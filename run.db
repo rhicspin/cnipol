@@ -12,11 +12,13 @@
 //=======                   Run05                      =========
 //==============================================================
 [6500.001]
+	ENERGY_CALIB=blue_calib_0412;
 	CONFIG=6935.002.config.dat;
 	MASSCUT=3;
 	TSHIFT=0;	
 
 [6500.101]
+	ENERGY_CALIB=yellow_calib_0412;
 	CONFIG=6858.113.config.dat;
 	MASSCUT=3;
 	TSHIFT=0;	
@@ -25,7 +27,7 @@
 	TSHIFT=3;	
 
 [6773.102]
-	TSHIFT=0;	
+	TSHIFT=0;
 
 [6849.102]
 	TSHIFT=3;
@@ -33,7 +35,11 @@
 [6849.103]
 	TSHIFT=0;
 
-[6935.102]
+[6935.001]
+	ENERGY_CALIB=blue_calib_0419-100v;
+
+[6935.101]
+	ENERGY_CALIB=yellow_calib_0419-150v;
 	CONFIG=6935.102.config.dat;
 
 
@@ -43,6 +49,13 @@
 [7007.101]
 	CONFIG=7009.107.config.dat;
 
+
+
+[7015.001]
+	ENERGY_CALIB=blue_calib_0504;
+
+[7015.101]
+	ENERGY_CALIB=yellow_calib_504;
 
 [7022.003]
 	CONFIG=7022.003.config.dat;
@@ -68,8 +81,14 @@
 [7061.001]
 	CONFIG=6947.005.config.dat;
 
-[7067.002]
+
+
+[7067.001]
+	ENERGY_CALIB=blue_calib_0513c;
 	CONFIG=7067.002.config.dat;
+
+[7067.101]
+	ENERGY_CALIB=yellow_calib_0513c;
 
 [7067.105]
 	CONFIG=7067.105.config.dat;
@@ -123,11 +142,6 @@
 
 [7279.005]
 	CONFIG=7279.005.config.dat;
-
-
-[7279.007]
-	MASSCUT=3;
-	TSHIFT=0;	
 
 [7279.106]
 	CONFIG=7279.106.config.dat;
