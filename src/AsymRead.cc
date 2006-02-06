@@ -347,7 +347,7 @@ int readloop() {
 			}
                     }
 
-		    cout << event.delim*512 + event.rev*2 + event.rev0 << endl;
+		    //cout << event.delim*512 + event.rev*2 + event.rev0 << endl;
 
                     if (Nread%1000000==0) {
 		      if (Flag.feedback){
