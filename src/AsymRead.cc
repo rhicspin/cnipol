@@ -76,7 +76,7 @@ int readloop() {
     
     // reading the data till its end ...
     if ((fp = fopen(datafile,"r")) == NULL) {
-      printf("%s file not found. Fource exit.\n",datafile);;
+      printf("ERROR: %s file not found. Fource exit.\n",datafile);;
       exit(-1);
     } 
 
@@ -427,7 +427,6 @@ calcRunConst(recordConfigRhicStruct *cfginfo){
 
   return;
 }
-
 
 
 

@@ -119,6 +119,7 @@ typedef struct {
 
 typedef struct {
   double RunID;
+  string calib_file_s;
   string config_file_s;
   string masscut_s;
   string tshift_s;
@@ -234,9 +235,11 @@ extern long int NStrip[3][72]; // counts 72 strips 3 spin states
 extern long int NRcounts[6][120][RAMPTIME];// counts 6det 120bunch RAMPTIME sec
 
 extern char * confdir;
+extern char * calibdir;
 extern char datafile[256];   // data file name 
-extern char reConfFile[256];           // update configuration file for T0 info
-extern char conf_file[256];           // update configuration file for T0 info
+extern char reConfFile[256];         // update configuration file for T0 info
+extern char conf_file[256];          // update configuration file for T0 info
+extern char CalibFile[256];          // Energy calibration file
 
 extern float ramptshift[500]; // ramp timing shift 
 
