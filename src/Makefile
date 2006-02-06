@@ -44,7 +44,7 @@ RunDBReader.o : AsymMain.h Asym.h
 	$(FC) -O -c $<
 
 install : Asym RunDBReader
-	install -c $^ $(INSTALLDIR)/bin/.
+	install -c $^ $(HOME)/bin/.
 
 ##############################
 clean :
