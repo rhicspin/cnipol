@@ -48,7 +48,7 @@ int main (int argc, char *argv[]){
     confdir = getenv("CONFDIR");
     if ( confdir == NULL ){
       cerr << "environment CONFDIR is not defined" << endl;
-      cerr << "e.g. export CONFDIR=$HOME/2005/offline/asym/Macro/Config" << endl;
+      cerr << "e.g. export CONFDIR=/usr/local/cnipol/config" << endl;
       exit(-1);
     }
 
@@ -426,44 +426,6 @@ void reConfig(recordConfigRhicStruct *cfginfo){
     configFile.close();
 }
 
-// =====================================
-// Print Out Configuration information 
-// =====================================
-int printConfig(recordConfigRhicStruct *cfginfo){
-
-    int ccutwu;
-    int ccutwl;
-
-    fprintf(stdout,"================================================\n");
-    fprintf(stdout,"===  RHIC Polarimeter Configuration (BGN)    ===\n");
-    fprintf(stdout,"================================================\n");
-
-    // Configulation File
-    fprintf(stdout," CONFIG    = %s\n",reConfFile);
-
-    // banana cut configulation
-    if (dproc.CBANANA == 0) {
-        ccutwl = (int)cfginfo->data.chan[3].ETCutW;
-        ccutwu = (int)cfginfo->data.chan[3].ETCutW;
-    } else if (dproc.CBANANA == 2) {
-      fprintf(stdout," MASSCUT   =%5.1f\n",dproc.MassSigma);
-    } else {
-        ccutwl = (int)dproc.widthl;
-        ccutwu = (int)dproc.widthu;
-    }
-    if (dproc.CBANANA!=2) 
-      fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
-
-    // tshift in [ns]
-    fprintf(stdout," TSHIFT    =%5d\n",dproc.tshift);
-
-
-    fprintf(stdout,"================================================\n");
-    fprintf(stdout,"===  RHIC Polarimeter Configuration (END)    ===\n");
-    fprintf(stdout,"================================================\n");
-
-    return(0);
-}
 
 
 //

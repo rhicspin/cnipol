@@ -19,6 +19,7 @@ using namespace std;
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+//#include "RunDB.h"
 
 //const char * GetVariables(string str);
 string GetVariables(string str);
@@ -29,6 +30,7 @@ int MatchBeam(double ThisRunID, double RunID);
 void PrintRunDB();
 
 StructRunDB rundb;
+
 
 
 
@@ -46,7 +48,10 @@ readdb(double RUNID) {
   // run DB file
   char *dbfile="run.db";
   FILE * in_file;
-  in_file = fopen(dbfile,"r");
+  if ((in_file = fopen(dbfile,"r")) == NULL) {
+      printf("ERROR: %s file not found. Fource exit.\n",dbfile);;
+      exit(-1);
+  } 
 
   string s;
   char * line = NULL;
@@ -66,27 +71,44 @@ readdb(double RUNID) {
       }
     }else{
       if (match){
-	if (str.find("CONFIG")     ==1) rundb.config_file_s = GetVariables(str);
-	if (str.find("MASSCUT")    ==1) rundb.masscut_s     = GetVariables(str);
-	if (str.find("TSHIFT")     ==1) rundb.tshift_s      = GetVariables(str);
+	if (str.find("CONFIG")       ==1) rundb.config_file_s = GetVariables(str);
+	if (str.find("MASSCUT")      ==1) rundb.masscut_s     = GetVariables(str);
+	if (str.find("TSHIFT")       ==1) rundb.tshift_s      = GetVariables(str);
+	if (str.find("ENERGY_CALIB") ==1) rundb.calib_file_s  = GetVariables(str);
+
       }
     }
 
   } // end-of-while(getline-loop)
 
   // processing conditions
+
   if (!extinput.CONFIG){
     strcat(reConfFile,confdir);
     strcat(reConfFile,    "/");
     strcat(reConfFile,rundb.config_file_s.c_str());
   }
+
+
+    // calib directories
+    calibdir = getenv("CALIBDIR");
+    if ( calibdir == NULL ){
+      cerr << "environment CALIBDIR is not defined" << endl;
+      cerr << "e.g. export CALIBDIR=/usr/local/cnipol/calib" << endl;
+      exit(-1);
+    }
+    strcat(CalibFile,calibdir);
+    strcat(CalibFile,    "/");
+    strcat(CalibFile,rundb.calib_file_s.c_str());
+
+
   if (!extinput.MASSCUT)
     dproc.MassSigma = strtof(rundb.masscut_s.c_str(),NULL);
 
   // TSHIFT will be cumulated TSHIFT from run.db and -t option
   dproc.tshift  += strtof(rundb.tshift_s.c_str(),NULL);
 
-  //  PrintRunDB();
+  // PrintRunDB();
 
   return 1;
 
@@ -169,6 +191,7 @@ void
 PrintRunDB(){
 
   printf("Config File  = %s\n",    rundb.config_file_s.c_str());
+  printf("Calib File   = %s\n",    rundb.calib_file_s.c_str());
   printf("Mass Cut     = %5.1f\n", strtof(rundb.masscut_s.c_str(),NULL));
   printf("TSHIFT       = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
 
@@ -176,6 +199,46 @@ PrintRunDB(){
 }
 
 
+
+// =====================================
+// Print Out Configuration information 
+// =====================================
+int printConfig(recordConfigRhicStruct *cfginfo){
+
+    int ccutwu;
+    int ccutwl;
+
+    fprintf(stdout,"================================================\n");
+    fprintf(stdout,"===  RHIC Polarimeter Configuration (BGN)    ===\n");
+    fprintf(stdout,"================================================\n");
+
+    // Configulation File
+    fprintf(stdout," CONFIG    = %s\n",reConfFile);
+    fprintf(stdout," CALIB     = %s\n",CalibFile);
+
+    // banana cut configulation
+    if (dproc.CBANANA == 0) {
+        ccutwl = (int)cfginfo->data.chan[3].ETCutW;
+        ccutwu = (int)cfginfo->data.chan[3].ETCutW;
+    } else if (dproc.CBANANA == 2) {
+      fprintf(stdout," MASSCUT   =%5.1f\n",dproc.MassSigma);
+    } else {
+        ccutwl = (int)dproc.widthl;
+        ccutwu = (int)dproc.widthu;
+    }
+    if (dproc.CBANANA!=2) 
+      fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
+
+    // tshift in [ns]
+    fprintf(stdout," TSHIFT    =%5d\n",dproc.tshift);
+
+
+    fprintf(stdout,"================================================\n");
+    fprintf(stdout,"===  RHIC Polarimeter Configuration (END)    ===\n");
+    fprintf(stdout,"================================================\n");
+
+    return(0);
+}
 
 //
 // Class name  :
