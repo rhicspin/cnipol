@@ -1,0 +1,98 @@
+# 00README
+# Jan.20, 2006
+# I. Nakagawa
+# pC offline analysis package
+
+Some key directories:
+DATA 
+  /dev/sda1/data 
+  /dev/sdb1/data
+  /dev/sdc1/data
+  symboric link to: /home/itaru/2005/data
+
+ONLINE LOG
+  /dev/sda1/log
+  /dev/sdb1/log
+  /dev/sdc1/log
+  symboric link to: /home/itaru/2005/log
+
+ANALYSIS
+  /home/itaru/2005/offline/asym
+
+SRC
+  /home/itaru/2005/offline/asym/src
+	AsymMain.cc    "main program. hundle options"
+	AsymRead.cc    "read in raw data and decode"
+	AsymRunDB.cc   "read in condistions for runs from run.db" 
+	AsymHbook.cc   "histogram booking"
+	hb_lib.f       "utility library to call hbook from c++"
+	AsymProcess.cc "event looop processing program"
+   	AsymCalc.cc    "end of run routine"
+
+	Asym.h
+	AsymMain.h
+	rpoldata.h
+	rhicpol.h
+	WeightedMean.h
+		
+  Executable : 
+	Asym          "Modified asymrhic. Current version"
+	asymrhic      "Got from Osamu. Stopped supporging"
+
+
+
+Set up for running Asym"
+
+1. Environmental variables (in bash format)
+
+        export ONLINEDIR=$HOME/2005
+        export ONLINELOGDIR=$ONLINEDIR/log
+        export DATADIR=$ONLINEDIR/data
+        export ASYMDIR=$ONLINEDIR/offline/asym
+        export CONFDIR=$ASYMDIR/Macro/Config
+
+	#whereever executable to be installed.
+        export PATH=./:$HOME/bin:$PATH
+
+2. make at source directory
+    %> cd $ASYMDIR/src
+    %> make 
+    %> make install (default install destination is $HOME/bin)
+    
+3. need run.db at analysis directory 
+   see 00README.rundb for syntax
+    %> cd $ASYMDIR
+    %> cp /home/itaru/2005/offline/asym/run.db .
+
+4. Executing Asym
+    %> cd $ASYMDIR
+    %> Asym -f 7069.101.data
+
+    Try
+    %> Asym -h for options
+    
+5. Outputs:
+
+    hbookfile: outsampleex.hbook
+    
+    
+6. Some utility to run Asym and histogram brawsing
+   %> cd $ASYMDIR
+   %> RHICAna.pl &
+
+    Some directrories to be created
+    $ASYMDIR/Hbooks                  : store hbook files
+    $ASYMDIR/Log                     : offline log directory	   
+    $ASYMDIR/ps                      : for postscript outputs
+    Copy over following directory from /home/itaru/offline/asym/kumac
+    $ASYMDIR/kumac/*.kumac,*.pl,*.sh : paw macro for plotting
+
+
+  * Useful instructions by Osamu:
+    http://www4.rcf.bnl.gov/~cnipol/Analysis/OsamuDocs/index.html
+
+    o   Brief summary of online monitoring scripts
+    o   CNI polarimeter monitoring GUI user guide  
+    
+
+
