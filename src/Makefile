@@ -19,34 +19,32 @@ D_FLAG = -Df2cFortran
 FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
 
-target : asymrhic Asym
+target : Asym RunDBReader
 
-OBJECTS = asym_main.o asym_process.o asym_calc.o hb_lib.o 
-
-AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o
+AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o 
+	  
+RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
 ######## BINARY ##################
-asymrhic : $(OBJECTS)
-	$(CC) $(C_FLAG) $(OBJECTS) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
 
 Asym : $(AsymOBJ)
 	$(CC) $(C_FLAG) $(AsymOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
 
+RunDBReader : $(RunDBReaderOBJ)
+	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
 
 ######## OBJECT ##################
 
-asym_main.o : asymrhic.h
-asym_process.o : asymrhic.h
-asym_calc.o : asymrhic.h
-AsymMain.o : asymrhic.h AsymMain.h
+AsymMain.o : Asym.h AsymMain.h
+RunDBReader.o : AsymMain.h Asym.h
 
 .C.o:
 	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<
 .f.o:
 	$(FC) -O -c $<
 
-install : asymrhic Asym
-	install -c $^ $(HOME)/bin/.
+install : Asym RunDBReader
+	install -c $^ $(INSTALLDIR)/bin/.
 
 ##############################
 clean :
