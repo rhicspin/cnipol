@@ -1,7 +1,7 @@
-# File name           : makefile
+# File name           : Makefile
 #
-# Author              : Osamu Jinouchi
-# Creation data       : 2002/Dec
+# Author              : Itaru Nakagawa
+# Creation data       : Feb.6,2006
 
 LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib
 INC_PATHS = -I. -I/usr/include
