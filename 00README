@@ -1,5 +1,5 @@
 # 00README
-# Jan.20, 2006
+# Feb.6,2006
 # I. Nakagawa
 # pC offline analysis package
 
@@ -8,19 +8,19 @@ DATA
   /dev/sda1/data 
   /dev/sdb1/data
   /dev/sdc1/data
-  symboric link to: /home/itaru/2005/data
+  symboric link to: /usr/local/cnipol/data
 
 ONLINE LOG
   /dev/sda1/log
   /dev/sdb1/log
   /dev/sdc1/log
-  symboric link to: /home/itaru/2005/log
+  symboric link to: /usr/local/cnipol/log
 
 ANALYSIS
-  /home/itaru/2005/offline/asym
+  cnipol
 
 SRC
-  /home/itaru/2005/offline/asym/src
+  cnipol/src
 	AsymMain.cc    "main program. hundle options"
 	AsymRead.cc    "read in raw data and decode"
 	AsymRunDB.cc   "read in condistions for runs from run.db" 
@@ -28,6 +28,7 @@ SRC
 	hb_lib.f       "utility library to call hbook from c++"
 	AsymProcess.cc "event looop processing program"
    	AsymCalc.cc    "end of run routine"
+	RunDBReader.cc "portable RunDB read program"
 
 	Asym.h
 	AsymMain.h
@@ -37,32 +38,32 @@ SRC
 		
   Executable : 
 	Asym          "Modified asymrhic. Current version"
-	asymrhic      "Got from Osamu. Stopped supporging"
-
+	RunDBReader   "portable run.db reader/printer"
 
 
 Set up for running Asym"
 
 1. Environmental variables (in bash format)
 
-        export ONLINEDIR=$HOME/2005
+        export INSTALLDIR=/usr/local/cnipol
+        export CONFDIR=$INSTALLDIR/config
+        export CALIBDIR=$INSTALLDIR/calib
+        export ONLINEDIR=$INSTALLDIR
         export ONLINELOGDIR=$ONLINEDIR/log
         export DATADIR=$ONLINEDIR/data
-        export ASYMDIR=$ONLINEDIR/offline/asym
-        export CONFDIR=$ASYMDIR/Macro/Config
+        export ASYMDIR=$HOME/2005/offline/asym
 
 	#whereever executable to be installed.
-        export PATH=./:$HOME/bin:$PATH
+        export PATH=$HOME/bin:$PATH
+
 
 2. make at source directory
     %> cd $ASYMDIR/src
     %> make 
-    %> make install (default install destination is $HOME/bin)
+    %> make install (default install destination is $HOME/bin. create $HOME/bin in advance)
     
 3. need run.db at analysis directory 
-   see 00README.rundb for syntax
-    %> cd $ASYMDIR
-    %> cp /home/itaru/2005/offline/asym/run.db .
+   see 00README.rundb for syntax (not yet available)
 
 4. Executing Asym
     %> cd $ASYMDIR
@@ -84,7 +85,7 @@ Set up for running Asym"
     $ASYMDIR/Hbooks                  : store hbook files
     $ASYMDIR/Log                     : offline log directory	   
     $ASYMDIR/ps                      : for postscript outputs
-    Copy over following directory from /home/itaru/offline/asym/kumac
+    Some useful paw macros and script for plotting
     $ASYMDIR/kumac/*.kumac,*.pl,*.sh : paw macro for plotting
 
 
