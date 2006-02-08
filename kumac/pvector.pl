@@ -2,9 +2,9 @@
 
 $run = $ARGV[0];
 
-$LOGDIR=$ENV{"ONLINELOGDIR"};
+$ONLINEDIR=$ENV{"ONLINEDIR"};
 $OUTFILE = ">pvect.dat";
-$LOGFILE = "$LOGDIR/an$run.log";
+$LOGFILE = "$ONLINEDIR/log/an$run.log";
 
 #printf "Processing run $run ($LOGFILE)\n";
 
