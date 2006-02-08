@@ -196,7 +196,7 @@
 	endif
 	
 	BID(i) = i
-* write(*,*) 'now ',i,'-th bunch '
+
       Enddo
       
       mean(1)=sum90/float(val90)

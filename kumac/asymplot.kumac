@@ -8,13 +8,13 @@
    if ([plot].eq.'nothing') then
      plot = $ENV(PLOT)
    endif
-   
+
    pson
    glo/cre run [run]
    exe setting
    exe file HID1=30000 HID2=30100
    exe polarization
-   
+	
    mess [run] [plot]
    glo/cre plot [plot]
    
@@ -51,7 +51,7 @@
 * **********************************
  macro setting
    opt nbox
-* opt pto
+
    filecase KEEP
    opt nfile 
    opt nstat
@@ -1480,8 +1480,9 @@ last:
    title_gl '' U
    zone 
    
-   LOGFILE=$ENV(ASYMDIR)/Log/[run].log
-   sh kumac/getTbin.sh [LOGFILE]
+   LOGFILE=$ENV(ASYMDIR)/log/[run].log
+   KUMACDIR=$ENV(KUMACDIR)
+   sh [KUMACDIR]/getTbin.sh [LOGFILE]
 
    ve/read minust tbin.dat
    ve/read ex tdbin.dat
@@ -2021,8 +2022,9 @@ next:
    title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
    title_gl '' U
 
-   LOGFILE=$ENV(ASYMDIR)/Log/[run].log
-   sh kumac/filter.sh [LOGFILE]
+   LOGFILE=$ENV(ASYMDIR)/log/[run].log
+   KUMACDIR=$ENV(KUMACDIR)
+   sh [KUMACDIR]/filter.sh [LOGFILE]
 
    ve/read index,delim,x,y tgt.dat ! ! -/*/
    ve/cr time($vdim(index,1))
