@@ -101,7 +101,7 @@ Double_t ExCoef(Double_t x, Int_t Index){
 
 class KinFit {
 public:
-  KinFit(Char_t *, Float_t, Int_t);
+  KinFit(Char_t *, Float_t, Int_t, Int_t);
   ~KinFit();
   
   void Fit(Int_t);
@@ -121,6 +121,7 @@ public:
   Char_t runid[10];
   Float_t bene;
   Int_t RHIC_Beam;
+  Int_t HID=15000;   // const. t cut by default
 
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
@@ -144,10 +145,14 @@ public:
 
 
 // Initialization of the class
-KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam){
+KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Int_t hid){
     sprintf(runid,"%s",runidinput);
     RHIC_Beam = RHICBeam;
     bene = beneinput;
+    HID = hid;
+
+    if (HID==15000) printf("Fit on constant time cut histogram, HID:%5d\n", HID);
+    if (HID==15100) printf("Fit on  banana-mass  cut histogram, HID:%5d\n", HID);
 
     memset(dl,0, sizeof(dl));
     memset(dlE,0, sizeof(dlE));
@@ -166,13 +171,13 @@ KinFit::~KinFit(){};
 void KinFit::Fit(Int_t mode) 
 {    
 
-    if (mode == 0) {
+    if (!mode&1) {
         cout << "TRY TWO FREE PARAMETER FIT" <<endl;
-    } elseif (mode == 1) {
+    } elseif (mode&1) {
         cout << "TRY T0 PARAMETER FIT (fixed Dlayer)" <<endl;
     }        
 
-    if (mode == 1) {
+    if (mode&1) {
         fout.open("testfit.dat");
     
         gStyle->SetGridColor(1);
@@ -199,18 +204,18 @@ void KinFit::Fit(Int_t mode)
 	  dlValid[St] = dlEValid[St] = dlSi[j] = dlESi[j] = 0;
 	  
             Char_t hName[100];
-            sprintf(hName,"h%d",15100+St+1);  
+            sprintf(hName,"h%d",HID+St+1);  
             TH2D* htemp = (TH2D*) gDirectory->Get(hName);
 
             Padn++;   // change pad even if the histograms is empty
-            if (mode==1) CurC->cd(Padn);
+            if (mode&1) CurC->cd(Padn);
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
 	      FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
-	      if (mode == 0) { 
+	      if (!mode&1) { 
 		  if (!DisableList(RHIC_Beam,St)){
 		    dl_accum += dl[St];
 		    dlValid[St] = dl[St];
@@ -225,12 +230,12 @@ void KinFit::Fit(Int_t mode)
 	    ++j;
         } // End-of-Loop for Strip 
 
-        if (mode==1) {
+        if (mode&1) {
             CurC->Update();
             ps.NewPage();
         }
 
-        if (mode == 0) {
+        if (!mode&1) {
 	  //dlsum[Si] = dl_accum/valstn;
 	  dlsum[Si] = WeightedMean(dlSi,dlESi,12);
 	  SiDev[Si]=0;
@@ -248,13 +253,13 @@ void KinFit::Fit(Int_t mode)
 	}
     } // end-of-St loop
 
-    if (mode == 0){
+    if (!mode&1){
       dlave = (Float_t)WeightedMean(dlValid,dlEValid,72);
       if (NValidSt) {
 	//dlave/=float(NValidSt);
 	devpst=WeightedMean(StDev,dlEValid,NValidSt);
       }
-    } else if (mode==1) {
+    } else if (mode&1) {
       printf("\n\n");
       printf("-----------------------------------------------------------\n");
       printf(" dlave = %7.2f\n",dlave);
@@ -284,7 +289,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     cout << " ===================================="<<endl;
 
     Char_t hName[100];
-    sprintf(hName,"h%d",15100+St+1);  
+    sprintf(hName,"h%d",HID+St+1);  
     
     TH2D* h2d = (TH2D*) gDirectory->Get(hName);
     h2d -> SetStats(0);
@@ -330,16 +335,16 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     // Set the default values
     // Dlayer Fix/ Or not
     
-    if (mode == 0) {
+    if (!mode&1) {
         kinf->SetParameters(50.0, 0.0);
         kinf->SetParLimits(0, 0., 200.);
-    } elseif (mode ==1) {
+    } elseif (mode&1) {
         kinf->SetParameters(dlsum[Si], 0.0);
         kinf->SetParLimits(0, dlsum[Si], dlsum[Si]);
     }        
     kinf->SetParLimits(1, -50., 50.);
 
-    if (mode == 1) h2d  -> Draw("color");
+    if (mode&1) h2d  -> Draw("color");
 
     // %%%%%%%%%%%%%%
     Float_t FitRangeLow = 400.;
@@ -352,7 +357,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     // putting in vectors
 
     Float_t ChiDOF=0;
-    if (mode==0) {
+    if (!mode&1) {
 
         // two parameter fit
 
@@ -362,7 +367,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         t0[St]   = kinf->GetParameter(1);
         t0E[St]  = Chi2[St] * kinf->GetParError(1);
 
-    } else if (mode ==1) {
+    } else if (mode&1) {
 
         // one parameter fit
         ChiDOF   = kinf->GetChisquare()/kinf->GetNDF();
@@ -371,7 +376,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 
     }        
 
-    if (mode==1) {
+    if (mode&1) {
 
         // Plot data points (Magenta)
 
