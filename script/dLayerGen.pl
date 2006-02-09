@@ -3,6 +3,36 @@
 $Runn = $ARGV[0];
 $ConfigFileName = $ARGV[1];
 
+#----------------------------------------------------------------------
+#               Command Line Options
+#----------------------------------------------------------------------
+use Getopt::Std;
+my %opt;
+getopts('f:h', \%opt);
+
+if ( $opt{h} ) {
+    help();
+}
+
+# Get Run ID
+my $Runn = $opt{f};
+if (length ($Runn) == 0){
+    print "Error: Specify <runID>.\n";
+    help();
+}
+
+sub help(){
+    print "\n";
+    print " Usage:\n  $0 -h [ -f <runID>]\n\n"; 
+    print "    create banana histograms for fit. Execute dLayerCal.pl next.\n\n";
+    print "\t -f <runID> runID\n";
+    print "\t -h         Show this help\n";
+    print "\n";
+    exit(0);
+}
+
+
+
 if (length ($ConfigFileName) != 0) {
     $ConfigFile = "$ConfigFileName.dat";
     $OPT_CONFIG = " -F $ConfigFile ";
