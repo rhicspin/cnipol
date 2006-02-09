@@ -1,5 +1,5 @@
 # 00README
-# Feb.6,2006
+# Feb.8,2006
 # I. Nakagawa
 # pC offline analysis package
 
@@ -8,13 +8,13 @@ DATA
   /dev/sda1/data 
   /dev/sdb1/data
   /dev/sdc1/data
-  symboric link to: /usr/local/cnipol/data
+  symboric link to: /usr/local/cnipol/online/data
 
 ONLINE LOG
   /dev/sda1/log
   /dev/sdb1/log
   /dev/sdc1/log
-  symboric link to: /usr/local/cnipol/log
+  symboric link to: /usr/local/cnipol/online/log
 
 ANALYSIS
   cnipol
@@ -41,52 +41,100 @@ SRC
 	RunDBReader   "portable run.db reader/printer"
 
 
-Set up for running Asym"
+
+Get SRC files from cvs server:
+
+	
+	export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
+	
+	% cvs login 
+	CVS password: (standard e950 password)
+	% cvs checkout cnipol
+
+
+Set up environment and install executables and macros.
 
 1. Environmental variables (in bash format)
 
-        export INSTALLDIR=/usr/local/cnipol
-        export CONFDIR=$INSTALLDIR/config
-        export CALIBDIR=$INSTALLDIR/calib
-        export ONLINEDIR=$INSTALLDIR
-        export ONLINELOGDIR=$ONLINEDIR/log
-        export DATADIR=$ONLINEDIR/data
-        export ASYMDIR=$HOME/2005/offline/asym
+	export CNILIB=/usr/local/cnipol
+	export ONLINEDIR=$CNILIB/online
+	export DATADIR=$CNILIB/data
+	export SHAREDIR=$CNILIB/share
+	export CONFDIR=$SHAREDIR/config
+	export CALIBDIR=$SHAREDIR/calib
 
-	#whereever executable to be installed.
-        export PATH=$HOME/bin:$PATH
+	# to work with your own version, then try $HOME/bin
+	export ASYMDIR=$HOME/2005/offline/asym
+	# installation destination 
+	export INSTALLDIR=$ASYMDIR/bin
+	export KUMACDIR=$ASYMDIR/kumac
+#    for developers use followings instead of above two lines
+#	export INSTALLDIR=$SHAREDIR/bin
+#	export KUMACDIR=$SHAREDIR/kumac
+
+	export PATH=$INSTALLDIR:$PATH
+
+2. Make and install src files:
+	% cd cnipol
+	% source ~/.bashrc
+	% ./install.sh
 
 
-2. make at source directory
-    %> cd $ASYMDIR/src
-    %> make 
-    %> make install (default install destination is $HOME/bin. create $HOME/bin in advance)
+3. Add following lines to your $HOME/.pawlogon.kumac
+
+	alias/cr pson 'exe ~/.pawlogon#on'
+	alias/cr psoff 'exe ~/.pawlogon#off'
+	opt zfl1	
+	FILECASE keep
+	defaults ./kumac,$ENV(KUMACDIR)
+
+	*===================================================
+	macro on fn=paw.ps met=-111
+	 fortran/file 66 [fn]
+	 graphics/metafile 66 [met]
+	return
+
+	*===================================================
+	macro off 
+	 close 66
+	return
+
+	*===================================================
+	macro eon fn=paw.eps met=-113
+	 fortran/file 66 [fn]
+	 graphics/metafile 66 [met]
+	return
+
+
+
+
+Working directory and Running executables:
+
+	create working directory
+	% mkdir $ASYMDIR
+	% cd $ASYMDIR
+	% cp $HOME/cnipol/run.db .
+	       or
+	% ln -s $HOME/cnipol/run.db .
+	
+	 run.db has to be at working directory
+	 see 00README.rundb for syntax (not yet available)
+
+	% Asym -f 7069.101.data
+	try Asym -h for options
     
-3. need run.db at analysis directory 
-   see 00README.rundb for syntax (not yet available)
-
-4. Executing Asym
-    %> cd $ASYMDIR
-    %> Asym -f 7069.101.data
-
-    Try
-    %> Asym -h for options
-    
-5. Outputs:
-
-    hbookfile: outsampleex.hbook
+  outputs:
+	hbookfile: outsampleex.hbook
     
     
-6. Some utility to run Asym and histogram brawsing
-   %> cd $ASYMDIR
+
+Some utility to run Asym and histogram brawsing
    %> RHICAna.pl &
 
     Some directrories to be created
-    $ASYMDIR/Hbooks                  : store hbook files
-    $ASYMDIR/Log                     : offline log directory	   
+    $ASYMDIR/hbook                   : store hbook files
+    $ASYMDIR/log                     : offline log directory	   
     $ASYMDIR/ps                      : for postscript outputs
-    Some useful paw macros and script for plotting
-    $ASYMDIR/kumac/*.kumac,*.pl,*.sh : paw macro for plotting
 
 
   * Useful instructions by Osamu:
@@ -95,5 +143,22 @@ Set up for running Asym"
     o   Brief summary of online monitoring scripts
     o   CNI polarimeter monitoring GUI user guide  
     
+
+
+
+
+###################################################################
+#########   For Calibration and DeadLayer Studies:       ##########
+###################################################################
+
+
+	
+Create necessary directories:
+
+	% mkdir $ASYMDIR/douts
+	% mkdir $ASYMDIR/calib
+	% mkdir $ASYMDIR/config
+	% mkdir $ASYMDIR/integ
+
 
 
