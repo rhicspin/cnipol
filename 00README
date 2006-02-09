@@ -3,21 +3,24 @@
 # I. Nakagawa
 # pC offline analysis package
 
-Some key directories:
-DATA 
-  /dev/sda1/data 
-  /dev/sdb1/data
-  /dev/sdc1/data
-  symboric link to: /usr/local/cnipol/online/data
+Some key directories under CNI library: 
+CNILIB=/usr/local/cnipol
 
-ONLINE LOG
-  /dev/sda1/log
-  /dev/sdb1/log
-  /dev/sdc1/log
-  symboric link to: /usr/local/cnipol/online/log
+% ls $CNIPOL
+   data/   online/  share/
 
-ANALYSIS
-  cnipol
+data/ 
+  symboric links to 2005 data available on pb2pb.phy.bnl.gov
+
+online/
+    hbook/  : symboric link to online hbook files.
+    log/    : symboric link to online log files.
+
+share/
+    calib/  : database for the energy calibration 
+    config/ : configulation database for analysis program Asym
+    macro/  : macro for plotting and deadlayer fits.
+    bin/    : executable binaries and scripts. 
 
 SRC
   cnipol/src
@@ -36,21 +39,20 @@ SRC
 	rhicpol.h
 	WeightedMean.h
 		
-  Executable : 
-	Asym          "Modified asymrhic. Current version"
+  Executables : 
+	Asym          "Main analysis program"
 	RunDBReader   "portable run.db reader/printer"
 
 
 
 Get SRC files from cvs server:
-
 	
 	export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
 	
 	% cvs login 
 	CVS password: (standard e950 password)
 	% cvs checkout cnipol
-
+        sources will be downloaded in ./cnipol directory.
 
 Set up environment and install executables and macros.
 
@@ -62,15 +64,15 @@ Set up environment and install executables and macros.
 	export SHAREDIR=$CNILIB/share
 	export CONFDIR=$SHAREDIR/config
 	export CALIBDIR=$SHAREDIR/calib
-
-	# to work with your own version, then try $HOME/bin
+	# working directory
 	export ASYMDIR=$HOME/2005/offline/asym
+
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin
-	export KUMACDIR=$ASYMDIR/kumac
+	export MACRODIR=$ASYMDIR/kumac
 #    for developers use followings instead of above two lines
 #	export INSTALLDIR=$SHAREDIR/bin
-#	export KUMACDIR=$SHAREDIR/kumac
+#	export MACRODIR=$SHAREDIR/kumac
 
 	export PATH=$INSTALLDIR:$PATH
 
