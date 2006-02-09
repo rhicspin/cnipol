@@ -31,7 +31,9 @@ sub help(){
     print "    Execute dLayerGen.pl for creation.\n\n";
     print "\t -f <runID> runID\n";
     print "\t -b         fit on banana cut events. (def:const.t cut)\n";
-    print "\t -h         Show this help\n";
+    print "\t -h         Show this help \n";
+    print "\n";
+    print "    ex.) dLayerCal.pl -f 7279.005 -b \n";
     print "\n";
     exit(0);
 }

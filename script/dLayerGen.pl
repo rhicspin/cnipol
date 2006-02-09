@@ -26,8 +26,10 @@ sub help(){
     print " Usage:\n  $0 -h [ -f <runID>]\n\n"; 
     print "    create banana histograms for fit. Execute dLayerCal.pl next.\n\n";
     print "\t -f <runID> runID\n";
-    print "\t -h         Show this help\n";
-    print "\n";
+    print "\t -h         Show this help";
+    print "\n\n";
+    print "    ex.) dLayerGen.pl -f 7279.005";
+    print "\n\n";
     exit(0);
 }
 
