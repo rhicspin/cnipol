@@ -1481,8 +1481,8 @@ last:
    zone 
    
    LOGFILE=$ENV(ASYMDIR)/log/[run].log
-   KUMACDIR=$ENV(KUMACDIR)
-   sh [KUMACDIR]/getTbin.sh [LOGFILE]
+   MACRODIR=$ENV(MACRODIR)
+   sh [MACRODIR]/getTbin.sh [LOGFILE]
 
    ve/read minust tbin.dat
    ve/read ex tdbin.dat
@@ -2023,8 +2023,8 @@ next:
    title_gl '' U
 
    LOGFILE=$ENV(ASYMDIR)/log/[run].log
-   KUMACDIR=$ENV(KUMACDIR)
-   sh [KUMACDIR]/filter.sh [LOGFILE]
+   MACRODIR=$ENV(MACRODIR)
+   sh [MACRODIR]/filter.sh [LOGFILE]
 
    ve/read index,delim,x,y tgt.dat ! ! -/*/
    ve/cr time($vdim(index,1))
