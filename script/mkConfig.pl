@@ -1,6 +1,6 @@
 #! /usr/bin/perl
-#
-# makes ConfigFile
+# mkConfig.pl
+# Feb.10
 
 $OPT  = " ";
 
@@ -38,10 +38,29 @@ sub help(){
     print "\t -f <runID> runID\n";
     print "\t -D         Execute deadlayer fit\n";
     print "\t -b         Banana cut event selection on deadlayer fit.\n";
-    print "\t            (used with -D option\n";
+    print "\t            (used with -D option)\n";
     print "\t -h         Show this help\n";
     print "\n";
+    print "    ex.) To perform deadlayer fit and make new configulation:\n\n";
+    print "            % mkConfig.pl -f 7279.005 -D -b \n\n";
+    print "         To make configulation file with existing deadlayer data\n\n";
+    print "            % mkConfig.pl -f 7279.005 \n";
+    print "\n";
     exit(0);
+
+}
+
+
+
+#----------------------------------------------------------------------
+#               Directory Path Setup
+#----------------------------------------------------------------------
+$BASEDIR      = $ENV{"ASYMDIR"};
+$MACRODIR     = $ENV{"MACRODIR"};
+$CONFIGDIR    = "$BASEDIR/config";
+
+unless (-d $CONFIGDIR) {
+    mkdir $CONFIGDIR;
 }
 
 
@@ -55,20 +74,19 @@ if ($DlayerFit){
     system("echo 'Generating histograms...\n'");
     system("dLayerGen.pl -f $Runn \n");
     system("echo 'Executing Fitting...\n'");
-    system("dLayerCal.pl -f $Runn \n");
+    system("dLayerCal.pl $OPT -f $Runn \n");
+    system("echo 'Executing Integral Fitting...\n'");
+    system("IntegCal.pl -f $Runn \n");
 }
 
 
 #----------------------------------------------------------------------
 #               Command line argument hundling routine
 #----------------------------------------------------------------------
-$Calb=`RunDBReader -r $Runn | grep CALIB | gawk -f mkConfig.awk`;
+$Calb=`RunDBReader -f $Runn | grep CALIB | gawk -f $MACRODIR/mkConfig.awk`;
 chop $Calb;
-if (length ($Calb) == 0) {
-    $Calb=`RunDBReader -r $Runn | grep CALIB | gawk -f mkConfig.awk`;
-    chop $Calb;
- if (length ($Calb) == 0) {die "Problem in getting calibration filename in run.db\n";}
-}
+if (length ($Calb) == 0) {die "Problem in getting calibration filename in run.db\n";}
+
 
 #----------------------------------------------------------------------
 #               Filename Allocation
@@ -120,7 +138,6 @@ while ($dline = <Dlayer>) {
 	$pcoef3[$Strip] = $dlines[16];
 	$pcoef4[$Strip] = $dlines[17];
 
-#	printf "St: $Strip T0: $tzero[$Strip] Width:$dwidth[$Strip] \n";
     }
 }
 close(Dlayer);
@@ -216,11 +233,6 @@ for ($st=0;$st<72;$st++) {
 
 close(PARA);
 
-if ($Runn != "-i") {
- system("cp config.dat $Runn.config.dat");
- printf ("Done - You should now have a configuration file named:\n$Runn.config.dat\n");
-}
 
-if ($Runn == "-i") {printf ("Done - You should now have a new config.dat file.\n");}
-
-printf (" \n");
+system("cp config.dat $CONFIGDIR/$Runn.config.dat");
+printf "New configulation file: $CONFIGDIR/$Runn.config.dat\n\n";
