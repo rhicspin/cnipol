@@ -48,5 +48,5 @@ printf("Dlayer DATA : $Runn \n");
 system("echo 'Generating histograms...\n'");
 system("dLayerGen.pl -f $Runn \n");
 system("echo 'Executing Fitting...\n'");
-system("dLayerCal.pl -f $Runn \n");
+system("dLayerCal.pl $OPT -f $Runn \n");
 
