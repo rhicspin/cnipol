@@ -1,10 +1,24 @@
+#####################################################################
 # 00README
-# Feb.8,2006
+# Feb.10,2006
 # I. Nakagawa
 # pC offline analysis package
+#####################################################################
 
-Some key directories under CNI library: 
-CNILIB=/usr/local/cnipol
+Get SRC files from cvs server:
+	
+	export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
+	
+	% cvs login 
+	CVS password: (standard e950 password)
+	% cvs checkout cnipol
+        sources will be downloaded in ./cnipol directory.
+
+#####################################################################
+
+
+Here are some directory structure of CNI libraries required to run
+the program: CNILIB=/usr/local/cnipol
 
 % ls $CNIPOL
    data/   online/  share/
@@ -23,7 +37,7 @@ share/
     bin/    : executable binaries and scripts. 
 
 SRC
-  cnipol/src
+  ./cnipol/src
 	AsymMain.cc    "main program. hundle options"
 	AsymRead.cc    "read in raw data and decode"
 	AsymRunDB.cc   "read in condistions for runs from run.db" 
@@ -45,14 +59,6 @@ SRC
 
 
 
-Get SRC files from cvs server:
-	
-	export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
-	
-	% cvs login 
-	CVS password: (standard e950 password)
-	% cvs checkout cnipol
-        sources will be downloaded in ./cnipol directory.
 
 Set up environment and install executables and macros.
 
@@ -79,7 +85,9 @@ Set up environment and install executables and macros.
 2. Make and install src files:
 	% cd cnipol
 	% source ~/.bashrc
+	Make src files and install executable binaries and scripts to $INDTALLDIR.
 	% ./install.sh
+          
 
 
 3. Add following lines to your $HOME/.pawlogon.kumac
@@ -115,22 +123,23 @@ Working directory and Running executables:
 	create working directory
 	% mkdir $ASYMDIR
 	% cd $ASYMDIR
+	copy or symbilic link run.db from the repository
 	% cp $HOME/cnipol/run.db .
 	       or
 	% ln -s $HOME/cnipol/run.db .
 	
-	 run.db has to be at working directory
-	 see 00README.rundb for syntax (not yet available)
+	 *run.db has to be at working directory*
+	 see 00README.rundb for syntax 
 
 	% Asym -f 7069.101.data
-	try Asym -h for options
+	  (try Asym -h for options)
     
-  outputs:
+   output:
 	hbookfile: outsampleex.hbook
     
     
 
-Some utility to run Asym and histogram brawsing
+The utility program to run Asym and browse histograms:
    %> RHICAna.pl &
 
     Some directrories to be created
@@ -153,7 +162,6 @@ Some utility to run Asym and histogram brawsing
 #########   For Calibration and DeadLayer Studies:       ##########
 ###################################################################
 
-
 	
 Create necessary directories:
 
@@ -161,6 +169,89 @@ Create necessary directories:
 	% mkdir $ASYMDIR/calib
 	% mkdir $ASYMDIR/config
 	% mkdir $ASYMDIR/integ
+
+
+Energy Calibration
+
+0. Make sure all the environments are defined as described above.
+   Calibration data supposed to be stored at $DATADIR as well as
+   normal data.
+
+1. For energy calibration filename e.g. blue_calib_0513c.data:
+
+   % cd $ASYMDIR
+   % Calib.pl -f blue_calib_0513c
+    (Try Calib.pl -h for help)
+
+2. The resulting ps and data files are created under $ASYMDIR/calib
+
+   % ls calib
+     blue_calib_0513c.fit.log     blue_calib_0513c.summarytemp.ps
+     blue_calib_0513c.fittemp.ps  blue_calib_0513c.temp.dat
+
+3. If the calibration is successful, to use the results for the 
+   forthcomming polarization measurements, then add following line
+   in $ASYMDIR/run.db at adequate [RUNID] location e.g. [7067.001] here:
+
+[7067.001]
+        ENERGY_CALIB=blue_calib_0513c;
+
+
+4. Create new configulation for e.g. run#7067.001:
+	
+    % mkConfig.pl -f 7067.001 
+      (Try mkConfig.pl -h for help)
+
+   see below "Create new configulation" for more detail.
+
+
+DeadLayer Fit:
+
+1. There are two options for the event selection to be fit:
+   The default is constant time cut. With option -b, banana
+   cut event selection can be selected. E.g. for run#7279.005.data:
+
+   % cd $ASYMDIR
+
+   for const. time cut:
+   % Dlayer.pl -f 7279.005 
+
+   for banana cut:
+   % Dlayer.pl -b -f 7279.005 
+
+
+
+Create new configulation:
+
+0. Make sure calibration file is defined in run.db
+
+1. To perform deadlayer fit and make new configulation:
+
+    % mkConfig.pl -f 7279.005 -D -b
+
+   To make configulation file with existing deadlayer data
+
+    % mkConfig.pl -f 7279.005
+
+   New configulation file will be created 
+
+    ./config/7279.005.config.data
+
+
+2. Copy new configulation file to shared library and update
+   on run.db to use new configulation.
+
+   in run.db add:
+   [7279.005]
+	CONFIG=7279.005.config.dat;
+
+   %cp ./config/7279.005.config.data $CONFDIR/.
+
+
+
+   
+
+
 
 
 
