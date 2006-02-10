@@ -108,7 +108,7 @@ readdb(double RUNID) {
   // TSHIFT will be cumulated TSHIFT from run.db and -t option
   dproc.tshift  += strtof(rundb.tshift_s.c_str(),NULL);
 
-  // PrintRunDB();
+  //PrintRunDB();
 
   return 1;
 
