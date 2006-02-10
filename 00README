@@ -71,7 +71,7 @@ Set up environment and install executables and macros.
 	export CONFDIR=$SHAREDIR/config
 	export CALIBDIR=$SHAREDIR/calib
 	# working directory
-	export ASYMDIR=$HOME/2005/offline/asym
+	export ASYMDIR=$HOME/offline/asym
 
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin
