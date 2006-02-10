@@ -119,7 +119,6 @@ for ($st=0;$st<72;$st++) {
 #========================================
 # READ DEAD LAYER and TZERO
 #========================================
-if ($Runn != "-i") {    # don't do if initializing...
 open(Dlayer,$DlayerFile) || die "cannot open $DlayerFile";
 printf "Reading $DlayerFile ... \n";
 while ($dline = <Dlayer>) {
@@ -141,7 +140,8 @@ while ($dline = <Dlayer>) {
     }
 }
 close(Dlayer);
-}  # skipped if intiializing
+
+
 #=======================================
 # READ Am Calibration
 #=======================================
@@ -179,37 +179,7 @@ while ($ia = <IA>) {
 close(IA);
 }  # skipped if initializing
 
-#==============================================
-# Initializing if $Runn == "-i"
-# READ default configuration file "config.dat"
-#==============================================
-if ($Runn == "-i") {
- open (CF,"config.dat") || die "There MUST be a config.dat file!";
- printf "Reading config.dat...\n";
- $Strip = 0;
- while ($cf = <CF>) {
-  chop($cf);
-  @cfs = split(/\s+/,$cf);
 
-  if ($cfs[0] ne "*" && $cfs[0] ne "#") {
-   $cfs[1] = substr($cfs[0],10);
-
-   if ($cfs[5] > 0.) {$ecoef[$Strip] = $cfs[1]/$cfs[5];}
-
-   $tzero[$Strip] = $cfs[1];
-   $edead[$Strip] = $cfs[2];
-   $dwidth[$Strip] = $cfs[6];
-   $pcoef0[$Strip] = $cfs[8];
-   $pcoef1[$Strip] = $cfs[9];
-   $pcoef2[$Strip] = $cfs[10];
-   $pcoef3[$Strip] = $cfs[11];
-   $pcoef4[$Strip] = $cfs[12];
-
-   $Strip++;
-  }
- }
- close(CF);
-}  # initialized
 
 #=====================================================================
 #  OutPut to File
@@ -234,5 +204,5 @@ for ($st=0;$st<72;$st++) {
 close(PARA);
 
 
-system("cp config.dat $CONFIGDIR/$Runn.config.dat");
+system("mv config.dat $CONFIGDIR/$Runn.config.dat");
 printf "New configulation file: $CONFIGDIR/$Runn.config.dat\n\n";
