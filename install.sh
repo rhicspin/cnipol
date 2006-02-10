@@ -25,7 +25,7 @@ fi
 
 cd macro
 install *.pl *.sh -C -v  --mode 777 $MACRODIR
-install *.kumac *.C -C -v  --mode 664 $MACRODIR
+install *.kumac *.C *.awk -C -v  --mode 664 $MACRODIR
 cd ..
 
 echo "Installation Completed"
