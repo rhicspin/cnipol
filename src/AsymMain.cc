@@ -156,6 +156,7 @@ int main (int argc, char *argv[]){
             break;
         case 'C':
             dproc.CMODE = 1;
+	    dproc.RECONFMODE = 0;
             break;
         case 'D':
             dproc.DMODE = 1;
@@ -229,7 +230,7 @@ int main (int argc, char *argv[]){
     double RUNID = strtod(RunID,NULL);
 
     // Read Conditions from run.db
-    readdb(RUNID);
+    if (RUNID)  readdb(RUNID);
 
     // if output hbk file is not specified
     if (hbk_read == 0 ) {
@@ -357,7 +358,7 @@ void reConfig(recordConfigRhicStruct *cfginfo){
     configFile.open(reConfFile);
 
     if (!configFile) {
-        cerr << "filed to open Config File" <<endl;
+        cerr << "failed to open Config File" <<endl;
         exit(1);
     }
 
