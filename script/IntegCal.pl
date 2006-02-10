@@ -20,12 +20,12 @@ if (length ($Runn) == 0){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hb [ -f <runID>]\n\n"; 
+    print " Usage:\n  $0 -h [ -f <runID>]\n\n"; 
     print "    Apply linear fit on the peak and integral value of WFD adcs. \n\n";
     print "\t -f <runID> runID\n";
     print "\t -h         Show this help \n";
     print "\n";
-    print "    ex.) IntegCal.pl -f 7279.005 -b \n";
+    print "    ex.) IntegCal.pl -f 7279.005 \n";
     print "\n";
     exit(0);
 }
