@@ -316,7 +316,7 @@ int readloop() {
                 
                 for (j=0; j<Nevent; j++) {
                     Nread++;
-                    if (fmod(Nread,THINOUT)==0) {
+                    if (fmod(float(Nread),float(THINOUT))==0) {
 
                         event.amp  = ATPtr -> data[j].a;
                         event.tdc  = ATPtr -> data[j].t; 
