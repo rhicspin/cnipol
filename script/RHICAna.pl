@@ -355,6 +355,8 @@ sub startana {
 	    if ($conffile eq "none") {
 		$option = "";
 	    } else { 
+		$conffile =`basename $conffile`;
+		printf "$confile";
 		$option = "-F $conffile"; 
 	    }
 	    
