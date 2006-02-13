@@ -70,12 +70,14 @@ $ONLINEDIR    = $ENV{"ONLINEDIR"};
 $DATADIR      = $ENV{"DATADIR"}; 
 $BASEDIR      = $ENV{"ASYMDIR"};
 $MACRODIR     = $ENV{"MACRODIR"}; 
+$CONFDIR      = $ENV{"CONFDIR"};
 
 printf "\n";
 printf " ONLINEDIR       =   $ONLINEDIR\n";
 printf " DATADIR         =   $DATADIR\n";
-printf " MACRODIR        =   $MACRODIR\n";
 printf " BASEDIR         =   $BASEDIR\n";
+printf " MACRODIR        =   $MACRODIR\n";
+printf " CONFDIR         =   $CONFDIR\n";
 printf "\n";
 
 
@@ -751,8 +753,7 @@ sub conflist(){
     $clb = $clist->Scrolled("Listbox",-scrollbars=>"e",-width=>"60",-selectmode=>"single")
 	->pack(-fill=>'both', -expand=>1) ;
     
-    $DIR="Macro/Config";
-    @cflist = <$DIR/*.dat>;
+    @cflist = <$CONFDIR/*.dat>;
 
     $clb->insert('end',@cflist);
     $clb->see('end');
