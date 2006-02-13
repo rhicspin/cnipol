@@ -322,7 +322,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // =========================================
         // Ntuple fill
         // =========================================
-        if ((Nevtot<NTLIMIT)&&(dproc.NTMODE==1)&&(fmod(Nevtot,10)==0)) {
+        if ((Nevtot<NTLIMIT)&&(dproc.NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
             atdata.ia = (long)event->amp;
             atdata.is = (long)event->intg;
             atdata.it = (long)event->tdc;
@@ -421,7 +421,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 
                 // bunch distribution (time + -t cut)
                 HHF1(10010,(float)event->bid,1.);
-                if (fmod(event->bid,2)==0) {
+                if (fmod((float)event->bid,2)==0) {
                     HHF1(10100+(si+1)*10,(float)event->bid,1.);
                 }
                 

@@ -931,7 +931,7 @@ TshiftFinder(int FeedBackLevel){
   }//end-of-st loop
 
   HHPAK(16300,feedback.mdev);  HHPAKE(16300,err);
-  float adev = WeightedMean(feedback.mdev,err,72)*G2k*runconst.M2T/sqrt(500);
+  float adev = WeightedMean(feedback.mdev,err,72)*G2k*runconst.M2T/sqrt(500.);
 
     // Unit Conversion [GeV] -> [keV]
     for (int i=0; i<NSTRIP; i++) {
