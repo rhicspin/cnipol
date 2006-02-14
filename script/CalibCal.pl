@@ -1,5 +1,9 @@
 #! /usr/bin/perl
+##############  defulats ##############
 $MACRODIR     = $ENV{"MACRODIR"};
+$GHOSTVIEW=0;
+#######################################
+
 
 
 #----------------------------------------------------------------------
@@ -7,10 +11,14 @@ $MACRODIR     = $ENV{"MACRODIR"};
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:h', \%opt);
+getopts('f:gh', \%opt);
 
 if ( $opt{h} ) {
     help();
+}
+
+if ( $opt{g} ) {
+    $GHOSTVIEW=1;
 }
 
 # Get Run ID
@@ -26,6 +34,7 @@ sub help(){
     print "    Execute fit on calibration histograms. \n";
     print "    Run CalibGen.pl to create calibration histogram data file.\n\n";
     print "\t -f <filename> calibration file name w/o .data \n";
+    print "\t -g         Execute ghostscript to view  fitted results.\n";
     print "\t -h         Show this help";
     print "\n\n";
     print "    ex.) CalibCal.pl -f bluc_calib_0504\n";
@@ -33,6 +42,11 @@ sub help(){
     exit(0);
 }
 
+
+sub GhostView(){
+    system("gv calib/$Runn.fittemp.ps");
+    system("gv calib/$Runn.summarytemp.ps");
+}
 
 
 #########################################################################
@@ -48,7 +62,7 @@ system("mv testfit.ps  calib/$Runn.fittemp.ps");
 system("mv testsummary.ps calib/$Runn.summarytemp.ps");
 system("rm input.C");
 
-
+if ($GHOSTVIEW) {GhostView();};
 
 
 
