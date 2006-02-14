@@ -1,14 +1,22 @@
 #! /usr/bin/perl
+##############  defulats ##############
+$OPT_GHOSTVIEW=" ";
+#######################################
+
 
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:h', \%opt);
+getopts('f:hg', \%opt);
 
 if ( $opt{h} ) {
     help();
+}
+
+if ( $opt{g} ) {
+    $OPT_GHOSTVIEW="-g";
 }
 
 # Get Run ID
@@ -24,6 +32,7 @@ sub help(){
     print "    Create energy calibration histograms and execute fit. \n";
     print "    CalibGen.pl & CalibCal.pl \n\n";
     print "\t -f <filename> calibration file name w/o .data \n";
+    print "\t -g         Execute ghostscript to view  fitted results.\n";
     print "\t -h            Show this help";
     print "\n\n";
     print "    ex.) Calib.pl -f bluc_calib_0504\n";
@@ -41,6 +50,6 @@ printf("CALIB DATA : $Runn \n");
 system("echo 'Generating histograms...\n'");
 system("CalibGen.pl -f $Runn \n");
 system("echo 'Executing Fitting...\n'");
-system("CalibCal.pl -f $Runn \n");
+system("CalibCal.pl -f $Runn $OPT_GHOSTVIEW \n");
 
 
