@@ -325,8 +325,8 @@ int readloop() {
                         event.tdcmax = ATPtr -> data[j].tmax; 
                         event.rev0 = ATPtr -> data[j].rev0;
                         event.rev = ATPtr -> data[j].rev;
-
-			/*
+                        cntr.revolusion=event.delim*512 + event.rev*2 + event.rev0 ;
+                        /*
                         cout << " i " <<i
                           << " Nevent " << Nevent
                           << " St " << event.stN  
@@ -334,8 +334,9 @@ int readloop() {
                           << " tdc " << event.tdc 
                           << " bid " << event.bid 
 			     << " rev0 " << event.rev0 
-			     << " rev  " << event.rev << endl;
-			*/
+			     << " rev  " << event.rev 
+                             << " revolusion #=" << cntr.revolusion << endl;
+                        */
 
 			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)) {
 			     // Event Processing
