@@ -10,22 +10,15 @@ fi
 make -C src 
 make -C src install
 
+# install scripts into $INSTALLDIR
 cd script 
-install *.pl *.sh -C -v  --mode 777 $INSTALLDIR 
+./install.sh
 cd ..
 
 
-# install paw macros:
-if [ -d $MACRODIR ] ; then
-	echo "install paw macros to $MACRODIR";
-else
-	echo "Create $MACRODIR";
-	mkdir $MACRODIR
-fi
-
+# install scripts into $MACRODIR
 cd macro
-install *.pl *.sh -C -v  --mode 777 $MACRODIR
-install *.kumac *.C *.awk -C -v  --mode 664 $MACRODIR
+./install.sh
 cd ..
 
 echo "Installation Completed"
