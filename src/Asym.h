@@ -166,9 +166,9 @@ typedef struct {
 } StructFlag;
 
 
-
-
-
+typedef struct {
+    long int revolusion;
+} StructCounter;
 
 
 
@@ -261,6 +261,7 @@ extern StructExtInput extinput;
 extern StructAverage average;
 extern StructHistStat hstat;
 extern StructFeedBack feedback;
+extern StructCounter cntr;
 extern StructRunConst runconst;
 extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
