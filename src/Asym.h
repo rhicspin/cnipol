@@ -219,6 +219,7 @@ int FlipSpinPattern(int mode);
 void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int);
 int BunchSelect(int);
+void CalcAsymmetry(float);
 
 // GLOBAL VARIABLES
 
