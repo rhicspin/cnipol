@@ -1,4 +1,5 @@
 #! /usr/bin/perl
+# Last modfied: Feb.16,2006
 ##############  defulats ##############
 $OPT_GHOSTVIEW=" ";
 #######################################
