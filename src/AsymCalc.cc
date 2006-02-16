@@ -548,89 +548,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-
-    int LumiSum[2][72]; // Total Luminosity [0]:Spin Up, [1]:Spin Down
-    float LumiSum_r[2][72];//Reduced order Total luminosity for histograming
-    float LumiRatio[72]; // Luminosity Ratio
-    float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
-    float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
-    float P[72], dP[72]; // phi corrected polarization 
-    float P_phi[62830],dP_phi[62830]; // phi corrected polarization with extended array
-    float Pt[72], dPt[72]; // phi Trancated corrected polarization,
-
-    printf("*========== strip by strip =============\n");
-
-    for (int i=0; i<72; i++) {
-      Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
-      LumiSum[0][i] = LumiSum[1][i] = 0;
-
-      // Loop for Total Luminosity
-      for (int j=0; j<72; j++) {
-
-	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
-	if (!ExclusionList(i,j,runinfo.RHICBeam)){
-	  for (int k=0; k<=1; k++) LumiSum[k][i]+=NStrip[k][j];
-	}
-
-      } // end-of-j-loop. 
-
-
-      // Luminosity Ratio
-      LumiRatio[i] = (float)LumiSum[0][i]/(float)LumiSum[1][i];
-      // Calculate Raw Asymmetries for strip-i
-      if ((LumiSum[1][i]) && ((NStrip[0][i]+NStrip[1][i])))
-	calcAsymmetry(NStrip[0][i], NStrip[1][i], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
-
-      // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
-      // Cannot accomomdate large entry.
-      LumiSum_r[0][i] = LumiSum[0][i]/1e3;
-      LumiSum_r[1][i] = LumiSum[1][i]/1e3;
-
-      // Since this is the recoil asymmetries, flip the sign of asymmetry
-      Asym[i]*=-1;
-      
-      // Raw polarization without phi angle weighted A_N
-      RawP[i]  =  Asym[i] / aveA_N;
-      dRawP[i] = dAsym[i] / aveA_N;
-
-      // Polarization with sin(phi) correction
-      P[i]  = RawP[i] / sin(phiRun5[i])*(-1);
-      dP[i] = fabs(dRawP[i] / sin(phiRun5[i]));
-
-      // Dump Polarization to phi array
-      int j = int(phiRun5[i]*1e4);
-      P_phi[j] = RawP[i];
-      dP_phi[j]= dRawP[i];
-
-      // Polarization with trancated sin(phi) correction
-      Pt[i]  = RawP[i] / sin(phiRun5t[i]);
-      dPt[i] = fabs(dRawP[i] / sin(phiRun5t[i]));
-
-      printf("%4d",i);
-      printf("%7.3f", phiRun5[i]);
-      printf("%12.3e%12.3e", Asym[i],dAsym[i]);
-      printf("%12.3e%12.3e", RawP[i],dRawP[i]);
-      printf("%12.3e%12.4e",    P[i],   dP[i]);
-      printf("%12.3e%12.4e",   Pt[i],  dPt[i]);
-      printf("\n");
-
-    } // end-of-i-loop
-
-    printf("*=======================================\n");
-    printf("\n");
-
-    // Caluclate Weighted Average
-    float P_ave, dP_ave;
-    P_ave = dP_ave = 0;
-    calcWeightedMean(P, dP, 72, P_ave, dP_ave);
-
-    // Histrograming
-    HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
-    HHPAK(36200, LumiRatio); 
-    HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
-    HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
-    HHPAK(36240, P);     HHPAKE(36240, dP);
-    HHPAK(36250, phiRun5); 
+    CalcAsymmetry(aveA_N);
 
 
     //-------------------------------------------------------
@@ -653,7 +571,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",analysis.TshiftAve);
-    printf(" Average Polarization        = %10.4f%8.4f\n",P_ave,dP_ave);
+    //    printf(" Average Polarization        = %10.4f%8.4f\n",P_ave,dP_ave);
     printf("-----------------------------------------------\n");
 
 
@@ -940,5 +858,109 @@ TshiftFinder(int FeedBackLevel){
     }
 
     return adev;
+
+}
+
+
+
+//
+// Class name  : 
+// Method name : calcAsymmetry
+//
+// Description : calculate asymmetries
+// Input       : aveA_N
+// Return      : 
+//
+void
+CalcAsymmetry(float aveA_N){
+
+    //-------------------------------------------------------
+    // Strip-by-Strip Asymmetries
+    //-------------------------------------------------------
+
+    int LumiSum[2][72]; // Total Luminosity [0]:Spin Up, [1]:Spin Down
+    float LumiSum_r[2][72];//Reduced order Total luminosity for histograming
+    float LumiRatio[72]; // Luminosity Ratio
+    float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
+    float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
+    float P[72], dP[72]; // phi corrected polarization 
+    float P_phi[62830],dP_phi[62830]; // phi corrected polarization with extended array
+    float Pt[72], dPt[72]; // phi Trancated corrected polarization,
+
+    printf("*========== strip by strip =============\n");
+
+    for (int i=0; i<72; i++) {
+      Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
+      LumiSum[0][i] = LumiSum[1][i] = 0;
+
+      // Loop for Total Luminosity
+      for (int j=0; j<72; j++) {
+
+	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
+	if (!ExclusionList(i,j,runinfo.RHICBeam)){
+	  for (int k=0; k<=1; k++) LumiSum[k][i]+=NStrip[k][j];
+	}
+
+      } // end-of-j-loop. 
+
+
+      // Luminosity Ratio
+      LumiRatio[i] = (float)LumiSum[0][i]/(float)LumiSum[1][i];
+      // Calculate Raw Asymmetries for strip-i
+      if ((LumiSum[1][i]) && ((NStrip[0][i]+NStrip[1][i])))
+	calcAsymmetry(NStrip[0][i], NStrip[1][i], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
+
+      // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
+      // Cannot accomomdate large entry.
+      LumiSum_r[0][i] = LumiSum[0][i]/1e3;
+      LumiSum_r[1][i] = LumiSum[1][i]/1e3;
+
+      // Since this is the recoil asymmetries, flip the sign of asymmetry
+      Asym[i]*=-1;
+      
+      // Raw polarization without phi angle weighted A_N
+      RawP[i]  =  Asym[i] / aveA_N;
+      dRawP[i] = dAsym[i] / aveA_N;
+
+      // Polarization with sin(phi) correction
+      P[i]  = RawP[i] / sin(phiRun5[i])*(-1);
+      dP[i] = fabs(dRawP[i] / sin(phiRun5[i]));
+
+      // Dump Polarization to phi array
+      int j = int(phiRun5[i]*1e4);
+      P_phi[j] = RawP[i];
+      dP_phi[j]= dRawP[i];
+
+      // Polarization with trancated sin(phi) correction
+      Pt[i]  = RawP[i] / sin(phiRun5t[i]);
+      dPt[i] = fabs(dRawP[i] / sin(phiRun5t[i]));
+
+      printf("%4d",i);
+      printf("%7.3f", phiRun5[i]);
+      printf("%12.3e%12.3e", Asym[i],dAsym[i]);
+      printf("%12.3e%12.3e", RawP[i],dRawP[i]);
+      printf("%12.3e%12.4e",    P[i],   dP[i]);
+      printf("%12.3e%12.4e",   Pt[i],  dPt[i]);
+      printf("\n");
+
+    } // end-of-i-loop
+
+    printf("*=======================================\n");
+    printf("\n");
+
+    // Caluclate Weighted Average
+    float P_ave, dP_ave;
+    P_ave = dP_ave = 0;
+    calcWeightedMean(P, dP, 72, P_ave, dP_ave);
+
+    // Histrograming
+    HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
+    HHPAK(36200, LumiRatio); 
+    HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
+    HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
+    HHPAK(36240, P);     HHPAKE(36240, dP);
+    HHPAK(36250, phiRun5); 
+
+    return;
 
 }
