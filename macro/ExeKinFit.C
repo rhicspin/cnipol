@@ -1,18 +1,19 @@
 
-void ExeKinFit(Char_t *run, Float_t bene, Int_t RHICBeam, Int_t HID)
-{
+void 
+ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T, 
+	  Float_t EMIN, Float_t EMAX, Int_t HID) {
 
   char MACRO[100];
   sprintf(MACRO,"%s/KinFit.C",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(MACRO);
+
 
   // open root file 
   Char_t filename[100];
   sprintf (filename, "douts/%s.root",run);
   TFile *f = TFile::Open(filename);
     
-  cout << "RUN: "<<run<< " ENE: "<<bene<< " file: "<<filename<<endl; 
-  KinFit *kfit = new KinFit(run, bene, RHICBeam, HID);
+  KinFit *kfit = new KinFit(run, bene, RHICBeam, E2T, EMIN, EMAX, HID);
   kfit->Fit(0);    // arg = 0 ... new fit with two free paramters 
   kfit->Fit(1);    // fix dlayer values with average
 

@@ -17,6 +17,9 @@ gROOT->Reset();
 // Global Variables
 const int NDisableList  = 5;
 const int NDisableStrip = 5;
+static Float_t KinConst_E2T=1459.43; // constant for Run05 L=18.5cm
+
+
 int DisableStr[NDisableList][NDisableStrip] =
   {
     { 14, 22, -1, -1, -1}, // 0 Blue
@@ -27,11 +30,11 @@ int DisableStr[NDisableList][NDisableStrip] =
   } ;
 
 
-
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //   FUNCTION to convert from (Edep, Dwidth) to Ekin
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Double_t KinFunc(Double_t *x, Double_t *par){
+Double_t 
+KinFunc(Double_t *x, Double_t *par){
     
     const Double_t cp0[4] = {-0.5174,0.4172,0.3610E-02,-0.1286E-05}; 
     const Double_t cp1[4] = {1.0000,0.8703E-02,0.1252E-04,0.6948E-07};
@@ -58,12 +61,7 @@ Double_t KinFunc(Double_t *x, Double_t *par){
         + pp[3]*pow(x0,3) + pp[4]*pow(x0,4);
     
     if (Ekin != 0.0) {
-//----------------------------------------
-// t = 22.7*sqrt(Mass-Carbon(AMU)=12)*L
-// For 2004 L=15.03 cm => t = 1181.6
-// For 2005 L=18.50 cm => t = 1454.75
-//----------------------------------------
-        Double_t tof = 1454.75/sqrt(Ekin) + par[1];
+        Double_t tof = KinConst_E2T/sqrt(Ekin) + par[1];
     } else {
         Double_t tof =0.0;
     }
@@ -71,6 +69,7 @@ Double_t KinFunc(Double_t *x, Double_t *par){
     return tof;
 
 };
+
 
 // Extracting the Coefficients
 Double_t ExCoef(Double_t x, Int_t Index){
@@ -99,9 +98,10 @@ Double_t ExCoef(Double_t x, Int_t Index){
 //  MAIN
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
 class KinFit {
 public:
-  KinFit(Char_t *, Float_t, Int_t, Int_t);
+  KinFit(Char_t *, Float_t, Int_t, Float_t, Float_t, Float_t, Int_t);
   ~KinFit();
   
   void Fit(Int_t);
@@ -113,19 +113,22 @@ public:
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
 
-
-
   ofstream fout;
   ofstream ferrout;
     
   Char_t runid[10];
   Float_t bene;
+
   Int_t RHIC_Beam;
   Int_t HID=15000;   // const. t cut by default
 
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
   Float_t totSiDev=0;
+
+  // Fitting Energy Range 
+  Float_t FitRangeLow = 400.;
+  Float_t FitRangeUpp = 900.;
 
 
   Float_t dl[72], dlE[72];
@@ -144,20 +147,35 @@ public:
 
 
 
+
+
 // Initialization of the class
-KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Int_t hid){
+KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, 
+	       Float_t EMIN, Float_t EMAX, Int_t hid){
+
     sprintf(runid,"%s",runidinput);
     RHIC_Beam = RHICBeam;
     bene = beneinput;
     HID = hid;
+    KinConst_E2T = E2T;
+    FitRangeLow = EMIN;
+    FitRangeUpp = EMAX;
 
-    if (HID==15000) printf("Fit on constant time cut histogram, HID:%5d\n", HID);
-    if (HID==15100) printf("Fit on  banana-mass  cut histogram, HID:%5d\n", HID);
+    printf("\n");
+    printf("=========================================================\n");
+    printf(" RunID                            : %s \n", runid);
+    printf(" Beam Energy [GeV]                : %6.2f\n", bene);
+    if (HID==15000) printf(" Fit on constant time cut , HID   : %5d\n", HID);
+    if (HID==15100) printf(" Fit on  banana-mass  cut , HID   : %5d\n", HID);
+    printf(" Fitting Energy Renga <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
+    printf("=========================================================\n");
+    printf("\n");
 
     memset(dl,0, sizeof(dl));
     memset(dlE,0, sizeof(dlE));
     memset(t0,0, sizeof(t0));
     memset(t0E,0, sizeof(t0E));
+
 };
 KinFit::~KinFit(){};
 
@@ -199,7 +217,7 @@ void KinFit::Fit(Int_t mode)
         Float_t dl_accum = 0.;
         Int_t valstn = 0;
 
-	j=0;
+	Int_t j=0;
         for (Int_t St=Si*12; St<Si*12+12; St++) {
 	  dlValid[St] = dlEValid[St] = dlSi[j] = dlESi[j] = 0;
 	  
@@ -345,10 +363,6 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     kinf->SetParLimits(1, -50., 50.);
 
     if (mode&1) h2d  -> Draw("color");
-
-    // %%%%%%%%%%%%%%
-    Float_t FitRangeLow = 400.;
-    Float_t FitRangeUpp = 900.;
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     sfit -> Fit(kinf,"E0","", FitRangeLow, FitRangeUpp);
