@@ -53,6 +53,7 @@ int main (int argc, char *argv[]){
     }
 
     // files
+    char *suffix;
     char ifile[32], cfile[32], hbk_outfile[256];
     char ramptiming[256];
     int hbk_read = 0;  // hbk file read from argument:1 default:0
@@ -103,6 +104,8 @@ int main (int argc, char *argv[]){
             exit(0);
         case 'f':
             sprintf(ifile, optarg);
+	    // if ifile lack of suffix ".data", attach ".data"
+	    if (strstr(ifile,".data")==NULL) strcat(ifile,".data"); 
 	    strcat(datafile, datadir);
 	    strcat(datafile,     "/");
 	    strcat(datafile,   ifile);
