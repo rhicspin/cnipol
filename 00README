@@ -81,6 +81,8 @@ Set up environment and install executables and macros.
 #	export MACRODIR=$SHAREDIR/kumac
 
 	export PATH=$INSTALLDIR:$PATH
+	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
+
 
 2. Make and install src files:
 	% cd cnipol
