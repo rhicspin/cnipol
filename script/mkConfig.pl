@@ -1,7 +1,8 @@
 #! /usr/bin/perl
 # mkConfig.pl
-# Feb.10
-
+# Feb.18, 2006 I.Nakagawa
+$CONFDIR     = $ENV{"CONFDIR"};
+$PUBLISH=0;
 $OPT  = " ";
 
 
@@ -10,12 +11,14 @@ $OPT  = " ";
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:Dhb', \%opt);
+getopts('f:Dhpb', \%opt);
 
 if ( $opt{h} ) {
     help();
 }
-
+if ( $opt{p} ) {
+    $PUBLISH=1;
+}
 if ( $opt{D} ){
     $DlayerFit=1;
 }
@@ -34,9 +37,10 @@ if (length ($Runn) == 0){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hDb [ -f <runID>]\n\n"; 
+    print " Usage:\n  $0 -hDpb [ -f <runID>]\n\n"; 
     print "\t -f <runID> runID\n";
     print "\t -D         Execute deadlayer fit\n";
+    print "\t -p         Publish configulation data file to $CONFDIR\n";
     print "\t -b         Banana cut event selection on deadlayer fit.\n";
     print "\t            (used with -D option)\n";
     print "\t -h         Show this help\n";
@@ -94,6 +98,21 @@ if (length ($Calb) == 0) {die "Problem in getting calibration filename in run.db
 $DlayerFile = "dlayer/$Runn.temp.dat";
 $CalibFile  = "$Calb.temp.dat";
 $IntegFile  = "integ/$Runn.temp.dat";
+
+
+######################################################################
+#                   PUBLISH CALIBRATION FILE                         #
+######################################################################
+
+sub Publish(){
+    if (-e $DlayerFile){
+	system("install -v -C $DlayerFile $CONFDIR");
+    }else{
+	printf("ERROR: $DlayerFile doesn't exist. Make configulation file first.\n");
+	exit(-1);
+    }
+    exit(0);
+}
 
 
 #----------------------------------------------------------------------
@@ -206,3 +225,7 @@ close(PARA);
 
 system("mv config.dat $CONFIGDIR/$Runn.config.dat");
 printf "New configulation file: $CONFIGDIR/$Runn.config.dat\n\n";
+
+if ($PUBLISH) {Publish()};
+
+
