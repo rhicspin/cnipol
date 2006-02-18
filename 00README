@@ -191,9 +191,13 @@ Energy Calibration
      blue_calib_0513c.fit.log     blue_calib_0513c.summarytemp.ps
      blue_calib_0513c.fittemp.ps  blue_calib_0513c.temp.dat
 
-3. If the calibration is successful, to use the results for the 
-   forthcomming polarization measurements, then add following line
-   in $ASYMDIR/run.db at adequate [RUNID] location e.g. [7067.001] here:
+3. If the calibration is successful, copy data file to $CALIBDIR
+
+   % copy calib/blue_calib_0513c.temp.dat $CALIBDIR/.
+
+   to use the results for forthcomming polarization measurements, 
+   add following line in $ASYMDIR/run.db at adequate [RUNID] 
+   location e.g. [7067.001] here:
 
 [7067.001]
         ENERGY_CALIB=blue_calib_0513c;
