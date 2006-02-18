@@ -24,7 +24,6 @@
 // ================= 
 // beginning of main 
 // ================= 
-//void main (int argc, char *argv[]){
 int main (int argc, char *argv[]){
 
     // for get option
@@ -74,7 +73,7 @@ int main (int argc, char *argv[]){
             cout << " -n <number>          : evnt skip (n=1 noskip)" <<endl;
             cout << " -o <filename>        : Output hbk file" <<endl;
             cout << " -r <filename>        : ramp timing file" <<endl;
-            cout << " -t <time shift>      : banana cut timing " <<endl;
+            cout << " -t <time shift>      : TOF timing shift in [ns]" <<endl;
             cout << "                      : addition to TSHIFT defined in run.db " 
 		 <<endl;
             cout << " -e <lower:upper>     : kinetic energy range" <<endl;
@@ -231,7 +230,7 @@ int main (int argc, char *argv[]){
     strncpy(RunID,ifile,8);
     double RUNID = strtod(RunID,NULL);
 
-    // Read Conditions from run.db
+    // Read Conditions from run.db. Skipped when alphabetical filename like calibration data. 
     if (RUNID)  readdb(RUNID);
 
     // if output hbk file is not specified
@@ -247,19 +246,23 @@ int main (int argc, char *argv[]){
         exit(1);
     }
     
+    // ---------------------------------------------------- // 
+    //                 Histogram Booking                    //
+    // ---------------------------------------------------- // 
     fprintf(stdout,"Booking ... histgram file\n");
     if (hist_book(hbk_outfile) != 0) {
         perror("Error: hist_book");
         exit(1);
     }
 
+
     fprintf(stdout,"Processing ... each events\n");
     fprintf(stdout,"If you terminate this process, the temporal output will be made in tmp_out.hbk\n");
 
-    //
-    // Quick Scan and Fit for tshift and mass sigma fit
-    //
 
+    // ---------------------------------------------------- // 
+    // Quick Scan and Fit for tshift and mass sigma fit     //
+    // ---------------------------------------------------- // 
     if (dproc.FEEDBACKMODE){
       if (readloop() != 0) {
         perror("Error: readloop");
@@ -268,21 +271,25 @@ int main (int argc, char *argv[]){
       Flag.feedback=0;
     }
 
-    //
-    // LOOP THROUGH THE DATA
-    //
+    // ---------------------------------------------------- // 
+    //                       Main Loop                      //
+    // ---------------------------------------------------- // 
     if (readloop() != 0) {
         perror("Error: readloop");
         exit(1);
     }
     
-    // HIST FILE CLOSE
 
+    // ---------------------------------------------------- // 
+    //                  Closing Histogram File              //
+    // ---------------------------------------------------- // 
     if (hist_close(hbk_outfile) !=0) {
         perror("Error: hist_close");
         exit(1);
     }
     
+
+
 } // end of main
  
 
