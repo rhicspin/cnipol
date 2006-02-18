@@ -191,9 +191,9 @@ Energy Calibration
      blue_calib_0513c.fit.log     blue_calib_0513c.summarytemp.ps
      blue_calib_0513c.fittemp.ps  blue_calib_0513c.temp.dat
 
-3. If the calibration is successful, copy data file to $CALIBDIR
+3. If the calibration is successful, publish calibration data file to $CALIBDIR
 
-   % copy calib/blue_calib_0513c.temp.dat $CALIBDIR/.
+   % Calib.pl -f blue_calib_0513c -p
 
    to use the results for forthcomming polarization measurements, 
    add following line in $ASYMDIR/run.db at adequate [RUNID] 
