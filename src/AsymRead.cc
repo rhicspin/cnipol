@@ -198,8 +198,8 @@ int readloop() {
 	    fprintf(stdout,"Beam Energy : %8.2f\n",runinfo.BeamEnergy);
 	    fprintf(stdout,"RHIC Beam : %1d\n",runinfo.RHICBeam);
 
-	    // Add 7 ns for injection measurements
-	    if (runinfo.BeamEnergy < 30) dproc.tshift+=7;
+	    // Add inj_tshift for injection measurements
+	    if (runinfo.BeamEnergy < 30) dproc.tshift+=dproc.inj_tshift;
 
             for (bid=0;bid<120;bid++) {
                 pat = beamdat.polarizationFillPatternS[bid*3];
@@ -293,7 +293,7 @@ int readloop() {
 	    }
 	    READ_FLAG=1;
 	  }
-
+	  exit;
 
             event.delim = rec.header.timestamp.delim;
             nreadsi = 0;  // number of Si already read

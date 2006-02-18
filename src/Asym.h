@@ -54,31 +54,32 @@ typedef struct {
 
 typedef struct {
     // Constraint parameter for Data processing 
-    int enel; // lower kinetic energy threshold (keV) 
-    int eneu; // upper kinetic energy threshold (keV)
-    int widthl; // lower banana cut (ns)
-    int widthu; // upper banana cut (ns)
-    int FEEDBACKMODE; // fit 12C peak first and feedback tshift and sigma
-    int CMODE; // Calibration mode 0:off 1:on
-    int DMODE; // dead layer study mode 0:off 1:on
-    int TMODE; // T0 study mode 0:off 1:on
-    int AMODE; // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on
-    int BMODE; // create banana curve (E-T) plots 0:off 1:on
-    int ZMODE; // with/out T0 subtraction 0:with 1:without
-    int MESSAGE; // message mode 1: exit just after run begin 
-    int CBANANA; // constant width banana cut :1, <sigma> Mass Cut :2
-    int UPDATE; // 1: keep update of the histogram
-    int MMODE;   // mass mode 
-    int NTMODE;  // if 1 store NTUPLEv
-    int RECONFMODE; // if 1 reconfigure from file 
-    int RAMPMODE;    // if 1 prepare the histograms for ramp measurement
-    int STUDYMODE;    // if 1 study mode
-  float MassSigma; // banana curve cut within <MassSigma> away from the 12C mass
-  float OneSigma; // 1-sigma of 12C mass distribution in [keV]
-  int tshift; // time shift
-  float WCMRANGE; // Wall Current Monitor process Fill range
-  float MassLimit; //Lower Mass limit for peak position adjustment fit
-  int thinout; // Every <thinout> event to be feed into feedback routine
+    int enel;          // lower kinetic energy threshold (keV) 
+    int eneu;          // upper kinetic energy threshold (keV)
+    int widthl;        // lower banana cut (ns)
+    int widthu;        // upper banana cut (ns)
+    int FEEDBACKMODE;  // fit 12C peak first and feedback tshift and sigma
+    int CMODE;         // Calibration mode 0:off 1:on
+    int DMODE;         // dead layer study mode 0:off 1:on
+    int TMODE;         // T0 study mode 0:off 1:on
+    int AMODE;         // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on
+    int BMODE;         // create banana curve (E-T) plots 0:off 1:on
+    int ZMODE;         // with/out T0 subtraction 0:with 1:without
+    int MESSAGE;       // message mode 1: exit just after run begin 
+    int CBANANA;       // constant width banana cut :1, <sigma> Mass Cut :2
+    int UPDATE;        // 1: keep update of the histogram
+    int MMODE;         // mass mode 
+    int NTMODE;        // if 1 store NTUPLEv
+    int RECONFMODE;    // if 1 reconfigure from file 
+    int RAMPMODE;      // if 1 prepare the histograms for ramp measurement
+    int STUDYMODE;     // if 1 study mode
+  float MassSigma;     // banana curve cut within <MassSigma> away from the 12C mass
+  float OneSigma;      // 1-sigma of 12C mass distribution in [keV]
+  float tshift;        // time shift in [ns]
+  float inj_tshift;    // time shift in [ns] for injection w.r.t. flattop
+  float WCMRANGE;      // Wall Current Monitor process Fill range
+  float MassLimit;     //Lower Mass limit for peak position adjustment fit
+  int thinout;         // Every <thinout> event to be feed into feedback routine
 } datprocStruct; 
 
 typedef struct {
@@ -103,6 +104,8 @@ typedef struct {
 
 typedef struct {
   float TshiftAve;
+  float P[5];
+  float dP[5];
 } StructAnalysis;
 
 
@@ -123,6 +126,7 @@ typedef struct {
   string config_file_s;
   string masscut_s;
   string tshift_s;
+  string inj_tshift_s;
 }StructRunDB ;
 
 
@@ -191,7 +195,9 @@ extern "C" {
   float hhmax_(int*);
   float hhstati_(int*, int*, char*, int*, int);
   //  void hhkind_(int*, int*, char*, int);
+  void hfith_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
   void hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
+
 }
 
 
@@ -268,8 +274,10 @@ extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
 extern StructAnalysis analysis;
 
-extern float phiRun5[72];   // phi-angle for each strips of Run5 (l=18.5cm)
-extern float phiRun5t[72];  // phi-angle for each strips in approximation 45,90,135... 
+extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
+extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
+extern float phit[NSTRIP];      // phi-angle for each strips in approximation 45,90,135... 
+extern float phi[NSTRIP];       // phi-angle
 
 
 // target position infomation 

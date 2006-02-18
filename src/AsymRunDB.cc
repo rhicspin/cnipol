@@ -19,7 +19,6 @@ using namespace std;
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
-//#include "RunDB.h"
 
 //const char * GetVariables(string str);
 string GetVariables(string str);
@@ -75,7 +74,7 @@ readdb(double RUNID) {
 	if (str.find("MASSCUT")      ==1) rundb.masscut_s     = GetVariables(str);
 	if (str.find("TSHIFT")       ==1) rundb.tshift_s      = GetVariables(str);
 	if (str.find("ENERGY_CALIB") ==1) rundb.calib_file_s  = GetVariables(str);
-
+	if (str.find("INJ_TSHIFT")   ==1) rundb.inj_tshift_s  = GetVariables(str);
       }
     }
 
@@ -102,11 +101,23 @@ readdb(double RUNID) {
     strcat(CalibFile,rundb.calib_file_s.c_str());
 
 
+  // Mass Cut sigma 
   if (!extinput.MASSCUT)
     dproc.MassSigma = strtof(rundb.masscut_s.c_str(),NULL);
 
   // TSHIFT will be cumulated TSHIFT from run.db and -t option
   dproc.tshift  += strtof(rundb.tshift_s.c_str(),NULL);
+
+  // TSHIFT for injection with respect to flattop timing
+  dproc.inj_tshift = strtof(rundb.inj_tshift_s.c_str(),NULL);
+
+  // Optimize setting for Run
+  if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
+    for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
+  } else if (RUNID>=7400) { // Run06
+    for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
+  }
+
 
   //PrintRunDB();
 
@@ -205,6 +216,7 @@ PrintRunDB(){
 // =====================================
 int printConfig(recordConfigRhicStruct *cfginfo){
 
+
     int ccutwu;
     int ccutwl;
 
@@ -230,7 +242,7 @@ int printConfig(recordConfigRhicStruct *cfginfo){
       fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
 
     // tshift in [ns]
-    fprintf(stdout," TSHIFT    =%5d\n",dproc.tshift);
+    fprintf(stdout," TSHIFT    =%5.1f\n",dproc.tshift);
 
 
     fprintf(stdout,"================================================\n");
