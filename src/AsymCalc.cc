@@ -28,6 +28,39 @@ extern float HHMAX(int);
 extern float HHSTATI(int hid, int icase, char * choice, int num);
 extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
 	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
+	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+
+
+
+
+
+/*
+
+//
+// Class name  : 
+// Method name : ufit
+//
+// Description : user defined fitting function
+// Input       : *xi
+//             :
+// Return      : a*sin(x+b)
+//
+
+float ufit(float *xi){
+
+  float y,x;
+  
+  x= *xi;
+  float a = HCFITD.dpar[0];
+  float b = HCFITD.dpar[1];
+
+  HCFITD.fitfun = a*sin(x+b);
+  y = HCFITD.fitfun;
+  return y;
+
+  }*/
+
 
 
 // =========================
@@ -571,7 +604,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",analysis.TshiftAve);
-    //    printf(" Average Polarization        = %10.4f%8.4f\n",P_ave,dP_ave);
+    printf(" Average Polarization        = %10.4f%8.4f\n",analysis.P[0],analysis.dP[0]);
     printf("-----------------------------------------------\n");
 
 
@@ -923,20 +956,20 @@ CalcAsymmetry(float aveA_N){
       dRawP[i] = dAsym[i] / aveA_N;
 
       // Polarization with sin(phi) correction
-      P[i]  = RawP[i] / sin(phiRun5[i])*(-1);
-      dP[i] = fabs(dRawP[i] / sin(phiRun5[i]));
+      P[i]  = RawP[i] / sin(phi[i])*(-1);
+      dP[i] = fabs(dRawP[i] / sin(phi[i]));
 
       // Dump Polarization to phi array
-      int j = int(phiRun5[i]*1e4);
+      int j = int(phi[i]*1e4);
       P_phi[j] = RawP[i];
       dP_phi[j]= dRawP[i];
 
       // Polarization with trancated sin(phi) correction
-      Pt[i]  = RawP[i] / sin(phiRun5t[i]);
-      dPt[i] = fabs(dRawP[i] / sin(phiRun5t[i]));
+      Pt[i]  = RawP[i] / sin(phit[i]);
+      dPt[i] = fabs(dRawP[i] / sin(phit[i]));
 
       printf("%4d",i);
-      printf("%7.3f", phiRun5[i]);
+      printf("%7.3f", phi[i]);
       printf("%12.3e%12.3e", Asym[i],dAsym[i]);
       printf("%12.3e%12.3e", RawP[i],dRawP[i]);
       printf("%12.3e%12.4e",    P[i],   dP[i]);
@@ -949,9 +982,7 @@ CalcAsymmetry(float aveA_N){
     printf("\n");
 
     // Caluclate Weighted Average
-    float P_ave, dP_ave;
-    P_ave = dP_ave = 0;
-    calcWeightedMean(P, dP, 72, P_ave, dP_ave);
+    calcWeightedMean(P, dP, 72, analysis.P[0], analysis.dP[0]);
 
     // Histrograming
     HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
@@ -959,8 +990,20 @@ CalcAsymmetry(float aveA_N){
     HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
     HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
     HHPAK(36240, P);     HHPAKE(36240, dP);
-    HHPAK(36250, phiRun5); 
+    HHPAK(36250, phi); 
+
+    // Fit phi-distribution
+    const int np=2;
+    float par[np], step[np], pmin[np], pmax[np], sigpar[np];
+    char chfun[3]="G";
+    char chopt[2]="Q";
+    float chi2, hmax;
+    //    HHFITHN(16200+st+1, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
+
 
     return;
 
 }
+
+  
+
