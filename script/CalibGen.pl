@@ -1,5 +1,7 @@
 #! /usr/bin/perl
-
+$DATADIR      = $ENV{"DATADIR"}; 
+$BASEDIR      = $ENV{"ASYMDIR"};
+$CALIBDIR     = $ENV{"CALIBDIR"};
 
 
 #----------------------------------------------------------------------
@@ -11,6 +13,7 @@ getopts('f:h', \%opt);
 if ( $opt{h} ) {
     help();
 }
+
 
 # Get Run ID
 my $Runn = $opt{f};
@@ -32,14 +35,16 @@ sub help(){
 }
 
 
-$DATADIR      = $ENV{"DATADIR"}; 
-$BASEDIR      = $ENV{"ASYMDIR"};
-
 $CHECKDATA= "$DATADIR/$Runn.data";
 $DATAFILE = "$Runn.data";
 $LOGFILE  = "$BASEDIR/douts/$Runn.calib.log";
 $COMMAND  = "Asym";
 
+
+
+#########################################################################
+######                     Main Routine                           #######
+#########################################################################
 if (-e $CHECKDATA) {
     
     $datsize = (stat($CHECKDATA))[7];
@@ -77,6 +82,7 @@ if (-e $CHECKDATA) {
     printf (" check $datafile \n");
     
 } 
+
 
 
 
