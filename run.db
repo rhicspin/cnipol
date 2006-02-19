@@ -185,3 +185,5 @@
 	CONFIG=7450.106.config.dat;
 
 
+[7450.004]
+	CONFIG=7450.004.config.dat;
