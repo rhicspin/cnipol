@@ -265,9 +265,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         
         // for T0 (cable length dependence)
         if ((dproc.TMODE == 1)&&(edepo!=0.)){
-
             HHF2(12100+st+1, (float)(1./sqrt(e)), t, 1.);
-            
         }
         
         // Banana Plots (E-T)
@@ -471,6 +469,19 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         } // Banana Cut
 
     } // tdc>6ns
+
+
+
+
+    // Target Histograms
+    if ((st>=72)||(st<=75)) {
+        HHF1(25000, st, 1.);
+        HHF2(25010, cntr.revolution, tgt.x, 1);
+        HHF2(25020, cntr.revolution, cntr.tgtMotion, 1);
+        HHF2(25030, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
+    }
+
+
 
 
     return(0);

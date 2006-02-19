@@ -113,8 +113,10 @@ readdb(double RUNID) {
 
   // Optimize setting for Run
   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
+      runinfo.Run=5;
     for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
   } else if (RUNID>=7400) { // Run06
+      runinfo.Run=6;
     for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
   }
 
@@ -193,7 +195,8 @@ ContinueScan(double ThisRunID, double RunID){
 // Class name  :
 // Method name : PrintRunDB()
 //
-// Description : printout final varibles read from run.db
+// Description : Printout final varibles read from run.db 
+//             : for Debugging 
 // Input       : 
 // Return      : 
 //             : 
@@ -205,6 +208,7 @@ PrintRunDB(){
   printf("Calib File   = %s\n",    rundb.calib_file_s.c_str());
   printf("Mass Cut     = %5.1f\n", strtof(rundb.masscut_s.c_str(),NULL));
   printf("TSHIFT       = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
+  printf("INJ_TSHIFT   = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
 
   return;
 }
@@ -214,7 +218,8 @@ PrintRunDB(){
 // =====================================
 // Print Out Configuration information 
 // =====================================
-int printConfig(recordConfigRhicStruct *cfginfo){
+int 
+printConfig(recordConfigRhicStruct *cfginfo){
 
 
     int ccutwu;

@@ -12,22 +12,23 @@ using namespace std;      //declare string in structure
 #endif
 #define NULL 0
 
-#define NWORDS_PAWC 20000000      // paw memory size 
+#define NWORDS_PAWC 20000000       // paw memory size 
 #define RECLEN 1024
-#define HMINENE 100.              // minimum energy for histograms 
-#define HMAXENE 1500.             // maximum energy for histograms
-#define HENEBIN 180               // number of energy bin in banana plot
+#define HMINENE 100.               // minimum energy for histograms 
+#define HMAXENE 1500.              // maximum energy for histograms
+#define HENEBIN 180                // number of energy bin in banana plot
 #define NTLIMIT 100000000
-#define RAMPTIME 350              // duration of the ramp measurement (sec)
-#define MAXDELIM 350              // maximum number of delimiter
-#define NTBIN 21                  // number of -t bin
 
-#define NSTRIP 72                 // Number of strip channels
-#define G2k 1e6                   // GeV -> keV
-#define k2G 1e-6                  // keV -> GeV
-#define MASS_12C 11.187e6         // Mass Carbon in [keV]
-#define C_CMNS 29.98              // Speed of Light in [cm/ns]
+#define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
+#define RAMPTIME 350               // duration of the ramp measurement (sec)
+#define MAXDELIM 350               // maximum number of delimiter
+#define NTBIN 21                   // number of -t bin
 
+#define NSTRIP 72                  // Number of strip channels
+#define G2k 1e6                    // GeV -> keV
+#define k2G 1e-6                   // keV -> GeV
+#define MASS_12C 11.187e6          // Mass Carbon in [keV]
+#define C_CMNS 29.98               // Speed of Light in [cm/ns]
 
 
 // whole info for one event
@@ -110,6 +111,7 @@ typedef struct {
 
 
 typedef struct {
+  int Run;
   int StartTime;
   int StopTime;
   int RunTime;
@@ -118,6 +120,7 @@ typedef struct {
   float WcmAve;
   double BeamEnergy;
   int RHICBeam;
+  int MaxRevolution;
 } StructRunInfo;
 
 typedef struct {
@@ -171,10 +174,16 @@ typedef struct {
 
 
 typedef struct {
-    long int revolusion;
+    long int revolution;
+    long int tgtMotion;
 } StructCounter;
 
 
+typedef struct {
+    int x;
+    int vector;
+    long int eventID;
+} StructTarget;
 
 
 extern "C" {
@@ -226,6 +235,8 @@ void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int);
 int BunchSelect(int);
 void CalcAsymmetry(float);
+void PrintRunResults(StructHistStat);
+
 
 // GLOBAL VARIABLES
 
@@ -273,6 +284,8 @@ extern StructRunConst runconst;
 extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
 extern StructAnalysis analysis;
+extern StructTarget tgt;
+
 
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
