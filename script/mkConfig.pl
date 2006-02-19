@@ -103,7 +103,7 @@ $IntegFile  = "integ/$Runn.temp.dat";
 ######################################################################
 #                   PUBLISH CALIBRATION FILE                         #
 ######################################################################
-if (PUBLISH){Publish();}
+if ($PUBLISH){Publish();}
 
 sub Publish(){
     $CONFIGFILE="$CONFIGDIR/$Runn.config.dat";
