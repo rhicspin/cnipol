@@ -232,6 +232,7 @@ Create new configulation:
 0. Make sure calibration file is defined in run.db
 
 1. To perform deadlayer fit and make new configulation:
+   (-b option for banana cut)
 
     % mkConfig.pl -f 7279.005 -D -b
 
@@ -247,11 +248,15 @@ Create new configulation:
 2. Copy new configulation file to shared library and update
    on run.db to use new configulation.
 
+   %cp ./config/7279.005.config.data $CONFDIR/.
+
+	or 
+
+   %mkConfig.pl -f 7279.005 -p
+
    in run.db add:
    [7279.005]
 	CONFIG=7279.005.config.dat;
-
-   %cp ./config/7279.005.config.data $CONFDIR/.
 
 
 
