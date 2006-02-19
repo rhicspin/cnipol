@@ -220,10 +220,10 @@ DeadLayer Fit:
    % cd $ASYMDIR
 
    for const. time cut:
-   % Dlayer.pl -f 7279.005 
+   % dLayer.pl -f 7279.005 
 
    for banana cut:
-   % Dlayer.pl -b -f 7279.005 
+   % dLayer.pl -b -f 7279.005 
 
 
 
