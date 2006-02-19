@@ -138,6 +138,11 @@ float pawc_[NWORDS_PAWC];
 //  20000+i   : carbon timing at (600-650keV) along ramp (i=0,300)
 //  21000+Si  : delimiter dist for UpSpin (Carbon cut)
 //  21100+Si  : delimiter dist for DwSpin (Carbon cut)
+//-TARGET ASSOCIATED
+//  25000     : target channel (St.73 - 76) histogram
+//  25010     : target position vs. revolution #
+//  25020     : target motion entry vs. revolution #
+//  25040     : target position vs. time
 //-ASYMMETRY RESULTS
 //  30000     : X90 phys(0), acpt(10), lumi(20)  
 //  30100     : X90 phys(0), acpt(10), lumi(20)  
@@ -368,6 +373,18 @@ int hist_book(char *filename){
     // Feedback Mass Peak Results
     sprintf(hcomment,"Peak deviation from 12C Mass");
     HHBOOK1(16300,hcomment,72,-0.5, 71.5);
+
+
+    // Target Histograms
+    sprintf(hcomment,"Target channel entries");
+    HHBOOK1(25000,hcomment,4,71.5,75.5);
+    sprintf(hcomment,"Target position vs. Revolution # ");
+    HHBOOK2(25010,hcomment, 100, 0., 5.e6, 1000, -5000, 5000);
+    sprintf(hcomment,"Ch(73,75) entry vs. Revolution # ");
+    HHBOOK2(25020,hcomment, 100, 0., 5.e6, 100, 0, 1e4);
+    sprintf(hcomment,"Target position vs. time [s] ");
+    HHBOOK2(25030,hcomment, 100, 0., 100., 1000, -5000, 5000);
+    
 
     // For asymmetry results 
     
