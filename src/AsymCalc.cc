@@ -33,8 +33,6 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 
 
 
-
-
 /*
 
 //
@@ -581,31 +579,13 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    CalcAsymmetry(aveA_N);
+    if (dproc.RECONFMODE) CalcAsymmetry(aveA_N);
 
 
     //-------------------------------------------------------
     // Run Informations
     //-------------------------------------------------------
-
-    runinfo.RunTime = runinfo.StopTime - runinfo.StartTime;
-    runinfo.EvntRate = float(Nevtot)/float(runinfo.RunTime);
-    runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
-
-    printf("-----------------------------------------------\n");
-    printf(" RunTime                     = %10d\n", runinfo.RunTime);
-    printf(" Event Rate                  = %10.1f\n", runinfo.EvntRate);
-    printf(" Read Rate                   = %10.1f\n", runinfo.ReadRate);
-    printf(" WCM Average                 = %10.1f\n", runinfo.WcmAve);
-    printf(" WCM Average w/in rnge       = %10.1f\n", average.average);
-    printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n", hstat.mean, hstat.RMS, hstat.RMSnorm);
-    printf(" # of Filled Bunch           = %10d\n", NFilledBunch);
-    printf(" bunch w/in WCM range        = %10d\n", average.counter);
-    printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
-    if (dproc.FEEDBACKMODE) 
-      printf(" feedback average tshift     = %10.1f [ns]\n",analysis.TshiftAve);
-    printf(" Average Polarization        = %10.4f%8.4f\n",analysis.P[0],analysis.dP[0]);
-    printf("-----------------------------------------------\n");
+    PrintRunResults(hstat);
 
 
 
@@ -643,6 +623,49 @@ int end_process(recordConfigRhicStruct *cfginfo)
   }//end-of-if(Flag.feedback)
 
 }
+
+
+
+//
+// Class name  :
+// Method name : PrintRunResults()
+//
+// Description : print analysis results and run infomation
+// Input       : 
+// Return      : 
+//
+void
+PrintRunResults(StructHistStat hstat){
+
+    runinfo.RunTime = runinfo.StopTime - runinfo.StartTime;
+    runinfo.EvntRate = float(Nevtot)/float(runinfo.RunTime);
+    runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
+
+    printf("-----------------------------------------------\n");
+    printf(" RunTime                 [s] = %10d\n", runinfo.RunTime);
+    printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
+    printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
+    if (runinfo.Run>=6){
+        printf(" Maximum Revolution #        = %10d\n", runinfo.MaxRevolution);
+        printf(" Reconstructed Duration  [s] = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
+        printf(" Target Motion Counter       = %10d\n",cntr.tgtMotion);
+    }
+    printf(" WCM Average                 = %10.1f\n", runinfo.WcmAve);
+    printf(" WCM Average w/in rnge       = %10.1f\n", average.average);
+    printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
+    printf(" # of Filled Bunch           = %10d\n", NFilledBunch);
+    printf(" bunch w/in WCM range        = %10d\n", average.counter);
+    printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
+    if (dproc.FEEDBACKMODE) 
+      printf(" feedback average tshift     = %10.1f [ns]\n",analysis.TshiftAve);
+    printf(" Average Polarization        = %10.4f%8.4f\n",analysis.P[0],analysis.dP[0]);
+    printf("-----------------------------------------------\n");
+
+
+    return;
+}
+
+
 
 
 //

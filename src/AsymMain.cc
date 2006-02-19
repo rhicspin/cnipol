@@ -228,10 +228,16 @@ int main (int argc, char *argv[]){
     // RunID 
     char  RunID[8];
     strncpy(RunID,ifile,8);
-    double RUNID = strtod(RunID,NULL);
+    double RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
 
-    // Read Conditions from run.db. Skipped when alphabetical filename like calibration data. 
-    if (RUNID)  readdb(RUNID);
+    // For normal runs, RUNID != 0. Then read run conditions from run.db.
+    // Otherwise, data filename with characters skip readdb and reconfig routines
+    // assuming these are energy calibration or test runs.
+    if (RUNID) { 
+        readdb(RUNID);
+    } else {     
+        dproc.RECONFMODE = 0;
+    }
 
     // if output hbk file is not specified
     if (hbk_read == 0 ) {

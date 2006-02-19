@@ -48,9 +48,33 @@ StructFlag Flag = {
 };
 
 StructCounter cntr = {
-    0       // revolution number
+    0,    // revolution number
+    0     // taret motion entries
 };
 	 
+
+StructRunInfo runinfo = {
+    6, // Run05, Run06,..
+    0, // StartTime;
+    0, // StopTime;
+    0, // RunTime;
+    0, // EvntRate;
+    0, // ReadRate;
+    0, // WcmAve;
+    0, // BeamEnergy;
+    0, // RHICBeam;
+    0  // MaxRevolution;
+}; 
+
+StructTarget tgt = {
+    0,  // target position x
+    -1, // target motion sign
+    0   // eventID
+};
+
+
+
+
 // Following arrays correspond to phi agnle of each strips. These phi angles are
 // subject to change depends on TOFLength from target to detectors.
 // To get phi values for given TOFLength, use calcPhi.cc program. Copy and paste outputs.
@@ -99,7 +123,6 @@ float phi[NSTRIP]={
 
 
 atdata_struct atdata;
-StructRunInfo runinfo;
 StructAverage average;
 StructFeedBack feedback;
 StructRunConst runconst;

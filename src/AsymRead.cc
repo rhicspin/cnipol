@@ -317,7 +317,6 @@ int readloop() {
                 for (j=0; j<Nevent; j++) {
                     Nread++;
                     if (fmod(float(Nread),float(THINOUT))==0) {
-
                         event.amp  = ATPtr -> data[j].a;
                         event.tdc  = ATPtr -> data[j].t; 
                         event.intg = ATPtr -> data[j].s;
@@ -325,7 +324,29 @@ int readloop() {
                         event.tdcmax = ATPtr -> data[j].tmax; 
                         event.rev0 = ATPtr -> data[j].rev0;
                         event.rev = ATPtr -> data[j].rev;
-                        cntr.revolusion=event.delim*512 + event.rev*2 + event.rev0 ;
+                        if (runinfo.Run>=6){
+                            cntr.revolution=event.delim*512 + event.rev*2 + event.rev0 ;
+                            if (cntr.revolution>runinfo.MaxRevolution) 
+                                runinfo.MaxRevolution = cntr.revolution;
+                            if ((event.stN==72)&&(event.delim!=tgt.eventID)){
+                                tgt.x += tgt.vector ;
+                                tgt.vector=-1;
+                            }
+                            if ((event.stN==72)||(event.stN==73)) {
+                                switch (event.stN){
+                                case 72: 
+                                    tgt.eventID=event.delim;
+                                    ++cntr.tgtMotion;
+                                    break;
+                                case 73:
+                                    tgt.vector = 1;
+                                    break;
+                                }// switch (event.stN)
+
+                            }// event.stN==72,73
+
+                        }// if (runinfo.Run>=6)
+
                         /*
                         cout << " i " <<i
                           << " Nevent " << Nevent
@@ -337,8 +358,13 @@ int readloop() {
 			     << " rev  " << event.rev 
                              << " revolusion #=" << cntr.revolusion << endl;
                         */
+                        
 
-			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)) {
+                        // process event for following case:
+                        //      fill pattern = 1
+                        //      Calibration mode = 1
+                        //      strip #72 - #76 (Run6 target events)
+			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)||(event.stN>=72)) {
 			     // Event Processing
                             if (event_process(&event,cfginfo)!=0) {
                                 fprintf(stdout, 
@@ -346,9 +372,8 @@ int readloop() {
                                         nreadsi,j);
                             }
 			}
-                    }
 
-		    //cout << event.delim*512 + event.rev*2 + event.rev0 << endl;
+                    }// if fmod(Nread,THINOUT)
 
                     if (Nread%1000000==0) {
 		      if (Flag.feedback){
