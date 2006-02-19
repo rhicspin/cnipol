@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 # mkConfig.pl
 # Feb.18, 2006 I.Nakagawa
-$CONFDIR     = $ENV{"CONFDIR"};
+$INSTALLDIR = $ENV{"CONFDIR"};
 $PUBLISH=0;
 $OPT  = " ";
 
@@ -103,37 +103,36 @@ $IntegFile  = "integ/$Runn.temp.dat";
 ######################################################################
 #                   PUBLISH CALIBRATION FILE                         #
 ######################################################################
+if (PUBLISH){Publish();}
 
 sub Publish(){
-    if (-e $DlayerFile){
-	system("install -v -C $DlayerFile $CONFDIR");
+    $CONFIGFILE="$CONFIGDIR/$Runn.config.dat";
+    if (-e $CONFIGFILE){
+	system("install -v -C $CONFIGFILE $INSTALLDIR");
     }else{
-	printf("ERROR: $DlayerFile doesn't exist. Make configulation file first.\n");
+	printf("ERROR: $CONFIGFILE doesn't exist. Make configulation file first.\n");
 	exit(-1);
     }
     exit(0);
 }
 
 
-#----------------------------------------------------------------------
-# The rest is just as it was in ParamConvine.pl, except that a copy
-# command was added to get the desired file name.
-#----------------------------------------------------------------------
 
-# Initialization 
-# old valus for acoef was 7.0
-
-for ($st=0;$st<72;$st++) {
+######################################################################
+#           INITIALIZE PARAMETERS WITH DEFAULT VALUES                #
+######################################################################
+for ($st=0;$st<76;$st++) {
 
     $tzero[$st] = 5.0;
     $ecoef[$st] = 1.1; $edead[$st] = 100.;
     $a0[$st] =10. ; $a1[$st] = 100.; $acoef[$st] = 8.5;
     $dwidth[$st] = 50.; $pede[$st] = 0.;
-    $pcoef0[$st] = 0.; $pcoef1[$st] = 0.; 
-    $pcoef2[$st] = 0.; $pcoef3[$st] = 0.; 
-    $pcoef4[$st] =0.;
+    $pcoef0[$st] = 40.; $pcoef1[$st] = 1.00; 
+    $pcoef2[$st] = 0.001; $pcoef3[$st] = 0.001; 
+    $pcoef4[$st] =0.001;
     
 }
+
 
 #========================================
 # READ DEAD LAYER and TZERO
@@ -212,7 +211,7 @@ printf PARA "* for the dead layer and T0  : $DlayerFile\n";
 printf PARA "* for the Am calibration     : $CalibFile\n";
 printf PARA "* for the Integral/Amplitude : $IntegFile\n";
 printf PARA "* \n";
-for ($st=0;$st<72;$st++) {
+for ($st=0;$st<76;$st++) {
     printf PARA "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
     $st+1,$tzero[$st],$ecoef[$st]*$acoef[$st],$edead[$st],
     $a0[$st],$a1[$st],$acoef[$st],$dwidth[$st],$pede[$st],
@@ -226,6 +225,5 @@ close(PARA);
 system("mv config.dat $CONFIGDIR/$Runn.config.dat");
 printf "New configulation file: $CONFIGDIR/$Runn.config.dat\n\n";
 
-if ($PUBLISH) {Publish()};
 
 
