@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 #include <iomanip>
 
@@ -117,7 +118,7 @@ public:
   ofstream ferrout;
     
   Char_t runid[10];
-  Float_t bene;
+  Float_t RUNID, bene;
 
   Int_t RHIC_Beam;
   Int_t HID=15000;   // const. t cut by default
@@ -171,6 +172,9 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     printf("=========================================================\n");
     printf("\n");
 
+    RUNID = atof(runid);
+
+
     memset(dl,0, sizeof(dl));
     memset(dlE,0, sizeof(dlE));
     memset(t0,0, sizeof(t0));
@@ -211,7 +215,6 @@ void KinFit::Fit(Int_t mode)
 
     Int_t NValidSt=0;
     for (Int_t Si=0;Si<6;Si++) {
-      cout << Si << endl;
 
         Int_t Padn=0;
         Float_t dl_accum = 0.;
@@ -230,7 +233,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-	      FitOne(St, mode);
+                FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -377,9 +380,9 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 
 	Chi2[St] = kinf->GetChisquare()/kinf->GetNDF();
         dl[St]   = fabs(kinf->GetParameter(0));
-        dlE[St]  = Chi2[St] * kinf->GetParError(0);
+        dlE[St]  = Chi2[St] + kinf->GetParError(0);
         t0[St]   = kinf->GetParameter(1);
-        t0E[St]  = Chi2[St] * kinf->GetParError(1);
+        t0E[St]  = Chi2[St] + kinf->GetParError(1);
 
     } else if (mode&1) {
 
@@ -470,6 +473,16 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 // -------------------------------------------------------------------
 void KinFit::PlotResult()
 {
+
+    // Default plotting range for Run05
+    Float_t TMIN=-30;
+    Float_t TMAX=10;
+    if (RUNID > 7400) { //  for Run06
+        TMIN = -15;
+        TMAX = 15;
+    }
+
+
 
     TCanvas *CurC = new TCanvas("CurC","",1);
     TPostScript ps("testsummary.ps",112);
@@ -566,7 +579,7 @@ void KinFit::PlotResult()
     
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, -30., 10.);
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Strip Number");
     frame -> GetYaxis()->SetTitle("T0 values (nsec)");
