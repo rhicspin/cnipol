@@ -1,7 +1,6 @@
 #! /usr/bin/perl
 $DATADIR      = $ENV{"DATADIR"}; 
 $BASEDIR      = $ENV{"ASYMDIR"};
-$CALIBDIR     = $ENV{"CALIBDIR"};
 
 
 #----------------------------------------------------------------------
