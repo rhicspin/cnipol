@@ -1572,8 +1572,8 @@ last:
    call meanm
    
 * Define Plot Range
-   PXMAX = 9000.
-*   PXMAX = 1400.
+*   PXMAX = 9000.
+   PXMAX = 1400.
    PXMIN = 200.
    PYMIN = -0.02
    PYMAX = 0.02
