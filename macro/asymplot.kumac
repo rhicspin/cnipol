@@ -539,72 +539,73 @@ return
    itx 0.05 0.9 'LOG'
    
    wait 
+* -*- disabled integral plots Feb.20,2006 (I.Nakagawa) -*-
 * Show the overlapped energy spectrums with Integral (6 detectors)
-   title_gl 'Run '//[run]//'Energy spectrum Integral (time cut)' U
-   zone 1 2 
-   opt liny
-   max = 0.
-   Do i=1,6
-     h/pro $EVAL(10420+[i])
-     candi = $HINFO(10420+[i],'MAX')
-     if ([candi].ge.[max]) then
-       max = [candi]
-     endif
-   Enddo
+*   title_gl 'Run '//[run]//'Energy spectrum Integral (time cut)' U
+*   zone 1 2 
+*   opt liny
+*   max = 0.
+*   Do i=1,6
+*     h/pro $EVAL(10420+[i])
+*     candi = $HINFO(10420+[i],'MAX')
+*     if ([candi].ge.[max]) then
+*       max = [candi]
+*     endif
+*   Enddo
    
-   opt utit
-   set HWID 5
-   MAX 10421 $RSIGMA(1.2*[max])
-   set HCOL 1 ; h/pl 10421(200.:1500.)
-   set HCOL 3 ; h/pl 10423 s  
-   set HCOL 4 ; h/pl 10424 s  
-   set HCOL 6 ; h/pl 10426 s
-   set HCOL 2 ; h/pl 10422 s 
-   set HCOL 7 ; h/pl 10425 s
-   set HCOL 1 
-   atitle 'Ekin (keV)' ''
+*   opt utit
+*   set HWID 5
+*   MAX 10421 $RSIGMA(1.2*[max])
+*   set HCOL 1 ; h/pl 10421(200.:1500.)
+*   set HCOL 3 ; h/pl 10423 s  
+*   set HCOL 4 ; h/pl 10424 s  
+*   set HCOL 6 ; h/pl 10426 s
+*   set HCOL 2 ; h/pl 10422 s 
+*   set HCOL 7 ; h/pl 10425 s
+*   set HCOL 1 
+*   atitle 'Ekin (keV)' ''
    
-   set LWID 5
-   set CSIZ 0.4
-   null 0. 1. 0. 1. ABS
-   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
-   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
-   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
-   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
-   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
-   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
+*   set LWID 5
+*   set CSIZ 0.4
+*   null 0. 1. 0. 1. ABS
+*   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
+*   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
+*   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
+*   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
+*   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
+*   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
    
-   set CHHE 0.7
-   itx 0.05 0.9 'LINEAR'
+*   set CHHE 0.7
+*   itx 0.05 0.9 'LINEAR'
    
-   opt logy
+*   opt logy
    
-   max = $RSIGMA([max]*2.)
-   set HCOL 1 ; set HWID 5
-   MAX 10421 $RSIGMA(1.2*[max])
-   MIN 10421 $RSIGMA([max]/1000.)
-   set HCOL 1 ;   h/pl 10421(400.:1000.)
-   set HCOL 3 ;   h/pl 10423 s  
-   set HCOL 4 ;   h/pl 10424 s  
-   set HCOL 6 ;   h/pl 10426 s
-   set HCOL 2 ;   h/pl 10422 s 
-   set HCOL 7 ;   h/pl 10425 s
-   set HCOL 1 
-   atitle 'Ekin (keV)' ''
+*   max = $RSIGMA([max]*2.)
+*   set HCOL 1 ; set HWID 5
+*   MAX 10421 $RSIGMA(1.2*[max])
+*   MIN 10421 $RSIGMA([max]/1000.)
+*   set HCOL 1 ;   h/pl 10421(400.:1000.)
+*   set HCOL 3 ;   h/pl 10423 s  
+*   set HCOL 4 ;   h/pl 10424 s  
+*   set HCOL 6 ;   h/pl 10426 s
+*   set HCOL 2 ;   h/pl 10422 s 
+*   set HCOL 7 ;   h/pl 10425 s
+*   set HCOL 1 
+*   atitle 'Ekin (keV)' ''
    
 * slope parameter exp(-68*t)
 * -62*2*11.17*100**(-2)
 * = -0.001519 (68)
 * = -0.001385 (62)
-   slope = 0.001385
-   f/plot 2.*[max]*exp(-[slope]*x) 200. 1100. s
+*   slope = 0.001385
+*   f/plot 2.*[max]*exp(-[slope]*x) 200. 1100. s
    
-   opt liny
-   null 0. 1. 0. 1. ABS
-   set CHHE 0.7
-   itx 0.05 0.9 'LOG'
+*   opt liny
+*   null 0. 1. 0. 1. ABS
+*   set CHHE 0.7
+*   itx 0.05 0.9 'LOG'
    
-   wait 
+*   wait 
    
 * Show all the strips for Plus bunches only
    set DMOD 1 
@@ -631,7 +632,7 @@ return
    exec ploteachsi si=5 base=10600
    exec ploteachsi si=6 base=10600
    
-*   wait
+   wait
    
    if ([plot].ne.'all') then
      mess plot is [plot] 
