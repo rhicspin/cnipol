@@ -89,8 +89,7 @@ int main (int argc, char *argv[]){
             cout << " -T                   : T0 study    mode on " <<endl;
             cout << " -A                   : A0,A1 study mode on " <<endl;
             cout << " -Z                   : without T0 subtraction" <<endl;
-            cout << " -F <file>            : overwrite conf file" <<endl;
-            cout << "                      : otherwise be loaded from run.db" <<endl;
+            cout << " -F <file>            : overwrite conf file defined in run.db" <<endl;
             cout << " -M                   : exit after run message" <<endl;
             cout << " -W <lower:upper>     : const width banana cut" <<endl;
 	    cout << " -m <sigma>           : banana cut by <sigma> from 12C mass [def]:3 sigma" 
@@ -145,11 +144,12 @@ int main (int argc, char *argv[]){
             break;
         case 'F':
 	  sprintf(cfile, optarg);
-	  strcat(reConfFile,confdir);
-	  strcat(reConfFile,    "/");
-	  strcat(reConfFile,  cfile);
+          if (!strstr(cfile,"/")) {
+              strcat(reConfFile,confdir);
+              strcat(reConfFile,    "/");
+          }
+          strcat(reConfFile,  cfile);
 	  fprintf(stdout,"overwrite conf file : %s \n",reConfFile); 
-	  // dproc.RECONFMODE = 1; by default 1.
 	  extinput.CONFIG = 1;
 	  break;
 	case 'b':
@@ -373,7 +373,7 @@ void reConfig(recordConfigRhicStruct *cfginfo){
     configFile.open(reConfFile);
 
     if (!configFile) {
-        cerr << "failed to open Config File" <<endl;
+        cerr << "failed to open Config File : " << reConfFile << endl;
         exit(1);
     }
 
