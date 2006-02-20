@@ -1,5 +1,6 @@
 #! /usr/bin/perl
 # defualts 
+$GHOSTVIEW=0;
 # HID:15000 (const.t) HID:15100: (banana)
 $HID  = 15000; 
 # Fit Energy Rnage Default
@@ -11,12 +12,14 @@ $EMAX=900;
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('E:f:bh', \%opt);
+getopts('E:f:bgh', \%opt);
 
 if ( $opt{h} ) {
     help();
 }
-
+if ( $opt{g} ) {
+    $GHOSTVIEW=1;
+}
 if ( $opt{b} ){
     $HID=15100;
 }
@@ -39,11 +42,12 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hb [ -f <runID>] [-E <Emin:Emax>]\n\n"; 
+    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>]\n\n"; 
     print "    fit banana histograms and get deadlayer and t0.\n";
-    print "    Execute dLayerGen.pl for creation.\n\n";
+    print "    Execute dLayerGen.pl for histogram creation.\n\n";
     print "\t -f <runID>     runID\n";
     print "\t -b             Fit on banana cut events. (def:const.t cut)\n";
+    print "\t -g             Launch ghostviewer after fit.\n";
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
     print "\t -h             Show this help \n";
     print "\n";
@@ -52,6 +56,10 @@ sub help(){
     exit(0);
 }
 
+sub GhostView(){
+    system("gv dlayer/$Runn.fittemp.ps");
+    system("gv dlayer/$Runn.summarytemp.ps");
+}
 
 
 
@@ -110,6 +118,7 @@ system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");
 system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");
 system("rm input.C");
 
+if ($GHOSTVIEW) {GhostView();};
 
 
 

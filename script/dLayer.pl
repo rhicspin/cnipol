@@ -13,7 +13,7 @@ $OPT  = " ";
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('E:f:bh', \%opt);
+getopts('E:f:bgh', \%opt);
 
 if ( $opt{h} ) {
     help();
@@ -21,6 +21,10 @@ if ( $opt{h} ) {
 
 if ( $opt{b} ){
     $OPT="-b $OPT";
+}
+
+if ( $opt{g} ){
+    $OPT="-g $OPT";
 }
 
 # Get Run ID
@@ -38,13 +42,14 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hb [-f <runID>] [-E <Emin:Emax>]\n\n"; 
+    print " Usage:\n  $0 -hgb [-f <runID>] [-E <Emin:Emax>]\n\n"; 
     print "    Generate histograms for deadlayer fit and execute fit.\n";
     print "    Executs dLayerGen.pl and dLayerCal.pl \n\n";
-    print "\t -f <runID> runID\n";
-    print "\t -b         fit on banana cut events. (def:const.t cut)\n";
+    print "\t -f <runID>     runID\n";
+    print "\t -b             Fit on banana cut events. (def:const.t cut)\n";
+    print "\t -g             Launch ghostviewer after fit.\n";
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
-    print "\t -h         Show this help \n";
+    print "\t -h             Show this help \n";
     print "\n";
     print "    ex.) dLayer.pl -f 7279.005 -b -E 350:950 \n";
     print "\n";
