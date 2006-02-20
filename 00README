@@ -14,6 +14,13 @@ Get SRC files from cvs server:
 	% cvs checkout cnipol
         sources will be downloaded in ./cnipol directory.
 
+Instructions are avaliable on following web site(note password protected) : 
+
+	http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
+
+	However, the lastest & up-to-date instruction should be found
+        in 00README from cvs repository.
+
 #####################################################################
 
 
