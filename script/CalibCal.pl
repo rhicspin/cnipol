@@ -39,7 +39,7 @@ sub help(){
     print "    Run CalibGen.pl to create calibration histogram data file.\n\n";
     print "\t -f <filename> calibration file name w/o .data \n";
     print "\t -p            Publish calibration data file to $CALIBDIR\n";
-    print "\t -g            Execute ghostscript to view  fitted results.\n";
+    print "\t -g            Launch ghostviewer after fit.\n";
     print "\t -h            Show this help";
     print "\n\n";
     print "    ex.) CalibCal.pl -f bluc_calib_0504 -g\n";
