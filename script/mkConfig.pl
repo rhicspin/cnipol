@@ -2,6 +2,7 @@
 # mkConfig.pl
 # Feb.18, 2006 I.Nakagawa
 $INSTALLDIR = $ENV{"CONFDIR"};
+$INTEGRALFIT=0;
 $PUBLISH=0;
 $OPT  = " ";
 
@@ -11,19 +12,20 @@ $OPT  = " ";
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:Dhpb', \%opt);
+getopts('f:DhIpb', \%opt);
 
 if ( $opt{h} ) {
     help();
-}
+} 
 if ( $opt{p} ) {
     $PUBLISH=1;
 }
 if ( $opt{D} ){
     $DlayerFit=1;
 }
-
-
+if ( $opt{I} ){
+    $INTEGRALFIT=1;
+}
 if ( $opt{b} ){
     $OPT="-b";
 }
@@ -37,12 +39,13 @@ if (length ($Runn) == 0){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hDpb [ -f <runID>]\n\n"; 
+    print " Usage:\n  $0 -hDIpb [ -f <runID>]\n\n"; 
     print "\t -f <runID> runID\n";
     print "\t -D         Execute deadlayer fit\n";
     print "\t -p         Publish configulation data file to $CONFDIR\n";
     print "\t -b         Banana cut event selection on deadlayer fit.\n";
     print "\t            (used with -D option)\n";
+    print "\t -I         Execute Integral Fit [def]:off\n";
     print "\t -h         Show this help\n";
     print "\n";
     print "    ex.) To perform deadlayer fit and make new configulation:\n\n";
@@ -79,10 +82,16 @@ if ($DlayerFit){
     system("dLayerGen.pl -f $Runn \n");
     system("echo 'Executing Fitting...\n'");
     system("dLayerCal.pl $OPT -f $Runn \n");
+}
+
+#----------------------------------------------------------------------
+#               Execute Integral Fit
+#----------------------------------------------------------------------
+if ($INTEGRALFIT){
+
     system("echo 'Executing Integral Fitting...\n'");
     system("IntegCal.pl -f $Runn \n");
 }
-
 
 #----------------------------------------------------------------------
 #               Command line argument hundling routine
@@ -97,8 +106,11 @@ if (length ($Calb) == 0) {die "Problem in getting calibration filename in run.db
 #----------------------------------------------------------------------
 $DlayerFile = "dlayer/$Runn.temp.dat";
 $CalibFile  = "$Calb.temp.dat";
-$IntegFile  = "integ/$Runn.temp.dat";
-
+if ($INTEGRALFIT) {
+    $IntegFile  = "integ/$Runn.temp.dat";
+} else {
+    $IntegFile = "default";
+}
 
 ######################################################################
 #                   PUBLISH CALIBRATION FILE                         #
@@ -181,7 +193,7 @@ close(ESCALE);
 #=========================================
 # READ Integral-Amplitude Correlation
 #=========================================
-if ($Runn != "-i") {   # skip if initializing...
+if ($INTEGRALFIT) {   # if Integral Fit option is fed
 open(IA,$IntegFile) || die "cannot open $IntegFile";
 printf "Reading $IntegFile ... \n";
 while ($ia = <IA>) {
@@ -195,7 +207,7 @@ while ($ia = <IA>) {
     }
 }
 close(IA);
-}  # skipped if initializing
+}  
 
 
 
