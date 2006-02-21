@@ -205,15 +205,16 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry 
 
 
-	/*
+
         e = ekin(edepo, cfginfo->data.chan[st].dwidth);
         e_int = ekin(edepo_int, cfginfo->data.chan[st].dwidth);
-	*/
 
+        /*
         e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef * 
           (event->amp + rand2 - 0.5);
 	e_int = cfginfo->data.chan[st].edead + 
                 cfginfo->data.chan[st].ecoef * (amp_int + rand2 - 0.5);
+        */
 
         // For A_N Calculation (Cross section)
         if ((e>Emin)&&(e<Emax)) {
