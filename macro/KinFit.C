@@ -159,6 +159,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
 	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile){
 
     sprintf(runid,"%s",runidinput);
+    RUNID = atof(runid);
     RHIC_Beam = RHICBeam;
     bene = beneinput;
     HID = hid;
@@ -166,6 +167,9 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     FitRangeLow = EMIN;
     FitRangeUpp = EMAX;
     sprintf(CONFFILE,"%s",cfile);
+
+
+    if (RUNID>7400) RHIC_Beam+=2;
 
     printf("\n");
     printf("=========================================================\n");
@@ -178,7 +182,6 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     printf("=========================================================\n");
     printf("\n");
 
-    RUNID = atof(runid);
 
     memset(dl,0, sizeof(dl));
     memset(dlE,0, sizeof(dlE));
