@@ -433,7 +433,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 
                 Ncounts[(int)(st/12)][event->bid]++;
-		NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
+		if (delim<MAXDELIM) NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[delim], spinpat[event->bid]==1?1:0);
 		if ((int)(st/12)==1) HHF1(38020, TgtIndex[delim], spinpat[event->bid]==-1?1:0);
 		if ((int)(st/12)==4) HHF1(38030, TgtIndex[delim], spinpat[event->bid]==1?1:0);
