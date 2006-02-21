@@ -93,6 +93,9 @@ while (<LOGFILE>) {
     } elsif (/Kinematic Const. E2T/) {
 	($F1,$F2,$F3,$F4,$F5) = split;
 	$E2T=$F5;
+    } elsif (/CONFIG/) {
+	($F1,$F2,$F3) = split;
+	$cfile=$F3;
     };
 };
 
@@ -104,13 +107,14 @@ printf("RHICBeam    : $RHICBeam \n");
 printf("E2T         : $E2T \n");
 printf("Emin - Emax : $EMIN - $EMAX \n");
 printf("HID         : $HID \n");
+printf("Config File : $cfile \n");
 
 
 #----------------------------------------------------------------------
 #               Main Routine
 #----------------------------------------------------------------------
 
-system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID)' > input.C");
+system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\")' > input.C");
 system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
     
 system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");
