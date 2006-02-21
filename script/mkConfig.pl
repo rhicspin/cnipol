@@ -120,7 +120,7 @@ if ($PUBLISH){Publish();}
 sub Publish(){
     $CONFIGFILE="$CONFIGDIR/$Runn.config.dat";
     if (-e $CONFIGFILE){
-	system("install -v -C $CONFIGFILE $INSTALLDIR");
+	system("install -v -C --mode 664 $CONFIGFILE $INSTALLDIR");
     }else{
 	printf("ERROR: $CONFIGFILE doesn't exist. Make configulation file first.\n");
 	exit(-1);
