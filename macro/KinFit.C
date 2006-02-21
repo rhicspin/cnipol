@@ -102,7 +102,7 @@ Double_t ExCoef(Double_t x, Int_t Index){
 
 class KinFit {
 public:
-  KinFit(Char_t *, Float_t, Int_t, Float_t, Float_t, Float_t, Int_t);
+  KinFit(Char_t *, Float_t, Int_t, Float_t, Float_t, Float_t, Int_t, Char_t*);
   ~KinFit();
   
   void Fit(Int_t);
@@ -113,11 +113,12 @@ public:
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
+  Int_t GetData();
 
   ofstream fout;
   ofstream ferrout;
     
-  Char_t runid[10];
+  Char_t runid[10], CONFFILE[256];
   Float_t RUNID, bene;
 
   Int_t RHIC_Beam;
@@ -144,6 +145,9 @@ public:
 
   Float_t dlave=0;
 
+  // From configulation file
+  Float_t dlsum_ref[6],t0_ref[72],t0E_ref[72];
+
 };
 
 
@@ -152,7 +156,7 @@ public:
 
 // Initialization of the class
 KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, 
-	       Float_t EMIN, Float_t EMAX, Int_t hid){
+	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile){
 
     sprintf(runid,"%s",runidinput);
     RHIC_Beam = RHICBeam;
@@ -161,6 +165,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     KinConst_E2T = E2T;
     FitRangeLow = EMIN;
     FitRangeUpp = EMAX;
+    sprintf(CONFFILE,"%s",cfile);
 
     printf("\n");
     printf("=========================================================\n");
@@ -169,18 +174,22 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     if (HID==15000) printf(" Fit on constant time cut , HID   : %5d\n", HID);
     if (HID==15100) printf(" Fit on  banana-mass  cut , HID   : %5d\n", HID);
     printf(" Fitting Energy Renga <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
+    printf(" Configuration File               : %s \n", CONFFILE);
     printf("=========================================================\n");
     printf("\n");
 
     RUNID = atof(runid);
-
 
     memset(dl,0, sizeof(dl));
     memset(dlE,0, sizeof(dlE));
     memset(t0,0, sizeof(t0));
     memset(t0E,0, sizeof(t0E));
 
+
 };
+
+
+
 KinFit::~KinFit(){};
 
 // -------------------------------------------------------------------
@@ -233,7 +242,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-                FitOne(St, mode);
+	      FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -611,10 +620,171 @@ void KinFit::PlotResult()
     
     tgt0s -> Draw("P");
 
+
+    ps.NewPage();
+
+    //-----------------------------------------------------------------
+    //    Compare with dl and t0 in Configulation File
+    //-----------------------------------------------------------------
+    /*
+    GetData();
+
+    TCanvas *CurC2 = new TCanvas("CurC2","",1);
+    CurC2 -> Divide(1,2);
+
+    // -------------
+    // Plot - 1 (Dead layer distribution)
+    // -------------
+
+    CurC2 -> cd(1);
+    
+    Char_t title[40];
+    sprintf(title, "%s Dead Layer", runid); 
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, -20., 20.);
+    frame -> SetStats(0);
+    frame -> GetXaxis()->SetTitle("Detector Number");
+    frame -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
+    frame -> Draw();
+
+    // draw the separaters btw detectors
+    for (Int_t isep=0; isep<6 ; isep++) {
+        TLine *l = new TLine(isep-0.5, 0., isep-0.5, 80.);
+        l -> Draw();
+    }
+
+    // draw the average values
+    Froat_t diff[6];
+    for (Int_t isep=0; isep<6 ; isep++) {
+      // deadlayer from current fit
+      diff[isep] = dlsum_ref[isep] - dlsum[isep]
+        TLine *ave = new TLine(isep-0.5, diff[isep], 
+                               (isep+1)-0.5, diff[isep]);
+        ave -> SetLineColor(4);
+        ave -> SetLineWidth(2.);
+        ave -> Draw();
+
+    }
+
+
+    // -------------
+    // Plot - 2 (t0)
+    // -------------
+
+    CurC2 -> cd(2);
+    
+    Char_t title[40];
+    sprintf(title, "%s : T0 Distribution", runid);
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
+    frame -> SetStats(0);
+    frame -> GetXaxis()->SetTitle("Strip Number");
+    frame -> GetYaxis()->SetTitle("T0 values (nsec)");
+    frame -> Draw();
+
+    // draw the separaters btw detectors
+    for (Int_t isep=0; isep<6 ; isep++) {
+        TLine *l = new TLine(12.*isep -0.5, -20., 12.*isep -0.5, 20.);
+        l -> Draw();
+    }
+    
+    // result of one parameter fit (red)
+    TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0s, stripE, t0sE);
+    tgt0s -> SetMarkerStyle(21);
+    tgt0s -> SetMarkerSize(1.0);
+    tgt0s -> SetLineWidth(1.0);
+    tgt0s-> SetLineColor(2);
+    tgt0s -> SetMarkerColor(2);
+
+    // result of one parameter fit (red) from reference
+    TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0_ref, stripE, t0E_ref);
+    tgt0s -> SetMarkerStyle(20);
+    tgt0s -> SetMarkerSize(1.0);
+    tgt0s -> SetLineWidth(1.0);
+    tgt0s-> SetLineColor(7);
+    tgt0s -> SetMarkerColor(7);
+    
+    tgt0s -> Draw("P");
+    */
+
     ps.Close();
 
 
 }
+
+
+
+//
+// Class name  : 
+// Method name : GetData
+//
+// Description : GetData from file
+// Input       : 
+// Return      : 
+//
+Int_t KinFit::GetData(){
+
+  ifstream infile(CONFFILE);
+
+  if ( infile.fail() ) {
+    cout << "unable to find file:" << CONFFILE << "\n" << flush;
+    exit(-1);
+  }
+
+  const Int_t N=72;
+  Char_t buffer[300];
+  Char_t *tempchar, *stripchar, *T0char;
+  Int_t stripn;
+  Float_t t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
+  Float_t c0n, c1n, c2n, c3n, c4n;
+
+  Int_t i=0;
+  Int_t ch, st;
+  while  ( ( ch = infile.peek()) != EOF) {
+
+    infile.getline(buffer, sizeof(buffer), '\n'); 
+    if (strstr(buffer,"Channel")!=0) { 
+
+      tempchar = strtok(buffer,"l");
+      stripn = atoi(strtok(NULL, "="));
+      t0n = atof(strtok(NULL," "));
+      ecn = atof(strtok(NULL," "));
+      edeadn = atof(strtok(NULL," "));
+      a0n = atof(strtok(NULL," "));
+      a1n = atof(strtok(NULL," "));
+      ealphn = atof(strtok(NULL," "));
+      dwidthn = atof(strtok(NULL," "));
+      peden = atof(strtok(NULL," "));
+      c0n = atof(strtok(NULL," "));
+      c1n = atof(strtok(NULL," "));
+      c2n = atof(strtok(NULL," "));
+      c3n = atof(strtok(NULL," "));
+      c4n = atof(strtok(NULL," "));
+
+      st = i/12;
+      t0_ref[i] = t0n;
+      t0E_ref[i] = 0;
+      dlsum_ref[st] = dwidthn;
+
+    if (i>=N) {
+      cerr << "getData(): input data " << i << " exceed default array size " << N << endl;
+      exit(-1);
+    }
+
+    i++;
+    }
+  }
+
+
+  return i-1;
+
+} // end-of-getData()
+
+
+
+
+
+
+
+
 
 //=======================================================================
 //          Check Disbled Strip List
@@ -663,3 +833,7 @@ WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT){
   return WM ;
 
 } // end-of-WeightedMean()
+
+
+
+
