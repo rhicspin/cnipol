@@ -1,4 +1,9 @@
-macro main run='-1'
+macro main run='-1' nowait='-1' 
+
+** J.Wood, Feb.21,2006: don't need ps file here, onliplot.kumac makes it too
+**                      add argument to not wait for <CR> from user
+**	 		move chi2 to upper plot, and write A_N
+
 *   pson
    if ([run].eq.'-1') then
      run = $ENV(RUN)
@@ -109,8 +114,8 @@ macro main run='-1'
 * ---------------------------------------
    quit
    
-   v/input fitpar(1) 0.01
-   v/input fitpar(2) 0.001
+   v/input fitpar(1) 1.0
+   v/input fitpar(2) 0.01
    v/input fitpar(3) 0.
    
    v/fit angle ratio ratioe fitfunc '0E' NP=3 PAR=fitpar ! ! ! ERRPAR=fitpare 
@@ -162,6 +167,29 @@ macro main run='-1'
      'Phi (deg) = '//$FORMAT([newangle],F5.1)//'+/-'//$FORMAT(fitpare(3),F5.1)
    v/print fitpare
    
+* ******************* Numbers ***************
+  vec/cre chi2(1) R 
+* ======================================
+   application comis quit
+      SUBROUTINE chiq
+* NPFITS  Number of points used in the fit
+* NFPAR   Number of free parameters
+* FITCHI  Chisquare
+* FITPAR  Values of parameters
+* FITSIG  Errors on parameters
+      COMMON/HCFITS/NCFITS,NPFITS,NFPAR,FITCHI,FITPAR(35),FITSIG(35)
+     +  ,FITDER(35)
+      vector chi2
+      chi2(1)=fitchi
+      END
+   quit   
+* ======================================
+   call chiq
+   mess $RSIGMA(chi2(1))  
+
+   itx 0.55 0.60 'Chi2/NDF ='//$FORMAT(chi2(1),F7.3)   
+
+
 * ======================================
 * ******* plot Polarization vector *****
 * ======================================
@@ -241,31 +269,12 @@ c
    f/pl $RSIGMA(c36p(1)-c36pe(1))-1.*x -[sc] [sc] s 
    
    
-* ******************* Numbers ***************
-  vec/cre chi2(1) R 
-* ======================================
-   application comis quit
-      SUBROUTINE chiq
-* NPFITS  Number of points used in the fit
-* NFPAR   Number of free parameters
-* FITCHI  Chisquare
-* FITPAR  Values of parameters
-* FITSIG  Errors on parameters
-      COMMON/HCFITS/NCFITS,NPFITS,NFPAR,FITCHI,FITPAR(35),FITSIG(35)
-     +  ,FITDER(35)
-      vector chi2
-      chi2(1)=fitchi
-      END
-   quit   
-* ======================================
-   call chiq
-   mess $RSIGMA(chi2(1))  
    null 0. 1. 0. 1. AB
    set CHHE 0.5
    itx 0. 0.95 'Polarization Vector'
    set CHHE 0.3
    
-   itx 0. 0.80 'Chi2/NDF ='//$FORMAT(chi2(1),F7.3)   
+   itx 0. 0.85 'Ave. A_N = '//$FORMAT(an(1),F6.5)
    
    itx 0. 0.73 'BLUE AREA'
    itx 0.2 0.66 'Xfit = '//$FORMAT(xchp(1),F7.4)//'+/-'//$FORMAT(xchpe(1),F7.4)
@@ -286,12 +295,14 @@ c
    itx 0. 0.08 'Pink/Black Lines : Cross Asymmetries'
    
    
-#   psoff
+*   psoff
 
    close 60 
    mess psfile=[psfile]
    sh rm -f pvect.dat
-   wait
+   if [nowait]<0 then
+     wait
+   endif
    
  return
    
