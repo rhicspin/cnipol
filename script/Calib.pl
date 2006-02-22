@@ -55,7 +55,7 @@ if ($PUBLISH) {Publish()};
 sub Publish(){
     $CALIBDATA= "calib/$Runn.temp.dat";
     if (-e $CALIBDATA){
-	system("install -v -C $CALIBDATA $CALIBDIR");
+	system("install --mode 666 -v -C $CALIBDATA $CALIBDIR");
     }else{
 	printf("ERROR: $CALIBDATA doesn't exist. Make calibration file first.\n");
 	exit(-1);
