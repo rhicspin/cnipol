@@ -9,7 +9,7 @@ else
 fi
 
 install *.pl *.sh -C -v  --mode 777 $MACRODIR
-install *.kumac *.C *.awk -C -v  --mode 664 $MACRODIR
+install *.kumac *.C *.awk -C -v  --mode 666 $MACRODIR
 
 
 
