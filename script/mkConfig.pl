@@ -122,14 +122,14 @@ if ($PUBLISH){Publish();}
 sub Publish(){
     $CONFIGFILE="$CONFIGDIR/$Runn.config.dat";
     if (-e $CONFIGFILE){
-	system("install -v -C --mode 664 $CONFIGFILE $INSTALL_CONFIG_DIR");
+	system("install -v -C --mode 666 $CONFIGFILE $INSTALL_CONFIG_DIR");
     }else{
 	printf("ERROR: $CONFIGFILE doesn't exist. Make configulation file first.\n");
 	exit(-1);
     }
 
     if (-e $DlayerFile){
-	system("install -v -C --mode 664 $DlayerFile $INSTALL_DLAYER_DIR");
+	system("install -v -C --mode 666 $DlayerFile $INSTALL_DLAYER_DIR");
     }else{
 	printf("ERROR: $DlayerFile doesn't exist. Do Dlayer fit first.\n");
 	exit(-1);
