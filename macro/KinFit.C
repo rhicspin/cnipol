@@ -111,6 +111,7 @@ public:
   void CoefsGet();   // read coeficients from root file 
   void PlotResult();
     void ReferenceConfig(Float_t, Float_t);
+    void ReferenceDlayer();
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
@@ -119,7 +120,7 @@ public:
   ofstream fout;
   ofstream ferrout;
     
-  Char_t runid[10], CONFFILE[256];
+  Char_t runid[10], CONFFILE[256], DLAYERFILE[256];
   Float_t RUNID, bene;
 
   Int_t RHIC_Beam;
@@ -168,7 +169,6 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     FitRangeLow = EMIN;
     FitRangeUpp = EMAX;
     sprintf(CONFFILE,"%s",cfile);
-
 
     if (RUNID>7400) RHIC_Beam+=2;
 
@@ -246,7 +246,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-               FitOne(St, mode);
+                FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -633,11 +633,33 @@ void KinFit::PlotResult()
     //    Compare with dl and t0 in Configulation File
     //-----------------------------------------------------------------
     ReferenceConfig(TMIN, TMAX);
+    ReferenceDlayer();
 
     ps.Close();
 
 
 }//End-of-PlotResults();
+
+
+
+//
+// Class name  : 
+// Method name : ReferenceDlayer()
+//
+// Description : Compare fitting results with reference deadlayer
+// Input       : 
+// Return      : 
+//
+void
+KinFit::ReferenceDlayer(){
+
+
+    // for developent, comment out calling FitOne(St,mode) to save time 
+    cout << "DLAYERFILE=" << DLAYERFILE << endl;
+    return;
+}
+
+
 
 
 
@@ -770,6 +792,8 @@ Int_t KinFit::GetData(){
 
   const Int_t N=72;
   Char_t buffer[300];
+  string dfile;
+  Char_t * SearchString = "* for the dead layer and T0  : ";
   Char_t *tempchar, *stripchar, *T0char;
   Int_t stripn;
   Float_t t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
@@ -778,8 +802,13 @@ Int_t KinFit::GetData(){
   Int_t i=0;
   Int_t ch, st;
   while  ( ( ch = infile.peek()) != EOF) {
-
+      
     infile.getline(buffer, sizeof(buffer), '\n'); 
+    if (strstr(buffer,SearchString)!=0){
+        string str(buffer);
+        dfile=str.substr(strlen(SearchString),strlen(buffer)-strlen(SearchString));
+        sprintf(DLAYERFILE,"%s/%s",gSystem->Getenv("SHAREDIR"),dfile.c_str());
+    }
     if (strstr(buffer,"Channel")!=0) { 
 
       tempchar = strtok(buffer,"l");
