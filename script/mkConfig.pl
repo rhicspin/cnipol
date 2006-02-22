@@ -1,7 +1,9 @@
 #! /usr/bin/perl
 # mkConfig.pl
 # Feb.18, 2006 I.Nakagawa
-$INSTALLDIR = $ENV{"CONFDIR"};
+$SHAREDIR = $ENV{"SHAREDIR"};
+$INSTALL_CONFIG_DIR ="$SHAREDIR/config";
+$INSTALL_DLAYER_DIR ="$SHAREDIR/dlayer";
 $INTEGRALFIT=0;
 $PUBLISH=0;
 $OPT  = " ";
@@ -120,9 +122,16 @@ if ($PUBLISH){Publish();}
 sub Publish(){
     $CONFIGFILE="$CONFIGDIR/$Runn.config.dat";
     if (-e $CONFIGFILE){
-	system("install -v -C --mode 664 $CONFIGFILE $INSTALLDIR");
+	system("install -v -C --mode 664 $CONFIGFILE $INSTALL_CONFIG_DIR");
     }else{
 	printf("ERROR: $CONFIGFILE doesn't exist. Make configulation file first.\n");
+	exit(-1);
+    }
+
+    if (-e $DlayerFile){
+	system("install -v -C --mode 664 $DlayerFile $INSTALL_DLAYER_DIR");
+    }else{
+	printf("ERROR: $DlayerFile doesn't exist. Do Dlayer fit first.\n");
 	exit(-1);
     }
     exit(0);
