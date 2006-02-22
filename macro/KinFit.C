@@ -547,8 +547,6 @@ void KinFit::PlotResult()
         TLine *l = new TLine(12.*isep -0.5, 0., 12.*isep -0.5, 80.);
         l -> Draw();
     }
-    TLine *L = new TLine(-0.5, 0,5.5, 0);
-    L -> Draw();
 
 
     TGraphErrors* tgdl = new TGraphErrors(72, strip, dl, stripE, dlE);
@@ -606,9 +604,7 @@ void KinFit::PlotResult()
         TLine *l = new TLine(12.*isep -0.5, -20., 12.*isep -0.5, 20.);
         l -> Draw();
     }
-    TLine *L = new TLine(-0.5, 0,71.5, 0);
-    L -> Draw();
-    
+
     // result of two paramter fit (blue)
     TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0, stripE, t0E);
     tgt0 -> SetMarkerStyle(20);
@@ -691,6 +687,8 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
         TLine *l = new TLine(isep-0.5, diffx_Min, isep-0.5, diffx_Max);
         l -> Draw();
     }
+    TLine *L = new TLine(-0.5, 0,5.5, 0);
+    L -> Draw();
 
     // draw the average values
     Float_t diff[6];
@@ -727,6 +725,9 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
         TLine *l = new TLine(12.*isep -0.5, difft_Min, 12.*isep -0.5, difft_Max);
         l -> Draw();
     }
+    TLine *L = new TLine(-0.5, 0,71.5, 0);
+    L -> Draw();
+    
     
     for (Int_t st=0; st<72; st++) {
         diff_t0[st] = t0s[st] - t0_ref[st];
