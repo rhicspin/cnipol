@@ -110,11 +110,12 @@ public:
 
   void CoefsGet();   // read coeficients from root file 
   void PlotResult();
+    void ReferenceConfig(Float_t, Float_t);
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
   Int_t GetData();
-
+    
   ofstream fout;
   ofstream ferrout;
     
@@ -245,7 +246,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-	      FitOne(St, mode);
+               FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -498,6 +499,7 @@ void KinFit::PlotResult()
 
     TCanvas *CurC = new TCanvas("CurC","",1);
     TPostScript ps("testsummary.ps",112);
+    ps.NewPage();
     
     CurC -> Divide(1,2);
 
@@ -545,6 +547,8 @@ void KinFit::PlotResult()
         TLine *l = new TLine(12.*isep -0.5, 0., 12.*isep -0.5, 80.);
         l -> Draw();
     }
+    TLine *L = new TLine(-0.5, 0,5.5, 0);
+    L -> Draw();
 
 
     TGraphErrors* tgdl = new TGraphErrors(72, strip, dl, stripE, dlE);
@@ -602,6 +606,8 @@ void KinFit::PlotResult()
         TLine *l = new TLine(12.*isep -0.5, -20., 12.*isep -0.5, 20.);
         l -> Draw();
     }
+    TLine *L = new TLine(-0.5, 0,71.5, 0);
+    L -> Draw();
     
     // result of two paramter fit (blue)
     TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0, stripE, t0E);
@@ -615,8 +621,8 @@ void KinFit::PlotResult()
     
     // result of one parameter fit (red)
     TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0s, stripE, t0sE);
-    tgt0s -> SetMarkerStyle(21);
-    tgt0s -> SetMarkerSize(1.0);
+    tgt0s -> SetMarkerStyle(20);
+    tgt0s -> SetMarkerSize(0.9);
     tgt0s -> SetLineWidth(1.0);
     tgt0s-> SetLineColor(2);
     tgt0s -> SetMarkerColor(2);
@@ -624,26 +630,57 @@ void KinFit::PlotResult()
     tgt0s -> Draw("P");
 
 
+    CurC->Update();
     ps.NewPage();
 
     //-----------------------------------------------------------------
     //    Compare with dl and t0 in Configulation File
     //-----------------------------------------------------------------
-    /*
+    ReferenceConfig(TMIN, TMAX);
+
+    ps.Close();
+
+
+}//End-of-PlotResults();
+
+
+
+//
+// Class name  : 
+// Method name : ReferenceConfig()
+//
+// Description : Compare fitting results with reference config.
+// Input       : Float_t TMIN, Float_t TMAX
+// Return      : 
+//
+void
+KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
+
     GetData();
 
-    TCanvas *CurC2 = new TCanvas("CurC2","",1);
-    CurC2 -> Divide(1,2);
+    Float_t strip[72], stripE[72];
+    for (Int_t St=0; St<72; St++) {
+        strip[St] = (Float_t)St;
+        stripE[St] = 0.;
+    }
+
+    Float_t diffx_Min = -15;
+    Float_t diffx_Max =  15;
+    Float_t difft_Min = -15;
+    Float_t difft_Max =  15;
+
+    TCanvas *CurC = new TCanvas("CurC","",1);
+    CurC -> Divide(1,2);
 
     // -------------
     // Plot - 1 (Dead layer distribution)
     // -------------
 
-    CurC2 -> cd(1);
+    CurC -> cd(1);
     
     Char_t title[40];
     sprintf(title, "%s Dead Layer", runid); 
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, -20., 20.);
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Detector Number");
     frame -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
@@ -651,15 +688,15 @@ void KinFit::PlotResult()
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(isep-0.5, 0., isep-0.5, 80.);
+        TLine *l = new TLine(isep-0.5, diffx_Min, isep-0.5, diffx_Max);
         l -> Draw();
     }
 
     // draw the average values
-    Froat_t diff[6];
+    Float_t diff[6];
     for (Int_t isep=0; isep<6 ; isep++) {
       // deadlayer from current fit
-      diff[isep] = dlsum_ref[isep] - dlsum[isep]
+        diff[isep] = dlsum_ref[isep] - dlsum[isep];
         TLine *ave = new TLine(isep-0.5, diff[isep], 
                                (isep+1)-0.5, diff[isep]);
         ave -> SetLineColor(4);
@@ -673,11 +710,13 @@ void KinFit::PlotResult()
     // Plot - 2 (t0)
     // -------------
 
-    CurC2 -> cd(2);
-    
+    CurC -> cd(2);
+
+    Float_t diff_t0[72], diffE_t0[72];
+
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, difft_Min, difft_Max);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Strip Number");
     frame -> GetYaxis()->SetTitle("T0 values (nsec)");
@@ -685,33 +724,29 @@ void KinFit::PlotResult()
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, -20., 12.*isep -0.5, 20.);
+        TLine *l = new TLine(12.*isep -0.5, difft_Min, 12.*isep -0.5, difft_Max);
         l -> Draw();
     }
     
+    for (Int_t st=0; st<72; st++) {
+        diff_t0[st] = t0s[st] - t0_ref[st];
+        diffE_t0[st] = sqrt(t0sE[st]*t0sE[st]+t0E_ref[st]*t0E_ref[st]);
+    }
+
     // result of one parameter fit (red)
-    TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0s, stripE, t0sE);
+    TGraphErrors* tgt0s = new TGraphErrors(72, strip, diff_t0, stripE, diffE_t0);
     tgt0s -> SetMarkerStyle(21);
     tgt0s -> SetMarkerSize(1.0);
     tgt0s -> SetLineWidth(1.0);
     tgt0s-> SetLineColor(2);
     tgt0s -> SetMarkerColor(2);
-
-    // result of one parameter fit (red) from reference
-    TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0_ref, stripE, t0E_ref);
-    tgt0s -> SetMarkerStyle(20);
-    tgt0s -> SetMarkerSize(1.0);
-    tgt0s -> SetLineWidth(1.0);
-    tgt0s-> SetLineColor(7);
-    tgt0s -> SetMarkerColor(7);
     
     tgt0s -> Draw("P");
-    */
 
-    ps.Close();
+    return;
 
+}//End-of-ReferenceConfig()
 
-}
 
 
 
@@ -767,15 +802,11 @@ Int_t KinFit::GetData(){
       t0E_ref[i] = 0;
       dlsum_ref[st] = dwidthn;
 
-    if (i>=N) {
-      cerr << "getData(): input data " << i << " exceed default array size " << N << endl;
-      exit(-1);
-    }
+      if (i==71) break;
 
     i++;
     }
   }
-
 
   return i-1;
 
