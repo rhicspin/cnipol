@@ -121,10 +121,10 @@ printf("Config File : $cfile \n");
 system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\")' > input.C");
 system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
     
-if (-f testfit.dat) {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
-if (-f testfit.ps) {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
-if (-f testsummary.ps) {system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
-if (-f input.C) {system("rm input.C");}
+if (-f "testfit.dat")    {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
+if (-f "testfit.ps")     {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
+if (-f "testsummary.ps") {system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
+if (-f "input.C")        {system("rm input.C");}
 
 if ($GHOSTVIEW) {GhostView();};
 
