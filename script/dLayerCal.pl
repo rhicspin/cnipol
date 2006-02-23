@@ -6,6 +6,7 @@ $HID  = 15000;
 # Fit Energy Rnage Default
 $EMIN=400;
 $EMAX=900;
+$cfile="config.dat";
 
 #----------------------------------------------------------------------
 #               Command Line Options
@@ -79,7 +80,10 @@ unless (-d $DLAYERDIR) {
 #----------------------------------------------------------------------
 #               Get Experimental Condistion for the run
 #----------------------------------------------------------------------
-open(LOGFILE,"douts/$Runn.dl.log");
+unless (open(LOGFILE,"douts/$Runn.dl.log")) {
+    die "Error: douts/$Runn.dl.log doesn't exist. Run dLayerGen.pl first.\n";
+}
+
 while (<LOGFILE>) {
     if (/MASSCUT/) {
 	($F1,$F2,$F3) = split;
@@ -117,12 +121,14 @@ printf("Config File : $cfile \n");
 system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\")' > input.C");
 system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
     
-system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");
-system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");
-system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");
-system("rm input.C");
+if (-f testfit.dat) {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
+if (-f testfit.ps) {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
+if (-f testsummary.ps) {system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
+if (-f input.C) {system("rm input.C");}
 
 if ($GHOSTVIEW) {GhostView();};
+
+
 
 
 
