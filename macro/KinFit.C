@@ -12,10 +12,12 @@
 #include <iomanip>
 
 #define Debug 0
+//plotting range
 
 gROOT->Reset();
 
 // Global Variables
+const int NSTRIP=72;
 const int NDisableList  = 5;
 const int NDisableStrip = 5;
 static Float_t KinConst_E2T=1459.43; // constant for Run05 L=18.5cm
@@ -109,9 +111,11 @@ public:
   void FitOne(Int_t, Int_t);
 
   void CoefsGet();   // read coeficients from root file 
+    Int_t PlotDlayer(Int_t);
+    Int_t PlotT0(Int_t);
   void PlotResult();
-    void ReferenceConfig(Float_t, Float_t);
-    void ReferenceDlayer();
+    Int_t ReferenceConfig(Float_t, Float_t);
+    Int_t ReferenceDlayer();
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
@@ -125,7 +129,7 @@ public:
 
   Int_t RHIC_Beam;
   Int_t HID=15000;   // const. t cut by default
-
+    
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
   Float_t totSiDev=0;
@@ -134,7 +138,12 @@ public:
   Float_t FitRangeLow = 400.;
   Float_t FitRangeUpp = 900.;
 
+    Float_t TMIN = -30.;
+    Float_t TMAX =  10.;
+    Float_t DMIN = 0.;
+    Float_t DMAX = 80.;
 
+  Float_t strip[72], stripE[72];
   Float_t dl[72], dlE[72];
   Float_t t0[72], t0E[72];
   Float_t t0s[72], t0sE[72]; // T0 result from single parameter fit
@@ -149,6 +158,8 @@ public:
 
   // From configulation file
   Float_t dlsum_ref[6],t0_ref[72],t0E_ref[72];
+
+
 
 };
 
@@ -188,6 +199,12 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     memset(dlE,0, sizeof(dlE));
     memset(t0,0, sizeof(t0));
     memset(t0E,0, sizeof(t0E));
+
+    // globally used.
+    for (Int_t St=0; St<72; St++) {
+        strip[St] = (Float_t)St;
+        stripE[St] = 0.;
+    }
 
 
 };
@@ -488,10 +505,8 @@ void KinFit::PlotResult()
 {
 
     // Default plotting range for Run05
-    Float_t TMIN=-30;
-    Float_t TMAX=10;
     if (RUNID > 7400) { //  for Run06
-        TMIN = -15;
+        TMIN = -20;
         TMAX = 15;
     }
 
@@ -502,12 +517,114 @@ void KinFit::PlotResult()
     ps.NewPage();
     
     CurC -> Divide(1,2);
+    // -------------
+    // Plot - 1 (Dead layer distribution)
+    // -------------
+    CurC -> cd(1);
+    PlotDlayer(1);
 
-    Float_t strip[72], stripE[72];
-    for (Int_t St=0; St<72; St++) {
-        strip[St] = (Float_t)St;
-        stripE[St] = 0.;
+
+    // -------------
+    // Plot - 2 (T0 distribution)
+    // -------------
+    CurC -> cd(2);
+    PlotT0(1);
+
+    CurC->Update();
+    ps.NewPage();
+
+    //-----------------------------------------------------------------
+    //    Compare with dl and t0 in Configulation File
+    //-----------------------------------------------------------------
+    if (ReferenceConfig(TMIN, TMAX)) { 
+        printf(" --> Comparison to reference is skipped.\n");
+    }else{
+        ps.NewPage();
+        ReferenceDlayer();
     }
+    ps.Close();
+
+
+}//End-of-PlotResults();
+
+
+
+//
+// Class name  : 
+// Method name : ReferenceDlayer()
+//
+// Description : Compare fitting results with reference deadlayer
+// Input       : 
+// Return      : 
+//
+Int_t
+KinFit::ReferenceDlayer(){
+
+
+    ifstream infile(DLAYERFILE);
+
+    if ( infile.fail() ) {
+      cout << "unable to find file:" << DLAYERFILE << "\n" << flush;
+      return -1;
+    }
+
+    Char_t buffer[300];
+    Char_t dumc[10];
+    Int_t i=0;
+    Int_t ch;
+    Float_t dum1,dum2,dum3,dum4,dum5,dum6,dum7,dum8,dum8,dum9,dum10;
+    Float_t St[NSTRIP],dlsum_d[NSTRIP],t0s_d[NSTRIP],t0sE_d[NSTRIP],dl_d[NSTRIP],dlE_d[NSTRIP];
+    Float_t t0_d[NSTRIP], t0E_d[NSTRIP];
+    while  ( ( ch = infile.peek()) != EOF) {
+
+        infile >> St[i] >> dlsum_d[(Int_t)St[i]/12] >> t0s_d[i] >> t0sE_d[i] >> dl_d[i] >> dlE_d[i]
+               >> t0_d[i] >> t0E_d[i] >> dum1 >> dum2 >> dumc >> dum4 >> dum5 >> dum6 >> dum7
+               >> dum8 >> dum9 >> dum10;
+        if (i==NSTRIP-1) break;
+        ++i;
+    }
+
+    CurC -> cd(1);
+    PlotDlayer(0);
+    // Superposition Disabled Strips 
+    TGraphErrors* tgdl = new TGraphErrors(72, strip, dl_d, stripE, dlE_d);
+    tgdl -> SetMarkerStyle(20);
+    tgdl -> SetMarkerSize(1.0);
+    tgdl -> SetLineWidth(1.0);
+    tgdl -> SetLineColor(2);
+    tgdl -> SetMarkerColor(2);
+    tgdl -> Draw("P");
+
+
+    CurC -> cd(2);
+    PlotT0(0);
+    TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
+    tgt0 -> SetMarkerStyle(20);
+    tgt0 -> SetMarkerSize(1.0);
+    tgt0 -> SetLineWidth(1.0);
+    tgt0-> SetLineColor(2);
+    tgt0 -> SetMarkerColor(2);
+    tgt0 -> Draw("P");
+
+    CurC->Update();
+
+
+    return 0;
+}
+
+
+
+//
+// Class name  : 
+// Method name : PlotDlayer
+//
+// Description : plot deadlayer fitting result
+// Input       : Int_t Mode
+// Return      : 
+//
+Int_t
+KinFit::PlotDlayer(Int_t Mode){
+
 
     // Fill Disabled Strip Arrays
     Float_t disable_strip[NDisableStrip];
@@ -522,25 +639,13 @@ void KinFit::PlotResult()
     }
 
 
-    // -------------
-    // Plot - 1 (Dead layer distribution)
-    // -------------
-
-    CurC -> cd(1);
-    
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, 0., 80.);
+    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, DMIN, 80.);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Strip Number");
     frame -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
     frame -> Draw();
-
-    // draw total average value
-    TLine *tave = new TLine(-0.5,dlave,71.5,dlave);
-    tave -> SetLineColor(5);
-    tave -> SetLineWidth(2);
-    tave -> Draw();
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
@@ -568,28 +673,44 @@ void KinFit::PlotResult()
     
     tgdl -> Draw("P");
     
+    if (Mode==1){
+        // draw total average value
+        TLine *tave = new TLine(-0.5,dlave,71.5,dlave);
+        tave -> SetLineColor(5);
+        tave -> SetLineWidth(2);
+        tave -> Draw();
+
 
     // draw the average values
-    for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *ave = new TLine(12.*isep -0.5, dlsum[isep], 
-                               12.*(isep+1) -0.5, dlsum[isep]);
-        ave -> SetLineColor(6);
-        ave -> SetLineWidth(2.);
-        ave -> Draw();
+        for (Int_t isep=0; isep<6 ; isep++) {
+            TLine *ave = new TLine(12.*isep -0.5, dlsum[isep], 
+                                   12.*(isep+1) -0.5, dlsum[isep]);
+            ave -> SetLineColor(6);
+            ave -> SetLineWidth(2.);
+            ave -> Draw();
         
-   }
+        }
     
+        TText t; Char_t rtext[50];
+        sprintf(rtext, "Average Deviation = %6.1f ug/cm2", devpst); 
+        t.DrawTextNDC(0.5, 0.8, rtext);
 
-    TText t; Char_t rtext[50];
-    sprintf(rtext, "Average Deviation = %6.1f ug/cm2", devpst); 
-    t.DrawTextNDC(0.5, 0.8, rtext);
+    }
 
+    return 0;
+}
 
-    // -------------
-    // Plot - 2 (T0 distribution)
-    // -------------
+//
+// Class name  : 
+// Method name : PlotT0(Int_t Mode)
+//
+// Description : plot T0 fitting results
+// Input       : Int_t Mode
+// Return      : 
+//
+Int_t
+KinFit::PlotT0(Int_t Mode){
 
-    CurC -> cd(2);
     
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
@@ -614,52 +735,23 @@ void KinFit::PlotResult()
     tgt0 -> SetMarkerColor(4);
     
     tgt0 -> Draw("P");
+
+    if (Mode==1) {
+        // result of one parameter fit (red)
+        TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0s, stripE, t0sE);
+        tgt0s -> SetMarkerStyle(20);
+        tgt0s -> SetMarkerSize(0.9);
+        tgt0s -> SetLineWidth(1.0);
+        tgt0s-> SetLineColor(2);
+        tgt0s -> SetMarkerColor(2);
     
-    // result of one parameter fit (red)
-    TGraphErrors* tgt0s = new TGraphErrors(72, strip, t0s, stripE, t0sE);
-    tgt0s -> SetMarkerStyle(20);
-    tgt0s -> SetMarkerSize(0.9);
-    tgt0s -> SetLineWidth(1.0);
-    tgt0s-> SetLineColor(2);
-    tgt0s -> SetMarkerColor(2);
-    
-    tgt0s -> Draw("P");
+        tgt0s -> Draw("P");
+    }
 
 
-    CurC->Update();
-    ps.NewPage();
+    return 0; 
 
-    //-----------------------------------------------------------------
-    //    Compare with dl and t0 in Configulation File
-    //-----------------------------------------------------------------
-    ReferenceConfig(TMIN, TMAX);
-    ReferenceDlayer();
-
-    ps.Close();
-
-
-}//End-of-PlotResults();
-
-
-
-//
-// Class name  : 
-// Method name : ReferenceDlayer()
-//
-// Description : Compare fitting results with reference deadlayer
-// Input       : 
-// Return      : 
-//
-void
-KinFit::ReferenceDlayer(){
-
-
-    // for developent, comment out calling FitOne(St,mode) to save time 
-    cout << "DLAYERFILE=" << DLAYERFILE << endl;
-    return;
 }
-
-
 
 
 
@@ -671,16 +763,10 @@ KinFit::ReferenceDlayer(){
 // Input       : Float_t TMIN, Float_t TMAX
 // Return      : 
 //
-void
+Int_t
 KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
 
-    GetData();
-
-    Float_t strip[72], stripE[72];
-    for (Int_t St=0; St<72; St++) {
-        strip[St] = (Float_t)St;
-        stripE[St] = 0.;
-    }
+    if (GetData()){ return -1; }
 
     Float_t diffx_Min = -15;
     Float_t diffx_Max =  15;
@@ -701,7 +787,7 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
     TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Detector Number");
-    frame -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
+    frame -> GetYaxis()->SetTitle("Dead Layer Difference (\mu g/cm**2)");
     frame -> Draw();
 
     // draw the separaters btw detectors
@@ -726,10 +812,15 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
     }
 
 
+    TText t; Char_t rtext[256];
+    sprintf(rtext, "Reference:%s", CONFIGFILE); 
+    t.DrawTextNDC(0.5, 0.8, rtext);
+
+
+
     // -------------
     // Plot - 2 (t0)
     // -------------
-
     CurC -> cd(2);
 
     Float_t diff_t0[72], diffE_t0[72];
@@ -750,7 +841,6 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
     TLine *L = new TLine(-0.5, 0,71.5, 0);
     L -> Draw();
     
-    
     for (Int_t st=0; st<72; st++) {
         diff_t0[st] = t0s[st] - t0_ref[st];
         diffE_t0[st] = sqrt(t0sE[st]*t0sE[st]+t0E_ref[st]*t0E_ref[st]);
@@ -758,15 +848,16 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
 
     // result of one parameter fit (red)
     TGraphErrors* tgt0s = new TGraphErrors(72, strip, diff_t0, stripE, diffE_t0);
-    tgt0s -> SetMarkerStyle(21);
+    tgt0s -> SetMarkerStyle(20);
     tgt0s -> SetMarkerSize(1.0);
     tgt0s -> SetLineWidth(1.0);
     tgt0s-> SetLineColor(2);
     tgt0s -> SetMarkerColor(2);
     
     tgt0s -> Draw("P");
+    CurC->Update();
 
-    return;
+    return 0;
 
 }//End-of-ReferenceConfig()
 
@@ -787,7 +878,7 @@ Int_t KinFit::GetData(){
 
   if ( infile.fail() ) {
     cout << "unable to find file:" << CONFFILE << "\n" << flush;
-    exit(-1);
+    return -1;
   }
 
   const Int_t N=72;
@@ -838,7 +929,7 @@ Int_t KinFit::GetData(){
     }
   }
 
-  return i-1;
+  return 0;
 
 } // end-of-getData()
 
