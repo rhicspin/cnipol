@@ -97,6 +97,30 @@ Double_t ExCoef(Double_t x, Int_t Index){
 
 };
 
+
+//
+// Class name  : 
+// Method name : BaseName(Char_t *filename)
+//
+// Description : strip off directories from filename 
+// Input       : Char_t *filename
+// Return      : string *filename without directory path
+//
+string
+BaseName(Char_t *filename){
+
+    Char_t *pch;
+    Int_t ptr;
+    pch = strchr(filename,'/');
+    while (pch!=NULL){ptr=pch-filename+1; pch=strchr(pch+1,'/');};
+    string str(filename);
+
+    return  str.substr(ptr,strlen(filename)) ;
+
+}
+
+
+
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //  MAIN
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -144,9 +168,9 @@ public:
     Float_t DMAX = 80.;
 
   Float_t strip[72], stripE[72];
-  Float_t dl[72], dlE[72];
-  Float_t t0[72], t0E[72];
-  Float_t t0s[72], t0sE[72]; // T0 result from single parameter fit
+  Float_t dl[72], dlE[72], dl_d[72], dlE_d[72];
+  Float_t t0[72], t0E[72], t0_d[72], t0E_d[72];
+  Float_t t0s[72], t0sE[72], t0s_d[72], t0sE_d[72]; // T0 result from single parameter fit
   Float_t dlValid[72], dlEValid[72];
   Float_t dlSi[12], dlESi[12];
   static Float_t Chi2[72]; // Fitting Chi2 for each strip
@@ -162,8 +186,6 @@ public:
 
 
 };
-
-
 
 
 
@@ -263,7 +285,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-                FitOne(St, mode);
+                 FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -573,39 +595,22 @@ KinFit::ReferenceDlayer(){
     Int_t i=0;
     Int_t ch;
     Float_t dum1,dum2,dum3,dum4,dum5,dum6,dum7,dum8,dum8,dum9,dum10;
-    Float_t St[NSTRIP],dlsum_d[NSTRIP],t0s_d[NSTRIP],t0sE_d[NSTRIP],dl_d[NSTRIP],dlE_d[NSTRIP];
-    Float_t t0_d[NSTRIP], t0E_d[NSTRIP];
+    Float_t St[NSTRIP],dlsum_d[NSTRIP];
     while  ( ( ch = infile.peek()) != EOF) {
 
         infile >> St[i] >> dlsum_d[(Int_t)St[i]/12] >> t0s_d[i] >> t0sE_d[i] >> dl_d[i] >> dlE_d[i]
                >> t0_d[i] >> t0E_d[i] >> dum1 >> dum2 >> dumc >> dum4 >> dum5 >> dum6 >> dum7
                >> dum8 >> dum9 >> dum10;
+
         if (i==NSTRIP-1) break;
         ++i;
     }
 
     CurC -> cd(1);
-    PlotDlayer(0);
-    // Superposition Disabled Strips 
-    TGraphErrors* tgdl = new TGraphErrors(72, strip, dl_d, stripE, dlE_d);
-    tgdl -> SetMarkerStyle(20);
-    tgdl -> SetMarkerSize(1.0);
-    tgdl -> SetLineWidth(1.0);
-    tgdl -> SetLineColor(2);
-    tgdl -> SetMarkerColor(2);
-    tgdl -> Draw("P");
-
+    PlotDlayer(2);
 
     CurC -> cd(2);
-    PlotT0(0);
-    TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
-    tgt0 -> SetMarkerStyle(20);
-    tgt0 -> SetMarkerSize(1.0);
-    tgt0 -> SetLineWidth(1.0);
-    tgt0-> SetLineColor(2);
-    tgt0 -> SetMarkerColor(2);
-    tgt0 -> Draw("P");
-
+    PlotT0(2);
     CurC->Update();
 
 
@@ -639,6 +644,9 @@ KinFit::PlotDlayer(Int_t Mode){
     }
 
 
+    aLegend = new TLegend(0.7,0.1,0.9,0.3);
+
+
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
     TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, DMIN, 80.);
@@ -660,9 +668,9 @@ KinFit::PlotDlayer(Int_t Mode){
     tgdl -> SetLineWidth(1.0);
     tgdl -> SetLineColor(4);
     tgdl -> SetMarkerColor(4);
-    
     tgdl -> Draw("P");
-    
+    aLegend->AddEntry(tgdl,runid,"P");
+
     // Superposition Disabled Strips 
     TGraphErrors* tgdl = new TGraphErrors(NDisableStrip, disable_strip, disable_dl, stripE, disable_dlE);
     tgdl -> SetMarkerStyle(20);
@@ -670,9 +678,8 @@ KinFit::PlotDlayer(Int_t Mode){
     tgdl -> SetLineWidth(1.0);
     tgdl -> SetLineColor(7);
     tgdl -> SetMarkerColor(7);
-    
     tgdl -> Draw("P");
-    
+
     if (Mode==1){
         // draw total average value
         TLine *tave = new TLine(-0.5,dlave,71.5,dlave);
@@ -695,7 +702,22 @@ KinFit::PlotDlayer(Int_t Mode){
         sprintf(rtext, "Average Deviation = %6.1f ug/cm2", devpst); 
         t.DrawTextNDC(0.5, 0.8, rtext);
 
+    }else if (Mode==2){
+
+        TGraphErrors* tgd2 = new TGraphErrors(72, strip, dl_d, stripE, dlE_d);
+        tgd2 -> SetMarkerStyle(20);
+        tgd2 -> SetMarkerSize(1.0);
+        tgd2 -> SetLineWidth(1.0);
+        tgd2 -> SetLineColor(2);
+        tgd2 -> SetMarkerColor(2);
+        tgd2 -> Draw("P");
+
+        string s = BaseName(CONFFILE);
+        aLegend->AddEntry(tgd2,s.c_str(),"P");
+        aLegend-> Draw("same");
+
     }
+
 
     return 0;
 }
@@ -744,10 +766,16 @@ KinFit::PlotT0(Int_t Mode){
         tgt0s -> SetLineWidth(1.0);
         tgt0s-> SetLineColor(2);
         tgt0s -> SetMarkerColor(2);
-    
         tgt0s -> Draw("P");
+    }else if (Mode==2){
+        TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
+        tgt0 -> SetMarkerStyle(20);
+        tgt0 -> SetMarkerSize(1.0);
+        tgt0 -> SetLineWidth(1.0);
+        tgt0-> SetLineColor(2);
+        tgt0 -> SetMarkerColor(2);
+        tgt0 -> Draw("P");
     }
-
 
     return 0; 
 
@@ -811,11 +839,11 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
 
     }
 
-
-    TText t; Char_t rtext[256];
-    sprintf(rtext, "Reference:%s", CONFFILE); 
-    t.DrawTextNDC(0.5, 0.8, rtext);
-
+    Char_t text[256];
+    sprintf(text, "Reference:%s", CONFFILE); 
+    aLegend = new TLegend(0.1,0.15,0.65,0.25);
+    aLegend -> AddEntry(ave,text,"L");
+    aLegend -> Draw("same");
 
 
     // -------------
