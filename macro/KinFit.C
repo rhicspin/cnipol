@@ -813,7 +813,7 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
 
 
     TText t; Char_t rtext[256];
-    sprintf(rtext, "Reference:%s", CONFIGFILE); 
+    sprintf(rtext, "Reference:%s", CONFFILE); 
     t.DrawTextNDC(0.5, 0.8, rtext);
 
 
