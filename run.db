@@ -187,3 +187,22 @@
 
 [7450.004]
 	CONFIG=7450.004.config.dat;
+
+[7473.002]
+	CONFIG=7473.002.config.dat;
+
+[7473.103]
+	CONFIG=7473.103.config.dat;
+
+[7483.001]
+	INJ_TSHIFT=7;
+	CONFIG=7483.004.config.dat;
+
+[7483.101]
+	INJ_TSHIFT=7;
+	CONFIG=7483.105.config.dat;
+
+
+
+
+
