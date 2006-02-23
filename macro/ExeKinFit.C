@@ -1,5 +1,5 @@
 
-void 
+void
 ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T, 
 	  Float_t EMIN, Float_t EMAX, Int_t HID, Char_t *cfile) {
 
@@ -12,7 +12,11 @@ ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T,
   Char_t filename[100];
   sprintf (filename, "douts/%s.root",run);
   TFile *f = TFile::Open(filename);
-    
+  if (!f) { 
+      cerr << "ERROR:" << filename << " not found" << endl;
+      exit(-1);
+  }
+
   KinFit *kfit = new KinFit(run, bene, RHICBeam, E2T, EMIN, EMAX, HID, cfile);
   kfit->Fit(0);    // arg = 0 ... new fit with two free paramters 
   kfit->Fit(1);    // fix dlayer values with average
@@ -21,6 +25,8 @@ ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T,
 
     
   delete kfit;
+
+  return ;
 
 }
 

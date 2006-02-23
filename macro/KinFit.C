@@ -138,7 +138,7 @@ public:
     Int_t PlotDlayer(Int_t);
     Int_t PlotT0(Int_t);
   void PlotResult();
-    Int_t ReferenceConfig(Float_t, Float_t);
+    Int_t ReferenceConfig();
     Int_t ReferenceDlayer();
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
@@ -285,7 +285,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-                 FitOne(St, mode);
+                FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -558,7 +558,7 @@ void KinFit::PlotResult()
     //-----------------------------------------------------------------
     //    Compare with dl and t0 in Configulation File
     //-----------------------------------------------------------------
-    if (ReferenceConfig(TMIN, TMAX)) { 
+    if (ReferenceConfig()) { 
         printf(" --> Comparison to reference is skipped.\n");
     }else{
         ps.NewPage();
@@ -744,7 +744,7 @@ KinFit::PlotT0(Int_t Mode){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, -20., 12.*isep -0.5, 20.);
+        TLine *l = new TLine(12.*isep -0.5, TMIN, 12.*isep -0.5, TMAX);
         l -> Draw();
     }
 
@@ -788,11 +788,11 @@ KinFit::PlotT0(Int_t Mode){
 // Method name : ReferenceConfig()
 //
 // Description : Compare fitting results with reference config.
-// Input       : Float_t TMIN, Float_t TMAX
+// Input       : 
 // Return      : 
 //
 Int_t
-KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
+KinFit::ReferenceConfig(){
 
     if (GetData()){ return -1; }
 
@@ -811,11 +811,11 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
     CurC -> cd(1);
     
     Char_t title[40];
-    sprintf(title, "%s Dead Layer", runid); 
+    sprintf(title, "%s Dead Layer Difference w.r.t. Ref.", runid); 
     TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Detector Number");
-    frame -> GetYaxis()->SetTitle("Dead Layer Difference (\mu g/cm**2)");
+    frame -> GetYaxis()->SetTitle("Dl(current) - D0(Ref) (\mu g/cm**2)");
     frame -> Draw();
 
     // draw the separaters btw detectors
@@ -854,11 +854,11 @@ KinFit::ReferenceConfig(Float_t TMIN, Float_t TMAX){
     Float_t diff_t0[72], diffE_t0[72];
 
     Char_t title[40];
-    sprintf(title, "%s : T0 Distribution", runid);
+    sprintf(title, "%s : T0 (1-par fit) diff w.r.t. Ref.", runid);
     TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, difft_Min, difft_Max);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("Strip Number");
-    frame -> GetYaxis()->SetTitle("T0 values (nsec)");
+    frame -> GetYaxis()->SetTitle("T0(Current) - T0(Reference) (nsec)");
     frame -> Draw();
 
     // draw the separaters btw detectors
