@@ -20,7 +20,7 @@ gROOT->Reset();
 const int NSTRIP=72;
 const int NDisableList  = 5;
 const int NDisableStrip = 5;
-static Float_t KinConst_E2T=1459.43; // constant for Run05 L=18.5cm
+static Float_t KinConst_E2T=1454.75; // constant for Run05 L=18.5cm
 
 
 int DisableStr[NDisableList][NDisableStrip] =
