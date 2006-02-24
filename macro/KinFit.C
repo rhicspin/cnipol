@@ -285,7 +285,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	//20000) {
                 
-                FitOne(St, mode);
+                 FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
@@ -551,7 +551,6 @@ void KinFit::PlotResult()
     CurC -> cd(2);
     PlotT0(1);
 
-    CurC->Update();
     ps.NewPage();
 
     //-----------------------------------------------------------------
@@ -565,6 +564,7 @@ void KinFit::PlotResult()
     }
     ps.Close();
 
+    framet->Delete();
 
 }//End-of-PlotResults();
 
@@ -610,8 +610,6 @@ KinFit::ReferenceDlayer(){
 
     CurC -> cd(2);
     PlotT0(2);
-    CurC->Update();
-
 
     return 0;
 }
@@ -648,11 +646,11 @@ KinFit::PlotDlayer(Int_t Mode){
 
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, DMIN, 80.);
-    frame -> SetStats(0);
-    frame -> GetXaxis()->SetTitle("Strip Number");
-    frame -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
-    frame -> Draw();
+    TH2D* frame = new TH2D("framed", title, 10, -0.5, 71.5, 10, DMIN, 80.);
+    framed -> SetStats(0);
+    framed -> GetXaxis()->SetTitle("Strip Number");
+    framed -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
+    framed -> Draw();
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
@@ -716,8 +714,6 @@ KinFit::PlotDlayer(Int_t Mode){
         aLegend-> Draw("same");
 
     }
-    CurC->Update();
-    frame->Delete();
 
     return 0;
 }
@@ -736,11 +732,11 @@ KinFit::PlotT0(Int_t Mode){
     
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
-    frame -> SetStats(0);
-    frame -> GetXaxis()->SetTitle("Strip Number");
-    frame -> GetYaxis()->SetTitle("T0 values (nsec)");
-    frame -> Draw();
+    TH2D* framet = new TH2D("framet", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
+    framet -> SetStats(0);
+    framet -> GetXaxis()->SetTitle("Strip Number");
+    framet -> GetYaxis()->SetTitle("T0 values (nsec)");
+    framet -> Draw();
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
@@ -778,7 +774,6 @@ KinFit::PlotT0(Int_t Mode){
     }
 
     CurC->Update();
-    frame->Delete();
 
     return 0; 
 
@@ -815,11 +810,11 @@ KinFit::ReferenceConfig(){
     
     Char_t title[40];
     sprintf(title, "%s Dead Layer Difference w.r.t. Ref.", runid); 
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
-    frame -> SetStats(0);
-    frame -> GetXaxis()->SetTitle("Detector Number");
-    frame -> GetYaxis()->SetTitle("Dl(current) - D0(Ref) (\mu g/cm**2)");
-    frame -> Draw();
+    TH2D* framer = new TH2D("framer", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
+    framer -> SetStats(0);
+    framer -> GetXaxis()->SetTitle("Detector Number");
+    framer -> GetYaxis()->SetTitle("Dl(current) - D0(Ref) (\mu g/cm**2)");
+    framer -> Draw();
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
@@ -848,9 +843,6 @@ KinFit::ReferenceConfig(){
     aLegend -> AddEntry(ave,text,"L");
     aLegend -> Draw("same");
 
-    CurC->Update();
-    frame->Delete();
-
     // -------------
     // Plot - 2 (t0)
     // -------------
@@ -860,11 +852,11 @@ KinFit::ReferenceConfig(){
 
     Char_t title[40];
     sprintf(title, "%s : T0 (1-par fit) diff w.r.t. Ref.", runid);
-    TH2D* frame = new TH2D("frame", title, 10, -0.5, 71.5, 10, difft_Min, difft_Max);
-    frame -> SetStats(0);
-    frame -> GetXaxis()->SetTitle("Strip Number");
-    frame -> GetYaxis()->SetTitle("T0(Current) - T0(Reference) (nsec)");
-    frame -> Draw();
+    TH2D* framet = new TH2D("framet", title, 10, -0.5, 71.5, 10, difft_Min, difft_Max);
+    framet -> SetStats(0);
+    framet -> GetXaxis()->SetTitle("Strip Number");
+    framet -> GetYaxis()->SetTitle("T0(Current) - T0(Reference) (nsec)");
+    framet -> Draw();
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
@@ -890,11 +882,6 @@ KinFit::ReferenceConfig(){
     tgt0c -> Draw("P");
     CurC->Update();
 
-    frame->Delete();
-    ave->Delete();
-    tgt0c->Delete();
-    l->Delete();
-    aLegend->Delete();
 
 
     return 0;
