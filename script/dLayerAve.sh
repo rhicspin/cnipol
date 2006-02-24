@@ -6,7 +6,8 @@
 
 BASEDIR=$ASYMDIR
 DLAYERDIR=$ASYMDIR/dlayer
-
+RUNLIST=$ASYMDIR/.runlist
+DUMMY=0;
 
 Execute(){
 
@@ -14,25 +15,32 @@ NLINE=`wc $RUNLIST | gawk '{print $1}'`
 
 for (( i=$Start; i<=$NLINE ; i++ )) ;
   do
-    run=`line.sh $i $RUNLIST  | gawk '{print $1}'`
-    date=`line.sh $i $RUNLIST  | gawk '{print $3}'`
-    DlayerFile=$DLAYERDIR/$run.temp.dat
-    if [ -f $DlayerFile ] ; then
-	target=`grep @ $BASEDIR/douts/$run.dl.log | gawk '{print $5}' | head -n 1`
+    RUNID=`line.sh $i $RUNLIST  | gawk '{print $1}'`
+    FILL=`echo $RUNID | gawk '{printf("%4d",$RUNID)}'`;
+    Test=`echo $RUNID $FILL | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
+    if [ $Test -eq 1 ] ; then
+	Beam="Yellow"
+    else
+	Beam="Blue"
+    fi
 
-	# process only vertical target measurements
-	if [ $target -lt 10 ] ; then 
-	    rates=`grep 'Event Rate'  $BASEDIR/douts/$run.dl.log | gawk '{print $4}'`
-	    chi2=`grep "Deviation/strip=" $DLAYERDIR/$run.fit.log | gawk '{print $2}'`
-	    rdrates=`grep 'Read Rate' $BASEDIR/douts/$run.dl.log | gawk '{print $4}'`
-	    wcmave=`grep 'WCM Average  ' $BASEDIR/douts/$run.dl.log | gawk '{print $4}'`
-	    fillb=`grep '# of Filled Bunch' $BASEDIR/douts/$run.dl.log | gawk '{print $6}'`
-	    SpeLumi=`grep 'Specific Luminosity' $BASEDIR/douts/$run.dl.log | gawk '{print $6}'`
-	    tgtpos=`grep @ $BASEDIR/douts/$run.dl.log | gawk '{print $4}'`
-#	    echo -e -n "$run   $date  $chi2  $rdrates $wcmave $fillb " 
-	    echo -e -n "$run   $date  $chi2  $rdrates $tgtpos $fillb  " 
-	    DlayerAverage -f $run.temp.dat -D $DisableList -d $DLAYERDIR
-	fi
+    DlayerFile=$DLAYERDIR/$RUNID.temp.dat
+    if [ -f $DlayerFile ] ; then
+
+	    EVENT_RATES=`grep 'Event Rate'  $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
+	    READ_RATES=`grep 'Read Rate' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $5}'`
+	    AVE_Dl=`grep "dlave =" $DLAYERDIR/$RUNID.fit.log | gawk '{print $3}'`
+	    AVE_Dl_ERROR=`grep "Deviation/strip=" $DLAYERDIR/$RUNID.fit.log | gawk '{print $2}'`
+	    AVE_WCM=`grep 'WCM Average  ' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
+	    FILL_BUNCH=`grep '# of Filled Bunch' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $6}'`
+	    SPECIFIC_LUMI=`grep 'Specific Luminosity' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $6}'`
+	    TGT_POS=`grep @ $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
+
+	    echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES " 
+	    echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH "
+	    echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "
+	    echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "
+	    echo -e -n "\n";
 
     fi
 
@@ -94,16 +102,6 @@ elif [ $Mode -eq 7 ] ; then
     Start=2;
 fi
 
-DisableList=1
-if [ $Beam = "Yellow" ] ;then
-    DisableList=0
-fi
-
-if [ $Profile -eq 0 ] ; then
-    RUNLIST=$HOME/2005/db/Sampled-$Beam\_$Mode.list
-else 
-    RUNLIST=$HOME/2005/offline/DlayerHistory/dat/profile_$Fill.$Beam.ext.dat
-fi
 
 Execute;
 
