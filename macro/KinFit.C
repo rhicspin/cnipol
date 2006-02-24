@@ -545,7 +545,6 @@ void KinFit::PlotResult()
     CurC -> cd(1);
     PlotDlayer(1);
 
-
     // -------------
     // Plot - 2 (T0 distribution)
     // -------------
@@ -672,13 +671,13 @@ KinFit::PlotDlayer(Int_t Mode){
     aLegend->AddEntry(tgdl,runid,"P");
 
     // Superposition Disabled Strips 
-    TGraphErrors* tgdl = new TGraphErrors(NDisableStrip, disable_strip, disable_dl, stripE, disable_dlE);
-    tgdl -> SetMarkerStyle(20);
-    tgdl -> SetMarkerSize(1.0);
-    tgdl -> SetLineWidth(1.0);
-    tgdl -> SetLineColor(7);
-    tgdl -> SetMarkerColor(7);
-    tgdl -> Draw("P");
+    TGraphErrors* tgdlD = new TGraphErrors(NDisableStrip, disable_strip, disable_dl, stripE, disable_dlE);
+    tgdlD -> SetMarkerStyle(20);
+    tgdlD -> SetMarkerSize(1.0);
+    tgdlD -> SetLineWidth(1.0);
+    tgdlD -> SetLineColor(7);
+    tgdlD -> SetMarkerColor(7);
+    tgdlD -> Draw("P");
 
     if (Mode==1){
         // draw total average value
@@ -717,7 +716,8 @@ KinFit::PlotDlayer(Int_t Mode){
         aLegend-> Draw("same");
 
     }
-
+    CurC->Update();
+    frame->Delete();
 
     return 0;
 }
@@ -768,14 +768,17 @@ KinFit::PlotT0(Int_t Mode){
         tgt0s -> SetMarkerColor(2);
         tgt0s -> Draw("P");
     }else if (Mode==2){
-        TGraphErrors* tgt0 = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
-        tgt0 -> SetMarkerStyle(20);
-        tgt0 -> SetMarkerSize(1.0);
-        tgt0 -> SetLineWidth(1.0);
-        tgt0-> SetLineColor(2);
-        tgt0 -> SetMarkerColor(2);
-        tgt0 -> Draw("P");
+        TGraphErrors* tgt0d = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
+        tgt0d -> SetMarkerStyle(20);
+        tgt0d -> SetMarkerSize(1.0);
+        tgt0d -> SetLineWidth(1.0);
+        tgt0d -> SetLineColor(2);
+        tgt0d -> SetMarkerColor(2);
+        tgt0d -> Draw("P");
     }
+
+    CurC->Update();
+    frame->Delete();
 
     return 0; 
 
@@ -845,6 +848,8 @@ KinFit::ReferenceConfig(){
     aLegend -> AddEntry(ave,text,"L");
     aLegend -> Draw("same");
 
+    CurC->Update();
+    frame->Delete();
 
     // -------------
     // Plot - 2 (t0)
@@ -875,15 +880,22 @@ KinFit::ReferenceConfig(){
     }
 
     // result of one parameter fit (red)
-    TGraphErrors* tgt0s = new TGraphErrors(72, strip, diff_t0, stripE, diffE_t0);
-    tgt0s -> SetMarkerStyle(20);
-    tgt0s -> SetMarkerSize(1.0);
-    tgt0s -> SetLineWidth(1.0);
-    tgt0s-> SetLineColor(2);
-    tgt0s -> SetMarkerColor(2);
+    TGraphErrors* tgt0c = new TGraphErrors(72, strip, diff_t0, stripE, diffE_t0);
+    tgt0c -> SetMarkerStyle(20);
+    tgt0c -> SetMarkerSize(1.0);
+    tgt0c -> SetLineWidth(1.0);
+    tgt0c -> SetLineColor(2);
+    tgt0c -> SetMarkerColor(2);
     
-    tgt0s -> Draw("P");
+    tgt0c -> Draw("P");
     CurC->Update();
+
+    frame->Delete();
+    ave->Delete();
+    tgt0c->Delete();
+    l->Delete();
+    aLegend->Delete();
+
 
     return 0;
 
