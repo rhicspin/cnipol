@@ -205,7 +205,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry 
 
 
-
         e = ekin(edepo, cfginfo->data.chan[st].dwidth);
         e_int = ekin(edepo_int, cfginfo->data.chan[st].dwidth);
 
