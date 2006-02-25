@@ -9,6 +9,21 @@ DLAYERDIR=$ASYMDIR/dlayer
 RUNLIST=$ASYMDIR/.runlist
 DUMMY=0;
 
+InitVariables(){
+    
+    EVENT_RATES=0;
+    READ_RATES=0;
+    AVE_Dl=0;
+    AVE_Dl_ERROR=0;
+    AVE_WCM=0;
+    FILL_BUNCH=0;
+    SPECIFIC_LUMI=0;
+    TGT_POS=0;
+
+}
+
+
+
 Execute(){
 
 NLINE=`wc $RUNLIST | gawk '{print $1}'`
@@ -103,5 +118,6 @@ elif [ $Mode -eq 7 ] ; then
 fi
 
 
+InitVariables;
 Execute;
 
