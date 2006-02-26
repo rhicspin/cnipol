@@ -1011,7 +1011,7 @@ fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
    Float_t chisq = 0;
    Float_t delta;
    for (Int_t i=0;i<NSTRIP; i++) {
-     delta  = (RawP[i]-asymfit.sinx(phi[i],par))/dRawP[i];
+     if (dRawP[i]) delta  = (RawP[i]-asymfit.sinx(phi[i],par))/dRawP[i];
      chisq += delta*delta;
    }
 
