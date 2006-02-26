@@ -1093,7 +1093,9 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
    phi[0]=(Float_t)val;
    phi[1]=(Float_t)eval;
 
-   chi2dof = FitChi2/Float_t(NSTRIP-NPAR);
+   Int_t NDATA=0;
+   for (Int_t i=0;i<NSTRIP; i++) NDATA += dRawP[i] ? 1 : 0;
+   chi2dof = FitChi2/Float_t(NDATA-NPAR);
 
    return;
 
