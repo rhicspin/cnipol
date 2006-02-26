@@ -4,8 +4,9 @@
 # Creation data       : Feb.6,2006
 
 LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib
-INC_PATHS = -I. -I/usr/include
+INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include
 LIBS =  -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc 
+ROOTLIB =`root-config --cflags` `root-config --libs` -lMinuit -Wl,-rpath,$(ROOTSYS)
 
 CC = g++
 ##C_FLAG = -g  -O2 -Wall -w 
@@ -28,7 +29,7 @@ RunDBReaderOBJ = AsymRunDB.o RunDBReader.o
 ######## BINARY ##################
 
 Asym : $(AsymOBJ)
-	$(CC) $(C_FLAG) $(AsymOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
+	$(CC) $(C_FLAG) $(AsymOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 RunDBReader : $(RunDBReaderOBJ)
 	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@

@@ -14,51 +14,13 @@
 #include <signal.h>
 #include <string.h>
 #include <iostream.h>
+#include "TMinuit.h"
+#include "TString.h"
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
 #include "WeightedMean.h"
-
-extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
-extern void HHPAK(int, float*);
-extern void HHPAKE(int, float*);
-extern void HHF1(int, float, float);
-//extern void HHKIND(int, int*, char*);
-extern float HHMAX(int);
-extern float HHSTATI(int hid, int icase, char * choice, int num);
-extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
-	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
-extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
-	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
-
-
-
-/*
-
-//
-// Class name  : 
-// Method name : ufit
-//
-// Description : user defined fitting function
-// Input       : *xi
-//             :
-// Return      : a*sin(x+b)
-//
-
-float ufit(float *xi){
-
-  float y,x;
-  
-  x= *xi;
-  float a = HCFITD.dpar[0];
-  float b = HCFITD.dpar[1];
-
-  HCFITD.fitfun = a*sin(x+b);
-  y = HCFITD.fitfun;
-  return y;
-
-  }*/
-
+#include "AsymCalc.h"
 
 
 // =========================
@@ -73,8 +35,8 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     int FeedBackLevel=2; // 1: no fit just max and mean  
                          // 2: gaussian fit
-    analysis.TshiftAve = TshiftFinder(FeedBackLevel);
-    printf("Tshift Average @ 500keV = %10.1f [ns]\n", analysis.TshiftAve);
+    anal.TshiftAve = TshiftFinder(FeedBackLevel);
+    printf("Tshift Average @ 500keV = %10.1f [ns]\n", anal.TshiftAve);
 
     // reset counters
     Nevtot = Nread = 0;
@@ -657,8 +619,11 @@ PrintRunResults(StructHistStat hstat){
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     if (dproc.FEEDBACKMODE) 
-      printf(" feedback average tshift     = %10.1f [ns]\n",analysis.TshiftAve);
-    printf(" Average Polarization        = %10.4f%8.4f\n",analysis.P[0],analysis.dP[0]);
+      printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
+    printf(" Average Polarization        = %10.4f%8.4f\n",anal.P[0],anal.P[1]);
+    printf(" Polarization (sinphi)       = %10.4f%8.4f\n",anal.sinphi.P[0],anal.sinphi.P[1]);
+    printf(" Phase (sinphi)  [deg.]      = %10.4f%8.4f\n",anal.sinphi.dPhi[0]*R2D,anal.sinphi.dPhi[1]*R2D);
+    printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi.chi2);
     printf("-----------------------------------------------\n");
 
 
@@ -938,10 +903,11 @@ CalcAsymmetry(float aveA_N){
     float LumiSum_r[2][72];//Reduced order Total luminosity for histograming
     float LumiRatio[72]; // Luminosity Ratio
     float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
-    float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
     float P[72], dP[72]; // phi corrected polarization 
     float P_phi[62830],dP_phi[62830]; // phi corrected polarization with extended array
     float Pt[72], dPt[72]; // phi Trancated corrected polarization,
+
+    for (int i=0;i<62830;i++) P_phi[i]=dP_phi[i]=0;
 
     printf("*========== strip by strip =============\n");
 
@@ -972,7 +938,7 @@ CalcAsymmetry(float aveA_N){
       LumiSum_r[1][i] = LumiSum[1][i]/1e3;
 
       // Since this is the recoil asymmetries, flip the sign of asymmetry
-      Asym[i]*=-1;
+      //      Asym[i]*=-1;
       
       // Raw polarization without phi angle weighted A_N
       RawP[i]  =  Asym[i] / aveA_N;
@@ -986,7 +952,6 @@ CalcAsymmetry(float aveA_N){
       int j = int(phi[i]*1e4);
       P_phi[j] = RawP[i];
       dP_phi[j]= dRawP[i];
-
       // Polarization with trancated sin(phi) correction
       Pt[i]  = RawP[i] / sin(phit[i]);
       dPt[i] = fabs(dRawP[i] / sin(phit[i]));
@@ -999,29 +964,28 @@ CalcAsymmetry(float aveA_N){
       printf("%12.3e%12.4e",   Pt[i],  dPt[i]);
       printf("\n");
 
+
+
     } // end-of-i-loop
 
     printf("*=======================================\n");
     printf("\n");
 
     // Caluclate Weighted Average
-    calcWeightedMean(P, dP, 72, analysis.P[0], analysis.dP[0]);
+    calcWeightedMean(P, dP, 72, anal.P[0], anal.P[1]);
 
     // Histrograming
     HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
     HHPAK(36200, LumiRatio); 
     HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
+    HHPAK(36220, RawP);  HHPAKE(36210, dRawP);
     HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
     HHPAK(36240, P);     HHPAKE(36240, dP);
     HHPAK(36250, phi); 
 
     // Fit phi-distribution
-    const int np=2;
-    float par[np], step[np], pmin[np], pmax[np], sigpar[np];
-    char chfun[3]="G";
-    char chopt[2]="Q";
-    float chi2, hmax;
-    //    HHFITHN(16200+st+1, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
+    AsymFit asymfit;
+    asymfit.SinPhiFit(anal.P[0], anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
 
 
     return;
@@ -1029,4 +993,109 @@ CalcAsymmetry(float aveA_N){
 }
 
   
+
+//
+// Class name  : 
+// Method name : fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
+//
+// Description : Function returns chi2 for MINUIT
+// Input       : 
+// Return      : chi2
+//
+void 
+fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
+{
+
+  AsymFit asymfit;
+   //calculate chisquare
+   Float_t chisq = 0;
+   Float_t delta;
+   for (Int_t i=0;i<NSTRIP; i++) {
+     delta  = (RawP[i]-asymfit.sinx(phi[i],par))/dRawP[i];
+     chisq += delta*delta;
+   }
+
+   FitChi2 = chisq;
+   f = chisq;
+   
+}
+
+//
+// Class name  : AsymFit
+// Method name : sinx(Float_t x, Double_t *par)
+//
+// Description : sin(x) fit. Amplitude and phase as parameters
+// Input       : Float_t x, Double_t *par
+// Return      : par[0]*sin(x+par[1])
+//
+Float_t
+AsymFit::sinx(Float_t x, Double_t *par)
+{
+ Float_t value=par[0]*sin(x+par[1]);
+ return value;
+}
+
+
+//
+// Class name  : AsymFit
+// Method name : SinPhiFit()
+//
+// Description : Master Routine for MINUIT call.
+// Input       : Float_t p0 (1-par Polarization for par[0] initialization)
+// Return      : Float_t *P, Float_t *phi, Float_t &chi2dof
+//
+void 
+AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
+{
+  
+  const Int_t NPAR=2;
+  TMinuit *gMinuit = new TMinuit(NPAR);  
+  gMinuit->SetFCN(fcn);
+
+   Double_t arglist[10];
+   Int_t ierflg = 0;
+
+   // By default, get rid of MINUIT busy messages
+   if (!Flag.VERBOSE) {
+     arglist[0]=-1;
+     gMinuit->mnexcm("SET PRINT", arglist, 1, ierflg);
+     arglist[0]=1;
+     gMinuit->mnexcm("SET NOWarnings", arglist, 1, ierflg);
+   }
+
+// Initiarize par[0]=p0, par[1]=0
+   static Double_t vstart[2] = {p0, 0.};
+   static Double_t step[4] = {0.01 , 0.01};
+   gMinuit->mnparm(0, "P",   vstart[0], step[0], 0,0,ierflg);
+   gMinuit->mnparm(1, "phi", vstart[1], step[1], 0,0,ierflg);
+
+// Now ready for minimization step
+   arglist[0] = 1000; // call at least 500 function calls
+   arglist[1] = 0.1;  // tolerance
+   gMinuit->mnexcm("MIGRAD", arglist ,2,ierflg);
+
+// Print results
+   Double_t amin,edm,errdef;
+   Int_t nvpar,nparx,icstat;
+   gMinuit->mnstat(amin,edm,errdef,nvpar,nparx,icstat);
+   //   if (!Flag.VERBOSE)  
+   gMinuit->mnprin(3,amin);
+
+
+   // Get Fitting Results
+   Double_t val,eval,bnd1,bnd2;
+   Int_t ivarbl;
+   TString CHNAM;
+   gMinuit->mnpout(0,CHNAM,val,eval,bnd1,bnd2,ivarbl);
+   P[0]=(Float_t)val;
+   P[1]=(Float_t)eval;
+   gMinuit->mnpout(1,CHNAM,val,eval,bnd1,bnd2,ivarbl);
+   phi[0]=(Float_t)val;
+   phi[1]=(Float_t)eval;
+
+   chi2dof = FitChi2/Float_t(NSTRIP-NPAR);
+
+   return;
+
+}
 

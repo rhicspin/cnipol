@@ -25,11 +25,11 @@ using namespace std;      //declare string in structure
 #define NTBIN 21                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
+#define R2D 57.29577951            // [rad] -> [degree]
 #define G2k 1e6                    // GeV -> keV
 #define k2G 1e-6                   // keV -> GeV
 #define MASS_12C 11.187e6          // Mass Carbon in [keV]
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
-
 
 // whole info for one event
 typedef struct {
@@ -104,9 +104,15 @@ typedef struct {
 
 
 typedef struct {
+  float P[2];
+  float dPhi[2];
+  float chi2;
+} StructSinPhi;
+
+typedef struct {
   float TshiftAve;
-  float P[5];
-  float dP[5];
+  float P[2];
+  StructSinPhi sinphi;
 } StructAnalysis;
 
 
@@ -169,6 +175,7 @@ typedef struct {
 
 
 typedef struct {
+  int VERBOSE;
   int feedback;
 } StructFlag;
 
@@ -283,7 +290,7 @@ extern StructCounter cntr;
 extern StructRunConst runconst;
 extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
-extern StructAnalysis analysis;
+extern StructAnalysis anal;
 extern StructTarget tgt;
 
 
