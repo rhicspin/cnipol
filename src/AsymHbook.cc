@@ -447,7 +447,7 @@ int hist_book(char *filename){
 
     // strip-by-strp based asymmetries and polarizations
     HHBOOK1(36210, "Raw Asymmetry vs. Strip#  ", 72, -0.5, 71.5);
-    HHBOOK1(36220, "Raw Asymmetry vs. Strip phi  ", 360, -0.5, 359.5);
+    HHBOOK1(36220, "Raw Asymmetry/A_N vs. Strip phi  ", 3600, 0, 360);
     HHBOOK1(36230, "Raw Polarization vs. Strip phi  ", 62830, 0, 6.283);
     HHBOOK1(36240, "Polarization vs. Strip# ", 72, -0.5, 71.5);
     HHBOOK1(36250, "Strip phi vs. Strip# ", 72, -0.5, 71.5);
