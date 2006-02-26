@@ -44,6 +44,7 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
+  0,      // VERBOSE mode
   0       // feedback mode
 };
 
@@ -126,7 +127,8 @@ atdata_struct atdata;
 StructAverage average;
 StructFeedBack feedback;
 StructRunConst runconst;
-StructAnalysis analysis;
+StructAnalysis anal;
+
 
 int spinpat[120]; // spin pattern 120 bunches (ADO info)
 int fillpat[120]; // spin pattern 120 bunches (ADO info)
