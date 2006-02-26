@@ -25,7 +25,7 @@ Instructions are avaliable on following web site(note password protected) :
 
 
 Here are some directory structure of CNI libraries required to run
-the program: CNILIB=/usr/local/cnipol
+the program: CNILIB=/usr/local/cnipol 
 
 % ls $CNIPOL
    data/   online/  share/
@@ -40,6 +40,7 @@ online/
 share/
     calib/  : database for the energy calibration 
     config/ : configulation database for analysis program Asym
+    dlayer/ : deadlayer database for DeadLayer Monitor
     macro/  : macro for plotting and deadlayer fits.
     bin/    : executable binaries and scripts. 
 
@@ -71,6 +72,9 @@ Set up environment and install executables and macros.
 
 1. Environmental variables (in bash format)
 
+	# define path to root of your system
+	export ROOTSYS=/usr/local/cern/root
+
 	export CNILIB=/usr/local/cnipol
 	export ONLINEDIR=$CNILIB/online
 	export DATADIR=$CNILIB/data
@@ -82,10 +86,10 @@ Set up environment and install executables and macros.
 
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin
-	export MACRODIR=$ASYMDIR/kumac
+	export MACRODIR=$ASYMDIR/macro
 #    for developers use followings instead of above two lines
 #	export INSTALLDIR=$SHAREDIR/bin
-#	export MACRODIR=$SHAREDIR/kumac
+#	export MACRODIR=$SHAREDIR/macro
 
 	export PATH=$INSTALLDIR:$PATH
 	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
@@ -178,7 +182,8 @@ Create necessary directories:
 	% mkdir $ASYMDIR/calib
 	% mkdir $ASYMDIR/config
 	% mkdir $ASYMDIR/integ
-
+	% mkdir $ASYMDIR/dlayer
+	% mkdir $ASYMDIR/ps
 
 Energy Calibration
 
