@@ -424,6 +424,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 }
                 
                 // energy distribution after carbon cut 
+		HHF1(10050, e, 1.);
                 HHF1(10410+si+1,e,1.);
                 HHF1(10420+si+1,e_int,1.);   // Integral
                 if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t 
