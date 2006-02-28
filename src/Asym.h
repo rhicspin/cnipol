@@ -111,6 +111,7 @@ typedef struct {
 
 typedef struct {
   float TshiftAve;
+  float A_N[2];
   float P[2];
   StructSinPhi sinphi;
 } StructAnalysis;

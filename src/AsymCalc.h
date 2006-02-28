@@ -21,7 +21,7 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 float FitChi2;
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
-
+float WeightAnalyzingPower(int hid);
 
 
 class AsymFit

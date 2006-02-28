@@ -46,6 +46,13 @@ int end_process(recordConfigRhicStruct *cfginfo)
   }else{
 
     //-------------------------------------------------------
+    //    Energy Yeild Weighted Average Analyzing Power
+    //-------------------------------------------------------
+    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
+    anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
+
+
+    //-------------------------------------------------------
     //                Normal Mode
     //-------------------------------------------------------
     int bid;
@@ -73,59 +80,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
     long Nsi[6]={0,0,0,0,0,0};
 
     
-    //----------------------------------------------------------------
-    // analyzing power
-    //
-    // A_N values from L. Trueman (new for Run-04)
-    //      t = e * 22.18 / 1000000.
-    //      Emin = (0.0010-0.001/2.)*1e6/22.18 = 22.5
-    //      Emax = (0.0255+0.001/2.)*1e6/22.18 = 1172.2
-
-    float anth[25] = { // for 25 GeV
-        0.0324757, 0.0401093, 0.0377283, 0.0339981, 0.0304917,
-        0.0274323, 0.0247887, 0.0224906, 0.020473,  0.0186837,
-        0.0170816, 0.0156351, 0.0143192, 0.0131145, 0.0120052,
-        0.0109786, 0.0100245, 0.00913435, 0.00830108, 0.00751878,
-        0.00678244, 0.00608782, 0.00543127, 0.00480969, 0.00422038};
-
-    float anth100[25] = { // for 100 GeV
-        0.0297964, 0.0372334, 0.0345393, 0.0306988, 0.0272192,
-        0.0242531, 0.0217307, 0.0195634, 0.017677,  0.0160148,
-        0.0145340, 0.0132021, 0.0119941, 0.0108907, 0.00987651,
-        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
-        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
-
-    if (runinfo.BeamEnergy>50) {
-        for (i=0; i<25; i++) anth[i] = anth100[i] ;
-    }
-
-
-    float Emin = 22.5;
-    float Emax = 1172.2;
-    float DeltaE = (Emax - Emin)/25.;
-
-    int hid = 10040;
-    int nbin = HENEBIN;
-    int fstbin = 1;
-    int lstbin = HENEBIN;
-
-    hhrebin_(&hid, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
-        
-    float sum = 0.;
-    float suma = 0.;
-    for (i=0;i<HENEBIN;i++){
-        j = (int)((X[i] - Emin)/DeltaE);
-        sum += Y[i];
-        suma += Y[i]*anth[j];
-        //printf("%d: Y %f AN %f X %f\n",i,Y[i],anth[j],X[i]);
-    }
-    HHF1(34000,0.5, suma/sum);
-
-    fprintf (stdout,"ANALYZING POWER (FIT) = %f\n",suma/sum);
-
-    float aveA_N = suma/sum;
-
-
     //====================================================
     // Right-Left asymmetry
     //====================================================
@@ -541,7 +495,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    if (dproc.RECONFMODE) CalcAsymmetry(aveA_N);
+    if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[0]);
 
 
     //-------------------------------------------------------
@@ -554,32 +508,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // RAMP MEASUREMENT 
     //-------------------------------------------------------
-    /*if (dproc.RAMPMODE==1) {
-
-        for (int dlm=0;dlm<RAMPTIME;dlm++){
-            // not need for initialization for RUN,RD,LU,LD
-            // they are initialized at bid=0
-            memset(SIU,0,sizeof(SIU));
-            memset(SID,0,sizeof(SID));
-            
-             for (bid=0;bid<120;bid++){
-                for (si=0;si<6;si++){
-                    SIU[si] += (NRcounts[si][bid][dlm])
-                        *((spinpat[bid]==1)?1:0)*gbid[bid];
-                    SID[si] += (NRcounts[si][bid][dlm])
-                        *((spinpat[bid]==-1)?1:0)*gbid[bid];
-                }
-            }
-
-            // fill the histograms
-            for (si=0; si<6; si++) {
-            HHF1(21000+si, (float)dlm, SIU[si]);
-            HHF1(21100+si, (float)dlm, SID[si]);
-            }
-
-        }            
-        }*/
-
     return(0);
 
   }//end-of-if(Flag.feedback)
@@ -618,6 +546,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" # of Filled Bunch           = %10d\n", NFilledBunch);
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
+    printf(" Analyzing Power Average     = %10.4f%10.4f \n", anal.A_N[0], anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
     printf(" Average Polarization        = %10.4f%8.4f\n",anal.P[0],anal.P[1]);
@@ -629,6 +558,80 @@ PrintRunResults(StructHistStat hstat){
 
     return;
 }
+
+
+//
+// Class name  :
+// Method name : WeightAnalysingPower()
+//
+// Description : Caluclate Energy Yeild weighted Analyzing power
+// Input       : int HID
+// Return      : A_N
+//
+float
+WeightAnalyzingPower(int HID){
+
+
+      //----------------------------------------------------------------
+    // analyzing power
+    //
+    // A_N values from L. Trueman (new for Run-04)
+    //      t = e * 22.18 / 1000000.
+    //      Emin = (0.0010-0.001/2.)*1e6/22.18 = 22.5
+    //      Emax = (0.0255+0.001/2.)*1e6/22.18 = 1172.2
+
+    float anth[25] = { // for 25 GeV
+        0.0324757, 0.0401093, 0.0377283, 0.0339981, 0.0304917,
+        0.0274323, 0.0247887, 0.0224906, 0.020473,  0.0186837,
+        0.0170816, 0.0156351, 0.0143192, 0.0131145, 0.0120052,
+        0.0109786, 0.0100245, 0.00913435, 0.00830108, 0.00751878,
+        0.00678244, 0.00608782, 0.00543127, 0.00480969, 0.00422038};
+
+    float anth100[25] = { // for 100 GeV
+        0.0297964, 0.0372334, 0.0345393, 0.0306988, 0.0272192,
+        0.0242531, 0.0217307, 0.0195634, 0.017677,  0.0160148,
+        0.0145340, 0.0132021, 0.0119941, 0.0108907, 0.00987651,
+        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
+        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
+
+    if (runinfo.BeamEnergy>50) {
+        for (int i=0; i<25; i++) anth[i] = anth100[i] ;
+    }
+
+
+    float Emin = 22.5;
+    float Emax = 1172.2;
+    float DeltaE = (Emax - Emin)/25.;
+
+    int nbin = HENEBIN;
+    int fstbin = 1;
+    int lstbin = HENEBIN;
+
+    float X[HENEBIN];
+    float Y[HENEBIN];
+    float EX[HENEBIN];
+    float EY[HENEBIN];
+
+    hhrebin_(&HID, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
+
+    int j=0;
+    float sum = 0.;
+    float suma = 0.;
+    for (int i=0;i<HENEBIN;i++){
+        j = (int)((X[i] - Emin)/DeltaE);
+        sum += Y[i];
+        suma += Y[i]*anth[j];
+        //printf("%d: Y %f AN %f X %f\n",i,Y[i],anth[j],X[i]);
+    }
+    HHF1(34000,0.5, suma/sum);
+
+    fprintf (stdout,"ANALYZING POWER (FIT) = %f\n",suma/sum);
+
+    float aveA_N = suma/sum;
+
+  return aveA_N;
+
+}// End-of-WeightAnalyzingPower()
 
 
 
@@ -1100,4 +1103,49 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
    return;
 
 }
+
+
+/*
+//
+// Class name  : RAMP
+// Method name : CalcRAMP()
+//
+// Description : Not being use. 
+// Input       : 
+// Return      : 
+//
+void 
+RAMP::CalcRAMP()
+{
+
+  if (dproc.RAMPMODE==1) {
+
+    for (int dlm=0;dlm<RAMPTIME;dlm++){
+      // not need for initialization for RUN,RD,LU,LD
+      // they are initialized at bid=0
+      memset(SIU,0,sizeof(SIU));
+      memset(SID,0,sizeof(SID));
+            
+      for (bid=0;bid<120;bid++){
+	for (si=0;si<6;si++){
+	  SIU[si] += (NRcounts[si][bid][dlm])
+	    *((spinpat[bid]==1)?1:0)*gbid[bid];
+	  SID[si] += (NRcounts[si][bid][dlm])
+	    *((spinpat[bid]==-1)?1:0)*gbid[bid];
+	}
+      }
+
+      // fill the histograms
+      for (si=0; si<6; si++) {
+	HHF1(21000+si, (float)dlm, SIU[si]);
+	HHF1(21100+si, (float)dlm, SID[si]);
+      }
+      
+    }            
+  }
+
+  return;
+
+}
+*/
 

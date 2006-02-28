@@ -97,6 +97,7 @@ float pawc_[NWORDS_PAWC];
 //  10034     : normalized specific luminosity 
 //  10035     : specific luminosity distribution (histogram)
 //  10040     : energy distribution for A_N calculation (default)
+//  10050     : energy distribution for A_N calculation -banana cut- (default)
 //  10100+Si  : bunch distribution carbon for each Si (default)
 //  10200     : delimiter distribution (default)
 //  10300+Si  : strip distribution (default)
@@ -244,6 +245,7 @@ int hist_book(char *filename){
     // Energy Distribution
 
     HHBOOK1(10040,"For A_N Calc", HENEBIN, 0., HMAXENE);
+    HHBOOK1(10050,"For A_N Calc (banana cut)", HENEBIN, 0., HMAXENE);
 
     for (si=1;si<=6;si++){
         sprintf(hcomment,"energy dist Si - %d ",si);
