@@ -495,7 +495,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[0]);
+    if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[1]);
 
 
     //-------------------------------------------------------
