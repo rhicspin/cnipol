@@ -25,6 +25,7 @@ using namespace std;      //declare string in structure
 #define NTBIN 21                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
+#define NBUNCH 120                 // Maximum bunch number
 #define R2D 57.29577951            // [rad] -> [degree]
 #define G2k 1e6                    // GeV -> keV
 #define k2G 1e-6                   // keV -> GeV
