@@ -174,6 +174,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
         Nsi[5]+=Ncounts[5][bid];
     }
 
+
     HHPAK(31010, (float*)Ncounts[0]);
     HHPAK(31020, (float*)Ncounts[1]);
     HHPAK(31030, (float*)Ncounts[2]);
@@ -492,6 +493,19 @@ int end_process(recordConfigRhicStruct *cfginfo)
     SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
 
 
+
+    //-------------------------------------------------------
+    // Bunch Asymmetries
+    //-------------------------------------------------------
+    /*
+    BunchAsymmetry(-1, basym.Ax45[0], basym.Ax45[1]);
+    BunchAsymmetry(0,  basym.Ax90[0], basym.Ax90[1]);
+    BunchAsymmetry(1,  basym.Ay45[0], basym.Ay45[1]);
+    HHPAK(31200, basym.Ax45[0]); HHPAKE(31200, basym.Ax45[1]);
+    HHPAK(31300, basym.Ax90[0]); HHPAKE(31300, basym.Ax90[1]);
+    HHPAK(31400, basym.Ay45[0]); HHPAKE(31200, basym.Ay45[1]);
+    */
+
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
@@ -521,7 +535,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
 // Method name : PrintRunResults()
 //
 // Description : print analysis results and run infomation
-// Input       : 
+// Input       : StructHistStat hstat
 // Return      : 
 //
 void
@@ -531,7 +545,8 @@ PrintRunResults(StructHistStat hstat){
     runinfo.EvntRate = float(Nevtot)/float(runinfo.RunTime);
     runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
 
-    printf("-----------------------------------------------\n");
+
+    printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10d\n", runinfo.RunTime);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
     printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
@@ -546,14 +561,14 @@ PrintRunResults(StructHistStat hstat){
     printf(" # of Filled Bunch           = %10d\n", NFilledBunch);
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
-    printf(" Analyzing Power Average     = %10.4f%10.4f \n", anal.A_N[0], anal.A_N[1]);
+    printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
     printf(" Average Polarization        = %10.4f%8.4f\n",anal.P[0],anal.P[1]);
     printf(" Polarization (sinphi)       = %10.4f%8.4f\n",anal.sinphi.P[0],anal.sinphi.P[1]);
     printf(" Phase (sinphi)  [deg.]      = %10.4f%8.4f\n",anal.sinphi.dPhi[0]*R2D,anal.sinphi.dPhi[1]*R2D);
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi.chi2);
-    printf("-----------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------\n");
 
 
     return;
@@ -674,14 +689,19 @@ ExclusionList(int k, int j, int RHICBeam){
 int
 calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym){
 
+  float R = 0;
   float A = float(a);
   float B = float(b);
   float Atot = float(atot);
   float Btot = float(btot);
-
-  float R = Atot/Btot;
-  Asym  = (A-R*B) / (A+R*B);
-  dAsym = sqrt(4*B*B*A + 4*A*A*B)/(A+B)/(A+B);
+  
+  if (Btot) R = Atot/Btot;
+  if ((A+R*B)&&(A+B)){
+    Asym  = (A-R*B) / (A+R*B);
+    dAsym = sqrt(4*B*B*A + 4*A*A*B)/(A+B)/(A+B);
+  }else{
+    Asym = dAsym = 0;
+  }
 
   return 0;
 }
@@ -887,6 +907,85 @@ TshiftFinder(int FeedBackLevel){
 
 
 
+
+
+//
+// Class name  : 
+// Method name : BunchAsymmetry
+//
+// Description : calculate asymmetries bunch by bunch
+// Input       : int Mode -1[Ax45], 0[Ax90], 1[Ay45]
+// Return      : Asym[NBUNCH], dA[NBUNCH]
+//
+int
+BunchAsymmetry(int Mode, float A[], float dA[]){
+
+  int error=0;
+  int Rdet[2], Ldet[2];
+
+  int RU[NBUNCH], RD[NBUNCH], LU[NBUNCH], LD[NBUNCH];
+  int LumiRU[NBUNCH], LumiRD[NBUNCH], LumiLU[NBUNCH], LumiLD[NBUNCH];
+
+
+  switch (Mode) {
+  case -1: // Ax45
+    Rdet[0]=0; Rdet[1]=2; Ldet[0]=3; Ldet[1]=5;
+    break; 
+  case 0:  // Ax90
+    Rdet[0]=1; Rdet[1]=-1; Ldet[0]=4; Ldet[1]=-1;
+    break; 
+  case 1:  // Ay45
+    Rdet[0]=0; Rdet[1]=5; Ldet[0]=2; Ldet[1]=3;
+    break;
+  default:
+    cerr << "BunchAsymmetry: No muching mode is coded in for " << Mode << endl;
+    error=-1;
+  }
+
+  // initiarize counters
+  for (int i=0;i<NBUNCH;i++) {
+    LumiRU[NBUNCH]=LumiRD[NBUNCH]=LumiLU[NBUNCH]=LumiLD[NBUNCH]=RU[i]=RD[i]=LU[i]=LD[i]=0;
+    A[i] = dA[i] = 0;
+  }
+
+
+  if (!error){
+
+    for (int bid=0;bid<NBUNCH;bid++){
+
+      // Calculate Luminosity for Right and Left/Up and Down spin
+      for (int i=0;i<3;i++) {
+	LumiRU[bid] += Ncounts[i][bid]*((spinpat[bid]==1)?1:0);
+	LumiRD[bid] += Ncounts[i][bid]*((spinpat[bid]==-11)?1:0);
+	LumiLU[bid] += Ncounts[i+3][bid]*((spinpat[bid]==1)?1:0);
+	LumiLD[bid] += Ncounts[i+3][bid]*((spinpat[bid]==-1)?1:0);
+      }
+
+      // Take sum of Up/Down for Right and Left detectors
+      for (int i=0; i<2; i++) {
+	RU[bid] += Ncounts[Rdet[i]][bid]*((spinpat[bid]==1)?1:0);
+	RD[bid] += Ncounts[Rdet[i]][bid]*((spinpat[bid]==-1)?1:0);
+	LU[bid] += Ncounts[Ldet[i]][bid]*((spinpat[bid]==1)?1:0);
+	LD[bid] += Ncounts[Ldet[i]][bid]*((spinpat[bid]==-1)?1:0);
+	if (!Mode) break;
+      }
+
+      if (spinpat[bid]==1) 
+	calcAsymmetry(RU[bid],LU[bid],LumiRU[bid],LumiLU[bid],A[bid],dA[bid]);
+      if (spinpat[bid]==-1)
+	calcAsymmetry(RD[bid],LD[bid],LumiRU[bid],LumiLD[bid],A[bid],dA[bid]);
+
+      cout << bid << " " << A[bid] << " " << dA[bid] << endl;
+    } // end-of-for(bid)-loop
+
+  }// end-of-(!error)
+
+  return error;
+
+}
+
+
+
 //
 // Class name  : 
 // Method name : calcAsymmetry
@@ -941,23 +1040,23 @@ CalcAsymmetry(float aveA_N){
       LumiSum_r[1][i] = LumiSum[1][i]/1e3;
 
       // Since this is the recoil asymmetries, flip the sign of asymmetry
-      //      Asym[i]*=-1;
+      Asym[i]*=-1;
       
       // Raw polarization without phi angle weighted A_N
       RawP[i]  =  Asym[i] / aveA_N;
       dRawP[i] = dAsym[i] / aveA_N;
 
       // Polarization with sin(phi) correction
-      P[i]  = RawP[i] / sin(phi[i])*(-1);
-      dP[i] = fabs(dRawP[i] / sin(phi[i]));
+      P[i]  = RawP[i] / sin(-phi[i]);
+      dP[i] = fabs(dRawP[i] / sin(-phi[i]));
 
       // Dump Polarization to phi array
       int j = int(phi[i]*1e4);
       P_phi[j] = RawP[i];
       dP_phi[j]= dRawP[i];
       // Polarization with trancated sin(phi) correction
-      Pt[i]  = RawP[i] / sin(phit[i]);
-      dPt[i] = fabs(dRawP[i] / sin(phit[i]));
+      Pt[i]  = RawP[i] / sin(-phit[i]);
+      dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
       printf("%4d",i);
       printf("%7.3f", phi[i]);
@@ -1034,7 +1133,7 @@ fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 Float_t
 AsymFit::sinx(Float_t x, Double_t *par)
 {
- Float_t value=par[0]*sin(x+par[1]);
+ Float_t value=par[0]*sin(-x+par[1]);
  return value;
 }
 

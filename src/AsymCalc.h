@@ -24,6 +24,15 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 float WeightAnalyzingPower(int hid);
 
 
+int BunchAsymmetry(int, float A[], float dA[]);
+struct BunchAsym {
+  float Ax90[2][NBUNCH];
+  float Ax45[2][NBUNCH];
+  float Ay45[2][NBUNCH];
+} basym;
+
+
+
 class AsymFit
 {
 
