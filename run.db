@@ -202,6 +202,22 @@
 	INJ_TSHIFT=7;
 	CONFIG=7483.105.config.dat;
 
+[7517.006]
+	CONFIG=7517.006.config.dat;
+
+[7517.104]
+	CONFIG=7517.104.config.dat;
+
+[7534.005]
+	CONFIG=7534.005.config.dat;
+
+[7534.105]
+	CONFIG=7534.105.config.dat;
+
+
+
+
+
 
 
 
