@@ -10,6 +10,9 @@ fi
 make -C src 
 make -C src install
 
+make -C src/util
+make -C src/util install
+
 # install scripts into $INSTALLDIR
 cd script 
 ./install.sh
