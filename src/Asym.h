@@ -19,9 +19,11 @@ using namespace std;      //declare string in structure
 #define HENEBIN 180                // number of energy bin in banana plot
 #define NTLIMIT 100000000
 
+
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
-#define MAXDELIM 350               // maximum number of delimiter
+#define MAXDELIM 350               // maximum number of delimiter (dynamic motion only)
+#define TARGETINDEX 1000           // maximum target full array size including static motion
 #define NTBIN 21                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
@@ -31,6 +33,8 @@ using namespace std;      //declare string in structure
 #define k2G 1e-6                   // keV -> GeV
 #define MASS_12C 11.187e6          // Mass Carbon in [keV]
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
+#define TGT_STEP 0.11              // target motion [mm]/step
+#define TGT_COUNT_MM 0.1           // target [count] -> [mm]
 
 // whole info for one event
 typedef struct {
@@ -189,9 +193,16 @@ typedef struct {
 
 
 typedef struct {
-    int x;
+    float x;                     // (arbitarary) target postion [mm]
     int vector;
     long int eventID;
+    int VHtarget;
+    int Index[MAXDELIM];
+    int Linear[MAXDELIM][2];   // Vertical:[0], Horizontal:[1]
+    int Rotary[MAXDELIM][2];
+    struct StructAll {
+        float x[TARGETINDEX];  // target position in [mm]
+    } all;
 } StructTarget;
 
 
@@ -222,6 +233,7 @@ extern "C" {
 int readloop(void);
 
 int readdb(double RUNID);
+void tgtHistBook();
 int hist_book(char *);
 int hist_close(char *);
 int read_rebin(char *);
@@ -304,10 +316,10 @@ extern float phi[NSTRIP];       // phi-angle
 
 // target position infomation 
 extern int ndelim ;
-extern long int VtgtLinear[MAXDELIM]; 
-extern long int VtgtRotary[MAXDELIM];
-extern long int HtgtLinear[MAXDELIM];
-extern long int HtgtRotary[MAXDELIM];
+//extern long int VtgtLinear[MAXDELIM]; 
+//extern long int VtgtRotary[MAXDELIM];
+//extern long int HtgtLinear[MAXDELIM];
+//extern long int HtgtRotary[MAXDELIM];
 extern int TgtIndex[MAXDELIM];
 extern int nTgtIndex;
 
