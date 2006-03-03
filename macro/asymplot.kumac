@@ -2023,6 +2023,9 @@ next:
    title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
    title_gl '' U
 
+   exe target
+	wait
+
    LOGFILE=$ENV(ASYMDIR)/log/[run].log
    MACRODIR=$ENV(MACRODIR)
    sh [MACRODIR]/filter.sh [LOGFILE]
@@ -2067,7 +2070,7 @@ next:
    
    exec detail xtitle=[xtitle] run=[run] scan=[scan]
 
-   sh rm -f tgt.dat
+*   sh rm -f tgt.dat
    mess psfile=[psfile]
    close 60
    
@@ -2124,5 +2127,25 @@ macro simple xtitle=[xtitle]
    fu/plot /home/itaru/kumac/p0.f $GRAFINFO('WNXMIN') $GRAFINFO('WNXMAX') s
 
    igset plci 1
+
+return
+
+
+* **************************************************************
+macro target
+* **************************************************************
+
+   opt utit
+	
+   hi/plot 25060
+   igset mtyp 20;
+   set hcol 2;
+   hi/plot 25050 s
+
+   null 0 10 0 10 abs
+   igset pmci 1 ; key 1 5   20 'Stepping Moter' 
+   igset pmci 2 ; key 1 4.5 20 'Encoder Readout'
+	
+   atitle 'Time in [s] from Measurement Start' 'target Position in [mm]' ! 220
 
 return
