@@ -171,7 +171,7 @@ int readloop() {
 		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
 		    ++nTgtIndex;
-		  printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
+                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
 		  }
 		}							  
                 // target position array including static target motion
