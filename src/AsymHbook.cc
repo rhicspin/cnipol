@@ -515,9 +515,37 @@ int hist_book(char *filename){
 
     return(0);
 }
+
+
+
 //
-// UTILITY PART
+// Target Histograms
 //
+void tgtHistBook(){
+
+    float XMIN, XMAX;
+    XMIN=XMAX=tgt.all.x[0];
+    for (int i=0; i<ndelim; i++) { 
+        XMAX = tgt.all.x[i]>XMAX ? tgt.all.x[i] : XMAX ;
+        XMIN = tgt.all.x[i]<XMIN ? tgt.all.x[i] : XMIN ;
+    }
+
+    char hcomment[256];
+    float dX=(XMAX-XMIN)*0.1;
+    int XBIN=(int)(fabs(XMAX-XMIN+2*dX)/TGT_COUNT_MM);
+    sprintf(hcomment,"Target position vs. time ");
+    //    HHBOOK2(25050,hcomment, XBIN, -0.5, ndelim+0.5, ndelim+1,XMIN-dX, XMAX+dX);
+    HHBOOK2(25050,hcomment, 1000, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
+    sprintf(hcomment,"Target position vs. time (tgt event)");
+    HHBOOK2(25060,hcomment, 500, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
+
+    // Fill target histo with x[mm] vs.time [s] 
+    for (int i=0; i<ndelim; i++) {
+        HHF2(25050, (float)i, tgt.all.x[i], 1);
+    }
+
+
+};
 
 
 
@@ -543,8 +571,8 @@ int hist_close(char *filename) {
     sprintf(filecomment, "T-E INFO");
     sprintf(filestatus, "N");
 
-    hhropen_(&lun, filecomment, filename, filestatus, &reclen, &icycle, 
-             strlen(filecomment),strlen(filename),strlen(filestatus));
+    //    hhropen_(&lun, filecomment, filename, filestatus, &reclen, &icycle, 
+    //             strlen(filecomment),strlen(filename),strlen(filestatus));
 
     sprintf(chopt, "T");
 
