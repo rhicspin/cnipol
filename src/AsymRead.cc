@@ -153,27 +153,38 @@ int readloop() {
             pointer = (long *)&rec.buffer[sizeof(rec.header)] ;
             --pointer;  i=0;
             for (int k=0; k<ndelim ; k++) {
-                VtgtLinear[k] = *++pointer;
-                VtgtRotary[k] = *++pointer ;
-                HtgtLinear[k] = *++pointer ;
-                HtgtRotary[k] = *++pointer ;
-
+                tgt.Linear[k][0] = *++pointer ; // Vertical target
+                tgt.Rotary[k][0] = *++pointer ;
+                tgt.Linear[k][1] = *++pointer ; // Horizontal target
+                tgt.Rotary[k][1] = *++pointer ;
+                
 		// force 0 for +/-1 tiny readout as target position. 
-		if (abs(HtgtRotary[k])<=1) HtgtRotary[k]=0;
+		if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
 		if (k==0) {
-		  printf("@%8d%8d%8d%8d\n", i, k, HtgtRotary[k], VtgtRotary[k]);
+                    if ((!tgt.Rotary[k][0])&&(!tgt.Rotary[k][1])) 
+                        cerr << "ERROR: no target rotary info. Don't know H/V target" << endl;
+                    tgt.VHtarget = tgt.Rotary[k][0] ? 0 : 1 ; // Vertical:0, Horizontal:1
+                    tgt.x = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM;
+                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
 		} else {
 		  TgtIndex[k] = i;
-		  if ((HtgtRotary[k] != HtgtRotary[k-1])||(VtgtRotary[k] != VtgtRotary[k-1])) {
+		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
 		    ++nTgtIndex;
-		  printf("@%8d%8d%8d%8d\n", i, k, HtgtRotary[k], VtgtRotary[k]);
+		  printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
 		  }
 		}							  
-            }
+                // target position array including static target motion
+                tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM ;
+
+            } // end-of-for(ndelim)-loop
+
 	    printf("Number of Delimiters :%4d\n",ndelim);
 	    ReadFlag.PCTARGET = 1;
 	  }
+
+          // define target histograms
+          tgtHistBook();
 	  break;
 
 
@@ -329,7 +340,7 @@ int readloop() {
                             if (cntr.revolution>runinfo.MaxRevolution) 
                                 runinfo.MaxRevolution = cntr.revolution;
                             if ((event.stN==72)&&(event.delim!=tgt.eventID)){
-                                tgt.x += tgt.vector ;
+                                tgt.x += TGT_STEP * (float)tgt.vector ;
                                 tgt.vector=-1;
                             }
                             if ((event.stN==72)||(event.stN==73)) {

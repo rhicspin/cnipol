@@ -48,7 +48,7 @@ readdb(double RUNID) {
   char *dbfile="run.db";
   FILE * in_file;
   if ((in_file = fopen(dbfile,"r")) == NULL) {
-      printf("ERROR: %s file not found. Fource exit.\n",dbfile);;
+      printf("ERROR: %s file not found. Force exit.\n",dbfile);;
       exit(-1);
   } 
 

@@ -162,10 +162,10 @@ int NFilledBunch=0;      // number of Filled Bunch
 
 long int * pointer ;
 int ndelim ;
-long int VtgtLinear[MAXDELIM]; 
-long int VtgtRotary[MAXDELIM];
-long int HtgtLinear[MAXDELIM];
-long int HtgtRotary[MAXDELIM];
+//long int VtgtLinear[MAXDELIM]; 
+//long int VtgtRotary[MAXDELIM];
+//long int HtgtLinear[MAXDELIM];
+//long int HtgtRotary[MAXDELIM];
 int TgtIndex[MAXDELIM];
 int nTgtIndex = 0 ;
 
