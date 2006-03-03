@@ -60,6 +60,9 @@ SRC
 	rpoldata.h
 	rhicpol.h
 	WeightedMean.h
+
+  ./cnipol/src/util
+	some utility programs.		
 		
   Executables : 
 	Asym          "Main analysis program"
