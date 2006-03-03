@@ -456,9 +456,9 @@ int
 DisabledDet(int det){
 
   // det(0,1,2,3,4,5} => {0, 1, 0, 0, 1, 0} => 18
-  int DeadDet = HtgtRotary[0] ? 0 : 18 ;
+  int DeadDet = tgt.VHtarget ? 18 : 0 ;
   //                            ^   ^
-  //                       V-target H-target 
+  //                       H-target V-target 
 
   return DeadDet>>det & 1 ;
 
