@@ -46,7 +46,7 @@ sub help(){
 $BASEDIR=$ENV{"ASYMDIR"};
 
 $calib_name = $BASEDIR."/calib/".$Runn.".temp.dat";
-$out_name = ">".$BASEDIR."/calib/".$Runn.".scale.dat";
+$out_name = ">".$BASEDIR."/calib/".$Runn.".scale.temp.dat";
 
 open(CALIBFILE,$calib_name) or die "Can't open file ",$calib_name;
 $i = 0;
