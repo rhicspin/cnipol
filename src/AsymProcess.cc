@@ -434,20 +434,22 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 
                 Ncounts[(int)(st/12)][event->bid]++;
+                int time=0;
 		if (runinfo.Run==5){
+                    time = delim;
                     NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
                 } else { 
-                    int time = (int)cntr.revolution/RHIC_REVOLUTION_FREQ;
+                    time = (int)cntr.revolution/RHIC_REVOLUTION_FREQ;
                     if (time<MAXDELIM) {
                         NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
                     }else{
                         cerr << "ERROR: time constructed from revolution # exeeds MAXDELIM define\n" << endl;
                     }
                 }
-		if ((int)(st/12)==1) HHF1(38010, TgtIndex[delim], spinpat[event->bid]==1?1:0);
-		if ((int)(st/12)==1) HHF1(38020, TgtIndex[delim], spinpat[event->bid]==-1?1:0);
-		if ((int)(st/12)==4) HHF1(38030, TgtIndex[delim], spinpat[event->bid]==1?1:0);
-		if ((int)(st/12)==4) HHF1(38040, TgtIndex[delim], spinpat[event->bid]==-1?1:0);
+		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
+		if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid]==-1?1:0);
+		if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid]==1?1:0);
+		if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid]==-1?1:0);
 
 		// Disable some detectors
 		if (!DisabledDet(st/12)) NStrip[spbit][st]++;
