@@ -48,7 +48,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     //    Energy Yeild Weighted Average Analyzing Power
     //-------------------------------------------------------
-    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
+      //    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
     anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
 
 
@@ -356,6 +356,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
         x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme; 
         x90phys[0][bid] = tmpasym;
         x90phys[1][bid] = tmpasyme;
+
       }
 
      HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
@@ -546,7 +547,7 @@ PrintRunResults(StructHistStat hstat){
     runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
 
 
-    printf("-----------------------------------------------------------------------------------------\n");
+printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10d\n", runinfo.RunTime);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
     printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
@@ -580,12 +581,15 @@ PrintRunResults(StructHistStat hstat){
 // Method name : WeightAnalysingPower()
 //
 // Description : Caluclate Energy Yeild weighted Analyzing power
+//             : Histogram 34000 is filled only once, which is controled by CallFlag
+//             : 
 // Input       : int HID
 // Return      : A_N
 //
 float
 WeightAnalyzingPower(int HID){
 
+    static int CallFlag=0;
 
       //----------------------------------------------------------------
     // analyzing power
@@ -638,11 +642,12 @@ WeightAnalyzingPower(int HID){
         suma += Y[i]*anth[j];
         //printf("%d: Y %f AN %f X %f\n",i,Y[i],anth[j],X[i]);
     }
-    HHF1(34000,0.5, suma/sum);
-
-    fprintf (stdout,"ANALYZING POWER (FIT) = %f\n",suma/sum);
 
     float aveA_N = suma/sum;
+
+    // Fill Analyzing power histogram only once.
+    if (!CallFlag) HHF1(34000,0.5, aveA_N);
+    CallFlag=1;
 
   return aveA_N;
 
