@@ -214,6 +214,28 @@
 [7534.105]
 	CONFIG=7534.105.config.dat;
 
+[7558.001]
+	ENERGY_CALIB=calib0103.001.scale;
+
+[7558.101]
+	ENERGY_CALIB=calib0103.101.scale;
+
+
+[7558.004]
+	CONFIG=7534.005.14ns.config.dat;
+
+[7558.104]
+	CONFIG=7534.105.14ns.config.dat;
+
+
+[7559.007]
+	CONFIG=7559.007.config.dat;
+
+[7559.106]
+	CONFIG=7559.106.config.dat;
+
+
+
 
 
 
