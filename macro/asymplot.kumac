@@ -2118,7 +2118,7 @@ return
 	   opt=l1
    endif
    hp/err x rate dx drate $vdim(index,1) 20 0.4 [opt]
-   ve/write x,P,dP,rate,drate profile/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
+*   ve/write x,P,dP,rate,drate profile/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
    atitle [xtitle] 'Rate \133 a.u. \135' ! 220
 
 return
