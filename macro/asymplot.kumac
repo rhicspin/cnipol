@@ -2068,16 +2068,17 @@ next:
    close 60;   for/file 60 [psfile]
    meta 60 -111
    
-   exec detail xtitle=[xtitle] run=[run] scan=[scan]
+   custum=custum
+   exec detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
 
-*   sh rm -f tgt.dat
+   sh rm -f tgt.dat
    mess psfile=[psfile]
    close 60
    
 return
 
 * **************************************************************
- macro detail xtitle=[xtitle] run=[run] scan=[scan]
+ macro detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
 * **************************************************************
    size 20 20
    zone 1 2
@@ -2090,13 +2091,7 @@ return
 *   set hcol 4 ;   hi/plot 38040 s
 *   set hcol 1
 
-   hp/err x P dx dP $vdim(index,1) 20 0.4 w,1
-* force the dimension of plot
-*   null 1100 1200 -0.2 0.8 
-*   hp/err x P dx dP $vdim(index,1) 20 0.4 1
-   atitle [xtitle] 'Polarization' ! 220
-	
-   ve/cr nevnt(30)
+   ve/cr nevnt(45)
    get_vect/contents 38010 nevnt
    ve/cr k($vdim(index,1)
    do i=1,$vdim(index,1)
@@ -2105,12 +2100,25 @@ return
    enddo
    sigma rate=k/delim
    ve/cr drate($vdim(rate,1))
-   if [run].lt.7400 then
+   if [run].lt.7600 then
       sigma drate=1/delim*rate
    endif
+	
+   opt=w,1
+   if [custum].eq.custum then
+	   exe CallNull mode=polarization
+	   opt=1
+   endif
+   hp/err x P dx dP $vdim(index,1) 20 0.4 [opt]
+   atitle [xtitle] 'Polarization' ! 220
 
-   hp/err x rate dx drate $vdim(index,1) 20 0.4 w,l1
-*   ve/write x,P,dP,rate,drate dat/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
+   opt=w,l1
+   if [custum].eq.custum then
+	   exe CallNull mode=rate
+	   opt=l1
+   endif
+   hp/err x rate dx drate $vdim(index,1) 20 0.4 [opt]
+   ve/write x,P,dP,rate,drate profile/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
    atitle [xtitle] 'Rate \133 a.u. \135' ! 220
 
 return
@@ -2154,5 +2162,38 @@ macro target
    igset pmci 2 ; key 1 4.5 20 'Encoder Readout'
 	
    atitle 'Time in [s] from Measurement Start' 'target Position in [mm]' ! 220
+
+return
+
+
+* **************************************************************
+macro CallNull mode=[mode]
+* **************************************************************
+
+   xmin=x(1)
+   xmax=x($vdim(index,1))+2
+
+   do i=1,$vdim(index,1)
+	if (rate([i]).gt.500) then
+	  xmin=x([i])-2
+	  goto label
+        endif
+   enddo
+
+label:
+
+if [mode].eq.polarization then
+   null [xmin] [xmax] 0 0.8
+else 
+   ymax=0
+   do i=1,$vdim(index,1) 
+	if (rate([i]).gt.[ymax]) then
+	   ymax=rate([i])*1.1
+        endif
+   enddo
+   null [xmin] [xmax] 0 [ymax]
+endif
+
+
 
 return
