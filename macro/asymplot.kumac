@@ -39,7 +39,7 @@
      exe t_dep       ;     wait
      exe chisq       ;     wait
      exe bunchselect ;     wait
-     exe profile     ;
+     exe profile     ;     wait
    else 
      exe [plot]      ;     wait
    endif
@@ -2142,6 +2142,7 @@ macro simple xtitle=[xtitle]
    fu/plot /home/itaru/kumac/p0.f $GRAFINFO('WNXMIN') $GRAFINFO('WNXMAX') s
 
    igset plci 1
+   wait
 
 return
 
@@ -2151,7 +2152,9 @@ macro target
 * **************************************************************
 
    opt utit
-	
+
+
+   set hcol 1	
    hi/plot 25060
    igset mtyp 20;
    set hcol 2;
