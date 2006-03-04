@@ -31,7 +31,7 @@
      exe ratio       ;     wait 
 
 **** Perform a "reset" to free some  memory...
-     exe file HID1=30000 HID2=30000
+     exe file HID1=30000 HID2=30100
      exe polarization
 
      exe timing      ;     wait
