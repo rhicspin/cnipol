@@ -2091,8 +2091,11 @@ return
 *   set hcol 1
 
    hp/err x P dx dP $vdim(index,1) 20 0.4 w,1
+* force the dimension of plot
+*   null 1100 1200 -0.2 0.8 
+*   hp/err x P dx dP $vdim(index,1) 20 0.4 1
    atitle [xtitle] 'Polarization' ! 220
-
+	
    ve/cr nevnt(30)
    get_vect/contents 38010 nevnt
    ve/cr k($vdim(index,1)
@@ -2101,7 +2104,11 @@ return
      ve/inp k([i]) [t]
    enddo
    sigma rate=k/delim
-   sigma drate=1/delim*rate
+   ve/cr drate($vdim(rate,1))
+   if [run].lt.7400 then
+      sigma drate=1/delim*rate
+   endif
+
    hp/err x rate dx drate $vdim(index,1) 20 0.4 w,l1
 *   ve/write x,P,dP,rate,drate dat/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
    atitle [xtitle] 'Rate \133 a.u. \135' ! 220
