@@ -531,7 +531,7 @@ void tgtHistBook(){
     }
 
     char hcomment[256];
-    float dX=(XMAX-XMIN)*0.1;
+    float dX= XMAX-XMIN ? (XMAX-XMIN)*0.1 : 1 ;
     int XBIN=(int)(fabs(XMAX-XMIN+2*dX)/TGT_COUNT_MM);
     sprintf(hcomment,"Target position vs. time ");
     //    HHBOOK2(25050,hcomment, XBIN, -0.5, ndelim+0.5, ndelim+1,XMIN-dX, XMAX+dX);
