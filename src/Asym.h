@@ -125,7 +125,7 @@ typedef struct {
 
 typedef struct {
   int Run;
-  float RunID;
+  double RUNID;
   int StartTime;
   int StopTime;
   int RunTime;
