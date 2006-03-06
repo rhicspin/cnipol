@@ -131,8 +131,8 @@ int readloop() {
 	  if (!ReadFlag.RECBEGIN){
             cout << "Begin of data stream Ver: " <<rec.begin.version<<endl;
             cout << "Comment: " << rec.begin.comment <<endl;
-            cout << "Time: " << ctime(&rec.begin.header.timestamp.time) 
-                 <<endl;
+            cout << "Time Stamp: " << ctime(&rec.begin.header.timestamp.time);
+            cout << "Unix Time Stamp: " << rec.begin.header.timestamp.time << endl;
 	    runinfo.StartTime=rec.begin.header.timestamp.time ;
 	    
 	    ReadFlag.RECBEGIN = 1;
@@ -161,9 +161,16 @@ int readloop() {
 		// force 0 for +/-1 tiny readout as target position. 
 		if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
 		if (k==0) {
-                    if ((!tgt.Rotary[k][0])&&(!tgt.Rotary[k][1])) 
+                    if (((!tgt.Rotary[k][0])&&(!tgt.Rotary[k][1]))||((tgt.Rotary[k][0])&&(tgt.Rotary[k][1]))){
                         cerr << "ERROR: no target rotary info. Don't know H/V target" << endl;
-                    tgt.VHtarget = tgt.Rotary[k][0] ? 0 : 1 ; // Vertical:0, Horizontal:1
+                        runinfo.target='-';
+                    } else if (tgt.Rotary[k][0]) {
+                        tgt.VHtarget = 0;
+                        runinfo.target = 'V';
+                    } else if (tgt.Rotary[k][1]) {
+                        tgt.VHtarget = 1;
+                        runinfo.target = 'H';
+                    }
                     tgt.x = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM;
                     printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
 		} else {
@@ -171,6 +178,7 @@ int readloop() {
 		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
 		    ++nTgtIndex;
+                    if (nTgtIndex>TGT_OPERATION) runinfo.TgtOperation=" scan";
                     printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
 		  }
 		}							  
