@@ -398,7 +398,7 @@ int readloop() {
 		      if (Flag.feedback){
 			printf("Feedback Mode Ncounts = %ld \r", Nread) ;
 		      }else{
-			printf("Proccesing  Ncounts   = %ld \r", Nread);
+			printf("%8.3f : Proccesing  Ncounts   = %ld \r", runinfo.RUNID, Nread);
 		      }
                         fflush(stdout);
                     }

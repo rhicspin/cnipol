@@ -228,13 +228,13 @@ int main (int argc, char *argv[]){
     // RunID 
     char  RunID[8];
     strncpy(RunID,ifile,8);
-    double RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
+    runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
 
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
     // Otherwise, data filename with characters skip readdb and reconfig routines
     // assuming these are energy calibration or test runs.
-    if (RUNID) { 
-        readdb(RUNID);
+    if (runinfo.RUNID) { 
+        readdb(runinfo.RUNID);
     } else {     
         dproc.RECONFMODE = 0;
     }

@@ -56,7 +56,7 @@ StructCounter cntr = {
 
 StructRunInfo runinfo = {
     6, // Run05, Run06,..
-    7279.005, // RunID
+    7279.005, // RUNID
     0, // StartTime;
     0, // StopTime;
     0, // RunTime;
