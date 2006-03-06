@@ -548,9 +548,11 @@ PrintRunResults(StructHistStat hstat){
 
 
 printf("-----------------------------------------------------------------------------------------\n");
-    printf(" RunTime                 [s] = %10d\n", runinfo.RunTime);
+    printf(" RunTime                 [s] = %10d\n",   runinfo.RunTime);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
     printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
+    printf(" Target                      =          %c\n",     runinfo.target);
+    printf(" Target Operation            =      %s\n",     runinfo.TgtOperation);
     if (runinfo.Run>=6){
         printf(" Maximum Revolution #        = %10d\n", runinfo.MaxRevolution);
         printf(" Reconstructed Duration  [s] = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
