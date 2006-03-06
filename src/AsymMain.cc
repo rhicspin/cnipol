@@ -531,6 +531,8 @@ Initialization(){
     feedback.RMS[i] = dproc.OneSigma ;
   }
 
+  runinfo.TgtOperation = "fixed";
+
   return 1;
 
 }
