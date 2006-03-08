@@ -2024,7 +2024,7 @@ next:
    title_gl '' U
 
    exe target
-	wait
+   wait
 
    LOGFILE=$ENV(ASYMDIR)/log/[run].log
    MACRODIR=$ENV(MACRODIR)
@@ -2064,16 +2064,16 @@ next:
 
 *   exec simple xtitle=[xtitle]
 
-   psfile=ps/profile_[run].ps
-   close 60;   for/file 60 [psfile]
-   meta 60 -111
+*   psfile=ps/profile_[run].ps
+*   close 60;   for/file 60 [psfile]
+*   meta 60 -111
    
    custum=custum
    exec detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
 
-   sh rm -f tgt.dat
-   mess psfile=[psfile]
-   close 60
+*   sh rm -f tgt.dat
+*   mess psfile=[psfile]
+*   close 60
    
 return
 
