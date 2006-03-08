@@ -2174,16 +2174,33 @@ macro CallNull mode=[mode]
 * **************************************************************
 
    xmin=x(1)
-   xmax=x($vdim(index,1))+2
+   xmax=x($vdim(index,1))
 
    do i=1,$vdim(index,1)
-	if (rate([i]).gt.500) then
-	  xmin=x([i])-2
-	  goto label
+	if (rate([i]).gt.200) then
+	  xmin=x([i])
+	  goto label1
         endif
    enddo
 
-label:
+label1:
+
+   do i=$vdim(index,1),1,-1
+	if (rate([i]).gt.200) then
+	  xmax=x([i])
+	  goto label2
+        endif
+   enddo
+
+label2:
+
+tmp=[xmin]
+if [xmin].gt.[xmax] then
+	xmin=[xmax]
+	xmax=[tmp]
+endif
+xmin=[xmin]-10
+xmax=[xmax]+10
 
 if [mode].eq.polarization then
    null [xmin] [xmax] 0 0.8
