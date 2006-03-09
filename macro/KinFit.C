@@ -157,7 +157,12 @@ public:
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
   Float_t totSiDev=0;
-  static Float_t Delta_t0=0; // total average of abs(t0[st-1]-t0[st])
+    struct StrcutT0 {
+        Float_t Delta;
+        Float_t ave;
+        Float_t Valid[72];
+        Float_t ValidE[72];
+    } T0;
 
   // Fitting Energy Range 
   Float_t FitRangeLow = 400.;
@@ -266,7 +271,8 @@ void KinFit::Fit(Int_t mode)
         ps.NewPage();
     }
 
-    Int_t NValidSt=0;
+    static Int_t NValidSt=0;
+    T0.Delta=0;
     for (Int_t Si=0;Si<6;Si++) {
 
         Int_t Padn=0;
@@ -299,11 +305,16 @@ void KinFit::Fit(Int_t mode)
 		    dlSi[j] = dl[St];
 		    dlESi[j] = dlE[St];
 		    valstn++;
-                    if (St>0) Delta_t0+=fabs(t0[St]-t0[St-1]);
 		  }; // End-of-Loop : Valid Strip 
 
-              } // End-of-if (!mode&1)
+              } else if (mode&1){
+                  if (!DisableList(RHIC_Beam,St)){
+                      T0.Valid[St]=t0s[St];
+                      T0.ValidE[St]=t0sE[St];
+                      if (St>0) T0.Delta+=fabs(t0[St]-t0[St-1]);
+                  }
 
+              }// End-of-if (!mode&1)
 
             } // End-of-if (htemp->GetnEntries)
 
@@ -319,7 +330,6 @@ void KinFit::Fit(Int_t mode)
         }
 
         if (!mode&1) {
-	  //dlsum[Si] = dl_accum/valstn;
 	  dlsum[Si] = WeightedMean(dlSi,dlESi,12);
 	  SiDev[Si]=0;
 
@@ -333,25 +343,28 @@ void KinFit::Fit(Int_t mode)
 	  totSiDev+=SiDev[Si];
 	  NValidSt+=valstn;
 	  dlave+=dl_accum;
-	}
+	} 
     } // end-of-Si loop
 
     if (!mode&1){
-      Delta_t0/=71;
       dlave = (Float_t)WeightedMean(dlValid,dlEValid,72);
       if (NValidSt) {
 	//dlave/=float(NValidSt);
 	devpst=WeightedMean(StDev,dlEValid,NValidSt);
       }
     } else if (mode&1) {
+      T0.ave=(Float_t)WeightedMean(T0.Valid,T0.ValidE,NValidSt);
+      T0.Delta/=(NValidSt-1);
       printf("\n\n");
       printf("-----------------------------------------------------------\n");
+      printf(" number of valid strips %3d\n", NValidSt);
       printf(" dlave = %7.2f\n",dlave);
       printf(" Chi2/Det=");
       for (Int_t Si=0;Si<6;Si++) printf(" %7.1f",SiDev[Si]);
       printf("\n Total Deviation=%7.1f\n",totSiDev);
       printf(" Deviation/strip=%7.1f\n",devpst);
-      printf(" Delta_t0 average= %7.1f\n", Delta_t0);
+      printf(" t0 average= %7.1f\n", T0.ave);
+      printf(" Delta_t0 average= %7.1f\n", T0.Delta);
       printf("-----------------------------------------------------------\n");
       printf("\n\n");
       fout.close();
@@ -775,6 +788,12 @@ KinFit::PlotT0(Int_t Mode){
         tgt0s-> SetLineColor(2);
         tgt0s -> SetMarkerColor(2);
         tgt0s -> Draw("P");
+
+        TText t; Char_t rtext[50];
+        sprintf(rtext, "Average Delta_t0 = %6.1f [ns]", T0.Delta); 
+        t.DrawTextNDC(0.5, 0.8, rtext);
+
+
     }else if (Mode==2){
         TGraphErrors* tgt0d = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
         tgt0d -> SetMarkerStyle(20);
