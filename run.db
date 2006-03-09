@@ -234,10 +234,73 @@
 [7559.106]
 	CONFIG=7559.106.config.dat;
 
+[7560.013]
+	CONFIG=7560.013.config.dat;
+
+[7560.014]
+	CONFIG=7560.014.config.dat;
+
+[7560.015]
+	CONFIG=7560.015.config.dat;
+
+[7560.016]
+	CONFIG=7560.016.config.dat;
+
+[7560.017]
+	CONFIG=7560.017.config.dat;
+
+[7560.019]
+	CONFIG=7560.019.config.dat;
+
+[7560.021]
+	CONFIG=7560.021.config.dat;
+
+[7560.023]
+	CONFIG=7560.023.config.dat;  
+
+[7560.024]
+	CONFIG=7560.024.config.dat;
+
+[7560.101]
+	CONFIG=7560.101.config.dat;
+
+[7562.003]
+	CONFIG=7562.003.config.dat;
+
+[7562.004]
+	CONFIG=7562.004.config.dat;
+
+[7562.005]
+	CONFIG=7562.005.config.dat;
+
+[7562.007]
+	CONFIG=7562.007.config.dat;
+
+[7576.001]
+	CONFIG=7576.001.config.dat;
+
+[7576.002]
+	CONFIG=7576.002.config.dat;
+
+[7576.005]
+	CONFIG=7576.005.config.dat;
+
+[7576.101]
+	CONFIG=7576.101.config.dat;
+
+[7576.102]
+	CONFIG=7576.102.config.dat;
+
+[7576.103]
+	CONFIG=7576.103.config.dat;
+
+[7576.105]
+	CONFIG=7576.105.config.dat;
 
 
-
-
+// this is for temporary study
+[7584.007]
+	CONFIG=7584.007.config.dat;
 
 
 
