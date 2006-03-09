@@ -485,13 +485,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 
 
-    // Target Histograms
+    // Target Histogram
     if ((st>=72)&&(st<=75)) {
-        HHF1(25000, st, 1.);
-        HHF2(25010, cntr.revolution, tgt.x, 1);
-        HHF2(25020, cntr.revolution, cntr.tgtMotion, 1);
-        HHF2(25030, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
-        HHF2(25040, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
         HHF2(25060, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
     }
 
