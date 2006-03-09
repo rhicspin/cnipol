@@ -157,7 +157,7 @@ public:
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
   Float_t totSiDev=0;
-  Float_t Delta_t0=0; // total average of abs(t0[st-1]-t0[st])
+  static Float_t Delta_t0=0; // total average of abs(t0[st-1]-t0[st])
 
   // Fitting Energy Range 
   Float_t FitRangeLow = 400.;
@@ -274,6 +274,7 @@ void KinFit::Fit(Int_t mode)
         Int_t valstn = 0;
 
 	Int_t j=0;
+
         for (Int_t St=Si*12; St<Si*12+12; St++) {
 	  dlValid[St] = dlEValid[St] = dlSi[j] = dlESi[j] = 0;
 	  
@@ -286,10 +287,13 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	
                 
+                cout << "before" << Delta_t0 << endl;
                  FitOne(St, mode);
+                cout << "after" << Delta_t0 << endl;
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
+
 		  if (!DisableList(RHIC_Beam,St)){
 		    dl_accum += dl[St];
 		    dlValid[St] = dl[St];
@@ -298,13 +302,18 @@ void KinFit::Fit(Int_t mode)
 		    dlESi[j] = dlE[St];
 		    valstn++;
                     if (St>0) Delta_t0+=fabs(t0[St]-t0[St-1]);
-                    cout << St << " " << t0[St] << endl;
 		  }; // End-of-Loop : Valid Strip 
-                }
-            } 
+
+              } // End-of-if (!mode&1)
+
+
+            } // End-of-if (htemp->GetnEntries)
 
 	    ++j;
         } // End-of-Loop for Strip 
+
+
+
 
         if (mode&1) {
             CurC->Update();
@@ -313,7 +322,6 @@ void KinFit::Fit(Int_t mode)
 
         if (!mode&1) {
 	  //dlsum[Si] = dl_accum/valstn;
-          Delta_t0/=71;
 	  dlsum[Si] = WeightedMean(dlSi,dlESi,12);
 	  SiDev[Si]=0;
 
@@ -328,9 +336,10 @@ void KinFit::Fit(Int_t mode)
 	  NValidSt+=valstn;
 	  dlave+=dl_accum;
 	}
-    } // end-of-St loop
+    } // end-of-Si loop
 
     if (!mode&1){
+      Delta_t0/=71;
       dlave = (Float_t)WeightedMean(dlValid,dlEValid,72);
       if (NValidSt) {
 	//dlave/=float(NValidSt);
