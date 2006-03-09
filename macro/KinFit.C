@@ -287,9 +287,7 @@ void KinFit::Fit(Int_t mode)
             
             if (htemp->GetEntries() > 20000) {	
                 
-                cout << "before" << Delta_t0 << endl;
-                 FitOne(St, mode);
-                cout << "after" << Delta_t0 << endl;
+                FitOne(St, mode);
                 
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
