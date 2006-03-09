@@ -157,6 +157,7 @@ public:
   Float_t dlsum[6];   // average of each detector
   Float_t SiDev[6], StDev[72];
   Float_t totSiDev=0;
+  Float_t Delta_t0=0; // total average of abs(t0[st-1]-t0[st])
 
   // Fitting Energy Range 
   Float_t FitRangeLow = 400.;
@@ -283,7 +284,7 @@ void KinFit::Fit(Int_t mode)
             Padn++;   // change pad even if the histograms is empty
             if (mode&1) CurC->cd(Padn);
             
-            if (htemp->GetEntries() > 20000) {	//20000) {
+            if (htemp->GetEntries() > 20000) {	
                 
                  FitOne(St, mode);
                 
@@ -296,6 +297,8 @@ void KinFit::Fit(Int_t mode)
 		    dlSi[j] = dl[St];
 		    dlESi[j] = dlE[St];
 		    valstn++;
+                    if (St>0) Delta_t0+=fabs(t0[St]-t0[St-1]);
+                    cout << St << " " << t0[St] << endl;
 		  }; // End-of-Loop : Valid Strip 
                 }
             } 
@@ -310,6 +313,7 @@ void KinFit::Fit(Int_t mode)
 
         if (!mode&1) {
 	  //dlsum[Si] = dl_accum/valstn;
+          Delta_t0/=71;
 	  dlsum[Si] = WeightedMean(dlSi,dlESi,12);
 	  SiDev[Si]=0;
 
@@ -340,6 +344,7 @@ void KinFit::Fit(Int_t mode)
       for (Int_t Si=0;Si<6;Si++) printf(" %7.1f",SiDev[Si]);
       printf("\n Total Deviation=%7.1f\n",totSiDev);
       printf(" Deviation/strip=%7.1f\n",devpst);
+      printf(" Delta_t0 average= %7.1f\n", Delta_t0);
       printf("-----------------------------------------------------------\n");
       printf("\n\n");
       fout.close();
@@ -646,7 +651,7 @@ KinFit::PlotDlayer(Int_t Mode){
 
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
-    TH2D* frame = new TH2D("framed", title, 10, -0.5, 71.5, 10, DMIN, 80.);
+    TH2D* frame = new TH2D("framed", title, 10, -0.5, 71.5, 10, DMIN, 100.);
     framed -> SetStats(0);
     framed -> GetXaxis()->SetTitle("Strip Number");
     framed -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
@@ -654,7 +659,7 @@ KinFit::PlotDlayer(Int_t Mode){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, 0., 12.*isep -0.5, 80.);
+        TLine *l = new TLine(12.*isep -0.5, 0., 12.*isep -0.5, 100.);
         l -> Draw();
     }
 
