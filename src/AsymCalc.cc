@@ -1018,7 +1018,6 @@ CalcAsymmetry(float aveA_N){
 
     for (int i=0;i<62830;i++) P_phi[i]=dP_phi[i]=0;
 
-    printf("*========== strip by strip =============\n");
 
     for (int i=0; i<72; i++) {
       Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
@@ -1065,23 +1064,32 @@ CalcAsymmetry(float aveA_N){
       Pt[i]  = RawP[i] / sin(-phit[i]);
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
-      printf("%4d",i);
-      printf("%7.3f", phi[i]);
-      printf("%12.3e%12.3e", Asym[i],dAsym[i]);
-      printf("%12.3e%12.3e", RawP[i],dRawP[i]);
-      printf("%12.3e%12.4e",    P[i],   dP[i]);
-      printf("%12.3e%12.4e",   Pt[i],  dPt[i]);
-      printf("\n");
-
 
 
     } // end-of-i-loop
 
-    printf("*=======================================\n");
-    printf("\n");
+
+    // printing routine
+    if (VERBOSE){
+        printf("*========== strip by strip =============\n");
+        for (int i=0;i<NSTRIP; i++){
+            printf("%4d",i);
+            printf("%7.3f", phi[i]);
+            printf("%12.3e%12.3e", Asym[i],dAsym[i]);
+            printf("%12.3e%12.3e", RawP[i],dRawP[i]);
+            printf("%12.3e%12.4e",    P[i],   dP[i]);
+            printf("%12.3e%12.4e",   Pt[i],  dPt[i]);
+            printf("\n");
+        }
+        printf("*=======================================\n");
+        printf("\n");
+    } //end-of-if(VERBOSE)
+
+
 
     // Caluclate Weighted Average
     calcWeightedMean(P, dP, 72, anal.P[0], anal.P[1]);
+
 
     // Histrograming
     HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
@@ -1091,6 +1099,7 @@ CalcAsymmetry(float aveA_N){
     HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
     HHPAK(36240, P);     HHPAKE(36240, dP);
     HHPAK(36250, phi); 
+
 
     // Fit phi-distribution
     AsymFit asymfit;

@@ -140,10 +140,8 @@ float pawc_[NWORDS_PAWC];
 //  21000+Si  : delimiter dist for UpSpin (Carbon cut)
 //  21100+Si  : delimiter dist for DwSpin (Carbon cut)
 //-TARGET ASSOCIATED
-//  25000     : target channel (St.73 - 76) histogram
-//  25010     : target position vs. revolution #
-//  25020     : target motion entry vs. revolution #
-//  25040     : target position vs. time
+//  25050     : CDEV target position vs. time 
+//  25060     : target position (using stepping moter) vs. time 
 //-ASYMMETRY RESULTS
 //  30000     : X90 phys(0), acpt(10), lumi(20)  
 //  30100     : X90 phys(0), acpt(10), lumi(20)  
