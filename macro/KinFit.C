@@ -168,6 +168,13 @@ public:
   Float_t FitRangeLow = 400.;
   Float_t FitRangeUpp = 900.;
 
+    struct StructResiducals {
+        Float_t x[100];
+        Float_t dx[100];
+        Float_t y[100];
+        Float_t dy[100];
+    } resd;
+
     Float_t TMIN = -30.;
     Float_t TMAX =  10.;
     Float_t DMIN = 0.;
@@ -183,7 +190,6 @@ public:
   static Float_t devpst=0; // Average deviation/strip
 
   Float_t Const[72],Slope[72];   // Final Results for DAQ 
-
   Float_t dlave=0;
 
   // From configulation file
@@ -450,7 +456,8 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 
     // putting in vectors
 
-    Float_t ChiDOF=0;
+    Double_t ChiDOF=0;
+    Double_t fitpar[2],x[2];
     if (!mode&1) {
 
         // two parameter fit
@@ -480,7 +487,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         Dpoints -> SetLineWidth(1.2);
         Dpoints -> GetXaxis()->SetRangeUser(300., 1000.);
         Dpoints -> Draw("same");
-        
+
         // Plot fit function (Green)
 
         TF1* fitfun = (TF1*) kinf->Clone();
@@ -489,8 +496,8 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         fitfun -> SetLineWidth(2.0);
         fitfun -> Draw("same");
 
+
         // TYPE the result on the Plots
-    
         TText t; Char_t rtext[50];
         sprintf(rtext, "Dl = %6.1f ug/cm2", dl[St]); //kinf->GetParameter(0));
         t.DrawTextNDC(0.5, 0.8, rtext);
@@ -500,6 +507,34 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 	if (Chi2[St]>40) t.SetTextColor(2);
         t.DrawTextNDC(0.5, 0.64, rtext);
 	t.SetTextColor(1);
+
+
+
+        /*
+        // for residuals study
+        for (int l=0;l<2;l++) fitpar[l] = kinf->GetParameter(l);
+        for (int k=0;k<Dpoints->GetNbinsX(); k++ ) {
+            x[0]=Dpoints->GetBinCenter(k);
+            resd.x[k]=x[0];
+            resd.y[k]=(Dpoints->GetBinContent(k)-KinFunc(x,fitpar));
+        }
+        TH2D* frame = new TH2D("frame","Residuals", 10, 195, 1185, 10, -1.5, 1.5);
+        frame -> SetStats(0);
+        frame -> GetXaxis()->SetTitle("kinetic energy");
+        frame -> GetYaxis()->SetTitle("residuals [ns]");
+        frame -> Draw();
+        TGraphErrors* tgae = new TGraphErrors(100, resd.x, resd.y, resd.dx, resd.dy);
+        tgae -> SetMarkerStyle(20);
+        tgae -> SetMarkerSize(0.5);
+        tgae -> SetLineWidth(2);
+        tgae -> SetMarkerColor(2);
+        tgae -> Draw("P");
+        TLine *l1 = new TLine(400., -1.5, 400., 1.5);
+        l1 -> Draw();
+        TLine *l2 = new TLine(900., -1.5, 900., 1.5);
+        l2 -> Draw();
+        */
+
 
         // Calculate the Linear Function Coefficients
         // Using the reference of 400-900keV fit
