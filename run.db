@@ -268,6 +268,16 @@
 	CONFIG=7562.003.config.dat;
 
 [7562.004]
+// started to chop off bottom of banana
+	DisableStrip=15;
+	DisableStrip=17;
+	DisableStrip=33;
+	DisableStrip=35;
+	DisableStrip=51;
+	DisableStrip=53;
+	DisableStrip=63;
+	DisableStrip=69;
+	DisableStrip=71;
 	CONFIG=7562.004.config.dat;
 
 [7562.005]
@@ -277,6 +287,15 @@
 	CONFIG=7562.007.config.dat;
 
 [7576.001]
+	EnableStrip=15;
+	EnableStrip=17;
+	EnableStrip=33;
+	EnableStrip=35;
+	EnableStrip=51;
+	EnableStrip=53;
+	EnableStrip=63;
+	EnableStrip=69;
+	EnableStrip=71;
 	CONFIG=7576.001.config.dat;
 
 [7576.002]
@@ -296,6 +315,7 @@
 
 [7576.105]
 	CONFIG=7576.105.config.dat;
+
 
 
 // this is for temporary study
