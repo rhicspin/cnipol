@@ -311,6 +311,10 @@ int readloop() {
                 exit(1); 
 	    }
 	    READ_FLAG=1;
+            if (rundb.run_status_s=="Junk") {
+                cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n"; 
+                exit(-1);
+            }
 	  }
 	  exit;
 
