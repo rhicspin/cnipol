@@ -324,6 +324,28 @@
 	CONFIG=7584.007.config.dat;
 
 
+[7586.014]
+	CONFIG=7586.014.config.dat;
+
+
+[7586.020]
+	RUN_STATUS=Junk;
+
+[7586.021]
+	//Beam spreads longitudinally and contaminates prompts into banana from next bunch
+	RUN_STATUS=Suspicious;
+
+
+[7586.114]
+	RUN_STATUS=Junk;
+
+[7586.119]
+	RUN_STATUS=Good;
+	CONFIG=7586.124.config.dat;
+
+[7588.001]
+	RUN_STATUS=Good;
+
 
 
 
