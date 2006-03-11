@@ -137,7 +137,9 @@ public:
   void CoefsGet();   // read coeficients from root file 
     Int_t PlotDlayer(Int_t);
     Int_t PlotT0(Int_t);
-  void PlotResult();
+    void Residual();
+    void PlotResidual();
+    void PlotResult(Int_t);
     Int_t ReferenceConfig();
     Int_t ReferenceDlayer();
 
@@ -169,10 +171,8 @@ public:
   Float_t FitRangeUpp = 900.;
 
     struct StructResiducals {
-        Float_t x[100];
-        Float_t dx[100];
-        Float_t y[100];
-        Float_t dy[100];
+        Float_t x[72][100];
+        Float_t y[72][100];
     } resd;
 
     Float_t TMIN = -30.;
@@ -300,7 +300,7 @@ void KinFit::Fit(Int_t mode)
             if (htemp->GetEntries() > 20000) {	
                 
                 FitOne(St, mode);
-                
+
 	      // fill arrays only if strip is valid
 	      if (!mode&1) { 
 
@@ -328,12 +328,11 @@ void KinFit::Fit(Int_t mode)
         } // End-of-Loop for Strip 
 
 
-
-
         if (mode&1) {
             CurC->Update();
             ps.NewPage();
         }
+
 
         if (!mode&1) {
 	  dlsum[Si] = WeightedMean(dlSi,dlESi,12);
@@ -350,7 +349,11 @@ void KinFit::Fit(Int_t mode)
 	  NValidSt+=valstn;
 	  dlave+=dl_accum;
 	} 
+
+
     } // end-of-Si loop
+
+
 
     if (!mode&1){
       dlave = (Float_t)WeightedMean(dlValid,dlEValid,72);
@@ -457,7 +460,6 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     // putting in vectors
 
     Double_t ChiDOF=0;
-    Double_t fitpar[2],x[2];
     if (!mode&1) {
 
         // two parameter fit
@@ -509,31 +511,14 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 	t.SetTextColor(1);
 
 
-
-        /*
-        // for residuals study
+        // for Residuals study
+        Double_t fitpar[2],x[2];
         for (int l=0;l<2;l++) fitpar[l] = kinf->GetParameter(l);
         for (int k=0;k<Dpoints->GetNbinsX(); k++ ) {
             x[0]=Dpoints->GetBinCenter(k);
-            resd.x[k]=x[0];
-            resd.y[k]=(Dpoints->GetBinContent(k)-KinFunc(x,fitpar));
+            resd.x[St][k]=x[0];
+            resd.y[St][k]=(Dpoints->GetBinContent(k)-KinFunc(x,fitpar));
         }
-        TH2D* frame = new TH2D("frame","Residuals", 10, 195, 1185, 10, -1.5, 1.5);
-        frame -> SetStats(0);
-        frame -> GetXaxis()->SetTitle("kinetic energy");
-        frame -> GetYaxis()->SetTitle("residuals [ns]");
-        frame -> Draw();
-        TGraphErrors* tgae = new TGraphErrors(100, resd.x, resd.y, resd.dx, resd.dy);
-        tgae -> SetMarkerStyle(20);
-        tgae -> SetMarkerSize(0.5);
-        tgae -> SetLineWidth(2);
-        tgae -> SetMarkerColor(2);
-        tgae -> Draw("P");
-        TLine *l1 = new TLine(400., -1.5, 400., 1.5);
-        l1 -> Draw();
-        TLine *l2 = new TLine(900., -1.5, 900., 1.5);
-        l2 -> Draw();
-        */
 
 
         // Calculate the Linear Function Coefficients
@@ -579,12 +564,90 @@ void KinFit::FitOne(Int_t St, Int_t mode)
 
 }
 
+// -------------------------------------------------------------------
+//     Plot Residuals of deadlayer fit
+// -------------------------------------------------------------------
+void KinFit::Residual()
+{
+
+    gStyle->SetGridColor(1);
+    gStyle->SetGridStyle(2);
+    
+    TCanvas *CurC = new TCanvas("CurC","",1);
+    TPostScript ps("residual.ps",112);
+    
+    CurC -> Divide(4,3);
+    ps.NewPage();
+    
+    for (Int_t Si=0;Si<6;Si++) {
+        Int_t Padn=0;
+
+        for (Int_t St=Si*12; St<Si*12+12; St++) {
+            Padn++;   // change pad even if the histograms is empty
+            CurC->cd(Padn);
+            PlotResidual(St);
+        } // End-of-St-loop
+
+
+        CurC->Update();
+        ps.NewPage();
+
+    } // End-of-Si-loop
+
+    ps.Close();
+
+}// End-of-Residual()
+
+
+
+// -------------------------------------------------------------------
+//     Plot Residuals of deadlayer fit
+// -------------------------------------------------------------------
+void KinFit::PlotResidual(Int_t St)
+{
+
+
+    Float_t x[100],y[100],dx[100],dy[100];
+    for (Int_t k=0; k<100; k++) {
+        x[k]=resd.x[St][k];
+        y[k]=resd.y[St][k];
+        dx[k]=dy[k]=0;
+    }
+
+    Char_t title[100];
+    sprintf(title,"%s ST-%d",runid, St);
+    TH2D* frame = new TH2D("frame",title, 10, 195, 1185, 10, -1.5, 1.5);
+    frame -> SetStats(0);
+    frame -> GetXaxis()->SetTitle("kinetic energy");
+    frame -> GetYaxis()->SetTitle("residuals [ns]");
+    frame -> Draw();
+
+    TGraphErrors* tgae = new TGraphErrors(100, x, y, dx, dy);
+    tgae -> SetMarkerStyle(20);
+    tgae -> SetMarkerSize(0.5);
+    tgae -> SetLineWidth(2);
+    tgae -> SetMarkerColor(2);
+    tgae -> Draw("P");
+
+    TLine *l1 = new TLine(400., -1.5, 400., 1.5);
+    l1 -> Draw();
+    TLine *l2 = new TLine(900., -1.5, 900., 1.5);
+    l2 -> Draw();
+
+}// End-of-PlotResidual()
+
+
 
 // -------------------------------------------------------------------
 //     Plot the result of the Fit 
 // -------------------------------------------------------------------
 void KinFit::PlotResult()
 {
+
+
+    // plot Residuals
+    Residual();
+
 
     // Default plotting range for Run05
     if (RUNID > 7400) { //  for Run06

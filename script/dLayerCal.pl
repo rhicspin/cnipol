@@ -59,6 +59,7 @@ sub help(){
 
 sub GhostView(){
     system("gv dlayer/$Runn.fittemp.ps");
+    system("gv dlayer/$Runn.residual.ps");
     system("gv dlayer/$Runn.summarytemp.ps");
 }
 
@@ -124,6 +125,7 @@ system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
 if (-f "testfit.dat")    {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
 if (-f "testfit.ps")     {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
 if (-f "testsummary.ps") {system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
+if (-f "residual.ps")    {system("mv residual.ps $DLAYERDIR/$Runn.residual.ps");}
 if (-f "input.C")        {system("rm input.C");}
 
 if ($GHOSTVIEW) {GhostView();};
