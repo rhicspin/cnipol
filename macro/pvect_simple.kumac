@@ -1,13 +1,13 @@
  macro main run='-1'
-   pson
+
    if ([run].eq.'-1') then
      run = $ENV(RUN)
    endif
    if ([plot].eq.'nothing') then
      plot = $
    endif
-
-   file=/home/itaru/2005/db/pvect.dat
+   asymdir=$ENV(ASYMDIR)
+   file=[asymdir]/pvect.dat
 
    v/cre x90p(1) R
    v/cre x90pe(1) R
@@ -28,7 +28,7 @@
    v/cre PCNT(6) R
    v/cre MCNT(6) R
    v/cre an(1) R
-   
+
    v/read x90p,x90pe [file] OPT='O'
    v/read x45p,x45pe [file] OPT=' '
    v/read y45p,y45pe [file] OPT=' '
@@ -45,7 +45,8 @@
    v/cre ratio(6) R
    v/cre ratioe(6) R
 
-   h/file 1 ~/2005/hbook/[run].hbook 
+   onlinedir=$ENV(ONLINEDIR)
+   h/file 1 [onlinedir]/hbook/[run].hbook 
    
    v/cre lumi(2) R  
    
@@ -99,8 +100,8 @@
    rmax = $RSIGMA(fitpar(1)+0.03)
    rmin = $RSIGMA(fitpar(1)-0.03)
    
-   pol = $RSIGMA(xchp(1)/an(1))
-   pole = $RSIGMA(xchpe(1)/an(1))
+   pol = $RSIGMA(xchp(1)/an(1)*100)
+   pole = $RSIGMA(xchpe(1)/an(1)*100)
    
    ve/cr  P(1) r [pol]
    ve/cr dP(1) r [pole]
