@@ -1,0 +1,110 @@
+ macro main run='-1'
+   pson
+   if ([run].eq.'-1') then
+     run = $ENV(RUN)
+   endif
+   if ([plot].eq.'nothing') then
+     plot = $
+   endif
+
+   file=/home/itaru/2005/db/pvect.dat
+
+   v/cre x90p(1) R
+   v/cre x90pe(1) R
+   v/cre x45p(1) R
+   v/cre x45pe(1) R
+   v/cre y45p(1) R
+   v/cre y45pe(1) R
+   v/cre c45p(1) R
+   v/cre c45pe(1) R
+   v/cre c14p(1) R
+   v/cre c14pe(1) R
+   v/cre c36p(1) R
+   v/cre c36pe(1) R
+   v/cre xchp(1) R
+   v/cre xchpe(1) R
+   v/cre ychp(1) R
+   v/cre ychpe(1) R
+   v/cre PCNT(6) R
+   v/cre MCNT(6) R
+   v/cre an(1) R
+   
+   v/read x90p,x90pe [file] OPT='O'
+   v/read x45p,x45pe [file] OPT=' '
+   v/read y45p,y45pe [file] OPT=' '
+   v/read c45p,c45pe [file] OPT=' '
+   v/read c14p,c14pe [file] OPT=' '
+   v/read c36p,c36pe [file] OPT=' '
+   v/read xchp,xchpe [file] OPT=' '
+   v/read ychp,ychpe [file] OPT=' '
+   v/read an [file] OPT=' '
+   v/read pcnt [file] OPT=' '
+   v/read mcnt [file] OPT='C'
+   zone 1 2 
+   v/cre angle(6) R 45. 90. 135. 225. 270. 315.
+   v/cre ratio(6) R
+   v/cre ratioe(6) R
+
+   h/file 1 ~/2005/hbook/[run].hbook 
+   
+   v/cre lumi(2) R  
+   
+   Do si=1,6
+	 
+     v/input lumi(1) $RSIGMA(lumi(1)+pcnt([si]))
+     v/input lumi(2) $RSIGMA(lumi(2)+mcnt([si]))
+
+   Enddo
+   
+   v/print pcnt
+   v/print mcnt
+   
+   Do i=1,6
+     v/input ratio([i]) $RSIGMA((pcnt([i])/mcnt([i]))*(lumi(2)/lumi(1)))
+     v/input ratioe([i]) _
+       $RSIGMA(ratio([i])*sqrt((1./pcnt([i]))+(1./mcnt([i]))))
+     
+   Enddo 
+   mess lumi ratio $RSIGMA((lumi(2)/lumi(1)))
+   v/print ratio
+   
+* v/input ratio(4) 1.
+* v/input ratioe(4) 10.
+   
+   v/cre fitpar(3) R
+   v/cre fitpare(3) R
+   * ======================================
+   application comis quit
+* 12345
+      real function fitfunc(x)
+      Implicit None
+      COMMON/PAWPAR/fitpar(3)    
+      real x
+      real convf
+      convf = 3.14159/180.
+      fitfunc = fitpar(1) + fitpar(2)*sin(x*convf-fitpar(3)*convf)
+      end 
+* ---------------------------------------
+   quit
+   
+   v/input fitpar(1) 0.01
+   v/input fitpar(2) 0.001
+   v/input fitpar(3) 0.
+   
+   v/fit angle ratio ratioe fitfunc '0ENQ' NP=3 PAR=fitpar ! ! ! ERRPAR=fitpare 
+   
+* rmax = $RSIGMA(fitpar(1)+2.*abs(fitpar(2)))
+* rmin = $RSIGMA(fitpar(1)-2.*abs(fitpar(2)))
+   
+   rmax = $RSIGMA(fitpar(1)+0.03)
+   rmin = $RSIGMA(fitpar(1)-0.03)
+   
+   pol = $RSIGMA(xchp(1)/an(1))
+   pole = $RSIGMA(xchpe(1)/an(1))
+   
+   ve/cr  P(1) r [pol]
+   ve/cr dP(1) r [pole]
+   
+   ve/write P,dP tmp.dat 'F10.5,2x,F10.5'
+
+return
