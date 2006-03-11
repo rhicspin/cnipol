@@ -350,8 +350,9 @@
 
 [7596.001]
 	// spin orientation = 45 deg.
-	RUN_STATUS=Suspicious;
 	// Bunch 70 noisy.
+	RUN_STATUS=Suspicious;
+	// noise below banana. Strip 27&45 are noisy WFD. Others could be radiation damage.
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=61;
