@@ -2,10 +2,12 @@
 //=======                   Run04                      =========
 //==============================================================
 [4000.001]
+	RUN_STATUS=Good;
 	CONFIG=6935.002.config.dat;
 	INJ_TSHIFT=7;
 
 [4000.101]
+	RUN_STATUS=Good;
 	CONFIG=6858.113.config.dat;
 	INJ_TSHIFT=7;
 
@@ -15,12 +17,14 @@
 //=======                   Run05                      =========
 //==============================================================
 [6500.001]
+	RUN_STATUS=Good;
 	ENERGY_CALIB=blue_calib_0412;
 	CONFIG=6935.002.config.dat;
 	MASSCUT=3;
 	TSHIFT=0;	
 
 [6500.101]
+	RUN_STATUS=Good;
 	ENERGY_CALIB=yellow_calib_0412;
 	CONFIG=6858.113.config.dat;
 	MASSCUT=3;
@@ -318,6 +322,7 @@
 	CONFIG=7576.105.config.dat;
 
 
+
 [7586.014]
 	CONFIG=7586.014.config.dat;
 
@@ -338,6 +343,39 @@
 	CONFIG=7586.124.config.dat;
 
 [7588.001]
+	RUN_STATUS=Good;
+
+[7588.101]
+	RUN_STATUS=Junk;
+
+[7596.001]
+	// spin orientation = 45 deg.
+	RUN_STATUS=Suspicious;
+	// Bunch 70 noisy.
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=61;
+	DisableStrip=62;
+	DisableStrip=63;
+	DisableStrip=64;
+	DisableStrip=65;
+	CONFIG=7596.002.config.dat;
+	
+[7596.101]
+	RUN_STATUS=Suspicious;
+
+[7597.001]
+	// noises are gone.
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=61;
+	EnableStrip=62;
+	EnableStrip=63;
+	EnableStrip=64;
+	EnableStrip=65;
+	RUN_STATUS=Good;
+
+[7597.101]
 	RUN_STATUS=Good;
 
 
