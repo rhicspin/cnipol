@@ -382,4 +382,23 @@
 
 
 
+[7602.004]
+	// fracky WFD moduels. Could be happening earlier.
+	DisableStrip=10;
+	DisableStrip=12;
+	DisableStrip=14;
+	DisableStrip=28;
+	DisableStrip=30;
+	DisableStrip=32;
+	DisableStrip=42;
+	DisableStrip=48;
+	DisableStrip=50;
+	DisableStrip=48;
+	DisableStrip=61;
+	DisableStrip=62;
+	DisableStrip=63;
+	DisableStrip=64;
+	DisableStrip=65;
+	DisableStrip=68;
+
 
