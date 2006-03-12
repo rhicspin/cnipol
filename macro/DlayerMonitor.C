@@ -115,12 +115,15 @@ DlayerMonitor::DlayerMonitor()
 {
 
     Float_t xmin=7475.0;
-    Float_t xmax=7475.05;
+    Float_t xmax=7578.0;
     Float_t ymin=20;
-    Float_t ymax=80;
+    Float_t ymax=100;
+    Float_t x2min=100000;
+    Float_t x2max=1500000;
 
     Char_t xtitle[100]="Run ID";
     Char_t ytitle[100]="DeadLayer Thickness [ug/cm^2]";
+    Char_t x2title[100]="Rate [Hz}";
 
     // postscript file
     Char_t psfile[100];
