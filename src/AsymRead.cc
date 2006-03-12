@@ -152,11 +152,13 @@ int readloop() {
 	    ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             pointer = (long *)&rec.buffer[sizeof(rec.header)] ;
             --pointer;  i=0;
+
+            printf("    index   total   x-pos   y-pos \n");
             for (int k=0; k<ndelim ; k++) {
-                tgt.Linear[k][0] = *++pointer ; // Vertical target
-                tgt.Rotary[k][0] = *++pointer ;
                 tgt.Linear[k][1] = *++pointer ; // Horizontal target
                 tgt.Rotary[k][1] = *++pointer ;
+                tgt.Linear[k][0] = *++pointer ; // Vertical target
+                tgt.Rotary[k][0] = *++pointer ;
                 
 		// force 0 for +/-1 tiny readout as target position. 
 		if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
@@ -172,14 +174,14 @@ int readloop() {
                         runinfo.target = 'H';
                     }
                     tgt.x = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM;
-                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
+                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);
 		} else {
 		  TgtIndex[k] = i;
 		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
 		    ++nTgtIndex;
                     if (nTgtIndex>TGT_OPERATION) runinfo.TgtOperation=" scan";
-                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][1], tgt.Rotary[k][0]);
+                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);
 		  }
 		}							  
                 // target position array including static target motion
