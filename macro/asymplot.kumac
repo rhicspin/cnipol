@@ -1681,6 +1681,16 @@ last:
  macro chisq
 * *************************
    exe setting 
+   size 18 16
+   
+   opt htit
+   null -0.05 6.28 -0.8 0.8
+   hi/plot 36230 s
+   atitle 'strip phi-angle \133 rad \135' 'Polarization \133 % \135' ! 220
+   wait
+
+
+   exe setting 
    zone 4 5 
    set HCOL 2
    v/cre phi(6) R 0.785 1.570 2.355 3.925 4.710 5.495 
