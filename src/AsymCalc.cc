@@ -1095,7 +1095,7 @@ CalcAsymmetry(float aveA_N){
     HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]); 
     HHPAK(36200, LumiRatio); 
     HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
-    HHPAK(36220, RawP);  HHPAKE(36210, dRawP);
+    HHPAK(36220, RawP);  HHPAKE(36220, dRawP);
     HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
     HHPAK(36240, P);     HHPAKE(36240, dP);
     HHPAK(36250, phi); 
