@@ -380,6 +380,19 @@
 	RUN_STATUS=Good;
 
 
+[7602.001]
+	RUN_STATUS=Good;
+	CONFIG=7602.001.config.dat;
+
+[7602.002]
+	RUN_STATUS=Good;
+	CONFIG=7602.002.config.dat;
+
+[7602.003]
+	RUN_STATUS=Good;
+	CONFIG=7602.003.config.dat;
+
+
 
 
 [7602.004]
@@ -400,5 +413,20 @@
 	DisableStrip=64;
 	DisableStrip=65;
 	DisableStrip=68;
+	CONFIG=7602.004.config.dat;
+
+[7602.007]
+	RUN_STATUS=Good;
+	CONFIG=7602.007.config.dat;
+
+
+[7605.001]
+	CONFIG=7605.001.config.dat;
+
+
+[7605.003]
+	CONFIG=7605.003.config.dat;
+
+
 
 
