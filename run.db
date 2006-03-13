@@ -419,14 +419,40 @@
 	RUN_STATUS=Good;
 	CONFIG=7602.007.config.dat;
 
+[7603.001]
+	TSHIFT=1;
+	CONFIG=7603.001.config.dat;
+
 
 [7605.001]
+	TSHIFT=0;
 	CONFIG=7605.001.config.dat;
+//cannot fix with tshift, strips offset by different times
+
 
 
 [7605.003]
 	CONFIG=7605.003.config.dat;
 
 
+[7605.004]
+	CONFIG=7605.004.config.dat;
+
+
+[7605.006]
+	CONFIG=7605.006.config.dat;
+
+
+[7605.101]
+	INJ_TSHIFT=8;
+
+[7605.103]
+	TSHIFT=-0.4;
+
+[7605.104]
+	TSHIFT=-0.4;
+
+[7605.107]
+	TSHIFT=-0.4;
 
 
