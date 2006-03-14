@@ -291,7 +291,10 @@
 [7562.007]
 	CONFIG=7562.007.config.dat;
 
-[7576.001]
+[7562.010]
+	CONFIG=7562.010.config.dat;
+
+[7562.101]
 	EnableStrip=15;
 	EnableStrip=17;
 	EnableStrip=33;
@@ -301,6 +304,19 @@
 	EnableStrip=63;
 	EnableStrip=69;
 	EnableStrip=71;
+	RUN_STATUS=Suspicious;	
+	CONFIG=7562.101.config.dat;
+
+[7562.102]
+	RUN_STATUS=Good;
+
+[7562.103]
+	CONFIG=7562.103.config.dat;
+
+[7562.105]
+	CONFIG=7562.105.config.dat;
+
+[7576.001]
 	CONFIG=7576.001.config.dat;
 
 [7576.002]
@@ -423,6 +439,25 @@
 	TSHIFT=1;
 	CONFIG=7603.001.config.dat;
 
+[7603.003]
+	TSHIFT=0;
+	CONFIG=7603.003.config.dat;
+
+[7603.005]
+	CONFIG=7603.005.config.dat;
+
+[7603.008]
+	CONFIG=7603.008.config.dat;
+
+[7603.010]
+	CONFIG=7603.010.config.dat;
+
+[7603.101]
+	TSHIFT=1;
+
+[7603.103]
+	TSHIFT=0;
+
 
 [7605.001]
 	TSHIFT=0;
@@ -447,6 +482,7 @@
 	INJ_TSHIFT=8;
 
 [7605.103]
+	INJ_TSHIFT=7;
 	TSHIFT=-0.4;
 
 [7605.104]
@@ -454,5 +490,11 @@
 
 [7605.107]
 	TSHIFT=-0.4;
+
+[7609.009]
+	CONFIG=7609.009.config.dat;
+	
+
+
 
 
