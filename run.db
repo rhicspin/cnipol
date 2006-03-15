@@ -530,7 +530,13 @@
 [7605.107]
 	TSHIFT=-0.4;
 
+[7609.003]
+	// Timing tune
+	RUN_STATUS=Tune;
+
+
 [7609.009]
+	RUN_STATUS=Good;
 	EnableStrip=18;
 	EnableStrip=54;
 	EnableStrip=72;
@@ -543,6 +549,10 @@
 
 [7614.005]
 	TSHIFT=0.7;
+
+[7614.012]
+	TSHIFT=0.7;
+	CONFIG=7614.012.config.dat;
 
 	
 
