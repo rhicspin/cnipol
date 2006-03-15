@@ -295,15 +295,6 @@
 	CONFIG=7562.010.config.dat;
 
 [7562.101]
-	EnableStrip=15;
-	EnableStrip=17;
-	EnableStrip=33;
-	EnableStrip=35;
-	EnableStrip=51;
-	EnableStrip=53;
-	EnableStrip=63;
-	EnableStrip=69;
-	EnableStrip=71;
 	RUN_STATUS=Suspicious;	
 	CONFIG=7562.101.config.dat;
 
@@ -316,14 +307,47 @@
 [7562.105]
 	CONFIG=7562.105.config.dat;
 
+[7562.108]
+	CONFIG=7562.108.config.dat;
+
+[7563.001]
+	EnableStrip=15;
+	EnableStrip=17;
+	EnableStrip=33;
+	EnableStrip=35;
+	EnableStrip=51;
+	EnableStrip=53;
+	EnableStrip=63;
+	EnableStrip=69;
+	EnableStrip=71;
+	CONFIG=7563.001.config.dat;
+
+[7563.002]
+	CONFIG=7563.002.config.dat;
+
+[7563.003]
+// Strips 18,54,72 have problems & the chi^2 on the dlayers are bad.
+	DisableStrip=18;
+	DisableStrip=54;
+	DisableStrip=72;
+	RUN_STATUS=Suspicious;
+	CONFIG=7563.003.config.dat;
+
+[7563.004]
+// Strips 17,53,71 have problems & the chi^2 on the dlayers are bad.
+	RUN_STATUS=Suspicious;
+	CONFIG=7563.004.config.dat;
+
+[7563.101]
+	RUN_STATUS=Good;
+	CONFIG=7563.101.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
 [7576.002]
 	CONFIG=7576.002.config.dat;
 
-[7576.005]
-	CONFIG=7576.005.config.dat;
 
 [7576.101]
 	CONFIG=7576.101.config.dat;
@@ -492,6 +516,9 @@
 	TSHIFT=-0.4;
 
 [7609.009]
+	EnableStrip=18;
+	EnableStrip=54;
+	EnableStrip=72;
 	CONFIG=7609.009.config.dat;
 	
 
