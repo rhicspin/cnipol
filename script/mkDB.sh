@@ -2,25 +2,27 @@
 #make run database
 #I.Nakagawa
 #March, 11, 2006
-ExeAnalyzedRunList=0 ;
+ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
+ExeAnalyzedRunList=1 ;
 ExeMakeDatabase=1;
-FROM_FILL=7400;
-TILL_FILL=8000;
+ExclusiveMode=0;
+FROM_FILL=7537;
+TILL_FILL=9000;
 LOGDIR=$ASYMDIR/log;
-
 
 #############################################################################
 #                                     Help                                  #
 #############################################################################
 help(){
     echo    " "
-    echo    " mkDB.sh [-xha][--analyzed-run-list][-F <Fill#>][--fill-from <Fill#>]"
+    echo    " mkDB.sh [-xha][--analyzed-run-list][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "    : make pC offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
+    echo -e "   --exclusive               Show only data analyized";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
     echo    " "
@@ -50,7 +52,6 @@ ShowExample(){
 MakeAnalyzedRunList(){
 
   TMPLIST="tmp.list";
-  ANALYZED_RUN_LIST="analyzed_run.list";
 
   if [ -f $TMPLIST ] ; then
       rm -f $TMPLIST;
@@ -70,9 +71,14 @@ MakeAnalyzedRunList(){
       
   done
 
-  sort $TMPLIST 
-#> ANALYZED_RUN_LIST
-  rm -f $TMPLIST
+
+  if [ $ExeMakeDatabase == 1 ] ; then
+      sort $TMPLIST > $ANALYZED_RUN_LIST;
+  else
+      sort $TMPLIST | tee $ANALYZED_RUN_LIST;
+  fi
+
+  rm -f $TMPLIST;
 
 
 }
@@ -83,10 +89,11 @@ MakeAnalyzedRunList(){
 ShowIndex(){
 
     printf "=================================================================================================";
-    printf "=============\n";
+    printf "====================\n";
     printf " RunID ";
     printf "      Online";
-    printf " Status ";
+    printf "  Status  ";
+    printf "Anal  "
     printf "Beam "
     printf "      Date/Time ";
     printf "         Offline";
@@ -99,7 +106,9 @@ ShowIndex(){
     printf "\n";
     printf "          ";
     printf "    P   dP ";
-    printf "     [GeV]                       ";
+    printf "       "
+    printf " crew ";
+    printf "[GeV]                       ";
     printf "   P     dP";
     printf "     phi  dphi";
     printf " /dof ";
@@ -109,7 +118,7 @@ ShowIndex(){
     printf "  RMS"
     printf "\n";
     printf "=================================================================================================";
-    printf "============\n";
+    printf "====================\n";
 
 
 }
@@ -155,7 +164,7 @@ grepit(){
     else
 
 
-	printf " %4s" $RUN_STATUS;
+	printf "  %4s  %5s" $RUN_STATUS $CREW;
 	grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'
 	arg=`grep 'End Time:' $LOGFILE | sed -e 's/End Time:/ /' | sed -e 's/2006//'`
 	echo -e -n "$arg";
@@ -183,18 +192,26 @@ grepit(){
 #############################################################################
 MakeDatabase(){
 
-for f in `ls $DATADIR/7???.???.data` ;
-    do
+for f in `ls $DATADIR/????.???.data` ;
+  do
       RunID=`basename $f | sed -e 's/.data//'`
       Fill=`echo $RunID | gawk '{printf("%4d",$1)}'`
 #      echo -e -n "$RunID $Fill\n"
       if [ $Fill -ge $FROM_FILL ]&&[ $Fill -le $TILL_FILL ] ; then
-	  LOGFILE=$LOGDIR/$RunID.log
-	  if [ -f $LOGFILE ] ; then
-	      grepit;
+	  CREW=`grep $RunID $ANALYZED_RUN_LIST | gawk '{print $2}'`
+	  grep $RunID $ANALYZED_RUN_LIST  > /dev/null; 
+	  if [ $? == 0 ] ; then
+	      LOGFILE=$LOGDIR/$RunID.log
+	      if [ -f $LOGFILE ] ; then
+		  grepit;
+	      else 
+		  echo -e -n "$RunID $LOGFILE missing\n";
+	      fi
+	  elif [ $ExclusiveMode == 0 ] ; then
+	      echo -e -n "$RunID\n";
 	  fi
       fi
-    done
+done
 
 }
 
@@ -211,6 +228,7 @@ while test $# -ne 0; do
   -F) shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from) shift ; FROM_FILL=$1;;
   --fill-till) shift ; TILL_FILL=$1;;
+  --exclusive) ExclusiveMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
   *)  echo "Error: Invarid Option $1"
