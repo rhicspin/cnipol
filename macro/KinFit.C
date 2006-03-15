@@ -25,8 +25,8 @@ static Float_t KinConst_E2T=1454.75; // constant for Run05 L=18.5cm
 
 int DisableStr[NDisableList][NDisableStrip] =
   {
-    { 14, 22, -1, -1, -1}, // 0 Blue
-    { 51, 55, -1, -1, -1}, // 1 Yellow FLattop Disable List
+    { 15, 23, -1, -1, -1}, // 0 Blue
+    { 52, 56, -1, -1, -1}, // 1 Yellow FLattop Disable List
     { -1, -1, -1, -1, -1}, // 2
     { -1, -1, -1, -1, -1}, // 3
     { -1, -1, -1, -1, -1}, // 4
@@ -236,7 +236,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
 
     // globally used.
     for (Int_t St=0; St<72; St++) {
-        strip[St] = (Float_t)St;
+        strip[St] = (Float_t)(St+1);
         stripE[St] = 0.;
     }
 
@@ -330,7 +330,7 @@ void KinFit::Fit(Int_t mode)
 
         if (mode&1) {
             CurC->Update();
-            ps.NewPage();
+            if (Si!=5) ps.NewPage();
         }
 
 
@@ -392,7 +392,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     Int_t Si = (Int_t)St/12;
 
     cout << " ===================================="<<endl;
-    cout << " === Now starting - "<<St<< " ( mode: "<<mode<<" )"<<endl;
+    cout << " === Now starting - "<<St+1<< " ( mode: "<<mode<<" )"<<endl;
     cout << " ===================================="<<endl;
 
     Char_t hName[100];
@@ -400,7 +400,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     
     TH2D* h2d = (TH2D*) gDirectory->Get(hName);
     h2d -> SetStats(0);
-    sprintf(hName,"%s ST-%d",runid, St);
+    sprintf(hName,"%s ST-%d",runid, St+1);
     h2d -> SetTitle(hName);
     h2d -> SetName("h2d");
     h2d->GetXaxis()->SetTitle("Measured Energy (keV)");
@@ -590,7 +590,7 @@ void KinFit::Residual()
 
 
         CurC->Update();
-        ps.NewPage();
+        if (Si!=5) ps.NewPage();
 
     } // End-of-Si-loop
 
@@ -615,7 +615,7 @@ void KinFit::PlotResidual(Int_t St)
     }
 
     Char_t title[100];
-    sprintf(title,"%s ST-%d",runid, St);
+    sprintf(title,"%s ST-%d",runid, St+1);
     TH2D* frame = new TH2D("frame",title, 10, 195, 1185, 10, -1.5, 1.5);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("kinetic energy");
@@ -769,7 +769,7 @@ KinFit::PlotDlayer(Int_t Mode){
 
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
-    TH2D* frame = new TH2D("framed", title, 10, -0.5, 71.5, 10, DMIN, 100.);
+    TH2D* frame = new TH2D("framed", title, 10, 0.5, 72.5, 10, DMIN, 100.);
     framed -> SetStats(0);
     framed -> GetXaxis()->SetTitle("Strip Number");
     framed -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
@@ -777,7 +777,7 @@ KinFit::PlotDlayer(Int_t Mode){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, 0., 12.*isep -0.5, 100.);
+        TLine *l = new TLine(12.*isep +0.5, 0., 12.*isep +0.5, 100.);
         l -> Draw();
     }
 
@@ -802,7 +802,7 @@ KinFit::PlotDlayer(Int_t Mode){
 
     if (Mode==1){
         // draw total average value
-        TLine *tave = new TLine(-0.5,dlave,71.5,dlave);
+        TLine *tave = new TLine(0.5,dlave,72.5,dlave);
         tave -> SetLineColor(5);
         tave -> SetLineWidth(2);
         tave -> Draw();
@@ -810,8 +810,8 @@ KinFit::PlotDlayer(Int_t Mode){
 
     // draw the average values
         for (Int_t isep=0; isep<6 ; isep++) {
-            TLine *ave = new TLine(12.*isep -0.5, dlsum[isep], 
-                                   12.*(isep+1) -0.5, dlsum[isep]);
+            TLine *ave = new TLine(12.*isep +0.5, dlsum[isep], 
+                                   12.*(isep+1) +0.5, dlsum[isep]);
             ave -> SetLineColor(6);
             ave -> SetLineWidth(2.);
             ave -> Draw();
@@ -855,7 +855,7 @@ KinFit::PlotT0(Int_t Mode){
     
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
-    TH2D* framet = new TH2D("framet", title, 10, -0.5, 71.5, 10, TMIN, TMAX);
+    TH2D* framet = new TH2D("framet", title, 10, 0.5, 72.5, 10, TMIN, TMAX);
     framet -> SetStats(0);
     framet -> GetXaxis()->SetTitle("Strip Number");
     framet -> GetYaxis()->SetTitle("T0 values (nsec)");
@@ -863,7 +863,7 @@ KinFit::PlotT0(Int_t Mode){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, TMIN, 12.*isep -0.5, TMAX);
+        TLine *l = new TLine(12.*isep +0.5, TMIN, 12.*isep +0.5, TMAX);
         l -> Draw();
     }
 
@@ -939,7 +939,7 @@ KinFit::ReferenceConfig(){
     
     Char_t title[40];
     sprintf(title, "%s Dead Layer Difference w.r.t. Ref.", runid); 
-    TH2D* framer = new TH2D("framer", title, 10, -0.5, 5.5, 10, diffx_Min, diffx_Max);
+    TH2D* framer = new TH2D("framer", title, 10, 0.5, 6.5, 10, diffx_Min, diffx_Max);
     framer -> SetStats(0);
     framer -> GetXaxis()->SetTitle("Detector Number");
     framer -> GetYaxis()->SetTitle("Dl(current) - D0(Ref) (\mu g/cm**2)");
@@ -947,10 +947,10 @@ KinFit::ReferenceConfig(){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(isep-0.5, diffx_Min, isep-0.5, diffx_Max);
+        TLine *l = new TLine(isep+0.5, diffx_Min, isep+0.5, diffx_Max);
         l -> Draw();
     }
-    TLine *L = new TLine(-0.5, 0,5.5, 0);
+    TLine *L = new TLine(0.5, 0,6.5, 0);
     L -> Draw();
 
     // draw the average values
@@ -958,8 +958,8 @@ KinFit::ReferenceConfig(){
     for (Int_t isep=0; isep<6 ; isep++) {
       // deadlayer from current fit
         diff[isep] = dlsum_ref[isep] - dlsum[isep];
-        TLine *ave = new TLine(isep-0.5, diff[isep], 
-                               (isep+1)-0.5, diff[isep]);
+        TLine *ave = new TLine(isep+0.5, diff[isep], 
+                               (isep+1)+0.5, diff[isep]);
         ave -> SetLineColor(4);
         ave -> SetLineWidth(2.);
         ave -> Draw();
@@ -981,7 +981,7 @@ KinFit::ReferenceConfig(){
 
     Char_t title[40];
     sprintf(title, "%s : T0 (1-par fit) diff w.r.t. Ref.", runid);
-    TH2D* framet = new TH2D("framet", title, 10, -0.5, 71.5, 10, difft_Min, difft_Max);
+    TH2D* framet = new TH2D("framet", title, 10, 0.5, 72.5, 10, difft_Min, difft_Max);
     framet -> SetStats(0);
     framet -> GetXaxis()->SetTitle("Strip Number");
     framet -> GetYaxis()->SetTitle("T0(Current) - T0(Reference) (nsec)");
@@ -989,10 +989,10 @@ KinFit::ReferenceConfig(){
 
     // draw the separaters btw detectors
     for (Int_t isep=0; isep<6 ; isep++) {
-        TLine *l = new TLine(12.*isep -0.5, difft_Min, 12.*isep -0.5, difft_Max);
+        TLine *l = new TLine(12.*isep +0.5, difft_Min, 12.*isep +0.5, difft_Max);
         l -> Draw();
     }
-    TLine *L = new TLine(-0.5, 0,71.5, 0);
+    TLine *L = new TLine(0.5, 0,72.5, 0);
     L -> Draw();
     
     for (Int_t st=0; st<72; st++) {
