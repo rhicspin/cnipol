@@ -66,9 +66,8 @@ MakeLinks(){
       if [ -e $DESTDIR/$filename ] ; then
 	  echo -e -n "";
       else 
-	  echo -e -n "$f" >> $LOGFILE
+	  echo -e -n "$f\n" >> $LOGFILE
 	  ln -s $f $DESTDIR
-	  chown 
       fi
     done
 
