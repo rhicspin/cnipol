@@ -2,11 +2,13 @@
 //=======                   Run04                      =========
 //==============================================================
 [4000.001]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Good;
 	CONFIG=6935.002.config.dat;
 	INJ_TSHIFT=7;
 
 [4000.101]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Good;
 	CONFIG=6858.113.config.dat;
 	INJ_TSHIFT=7;
@@ -17,6 +19,7 @@
 //=======                   Run05                      =========
 //==============================================================
 [6500.001]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Good;
 	ENERGY_CALIB=blue_calib_0412;
 	CONFIG=6935.002.config.dat;
@@ -24,6 +27,7 @@
 	TSHIFT=0;	
 
 [6500.101]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Good;
 	ENERGY_CALIB=yellow_calib_0412;
 	CONFIG=6858.113.config.dat;
@@ -167,11 +171,13 @@
 //=======                   Run06                      =========
 //==============================================================
 [7400.001]
+	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=0;
 	ENERGY_CALIB=0213.007;
 	CONFIG=config_init.dat;
 
 [7400.101]
+	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=0;
 	ENERGY_CALIB=60217.101;
 	CONFIG=config_init.dat;
@@ -341,6 +347,15 @@
 [7563.101]
 	RUN_STATUS=Good;
 	CONFIG=7563.101.config.dat;
+
+[7563.102]
+	CONFIG=7563.102.config.dat;
+
+[7564.001]
+	CONFIG=7564.001.config.dat;
+
+[7564.101]
+	CONFIG=7564.101.config.dat;
 
 [7576.001]
 	CONFIG=7576.001.config.dat;
@@ -520,6 +535,21 @@
 	EnableStrip=54;
 	EnableStrip=72;
 	CONFIG=7609.009.config.dat;
+
+[7614.001]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	TSHIFT=1;
+	CONFIG=7614.001.config.dat;
+
+[7614.005]
+	TSHIFT=0.7;
+
+	
+
+[7615.001]
+	MEASUREMENT_TYPE=NORM;
+	TSHIFT=0;
+
 	
 
 
