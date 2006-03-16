@@ -383,6 +383,9 @@
 [7568.102]
 	CONFIG=7568.102.config.dat;
 
+[7568.104]
+	CONFIG=7568.104.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
@@ -583,6 +586,7 @@
 	
 
 [7620.001]
+	// blue timing has shifted by 10 ns
 	RUN_STATUS=Junk;
 	MEASUREMENT_TYPE=NORM;
 	TSHIFT=0;
