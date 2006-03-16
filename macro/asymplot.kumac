@@ -2055,13 +2055,13 @@ next:
    ve/cr  P($vdim(index,1))
    ve/cr dP($vdim(index,1))
 
-   TargetMotion=Horizontal
+   Orientation=Horizontal
    scan=H
 * Incert Target Values to x for Vertical Scan
    test=$EVAL(x(1)*x(2)*x(3))
    if [test].eq.0 then
 	  sigma x=y
-	  TargetMotion=Vertical
+	  Orientation=Vertical
 	  scan=V
    endif
 
@@ -2070,7 +2070,7 @@ next:
        ve/inp dP([i]) [dspol[i]]
    enddo
 
-   xtitle=[TargetMotion] Target Position \133 counts \135
+   xtitle=Target [Orientation] Position \133 counts \135
 
 *   exec simple xtitle=[xtitle]
 
