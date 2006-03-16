@@ -146,7 +146,8 @@ typedef struct {
   string masscut_s;
   string tshift_s;
   string inj_tshift_s;
-  string run_status_s;    
+  string run_status_s; 
+  string measurement_type_s;
 }StructRunDB ;
 
 
