@@ -16,8 +16,8 @@ help(){
     echo    " mklink.sh [-xh][--pc2pc-stand-alone][--double-pc][--pb2pb-2005]"
     echo    "    : make symbolic links"
     echo    " "
-    echo -e "   --pc2pc-stand-alone    Double PC configulation";
-    echo -e "   --double-pc            Stand alone pc2pc configulation";
+    echo -e "   --pc2pc-stand-alone    Stand alone pc2pc configulation";
+    echo -e "   --double-pc            Double PC configulation";
     echo -e "   --pb2pb-2005           cd to DATADIR, ONLINE/log, hbook and execute ln.sh"
     echo -e "   -h | --help            Show this help"
     echo -e "   -x                     Show example"
