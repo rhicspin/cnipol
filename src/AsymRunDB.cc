@@ -70,12 +70,13 @@ readdb(double RUNID) {
       }
     }else{
       if (match){
-	if (str.find("CONFIG")       ==1) rundb.config_file_s = GetVariables(str);
-	if (str.find("MASSCUT")      ==1) rundb.masscut_s     = GetVariables(str);
-	if (str.find("TSHIFT")       ==1) rundb.tshift_s      = GetVariables(str);
-	if (str.find("ENERGY_CALIB") ==1) rundb.calib_file_s  = GetVariables(str);
-	if (str.find("INJ_TSHIFT")   ==1) rundb.inj_tshift_s  = GetVariables(str);
-	if (str.find("RUN_STATUS")   ==1) rundb.run_status_s  = GetVariables(str);
+	if (str.find("CONFIG")          ==1) rundb.config_file_s       = GetVariables(str);
+	if (str.find("MASSCUT")         ==1) rundb.masscut_s           = GetVariables(str);
+	if (str.find("TSHIFT")          ==1) rundb.tshift_s            = GetVariables(str);
+	if (str.find("ENERGY_CALIB")    ==1) rundb.calib_file_s        = GetVariables(str);
+	if (str.find("INJ_TSHIFT")      ==1) rundb.inj_tshift_s        = GetVariables(str);
+	if (str.find("RUN_STATUS")      ==1) rundb.run_status_s        = GetVariables(str);
+	if (str.find("MEASUREMENT_TYPE")==1) rundb.measurement_type_s  = GetVariables(str);
       }
     }
 
@@ -205,12 +206,13 @@ ContinueScan(double ThisRunID, double RunID){
 void
 PrintRunDB(){
 
-  printf("Run Status   = %s\n",    rundb.run_status_s.c_str());
-  printf("Config File  = %s\n",    rundb.config_file_s.c_str());
-  printf("Calib File   = %s\n",    rundb.calib_file_s.c_str());
-  printf("Mass Cut     = %5.1f\n", strtof(rundb.masscut_s.c_str(),NULL));
-  printf("TSHIFT       = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
-  printf("INJ_TSHIFT   = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
+  printf("Run Status       = %s\n",    rundb.run_status_s.c_str());
+  printf("Config File      = %s\n",    rundb.config_file_s.c_str());
+  printf("Calib File       = %s\n",    rundb.calib_file_s.c_str());
+  printf("Mass Cut         = %5.1f\n", strtof(rundb.masscut_s.c_str(),NULL));
+  printf("TSHIFT           = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
+  printf("INJ_TSHIFT       = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
+  printf("MEASUREMENT_TYPE = %5.1f\n", strtof(rundb.measurement_type_s.c_str(),NULL));
 
   return;
 }
@@ -233,6 +235,7 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // Configulation File
     fprintf(stdout," RUN STATUS   = %s\n",    rundb.run_status_s.c_str());
+    fprintf(stdout," MEAS. TYPE   = %s\n",    rundb.measurement_type_s.c_str());
     fprintf(stdout," CONFIG       = %s\n",reConfFile);
     fprintf(stdout," CALIB        = %s\n",CalibFile);
 
