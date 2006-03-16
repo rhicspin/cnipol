@@ -369,6 +369,14 @@
 [7568.005]
 	CONFIG=7568.005.config.dat;
 
+[7568.006]
+	RUN_STATUS=Junk;
+	CONFIG=7568.006.config.dat;
+
+[7568.007]
+	RUN_STATUS=Suspicious;
+	CONFIG=7568.007.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
