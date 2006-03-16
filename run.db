@@ -363,6 +363,12 @@
 [7568.003]
 	CONFIG=7568.003.config.dat;
 
+[7568.004]
+	CONFIG=7568.004.config.dat;
+
+[7568.005]
+	CONFIG=7568.005.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
