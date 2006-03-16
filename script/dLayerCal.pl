@@ -52,7 +52,7 @@ sub help(){
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
     print "\t -h             Show this help \n";
     print "\n";
-    print "    ex.) dLayerCal.pl -E 350:950 -f 7279.005 -b \n";
+    print "    ex.1) dLayerCal.pl -E 350:950 -f 7279.005 -b \n\n";
     print "\n";
     exit(0);
 }

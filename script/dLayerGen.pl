@@ -1,15 +1,27 @@
 #! /usr/bin/perl
+$cfile="";
+$OPT_CONFIG=0;
 
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:h', \%opt);
+getopts('F:f:h', \%opt);
 
 if ( $opt{h} ) {
     help();
 }
+
+if ( $opt{F} ) {
+    $OPT_CONFIG=1;
+    $cfile = $opt{F};
+    if (length ($cfile) == 0){
+	print "Error: Specify Config <file>.\n";
+	help();
+    } 
+}
+
 
 # Get Run ID
 my $Runn = $opt{f};
@@ -20,12 +32,15 @@ if (length ($Runn) == 0){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -h [ -f <runID>]\n\n"; 
+    print " Usage:\n  $0 -h [ -f <runID>][-F <file>]\n\n"; 
     print "    create banana histograms for fit. Execute dLayerCal.pl next.\n\n";
     print "\t -f <runID> runID\n";
+    print "\t -F <file>  Load configulation from <file> \n";
     print "\t -h         Show this help";
     print "\n\n";
-    print "    ex.) dLayerGen.pl -f 7279.005";
+    print "    ex.) dLayerGen.pl -f 7279.005\n\n";
+    print "    ex.2) Load configulation from ./config/7586.014.config.dat :\n\n";
+    print "          dLayerCal.pl -f 7602.004 -F ./config/7586.014.config.dat \n\n";
     print "\n\n";
     exit(0);
 }
@@ -38,16 +53,20 @@ $DATAFILE = "$Runn.data";
 $LOGFILE  = "$BASEDIR/douts/$Runn.dl.log";
 $COMMAND  = "Asym";
 
+
 if (-e $CHECKDATA) {
     
 	# Number of events to be skipped 1: all the events
-	$NEVOPT = " -n 1 ";    
-	$options = "-D -A";     # TOF vs. EDEP without Tzero subtraction
-	
-	printf "nice -19 $COMMAND $NEVOPT -f $DATAFILE $options  -o $Runn.hbook $tshiftopt $OPT_CONFIG | tee $LOGFILE\n "; 
-	
+	$NEVOPT = " -n 1";    
+	$options = " -D -A";     # TOF vs. EDEP without Tzero subtraction
+	if ($OPT_CONFIG) {
+	    $options = " $options -F $cfile";
+	}
+
+	printf "nice -19 $COMMAND $NEVOPT -f $DATAFILE $options  -o $Runn.hbook | tee $LOGFILE\n "; 
+
 	##### START #####
-	system ("nice -19 $COMMAND $NEVOPT -f $DATAFILE  $options  -o $Runn.hbook $tshiftopt $OPT_CONFIG | tee $LOGFILE\n ");
+	system ("nice -19 $COMMAND $NEVOPT -f $DATAFILE  $options  -o $Runn.hbook | tee $LOGFILE\n ");
 	system ("h2root $Runn.hbook ");
 	system ("mv $Runn.root ./douts");
 	system ("rm $Runn.hbook");
