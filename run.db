@@ -357,6 +357,9 @@
 [7564.101]
 	CONFIG=7564.101.config.dat;
 
+[7568.002]
+	CONFIG=7568.002.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
