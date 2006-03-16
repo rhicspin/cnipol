@@ -380,6 +380,9 @@
 [7568.101]
 	CONFIG=7568.101.config.dat;
 
+[7568.102]
+	CONFIG=7568.102.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
@@ -579,19 +582,22 @@
 
 	
 
-[7615.001]
+[7620.001]
+	RUN_STATUS=Junk;
 	MEASUREMENT_TYPE=NORM;
 	TSHIFT=0;
 	ENERGY_CALIB=calib.1503.002.scale;
 	CONFIG=7621.003.config.dat;
 
-[7615.101]
+[7620.101]
 	ENERGY_CALIB=calib.1503.102.scale;
 	
 [7622.001]
+	// timing tune 
 	RUN_STATUS=Junk;
 
 [7622.101]
+	// timing tune
 	RUN_STATUS=Junk;
 
 [7623.001]
