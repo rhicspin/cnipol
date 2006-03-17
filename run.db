@@ -604,13 +604,54 @@
 	// timing tune
 	RUN_STATUS=Junk;
 
-[7623.001]
+[7622.012]
 	RUN_STATUS=Good;
-	CONFIG=7614.012.config.dat;
+	CONFIG=7622.012.config.dat;
 
-[7623.101]
+[7622.013]
+	CONFIG=7622.013.config.dat;
+
+[7622.019]
+	CONFIG=7622.019.config.dat;
+
+
+[7622.104]
+	RUN_STATUS=Good;
+	CONFIG=7622.104.config.dat;
+
+
+[7622.105]
+	TSHIFT=0;
+	CONFIG=7622.105.config.dat;
+
+[7622.109]
+	CONFIG=7622.109.config.dat;
+
+
+[7626.001] 
+	// timing tune in online
+	RUN_STATUS=Junk;
+
+[7626.004] 
+	RUN_STATUS=Tune;
+
+[7626.101] 
+	// timing tune in online
+	RUN_STATUS=Junk;
+
+[7626.102] 
+	// timing tune in online
+	RUN_STATUS=Tune;
+
+[7627.001] 
+	RUN_STATUS=Junk;
+
+[7627.004] 
 	RUN_STATUS=Good;
 
+[7627.101] 
+	RUN_STATUS=Junk;
 
-
+[7627.102] 
+	RUN_STATUS=Good;
 
