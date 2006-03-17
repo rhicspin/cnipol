@@ -213,6 +213,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     KinConst_E2T = E2T;
     FitRangeLow = EMIN;
     FitRangeUpp = EMAX;
+    cfile="/usr/local/cnipol/config/7559.007.config.dat";
     sprintf(CONFFILE,"%s",cfile);
 
     if (RUNID>7400) RHIC_Beam+=2;
@@ -651,8 +652,8 @@ void KinFit::PlotResult()
 
     // Default plotting range for Run05
     if (RUNID > 7400) { //  for Run06
-        TMIN = -20;
-        TMAX = 15;
+        TMIN = -25;
+        TMAX = 10;
     }
 
 
