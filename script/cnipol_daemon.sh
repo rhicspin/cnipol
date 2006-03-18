@@ -62,6 +62,7 @@ RunDlayer(){
     dLayer.pl -f $RunID 
     mkConfig.pl -f $RunID
     dLayer.pl -f $RunID -b -F ./config/$RunID.config.dat
+    mkConfig.pl -f $RunID
 
 }
 
