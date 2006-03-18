@@ -600,10 +600,6 @@
 	// timing tune 
 	RUN_STATUS=Junk;
 
-[7622.101]
-	// timing tune
-	RUN_STATUS=Junk;
-
 [7622.012]
 	RUN_STATUS=Good;
 	CONFIG=7622.012.config.dat;
@@ -614,6 +610,9 @@
 [7622.019]
 	CONFIG=7622.019.config.dat;
 
+[7622.101]
+	// timing tune
+	RUN_STATUS=Junk;
 
 [7622.104]
 	RUN_STATUS=Good;
