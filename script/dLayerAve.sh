@@ -5,10 +5,42 @@
 #I. Nakagawa
 
 BASEDIR=$ASYMDIR
+ExeDlayerAverage=1;
 DLAYERDIR=$ASYMDIR/dlayer
 RUNLIST=$ASYMDIR/.runlist
 DUMMY=0;
 
+#############################################################################
+#                                     Help                                  #
+#############################################################################
+help(){
+    echo    " "
+    echo    " mkDB.sh [-xh][-f <file>]"
+    echo    "    : make deadlayer analysis database "
+    echo    " "
+    echo -e "   -f <file>                 Make list from runlist <file>";
+    echo -e "   -h | --help               Show this help"
+    echo -e "   -x                        Show example"
+    echo    " "
+    exit;
+}
+
+ 
+ShowExample(){
+ 
+    echo    " "
+    echo    "1. make deadlayer database from runlist=.runlist";
+    echo    " "
+    echo    "    mkDB.sh -f .runlist"
+    echo    " "
+    exit;
+
+}
+
+
+#############################################################################
+#                                  InitVariables()                          #
+#############################################################################
 InitVariables(){
     
     EVENT_RATES=0;
@@ -23,12 +55,35 @@ InitVariables(){
 }
 
 
+#############################################################################
+#                                  InitVariables()                          #
+#############################################################################
+ShowIndex(){
 
-Execute(){
+    printf "=============================================================\n";
+    printf " RunID    ";
+    printf " Dl_ave";
+    printf " err";
+    printf " Rate ";
+    printf "\n";
+    printf "            ";
+    printf "[ug/cm^2]";
+    printf "";
+    printf " [Hz]";
+    printf "\n";
+    printf "=============================================================\n";
+
+}
+
+
+#############################################################################
+#                                DlayerAverage()                            #
+#############################################################################
+DlayerAverage(){
 
 NLINE=`wc $RUNLIST | gawk '{print $1}'`
 
-for (( i=$Start; i<=$NLINE ; i++ )) ;
+for (( i=1; i<=$NLINE ; i++ )) ;
   do
     RUNID=`line.sh $i $RUNLIST  | gawk '{print $1}'`
     FILL=`echo $RUNID | gawk '{printf("%4d",$RUNID)}'`;
@@ -39,17 +94,19 @@ for (( i=$Start; i<=$NLINE ; i++ )) ;
 	Beam="Blue"
     fi
 
-    DlayerFile=$DLAYERDIR/$RUNID.temp.dat
+    DlayerFile=$DLAYERDIR/$RUNID.temp.dat;
+    FITLOGFILE=$DLAYERDIR/$RUNID.fit.log;
+    LOGFILE=$BASEDIR/douts/$RUNID.dl.log;
     if [ -f $DlayerFile ] ; then
 
-	    EVENT_RATES=`grep 'Event Rate'  $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
-	    READ_RATES=`grep 'Read Rate' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $5}'`
-	    AVE_Dl=`grep "dlave =" $DLAYERDIR/$RUNID.fit.log | gawk '{print $3}'`
-	    AVE_Dl_ERROR=`grep "Deviation/strip=" $DLAYERDIR/$RUNID.fit.log | gawk '{print $2}'`
-	    AVE_WCM=`grep 'WCM Average  ' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
-	    FILL_BUNCH=`grep '# of Filled Bunch' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $6}'`
-	    SPECIFIC_LUMI=`grep 'Specific Luminosity' $BASEDIR/douts/$RUNID.dl.log | gawk '{print $6}'`
-	    TGT_POS=`grep @ $BASEDIR/douts/$RUNID.dl.log | gawk '{print $4}'`
+	    EVENT_RATES=`grep 'Event Rate'  $LOGFILE | gawk '{printf("%4.2f", $4*1e-6)}'`
+	    READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5*1e-6)}'`
+	    AVE_Dl=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`
+	    AVE_Dl_ERROR=`grep "Deviation/strip=" $FITLOGFILE | gawk '{printf("%5.2f", $2)}'`
+	    AVE_WCM=`grep 'WCM Average  ' $LOGFILE | gawk '{printf("%7.2f", $4)}'`
+	    FILL_BUNCH=`grep '# of Filled Bunch' $LOGFILE | gawk '{printf(" %3d", $6)}'`
+	    SPECIFIC_LUMI=`grep 'Specific Luminosity' $LOGFILE | gawk '{printf("%6.3f",$6)}'`
+	    TGT_POS=`grep @ $LOGFILE | gawk '{print $4}'`
 
 	    echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES " 
 	    echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH "
@@ -64,60 +121,29 @@ for (( i=$Start; i<=$NLINE ; i++ )) ;
 
 }
 
-################################################################
-############                  Select Mode        ###############
-################################################################
-#Mode Blue+Flattop
-#Mode=1 ; 
-#Mode Blue+Injection
-Mode=2 ;
-#Mode Yellow+Flattop
-#Mode=3 ; 
-#Mode Yellow+Injection
-#Mode=4 ; 
-#Profile 7133 (Yellow)
-#Mode=5 ; 
-#Profile 7151 (Yellow)
-#Mode=6 ; 
-#Profile 7151 (Blue)
-#Mode=7 ; 
-################################################################
 
-
-
-
-Profile=0;
-Start=1;
-if [ $Mode -eq 1 ] ; then 
-    Beam=Blue
-    Mode=FTP
-elif [ $Mode -eq 2 ] ; then
-    Beam=Blue
-    Mode=INJ
-elif [ $Mode -eq 3 ] ; then
-    Beam=Yellow
-    Mode=FTP
-elif [ $Mode -eq 4 ] ; then
-    Beam=Yellow 
-    Mode=INJ
-elif [ $Mode -eq 5 ] ; then
-    Beam=Yellow;
-    Profile=1;
-    Fill=7133;
-    Start=2;
-elif [ $Mode -eq 6 ] ; then
-    Beam=Yellow;
-    Profile=1;
-    Fill=7151;
-    Start=2;
-elif [ $Mode -eq 7 ] ; then
-    Beam=Blue;
-    Profile=1;
-    Fill=7151;
-    Start=2;
-fi
+#############################################################################
+#                                    Main                                   #
+#############################################################################
+ 
+while test $# -ne 0; do
+  case "$1" in
+  -f) shift ; RUNLIST=$1 ;;
+  -x) shift ; ShowExample ;;
+  -h | --help) help ;;
+  *)  echo "Error: Invarid Option $1"
+      help;;
+  esac
+  shift
+done
 
 
 InitVariables;
-Execute;
+
+ShowIndex;
+if [ $ExeDlayerAverage == 1 ] ; then
+    DlayerAverage;
+fi
+
+
 
