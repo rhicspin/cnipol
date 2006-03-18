@@ -1681,13 +1681,13 @@ last:
  macro chisq
 * *************************
    exe setting 
-   size 18 16
+*   size 18 16
    
-   opt htit
-   null -0.05 6.28 -0.8 0.8
-   hi/plot 36230 s
-   atitle 'strip phi-angle \133 rad \135' 'Polarization \133 % \135' ! 220
-   wait
+*   opt htit
+*   null -0.05 6.28 -0.8 0.8
+*   hi/plot 36230 s
+*   atitle 'strip phi-angle \133 rad \135' 'Polarization \133 % \135' ! 220
+*   wait
 
 
    exe setting 
