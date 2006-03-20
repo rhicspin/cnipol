@@ -412,7 +412,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     TH2D* h2dcarbon = (TH2D*) h2d->Clone();
     h2dcarbon -> SetName("h2dcarbon");
     
-    // Extracting information of the 2D histogram
+    //Extracting information of the 2D histogram
     Int_t xnbins = h2dcarbon ->GetXaxis()->GetNbins();
     Float_t xmin = h2dcarbon ->GetXaxis()->GetXmin();
     Float_t xmax = h2dcarbon ->GetXaxis()->GetXmax();
@@ -561,6 +561,8 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     h2d_1    -> Delete();
     h2d_2    -> Delete();
     h2d_chi2 -> Delete();
+    kinf->Delete();
+    myf->Delete();
 
 }
 
@@ -616,7 +618,7 @@ void KinFit::PlotResidual(Int_t St)
 
     Char_t title[100];
     sprintf(title,"%s ST-%d",runid, St+1);
-    TH2D* frame = new TH2D("frame",title, 10, 195, 1185, 10, -1.5, 1.5);
+    TH2D* frame = new TH2D(title,title, 10, 195, 1185, 10, -1.5, 1.5);
     frame -> SetStats(0);
     frame -> GetXaxis()->SetTitle("kinetic energy");
     frame -> GetYaxis()->SetTitle("residuals [ns]");
@@ -769,7 +771,14 @@ KinFit::PlotDlayer(Int_t Mode){
 
     Char_t title[40];
     sprintf(title, "%s Dead Layer Distribution", runid); 
-    TH2D* frame = new TH2D("framed", title, 10, 0.5, 72.5, 10, DMIN, 100.);
+    if(Mode==2)
+    {
+	    TH2D* framed = new TH2D("dead layer 2", title, 10, 0.5, 72.5, 10, DMIN, 100.);
+    }
+    else
+    {
+	    TH2D* framed = new TH2D("dead layer 1", title, 10, 0.5, 72.5, 10, DMIN, 100.);
+    }
     framed -> SetStats(0);
     framed -> GetXaxis()->SetTitle("Strip Number");
     framed -> GetYaxis()->SetTitle("Dead Layer (\mu g/cm**2)");
@@ -855,7 +864,14 @@ KinFit::PlotT0(Int_t Mode){
     
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
-    TH2D* framet = new TH2D("framet", title, 10, 0.5, 72.5, 10, TMIN, TMAX);
+    if(Mode==2)
+    {
+	    TH2D* framet = new TH2D("T0 2", title, 10, 0.5, 72.5, 10, TMIN, TMAX);
+    }
+    else
+    {
+	    TH2D* framet = new TH2D("T0 1", title, 10, 0.5, 72.5, 10, TMIN, TMAX);
+    }
     framet -> SetStats(0);
     framet -> GetXaxis()->SetTitle("Strip Number");
     framet -> GetYaxis()->SetTitle("T0 values (nsec)");
@@ -939,7 +955,7 @@ KinFit::ReferenceConfig(){
     
     Char_t title[40];
     sprintf(title, "%s Dead Layer Difference w.r.t. Ref.", runid); 
-    TH2D* framer = new TH2D("framer", title, 10, 0.5, 6.5, 10, diffx_Min, diffx_Max);
+    TH2D* framer = new TH2D(title, title, 10, 0.5, 6.5, 10, diffx_Min, diffx_Max);
     framer -> SetStats(0);
     framer -> GetXaxis()->SetTitle("Detector Number");
     framer -> GetYaxis()->SetTitle("Dl(current) - D0(Ref) (\mu g/cm**2)");
