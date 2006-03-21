@@ -654,3 +654,55 @@
 [7627.102] 
 	RUN_STATUS=Good;
 
+[7633.001]
+	RUN_STATUS=Good;
+	CONFIG=7633.001.config.dat;
+
+[7633.003]
+	CONFIG=7633.003.config.dat;
+
+[7633.101]
+	CONFIG=7633.101.config.dat;
+
+[7633.103]
+	CONFIG=7633.103.config.dat;
+
+[7637.001]
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	CONFIG=7637.001.config.dat;
+
+[7637.003]
+	CONFIG=7637.003.config.dat;
+
+[7637.009]
+	CONFIG=7637.009.config.dat;
+
+[7637.101]
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	CONFIG=7637.101.config.dat;
+
+[7639.001]
+	CONFIG=7639.001.config.dat;
+
+[7639.003]
+	RUN_STATUS=Suspicious;
+	CONFIG=7639.003.config.dat;
+
+[7639.003]
+	RUN_STATUS=Good;
+
+[7639.007]
+	CONFIG=7639.007.config.dat;
+
+[7640.010]
+	// bunch 19 is 10 times hotter than other bunches.
+	RUN_STATUS=Junk;
+
+[7640.012]
+	RUN_STATUS=Good;
