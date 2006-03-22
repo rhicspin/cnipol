@@ -20,11 +20,12 @@ D_FLAG = -Df2cFortran
 FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
 
-target : Asym RunDBReader
 
 AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o 
 	  
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
+
+all: Asym RunDBReader Host
 
 ######## BINARY ##################
 
@@ -36,13 +37,16 @@ RunDBReader : $(RunDBReaderOBJ)
 
 ######## OBJECT ##################
 
-AsymMain.o : Asym.h AsymMain.h
+AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h
 RunDBReader.o : AsymMain.h Asym.h
 
 .C.o:
 	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<
 .f.o:
 	$(FC) -O -c $<
+
+Host:
+	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
 install : Asym RunDBReader
 	install -v -C $^ $(INSTALLDIR)
