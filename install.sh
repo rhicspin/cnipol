@@ -1,4 +1,5 @@
 #!/bin/bash
+HOSTFILE=src/.compiled_host
 
 if [ -d $INSTALLDIR ] ; then
 	echo "install executables to $INSTALLDIR"
@@ -7,6 +8,18 @@ else
 	mkdir $INSTALLDIR
 fi
 
+
+# This routine checks if the present executables are compiled in 
+# a local machine. If not, then make clean to recompile.
+if [ -f $HOSTFILE ] ; then
+    COMPILED_HOST=`cat $HOSTFILE`;
+    if [ $COMPILED_HOST != $HOSTNAME ] ; then
+	make -C src clean
+	make -C src/util clean
+    fi
+fi
+
+# make source files and install into $INSTALLDIR
 make -C src 
 make -C src install
 
