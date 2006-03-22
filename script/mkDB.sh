@@ -15,7 +15,8 @@ LOGDIR=$ASYMDIR/log;
 #############################################################################
 help(){
     echo    " "
-    echo    " mkDB.sh [-xha][--analyzed-run-list][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
+    echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
+    echo    "         [--analyzed-run-list]";
     echo    "    : make pC offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist";
@@ -236,7 +237,6 @@ while test $# -ne 0; do
   esac
   shift
 done
-
 
 
 
