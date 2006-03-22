@@ -1,3 +1,4 @@
+
 //==============================================================
 //=======                   Run04                      =========
 //==============================================================
@@ -654,6 +655,9 @@
 [7627.102] 
 	RUN_STATUS=Good;
 
+[7630.001]
+	CONFIG=7630.001.config.dat;
+
 [7633.001]
 	RUN_STATUS=Good;
 	CONFIG=7633.001.config.dat;
@@ -720,7 +724,7 @@
 	CONFIG=7640.001.config.dat;
 
 [7640.002]
-	DisableStrip=09;
+	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
@@ -741,7 +745,43 @@
 [7640.012]
 	RUN_STATUS=Good;
 
+[7641.001]
+	CONFIG=7641.001.config.dat;
+
+[7641.003]
+	CONFIG=7641.003.config.dat;
+
+[7641.101]
+	CONFIG=7641.101.config.dat;
+
+[7641.103]
+	CONFIG=7641.103.config.dat;
+
+[7641.111]
+	RUN_STATUS=Suspicious;
+
+[7642.001]
+	CONFIG=7642.001.config.dat;
+
+[7642.003]
+	CONFIG=7642.003.config.dat;
+
+[7642.013]
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+
+[7642.101]
+	RUN_STATUS=Good;
+	CONFIG=7642.101.config.dat;
+
+[7642.103]
+	CONFIG=7642.103.config.dat;
+
 [7643.101]
 	RUN_STATUS=Junk;
 
+[7643.102]
+	RUN_STATUS=Good;
 
