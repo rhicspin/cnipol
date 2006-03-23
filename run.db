@@ -779,9 +779,29 @@
 [7642.103]
 	CONFIG=7642.103.config.dat;
 
+[7642.113]
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+
 [7643.101]
 	RUN_STATUS=Junk;
 
 [7643.102]
 	RUN_STATUS=Good;
 
+[7644.001]
+	CONFIG=7644.001.config.dat;
+
+[7651.001]
+	RUN_STATUS=Junk;
+
+[7651.101]
+	RUN_STATUS=Junk;
+
+[7651.003]
+	RUN_STATUS=Good;
+
+[7651.103]
+	RUN_STATUS=Good;
