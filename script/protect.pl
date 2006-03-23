@@ -79,7 +79,7 @@ sub protect() {
 sub unprotect() {
     printf("Unprotecting hbook & log: $Runn \n");
     system("chmod 644 $HBOOKDIR/$Runn.hbook");
-    system("chmod 644 $LOGDIR/$Runn.log");
+    system("chmod 664 $LOGDIR/$Runn.log");
 }
 
 #############################################################################
