@@ -79,14 +79,6 @@ sub protect() {
 
 }
 
-#############################################################################
-#                               unprotect()                                 #
-#############################################################################
-sub unprotect() {
-    printf("Unprotecting hbook & log: $Runn \n");
-    system("chmod 644 $HBOOKDIR/$Runn.hbook");
-    system("chmod 664 $LOGDIR/$Runn.log");
-}
 
 #############################################################################
 #                                  scan()                                   #
@@ -97,19 +89,6 @@ sub scan(){
 	chomp($_);                    # strip off charrige return from $_
 	$Runn=$_;        
 	protect();
-    }
-
-}
-
-#############################################################################
-#                                  unscan()                                 #
-#############################################################################
-sub unscan(){
-                                                                           
-    while (defined($_=<instream>)) {  # readin line to $_ from instream
-	chomp($_);                    # strip off charrige return from $_
-	$Runn=$_;        
-	unprotect();
     }
 
 }
