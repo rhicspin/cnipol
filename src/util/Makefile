@@ -1,10 +1,10 @@
 
 C++    = g++
 
-SRC    = calcPhi.cc  interval.cc
-BINARY = calcPhi interval
+SRC    = calcPhi.cc  interval.cc converge.cc
+BINARY = calcPhi interval converge
 
-all: calcPhi interval
+all: calcPhi interval converge
 
 clean:
 	rm -f *.o core 
@@ -15,6 +15,9 @@ calcPhi: calcPhi.o
 
 
 interval: interval.o
+	$(C++) $^ -o $@
+
+converge: converge.o
 	$(C++) $^ -o $@
 
 install: $(BINARY)
