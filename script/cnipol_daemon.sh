@@ -5,14 +5,20 @@
 
 
 CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
-CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer.dat;
 DLAYERDIR=$ASYMDIR/dlayer
 HBOOKDIR=$ASYMDIR/hbook
 LOGDIR=$ASYMDIR/log
-FROM_FILL=7605;
+FROM_FILL=7538;
 TILL_FILL=9000;
+SLEEP_TIME=1800;
+
+# deadlayer fit environments
+CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer_iteration.dat;
 ExeDlayerFit=0;
-SLEEP_TIME=3;
+MAX_ITERATION=4;
+TOLERANCE=1; 
+
+
 
 # check runlist
 if [ -f $CNI_DAEMON_RUNLIST ] ; then
@@ -29,11 +35,13 @@ fi
 help(){
     echo    " "
     echo    " cnipol_daemon.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "                  [--dlayer-fit][-s --sleep <time>]"; 
+    echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>]"; 
     echo    "    : search for new run which has not been analyized and then run analysis program "
     echo    " "
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --delayer-fit             run deadlayer fit"
+    echo -e "   --max-iteration <int>     Maximum iteration for deadlayer fit [def]:$MAX_ITERATION";
+    echo -e "   --toleratnce <[%]>        Tolerance in [%] to be converged. [def]:$TOLERANCE";
     echo -e "   --fill-from <Fill#>       Make list from <Fill#> [def]:$FROM_FILL";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#> [def]:$TILL_FILL";
     echo -e "   -s --sleep <time>         Sleep <time> in sec [def]:$SLEEP_TIME";
@@ -66,26 +74,57 @@ RunDlayer(){
 
     echo $RunID  ;
     echo -e -n "$RunID " >> $CNI_DAEMON_DLAYER_STUDY;
+
+    # First iteration without -b option
     dLayer.pl -f $RunID 
     mkConfig.pl -f $RunID
     AVE_Dl_1=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
     AVE_T0_1=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
-    dLayer.pl -f $RunID -b -F ./config/$RunID.config.dat
-    mkConfig.pl -f $RunID ;
-    AVE_Dl_2=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
-    AVE_T0_2=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
-    Dl_ratio=`echo -e -n "$AVE_Dl_1 $AVE_Dl_2" | gawk '{printf("%7.4f",$2/$1)}'`
-    T0_ratio=`echo -e -n "$AVE_T0_1 $AVE_T0_2" | gawk '{printf("%7.4f",$2/$1)}'`
-    echo -e -n " $Dl_ratio  $T0_ratio " >> $CNI_DAEMON_DLAYER_STUDY;
-    dLayer.pl -f $RunID -b -F ./config/$RunID.config.dat
-    mkConfig.pl -f $RunID 
-    AVE_Dl_3=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
-    AVE_T0_3=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
-    Dl_ratio=`echo -e -n "$AVE_Dl_2 $AVE_Dl_3" | gawk '{printf("%7.4f",$2/$1)}'`
-    T0_ratio=`echo -e -n "$AVE_T0_2 $AVE_T0_3" | gawk '{printf("%7.4f",$2/$1)}'`
-    echo -e -n " $Dl_ratio  $T0_ratio \n" >> $CNI_DAEMON_DLAYER_STUDY; 
+
+
+    # Loop for further iteration with -b option
+    for (( i=2; i<=$MAX_ITERATION; i++ )) ; do 
+
+	dLayer.pl -f $RunID -b -F ./config/$RunID.config.dat
+	mkConfig.pl -f $RunID ;
+
+	AVE_Dl_2=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
+	AVE_T0_2=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
+	echo -e -n "$AVE_Dl_2 $AVE_Dl_1" | converge >> $CNI_DAEMON_DLAYER_STUDY;
+	echo -e -n "$AVE_T0_2 $AVE_T0_1" | converge >> $CNI_DAEMON_DLAYER_STUDY;
+
+	# Check if results are converged or not
+	TEST1=`echo -e -n "$AVE_Dl_2 $AVE_Dl_1" | converge -t $TOLERANCE` 
+	TEST2=`echo -e -n "$AVE_T0_2 $AVE_T0_1" | converge -t $TOLERANCE` 
+
+	# Following 3 lines are for debugging
+	echo -e -n "Iteration: $i DL= $AVE_Dl_1 $AVE_Dl_2 \n";
+	echo -e -n "Iteration: $i T0= $AVE_T0_1 $AVE_T0_2 \n";
+	echo -e "TEST Results : $TEST1 $TEST2";
+
+	if [ $TEST1 -eq 1 ]&&[ $TEST2 -eq 1 ] ; then
+
+	    # OK, both deadlayer and t0 are converged
+	    echo -e -n "\n" >> $CNI_DAEMON_DLAYER_STUDY;
+	    echo -e "Ok $RunID deadlayer fit Converged, Move on to run";
+	    break;
+
+	else
+
+	    if [ $i -eq $MAX_ITERATION ] ; then
+		echo -e -n " Didn't Converge after $i Iteration\n" >> $CNI_DAEMON_DLAYER_STUDY;
+		break;
+	    fi
+
+	    # update reference dl/t0 results
+	    AVE_Dl_1=$AVE_Dl_2;
+	    AVE_T0_1=$AVE_T0_2;
+
+	fi
+    done
 
 }
+
 
 
 #############################################################################
@@ -145,13 +184,15 @@ done;
 
 while test $# -ne 0; do
   case "$1" in
-  -F) shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
-  --fill-from) shift ; FROM_FILL=$1;;
-  --fill-till) shift ; TILL_FILL=$1;;
-  --dlayer-fit) ExeDlayerFit=1;;
-  -s | --sleep) shift ; SLEEP_TIME=$1 ;;
-  -x) shift ; ShowExample ;;
-  -h | --help) help ;;
+  -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
+  --fill-from)     shift ; FROM_FILL=$1;;
+  --fill-till)     shift ; TILL_FILL=$1;;
+  --dlayer-fit)            ExeDlayerFit=1;;
+  --max-iteration) shift ; MAX_ITERATION=$1 ;;
+  --tolerance)     shift ; TOLERANCE=$1 ;;
+  -s | --sleep)    shift ; SLEEP_TIME=$1 ;;
+  -x)              shift ; ShowExample ;;
+  -h | --help)              help ;;
   *)  echo "Error: Invarid Option $1"
       help;;
   esac
