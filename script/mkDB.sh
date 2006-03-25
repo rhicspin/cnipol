@@ -161,7 +161,7 @@ grepit(){
 
     # If Junk then carrige return
     if [ $RUN_STATUS == 'Junk' ] ; then
-	echo -e -n "$RUN_STATUS\n";
+	echo -e -n " $RUN_STATUS\n";
     else
 
 
