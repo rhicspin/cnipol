@@ -443,7 +443,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     // Dlayer Fix/ Or not
     
     if (!mode&1) {
-        kinf->SetParameters(50.0, 0.0);
+        kinf->SetParameters(65.0, -16.0);
         kinf->SetParLimits(0, 0., 200.);
     } elseif (mode&1) {
         kinf->SetParameters(dlsum[Si], 0.0);
