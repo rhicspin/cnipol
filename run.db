@@ -658,6 +658,19 @@
 [7630.001]
 	CONFIG=7630.001.config.dat;
 
+[7630.004]
+	CONFIG=7630.004.config.dat;
+
+[7630.101]
+	CONFIG=7630.101.config.dat;
+
+[7630.103]
+	TSHIFT=-2;
+
+[7630.105]
+	TSHIFT=0;
+	CONFIG=7630.105.config.dat;
+
 [7633.001]
 	RUN_STATUS=Good;
 	CONFIG=7633.001.config.dat;
@@ -690,6 +703,9 @@
 	DisableStrip=47;
 	DisableStrip=65;
 	CONFIG=7637.101.config.dat;
+
+[7637.103]
+	CONFIG=7637.103.config.dat;
 
 [7639.001]
 	CONFIG=7639.001.config.dat;
@@ -739,13 +755,36 @@
 [7640.011]
 	RUN_STATUS=Suspicious;
 
-[7640.014]
-	CONFIG=7640.014.config.dat;
-
 [7640.012]
 	RUN_STATUS=Good;
 
+[7640.014]
+	CONFIG=7640.014.config.dat;
+
+[7640.101]
+	CONFIG=7640.101.config.dat;
+
+[7640.104]
+	CONFIG=7640.104.config.dat;
+
+[7640.106]
+	CONFIG=7640.106.config.dat;
+
+[7640.107]
+	RUN_STATUS=Suspicious;
+
+[7640.108]
+	RUN_STATUS=Good;
+
+[7640.110]
+	RUN_STATUS=Junk;
+
+[7640.111]
+	RUN_STATUS=Suspicious;
+	CONFIG=7640.111.config.dat;
+
 [7641.001]
+	RUN_STATUS=Good;
 	CONFIG=7641.001.config.dat;
 
 [7641.003]
@@ -793,6 +832,25 @@
 
 [7644.001]
 	CONFIG=7644.001.config.dat;
+
+[7644.003]
+	CONFIG=7644.003.config.dat;
+
+[7644.101]
+	CONFIG=7644.101.config.dat;
+
+[7644.103]
+	CONFIG=7644.103.config.dat;
+
+[7645.001]
+	RUN_STATUS=Junk;
+
+[7645.002]
+	RUN_STATUS=Good;
+	CONFIG=7645.002.config.dat;
+
+[7645.004]
+	CONFIG=7645.004.config.dat;
 
 [7651.001]
 	RUN_STATUS=Junk;
