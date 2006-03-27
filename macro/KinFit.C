@@ -128,29 +128,33 @@ BaseName(Char_t *filename){
 
 class KinFit {
 public:
-  KinFit(Char_t *, Float_t, Int_t, Float_t, Float_t, Float_t, Int_t, Char_t*);
+  KinFit(Char_t *, Float_t, Int_t, Float_t, Float_t, Float_t, Int_t, Char_t*, Char_t *);
   ~KinFit();
   
   void Fit(Int_t);
   void FitOne(Int_t, Int_t);
 
   void CoefsGet();   // read coeficients from root file 
-    Int_t PlotDlayer(Int_t);
+    Int_t PlotDlayer(Int_t, TLegend*);
     Int_t PlotT0(Int_t);
     void Residual();
     void PlotResidual();
     void PlotResult(Int_t);
     Int_t ReferenceConfig();
-    Int_t ReferenceDlayer();
+    Int_t ReferenceDlayer(TLegend*);
+    Int_t GetDlayerFromFile();
+    Int_t SuperposeDlayerPlot(Char_t *, TLegend*, Int_t);
+    Int_t SuperposeT0Plot(Int_t);
+
 
   Int_t DisableList(Int_t RHIC_Beam, Int_t St);
   Float_t WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT);
-  Int_t GetData();
+  Int_t GetData(Char_t*);
     
   ofstream fout;
   ofstream ferrout;
     
-  Char_t runid[10], CONFFILE[256], DLAYERFILE[256];
+  Char_t runid[10], CONFFILE[256], DLAYERFILE[256], ONLINE_CONFFILE[256];
   Float_t RUNID, bene;
 
   Int_t RHIC_Beam;
@@ -203,7 +207,7 @@ public:
 
 // Initialization of the class
 KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, 
-	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile){
+	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile, Char_t *online_cfile){
 
     sprintf(runid,"%s",runidinput);
     RUNID = atof(runid);
@@ -214,6 +218,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     FitRangeLow = EMIN;
     FitRangeUpp = EMAX;
     sprintf(CONFFILE,"%s",cfile);
+    sprintf(ONLINE_CONFFILE,"%s",online_cfile);
 
     if (RUNID>7400) RHIC_Beam+=2;
 
@@ -225,13 +230,14 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     if (HID==15100) printf(" Fit on  banana-mass  cut , HID   : %5d\n", HID);
     printf(" Fitting Energy Renga <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
     printf(" Configuration File               : %s \n", CONFFILE);
+    printf(" Online Configuration File        : %s \n", ONLINE_CONFFILE);
     printf("=========================================================\n");
     printf("\n");
 
 
-    memset(dl,0, sizeof(dl));
+    memset(dl, 0, sizeof(dl) );
     memset(dlE,0, sizeof(dlE));
-    memset(t0,0, sizeof(t0));
+    memset(t0, 0, sizeof(t0) );
     memset(t0E,0, sizeof(t0E));
 
     // globally used.
@@ -663,12 +669,14 @@ void KinFit::PlotResult()
     TPostScript ps("testsummary.ps",112);
     ps.NewPage();
     
+
+    TLegend * aLegend = new TLegend(0.7,0.1,0.9,0.3);
     CurC -> Divide(1,2);
     // -------------
     // Plot - 1 (Dead layer distribution)
     // -------------
     CurC -> cd(1);
-    PlotDlayer(1);
+    PlotDlayer(1, aLegend);
 
     // -------------
     // Plot - 2 (T0 distribution)
@@ -678,14 +686,19 @@ void KinFit::PlotResult()
 
     ps.NewPage();
 
+
+    aLegend->Delete();
+
+
     //-----------------------------------------------------------------
     //    Compare with dl and t0 in Configulation File
     //-----------------------------------------------------------------
+    TLegend * aLegend = new TLegend(0.7,0.1,0.9,0.3);
     if (ReferenceConfig()) { 
         printf(" --> Comparison to reference is skipped.\n");
     }else{
         ps.NewPage();
-        ReferenceDlayer();
+        ReferenceDlayer(aLegend);
     }
     ps.Close();
 
@@ -704,7 +717,39 @@ void KinFit::PlotResult()
 // Return      : 
 //
 Int_t
-KinFit::ReferenceDlayer(){
+KinFit::ReferenceDlayer(TLegend *aLegend){
+
+    GetDlayerFromFile();
+
+    CurC -> cd(1);
+    PlotDlayer(2, aLegend);
+    GetData(ONLINE_CONFFILE);
+    GetDlayerFromFile();
+    SuperposeDlayerPlot(ONLINE_CONFFILE, aLegend, 7);
+
+    //Restore current configulation file before t0 plot
+    GetData(CONFFILE);
+    GetDlayerFromFile();
+    CurC -> cd(2);
+    PlotT0(2);
+
+    GetData(ONLINE_CONFFILE);
+    GetDlayerFromFile();
+    SuperposeT0Plot(7);
+
+    return 0;
+}
+
+//
+// Class name  : 
+// Method name : GetDlayerFromFile()
+//
+// Description : Read in Deadlayers from DLAYEFILE
+// Input       : 
+// Return      : 
+//
+Int_t
+KinFit::GetDlayerFromFile(){
 
 
     ifstream infile(DLAYERFILE);
@@ -730,14 +775,10 @@ KinFit::ReferenceDlayer(){
         ++i;
     }
 
-    CurC -> cd(1);
-    PlotDlayer(2);
-
-    CurC -> cd(2);
-    PlotT0(2);
-
     return 0;
-}
+
+}//end-of-GetDlayerFromFile();
+
 
 
 
@@ -750,7 +791,7 @@ KinFit::ReferenceDlayer(){
 // Return      : 
 //
 Int_t
-KinFit::PlotDlayer(Int_t Mode){
+KinFit::PlotDlayer(Int_t Mode, TLegend *aLegend){
 
 
     // Fill Disabled Strip Arrays
@@ -765,8 +806,6 @@ KinFit::PlotDlayer(Int_t Mode){
       }
     }
 
-
-    aLegend = new TLegend(0.7,0.1,0.9,0.3);
 
 
     Char_t title[40];
@@ -816,8 +855,7 @@ KinFit::PlotDlayer(Int_t Mode){
         tave -> SetLineWidth(2);
         tave -> Draw();
 
-
-    // draw the average values
+        // draw the average values
         for (Int_t isep=0; isep<6 ; isep++) {
             TLine *ave = new TLine(12.*isep +0.5, dlsum[isep], 
                                    12.*(isep+1) +0.5, dlsum[isep]);
@@ -833,22 +871,41 @@ KinFit::PlotDlayer(Int_t Mode){
 
     }else if (Mode==2){
 
-        TGraphErrors* tgd2 = new TGraphErrors(72, strip, dl_d, stripE, dlE_d);
-        tgd2 -> SetMarkerStyle(20);
-        tgd2 -> SetMarkerSize(1.0);
-        tgd2 -> SetLineWidth(1.0);
-        tgd2 -> SetLineColor(2);
-        tgd2 -> SetMarkerColor(2);
-        tgd2 -> Draw("P");
-
-        string s = BaseName(CONFFILE);
-        aLegend->AddEntry(tgd2,s.c_str(),"P");
-        aLegend-> Draw("same");
+        // plot deadlayer from current configulation file.
+        SuperposeDlayerPlot(CONFFILE, aLegend, 2);
 
     }
 
     return 0;
 }
+
+
+//
+// Class name  : 
+// Method name : SuperposeDlayerPlot(Int_t Mode)
+//
+// Description : Add deadlayer points on current panel
+// Input       : Int_t Mode
+// Return      : 
+//
+Int_t
+KinFit::SuperposeDlayerPlot(Char_t* CONFIG_FILE, TLegend *aLegend, Int_t pmci){
+
+        TGraphErrors * tgd2 = new TGraphErrors(72, strip, dl_d, stripE, dlE_d);
+        tgd2 -> SetMarkerStyle(20);
+        tgd2 -> SetMarkerSize(1.0);
+        tgd2 -> SetLineWidth(1.0);
+        tgd2 -> SetLineColor(pmci);
+        tgd2 -> SetMarkerColor(pmci);
+        tgd2 -> Draw("P");
+
+        string s = BaseName(CONFIG_FILE);
+        aLegend->AddEntry(tgd2,s.c_str(),"P");
+        aLegend-> Draw("same");
+
+        return 0;
+}
+
 
 //
 // Class name  : 
@@ -909,13 +966,9 @@ KinFit::PlotT0(Int_t Mode){
 
 
     }else if (Mode==2){
-        TGraphErrors* tgt0d = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
-        tgt0d -> SetMarkerStyle(20);
-        tgt0d -> SetMarkerSize(1.0);
-        tgt0d -> SetLineWidth(1.0);
-        tgt0d -> SetLineColor(2);
-        tgt0d -> SetMarkerColor(2);
-        tgt0d -> Draw("P");
+
+        SuperposeT0Plot(2);
+
     }
 
     CurC->Update();
@@ -925,6 +978,27 @@ KinFit::PlotT0(Int_t Mode){
 }
 
 
+//
+// Class name  : 
+// Method name : SuperposeT0Plot(Int_t pmci)
+//
+// Description : Add T0 plot on current panel
+// Input       : Int_t Mode
+// Return      : 0
+//
+Int_t
+KinFit::SuperposeT0Plot(Int_t pmci){
+
+        TGraphErrors* tgt0d = new TGraphErrors(72, strip, t0_d, stripE, t0E_d);
+        tgt0d -> SetMarkerStyle(20);
+        tgt0d -> SetMarkerSize(1.0);
+        tgt0d -> SetLineWidth(1.0);
+        tgt0d -> SetLineColor(pmci);
+        tgt0d -> SetMarkerColor(pmci);
+        tgt0d -> Draw("P");
+
+        return 0;
+}
 
 //
 // Class name  : 
@@ -937,7 +1011,7 @@ KinFit::PlotT0(Int_t Mode){
 Int_t
 KinFit::ReferenceConfig(){
 
-    if (GetData()){ return -1; }
+    if (GetData(CONFFILE)){ return -1; }
 
     Float_t diffx_Min = -15;
     Float_t diffx_Max =  15;
@@ -1038,15 +1112,15 @@ KinFit::ReferenceConfig(){
 
 //
 // Class name  : 
-// Method name : GetData
+// Method name : GetData(Char_t * CONFIG_FILE)
 //
-// Description : GetData from file
+// Description : Read deadlayer/t0 data from CONFIG_FILE 
 // Input       : 
 // Return      : 
 //
-Int_t KinFit::GetData(){
+Int_t KinFit::GetData(Char_t * CONFIG_FILE){
 
-  ifstream infile(CONFFILE);
+  ifstream infile(CONFIG_FILE);
 
   if ( infile.fail() ) {
     cout << "unable to find file:" << CONFFILE << "\n" << flush;
