@@ -143,6 +143,7 @@ public:
     Int_t ReferenceConfig();
     Int_t ReferenceDlayer(TLegend*);
     Int_t GetDlayerFromFile();
+    Int_t GetDlayer(Char_t);
     Int_t SuperposeDlayerPlot(Char_t *, TLegend*, Int_t);
     Int_t SuperposeT0Plot(Int_t);
 
@@ -169,6 +170,11 @@ public:
         Float_t Valid[72];
         Float_t ValidE[72];
     } T0;
+
+    struct StructFlag {
+        Int_t PLOT_ONLINE_CONFIG;
+    } flag;
+
 
   // Fitting Energy Range 
   Float_t FitRangeLow = 400.;
@@ -209,6 +215,9 @@ public:
 KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, 
 	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile, Char_t *online_cfile){
 
+    // default online deadlayer plot on
+    flag.PLOT_ONLINE_CONFIG=1;
+
     sprintf(runid,"%s",runidinput);
     RUNID = atof(runid);
     RHIC_Beam = RHICBeam;
@@ -219,6 +228,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     FitRangeUpp = EMAX;
     sprintf(CONFFILE,"%s",cfile);
     sprintf(ONLINE_CONFFILE,"%s",online_cfile);
+    if (!strlen(ONLINE_CONFFILE)) flag.PLOT_ONLINE_CONFIG=0;
 
     if (RUNID>7400) RHIC_Beam+=2;
 
@@ -233,7 +243,6 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     printf(" Online Configuration File        : %s \n", ONLINE_CONFFILE);
     printf("=========================================================\n");
     printf("\n");
-
 
     memset(dl, 0, sizeof(dl) );
     memset(dlE,0, sizeof(dlE));
@@ -719,26 +728,59 @@ void KinFit::PlotResult()
 Int_t
 KinFit::ReferenceDlayer(TLegend *aLegend){
 
+    // Get deadlayer data defined in current config.
     GetDlayerFromFile();
 
+    //========================
+    //    Plot 1 - dl
+    //========================
     CurC -> cd(1);
     PlotDlayer(2, aLegend);
-    GetData(ONLINE_CONFFILE);
-    GetDlayerFromFile();
-    SuperposeDlayerPlot(ONLINE_CONFFILE, aLegend, 7);
 
-    //Restore current configulation file before t0 plot
-    GetData(CONFFILE);
-    GetDlayerFromFile();
+    // if online config file is defined, superpose on plot
+    if (flag.PLOT_ONLINE_CONFIG) {
+        GetDlayer(ONLINE_CONFFILE);
+        SuperposeDlayerPlot(ONLINE_CONFFILE, aLegend, 7);
+
+        //Restore current configulation file before t0 plot
+        GetDlayer(CONFFILE);
+    }
+
+
+    //========================
+    //    Plot 2 - t0
+    //========================
     CurC -> cd(2);
     PlotT0(2);
 
-    GetData(ONLINE_CONFFILE);
-    GetDlayerFromFile();
-    SuperposeT0Plot(7);
+    // if online config file is defined, superpose on plot
+    if (flag.PLOT_ONLINE_CONFIG) {
+        GetDlayer(ONLINE_CONFFILE);
+        SuperposeT0Plot(7);
+    }
+
 
     return 0;
 }
+
+//
+// Class name  : 
+// Method name : GetDlayer()
+//
+// Description : Get DLAYERFILE from CONFIG_FILE and read data from DLAYEFILE
+// Input       : 
+// Return      : 
+//
+Int_t
+KinFit::GetDlayer(Char_t * CONFIG_FILE){
+
+    GetData(CONFIG_FILE);
+    GetDlayerFromFile();
+
+    return 1;
+}
+
+
 
 //
 // Class name  : 

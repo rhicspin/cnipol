@@ -7,7 +7,7 @@ $HID  = 15000;
 $EMIN=400;
 $EMAX=900;
 $cfile="config.dat";
-$ONLINE_CONFIG=" ";
+$ONLINE_CONFIG="";
 
 #----------------------------------------------------------------------
 #               Command Line Options
@@ -87,8 +87,7 @@ sub GetOnlineConfig(){
 $ONLINEDIR    = $ENV{"ONLINEDIR"};
 $ONLINELOG    = "$ONLINEDIR/log/$Runn.log";
 unless (open(ONLINE_LOG_FILE,"$ONLINELOG")) {
-    # This is not a cruecial for offline analysis. Should be recovered later.
-    die "Error: $ONLINELOG doesn't exist. \n";
+    print "Warning: $ONLINELOG doesn't exist. Deadlayer for online won't be plotted.\n";
 }
 while (<ONLINE_LOG_FILE>) {
     if (/Reading calibration parameters from file/) {
