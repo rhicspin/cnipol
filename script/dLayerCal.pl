@@ -7,6 +7,7 @@ $HID  = 15000;
 $EMIN=400;
 $EMAX=900;
 $cfile="config.dat";
+$ONLINE_CONFIG=" ";
 
 #----------------------------------------------------------------------
 #               Command Line Options
@@ -71,16 +72,38 @@ sub GhostView(){
 $BASEDIR      = $ENV{"ASYMDIR"};
 $MACRODIR     = $ENV{"MACRODIR"};
 $DLAYERDIR    = "$BASEDIR/dlayer";
+$CONFDIR      = $ENV{"CONFDIR"};
 
 unless (-d $DLAYERDIR) {
     mkdir $DLAYERDIR;
 }
 
 
+#----------------------------------------------------------------------
+#         Get Online Configulation File Name from Online Log
+#----------------------------------------------------------------------
+sub GetOnlineConfig(){
+
+$ONLINEDIR    = $ENV{"ONLINEDIR"};
+$ONLINELOG    = "$ONLINEDIR/log/$Runn.log";
+unless (open(ONLINE_LOG_FILE,"$ONLINELOG")) {
+    # This is not a cruecial for offline analysis. Should be recovered later.
+    die "Error: $ONLINELOG doesn't exist. \n";
+}
+while (<ONLINE_LOG_FILE>) {
+    if (/Reading calibration parameters from file/) {
+	($F1,$F2,$F3,$F4,$F5,$F6,$F7,$F8) = split;
+	$ONLINE_CONFIG="$CONFDIR/$F8";
+    };
+};
+
+}
 
 #----------------------------------------------------------------------
-#               Get Experimental Condistion for the run
+#           Get Run Condistions from Offline Log
 #----------------------------------------------------------------------
+sub GetLog(){
+
 unless (open(LOGFILE,"douts/$Runn.dl.log")) {
     die "Error: douts/$Runn.dl.log doesn't exist. Run dLayerGen.pl first.\n";
 }
@@ -104,23 +127,42 @@ while (<LOGFILE>) {
     };
 };
 
-
-printf("RUN NUMBER  : $Runn \n");
-printf("Mass Cut    : $MASSCUT \n");
-printf("Beam Energy : $Bene \n");
-printf("RHICBeam    : $RHICBeam \n");
-printf("E2T         : $E2T \n");
-printf("Emin - Emax : $EMIN - $EMAX \n");
-printf("HID         : $HID \n");
-printf("Config File : $cfile \n");
+}
 
 
 #----------------------------------------------------------------------
-#               Main Routine
+#               Print Run Condition
 #----------------------------------------------------------------------
 
-system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\")' > input.C");
-system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
+sub PrintRunCondition(){
+
+    printf("RUN NUMBER  : $Runn \n");
+    printf("Mass Cut    : $MASSCUT \n");
+    printf("Beam Energy : $Bene \n");
+    printf("RHICBeam    : $RHICBeam \n");
+    printf("E2T         : $E2T \n");
+    printf("Emin - Emax : $EMIN - $EMAX \n");
+    printf("HID         : $HID \n");
+    printf("Config File   : $cfile \n");
+    printf("Online Config : $ONLINE_CONFIG \n");
+
+}
+
+#----------------------------------------------------------------------
+#                             Main Routine
+#----------------------------------------------------------------------
+
+# Get Run Conditions from Offline Log file
+GetLog();
+# Get Online Configulation file name for online monitoring.
+GetOnlineConfig();
+# Print Run Conditions
+PrintRunCondition();
+
+# Make input macro for fitting.
+system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\")' > input.C");
+# Execute deadlayer fitting on root
+system("root -b < input.C");
     
 if (-f "testfit.dat")    {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
 if (-f "testfit.ps")     {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
