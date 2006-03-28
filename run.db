@@ -863,3 +863,54 @@
 
 [7651.103]
 	RUN_STATUS=Good;
+
+[7657.001]
+	CONFIG=7657.001.config.dat;
+
+[7657.002]
+	//wierd strip behavior
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	CONFIG=7657.002.config.dat;
+
+[7657.002]
+	CONFIG=7657.002.config.dat;
+
+[7657.005]
+	RUN_STATUS=Suspicious;
+
+[7657.006]
+	RUN_STATUS=Good;
+
+[7657.101]
+	CONFIG=7657.101.config.dat;
+
+[7657.102]
+	CONFIG=7657.102.config.dat;
+
+[7658.101]
+	CONFIG=7658.101.config.dat;
+
+[7658.102]
+	//online error = 100.0
+	RUN_STATUS=Suspicious;
+
+[7661.001]
+	CONFIG=7661.001.config.dat;
+
+[7661.101]
+	CONFIG=7661.101.config.dat;
+
+[7662.001]
+	CONFIG=7662.001.config.dat;
+
+[7662.101]
+	//big phi errors
+	RUN_STATUS=Suspicious;
+	CONFIG=7662.101.config.dat;
+
+[7662.102]
+	RUN_STATUS=Good;
+
