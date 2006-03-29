@@ -70,42 +70,34 @@ void BenchMark()
   }
 
   Char_t hName[100];
-  sprintf(hName,"h%d",15001);  
-    TH2D* h2d = (TH2D*) gDirectory->Get(hName);
-    h2d -> SetStats(0);
-    h2d -> SetName("h2d");
+  for (Int_t i=1;i<71;i++){
+
+      sprintf(hName,"h%d",15000+i);  
+      TH2D* h2d = (TH2D*) gDirectory->Get(hName);
+      h2d -> SetStats(0);
+      h2d -> SetName("h2d");
     
-    TH2D* h2dcarbon = (TH2D*) h2d->Clone();
-    h2dcarbon -> SetName("h2dcarbon");
-    
-    //Extracting information of the 2D histogram
-    Int_t xnbins = h2dcarbon ->GetXaxis()->GetNbins();
-    Float_t xmin = h2dcarbon ->GetXaxis()->GetXmin();
-    Float_t xmax = h2dcarbon ->GetXaxis()->GetXmax();
-    Int_t ynbins = h2dcarbon ->GetYaxis()->GetNbins();
-    Float_t ymin = h2dcarbon ->GetYaxis()->GetXmin();
-    Float_t ymax = h2dcarbon ->GetYaxis()->GetXmax();
 
-    TCanvas *CurC = new TCanvas("CurC","",1);
+      //    TCanvas *CurC = new TCanvas("CurC","",1);
 
-    // ======================================================
-    // ====   The fit                                  ==
-    // ======================================================
-    TF1* myf = new TF1("myf","gaus",0.0,150.0);
-    h2d->FitSlicesY(myf);
-    TH1F* sfit = (TH1F*) gDirectory->Get("h2d_1");
+      // ======================================================
+      // ====   The fit                                  ==
+      // ======================================================
+      TF1* myf = new TF1("myf","gaus",0.0,150.0);
+      h2d->FitSlicesY(myf);
+      TH1F* sfit = (TH1F*) gDirectory->Get("h2d_1");
 
-    // Define banana function
-    TF1 *kinf = new TF1("kinf",KinFunc, 200.0, 1000.0, 2);
+      TF1 *kinf = new TF1("kinf",KinFunc, 200.0, 1000.0, 2);
 
-    kinf->SetParameters(65.0, -16.0);
-    kinf->SetParLimits(0, 0., 200.);
-    kinf->SetParLimits(1, -50., 50.);
+      kinf->SetParameters(65.0, -16.0);
+      kinf->SetParLimits(0, 0., 200.);
+      kinf->SetParLimits(1, -50., 50.);
 
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    sfit -> Fit(kinf,"E0","", 400, 900);
-    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      sfit -> Fit(kinf,"E0","", 400, 900);
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    /*
         // Plot data points (Magenta)
 
         TH1D* Dpoints = (TH1D*) sfit->Clone();
@@ -122,6 +114,9 @@ void BenchMark()
         fitfun -> SetLineColor(3);
         fitfun -> SetLineWidth(2.0);
         fitfun -> Draw("same");
+    */
+
+  }
 
 	return;
 }
