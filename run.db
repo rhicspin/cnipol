@@ -358,6 +358,10 @@
 [7564.101]
 	CONFIG=7564.101.config.dat;
 
+[7568.001]
+	//very low polarization
+	RUN_STATUS=Suspicious;
+
 [7568.002]
 	CONFIG=7568.002.config.dat;
 
@@ -889,6 +893,9 @@
 
 [7657.102]
 	CONFIG=7657.102.config.dat;
+
+[7657.107]
+	CONFIG=7657.107.config.dat;
 
 [7658.101]
 	CONFIG=7658.101.config.dat;
