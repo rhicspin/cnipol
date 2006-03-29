@@ -13,7 +13,7 @@ TILL_FILL=9000;
 SLEEP_TIME=1800;
 
 # deadlayer fit environments
-CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer_iteration.dat;
+CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer_iteration;
 ExeDlayerFit=0;
 MAX_ITERATION=4;
 TOLERANCE=1; 
@@ -81,7 +81,6 @@ RunDlayer(){
     AVE_Dl_1=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
     AVE_T0_1=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
-
     # Loop for further iteration with -b option
     for (( i=2; i<=$MAX_ITERATION; i++ )) ; do 
 
@@ -105,6 +104,7 @@ RunDlayer(){
 	if [ $TEST1 -eq 1 ]&&[ $TEST2 -eq 1 ] ; then
 
 	    # OK, both deadlayer and t0 are converged
+	    mkConfig.pl -f $RunID -p ;
 	    echo -e -n "\n" >> $CNI_DAEMON_DLAYER_STUDY;
 	    echo -e "Ok $RunID deadlayer fit Converged, Move on to run";
 	    break;
@@ -142,6 +142,12 @@ RunAsym(){
 #                             CNIPOL_DAEMON()                               #
 #############################################################################
 CNIPOL_DAEMON(){
+
+HOST=`echo $HOSTNAME | sed -e 's/.rhic.bnl.gov//'`
+CNI_DAEMON_DLAYER_STUDY=$CNI_DAEMON_DLAYER_STUDY.$HOST;
+echo -e -n "Deadlayer Iteration Monitor file: $CNI_DAEMON_DLAYER_STUDY\n";
+
+
 
 while [ 1 ] ; 
   do 
