@@ -868,6 +868,18 @@
 [7651.103]
 	RUN_STATUS=Good;
 
+[7655.002]
+	CONFIG=7655.002.config.dat;
+
+[7655.003]
+	// Big phi error leading to big P error
+	RUN_STATUS=Suspicious;
+	CONFIG=7655.003.config.dat;
+
+[7655.004]
+	RUN_STATUS=Good;
+
+
 [7657.001]
 	CONFIG=7657.001.config.dat;
 
