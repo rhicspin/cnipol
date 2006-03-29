@@ -161,7 +161,7 @@ PrintRunCondition();
 # Make input macro for fitting.
 system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\")' > input.C");
 # Execute deadlayer fitting on root
-system("root -b < input.C");
+system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
     
 if (-f "testfit.dat")    {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
 if (-f "testfit.ps")     {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
