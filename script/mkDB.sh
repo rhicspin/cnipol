@@ -6,6 +6,7 @@ ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
 ExeAnalyzedRunList=1 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
+ExpertMode=0;
 FROM_FILL=7537;
 TILL_FILL=9000;
 LOGDIR=$ASYMDIR/log;
@@ -16,7 +17,7 @@ LOGDIR=$ASYMDIR/log;
 help(){
     echo    " "
     echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "         [--analyzed-run-list]";
+    echo    "         [--analyzed-run-list][-X --expert]";
     echo    "    : make pC offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist";
@@ -24,6 +25,7 @@ help(){
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
     echo -e "   --exclusive               Show only data analyized";
+    echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
     echo    " "
@@ -178,6 +180,9 @@ grepit(){
 	grep 'Target Operation            ' $LOGFILE | sed -e 's/fixed/fixd/' | gawk '{printf(" %s",$4)}' 
 	grep 'Event Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
+	if [ $ExpertMode -eq 1 ] ; then
+	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
+        fi
 	echo -e -n "\n";
     fi
 
@@ -230,6 +235,7 @@ while test $# -ne 0; do
   --fill-from) shift ; FROM_FILL=$1;;
   --fill-till) shift ; TILL_FILL=$1;;
   --exclusive) ExclusiveMode=1;;
+  -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
   *)  echo "Error: Invarid Option $1"
