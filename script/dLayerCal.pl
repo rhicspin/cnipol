@@ -8,13 +8,14 @@ $EMIN=400;
 $EMAX=900;
 $cfile="config.dat";
 $ONLINE_CONFIG="";
+$OUTPUTDIR=".";
 
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('E:f:bgh', \%opt);
+getopts('d:E:f:bgh', \%opt);
 
 if ( $opt{h} ) {
     help();
@@ -25,6 +26,11 @@ if ( $opt{g} ) {
 if ( $opt{b} ){
     $HID=15100;
 }
+
+if ( $opt{d} ){
+    $OUTPUTDIR=$opt{d};
+}
+
 
 # Get Run ID
 my $Runn = $opt{f};
@@ -44,11 +50,12 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>]\n\n"; 
+    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>][-d <dir>]\n\n"; 
     print "    fit banana histograms and get deadlayer and t0.\n";
     print "    Execute dLayerGen.pl for histogram creation.\n\n";
     print "\t -f <runID>     runID\n";
     print "\t -b             Fit on banana cut events. (def:const.t cut)\n";
+    print "\t -d <dir>       Temporary output directory.\n";
     print "\t -g             Launch ghostviewer after fit.\n";
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
     print "\t -h             Show this help \n";
@@ -135,15 +142,16 @@ while (<LOGFILE>) {
 
 sub PrintRunCondition(){
 
-    printf("RUN NUMBER  : $Runn \n");
-    printf("Mass Cut    : $MASSCUT \n");
-    printf("Beam Energy : $Bene \n");
-    printf("RHICBeam    : $RHICBeam \n");
-    printf("E2T         : $E2T \n");
-    printf("Emin - Emax : $EMIN - $EMAX \n");
-    printf("HID         : $HID \n");
-    printf("Config File   : $cfile \n");
-    printf("Online Config : $ONLINE_CONFIG \n");
+    printf("RUN NUMBER           : $Runn \n");
+    printf("Mass Cut             : $MASSCUT \n");
+    printf("Beam Energy          : $Bene \n");
+    printf("RHICBeam             : $RHICBeam \n");
+    printf("E2T                  : $E2T \n");
+    printf("Emin - Emax          : $EMIN - $EMAX \n");
+    printf("HID                  : $HID \n");
+    printf("Config File          : $cfile \n");
+    printf("Online Config        : $ONLINE_CONFIG \n");
+    printf("Temporary output Dir : $OUTPUTDIR \n");
 
 }
 
@@ -159,15 +167,15 @@ GetOnlineConfig();
 PrintRunCondition();
 
 # Make input macro for fitting.
-system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\")' > input.C");
+system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\",\"$OUTPUTDIR\")' > $OUTPUTDIR/input.C");
 # Execute deadlayer fitting on root
-system("root -b < input.C | tee $DLAYERDIR/$Runn.fit.log");
+system("root -b < $OUTPUTDIR/input.C | tee $DLAYERDIR/$Runn.fit.log");
     
-if (-f "testfit.dat")    {system("mv testfit.dat $DLAYERDIR/$Runn.temp.dat");}
-if (-f "testfit.ps")     {system("mv testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
-if (-f "testsummary.ps") {system("mv testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
-if (-f "residual.ps")    {system("mv residual.ps $DLAYERDIR/$Runn.residual.ps");}
-if (-f "input.C")        {system("rm input.C");}
+if (-f "$OUTPUTDIR/testfit.dat")    {system("mv $OUTPUTDIR/testfit.dat $DLAYERDIR/$Runn.temp.dat");}
+if (-f "$OUTPUTDIR/testfit.ps")     {system("mv $OUTPUTDIR/testfit.ps $DLAYERDIR/$Runn.fittemp.ps");}
+if (-f "$OUTPUTDIR/testsummary.ps") {system("mv $OUTPUTDIR/testsummary.ps $DLAYERDIR/$Runn.summarytemp.ps");}
+if (-f "$OUTPUTDIR/residual.ps")    {system("mv $OUTPUTDIR/residual.ps $DLAYERDIR/$Runn.residual.ps");}
+if (-f "$OUTPUTDIR/input.C")        {system("rm $OUTPUTDIR/input.C");}
 
 if ($GHOSTVIEW) {GhostView();};
 

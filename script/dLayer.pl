@@ -14,7 +14,7 @@ $OPT_GEN  = " ";
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('F:E:f:bgh', \%opt);
+getopts('d:F:E:f:bgh', \%opt);
 
 if ( $opt{h} ) {
     help();
@@ -27,6 +27,11 @@ if ( $opt{b} ){
 if ( $opt{g} ){
     $OPT_CAL="-g $OPT_CAL";
 }
+
+if ( $opt{d} ){
+    $OPT_CAL="$OPT_CAL -d $opt{d}";
+}
+
 
 # specify config file
 if ( $opt{F} ) {
@@ -52,12 +57,13 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hgb [-f <runID>][-E <Emin:Emax>][-F <file>]\n\n"; 
+    print " Usage:\n  $0 -hgb [-f <runID>][-E <Emin:Emax>][-F <file>][-d <dir>]\n\n"; 
     print "    Generate histograms for deadlayer fit and execute fit.\n";
     print "    Executes dLayerGen.pl and dLayerCal.pl \n\n";
     print "\t -f <runID>     runID\n";
     print "\t -F <file>      Load configulation from <file> \n";
     print "\t -b             Fit on banana cut events. (def:const.t cut)\n";
+    print "\t -d <dir>       Temporary output directory for KinFit.C\n";
     print "\t -g             Launch ghostviewer after fit.\n";
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
     print "\t -h             Show this help \n";
