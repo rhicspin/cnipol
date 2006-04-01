@@ -276,7 +276,11 @@
 [7560.101]
 	CONFIG=7560.101.config.dat;
 
+[7562.002]
+	RUN_STATUS=Junk;
+
 [7562.003]
+	RUN_STATUS=Good;
 	CONFIG=7562.003.config.dat;
 
 [7562.004]
@@ -879,16 +883,23 @@
 [7655.004]
 	RUN_STATUS=Good;
 
+[7655.008]
+	//As far as I can see this is the beginning of the strange
+	//strip behavior
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	CONFIG=7655.008.config.dat;
+
+[7655.101]
+	CONFIG=7655.101.config.dat;
+
 
 [7657.001]
 	CONFIG=7657.001.config.dat;
 
 [7657.002]
-	//wierd strip behavior
-	DisableStrip=9;
-	DisableStrip=27;
-	DisableStrip=45;
-	DisableStrip=63;
 	CONFIG=7657.002.config.dat;
 
 [7657.002]
@@ -933,3 +944,51 @@
 [7662.102]
 	RUN_STATUS=Good;
 
+[7671.001]
+	CONFIG=7671.001.config.dat;
+
+[7671.003]
+	CONFIG=7671.003.config.dat;
+
+[7671.101]
+	RUN_STATUS=Junk;
+
+[7671.112]
+	//both online and offline P are negative
+	RUN_STATUS=Suspicious;
+	CONFIG=7671.112.config.dat;
+
+[7671.113]
+	RUN_STATUS=Good;
+	CONFIG=7671.113.config.dat;
+
+[7672.001]
+	//huge time shift, don't know why.
+	RUN_STATUS=Suspicious;
+	TSHIFT=0.0;
+	CONFIG=7672.001.config.dat;
+
+[7672.002]
+	RUN_STATUS=Good;
+	CONFIG=7672.002.config.dat;
+
+[7672.002]
+	CONFIG=7672.002.config.dat;
+
+[7672.004]
+	//negative polarization?  But may just be a sign issue
+	RUN_STATUS=Suspicious;
+	CONFIG=7672.004.config.dat;
+
+[7672.101]
+	//huge jump betwen online and offline
+	RUN_STATUS=Suspicious;
+	CONFIG=7672.101.config.dat;
+
+[7672.102]
+	RUN_STATUS=Good;
+	CONFIG=7672.102.config.dat;
+
+
+[7672.103]
+	CONFIG=7672.103.config.dat;
