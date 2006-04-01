@@ -149,7 +149,7 @@ public:
   ofstream fout;
   ofstream ferrout;
     
-  Char_t runid[10], CONFFILE[256], DLAYERFILE[256], ONLINE_CONFFILE[256];
+  Char_t runid[10], CONFFILE[256], DLAYERFILE[256], ONLINE_CONFFILE[256], OUTPUTDIR[100];
   Float_t RUNID, bene;
 
   Int_t RHIC_Beam;
@@ -206,8 +206,8 @@ public:
 
 
 // Initialization of the class
-KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, 
-	       Float_t EMIN, Float_t EMAX, Int_t hid, Char_t *cfile, Char_t *online_cfile){
+KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2T, Float_t EMIN, 
+	       Float_t EMAX, Int_t hid, Char_t *cfile, Char_t *online_cfile, Char_t *outputdir){
 
     // default online deadlayer plot on
     flag.PLOT_ONLINE_CONFIG=1;
@@ -224,6 +224,9 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     sprintf(ONLINE_CONFFILE,"%s",online_cfile);
     if (!strlen(ONLINE_CONFFILE)) flag.PLOT_ONLINE_CONFIG=0;
 
+    sprintf(OUTPUTDIR,"%s",outputdir);
+    if (!strlen(OUTPUTDIR)) sprintf(OUTPUTDIR,".");
+
     if (RUNID>7400) RHIC_Beam+=2;
 
     printf("\n");
@@ -235,6 +238,8 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     printf(" Fitting Energy Renga <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
     printf(" Configuration File               : %s \n", CONFFILE);
     printf(" Online Configuration File        : %s \n", ONLINE_CONFFILE);
+    if (strlen(OUTPUTDIR)!=1)
+      printf(" Temporary Output Directory       : %s \n", OUTPUTDIR);
     printf("=========================================================\n");
     printf("\n");
 
@@ -257,7 +262,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
 KinFit::~KinFit(){};
 
 // -------------------------------------------------------------------
-//  fit the E-T band with non-linear dlayer corrected function
+//  fit the E-T band with non-linear dlayer ceorrected function
 //  plot and extract fit results
 //  mode : 0 ... two free parameters
 //         1 ... fix dlayer width t0 free parameter
@@ -266,6 +271,8 @@ KinFit::~KinFit(){};
 void KinFit::Fit(Int_t mode) 
 {    
 
+  Char_t filename[100];
+
     if (!mode&1) {
         cout << "TRY TWO FREE PARAMETER FIT" <<endl;
     } elseif (mode&1) {
@@ -273,14 +280,16 @@ void KinFit::Fit(Int_t mode)
     }        
 
     if (mode&1) {
-        fout.open("testfit.dat");
+      sprintf(filename,"%s/testfit.dat",OUTPUTDIR);
+      fout.open(filename);
     
         gStyle->SetGridColor(1);
         gStyle->SetGridStyle(2);
         //        gStyle->SetPalette(1,0);
     
         TCanvas *CurC = new TCanvas("CurC","",1);
-        TPostScript ps("testfit.ps",112);
+	sprintf(filename,"%s/testfit.ps",OUTPUTDIR);
+        TPostScript ps(filename,112);
     
         CurC -> Divide(4,3);
         ps.NewPage();
@@ -585,7 +594,10 @@ void KinFit::Residual()
     gStyle->SetGridStyle(2);
     
     TCanvas *CurC = new TCanvas("CurC","",1);
-    TPostScript ps("residual.ps",112);
+
+    Char_t filename[100];
+    sprintf(filename,"%s/residual.ps",OUTPUTDIR);
+    TPostScript ps(filename,112);
     
     CurC -> Divide(4,3);
     ps.NewPage();
@@ -669,7 +681,10 @@ void KinFit::PlotResult()
 
 
     TCanvas *CurC = new TCanvas("CurC","",1);
-    TPostScript ps("testsummary.ps",112);
+
+    Char_t filename[100];
+    sprintf(filename,"%s/testsummary.ps",OUTPUTDIR);
+    TPostScript ps(filename,112);
     ps.NewPage();
     
 
@@ -788,7 +803,6 @@ KinFit::GetDlayerFromFile(){
 
 
     ifstream infile(DLAYERFILE);
-    cout << "DLAYERFILE=" << DLAYERFILE << endl;
 
     if ( infile.fail() ) {
       cout << "unable to find file:" << DLAYERFILE << "\n" << flush;
