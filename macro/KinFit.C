@@ -788,6 +788,7 @@ KinFit::GetDlayerFromFile(){
 
 
     ifstream infile(DLAYERFILE);
+    cout << "DLAYERFILE=" << DLAYERFILE << endl;
 
     if ( infile.fail() ) {
       cout << "unable to find file:" << DLAYERFILE << "\n" << flush;
@@ -805,8 +806,7 @@ KinFit::GetDlayerFromFile(){
         infile >> St[i] >> dlsum_d[(Int_t)St[i]/12] >> t0s_d[i] >> t0sE_d[i] >> dl_d[i] >> dlE_d[i]
                >> t0_d[i] >> t0E_d[i] >> dum1 >> dum2 >> dumc >> dum4 >> dum5 >> dum6 >> dum7
                >> dum8 >> dum9 >> dum10;
-
-        if (i==NSTRIP-1) break;
+        if ((St[i]>=NSTRIP-1) || (i==NSTRIP-1)) break;
         ++i;
     }
 
