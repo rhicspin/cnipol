@@ -758,9 +758,11 @@
 
 [7640.010]
 	// bunch 19 is 10 times hotter than other bunches.
-	RUN_STATUS=Junk;
+	DisableBunch=19;
+	RUN_STATUS=Suspicious;
 
 [7640.011]
+	EnableBunch=19;
 	RUN_STATUS=Suspicious;
 
 [7640.012]
@@ -964,8 +966,8 @@
 
 [7672.001]
 	//huge time shift, don't know why.
-	RUN_STATUS=Suspicious;
-	TSHIFT=0.0;
+	//config file replaced and now good.
+	RUN_STATUS=Good;
 	CONFIG=7672.001.config.dat;
 
 [7672.002]
@@ -992,3 +994,24 @@
 
 [7672.103]
 	CONFIG=7672.103.config.dat;
+
+[7672.107]
+	RUN_STATUS=Suspicious;
+	// reversed spin sign from CDEV.
+
+
+
+[7673.001]
+	// Not confirmed yet.
+	RUN_STATUS=Good;
+
+[7673.101]
+	// Not confirmed yet.
+	RUN_STATUS=Good;
+
+
+[7691.001]
+	CONFIG=7691.001.config.dat;
+
+
+
