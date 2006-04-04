@@ -27,10 +27,11 @@ float GetVariablesFloat(string str);
 int ContinueScan(double ThisRunID, double RunID);
 int MatchBeam(double ThisRunID, double RunID);
 void PrintRunDB();
-
+int StripHandler(int, int);
 StructRunDB rundb;
-
-
+static int ProcessStrip[NSTRIP];
+int FindDisableStrip();
+int NDisableStrip=0;
 
 
 //
@@ -77,13 +78,22 @@ readdb(double RUNID) {
 	if (str.find("INJ_TSHIFT")      ==1) rundb.inj_tshift_s        = GetVariables(str);
 	if (str.find("RUN_STATUS")      ==1) rundb.run_status_s        = GetVariables(str);
 	if (str.find("MEASUREMENT_TYPE")==1) rundb.measurement_type_s  = GetVariables(str);
+	if (str.find("DisableStrip")    ==1){
+	  rundb.disable_strip_s     = GetVariables(str);
+	  StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
+	if (str.find("EnableStrip")     ==1) {
+	  rundb.enable_strip_s      = GetVariables(str);
+	  StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
       }
     }
 
   } // end-of-while(getline-loop)
 
-  // processing conditions
+  // Find Disable Strip List
+  NDisableStrip=FindDisableStrip();
 
+
+  // processing conditions
   if (!extinput.CONFIG){
     strcat(reConfFile,confdir);
     strcat(reConfFile,    "/");
@@ -128,6 +138,66 @@ readdb(double RUNID) {
   return 1;
 
 }
+
+
+//
+// Class name  :
+// Method name : StripHandler(int st, int flag)
+//
+// Description : handle enable/disable strips
+// Input       : 
+// Return      : 
+//
+int 
+StripHandler(int st, int flag){
+
+  static int Initiarize = 1;
+  if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
+
+  ProcessStrip[st-1] += flag;
+
+  Initiarize=0;
+
+  return 0;
+}
+
+
+//
+// Class name  :
+// Method name : FindDisableStrip()
+//
+// Description : This subtoutine is under construction (April 4, 06)
+// Input       : 
+// Return      : 
+//
+int 
+FindDisableStrip(){
+
+  int NDisableStrip=0;
+  for (int i=0;i<NSTRIP; i++) {
+    if (ProcessStrip[i]>0) NDisableStrip++;
+  }
+
+  cout << NDisableStrip << endl;
+
+  /*
+  // initiarize DisableStrip Array
+  int DisableStrip[NDisableStrip];
+  for (int i=0; NDisableStrip; i++) DisableStrip[i]=0;
+
+  int j=0;
+  for (int i=0;i<NSTRIP; i++) {
+    if (ProcessStrip[i]>0) {
+      DisableStrip[j]=i;
+      ++j;
+      cout << j << " " << DisableStrip[j] << endl;
+    }
+  }
+  */
+
+  return NDisableStrip;
+}
+
 
 //
 // Class name  :
@@ -254,6 +324,16 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // tshift in [ns]
     fprintf(stdout," TSHIFT       = %5.1f\n",dproc.tshift);
+
+    // Disabled strips
+    fprintf(stdout,"#DisableStrip = %d\n", NDisableStrip);
+    if (NDisableStrip){
+      fprintf(stdout," DisableStrip = ");
+      for (int i=0;i<NSTRIP;i++) {
+	if (ProcessStrip[i]>0) fprintf(stdout,"%d ",i+1);
+      }
+      printf("\n");
+    }
 
 
     fprintf(stdout,"================================================\n");
