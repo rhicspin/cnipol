@@ -148,6 +148,8 @@ typedef struct {
   string inj_tshift_s;
   string run_status_s; 
   string measurement_type_s;
+  string disable_strip_s;
+  string enable_strip_s;
 }StructRunDB ;
 
 
