@@ -17,13 +17,14 @@ LOGDIR=$ASYMDIR/log;
 help(){
     echo    " "
     echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "         [--analyzed-run-list][-X --expert]";
+    echo    "         [--analyzed-run-list][-X --expert][-f <runlis>]";
     echo    "    : make pC offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
+    echo -e "   -f <runlist>              Show list for runs listed in <runlist>";
     echo -e "   --exclusive               Show only data analyized";
     echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
@@ -182,6 +183,7 @@ grepit(){
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
 	if [ $ExpertMode -eq 1 ] ; then
 	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
+	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
         fi
 	echo -e -n "\n";
     fi
@@ -234,6 +236,7 @@ while test $# -ne 0; do
   -F) shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from) shift ; FROM_FILL=$1;;
   --fill-till) shift ; TILL_FILL=$1;;
+  -f) shift ; ANALYZED_RUN_LIST=$1; ExeAnalyzedRunList=0 ;;
   --exclusive) ExclusiveMode=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
