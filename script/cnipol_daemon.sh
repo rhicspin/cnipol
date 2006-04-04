@@ -175,7 +175,7 @@ while [ 1 ] ;
 		    echo $RunID >> $CNI_DAEMON_RUNLIST;
 	    fi
 	    if [ $ExeRunAsym==1 ]; then
-		    RunDlayer;
+		    RunAsym;
 		    echo $RunID >> $CNI_DAEMON_RUNLIST;
 	    fi
 	else 
