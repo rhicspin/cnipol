@@ -149,8 +149,10 @@ RunAsym(){
 #                             CNIPOL_DAEMON()                               #
 #############################################################################
 CNIPOL_DAEMON(){
+echo "Mission: DeadlayerFit=$ExeDlayerFit, Asym=$ExeRunAsym";
 
-if [ ExeDlayerFit==1 ]; then
+
+if [ $ExeDlayerFit -eq 1 ]; then
     HOST=`echo $HOSTNAME | sed -e 's/.rhic.bnl.gov//'`
     CNI_DAEMON_DLAYER_STUDY=$CNI_DAEMON_DLAYER_STUDY.$HOST;
     echo -e -n "Deadlayer Iteration Monitor file: $CNI_DAEMON_DLAYER_STUDY\n";
@@ -170,11 +172,11 @@ while [ 1 ] ;
 	grep $RunID $CNI_DAEMON_RUNLIST > /dev/null;
 	if [ $? == 1 ] ; then
 	    echo -e -n "\n Analyzing $RunID \n"
-	    if [ $ExeDlayerFit==1 ]; then
+	    if [ $ExeDlayerFit -eq 1 ]; then
 		    RunDlayer;
 		    echo $RunID >> $CNI_DAEMON_RUNLIST;
 	    fi
-	    if [ $ExeRunAsym==1 ]; then
+	    if [ $ExeRunAsym -eq 1 ]; then
 		    RunAsym;
 		    echo $RunID >> $CNI_DAEMON_RUNLIST;
 	    fi
