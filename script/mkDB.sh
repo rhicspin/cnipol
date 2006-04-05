@@ -62,6 +62,8 @@ MakeAnalyzedRunList(){
   fi
   touch $TMPLIST;
 
+  
+
   for a in alanH alanD jeffW itaru ; 
   do 
 
@@ -181,6 +183,8 @@ grepit(){
 	grep 'Target Operation            ' $LOGFILE | sed -e 's/fixed/fixd/' | gawk '{printf(" %s",$4)}' 
 	grep 'Event Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
+	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
+	echo $OnlineP $OfflineP | gawk '{printf(" %6.1f",100*($1-$2)/$1)}'
 	if [ $ExpertMode -eq 1 ] ; then
 	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
 	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
@@ -200,9 +204,9 @@ grepit(){
 #############################################################################
 MakeDatabase(){
 
-for f in `ls $DATADIR/????.???.data` ;
+for f in `cat $DATADIR/raw_data.list` ;
   do
-      RunID=`basename $f | sed -e 's/.data//'`
+      RunID=$f
       Fill=`echo $RunID | gawk '{printf("%4d",$1)}'`
 #      echo -e -n "$RunID $Fill\n"
       if [ $Fill -ge $FROM_FILL ]&&[ $Fill -le $TILL_FILL ] ; then
