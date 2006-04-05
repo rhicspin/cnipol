@@ -95,7 +95,7 @@ MakeAnalyzedRunList(){
 ShowIndex(){
 
     printf "=================================================================================================";
-    printf "====================\n";
+    printf "============================\n";
     printf " RunID ";
     printf "      Online";
     printf "  Status  ";
@@ -109,6 +109,7 @@ ShowIndex(){
     printf " Target";
     printf " Rate";
     printf " SpLm";
+    printf "   on/off";
     printf "\n";
     printf "          ";
     printf "    P   dP ";
@@ -122,9 +123,10 @@ ShowIndex(){
     printf "       ";
     printf "[MHz]"
     printf "  RMS"
+    printf "   Error"
     printf "\n";
     printf "=================================================================================================";
-    printf "====================\n";
+    printf "============================\n";
 
 
 }
