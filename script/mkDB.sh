@@ -109,7 +109,7 @@ ShowIndex(){
     printf " Target";
     printf " Rate";
     printf " SpLm";
-    printf "   on/off";
+    printf "   on-off";
     printf "\n";
     printf "          ";
     printf "    P   dP ";
@@ -186,7 +186,7 @@ grepit(){
 	grep 'Event Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
 	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
-	echo $OnlineP $OfflineP | gawk '{printf(" %6.1f",100*($1-$2)/$1)}'
+	echo $OnlineP $OfflineP | gawk '{printf(" %6.2f",$1-$2)}'
 	if [ $ExpertMode -eq 1 ] ; then
 	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
 	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
