@@ -1,0 +1,35 @@
+macro HID36230 RunID='-1'
+exe defsetting
+opt file
+opt fit
+set fit 1111
+
+mode=batch
+*mode=interactive
+
+RunID=$ENV(RUNID)
+
+if [mode].ne.batch then
+	mess " RunID> "
+	read RunID
+endif
+
+mess [RunID]
+
+hi/file 20 hbook/[RunID].hbook
+
+ve/cr par(2)
+ve/cr epar(2)
+hi/fit 36230 ~/kumac/phi.f V 2 par ! ! ! epar
+
+ve/write par(1),epar(1),par(2),epar(2) dat/HID36230.dat '4(F10.4)' 
+
+if [mode].ne.batch then
+	igset pmci 2
+	igset mtyp 20 ;
+	hi/plot 36230 ps
+endif
+
+close 0
+
+return
