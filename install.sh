@@ -31,11 +31,20 @@ cd script
 ./install.sh
 cd ..
 
-
 # install scripts into $MACRODIR
 cd macro
 ./install.sh
 cd ..
 
-echo "Installation Completed"
+
+if [ $CNI_EXPERT ] ; then
+    if [ -d expert ] ; then
+        echo "### Installing Expert Tools. ###";
+        cd expert
+	./install.sh
+        cd ..
+    fi
+fi
+
+echo "Installation Completed."
 
