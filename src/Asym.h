@@ -150,6 +150,7 @@ typedef struct {
   string measurement_type_s;
   string disable_strip_s;
   string enable_strip_s;
+  string comment_s;
 }StructRunDB ;
 
 
