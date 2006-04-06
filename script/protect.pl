@@ -55,7 +55,7 @@ sub help() {
     print "    in order to protect them to be overwritten accidentally.\n\n";
     print "\t -f <runid>   protect hbook and log files for run <runid> \n";
     print "\t -l <runlist> prtects all runs in list \n";
-    print "\t -u <runid>   unprotect file \n"; 
+    print "\t -u           unprotect file \n"; 
     print "\t -h           show this menu\n";
     print "\n";
     print "    ex.1) change 7559.106 hbook & log files to be protected mode\n\n";
