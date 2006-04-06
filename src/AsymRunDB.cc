@@ -78,6 +78,7 @@ readdb(double RUNID) {
 	if (str.find("INJ_TSHIFT")      ==1) rundb.inj_tshift_s        = GetVariables(str);
 	if (str.find("RUN_STATUS")      ==1) rundb.run_status_s        = GetVariables(str);
 	if (str.find("MEASUREMENT_TYPE")==1) rundb.measurement_type_s  = GetVariables(str);
+	if (str.find("COMMENT")         ==1) rundb.comment_s           = GetVariables(str);
 	if (str.find("DisableStrip")    ==1){
 	  rundb.disable_strip_s     = GetVariables(str);
 	  StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
@@ -133,7 +134,7 @@ readdb(double RUNID) {
   }
 
 
-  //PrintRunDB();
+  if (Flag.VERBOSE) PrintRunDB();
 
   return 1;
 
@@ -283,6 +284,7 @@ PrintRunDB(){
   printf("TSHIFT           = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
   printf("INJ_TSHIFT       = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
   printf("MEASUREMENT_TYPE = %5.1f\n", strtof(rundb.measurement_type_s.c_str(),NULL));
+  printf("COMMENT          = %s\n",    rundb.comment_s.c_str());
 
   return;
 }
@@ -335,6 +337,10 @@ printConfig(recordConfigRhicStruct *cfginfo){
       printf("\n");
     }
 
+    // print comment
+
+    if (strlen(rundb.comment_s.c_str())>3)
+      printf(" COMMENT      = %s\n",    rundb.comment_s.c_str());
 
     fprintf(stdout,"================================================\n");
     fprintf(stdout,"===  RHIC Polarimeter Configuration (END)    ===\n");
