@@ -285,15 +285,15 @@
 
 [7562.004]
 // started to chop off bottom of banana
-	DisableStrip=15;
-	DisableStrip=17;
-	DisableStrip=33;
-	DisableStrip=35;
-	DisableStrip=51;
-	DisableStrip=53;
-	DisableStrip=63;
-	DisableStrip=69;
-	DisableStrip=71;
+	DisableStrip=16;
+	DisableStrip=18;
+	DisableStrip=34;
+	DisableStrip=36;
+	DisableStrip=52;
+	DisableStrip=54;
+	DisableStrip=64;
+	DisableStrip=70;
+	DisableStrip=72;
 	CONFIG=7562.004.config.dat;
 
 [7562.005]
@@ -322,24 +322,24 @@
 	CONFIG=7562.108.config.dat;
 
 [7563.001]
-	EnableStrip=15;
-	EnableStrip=17;
-	EnableStrip=33;
-	EnableStrip=35;
-	EnableStrip=51;
-	EnableStrip=53;
-	EnableStrip=63;
-	EnableStrip=69;
-	EnableStrip=71;
+	EnableStrip=16;
+	EnableStrip=18;
+	EnableStrip=34;
+	EnableStrip=36;
+	EnableStrip=52;
+	EnableStrip=54;
+	EnableStrip=64;
+	EnableStrip=70;
+	EnableStrip=72;
 	CONFIG=7563.001.config.dat;
 
 [7563.002]
 	CONFIG=7563.002.config.dat;
 
 [7563.003]
-// Strips 18,54,72 have problems & the chi^2 on the dlayers are bad.
-	DisableStrip=18;
-	DisableStrip=54;
+// Strips 17,53,72 have problems & the chi^2 on the dlayers are bad.
+	DisableStrip=17;
+	DisableStrip=53;
 	DisableStrip=72;
 	RUN_STATUS=Suspicious;
 	CONFIG=7563.003.config.dat;
@@ -357,6 +357,12 @@
 	CONFIG=7563.102.config.dat;
 
 [7564.001]
+	//numbering scheme changes to 1-72. updating enables and 
+	//disables
+	EnableStrip=17;
+	EnableStrip=53;
+	DisableStrip=18;
+	DisableStrip=54;
 	CONFIG=7564.001.config.dat;
 
 [7564.101]
@@ -364,6 +370,9 @@
 
 [7568.001]
 	//very low polarization
+	EnableStrip=18;
+	EnableStrip=54;
+	EnableStrip=72;
 	RUN_STATUS=Suspicious;
 
 [7568.002]
@@ -415,7 +424,6 @@
 	CONFIG=7576.105.config.dat;
 
 
-
 [7586.014]
 	CONFIG=7586.014.config.dat;
 
@@ -444,7 +452,6 @@
 [7596.001]
 	// spin orientation = 45 deg.
 	// Bunch 70 noisy.
-	RUN_STATUS=Suspicious;
 	// noise below banana. Strip 27&45 are noisy WFD. Others could be radiation damage.
 	DisableStrip=27;
 	DisableStrip=45;
@@ -453,13 +460,14 @@
 	DisableStrip=63;
 	DisableStrip=64;
 	DisableStrip=65;
+	RUN_STATUS=Suspicious;
 	CONFIG=7596.002.config.dat;
 	
 [7596.101]
 	RUN_STATUS=Suspicious;
 
 [7597.001]
-	// noises are gone.
+	// noise is gone.
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=61;
@@ -486,26 +494,28 @@
 	CONFIG=7602.003.config.dat;
 
 
-
-
 [7602.004]
 	// fracky WFD moduels. Could be happening earlier.
+	DisableStrip=9;
 	DisableStrip=10;
 	DisableStrip=12;
 	DisableStrip=14;
+	DisableStrip=27;
 	DisableStrip=28;
 	DisableStrip=30;
 	DisableStrip=32;
-	DisableStrip=42;
+	DisableStrip=45;
+	DisableStrip=46;
 	DisableStrip=48;
 	DisableStrip=50;
-	DisableStrip=48;
 	DisableStrip=61;
 	DisableStrip=62;
 	DisableStrip=63;
 	DisableStrip=64;
 	DisableStrip=65;
 	DisableStrip=68;
+	// Beside above, bottom of banana's for strips{16,18,34,36,52,54,70,72} are
+        // chopped off. Energy range cannot be expanded beyond 900keV for these strips.
 	CONFIG=7602.004.config.dat;
 
 [7602.007]
@@ -539,11 +549,11 @@
 [7605.001]
 	TSHIFT=0;
 	CONFIG=7605.001.config.dat;
-//cannot fix with tshift, strips offset by different times
-
+	//cannot fix with tshift, strips offset by different times
 
 
 [7605.003]
+	RUN_STATUS=Suspicious;
 	CONFIG=7605.003.config.dat;
 
 
@@ -575,12 +585,33 @@
 
 [7609.009]
 	RUN_STATUS=Good;
-	EnableStrip=18;
-	EnableStrip=54;
-	EnableStrip=72;
+// The banana of these strips have been interfaring with time window cut.
+//	EnableStrip=18;
+//	EnableStrip=54;
+//	EnableStrip=72;
 	CONFIG=7609.009.config.dat;
 
 [7614.001]
+	//strips back to normal, but check fill 7610 and 7612
+	EnableStrip=9;
+	EnableStrip=10;
+	EnableStrip=12;
+	EnableStrip=14;
+	EnableStrip=27;
+	EnableStrip=28;
+	EnableStrip=30;
+	EnableStrip=32;
+	EnableStrip=45;
+	EnableStrip=46;
+	EnableStrip=48;
+	EnableStrip=50;
+	EnableStrip=61;
+	EnableStrip=62;
+	EnableStrip=63;
+	EnableStrip=64;
+	EnableStrip=65;
+	EnableStrip=68;
+	EnableStrip=70;
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	TSHIFT=1;
 	CONFIG=7614.001.config.dat;
@@ -706,13 +737,16 @@
 	CONFIG=7637.009.config.dat;
 
 [7637.101]
+	//Jump in t dependent asymmetries.  See elog.
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
+	DisableBunch=62;
 	CONFIG=7637.101.config.dat;
 
 [7637.103]
+	EnableBunch=62
 	CONFIG=7637.103.config.dat;
 
 [7639.001]
@@ -897,8 +931,19 @@
 [7655.101]
 	CONFIG=7655.101.config.dat;
 
+[7655.102]
+	CONFIG=7655.102.config.dat;
+
+[7655.104]
+	CONFIG=7655.104.config.dat;
+
+[7655.108]
+	//target may have been lost?
+	//See E-log for pp 3/24/06 14:59
+	RUN_STATUS=Junk;
 
 [7657.001]
+	RUN_STATUS=Good;
 	CONFIG=7657.001.config.dat;
 
 [7657.002]
@@ -930,6 +975,11 @@
 	RUN_STATUS=Suspicious;
 
 [7661.001]
+	//strange strip behavior gone
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
 	CONFIG=7661.001.config.dat;
 
 [7661.101]
@@ -983,7 +1033,7 @@
 	CONFIG=7672.004.config.dat;
 
 [7672.101]
-	//huge jump betwen online and offline
+	COMMENT="very bizzare timing issues as evidenced in the offline plots, not a run I would trust, but not ready to junk just yet."
 	RUN_STATUS=Suspicious;
 	CONFIG=7672.101.config.dat;
 
@@ -999,19 +1049,230 @@
 	RUN_STATUS=Suspicious;
 	// reversed spin sign from CDEV.
 
-
-
 [7673.001]
-	// Not confirmed yet.
+	RUN_STATUS=Junk;
+
+[7673.003]
+	//online plots not too tight, 6 bunch injection
+	RUN_STATUS=Suspicious;
+	CONFIG=7673.003.config.dat;
+
+[7673.004]
 	RUN_STATUS=Good;
+	CONFIG=7673.004.config.dat;
+
+[7673.005]
+	//Bunch By Bunch dist looks strange and has huge errors
+	//low statistics?
+	RUN_STATUS=Suspicious;
+
+[7673.007]
+	RUN_STATUS=Good;
+
+[7673.008]
+	//run excluded from Elog, and then repeated 2 minutes later
+	RUN_STATUS=Suspicious;
+
+[7673.007]
+	RUN_STATUS=Good;
+
+[7673.010]
+	//not sure about this one, timing issues and exclusion from elog
+	//very tempted to junk this one
+	RUN_STATUS=Suspicious;
+	CONFIG=7673.010.config.dat;
 
 [7673.101]
-	// Not confirmed yet.
+	RUN_STATUS=Junk;
+
+[7673.109]
+	//According to Elog, they missed a bunch and then dumped and refilled
+	RUN_STATUS=Suspicious;
+	CONFIG=7673.109.config.dat;
+
+[7673.110]
+	RUN_STATUS=Junk;
+
+[7673.111]
+	//big jump between online and offline
+	RUN_STATUS=Suspicious;
+	CONFIG=7673.111.config.dat;
+
+[7673.113]
+	RUN_STATUS=Good;
+	CONFIG=7673.113.config.dat;
+
+[7673.116]
+	//something is very wrong with the second and fifth detector
+	//tempted to junk completely
+	DisableStrip=13;
+	DisableStrip=14;
+	DisableStrip=15;
+	DisableStrip=16;
+	DisableStrip=17;
+	DisableStrip=18;
+	DisableStrip=19;
+	DisableStrip=20;
+	DisableStrip=21;
+	DisableStrip=22;
+	DisableStrip=23;
+	DisableStrip=24;
+	DisableStrip=49;
+	DisableStrip=50;
+	DisableStrip=51;
+	DisableStrip=52;
+	DisableStrip=53;
+	DisableStrip=54;
+	DisableStrip=55;
+	DisableStrip=56;
+	DisableStrip=57;
+	DisableStrip=58;
+	DisableStrip=59;
+	DisableStrip=60;
+	RUN_STATUS=Suspicious;
+
+[7673.117]
+	RUN_STATUS=Junk;
+
+[7673.118]
+	RUN_STATUS=Suspicious;
+
+[7674.001]
+	RUN_STATUS=Good;
+	CONFIG=7674.001.config.dat;
+
+[7674.101]
+	EnableStrip=13;
+	EnableStrip=14;
+	EnableStrip=15;
+	EnableStrip=16;
+	EnableStrip=17;
+	EnableStrip=18;
+	EnableStrip=19;
+	EnableStrip=20;
+	EnableStrip=21;
+	EnableStrip=22;
+	EnableStrip=23;
+	EnableStrip=24;
+	EnableStrip=49;
+	EnableStrip=50;
+	EnableStrip=51;
+	EnableStrip=52;
+	EnableStrip=53;
+	EnableStrip=54;
+	EnableStrip=55;
+	EnableStrip=56;
+	EnableStrip=57;
+	EnableStrip=58;
+	EnableStrip=59;
+	EnableStrip=60;
+	RUN_STATUS=Good;
+	CONFIG=7674.101.config.dat;
+
+[7681.001]
+	CONFIG=7681.001.config.dat;
+
+[7681.003]
+	//background noise in the sixth detector, but not too high to warrent
+	//"disable" status
+
+[7681.004]
+	CONFIG=7681.004.config.dat;
+
+[7681.008]
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	RUN_STATUS=Suspicious;
+
+[7681.101]
+	CONFIG=7681.101.config.dat;
+
+[7681.104]
+	RUN_STATUS=Junk;
+
+[7681.105]
+	RUN_STATUS=Good;
+	CONFIG=7681.105.config.dat;
+
+[7681.106]
+	CONFIG=7681.106.config.dat;
+
+[7682.001]
+	RUN_STATUS=Suspicious;
+	CONFIG=7682.001.config.dat;
+
+[7682.003]
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	RUN_STATUS=Good;	
+	
+
+[7682.006]
+	CONFIG=7682.006.config.dat;
+
+[7682.101]
+	CONFIG=7682.101.config.dat;
+
+[7682.104]
+	CONFIG=7682.104.config.dat;
+
+[7685.001]
+	CONFIG=7685.001.config.dat;
+
+[7685.002]
+	CONFIG=7685.002.config.dat;
+
+[7685.101]
+	CONFIG=7685.101.config.dat;
+
+[7688.001]
+	CONFIG=7688.001.config.dat;
+
+[7688.002]
+	// big errors on the online asymmetry values.
+	RUN_STATUS=Suspicious;
+	CONFIG=7688.002.config.dat;
+
+[7688.003]
+	RUN_STATUS=Good;
+	CONFIG=7688.003.config.dat;
+
+[7688.101]
+	CONFIG=7688.101.config.dat;
+
+[7688.102]
+	CONFIG=7688.102.config.dat;
+
+[7689.101]
+	CONFIG=7689.101.config.dat;
+
+[7690.101]
+	CONFIG=7690.101.config.dat;
+
+[7691.001]
+	CONFIG=7690.001.config.dat;
+
+[7691.101]
+	CONFIG=7691.101.config.dat;
+
+[7691.106]
+	//something about emittance measurement.  See Sandro's note in
+	//the rhic_pp elog
+	RUN_STATUS=Junk;
+
+
+[7697.101]
 	RUN_STATUS=Good;
 
 
-[7691.001]
-	CONFIG=7691.001.config.dat;
+[7712.001]
+	CONFIG=7712.001.config.dat;
 
+[7712.101]
+	CONFIG=7712.101.config.dat;
 
 
