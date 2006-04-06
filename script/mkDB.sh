@@ -112,7 +112,7 @@ ShowIndex(){
     printf "   on-off";
     printf "\n";
     printf "          ";
-    printf "    P   dP ";
+    printf "  P     dP ";
     printf "       "
     printf " crew ";
     printf "[GeV]                       ";
@@ -170,6 +170,13 @@ grepit(){
     if [ $RUN_STATUS == 'Junk' ] ; then
 	echo -e -n " $RUN_STATUS\n";
     else
+
+    # If No Crew defined then carrige return
+    if [ $CREW ] ; then
+	echo -e -n "";
+    else
+	CREW="-----";
+    fi
 
 
 	printf "  %4s  %5s" $RUN_STATUS $CREW;
