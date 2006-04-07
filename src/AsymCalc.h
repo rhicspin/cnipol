@@ -21,6 +21,7 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 float FitChi2;
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
+Double_t sin_phi(Double_t *x, Double_t *par);
 float WeightAnalyzingPower(int hid);
 
 
@@ -39,8 +40,15 @@ class AsymFit
  private:
 
  public:
-  void SinPhiFit(Float_t p0, Float_t *par, Float_t *phi, Float_t &chi2);
+  void SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
+		 Float_t *P, Float_t *dphi, Float_t &chi2dof);
+
+  // following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.
+  /*
+  void SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2);
   Float_t sinx(Float_t, Double_t *);
+  Double_t GetFittingErrors(TMinuit *gMinuit, Int_t NUM);
+  */
 
 };
 

@@ -16,11 +16,16 @@
 #include <iostream.h>
 #include "TMinuit.h"
 #include "TString.h"
+#include "TGraphErrors.h"
+#include "TF1.h"
+#include "TMath.h"
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
 #include "WeightedMean.h"
 #include "AsymCalc.h"
+
+
 
 
 // =========================
@@ -547,7 +552,7 @@ PrintRunResults(StructHistStat hstat){
     runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
 
 
-printf("-----------------------------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10d\n",   runinfo.RunTime);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
     printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
@@ -963,7 +968,7 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
       // Calculate Luminosity for Right and Left/Up and Down spin
       for (int i=0;i<3;i++) {
 	LumiRU[bid] += Ncounts[i][bid]*((spinpat[bid]==1)?1:0);
-	LumiRD[bid] += Ncounts[i][bid]*((spinpat[bid]==-11)?1:0);
+	LumiRD[bid] += Ncounts[i][bid]*((spinpat[bid]==-1)?1:0);
 	LumiLU[bid] += Ncounts[i+3][bid]*((spinpat[bid]==1)?1:0);
 	LumiLD[bid] += Ncounts[i+3][bid]*((spinpat[bid]==-1)?1:0);
       }
@@ -1103,14 +1108,79 @@ CalcAsymmetry(float aveA_N){
 
     // Fit phi-distribution
     AsymFit asymfit;
-    asymfit.SinPhiFit(anal.P[0], anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
-
+    asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
+    //asymfit.SinPhiFit(anal.P[0], anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
 
     return;
 
 }
 
+
+//
+// Class name  : 
+// Method name : sin_phi(Float_t x, Double_t *par)
+//
+// Description : sin(x) fit. Amplitude and phase as parameters
+// Input       : Double_t *x, Double_t *par
+// Return      : par[0]*sin(x+par[1])
+//
+Double_t
+sin_phi(Double_t *x, Double_t *par)
+{
+ Double_t value=par[0]*sin(-x[0]+par[1]);
+ return value;
+}
+
+
+
+//
+// Class name  : AsymFit
+// Method name : SinPhiFit()
+//
+// Description : Master Routine for sin(phi) root-fit  
+// Input       : Float_t p0 (1-par Polarization for par[0] initialization)
+//             : Float_t *RawP, Float_t *dRawP, Float_t *phi (vectors to be fit)
+// Return      : Float_t *P, Float_t *dphi, Float_t &chi2dof
+//
+void 
+AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
+		       Float_t *P, Float_t *dphi, Float_t &chi2dof)
+{
   
+  float dx[NSTRIP];
+  for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
+
+  TGraphErrors * tg = new TGraphErrors(NSTRIP, phi, RawP, dx, dRawP);
+
+  // define sin(phi) fit function & initialize parmaeters
+  TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
+  func -> SetParameters(p0,0);
+  func -> SetParLimits(0, -1, 1);
+  func -> SetParLimits(1, -M_PI, M_PI);
+  func -> SetParNames("P","dPhi");
+
+  // Perform sin(phi) fit
+  tg -> Fit("sin_phi","R");
+
+  // Get fitting results
+  P[0] = func->GetParameter(0);
+  P[1] = func->GetParError(0);
+  dphi[0] = func->GetParameter(1);
+  dphi[1] = func->GetParError(1);
+
+  // calculate chi2
+  chi2dof = func->GetChisquare()/func->GetNDF();
+
+  return;
+
+}// end-of-AsymFit::SinPhiFit()
+
+
+
+
+
+
+/*       following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.  
 
 //
 // Class name  : 
@@ -1138,6 +1208,7 @@ fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
    
 }
 
+
 //
 // Class name  : AsymFit
 // Method name : sinx(Float_t x, Double_t *par)
@@ -1153,7 +1224,6 @@ AsymFit::sinx(Float_t x, Double_t *par)
  return value;
 }
 
-
 //
 // Class name  : AsymFit
 // Method name : SinPhiFit()
@@ -1166,9 +1236,11 @@ void
 AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
 {
   
+
   const Int_t NPAR=2;
   TMinuit *gMinuit = new TMinuit(NPAR);  
   gMinuit->SetFCN(fcn);
+
 
    Double_t arglist[10];
    Int_t ierflg = 0;
@@ -1188,9 +1260,11 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
    gMinuit->mnparm(1, "phi", vstart[1], step[1], 0,0,ierflg);
 
 // Now ready for minimization step
-   arglist[0] = 1000; // call at least 500 function calls
-   arglist[1] = 0.1;  // tolerance
+   arglist[0] = 1000; // call at least 1000 function calls
+   arglist[1] = 0.01;  // tolerance
    gMinuit->mnexcm("MIGRAD", arglist ,2,ierflg);
+   gMinuit->mnexcm("MINOS", arglist ,2,ierflg);
+
 
 // Print results
    Double_t amin,edm,errdef;
@@ -1206,10 +1280,13 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
    TString CHNAM;
    gMinuit->mnpout(0,CHNAM,val,eval,bnd1,bnd2,ivarbl);
    P[0]=(Float_t)val;
-   P[1]=(Float_t)eval;
+   //   P[1]=(Float_t)eval;
+   P[1]=(Float_t)GetFittingErrors(gMinuit, 0);
    gMinuit->mnpout(1,CHNAM,val,eval,bnd1,bnd2,ivarbl);
    phi[0]=(Float_t)val;
-   phi[1]=(Float_t)eval;
+   //   phi[1]=(Float_t)eval;
+   phi[1]=(Float_t)GetFittingErrors(gMinuit, 1);
+
 
    Int_t NDATA=0;
    for (Int_t i=0;i<NSTRIP; i++) NDATA += dRawP[i] ? 1 : 0;
@@ -1218,6 +1295,39 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
    return;
 
 }
+
+
+
+//
+// Class name  : AsymFit
+// Method name : GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
+//
+// Description : Retrun parameter errors for parameter NUM
+// Input       : TMinuit *gMinuit, Int_t NUM
+// Return      : error
+//
+Double_t 
+AsymFit::GetFittingErrors(TMinuit *gMinuit, Int_t NUM){
+
+  Double_t error;
+  Double_t eplus, eminus, eparab, globcc;
+  gMinuit->mnerrs(NUM,eplus,eminus,eparab,globcc);
+
+  Int_t NoAverage = fabs(eplus)*fabs(eminus) ? 0 : 1;
+  if (NoAverage) {
+    error = eplus ? fabs(eplus) : fabs(eminus);
+  }else{
+    error =(fabs(eplus)+fabs(eminus))/2.;
+  }
+
+  cout << eplus << " " << eminus << " " << eparab << " " << globcc << " " << error << endl;
+
+  return error;
+
+}
+
+
+*/
 
 
 /*
