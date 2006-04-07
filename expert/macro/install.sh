@@ -9,7 +9,7 @@ else
 fi
 
 # install *.pl *.sh -C -v  --mode 777 $MACRODIR
-install *.kumac -C -v  --mode 666 $MACRODIR
+install *.f *.kumac -C -v  --mode 666 $MACRODIR
 
 
 
