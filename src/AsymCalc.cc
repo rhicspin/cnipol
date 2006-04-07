@@ -516,6 +516,11 @@ int end_process(recordConfigRhicStruct *cfginfo)
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
     if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[1]);
+    
+    //-------------------------------------------------------
+    // Check for bunches with too few/many counts
+    //-------------------------------------------------------
+    checkForBadBunches();
 
 
     //-------------------------------------------------------
@@ -1374,3 +1379,41 @@ RAMP::CalcRAMP()
 }
 */
 
+
+void checkForBadBunches()
+{
+	
+	printf("checking for bad bunches\n");
+	
+	double avg;
+	double sigma;
+	for(int i=0;i<6;i++)
+	{
+		avg=0.;
+		for(int j=0;j<120;j++)
+		{
+			avg+=Ncounts[i][j];
+		}
+		avg=avg/120.;
+		
+		sigma=0.;
+		for(int j=0;j<120;j++)
+		{
+			sigma+=((Ncounts[i][j]-avg)*(Ncounts[i][j]-avg));
+		}
+		sigma=sigma/120.;
+		sigma=sqrt(sigma);
+		
+		for(int j=0;j<120;j++)
+		{
+			if((Ncounts[i][j]-avg)>3.*sigma)
+			{
+				printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
+			}
+		}
+		
+	}
+}
+
+
+			
