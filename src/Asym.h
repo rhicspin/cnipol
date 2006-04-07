@@ -266,6 +266,7 @@ float TshiftFinder(int);
 int BunchSelect(int);
 void CalcAsymmetry(float);
 void PrintRunResults(StructHistStat);
+void checkForBadBunches();
 
 
 // GLOBAL VARIABLES
