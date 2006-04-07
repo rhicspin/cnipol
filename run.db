@@ -188,7 +188,6 @@
 	CONFIG=7450.001.config.dat;
 	ENERGY_CALIB=60217.001.scale;
 
-
 [7450.101]
 	CONFIG=7450.105.config.dat;
 	ENERGY_CALIB=60217.101.scale;
@@ -558,6 +557,7 @@
 
 
 [7605.004]
+	COMMENT="Strips are bad and bananas are being cut off at bottom. delta P > 10%"
 	CONFIG=7605.004.config.dat;
 
 
