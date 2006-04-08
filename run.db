@@ -546,6 +546,7 @@
 
 
 [7605.001]
+	RUN_STATUS=Suspicious;
 	TSHIFT=0;
 	CONFIG=7605.001.config.dat;
 	//cannot fix with tshift, strips offset by different times
@@ -557,11 +558,12 @@
 
 
 [7605.004]
-	COMMENT="Strips are bad and bananas are being cut off at bottom. delta P > 10%"
+	COMMENT="Strips are bad and bananas are being cut off at bottom. delta P > 10%";
 	CONFIG=7605.004.config.dat;
 
 
 [7605.006]
+	COMMENT="";
 	CONFIG=7605.006.config.dat;
 
 
@@ -1033,11 +1035,12 @@
 	CONFIG=7672.004.config.dat;
 
 [7672.101]
-	COMMENT="very bizzare timing issues as evidenced in the offline plots, not a run I would trust, but not ready to junk just yet."
+	COMMENT="very bizzare timing issues as evidenced in the offline plots, not a run I would trust, but not ready to junk just yet.";
 	RUN_STATUS=Suspicious;
 	CONFIG=7672.101.config.dat;
 
 [7672.102]
+	COMMENT=""
 	RUN_STATUS=Good;
 	CONFIG=7672.102.config.dat;
 
@@ -1275,4 +1278,19 @@
 [7712.101]
 	CONFIG=7712.101.config.dat;
 
+[7718.005]
+	CONFIG=7718.005.config.dat;
+
+[7718.006]
+	CONFIG=7718.006.config.dat;
+
+[7718.007]
+	CONFIG=7718.007.config.dat;
+
+[7712.103]
+	RUN_STATUS=Junk;
+
+[7718.104]
+	RUN_STATUS=Good;
+	CONFIG=7718.104.config.dat;
 
