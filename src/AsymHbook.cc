@@ -174,6 +174,12 @@ float pawc_[NWORDS_PAWC];
 //  36250     : polarization vs. phi
 //  37000+TgtIndex  : X90 phys(0), acpt(10), lumi(20)  
 //  37500+TgtIndex  : X45 phys(0), acpt(10), lumi(20)  
+//  38010     : Intensity Profile (RU(90))
+//  38020     : Intensity Profile (RD(90))
+//  38030     : Intensity Profile (LU(90))
+//  38040     : Intensity Profile (LD(90))
+//  38050     : Total Intensity Profile vs. Target Position
+//  38060     : Total Intensity Profile vs. Time [s]
 //-STUDY MODE
 //  40000+Si  : 120 bunch dists for spin tune measurement
 
@@ -473,6 +479,8 @@ int hist_book(char *filename){
     HHBOOK1(38020, "RD(90)", MAXTGT, -0.5, MAXTGT);
     HHBOOK1(38030, "LU(90)", MAXTGT, -0.5, MAXTGT);
     HHBOOK1(38040, "RD(90)", MAXTGT, -0.5, MAXTGT);
+    HHBOOK1(38050, "Intensity Profile (target)", MAXTGT, -0.5, MAXTGT);
+    HHBOOK1(38060, "Intensity Profile (time)",   40, -0.5, 40);
 
 
     // Ntuple booking
@@ -532,10 +540,10 @@ void tgtHistBook(){
     float dX= XMAX-XMIN ? (XMAX-XMIN)*0.1 : 1 ;
     int XBIN=(int)(fabs(XMAX-XMIN+2*dX)/TGT_COUNT_MM);
     sprintf(hcomment,"Target position vs. time ");
-    //    HHBOOK2(25050,hcomment, XBIN, -0.5, ndelim+0.5, ndelim+1,XMIN-dX, XMAX+dX);
-    HHBOOK2(25050,hcomment, 1000, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
+    HHBOOK2(25050,hcomment, XBIN, -0.5, ndelim+0.5, ndelim+1,XMIN-dX, XMAX+dX);
+    //    HHBOOK2(25050,hcomment, 1000, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
     sprintf(hcomment,"Target position vs. time (tgt event)");
-    HHBOOK2(25060,hcomment, 500, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
+    HHBOOK2(25060,hcomment, 100, -0.5, ndelim+0.5, 100,XMIN-dX, XMAX+dX);
 
     // Fill target histo with x[mm] vs.time [s] 
     for (int i=0; i<ndelim; i++) {
