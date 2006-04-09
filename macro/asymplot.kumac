@@ -2109,6 +2109,7 @@ return
      ve/inp k([i]) [t]
    enddo
    sigma rate=k/delim
+
    ve/cr drate($vdim(rate,1))
    if [run].lt.7600 then
       sigma drate=1/delim*rate
@@ -2165,14 +2166,14 @@ macro target
 
 
    set hcol 1	
-   hi/plot 25060
+   hi/plot 25060 box 
    igset mtyp 20;
    set hcol 2;
-   hi/plot 25050 s
+   hi/plot 25050 box,s
 
    null 0 10 0 10 abs
-   igset pmci 1 ; key 1 5   20 'Stepping Moter' 
-   igset pmci 2 ; key 1 4.5 20 'Encoder Readout'
+   igset pmci 1 ; key 0.5 5   25 'Stepping Moter' 
+   igset pmci 2 ; key 0.5 4.5 25 'Encoder Readout'
 	
    atitle 'Time in [s] from Measurement Start' 'target Position in [mm]' ! 220
 
@@ -2183,11 +2184,12 @@ return
 macro CallNull mode=[mode]
 * **************************************************************
 
+   RateLimit=1e4
    xmin=x(1)
    xmax=x($vdim(index,1))
 
    do i=1,$vdim(index,1)
-	if (rate([i]).gt.200) then
+	if (rate([i]).gt.[RateLimit]) then
 	  xmin=x([i])
 	  goto label1
         endif
@@ -2196,7 +2198,7 @@ macro CallNull mode=[mode]
 label1:
 
    do i=$vdim(index,1),1,-1
-	if (rate([i]).gt.200) then
+	if (rate([i]).gt.[RateLimit]) then
 	  xmax=x([i])
 	  goto label2
         endif
