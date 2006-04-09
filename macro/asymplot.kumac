@@ -2081,7 +2081,7 @@ next:
    custum=custum
    exec detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
 
-*   sh rm -f tgt.dat
+   sh rm -f tgt.dat
 *   mess psfile=[psfile]
 *   close 60
    
