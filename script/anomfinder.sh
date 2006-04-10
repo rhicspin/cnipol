@@ -2,8 +2,6 @@
 #find anomalous runs
 #A. Hoffman
 #April 6, 2006
-# For now, this program only accepts specific minimum values under 10%
-# All -n entries greater 10% will revert to 10% 
 
 INF="$ASYMDIR/testlist.txt";
 B=5;
@@ -69,8 +67,8 @@ done
 
 if test $m -eq 1
 then
-    echo "updating mkDB.txt...";
-    mkDB.sh --exclusive > $INF
+    echo "updating testlist.txt...";
+    mkDB.sh --exclusive | grep -v Junk | grep ^7 | grep -v /home/ > $INF
 fi
 
 
