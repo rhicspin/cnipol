@@ -1294,3 +1294,97 @@
 	RUN_STATUS=Good;
 	CONFIG=7718.104.config.dat;
 
+[7719.001]
+	RUN_STATUS=Junk;
+	
+[7719.004]
+	CONFIG=7719.004.config.dat;
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange intensity profile";
+	
+[7719.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide intensity profile"
+	CONFIG=7719.101.config.dat;
+	
+[7722.001]
+	RUN_STATUS=Good;
+	CONFIG=7722.001.config.dat;
+	COMMENT="";
+	
+[7722.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide intensity profile";
+	
+[7722.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide intensity profile";
+	
+[7722.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide intensity profile";
+	
+[7722.005]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7722.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+	CONFIG=7722.101.config.dat;
+	
+[7722.106]
+	COMMENT="low statistics, low polarization";
+	RUN_STATUS=Junk;
+	
+[7723.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
+[7732.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Large chi^2 in online phi fit.";
+	CONFIG=7732.001.config.dat;
+
+[7732.002]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7733.001]
+	COMMENT="";
+	CONFIG=7733.001.config.dat;
+	RUN_STATUS=Good;
+
+[7733.003]
+	CONFIG=7733.003.config.dat;
+
+[7733.101]
+	CONFIG=7733.101.config.dat;
+
+[7733.102]
+	COMMENT="Yellow polarization dropped to zero?  Perhaps a spin pattern problem, but but unlikely.";
+	RUN_STATUS=Junk;
+
+[7738.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+	CONFIG=7738.001.config.dat;
+
+[7738.002]
+	CONFIG=7738.002.config.dat;
+
+[7738.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+	CONFIG=7738.101.config.dat;
+
+[7738.102]
+	CONFIG=7738.102.config.dat;
+
+[7739.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="large chi^2 in sinphi plot";
+
+
+
