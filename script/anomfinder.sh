@@ -5,7 +5,7 @@
 # For now, this program only accepts specific minimum values under 10%
 # All -n entries greater 10% will revert to 10% 
 
-INF="$ASYMDIR/mkDB.txt";
+INF="$ASYMDIR/testlist.txt";
 B=5;
 DUMP=0;
 h=0;
@@ -33,34 +33,23 @@ helpmenu() {
 
 
 #############################################################################
-#                       GrepAnomRuns()                                      #
+#                        AwkAnomRuns()                                      #
 #############################################################################
 
-GrepAnomRuns() {
+AwkAnomRuns() {
 
     if test $DUMP -eq 1
     then
-	grep "[$B-9]\.[0-9][0-9]$\|1[0-9]\.[0-9][0-9]$" $INF > anom.list;
+	awk "\$21 > $B || \$21 < -$B"  $INF > anom.list;
 	echo "found all runs with a difference of $B % or greater and dumped them into anom.list";
 	
     else
-	grep "[$B-9]\.[0-9][0-9]$\|1[0-9]\.[0-9][0-9]$" $INF;
+	echo "testing";
+	awk "\$21 > $B || \$21 < -$B" $INF;
 	echo "found all runs with a difference of $B % or greater";
     fi
 }
 
-GrepBigAnomRuns() {
-
-    if test $DUMP -eq 1
-    then
-	grep "[1-9][0-9]\.[0-9][0-9]$" $INF > anom.list;
-	echo "found all runs with difference of 10 % or greater and dumped them into anom.list";
-	
-    else
-	grep "[1-9][0-9]\.[0-9][0-9]$" $INF;
-	echo "found all runs with a difference of 10 % or greater";
-    fi
-}
 
 #############################################################################
 #                                    Main                                   #
@@ -84,10 +73,5 @@ then
     mkDB.sh --exclusive > $INF
 fi
 
-if test $B -gt 9
-then
-    GrepBigAnomRuns;
 
-else
-    GrepAnomRuns;
-fi
+AwkAnomRuns;
