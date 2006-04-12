@@ -44,8 +44,9 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
-  0,      // VERBOSE mode
-  0       // feedback mode
+  0,       // VERBOSE mode
+  0,       // feedback mode
+  -1,      // spin pattern
 };
 
 StructCounter cntr = {

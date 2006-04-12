@@ -556,7 +556,16 @@ PrintRunResults(StructHistStat hstat){
     runinfo.EvntRate = float(Nevtot)/float(runinfo.RunTime);
     runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
 
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("-----------------------------  Operation Messages  --------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    if (Flag.feedback)        printf(" Feedback mode     : On \n");
+    if (Flag.spin_pattern>=0) printf(" RHIC Spin Pattern : Recovered.\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("\n\n");
 
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("-----------------------------   Analysis Results   --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10d\n",   runinfo.RunTime);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
@@ -577,12 +586,11 @@ PrintRunResults(StructHistStat hstat){
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
-    printf(" Average Polarization        = %10.4f%8.4f\n",anal.P[0],anal.P[1]);
-    printf(" Polarization (sinphi)       = %10.4f%8.4f\n",anal.sinphi.P[0],anal.sinphi.P[1]);
-    printf(" Phase (sinphi)  [deg.]      = %10.4f%8.4f\n",anal.sinphi.dPhi[0]*R2D,anal.sinphi.dPhi[1]*R2D);
+    printf(" Average Polarization        = %10.4f%9.4f\n",anal.P[0],anal.P[1]);
+    printf(" Polarization (sinphi)       = %10.4f%9.4f\n",anal.sinphi.P[0],anal.sinphi.P[1]);
+    printf(" Phase (sinphi)  [deg.]      = %10.4f%9.4f\n",anal.sinphi.dPhi[0]*R2D,anal.sinphi.dPhi[1]*R2D);
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi.chi2);
     printf("-----------------------------------------------------------------------------------------\n");
-
 
     return;
 }
@@ -1380,6 +1388,14 @@ RAMP::CalcRAMP()
 */
 
 
+//
+// Class name  : 
+// Method name : checkForBadBunches()
+//
+// Description : check for bad bunches
+// Input       : 
+// Return      : 
+//
 void checkForBadBunches()
 {
 	

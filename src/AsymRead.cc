@@ -18,8 +18,11 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+#include "AsymRecover.h"
+
 
 #define REC_BEAMMASK 0x00030000
+void PrintPattern(char*);
 
 
 // ================= 
@@ -63,8 +66,10 @@ int readloop() {
     targetDataStruct tgtdat2;
     wcmDataStruct wcmdat;
     pCTargetStruct pctdat;
-    int bid,pat;
     processEvent event;
+    AsymRecover recover;
+
+    int bid,pat;
     char pattern[1];
     int nreadsi;  // number of Si already read
     int nreadbyte; 
@@ -242,29 +247,25 @@ int readloop() {
                     fillpat[bid] = 0;
                 }
             }
-	    //Impremented to recover spin pattern screwed data (Nov.15,'05) 
-	    //FlipSpinPattern(1);
 
-            cout << "Spin Pattern Used : " << endl;
-            char pattern[3][5] ;
-            sprintf(pattern[0],"-");
-            sprintf(pattern[1],".");
-            sprintf(pattern[2],"+");
+	    char pattern[3][5] ;
+	    cout << "Spin Pattern Used : " << endl;
+	    PrintPattern("spin");
 
-            for (bid=0;bid<120;bid++) {
-                if (bid%10 == 0) cout << " ";
-                cout << pattern[spinpat[bid]+1];
-            }
-            cout <<endl;
+	    //Recover Spin Pattern by User Defined ones
+	    if (Flag.spin_pattern>=0) {
+	      recover.OverwriteSpinPattern(Flag.spin_pattern);
+	      PrintPattern("spin");
+	    }
+
             cout << "Fill Pattern Used : " << endl;
-            for (bid=0;bid<120;bid++) {
-                if (bid%10 == 0) cout << " ";
-                cout << pattern[fillpat[bid]+1];
-            }
-            cout<<endl;
+	    PrintPattern("fill");
+
 
 	    ReadFlag.BEAMADO = 1;
+
 	  }
+
 	  break; 
 
         case REC_END:
@@ -440,9 +441,47 @@ int readloop() {
             break;
         }
     }
-    fprintf(stdout,"End of loop\n");
+    //    fprintf(stdout,"End of loop\n");
     return(0);
 }
+
+
+
+//
+// Class name  :
+// Method name : void PrintPattern(char* Mode)
+//
+// Description : print out spin (Mode=0), fill (Mode=1) pattern
+// Input       : Mode
+// Return      : 
+//             : 
+//
+void 
+PrintPattern(char * Mode){
+
+  char pattern[3][5] ;
+  sprintf(pattern[0],"-");
+  sprintf(pattern[1],".");
+  sprintf(pattern[2],"+");
+
+  for (int i=0;i<RHIC_MAX_FILL;i++) {
+
+    if (i%10 == 0) cout << " ";
+
+    if (Mode=="spin") {
+      cout << pattern[spinpat[i]+1];
+    }else if (Mode=="fill") {
+      cout << pattern[fillpat[i]+1];
+    }      
+
+  }
+
+  cout <<endl;
+  
+  return;
+
+}
+
 
 
 

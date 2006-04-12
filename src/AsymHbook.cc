@@ -571,8 +571,8 @@ int hist_close(char *filename) {
     char chopt[5];
     int idout = 0;
 
-    fprintf(stdout,"\nClosing histgram file : %s \n",filename);
-    fprintf(stdout,"Writing Hbook file on Disk \n");
+    //    fprintf(stdout,"\nClosing histgram file : %s \n",filename);
+    //    fprintf(stdout,"Writing Hbook file on Disk \n");
     
     sprintf(filecomment, "T-E INFO");
     sprintf(filestatus, "N");
