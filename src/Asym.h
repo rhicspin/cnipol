@@ -21,6 +21,7 @@ using namespace std;      //declare string in structure
 
 
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
+#define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
 #define MAXDELIM 350               // maximum number of delimiter (dynamic motion only)
 #define TARGETINDEX 1000           // maximum target full array size including static motion
@@ -85,9 +86,10 @@ typedef struct {
   float tshift;        // time shift in [ns]
   float inj_tshift;    // time shift in [ns] for injection w.r.t. flattop
   float WCMRANGE;      // Wall Current Monitor process Fill range
-  float MassLimit;     //Lower Mass limit for peak position adjustment fit
+  float MassLimit;     // Lower Mass limit for peak position adjustment fit
   int thinout;         // Every <thinout> event to be feed into feedback routine
 } datprocStruct; 
+
 
 typedef struct {
     long ia;
@@ -150,6 +152,7 @@ typedef struct {
   string measurement_type_s;
   string disable_strip_s;
   string enable_strip_s;
+  string define_spin_pattern_s;
   string comment_s;
 }StructRunDB ;
 
@@ -192,6 +195,7 @@ typedef struct {
 typedef struct {
   int VERBOSE;
   int feedback;
+  int spin_pattern;
 } StructFlag;
 
 
@@ -260,7 +264,6 @@ float ekin(float, float);
 int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 int DisabledDet(int det);
-int FlipSpinPattern(int mode);
 void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int);
 int BunchSelect(int);
