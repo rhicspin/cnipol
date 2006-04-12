@@ -1351,6 +1351,25 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 
+[7732.003]
+	CONFIG=7732.003.config.dat;
+
+[7732.101]
+	RUN_STATUS=Junk;
+
+[7732.102]
+	RUN_STATUS=Good;
+	CONFIG=7732.102.config.dat;
+
+[7732.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="Spin pattern is definitely not right."
+	CONFIG=7732.103.config.dat;
+
+[7732.104]
+	RUN_STATUS=Suspicious;
+	COMMENT="Spin pattern is definitely not right."
+
 [7733.001]
 	COMMENT="";
 	CONFIG=7733.001.config.dat;
@@ -1360,6 +1379,8 @@
 	CONFIG=7733.003.config.dat;
 
 [7733.101]
+	COMMENT="";
+	RUN_STATUS=Good;
 	CONFIG=7733.101.config.dat;
 
 [7733.102]
@@ -1386,5 +1407,33 @@
 	RUN_STATUS=Suspicious;
 	COMMENT="large chi^2 in sinphi plot";
 
+[7740.001]
+	RUN_STATUS=Good;
+	COMMENT="";
 
+[7740.101]
+	CONFIG=7740.101.config.dat;
+
+[7740.102]
+	CONFIG=7740.102.config.dat;
+
+[7744.001]
+	RUN_STATUS=Good;
+
+[7744.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="large chi^2 in sinphi plot";
+	CONFIG=7744.103.config.dat;
+
+[7744.104]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7745.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wrong spin pattern loaded";
+
+[7745.003]
+	RUN_STATUS=Good;
+	COMMENT="";
 
