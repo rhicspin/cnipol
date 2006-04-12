@@ -1436,7 +1436,7 @@
 	COMMENT="";
 
 [7745.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS=Recoverd;
 	COMMENT="Wrong spin pattern loaded";
 	DEFINE_SPIN_PATTERN=1;
 
