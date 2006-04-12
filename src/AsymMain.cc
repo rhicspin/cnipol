@@ -487,31 +487,6 @@ int sqass(float A, float B, float C, float D, float *asym, float *easym) {
 
 
 
-//
-// Class name  :
-// Method name : FlipSpinPattern(int mode)
-//
-// Description : Overwrite the spin pattern to save runs whose spin patterns
-//             : were screwed up
-// Input       : int mode
-// Return      : 
-//
-int
-FlipSpinPattern(int mode){
-
-  int BluePattern[120]={1,0,-1,0,1,0,-1,0,1,0,-1,0,1,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  if (mode==1){
-    for (int i=0; i<120; i++) spinpat[i] = BluePattern[i] ;
-  }
-
-  return 1 ;
-
-}
-
-
 
 
 //
