@@ -1347,6 +1347,18 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 
+[7729.001]
+	RUN_STATUS=Junk;
+
+[7729.003]
+	RUN_STATUS=Good;
+
+[7729.004]
+	RUN_STATUS=Suspicious;
+	COMMENT= "Offline bunch crossing and WCM plots are weird.";
+
+[7729.103]
+	CONFIG=7729.103.config.dat;
 
 [7732.001]
 	RUN_STATUS=Suspicious;
