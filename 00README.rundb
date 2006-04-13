@@ -4,6 +4,10 @@
 # syntax for run.db
 
 
+defaults:
+	DEFINE_SPIN_PATTERN=-1;
+
+
   Although blue and yellow are combined in run.db, the program reads 
 only blue setting when analyzing blue data, and thus igores yellow setting, 
 vice-versa for yellow data. 
