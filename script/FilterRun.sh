@@ -14,17 +14,19 @@ P=0;
 #############################################################################
 
 helpmenu() {
+    
+    COMMAND=`basename $0`
 
     echo    " "
-    echo    " anomfinder.sh [-dhm][-n <#>]";
-    echo    "    : list runs with large difference in onlineP - offlineP ";
+    echo -e " $COMMAND [-dhm][-n <#>][-p <phi>]\n";
+    echo    "    : List runs matches with conditions defined by options. ";
     echo    " "
-    echo -e "   -h                        Show this help file";
-    echo -e "   -d                        dump list into anom.list"
-    echo -e "   -n <#>                    finds all lists with a difference greater than <#>";
-    echo -e "   -m                        updates the mkDB.txt database first (this will take some time)";
+    echo -e "   -h           Show this help file";
+    echo -e "   -d           Dump list into anom.list"
+    echo -e "   -n <#>       Finds runs onlineP-offlineP greater than <#> [%] in absolute scale.[def]:$B";
+    echo -e "   -p <phi>     Finds runs Dphi > abs(<phi>) [degrees] ";
+    echo -e "   -m           Updates the mkDB.txt database first (this will take some time)";
     echo    " ";
-    echo -e "   default minimum difference is 5%";
     echo    " ";
     exit;
 }
@@ -61,7 +63,7 @@ AwkPhiRuns() {
 	
     else
 	awk "\$13 > $P || \$13 < -$P" $INF;
-	echo "found all runs with a phi difference of $P % or greater";
+	echo "found all runs with a Dphi angle of $P degrees greater";
     fi
 }
 
