@@ -64,7 +64,7 @@ MakeAnalyzedRunList(){
 
   
 
-  for a in alanH alanD jeffW itaru ; 
+  for a in alanH alanD jeffW itaru daemn koich; 
   do 
 
     f="$ASYMDIR/analyzed_runlist.$a"
@@ -174,9 +174,7 @@ grepit(){
     else
 
     # If No Crew defined then carrige return
-    if [ $CREW ] ; then
-	echo -e -n "";
-    else
+    if [ ! $CREW ] ; then
 	CREW="-----";
     fi
 
