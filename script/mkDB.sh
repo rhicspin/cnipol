@@ -20,7 +20,7 @@ help(){
     echo    "         [--analyzed-run-list][-X --expert][-f <runlis>]";
     echo    "    : make pC offline analysis database "
     echo    " "
-    echo -e "   -a --analyzed-run-list    Make analyized runlist";
+    echo -e "   -a --analyzed-run-list    Make analyized runlist [def]:$ANALYZED_RUN_LIST";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
