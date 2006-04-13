@@ -160,6 +160,8 @@ grepit(){
     if [ $RUN_STATUS ] ; then
 	if [ $RUN_STATUS == 'Suspicious' ] ; then
 	    RUN_STATUS="Susp";
+	elif [ $RUN_STATUS == 'Recovered' ] ; then
+	    RUN_STATUS="Rcvd";
 	fi
     else
 	RUN_STATUS="----";
