@@ -26,6 +26,13 @@ make -C src install
 make -C src/util
 make -C src/util install
 
+# This requires CDEV library. Compile only when it exist.
+if [ -d /usr/local/lib/cdev ] ; then
+    make -C src/cdev
+    make -C src/cdev install
+fi
+
+
 # install scripts into $INSTALLDIR
 cd script 
 ./install.sh
