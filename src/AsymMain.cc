@@ -244,13 +244,16 @@ int main (int argc, char *argv[]){
         sprintf(hbk_outfile, "outsampleex.hbook");
         fprintf(stdout,"Hbook DEFAULT file: %s \n",hbk_outfile); 
     }        
-    
+
+    /*
     if (ramp_read == 0) {
         fprintf(stdout, "Ramp timing file not specified\n");
     } else if (read_ramptiming(ramptiming) != 0) {
         perror("Error: read ramp");
         exit(1);
     }
+    */
+
     
     // ---------------------------------------------------- // 
     //                 Histogram Booking                    //
@@ -260,10 +263,6 @@ int main (int argc, char *argv[]){
         perror("Error: hist_book");
         exit(1);
     }
-
-
-    fprintf(stdout,"Processing ... each events\n");
-    fprintf(stdout,"If you terminate this process, the temporal output will be made in tmp_out.hbk\n");
 
 
     // ---------------------------------------------------- // 
