@@ -516,6 +516,8 @@ calcRunConst(recordConfigRhicStruct *cfginfo){
   runconst.T2M = 2*c*c/L/L;
 
   printf("Kinematic Const. E2T =%10.2f\n",runconst.E2T);
+  printf("Kinematic Const. M2T =%10.2f\n",runconst.M2T);
+  printf("Kinematic Const. T2M =%10.2f\n",runconst.T2M);
 
   return;
 }
