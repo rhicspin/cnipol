@@ -178,8 +178,9 @@ typedef struct {
 } StructHistStat;
 
 typedef struct {
-  float mdev[72];
-  float RMS[72];
+  float RMS[NSTRIP];
+  float mdev[NSTRIP];
+  float tedev[NSTRIP];
 } StructFeedBack;
 
 

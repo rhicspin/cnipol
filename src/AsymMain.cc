@@ -270,6 +270,7 @@ int main (int argc, char *argv[]){
     // Quick Scan and Fit for tshift and mass sigma fit     //
     // ---------------------------------------------------- // 
     if (dproc.FEEDBACKMODE){
+      printf("Feedback Sparcification Factor = 1/%d \n",dproc.thinout);
       if (readloop() != 0) {
         perror("Error: readloop");
         exit(1);

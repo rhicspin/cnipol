@@ -74,11 +74,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         hhrammar_(&rand1, &vlen);
         hhrammar_(&rand2, &vlen);
 
-	e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef * 
-	  (event->amp + rand2 - 0.5);
+        float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+        e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+	//e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef * 
+	//  (event->amp + rand2 - 0.5);
 
-	Ct = cfginfo->data.WFDTUnit/2.;
-	t =  Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
+	t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
 
 	Mass = t*t*e*runconst.T2M * k2G;
 
@@ -237,11 +238,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             t =  runconst.Ct * (event->tdc + rand1 - 0.5) 
                 - cfginfo->data.chan[st].t0 
                 - (ramptshift[(int)event->delim/20]-ramptshift[0]) - dproc.tshift; 
-            
+
         } else if (dproc.ZMODE == 0) {   // normal runs
 
             t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 
-                - dproc.tshift - feedback.mdev[st]/sqrt(e); 
+                - dproc.tshift - feedback.tedev[st]/sqrt(e); 
 
         } else  { 
             

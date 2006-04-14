@@ -41,7 +41,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     int FeedBackLevel=2; // 1: no fit just max and mean  
                          // 2: gaussian fit
     anal.TshiftAve = TshiftFinder(FeedBackLevel);
-    printf("Tshift Average @ 500keV = %10.1f [ns]\n", anal.TshiftAve);
+    printf("Tshift Average @ 400keV = %10.2f [ns]\n", anal.TshiftAve);
 
     // reset counters
     Nevtot = Nread = 0;
@@ -918,15 +918,17 @@ TshiftFinder(int FeedBackLevel){
   }//end-of-st loop
 
   HHPAK(16300,feedback.mdev);  HHPAKE(16300,err);
-  float adev = WeightedMean(feedback.mdev,err,72)*G2k*runconst.M2T/sqrt(500.);
+  float mdev = WeightedMean(feedback.mdev,err,72);
+  printf("Average Mass Deviation  = %10.2f [GeV/c]\n",mdev);
+  float adev = mdev*G2k*runconst.M2T/sqrt(400.);
 
-    // Unit Conversion [GeV] -> [keV]
-    for (int i=0; i<NSTRIP; i++) {
-      feedback.mdev[i] *= (G2k*runconst.M2T);
-      feedback.RMS[i] *= G2k;
-    }
+  // Unit Conversion [GeV] -> [keV]
+  for (int i=0; i<NSTRIP; i++) {
+    feedback.tedev[i] = feedback.mdev[i]*G2k*runconst.M2T;
+    feedback.RMS[i] *= G2k;
+  }
 
-    return adev;
+  return adev;
 
 }
 
