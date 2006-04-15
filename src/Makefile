@@ -25,6 +25,7 @@ AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o As
 	  
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
+BINARY = Asym RunDBReader
 all: Asym RunDBReader Host
 
 ######## BINARY ##################
@@ -54,8 +55,10 @@ install : Asym RunDBReader
 	install -v -C $^ $(INSTALLDIR)
 
 ##############################
-clean :
-	rm *.o ; rm *~ ; rm Asym ; rm RunDBReader
+clean : $(BINARY)
+	rm -f $(BINARY)
+	rm -f *.o
+	rm -f *~ 
 
 
 

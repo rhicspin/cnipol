@@ -14,9 +14,6 @@ LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 all: calcPhi interval converge 
 
-clean:
-	rm -f *.o core 
-
 
 calcPhi: calcPhi.o
 	$(C++) $^ -o $@
@@ -27,6 +24,11 @@ interval: interval.o
 
 converge: converge.o
 	$(C++) $^ -o $@
+
+
+clean: $(BINARY)
+	rm -f $^
+	rm -f *.o core 
 
 
 install: $(BINARY)
