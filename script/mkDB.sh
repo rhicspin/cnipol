@@ -135,6 +135,7 @@ ShowIndex(){
 GetOnlinePolarization(){
 
  $MACRODIR/pvector.pl $RunID
+ export RUN=$RunID;
  paw -b $MACRODIR/pvect_simple.kumac &> /dev/null
  OnlineP=`cat tmp.dat | gawk '{printf("%6.1f",$1)}'`;
  OnlinedP=`cat tmp.dat | gawk '{printf("%5.1f",$2)}'`;
