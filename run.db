@@ -1457,3 +1457,32 @@
 	COMMENT="";
 	DEFINE_SPIN_PATTERN=-1;
 
+[7756.101]
+	CONFIG=7756.101.config.dat;
+
+[7756.103]
+	CONFIG=7756.103.config.dat;
+
+[7756.104]
+	CONFIG=7756.104.config.dat;
+
+[7756.105]
+	CONFIG=7756.105.config.dat;
+
+[7757.101]
+	CONFIG=7757.101.config.dat;
+
+[7758.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wrong Spin Pattern Loaded";
+
+[7759.001]
+	RUN_STATUS=Junk;
+	COMMENT="wrong spin pattern followed by quick beam dump";
+
+[7760.001]
+	//not yet verified
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
