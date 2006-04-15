@@ -1,6 +1,6 @@
 #####################################################################
 # 00README
-# Feb.27,2006
+# April.15,2006
 # I. Nakagawa
 # pC offline analysis package
 #####################################################################
@@ -50,6 +50,7 @@ SRC
 	AsymRead.cc    "read in raw data and decode"
 	AsymRunDB.cc   "read in condistions for runs from run.db" 
 	AsymHbook.cc   "histogram booking"
+	AsymRecover.cc "recoverly routines for unusual treatments of data"
 	hb_lib.f       "utility library to call hbook from c++"
 	AsymProcess.cc "event looop processing program"
    	AsymCalc.cc    "end of run routine"
@@ -57,6 +58,9 @@ SRC
 
 	Asym.h
 	AsymMain.h
+	AsymCalc.h
+	AsymRecoverUserDefined.h
+	AsymRecover.h
 	rpoldata.h
 	rhicpol.h
 	WeightedMean.h
@@ -113,6 +117,7 @@ Set up environment and install executables and macros.
 	opt zfl1	
 	FILECASE keep
 	defaults ./kumac,$ENV(KUMACDIR)
+	return
 
 	*===================================================
 	macro on fn=paw.ps met=-111
