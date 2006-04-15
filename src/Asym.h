@@ -25,7 +25,7 @@ using namespace std;      //declare string in structure
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
 #define MAXDELIM 350               // maximum number of delimiter (dynamic motion only)
 #define TARGETINDEX 1000           // maximum target full array size including static motion
-#define NTBIN 21                   // number of -t bin
+#define NTBIN 14                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
 #define NBUNCH 120                 // Maximum bunch number
