@@ -1480,6 +1480,11 @@ last:
      'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
    title_gl '' U
    zone 
+
+
+
+
+
    
    LOGFILE=$ENV(ASYMDIR)/log/[run].log
    MACRODIR=$ENV(MACRODIR)
@@ -1658,13 +1663,6 @@ last:
    Do i = 1,25
      v/input ant([i]) $RSIGMA(0.0010 + 0.001*([i]-1))
    Enddo
-   
-* v/cre antold(10) R 0.0030 0.0055 0.0080 0.0105 0.0130 _
-* 0.0155 0.0180 0.0205 0.0230 0.0255
-* v/cre asymthold(10) R 0.034445 0.026340 0.020389 0.016051 0.012707 _
-* 0.010014 0.007777 0.005875 0.004233 0.002799
-* vscale asymthold $EVAL(pol(1)) polthold
-* graph 10 antold polthold C
    
    vscale asymth $EVAL(pol(1)) polth
    set LWID 3
