@@ -26,8 +26,8 @@ converge: converge.o
 	$(C++) $^ -o $@
 
 
-clean: $(BINARY)
-	rm -f $^
+clean: 
+	rm -f $(BINARY)
 	rm -f *.o core 
 
 
