@@ -29,7 +29,7 @@ converge: converge.o
 clean: 
 	rm -f $(BINARY)
 	rm -f *.o core 
-
+	rm -f *~
 
 install: $(BINARY)
 	install -v -C $^ $(INSTALLDIR)
