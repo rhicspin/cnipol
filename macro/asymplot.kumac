@@ -1577,8 +1577,7 @@ last:
    call meanm
    
 * Define Plot Range
-*   PXMAX = 9000.
-   PXMAX = 1400.
+   PXMAX = 1200.5
    PXMIN = 200.
    PYMIN = -0.02
    PYMAX = 0.02
@@ -2016,6 +2015,7 @@ next:
 * **************************************************************
  macro profile
 * **************************************************************
+   exe setting
    glo/imp run
    v/del *
    h/del *
