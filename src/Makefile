@@ -55,7 +55,7 @@ install : Asym RunDBReader
 	install -v -C $^ $(INSTALLDIR)
 
 ##############################
-clean : $(BINARY)
+clean : 
 	rm -f $(BINARY)
 	rm -f *.o
 	rm -f *~ 
