@@ -58,6 +58,7 @@ $runnumber="005";                # default run number
 $opt_bwidth="-15:15";            # banana cut width in ns
 $info = "not started";
 $ploption = "all";
+$feedbackinfo = "Off";
 $ENV{"PLOT"} = "all";
 $tshift = "0.0";
 $energyinfo = "flattop";
@@ -179,6 +180,7 @@ foreach (qw/all
                         -command=>\&pl_optchange);
 }
 
+
 # -------------------
 # exit
 # -------------------
@@ -239,7 +241,7 @@ $frame2->Button(-text => "Log(analysis)", -command=>\&analog)
 # ----------------------------
 # menu bar for feedback mode
 # ----------------------------
-$frame2->Label(-text => "      ")
+$frame2->Label(-text => "Feedback")
     ->pack(-side=>'left',-anchor=>'w');;
 
 $tmenub=$frame2->Menubutton(-textvariable=>\$feedbackinfo,
@@ -247,13 +249,15 @@ $tmenub=$frame2->Menubutton(-textvariable=>\$feedbackinfo,
                           -relief=>'raised')
     ->pack(-side=>'left',-anchor=>'w');
 
-foreach (qw/Feedback_on Feedback_off/){
-    $tmenub->radiobutton(-label=> "$_",
-			 -value=> $_,
-			 -variable=>\$feedbackinfo,
-			 -command=>\&feedbackopt);
+foreach (qw/Off On/){
 
+    $tmenub->radiobutton(-label=> $_,
+			 -value=> $_,
+			 -variable=> \$feedbackinfo,
+			 -command=>\&feedbackopt);
 }
+
+
 $frame2->Label(-text=>" TSHIFT: ")
     ->pack(-side=>'left',-anchor=>'w');
 $frame2->Entry(-justify=>'right',-textvariable=>\$tshift,-font=>'r16',
@@ -261,6 +265,7 @@ $frame2->Entry(-justify=>'right',-textvariable=>\$tshift,-font=>'r16',
     ->pack(-side=>'left',-anchor=>'w');
 $frame2->Label(-text=>" (nsec) ")
     ->pack(-side=>'left',-anchor=>'w');
+
 
 #-----------------------------------
 ## N Skip
@@ -276,6 +281,8 @@ $frame2->Label(-text=>" (default=1)")
 
 #$option_b = $mw->Button(-text => "option", -command=>\&option)
 #    ->pack(-side=>'left',-anchor=>'w');
+
+
 
 #-----------------------------------
 # Energy threshold
@@ -390,7 +397,7 @@ sub startana {
 
 sub feedbackopt {
 
-if ($feedbackinfo eq "Feedback_on") {
+if ($feedbackinfo eq "On") {
     $fopt=" -b";
 }
 
