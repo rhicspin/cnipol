@@ -237,21 +237,21 @@ $frame2->Button(-text => "Log(analysis)", -command=>\&analog)
     ->pack(-side=>'left',-anchor=>'w');
 
 # ----------------------------
-# menu bar for timing shift
+# menu bar for feedback mode
 # ----------------------------
 $frame2->Label(-text => "      ")
     ->pack(-side=>'left',-anchor=>'w');;
 
-$tmenub=$frame2->Menubutton(-textvariable=>\$energyinfo,
+$tmenub=$frame2->Menubutton(-textvariable=>\$feedbackinfo,
                           -indicatoron=>1,
                           -relief=>'raised')
     ->pack(-side=>'left',-anchor=>'w');
 
-foreach (qw/injection flattop other/){
-    $tmenub->radiobutton(-label=> "timing of $_",
+foreach (qw/Feedback_on Feedback_off/){
+    $tmenub->radiobutton(-label=> "$_",
 			 -value=> $_,
-			 -variable=>\$energyinfo,
-			 -command=>\&optenergy);
+			 -variable=>\$feedbackinfo,
+			 -command=>\&feedbackopt);
 
 }
 $frame2->Label(-text=>" TSHIFT: ")
@@ -364,7 +364,7 @@ sub startana {
 	    
 	    $info = "Analyzing .... data ".$fillnumber.".".$runnumber;
 	    
-	    system ("xterm -e tcsh -c \"nice +19 $command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift -o $Runn.hbook | tee $logfile\" "); 
+	    system ("xterm -e tcsh -c \"nice +19 $command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $fopt $tshift -o $Runn.hbook | tee $logfile\" "); 
 
 	    system ("mv $Runn.hbook hbook/");
 	    $info = "Finished Analysis";
@@ -384,7 +384,21 @@ sub startana {
     } 
 }
 
+# -------------------------
+# option for feedback
+# -------------------------
 
+sub feedbackopt {
+
+if ($feedbackinfo eq "Feedback_on") {
+    $fopt=" -b";
+}
+
+else {
+    $fopt="";
+}
+
+}
 # -------------------------
 # option for beam energy
 # -------------------------
@@ -406,23 +420,23 @@ sub optenergy {
     $TS_BI = "0.0";
     $TS_BF = "0.0";
 
-    if ($energyinfo eq "injection") {
-	if ($runnumber > 100) {
-	    $tshift = " $TS_YI ";
-	} else {
-	    $tshift = " $TS_BI ";
-	}
-    } elsif ($energyinfo eq "flattop") {
-	if ($runnumber > 100) {
-	    $tshift = " $TS_YF ";
-	} else {
-	    $tshift = " $TS_BF ";
-	}
-    } elsif ($energyinfo eq "other"){
-	$tshift = "-3 ";
-    } else {
-	$tshift = "";
-    }	
+#    if ($energyinfo eq "injection") {
+#	if ($runnumber > 100) {
+#	    $tshift = " $TS_YI ";
+#	} else {
+#	    $tshift = " $TS_BI ";
+#	}
+#    } elsif ($energyinfo eq "flattop") {
+#	if ($runnumber > 100) {
+#	    $tshift = " $TS_YF ";
+#	} else {
+#	    $tshift = " $TS_BF ";
+#	}
+#    } elsif ($energyinfo eq "other"){
+#	$tshift = "-3 ";
+#    } else {
+#	$tshift = "";
+#    }	
     #printf ("$energyinfo $runnumber tshift is = $tshiftopt\n");
 }
 
