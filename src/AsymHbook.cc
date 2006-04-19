@@ -132,7 +132,13 @@ float pawc_[NWORDS_PAWC];
 //-MMODE
 //  16000+St  : mass plot(1d)
 //  16100+St  : mass plot vs. energy (2d)
-//  16200+St  : mass plot(1d) excluding background
+//  16200+St  : mass plot(1d) excluding background (for feedback)
+//  17200+St  : mass plot(1d) excluding background (for quality check)
+//  16310     : mass sigma vs. strip
+//  16320     : mass sigma average
+//  16330     : mass sigma allowance
+//  16340     : mass fit chi2 vs strip
+//  16350     : mass fit chi2 allowance
 //-FEEDBACKMODE
 //  16300     : deviation from 12C mass peak [GeV] vs. strip
 //-RAMPMODE
@@ -371,17 +377,34 @@ int hist_book(char *filename){
     }
 
     // Mass plots
-    if (dproc.MMODE == 1) {
-        for (st=1;st<=72;st++){
-            sprintf(hcomment,"Mass st %d ",st);
-            HHBOOK1(16000+st,hcomment,90,0.,30.);
-            HHBOOK1(16200+st,hcomment,90,0.,30.);
-        }
-    }
 
     // Feedback Mass Peak Results
     sprintf(hcomment,"Peak deviation from 12C Mass");
     HHBOOK1(16300,hcomment,72,-0.5, 71.5);
+
+    if (dproc.MMODE == 1) {
+        for (st=1;st<=72;st++){
+            sprintf(hcomment,"Mass st %d ",st);
+            HHBOOK1(16000+st,hcomment,90,0.,30.);
+            HHBOOK1(16200+st,hcomment,90,0.,30.);   // for feedback
+	    HHBOOK1(17200+st,hcomment,90,0.,30.);   // for quality check
+        }
+    }
+
+    sprintf(hcomment,"12C Mass sigma vs. strip");
+    HHBOOK1(16310,hcomment,72,-0.5, 71.5);
+    
+    sprintf(hcomment,"12C Mass sigma average");
+    HHBOOK1(16320,hcomment,1,-0.5, 71.5);
+
+    sprintf(hcomment,"12C Mass sigma allowance");
+    HHBOOK1(16330,hcomment,1,-0.5, 71.5);
+
+    sprintf(hcomment,"12C Mass fit chi2");
+    HHBOOK1(16340,hcomment,72,-0.5, 71.5);
+
+    sprintf(hcomment,"12C Mass fit chi2 allowance");
+    HHBOOK1(16350,hcomment,1,-0.5, 71.5);
 
 
     // Target Histograms
@@ -438,7 +461,7 @@ int hist_book(char *filename){
         HHBOOK1(32200+tbin+1, "-t binned Y45", 120, -0.5, 119.5);
         HHBOOK1(32300+tbin+1, "-t binned C45", 120, -0.5, 119.5);
     }
-    
+
     HHBOOK1(33000, "Bid dists for Good Events", 120, -0.5, 119.5);
     HHBOOK1(33010, "Bid dists for Background Events", 120, -0.5, 119.5);
     HHBOOK1(33020, "Bid dists for Total Events", 120, -0.5, 119.5);

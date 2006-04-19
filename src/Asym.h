@@ -92,6 +92,12 @@ typedef struct {
 
 
 typedef struct {
+  float MASS_DEV_ALLOWANCE;
+  float MASS_CHI2_ALLOWANCE;
+}ErrorDetector;
+
+
+typedef struct {
     long ia;
     long it;
     long is;
@@ -110,6 +116,12 @@ typedef struct {
   float T2M;   // ToF -> Mass
 } StructRunConst;
 
+typedef struct {
+  int nstrip;
+  int st[NSTRIP];
+  int Bunch[NSTRIP];
+} StructAnomaly;
+
 
 typedef struct {
   float P[2];
@@ -122,7 +134,9 @@ typedef struct {
   float A_N[2];
   float P[2];
   StructSinPhi sinphi;
+  StructAnomaly anomaly;
 } StructAnalysis;
+
 
 
 typedef struct {
@@ -181,6 +195,8 @@ typedef struct {
   float RMS[NSTRIP];
   float mdev[NSTRIP];
   float tedev[NSTRIP];
+  float err[NSTRIP];
+  float chi2[NSTRIP];
 } StructFeedBack;
 
 
@@ -266,7 +282,7 @@ int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 int DisabledDet(int det);
 void SpecificLuminosity(float&, float&, float&);
-float TshiftFinder(int);
+float TshiftFinder(int, int);
 int BunchSelect(int);
 void CalcAsymmetry(float);
 void PrintRunResults(StructHistStat);
@@ -307,6 +323,7 @@ extern long int Ngood[120];   // number of evts after carbon cut
 extern long int Ntotal[120];  // number of evts before carbon cut 
 extern long int Nback[120];   // number of evts below the curbon cut
 extern datprocStruct dproc;
+extern ErrorDetector errdet;
 extern atdata_struct atdata;
 extern StructRunDB rundb;
 extern StructRunInfo runinfo;

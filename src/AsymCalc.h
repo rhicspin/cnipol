@@ -24,6 +24,27 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 Double_t sin_phi(Double_t *x, Double_t *par);
 float WeightAnalyzingPower(int hid);
 
+//=================================================================//
+//                     Strip Error Detector                        //
+//=================================================================//
+typedef struct {
+  float allowance;
+  float max;
+  int st;
+} StructInvMass;
+
+struct StructStripCheck {
+  float average[1];
+  StructInvMass dev, chi2;
+} strpchk;
+
+int  StripAnomalyDetector();
+void PrintWarning();
+
+
+
+
+
 
 int BunchAsymmetry(int, float A[], float dA[]);
 struct BunchAsym {
