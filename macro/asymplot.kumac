@@ -40,6 +40,7 @@
      exe chisq       ;     wait
      exe bunchselect ;     wait
      exe profile     ;     wait
+     exe ErrorDetector;    wait
    else 
      exe [plot]      ;     wait
    endif
@@ -382,7 +383,9 @@ return
    line -0.5 0 71.5 0 
    set dmod 1
    hi/plot 16300 sp 	   
-   atitle 'Strip-N' 'Peak - 12C Mass [GeV/c^2]' ! 220
+   atitle 'Strip-N' 'Peak - 12C Mass \133 GeV/c^2 \135' ! 220
+
+
  return
  
 * ********************************************************
@@ -2225,5 +2228,42 @@ else
 endif
 
 
+
+return
+
+
+* **************************************************************
+macro ErrorDetector
+* **************************************************************
+   zone 1 2
+   igset pmci 4; set hcol 4;
+   opt utit
+ 
+   title 'Error Detector (Strip)'
+
+   null -0.5 71.5 0 3
+   set dmod 1
+   igset mtyp 20 
+   hi/plot 16310 sp
+   igset plci 2
+   set hcol 2 ; hi/plot 16320 s
+   set dmod 2 ; hi/plot 16330 s
+   atitle 'Strip-N' '12C Mass Sigma \133 GeV/c^2 \135' ! 220
+   null 0 10 0 10 abs
+   igset dmod 1 
+   key 0.5 9 1 'Average' ! l
+   key 0.5 8 2 'Allowance' ! l
+
+   set dmod 1
+   set hcol 1
+
+   set dmod 1
+   igset mtyp 20 
+   hi/plot 16340 p
+   set hcol 2; set dmod 2 ; hi/plot 16350 s
+   atitle 'Strip-N' '12C Mass Fit Chi2 \133 GeV/c^2 \135' ! 220
+   null 0 10 0 10 abs
+   key 0.5 9 2 'Allowance' ! l
+   
 
 return
