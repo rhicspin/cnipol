@@ -1342,6 +1342,80 @@
 [7722.106]
 	COMMENT="low statistics, low polarization";
 	RUN_STATUS=Junk;
+
+[7723.001]
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT="Some strips have low statistics, and the profile scan wrong";
+	RUN_STATUS=Suspicious;
+
+[7723.101]
+	COMMENT="";
+	RUN_STATUS=Good;
+
+[7724.002]
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	COMMENT="The profile scan is wrong, and the plots show a number of false Y45 asymmetries";
+	RUN_STATUS=Suspicious;
+
+[7724.003]
+	COMMENT="The profile scan is wrong";
+	RUN_STATUS=Suspicious;
+
+[7724.004]
+	COMMENT="Profile scan begins in the middle of the beam";
+	RUN_STATUS=Suspicious;
+
+[7724.101]
+	COMMENT="";
+	RUN_STATUS=Good;
+
+[7724.106]
+	RUN_STATUS=Junk;
+
+[7724.107]
+	RUN_STATUS=;
+
+[7725.001]
+	COMMENT="Profile scan begins in the middle of the beam";
+	RUN_STATUS=Suspicious;
+
+[7725.002]
+	COMMENT="Some strips are wrong and profile scan begins in middle of beam";
+	RUN_STATUS=Suspicious;
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	
+[7725.003]
+	COMMENT="Strange structure in bunch crossing and WCM plots and profile scan begins in middle of beam";
+	RUN_STATUS=Suspicious;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+
+[7725.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide intensity profile";	
+
+[7725.005]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange structure in bunch crossing and wide intensity profile";
+
+[7725.009]
+	RUN_STATUS=Good;
+	COMMENT="Fixed target which was checked with e-log";
+
+[7725.101]
+	RUN_STATUS=Good;
+	COMMENT="";	
 	
 [7723.101]
 	RUN_STATUS=Good;
@@ -1457,7 +1531,27 @@
 	COMMENT="";
 	DEFINE_SPIN_PATTERN=-1;
 
+[7749.001]
+	CONFIG=7749.001.config.dat;
+
+[7749.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="polarization seems too low, and the online timing may be off.";
+	CONFIG=7749.002.config.dat;
+	DisableStrip=49;
+	DisableStrip=61;
+	DisableStrip=62;
+	DisableStrip=64;
+
+[7749.002]
+	EnableStrip=49;
+	EnableStrip=61;
+	EnableStrip=62;
+	EnableStrip=64;
+
 [7756.101]
+	RUN_STATUS=Good;
+	COMMENT="";
 	CONFIG=7756.101.config.dat;
 
 [7756.103]
@@ -1479,6 +1573,11 @@
 [7759.001]
 	RUN_STATUS=Junk;
 	COMMENT="wrong spin pattern followed by quick beam dump";
+
+[7759.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="No corresponding yellow measurement.";
+	CONFIG=7759.002.config.dat;
 
 [7760.001]
 	//not yet verified
