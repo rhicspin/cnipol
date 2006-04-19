@@ -29,6 +29,14 @@ datprocStruct dproc = {
     100,        // <thinout> event rate to be feed into feedback routine
 };  // data process modes 
 
+
+ErrorDetector errdet = {
+  0.10,         // MASS_DEV_ALLOWANCE [GeV]
+  15            // MASS_CHI2_ALLOWANCE [GeV]
+};
+
+
+
 StructExtInput extinput = {
   0, // CONFIG
   0, // MASSCUT
