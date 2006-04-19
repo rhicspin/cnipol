@@ -345,14 +345,7 @@ sub startana {
     if (-e $datafile) {
 	
 	$datsize = (stat($datafile))[7];
-	if ($datsize < 650000){
-	    # do not proceed just give warning
-	    scaler_file();
-	} else {
 	
-	    # decide which ring 
-	    #@@@@@@@@
-
 	    if ($runnumber>100) {
 		$ring = "y";
 	    } else {
@@ -385,7 +378,6 @@ sub startana {
 	    }
 	    close(LOG);
 	    $text->yviewMoveto(1.0);
-	  }
 	
     } else {
 	warning_file();
