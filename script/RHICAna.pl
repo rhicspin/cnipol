@@ -172,7 +172,8 @@ foreach (qw/all
 	 phi_fit
 	 bunchselect
 	 first_tdc_bin
-	 profile/){
+	 profile
+	 ErrorDetector/){
     
     $menub->radiobutton(-label=> $_,
                         -value=> $_,
@@ -500,6 +501,8 @@ sub pl_optchange {
 	$ENV{"PLOT"} = "first_tdc_bin";
     } elsif ($ploption eq "profile") {
 	$ENV{"PLOT"} = "profile";
+    } elsif ($ploption eq "ErrorDetector") {
+	$ENV{"PLOT"} = "ErrorDetector";
     }
 }
 
