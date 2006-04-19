@@ -260,9 +260,10 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // Mass mode
         if (dproc.MMODE == 1) {
             if (e>Emin && e< Emax) {
-                HHF1(16000+st+1, Mass, 1.);
-            }
-        }
+	      HHF1(16000+st+1, Mass, 1.);
+	      if ((Mass>dproc.MassLimit)&&(Mass<14.)) HHF1(17200+st+1, Mass, 1.);
+	    }
+	}
         
         // for T0 (cable length dependence)
         if ((dproc.TMODE == 1)&&(edepo!=0.)){

@@ -40,8 +40,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     int FeedBackLevel=2; // 1: no fit just max and mean  
                          // 2: gaussian fit
-    anal.TshiftAve = TshiftFinder(FeedBackLevel);
-    printf("Tshift Average @ 400keV = %10.2f [ns]\n", anal.TshiftAve);
+    anal.TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
 
     // reset counters
     Nevtot = Nread = 0;
@@ -517,8 +516,15 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[1]);
     
+
     //-------------------------------------------------------
-    // Check for bunches with too few/many counts
+    //  Check 12C Invariant Mass Possition
+    //-------------------------------------------------------
+    float MaxDev=TshiftFinder(Flag.feedback, 2);
+
+
+    //-------------------------------------------------------
+    //  Check for bunches with too few/many counts
     //-------------------------------------------------------
     checkForBadBunches();
 
@@ -526,17 +532,46 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Run Informations
     //-------------------------------------------------------
+    PrintWarning();
     PrintRunResults(hstat);
 
 
 
-    //-------------------------------------------------------
-    // RAMP MEASUREMENT 
-    //-------------------------------------------------------
     return(0);
 
   }//end-of-if(Flag.feedback)
 
+}
+
+
+//
+// Class name  :
+// Method name : PrintWarning()
+//
+// Description : print warnings
+// Input       : 
+// Return      : 
+//
+void
+PrintWarning(){
+
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("------------------------------       Warnings      --------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf(" Maximum Mass Deviation [GeV]        : %6.2f (%d)\n", strpchk.dev.max,  strpchk.dev.st);
+    printf(" Maximum Mass fit chi-2              : %6.2f (%d)\n", strpchk.chi2.max, strpchk.chi2.st);
+    printf(" Weighted Mean InvMass Sigma         : %6.2f \n", strpchk.average[0]);
+    printf(" Good Strip Allowance Sigma  [GeV]   : %6.2f \n", strpchk.dev.allowance);
+    printf(" Good Strip Allowance chi2           : %6.2f \n", strpchk.chi2.allowance);
+    printf(" Number of Problematic Strips        : %3d \n", anal.anomaly.nstrip); 
+    printf(" Problematic Strips                  : ");
+       for (int i=0; i<anal.anomaly.nstrip; i++) 
+	 i==anal.anomaly.nstrip-1 ? printf("%d", anal.anomaly.st[i]+1) : printf("%d,", anal.anomaly.st[i]+1);;
+    printf("\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("\n\n");
+
+    return;
 }
 
 
@@ -870,12 +905,13 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
 //
 // Description : Find Time shift from 12C mass peak fit. Units are all in [GeV]
 //             : ouotputs are converted to [keV]
-// Input       : int FeedBackLevel 1) no fit, just max and mean
+// Input       : int Mode
+//             : int FeedBackLevel 1) no fit, just max and mean
 //             :                   2) gaussian fit
 // Return      : average tshift [ns] @ 500keV
 //
 float
-TshiftFinder(int FeedBackLevel){
+TshiftFinder(int Mode, int FeedBackLevel){
 
   char CHOICE[5]="HIST";
   const int np=3;
@@ -883,11 +919,11 @@ TshiftFinder(int FeedBackLevel){
   char chfun[3]="G";
   char chopt[2]="Q";
   float chi2, hmax;
-  float err[NSTRIP];
+  float mdev,adev;
 
-  for (int st=0; st<72; st++){
-    err[st]=1; // initialization
-    int hid=16200+st+1;
+  for (int st=0; st<NSTRIP; st++){
+    feedback.err[st]=1; // initialization
+    int hid= Mode ? 16200+st+1 : 17200+st+1 ;
 
     switch(FeedBackLevel){
 
@@ -904,23 +940,41 @@ TshiftFinder(int FeedBackLevel){
       par[1] = MASS_12C*k2G;       // mean [GeV]
       par[2] = dproc.OneSigma*k2G; // sigma [GeV]
       if (par[0]) { // Gaussian Fit unless histogram isn't empty
-	HHFITHN(16200+st+1, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
+	HHFITHN(hid, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
       }else{
-	par[1] = par[2] = err[st] = 0; // set weight 0
+	par[2] = feedback.err[st] = 0; // set weight 0
       }
-      err[st] = sigpar[1];
-      feedback.mdev[st] =  par[1] - MASS_12C*k2G; 
-      feedback.RMS[st]  =  par[2]; 
+      feedback.err[st]  = sigpar[1] * chi2 * chi2;
+      feedback.mdev[st] = par[1] - MASS_12C*k2G; 
+      feedback.RMS[st]  = par[2]; 
+      feedback.chi2[st] = chi2;
+
       break;
 
     }//end-of-switch(FinderLevel)
 
   }//end-of-st loop
 
-  HHPAK(16300,feedback.mdev);  HHPAKE(16300,err);
-  float mdev = WeightedMean(feedback.mdev,err,72);
+
+  if (Mode) {
+    // Fill summary histograms
+    HHPAK(16300,feedback.mdev);  
+    HHPAKE(16300,feedback.err);
+
+
+  } else {
+
+    HHPAK(16310,feedback.RMS);  
+    HHPAKE(16310,feedback.err);
+    HHPAK(16340,feedback.chi2);  
+    StripAnomalyDetector();
+    
+  }
+
+  mdev = WeightedMean(feedback.mdev,feedback.err,NSTRIP);
   printf("Average Mass Deviation  = %10.2f [GeV/c]\n",mdev);
-  float adev = mdev*G2k*runconst.M2T/sqrt(400.);
+  adev = mdev*G2k*runconst.M2T/sqrt(400.);
+  printf("Tshift Average @ 400keV = %10.2f [ns]\n", adev);
 
   // Unit Conversion [GeV] -> [keV]
   for (int i=0; i<NSTRIP; i++) {
@@ -928,9 +982,75 @@ TshiftFinder(int FeedBackLevel){
     feedback.RMS[i] *= G2k;
   }
 
-  return adev;
+  return adev ;
 
 }
+
+
+//
+// Class name  : 
+// Method name : StripErrorDetector()
+//
+// Description : find suspicious strips
+// Input       : 
+// Return      : 
+//
+int
+StripAnomalyDetector(){
+
+  int counter=0;
+  float sigma=0;
+  strpchk.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
+  HHPAK(16320,strpchk.average);  
+  
+  strpchk.dev.max  = fabs(feedback.mdev[0]);
+  strpchk.chi2.max = feedback.chi2[0];
+  for (int i=0; i<NSTRIP; i++) {
+
+    // Maximum devistion of peak from 12C_MASS
+    if (fabs(feedback.mdev[i]) > strpchk.dev.max) {
+      strpchk.dev.max  = fabs(feedback.mdev[i]);
+      strpchk.dev.st   = i;
+    }
+    // Largest chi2
+    if (feedback.chi2[i] > strpchk.chi2.max) {
+      strpchk.chi2.max  = fabs(feedback.chi2[i]);
+      strpchk.chi2.st   = i;
+    }
+
+    // Calculate one sigma of RMS distribution
+    if (feedback.err[i]){
+      sigma += (feedback.RMS[i]-strpchk.average[0])*(feedback.RMS[i]-strpchk.average[0])
+	/feedback.err[i]/feedback.err[i];
+      counter++;
+
+    }
+
+  }
+  sigma=sqrt(sigma)/counter; 
+
+
+  strpchk.dev.allowance  = errdet.MASS_DEV_ALLOWANCE;
+  strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
+  float devlimit[1]={strpchk.dev.allowance+strpchk.average[0]};
+  HHPAK(16330,devlimit);  
+  float chi2limit[1]={strpchk.chi2.allowance};
+  HHPAK(16350,chi2limit);
+
+  // counts suspicious strips 
+  // large chi2 or deviation of peak position from average 
+  anal.anomaly.nstrip=0;
+  for (int i=0;i<NSTRIP; i++) {
+    if ((fabs(feedback.RMS[i])-strpchk.average[0]>strpchk.dev.allowance)
+	||(feedback.chi2[i]>strpchk.chi2.allowance)) {
+      anal.anomaly.st[anal.anomaly.nstrip]=i;
+      ++anal.anomaly.nstrip;
+    }
+  }
+  
+  return 0;
+
+};
 
 
 
@@ -1426,6 +1546,7 @@ void checkForBadBunches()
 		{
 			if((Ncounts[i][j]-avg)>3.*sigma)
 			{
+
 				printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
 			}
 		}
