@@ -93,7 +93,7 @@ readdb(double RUNID) {
   } // end-of-while(getline-loop)
 
   // Find Disable Strip List
-  NDisableStrip=FindDisableStrip();
+  runinfo.NDisableStrip = FindDisableStrip();
 
 
   // processing conditions
@@ -175,35 +175,23 @@ StripHandler(int st, int flag){
 //
 // Description : This subtoutine is under construction (April 4, 06)
 // Input       : 
-// Return      : 
+// Return      : NDisableStrip
 //
 int 
 FindDisableStrip(){
 
   int NDisableStrip=0;
   for (int i=0;i<NSTRIP; i++) {
-    if (ProcessStrip[i]>0) NDisableStrip++;
-  }
-
-  cout << NDisableStrip << endl;
-
-  /*
-  // initiarize DisableStrip Array
-  int DisableStrip[NDisableStrip];
-  for (int i=0; NDisableStrip; i++) DisableStrip[i]=0;
-
-  int j=0;
-  for (int i=0;i<NSTRIP; i++) {
     if (ProcessStrip[i]>0) {
-      DisableStrip[j]=i;
-      ++j;
-      cout << j << " " << DisableStrip[j] << endl;
+      runinfo.DisableStrip[NDisableStrip] = i;
+      NDisableStrip++;
     }
   }
-  */
 
   return NDisableStrip;
+
 }
+
 
 
 //
@@ -334,17 +322,15 @@ printConfig(recordConfigRhicStruct *cfginfo){
     fprintf(stdout," TSHIFT       = %5.1f\n",dproc.tshift);
 
     // Disabled strips
-    fprintf(stdout,"#DisableStrip = %d\n", NDisableStrip);
-    if (NDisableStrip){
+    fprintf(stdout,"#DisableStrip =   %d\n", runinfo.NDisableStrip);
+    if (runinfo.NDisableStrip){
       fprintf(stdout," DisableStrip = ");
-      for (int i=0;i<NSTRIP;i++) {
-	if (ProcessStrip[i]>0) fprintf(stdout,"%d ",i+1);
-      }
-      printf("\n");
+      for (int i=0;i<runinfo.NDisableStrip;i++) printf("%d ",runinfo.DisableStrip[i]+1);
     }
+    printf("\n");
+
 
     // print comment
-
     if (strlen(rundb.comment_s.c_str())>3)
       printf(" COMMENT      = %s\n",    rundb.comment_s.c_str());
 

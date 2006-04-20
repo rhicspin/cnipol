@@ -32,7 +32,7 @@ datprocStruct dproc = {
 
 ErrorDetector errdet = {
   0.10,         // MASS_DEV_ALLOWANCE [GeV]
-  15            // MASS_CHI2_ALLOWANCE [GeV]
+  50            // MASS_CHI2_ALLOWANCE [GeV]
 };
 
 
@@ -76,7 +76,16 @@ StructRunInfo runinfo = {
     0, // RHICBeam;
     0, // MaxRevolution;
   'V', // target
-    0 // TgtOperation (Initialization is done in Initialization() )
+    0, // TgtOperation (Initialization is done in Initialization() )
+    0, // NDisableStrip
+    {  // DisableStrip[NSTRIP]
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0
+    }
 }; 
 
 StructTarget tgt = {

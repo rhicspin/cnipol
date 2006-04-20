@@ -119,8 +119,12 @@ typedef struct {
 typedef struct {
   int nstrip;
   int st[NSTRIP];
-  int Bunch[NSTRIP];
+  int Bunch[NBUNCH];
 } StructAnomaly;
+
+typedef struct {
+  StructAnomaly anomaly;
+} StructUnrecognized;
 
 
 typedef struct {
@@ -135,6 +139,7 @@ typedef struct {
   float P[2];
   StructSinPhi sinphi;
   StructAnomaly anomaly;
+  StructUnrecognized unrecog;
 } StructAnalysis;
 
 
@@ -153,6 +158,8 @@ typedef struct {
   int MaxRevolution;
   char target;
   char * TgtOperation;
+  int NDisableStrip;
+  int DisableStrip[NSTRIP];
 } StructRunInfo;
 
 typedef struct {

@@ -561,12 +561,15 @@ PrintWarning(){
     printf(" Maximum Mass Deviation [GeV]        : %6.2f (%d)\n", strpchk.dev.max,  strpchk.dev.st);
     printf(" Maximum Mass fit chi-2              : %6.2f (%d)\n", strpchk.chi2.max, strpchk.chi2.st);
     printf(" Weighted Mean InvMass Sigma         : %6.2f \n", strpchk.average[0]);
-    printf(" Good Strip Allowance Sigma  [GeV]   : %6.2f \n", strpchk.dev.allowance);
-    printf(" Good Strip Allowance chi2           : %6.2f \n", strpchk.chi2.allowance);
+    printf(" Good Strip Mass Sigma Allowance[GeV]: %6.2f \n", strpchk.dev.allowance);
+    printf(" Good Strip Mass Fit chi2 Allowance  : %6.2f \n", strpchk.chi2.allowance);
     printf(" Number of Problematic Strips        : %3d \n", anal.anomaly.nstrip); 
     printf(" Problematic Strips                  : ");
-       for (int i=0; i<anal.anomaly.nstrip; i++) 
-	 i==anal.anomaly.nstrip-1 ? printf("%d", anal.anomaly.st[i]+1) : printf("%d,", anal.anomaly.st[i]+1);;
+    for (int i=0; i<anal.anomaly.nstrip; i++) 
+      i==anal.anomaly.nstrip-1 ? printf("%d", anal.anomaly.st[i]+1) : printf("%d,", anal.anomaly.st[i]+1);
+    printf("\n");
+    printf(" Unrecognized Problematic Strips     : ");
+    for (int i=0; i<anal.unrecog.anomaly.nstrip; i++) printf("%d ",anal.unrecog.anomaly.st[i]+1) ; 
     printf("\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf("\n\n");
@@ -1048,11 +1051,46 @@ StripAnomalyDetector(){
     }
   }
   
+  UnrecognizedAnomaly(anal.anomaly.st,anal.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
+		      anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
+
+
   return 0;
 
 };
 
 
+
+//
+// Class name  : 
+// Method name : UnrecognizedAnomaly(int Mode)
+//
+// Description : Check whether anomalies are recognized or not.
+// Input       : int Mode 
+// Return      : 0
+//
+int
+UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz){
+
+  int match[nx];
+  for (int i=0;i<nx;i++) match[i]=x[i];
+
+  // Check for mathing between two arrays x[nx], y[ny]
+  for (int i=0; i<ny; i++){
+    for (int j=0; j<nx; j++){
+      if (y[i]==match[j]){ match[j]=-1; break;}
+    }
+  }
+
+  nz=0;
+  for (int i=0;i<nx; i++) {
+    if (match[i]!=-1) { z[nz]=match[i] ;nz++ ;}
+  }
+
+
+  return 0;
+
+}
 
 
 

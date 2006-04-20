@@ -41,6 +41,8 @@ struct StructStripCheck {
 int  StripAnomalyDetector();
 void PrintWarning();
 
+int UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
+
 
 
 
