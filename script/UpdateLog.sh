@@ -55,10 +55,10 @@ UpdateStatus() {
 UpdateComment() {
     NLINE=`wc alanstmp.log | gawk '{print $1}'`
 
-    header=`grep -n '(END)    ===$' alanstmp.log | sed -e "s/:/ /" | gawk '{print $1-2}'`
+    header=`grep -n '(END)    ===$' alanstmp.log | sed -e "s/:/ /" | gawk '{print $1-3}'`
     head -n $header alanstmp.log > alanstmp2.log
     echo -e -n " COMMENT      = $NEWCOMMENT\n" >> alanstmp2.log
-    residual=$(( $NLINE - $header  ));
+    residual=$(( $NLINE - $header - 1 ));
     tail -n $residual alanstmp.log >> alanstmp2.log
     echo -e -n "and has comment $NEWCOMMENT \n"
 
