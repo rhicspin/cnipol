@@ -139,10 +139,23 @@ RunDlayer(){
 #############################################################################
 RunAsym(){
 
-    Asym -f $RunID -o $RunID.hbook | tee $LOGDIR/$RunID.log ;
+    dLayerChecker -f $RunID;
+    if [ $? -eq 0 ] ; then
+	ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+	NEVENTS=`grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}'`;
+	if [ $NEVENTS -gt 5 ]; then
+	    dLayerChecker -f $RunID -x ;
+	else
+	    rundb_updator.pl -f $RunID;
+	fi
+    fi
+    Asym -f $RunID -b ;	
     mv $RunID.hbook $HBOOKDIR
 
 }
+
+
+
 
 
 #############################################################################
