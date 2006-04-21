@@ -6,6 +6,7 @@ ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
 ExeAnalyzedRunList=1 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
+ExeOnlineNevents=0;
 ExpertMode=0;
 FROM_FILL=7537;
 TILL_FILL=9000;
@@ -25,6 +26,7 @@ help(){
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
     echo -e "   -f <runlist>              Show list for runs listed in <runlist>";
+    echo -e "   --online-nevents          Show online nevents"
     echo -e "   --exclusive               Show only data analyized";
     echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
@@ -144,6 +146,16 @@ GetOnlinePolarization(){
 
 }
 
+OnlineNevents(){
+
+   echo -e -n "$RunID";
+   ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+   grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}';
+   echo -e -n "\n";
+
+}
+
+
 
 #############################################################################
 #                                grepit()                                   #
@@ -225,7 +237,11 @@ for f in `cat $DATADIR/raw_data.list` ;
 	  if [ $? == 0 ] ; then
 	      LOGFILE=$LOGDIR/$RunID.log
 	      if [ -f $LOGFILE ] ; then
-		  grepit;
+		  if [ $ExeOnlineNevents -eq 1 ] ; then
+		     OnlineNevents;
+		  else
+		      grepit;
+		  fi
 	      else 
 		  echo -e -n "$RunID $LOGFILE missing\n";
 	      fi
@@ -251,6 +267,7 @@ while test $# -ne 0; do
   --fill-from) shift ; FROM_FILL=$1;;
   --fill-till) shift ; TILL_FILL=$1;;
   -f) shift ; ANALYZED_RUN_LIST=$1; ExeAnalyzedRunList=0 ;;
+  --online-events) ExeOnlineNevents=1;;
   --exclusive) ExclusiveMode=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
