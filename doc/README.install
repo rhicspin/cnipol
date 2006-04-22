@@ -1,6 +1,6 @@
 #####################################################################
-# 00README
-# April.15,2006
+# README.install
+# April.22,2006
 # I. Nakagawa
 # pC offline analysis package
 #####################################################################
@@ -19,7 +19,7 @@ Instructions are avaliable on following web site(note password protected) :
 	http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
 
 	However, the lastest & up-to-date instruction should be found
-        in 00README from cvs repository.
+        in doc/README.install from cvs repository.
 
 #####################################################################
 
@@ -31,7 +31,8 @@ the program: CNILIB=/usr/local/cnipol
    data/   online/  share/
 
 data/ 
-  symboric links to 2005 data available on pb2pb.phy.bnl.gov
+  symboric links to yellowpc and bluepc data direcotries.
+  (symboric links to 2005 data available on pb2pb.phy.bnl.gov)
 
 online/
     hbook/  : symboric link to online hbook files.
@@ -67,10 +68,24 @@ SRC
 
   ./cnipol/src/util
 	some utility programs.		
-		
+
+  ./cnipol/src/cdev
+	cdev interface utility programs.		
+	(installs only if /usr/local/lib/cdev library exists.)
+
   Executables : 
 	Asym          "Main analysis program"
 	RunDBReader   "portable run.db reader/printer"
+	dLayerChecker "deadlayer fit checker"
+
+
+DOCUMENTAIONS
+  ./cnipol/doc
+ 	README.install : this document
+  	README.rundb   : run.db syntax
+    	README.dlayer  : deadlayer instructions
+
+
 
 
 
@@ -150,7 +165,7 @@ Working directory and Running executables:
 	% ln -s $HOME/cnipol/run.db .
 	
 	 *run.db has to be at working directory*
-	 see 00README.rundb for syntax 
+	 see doc/README.rundb for syntax 
 
 	% Asym -f 7069.101.data
 	  (try Asym -h for options)
