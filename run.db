@@ -181,6 +181,7 @@
 	ENERGY_CALIB=0213.007;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
+	DisableStrip=66;
 
 [7400.101]
 	MEASUREMENT_TYPE=NORM;
@@ -916,6 +917,14 @@
 [7651.103]
 	RUN_STATUS=Good;
 
+[7654.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="The profile scan is wrong";
+
+[7654.002]
+	RUN_STATUS=Good;
+	COMMENT="";
+	
 [7655.002]
 	CONFIG=7655.002.config.dat;
 
@@ -1202,7 +1211,8 @@
 	RUN_STATUS=Junk;
 
 [7681.105]
-	RUN_STATUS=Good;
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Scan is messed up.";
 	CONFIG=7681.105.config.dat;
 
 [7681.106]
@@ -1277,6 +1287,21 @@
 [7697.101]
 	RUN_STATUS=Good;
 
+[7700.001]
+	RUN_STATUS=Junk;
+	COMMENT="Data size is small";
+
+[7700.101]
+	RUN_STATUS=Junk;
+	COMMENT="Data size is small";
+
+[7710.001]
+	RUN_STATUS=Junk;
+	COMMENT="Data size is small";
+
+[7710.002]
+	RUN_STATUS=Good;
+	COMMENT="";
 
 [7712.001]
 	CONFIG=7712.001.config.dat;
@@ -1331,8 +1356,8 @@
 	COMMENT="Wide intensity profile";
 	
 [7722.005]
-	RUN_STATUS=Good;
-	COMMENT="";
+	RUN_STATUS=Suspicious;
+	COMMENT="Intensity profile is too wide";
 
 [7722.101]
 	RUN_STATUS=Good;
@@ -1411,28 +1436,42 @@
 
 [7725.009]
 	RUN_STATUS=Good;
-	COMMENT="Fixed target which was checked with e-log";
+	COMMENT="Target is fixed and it was checked with e-log";
 
 [7725.101]
 	RUN_STATUS=Good;
 	COMMENT="";	
 	
-[7723.101]
-	RUN_STATUS=Good;
-	COMMENT="";
+[7725.108]
+	RUN_STATUS=Junk;
+	COMMENT="less than 2M events, no elog entry";
 
+[7725.109]
+	RUN_STATUS=Good;
+	COMMENT="Target is fixed and it was cheched with e-log";
+
+	
 [7729.001]
 	RUN_STATUS=Junk;
 
 [7729.003]
-	RUN_STATUS=Good;
+	COMMENT="Intensity profile is still wide.";
+	RUN_STATUS=Suspicious;
 
 [7729.004]
 	RUN_STATUS=Suspicious;
 	COMMENT= "Offline bunch crossing and WCM plots are weird.";
 
+[7729.007]
+	RUN_STATUS=Good;
+	COMMENT="Intensity profile problem (begining at 7719) has been fixed";
+
+[7729.008]
+	RUN_STATUS=Junk;
+
 [7729.103]
 	CONFIG=7729.103.config.dat;
+	COMMENT="";
 
 [7732.001]
 	RUN_STATUS=Suspicious;
@@ -1479,10 +1518,19 @@
 	COMMENT="Yellow polarization dropped to zero?  Perhaps a spin pattern problem, but but unlikely.";
 	RUN_STATUS=Junk;
 
+[7737.001]
+	COMMENT="Profile scan is messed up";
+	RUN_STATUS=Suspicious;
+	CONFIG=7737.001.config.dat;
+
 [7738.001]
 	RUN_STATUS=Good;
 	COMMENT="";
 	CONFIG=7738.001.config.dat;
+
+[7737.101]
+	RUN_STATUS=Good;
+	COMMENT="";
 
 [7738.002]
 	CONFIG=7738.002.config.dat;
@@ -1534,6 +1582,7 @@
 [7749.001]
 	CONFIG=7749.001.config.dat;
 
+
 [7749.002]
 	RUN_STATUS=Suspicious;
 	COMMENT="polarization seems too low, and the online timing may be off.";
@@ -1548,6 +1597,22 @@
 	EnableStrip=61;
 	EnableStrip=62;
 	EnableStrip=64;
+
+[7749.101]
+	CONFIG=7749.101.config.dat;
+
+[7749.102]
+	RUN_STATUS=Suspicious;
+	COMMENT="Intensity scan does not make it all the way through the beam.";
+	CONFIG=7749.102.config.dat;
+
+[7749.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="Intensity scan does not make it all the way through the beam and we see false Y45 asymmetries.";
+
+[7749.104]
+	RUN_STATUS=Suspicious;
+	COMMENT="Intensity scan does not make it all the way through the beam.";
 
 [7756.101]
 	RUN_STATUS=Good;
@@ -1579,9 +1644,24 @@
 	COMMENT="No corresponding yellow measurement.";
 	CONFIG=7759.002.config.dat;
 
-[7760.001]
-	//not yet verified
+
+// ------------------------------------------------------------//
+// One week shutdown due to the arc flash accident in STAR.
+// ------------------------------------------------------------//
+[7766.001]
+	RUN_STATUS=Good;
+	COMMENT="First measurement after a week shutdown.";
+
+[7766.002]
 	RUN_STATUS=Good;
 	COMMENT="";
 
+
+[7766.101]
+	RUN_STATUS=Good
+	CONFIG=7766.101.config.dat;
+	COMMENT="First measurement after a week shutdown.";
+
+[7766.102]
+	COMMENT="";
 
