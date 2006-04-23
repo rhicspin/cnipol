@@ -14,19 +14,7 @@
 int main (int argc, char *argv[])
 {
 	
-	for(unsigned short strip=0;strip<num_strips;strip++)
-	{
-		is_strip_alive[strip]=true;
-		for(unsigned short nn=0;nn<num_dead_strips;nn++)
-		{
-			if(dead_strips[nn]==strip)
-			{
-				is_strip_alive[strip]=false;
-				break;
-			}
-		}
-	}
-	
+	bool optgiven=false;
 	
 	
 	
@@ -36,17 +24,16 @@ int main (int argc, char *argv[])
 	
 	
 	
-	char * datadir = getenv("DATADIR");
+	datadir = getenv("CONFDIR");
 	if ( datadir == NULL )
 	{
-		cerr << "environment DATADIR is not defined" << endl;
-		cerr << "e.g. export DATADIR=$HOME/2005/data" << endl;
+		cerr << "environment CONFDIR is not defined" << endl;
 		exit(-1);
 	}
-
-	char ifile[32];
 	
-	while ((c = getopt(argc, argv, "?f:g:h"))!=-1)
+	
+	
+	while ((c = getopt(argc, argv, "?f:h"))!=-1)
 	{
 		switch (c)
 		{
@@ -54,26 +41,17 @@ int main (int argc, char *argv[])
 			case '?':
 				cout<<"This program compares the dead layers from two data files"<<endl;
 				cout<<"Usage of " << argv[0] <<endl;
-				cout << " -f <filename>        : first input data file name " <<endl;
-				cout << " -g <filename>        : second input data file name " <<endl;
+				cout << " -f <run #>        : input run # " <<endl;
 				exit(-1);
 			case 'f':
-				sprintf(ifile, optarg);
+				sprintf(runid, optarg);
 	    			// if ifile lack of suffix ".data", attach ".data"
-				if (strstr(ifile,".data")==NULL) strcat(ifile,".data"); 
-				strcat(datafile, datadir);
-				strcat(datafile,     "/");
-				strcat(datafile,   ifile);
-				fprintf(stdout,"Input data file : %s\n",datafile);
-				break;
-			case 'g':
-				sprintf(ifile, optarg);
-	    			// if ifile lack of suffix ".data", attach ".data"
-				if (strstr(ifile,".data")==NULL) strcat(ifile,".data"); 
-				strcat(datafile2, datadir);
-				strcat(datafile2,     "/");
-				strcat(datafile2,   ifile);
-				fprintf(stdout,"Input data file 2 : %s\n",datafile2);
+				strcat(configfile, datadir);
+				strcat(configfile,     "/");
+				strcat(configfile,   runid);
+				strcat(configfile,   ".config.dat");
+				fprintf(stdout,"Input config file : %s\n",configfile);
+				optgiven=true;
 				break;
 			default:
 				fprintf(stdout,"Invalid Option \n");
@@ -82,12 +60,22 @@ int main (int argc, char *argv[])
 		}
 	}
 	
+	if(optgiven==false)
+	{
+		cout<<"This program compares the dead layers from two data files"<<endl;
+		cout<<"Usage of " << argv[0] <<endl;
+		cout << " -f <run #>        : input run # " <<endl;
+		return -1;
+	}
+	
+	getPreviousRun(true);
+	
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		tempwidth[ii]=0;
 	}
 	
-	if(readDLayer(datafile)!=1)
+	if(readDLayer(configfile)!=1)
 	{
 		return -1;
 	}
@@ -98,12 +86,17 @@ int main (int argc, char *argv[])
 	
 	
 	
+	getPreviousRun();
+	
+	
+	
+	
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		tempwidth[ii]=0;
 	}
 	
-	if(readDLayer(datafile2)!=1)
+	if(readDLayer(configfile2)!=1)
 	{
 		return -1;
 	}
@@ -116,7 +109,7 @@ int main (int argc, char *argv[])
 	
 	
 	cout<<endl<<endl;
-	cout<<"dead layers from first file"<<endl;
+	cout<<"dead layers from this run"<<endl;
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		cout<<deadwidth[0][ii]<<endl;
@@ -124,7 +117,7 @@ int main (int argc, char *argv[])
 	
 	cout<<endl<<endl;
 	
-	cout<<"dead layers from second file"<<endl;
+	cout<<"dead layers from previous file"<<endl;
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		cout<<deadwidth[1][ii]<<endl;
@@ -160,126 +153,276 @@ int main (int argc, char *argv[])
 	
 }
 
+
+
+
+void getPreviousRun(bool thisrun)
+{
+	
+	double RUNID=strtod(runid, NULL);
+	// run DB file
+	char *dbfile="run.db";
+	FILE * in_file;
+	if ((in_file = fopen(dbfile,"r")) == NULL) {
+		printf("ERROR: %s file not found. Force exit.\n",dbfile);;
+		exit(-1);
+	} 
+
+	string s;
+	char * line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	int match=0;
+	while ((read = getline(&line, &len, in_file)) != -1){
+    
+		string str(line);
+		if (str[0] == '[') { // Get Run Number
+			s = str.substr(1,8);
+			sprintf(runid2, "%s", s.c_str());
+			rundb.RunID = strtod(s.c_str(),NULL);
+      //printf("%8.3f\n",rundb.RunID);
+			match = MatchBeam(RUNID,rundb.RunID);
+			if (match){
+				if(thisrun==false)
+				{
+					if (RUNID==rundb.RunID) break;
+				}
+				else
+				{
+					if (RUNID<rundb.RunID) break;
+				}
+			}
+		}else{
+			if (match){
+				if (str.find("CONFIG")              ==1) {rundb.config_file_s         = GetVariables(str);}
+				if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
+				if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
+				if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
+				if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
+				if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
+				if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
+				if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
+				if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
+				if (str.find("DisableStrip")        ==1){
+					rundb.disable_strip_s     = GetVariables(str);
+					StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
+					if (str.find("EnableStrip")         ==1) {
+						rundb.enable_strip_s      = GetVariables(str);
+						StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+			}
+		}
+
+	} // end-of-while(getline-loop)
+	
+	runinfo.NDisableStrip = FindDisableStrip();
+	
+	if(thisrun==false)
+	{
+		sprintf(configfile2, "%s/%s", datadir, rundb.config_file_s.c_str());
+	}
+	
+}
+
+
+
+
 int readDLayer(char *infile)
 {
-	int flag=0;     // exit from while when flag==1
-	int rval;
+	
+	double deadwidth[strips_per_detector*num_detectors + 10];
 	
 	int countstrip=0;
 	int countdetector=0;
 	
-	 // Common structure for the data format
-	static union 
-	{
-		recordHeaderStruct     header;
-		recordBeginStruct      begin;
-		recordPolAdoStruct     polado;
-		recordTagAdoStruct     tagado;
-		recordBeamAdoStruct    beamado;
-		recordConfigRhicStruct cfg;
-		recordReadWaveStruct   all;
-		recordReadWave120Struct all120;
-		recordReadATStruct      at;
-		recordWFDV8ArrayStruct  wfd;
-		recordEndStruct        end;
-		recordScalersStruct    scal;
-		recordWcmAdoStruct     wcmado;
-		char                   buffer[BSIZE*sizeof(int)];
-		recordDataStruct       data;
-	} rec;
+	int st,strip;
+	float t0,acoef,edead,ecoef,A0,A1,iasigma;
+
+	fprintf(stdout,"**********************************\n");
+	fprintf(stdout,"** Configuration is overwritten **\n");
+	fprintf(stdout,"**********************************\n");
+
+	ifstream configFile;
+
+	configFile.open(infile);
 	
-	recordConfigRhicStruct  *cfginfo;
-	
-	FILE *fp;
-	
-	// reading the data till its end ...
-	if ((fp = fopen(infile,"r")) == NULL)
-	{
-		printf("ERROR: %s file not found. Fource exit.\n",infile);;
-		exit(-1);
-	} 
-	
-	while(flag==0)
-	{
-		if (fread(&rec.header, sizeof(recordHeaderStruct), 1, fp)!=1)
-		{
-			break;
-		}
-		
-		if (feof(fp))
-		{
-			fprintf(stdout,"Expected end of file\n");
-			break;
-		}
-		
+	if (!configFile) {
+		cerr << "failed to open Config File : " << infile << endl;
+		return -1;
+	}
+
+	cout << "Reading configuration info from : " << infile <<endl;
+
+    
+	char temp[13][20];
+	char *tempchar, *stripchar, *T0char;
+    
+	char buffer[300];
+	int stripn;
+	float t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
+	float c0n, c1n, c2n, c3n, c4n;
+
+
+	int linen=0;
+	while (!configFile.eof()) {
         
-		if (rec.header.len > BSIZE*sizeof(int))
-		{
-			fprintf(stdout,"Not enough buffer d: %d byte b: %d byte\n",
-				rec.header.len, sizeof(rec));
-			break;
+		configFile.getline(buffer, sizeof(buffer), '\n'); 
+		if (strstr(buffer,"Channel")!=0) { 
+
+			tempchar = strtok(buffer,"l");
+			stripn = atoi(strtok(NULL, "="));
+			t0n = atof(strtok(NULL," "));
+			ecn = atof(strtok(NULL," "));
+			edeadn = atof(strtok(NULL," "));
+			a0n = atof(strtok(NULL," "));
+			a1n = atof(strtok(NULL," "));
+			ealphn = atof(strtok(NULL," "));
+			dwidthn = atof(strtok(NULL," "));
+			peden = atof(strtok(NULL," "));
+			c0n = atof(strtok(NULL," "));
+			c1n = atof(strtok(NULL," "));
+			c2n = atof(strtok(NULL," "));
+			c3n = atof(strtok(NULL," "));
+			c4n = atof(strtok(NULL," "));
+			
+			
+			
+			
+			deadwidth[stripn-1]=dwidthn;
+			
+			
+			
+
+// 			cfginfo.data.chan[stripn-1].edead = edeadn;
+// 			cfginfo.data.chan[stripn-1].ecoef = ecn;
+// 			cfginfo.data.chan[stripn-1].t0 = t0n;
+// 			cfginfo.data.chan[stripn-1].A0 = a0n;
+// 			cfginfo.data.chan[stripn-1].A1 = a1n;
+// 			cfginfo.data.chan[stripn-1].acoef = ealphn;
+// 			cfginfo.data.chan[stripn-1].dwidth = dwidthn;
+// 			cfginfo.data.chan[stripn-1].pede = peden;
+// 			cfginfo.data.chan[stripn-1].C[0] = c0n;
+// 			cfginfo.data.chan[stripn-1].C[1] = c1n;
+// 			cfginfo.data.chan[stripn-1].C[2] = c2n;
+// 			cfginfo.data.chan[stripn-1].C[3] = c3n;
+// 			cfginfo.data.chan[stripn-1].C[4] = c4n;
+// 			
+// 			cout<<"wrote to cfginfo"<<endl;
+
+// 			cout << " Strip " << stripn;
+// 			cout << " Ecoef " << ecn;
+// 			cout << " T0 " << t0n;
+// 			cout << " A0 " << a0n;
+// 			cout << " A1 " << a1n;
+// 			cout << " Acoef " << ealphn;
+// 			cout << " Dwidth " << dwidthn;
+// 			cout << " Pedestal " << peden << endl;
 		}
-		 
-		// Read rest of the structure
-		rval = fread(&rec.begin.version, rec.header.len - 
-				sizeof(recordHeaderStruct),1,fp);
-		
-		
-		if (feof(fp)) 
+        
+		linen ++;
+	}
+
+
+	configFile.close();
+	
+	
+	for(unsigned short detector=0;detector<num_detectors;detector++)
+	{
+		countstrip=0;
+		for(unsigned short strip=0;strip<strips_per_detector;strip++)
 		{
-			perror("Unexpected end of file");
-			exit(-1);
-			break;
+			if(isStripAlive(strips_per_detector*detector + strip)==true)
+			{
+				countstrip++;
+// 				tempwidth[detector]+=cfginfo.data.chan[strips_per_detector*detector + strip].dwidth;
+				tempwidth[detector]+=deadwidth[strips_per_detector*detector + strip];
+			}
 		}
-		
-		switch (rec.header.type & REC_TYPEMASK) 
+		if(countstrip!=0)
 		{
-			case REC_RHIC_CONF:
-				if (/*!ReadFlag.RHICCONF*/1)
-				{
-					fprintf(stdout,"Read configure information\n");
-					cfginfo = (recordConfigRhicStruct *)malloc(sizeof(recordConfigRhicStruct)+(rec.cfg.data.NumChannels-1)*sizeof(SiChanStruct));
-					
-					memcpy(cfginfo, &rec.cfg, sizeof(recordConfigRhicStruct)+(rec.cfg.data.NumChannels-1)*sizeof(SiChanStruct));
-					
-					//channels <--> strips
-					if(cfginfo->data.NumChannels!=num_strips)
-					{
-						cout<<"wrong number of channels in cfginfo"<<endl;
-						exit(-1);
-					}
-					
-					
-					for(unsigned short detector=0;detector<num_detectors;detector++)
-					{
-						countstrip=0;
-						for(unsigned short strip=0;strip<strips_per_detector;strip++)
-						{
-							if(is_strip_alive[strips_per_detector*detector + strip]==true)
-							{
-								countstrip++;
-								tempwidth[detector]+=cfginfo->data.chan[strips_per_detector*detector + strip].dwidth;
-							}
-						}
-						if(countstrip!=0)
-						{
-							tempwidth[detector]=(tempwidth[detector]/((float)countstrip));
-						}
-						else
-						{
-							cout<<"warning: detector "<<detector<<" has no live strips"<<endl;
-						}
-					}
-					
-				}
-				break;
+			tempwidth[detector]=(tempwidth[detector]/((float)countstrip));
 		}
-		
+		else
+		{
+			cout<<"warning: detector "<<detector<<" has no live strips"<<endl;
+		}
 	}
 	
-// 	cout<<rec.header.len<<endl;
-// 	cout<<rec.header.type<<endl;
-// 	cout<<rec.cfg.data.NumChannels<<endl;
 	
 	return 1;
+	
 }
+
+
+
+bool isStripAlive(unsigned short strp)
+{
+	for(int jj=0;jj<runinfo.NDisableStrip;jj++)
+	{
+		if((int)strp==runinfo.DisableStrip[jj])
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+int MatchBeam(double ThisRunID, double RunID)
+{
+
+	int match=0;
+
+	int ThisRun = int((ThisRunID-int(ThisRunID))*1e3);
+	int Run     = int((RunID-int(RunID))*1e3);
+
+	if ((ThisRun>=100)&&(Run>=100)) match=1;
+	if ((ThisRun<= 99)&&(Run<=99))  match=1;
+
+	return match;
+}
+
+
+string GetVariables(string str)
+{
+
+	string::size_type begin = str.find("=")+ 1;
+	string::size_type end = str.find(";");
+	string::size_type length = end - begin ;
+
+	string s = str.substr(begin,length);
+	return s;
+
+}
+
+
+int StripHandler(int st, int flag)
+{
+
+	static int Initiarize = 1;
+	if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
+
+	ProcessStrip[st-1] += flag;
+
+	Initiarize=0;
+
+	return 0;
+}
+
+
+int FindDisableStrip()
+{
+
+	int NDisableStrip=0;
+	for (int i=0;i<NSTRIP; i++) {
+		if (ProcessStrip[i]>0) {
+			runinfo.DisableStrip[NDisableStrip] = i;
+			NDisableStrip++;
+		}
+	}
+
+	return NDisableStrip;
+
+}
+
+

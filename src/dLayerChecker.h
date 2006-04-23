@@ -2,22 +2,26 @@
 #include "rpoldata.h"
 #include "Asym.h"
 
+char *datadir;
+
+
 //input data files
-char datafile[256];
-char datafile2[256];
+char configfile[256];
+char configfile2[256];
+
+char runid[32];
+char runid2[32];
+
+StructRunDB rundb;
+StructRunInfo runinfo;
+
+recordConfigRhicStruct  cfginfo;
 
 //the number of strips
-const unsigned short num_strips=76;
+const unsigned short num_strips=72;
 const unsigned short strips_per_detector=12;
 const unsigned short num_detectors=6;
 
-
-//tells whether a strip is alive or not, so we know whether to include it in the dead layer average
-bool is_strip_alive[num_strips];
-
-//tells which strips are dead, so that is_strip_alive can be generated
-const unsigned short num_dead_strips=1;
-short dead_strips[num_dead_strips]={65};
 
 //average deadwidth[which file][which detector]
 float deadwidth[2][num_detectors];
@@ -27,4 +31,13 @@ float tempwidth[num_detectors];
 bool dead_layers_consistent;
 
 
+static int ProcessStrip[NSTRIP];
+
+
+void getPreviousRun(bool thisrun=false); //if thisrun is true, then look at current run instead of previous
 int readDLayer(char *infile);
+bool isStripAlive(unsigned short strp);
+int MatchBeam(double ThisRunID, double RunID);
+string GetVariables(string str);
+int StripHandler(int, int);
+int FindDisableStrip();
