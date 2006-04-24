@@ -19,6 +19,7 @@ MAX_ITERATION=4;
 TOLERANCE=1; 
 
 #Asym environments
+ANALYZED_RUNLIST_DAEMON=$ASYMDIR/analyzed_runlist.daemn;
 ExeRunAsym=0;
 
 
@@ -140,17 +141,10 @@ RunDlayer(){
 RunAsym(){
 
     dLayerChecker -f $RunID;
-    if [ $? -eq 0 ] ; then
-	ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
-	NEVENTS=`grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}'`;
-	if [ $NEVENTS -gt 5 ]; then
-	    dLayerChecker -f $RunID -x ;
-	else
-	    rundb_updator.pl -f $RunID;
-	fi
+    if [ $? -eq 1 ] ; then
+	Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+	echo $RunID >> $ANALYZED_RUNLIST_DAEMON
     fi
-    Asym -f $RunID -b ;	
-    mv $RunID.hbook $HBOOKDIR
 
 }
 
