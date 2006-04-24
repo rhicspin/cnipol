@@ -11,7 +11,7 @@ help(){
     echo    "    : refresh contents in existing Asym log file "
     echo    " "
     echo -e "   -f <RunID>                <RunID>"
-    echo -e "   --status                  refresh status and comment"
+    echo -e "   --update                  refresh status and comment"
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
     echo    " "
@@ -78,7 +78,7 @@ while test $# -ne 0; do
   --update) ExeUpdateStatus=1 ;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
-  *)  echo "Error: Invarid Option $1"
+  *)  echo "Error: Invalid Option $1"
       help;;
   esac
   shift
