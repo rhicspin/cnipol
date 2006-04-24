@@ -20,19 +20,8 @@ using namespace std;
 #include "rpoldata.h"
 #include "Asym.h"
 #include "AsymRecover.h"
+#include "AsymRunDB.h"
 
-//const char * GetVariables(string str);
-string GetVariables(string str);
-//const char* GetVariables(string str);
-float GetVariablesFloat(string str);
-int ContinueScan(double ThisRunID, double RunID);
-int MatchBeam(double ThisRunID, double RunID);
-void PrintRunDB();
-int StripHandler(int, int);
-StructRunDB rundb;
-static int ProcessStrip[NSTRIP];
-int FindDisableStrip();
-int NDisableStrip=0;
 
 
 //
