@@ -924,7 +924,18 @@
 [7654.002]
 	RUN_STATUS=Good;
 	COMMENT="";
-	
+
+[7654.008]
+	RUN_STATUS=Suspicious;
+	COMMENT="Some strips are wrong, target may be fixed but no e-log entry";
+
+[7654.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="The profile scan is wrong"
+
+[7654.103]
+	RUN_STATUS=Junk;
+
 [7655.002]
 	CONFIG=7655.002.config.dat;
 
@@ -1448,7 +1459,7 @@
 
 [7725.109]
 	RUN_STATUS=Good;
-	COMMENT="Target is fixed and it was cheched with e-log";
+	COMMENT="Target is fixed and it was checked with e-log";
 
 	
 [7729.001]
