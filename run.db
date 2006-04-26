@@ -800,12 +800,12 @@
 	RUN_STATUS=Junk;
 
 [7640.010]
-	// bunch 21 is 10 times hotter than other bunches.
-	DisableBunch=21;
-	RUN_STATUS=Recovered;
+	// bunch 20 is 10 times hotter than other bunches.
+	DisableBunch=20;
+	RUN_STATUS=Suspicious;
 
 [7640.011]
-	EnableBunch=21;
+	EnableBunch=20;
 	RUN_STATUS=Suspicious;
 
 [7640.012]
@@ -935,6 +935,7 @@
 
 [7654.103]
 	RUN_STATUS=Junk;
+	COMMENT="Data size is small";
 
 [7655.002]
 	CONFIG=7655.002.config.dat;
@@ -1670,12 +1671,21 @@
 
 
 [7766.101]
-	RUN_STATUS=Good
+	RUN_STATUS=Good;
 	CONFIG=7766.101.config.dat;
 	COMMENT="First measurement after a week shutdown.";
 
 [7766.102]
 	COMMENT="";
 
+[7772.001]
+	RUN_STATUS=Good;
+	
+[7781.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Problem in target motion. Scan stopped half way thru the beam";
 
+[7781.103]
+	RUN_STATUS=Good;
+	COMMENT="Target problem fixed.";
 
