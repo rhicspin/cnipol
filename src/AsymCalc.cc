@@ -556,17 +556,25 @@ void
 PrintWarning(){
 
     printf("-----------------------------------------------------------------------------------------\n");
-    printf("------------------------------       Warnings      --------------------------------------\n");
+    printf("------------------------------  Error Detector Results ----------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
+    printf("===> Bunch distribution \n");
+    printf(" Number of Problemeatic Bunches      : %d \n", anal.anomaly.nbunch);
+    printf(" Problemeatic Bunch ID's             : ");
+    for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]+1) ; 
+    printf("\n");
+    printf(" Unrecognized Problematic Strips     : ");
+    for (int i=0; i<anal.unrecog.anomaly.nbunch; i++) printf("%d ",anal.unrecog.anomaly.bunch[i]+1) ; 
+    printf("\n");
+    printf("===> Invariant Mass / strip \n");
     printf(" Maximum Mass Deviation [GeV]        : %6.2f (%d)\n", strpchk.dev.max,  strpchk.dev.st);
     printf(" Maximum Mass fit chi-2              : %6.2f (%d)\n", strpchk.chi2.max, strpchk.chi2.st);
     printf(" Weighted Mean InvMass Sigma         : %6.2f \n", strpchk.average[0]);
     printf(" Good Strip Mass Sigma Allowance[GeV]: %6.2f \n", strpchk.dev.allowance);
     printf(" Good Strip Mass Fit chi2 Allowance  : %6.2f \n", strpchk.chi2.allowance);
-    printf(" Number of Problematic Strips        : %3d \n", anal.anomaly.nstrip); 
+    printf(" Number of Problematic Strips        : %d \n", anal.anomaly.nstrip); 
     printf(" Problematic Strips                  : ");
-    for (int i=0; i<anal.anomaly.nstrip; i++) 
-      i==anal.anomaly.nstrip-1 ? printf("%d", anal.anomaly.st[i]+1) : printf("%d,", anal.anomaly.st[i]+1);
+    for (int i=0; i<anal.anomaly.nstrip; i++) printf("%d ", anal.anomaly.st[i]+1);
     printf("\n");
     printf(" Unrecognized Problematic Strips     : ");
     for (int i=0; i<anal.unrecog.anomaly.nstrip; i++) printf("%d ",anal.unrecog.anomaly.st[i]+1) ; 
@@ -599,6 +607,7 @@ PrintRunResults(StructHistStat hstat){
     printf("-----------------------------------------------------------------------------------------\n");
     if (Flag.feedback)        printf(" Feedback mode     : On \n");
     if (Flag.spin_pattern>=0) printf(" RHIC Spin Pattern : Recovered.\n");
+    if (Flag.mask_bunch)      printf(" Applied a mask to the fill pattern in the data stream.\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf("\n\n");
 
@@ -1066,8 +1075,8 @@ StripAnomalyDetector(){
 // Method name : UnrecognizedAnomaly(int Mode)
 //
 // Description : Check whether anomalies are recognized or not.
-// Input       : int Mode 
-// Return      : 0
+// Input       : 
+// Return      : unrecongnized (strip/bunch) ID in array z, and nz
 //
 int
 UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz){
@@ -1558,12 +1567,17 @@ RAMP::CalcRAMP()
 //
 void checkForBadBunches()
 {
-	
+
+  // counter initiariztion
+  anal.anomaly.nbunch=0;
+  bnchchk.allowance=errdet.BUNCH_ALLOWANCE_SIGMA;
+
+
 	printf("checking for bad bunches\n");
 	
 	double avg;
 	double sigma;
-	for(int i=0;i<6;i++)
+	for(int i=0;i<NDETECTOR;i++)
 	{
 		avg=0.;
 		for(int j=0;j<120;j++)
@@ -1582,14 +1596,22 @@ void checkForBadBunches()
 		
 		for(int j=0;j<120;j++)
 		{
-			if((Ncounts[i][j]-avg)>3.*sigma)
+			if((Ncounts[i][j]-avg)> bnchchk.allowance*sigma)
 			{
+			  anal.anomaly.bunch[anal.anomaly.nbunch]=j+1;
+			  anal.anomaly.nbunch++;
+			  printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
 
-				printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
 			}
 		}
 		
 	}
+
+
+	UnrecognizedAnomaly(anal.anomaly.bunch,anal.anomaly.nbunch,runinfo.DisableBunch,runinfo.NDisableBunch,
+			    anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+
+
 }
 
 

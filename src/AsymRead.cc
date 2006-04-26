@@ -261,6 +261,11 @@ int readloop() {
             cout << "Fill Pattern Used : " << endl;
 	    PrintPattern("fill");
 
+	    if (runinfo.NDisableBunch) {
+	      recover.MaskFillPattern();
+	      cout << "Masked Fill Pattern : " << endl;
+	      PrintPattern("fill");
+	    }
 
 	    ReadFlag.BEAMADO = 1;
 

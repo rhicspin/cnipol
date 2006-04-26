@@ -24,6 +24,7 @@ class AsymRecover
 
 
   int OverwriteSpinPattern(int index);
+  int MaskFillPattern();
 
 };
 

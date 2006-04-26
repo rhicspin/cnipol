@@ -28,6 +28,7 @@ using namespace std;      //declare string in structure
 #define NTBIN 14                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
+#define NDETECTOR 6                // Number of detectors
 #define NBUNCH 120                 // Maximum bunch number
 #define R2D 57.29577951            // [rad] -> [degree]
 #define G2k 1e6                    // GeV -> keV
@@ -94,6 +95,7 @@ typedef struct {
 typedef struct {
   float MASS_DEV_ALLOWANCE;
   float MASS_CHI2_ALLOWANCE;
+  float BUNCH_ALLOWANCE_SIGMA;
 }ErrorDetector;
 
 
@@ -119,7 +121,8 @@ typedef struct {
 typedef struct {
   int nstrip;
   int st[NSTRIP];
-  int Bunch[NBUNCH];
+  int nbunch;
+  int bunch[NBUNCH];
 } StructAnomaly;
 
 typedef struct {
@@ -160,6 +163,8 @@ typedef struct {
   char * TgtOperation;
   int NDisableStrip;
   int DisableStrip[NSTRIP];
+  int NDisableBunch;
+  int DisableBunch[NBUNCH];
 } StructRunInfo;
 
 typedef struct {
@@ -173,6 +178,8 @@ typedef struct {
   string measurement_type_s;
   string disable_strip_s;
   string enable_strip_s;
+  string disable_bunch_s;
+  string enable_bunch_s;
   string define_spin_pattern_s;
   string comment_s;
 }StructRunDB ;
@@ -220,6 +227,7 @@ typedef struct {
   int VERBOSE;
   int feedback;
   int spin_pattern;
+  int mask_bunch;
 } StructFlag;
 
 
