@@ -751,11 +751,11 @@
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	DisableBunch=62;
+	DisableBunch=64;
 	CONFIG=7637.101.config.dat;
 
 [7637.103]
-	EnableBunch=62
+	EnableBunch=64
 	CONFIG=7637.103.config.dat;
 
 [7639.001]
