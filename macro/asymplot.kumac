@@ -995,6 +995,14 @@ return
    v/cre bid0(120) R 
    v/cre ex0(120) R 120*0.
    SQRT2 = '1.414'
+
+
+   X45MIN=$RSIGMA(RL45(1)*[SQRT2])
+   X45MAX=$RSIGMA(RL45(1)*[SQRT2])
+   X90MIN=RL90(1)
+   X90MAX=RL90(1)
+   Y45MIN=$RSIGMA(BT45(1)*[SQRT2])
+   Y45MAX=$RSIGMA(BT45(1)*[SQRT2])
    Do i=1,120
      v/input bid0([i]) $RSIGMA([i])
      if (spin([i]).eq.1) then
@@ -1018,7 +1026,43 @@ return
        v/input RL450([i])  $RSIGMA(RL45([i])*[SQRT2])
        v/input BT450([i])  $RSIGMA(BT45([i])*[SQRT2])
      endif
+
+    if (RL45([i]) .ne. 0 ) then
+	     if ($RSIGMA(RL45([i])*[SQRT2]) .lt. [X45MIN]) then
+		X45MIN=$RSIGMA(RL45([i])*[SQRT2])
+	     endif	
+	     if ($RSIGMA(RL45([i])*[SQRT2]) .gt. [X45MAX]) then
+		X45MAX=$RSIGMA(RL45([i])*[SQRT2])
+	     endif
+    endif	
+    if (RL90([i]) .ne. 0 ) then
+	     if (RL90([i]) .lt. [X90MIN]) then
+		X90MIN=RL90([i])
+	     endif	
+	     if (RL90([i]) .gt. [X90MAX]) then
+		X90MAX=RL90([i])
+	     endif	
+    endif	
+    if (BT45([i]) .ne. 0 ) then
+	     if ($RSIGMA(BT45([i])*[SQRT2]) .lt. [Y45MIN]) then
+		Y45MIN=$RSIGMA(BT45([i])*[SQRT2])
+	     endif	
+	     if ($RSIGMA(BT45([i])*[SQRT2]) .gt. [Y45MAX]) then
+		Y45MAX=$RSIGMA(BT45([i])*[SQRT2])
+	     endif
+   endif
+
    Enddo
+
+   INTERVAL=[X45MAX]-[X45MIN]
+   X45MIN=[X45MIN]-[INTERVAL]*0.1
+   X45MAX=[X45MAX]+[INTERVAL]*0.1
+   INTERVAL=([X90MAX]-[X90MIN])
+   X90MIN=[X90MIN]-([INTERVAL]*0.1)
+   X90MAX=[X90MAX]+([INTERVAL]*0.1)
+   INTERVAL=[Y45MAX]-[Y45MIN]
+   Y45MIN=[Y45MIN]-[INTERVAL]*0.1
+   Y45MAX=[Y45MAX]+[INTERVAL]*0.1
 
    opt utit
    set YHTI 0.7
@@ -1030,7 +1074,8 @@ return
    hfill id=999 vname='RL45U'
    low45X = $HINFO(999,'MEAN')-0.02
    upp45X = $HINFO(999,'MEAN')+0.02
-   null 0. 120. [low45X] [upp45X]
+*   null 0. 120. [low45X] [upp45X]
+   null 0. 120. [X45MIN] [X45MAX]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 RL45U ex0 RL45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
@@ -1048,7 +1093,8 @@ return
    hfill id=999 vname='RL90U'
    low90X = $HINFO(999,'MEAN')-0.02
    upp90X = $HINFO(999,'MEAN')+0.02
-   null 0. 120. [low90X] [upp90X]
+*   null 0. 120. [low90X] [upp90X]
+   null 0. 120. [X90MIN] [X90MAX]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 RL90U ex0 RL90EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
@@ -1066,7 +1112,8 @@ return
    hfill id=999 vname='BT45U'
    low45Y = $HINFO(999,'MEAN')-0.02
    upp45Y = $HINFO(999,'MEAN')+0.02
-   null 0. 120. [low45Y] [upp45Y]
+*   null 0. 120. [low45Y] [upp45Y]
+   null 0. 120. [Y45MIN] [Y45MAX]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 BT45U ex0 BT45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
