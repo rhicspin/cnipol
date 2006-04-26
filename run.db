@@ -796,16 +796,14 @@
 	DisableStrip=45;
 	DisableStrip=63;
 
-[7640.006]
-	RUN_STATUS=Junk;
 
-[7640.010]
-	// bunch 20 is 10 times hotter than other bunches.
-	DisableBunch=20;
-	RUN_STATUS=Suspicious;
+[7640.006]
+	// bunch 21 is 10 times hotter than other bunches.
+	DisableBunch=21;
+	RUN_STATUS=Recovered;
 
 [7640.011]
-	EnableBunch=20;
+	EnableBunch=21;
 	RUN_STATUS=Suspicious;
 
 [7640.012]
