@@ -99,7 +99,7 @@ ShowIndex(){
     printf "=================================================================================================";
     printf "============================\n";
     printf " RunID ";
-    printf "      Online";
+    printf "       Online";
     printf "  Status  ";
     printf "Anal  "
     printf "Beam "
@@ -114,7 +114,7 @@ ShowIndex(){
     printf "   on-off";
     printf "\n";
     printf "          ";
-    printf "  P     dP ";
+    printf "   P     dP ";
     printf "       "
     printf " crew ";
     printf "[GeV]                       ";
@@ -139,7 +139,7 @@ GetOnlinePolarization(){
  $MACRODIR/pvector.pl $RunID
  export RUN=$RunID;
  paw -b $MACRODIR/pvect_simple.kumac &> /dev/null
- OnlineP=`cat tmp.dat | gawk '{printf("%6.1f",$1)}'`;
+ OnlineP=`cat tmp.dat | gawk '{printf("%7.1f",$1)}'`;
  OnlinedP=`cat tmp.dat | gawk '{printf("%5.1f",$2)}'`;
  rm -f tmp.dat
  rm -f pvect.dat
