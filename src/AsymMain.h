@@ -32,7 +32,8 @@ datprocStruct dproc = {
 
 ErrorDetector errdet = {
   0.10,         // MASS_DEV_ALLOWANCE [GeV]
-  50            // MASS_CHI2_ALLOWANCE [GeV]
+  100,           // MASS_CHI2_ALLOWANCE [GeV]
+  3.            // BUNCH_ALLOWANCE_SIGMA 
 };
 
 
@@ -55,6 +56,7 @@ StructFlag Flag = {
   0,       // VERBOSE mode
   0,       // feedback mode
   -1,      // spin pattern
+  0        // mask_bunch
 };
 
 StructCounter cntr = {

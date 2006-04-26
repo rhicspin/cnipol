@@ -70,6 +70,12 @@ readdb(double RUNID) {
 	if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
 	if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
 	if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
+	if (str.find("DisableBunch")        ==1){
+	  rundb.disable_bunch_s     = GetVariables(str);
+	  BunchHandler(atoi(rundb.disable_bunch_s.c_str()), 1);}
+	if (str.find("EnableBunch")        ==1){
+	  rundb.enable_bunch_s     = GetVariables(str);
+	  BunchHandler(atoi(rundb.enable_bunch_s.c_str()),-1);}
 	if (str.find("DisableStrip")        ==1){
 	  rundb.disable_strip_s     = GetVariables(str);
 	  StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
@@ -84,6 +90,9 @@ readdb(double RUNID) {
   // Find Disable Strip List
   runinfo.NDisableStrip = FindDisableStrip();
 
+  // Find Disable Bunch List
+  runinfo.NDisableBunch = FindDisableBunch();
+  if (runinfo.NDisableBunch) Flag.mask_bunch = 1;
 
   // processing conditions
   if (!extinput.CONFIG){
@@ -141,7 +150,8 @@ readdb(double RUNID) {
 // Method name : StripHandler(int st, int flag)
 //
 // Description : handle enable/disable strips
-// Input       : 
+//             : Any strips ended up with ProcessStrip[st]>0 are disabled.
+// Input       : int st, int enable/disable flag
 // Return      : 
 //
 int 
@@ -178,6 +188,53 @@ FindDisableStrip(){
   }
 
   return NDisableStrip;
+
+}
+
+
+//
+// Class name  :
+// Method name : BunchHandler(int bunch, int flag)
+//
+// Description : handle enable/disable bunch
+//             : Any bunches ended up with ProcessBunch[bid]>0 are disabled.
+// Input       : int bunch, int enable/disable flag
+// Return      : 
+//
+int 
+BunchHandler(int bunch, int flag){
+
+  static int Initiarize = 1;
+  if (Initiarize) for (int i=0; i<NBUNCH; i++) ProcessBunch[i]=0;
+
+  ProcessBunch[bunch-1] += flag;
+
+  Initiarize=0;
+
+  return 0;
+}
+
+
+//
+// Class name  :
+// Method name : FindDisableBunch()
+//
+// Description : dump disabled bunches into runinfo.DisableBunch array
+// Input       : 
+// Return      : NDisableBunch
+//
+int 
+FindDisableBunch(){
+
+  int NDisableBunch=0;
+  for (int i=0;i<NBUNCH; i++) {
+    if (ProcessBunch[i]>0) {
+      runinfo.DisableBunch[NDisableBunch] = i;
+      NDisableBunch++;
+    }
+  }
+
+  return NDisableBunch;
 
 }
 
@@ -309,6 +366,14 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // tshift in [ns]
     fprintf(stdout," TSHIFT       = %5.1f\n",dproc.tshift);
+
+    // Disabled bunch
+    fprintf(stdout,"#DisableBunch =   %d\n", runinfo.NDisableBunch);
+    if (runinfo.NDisableBunch){
+      fprintf(stdout," DisableBunch = ");
+      for (int i=0;i<runinfo.NDisableBunch;i++) printf("%d ",runinfo.DisableBunch[i]+1);
+    }
+    printf("\n");
 
     // Disabled strips
     fprintf(stdout,"#DisableStrip =   %d\n", runinfo.NDisableStrip);

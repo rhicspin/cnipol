@@ -38,6 +38,12 @@ struct StructStripCheck {
   StructInvMass dev, chi2;
 } strpchk;
 
+struct StructBunchCheck {
+  float average[1];
+  float allowance;
+} bnchchk;
+
+
 int  StripAnomalyDetector();
 void PrintWarning();
 

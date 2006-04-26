@@ -45,3 +45,25 @@ AsymRecover::OverwriteSpinPattern(int index){
 
 }
 
+
+//
+// Class name  : AsymRecover
+// Method name : MaskFillPattern(int index)
+//
+// Description : Mask fill pattern to disable suspicious bunches
+//             : 
+// Input       : 
+// Return      : 
+//
+int
+AsymRecover::MaskFillPattern(){
+ 
+  for (int i=0; i<runinfo.NDisableBunch;i++) {
+    for (int j=0; j<NBUNCH; j++) {
+      fillpat[j] = runinfo.DisableBunch[i]-1 == j ? 0 : fillpat[j];
+    }
+  }
+
+  return 0;
+
+}
