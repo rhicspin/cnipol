@@ -800,12 +800,12 @@
 	RUN_STATUS=Junk;
 
 [7640.010]
-	// bunch 19 is 10 times hotter than other bunches.
-	DisableBunch=19;
+	// bunch 20 is 10 times hotter than other bunches.
+	DisableBunch=20;
 	RUN_STATUS=Suspicious;
 
 [7640.011]
-	EnableBunch=19;
+	EnableBunch=20;
 	RUN_STATUS=Suspicious;
 
 [7640.012]
@@ -1642,6 +1642,7 @@
 [7757.101]
 	CONFIG=7757.101.config.dat;
 
+
 [7758.001]
 	RUN_STATUS=Suspicious;
 	COMMENT="Wrong Spin Pattern Loaded";
@@ -1669,7 +1670,7 @@
 
 
 [7766.101]
-	RUN_STATUS=Good
+	RUN_STATUS=Good;
 	CONFIG=7766.101.config.dat;
 	COMMENT="First measurement after a week shutdown.";
 
@@ -1677,4 +1678,11 @@
 	COMMENT="";
 
 
+[7781.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Problem in target motion. Scan stopped half way thru the beam";
+
+[7781.103]
+	RUN_STATUS=Good;
+	COMMENT="Target problem fixed.";
 
