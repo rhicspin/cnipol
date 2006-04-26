@@ -23,6 +23,11 @@ echo -e "Next number is $NextN"
 tester=`grep "\[$NextN" $DB`
 echo -e "$tester"
 
+if [ $NextN -eq 0 ]; then
+    tester=0
+fi
+
+
 InsertTag()  {
 
     header=`grep -n "\[$NextN" $DB | sed -e "s/:/ /" | gawk '{print $1-1}'`
