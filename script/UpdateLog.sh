@@ -62,7 +62,7 @@ UpdateComment() {
     tail -n $residual alanstmp.log >> alanstmp2.log
     echo -e -n "and has comment $NEWCOMMENT \n"
 
-#    mv alanstmp2.log log/$RUNID.log;
+    mv alanstmp2.log log/$RUNID.log;
 # ***do not remove prvious line until ready for implimentation***
 
     rm alanstmp.log
@@ -91,7 +91,7 @@ if [ $ExeUpdateStatus -eq 1 ]; then
     if [ -n "$NEWCOMMENT" ]; then
 	UpdateComment;
     else
-#       mv alanstmp.log log/$RUNID.log
+       mv alanstmp.log log/$RUNID.log
 #***do not remove above line until ready for implimentation
     echo -e "removing firsttest.dat";
     rm firsttest.dat;
@@ -100,3 +100,5 @@ if [ $ExeUpdateStatus -eq 1 ]; then
 fi
 
 
+rm alanstemp.log
+rm alanstemp2.log
