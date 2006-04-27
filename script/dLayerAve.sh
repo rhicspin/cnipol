@@ -174,7 +174,10 @@ done
 InitVariables;
 
 if [ $DISTRIBUTION -eq 1 ] ; then
-    rm -f $ASYMDIR/summary/dLayer_*_*.dat;
+    rm -f $ASYMDIR/summary/dLayer_*_*.dat &> /dev/null;
+    if [ ! -d $ASYMDIR/summary ] ; then
+	mkdir $ASYMDIR/summary
+    fi
 fi
 
 ShowIndex;
