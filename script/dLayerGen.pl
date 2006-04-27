@@ -63,10 +63,10 @@ if (-e $CHECKDATA) {
 	    $options = " $options -F $cfile";
 	}
 
-	printf "nice -19 $COMMAND $NEVOPT -f $DATAFILE $options  -o $Runn.hbook | tee $LOGFILE\n "; 
+	printf "nice +19 $COMMAND $NEVOPT -f $DATAFILE $options  -o $Runn.hbook | tee $LOGFILE\n "; 
 
 	##### START #####
-	system ("nice -19 $COMMAND $NEVOPT -f $DATAFILE  $options  -o $Runn.hbook | tee $LOGFILE\n ");
+	system ("nice +19 $COMMAND $NEVOPT -f $DATAFILE  $options  -o $Runn.hbook | tee $LOGFILE\n ");
 	system ("h2root $Runn.hbook ");
 	system ("mv $Runn.root ./douts");
 	system ("rm $Runn.hbook");
