@@ -365,7 +365,7 @@ sub startana {
 	    
 	    $info = "Analyzing .... data ".$fillnumber.".".$runnumber;
 	    
-	    system ("xterm -e tcsh -c \"nice +11 $command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift $fopt -o $Runn.hbook | tee $logfile\" "); 
+	    system ("xterm -e tcsh -c \"nice -n 1 $command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift $fopt -o $Runn.hbook | tee $logfile\" "); 
 
 	    system ("mv $Runn.hbook hbook/");
 	    $info = "Finished Analysis";
