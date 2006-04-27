@@ -4,6 +4,7 @@
 #Feb.24,2006
 #I. Nakagawa
 
+DISTRIBUTION=0;
 BASEDIR=$ASYMDIR
 ExeDlayerAverage=1;
 DLAYERDIR=$ASYMDIR/dlayer
@@ -15,12 +16,13 @@ DUMMY=0;
 #############################################################################
 help(){
     echo    " "
-    echo    " mkDB.sh [-xh][-f <file>]"
+    echo    " mkDB.sh [-xh][-f <file>][--distribute]"
     echo    "    : make deadlayer analysis database "
     echo    " "
-    echo -e "   -f <file>                 Make list from runlist <file>";
-    echo -e "   -h | --help               Show this help"
-    echo -e "   -x                        Show example"
+    echo -e "   --distribute  Distribute blue/yellow & flattop/injection measurements."
+    echo -e "   -f <file>     Make list from runlist <file>";
+    echo -e "   -h | --help   Show this help"
+    echo -e "   -x            Show example"
     echo    " "
     exit;
 }
@@ -111,6 +113,18 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     DlayerFile=$DLAYERDIR/$RUNID.temp.dat;
     FITLOGFILE=$DLAYERDIR/$RUNID.fit.log;
     LOGFILE=$BASEDIR/douts/$RUNID.dl.log;
+
+    Test=`grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'`;
+    if [ $Test -gt 30 ] ; then
+	Mode="FTP";
+    else
+	Mode="INJ";
+    fi
+
+    if [ $DISTRIBUTION -eq 1 ] ; then
+	OFILE=$ASYMDIR/summary/dLayer_$Beam\_$Mode.dat;
+    fi
+
     if [ -f $DlayerFile ] ; then
 
 	    EVENT_RATES=`grep 'Event Rate'  $LOGFILE | gawk '{printf("%4.2f", $4*1e-6)}'`
@@ -124,11 +138,13 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    AVE_T0=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
-	    echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES " 
-	    echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "
-	    echo -e -n "$AVE_T0 $DELTA_T0 $DUMMY $DUMMY $DUMMY "
-	    echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "
-	    echo -e -n "\n";
+	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
+		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "  | tee -a $OFILE 
+		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "     | tee -a $OFILE
+		echo -e -n "$AVE_T0 $DELTA_T0 $DUMMY $DUMMY $DUMMY "    | tee -a $OFILE
+		echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "        | tee -a $OFILE
+		echo -e -n "\n"                                         | tee -a $OFILE
+	    fi
 
     fi
 
@@ -144,6 +160,7 @@ for (( i=1; i<=$NLINE ; i++ )) ;
  
 while test $# -ne 0; do
   case "$1" in
+  --distribute) DISTRIBUTION=1;;
   -f) shift ; RUNLIST=$1 ;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
@@ -155,6 +172,10 @@ done
 
 
 InitVariables;
+
+if [ $DISTRIBUTION -eq 1 ] ; then
+    rm -f $ASYMDIR/summary/dLayer_*_*.dat;
+fi
 
 ShowIndex;
 if [ $ExeDlayerAverage == 1 ] ; then
