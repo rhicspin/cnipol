@@ -142,7 +142,7 @@ RunAsym(){
 
     dLayerChecker -f $RunID;
     if [ $? -eq 1 ] ; then
-	nice +19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+	nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
 	echo $RunID >> $ANALYZED_RUNLIST_DAEMON
     fi
 
