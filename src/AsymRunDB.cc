@@ -372,16 +372,16 @@ printConfig(recordConfigRhicStruct *cfginfo){
     if (runinfo.NDisableBunch){
       fprintf(stdout," DisableBunch = ");
       for (int i=0;i<runinfo.NDisableBunch;i++) printf("%d ",runinfo.DisableBunch[i]+1);
+      printf("\n");
     }
-    printf("\n");
 
     // Disabled strips
     fprintf(stdout,"#DisableStrip =   %d\n", runinfo.NDisableStrip);
     if (runinfo.NDisableStrip){
       fprintf(stdout," DisableStrip = ");
       for (int i=0;i<runinfo.NDisableStrip;i++) printf("%d ",runinfo.DisableStrip[i]+1);
+      printf("\n");
     }
-    printf("\n");
 
 
     // print comment
