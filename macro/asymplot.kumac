@@ -2269,9 +2269,10 @@ else
    ymax=0
    do i=1,$vdim(index,1) 
 	if (rate([i]).gt.[ymax]) then
-	   ymax=rate([i])*1.1
+	   ymax=rate([i])
         endif
    enddo
+   ymax=[ymax]*1.1
    null [xmin] [xmax] 0 [ymax]
 endif
 
