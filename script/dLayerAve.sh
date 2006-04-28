@@ -15,8 +15,9 @@ DUMMY=0;
 #                                     Help                                  #
 #############################################################################
 help(){
+    COMMAND=`basename $0`
     echo    " "
-    echo    " mkDB.sh [-xh][-f <file>][--distribute]"
+    echo    " $COMMAND [-xh][-f <file>][--distribute]"
     echo    "    : make deadlayer analysis database "
     echo    " "
     echo -e "   --distribute  Distribute blue/yellow & flattop/injection measurements."
