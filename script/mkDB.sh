@@ -11,6 +11,7 @@ ExpertMode=0;
 FROM_FILL=7537;
 TILL_FILL=9000;
 LOGDIR=$ASYMDIR/log;
+DISTRIBUTION=0;
 
 #############################################################################
 #                                     Help                                  #
@@ -18,7 +19,7 @@ LOGDIR=$ASYMDIR/log;
 help(){
     echo    " "
     echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "         [--analyzed-run-list][-X --expert][-f <runlis>]";
+    echo    "         [--analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
     echo    "    : make pC offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist [def]:$ANALYZED_RUN_LIST";
@@ -28,6 +29,8 @@ help(){
     echo -e "   -f <runlist>              Show list for runs listed in <runlist>";
     echo -e "   --online-nevents          Show online nevents"
     echo -e "   --exclusive               Show only data analyized";
+    echo -e "   --blue                    Show only blue data ";
+    echo -e "   --yellow                  Show only yellow data ";
     echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
@@ -64,8 +67,6 @@ MakeAnalyzedRunList(){
   fi
   touch $TMPLIST;
 
-  
-
   for a in alanH alanD jeffW itaru daemn koich; 
   do 
 
@@ -74,7 +75,18 @@ MakeAnalyzedRunList(){
     for (( i=1; i<=$NLINE; i++ )) ; 
        do
        RunID=`$INSTALLDIR/line.sh $i $f` 
-       echo -e -n "$RunID $a\n"  >> $TMPLIST
+       FILL=`echo $RunID | gawk '{printf("%4d",$RUNID)}'`;
+       Test=`echo $RunID $FILL | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
+       if [ $Test -eq 1 ]&&[ $DISTRIBUTION -eq 2 ] ; then
+	   Beam="Yellow"
+	   echo -e -n "$RunID $a\n"  >> $TMPLIST
+       elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
+	   Beam="Blue"
+	   echo -e -n "$RunID $a\n"  >> $TMPLIST
+       elif [ $DISTRIBUTION -eq 0 ] ; then
+	   echo -e -n "$RunID $a\n"  >> $TMPLIST
+       fi
+       
        done
       
   done
@@ -86,8 +98,9 @@ MakeAnalyzedRunList(){
       sort $TMPLIST | tee $ANALYZED_RUN_LIST;
   fi
 
-  rm -f $TMPLIST;
 
+
+  rm -f $TMPLIST;
 
 }
 
@@ -269,6 +282,8 @@ while test $# -ne 0; do
   -f) shift ; ANALYZED_RUN_LIST=$1; ExeAnalyzedRunList=0 ;;
   --online-events) ExeOnlineNevents=1;;
   --exclusive) ExclusiveMode=1;;
+  --blue)   DISTRIBUTION=1;;
+  --yellow) DISTRIBUTION=2;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
