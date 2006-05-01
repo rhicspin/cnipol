@@ -1,17 +1,16 @@
 #!/bin/bash
 
-ExeUpdateStatus=0;
+ExeUpdateStatus=1;
 
 #############################################################################
 #                                     Help                                  #
 #############################################################################
 help(){
     echo    " "
-    echo    " $0 [-xh][-f <RunID>][--update]"
+    echo    " $0 [-xh][-f <RunID>]"
     echo    "    : refresh contents in existing Asym log file "
     echo    " "
     echo -e "   -f <RunID>                <RunID>"
-    echo -e "   --update                  refresh status and comment"
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
     echo    " "
@@ -75,9 +74,8 @@ UpdateComment() {
 while test $# -ne 0; do
   case "$1" in
   -f) shift ; RUNID=$1 ;; 
-  --update) ExeUpdateStatus=1 ;;
-  -x) shift ; ShowExample ;;
-  -h | --help) help ;;
+  -x) shift ; ExeUpdateStatus=0; ShowExample ;;
+  -h | --help) help ; ExeUpdateStatus=0 ;;
   *)  echo "Error: Invalid Option $1"
       help;;
   esac
