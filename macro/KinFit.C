@@ -1010,7 +1010,7 @@ KinFit::PlotT0(Int_t Mode){
         tgt0s -> Draw("P");
 
         TText t; Char_t rtext[50];
-        sprintf(rtext, "Average Delta_t0 = %6.1f [ns]", T0.Delta); 
+        sprintf(rtext, "Average Delta_t0 = %6.2f [ns]", T0.Delta); 
         t.DrawTextNDC(0.5, 0.8, rtext);
 
 
