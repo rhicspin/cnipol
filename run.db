@@ -747,6 +747,8 @@
 
 [7637.101]
 	//Jump in t dependent asymmetries.  See elog.
+	//Bunch now masked out and everything looks good
+	RUN_STATUS=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
@@ -755,7 +757,8 @@
 	CONFIG=7637.101.config.dat;
 
 [7637.103]
-	EnableBunch=64
+	RUN_STATUS=Good;
+	EnableBunch=64;
 	CONFIG=7637.103.config.dat;
 
 [7639.001]
@@ -800,7 +803,7 @@
 [7640.006]
 	// bunch 21 is 10 times hotter than other bunches.
 	DisableBunch=21;
-	RUN_STATUS=Recovered;
+	RUN_STATUS=Suspicious;
 
 [7640.011]
 	EnableBunch=21;
@@ -1678,12 +1681,60 @@
 
 [7772.001]
 	RUN_STATUS=Good;
+	COMMENT="";
+
+[7772.002]
+	RUN_STATUS=Suspicious;	
+	COMMENT="Several parts of Bunchcrossing are outstanding.";
+	
+[7780.001]
+	CONFIG=7780.001.config.dat;
+
+[7780.002]
+	CONFIG=7780.002.config.dat;
+
+[7781.001]
+	CONFIG=7781.001.config.dat;
 	
 [7781.101]
 	RUN_STATUS=Suspicious;
+	CONFIG=7781.101.config.dat;
 	COMMENT="Problem in target motion. Scan stopped half way thru the beam";
 
 [7781.103]
 	RUN_STATUS=Good;
 	COMMENT="Target problem fixed.";
+
+[7781.104]
+	COMMENT="";
+
+[7781.106]
+	CONFIG=7781.106.config.dat;
+
+
+[7785.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+	CONFIG=7785.001.config.dat;
+
+
+[7785.002]
+	CONFIG=7785.002.config.dat;
+
+[7786.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange structure in WCM and Bunch Crossing Dist.";
+
+[7788.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7788.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange structure in WCM and Bunch Crossing Dist.";
+
+
+[7789.001]
+	RUN_STATUS=Good;
+	COMMENT="";
 
