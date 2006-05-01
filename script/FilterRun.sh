@@ -18,14 +18,16 @@ helpmenu() {
     COMMAND=`basename $0`
 
     echo    " "
-    echo -e " $COMMAND [-dhm][-n <#>][-p <phi>]\n";
+    echo -e " $COMMAND [-dhm][-f <filename>][-n <#>][-p <phi>]\n";
     echo    "    : List runs matches with conditions defined by options. ";
     echo    " "
-    echo -e "   -h           Show this help file";
-    echo -e "   -d           Dump list into anom.list"
-    echo -e "   -n <#>       Finds runs onlineP-offlineP greater than <#> [%] in absolute scale.[def]:$B";
-    echo -e "   -p <phi>     Finds runs Dphi > abs(<phi>) [degrees] ";
-    echo -e "   -m           Updates the mkDB.txt database first (this will take some time)";
+    echo -e "   -h             Show this help file";
+    echo -e "   -d             Dump list into anom.list";
+    echo -e "   -f <filename>  Filters the list using <filename> as database";
+    echo -e "                  Default is testlist.txt"
+    echo -e "   -n <#>         Finds runs onlineP-offlineP greater than <#> [%] in absolute scale.[def]:$B";
+    echo -e "   -p <phi>       Finds runs Dphi > abs(<phi>) [degrees] ";
+    echo -e "   -m             Updates the mkDB.txt database first (this will take some time)";
     echo    " ";
     echo    " ";
     exit;
@@ -73,9 +75,10 @@ AwkPhiRuns() {
 #############################################################################
 
 
-while getopts n:p:dhm opt
+while getopts f:n:p:dhm opt
 do
   case "$opt" in
+      f) INF="$OPTARG" ;;
       n) B="$OPTARG" ;;
       d) DUMP=1 ;;
       h) helpmenu ;;
