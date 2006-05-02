@@ -83,6 +83,7 @@ while test $# -ne 0; do
 done
 
 
+protect.pl -f $RUNID -u;
 
 if [ $ExeUpdateStatus -eq 1 ]; then
     UpdateStatus;
