@@ -217,7 +217,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
 // Method name : DlayerPlot
 //
 // Description : 
-// Input       : 
+// Input       : Char_t *Beam, Int_t Mode
 // Return      : 
 //
 Int_t 
@@ -268,15 +268,17 @@ DlayerMonitor::DlayerPlot(Char_t *Beam, Int_t Mode){
 Int_t 
 DlayerMonitor::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
+
   DlayerPlot("Blue",Mode);
   CurC -> Update();
   frame->Delete();
 
   ps->NewPage();
+
   DlayerPlot("Yellow",Mode);
   CurC -> Update();
   if (Mode!=40) frame->Delete();
-  
+
   return 0;
     
 }
@@ -295,6 +297,7 @@ Int_t
 DlayerMonitor::DlayerMonitor()
 {
 
+
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
     CurC -> SetGridy();
@@ -311,7 +314,9 @@ DlayerMonitor::DlayerMonitor()
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
-    
+
+    //   gSystem->Exec("gv ps/dLmonitor.ps");
+
     return 0;
 
 }
