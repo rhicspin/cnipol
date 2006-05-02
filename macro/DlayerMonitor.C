@@ -134,6 +134,18 @@ DlayerMonitor::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 40:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DeltaT0, dx, dy);
     break;
+  case 50:
+    TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, AveT0, dx, dy);
+    break;
+  case 60:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, ReadRate, dx, dy);
+    break;
+  case 100:
+    TGraphErrors* tgae = new TGraphErrors(ndata, AveT0, Dl, dx, DlE);
+    break;
+  case 101:
+    TGraphErrors* tgae = new TGraphErrors(ndata, AveT0, Dl, dx, DlE);
+    break;
   }
 
     tgae -> SetMarkerStyle(Mtyp);
@@ -197,6 +209,35 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"Delta_t0 [ns]");
     sprintf(title," Delta_t0 History (%s)",Beam);
+    break;
+  case 50:
+    xmin=0.0 ; xmax=1.5;
+    ymin=-20  ; ymax=0;
+    sprintf(xtitle,"Event Rate [MHz]");
+    sprintf(ytitle,"t0 Average [ns]");
+    sprintf(title," t0 Average Rate Dependence (%s)",Beam);
+    break;
+  case 60:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=0.0 ; ymax=1.5;
+    sprintf(ytitle,"Event Rate [MHz]");
+    sprintf(xtitle,"Fill Number");
+    sprintf(title," Event Rate History",Beam);
+    break;
+  case 100:
+    GetScale(AveT0, ndata, margin, xmin, xmax);
+    ymin=60; ymax=75;
+    sprintf(xtitle,"t0 Average [ns]");
+    sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
+    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
+    break;
+  case 101:
+    xmin=-20 ; xmax=-14;
+    if (Beam=="Blue") {xmin=-16; xmax=-10;}
+    ymin=58; ymax=80;
+    sprintf(xtitle,"t0 Average [ns]");
+    sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
+    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     break;
   }
 
@@ -277,7 +318,7 @@ DlayerMonitor::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
   DlayerPlot("Yellow",Mode);
   CurC -> Update();
-  if (Mode!=40) frame->Delete();
+  if (Mode!=101) frame->Delete();
 
   return 0;
     
@@ -304,18 +345,22 @@ DlayerMonitor::DlayerMonitor()
 
     // postscript file
     Char_t psfile[100];
-    sprintf(psfile,"ps/dLmonitor.ps");
+    sprintf(psfile,"ps/DlayerMonitor.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    BlueAndYellowBeams(10, CurC, ps);
-    BlueAndYellowBeams(20, CurC, ps);
-    BlueAndYellowBeams(30, CurC, ps);
-    BlueAndYellowBeams(40, CurC, ps);
+    BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
+    BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
+    BlueAndYellowBeams(30, CurC, ps);   // Fill vs. Average t0
+    BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
+    BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
+    BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
+    BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
+    BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
 
-    //   gSystem->Exec("gv ps/dLmonitor.ps");
+    gSystem->Exec("gv ps/DlayerMonitor.ps");
 
     return 0;
 
