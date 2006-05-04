@@ -470,7 +470,10 @@
 	CONFIG=7596.002.config.dat;
 	
 [7596.101]
-	RUN_STATUS=Suspicious;
+	COMMENT="Significantly large faulse asymmetry in bunch 71";
+	RUN_STATUS=Recovered;
+	DisableBunch=71;
+
 
 [7597.001]
 	// noise is gone.
@@ -485,6 +488,7 @@
 
 [7597.101]
 	RUN_STATUS=Good;
+	EnableBunch=71;
 
 
 [7602.001]
@@ -716,10 +720,43 @@
 	TSHIFT=-2;
 
 [7630.105]
+
+[7630.004]
+	CONFIG=7630.004.config.dat;
+
+[7630.101]
+	CONFIG=7630.101.config.dat;
+
+[7630.103]
+	TSHIFT=-2;
+
+[7630.105]
 	TSHIFT=0;
 	CONFIG=7630.105.config.dat;
 
 [7633.001]
+
+[7630.004]
+	CONFIG=7630.004.config.dat;
+
+[7630.101]
+	CONFIG=7630.101.config.dat;
+
+[7630.103]
+	TSHIFT=-2;
+
+[7630.105]
+
+[7630.004]
+	CONFIG=7630.004.config.dat;
+
+[7630.101]
+	CONFIG=7630.101.config.dat;
+
+[7630.103]
+	TSHIFT=-2;
+
+[7630.105]
 	RUN_STATUS=Good;
 	CONFIG=7633.001.config.dat;
 
@@ -960,6 +997,7 @@
 
 [7655.101]
 	CONFIG=7655.101.config.dat;
+	COMMENT="";
 
 [7655.102]
 	CONFIG=7655.102.config.dat;
@@ -1043,6 +1081,14 @@
 [7671.113]
 	RUN_STATUS=Good;
 	CONFIG=7671.113.config.dat;
+
+[7671.119]
+	RUN_STATUS=Good;
+	CONFIG=7671.119.config.dat;
+
+[7671.120]
+	RUN_STATUS=Junk;
+	COMMENT="Small Data size";
 
 [7672.001]
 	//huge time shift, don't know why.
@@ -1687,6 +1733,34 @@
 	RUN_STATUS=Suspicious;	
 	COMMENT="Several parts of Bunchcrossing are outstanding.";
 	
+[7772.101]		
+	RUN_STATUS=Good;	
+
+[7772.102]	
+	RUN_STATUS=Good;	
+	CONFIG=7772.102.config.dat;
+
+[7772.103]	
+	RUN_STATUS=Suspicious;
+	COMMENT="Several parts of Bunchcrossing are outstanding.";			
+	CONFIG=7772.103.config.dat;
+
+[7775.001]	
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7775.003]
+	RUN_STATUS=Suspicious;	
+	COMMENT="The profile scan is wide.";
+
+[7775.101]
+	RUN_STATUS=Junk;	
+	COMMENT="Becouse the profile scan is imcopleted and date size is about 12kB.";	
+	
+[7775.102]
+	RUN_STATUS=Junk;	
+	COMMENT="The date size is about 12kB.";	
+
 [7780.001]
 	CONFIG=7780.001.config.dat;
 
@@ -1737,4 +1811,98 @@
 [7789.001]
 	RUN_STATUS=Good;
 	COMMENT="";
+
+[7789.104]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through beam.";
+
+[7789.109]
+	RUN_STATUS=Junk;
+
+[7790.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through beam.";
+
+[7790.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7790.106]
+	RUN_STATUS=Junk;
+
+[7790.107]
+	CONFIG=7790.107.config.dat;
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7791.005]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+
+
+[7792.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7792.005]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+
+[7794.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
+[7800.002]
+	RUN_STATUS=Junk;
+	COMMENT="This is where we lost a blue target, from now on we will use target 3";
+
+[7800.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3, wide profile";
+
+[7800.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through the beam";
+
+[7800.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7804.001]
+	CONFIG=7804.001.config.dat;
+	RUN_STATUS=Suspicious;
+	COMMENT="Target 6 is used, and there are problems with the profile scan as well as high backgrounds and other problems.";
+
+[7804.005]
+	RUN_STATUS=Junk;
+
+[7804.006]
+	RUN_STATUS=Junk;
+
+[7804.101]
+	RUN_STATUS=Junk;
+	COMMENT="";
+
+[7804.102]
+	CONFIG=7804.102.config.dat;
+	RUN_STATUS=Good;
+	COMMENT="analyzed by hand";
+
+[7805.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Back to target 3, with its known profile problems";
+
+[7805.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7810.101]
+	RUN_STATUS=Junk;
+	COMMENT="Measurements done with HV tripped off.";
+
+[7810.104]
+	RUN_STATUS=Good;
+	COMMENT="";
+
 
