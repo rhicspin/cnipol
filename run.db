@@ -1897,12 +1897,18 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 
+[7810.001]
+	CONFIG=7810.001.config.dat;
+
 [7810.101]
 	RUN_STATUS=Junk;
 	COMMENT="Measurements done with HV tripped off.";
 
 [7810.104]
-	RUN_STATUS=Good;
-	COMMENT="";
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through, and error checker finds a few bad strips";
 
+[7810.107]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue is resolved, but still some suspicious strips.";
 
