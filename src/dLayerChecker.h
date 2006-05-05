@@ -3,6 +3,11 @@
 #include "Asym.h"
 
 char *datadir;
+char *asymdir;
+
+int fitresult;
+
+bool runfit;
 
 
 //input data files
@@ -21,6 +26,8 @@ recordConfigRhicStruct  cfginfo;
 const unsigned short num_strips=72;
 const unsigned short strips_per_detector=12;
 const unsigned short num_detectors=6;
+
+const float chi2max=20.;
 
 
 //average deadwidth[which file][which detector]
@@ -41,3 +48,4 @@ int MatchBeam(double ThisRunID, double RunID);
 string GetVariables(string str);
 int StripHandler(int, int);
 int FindDisableStrip();
+void checkChi2(char *infile);
