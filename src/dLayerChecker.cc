@@ -15,7 +15,8 @@ int main (int argc, char *argv[])
 {
 	
 	bool optgiven=false;
-	
+	fitresult=0;
+	runfit=false;
 	
 	
 	// for get option
@@ -25,6 +26,7 @@ int main (int argc, char *argv[])
 	
 	
 	datadir = getenv("CONFDIR");
+	asymdir = getenv("ASYMDIR");
 	if ( datadir == NULL )
 	{
 		cerr << "environment CONFDIR is not defined" << endl;
@@ -33,7 +35,7 @@ int main (int argc, char *argv[])
 	
 	
 	
-	while ((c = getopt(argc, argv, "?f:h"))!=-1)
+	while ((c = getopt(argc, argv, "?fz:h"))!=-1)
 	{
 		switch (c)
 		{
@@ -41,7 +43,9 @@ int main (int argc, char *argv[])
 			case '?':
 				cout<<"This program compares the dead layers from two data files"<<endl;
 				cout<<"Usage of " << argv[0] <<endl;
-				cout << " -f <run #>        : input run # " <<endl;
+				cout << " -f <run #>        : check dead layer consitency " <<endl;
+				cout<<"or"<<endl;
+				cout << " -z <run #>        : check dead layer fit status" <<endl;
 				exit(-1);
 			case 'f':
 				sprintf(runid, optarg);
@@ -53,11 +57,35 @@ int main (int argc, char *argv[])
 				fprintf(stdout,"Input config file : %s\n",configfile);
 				optgiven=true;
 				break;
+			case 'z':
+				sprintf(runid, optarg);
+				strcat(configfile, asymdir);
+				strcat(configfile,     "/dlayer/");
+				strcat(configfile,   runid);
+				strcat(configfile,   ".temp.dat");
+				fprintf(stdout,"Input dlayer file : %s\n",configfile);
+				runfit=true;
+				checkChi2(configfile);
+				break;
 			default:
 				fprintf(stdout,"Invalid Option \n");
 				cout<<"run with option -h for help"<<endl;
 				exit(-1);
 		}
+	}
+	
+	
+	if(runfit==true)
+	{
+		if(fitresult==1)
+		{
+			cout<<"dlayer fit is successful"<<endl;
+		}
+		else
+		{
+			cout<<"dlayer fit is NOT successful"<<endl;
+		}
+		return fitresult;
 	}
 	
 	if(optgiven==false)
@@ -426,3 +454,56 @@ int FindDisableStrip()
 }
 
 
+void checkChi2(char *infile)
+{
+	ifstream configFile;
+	fitresult=1;
+
+	configFile.open(infile);
+	
+	if (!configFile) {
+		cerr << "failed to open Config File : " << infile << endl;
+		exit(-1);
+	}
+	
+	char buffer[300];
+	float chi2;
+	char *fitstatus;
+	
+	int stripcount =1;
+	
+	while (stripcount<NSTRIP) {
+        
+		configFile.getline(buffer, sizeof(buffer), '\n'); 
+		
+		strtok(buffer," ");
+		for(short ii=0;ii<7;ii++)
+		{
+			strtok(NULL," ");
+		}
+		chi2=atof(strtok(NULL," "));
+		strtok(NULL," ");
+		fitstatus=strtok(NULL," ");
+		
+		if(chi2>chi2max)
+		{
+			cout<<"chi2 is too large for strip "<<stripcount<<endl;
+			fitresult=0;
+			break;
+		}
+		
+		string ss=fitstatus;
+		
+		if(ss!="SUCCESSFUL")
+		{
+			cout<<fitstatus<<endl;
+			cout<<"fit status not successful for strip "<<stripcount<<endl;
+			fitresult=0;
+			break;
+		}
+		
+		stripcount++;
+	}
+	
+	
+}
