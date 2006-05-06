@@ -25,7 +25,7 @@ AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o As
 	  
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
-dLayerCheckerOBJ = dLayerChecker.o
+dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
 
 BINARY = Asym RunDBReader dLayerChecker
 all: Asym RunDBReader dLayerChecker Host
@@ -47,7 +47,6 @@ AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h
 AsymCalc.o : Asym.h AsymCalc.h WeightedMean.h
 AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
-dLayerChecker.o: Asym.h rhicpol.h rpoldata.h dLayerChecker.h
 
 .C.o:
 	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<

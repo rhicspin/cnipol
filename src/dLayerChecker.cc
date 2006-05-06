@@ -8,6 +8,8 @@
 #include <iostream.h>
 #include <fstream.h>
 
+
+
 #include "dLayerChecker.h"
 
 
@@ -396,62 +398,62 @@ bool isStripAlive(unsigned short strp)
 }
 
 
-int MatchBeam(double ThisRunID, double RunID)
-{
-
-	int match=0;
-
-	int ThisRun = int((ThisRunID-int(ThisRunID))*1e3);
-	int Run     = int((RunID-int(RunID))*1e3);
-
-	if ((ThisRun>=100)&&(Run>=100)) match=1;
-	if ((ThisRun<= 99)&&(Run<=99))  match=1;
-
-	return match;
-}
-
-
-string GetVariables(string str)
-{
-
-	string::size_type begin = str.find("=")+ 1;
-	string::size_type end = str.find(";");
-	string::size_type length = end - begin ;
-
-	string s = str.substr(begin,length);
-	return s;
-
-}
+// int MatchBeam(double ThisRunID, double RunID)
+// {
+// 
+// 	int match=0;
+// 
+// 	int ThisRun = int((ThisRunID-int(ThisRunID))*1e3);
+// 	int Run     = int((RunID-int(RunID))*1e3);
+// 
+// 	if ((ThisRun>=100)&&(Run>=100)) match=1;
+// 	if ((ThisRun<= 99)&&(Run<=99))  match=1;
+// 
+// 	return match;
+// }
 
 
-int StripHandler(int st, int flag)
-{
+// string GetVariables(string str)
+// {
+// 
+// 	string::size_type begin = str.find("=")+ 1;
+// 	string::size_type end = str.find(";");
+// 	string::size_type length = end - begin ;
+// 
+// 	string s = str.substr(begin,length);
+// 	return s;
+// 
+// }
 
-	static int Initiarize = 1;
-	if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
 
-	ProcessStrip[st-1] += flag;
+// int StripHandler(int st, int flag)
+// {
+// 
+// 	static int Initiarize = 1;
+// 	if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
+// 
+// 	ProcessStrip[st-1] += flag;
+// 
+// 	Initiarize=0;
+// 
+// 	return 0;
+// }
 
-	Initiarize=0;
 
-	return 0;
-}
-
-
-int FindDisableStrip()
-{
-
-	int NDisableStrip=0;
-	for (int i=0;i<NSTRIP; i++) {
-		if (ProcessStrip[i]>0) {
-			runinfo.DisableStrip[NDisableStrip] = i;
-			NDisableStrip++;
-		}
-	}
-
-	return NDisableStrip;
-
-}
+// int FindDisableStrip()
+// {
+// 
+// 	int NDisableStrip=0;
+// 	for (int i=0;i<NSTRIP; i++) {
+// 		if (ProcessStrip[i]>0) {
+// 			runinfo.DisableStrip[NDisableStrip] = i;
+// 			NDisableStrip++;
+// 		}
+// 	}
+// 
+// 	return NDisableStrip;
+// 
+// }
 
 
 void checkChi2(char *infile)

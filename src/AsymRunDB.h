@@ -2,7 +2,7 @@
 #define ASYM_RUNDB_H
 
 
-StructRunDB rundb;
+// StructRunDB rundb;
 static int ProcessStrip[NSTRIP];
 static int ProcessBunch[NBUNCH];
 
