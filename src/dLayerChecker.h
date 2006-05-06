@@ -1,6 +1,8 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+#include "AsymMain.h"
+#include "AsymRunDB.h"
 
 char *datadir;
 char *asymdir;
@@ -17,8 +19,7 @@ char configfile2[256];
 char runid[32];
 char runid2[32];
 
-StructRunDB rundb;
-StructRunInfo runinfo;
+
 
 recordConfigRhicStruct  cfginfo;
 
@@ -38,14 +39,9 @@ float tempwidth[num_detectors];
 bool dead_layers_consistent;
 
 
-static int ProcessStrip[NSTRIP];
 
 
 void getPreviousRun(bool thisrun=false); //if thisrun is true, then look at current run instead of previous
 int readDLayer(char *infile);
 bool isStripAlive(unsigned short strp);
-int MatchBeam(double ThisRunID, double RunID);
-string GetVariables(string str);
-int StripHandler(int, int);
-int FindDisableStrip();
 void checkChi2(char *infile);

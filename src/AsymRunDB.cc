@@ -22,6 +22,8 @@ using namespace std;
 #include "AsymRecover.h"
 #include "AsymRunDB.h"
 
+StructRunDB rundb;
+
 
 
 //
