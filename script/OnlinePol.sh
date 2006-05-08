@@ -32,15 +32,17 @@ ShowExample(){
 
 GetOnlinePolarization(){
 
-	
+ TMPDIR=/tmp/cnipol;
+ if [ ! -d $TMPDIR ]; then
+     mkdir $TMPDIR;
+ fi
+
  $MACRODIR/pvector.pl $RunID
  paw -b $MACRODIR/pvect_simple.kumac &> /dev/null;
- echo -e -n "$RunID" > $ASYMDIR/tmp.log
- cat tmp.dat | gawk '{printf("%6.1f%5.1f\n",$1,$2)}' 
-# OnlineP=`cat tmp.dat | gawk '{printf("%6.1f",$1)}'`;
-# OnlinedP=`cat tmp.dat | gawk '{printf("%5.1f",$2)}'`;
- rm -f tmp.dat
- rm -f pvect.dat
+ echo -e -n "$RunID" > $TMPDIR/tmp.log
+ cat $TMPDIR/tmp.dat | gawk '{printf("%6.1f%5.1f\n",$1,$2)}' 
+ rm -f $TMPDIR/tmp.dat
+ rm -f $TMPDIR/pvect.dat
 
 }
 

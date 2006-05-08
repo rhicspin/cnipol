@@ -7,8 +7,8 @@
      plot = $
    endif
    asymdir=$ENV(ASYMDIR)
-   file=[asymdir]/pvect.dat
-   ofile=[asymdir]/tmp.dat
+   file=/tmp/cnipol/pvect.dat
+   ofile=/tmp/cnipol/tmp.dat
 
    v/cre x90p(1) R
    v/cre x90pe(1) R
