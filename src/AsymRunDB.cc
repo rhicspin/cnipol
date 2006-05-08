@@ -63,27 +63,30 @@ readdb(double RUNID) {
       }
     }else{
       if (match){
-	if (str.find("CONFIG")              ==1) rundb.config_file_s         = GetVariables(str);
-	if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
-	if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
-	if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
-	if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
-	if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
-	if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
-	if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
-	if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
-	if (str.find("DisableBunch")        ==1){
-	  rundb.disable_bunch_s     = GetVariables(str);
-	  BunchHandler(atoi(rundb.disable_bunch_s.c_str()), 1);}
-	if (str.find("EnableBunch")        ==1){
-	  rundb.enable_bunch_s     = GetVariables(str);
-	  BunchHandler(atoi(rundb.enable_bunch_s.c_str()),-1);}
-	if (str.find("DisableStrip")        ==1){
-	  rundb.disable_strip_s     = GetVariables(str);
-	  StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
-	if (str.find("EnableStrip")         ==1) {
-	  rundb.enable_strip_s      = GetVariables(str);
-	  StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+	      if(str.find("*")==-1 || RUNID==rundb.RunID) //a "*" after the flag name means only apply the flag to this run
+	      {
+			if (str.find("CONFIG")              ==1) rundb.config_file_s         = GetVariables(str);
+			if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
+			if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
+			if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
+			if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
+			if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
+			if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
+			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
+			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
+			if (str.find("DisableBunch")        ==1){
+			rundb.disable_bunch_s     = GetVariables(str);
+			BunchHandler(atoi(rundb.disable_bunch_s.c_str()), 1);}
+			if (str.find("EnableBunch")        ==1){
+			rundb.enable_bunch_s     = GetVariables(str);
+			BunchHandler(atoi(rundb.enable_bunch_s.c_str()),-1);}
+			if (str.find("DisableStrip")        ==1){
+			rundb.disable_strip_s     = GetVariables(str);
+			StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
+			if (str.find("EnableStrip")         ==1) {
+			rundb.enable_strip_s      = GetVariables(str);
+			StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+	      }
       }
     }
 
