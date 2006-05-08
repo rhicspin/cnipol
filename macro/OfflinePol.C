@@ -12,7 +12,7 @@
 
 #define Debug 0
 
-const Int_t N=1000;
+const Int_t N=2000;
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 
 
@@ -22,11 +22,12 @@ class OfflinePol
 private:
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
   Float_t index[N],dx[N],dy[N];
+  TH2D* frame ;
 
 public:
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
   Int_t DlayerPlot(Char_t*, Int_t);
-  Int_t RunBothBeam(Int_t Mode,  TPostScript ps);
+  Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
@@ -86,12 +87,27 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
     Float_t Fill,ID;
     Float_t dum[10];
+    Char_t buffer[300];
+    Char_t *RunStatus;
     Int_t i=0;
     Int_t ch=0;
-    while (!fin.eof()) {
+    while ( ( ch = fin.peek()) != EOF ) {
+      
+      fin.getline(buffer, sizeof(buffer), '\n'); 
+      // skip header if DATAFILE starts from "==========="
+      if (strstr(buffer,"=====")) {
+	for (int j=0; j<4; j++) fin.getline(buffer, sizeof(buffer), '\n'); 
+      }
 
-      index[i]=i;
-      fin >> RunID[i] >> P_online[i] >> dP_online[i] >> P_offline[i] >> dP_offline[i];
+      // main read-in routine
+      RunID[i]     = atof(strtok(buffer," "));
+      P_online[i]  = atof(strtok(NULL," "));
+      dP_online[i] = atof(strtok(NULL," "));
+      RunStatus    = strtok(NULL," ");
+      for (int k=0; k<6; k++) strtok(NULL, " ");
+      P_offline[i]  = atof(strtok(NULL," "));
+      dP_offline[i] = atof(strtok(NULL," "));
+
       ++i; dx[i]=dy[i]=0;
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
@@ -105,6 +121,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
     return i-1;
 
 }
+
 
 //
 // Class name  : Offline
@@ -180,7 +197,7 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
 
   Char_t title[100];
   sprintf(title,"Polarization (%s)",Beam);
-  TH2D* frame = new TH2D(Beam,title, 10, xmin, xmax, 10, ymin, ymax);
+  frame = new TH2D(Beam,title, 10, xmin, xmax, 10, ymin, ymax);
   frame -> SetStats(0);
   frame -> GetXaxis()->SetTitle(xtitle);
   frame -> GetYaxis()->SetTitle(ytitle);
@@ -203,10 +220,9 @@ Int_t
 OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
 
   Int_t Color = Beam == "Blue" ? 4 : 94 ;
-  Color=4;
 
   Char_t DATAFILE[256];
-  sprintf(DATAFILE,"%s.dat",Beam);
+  sprintf(DATAFILE,"summary/OfflinePol_%s.dat",Beam);
   Int_t ndata = GetData(DATAFILE);
   DrawFrame(Mode, ndata, Beam);
 
@@ -230,13 +246,15 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
 // Return      : 
 //
 Int_t 
-OfflinePol::RunBothBeam(Int_t Mode, TPostScript ps){
+OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
   DlayerPlot("Blue",10);
   CurC -> Update();
-   
-  ps.NewPage();
+  frame->Delete();
+
+  ps->NewPage();
+
   DlayerPlot("Yellow",10);
   CurC -> Update();
 
@@ -259,27 +277,22 @@ OfflinePol::OfflinePol()
 {
 
 
-    // postscript file
-    Char_t psfile[100];
-    Char_t Beam[20]="Blue";
-    sprintf(psfile,"ps/offline_%s.ps",Beam);
-    TPostScript ps(psfile,112);
-
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
     CurC -> SetGridy();
 
-    DlayerPlot(Beam,10);
-    CurC -> Update();
-   
-    //  ps.NewPage();
-    //  DlayerPlot("Yellow",10);
-    CurC -> Update();
-  //    RunBothBeam(10, ps);
+    // postscript file
+    Char_t psfile[100];
+    sprintf(psfile,"ps/OfflinePol.ps");
+    TPostScript *ps = new TPostScript(psfile,112);
+
+    RunBothBeam(10, CurC, ps);
 
     cout << "ps file : " << psfile << endl;
-    ps.Close();
+    ps->Close();
     
+    gSystem->Exec("gv ps/OfflinePol.ps");
+
     return 0;
 
 }
