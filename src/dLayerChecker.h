@@ -5,7 +5,7 @@
 #include "AsymRunDB.h"
 
 char *datadir;
-char *asymdir;
+char *sharedir;
 
 int fitresult;
 
