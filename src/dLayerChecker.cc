@@ -37,7 +37,7 @@ int main (int argc, char *argv[])
 	
 	
 	
-	while ((c = getopt(argc, argv, "?fz:h"))!=-1)
+	while ((c = getopt(argc, argv, "?f:z:h"))!=-1)
 	{
 		switch (c)
 		{
@@ -224,6 +224,8 @@ void getPreviousRun(bool thisrun)
 			}
 		}else{
 			if (match){
+				if(str.find("*")==-1 || RUNID==rundb.RunID)
+				{
 				if (str.find("CONFIG")              ==1) {rundb.config_file_s         = GetVariables(str);}
 				if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
 				if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
@@ -239,6 +241,7 @@ void getPreviousRun(bool thisrun)
 					if (str.find("EnableStrip")         ==1) {
 						rundb.enable_strip_s      = GetVariables(str);
 						StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+				}
 			}
 		}
 
@@ -266,11 +269,8 @@ int readDLayer(char *infile)
 	
 	int st,strip;
 	float t0,acoef,edead,ecoef,A0,A1,iasigma;
-
-	fprintf(stdout,"**********************************\n");
-	fprintf(stdout,"** Configuration is overwritten **\n");
-	fprintf(stdout,"**********************************\n");
-
+	
+	
 	ifstream configFile;
 
 	configFile.open(infile);
@@ -320,32 +320,6 @@ int readDLayer(char *infile)
 			deadwidth[stripn-1]=dwidthn;
 			
 			
-			
-
-// 			cfginfo.data.chan[stripn-1].edead = edeadn;
-// 			cfginfo.data.chan[stripn-1].ecoef = ecn;
-// 			cfginfo.data.chan[stripn-1].t0 = t0n;
-// 			cfginfo.data.chan[stripn-1].A0 = a0n;
-// 			cfginfo.data.chan[stripn-1].A1 = a1n;
-// 			cfginfo.data.chan[stripn-1].acoef = ealphn;
-// 			cfginfo.data.chan[stripn-1].dwidth = dwidthn;
-// 			cfginfo.data.chan[stripn-1].pede = peden;
-// 			cfginfo.data.chan[stripn-1].C[0] = c0n;
-// 			cfginfo.data.chan[stripn-1].C[1] = c1n;
-// 			cfginfo.data.chan[stripn-1].C[2] = c2n;
-// 			cfginfo.data.chan[stripn-1].C[3] = c3n;
-// 			cfginfo.data.chan[stripn-1].C[4] = c4n;
-// 			
-// 			cout<<"wrote to cfginfo"<<endl;
-
-// 			cout << " Strip " << stripn;
-// 			cout << " Ecoef " << ecn;
-// 			cout << " T0 " << t0n;
-// 			cout << " A0 " << a0n;
-// 			cout << " A1 " << a1n;
-// 			cout << " Acoef " << ealphn;
-// 			cout << " Dwidth " << dwidthn;
-// 			cout << " Pedestal " << peden << endl;
 		}
         
 		linen ++;
@@ -398,62 +372,6 @@ bool isStripAlive(unsigned short strp)
 }
 
 
-// int MatchBeam(double ThisRunID, double RunID)
-// {
-// 
-// 	int match=0;
-// 
-// 	int ThisRun = int((ThisRunID-int(ThisRunID))*1e3);
-// 	int Run     = int((RunID-int(RunID))*1e3);
-// 
-// 	if ((ThisRun>=100)&&(Run>=100)) match=1;
-// 	if ((ThisRun<= 99)&&(Run<=99))  match=1;
-// 
-// 	return match;
-// }
-
-
-// string GetVariables(string str)
-// {
-// 
-// 	string::size_type begin = str.find("=")+ 1;
-// 	string::size_type end = str.find(";");
-// 	string::size_type length = end - begin ;
-// 
-// 	string s = str.substr(begin,length);
-// 	return s;
-// 
-// }
-
-
-// int StripHandler(int st, int flag)
-// {
-// 
-// 	static int Initiarize = 1;
-// 	if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
-// 
-// 	ProcessStrip[st-1] += flag;
-// 
-// 	Initiarize=0;
-// 
-// 	return 0;
-// }
-
-
-// int FindDisableStrip()
-// {
-// 
-// 	int NDisableStrip=0;
-// 	for (int i=0;i<NSTRIP; i++) {
-// 		if (ProcessStrip[i]>0) {
-// 			runinfo.DisableStrip[NDisableStrip] = i;
-// 			NDisableStrip++;
-// 		}
-// 	}
-// 
-// 	return NDisableStrip;
-// 
-// }
 
 
 void checkChi2(char *infile)
