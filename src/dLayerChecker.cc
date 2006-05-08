@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
 	
 	
 	datadir = getenv("CONFDIR");
-	asymdir = getenv("ASYMDIR");
+	sharedir = getenv("SHAREDIR");
 	if ( datadir == NULL )
 	{
 		cerr << "environment CONFDIR is not defined" << endl;
@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 				break;
 			case 'z':
 				sprintf(runid, optarg);
-				strcat(configfile, asymdir);
+				strcat(configfile, sharedir);
 				strcat(configfile,     "/dlayer/");
 				strcat(configfile,   runid);
 				strcat(configfile,   ".temp.dat");
