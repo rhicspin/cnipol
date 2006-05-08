@@ -63,7 +63,7 @@ readdb(double RUNID) {
       }
     }else{
       if (match){
-	      if(str.find("*")==-1 || RUNID==rundb.RunID) //a "*" after the flag name means only apply the flag to this run
+	      if(str.find("*=")==-1 || RUNID==rundb.RunID) //a "*" after the flag name means only apply the flag to this run
 	      {
 			if (str.find("CONFIG")              ==1) rundb.config_file_s         = GetVariables(str);
 			if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
