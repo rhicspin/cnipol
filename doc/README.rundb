@@ -40,6 +40,21 @@ o Syntax and rules:
 
 	Then it will pick up INJ_TSHIFT=8, not 7.
 	
+	The exception to this is if you include "*" at the end of the parameter name.  In 
+	that case the parameter only applies to the given run.
+	
+	so If you are analyzing run=7605.104 and entries are:
+	
+	[7605.101]
+        	INJ_TSHIFT=8;
+
+	[7605.103]
+	        INJ_TSHIFT*=7;
+	        
+	 [7605.104]
+	
+	then it will pick up INJ_TSHIFT=8, not 7.
+	
    2)	Thus the program assumes the previously defined parameters unless
 	it is overwritten by further entries before the run you analyze.
 	Some parameters you may want to *initiarize* to defaults, because
