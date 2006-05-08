@@ -376,13 +376,13 @@ bool isStripAlive(unsigned short strp)
 
 void checkChi2(char *infile)
 {
-	ifstream configFile;
+	ifstream DlayerFile;
 	fitresult=1;
 
-	configFile.open(infile);
+	DlayerFile.open(infile);
 	
-	if (!configFile) {
-		cerr << "failed to open Config File : " << infile << endl;
+	if (!DlayerFile) {
+		cerr << "failed to open DlayerFit File : " << infile << endl;
 		exit(-1);
 	}
 	
@@ -394,7 +394,7 @@ void checkChi2(char *infile)
 	
 	while (stripcount<NSTRIP) {
         
-		configFile.getline(buffer, sizeof(buffer), '\n'); 
+		DlayerFile.getline(buffer, sizeof(buffer), '\n'); 
 		
 		strtok(buffer," ");
 		for(short ii=0;ii<7;ii++)
