@@ -149,13 +149,18 @@ ShowIndex(){
 
 GetOnlinePolarization(){
 
+ TMPDIR=/tmp/cnipol;
+ if [ ! -d $TMPDIR ]; then
+     mkdir $TMPDIR;
+ fi
+
  $MACRODIR/pvector.pl $RunID
  export RUN=$RunID;
  paw -b $MACRODIR/pvect_simple.kumac &> /dev/null
- OnlineP=`cat tmp.dat | gawk '{printf("%7.1f",$1)}'`;
- OnlinedP=`cat tmp.dat | gawk '{printf("%5.1f",$2)}'`;
- rm -f tmp.dat
- rm -f pvect.dat
+ OnlineP=`cat $TMPDIR/tmp.dat | gawk '{printf("%7.1f",$1)}'`;
+ OnlinedP=`cat $TMPDIR/tmp.dat | gawk '{printf("%5.1f",$2)}'`;
+ rm -f $TMPDIR/tmp.dat
+ rm -f $TMPDIR/pvect.dat
 
 }
 
