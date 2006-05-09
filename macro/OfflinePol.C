@@ -80,6 +80,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
                  
     ifstream fin;
     fin.open(DATAFILE,ios::in);
+    printf("datafile=%s\n",DATAFILE);
+
     if (fin.fail()){
         cerr << "ERROR: " << DATAFILE << " doesn't exist. Force exit." << endl;
         exit(-1);
@@ -227,11 +229,8 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   DrawFrame(Mode, ndata, Beam);
 
   TLegend * aLegend = new TLegend(0.7,0.15,0.85,0.3);
-  Plot(Mode, ndata, 24, "Online", Color, aLegend);
-
-  Int_t ndata = GetData(DATAFILE);
+  Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
   Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
-
 
   return 0;
 
