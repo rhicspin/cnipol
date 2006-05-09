@@ -60,8 +60,12 @@ ShowExample(){
 #############################################################################
 MakeAnalyzedRunList(){
 
-  TMPLIST="tmp.list";
+  TMPDIR=/tmp/cnipol;
+  if [ ! -d $TMPDIR ]; then
+      mkdir $TMPDIR;
+  fi
 
+  TMPLIST="$TMPDIR/tmp.list";
   if [ -f $TMPLIST ] ; then
       rm -f $TMPLIST;
   fi
@@ -272,6 +276,17 @@ done
 }
 
 
+#############################################################################
+#                                    Main                                   #
+#############################################################################
+Switch(){
+    touch $ASYMDIR 2>/dev/null;
+    if [ $? -eq 1 ] ; then
+	ANALYZED_RUN_LIST="./analyzed_run.list"
+    fi
+
+}
+
 
 #############################################################################
 #                                    Main                                   #
@@ -301,6 +316,7 @@ done
 
 
 if [  $ExeAnalyzedRunList -eq 1 ] ; then
+    Switch;
     MakeAnalyzedRunList;
 fi
 if [ $ExeMakeDatabase -eq 1 ] ; then
