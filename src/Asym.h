@@ -37,7 +37,7 @@ using namespace std;      //declare string in structure
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
 #define TGT_STEP 0.11              // target motion [mm]/step
 #define TGT_COUNT_MM 0.1           // target [count] -> [mm]
-const int TGT_OPERATION=3;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
+const int TGT_OPERATION=6;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
 
 // whole info for one event
 typedef struct {
