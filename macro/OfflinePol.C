@@ -25,6 +25,7 @@ private:
   TH2D* frame ;
 
 public:
+  void Initiarization(Int_t);
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
   Int_t DlayerPlot(Char_t*, Int_t);
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
@@ -34,6 +35,33 @@ public:
 
 
 }; // end-class Offline
+
+
+//
+// Class name  : 
+// Method name : void Initiarization()
+//
+// Description : Initiarize Array
+// Input       : 
+// Return      : 
+//
+void Initiarization(Int_t i){
+  
+  cout << i << endl;
+  RunID[i]=0;
+  P_online[i]=0;
+  dP_online[i]=0;
+  P_offline[i]=0;
+  dP_offline[i]=0;
+  index[i]=0;
+  dx[i]=0;
+  dy[i]=0;
+  
+  return;
+
+}
+
+
 
 
 //
@@ -100,17 +128,20 @@ OfflinePol::GetData(Char_t * DATAFILE){
       if (strstr(buffer,"=====")) {
 	for (int j=0; j<4; j++) fin.getline(buffer, sizeof(buffer), '\n'); 
       }
+      //Initiarization(i);
 
       // main read-in routine
       RunID[i]     = atof(strtok(buffer," "));
       P_online[i]  = atof(strtok(NULL," "));
       dP_online[i] = atof(strtok(NULL," "));
       RunStatus    = strtok(NULL," ");
-      for (int k=0; k<6; k++) strtok(NULL, " ");
-      P_offline[i]  = atof(strtok(NULL," "));
-      dP_offline[i] = atof(strtok(NULL," "));
+      if (strcmp(RunStatus,"Junk")){
+	for (int k=0; k<6; k++) strtok(NULL, " ");
+	P_offline[i]  = atof(strtok(NULL," "));
+	dP_offline[i] = atof(strtok(NULL," "));
+      }
 
-      ++i; dx[i]=dy[i]=0;
+      ++i; 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
