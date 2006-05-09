@@ -54,17 +54,17 @@ macro main run='-1' nowait='-1'
    v/cre MCNT(6) R
    v/cre an(1) R
    
-   v/read x90p,x90pe pvect.dat OPT='O'
-   v/read x45p,x45pe pvect.dat OPT=' '
-   v/read y45p,y45pe pvect.dat OPT=' '
-   v/read c45p,c45pe pvect.dat OPT=' '
-   v/read c14p,c14pe pvect.dat OPT=' '
-   v/read c36p,c36pe pvect.dat OPT=' '
-   v/read xchp,xchpe pvect.dat OPT=' '
-   v/read ychp,ychpe pvect.dat OPT=' '
-   v/read an pvect.dat OPT=' '
-   v/read pcnt pvect.dat OPT=' '
-   v/read mcnt pvect.dat OPT='C'
+   v/read x90p,x90pe /tmp/cnipol/pvect.dat OPT='O'
+   v/read x45p,x45pe /tmp/cnipol/pvect.dat OPT=' '
+   v/read y45p,y45pe /tmp/cnipol/pvect.dat OPT=' '
+   v/read c45p,c45pe /tmp/cnipol/pvect.dat OPT=' '
+   v/read c14p,c14pe /tmp/cnipol/pvect.dat OPT=' '
+   v/read c36p,c36pe /tmp/cnipol/pvect.dat OPT=' '
+   v/read xchp,xchpe /tmp/cnipol/pvect.dat OPT=' '
+   v/read ychp,ychpe /tmp/cnipol/pvect.dat OPT=' '
+   v/read an /tmp/cnipol/pvect.dat OPT=' '
+   v/read pcnt /tmp/cnipol/pvect.dat OPT=' '
+   v/read mcnt /tmp/cnipol/pvect.dat OPT='C'
    zone 1 2 
    v/cre angle(6) R 45. 90. 135. 225. 270. 315.
    v/cre ratio(6) R
@@ -299,7 +299,7 @@ c
 
    close 60 
    mess psfile=[psfile]
-   sh rm -f pvect.dat
+   sh rm -f /tmp/cnipol/pvect.dat
    if [nowait]<0 then
      wait
    endif
