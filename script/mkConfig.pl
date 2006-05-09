@@ -44,7 +44,7 @@ sub help(){
     print " Usage:\n  $0 -hDIpb [ -f <runID>]\n\n"; 
     print "\t -f <runID> runID\n";
     print "\t -D         Execute deadlayer fit\n";
-    print "\t -p         Publish configulation data file to $CONFDIR\n";
+    print "\t -p         Publish deadlayer & configulation files to $SHAREDIR.\n";
     print "\t -b         Banana cut event selection on deadlayer fit.\n";
     print "\t            (used with -D option)\n";
     print "\t -I         Execute Integral Fit [def]:off\n";
