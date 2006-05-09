@@ -21,6 +21,7 @@ class OfflinePol
 
 private:
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
+  Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],SpeLumi[N],DiffP[N];
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
 
@@ -118,7 +119,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
     Float_t Fill,ID;
     Float_t dum[10];
     Char_t buffer[300];
-    Char_t *RunStatus;
+    Char_t *RunStatus, *target, *tgtOp;
     Int_t i=0;
     Int_t ch=0;
     while ( ( ch = fin.peek()) != EOF ) {
@@ -139,6 +140,15 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	for (int k=0; k<6; k++) strtok(NULL, " ");
 	P_offline[i]  = atof(strtok(NULL," "));
 	dP_offline[i] = atof(strtok(NULL," "));
+	phi[i]        = atof(strtok(NULL," "));
+	dphi[i]       = atof(strtok(NULL," "));
+	chi2[i]       = atof(strtok(NULL," "));
+	A_N[i]        = atof(strtok(NULL," "));
+	target        = strtok(NULL," ");
+	tgtOp         = strtok(NULL," ");
+	Rate[i]       = atof(strtok(NULL," "));
+	SpeLumi[i]    = atof(strtok(NULL," "));
+	DiffP[i]      = atof(strtok(NULL," "));
       }
 
       ++i; 
@@ -180,6 +190,9 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
     break;
   case 25:
     TGraphErrors* tgae = new TGraphErrors(ndata, index, P_offline, dx, dP_offline);
+    break;
+  case 50:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DiffP, dx, dy);
     break;
   }
 
@@ -226,6 +239,12 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     Char_t xtitle[100]="Index";
     Char_t ytitle[100]="Polarization [%]";
     break;
+  case 50:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=-10; ymax=10;
+    Char_t xtitle[100]="Index";
+    Char_t ytitle[100]="P_online-P_offline";
+    break;
   }
 
   Char_t title[100];
@@ -260,8 +279,16 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   DrawFrame(Mode, ndata, Beam);
 
   TLegend * aLegend = new TLegend(0.7,0.15,0.85,0.3);
-  Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
-  Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
+
+  switch (Mode) {
+  case 10:
+      Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
+      Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
+      break;
+  case 50:
+      Plot(Mode,    ndata, 20, "Online",  Color, aLegend);
+      break;
+  }
 
   return 0;
 
@@ -279,13 +306,13 @@ Int_t
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
-  DlayerPlot("Blue",10);
+  DlayerPlot("Blue",Mode);
   CurC -> Update();
   frame->Delete();
 
   ps->NewPage();
 
-  DlayerPlot("Yellow",10);
+  DlayerPlot("Yellow",Mode);
   CurC -> Update();
 
   return 0;
@@ -316,7 +343,8 @@ OfflinePol::OfflinePol()
     sprintf(psfile,"ps/OfflinePol.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    RunBothBeam(10, CurC, ps);
+    RunBothBeam(10, CurC, ps); // onlineP and offlineP vs. RunID
+    RunBothBeam(50, CurC, ps); 
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
