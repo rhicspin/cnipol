@@ -91,7 +91,7 @@ DOCUMENTAIONS
 
 Set up environment and install executables and macros.
 
-1. Environmental variables (in bash format)
+1. Environmental variables (in bash format) copy & paste in your ~/.bashrc
 
 	# define path to root of your system
 	export ROOTSYS=/usr/local/cern/root
@@ -103,8 +103,12 @@ Set up environment and install executables and macros.
 	export SHAREDIR=$CNILIB/share
 	export CONFDIR=$SHAREDIR/config
 	export CALIBDIR=$SHAREDIR/calib
+
 	# working directory
 	export ASYMDIR=$HOME/offline
+
+	# temporary output directory
+	export TMPDIR=/tmp/cnipol
 
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin
@@ -112,9 +116,16 @@ Set up environment and install executables and macros.
 #    for developers use followings instead of above two lines
 #	export INSTALLDIR=$SHAREDIR/bin
 #	export MACRODIR=$SHAREDIR/macro
+#	export CNI_EXPERT=1;
 
 	export PATH=$INSTALLDIR:$PATH
 	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
+
+	if [ ! -d $TMPDIR ] ; then
+	    mkdir $TMPDIR
+	    chmod 777 $TMPDIR
+	    echo "Create $TMPDIR";
+	fi
 
 
 2. Make and install src files:
