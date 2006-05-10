@@ -395,7 +395,6 @@
 
 [7568.006]
 	RUN_STATUS=Junk;
-	CONFIG=7568.006.config.dat;
 
 [7568.007]
 	RUN_STATUS=Suspicious;
@@ -1176,7 +1175,8 @@
 	CONFIG=7673.111.config.dat;
 
 [7673.113]
-	RUN_STATUS=Good;
+	RUN_STATUS=Suspicious;
+	COMMENT="only 4 million carbons?  perhaps low statistics? And profile scan does not make it all the way through beam.";
 	CONFIG=7673.113.config.dat;
 
 [7673.116]
@@ -1207,9 +1207,11 @@
 	DisableStrip=59;
 	DisableStrip=60;
 	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips.";
 
 [7673.117]
 	RUN_STATUS=Junk;
+	COMMENT="";
 
 [7673.118]
 	RUN_STATUS=Suspicious;
@@ -1912,3 +1914,113 @@
 	RUN_STATUS=Suspicious;
 	COMMENT="Profile issue is resolved, but still some suspicious strips.";
 
+[7811.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through, and error checker finds suspicious strips.";
+
+[7817.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus suspicious strips";
+
+[7817.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7817.102]
+	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips";
+
+
+[7820.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus some suspicious strips.";
+
+[7820.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7823.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus some suspicious strips.";
+
+[7824.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus some suspicious strips.";
+
+[7823.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through beam and suspicious strips.";
+
+[7823.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7824.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through beam.";
+
+[7824.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7824.104]
+	RUN_STATUS=Suspicious;
+	COMMENT="Some bad strips";
+
+[7825.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus some suspicious strips.";
+
+[7825.103]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7825.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips";
+
+
+[7826.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3, plus now there are many suspicious strips";
+
+[7826.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
+[7830.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3, plus suspicious strips.";
+
+[7830.005]
+	RUN_STATUS=Suspicious;
+	COMMENT*="Target-3, plus suspicious strips, analyzed by hand.";
+
+[7830.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan only goes halfway through beam.";
+
+[7830.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7830.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile scan does not make it all the way through beam.";
+
+[7830.105]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7831.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus suspicious strips.";
+
+[7831.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile scan does not make it all the way through beam.";
+
+[7831.102]
+	RUN_STATUS=Good;
+	COMMENT="";
