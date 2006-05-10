@@ -151,7 +151,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	DiffP[i]      = atof(strtok(NULL," "));
       }
 
-      ++i; 
+      index[i]=i; ++i; 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
@@ -285,6 +285,10 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
       break;
+  case 15:
+      Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
+      Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
+      break;
   case 50:
       Plot(Mode,    ndata, 20, "Online",  Color, aLegend);
       break;
@@ -344,6 +348,7 @@ OfflinePol::OfflinePol()
     TPostScript *ps = new TPostScript(psfile,112);
 
     RunBothBeam(10, CurC, ps); // onlineP and offlineP vs. RunID
+    RunBothBeam(15, CurC, ps); // onlineP and offlineP vs. index
     RunBothBeam(50, CurC, ps); 
 
     cout << "ps file : " << psfile << endl;
