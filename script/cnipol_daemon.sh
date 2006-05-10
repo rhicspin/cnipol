@@ -141,10 +141,13 @@ RunDlayer(){
 RunAsym(){
 
     dLayerChecker -f $RunID;
-    if [ $? -eq 1 ] ; then
-	nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
-	echo $RunID >> $ANALYZED_RUNLIST_DAEMON
+    if [ $? -eq 0 ] ; then
+	dLayerChecker -z $RunID
+	rundb_updater.pl 
     fi
+
+    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+    echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
 }
 
