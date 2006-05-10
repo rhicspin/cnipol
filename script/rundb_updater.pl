@@ -4,22 +4,14 @@
 
 
 $BASEDIR   = $ENV{"ASYMDIR"};
-$INF       = "$BASEDIR/out.dat";
-$OUTF      = "$BASEDIR/test.dat";
-
-
-#print "hello world \n";
-#print "$INF \n";
-#print "$OUTF \n";
+$TMPDIR    = $ENV{"TMPDIR"};
+$INF       = "$TMPDIR/dLayerChecker.dat";
+$OUTF      = "$BASEDIR/run.db";
 
 open (MYFILE,"$INF");
 open (OTHERFILE, ">>$OUTF");
 
 while (<MYFILE>) {
-#    if (/7\d\d\d.\d\d\d/) {
-#	$_ s/(]@)/ /;
-#	print;
- #   }
     chomp;
     print OTHERFILE "$_\n";
 }
