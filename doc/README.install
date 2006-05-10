@@ -121,13 +121,6 @@ Set up environment and install executables and macros.
 	export PATH=$INSTALLDIR:$PATH
 	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
 
-	if [ ! -d $TMPDIR ] ; then
-	    mkdir $TMPDIR
-	    chmod 777 $TMPDIR
-	    echo "Create $TMPDIR";
-	fi
-
-
 2. Make and install src files:
 	% cd cnipol
 	% source ~/.bashrc
