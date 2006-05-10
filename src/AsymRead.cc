@@ -130,7 +130,6 @@ int readloop() {
 	//=============================================================
 	//                          Main Switch
 	//=============================================================
-
         switch (rec.header.type & REC_TYPEMASK) {
         case REC_BEGIN:
 	  if (!ReadFlag.RECBEGIN){
@@ -324,7 +323,7 @@ int readloop() {
                 exit(-1);
             }
 	  }
-	  exit;
+	 exit;
 
             event.delim = rec.header.timestamp.delim;
             nreadsi = 0;  // number of Si already read
@@ -446,7 +445,19 @@ int readloop() {
             break;
         }
     }
-    //    fprintf(stdout,"End of loop\n");
+
+    //fprintf(stdout,"End of loop after %d events.\n", Nread);
+
+    // Some incompleted run don't even have REC_READAT flag. Force printConfig. 
+    if ((!Nread)&&(!READ_FLAG)) {
+      printConfig(cfginfo); 
+      if (rundb.run_status_s=="Junk") {
+	cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n"; 
+	exit(-1);
+      }
+    }
+
+
     return(0);
 }
 
