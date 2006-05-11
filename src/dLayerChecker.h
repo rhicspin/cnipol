@@ -6,6 +6,8 @@
 
 char *datadir;
 char *sharedir;
+char *tmpdir;
+char ofile[256];
 
 int fitresult;
 
@@ -41,6 +43,7 @@ bool dead_layers_consistent;
 
 
 
+void Usage(char* argv[]);
 void getPreviousRun(bool thisrun=false); //if thisrun is true, then look at current run instead of previous
 int readDLayer(char *infile);
 bool isStripAlive(unsigned short strp);
