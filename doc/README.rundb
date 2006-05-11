@@ -38,7 +38,7 @@ o Syntax and rules:
 	        INJ_TSHIFT=7;
 
 
-	Then it will pick up INJ_TSHIFT=8, not 7.
+	Then it will pick up INJ_TSHIFT=8, not 7. 
 	
 	The exception to this is if you include "*" at the end of the parameter name.  In 
 	that case the parameter only applies to the given run.
@@ -79,8 +79,16 @@ o Syntax and rules:
 	only blue setting when analyzing blue data, and thus igores yellow 
 	setting, vice-versa for yellow data. 
 
+   4)   The indent before keywords has to be given by the tab, not 8 spaces, 
+	just like makefile syntax.
 
-   4)   The syntax is *VERY* tight. Parser is not too smart and therefore
+		COMMENT="";  <-  valid
+	        COMMENT="";  <-  invalid
+
+   5)   Any entries followed by "@" at the end of line is an entry made by 
+	programs, not manually.
+
+   6)   The syntax is *VERY* tight. Parser is not too smart and therefore
 	you have to follow very strict syntax rules.
 
 	Run number lable has to be started from the first column and have
