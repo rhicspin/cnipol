@@ -247,30 +247,49 @@ grepit(){
 #                                grepit()                                   #
 #############################################################################
 MakeDatabase(){
+PROCESS=1;
 
 for f in `cat $DATADIR/raw_data.list` ;
   do
       RunID=$f
       Fill=`echo $RunID | gawk '{printf("%4d",$1)}'`
-#      echo -e -n "$RunID $Fill\n"
-      if [ $Fill -ge $FROM_FILL ]&&[ $Fill -le $TILL_FILL ] ; then
-	  CREW=`grep $RunID $ANALYZED_RUN_LIST | gawk '{print $2}'`
-	  grep $RunID $ANALYZED_RUN_LIST  > /dev/null; 
-	  if [ $? == 0 ] ; then
-	      LOGFILE=$LOGDIR/$RunID.log
-	      if [ -f $LOGFILE ] ; then
-		  if [ $ExeOnlineNevents -eq 1 ] ; then
-		     OnlineNevents;
-		  else
-		      grepit;
-		  fi
-	      else 
-		  echo -e -n "$RunID $LOGFILE missing\n";
-	      fi
-	  elif [ $ExclusiveMode == 0 ] ; then
-	      echo -e -n "$RunID\n";
-	  fi
+      Test=`echo $RunID $Fill | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
+      if [ $Test -eq 1 ]&&[ $DISTRIBUTION -eq 2 ] ; then
+	  PROCESS=1;
+      elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
+	  PROCESS=1;
       fi
+
+      if [ $PROCESS -eq 1 ] ; then
+
+	  if [ $Fill -ge $FROM_FILL ]&&[ $Fill -le $TILL_FILL ] ; then
+	      CREW=`grep $RunID $ANALYZED_RUN_LIST | gawk '{print $2}'`
+	      grep $RunID $ANALYZED_RUN_LIST  > /dev/null; 
+	      if [ $? == 0 ] ; then
+		  LOGFILE=$LOGDIR/$RunID.log
+		  if [ -f $LOGFILE ] ; then
+		      if [ $ExeOnlineNevents -eq 1 ] ; then
+			  OnlineNevents;
+		      else
+			  grepit;
+		      fi
+		  else 
+		      echo -e -n "$RunID $LOGFILE missing\n";
+		  fi
+	      elif [ $ExclusiveMode == 0 ] ; then
+		  echo -e -n "$RunID";
+		  GetOnlinePolarization;
+		  printf "$OnlineP $OnlinedP  N/A-";
+		  echo -e -n "\n";
+	      fi
+	  fi
+
+      fi
+
+      if [ $DISTRIBUTION -ne 0 ] ; then
+	  PROCESS=0;
+      fi
+
 done
 
 }
