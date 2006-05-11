@@ -7,10 +7,26 @@
 #include <string.h>
 #include <iostream.h>
 #include <fstream.h>
-
-
-
 #include "dLayerChecker.h"
+
+
+
+void Usage(char* argv[]){
+
+  cout << endl;
+  cout<<" This program compares the dead layers from two data files."<<endl;
+  cout<<" Default output for -z test is " << ofile << endl;
+  cout<<" Usage of " << argv[0] <<endl;
+  cout << " -f <run #>        : check dead layer consitency " <<endl;
+  cout << " -z <run #>        : check dead layer fit status" <<endl << endl;
+  
+  exit(-1);
+
+  return;
+
+}
+
+
 
 
 int main (int argc, char *argv[])
@@ -20,22 +36,28 @@ int main (int argc, char *argv[])
 	fitresult=0;
 	runfit=false;
 	
-	
 	// for get option
 	int c;
 	extern char *optarg;
 	
-	
-	
 	datadir = getenv("CONFDIR");
 	sharedir = getenv("SHAREDIR");
+	tmpdir = getenv("TMPDIR");
+
+	// output file operation
+	sprintf(ofile,"%s/dLayerChecker.dat",tmpdir);
+	ofstream out;
+	out.open(ofile);
+	if (out.fail()) {
+	  cerr << "\n Cannot create output file " << ofile << "." << endl;
+	  cerr << " Likely either no /tmp/cnipol directory or write permission problem." << endl;
+	}
+
 	if ( datadir == NULL )
 	{
 		cerr << "environment CONFDIR is not defined" << endl;
 		exit(-1);
 	}
-	
-	
 	
 	while ((c = getopt(argc, argv, "?f:z:h"))!=-1)
 	{
@@ -43,12 +65,7 @@ int main (int argc, char *argv[])
 		{
 			case 'h':
 			case '?':
-				cout<<"This program compares the dead layers from two data files"<<endl;
-				cout<<"Usage of " << argv[0] <<endl;
-				cout << " -f <run #>        : check dead layer consitency " <<endl;
-				cout<<"or"<<endl;
-				cout << " -z <run #>        : check dead layer fit status" <<endl;
-				exit(-1);
+			  Usage(argv);
 			case 'f':
 				sprintf(runid, optarg);
 	    			// if ifile lack of suffix ".data", attach ".data"
@@ -82,21 +99,25 @@ int main (int argc, char *argv[])
 		if(fitresult==1)
 		{
 			cout<<"dlayer fit is successful"<<endl;
+			out << endl << "[" << runid << "]@" << endl;
+			out << "\tCONFIG=" << runid << ".config.dat;@" << endl << endl;
 		}
-		else
+		else 
 		{
 			cout<<"dlayer fit is NOT successful"<<endl;
+			out << endl << "[" << runid << "]@" << endl;
+			out << "\tRUN_STATUS*=Suspicious;@" << endl;
+			if (fitresult==0) 
+			  out << "\tCOMMENT*=\"Unsuccessful deadlayer fit. Don't update config file\";@";
+			if (fitresult==-1) 
+			  out << "\tCOMMENT*=\"Deadlayer fit failure. Don't update config file\";@";
+			out << endl << endl;
 		}
 		return fitresult;
 	}
 	
-	if(optgiven==false)
-	{
-		cout<<"This program compares the dead layers from two data files"<<endl;
-		cout<<"Usage of " << argv[0] <<endl;
-		cout << " -f <run #>        : input run # " <<endl;
-		return -1;
-	}
+	if(optgiven==false) Usage(argv);
+
 	
 	getPreviousRun(true);
 	
@@ -181,6 +202,9 @@ int main (int argc, char *argv[])
 		return 0;
 	}
 	
+
+	out.close();
+
 }
 
 
@@ -383,7 +407,8 @@ void checkChi2(char *infile)
 	
 	if (!DlayerFile) {
 		cerr << "failed to open DlayerFit File : " << infile << endl;
-		exit(-1);
+		fitresult=-1;
+		return ;
 	}
 	
 	char buffer[300];
