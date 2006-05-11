@@ -300,7 +300,7 @@ while test $# -ne 0; do
   --fill-from) shift ; FROM_FILL=$1;;
   --fill-till) shift ; TILL_FILL=$1;;
   -f) shift ; ANALYZED_RUN_LIST=$1; ExeAnalyzedRunList=0 ;;
-  --online-events) ExeOnlineNevents=1;;
+  --online-nevents) ExeOnlineNevents=1;;
   --exclusive) ExclusiveMode=1;;
   --blue)   DISTRIBUTION=1;;
   --yellow) DISTRIBUTION=2;;
