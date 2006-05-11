@@ -8,6 +8,13 @@ else
 	mkdir $INSTALLDIR
 fi
 
+# Check temporary output directory
+if [ ! -d $TMPDIR ] ; then
+    mkdir $TMPDIR
+    chmod 777 $TMPDIR
+    echo "Create $TMPDIR";
+fi
+
 
 # This routine checks if the present executables are compiled in 
 # a local machine. If not, then make clean to recompile.
