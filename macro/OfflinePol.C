@@ -24,6 +24,8 @@ private:
   Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],SpeLumi[N],DiffP[N];
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
+  TH1D* Pdiff ;
+  TH1D* phiDist;
 
 public:
   void Initiarization(Int_t);
@@ -39,25 +41,20 @@ public:
 
 
 //
-// Class name  : 
+// Class name  : OfflinePol
 // Method name : void Initiarization()
 //
 // Description : Initiarize Array
-// Input       : 
+// Input       : array index i
 // Return      : 
 //
-void Initiarization(Int_t i){
+void 
+OfflinePol::Initiarization(Int_t i){
   
-  cout << i << endl;
-  RunID[i]=0;
-  P_online[i]=0;
-  dP_online[i]=0;
-  P_offline[i]=0;
-  dP_offline[i]=0;
+  RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
+  P_offline[i] =  phi[i]  = -9999;
   index[i]=0;
-  dx[i]=0;
-  dy[i]=0;
-  
+
   return;
 
 }
@@ -107,6 +104,10 @@ GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
 Int_t
 OfflinePol::GetData(Char_t * DATAFILE){
                  
+  //define histograms
+  Pdiff   = new TH1D("Pdiff",  "Online/Offline Polarization Consistency",60,-20,20);
+  phiDist = new TH1D("phiDist","phi angle distribution",60,-35,35);
+
     ifstream fin;
     fin.open(DATAFILE,ios::in);
     printf("datafile=%s\n",DATAFILE);
@@ -129,14 +130,16 @@ OfflinePol::GetData(Char_t * DATAFILE){
       if (strstr(buffer,"=====")) {
 	for (int j=0; j<4; j++) fin.getline(buffer, sizeof(buffer), '\n'); 
       }
-      //Initiarization(i);
+      Initiarization(i);
 
       // main read-in routine
       RunID[i]     = atof(strtok(buffer," "));
       P_online[i]  = atof(strtok(NULL," "));
       dP_online[i] = atof(strtok(NULL," "));
       RunStatus    = strtok(NULL," ");
-      if (strcmp(RunStatus,"Junk")){
+
+      // process if RunStatus != "Junk" or "N/A-"
+      if ( strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-") ){
 	for (int k=0; k<6; k++) strtok(NULL, " ");
 	P_offline[i]  = atof(strtok(NULL," "));
 	dP_offline[i] = atof(strtok(NULL," "));
@@ -149,8 +152,13 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	Rate[i]       = atof(strtok(NULL," "));
 	SpeLumi[i]    = atof(strtok(NULL," "));
 	DiffP[i]      = atof(strtok(NULL," "));
-      }
 
+	// fill 1-dim histograms
+	Pdiff->Fill(DiffP[i]);
+	phiDist->Fill(phi[i]);
+
+      }
+      
       index[i]=i; ++i; 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
@@ -194,18 +202,26 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 50:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DiffP, dx, dy);
     break;
+  case 60:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, phi, dx, dphi);
+    break;
+  case 70:
+    TGraphErrors* tgae = new TGraphErrors(ndata, phi, P_offline, dphi, dP_offline);
+    break;
   }
 
-    tgae -> SetMarkerStyle(Mtyp);
-    tgae -> SetMarkerSize(1.5);
-    tgae -> SetLineWidth(2);
-    tgae -> SetMarkerColor(Color);
-    tgae -> Draw("P");
+  tgae -> SetMarkerStyle(Mtyp);
+  tgae -> SetMarkerSize(1.5);
+  tgae -> SetLineWidth(2);
+  tgae -> SetMarkerColor(Color);
+  tgae -> Draw("P");
+   
+  if ( Mode < 50 ) {
+      aLegend->AddEntry(tgae,text,"P");
+      aLegend->Draw("same");
+  }
 
-    aLegend->AddEntry(tgae,text,"P");
-    aLegend->Draw("same");
-
-    return 0;
+  return 0;
 
 } // end-of-DlayerPlot()
 
@@ -226,6 +242,9 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   Float_t xmin, xmax, ymin, ymax;
   Float_t margin=0.05;
 
+  Char_t title[100];
+  sprintf(title,"Polarization (%s)",Beam);
+
   switch (Mode) {
   case 10:
     GetScale(RunID, ndata, margin, xmin, xmax);
@@ -242,13 +261,26 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   case 50:
     GetScale(RunID, ndata, margin, xmin, xmax);
     ymin=-10; ymax=10;
-    Char_t xtitle[100]="Index";
+    Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="P_online-P_offline";
+    sprintf(title,"Online/Offline Polarization Diff.(%s)",Beam);
+    break;
+  case 60:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=-100; ymax=100;
+    Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="phi angle [deg]";
+    sprintf(title,"phi angle (%s)",Beam);
+    break;
+  case 70:
+    xmin=-30; xmax=30;
+    ymin=20; ymax=80;
+    Char_t xtitle[100]="phi angle [deg]";
+    Char_t ytitle[100]="P_offline [%]";
+    sprintf(title,"P vs. phi angle",Beam);
     break;
   }
 
-  Char_t title[100];
-  sprintf(title,"Polarization (%s)",Beam);
   frame = new TH2D(Beam,title, 10, xmin, xmax, 10, ymin, ymax);
   frame -> SetStats(0);
   frame -> GetXaxis()->SetTitle(xtitle);
@@ -276,7 +308,7 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   Char_t DATAFILE[256];
   sprintf(DATAFILE,"summary/OfflinePol_%s.dat",Beam);
   Int_t ndata = GetData(DATAFILE);
-  DrawFrame(Mode, ndata, Beam);
+  if (Mode<100) DrawFrame(Mode, ndata, Beam);
 
   TLegend * aLegend = new TLegend(0.7,0.15,0.85,0.3);
 
@@ -290,7 +322,23 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
       break;
   case 50:
-      Plot(Mode,    ndata, 20, "Online",  Color, aLegend);
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 150:
+      Pdiff->SetXTitle("Poffline - Ponline [%]");
+      Pdiff->SetFillColor(Color);
+      Pdiff->Draw();
+      break;
+  case 60:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 160:
+      phiDist->SetXTitle("phi angle [deg.]");
+      phiDist->SetFillColor(Color);
+      phiDist->Draw();
+      break;
+  case 70:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
   }
 
@@ -347,9 +395,13 @@ OfflinePol::OfflinePol()
     sprintf(psfile,"ps/OfflinePol.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    RunBothBeam(10, CurC, ps); // onlineP and offlineP vs. RunID
-    RunBothBeam(15, CurC, ps); // onlineP and offlineP vs. index
-    RunBothBeam(50, CurC, ps); 
+    RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
+    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
+    RunBothBeam(50,  CurC, ps); // onlineP-offlineP vs. RunID
+    RunBothBeam(150, CurC, ps); // onlineP-offlineP Distribution
+    RunBothBeam(60,  CurC, ps); // phi-angle vs. RunID
+    RunBothBeam(160, CurC, ps); // phi-angle Distribution
+    RunBothBeam(70,  CurC, ps); // offline P vs. phi-angle 
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
