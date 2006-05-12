@@ -143,9 +143,9 @@ RunAsym(){
     NEVENTS=`OnlinePol.sh -f $RunID --nevents -k`;
     if [ $NEVENTS -lt 50 ] ; then
 	echo -e "\n";
-	echo -e "[$RunID]@" | tee $TMPDIR/dLayerChecker.dat;
-	echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPDIR/dLayerChecker.dat;
-	echo -e "\tCOMMENT*=\"Number of events < 50k.\";@" | tee -a $TMPDIR/dLayerChecker.dat;
+	echo -e "[$RunID]@" | tee $TMPOUTDIR/dLayerChecker.dat;
+	echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPOUTDIR/dLayerChecker.dat;
+	echo -e "\tCOMMENT*=\"Number of events < 50k.\";@" | tee -a $TMPOUTDIR/dLayerChecker.dat;
 	echo -e "\n";
 	rundb_updater.pl
     fi
