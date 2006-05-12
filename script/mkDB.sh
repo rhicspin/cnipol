@@ -60,12 +60,12 @@ ShowExample(){
 #############################################################################
 MakeAnalyzedRunList(){
 
-  TMPDIR=/tmp/cnipol;
-  if [ ! -d $TMPDIR ]; then
-      mkdir $TMPDIR;
+  TMPOUTDIR=/tmp/cnipol;
+  if [ ! -d $TMPOUTDIR ]; then
+      mkdir $TMPOUTDIR;
   fi
 
-  TMPLIST="$TMPDIR/tmp.list";
+  TMPLIST="$TMPOUTDIR/tmp.list";
   if [ -f $TMPLIST ] ; then
       rm -f $TMPLIST;
   fi
@@ -153,18 +153,18 @@ ShowIndex(){
 
 GetOnlinePolarization(){
 
- TMPDIR=/tmp/cnipol;
- if [ ! -d $TMPDIR ]; then
-     mkdir $TMPDIR;
+ TMPOUTDIR=/tmp/cnipol;
+ if [ ! -d $TMPOUTDIR ]; then
+     mkdir $TMPOUTDIR;
  fi
 
  $MACRODIR/pvector.pl $RunID
  export RUN=$RunID;
  paw -b $MACRODIR/pvect_simple.kumac &> /dev/null
- OnlineP=`cat $TMPDIR/tmp.dat | gawk '{printf("%7.1f",$1)}'`;
- OnlinedP=`cat $TMPDIR/tmp.dat | gawk '{printf("%5.1f",$2)}'`;
- rm -f $TMPDIR/tmp.dat
- rm -f $TMPDIR/pvect.dat
+ OnlineP=`cat $TMPOUTDIR/tmp.dat | gawk '{printf("%7.1f",$1)}'`;
+ OnlinedP=`cat $TMPOUTDIR/tmp.dat | gawk '{printf("%5.1f",$2)}'`;
+ rm -f $TMPOUTDIR/tmp.dat
+ rm -f $TMPOUTDIR/pvect.dat
 
 }
 

@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
 	
 	datadir = getenv("CONFDIR");
 	sharedir = getenv("SHAREDIR");
-	tmpdir = getenv("TMPDIR");
+	tmpdir = getenv("TMPOUTDIR");
 
 	// output file operation
 	sprintf(ofile,"%s/dLayerChecker.dat",tmpdir);

@@ -4,7 +4,7 @@
 
 
 $BASEDIR   = $ENV{"ASYMDIR"};
-$TMPDIR    = $ENV{"TMPDIR"};
+$TMPDIR    = $ENV{"TMPOUTDIR"};
 $INF       = "$TMPDIR/dLayerChecker.dat";
 $OUTF      = "$BASEDIR/run.db";
 
