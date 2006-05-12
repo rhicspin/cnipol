@@ -108,7 +108,7 @@ Set up environment and install executables and macros.
 	export ASYMDIR=$HOME/offline
 
 	# temporary output directory
-	export TMPDIR=/tmp/cnipol
+	export TMPOUTDIR=/tmp/cnipol
 
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin

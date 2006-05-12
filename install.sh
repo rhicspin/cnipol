@@ -9,10 +9,10 @@ else
 fi
 
 # Check temporary output directory
-if [ ! -d $TMPDIR ] ; then
-    mkdir $TMPDIR
-    chmod 777 $TMPDIR
-    echo "Create $TMPDIR";
+if [ ! -d $TMPOUTDIR ] ; then
+    mkdir $TMPOUTDIR
+    chmod 777 $TMPOUTDIR
+    echo "Create $TMPOUTDIR";
 fi
 
 
