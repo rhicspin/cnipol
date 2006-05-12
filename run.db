@@ -1,4 +1,3 @@
-
 //==============================================================
 //=======                   Run04                      =========
 //==============================================================
@@ -1918,6 +1917,10 @@
 	RUN_STATUS=Suspicious;
 	COMMENT="Profile scan only goes halfway through, and error checker finds suspicious strips.";
 
+[7812.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
 [7817.002]
 	RUN_STATUS=Suspicious;
 	COMMENT="Target-3 plus suspicious strips";
@@ -1929,7 +1932,6 @@
 [7817.102]
 	RUN_STATUS=Suspicious;
 	COMMENT="Suspicious strips";
-
 
 [7820.001]
 	RUN_STATUS=Suspicious;
@@ -2024,3 +2026,79 @@
 [7831.102]
 	RUN_STATUS=Good;
 	COMMENT="";
+
+[7834.001]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3";
+
+[7834.101]
+	RUN_STATUS=Junk;
+
+[7834.102]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+
+[7834.103]
+	RUN_STATUS=Junk;
+
+[7834.104]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Good;
+
+[7834.105]
+	RUN_STATUS=Junk;
+
+[7834.106]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Good;
+
+[7835.001]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus suspicious strips.";
+
+[7835.101]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips.";
+	
+
+
+// ------------------------------------------------------------//
+//    Broke the vacuum and replaced all blue targets           //
+// ------------------------------------------------------------//
+[7840.001]
+	RUN_STATUS=Junk;
+
+[7840.002]
+	RUN_STATUS=Junk;
+
+[7840.004]
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Tune;
+	COMMENT="Target commissioning";
+
+[7840.006]
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Tune;
+	COMMENT="Target commissioning plus bad strips in a few detectors (not WFD problem.)";
+
+[7842.001]
+	RUN_STATUS=Junk;
+
+[7842.005]
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Tune;
+	COMMENT="Target commissioning";
+
+[7843.001]
+	//Not yet confirmed.
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7843.101]
+	//Not yet confirmed.
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
