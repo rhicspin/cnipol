@@ -221,7 +221,7 @@ grepit(){
 	grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f %5.1f",$4*100,$5*100)}'
 #	    grep 'Average Polarization' $LOGFILE | gawk '{printf(" %6.1f%7.1f",$4*100,$5*100)}'
 	grep 'Phase' $LOGFILE | gawk '{printf(" %7.1f %5.1f",$5,$6)}'
-	grep 'chi2/d.o.f (sinphi fit)     ' $LOGFILE | gawk '{printf(" %4.1f",$5)}'
+	grep 'chi2/d.o.f (sinphi fit)     ' $LOGFILE | gawk '{printf(" %4.2f",$5)}'
 	grep 'Analyzing Power Average     ' $LOGFILE | gawk '{printf(" %6.4f",$5)}'
 	grep 'Target                      ' $LOGFILE | gawk '{printf(" %c",$3)}'      
 	grep 'Target Operation            ' $LOGFILE | sed -e 's/fixed/fixd/' | gawk '{printf(" %s",$4)}' 
