@@ -26,6 +26,7 @@ private:
   TH2D* frame ;
   TH1D* Pdiff ;
   TH1D* phiDist;
+  TH1D* sfitchi2;
 
 public:
   void Initiarization(Int_t);
@@ -105,8 +106,9 @@ Int_t
 OfflinePol::GetData(Char_t * DATAFILE){
                  
   //define histograms
-  Pdiff   = new TH1D("Pdiff",  "Online/Offline Polarization Consistency",60,-20,20);
-  phiDist = new TH1D("phiDist","phi angle distribution",60,-35,35);
+  Pdiff   = new TH1D("Pdiff",   "Online/Offline Polarization Consistency",60,-20,20);
+  phiDist = new TH1D("phiDist", "phi angle distribution",60,-35,35);
+  sfitchi2= new TH1D("sfitchi2","chi2 distribution of P*sin(phi) fit",30,0,4);
 
     ifstream fin;
     fin.open(DATAFILE,ios::in);
@@ -156,6 +158,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	// fill 1-dim histograms
 	Pdiff->Fill(DiffP[i]);
 	phiDist->Fill(phi[i]);
+	sfitchi2->Fill(chi2[i]);
 
       }
       
@@ -205,8 +208,14 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 60:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, phi, dx, dphi);
     break;
+  case 65:
+    TGraphErrors* tgae = new TGraphErrors(ndata, index, phi, dx, dphi);
+    break;
   case 70:
     TGraphErrors* tgae = new TGraphErrors(ndata, phi, P_offline, dphi, dP_offline);
+    break;
+  case 80:
+    TGraphErrors* tgae = new TGraphErrors(ndata, chi2, phi, dy, dphi);
     break;
   }
 
@@ -267,8 +276,15 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     break;
   case 60:
     GetScale(RunID, ndata, margin, xmin, xmax);
-    ymin=-100; ymax=100;
+    ymin=-35; ymax=35;
     Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="phi angle [deg]";
+    sprintf(title,"phi angle (%s)",Beam);
+    break;
+  case 65:
+    GetScale(index, ndata, margin, xmin, xmax);
+    ymin=-35; ymax=35;
+    Char_t xtitle[100]="Index";
     Char_t ytitle[100]="phi angle [deg]";
     sprintf(title,"phi angle (%s)",Beam);
     break;
@@ -278,6 +294,13 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     Char_t xtitle[100]="phi angle [deg]";
     Char_t ytitle[100]="P_offline [%]";
     sprintf(title,"P vs. phi angle",Beam);
+    break;
+  case 80:
+    xmin=0; xmax=4;
+    ymin=-40; ymax=40;
+    Char_t xtitle[100]="chi2 of P*sin(phi) fit";
+    Char_t ytitle[100]="phi angle [deg]";
+    sprintf(title,"Chi2 vs. phi",Beam);
     break;
   }
 
@@ -332,6 +355,9 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   case 60:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
+  case 65:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
   case 160:
       phiDist->SetXTitle("phi angle [deg.]");
       phiDist->SetFillColor(Color);
@@ -339,6 +365,14 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       break;
   case 70:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 80:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 180:
+      sfitchi2->SetXTitle("sin(phi) fit chi2");
+      sfitchi2->SetFillColor(Color);
+      sfitchi2->Draw();
       break;
   }
 
@@ -401,7 +435,10 @@ OfflinePol::OfflinePol()
     RunBothBeam(150, CurC, ps); // onlineP-offlineP Distribution
     RunBothBeam(60,  CurC, ps); // phi-angle vs. RunID
     RunBothBeam(160, CurC, ps); // phi-angle Distribution
+    RunBothBeam(65,  CurC, ps); // phi-angle vs. index
     RunBothBeam(70,  CurC, ps); // offline P vs. phi-angle 
+    RunBothBeam(80,  CurC, ps); // phi-angle vs. chi2
+    RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
