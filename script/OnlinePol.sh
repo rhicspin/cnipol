@@ -35,6 +35,9 @@ ShowExample(){
     echo    " "
     echo    " $0 -f 7759.002";
     echo    " "
+    echo    " Running in daemon mode";
+    echo    " $0 --daemon";
+    echo    " ";
     exit;
 
 }
@@ -100,6 +103,11 @@ OnlineNevents(){
 #############################################################################
 ExeDaemon(){
 
+if [ ! -f $ONLINE_DB ] ; then
+    touch $ONLINE_DB;
+fi
+
+    
   while [ 1 ] ; do 
 
     NLINE=`wc $ONLINE_RUNLIST | gawk '{print $1}'`
