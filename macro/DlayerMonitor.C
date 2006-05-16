@@ -94,7 +94,10 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
             >> AveT0[i] >> DeltaT0[i] >> dum[2] >> dum[3] >> dum[4] 
             >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9];
 
-      ++i; dx[i]=dy[i]=0;
+	//	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+
+	++i; dx[i]=dy[i]=0;
+
 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
