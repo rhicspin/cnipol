@@ -3,7 +3,8 @@
 $run = $ARGV[0];
 
 $ONLINEDIR=$ENV{"ONLINEDIR"};
-$OUTFILE = ">/tmp/cnipol/pvect.dat";
+$TMPOUTDIR=$ENV{"TMPOUTDIR"};
+$OUTFILE = ">$TMPOUTDIR/pvect.dat";
 $LOGFILE = "$ONLINEDIR/log/an$run.log";
 
 #printf "Processing run $run ($LOGFILE)\n";
