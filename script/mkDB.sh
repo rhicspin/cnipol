@@ -3,6 +3,7 @@
 #I.Nakagawa
 #March, 11, 2006
 ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
+ONLINE_DB="$DATADIR/OnlinePol.dat";
 ExeAnalyzedRunList=1 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
@@ -151,6 +152,10 @@ ShowIndex(){
 }
 
 
+#############################################################################
+#                              OnlinePolarization                           #
+#############################################################################
+
 GetOnlinePolarization(){
 
  TMPOUTDIR=/tmp/cnipol;
@@ -167,6 +172,16 @@ GetOnlinePolarization(){
  rm -f $TMPOUTDIR/pvect.dat
 
 }
+
+
+GetOnlinePolFromFile(){
+
+    OnlineP=`grep $RunID $ONLINE_DB | gawk '{printf("%7.1f",$2)}'`
+    OnlinedP=`grep $RunID $ONLINE_DB | gawk '{printf("%5.1f",$3)}'`
+
+}
+
+
 
 OnlineNevents(){
 
@@ -185,10 +200,9 @@ OnlineNevents(){
 grepit(){
 
     echo -e -n "$RunID";
-    GetOnlinePolarization;
+#    GetOnlinePolarization;
+    GetOnlinePolFromFile;
     printf "$OnlineP $OnlinedP";
-
-
 
     # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
     RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
