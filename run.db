@@ -1906,7 +1906,12 @@
 	COMMENT="Measurements done with HV tripped off.";
 
 [7810.104]
+	//this is where the suspicious strips start, have to mark them, although it is hard to see which ones exactly are bad.
 	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;
 	COMMENT="Profile scan only goes halfway through, and error checker finds a few bad strips";
 
 [7810.107]
@@ -1919,10 +1924,34 @@
 
 [7812.101]
 	RUN_STATUS=Good;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;
 	COMMENT="";
 
 [7817.002]
 	RUN_STATUS=Suspicious;
+	DisableStrip=13;
+	DisableStrip=31;
+	DisableStrip=49;
+	DisableStrip=67;
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT="Target-3 plus suspicious strips";
+
+[7817.003]
+	RUN_STATUS=Suspicious;
+	EnableStrip=13;
+	EnableStrip=31;
+	EnableStrip=49;
+	EnableStrip=67;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
 	COMMENT="Target-3 plus suspicious strips";
 
 [7817.101]
@@ -1935,27 +1964,71 @@
 
 [7820.001]
 	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus some suspicious strips.";
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	DisableStrip=13;
+	DisableStrip=31;
+	DisableStrip=49;
+	DisableStrip=67;
+	DisableStrip=5;
+	DisableStrip=23;
+	DisableStrip=41;
+	DisableStrip=59;
+	COMMENT="Target-3 plus suspicious strips";
 
 [7820.101]
 	RUN_STATUS=Good;
 	COMMENT="";
 
-[7823.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus some suspicious strips.";
+[7823.001]
+	RUN_STATUS*=Good;
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	EnableStrip*=13;
+	EnableStrip*=31;
+	EnableStrip*=49;
+	EnableStrip*=67;
+	EnableStrip*=5;
+	EnableStrip*=23;
+	EnableStrip*=41;
+	EnableStrip*=59;
+	COMMENT*="";
 
-[7824.001]
+[7823.002]
 	RUN_STATUS=Suspicious;
 	COMMENT="Target-3 plus some suspicious strips.";
 
 [7823.101]
 	RUN_STATUS=Suspicious;
+	DisableStrip*=17;
+	DisableStrip*=35;
+	DisableStrip*=53;
+	DisableStrip*=71;
 	COMMENT="Profile scan only goes halfway through beam and suspicious strips.";
 
 [7823.102]
 	RUN_STATUS=Good;
 	COMMENT="";
+
+[7824.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Target-3 plus some suspicious strips.";
+
+[7824.004]
+	RUN_STATUS=Suspicious;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	EnableStrip=5;
+	EnableStrip=23;
+	EnableStrip=41;
+	EnableStrip=59;
+	COMMENT="Target-3 plus some suspicious strips.";
 
 [7824.101]
 	RUN_STATUS=Suspicious;
@@ -1967,20 +2040,35 @@
 
 [7824.104]
 	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;
 	COMMENT="Some bad strips";
 
 [7825.001]
 	RUN_STATUS=Suspicious;
 	COMMENT="Target-3 plus some suspicious strips.";
 
+[7825.003]
+	RUN_STATUS=Suspicious;
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	DisableStrip=5;
+	DisableStrip=23;
+	DisableStrip=41;
+	DisableStrip=59;
+	COMMENT="Target-3 plus some suspicious strips.";
+
 [7825.103]
 	RUN_STATUS=Good;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;
 	COMMENT="";
-
-[7825.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips";
-
 
 [7826.001]
 	RUN_STATUS=Suspicious;
@@ -2030,7 +2118,15 @@
 [7834.001]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Suspicious;
-	COMMENT="Target-3";
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	EnableStrip=5;
+	EnableStrip=23;
+	EnableStrip=41;
+	EnableStrip=59;
+	COMMENT="Target-3 plus strips";
 
 [7834.101]
 	RUN_STATUS=Junk;
@@ -2055,7 +2151,7 @@
 [7835.001]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus suspicious strips.";
+	COMMENT="Target-3 plus suspicious strips.  Many suspicious strips, not worth marking.";
 
 [7835.101]
 	MEASUREMENT_TYPE=SPIN_TUNE;
@@ -2076,6 +2172,10 @@
 [7840.004]
 	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Tune;
+	EnableStrip=13;
+	EnableStrip=31;
+	EnableStrip=49;
+	EnableStrip=67;
 	COMMENT="Target commissioning";
 
 [7840.006]
@@ -2101,4 +2201,258 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 
+[7846.101]
+	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;
+	COMMENT="suspicious strips";
 
+[7847.001]
+	RUN_STATUS=Suspicious
+	COMMENT="Profile scan problems.";
+
+[7847.002]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7847.004]
+	CONFIG=7847.004.config.dat;
+
+[7847.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips.";
+
+[7849.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7849.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile scan issues.";
+
+[7849.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+
+[7850.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7850.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile problems.";
+
+[7850.003]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7850.004]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7850.009]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile problems.";
+
+[7850.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="suspicious strips.";
+
+[7851.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7851.002]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile problems.";
+
+[7851.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile problems";
+
+[7851.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="suspicious strips.";
+
+[7851.105]
+	COMMENT="suspicious strips and profile problems.";
+
+[7851.106]
+	RUN_STATUS*=Junk;
+	COMMENT*="";
+
+[7851.107]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+
+[7582.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7852.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="suspicious strips.";
+
+[7852.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+
+[7853.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7853.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7853.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="wide profile.";
+
+[7853.005]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Double Peaked profile scan.";
+
+[7853.006]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7853.008]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7853.009]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7853.010]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7853.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="suspicious strips.";
+
+[7853.105]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+
+[7854.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7854.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7854.102]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile scan issues and suspicious strips.";
+
+[7855.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7856.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7856.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile scan issues and suspicious strips.";
+
+[7856.105]
+	RUN_STATUS=Suspicious;
+	COMMENT="Suspicious strips.";
+
+[7857.101]
+	RUN_STATUS=Suspicious;
+	CONFIG=7857.101.config.dat;
+	COMMENT="suspicious strips.";
+
+
+[7858.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+[7858.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7858.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile scan issues.";
+
+[7858.007]
+	RUN_STATUS=Suspicious;
+	COMMENT="very strange run, from bizzare strips unusual bunches, tempted to junk.";
+
+
+[7858.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Unsuccessful deadlayer fit. Don't update config file, also profile scan issues and suspicious strips";
+
+[7858.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+[7858.104]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7858.105]
+	RUN_STATUS=Suspicious;
+	CONFIG=7858.105.config.dat;
+	COMMENT="strange beam profile and suspicious strips.";
+
+[7859.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7859.003]
+	RUN_STATUS=Junk;
+	COMMENT="Measurement yeilds zero and problems with strips and bunches etc.";
+
+[7859.101]
+	RUN_STATUS=Suspicious;
+	CONFIG=7859.101.config.dat;
+	COMMENT="suspicious strips and profile problems.";
+
+[7860.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7860.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile problems.";
+
+[7860.003]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7860.007]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7860.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile problems and suspicious strips.";
+	CONFIG=7860.101.config.dat;
+
+[7860.102]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7860.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="suspicious strips.";
+
+[7860.105]
+	RUN_STATUS=Good;
+	EnableStrip=16;
+	EnableStrip=34;
+	EnableStrip=52;
+	EnableStrip=70;
+	COMMENT="";
