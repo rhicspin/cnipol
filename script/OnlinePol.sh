@@ -7,6 +7,7 @@ UnitKiro=0;
 ONLINE_RUNLIST=$DATADIR/raw_data.list;
 ONLINE_DB=$DATADIR/OnlinePol.dat;
 SLEEP_INTERVAL=1800;
+DAEMON=0;
 
 #############################################################################
 #                                     Help                                  #
