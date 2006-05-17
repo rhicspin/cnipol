@@ -13,6 +13,9 @@
 
 extern void HHF1(int, float, float);
 extern void HHF2(int, float, float, float);
+int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, 
+			 int st, float &edepo, float &e, float &t, float &delt, float &Mass);
+
 
 int init=0;
 //float EnergyBin[NTBIN+1]={320,400,480,600,800,1000,1200}; // 6+1
@@ -34,7 +37,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
     float edepo, rtof;
     int si;
     float pbeam;
-    float Ct, t, e, e_int, Integ, Mass;
+    float t, e, e_int, Integ, Mass;
     float t0f, t0w, Expint, delt;
     float rand1, rand2;
     int Htgt, Vtgt;
@@ -92,6 +95,30 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
       return (0);
     }// end-of-Flag.feedback
 
+
+    //------------------------------------------------------------------//
+    //                          DeadLayer Mode                          //
+    //------------------------------------------------------------------//
+    if (dproc.DMODE) {
+
+	// 2*cfginfo->data.chan[st].Window.split.Beg = 6
+	if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)){
+
+	  KinemaReconstruction(1, event, cfginfo, st, edepo, e, t, delt, Mass);
+	  HHF2(15000+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+
+	  if (dproc.CBANANA==2) {
+
+	    if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e)) 
+	      HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+	    
+	  } // end-of-if (dproc.CBANANA) 
+
+	} // end-of-if (event->tdc)
+	
+	return (0);
+
+    } // end-of-DMODE
 
 
 
@@ -297,12 +324,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         }
         */
 
-        // ==================================
-        // Dead Layer estimation
-        // ==================================
-        if (dproc.DMODE == 1){
-            HHF2(15000+st+1, edepo, runconst.Ct * (event->tdc + rand1 - 0.5) - dproc.tshift , 1.);
-        }
         
         // integral vs. amplitede
         if (dproc.AMODE ==1){
@@ -317,6 +338,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             HHF1(10460+si+1, 2*11.18*e_int/1000000.,1.);
         }
         
+	t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
         delt = t - runconst.E2T/sqrt(e);  
             
         // =========================================
@@ -372,14 +394,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 }
 
             }
-
-	    // ==================================
-	    // Dead Layer estimation
-	    // ==================================
-	    if (dproc.DMODE == 1){
-	      if (wcmfillpat[(int)event->bid])
-		HHF2(15100+st+1, edepo, runconst.Ct * (event->tdc + rand1 - 0.5) - dproc.tshift , 1.);
-	    }
 
 
             // fine -t bins
@@ -498,6 +512,35 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 
     return(0);
+}
+
+//
+// Class name  : 
+// Method name : KinemaReconstruction(
+//
+// Description : 
+// Input       : 
+// Return      : 
+//
+int
+KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, 
+		     int st, float &edepo, float &e, float &t, float &delt, float &Mass){
+
+  float rand1, rand2;
+
+  // random numbers in order to smear for the integer reading
+  int vlen = 1;
+  hhrammar_(&rand1, &vlen);
+  hhrammar_(&rand2, &vlen);
+  
+  edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+
+  t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
+  e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+  delt = t - runconst.E2T/sqrt(e);  
+
+  return 1;
+
 }
 
 
