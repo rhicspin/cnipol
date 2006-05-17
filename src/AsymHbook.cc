@@ -217,13 +217,6 @@ int hist_book(char *filename){
 
     fprintf (stdout,"new hbook file : %s\n",filename);
 
-    // Bunch Distribution
-    sprintf(hcomment,"Bunch Distribution");
-    HHBOOK1(10000,hcomment,120,-.5,119.5);
-    sprintf(hcomment,"Bunch Distribution (time + -t cut)");
-    HHBOOK1(10010,hcomment,120,-.5,119.5);
-    sprintf(hcomment,"Bunch Distribution (-t cut)");
-    HHBOOK1(10020,hcomment,120,-.5,119.5);
 
     // WCM
     sprintf(hcomment,"WCM Distribution");
@@ -232,6 +225,33 @@ int hist_book(char *filename){
     HHBOOK1(10033,hcomment,120,-.5,119.5);
     sprintf(hcomment,"Normarized Specific Luminosity");
     HHBOOK1(10034,hcomment,120,-.5,119.5);
+
+    //------------------------------------------------------------------//
+    //                          DeadLayer Mode                          //
+    //------------------------------------------------------------------//
+    if (dproc.DMODE == 1) {
+        for (st=1;st<=72;st++){
+            sprintf(hcomment,"Tof vs Edep St - %d ",st);
+            HHBOOK2(15000+st,hcomment,
+                    100, 200., 1200.,  120, 0., 120.);
+            HHBOOK2(15100+st,hcomment,
+                    100, 200., 1200.,  120, 0., 120.);
+        }
+	return 0;
+    }
+    
+
+    //------------------------------------------------------------------//
+    //                           Nomal Process Mode                     //
+    //------------------------------------------------------------------//
+
+    // Bunch Distribution
+    sprintf(hcomment,"Bunch Distribution");
+    HHBOOK1(10000,hcomment,120,-.5,119.5);
+    sprintf(hcomment,"Bunch Distribution (time + -t cut)");
+    HHBOOK1(10010,hcomment,120,-.5,119.5);
+    sprintf(hcomment,"Bunch Distribution (-t cut)");
+    HHBOOK1(10020,hcomment,120,-.5,119.5);
 
     // Bunch Distribution for Each Si
     HHBOOK1(10110,"bunch distribution Si-1",120,-.5,119.5);
@@ -295,17 +315,6 @@ int hist_book(char *filename){
         HHBOOK1(11100+st,hcomment, 256, 0., 256.);
     }   
 
-    // Dead layer estimation
-    if (dproc.DMODE == 1) {
-        for (st=1;st<=72;st++){
-            sprintf(hcomment,"Tof vs Edep St - %d ",st);
-            HHBOOK2(15000+st,hcomment,
-                    100, 200., 1200.,  120, 0., 120.);
-            HHBOOK2(15100+st,hcomment,
-                    100, 200., 1200.,  120, 0., 120.);
-        }
-    }
-    
     // Energy distribution in given -t bin
     for (int ibin=0; ibin<10; ibin++) {
         float Elow = 200. + ibin*100.;

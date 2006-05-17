@@ -107,13 +107,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 	  KinemaReconstruction(1, event, cfginfo, st, edepo, e, t, delt, Mass);
 	  HHF2(15000+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
 
-	  if (dproc.CBANANA==2) {
-
-	    if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e)) 
-	      HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+	  if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e)) {
 	    
-	  } // end-of-if (dproc.CBANANA) 
-
+	    HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+	    if ((e>Emin) && (e<Emax)) Ngood[event->bid]++;
+	    
+	  } //end-of-if (abs(delt))
+	  
 	} // end-of-if (event->tdc)
 	
 	return (0);
@@ -125,8 +125,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
     //------------------------------------------------------------------//
     //                           Nomal Process Mode                     //
     //------------------------------------------------------------------//
-
-
     // fill profile histograms at the 1st visit
     if (Nevtot==1) {
         
