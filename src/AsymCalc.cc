@@ -47,7 +47,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     for (int i=0;i<120;i++) Ntotal[i] = 0;
     return 0;
 
-  }else{
+  }else if (!dproc.DMODE) {
 
     //-------------------------------------------------------
     //    Energy Yeild Weighted Average Analyzing Power
@@ -491,13 +491,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
 
 
-    //-------------------------------------------------------
-    // Specific Luminosity 
-    //-------------------------------------------------------
-    StructHistStat hstat;
-    SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
-
-
 
     //-------------------------------------------------------
     // Bunch Asymmetries
@@ -528,6 +521,15 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     checkForBadBunches();
 
+  }//end-of-if(!dproc.DMODE)
+
+
+    //-------------------------------------------------------
+    // Specific Luminosity 
+    //-------------------------------------------------------
+    StructHistStat hstat;
+    SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
+
 
     //-------------------------------------------------------
     // Run Informations
@@ -539,7 +541,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
     return(0);
 
-  }//end-of-if(Flag.feedback)
 
 }
 
