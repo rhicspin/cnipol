@@ -2388,7 +2388,7 @@
 
 [7858.007]
 	RUN_STATUS=Suspicious;
-	COMMENT="very strange run, from bizzare strips unusual bunches, tempted to junk.";
+	COMMENT="very strange run, from bizzare strips and unusual bunches (phi fit does not work for ~1/2 of the bunches, no separation in the phase, tempted to junk.";
 
 
 [7858.101]
@@ -2451,8 +2451,59 @@
 
 [7860.105]
 	RUN_STATUS=Good;
-	EnableStrip=16;
-	EnableStrip=34;
-	EnableStrip=52;
-	EnableStrip=70;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;
 	COMMENT="";
+
+[7863.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile problems.";
+
+[7863.005]
+	RUN_STATUS*=Good;
+	CONFIG=7863.003.config.dat;
+	COMMENT*="fixed target.";
+	
+[7863.101]
+	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;
+	COMMENT="suspicious strips.";
+
+[7863.102]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7864.003]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7864.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7864.103]
+	RUN_STATUS=Good;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;
+	COMMENT="";
+
+[7865.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7865.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile problems.";
+
+[7865.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wide Profile";
+
+
