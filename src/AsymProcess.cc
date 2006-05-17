@@ -516,9 +516,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 // Class name  : 
 // Method name : KinemaReconstruction(
 //
-// Description : 
-// Input       : 
-// Return      : 
+// Description : calculate kinematics from ADC and TDC
+// Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
+// Return      : float &edepo, float &e, float &t, float &delt, float &Mass
 //
 int
 KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, 
@@ -530,11 +530,17 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
   int vlen = 1;
   hhrammar_(&rand1, &vlen);
   hhrammar_(&rand2, &vlen);
-  
+
+  // Energy Deosit
   edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
 
+  // ToF in [ns]
   t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
+
+  // Kinetic energy assuming Carbon 
   e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+
+  // Decrepancy between observed ToF and calculated t from energy
   delt = t - runconst.E2T/sqrt(e);  
 
   return 1;
