@@ -5,44 +5,46 @@
 INF=out.dat;
 DB=testdb.txt;
 LIST=runlist.txt;
+test=0;
+
+#RefN=7737.001;
 
 #Find the run number, the next run number, and the reference line number
 
 NLINE=`wc $DB | gawk '{print $1}'`
-grep -n '^.' $LIST > tmplist.txt
+#grep -n '^.' $LIST > tmplist.txt
+
+grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > tmplist.txt
+DbN=`wc tmplist.txt | gawk '{ print $1 }'`
+echo -e "DbN is $DbN"
 
 RunN=`grep "^\[" $INF | sed -e "s/\[//" | sed "s/\]//" | sed -e "s/@//"`
 echo -e "Run number is $RunN"
 
-RefN=`grep -n "$RunN" $LIST | cut -f1 -d: | gawk '{print $1 +1}'`
-echo -e "Reference number is $RefN"
 
-NextN=`grep "^$RefN" tmplist.txt | sed "s/:/ /" | gawk '{print $2}'`
-echo -e "Next number is $NextN"
-
-
-if [[ $NextN ]]; then
-    
-    tester=`grep "\[$NextN" $DB`;
-else
-    tester=0;
-fi
-
-echo -e "tester is $tester"
+#############################################################################
+#                                InsertTag                                  #
+#############################################################################
 
 
 InsertTag()  {
 
-    header=`grep -n "\[$NextN" $DB | sed -e "s/:/ /" | gawk '{print $1-1}'`
-    head -n $header $DB > tmp1.txt
+    header=`grep -n "^\[$RefN" testdb.txt | sed -e "s/:/ /" | gawk '{print $1-1}'`
+    echo -e "$header";
+    head -n $header $DB > tmp1.txt;
 
-    grep '^.' $INF >> tmp1.txt
-    echo -e "" >> tmp1.txt
+    grep '^.' $INF >> tmp1.txt;
+    echo -e "" >> tmp1.txt;
     residual=$(( $NLINE - $header ));
-    tail -n $residual $DB >> tmp1.txt
+    echo -e "$residual";
+    tail -n $residual $DB >> tmp1.txt;
 
     echo "insertion complete"
 }
+
+#############################################################################
+#                                  AppendTag                                #
+#############################################################################
 
 AppendTag() {
 
@@ -53,9 +55,28 @@ AppendTag() {
 
 }
 
-if [[ $tester != 0 ]]; then
-    echo "insterting";
+
+
+#############################################################################
+#                                    Main                                   #
+#############################################################################
+
+
+for (( i =1; i<=$DbN; i++ )) {
+    RefN=`line.sh "$i" tmplist.txt`;
+    echo -e "RefN = $RefN";
+    test=`CompareRuns $RefN $RunN`
+    echo -e "$test";
+    if [[ $test == 1 ]]; then
+ 	break
+    fi
+} 
+
+
+if [[ $test == 0 ]]; then
+    echo "inserting";
     InsertTag;
+    echo "$header";
 
 else
     echo "appending";
