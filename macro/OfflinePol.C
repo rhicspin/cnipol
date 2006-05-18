@@ -246,13 +246,13 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 // Return      : 
 //
 Int_t 
-OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
+OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
 
   Float_t xmin, xmax, ymin, ymax;
   Float_t margin=0.05;
 
   Char_t title[100];
-  sprintf(title,"Polarization (%s)",Beam);
+  sprintf(title,"Polarization (%s) %s", Beam, subtitle);
 
   switch (Mode) {
   case 10:
@@ -272,35 +272,35 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     ymin=-10; ymax=10;
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="P_online-P_offline";
-    sprintf(title,"Online/Offline Polarization Diff.(%s)",Beam);
+    sprintf(title,"Online/Offline Polarization Diff.(%s) %s",Beam, subtitle);
     break;
   case 60:
     GetScale(RunID, ndata, margin, xmin, xmax);
     ymin=-35; ymax=35;
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="phi angle [deg]";
-    sprintf(title,"phi angle (%s)",Beam);
+    sprintf(title,"phi angle (%s) %s", Beam, subtitle);
     break;
   case 65:
     GetScale(index, ndata, margin, xmin, xmax);
     ymin=-35; ymax=35;
     Char_t xtitle[100]="Index";
     Char_t ytitle[100]="phi angle [deg]";
-    sprintf(title,"phi angle (%s)",Beam);
+    sprintf(title,"phi angle (%s) %s", Beam, subtitle);
     break;
   case 70:
     xmin=-30; xmax=30;
     ymin=20; ymax=80;
     Char_t xtitle[100]="phi angle [deg]";
     Char_t ytitle[100]="P_offline [%]";
-    sprintf(title,"P vs. phi angle",Beam);
+    sprintf(title,"P vs. phi angle %s",Beam, subtitle);
     break;
   case 80:
     xmin=0; xmax=4;
     ymin=-40; ymax=40;
     Char_t xtitle[100]="chi2 of P*sin(phi) fit";
     Char_t ytitle[100]="phi angle [deg]";
-    sprintf(title,"Chi2 vs. phi",Beam);
+    sprintf(title,"Chi2 vs. phi %s", Beam, subtitle);
     break;
   }
 
@@ -331,8 +331,18 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   Char_t DATAFILE[256];
   sprintf(DATAFILE,"summary/OfflinePol_%s.dat",Beam);
   Int_t ndata = GetData(DATAFILE);
-  if (Mode<100) DrawFrame(Mode, ndata, Beam);
 
+  Int_t FILL[2];
+  FILL[0] = int(RunID[0]);
+  FILL[1] = int(RunID[ndata]);
+  Char_t subtitle[50]; 
+  sprintf(subtitle,"[Fill#%d - %d]",FILL[0],FILL[1]);
+
+  if (Mode<100) DrawFrame(Mode, ndata, Beam, subtitle);
+
+
+  Char_t ytitle[100];
+  sprintf(ytitle,"# of Runs %s",subtitle);
   TLegend * aLegend = new TLegend(0.7,0.15,0.85,0.3);
 
   switch (Mode) {
@@ -349,6 +359,7 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       break;
   case 150:
       Pdiff->SetXTitle("Poffline - Ponline [%]");
+      Pdiff->SetYTitle(ytitle);
       Pdiff->SetFillColor(Color);
       Pdiff->Draw();
       break;
@@ -360,6 +371,7 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       break;
   case 160:
       phiDist->SetXTitle("phi angle [deg.]");
+      phiDist->SetYTitle(ytitle);
       phiDist->SetFillColor(Color);
       phiDist->Draw();
       break;
@@ -371,6 +383,7 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
       break;
   case 180:
       sfitchi2->SetXTitle("sin(phi) fit chi2");
+      sfitchi2->SetYTitle(ytitle);
       sfitchi2->SetFillColor(Color);
       sfitchi2->Draw();
       break;
