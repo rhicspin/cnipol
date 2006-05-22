@@ -292,7 +292,8 @@ for f in `cat $DATADIR/raw_data.list` ;
 		  fi
 	      elif [ $ExclusiveMode == 0 ] ; then
 		  echo -e -n "$RunID";
-		  GetOnlinePolarization;
+#		  GetOnlinePolarization;
+		  GetOnlinePolFromFile;
 		  printf "$OnlineP $OnlinedP  N/A-";
 		  echo -e -n "\n";
 	      fi
@@ -310,7 +311,7 @@ done
 
 
 #############################################################################
-#                                    Main                                   #
+#                                   Switch                                  #
 #############################################################################
 Switch(){
     touch $ASYMDIR 2>/dev/null;
