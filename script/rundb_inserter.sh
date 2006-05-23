@@ -5,9 +5,7 @@
 INF=out.dat;
 DB=testdb.txt;
 LIST=runlist.txt;
-test=0;
-
-#RefN=7737.001;
+Test=0;
 
 #Find the run number, the next run number, and the reference line number
 
@@ -18,7 +16,7 @@ grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > tmplist.txt
 DbN=`wc tmplist.txt | gawk '{ print $1 }'`
 echo -e "DbN is $DbN"
 
-RunN=`grep "^\[" $INF | sed -e "s/\[//" | sed "s/\]//" | sed -e "s/@//"`
+RunN=`grep "^\[" $INF | sed -e "s/\[//" | sed "s/\]@//" | gawk '{print $1}'`
 echo -e "Run number is $RunN"
 
 
@@ -62,18 +60,18 @@ AppendTag() {
 #############################################################################
 
 
-for (( i =1; i<=$DbN; i++ )) {
+for (( i=1; i<=$DbN; i++ )) do
     RefN=`line.sh "$i" tmplist.txt`;
-    echo -e "RefN = $RefN";
-    test=`CompareRuns $RefN $RunN`
-    echo -e "$test";
-    if [[ $test == 1 ]]; then
+    Test=`CompareRuns $RefN $RunN`;
+    echo -e "Test = $Test";
+    if [[ $Test == 1 ]]; then
  	break
     fi
-} 
+done
+ 
+echo -e "Test = $Test";
 
-
-if [[ $test == 0 ]]; then
+if [[ $Test == 1 ]]; then
     echo "inserting";
     InsertTag;
     echo "$header";
