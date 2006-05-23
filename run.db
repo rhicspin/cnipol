@@ -7,6 +7,7 @@
 	CONFIG=6935.002.config.dat;
 	INJ_TSHIFT=7;
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 
 [4000.101]
 	MEASUREMENT_TYPE=NORM;
@@ -14,6 +15,7 @@
 	CONFIG=6858.113.config.dat;
 	INJ_TSHIFT=7;
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 
 
 
@@ -28,6 +30,7 @@
 	MASSCUT=3;
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 
 [6500.101]
 	MEASUREMENT_TYPE=NORM;
@@ -37,6 +40,7 @@
 	MASSCUT=3;
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 
 [6773.101]
 	TSHIFT=3;	
@@ -180,6 +184,7 @@
 	ENERGY_CALIB=0213.007;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 	DisableStrip=66;
 
 [7400.101]
@@ -188,6 +193,7 @@
 	ENERGY_CALIB=60217.101;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
 
 
 [7450.001]
@@ -2505,5 +2511,235 @@
 [7865.004]
 	RUN_STATUS=Suspicious;
 	COMMENT="Wide Profile";
+
+
+[7866.001]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Tune;
+	CONFIG=7866.001.config.dat;
+	COMMENT="Profile Problems.";
+
+[7866.101]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Tune;
+	CONFIG=7866.101.config.dat;
+	COMMENT*="Gap in bunch pattern.";
+
+[7867.001]
+	RUN_STATUS=Tune;
+	COMMENT="Horizontal target?  Many strip problems.";
+
+[7867.004]
+	RUN_STATUS*=Tune;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target";
+
+
+[7867.005]
+	RUN_STATUS*=Tune;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target.";
+
+[7867.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Everything looks bad in this one.";
+
+[7867.007]
+	RUN_STATUS*=Tune;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target.";
+
+[7868.001]
+	RUN_STATUS=Tune;
+	COMMENT="Wide mass peaks and background issues.";
+
+[7868.002]
+	CONFIG=7868.002.config.dat;
+
+[7868.003]
+	COMMENT="Wide mass peaks and wide profile.";
+
+[7868.007]
+	RUN_STATUS=Tune;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks";
+
+[7868.008]
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks.";
+
+[7868.009]
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks.";
+
+[7868.101]
+	RUN_STATUS=Tune;
+	COMMENT="";
+
+[7868.108]
+	RUN_STATUS*=Junk;
+
+[7868.113]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7869.001]
+	RUN_STATUS=Tune;
+	CONFIG=7869.001.config.dat;
+	COMMENT="";
+
+[7871.001]
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile problems";
+	CONFIG=7871.001.config.dat;
+
+[7871.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Wider profile, but better than previous.";
+
+[7871.101]
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Good;
+	COMMENT="";
+	CONFIG=7871.101.config.dat;
+
+[7872.001]
+	RUN_STATUS=Suspicious;
+	DisableStrip=64;
+	COMMENT="Profile problems, and strip 64 seems to flakey, could be false signal however."
+
+[7872.002]
+	RUN_STATUS=Good;
+	EnableStrip=64;
+	COMMENT="";
+
+[7872.103]
+	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;	
+	COMMENT="Flakey WFD strips are back, but not as pronounced."
+
+[7875.001]
+	RUN_STATUS=Junk;
+	COMMENT="All sorts of problems including bad strips and seemingly low event numbers ~300000 carbons but this was a 6 bunch run so not too worried, after looking at the scalar plots, I decided this was junk.";
+
+[7875.101]
+	RUN_STATUS=Junk;
+	COMMENT="Similar problems to 7875.001.";
+
+[7878.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7878.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="profile issue. scan stops midway through the beam.";
+
+[7878.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7878.102]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan starts midway through beam.";
+
+[7882.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan starts midway through the beam.";
+
+[7882.101]
+	COMMENT="Suspicious strips";
+
+[7882.102]
+	COMMENT="Profile issue: scan starts midway through the beam.";
+
+[7883.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan stops midway through beam.";
+
+[7885.001]
+	CONFIG=7885.001.config.dat;
+	COMMENT="six bunch mode, with low rates and associated problems.";
+
+[7885.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="six bunch mode and associated problems.";
+
+[7886.001]
+	CONFIG=7886.001.config.dat;
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan stops midway through beam.";
+
+[7886.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7886.007]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7886.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7886.102]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan starts midway through beam.";
+
+[7886.103]
+	COMMENT="Profile issue: only three points in the scan?";
+
+[7886.104]
+	COMMENT="Profile issue: scan only sees second half of the beam.";
+
+[7886.105]
+	RUN_STATUS=Good;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;
+	COMMENT="";
+
+[7889.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7889.003]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: bunch right?";
+
+[7889.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan stops midway through beam.";
+
+[7889.005]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7889.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: wide profile, flattop.";
+
+[7892.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7893.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7896.105]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+
+[7898.001]
+	RUN_STATUS*=Suspicious;
+	DEFINE_SPIN_PATTERN*=2;
+	DEFINE_FILL_PATTERN*=1;
+	COMMENT*="Spin and Fill Pattern are screwed up.";
+
+[7898.101]
+	RUN_STATUS*=Suspicious;
+	DEFINE_SPIN_PATTERN*=3;
+	DEFINE_FILL_PATTERN*=1;
+	COMMENT*="Spin and Fill Pattern are screwed up.";
 
 
