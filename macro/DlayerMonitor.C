@@ -12,7 +12,9 @@
 
 #define Debug 0
 
-const Int_t N=1000;
+const Int_t N=2000;
+Int_t RUN=5;
+
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 
 class DlayerMonitor
@@ -96,8 +98,7 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
 
 	//	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 
-	++i; dx[i]=dy[i]=0;
-
+      ++i; dx[i]=dy[i]=0;
 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
@@ -106,6 +107,10 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
       } // if-(i>N)
 
     }// end-of-while(!fin.eof())
+
+    // Run-5, Run-6, Run-7....
+    if (RunID[0]>7400) RUN=6;
+
 
     fin.close();
     return i-1;
@@ -187,21 +192,24 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   switch (Mode) {
   case 10:
     GetScale(RunID, ndata, margin, xmin, xmax);
-    ymin=20; ymax=80;
+    if (RUN==5) {ymin=20  ; ymax=65;}
+    if (RUN==6) {ymin=50  ; ymax=75;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title,"DeadLayer History (%s)",Beam);
     break;
   case 20:
     xmin=0.0 ; xmax=1.5;
-    ymin=60  ; ymax=75;
+    if (RUN==5) {ymin=20  ; ymax=65;}
+    if (RUN==6) {ymin=60  ; ymax=75;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title," DeadLayer Rate Dependence (%s)",Beam);
     break;
   case 30:
     GetScale(RunID, ndata, margin, xmin, xmax);
-    ymin=-20  ; ymax=0;
+    GetScale(AveT0, ndata, margin, ymin, ymax);
+    if (RUN==6) {ymin=-20  ; ymax=0;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"t0 Average [ns]");
     sprintf(title," t0 Average History (%s)",Beam);
@@ -215,7 +223,8 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     break;
   case 50:
     xmin=0.0 ; xmax=1.5;
-    ymin=-20  ; ymax=0;
+    if (RUN==5) {ymin=-20  ; ymax=20;}
+    if (RUN==6) {ymin=-20  ; ymax=0;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"t0 Average [ns]");
     sprintf(title," t0 Average Rate Dependence (%s)",Beam);
@@ -229,15 +238,17 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     break;
   case 100:
     GetScale(AveT0, ndata, margin, xmin, xmax);
-    ymin=60; ymax=75;
+    if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
+    if (RUN==6) {ymin=60  ; ymax=75;}
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
     sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     break;
   case 101:
-    xmin=-20 ; xmax=-14;
+    if (RUN==5) {xmin=-20; xmax=15; ymin=20; ymax=65;}
+    if (RUN==6) {xmin=-20 ; xmax=-14;  ymin=58; ymax=80;
     if (Beam=="Blue") {xmin=-16; xmax=-10;}
-    ymin=58; ymax=80;
+    }
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
     sprintf(title," t0-deadlayer Correlation (%s)",Beam);
@@ -272,14 +283,19 @@ DlayerMonitor::DlayerPlot(Char_t *Beam, Int_t Mode){
   // Y-coodinates for Legend
   Float_t interval=0.15;
   Float_t ymin=0.15;
+  Float_t xmin=0.7;
   switch (Mode) {
   case 30:
     ymin=0.70;
     break;
   case 40:
-    ymin=0.70;
+    if (RUN==6) ymin=0.70;
+    break;
+  case 60:
+    xmin=0.2;  ymin=0.70;
     break;
   }
+  Float_t xmax=xmin+interval;
   Float_t ymax=ymin+interval;
 
   Char_t DATAFILE[256];
@@ -288,7 +304,7 @@ DlayerMonitor::DlayerPlot(Char_t *Beam, Int_t Mode){
   DrawFrame(Mode, ndata, Beam);
 
   // Legend
-  TLegend * aLegend = new TLegend(0.7, ymin, 0.85, ymax);
+  TLegend * aLegend = new TLegend(xmin, ymin, xmax, ymax);
 
   // Plot flattop
   Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
