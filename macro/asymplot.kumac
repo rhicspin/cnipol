@@ -1064,6 +1064,14 @@ return
    Y45MIN=[Y45MIN]-[INTERVAL]*0.1
    Y45MAX=[Y45MAX]+[INTERVAL]*0.1
 
+* Manual Scale
+*   X45MIN=-0.02
+*   X45MAX=0.02
+*   X90MIN=-0.03
+*   X90MAX=0.01
+*   Y45MIN=-0.04
+*   Y45MAX=-0.01
+
    opt utit
    set YHTI 0.7
    
