@@ -1383,9 +1383,12 @@
 	CONFIG=7718.005.config.dat;
 
 [7718.006]
+	RUN_STATUS=Suspicious;
+	COMMENT="fixed target measurement with very low rate"	
 	CONFIG=7718.006.config.dat;
 
 [7718.007]
+	RUN_STATUS=Good;
 	CONFIG=7718.007.config.dat;
 
 [7712.103]
@@ -2262,6 +2265,10 @@
 [7850.004]
 	RUN_STATUS=Good;
 	COMMENT="";
+
+[7850.007]
+	RUN_STATUS=Suspicious;
+	COMMENT="Fixed target with low rate";
 
 [7850.009]
 	RUN_STATUS*=Suspicious;
