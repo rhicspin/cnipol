@@ -45,6 +45,28 @@ AsymRecover::OverwriteSpinPattern(int index){
 
 }
 
+//
+// Class name  : AsymRecover
+// Method name : OverwriteFillPattern(int index)
+//
+// Description : Overwrite the fill pattern to save runs whose fill patterns
+//             : were screwed up
+// Input       : int index
+// Return      : 
+//
+int
+AsymRecover::OverwriteFillPattern(int index){
+  
+  cout << "Recovery: Fill pattern is ovewritten by user defined pattern index(" 
+       << index << ")" << endl;
+
+  for (int i=0; i<RHIC_MAX_FILL; i++)  fillpat[i] = UserDefinedFillPattern[index][i] ;
+
+  return 1 ;
+
+}
+
+
 
 //
 // Class name  : AsymRecover

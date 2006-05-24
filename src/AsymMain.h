@@ -55,7 +55,8 @@ StructReadFlag ReadFlag = {
 StructFlag Flag = {
   0,       // VERBOSE mode
   0,       // feedback mode
-  -1,      // spin pattern
+  -1,      // spin_pattern
+  -1,      // fill_pattern
   0        // mask_bunch
 };
 

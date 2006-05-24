@@ -248,18 +248,31 @@ int readloop() {
             }
 
 	    char pattern[3][5] ;
+
+	    //===================================================================
+	    //   Print Spin Pattern and Recover Spin Pattern by User Defined ones
+	    //===================================================================
 	    cout << "Spin Pattern Used : " << endl;
 	    PrintPattern("spin");
-
-	    //Recover Spin Pattern by User Defined ones
 	    if (Flag.spin_pattern>=0) {
 	      recover.OverwriteSpinPattern(Flag.spin_pattern);
 	      PrintPattern("spin");
 	    }
 
+
+	    //===================================================================
+	    //   Print Fill Pattern and Recover Fill Pattern by User Defined ones
+	    //===================================================================
             cout << "Fill Pattern Used : " << endl;
 	    PrintPattern("fill");
+	    if (Flag.fill_pattern>=0) {
+	      recover.OverwriteFillPattern(Flag.fill_pattern);
+	      PrintPattern("fill");
+	    }
 
+	    //===========================================================
+	    //       Masking on bad bunches 
+	    //===========================================================
 	    if (runinfo.NDisableBunch) {
 	      recover.MaskFillPattern();
 	      cout << "Masked Fill Pattern : " << endl;
