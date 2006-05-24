@@ -2733,13 +2733,13 @@
 [7898.001]
 	RUN_STATUS*=Suspicious;
 	DEFINE_SPIN_PATTERN*=2;
-	DEFINE_FILL_PATTERN*=1; // this has not been implemented yet. 
+	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
 
 [7898.101]
 	RUN_STATUS*=Suspicious;
 	DEFINE_SPIN_PATTERN*=3;
-	DEFINE_FILL_PATTERN*=1; // this has not been implemented yet. 
+	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
 
 [7898.002]
