@@ -2733,13 +2733,42 @@
 [7898.001]
 	RUN_STATUS*=Suspicious;
 	DEFINE_SPIN_PATTERN*=2;
-	DEFINE_FILL_PATTERN*=1;
+	DEFINE_FILL_PATTERN*=1; // this has not been implemented yet. 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
 
 [7898.101]
 	RUN_STATUS*=Suspicious;
 	DEFINE_SPIN_PATTERN*=3;
-	DEFINE_FILL_PATTERN*=1;
+	DEFINE_FILL_PATTERN*=1; // this has not been implemented yet. 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
+
+[7898.002]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: scan stops midway through beam.";
+
+[7898.003]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
+[7898.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7901.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7901.002]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7901.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7901.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
 
 
