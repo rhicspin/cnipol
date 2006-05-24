@@ -73,6 +73,7 @@ readdb(double RUNID) {
 			if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
 			if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
 			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
+			if (str.find("DEFINE_FILL_PATTERN") ==1) rundb.define_fill_pattern_s = GetVariables(str);
 			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
 			if (str.find("DisableBunch")        ==1){
 			rundb.disable_bunch_s     = GetVariables(str);
@@ -140,6 +141,9 @@ readdb(double RUNID) {
 
   // Spin Pattern Recoverly
   Flag.spin_pattern = atoi(rundb.define_spin_pattern_s.c_str());
+
+  // Fill Pattern Recoverly
+  Flag.fill_pattern = atoi(rundb.define_fill_pattern_s.c_str());
 
 
   // VERBOSE mode

@@ -181,6 +181,7 @@ typedef struct {
   string disable_bunch_s;
   string enable_bunch_s;
   string define_spin_pattern_s;
+  string define_fill_pattern_s;
   string comment_s;
 }StructRunDB ;
 
@@ -227,6 +228,7 @@ typedef struct {
   int VERBOSE;
   int feedback;
   int spin_pattern;
+  int fill_pattern;
   int mask_bunch;
 } StructFlag;
 
