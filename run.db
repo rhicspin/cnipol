@@ -2729,16 +2729,9 @@
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
-
 [7898.001]
-	RUN_STATUS*=Suspicious;
+	RUN_STATUS*=Recovered;
 	DEFINE_SPIN_PATTERN*=2;
-	DEFINE_FILL_PATTERN*=0; 
-	COMMENT*="Spin and Fill Pattern are screwed up.";
-
-[7898.101]
-	RUN_STATUS*=Suspicious;
-	DEFINE_SPIN_PATTERN*=3;
 	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
 
@@ -2750,10 +2743,15 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 
+[7898.101]
+	RUN_STATUS*=Suspicious;
+	DEFINE_SPIN_PATTERN*=3;
+	DEFINE_FILL_PATTERN*=0; 
+	COMMENT*="Spin and Fill Pattern are screwed up.";
 
-[7898.106]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7898.106]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
 
 [7901.001]
 	RUN_STATUS*=Junk;

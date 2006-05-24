@@ -23,7 +23,7 @@ help(){
     echo    "         [--analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
     echo    "    : make pC offline analysis database "
     echo    " "
-    echo -e "   -a --analyzed-run-list    Make analyized runlist [def]:$ANALYZED_RUN_LIST";
+    echo -e "   -a --analyzed-run-list    Make analyized runlist file [def]:$ANALYZED_RUN_LIST";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
@@ -313,7 +313,10 @@ done
 #############################################################################
 #                                   Switch                                  #
 #############################################################################
-Switch(){
+# Check if one has a permission to create analyzed_run.list file in default
+# directory. If not, the analyzed_run.list will be created in the current
+# directory.
+CheckWritePermission(){
     touch $ASYMDIR 2>/dev/null;
     if [ $? -eq 1 ] ; then
 	ANALYZED_RUN_LIST="./analyzed_run.list"
@@ -350,7 +353,7 @@ done
 
 
 if [  $ExeAnalyzedRunList -eq 1 ] ; then
-    Switch;
+    CheckWritePermission;  # check the write permission of analyzed_run.list.
     MakeAnalyzedRunList;
 fi
 if [ $ExeMakeDatabase -eq 1 ] ; then
