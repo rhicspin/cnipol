@@ -333,6 +333,8 @@
 	CONFIG=7562.108.config.dat;
 
 [7563.001]
+// wrong spin pattern
+	RUN_STATUS=Suspicious;	
 	EnableStrip=16;
 	EnableStrip=18;
 	EnableStrip=34;
@@ -345,6 +347,8 @@
 	CONFIG=7563.001.config.dat;
 
 [7563.002]
+// wrong spin pattern
+	RUN_STATUS=Suspicious;	
 	CONFIG=7563.002.config.dat;
 
 [7563.003]
