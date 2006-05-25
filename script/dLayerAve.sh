@@ -123,7 +123,7 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     fi
 
     if [ $DISTRIBUTION -eq 1 ] ; then
-	OFILE=$ASYMDIR/summary/dLayer_$Beam\_$Mode.dat;
+	OFILE=$ASYMDIR/summary/dLayer_$Beam\_$Mode\_all.dat;
     fi
 
     if [ -f $DlayerFile ] ; then
