@@ -17,17 +17,18 @@ FILTER=0;
 help(){
     COMMAND=`basename $0`
     echo    " "
-    echo    " $COMMAND [-xh][--all][-n <number>]"
+    echo    " $COMMAND [-xh][--all][-n <number>][--exclude-tune]"
     echo    "    : Make specific database or/and switch link betwen data files."
     echo    "      Default link is $FILE";
     echo    " "
-    echo -e "   --all         Switch to $FILE";
+    echo -e "   --all          Switch to $FILE";
+    echo -e "   --exclude-tune Excluding tuning measurements"; 
     echo -e "   --7579-7714   ";
     echo -e "   --7715-7783   ";
     echo -e "   --7784-7842   ";
     echo -e "   --7842after   ";
-    echo -e "   -n <number>   Select only the last <number> runs";
-    echo -e "   -h | --help   Show this help"
+    echo -e "   -n <number>    Select only the last <number> runs";
+    echo -e "   -h | --help    Show this help"
     echo -e "   -x            Show example"
     echo    " "
     exit;
@@ -96,6 +97,7 @@ BackDefault(){
 while test $# -ne 0; do
   case "$1" in
   --all) MODE="_all" ;;
+  --exclude-tune) MODE="_limited";;
   --7579-7714) MODE="_7579-7714";;
   --7715-7783) MODE="_7715-7783";;
   --7784-7842) MODE="_7784-7842";;
