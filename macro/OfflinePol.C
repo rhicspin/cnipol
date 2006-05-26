@@ -217,6 +217,12 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 80:
     TGraphErrors* tgae = new TGraphErrors(ndata, chi2, phi, dy, dphi);
     break;
+  case 90:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, SpeLumi, dx, dy);
+    break;
+  case 100:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, A_N, dx, dy);
+    break;
   }
 
   tgae -> SetMarkerStyle(Mtyp);
@@ -302,6 +308,21 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
     Char_t ytitle[100]="phi angle [deg]";
     sprintf(title,"Chi2 vs. phi %s", Beam, subtitle);
     break;
+  case 90:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    GetScale(SpeLumi, ndata, margin, ymin, ymax);
+    Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="Specific Luminosity sigma";
+    sprintf(title,"Specific Luminosity Sigma vs. Fill Number %s", Beam, subtitle);
+    break;
+  case 100:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    GetScale(A_N, ndata, margin, ymin, ymax);
+    cout << ymin << " " << ymax;
+    Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="A_N";
+    sprintf(title,"Energy Spectrum Weighted Average A_N %s", Beam, subtitle);
+    break;
   }
 
   frame = new TH2D(Beam,title, 10, xmin, xmax, 10, ymin, ymax);
@@ -381,6 +402,12 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
   case 80:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
+  case 90:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 100:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
   case 180:
       sfitchi2->SetXTitle("sin(phi) fit chi2");
       sfitchi2->SetYTitle(ytitle);
@@ -452,6 +479,8 @@ OfflinePol::OfflinePol()
     RunBothBeam(70,  CurC, ps); // offline P vs. phi-angle 
     RunBothBeam(80,  CurC, ps); // phi-angle vs. chi2
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
+    RunBothBeam(90,  CurC, ps); // Specific Luminosity  vs. RunID
+    //    RunBothBeam(100, CurC, ps); // phi-angle vs. chi2
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
