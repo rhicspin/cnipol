@@ -2755,7 +2755,7 @@
 	COMMENT="";
 
 [7898.101]
-	RUN_STATUS*=Suspicious;
+	RUN_STATUS*=Recovered;
 	DEFINE_SPIN_PATTERN*=3;
 	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
@@ -2780,4 +2780,95 @@
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7904.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7906.002]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan ends midway through the beam.";
+
+[7906.003]
+	CONFIG=7906.003.config.dat;
+
+[7908.001]
+	RUN_STATUS=Suspicious;
+	CONFIG=7908.001.config.dat;
+	COMMENT="Profile issue: flattop, and scan stops midway through scan.";
+
+[7908.002]
+	COMMENT*="Scalar mode yields zero polarization.  Event mode looks good.";
+
+[7908.004]
+	COMMENT="Profile issue: flattop and bunched right.";
+
+[7908.005]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7908.006]
+	RUN_STATUS*=Junk;
+
+[7908.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7908.106]
+	RUN_STATUS=Suspicious;
+	DisableStrip=17;
+	DisableStrip=35;
+	DisableStrip=53;
+	DisableStrip=71;	
+	COMMENT="Flakey WFD";
+
+[7908.107]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file. and flakey WFD.";
+
+[7909.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: flattop and scan stops halfway through the scan.";
+
+[7909.003]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7909.004]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile issue: bizzare profile shape.";
+
+[7909.005]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7909.101]
+	RUN_STATUS=Good;
+	EnableStrip=17;
+	EnableStrip=35;
+	EnableStrip=53;
+	EnableStrip=71;	
+	COMMENT="";
+
+[7911.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7911.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+
+[7915.001]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+[7915.102]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7915.107]@
+	CONFIG=7915.107.config.dat;@
+
+
+[7916.101]@
+	CONFIG=7916.101.config.dat;@
 
