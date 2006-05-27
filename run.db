@@ -129,15 +129,46 @@
 [7208.001]
 	CONFIG=7067.002.config.dat;
 
+// ------------------------------------------------------------//
+//                      Begin  205 GeV Run
+// ------------------------------------------------------------//
 [7223.001]
+	COMMENT="205 GeV Operation";
 	CONFIG=7223.002.config.dat;
 
 [7223.101]
 	CONFIG=7223.102.config.dat;
+	COMMENT="205 GeV Operation";
 
+[7224.001] 
+	RUN_STATUS=Junk;
 
-[7223.101]
-	CONFIG=7223.102.config.dat;
+[7224.002] 
+	RUN_STATUS=Good;
+	COMMENT="A_N measurements 002 - 008 with attenuation x1.";
+
+[7224.009] 
+	RUN_STATUS=Junk;
+
+[7224.010] 
+	RUN_STATUS=Good;
+	ENERGY_CALIB=blue_calib_0513c.times2;
+	COMMENT="High-t A_N measurements 009 - 019. Attenuation factor x2";
+
+[7224.105] 
+	COMMENT="A_N measurements 105 - 112 with attenuation x1.";
+
+[7225.001] 
+	ENERGY_CALIB=blue_calib_0513c;
+	COMMENT="";
+
+[7225.001] 
+	ENERGY_CALIB=blue_calib_0513c;
+	COMMENT="";
+
+// ------------------------------------------------------------//
+//                     End  205 GeV Run
+// ------------------------------------------------------------//
 
 [7229.001]
 	CONFIG=7069.002.config.dat;
@@ -145,18 +176,75 @@
 [7229.101]
 	CONFIG=7069.104.config.dat;
 	
+
+[7256.007]
+	RUN_STATUS*=Junk;
+
+[7257.103]
+	RUN_STATUS*=Junk;
+
 [7259.001]
+	RUN_STATUS*=Junk;
 	CONFIG=7223.002.config.dat;
+	COMMENT="Lowest energy tune. Online ETRIG=200 keV";
+
+[7259.002]
+	RUN_STATUS*=Junk;
+	COMMENT="Lowest energy tune. Online ETRIG=160 keV";
+
+[7259.003]
+	RUN_STATUS*=Junk;
+	COMMENT="Lowest energy tune. Online ETRIG=180 keV";
+
+[7259.004]
+	RUN_STATUS=Good;
+	COMMENT="Dedicated A_N runs for lowest energy 004 - 007. Online ETRIG=180keV";
 
 [7259.008]
+	RUN_STATUS*=Junk;
+	ENERGY_CALIB=blue_calib_0513c.times2;
 	CONFIG=7223.002.x2.config.dat;
+	COMMENT="Tune WINBEG=7 for consequtive High-t A_N measurements starts from next.";
+
+[7259.009]
+	RUN_STATUS=Good;
+	ENERGY_CALIB=blue_calib_0513c.times2;
+	CONFIG=7223.002.x2.config.dat;
+	COMMENT="Tune WINBEG=5. High-t A_N measurements 009 - 014 with attenuation x2.";
+
 
 [7259.015]
+	ENERGY_CALIB=blue_calib_0513c.times5;
 	CONFIG=7223.002.x5.config.dat;
+	COMMENT="Tune WINBEG=5. High-t A_N measurements 015 - 021 with attenuation x5.";
 
 
 [7262.001]
+	// back to normal calibration file
+	ENERGY_CALIB=blue_calib_0513c;
 	CONFIG=7069.002.config.dat;
+	COMMENT="";
+
+[7262.101]
+	COMMENT="";
+
+
+[7270.006]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Scan.";
+
+[7270.106]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Scan.";
+
+
+[7278.006]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Scan.";
+
+[7278.106]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Scan.";
 
 
 [7279.005]
@@ -168,11 +256,71 @@
 [7280.001]
 	CONFIG=7067.002.config.dat;
 
+[7280.003]
+	RUN_STATUS*=Junk;
+	COMMENT*="H.V screwed up.";
+
+[7280.004]
+	RUN_STATUS*=Junk;
+	COMMENT*="H.V screwed up.";
+
+[7280.005]
+	RUN_STATUS*=Junk;
+	COMMENT*="timing screwed up.";
+
+[7280.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Dunno good or bad. No comment in logbook.";
+
+[7280.007]
+	RUN_STATUS=Tune;
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	COMMENT*="Spin tune measurements 006 - 009";
+
+[7280.010]
+	RUN_STATUS=Good;
+	COMMENT="Dedicated A_N measurements 010 - 028. TrigMin=180keV, WinBeg=17.";
+
+[7280.013]
+	COMMENT="A_N low energy measurement. TrigMin=160keV, WinBeg=20";
+
+[7280.014]
+	COMMENT="A_N low energy measurement. TrigMin=160keV, WinBeg=23";
+
+[7280.015]
+	COMMENT="A_N low energy measurement 015 - 017. TrigMin=160keV, WinBeg=25";
+
+[7280.018]
+	COMMENT="A_N low energy measurement 018 - 019. TrigMin=140keV, WinBeg=25";
+
 [7280.020]
+	ENERGY_CALIB=blue_calib_0513c.times316;
 	CONFIG=7067.002.x316.config.dat;
+	COMMENT="High-t A_N measurements 020 - 028 with attenuation x3.16";
 
 [7281.001]
+	ENERGY_CALIB=blue_calib_0513c;
 	CONFIG=7279.005.config.dat;
+	COMMENT="";
+
+
+[7308.005]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal target profile scan.";
+
+[7308.006]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Vertical target profile scan.";
+
+[7308.110]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal target profile scan.";
+
+[7308.111]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Vertical target profile scan.";
+
+
 
 
 //==============================================================
