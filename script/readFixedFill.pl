@@ -109,10 +109,10 @@ for ($i=0; $i<$nfix; $i++) {
 	$rat_offl = $p_offl[$i] / $avp_offl;
 	$erat_offl = $rat_offl*sqrt(($err_offl[$i]/$p_offl[$i])**2 + ($averr_offl/$avp_offl)**2);
 # warn if out of range
-	if ($rat_onl<0.5 || $rat_offl<0.5) {
-	    print "** Warning:  Fill $fill, Fixed target/Scan ratio < 0.5\n";
-	}elsif ($rat_onl>1.5 || $rat_offl>1.5) {
-	    print "** Warning:  Fill $fill, Fixed target/Scan ratio > 1.5\n";
+	if ($rat_onl<0.7 || $rat_offl<0.7) {
+	    print "** Warning:  Fill $fill, Fixed target/Scan ratio < 0.7\n";
+	}elsif ($rat_onl>1.3 || $rat_offl>1.3) {
+	    print "** Warning:  Fill $fill, Fixed target/Scan ratio > 1.3\n";
 	}
 # write output
 	printf OUTFILE "%4d %2.2f %2.2f %2.2f %2.2f %3d %3d %2.1f %2.1f %2.1f %2.1f %7.3f %2.1f %2.1f %2.1f %2.1f %2.2f\n", $fill, $rat_onl, $erat_onl, $rat_offl, $erat_offl, $ene[$i], $nscan, $avp_onl, $averr_onl, $avp_offl, $averr_offl, $run[$i], $p_onl[$i], $err_onl[$i], $p_offl[$i], $err_offl[$i], $rate[$i]; 
