@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 # J.Wood, May 22, 2006
 # script to extract data from offline summary (~e950/offline/summary/Offline*)
-# then calculate ration of P for fixed target to scan measurements
+# then calculate ratio of P for fixed target to scan measurements
 
 $ring = $ARGV[0];
 
@@ -9,11 +9,11 @@ $BASEDIR = $ENV{"ASYMDIR"};
 
 if ($ring eq "y") {
     $infile = $BASEDIR."/summary/OfflinePol_Yellow.dat";
-    $outfile = ">".$BASEDIR."/summary/fixed-scan_ratio_yel.dat";
+    $outfile = ">".$BASEDIR."/ps/fixed-scan_ratio_yel.dat";
 }
 elsif ($ring eq "b") {
     $infile = $BASEDIR."/summary/OfflinePol_Blue.dat";
-    $outfile = ">".$BASEDIR."/summary/fixed-scan_ratio_blu.dat";
+    $outfile = ">".$BASEDIR."/ps/fixed-scan_ratio_blu.dat";
 }
 else {
     print "Must specify \'y\' for Yellow or \'b\' for Blue\n";

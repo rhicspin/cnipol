@@ -6,7 +6,7 @@
 # defaults
 $OFLDIR = $ENV{"ASYMDIR"};
 $MACRODIR = $ENV{"MACRODIR"};
-$SUMDIR = $OFLDIR."/summary/";
+$SUMDIR = $OFLDIR."/ps/";
 $OPT_GV=0;
 $ONOFF=0;
 $PLOTNAME = $SUMDIR."fixed-scan_ratio.ps";
