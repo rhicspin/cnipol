@@ -7,8 +7,6 @@ offldir = $ENV(ASYMDIR)
 alias/cre bfile [offldir]//'/summary/fixed-scan_ratio_blu.dat'
 alias/cre yfile [offldir]//'/summary/fixed-scan_ratio_yel.dat'
 alias/cre psfile $ENV(RATIOPLOT)
-lofill = 7550
-hifill = 8000
 
 ************
 ** read data
@@ -21,6 +19,10 @@ nptb = $vdim(fillb,1)
 v/cre xerrb([nptb]) r [nptb]*0
 npty = $vdim(filly,1)
 v/cre xerry([npty]) r [npty]*0
+
+lofill = 7550
+hiblu = $eval(fillb([nptb]) + 20)
+hiyel = $eval(filly([npty]) + 20)
 
 *********************************
 ** calculate ratio online/offline
@@ -63,12 +65,12 @@ zone 1 2
 
 title_global 'Target Scans - average P for each fill'
 
-null [lofill] [hifill] 0.9 1.1
+null [lofill] [hiblu] 0.9 1.1
 set pmci 4
 hplot/symbols fillb scanb [nptb] 20
 atitle 'fill' 'P?onl!/P?offl!'
 
-null [lofill] [hifill] 0.9 1.1
+null [lofill] [hiyel] 0.9 1.1
 set pmci 5
 hplot/symbols filly scany [npty] 20
 set pmci 1
@@ -77,12 +79,12 @@ atitle 'fill' 'P?onl!/P?offl!'
 
 title_global 'Fixed Target'
 
-null [lofill] [hifill] 0.9 1.1
+null [lofill] [hiblu] 0.9 1.1
 set pmci 4
 hplot/symbols fillb fixb [nptb] 20
 atitle 'fill' 'P?onl!/P?offl!'
 
-null [lofill] [hifill] 0.9 1.1
+null [lofill] [hiyel] 0.9 1.1
 set pmci 5
 hplot/symbols filly fixy [npty] 20
 set pmci 1
