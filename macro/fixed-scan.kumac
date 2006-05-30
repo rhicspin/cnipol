@@ -8,8 +8,6 @@ alias/cre bfile [offldir]//'/summary/fixed-scan_ratio_blu.dat'
 alias/cre yfile [offldir]//'/summary/fixed-scan_ratio_yel.dat'
 alias/cre psfile $ENV(FIXEDPLOT)
 *alias/cre psfile 'fixed-scan_ratio.ps'
-lofill = 7550
-hifill = 8000
 
 ************
 ** read data
@@ -22,6 +20,10 @@ nptb = $vdim(fillb,1)
 v/cre xerrb([nptb]) r [nptb]*0
 npty = $vdim(filly,1)
 v/cre xerry([npty]) r [npty]*0
+
+lofill = 7550
+hiblu = $eval(fillb([nptb]) + 20)
+hiyel = $eval(filly([npty]) + 20)
 
 ************************
 ** function to get Chi^2
@@ -89,18 +91,18 @@ zone 1 2
 
 title_global 'Online Results'
 
-null [lofill] [hifill] 0.5 1.5
+null [lofill] [hiblu] 0.5 1.5
 do i=1,4
-f/pl $eval(bonlfit(1)) [lofill] [hifill] s
+f/pl $eval(bonlfit(1)) [lofill] [hiblu] s
 enddo
 set pmci 4
 hplot/errors fillb ratonb xerrb eratonb [nptb] 20
 atitle 'fill' 'P?fixed!/P?scan!'
 itx 7600 0.61 'fit P?fixed!/P?scan! = '//$format(bonlfit(1),F3.2)//'+/-'//$format(bonlfite(1),F3.2)//',  [\143]^2! = '//$format([chionlb],F3.2)
 
-null [lofill] [hifill] 0.5 1.5
+null [lofill] [hiyel] 0.5 1.5
 do i=1,4
-f/pl $eval(yonlfit(1)) [lofill] [hifill] s
+f/pl $eval(yonlfit(1)) [lofill] [hiyel] s
 enddo
 set pmci 5
 hplot/errors filly ratony xerry eratony [npty] 20
@@ -111,18 +113,18 @@ itx 7600 0.61 'fit P?fixed!/P?scan! = '//$format(yonlfit(1),F3.2)//'+/-'//$forma
 
 title_global 'Offline Results'
 
-null [lofill] [hifill] 0.5 1.5
+null [lofill] [hiblu] 0.5 1.5
 do i=1,4
-f/pl $eval(bofflfit(1)) [lofill] [hifill] s
+f/pl $eval(bofflfit(1)) [lofill] [hiblu] s
 enddo
 set pmci 4
 hplot/errors fillb ratoffb xerrb eratoffb [nptb] 20
 atitle 'fill' 'P?fixed!/P?scan!'
 itx 7600 0.61 'fit P?fixed!/P?scan! = '//$format(bofflfit(1),F3.2)//'+/-'//$format(bofflfite(1),F3.2)//',  [\143]^2! = '//$format([chiofflb],F3.2)
 
-null [lofill] [hifill] 0.5 1.5
+null [lofill] [hiyel] 0.5 1.5
 do i=1,4
-f/pl $eval(yofflfit(1)) [lofill] [hifill] s
+f/pl $eval(yofflfit(1)) [lofill] [hiyel] s
 enddo
 set pmci 5
 hplot/errors filly ratoffy xerry eratoffy [npty] 20
