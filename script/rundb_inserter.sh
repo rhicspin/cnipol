@@ -4,7 +4,6 @@
 
 INF=out.dat;
 DB=testdb.txt;
-LIST=runlist.txt;
 Test=0;
 
 #Find the run number, the next run number, and the reference line number
@@ -12,8 +11,8 @@ Test=0;
 NLINE=`wc $DB | gawk '{print $1}'`
 #grep -n '^.' $LIST > tmplist.txt
 
-grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > tmplist.txt
-DbN=`wc tmplist.txt | gawk '{ print $1 }'`
+grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > $TMPOUTDIR/tmplist.txt
+DbN=`wc $TMPOUTDIR/tmplist.txt | gawk '{ print $1 }'`
 echo -e "DbN is $DbN"
 
 RunN=`grep "^\[" $INF | sed -e "s/\[//" | sed "s/\]@//" | gawk '{print $1}'`
@@ -61,7 +60,7 @@ AppendTag() {
 
 
 for (( i=1; i<=$DbN; i++ )) do
-    RefN=`line.sh "$i" tmplist.txt`;
+    RefN=`line.sh "$i" $TMPOUTDIR/tmplist.txt`;
     Test=`CompareRuns $RefN $RunN`;
     echo -e "Test = $Test";
     if [[ $Test == 1 ]]; then
