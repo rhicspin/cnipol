@@ -24,7 +24,7 @@ static Float_t KinConst_E2T=1454.75; // constant for Run05 L=18.5cm
 int DisableStr[NDisableList][NDisableStrip] =
   {
     { 14, 22, -1, -1, -1}, // 0 Blue
-    { 52, 56, -1, -1, -1}, // 1 Yellow FLattop Disable List
+    { 51, 55, -1, -1, -1}, // 1 Yellow FLattop Disable List
     { -1, -1, -1, -1, -1}, // 2
     { -1, -1, -1, -1, -1}, // 3
     { -1, -1, -1, -1, -1}, // 4
@@ -402,6 +402,8 @@ void KinFit::Fit(Int_t mode)
       printf(" dlave = %7.2f\n",dlave);
       printf(" Chi2/Det=");
       for (Int_t Si=0;Si<6;Si++) printf(" %7.1f",SiDev[Si]);
+      printf("\n dLayer/det=");
+      for (Int_t Si=0;Si<6;Si++) printf(" %7.1f",dlsum[Si]);
       printf("\n Total Deviation=%7.1f\n",totSiDev);
       printf(" Deviation/strip=%7.1f\n",devpst);
       printf(" t0 average= %7.1f\n", T0.ave);
