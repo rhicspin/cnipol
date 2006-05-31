@@ -179,10 +179,12 @@ public:
         Float_t y[72][100];
     } resd;
 
-    Float_t TMIN = -30.;
-    Float_t TMAX =  10.;
-    Float_t DMIN = 0.;
-    Float_t DMAX = 80.;
+  struct PlotRange {
+    Float_t TMIN  ;
+    Float_t TMAX  ;
+    Float_t DMIN  ;
+    Float_t DMAX  ;
+  } plotrange;
 
   Float_t strip[72], stripE[72];
   Float_t dl[72], dlE[72], dl_d[72], dlE_d[72];
@@ -253,6 +255,18 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
         strip[St] = (Float_t)(St+1);
         stripE[St] = 0.;
     }
+
+
+    // Dl, t0 plotting range initialization    
+    plotrange.TMIN = -35.;
+    plotrange.TMAX =  10.;
+    plotrange.DMIN = 0.;
+    plotrange.DMAX = 80.;
+    if (RUNID > 7400) { //  for Run06
+        plotrange.TMIN = -25;
+	plotrange.TMAX = 10;
+    }
+
 
 
 };
@@ -671,15 +685,6 @@ void KinFit::PlotResult()
     // plot Residuals
     Residual();
 
-
-    // Default plotting range for Run05
-    if (RUNID > 7400) { //  for Run06
-        TMIN = -25;
-        TMAX = 10;
-    }
-
-
-
     TCanvas *CurC = new TCanvas("CurC","",1);
 
     Char_t filename[100];
@@ -861,11 +866,11 @@ KinFit::PlotDlayer(Int_t Mode, TLegend *aLegend){
     sprintf(title, "%s Dead Layer Distribution", runid); 
     if(Mode==2)
     {
-	    TH2D* framed = new TH2D("dead layer 2", title, 10, 0.5, 72.5, 10, DMIN, 100.);
+	    TH2D* framed = new TH2D("dead layer 2", title, 10, 0.5, 72.5, 10, plotrange.DMIN, 100.);
     }
     else
     {
-	    TH2D* framed = new TH2D("dead layer 1", title, 10, 0.5, 72.5, 10, DMIN, 100.);
+	    TH2D* framed = new TH2D("dead layer 1", title, 10, 0.5, 72.5, 10, plotrange.DMIN, 100.);
     }
     framed -> SetStats(0);
     framed -> GetXaxis()->SetTitle("Strip Number");
@@ -915,8 +920,10 @@ KinFit::PlotDlayer(Int_t Mode, TLegend *aLegend){
         }
     
         TText t; Char_t rtext[50];
+        sprintf(rtext, "Average Dead Layer = %6.1f ug/cm2", dlave); 
+        t.DrawTextNDC(0.5, 0.80, rtext);
         sprintf(rtext, "Average Deviation = %6.1f ug/cm2", devpst); 
-        t.DrawTextNDC(0.5, 0.8, rtext);
+        t.DrawTextNDC(0.5, 0.75, rtext);
 
     }else if (Mode==2){
 
@@ -967,7 +974,9 @@ KinFit::SuperposeDlayerPlot(Char_t* CONFIG_FILE, TLegend *aLegend, Int_t pmci){
 Int_t
 KinFit::PlotT0(Int_t Mode){
 
-    
+  Float_t TMIN=plotrange.TMIN;
+  Float_t TMAX=plotrange.TMAX;
+  
     Char_t title[40];
     sprintf(title, "%s : T0 Distribution", runid);
     if(Mode==2)
