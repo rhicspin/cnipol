@@ -14,6 +14,7 @@ SLEEP_TIME=1800;
 
 # deadlayer fit environments
 CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer_iteration;
+ExeDlayerFitSimple=0;
 ExeDlayerFit=0;
 MAX_ITERATION=4;
 TOLERANCE=1; 
@@ -68,6 +69,10 @@ ShowExample(){
     echo    " "
     echo    "    cnipol_daemon.sh -F 7575 --run-Asym"
     echo    " "
+    echo    "3. run deadlayer fit without iteration."
+    echo    " "
+    echo    "    cnipol_daemon.sh --dlayer-fit --iteration 0."
+    echo    " "
     exit;
 
 }
@@ -81,8 +86,17 @@ RunDlayer(){
     FITLOGFILE=$DLAYERDIR/$RunID.fit.log;
 
     echo $RunID  ;
-    echo -e -n "$RunID " >> $CNI_DAEMON_DLAYER_STUDY;
 
+    if [ $MAX_ITERATION -eq 0 ] ; then
+
+	echo "No iteration";
+	dLayerCal.pl -f $RunID -b ;
+	mkConfig.pl -f $RunID ;
+	mkConfig.pl -f $RunID -p ;
+
+    else 
+
+    echo -e -n "$RunID " >> $CNI_DAEMON_DLAYER_STUDY;
     # First iteration without -b option
     dLayer.pl -f $RunID 
     mkConfig.pl -f $RunID
@@ -129,7 +143,11 @@ RunDlayer(){
 	    AVE_T0_1=$AVE_T0_2;
 
 	fi
+
     done
+    
+    # if [ $MAX_ITERATION -eq 0 ] 
+    fi  
 
 }
 
