@@ -23,7 +23,7 @@ static Float_t KinConst_E2T=1454.75; // constant for Run05 L=18.5cm
 
 int DisableStr[NDisableList][NDisableStrip] =
   {
-    { 15, 23, -1, -1, -1}, // 0 Blue
+    { 14, 22, -1, -1, -1}, // 0 Blue
     { 52, 56, -1, -1, -1}, // 1 Yellow FLattop Disable List
     { -1, -1, -1, -1, -1}, // 2
     { -1, -1, -1, -1, -1}, // 3
@@ -248,7 +248,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     memset(t0, 0, sizeof(t0) );
     memset(t0E,0, sizeof(t0E));
 
-    // globally used.
+    // globally used. St runs from 0 -> 71, whereas strip 1 -> 72.
     for (Int_t St=0; St<72; St++) {
         strip[St] = (Float_t)(St+1);
         stripE[St] = 0.;
@@ -848,10 +848,10 @@ KinFit::PlotDlayer(Int_t Mode, TLegend *aLegend){
     Float_t disable_dl[NDisableStrip], disable_dlE[NDisableStrip];
     for (Int_t i=0; i<NDisableStrip; i++){
       disable_dl[i] = disable_dlE[i] = 0; // initiarization
-      disable_strip[i]=DisableStr[RHIC_Beam][i];
+      disable_strip[i]=DisableStr[RHIC_Beam][i]+1;
       if (disable_strip[i]!=-1) {
-	disable_dl[i]=dl[int(disable_strip[i])];
-        disable_dlE[i]=dlE[int(disable_strip[i])];
+	disable_dl[i]=dl[int(DisableStr[RHIC_Beam][i])];
+        disable_dlE[i]=dlE[int(DisableStr[RHIC_Beam][i])];
       }
     }
 
