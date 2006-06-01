@@ -8,6 +8,7 @@ ExeAnalyzedRunList=1 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
 ExeOnlineNevents=0;
+ExeOnlineDatabase=0;
 ExpertMode=0;
 FROM_FILL=7537;
 TILL_FILL=9000;
@@ -21,7 +22,8 @@ help(){
     echo    " "
     echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "         [--analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
-    echo    "    : make pC offline analysis database "
+    echo    "         [--online][--online-nevents]";
+    echo    "    : make pC (offline) offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist file [def]:$ANALYZED_RUN_LIST";
     echo -e "   -F <Fill#>                Show list <Fill#>"
@@ -29,6 +31,7 @@ help(){
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
     echo -e "   -f <runlist>              Show list for runs listed in <runlist>";
     echo -e "   --online-nevents          Show online nevents"
+    echo -e "   --online                  Show online parameters"
     echo -e "   --exclusive               Show only data analyized";
     echo -e "   --blue                    Show only blue data ";
     echo -e "   --yellow                  Show only yellow data ";
@@ -192,6 +195,28 @@ OnlineNevents(){
 
 }
 
+OnlineDatabase(){
+
+   ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+   NEvents=`grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}'`;
+   CONFIG_FILE=`grep 'Reading calibration parameters' $ONLINE_LOG | gawk '{print $8}'`;
+   TRIG_THRESHOLD_E=`grep 'Trigger threshold for enegry' $ONLINE_LOG | gawk '{print $6}'`;
+   TRIG_THRESHOLD=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $1}' | sed -e 's/TrigThreshold://'`;
+   BZ_DELAY=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/BZDelay://'`
+   AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://'`;
+
+   echo -e -n "$RunID";
+   printf " %3d "     $AT_BUNCH;
+   printf " %3d "     $BZ_DELAY;
+   printf " %5d "     $TRIG_THRESHOLD;
+   printf " %5.0f "   $TRIG_THRESHOLD_E;
+   printf " %5.1f "   $NEvents;
+   printf " %s  "     $CONFIG_FILE;
+   echo -e -n "\n";
+
+
+}
+
 
 
 #############################################################################
@@ -277,32 +302,37 @@ for f in `cat $DATADIR/raw_data.list` ;
       if [ $PROCESS -eq 1 ] ; then
 
 	  if [ $Fill -ge $FROM_FILL ]&&[ $Fill -le $TILL_FILL ] ; then
-	      CREW=`grep $RunID $ANALYZED_RUN_LIST | gawk '{print $2}'`
-	      grep $RunID $ANALYZED_RUN_LIST  > /dev/null; 
-	      if [ $? == 0 ] ; then
-		  LOGFILE=$LOGDIR/$RunID.log
-		  if [ -f $LOGFILE ] ; then
-		      if [ $ExeOnlineNevents -eq 1 ] ; then
-			  OnlineNevents;
-		      else
-			  grepit;
+	      if [ $ExeOnlineDatabase -eq 1 ]; then 
+		  OnlineDatabase;
+	      else 
+		  CREW=`grep $RunID $ANALYZED_RUN_LIST | gawk '{print $2}'`
+		  grep $RunID $ANALYZED_RUN_LIST  > /dev/null; 
+		  if [ $? == 0 ] ; then
+		      LOGFILE=$LOGDIR/$RunID.log
+		      if [ -f $LOGFILE ] ; then
+			  if [ $ExeOnlineNevents -eq 1 ] ; then
+			      OnlineNevents;
+			  else
+			      grepit;
+			  fi
+		      else 
+			  echo -e -n "$RunID $LOGFILE missing\n";
 		      fi
-		  else 
-		      echo -e -n "$RunID $LOGFILE missing\n";
+		  elif [ $ExclusiveMode == 0 ] ; then
+		      echo -e -n "$RunID";
+#		      GetOnlinePolarization;
+		      GetOnlinePolFromFile;
+		      printf "$OnlineP $OnlinedP  N/A-";
+		      echo -e -n "\n";
 		  fi
-	      elif [ $ExclusiveMode == 0 ] ; then
-		  echo -e -n "$RunID";
-#		  GetOnlinePolarization;
-		  GetOnlinePolFromFile;
-		  printf "$OnlineP $OnlinedP  N/A-";
-		  echo -e -n "\n";
 	      fi
+
 	  fi
 
-      fi
+	  if [ $DISTRIBUTION -ne 0 ] ; then
+	      PROCESS=0;
+	  fi
 
-      if [ $DISTRIBUTION -ne 0 ] ; then
-	  PROCESS=0;
       fi
 
 done
@@ -338,6 +368,7 @@ while test $# -ne 0; do
   --fill-till) shift ; TILL_FILL=$1;;
   -f) shift ; ANALYZED_RUN_LIST=$1; ExeAnalyzedRunList=0 ;;
   --online-nevents) ExeOnlineNevents=1;;
+  --online)         ExeOnlineDatabase=1; ExeAnalyzedRunList=0 ;;
   --exclusive) ExclusiveMode=1;;
   --blue)   DISTRIBUTION=1;;
   --yellow) DISTRIBUTION=2;;
