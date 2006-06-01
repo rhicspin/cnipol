@@ -5,23 +5,34 @@ using namespace std;
 #include "TF1.h"
 #include "TH1.h"
 
+gROOT->Reset();
+
+//number of histograms to loop over
+const int dup = 5;
+
+//parameter seeds for two peaks
+double pars[] = {2000., 4.5, 2., 18000., 11., 3.};
+
+//root file name
 TFile* f = new TFile("hbook/7804.002.root");
+
+//global variables
 char name[100];
 char diagram[100];
 char param[100];
-TH1* h[72];
-TCanvas* c[72];
-double amp_1[72];
-double mu_1[72];
-double sig_1[72];
-double amp_2[72];
-double mu_2[72];
-double sig_2[72];
+TH1* h[dup+1];
+TCanvas* c[dup+1];
+double amp_1[dup+1];
+double mu_1[dup+1];
+double sig_1[dup+1];
+double amp_2[dup+1];
+double mu_2[dup+1];
+double sig_2[dup+1];
 
-
+//start main program
 void RatioCalc() {
 
-  for (int j=1;j<3;j++) {
+  for (int j=1;j<dup+1;j++) {
     cout<<"j is now "<<j<<endl;
     TwoGausFit(j);
   }
@@ -40,7 +51,6 @@ void TwoGausFit(int i) {
 
   TF1* myFit = new TF1("myFit", gFitFunction,0.,30.,6);
 
-  double pars[] = {2000., 4.5, 2., 18000., 11., 3.};
   myFit->SetParameters(pars);
   myFit->SetNpx(1000.);
 
@@ -64,23 +74,23 @@ void TwoGausFit(int i) {
   double upperbd = mu_2[i]+3*sig_2[i];
   cout<<"upper bound is "<<upperbd<<endl;
 
-  TF1* carbonPeak = new TF1("carbonPeak","gaus(0)",0,30);
-  carbonPeak->SetParameter(0,amp_2[i]);
-  carbonPeak->SetParameter(1,mu_2[i]);
-  carbonPeak->SetParameter(2,sig_2[i]);
+  TF1* FirstPeak = new TF1("FirstPeak","gaus(0)",0,30);
+  FirstPeak->SetParameter(0,amp_1[i]);
+  FirstPeak->SetParameter(1,mu_1[i]);
+  FirstPeak->SetParameter(2,sig_1[i]);
 
-  double carbonint = carbonPeak->Integral(lowerbd, upperbd);
-  cout<<"Carbon peak integral = "<<carbonint<<endl;
+  double Firstint = FirstPeak->Integral(lowerbd, 20);
+  cout<<"Alpha peak integral = "<<Firstint<<endl;
 
-  TF1* alphaPeak = new TF1("alphaPeak","gaus(0)",0,30);
-  alphaPeak->SetParameter(0,amp_1[i]);
-  alphaPeak->SetParameter(1,mu_1[i]);
-  alphaPeak->SetParameter(2,sig_1[i]);
+  TF1* SecondPeak = new TF1("SecondPeak","gaus(0)",0,30);
+  SecondPeak->SetParameter(0,amp_2[i]);
+  SecondPeak->SetParameter(1,mu_2[i]);
+  SecondPeak->SetParameter(2,sig_2[i]);
 
-  double alphaint = alphaPeak->Integral(lowerbd, 20);
-  cout<<"Alpha peak integral = "<<alphaint<<endl;
+  double Secondint = SecondPeak->Integral(lowerbd, upperbd);
+  cout<<"Carbon peak integral = "<<Secondint<<endl;
 
-  double ratio = alphaint/carbonint;
+  double ratio = Firstint/Secondint;
   cout<<"Ratio of Alpha integral to Carbon Int = "<<ratio<<endl;
   
   sprintf(param,"./gausouts/params/strip%i.txt",i);
@@ -93,8 +103,8 @@ void TwoGausFit(int i) {
   myfile<<"amp-2:\t\t"<<myFit->GetParameter(3)<<endl;
   myfile<<"mu-2:\t\t"<<myFit->GetParameter(4)<<endl;
   myfile<<"sig-2:\t\t"<<myFit->GetParameter(5)<<endl;
-  myfile<<"alpha-int:\t"<<alphaint<<endl;
-  myfile<<"carbon-int:\t"<<carbonint<<endl;
+  myfile<<"alpha-int:\t"<<Firstint<<endl;
+  myfile<<"carbon-int:\t"<<Secondint<<endl;
   myfile<<"ratio:\t\t"<<ratio<<endl;
   myfile.close();
 
@@ -110,6 +120,9 @@ double gFitFunction(double* xs, double* pars) {
   double n2 = pars[3];
   double mu2 = pars[4];
   double sig2 = pars[5];
+
+
+
 
   double g1 = n1*exp(-0.5*(x-mu1)*(x-mu1)/sig1);
   double g2 = n2*exp(-0.5*(x-mu2)*(x-mu2)/sig2);
