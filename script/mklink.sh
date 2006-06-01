@@ -130,6 +130,9 @@ Simple(){
 cd $DATADIR
 echo "$DATADIR: making data  links ..."
 ln.sh
+ls ????.???.data | sed -e 's/.data//' > $TMPOUTDIR/runlist.dat;
+sort $TMPOUTDIR/runlist.dat > $RAW_DATALIST;
+rm -f $TMPOUTDIR/runlist.dat;
 cd ..
 
 cd $ONLINEDIR/hbook
@@ -141,7 +144,6 @@ cd $ONLINEDIR/log
 echo "$ONLINEDIR/log: making  log  links ..."
 ln.sh
 
-ls ????.???.data | sed -e 's/.data//' > $RAW_DATALIST;
 
 }
 
