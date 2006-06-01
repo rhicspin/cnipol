@@ -10,9 +10,6 @@ gROOT->Reset();
 //number of histograms to loop over
 const int dup = 5;
 
-//parameter seeds for two peaks
-double pars[] = {2000., 4.5, 2., 18000., 11., 3.};
-
 //root file name
 TFile* f = new TFile("hbook/7804.002.root");
 
@@ -33,7 +30,7 @@ double sig_2[dup+1];
 void RatioCalc() {
 
   for (int j=1;j<dup+1;j++) {
-    cout<<"j is now "<<j<<endl;
+    //cout<<"j is now "<<j<<endl;
     TwoGausFit(j);
   }
 }
@@ -41,7 +38,7 @@ void RatioCalc() {
 
 void TwoGausFit(int i) {
 
-  cout<<"i is now "<<i<<endl;
+  //cout<<"i is now "<<i<<endl;
 
   c[i] = new TCanvas();
   sprintf(name,"h%i",i+16000);
@@ -51,6 +48,9 @@ void TwoGausFit(int i) {
 
   TF1* myFit = new TF1("myFit", gFitFunction,0.,30.,6);
 
+  //parameter seeds for two peaks
+  double hight = h[i]->GetMaximum();
+  double pars[] = {2000., 4.5, 2., hight, 11., 3.};
   myFit->SetParameters(pars);
   myFit->SetNpx(1000.);
 
