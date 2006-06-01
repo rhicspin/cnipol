@@ -114,6 +114,7 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     DlayerFile=$DLAYERDIR/$RUNID.temp.dat;
     FITLOGFILE=$DLAYERDIR/$RUNID.fit.log;
     LOGFILE=$BASEDIR/douts/$RUNID.dl.log;
+    ONLINE_LOG=$ONLINEDIR/log/$RUNID.log;
 
     Test=`grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'`;
     if [ $Test -gt 30 ] ; then
@@ -124,6 +125,11 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 
     if [ $DISTRIBUTION -eq 1 ] ; then
 	OFILE=$ASYMDIR/summary/dLayer_$Beam\_$Mode\_all.dat;
+    fi
+
+    AT_BUNCH=0;
+    if [ -f $ONLINE_LOG ] ; then
+	   AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://' | head -n 1`;
     fi
 
     if [ -f $DlayerFile ] ; then
@@ -140,11 +146,11 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
 	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
-		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "  | tee -a $OFILE 
-		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "     | tee -a $OFILE
-		echo -e -n "$AVE_T0 $DELTA_T0 $DUMMY $DUMMY $DUMMY "    | tee -a $OFILE
-		echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "        | tee -a $OFILE
-		echo -e -n "\n"                                         | tee -a $OFILE
+		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "   | tee -a $OFILE 
+		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "      | tee -a $OFILE
+		echo -e -n "$AVE_T0 $DELTA_T0  $AT_BUNCH $DUMMY $DUMMY " | tee -a $OFILE
+		echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "         | tee -a $OFILE
+		echo -e -n "\n"                                          | tee -a $OFILE
 	    fi
 
     fi
