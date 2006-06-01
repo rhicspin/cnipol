@@ -50,25 +50,21 @@ ShowExample(){
 MakeLinks(){
 
     #create directory if there is no such a directory
-    if [ -d $DESTDIR ] ; then
-	echo -e -n "";
-    else
+    if [ ! -d $DESTDIR ] ; then
 	echo -e "Create $DESTDIR";
 	mkdir $DESTDIR
     fi
-    echo $DESTDIR
+    echo $BEAM - $DESTDIR 
 
     
     #make simbolik link if there is no existing links
     SOURCEDIR=/$BEAM/2006/$Mode
-    for f in `ls $SOURCEDIR/*.$Mode` ; 
+    for f in `ls $SOURCEDIR | grep $Mode` ; 
       do 
       filename=`basename $f`
-      if [ -e $DESTDIR/$filename ] ; then
-	  echo -e -n "$f exists\n" >> $LOGDIR;
-      else 
+      if [ ! -e $DESTDIR/$filename ] ; then
 	  echo -e -n "$f\n" >> $LOGFILE
-	  ln -s $f $DESTDIR
+	  ln -s $SOURCEDIR/$f $DESTDIR
       fi
     done
 
