@@ -3,6 +3,7 @@
 # March. 8, 2006
 # I.Nakagawa
 LOGFILE="/tmp/log/mklink.log";
+RAW_DATALIST="$DATADIR/raw_data.list";
 ExeStandAlonePC2PC=0;
 ExeDoublePC=0;
 ExeSimple=0;
@@ -64,7 +65,7 @@ MakeLinks(){
       do 
       filename=`basename $f`
       if [ -e $DESTDIR/$filename ] ; then
-	  echo -e -n "";
+	  echo -e -n "$f exists\n" >> $LOGDIR;
       else 
 	  echo -e -n "$f\n" >> $LOGFILE
 	  ln -s $f $DESTDIR
@@ -143,6 +144,8 @@ cd ..
 cd $ONLINEDIR/log
 echo "$ONLINEDIR/log: making  log  links ..."
 ln.sh
+
+ls ????.???.data | sed -e 's/.data//' > $RAW_DATALIST;
 
 }
 
