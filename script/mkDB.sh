@@ -113,7 +113,7 @@ MakeAnalyzedRunList(){
 }
 
 #############################################################################
-#                                grepit()                                   #
+#                                ShowIndex()                                #
 #############################################################################
 ShowIndex(){
 
@@ -153,6 +153,34 @@ ShowIndex(){
 
 
 }
+
+
+
+ShowIndexOnline(){
+
+    printf "=====================================================================================\n";
+    printf " RunID     ";
+    printf " Date/Time   ";
+    printf " Bunch";
+    printf " BZDelay ";
+    printf " Threshoulds";
+    printf " Nevents ";
+    printf " config file ";
+    printf " \n";
+    printf " \t";
+    printf " \t";
+    printf " \t";
+    printf " \t";
+    printf " \t     ";
+    printf " [keV] ";
+    printf " [M]";
+    printf " \n";
+    printf "=====================================================================================\n";
+
+
+}
+
+
 
 
 #############################################################################
@@ -198,6 +226,9 @@ OnlineNevents(){
 OnlineDatabase(){
 
    ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+   MONTH=`grep '>>>>' $ONLINE_LOG | gawk '{print $3}'`;
+   DATE=`grep '>>>>' $ONLINE_LOG | gawk '{print $4}'`;
+   TIME=`grep '>>>>' $ONLINE_LOG | gawk '{print $5}'`;
    NEvents=`grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}'`;
    CONFIG_FILE=`grep 'Reading calibration parameters' $ONLINE_LOG | gawk '{print $8}'`;
    TRIG_THRESHOLD_E=`grep 'Trigger threshold for enegry' $ONLINE_LOG | gawk '{print $6}'`;
@@ -206,8 +237,9 @@ OnlineDatabase(){
    AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://'`;
 
    echo -e -n "$RunID";
+   printf " %s %2d %s " $MONTH $DATE $TIME;
    printf " %3d "     $AT_BUNCH;
-   printf " %3d "     $BZ_DELAY;
+   printf " %5d "     $BZ_DELAY;
    printf " %5d "     $TRIG_THRESHOLD;
    printf " %5.0f "   $TRIG_THRESHOLD_E;
    printf " %5.1f "   $NEvents;
@@ -388,7 +420,11 @@ if [  $ExeAnalyzedRunList -eq 1 ] ; then
     MakeAnalyzedRunList;
 fi
 if [ $ExeMakeDatabase -eq 1 ] ; then
-    ShowIndex;
+    if [ $ExeOnlineDatabase -eq 1 ]; then
+	ShowIndexOnline;
+    else
+	ShowIndex;
+    fi
     MakeDatabase;
 fi;
 
