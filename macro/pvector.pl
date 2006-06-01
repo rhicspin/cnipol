@@ -5,6 +5,7 @@ $run = $ARGV[0];
 $ONLINEDIR=$ENV{"ONLINEDIR"};
 $TMPOUTDIR=$ENV{"TMPOUTDIR"};
 $OUTFILE = ">$TMPOUTDIR/pvect.dat";
+$POLFILE = ">$TMPOUTDIR/tmp.dat";
 $LOGFILE = "$ONLINEDIR/log/an$run.log";
 
 #printf "Processing run $run ($LOGFILE)\n";
@@ -146,8 +147,14 @@ printf OUTFILE "$A_N\n";
 printf OUTFILE "$PCNT[0] $PCNT[1] $PCNT[2] $PCNT[3] $PCNT[4] $PCNT[5]\n";
 printf OUTFILE "$MCNT[0] $MCNT[1] $MCNT[2] $MCNT[3] $MCNT[4] $MCNT[5]\n";
 
+# write online polarization to temp. file
+$pol = $xchp/$A_N*100;
+$pole = $xchpe/$A_N*100;
 
+open(POLFILE,$POLFILE);
+printf POLFILE "%10.5f  %10.5f\n",$pol,$pole;
 
+close(POLFILE);
 close(OUTFILE);
 close(LOGFILE);
 
