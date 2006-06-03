@@ -22,7 +22,7 @@ class DlayerMonitor
 
 private:
   Float_t RunID[N],Dl[N],DlE[N],ReadRate[N],WCM[N],SpeLumi[N],NBunch[N]; 
-  Float_t AveT0[N],DeltaT0[N];
+  Float_t AveT0[N],DeltaT0[N],Bunch[N];
   Float_t dx[N],dy[N];
   TH2D* frame ;
 
@@ -93,11 +93,11 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
     while (!fin.eof()) {
 
         fin >> RunID[i] >> Dl[i] >> DlE[i] >> ReadRate[i] >> WCM[i] >> SpeLumi[i] >> NBunch[i]
-            >> AveT0[i] >> DeltaT0[i] >> dum[2] >> dum[3] >> dum[4] 
-            >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9];
+            >> AveT0[i] >> DeltaT0[i] >> Bunch[i] >> dum[3] >> dum[4] 
+            >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9] ;
 
-	//	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
-
+	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+	
       ++i; dx[i]=dy[i]=0;
 
       if (i>N-1){
@@ -245,7 +245,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     break;
   case 101:
-    if (RUN==5) {xmin=-20; xmax=15; ymin=20; ymax=65;}
+    if (RUN==5) {xmin=-5; xmax=8; ymin=20; ymax=65;}
     if (RUN==6) {xmin=-20 ; xmax=-14;  ymin=58; ymax=80;
     if (Beam=="Blue") {xmin=-16; xmax=-10;}
     }
