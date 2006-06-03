@@ -130,7 +130,11 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     AT_BUNCH=0;
     if [ -f $ONLINE_LOG ] ; then
 	   AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://' | head -n 1`;
+	   if [ ! $AT_BUNCH ] ; then
+	       AT_BUNCH=0;
+           fi
     fi
+
 
     if [ -f $DlayerFile ] ; then
 
@@ -181,7 +185,7 @@ done
 InitVariables;
 
 if [ $DISTRIBUTION -eq 1 ] ; then
-    rm -f $ASYMDIR/summary/dLayer_*_*.dat &> /dev/null;
+    rm -f $ASYMDIR/summary/dLayer_*_*_all.dat &> /dev/null;
     if [ ! -d $ASYMDIR/summary ] ; then
 	mkdir $ASYMDIR/summary
     fi
