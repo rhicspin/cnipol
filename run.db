@@ -3060,70 +3060,188 @@
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile issue: double hump.";
 
-[7944.101]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7944.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Horizontal target, plus flakey WFD module.";
 
+[7944.002]
+	COMMENT="Proflie issue: bunch left and long tail plus flakey WFD and Horizontal target issues.";
 
-[7944.102]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7944.005]
+	RUN_STATUS=Suspicious;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	COMMENT="Profile Issue: Bunch left and long tail.";
 
+[7944.006]
+	RUN_STATUS*=Junk;
+	DEFINE_FILL_PATTERN*=0;
+	COMMENT*="Recovery failed";
 
-[7944.103]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7944.008]
+	RUN_STATUS*=Junk;
+	DEFINE_FILL_PATTERN*=0;
+	COMMENT="Recovery Failed.";
 
+[7944.009]
+	RUN_STATUS*=Junk;
+	DEFINE_FILL_PATTERN*=0;
+	COMMENT*="Recovery Failed";
 
-[7944.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7944.006]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Number of events < 50k.";@
-
-[7944.007]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7944.105]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7944.008]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[7944.009]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[7944.010]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
+[7944.010]
+	RUN_STATUS*=Junk;
+	DEFINE_FILL_PATTERN*=0;
+	COMMENT*="Recovery Failed.";
 
 [7944.011]
 	RUN_STATUS=Suspicious;
 	DEFINE_FILL_PATTERN*=0;
 	COMMENT="";
 
+[7944.101]
+	RUN_STATUS=Suspicious;
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT="Unsuccessful deadlayer fit. Don't update config file, and flakey WFD module and profile issue: double hump.";
 
-[7945.001]
-	//Not Yet Confirmed.
+[7944.104]
+	RUN_STATUS=Suspicious;
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	COMMENT="Unsuccessful deadlayer fit. Don't update config file,and proflie issue: double hump.";
+
+[7946.001]
+	RUN_STATUS=Suspicious;
+	CONFIG=7946.001.config.dat;
+	COMMENT="Flakey WFD module.";
+
+[7946.101]
+	RUN_STATUS=Suspicious;
+	CONFIG=7946.101.config.dat;
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT="Profile Issue: wide profile, and flakey WFD module.";
+
+[7949.001]
+	RUN_STATUS=Suspicious;
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT="Flakey WFD module and profile issue: bunch left and long tail and horizontal target issues.";
+
+[7949.002]
+	RUN_STATUS=Suspicious;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	COMMENT="Profile Issue: bunch left and long tail and horizontal target issues.";
+
+[7949.004]
+	RUN_STATUS*=Junk;
+
+[7949.007]
 	RUN_STATUS=Good;
 	COMMENT="";
+	
+[7949.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issues: double humped profile, and flakey WFD.";
 
-[7945.101]
-	//Not Yet Confirmed.
-	RUN_STATUS=Good;
+[7949.102]
+	RUN_STATUS=Suspicious;
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	COMMENT="Profile Issue: double humped profile.";
+
+[7951.001]
+	RUN_STATUS=Suspicious;
+	CONFIG=7951.001.config.dat;
+	COMMENT="Profile Issue: bunched left and tail.";
+
+[7951.004]
+	COMMENT="Strange things going on in the strips, more than horizontal target stuff.";
+
+
+[7952.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7952.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7952.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7952.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7952.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7954.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7954.102]@
+	CONFIG=7954.102.config.dat;@
+
+
+[7954.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7954.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7954.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7957.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7957.010]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[7957.106]
+	COMMENT="Fixed Target Vertical Scan 7957.106 - 7957.111";
+
+
+// ------------------------------------------------------------//
+// End of 200 GeV run. Begin 62.4 GeV Run
+// ------------------------------------------------------------//
+
+[7962.101]
 	COMMENT="";
-
-
-
-
-[7944.011]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7946.001]@
-	CONFIG=7946.001.config.dat;@
+	
+[7987.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
