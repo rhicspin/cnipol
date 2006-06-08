@@ -3170,65 +3170,74 @@
 	CONFIG=7951.001.config.dat;
 	COMMENT="Profile Issue: bunched left and tail.";
 
-[7951.004]
-	COMMENT="Strange things going on in the strips, more than horizontal target stuff.";
+[7951.003]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Tune;
+	COMMENT="Tune measurements.";
 
+[7952.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: bunch left and long tail, also horizontal target.";
 
-[7952.101]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7952.007]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal target.";
 
+[7952.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: double hump.";
 
-[7952.102]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7952.106]
+	RUN_STATUS*=Good;
+	COMMENT*="";
 
+[7954.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Horizontal targets, profile looking better.";
 
-[7952.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7954.006]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strip problems, perhaps a spin tune measurement?";
 
+[7954.007]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Tune;
+	COMMENT="Tune measurements.";	
 
-[7952.006]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7954.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: double hump.";
 
+[7954.102]
+	CONFIG=7954.102.config.dat;
 
-[7952.106]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7954.105]
+	RUN_STATUS=Suspicious;
+	COMMENT="Strip issues.";
 
+[7957.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Horizontal Target problems.";
 
-[7954.101]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7957.005]
+	RUN_STATUS=Suspicious;
+	COMMENT*="Profile issue: bunch left.";
 
+[7957.008]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
 
-[7954.102]@
-	CONFIG=7954.102.config.dat;@
+[7957.009]
+	MEASUREMENT_TYPE=SPIN_TUNE;
+	RUN_STATUS=Tune;
+	COMMENT="Tune measurements.";
 
+[7957.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: double hump.";
 
-[7954.005]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-
-[7954.105]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7954.008]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7957.008]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7957.010]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
+[7957.104]
+	COMMENT="Profile Issue: bunch left and double hump.";
 
 [7957.106]
 	COMMENT="Fixed Target Vertical Scan 7957.106 - 7957.111";
@@ -3238,10 +3247,67 @@
 // End of 200 GeV run. Begin 62.4 GeV Run
 // ------------------------------------------------------------//
 
+
+[7962.001]
+	RUN_STATUS=Junk;
+	COMMENT="";
+
 [7962.101]
+	RUN_STATUS=Junk;
 	COMMENT="";
 	
-[7987.101]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7987.101]
+	RUN_STATUS=Junk;
+	COMMENT="";
+
+[7989.001]
+	RUN_STATUS=Good;
+	CONFIG=7989.001.config.dat;
+	COMMENT="";
+
+[7989.101]
+	RUN_STATUS=Junk;
+	COMMENT="Number of events < 50k.";
+
+[7989.102]
+	RUN_STATUS=Junk;
+	COMMENT="Number of events < 50k.";
+
+[7989.105]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7991.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Mass peaks are flakey, don't know why.";
+
+[7991.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Mass peaks are flakey, don't know why.";
+
+[7992.001]
+	COMMENT="Mass peaks look a bit better, but not perfect.";
+
+[7992.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7994.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7994.101]
+	CONFIG=7994.101.config.dat;
+
+[7998.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[7998.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7998.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: bunch right and only partial scan.";
 
