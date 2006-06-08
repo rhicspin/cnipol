@@ -11,8 +11,10 @@ ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
 ExpertMode=0;
 FROM_FILL=7537;
-if [ $RHICRUN == 5 ] ; then
-    FROM_FILL=6600;
+if [ $RHICRUN ] ; then
+    if [ $RHICRUN -eq 5 ] ; then
+	FROM_FILL=6600;
+    fi
 fi
 TILL_FILL=9000;
 LOGDIR=$ASYMDIR/log;
@@ -192,8 +194,8 @@ ShowIndexOnline(){
 
 GetOnlinePolarization(){
 
-    OnlineP=`OnlinePol.sh | gawk '{print $1}'`;
-    OnlinedP=`grep $RunID $ONLINE_DB | gawk '{print $2}'`;
+    OnlineP=`OnlinePol.sh -f $RunID | gawk '{printf("%7.1f",$1)}'`;
+    OnlinedP=`OnlinePol.sh -f $RunID | gawk '{printf("%5.1f",$2)}'`;
 
 }
 
