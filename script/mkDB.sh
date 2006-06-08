@@ -11,6 +11,9 @@ ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
 ExpertMode=0;
 FROM_FILL=7537;
+if [ $RHICRUN == 5 ] ; then
+    FROM_FILL=6600;
+fi
 TILL_FILL=9000;
 LOGDIR=$ASYMDIR/log;
 DISTRIBUTION=0;
@@ -189,18 +192,8 @@ ShowIndexOnline(){
 
 GetOnlinePolarization(){
 
- TMPOUTDIR=/tmp/cnipol;
- if [ ! -d $TMPOUTDIR ]; then
-     mkdir $TMPOUTDIR;
- fi
-
- $MACRODIR/pvector.pl $RunID
- export RUN=$RunID;
- paw -b $MACRODIR/pvect_simple.kumac &> /dev/null
- OnlineP=`cat $TMPOUTDIR/tmp.dat | gawk '{printf("%7.1f",$1)}'`;
- OnlinedP=`cat $TMPOUTDIR/tmp.dat | gawk '{printf("%5.1f",$2)}'`;
- rm -f $TMPOUTDIR/tmp.dat
- rm -f $TMPOUTDIR/pvect.dat
+    OnlineP=`OnlinePol.sh | gawk '{print $1}'`;
+    OnlinedP=`grep $RunID $ONLINE_DB | gawk '{print $2}'`;
 
 }
 
@@ -257,8 +250,8 @@ OnlineDatabase(){
 grepit(){
 
     echo -e -n "$RunID";
-#    GetOnlinePolarization;
-    GetOnlinePolFromFile;
+    GetOnlinePolarization;
+#    GetOnlinePolFromFile;
     printf "$OnlineP $OnlinedP";
 
     # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
@@ -315,7 +308,7 @@ grepit(){
 
 
 #############################################################################
-#                                grepit()                                   #
+#                              MakeDatabase()                               #
 #############################################################################
 MakeDatabase(){
 PROCESS=1;
