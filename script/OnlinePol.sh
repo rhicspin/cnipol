@@ -70,12 +70,13 @@ GetOnlinePolarization(){
      mkdir $TMPOUTDIR;
  fi
 
- $MACRODIR/pvector.pl $RunID
- paw -b $MACRODIR/pvect_simple.kumac &> /dev/null;
- echo -e -n "$RunID" > $TMPOUTDIR/tmp.log;
- cat $TMPOUTDIR/tmp.dat | gawk '{printf("%7.1f %5.1f\n",$1,$2)}' 
- rm -f $TMPOUTDIR/tmp.dat
- rm -f $TMPOUTDIR/pvect.dat
+ if [ -f $ONLINEDIR/log/an$RunID.log ] ; then
+     $MACRODIR/pvector.pl $RunID
+     tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f %5.1f\n",$1,$2)}' 
+ else 
+     printf "%7.1f %5.1f\n" 0 0;
+ fi
+# rm -f $TMPOUTDIR/pvect.dat;
 
 }
 
@@ -117,7 +118,7 @@ fi
 	CheckRunID;
 	grep $RunID $ONLINE_DB;
 	if [ $? -eq 1 ] ; then
-	    echo -e -n "$RunID" | tee -a  $ONLINE_DB ;
+	    echo -e -n "$RunID"   | tee -a $ONLINE_DB ;
 	    GetOnlinePolarization | tee -a $ONLINE_DB ;
         fi
 
