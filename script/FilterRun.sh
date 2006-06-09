@@ -91,7 +91,7 @@ done
 if test $M -eq 1
 then
     echo "updating testlist.txt...";
-    mkDB.sh --exclusive | grep -v Junk | grep ^7 | grep -v /home/ > $INF;
+    mkDB.sh --exclusive | grep -v Junk | grep ^[7-8] | grep -v /home/ > $INF;
 fi
 
 if test $P -ne 0
