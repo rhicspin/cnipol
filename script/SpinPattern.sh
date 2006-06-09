@@ -3,18 +3,20 @@
 # June 9, 2006
 # I. Nakagawa
 RUN=6;
+RHICRUN=Run0$RUN;
 LOGDIR=$ONLINEDIR/log;
 
 #############################################################################
 #                                     Help                                  #
 #############################################################################
 help(){
+    PROGRAM=`basename $0`;
     echo    " "
-    echo    " $0 [-xh][-f <runlist>]"
-    echo    "    : make spin pattern database";
+    echo    " $PROGRAM [-xh][-f <runlist>][-r <run>]"
+    echo    "    : make spin pattern database. Default output is ./SpinPattern_$RHICRUN.Blue(Yellow).db";
     echo    " "
     echo -e "   -f <runlist>              make spin pattern database for <runlist>"
-    echo -e "   -r <run>                  For Run 5, 6, ... [def]:Run6";
+    echo -e "   -r <run>                  For Run 5, 6, ... [def]:$RHICRUN";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
     echo    " "
@@ -24,7 +26,11 @@ help(){
 
 ShowExample(){
 
-    echo    " "
+    PROGRAM=`basename $0`;
+    echo    " " ;
+    echo    " o Make Run05 database:"
+    echo -e "\t $PROGRAM -f \$DATADIR/raw_data.list -r 5";
+    echo    " " ;
     exit;
 
 }
