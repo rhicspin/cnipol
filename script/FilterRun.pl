@@ -16,13 +16,15 @@ use Getopt::Long;
 $DLAYER          = 0;
 $UPDATE_LINK     = 0;
 $PHENIX_DATABASE = 0;
+$PROFILE_RUN     = 0;
 $KEYWD           ="phenix";
 $DEFAULT_LINK    = 0;
 
 GetOptions(
 	   'update-link' => \$UPDATE_LINK ,
-	   'def' => \$DEFAULT_LINK ,
+	   'def-link' => \$DEFAULT_LINK ,
 	   'phenix' => \$PHENIX_DATABASE ,
+	   'profile' => \$PROFILE_RUN ,
 	   'dlayer' => \$DLAYER , 
 	   'help' => \$HELP
 );
@@ -33,6 +35,7 @@ if($HELP){
 
 
 if($PHENIX_DATABASE) {$KEYWD="phenix"; $FILTER_DB="$SHAREDIR/db/PhenixPhysicsRun05.db";};
+if($PROFILE_RUN) {$KEYWD="profile"; $FILTER_DB="$SHAREDIR/db/ProfileRun05.db";};
 if($DEFAULT_LINK) {$KEYWD="all"; $UPDATE_LINK=1;};
 if($DLAYER){DlayerMode();};
 
@@ -43,18 +46,19 @@ if($DLAYER){DlayerMode();};
 sub help(){
 
     print "\n";
-    print " Usage:\n  $0 -h [--dlayer][ -f <runlist>][--update-link][--def]\n\n";
+    print " Usage:\n  $0 -h [--dlayer][ -f <runlist>][--update-link][--def-link]\n\n";
     print "    Filter runs based on the runlist\n\n";
     print "\t -f <runlist>  run list file [def]:$FILTER_DB \n";
     print "\t --dlayer      Process deadlayer dabase\n";
     print "\t --phenix      Filter for PHENIX physics stores\n";
+    print "\t --profile     Filter for profile runs\n";
     print "\t --update-link Redirect link to new one\n";
     print "\t --def-link    Redirect link to default (all)\n";
     print "\t -h --help  Show this help";
     print "\n\n";
     print "    ex.1) $0 -f runlist.db --dlayer \n\n";
     print "    ex.2) Redirect link to default (all) files:\n";
-    print "          $0 --dlayer --def \n\n";
+    print "          $0 --dlayer --def-link \n\n";
     print "\n\n";
     exit(0);
 
