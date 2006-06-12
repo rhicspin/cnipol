@@ -1,8 +1,8 @@
 
 C++    = g++
 
-SRC    = calcPhi.cc  interval.cc converge.cc
-BINARY = calcPhi interval converge 
+SRC    = calcPhi.cc  interval.cc converge.cc CompareRunNmbr.cc
+BINARY = calcPhi interval converge CompareRunNmbr
 
 CDEV=/usr/local/lib/cdev
 LIB_PATHS = -L$(CDEV) -L$(CDEV)/Linux 
@@ -12,10 +12,13 @@ CFLAGS = $(INC_PATHS) -pthread
 CXXFLAGS = $(INC_PATHS) -pthread
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
-all: calcPhi interval converge 
+all: calcPhi interval converge CompareRunNmbr
 
 
 calcPhi: calcPhi.o
+	$(C++) $^ -o $@
+
+CompareRunNmbr: CompareRunNmbr.o
 	$(C++) $^ -o $@
 
 
