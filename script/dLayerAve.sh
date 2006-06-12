@@ -56,6 +56,13 @@ InitVariables(){
     TGT_POS=0;
     AVE_T0=0;
     DELTA_T0=0;
+    Dldet1=0;
+    t0Strip1=0;
+    t0EStrip1=0;
+    DlStrip1=0;
+    DlEStrip1=0;
+    t0_2par_Strip1=0;
+    t0E_2par_Strip1=0;
 
 }
 
@@ -66,7 +73,7 @@ InitVariables(){
 ShowIndex(){
 
     printf "=============================================================";
-    printf "===============\n"
+    printf "=============================================================\n";
     printf " RunID    ";
     printf " Dl_ave";
     printf " err";
@@ -76,6 +83,11 @@ ShowIndex(){
     printf " #of "
     printf " T0_ave";
     printf " DeltaT0";
+    printf " Bnch";
+    printf " Dl_ave   ";
+    printf " Strip-1"
+    printf " ==================> "
+    printf " (2par)"
     printf "\n";
     printf "            ";
     printf "[ug/cm^2]";
@@ -85,10 +97,18 @@ ShowIndex(){
     printf "        ";
     printf " Fill  ";
     printf " [ns]   ";
-    printf " [ns]";
+    printf " [ns] ";
+    printf " Mode "
+    printf " Det1   ";
+    printf " t0    ";
+    printf " t0E   ";
+    printf " dl    ";
+    printf " dlE   ";
+    printf " t0    ";
+    printf " t0E   ";
     printf "\n";
     printf "=============================================================";
-    printf "===============\n"
+    printf "=============================================================\n";
 
 }
 
@@ -149,12 +169,23 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    AVE_T0=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
+	    STRIP1=`line.sh 1 $DlayerFile | gawk '{print $1}'`;
+	    if [ $STRIP1 -eq 0 ] ; then
+		Dldet1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$2)}'`;
+		t0Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$3)}'`;
+		t0EStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$4)}'`;
+		DlStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$5)}'`;
+		DlEStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$6)}'`;
+		t0_2par_Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$7)}'`;
+		t0E_2par_Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$8)}'`;
+	    fi
+
 	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
-		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "   | tee -a $OFILE 
-		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "      | tee -a $OFILE
-		echo -e -n "$AVE_T0 $DELTA_T0  $AT_BUNCH $DUMMY $DUMMY " | tee -a $OFILE
-		echo -e -n "$DUMMY $DUMMY $DUMMY $DUMMY $DUMMY "         | tee -a $OFILE
-		echo -e -n "\n"                                          | tee -a $OFILE
+		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "        | tee -a $OFILE 
+		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "           | tee -a $OFILE
+		echo -e -n "$AVE_T0 $DELTA_T0   $AT_BUNCH $Dldet1 $t0Strip1 " | tee -a $OFILE
+		echo -e -n "$t0EStrip1 $DlStrip1 $DlEStrip1 $t0_2par_Strip1 $t0E_2par_Strip1"  | tee -a $OFILE
+		echo -e -n "\n"                                               | tee -a $OFILE
 	    fi
 
     fi
