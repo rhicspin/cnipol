@@ -23,10 +23,25 @@ class DlayerAnalyzer
 private:
   Float_t RunID[N],Dl[N],DlE[N],ReadRate[N],WCM[N],SpeLumi[N],NBunch[N]; 
   Float_t AveT0[N],DeltaT0[N],Bunch[N];
+  Float_t Dl_det1[N], t0Strip1[N],t0EStrip1[N],DlStrip1[N],DlEStrip1[N];
+  Float_t t0_2par_Strip1[N],t0E_2par_Strip1[N];
   Float_t dx[N],dy[N];
   TH2D* frame ;
   TNtuple * ntp ;
 
+  typedef struct {
+    Float_t t0[N];
+    Float_t t0E[N];
+    Float_t Dl[N];
+    Float_t DlE[N];
+  } StructFitMode;
+
+  struct SingleStruct {
+    StructFitMode Par2, Par1;
+  } single;
+
+
+    
 public:
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
   Int_t DlayerPlot(Char_t*, Int_t);
@@ -90,7 +105,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 
 
     // New Ntuples declaration
-    ntp = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx:dy");
+    ntp = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
 
     Float_t dum[10];
     Int_t i=0;
@@ -98,15 +113,21 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
     while (!fin.eof()) {
 
         fin >> RunID[i] >> Dl[i] >> DlE[i] >> ReadRate[i] >> WCM[i] >> SpeLumi[i] >> NBunch[i]
-            >> AveT0[i] >> DeltaT0[i] >> Bunch[i] >> dum[3] >> dum[4] 
-            >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9] ;
+            >> AveT0[i] >> DeltaT0[i] >> Bunch[i] 
+	    >> single.Par1.Dl[i] >> single.Par1.t0[i] >> single.Par1.t0E[i] 
+	    >> single.Par2.Dl[i] >> single.Par2.DlE[i] >> single.Par2.t0[i] >> single.Par2.t0E[i]; 
 
-	//	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
-	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
+	//	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 	dx[i]=dy[i]=0;
 	ntp->Fill(RunID[i],Dl[i],DlE[i],ReadRate[i],WCM[i],SpeLumi[i],NBunch[i],AveT0[i],DeltaT0[i],Bunch[i],dx[i],dy[i]);
 	
+	single.Par1.Dl[i] -= 20;
+	single.Par2.Dl[i] -= 15;
+	single.Par1.t0[i] -=  5;
+	single.Par2.t0[i] -= 10;
+
 	++i; 
 	if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
@@ -136,16 +157,45 @@ Int_t
 DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text, 
 		    Int_t Color, TLegend *aLegend){
 
+  bool Single=true;
 
   switch (Mode) {
   case 10:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, Dl, dx, DlE);
+  if (Single){
+    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.Dl, dx, dy);
+    tgaP1 -> SetMarkerStyle(Mtyp+2);
+    tgaP1 -> SetMarkerSize(1.0);
+    tgaP1 -> SetLineWidth(2);
+    tgaP1 -> SetMarkerColor(20);
+    tgaP1 -> Draw("P");
+    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.Dl, dx, dy);
+    tgaP2 -> SetMarkerStyle(Mtyp+3);
+    tgaP2 -> SetMarkerSize(1.0);
+    tgaP2 -> SetLineWidth(2);
+    tgaP2 -> SetMarkerColor(25);
+    tgaP2 -> Draw("P");
+  }
     break;
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, Dl, dx, DlE);
     break;
   case 30:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, AveT0, dx, dy);
+  if (Single){
+    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.t0, dx, single.Par1.t0E);
+    tgaP1 -> SetMarkerStyle(Mtyp+2);
+    tgaP1 -> SetMarkerSize(1.0);
+    tgaP1 -> SetLineWidth(2);
+    tgaP1 -> SetMarkerColor(20);
+    tgaP1 -> Draw("P");
+    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.t0, dx, dy);
+    tgaP2 -> SetMarkerStyle(Mtyp+3);
+    tgaP2 -> SetMarkerSize(1.0);
+    tgaP2 -> SetLineWidth(2);
+    tgaP2 -> SetMarkerColor(25);
+    tgaP2 -> Draw("P");
+  }
     break;
   case 40:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DeltaT0, dx, dy);
@@ -155,6 +205,9 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
     break;
   case 60:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, ReadRate, dx, dy);
+    break;
+  case 70:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, NBunch, dx, dy);
     break;
   case 100:
     TGraphErrors* tgae = new TGraphErrors(ndata, AveT0, Dl, dx, DlE);
@@ -224,6 +277,10 @@ DlayerAnalyzer::OverDrawNtuple(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
     break;
   case 60:
     ntp->Draw("ReadRate:RunID",CuT,"same");
+    YesLegend = true;
+    break;
+  case 70:
+    ntp->Draw("NBunch:RunID",CuT,"same");
     YesLegend = true;
     break;
   case 100:
@@ -314,6 +371,13 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(xtitle,"Fill Number");
     sprintf(title," Event Rate History",Beam);
     break;
+  case 70:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=0.0 ; ymax=120;
+    sprintf(ytitle,"Number of Filled Bunches");
+    sprintf(xtitle,"Fill Number");
+    sprintf(title," Filled Bunch History (%s)",Beam);
+    break;
   case 100:
     GetScale(AveT0, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
@@ -373,6 +437,9 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   case 60:
     xmin=0.15;  ymin=0.70;
     break;
+  case 70:
+    xmin=0.15; ymin=0.70;
+    break;
   }
   Float_t xmax=xmin+interval;
   Float_t ymax=ymin+interval;
@@ -386,11 +453,11 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   TLegend * aLegend = new TLegend(xmin, ymin, xmax, ymax);
 
   // Plot flattop
-  Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
+  if (ndata>0) Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
   sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
   Int_t ndata = GetData(DATAFILE);
   // Plot injection
-  Plot(Mode, ndata, 24, "Injection", Color, aLegend);
+  if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
 
   return 0;
 
@@ -453,6 +520,7 @@ DlayerAnalyzer::DlayerAnalyzer()
     BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
     BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
     BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
+    BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
     BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
     BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
 
