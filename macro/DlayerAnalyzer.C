@@ -44,6 +44,7 @@ private:
     
 public:
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
+  Int_t PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text);
   Int_t DlayerPlot(Char_t*, Int_t);
   Int_t BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
@@ -105,7 +106,9 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 
 
     // New Ntuples declaration
-    ntp = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
+    ntp  = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
+    ntps = new TNtuple("ntps","Single Strip Data","RunID:single.Par1.Dl:single.Par1.t0:single.Par1.t0E:single.Par2.Dl:single.Par2.DlE:single.Par2.t0Lsingle.Par2.t0E");
+
 
     Float_t dum[10];
     Int_t i=0;
@@ -121,13 +124,16 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
 	//	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 	dx[i]=dy[i]=0;
-	ntp->Fill(RunID[i],Dl[i],DlE[i],ReadRate[i],WCM[i],SpeLumi[i],NBunch[i],AveT0[i],DeltaT0[i],Bunch[i],dx[i],dy[i]);
-	
+
 	single.Par1.Dl[i] -= 20;
 	single.Par2.Dl[i] -= 15;
 	single.Par1.t0[i] -=  5;
-	single.Par2.t0[i] -= 10;
+	single.Par2.t0[i] -=  8;
 
+	ntp->Fill(RunID[i],Dl[i],DlE[i],ReadRate[i],WCM[i],SpeLumi[i],NBunch[i],AveT0[i],DeltaT0[i],Bunch[i],dx[i],dy[i]);
+	ntps->Fill(RunID[i],single.Par1.Dl[i],single.Par1.t0[i],single.Par1.t0E[i],single.Par2.Dl[i],single.Par2.DlE[i],
+		   single.Par2.t0[i],single.Par2.t0E[i]);
+	
 	++i; 
 	if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
@@ -162,40 +168,14 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   switch (Mode) {
   case 10:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, Dl, dx, DlE);
-  if (Single){
-    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.Dl, dx, dy);
-    tgaP1 -> SetMarkerStyle(Mtyp+2);
-    tgaP1 -> SetMarkerSize(1.0);
-    tgaP1 -> SetLineWidth(2);
-    tgaP1 -> SetMarkerColor(20);
-    tgaP1 -> Draw("P");
-    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.Dl, dx, dy);
-    tgaP2 -> SetMarkerStyle(Mtyp+3);
-    tgaP2 -> SetMarkerSize(1.0);
-    tgaP2 -> SetLineWidth(2);
-    tgaP2 -> SetMarkerColor(25);
-    tgaP2 -> Draw("P");
-  }
+    if (Single) PlotSingleStrip(Mode,ndata,Mtyp,text);
     break;
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, Dl, dx, DlE);
     break;
   case 30:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, AveT0, dx, dy);
-  if (Single){
-    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.t0, dx, single.Par1.t0E);
-    tgaP1 -> SetMarkerStyle(Mtyp+2);
-    tgaP1 -> SetMarkerSize(1.0);
-    tgaP1 -> SetLineWidth(2);
-    tgaP1 -> SetMarkerColor(20);
-    tgaP1 -> Draw("P");
-    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.t0, dx, dy);
-    tgaP2 -> SetMarkerStyle(Mtyp+3);
-    tgaP2 -> SetMarkerSize(1.0);
-    tgaP2 -> SetLineWidth(2);
-    tgaP2 -> SetMarkerColor(25);
-    tgaP2 -> Draw("P");
-  }
+    if (Single) PlotSingleStrip(Mode,ndata,Mtyp,text);
     break;
   case 40:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DeltaT0, dx, dy);
@@ -218,7 +198,6 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   }
 
 
-
   tgae -> SetMarkerStyle(Mtyp);
   tgae -> SetMarkerSize(1.3);
   tgae -> SetLineWidth(2);
@@ -233,6 +212,63 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   return 0;
 
 } // end-of-DlayerPlot()
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtype, Char_t*text)
+//
+// Description : Plot Single Strip data
+// Input       : Int_t Mode, Int_t ndata, Int_t Mtype, Char_t text
+// Return      : 
+//
+Int_t
+DlayerAnalyzer::PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text)
+{ 
+
+  Float_t xmin=0.15;
+  Float_t ymin=0.70;
+  Float_t interval=0.15;
+
+  switch(Mode) {
+  case 10:
+    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.Dl, dx, dy);
+    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.Dl, dx, dy);
+    break;
+  case 30:
+    TGraphErrors* tgaP1 = new TGraphErrors(ndata, RunID, single.Par1.t0, dx, single.Par1.t0E);
+    TGraphErrors* tgaP2 = new TGraphErrors(ndata, RunID, single.Par2.t0, dx, dy);
+    xmin=0.6; ymin=0.5;
+    break;
+  }
+
+    tgaP1 -> SetMarkerStyle(Mtyp+2);
+    tgaP1 -> SetMarkerSize(1.0);
+    tgaP1 -> SetLineWidth(2);
+    tgaP1 -> SetMarkerColor(20);
+    tgaP1 -> Draw("P");
+
+    tgaP2 -> SetMarkerStyle(Mtyp+3);
+    tgaP2 -> SetMarkerSize(1.0);
+    tgaP2 -> SetLineWidth(2);
+    tgaP2 -> SetMarkerColor(25);
+    tgaP2 -> Draw("P");
+
+  // Legend
+  Char_t legend[100];
+  Float_t xmax=xmin+interval+0.05;
+  Float_t ymax=ymin+interval-0.05;
+  TLegend * slegend = new TLegend(xmin, ymin, xmax, ymax);
+  if (text=="Flattop"){
+    slegend->AddEntry(tgaP1,"1 par fit(scaled)","P");
+    slegend->AddEntry(tgaP2,"2 par fit(scaled)","P");
+    slegend->Draw("same");
+  }
+
+
+  return 0;
+
+}
+
 
 
 //
@@ -253,6 +289,7 @@ DlayerAnalyzer::OverDrawNtuple(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 
   ntp->SetMarkerStyle(Mtyp);
   ntp->SetMarkerSize(1.3);
+
   if (Color==4) {
     ntp->SetMarkerColor(7);
   }else{
