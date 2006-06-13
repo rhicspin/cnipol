@@ -27,7 +27,7 @@ ShowExample(){
 
 
 #############################################################################
-#                 UpdateStatus() and UpdateComment()                         #
+#                 UpdateStatus() and UpdateComment()                        #
 #############################################################################
 UpdateStatus() {
 
@@ -36,9 +36,10 @@ UpdateStatus() {
     $INSTALLDIR/RunDBReader -f $RUNID > firsttest.dat
     NEWSTATUS=`grep "RUN STATUS" firsttest.dat | gawk '{print $4}'`
     NEWCOMMENT=`grep "COMMENT" firsttest.dat | sed -e "s/ COMMENT      = //"`
+    NEWTYPE=`grep  "MEAS. TYPE" firsttest.dat | gawk '{print $4}'`
     echo -e -n "$NEWSTATUS\n"
     echo -e -n "$NEWCOMMENT\n"
-
+    echo -e -n "$NEWTYPE\n"
 
     NLINE=`wc $LOGFILE | gawk '{print $1}'`
     echo -e -n "$RUNID\n"
@@ -51,21 +52,38 @@ UpdateStatus() {
     echo -e -n "is now tagged as $NEWSTATUS \n"
 }
 
-UpdateComment() {
+UpdateType() {
+
     NLINE=`wc alanstmp.log | gawk '{print $1}'`
 
-    header=`grep -n '(END)    ===$' alanstmp.log | sed -e "s/:/ /" | gawk '{print $1-3}'`
+    header=`grep -n " MEAS. TYPE" $LOGFILE | sed -e "s/:/ /" | gawk '{print $1-1}'`
     head -n $header alanstmp.log > alanstmp2.log
-    echo -e -n " COMMENT      = $NEWCOMMENT\n" >> alanstmp2.log
+    echo -e -n " MEAS. TYPE   = $NEWTYPE\n" >> alanstmp2.log
     residual=$(( $NLINE - $header - 1 ));
     tail -n $residual alanstmp.log >> alanstmp2.log
-    echo -e -n "and has comment $NEWCOMMENT \n"
-
-    mv -f alanstmp2.log log/$RUNID.log;
-# ***do not remove prvious line until ready for implimentation***
+    echo -e -n "and has type $NEWTYPE \n"
 
     rm alanstmp.log
 }
+
+
+
+UpdateComment() {
+    NLINE=`wc alanstmp2.log | gawk '{print $1}'`
+
+    header=`grep -n '(END)    ===$' alanstmp2.log | sed -e "s/:/ /" | gawk '{print $1-3}'`
+    head -n $header alanstmp2.log > alanstmp3.log
+    echo -e -n " COMMENT      = $NEWCOMMENT\n" >> alanstmp3.log
+    residual=$(( $NLINE - $header - 1 ));
+    tail -n $residual alanstmp2.log >> alanstmp3.log
+    echo -e -n "and has comment $NEWCOMMENT \n"
+
+    mv -f alanstmp3.log log/$RUNID.log;
+# ***do not remove prvious line until ready for implimentation***
+
+    rm alanstmp2.log
+}
+
 
 #############################################################################
 #                                    Main                                   #
@@ -87,10 +105,11 @@ protect.pl -f $RUNID -u;
 
 if [ $ExeUpdateStatus -eq 1 ]; then
     UpdateStatus;
+    UpdateType;
     if [ -n "$NEWCOMMENT" ]; then
 	UpdateComment;
     else
-       mv -f alanstmp.log log/$RUNID.log
+       mv -f alanstmp2.log log/$RUNID.log
 #***do not remove above line until ready for implimentation
     echo -e "removing firsttest.dat";
     rm firsttest.dat;
