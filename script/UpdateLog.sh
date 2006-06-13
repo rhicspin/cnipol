@@ -45,43 +45,43 @@ UpdateStatus() {
     echo -e -n "$RUNID\n"
 
     header=`grep -n " RUN STATUS" $LOGFILE | sed -e "s/:/ /" | gawk '{print $1-1}'`
-    head -n $header $LOGFILE > alanstmp.log
-    echo -e -n " RUN STATUS   = $NEWSTATUS\n" >> alanstmp.log
+    head -n $header $LOGFILE > $TMPOUTDIR/updatelogtmp.log
+    echo -e -n " RUN STATUS   = $NEWSTATUS\n" >> $TMPOUTDIR/updatelogtmp.log
     residual=$(( $NLINE - $header - 1 ));
-    tail -n $residual $LOGFILE >> alanstmp.log
+    tail -n $residual $LOGFILE >> $TMPOUTDIR/updatelogtmp.log
     echo -e -n "is now tagged as $NEWSTATUS \n"
 }
 
 UpdateType() {
 
-    NLINE=`wc alanstmp.log | gawk '{print $1}'`
+    NLINE=`wc $TMPOUTDIR/updatelogtmp.log | gawk '{print $1}'`
 
     header=`grep -n " MEAS. TYPE" $LOGFILE | sed -e "s/:/ /" | gawk '{print $1-1}'`
-    head -n $header alanstmp.log > alanstmp2.log
-    echo -e -n " MEAS. TYPE   = $NEWTYPE\n" >> alanstmp2.log
+    head -n $header $TMPOUTDIR/updatelogtmp.log > $TMPOUTDIR/updatelogtmp2.log
+    echo -e -n " MEAS. TYPE   = $NEWTYPE\n" >> $TMPOUTDIR/updatelogtmp2.log
     residual=$(( $NLINE - $header - 1 ));
-    tail -n $residual alanstmp.log >> alanstmp2.log
+    tail -n $residual $TMPOUTDIR/updatelogtmp.log >> $TMPOUTDIR/updatelogtmp2.log
     echo -e -n "and has type $NEWTYPE \n"
 
-    rm alanstmp.log
+    rm $TMPOUTDIR/updatelogtmp.log
 }
 
 
 
 UpdateComment() {
-    NLINE=`wc alanstmp2.log | gawk '{print $1}'`
+    NLINE=`wc $TMPOUTDIR/updatelogtmp2.log | gawk '{print $1}'`
 
-    header=`grep -n '(END)    ===$' alanstmp2.log | sed -e "s/:/ /" | gawk '{print $1-3}'`
-    head -n $header alanstmp2.log > alanstmp3.log
-    echo -e -n " COMMENT      = $NEWCOMMENT\n" >> alanstmp3.log
+    header=`grep -n '(END)    ===$' $TMPOUTDIR/updatelogtmp2.log | sed -e "s/:/ /" | gawk '{print $1-3}'`
+    head -n $header $TMPOUTDIR/updatelogtmp2.log > $TMPOUTDIR/updatelogtmp3.log
+    echo -e -n " COMMENT      = $NEWCOMMENT\n" >> $TMPOUTDIR/updatelogtmp3.log
     residual=$(( $NLINE - $header - 1 ));
-    tail -n $residual alanstmp2.log >> alanstmp3.log
+    tail -n $residual $TMPOUTDIR/updatelogtmp2.log >> $TMPOUTDIR/updatelogtmp3.log
     echo -e -n "and has comment $NEWCOMMENT \n"
 
-    mv -f alanstmp3.log log/$RUNID.log;
+    mv -f $TMPOUTDIR/updatelogtmp3.log log/$RUNID.log;
 # ***do not remove prvious line until ready for implimentation***
 
-    rm alanstmp2.log
+    rm $TMPOUTDIR/updatelogtmp2.log
 }
 
 
@@ -109,7 +109,7 @@ if [ $ExeUpdateStatus -eq 1 ]; then
     if [ -n "$NEWCOMMENT" ]; then
 	UpdateComment;
     else
-       mv -f alanstmp2.log log/$RUNID.log
+       mv -f $TMPOUTDIR/updatelogtmp2.log log/$RUNID.log
 #***do not remove above line until ready for implimentation
     echo -e "removing firsttest.dat";
     rm firsttest.dat;
