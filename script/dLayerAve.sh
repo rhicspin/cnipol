@@ -9,6 +9,7 @@ BASEDIR=$ASYMDIR
 ExeDlayerAverage=1;
 DLAYERDIR=$ASYMDIR/dlayer
 RUNLIST=$ASYMDIR/.runlist
+SINGLE_STRIP=1;
 DUMMY=0;
 
 #############################################################################
@@ -17,10 +18,11 @@ DUMMY=0;
 help(){
     COMMAND=`basename $0`
     echo    " "
-    echo    " $COMMAND [-xh][-f <file>][--distribute]"
-    echo    "    : make deadlayer analysis database "
+    echo    " $COMMAND [-xh][-f <file>][--distribute][--strip <st>]";
+    echo    "    : make deadlayer analysis database ";
     echo    " "
     echo -e "   --distribute  Distribute blue/yellow & flattop/injection measurements."
+    echo -e "   --strip <st>  Single strip number to be extracted [def]=$SINGLE_STRIP";
     echo -e "   -f <file>     Make list from runlist <file>";
     echo -e "   -h | --help   Show this help"
     echo -e "   -x            Show example"
@@ -35,6 +37,10 @@ ShowExample(){
     echo    "1. make deadlayer database from runlist=.runlist";
     echo    " "
     echo    "    mkDB.sh -f .runlist"
+    echo    " ";
+    echo    "2. extract single strip #2 and distribute to output files";
+    echo    " "
+    echo    "    mkDB.sh -f .cnipol_daemon_run.list --distribute --strip 2"
     echo    " "
     exit;
 
@@ -85,7 +91,7 @@ ShowIndex(){
     printf " DeltaT0";
     printf " Bnch";
     printf " Dl_ave   ";
-    printf " Strip-1"
+    printf " Strip-$SINGLE_STRIP"
     printf " ==================> "
     printf " (2par)"
     printf "\n";
@@ -169,15 +175,16 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    AVE_T0=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
-	    STRIP1=`line.sh 1 $DlayerFile | gawk '{print $1}'`;
-	    if [ $STRIP1 -eq 0 ] ; then
-		Dldet1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$2)}'`;
-		t0Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$3)}'`;
-		t0EStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$4)}'`;
-		DlStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$5)}'`;
-		DlEStrip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$6)}'`;
-		t0_2par_Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$7)}'`;
-		t0E_2par_Strip1=`line.sh 1 $DlayerFile | gawk '{printf("%6.2f",$8)}'`;
+	    STRIP1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{print $1}'`;
+	    STRIP_NUMBER=`echo $SINGLE_STRIP | gawk '{print $1-1}'`;
+	    if [ $STRIP1 -eq $STRIP_NUMBER ] ; then
+		Dldet1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$2)}'`;
+		t0Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$3)}'`;
+		t0EStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$4)}'`;
+		DlStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$5)}'`;
+		DlEStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$6)}'`;
+		t0_2par_Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$7)}'`;
+		t0E_2par_Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$8)}'`;
 	    fi
 
 	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
@@ -203,6 +210,7 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 while test $# -ne 0; do
   case "$1" in
   --distribute) DISTRIBUTION=1;;
+  --strip) shift; SINGLE_STRIP=$1;;
   -f) shift ; RUNLIST=$1 ;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
