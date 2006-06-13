@@ -856,7 +856,7 @@ KinFit::PlotDlayer(Int_t Mode, TLegend *aLegend){
     for (Int_t i=0; i<NDisableStrip; i++){
       disable_dl[i] = disable_dlE[i] = 0; // initiarization
       disable_strip[i]=DisableStr[RHIC_Beam][i]+1;
-      if (disable_strip[i]!=-1) {
+      if (DisableStr[RHIC_Beam][i]!=-1) {
 	disable_dl[i]=dl[int(DisableStr[RHIC_Beam][i])];
         disable_dlE[i]=dlE[int(DisableStr[RHIC_Beam][i])];
       }
