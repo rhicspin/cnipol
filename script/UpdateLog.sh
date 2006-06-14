@@ -109,10 +109,12 @@ if [ $ExeUpdateStatus -eq 1 ]; then
     if [ -n "$NEWCOMMENT" ]; then
 	UpdateComment;
     else
-       mv -f $TMPOUTDIR/updatelogtmp2.log log/$RUNID.log
+	grep -v "COMMENT" $TMPOUTDIR/updatelogtmp2.log > $TMPOUTDIR/updatelogtmp4.log
+	mv -f $TMPOUTDIR/updatelogtmp4.log log/$RUNID.log
+	rm $TMPOUTDIR/updatelogtmp2.log
 #***do not remove above line until ready for implimentation
+    fi
     echo -e "removing firsttest.dat";
     rm firsttest.dat;
-    fi
 
 fi
