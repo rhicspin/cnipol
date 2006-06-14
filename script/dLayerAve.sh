@@ -128,6 +128,7 @@ NLINE=`wc $RUNLIST | gawk '{print $1}'`
 
 for (( i=1; i<=$NLINE ; i++ )) ;
   do
+  InitVariables;
     RUNID=`line.sh $i $RUNLIST  | gawk '{print $1}'`
     FILL=`echo $RUNID | gawk '{printf("%4d",$RUNID)}'`;
     Test=`echo $RUNID $FILL | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
@@ -175,16 +176,18 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    AVE_T0=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 
-	    STRIP1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{print $1}'`;
-	    STRIP_NUMBER=`echo $SINGLE_STRIP | gawk '{print $1-1}'`;
-	    if [ $STRIP1 -eq $STRIP_NUMBER ] ; then
-		Dldet1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$2)}'`;
-		t0Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$3)}'`;
-		t0EStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$4)}'`;
-		DlStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$5)}'`;
-		DlEStrip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$6)}'`;
-		t0_2par_Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$7)}'`;
-		t0E_2par_Strip1=`line.sh $SINGLE_STRIP $DlayerFile | gawk '{printf("%6.2f",$8)}'`;
+	    #Single Strip 
+	    cat $DlayerFile | gawk '{print $1+1}' > $TMPOUTDIR/dLayerAve.log;
+	    LINE=`grep -n $SINGLE_STRIP $TMPOUTDIR/dLayerAve.log | head -n 1 | sed -e "s/:/ /" | gawk '{print $1}'`;
+	    STRIP=`line.sh $LINE $DlayerFile | gawk '{print $1+1}'`;
+	    if [ $LINE ] ; then
+		Dldet1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$2)}'`;
+		t0Strip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$3)}'`;
+		t0EStrip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$4)}'`;
+		DlStrip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$5)}'`;
+		DlEStrip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$6)}'`;
+		t0_2par_Strip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$7)}'`;
+		t0E_2par_Strip1=`line.sh $LINE $DlayerFile | gawk '{printf("%6.2f",$8)}'`;
 	    fi
 
 	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
