@@ -1331,12 +1331,12 @@ return
    title_gl _
      'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
 
-   v/cre timec(55) R 
-   v/cre timew(55) R
-   v/cre timece(55) R
-   v/cre timewe(55) R
-   v/cre tbid(55) R 
-   v/cre ex(55) R 
+   v/cre timec(121) R 
+   v/cre timew(121) R
+   v/cre timece(121) R
+   v/cre timewe(121) R
+   v/cre tbid(121) R 
+   v/cre ex(121) R 
    v/cre ppar(3) R 1000. 50. 3.
    v/cre ppare(3) R 1. 1. 1. 
 
@@ -1350,7 +1350,7 @@ return
    sum = 0.
    nval = 0.
    
-   Do bid=0, 54
+   Do bid=0, 120
      num=$EVAL([bid]+1)
      v/input tbid([num]) [num]
      
@@ -1358,22 +1358,25 @@ return
      h/pro [hid]
      NCONT = $HINFO([hid],'ENTRIES')
      if ([NCONT] .ge. 1000.) then
-       v/input ppar(1) [expamp] 
-       v/input ppar(2) 40. 
-       v/input ppar(3) 3. 
+       v/input ppar(1)  $HINFO([hid],'MAX')
+       v/input ppar(2)  $HINFO([hid],'MEAN')
+       v/input ppar(3) 	$HINFO([hid],'RMS')
 * -------------------------------------------------------------
 *       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 par=ppar errpar=ppare
-       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 ppar pstep ppmin ppmax ppare
+       h/fit $EVAL(11000+[bid]) G Q0E 3 ppar pstep ppmin ppmax ppare
 * -------------------------------------------------------------
        v/input timec([num]) $EVAL(ppar(2))
        v/input timew([num]) $EVAL(abs(ppar(3))) 
        v/input timece([num]) $EVAL(ppare(2)) 
        v/input timewe([num]) $EVAL(ppare(3))
-       
+
+*	mess $EVAL(timec([num])) [sum] [nval]
        timec = $EVAL(timec([num]))
-       sum = $RSIGMA([sum] + timec([num]))
-       nval = $RSIGMA([nval]+1)
-       
+	if [timec].gt.0 .and. [timec].lt.100 then
+	       sum = $RSIGMA([sum] + timec([num]))
+	       nval = $RSIGMA([nval]+1)
+	endif
+
 * mess $EVAL([bid])//' '//$EVAL(ppar(2))//' '//$EVAL(ppar(3))//' '_
 * $EVAL([expamp])
      else 
@@ -1383,7 +1386,7 @@ return
    
    Do bid=0, 54
      num=$EVAL([bid]+1)
-*     mess [bid] $EVAL(timec([num])-[sum]/[nval]) $EVAL([sum]/[nval])   
+*     mess [bid] $EVAL(timec([num])) $EVAL(timec([num])-[sum]/[nval]) $EVAL([sum]/[nval])   
      v/input timec([num]) $EVAL(timec([num])-[sum]/[nval])
    Enddo
    
