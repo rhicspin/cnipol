@@ -305,11 +305,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             HHF1(14000+st+1, event->bid, 1.);
         }
         
-        // Timing info for Each bunch 
-        if ((e>600.)&&(e<650.)){
-            HHF1(11000+(int)event->bid/2, t, 1.);
-        }
-        
+	HHF2(16500+st+1, Mass, t, 1);
 
 	/*
         if (dproc.RAMPMODE==1) {0
@@ -424,6 +420,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             if ((e>Emin) && (e<Emax)) {
                 
 
+        
+	      // Timing info for Each bunch 
+	      if ((e>600.)&&(e<650.)){
+		HHF1(11000+(int)event->bid, t, 1.);
+	      }
+
                 // delimiter distribution
                 HHF1(10200,(float)event->delim,1.);
                 
@@ -445,6 +447,10 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 
                 // Strip distribution (time + -t cut )
                 HHF1(10320+si+1,(float)(st-si*12)+1,1.);
+
+		// Mass vs. t and vs. Energy plots
+		HHF2(16100+st+1, Mass, e, 1);
+		HHF2(16400+st+1, Mass, t, 1);
 
 
                 Ncounts[(int)(st/12)][event->bid]++;
