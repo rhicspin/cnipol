@@ -29,6 +29,12 @@ private:
   TH2D* frame ;
   TNtuple * ntp ;
 
+  struct PlotOption {
+    bool SingleStrip;
+    bool WCM;
+    bool ScaleToF;
+  } opt;
+
   typedef struct {
     Float_t t0[N];
     Float_t t0E[N];
@@ -43,16 +49,41 @@ private:
 
     
 public:
+  void OptionHandler();
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
   Int_t PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text);
+  Int_t PlotWCM(Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtyp, Char_t*text);
   Int_t DlayerPlot(Char_t*, Int_t);
   Int_t BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t DlayerAnalyzer();
   Int_t GetData(Char_t * DATAFILE);
 
-
 }; // end-class DlayerAnalyzer
+
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : OptionHandler()
+//
+// Description : Handles plotting option
+// Input       : 
+// Return      : 
+//
+void
+DlayerAnalyzer::OptionHandler(){
+
+  opt.SingleStrip=false;
+  opt.WCM=false;
+  opt.ScaleToF=false;
+
+  return;
+
+}// end-of-OptionHandler()
+
+
+
+
 
 
 //
@@ -97,6 +128,8 @@ GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
 Int_t
 DlayerAnalyzer::GetData(Char_t * DATAFILE){
                  
+  Int_t Fill;
+
     ifstream fin;
     fin.open(DATAFILE,ios::in);
     if (fin.fail()){
@@ -109,10 +142,8 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
     ntp  = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
     ntps = new TNtuple("ntps","Single Strip Data","RunID:single.Par1.Dl:single.Par1.t0:single.Par1.t0E:single.Par2.Dl:single.Par2.DlE:single.Par2.t0Lsingle.Par2.t0E");
 
-
     Float_t dum[10];
     Int_t i=0;
-    Int_t ch=0;
     while (!fin.eof()) {
 
         fin >> RunID[i] >> Dl[i] >> DlE[i] >> ReadRate[i] >> WCM[i] >> SpeLumi[i] >> NBunch[i]
@@ -124,6 +155,11 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
 	//	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 	dx[i]=dy[i]=0;
+
+	if (opt.ScaleToF) {
+	  Fill=int(RunID[i]);
+	  if (Bunch[i]==120) AveT0[i] += (RunID[i]-Fill)*1000-100>0 ? 18 : 14;
+	}
 
 	single.Par1.Dl[i] -= 20;
 	single.Par2.Dl[i] -= 15;
@@ -163,19 +199,18 @@ Int_t
 DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text, 
 		    Int_t Color, TLegend *aLegend){
 
-  bool Single=true;
-
   switch (Mode) {
   case 10:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, Dl, dx, DlE);
-    if (Single) PlotSingleStrip(Mode,ndata,Mtyp,text);
+    if (opt.SingleStrip) PlotSingleStrip(Mode,ndata,Mtyp,text);
     break;
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, Dl, dx, DlE);
     break;
   case 30:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, AveT0, dx, dy);
-    if (Single) PlotSingleStrip(Mode,ndata,Mtyp,text);
+    if (opt.SingleStrip) PlotSingleStrip(Mode,ndata,Mtyp,text);
+    if (opt.WCM) PlotWCM(Mode,ndata,Color,Mtyp,text);
     break;
   case 40:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DeltaT0, dx, dy);
@@ -212,6 +247,56 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   return 0;
 
 } // end-of-DlayerPlot()
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : PlotWCM(Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtype, Char_t*text)
+//
+// Description : Plot Wall Current Monitor timing history
+// Input       : Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtype, Char_t text
+// Return      : 
+//
+Int_t
+DlayerAnalyzer::PlotWCM(Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtyp, Char_t*text)
+{ 
+
+  if (text=="Injection") return;
+
+  const Int_t K=20;
+  Float_t wcmRunID[K];
+  Float_t wcmBlueT0[K],wcmBlueT0E[K];
+  Float_t wcmYellowT0[K],wcmYellowT0E[K];
+  Float_t dummy[K];
+
+  ifstream fin;
+  fin.open("/home/itaru/2005/offline/WCM/dat/WCM_timingRun5.dat",ios::in);
+  if (fin.fail()){
+    cerr << "ERROR: " << DATAFILE << " doesn't exist. Force exit. PlotWCM Ignored." << endl;
+    return;
+  };
+
+  Int_t i=0;
+  while (!fin.eof()) {
+    fin >> wcmRunID[i] >> wcmBlueT0[i] >> wcmBlueT0E[i] >> wcmYellowT0[i] >> wcmYellowT0E[i];
+    wcmBlueT0[i] *= -1;
+    wcmYellowT0[i] = -1*wcmYellowT0[i]+20;
+    dummy[i]=0;
+    ++i;
+  };
+
+  Int_t ndata=i-1;
+  if (Color==4)  TGraphErrors* wcmT0 = new TGraphErrors(ndata, wcmRunID, wcmBlueT0, dummy, wcmBlueT0E);
+  if (Color==94) TGraphErrors* wcmT0 = new TGraphErrors(ndata, wcmRunID, wcmYellowT0, dummy, wcmYellowT0E);
+
+  Mtyp=21;
+  wcmT0 -> SetMarkerStyle(Mtyp);
+  wcmT0 -> SetMarkerSize(1.3);
+  wcmT0 -> SetLineWidth(2);
+  wcmT0 -> SetMarkerColor(40);
+  wcmT0 -> Draw("P");
+
+  return 0;
+}
 
 //
 // Class name  : DlayerAnalyzer
@@ -550,6 +635,8 @@ DlayerAnalyzer::DlayerAnalyzer()
     sprintf(psfile,"ps/DlayerAnalyzer.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
+    // Handle Plotting Options
+    OptionHandler();
 
     BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
     BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
