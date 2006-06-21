@@ -667,6 +667,7 @@
 
 [7622.013]
 	CONFIG=7622.013.config.dat;
+	COMMENT="";
 
 [7622.019]
 	CONFIG=7622.019.config.dat;
@@ -3249,10 +3250,12 @@
 
 
 [7962.001]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Junk;
 	COMMENT="";
 
 [7962.101]
+	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Junk;
 	COMMENT="";
 	
@@ -3311,3 +3314,503 @@
 	RUN_STATUS=Suspicious;
 	COMMENT="Profile Issue: bunch right and only partial scan.";
 
+[8003.001]
+	CONFIG=8003.001.config.dat;
+	COMMENT="Wide profile, but looks good.";
+
+[8003.002]
+	CONFIG=8003.002.config.dat;
+
+[8003.101]
+	RUN_STATUS=Good;
+	COMMENT="Wide profile, but looks good.";
+
+[8003.102]
+	CONFIG=8003.102.config.dat;
+	COMMENT="Large Errors on the cumulative asymmetries.";
+
+[8003.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="many problems, including bizzare banana windows and strips problem.";
+
+[8003.104]
+	RUN_STATUS=Good;
+	CONFIG=8003.104.config.dat;
+	COMMENT="Wide profile, but looks good otherwise.";
+
+[8005.001]
+	RUN_STATUS=Good;
+	COMMENT="Wide profile, but looks good otherwise.";
+
+[8005.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: scan ends early.";
+
+[8005.102]
+	COMMENT="Wide profiles.";
+
+[8006.001]
+	RUN_STATUS=Good;
+	CONFIG=8006.001.config.dat;
+	COMMENT="";
+
+[8006.002]
+	RUN_STATUS=Good;
+	CONFIG=8006.002.config.dat;
+	COMMENT="wide mass peaks.";
+
+[8006.003]
+	RUN_STATUS=Good;
+	CONFIG=8006.003.config.dat;
+	COMMENT="";
+
+[8006.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8006.102]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+
+[8008.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8008.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8015.101]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: bunch right.";
+
+[8016.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: Wide profile.";
+
+[8018.001]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8019.003]
+	RUN_STATUS=Suspicious;
+	CONFIG=8019.003.config.dat;
+	COMMENT="Strange banana plots and problems stemming from these.";
+
+[8019.102]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: Bunch Right.";
+
+[8020.001]
+	RUN_STATUS=Good;
+	CONFIG=8020.001.config.dat;
+	COMMENT="";
+
+[8021.002]
+	RUN_STATUS=Suspicious;
+	CONFIG=8021.002.config.dat;
+	COMMENT="Profile Issue: bunch right. Correct mass peaks recovered.";
+
+[8021.003]
+	COMMENT="Profile Issue: Wide profile. Correct mass peaks recovered";
+
+[8021.005]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8021.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8021.105]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: wide profile.";
+
+[8022.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="asymmetric mass peaks.";
+
+[8022.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8022.101]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8023.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Asymmetric mass peaks.";
+
+[8023.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8024.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Asymmetric mass peaks.";
+
+[8024.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8025.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Slightly asymmetric mass peaks.";
+
+[8025.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8026.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Slightly asymmetric mass peaks.";
+
+[8026.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+
+[8031.001]
+	RUN_STATUS=Suspicious;
+	COMMENT="Slightly asymmetric mass peaks.";
+
+[8031.002]
+	RUN_STATUS=Good;
+	COMMENT="Correct mass peaks recovered.";
+	CONFIG=8031.002.config.dat;
+
+[8032.001]
+	RUN_STATUS=Suspicious;
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT="Flakey WFD module.";
+
+[8032.005]
+	RUN_STATUS=Good;
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	COMMENT="";
+
+[8032.101]
+	RUN_STATUS=Suspicious;
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT="Flakey WFD module.";
+
+[8032.105]
+	RUN_STATUS=Good;
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	COMMENT="";
+
+[8033.001]
+	MEASUREMENT_TYPE=TUNE;
+	RUN_STATUS=Tune;
+
+[8033.002]
+	COMMENT="Strange strip phenomenon,perhaps WFD, but larger, not smaller counts.";
+
+[8033.003]
+	COMMENT="";
+
+[8033.006]
+	COMMENT="Strange strip phenomenon. perhaps WFD, but large, not smaller counts.";
+
+[8033.007]
+	COMMENT="All sorts of trouble in the strips.";
+
+[8033.009]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8033.010]
+	RUN_STATUS*=Tune;
+	COMMENT*="seems like only four of the detectors are in use (and only partially)?";
+
+[8033.101]
+	MEASUREMENT_TYPE=TUNE;
+	RUN_STATUS=Tune;
+	CONFIG=8033.101.config.dat;
+	COMMENT="strange mass peak behavior.";
+
+[8033.102]
+	CONFIG=8033.102.config.dat;
+	COMMENT="";
+
+[8033.109]
+	RUN_STATUS*=Junk;
+	COMMENT*="Unrecoverable spin pattern.";
+
+[8033.117]
+	DEFINE_SPIN_PATTERN*=5;
+	COMMENT*="Recovered spin patter.";
+
+[8035.001]
+	RUN_STATUS=Junk;
+	COMMENT="Number of events < 50k.";
+
+[8035.103]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: incomplete scan.";
+
+[8035.105]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8036.001]
+	RUN_STATUS=Suspicious;
+	CONFIG=8036.001.config.dat;
+	COMMENT="Profile Issue: bunch left. Horizontal target.";
+
+[8036.002]
+	COMMENT="Horizontal target";
+
+[8036.003]
+	COMMENT="Profile Issue: bunch left.  Horizontal target.";
+
+[8036.005]
+	COMMENT="Horizontal target.";
+
+[8036.101]
+	RUN_STATUS=Suspicious;
+	COMMENT="Profile Issue: bunch right.";
+
+[8036.102]
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8037.001]
+	RUN_STATUS=Tune;
+	COMMENT="Sandro's vertical scan with horizontal target.";
+
+[8037.002]
+	CONFIG=8037.002.config.dat;
+
+[8037.005]
+	RUN_STATUS=Good;
+	MEASUREMENT_TYPE=PHYS;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 1 (8037.005 - 008)";
+
+[8037.009]
+	RUN_STATUS=Junk;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3, but wrong blue_at.ini (009-011)";
+
+[8037.012]
+	RUN_STATUS=Junk;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Low statistics test.";
+
+[8037.013]
+	RUN_STATUS=Junk;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Target broke during measurment. Switch to yellow.";
+
+[8037.102]
+	RUN_STATUS=Tune;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Tuning timing.";
+
+[8037.103]
+	MEASUREMENT_TYPE=PHYS;
+	RUN_STATUS=Good;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. (8037.103 - .106)";
+
+[8037.107]
+	RUN_STATUS=Junk;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 5. Tuning.(.107-.108)";
+
+[8037.108]
+	RUN_STATUS=Good;
+	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 5. (8037.109 - .112);
+
+
+[8038.001]
+	//not yet confirmed
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8038.101]
+	//not yet confirmed
+	MEASUREMENT_TYPE=NORM;
+	RUN_STATUS=Good;
+	COMMENT="";
+
+[8037.004]@
+	CONFIG=8037.004.config.dat;@
+
+
+[8037.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.009]@
+	CONFIG=8037.009.config.dat;@
+
+
+[8037.012]@
+	CONFIG=8037.012.config.dat;@
+
+
+[8037.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.103]@
+	CONFIG=8037.103.config.dat;@
+
+
+[8037.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.108]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.109]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.110]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.111]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8037.112]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8038.001]@
+	CONFIG=8038.001.config.dat;@
+
+
+[8038.002]@
+	CONFIG=8038.002.config.dat;@
+
+
+[8038.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8038.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8038.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8039.101]@
+	CONFIG=8039.101.config.dat;@
+
+[8042.102]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[8049.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8049.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8049.102]@
+	CONFIG=8049.102.config.dat;@
+
+
+[8052.101]@
+	CONFIG=8052.101.config.dat;@
+
+
+[8054.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8054.011]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8054.014]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8056.105]@
+	CONFIG=8056.105.config.dat;@
+
+
+[8056.011]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8058.011]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8058.108]@
+	CONFIG=8058.108.config.dat;@
+
+
+[8058.012]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8058.014]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8059.010]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8060.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[8060.101]@
+	CONFIG=8060.101.config.dat;@
+
+[8061.001]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
