@@ -36,7 +36,8 @@ public:
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
-
+  Int_t PrintComments(Int_t Mode);
+  Int_t ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt);
 
 }; // end-class Offline
 
@@ -175,6 +176,60 @@ OfflinePol::GetData(Char_t * DATAFILE){
     return i-1;
 
 }
+
+//
+// Class name  : OfflinePol
+// Method name : PrintComments(Int_t Mode)
+//
+// Description : Print optional comments on the current plot
+// Input       : 
+// Return      : 
+//
+Int_t
+OfflinePol::PrintComments(Int_t Mode){
+
+
+  if ((Mode==10)||(Mode==50)||(Mode==60)||(Mode==90)){
+    ArrayAndText(7563.,7957.,41, "200GeV");
+    ArrayAndText(7991.,8061.,32, "62GeV");
+  }
+
+
+  return 0;
+
+}
+
+//
+// Class name  : OfflinePol
+// Method name : ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt)
+//
+// Description : Draw Array and text on the current frame
+// Input       : Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt
+// Return      : 
+//
+Int_t
+OfflinePol::ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt){
+
+  Float_t scale=0.1;
+  Float_t ymin=frame->GetYaxis()->GetXmin() ;
+  Float_t ymax=frame ->GetYaxis()->GetXmax() ;
+  Float_t yint=ymax-ymin;
+  TArrow * ar = new TArrow(xmin,ymax-yint*scale,xmax,ymax-yint*scale,0.02F,"|>"); 
+  ar->SetLineWidth(6);
+  ar->SetLineColor(Color);
+  ar.SetFillColor(Color);
+  ar->Draw("same");
+
+  Float_t xtxt = xmin+(xmax-xmin)/2.;
+  TText *tx = new TText(xtxt,ymax-yint*scale,txt);
+  tx->SetTextAlign(21);
+  tx->SetTextColor(13);
+  tx->Draw("same");
+
+  return 0;
+
+}			
+
 
 
 //
@@ -330,6 +385,8 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   frame -> GetXaxis()->SetTitle(xtitle);
   frame -> GetYaxis()->SetTitle(ytitle);
   frame -> Draw();
+
+  PrintComments(Mode);
 
   return 0;
 
