@@ -1370,7 +1370,7 @@ return
        v/input timece([num]) $EVAL(ppare(2)) 
        v/input timewe([num]) $EVAL(ppare(3))
 
-*	mess $EVAL(timec([num])) [sum] [nval]
+
        timec = $EVAL(timec([num]))
 	if [timec].gt.0 .and. [timec].lt.100 then
 	       sum = $RSIGMA([sum] + timec([num]))
@@ -1489,7 +1489,7 @@ return
    v/cre strip(72) R
    v/cre fraction(72) R
    Do st=1,72
-     hid = $EVAL(11100+[st])
+     hid = $EVAL(11200+[st])
      h/pro [hid]
      
      nent = $HINFO([hid], 'ENTRIES')
