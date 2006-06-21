@@ -182,7 +182,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
     
 
     // TDC Dists without Cut
-    HHF1(11100+st+1, (float)event->tdc, 1.);
+    HHF1(11200+st+1, (float)event->tdc, 1.);
 
     // 2*cfginfo->data.chan[st].Window.split.Beg = 6
     if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)){
@@ -419,7 +419,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             
             if ((e>Emin) && (e<Emax)) {
                 
-
         
 	      // Timing info for Each bunch 
 	      if ((e>600.)&&(e<650.)){

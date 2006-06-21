@@ -111,7 +111,7 @@ float pawc_[NWORDS_PAWC];
 //  10600+St  : energy dists for minus bunch (each strip,default)
 //  10700+i   : energy dists in given -t bin
 //  11000+bid : bunch by bunch timing infor (default)
-//  11100+St  : tdc distribution without cut 
+//  11200+St  : tdc distribution without cut 
 //-CMODE
 //  12000+St  : energy calibration
 //-TMODE
@@ -314,7 +314,7 @@ int hist_book(char *filename){
     // TDC DISTS without any cut
     for (st=1;st<=NSTRIP;st++){
         sprintf(hcomment,"TDC dist st-%d",st);
-        HHBOOK1(11100+st,hcomment, 256, 0., 256.);
+        HHBOOK1(11200+st,hcomment, 256, 0., 256.);
     }   
 
     // Energy distribution in given -t bin
