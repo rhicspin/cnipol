@@ -9,13 +9,14 @@ $EMAX=900;
 $cfile="config.dat";
 $ONLINE_CONFIG="";
 $OUTPUTDIR=".";
+$ONE_PAR_FIT_OPTION=1;
 
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('d:E:f:bgh', \%opt);
+getopts('d:E:f:O:bgh', \%opt);
 
 if ( $opt{h} ) {
     help();
@@ -30,6 +31,15 @@ if ( $opt{b} ){
 if ( $opt{d} ){
     $OUTPUTDIR=$opt{d};
 }
+
+if ( $opt{O} ){
+    $ONE_PAR_FIT_OPTION=$opt{O};
+    if (($ONE_PAR_FIT_OPTION != 1)&&($ONE_PAR_FIT_OPTION!=11)) {
+	print "Error : Invarid One Par Fit Option <$ONE_PAR_FIT_OPTION> \n";
+	help();
+    }
+}
+
 
 
 # Get Run ID
@@ -50,7 +60,7 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>][-d <dir>]\n\n"; 
+    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>][-d <dir>][-O <fit mode>]\n\n"; 
     print "    fit banana histograms and get deadlayer and t0.\n";
     print "    Execute dLayerGen.pl for histogram creation.\n\n";
     print "\t -f <runID>     runID\n";
@@ -59,8 +69,14 @@ sub help(){
     print "\t -g             Launch ghostviewer after fit.\n";
     print "\t -E <Emin:Emax> Fit Energy Range in [keV] (def <$EMIN:$EMAX>) \n";
     print "\t -h             Show this help \n";
+    print "\t ----------------- expert options ------------------\n";
+    print "\t -O <fit mode>  One parameter fitting option. [Def]:$ONE_PAR_FIT_OPTION\n";
+    print "\t                  1: fix deadlayer   11: fix t0\n";
+    print "\n";
     print "\n";
     print "    ex.1) dLayerCal.pl -E 350:950 -f 7279.005 -b \n\n";
+    print "    ex.2) Fixed t0 one parameter fit.\n";
+    print "          dLayerCal.pl -O 11 -f 7300.002 -b \n\n";
     print "\n";
     exit(0);
 }
@@ -151,6 +167,7 @@ sub PrintRunCondition(){
     printf("HID                  : $HID \n");
     printf("Config File          : $cfile \n");
     printf("Online Config        : $ONLINE_CONFIG \n");
+    printf("One Par Fit option   : $ONE_PAR_FIT_OPTION \n");
     printf("Temporary output Dir : $OUTPUTDIR \n");
 
 }
@@ -167,7 +184,7 @@ GetOnlineConfig();
 PrintRunCondition();
 
 # Make input macro for fitting.
-system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\",\"$OUTPUTDIR\")' > $OUTPUTDIR/input.C");
+system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\",\"$OUTPUTDIR\", $ONE_PAR_FIT_OPTION)' > $OUTPUTDIR/input.C");
 # Execute deadlayer fitting on root
 system("root -b < $OUTPUTDIR/input.C | tee $DLAYERDIR/$Runn.fit.log");
     
