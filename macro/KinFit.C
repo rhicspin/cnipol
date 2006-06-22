@@ -476,14 +476,21 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     // Set the default values
     // Dlayer Fix/ Or not
     
+    kinf->SetParLimits(1, -50., 50.);
     if (!mode&1) {
         kinf->SetParameters(65.0, -16.0);
         kinf->SetParLimits(0, 0., 200.);
     } elseif (mode&1) {
-        kinf->SetParameters(dlsum[Si], 0.0);
-        kinf->SetParLimits(0, dlsum[Si], dlsum[Si]);
+	if (!(mode>>1)&1) { 
+	  kinf->SetParameters(dlsum[Si], 0.0);
+	  kinf->SetParLimits(0, dlsum[Si], dlsum[Si]);
+	}else{// this is an expert mode. Fix t0 and play with dlayer
+	  cout << "mode=" << mode << endl;
+	  kinf->SetParameters(dlsum[Si],t0[St]+5);
+	  kinf->SetParLimits(1, t0[St]+5, t0[St]+5);
+	}
+
     }        
-    kinf->SetParLimits(1, -50., 50.);
 
     if (mode&1) h2d  -> Draw("color");
 
@@ -510,6 +517,11 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         ChiDOF   = kinf->GetChisquare()/kinf->GetNDF();
         t0s[St]  = kinf->GetParameter(1);
         t0sE[St] = ChiDOF *  kinf->GetParError(1);
+
+	if (mode>>1&1){
+	  dl[St] = fabs(kinf->GetParameter(0));
+	  dlE[St]  = Chi2[St] + kinf->GetParError(0);
+	}
 
     }        
 
@@ -570,7 +582,11 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         // Write Out the Result on File
     
         fout << St<< " ";
-        fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";
+	if (!(mode>>1)&1) { 
+	  fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";
+	}else{
+	  fout << setprecision(4) << dl[St] << " ";
+	}
         fout << setprecision(4) << t0s[St]  <<" ";
         fout << setprecision(4) << t0sE[St] <<" ";
         fout << setprecision(4) << dl[St]  <<" ";
