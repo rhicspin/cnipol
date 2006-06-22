@@ -1,7 +1,8 @@
 
 void
 ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T, Float_t EMIN, 
-	  Float_t EMAX, Int_t HID, Char_t *cfile, Char_t *online_cfile, Char_t *outputdir) {
+	  Float_t EMAX, Int_t HID, Char_t *cfile, Char_t *online_cfile, Char_t *outputdir,
+	  Int_t option) {
 
   char MACRO[100];
   sprintf(MACRO,"%s/KinFit.C",gSystem->Getenv("MACRODIR"));
@@ -19,7 +20,8 @@ ExeKinFit(Char_t *run,  Float_t bene, Int_t RHICBeam, Float_t E2T, Float_t EMIN,
 
   KinFit *kfit = new KinFit(run, bene, RHICBeam, E2T, EMIN, EMAX, HID, cfile, online_cfile, outputdir);
   kfit->Fit(0);    // arg = 0 ... new fit with two free paramters 
-  kfit->Fit(1);    // fix dlayer values with average
+  kfit->Fit(option);    
+
 
   kfit->PlotResult();
 
