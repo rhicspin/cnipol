@@ -23,7 +23,7 @@ using namespace std;      //declare string in structure
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
 #define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
-#define MAXDELIM 350               // maximum number of delimiter (dynamic motion only)
+#define MAXDELIM 410               // maximum number of delimiter (dynamic motion only)
 #define TARGETINDEX 1000           // maximum target full array size including static motion
 #define NTBIN 14                   // number of -t bin
 
