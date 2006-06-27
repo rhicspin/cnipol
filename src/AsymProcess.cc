@@ -462,7 +462,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     if (time<MAXDELIM) {
                         NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
                     }else{
-                        cerr << "ERROR: time constructed from revolution # exeeds MAXDELIM define\n" << endl;
+		      cerr << "ERROR: time constructed from revolution # " << time << "exeeds MAXDELIM=" << MAXDELIM << " defined\n" << endl;
                     }
                 }
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
