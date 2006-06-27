@@ -345,6 +345,7 @@
 	EnableStrip=70;
 	EnableStrip=72;
 	CONFIG=7563.001.config.dat;
+	COMMENT="Wrong spin pattern. Fill 7563 (blue)";
 
 [7563.002]
 // wrong spin pattern
@@ -379,6 +380,7 @@
 	DisableStrip=18;
 	DisableStrip=54;
 	CONFIG=7564.001.config.dat;
+	COMMENT="";
 
 [7564.101]
 	CONFIG=7564.101.config.dat;
@@ -1565,6 +1567,7 @@
 [7732.102]
 	RUN_STATUS=Good;
 	CONFIG=7732.102.config.dat;
+	COMMENT*="Injection";
 
 [7732.103]
 	RUN_STATUS=Suspicious;
@@ -1589,7 +1592,7 @@
 	CONFIG=7733.101.config.dat;
 
 [7733.102]
-	COMMENT="Yellow polarization dropped to zero?  Perhaps a spin pattern problem, but but unlikely.";
+	COMMENT="Physics asymmetries are zero even bunch by bunch. 7733.103 as well";
 	RUN_STATUS=Junk;
 
 [7737.001]
