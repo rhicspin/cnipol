@@ -45,8 +45,8 @@ ExtractSpinPattern(){
 if [ -f SpinPattern\_$RHICRUN.*.db ] ; then
     rm -f SpinPattern\_$RHICRUN.*.db;
 fi
-touch SpinPattern\_$RHICRUN.Yellow.db
-touch SpinPattern\_$RHICRUN.Blue.db
+touch SpinPattern\_$RHICRUN.Yellow.db;
+touch SpinPattern\_$RHICRUN.Blue.db;
 
 
 NLINE=`wc $RUNLIST | gawk '{print $1}'`;
@@ -64,7 +64,7 @@ for (( i=1; i<=$NLINE ; i++ ))
       LOGFILE=$LOGDIR/$RunID.log;
       if [ -f $LOGFILE ] ; then
 	  echo -e -n "$Fill " | tee -a SpinPattern\_$RHICRUN.$Beam.db
-	  grep Bunches $LOGFILE  | gawk '{print $4}' | tee -a SpinPattern\_$RHICRUN.$Beam.db
+	  grep Bunches $LOGFILE | head -n 2 | gawk '{print $4}' | tee -a SpinPattern\_$RHICRUN.$Beam.db
       fi
 
     done
