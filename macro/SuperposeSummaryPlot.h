@@ -21,6 +21,11 @@ SuperposeComments(Int_t Mode, TH2D *frame){
 
   // may need to restore following if statements in the future.
   //  if ((Mode==10)||(Mode==50)||(Mode==60)||(Mode==90)){
+  // Run05 
+    ArrayAndText(frame, 6789, 7172.,41, "200GeV");
+    ArrayAndText(frame, 7203.,7226.,32, "410GeV");
+    ArrayAndText(frame, 7229.,7327.,41, "200GeV");
+  // Run06 
     ArrayAndText(frame, 7563.,7957.,41, "200GeV");
     ArrayAndText(frame, 7991.,8061.,32, "62GeV");
     ArrayAndText(frame, 8092.,8124.,25, "500GeV");
@@ -55,6 +60,7 @@ ArrayAndText(TH2D*frame, Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt){
   Float_t xtxt = xmin+(xmax-xmin)/2.;
   TText *tx = new TText(xtxt,ymax-yint*scale,txt);
   tx->SetTextAlign(21);
+  if (txt=="410GeV") tx->SetTextAlign(23);
   tx->SetTextColor(13);
   tx->Draw("same");
 

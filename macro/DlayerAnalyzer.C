@@ -27,6 +27,8 @@ private:
   Float_t t0_2par_Strip1[N],t0E_2par_Strip1[N];
   Float_t dx[N],dy[N];
   TH2D* frame ;
+  TH1D* ProjDlayerRateCorr ;
+  TH1D* ProjDlayerRaw ;
   TNtuple * ntp ;
 
   struct PlotOption {
@@ -73,9 +75,14 @@ public:
 void
 DlayerAnalyzer::OptionHandler(){
 
+  // Plot Single strip Behavior 
   opt.SingleStrip=false;
+  // Plot Wall Current Monitor t0 history
   opt.WCM=false;
+  // Shift 120 bunchmode ToF to make sooth continuity with 60 bunches data 
   opt.ScaleToF=false;
+
+
 
   return;
 
@@ -128,6 +135,8 @@ GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
 Int_t
 DlayerAnalyzer::GetData(Char_t * DATAFILE){
                  
+  static Int_t J; ++J;
+  Char_t histname[100];
   Int_t Fill;
 
     ifstream fin;
@@ -137,6 +146,11 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
         exit(-1);
     }
 
+    //Define Histograms
+    sprintf(histname,"ProjDlayerRaw%d",J);
+    ProjDlayerRaw      = new TH1D(histname, "Dead Layer Stability (No correction)", 50, 20, 80);
+    sprintf(histname,"ProjDlayerRateCorr%d",J);
+    ProjDlayerRateCorr = new TH1D(histname, "Dead Layer Stability (Rate Correction)", 50, 20, 80);
 
     // New Ntuples declaration
     ntp  = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
@@ -151,10 +165,18 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	    >> single.Par1.Dl[i] >> single.Par1.t0[i] >> single.Par1.t0E[i] 
 	    >> single.Par2.Dl[i] >> single.Par2.DlE[i] >> single.Par2.t0[i] >> single.Par2.t0E[i]; 
 
+
+	// Fill Histograms
+	ProjDlayerRaw -> Fill(Dl[i]);
+
 	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
 	//	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 	dx[i]=dy[i]=0;
+
+	// Fill Histograms
+	ProjDlayerRateCorr -> Fill(Dl[i]);
+
 
 	if (opt.ScaleToF) {
 	  Fill=int(RunID[i]);
@@ -526,6 +548,10 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   frame -> GetYaxis()->SetTitle(ytitle);
   frame -> Draw();
 
+  // Superpose some beam operational comments on the frame 
+  SuperposeComments(Mode, frame);
+
+
   return 0;
 
 }
@@ -544,11 +570,27 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
 
   Int_t Color = Beam == "Blue" ? 4 : 94 ;
 
+  // Get Data from File and draw frame
+  Char_t DATAFILE[256];
+  sprintf(DATAFILE,"summary/dLayer_%s_FTP.dat",Beam);
+  Int_t ndata = GetData(DATAFILE);
+  if (!(Mode&1)) DrawFrame(Mode, ndata, Beam);
+
   // Y-coodinates for Legend
   Float_t interval=0.15;
   Float_t ymin=0.15;
   Float_t xmin=0.7;
   switch (Mode) {
+  case 15:
+    ProjDlayerRaw->SetXTitle("Dead Layer [ug/cm^2]");
+    ProjDlayerRaw->SetFillColor(Color);
+    ProjDlayerRaw->Draw();
+    break;
+  case 17:
+    ProjDlayerRateCorr->SetXTitle("Dead Layer [ug/cm^2]");
+    ProjDlayerRateCorr->SetFillColor(Color);
+    ProjDlayerRateCorr->Draw();
+    break;
   case 30:
     xmin=0.15;
     ymin=0.15;
@@ -566,20 +608,17 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   Float_t xmax=xmin+interval;
   Float_t ymax=ymin+interval;
 
-  Char_t DATAFILE[256];
-  sprintf(DATAFILE,"summary/dLayer_%s_FTP.dat",Beam);
-  Int_t ndata = GetData(DATAFILE);
-  DrawFrame(Mode, ndata, Beam);
-
   // Legend
   TLegend * aLegend = new TLegend(xmin, ymin, xmax, ymax);
 
-  // Plot flattop
-  if (ndata>0) Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
-  sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
-  Int_t ndata = GetData(DATAFILE);
-  // Plot injection
-  if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
+  if (!(Mode&1)) {
+    // Plot flattop
+    if (ndata>0) Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
+    sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
+    Int_t ndata = GetData(DATAFILE);
+    // Plot injection
+    if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
+  }
 
   return 0;
 
@@ -598,14 +637,13 @@ DlayerAnalyzer::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
   DlayerPlot("Blue",Mode);
   CurC -> Update();
-  frame->Delete();
+  if (!(Mode&1)) frame->Delete();
 
   ps->NewPage();
 
   DlayerPlot("Yellow",Mode);
   CurC -> Update();
-  if (Mode!=101) frame->Delete();
-
+  if (!(Mode&1)) frame->Delete();
 
   return 0;
     
@@ -625,35 +663,41 @@ Int_t
 DlayerAnalyzer::DlayerAnalyzer()
 {
 
+  // load header macro
+  Char_t HEADER[100];
+  sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
 
-    // Cambus Setup
-    TCanvas *CurC = new TCanvas("CurC","",1);
-    CurC -> SetGridy();
+  // Cambus Setup
+  TCanvas *CurC = new TCanvas("CurC","",1);
+  CurC -> SetGridy();
+  
+  // postscript file
+  Char_t psfile[100];
+  sprintf(psfile,"ps/DlayerAnalyzer.ps");
+  TPostScript *ps = new TPostScript(psfile,112);
 
-    // postscript file
-    Char_t psfile[100];
-    sprintf(psfile,"ps/DlayerAnalyzer.ps");
-    TPostScript *ps = new TPostScript(psfile,112);
+  // Handle Plotting Options
+  OptionHandler();
 
-    // Handle Plotting Options
-    OptionHandler();
+  BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
+  BlueAndYellowBeams(15, CurC, ps);   // Deadlayer Raw (flattop only)
+  BlueAndYellowBeams(17, CurC, ps);   // Deadlayer Rate Correction (flattop only)
+  BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
+  BlueAndYellowBeams(30, CurC, ps);   // Fill vs. Average t0
+  BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
+  BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
+  BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
+  BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
+  BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
+  BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
 
-    BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
-    BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
-    BlueAndYellowBeams(30, CurC, ps);   // Fill vs. Average t0
-    BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
-    BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
-    BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
-    BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
-    BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
-    BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
+  cout << "ps file : " << psfile << endl;
+  ps->Close();
+  
+  gSystem->Exec("gv ps/DlayerAnalyzer.ps");
 
-    cout << "ps file : " << psfile << endl;
-    ps->Close();
-
-    gSystem->Exec("gv ps/DlayerAnalyzer.ps");
-
-    return 0;
+  return 0;
 
 }
 
