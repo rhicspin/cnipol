@@ -15,6 +15,9 @@
 const Int_t N=2000;
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 
+//Int_t SuperposeComments(Int_t Mode, TH2D *frame);
+//Int_t ArrayAndText(TH2D *frame, Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt);
+
 
 class OfflinePol
 {
@@ -31,13 +34,11 @@ private:
 public:
   void Initiarization(Int_t);
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
-  Int_t DlayerPlot(Char_t*, Int_t);
+  Int_t PlotControlCenter(Char_t*, Int_t);
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
-  Int_t PrintComments(Int_t Mode);
-  Int_t ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt);
 
 }; // end-class Offline
 
@@ -177,60 +178,6 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
 }
 
-//
-// Class name  : OfflinePol
-// Method name : PrintComments(Int_t Mode)
-//
-// Description : Print optional comments on the current plot
-// Input       : 
-// Return      : 
-//
-Int_t
-OfflinePol::PrintComments(Int_t Mode){
-
-
-  if ((Mode==10)||(Mode==50)||(Mode==60)||(Mode==90)){
-    ArrayAndText(7563.,7957.,41, "200GeV");
-    ArrayAndText(7991.,8061.,32, "62GeV");
-  }
-
-
-  return 0;
-
-}
-
-//
-// Class name  : OfflinePol
-// Method name : ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt)
-//
-// Description : Draw Array and text on the current frame
-// Input       : Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt
-// Return      : 
-//
-Int_t
-OfflinePol::ArrayAndText(Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt){
-
-  Float_t scale=0.1;
-  Float_t ymin=frame->GetYaxis()->GetXmin() ;
-  Float_t ymax=frame ->GetYaxis()->GetXmax() ;
-  Float_t yint=ymax-ymin;
-  TArrow * ar = new TArrow(xmin,ymax-yint*scale,xmax,ymax-yint*scale,0.02F,"|>"); 
-  ar->SetLineWidth(6);
-  ar->SetLineColor(Color);
-  ar.SetFillColor(Color);
-  ar->Draw("same");
-
-  Float_t xtxt = xmin+(xmax-xmin)/2.;
-  TText *tx = new TText(xtxt,ymax-yint*scale,txt);
-  tx->SetTextAlign(21);
-  tx->SetTextColor(13);
-  tx->Draw("same");
-
-  return 0;
-
-}			
-
-
 
 //
 // Class name  : Offline
@@ -302,9 +249,9 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 // Class name  : Offline
 // Method name : DrawFrame()
 //
-// Description : 
-// Input       : 
-// Return      : 
+// Description : Draw TH2D frame before plotting
+// Input       : Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]
+// Return      : 0
 //
 Int_t 
 OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
@@ -315,6 +262,8 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   Char_t title[100];
   sprintf(title,"Polarization (%s) %s", Beam, subtitle);
 
+
+  // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
   case 10:
     GetScale(RunID, ndata, margin, xmin, xmax);
@@ -380,13 +329,17 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
     break;
   }
 
+
+  // draw frames
   frame = new TH2D(Beam,title, 10, xmin, xmax, 10, ymin, ymax);
   frame -> SetStats(0);
   frame -> GetXaxis()->SetTitle(xtitle);
   frame -> GetYaxis()->SetTitle(ytitle);
   frame -> Draw();
 
-  PrintComments(Mode);
+
+  // Superpose some beam operational comments on the frame 
+  SuperposeComments(Mode, frame);
 
   return 0;
 
@@ -395,14 +348,14 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
 
 //
 // Class name  : Offline
-// Method name : DlayerPlot
+// Method name : PlotControlCenter
 //
-// Description : 
-// Input       : 
-// Return      : 
+// Description : Control Center of all plots. 
+// Input       : Char_t *Beam, Int_t Mode
+// Return      : 0
 //
 Int_t 
-OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
+OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode){
 
   Int_t Color = Beam == "Blue" ? 4 : 94 ;
 
@@ -475,7 +428,9 @@ OfflinePol::DlayerPlot(Char_t *Beam, Int_t Mode){
 
   return 0;
 
-}
+} // End-of-PlotControlCenter()
+
+
 
 //
 // Class name  : Offline
@@ -489,13 +444,13 @@ Int_t
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
-  DlayerPlot("Blue",Mode);
+  PlotControlCenter("Blue",Mode);
   CurC -> Update();
   frame->Delete();
 
   ps->NewPage();
 
-  DlayerPlot("Yellow",Mode);
+  PlotControlCenter("Yellow",Mode);
   CurC -> Update();
 
   return 0;
@@ -516,6 +471,10 @@ Int_t
 OfflinePol::OfflinePol()
 {
 
+  // load header macro
+  Char_t HEADER[100];
+  sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
 
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
@@ -527,12 +486,12 @@ OfflinePol::OfflinePol()
     TPostScript *ps = new TPostScript(psfile,112);
 
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
-    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
+    //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
     RunBothBeam(50,  CurC, ps); // onlineP-offlineP vs. RunID
     RunBothBeam(150, CurC, ps); // onlineP-offlineP Distribution
     RunBothBeam(60,  CurC, ps); // phi-angle vs. RunID
     RunBothBeam(160, CurC, ps); // phi-angle Distribution
-    RunBothBeam(65,  CurC, ps); // phi-angle vs. index
+    //    RunBothBeam(65,  CurC, ps); // phi-angle vs. index
     RunBothBeam(70,  CurC, ps); // offline P vs. phi-angle 
     RunBothBeam(80,  CurC, ps); // phi-angle vs. chi2
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution

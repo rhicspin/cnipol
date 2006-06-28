@@ -262,6 +262,9 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   frame -> GetYaxis()->SetTitle(ytitle);
   frame -> Draw();
 
+  // Superpose some beam operational comments on the frame 
+  SuperposeComments(Mode, frame);
+
   return 0;
 
 }
@@ -357,6 +360,10 @@ Int_t
 DlayerMonitor::DlayerMonitor()
 {
 
+  // load header macro
+  Char_t HEADER[100];
+  sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
 
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
