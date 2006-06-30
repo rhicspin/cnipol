@@ -1,0 +1,42 @@
+# README.fastoffline
+# I.Nakagawa
+# June 30, 2006
+
+This README file instructs the setup for the fast offline analysis of pC 
+software packages. Here is the setup for Run06:
+
+o pc2pc 
+
+  Make links to bluepc/yellowpc data files to $DATADIR
+
+  /etc/cron.hourly/MkLink.sh
+
+	#!/bin/bash
+
+	export DATADIR=/usr/local/cnipol/data
+	export ONLINEDIR=/usr/local/cnipol/online
+	RAWDATA_LIST=raw_data.list
+
+	/usr/local/cnipol/share/bin/mklink.sh --double-pc
+
+	#Update raw data file list in $RAWDATA_LIST
+	cd $DATADIR
+	ls [7-8]???.???.data | sed -e 's/.data//' > $RAWDATA_LIST
+	chown e950:e950 $RAWDATA_LIST
+	cd -
+
+
+o bluepc
+
+   Make deadlayer & offline polarization database and plots:
+   
+[e950@bluepc cnipol]$ crontab -l
+ 30 2 * * * source ~/.bashrc ; cd $ASYMDIR ; dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
+ 30 3 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/DlayerMonitor.C
+ 30 4 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
+ 30 5 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/OfflinePol.C
+
+
+ 
+
+
