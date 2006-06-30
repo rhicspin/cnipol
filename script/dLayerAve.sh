@@ -144,7 +144,7 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     ONLINE_LOG=$ONLINEDIR/log/$RUNID.log;
 
     Test=`grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'`;
-    if [ $Test -gt 30 ] ; then
+    if [ $Test -gt 25 ] ; then
 	Mode="FTP";
     else
 	Mode="INJ";
