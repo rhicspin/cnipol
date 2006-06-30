@@ -17,6 +17,7 @@ Int_t RUN=5;
 
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 
+
 class DlayerAnalyzer
 {
 
@@ -26,15 +27,20 @@ private:
   Float_t Dl_det1[N], t0Strip1[N],t0EStrip1[N],DlStrip1[N],DlEStrip1[N];
   Float_t t0_2par_Strip1[N],t0E_2par_Strip1[N];
   Float_t dx[N],dy[N];
+  Float_t Dl_proj[N];
+
   TH2D* frame ;
-  TH1D* ProjDlayerRateCorr ;
   TH1D* ProjDlayerRaw ;
+  TH1D* ProjDlayerRateCorr ;
+  TH1D* ProjDlayerRadCorr ;
   TNtuple * ntp ;
 
   struct PlotOption {
     bool SingleStrip;
+    bool Ntuple;
     bool WCM;
     bool ScaleToF;
+    bool RadDamageFit;
   } opt;
 
   typedef struct {
@@ -60,6 +66,8 @@ public:
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t DlayerAnalyzer();
   Int_t GetData(Char_t * DATAFILE);
+  Int_t RadiationDamageFitter(TGraphErrors* tgae);
+  Int_t RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color);
 
 }; // end-class DlayerAnalyzer
 
@@ -77,12 +85,14 @@ DlayerAnalyzer::OptionHandler(){
 
   // Plot Single strip Behavior 
   opt.SingleStrip=false;
+  // Plot ntuples
+  opt.Ntuple=true;
   // Plot Wall Current Monitor t0 history
   opt.WCM=false;
   // Shift 120 bunchmode ToF to make sooth continuity with 60 bunches data 
   opt.ScaleToF=false;
-
-
+  // Fit Deadlayer History to vanish radiation damage
+  opt.RadDamageFit=true;
 
   return;
 
@@ -151,6 +161,8 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
     ProjDlayerRaw      = new TH1D(histname, "Dead Layer Stability (No correction)", 50, 20, 80);
     sprintf(histname,"ProjDlayerRateCorr%d",J);
     ProjDlayerRateCorr = new TH1D(histname, "Dead Layer Stability (Rate Correction)", 50, 20, 80);
+    sprintf(histname,"ProjDlayerRateRadCorr%d",J);
+    ProjDlayerRadCorr  = new TH1D(histname, "Dead Layer Stability (Radiation Damage Correction)", 50, -30, 30);
 
     // New Ntuples declaration
     ntp  = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
@@ -164,22 +176,31 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
             >> AveT0[i] >> DeltaT0[i] >> Bunch[i] 
 	    >> single.Par1.Dl[i] >> single.Par1.t0[i] >> single.Par1.t0E[i] 
 	    >> single.Par2.Dl[i] >> single.Par2.DlE[i] >> single.Par2.t0[i] >> single.Par2.t0E[i]; 
-
+	Fill=int(RunID[i]);
 
 	// Fill Histograms
 	ProjDlayerRaw -> Fill(Dl[i]);
 
 	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
-	//	Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
+	//Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 	dx[i]=dy[i]=0;
 
 	// Fill Histograms
 	ProjDlayerRateCorr -> Fill(Dl[i]);
 
+	// Radiation Damage Correction
+	if ((RunID[i]-Fill)*1000-100>0) {
+	  Dl_proj[i] = RunID[i]<6960 ? Dl[i] - (-389+0.0625*RunID[i]) : Dl[i] - 46. ;
+	}else {
+	  Dl_proj[i] = RunID[i]<6970 ? Dl[i] - (-149+0.0274*RunID[i]) : Dl[i] - 42. ;
+	}
+	ProjDlayerRadCorr  -> Fill(Dl_proj[i]);
+
+
+
 
 	if (opt.ScaleToF) {
-	  Fill=int(RunID[i]);
 	  if (Bunch[i]==120) AveT0[i] += (RunID[i]-Fill)*1000-100>0 ? 18 : 14;
 	}
 
@@ -192,7 +213,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	ntps->Fill(RunID[i],single.Par1.Dl[i],single.Par1.t0[i],single.Par1.t0E[i],single.Par2.Dl[i],single.Par2.DlE[i],
 		   single.Par2.t0[i],single.Par2.t0E[i]);
 	
-	++i; 
+	if (Dl[i]!=0) ++i; 
 	if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
@@ -264,7 +285,15 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   aLegend->AddEntry(tgae,text,"P");
   aLegend->Draw("same");
 
-  OverDrawNtuple(Mode, ndata, Mtyp, text, Color, aLegend);
+  // supoerposition ntuples
+  if (opt.Ntuple) OverDrawNtuple(Mode, ndata, Mtyp, text, Color, aLegend);
+
+  if (opt.RadDamageFit){
+    // Fit Deadlayer History to vanish radiation damage (only flattop)
+    //if ((Mode==10)&&(Mtyp==20)) RadiationDamageFitter(tgae);
+    if ((Mode==10)&&(Mtyp==20)) RadiationDamageDrawer(tgae, Color);
+  }
+
 
   return 0;
 
@@ -446,6 +475,63 @@ DlayerAnalyzer::OverDrawNtuple(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 
 } // end-of-OverDrawNtuple()
 
+//
+// Class name  : DlayerAnalyzer
+// Method name : RadiationDamageFitter()
+//
+// Description : Fit deadlayer history to vanish radiation damage
+// Input       : 
+// Return      : 
+//
+Int_t
+DlayerAnalyzer::RadiationDamageFitter(TGraphErrors* tgae)
+{ 
+
+  TF1 *f1 = new TF1("f1","pol1",6800,6920);
+  TF1 *f2 = new TF1("f2","pol1",6920,7010);
+  TF1 *f3 = new TF1("f3","pol1",7020,7350);
+  f1->SetLineColor(2);
+  f2->SetLineColor(2);
+  f3->SetLineColor(2);
+  tgae->Fit("f1","R");
+  f1->Draw("same");
+  tgae->Fit("f2","R");
+  f2->Draw("same");
+  tgae->Fit("f3","R");
+  f3->Draw("same");
+
+
+  return 0;
+};
+
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : RadiationDamageFitter()
+//
+// Description : Fit deadlayer history to vanish radiation damage
+// Input       : 
+// Return      : 
+//
+Int_t
+DlayerAnalyzer::RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color)
+{ 
+
+  if (Color==4) { // Blue 
+    TF1 *f1 = new TF1("f1","-149+0.0274*x",6600,6970);
+    TF1 *f2 = new TF1("f1","42",6940,7350);
+  }else{
+    TF1 *f1 = new TF1("f1","-389+0.0625*x",6600,7020);
+    TF1 *f2 = new TF1("f1","46",6940,7350);
+  }
+
+  f1->SetLineColor(2);
+  f2->SetLineColor(2);
+  f1->Draw("same");
+  f2->Draw("same");
+
+  return 0;
+};
 
 
 
@@ -584,12 +670,20 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   case 15:
     ProjDlayerRaw->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRaw->SetFillColor(Color);
-    ProjDlayerRaw->Draw();
+    ProjDlayerRaw->Fit("gaus");
+    //    ProjDlayerRaw->Draw();
     break;
   case 17:
     ProjDlayerRateCorr->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRateCorr->SetFillColor(Color);
-    ProjDlayerRateCorr->Draw();
+    ProjDlayerRateCorr->Fit("gaus");
+    //    ProjDlayerRateCorr->Draw();
+    break;
+  case 19:
+    ProjDlayerRadCorr->SetXTitle("Dead Layer [ug/cm^2]");
+    ProjDlayerRadCorr->SetFillColor(Color);
+    ProjDlayerRadCorr->Fit("gaus");
+    //    ProjDlayerRadCorr->Draw();
     break;
   case 30:
     xmin=0.15;
@@ -617,7 +711,7 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
     sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
     Int_t ndata = GetData(DATAFILE);
     // Plot injection
-    if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
+    //    if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
   }
 
   return 0;
@@ -683,6 +777,7 @@ DlayerAnalyzer::DlayerAnalyzer()
   BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
   BlueAndYellowBeams(15, CurC, ps);   // Deadlayer Raw (flattop only)
   BlueAndYellowBeams(17, CurC, ps);   // Deadlayer Rate Correction (flattop only)
+  BlueAndYellowBeams(19, CurC, ps);   // Deadlayer Raw (flattop only)
   BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
   BlueAndYellowBeams(30, CurC, ps);   // Fill vs. Average t0
   BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
