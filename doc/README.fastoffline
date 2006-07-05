@@ -28,7 +28,13 @@ o pc2pc
 
 o bluepc
 
-   Make deadlayer & offline polarization database and plots:
+  1) Run deadlayer/polarization analysis programs in background:
+
+     cd $ASYMDIR
+     cnipol_daemon.sh --dlayer-fit --run-Asym | tee $TMPOUTDIR/cnipol_daemon.log &
+
+
+  2) Make deadlayer & offline polarization database and plots:
    
 [e950@bluepc cnipol]$ crontab -l
  30 2 * * * source ~/.bashrc ; cd $ASYMDIR ; dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
@@ -36,7 +42,13 @@ o bluepc
  30 4 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
  30 5 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/OfflinePol.C
 
-
+ Resulting summary data/postscript files are found in:
+ $ASYMDIR/summary/dLayer_Blue(Yellow)_FTP(INJ)_all.dat   ; deadlayer summary data
+ $ASYMDIR/ps/DlayerMonitor.ps                            ; Deadlayer summary plot
+ $ASYMDIR/summary/OfflinePol_Blue(Yellow)_all.dat        ; Offline Polarization summary data
+ $ASYMDIR/ps/OfflinePol.ps	 			 ; Offline Polarization summary plot
  
+
+
 
 
