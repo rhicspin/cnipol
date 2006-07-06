@@ -16,6 +16,7 @@ const Int_t N=2000;
 Int_t RUN=5;
 
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
+Float_t SquareRootSum(Float_t A, Float_t B) { return sqrt(A*A+B*B); }
 
 
 class DlayerAnalyzer
@@ -28,11 +29,12 @@ private:
   Float_t t0_2par_Strip1[N],t0E_2par_Strip1[N];
   Float_t dx[N],dy[N];
   Float_t Dl_proj[N];
-
+  
   TH2D* frame ;
   TH1D* ProjDlayerRaw ;
   TH1D* ProjDlayerRateCorr ;
   TH1D* ProjDlayerRadCorr ;
+  TH1D* DlAveDeviation ;
   TNtuple * ntp ;
 
   struct PlotOption {
@@ -54,8 +56,25 @@ private:
     StructFitMode Par2, Par1;
   } single;
 
+  typedef struct {
+    Float_t sigma;
+    Float_t ave;
+    Float_t mdev; // mean average deviation of strips from the detector average
+  } StructError;
 
-    
+  struct Correction {
+    StructError no, rate, rad;
+    Float_t AsignError;
+  } corr[2];
+
+  struct Systematic {
+    StructError dl;
+  } sys[2];
+
+
+  // Analysis summary data file
+  ofstream fout;
+
 public:
   void OptionHandler();
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
@@ -68,6 +87,7 @@ public:
   Int_t GetData(Char_t * DATAFILE);
   Int_t RadiationDamageFitter(TGraphErrors* tgae);
   Int_t RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color);
+  Int_t PrintOutput();
 
 }; // end-class DlayerAnalyzer
 
@@ -76,7 +96,7 @@ public:
 // Class name  : DlayerAnalyzer
 // Method name : OptionHandler()
 //
-// Description : Handles plotting option
+// Description : Handles analysis/plotting options
 // Input       : 
 // Return      : 
 //
@@ -93,6 +113,10 @@ DlayerAnalyzer::OptionHandler(){
   opt.ScaleToF=false;
   // Fit Deadlayer History to vanish radiation damage
   opt.RadDamageFit=true;
+
+  // Error allocation
+  corr[0].AsignError = corr[1].AsignError = 3; // sigma
+
 
   return;
 
@@ -145,7 +169,7 @@ GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
 Int_t
 DlayerAnalyzer::GetData(Char_t * DATAFILE){
                  
-  static Int_t J; ++J;
+  static Int_t J; ++J; 
   Char_t histname[100];
   Int_t Fill;
 
@@ -163,6 +187,8 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
     ProjDlayerRateCorr = new TH1D(histname, "Dead Layer Stability (Rate Correction)", 50, 20, 80);
     sprintf(histname,"ProjDlayerRateRadCorr%d",J);
     ProjDlayerRadCorr  = new TH1D(histname, "Dead Layer Stability (Radiation Damage Correction)", 50, -30, 30);
+    sprintf(histname,"DlAveDeviation%d",J);
+    DlAveDeviation     = new TH1D(histname, "Dl Average Deviation from Detector Average", 50, 0.5, 10.5);
 
     // New Ntuples declaration
     ntp  = new TNtuple("ntp","Deadlayer Analysis","RunID:Dl:DlE:ReadRate:WCM:SpeLumi:NBunch:AveT0:DeltaT0:Bunch:dx,dy");
@@ -180,6 +206,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 
 	// Fill Histograms
 	ProjDlayerRaw -> Fill(Dl[i]);
+	DlAveDeviation -> Fill(DlE[i]);
 
 	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
@@ -655,6 +682,7 @@ Int_t
 DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
 
   Int_t Color = Beam == "Blue" ? 4 : 94 ;
+  Int_t beam  = Beam == "Blue" ? 0 : 1  ;
 
   // Get Data from File and draw frame
   Char_t DATAFILE[256];
@@ -662,28 +690,36 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   Int_t ndata = GetData(DATAFILE);
   if (!(Mode&1)) DrawFrame(Mode, ndata, Beam);
 
+  TF1 * func = new TF1("gaussian", "gaus");
+
   // Y-coodinates for Legend
   Float_t interval=0.15;
   Float_t ymin=0.15;
   Float_t xmin=0.7;
   switch (Mode) {
+  case 11:
+    DlAveDeviation->SetXTitle("Average Deviation from Detector Average [ug/cm^2]");
+    DlAveDeviation->SetFillColor(Color);
+    DlAveDeviation->Fit("gaussian","Q");
+    sys[beam].dl.mdev = func->GetParameter(1); // get mean
+    break;
   case 15:
     ProjDlayerRaw->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRaw->SetFillColor(Color);
-    ProjDlayerRaw->Fit("gaus");
-    //    ProjDlayerRaw->Draw();
+    ProjDlayerRaw->Fit("gaussian","Q");
+    corr[beam].no.sigma = func->GetParameter(2); // get sigma
     break;
   case 17:
     ProjDlayerRateCorr->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRateCorr->SetFillColor(Color);
-    ProjDlayerRateCorr->Fit("gaus");
-    //    ProjDlayerRateCorr->Draw();
+    ProjDlayerRateCorr->Fit("gaussian","Q");
+    corr[beam].rate.sigma = func->GetParameter(2); // get sigma
     break;
   case 19:
     ProjDlayerRadCorr->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRadCorr->SetFillColor(Color);
-    ProjDlayerRadCorr->Fit("gaus");
-    //    ProjDlayerRadCorr->Draw();
+    ProjDlayerRadCorr->Fit("gaussian","Q");
+    corr[beam].rad.sigma = func->GetParameter(2);  // get sigma
     break;
   case 30:
     xmin=0.15;
@@ -713,6 +749,7 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
     // Plot injection
     //    if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
   }
+
 
   return 0;
 
@@ -756,6 +793,7 @@ DlayerAnalyzer::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 Int_t 
 DlayerAnalyzer::DlayerAnalyzer()
 {
+  gStyle->SetOptFit(111);
 
   // load header macro
   Char_t HEADER[100];
@@ -766,15 +804,25 @@ DlayerAnalyzer::DlayerAnalyzer()
   TCanvas *CurC = new TCanvas("CurC","",1);
   CurC -> SetGridy();
   
+  // Handle Plotting Options
+  OptionHandler();
+
   // postscript file
   Char_t psfile[100];
   sprintf(psfile,"ps/DlayerAnalyzer.ps");
   TPostScript *ps = new TPostScript(psfile,112);
 
-  // Handle Plotting Options
-  OptionHandler();
+  // Analysis summary data file
+  Char_t outfile[100];
+  sprintf(outfile,"summary/DlayerAnalyzer.dat");
+  fout.open(outfile,ios::out);
 
+  //---------------------------------------------------------------------------//
+  //                       main plotting routines                              //
+  //                 (Odd ID numbers are 1D histograms)                        //
+  //---------------------------------------------------------------------------//
   BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
+  BlueAndYellowBeams(11, CurC, ps);   // Strip Deadlayer Average Deviation from Detector Average
   BlueAndYellowBeams(15, CurC, ps);   // Deadlayer Raw (flattop only)
   BlueAndYellowBeams(17, CurC, ps);   // Deadlayer Rate Correction (flattop only)
   BlueAndYellowBeams(19, CurC, ps);   // Deadlayer Raw (flattop only)
@@ -786,14 +834,57 @@ DlayerAnalyzer::DlayerAnalyzer()
   BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
   BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
   BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
-
-  cout << "ps file : " << psfile << endl;
-  ps->Close();
   
+
+  // Output analysis results
+  PrintOutput();
+  cout << "---" << endl << endl;
+  cout << "analysis summary file : " << outfile << endl;
+  fout.close();
+
+  cout << "ps file               : " << psfile << endl;
+  ps->Close();
+
+
   gSystem->Exec("gv ps/DlayerAnalyzer.ps");
 
   return 0;
 
 }
 
+
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : PrintOutput
+//
+// Description : Print out analysis results into output file
+// Input       : 
+// Return      : 
+//
+Int_t 
+DlayerAnalyzer::PrintOutput(){
+
+
+  fout << endl;
+  fout << "Blue \t\t\t\t\t\t 1-sigma  " << setw(1) << corr[0].AsignError << "-sigma " << endl;
+
+  fout.precision(3);
+  for (Int_t i=0; i<=1; i++) {
+    if (i==1)   fout << "Yellow     \t\t\t\t\t 1-sigma  " << setw(1) << corr[0].AsignError << "-sigma " << endl;
+    fout << " Deadlayer Stability (No Correction)             : " 
+	 <<  corr[i].no.sigma   << setw(8) << corr[i].AsignError*corr[i].no.sigma << endl;
+    fout << " Deadlayer Stability (Rate Correction)           : " 
+	 <<  corr[i].rate.sigma << setw(8) << corr[i].AsignError*corr[i].rate.sigma << endl;
+    fout << " Deadlayer Stability (RadiationDmage Correction) : " 
+	 <<  corr[i].rad.sigma  << setw(8) << corr[i].AsignError*corr[i].rad.sigma << endl;
+    fout << "\t\t\t\t\t\t   Mean" << endl;
+    fout << " Average Deviation from Detector Average         : " << sys[i].dl.mdev << endl;
+    fout << " Total Error  (Quadratic Sum)                    : " 
+	 << SquareRootSum(corr[i].AsignError*corr[i].rad.sigma, sys[i].dl.mdev) << endl; 
+  }
+
+
+  return 0;
+}
 
