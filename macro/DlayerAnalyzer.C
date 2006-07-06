@@ -38,10 +38,12 @@ private:
   TNtuple * ntp ;
 
   struct PlotOption {
+    bool Injection;
     bool SingleStrip;
     bool Ntuple;
     bool WCM;
     bool ScaleToF;
+    bool RateCorrection;
     bool RadDamageFit;
   } opt;
 
@@ -59,7 +61,8 @@ private:
   typedef struct {
     Float_t sigma;
     Float_t ave;
-    Float_t mdev; // mean average deviation of strips from the detector average
+    Float_t strip; // mean average deviation of strips from the detector average
+    Float_t run;   // run-by-run stability of all-strip-averaged dl 
   } StructError;
 
   struct Correction {
@@ -68,7 +71,7 @@ private:
   } corr[2];
 
   struct Systematic {
-    StructError dl;
+    StructError err;
   } sys[2];
 
 
@@ -87,6 +90,7 @@ public:
   Int_t GetData(Char_t * DATAFILE);
   Int_t RadiationDamageFitter(TGraphErrors* tgae);
   Int_t RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color);
+  Int_t CalcSystematicError();
   Int_t PrintOutput();
 
 }; // end-class DlayerAnalyzer
@@ -103,6 +107,8 @@ public:
 void
 DlayerAnalyzer::OptionHandler(){
 
+  // plot injection
+  opt.Injection=true;
   // Plot Single strip Behavior 
   opt.SingleStrip=false;
   // Plot ntuples
@@ -111,6 +117,8 @@ DlayerAnalyzer::OptionHandler(){
   opt.WCM=false;
   // Shift 120 bunchmode ToF to make sooth continuity with 60 bunches data 
   opt.ScaleToF=false;
+  // Apply Rate Correction onto Deadlayer Thickness
+  opt.RateCorrection=true;
   // Fit Deadlayer History to vanish radiation damage
   opt.RadDamageFit=true;
 
@@ -202,16 +210,15 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
             >> AveT0[i] >> DeltaT0[i] >> Bunch[i] 
 	    >> single.Par1.Dl[i] >> single.Par1.t0[i] >> single.Par1.t0E[i] 
 	    >> single.Par2.Dl[i] >> single.Par2.DlE[i] >> single.Par2.t0[i] >> single.Par2.t0E[i]; 
-	Fill=int(RunID[i]);
+	Fill=int(RunID[i]); dx[i]=dy[i]=0;
 
 	// Fill Histograms
 	ProjDlayerRaw -> Fill(Dl[i]);
 	DlAveDeviation -> Fill(DlE[i]);
 
-	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+	if (opt.RateCorrection)	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
 	//Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
-	dx[i]=dy[i]=0;
 
 	// Fill Histograms
 	ProjDlayerRateCorr -> Fill(Dl[i]);
@@ -224,23 +231,27 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	}
 	ProjDlayerRadCorr  -> Fill(Dl_proj[i]);
 
-
-
-
+	// adjust T0 distribution btwn 60 and 120 bunches modes
 	if (opt.ScaleToF) {
 	  if (Bunch[i]==120) AveT0[i] += (RunID[i]-Fill)*1000-100>0 ? 18 : 14;
 	}
 
-	single.Par1.Dl[i] -= 20;
-	single.Par2.Dl[i] -= 15;
-	single.Par1.t0[i] -=  5;
-	single.Par2.t0[i] -=  8;
+	// Single strip intentional shifts to avoid overlaps with average data points
+	if (opt.SingleStrip){
+	  single.Par1.Dl[i] -= 20; single.Par2.Dl[i] -= 15;
+	  single.Par1.t0[i] -=  5; single.Par2.t0[i] -=  8;
+	}
 
-	ntp->Fill(RunID[i],Dl[i],DlE[i],ReadRate[i],WCM[i],SpeLumi[i],NBunch[i],AveT0[i],DeltaT0[i],Bunch[i],dx[i],dy[i]);
-	ntps->Fill(RunID[i],single.Par1.Dl[i],single.Par1.t0[i],single.Par1.t0E[i],single.Par2.Dl[i],single.Par2.DlE[i],
-		   single.Par2.t0[i],single.Par2.t0E[i]);
-	
+	// Ntuples
+	if (opt.Ntuple){
+	  ntp->Fill(RunID[i],Dl[i],DlE[i],ReadRate[i],WCM[i],SpeLumi[i],NBunch[i],AveT0[i],DeltaT0[i],Bunch[i],dx[i],dy[i]);
+	  ntps->Fill(RunID[i],single.Par1.Dl[i],single.Par1.t0[i],single.Par1.t0E[i],single.Par2.Dl[i],single.Par2.DlE[i],
+		     single.Par2.t0[i],single.Par2.t0E[i]);
+	}
+
+	// ignore Dl=0 entries, coz failur of deadlayer fit evidently 
 	if (Dl[i]!=0) ++i; 
+
 	if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
@@ -293,6 +304,9 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
     break;
   case 70:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, NBunch, dx, dy);
+    break;
+  case 80:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DlE, dx, dy);
     break;
   case 100:
     TGraphErrors* tgae = new TGraphErrors(ndata, AveT0, Dl, dx, DlE);
@@ -587,6 +601,7 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     if (RUN==6) {ymin=50  ; ymax=75;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
+    if (opt.RateCorrection) strcat(ytitle,"(Rate Corrected)");
     sprintf(title,"DeadLayer History (%s)",Beam);
     break;
   case 20:
@@ -595,6 +610,7 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     if (RUN==6) {ymin=60  ; ymax=75;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
+    if (opt.RateCorrection) strcat(ytitle,"(Rate Corrected)");
     sprintf(title," DeadLayer Rate Dependence (%s)",Beam);
     break;
   case 30:
@@ -635,22 +651,31 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(xtitle,"Fill Number");
     sprintf(title," Filled Bunch History (%s)",Beam);
     break;
+  case 80:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=0.0 ; ymax=5.5;
+    sprintf(title,"Average Strip-by-Strip Deviation from Detector Average ");
+    sprintf(xtitle,"Fill Number");
+    sprintf(ytitle," DlE [ug/cm^2]",Beam);
+    break;
   case 100:
     GetScale(AveT0, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
     if (RUN==6) {ymin=60  ; ymax=75;}
+    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
-    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
+    if (opt.RateCorrection) strcat(ytitle,"(Rate Corrected)");
     break;
   case 101:
     if (RUN==5) {xmin=-5; xmax=8; ymin=20; ymax=65;}
     if (RUN==6) {xmin=-20 ; xmax=-14;  ymin=58; ymax=80;
     if (Beam=="Blue") {xmin=-16; xmax=-10;}
     }
+    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
-    sprintf(title," t0-deadlayer Correlation (%s)",Beam);
+    if (opt.RateCorrection) strcat(ytitle,"(Rate Corrected)");
     break;
   }
 
@@ -674,7 +699,9 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
 // Class name  : DlayerAnalyzer
 // Method name : DlayerPlot
 //
-// Description : 
+// Description : Draw Frame for 2D-histograms and Call Injection & Flattop plots
+//             : Determin geometry for Legends.
+//             : Note 1-D histograms are plotted for flattop only!
 // Input       : Char_t *Beam, Int_t Mode
 // Return      : 
 //
@@ -692,17 +719,11 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
 
   TF1 * func = new TF1("gaussian", "gaus");
 
-  // Y-coodinates for Legend
+  // Default XY-coodinates for Legend
   Float_t interval=0.15;
   Float_t ymin=0.15;
   Float_t xmin=0.7;
   switch (Mode) {
-  case 11:
-    DlAveDeviation->SetXTitle("Average Deviation from Detector Average [ug/cm^2]");
-    DlAveDeviation->SetFillColor(Color);
-    DlAveDeviation->Fit("gaussian","Q");
-    sys[beam].dl.mdev = func->GetParameter(1); // get mean
-    break;
   case 15:
     ProjDlayerRaw->SetXTitle("Dead Layer [ug/cm^2]");
     ProjDlayerRaw->SetFillColor(Color);
@@ -734,7 +755,14 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   case 70:
     xmin=0.15; ymin=0.70;
     break;
+  case 81:
+    DlAveDeviation->SetXTitle("Average Deviation from Detector Average [ug/cm^2]");
+    DlAveDeviation->SetFillColor(Color);
+    DlAveDeviation->Fit("gaussian","Q");
+    sys[beam].err.strip = func->GetParameter(1); // get mean
+    break;
   }
+
   Float_t xmax=xmin+interval;
   Float_t ymax=ymin+interval;
 
@@ -742,13 +770,19 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
   TLegend * aLegend = new TLegend(xmin, ymin, xmax, ymax);
 
   if (!(Mode&1)) {
+
     // Plot flattop
     if (ndata>0) Plot(Mode, ndata, 20, "Flattop", Color, aLegend);
-    sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
-    Int_t ndata = GetData(DATAFILE);
+
     // Plot injection
-    //    if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
-  }
+    if (opt.Injection){     
+      sprintf(DATAFILE,"summary/dLayer_%s_INJ.dat",Beam);
+      Int_t ndata = GetData(DATAFILE);
+      if (ndata>0) Plot(Mode, ndata, 24, "Injection", Color, aLegend);
+
+    }
+
+  } // end-of-if(!(mode&1))
 
 
   return 0;
@@ -819,10 +853,9 @@ DlayerAnalyzer::DlayerAnalyzer()
 
   //---------------------------------------------------------------------------//
   //                       main plotting routines                              //
-  //                 (Odd ID numbers are 1D histograms)                        //
+  //         (Odd ID numbers are 1D histograms - flattop only)                 //
   //---------------------------------------------------------------------------//
   BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
-  BlueAndYellowBeams(11, CurC, ps);   // Strip Deadlayer Average Deviation from Detector Average
   BlueAndYellowBeams(15, CurC, ps);   // Deadlayer Raw (flattop only)
   BlueAndYellowBeams(17, CurC, ps);   // Deadlayer Rate Correction (flattop only)
   BlueAndYellowBeams(19, CurC, ps);   // Deadlayer Raw (flattop only)
@@ -832,21 +865,57 @@ DlayerAnalyzer::DlayerAnalyzer()
   BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
   BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
   BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
+  BlueAndYellowBeams(80, CurC, ps);   // Fill vs. Strip DlE
+  BlueAndYellowBeams(81, CurC, ps);   // Strip Deadlayer Average Deviation from Detector Average(DlE)
   BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
   BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
-  
+
+  // Calculate Systematic Errors
+  CalcSystematicError();
 
   // Output analysis results
   PrintOutput();
-  cout << "---" << endl << endl;
-  cout << "analysis summary file : " << outfile << endl;
+  cout << "---" << endl << endl << "analysis summary file : " << outfile << endl;
   fout.close();
 
+  // close ps file
   cout << "ps file               : " << psfile << endl;
   ps->Close();
 
-
+  // launch ghostview
   gSystem->Exec("gv ps/DlayerAnalyzer.ps");
+
+  return 0;
+
+}
+
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : CalcSystematicError()
+//
+// Description : Calculate Systematic Errors
+// Input       : 
+// Return      : 
+//
+Int_t 
+DlayerAnalyzer::CalcSystematicError(){
+
+  // Loop i=0:Blue i=1:Yellow
+  for (Int_t i=0; i<=1; i++) {
+    
+    switch (RUN) {
+    case 5:
+      sys[i].err.run = corr[i].AsignError*corr[i].rad.sigma;
+      break;
+    case 6:
+      sys[i].err.run = corr[i].AsignError*corr[i].no.sigma;
+      break;
+    default:
+      sys[i].err.run = corr[i].AsignError*corr[i].no.sigma;
+    }
+
+  }// end-of-for(i) loop
 
   return 0;
 
@@ -879,12 +948,13 @@ DlayerAnalyzer::PrintOutput(){
     fout << " Deadlayer Stability (RadiationDmage Correction) : " 
 	 <<  corr[i].rad.sigma  << setw(8) << corr[i].AsignError*corr[i].rad.sigma << endl;
     fout << "\t\t\t\t\t\t   Mean" << endl;
-    fout << " Average Deviation from Detector Average         : " << sys[i].dl.mdev << endl;
+    fout << " Average Deviation from Detector Average         : " << sys[i].err.strip << endl;
     fout << " Total Error  (Quadratic Sum)                    : " 
-	 << SquareRootSum(corr[i].AsignError*corr[i].rad.sigma, sys[i].dl.mdev) << endl; 
+	 << SquareRootSum(sys[i].err.run, sys[i].err.strip) << endl; 
   }
 
 
   return 0;
+
 }
 
