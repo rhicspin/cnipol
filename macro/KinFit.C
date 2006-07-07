@@ -684,9 +684,9 @@ void KinFit::PlotResidual(Int_t St)
     tgae -> SetMarkerColor(2);
     tgae -> Draw("P");
 
-    TLine *l1 = new TLine(400., -1.5, 400., 1.5);
+    TLine *l1 = new TLine(FitRangeLow, -1.5, FitRangeLow, 1.5);
     l1 -> Draw();
-    TLine *l2 = new TLine(900., -1.5, 900., 1.5);
+    TLine *l2 = new TLine(FitRangeUpp, -1.5, FitRangeUpp, 1.5);
     l2 -> Draw();
 
 }// End-of-PlotResidual()
