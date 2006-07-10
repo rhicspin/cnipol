@@ -1,0 +1,16 @@
+macro minus_t_vs_Tkin
+exe defsetting
+ve/del *
+size 18 15
+
+title 'T?kin! vs. -t '
+
+ve/read Tkin,minust minus_t_vs_Tkin.dat
+igset plci 2
+set lwid 7
+
+null 0 5000 0 0.12
+graph $vdim(Tkin,1) Tkin minust cs
+atitle '12C Kinematic Energy \133 keV \135' '-t \133 (GeV/c)^2! \135' ! 220
+
+return
