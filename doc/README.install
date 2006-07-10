@@ -44,6 +44,8 @@ share/
     dlayer/ : deadlayer database for DeadLayer Monitor
     macro/  : macro for plotting and deadlayer fits.
     bin/    : executable binaries and scripts. 
+    phys/   : physics database
+
 
 SRC
   ./cnipol/src
@@ -81,11 +83,10 @@ SRC
 
 DOCUMENTAIONS
   ./cnipol/doc
- 	README.install : this document
-  	README.rundb   : run.db syntax
-    	README.dlayer  : deadlayer instructions
-
-
+ 	README.install     : this document
+  	README.rundb       : run.db syntax
+    	README.dlayer      : deadlayer instructions
+	README.fastoffline : instruction for fast offline setup
 
 
 
