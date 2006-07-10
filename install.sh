@@ -50,6 +50,11 @@ cd macro
 ./install.sh
 cd ..
 
+# install physics database into $SHARE/phys
+cd phys
+./install.sh
+cd ..
+
 
 if [ $CNI_EXPERT ] ; then
     if [ -d expert ] ; then
