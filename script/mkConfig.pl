@@ -4,17 +4,17 @@
 $SHAREDIR = $ENV{"SHAREDIR"};
 $INSTALL_CONFIG_DIR ="$SHAREDIR/config";
 $INSTALL_DLAYER_DIR ="$SHAREDIR/dlayer";
-$INTEGRALFIT=0;
+$ADD_DLAYER  = 0;
+$INTEGRALFIT = 0;
 $PUBLISH=0;
 $OPT  = " ";
-
 
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('f:DhIpb', \%opt);
+getopts('f:a:DhIpb', \%opt);
 
 if ( $opt{h} ) {
     help();
@@ -39,6 +39,16 @@ if (length ($Runn) == 0){
     help();
 }
 
+# Get Deadlayer Add/Subtraction 
+my $Delta_Dl = $opt{a};
+if (length ($Delta_Dl) == 0){
+    print "Error: Specify <Delta_Dl>.\n";
+    help();
+}else{
+    $ADD_DLAYER = 1;
+}
+
+
 sub help(){
     print "\n";
     print " Usage:\n  $0 -hDIpb [ -f <runID>]\n\n"; 
@@ -48,6 +58,7 @@ sub help(){
     print "\t -b         Banana cut event selection on deadlayer fit.\n";
     print "\t            (used with -D option)\n";
     print "\t -I         Execute Integral Fit [def]:off\n";
+    print "\t -a <Delta_Dl> Add Deadlayer thickness by <Delta_Dl>.\n";
     print "\t -h         Show this help\n";
     print "\n";
     print "    ex.) To perform deadlayer fit and make new configulation:\n\n";
@@ -217,6 +228,17 @@ while ($ia = <IA>) {
 }
 close(IA);
 }  
+
+#====================================================================
+# Add/Subtract deadlayer thickness if -a option is given
+#====================================================================
+if ($ADD_DLAYER) { 
+
+    for ($st=0;$st<76;$st++) {
+	$dwidth[$st] += $Delta_Dl;
+    }
+    
+}
 
 
 
