@@ -139,8 +139,6 @@ float pawc_[NWORDS_PAWC];
 //  16330     : mass sigma allowance
 //  16340     : mass fit chi2 vs strip
 //  16350     : mass fit chi2 allowance
-//  16400+St  : mass plot vs. t (banana cut)
-//  16500+St  : mass plot vs. t (no cut)
 //-FEEDBACKMODE
 //  16300     : deviation from 12C mass peak [GeV] vs. strip
 //-RAMPMODE
@@ -399,13 +397,6 @@ int hist_book(char *filename){
             HHBOOK1(16000+st,hcomment,90,0.,30.);
             HHBOOK1(16200+st,hcomment,90,0.,30.);   // for feedback
 	    HHBOOK1(17200+st,hcomment,90,0.,30.);   // for quality check
-
-	    sprintf(hcomment,"Mass vs. Energy");
-            HHBOOK2(16100+st,hcomment,50,0.,30.,50,200,1000);
-	    sprintf(hcomment,"Mass vs. t (banana cut");
-            HHBOOK2(16400+st,hcomment,50,0.,30.,50,30.,90.);
-	    sprintf(hcomment,"Mass vs. t (no cut");
-            HHBOOK2(16500+st,hcomment,50,0.,30.,50,30.,90.);
 
         }
     }

@@ -16,17 +16,12 @@
 #include <iostream.h>
 #include "TMinuit.h"
 #include "TString.h"
-#include "TGraphErrors.h"
-#include "TF1.h"
 #include "TMath.h"
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
 #include "WeightedMean.h"
 #include "AsymCalc.h"
-
-
-
 
 // =========================
 // End of data process
@@ -488,8 +483,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
     // Spin Sorted Strip Distribution  
     HHPAK(36000, (float*)NStrip[0]);
     HHPAK(36100, (float*)NStrip[1]);
-
-
 
 
     //-------------------------------------------------------
@@ -1288,7 +1281,6 @@ CalcAsymmetry(float aveA_N){
     HHPAK(36240, P);     HHPAKE(36240, dP);
     HHPAK(36250, phi); 
 
-
     // Fit phi-distribution
     AsymFit asymfit;
     asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
@@ -1325,15 +1317,25 @@ sin_phi(Double_t *x, Double_t *par)
 //             : Float_t *RawP, Float_t *dRawP, Float_t *phi (vectors to be fit)
 // Return      : Float_t *P, Float_t *dphi, Float_t &chi2dof
 //
-void 
+void
 AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
-		       Float_t *P, Float_t *dphi, Float_t &chi2dof)
+		   Float_t *P, Float_t *dphi, Float_t &chi2dof)
 {
   
+  gStyle->SetOptFit(111);
+
   float dx[NSTRIP];
   for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
 
   TGraphErrors * tg = new TGraphErrors(NSTRIP, phi, RawP, dx, dRawP);
+  tg->SetTitle("sin(phi) fit");
+  tg->GetXaxis()->SetTitle("phi [deg.]");
+  tg->GetYaxis()->SetTitle("Asymmetry * A_N [%]");
+  tg->SetMarkerStyle(20);
+  tg->SetMarkerSize(1.5);
+  tg->SetLineWidth(2);
+  tg->SetMarkerColor(2);
+  tg->SetDrawOption("P");
 
   // define sin(phi) fit function & initialize parmaeters
   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
@@ -1341,10 +1343,15 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   func -> SetParLimits(0, -1, 1);
   func -> SetParLimits(1, -M_PI, M_PI);
   func -> SetParNames("P","dPhi");
+  func -> SetLineColor(2);
+
+  TText * txt = new TText(1,1,"sin(phi) fit");
+  tg->GetListOfFunctions()->Add(txt);
 
   // Perform sin(phi) fit
   tg -> Fit("sin_phi","R");
-
+  tg -> Write("tg");
+    
   // Get fitting results
   P[0] = func->GetParameter(0);
   P[1] = func->GetParError(0);
@@ -1354,7 +1361,7 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   // calculate chi2
   chi2dof = func->GetChisquare()/func->GetNDF();
 
-  return;
+  return ;
 
 }// end-of-AsymFit::SinPhiFit()
 

@@ -19,6 +19,7 @@
 #include "rpoldata.h"
 #include "Asym.h"
 #include "AsymMain.h"
+#include "AsymROOT.h"
 
 
 // ================= 
@@ -261,9 +262,22 @@ int main (int argc, char *argv[]){
     fprintf(stdout,"Booking ... histgram file\n");
     if (hist_book(hbk_outfile) != 0) {
         perror("Error: hist_book");
-        exit(1);
+        exit(-1);
     }
 
+    // ---------------------------------------------------- // 
+    //                 Root Histogram Booking               //
+    // ---------------------------------------------------- // 
+    char filename[50];
+    Root rt;
+    sprintf(filename,"%8.3f.root",runinfo.RUNID);
+    fprintf(stdout,"Booking ROOT histgrams ...\n");
+    if (rt.RootFile(filename) != 0) {
+        perror("Error: RootFile()");
+        exit(-1);
+    }
+    
+    rt.RootHistBook();
 
     // ---------------------------------------------------- // 
     // Quick Scan and Fit for tshift and mass sigma fit     //
@@ -272,7 +286,7 @@ int main (int argc, char *argv[]){
       printf("Feedback Sparcification Factor = 1/%d \n",dproc.thinout);
       if (readloop() != 0) {
         perror("Error: readloop");
-        exit(1);
+        exit(-1);
       }
       Flag.feedback=0;
     }
@@ -282,7 +296,7 @@ int main (int argc, char *argv[]){
     // ---------------------------------------------------- // 
     if (readloop() != 0) {
         perror("Error: readloop");
-        exit(1);
+        exit(-1);
     }
     
 
@@ -291,7 +305,15 @@ int main (int argc, char *argv[]){
     // ---------------------------------------------------- // 
     if (hist_close(hbk_outfile) !=0) {
         perror("Error: hist_close");
-        exit(1);
+        exit(-1);
+    }
+
+    // ---------------------------------------------------- // 
+    //                     Closing ROOT File                //
+    // ---------------------------------------------------- // 
+    if (rt.CloseROOTFile() !=0) {
+        perror("Error: CloseROOTFile()");
+        exit(-1);
     }
     
 

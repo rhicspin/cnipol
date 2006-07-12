@@ -1,6 +1,7 @@
 // Header file for AsymCalc
 // Author   : Itaru Nakagawa
 // Creation : 02/25/2006         
+#include "AsymROOT.h"
 
 #ifndef ASYM_CALC_H
 #define ASYM_CALC_H
