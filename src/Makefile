@@ -21,14 +21,16 @@ FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
 
 
-AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o
-	  
+AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymROOT.o
+
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
 dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
 
+testOBJ = test.o
+
 BINARY = Asym RunDBReader dLayerChecker
-all: Asym RunDBReader dLayerChecker Host
+all: Asym RunDBReader dLayerChecker Host test
 
 ######## BINARY ##################
 
@@ -37,16 +39,20 @@ Asym : $(AsymOBJ)
 
 RunDBReader : $(RunDBReaderOBJ)
 	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
-	
+
 dLayerChecker : $(dLayerCheckerOBJ)
 	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
+test : $(testOBJ)
+	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+
 ######## OBJECT ##################
 
-AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h
+AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h 
 AsymCalc.o : Asym.h AsymCalc.h WeightedMean.h
 AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
+AsymROOT.o : AsymROOT.h
 
 .C.o:
 	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<

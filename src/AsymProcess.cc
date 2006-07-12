@@ -10,6 +10,7 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+#include "AsymROOT.h"
 
 extern void HHF1(int, float, float);
 extern void HHF2(int, float, float, float);
@@ -24,6 +25,7 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
 //float EnergyBin[NTBIN+1]={100,150,200,250,300,350,400,500,600,800,1100,1500,2000,2500,3000,3300,3600,4000,4250,4500,4750}; // 21+1
 //float EnergyBin[NTBIN+1]={100,120,140,160,180,200,230,260,290,320,350,400,450,500,600,700,800,900,1000,1100,1200,1300,1400}; // 22+1
 //float EnergyBin[NTBIN+1]={500,600,700,800,900,1000,1100,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3300,3600,3900,4500,5000,6000,7000,8000,9000,10000}; // 26+1
+
 
 // ==================== 
 // Processing one event 
@@ -141,7 +143,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 	}
 	average.average = average.total/float(average.counter);
 
-        
 
 
         // Online Banana Cut 
@@ -176,9 +177,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     }
                 }
             }
+
         }
         cout << "finished first event initialization "<<endl;
-    }
+
+    } // end-of-if(Nevent==1)
     
 
     // TDC Dists without Cut
@@ -304,8 +307,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             HHF2(13200+st+1, event->amp, event->tdcmax, 1.);
             HHF1(14000+st+1, event->bid, 1.);
         }
-        
-	HHF2(16500+st+1, Mass, t, 1);
+
+	// Mass vs. ToF Scatter plot for Error Check
+	mass_vs_t[st]->Fill(t,Mass);
 
 	/*
         if (dproc.RAMPMODE==1) {0
@@ -448,8 +452,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 HHF1(10320+si+1,(float)(st-si*12)+1,1.);
 
 		// Mass vs. t and vs. Energy plots
-		HHF2(16100+st+1, Mass, e, 1);
-		HHF2(16400+st+1, Mass, t, 1);
+		mass_vs_e_ecut[st] -> Fill(e, Mass);
+		mass_vs_t_ecut[st] -> Fill(t, Mass);
 
 
                 Ncounts[(int)(st/12)][event->bid]++;
