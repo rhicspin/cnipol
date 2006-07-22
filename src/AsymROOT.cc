@@ -21,10 +21,10 @@
 
 
 // Histogram Definitions
+TH2F * t_vs_e[NSTRIP];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F * mass_vs_e_ecut[NSTRIP];  // Mass vs. 12C Kinetic Energy 
 TH2F * mass_vs_t_ecut[NSTRIP];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[NSTRIP];       // Mass vs. ToF (w/o Energy Cut)
-
 
 
 
@@ -60,23 +60,27 @@ Root::RootFile(char *filename){
 int 
 Root::RootHistBook(){
 
-  Char_t histname[100],histtitle[100];
+  Char_t histname[100], histtitle[100];
   for (int i=0; i<NSTRIP; i++) {
+
+    sprintf(histname,"t_vs_e_st%d",i);
+    sprintf(histtitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
+    t_vs_e[i] = new TH2F(histname,histtitle, 100, 200, 1500, 100, 20, 90);
 
     sprintf(histname,"mass_vs_e_ecut_st%d",i);
     sprintf(histtitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);
-    mass_vs_e_ecut[i] = new TH2F(histname,histtitle, 100, 200, 1000, 100, 0, 30);
+    mass_vs_e_ecut[i] = new TH2F(histname,histtitle, 50, 200, 1000, 200, 6, 18);
 
     sprintf(histname,"mass_vs_t_ecut_st%d",i);
     sprintf(histtitle,"%8.3f : Mass vs. ToF (Energy Cut) Str%d ", runinfo.RUNID, i);
-    mass_vs_t_ecut[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 0, 30);
+    mass_vs_t_ecut[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 5, 25);
 
     sprintf(histname,"mass_vs_t_st%d",i);
     sprintf(histtitle,"%8.3f : Mass vs. ToF Str%d", runinfo.RUNID, i);
-    mass_vs_t[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 0, 30);
-
+    mass_vs_t[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 5, 25);
 
   }
+
 
   return 0;
 

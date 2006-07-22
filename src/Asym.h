@@ -95,6 +95,7 @@ typedef struct {
 typedef struct {
   float MASS_DEV_ALLOWANCE;
   float MASS_CHI2_ALLOWANCE;
+  float MASS_ENERGY_CORR_ALLOWANCE;
   float BUNCH_ALLOWANCE_SIGMA;
 }ErrorDetector;
 

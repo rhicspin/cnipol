@@ -34,9 +34,15 @@ typedef struct {
   int st;
 } StructInvMass;
 
+typedef struct {
+  float p[3][NSTRIP];
+  float perr[3][NSTRIP];
+} StructEnergyCorr;
+
 struct StructStripCheck {
   float average[1];
-  StructInvMass dev, chi2;
+  StructInvMass dev, chi2, p1;
+  StructEnergyCorr ecorr;
 } strpchk;
 
 struct StructBunchCheck {
@@ -46,11 +52,12 @@ struct StructBunchCheck {
 
 
 int  StripAnomalyDetector();
-void PrintWarning();
-
+int  InvariantMassCorrelation(int st);
 int UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
 
+void PrintWarning();
 
+double KinFunc(Double_t *x, Double_t *par){ par[0]=50; return ekin(float(x[0]),float(par[0])); };
 
 
 
