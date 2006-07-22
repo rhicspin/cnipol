@@ -29,6 +29,7 @@ class Root
 
 
 // Histograms
+extern  TH2F * t_vs_e[NSTRIP];
 extern  TH2F * mass_vs_e_ecut[NSTRIP];  // Mass vs. 12C Kinetic Energy 
 extern  TH2F * mass_vs_t_ecut[NSTRIP];  // Mass vs. ToF (w/ Energy Cut)
 extern  TH2F * mass_vs_t[NSTRIP];       // Mass vs. ToF (w/o Energy Cut)

@@ -338,6 +338,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         
 	t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
         delt = t - runconst.E2T/sqrt(e);  
+
+	// t vs. E (banana with no cut)
+	t_vs_e[st] -> Fill(e, t);
             
         // =========================================
         // Ntuple fill
@@ -555,6 +558,7 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
   return 1;
 
 }
+
 
 
 
