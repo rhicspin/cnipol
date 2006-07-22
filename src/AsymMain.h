@@ -32,7 +32,8 @@ datprocStruct dproc = {
 
 ErrorDetector errdet = {
   0.10,         // MASS_DEV_ALLOWANCE [GeV]
-  100,           // MASS_CHI2_ALLOWANCE [GeV]
+  100,          // MASS_CHI2_ALLOWANCE [GeV]
+  0.002,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
   3.            // BUNCH_ALLOWANCE_SIGMA 
 };
 
