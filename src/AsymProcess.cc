@@ -181,6 +181,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         }
         cout << "finished first event initialization "<<endl;
 
+
+
     } // end-of-if(Nevent==1)
     
 
@@ -231,9 +233,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
         float edepo_int = cfginfo->data.chan[st].acoef * (amp_int+rand2-0.5);
 
+
         // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry 
-
-
         e = ekin(edepo, cfginfo->data.chan[st].dwidth);
         e_int = ekin(edepo_int, cfginfo->data.chan[st].dwidth);
 
@@ -278,6 +279,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
         }        
 	
+
+        delt = t - runconst.E2T/sqrt(e);  
 
         // ========================================
         //              Invariant Mass
@@ -336,8 +339,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             HHF1(10460+si+1, 2*11.18*e_int/1000000.,1.);
         }
         
-	t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift; 
-        delt = t - runconst.E2T/sqrt(e);  
 
 	// t vs. E (banana with no cut)
 	t_vs_e[st] -> Fill(e, t);
