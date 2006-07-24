@@ -462,10 +462,6 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     
     TF1* myf = new TF1("myf","gaus",0.0,150.0);
 
-    // This is not necessary for Mass Cut event selection.
-    // if (bene > 50.) 
-    // myf -> SetRange(10.0, 50.);
-
     h2d->FitSlicesY(myf);
 
     TH1F* sfit = (TH1F*) gDirectory->Get("h2d_1");
