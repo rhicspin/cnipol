@@ -305,7 +305,7 @@ void KinFit::Fit(Int_t mode)
 	sprintf(filename,"%s/testfit.ps",OUTPUTDIR);
         TPostScript ps(filename,112);
     
-        CurC -> Divide(4,3);
+	CurC -> Divide(4,3);
         ps.NewPage();
     }
 
@@ -524,7 +524,6 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     if (mode&1) {
 
         // Plot data points (Magenta)
-
         TH1D* Dpoints = (TH1D*) sfit->Clone();
         Dpoints -> SetName("Dpoints");
         Dpoints -> SetLineColor(6);
@@ -533,7 +532,6 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         Dpoints -> Draw("same");
 
         // Plot fit function (Green)
-
         TF1* fitfun = (TF1*) kinf->Clone();
         fitfun -> SetName("fitfun");
         fitfun -> SetLineColor(3);
@@ -669,7 +667,7 @@ void KinFit::PlotResidual(Int_t St)
     sprintf(title,"%s ST-%d",runid, St+1);
     TH2D* frame = new TH2D(title,title, 10, 195, 1185, 10, -1.5, 1.5);
     frame -> SetStats(0);
-    frame -> GetXaxis()->SetTitle("kinetic energy");
+    frame -> GetXaxis()->SetTitle("depositted energy [keV]");
     frame -> GetYaxis()->SetTitle("residuals [ns]");
     frame -> Draw();
 
