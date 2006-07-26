@@ -237,7 +237,7 @@ KinFit::KinFit(Char_t *runidinput, Float_t beneinput, Int_t RHICBeam, Float_t E2
     printf(" Beam Energy [GeV]                : %6.2f\n", bene);
     if (HID==15000) printf(" Fit on constant time cut , HID   : %5d\n", HID);
     if (HID==15100) printf(" Fit on  banana-mass  cut , HID   : %5d\n", HID);
-    printf(" Fitting Energy Renga <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
+    printf(" Fitting Energy Range <Emin-Emax> :%4d-%4d\n",FitRangeLow, FitRangeUpp);
     printf(" Configuration File               : %s \n", CONFFILE);
     printf(" Online Configuration File        : %s \n", ONLINE_CONFFILE);
     if (strlen(OUTPUTDIR)!=1)
@@ -440,8 +440,8 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     h2d->GetXaxis()->SetTitle("Measured Energy (keV)");
     h2d->GetYaxis()->SetTitle("Tof");
     
-    h2d->GetXaxis()->SetRangeUser(200., 1000.);
-    h2d->GetYaxis()->SetRangeUser(10., 100.);
+    h2d->GetXaxis()->SetRangeUser(100., 1000.);
+    h2d->GetYaxis()->SetRangeUser(0., 100.);
     
     TH2D* h2dcarbon = (TH2D*) h2d->Clone();
     h2dcarbon -> SetName("h2dcarbon");
@@ -467,7 +467,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
     TH1F* sfit = (TH1F*) gDirectory->Get("h2d_1");
 
     // Define banana function
-    TF1 *kinf = new TF1("kinf",KinFunc, 200.0, 1000.0, 2);
+    TF1 *kinf = new TF1("kinf",KinFunc, 100.0, 1000.0, 2);
 
     // Set the default values
     // Dlayer Fix/ Or not
@@ -528,7 +528,7 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         Dpoints -> SetName("Dpoints");
         Dpoints -> SetLineColor(6);
         Dpoints -> SetLineWidth(1.2);
-        Dpoints -> GetXaxis()->SetRangeUser(300., 1000.);
+        Dpoints -> GetXaxis()->SetRangeUser(200., 1000.);
         Dpoints -> Draw("same");
 
         // Plot fit function (Green)
