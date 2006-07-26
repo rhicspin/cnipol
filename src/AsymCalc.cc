@@ -1056,13 +1056,57 @@ InvariantMassCorrelation(int st){
     ecorr -> GetYaxis()->SetTitle("slope [GeV/keV]");
     ecorr -> SetMarkerStyle(20);
     ecorr -> SetMarkerColor(2);
+    TLine * lp = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
+    TLine * ln = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
+    lp -> SetLineStyle(2);
+    ln -> SetLineStyle(2);
+    ecorr -> GetListOfFunctions()->Add(lp);
+    ecorr -> GetListOfFunctions()->Add(ln);
     ecorr -> Write("ecorr");
   }
-
 
   return 0;
 
 }
+
+
+//
+// Class name  : 
+// Method name : StripErrorDetector()
+//
+// Description : fit banana with kinematic function. This routine is incomplete.
+//             : 1. fix hard corded runconst.E2T consntant 1459.43. 
+//             : 2. delete hbananan_1 histograms
+// Input       : 
+// Return      : 
+//
+void 
+BananaFit(int st){
+
+  TF1 * functof = new TF1("functof", "1459.43/sqrt(x)",200,1500);
+
+  char hname[100];
+  sprintf(hname,"t_vs_e_st%d",st);
+  t_vs_e[st]->GetListOfFunctions()->Add(functof);
+  t_vs_e[st]->Write();
+  TH2F * hbanana = (TH2F*) gDirectory->Get(hname);
+  hbanana->SetName("hbanana");
+
+  // Get centers of banana
+  hbanana->FitSlicesY();
+
+  TH1D *hbanana_1 = (TH1D*) gDirectory->Get("hbanana_1");
+  sprintf(hname,"banana_center_st%d",st);
+  hbanana_1->SetName(hname);
+
+  // Delete unnecessary histograms
+  TH1D *hbanana_0    = (TH1D*) gDirectory->Get("hbanana_0");
+  TH1D *hbanana_2    = (TH1D*) gDirectory->Get("hbanana_2");
+  TH1D *hbanana_chi2 = (TH1D*) gDirectory->Get("hbanana_chi2");
+  hbanana_0->Delete();  hbanana_2->Delete();  hbanana_chi2->Delete();
+
+  return;
+};
 
 
 
@@ -1084,20 +1128,19 @@ StripAnomalyDetector(){
   HHPAK(16320,strpchk.average);  
   
   TF1 *f1 = new TF1("f1","pol1",0,1000);
-  TF1 *kinf = new TF1("kinfunc",KinFunc,200,1500);
-  
+
   strpchk.dev.max  = fabs(feedback.mdev[0]);
   strpchk.chi2.max = feedback.chi2[0];
 
   for (int i=0; i<NSTRIP; i++) {
     printf("Anomary Check for strip=%d ...\r",i);
 
-    // t vs. Energy 
-    //    t_vs_e[i]->GetListOfFunctions()->Add(kinf);
+    // t vs. Energy (this routine is incomplete)
+    //    BananaFit(i);
 
     // MASS vs. Energy correlation
     InvariantMassCorrelation(i);
-    if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);
+    if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);  // initialize max w/ strip 0
     if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.max ) {
       strpchk.p1.max = fabs(strpchk.ecorr.p[1][i]);
       strpchk.p1.st  = i;

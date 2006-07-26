@@ -18,6 +18,7 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+#include "AsymProcess.h"
 #include "AsymRecover.h"
 
 
@@ -537,7 +538,6 @@ calcRunConst(recordConfigRhicStruct *cfginfo){
 
   // speed of light
   float c = C_CMNS;
-
 
   // Calculate kinematic constants for the Run
   runconst.E2T = M_SQRT1_2/c * sqrt(m) * L;

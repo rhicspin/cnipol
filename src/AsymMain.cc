@@ -19,6 +19,7 @@
 #include "rpoldata.h"
 #include "Asym.h"
 #include "AsymMain.h"
+#include "AsymProcess.h"
 #include "AsymROOT.h"
 
 
