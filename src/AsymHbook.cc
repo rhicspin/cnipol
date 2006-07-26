@@ -233,9 +233,9 @@ int hist_book(char *filename){
         for (st=1;st<=72;st++){
             sprintf(hcomment,"Tof vs Edep St - %d ",st);
             HHBOOK2(15000+st,hcomment,
-                    100, 200., 1200.,  120, 0., 120.);
+                    100, 100., 1100.,  100, 0., 100.);
             HHBOOK2(15100+st,hcomment,
-                    100, 200., 1200.,  120, 0., 120.);
+                    100, 100., 1100.,  100, 0., 100.);
         }
 	return 0;
     }
