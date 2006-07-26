@@ -27,10 +27,12 @@ RunDBReaderOBJ = AsymRunDB.o RunDBReader.o
 
 dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
 
+KinFuncOBJ = KinFunc.o
+
 testOBJ = test.o
 
 BINARY = Asym RunDBReader dLayerChecker
-all: Asym RunDBReader dLayerChecker Host test
+all: Asym RunDBReader dLayerChecker Host KinFunc test
 
 ######## BINARY ##################
 
@@ -43,6 +45,9 @@ RunDBReader : $(RunDBReaderOBJ)
 dLayerChecker : $(dLayerCheckerOBJ)
 	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
+KinFunc : $(KinFuncOBJ)
+	$(CC) $(C_FLAG) $(KinFuncOBJ) $(INC_PATHS) -o $@
+
 test : $(testOBJ)
 	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
@@ -53,6 +58,7 @@ AsymCalc.o : Asym.h AsymCalc.h WeightedMean.h
 AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
 AsymROOT.o : AsymROOT.h
+KinFunc.o  : AsymProcess.h
 
 .C.o:
 	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<
@@ -62,7 +68,7 @@ AsymROOT.o : AsymROOT.h
 Host:
 	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
-install : Asym RunDBReader dLayerChecker
+install : Asym RunDBReader dLayerChecker ekin
 	install -v -C $^ $(INSTALLDIR)
 
 ##############################

@@ -53,12 +53,10 @@ struct StructBunchCheck {
 
 int  StripAnomalyDetector();
 int  InvariantMassCorrelation(int st);
-int UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
+int  BananaFit();
+int  UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
 
 void PrintWarning();
-
-double KinFunc(Double_t *x, Double_t *par){ par[0]=50; return ekin(float(x[0]),float(par[0])); };
-
 
 
 
