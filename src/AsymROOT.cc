@@ -65,7 +65,7 @@ Root::RootHistBook(){
 
     sprintf(histname,"t_vs_e_st%d",i);
     sprintf(histtitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
-    t_vs_e[i] = new TH2F(histname,histtitle, 100, 200, 1500, 100, 20, 90);
+    t_vs_e[i] = new TH2F(histname,histtitle, 50, 200, 1500, 100, 20, 90);
 
     sprintf(histname,"mass_vs_e_ecut_st%d",i);
     sprintf(histtitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);

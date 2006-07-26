@@ -289,13 +289,11 @@ int read_ramptiming(char *);
 int Initialization();
 int spill_end(recordConfigRhicStruct *);
 int sqass(float, float, float, float, float *, float *);
-int event_process(processEvent *, recordConfigRhicStruct *);
 int end_process(recordConfigRhicStruct *);
 
 int printConfig(recordConfigRhicStruct *);
 void reConfig(recordConfigRhicStruct *);
 void calcRunConst(recordConfigRhicStruct *);
-float ekin(float, float);
 int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 int DisabledDet(int det);
