@@ -7,6 +7,7 @@
 #include "TGraphErrors.h"
 #include "TStyle.h"
 #include "TText.h"
+#include "TLine.h"
 
 #define NSTRIP 72
 
