@@ -13,10 +13,11 @@ TILL_FILL=9000;
 SLEEP_TIME=1800;
 
 # deadlayer fit environments
+CNI_DAEMON_DLAYER_ERANGE=$ASYMDIR/.cnipol_daemon_dlayer_erange;
 CNI_DAEMON_DLAYER_STUDY=$ASYMDIR/.cnipol_daemon_dlayer_iteration;
 ExeDlayerFitSimple=0;
 ExeDlayerFit=0;
-MAX_ITERATION=4;
+MAX_ITERATION=6;
 TOLERANCE=1; 
 
 #Asym environments
@@ -97,22 +98,25 @@ RunDlayer(){
     else 
 
     echo -e -n "$RunID " >> $CNI_DAEMON_DLAYER_STUDY;
+    echo -e -n "$RunID " >> $CNI_DAEMON_DLAYER_ERANGE;
     # First iteration without -b option
-    dLayer.pl -f $RunID 
+    dLayer.pl -f $RunID -i
     mkConfig.pl -f $RunID
     AVE_Dl_1=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
     AVE_T0_1=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
+    grep "Energy Range" $FITLOGFILE >> $CNI_DAEMON_DLAYER_ERANGE;
 
     # Loop for further iteration with -b option
     for (( i=2; i<=$MAX_ITERATION; i++ )) ; do 
 
-	dLayer.pl -f $RunID -b -F ./config/$RunID.config.dat
+	dLayer.pl -f $RunID -i -b -F ./config/$RunID.config.dat
 	mkConfig.pl -f $RunID ;
 
 	AVE_Dl_2=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	AVE_T0_2=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	echo -e -n "$AVE_Dl_2 $AVE_Dl_1" | converge >> $CNI_DAEMON_DLAYER_STUDY;
 	echo -e -n "$AVE_T0_2 $AVE_T0_1" | converge >> $CNI_DAEMON_DLAYER_STUDY;
+	grep "Energy Range" $FITLOGFILE >> $CNI_DAEMON_DLAYER_ERANGE;
 
 	# Check if results are converged or not
 	TEST1=`echo -e -n "$AVE_Dl_2 $AVE_Dl_1" | converge -t $TOLERANCE` 

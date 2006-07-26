@@ -11,23 +11,30 @@ $ONLINE_CONFIG="";
 $OUTPUTDIR=".";
 $ONE_PAR_FIT_OPTION=1;
 
+$DLAYER_WIDTH=50;
+$INVERT_KINEMA=0;
+
+
+
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
 use Getopt::Std;
 my %opt;
-getopts('d:E:f:O:bgh', \%opt);
+getopts('d:E:f:O:ibgh', \%opt);
 
 if ( $opt{h} ) {
     help();
 }
+if ( $opt{i} ) {
+    $INVERT_KINEMA = 1;
+}
 if ( $opt{g} ) {
-    $GHOSTVIEW=1;
+    $GHOSTVIEW = 1;
 }
 if ( $opt{b} ){
-    $HID=15100;
+    $HID = 15100;
 }
-
 if ( $opt{d} ){
     $OUTPUTDIR=$opt{d};
 }
@@ -60,7 +67,7 @@ if ( $opt{E} ){
 
 sub help(){
     print "\n";
-    print " Usage:\n  $0 -hgb [ -f <runID>] [-E <Emin:Emax>][-d <dir>][-O <fit mode>]\n\n"; 
+    print " Usage:\n  $0 [-hgbi][ -f <runID>][-E <Emin:Emax>][-d <dir>][-O <fit mode>]\n\n"; 
     print "    fit banana histograms and get deadlayer and t0.\n";
     print "    Execute dLayerGen.pl for histogram creation.\n\n";
     print "\t -f <runID>     runID\n";
@@ -72,11 +79,16 @@ sub help(){
     print "\t ----------------- expert options ------------------\n";
     print "\t -O <fit mode>  One parameter fitting option. [Def]:$ONE_PAR_FIT_OPTION\n";
     print "\t                  1: fix deadlayer   11: fix t0\n";
+    print "\t -i             Interplet -E <EMIN:EMAX> as Kinetic Energy. Calculate relevant energy depsit\n";
+    print "\t                for average <dwidth>. Average <dwidth> is taken from dlayer/<runID>.fit.log.\n";
+    print "\t                Take default value <$DLAYER_WIDTH> if the file doesn't exist\n";
     print "\n";
     print "\n";
     print "    ex.1) dLayerCal.pl -E 350:950 -f 7279.005 -b \n\n";
     print "    ex.2) Fixed t0 one parameter fit.\n";
     print "          dLayerCal.pl -O 11 -f 7300.002 -b \n\n";
+    print "    ex.3) Convert <EMIN:EMAX> from kinetic energy to energy deposit.\n";
+    print "          dLayerCal.pl -f 7279.001 -E 400:900 -i \n\n";
     print "\n";
     exit(0);
 }
@@ -122,6 +134,37 @@ while (<ONLINE_LOG_FILE>) {
 }
 
 #----------------------------------------------------------------------
+#           Convert energy deposit to kinetic energy
+#----------------------------------------------------------------------
+sub ConvertEdep2Ekin(){
+
+
+    #Get Average deadlayer width from fit log file
+    $FITLOGFILE="dlayer/$Runn.fit.log";
+    if (-f "$FITLOGFILE"){
+	open(fitlogfile,"$FITLOGFILE") || die "ConvertEdep2Ekin(): $!";
+	while (<fitlogfile>) {
+	    if (/dlave =/){
+		($F1,$F2,$F3) = split;
+		$DLAYER_WIDTH = "$F3";
+	    }
+	}
+    }else{
+	print "$FITLOGFILE doesn't exist. Use default <dwidth>=$DLAYER_WIDTH\n";
+    }
+
+    $E_KIN_MIN=$EMIN;
+    $E_KIN_MAX=$EMAX;
+    #Convert <EMIN:EMAX> to Energy Deposits
+    my @tmp = split(" ", `KinFunc -w $DLAYER_WIDTH -e $EMIN -i`);
+    $EMIN = $tmp[1];
+    my @tmp = split(" ", `KinFunc -w $DLAYER_WIDTH -e $EMAX -i`);
+    $EMAX = $tmp[1];
+
+}
+
+
+#----------------------------------------------------------------------
 #           Get Run Condistions from Offline Log
 #----------------------------------------------------------------------
 sub GetLog(){
@@ -164,6 +207,8 @@ sub PrintRunCondition(){
     printf("RHICBeam             : $RHICBeam \n");
     printf("E2T                  : $E2T \n");
     printf("Emin - Emax          : $EMIN - $EMAX \n");
+    if ($INVERT_KINEMA) {printf("Average DLAYER_WIDTH : $DLAYER_WIDTH \n"); 
+			 printf("Corresp.Kin.EMIN-EMAX: $E_KIN_MIN - $E_KIN_MAX \n");   };
     printf("HID                  : $HID \n");
     printf("Config File          : $cfile \n");
     printf("Online Config        : $ONLINE_CONFIG \n");
@@ -172,16 +217,27 @@ sub PrintRunCondition(){
 
 }
 
+
+
+
+
 #----------------------------------------------------------------------
 #                             Main Routine
 #----------------------------------------------------------------------
 
 # Get Run Conditions from Offline Log file
 GetLog();
+
 # Get Online Configulation file name for online monitoring.
 GetOnlineConfig();
+
+# Calculate EMIN:EMAX range from kinetic energies for given dlayer thickness
+if ( $INVERT_KINEMA ) { ConvertEdep2Ekin(); };
+
 # Print Run Conditions
 PrintRunCondition();
+
+
 
 # Make input macro for fitting.
 system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\",\"$OUTPUTDIR\", $ONE_PAR_FIT_OPTION)' > $OUTPUTDIR/input.C");
