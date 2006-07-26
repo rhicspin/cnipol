@@ -68,7 +68,7 @@ KinFunc.o  : AsymProcess.h
 Host:
 	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
-install : Asym RunDBReader dLayerChecker ekin
+install : Asym RunDBReader dLayerChecker KinFunc
 	install -v -C $^ $(INSTALLDIR)
 
 ##############################
