@@ -1,6 +1,6 @@
 #####################################################################
 # README.install
-# April.22,2006
+# July.26,2006
 # I. Nakagawa
 # pC offline analysis package
 #####################################################################
@@ -57,13 +57,15 @@ SRC
 	hb_lib.f       "utility library to call hbook from c++"
 	AsymProcess.cc "event looop processing program"
    	AsymCalc.cc    "end of run routine"
-	RunDBReader.cc "portable RunDB read program"
+
 
 	Asym.h
 	AsymMain.h
 	AsymCalc.h
 	AsymRecoverUserDefined.h
 	AsymRecover.h
+	AsymProcess.h
+	Kinema.h
 	rpoldata.h
 	rhicpol.h
 	WeightedMean.h
@@ -75,11 +77,11 @@ SRC
 	cdev interface utility programs.		
 	(installs only if /usr/local/lib/cdev library exists.)
 
-  Executables : 
-	Asym          "Main analysis program"
-	RunDBReader   "portable run.db reader/printer"
-	dLayerChecker "deadlayer fit checker"
-
+  Executables : try -h and -x options for more details
+	Asym           "Main analysis program"
+	RunDBReader    "portable run.db reader/printer"
+	dLayerChecker  "deadlayer fit checker"
+	KinFunc.cc     "kinematics reconstructer from depsited energy"
 
 DOCUMENTAIONS
   ./cnipol/doc
