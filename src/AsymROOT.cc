@@ -19,12 +19,17 @@
 #include "Asym.h"
 #include "AsymROOT.h"
 
-
-// Histogram Definitions
-TH2F * t_vs_e[NSTRIP];          // t vs. 12C Kinetic Energy (banana with/o cut)
-TH2F * mass_vs_e_ecut[NSTRIP];  // Mass vs. 12C Kinetic Energy 
-TH2F * mass_vs_t_ecut[NSTRIP];  // Mass vs. ToF (w/ Energy Cut)
-TH2F * mass_vs_t[NSTRIP];       // Mass vs. ToF (w/o Energy Cut)
+//
+//  Histogram Definitions 
+//
+//  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
+//  in Run06 which are target events. These histograms are deleted before ROOT file closing 
+//  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
+//
+TH2F * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
+TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
+TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
+TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 
 
 
@@ -61,7 +66,7 @@ int
 Root::RootHistBook(){
 
   Char_t histname[100], histtitle[100];
-  for (int i=0; i<NSTRIP; i++) {
+  for (int i=0; i<TOT_WFD_CH; i++) {
 
     sprintf(histname,"t_vs_e_st%d",i);
     sprintf(histtitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
@@ -82,6 +87,37 @@ Root::RootHistBook(){
   }
 
 
+  return 0;
+
+}
+
+
+
+//
+// Class name  : Root
+// Method name : DeleteHistogram
+//
+// Description : Delete Unnecessary Histograms
+//             : 
+// Input       : 
+// Return      : 
+//
+int 
+Root::DeleteHistogram(){
+
+  
+  // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles 
+  // are for target channels and thus thes histograms wouldn't make any sense.
+  for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
+
+    t_vs_e[i] -> Delete();
+    mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
+    mass_vs_t_ecut[i] -> Delete();  // Mass vs. ToF (w/ Energy Cut)
+    mass_vs_t[i] -> Delete();       // Mass vs. ToF (w/o Energy Cut)
+
+  }
+
+  
   return 0;
 
 }
