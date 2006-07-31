@@ -157,6 +157,9 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	SpeLumi[i]    = atof(strtok(NULL," "));
 	DiffP[i]      = atof(strtok(NULL," "));
 
+	// overflow
+	if (fabs(DiffP[i])>20) DiffP[i]=-20;
+
 	// fill 1-dim histograms
 	Pdiff->Fill(DiffP[i]);
 	phiDist->Fill(phi[i]);
@@ -384,7 +387,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode){
   case 15:
       Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
-      break;
+     break;
   case 50:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
