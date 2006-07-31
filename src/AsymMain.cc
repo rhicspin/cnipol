@@ -302,6 +302,14 @@ int main (int argc, char *argv[]){
     
 
     // ---------------------------------------------------- // 
+    //        Delete Unnecessary ROOT Histograms            //
+    // ---------------------------------------------------- // 
+    if (rt.DeleteHistogram() !=0) {
+        perror("Error: DeleteHistogram()");
+        exit(-1);
+    }
+
+    // ---------------------------------------------------- // 
     //                  Closing Histogram File              //
     // ---------------------------------------------------- // 
     if (hist_close(hbk_outfile) !=0) {
