@@ -598,7 +598,7 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   case 10:
     GetScale(RunID, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65;}
-    if (RUN==6) {ymin=50  ; ymax=75;}
+    if (RUN==6) {ymin=55  ; ymax=85;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     if (opt.RateCorrection) strcat(ytitle,"(Rate Corrected)");
@@ -743,8 +743,8 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
     corr[beam].rad.sigma = func->GetParameter(2);  // get sigma
     break;
   case 30:
-    xmin=0.15;
-    ymin=0.15;
+    xmin=0.15; ymin=0.15;
+    if (RUN==6) xmin=0.70; ymin=0.60;
     break;
   case 40:
     if (RUN==6) ymin=0.70;
