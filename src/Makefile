@@ -32,7 +32,7 @@ KinFuncOBJ = KinFunc.o
 testOBJ = test.o
 
 BINARY = Asym RunDBReader dLayerChecker
-all: Asym RunDBReader dLayerChecker Host KinFunc test
+all: Asym RunDBReader dLayerChecker Host KinFunc 
 
 ######## BINARY ##################
 
