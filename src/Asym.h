@@ -28,6 +28,7 @@ using namespace std;      //declare string in structure
 #define NTBIN 14                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
+#define NTGTWFD 4                  // Number of target WFD channels
 #define NDETECTOR 6                // Number of detectors
 #define NBUNCH 120                 // Maximum bunch number
 #define R2D 57.29577951            // [rad] -> [degree]
@@ -38,6 +39,7 @@ using namespace std;      //declare string in structure
 #define TGT_STEP 0.11              // target motion [mm]/step
 #define TGT_COUNT_MM 0.1           // target [count] -> [mm]
 const int TGT_OPERATION=6;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
+const int TOT_WFD_CH=NSTRIP+NTGTWFD;//Total WFD channels including target WFD channels.
 
 // whole info for one event
 typedef struct {
