@@ -31,7 +31,7 @@ TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
 TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 
-
+TDirectory * strip;
 
 //
 // Class name  : Root
@@ -46,6 +46,9 @@ int
 Root::RootFile(char *filename){
 
   rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
+
+  strip = rootfile->mkdir("strip");
+
 
   return 0;
 
@@ -64,6 +67,7 @@ Root::RootFile(char *filename){
 //
 int 
 Root::RootHistBook(){
+
 
   Char_t histname[100], histtitle[100];
   for (int i=0; i<TOT_WFD_CH; i++) {

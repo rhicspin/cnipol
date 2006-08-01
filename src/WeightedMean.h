@@ -1,13 +1,20 @@
 #ifndef WeightedMean_H
 #define WeightedMean_H
 
-const int N=73;
-int VERBOSE=0;
-int indx[N];
-double x[N];
-double dx[N];
+const int N=NSTRIP;
 
-char * DataFile = "Average.dat";
+
+int Usage(char *argv[]);
+int Example(char *argv[]);
+int getData();
+float WeightedMeanError(float A[N], float dA[N], float Ave, int NDAT);
+float WeightedMean(float A[N], float dA[N], int NDAT);
+void calcWeightedMean(float A[N], float dA[N], int NDAT, float &Ave, float &dAve);
+void PrintResults(int Mode);
+
+
+
+/*
 
 //
 // Class name  : 
@@ -23,14 +30,6 @@ Mean(double A[N], int NDAT){
   for (int i=0; i<N ; i++) mean += A[i];
   return mean/NDAT;
 }
-
-
-int Usage(char *argv[]);
-int Example(char *argv[]);
-int getData();
-float WeightedMeanError(float A[N], float dA[N], float Ave, int NDAT);
-float WeightedMean(float A[N], float dA[N], int NDAT);
-void calcWeightedMean(float A[N], float dA[N], int NDAT, float &Ave, float &dAve);
-void PrintResults(int Mode);
+*/
 
 #endif /* WM_H */
