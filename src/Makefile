@@ -21,7 +21,7 @@ FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
 
 
-AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymROOT.o
+AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymROOT.o AsymErrorDetector.o
 
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
@@ -54,7 +54,7 @@ test : $(testOBJ)
 ######## OBJECT ##################
 
 AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h 
-AsymCalc.o : Asym.h AsymCalc.h WeightedMean.h
+AsymCalc.o : Asym.h AsymCalc.h AsymErrorDetector.h WeightedMean.h
 AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
 AsymROOT.o : AsymROOT.h
