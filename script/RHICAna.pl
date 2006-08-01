@@ -310,16 +310,32 @@ $frame3->Entry(-justify=>'right',-textvariable=>\$conffile,-font=>'r16',
 $frame3->Button(-text => "Browse", -command=>\&conflist)
     ->pack(-side=>'left',-anchor=>'w');
 
-#-----------------------------------
-# see the history plot
-#-----------------------------------
-$frame4->Button(-text=>"time plot", -command=>\&timeplot)
+#----------------------------------
+# Dlayer and T0 plots
+#----------------------------------
+$frame4->Button(-text => "dlayer plots", -command=>\&dlayeropt)
     ->pack(-side=>'left',-anchor=>'w');
+
+#----------------------------------
+# OfflinePol plots
+#----------------------------------
+$frame4->Button(-text => "OfflinePol Plots", -command=>\&offlineopt)
+    ->pack(-side=>'left',-anchor=>'w');
+
+$frame4->Label(-text => "Number of runs")
+    ->pack(-side=>'left',-anchor=>'w');;
+
+$frame4->Entry(-justify=>'right',-textvariable=>\$offlinepolnum,-font=>'r16',
+	      -background=>'White',-width=>6)
+    ->pack(-side=>'left',-anchor=>'w');
+
+
 
 $nt_low = 0;
 $nt_up = 0;
 $sp_low = 0;
 $sp_up = 500;
+
 
 MainLoop;
 
@@ -808,15 +824,13 @@ sub timeplot{
 }
 
 
+sub offlineopt() {
+    system("root -b -q $MACRODIR/OfflinePol.C");
+}
 
-
-
-
-
-
-
-
-
+sub dlayeropt() {
+    system("root -b -q $MACRODIR/DlayerMonitor.C");
+}
 
 
 
