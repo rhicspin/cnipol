@@ -19,48 +19,20 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 
 
+extern StructBunchCheck bnchchk;
+extern StructStripCheck strpchk;
+
+
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 float FitChi2;
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 Double_t sin_phi(Double_t *x, Double_t *par);
+
+int  CumulativeAsymmetry();
+int BunchAsymmetry(int, float A[], float dA[]);
 float WeightAnalyzingPower(int hid);
-
-//=================================================================//
-//                     Strip Error Detector                        //
-//=================================================================//
-typedef struct {
-  float allowance;
-  float max;
-  int st;
-} StructInvMass;
-
-typedef struct {
-  float p[3][NSTRIP];
-  float perr[3][NSTRIP];
-} StructEnergyCorr;
-
-struct StructStripCheck {
-  float average[1];
-  StructInvMass dev, chi2, p1;
-  StructEnergyCorr ecorr;
-} strpchk;
-
-struct StructBunchCheck {
-  float average[1];
-  float allowance;
-} bnchchk;
-
-
-int  StripAnomalyDetector();
-int  InvariantMassCorrelation(int st);
-int  BananaFit();
-int  UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
-
 void PrintWarning();
 
-
-
-int BunchAsymmetry(int, float A[], float dA[]);
 struct BunchAsym {
   float Ax90[2][NBUNCH];
   float Ax45[2][NBUNCH];
