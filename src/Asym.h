@@ -4,8 +4,8 @@
 
 #ifndef ASYM_STREAM_H
 #define ASYM_STREAM_H
-#include <string.h>       // this is funny, but need to be included here to 
-using namespace std;      //declare string in structure
+#include <string.h>       // This is funny, but need to be included here to 
+using namespace std;      // declare string in structure
 
 #ifdef NULL
 #undef NULL
@@ -256,6 +256,8 @@ typedef struct {
 } StructTarget;
 
 
+
+// Hbook Associated Stuff
 extern "C" {
 
   void hhbook1d_(int*, char*, int*, float*, float*,  int);
@@ -364,10 +366,6 @@ extern float phi[NSTRIP];       // phi-angle
 
 // target position infomation 
 extern int ndelim ;
-//extern long int VtgtLinear[MAXDELIM]; 
-//extern long int VtgtRotary[MAXDELIM];
-//extern long int HtgtLinear[MAXDELIM];
-//extern long int HtgtRotary[MAXDELIM];
 extern int TgtIndex[MAXDELIM];
 extern int nTgtIndex;
 
