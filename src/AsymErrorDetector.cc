@@ -20,6 +20,7 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
+#include "AsymROOT.h"
 #include "WeightedMean.h"
 #include "AsymErrorDetector.h"
 
@@ -33,7 +34,8 @@ StructStripCheck strpchk;
 // Class name  : 
 // Method name : int InvariantMassCorrelation()
 //
-// Description : Check the Mass vs. 12C Kinetic Enegy Correlation 
+// Description : Check the Mass vs. 12C Kinetic Enegy Correlation. Apply linear fit on
+//             : Mass .vs Energy scatter plot and record resulting slops for all strips
 // Input       : int st
 // Return      : 
 //
@@ -81,20 +83,21 @@ InvariantMassCorrelation(int st){
   if (st==NSTRIP-1) {
     float strip[NSTRIP],ex[NSTRIP];
     for (int k=0;k<NSTRIP;k++) {strip[k]=k+1;ex[k]=0;}
-    TGraphErrors * ecorr = new TGraphErrors(NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
+
+    mass_e_correlation_strip = new TGraphErrors(NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
     sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
-    ecorr -> SetTitle(htitle);
-    ecorr -> GetXaxis()->SetTitle("Strip Number");
-    ecorr -> GetYaxis()->SetTitle("slope [GeV/keV]");
-    ecorr -> SetMarkerStyle(20);
-    ecorr -> SetMarkerColor(2);
+    mass_e_correlation_strip -> SetTitle(htitle);
+    mass_e_correlation_strip -> GetXaxis()->SetTitle("Strip Number");
+    mass_e_correlation_strip -> GetYaxis()->SetTitle("slope [GeV/keV]");
+    mass_e_correlation_strip -> SetMarkerStyle(20);
+    mass_e_correlation_strip -> SetMarkerColor(2);
     TLine * lp = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
     TLine * ln = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
     lp -> SetLineStyle(2);
     ln -> SetLineStyle(2);
-    ecorr -> GetListOfFunctions()->Add(lp);
-    ecorr -> GetListOfFunctions()->Add(ln);
-    ecorr -> Write("ecorr");
+    mass_e_correlation_strip -> GetListOfFunctions()->Add(lp);
+    mass_e_correlation_strip -> GetListOfFunctions()->Add(ln);
+
   }
 
   return 0;
@@ -104,12 +107,12 @@ InvariantMassCorrelation(int st){
 
 //
 // Class name  : 
-// Method name : StripErrorDetector()
+// Method name : BananaFit()
 //
 // Description : fit banana with kinematic function. This routine is incomplete.
 //             : 1. fix hard corded runconst.E2T consntant 1459.43. 
 //             : 2. delete hbananan_1 histograms
-// Input       : 
+// Input       : int st
 // Return      : 
 //
 void 
@@ -144,7 +147,7 @@ BananaFit(int st){
 
 //
 // Class name  : 
-// Method name : StripErrorDetector()
+// Method name : StripAnomaryDetector()
 //
 // Description : find suspicious strips
 // Input       : 
@@ -157,7 +160,11 @@ StripAnomalyDetector(){
   int counter=0;
   float sigma=0;
   strpchk.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
-  //  HHPAK(16320,strpchk.average);  
+  TLine * strpave = new TLine(-0.5,strpchk.average[0],NSTRIP+0.5,strpchk.average[0]);
+  strpave -> SetLineStyle(1);
+  strpave -> SetLineColor(4);
+  mass_sigma_vs_strip -> GetListOfFunctions() -> Add(strpave);
+
   
   TF1 *f1 = new TF1("f1","pol1",0,1000);
 
@@ -203,10 +210,19 @@ StripAnomalyDetector(){
   strpchk.p1.allowance   = errdet.MASS_ENERGY_CORR_ALLOWANCE;
   strpchk.dev.allowance  = errdet.MASS_DEV_ALLOWANCE;
   strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
-  float devlimit[1]={strpchk.dev.allowance+strpchk.average[0]};
-  //  HHPAK(16330,devlimit);  
-  float chi2limit[1]={strpchk.chi2.allowance};
-  //  HHPAK(16350,chi2limit);
+  float devlimit=strpchk.dev.allowance+strpchk.average[0];
+  TLine * strpdev = new TLine(-0.5, devlimit, NSTRIP+0.5, devlimit);
+  strpdev -> SetLineStyle(2);
+  strpdev -> SetLineColor(2);
+  mass_sigma_vs_strip -> GetListOfFunctions() -> Add(strpdev);
+
+  float chi2limit={strpchk.chi2.allowance};
+  TLine * strpchi2 = new TLine(-0.5, chi2limit, NSTRIP+0.5, chi2limit);
+  strpchi2 -> SetLineStyle(2);
+  strpchi2 -> SetLineColor(2);
+  strpchi2 -> SetLineWidth(5);
+  mass_chi2_vs_strip -> GetListOfFunctions() -> Add(strpchi2);
+
 
   // register and count suspicious strips 
 
@@ -228,6 +244,22 @@ StripAnomalyDetector(){
   return 0;
 
 };
+
+
+//
+// Class name  : 
+// Method name : BunchAnomaryDetector()
+//
+// Description : find suspicious bunch
+// Input       : 
+// Return      : 
+//
+int
+BunchAnomalyDetector(){
+
+
+  return 0;
+}
 
 
 
