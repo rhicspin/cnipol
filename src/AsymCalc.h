@@ -19,8 +19,6 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 
 
-extern StructBunchCheck bnchchk;
-extern StructStripCheck strpchk;
 
 
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
