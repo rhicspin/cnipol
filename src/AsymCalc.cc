@@ -957,9 +957,11 @@ TshiftFinder(int Mode, int FeedBackLevel){
   char chopt[2]="Q";
   float chi2, hmax;
   float mdev,adev;
+  float ex[NSTRIP];
 
   for (int st=0; st<NSTRIP; st++){
-    feedback.err[st]=1; // initialization
+    feedback.strip[st]=st+1;
+    ex[st]=0; feedback.err[st]=1; // initialization
     int hid= Mode ? 16200+st+1 : 17200+st+1 ;
 
     switch(FeedBackLevel){
@@ -1000,10 +1002,28 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
 
   } else {
+    
+    ErrDet->cd();
+    // RMS width mapping of 12C mass peak
+    mass_sigma_vs_strip = new TGraphErrors(NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
+    mass_sigma_vs_strip -> SetTitle("Mass sigma vs. strip");
+    mass_sigma_vs_strip -> SetMarkerStyle(20);
+    mass_sigma_vs_strip -> SetMarkerSize(1.5);
+    mass_sigma_vs_strip -> SetMarkerColor(7);
+    mass_sigma_vs_strip -> SetDrawOption("P");
+    mass_sigma_vs_strip -> GetYaxis() -> SetTitle("RMS Width of 12C Mass Peak[GeV]");
+    mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
-    HHPAK(16310,feedback.RMS);  
-    HHPAKE(16310,feedback.err);
-    HHPAK(16340,feedback.chi2);  
+    // Chi2 mapping of Gaussian fit on 12C mass peak
+    mass_chi2_vs_strip = new TGraphErrors(NSTRIP, feedback.strip, feedback.chi2, ex, ex);
+    mass_chi2_vs_strip -> SetTitle("Gauss Fit Mass chi2 vs. strip");
+    mass_chi2_vs_strip -> SetMarkerStyle(20);
+    mass_chi2_vs_strip -> SetMarkerSize(1.5);
+    mass_chi2_vs_strip -> SetMarkerColor(7);
+    mass_chi2_vs_strip -> SetDrawOption("P");
+    mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
+    mass_chi2_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
+
     StripAnomalyDetector();
     
   }
@@ -1250,20 +1270,18 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 		   Float_t *P, Float_t *dphi, Float_t &chi2dof)
 {
   
-  gStyle->SetOptFit(111);
-
   float dx[NSTRIP];
   for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
 
-  TGraphErrors * tg = new TGraphErrors(NSTRIP, phi, RawP, dx, dRawP);
-  tg->SetTitle("sin(phi) fit");
-  tg->GetXaxis()->SetTitle("phi [deg.]");
-  tg->GetYaxis()->SetTitle("Asymmetry * A_N [%]");
-  tg->SetMarkerStyle(20);
-  tg->SetMarkerSize(1.5);
-  tg->SetLineWidth(2);
-  tg->SetMarkerColor(2);
-  tg->SetDrawOption("P");
+  asym_sinphi_fit = new TGraphErrors(NSTRIP, phi, RawP, dx, dRawP);
+  asym_sinphi_fit->SetTitle("sin(phi) fit");
+  asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
+  asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry * A_N [%]");
+  asym_sinphi_fit->SetMarkerStyle(20);
+  asym_sinphi_fit->SetMarkerSize(1.5);
+  asym_sinphi_fit->SetLineWidth(2);
+  asym_sinphi_fit->SetMarkerColor(2);
+  asym_sinphi_fit->SetDrawOption("P");
 
   // define sin(phi) fit function & initialize parmaeters
   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
@@ -1274,11 +1292,10 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   func -> SetLineColor(2);
 
   TText * txt = new TText(1,1,"sin(phi) fit");
-  tg->GetListOfFunctions()->Add(txt);
+  asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 
   // Perform sin(phi) fit
-  tg -> Fit("sin_phi","R");
-  tg -> Write("tg");
+  asym_sinphi_fit -> Fit("sin_phi","R");
     
   // Get fitting results
   P[0] = func->GetParameter(0);

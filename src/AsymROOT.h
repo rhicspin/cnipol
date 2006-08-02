@@ -30,10 +30,26 @@ class Root
 
 
 // ROOT Histograms
-extern  TH2F * t_vs_e[TOT_WFD_CH];
-extern  TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-extern  TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
-extern  TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
+extern TDirectory * Kinema;
+extern TDirectory * ErrDet;
+extern TDirectory * Asymmetry;
+
+// Kinema Direcotry
+extern TH2F * t_vs_e[TOT_WFD_CH];
+extern TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
+extern TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
+extern TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
+
+// ErrDet Direcotry
+extern TGraphErrors * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
+extern TGraphErrors * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
+extern TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+
+// Asymmetry Directory
+extern  TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  
+
+
+
 
 
 

@@ -19,6 +19,11 @@
 #include "Asym.h"
 #include "AsymROOT.h"
 
+// Direcotories
+TDirectory * Kinema;
+TDirectory * ErrDet;
+TDirectory * Asymmetry;
+
 //
 //  Histogram Definitions 
 //
@@ -26,18 +31,26 @@
 //  in Run06 which are target events. These histograms are deleted before ROOT file closing 
 //  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
 //
+// Kinema Dir
 TH2F * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 
-TDirectory * strip;
+// ErrDet dir
+TGraphErrors * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
+TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip 
+TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+
+// Asymmetry dir
+TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit 
+
 
 //
 // Class name  : Root
 // Method name : RootFile(char * filename)
 //
-// Description : Open Root File
+// Description : Open Root File and define directory structure of histograms
 //             : 
 // Input       : char *filename
 // Return      : 
@@ -47,7 +60,11 @@ Root::RootFile(char *filename){
 
   rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
 
-  strip = rootfile->mkdir("strip");
+  // directory structure
+  Kinema    = rootfile->mkdir("Kinema");
+  ErrDet    = rootfile->mkdir("ErrDet");
+  Asymmetry = rootfile->mkdir("Asymmetry");
+
 
 
   return 0;
@@ -68,28 +85,29 @@ Root::RootFile(char *filename){
 int 
 Root::RootHistBook(){
 
+  Char_t hname[100], htitle[100];
 
-  Char_t histname[100], histtitle[100];
+  Kinema->cd();
   for (int i=0; i<TOT_WFD_CH; i++) {
 
-    sprintf(histname,"t_vs_e_st%d",i);
-    sprintf(histtitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
-    t_vs_e[i] = new TH2F(histname,histtitle, 50, 200, 1500, 100, 20, 90);
 
-    sprintf(histname,"mass_vs_e_ecut_st%d",i);
-    sprintf(histtitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);
-    mass_vs_e_ecut[i] = new TH2F(histname,histtitle, 50, 200, 1000, 200, 6, 18);
+    sprintf(hname,"t_vs_e_st%d",i);
+    sprintf(htitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
+    t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
 
-    sprintf(histname,"mass_vs_t_ecut_st%d",i);
-    sprintf(histtitle,"%8.3f : Mass vs. ToF (Energy Cut) Str%d ", runinfo.RUNID, i);
-    mass_vs_t_ecut[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 5, 25);
+    sprintf(hname,"mass_vs_e_ecut_st%d",i);
+    sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);
+    mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
 
-    sprintf(histname,"mass_vs_t_st%d",i);
-    sprintf(histtitle,"%8.3f : Mass vs. ToF Str%d", runinfo.RUNID, i);
-    mass_vs_t[i] = new TH2F(histname,histtitle, 100, 10, 90, 100, 5, 25);
+    sprintf(hname,"mass_vs_t_ecut_st%d",i);
+    sprintf(htitle,"%8.3f : Mass vs. ToF (Energy Cut) Str%d ", runinfo.RUNID, i);
+    mass_vs_t_ecut[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
+
+    sprintf(hname,"mass_vs_t_st%d",i);
+    sprintf(htitle,"%8.3f : Mass vs. ToF Str%d", runinfo.RUNID, i);
+    mass_vs_t[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
 
   }
-
 
   return 0;
 
@@ -133,15 +151,29 @@ Root::DeleteHistogram(){
 // Class name  : Root
 // Method name : RootFile(char * filename)
 //
-// Description : Close Root File
+// Description : Write out memory and dump histogram before closing the rootfile
 //             : 
 // Input       : 
 // Return      : 
 //
 int 
 Root::CloseROOTFile(){
+  
+  
+  // Write out memory before closing
+  ErrDet->cd();
+  mass_sigma_vs_strip -> Write("mass_sigma_vs_strip");
+  mass_chi2_vs_strip -> Write("mass_chi2_vs_strip");
+  mass_e_correlation_strip -> Write("mass_e_correlation_strip");
+
+  Asymmetry->cd();
+  asym_sinphi_fit -> Write("asym_sinphi_fit");
+
 
   rootfile->Write();
+
+
+  // close rootfile
   rootfile->Close();
 
   return 0;
