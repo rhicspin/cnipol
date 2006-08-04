@@ -258,8 +258,103 @@ int
 BunchAnomalyDetector(){
 
 
+  HotBunchFinder();
+
+
+
   return 0;
 }
+
+
+//
+// Class name  : 
+// Method name : HotBunchFinder()
+//
+// Description : find hot bunch 
+// Input       : 
+// Return      : 
+//
+int
+HotBunchFinder(){
+
+  float NBcounts[NBUNCH];
+  float err[NBUNCH], bindex[NBUNCH];
+  float max, min;
+  int init_flag=1;
+
+
+  for (int bnch=0; bnch<NBUNCH; bnch++){
+
+    // inistiarization
+    bindex[bnch]=bnch+1; err[bnch]=1; NBcounts[bnch]=0; 
+
+    // sum over detector yields
+    for (int det=0; det<NDETECTOR; det++) { NBcounts[bnch] += Ncounts[det][bnch];}
+
+    // calculate min and max range of the histogram
+    if ((NBcounts[bnch])&&(init_flag) ) {min=NBcounts[bnch]; init_flag=0;}
+    if ((NBcounts[bnch] < min)&&(!NBcounts[bnch])) min = NBcounts[bnch];
+    if (max < NBcounts[bnch]) max = NBcounts[bnch];
+
+  }
+
+  // define rate distribution and fill the histogram
+  char hname[100];
+  sprintf(hname,"%8.3f : Rate Distribution / bunch", runinfo.RUNID);
+  bunch_rate = new TH1F("bunch_rate",hname, 100, min*0.9, max*1.1);
+  for (int bnch=0;bnch<NBUNCH;bnch++) { 
+    if (NBcounts[bnch]) bunch_rate->Fill(NBcounts[bnch]);
+  }
+
+  // define rate vs. bunch plot 
+  rate_vs_bunch = new TGraph(NBUNCH, bindex, NBcounts);
+  rate_vs_bunch -> SetTitle(hname);
+  rate_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
+  rate_vs_bunch -> GetYaxis()->SetTitle("Yield/Bunch");
+  rate_vs_bunch -> SetMarkerStyle(20);
+  rate_vs_bunch -> SetMarkerColor(7);
+
+  // define gaussian function 
+  TF1 * g1 = new TF1("g1","gaus");
+  g1->SetLineColor(2);
+
+  // apply gaussian fit on rate distribution
+  bunch_rate->Fit(g1);
+  
+  // get mean from gaussian fit
+  float ave = g1->GetParameter(1);
+  TLine * ave_l = new TLine(0, ave, NBUNCH, ave);
+  rate_vs_bunch->GetListOfFunctions()->Add(ave_l);
+
+  // get sigma from Gaussian fit and calculate allowance limit
+  float sigma=g1->GetParameter(2);
+  bnchchk.allowance = ave + errdet.BUNCH_ALLOWANCE_SIGMA*sigma;
+  TLine * allowance_l = new TLine(0, bnchchk.allowance, NBUNCH, bnchchk.allowance);
+  allowance_l -> SetLineStyle(2);
+  allowance_l -> SetLineColor(2);
+  rate_vs_bunch->GetListOfFunctions()->Add(allowance_l);
+
+  TLine * allowance_ll = new TLine(bnchchk.allowance, 0, bnchchk.allowance, g1->GetParameter(0));
+  allowance_ll -> SetLineStyle(2);
+  allowance_ll -> SetLineColor(2);
+  bunch_rate ->GetListOfFunctions()->Add(allowance_ll);
+
+
+  anal.anomaly.nbunch=0;
+  for (int bnch=0;bnch<NBUNCH;bnch++) {
+    if (NBcounts[bnch] > bnchchk.allowance) {
+      anal.anomaly.bunch[anal.anomaly.nbunch] = bnch + 1;
+      anal.anomaly.nbunch++;
+      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch+1, bnchchk.allowance);
+      
+    }
+  }
+
+
+  return 0;
+}
+
+
 
 
 
