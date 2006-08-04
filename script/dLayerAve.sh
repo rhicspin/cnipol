@@ -63,6 +63,8 @@ InitVariables(){
     AVE_T0=0;
     DELTA_T0=0;
     Dldet1=0;
+    RANGE_MIN=0;
+    RANGE_MAX=0;
     t0Strip1=0;
     t0EStrip1=0;
     DlStrip1=0;
@@ -78,8 +80,8 @@ InitVariables(){
 #############################################################################
 ShowIndex(){
 
-    printf "=============================================================";
-    printf "=============================================================\n";
+    printf "================================================================";
+    printf "===============================================================\n";
     printf " RunID    ";
     printf " Dl_ave";
     printf " err";
@@ -89,6 +91,8 @@ ShowIndex(){
     printf " #of "
     printf " T0_ave";
     printf " DeltaT0";
+    printf " Emin";
+    printf " Emax";
     printf " Bnch";
     printf " Dl_ave   ";
     printf " Strip-$SINGLE_STRIP"
@@ -103,7 +107,9 @@ ShowIndex(){
     printf "        ";
     printf " Fill  ";
     printf " [ns]   ";
-    printf " [ns] ";
+    printf " [ns]  ";
+    printf " keV ";
+    printf " keV";
     printf " Mode "
     printf " Det1   ";
     printf " t0    ";
@@ -113,8 +119,8 @@ ShowIndex(){
     printf " t0    ";
     printf " t0E   ";
     printf "\n";
-    printf "=============================================================";
-    printf "=============================================================\n";
+    printf "================================================================";
+    printf "===============================================================\n";
 
 }
 
@@ -175,6 +181,8 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    TGT_POS=`grep @ $LOGFILE | gawk '{print $4}'`
 	    AVE_T0=`grep " t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
 	    DELTA_T0=`grep " Delta_t0 average=" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`;
+	    RANGE_MIN=`grep "Emin-Emax" $FITLOGFILE | gawk '{print $6}' | sed -e '{s/-/ /}'`
+	    RANGE_MAX=`grep "Emin-Emax" $FITLOGFILE | gawk '{print $7}'`
 
 	    #Single Strip 
 	    cat $DlayerFile | gawk '{print $1+1}' > $TMPOUTDIR/dLayerAve.log;
@@ -193,8 +201,9 @@ for (( i=1; i<=$NLINE ; i++ )) ;
 	    if [ $AVE_Dl ]&&[ $AVE_WCM ]  ; then
 		echo -e -n "$RUNID $AVE_Dl $AVE_Dl_ERROR $READ_RATES "        | tee -a $OFILE 
 		echo -e -n "$AVE_WCM $SPECIFIC_LUMI $FILL_BUNCH   "           | tee -a $OFILE
-		echo -e -n "$AVE_T0 $DELTA_T0   $AT_BUNCH $Dldet1 $t0Strip1 " | tee -a $OFILE
-		echo -e -n "$t0EStrip1 $DlStrip1 $DlEStrip1 $t0_2par_Strip1 $t0E_2par_Strip1"  | tee -a $OFILE
+		echo -e -n "$AVE_T0 $DELTA_T0   $RANGE_MIN $RANGE_MAX "       | tee -a $OFILE
+		echo -e -n "$AT_BUNCH $Dldet1 $t0Strip1 $t0EStrip1 "          | tee -a $OFILE
+		echo -e -n "$DlStrip1 $DlEStrip1 $t0_2par_Strip1 $t0E_2par_Strip1"  | tee -a $OFILE
 		echo -e -n "\n"                                               | tee -a $OFILE
 	    fi
 
