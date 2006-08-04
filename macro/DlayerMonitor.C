@@ -22,7 +22,7 @@ class DlayerMonitor
 
 private:
   Float_t RunID[N],Dl[N],DlE[N],ReadRate[N],WCM[N],SpeLumi[N],NBunch[N]; 
-  Float_t AveT0[N],DeltaT0[N],Bunch[N];
+  Float_t AveT0[N],DeltaT0[N],Emin[N],Emax[N],Bunch[N];
   Float_t dx[N],dy[N];
   TH2D* frame ;
 
@@ -93,7 +93,7 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
     while (!fin.eof()) {
 
         fin >> RunID[i] >> Dl[i] >> DlE[i] >> ReadRate[i] >> WCM[i] >> SpeLumi[i] >> NBunch[i]
-            >> AveT0[i] >> DeltaT0[i] >> Bunch[i] >> dum[3] >> dum[4] 
+            >> AveT0[i] >> DeltaT0[i] >> Emin[i] >> Emax[i] >> Bunch[i] >> dum[3] >> dum[4] 
             >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9] ;
 
 	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
@@ -364,6 +364,7 @@ DlayerMonitor::DlayerMonitor()
   Char_t HEADER[100];
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
+
 
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
