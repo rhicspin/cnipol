@@ -24,7 +24,7 @@ class DlayerAnalyzer
 
 private:
   Float_t RunID[N],Dl[N],DlE[N],ReadRate[N],WCM[N],SpeLumi[N],NBunch[N]; 
-  Float_t AveT0[N],DeltaT0[N],Bunch[N];
+  Float_t AveT0[N],DeltaT0[N],Emin[N],Emax[N],Bunch[N];
   Float_t Dl_det1[N], t0Strip1[N],t0EStrip1[N],DlStrip1[N],DlEStrip1[N];
   Float_t t0_2par_Strip1[N],t0E_2par_Strip1[N];
   Float_t dx[N],dy[N];
@@ -207,7 +207,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
     while (!fin.eof()) {
 
         fin >> RunID[i] >> Dl[i] >> DlE[i] >> ReadRate[i] >> WCM[i] >> SpeLumi[i] >> NBunch[i]
-            >> AveT0[i] >> DeltaT0[i] >> Bunch[i] 
+            >> AveT0[i] >> DeltaT0[i] >> Emin[i] >> Emax[i] >> Bunch[i] 
 	    >> single.Par1.Dl[i] >> single.Par1.t0[i] >> single.Par1.t0E[i] 
 	    >> single.Par2.Dl[i] >> single.Par2.DlE[i] >> single.Par2.t0[i] >> single.Par2.t0E[i]; 
 	Fill=int(RunID[i]); dx[i]=dy[i]=0;
@@ -308,6 +308,10 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 80:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DlE, dx, dy);
     break;
+  case 90:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, Emin, dx, dy);
+    TGraphErrors* tga2 = new TGraphErrors(ndata, RunID, Emax, dx, dy);
+    break;
   case 100:
     TGraphErrors* tgae = new TGraphErrors(ndata, AveT0, Dl, dx, DlE);
     break;
@@ -325,6 +329,17 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 
   aLegend->AddEntry(tgae,text,"P");
   aLegend->Draw("same");
+
+  if (Mode==90) {
+    tga2 -> SetMarkerStyle(Mtyp);
+    tga2 -> SetMarkerSize(1.3);
+    tga2 -> SetLineWidth(2);
+    tga2 -> SetMarkerColor(Color+2);
+    tga2 -> Draw("P");
+
+    aLegend->AddEntry(tga2,text,"P");
+    aLegend->Draw("same");
+  }
 
   // supoerposition ntuples
   if (opt.Ntuple) OverDrawNtuple(Mode, ndata, Mtyp, text, Color, aLegend);
@@ -658,6 +673,13 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle," DlE [ug/cm^2]",Beam);
     break;
+  case 90:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=0 ; ymax=1000;
+    sprintf(title,"Deadlayer Fitting Range Emin & Emax History");
+    sprintf(xtitle,"Fill Number");
+    sprintf(ytitle,"Fitting Range Emin & Emax [keV]",Beam);
+    break;
   case 100:
     GetScale(AveT0, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
@@ -867,6 +889,7 @@ DlayerAnalyzer::DlayerAnalyzer()
   BlueAndYellowBeams(70, CurC, ps);   // Fill vs. Active Bunches
   BlueAndYellowBeams(80, CurC, ps);   // Fill vs. Strip DlE
   BlueAndYellowBeams(81, CurC, ps);   // Strip Deadlayer Average Deviation from Detector Average(DlE)
+  BlueAndYellowBeams(90, CurC, ps);   // Fitting Energy Range History
   BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
   BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
 
