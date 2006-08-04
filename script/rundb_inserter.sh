@@ -2,7 +2,7 @@
 #rundb_insterter.sh
 #April 20, 2006, A. Hoffman
 
-INF=out.dat;
+INF=$TMPOUTDIR/dLayerChecker.dat;
 DB=testdb.txt;
 Test=0;
 
