@@ -44,6 +44,9 @@ extern TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 extern TGraphErrors * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 extern TGraphErrors * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
 extern TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+extern TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
+extern TGraph * rate_vs_bunch_exc;                 // Counting rate vs. bunch (excluding max rate)
+extern TH1F * bunch_rate;                          // Counting rate per bunch hisogram
 
 // Asymmetry Directory
 extern  TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  

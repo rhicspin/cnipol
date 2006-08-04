@@ -82,12 +82,14 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     //  Check 12C Invariant Mass Possition
     //-------------------------------------------------------
-    float MaxDev=TshiftFinder(Flag.feedback, 2);
+    //TshiftFinder(Flag.feedback, 2);
 
 
     //-------------------------------------------------------
     //  Check for bunches with too few/many counts
     //-------------------------------------------------------
+    BunchAnomalyDetector();
+
     //    checkForBadBunches();
 
     //-------------------------------------------------------
@@ -582,6 +584,7 @@ PrintWarning(){
     printf("------------------------------  Error Detector Results ----------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf("===> Bunch distribution \n");
+    printf(" Good Bunch Yield Allowance Sigma    : %6.1f\n",errdet.BUNCH_ALLOWANCE_SIGMA);
     printf(" Number of Problemeatic Bunches      : %d \n", anal.anomaly.nbunch);
     printf(" Problemeatic Bunch ID's             : ");
     for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]+1) ; 
@@ -1003,7 +1006,6 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
   } else {
     
-    ErrDet->cd();
     // RMS width mapping of 12C mass peak
     mass_sigma_vs_strip = new TGraphErrors(NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
     mass_sigma_vs_strip -> SetTitle("Mass sigma vs. strip");

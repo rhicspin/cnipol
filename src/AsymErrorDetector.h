@@ -38,11 +38,12 @@ extern StructStripCheck strpchk;
 
 
 
-int  InvariantMassCorrelation(int st);
-int  BananaFit();
-int  StripAnomalyDetector();
-int  BunchAnomalyDetector();
-int  UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
+int InvariantMassCorrelation(int st);
+int BananaFit();
+int StripAnomalyDetector();
+int BunchAnomalyDetector();
+int HotBunchFinder(); 
+int UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
 
 
 #endif /* ASYM_ERROR_DETECTOR_H */
