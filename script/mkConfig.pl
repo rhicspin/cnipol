@@ -40,12 +40,14 @@ if (length ($Runn) == 0){
 }
 
 # Get Deadlayer Add/Subtraction 
-my $Delta_Dl = $opt{a};
-if (length ($Delta_Dl) == 0){
-    print "Error: Specify <Delta_Dl>.\n";
-    help();
-}else{
-    $ADD_DLAYER = 1;
+if ($opt{a} ) {
+    my $Delta_Dl = $opt{a};
+    if (length ($Delta_Dl) == 0){
+	print "Error: Specify <Delta_Dl>.\n";
+	help();
+    }else{
+	$ADD_DLAYER = 1;
+    }
 }
 
 
