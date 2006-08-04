@@ -215,6 +215,7 @@ typedef struct {
   float tedev[NSTRIP];
   float err[NSTRIP];
   float chi2[NSTRIP];
+  float strip[NSTRIP];
 } StructFeedBack;
 
 
