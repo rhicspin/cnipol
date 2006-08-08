@@ -64,33 +64,25 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Bunch Asymmetries
     //-------------------------------------------------------
-    /*
-    BunchAsymmetry(-1, basym.Ax45[0], basym.Ax45[1]);
-    BunchAsymmetry(0,  basym.Ax90[0], basym.Ax90[1]);
-    BunchAsymmetry(1,  basym.Ay45[0], basym.Ay45[1]);
-    HHPAK(31200, basym.Ax45[0]); HHPAKE(31200, basym.Ax45[1]);
-    HHPAK(31300, basym.Ax90[0]); HHPAKE(31300, basym.Ax90[1]);
-    HHPAK(31400, basym.Ay45[0]); HHPAKE(31200, basym.Ay45[1]);
-    */
+    calcBunchAsymmetry();
+
+    //-------------------------------------------------------
+    //  Check for bunch anomaly 
+    //-------------------------------------------------------
+    BunchAnomalyDetector();
+
+    //    checkForBadBunches();
 
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
     if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[1]);
-    
 
     //-------------------------------------------------------
     //  Check 12C Invariant Mass Possition
     //-------------------------------------------------------
     //TshiftFinder(Flag.feedback, 2);
 
-
-    //-------------------------------------------------------
-    //  Check for bunches with too few/many counts
-    //-------------------------------------------------------
-    BunchAnomalyDetector();
-
-    //    checkForBadBunches();
 
     //-------------------------------------------------------
     // Specific Luminosity 
@@ -1045,6 +1037,90 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
 }
 
+//
+// Class name  : 
+// Method name : calcBunchAsymmetry
+//
+// Description : call BunchAsymmetry to calculate asymmetries bunch by bunch
+// Input       : 
+// Return      : 
+//
+TGraphErrors * 
+AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
+
+  int Color= Mode == 1 ? 2 : 4;
+  TGraphErrors * asymgraph = new TGraphErrors(N, x, y, ex, ey);
+  asymgraph -> SetMarkerStyle(20);
+  asymgraph -> SetMarkerColor(Color);
+
+
+  return asymgraph ;
+
+}
+
+//
+// Class name  : 
+// Method name : calcBunchAsymmetry
+//
+// Description : call BunchAsymmetry to calculate asymmetries bunch by bunch
+// Input       : 
+// Return      : 
+//
+int
+calcBunchAsymmetry(){
+
+    BunchAsymmetry(-1, basym.Ax45[0], basym.Ax45[1]);
+    BunchAsymmetry(0,  basym.Ax90[0], basym.Ax90[1]);
+    BunchAsymmetry(1,  basym.Ay45[0], basym.Ay45[1]);
+
+    Asymmetry->cd();
+
+    // Define TGraphError histograms first
+    float bunch[NBUNCH], ex[NBUNCH];
+    for (int bid=0; bid<NBUNCH; bid++) { ex[bid]=0; bunch[bid]= bid+1; }
+    asym_vs_bunch_x45 = new TGraphErrors(NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
+    asym_vs_bunch_x90 = new TGraphErrors(NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
+    asym_vs_bunch_y45 = new TGraphErrors(NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
+
+    TGraphErrors * asymgraph ;
+    // Superpose Positive/Negative Bunches 
+    for (int spin=1; spin>=-1; spin-=2 ) {
+
+      // bunch ID 
+      for (int bid=0; bid<NBUNCH; bid++) { bunch[bid]= spinpat[bid] == spin ? bid+1 : -1 ;}
+
+      // X45 
+      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
+      asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_x45 -> SetTitle("Bunch Asymmetry X45");
+      asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+
+      // X90 
+      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
+      asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_x90 -> SetTitle("Bunch Asymmetry X90");
+      asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_x90 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+
+      // Y45 
+      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
+      asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_y45 -> SetTitle("Bunch Asymmetry Y45");
+      asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+
+    }// end-of-for(spin) loop
+
+
+    HHPAK(31200, basym.Ax45[0]); HHPAKE(31200, basym.Ax45[1]);
+    HHPAK(31300, basym.Ax90[0]); HHPAKE(31300, basym.Ax90[1]);
+    HHPAK(31400, basym.Ay45[0]); HHPAKE(31200, basym.Ay45[1]);
+
+  return 0;
+
+}
+
 
 
 //
@@ -1113,7 +1189,7 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
       if (spinpat[bid]==-1)
 	calcAsymmetry(RD[bid],LD[bid],LumiRU[bid],LumiLD[bid],A[bid],dA[bid]);
 
-      cout << bid << " " << A[bid] << " " << dA[bid] << endl;
+      //      cout << "BunchAsymmetry=" << bid << " " << A[bid] << " " << dA[bid] << endl;
     } // end-of-for(bid)-loop
 
   }// end-of-(!error)

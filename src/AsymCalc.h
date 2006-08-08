@@ -27,6 +27,8 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 Double_t sin_phi(Double_t *x, Double_t *par);
 
 int  CumulativeAsymmetry();
+int calcBunchAsymmetry();
+TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 int BunchAsymmetry(int, float A[], float dA[]);
 float WeightAnalyzingPower(int hid);
 void PrintWarning();

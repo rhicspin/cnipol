@@ -43,6 +43,10 @@ TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip
 TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
 TH1F * bunch_rate;                          // Counting rate per bunch hisogram
+TGraphErrors * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
+TGraphErrors * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
+TGraphErrors * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
+
 
 // Asymmetry dir
 TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit 
@@ -164,14 +168,17 @@ Root::CloseROOTFile(){
   
   // Write out memory before closing
   ErrDet->cd();
-  //  mass_sigma_vs_strip -> Write("mass_sigma_vs_strip");
-  //  mass_chi2_vs_strip -> Write("mass_chi2_vs_strip");
-  //  mass_e_correlation_strip -> Write("mass_e_correlation_strip");
-  bunch_rate -> Write("bunch_rate");
-  rate_vs_bunch -> Write("rate_vs_bunch");
+  if (mass_sigma_vs_strip)      mass_sigma_vs_strip -> Write("mass_sigma_vs_strip");
+  if (mass_chi2_vs_strip)       mass_chi2_vs_strip -> Write("mass_chi2_vs_strip");
+  if (mass_e_correlation_strip) mass_e_correlation_strip -> Write("mass_e_correlation_strip");
+  if (bunch_rate)               bunch_rate -> Write("bunch_rate");
+  if (rate_vs_bunch)            rate_vs_bunch -> Write("rate_vs_bunch");
 
   Asymmetry->cd();
-  asym_sinphi_fit -> Write("asym_sinphi_fit");
+  if (asym_sinphi_fit)   asym_sinphi_fit -> Write("asym_sinphi_fit");
+  if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write("asym_vs_bunch_x45");
+  if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write("asym_vs_bunch_x90");
+  if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write("asym_vs_bunch_y45");
 
 
   rootfile->Write();
