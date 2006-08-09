@@ -33,6 +33,29 @@ int BunchAsymmetry(int, float A[], float dA[]);
 float WeightAnalyzingPower(int hid);
 void PrintWarning();
 
+// Return Maximum from array A[N]
+float GetMax(int N, float A[]){
+  float max = A[0];
+  for (int i=1; i<N; i++) max = max<A[i] ? A[i] : max;
+  return max;
+}
+
+// Return Miminum from array A[N]
+float GetMin(int N, float A[]){
+  float min = A[0];
+  for (int i=1; i<N; i++) min = min>A[i] ? A[i] : min;
+  return min;
+}
+
+// Return Minimum and Maximum from array A[N]
+void GetMinMax(int N, float A[], float &min, float &max){
+  min = GetMin(N,A);
+  max = GetMax(N,A);
+  return ;
+}
+
+
+  
 struct BunchAsym {
   float Ax90[2][NBUNCH];
   float Ax45[2][NBUNCH];

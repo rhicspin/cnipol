@@ -153,9 +153,6 @@ float pawc_[NWORDS_PAWC];
 //  31100     : RL90 (with errors)
 //  31110     : RL45 (with errors)
 //  31120     : BT45 (with errors)
-//  31200     : Ax45 bunch by bunch
-//  31300     : Ax90 bunch by bunch
-//  31400     : Ay90 bunch by bunch
 //  32000+i   : -t bined X90 (i=1,6)
 //  32100+i   : -t bined X45
 //  32200+i   : -t bined Y45
@@ -438,12 +435,6 @@ int hist_book(char *filename){
     HHBOOK1(31100, "RL90", 120, -0.5, 119.5);
     HHBOOK1(31110, "RL45", 120, -0.5, 119.5);
     HHBOOK1(31120, "BT45", 120, -0.5, 119.5);
-
-    // bunch by bunch Asymmetry
-    HHBOOK1(31200, "Ax45", 120, -0.5, 119.5);
-    HHBOOK1(31300, "Ax90", 120, -0.5, 119.5);
-    HHBOOK1(31400, "Ay45", 120, -0.5, 119.5);
-
 
     for (int tbin=0; tbin<NTBIN; tbin++) { // runs for number of bunches
         HHBOOK1(32000+tbin+1, "-t binned X90", 120, -0.5, 119.5);

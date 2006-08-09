@@ -1048,9 +1048,10 @@ TshiftFinder(int Mode, int FeedBackLevel){
 TGraphErrors * 
 AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
 
-  int Color= Mode == 1 ? 2 : 4;
+  int Color= Mode == 1 ? 4 : 2;
   TGraphErrors * asymgraph = new TGraphErrors(N, x, y, ex, ey);
   asymgraph -> SetMarkerStyle(20);
+  //  asymgraph -> SetMarkerSize(0.5);
   asymgraph -> SetMarkerColor(Color);
 
 
@@ -1069,21 +1070,34 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
 int
 calcBunchAsymmetry(){
 
+  // calculate Bunch Asymmetries for x45, x90, y45
     BunchAsymmetry(-1, basym.Ax45[0], basym.Ax45[1]);
     BunchAsymmetry(0,  basym.Ax90[0], basym.Ax90[1]);
     BunchAsymmetry(1,  basym.Ay45[0], basym.Ay45[1]);
 
+    // Define TH2F histograms first
     Asymmetry->cd();
+    char htitle[100];
+    float min, max;
+    sprintf(htitle,"Run%8.3f:Raw Asymmetry X45",runinfo.RUNID);
+    GetMinMax(NBUNCH, basym.Ax45[0], min, max);
+    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
 
-    // Define TGraphError histograms first
+    sprintf(htitle,"Run%8.3f:Raw Asymmetry X90",runinfo.RUNID);
+    GetMinMax(NBUNCH, basym.Ax90[0], min, max);
+    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
+
+    sprintf(htitle,"Run%8.3f:Raw Asymmetry Y45",runinfo.RUNID);
+    GetMinMax(NBUNCH, basym.Ay45[0], min, max);
+    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
+
+
+    // index bunch array runs for 1 - NBUMCH
     float bunch[NBUNCH], ex[NBUNCH];
     for (int bid=0; bid<NBUNCH; bid++) { ex[bid]=0; bunch[bid]= bid+1; }
-    asym_vs_bunch_x45 = new TGraphErrors(NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
-    asym_vs_bunch_x90 = new TGraphErrors(NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
-    asym_vs_bunch_y45 = new TGraphErrors(NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
 
+    // Superpose Positive/Negative Bunches arrays into TH2F histograms defined above
     TGraphErrors * asymgraph ;
-    // Superpose Positive/Negative Bunches 
     for (int spin=1; spin>=-1; spin-=2 ) {
 
       // bunch ID 
@@ -1091,31 +1105,27 @@ calcBunchAsymmetry(){
 
       // X45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
-      asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x45 -> SetTitle("Bunch Asymmetry X45");
       asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // X90 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
-      asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x90 -> SetTitle("Bunch Asymmetry X90");
       asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x90 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // Y45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
-      asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph);
+      asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_y45 -> SetTitle("Bunch Asymmetry Y45");
       asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
     }// end-of-for(spin) loop
 
-
-    HHPAK(31200, basym.Ax45[0]); HHPAKE(31200, basym.Ax45[1]);
-    HHPAK(31300, basym.Ax90[0]); HHPAKE(31300, basym.Ax90[1]);
-    HHPAK(31400, basym.Ay45[0]); HHPAKE(31200, basym.Ay45[1]);
 
   return 0;
 
