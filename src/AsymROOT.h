@@ -46,9 +46,9 @@ extern TGraphErrors * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Ma
 extern TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 extern TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
 extern TH1F * bunch_rate;                          // Counting rate per bunch hisogram
-extern TGraphErrors * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
-extern TGraphErrors * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
-extern TGraphErrors * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
+extern TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
+extern TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
+extern TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
 
 // Asymmetry Directory
 extern  TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  

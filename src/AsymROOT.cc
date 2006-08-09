@@ -43,9 +43,9 @@ TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip
 TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
 TH1F * bunch_rate;                          // Counting rate per bunch hisogram
-TGraphErrors * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
-TGraphErrors * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
-TGraphErrors * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
+TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
+TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
+TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
 
 
 // Asymmetry dir
