@@ -256,11 +256,12 @@ StripAnomalyDetector(){
 // Return      : 
 //
 void 
-DrawLine(TH1F * h, float x, float y1, int color){
+DrawLine(TH1F * h, float x, float y1, int color, int lwidth){
 
   TLine * l = new TLine(x, 0, x, y1);
   l -> SetLineStyle(2);
   l -> SetLineColor(color);
+  l -> SetLineWidth(lwidth);
   h -> GetListOfFunctions()->Add(l);
 
   return;
@@ -272,15 +273,16 @@ DrawLine(TH1F * h, float x, float y1, int color){
 //
 // Description : DrawLines in TH1F histogram
 //             : Assumes  (x1,x2) y=y0=y1
-// Input       : TH2F * h, float x0, float x1, float y, int color
+// Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
 // Return      : 
 //
 void 
-DrawLine(TH2F * h, float x0, float x1, float y, int color){
+DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
 
   TLine * l = new TLine(x0, y, x1, y);
-  l -> SetLineStyle(2);
+  l -> SetLineStyle(lstyle);
   l -> SetLineColor(color);
+  l -> SetLineWidth(lwidth);
   h -> GetListOfFunctions()->Add(l);
 
   return;
@@ -314,19 +316,17 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]){
   bnchchk.asym[1].allowance = mean + errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
 
   // draw allowance lines to 1-dim histograms
-  DrawLine(h1, bnchchk.asym[0].allowance, hight, 2);
-  DrawLine(h1, bnchchk.asym[1].allowance, hight, 2);
+  DrawLine(h1, bnchchk.asym[0].allowance, hight, 2, 2);
+  DrawLine(h1, bnchchk.asym[1].allowance, hight, 2, 2);
 
   // draw allowance lines to asymmetery vs. bunch histograms
-  DrawLine(h2, 0, NBUNCH, bnchchk.asym[0].allowance, 4);
-  DrawLine(h2, 0, NBUNCH, bnchchk.asym[1].allowance, 4);
-
-  DrawLine(h2, 0, NBUNCH, -bnchchk.asym[0].allowance, 2);
-  DrawLine(h2, 0, NBUNCH, -bnchchk.asym[1].allowance, 2);
+  DrawLine(h2, 0, NBUNCH+1,  bnchchk.asym[0].allowance, 4, 4, 2);
+  DrawLine(h2, 0, NBUNCH+1,  bnchchk.asym[1].allowance, 4, 4, 2);
+  DrawLine(h2, 0, NBUNCH+1, -bnchchk.asym[0].allowance, 2, 2, 2);
+  DrawLine(h2, 0, NBUNCH+1, -bnchchk.asym[1].allowance, 2, 2, 2);
 
 
   // Anomaly bunch resistration
-  anal.anomaly.nbunch=0;
   for (int bid=0;bid<NBUNCH;bid++) {
     if ( fabs(A[bid] - mean) > errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bid + 1;
@@ -374,6 +374,9 @@ BunchAsymmetryAnomaly(){
 //
 int
 BunchAnomalyDetector(){
+
+  // Initiarize anomaly bunch counter
+  anal.anomaly.nbunch=0;
 
   // Find anomaly bunches from unusual deviation from average asymmetry
   BunchAsymmetryAnomaly();
@@ -448,18 +451,17 @@ HotBunchFinder(){
   // get sigma from Gaussian fit and calculate allowance limit
   float sigma=g1->GetParameter(2);
   bnchchk.rate.allowance = ave + errdet.BUNCH_RATE_SIGMA_ALLOWANCE*sigma;
+
+  // draw lines to graph and histogram
   TLine * allowance_l = new TLine(0, bnchchk.rate.allowance, NBUNCH, bnchchk.rate.allowance);
   allowance_l -> SetLineStyle(2);
   allowance_l -> SetLineColor(2);
   rate_vs_bunch->GetListOfFunctions()->Add(allowance_l);
 
-  TLine * allowance_ll = new TLine(bnchchk.rate.allowance, 0, bnchchk.rate.allowance, g1->GetParameter(0));
-  allowance_ll -> SetLineStyle(2);
-  allowance_ll -> SetLineColor(2);
-  bunch_rate ->GetListOfFunctions()->Add(allowance_ll);
+  DrawLine(bunch_rate, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
 
 
-  anal.anomaly.nbunch=0;
+  // anomaly bunch registration
   for (int bnch=0;bnch<NBUNCH;bnch++) {
     if (NBcounts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch + 1;

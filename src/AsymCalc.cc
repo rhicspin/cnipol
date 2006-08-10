@@ -1088,6 +1088,7 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
   int Color= Mode == 1 ? 4 : 2;
   TGraphErrors * asymgraph = new TGraphErrors(N, x, y, ex, ey);
   asymgraph -> SetMarkerStyle(20);
+  asymgraph -> SetMarkerSize(1.2);
   asymgraph -> SetMarkerColor(Color);
 
   return asymgraph ;
@@ -1117,19 +1118,21 @@ calcBunchAsymmetry(){
     char htitle[100];
     float min, max;
     float margin=0.2;
-    float prefix=0.02;
-    sprintf(htitle,"Run%8.3f:Raw Asymmetry X90",runinfo.RUNID);
-    GetMinMaxOption(prefix, NBUNCH, basym.Ax90[0], 0.2, min, max);
-    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90",htitle,100,0,NBUNCH+1,100, min, max);
+    float prefix=0.028;
+    sprintf(htitle,"Run%8.3f : Raw Asymmetry X90", runinfo.RUNID);
+    GetMinMaxOption(prefix, NBUNCH, basym.Ax90[0], margin, min, max);
+    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, 100, 0, NBUNCH+1, 100, min, max);
+    DrawLine(asym_vs_bunch_x90, 0, NBUNCH, 0, 1, 1, 1);
 
-    sprintf(htitle,"Run%8.3f:Raw Asymmetry X45",runinfo.RUNID);
-    GetMinMaxOption(prefix, NBUNCH, basym.Ax45[0], 0.2, min, max);
-    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45",htitle,100,0,NBUNCH+1,100, min, max);
+    sprintf(htitle,"Run%8.3f : Raw Asymmetry X45", runinfo.RUNID);
+    GetMinMaxOption(prefix, NBUNCH, basym.Ax45[0], margin, min, max);
+    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, 100, 0, NBUNCH+1, 100, min, max);
+    DrawLine(asym_vs_bunch_x45, 0, NBUNCH, 0, 1, 1, 1);
 
-    sprintf(htitle,"Run%8.3f:Raw Asymmetry Y45",runinfo.RUNID);
-    GetMinMaxOption(prefix, NBUNCH, basym.Ay45[0], 0.2, min, max);
-    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45",htitle,100,0,NBUNCH+1,100, min, max);
-
+    sprintf(htitle,"Run%8.3f : Raw Asymmetry Y45", runinfo.RUNID);
+    GetMinMaxOption(prefix, NBUNCH, basym.Ay45[0], margin, min, max);
+    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, 100, 0, NBUNCH+1, 100, min, max);
+    DrawLine(asym_vs_bunch_y45, 0, NBUNCH, 0, 1, 1, 1);
 
     // fill bunch ID array [1 - NBUNCH], not [0 - NBUNCH-1]
     float bunch[NBUNCH], ex[NBUNCH];
@@ -1146,7 +1149,6 @@ calcBunchAsymmetry(){
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
       FillAsymmetryHistgram("x90", spin, NBUNCH, basym.Ax90[0], bunch);
       asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x90 -> SetTitle("Bunch Asymmetry X90");
       asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x90 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
@@ -1154,7 +1156,6 @@ calcBunchAsymmetry(){
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
       FillAsymmetryHistgram("x45", spin, NBUNCH, basym.Ax45[0], bunch);
       asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x45 -> SetTitle("Bunch Asymmetry X45");
       asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
@@ -1162,7 +1163,6 @@ calcBunchAsymmetry(){
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
       FillAsymmetryHistgram("y45", spin, NBUNCH, basym.Ay45[0], bunch);
       asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_y45 -> SetTitle("Bunch Asymmetry Y45");
       asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 

@@ -120,11 +120,11 @@ Root::RootHistBook(){
   // Error detectors
   ErrDet->cd();
   sprintf(htitle,"%8.3f : Bunch Asymmetry X90", runinfo.RUNID);
-  asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 50, -0.05, 0.05);
+  asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
   sprintf(htitle,"%8.3f : Bunch Asymmetry X45", runinfo.RUNID);
-  asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 50, -0.05, 0.05);
+  asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
   sprintf(htitle,"%8.3f : Bunch Asymmetry Y45", runinfo.RUNID);
-  asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 50, -0.05, 0.05);
+  asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
 
 
   return 0;
@@ -192,9 +192,9 @@ Root::CloseROOTFile(){
 
   Asymmetry->cd();
   if (asym_sinphi_fit)   asym_sinphi_fit -> Write("asym_sinphi_fit");
-  if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write("asym_vs_bunch_x45");
-  if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write("asym_vs_bunch_x90");
-  if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write("asym_vs_bunch_y45");
+  if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write();
+  if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write();
+  if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write();
 
 
 
