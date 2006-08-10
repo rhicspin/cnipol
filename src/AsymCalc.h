@@ -6,76 +6,23 @@
 #ifndef ASYM_CALC_H
 #define ASYM_CALC_H
 
-extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
-extern void HHPAK(int, float*);
-extern void HHPAKE(int, float*);
-extern void HHF1(int, float, float);
-//extern void HHKIND(int, int*, char*);
-extern float HHMAX(int);
-extern float HHSTATI(int hid, int icase, char * choice, int num);
-extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
-	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
-extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
-	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+//===========================================================================
+//                      Main End Process Routine
+//===========================================================================
+int end_process(recordConfigRhicStruct *cfginfo);
 
 
-
-
-//weighted Anaolyzing power
+//===========================================================================
+//                       Anaolyzing power
+//===========================================================================
 float WeightAnalyzingPower(int hid);
 
-// strip by strip
-float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
-float FitChi2;
+//===========================================================================
+//                              Strip by Strip
+//===========================================================================
 void CalcStripAsymmetry(float aveA_N);
 Double_t sin_phi(Double_t *x, Double_t *par);
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
-
-// bunch by bunch
-int  CumulativeAsymmetry();
-int calcBunchAsymmetry();
-TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
-int BunchAsymmetry(int, float A[], float dA[]);
-
-// print results
-void PrintWarning();
-
-
-
-
-// Return Maximum from array A[N]
-float GetMax(int N, float A[]){
-  float max = A[0];
-  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i]) ? A[i] : max;
-  return max;
-}
-
-// Return Miminum from array A[N]
-float GetMin(int N, float A[]){
-  float min = A[0];
-  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i]) ? A[i] : min;
-  return min;
-}
-
-// Return Minimum and Maximum from array A[N]
-void GetMinMax(int N, float A[], float margin, float &min, float &max){
-  min = GetMin(N,A);
-  max = GetMax(N,A);
-  min -= fabs(min)*margin;
-  max += fabs(max)*margin;
-  return ;
-}
-
-
-  
-struct BunchAsym {
-  float Ax90[2][NBUNCH];
-  float Ax45[2][NBUNCH];
-  float Ay45[2][NBUNCH];
-} basym;
-
-
-
 class AsymFit
 {
 
@@ -93,6 +40,60 @@ class AsymFit
   */
 
 };
+
+
+//===========================================================================
+//                          Bunch by Bunch
+//===========================================================================
+struct BunchAsym {
+  float Ax90[2][NBUNCH];
+  float Ax45[2][NBUNCH];
+  float Ay45[2][NBUNCH];
+} ;
+extern BunchAsym basym;
+int  CumulativeAsymmetry();
+int calcBunchAsymmetry();
+void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float bunch[]);
+TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
+int BunchAsymmetry(int, float A[], float dA[]);
+
+
+
+//===========================================================================
+//                        Result Printing
+//===========================================================================
+void PrintWarning();
+void PrintRunResults(StructHistStat hstat);
+
+
+
+//===========================================================================
+//           Some utility routines to determin histogram range
+//===========================================================================
+float GetMax(int N, float A[]);
+float GetMin(int N, float A[]);
+void GetMinMax(int N, float A[], float margin, float &min, float &max);
+void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
+
+
+  
+
+
+//===========================================================================
+//                                  HBOOK stuff
+//===========================================================================
+extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
+extern void HHPAK(int, float*);
+extern void HHPAKE(int, float*);
+extern void HHF1(int, float, float);
+//extern void HHKIND(int, int*, char*);
+extern float HHMAX(int);
+extern float HHSTATI(int hid, int icase, char * choice, int num);
+extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
+	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
+	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+
 
 
 

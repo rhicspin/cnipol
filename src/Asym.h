@@ -98,7 +98,8 @@ typedef struct {
   float MASS_DEV_ALLOWANCE;
   float MASS_CHI2_ALLOWANCE;
   float MASS_ENERGY_CORR_ALLOWANCE;
-  float BUNCH_ALLOWANCE_SIGMA;
+  float BUNCH_RATE_SIGMA_ALLOWANCE;
+  float BUNCH_ASYM_SIGMA_ALLOWANCE;
 }ErrorDetector;
 
 
