@@ -9,6 +9,10 @@
 //=================================================================//
 //                     Strip Error Detector                        //
 //=================================================================//
+int InvariantMassCorrelation(int st);
+int BananaFit();
+int StripAnomalyDetector();
+
 typedef struct {
   float allowance;
   float max;
@@ -25,25 +29,35 @@ struct StructStripCheck {
   StructInvMass dev, chi2, p1;
   StructEnergyCorr ecorr;
 } ;
-
-struct StructBunchCheck {
-  float average[1];
-  float allowance;
-} ;
-
-
-
-extern StructBunchCheck bnchchk;
 extern StructStripCheck strpchk;
 
 
-
-int InvariantMassCorrelation(int st);
-int BananaFit();
-int StripAnomalyDetector();
+//=================================================================//
+//                     Strip Error Detector                        //
+//=================================================================//
 int BunchAnomalyDetector();
+int BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]);
 int HotBunchFinder(); 
+
+
+struct StructBunch {
+  float average[1];
+  float allowance;
+};
+
+struct StructBunchCheck {
+  StructBunch rate, asym[2];
+} ;
+extern StructBunchCheck bnchchk;
+
+
+
+//=================================================================//
+//                              Misc                               //
+//=================================================================//
 int UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz);
+void DrawLine(TH1F * h, float x, float y1, int color);
+void DrawLine(TH2F * h, float x0, float x1, float y, int color);
 
 
 #endif /* ASYM_ERROR_DETECTOR_H */

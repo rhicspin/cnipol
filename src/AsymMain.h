@@ -34,7 +34,8 @@ ErrorDetector errdet = {
   0.10,         // MASS_DEV_ALLOWANCE [GeV]
   100,          // MASS_CHI2_ALLOWANCE [GeV]
   0.001,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
-  5.            // BUNCH_ALLOWANCE_SIGMA 
+  5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
+  1.            // BUNCH_ASYM_SIGMA_ALLOWANCE;
 };
 
 
@@ -54,7 +55,7 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
-  0,       // VERBOSE mode
+  1,       // VERBOSE mode
   0,       // feedback mode
   -1,      // spin_pattern
   -1,      // fill_pattern

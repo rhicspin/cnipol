@@ -43,12 +43,14 @@ TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip
 TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
 TH1F * bunch_rate;                          // Counting rate per bunch hisogram
+TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
+TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
+TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45 
+
+// Asymmetry dir
 TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
 TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
 TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
-
-
-// Asymmetry dir
 TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit 
 
 
@@ -115,6 +117,16 @@ Root::RootHistBook(){
 
   }
 
+  // Error detectors
+  ErrDet->cd();
+  sprintf(htitle,"%8.3f : Bunch Asymmetry X90", runinfo.RUNID);
+  asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 50, -0.05, 0.05);
+  sprintf(htitle,"%8.3f : Bunch Asymmetry X45", runinfo.RUNID);
+  asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 50, -0.05, 0.05);
+  sprintf(htitle,"%8.3f : Bunch Asymmetry Y45", runinfo.RUNID);
+  asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 50, -0.05, 0.05);
+
+
   return 0;
 
 }
@@ -173,12 +185,17 @@ Root::CloseROOTFile(){
   if (mass_e_correlation_strip) mass_e_correlation_strip -> Write("mass_e_correlation_strip");
   if (bunch_rate)               bunch_rate -> Write("bunch_rate");
   if (rate_vs_bunch)            rate_vs_bunch -> Write("rate_vs_bunch");
+  if (asym_bunch_x90)           asym_bunch_x90-> Write();
+  if (asym_bunch_x45)           asym_bunch_x45-> Write();
+  if (asym_bunch_y45)           asym_bunch_y45-> Write();
+
 
   Asymmetry->cd();
   if (asym_sinphi_fit)   asym_sinphi_fit -> Write("asym_sinphi_fit");
   if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write("asym_vs_bunch_x45");
   if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write("asym_vs_bunch_x90");
   if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write("asym_vs_bunch_y45");
+
 
 
   rootfile->Write();
