@@ -76,7 +76,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    if (dproc.RECONFMODE) CalcAsymmetry(anal.A_N[1]);
+    if (dproc.RECONFMODE) CalcStripAsymmetry(anal.A_N[1]);
 
     //-------------------------------------------------------
     //  Check 12C Invariant Mass Possition
@@ -1041,9 +1041,12 @@ TshiftFinder(int Mode, int FeedBackLevel){
 // Class name  : 
 // Method name : calcBunchAsymmetry
 //
-// Description : call BunchAsymmetry to calculate asymmetries bunch by bunch
-// Input       : 
-// Return      : 
+// Description : Define net TGraphErrors object asymgraph for vectors x,y,ex,ey
+//             : specifies marker color based on mode
+//             : positive spin : blue
+//             : negative spin : red
+// Input       : int Mode, int N, float x[], float y[], float ex[], float ey[]
+// Return      : TGraphErrors * asymgraph
 //
 TGraphErrors * 
 AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
@@ -1051,9 +1054,7 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
   int Color= Mode == 1 ? 4 : 2;
   TGraphErrors * asymgraph = new TGraphErrors(N, x, y, ex, ey);
   asymgraph -> SetMarkerStyle(20);
-  //  asymgraph -> SetMarkerSize(0.5);
   asymgraph -> SetMarkerColor(Color);
-
 
   return asymgraph ;
 
@@ -1064,6 +1065,7 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
 // Method name : calcBunchAsymmetry
 //
 // Description : call BunchAsymmetry to calculate asymmetries bunch by bunch
+//             : 
 // Input       : 
 // Return      : 
 //
@@ -1080,16 +1082,16 @@ calcBunchAsymmetry(){
     char htitle[100];
     float min, max;
     sprintf(htitle,"Run%8.3f:Raw Asymmetry X45",runinfo.RUNID);
-    GetMinMax(NBUNCH, basym.Ax45[0], min, max);
-    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
+    GetMinMax(NBUNCH, basym.Ax45[0], 0.2, min, max);
+    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45",htitle,100,0,NBUNCH+1,100,min*1.2,max*1.2);
 
     sprintf(htitle,"Run%8.3f:Raw Asymmetry X90",runinfo.RUNID);
-    GetMinMax(NBUNCH, basym.Ax90[0], min, max);
-    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
+    GetMinMax(NBUNCH, basym.Ax90[0], 0.2, min, max);
+    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90",htitle,100,0,NBUNCH+1,100,min*1.2,max*1.2);
 
     sprintf(htitle,"Run%8.3f:Raw Asymmetry Y45",runinfo.RUNID);
-    GetMinMax(NBUNCH, basym.Ay45[0], min, max);
-    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45",htitle,100,0,NBUNCH+1,100,min*1.1,max*1.1);
+    GetMinMax(NBUNCH, basym.Ay45[0], 0.2, min, max);
+    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45",htitle,100,0,NBUNCH+1,100,min*1.2,max*1.2);
 
 
     // index bunch array runs for 1 - NBUMCH
@@ -1129,7 +1131,7 @@ calcBunchAsymmetry(){
 
   return 0;
 
-}
+} // end-of-calcBunchAsymmetry()
 
 
 
@@ -1167,12 +1169,10 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
   }
 
   // initiarize counters
-  for (int i=0;i<NBUNCH;i++) {
-    LumiRU[NBUNCH]=LumiRD[NBUNCH]=LumiLU[NBUNCH]=LumiLD[NBUNCH]=RU[i]=RD[i]=LU[i]=LD[i]=0;
-    A[i] = dA[i] = 0;
-  }
+  for (int i=0;i<NBUNCH;i++) LumiRU[i]=LumiRD[i]=LumiLU[i]=LumiLD[i]=RU[i]=RD[i]=LU[i]=LD[i]=A[i]=dA[i]=0;
 
 
+  // Loop over bunches
   if (!error){
 
     for (int bid=0;bid<NBUNCH;bid++){
@@ -1191,15 +1191,15 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 	RD[bid] += Ncounts[Rdet[i]][bid]*((spinpat[bid]==-1)?1:0);
 	LU[bid] += Ncounts[Ldet[i]][bid]*((spinpat[bid]==1)?1:0);
 	LD[bid] += Ncounts[Ldet[i]][bid]*((spinpat[bid]==-1)?1:0);
-	if (!Mode) break;
+	if (!Mode) break; // no loop for x90 which has only 1 det involved per L/R.
       }
 
       if (spinpat[bid]==1) 
 	calcAsymmetry(RU[bid],LU[bid],LumiRU[bid],LumiLU[bid],A[bid],dA[bid]);
       if (spinpat[bid]==-1)
-	calcAsymmetry(RD[bid],LD[bid],LumiRU[bid],LumiLD[bid],A[bid],dA[bid]);
+	calcAsymmetry(RD[bid],LD[bid],LumiRD[bid],LumiLD[bid],A[bid],dA[bid]);
 
-      //      cout << "BunchAsymmetry=" << bid << " " << A[bid] << " " << dA[bid] << endl;
+      if (Flag.VERBOSE) cout << "bid=" << bid << " spin=" << spinpat[bid] << " A=" << A[bid] << " dA=" << dA[bid] << endl;
     } // end-of-for(bid)-loop
 
   }// end-of-(!error)
@@ -1212,14 +1212,14 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 
 //
 // Class name  : 
-// Method name : calcAsymmetry
+// Method name : CalcStripAsymmetry
 //
-// Description : calculate asymmetries
+// Description : calculate asymmetries strip by strip
 // Input       : aveA_N
 // Return      : 
 //
 void
-CalcAsymmetry(float aveA_N){
+CalcStripAsymmetry(float aveA_N){
 
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
