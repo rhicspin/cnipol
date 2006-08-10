@@ -21,36 +21,48 @@ extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par,
 
 
 
+//weighted Anaolyzing power
+float WeightAnalyzingPower(int hid);
+
+// strip by strip
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 float FitChi2;
-void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
+void CalcStripAsymmetry(float aveA_N);
 Double_t sin_phi(Double_t *x, Double_t *par);
+void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 
+// bunch by bunch
 int  CumulativeAsymmetry();
 int calcBunchAsymmetry();
 TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 int BunchAsymmetry(int, float A[], float dA[]);
-float WeightAnalyzingPower(int hid);
+
+// print results
 void PrintWarning();
+
+
+
 
 // Return Maximum from array A[N]
 float GetMax(int N, float A[]){
   float max = A[0];
-  for (int i=1; i<N; i++) max = max<A[i] ? A[i] : max;
+  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i]) ? A[i] : max;
   return max;
 }
 
 // Return Miminum from array A[N]
 float GetMin(int N, float A[]){
   float min = A[0];
-  for (int i=1; i<N; i++) min = min>A[i] ? A[i] : min;
+  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i]) ? A[i] : min;
   return min;
 }
 
 // Return Minimum and Maximum from array A[N]
-void GetMinMax(int N, float A[], float &min, float &max){
+void GetMinMax(int N, float A[], float margin, float &min, float &max){
   min = GetMin(N,A);
   max = GetMax(N,A);
+  min -= fabs(min)*margin;
+  max += fabs(max)*margin;
   return ;
 }
 
