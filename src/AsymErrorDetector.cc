@@ -225,7 +225,6 @@ StripAnomalyDetector(){
 
 
   // register and count suspicious strips 
-
   anal.anomaly.nstrip=0;
   for (int i=0;i<NSTRIP; i++) {
     if ((fabs(feedback.RMS[i])-strpchk.average[0]>strpchk.dev.allowance)   // large chi2 or deviation of peak position from average 
@@ -297,11 +296,11 @@ DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidt
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
 //             : registered as problematic bunch ID
-// Input       : 
+// Input       : TH1F * h1, TH2F * h2, float A[], float dA[]
 // Return      : 
 //
 int 
-BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]){
+BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
 
   TF1 * g = new TF1("g","gaus");
   g -> SetLineColor(2);
@@ -315,25 +314,75 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]){
   bnchchk.asym[0].allowance = mean - errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
   bnchchk.asym[1].allowance = mean + errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
 
-  // draw allowance lines to 1-dim histograms
-  DrawLine(h1, bnchchk.asym[0].allowance, hight, 2, 2);
-  DrawLine(h1, bnchchk.asym[1].allowance, hight, 2, 2);
+  // draw lines to mean asymmetery vs. bunch histograms
+  DrawLine(h2, -0.5, NBUNCH-0.5,  mean, 4, 4, 2);
+  DrawLine(h2, -0.5, NBUNCH-0.5, -mean, 2, 2, 2);
 
-  // draw allowance lines to asymmetery vs. bunch histograms
-  DrawLine(h2, 0, NBUNCH+1,  bnchchk.asym[0].allowance, 4, 4, 2);
-  DrawLine(h2, 0, NBUNCH+1,  bnchchk.asym[1].allowance, 4, 4, 2);
-  DrawLine(h2, 0, NBUNCH+1, -bnchchk.asym[0].allowance, 2, 2, 2);
-  DrawLine(h2, 0, NBUNCH+1, -bnchchk.asym[1].allowance, 2, 2, 2);
+  // axis titles
+  h1 -> GetYaxis() -> SetTitle("Counts devided by statistical error");
+  h1 -> GetXaxis() -> SetTitle("Raw Asymmetry");
 
 
-  // Anomaly bunch resistration
+  // local anamaly bunch array and counter
+  struct StructBUNCH {
+    float A[NBUNCH];
+    int bunch[NBUNCH];
+    int nbunch;
+    float dev;
+  } local;
+
+  // Anomaly bunch finding
+  char text[20];
+  local.nbunch=0;
   for (int bid=0;bid<NBUNCH;bid++) {
-    if ( fabs(A[bid] - mean) > errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma) {
-      anal.anomaly.bunch[anal.anomaly.nbunch] = bid + 1;
-      anal.anomaly.nbunch++;
-      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bid+1, errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
-      
-    }
+    local.bunch[bid] = -999; // default not to appear in plots
+
+    if ((fillpat[bid])&&(A[bid]!=-ASYM_DEFAULT)) {
+
+      if (spinpat[bid] == 1)  local.dev =  fabs(A[bid] - mean);  
+      if (spinpat[bid] == -1) local.dev =  fabs(A[bid] - (-1)*mean);  
+
+      if (local.dev/dA[bid] > errdet.BUNCH_ASYM_SIGMA_ALLOWANCE) {
+	
+	local.bunch[local.nbunch] = bid;
+	local.A[local.nbunch] = A[bid];
+	local.nbunch++;
+	printf(" WARNING: bunch # %d asym sigma %6.1f exeeds %6.1f limit from average\n", 
+	       bid+1, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
+
+	// comment in h2 histogram
+	sprintf(text,"%6.1f sigma", local.dev/dA[bid]);
+	TText * t = new TText(bid+2, A[bid], text);
+	h2 -> GetListOfFunctions()->Add(t);
+	
+      }
+
+    } // end-of-if(fillpat[bid])
+
+  }// end-of-for(bid) loop
+
+
+  if (local.nbunch){
+    // global registration
+    cout << "bofore registration: nbunch=" << local.bunch << endl;
+    for (int i=0; i<local.nbunch; i++) cout << local.bunch[i] << " " ;
+    cout << endl;
+    RegisterAnomaly(local.bunch, local.nbunch, anal.anomaly.bunch, anal.anomaly.nbunch,
+		    anal.anomaly.bunch, anal.anomaly.nbunch);
+    cout << "after registration: nbunch=" << anal.anomaly.nbunch << endl;
+    for (int i=0; i<anal.anomaly.nbunch; i++) cout << anal.anomaly.bunch[i] << " " ;
+    cout << endl;
+
+    // Superpose h2 histogram
+    float bindex[local.nbunch];
+    for (int i=0;i<local.nbunch;i++) bindex[i]=local.bunch[i];
+    TGraph * gr = new TGraph(local.nbunch, bindex, local.A);
+    gr -> SetMarkerStyle(24);
+    gr -> SetMarkerSize(MSIZE);
+    gr -> SetMarkerColor(3);
+
+    // append suspicious bunch in h2 hitogram
+    h2 -> GetListOfFunctions() -> Add(gr,"P");
   }
 
   return 0;
@@ -353,9 +402,13 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]){
 int 
 BunchAsymmetryAnomaly(){
 
-  BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0]);
-  BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0]);
-  BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0]);
+  printf("BunchAsymmetryAnomaly(): check for x90\n");
+  BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1]);
+  printf("BunchAsymmetryAnomaly(): check for x45\n");
+  BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1]);
+  printf("BunchAsymmetryAnomaly(): check for y45\n");
+  BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1]);
+
 
   return 0;
 
@@ -384,6 +437,10 @@ BunchAnomalyDetector(){
   // Find Hot bunches from counting rates per bunch
   HotBunchFinder();
 
+  // check unrecognized anomaly
+  UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
+		      anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+
   return 0;
 }
 
@@ -408,7 +465,7 @@ HotBunchFinder(){
   for (int bnch=0; bnch<NBUNCH; bnch++){
 
     // inistiarization
-    bindex[bnch]=bnch+1; err[bnch]=1; NBcounts[bnch]=0; 
+    bindex[bnch]=bnch; err[bnch]=1; NBcounts[bnch]=0; 
 
     // sum over detector yields
     for (int det=0; det<NDETECTOR; det++) { NBcounts[bnch] += Ncounts[det][bnch];}
@@ -429,12 +486,15 @@ HotBunchFinder(){
   }
 
   // define rate vs. bunch plot 
-  rate_vs_bunch = new TGraph(NBUNCH, bindex, NBcounts);
-  rate_vs_bunch -> SetTitle(hname);
+  ErrDet->cd();
+  TGraph * gr = new TGraph(NBUNCH, bindex, NBcounts);
+  gr -> SetMarkerSize(MSIZE);
+  gr -> SetMarkerStyle(20);
+  gr -> SetMarkerColor(4);
+  rate_vs_bunch = new TH2F("rate_vs_bunch", hname, NBUNCH, -0.5, NBUNCH+0.5, 50, min, max*1.3);
+  rate_vs_bunch -> GetListOfFunctions() -> Add(gr,"P");
   rate_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
   rate_vs_bunch -> GetYaxis()->SetTitle("Yield/Bunch");
-  rate_vs_bunch -> SetMarkerStyle(20);
-  rate_vs_bunch -> SetMarkerColor(7);
 
   // define gaussian function 
   TF1 * g1 = new TF1("g1","gaus");
@@ -445,28 +505,22 @@ HotBunchFinder(){
   
   // get mean from gaussian fit
   float ave = g1->GetParameter(1);
-  TLine * ave_l = new TLine(0, ave, NBUNCH, ave);
-  rate_vs_bunch->GetListOfFunctions()->Add(ave_l);
+  DrawLine(rate_vs_bunch, -0.5, NBUNCH+0.5, ave, 1, 1, 1);
 
   // get sigma from Gaussian fit and calculate allowance limit
   float sigma=g1->GetParameter(2);
   bnchchk.rate.allowance = ave + errdet.BUNCH_RATE_SIGMA_ALLOWANCE*sigma;
 
-  // draw lines to graph and histogram
-  TLine * allowance_l = new TLine(0, bnchchk.rate.allowance, NBUNCH, bnchchk.rate.allowance);
-  allowance_l -> SetLineStyle(2);
-  allowance_l -> SetLineColor(2);
-  rate_vs_bunch->GetListOfFunctions()->Add(allowance_l);
-
+  // draw lines to 1D and 2D histograms
+  DrawLine(rate_vs_bunch, -0.5, NBUNCH+0.5, bnchchk.rate.allowance, 2, 2, 2);
   DrawLine(bunch_rate, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
-
 
   // anomaly bunch registration
   for (int bnch=0;bnch<NBUNCH;bnch++) {
     if (NBcounts[bnch] > bnchchk.rate.allowance) {
-      anal.anomaly.bunch[anal.anomaly.nbunch] = bnch + 1;
+      anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
       anal.anomaly.nbunch++;
-      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch+1, bnchchk.rate.allowance);
+      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch, bnchchk.rate.allowance);
       
     }
   }
@@ -477,18 +531,83 @@ HotBunchFinder(){
 
 
 
+//
+// Class name  : 
+// Method name : RegisterAnomaly(float *x, int nx, int *y, int ny, int *z, int &nz)
+//
+// Description : converts float array x[] into integer and call RegisterAnomaly(int,...)
+//             : 
+// Input       : float x[], int nx, int y[], int ny,
+// Return      : result of (x[]&y[]) -> array z[], and nz
+//
+int
+RegisterAnomaly(float x[], int nx, int y[], int ny, int z[], int &nz){
+
+  int X[nx];
+  for (int i=0;i<nx;i++) X[i]=int(x[i]);
+  RegisterAnomaly(X, nx, y, ny, z, nz);
+
+  return 0;
+
+}
+
+//
+// Class name  : 
+// Method name : RegisterAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz)
+//
+// Description : Check whether anomalies are recognized or not.
+//             : Take AND of array x[] and y[], exclude double counting
+// Input       : int x[], int nx, int y[], int ny,
+// Return      : result of (x[]&y[]) -> array z[], and nz
+//
+int
+RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
+
+  // if ny=0, then copy x[] -> z[]. the main loop doesn't work for ny=0
+  if (!ny) {
+    for (int i=0;i<nx;i++) z[i]=x[i];
+    nz=nx;
+    return 0;
+  }
+
+  // main loop
+  nz=0; int J=0;
+  for(int i=0; i<nx; i++) {
+
+    for (int j=J; j<ny ; j++){
+      if (y[j]<x[i]) {
+	z[nz]=y[j]; nz++; J++; 
+      } else if (y[j]==x[i]) {
+	z[nz]=y[j]; nz++; J++; 
+	break;
+      }	else {
+	z[nz]=x[i]; nz++;
+	break;
+      }
+    } // end-of-for(j)
+
+  }//end-of-for(i)
+
+  // above loop doesn't precess the largest number in x[] or y[] array
+  if (x[nx-1]>y[ny-1]) {z[nz]=x[nx-1]; nz++;}
+  if (y[ny-1]>x[nx-1]) {z[nz]=y[ny-1]; nz++;}
+
+  return 0;
+
+}
 
 
 //
 // Class name  : 
-// Method name : UnrecognizedAnomaly(int Mode)
+// Method name : UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz){
 //
 // Description : Check whether anomalies are recognized or not.
-// Input       : 
+//             : Take AND of array x[] and y[], returns false of the tests
+// Input       : int *x, int nx, int *y, int ny,
 // Return      : unrecongnized (strip/bunch) ID in array z, and nz
 //
 int
-UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz){
+UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 
   int match[nx];
   for (int i=0;i<nx;i++) match[i]=x[i];

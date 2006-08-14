@@ -581,10 +581,10 @@ PrintWarning(){
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
     printf(" Number of Problemeatic Bunches      : %d \n", anal.anomaly.nbunch);
     printf(" Problemeatic Bunch ID's             : ");
-    for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]+1) ; 
+    for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]) ; 
     printf("\n");
-    printf(" Unrecognized Problematic Strips     : ");
-    for (int i=0; i<anal.unrecog.anomaly.nbunch; i++) printf("%d ",anal.unrecog.anomaly.bunch[i]+1) ; 
+    printf(" Unrecognized Problematic Bunches    : ");
+    for (int i=0; i<anal.unrecog.anomaly.nbunch; i++) printf("%d ",anal.unrecog.anomaly.bunch[i]) ; 
     printf("\n");
     printf("===> Invariant Mass / strip \n");
     printf(" Maximum Mass Deviation [GeV]        : %6.2f   (%d)\n", strpchk.dev.max,  strpchk.dev.st);
@@ -1046,25 +1046,30 @@ TshiftFinder(int Mode, int FeedBackLevel){
 // Description : Fill out bunch by bunch Asymmetry Histograms
 //             : asym_bunch_x90, asym_bunch_x45, asym_bunch_y45
 //             : These histograms are then applied Gaussian fit to check anomaly bunches
-// Input       : char Mode[], int sign, int N, float A[], float bunch[]
+// Input       : char Mode[], int sign, int N, float A[], float dA[], float bunch[]
 // Return      : 
 //
 void
-FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float bunch[]){
+FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]){
 
+  float a[N];
   for (int i=0; i<N; i++) { // loop for bunch number
 
     // flip the asymmetry sign for spin=-1 to be consistent with spin=+1
-    A[i] *= sign; 
+    a[i] = A[i]*sign; 
 
-    // process only active bunches
-    if (bunch[i] != -1){
-      if (Mode=="x90") asym_bunch_x90->Fill(A[i]);
-      if (Mode=="x45") asym_bunch_x45->Fill(A[i]);
-      if (Mode=="y45") asym_bunch_y45->Fill(A[i]);
-    }
+    if ((fillpat[i])&&(dA[i])){
 
-  }
+      // process only active bunches
+      if (bunch[i] != -1){
+	if (Mode=="x90") asym_bunch_x90->Fill(a[i],1/dA[i]); //weighted by error
+	if (Mode=="x45") asym_bunch_x45->Fill(a[i],1/dA[i]);
+	if (Mode=="y45") asym_bunch_y45->Fill(a[i],1/dA[i]);
+      }
+
+    }  //end-of-if(fillpat)
+
+  } // end-of-for(i->NBUNCH) loop
 
   return ;
 
@@ -1088,7 +1093,7 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
   int Color= Mode == 1 ? 4 : 2;
   TGraphErrors * asymgraph = new TGraphErrors(N, x, y, ex, ey);
   asymgraph -> SetMarkerStyle(20);
-  asymgraph -> SetMarkerSize(1.2);
+  asymgraph -> SetMarkerSize(MSIZE);
   asymgraph -> SetMarkerColor(Color);
 
   return asymgraph ;
@@ -1121,47 +1126,51 @@ calcBunchAsymmetry(){
     float prefix=0.028;
     sprintf(htitle,"Run%8.3f : Raw Asymmetry X90", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ax90[0], margin, min, max);
-    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, 100, 0, NBUNCH+1, 100, min, max);
-    DrawLine(asym_vs_bunch_x90, 0, NBUNCH, 0, 1, 1, 1);
+    asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+    DrawLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
     sprintf(htitle,"Run%8.3f : Raw Asymmetry X45", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ax45[0], margin, min, max);
-    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, 100, 0, NBUNCH+1, 100, min, max);
-    DrawLine(asym_vs_bunch_x45, 0, NBUNCH, 0, 1, 1, 1);
+    asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+    asym_vs_bunch_x45 -> GetYaxis() -> SetTitle("Counts weighted by error");
+    asym_vs_bunch_x45 -> GetXaxis() -> SetTitle("Raw Asymmetry");
+    DrawLine(asym_vs_bunch_x45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
     sprintf(htitle,"Run%8.3f : Raw Asymmetry Y45", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ay45[0], margin, min, max);
-    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, 100, 0, NBUNCH+1, 100, min, max);
-    DrawLine(asym_vs_bunch_y45, 0, NBUNCH, 0, 1, 1, 1);
+    asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+    asym_vs_bunch_y45 -> GetYaxis() -> SetTitle("Counts weighted by error");
+    asym_vs_bunch_y45 -> GetXaxis() -> SetTitle("Raw Asymmetry");
+    DrawLine(asym_vs_bunch_y45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
     // fill bunch ID array [1 - NBUNCH], not [0 - NBUNCH-1]
     float bunch[NBUNCH], ex[NBUNCH];
-    for (int bid=0; bid<NBUNCH; bid++) { ex[bid]=0; bunch[bid]= bid+1; }
+    for (int bid=0; bid<NBUNCH; bid++) { ex[bid]=0; bunch[bid]= bid; }
 
     // Superpose Positive/Negative Bunches arrays into TH2F histograms defined above
     TGraphErrors * asymgraph ;
     for (int spin=1; spin>=-1; spin-=2 ) {
 
       // Selectively disable bunch ID by matching spin pattern
-      for (int bid=0; bid<NBUNCH; bid++) { bunch[bid]= spinpat[bid] == spin ? bid+1 : -1 ;}
+      for (int bid=0; bid<NBUNCH; bid++) { bunch[bid]= spinpat[bid] == spin ? bid : -1 ;}
 
       // X90 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
-      FillAsymmetryHistgram("x90", spin, NBUNCH, basym.Ax90[0], bunch);
+      FillAsymmetryHistgram("x90", spin, NBUNCH, basym.Ax90[0], basym.Ax90[1], bunch);
       asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x90 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // X45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
-      FillAsymmetryHistgram("x45", spin, NBUNCH, basym.Ax45[0], bunch);
+      FillAsymmetryHistgram("x45", spin, NBUNCH, basym.Ax45[0], basym.Ax45[1], bunch);
       asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // Y45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
-      FillAsymmetryHistgram("y45", spin, NBUNCH, basym.Ay45[0], bunch);
+      FillAsymmetryHistgram("y45", spin, NBUNCH, basym.Ay45[0], basym.Ay45[1], bunch);
       asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
@@ -1208,8 +1217,10 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
   long int LumiR = 0;   long int LumiL = 0;
   for (int i=0;i<2;i++) { // run for 2 for X45 and Y45
     for (int bid=0;bid<NBUNCH;bid++) {
-      LumiR += Ncounts[Rdet[i]][bid] ; 
-      LumiL += Ncounts[Ldet[i]][bid] ;
+      if (fillpat[bid]){
+	LumiR += Ncounts[Rdet[i]][bid] ; 
+	LumiL += Ncounts[Ldet[i]][bid] ;
+      }
     }
     if (!Mode) break; // no R/L detector loop for x90
   }
@@ -1218,14 +1229,18 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
   // Main bunch loop to calculate asymmetry bunch by bunch
   for (int bid=0;bid<NBUNCH;bid++){
 
-    // Take sum of Up/Down for Right and Left detectors
-    int R = 0; int L = 0; A[bid] = dA[bid] = 0;
-    for (int i=0; i<2; i++) {
-      R += Ncounts[Rdet[i]][bid];
-      L += Ncounts[Ldet[i]][bid];
-      if (!Mode) break; // no detector loop for X90
-    }
-    calcAsymmetry(R,L,LumiR,LumiL,A[bid],dA[bid]);
+    int R = 0; int L = 0; A[bid] = ASYM_DEFAULT ; dA[bid] = 0;
+    if (fillpat[bid]){
+      // Take sum of Up/Down for Right and Left detectors
+      for (int i=0; i<2; i++) {
+	R += Ncounts[Rdet[i]][bid];
+	L += Ncounts[Ldet[i]][bid];
+	if (!Mode) break; // no detector loop for X90
+      }
+
+      calcAsymmetry(R,L,LumiR,LumiL,A[bid],dA[bid]);
+
+    }// end-of-if(fillpat)
 
   } // end-of-bid loop
 
@@ -1429,14 +1444,14 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 // Return Maximum from array A[N]
 float GetMax(int N, float A[]){
   float max = A[0];
-  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i]) ? A[i] : max;
+  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=-999) ? A[i] : max;
   return max;
 }
 
 // Return Miminum from array A[N]
 float GetMin(int N, float A[]){
   float min = A[0];
-  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i]) ? A[i] : min;
+  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i])&&(A[i]!=-999) ? A[i] : min;
   return min;
 }
 
