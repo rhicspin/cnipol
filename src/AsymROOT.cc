@@ -21,6 +21,7 @@
 
 // Direcotories
 TDirectory * Kinema;
+TDirectory * Bunch;
 TDirectory * ErrDet;
 TDirectory * Asymmetry;
 
@@ -37,11 +38,14 @@ TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
 TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 
+// Bunch Distribution
+TH1F * bunch_dist;                  // counts per bunch
+
 // ErrDet dir
 TGraphErrors * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip 
 TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
-TGraph * rate_vs_bunch;                     // Counting rate vs. bunch
+TH2F * rate_vs_bunch;                       // Counting rate vs. bunch
 TH1F * bunch_rate;                          // Counting rate per bunch hisogram
 TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
 TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
@@ -70,6 +74,7 @@ Root::RootFile(char *filename){
 
   // directory structure
   Kinema    = rootfile->mkdir("Kinema");
+  Bunch     = rootfile->mkdir("Bunch");
   ErrDet    = rootfile->mkdir("ErrDet");
   Asymmetry = rootfile->mkdir("Asymmetry");
 
@@ -98,7 +103,6 @@ Root::RootHistBook(){
   Kinema->cd();
   for (int i=0; i<TOT_WFD_CH; i++) {
 
-
     sprintf(hname,"t_vs_e_st%d",i);
     sprintf(htitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
@@ -116,6 +120,12 @@ Root::RootHistBook(){
     mass_vs_t[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
 
   }
+
+  Bunch->cd();
+  sprintf(htitle,"%8.3f : Counts per Bunch ", runinfo.RUNID);
+  bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+  bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
+  bunch_dist -> GetYaxis() -> SetTitle("Counts");
 
   // Error detectors
   ErrDet->cd();
@@ -184,7 +194,7 @@ Root::CloseROOTFile(){
   if (mass_chi2_vs_strip)       mass_chi2_vs_strip -> Write("mass_chi2_vs_strip");
   if (mass_e_correlation_strip) mass_e_correlation_strip -> Write("mass_e_correlation_strip");
   if (bunch_rate)               bunch_rate -> Write("bunch_rate");
-  if (rate_vs_bunch)            rate_vs_bunch -> Write("rate_vs_bunch");
+  if (rate_vs_bunch)            rate_vs_bunch -> Write();
   if (asym_bunch_x90)           asym_bunch_x90-> Write();
   if (asym_bunch_x45)           asym_bunch_x45-> Write();
   if (asym_bunch_y45)           asym_bunch_y45-> Write();

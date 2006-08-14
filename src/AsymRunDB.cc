@@ -216,7 +216,7 @@ BunchHandler(int bunch, int flag){
   static int Initiarize = 1;
   if (Initiarize) for (int i=0; i<NBUNCH; i++) ProcessBunch[i]=0;
 
-  ProcessBunch[bunch-1] += flag;
+  ProcessBunch[bunch] += flag;
 
   Initiarize=0;
 
@@ -380,7 +380,7 @@ printConfig(recordConfigRhicStruct *cfginfo){
     fprintf(stdout,"#DisableBunch =   %d\n", runinfo.NDisableBunch);
     if (runinfo.NDisableBunch){
       fprintf(stdout," DisableBunch = ");
-      for (int i=0;i<runinfo.NDisableBunch;i++) printf("%d ",runinfo.DisableBunch[i]+1);
+      for (int i=0;i<runinfo.NDisableBunch;i++) printf("%d ",runinfo.DisableBunch[i]);
       printf("\n");
     }
 

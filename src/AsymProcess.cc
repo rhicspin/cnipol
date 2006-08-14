@@ -134,7 +134,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
     //------------------------------------------------------------------//
     // fill profile histograms at the 1st visit
     if (Nevtot==1) {
-        
+
         // Wall Current Monitor Operation
       average.total   = 0;
       average.counter = 0;
@@ -217,7 +217,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         
         // bunch distribution
 	HHF1(10000,(float)event->bid,1.);
-
+	bunch_dist -> Fill(event->bid);
         
         // ========================================
         //              Integral   
