@@ -6,6 +6,9 @@
 #ifndef ASYM_CALC_H
 #define ASYM_CALC_H
 
+const int ASYM_DEFAULT=-999;
+extern const int ASYM_DEFAULT;
+
 //===========================================================================
 //                      Main End Process Routine
 //===========================================================================
@@ -53,7 +56,7 @@ struct BunchAsym {
 extern BunchAsym basym;
 int  CumulativeAsymmetry();
 int calcBunchAsymmetry();
-void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float bunch[]);
+void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 int BunchAsymmetry(int, float A[], float dA[]);
 
