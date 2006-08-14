@@ -351,7 +351,7 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
 	       bid+1, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
 
 	// comment in h2 histogram
-	sprintf(text,"%6.1f sigma", local.dev/dA[bid]);
+	sprintf(text,"%6.1f sigma (%d)", local.dev/dA[bid],bid);
 	TText * t = new TText(bid+2, A[bid], text);
 	h2 -> GetListOfFunctions()->Add(t);
 	
@@ -516,15 +516,22 @@ HotBunchFinder(){
   DrawLine(bunch_rate, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
 
   // anomaly bunch registration
+  char text[16]; 
   for (int bnch=0;bnch<NBUNCH;bnch++) {
     if (NBcounts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
       anal.anomaly.nbunch++;
       printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch, bnchchk.rate.allowance);
       
+      // comment in h2 histogram
+      sprintf(text,"Bunch %d",bnch);
+      TText * t = new TText(bnch+2, NBcounts[bnch], text);
+      rate_vs_bunch -> GetListOfFunctions()->Add(t);
+
     }
   }
 
+	
 
   return 0;
 }
