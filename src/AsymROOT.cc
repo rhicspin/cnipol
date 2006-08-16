@@ -25,6 +25,7 @@ TDirectory * Bunch;
 TDirectory * ErrDet;
 TDirectory * Asymmetry;
 
+
 //
 //  Histogram Definitions 
 //
@@ -37,14 +38,16 @@ TH2F * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o c
 TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
+TF1  * banana_cut_l[TOT_WFD_CH];    // banana cut low 
+TF1  * banana_cut_h[TOT_WFD_CH];    // banana cut high
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
 
 // ErrDet dir
-TGraphErrors * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
-TGraphErrors * mass_chi2_vs_strip;          // Mass sigma width vs. strip 
-TGraphErrors * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
+TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
+TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TH2F * rate_vs_bunch;                       // Counting rate vs. bunch
 TH1F * bunch_rate;                          // Counting rate per bunch hisogram
 TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
@@ -55,7 +58,7 @@ TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45
 TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
 TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
 TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
-TGraphErrors * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit 
+TH2F * asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
 
 
 //
@@ -77,8 +80,6 @@ Root::RootFile(char *filename){
   Bunch     = rootfile->mkdir("Bunch");
   ErrDet    = rootfile->mkdir("ErrDet");
   Asymmetry = rootfile->mkdir("Asymmetry");
-
-
 
   return 0;
 
@@ -142,6 +143,27 @@ Root::RootHistBook(){
 }
 
 
+//
+// Class name  : Root
+// Method name : RootFuncBook()
+//
+// Description : Book ROOT Functions and Histograms using Feedback infomations
+//             : This routine shuould be called after Feedback operation
+// Input       : 
+// Return      : 
+//
+int 
+Root::RootHistBook2(){
+
+
+  //  for (int i=0;i<NSTRIP; i++) {
+    
+
+  return 0;
+
+}
+
+
 
 //
 // Class name  : Root
@@ -179,7 +201,7 @@ Root::DeleteHistogram(){
 // Class name  : Root
 // Method name : RootFile(char * filename)
 //
-// Description : Write out memory and dump histogram before closing the rootfile
+// Description : Write out objects in memory and dump in rootfile before closing it
 //             : 
 // Input       : 
 // Return      : 
@@ -189,11 +211,12 @@ Root::CloseROOTFile(){
   
   
   // Write out memory before closing
+  /*
   ErrDet->cd();
-  if (mass_sigma_vs_strip)      mass_sigma_vs_strip -> Write("mass_sigma_vs_strip");
-  if (mass_chi2_vs_strip)       mass_chi2_vs_strip -> Write("mass_chi2_vs_strip");
-  if (mass_e_correlation_strip) mass_e_correlation_strip -> Write("mass_e_correlation_strip");
-  if (bunch_rate)               bunch_rate -> Write("bunch_rate");
+  if (mass_sigma_vs_strip)      mass_sigma_vs_strip      -> Write();
+  if (mass_chi2_vs_strip)       mass_chi2_vs_strip       -> Write();
+  if (mass_e_correlation_strip) mass_e_correlation_strip -> Write();
+  if (bunch_rate)               bunch_rate    -> Write();
   if (rate_vs_bunch)            rate_vs_bunch -> Write();
   if (asym_bunch_x90)           asym_bunch_x90-> Write();
   if (asym_bunch_x45)           asym_bunch_x45-> Write();
@@ -201,12 +224,12 @@ Root::CloseROOTFile(){
 
 
   Asymmetry->cd();
-  if (asym_sinphi_fit)   asym_sinphi_fit -> Write("asym_sinphi_fit");
+  if (asym_sinphi_fit)   asym_sinphi_fit   -> Write();
   if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write();
   if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write();
   if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write();
 
-
+  */
 
   rootfile->Write();
 

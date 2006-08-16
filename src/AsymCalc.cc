@@ -78,17 +78,19 @@ int end_process(recordConfigRhicStruct *cfginfo)
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
     if (dproc.RECONFMODE) CalcStripAsymmetry(anal.A_N[1]);
+    cout << "finish CalcStripAsymm()" << endl;
 
     //-------------------------------------------------------
     //  Check 12C Invariant Mass Possition
     //-------------------------------------------------------
-    //TshiftFinder(Flag.feedback, 2);
+    TshiftFinder(Flag.feedback, 2);
 
 
     //-------------------------------------------------------
     // Specific Luminosity 
     //-------------------------------------------------------
     SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
+
 
   }//end-of-if(!dproc.DMODE)
 
@@ -955,6 +957,8 @@ TshiftFinder(int Mode, int FeedBackLevel){
   float chi2, hmax;
   float mdev,adev;
   float ex[NSTRIP];
+  char htitle[50];
+  TGraphErrors * tg;
 
   for (int st=0; st<NSTRIP; st++){
     feedback.strip[st]=st+1;
@@ -1001,25 +1005,28 @@ TshiftFinder(int Mode, int FeedBackLevel){
   } else {
     
     // RMS width mapping of 12C mass peak
-    mass_sigma_vs_strip = new TGraphErrors(NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
+    float min,max;
+    float margin=0.2;
+    GetMinMax(NSTRIP, feedback.RMS, margin, min, max);
+    sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID); 
+    mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
+    tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
+    mass_sigma_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
     mass_sigma_vs_strip -> SetTitle("Mass sigma vs. strip");
-    mass_sigma_vs_strip -> SetMarkerStyle(20);
-    mass_sigma_vs_strip -> SetMarkerSize(1.5);
-    mass_sigma_vs_strip -> SetMarkerColor(7);
-    mass_sigma_vs_strip -> SetDrawOption("P");
     mass_sigma_vs_strip -> GetYaxis() -> SetTitle("RMS Width of 12C Mass Peak[GeV]");
     mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
     // Chi2 mapping of Gaussian fit on 12C mass peak
-    mass_chi2_vs_strip = new TGraphErrors(NSTRIP, feedback.strip, feedback.chi2, ex, ex);
+    sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass chi2 vs. strip",runinfo.RUNID); 
+    GetMinMax(NSTRIP, feedback.chi2, margin, min, max);
+    mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
+    tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
+    mass_chi2_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
     mass_chi2_vs_strip -> SetTitle("Gauss Fit Mass chi2 vs. strip");
-    mass_chi2_vs_strip -> SetMarkerStyle(20);
-    mass_chi2_vs_strip -> SetMarkerSize(1.5);
-    mass_chi2_vs_strip -> SetMarkerColor(7);
-    mass_chi2_vs_strip -> SetDrawOption("P");
     mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
     mass_chi2_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
+    // Call strip anomaly detector routine
     StripAnomalyDetector();
     
   }
@@ -1322,8 +1329,6 @@ CalcStripAsymmetry(float aveA_N){
       Pt[i]  = RawP[i] / sin(-phit[i]);
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
-
-
     } // end-of-i-loop
 
 
@@ -1398,19 +1403,21 @@ void
 AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
 		   Float_t *P, Float_t *dphi, Float_t &chi2dof)
 {
+
   
+  char htitle[100];
   float dx[NSTRIP];
   for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
 
-  asym_sinphi_fit = new TGraphErrors(NSTRIP, phi, RawP, dx, dRawP);
-  asym_sinphi_fit->SetTitle("sin(phi) fit");
-  asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
-  asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry * A_N [%]");
-  asym_sinphi_fit->SetMarkerStyle(20);
-  asym_sinphi_fit->SetMarkerSize(1.5);
-  asym_sinphi_fit->SetLineWidth(2);
-  asym_sinphi_fit->SetMarkerColor(2);
-  asym_sinphi_fit->SetDrawOption("P");
+  // define TH2D sin(phi) histogram
+  Asymmetry->cd();
+  float min, max, prefix, margin; prefix=margin=0.3;
+  GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
+  sprintf(htitle,"Run%8.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+  asym_sinphi_fit   =  new TH2F("asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
+  asym_sinphi_fit   -> GetXaxis()->SetTitle("phi [deg.]");
+  asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry * A_N [%]");
+  DrawLine(asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
 
   // define sin(phi) fit function & initialize parmaeters
   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
@@ -1420,20 +1427,29 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   func -> SetParNames("P","dPhi");
   func -> SetLineColor(2);
 
-  TText * txt = new TText(1,1,"sin(phi) fit");
-  asym_sinphi_fit->GetListOfFunctions()->Add(txt);
+
+  // define TGraphError obect for fitting
+  TGraphErrors * tg =  AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
 
   // Perform sin(phi) fit
-  asym_sinphi_fit -> Fit("sin_phi","R");
+  tg -> Fit("sin_phi","R");
+  
+  // Dump TGraphError obect to TH2D histogram
+  asym_sinphi_fit   -> GetListOfFunctions() -> Add(tg,"p");
+
     
   // Get fitting results
   P[0] = func->GetParameter(0);
   P[1] = func->GetParError(0);
   dphi[0] = func->GetParameter(1);
   dphi[1] = func->GetParError(1);
-
-  // calculate chi2
   chi2dof = func->GetChisquare()/func->GetNDF();
+
+  // Write out fitting results on plot
+  char text[50];
+  sprintf(text,"%7.2f * sin(phi+%5.2f)",P[0],dphi[0]);
+  TText * txt = new TText(0.5,max*0.8,text);
+  asym_sinphi_fit -> GetListOfFunctions() -> Add(txt);
 
   return ;
 
