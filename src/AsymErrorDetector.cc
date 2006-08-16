@@ -80,23 +80,23 @@ InvariantMassCorrelation(int st){
   hslice_0->Delete(); hslice_2->Delete(); hslice_chi2->Delete();
 
   // Make graph of p1 paramter as a function of strip number when strip number is the last one
+  
   if (st==NSTRIP-1) {
     float strip[NSTRIP],ex[NSTRIP];
     for (int k=0;k<NSTRIP;k++) {strip[k]=k+1;ex[k]=0;}
 
-    mass_e_correlation_strip = new TGraphErrors(NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
+
+    float min,max;
+    float margin=0.2;
+    GetMinMax(NBUNCH, strpchk.ecorr.p[1], margin, min, max);
     sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
-    mass_e_correlation_strip -> SetTitle(htitle);
+    mass_e_correlation_strip = new TH2F("mass_e_corrlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
+    TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
+    mass_e_correlation_strip -> GetListOfFunctions() -> Add(tg,"p");
     mass_e_correlation_strip -> GetXaxis()->SetTitle("Strip Number");
     mass_e_correlation_strip -> GetYaxis()->SetTitle("slope [GeV/keV]");
-    mass_e_correlation_strip -> SetMarkerStyle(20);
-    mass_e_correlation_strip -> SetMarkerColor(2);
-    TLine * lp = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
-    TLine * ln = new TLine(0, strpchk.p1.allowance, NSTRIP+1, strpchk.p1.allowance);
-    lp -> SetLineStyle(2);
-    ln -> SetLineStyle(2);
-    mass_e_correlation_strip -> GetListOfFunctions()->Add(lp);
-    mass_e_correlation_strip -> GetListOfFunctions()->Add(ln);
+    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, strpchk.p1.allowance, 2, 2, 2); 
+    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, -strpchk.p1.allowance, 2, 2, 2); 
 
   }
 
@@ -118,7 +118,11 @@ InvariantMassCorrelation(int st){
 void 
 BananaFit(int st){
 
-  TF1 * functof = new TF1("functof", "1459.43/sqrt(x)",200,1500);
+  char f[50];
+  sprintf(f,"%8.3f/sqrt(x)",runconst.E2T);
+  TF1 * functof = new TF1("functof", f,200,1500);
+  functof->SetLineColor(2);
+  functof->SetLineWidth(4);
 
   char hname[100];
   sprintf(hname,"t_vs_e_st%d",st);
@@ -149,21 +153,25 @@ BananaFit(int st){
 // Class name  : 
 // Method name : StripAnomaryDetector()
 //
-// Description : find suspicious strips
+// Description : find suspicious strips through folllowing three checks
+//             : 1. Invariant Mass vs. Energy Correlation
+//             : 2. Masimum deviation of invariant mass peak from 12Mass
+//             : 3. Chi2 of Gaussian Fit on Invariant mass
 // Input       : 
 // Return      : 
 //
 int
 StripAnomalyDetector(){
 
+  // Errror allowance
+  strpchk.p1.allowance   = errdet.MASS_ENERGY_CORR_ALLOWANCE;
+  strpchk.dev.allowance  = errdet.MASS_DEV_ALLOWANCE;
+  strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
 
   int counter=0;
   float sigma=0;
   strpchk.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
-  TLine * strpave = new TLine(-0.5,strpchk.average[0],NSTRIP+0.5,strpchk.average[0]);
-  strpave -> SetLineStyle(1);
-  strpave -> SetLineColor(4);
-  mass_sigma_vs_strip -> GetListOfFunctions() -> Add(strpave);
+  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.average[0], 1, 1, 2);
 
   
   TF1 *f1 = new TF1("f1","pol1",0,1000);
@@ -175,7 +183,7 @@ StripAnomalyDetector(){
     printf("Anomary Check for strip=%d ...\r",i);
 
     // t vs. Energy (this routine is incomplete)
-    //    BananaFit(i);
+    //  BananaFit(i);
 
     // MASS vs. Energy correlation
     InvariantMassCorrelation(i);
@@ -207,21 +215,12 @@ StripAnomalyDetector(){
   }
   sigma=sqrt(sigma)/counter; 
 
-  strpchk.p1.allowance   = errdet.MASS_ENERGY_CORR_ALLOWANCE;
-  strpchk.dev.allowance  = errdet.MASS_DEV_ALLOWANCE;
-  strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
-  float devlimit=strpchk.dev.allowance+strpchk.average[0];
-  TLine * strpdev = new TLine(-0.5, devlimit, NSTRIP+0.5, devlimit);
-  strpdev -> SetLineStyle(2);
-  strpdev -> SetLineColor(2);
-  mass_sigma_vs_strip -> GetListOfFunctions() -> Add(strpdev);
 
+  // Draw lines to objects
+  float devlimit=strpchk.dev.allowance+strpchk.average[0];
+  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, devlimit, 2, 2, 2);
   float chi2limit={strpchk.chi2.allowance};
-  TLine * strpchi2 = new TLine(-0.5, chi2limit, NSTRIP+0.5, chi2limit);
-  strpchi2 -> SetLineStyle(2);
-  strpchi2 -> SetLineColor(2);
-  strpchi2 -> SetLineWidth(5);
-  mass_chi2_vs_strip -> GetListOfFunctions() -> Add(strpchi2);
+  DrawLine(mass_chi2_vs_strip, 0, NSTRIP+1, chi2limit, 2, 2, 2);
 
 
   // register and count suspicious strips 
