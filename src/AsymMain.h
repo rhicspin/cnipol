@@ -21,6 +21,7 @@ datprocStruct dproc = {
     0,          // RAMPMODE
     0,          // STUDYMODE
     3,          // MassSigma banana curve cut within <MassSigma> away from the 12C mass
+    2,          // MassSigma banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
     1.5e6,      // 1-sigma of 12C mass peak => 1.5e6 [keV] 
     0,          // Time shift in [ns]
     0,          // Time shift in [ns] for injection w.r.t. flattop

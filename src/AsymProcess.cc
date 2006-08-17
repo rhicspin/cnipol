@@ -198,6 +198,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
     } // end-of-if(Nevent==1)
     
 
+
+    // =================================================================================//
+    //                        Main Process Routine event by event                       //
+    // =================================================================================//
+
     // TDC Dists without Cut
     HHF1(11200+st+1, (float)event->tdc, 1.);
 
@@ -239,7 +244,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // ========================================
 
         // Energy corrected with Dead layer info (keV)
-        float e, e_int;
+        float e, e_int, sqrt_e;
 
         // energy deposit on Si strip
         float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
@@ -249,6 +254,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry 
         e = ekin(edepo, cfginfo->data.chan[st].dwidth);
         e_int = ekin(edepo_int, cfginfo->data.chan[st].dwidth);
+	sqrt_e = sqrt(e);
 
         /*
         e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef * 
@@ -283,7 +289,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         } else if (dproc.ZMODE == 0) {   // normal runs
 
             t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 
-                - dproc.tshift - feedback.tedev[st]/sqrt(e); 
+                - dproc.tshift - feedback.tedev[st]/sqrt_e; 
 
         } else  { 
             
@@ -292,12 +298,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         }        
 	
 
-        delt = t - runconst.E2T/sqrt(e);  
+        delt = t - runconst.E2T/sqrt_e;  
 
         // ========================================
         //              Invariant Mass
         // ========================================
-
 	Mass = t*t*e*runconst.T2M * k2G;
 
         // Mass mode
@@ -310,7 +315,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         
         // for T0 (cable length dependence)
         if ((dproc.TMODE == 1)&&(edepo!=0.)){
-            HHF2(12100+st+1, (float)(1./sqrt(e)), t, 1.);
+            HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
         }
         
         // Banana Plots (E-T)
@@ -395,8 +400,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
               (delt < (float)(dproc.widthu) )&&
               (dproc.CBANANA==1)) 
 	     ||
-	     ((fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e)) 
-	      && (dproc.CBANANA==2))
+	     ((fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e) 
+	       && (dproc.CBANANA==2))
 	     ){
 
 	    // -t dependence
@@ -493,9 +498,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 		HHF1(38060, time, 1);
 
 		// Disable some detectors
-		if (!DisabledDet(st/12)) NStrip[spbit][st]++;
+		if (!DisabledDet(st/12)) {
+		  cntr.reg.NStrip[spbit][st]++;
+		  if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e) 
+		    cntr.alt.NStrip[spbit][st]++;
+		}
 
-                //lcounts[(int)event->bid][(int)(st/12)][event->gCC]++;
                 
                 // Ramp measurements binning
                 // 20 Hz delimiters

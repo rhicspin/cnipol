@@ -85,6 +85,7 @@ typedef struct {
     int RAMPMODE;      // if 1 prepare the histograms for ramp measurement
     int STUDYMODE;     // if 1 study mode
   float MassSigma;     // banana curve cut within <MassSigma> away from the 12C mass
+  float MassSigmaAlt;  // banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
   float OneSigma;      // 1-sigma of 12C mass distribution in [keV]
   float tshift;        // time shift in [ns]
   float inj_tshift;    // time shift in [ns] for injection w.r.t. flattop
@@ -239,8 +240,13 @@ typedef struct {
 
 
 typedef struct {
-    long int revolution;
-    long int tgtMotion;
+  long int NStrip[3][NSTRIP];    // strip counters for 3 different spin states
+} StructStripCounter;
+
+typedef struct {
+  long int revolution;
+  long int tgtMotion;
+  StructStripCounter reg, alt;
 } StructCounter;
 
 

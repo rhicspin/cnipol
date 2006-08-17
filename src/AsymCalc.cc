@@ -548,8 +548,8 @@ CumulativeAsymmetry(){
     HHPAK(33020, (float*)Ntotal);
 
     // Spin Sorted Strip Distribution  
-    HHPAK(36000, (float*)NStrip[0]);
-    HHPAK(36100, (float*)NStrip[1]);
+    HHPAK(36000, (float*)cntr.reg.NStrip[0]);
+    HHPAK(36100, (float*)cntr.reg.NStrip[1]);
 
 
     return 0;
@@ -1289,7 +1289,7 @@ CalcStripAsymmetry(float aveA_N){
 
 	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
 	if (!ExclusionList(i,j,runinfo.RHICBeam)){
-	  for (int k=0; k<=1; k++) LumiSum[k][i]+=NStrip[k][j];
+	  for (int k=0; k<=1; k++) LumiSum[k][i]+=cntr.reg.NStrip[k][j];
 	}
 
       } // end-of-j-loop. 
@@ -1298,8 +1298,8 @@ CalcStripAsymmetry(float aveA_N){
       // Luminosity Ratio
       LumiRatio[i] = (float)LumiSum[0][i]/(float)LumiSum[1][i];
       // Calculate Raw Asymmetries for strip-i
-      if ((LumiSum[1][i]) && ((NStrip[0][i]+NStrip[1][i])))
-	calcAsymmetry(NStrip[0][i], NStrip[1][i], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
+      if ((LumiSum[1][i]) && ((cntr.reg.NStrip[0][i]+cntr.reg.NStrip[1][i])))
+	calcAsymmetry(cntr.reg.NStrip[0][i], cntr.reg.NStrip[1][i], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
 
       // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
       // Cannot accomomdate large entry.
