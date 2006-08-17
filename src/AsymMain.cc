@@ -292,11 +292,6 @@ int main (int argc, char *argv[]){
       Flag.feedback=0;
     }
 
-    // ---------------------------------------------------- // 
-    //   Root Histogram Booking using feedback results      //
-    // ---------------------------------------------------- // 
-    rt.RootHistBook2();
-
 
     // ---------------------------------------------------- // 
     //                       Main Loop                      //
