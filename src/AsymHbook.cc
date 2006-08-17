@@ -167,7 +167,6 @@ float pawc_[NWORDS_PAWC];
 //  36100     : strip dists for Down spin
 //  36210     : raw asymmetry vs. strip#
 //  36220     : raw asymmetry vs. phi
-//  36230     : raw polarization vs. phi
 //  36240     : polarization vs. strip#
 //  36250     : polarization vs. phi
 //  37000+TgtIndex  : X90 phys(0), acpt(10), lumi(20)  
@@ -467,7 +466,6 @@ int hist_book(char *filename){
     // strip-by-strp based asymmetries and polarizations
     HHBOOK1(36210, "Raw Asymmetry vs. Strip#  ", 72, -0.5, 71.5);
     HHBOOK1(36220, "Raw Asymmetry/A_N vs. Strip phi  ", 3600, 0, 360);
-    HHBOOK1(36230, "Raw Polarization vs. Strip phi  ", 62830, 0, 6.283);
     HHBOOK1(36240, "Polarization vs. Strip# ", 72, -0.5, 71.5);
     HHBOOK1(36250, "Strip phi vs. Strip# ", 72, -0.5, 71.5);
     

@@ -20,7 +20,7 @@
 #include "Asym.h"
 #include "AsymProcess.h"
 #include "AsymRecover.h"
-
+#include "AsymROOT.h"
 
 #define REC_BEAMMASK 0x00030000
 void PrintPattern(char*);
