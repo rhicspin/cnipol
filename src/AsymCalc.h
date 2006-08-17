@@ -23,7 +23,8 @@ float WeightAnalyzingPower(int hid);
 //===========================================================================
 //                              Strip by Strip
 //===========================================================================
-void CalcStripAsymmetry(float aveA_N);
+void StripAsymmetry();
+void CalcStripAsymmetry(float aveA_N, int Mode);
 Double_t sin_phi(Double_t *x, Double_t *par);
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 class AsymFit
@@ -77,9 +78,7 @@ float GetMax(int N, float A[]);
 float GetMin(int N, float A[]);
 void GetMinMax(int N, float A[], float margin, float &min, float &max);
 void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
-
-
-  
+float QuadErrorDiv(float x, float y, float dx, float dy);
 
 
 //===========================================================================

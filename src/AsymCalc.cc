@@ -78,7 +78,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    if (dproc.RECONFMODE) CalcStripAsymmetry(anal.A_N[1]);
+    StripAsymmetry();
 
     //-------------------------------------------------------
     //  Check for 12C Invariant Mass and energy dependences
@@ -657,10 +657,13 @@ PrintRunResults(StructHistStat hstat){
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
-    printf(" Average Polarization        = %10.4f%9.4f\n",anal.P[0],anal.P[1]);
-    printf(" Polarization (sinphi)       = %10.4f%9.4f\n",anal.sinphi.P[0],anal.sinphi.P[1]);
-    printf(" Phase (sinphi)  [deg.]      = %10.4f%9.4f\n",anal.sinphi.dPhi[0]*R2D,anal.sinphi.dPhi[1]*R2D);
-    printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi.chi2);
+    printf(" Average Polarization (phi=0)= %10.4f%9.4f\n",anal.P[0],anal.P[1]);
+    printf(" Polarization (sinphi)       = %10.4f%9.4f\n",anal.sinphi[0].P[0],anal.sinphi[0].P[1]);
+    printf(" Phase (sinphi)  [deg.]      = %10.4f%9.4f\n",anal.sinphi[0].dPhi[0]*R2D,anal.sinphi[0].dPhi[1]*R2D);
+    printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi[0].chi2);
+    printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
+    printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
+    printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[0]);
     printf("-----------------------------------------------------------------------------------------\n");
 
     return;
@@ -1257,6 +1260,30 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 }
 
 
+//
+// Class name  : 
+// Method name : StripAsymmetry
+//
+// Description : call calcStripAsymmetry() subroutines for 
+//             : regular and alternative sigma banana cuts, respectively.
+// Input       : 
+// Return      : 
+//
+void
+StripAsymmetry(){
+
+    CalcStripAsymmetry(anal.A_N[1], 1);  // alternative sigma cut
+    CalcStripAsymmetry(anal.A_N[1], 0);  // regular sigma cut
+    if (anal.sinphi[0].P[0]) {
+      anal.P_sigma_ratio[0] = anal.sinphi[1].P[0] / anal.sinphi[0].P[0];
+      anal.P_sigma_ratio[1] = 
+	QuadErrorDiv(anal.sinphi[1].P[0],anal.sinphi[0].P[0],anal.sinphi[1].P[1],anal.sinphi[0].P[1]);
+    }
+
+    return;
+}
+
+
 
 //
 // Class name  : 
@@ -1267,18 +1294,19 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 // Return      : 
 //
 void
-CalcStripAsymmetry(float aveA_N){
+CalcStripAsymmetry(float aveA_N, int Mode){
+
 
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-
-    int LumiSum[2][72]; // Total Luminosity [0]:Spin Up, [1]:Spin Down
-    float LumiSum_r[2][72];//Reduced order Total luminosity for histograming
-    float LumiRatio[72]; // Luminosity Ratio
+    int LumiSum[2][72];        // Total Luminosity [0]:Spin Up, [1]:Spin Down
+    float LumiSum_r[2][72];    // Reduced order Total luminosity for histograming
+    float LumiRatio[72];       // Luminosity Ratio
     float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
-    float P[72], dP[72]; // phi corrected polarization 
-    float Pt[72], dPt[72]; // phi Trancated corrected polarization,
+    float P[72], dP[72];       // phi corrected polarization 
+    float Pt[72], dPt[72];     // phi Trancated corrected polarization,
+    long int counts[2];        // local counter variables
 
     for (int i=0; i<72; i++) {
       Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
@@ -1289,17 +1317,19 @@ CalcStripAsymmetry(float aveA_N){
 
 	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
 	if (!ExclusionList(i,j,runinfo.RHICBeam)){
-	  for (int k=0; k<=1; k++) LumiSum[k][i]+=cntr.reg.NStrip[k][j];
+	  for (int k=0; k<=1; k++) LumiSum[k][i] += Mode ? cntr.alt.NStrip[k][j] : cntr.reg.NStrip[k][j];
 	}
 
       } // end-of-j-loop. 
 
+      counts[0] = Mode ? cntr.alt.NStrip[0][i] : cntr.reg.NStrip[0][i] ;
+      counts[1] = Mode ? cntr.alt.NStrip[1][i] : cntr.reg.NStrip[1][i] ;
 
       // Luminosity Ratio
       LumiRatio[i] = (float)LumiSum[0][i]/(float)LumiSum[1][i];
       // Calculate Raw Asymmetries for strip-i
-      if ((LumiSum[1][i]) && ((cntr.reg.NStrip[0][i]+cntr.reg.NStrip[1][i])))
-	calcAsymmetry(cntr.reg.NStrip[0][i], cntr.reg.NStrip[1][i], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
+      if ( (LumiSum[1][i]) && (counts[0]+counts[1]) )
+	calcAsymmetry(counts[0], counts[1], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
 
       // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
       // Cannot accomomdate large entry.
@@ -1356,7 +1386,7 @@ CalcStripAsymmetry(float aveA_N){
 
     // Fit phi-distribution
     AsymFit asymfit;
-    asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
+    asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi[Mode].P, anal.sinphi[Mode].dPhi, anal.sinphi[Mode].chi2);
     //asymfit.SinPhiFit(anal.P[0], anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
 
     return;

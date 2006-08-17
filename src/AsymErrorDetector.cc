@@ -60,12 +60,15 @@ InvariantMassCorrelation(int st){
 
   TH1D *hslice_1 = (TH1D*)gDirectory->Get("hslice_1");
   sprintf(histname,"mass_vs_energy_corr_st%d",st);
-  hslice_1->SetName(histname);
+  hslice_1 -> SetName(histname);
   sprintf(htitle,"%8.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",runinfo.RUNID,st+1);
-  hslice_1->SetTitle(htitle);
-  hslice_1->GetXaxis()->SetTitle("12C Kinetic Energy [keV]");
-  hslice_1->GetYaxis()->SetTitle("Invariant Mass [GeV]");
-  hslice_1->Fit("f1","Q");
+  hslice_1 -> SetTitle(htitle);
+  hslice_1 -> GetXaxis()->SetTitle("12C Kinetic Energy [keV]");
+  hslice_1 -> GetYaxis()->SetTitle("Invariant Mass [GeV]");
+  hslice_1 -> Fit("f1","Q");
+  TLine * l = new TLine(200, 1000, MASS_12C*k2G, MASS_12C*k2G);
+  hslice_1 -> GetListOfFunctions() -> Add(l);
+  
 
   //Get Fitting results
   for (int j=0;j<2; j++) {
@@ -636,7 +639,20 @@ UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 }
 
 
+//
+// Class name  : 
+// Method name : QuadErrorDiv(float x, float y, float dx, float dy){
+//
+// Description : calculate quadratic error of x/y
+// Input       : float x, float y, float dx, float dy
+// Return      : float quadratic error of x/y
+//
+float QuadErrorDiv(float x, float y, float dx, float dy){
+  return y*x ? x/y*sqrt(dx*dx/x/x+dy*dy/y/y): 0 ;
+}
 
+
+/*
 //
 // Class name  : 
 // Method name : checkForBadBunches()
@@ -696,3 +712,4 @@ void checkForBadBunches()
 
 
 			
+*/
