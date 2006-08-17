@@ -52,6 +52,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
   }else if (!dproc.DMODE) {
 
+
     //-------------------------------------------------------
     //    Energy Yeild Weighted Average Analyzing Power
     //-------------------------------------------------------
@@ -78,10 +79,9 @@ int end_process(recordConfigRhicStruct *cfginfo)
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
     if (dproc.RECONFMODE) CalcStripAsymmetry(anal.A_N[1]);
-    cout << "finish CalcStripAsymm()" << endl;
 
     //-------------------------------------------------------
-    //  Check 12C Invariant Mass Possition
+    //  Check for 12C Invariant Mass and energy dependences
     //-------------------------------------------------------
     TshiftFinder(Flag.feedback, 2);
 
@@ -1278,11 +1278,7 @@ CalcStripAsymmetry(float aveA_N){
     float LumiRatio[72]; // Luminosity Ratio
     float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
     float P[72], dP[72]; // phi corrected polarization 
-    float P_phi[62830],dP_phi[62830]; // phi corrected polarization with extended array
     float Pt[72], dPt[72]; // phi Trancated corrected polarization,
-
-    for (int i=0;i<62830;i++) P_phi[i]=dP_phi[i]=0;
-
 
     for (int i=0; i<72; i++) {
       Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
@@ -1321,10 +1317,6 @@ CalcStripAsymmetry(float aveA_N){
       P[i]  = RawP[i] / sin(-phi[i]);
       dP[i] = fabs(dRawP[i] / sin(-phi[i]));
 
-      // Dump Polarization to phi array
-      int j = int(phi[i]*1e4);
-      P_phi[j] = RawP[i];
-      dP_phi[j]= dRawP[i];
       // Polarization with trancated sin(phi) correction
       Pt[i]  = RawP[i] / sin(-phit[i]);
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
@@ -1359,7 +1351,6 @@ CalcStripAsymmetry(float aveA_N){
     HHPAK(36200, LumiRatio); 
     HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
     HHPAK(36220, RawP);  HHPAKE(36220, dRawP);
-    HHPAK(36230, P_phi); HHPAKE(36230, dP_phi);
     HHPAK(36240, P);     HHPAKE(36240, dP);
     HHPAK(36250, phi); 
 

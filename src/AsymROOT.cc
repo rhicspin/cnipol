@@ -38,8 +38,10 @@ TH2F * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o c
 TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
-TF1  * banana_cut_l[TOT_WFD_CH];    // banana cut low 
-TF1  * banana_cut_h[TOT_WFD_CH];    // banana cut high
+TF1  * banana_cut_l[NSTRIP];        // banana cut low 
+TF1  * banana_cut_h[NSTRIP];        // banana cut high
+TLine  * energy_cut_l[NSTRIP];      // energy cut low 
+TLine  * energy_cut_h[NSTRIP];      // energy cut high
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -107,18 +109,26 @@ Root::RootHistBook(){
     sprintf(hname,"t_vs_e_st%d",i);
     sprintf(htitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+    t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+    t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"mass_vs_e_ecut_st%d",i);
     sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
+    mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+    mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
     sprintf(hname,"mass_vs_t_ecut_st%d",i);
     sprintf(htitle,"%8.3f : Mass vs. ToF (Energy Cut) Str%d ", runinfo.RUNID, i);
     mass_vs_t_ecut[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
+    mass_vs_t_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+    mass_vs_t_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
     sprintf(hname,"mass_vs_t_st%d",i);
     sprintf(htitle,"%8.3f : Mass vs. ToF Str%d", runinfo.RUNID, i);
     mass_vs_t[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
+    mass_vs_t[i] -> GetXaxis() -> SetTitle("Time of Flight [ns]");
+    mass_vs_t[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
   }
 
@@ -155,9 +165,41 @@ Root::RootHistBook(){
 int 
 Root::RootHistBook2(){
 
+  Kinema->cd();
+  char formula[100],fname[100];
+  float low, high, sqrte;
+  for (int i=0;i<NSTRIP; i++) {
 
-  //  for (int i=0;i<NSTRIP; i++) {
-    
+    // lower limit
+    sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, runconst.M2T*feedback.RMS[i]*dproc.MassSigma);
+    sprintf(fname,"banana_cut_l_st%d",i);
+    banana_cut_l[i] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+    banana_cut_l[i] -> SetLineColor(2); 
+    banana_cut_l[i] -> SetLineWidth(4); 
+
+    // upper limit
+    sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, runconst.M2T*feedback.RMS[i]*dproc.MassSigma);
+    sprintf(fname,"banana_cut_h_st%d",i);
+    banana_cut_h[i] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+    banana_cut_h[i] -> SetLineColor(2); 
+    banana_cut_h[i] -> SetLineWidth(4); 
+
+    // energy cut low
+    low  = runconst.E2T/sqrt(dproc.enel)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
+    high = runconst.E2T/sqrt(dproc.enel)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
+    energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
+    energy_cut_l[i] ->SetLineColor(2);
+    energy_cut_l[i] ->SetLineWidth(4);
+
+    // energy cut high
+    low  = runconst.E2T/sqrt(dproc.eneu)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
+    high = runconst.E2T/sqrt(dproc.eneu)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
+    energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
+    energy_cut_h[i] ->SetLineColor(2);
+    energy_cut_h[i] ->SetLineWidth(4);
+
+  }
+
 
   return 0;
 
@@ -209,7 +251,18 @@ Root::DeleteHistogram(){
 int 
 Root::CloseROOTFile(){
   
-  
+
+  Kinema->cd();
+  TLine * l;
+  for (int i=0;i<NSTRIP; i++){
+    if (t_vs_e[i]) {
+      if (banana_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_l[i]);
+      if (banana_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_h[i]);
+      if (energy_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_l[i]);
+      if (energy_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_h[i]);
+    }
+  }
+
   // Write out memory before closing
   /*
   ErrDet->cd();

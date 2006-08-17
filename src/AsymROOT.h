@@ -45,8 +45,10 @@ extern TH2F * t_vs_e[TOT_WFD_CH];
 extern TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 extern TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
 extern TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
-extern TF1  * banana_cut_l[TOT_WFD_CH];    // banana cut low 
-extern TF1  * banana_cut_h[TOT_WFD_CH];    // banana cut high
+extern TF1  * banana_cut_l[NSTRIP];        // banana cut low 
+extern TF1  * banana_cut_h[NSTRIP];        // banana cut high
+extern TLine  * energy_cut_l[NSTRIP];      // energy cut low 
+extern TLine  * energy_cut_h[NSTRIP];      // energy cut high
 
 // Bunch Distribution
 extern TH1F * bunch_dist;                  // counts per bunch

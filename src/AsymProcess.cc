@@ -150,6 +150,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 
 
+	// ---------------------------------------------------- // 
+	//   Root Histogram Booking using feedback results      //
+	// ---------------------------------------------------- // 
+	Root rt;
+	rt.RootHistBook2();
+
+
         // Online Banana Cut 
         for (int strip=0;strip<72;strip++){
             for (int j=0; j<HENEBIN; j++){
