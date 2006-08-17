@@ -540,6 +540,12 @@ Initialization(){
 
   runinfo.TgtOperation = "fixed";
 
+
+  // Initiarize Strip counters
+  for (int i=0; i<NSTRIP; i++) {
+    for (int j=0; j<3; j++) cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = 0;
+  }
+
   return 1;
 
 }
