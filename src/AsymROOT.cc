@@ -34,14 +34,14 @@ TDirectory * Asymmetry;
 //  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
 //
 // Kinema Dir
-TH2F * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
-TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-TH2F * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
-TH2F * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
-TF1  * banana_cut_l[NSTRIP];        // banana cut low 
-TF1  * banana_cut_h[NSTRIP];        // banana cut high
-TLine  * energy_cut_l[NSTRIP];      // energy cut low 
-TLine  * energy_cut_h[NSTRIP];      // energy cut high
+TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
+TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
+TH2F  * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
+TH2F  * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
+TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
+TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
+TLine * energy_cut_l[NSTRIP];        // energy cut low 
+TLine * energy_cut_h[NSTRIP];        // energy cut high
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -167,36 +167,48 @@ Root::RootHistBook2(){
 
   Kinema->cd();
   char formula[100],fname[100];
-  float low, high, sqrte;
-  for (int i=0;i<NSTRIP; i++) {
+  float low, high, sqrte, sigma;
+  int Color=2;
+  int Width=2;
 
-    // lower limit
-    sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, runconst.M2T*feedback.RMS[i]*dproc.MassSigma);
-    sprintf(fname,"banana_cut_l_st%d",i);
-    banana_cut_l[i] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-    banana_cut_l[i] -> SetLineColor(2); 
-    banana_cut_l[i] -> SetLineWidth(4); 
+  for (int i=0; i<NSTRIP; i++) {
 
-    // upper limit
-    sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, runconst.M2T*feedback.RMS[i]*dproc.MassSigma);
-    sprintf(fname,"banana_cut_h_st%d",i);
-    banana_cut_h[i] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-    banana_cut_h[i] -> SetLineColor(2); 
-    banana_cut_h[i] -> SetLineWidth(4); 
+    for (int j=0; j<2; j++) {
+      
+      sigma = j ? runconst.M2T*feedback.RMS[i]*dproc.MassSigmaAlt : runconst.M2T*feedback.RMS[i]*dproc.MassSigma;
+      int Style = j + 1 ; 
+
+      // lower limit 
+      sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
+      sprintf(fname,"banana_cut_l_st%d_mode%d",i,j);
+      banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+      banana_cut_l[i][j] -> SetLineColor(Color); 
+      banana_cut_l[i][j] -> SetLineWidth(Width); 
+      banana_cut_l[i][j] -> SetLineStyle(Style); 
+
+      // upper limit 
+      sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, sigma);
+      sprintf(fname,"banana_cut_h_st%d",i);
+      banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+      banana_cut_h[i][j] -> SetLineColor(Color); 
+      banana_cut_h[i][j] -> SetLineWidth(Width); 
+      banana_cut_h[i][j] -> SetLineStyle(Style); 
+
+    }
 
     // energy cut low
     low  = runconst.E2T/sqrt(dproc.enel)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
     high = runconst.E2T/sqrt(dproc.enel)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
     energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
-    energy_cut_l[i] ->SetLineColor(2);
-    energy_cut_l[i] ->SetLineWidth(4);
+    energy_cut_l[i] ->SetLineColor(Color);
+    energy_cut_l[i] ->SetLineWidth(Width);
 
     // energy cut high
     low  = runconst.E2T/sqrt(dproc.eneu)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
     high = runconst.E2T/sqrt(dproc.eneu)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
     energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
-    energy_cut_h[i] ->SetLineColor(2);
-    energy_cut_h[i] ->SetLineWidth(4);
+    energy_cut_h[i] ->SetLineColor(Color);
+    energy_cut_h[i] ->SetLineWidth(Width);
 
   }
 
@@ -256,8 +268,10 @@ Root::CloseROOTFile(){
   TLine * l;
   for (int i=0;i<NSTRIP; i++){
     if (t_vs_e[i]) {
-      if (banana_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_l[i]);
-      if (banana_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_h[i]);
+      for (int j=0; j<2; j++){
+	if (banana_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_l[i][j]);
+	if (banana_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_h[i][j]);
+      }
       if (energy_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_l[i]);
       if (energy_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_h[i]);
     }

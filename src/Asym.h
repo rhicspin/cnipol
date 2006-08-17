@@ -145,7 +145,8 @@ typedef struct {
   float TshiftAve;
   float A_N[2];
   float P[2];
-  StructSinPhi sinphi;
+  float P_sigma_ratio[2];
+  StructSinPhi sinphi[2];   // [0]: regular,   [1]: alternative sigma cut
   StructAnomaly anomaly;
   StructUnrecognized unrecog;
 } StructAnalysis;
