@@ -60,6 +60,9 @@ int RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
 int UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
 void DrawLine(TH1F * h, float x, float y1, int color, int lwidth);
 void DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
+float QuadErrorDiv(float x, float y, float dx, float dy);
+float QuadErrorSum(float dx, float dy);
+
 
 
 #endif /* ASYM_ERROR_DETECTOR_H */

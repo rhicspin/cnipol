@@ -24,6 +24,7 @@
 #include "AsymErrorDetector.h"
 #include "AsymCalc.h"
 
+StructSpeLumi SpeLumi;
 BunchAsym basym;
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 
@@ -66,6 +67,11 @@ int end_process(recordConfigRhicStruct *cfginfo)
     CumulativeAsymmetry();
 
     //-------------------------------------------------------
+    // Specific Luminosity 
+    //-------------------------------------------------------
+    SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
+
+    //-------------------------------------------------------
     // Bunch Asymmetries
     //-------------------------------------------------------
     calcBunchAsymmetry();
@@ -86,10 +92,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
     TshiftFinder(Flag.feedback, 2);
 
 
-    //-------------------------------------------------------
-    // Specific Luminosity 
-    //-------------------------------------------------------
-    SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
 
 
   }//end-of-if(!dproc.DMODE)
@@ -663,7 +665,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi[0].chi2);
     printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
-    printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[0]);
+    printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[1]);
     printf("-----------------------------------------------------------------------------------------\n");
 
     return;
@@ -901,20 +903,25 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
     // Specific Luminosity 
     //-------------------------------------------------------
   int bid;
-  float SpeLumi[120],dSpeLumi[120];
-  float SpeLumi_norm[120], dSpeLumi_norm[120];
+  float SpeLumi_norm[NBUNCH], dSpeLumi_norm[NBUNCH];
 
-  for (bid=0; bid<120; bid++) {
-    SpeLumi[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
-    dSpeLumi[bid] = sqrt(SpeLumi[bid]);
+  // initialization
+  SpeLumi.min=SpeLumi.max=SpeLumi.Cnts[0];
+
+  for (bid=0; bid<NBUNCH; bid++) {
+    SpeLumi.Cnts[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
+    SpeLumi.dCnts[bid] = sqrt(SpeLumi.Cnts[bid]);
+    specific_luminosity->Fill(bid,SpeLumi.Cnts[bid]);
+    if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
+    if (SpeLumi.min>SpeLumi.Cnts[bid])SpeLumi.min=SpeLumi.Cnts[bid];
   }
-  HHPAK(10033, SpeLumi);    HHPAKE(11033, dSpeLumi);
-  float ave = WeightedMean(SpeLumi,dSpeLumi,120);
+  HHPAK(10033, SpeLumi.Cnts);    HHPAKE(11033, SpeLumi.dCnts);
+  SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,NBUNCH);
 
-  if (ave){
-    for (bid=0; bid<120; bid++) {
-      SpeLumi_norm[bid] = SpeLumi[bid]/ave;
-      dSpeLumi_norm[bid] = dSpeLumi[bid]/ave;
+  if (SpeLumi.ave){
+    for (bid=0; bid<NBUNCH; bid++) {
+      SpeLumi_norm[bid] = SpeLumi.Cnts[bid]/SpeLumi.ave;
+      dSpeLumi_norm[bid] = SpeLumi.dCnts[bid]/SpeLumi.ave;
     }
   }
   HHPAK(10034, SpeLumi_norm);    HHPAKE(11034, dSpeLumi_norm);
@@ -923,8 +930,8 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
   // Book and fill histograms
   char hcomment[256];
   sprintf(hcomment,"Specific Luminosity");
-  HHBOOK1(10035,hcomment,100,ave-ave/2,ave+ave/2.);
-  for (bid=0;bid<120;bid++) HHF1(10035,SpeLumi[bid],1);
+  HHBOOK1(10035,hcomment,100,SpeLumi.ave-SpeLumi.ave/2,SpeLumi.ave+SpeLumi.ave/2.);
+  for (bid=0;bid<120;bid++) HHF1(10035,SpeLumi.Cnts[bid],1);
 
   // Get variables
   char CHOICE[5]="HIST";
@@ -1272,15 +1279,18 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 void
 StripAsymmetry(){
 
-    CalcStripAsymmetry(anal.A_N[1], 1);  // alternative sigma cut
-    CalcStripAsymmetry(anal.A_N[1], 0);  // regular sigma cut
-    if (anal.sinphi[0].P[0]) {
-      anal.P_sigma_ratio[0] = anal.sinphi[1].P[0] / anal.sinphi[0].P[0];
-      anal.P_sigma_ratio[1] = 
-	QuadErrorDiv(anal.sinphi[1].P[0],anal.sinphi[0].P[0],anal.sinphi[1].P[1],anal.sinphi[0].P[1]);
-    }
+  float diff[2];
+  CalcStripAsymmetry(anal.A_N[1], 1);  // alternative sigma cut
+  CalcStripAsymmetry(anal.A_N[1], 0);  // regular sigma cut
+  if (anal.sinphi[0].P[0]) {
+    diff[0] = anal.sinphi[1].P[0] - anal.sinphi[0].P[0];
+    anal.P_sigma_ratio[0] = diff[0] / anal.sinphi[0].P[0];
+    diff[1] = QuadErrorSum(anal.sinphi[1].P[1], anal.sinphi[0].P[1]);
+    anal.P_sigma_ratio[1] = 
+      QuadErrorDiv(diff[0],anal.sinphi[0].P[0],diff[1],anal.sinphi[0].P[1]);
+  }
 
-    return;
+  return;
 }
 
 

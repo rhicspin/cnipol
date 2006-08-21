@@ -55,6 +55,14 @@ struct BunchAsym {
   float Ay45[2][NBUNCH];
 } ;
 extern BunchAsym basym;
+struct StructSpeLumi {
+  float Cnts[NBUNCH];
+  float dCnts[NBUNCH];
+  float ave;
+  float max;
+  float min;
+} ;
+extern StructSpeLumi SpeLumi;
 int  CumulativeAsymmetry();
 int calcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
