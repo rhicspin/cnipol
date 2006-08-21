@@ -666,9 +666,13 @@ PrintRunResults(StructHistStat hstat){
     printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
     printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[1]);
+    printf(" Ratio ((alt-reg)/reg)       = %10.3f%9.3f\n", anal.P_sigma_ratio_norm[0],anal.P_sigma_ratio_norm[1]);
     printf("-----------------------------------------------------------------------------------------\n");
 
+
+
     return;
+
 }
 
 
@@ -1283,10 +1287,17 @@ StripAsymmetry(){
   CalcStripAsymmetry(anal.A_N[1], 1);  // alternative sigma cut
   CalcStripAsymmetry(anal.A_N[1], 0);  // regular sigma cut
   if (anal.sinphi[0].P[0]) {
+
+    // calculate differences and ratio
     diff[0] = anal.sinphi[1].P[0] - anal.sinphi[0].P[0];
-    anal.P_sigma_ratio[0] = diff[0] / anal.sinphi[0].P[0];
+    anal.P_sigma_ratio[0] = anal.sinphi[1].P[0] / anal.sinphi[0].P[0];
+    anal.P_sigma_ratio_norm[0] = diff[0] / anal.sinphi[0].P[0];
+
+    // calculate errors for above, respectively
     diff[1] = QuadErrorSum(anal.sinphi[1].P[1], anal.sinphi[0].P[1]);
     anal.P_sigma_ratio[1] = 
+      QuadErrorDiv(anal.sinphi[1].P[0],anal.sinphi[0].P[0],anal.sinphi[1].P[1],anal.sinphi[0].P[1]);
+    anal.P_sigma_ratio_norm[1] = 
       QuadErrorDiv(diff[0],anal.sinphi[0].P[0],diff[1],anal.sinphi[0].P[1]);
   }
 
