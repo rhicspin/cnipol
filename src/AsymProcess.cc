@@ -139,6 +139,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
       average.total   = 0;
       average.counter = 0;
         for (j=0;j<120;j++){
+	  wall_current_monitor->Fill(j,wcmdist[j]);
             HHF1(10030,(float)j, (float)wcmdist[j]);
 	    if (( fabs(runinfo.WcmAve-wcmdist[j])/runinfo.WcmAve<dproc.WCMRANGE )&&(fillpat[j])) {
 	      average.total+=wcmdist[j];

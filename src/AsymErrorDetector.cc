@@ -458,7 +458,6 @@ BunchAnomalyDetector(){
 int
 HotBunchFinder(){
 
-  float NBcounts[NBUNCH];
   float err[NBUNCH], bindex[NBUNCH];
   float max, min;
   int init_flag=1;
@@ -467,68 +466,68 @@ HotBunchFinder(){
   for (int bnch=0; bnch<NBUNCH; bnch++){
 
     // inistiarization
-    bindex[bnch]=bnch; err[bnch]=1; NBcounts[bnch]=0; 
-
-    // sum over detector yields
-    for (int det=0; det<NDETECTOR; det++) { NBcounts[bnch] += Ncounts[det][bnch];}
+    bindex[bnch]=bnch; err[bnch]=1; 
 
     // calculate min and max range of the histogram
-    if ((NBcounts[bnch])&&(init_flag) ) {min=NBcounts[bnch]; init_flag=0;}
-    if ((NBcounts[bnch] < min)&&(!NBcounts[bnch])) min = NBcounts[bnch];
-    if (max < NBcounts[bnch]) max = NBcounts[bnch];
+    if ((SpeLumi.Cnts[bnch])&&(init_flag) ) {min=SpeLumi.Cnts[bnch]; init_flag=0;}
+    if ((SpeLumi.Cnts[bnch] < min)&&(!SpeLumi.Cnts[bnch])) min = SpeLumi.Cnts[bnch];
+    if (max < SpeLumi.Cnts[bnch]) max = SpeLumi.Cnts[bnch];
 
   }
 
   // define rate distribution and fill the histogram
+  Bunch->cd();
   char hname[100];
   sprintf(hname,"%8.3f : Rate Distribution / bunch", runinfo.RUNID);
-  bunch_rate = new TH1F("bunch_rate",hname, 100, min*0.9, max*1.1);
+  bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
   for (int bnch=0;bnch<NBUNCH;bnch++) { 
-    if (NBcounts[bnch]) bunch_rate->Fill(NBcounts[bnch]);
+    if (SpeLumi.Cnts[bnch]) bunch_spelumi->Fill(SpeLumi.Cnts[bnch]);
   }
 
   // define rate vs. bunch plot 
   ErrDet->cd();
-  TGraph * gr = new TGraph(NBUNCH, bindex, NBcounts);
+  TGraph * gr = new TGraph(NBUNCH, bindex, SpeLumi.Cnts);
   gr -> SetMarkerSize(MSIZE);
   gr -> SetMarkerStyle(20);
   gr -> SetMarkerColor(4);
-  rate_vs_bunch = new TH2F("rate_vs_bunch", hname, NBUNCH, -0.5, NBUNCH+0.5, 50, min, max*1.3);
-  rate_vs_bunch -> GetListOfFunctions() -> Add(gr,"P");
-  rate_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
-  rate_vs_bunch -> GetYaxis()->SetTitle("Yield/Bunch");
+  spelumi_vs_bunch = new TH2F("spelumi_vs_bunch", hname, NBUNCH, -0.5, NBUNCH+0.5, 50, min, max*1.3);
+  spelumi_vs_bunch -> GetListOfFunctions() -> Add(gr,"P");
+  spelumi_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
+  spelumi_vs_bunch -> GetYaxis()->SetTitle("Yield/Bunch");
 
   // define gaussian function 
   TF1 * g1 = new TF1("g1","gaus");
+  g1->SetParameter(1,SpeLumi.ave);
+  g1->SetParLimits(1,SpeLumi.min,SpeLumi.max);
   g1->SetLineColor(2);
 
   // apply gaussian fit on rate distribution
-  bunch_rate->Fit(g1);
+  bunch_spelumi->Fit(g1);
   
   // get mean from gaussian fit
   float ave = g1->GetParameter(1);
-  DrawLine(rate_vs_bunch, -0.5, NBUNCH+0.5, ave, 1, 1, 1);
+  DrawLine(spelumi_vs_bunch, -0.5, NBUNCH+0.5, ave, 1, 1, 1);
 
   // get sigma from Gaussian fit and calculate allowance limit
   float sigma=g1->GetParameter(2);
   bnchchk.rate.allowance = ave + errdet.BUNCH_RATE_SIGMA_ALLOWANCE*sigma;
 
   // draw lines to 1D and 2D histograms
-  DrawLine(rate_vs_bunch, -0.5, NBUNCH+0.5, bnchchk.rate.allowance, 2, 2, 2);
-  DrawLine(bunch_rate, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
+  DrawLine(spelumi_vs_bunch, -0.5, NBUNCH+0.5, bnchchk.rate.allowance, 2, 2, 2);
+  DrawLine(bunch_spelumi, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
 
   // anomaly bunch registration
   char text[16]; 
   for (int bnch=0;bnch<NBUNCH;bnch++) {
-    if (NBcounts[bnch] > bnchchk.rate.allowance) {
+    if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
       anal.anomaly.nbunch++;
       printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch, bnchchk.rate.allowance);
       
       // comment in h2 histogram
       sprintf(text,"Bunch %d",bnch);
-      TText * t = new TText(bnch+2, NBcounts[bnch], text);
-      rate_vs_bunch -> GetListOfFunctions()->Add(t);
+      TText * t = new TText(bnch+2, SpeLumi.Cnts[bnch], text);
+      spelumi_vs_bunch -> GetListOfFunctions()->Add(t);
 
     }
   }
@@ -649,6 +648,18 @@ UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 //
 float QuadErrorDiv(float x, float y, float dx, float dy){
   return y*x ? x/y*sqrt(dx*dx/x/x+dy*dy/y/y): 0 ;
+}
+
+//
+// Class name  : 
+// Method name : QuadErrorDiv(float dx, float dy)
+//
+// Description : calculate quadratic sum
+// Input       : float dx, float dy
+// Return      : float quadratic error sum of x+y or x-y
+//
+float QuadErrorSum(float dx, float dy){
+  return sqrt(dx*dx+dy*dy);
 }
 
 

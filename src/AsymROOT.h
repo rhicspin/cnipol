@@ -52,13 +52,15 @@ extern TLine  * energy_cut_h[NSTRIP];      // energy cut high
 
 // Bunch Distribution
 extern TH1F * bunch_dist;                  // counts per bunch
+extern TH1F * wall_current_monitor;        // wall current monitor
+extern TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet Direcotry
 extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 extern TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
 extern TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
-extern TH2F * rate_vs_bunch;               // Counting rate vs. bunch
-extern TH1F * bunch_rate;                  // Counting rate per bunch hisogram
+extern TH2F * spelumi_vs_bunch;            // Counting rate vs. bunch
+extern TH1F * bunch_spelumi;               // Counting rate per bunch hisogram
 extern TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45 
 extern TH1F * asym_bunch_x90;              // Bunch asymmetry histogram for x90 
 extern TH1F * asym_bunch_y45;              // Bunch asymmetry histogram for y45 

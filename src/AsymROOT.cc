@@ -45,13 +45,15 @@ TLine * energy_cut_h[NSTRIP];        // energy cut high
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
+TH1F * wall_current_monitor;        // wall current monitor
+TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet dir
 TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
-TH2F * rate_vs_bunch;                       // Counting rate vs. bunch
-TH1F * bunch_rate;                          // Counting rate per bunch hisogram
+TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
+TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
 TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
 TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
 TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45 
@@ -132,11 +134,25 @@ Root::RootHistBook(){
 
   }
 
+  // Bunch Directory
   Bunch->cd();
   sprintf(htitle,"%8.3f : Counts per Bunch ", runinfo.RUNID);
   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
   bunch_dist -> GetYaxis() -> SetTitle("Counts");
+  bunch_dist -> SetFillColor(13);
+
+  sprintf(htitle,"%8.3f : Wall Current Monitor", runinfo.RUNID);
+  wall_current_monitor = new TH1F("wall_current_monitor", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+  wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
+  wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
+  wall_current_monitor -> SetFillColor(13);
+
+  sprintf(htitle,"%8.3f : Specific Luminosity", runinfo.RUNID);
+  specific_luminosity = new TH1F("specific_luminosity", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+  specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
+  specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
+  specific_luminosity -> SetFillColor(13);
 
   // Error detectors
   ErrDet->cd();
