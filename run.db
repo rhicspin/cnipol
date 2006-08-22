@@ -41,18 +41,6 @@
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 
-[6773.101]
-	TSHIFT=3;	
-
-[6773.102]
-	TSHIFT=0;
-
-[6849.102]
-	TSHIFT=3;
-
-[6849.103]
-	TSHIFT=0;
-
 [6935.001]
 	ENERGY_CALIB=blue_calib_0419-100v;
 
@@ -310,10 +298,6 @@
 	CONFIG=7279.005.config.dat;
 	COMMENT="";
 
-
-[7300.002]
-//	CONFIG=7300.002.plus5ns.config.dat;
-	CONFIG=7300.002.plus20ug.config.dat;
 
 [7308.005]
 	RUN_STATUS*=Suspicious;
