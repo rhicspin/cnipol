@@ -45,6 +45,7 @@ readdb(double RUNID) {
       exit(-1);
   } 
 
+
   string s;
   char * line = NULL;
   size_t len = 0;
@@ -56,7 +57,7 @@ readdb(double RUNID) {
     if (str[0] == '[') { // Get Run Number
       s = str.substr(1,8);
       rundb.RunID = strtod(s.c_str(),NULL);
-      //printf("%8.3f\n",rundb.RunID);
+      //      printf("%8.3f\n",rundb.RunID);
       match = MatchBeam(RUNID,rundb.RunID);
       if (match){
 	if (RUNID<rundb.RunID) break;

@@ -6,6 +6,7 @@
 static int ProcessStrip[NSTRIP];
 static int ProcessBunch[NBUNCH];
 
+int readdb(double RUNID) ;
 //const char * GetVariables(string str);
 string GetVariables(string str);
 //const char* GetVariables(string str);
