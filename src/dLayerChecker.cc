@@ -8,6 +8,7 @@
 #include <iostream.h>
 #include <fstream.h>
 #include "dLayerChecker.h"
+#include "AsymRunDB.h"
 
 
 
@@ -17,8 +18,9 @@ void Usage(char* argv[]){
   cout<<" This program compares the dead layers from two data files."<<endl;
   cout<<" Default output for -z test is " << ofile << endl;
   cout<<" Usage of " << argv[0] <<endl;
-  cout << " -f <run #>        : check dead layer consitency " <<endl;
-  cout << " -z <run #>        : check dead layer fit status" <<endl << endl;
+  cout << " -f <RunID>        : check dead layer consitency between <RunID> and whatever config file";
+  cout <<                     " defined in run.db" <<endl;
+  cout << " -z <RunID>        : check the quality of dead layer fit for <RunID>" <<endl << endl;
   
   exit(-1);
 
@@ -31,7 +33,7 @@ void Usage(char* argv[]){
 
 int main (int argc, char *argv[])
 {
-	
+
 	bool optgiven=false;
 	fitresult=0;
 	runfit=false;
@@ -39,13 +41,16 @@ int main (int argc, char *argv[])
 	// for get option
 	int c;
 	extern char *optarg;
-	
-	datadir = getenv("CONFDIR");
+
+	char OperationMode[100];
+	int Mode=0;
+
+	confdir = getenv("CONFDIR");
 	sharedir = getenv("SHAREDIR");
 	tmpdir = getenv("TMPOUTDIR");
 
 	// output file operation
-	sprintf(ofile,"%s/dLayerChecker.dat",tmpdir);
+	sprintf(ofile,"%s/rundb.log",tmpdir);
 	ofstream out;
 	out.open(ofile);
 	if (out.fail()) {
@@ -53,7 +58,7 @@ int main (int argc, char *argv[])
 	  cerr << " Likely either no /tmp/cnipol directory or write permission problem." << endl;
 	}
 
-	if ( datadir == NULL )
+	if ( confdir == NULL )
 	{
 		cerr << "environment CONFDIR is not defined" << endl;
 		exit(-1);
@@ -69,12 +74,12 @@ int main (int argc, char *argv[])
 			case 'f':
 				sprintf(runid, optarg);
 	    			// if ifile lack of suffix ".data", attach ".data"
-				strcat(configfile, datadir);
+				strcat(configfile, confdir);
 				strcat(configfile,     "/");
 				strcat(configfile,   runid);
 				strcat(configfile,   ".config.dat");
-				fprintf(stdout,"Input config file : %s\n",configfile);
 				optgiven=true;
+				sprintf(OperationMode,"(Consistency Check Mode)          ");
 				break;
 			case 'z':
 				sprintf(runid, optarg);
@@ -82,9 +87,9 @@ int main (int argc, char *argv[])
 				strcat(configfile,     "/dlayer/");
 				strcat(configfile,   runid);
 				strcat(configfile,   ".temp.dat");
-				fprintf(stdout,"Input dlayer file : %s\n",configfile);
 				runfit=true;
-				checkChi2(configfile);
+				sprintf(OperationMode,"(DeadLayer Fit Quality Check Mode)");
+				Mode=1;
 				break;
 			default:
 				fprintf(stdout,"Invalid Option \n");
@@ -93,6 +98,16 @@ int main (int argc, char *argv[])
 		}
 	}
 	
+
+
+	printf("\n");
+	printf("******************************************************************************\n");
+	printf("****         dLayerChecker Message %s     ****\n", OperationMode);
+	printf("******************************************************************************\n");
+
+	// OperationMode == Deadalyer Fit Quality Check
+	if (Mode) checkChi2(configfile);
+
 	
 	if(runfit==true)
 	{
@@ -113,6 +128,7 @@ int main (int argc, char *argv[])
 			  out << "\tCOMMENT*=\"Deadlayer fit failure. Don't update config file\";@";
 			out << endl << endl;
 		}
+		printf("******************************************************************************\n\n");
 		return fitresult;
 	}
 	
@@ -155,50 +171,40 @@ int main (int argc, char *argv[])
 	{
 		deadwidth[1][ii]=tempwidth[ii];
 	}
-	
-	
-	
-	
-	cout<<endl<<endl;
-	cout<<"dead layers from this run"<<endl;
-	for(unsigned short ii=0;ii<num_detectors;ii++)
-	{
-		cout<<deadwidth[0][ii]<<endl;
-	}
-	
-	cout<<endl<<endl;
-	
-	cout<<"dead layers from previous file"<<endl;
-	for(unsigned short ii=0;ii<num_detectors;ii++)
-	{
-		cout<<deadwidth[1][ii]<<endl;
-	}
-	
-	cout<<endl<<endl;
-	
-	
-	
-	
-	dead_layers_consistent=true;
 
+	// print out deadlayer thickness of THIS RunID
+	cout<< configfile << ": (THIS)" << endl;
+	for(unsigned short ii=0;ii<num_detectors;ii++) printf("%10.2f",deadwidth[0][ii]);
+	cout<<endl;
 	
+	// print out deadlayer thickness of defined configfile in run.db
+	cout<< configfile2 << ": (run.db)" << endl;
+	for(unsigned short ii=0;ii<num_detectors;ii++) printf("%10.2f",deadwidth[1][ii]);
+	cout<<endl;
+
+	// Consistency test between deadlayers in two configulation files
+	printf("Consistency limit =%5.1f [ug/cm2]\n", dlayer_consistency );
+	dead_layers_consistent=true;
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
-		if(fabs(deadwidth[0][ii]-deadwidth[1][ii])>3.)
+	  printf("%10.2f",fabs(deadwidth[0][ii]-deadwidth[1][ii]));
+		if(fabs(deadwidth[0][ii]-deadwidth[1][ii])>dlayer_consistency)
 		{
 			dead_layers_consistent=false;
-			break;
 		}
 	}
+	cout << endl;
 		
 	if(dead_layers_consistent==true)
 	{
 		cout<<"finished: dead layers are consistent"<<endl;
+		printf("******************************************************************************\n\n");
 		return 1;
 	}
 	else
 	{
 		cout<<"finished: dead layers are NOT consistent"<<endl;
+		printf("******************************************************************************\n\n");
 		return 0;
 	}
 	
@@ -210,77 +216,21 @@ int main (int argc, char *argv[])
 
 
 
-void getPreviousRun(bool thisrun)
-{
-	
+
+void getPreviousRun(bool thisrun){
+
 	double RUNID=strtod(runid, NULL);
-	// run DB file
-	char *dbfile="run.db";
-	FILE * in_file;
-	if ((in_file = fopen(dbfile,"r")) == NULL) {
-		printf("ERROR: %s file not found. Force exit.\n",dbfile);;
-		exit(-1);
-	} 
 
-	string s;
-	char * line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	int match=0;
-	while ((read = getline(&line, &len, in_file)) != -1){
-    
-		string str(line);
-		if (str[0] == '[') { // Get Run Number
-			s = str.substr(1,8);
-			sprintf(runid2, "%s", s.c_str());
-			rundb.RunID = strtod(s.c_str(),NULL);
-      //printf("%8.3f\n",rundb.RunID);
-			match = MatchBeam(RUNID,rundb.RunID);
-			if (match){
-				if(thisrun==false)
-				{
-					if (RUNID==rundb.RunID) break;
-				}
-				else
-				{
-					if (RUNID<rundb.RunID) break;
-				}
-			}
-		}else{
-			if (match){
-				if(str.find("*=")==-1 || RUNID==rundb.RunID)
-				{
-				if (str.find("CONFIG")              ==1) {rundb.config_file_s         = GetVariables(str);}
-				if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
-				if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
-				if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
-				if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
-				if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
-				if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
-				if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
-				if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
-				if (str.find("DisableStrip")        ==1){
-					rundb.disable_strip_s     = GetVariables(str);
-					StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
-					if (str.find("EnableStrip")         ==1) {
-						rundb.enable_strip_s      = GetVariables(str);
-						StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
-				}
-			}
-		}
+	// Read run.db
+	readdb(RUNID);
 
-	} // end-of-while(getline-loop)
-	
-	runinfo.NDisableStrip = FindDisableStrip();
-	
 	if(thisrun==false)
 	{
-		sprintf(configfile2, "%s/%s", datadir, rundb.config_file_s.c_str());
+		sprintf(configfile2, "%s/%s", confdir, rundb.config_file_s.c_str());
 	}
 	
+	return;
 }
-
-
 
 
 int readDLayer(char *infile)
@@ -303,8 +253,6 @@ int readDLayer(char *infile)
 		cerr << "failed to open Config File : " << infile << endl;
 		return -1;
 	}
-
-	cout << "Reading configuration info from : " << infile <<endl;
 
     
 	char temp[13][20];
@@ -451,4 +399,82 @@ void checkChi2(char *infile)
 	}
 	
 	
+
 }
+
+
+
+/*
+
+void getPreviousRun(bool thisrun)
+{
+	
+	double RUNID=strtod(runid, NULL);
+	// run DB file
+	char *dbfile="run.db";
+	FILE * in_file;
+	if ((in_file = fopen(dbfile,"r")) == NULL) {
+		printf("ERROR: %s file not found. Force exit.\n",dbfile);;
+		exit(-1);
+	} 
+
+	string s;
+	char * line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	int match=0;
+	while ((read = getline(&line, &len, in_file)) != -1){
+    
+		string str(line);
+		if (str[0] == '[') { // Get Run Number
+			s = str.substr(1,8);
+			sprintf(runid2, "%s", s.c_str());
+			rundb.RunID = strtod(s.c_str(),NULL);
+      //printf("%8.3f\n",rundb.RunID);
+			match = MatchBeam(RUNID,rundb.RunID);
+			if (match){
+				if(thisrun==false)
+				{
+					if (RUNID==rundb.RunID) break;
+				}
+				else
+				{
+					if (RUNID<rundb.RunID) break;
+				}
+			}
+		}else{
+			if (match){
+				if(str.find("*=")==-1 || RUNID==rundb.RunID)
+				{
+				if (str.find("CONFIG")              ==1) {rundb.config_file_s         = GetVariables(str);}
+				if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
+				if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
+				if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
+				if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
+				if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
+				if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
+				if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
+				if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
+				if (str.find("DisableStrip")        ==1){
+					rundb.disable_strip_s     = GetVariables(str);
+					StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
+					if (str.find("EnableStrip")         ==1) {
+						rundb.enable_strip_s      = GetVariables(str);
+						StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+				}
+			}
+		}
+
+	} // end-of-while(getline-loop)
+	
+	runinfo.NDisableStrip = FindDisableStrip();
+	
+	if(thisrun==false)
+	{
+		sprintf(configfile2, "%s/%s", confdir, rundb.config_file_s.c_str());
+	}
+	
+}
+
+*/
+
