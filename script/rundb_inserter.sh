@@ -2,21 +2,30 @@
 #rundb_insterter.sh
 #April 20, 2006, A. Hoffman
 
-INF=$TMPOUTDIR/dLayerChecker.dat;
-DB=testdb.txt;
+# original database to be updated
+DB=run.db;
+# input file to be inserted to run.db
+INF=$TMPOUTDIR/rundb.log;
+# tempolary dababase file during this operation. It will be renamed as run.db at the end
+OFILE=$TMPOUTDIR/rundb_inserter.db;
+# log file for this script
+LOGFILE=$TMPOUTDIR/rundb_inserter.log;
 Test=0;
 
 #Find the run number, the next run number, and the reference line number
 
+# Total Lines in run.db database
 NLINE=`wc $DB | gawk '{print $1}'`
-#grep -n '^.' $LIST > tmplist.txt
 
+
+# Get Total Lines in temporary RunID list 
 grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > $TMPOUTDIR/tmplist.txt
 DbN=`wc $TMPOUTDIR/tmplist.txt | gawk '{ print $1 }'`
-echo -e "DbN is $DbN"
 
+
+# RunID to be inserted 
 RunN=`grep "^\[" $INF | sed -e "s/\[//" | sed "s/\]@//" | gawk '{print $1}'`
-echo -e "Run number is $RunN"
+echo -e "Run number to be inserted : $RunN"
 
 
 #############################################################################
@@ -26,15 +35,15 @@ echo -e "Run number is $RunN"
 
 InsertTag()  {
 
-    header=`grep -n "^\[$RefN" testdb.txt | sed -e "s/:/ /" | gawk '{print $1-1}'`
+    header=`grep -n "^\[$RefN" $DB | sed -e "s/:/ /" | gawk '{print $1-1}'`
     echo -e "$header";
-    head -n $header $DB > tmp1.txt;
+    head -n $header $DB > $OFILE;
 
-    grep '^.' $INF >> tmp1.txt;
-    echo -e "" >> tmp1.txt;
+    grep '^.' $INF >> $OFILE;
+    echo -e "" >> $OFILE;
     residual=$(( $NLINE - $header ));
     echo -e "$residual";
-    tail -n $residual $DB >> tmp1.txt;
+    tail -n $residual $DB >> $OFILE;
 
     echo "insertion complete"
 }
@@ -45,9 +54,9 @@ InsertTag()  {
 
 AppendTag() {
 
-    head -n $NLINE $DB > tmp1.txt
-    echo "" >> tmp1.txt
-    grep '^.' $INF >> tmp1.txt
+    head -n $NLINE $DB > $OFILE
+    echo "" >> $OFILE
+    grep '^.' $INF >> $OFILE
     echo "appending complete"
 
 }
@@ -61,17 +70,15 @@ AppendTag() {
 
 for (( i=1; i<=$DbN; i++ )) do
     RefN=`line.sh "$i" $TMPOUTDIR/tmplist.txt`;
-    Test=`CompareRuns $RefN $RunN`;
-    echo -e "Test = $Test";
+    Test=`CompareRunNmbr $RefN $RunN`;
     if [[ $Test == 1 ]]; then
- 	break
+ 	break;
     fi
 done
  
 echo -e "Test = $Test";
 
 if [[ $Test == 1 ]]; then
-    echo "inserting";
     InsertTag;
     echo "$header";
 
@@ -81,5 +88,15 @@ else
 
 fi
 
-# mv tmp1.txt $DB
-# do not implement the above line until code is perfect.
+NLINE_OFILE=`wc $OFILE | gawk '{print $1}'`;
+if [ $NLINE_OFILE -ge $NLINE ] ; then
+    mv $OFILE $DB
+else 
+    echo "=====================" >> $LOGFILE;
+    echo "RunID=$RunN" >> $LOGFILE;
+    echo "-->contents of run.db log" >> $LOGFILE;
+    cat $INF >> $LOGFILE;
+    echo "-->contents of rundb_inserter.db" >> $LOGFILE;
+    cat $OFLIE >> $LOGFILE;
+    echo " " ;
+fi
