@@ -90,6 +90,7 @@ int main (int argc, char *argv[])
 				runfit=true;
 				sprintf(OperationMode,"(DeadLayer Fit Quality Check Mode)");
 				Mode=1;
+				getPreviousRun();
 				break;
 			default:
 				fprintf(stdout,"Invalid Option \n");
@@ -305,7 +306,7 @@ int readDLayer(char *infile)
 	{
 		countstrip=0;
 		for(unsigned short strip=0;strip<strips_per_detector;strip++)
-		{
+		  {
 			if(isStripAlive(strips_per_detector*detector + strip)==true)
 			{
 				countstrip++;
@@ -363,40 +364,45 @@ void checkChi2(char *infile)
 	float chi2;
 	char *fitstatus;
 	
-	int stripcount =1;
-	
-	while (stripcount<NSTRIP) {
+	int counter=0;
+	while (counter<NSTRIP) {
         
 		DlayerFile.getline(buffer, sizeof(buffer), '\n'); 
-		
-		strtok(buffer," ");
-		for(short ii=0;ii<7;ii++)
-		{
-			strtok(NULL," ");
-		}
+
+
+		// get Strip #, chi2 and fitting status from buffer 
+		int stripID=atoi(strtok(buffer," "));
+		for(short ii=0;ii<7;ii++)   strtok(NULL," ");
 		chi2=atof(strtok(NULL," "));
 		strtok(NULL," ");
 		fitstatus=strtok(NULL," ");
-		
-		if(chi2>chi2max)
-		{
-			cout<<"chi2 is too large for strip "<<stripcount<<endl;
+
+		  // ignore if strip is disabled in run.db
+		  if(isStripAlive(stripID)==true) {
+		    
+		    // test chi2
+		    if(chi2>chi2max)
+		      {
+			cout<< "chi2 = "<< chi2 << " exceeds limit " << chi2max << " in strip #" << stripID+1 <<endl;
 			fitresult=0;
 			break;
-		}
+		      }
 		
-		string ss=fitstatus;
-		
-		if(ss!="SUCCESSFUL")
-		{
+		    // test fitting status
+		    string ss=fitstatus;
+		    if(ss!="SUCCESSFUL")
+		      {
 			cout<<fitstatus<<endl;
-			cout<<"fit status not successful for strip "<<stripcount<<endl;
+			cout<<"fit status not successful for strip "<<stripID<<endl;
 			fitresult=0;
 			break;
-		}
+		      }
 		
-		stripcount++;
-	}
+		  }// end-if-isStripAlive()
+
+		  counter++;
+
+	}// end-while(stripcount<NSTRIP)
 	
 	
 
