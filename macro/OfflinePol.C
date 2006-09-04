@@ -13,6 +13,8 @@
 #define Debug 0
 
 const Int_t N=2000;
+Int_t RUN=5;
+
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 
 //Int_t SuperposeComments(Int_t Mode, TH2D *frame);
@@ -123,13 +125,14 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
     Float_t Fill,ID;
     Float_t dum[10];
-    Char_t buffer[300];
+    Char_t buffer[300], line[300];
     Char_t *RunStatus, *target, *tgtOp;
     Int_t i=0;
     Int_t ch=0;
     while ( ( ch = fin.peek()) != EOF ) {
       
       fin.getline(buffer, sizeof(buffer), '\n'); 
+      sprintf(line,buffer);
       // skip header if DATAFILE starts from "==========="
       if (strstr(buffer,"=====")) {
 	for (int j=0; j<4; j++) fin.getline(buffer, sizeof(buffer), '\n'); 
@@ -144,28 +147,33 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
       // process if RunStatus != "Junk" or "N/A-"
       if ( strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-") ){
-	for (int k=0; k<6; k++) strtok(NULL, " ");
-	P_offline[i]  = atof(strtok(NULL," "));
-	dP_offline[i] = atof(strtok(NULL," "));
-	phi[i]        = atof(strtok(NULL," "));
-	dphi[i]       = atof(strtok(NULL," "));
-	chi2[i]       = atof(strtok(NULL," "));
-	A_N[i]        = atof(strtok(NULL," "));
-	target        = strtok(NULL," ");
-	tgtOp         = strtok(NULL," ");
-	Rate[i]       = atof(strtok(NULL," "));
-	SpeLumi[i]    = atof(strtok(NULL," "));
-	DiffP[i]      = atof(strtok(NULL," "));
 
-	// overflow
-	if (fabs(DiffP[i])>20) DiffP[i]=-20;
+	// Skip incomplete lines due to half way running Asym. 
+	if (strlen(line)>50) { 
+	  for (int k=0; k<6; k++) strtok(NULL, " ") ;
+	  P_offline[i]  = atof(strtok(NULL," "));
+	  dP_offline[i] = atof(strtok(NULL," "));
+	  phi[i]        = atof(strtok(NULL," "));
+	  dphi[i]       = atof(strtok(NULL," "));
+	  chi2[i]       = atof(strtok(NULL," "));
+	  A_N[i]        = atof(strtok(NULL," "));
+	  target        = strtok(NULL," ");
+	  tgtOp         = strtok(NULL," ");
+	  Rate[i]       = atof(strtok(NULL," "));
+	  SpeLumi[i]    = atof(strtok(NULL," "));
+	  DiffP[i]      = atof(strtok(NULL," "));
 
-	// fill 1-dim histograms
-	Pdiff->Fill(DiffP[i]);
-	phiDist->Fill(phi[i]);
-	sfitchi2->Fill(chi2[i]);
+	  // overflow
+	  if (fabs(DiffP[i])>20) DiffP[i]=-20;
 
-      }
+	  // fill 1-dim histograms
+	  Pdiff->Fill(DiffP[i]);
+	  phiDist->Fill(phi[i]);
+	  sfitchi2->Fill(chi2[i]);
+
+	} // end-of-if(strlen(50)
+
+      } // end-of-if(strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-");
       
       index[i]=i; ++i; 
       if (i>N-1){
@@ -175,6 +183,9 @@ OfflinePol::GetData(Char_t * DATAFILE){
       } // if-(i>N)
 
     }// end-of-while(!fin.eof())
+
+    // Run-5, Run-6, Run-7....
+    if (RunID[0]>7400) RUN=6;
 
     fin.close();
     return i-1;
@@ -265,18 +276,18 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   Char_t title[100];
   sprintf(title,"Polarization (%s) %s", Beam, subtitle);
 
+  ymin=-70 ; ymax=-20;
+  if (RUN==6) {ymin=20; ymax=80;}
 
   // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
   case 10:
     GetScale(RunID, ndata, margin, xmin, xmax);
-    ymin=20; ymax=80;
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="Polarization [%]";
     break;
   case 15:
     GetScale(index, ndata, margin, xmin, xmax);
-    ymin=20; ymax=80;
     Char_t xtitle[100]="Index";
     Char_t ytitle[100]="Polarization [%]";
     break;
@@ -303,7 +314,6 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
     break;
   case 70:
     xmin=-30; xmax=30;
-    ymin=20; ymax=80;
     Char_t xtitle[100]="phi angle [deg]";
     Char_t ytitle[100]="P_offline [%]";
     sprintf(title,"P vs. phi angle %s",Beam, subtitle);
