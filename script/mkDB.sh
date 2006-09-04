@@ -84,24 +84,27 @@ MakeAnalyzedRunList(){
   do 
 
     f="$ASYMDIR/analyzed_runlist.$a"
-    NLINE=`wc $f | gawk '{print $1}'`
-    for (( i=1; i<=$NLINE; i++ )) ; 
-       do
-       RunID=`$INSTALLDIR/line.sh $i $f` 
-       FILL=`echo $RunID | gawk '{printf("%4d",$RUNID)}'`;
-       Test=`echo $RunID $FILL | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
-       if [ $Test -eq 1 ]&&[ $DISTRIBUTION -eq 2 ] ; then
-	   Beam="Yellow"
-	   echo -e -n "$RunID $a\n"  >> $TMPLIST
-       elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
-	   Beam="Blue"
-	   echo -e -n "$RunID $a\n"  >> $TMPLIST
-       elif [ $DISTRIBUTION -eq 0 ] ; then
-	   echo -e -n "$RunID $a\n"  >> $TMPLIST
-       fi
-       
-       done
-      
+    if [ -f $f ] ; then
+	NLINE=`wc $f | gawk '{print $1}'`
+	for (( i=1; i<=$NLINE; i++ )) ; 
+	  do
+	  RunID=`$INSTALLDIR/line.sh $i $f` 
+	  FILL=`echo $RunID | gawk '{printf("%4d",$RUNID)}'`;
+	  Test=`echo $RunID $FILL | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
+	  if [ $Test -eq 1 ]&&[ $DISTRIBUTION -eq 2 ] ; then
+	      Beam="Yellow"
+	      echo -e -n "$RunID $a\n"  >> $TMPLIST
+	  elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
+	      Beam="Blue"
+	      echo -e -n "$RunID $a\n"  >> $TMPLIST
+	  elif [ $DISTRIBUTION -eq 0 ] ; then
+	      echo -e -n "$RunID $a\n"  >> $TMPLIST
+	  fi
+	  
+	done
+
+    fi
+
   done
 
 
@@ -282,7 +285,7 @@ grepit(){
 
 	printf "  %4s  %5s" $RUN_STATUS $CREW;
 	grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'
-	arg=`grep 'End Time:' $LOGFILE | sed -e 's/End Time:/ /' | sed -e 's/2006//'`
+	arg=`grep 'End Time:' $LOGFILE | grep -v 'Scaler' | sed -e 's/End Time:/ /' | sed -e 's/200[4-9]//'`
 	echo -e -n "$arg";
 	grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f %5.1f",$4*100,$5*100)}'
 #	    grep 'Average Polarization' $LOGFILE | gawk '{printf(" %6.1f%7.1f",$4*100,$5*100)}'
