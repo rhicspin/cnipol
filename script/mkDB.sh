@@ -287,7 +287,7 @@ grepit(){
 	grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'
 	arg=`grep 'End Time:' $LOGFILE | grep -v 'Scaler' | sed -e 's/End Time:/ /' | sed -e 's/200[4-9]//'`
 	echo -e -n "$arg";
-	grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f %5.1f",$4*100,$5*100)}'
+	grep 'Polarization (sinphi)     ' $LOGFILE | gawk '{printf(" %6.1f %5.1f",$4*100,$5*100)}'
 #	    grep 'Average Polarization' $LOGFILE | gawk '{printf(" %6.1f%7.1f",$4*100,$5*100)}'
 	grep 'Phase' $LOGFILE | gawk '{printf(" %7.1f %5.1f",$5,$6)}'
 	grep 'chi2/d.o.f (sinphi fit)     ' $LOGFILE | gawk '{printf(" %4.2f",$5)}'
