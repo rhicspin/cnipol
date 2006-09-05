@@ -4,10 +4,11 @@ AsymErrorDetector()
 {
 
   // Root file open
-  TFile * rootfile = new TFile("7642.101.root");
+  TFile * rootfile = new TFile("root/7325.007.root");
 
   // Cambus Setup
   TCanvas *CurC = new TCanvas("CurC","",1);
+  CurC -> SetGridx();
 
   // postscript file
   Char_t psfile[100];
@@ -21,11 +22,16 @@ AsymErrorDetector()
 
   rootfile->cd();
   ErrDet->cd();
+  gStyle->SetOptFit(111);
   asym_bunch_x90 -> Draw(); CurC -> Update(); ps->NewPage();
   asym_bunch_x45 -> Draw(); CurC -> Update(); ps->NewPage();
   asym_bunch_y45 -> Draw(); CurC -> Update(); ps->NewPage();
-  bunch_rate     -> Draw(); CurC -> Update(); ps->NewPage();
-  rate_vs_bunch  -> Draw("AP"); CurC -> Update(); 
+  //  bunch_rate     -> Draw(); CurC -> Update(); ps->NewPage();
+  rate_vs_bunch  -> Draw("AP"); CurC -> Update(); ps->NewPage();
+
+  rootfile->cd();
+  Bunch->cd();
+  bunch_dist     -> Draw(); CurC -> Update();
 
   cout << "ps file : " << psfile << endl;
   ps->Close();
