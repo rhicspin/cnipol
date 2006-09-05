@@ -4,11 +4,12 @@
 # I. Nakagawa
 
 
+RUNLIST=$DATADIR/raw_data.list;
 CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
 DLAYERDIR=$ASYMDIR/dlayer
 HBOOKDIR=$ASYMDIR/hbook
 LOGDIR=$ASYMDIR/log
-FROM_FILL=7538;
+FROM_FILL=6500;
 TILL_FILL=9000;
 SLEEP_TIME=1800;
 
@@ -41,9 +42,11 @@ help(){
     echo    " "
     echo    " cnipol_daemon.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>]"; 
-    echo    "                  [--run-Asym]";
-    echo    "    : search for new run which has not been analyized and then run analysis program "
+    echo    "                  [--run-Asym][--runlist <runlist>]";
+    echo    "    : search for new run from <runlist> which has not been analyized and then run"
+    echo    "      analysis program."
     echo    " "
+    echo -e "   --runlist <runlist>       data run list file [def]:$RUNLIST";
     echo -e "   -F <Fill#>                run program for runs in <Fill#>"
     echo -e "   --fill-from <Fill#>       run program for runs from <Fill#> [def]:$FROM_FILL";
     echo -e "   --fill-till <Fill#>       run program for runs till <Fill#> [def]:$TILL_FILL";
@@ -165,19 +168,23 @@ RunAsym(){
     NEVENTS=`OnlinePol.sh -f $RunID --nevents -k`;
     if [ $NEVENTS -lt 50 ] ; then
 	echo -e "\n";
-	echo -e "[$RunID]@" | tee $TMPOUTDIR/dLayerChecker.dat;
-	echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPOUTDIR/dLayerChecker.dat;
-	echo -e "\tCOMMENT*=\"Number of events < 50k.\";@" | tee -a $TMPOUTDIR/dLayerChecker.dat;
+	echo -e "[$RunID]@" | tee $TMPOUTDIR/rundb.log;
+	echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPOUTDIR/rundb.log;
+	echo -e "\tCOMMENT*=\"Number of events < 50k.\";@" | tee -a $TMPOUTDIR/rundb.log;
 	echo -e "\n";
-	rundb_updater.pl
+#	rundb_updater.pl
+	rundb_inserter.sh 
     fi
+    echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
     dLayerChecker -f $RunID;
     if [ $? -eq 0 ] ; then
 	dLayerChecker -z $RunID
-	rundb_updater.pl 
+#	rundb_updater.pl 
+	rundb_inserter.sh 
     fi
 
     nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+    mv $RunID.root root/.;
     echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
 }
@@ -203,7 +210,8 @@ fi
 while [ 1 ] ; 
   do 
 
-  for f in `ls $DATADIR/????.???.data` ;
+  for f in `cat $RUNLIST` ;
+#  for f in `ls $DATADIR/????.???.data` ;
     do 
     RunID=`basename $f | sed -e 's/\.data//'`; 
     fill=`echo $RunID | sed -e 's/\./ /' | gawk '{print $1}'`;
@@ -245,6 +253,7 @@ done;
 
 while test $# -ne 0; do
   case "$1" in
+  --runlist)       shift ; RUNLIST=$1 ;;
   -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from)     shift ; FROM_FILL=$1;;
   --fill-till)     shift ; TILL_FILL=$1;;

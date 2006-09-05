@@ -97,6 +97,6 @@ else
     echo "-->contents of run.db log" >> $LOGFILE;
     cat $INF >> $LOGFILE;
     echo "-->contents of rundb_inserter.db" >> $LOGFILE;
-    cat $OFLIE >> $LOGFILE;
+    cat $OFILE >> $LOGFILE;
     echo " " ;
 fi
