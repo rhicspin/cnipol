@@ -4,7 +4,7 @@
 #March, 11, 2006
 ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
 ONLINE_DB="$DATADIR/OnlinePol.dat";
-ExeAnalyzedRunList=1 ;
+ExeAnalyzedRunList=0 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
 ExeOnlineNevents=0;
