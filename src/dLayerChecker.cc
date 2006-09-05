@@ -108,7 +108,6 @@ int main (int argc, char *argv[])
 
 	// OperationMode == Deadalyer Fit Quality Check
 	if (Mode) checkChi2(configfile);
-
 	
 	if(runfit==true)
 	{
@@ -366,12 +365,13 @@ void checkChi2(char *infile)
 	
 	int counter=0;
 	while (counter<NSTRIP) {
-        
-		DlayerFile.getline(buffer, sizeof(buffer), '\n'); 
 
+		DlayerFile.getline(buffer, sizeof(buffer), '\n'); 
+		if (strchr(buffer,' ')==NULL) break;
 
 		// get Strip #, chi2 and fitting status from buffer 
 		int stripID=atoi(strtok(buffer," "));
+
 		for(short ii=0;ii<7;ii++)   strtok(NULL," ");
 		chi2=atof(strtok(NULL," "));
 		strtok(NULL," ");
@@ -404,7 +404,7 @@ void checkChi2(char *infile)
 
 	}// end-while(stripcount<NSTRIP)
 	
-	
+	return;
 
 }
 
