@@ -9,6 +9,7 @@ ExeMakeDatabase=1;
 ExclusiveMode=0;
 ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
+ExeDlayerConfig=0;
 ExpertMode=0;
 FROM_FILL=7537;
 if [ $RHICRUN ] ; then
@@ -27,10 +28,11 @@ help(){
     echo    " "
     echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "         [--analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
-    echo    "         [--online][--online-nevents]";
+    echo    "         [--online][--online-nevents][--dlayer-config]";
     echo    "    : make pC (offline) offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist file [def]:$ANALYZED_RUN_LIST";
+    echo -e "   --dlayer-config           Make database for configulation files loaded";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
@@ -55,9 +57,17 @@ ShowExample(){
     echo    " "
     echo    "    mkDB.sh --fill-from 7575 --fill-till 7590"
     echo    " "
-    echo    "2. make analyzed runlist"
+    echo    "2. make analyzed runlist = $ANALYZED_RUN_LIST"
     echo    " "
     echo    "    mkDB.sh -a"
+    echo    " "
+    echo    "3. make exclusive database for blue from <runlist> and dump to <file>"
+    echo    " "
+    echo    "    mkDB.sh --blue -f <runlist> --exclusive | tee <file>"
+    echo    " "
+    echo    "4. make configulation file database loaded in Asym.";
+    echo    " "
+    echo    "    mkDB.sh --blue -f <runlist> --exclusive --dlayer-config"
     echo    " "
     exit;
 
@@ -69,7 +79,6 @@ ShowExample(){
 #############################################################################
 MakeAnalyzedRunList(){
 
-  TMPOUTDIR=/tmp/cnipol;
   if [ ! -d $TMPOUTDIR ]; then
       mkdir $TMPOUTDIR;
   fi
@@ -108,13 +117,28 @@ MakeAnalyzedRunList(){
   done
 
 
-  if [ $ExeMakeDatabase == 1 ] ; then
-      sort $TMPLIST > $ANALYZED_RUN_LIST;
-  else
-      sort $TMPLIST | tee $ANALYZED_RUN_LIST;
+  # sorting 
+  sort $TMPLIST > $ANALYZED_RUN_LIST;
+  mv -f $ANALYZED_RUN_LIST $TMPLIST;
+
+  #eliminate double counting same RunID
+  NLINE=`wc $TMPLIST | gawk '{print $1}'`;
+  for (( i=1; i<=$NLINE; i++ )); do
+      run=`line.sh $i $TMPLIST | gawk '{print $1}'`;
+      if [ $i -eq 1 ] ; then 
+	  line.sh $i $TMPLIST >>  $ANALYZED_RUN_LIST;
+      else 
+	  if [ $run != $prev ] ; then
+	      line.sh $i $TMPLIST >> $ANALYZED_RUN_LIST;
+	  fi
+      fi
+      prev=$run;
+  done
+
+
+  if [ $ExeMakeDatabase != 1 ] ; then
+      cat $ANALYZED_RUN_LIST;
   fi
-
-
 
   rm -f $TMPLIST;
 
@@ -188,6 +212,20 @@ ShowIndexOnline(){
 
 }
 
+ShowDlayerConfigIndex(){
+
+    printf "=====================================================================================\n";
+    printf " RunID  ";
+    printf " ConfigID";
+    printf " Dlayer";
+    printf " Error";
+    printf " Rate";
+    printf " \n";
+    printf "=====================================================================================\n";
+
+
+}
+
 
 
 
@@ -248,6 +286,34 @@ OnlineDatabase(){
 }
 
 
+#############################################################################
+#                          dLyaerConfig()                                   #
+#############################################################################
+dLayerConfig(){
+
+    if [ -f $TMPOUTDIR/mkDB.log ]; then
+	rm -f $TMPOUTDIR/mkDB.log;
+    fi
+
+    echo -e -n "$RunID ";
+    basename `grep CONFIG $LOGFILE | gawk '{print $3}'` 2> /dev/null | sed -e 's/.config.dat//' | gawk '{printf("%s",$1)}' | tee $TMPOUTDIR/mkDB.log;
+    CONFIG_ID=`cat $TMPOUTDIR/mkDB.log`;
+
+    DLAYERDIR=$ASYMDIR/dlayer
+    DlayerFile=$DLAYERDIR/$CONFIG_ID.temp.dat;
+    FITLOGFILE=$DLAYERDIR/$CONFIG_ID.fit.log;
+    LOGFILE=$ASYMDIR/douts/$CONFIG_ID.dl.log;
+
+    READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5*1e-6)}'`
+    AVE_Dl=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`
+    AVE_Dl_ERROR=`grep "Deviation/strip=" $FITLOGFILE | gawk '{printf("%5.2f", $2)}'`
+    if [ $AVE_Dl ] ; then
+	echo -e -n " $AVE_Dl $AVE_Dl_ERROR $READ_RATES "        
+    fi
+
+    echo -e -n "\n";
+
+}
 
 #############################################################################
 #                                grepit()                                   #
@@ -299,8 +365,9 @@ grepit(){
 	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
 	echo $OnlineP $OfflineP | gawk '{printf(" %6.2f",$1-$2)}'
 	if [ $ExpertMode -eq 1 ] ; then
-	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
-	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
+	    basename `grep CONFIG $LOGFILE | gawk '{print $3}'` 2> /dev/null | gawk '{printf(" %s",$1)}';
+#	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
+#	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
         fi
 	echo -e -n "\n";
     fi
@@ -342,6 +409,8 @@ for f in `cat $DATADIR/raw_data.list` ;
 		      if [ -f $LOGFILE ] ; then
 			  if [ $ExeOnlineNevents -eq 1 ] ; then
 			      OnlineNevents;
+			  elif [ $ExeDlayerConfig -eq 1 ] ; then
+			      dLayerConfig;
 			  else
 			      grepit;
 			  fi
@@ -402,6 +471,7 @@ while test $# -ne 0; do
   --exclusive) ExclusiveMode=1;;
   --blue)   DISTRIBUTION=1;;
   --yellow) DISTRIBUTION=2;;
+  --dlayer-config) ExeDlayerConfig=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
@@ -420,6 +490,8 @@ fi
 if [ $ExeMakeDatabase -eq 1 ] ; then
     if [ $ExeOnlineDatabase -eq 1 ]; then
 	ShowIndexOnline;
+    elif [ $ExeDlayerConfig -eq 1 ]; then
+	ShowDlayerConfigIndex;
     else
 	ShowIndex;
     fi
