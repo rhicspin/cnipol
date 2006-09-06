@@ -298,17 +298,24 @@ dLayerConfig(){
     echo -e -n "$RunID ";
     basename `grep CONFIG $LOGFILE | gawk '{print $3}'` 2> /dev/null | sed -e 's/.config.dat//' | gawk '{printf("%s",$1)}' | tee $TMPOUTDIR/mkDB.log;
     CONFIG_ID=`cat $TMPOUTDIR/mkDB.log`;
+    if [ ! $CONFIG_ID ] ; then
+	echo -e -n "0000 0 0 0" ;
+    fi
+
 
     DLAYERDIR=$ASYMDIR/dlayer
-    DlayerFile=$DLAYERDIR/$CONFIG_ID.temp.dat;
     FITLOGFILE=$DLAYERDIR/$CONFIG_ID.fit.log;
     LOGFILE=$ASYMDIR/douts/$CONFIG_ID.dl.log;
 
-    READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5*1e-6)}'`
-    AVE_Dl=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`
-    AVE_Dl_ERROR=`grep "Deviation/strip=" $FITLOGFILE | gawk '{printf("%5.2f", $2)}'`
-    if [ $AVE_Dl ] ; then
-	echo -e -n " $AVE_Dl $AVE_Dl_ERROR $READ_RATES "        
+    if [ -f $FITLOGFILE ]&&[ -f $LOGFILE ]  ; then
+	READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5*1e-6)}'`
+	AVE_Dl=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`
+	AVE_Dl_ERROR=`grep "Deviation/strip=" $FITLOGFILE | gawk '{printf("%5.2f", $2)}'`
+	if [ $AVE_Dl ] ; then
+	    echo -e -n " $AVE_Dl $AVE_Dl_ERROR $READ_RATES "        
+	else
+	    echo -e -n " 0 0 0 "        
+	fi
     fi
 
     echo -e -n "\n";
