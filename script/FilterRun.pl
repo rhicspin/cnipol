@@ -55,9 +55,9 @@ if($DLAYER){DlayerMode();};
 sub help(){
 
     print "\n";
-    print " Usage:\n  $0 [-h][--dlayer][ -f <runlist>][--update-link][--def-link]\n\n";
-    print "              [--src-list <srclist>]"; 
-    print "    Filter runs based on the runlist. ";
+    print " Usage:\n  $0 [-h][--dlayer][ -f <runlist>][--update-link][--def-link]\n";
+    print "              [--src-list <srclist>]\n\n"; 
+    print "    Filter runs based on the runlist.\n";
     print "    dlayer SRC datafile = summary/dLayer_Blue(Yellow)_FTP(INJ)_all.dat.\n\n";
     print "\t -f <runlist>   base run list file [def]:$FILTER_DB \n";
     print "\t --src-list <srclist>  src run list file to be filtered \n";
@@ -71,7 +71,7 @@ sub help(){
     print "    ex.1) $0 -f runlist.db --dlayer \n\n";
     print "    ex.2) Redirect link to default (all) files:\n";
     print "          $0 --dlayer --def-link \n\n";
-    print "    ex.3) Filter <srclist> based on <runlist>\n";
+    print "    ex.3) Filter <srclist> based on <runlist>. Default output $DEF_FILTERD_DB\n";
     print "          $0 --src-list <srclist> -f <runlist>";
     print "\n\n";
     exit(0);
