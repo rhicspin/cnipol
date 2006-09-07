@@ -45,6 +45,7 @@ private:
     bool ScaleToF;
     bool RateCorrection;
     bool RadDamageFit;
+    bool RadDamageDraw;
     bool ConfigFile;
   } opt;
 
@@ -167,7 +168,9 @@ DlayerAnalyzer::OptionHandler(){
   // Apply Rate Correction onto Deadlayer Thickness
   opt.RateCorrection=true;
   // Fit Deadlayer History to vanish radiation damage
-  opt.RadDamageFit=true;
+  opt.RadDamageFit=false;
+  // Draw above resulting Linear fit Lines on Deadlayer History plots 
+  opt.RadDamageDraw=true;
   // plot Configulation file history
   opt.ConfigFile=false;
 
@@ -276,6 +279,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	// Radiation Damage Correction
 	Dl_proj[i] = RadiationDamageProjection(RunID[i], Fill, Dl[i]);
 	ProjDlayerRadCorr  -> Fill(Dl_proj[i]);
+
 
 	// adjust T0 distribution btwn 60 and 120 bunches modes
 	if (opt.ScaleToF) {
@@ -408,10 +412,10 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   // supoerposition ntuples
   if (opt.Ntuple) OverDrawNtuple(Mode, ndata, Mtyp, text, Color, aLegend);
 
-  if (opt.RadDamageFit){
-    // Fit Deadlayer History to vanish radiation damage (only flattop)
-    //    if ((Mode==10)&&(Mtyp==20)) RadiationDamageFitter(tgae);
-    if ((Mode==10)&&(Mtyp==20)) RadiationDamageDrawer(tgae, Color);
+  // Fit Deadlayer History to vanish radiation damage (only flattop)
+  if ((Mode==10)&&(Mtyp==20)){
+       if (opt.RadDamageFit) RadiationDamageFitter(tgae);
+       if (opt.RadDamageDraw) RadiationDamageDrawer(tgae, Color);
   }
 
   // supserpose configluation file updates by Asym
