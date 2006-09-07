@@ -45,6 +45,7 @@ private:
     bool ScaleToF;
     bool RateCorrection;
     bool RadDamageFit;
+    bool ConfigFile;
   } opt;
 
   typedef struct {
@@ -57,6 +58,11 @@ private:
   struct SingleStruct {
     StructFitMode Par2, Par1;
   } single;
+
+  struct StructDlHistoryFitPar {
+    Float_t par[2];
+    Float_t intersection;
+  } blue[2], yellow[2];
 
   typedef struct {
     Float_t sigma;
@@ -74,12 +80,23 @@ private:
     StructError err;
   } sys[2];
 
+  typedef struct {
+    Float_t RunID[N];
+    Float_t cRunID[N];
+    Float_t dx[N];
+    Float_t Dl[N];
+    Float_t DlE[N];
+    Float_t ReadRate[N];
+  } StructConfigFileDB;
+
 
   // Analysis summary data file
   ofstream fout;
 
 public:
   void OptionHandler();
+  Float_t RateCorrection(Float_t x);
+  Int_t InitScope();
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
   Int_t PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text);
   Int_t PlotWCM(Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtyp, Char_t*text);
@@ -90,11 +107,41 @@ public:
   Int_t GetData(Char_t * DATAFILE);
   Int_t RadiationDamageFitter(TGraphErrors* tgae);
   Int_t RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color);
+  Int_t RadiationDamageProjection(Float_t runid, Int_t Fill, Float_t dl);
   Int_t CalcSystematicError();
   Int_t PrintOutput();
 
+  TGraphErrors * PlotConfigFile(Int_t Mode, Int_t Color, Char_t * text);
+
 }; // end-class DlayerAnalyzer
 
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : InitScope()
+//
+// Description : Initiarize parameters
+// Input       : 
+// Return      : 
+//
+Int_t
+DlayerAnalyzer::InitScope(){
+
+  // deadlayer history linear fit parameters
+  blue[0].par[0] = -300.47;
+  blue[0].par[1] = 0.0496;
+  blue[1].par[0] = -21.4;
+  blue[1].par[1] = 0.00957;
+  blue[0].intersection = (blue[0].par[0]-blue[1].par[0])/(blue[1].par[1]-blue[0].par[1]);
+
+  yellow[0].par[0] = -443.43;
+  yellow[0].par[1] = 0.0703;
+  yellow[1].par[0] = 16;
+  yellow[1].par[1] = 0.00476;
+  yellow[0].intersection = (yellow[0].par[0]-yellow[1].par[0])/(yellow[1].par[1]-yellow[0].par[1]);
+
+  return 0;
+}
 
 //
 // Class name  : DlayerAnalyzer
@@ -108,7 +155,7 @@ void
 DlayerAnalyzer::OptionHandler(){
 
   // plot injection
-  opt.Injection=true;
+  opt.Injection=false;
   // Plot Single strip Behavior 
   opt.SingleStrip=false;
   // Plot ntuples
@@ -121,6 +168,8 @@ DlayerAnalyzer::OptionHandler(){
   opt.RateCorrection=true;
   // Fit Deadlayer History to vanish radiation damage
   opt.RadDamageFit=true;
+  // plot Configulation file history
+  opt.ConfigFile=false;
 
   // Error allocation
   corr[0].AsignError = corr[1].AsignError = 3; // sigma
@@ -216,7 +265,8 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	ProjDlayerRaw -> Fill(Dl[i]);
 	DlAveDeviation -> Fill(DlE[i]);
 
-	if (opt.RateCorrection)	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+	if (opt.RateCorrection)	Dl[i] -= RateCorrection(ReadRate[i]);
+	//	if (opt.RateCorrection)	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	//Dl[i] -= (7.13*ReadRate[i]*ReadRate[i]*ReadRate[i]-9.44*ReadRate[i]*ReadRate[i]+5.78*ReadRate[i]);
 	//Dl[i] -= (7.86*ReadRate[i]*ReadRate[i]*ReadRate[i]-10.71*ReadRate[i]*ReadRate[i]+6.29*ReadRate[i]);
 
@@ -224,11 +274,7 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 	ProjDlayerRateCorr -> Fill(Dl[i]);
 
 	// Radiation Damage Correction
-	if ((RunID[i]-Fill)*1000-100>0) {
-	  Dl_proj[i] = RunID[i]<6960 ? Dl[i] - (-389+0.0625*RunID[i]) : Dl[i] - 46. ;
-	}else {
-	  Dl_proj[i] = RunID[i]<6970 ? Dl[i] - (-149+0.0274*RunID[i]) : Dl[i] - 42. ;
-	}
+	Dl_proj[i] = RadiationDamageProjection(RunID[i], Fill, Dl[i]);
 	ProjDlayerRadCorr  -> Fill(Dl_proj[i]);
 
 	// adjust T0 distribution btwn 60 and 120 bunches modes
@@ -270,6 +316,20 @@ DlayerAnalyzer::GetData(Char_t * DATAFILE){
 
 //
 // Class name  : DlayerAnalyzer
+// Method name : RateCorrection(Float_t x)
+//
+// Description : Calculate deadlayer thickness currection for rate
+// Input       : Float_t x (rate)
+// Return      : 
+//
+Float_t
+DlayerAnalyzer::RateCorrection(Float_t x){return 3.66*x*x-0.02*x; }
+
+
+
+
+//
+// Class name  : DlayerAnalyzer
 // Method name : Plot(Int_t Mode)
 //
 // Description : Plot data
@@ -284,6 +344,10 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 10:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, Dl, dx, DlE);
     if (opt.SingleStrip) PlotSingleStrip(Mode,ndata,Mtyp,text);
+    if (opt.ConfigFile) {
+      TGraphErrors * tg; 
+      tg = PlotConfigFile(Mode,Color,text);
+    }
     break;
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, Dl, dx, DlE);
@@ -346,10 +410,12 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
 
   if (opt.RadDamageFit){
     // Fit Deadlayer History to vanish radiation damage (only flattop)
-    //if ((Mode==10)&&(Mtyp==20)) RadiationDamageFitter(tgae);
+    //    if ((Mode==10)&&(Mtyp==20)) RadiationDamageFitter(tgae);
     if ((Mode==10)&&(Mtyp==20)) RadiationDamageDrawer(tgae, Color);
   }
 
+  // supserpose configluation file updates by Asym
+  if ((opt.ConfigFile)&&(Mode==10)) tg -> Draw("PL");
 
   return 0;
 
@@ -543,18 +609,16 @@ Int_t
 DlayerAnalyzer::RadiationDamageFitter(TGraphErrors* tgae)
 { 
 
-  TF1 *f1 = new TF1("f1","pol1",6800,6920);
-  TF1 *f2 = new TF1("f2","pol1",6920,7010);
-  TF1 *f3 = new TF1("f3","pol1",7020,7350);
+  TF1 *f1 = new TF1("f1","pol1",6800,7050);
+  TF1 *f2 = new TF1("f2","pol1",7000,7400);
   f1->SetLineColor(2);
   f2->SetLineColor(2);
-  f3->SetLineColor(2);
+  cout << "****** Range 1 *********" << endl;
   tgae->Fit("f1","R");
   f1->Draw("same");
+  cout << "****** Range 2 *********" << endl;
   tgae->Fit("f2","R");
   f2->Draw("same");
-  tgae->Fit("f3","R");
-  f3->Draw("same");
 
 
   return 0;
@@ -565,20 +629,25 @@ DlayerAnalyzer::RadiationDamageFitter(TGraphErrors* tgae)
 // Class name  : DlayerAnalyzer
 // Method name : RadiationDamageFitter()
 //
-// Description : Fit deadlayer history to vanish radiation damage
-// Input       : 
-// Return      : 
+// Description : draw deadlayer history fitting results
+// Input       : TGraphErrors* tgae, Int_t Color
+// Return      : 0
 //
 Int_t
 DlayerAnalyzer::RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color)
 { 
 
+  Char_t linf[100];
   if (Color==4) { // Blue 
-    TF1 *f1 = new TF1("f1","-149+0.0274*x",6600,6970);
-    TF1 *f2 = new TF1("f1","42",6940,7350);
-  }else{
-    TF1 *f1 = new TF1("f1","-389+0.0625*x",6600,7020);
-    TF1 *f2 = new TF1("f1","46",6940,7350);
+    sprintf(linf,"%f+(%f)*x",blue[0].par[0],blue[0].par[1]);
+    TF1 *f1 = new TF1("f1",linf,6600,6970);
+    sprintf(linf,"%f+(%f)*x",blue[1].par[0],blue[1].par[1]);
+    TF1 *f2 = new TF1("f2",linf,6940,7350);
+  }else{ // Yellow
+    sprintf(linf,"%f+(%f)*x",yellow[0].par[0],yellow[0].par[1]);
+    TF1 *f1 = new TF1("f1",linf,6600,7020);
+    sprintf(linf,"%f+(%f)*x",yellow[1].par[0],yellow[1].par[1]);
+    TF1 *f2 = new TF1("f2",linf,6940,7350);
   }
 
   f1->SetLineColor(2);
@@ -590,6 +659,28 @@ DlayerAnalyzer::RadiationDamageDrawer(TGraphErrors* tgae, Int_t Color)
 };
 
 
+//
+// Class name  : DlayerAnalyzer
+// Method name : RadiationDamageProjection(Float_t RunID,Int_t Fill, Float_t dl)
+//
+// Description : calculate deadlayer history fitting projection
+// Input       : (Float_t runid, int_t fill, Float_t dl)
+// Return      : Float_t proj
+//
+Float_t 
+DlayerAnalyzer::RadiationDamageProjection(Float_t runid, Int_t fill, Float_t dl){
+
+  Float_t proj;
+  Int_t range;
+  if ((runid-fill)*1000-100 < 0) { // blue
+    range = runid < blue[0].intersection  ? 0 : 1;
+    proj = dl - (blue[range].par[0]+blue[range].par[1]*runid);
+  }else{ // yellow
+    range = runid < yellow[0].intersection  ? 0 : 1;
+    proj = dl - (yellow[range].par[0]+yellow[range].par[1]*runid);
+  }
+  return proj;
+}
 
 
 //
@@ -855,6 +946,8 @@ DlayerAnalyzer::DlayerAnalyzer()
   Char_t HEADER[100];
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
+  sprintf(HEADER,"%s/SuperposeDlayerPlot.h",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
 
   // Cambus Setup
   TCanvas *CurC = new TCanvas("CurC","",1);
@@ -862,6 +955,9 @@ DlayerAnalyzer::DlayerAnalyzer()
   
   // Handle Plotting Options
   OptionHandler();
+
+  // Initiarizer
+  InitScope();
 
   // postscript file
   Char_t psfile[100];
