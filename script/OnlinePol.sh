@@ -8,6 +8,7 @@ ONLINE_RUNLIST=$DATADIR/raw_data.list;
 ONLINE_DB=$DATADIR/OnlinePol.dat;
 SLEEP_INTERVAL=1800;
 DAEMON=0;
+A_NCorrection=0;
 
 #############################################################################
 #                                     Help                                  #
@@ -15,17 +16,18 @@ DAEMON=0;
 help(){
     COMMAND=`basename $0`;
     echo    " "
-    echo    " $COMMAND [-xh][-f <RunID>][--nevents][--daemon][-s -sleeep <s>][-M]"
+    echo    " $COMMAND [-xh][-f <RunID>][--nevents][--daemon][-s -sleeep <s>][-M][--A_NCorrection]"
     echo    "    : Calculate Online Polarization & show online records"
     echo    " "
-    echo -e "   -f <RunID>     Calculate Online Polarization of <RunID>";
-    echo -e "   --nevents      Print Online # of Events ";
-    echo -e "   --deamon       Dynamicly update online Pol data file $ONLINE_DB"; 
-    echo -e "   -s --sleep <s> Sleep interval for Daemon mode in sec. [Def]:$SLEEP_INTERVAL";               
-    echo -e "   -M             Nevents in Million unit ";
-    echo -e "   -k             Nevents in kiro unit ";
-    echo -e "   -h | --help    Show this help"
-    echo -e "   -x             Show example"
+    echo -e "   -f <RunID>      Calculate Online Polarization of <RunID>";
+    echo -e "   --nevents       Print Online # of Events ";
+    echo -e "   --deamon        Dynamicly update online Pol data file $ONLINE_DB"; 
+    echo -e "   -s --sleep <s>  Sleep interval for Daemon mode in sec. [Def]:$SLEEP_INTERVAL";               
+    echo -e "   -M              Nevents in Million unit ";
+    echo -e "   -k              Nevents in kiro unit ";
+    echo -e "   --A_NCorrection A_N correction for before Fill#6884";
+    echo -e "   -h | --help     Show this help"
+    echo -e "   -x              Show example"
     echo    " "
     exit;
 }
@@ -33,11 +35,14 @@ help(){
  
 ShowExample(){
  
-    echo    " "
+    echo    " ";
     echo    " $0 -f 7759.002";
-    echo    " "
+    echo    " ";
     echo    " Running in daemon mode";
     echo    " $0 --daemon";
+    echo    " ";
+    echo    " A_N Correction for Fill<6884 (only for flattops). ";
+    echo    " $0 -f 6883 --A_NCorrection";
     echo    " ";
     exit;
 
@@ -72,7 +77,16 @@ GetOnlinePolarization(){
 
  if [ -f $ONLINEDIR/log/an$RunID.log ] ; then
      $MACRODIR/pvector.pl $RunID
-     tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f %5.1f\n",$1,$2)}' 
+     OnlineP=`tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f\n",$1)}'`; 
+     dOnlineP=`tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f\n",$2)}'`; 
+     #tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f %5.1f\n",$1,$2)}' 
+
+     # This is a correction for A_N for Flattop 
+     Fill=`echo $RunID | gawk '{printf("%d",$1)}'`;
+     if [ $A_NCorrection -eq 1 ] && [ $Fill -lt 6884 ] ; then
+	 OnlineP=`echo $OnlineP | gawk '{printf("%7.1f",$1*1.2)}'`;
+     fi
+     printf "%7.1f %5.1f\n" $OnlineP $dOnlineP;
  else 
      printf "%7.1f %5.1f\n" 0 0;
  fi
@@ -141,6 +155,7 @@ fi
 while test $# -ne 0; do
   case "$1" in
   -f) shift ; RunID=$1 ;;
+  --A_NCorrection) A_NCorrection=1;;
   --nevents) ExeNevents=1; ExeOnlinePol=0;;
   --daemon) DAEMON=1;;
   -s | -sleep) shift ; SLEEP_INTERVAL=$1;;
