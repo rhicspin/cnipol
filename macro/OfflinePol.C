@@ -164,7 +164,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	  DiffP[i]      = atof(strtok(NULL," "));
 
 	  // overflow
-	  if (fabs(DiffP[i])>20) DiffP[i]=-20;
+	  if (fabs(DiffP[i])>25) DiffP[i]=25;
 
 	  // fill 1-dim histograms
 	  Pdiff->Fill(DiffP[i]);
@@ -293,7 +293,8 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
     break;
   case 50:
     GetScale(RunID, ndata, margin, xmin, xmax);
-    ymin=-10; ymax=10;
+    ymin=-10; ymax=10; 
+    if (RUN==5) {ymin=-25;ymax=25;};
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="P_online-P_offline";
     sprintf(title,"Online/Offline Polarization Diff.(%s) %s",Beam, subtitle);
