@@ -190,14 +190,15 @@ ShowIndex(){
 
 ShowIndexOnline(){
 
-    printf "=====================================================================================\n";
+    printf "===============================================================================================\n";
     printf " RunID     ";
     printf " Date/Time   ";
     printf " Bunch";
     printf " BZDelay ";
     printf " Threshoulds";
     printf " Nevents ";
-    printf " A_N   ";
+    printf " A_N  ";
+    printf " Dl(ave) ";
     printf " config file ";
     printf " \n";
     printf " \t";
@@ -207,9 +208,10 @@ ShowIndexOnline(){
     printf " \t     ";
     printf " [keV] ";
     printf " [M]   ";
-    printf " (ave) ";
+    printf " (ave)";
+    printf " [ug/cm2] ";
     printf " \n";
-    printf "=====================================================================================\n";
+    printf "===============================================================================================\n";
 
 
 }
@@ -265,18 +267,24 @@ OnlineDatabase(){
 
    ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
    ONLINE_ANLOG=$ONLINEDIR/log/an$RunID.log;
+   ONLINE_CONFIG_DLAYERAVE=$ONLINEDIR/config/dLayerAverage.list;
 
-   MONTH=`grep '>>>>' $ONLINE_LOG | gawk '{print $3}'`;
-   DATE=`grep '>>>>' $ONLINE_LOG | gawk '{print $4}'`;
-   TIME=`grep '>>>>' $ONLINE_LOG | gawk '{print $5}'`;
+   MONTH=`grep '>>>>' $ONLINE_LOG | tail -n 1 | gawk '{print $3}'`;
+   DATE=`grep '>>>>' $ONLINE_LOG | tail -n 1 | gawk '{print $4}'`;
+   TIME=`grep '>>>>' $ONLINE_LOG | tail -n 1 | gawk '{print $5}'`;
    NEvents=`grep ">>>" $ONLINE_LOG | tail -n 1 | gawk '{printf(" %2d ",$10/1e6)}'`;
-   CONFIG_FILE=`grep 'Reading calibration parameters' $ONLINE_LOG | gawk '{print $8}'`;
-   TRIG_THRESHOLD_E=`grep 'Trigger threshold for enegry' $ONLINE_LOG | gawk '{print $6}'`;
-   TRIG_THRESHOLD=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $1}' | sed -e 's/TrigThreshold://'`;
-   BZ_DELAY=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/BZDelay://'`
-   AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://'`;
-   A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | gawk '{print $7}'`;
+   CONFIG_FILE=`grep 'Reading calibration parameters' $ONLINE_LOG | tail -n 1 | gawk '{print $8}'`;
+   TRIG_THRESHOLD_E=`grep 'Trigger threshold for enegry' $ONLINE_LOG | tail -n 1 | gawk '{print $6}'`;
+   TRIG_THRESHOLD=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $1}' | tail -n 1 | sed -e 's/TrigThreshold://'`;
+   BZ_DELAY=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $2}' | tail -n 1 | sed -e 's/BZDelay://'`
+   AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | tail -n 1 | sed -e 's/Bunch://'`;
+   A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | tail -n 1 | gawk '{print $7}' | sed -e '{s/NAN/0/}'`;
 
+   dlAve=0;
+   grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE > /dev/null
+   if [ $? -eq 0 ]; then
+       dlAve=`grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE | gawk '{print $2}'`;
+   fi
 
    echo -e -n "$RunID";
    printf " %s %2d %s " $MONTH $DATE $TIME;
@@ -286,6 +294,7 @@ OnlineDatabase(){
    printf " %5.0f "   $TRIG_THRESHOLD_E;
    printf " %5.1f "   $NEvents;
    printf " %6.4f "   $A_N;
+   printf " %5.1f "   $dlAve;
    printf " %s  "     $CONFIG_FILE;
    echo -e -n "\n";
 
