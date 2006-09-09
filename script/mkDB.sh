@@ -281,11 +281,13 @@ OnlineDatabase(){
    A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | tail -n 1 | gawk '{print $7}' | sed -e '{s/NAN/0/}'`;
 
    dlAve=0;
-   grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE > /dev/null
-   if [ $? -eq 0 ]; then
-       dlAve=`grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE | gawk '{print $2}'`;
+   if [ $CONFIG_FILE ] ; then
+       grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE > /dev/null
+       if [ $? -eq 0 ]; then
+	   dlAve=`grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE | gawk '{print $2}'`;
+       fi
    fi
-
+   
    echo -e -n "$RunID";
    printf " %s %2d %s " $MONTH $DATE $TIME;
    printf " %3d "     $AT_BUNCH;
