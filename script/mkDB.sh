@@ -197,6 +197,7 @@ ShowIndexOnline(){
     printf " BZDelay ";
     printf " Threshoulds";
     printf " Nevents ";
+    printf " A_N   ";
     printf " config file ";
     printf " \n";
     printf " \t";
@@ -205,7 +206,8 @@ ShowIndexOnline(){
     printf " \t";
     printf " \t     ";
     printf " [keV] ";
-    printf " [M]";
+    printf " [M]   ";
+    printf " (ave) ";
     printf " \n";
     printf "=====================================================================================\n";
 
@@ -235,7 +237,7 @@ ShowDlayerConfigIndex(){
 
 GetOnlinePolarization(){
 
-    OnlineP=`OnlinePol.sh -f $RunID | gawk '{printf("%7.1f",$1)}'`;
+    OnlineP=`OnlinePol.sh -f $RunID --A_NCorrection | gawk '{printf("%7.1f",$1)}'`;
     OnlinedP=`OnlinePol.sh -f $RunID | gawk '{printf("%5.1f",$2)}'`;
 
 }
@@ -262,6 +264,8 @@ OnlineNevents(){
 OnlineDatabase(){
 
    ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+   ONLINE_ANLOG=$ONLINEDIR/log/an$RunID.log;
+
    MONTH=`grep '>>>>' $ONLINE_LOG | gawk '{print $3}'`;
    DATE=`grep '>>>>' $ONLINE_LOG | gawk '{print $4}'`;
    TIME=`grep '>>>>' $ONLINE_LOG | gawk '{print $5}'`;
@@ -271,6 +275,8 @@ OnlineDatabase(){
    TRIG_THRESHOLD=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $1}' | sed -e 's/TrigThreshold://'`;
    BZ_DELAY=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/BZDelay://'`
    AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | sed -e 's/Bunch://'`;
+   A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | gawk '{print $7}'`;
+
 
    echo -e -n "$RunID";
    printf " %s %2d %s " $MONTH $DATE $TIME;
@@ -279,6 +285,7 @@ OnlineDatabase(){
    printf " %5d "     $TRIG_THRESHOLD;
    printf " %5.0f "   $TRIG_THRESHOLD_E;
    printf " %5.1f "   $NEvents;
+   printf " %6.4f "   $A_N;
    printf " %s  "     $CONFIG_FILE;
    echo -e -n "\n";
 
