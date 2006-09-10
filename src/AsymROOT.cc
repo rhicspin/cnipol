@@ -101,7 +101,7 @@ Root::RootFile(char *filename){
 // Return      : 
 //
 int 
-Root::RootHistBook(){
+Root::RootHistBook(StructRunInfo runinfo){
 
   Char_t hname[100], htitle[100];
 
@@ -179,7 +179,7 @@ Root::RootHistBook(){
 // Return      : 
 //
 int 
-Root::RootHistBook2(){
+Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback){
 
   Kinema->cd();
   char formula[100],fname[100];

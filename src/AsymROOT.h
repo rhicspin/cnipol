@@ -8,6 +8,9 @@
 #include "TStyle.h"
 #include "TText.h"
 #include "TLine.h"
+#include "TCanvas.h"
+#include "TPostScript.h"
+#include "TSystem.h"
 
 // defaults
 const float MSIZE=1.2; // Marker size
@@ -19,8 +22,8 @@ class Root
   
  public:
   int RootFile(char*filename);
-  int RootHistBook();
-  int RootHistBook2();
+  int RootHistBook(StructRunInfo runinfo);
+  int RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback);
   int DeleteHistogram();
   int CloseROOTFile();
 

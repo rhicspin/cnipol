@@ -155,7 +155,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 	//   Root Histogram Booking using feedback results      //
 	// ---------------------------------------------------- // 
 	Root rt;
-	rt.RootHistBook2();
+	rt.RootHistBook2(dproc, runconst, feedback);
 
 
         // Online Banana Cut 

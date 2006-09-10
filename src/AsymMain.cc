@@ -278,7 +278,7 @@ int main (int argc, char *argv[]){
         exit(-1);
     }
     
-    rt.RootHistBook();
+    rt.RootHistBook(runinfo);
 
     // ---------------------------------------------------- // 
     // Quick Scan and Fit for tshift and mass sigma fit     //
