@@ -3,6 +3,9 @@
 # March, 15, 2006
 # I. Nakagawa
 
+#cnipol_daemon in to_be_analyzed_list mode;
+TO_BE_ANALYZED_LIST=$ASYMDIR/.cnipol_daemon_to_be_analyzed_asym.list;
+ANALYZE_FROM_FILE=0;
 
 RUNLIST=$DATADIR/raw_data.list;
 CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
@@ -42,10 +45,12 @@ help(){
     echo    " "
     echo    " cnipol_daemon.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>]"; 
-    echo    "                  [--run-Asym][--runlist <runlist>]";
+    echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list]";
     echo    "    : search for new run from <runlist> which has not been analyized and then run"
     echo    "      analysis program."
     echo    " "
+    echo -e "   --analyze-from-list       analyzed from <file> without checking .cnipol_daemon_run.list."
+    echo -e "                             [def <file>]=$TO_BE_ANALYZED_LIST";
     echo -e "   --runlist <runlist>       data run list file [def]:$RUNLIST";
     echo -e "   -F <Fill#>                run program for runs in <Fill#>"
     echo -e "   --fill-from <Fill#>       run program for runs from <Fill#> [def]:$FROM_FILL";
@@ -190,6 +195,51 @@ RunAsym(){
 }
 
 
+#############################################################################
+#                             CNIPOL_DAEMON()                               #
+#############################################################################
+CNI_Operation(){
+
+    if [ $ExeDlayerFit -eq 1 ]; then
+	RunDlayer;
+	echo $RunID >> $CNI_DAEMON_RUNLIST;
+    fi
+    if [ $ExeRunAsym -eq 1 ]; then
+	RunAsym;
+	echo $RunID >> $CNI_DAEMON_RUNLIST;
+    fi
+
+}
+
+
+#############################################################################
+#                   CNIPOL_DAEMON_FROM_LIST()                               #
+#############################################################################
+CNIPOL_DAEMON_FROM_LIST(){
+TMPLIST=$TMPOUTDIR/cnipol_daemon_tmp.list;
+
+while [ 1 ] ; 
+  do 
+
+  NLINE=`wc $TO_BE_ANALYZED_LIST | gawk '{print $1}'`;
+  for RunID in `cat $TO_BE_ANALYZED_LIST`;
+  do 
+    if [ -f $DATADIR/$RunID.data ] ; then
+	echo -e -n "Analyzing $RunID ...";
+	CNI_Operation;
+	grep -v $RunID $TO_BE_ANALYZED_LIST > $TMPLIST;
+	mv -f $TMPLIST > $TO_BE_ANALYZED_LIST;
+    fi
+  done
+
+  echo "sleeping $SLEEP_TIME [s] ..."
+  sleep $SLEEP_TIME
+
+  #end-of-while loop
+  done;
+    
+}
+
 
 
 
@@ -220,28 +270,21 @@ while [ 1 ] ;
     if [ $fill -ge $FROM_FILL ]&&[ $fill -le $TILL_FILL ]  ; then
 	grep $RunID $CNI_DAEMON_RUNLIST > /dev/null;
 	if [ $? == 1 ] ; then
+	    CNI_Operation;
 	    echo -e -n "\n Analyzing $RunID \n"
-	    if [ $ExeDlayerFit -eq 1 ]; then
-		    RunDlayer;
-		    echo $RunID >> $CNI_DAEMON_RUNLIST;
-	    fi
-	    if [ $ExeRunAsym -eq 1 ]; then
-		    RunAsym;
-		    echo $RunID >> $CNI_DAEMON_RUNLIST;
-	    fi
 	else 
 	    echo -e -n "\n $RunID has already been analyized. Skip. \n";
 	fi
 	
     fi  
  
+    done;
+
+  echo "sleeping $SLEEP_TIME [s] ..."
+  sleep $SLEEP_TIME
+
+  #end-of-while loop
   done;
-
-echo "sleeping $SLEEP_TIME [s] ..."
-sleep $SLEEP_TIME
-
-#end-of-while loop
-done;
 
 }
 
@@ -253,6 +296,7 @@ done;
 
 while test $# -ne 0; do
   case "$1" in
+  --analyze-from-list)        ANALYZE_FROM_FILE=1;;
   --runlist)       shift ; RUNLIST=$1 ;;
   -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from)     shift ; FROM_FILL=$1;;
@@ -271,5 +315,10 @@ while test $# -ne 0; do
 done
 
 
-CNIPOL_DAEMON;
+
+if [ $ANALYZE_FROM_FILE -eq 1 ] ; then
+    CNIPOL_DAEMON_FROM_LIST;
+else
+    CNIPOL_DAEMON;
+fi
 
