@@ -10,6 +10,7 @@ ExclusiveMode=0;
 ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
 ExeDlayerConfig=0;
+ExeErrorDetector=0;
 ExpertMode=0;
 FROM_FILL=7537;
 if [ $RHICRUN ] ; then
@@ -26,22 +27,23 @@ DISTRIBUTION=0;
 #############################################################################
 help(){
     echo    " "
-    echo    " mkDB.sh [-xha][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "         [--analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
-    echo    "         [--online][--online-nevents][--dlayer-config]";
-    echo    "    : make pC (offline) offline analysis database "
+    echo    " mkDB.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
+    echo    "         [-a --analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
+    echo    "         [--online][--online-nevents][--dlayer-config][--error-detector]";
+    echo    "    : make pC offline/offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist file [def]:$ANALYZED_RUN_LIST";
-    echo -e "   --dlayer-config           Make database for configulation files loaded";
     echo -e "   -F <Fill#>                Show list <Fill#>"
     echo -e "   --fill-from <Fill#>       Make list from <Fill#>";
     echo -e "   --fill-till <Fill#>       Make list till <Fill#>";
     echo -e "   -f <runlist>              Show list for runs listed in <runlist>";
-    echo -e "   --online-nevents          Show online nevents"
-    echo -e "   --online                  Show online parameters"
-    echo -e "   --exclusive               Show only data analyized";
     echo -e "   --blue                    Show only blue data ";
     echo -e "   --yellow                  Show only yellow data ";
+    echo -e "   --exclusive               Show only data analyized";
+    echo -e "   --dlayer-config           Show database for configulation files loaded by Asym";
+    echo -e "   --online-nevents          Show online nevents"
+    echo -e "   --online                  Show online parameters"
+    echo -e "   --error-detector          Show error detector results";
     echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
@@ -229,6 +231,52 @@ ShowDlayerConfigIndex(){
 
 
 }
+
+ShowErrorDetectorIndex(){
+
+    printf "=====================================================================================\n";
+    printf " RunID  ";
+    printf " \n";
+    printf "=====================================================================================\n";
+
+}
+
+
+#############################################################################
+#                              ErrorDetector                                #
+#############################################################################
+
+ErrorDetector(){
+
+    
+   echo -e -n "$RunID";
+   PROBLEM_BUNCH=-1;
+   PROBLEM_STRIP=-1;
+
+   LOGFILE=$ASYMDIR/log/$RunID.log;
+   if [ -f $LOGFILE ] ; then
+       PROBLEM_BUNCH=`grep 'Number of Problemeatic Bunches' $LOGFILE | gawk '{printf("%2d",$6)}'`;
+       PROBLEM_STRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{printf("%2d",$6)}'`;
+       MAX_MASS_CHI2=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$6)}'`;    
+#       MAX_MASS_CHI2_STRIP=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$7)}'`;    
+       UNRECOG_STRIP=`grep 'Unrecognized Problematic Strips' $LOGFILE | sed -e '{s/ Unrecognized Problematic Strips     ://}'`;
+       if [ ! $PROBLEM_BUNCH ] ; then
+	   PROBLEM_BUNCH=-1;
+       fi
+       if [ ! $PROBLEM_STRIP ] ; then
+	   PROBLEM_STRIP=-1;
+       fi
+       if [ ! $MAX_MASS_CHI2 ] ; then
+	   MAX_MASS_CHI2=-1;
+       fi
+   fi
+   
+   echo -e -n "  $PROBLEM_BUNCH  $PROBLEM_STRIP  $MAX_MASS_CHI2 ";
+#   echo -e -n "  $UNRECOG_STRIP";
+   echo -e -n "\n";
+
+}
+
 
 
 
@@ -436,6 +484,8 @@ for f in `cat $DATADIR/raw_data.list` ;
 			      OnlineNevents;
 			  elif [ $ExeDlayerConfig -eq 1 ] ; then
 			      dLayerConfig;
+			  elif [ $ExeErrorDetector -eq 1 ] ; then
+			      ErrorDetector;
 			  else
 			      grepit;
 			  fi
@@ -497,6 +547,7 @@ while test $# -ne 0; do
   --blue)   DISTRIBUTION=1;;
   --yellow) DISTRIBUTION=2;;
   --dlayer-config) ExeDlayerConfig=1;;
+  --error-detector) ExeErrorDetector=1; ExclusiveMode=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
@@ -517,6 +568,8 @@ if [ $ExeMakeDatabase -eq 1 ] ; then
 	ShowIndexOnline;
     elif [ $ExeDlayerConfig -eq 1 ]; then
 	ShowDlayerConfigIndex;
+    elif [ $ExeErrorDetector -eq 1 ]; then
+	ShowErrorDetectorIndex;
     else
 	ShowIndex;
     fi
