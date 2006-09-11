@@ -431,17 +431,20 @@ int
 BunchAnomalyDetector(){
 
   // Initiarize anomaly bunch counter
-  anal.anomaly.nbunch=0;
+  anal.anomaly.nbunch= runinfo.NFilledBunch > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
 
-  // Find anomaly bunches from unusual deviation from average asymmetry
-  BunchAsymmetryAnomaly();
+  if (anal.anomaly.nbunch != -1) {
+    // Find anomaly bunches from unusual deviation from average asymmetry
+    BunchAsymmetryAnomaly();
 
-  // Find Hot bunches from counting rates per bunch
-  HotBunchFinder();
+    // Find Hot bunches from counting rates per bunch
+    HotBunchFinder();
 
-  // check unrecognized anomaly
-  UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
+    // check unrecognized anomaly
+    UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
 		      anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+
+  }
 
   return 0;
 }

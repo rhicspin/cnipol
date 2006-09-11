@@ -101,6 +101,7 @@ typedef struct {
   float MASS_ENERGY_CORR_ALLOWANCE;
   float BUNCH_RATE_SIGMA_ALLOWANCE;
   float BUNCH_ASYM_SIGMA_ALLOWANCE;
+  int NBUNCH_REQUIREMENT;
 }ErrorDetector;
 
 
@@ -170,6 +171,7 @@ typedef struct {
   char * TgtOperation;
   int NDisableStrip;
   int DisableStrip[NSTRIP];
+  int NFilledBunch;
   int NDisableBunch;
   int DisableBunch[NBUNCH];
 } StructRunInfo;
