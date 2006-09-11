@@ -36,7 +36,8 @@ ErrorDetector errdet = {
   100,          // MASS_CHI2_ALLOWANCE [GeV]
   0.001,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
   5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
-  5.            // BUNCH_ASYM_SIGMA_ALLOWANCE;
+  5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
+  20            // NBUNCH_REQUIREMENT;
 };
 
 
@@ -91,7 +92,9 @@ StructRunInfo runinfo = {
       0,0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,0
-    }
+    },
+    0, // NFilledBunch;
+    0  // NDisableBunch,
 }; 
 
 StructTarget tgt = {

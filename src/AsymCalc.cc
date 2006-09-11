@@ -581,6 +581,7 @@ PrintWarning(){
     printf("------------------------------  Error Detector Results ----------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf("===> Bunch distribution \n");
+    printf(" # of Bunches requirement for check  : %d\n",errdet.NBUNCH_REQUIREMENT);
     printf(" Good Bunch Rate Sigma Allowance     : %6.1f\n",errdet.BUNCH_RATE_SIGMA_ALLOWANCE);
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
     printf(" Number of Problemeatic Bunches      : %d \n", anal.anomaly.nbunch);
@@ -653,7 +654,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" WCM Average                 = %10.1f\n", runinfo.WcmAve);
     printf(" WCM Average w/in rnge       = %10.1f\n", average.average);
     printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
-    printf(" # of Filled Bunch           = %10d\n", NFilledBunch);
+    printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
