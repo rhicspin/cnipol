@@ -30,7 +30,7 @@ const unsigned short num_strips=72;
 const unsigned short strips_per_detector=12;
 const unsigned short num_detectors=6;
 
-const float chi2max=100.;
+const float chi2max=300.;
 const float dlayer_consistency=3.; // [ug/cm2]
 
 //average deadwidth[which file][which detector]
