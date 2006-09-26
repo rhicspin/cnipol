@@ -35,8 +35,11 @@ echo -e "Run number to be inserted : $RunN"
 
 InsertTag()  {
 
+    echo  -e "Get line number for Reference ID $RefN";
+    grep -n $RefN $DB;
+
     header=`grep -n "^\[$RefN" $DB | sed -e "s/:/ /" | gawk '{print $1-1}'`
-    echo -e "$header";
+    echo -e "header # = $header";
     head -n $header $DB > $OFILE;
 
     grep '^.' $INF >> $OFILE;
@@ -69,7 +72,7 @@ AppendTag() {
 
 
 for (( i=1; i<=$DbN; i++ )) do
-    RefN=`line.sh "$i" $TMPOUTDIR/tmplist.txt`;
+    RefN=`line.sh "$i" $TMPOUTDIR/tmplist.txt | gawk '{printf("%8.3f",$1)}'`;
     Test=`CompareRunNmbr $RefN $RunN`;
     if [[ $Test == 1 ]]; then
  	break;
@@ -79,6 +82,7 @@ done
 echo -e "Test = $Test";
 
 if [[ $Test == 1 ]]; then
+    echo "Run# to be inserted: $RunN, Reference Number in rundb: $RefN";
     InsertTag;
     echo "$header";
 
