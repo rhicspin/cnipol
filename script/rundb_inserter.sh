@@ -19,7 +19,7 @@ NLINE=`wc $DB | gawk '{print $1}'`
 
 
 # Get Total Lines in temporary RunID list 
-grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' > $TMPOUTDIR/tmplist.txt
+grep "\[" $DB | sed -e 's/\[//' | sed -e 's/\]//' | sed -e 's/@//' > $TMPOUTDIR/tmplist.txt
 DbN=`wc $TMPOUTDIR/tmplist.txt | gawk '{ print $1 }'`
 
 
