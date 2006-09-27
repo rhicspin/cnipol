@@ -14,6 +14,7 @@ $DEF_FILTERD_DB="./Filtered.list";
 
 use Getopt::Long;
 
+$OFFLINEPOL      = 0;
 $DLAYER          = 0;
 $UPDATE_LINK     = 0;
 $PHENIX_DATABASE = 0;
@@ -28,6 +29,7 @@ GetOptions(
 	   'phenix' => \$PHENIX_DATABASE ,
 	   'profile' => \$PROFILE_RUN ,
 	   'dlayer' => \$DLAYER , 
+	   'OfflinePol' => \$OFFLINEPOL ,
 	   'f:s' => \$FILTER_DB ,
 	   'src-list:s' => \$SRC_DB ,
 	   'help' => \$HELP
@@ -47,6 +49,7 @@ if($SRC_DB) {
     print "Output: $DEF_FILTERD_DB\n";
 }
 if($DLAYER){DlayerMode();};
+if($OFFLINEPOL){AsymMode();};
 
 
 #================================================================================#
@@ -62,6 +65,7 @@ sub help(){
     print "\t -f <runlist>   base run list file [def]:$FILTER_DB \n";
     print "\t --src-list <srclist>  src run list file to be filtered \n";
     print "\t --dlayer       Process deadlayer dabase\n";
+    print "\t --OfflinePol   Process OfflinePol database\n";
     print "\t --phenix       Filter for PHENIX physics stores\n";
     print "\t --profile      Filter for profile runs\n";
     print "\t --update-link  Redirect link to new one\n";
@@ -103,6 +107,29 @@ sub DlayerMode(){
 	}
 
     }
+
+};
+#================================================================================#
+#                              AsymMode()                                      #
+#================================================================================#
+sub AsymMode(){
+
+    @BEAM=("Blue","Yellow");
+
+    foreach $i (@BEAM) {
+	    $SRC_DB="$ASYMDIR/summary/OfflinePol\_$i\_all.dat";
+	    $DEST_DB="$ASYMDIR/summary/OfflinePol\_$i\_$KEYWD.dat";
+	    if (!$DEFAULT_LINK){
+		open(FILE, ">$DEST_DB") || die;
+		Filter();
+	    }
+	    if($UPDATE_LINK){
+		system("rm -f $ASYMDIR/summary/OfflinePol\_$i.dat");
+		system("ln -s $DEST_DB $ASYMDIR/summary/OfflinePol\_$i.dat");
+
+	    };
+
+	};
 
 };
 
