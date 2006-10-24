@@ -211,7 +211,7 @@ int readloop() {
                 wcmdist[bid] = wcmdat.fillDataM[bid*3];
 		Nwcmtot+=wcmdist[bid]*fillpat[bid];
             }
-	    runinfo.WcmAve  =  Nwcmtot/float(NFilledBunch);
+	    runinfo.WcmAve  =  Nwcmtot/float(runinfo.NFilledBunch);
 	    ReadFlag.WCMADO = 1;
 	  }
 	  break;
@@ -239,10 +239,10 @@ int readloop() {
                 pat = beamdat.measuredFillPatternM[bid*3];
                 if (pat>0) {
                     fillpat[bid] = 1;
-		    NFilledBunch++;
+		    runinfo.NFilledBunch++;
                 } else if (pat<0) {
                     fillpat[bid] = -1;
-		    NFilledBunch++;
+		    runinfo.NFilledBunch++;
                 } else {
                     fillpat[bid] = 0;
                 }
@@ -447,7 +447,6 @@ int readloop() {
 
 	    // calculate Run Constants
 	    calcRunConst(cfginfo);
-
             if (dproc.MESSAGE == 1) exit(0);
 	    ReadFlag.RHICCONF = 1;
 	  }
