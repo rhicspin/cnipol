@@ -126,6 +126,8 @@ BananaFit(int st){
   TF1 * functof = new TF1("functof", f,200,1500);
   functof->SetLineColor(2);
   functof->SetLineWidth(4);
+  functof->SetName("kin_func");
+  functof->Write();
 
   char hname[100];
   sprintf(hname,"t_vs_e_st%d",st);
@@ -186,7 +188,7 @@ StripAnomalyDetector(){
     printf("Anomary Check for strip=%d ...\r",i);
 
     // t vs. Energy (this routine is incomplete)
-    //  BananaFit(i);
+    //BananaFit(i);
 
     // MASS vs. Energy correlation
     InvariantMassCorrelation(i);
