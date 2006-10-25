@@ -15,6 +15,15 @@
 // defaults
 const float MSIZE=1.2; // Marker size
 
+struct StructHist {
+  int nxbin;
+  float xmin;
+  float xmax;
+  int nybin;
+  float ymin;
+  float ymax;
+} ;
+
 
 class Root
 {

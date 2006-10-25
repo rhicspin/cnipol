@@ -48,8 +48,10 @@ DetectorAnomaly(){
   // limit fitting range between energy cuts. Be careful to change this
   // not to include small entry bins at the both edge of the histogram
   // into the fit.
-  float min_t=2*dproc.enel*MASS_12C*k2G*k2G;
-  float max_t=2*dproc.eneu*MASS_12C*k2G*k2G;
+  extern StructHist Eslope;
+  float dbin  = (Eslope.xmax - Eslope.xmin)/float(Eslope.nxbin);
+  float min_t = 2*dproc.enel*MASS_12C*k2G*k2G + dbin; 
+  float max_t = 2*dproc.eneu*MASS_12C*k2G*k2G - dbin;
   energy_spectrum_all -> Fit("expf"," "," ",min_t,max_t);
   anal.energy_slope[0] = expf -> GetParameter(1);
   anal.energy_slope[1] = expf -> GetParError(1);

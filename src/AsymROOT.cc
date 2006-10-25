@@ -19,6 +19,10 @@
 #include "Asym.h"
 #include "AsymROOT.h"
 
+
+// global declarations
+StructHist Eslope;
+
 // Direcotories
 TDirectory * Kinema;
 TDirectory * Bunch;
@@ -106,18 +110,20 @@ Root::RootFile(char *filename){
 int 
 Root::RootHistBook(StructRunInfo runinfo){
 
+
   Char_t hname[100], htitle[100];
 
   Kinema->cd();
   // 1-dim Energy Spectrum
+  Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
   for (int i=0; i<NDETECTOR; i++) {
     sprintf(hname,"energy_spectrum_det%d",i);
     sprintf(htitle,"%8.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i);
-    energy_spectrum[i] = new TH1F(hname,htitle, 100, 0, 0.03);
+    energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
     energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
   }
   sprintf(htitle,"%8.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
-  energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, 100, 0, 0.03);
+  energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
 
 
