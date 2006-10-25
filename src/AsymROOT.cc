@@ -42,6 +42,9 @@ TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alte
 TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
 TLine * energy_cut_l[NSTRIP];        // energy cut low 
 TLine * energy_cut_h[NSTRIP];        // energy cut high
+TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
+TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
+
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -106,6 +109,18 @@ Root::RootHistBook(StructRunInfo runinfo){
   Char_t hname[100], htitle[100];
 
   Kinema->cd();
+  // 1-dim Energy Spectrum
+  for (int i=0; i<NDETECTOR; i++) {
+    sprintf(hname,"energy_spectrum_det%d",i);
+    sprintf(htitle,"%8.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i);
+    energy_spectrum[i] = new TH1F(hname,htitle, 100, 0, 0.03);
+    energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
+  }
+  sprintf(htitle,"%8.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
+  energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, 100, 0, 0.03);
+  energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
+
+
   for (int i=0; i<TOT_WFD_CH; i++) {
 
     sprintf(hname,"t_vs_e_st%d",i);

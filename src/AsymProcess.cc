@@ -406,6 +406,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 	     ){
 
 	    // -t dependence
+	  float minus_t = 2 * e * MASS_12C * k2G * k2G;
             if (e>EnergyBin[0]) {
                 for (int k=0; k<NTBIN ; k++) {
 		  if ((e>=EnergyBin[k])&&(e<EnergyBin[k+1])){
@@ -468,6 +469,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 		HHF1(10050, e, 1.);
                 HHF1(10410+si+1,e,1.);
                 HHF1(10420+si+1,e_int,1.);   // Integral
+		energy_spectrum[si]->Fill(minus_t);
+		energy_spectrum_all->Fill(minus_t);
                 if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t 
                 
                 // Strip distribution (time + -t cut )

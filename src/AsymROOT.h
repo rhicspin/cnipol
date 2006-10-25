@@ -52,6 +52,8 @@ extern TF1  * banana_cut_l[NSTRIP][2];     // banana cut low
 extern TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
 extern TLine  * energy_cut_l[NSTRIP];      // energy cut low 
 extern TLine  * energy_cut_h[NSTRIP];      // energy cut high
+extern TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
+extern TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
 
 // Bunch Distribution
 extern TH1F * bunch_dist;                  // counts per bunch

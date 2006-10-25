@@ -148,6 +148,7 @@ typedef struct {
   float P[2];
   float P_sigma_ratio[2];
   float P_sigma_ratio_norm[2];
+  float energy_slope[2];
   StructSinPhi sinphi[2];   // [0]: regular,   [1]: alternative sigma cut
   StructAnomaly anomaly;
   StructUnrecognized unrecog;
