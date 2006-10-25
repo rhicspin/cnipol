@@ -29,6 +29,42 @@ StructBunchCheck bnchchk;
 StructStripCheck strpchk;
 
 
+//
+// Class name  : 
+// Method name : int DetectorAnomaly()
+//
+// Description : Fit the slope of energy spectrum given in (-t) with exponential.
+//             : 
+// Input       : 
+// Return      : 
+//
+int 
+DetectorAnomaly(){
+
+  TF1 * expf = new TF1("expf","expo");
+  expf -> SetParameters(1,-60);
+  expf -> SetLineColor(2);
+
+  // limit fitting range between energy cuts. Be careful to change this
+  // not to include small entry bins at the both edge of the histogram
+  // into the fit.
+  float min_t=2*dproc.enel*MASS_12C*k2G*k2G;
+  float max_t=2*dproc.eneu*MASS_12C*k2G*k2G;
+  energy_spectrum_all -> Fit("expf"," "," ",min_t,max_t);
+  anal.energy_slope[0] = expf -> GetParameter(1);
+  anal.energy_slope[1] = expf -> GetParError(1);
+
+  // print fitting results on histogram
+  char text[36];
+  sprintf(text,"slope=%6.1f +/- %6.2f", anal.energy_slope[0], anal.energy_slope[1]);
+  TText * t = new TText(0.01, energy_spectrum_all->GetMaximum()/4, text);
+  energy_spectrum_all -> GetListOfFunctions()->Add(t);
+
+  return 0;
+
+}
+
+
 
 //
 // Class name  : 

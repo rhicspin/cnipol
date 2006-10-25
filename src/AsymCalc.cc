@@ -91,6 +91,10 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     TshiftFinder(Flag.feedback, 2);
 
+    //-------------------------------------------------------
+    //  Check for slope of Energy Spectrum 
+    //-------------------------------------------------------
+    DetectorAnomaly();
 
 
 
@@ -606,6 +610,8 @@ PrintWarning(){
     printf(" Unrecognized Problematic Strips     : ");
     for (int i=0; i<anal.unrecog.anomaly.nstrip; i++) printf("%d ",anal.unrecog.anomaly.st[i]+1) ; 
     printf("\n");
+    printf("===> Detector \n");
+    printf(" Slope of Energy Spectrum (sum 6 det): %6.1f%6.2f\n", anal.energy_slope[0],anal.energy_slope[1]);
     printf("-----------------------------------------------------------------------------------------\n");
     printf("\n\n");
 
