@@ -406,14 +406,9 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
 
   if (local.nbunch){
     // global registration
-    cout << "bofore registration: nbunch=" << local.bunch << endl;
-    for (int i=0; i<local.nbunch; i++) cout << local.bunch[i] << " " ;
-    cout << endl;
     RegisterAnomaly(local.bunch, local.nbunch, anal.anomaly.bunch, anal.anomaly.nbunch,
 		    anal.anomaly.bunch, anal.anomaly.nbunch);
-    cout << "after registration: nbunch=" << anal.anomaly.nbunch << endl;
-    for (int i=0; i<anal.anomaly.nbunch; i++) cout << anal.anomaly.bunch[i] << " " ;
-    cout << endl;
+
 
     // Superpose h2 histogram
     float bindex[local.nbunch];
@@ -483,6 +478,9 @@ BunchAnomalyDetector(){
     // check unrecognized anomaly
     UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
 		      anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+
+    anal.anomaly.bad_bunch_rate = runinfo.NFilledBunch ? anal.anomaly.nbunch/float(runinfo.NFilledBunch)*100 : -1 ;
+
 
   }
 

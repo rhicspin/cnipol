@@ -580,15 +580,17 @@ PrintWarning(){
 
   extern StructStripCheck strpchk;
   extern StructBunchCheck bnchchk;
+  
 
     printf("-----------------------------------------------------------------------------------------\n");
     printf("------------------------------  Error Detector Results ----------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf("===> Bunch distribution \n");
-    printf(" # of Bunches requirement for check  : %d\n",errdet.NBUNCH_REQUIREMENT);
+    printf(" # of Bunches requirement for check  : %6d\n",errdet.NBUNCH_REQUIREMENT);
     printf(" Good Bunch Rate Sigma Allowance     : %6.1f\n",errdet.BUNCH_RATE_SIGMA_ALLOWANCE);
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
-    printf(" Number of Problemeatic Bunches      : %d \n", anal.anomaly.nbunch);
+    printf(" Number of Problemeatic Bunches      : %6d \n", anal.anomaly.nbunch);
+    printf(" Problemeatic Bunches Rate [%]       : %6.1f\n", anal.anomaly.bad_bunch_rate);
     printf(" Problemeatic Bunch ID's             : ");
     for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]) ; 
     printf("\n");
@@ -603,7 +605,7 @@ PrintWarning(){
     printf(" Good strip Mass-Energy Correlation  : %8.4f \n", strpchk.p1.allowance);
     printf(" Good Strip Mass Sigma Allowance[GeV]: %6.2f \n", strpchk.dev.allowance);
     printf(" Good Strip Mass Fit chi2 Allowance  : %6.2f \n", strpchk.chi2.allowance);
-    printf(" Number of Problematic Strips        : %d \n", anal.anomaly.nstrip); 
+    printf(" Number of Problematic Strips        : %6d \n", anal.anomaly.nstrip); 
     printf(" Problematic Strips                  : ");
     for (int i=0; i<anal.anomaly.nstrip; i++) printf("%d ", anal.anomaly.st[i]+1);
     printf("\n");
