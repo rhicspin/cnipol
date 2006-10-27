@@ -390,7 +390,7 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
 	local.A[local.nbunch] = A[bid];
 	local.nbunch++;
 	printf(" WARNING: bunch # %d asym sigma %6.1f exeeds %6.1f limit from average\n", 
-	       bid+1, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
+	       bid, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
 
 	// comment in h2 histogram
 	sprintf(text,"%6.1f sigma (%d)", local.dev/dA[bid],bid);
