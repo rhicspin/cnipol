@@ -131,6 +131,7 @@ typedef struct {
   int nbunch;
   int bunch[NBUNCH];
   float bad_bunch_rate;
+  int bunch_err_code;
 } StructAnomaly;
 
 typedef struct {

@@ -338,11 +338,11 @@ DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidt
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
 //             : registered as problematic bunch ID
-// Input       : TH1F * h1, TH2F * h2, float A[], float dA[]
+// Input       : TH1F * h1, TH2F * h2, float A[], float dA[], int err_code
 // Return      : 
 //
 int 
-BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
+BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code){
 
   TF1 * g = new TF1("g","gaus");
   g -> SetLineColor(2);
@@ -405,6 +405,9 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
 
 
   if (local.nbunch){
+    // error_code registration
+    anal.anomaly.bunch_err_code += err_code;
+
     // global registration
     RegisterAnomaly(local.bunch, local.nbunch, anal.anomaly.bunch, anal.anomaly.nbunch,
 		    anal.anomaly.bunch, anal.anomaly.nbunch);
@@ -432,7 +435,9 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[]){
 //
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
-//             : registered as problematic bunch ID
+//             : registered as problematic bunch ID. 
+//             : The last argument of the function BunchAsymmetryGaussianFit() is the 
+//             : error code to record which asymmetry gives warning. 
 // Input       : 
 // Return      : 
 //
@@ -440,12 +445,11 @@ int
 BunchAsymmetryAnomaly(){
 
   printf("BunchAsymmetryAnomaly(): check for x90\n");
-  BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1]);
+  BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1], 1);
   printf("BunchAsymmetryAnomaly(): check for x45\n");
-  BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1]);
+  BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1], 2);
   printf("BunchAsymmetryAnomaly(): check for y45\n");
-  BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1]);
-
+  BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1], 4);
 
   return 0;
 
@@ -465,15 +469,16 @@ BunchAsymmetryAnomaly(){
 int
 BunchAnomalyDetector(){
 
-  // Initiarize anomaly bunch counter
+  // Initiarize anomaly bunch counter and error_code
   anal.anomaly.nbunch= runinfo.NFilledBunch > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
+  anal.anomaly.bunch_err_code = 0;
 
   if (anal.anomaly.nbunch != -1) {
     // Find anomaly bunches from unusual deviation from average asymmetry
     BunchAsymmetryAnomaly();
 
     // Find Hot bunches from counting rates per bunch
-    HotBunchFinder();
+    HotBunchFinder(8);
 
     // check unrecognized anomaly
     UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
@@ -490,14 +495,14 @@ BunchAnomalyDetector(){
 
 //
 // Class name  : 
-// Method name : HotBunchFinder()
+// Method name : HotBunchFinder(int err_code)
 //
-// Description : find hot bunch 
-// Input       : 
+// Description : find hot bunch from specific luminosity distribution
+// Input       : err_code
 // Return      : 
 //
 int
-HotBunchFinder(){
+HotBunchFinder(int err_code){
 
   float err[NBUNCH], bindex[NBUNCH];
   float max, min;
@@ -558,12 +563,13 @@ HotBunchFinder(){
   DrawLine(bunch_spelumi, bnchchk.rate.allowance, g1->GetParameter(0), 2, 2);
 
   // anomaly bunch registration
+  int flag=0;
   char text[16]; 
   for (int bnch=0;bnch<NBUNCH;bnch++) {
     if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
-      anal.anomaly.nbunch++;
-      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average\n", bnch, bnchchk.rate.allowance);
+      anal.anomaly.nbunch++; flag++;
+      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, bnchchk.rate.allowance);
       
       // comment in h2 histogram
       sprintf(text,"Bunch %d",bnch);
@@ -573,7 +579,8 @@ HotBunchFinder(){
     }
   }
 
-	
+  // assign error_code
+  if (flag) anal.anomaly.bunch_err_code += err_code;
 
   return 0;
 }

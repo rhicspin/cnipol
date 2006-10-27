@@ -564,6 +564,28 @@ CumulativeAsymmetry(){
 
 
 
+//
+// Class name  :
+// Method name : binary(int n)
+//
+// Description : print integer in binary
+// Input       : int n
+// Return      : writes out n in binary 
+//
+void binary(int n) {
+	int remainder;
+
+	if(n <= 1) {
+		cout << n;
+		return;
+	}
+
+	remainder = n%2;
+	binary(n >> 1);    
+	cout << remainder;
+
+}
+
 
 
 
@@ -591,6 +613,7 @@ PrintWarning(){
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
     printf(" Number of Problemeatic Bunches      : %6d \n", anal.anomaly.nbunch);
     printf(" Problemeatic Bunches Rate [%]       : %6.1f\n", anal.anomaly.bad_bunch_rate);
+    printf(" Bunch error code                    : "); binary(anal.anomaly.bunch_err_code);printf("\n");
     printf(" Problemeatic Bunch ID's             : ");
     for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]) ; 
     printf("\n");
