@@ -33,11 +33,11 @@ extern StructStripCheck strpchk;
 
 
 //=================================================================//
-//                     Strip Error Detector                        //
+//                     Bunch Error Detector                        //
 //=================================================================//
 int BunchAnomalyDetector();
-int BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[]);
-int HotBunchFinder(); 
+int BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
+int HotBunchFinder(int err_code); 
 
 
 struct StructBunch {

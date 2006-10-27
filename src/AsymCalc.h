@@ -74,6 +74,7 @@ int BunchAsymmetry(int, float A[], float dA[]);
 //===========================================================================
 //                        Result Printing
 //===========================================================================
+void binary(int n);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
 
