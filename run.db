@@ -30,6 +30,8 @@
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	DisableStrip=15;
+	DisableStrip=23;
 
 [6500.101]
 	MEASUREMENT_TYPE=NORM;
@@ -40,78 +42,1122 @@
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	DisableStrip=52;
+	DisableStrip=56;
+
+[6789.003]
+	CONFIG=6789.003.config.dat;
+
+[6790.102]@
+	CONFIG=6790.102.config.dat;@
+
+[6793.102]@
+	CONFIG=6793.102.config.dat;@
+
+[6797.004]@
+	CONFIG=6797.004.config.dat;@
+
+[6797.102]@
+	CONFIG=6797.102.config.dat;@
+
+[6797.104]@
+	CONFIG=6797.104.config.dat;@
+
+[6809.002]@
+	CONFIG=6809.002.config.dat;@
+
+[6809.102]@
+	CONFIG=6809.102.config.dat;@
+
+[6811.105]@
+	CONFIG=6811.105.config.dat;@
+
+[6811.106]@
+	CONFIG=6811.106.config.dat;@
+
+[6811.107]@
+	CONFIG=6811.107.config.dat;@
+
+[6812.105]@
+	CONFIG=6812.105.config.dat;@
+
+[6813.105]@
+	CONFIG=6813.105.config.dat;@
+
+[6814.002]@
+	CONFIG=6814.002.config.dat;@
+
+[6814.108]@
+	CONFIG=6814.108.config.dat;@
+
+[6821.105]@
+	CONFIG=6821.105.config.dat;@
+
+[6828.101]@
+	CONFIG=6828.101.config.dat;@
+
+[6830.101]@
+	CONFIG=6830.101.config.dat;@
+
+[6830.103]@
+	CONFIG=6830.103.config.dat;@
+
+[6830.104]@
+	CONFIG=6830.104.config.dat;@
+
+[6837.102]@
+	CONFIG=6837.102.config.dat;@
+
+[6840.102]
+	CONFIG=6840.102.config.dat;
+
+
+[6840.103]@
+	CONFIG=6840.103.config.dat;@
+
+[6843.102]@
+	CONFIG=6843.102.config.dat;@
+
+[6843.103]@
+	CONFIG=6843.103.config.dat;@
+
+[6847.003]@
+	CONFIG=6847.003.config.dat;@
+
+[6847.102]@
+	CONFIG=6847.102.config.dat;@
+
+[6847.103]@
+	CONFIG=6847.103.config.dat;@
+
+[6847.104]@
+	CONFIG=6847.104.config.dat;@
+
+[6852.002]@
+	CONFIG=6852.002.config.dat;@
+
+[6852.003]@
+	CONFIG=6852.003.config.dat;@
+
+[6853.103]@
+	CONFIG=6853.103.config.dat;@
+
+[6855.101]@
+	CONFIG=6855.101.config.dat;@
+
+[6858.002]@
+	CONFIG=6858.002.config.dat;@
+
+[6858.111]@
+	CONFIG=6858.111.config.dat;@
+
+[6858.113]@
+	CONFIG=6858.113.config.dat;@
+
+[6861.104]@
+	CONFIG=6861.104.config.dat;@
+
+[6861.105]@
+	CONFIG=6861.105.config.dat;@
+
+[6861.106]@
+	CONFIG=6861.106.config.dat;@
+
+[6864.002]@
+	CONFIG=6864.002.config.dat;@
+
+[6864.102]@
+	CONFIG=6864.102.config.dat;@
+
+[6868.108]@
+	CONFIG=6868.108.config.dat;@
+
+[6869.010]@
+	CONFIG=6869.010.config.dat;@
+
+[6869.111]@
+	CONFIG=6869.111.config.dat;@
+
+[6870.104]@
+	CONFIG=6870.104.config.dat;@
+
+[6870.105]@
+	CONFIG=6870.105.config.dat;@
+
+[6871.104]@
+	CONFIG=6871.104.config.dat;@
+
+[6872.003]@
+	CONFIG=6872.003.config.dat;@
+
+[6872.104]@
+	CONFIG=6872.104.config.dat;@
+
+[6877.004]@
+	CONFIG=6877.004.config.dat;@
+
+[6877.104]@
+	CONFIG=6877.104.config.dat;@
+
+[6877.106]@
+	CONFIG=6877.106.config.dat;@
+
+[6883.002]@
+	CONFIG=6883.002.config.dat;@
+
+[6883.102]@
+	CONFIG=6883.102.config.dat;@
+
+[6884.103]@
+	CONFIG=6884.103.config.dat;@
+
+[6885.002]@
+	CONFIG=6885.002.config.dat;@
+
+[6885.102]@
+	CONFIG=6885.102.config.dat;@
+
+[6885.104]@
+	CONFIG=6885.104.config.dat;@
+
+[6888.002]@
+	CONFIG=6888.002.config.dat;@
+
+[6888.104]@
+	CONFIG=6888.104.config.dat;@
+
+[6904.002]@
+	CONFIG=6904.002.config.dat;@
+
+[6904.102]@
+	CONFIG=6904.102.config.dat;@
+
+[6905.104]@
+	CONFIG=6905.104.config.dat;@
+
+[6905.105]@
+	CONFIG=6905.105.config.dat;@
+
+[6905.107]@
+	CONFIG=6905.107.config.dat;@
+
+[6906.102]@
+	CONFIG=6906.102.config.dat;@
+
+[6906.103]@
+	CONFIG=6906.103.config.dat;@
+
+[6913.002]@
+	CONFIG=6913.002.config.dat;@
+
+[6913.003]@
+	CONFIG=6913.003.config.dat;@
+
+[6913.011]@
+	CONFIG=6913.011.config.dat;@
+
+[6913.103]@
+	CONFIG=6913.103.config.dat;@
+
+[6913.104]@
+	CONFIG=6913.104.config.dat;@
+
+[6913.106]@
+	CONFIG=6913.106.config.dat;@
+
+[6913.109]@
+	CONFIG=6913.109.config.dat;@
+
+[6917.004]@
+	CONFIG=6917.004.config.dat;@
+
+[6917.107]@
+	CONFIG=6917.107.config.dat;@
+
+[6917.110]@
+	CONFIG=6917.110.config.dat;@
+
+[6919.001]@
+	CONFIG=6919.001.config.dat;@
+
+[6919.101]@
+	CONFIG=6919.101.config.dat;@
+
+[6919.102]@
+	CONFIG=6919.102.config.dat;@
+
+[6919.103]@
+	CONFIG=6919.103.config.dat;@
+
+[6919.105]@
+	CONFIG=6919.105.config.dat;@
+
+[6925.001]@
+	CONFIG=6925.001.config.dat;@
+
+[6928.004]@
+	CONFIG=6928.004.config.dat;@
+
+[6928.006]@
+	CONFIG=6928.006.config.dat;@
+
+[6928.007]@
+	CONFIG=6928.007.config.dat;@
+
+[6928.102]@
+	CONFIG=6928.102.config.dat;@
+
+[6928.104]@
+	CONFIG=6928.104.config.dat;@
+
+[6928.105]@
+	CONFIG=6928.105.config.dat;@
+
+[6928.108]@
+	CONFIG=6928.108.config.dat;@
+
+[6931.002]@
+	CONFIG=6931.002.config.dat;@
+
+[6931.005]@
+	CONFIG=6931.005.config.dat;@
+
+[6931.102]@
+	CONFIG=6931.102.config.dat;@
+
+[6931.104]@
+	CONFIG=6931.104.config.dat;@
 
 [6935.001]
 	ENERGY_CALIB=blue_calib_0419-100v;
+
+[6935.002]@
+	CONFIG=6935.002.config.dat;@
+
+[6935.003]@
+	CONFIG=6935.003.config.dat;@
 
 [6935.101]
 	ENERGY_CALIB=yellow_calib_0419-150v;
 	CONFIG=6935.102.config.dat;
 
+[6936.002]@
+	CONFIG=6936.002.config.dat;@
+
+[6936.004]@
+	CONFIG=6936.004.config.dat;@
+
+[6936.103]@
+	CONFIG=6936.103.config.dat;@
+
+[6936.104]@
+	CONFIG=6936.104.config.dat;@
+
+[6943.105]@
+	CONFIG=6943.105.config.dat;@
+
+[6943.107]@
+	CONFIG=6943.107.config.dat;@
+
+[6943.112]@
+	CONFIG=6943.112.config.dat;@
+
+[6943.115]@
+	CONFIG=6943.115.config.dat;@
+
+[6945.002]@
+	CONFIG=6945.002.config.dat;@
+
+[6945.003]@
+	CONFIG=6945.003.config.dat;@
+
+[6945.102]@
+	CONFIG=6945.102.config.dat;@
+
+[6945.103]@
+	CONFIG=6945.103.config.dat;@
+
+[6945.105]@
+	CONFIG=6945.105.config.dat;@
+
+[6945.110]@
+	CONFIG=6945.110.config.dat;@
+
+[6946.002]@
+	CONFIG=6946.002.config.dat;@
+
+[6946.102]@
+	CONFIG=6946.102.config.dat;@
+
+[6947.002]@
+	CONFIG=6947.002.config.dat;@
+
+[6947.005]@
+	CONFIG=6947.005.config.dat;@
+
+[6947.102]@
+	CONFIG=6947.102.config.dat;@
+
+[6947.105]@
+	CONFIG=6947.105.config.dat;@
+
+[6947.106]@
+	CONFIG=6947.106.config.dat;@
+
+[6955.102]@
+	CONFIG=6955.102.config.dat;@
+
+[6957.105]@
+	CONFIG=6957.105.config.dat;@
+
+[6959.003]@
+	CONFIG=6959.003.config.dat;@
+
+[6959.102]@
+	CONFIG=6959.102.config.dat;@
+
+[6959.104]@
+	CONFIG=6959.104.config.dat;@
+
+[6959.107]@
+	CONFIG=6959.107.config.dat;@
+
+[6963.105]@
+	CONFIG=6963.105.config.dat;@
+
+[6963.107]@
+	CONFIG=6963.107.config.dat;@
+
+[6963.108]@
+	CONFIG=6963.108.config.dat;@
+
+[6967.103]@
+	CONFIG=6967.103.config.dat;@
+
+[6968.102]@
+	CONFIG=6968.102.config.dat;@
+
+[6969.104]@
+	CONFIG=6969.104.config.dat;@
+
+[6972.004]@
+	CONFIG=6972.004.config.dat;@
+
+[6972.102]@
+	CONFIG=6972.102.config.dat;@
+
+[6973.107]@
+	CONFIG=6973.107.config.dat;@
+
+[6973.109]@
+	CONFIG=6973.109.config.dat;@
+
+[6975.003]@
+	CONFIG=6975.003.config.dat;@
+
+[6975.103]@
+	CONFIG=6975.103.config.dat;@
+
+[6975.104]@
+	CONFIG=6975.104.config.dat;@
+
+[6975.108]@
+	CONFIG=6975.108.config.dat;@
+
+[6978.003]
+	ENERGY_CALIB=blue_calib_0419-100v;
+
+[6979.002]@
+	CONFIG=6979.002.config.dat;@
+
+[6979.103]@
+	CONFIG=6979.103.config.dat;@
+
+[6980.002]@
+	CONFIG=6980.002.config.dat;@
+
+[6980.102]@
+	CONFIG=6980.102.config.dat;@
+
+[6980.103]@
+	CONFIG=6980.103.config.dat;@
+
+[6980.104]@
+	CONFIG=6980.104.config.dat;@
+
+[6987.003]@
+	CONFIG=6987.003.config.dat;@
+
+[6987.103]@
+	CONFIG=6987.103.config.dat;@
+
+[6988.103]@
+	CONFIG=6988.103.config.dat;@
+
+[6988.108]@
+	CONFIG=6988.108.config.dat;@
+
+[6988.109]@
+	CONFIG=6988.109.config.dat;@
+
+[6988.110]@
+	CONFIG=6988.110.config.dat;@
+
+[6990.105]@
+	CONFIG=6990.105.config.dat;@
+
+[6991.004]@
+	CONFIG=6991.004.config.dat;@
+
+[6992.005]@
+	CONFIG=6992.005.config.dat;@
+
+[6992.102]@
+	CONFIG=6992.102.config.dat;@
+
+[6993.103]@
+	CONFIG=6993.103.config.dat;@
+
+[6994.104]@
+	CONFIG=6994.104.config.dat;@
+
+[6994.105]@
+	CONFIG=6994.105.config.dat;@
+
+[6995.104]@
+	CONFIG=6995.104.config.dat;@
+
+[6996.006]@
+	CONFIG=6996.006.config.dat;@
+
+[6996.103]@
+	CONFIG=6996.103.config.dat;@
+
+[6997.002]@
+	CONFIG=6997.002.config.dat;@
+
+[6997.108]@
+	CONFIG=6997.108.config.dat;@
+
+[6998.102]@
+	CONFIG=6998.102.config.dat;@
+
+[6998.103]@
+	CONFIG=6998.103.config.dat;@
+
+[6998.104]@
+	CONFIG=6998.104.config.dat;@
+
+[6999.102]@
+	CONFIG=6999.102.config.dat;@
+
+[6999.103]@
+	CONFIG=6999.103.config.dat;@
+
+[7000.102]@
+	CONFIG=7000.102.config.dat;@
+
+[7000.103]@
+	CONFIG=7000.103.config.dat;@
+
+[7001.003]@
+	CONFIG=7001.003.config.dat;@
+
+[7001.102]@
+	CONFIG=7001.102.config.dat;@
+
+[7001.103]@
+	CONFIG=7001.103.config.dat;@
+
+[7002.003]@
+	CONFIG=7002.003.config.dat;@
+
+[7002.105]@
+	CONFIG=7002.105.config.dat;@
+
+[7005.002]@
+	CONFIG=7005.002.config.dat;@
+
+[7005.110]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7005.111]@
+	CONFIG=7005.111.config.dat;@
+
+[7006.005]@
+	CONFIG=7006.005.config.dat;@
+
+[7006.104]@
+	CONFIG=7006.104.config.dat;@
 
 [7007.001]
 	CONFIG=7009.014.config.dat;
+
+[7007.002]@
+	CONFIG=7007.002.config.dat;@
 
 [7007.101]
 	CONFIG=7009.107.config.dat;
 
 
 
+[7007.102]@
+	CONFIG=7007.102.config.dat;@
+
+[7007.103]@
+	CONFIG=7007.103.config.dat;@
+
+[7009.010]@
+	CONFIG=7009.010.config.dat;@
+
+[7009.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7009.106]@
+	CONFIG=7009.106.config.dat;@
+
+[7010.002]@
+	CONFIG=7010.002.config.dat;@
+
+[7010.006]@
+	CONFIG=7010.006.config.dat;@
+
+[7010.102]@
+	CONFIG=7010.102.config.dat;@
+
+[7010.105]@
+	CONFIG=7010.105.config.dat;@
+
+[7010.106]@
+	CONFIG=7010.106.config.dat;@
+
+[7015.001]@
+	CONFIG=7015.001.config.dat;@
+
 [7015.001]
 	ENERGY_CALIB=blue_calib_0504;
 
+[7015.101]@
+	CONFIG=7015.101.config.dat;@
+
 [7015.101]
-	ENERGY_CALIB=yellow_calib_504;
+	ENERGY_CALIB=yellow_calib_0504;
+
+[7021.004]@
+	CONFIG=7021.004.config.dat;@
+
+[7022.002]@
+	CONFIG=7022.002.config.dat;@
 
 [7022.003]
 	CONFIG=7022.003.config.dat;
 
 
+[7022.101]@
+	CONFIG=7022.101.config.dat;@
+
 [7022.103]
 	CONFIG=7022.103.config.dat;
 
 
+[7025.004]@
+	CONFIG=7025.004.config.dat;@
+
+[7025.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7025.008]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7025.009]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7025.101]@
+	CONFIG=7025.101.config.dat;@
+
+[7025.102]@
+	CONFIG=7025.102.config.dat;@
+
+[7028.001]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7028.002]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7028.003]@
+	CONFIG=7028.003.config.dat;@
+
 [7028.004]
 	CONFIG=7028.004.config.dat;
+
+[7028.005]@
+	CONFIG=7028.005.config.dat;@
+
+[7028.011]@
+	CONFIG=7028.011.config.dat;@
+
+[7028.101]@
+	CONFIG=7028.101.config.dat;@
+
+[7028.103]@
+	CONFIG=7028.103.config.dat;@
+
+[7028.108]@
+	CONFIG=7028.108.config.dat;@
 
 [7029.001]
 	CONFIG=7022.003.config.dat;
 
 
 
+[7029.002]@
+	CONFIG=7029.002.config.dat;@
+
+[7029.003]@
+	CONFIG=7029.003.config.dat;@
+
+[7030.003]@
+	CONFIG=7030.003.config.dat;@
+
+[7030.006]@
+	CONFIG=7030.006.config.dat;@
+
+[7032.002]@
+	CONFIG=7032.002.config.dat;@
+
+[7032.003]@
+	CONFIG=7032.003.config.dat;@
+
+[7032.005]@
+	CONFIG=7032.005.config.dat;@
+
+[7034.002]@
+	CONFIG=7034.002.config.dat;@
+
+[7034.004]@
+	CONFIG=7034.004.config.dat;@
+
+[7034.007]@
+	CONFIG=7034.007.config.dat;@
+
+[7035.004]@
+	CONFIG=7035.004.config.dat;@
+
+[7035.005]@
+	CONFIG=7035.005.config.dat;@
+
+[7035.007]@
+	CONFIG=7035.007.config.dat;@
+
+[7036.002]@
+	CONFIG=7036.002.config.dat;@
+
+[7036.004]@
+	CONFIG=7036.004.config.dat;@
+
+[7039.005]@
+	CONFIG=7039.005.config.dat;@
+
+[7051.002]@
+	CONFIG=7051.002.config.dat;@
+
+[7051.101]@
+	CONFIG=7051.101.config.dat;@
+
+[7051.102]@
+	CONFIG=7051.102.config.dat;@
+
+[7052.001]@
+	CONFIG=7052.001.config.dat;@
+
+[7052.101]@
+	CONFIG=7052.101.config.dat;@
+
+[7053.103]@
+	CONFIG=7053.103.config.dat;@
+
+[7054.101]@
+	CONFIG=7054.101.config.dat;@
+
+[7054.103]@
+	CONFIG=7054.103.config.dat;@
+
+[7054.104]@
+	CONFIG=7054.104.config.dat;@
+
+[7055.003]@
+	CONFIG=7055.003.config.dat;@
+
 [7055.004]
 	CONFIG=7055.004.config.dat;
 
+[7055.101]@
+	CONFIG=7055.101.config.dat;@
+
+[7055.102]@
+	CONFIG=7055.102.config.dat;@
+
+[7055.103]@
+	CONFIG=7055.103.config.dat;@
+
+[7056.001]@
+	CONFIG=7056.001.config.dat;@
+
 [7056.001]
 	CONFIG=7022.003.config.dat;
+
+[7056.002]@
+	CONFIG=7056.002.config.dat;@
+
+[7056.101]@
+	CONFIG=7056.101.config.dat;@
+
+[7059.102]@
+	CONFIG=7059.102.config.dat;@
+
+[7059.103]@
+	CONFIG=7059.103.config.dat;@
+
+[7061.001]@
+	CONFIG=7061.001.config.dat;@
 
 [7061.001]
 	CONFIG=6947.005.config.dat;
 
 
 
+[7061.002]@
+	CONFIG=7061.002.config.dat;@
+
+[7061.101]@
+	CONFIG=7061.101.config.dat;@
+
+[7062.001]@
+	CONFIG=7062.001.config.dat;@
+
+[7063.102]@
+	CONFIG=7063.102.config.dat;@
+
+[7063.103]@
+	CONFIG=7063.103.config.dat;@
+
+[7064.101]@
+	CONFIG=7064.101.config.dat;@
+
+[7064.102]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7064.103]@
+	CONFIG=7064.103.config.dat;@
+
+[7064.106]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7064.107]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7064.108]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7064.109]@
+	CONFIG=7064.109.config.dat;@
+
+[7067.001]@
+	CONFIG=7067.001.config.dat;@
+
 [7067.001]
 	ENERGY_CALIB=blue_calib_0513c;
 	CONFIG=7067.002.config.dat;
 
+[7067.006]@
+	CONFIG=7067.006.config.dat;@
+
+[7067.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7067.101]
 	ENERGY_CALIB=yellow_calib_0513c;
+
+[7067.103]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7067.104]@
+	CONFIG=7067.104.config.dat;@
 
 [7067.105]
 	CONFIG=7067.105.config.dat;
 
+[7068.001]@
+	CONFIG=7068.001.config.dat;@
+
+[7068.002]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7068.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7069.002]
 	CONFIG=7069.002.config.dat;
+
+[7069.004]@
+	CONFIG=7069.004.config.dat;@
 
 [7069.104]
 	CONFIG=7069.104.config.dat;
 
+[7069.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7070.008]
 	CONFIG=7070.008.config.dat;
 
+[7070.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7070.108]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7070.109]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7070.110]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7070.111]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7072.102]@
+	CONFIG=7072.102.config.dat;@
+
+[7072.103]@
+	CONFIG=7072.103.config.dat;@
+
+[7074.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7075.102]@
+	CONFIG=7075.102.config.dat;@
+
+[7079.004]@
+	CONFIG=7079.004.config.dat;@
+
+[7079.102]@
+	CONFIG=7079.102.config.dat;@
+
+[7079.103]@
+	CONFIG=7079.103.config.dat;@
+
+[7084.005]@
+	CONFIG=7084.005.config.dat;@
+
+[7084.104]@
+	CONFIG=7084.104.config.dat;@
+
+[7084.106]@
+	CONFIG=7084.106.config.dat;@
+
+[7085.002]@
+	CONFIG=7085.002.config.dat;@
+
+[7085.005]@
+	CONFIG=7085.005.config.dat;@
+
+[7085.102]@
+	CONFIG=7085.102.config.dat;@
+
+[7085.104]@
+	CONFIG=7085.104.config.dat;@
+
+[7086.104]@
+	CONFIG=7086.104.config.dat;@
+
+[7101.003]@
+	CONFIG=7101.003.config.dat;@
+
+[7101.102]@
+	CONFIG=7101.102.config.dat;@
+
+[7102.008]@
+	CONFIG=7102.008.config.dat;@
+
+[7102.103]@
+	CONFIG=7102.103.config.dat;@
+
+[7114.104]@
+	CONFIG=7114.104.config.dat;@
+
+[7114.105]@
+	CONFIG=7114.105.config.dat;@
+
+[7114.107]@
+	CONFIG=7114.107.config.dat;@
+
+[7114.108]@
+	CONFIG=7114.108.config.dat;@
+
+[7118.102]@
+	CONFIG=7118.102.config.dat;@
+
+[7120.002]@
+	CONFIG=7120.002.config.dat;@
+
+[7120.102]@
+	CONFIG=7120.102.config.dat;@
+
+[7122.102]@
+	CONFIG=7122.102.config.dat;@
+
+[7123.104]@
+	CONFIG=7123.104.config.dat;@
+
+[7124.102]@
+	CONFIG=7124.102.config.dat;@
+
+[7124.103]@
+	CONFIG=7124.103.config.dat;@
+
+[7124.105]@
+	CONFIG=7124.105.config.dat;@
+
+[7124.109]@
+	CONFIG=7124.109.config.dat;@
+
+[7125.102]@
+	CONFIG=7125.102.config.dat;@
+
+[7125.104]@
+	CONFIG=7125.104.config.dat;@
+
+[7128.009]@
+	CONFIG=7128.009.config.dat;@
+
+[7129.004]@
+	CONFIG=7129.004.config.dat;@
+
+[7129.104]@
+	CONFIG=7129.104.config.dat;@
+
+[7129.105]@
+	CONFIG=7129.105.config.dat;@
+
+[7131.002]@
+	CONFIG=7131.002.config.dat;@
+
+[7131.102]@
+	CONFIG=7131.102.config.dat;@
+
+[7131.105]@
+	CONFIG=7131.105.config.dat;@
+
+[7133.106]
+	MEASUREMENT_TYPE=PROFILE;
+	COMMENT="Fixed target profile scan. Off-centered target position. 7133.106 - 7133.115";
+
+[7133.108]@
+	CONFIG=7133.108.config.dat;@
+
+[7133.112]@
+	CONFIG=7133.112.config.dat;@
+
+[7133.114]@
+	CONFIG=7133.114.config.dat;@
+
+[7133.115]@
+	CONFIG=7133.115.config.dat;@
+
+[7134.101]
+	MEASUREMENT_TYPE=NORM;
+	COMMENT="";
+
+[7134.103]@
+	CONFIG=7134.103.config.dat;@
+
+[7136.102]@
+	CONFIG=7136.102.config.dat;@
+
+[7136.103]@
+	CONFIG=7136.103.config.dat;@
+
+[7138.103]@
+	CONFIG=7138.103.config.dat;@
+
+[7139.003]@
+	CONFIG=7139.003.config.dat;@
+
+[7142.106]@
+	CONFIG=7142.106.config.dat;@
+
+[7143.102]@
+	CONFIG=7143.102.config.dat;@
+
+[7143.103]@
+	CONFIG=7143.103.config.dat;@
+
+[7143.104]@
+	CONFIG=7143.104.config.dat;@
+
+[7151.002]@
+	CONFIG=7151.002.config.dat;@
+
+[7151.006]@
+	CONFIG=7151.006.config.dat;@
+
 [7151.007]
 	CONFIG=7151.010.config.dat;
+	MEASUREMENT_TYPE=PROFILE;
+	COMMENT="Fixed target profile scan. Off-centered target position. 7151.007 - 7151.019";
 
+[7151.107]
+	MEASUREMENT_TYPE=PROFILE;
+	COMMENT="Fixed target profile scan. Off-centered target position. 7151.107 - 7151.119";
+
+[7152.001]
+	MEASUREMENT_TYPE=NORM;
+	COMMENT="";
+
+[7152.101]
+	MEASUREMENT_TYPE=NORM;
+	COMMENT="";
+
+[7153.002]@
+	CONFIG=7153.002.config.dat;@
+
+[7161.002]@
+	CONFIG=7161.002.config.dat;@
+
+[7165.002]@
+	CONFIG=7165.002.config.dat;@
+
+[7172.005]@
+	CONFIG=7172.005.config.dat;@
+
+[7203.001]@
+	CONFIG=7203.001.config.dat;@
+
+[7204.001]@
+	CONFIG=7204.001.config.dat;@
 
 [7207.103] 
 	CONFIG=7067.105.config.dat;
@@ -120,9 +1166,50 @@
 [7208.001]
 	CONFIG=7067.002.config.dat;
 
+[7208.002]@
+	CONFIG=7208.002.config.dat;@
+
+[7208.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="asym_vs_bunch_x90 demonstrait mixed up spin pattern, but asym_vs_bunch_x45 shows normal. This fill is not (PHENIX) physics anyway. Unsuccessful deadlayer fit. Don't update config file. " 
+	DisableStrip=1;
+
+[7210.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7212.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7212.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7213.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7215.004]@
+	CONFIG=7215.004.config.dat;@
+
+[7215.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7215.005]@
+	CONFIG=7215.005.config.dat;@
+
+[7215.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 // ------------------------------------------------------------//
 //                      Begin  205 GeV Run
 // ------------------------------------------------------------//
+[7219.003]@
+	CONFIG=7219.003.config.dat;@
+
 [7223.001]
 	COMMENT="205 GeV Operation";
 	CONFIG=7223.002.config.dat;
@@ -163,12 +1250,139 @@
 //                     End  205 GeV Run
 // ------------------------------------------------------------//
 
+[7225.006]@
+	CONFIG=7225.006.config.dat;@
+
 [7229.001]
 	CONFIG=7069.002.config.dat;
 
 [7229.101]
 	CONFIG=7069.104.config.dat;
 	
+
+[7232.003]@
+	CONFIG=7232.003.config.dat;@
+
+[7232.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7232.103]@
+	CONFIG=7232.103.config.dat;@
+
+[7232.104]@
+	CONFIG=7232.104.config.dat;@
+
+[7233.102]@
+	CONFIG=7233.102.config.dat;@
+
+[7234.002]@
+	CONFIG=7234.002.config.dat;@
+
+[7234.003]@
+	CONFIG=7234.003.config.dat;@
+
+[7234.102]@
+	CONFIG=7234.102.config.dat;@
+
+[7234.103]@
+	CONFIG=7234.103.config.dat;@
+
+[7234.104]@
+	CONFIG=7234.104.config.dat;@
+
+[7235.102]@
+	CONFIG=7235.102.config.dat;@
+
+[7236.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7237.103]@
+	CONFIG=7237.103.config.dat;@
+
+[7237.104]@
+	CONFIG=7237.104.config.dat;@
+
+[7237.105]@
+	CONFIG=7237.105.config.dat;@
+
+[7238.102]@
+	CONFIG=7238.102.config.dat;@
+
+[7238.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7240.004]@
+	CONFIG=7240.004.config.dat;@
+
+[7240.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7240.106]@
+	CONFIG=7240.106.config.dat;@
+
+[7240.107]@
+	CONFIG=7240.107.config.dat;@
+
+[7241.003]@
+	CONFIG=7241.003.config.dat;@
+
+[7241.005]@
+	CONFIG=7241.005.config.dat;@
+
+[7245.005]@
+	CONFIG=7245.005.config.dat;@
+
+[7245.104]@
+	CONFIG=7245.104.config.dat;@
+
+[7245.105]@
+	CONFIG=7245.105.config.dat;@
+
+[7249.002]@
+	CONFIG=7249.002.config.dat;@
+
+[7249.003]@
+	CONFIG=7249.003.config.dat;@
+
+[7249.102]@
+	CONFIG=7249.102.config.dat;@
+
+[7249.104]@
+	CONFIG=7249.104.config.dat;@
+
+[7249.105]@
+	CONFIG=7249.105.config.dat;@
+
+[7250.102]@
+	CONFIG=7250.102.config.dat;@
+
+[7253.003]@
+	CONFIG=7253.003.config.dat;@
+
+[7253.004]@
+	CONFIG=7253.004.config.dat;@
+
+[7253.104]@
+	CONFIG=7253.104.config.dat;@
+
+[7255.002]@
+	CONFIG=7255.002.config.dat;@
+
+[7255.003]@
+	CONFIG=7255.003.config.dat;@
+
+[7255.102]@
+	CONFIG=7255.102.config.dat;@
+
+[7255.103]@
+	CONFIG=7255.103.config.dat;@
+
+[7255.104]@
+	CONFIG=7255.104.config.dat;@
 
 [7256.007]
 	RUN_STATUS*=Junk;
@@ -218,30 +1432,251 @@
 	CONFIG=7069.002.config.dat;
 	COMMENT="";
 
+[7262.002]@
+	CONFIG=7262.002.config.dat;@
+
+[7262.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7262.101]
 	COMMENT="";
 
 
+[7262.102]@
+	CONFIG=7262.102.config.dat;@
+
+[7263.002]@
+	CONFIG=7263.002.config.dat;@
+
+[7263.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7263.003]@
+	CONFIG=7263.003.config.dat;@
+
+[7263.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7263.102]@
+	CONFIG=7263.102.config.dat;@
+
+[7263.103]@
+	CONFIG=7263.103.config.dat;@
+
+[7263.104]@
+	CONFIG=7263.104.config.dat;@
+
+[7263.105]@
+	CONFIG=7263.105.config.dat;@
+
+[7264.002]@
+	CONFIG=7264.002.config.dat;@
+
+[7264.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7265.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7265.003]@
+	CONFIG=7265.003.config.dat;@
+
+[7265.102]@
+	CONFIG=7265.102.config.dat;@
+
+[7265.103]@
+	CONFIG=7265.103.config.dat;@
+
+[7266.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7266.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7267.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7267.102]@
+	CONFIG=7267.102.config.dat;@
+
+[7269.003]@
+	CONFIG=7269.003.config.dat;@
+
+[7269.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7269.004]@
+	CONFIG=7269.004.config.dat;@
+
+[7269.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7270.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7270.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7270.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7270.006]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Scan.";
+
+[7270.103]@
+	CONFIG=7270.103.config.dat;@
+
+[7270.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7270.106]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Scan.";
 
 
+[7271.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7271.102]@
+	CONFIG=7271.102.config.dat;@
+
+[7272.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7272.103]@
+	CONFIG=7272.103.config.dat;@
+
+[7272.104]@
+	CONFIG=7272.104.config.dat;@
+
+[7272.105]@
+	CONFIG=7272.105.config.dat;@
+
+[7272.106]@
+	CONFIG=7272.106.config.dat;@
+
+[7274.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7274.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7274.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7274.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7274.006]@
+	CONFIG=7274.006.config.dat;@
+
+[7274.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7274.102]@
+	CONFIG=7274.102.config.dat;@
+
+[7274.103]@
+	CONFIG=7274.103.config.dat;@
+
+[7274.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7276.003]@
+	CONFIG=7276.003.config.dat;@
+
+[7276.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7276.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7276.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7278.002]@
+	CONFIG=7278.002.config.dat;@
+
+[7278.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7278.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7278.006]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Scan.";
+
+[7278.102]@
+	CONFIG=7278.102.config.dat;@
+
+[7278.103]@
+	CONFIG=7278.103.config.dat;@
+
+[7278.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7278.106]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Scan.";
 
 
+[7279.002]@
+	CONFIG=7279.002.config.dat;@
+
+[7279.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7279.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7279.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7279.005]
 	CONFIG=7279.005.config.dat;
+
+[7279.102]@
+	CONFIG=7279.102.config.dat;@
+
+[7279.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7279.105]@
+	CONFIG=7279.105.config.dat;@
 
 [7279.106]
 	CONFIG=7279.106.config.dat;
@@ -274,6 +1709,22 @@
 	MEASUREMENT_TYPE=PHYS;
 	COMMENT="Dedicated A_N measurements 010 - 028. TrigMin=180keV, WinBeg=17.";
 
+[7280.011]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7280.011]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7280.012]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7280.012]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7280.013]
 	COMMENT="A_N low energy measurement. TrigMin=160keV, WinBeg=20";
 
@@ -299,23 +1750,456 @@
 	COMMENT="";
 
 
+[7282.001]@
+	CONFIG=7282.001.config.dat;@
+
+[7282.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7283.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7283.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7284.001]@
+	CONFIG=7284.001.config.dat;@
+
+[7284.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7290.002]@
+	CONFIG=7290.002.config.dat;@
+
+[7290.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7290.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7290.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7290.104]@
+	CONFIG=7290.104.config.dat;@
+
+[7293.002]@
+	CONFIG=7293.002.config.dat;@
+
+[7293.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7293.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7293.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7293.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7293.104]@
+	CONFIG=7293.104.config.dat;@
+
+[7293.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7294.003]@
+	CONFIG=7294.003.config.dat;@
+
+[7294.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7294.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7294.103]@
+	CONFIG=7294.103.config.dat;@
+
+[7294.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7294.108]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7295.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7295.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7295.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7295.104]@
+	CONFIG=7295.104.config.dat;@
+
+[7296.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7296.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7296.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7301.002]@
+	CONFIG=7301.002.config.dat;@
+
+[7301.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7301.003]@
+	CONFIG=7301.003.config.dat;@
+
+[7301.102]@
+	CONFIG=7301.102.config.dat;@
+
+[7301.103]@
+	CONFIG=7301.103.config.dat;@
+
+[7302.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7302.106]@
+	CONFIG=7302.106.config.dat;@
+
+[7302.107]@
+	CONFIG=7302.107.config.dat;@
+
+[7302.108]@
+	CONFIG=7302.108.config.dat;@
+
+[7302.109]@
+	CONFIG=7302.109.config.dat;@
+
+[7303.007]@
+	CONFIG=7303.007.config.dat;@
+
+[7303.009]@
+	CONFIG=7303.009.config.dat;@
+
+[7303.105]@
+	CONFIG=7303.105.config.dat;@
+
+[7303.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7303.107]@
+	CONFIG=7303.107.config.dat;@
+
+[7304.002]@
+	CONFIG=7304.002.config.dat;@
+
+[7304.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7304.005]@
+	CONFIG=7304.005.config.dat;@
+
+[7304.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7305.003]@
+	CONFIG=7305.003.config.dat;@
+
+[7305.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7305.004]@
+	CONFIG=7305.004.config.dat;@
+
+[7305.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7305.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7305.105]@
+	CONFIG=7305.105.config.dat;@
+
+[7306.003]@
+	CONFIG=7306.003.config.dat;@
+
+[7306.005]@
+	CONFIG=7306.005.config.dat;@
+
+[7306.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7306.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7308.002]@
+	CONFIG=7308.002.config.dat;@
+
+[7308.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7308.003]@
+	CONFIG=7308.003.config.dat;@
+
+[7308.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7308.005]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Horizontal target profile scan.";
+
+[7308.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7308.006]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Vertical target profile scan.";
 
+[7308.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [7308.110]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Horizontal target profile scan.";
+
+[7308.111]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7308.111]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Vertical target profile scan.";
 
+[7311.006]@
+	CONFIG=7311.006.config.dat;@
 
+[7311.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7311.102]@
+	CONFIG=7311.102.config.dat;@
+
+[7311.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7311.105]@
+	CONFIG=7311.105.config.dat;@
+
+[7317.004]@
+	CONFIG=7317.004.config.dat;@
+
+[7317.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7317.005]@
+	CONFIG=7317.005.config.dat;@
+
+[7317.006]@
+	CONFIG=7317.006.config.dat;@
+
+[7317.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7317.104]@
+	CONFIG=7317.104.config.dat;@
+
+[7318.003]@
+	CONFIG=7318.003.config.dat;@
+
+[7318.006]@
+	CONFIG=7318.006.config.dat;@
+
+[7318.007]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7318.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7318.108]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7319.002]@
+	CONFIG=7319.002.config.dat;@
+
+[7319.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7319.003]@
+	CONFIG=7319.003.config.dat;@
+
+[7319.007]@
+	CONFIG=7319.007.config.dat;@
+
+[7319.008]@
+	CONFIG=7319.008.config.dat;@
+
+[7319.008]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+
+
+[7320.002]@
+	CONFIG=7320.002.config.dat;@
+
+[7320.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.003]@
+	CONFIG=7320.003.config.dat;@
+
+[7320.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.002]@
+	CONFIG=7325.002.config.dat;@
+
+[7325.003]@
+	CONFIG=7325.003.config.dat;@
+
+[7325.005]@
+	CONFIG=7325.005.config.dat;@
+
+[7325.007]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.007]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.107]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.003]@
+	CONFIG=7327.003.config.dat;@
+
+[7327.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.004]@
+	CONFIG=7327.004.config.dat;@
+
+[7327.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.005]@
+	CONFIG=7327.005.config.dat;@
+
+[7327.005]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.006]@
+	CONFIG=7327.006.config.dat;@
+
+[7327.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 //==============================================================
 //=======                   Run06                      =========
@@ -327,6 +2211,9 @@
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	EnableStrip=1;
+	EnableStrip=15;
+	EnableStrip=23;
 	DisableStrip=66;
 
 [7400.101]
@@ -336,7 +2223,8 @@
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
-
+	EnableStrip=52;
+	EnableStrip=56;
 
 [7450.001]
 	CONFIG=7450.001.config.dat;
@@ -3955,4 +5843,79 @@
 
 [8122.001]@
 	CONFIG=8122.001.config.dat;@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
