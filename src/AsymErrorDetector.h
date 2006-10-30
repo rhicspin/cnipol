@@ -42,6 +42,7 @@ int HotBunchFinder(int err_code);
 
 struct StructBunch {
   float average[1];
+  float sigma_over_mean;
   float allowance;
 };
 

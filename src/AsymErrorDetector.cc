@@ -507,7 +507,7 @@ HotBunchFinder(int err_code){
   float err[NBUNCH], bindex[NBUNCH];
   float max, min;
   int init_flag=1;
-
+  int EXCLUDE_BUNCH=20; // bunch 20 supposed be excluded from specific luminosity anomaly finding
 
   for (int bnch=0; bnch<NBUNCH; bnch++){
 
@@ -524,10 +524,10 @@ HotBunchFinder(int err_code){
   // define rate distribution and fill the histogram
   Bunch->cd();
   char hname[100];
-  sprintf(hname,"%8.3f : Rate Distribution / bunch", runinfo.RUNID);
+  sprintf(hname,"%8.3f : Specific Luminosiry / bunch", runinfo.RUNID);
   bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
   for (int bnch=0;bnch<NBUNCH;bnch++) { 
-    if (SpeLumi.Cnts[bnch]) bunch_spelumi->Fill(SpeLumi.Cnts[bnch]);
+    if ((SpeLumi.Cnts[bnch])&&(bnch!=EXCLUDE_BUNCH)) bunch_spelumi->Fill(SpeLumi.Cnts[bnch]);
   }
 
   // define rate vs. bunch plot 
@@ -539,7 +539,7 @@ HotBunchFinder(int err_code){
   spelumi_vs_bunch = new TH2F("spelumi_vs_bunch", hname, NBUNCH, -0.5, NBUNCH+0.5, 50, min, max*1.3);
   spelumi_vs_bunch -> GetListOfFunctions() -> Add(gr,"P");
   spelumi_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
-  spelumi_vs_bunch -> GetYaxis()->SetTitle("Yield/Bunch");
+  spelumi_vs_bunch -> GetYaxis()->SetTitle("12C Yields/WCM");
 
   // define gaussian function 
   TF1 * g1 = new TF1("g1","gaus");
@@ -557,6 +557,7 @@ HotBunchFinder(int err_code){
   // get sigma from Gaussian fit and calculate allowance limit
   float sigma=g1->GetParameter(2);
   bnchchk.rate.allowance = ave + errdet.BUNCH_RATE_SIGMA_ALLOWANCE*sigma;
+  bnchchk.rate.sigma_over_mean = ave ? sigma/ave : -1 ;
 
   // draw lines to 1D and 2D histograms
   DrawLine(spelumi_vs_bunch, -0.5, NBUNCH+0.5, bnchchk.rate.allowance, 2, 2, 2);
