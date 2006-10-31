@@ -44,6 +44,7 @@ struct StructBunch {
   float average[1];
   float sigma_over_mean;
   float allowance;
+  float max_dev;
 };
 
 struct StructBunchCheck {

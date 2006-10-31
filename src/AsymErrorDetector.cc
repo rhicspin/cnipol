@@ -472,6 +472,7 @@ BunchAnomalyDetector(){
   // Initiarize anomaly bunch counter and error_code
   anal.anomaly.nbunch= runinfo.NFilledBunch > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
   anal.anomaly.bunch_err_code = 0;
+  bnchchk.rate.max_dev = 0;
 
   if (anal.anomaly.nbunch != -1) {
     // Find anomaly bunches from unusual deviation from average asymmetry
@@ -526,8 +527,12 @@ HotBunchFinder(int err_code){
   char hname[100];
   sprintf(hname,"%8.3f : Specific Luminosiry / bunch", runinfo.RUNID);
   bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
+  bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events / WCM");
+  bunch_spelumi -> GetYaxis()->SetTitle("# Bunches weighted by 1/sqrt(12C Events)");
+
   for (int bnch=0;bnch<NBUNCH;bnch++) { 
-    if ((SpeLumi.Cnts[bnch])&&(bnch!=EXCLUDE_BUNCH)) bunch_spelumi->Fill(SpeLumi.Cnts[bnch]);
+    if ((SpeLumi.Cnts[bnch])&&(bnch!=EXCLUDE_BUNCH)) 
+      bunch_spelumi->Fill(SpeLumi.Cnts[bnch], 1/SpeLumi.dCnts[bnch]);
   }
 
   // define rate vs. bunch plot 
@@ -570,7 +575,9 @@ HotBunchFinder(int err_code){
     if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
       anal.anomaly.nbunch++; flag++;
-      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, bnchchk.rate.allowance);
+      float dev = (SpeLumi.Cnts[bnch] - SpeLumi.ave)/sigma;
+      bnchchk.rate.max_dev = bnchchk.rate.max_dev < dev ? dev : bnchchk.rate.max_dev ;
+      printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, dev);
       
       // comment in h2 histogram
       sprintf(text,"Bunch %d",bnch);
