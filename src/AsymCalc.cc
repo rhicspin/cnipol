@@ -612,7 +612,7 @@ PrintWarning(){
     printf(" Good Bunch SpeLumi Sigma Allowance  : %6.1f\n",errdet.BUNCH_RATE_SIGMA_ALLOWANCE);
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
     printf(" SpeLumi sigma/mean                  : %8.4f\n",bnchchk.rate.sigma_over_mean);
-    if (bnchchk.rate.max_dev) printf(" Max SpeLumi deviation from average  : %8.4f\n",bnchchk.rate.max_dev);
+    if (bnchchk.rate.max_dev) printf(" Max SpeLumi deviation from average  : %6.1f\n",bnchchk.rate.max_dev);
     printf(" Number of Problemeatic Bunches      : %6d \n", anal.anomaly.nbunch);
     printf(" Problemeatic Bunches Rate [%]       : %6.1f\n", anal.anomaly.bad_bunch_rate);
     printf(" Bunch error code                    :   "); binary_zero(anal.anomaly.bunch_err_code,4);printf("\n");
