@@ -564,25 +564,25 @@ CumulativeAsymmetry(){
 
 
 
+
 //
 // Class name  :
-// Method name : binary(int n)
+// Method name : binary_zero(int n)
 //
-// Description : print integer in binary
-// Input       : int n
+// Description : print integer in binary with zero filled from the most significant bit
+//             : to zero bit, f.i. 0101 for n=5, mb=4 
+// Input       : int n, int mb(the most significant bit)
 // Return      : writes out n in binary 
 //
-void binary(int n) {
-	int remainder;
+void binary_zero(int n, int mb) {
+  int X=pow(2,mb-1);
 
-	if(n <= 1) {
-		cout << n;
-		return;
-	}
-
-	remainder = n%2;
-	binary(n >> 1);    
-	cout << remainder;
+  for (int i=0; i<mb; i++) {
+    int j = n << i & X ? 1 : 0 ;
+    cout << j ;
+  }
+  
+  return;
 
 }
 
@@ -612,9 +612,10 @@ PrintWarning(){
     printf(" Good Bunch SpeLumi Sigma Allowance  : %6.1f\n",errdet.BUNCH_RATE_SIGMA_ALLOWANCE);
     printf(" Good Bunch Asymmetry Sigma Allowance: %6.1f\n",errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
     printf(" SpeLumi sigma/mean                  : %8.4f\n",bnchchk.rate.sigma_over_mean);
+    if (bnchchk.rate.max_dev) printf(" Max SpeLumi deviation from average  : %8.4f\n",bnchchk.rate.max_dev);
     printf(" Number of Problemeatic Bunches      : %6d \n", anal.anomaly.nbunch);
     printf(" Problemeatic Bunches Rate [%]       : %6.1f\n", anal.anomaly.bad_bunch_rate);
-    printf(" Bunch error code                    :   "); binary(anal.anomaly.bunch_err_code);printf("\n");
+    printf(" Bunch error code                    :   "); binary_zero(anal.anomaly.bunch_err_code,4);printf("\n");
     printf(" Problemeatic Bunch ID's             : ");
     for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]) ; 
     printf("\n");
@@ -947,7 +948,7 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
 
   for (bid=0; bid<NBUNCH; bid++) {
     SpeLumi.Cnts[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
-    SpeLumi.dCnts[bid] = sqrt(SpeLumi.Cnts[bid]);
+    SpeLumi.dCnts[bid] = sqrt(Ngood[bid]);
     specific_luminosity->Fill(bid,SpeLumi.Cnts[bid]);
     if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
     if (SpeLumi.min>SpeLumi.Cnts[bid])SpeLumi.min=SpeLumi.Cnts[bid];
