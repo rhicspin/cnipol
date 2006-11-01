@@ -235,8 +235,8 @@ ShowDlayerConfigIndex(){
 ShowErrorDetectorIndex(){
 
     printf "=====================================================================================\n";
-    printf " RunID  ";
-    printf " \n";
+    printf " RunID    #    #Bad   Bad  Error   Max    #Bad     Mass      \n"; 
+    printf "        bunch  bunch  Rate  Code   Dev    strip   MaxChi2    \n";
     printf "=====================================================================================\n";
 
 }
@@ -249,17 +249,23 @@ ShowErrorDetectorIndex(){
 ErrorDetector(){
 
     
-   echo -e -n "$RunID";
    PROBLEM_BUNCH=-1;
    PROBLEM_STRIP=-1;
 
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
+       NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{printf("%3d",$6)}'`;
+       BUNCH_ERR_CODE=`grep 'Bunch error code     ' $LOGFILE | gawk '{printf("%4s",$5)}'`;
+       MAX_SPELUMI_DEV=`grep ' Max SpeLumi deviation from average' $LOGFILE | gawk '{printf("%5.1f",$7)}'`;
+       BAD_BUNCH_RATE=`grep 'Problemeatic Bunches Rate' $LOGFILE | gawk '{printf("%5.1f",$6)}'`;
        PROBLEM_BUNCH=`grep 'Number of Problemeatic Bunches' $LOGFILE | gawk '{printf("%2d",$6)}'`;
        PROBLEM_STRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{printf("%2d",$6)}'`;
        MAX_MASS_CHI2=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$6)}'`;    
 #       MAX_MASS_CHI2_STRIP=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$7)}'`;    
        UNRECOG_STRIP=`grep 'Unrecognized Problematic Strips' $LOGFILE | sed -e '{s/ Unrecognized Problematic Strips     ://}'`;
+       if [ ! $NBUNCH ] ; then
+	   NBUNCH=-1;
+       fi
        if [ ! $PROBLEM_BUNCH ] ; then
 	   PROBLEM_BUNCH=-1;
        fi
@@ -269,11 +275,24 @@ ErrorDetector(){
        if [ ! $MAX_MASS_CHI2 ] ; then
 	   MAX_MASS_CHI2=-1;
        fi
+       if [ ! $BUNCH_ERR_CODE ] ; then
+	   BUNCH_ERR_CODE=-1;
+       fi
+       if [ ! $MAX_SPELUMI_DEV ] ; then
+	   MAX_SPELUMI_DEV=-1;
+       fi
+       if [ ! $BAD_BUNCH_RATE ] ; then
+	   BAD_BUNCH_RATE=-1;
+       fi
    fi
-   
-   echo -e -n "  $PROBLEM_BUNCH  $PROBLEM_STRIP  $MAX_MASS_CHI2 ";
+
+   if [ $PROBLEM_BUNCH -ge 1 ] ; then
+       echo -e -n "$RunID";
+       echo -e -n "  $NBUNCH   $PROBLEM_BUNCH   $BAD_BUNCH_RATE  $BUNCH_ERR_CODE $MAX_SPELUMI_DEV ";
+       echo -e -n "  $PROBLEM_STRIP    $MAX_MASS_CHI2 ";
+       echo -e -n "\n";
 #   echo -e -n "  $UNRECOG_STRIP";
-   echo -e -n "\n";
+   fi
 
 }
 
@@ -437,6 +456,9 @@ grepit(){
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
 	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
 	echo $OnlineP $OfflineP | gawk '{printf(" %6.2f",$1-$2)}'
+
+	grep 'Polarization (sinphi) alt  ' $LOGFILE | gawk '{printf(" %6.1f%5.1f",$5*100, $6*100)}'
+
 	if [ $ExpertMode -eq 1 ] ; then
 	    basename `grep CONFIG $LOGFILE | gawk '{print $3}'` 2> /dev/null | gawk '{printf(" %s",$1)}';
 #	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
