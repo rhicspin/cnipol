@@ -306,6 +306,7 @@
    set PMCI 2 
    hp/err BIDP RSLT90 ex ERR90 120 20 0.15 ' '
    atitle 'bunch crossing' 'Left-Right asym'
+
    
    title_gl 'X45 left - right' U
    l45=$RSIGMA(-0.02)
@@ -347,6 +348,9 @@
    sh rm -f spinpat.dat
    wait
    psoff
+
+   ve/write BIDM,BIDP,RSLT90,ERR90 x90.dat 'F10.0,F10.0,F10.5,F10.5'
+   ve/write BIDM,BIDP,RSLT45XS,ERR45XS x45.dat 'F10.0,F10.0,F10.5,F10.5'
 
  return
  
