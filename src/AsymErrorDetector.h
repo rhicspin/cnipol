@@ -36,19 +36,20 @@ extern StructStripCheck strpchk;
 //                     Bunch Error Detector                        //
 //=================================================================//
 int BunchAnomalyDetector();
-int BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
+float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
 int HotBunchFinder(int err_code); 
 
 
 struct StructBunch {
   float average[1];
   float sigma_over_mean;
+  float sigma;
   float allowance;
   float max_dev;
 };
 
 struct StructBunchCheck {
-  StructBunch rate, asym[2];
+  StructBunch rate, asym[3];// asym[0]:x90, asym[1]:x45, asym[2]:y45
 } ;
 extern StructBunchCheck bnchchk;
 

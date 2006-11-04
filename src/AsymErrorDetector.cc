@@ -339,22 +339,24 @@ DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidt
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
 //             : registered as problematic bunch ID
 // Input       : TH1F * h1, TH2F * h2, float A[], float dA[], int err_code
-// Return      : 
+// Return      : sigma of Gaussian fit
 //
-int 
+float 
 BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code){
 
+  // define Gaussian function
   TF1 * g = new TF1("g","gaus");
   g -> SetLineColor(2);
 
+  // Perform Gaussian Fit 
   h1->Fit("g","Q");
   float hight = g -> GetParameter(0);
   float mean  = g -> GetParameter(1);
   float sigma = g -> GetParameter(2);
 
   // get sigma from Gaussian fit and calculate allowance limit
-  bnchchk.asym[0].allowance = mean - errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
-  bnchchk.asym[1].allowance = mean + errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
+  //  bnchchk.asym[0].allowance = mean - errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
+  //  bnchchk.asym[1].allowance = mean + errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
 
   // draw lines to mean asymmetery vs. bunch histograms
   DrawLine(h2, -0.5, NBUNCH-0.5,  mean, 4, 4, 2);
@@ -371,18 +373,28 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
     int bunch[NBUNCH];
     int nbunch;
     float dev;
+    int active_bunch[2];
+    float chi2[2]; // [0]:plus [1]:minus bunches
   } local;
 
   // Anomaly bunch finding
   char text[20];
-  local.nbunch=0;
+  local.nbunch = local.active_bunch[0] = local.active_bunch[1] = local.chi2[0] = local.chi2[1] = 0;
   for (int bid=0;bid<NBUNCH;bid++) {
     local.bunch[bid] = -999; // default not to appear in plots
 
     if ((fillpat[bid])&&(A[bid]!=-ASYM_DEFAULT)) {
 
-      if (spinpat[bid] == 1)  local.dev =  fabs(A[bid] - mean);  
-      if (spinpat[bid] == -1) local.dev =  fabs(A[bid] - (-1)*mean);  
+      if (spinpat[bid] == 1) { 
+	local.active_bunch[0]++;
+	local.dev =  fabs(A[bid] - mean); 
+	local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
+      }
+      if (spinpat[bid] == -1) {
+	local.active_bunch[1]++;  
+	local.dev =  fabs(A[bid] - (-1)*mean); 
+	local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
+      }
 
       if (local.dev/dA[bid] > errdet.BUNCH_ASYM_SIGMA_ALLOWANCE) {
 	
@@ -403,6 +415,16 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
 
   }// end-of-for(bid) loop
 
+
+  // print chi2 in plot
+  sprintf(text,"chi2(+)=%6.1f", local.chi2[0]/float(local.active_bunch[0]));
+  TText * t1 = new TText(3, h2->GetYaxis()->GetXmax()*0.90, text);
+  t1->SetTextColor(13);
+  h2 -> GetListOfFunctions()->Add(t1);
+  sprintf(text,"chi2(-)=%6.1f", local.chi2[1]/float(local.active_bunch[1]));
+  TText * t2 = new TText(90, h2->GetYaxis()->GetXmin()*0.90, text);
+  t2->SetTextColor(13);
+  h2 -> GetListOfFunctions()->Add(t2);
 
   if (local.nbunch){
     // error_code registration
@@ -425,7 +447,7 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
     h2 -> GetListOfFunctions() -> Add(gr,"P");
   }
 
-  return 0;
+  return sigma;
 
 }
 
@@ -444,12 +466,20 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
 int 
 BunchAsymmetryAnomaly(){
 
+  // X90 Asymmetry Check
   printf("BunchAsymmetryAnomaly(): check for x90\n");
-  BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1], 1);
+  bnchchk.asym[0].sigma =
+    BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1], 1);
+
+  // X45 Asymmetry Check
   printf("BunchAsymmetryAnomaly(): check for x45\n");
-  BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1], 2);
+  bnchchk.asym[1].sigma =
+    BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1], 2);
+
+  // Y45 Asymmetry Check
   printf("BunchAsymmetryAnomaly(): check for y45\n");
-  BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1], 4);
+  bnchchk.asym[2].sigma =
+    BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1], 4);
 
   return 0;
 
@@ -552,7 +582,7 @@ HotBunchFinder(int err_code){
   g1->SetParLimits(1,SpeLumi.min,SpeLumi.max);
   g1->SetLineColor(2);
 
-  // apply gaussian fit on rate distribution
+  // apply gaussian fit on specific luminosity distribution
   bunch_spelumi->Fit(g1);
   
   // get mean from gaussian fit
@@ -575,7 +605,7 @@ HotBunchFinder(int err_code){
     if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
       anal.anomaly.nbunch++; flag++;
-      float dev = (SpeLumi.Cnts[bnch] - SpeLumi.ave)/sigma;
+      float dev = (SpeLumi.Cnts[bnch] - ave)/sigma;
       bnchchk.rate.max_dev = bnchchk.rate.max_dev < dev ? dev : bnchchk.rate.max_dev ;
       printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, dev);
       
