@@ -218,6 +218,11 @@ CNI_Operation(){
 CNIPOL_DAEMON_FROM_LIST(){
 TMPLIST=$TMPOUTDIR/cnipol_daemon_tmp.list;
 
+if [ $ExeDlayerFit -eq 1 ] ; then
+    echo "Running --analyze-from-list mode is not ready to run with --dlayer-fit operation";
+    exit;
+fi
+
 while [ 1 ] ; 
   do 
 
