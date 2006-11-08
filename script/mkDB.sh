@@ -192,9 +192,10 @@ ShowIndex(){
 
 ShowIndexOnline(){
 
-    printf "===============================================================================================\n";
+    printf "====================================================================================================\n";
     printf " RunID     ";
     printf " Date/Time   ";
+    printf " Energy";
     printf " Bunch";
     printf " BZDelay ";
     printf " Threshoulds";
@@ -206,14 +207,14 @@ ShowIndexOnline(){
     printf " \t";
     printf " \t";
     printf " \t";
-    printf " \t";
+    printf "  [GeV]  ";
     printf " \t     ";
     printf " [keV] ";
     printf " [M]   ";
     printf " (ave)";
     printf " [ug/cm2] ";
     printf " \n";
-    printf "===============================================================================================\n";
+    printf "====================================================================================================\n";
 
 
 }
@@ -355,8 +356,18 @@ OnlineDatabase(){
        fi
    fi
    
+   # Get Energy which is a bit tricky
+   energy1=`grep "GeV" $ONLINE_LOG | tail -n 1 | gawk '{print $5}' | sed {s/E=//}`
+   energy2=`grep "GeV" $ONLINE_LOG | tail -n 1 | gawk '{print $6}'`
+   if [ $energy2 = "GeV;" ] 2>/dev/null ; then
+       ENERGY=$energy1
+   else
+       ENERGY=$energy2
+   fi
+
    echo -e -n "$RunID";
    printf " %s %2d %s " $MONTH $DATE $TIME;
+   printf " %5.1f "   $ENERGY;
    printf " %3d "     $AT_BUNCH;
    printf " %5d "     $BZ_DELAY;
    printf " %5d "     $TRIG_THRESHOLD;
