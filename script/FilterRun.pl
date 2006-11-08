@@ -5,7 +5,7 @@
 
 $ASYMDIR=$ENV{"ASYMDIR"};
 $SHAREDIR=$ENV{"SHAREDIR"};
-$FILTER_DB="$SHAREDIR/db/PhenixPhysicsRun05.db";
+$FILTER_DB="$SHAREDIR/db/PhysicsFill_Run05_100GeV.db";
 $DEF_FILTERD_DB="./Filtered.list";
 
 #================================================================================#
@@ -14,18 +14,20 @@ $DEF_FILTERD_DB="./Filtered.list";
 
 use Getopt::Long;
 
-$OFFLINEPOL      = 0;
-$DLAYER          = 0;
-$UPDATE_LINK     = 0;
-$PHENIX_DATABASE = 0;
-$PROFILE_RUN     = 0;
-$FILTER_RUN      = 0;
-$KEYWD           ="phenix";
-$DEFAULT_LINK    = 0;
+$OFFLINEPOL       = 0;
+$DLAYER           = 0;
+$UPDATE_LINK      = 0;
+$PHYSICS_DATABASE = 0;
+$PHENIX_DATABASE  = 0;
+$PROFILE_RUN      = 0;
+$FILTER_RUN       = 0;
+$KEYWD            ="phenix";
+$DEFAULT_LINK     = 0;
 
 GetOptions(
 	   'update-link' => \$UPDATE_LINK ,
 	   'def-link' => \$DEFAULT_LINK ,
+	   'phys' => \$PHYSICS_DATABASE ,
 	   'phenix' => \$PHENIX_DATABASE ,
 	   'profile' => \$PROFILE_RUN ,
 	   'dlayer' => \$DLAYER , 
@@ -40,6 +42,7 @@ if($HELP){
 }
 
 
+if($PHYSICS_DATABASE) {$KEYWD="phys"; $FILTER_DB="$SHAREDIR/db/PhysicsRun05_100GeV.db";};
 if($PHENIX_DATABASE) {$KEYWD="phenix"; $FILTER_DB="$SHAREDIR/db/PhenixPhysicsRun05.db";};
 if($PROFILE_RUN) {$KEYWD="profile"; $FILTER_DB="$SHAREDIR/db/ProfileRun05.db";};
 if($DEFAULT_LINK) {$KEYWD="all"; $UPDATE_LINK=1;};
@@ -66,7 +69,8 @@ sub help(){
     print "\t --src-list <srclist>  src run list file to be filtered \n";
     print "\t --dlayer       Process deadlayer dabase\n";
     print "\t --OfflinePol   Process OfflinePol database\n";
-    print "\t --phenix       Filter for PHENIX physics stores\n";
+    print "\t --phys         Filter for PHYSICS stores \n";
+#    print "\t --phenix       Filter for PHENIX physics stores\n";
     print "\t --profile      Filter for profile runs\n";
     print "\t --update-link  Redirect link to new one\n";
     print "\t --def-link     Redirect link to default (all)\n";
