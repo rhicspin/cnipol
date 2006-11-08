@@ -28,6 +28,8 @@
 StructBunchCheck bnchchk;
 StructStripCheck strpchk;
 
+// function prototypes
+
 
 //
 // Class name  : 
