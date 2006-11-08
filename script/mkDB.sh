@@ -417,6 +417,7 @@ grepit(){
 #    GetOnlinePolFromFile;
     printf "$OnlineP $OnlinedP";
 
+    MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
     # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
     RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
     if [ $RUN_STATUS ] ; then
@@ -424,6 +425,8 @@ grepit(){
 	    RUN_STATUS="Susp";
 	elif [ $RUN_STATUS == 'Recovered' ] ; then
 	    RUN_STATUS="Rcvd";
+	elif [ $RUN_STATUS == 'Bad' ] ; then
+	    RUN_STATUS="Bad ";
 	fi
     else
 	RUN_STATUS="----";
@@ -441,7 +444,8 @@ grepit(){
     fi
 
 
-	printf "  %4s  %5s" $RUN_STATUS $CREW;
+#	printf "  %4s  %5s" $RUN_STATUS $CREW;
+	printf "  %4s  %5s" $RUN_STATUS $MEAS_TYPE;
 	grep 'Beam Energy :' $LOGFILE | gawk '{printf(" %4d",$4)}'
 	arg=`grep 'End Time:' $LOGFILE | grep -v 'Scaler' | sed -e 's/End Time:/ /' | sed -e 's/200[4-9]//'`
 	echo -e -n "$arg";
