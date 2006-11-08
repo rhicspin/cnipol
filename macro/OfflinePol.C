@@ -16,6 +16,7 @@ const Int_t N=2000;
 Int_t RUN=5;
 
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
+Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
 
 //Int_t SuperposeComments(Int_t Mode, TH2D *frame);
 //Int_t ArrayAndText(TH2D *frame, Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt);
@@ -27,6 +28,7 @@ class OfflinePol
 private:
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
   Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],SpeLumi[N],DiffP[N];
+  Float_t P_alt[N],dP_alt[N],R_Preg_Palt[N],dR_Preg_Palt[N];
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
   TH1D* Pdiff ;
@@ -57,6 +59,7 @@ void
 OfflinePol::Initiarization(Int_t i){
   
   RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
+  P_alt[i]=dP_alt[i]= 0;
   P_offline[i] =  phi[i]  = -9999;
   index[i]=0;
 
@@ -110,6 +113,7 @@ Int_t
 OfflinePol::GetData(Char_t * DATAFILE){
                  
   //define histograms
+  Pratio   = new TH1D("Pratio",   "Offline Pol Event Selection Dependence",60,0.5,1.5);
   Pdiff   = new TH1D("Pdiff",   "Online/Offline Polarization Consistency",60,-20,20);
   phiDist = new TH1D("phiDist", "phi angle distribution",60,-35,35);
   sfitchi2= new TH1D("sfitchi2","chi2 distribution of P*sin(phi) fit",30,0,4);
@@ -162,11 +166,17 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	  Rate[i]       = atof(strtok(NULL," "));
 	  SpeLumi[i]    = atof(strtok(NULL," "));
 	  DiffP[i]      = atof(strtok(NULL," "));
+	  P_alt[i]      = atof(strtok(NULL," "));
+	  dP_alt[i]     = atof(strtok(NULL," "));
+
+	  R_Preg_Palt[i] = P_offline[i] ? P_alt[i]/P_offline[i] : 0;
+	  dR_Preg_Palt[i]= CorrelatedError(P_alt[i],dP_alt[i],P_offline[i],dP_offline[i]);
 
 	  // overflow
 	  if (fabs(DiffP[i])>25) DiffP[i]=25;
 
 	  // fill 1-dim histograms
+	  Pratio->Fill(R_Preg_Palt[i]);
 	  Pdiff->Fill(DiffP[i]);
 	  phiDist->Fill(phi[i]);
 	  sfitchi2->Fill(chi2[i]);
@@ -193,6 +203,11 @@ OfflinePol::GetData(Char_t * DATAFILE){
 }
 
 
+Float_t 
+CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db){
+  return b ? a/b*sqrt((da/a)*(da/a)-(db/b)*(db/b)) : 0;
+}
+
 //
 // Class name  : Offline
 // Method name : Plot(Int_t Mode)
@@ -217,6 +232,9 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
     break;
   case 25:
     TGraphErrors* tgae = new TGraphErrors(ndata, index, P_offline, dx, dP_offline);
+    break;
+  case 30:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, R_Preg_Palt, dx, dR_Preg_Palt);
     break;
   case 50:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, DiffP, dx, dy);
@@ -290,6 +308,13 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
     GetScale(index, ndata, margin, xmin, xmax);
     Char_t xtitle[100]="Index";
     Char_t ytitle[100]="Polarization [%]";
+    break;
+  case 30:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    ymin=0.5;   ymax=+1.5;
+    Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="2-sigma/3-sigma Ratio";
+    sprintf(title,"Offline Pol Event Selection Dependence %s", Beam, subtitle);
     break;
   case 50:
     GetScale(RunID, ndata, margin, xmin, xmax);
@@ -399,6 +424,15 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode){
       Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
      break;
+  case 30:
+      Plot(Mode,    ndata, 20, " ",  Color, aLegend);
+      break;
+  case 130:
+      Pratio->SetXTitle("P(2sigma/3sigma)");
+      Pratio->SetYTitle(ytitle);
+      Pratio->SetFillColor(Color);
+      Pratio->Draw();
+      break;
   case 50:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
@@ -501,6 +535,8 @@ OfflinePol::OfflinePol()
 
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
     //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
+    RunBothBeam(30,  CurC, ps); // 2-sigma/3-sigma ratio vs. RunID
+    RunBothBeam(130,  CurC, ps); // 2-sigma/3-sigma ratio Distribution
     RunBothBeam(50,  CurC, ps); // onlineP-offlineP vs. RunID
     RunBothBeam(150, CurC, ps); // onlineP-offlineP Distribution
     RunBothBeam(60,  CurC, ps); // phi-angle vs. RunID
@@ -510,12 +546,12 @@ OfflinePol::OfflinePol()
     RunBothBeam(80,  CurC, ps); // phi-angle vs. chi2
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
     RunBothBeam(90,  CurC, ps); // Specific Luminosity  vs. RunID
-    //    RunBothBeam(100, CurC, ps); // phi-angle vs. chi2
+    //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
     
-    gSystem->Exec("gv ps/OfflinePol.ps");
+    //    gSystem->Exec("gv ps/OfflinePol.ps");
 
     return 0;
 
