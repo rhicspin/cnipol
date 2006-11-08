@@ -47,6 +47,7 @@ private:
     bool RadDamageFit;
     bool RadDamageDraw;
     bool ConfigFile;
+    bool OnlineDlayer;
   } opt;
 
   typedef struct {
@@ -90,6 +91,17 @@ private:
     Float_t ReadRate[N];
   } StructConfigFileDB;
 
+  typedef struct {
+    Float_t RunID[N];
+    Float_t bunch[N];
+    Float_t BZdelay[N];
+    Float_t threshold[N][2];
+    Float_t Nevents[N];
+    Float_t A_N[N];
+    Float_t Dl[N];
+    Char_t * config[N];
+  } StructOnlineDlayer;
+
 
   // Analysis summary data file
   ofstream fout;
@@ -112,7 +124,12 @@ public:
   Int_t CalcSystematicError();
   Int_t PrintOutput();
 
+  // from SuperposeDlayerPlot.h
+  Int_t GetConfigFileDB(Char_t * DATAFILE);
   TGraphErrors * PlotConfigFile(Int_t Mode, Int_t Color, Char_t * text);
+  Int_t GetOnlineSummaryDat(Char_t * DATAFILE);
+  TGraph * PlotOnlineDlayerAverage(Int_t Mode, Int_t Color, Char_t * text);
+
 
 }; // end-class DlayerAnalyzer
 
@@ -171,11 +188,13 @@ DlayerAnalyzer::OptionHandler(){
   opt.RadDamageFit=false;
   // Draw above resulting Linear fit Lines on Deadlayer History plots 
   opt.RadDamageDraw=true;
-  // plot Configulation file history
-  opt.ConfigFile=false;
+  // plot offline Configulation file history
+  opt.ConfigFile=true;
+  // plot deadlayer average from online Configluation files
+  opt.OnlineDlayer=true;
 
   // Error allocation
-  corr[0].AsignError = corr[1].AsignError = 3; // sigma
+  corr[0].AsignError = corr[1].AsignError = 1; // sigma
 
 
   return;
@@ -352,6 +371,10 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
       TGraphErrors * tg; 
       tg = PlotConfigFile(Mode,Color,text);
     }
+    if (opt.OnlineDlayer) {
+      TGraph * online_dlayer; 
+      online_dlayer = PlotOnlineDlayerAverage(Mode,Color,text);
+    }      
     break;
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, ReadRate, Dl, dx, DlE);
@@ -419,8 +442,18 @@ DlayerAnalyzer::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   }
 
   // supserpose configluation file updates by Asym
-  if ((opt.ConfigFile)&&(Mode==10)) tg -> Draw("PL");
+  if ((opt.ConfigFile)&&(Mode==10)) {
+    tg -> Draw("PL");
+    aLegend->AddEntry(tg,"Offline Config","P");
+    aLegend->Draw("same");
+  }
 
+  // supserpose deadlayer average from online configulation files
+  if ((opt.OnlineDlayer)&&(Mode==10)) {
+    online_dlayer -> Draw("PL");
+    aLegend->AddEntry(online_dlayer,"Online Config","P");
+    aLegend->Draw("same");
+  }
   return 0;
 
 } // end-of-DlayerPlot()
@@ -944,7 +977,7 @@ DlayerAnalyzer::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 Int_t 
 DlayerAnalyzer::DlayerAnalyzer()
 {
-  gStyle->SetOptFit(111);
+  gStyle->SetOptFit(111)
 
   // load header macro
   Char_t HEADER[100];
