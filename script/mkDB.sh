@@ -348,6 +348,16 @@ OnlineDatabase(){
    AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | tail -n 1 | sed -e 's/Bunch://'`;
    A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | tail -n 1 | gawk '{print $7}' | sed -e '{s/NAN/0/}'`;
 
+   if [ ! $MONTH ] ; then
+       MONTH=0;
+   fi
+   if [ ! $DATE ] ; then
+       DATE=0;
+   fi
+   if [ ! $TIME ] ; then
+       TIME=0;
+   fi
+
    dlAve=0;
    if [ $CONFIG_FILE ] ; then
        grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE > /dev/null
