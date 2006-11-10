@@ -329,9 +329,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             HHF1(14000+st+1, event->bid, 1.);
         }
 
-	// Mass vs. ToF Scatter plot for Error Check
-	mass_vs_t[st]->Fill(t,Mass);
-
 	/*
         if (dproc.RAMPMODE==1) {0
             // total RAMPTIME sec
@@ -476,10 +473,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 // Strip distribution (time + -t cut )
                 HHF1(10320+si+1,(float)(st-si*12)+1,1.);
 
-		// Mass vs. t and vs. Energy plots
+		// Mass vs. Energy plots
 		mass_vs_e_ecut[st] -> Fill(e, Mass);
-		mass_vs_t_ecut[st] -> Fill(t, Mass);
-
 
                 Ncounts[(int)(st/12)][event->bid]++;
                 int time=0;
