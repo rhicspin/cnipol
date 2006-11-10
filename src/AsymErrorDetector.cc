@@ -216,6 +216,7 @@ StripAnomalyDetector(){
   int counter=0;
   float sigma=0;
   strpchk.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
+
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.average[0], 1, 1, 2);
 
   
