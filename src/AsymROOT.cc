@@ -40,8 +40,6 @@ TDirectory * Asymmetry;
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-TH2F  * mass_vs_t_ecut[TOT_WFD_CH];  // Mass vs. ToF (w/ Energy Cut)
-TH2F  * mass_vs_t[TOT_WFD_CH];       // Mass vs. ToF (w/o Energy Cut)
 TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
 TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
 TLine * energy_cut_l[NSTRIP];        // energy cut low 
@@ -140,18 +138,6 @@ Root::RootHistBook(StructRunInfo runinfo){
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
-
-    sprintf(hname,"mass_vs_t_ecut_st%d",i);
-    sprintf(htitle,"%8.3f : Mass vs. ToF (Energy Cut) Str%d ", runinfo.RUNID, i);
-    mass_vs_t_ecut[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
-    mass_vs_t_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-    mass_vs_t_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
-
-    sprintf(hname,"mass_vs_t_st%d",i);
-    sprintf(htitle,"%8.3f : Mass vs. ToF Str%d", runinfo.RUNID, i);
-    mass_vs_t[i] = new TH2F(hname,htitle, 100, 10, 90, 100, 5, 25);
-    mass_vs_t[i] -> GetXaxis() -> SetTitle("Time of Flight [ns]");
-    mass_vs_t[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
   }
 
@@ -275,8 +261,6 @@ Root::DeleteHistogram(){
 
     t_vs_e[i] -> Delete();
     mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
-    mass_vs_t_ecut[i] -> Delete();  // Mass vs. ToF (w/ Energy Cut)
-    mass_vs_t[i] -> Delete();       // Mass vs. ToF (w/o Energy Cut)
 
   }
 
