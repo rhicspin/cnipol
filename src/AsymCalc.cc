@@ -1012,7 +1012,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
   for (int st=0; st<NSTRIP; st++){
     feedback.strip[st]=st+1;
-    ex[st]=0; feedback.err[st]=1; // initialization
+    chi2 = sigpar[1] = 0; ex[st]=0; feedback.err[st]=1; // initialization
     int hid= Mode ? 16200+st+1 : 17200+st+1 ;
 
     switch(FeedBackLevel){
@@ -1062,7 +1062,6 @@ TshiftFinder(int Mode, int FeedBackLevel){
     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
     mass_sigma_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
-    mass_sigma_vs_strip -> SetTitle("Mass sigma vs. strip");
     mass_sigma_vs_strip -> GetYaxis() -> SetTitle("RMS Width of 12C Mass Peak[GeV]");
     mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
@@ -1072,7 +1071,6 @@ TshiftFinder(int Mode, int FeedBackLevel){
     mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
     mass_chi2_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
-    mass_chi2_vs_strip -> SetTitle("Gauss Fit Mass chi2 vs. strip");
     mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
     mass_chi2_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
