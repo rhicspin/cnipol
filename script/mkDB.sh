@@ -71,6 +71,10 @@ ShowExample(){
     echo    " "
     echo    "    mkDB.sh --blue -f <runlist> --exclusive --dlayer-config"
     echo    " "
+    echo    "5. make online database:";
+    echo    " "
+    echo    "    mkDB.sh --blue --online | tee summary/Online_Blue.dat"
+    echo    " "
     exit;
 
 }
@@ -235,9 +239,13 @@ ShowDlayerConfigIndex(){
 
 ShowErrorDetectorIndex(){
 
+    printf "=====================================================================================";
     printf "=====================================================================================\n";
-    printf " RunID    #    #Bad   Bad  Error   Max    #Bad     Mass      \n"; 
-    printf "        bunch  bunch  Rate  Code   Dev    strip   MaxChi2    \n";
+    printf " RunID    #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
+    printf " #Bad     BadStrip      \n"; 
+    printf "        bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
+    printf "strip       List        \n";
+    printf "=====================================================================================";
     printf "=====================================================================================\n";
 
 }
@@ -255,23 +263,28 @@ ErrorDetector(){
 
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
+#  Bunch Errors       
        NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{printf("%3d",$6)}'`;
        BUNCH_ERR_CODE=`grep 'Bunch error code     ' $LOGFILE | gawk '{printf("%4s",$5)}'`;
        MAX_SPELUMI_DEV=`grep ' Max SpeLumi deviation from average' $LOGFILE | gawk '{printf("%5.1f",$7)}'`;
        BAD_BUNCH_RATE=`grep 'Problemeatic Bunches Rate' $LOGFILE | gawk '{printf("%5.1f",$6)}'`;
        PROBLEM_BUNCH=`grep 'Number of Problemeatic Bunches' $LOGFILE | gawk '{printf("%2d",$6)}'`;
-       PROBLEM_STRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{printf("%2d",$6)}'`;
+#  Detector Errors       
+       ENERGY_SLOPE=`grep " Slope of Energy Spectrum" $LOGFILE | gawk '{print $8}'`;
+#  Strip Errors       
+       MAX_MASS_DEVIATION=`grep "Maximum Mass Deviation" $LOGFILE | gawk '{printf("%6.1f",$6)}'`;
        MAX_MASS_CHI2=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$6)}'`;    
-#       MAX_MASS_CHI2_STRIP=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$7)}'`;    
+       MAX_MASS_E_CORR=`grep "Maximum Mass-Energy Correlation" $LOGFILE | gawk '{print $5}'`;
+       INVARIANT_MASS_SIGMA=`grep " Weighted Mean InvMass Sigma    " $LOGFILE | gawk '{printf("%7.2f",$6)}'`;
+       STRIP_ERR_CODE=`grep " Strip error code" $LOGFILE | gawk '{print $5}'`;
+       PROBLEM_NSTRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{printf("%2d",$6)}'`;
        UNRECOG_STRIP=`grep 'Unrecognized Problematic Strips' $LOGFILE | sed -e '{s/ Unrecognized Problematic Strips     ://}'`;
+
        if [ ! $NBUNCH ] ; then
 	   NBUNCH=-1;
        fi
        if [ ! $PROBLEM_BUNCH ] ; then
 	   PROBLEM_BUNCH=-1;
-       fi
-       if [ ! $PROBLEM_STRIP ] ; then
-	   PROBLEM_STRIP=-1;
        fi
        if [ ! $MAX_MASS_CHI2 ] ; then
 	   MAX_MASS_CHI2=-1;
@@ -285,15 +298,44 @@ ErrorDetector(){
        if [ ! $BAD_BUNCH_RATE ] ; then
 	   BAD_BUNCH_RATE=-1;
        fi
+       if [ ! $MAX_MASS_DEVIATION ] ; then
+	   MAX_MASS_DEVIATION=-1;
+       fi
+       if [ ! $MAX_MASS_E_CORR ] ; then
+	   MAX_MASS_E_CORR=-1;
+       fi
+       if [ ! $MAX_MASS_CHI2 ] ; then
+	   MAX_MASS_CHI2=-1;
+       fi
+       if [ ! $INVARIANT_MASS_SIGMA ] ; then
+	   INVARIANT_MASS_SIGMA=-1;
+       fi
+       if [ ! $STRIP_ERR_CODE ] ; then
+	   STRIP_ERR_CODE=-1;
+       fi
+       if [ ! $PROBLEM_NSTRIP ] ; then
+	   PROBLEM_NSTRIP=-1;
+       fi
+
    fi
 
-   if [ $PROBLEM_BUNCH -ge 1 ] ; then
+#   if [ $PROBLEM_BUNCH -ge 1 ] ; then
        echo -e -n "$RunID";
-       echo -e -n "  $NBUNCH   $PROBLEM_BUNCH   $BAD_BUNCH_RATE  $BUNCH_ERR_CODE $MAX_SPELUMI_DEV ";
-       echo -e -n "  $PROBLEM_STRIP    $MAX_MASS_CHI2 ";
+       printf " %3d"    $NBUNCH;
+       printf " %5d"    $PROBLEM_BUNCH;
+       printf " %6.1f"  $BAD_BUNCH_RATE;
+       printf " %6s"    $BUNCH_ERR_CODE;
+       printf " %6.1f"  $MAX_SPELUMI_DEV;
+       printf " %8.1f"  $ENERGY_SLOPE;
+       printf " %6.1f"  $MAX_MASS_DEVIATION;
+       printf " %8.4f" $MAX_MASS_E_CORR;
+       printf " %7.2f"  $INVARIANT_MASS_SIGMA;
+       printf " %7s"    $STRIP_ERR_CODE;
+       printf " %5d"    $PROBLEM_NSTRIP;
+#       echo -e -n "  $UNRECOG_STRIP";
        echo -e -n "\n";
-#   echo -e -n "  $UNRECOG_STRIP";
-   fi
+
+#   fi
 
 }
 
