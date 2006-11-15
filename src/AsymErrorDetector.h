@@ -14,6 +14,7 @@ int BananaFit();
 int StripAnomalyDetector();
 
 typedef struct {
+  float average[1];
   float allowance;
   float max;
   int st;
@@ -25,8 +26,7 @@ typedef struct {
 } StructEnergyCorr;
 
 struct StructStripCheck {
-  float average[1];
-  StructInvMass dev, chi2, p1;
+  StructInvMass dev, chi2, p1, width;
   StructEnergyCorr ecorr;
 } ;
 extern StructStripCheck strpchk;
