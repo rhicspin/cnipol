@@ -96,7 +96,8 @@ typedef struct {
 
 
 typedef struct {
-  float MASS_DEV_ALLOWANCE;
+  float MASS_WIDTH_DEV_ALLOWANCE;
+  float MASS_POSITION_ALLOWANCE;
   float MASS_CHI2_ALLOWANCE;
   float MASS_ENERGY_CORR_ALLOWANCE;
   float BUNCH_RATE_SIGMA_ALLOWANCE;
@@ -128,6 +129,7 @@ typedef struct {
   int nstrip;
   int st[NSTRIP];
   float bad_st_rate;
+  int strip_err_code;
   int nbunch;
   int bunch[NBUNCH];
   float bad_bunch_rate;
