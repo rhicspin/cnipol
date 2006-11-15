@@ -358,7 +358,7 @@ return
 * Plot Centers
    opt utit
    title_gl 'Centroids' U 
-   null 0. 72. 5. 14.
+   null 0. 72. 10. 13.
    line 0. 11.17 72. 11.17 	| Carbon Mass indicator
    Do i=1,6
      line $RSIGMA(12*[i]+0.5) 5. $RSIGMA(12*[i]+0.5) 14. | Si Separators
