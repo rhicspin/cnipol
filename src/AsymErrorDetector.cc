@@ -200,7 +200,7 @@ BananaFit(int st){
 //
 // Description : find suspicious strips through folllowing three checks
 //             : 1. Invariant Mass vs. Energy Correlation
-//             : 2. Masimum deviation of invariant mass peak from 12Mass
+//             : 2. Maximum deviation of invariant mass peak from 12Mass
 //             : 3. Chi2 of Gaussian Fit on Invariant mass
 // Input       : 
 // Return      : 
@@ -210,21 +210,22 @@ StripAnomalyDetector(){
 
   // Errror allowance
   strpchk.p1.allowance   = errdet.MASS_ENERGY_CORR_ALLOWANCE;
-  strpchk.dev.allowance  = errdet.MASS_DEV_ALLOWANCE;
+  strpchk.dev.allowance  = errdet.MASS_POSITION_ALLOWANCE;
+  strpchk.width.allowance  = errdet.MASS_WIDTH_DEV_ALLOWANCE;
   strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
 
-  int counter=0;
-  float sigma=0;
-  strpchk.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
+  // Get weighted average for width of 12C invariant mass distributions 
+  strpchk.width.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
 
-  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.average[0], 1, 1, 2);
-
-  
-  TF1 *f1 = new TF1("f1","pol1",0,1000);
+  // draw average line for 12C mass width distribution 
+  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
 
   strpchk.dev.max  = fabs(feedback.mdev[0]);
   strpchk.chi2.max = feedback.chi2[0];
 
+  // registration of the warst strips
+  float sigma=0;
+  int counter=0;
   for (int i=0; i<NSTRIP; i++) {
     printf("Anomary Check for strip=%d ...\r",i);
 
@@ -252,7 +253,7 @@ StripAnomalyDetector(){
 
     // Calculate one sigma of RMS distribution
     if (feedback.err[i]){
-      sigma += (feedback.RMS[i]-strpchk.average[0])*(feedback.RMS[i]-strpchk.average[0])
+      sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
 	/feedback.err[i]/feedback.err[i];
       counter++;
 
@@ -263,24 +264,37 @@ StripAnomalyDetector(){
 
 
   // Draw lines to objects
-  float devlimit=strpchk.dev.allowance+strpchk.average[0];
-  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, devlimit, 2, 2, 2);
+  float widthlimit=strpchk.width.allowance+strpchk.width.average[0];
+  DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, widthlimit, 2, 2, 2);
   float chi2limit={strpchk.chi2.allowance};
   DrawLine(mass_chi2_vs_strip, 0, NSTRIP+1, chi2limit, 2, 2, 2);
 
-
   // register and count suspicious strips 
-  anal.anomaly.nstrip=0;
+  anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;
   for (int i=0;i<NSTRIP; i++) {
-    if ((fabs(feedback.RMS[i])-strpchk.average[0]>strpchk.dev.allowance)   // large chi2 or deviation of peak position from average 
-	||(feedback.chi2[i] > strpchk.chi2.allowance)           // chi2 of Gaussian fit on Inv. Mass peak
-	||(fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance)) // mass vs. 12C kinetic energy correlation
+
+    int strip_err_code = 0;
+    // deviation from average width of 12C mass distribution
+    if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) strip_err_code += 1;  
+    // Invariant mass peak position deviation from 12C mass
+    if (feedback.mdev[i] > strpchk.dev.allowance) strip_err_code += 2;
+    // chi2 of Gaussian fit on Inv. Mass peak
+    if (feedback.chi2[i] > strpchk.chi2.allowance) strip_err_code += 4;    
+    // mass vs. 12C kinetic energy correlation
+    if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) strip_err_code += 8; 
+
+    if (strip_err_code)
       {
 	anal.anomaly.st[anal.anomaly.nstrip]=i;
 	++anal.anomaly.nstrip;
       }
-  }
+    
+    // register global strip error code
+    anal.anomaly.strip_err_code = anal.anomaly.strip_err_code | strip_err_code ;
+
+  } // end-of-for(NSTRIP) loop
   
+  // register unrecognized anomaly strips
   UnrecognizedAnomaly(anal.anomaly.st,anal.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
 		      anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
 
