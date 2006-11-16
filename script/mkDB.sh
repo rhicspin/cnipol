@@ -264,20 +264,20 @@ ErrorDetector(){
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
 #  Bunch Errors       
-       NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{printf("%3d",$6)}'`;
-       BUNCH_ERR_CODE=`grep 'Bunch error code     ' $LOGFILE | gawk '{printf("%4s",$5)}'`;
-       MAX_SPELUMI_DEV=`grep ' Max SpeLumi deviation from average' $LOGFILE | gawk '{printf("%5.1f",$7)}'`;
-       BAD_BUNCH_RATE=`grep 'Problemeatic Bunches Rate' $LOGFILE | gawk '{printf("%5.1f",$6)}'`;
-       PROBLEM_BUNCH=`grep 'Number of Problemeatic Bunches' $LOGFILE | gawk '{printf("%2d",$6)}'`;
+       NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{print $6}'`;
+       BUNCH_ERR_CODE=`grep 'Bunch error code     ' $LOGFILE | gawk '{print $5}'`;
+       MAX_SPELUMI_DEV=`grep ' Max SpeLumi deviation from average' $LOGFILE | gawk '{print $7}'`;
+       BAD_BUNCH_RATE=`grep 'Problemeatic Bunches Rate' $LOGFILE | gawk '{print $6}'`;
+       PROBLEM_BUNCH=`grep 'Number of Problemeatic Bunches' $LOGFILE | gawk '{print $6}'`;
 #  Detector Errors       
        ENERGY_SLOPE=`grep " Slope of Energy Spectrum" $LOGFILE | gawk '{print $8}'`;
 #  Strip Errors       
-       MAX_MASS_DEVIATION=`grep "Maximum Mass Deviation" $LOGFILE | gawk '{printf("%6.1f",$6)}'`;
-       MAX_MASS_CHI2=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{printf("%7.2f",$6)}'`;    
+       MAX_MASS_DEVIATION=`grep "Maximum Mass Deviation" $LOGFILE | gawk '{print $6}'`;
+       MAX_MASS_CHI2=`grep 'Maximum Mass fit chi-2' $LOGFILE | gawk '{print $6}'`;    
        MAX_MASS_E_CORR=`grep "Maximum Mass-Energy Correlation" $LOGFILE | gawk '{print $5}'`;
-       INVARIANT_MASS_SIGMA=`grep " Weighted Mean InvMass Sigma    " $LOGFILE | gawk '{printf("%7.2f",$6)}'`;
+       INVARIANT_MASS_SIGMA=`grep " Weighted Mean InvMass Sigma    " $LOGFILE | gawk '{print $6}'`;
        STRIP_ERR_CODE=`grep " Strip error code" $LOGFILE | gawk '{print $5}'`;
-       PROBLEM_NSTRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{printf("%2d",$6)}'`;
+       PROBLEM_NSTRIP=`grep 'Number of Problematic Strips' $LOGFILE | gawk '{print $6}'`;
        UNRECOG_STRIP=`grep 'Unrecognized Problematic Strips' $LOGFILE | sed -e '{s/ Unrecognized Problematic Strips     ://}'`;
 
        if [ ! $NBUNCH ] ; then
@@ -327,12 +327,12 @@ ErrorDetector(){
        printf " %6s"    $BUNCH_ERR_CODE;
        printf " %6.1f"  $MAX_SPELUMI_DEV;
        printf " %8.1f"  $ENERGY_SLOPE;
-       printf " %6.1f"  $MAX_MASS_DEVIATION;
-       printf " %8.4f" $MAX_MASS_E_CORR;
+       printf " %6.2f"  $MAX_MASS_DEVIATION;
+       printf " %8.4f"  $MAX_MASS_E_CORR;
        printf " %7.2f"  $INVARIANT_MASS_SIGMA;
        printf " %7s"    $STRIP_ERR_CODE;
        printf " %5d"    $PROBLEM_NSTRIP;
-#       echo -e -n "  $UNRECOG_STRIP";
+       echo -e -n "  $UNRECOG_STRIP";
        echo -e -n "\n";
 
 #   fi
@@ -481,6 +481,13 @@ grepit(){
     printf "$OnlineP $OnlinedP";
 
     MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
+    if [ $MEAS_TYPE ] ; then
+	if [ $MEAS_TYPE == 'PROFILE' ] ; then
+	    MEAS_TYPE="PROF";
+	elif [ $MEAS_TYPE == 'SPIN_TUNE' ]; then
+	    MEAS_TYPE="SPIN";
+	fi
+    fi
     # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
     RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
     if [ $RUN_STATUS ] ; then
