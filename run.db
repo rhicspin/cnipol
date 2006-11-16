@@ -1,3 +1,10 @@
+// RUN_STATUS:
+//	Good          : Good Measurement
+//	Suspicious;   : Some problem. May be not serious, could be recovered.
+// 	Recovered;    : As good as "Good". Somehow recovered by solving problems.
+// 	Junk;         : Measurement poorly failed or just lack of statistics, 
+// 	Bad;          : Problems were Unrecoverable.
+
 //==============================================================
 //=======                   Run04                      =========
 //==============================================================
@@ -216,6 +223,14 @@
 [6885.002]@
 	CONFIG=6885.002.config.dat;@
 
+[6885.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6885.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6885.102]@
 	CONFIG=6885.102.config.dat;@
 
@@ -231,8 +246,20 @@
 [6904.002]@
 	CONFIG=6904.002.config.dat;@
 
+[6904.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6904.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6904.102]@
 	CONFIG=6904.102.config.dat;@
+
+[6904.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just junk data";
 
 [6905.104]@
 	CONFIG=6905.104.config.dat;@
@@ -255,6 +282,14 @@
 [6913.003]@
 	CONFIG=6913.003.config.dat;@
 
+[6913.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6913.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6913.011]@
 	CONFIG=6913.011.config.dat;@
 
@@ -263,6 +298,10 @@
 
 [6913.104]@
 	CONFIG=6913.104.config.dat;@
+
+[6913.105]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just junk data";
 
 [6913.106]@
 	CONFIG=6913.106.config.dat;@
@@ -297,6 +336,22 @@
 [6925.001]@
 	CONFIG=6925.001.config.dat;@
 
+[6928.002]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6928.002]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6928.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6928.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6928.004]@
 	CONFIG=6928.004.config.dat;@
 
@@ -324,11 +379,23 @@
 [6931.005]@
 	CONFIG=6931.005.config.dat;@
 
+[6931.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6931.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6931.102]@
 	CONFIG=6931.102.config.dat;@
 
 [6931.104]@
 	CONFIG=6931.104.config.dat;@
+
+[6931.105]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just junk data";
 
 [6935.001]
 	ENERGY_CALIB=blue_calib_0419-100v;
@@ -355,11 +422,43 @@
 [6936.104]@
 	CONFIG=6936.104.config.dat;@
 
+[6943.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6943.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6943.009]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6943.009]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6943.105]@
 	CONFIG=6943.105.config.dat;@
 
+[6943.106]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6943.106]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6943.107]@
 	CONFIG=6943.107.config.dat;@
+
+[6943.108]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6943.108]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [6943.112]@
 	CONFIG=6943.112.config.dat;@
@@ -373,11 +472,22 @@
 [6945.003]@
 	CONFIG=6945.003.config.dat;@
 
+[6945.011]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[6945.011]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [6945.102]@
 	CONFIG=6945.102.config.dat;@
 
 [6945.103]@
 	CONFIG=6945.103.config.dat;@
+
+[6945.104]@
+	CONFIG=6945.104.config.dat;@
 
 [6945.105]@
 	CONFIG=6945.105.config.dat;@
@@ -537,6 +647,10 @@
 
 [6997.002]@
 	CONFIG=6997.002.config.dat;@
+
+[6997.106]@
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
 
 [6997.108]@
 	CONFIG=6997.108.config.dat;@
@@ -725,6 +839,10 @@
 [7029.003]@
 	CONFIG=7029.003.config.dat;@
 
+[7029.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7029.102]@
 	CONFIG=7029.102.config.dat;@
 
@@ -816,6 +934,9 @@
 [7045.103]@
 	CONFIG=7045.103.config.dat;@
 
+[7045.104]@
+	CONFIG=7045.104.config.dat;@
+
 [7045.105]@
 	CONFIG=7045.105.config.dat;@
 
@@ -823,16 +944,25 @@
 	RUN_STATUS*=Junk;
 	COMMENT*="Poor Statistics";
 
+[7047.101]@
+	CONFIG=7047.101.config.dat;@
+
+[7048.002]@
+	CONFIG=7048.002.config.dat;@
+
+[7048.004]@
+	CONFIG=7048.004.config.dat;@
+
 [7048.005]@
 	CONFIG=7048.005.config.dat;@
 
 [7048.102]
 	RUN_STATUS=Junk;
-	COMMENT="Poor Statistics 7048.102 - 104";
+	COMMENT="Poor Statistics 7048.102 - 104. Actually target-1 lost.";
 
 [7048.104]
-	RUN_STATUS=Suspicious;
-	COMMENT="Asymmetries x90 looks horrible.";
+	RUN_STATUS=Bad;
+	COMMENT="Asymmetries particulary x90 in earlier bunches are screwed up, because of thick target (target-3). Taken with 120 bunch mode. All bad 7048.104 - 112.";
 
 [7048.105]@
 	CONFIG=7048.105.config.dat;@
@@ -849,6 +979,13 @@
 [7049.004]@
 	CONFIG=7049.004.config.dat;@
 
+[7049.101]
+	RUN_STATUS="Good";
+	COMMENT="Back to 60 bunches mode. Screwed up early bunches are now OK even with thick target (target-3).";
+
+[7049.102]
+	COMMENT="";
+
 [7049.103]
 	CONFIG=7049.103.config.dat;@
 	
@@ -858,8 +995,9 @@
 [7051.002]@
 	CONFIG=7051.002.config.dat;@
 
-[7051.101]@
+[7051.101]
 	CONFIG=7051.101.config.dat;@
+	COMMENT="Target 2. No more thick target (target-3).";
 
 [7051.102]@
 	CONFIG=7051.102.config.dat;@
@@ -872,6 +1010,8 @@
 
 [7053.103]@
 	CONFIG=7053.103.config.dat;@
+	RUN_STATUS=Bad;
+	COMMENT="BunchID's 70 - 80 shows systematicly large negative asymmetries for yellow measurements in fill 7053 - 7056."
 
 [7054.101]@
 	CONFIG=7054.101.config.dat;@
@@ -908,7 +1048,9 @@
 
 [7056.101]@
 	CONFIG=7056.101.config.dat;@
-
+	RUN_STATUS=Good;
+	COMMENT="Suspicious bunches ID 70 - 80 are now back to normal.";
+	
 [7059.102]@
 	CONFIG=7059.102.config.dat;@
 
@@ -932,6 +1074,9 @@
 [7062.001]@
 	CONFIG=7062.001.config.dat;@
 
+[7063.002]@
+	CONFIG=7063.002.config.dat;@
+
 [7063.102]@
 	CONFIG=7063.102.config.dat;@
 
@@ -952,35 +1097,14 @@
 [7064.103]@
 	CONFIG=7064.103.config.dat;@
 
-[7064.106]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7064.106]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7064.107]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7064.107]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7064.108]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[7064.108]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
+[7064.105]
+	RUN_STATUS=Junk;
+	COMMENT="Number of events < 50k. 7065.105 - 108.";
 
 [7064.109]@
+	RUN_STATUS=Good;
+	COMMENT="";
 	CONFIG=7064.109.config.dat;@
-
-[7067.001]@
-	CONFIG=7067.001.config.dat;@
 
 [7067.001]
 	ENERGY_CALIB=blue_calib_0513c;
@@ -988,6 +1112,10 @@
 
 [7067.006]@
 	CONFIG=7067.006.config.dat;@
+
+[7067.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7067.007]@
 	RUN_STATUS*=Junk;@
@@ -1003,13 +1131,20 @@
 [7067.104]@
 	CONFIG=7067.104.config.dat;@
 
-[7067.105]
-	CONFIG=7067.105.config.dat;
+[7067.107]@
+	CONFIG=7067.107.config.dat;@
 
 [7068.001]@
 	CONFIG=7068.001.config.dat;@
 
 [7068.002]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7068.003]@
+	CONFIG=7068.003.config.dat;@
+
+[7068.006]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
@@ -1035,6 +1170,12 @@
 
 [7070.008]
 	CONFIG=7070.008.config.dat;
+
+[7070.105]@
+	CONFIG=7070.105.config.dat;@
+
+[7070.107]@
+	CONFIG=7070.107.config.dat;@
 
 [7070.107]@
 	RUN_STATUS*=Suspicious;@
@@ -1063,8 +1204,19 @@
 	CONFIG=7072.103.config.dat;@
 
 [7074.102]@
+	CONFIG=7074.102.config.dat;@
+
+[7074.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7075.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7075.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7075.102]@
 	CONFIG=7075.102.config.dat;@
@@ -1102,6 +1254,34 @@
 [7086.104]@
 	CONFIG=7086.104.config.dat;@
 
+[7088.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7088.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7088.104]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just a junk data.";
+
+[7092.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7092.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7092.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7092.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7101.003]@
 	CONFIG=7101.003.config.dat;@
 
@@ -1113,6 +1293,30 @@
 
 [7102.103]@
 	CONFIG=7102.103.config.dat;@
+
+[7103.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7103.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7110.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7110.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7112.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7112.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7114.104]@
 	CONFIG=7114.104.config.dat;@
@@ -1135,11 +1339,35 @@
 [7120.102]@
 	CONFIG=7120.102.config.dat;@
 
+[7122.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7122.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7122.102]@
 	CONFIG=7122.102.config.dat;@
 
 [7123.104]@
 	CONFIG=7123.104.config.dat;@
+
+[7124.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7124.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7124.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7124.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7124.102]@
 	CONFIG=7124.102.config.dat;@
@@ -1149,6 +1377,10 @@
 
 [7124.105]@
 	CONFIG=7124.105.config.dat;@
+
+[7124.108]
+	RUN_STATUS*=Junk;
+	COMMENT*="Low statistics. Junk.";
 
 [7124.109]@
 	CONFIG=7124.109.config.dat;@
@@ -1174,6 +1406,14 @@
 [7131.002]@
 	CONFIG=7131.002.config.dat;@
 
+[7131.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7131.006]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7131.102]@
 	CONFIG=7131.102.config.dat;@
 
@@ -1186,6 +1426,9 @@
 
 [7133.108]@
 	CONFIG=7133.108.config.dat;@
+
+[7133.111]@
+	CONFIG=7133.111.config.dat;@
 
 [7133.112]@
 	CONFIG=7133.112.config.dat;@
@@ -1230,6 +1473,14 @@
 [7151.002]@
 	CONFIG=7151.002.config.dat;@
 
+[7151.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7151.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7151.006]@
 	CONFIG=7151.006.config.dat;@
 
@@ -1244,9 +1495,21 @@
 [7151.019]@
 	CONFIG=7151.019.config.dat;@
 
+[7151.105]@
+	CONFIG=7151.105.config.dat;@
+
 [7151.107]
 	MEASUREMENT_TYPE=PROFILE;
 	COMMENT="Fixed target profile scan. Off-centered target position. 7151.107 - 7151.119";
+
+[7151.112]@
+	CONFIG=7151.112.config.dat;@
+
+[7151.117]@
+	CONFIG=7151.117.config.dat;@
+
+[7151.119]@
+	CONFIG=7151.119.config.dat;@
 
 [7152.001]
 	MEASUREMENT_TYPE=NORM;
@@ -1265,11 +1528,76 @@
 [7161.002]@
 	CONFIG=7161.002.config.dat;@
 
+[7161.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7161.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7161.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7161.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7161.009]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7161.009]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7162.007]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7162.102]@
 	CONFIG=7162.102.config.dat;@
 
+[7162.104]@
+	CONFIG=7162.104.config.dat;@
+
 [7165.002]@
 	CONFIG=7165.002.config.dat;@
+
+[7166.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7166.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7166.102]@
+	CONFIG=7166.102.config.dat;@
+
+[7166.104]@
+	CONFIG=7166.104.config.dat;@
 
 [7172.005]@
 	CONFIG=7172.005.config.dat;@
@@ -1409,6 +1737,14 @@
 [7232.104]@
 	CONFIG=7232.104.config.dat;@
 
+[7233.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7233.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7233.102]@
 	CONFIG=7233.102.config.dat;@
 
@@ -1431,6 +1767,9 @@
 	CONFIG=7235.102.config.dat;@
 
 [7236.102]@
+	CONFIG=7236.102.config.dat;@
+
+[7236.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
@@ -1443,8 +1782,19 @@
 [7237.105]@
 	CONFIG=7237.105.config.dat;@
 
+[7238.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7238.003]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7238.102]@
 	CONFIG=7238.102.config.dat;@
+
+[7238.103]@
+	CONFIG=7238.103.config.dat;@
 
 [7238.103]@
 	RUN_STATUS*=Suspicious;@
@@ -1483,6 +1833,14 @@
 
 [7249.003]@
 	CONFIG=7249.003.config.dat;@
+
+[7249.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7249.004]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7249.102]@
 	CONFIG=7249.102.config.dat;@
@@ -1738,6 +2096,9 @@
 	CONFIG=7274.103.config.dat;@
 
 [7274.106]@
+	CONFIG=7274.106.config.dat;@
+
+[7274.106]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
@@ -1809,6 +2170,9 @@
 
 [7279.102]@
 	CONFIG=7279.102.config.dat;@
+
+[7279.104]@
+	CONFIG=7279.104.config.dat;@
 
 [7279.104]@
 	RUN_STATUS*=Suspicious;@
@@ -1945,8 +2309,14 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7293.102]@
+	CONFIG=7293.102.config.dat;@
+
+[7293.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7293.103]@
+	CONFIG=7293.103.config.dat;@
 
 [7293.104]@
 	CONFIG=7293.104.config.dat;@
@@ -1971,6 +2341,10 @@
 
 [7294.103]@
 	CONFIG=7294.103.config.dat;@
+
+[7294.106]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just a junk data.";
 
 [7294.107]@
 	CONFIG=7294.107.config.dat;@
@@ -2010,6 +2384,14 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
+[7296.104]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7296.104]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
 [7300.002]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
@@ -2021,6 +2403,9 @@
 [7300.004]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7300.103]@
+	CONFIG=7300.103.config.dat;@
 
 [7300.103]@
 	RUN_STATUS*=Suspicious;@
@@ -2072,6 +2457,9 @@
 	CONFIG=7303.105.config.dat;@
 
 [7303.106]@
+	CONFIG=7303.106.config.dat;@
+
+[7303.106]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
@@ -2089,11 +2477,11 @@
 	CONFIG=7304.005.config.dat;@
 
 [7304.102]@
+	CONFIG=7304.102.config.dat;@
+
+[7304.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7305.003]@
-	CONFIG=7305.003.config.dat;@
 
 [7305.003]@
 	RUN_STATUS*=Suspicious;@
@@ -2120,22 +2508,22 @@
 	CONFIG=7306.005.config.dat;@
 
 [7306.103]@
+	CONFIG=7306.103.config.dat;@
+
+[7306.103]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7306.104]@
+	CONFIG=7306.104.config.dat;@
 
 [7306.106]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7308.002]@
-	CONFIG=7308.002.config.dat;@
-
-[7308.002]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7308.003]@
-	CONFIG=7308.003.config.dat;@
 
 [7308.003]@
 	RUN_STATUS*=Suspicious;@
@@ -2143,34 +2531,29 @@
 
 [7308.005]
 	RUN_STATUS*=Suspicious;
-	COMMENT*="Horizontal target profile scan.";
-
-[7308.006]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	COMMENT*="Vertical target profile scan.";
 
 [7308.006]
-	RUN_STATUS*=Suspicious;
-	COMMENT*="Vertical target profile scan.";
+	RUN_STATUS*=Tune;
+	COMMENT*="Horizontal target profile scan.";
 
 [7308.107]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
+[7308.108]@
+	CONFIG=7308.108.config.dat;@
+
+[7308.109]@
+	CONFIG=7308.109.config.dat;@
+
 [7308.110]
-	RUN_STATUS*=Suspicious;
-	COMMENT*="Horizontal target profile scan.";
-
-[7308.111]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7308.111]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Vertical target profile scan.";
 
-[7311.006]@
-	CONFIG=7311.006.config.dat;@
+[7308.111]
+	RUN_STATUS*=Tune;
+	COMMENT*="Horizontal target profile scan.Thick target, broad banana.";
 
 [7311.006]@
 	RUN_STATUS*=Suspicious;@
@@ -2180,17 +2563,11 @@
 	CONFIG=7311.102.config.dat;@
 
 [7311.104]@
-	CONFIG=7311.104.config.dat;@
-
-[7311.104]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7311.105]@
 	CONFIG=7311.105.config.dat;@
-
-[7317.004]@
-	CONFIG=7317.004.config.dat;@
 
 [7317.004]@
 	RUN_STATUS*=Suspicious;@
@@ -2201,9 +2578,6 @@
 
 [7317.006]@
 	CONFIG=7317.006.config.dat;@
-
-[7317.103]@
-	CONFIG=7317.103.config.dat;@
 
 [7317.103]@
 	RUN_STATUS*=Suspicious;@
@@ -2276,8 +2650,14 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7320.105]@
+	CONFIG=7320.105.config.dat;@
+
+[7320.105]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.106]@
+	CONFIG=7320.106.config.dat;@
 
 [7320.106]@
 	RUN_STATUS*=Suspicious;@
@@ -2289,6 +2669,9 @@
 [7320.107]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7320.108]@
+	CONFIG=7320.108.config.dat;@
 
 [7325.002]@
 	CONFIG=7325.002.config.dat;@
@@ -2308,8 +2691,14 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7325.103]@
+	CONFIG=7325.103.config.dat;@
+
+[7325.103]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.104]@
+	CONFIG=7325.104.config.dat;@
 
 [7325.104]@
 	RUN_STATUS*=Suspicious;@
@@ -2359,6 +2748,14 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7327.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7327.105]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
