@@ -2,6 +2,7 @@
 //	Good          : Good Measurement
 //	Suspicious;   : Some problem. May be not serious, could be recovered.
 // 	Recovered;    : As good as "Good". Somehow recovered by solving problems.
+//      Tune;         : Measurements for tuning purpose
 // 	Junk;         : Measurement poorly failed or just lack of statistics, 
 // 	Bad;          : Problems were Unrecoverable.
 
@@ -6118,7 +6119,6 @@
 	COMMENT="";
 
 [8033.001]
-	MEASUREMENT_TYPE=TUNE;
 	RUN_STATUS=Tune;
 
 [8033.002]
@@ -6142,7 +6142,6 @@
 	COMMENT*="seems like only four of the detectors are in use (and only partially)?";
 
 [8033.101]
-	MEASUREMENT_TYPE=TUNE;
 	RUN_STATUS=Tune;
 	CONFIG=8033.101.config.dat;
 	COMMENT="strange mass peak behavior.";
