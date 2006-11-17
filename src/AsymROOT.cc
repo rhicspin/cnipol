@@ -57,6 +57,7 @@ TH1F * specific_luminosity;         // specific luminosity
 TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
 TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
 TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 

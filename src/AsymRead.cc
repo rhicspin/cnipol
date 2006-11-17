@@ -200,6 +200,10 @@ int readloop() {
 
           // define target histograms
           tgtHistBook();
+
+	  // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
+	  if (tgt.VHtarget) mask.detector = 0x2D; 				       
+
 	  break;
 
 
@@ -325,8 +329,12 @@ int readloop() {
 	  break; 
 
         case REC_READAT:
-	  // Display configuration just once
+	  // Display configuration and configure active strips just once
 	  if (!READ_FLAG){
+
+	    // Configure Active Strip Map
+	    ConfigureActiveStrip(mask.detector);
+
             if (printConfig(cfginfo)!=0) {
                 perror(" error in printing configuration");
                 exit(1); 
@@ -408,14 +416,24 @@ int readloop() {
                         //      fill pattern = 1
                         //      Calibration mode = 1
                         //      strip #72 - #76 (Run6 target events)
+			int det, strip=0;
 			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)||(event.stN>=72)) {
+
+			  // process only if strip is active
+			  det = event.stN/NSTRIP_PER_DETECTOR;
+			  strip = event.stN - det*NSTRIP_PER_DETECTOR;
+			  if ((runinfo.ActiveDetector[det]>>strip)&1) { 
+
 			     // Event Processing
                             if (event_process(&event,cfginfo)!=0) {
                                 fprintf(stdout, 
                                         "Error event process Si:%d Ev:%d\n",
                                         nreadsi,j);
                             }
-			}
+
+			  } // if (runinfo.ActiveDetector)
+
+			} // if (fillpat)||(dproc.CMODE)||(event.stN>=72)
 
                     }// if fmod(Nread,THINOUT)
 
