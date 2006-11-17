@@ -28,6 +28,7 @@ using namespace std;      // declare string in structure
 #define NTBIN 14                   // number of -t bin
 
 #define NSTRIP 72                  // Number of strip channels
+#define NSTRIP_PER_DETECTOR 12     // Number of strips per detector
 #define NTGTWFD 4                  // Number of target WFD channels
 #define NDETECTOR 6                // Number of detectors
 #define NBUNCH 120                 // Maximum bunch number
@@ -126,6 +127,10 @@ typedef struct {
 } StructRunConst;
 
 typedef struct {
+  int detector;
+} StructMask;
+
+typedef struct {
   int nstrip;
   int st[NSTRIP];
   float bad_st_rate;
@@ -175,6 +180,7 @@ typedef struct {
   int MaxRevolution;
   char target;
   char * TgtOperation;
+  int ActiveDetector[NDETECTOR];
   int NDisableStrip;
   int DisableStrip[NSTRIP];
   int NFilledBunch;
@@ -274,6 +280,9 @@ typedef struct {
 } StructTarget;
 
 
+typedef struct {
+  int pow[NSTRIP_PER_DETECTOR];
+} StructMath;
 
 // Hbook Associated Stuff
 extern "C" {
@@ -319,6 +328,7 @@ void calcRunConst(recordConfigRhicStruct *);
 int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 int DisabledDet(int det);
+int ConfigureActiveStrip(int);
 void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int, int);
 int BunchSelect(int);
@@ -371,10 +381,12 @@ extern StructHistStat hstat;
 extern StructFeedBack feedback;
 extern StructCounter cntr;
 extern StructRunConst runconst;
+extern StructMask mask;
 extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
 extern StructAnalysis anal;
 extern StructTarget tgt;
+extern StructMath math;
 
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)

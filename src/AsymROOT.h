@@ -71,6 +71,7 @@ extern TH1F * specific_luminosity;         // specific luminosity
 extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 extern TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
 extern TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+extern TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 extern TH2F * spelumi_vs_bunch;            // Counting rate vs. bunch
 extern TH1F * bunch_spelumi;               // Counting rate per bunch hisogram
 extern TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45 

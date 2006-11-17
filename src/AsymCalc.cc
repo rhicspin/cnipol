@@ -1056,10 +1056,22 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
 
   } else {
-    
-    // RMS width mapping of 12C mass peak
+
+    // activate this next round
+    //    ErrDet->cd();
+
+    // Mass Position Deviation from M_12 
     float min,max;
     float margin=0.2;
+    GetMinMax(NSTRIP, feedback.mdev, margin, min, max);
+    sprintf(htitle,"Run%8.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
+    mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
+    tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
+    mass_pos_dev_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
+    mass_pos_dev_vs_strip -> GetYaxis() -> SetTitle("Peak - M_12C [GeV]");
+    mass_pos_dev_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
+
+    // RMS width mapping of 12C mass peak
     GetMinMax(NSTRIP, feedback.RMS, margin, min, max);
     sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID); 
     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);

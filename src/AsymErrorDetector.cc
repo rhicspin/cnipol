@@ -128,7 +128,6 @@ InvariantMassCorrelation(int st){
     float strip[NSTRIP],ex[NSTRIP];
     for (int k=0;k<NSTRIP;k++) {strip[k]=k+1;ex[k]=0;}
 
-
     float min,max;
     float margin=0.2;
     GetMinMax(NBUNCH, strpchk.ecorr.p[1], margin, min, max);
@@ -217,6 +216,7 @@ StripAnomalyDetector(){
   // Get weighted average for width of 12C invariant mass distributions 
   strpchk.width.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
 
+
   // draw average line for 12C mass width distribution 
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
 
@@ -268,6 +268,9 @@ StripAnomalyDetector(){
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, widthlimit, 2, 2, 2);
   float chi2limit={strpchk.chi2.allowance};
   DrawLine(mass_chi2_vs_strip, 0, NSTRIP+1, chi2limit, 2, 2, 2);
+  // draw average line for 12C mass width distribution 
+  DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1,    strpchk.dev.allowance, 2, 2, 2);
+  DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1, -1*strpchk.dev.allowance, 2, 2, 2);
 
   // register and count suspicious strips 
   anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;

@@ -31,6 +31,10 @@ datprocStruct dproc = {
 };  // data process modes 
 
 
+StructMask mask = {
+  0x3F          // detector mask 0x3F={11 1111} All detector active
+};
+
 ErrorDetector errdet = {
   0.10,         // MASS_WIDTH_DEV_ALLOWANCE [GeV]
   0.50,         // MASS_POSITION_ALLOWANCE [GeV]
@@ -85,6 +89,9 @@ StructRunInfo runinfo = {
     0, // MaxRevolution;
   'V', // target
     0, // TgtOperation (Initialization is done in Initialization() )
+    {  // ActiveDetector[NDETECTOR]
+      0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
+    }, 
     0, // NDisableStrip
     {  // DisableStrip[NSTRIP]
       0,0,0,0,0,0,0,0,0,0,0,0,
@@ -104,7 +111,20 @@ StructTarget tgt = {
     0   // eventID
 };
 
-
+StructMath math = {
+  1,    // pow[0]
+  2,    // pow[1]
+  4,    // pow[2]
+  8,    // pow[3]
+  16,   // pow[4]
+  32,   // pow[5]
+  64,   // pow[6]
+  128,  // pow[7]
+  256,  // pow[8]
+  512,  // pow[9]
+  1024, // pow[10]
+  2048  // pow[11]
+};
 
 
 // Following arrays correspond to phi agnle of each strips. These phi angles are

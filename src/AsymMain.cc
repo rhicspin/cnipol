@@ -226,7 +226,8 @@ int main (int argc, char *argv[]){
             exit(0);
         }
     }
-    
+
+
     // RunID 
     char  RunID[8];
     strncpy(RunID,ifile,8);
@@ -474,6 +475,37 @@ void reConfig(recordConfigRhicStruct *cfginfo){
     configFile.close();
 }
 
+//
+// Class name  :
+// Method name : ConfigureActiveStrip(int mask.detector)
+//
+// Description : Disable detector and configure active strips
+//
+// Input       : int mask.detector
+// Return      : runinfo.ActiveDetector[i] remains masked strip configulation
+//
+int ConfigureActiveStrip(int mask){
+
+  // Disable Detector First
+  for (int i=0; i<NDETECTOR; i++) {
+    if ((~mask>>i)&1) runinfo.ActiveDetector[i] = 0x000;
+  }
+
+  // Configure Active Strips
+  int det, strip=0;
+  for (int i=0; i<runinfo.NDisableStrip; i++) {
+    det   = runinfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
+
+    // skip if the detector is already disabled
+    if ((mask>>det)&1) { 
+      strip = runinfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
+      runinfo.ActiveDetector[det] ^= int(pow(2,strip)); // mask strips of detector=det
+    }
+
+  } // end-of-for(runinof.NDisableStrip) loop
+
+  return 0;
+}
 
 
 //
@@ -539,7 +571,6 @@ Initialization(){
   }
 
   runinfo.TgtOperation = "fixed";
-
 
   // Initiarize Strip counters
   for (int i=0; i<NSTRIP; i++) {

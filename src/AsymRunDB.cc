@@ -356,17 +356,17 @@ printConfig(recordConfigRhicStruct *cfginfo){
     fprintf(stdout,"================================================\n");
 
     // Configulation File
-    fprintf(stdout," RUN STATUS   = %s\n",    rundb.run_status_s.c_str());
-    fprintf(stdout," MEAS. TYPE   = %s\n",    rundb.measurement_type_s.c_str());
-    fprintf(stdout," CONFIG       = %s\n",reConfFile);
-    fprintf(stdout," CALIB        = %s\n",CalibFile);
+    fprintf(stdout,"         RUN STATUS = %s\n",    rundb.run_status_s.c_str());
+    fprintf(stdout,"         MEAS. TYPE = %s\n",    rundb.measurement_type_s.c_str());
+    fprintf(stdout,"             CONFIG = %s\n",reConfFile);
+    fprintf(stdout,"              CALIB = %s\n",CalibFile);
 
     // banana cut configulation
     if (dproc.CBANANA == 0) {
         ccutwl = (int)cfginfo->data.chan[3].ETCutW;
         ccutwu = (int)cfginfo->data.chan[3].ETCutW;
     } else if (dproc.CBANANA == 2) {
-      fprintf(stdout," MASSCUT      = %5.1f\n",dproc.MassSigma);
+      fprintf(stdout,"            MASSCUT = %.1f\n",dproc.MassSigma);
     } else {
         ccutwl = (int)dproc.widthl;
         ccutwu = (int)dproc.widthu;
@@ -375,28 +375,37 @@ printConfig(recordConfigRhicStruct *cfginfo){
       fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
 
     // tshift in [ns]
-    fprintf(stdout," TSHIFT       = %5.1f\n",dproc.tshift);
+    fprintf(stdout,"             TSHIFT = %.1f\n",dproc.tshift);
 
     // Disabled bunch
-    fprintf(stdout,"#DisableBunch =   %d\n", runinfo.NDisableBunch);
+    fprintf(stdout,"      #DisableBunch = %d\n", runinfo.NDisableBunch);
     if (runinfo.NDisableBunch){
-      fprintf(stdout," DisableBunch = ");
+      fprintf(stdout,"       DisableBunch = ");
       for (int i=0;i<runinfo.NDisableBunch;i++) printf("%d ",runinfo.DisableBunch[i]);
       printf("\n");
     }
 
     // Disabled strips
-    fprintf(stdout,"#DisableStrip =   %d\n", runinfo.NDisableStrip);
+    fprintf(stdout,"      #DisableStrip = %d\n", runinfo.NDisableStrip);
     if (runinfo.NDisableStrip){
-      fprintf(stdout," DisableStrip = ");
+      fprintf(stdout,"       DisableStrip = ");
       for (int i=0;i<runinfo.NDisableStrip;i++) printf("%d ",runinfo.DisableStrip[i]+1);
       printf("\n");
     }
 
+    // Active Detector and Strip Configulation
+    printf("    Active Detector =");
+    for (int i=NDETECTOR-1; i>=0; i--)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
+    printf("\n");
+    printf("Active Strip Config =");
+    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
+    printf("\n");
+
+
 
     // print comment
     if (strlen(rundb.comment_s.c_str())>3)
-      printf(" COMMENT      = %s\n",    rundb.comment_s.c_str());
+      printf("            COMMENT = %s\n",    rundb.comment_s.c_str());
 
     fprintf(stdout,"================================================\n");
     fprintf(stdout,"===  RHIC Polarimeter Configuration (END)    ===\n");
