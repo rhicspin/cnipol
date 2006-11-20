@@ -508,6 +508,7 @@ int ConfigureActiveStrip(int mask){
 }
 
 
+
 //
 // Class name  :
 // Method name : DisabledDet
@@ -516,6 +517,7 @@ int ConfigureActiveStrip(int mask){
 // Input       : int strip nuumber
 // Return      : 1 if disabled. otherwise 0
 //
+/*
 int
 DisabledDet(int det){
 
@@ -527,6 +529,7 @@ DisabledDet(int det){
   return DeadDet>>det & 1 ;
 
 }
+*/
 
 
 

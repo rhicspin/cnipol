@@ -223,11 +223,10 @@ StripAnomalyDetector(){
   strpchk.dev.max  = fabs(feedback.mdev[0]);
   strpchk.chi2.max = feedback.chi2[0];
 
-  // registration of the warst strips
+  // registration of the worst strips
   float sigma=0;
   int counter=0;
   for (int i=0; i<NSTRIP; i++) {
-    printf("Anomary Check for strip=%d ...\r",i);
 
     // t vs. Energy (this routine is incomplete)
     //BananaFit(i);
@@ -239,7 +238,6 @@ StripAnomalyDetector(){
       strpchk.p1.max = fabs(strpchk.ecorr.p[1][i]);
       strpchk.p1.st  = i;
     }
-
     // Maximum devistion of peak from 12C_MASS
     if (fabs(feedback.mdev[i]) > strpchk.dev.max) {
       strpchk.dev.max  = fabs(feedback.mdev[i]);
@@ -250,7 +248,6 @@ StripAnomalyDetector(){
       strpchk.chi2.max  = fabs(feedback.chi2[i]);
       strpchk.chi2.st   = i;
     }
-
     // Calculate one sigma of RMS distribution
     if (feedback.err[i]){
       sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
@@ -275,16 +272,34 @@ StripAnomalyDetector(){
   // register and count suspicious strips 
   anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;
   for (int i=0;i<NSTRIP; i++) {
+    printf("Anomary Check for strip=%d ...\r",i);
 
     int strip_err_code = 0;
     // deviation from average width of 12C mass distribution
-    if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) strip_err_code += 1;  
+    if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) {
+      strip_err_code += 1;  
+      printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
+	     i+1, feedback.RMS[i], strpchk.width.allowance);
+    }      
     // Invariant mass peak position deviation from 12C mass
-    if (feedback.mdev[i] > strpchk.dev.allowance) strip_err_code += 2;
+    if (feedback.mdev[i] > strpchk.dev.allowance) {
+      strip_err_code += 2;
+      printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
+	     i+1, feedback.mdev[i], strpchk.dev.allowance);
+    }
     // chi2 of Gaussian fit on Inv. Mass peak
-    if (feedback.chi2[i] > strpchk.chi2.allowance) strip_err_code += 4;    
+    if (feedback.chi2[i] > strpchk.chi2.allowance) {
+      strip_err_code += 4;    
+      printf(" WARNING: strip # %d chi2 of Gaussian fit on mass %8.4f exeeds allowance limit %8.4f\n",
+	     i+1, feedback.chi2[i], strpchk.chi2.allowance);
+    }
     // mass vs. 12C kinetic energy correlation
-    if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) strip_err_code += 8; 
+    if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
+      strip_err_code += 8; 
+      printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
+	     i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
+    }
+
 
     if (strip_err_code)
       {

@@ -496,16 +496,14 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 		HHF1(38050, TgtIndex[time], 1);
 		HHF1(38060, time, 1);
 
-		// Disable some detectors
-		if (!DisabledDet(st/12)) {
-		  cntr.reg.NStrip[spbit][st]++;
-		  if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e) 
-		    cntr.alt.NStrip[spbit][st]++;
-		}
+		cntr.reg.NStrip[spbit][st]++;
+		if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e) 
+		  cntr.alt.NStrip[spbit][st]++;
 
                 
                 // Ramp measurements binning
                 // 20 Hz delimiters
+		/*
                 if (dproc.RAMPMODE==1) {
                     int rbin = (int)((event->delim)/20.);
                     //NRcounts[(int)(st/12)][event->bid][rbin]++;
@@ -513,7 +511,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     // Plus Spin 21000+Si
                     // Minus Spin 21100+Si
                     HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
-                }
+		    }
+		*/
 
                 // Study mode for multiple purpise
                 
