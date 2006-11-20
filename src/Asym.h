@@ -279,11 +279,6 @@ typedef struct {
     } all;
 } StructTarget;
 
-
-typedef struct {
-  int pow[NSTRIP_PER_DETECTOR];
-} StructMath;
-
 // Hbook Associated Stuff
 extern "C" {
 
@@ -327,7 +322,7 @@ void reConfig(recordConfigRhicStruct *);
 void calcRunConst(recordConfigRhicStruct *);
 int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
-int DisabledDet(int det);
+//int DisabledDet(int det);
 int ConfigureActiveStrip(int);
 void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int, int);
@@ -386,7 +381,6 @@ extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
 extern StructAnalysis anal;
 extern StructTarget tgt;
-extern StructMath math;
 
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)

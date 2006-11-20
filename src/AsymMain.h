@@ -111,22 +111,6 @@ StructTarget tgt = {
     0   // eventID
 };
 
-StructMath math = {
-  1,    // pow[0]
-  2,    // pow[1]
-  4,    // pow[2]
-  8,    // pow[3]
-  16,   // pow[4]
-  32,   // pow[5]
-  64,   // pow[6]
-  128,  // pow[7]
-  256,  // pow[8]
-  512,  // pow[9]
-  1024, // pow[10]
-  2048  // pow[11]
-};
-
-
 // Following arrays correspond to phi agnle of each strips. These phi angles are
 // subject to change depends on TOFLength from target to detectors.
 // To get phi values for given TOFLength, use calcPhi.cc program. Copy and paste outputs.
