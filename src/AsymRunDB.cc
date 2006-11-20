@@ -395,10 +395,16 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // Active Detector and Strip Configulation
     printf("    Active Detector =");
-    for (int i=NDETECTOR-1; i>=0; i--)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
+    for (int i=0; i<NDETECTOR; i++)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
     printf("\n");
+    //    printf("Active Strip Config =");
+    //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
+    //    printf("\n");
     printf("Active Strip Config =");
-    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
+    for (int i=0; i<NSTRIP; i++) {
+      if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
+      printf("%d", runinfo.ActiveStrip[i]);
+    }
     printf("\n");
 
 

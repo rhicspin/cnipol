@@ -18,7 +18,7 @@ typedef struct {
   float allowance;
   float max;
   int st;
-} StructInvMass;
+} StructStrip;
 
 typedef struct {
   float p[3][NSTRIP];
@@ -26,7 +26,7 @@ typedef struct {
 } StructEnergyCorr;
 
 struct StructStripCheck {
-  StructInvMass dev, chi2, p1, width;
+  StructStrip dev, chi2, p1, width, evnt;
   StructEnergyCorr ecorr;
 } ;
 extern StructStripCheck strpchk;
@@ -68,6 +68,7 @@ int RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
 int UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
 void DrawLine(TH1F * h, float x, float y1, int color, int lwidth);
 void DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
+void DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);
 

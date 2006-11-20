@@ -101,6 +101,7 @@ typedef struct {
   float MASS_POSITION_ALLOWANCE;
   float MASS_CHI2_ALLOWANCE;
   float MASS_ENERGY_CORR_ALLOWANCE;
+  float GOOD_CARBON_EVENTS_ALLOWANCE;
   float BUNCH_RATE_SIGMA_ALLOWANCE;
   float BUNCH_ASYM_SIGMA_ALLOWANCE;
   int NBUNCH_REQUIREMENT;
@@ -181,6 +182,8 @@ typedef struct {
   char target;
   char * TgtOperation;
   int ActiveDetector[NDETECTOR];
+  int ActiveStrip[NSTRIP];
+  int NActiveStrip;
   int NDisableStrip;
   int DisableStrip[NSTRIP];
   int NFilledBunch;

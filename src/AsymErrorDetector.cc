@@ -82,6 +82,8 @@ DetectorAnomaly(){
 int 
 InvariantMassCorrelation(int st){
 
+  Kinema->cd();
+
   char htitle[100],histname[100];
 
   // Function for Fitting
@@ -125,12 +127,14 @@ InvariantMassCorrelation(int st){
   // Make graph of p1 paramter as a function of strip number when strip number is the last one
   
   if (st==NSTRIP-1) {
+    ErrDet->cd();
+
     float strip[NSTRIP],ex[NSTRIP];
     for (int k=0;k<NSTRIP;k++) {strip[k]=k+1;ex[k]=0;}
-
+    
     float min,max;
     float margin=0.2;
-    GetMinMax(NBUNCH, strpchk.ecorr.p[1], margin, min, max);
+    GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
     sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
     mass_e_correlation_strip = new TH2F("mass_e_corrlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
     TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
@@ -197,10 +201,13 @@ BananaFit(int st){
 // Class name  : 
 // Method name : StripAnomaryDetector()
 //
-// Description : find suspicious strips through folllowing three checks
-//             : 1. Invariant Mass vs. Energy Correlation
-//             : 2. Maximum deviation of invariant mass peak from 12Mass
-//             : 3. Chi2 of Gaussian Fit on Invariant mass
+// Description : find suspicious strips through folllowing three checks 
+//             : (chi-2 check of Gaussian Fit on Inviariant Mass is not included now)
+//             : strip_err_code (1111)
+//             : Bit[0]: RMS width of Carbin Invariant Mass Deviation from Average
+//             : Bit[1]: Maximum deviation of invariant mass peak from 12Mass
+//             : Bit[2]: Number of events in Banana Cuts Deviation from Average
+//             : Bit[3]: Invariant Mass vs. Energy Correlation
 // Input       : 
 // Return      : 
 //
@@ -208,55 +215,72 @@ int
 StripAnomalyDetector(){
 
   // Errror allowance
-  strpchk.p1.allowance   = errdet.MASS_ENERGY_CORR_ALLOWANCE;
-  strpchk.dev.allowance  = errdet.MASS_POSITION_ALLOWANCE;
+  strpchk.p1.allowance     = errdet.MASS_ENERGY_CORR_ALLOWANCE;
+  strpchk.dev.allowance    = errdet.MASS_POSITION_ALLOWANCE;
   strpchk.width.allowance  = errdet.MASS_WIDTH_DEV_ALLOWANCE;
-  strpchk.chi2.allowance = errdet.MASS_CHI2_ALLOWANCE;
+  strpchk.chi2.allowance   = errdet.MASS_CHI2_ALLOWANCE;
+  strpchk.evnt.allowance   = errdet.GOOD_CARBON_EVENTS_ALLOWANCE;
 
   // Get weighted average for width of 12C invariant mass distributions 
   strpchk.width.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
-
-
-  // draw average line for 12C mass width distribution 
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
 
+  // Calculate average carbon events in banana cuts
+  strpchk.evnt.average[0] = good_carbon_events_strip->GetEntries()/float(runinfo.NActiveStrip);
+  DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, strpchk.evnt.average[0], 1, 1, 2);
+  printf(" Average # of Events in Banana Cut : %6.2f\n", strpchk.evnt.average[0]);
+
+  // initiarization before following worst (max) search
   strpchk.dev.max  = fabs(feedback.mdev[0]);
   strpchk.chi2.max = feedback.chi2[0];
+  strpchk.evnt.max = 0;
 
   // registration of the worst strips
+  float evntdev[NSTRIP];
   float sigma=0;
   int counter=0;
   for (int i=0; i<NSTRIP; i++) {
+    evntdev[i]=0;
+    printf("Anomary Check for strip=%d ...\r",i);
 
-    // t vs. Energy (this routine is incomplete)
-    //BananaFit(i);
+    if (runinfo.ActiveStrip[i]) {
+      // t vs. Energy (this routine is incomplete)
+      //BananaFit(i);
 
-    // MASS vs. Energy correlation
-    InvariantMassCorrelation(i);
-    if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);  // initialize max w/ strip 0
-    if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.max ) {
-      strpchk.p1.max = fabs(strpchk.ecorr.p[1][i]);
-      strpchk.p1.st  = i;
-    }
-    // Maximum devistion of peak from 12C_MASS
-    if (fabs(feedback.mdev[i]) > strpchk.dev.max) {
-      strpchk.dev.max  = fabs(feedback.mdev[i]);
-      strpchk.dev.st   = i;
-    }
-    // Gaussian Mass fit Largest chi2
-    if (feedback.chi2[i] > strpchk.chi2.max) {
-      strpchk.chi2.max  = fabs(feedback.chi2[i]);
-      strpchk.chi2.st   = i;
-    }
-    // Calculate one sigma of RMS distribution
-    if (feedback.err[i]){
-      sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
-	/feedback.err[i]/feedback.err[i];
-      counter++;
+      // MASS vs. Energy correlation
+      InvariantMassCorrelation(i);
+      if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);  // initialize max w/ strip 0
+      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.max ) {
+	strpchk.p1.max = fabs(strpchk.ecorr.p[1][i]);
+	strpchk.p1.st  = i;
+      }
+      // Maximum devistion of peak from 12C_MASS
+      if (fabs(feedback.mdev[i]) > strpchk.dev.max) {
+	strpchk.dev.max  = fabs(feedback.mdev[i]);
+	strpchk.dev.st   = i;
+      }
+      // Gaussian Mass fit Largest chi2
+      if (feedback.chi2[i] > strpchk.chi2.max) {
+	strpchk.chi2.max  = fabs(feedback.chi2[i]);
+	strpchk.chi2.st   = i;
+      }
+      // Good carbon events within banana
+      evntdev[i]=fabs(good_carbon_events_strip->GetBinContent(i)-strpchk.evnt.average[0])/strpchk.evnt.average[0] ;
+      if (evntdev[i]>strpchk.evnt.max) {
+	strpchk.evnt.max  = evntdev[i];
+	strpchk.evnt.st   = i;
+      }
 
-    }
+      // Calculate one sigma of RMS distribution
+      if (feedback.err[i]){
+	sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
+	  /feedback.err[i]/feedback.err[i];
+	counter++;
+      }
 
-  }
+    } // end-if-(runinfo.ActiveStrip[i])
+
+  }// end-for-loop(NSTRIP)
   sigma=sqrt(sigma)/counter; 
 
 
@@ -268,50 +292,65 @@ StripAnomalyDetector(){
   // draw average line for 12C mass width distribution 
   DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1,    strpchk.dev.allowance, 2, 2, 2);
   DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1, -1*strpchk.dev.allowance, 2, 2, 2);
+  // draw allowance for good_carbon_events_strip
+  float evelim=(1+strpchk.evnt.allowance)*strpchk.evnt.average[0];
+  DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
+  evelim=(1-strpchk.evnt.allowance)*strpchk.evnt.average[0];
+  DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
+
 
   // register and count suspicious strips 
   anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;
   for (int i=0;i<NSTRIP; i++) {
-    printf("Anomary Check for strip=%d ...\r",i);
-
     int strip_err_code = 0;
-    // deviation from average width of 12C mass distribution
-    if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) {
-      strip_err_code += 1;  
-      printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
-	     i+1, feedback.RMS[i], strpchk.width.allowance);
-    }      
-    // Invariant mass peak position deviation from 12C mass
-    if (feedback.mdev[i] > strpchk.dev.allowance) {
-      strip_err_code += 2;
-      printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
-	     i+1, feedback.mdev[i], strpchk.dev.allowance);
-    }
-    // chi2 of Gaussian fit on Inv. Mass peak
-    if (feedback.chi2[i] > strpchk.chi2.allowance) {
+    if (runinfo.ActiveStrip[i]){
+      
+      // deviation from average width of 12C mass distribution
+      if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) {
+	strip_err_code += 1;  
+	printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
+	       i+1, feedback.RMS[i], strpchk.width.allowance);
+      }      
+      // Invariant mass peak position deviation from 12C mass
+      if (feedback.mdev[i] > strpchk.dev.allowance) {
+	strip_err_code += 2;
+	printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
+	       i+1, feedback.mdev[i], strpchk.dev.allowance);
+      }
+      /* Currently chi2 is poor. Follwing routine is disabled until chi2 is inproved
+      // chi2 of Gaussian fit on Inv. Mass peak
+      if (feedback.chi2[i] > strpchk.chi2.allowance) {
       strip_err_code += 4;    
       printf(" WARNING: strip # %d chi2 of Gaussian fit on mass %8.4f exeeds allowance limit %8.4f\n",
-	     i+1, feedback.chi2[i], strpchk.chi2.allowance);
-    }
-    // mass vs. 12C kinetic energy correlation
-    if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
-      strip_err_code += 8; 
-      printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
-	     i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
-    }
-
-
-    if (strip_err_code)
-      {
-	anal.anomaly.st[anal.anomaly.nstrip]=i;
-	++anal.anomaly.nstrip;
+      i+1, feedback.chi2[i], strpchk.chi2.allowance);
+      }*/
+      // number of carbon events per strip checker
+      if (evntdev[i] > strpchk.evnt.allowance) {
+	strip_err_code += 4;    
+	printf(" WARNING: strip # %d number of events in banana cut  %6.2f exeeds allowance limit %6.2f\n",
+	       i+1, evntdev[i], strpchk.evnt.allowance);
       }
+      // mass vs. 12C kinetic energy correlation
+      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
+	strip_err_code += 8; 
+	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
+	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
+      }
+
+
+      if (strip_err_code)
+	{
+	  anal.anomaly.st[anal.anomaly.nstrip]=i;
+	  ++anal.anomaly.nstrip;
+	}
     
-    // register global strip error code
-    anal.anomaly.strip_err_code = anal.anomaly.strip_err_code | strip_err_code ;
+      // register global strip error code
+      anal.anomaly.strip_err_code = anal.anomaly.strip_err_code | strip_err_code ;
+
+    } // end-of-if(runinfo.ActiveStrip[i])      
 
   } // end-of-for(NSTRIP) loop
-  
+    
   // register unrecognized anomaly strips
   UnrecognizedAnomaly(anal.anomaly.st,anal.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
 		      anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
@@ -319,7 +358,7 @@ StripAnomalyDetector(){
 
   return 0;
 
-};
+  };
 
 
 //
@@ -347,13 +386,34 @@ DrawLine(TH1F * h, float x, float y1, int color, int lwidth){
 // Class name  : 
 // Method name : DrawLine()
 //
-// Description : DrawLines in TH1F histogram
+// Description : DrawLines in TH2F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
 // Return      : 
 //
 void 
 DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
+
+  TLine * l = new TLine(x0, y, x1, y);
+  l -> SetLineStyle(lstyle);
+  l -> SetLineColor(color);
+  l -> SetLineWidth(lwidth);
+  h -> GetListOfFunctions()->Add(l);
+
+  return;
+}
+
+//
+// Class name  : 
+// Method name : DrawLine()
+//
+// Description : DrawLines in TH1F histogram
+//             : Assumes  (x1,x2) y=y0=y1
+// Input       : TH1I * h, float x0, float x1, float y, int color, int lstyle
+// Return      : 
+//
+void 
+DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
 
   TLine * l = new TLine(x0, y, x1, y);
   l -> SetLineStyle(lstyle);
