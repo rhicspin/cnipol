@@ -627,12 +627,14 @@ PrintWarning(){
     printf("===> Invariant Mass / strip \n");
     printf(" Maximum Mass Deviation [GeV]        : %6.2f   (%d)\n", strpchk.dev.max,  strpchk.dev.st);
     printf(" Maximum Mass fit chi-2              : %6.2f   (%d)\n", strpchk.chi2.max, strpchk.chi2.st);
+    printf(" Maximum #Events Deviation from Ave  : %6.2f   (%d)\n", strpchk.evnt.max, strpchk.evnt.st);
     printf(" Maximum Mass-Energy Correlation     : %8.4f (%d)\n", strpchk.p1.max, strpchk.p1.st);
     printf(" Weighted Mean InvMass Sigma         : %6.2f \n", strpchk.width.average[0]);
     printf(" Good strip Mass-Energy Correlation  : %8.4f \n", strpchk.p1.allowance);
     printf(" Good strip Mass Sigma Allowance[GeV]: %6.2f \n", strpchk.width.allowance);
     printf(" Good strip Mass Pos. Allowance[GeV] : %6.2f \n", strpchk.dev.allowance);
     printf(" Good strip Mass Fit chi2 Allowance  : %6.2f \n", strpchk.chi2.allowance);
+    printf(" Good strip #Events Allowance        : %6.2f \n", strpchk.evnt.allowance);
     printf(" Strip error code                    :   "); binary_zero(anal.anomaly.strip_err_code,4);printf("\n");
     printf(" Number of Problematic Strips        : %6d \n", anal.anomaly.nstrip); 
     printf(" Problematic Strips                  : ");
@@ -1035,7 +1037,9 @@ TshiftFinder(int Mode, int FeedBackLevel){
       if (par[0]) { // Gaussian Fit unless histogram isn't empty
 	HHFITHN(hid, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
       }else{
-	par[2] = feedback.err[st] = 0; // set weight 0
+	par[1] = MASS_12C*k2G + ASYM_DEFAULT;
+	par[2] = ASYM_DEFAULT;
+	feedback.err[st] = 0; // set weight 0
       }
       feedback.err[st]  = sigpar[1] * chi2 * chi2;
       feedback.mdev[st] = par[1] - MASS_12C*k2G; 
@@ -1057,13 +1061,12 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
   } else {
 
-    // activate this next round
-    //    ErrDet->cd();
+    ErrDet->cd();
 
     // Mass Position Deviation from M_12 
     float min,max;
     float margin=0.2;
-    GetMinMax(NSTRIP, feedback.mdev, margin, min, max);
+    GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
     sprintf(htitle,"Run%8.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
@@ -1548,17 +1551,17 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 
 
 
-// Return Maximum from array A[N]
+// Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMax(int N, float A[]){
   float max = A[0];
-  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=-999) ? A[i] : max;
+  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : max;
   return max;
 }
 
-// Return Miminum from array A[N]
+// Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMin(int N, float A[]){
   float min = A[0];
-  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i])&&(A[i]!=-999) ? A[i] : min;
+  for (int i=1; i<N; i++) min = (A[i])&&(min>A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : min;
   return min;
 }
 

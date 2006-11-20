@@ -416,13 +416,10 @@ int readloop() {
                         //      fill pattern = 1
                         //      Calibration mode = 1
                         //      strip #72 - #76 (Run6 target events)
-			int det, strip=0;
 			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)||(event.stN>=72)) {
 
 			  // process only if strip is active
-			  det = event.stN/NSTRIP_PER_DETECTOR;
-			  strip = event.stN - det*NSTRIP_PER_DETECTOR;
-			  if ((runinfo.ActiveDetector[det]>>strip)&1) { 
+			  if (runinfo.ActiveStrip[event.stN]){
 
 			     // Event Processing
                             if (event_process(&event,cfginfo)!=0) {
@@ -431,7 +428,7 @@ int readloop() {
                                         nreadsi,j);
                             }
 
-			  } // if (runinfo.ActiveDetector)
+			  } // if (runinfo.ActiveStrip)
 
 			} // if (fillpat)||(dproc.CMODE)||(event.stN>=72)
 

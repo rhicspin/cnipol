@@ -472,10 +472,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 
                 // Strip distribution (time + -t cut )
                 HHF1(10320+si+1,(float)(st-si*12)+1,1.);
+		good_carbon_events_strip->Fill(st+1);
 
 		// Mass vs. Energy plots
 		mass_vs_e_ecut[st] -> Fill(e, Mass);
-
+		
                 Ncounts[(int)(st/12)][event->bid]++;
                 int time=0;
 		if (runinfo.Run==5){

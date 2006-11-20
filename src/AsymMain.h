@@ -40,6 +40,7 @@ ErrorDetector errdet = {
   0.50,         // MASS_POSITION_ALLOWANCE [GeV]
   100,          // MASS_CHI2_ALLOWANCE [GeV]
   0.001,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
+  0.2,          // GOOD_CARBON_EVENTS_ALLOWANCE fabs(events[st]-average)/average<GOOD_CARBON_EVENTS_ALLOWANCE
   5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
   5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
   20            // NBUNCH_REQUIREMENT;
@@ -91,7 +92,16 @@ StructRunInfo runinfo = {
     0, // TgtOperation (Initialization is done in Initialization() )
     {  // ActiveDetector[NDETECTOR]
       0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
-    }, 
+    }, // ActiveStrip[NSTRIP]
+    {  // ActiveStrip[NSTRIP]
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1
+    },
+    NSTRIP, // NAactiveStrip;
     0, // NDisableStrip
     {  // DisableStrip[NSTRIP]
       0,0,0,0,0,0,0,0,0,0,0,0,

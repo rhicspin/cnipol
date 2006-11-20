@@ -488,7 +488,13 @@ int ConfigureActiveStrip(int mask){
 
   // Disable Detector First
   for (int i=0; i<NDETECTOR; i++) {
-    if ((~mask>>i)&1) runinfo.ActiveDetector[i] = 0x000;
+    if ((~mask>>i)&1) {
+      runinfo.ActiveDetector[i] = 0x000;
+      for (int j=0;i<NSTRIP_PER_DETECTOR; j++) {
+	runinfo.NActiveStrip--;
+	runinfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
+      }
+    }
   }
 
   // Configure Active Strips
@@ -500,9 +506,12 @@ int ConfigureActiveStrip(int mask){
     if ((mask>>det)&1) { 
       strip = runinfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
       runinfo.ActiveDetector[det] ^= int(pow(2,strip)); // mask strips of detector=det
+      runinfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
+      runinfo.NActiveStrip--;
     }
 
   } // end-of-for(runinof.NDisableStrip) loop
+
 
   return 0;
 }

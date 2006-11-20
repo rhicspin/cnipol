@@ -47,7 +47,6 @@ TLine * energy_cut_h[NSTRIP];        // energy cut high
 TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
 
-
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
 TH1F * wall_current_monitor;        // wall current monitor
@@ -58,6 +57,7 @@ TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip
 TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
+TH1I * good_carbon_events_strip;    // number of good carbon events per strip
 TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
 TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
 TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
@@ -170,7 +170,8 @@ Root::RootHistBook(StructRunInfo runinfo){
   asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
   sprintf(htitle,"%8.3f : Bunch Asymmetry Y45", runinfo.RUNID);
   asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
-
+  sprintf(htitle,"%8.3f : # of Events in Banana Cut per strip", runinfo.RUNID);
+  good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
 
   return 0;
 
