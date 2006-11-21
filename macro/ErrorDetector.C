@@ -483,7 +483,7 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
     case 353:
       // Superpose Measurements as a Reference
       TGraph * tg = new TGraph(ndata, data.RunID, data.strip.dummy);
-      tg->SetMarkerColor(2);
+      tg->SetMarkerColor(11);
       tg->SetMarkerSize(1.2);
       tg->SetMarkerStyle(20);
 
