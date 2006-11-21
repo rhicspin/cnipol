@@ -214,7 +214,8 @@ ShowIndexOnline(){
     printf "  [GeV]  ";
     printf " \t     ";
     printf " [keV] ";
-    printf " [M]   ";
+    printf " [keV] ";
+    printf "  [M]  ";
     printf " (ave)";
     printf " [ug/cm2] ";
     printf " \n";
@@ -241,9 +242,9 @@ ShowErrorDetectorIndex(){
 
     printf "=====================================================================================";
     printf "=====================================================================================\n";
-    printf " RunID    #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
+    printf " RunID    #Good   #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
     printf " #Bad     BadStrip      \n"; 
-    printf "        bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
+    printf "           12C  bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
     printf "strip       List        \n";
     printf "=====================================================================================";
     printf "=====================================================================================\n";
@@ -264,6 +265,7 @@ ErrorDetector(){
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
 #  Bunch Errors       
+       NEVENTS=`grep 'Carbons are found' $LOGFILE | gawk '{printf("%6.2f", $1*1e-6)}'`; 
        NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{print $6}'`;
        BUNCH_ERR_CODE=`grep 'Bunch error code     ' $LOGFILE | gawk '{print $5}'`;
        MAX_SPELUMI_DEV=`grep ' Max SpeLumi deviation from average' $LOGFILE | gawk '{print $7}'`;
@@ -321,6 +323,7 @@ ErrorDetector(){
 
 #   if [ $PROBLEM_BUNCH -ge 1 ] ; then
        echo -e -n "$RunID";
+       printf " %6.2f"  $NEVENTS;
        printf " %3d"    $NBUNCH;
        printf " %5d"    $PROBLEM_BUNCH;
        printf " %6.1f"  $BAD_BUNCH_RATE;
