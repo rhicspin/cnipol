@@ -172,6 +172,7 @@ Root::RootHistBook(StructRunInfo runinfo){
   asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
   sprintf(htitle,"%8.3f : # of Events in Banana Cut per strip", runinfo.RUNID);
   good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
+  good_carbon_events_strip->SetFillColor(17);
 
   return 0;
 
