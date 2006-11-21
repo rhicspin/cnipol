@@ -265,7 +265,7 @@ StripAnomalyDetector(){
 	strpchk.chi2.st   = i;
       }
       // Good carbon events within banana
-      evntdev[i]=fabs(good_carbon_events_strip->GetBinContent(i)-strpchk.evnt.average[0])/strpchk.evnt.average[0] ;
+      evntdev[i]=fabs(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0])/strpchk.evnt.average[0] ;
       if (evntdev[i]>strpchk.evnt.max) {
 	strpchk.evnt.max  = evntdev[i];
 	strpchk.evnt.st   = i;
@@ -300,23 +300,44 @@ StripAnomalyDetector(){
 
 
   // register and count suspicious strips 
+  char text[36];
   anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;
   for (int i=0;i<NSTRIP; i++) {
+
+    sprintf(text,"%d",i+1);
     int strip_err_code = 0;
-    if (runinfo.ActiveStrip[i]){
-      
+    if (runinfo.ActiveStrip[i]){ // process only if the strip is active
+
       // deviation from average width of 12C mass distribution
       if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) {
 	strip_err_code += 1;  
 	printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, feedback.RMS[i], strpchk.width.allowance);
+	DrawText(mass_sigma_vs_strip, float(i+1), feedback.RMS[i], 2, text);
       }      
       // Invariant mass peak position deviation from 12C mass
       if (feedback.mdev[i] > strpchk.dev.allowance) {
 	strip_err_code += 2;
 	printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, feedback.mdev[i], strpchk.dev.allowance);
+	DrawText(mass_pos_dev_vs_strip, float(i+1), feedback.mdev[i], 2, text);
       }
+      // number of carbon events per strip checker
+      if (evntdev[i] > strpchk.evnt.allowance) {
+	strip_err_code += 4;    
+	printf(" WARNING: strip # %d number of events in banana cut  %6.2f exeeds allowance limit %6.2f\n",
+	       i+1, evntdev[i], strpchk.evnt.allowance);
+	// comment in h2 histogram
+	DrawText(good_carbon_events_strip, float(i+1), good_carbon_events_strip->GetBinContent(i+1), 2, text);
+      }
+      // mass vs. 12C kinetic energy correlation
+      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
+	strip_err_code += 8; 
+	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
+	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
+	DrawText(mass_e_correlation_strip, float(i+1), strpchk.ecorr.p[1][i], 2, text);
+      }
+
       /* Currently chi2 is poor. Follwing routine is disabled until chi2 is inproved
       // chi2 of Gaussian fit on Inv. Mass peak
       if (feedback.chi2[i] > strpchk.chi2.allowance) {
@@ -324,18 +345,6 @@ StripAnomalyDetector(){
       printf(" WARNING: strip # %d chi2 of Gaussian fit on mass %8.4f exeeds allowance limit %8.4f\n",
       i+1, feedback.chi2[i], strpchk.chi2.allowance);
       }*/
-      // number of carbon events per strip checker
-      if (evntdev[i] > strpchk.evnt.allowance) {
-	strip_err_code += 4;    
-	printf(" WARNING: strip # %d number of events in banana cut  %6.2f exeeds allowance limit %6.2f\n",
-	       i+1, evntdev[i], strpchk.evnt.allowance);
-      }
-      // mass vs. 12C kinetic energy correlation
-      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
-	strip_err_code += 8; 
-	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
-	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
-      }
 
 
       if (strip_err_code)
@@ -359,6 +368,47 @@ StripAnomalyDetector(){
   return 0;
 
   };
+
+
+//
+// Class name  : 
+// Method name : DrawText(TH1I * h, float x, float y, int color, char * text)
+//
+// Description : draw text on histogram. Text alignment is (center,top) by default
+//             : 
+// Input       : TH1I * h, float x, float y, int color, char * text
+// Return      : 
+//
+void 
+DrawText(TH1I * h, float x, float y, int color, char * text){
+
+  TText * t = new TText(x, y, text);
+  t->SetTextColor(color);
+  t->SetTextAlign(21);
+  h->GetListOfFunctions()->Add(t);
+
+  return;
+}
+
+//
+// Class name  : 
+// Method name : DrawText(TH2F * h, float x, float y, int color, char * text)
+//
+// Description : draw text on histogram. 
+//             : 
+// Input       : TH2F * h, float x, float y, int color, char * text
+// Return      : 
+//
+void 
+DrawText(TH2F * h, float x, float y, int color, char * text){
+
+  TText * t = new TText(x, y, text);
+  t->SetTextColor(color);
+  //  t->SetTextAlign(21);
+  h->GetListOfFunctions()->Add(t);
+
+  return;
+}
 
 
 //

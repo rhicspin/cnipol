@@ -490,7 +490,7 @@ int ConfigureActiveStrip(int mask){
   for (int i=0; i<NDETECTOR; i++) {
     if ((~mask>>i)&1) {
       runinfo.ActiveDetector[i] = 0x000;
-      for (int j=0;i<NSTRIP_PER_DETECTOR; j++) {
+      for (int j=0;j<NSTRIP_PER_DETECTOR; j++) {
 	runinfo.NActiveStrip--;
 	runinfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
       }
