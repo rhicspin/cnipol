@@ -5,6 +5,14 @@
 //      Tune;         : Measurements for tuning purpose
 // 	Junk;         : Measurement poorly failed or just lack of statistics, 
 // 	Bad;          : Problems were Unrecoverable.
+//
+// MEASUREMENT_TYPE:
+//      NORM          : Normal polarization measurment
+//      PHYS          : Physics A_N measurements
+//      SPIN_TUNE     : Spin tune measurments
+//      PROFILE       : Polarization profile measurements by scanning mode (Run05 only)
+//
+
 
 //==============================================================
 //=======                   Run04                      =========
@@ -374,7 +382,7 @@
 [6928.108]@
 	CONFIG=6928.108.config.dat;@
 
-[6931.002]@
+[6931.002]
 	CONFIG=6931.002.config.dat;@
 
 [6931.005]@
@@ -932,6 +940,10 @@
 [7045.003]@
 	CONFIG=7045.003.config.dat;@
 
+[7045.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just Poor Statistics";
+
 [7045.103]@
 	CONFIG=7045.103.config.dat;@
 
@@ -1159,6 +1171,9 @@
 [7069.004]@
 	CONFIG=7069.004.config.dat;@
 
+[7069.102]@
+	CONFIG=7069.102.config.dat;@
+
 [7069.104]
 	CONFIG=7069.104.config.dat;
 
@@ -1169,14 +1184,15 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
+[7070.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Poor statistics.";
+
 [7070.008]
 	CONFIG=7070.008.config.dat;
 
 [7070.105]@
 	CONFIG=7070.105.config.dat;@
-
-[7070.107]@
-	CONFIG=7070.107.config.dat;@
 
 [7070.107]@
 	RUN_STATUS*=Suspicious;@
@@ -1204,16 +1220,13 @@
 [7072.103]@
 	CONFIG=7072.103.config.dat;@
 
-[7074.102]@
-	CONFIG=7074.102.config.dat;@
+[7074.004]
+	RUN_STATUS*=Junk;
+	COMMENT*="Poor Statistics.";
 
 [7074.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7075.004]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
 
 [7075.004]@
 	RUN_STATUS*=Junk;@
@@ -1242,6 +1255,10 @@
 
 [7085.002]@
 	CONFIG=7085.002.config.dat;@
+
+[7085.003]@
+	RUN_STATUS*=Junk;
+	COMMENT*="Just Poor stastitics.";
 
 [7085.005]@
 	CONFIG=7085.005.config.dat;@
@@ -1318,6 +1335,18 @@
 [7112.006]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
+
+[7114.002]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Relatively small events. Bload banana in general.";
+
+[7114.005]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just poor statistics";
+
+[7114.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Just poor statistics";
 
 [7114.104]@
 	CONFIG=7114.104.config.dat;@
@@ -1417,6 +1446,14 @@
 
 [7131.102]@
 	CONFIG=7131.102.config.dat;@
+
+[7131.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Poor statistics. Junk it.";
+
+[7131.104]
+	RUN_STATUS*=Junk;
+	COMMENT*="Poor statistics. Junk it.";
 
 [7131.105]@
 	CONFIG=7131.105.config.dat;@
@@ -2331,6 +2368,7 @@
 
 [7294.003]@
 	CONFIG=7294.003.config.dat;@
+	COMMENT*="Banana looks unhealthy.";
 
 [7294.003]@
 	RUN_STATUS*=Suspicious;@
@@ -2342,6 +2380,10 @@
 
 [7294.103]@
 	CONFIG=7294.103.config.dat;@
+
+[7294.106]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [7294.106]
 	RUN_STATUS*=Junk;
@@ -2418,6 +2460,7 @@
 
 [7301.002]@
 	CONFIG=7301.002.config.dat;@
+	COMMENT*="Looks more background.";@
 
 [7301.002]@
 	RUN_STATUS*=Suspicious;@
@@ -2531,10 +2574,12 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7308.005]
+	MEASUREMENT_TYPE=PROFILE;
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Vertical target profile scan.";
 
 [7308.006]
+	MEASUREMENT_TYPE=PROFILE;
 	RUN_STATUS*=Tune;
 	COMMENT*="Horizontal target profile scan.";
 
@@ -2549,10 +2594,12 @@
 	CONFIG=7308.109.config.dat;@
 
 [7308.110]
+	MEASUREMENT_TYPE=PROFILE;
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Vertical target profile scan.";
 
 [7308.111]
+	MEASUREMENT_TYPE=PROFILE;
 	RUN_STATUS*=Tune;
 	COMMENT*="Horizontal target profile scan.Thick target, broad banana.";
 
@@ -2629,9 +2676,6 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-
-
-
 [7320.002]@
 	CONFIG=7320.002.config.dat;@
 
@@ -2676,6 +2720,8 @@
 
 [7325.002]@
 	CONFIG=7325.002.config.dat;@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Invariant mass width is 2GeV.";
 
 [7325.003]@
 	CONFIG=7325.003.config.dat;@
