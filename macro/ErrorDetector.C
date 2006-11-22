@@ -253,11 +253,15 @@ ErrorDetector::GetData(Char_t * DATAFILE){
       // Error Code Decorder
       Int_t EArray[4];
       if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
-	for (Int_t k=0; k<MB; k++)  BunchErrCode->Fill(EArray[k]);
+	for (Int_t k=0; k<MB; k++) {
+	  if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
+	}
       }
       for (int j=0;j<4;j++) EArray[j]=0;
       if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
-	for (Int_t k=0; k<MB; k++)  StripErrCode->Fill(EArray[k]);
+	for (Int_t k=0; k<MB; k++) {
+	  if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
+	}
       }
 
       // Fill 1-dim histograms
@@ -453,6 +457,10 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
     case 125:
       BunchErrCode->SetXTitle("Bunch Error Code ");
       BunchErrCode->SetFillColor(Color);
+      BunchErrCode->GetXaxis()->SetBinLabel(1,"Specific Luminosity");
+      BunchErrCode->GetXaxis()->SetBinLabel(2,"X90 Asymmetry");
+      BunchErrCode->GetXaxis()->SetBinLabel(3,"X45 Asymmetry");
+      BunchErrCode->GetXaxis()->SetBinLabel(4,"Y45 Asymmetry");
       BunchErrCode->Draw();
       break;
     case 135:
@@ -478,6 +486,10 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
     case 335:
       StripErrCode->SetXTitle("Strip Error Code ");
       StripErrCode->SetFillColor(Color);
+      StripErrCode->GetXaxis()->SetBinLabel(1,"Mass-E Correlation");
+      StripErrCode->GetXaxis()->SetBinLabel(2,"#Events in Banana");
+      StripErrCode->GetXaxis()->SetBinLabel(3,"Mass Position");
+      StripErrCode->GetXaxis()->SetBinLabel(4,"Mass Width");
       StripErrCode->Draw();
       break;
     case 353:
