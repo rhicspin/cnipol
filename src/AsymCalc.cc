@@ -96,6 +96,10 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     DetectorAnomaly();
 
+    //-------------------------------------------------------
+    //  Complete Histograms
+    //-------------------------------------------------------
+    CompleteHistogram();
 
 
   }//end-of-if(!dproc.DMODE)
@@ -113,6 +117,28 @@ int end_process(recordConfigRhicStruct *cfginfo)
 }
 
 
+
+
+//
+// Class name  :
+// Method name : CompleteHistograms()
+//
+// Description : Complete dressing histograms
+// Input       : 
+// Return      : 
+//
+int
+CompleteHistogram(){
+
+  float MASS_12C_k2G=MASS_12C*k2G;
+  for (int i=0; i<NSTRIP; i++) {
+    cout << i << " " << mass_nocut[i]->GetMaximum() << endl;
+    DrawLine(mass_nocut[i], MASS_12C_k2G, mass_nocut[i]->GetMaximum()*1.05, 14, 2);
+  }
+
+  return 0;
+
+}
 
 
 //

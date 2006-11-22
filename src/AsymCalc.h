@@ -13,7 +13,7 @@ extern const int ASYM_DEFAULT;
 //                      Main End Process Routine
 //===========================================================================
 int end_process(recordConfigRhicStruct *cfginfo);
-
+int CompleteHistogram();
 
 //===========================================================================
 //                       Anaolyzing power

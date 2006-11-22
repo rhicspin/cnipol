@@ -306,6 +306,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // ========================================
 	Mass = t*t*e*runconst.T2M * k2G;
 
+	mass_nocut[st]->Fill(Mass);
+
         // Mass mode
         if (dproc.MMODE == 1) {
             if (e>Emin && e< Emax) {
@@ -361,6 +363,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
         // =========================================
         // Ntuple fill
         // =========================================
+	/*
         if ((Nevtot<NTLIMIT)&&(dproc.NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
             atdata.ia = (long)event->amp;
             atdata.is = (long)event->intg;
@@ -375,7 +378,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             
             //HHFNT(1);
         }
-            
+	*/
+  
         // background estimation
         if ((delt<=-2*cfginfo->data.chan[st].ETCutW)&&
             (e>Emin)&&(e<Emax)){
