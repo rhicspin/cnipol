@@ -46,6 +46,7 @@ TLine * energy_cut_l[NSTRIP];        // energy cut low
 TLine * energy_cut_h[NSTRIP];        // energy cut high
 TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
+TH1F  * mass_nocut[NSTRIP];          // invariant mass without banana cut
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -116,8 +117,8 @@ Root::RootHistBook(StructRunInfo runinfo){
   // 1-dim Energy Spectrum
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
   for (int i=0; i<NDETECTOR; i++) {
-    sprintf(hname,"energy_spectrum_det%d",i);
-    sprintf(htitle,"%8.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i);
+    sprintf(hname,"energy_spectrum_det%d",i+1);
+    sprintf(htitle,"%8.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i+1);
     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
     energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
   }
@@ -126,21 +127,29 @@ Root::RootHistBook(StructRunInfo runinfo){
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
 
 
-  for (int i=0; i<TOT_WFD_CH; i++) {
+  // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
+  // target events strip [73 - 76].
+  for (int i=0; i<TOT_WFD_CH; i++) { 
 
-    sprintf(hname,"t_vs_e_st%d",i);
-    sprintf(htitle,"%8.3f : t vs. Kin.Energy Str%d ",runinfo.RUNID, i);
+    sprintf(hname,"t_vs_e_st%d",i+1);
+    sprintf(htitle,"%8.3f : t vs. Kin.Energy Strip-%d ",runinfo.RUNID, i+1);
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
-    sprintf(hname,"mass_vs_e_ecut_st%d",i);
-    sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Str%d ",runinfo.RUNID, i);
+    sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
+    sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ",runinfo.RUNID, i+1);
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
+    sprintf(hname,"mass_nocut_st%d",i+1);
+    sprintf(htitle,"%8.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
+    mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+
   }
+
 
   // Bunch Directory
   Bunch->cd();
