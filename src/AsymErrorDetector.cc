@@ -92,7 +92,7 @@ InvariantMassCorrelation(int st){
   f1->SetLineColor(2);
 
   // Mass vs. Energy correlation
-  sprintf(histname,"mass_vs_e_ecut_st%d",st);
+  sprintf(histname,"mass_vs_e_ecut_st%d",st+1);
   mass_vs_e_ecut[st]->Write();
   TH2F * hslice = (TH2F*) gDirectory->Get(histname);
   hslice->SetName("hslice");
@@ -111,7 +111,6 @@ InvariantMassCorrelation(int st){
   TLine * l = new TLine(200, 1000, MASS_12C*k2G, MASS_12C*k2G);
   hslice_1 -> GetListOfFunctions() -> Add(l);
   
-
   //Get Fitting results
   for (int j=0;j<2; j++) {
     strpchk.ecorr.p[j][st]    = f1->GetParameter(j);
