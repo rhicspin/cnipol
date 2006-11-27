@@ -143,6 +143,7 @@ Root::RootHistBook(StructRunInfo runinfo){
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
+
     sprintf(hname,"mass_nocut_st%d",i+1);
     sprintf(htitle,"%8.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
     mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);     
@@ -273,6 +274,7 @@ Root::DeleteHistogram(){
 
     t_vs_e[i] -> Delete();
     mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
+    mass_nocut[i] -> Delete();
 
   }
 

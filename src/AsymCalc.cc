@@ -132,7 +132,6 @@ CompleteHistogram(){
 
   float MASS_12C_k2G=MASS_12C*k2G;
   for (int i=0; i<NSTRIP; i++) {
-    cout << i << " " << mass_nocut[i]->GetMaximum() << endl;
     DrawLine(mass_nocut[i], MASS_12C_k2G, mass_nocut[i]->GetMaximum()*1.05, 14, 2);
   }
 
