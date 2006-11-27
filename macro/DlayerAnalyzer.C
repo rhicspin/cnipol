@@ -41,6 +41,7 @@ private:
     bool Injection;
     bool SingleStrip;
     bool Ntuple;
+    bool SuperposeComment;
     bool WCM;
     bool ScaleToF;
     bool RateCorrection;
@@ -114,6 +115,7 @@ public:
   Int_t PlotSingleStrip(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text);
   Int_t PlotWCM(Int_t Mode, Int_t ndata, Int_t Color, Int_t Mtyp, Char_t*text);
   Int_t DlayerPlot(Char_t*, Int_t);
+  Int_t SpecialPlots(Int_t Mode, TCanvas *CurC, TPostScript *ps);
   Int_t BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t DlayerAnalyzer();
@@ -176,8 +178,10 @@ DlayerAnalyzer::OptionHandler(){
   opt.Injection=false;
   // Plot Single strip Behavior 
   opt.SingleStrip=false;
-  // Plot ntuples
-  opt.Ntuple=true;
+  // Plot ntuples (60 bunches mode)
+  opt.Ntuple=false;
+  // superpose comment on plots
+  opt.SuperposeComment=false;
   // Plot Wall Current Monitor t0 history
   opt.WCM=false;
   // Shift 120 bunchmode ToF to make sooth continuity with 60 bunches data 
@@ -189,9 +193,9 @@ DlayerAnalyzer::OptionHandler(){
   // Draw above resulting Linear fit Lines on Deadlayer History plots 
   opt.RadDamageDraw=true;
   // plot offline Configulation file history
-  opt.ConfigFile=true;
+  opt.ConfigFile=false;
   // plot deadlayer average from online Configluation files
-  opt.OnlineDlayer=true;
+  opt.OnlineDlayer=false;
 
   // Error allocation
   corr[0].AsignError = corr[1].AsignError = 1; // sigma
@@ -735,7 +739,7 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   Float_t margin=0.05;
   Char_t xtitle[100],ytitle[100];
   Char_t title[100],htitle[100];
-  sprintf(title,"DeadLayer History (%s)",Beam);
+  sprintf(title,"Effective DeadLayer History (%s)",Beam);
 
   switch (Mode) {
   case 10:
@@ -837,7 +841,7 @@ DlayerAnalyzer::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   frame -> Draw();
 
   // Superpose some beam operational comments on the frame 
-  SuperposeComments(Mode, frame);
+  if (opt.SuperposeComment) SuperposeComments(Mode, frame);
 
 
   return 0;
@@ -950,15 +954,45 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
 Int_t 
 DlayerAnalyzer::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
+  CurC -> Divide(1,2);
+
   DlayerPlot("Blue",Mode);
   CurC -> Update();
   if (!(Mode&1)) frame->Delete();
 
-  ps->NewPage();
+  //  ps->NewPage();
 
   DlayerPlot("Yellow",Mode);
   CurC -> Update();
   if (!(Mode&1)) frame->Delete();
+
+  return 0;
+    
+}
+
+//
+// Class name  : DlayerAnalyzer
+// Method name : SpecialPlots(Int_t Mode, TCanvas *CurC, TPostScript *ps)
+//
+// Description : Execute Blue & Yellow make plot routines in Divide(1,2) configulation
+// Input       : Int_t Mode, TCanvas *CurC, TPostScript *ps
+// Return      : 
+//
+DlayerAnalyzer::SpecialPlots(Int_t Mode, TCanvas *CurC, TPostScript *ps){
+
+  CurC -> Divide(1,2);
+
+  CurC->cd(1);
+  DlayerPlot("Blue",Mode);
+  //  CurC -> Update();
+  //  if (!(Mode&1)) frame->Delete();
+
+  CurC->cd(2);
+  DlayerPlot("Yellow",Mode);
+  CurC -> Update();
+  //  if (!(Mode&1)) frame->Delete();
+
+  ps->NewPage();
 
   return 0;
     
@@ -1010,6 +1044,7 @@ DlayerAnalyzer::DlayerAnalyzer()
   //                       main plotting routines                              //
   //         (Odd ID numbers are 1D histograms - flattop only)                 //
   //---------------------------------------------------------------------------//
+  //  SpecialPlots(10, CurC, ps);   // Fill vs. Deadlayer
   BlueAndYellowBeams(10, CurC, ps);   // Fill vs. Deadlayer
   BlueAndYellowBeams(15, CurC, ps);   // Deadlayer Raw (flattop only)
   BlueAndYellowBeams(17, CurC, ps);   // Deadlayer Rate Correction (flattop only)
@@ -1025,6 +1060,7 @@ DlayerAnalyzer::DlayerAnalyzer()
   BlueAndYellowBeams(90, CurC, ps);   // Fitting Energy Range History
   BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
   BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
+
 
   // Calculate Systematic Errors
   CalcSystematicError();
