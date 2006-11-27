@@ -101,7 +101,7 @@ InvariantMassCorrelation(int st){
   hslice->FitSlicesY(g1);
 
   TH1D *hslice_1 = (TH1D*)gDirectory->Get("hslice_1");
-  sprintf(histname,"mass_vs_energy_corr_st%d",st);
+  sprintf(histname,"mass_vs_energy_corr_st%d",st+1);
   hslice_1 -> SetName(histname);
   sprintf(htitle,"%8.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",runinfo.RUNID,st+1);
   hslice_1 -> SetTitle(htitle);
@@ -335,6 +335,7 @@ StripAnomalyDetector(){
 	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
 	DrawText(mass_e_correlation_strip, float(i+1), strpchk.ecorr.p[1][i], 2, text);
+
       }
 
       /* Currently chi2 is poor. Follwing routine is disabled until chi2 is inproved
