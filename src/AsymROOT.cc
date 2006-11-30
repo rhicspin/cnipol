@@ -54,6 +54,7 @@ TH1F * wall_current_monitor;        // wall current monitor
 TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet dir
+TH2F * dummy;                       // don't remove this otherwise looses next graph in root file(at least root v.4)
 TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
