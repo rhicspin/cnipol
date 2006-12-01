@@ -96,6 +96,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     DetectorAnomaly();
 
+
     //-------------------------------------------------------
     //  Complete Histograms
     //-------------------------------------------------------
@@ -134,6 +135,7 @@ CompleteHistogram(){
   for (int i=0; i<NSTRIP; i++) {
     DrawLine(mass_nocut[i], MASS_12C_k2G, mass_nocut[i]->GetMaximum()*1.05, 14, 2);
   }
+
 
   return 0;
 
