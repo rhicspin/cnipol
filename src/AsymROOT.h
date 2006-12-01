@@ -61,7 +61,7 @@ extern TLine  * energy_cut_l[NSTRIP];      // energy cut low
 extern TLine  * energy_cut_h[NSTRIP];      // energy cut high
 extern TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
 extern TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
-extern TH1F  * mass_nocut[NSTRIP];          // invariant mass without banana cut
+extern TH1F  * mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
 
 // Bunch Distribution
 extern TH1F * bunch_dist;                  // counts per bunch
@@ -69,8 +69,8 @@ extern TH1F * wall_current_monitor;        // wall current monitor
 extern TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet Direcotry
-extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 extern TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
+extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 extern TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 extern TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 extern TH1I * good_carbon_events_strip;    // number of good carbon events per strip

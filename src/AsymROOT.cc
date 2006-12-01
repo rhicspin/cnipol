@@ -46,7 +46,7 @@ TLine * energy_cut_l[NSTRIP];        // energy cut low
 TLine * energy_cut_h[NSTRIP];        // energy cut high
 TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
-TH1F  * mass_nocut[NSTRIP];          // invariant mass without banana cut
+TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -54,9 +54,8 @@ TH1F * wall_current_monitor;        // wall current monitor
 TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet dir
-TH2F * dummy;                       // don't remove this otherwise looses next graph in root file(at least root v.4)
-TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
+TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 TH1I * good_carbon_events_strip;    // number of good carbon events per strip
@@ -143,7 +142,6 @@ Root::RootHistBook(StructRunInfo runinfo){
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
-
 
     sprintf(hname,"mass_nocut_st%d",i+1);
     sprintf(htitle,"%8.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
@@ -268,7 +266,6 @@ Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack
 int 
 Root::DeleteHistogram(){
 
-  
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles 
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
@@ -316,7 +313,7 @@ Root::CloseROOTFile(){
   // Write out memory before closing
   /*
   ErrDet->cd();
-  if (mass_sigma_vs_strip)      mass_sigma_vs_strip      -> Write();
+  if (mass_sigma_vs_strip)    mass_sigma_vs_strip      -> Write();
   if (mass_chi2_vs_strip)       mass_chi2_vs_strip       -> Write();
   if (mass_e_correlation_strip) mass_e_correlation_strip -> Write();
   if (bunch_rate)               bunch_rate    -> Write();

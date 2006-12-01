@@ -699,7 +699,7 @@ HotBunchFinder(int err_code){
   }
 
   // define rate distribution and fill the histogram
-  Bunch->cd();
+  ErrDet->cd();
   char hname[100];
   sprintf(hname,"%8.3f : Specific Luminosiry / bunch", runinfo.RUNID);
   bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
@@ -712,7 +712,6 @@ HotBunchFinder(int err_code){
   }
 
   // define rate vs. bunch plot 
-  ErrDet->cd();
   TGraph * gr = new TGraph(NBUNCH, bindex, SpeLumi.Cnts);
   gr -> SetMarkerSize(MSIZE);
   gr -> SetMarkerStyle(20);
