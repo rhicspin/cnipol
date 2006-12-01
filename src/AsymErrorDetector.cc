@@ -254,7 +254,7 @@ StripAnomalyDetector(){
 	strpchk.p1.st  = i;
       }
       // Maximum devistion of peak from 12C_MASS
-      if (fabs(feedback.mdev[i]) > strpchk.dev.max) {
+      if ((fabs(feedback.mdev[i]) > strpchk.dev.max)&&(fabs(feedback.mdev[i]!=ASYM_DEFAULT))) {
 	strpchk.dev.max  = fabs(feedback.mdev[i]);
 	strpchk.dev.st   = i;
       }
