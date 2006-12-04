@@ -48,6 +48,7 @@
 	DEFINE_FILL_PATTERN=-1;
 	DisableStrip=15;
 	DisableStrip=23;
+	DisableStrip=63;
 	DisableBunch=20;
 
 [6500.101]
@@ -993,7 +994,7 @@
 	CONFIG=7049.004.config.dat;@
 
 [7049.101]
-	RUN_STATUS="Good";
+	RUN_STATUS=Good;
 	COMMENT="Back to 60 bunches mode. Screwed up early bunches are now OK even with thick target (target-3).";
 
 [7049.102]
@@ -1171,6 +1172,10 @@
 [7069.004]@
 	CONFIG=7069.004.config.dat;@
 
+[7069.005]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events only 3M.";
+
 [7069.102]@
 	CONFIG=7069.102.config.dat;@
 
@@ -1180,9 +1185,9 @@
 [7069.105]@
 	CONFIG=7069.105.config.dat;@
 
-[7069.105]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7069.106]@
+	RUN_STATUS*=Junk;
+	COMMENT*="Just junk";
 
 [7070.006]
 	RUN_STATUS*=Junk;
@@ -1195,8 +1200,7 @@
 	CONFIG=7070.105.config.dat;@
 
 [7070.107]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	CONFIG=7070.107.config.dat;
 
 [7070.108]@
 	RUN_STATUS*=Suspicious;@
@@ -1616,6 +1620,10 @@
 
 [7162.102]@
 	CONFIG=7162.102.config.dat;@
+
+[7162.103]@
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 1M";
 
 [7162.104]@
 	CONFIG=7162.104.config.dat;@
@@ -2354,7 +2362,8 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7293.103]@
-	CONFIG=7293.103.config.dat;@
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 1M";
 
 [7293.104]@
 	CONFIG=7293.104.config.dat;@
@@ -2411,6 +2420,10 @@
 [7295.102]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7295.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 1M";
 
 [7295.104]@
 	CONFIG=7295.104.config.dat;@
@@ -2527,9 +2540,8 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-[7305.003]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7305.003]
+	CONFIG=7305.003.config.dat;
 
 [7305.004]@
 	CONFIG=7305.004.config.dat;@
@@ -2538,9 +2550,8 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-[7305.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7305.104]
+	CONFIG=7305.104.config.dat;
 
 [7305.105]@
 	CONFIG=7305.105.config.dat;@
@@ -2561,17 +2572,14 @@
 [7306.104]@
 	CONFIG=7306.104.config.dat;@
 
-[7306.106]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7306.106]
+	CONFIG=7306.106.config.dat;
 
-[7308.002]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7308.002]
+	CONFIG=7308.002.config.dat;
 
-[7308.003]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7308.003]
+	CONFIG=7308.003.config.dat;
 
 [7308.005]
 	MEASUREMENT_TYPE=PROFILE;
@@ -2583,9 +2591,8 @@
 	RUN_STATUS*=Tune;
 	COMMENT*="Horizontal target profile scan.";
 
-[7308.107]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7308.107]
+	CONFIG=7308.107.config.dat;
 
 [7308.108]@
 	CONFIG=7308.108.config.dat;@
@@ -2603,23 +2610,37 @@
 	RUN_STATUS*=Tune;
 	COMMENT*="Horizontal target profile scan.Thick target, broad banana.";
 
+[7311.002]
+	RUN_STATUS=Junk;
+	COMMENT="Number of events < 1M" [7311.002 - 004];
+
+[7311.005]
+	RUN_STATUS=Good;
+	CONFIG=7311.005.config.dat;
+	COMMENT="";
+
 [7311.006]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
+[7311.007]
+	CONFIG=7311.007.config.dat;
+
 [7311.102]@
 	CONFIG=7311.102.config.dat;@
 
+[7311.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 1M";
+
 [7311.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	CONFIG=7311.104.config.dat;@
 
 [7311.105]@
 	CONFIG=7311.105.config.dat;@
 
-[7317.004]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7317.004]
+	CONFIG=7317.004.config.dat;
 
 [7317.005]@
 	CONFIG=7317.005.config.dat;@
@@ -2627,9 +2648,8 @@
 [7317.006]@
 	CONFIG=7317.006.config.dat;@
 
-[7317.103]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7317.103]
+	CONFIG=7317.103.config.dat;
 
 [7317.104]@
 	CONFIG=7317.104.config.dat;@
@@ -2648,9 +2668,9 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-[7318.108]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7318.105]
+	RUN_STATUS*=Junk;
+	COMMENT*="Poor Statistics";
 
 [7318.108]@
 	RUN_STATUS*=Suspicious;@
@@ -2658,10 +2678,6 @@
 
 [7319.002]@
 	CONFIG=7319.002.config.dat;@
-
-[7319.002]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7319.003]@
 	CONFIG=7319.003.config.dat;@
@@ -2672,16 +2688,8 @@
 [7319.008]@
 	CONFIG=7319.008.config.dat;@
 
-[7319.008]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7320.002]@
 	CONFIG=7320.002.config.dat;@
-
-[7320.002]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7320.003]@
 	CONFIG=7320.003.config.dat;@
@@ -2697,23 +2705,11 @@
 [7320.105]@
 	CONFIG=7320.105.config.dat;@
 
-[7320.105]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7320.106]@
 	CONFIG=7320.106.config.dat;@
 
-[7320.106]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7320.107]@
 	CONFIG=7320.107.config.dat;@
-
-[7320.107]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7320.108]@
 	CONFIG=7320.108.config.dat;@
@@ -2733,27 +2729,12 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-[7325.007]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7325.103]@
 	CONFIG=7325.103.config.dat;@
 
-[7325.103]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7325.104]@
 	CONFIG=7325.104.config.dat;@
-
-[7325.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7325.107]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7325.107]@
 	RUN_STATUS*=Suspicious;@
@@ -2762,33 +2743,17 @@
 [7327.003]@
 	CONFIG=7327.003.config.dat;@
 
-[7327.003]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7327.004]@
 	CONFIG=7327.004.config.dat;@
 
-[7327.004]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
 [7327.005]@
 	CONFIG=7327.005.config.dat;@
-
-[7327.005]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7327.006]@
 	CONFIG=7327.006.config.dat;@
 
 [7327.102]@
 	CONFIG=7327.102.config.dat;@
-
-[7327.102]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7327.103]@
 	RUN_STATUS*=Suspicious;@
@@ -2799,10 +2764,6 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7327.104]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
-
-[7327.105]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
