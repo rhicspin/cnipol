@@ -151,6 +151,26 @@ MakeAnalyzedRunList(){
 }
 
 #############################################################################
+#                            RunStatusAbbriviator()                         #
+#############################################################################
+RunStatusAbbriviator(){
+
+    if [ $RUN_STATUS ] ; then
+	if [ $RUN_STATUS == 'Suspicious' ] ; then
+	    RUN_STATUS="Susp";
+	elif [ $RUN_STATUS == 'Recovered' ] ; then
+	    RUN_STATUS="Rcvd";
+	elif [ $RUN_STATUS == 'Bad' ] ; then
+	    RUN_STATUS="Bad ";
+	fi
+    else
+	RUN_STATUS="----";
+    fi
+
+
+}
+
+#############################################################################
 #                                ShowIndex()                                #
 #############################################################################
 ShowIndex(){
@@ -242,9 +262,9 @@ ShowErrorDetectorIndex(){
 
     printf "=====================================================================================";
     printf "=====================================================================================\n";
-    printf " RunID    #Good   #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
+    printf " RunID     Run  #Good   #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
     printf " #Bad     BadStrip      \n"; 
-    printf "           12C  bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
+    printf "         Status  12C  bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
     printf "strip       List        \n";
     printf "=====================================================================================";
     printf "=====================================================================================\n";
@@ -264,6 +284,8 @@ ErrorDetector(){
 
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
+       RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
+       RunStatusAbbriviator;
 #  Bunch Errors       
        NEVENTS=`grep 'Carbons are found' $LOGFILE | gawk '{printf("%6.2f", $1*1e-6)}'`; 
        NBUNCH=`grep '# of Filled Bunch          ' $LOGFILE | gawk '{print $6}'`;
@@ -323,8 +345,9 @@ ErrorDetector(){
 
 #   if [ $PROBLEM_BUNCH -ge 1 ] ; then
        echo -e -n "$RunID";
+       printf "  %s"    $RUN_STATUS;
        printf " %6.2f"  $NEVENTS;
-       printf " %3d"    $NBUNCH;
+       printf " %4d"    $NBUNCH;
        printf " %5d"    $PROBLEM_BUNCH;
        printf " %6.1f"  $BAD_BUNCH_RATE;
        printf " %6s"    $BUNCH_ERR_CODE;
@@ -493,18 +516,7 @@ grepit(){
     fi
     # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
     RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
-    if [ $RUN_STATUS ] ; then
-	if [ $RUN_STATUS == 'Suspicious' ] ; then
-	    RUN_STATUS="Susp";
-	elif [ $RUN_STATUS == 'Recovered' ] ; then
-	    RUN_STATUS="Rcvd";
-	elif [ $RUN_STATUS == 'Bad' ] ; then
-	    RUN_STATUS="Bad ";
-	fi
-    else
-	RUN_STATUS="----";
-    fi
-
+    RunStatusAbbriviator;
 
     # If Junk then carrige return
     if [ $RUN_STATUS == 'Junk' ] ; then
@@ -546,9 +558,6 @@ grepit(){
 
     
 }
-
-
-
 
 
 #############################################################################

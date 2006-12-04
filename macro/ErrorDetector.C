@@ -210,7 +210,8 @@ ErrorDetector::GetData(Char_t * DATAFILE){
     // Initialization of Histograms and variables
     Initiarize();
 
-    Char_t buffer[300], line[300];
+    Char_t buffer[400], line[400];
+    Char_t *RunStatus;
     Int_t i=0;
     Int_t ch=0;
     Float_t nevents;
@@ -224,59 +225,65 @@ ErrorDetector::GetData(Char_t * DATAFILE){
       }
 
       data.RunID[i] = atof(strtok(buffer," " ));
-      nevents = atof(strtok(NULL," "));
-      data.bunch.NBunch[i] = atof(strtok(NULL," " ));
-      data.bunch.NBad[i] = atof(strtok(NULL," " ));
-      data.bunch.BadRate[i] = atof(strtok(NULL," " ));
-      data.bunch.ErrCode = strtok(NULL," " );
-      data.bunch.MaxDev[i] = atof(strtok(NULL," " )) ;
+      RunStatus = strtok(NULL," ");
+      
+      if ( strcmp(RunStatus,"Bad")*strcmp(RunStatus,"N/A")*strcmp(RunStatus,"Junk") ) {
 
-      data.detector.EnergySlope[i] = atof(strtok(NULL," " )) ;
+	nevents = atof(strtok(NULL," "));
+	data.bunch.NBunch[i] = atof(strtok(NULL," " ));
+	data.bunch.NBad[i] = atof(strtok(NULL," " ));
+	data.bunch.BadRate[i] = atof(strtok(NULL," " ));
+	data.bunch.ErrCode = strtok(NULL," " );
+	data.bunch.MaxDev[i] = atof(strtok(NULL," " )) ;
 
-      data.strip.max.MassDev[i] = atof(strtok(NULL," " )) ;
-      data.strip.max.M_E_Corr[i] = atof(strtok(NULL," " )) ;
-      data.strip.InvMassSigma[i] = atof(strtok(NULL," " )) ;
-      data.strip.ErrCode = strtok(NULL," ");
-      data.strip.NBad[i] = atof(strtok(NULL," " ));
+	data.detector.EnergySlope[i] = atof(strtok(NULL," " )) ;
 
-      Char_t * tok; Int_t k=0;
-      while (tok=strtok(NULL," " )) {
-	data.strip.StripID[i][k]=atoi(tok);
-	BadStripStatistics->Fill(data.strip.StripID[i][k]);
-	k++;
-      };
-      dx[i]=dy[i]=0; data.strip.dummy[i]=-2;
+	data.strip.max.MassDev[i] = atof(strtok(NULL," " )) ;
+	data.strip.max.M_E_Corr[i] = atof(strtok(NULL," " )) ;
+	data.strip.InvMassSigma[i] = atof(strtok(NULL," " )) ;
+	data.strip.ErrCode = strtok(NULL," ");
+	data.strip.NBad[i] = atof(strtok(NULL," " ));
 
-      // Overflows
-      OverflowControl(i);
+	Char_t * tok; Int_t k=0;
+	while (tok=strtok(NULL," " )) {
+	  data.strip.StripID[i][k]=atoi(tok);
+	  BadStripStatistics->Fill(data.strip.StripID[i][k]);
+	  k++;
+	};
+	dx[i]=dy[i]=0; data.strip.dummy[i]=-2;
 
-      // Error Code Decorder
-      Int_t EArray[4];
-      if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
-	for (Int_t k=0; k<MB; k++) {
-	  if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
+	// Overflows
+	OverflowControl(i);
+
+	// Error Code Decorder
+	Int_t EArray[4];
+	if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
+	  for (Int_t k=0; k<MB; k++) {
+	    if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
+	  }
 	}
-      }
-      for (int j=0;j<4;j++) EArray[j]=0;
-      if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
-	for (Int_t k=0; k<MB; k++) {
-	  if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
+	for (int j=0;j<4;j++) EArray[j]=0;
+	if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
+	  for (Int_t k=0; k<MB; k++) {
+	    if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
+	  }
 	}
-      }
 
-      // Fill 1-dim histograms
-      BadBunchRate->Fill(data.bunch.BadRate[i]);
-      BunchMaxDev->Fill(data.bunch.MaxDev[i]);
-      EnergySlope->Fill(data.detector.EnergySlope[i]);
-      MaxM_E_Corr->Fill(data.strip.max.M_E_Corr[i]);
-      MaxMassPosDev->Fill(data.strip.max.MassDev[i]);
+	// Fill 1-dim histograms
+	BadBunchRate->Fill(data.bunch.BadRate[i]);
+	BunchMaxDev->Fill(data.bunch.MaxDev[i]);
+	EnergySlope->Fill(data.detector.EnergySlope[i]);
+	MaxM_E_Corr->Fill(data.strip.max.M_E_Corr[i]);
+	MaxMassPosDev->Fill(data.strip.max.MassDev[i]);
 
-      ++i; 
-      if (i>N-1){
+	++i; 
+	if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
           break;
-      } // if-(i>N)
+	} // if-(i>N)
+
+      } // if (RunStatus)
 
     }// end-of-while(!fin.eof())
 
@@ -284,6 +291,7 @@ ErrorDetector::GetData(Char_t * DATAFILE){
     return i-1;
 
 }
+
 
 //
 // Class name  : ErrorDetector
