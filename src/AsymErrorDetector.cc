@@ -135,7 +135,7 @@ InvariantMassCorrelation(int st){
     float margin=0.2;
     GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
     sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
-    mass_e_correlation_strip = new TH2F("mass_e_corrlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
+    mass_e_correlation_strip = new TH2F("mass_e_correlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
     TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
     mass_e_correlation_strip -> GetListOfFunctions() -> Add(tg,"p");
     mass_e_correlation_strip -> GetXaxis()->SetTitle("Strip Number");
