@@ -11,6 +11,7 @@ ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
 ExeDlayerConfig=0;
 ExeErrorDetector=0;
+StripTable=0;
 ExpertMode=0;
 FROM_FILL=7537;
 if [ $RHICRUN ] ; then
@@ -29,7 +30,7 @@ help(){
     echo    " "
     echo    " mkDB.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "         [-a --analyzed-run-list][-X --expert][-f <runlis>][--blue][--yellow]";
-    echo    "         [--online][--online-nevents][--dlayer-config][--error-detector]";
+    echo    "         [--online][--online-nevents][--dlayer-config][--error-detector][--strip]";
     echo    "    : make pC offline/offline analysis database "
     echo    " "
     echo -e "   -a --analyzed-run-list    Make analyized runlist file [def]:$ANALYZED_RUN_LIST";
@@ -44,6 +45,7 @@ help(){
     echo -e "   --online-nevents          Show online nevents"
     echo -e "   --online                  Show online parameters"
     echo -e "   --error-detector          Show error detector results";
+    echo -e "     --strip                   Show strip anomaly table";
     echo -e "   -X --expert               Show list in expert mode";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
@@ -276,6 +278,7 @@ ShowErrorDetectorIndex(){
 #                              ErrorDetector                                #
 #############################################################################
 
+
 ErrorDetector(){
 
     
@@ -343,9 +346,9 @@ ErrorDetector(){
 
    fi
 
-#   if [ $PROBLEM_BUNCH -ge 1 ] ; then
-       echo -e -n "$RunID";
-       printf "  %s"    $RUN_STATUS;
+   echo -e -n "$RunID";
+   printf "  %s"    $RUN_STATUS;
+   if [ $StripTable != 1 ] ; then
        printf " %6.2f"  $NEVENTS;
        printf " %4d"    $NBUNCH;
        printf " %5d"    $PROBLEM_BUNCH;
@@ -359,12 +362,13 @@ ErrorDetector(){
        printf " %7s"    $STRIP_ERR_CODE;
        printf " %5d"    $PROBLEM_NSTRIP;
        echo -e -n "  $UNRECOG_STRIP";
-       echo -e -n "\n";
+   else
+       echo -e -n "  $UNRECOG_STRIP" | mkTable 
+   fi
 
-#   fi
+   echo -e -n "\n";
 
 }
-
 
 
 
@@ -656,6 +660,7 @@ while test $# -ne 0; do
   --yellow) DISTRIBUTION=2;;
   --dlayer-config) ExeDlayerConfig=1;;
   --error-detector) ExeErrorDetector=1; ExclusiveMode=1;;
+  --strip) StripTable=1; ExclusiveMode=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
@@ -677,7 +682,9 @@ if [ $ExeMakeDatabase -eq 1 ] ; then
     elif [ $ExeDlayerConfig -eq 1 ]; then
 	ShowDlayerConfigIndex;
     elif [ $ExeErrorDetector -eq 1 ]; then
-	ShowErrorDetectorIndex;
+	if [ $StripTable -ne 1 ] ; then
+	    ShowErrorDetectorIndex;
+	fi
     else
 	ShowIndex;
     fi
