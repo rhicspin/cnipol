@@ -172,13 +172,15 @@ RunAsym(){
     
     NEVENTS=`OnlinePol.sh -f $RunID --nevents -k`;
     if [ $NEVENTS -lt 1000 ] ; then
-	echo -e "\n";
-	echo -e "[$RunID]@" | tee $TMPOUTDIR/rundb.log;
-	echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPOUTDIR/rundb.log;
-	echo -e "\tCOMMENT*=\"Number of events < 1M\";@" | tee -a $TMPOUTDIR/rundb.log;
-	echo -e "\n";
-#	rundb_updater.pl
-	rundb_inserter.sh 
+	RUN_STATUS=`RunDBReader -f $f | grek "RUN STATUS" | gawk '{print $4}'`;
+	if [ $RUN_STATUS != "Junk" ] ; then
+	    echo -e "\n";
+	    echo -e "[$RunID]@" | tee $TMPOUTDIR/rundb.log;
+	    echo -e "\tRUN_STATUS*=Junk;@" | tee -a $TMPOUTDIR/rundb.log;
+	    echo -e "\tCOMMENT*=\"Number of events < 1M\";@" | tee -a $TMPOUTDIR/rundb.log;
+	    echo -e "\n";
+	    rundb_inserter.sh 
+	fi
     fi
     echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
     dLayerChecker -f $RunID;
