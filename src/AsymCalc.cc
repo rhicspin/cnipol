@@ -1097,6 +1097,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
     sprintf(htitle,"Run%8.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
+    tg->SetName("tg");
     mass_pos_dev_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
     mass_pos_dev_vs_strip -> GetYaxis() -> SetTitle("Peak - M_12C [GeV]");
     mass_pos_dev_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
@@ -1106,6 +1107,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
     sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID); 
     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
+    tg->SetName("tg");
     mass_sigma_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
     mass_sigma_vs_strip -> GetYaxis() -> SetTitle("RMS Width of 12C Mass Peak[GeV]");
     mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
@@ -1115,6 +1117,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
     GetMinMax(NSTRIP, feedback.chi2, margin, min, max);
     mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
+    tg->SetName("tg");
     mass_chi2_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
     mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
     mass_chi2_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
@@ -1256,6 +1259,7 @@ calcBunchAsymmetry(){
 
       // X90 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
+      asymgraph -> SetName("asymgraph");
       FillAsymmetryHistgram("x90", spin, NBUNCH, basym.Ax90[0], basym.Ax90[1], bunch);
       asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
@@ -1264,6 +1268,7 @@ calcBunchAsymmetry(){
       // X45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
       FillAsymmetryHistgram("x45", spin, NBUNCH, basym.Ax45[0], basym.Ax45[1], bunch);
+      asymgraph -> SetName("asymgraph");
       asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
@@ -1271,6 +1276,7 @@ calcBunchAsymmetry(){
       // Y45 
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
       FillAsymmetryHistgram("y45", spin, NBUNCH, basym.Ay45[0], basym.Ay45[1], bunch);
+      asymgraph -> SetName("asymgraph");
       asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
@@ -1554,7 +1560,8 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 
   // Perform sin(phi) fit
   tg -> Fit("sin_phi","R");
-  
+  tg -> SetName("tg");
+
   // Dump TGraphError obect to TH2D histogram
   asym_sinphi_fit   -> GetListOfFunctions() -> Add(tg,"p");
 
