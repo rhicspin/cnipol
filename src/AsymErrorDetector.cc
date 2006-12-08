@@ -124,7 +124,6 @@ InvariantMassCorrelation(int st){
   hslice_0->Delete(); hslice_2->Delete(); hslice_chi2->Delete();
 
   // Make graph of p1 paramter as a function of strip number when strip number is the last one
-  
   if (st==NSTRIP-1) {
     ErrDet->cd();
 
@@ -136,8 +135,9 @@ InvariantMassCorrelation(int st){
     GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
     sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
     mass_e_correlation_strip = new TH2F("mass_e_correlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
-    TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
-    mass_e_correlation_strip -> GetListOfFunctions() -> Add(tg,"p");
+    TGraphErrors * mass_e_gr = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
+    mass_e_gr -> SetName("mass_e_gr");
+    mass_e_correlation_strip -> GetListOfFunctions() -> Add(mass_e_gr,"p");
     mass_e_correlation_strip -> GetXaxis()->SetTitle("Strip Number");
     mass_e_correlation_strip -> GetYaxis()->SetTitle("slope [GeV/keV]");
     DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, strpchk.p1.allowance, 2, 2, 2); 
