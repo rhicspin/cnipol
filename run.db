@@ -46,8 +46,10 @@
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	DisableStrip=6;
 	DisableStrip=15;
 	DisableStrip=23;
+	DisableStrip=52;
 	DisableStrip=63;
 	DisableBunch=20;
 
@@ -320,6 +322,7 @@
 	CONFIG=6913.109.config.dat;@
 
 [6917.004]@
+	EnableStrip=52;
 	CONFIG=6917.004.config.dat;@
 
 [6917.107]@
@@ -698,6 +701,10 @@
 [7002.003]@
 	CONFIG=7002.003.config.dat;@
 
+[7002.104]
+	RecognizedStrip=32;
+	COMMENT*="Mass_vs_E correlation slope exceeds limit, but tiny.";
+
 [7002.105]@
 	CONFIG=7002.105.config.dat;@
 
@@ -841,8 +848,6 @@
 [7029.001]
 	CONFIG=7022.003.config.dat;
 
-
-
 [7029.002]@
 	CONFIG=7029.002.config.dat;@
 
@@ -852,6 +857,10 @@
 [7029.006]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
+
+[7029.101]
+	DisableStrip=32;
+	COMMENT="Extreme double banana in Strip#32 until 7046.111";
 
 [7029.102]@
 	CONFIG=7029.102.config.dat;@
@@ -873,7 +882,8 @@
 	CONFIG=7030.006.config.dat;@
 
 [7030.107]@
-	CONFIG=7030.107.config.dat;@
+	CONFIG=7030.107.config.dat;
+	COMMENT*="Extreme double banana in strip 32";
 
 [7030.109]@
 	CONFIG=7030.109.config.dat;@
@@ -994,8 +1004,9 @@
 	CONFIG=7049.004.config.dat;@
 
 [7049.101]
+	EnableStrip=32;
 	RUN_STATUS=Good;
-	COMMENT="Back to 60 bunches mode. Screwed up early bunches are now OK even with thick target (target-3).";
+	COMMENT="Back to 60 bunches mode. Enable strip 32. Screwed up early bunches are now OK even with thick target (target-3).";
 
 [7049.102]
 	COMMENT="";
@@ -1121,6 +1132,7 @@
 	CONFIG=7064.109.config.dat;@
 
 [7067.001]
+	EnableStrip=6;
 	ENERGY_CALIB=blue_calib_0513c;
 	CONFIG=7067.002.config.dat;
 
@@ -2390,6 +2402,10 @@
 [7294.103]@
 	CONFIG=7294.103.config.dat;@
 
+[7294.105]
+	DisableStrip*=32;	
+	COMMENT*="funny banana. But low statistics anyway";
+
 [7294.106]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
@@ -2536,9 +2552,10 @@
 [7304.102]@
 	CONFIG=7304.102.config.dat;@
 
-[7304.102]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[7304.102]
+	RUN_STATUS*=Suspicious;
+	DisableStrip=10;
+	COMMENT*="Don't update config file. Strip 10 goes bad.";
 
 [7305.003]
 	CONFIG=7305.003.config.dat;
@@ -2728,6 +2745,35 @@
 [7325.007]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[7325.101]
+	RUN_STATUS=Suspicious;
+	DisableStrip=37;
+	DisableStrip=38;
+	DisableStrip=39;
+	DisableStrip=40;
+	DisableStrip=41;
+	DisableStrip=42;
+	DisableStrip=43;
+	DisableStrip=44;
+	DisableStrip=45;
+	DisableStrip=46;
+	DisableStrip=47;
+	DisableStrip=48;
+	COMMENT="Detector 5 dead. Thus disable detector 2 in order to cancel acceptance asymmetry."
+	DisableStrip=13;
+	DisableStrip=14;
+	DisableStrip=15;
+	DisableStrip=16;
+	DisableStrip=17;
+	DisableStrip=18;
+	DisableStrip=19;
+	DisableStrip=20;
+	DisableStrip=21;
+	DisableStrip=22;
+	DisableStrip=23;
+	DisableStrip=24;
+
 
 [7325.103]@
 	CONFIG=7325.103.config.dat;@
