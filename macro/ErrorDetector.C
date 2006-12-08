@@ -14,6 +14,9 @@
 
 const Int_t N=2000;
 const Int_t MB=4; // Most Significant Bit for Bunch Error Code
+const Int_t NSTRIP=72;
+const Int_t NSTRIP_PER_DETECTOR=12;
+const Int_t NDETECTOR=6;
 
 class ErrorDetector
 {
@@ -38,8 +41,10 @@ private:
     Float_t InvMassSigma[N];
     Char_t * ErrCode;
     Float_t NBad[N];
-    Float_t StripID[N][72];
+    Float_t StripID[N][NSTRIP];
     Float_t dummy[N];
+    Float_t Slope[NSTRIP][N];
+    Float_t SlopeE[NSTRIP][N];
   } ;
 
   struct StructData {
@@ -72,6 +77,8 @@ private:
   TH1I * StripErrCode;
   TH1I * BadStripStatistics;
   TH2D * BadStripHistory;
+  TH2D * BadStripIndex;
+  TH2F * strip_slope_history[NSTRIP];
 
 public:
   Int_t Initiarize();
@@ -82,6 +89,9 @@ public:
   Int_t MakePlots(Char_t *Beam, TCanvas * CurC, TPostScript * ps);
   Int_t Plot(Int_t Mode, Int_t ndata, Int_t Color);
   Int_t GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color);
+  Int_t RootFileOperation(Int_t ndata, Char_t * Beam);
+  Int_t IndividualStripHistory(Int_t ndata, Char_t *Beam, Int_t Color);
+
 }; // end-class ErrorDetector
 
 
@@ -185,6 +195,135 @@ ErrCodeDecorder(Char_t *ErrCode, Int_t MB, Int_t EArray[]){
   }
 
   return 0;
+}
+
+//
+// Class name  : 
+// Method name : RootFileOperation(Int_t ndata, Char_t * Beam)
+//             :
+// Description : Extract informations from histograms in root file
+// Input       : Int_t ndata, Char_t * Beam
+// Return      : 
+//
+Int_t
+ErrorDetector::RootFileOperation(Int_t ndata, Char_t * Beam){
+
+  Char_t rootfile[100], text[100], histname[100], htitle[100];
+
+  printf("\n");
+
+  // loop over runs
+  for (Int_t i=0; i<ndata; i++) {
+
+    sprintf(rootfile,"%8.3f.root",data.RunID[i]);
+    printf("%s : %d %8.3f \r",Beam, i, data.RunID[i]);
+
+    // create symboric link
+    sprintf(text,"ln -s root/%s %s",rootfile,rootfile);
+    gSystem->Exec(text);
+
+    TFile * rfile = TFile::Open(rootfile);
+    Kinema->cd();
+
+    // loop over strips
+    for (Int_t st=0; st<NSTRIP; st++) {
+      data.strip.Slope[st][i]=data.strip.SlopeE[st][i]=0;
+
+      // extract slope from mass_vs_energy_corr_st histogram
+      sprintf(histname,"mass_vs_energy_corr_st%d",st+1);
+      if (gDirectory->Get(histname) ) {
+	TH1D * hist = (TH1D*)gDirectory->Get(histname);
+	if ( hist->GetFunction("f1") ){
+	  TF1 * f1 = (TF1*)hist->GetFunction("f1");
+	  data.strip.Slope[st][i] = f1->GetParameter(1);
+	  data.strip.SlopeE[st][i]= f1->GetParError(1);
+
+	  //	   if (st==51) printf("%8.3f %10.5f  %10.5f\n",data.RunID[i],data.strip.Slope[st][i],data.strip.SlopeE[st][i]);
+
+	}
+      }
+
+    } // end-of-st-loop
+
+    // remove symboric link
+    sprintf(text,"rm -f %s",rootfile);
+    gSystem->Exec(text);
+    rfile->Close();
+
+  };
+
+  
+
+  /* work in progress
+  TGraph * tg = (TGraph*)mass_e_correlation_strip -> GetListOfFunctions() -> FindObject("mass_e_gr");
+  Double_t * x = tg->GetX();
+  cout << x[1] << endl;
+  */
+
+
+  return;
+
+}
+
+//
+// Class name  : ErrorDetector
+// Method name : IndividualStripHistory(Int_t ndata, Char_t *Beam, Int_t Color)
+//
+// Description : Draw Strip history individually
+// Input       : Int_t ndata, Char_t Beam, Int_t Color
+// Return      : 
+//
+Int_t
+ErrorDetector::IndividualStripHistory(Int_t ndata, Char_t *Beam, Int_t Color){
+
+  gStyle->SetOptStat(0);
+  CurC->Divide(4,3);   ps->NewPage();
+
+  Char_t histname[100], htitle[100];
+
+  Float_t margin=0.05;
+  Float_t xmin,xmax,ymin,ymax; 
+  GetScale(data.RunID, ndata, margin, xmin, xmax);
+  TLine * t0 = new TLine(xmin, 0, xmax, 0);
+  TLine * tl = new TLine(xmin,  0.001, xmax,  0.001);
+  TLine * th = new TLine(xmin, -0.001, xmax, -0.001);
+  tl->SetLineStyle(2);  tl->SetLineColor(2);
+  th->SetLineStyle(2);  th->SetLineColor(2);
+
+  for (Int_t det=0; det<NDETECTOR; det++){
+    
+    for (Int_t i=0; i<NSTRIP_PER_DETECTOR; i++){
+
+      // Draw TH2F frame 
+      st=det*NSTRIP_PER_DETECTOR+i;
+      sprintf(histname,"strip_slope_history_st%d",st+1);
+      sprintf(htitle,"%s : Strip Slope History St %d",Beam, st+1);
+      GetScalePrefix(0.002, ndata, data.strip.Slope[st], margin, ymin, ymax);
+      strip_slope_history[st] = new TH2F(histname, htitle, 100, xmin, xmax, 100, ymin, ymax);
+      TH2F * h = (TH2F*)gDirectory->Get(histname);
+      h->GetXaxis() -> SetTitle("Run ID");
+      h->GetYaxis() -> SetTitle("slope [GeV/keV]");
+      CurC->cd(i+1); //h->Draw(); tl->Draw("same") ; th->Draw("same"); t0->Draw("same");
+      h->GetListOfFunctions()->Add(tl); h->GetListOfFunctions()->Add(th); h->GetListOfFunctions()->Add(t0);
+
+
+      // Superpose TGraphErrors
+      TGraphErrors * tge = new TGraphErrors(ndata, data.RunID, data.strip.Slope[st], dx, data.strip.SlopeE[st]);
+      tge -> SetMarkerStyle(20);
+      tge -> SetMarkerSize(1.0);
+      tge -> SetMarkerColor(Color);
+      //      tge -> Draw("PL");
+      h->GetListOfFunctions()->Add(tge,"PL"); 
+      h->Draw();
+      CurC->Update();
+
+    }// end-of-STRIP_PER_DETECTOR loop
+
+    if (det!=NDETECTOR-1) ps->NewPage();
+
+  }// end-of-NDETECTOR loop
+
+
 }
 
 
@@ -341,7 +480,6 @@ ErrorDetector::Plot(Int_t Mode, Int_t ndata, Int_t Color){
   tg -> SetLineColor(Color);
   tg -> SetLineWidth(Color);
   tg -> Draw("P");
-    
 
   //Legend
   if (Mode<110){
@@ -438,7 +576,10 @@ ErrorDetector::DrawFrame(Int_t Mode, Int_t ndata){
 // Method name : MakePlots(0
 //
 // Description : Plotting controll center
-// Input       : 
+//             : Mode Number : odd  - typical 1D histograms don't requre frame to be drawn
+//             :             : even - typical 2D histograms require frame to be drawn and then 
+//             :                      superposed by graph *tg object in Plot() routine
+// Input       : (Int_t Mode, Char_t * Beam, Int_t Color)
 // Return      : 
 //
 Int_t
@@ -449,13 +590,18 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
   cout << "DATAFILE=" << DATAFILE << endl;
 
   Int_t ndata = GetData(DATAFILE);
+  if (Mode<100){
+    RootFileOperation(ndata, Beam);
+    IndividualStripHistory(ndata, Beam, Color);
+    return;
+  };
 
   Int_t i,j; Float_t xmin,xmax,ymin,ymax;  Float_t margin=0.05;
-  if (!(Mode&1)) {
+  if (!(Mode&1)) { // Only Even Mode Numbers
     DrawFrame(Mode, ndata);
     Plot(Mode, ndata, Color);
     if (Mode==100) Plot(Mode+1, ndata, Color);
-  } else {
+  } else { // Odd Mode Numbers
     switch (Mode) {
     case 115:
       BadBunchRate->SetXTitle("# of Bad Bunch / Total Bunch [%]");
@@ -499,6 +645,26 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
       StripErrCode->GetXaxis()->SetBinLabel(3,"Mass Position");
       StripErrCode->GetXaxis()->SetBinLabel(4,"Mass Width");
       StripErrCode->Draw();
+      break;
+    case 351:
+      sprintf(histname,"BadStripIndex%d",j);
+      sprintf(htitle,"Problematic Strip ID History in Index");
+      BadStripIndex = new TH2D(histname, htitle, 72, 0.5, 72.5, ndata, 0, ndata);
+      BadStripIndex -> GetXaxis()->SetTitle("Strip ID");
+      BadStripIndex -> GetYaxis()->SetTitle("Index");
+      BadStripIndex -> SetMarkerStyle(21);
+      //      BadStripIndex -> SetMarkerSize(10);
+      BadStripIndex -> SetMarkerColor(Color);
+      BadStripIndex -> SetFillColor(Color);
+      for (i=0; i<ndata; i++) {
+	TLine * l = new TLine(12*i, 0, 12*i, ndata);
+	l -> SetLineStyle(2);
+	BadStripIndex -> GetListOfFunctions() -> Add(l);
+	for (j=0; j<data.strip.NBad[i]; j++) {
+	  BadStripIndex->Fill(data.strip.StripID[i][j], i);
+	}
+      }
+      BadStripIndex->Draw("box");
       break;
     case 353:
       // Superpose Measurements as a Reference
@@ -599,9 +765,10 @@ Int_t
 ErrorDetector::ErrorDetector()
 {
 
+  Int_t Mode=100; // 0 - regular , 100 - individual strip history
+  Char_t HEADER[100], psfile[100], text[100];
 
   // load header macro
-  Char_t HEADER[100];
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
@@ -609,40 +776,52 @@ ErrorDetector::ErrorDetector()
   sprintf(HEADER,"%s/include.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
-  // postscript file
-  Char_t psfile[100];
-  sprintf(psfile,"ps/ErrorDetector.ps");
-  ps = new TPostScript(psfile,112);
-
   // Cambus Setup
   CurC = new TCanvas("CurC","",1);
   CurC -> SetGridy();
 
-  gStyle->SetOptStat(1111);
-  MakePlots(100, CurC, ps); // Total Number of Bunches
-  MakePlots(110, CurC, ps); // Bad Bunch Rate
-  MakePlots(115, CurC, ps); // Bad Bunch Rate (1-dim hist)
-  MakePlots(125, CurC, ps); // Bunch Error Code (1-dim hist)
-  MakePlots(135, CurC, ps); // Max Specific Luminosity Deviation (1-dim hist)
-  MakePlots(200, CurC, ps); // Energy Slope
-  MakePlots(205, CurC, ps); // Energy Slope (1-dim hist)
-  MakePlots(300, CurC, ps); // Maximum Mass Postion Deviation 
-  MakePlots(305, CurC, ps); // Maximum Mass Postion Deviation (1-dim hist)
-  MakePlots(310, CurC, ps); // Maximum Mass-Energy Correlation
-  MakePlots(315, CurC, ps); // Maximum Mass-Energy Correlation (1-dim hist)
-  MakePlots(320, CurC, ps); // Invariant Mass Width Average 
-  MakePlots(335, CurC, ps); // Strip Error Code
-  MakePlots(340, CurC, ps); // Number of Bad Strips
-  gStyle->SetOptStat(11);
-  CurC->SetGridy(0);
-  MakePlots(353, CurC, ps); // Bad Strip History
-  CurC->SetGridy();
-  MakePlots(355, CurC, ps); // Bad Strip Statistics (1-dim)
+  // Individual Strip History Routines (slow)
+  if (Mode==100){
+    sprintf(psfile,"ps/IndividualStripHistory.ps");
+    ps = new TPostScript(psfile,112);
+    gStyle->SetOptStat(1111);
+    MakePlots(10, CurC, ps);// Individual Strip History 4x3 canvas times 6 pages times 2
+  } else {
+
+    // Regular Routines
+    sprintf(psfile,"ps/ErrorDetector.ps");
+    ps = new TPostScript(psfile,112);
+
+    MakePlots(100, CurC, ps); // Total Number of Bunches
+    MakePlots(110, CurC, ps); // Bad Bunch Rate
+    MakePlots(115, CurC, ps); // Bad Bunch Rate (1-dim hist)
+    MakePlots(125, CurC, ps); // Bunch Error Code (1-dim hist)
+    MakePlots(135, CurC, ps); // Max Specific Luminosity Deviation (1-dim hist)
+    MakePlots(200, CurC, ps); // Energy Slope
+    MakePlots(205, CurC, ps); // Energy Slope (1-dim hist)
+    MakePlots(300, CurC, ps); // Maximum Mass Postion Deviation 
+    MakePlots(305, CurC, ps); // Maximum Mass Postion Deviation (1-dim hist)
+    MakePlots(310, CurC, ps); // Maximum Mass-Energy Correlation
+    MakePlots(315, CurC, ps); // Maximum Mass-Energy Correlation (1-dim hist)
+    MakePlots(320, CurC, ps); // Invariant Mass Width Average 
+    MakePlots(335, CurC, ps); // Strip Error Code
+    MakePlots(340, CurC, ps); // Number of Bad Strips
+
+    gStyle->SetOptStat(11);
+    CurC->SetGridy(0);
+    MakePlots(351, CurC, ps); // Bad Strip Index
+    MakePlots(353, CurC, ps); // Bad Strip History
+    CurC->SetGridy();
+    MakePlots(355, CurC, ps); // Bad Strip Statistics (1-dim)
+
+  }
+
 
   cout << "ps file : " << psfile << endl;
   ps->Close();
     
-  gSystem->Exec("gv -landscape ps/ErrorDetector.ps");
+  sprintf(text,"gv -landscape %s", psfile );
+  gSystem->Exec(text);
  
   return 0;
 
