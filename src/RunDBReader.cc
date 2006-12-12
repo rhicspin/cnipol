@@ -23,7 +23,7 @@ using namespace std;
 int
 Usage(char *argv[]){
 
-  cout << "\n Usage:" << argv[0] << "[-h] [-x][-r <runID>" << endl;
+  cout << "\n Usage:" << argv[0] << "[-h] [-x][-f <runID>]" << endl;
   cout << "\n Description: " << endl;
   cout << "\t Read configulations from run.db and print" << endl;
   cout << "\n Options:" << endl;
@@ -39,7 +39,7 @@ int
 Example(char *argv[]){
 
   cout << "\n Exapmle: " << endl;
-  cout << "\t" << argv[0] << " -r 7279.005" << endl;
+  cout << "\t" << argv[0] << " -f 7279.005" << endl;
   cout << 
   cout << endl;
   exit(0);
