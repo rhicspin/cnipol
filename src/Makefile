@@ -29,10 +29,12 @@ dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
 
 KinFuncOBJ = KinFunc.o
 
-testOBJ = test.o
+AsymPlotOBJ = AsymPlot.o AsymROOT.o
 
-BINARY = Asym RunDBReader dLayerChecker
-all: Asym RunDBReader dLayerChecker Host KinFunc 
+testOBJ = test.o AsymROOT.o
+
+BINARY = Asym RunDBReader dLayerChecker KinFunc AsymPlot
+all: $(BINARY)
 
 ######## BINARY ##################
 
@@ -42,13 +44,16 @@ Asym : $(AsymOBJ)
 RunDBReader : $(RunDBReaderOBJ)
 	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
 
+AsymPlot : $(AsymPlotOBJ)
+	$(CC) $(C_FLAG) $(AsymPlotOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+
 dLayerChecker : $(dLayerCheckerOBJ)
 	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 KinFunc : $(KinFuncOBJ)
 	$(CC) $(C_FLAG) $(KinFuncOBJ) $(INC_PATHS) -o $@
 
-test : $(testOBJ)
+test : $(testOBJ) 
 	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 ######## OBJECT ##################
@@ -60,16 +65,15 @@ RunDBReader.o : AsymMain.h Asym.h
 AsymROOT.o : AsymROOT.h
 KinFunc.o  : AsymProcess.h
 
-.C.o:
-	$(CC) $(C_FLAG) $(D_FLAG) -c -I. $<
 .f.o:
 	$(FC) -O -c $<
 
 Host:
 	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
-install : Asym RunDBReader dLayerChecker KinFunc
+install : $(BINARY)
 	install -v -C $^ $(INSTALLDIR)
+	install *.C -v -C --mode 666 $(MACRODIR)
 
 ##############################
 clean : 
