@@ -157,6 +157,7 @@ MakeAnalyzedRunList(){
 #############################################################################
 RunStatusAbbriviator(){
 
+    # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
     if [ $RUN_STATUS ] ; then
 	if [ $RUN_STATUS == 'Suspicious' ] ; then
 	    RUN_STATUS="Susp";
@@ -171,6 +172,25 @@ RunStatusAbbriviator(){
 
 
 }
+
+#############################################################################
+#                            RunStatusAbbriviator()                         #
+#############################################################################
+MeasTypeAbbriviator(){
+
+    if [ $MEAS_TYPE ] ; then
+	if [ $MEAS_TYPE == 'PROFILE' ] ; then
+	    MEAS_TYPE="PROF";
+	elif [ $MEAS_TYPE == 'SPIN_TUNE' ]; then
+	    MEAS_TYPE="SPIN";
+	fi
+    else
+	MEAS_TYPE="----";
+    fi
+
+
+}
+
 
 #############################################################################
 #                                ShowIndex()                                #
@@ -264,9 +284,9 @@ ShowErrorDetectorIndex(){
 
     printf "=====================================================================================";
     printf "=====================================================================================\n";
-    printf " RunID     Run  #Good   #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
+    printf " RunID     Run  Meas. #Good   #    #Bad   Bad  Error SpeLumi  Energy    Max    Max    InvMass  Strip  ";
     printf " #Bad     BadStrip      \n"; 
-    printf "         Status  12C  bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
+    printf "         Status Type   12C  bunch  bunch  Rate  Code  MaxDev   Slope  MassDev M-Ecor   Sigma  ErrCode ";
     printf "strip       List        \n";
     printf "=====================================================================================";
     printf "=====================================================================================\n";
@@ -287,6 +307,9 @@ ErrorDetector(){
 
    LOGFILE=$ASYMDIR/log/$RunID.log;
    if [ -f $LOGFILE ] ; then
+       
+       MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
+       MeasTypeAbbriviator;
        RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
        RunStatusAbbriviator;
 #  Bunch Errors       
@@ -348,6 +371,7 @@ ErrorDetector(){
 
    echo -e -n "$RunID";
    printf "  %s"    $RUN_STATUS;
+   printf "  %s"    $MEAS_TYPE;
    if [ $StripTable != 1 ] ; then
        printf " %6.2f"  $NEVENTS;
        printf " %4d"    $NBUNCH;
@@ -511,14 +535,8 @@ grepit(){
     printf "$OnlineP $OnlinedP";
 
     MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
-    if [ $MEAS_TYPE ] ; then
-	if [ $MEAS_TYPE == 'PROFILE' ] ; then
-	    MEAS_TYPE="PROF";
-	elif [ $MEAS_TYPE == 'SPIN_TUNE' ]; then
-	    MEAS_TYPE="SPIN";
-	fi
-    fi
-    # check RUN_STATUS entry in logfile. If RUN_STATUS isn't there, asign "----"
+    MeasTypeAbbriviator;
+
     RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
     RunStatusAbbriviator;
 
@@ -545,7 +563,7 @@ grepit(){
 	grep 'Analyzing Power Average     ' $LOGFILE | gawk '{printf(" %6.4f",$5)}'
 	grep 'Target                      ' $LOGFILE | gawk '{printf(" %c",$3)}'      
 	grep 'Target Operation            ' $LOGFILE | sed -e 's/fixed/fixd/' | gawk '{printf(" %s",$4)}' 
-	grep 'Event Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
+	grep 'Read Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
 	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
 	echo $OnlineP $OfflineP | gawk '{printf(" %6.2f",$1-$2)}'
