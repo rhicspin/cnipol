@@ -20,9 +20,8 @@
 #endif
 
 static Int_t GHOSTVIEW=0;
-static Int_t PLOT_BANANA=0;
-static Int_t ERROR_DETECTOR=0;
-static Int_t ALL=0;
+static Int_t PLOT_BANANA=1;
+static Int_t ERROR_DETECTOR=1;
 static Int_t stID=0;
 static char * RUNID;
 
@@ -60,11 +59,14 @@ public:
 Int_t
 Usage(char *argv[]){
 
-  cout << "\n Usage:" << argv[0] << "[-hxg][-f <runID>]" << endl;
+  cout << "\n Usage:" << argv[0] << "[-hxg][-f <runID>][--banana][--error-detector]" << endl;
   cout << "\n Description: " << endl;
   cout << "\t Make plots for Run <runID>." << endl;
   cout << "\n Options:" << endl;
   cout << "\t -f <runID> " << endl;
+  cout << "\t --error-detector  plot error detector histograms" << endl;
+  cout << "\t --banana          plot kinematics reconstruction for all strips" << endl;
+  cout << "\t --strip <stID>    plot kinematics reconstruction for strip <stID>" << endl;
   cout << "\t -g \t launch ghostview" << endl;
   cout << "\t -h \t show this help    " << endl;
   cout << "\t -x \t show example    " << endl;
@@ -77,7 +79,7 @@ Int_t
 Example(char *argv[]){
 
   cout << "\n Exapmle: " << endl;
-  cout << "\t" << argv[0] << " -f 7279.005" << endl;
+  cout << "\t" << argv[0] << " -f 7279.005 -g" << endl;
   cout << 
   cout << endl;
   exit(0);
@@ -259,7 +261,7 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   CurC -> SetGridx();
 
   ps->NewPage();
-  CurC->Divide(2,2); 
+  CurC->Clear(); CurC->Divide(2,2); 
   rootfile->cd(); rootfile->cd("ErrDet");  
   CurC->cd(1) ; mass_e_correlation_strip -> Draw(); 
   CurC->cd(2) ; mass_sigma_vs_strip -> Draw(); 
@@ -365,19 +367,24 @@ int main(int argc, char **argv) {
   static struct option long_options[] = {
     {"strip", 1, 0, 's'},
     {"banana", 0, 0, 'b'},
-    {"delete", 1, 0, 0},
+    {"error-detector", 0, 0, 'e'},
     {"verbose", 0, 0, 0},
     {"create", 1, 0, 'c'},
     {"file", 1, 0, 0},
     {0, 0, 0, 0}
   };
 
-  while (EOF != (opt = getopt_long (argc, argv, "gh?xf:s:b:", long_options, &option_index))) {
+  while (EOF != (opt = getopt_long (argc, argv, "geh?xf:s:b:", long_options, &option_index))) {
     switch (opt) {
     case -1:
       break;
     case 'b':
       PLOT_BANANA=1;
+      ERROR_DETECTOR=0;
+      break;
+    case 'e':
+      ERROR_DETECTOR=1;
+      PLOT_BANANA=0;
       break;
     case 'g':
       GHOSTVIEW=1;
@@ -425,17 +432,15 @@ int AsymPlot() {
 
   // postscript file
   Char_t psfile[100];
-  sprintf(psfile,"ps/AsymErrorDetctor_%s.ps",RUNID);
+  sprintf(psfile,"ps/AsymPlot_%s.ps",RUNID);
   TPostScript *ps = new TPostScript(psfile,112);
 
   AsymPlot asymplot;
   asymplot.GetHistograms(rootfile);
 
   if (stID) PlotStrip(rootfile, CurC, ps, stID);
-  if (ALL){
-    PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
-    asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
-  }
+  if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
+  if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
 
   // remove link
   sprintf(text,"rm -f %s",filename);
