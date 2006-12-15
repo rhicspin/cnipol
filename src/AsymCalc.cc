@@ -1587,14 +1587,14 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 
 // Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMax(int N, float A[]){
-  float max = A[0];
+  float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
   for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : max;
   return max;
 }
 
 // Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMin(int N, float A[]){
-  float min = A[0];
+  float min = A[0] != ASYM_DEFAULT ? A[0] : A[1];
   for (int i=1; i<N; i++) min = (A[i])&&(min>A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : min;
   return min;
 }
