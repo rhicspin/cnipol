@@ -22,6 +22,7 @@
 static Int_t GHOSTVIEW=0;
 static Int_t PLOT_BANANA=1;
 static Int_t ERROR_DETECTOR=1;
+static Int_t SUMMARY=1;
 static Int_t stID=0;
 static char * RUNID;
 
@@ -32,6 +33,7 @@ private:
 public:
   Int_t GetHistograms(TFile * rootfile);
   Int_t PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
+  Int_t PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   // Directory "ErrDet"
   TH2F * mass_e_correlation_strip;
   TH2F * mass_chi2_vs_strip;
@@ -46,6 +48,7 @@ public:
   TH2F * asym_vs_bunch_x90;
   TH2F * asym_vs_bunch_x45;
   TH2F * asym_vs_bunch_y45;
+  TH2F * asym_sinphi_fit;
   // Directory "Bunch"
   TH1F * bunch_dist;
   TH1F * wall_current_monitor;
@@ -66,6 +69,7 @@ Usage(char *argv[]){
   cout << "\t -f <runID> " << endl;
   cout << "\t --error-detector  plot error detector histograms" << endl;
   cout << "\t --banana          plot kinematics reconstruction for all strips" << endl;
+  cout << "\t --summary         plot summary" << endl;
   cout << "\t --strip <stID>    plot kinematics reconstruction for strip <stID>" << endl;
   cout << "\t -g \t launch ghostview" << endl;
   cout << "\t -h \t show this help    " << endl;
@@ -256,7 +260,7 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
 
 Int_t 
-AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
   CurC -> SetGridx();
 
@@ -275,7 +279,22 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   CurC->cd(3) ; asym_vs_bunch_y45 -> Draw(); 
   rootfile->cd(); rootfile->cd("ErrDet");
   CurC->cd(4) ; spelumi_vs_bunch -> Draw(); CurC->Update(); 
-  CurC->Clear();
+
+  return 0;
+
+
+}
+
+
+Int_t 
+AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+
+  CurC -> SetGridx();
+  ps->NewPage(); CurC->Clear(); CurC->Divide(1,1); 
+
+  // energy slope
+  rootfile->cd(); rootfile->cd("Kinema");
+  energy_spectrum_all->Draw(); CurC->Update();
 
   // bunch detailes 
   rootfile->cd("Asymmetry");
@@ -304,10 +323,10 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   good_carbon_events_strip -> Draw(); CurC->Update(); 
   mass_pos_dev_vs_strip -> Draw(); CurC->Update(); 
 
-  // energy slope
-  rootfile->cd(); rootfile->cd("Kinema");
-  energy_spectrum_all->Draw(); CurC->Update();
-
+  // sin(phi) fit
+  rootfile->cd(); rootfile->cd("Asymmetry");
+  gStyle->SetOptFit(111); gStyle->SetOptStat(0);
+  asym_sinphi_fit->Draw(); CurC->Update();
 
   return 0;
 
@@ -342,6 +361,7 @@ AsymPlot::GetHistograms(TFile * rootfile){
   asym_vs_bunch_x90          = (TH2F*)gDirectory->Get("asym_vs_bunch_x90");
   asym_vs_bunch_x45          = (TH2F*)gDirectory->Get("asym_vs_bunch_x45");
   asym_vs_bunch_y45          = (TH2F*)gDirectory->Get("asym_vs_bunch_y45");
+  asym_sinphi_fit            = (TH2F*)gDirectory->Get("asym_sinphi_fit");
 
   rootfile->cd(); rootfile->cd("Bunch");
   bunch_dist                 = (TH1F*)gDirectory->Get("bunch_dist");
@@ -368,13 +388,13 @@ int main(int argc, char **argv) {
     {"strip", 1, 0, 's'},
     {"banana", 0, 0, 'b'},
     {"error-detector", 0, 0, 'e'},
-    {"verbose", 0, 0, 0},
+    {"summary", 0, 0, 'S'},
     {"create", 1, 0, 'c'},
     {"file", 1, 0, 0},
     {0, 0, 0, 0}
   };
 
-  while (EOF != (opt = getopt_long (argc, argv, "geh?xf:s:b:", long_options, &option_index))) {
+  while (EOF != (opt = getopt_long (argc, argv, "geSh?xf:s:b:", long_options, &option_index))) {
     switch (opt) {
     case -1:
       break;
@@ -391,6 +411,11 @@ int main(int argc, char **argv) {
       break;
     case 'f':
       RUNID=optarg;
+      break;
+    case 'S':
+      SUMMARY=1;
+      ERROR_DETECTOR=0;
+      PLOT_BANANA=0;
       break;
     case 's':
       stID=atoi(optarg);
@@ -425,7 +450,6 @@ int AsymPlot() {
   // Root file open.
   cout << filename << endl;
   TFile * rootfile = TFile::Open(filename);
-  gDirectory->ls();
 
   // Cambus Setup
   TCanvas *CurC = new TCanvas("CurC","",1);
@@ -440,6 +464,7 @@ int AsymPlot() {
 
   if (stID) PlotStrip(rootfile, CurC, ps, stID);
   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
+  if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
 
   // remove link
