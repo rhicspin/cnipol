@@ -446,7 +446,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             //  ====================================================
             
             if ((e>Emin) && (e<Emax)) {
-                
+
+	      // mass_with energy & mass sigma cut
+	      mass_yescut[st]->Fill(Mass);
         
 	      // Timing info for Each bunch 
 	      if ((e>600.)&&(e<650.)){
