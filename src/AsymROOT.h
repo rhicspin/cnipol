@@ -62,6 +62,7 @@ extern TLine  * energy_cut_h[NSTRIP];      // energy cut high
 extern TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
 extern TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
 extern TH1F  * mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+extern TH1F  * mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
 
 // Bunch Distribution
 extern TH1F * bunch_dist;                  // counts per bunch
