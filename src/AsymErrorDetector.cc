@@ -230,8 +230,8 @@ StripAnomalyDetector(){
   printf(" Average # of Events in Banana Cut : %6.2f\n", strpchk.evnt.average[0]);
 
   // initiarization before following worst (max) search
-  strpchk.dev.max  = fabs(feedback.mdev[0]);
-  strpchk.chi2.max = feedback.chi2[0];
+  strpchk.dev.max  = 0;
+  strpchk.chi2.max = 0;
   strpchk.evnt.max = 0;
 
   // registration of the worst strips

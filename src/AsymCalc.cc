@@ -652,10 +652,10 @@ PrintWarning(){
     for (int i=0; i<anal.unrecog.anomaly.nbunch; i++) printf("%d ",anal.unrecog.anomaly.bunch[i]) ; 
     printf("\n");
     printf("===> Invariant Mass / strip \n");
-    printf(" Maximum Mass Deviation [GeV]        : %6.2f   (%d)\n", strpchk.dev.max,  strpchk.dev.st);
-    printf(" Maximum Mass fit chi-2              : %6.2f   (%d)\n", strpchk.chi2.max, strpchk.chi2.st);
-    printf(" Maximum #Events Deviation from Ave  : %6.2f   (%d)\n", strpchk.evnt.max, strpchk.evnt.st);
-    printf(" Maximum Mass-Energy Correlation     : %8.4f (%d)\n", strpchk.p1.max, strpchk.p1.st);
+    printf(" Maximum Mass Deviation [GeV]        : %6.2f   (%d)\n", strpchk.dev.max,  strpchk.dev.st+1);
+    printf(" Maximum Mass fit chi-2              : %6.2f   (%d)\n", strpchk.chi2.max, strpchk.chi2.st+1);
+    printf(" Maximum #Events Deviation from Ave  : %6.2f   (%d)\n", strpchk.evnt.max, strpchk.evnt.st+1);
+    printf(" Maximum Mass-Energy Correlation     : %8.4f (%d)\n", strpchk.p1.max, strpchk.p1.st+1);
     printf(" Weighted Mean InvMass Sigma         : %6.2f \n", strpchk.width.average[0]);
     printf(" Good strip Mass-Energy Correlation  : %8.4f \n", strpchk.p1.allowance);
     printf(" Good strip Mass Sigma Allowance[GeV]: %6.2f \n", strpchk.width.allowance);
@@ -841,9 +841,9 @@ ExclusionList(int k, int j, int RHICBeam){
   if ((j==i)||(j==35-i)||(j==36+i)||(j==71-i)) test = 1;
 
   // This is because of dead channel 62. (Strip#63) in blue
-  if (!RHICBeam) {
-    if ((j==26)||(j==9)||(j==62)||(j==45)) test = 1;
-  }
+  //  if (!RHICBeam) {
+  //    if ((j==26)||(j==9)||(j==62)||(j==45)) test = 1;
+  //  }
 
   return test;
 
@@ -1406,20 +1406,20 @@ CalcStripAsymmetry(float aveA_N, int Mode){
     //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
-    int LumiSum[2][72];        // Total Luminosity [0]:Spin Up, [1]:Spin Down
-    float LumiSum_r[2][72];    // Reduced order Total luminosity for histograming
-    float LumiRatio[72];       // Luminosity Ratio
-    float Asym[72], dAsym[72]; // Raw Asymmetries strip-by-strip
-    float P[72], dP[72];       // phi corrected polarization 
-    float Pt[72], dPt[72];     // phi Trancated corrected polarization,
+    int LumiSum[2][NSTRIP];        // Total Luminosity [0]:Spin Up, [1]:Spin Down
+    float LumiSum_r[2][NSTRIP];    // Reduced order Total luminosity for histograming
+    float LumiRatio[NSTRIP];       // Luminosity Ratio
+    float Asym[NSTRIP], dAsym[NSTRIP]; // Raw Asymmetries strip-by-strip
+    float P[NSTRIP], dP[NSTRIP];       // phi corrected polarization 
+    float Pt[NSTRIP], dPt[NSTRIP];     // phi Trancated corrected polarization,
     long int counts[2];        // local counter variables
 
-    for (int i=0; i<72; i++) {
+    for (int i=0; i<NSTRIP; i++) {
       Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
       LumiSum[0][i] = LumiSum[1][i] = 0;
 
       // Loop for Total Luminosity
-      for (int j=0; j<72; j++) {
+      for (int j=0; j<NSTRIP; j++) {
 
 	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
 	if (!ExclusionList(i,j,runinfo.RHICBeam)){
