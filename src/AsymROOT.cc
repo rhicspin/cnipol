@@ -47,6 +47,7 @@ TLine * energy_cut_h[NSTRIP];        // energy cut high
 TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
 TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
+TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -147,6 +148,12 @@ Root::RootHistBook(StructRunInfo runinfo){
     sprintf(htitle,"%8.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
     mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);     
     mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+
+    sprintf(hname,"mass_yescut_st%d",i+1);
+    sprintf(htitle,"%8.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
+    mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+    mass_yescut[i] -> SetLineColor(2);
 
   }
 
@@ -273,6 +280,7 @@ Root::DeleteHistogram(){
     t_vs_e[i] -> Delete();
     mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
     mass_nocut[i] -> Delete();
+    //    mass_yescut[i] -> Delete();
 
   }
 
