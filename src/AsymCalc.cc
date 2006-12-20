@@ -136,7 +136,6 @@ CompleteHistogram(){
     DrawLine(mass_nocut[i], MASS_12C_k2G, mass_nocut[i]->GetMaximum()*1.05, 14, 2);
   }
 
-
   return 0;
 
 }
@@ -978,14 +977,17 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
   float SpeLumi_norm[NBUNCH], dSpeLumi_norm[NBUNCH];
 
   // initialization
-  SpeLumi.min=SpeLumi.max=SpeLumi.Cnts[0];
+  SpeLumi.max = SpeLumi.Cnts[0];
+  SpeLumi.min = 9999999;
 
   for (bid=0; bid<NBUNCH; bid++) {
     SpeLumi.Cnts[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
     SpeLumi.dCnts[bid] = sqrt(Ngood[bid]);
     specific_luminosity->Fill(bid,SpeLumi.Cnts[bid]);
-    if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
-    if (SpeLumi.min>SpeLumi.Cnts[bid])SpeLumi.min=SpeLumi.Cnts[bid];
+    if (fillpat[bid]) {
+      if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
+      if (SpeLumi.min>SpeLumi.Cnts[bid])SpeLumi.min=SpeLumi.Cnts[bid];
+    }
   }
   HHPAK(10033, SpeLumi.Cnts);    HHPAKE(11033, SpeLumi.dCnts);
   SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,NBUNCH);
