@@ -95,7 +95,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 	delt = t - runconst.E2T/sqrt(e);  
 
-	if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<14.))  HHF1(16200+st+1, Mass, 1.);
+	if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  HHF1(16200+st+1, Mass, 1.);
 
       } // tdc>6ns
 
@@ -446,6 +446,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             //  ====================================================
             
             if ((e>Emin) && (e<Emax)) {
+
+	      // t vs. E (banana with no cut)
+	      t_vs_e_yescut[st] -> Fill(e, t);
 
 	      // mass_with energy & mass sigma cut
 	      mass_yescut[st]->Fill(Mass);
