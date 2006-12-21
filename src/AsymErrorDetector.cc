@@ -249,13 +249,13 @@ StripAnomalyDetector(){
       // MASS vs. Energy correlation
       InvariantMassCorrelation(i);
       if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);  // initialize max w/ strip 0
-      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.max ) {
-	strpchk.p1.max = fabs(strpchk.ecorr.p[1][i]);
+      if (fabs(strpchk.ecorr.p[1][i]) > fabs(strpchk.p1.max) ) {
+	strpchk.p1.max = strpchk.ecorr.p[1][i];
 	strpchk.p1.st  = i;
       }
       // Maximum devistion of peak from 12C_MASS
       if ((fabs(feedback.mdev[i]) > strpchk.dev.max)&&(fabs(feedback.mdev[i]!=ASYM_DEFAULT))) {
-	strpchk.dev.max  = fabs(feedback.mdev[i]);
+	strpchk.dev.max  = feedback.mdev[i];
 	strpchk.dev.st   = i;
       }
       // Gaussian Mass fit Largest chi2
@@ -315,7 +315,7 @@ StripAnomalyDetector(){
 	DrawText(mass_sigma_vs_strip, float(i+1), feedback.RMS[i], 2, text);
       }      
       // Invariant mass peak position deviation from 12C mass
-      if (feedback.mdev[i] > strpchk.dev.allowance) {
+      if (fabs(feedback.mdev[i]) > fabs(strpchk.dev.allowance)) {
 	strip_err_code += 2;
 	printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, feedback.mdev[i], strpchk.dev.allowance);
@@ -564,7 +564,6 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
   // print chi2 in plot
   sprintf(text,"chi2(+)=%6.1f", local.chi2[0]/float(local.active_bunch[0]));
   TText * t1 = new TText(3, h2->GetYaxis()->GetXmax()*0.90, text);
-  cout << "good sample" << h2->GetYaxis()->GetXmax() << endl;
   t1->SetTextColor(13);
   h2 -> GetListOfFunctions()->Add(t1);
   sprintf(text,"chi2(-)=%6.1f", local.chi2[1]/float(local.active_bunch[1]));

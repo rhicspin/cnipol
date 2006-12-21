@@ -146,7 +146,12 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
 
   // invariant mass
   sprintf(histname,"mass_nocut_st%d",stID);
-  gDirectory->Get(histname) -> Draw("");  CurC->Update();    
+  gDirectory->Get(histname) -> Draw("");  
+  sprintf(histname,"mass_yescut_st%d",stID);
+  if (gDirectory->Get(histname)){
+    gDirectory->Get(histname) -> Draw("same");  
+  }
+  CurC->Update();    
 
   return 0;
 
@@ -234,7 +239,12 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       stID=det*NSTRIP_PER_DETECTOR+st;
       CurC->cd(st); 
       sprintf(histname,"mass_nocut_st%d",stID);
-      gDirectory->Get(histname) -> Draw("");  CurC->Update();    
+      gDirectory->Get(histname) -> Draw(""); 
+      sprintf(histname,"mass_yescut_st%d",stID);
+      if (gDirectory->Get(histname)){
+	gDirectory->Get(histname) -> Draw("same");  
+      }
+      CurC->Update();    
 
     }// end-of-strip loop
 
