@@ -54,6 +54,7 @@ extern TDirectory * Asymmetry;
 
 // Kinema Direcotry
 extern TH2F * t_vs_e[TOT_WFD_CH];
+extern TH2F * t_vs_e_yescut[TOT_WFD_CH];
 extern TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 extern TF1  * banana_cut_l[NSTRIP][2];     // banana cut low 
 extern TF1  * banana_cut_h[NSTRIP][2];     // banana cut high

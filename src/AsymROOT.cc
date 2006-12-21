@@ -39,6 +39,7 @@ TDirectory * Asymmetry;
 //
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
+TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
 TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
 TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
 TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
@@ -137,6 +138,12 @@ Root::RootHistBook(StructRunInfo runinfo){
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
+
+    sprintf(hname,"t_vs_e_yescut_st%d",i+1);
+    sprintf(htitle,"%8.3f : t vs. Kin.Energy (with cut) Strip-%d ",runinfo.RUNID, i+1);
+    t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+    t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+    t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
     sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ",runinfo.RUNID, i+1);
@@ -278,6 +285,7 @@ Root::DeleteHistogram(){
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
 
     t_vs_e[i] -> Delete();
+    t_vs_e_yescut[i] -> Delete();
     mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
     mass_nocut[i] -> Delete();
     //    mass_yescut[i] -> Delete();

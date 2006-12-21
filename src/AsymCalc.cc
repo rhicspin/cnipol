@@ -133,8 +133,17 @@ CompleteHistogram(){
 
   float MASS_12C_k2G=MASS_12C*k2G;
   for (int i=0; i<NSTRIP; i++) {
-    DrawLine(mass_nocut[i], MASS_12C_k2G, mass_nocut[i]->GetMaximum()*1.05, 14, 2);
+    float max = mass_nocut[i]->GetMaximum();
+    DrawLine(mass_nocut[i], MASS_12C_k2G, max*1.05, 14, 2);
+    DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
+    DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
+    DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
+    DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
+    DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.2, 6, 3);
+    DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.2, 6, 3);
   }
+
+  
 
   return 0;
 
