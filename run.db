@@ -455,6 +455,10 @@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
+[6943.011]
+	CONFIG=6943.014.config.dat;
+	COMMENT="Strip 60 invariant mass is incompatible with 6959.003.config.dat.";
+
 [6943.105]@
 	CONFIG=6943.105.config.dat;@
 
@@ -568,6 +572,10 @@
 
 [6969.104]@
 	CONFIG=6969.104.config.dat;@
+
+[6971.004]
+	CONFIG*=6971.004.config.dat;
+	COMMENT="Strip 42 invariant mass is reconstructed in wrong spot with 6959.003.config.";
 
 [6972.004]@
 	CONFIG=6972.004.config.dat;@
@@ -698,6 +706,10 @@
 
 [7001.003]@
 	CONFIG=7001.003.config.dat;@
+
+[7001.005]
+	CONFIG=7001.005.config.dat;@
+	COMMENT*="Strip 22 is not consistent with 7001.003.config.dat";
 
 [7001.102]@
 	CONFIG=7001.102.config.dat;@
@@ -2790,8 +2802,7 @@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7327.105]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	CONFIG=7327.105.config.dat;@
 
 //==============================================================
 //=======                   Run06                      =========
