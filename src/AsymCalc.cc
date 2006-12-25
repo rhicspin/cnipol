@@ -139,8 +139,8 @@ CompleteHistogram(){
     DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
     DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
     DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigma,max*0.3, 4, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.2, 6, 3);
-    DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.2, 6, 3);
+    DrawLine(mass_nocut[i], MASS_12C_k2G+feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.3, 4, 1);
+    DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.3, 4, 1);
   }
 
   
