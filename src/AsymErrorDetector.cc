@@ -702,7 +702,7 @@ HotBunchFinder(int err_code){
   char hname[100];
   sprintf(hname,"%8.3f : Specific Luminosiry / bunch", runinfo.RUNID);
   bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
-  bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events / WCM");
+  bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events/bunch / WCM");
   bunch_spelumi -> GetYaxis()->SetTitle("# Bunches weighted by 1/sqrt(12C Events)");
 
   for (int bnch=0;bnch<NBUNCH;bnch++) { 
@@ -721,9 +721,12 @@ HotBunchFinder(int err_code){
   spelumi_vs_bunch -> GetYaxis()->SetTitle("12C Yields/WCM");
 
   // define gaussian function 
+  // mean (parameter-1) is constrained to be between min and max of entries
+  // sigma (parameter-1) is constrained to be between 0 and max-min of entries
   TF1 * g1 = new TF1("g1","gaus");
-  g1->SetParameter(1,SpeLumi.ave);
-  g1->SetParLimits(1,SpeLumi.min,SpeLumi.max);
+  g1->SetParameters(bunch_spelumi->GetMaximum(), SpeLumi.ave, (SpeLumi.max-SpeLumi.min)/3);
+  g1->SetParLimits(1, SpeLumi.min, SpeLumi.max);
+  g1->SetParLimits(2, 0, SpeLumi.max-SpeLumi.min);
   g1->SetLineColor(2);
 
   // apply gaussian fit on specific luminosity distribution
