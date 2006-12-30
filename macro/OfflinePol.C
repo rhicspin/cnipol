@@ -13,6 +13,7 @@
 #define Debug 0
 
 const Int_t N=2000;
+const Int_t MAX_NMEAS_PER_FILL=99;
 Int_t RUN=5;
 
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
@@ -26,6 +27,33 @@ class OfflinePol
 {
 
 private:
+  struct StructFillByFill {
+    Int_t FillID;
+    Int_t nRun;
+    Float_t Clock0;
+    Float_t Clock[MAX_NMEAS_PER_FILL];
+    Float_t RunID[MAX_NMEAS_PER_FILL];
+    Float_t Index[MAX_NMEAS_PER_FILL];
+    Float_t P_online[N];
+    Float_t dP_online[N];
+    Float_t P_offline[N];
+    Float_t dP_offline[N];
+    Float_t dum[N];
+    TGraphErrors *meas_vs_P[2];
+  } fill[N];
+
+  struct StructTime {
+    Char_t *Week;
+    Char_t *Month;
+    Int_t Day;
+    Char_t *Time;
+    Int_t Hour;
+    Int_t Minute;
+    Int_t Sec;
+  }time;
+
+  Int_t Fill[N], nRun[N], Time[N];
+  Float_t Energy[N];
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
   Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],SpeLumi[N],DiffP[N];
   Float_t P_alt[N],dP_alt[N],R_Preg_Palt[N],dR_Preg_Palt[N];
@@ -38,11 +66,13 @@ private:
 public:
   void Initiarization(Int_t);
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
-  Int_t PlotControlCenter(Char_t*, Int_t);
+  Int_t PlotControlCenter(Char_t*, Int_t, TCanvas *CurC,  TPostScript *ps);
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
+  Int_t FillByFillAnalysis(Int_t Mode, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t TimeDecoder();
 
 }; // end-class Offline
 
@@ -127,10 +157,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
         exit(-1);
     }
 
-    Float_t Fill,ID;
-    Float_t dum[10];
     Char_t buffer[300], line[300];
-    Char_t *RunStatus, *target, *tgtOp;
+    Char_t *RunStatus, *MeasType, *target, *tgtOp, *dum[6];
     Int_t i=0;
     Int_t ch=0;
     while ( ( ch = fin.peek()) != EOF ) {
@@ -148,13 +176,18 @@ OfflinePol::GetData(Char_t * DATAFILE){
       P_online[i]  = atof(strtok(NULL," "));
       dP_online[i] = atof(strtok(NULL," "));
       RunStatus    = strtok(NULL," ");
-
       // process if RunStatus != "Junk" or "N/A-"
       if ( strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-") ){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
-	  for (int k=0; k<6; k++) strtok(NULL, " ") ;
+	  MeasType      = strtok(NULL," ");
+	  Energy[i]     = atof(strtok(NULL," "));
+	  time.Week     = strtok(NULL," ");
+	  time.Month    = strtok(NULL," ");
+	  time.Day      = atoi(strtok(NULL," "));
+	  time.Time     = strtok(NULL," ");
+
 	  P_offline[i]  = atof(strtok(NULL," "));
 	  dP_offline[i] = atof(strtok(NULL," "));
 	  phi[i]        = atof(strtok(NULL," "));
@@ -169,6 +202,9 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	  P_alt[i]      = atof(strtok(NULL," "));
 	  dP_alt[i]     = atof(strtok(NULL," "));
 
+	  // Time decorder should be at the end of buffer read loop
+	  Time[i] = TimeDecoder();
+
 	  R_Preg_Palt[i] = P_offline[i] ? P_alt[i]/P_offline[i] : 0;
 	  dR_Preg_Palt[i]= CorrelatedError(P_alt[i],dP_alt[i],P_offline[i],dP_offline[i]);
 
@@ -181,11 +217,14 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	  phiDist->Fill(phi[i]);
 	  sfitchi2->Fill(chi2[i]);
 
+
 	} // end-of-if(strlen(50)
 
+	
+	// Skip "Junk" and "N/A-" from array
+	index[i]=i; ++i; 
       } // end-of-if(strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-");
       
-      index[i]=i; ++i; 
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
@@ -198,6 +237,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
     if (RunID[0]>7400) RUN=6;
 
     fin.close();
+
+
     return i-1;
 
 }
@@ -390,11 +431,11 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
 // Method name : PlotControlCenter
 //
 // Description : Control Center of all plots. 
-// Input       : Char_t *Beam, Int_t Mode
+// Input       : Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScript *ps
 // Return      : 0
 //
 Int_t 
-OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode){
+OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
   Int_t Color = Beam == "Blue" ? 4 : 94 ;
 
@@ -472,6 +513,9 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode){
       sfitchi2->SetFillColor(Color);
       sfitchi2->Draw();
       break;
+  case 1000:
+    FillByFillAnalysis(Mode, ndata, Color, CurC, ps);
+    break;
   }
 
   return 0;
@@ -492,13 +536,14 @@ Int_t
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
-  PlotControlCenter("Blue",Mode);
+  PlotControlCenter("Blue",Mode, CurC, ps);
   CurC -> Update();
-  frame->Delete();
+  if (frame) frame->Delete();
 
   ps->NewPage();
 
-  PlotControlCenter("Yellow",Mode);
+
+  PlotControlCenter("Yellow",Mode, CurC, ps);
   CurC -> Update();
 
   return 0;
@@ -523,6 +568,8 @@ OfflinePol::OfflinePol()
   Char_t HEADER[100];
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
+  sprintf(HEADER,"%s/FillByFill.C",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
 
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
@@ -533,6 +580,9 @@ OfflinePol::OfflinePol()
     sprintf(psfile,"ps/OfflinePol.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
+    RunBothBeam(1000,  CurC, ps); // onlineP and offlineP vs. RunID
+
+    /*
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
     //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
     RunBothBeam(30,  CurC, ps); // 2-sigma/3-sigma ratio vs. RunID
@@ -547,6 +597,7 @@ OfflinePol::OfflinePol()
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
     RunBothBeam(90,  CurC, ps); // Specific Luminosity  vs. RunID
     //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
+    */
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
