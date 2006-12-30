@@ -45,6 +45,10 @@ private:
     Float_t dummy[N];
     Float_t Slope[NSTRIP][N];
     Float_t SlopeE[NSTRIP][N];
+    Float_t sinphi_P;
+    Float_t sinphi_dPhi;
+    Float_t sinphi_sigma[NSTRIP][N];
+    Float_t sinphi_sigmaE[NSTRIP][N];
   } ;
 
   struct StructData {
@@ -79,6 +83,7 @@ private:
   TH2D * BadStripHistory;
   TH2D * BadStripIndex;
   TH2F * strip_slope_history[NSTRIP];
+  TH2F * sinphi_fit_sigma_st[NSTRIP];
 
 public:
   Int_t Initiarize();
@@ -90,7 +95,9 @@ public:
   Int_t Plot(Int_t Mode, Int_t ndata, Int_t Color);
   Int_t GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color);
   Int_t RootFileOperation(Int_t ndata, Char_t * Beam);
+  Int_t RootFileOperation2(Int_t ndata, Char_t * Beam);
   Int_t IndividualStripHistory(Int_t ndata, Char_t *Beam, Int_t Color);
+  Int_t IndividualStripHistorySinPhi(Int_t ndata, Char_t *Beam, Int_t Color);
 
 }; // end-class ErrorDetector
 
@@ -123,7 +130,7 @@ ErrorDetector::Initiarize(){
   EnergySlope = new TH1D(histname, "Energy Slope", 25, overflow.EnergySlope, 0);
 
   // -------- Strip Error Histograms ------------- // 
-  overflow.MassDev=0.5;
+  overflow.MassDev=3.0;
   sprintf(histname,"MaxMassPosDev%d",j);
   sprintf(htitle,"Maximum Mass Position Deviation [GeV]");
   MaxMassPosDev = new TH1D(histname, htitle, 10, -1*overflow.MassDev, overflow.MassDev);
@@ -214,23 +221,58 @@ ErrorDetector::RootFileOperation(Int_t ndata, Char_t * Beam){
 
   // loop over runs
   for (Int_t i=0; i<ndata; i++) {
-
+    
     sprintf(rootfile,"%8.3f.root",data.RunID[i]);
     printf("%s : %d %8.3f \r",Beam, i, data.RunID[i]);
+    printf("%8.3f",data.RunID[i]);
 
     // create symboric link
     sprintf(text,"ln -s root/%s %s",rootfile,rootfile);
     gSystem->Exec(text);
 
     TFile * rfile = TFile::Open(rootfile);
-    Kinema->cd();
+
+    // Get sin(phi) fitting function from asym_sinphi_fit histogram
+    Asymmetry->cd();
+    data.strip.sinphi_P = data.strip.sinphi_dPhi = 0;
+    if (gDirectory->Get("asym_sinphi_fit")) {
+      /*
+      if (asym_sinphi_fit) cout << "--" << endl;
+      if (asym_sinphi_fit->GetFunction("tg")){
+	TGraphErrors *tg = (TGraphErrors*)asym_sinphi_fit->GetFunction("tg");
+	if (tg){
+	  if ((tg->GetX())&&(tg->GetY())&&(tg->GetEY())) {
+	    Double_t  *x = tg->GetX();
+	    Double_t  *y = tg->GetY();
+	    Double_t *ey = tg->GetEY();
+	    if (tg->GetFunction("sin_phi")) {
+	      TF1 * sin_phi = (TF1*)tg->GetFunction("sin_phi");
+	      if (sin_phi){ 
+		data.strip.sinphi_P    = sin_phi->GetParameter("P");
+		data.strip.sinphi_dPhi = sin_phi->GetParameter("dPhi");
+	      }
+	    }
+	  }
+	}
+      }
+    */
+    }
+    cout << "..done" << endl;
 
     // loop over strips
     for (Int_t st=0; st<NSTRIP; st++) {
       data.strip.Slope[st][i]=data.strip.SlopeE[st][i]=0;
 
+      // calculate diviation (in the unit of sigma) of each strips from fitted sin(phi) curve.
+      /*
+      if (ey[st]){
+	  data.strip.sinphi_sigma[st][i]=(y[st]-data.strip.sinphi_P*sin(-x[st]+data.strip.sinphi_dPhi))/ey[st] ;
+	  data.strip.sinphi_sigmaE[st][i]=ey[st];
+	  }*/
+
       // extract slope from mass_vs_energy_corr_st histogram
       sprintf(histname,"mass_vs_energy_corr_st%d",st+1);
+      rfile->cd(); rfile->("Kinema"); 
       if (gDirectory->Get(histname) ) {
 	TH1D * hist = (TH1D*)gDirectory->Get(histname);
 	if ( hist->GetFunction("f1") ){
@@ -250,15 +292,97 @@ ErrorDetector::RootFileOperation(Int_t ndata, Char_t * Beam){
     gSystem->Exec(text);
     rfile->Close();
 
-  };
 
-  
+  }; 
 
-  /* work in progress
-  TGraph * tg = (TGraph*)mass_e_correlation_strip -> GetListOfFunctions() -> FindObject("mass_e_gr");
-  Double_t * x = tg->GetX();
-  cout << x[1] << endl;
-  */
+  return;
+
+}
+
+
+//
+// Class name  : 
+// Method name : RootFileOperation2(Int_t ndata, Char_t * Beam)
+//             :
+// Description : Extract informations from histograms in root file
+//             : This routine is incomplete Dec.18,2006
+// Input       : Int_t ndata, Char_t * Beam
+// Return      : 
+//
+Int_t
+ErrorDetector::RootFileOperation2(Int_t ndata, Char_t * Beam){
+
+  Char_t rootfile[100], text[100], histname[100], htitle[100];
+
+  printf("\n");
+
+  // loop over runs
+  for (Int_t i=0; i<ndata; i++) {
+    
+    printf(" --> %d ", i);
+    printf(" %8.3f ", data.RunID[i]);
+    sprintf(rootfile,"%8.3f.root",data.RunID[i]);
+    cout << " xxx " ;
+    //    printf("%s : %d %8.3f \r",Beam, i, data.RunID[i]);
+    printf("%s : %d %8.3f ",Beam, i, data.RunID[i]);
+
+    // create symboric link
+    sprintf(text,"ln -s root/%s %s",rootfile,rootfile);
+    gSystem->Exec(text);
+
+    cout << " file open " << rootfile ;
+    TFile * rfile = TFile::Open(rootfile);
+    cout << " file opened " << rootfile ;
+
+    // Get sin(phi) fitting function from asym_sinphi_fit histogram
+    Asymmetry->cd();
+    data.strip.sinphi_P = data.strip.sinphi_dPhi = 0;
+
+    /*
+    if (gDirectory->Get("asym_sinphi_fit")) {
+
+      if (asym_sinphi_fit->GetFunction("tg")){
+	TGraphErrors *tg = (TGraphErrors*)asym_sinphi_fit->GetFunction("tg");
+	if ((tg->GetX())&&(tg->GetY())&&(tg->GetEY())) {
+	  Double_t *x = tg->GetX();
+	  Double_t *y = tg->GetY();
+	  Double_t *ey = tg->GetEY();
+
+	  if (tg->GetFunction("sin_phi")) {
+	    TF1 * sin_phi = (TF1*)tg->GetFunction("sin_phi");
+	    data.strip.sinphi_P    = sin_phi->GetParameter("P");
+	    data.strip.sinphi_dPhi = sin_phi->GetParameter("dPhi");
+
+	    // strip loop
+	    for (Int_t st=0; st<NSTRIP; st++) {
+	      data.strip.sinphi_sigma[st][i]=data.strip.sinphi_sigmaE[st][i]=0;
+	      
+	      // calculate diviation (in the unit of sigma) of each strips from fitted sin(phi) curve.
+	      if (ey[st]){
+		data.strip.sinphi_sigma[st][i]=(y[st]-data.strip.sinphi_P*sin(-x[st]+data.strip.sinphi_dPhi))/ey[st] ;
+		data.strip.sinphi_sigmaE[st][i]=ey[st];
+	      }
+
+	    } // end-of-st-loop
+
+
+	  } // if (tg->GetFunction("sin_phi"))
+
+	} // if ((tg->GetX())&&(tg->GetY())&&(tg->GetEY()))
+
+      } // if (asym_sinphi_fit->GetFunction("tg"))
+
+    } // if (gDirectory->Get("asym_sinphi_fit");
+    */
+
+    // remove symboric link
+    sprintf(text,"rm -f %s",rootfile);
+    gSystem->Exec(text);
+    rfile->Close();
+
+    cout << "next loop" << endl;
+
+  };  // end-if-ndata-loop
 
 
   return;
@@ -329,6 +453,66 @@ ErrorDetector::IndividualStripHistory(Int_t ndata, Char_t *Beam, Int_t Color){
 
 //
 // Class name  : ErrorDetector
+// Method name : IndividualStripHistorySinPhi(Int_t ndata, Char_t *Beam, Int_t Color)
+//
+// Description : Draw Strip history individually for sin(phi) fit
+// Input       : Int_t ndata, Char_t Beam, Int_t Color
+// Return      : 
+//
+Int_t
+ErrorDetector::IndividualStripHistorySinPhi(Int_t ndata, Char_t *Beam, Int_t Color){
+
+  gStyle->SetOptStat(0);
+  CurC->Divide(4,3);   ps->NewPage();
+
+  Char_t histname[100], htitle[100];
+
+  Float_t margin=0.05;
+  Float_t xmin,xmax,ymin,ymax; 
+  GetScale(data.RunID, ndata, margin, xmin, xmax);
+  TLine * t0 = new TLine(xmin, 0, xmax, 0);
+  TLine * tl = new TLine(xmin,  0.001, xmax,  0.001);
+  TLine * th = new TLine(xmin, -0.001, xmax, -0.001);
+  tl->SetLineStyle(2);  tl->SetLineColor(2);
+  th->SetLineStyle(2);  th->SetLineColor(2);
+
+  for (Int_t det=0; det<NDETECTOR; det++){
+    
+    for (Int_t i=0; i<NSTRIP_PER_DETECTOR; i++){
+
+      // Draw TH2F frame 
+      st=det*NSTRIP_PER_DETECTOR+i;
+      sprintf(histname,"sinphi_fit_sigma_st%d",st+1);
+      sprintf(htitle,"%s : Sigma from Sin(phi) Fit St %d",Beam, st+1);
+      GetScalePrefix(0.002, ndata, data.strip.sinphi_sigma[st], margin, ymin, ymax);
+      sinphi_fit_sigma_st[st] = new TH2F(histname, htitle, 100, xmin, xmax, 100, ymin, ymax);
+      TH2F * h = (TH2F*)gDirectory->Get(histname);
+      h->GetXaxis() -> SetTitle("Run ID");
+      h->GetYaxis() -> SetTitle("sigma form sin(phi) fit");
+      CurC->cd(i+1); //h->Draw(); tl->Draw("same") ; th->Draw("same"); t0->Draw("same");
+      h->GetListOfFunctions()->Add(tl); h->GetListOfFunctions()->Add(th); h->GetListOfFunctions()->Add(t0);
+
+      // Superpose TGraphErrors
+      TGraphErrors * tge = new TGraphErrors(ndata, data.RunID, data.strip.sinphi_sigma[st], dx, data.strip.sinphi_sigmaE[st]);
+      tge -> SetMarkerStyle(20);
+      tge -> SetMarkerSize(1.0);
+      tge -> SetMarkerColor(Color);
+      //      tge -> Draw("PL");
+      h->GetListOfFunctions()->Add(tge,"PL"); 
+      h->Draw();
+      CurC->Update();
+
+    }// end-of-STRIP_PER_DETECTOR loop
+
+    if (det!=NDETECTOR-1) ps->NewPage();
+
+  }// end-of-NDETECTOR loop
+
+
+}
+
+//
+// Class name  : ErrorDetector
 // Method name : GetData(Char_t *DATAFILE)
 //
 // Description : Get Data from DATAFILE
@@ -350,7 +534,7 @@ ErrorDetector::GetData(Char_t * DATAFILE){
     Initiarize();
 
     Char_t buffer[400], line[400];
-    Char_t *RunStatus;
+    Char_t *RunStatus, *MeasType;
     Int_t i=0;
     Int_t ch=0;
     Float_t nevents;
@@ -365,62 +549,66 @@ ErrorDetector::GetData(Char_t * DATAFILE){
 
       data.RunID[i] = atof(strtok(buffer," " ));
       RunStatus = strtok(NULL," ");
+      MeasType  = strtok(NULL," ");
       
       if ( strcmp(RunStatus,"Bad")*strcmp(RunStatus,"N/A")*strcmp(RunStatus,"Junk") ) {
+	if ( strcmp(MeasType,"PROF")*strcmp(MeasType,"TUNE")*strcmp(MeasType,"PHYS") ) {
 
-	nevents = atof(strtok(NULL," "));
-	data.bunch.NBunch[i] = atof(strtok(NULL," " ));
-	data.bunch.NBad[i] = atof(strtok(NULL," " ));
-	data.bunch.BadRate[i] = atof(strtok(NULL," " ));
-	data.bunch.ErrCode = strtok(NULL," " );
-	data.bunch.MaxDev[i] = atof(strtok(NULL," " )) ;
+	  nevents = atof(strtok(NULL," "));
+	  data.bunch.NBunch[i] = atof(strtok(NULL," " ));
+	  data.bunch.NBad[i] = atof(strtok(NULL," " ));
+	  data.bunch.BadRate[i] = atof(strtok(NULL," " ));
+	  data.bunch.ErrCode = strtok(NULL," " );
+	  data.bunch.MaxDev[i] = atof(strtok(NULL," " )) ;
 
-	data.detector.EnergySlope[i] = atof(strtok(NULL," " )) ;
+	  data.detector.EnergySlope[i] = atof(strtok(NULL," " )) ;
+	  
+	  data.strip.max.MassDev[i] = atof(strtok(NULL," " )) ;
+	  data.strip.max.M_E_Corr[i] = atof(strtok(NULL," " )) ;
+	  data.strip.InvMassSigma[i] = atof(strtok(NULL," " )) ;
+	  data.strip.ErrCode = strtok(NULL," ");
+	  data.strip.NBad[i] = atof(strtok(NULL," " ));
 
-	data.strip.max.MassDev[i] = atof(strtok(NULL," " )) ;
-	data.strip.max.M_E_Corr[i] = atof(strtok(NULL," " )) ;
-	data.strip.InvMassSigma[i] = atof(strtok(NULL," " )) ;
-	data.strip.ErrCode = strtok(NULL," ");
-	data.strip.NBad[i] = atof(strtok(NULL," " ));
+	  Char_t * tok; Int_t k=0;
+	  while (tok=strtok(NULL," " )) {
+	    data.strip.StripID[i][k]=atoi(tok);
+	    BadStripStatistics->Fill(data.strip.StripID[i][k]);
+	    k++;
+	  };
+	  dx[i]=dy[i]=0; data.strip.dummy[i]=-2;
 
-	Char_t * tok; Int_t k=0;
-	while (tok=strtok(NULL," " )) {
-	  data.strip.StripID[i][k]=atoi(tok);
-	  BadStripStatistics->Fill(data.strip.StripID[i][k]);
-	  k++;
-	};
-	dx[i]=dy[i]=0; data.strip.dummy[i]=-2;
+	  // Overflows
+	  OverflowControl(i);
 
-	// Overflows
-	OverflowControl(i);
-
-	// Error Code Decorder
-	Int_t EArray[4];
-	if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
-	  for (Int_t k=0; k<MB; k++) {
-	    if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
+	  // Error Code Decorder
+	  Int_t EArray[4];
+	  if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
+	    for (Int_t k=0; k<MB; k++) {
+	      if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
+	    }
 	  }
-	}
-	for (int j=0;j<4;j++) EArray[j]=0;
-	if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
-	  for (Int_t k=0; k<MB; k++) {
-	    if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
+	  for (int j=0;j<4;j++) EArray[j]=0;
+	  if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
+	    for (Int_t k=0; k<MB; k++) {
+	      if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
+	    }
 	  }
-	}
 
-	// Fill 1-dim histograms
-	BadBunchRate->Fill(data.bunch.BadRate[i]);
-	BunchMaxDev->Fill(data.bunch.MaxDev[i]);
-	EnergySlope->Fill(data.detector.EnergySlope[i]);
-	MaxM_E_Corr->Fill(data.strip.max.M_E_Corr[i]);
-	MaxMassPosDev->Fill(data.strip.max.MassDev[i]);
+	  // Fill 1-dim histograms
+	  BadBunchRate->Fill(data.bunch.BadRate[i]);
+	  BunchMaxDev->Fill(data.bunch.MaxDev[i]);
+	  EnergySlope->Fill(data.detector.EnergySlope[i]);
+	  MaxM_E_Corr->Fill(data.strip.max.M_E_Corr[i]);
+	  MaxMassPosDev->Fill(data.strip.max.MassDev[i]);
 
-	++i; 
-	if (i>N-1){
-          cerr << "WARNING : input data exceed the size of array " << N << endl;
-          cerr << "          Ignore beyond line " << N << endl;
-          break;
-	} // if-(i>N)
+	  ++i; 
+	  if (i>N-1){
+	    cerr << "WARNING : input data exceed the size of array " << N << endl;
+	    cerr << "          Ignore beyond line " << N << endl;
+	    break;
+	  } // if-(i>N)
+
+	} // if (MeasType)
 
       } // if (RunStatus)
 
@@ -430,6 +618,8 @@ ErrorDetector::GetData(Char_t * DATAFILE){
     return i-1;
 
 }
+
+
 
 
 //
@@ -571,9 +761,11 @@ ErrorDetector::DrawFrame(Int_t Mode, Int_t ndata){
 
   return;
 }
+
+
 //
 // Class name  : ErrorDetector
-// Method name : MakePlots(0
+// Method name : GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color)
 //
 // Description : Plotting controll center
 //             : Mode Number : odd  - typical 1D histograms don't requre frame to be drawn
@@ -593,6 +785,10 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
   if (Mode<100){
     RootFileOperation(ndata, Beam);
     IndividualStripHistory(ndata, Beam, Color);
+    /* Following routines are incomplete. Dec.18,2006
+    RootFileOperation(ndata, Beam);
+    IndividualStripHistorySinPhi(ndata, Beam, Color);
+    */
     return;
   };
 
@@ -765,7 +961,7 @@ Int_t
 ErrorDetector::ErrorDetector()
 {
 
-  Int_t Mode=100; // 0 - regular , 100 - individual strip history
+  Int_t Mode=0; // 0 - regular , 100 - individual strip history
   Char_t HEADER[100], psfile[100], text[100];
 
   // load header macro
