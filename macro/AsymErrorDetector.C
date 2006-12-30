@@ -14,10 +14,11 @@
 #include "rpoldata.h"
 #include "Asym.h"
 #include "AsymROOT.h"
-#include "ROOT.h"
+
 
 #endif
 
+/*
 Int_t 
 ColorSkime(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
@@ -40,6 +41,7 @@ ColorSkime(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   }
 
 }
+*/
 
 Int_t 
 PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
@@ -142,7 +144,7 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   PlotMassEnergyCorrelation(rootfile, CurC, ps);   // Plot Individual Strip
   PlotInvariantMass(rootfile, CurC, ps);   // Plot Individual Strip
 
-  return;
+  return 0;
 
 }
 
@@ -155,12 +157,20 @@ PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   ps->NewPage();
   CurC->Divide(2,2); 
   rootfile->cd(); rootfile->cd("ErrDet");  
-  CurC->cd(1) ; mass_e_corrlation_strip -> Draw(); 
-  //  CurC->cd(2) ; mass_sigma_vs_strip -> Draw(); 
+
+  TH2F * mass_e_correlation_strip = (TH2F*)gDirectory->Get("mass_e_correlation_strip");
+  TH2F * mass_sigma_vs_strip = (TH2F*)gDirectory->Get("mass_sigma_vs_strip");
+  TH1F * good_carbon_events_strip = (TH1F*)gDirectory->Get("good_carbon_events_strip");
+  TH2F * mass_pos_dev_vs_strip = (TH2F*)gDirectory->Get("mass_pos_dev_vs_strip");
+
+  CurC->cd(1) ; mass_e_correlation_strip -> Draw(); 
+  CurC->cd(2) ; mass_sigma_vs_strip -> Draw(); 
   CurC->cd(3) ; good_carbon_events_strip -> Draw(); 
   CurC->cd(4) ; mass_pos_dev_vs_strip -> Draw(); CurC->Update(); 
   ps->NewPage();
 
+  
+  /*
   // one page summary for bunch
   rootfile->cd("Asymmetry");
   CurC->cd(1) ; asym_vs_bunch_x90 -> Draw(); 
@@ -169,7 +179,6 @@ PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   rootfile->cd(); rootfile->cd("ErrDet");
   CurC->cd(4) ; spelumi_vs_bunch -> Draw(); CurC->Update(); 
   CurC->Clear();
-  
 
   // bunch detailes 
   rootfile->cd("Asymmetry");
@@ -185,16 +194,14 @@ PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   asym_bunch_y45   -> Draw(); CurC -> Update(); ps->NewPage();
   spelumi_vs_bunch -> Draw(); CurC -> Update(); ps->NewPage();
 
-  /*
   rootfile->cd(); rootfile->cd("Bunch");
   if (gDirectory(bunch_spelumi))       bunch_spelumi  -> Draw(); CurC -> Update(); ps->NewPage();
   if (gDirecotry(bunch_dist))          bunch_dist     -> Draw(); CurC -> Update(); ps->NewPage();
   if (gDirectory(wall_current_monitor))wall_current_monitor -> Draw(); CurC -> Update(); ps->NewPage();
-  */
 
   // strip details
   rootfile->cd(); rootfile->cd("ErrDet");
-  mass_e_corrlation_strip -> Draw(); CurC->Update(); 
+  mass_e_correlation_strip -> Draw(); CurC->Update(); 
   // mass_sigma_vs_strip -> Draw(); CurC->Update(); 
   mass_chi2_vs_strip -> Draw(); CurC->Update(); 
   good_carbon_events_strip -> Draw(); CurC->Update(); 
@@ -203,6 +210,7 @@ PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   // energy slope
   rootfile->cd(); rootfile->cd("Kinema");
   energy_spectrum_all->Draw(); CurC->Update();
+  */
 
 
   return 0;
@@ -211,18 +219,29 @@ PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
 
 #ifndef __CINT__
-int main(int argc, char **argv) 
+int main(int argc, char **argv) {
+
+  int opt;
+  while (EOF != (opt = getopt(argc, argv, "w:e:ishx?"))) {
+    switch (opt) {
+    case 'h':
+    case '?':
+    case '*':
+      cout << " help" << endl;
+      break;
+    }
+  }
+
 #else
-  Int_t AsymErrorDetector()
+  Int_t AsymErrorDetector() {
 #endif
-{
 
   // load header file
   Char_t HEADER[100];
   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
-  Char_t RunID[10]="7325.102";
+  Char_t RunID[10]="6931.003";
   Char_t filename[50], text[100];
   sprintf(filename,"%s.root",RunID);
   
@@ -244,7 +263,7 @@ int main(int argc, char **argv)
   TCanvas *CurC = new TCanvas("CurC","",1);
 
   PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
-  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
+  //  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
 
   // remove link
   sprintf(text,"rm -f %s",filename);
