@@ -38,8 +38,11 @@ private:
     Float_t dP_online[N];
     Float_t P_offline[N];
     Float_t dP_offline[N];
+    Float_t Rate[N];
+    Float_t sRate[N]; // scaled rate for superpose plot on polarization
     Float_t dum[N];
     TGraphErrors *meas_vs_P[2];
+    TGraphErrors *meas_vs_Rate;
   } fill[N];
 
   struct StructTime {
@@ -71,7 +74,10 @@ public:
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
-  Int_t FillByFillAnalysis(Int_t Mode, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  // following functions are defined in FillByFill.C
+  Int_t FillByFill(Int_t Mode, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t FillByFillAnalysis(Int_t ndata);
+  Int_t FillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t TimeDecoder();
 
 }; // end-class Offline
@@ -98,34 +104,6 @@ OfflinePol::Initiarization(Int_t i){
 }
 
 
-
-
-//
-// Class name  : 
-// Method name : GetScale(Float_t *x, Int_t N, Float_t margin, Float& min, Float& max);
-//
-// Description : Calculate min and max from array x(N)
-// Input       : 
-// Return      : Float_t min, Float_t max
-//
-void
-GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
-
-  min = max = x[0];
-  for (Int_t i=0; i<N; i++) {
-    if (x[i]) {
-      if (x[i]<min) min=x[i];
-      if (x[i]>max) max=x[i];
-    }
-  }
-
-  Float_t interval = max - min;
-  min -= interval*margin;
-  max += interval*margin;
-
-  return ;
-
-}
 
 
 
@@ -514,7 +492,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       sfitchi2->Draw();
       break;
   case 1000:
-    FillByFillAnalysis(Mode, ndata, Color, CurC, ps);
+    FillByFill(Mode, ndata, Color, CurC, ps);
     break;
   }
 
@@ -566,6 +544,8 @@ OfflinePol::OfflinePol()
 
   // load header macro
   Char_t HEADER[100];
+  sprintf(HEADER,"%s/Utility.h",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
   sprintf(HEADER,"%s/FillByFill.C",gSystem->Getenv("MACRODIR"));
