@@ -773,6 +773,9 @@
 [7010.002]@
 	CONFIG=7010.002.config.dat;@
 
+[7010.005]
+	CONFIG=7010.006.config.dat;
+
 [7010.006]@
 	CONFIG=7010.006.config.dat;@
 
