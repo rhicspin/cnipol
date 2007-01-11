@@ -16,7 +16,7 @@ const Int_t N=2000;
 const Int_t MAX_NMEAS_PER_FILL=99;
 Int_t RUN=5;
 
-void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
+//void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
 Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
 
 //Int_t SuperposeComments(Int_t Mode, TH2D *frame);
@@ -107,8 +107,6 @@ OfflinePol::Initiarization(Int_t i){
 
 
 
-
-
 //
 // Class name  : Offline
 // Method name : GetData(Char_t *DATAFILE)
@@ -154,55 +152,59 @@ OfflinePol::GetData(Char_t * DATAFILE){
       P_online[i]  = atof(strtok(NULL," "));
       dP_online[i] = atof(strtok(NULL," "));
       RunStatus    = strtok(NULL," ");
-      // process if RunStatus != "Junk" or "N/A-"
-      if ( strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-") ){
+
+      // 31 : process if RunStatus != "N/A-","Junk","Bad","BadP","Tune" 
+      if (RunStatusFilter(31, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
+
 	  MeasType      = strtok(NULL," ");
-	  Energy[i]     = atof(strtok(NULL," "));
-	  time.Week     = strtok(NULL," ");
-	  time.Month    = strtok(NULL," ");
-	  time.Day      = atoi(strtok(NULL," "));
-	  time.Time     = strtok(NULL," ");
+	  if (MeasTypeFilter(15,MeasType)){
 
-	  P_offline[i]  = atof(strtok(NULL," "));
-	  dP_offline[i] = atof(strtok(NULL," "));
-	  phi[i]        = atof(strtok(NULL," "));
-	  dphi[i]       = atof(strtok(NULL," "));
-	  chi2[i]       = atof(strtok(NULL," "));
-	  A_N[i]        = atof(strtok(NULL," "));
-	  target        = strtok(NULL," ");
-	  tgtOp         = strtok(NULL," ");
-	  Rate[i]       = atof(strtok(NULL," "));
-	  SpeLumi[i]    = atof(strtok(NULL," "));
-	  DiffP[i]      = atof(strtok(NULL," "));
-	  P_alt[i]      = atof(strtok(NULL," "));
-	  dP_alt[i]     = atof(strtok(NULL," "));
+	    Energy[i]     = atof(strtok(NULL," "));
+	    time.Week     = strtok(NULL," ");
+	    time.Month    = strtok(NULL," ");
+	    time.Day      = atoi(strtok(NULL," "));
+	    time.Time     = strtok(NULL," ");
 
-	  // Time decorder should be at the end of buffer read loop
-	  Time[i] = TimeDecoder();
+	    P_offline[i]  = atof(strtok(NULL," "));
+	    dP_offline[i] = atof(strtok(NULL," "));
+	    phi[i]        = atof(strtok(NULL," "));
+	    dphi[i]       = atof(strtok(NULL," "));
+	    chi2[i]       = atof(strtok(NULL," "));
+	    A_N[i]        = atof(strtok(NULL," "));
+	    target        = strtok(NULL," ");
+	    tgtOp         = strtok(NULL," ");
+	    Rate[i]       = atof(strtok(NULL," "));
+	    SpeLumi[i]    = atof(strtok(NULL," "));
+	    DiffP[i]      = atof(strtok(NULL," "));
+	    P_alt[i]      = atof(strtok(NULL," "));
+	    dP_alt[i]     = atof(strtok(NULL," "));
 
-	  R_Preg_Palt[i] = P_offline[i] ? P_alt[i]/P_offline[i] : 0;
-	  dR_Preg_Palt[i]= CorrelatedError(P_alt[i],dP_alt[i],P_offline[i],dP_offline[i]);
+	    // Time decorder should be at the end of buffer read loop
+	    Time[i] = TimeDecoder();
 
-	  // overflow
-	  if (fabs(DiffP[i])>25) DiffP[i]=25;
+	    R_Preg_Palt[i] = P_offline[i] ? P_alt[i]/P_offline[i] : 0;
+	    dR_Preg_Palt[i]= CorrelatedError(P_alt[i],dP_alt[i],P_offline[i],dP_offline[i]);
 
-	  // fill 1-dim histograms
-	  Pratio->Fill(R_Preg_Palt[i]);
-	  Pdiff->Fill(DiffP[i]);
-	  phiDist->Fill(phi[i]);
-	  sfitchi2->Fill(chi2[i]);
+	    // overflow
+	    if (fabs(DiffP[i])>25) DiffP[i]=25;
 
+	    // fill 1-dim histograms
+	    Pratio->Fill(R_Preg_Palt[i]);
+	    Pdiff->Fill(DiffP[i]);
+	    phiDist->Fill(phi[i]);
+	    sfitchi2->Fill(chi2[i]);
+
+	    index[i]=i; ++i; 
+
+	  } // end-of-if(MeasTypeFilter()
 
 	} // end-of-if(strlen(50)
 
-	
-	// Skip "Junk" and "N/A-" from array
-	index[i]=i; ++i; 
       } // end-of-if(strcmp(RunStatus,"Junk")*strcmp(RunStatus,"N/A-");
-      
+
       if (i>N-1){
           cerr << "WARNING : input data exceed the size of array " << N << endl;
           cerr << "          Ignore beyond line " << N << endl;
@@ -215,7 +217,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
     if (RunID[0]>7400) RUN=6;
 
     fin.close();
-
+    cout << "Total run =" << i-1 << endl;
 
     return i-1;
 
