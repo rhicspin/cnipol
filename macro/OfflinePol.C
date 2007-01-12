@@ -41,6 +41,11 @@ private:
     Float_t Rate[N];
     Float_t sRate[N]; // scaled rate for superpose plot on polarization
     Float_t dum[N];
+    Float_t Chi2[2];
+    struct StructBad {
+      Float_t P_offline[N];
+      Float_t Clock[N];
+    } bad;
     TGraphErrors *meas_vs_P[2];
     TGraphErrors *meas_vs_Rate;
   } fill[N];
@@ -54,6 +59,13 @@ private:
     Int_t Minute;
     Int_t Sec;
   }time;
+
+  // scale rate for fill by fill analysis plot
+  struct Rate {
+    Float_t ymin;
+    Float_t ymax;
+    Int_t Color;
+  } r;
 
   Int_t Fill[N], nRun[N], Time[N];
   Float_t Energy[N];
@@ -75,9 +87,10 @@ public:
   Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
   // following functions are defined in FillByFill.C
-  Int_t FillByFill(Int_t Mode, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
-  Int_t FillByFillAnalysis(Int_t ndata);
-  Int_t FillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
+  Int_t FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
+  Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
+  Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
   Int_t TimeDecoder();
 
 }; // end-class Offline
@@ -494,7 +507,11 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       sfitchi2->Draw();
       break;
   case 1000:
-    FillByFill(Mode, ndata, Color, CurC, ps);
+    //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
+    //  Mode += 7 (Offline,Online,Rate)
+    //  Mode += 9 (Offline,fit)
+    //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     break;
   }
 
