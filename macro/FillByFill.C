@@ -1,3 +1,7 @@
+extern Float_t RATE_FIT_STANDARD_DEVIATION ;
+extern Float_t RATE_FIT_STANDARD_DEVIATION_DATA ;
+extern Float_t POLARIZATION_FIT_CHI2 ;
+extern Float_t POLARIZATION_FIT_SIGMA_DATA ;
 
 //
 // Class name  : Offline
@@ -111,18 +115,36 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
 Int_t 
 OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps){
 
+  if (Color==4){
+    fout << "\n Blue:" << endl;
+  }else{
+    fout << "\n Yellow:" << endl;
+  };
+
   ps->NewPage();
 
   // Define Chi2 Distribution
   Float_t OverFlow=10;
-  TH1F * FillByFillChi2[2];
-  FillByFillChi2[0] = new TH1F("FillByFillChi2-0","Fill By Fill Polarization Chi2", 21, 0, OverFlow);
-  FillByFillChi2[1] = new TH1F("FillByFillChi2-1","Fill By Fill Polarization Chi2", 21, 0, OverFlow);
-  FillByFillChi2[0] ->SetFillColor(Color);
-  FillByFillChi2[0] ->SetXTitle("Chi2/D.o.F.");
-  FillByFillChi2[0] ->SetYTitle("# of Fill");
-  FillByFillChi2[1] ->SetLineColor(3);
-  FillByFillChi2[1] ->SetLineStyle(2);
+  TH1F * FillByFillChi2[4];
+  Char_t htitle[100];
+  for (Int_t i=0; i<4; i++) {
+    sprintf(htitle,"FillByFillChi2_%d",i);
+    FillByFillChi2[i] = new TH1F(htitle,"Fill By Fill Polarization Chi2/D.o.F", 42, 0, OverFlow);
+    FillByFillChi2[i] ->SetXTitle("Chi2/D.o.F.");
+    FillByFillChi2[i] ->SetYTitle("# of Fill");
+    if (i) {
+      FillByFillChi2[1] ->SetLineColor(3);
+      FillByFillChi2[i] ->SetLineWidth(2); 
+      if (i!=2) FillByFillChi2[i] ->SetLineStyle(2);
+    }else{
+      FillByFillChi2[i] ->SetFillColor(Color);
+      FillByFillChi2[i] ->SetStats(1111);
+    }
+  }
+
+  // Reset counters
+  Fill.bad.rate.fill = Fill.bad.rate.data = Fill.bad.P.fill = Fill.bad.P.data = 0;
+
 
   gStyle->SetOptStat(kFALSE);
   gStyle->SetTitleFontSize(0.08);
@@ -132,26 +154,33 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   Int_t j=0;
   for (Int_t k=0; k<nFill; k++) {
 
-      C->cd(j%10+1);
-      C->Update();
-
       if (fill[k].nRun>1) {
-	FillByFillPlot(Mode, k, Color);
+	C->cd(j%10+1);
+	FillByFillPlot(Mode, k, Color); C->Update();
 	for (Int_t i=0; i<2; i++)  fill[k].Chi2[i] = fill[k].Chi2[i]>OverFlow ? OverFlow*0.99 : fill[k].Chi2[i];
-	if (fill[k].Chi2[0]) FillByFillChi2[0]->Fill(fill[k].Chi2[0]); // Linear Fit
-	if (fill[k].Chi2[0]) FillByFillChi2[1]->Fill(fill[k].Chi2[1]); // Exponential Fit
+	if (fill[k].Chi2[1]) FillByFillChi2[1]->Fill(fill[k].Chi2[1]);   // Exponential Fit
+	if (fill[k].Chi2[0]) {
+	  FillByFillChi2[0]->Fill(fill[k].Chi2[0]);                      // Linear Fit
+	  if (fill[k].DoF>1)  FillByFillChi2[2]->Fill(fill[k].Chi2[0]);  // D.o.F>1
+	  if (fill[k].DoF==1) FillByFillChi2[3]->Fill(fill[k].Chi2[0]);  // D.o.F=1
+	}
 	if ((j+1)%10==0) ps->NewPage();
 	++j;
       }
 
-  }// for (k=0; k<nFill)
+  } // for (k=0; k<nFill)
+
+  C->Update(); ps->NewPage();
+
 
   // Plot Chi2 Distribution if Fit Mode
   if (Mode>>3&1) {
     gStyle->SetTitleFontSize(0.05);
     gStyle->SetOptStat(kTRUE);
-    TCanvas * C2 = new TCanvas("C2");
-    FillByFillChi2[0]->SetStats(1111);
+    TCanvas * C2 = new TCanvas("C2","Chi2 Distribution", 1100, 800);
+    C2->Divide(2);
+
+    C2->cd(1);
     FillByFillChi2[0]->Draw();
     FillByFillChi2[1]->Draw("same");
 
@@ -160,8 +189,34 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
     lg -> AddEntry(FillByFillChi2[1],"Expo Fit","F");
     lg -> Draw("same");
 
-  }
+    C2->cd(2);
+    FillByFillChi2[0]->SetLineColor(Color);
+    FillByFillChi2[0]->Draw("");
+    FillByFillChi2[2]->Draw("same");
+    FillByFillChi2[3]->Draw("same");
 
+    TLegend * lg = new TLegend(0.45,0.7,0.65,0.85);
+    lg -> AddEntry(FillByFillChi2[0],"Linear All;","F");
+    lg -> AddEntry(FillByFillChi2[2],"D.o.F>1","F");
+    lg -> AddEntry(FillByFillChi2[3],"D.o.F=1","F");
+    lg -> Draw("same");
+
+
+    C2->Update();    ps->NewPage();
+
+    fout << "\n ===========================================================" << endl;
+    fout << "  Large Chi2 Pol  fills               : " << Fill.bad.P.fill    << endl;
+    fout << "  Large Chi2 Pol  data                : " << Fill.bad.P.data    << endl;
+    fout << " ===========================================================" << endl;
+
+  } else if (Mode>>4&1) {
+
+    fout << "\n ===========================================================" << endl;
+    fout << "  Large standard deviation RATE fills : " << Fill.bad.rate.fill << endl;
+    fout << "  Large standard deviation RATE data  : " << Fill.bad.rate.data << endl;
+    fout << "\n ===========================================================" << endl;
+
+  }
 
 
   return 0;
@@ -178,7 +233,8 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 //                   Bit 0 - P_Offline 
 //                   Bit 1 - P_Online
 //                   Bit 2 - Rate
-//                   Bit 3 - Fit
+//                   Bit 3 - P_Offline Fit
+//                   Bit 4 - Rate Fit
 //               Mode=7 (Offline,Online,Rate), Mode=9 (Offline,fit)
 // Input       : Int_t Mode, Int_t k, Int_t Color
 // Return      : 
@@ -186,8 +242,9 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 Int_t 
 OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
+  static Int_t hid;
   Char_t text[50];
-  Float_t xmin, xmax, ymin, ymax;
+  Float_t xmin=-0.5, xmax=10, ymin, ymax;
   Float_t margin=0.05;
   Float_t prefix_range=25; // Vertical Axis (Polariation) Range [%]. 
 
@@ -195,17 +252,19 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   r.ymin=0;
   r.ymax=1.6;
   r.Color = 30;
-  xmin=-0.5;  
-  xmax=10;
+
 
   // 2D hist frame
-  Char_t htitle[100]; 
+  Char_t htitle[100], hname[100]; 
   sprintf(htitle,"Fill#%5d",fill[k].FillID);
+  sprintf(hname,"Fill%d",hid); ++hid;
   if (fill[k].nRun>1) GetScale(fill[k].Clock, fill[k].nRun, margin, xmin, xmax);
   Float_t Range = GetScalePrefixRange(prefix_range, fill[k].P_offline, fill[k].nRun, margin, ymin, ymax);
-  TH2F * fillbyfill = new TH2F("fillbyfill", htitle, 10, xmin, xmax, 100, ymin, ymax); 
+  if (Mode>>4&1) {ymin=r.ymin; ymax=r.ymax;};
+  TH2F * fillbyfill     = new TH2F(hname, htitle, 10, xmin, xmax, 100, ymin, ymax); 
   fillbyfill->GetXaxis()->SetTitle("Hours from first measurement at store");
   fillbyfill->GetYaxis()->SetTitle("Polarization [%]");
+  if (Mode>>4&1)  fillbyfill->GetYaxis()->SetTitle("Good Carbon Rate [MHz]");
 
   // Print Vertical Range
   sprintf(text,"V-Range = %d", Range);
@@ -254,8 +313,82 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
     fill[k].meas_vs_Rate -> Draw("PL");
   }
 
+
   // ------------------------------------------------------------------- // 
-  //                              Fitting                                // 
+  //                            Rate Fit       .                         // 
+  // ------------------------------------------------------------------- // 
+  if (Mode>>4&1){
+    Float_t P0, P1;
+    gStyle->SetOptFit(111);
+
+    fill[k].meas_vs_Rate = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].Rate, fill[k].dum, fill[k].dum);
+    fill[k].meas_vs_Rate -> SetMarkerStyle(22);
+    fill[k].meas_vs_Rate -> SetMarkerColor(r.Color);
+    fill[k].meas_vs_Rate -> SetLineColor(r.Color);
+    fill[k].meas_vs_Rate -> Draw("PL");
+
+    TF1 * f1 = new TF1("f1","pol1");
+    f1 -> SetParLimits(1,-10000,0); // positive slope not allowed
+    f1 -> SetLineColor(2);
+    fill[k].meas_vs_Rate -> Fit(f1,"QB");
+    if (fill[k].Chi2[0]>5) printf("Fill#%d Chi-2:%.1f\n",fill[k].FillID, fill[k].Chi2[0]);
+    P0      = f1->GetParameter(0);
+    P1      = f1->GetParameter(1);
+
+    // Test deviation of each data point from the Linear fit
+    for (Int_t i=0; i<fill[k].nRun; i++) fill[k].FitAve[i] = P0 + P1*fill[k].Clock[i];
+    Float_t sdev = StandardDeviation(fill[k].nRun, fill[k].FitAve, fill[k].Rate);
+    sprintf(text,"Standard Deviation %.2f",sdev);
+    TText * tx = new TText(0,0.1,text);
+    tx -> SetTextSize(0.08);
+    tx -> Draw("same");
+
+    // Find suspicious measurement for large standard deviation fills
+    Int_t j=0;
+    if (sdev > RATE_FIT_STANDARD_DEVIATION) {
+      fout.precision(3);
+      fout << "  Fill#" <<  fill[k].FillID << " Standard Deviation : " << sdev 
+	   << " Exceeds limit:" << RATE_FIT_STANDARD_DEVIATION << endl;
+      tx -> SetTextColor(2);
+      tx -> Draw("same");
+      ++Fill.bad.rate.fill;
+
+      for (Int_t i=0; i<fill[k].nRun; i++) {
+	Float_t diff = ((P0 + P1*fill[k].Clock[i]) - fill[k].Rate[i])/sdev;
+	if (fabs(diff)>RATE_FIT_STANDARD_DEVIATION_DATA) {
+	  fill[k].bad.Clock[j] = fill[k].Clock[i];
+	  fill[k].bad.Rate[j]  = fill[k].Rate[i];
+	  printf("%8.3f : %5.1f [MHz] off\n",fill[k].RunID[i], diff);
+	  fout << "    ====> RunID:" << std::setprecision(7) << fill[k].RunID[i] << " is off by " 
+	       << std::setprecision(3) << diff << " standard deviation limit "  << RATE_FIT_STANDARD_DEVIATION_DATA << endl;
+	  sprintf(text,"%5.1f",diff);
+	  TText * tx = new TText(fill[k].bad.Clock[j],fill[k].bad.Rate[j],text);
+	  tx -> SetTextSize(0.08);
+	  tx -> Draw("same");
+	  ++j;
+	} // end-of-fabs(diff>3)
+
+      } // end-of-for(Int_t i=0; i<fill[k].nRun)
+
+    }// end-of-if (StandardDeviation > RATE_FIT_STANDARD_DEVIATION) 
+
+
+    if (j) { // this superpose routine is not working 
+	TGraph * tg = new TGraph(j, fill[k].bad.Clock, fill[k].bad.Rate);
+	tg -> SetMarkerStyle(25);
+	tg -> SetMarkerColor(6);
+	tg -> Draw("same");
+    }
+
+
+    Fill.bad.rate.data += j;
+
+  }
+
+
+
+  // ------------------------------------------------------------------- // 
+  //                     Fitting  on Polarization                        // 
   // ------------------------------------------------------------------- // 
   if (Mode>>3&1){
     Float_t P0, P1;
@@ -266,50 +399,60 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
       // Linear Fit
       TF1 * f1 = new TF1("f1","pol1");
+      f1 -> SetParLimits(1,-10000,0); // positive slope not allowed
       f1 -> SetLineColor(2);
-      fill[k].meas_vs_P[0] -> Fit(f1,"Q");
-      fill[k].Chi2[0] = f1->GetChisquare()/(Float_t)f1->GetNDF();
+      fill[k].meas_vs_P[0] -> Fit(f1,"QB");
+      fill[k].DoF     = f1->GetNDF();
+      fill[k].Chi2[0] = f1->GetChisquare()/(Float_t)fill[k].DoF;
+      if (fill[k].Chi2[0]>POLARIZATION_FIT_CHI2){
+	printf("Fill#%d Chi-2:%.1f\n",fill[k].FillID, fill[k].Chi2[0]);
+	fout.precision(3);
+	fout << "  Fill#" <<  fill[k].FillID << " Pol fit chi2 : " << fill[k].Chi2[0] 
+	   << " Exceeds limit:" << POLARIZATION_FIT_CHI2 << endl;
+        ++Fill.bad.P.fill;
+      }
       P0      = f1->GetParameter(0);
       P1      = f1->GetParameter(1);
       lg->AddEntry(f1,"Linear Fit","L");
 
       // Exponential Fit
       TF1 * f2 = new TF1("f2","expo");
+      f2 -> SetParLimits(1,-10000,0); // positive slope not allowed
       f2 -> SetLineColor(3);
       f2 -> SetLineStyle(2);
-      fill[k].meas_vs_P[0] -> Fit(f2,"QN");
+      fill[k].meas_vs_P[0] -> Fit(f2,"QNB");
       f2 -> Draw("same");
       fill[k].Chi2[1] = f2->GetChisquare()/(Float_t)f2->GetNDF();
       lg->AddEntry(f2,"Expo Fit","L");
-
       lg->Draw("same");
 
       // Test deviation of each data point from the Linear fit
       Int_t j=0;
       for (Int_t i=0; i<fill[k].nRun; i++) {
+
 	Float_t sigma = ((P0 + P1*fill[k].Clock[i]) - fill[k].P_offline[i])/fill[k].dP_offline[i];
-	if (fabs(sigma)>3) {
+	if (fabs(sigma)>POLARIZATION_FIT_SIGMA_DATA) {
 	  fill[k].bad.Clock[j] = fill[k].Clock[i];
 	  fill[k].bad.P_offline[j] = fill[k].P_offline[i];
-	  printf("%8.3f : %.1f sigma off\n",fill[k].RunID[i], sigma);
+	  printf("%8.3f : %5.1f sigma off\n",fill[k].RunID[i], sigma);
 	  sprintf(text,"%5.1f",sigma);
-	  TText * tx = new TText(fill[k].bad.Clock[j],fill[k].bad.P_offline[j],text);
+	  fout << "    ====> RunID:" << std::setprecision(7) << fill[k].RunID[i] << " polarization is off by " 
+	       << std::setprecision(3) << sigma << " sigma limit "  << POLARIZATION_FIT_SIGMA_DATA << endl;
+	  TText * tx = new TText(fill[k].Clock[i],fill[k].P_offline[i],text);
 	  tx -> SetTextSize(0.08);
 	  tx -> Draw("same");
 	  ++j;
-	}
-      } 
+	} // end-of-fabs(sigma>3)
 
-      if (j) { // this superpose routine is not working 
-	TGraph * tg = new TGraph(j, fill[k].bad.Clock, fill[k].bad.P_offline);
-	tg -> SetMarkerStyle(25);
-	tg -> SetMarkerColor(6);
-	tg -> Draw("same");
-      }
-
+      } // end-of-for(Int_t i=0; i<fill[k].nRun)
+      
+      Fill.bad.P.data += j;
     } // end-of-if(fill[k].nRun>2)  
 
-    } // end-of-if(Mode>>3&1)
+
+  } // end-of-if(Mode>>3&1)
+
+
 
   return 0;
 

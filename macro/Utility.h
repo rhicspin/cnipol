@@ -1,3 +1,17 @@
+//
+// Class name  : 
+// Method name : StandardDeviation(Int_t n; Float_t Y[], Float_t y[]);
+// Description : Calcualte standard deviation
+// Input       : (Int_t Mask, Char *RunStatus)
+// Return      : 1 if true, 0 if false
+//
+Float_t StandardDeviation(Int_t n, Float_t Y[], Float_t y[]){
+
+  Float_t sdev=0;
+  for (Int_t i=0;i<n;i++) sdev += (Y[i] - y[i])*(Y[i] - y[i]);
+  
+  return sqrt(sdev/Float_t(n-1));
+}
 
 //
 // Class name  : 

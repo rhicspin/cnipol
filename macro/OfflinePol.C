@@ -16,17 +16,20 @@ const Int_t N=2000;
 const Int_t MAX_NMEAS_PER_FILL=99;
 Int_t RUN=5;
 
-//void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
+
+// Bad data point criterias for Fitting
+Float_t RATE_FIT_STANDARD_DEVIATION      = 0.1;   // [MHz]
+Float_t RATE_FIT_STANDARD_DEVIATION_DATA = 1.5;   // [sigma]
+Float_t POLARIZATION_FIT_CHI2            = 5;   
+Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;   // [sigma]
+
 Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
-
-//Int_t SuperposeComments(Int_t Mode, TH2D *frame);
-//Int_t ArrayAndText(TH2D *frame, Float_t xmin, Float_t xmax, Int_t Color, Char_t *txt);
-
 
 class OfflinePol
 {
 
 private:
+  ofstream fout;
   struct StructFillByFill {
     Int_t FillID;
     Int_t nRun;
@@ -42,13 +45,21 @@ private:
     Float_t sRate[N]; // scaled rate for superpose plot on polarization
     Float_t dum[N];
     Float_t Chi2[2];
+    Int_t DoF;
+    Float_t FitAve[N];
     struct StructBad {
-      Float_t P_offline[N];
       Float_t Clock[N];
-    } bad;
+      Float_t P_offline[N];
+      Float_t Rate[N];
+      struct StructCounter {
+	Int_t data;
+	Int_t fill;
+      } rate, P;
+    } bad, good;
     TGraphErrors *meas_vs_P[2];
     TGraphErrors *meas_vs_Rate;
-  } fill[N];
+  } fill[N], Fill ;
+
 
   struct StructTime {
     Char_t *Week;
@@ -264,6 +275,12 @@ OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text,
   case 20:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, P_offline, dx, dP_offline);
     break;
+  case 22:
+    TGraphErrors* tgae = new TGraphErrors(ndata, RunID, P_offline, dx, dP_offline);
+    TF1 * f = new TF1("f","pol0");
+    f->SetLineColor(2);
+    tgae->Fit(f);
+    break;
   case 25:
     TGraphErrors* tgae = new TGraphErrors(ndata, index, P_offline, dx, dP_offline);
     break;
@@ -334,6 +351,11 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
   case 10:
+    GetScale(RunID, ndata, margin, xmin, xmax);
+    Char_t xtitle[100]="Fill Number";
+    Char_t ytitle[100]="Polarization [%]";
+    break;
+  case 12:
     GetScale(RunID, ndata, margin, xmin, xmax);
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="Polarization [%]";
@@ -454,6 +476,9 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
       break;
+  case 12:
+      Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
+      break;
   case 15:
       Plot(Mode,    ndata, 24, "Online",  Color, aLegend);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
@@ -508,10 +533,15 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       break;
   case 1000:
     //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
-    //  Mode += 7 (Offline,Online,Rate)
-    //  Mode += 9 (Offline,fit)
+    //  Mode += 3  (Offline,Online)
+    //  Mode += 7  (Offline,Online,Rate)
+    //  Mode += 9  (Offline,fit)
+    //  Mode += 13 (Offline,Rate,fit)
+    //  Mode += 18 (Rate, Rate_fit)
+    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
     break;
   }
 
@@ -579,8 +609,10 @@ OfflinePol::OfflinePol()
     sprintf(psfile,"ps/OfflinePol.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    RunBothBeam(1000,  CurC, ps); // onlineP and offlineP vs. RunID
-
+    // ==============================================================
+    //                   Run By Run Analysis
+    // ==============================================================
+    RunBothBeam(12,  CurC, ps); // onlineP and Linear Fit
     /*
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
     //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
@@ -600,7 +632,28 @@ OfflinePol::OfflinePol()
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
-    
+    CurC->Clear();
+
+
+    // ==============================================================
+    //                   Fill by Fill Analysis
+    // ==============================================================
+    sprintf(psfile,"ps/FillByFill.ps");
+    TPostScript *ps = new TPostScript(psfile,112);
+
+    Char_t outfile[100]; 
+    sprintf(outfile,"summary/FillByFill.dat");
+    fout.open(outfile,ios::out);
+    RunBothBeam(1000,  CurC, ps); // onlineP and offlineP vs. RunID
+
+    // close output file
+    cout << "output data file: " << outfile << endl;
+    fout.close();
+
+    cout << "ps file : " << psfile << endl;
+    ps->Close();
+
+
     //    gSystem->Exec("gv ps/OfflinePol.ps");
 
     return 0;
