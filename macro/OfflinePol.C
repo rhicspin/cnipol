@@ -18,7 +18,7 @@ Int_t RUN=5;
 
 
 // Bad data point criterias for Fitting
-Float_t RATE_FIT_STANDARD_DEVIATION      = 0.1;   // [MHz]
+Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
 Float_t RATE_FIT_STANDARD_DEVIATION_DATA = 1.5;   // [sigma]
 Float_t POLARIZATION_FIT_CHI2            = 5;   
 Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;   // [sigma]
@@ -541,7 +541,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
     break;
   }
 
