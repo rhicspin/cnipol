@@ -81,7 +81,7 @@ SRC
 	Asym           "Main analysis program"
 	RunDBReader    "portable run.db reader/printer"
 	dLayerChecker  "deadlayer fit checker"
-	KinFunc.cc     "kinematics reconstructer from depsited energy"
+	KinFunc.cc     "kinematics reconstructer from deposited energy"
 
 DOCUMENTAIONS
   ./cnipol/doc
