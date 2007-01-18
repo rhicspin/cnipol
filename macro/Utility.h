@@ -77,6 +77,20 @@ MeasTypeFilter(Int_t Mask, Char_t *MeasType){
 
 }
 
+//
+// Class name  : 
+// Method name : GetMax(Float_t *x, Int_t N)
+//
+// Description : Calculate maximum out of array x[] 
+// Input       : 
+// Return      : Float_t Max
+//
+Float_t 
+GetMax(Float_t *x, Int_t N){
+  Float_t Max=x[0];
+  for (Int_t i=1; i<N; i++) Max = x[i]>Max ? x[i] : Max;
+  return Max;
+}
 
 
 //
@@ -125,4 +139,14 @@ GetScalePrefixRange(Float_t Range, Float_t *x, Int_t N, Float_t margin, Float_t 
   
   return fabs(max - min);
 
+}
+
+// Return Minimum and Maximum from array A[N]. Same as GetMinMax() function. But
+// GetMinMaxOption takes prefix value which forces min, max to be prefix when the
+// absolute min,max are smaller than prefix.
+void GetScalePrefix(float prefix, int N, float A[], float margin, float &min, float &max){
+  GetScale(A, N, margin, min, max);
+  if ( fabs(min)<prefix ) min = -prefix;
+  if ( fabs(max)<prefix ) max =  prefix;
+  return ;
 }
