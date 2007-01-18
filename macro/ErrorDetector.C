@@ -969,7 +969,7 @@ ErrorDetector::ErrorDetector()
   gROOT->LoadMacro(HEADER);
 
   // some utility macros
-  sprintf(HEADER,"%s/include.h",gSystem->Getenv("MACRODIR"));
+  sprintf(HEADER,"%s/Utility.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
   // Cambus Setup
