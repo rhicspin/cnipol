@@ -23,7 +23,7 @@ Float_t StandardDeviation(Int_t n, Float_t Y[], Float_t y[]){
 //	         Bit 5 - Susp;
 //               Bit 4 - Tune;     
 //               Bit 3 - BadP;     
-// 	         Bit 2 - Bad;      
+// 	         Bit 2 - Bad-;      
 //               Bit 1 - Junk;
 // 	         Bit 0 - N/A-;     
 // Input       : (Int_t Mask, Char *RunStatus)
@@ -35,7 +35,7 @@ RunStatusFilter(Int_t Mask, Char_t *RunStatus){
   Int_t test=1;
   if (Mask>>0&1) test *= strcmp(RunStatus,"N/A");
   if (Mask>>1&1) test *= strcmp(RunStatus,"Junk");
-  if (Mask>>2&1) test *= strcmp(RunStatus,"Bad");
+  if (Mask>>2&1) test *= strcmp(RunStatus,"Bad-");
   if (Mask>>3&1) test *= strcmp(RunStatus,"BadP");
   if (Mask>>4&1) test *= strcmp(RunStatus,"Tune");
   if (Mask>>5&1) test *= strcmp(RunStatus,"Susp");
