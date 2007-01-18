@@ -164,7 +164,7 @@ RunStatusAbbriviator(){
 	elif [ $RUN_STATUS == 'Recovered' ] ; then
 	    RUN_STATUS="Rcvd";
 	elif [ $RUN_STATUS == 'Bad' ] ; then
-	    RUN_STATUS="Bad ";
+	    RUN_STATUS="Bad-";
 	fi
     else
 	RUN_STATUS="----";
@@ -530,8 +530,8 @@ dLayerConfig(){
 grepit(){
 
     echo -e -n "$RunID";
-    GetOnlinePolarization;
-#    GetOnlinePolFromFile;
+#    GetOnlinePolarization;
+    GetOnlinePolFromFile;
     printf "$OnlineP $OnlinedP";
 
     MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
