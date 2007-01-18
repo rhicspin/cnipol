@@ -20,8 +20,9 @@ Int_t RUN=5;
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
 Float_t RATE_FIT_STANDARD_DEVIATION_DATA = 1.5;   // [sigma]
+Float_t RATE_DROP_ALLOWANCE              = 0.6;   // Maximum rate drop factor
 Float_t POLARIZATION_FIT_CHI2            = 5;   
-Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;   // [sigma]
+Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;     // [sigma]
 
 Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
 
@@ -43,6 +44,7 @@ private:
     Float_t dP_offline[N];
     Float_t Rate[N];
     Float_t sRate[N]; // scaled rate for superpose plot on polarization
+    Float_t RateRest[N];
     Float_t dum[N];
     Float_t Chi2[2];
     Int_t DoF;
@@ -102,6 +104,8 @@ public:
   Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
+  Int_t RateFit(Int_t k, Int_t Mode);
+  Float_t GetDropRate(Int_t k, Int_t i);
   Int_t TimeDecoder();
 
 }; // end-class Offline
@@ -477,6 +481,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
       break;
   case 12:
+    gStyle->SetOptFit(111);
       Plot(Mode+10, ndata, 20, "Offline", Color, aLegend);
       break;
   case 15:
@@ -538,7 +543,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 9  (Offline,fit)
     //  Mode += 13 (Offline,Rate,fit)
     //  Mode += 18 (Rate, Rate_fit)
-    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
