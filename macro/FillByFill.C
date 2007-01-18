@@ -212,9 +212,9 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   } else if (Mode>>4&1) {
 
     fout << "\n ===========================================================" << endl;
-    fout << "  Large standard deviation RATE fills : " << Fill.bad.rate.fill << endl;
-    fout << "  Large standard deviation RATE data  : " << Fill.bad.rate.data << endl;
-    fout << "\n ===========================================================" << endl;
+    if (Fill.bad.rate.fill) fout << "  RATE Drop Suspicious fills : " << Fill.bad.rate.fill << endl;
+    fout << "  RATE Drop Suspicoius data  : " << Fill.bad.rate.data << endl;
+    fout << " ===========================================================" << endl;
 
   }
 
@@ -256,7 +256,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
   // 2D hist frame
   Char_t htitle[100], hname[100]; 
-  sprintf(htitle,"Fill#%5d",fill[k].FillID);
+  Color == 4 ? sprintf(htitle,"Fill#%5d (Blue)",fill[k].FillID) : sprintf(htitle,"Fill#%5d (Yellow)",fill[k].FillID) ;
   sprintf(hname,"Fill%d",hid); ++hid;
   if (fill[k].nRun>1) GetScale(fill[k].Clock, fill[k].nRun, margin, xmin, xmax);
   Float_t Range = GetScalePrefixRange(prefix_range, fill[k].P_offline, fill[k].nRun, margin, ymin, ymax);
@@ -318,71 +318,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   //                            Rate Fit       .                         // 
   // ------------------------------------------------------------------- // 
   if (Mode>>4&1){
-    Float_t P0, P1;
-    gStyle->SetOptFit(111);
-
-    fill[k].meas_vs_Rate = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].Rate, fill[k].dum, fill[k].dum);
-    fill[k].meas_vs_Rate -> SetMarkerStyle(22);
-    fill[k].meas_vs_Rate -> SetMarkerColor(r.Color);
-    fill[k].meas_vs_Rate -> SetLineColor(r.Color);
-    fill[k].meas_vs_Rate -> Draw("PL");
-
-    TF1 * f1 = new TF1("f1","pol1");
-    f1 -> SetParLimits(1,-10000,0); // positive slope not allowed
-    f1 -> SetLineColor(2);
-    fill[k].meas_vs_Rate -> Fit(f1,"QB");
-    if (fill[k].Chi2[0]>5) printf("Fill#%d Chi-2:%.1f\n",fill[k].FillID, fill[k].Chi2[0]);
-    P0      = f1->GetParameter(0);
-    P1      = f1->GetParameter(1);
-
-    // Test deviation of each data point from the Linear fit
-    for (Int_t i=0; i<fill[k].nRun; i++) fill[k].FitAve[i] = P0 + P1*fill[k].Clock[i];
-    Float_t sdev = StandardDeviation(fill[k].nRun, fill[k].FitAve, fill[k].Rate);
-    sprintf(text,"Standard Deviation %.2f",sdev);
-    TText * tx = new TText(0,0.1,text);
-    tx -> SetTextSize(0.08);
-    tx -> Draw("same");
-
-    // Find suspicious measurement for large standard deviation fills
-    Int_t j=0;
-    if (sdev > RATE_FIT_STANDARD_DEVIATION) {
-      fout.precision(3);
-      fout << "  Fill#" <<  fill[k].FillID << " Standard Deviation : " << sdev 
-	   << " Exceeds limit:" << RATE_FIT_STANDARD_DEVIATION << endl;
-      tx -> SetTextColor(2);
-      tx -> Draw("same");
-      ++Fill.bad.rate.fill;
-
-      for (Int_t i=0; i<fill[k].nRun; i++) {
-	Float_t diff = ((P0 + P1*fill[k].Clock[i]) - fill[k].Rate[i])/sdev;
-	if (fabs(diff)>RATE_FIT_STANDARD_DEVIATION_DATA) {
-	  fill[k].bad.Clock[j] = fill[k].Clock[i];
-	  fill[k].bad.Rate[j]  = fill[k].Rate[i];
-	  printf("%8.3f : %5.1f [MHz] off\n",fill[k].RunID[i], diff);
-	  fout << "    ====> RunID:" << std::setprecision(7) << fill[k].RunID[i] << " is off by " 
-	       << std::setprecision(3) << diff << " standard deviation limit "  << RATE_FIT_STANDARD_DEVIATION_DATA << endl;
-	  sprintf(text,"%5.1f",diff);
-	  TText * tx = new TText(fill[k].bad.Clock[j],fill[k].bad.Rate[j],text);
-	  tx -> SetTextSize(0.08);
-	  tx -> Draw("same");
-	  ++j;
-	} // end-of-fabs(diff>3)
-
-      } // end-of-for(Int_t i=0; i<fill[k].nRun)
-
-    }// end-of-if (StandardDeviation > RATE_FIT_STANDARD_DEVIATION) 
-
-
-    if (j) { // this superpose routine is not working 
-	TGraph * tg = new TGraph(j, fill[k].bad.Clock, fill[k].bad.Rate);
-	tg -> SetMarkerStyle(25);
-	tg -> SetMarkerColor(6);
-	tg -> Draw("same");
-    }
-
-
-    Fill.bad.rate.data += j;
-
+    RateFit(k, 0);
   }
 
 
@@ -455,5 +391,143 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
 
   return 0;
+
+}
+
+
+
+//
+// Class name  : OfflinePol
+// Method name : RateFit()
+//
+// Description : 
+// Input       : 
+// Return      : 
+//
+void 
+OfflinePol::RateFit(Int_t k, Int_t Mode){
+  
+  Int_t j=0; // bad run counter
+  Char_t text[100];
+
+
+  Float_t P0, P1;
+  gStyle->SetOptFit(111);
+
+  // Plot rate as a function of time
+  fill[k].meas_vs_Rate = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].Rate, fill[k].dum, fill[k].dum);
+  fill[k].meas_vs_Rate -> SetMarkerStyle(22);
+  fill[k].meas_vs_Rate -> SetMarkerColor(r.Color);
+  fill[k].meas_vs_Rate -> SetLineColor(r.Color);
+  fill[k].meas_vs_Rate -> Draw("PL");
+
+  //==============================================================================//
+  //     No fit. Just check if the rate is not significantly low than expected    //
+  //==============================================================================//
+  if (Mode==0){
+
+    for (Int_t i=0; i<fill[k].nRun; i++) {
+      Float_t DropRate = GetDropRate(k, i);
+      if ( DropRate < RATE_DROP_ALLOWANCE) {
+	++j;
+	fout << "    ====> RunID: " << std::setprecision(7) << fill[k].RunID[i] << " rate drop " 
+	     << std::setprecision(3) << DropRate << " significant than limit :"  << RATE_DROP_ALLOWANCE << endl;
+	sprintf(text,"%8.3f(%5.2f)",fill[k].RunID[i],DropRate);
+	TText * tx = new TText(fill[k].Clock[i],fill[k].Rate[i],text);
+	tx -> SetTextSize(0.08);
+	tx -> Draw("same");
+      }	
+    }
+
+
+  //==============================================================================//
+  //                 Linear fit and check the standard deviation                  //
+  //==============================================================================//
+  } else if (Mode == 1){
+
+    TF1 * f1 = new TF1("f1","pol1");
+    f1 -> SetParLimits(1,-10000,0); // positive slope not allowed
+    f1 -> SetLineColor(2);
+    fill[k].meas_vs_Rate -> Fit(f1,"QB");
+    if (fill[k].Chi2[0]>5) printf("Fill#%d Chi-2:%.1f\n",fill[k].FillID, fill[k].Chi2[0]);
+    P0      = f1->GetParameter(0);
+    P1      = f1->GetParameter(1);
+      
+
+    // Test deviation of each data point from the Linear fit
+    for (Int_t i=0; i<fill[k].nRun; i++) fill[k].FitAve[i] = P0 + P1*fill[k].Clock[i];
+    Float_t sdev = StandardDeviation(fill[k].nRun, fill[k].FitAve, fill[k].Rate);
+    sprintf(text,"Standard Deviation %.2f",sdev);
+    TText * tx = new TText(0,0.1,text);
+    tx -> SetTextSize(0.08);
+    tx -> Draw("same");
+
+
+    // Find suspicious measurement for large standard deviation fills
+    Int_t j=0;
+    if (sdev > RATE_FIT_STANDARD_DEVIATION) {
+      fout.precision(3);
+      fout << "  Fill#" <<  fill[k].FillID << " Standard Deviation : " << sdev 
+	   << " Exceeds limit:" << RATE_FIT_STANDARD_DEVIATION << endl;
+      tx -> SetTextColor(2);
+      tx -> Draw("same");
+      ++Fill.bad.rate.fill;
+
+      for (Int_t i=0; i<fill[k].nRun; i++) {
+	Float_t diff = ((P0 + P1*fill[k].Clock[i]) - fill[k].Rate[i])/sdev;
+	if (fabs(diff)>RATE_FIT_STANDARD_DEVIATION_DATA) {
+	  fill[k].bad.Clock[j] = fill[k].Clock[i];
+	  fill[k].bad.Rate[j]  = fill[k].Rate[i];
+	  printf("%8.3f : %5.1f [MHz] off\n",fill[k].RunID[i], diff);
+	  fout << "    ====> RunID:" << std::setprecision(7) << fill[k].RunID[i] << " is off by " 
+	       << std::setprecision(3) << diff << " standard deviation limit "  << RATE_FIT_STANDARD_DEVIATION_DATA << endl;
+	  sprintf(text,"%5.1f",diff);
+	  TText * tx = new TText(fill[k].bad.Clock[j],fill[k].bad.Rate[j],text);
+	  tx -> SetTextSize(0.08);
+	  tx -> Draw("same");
+	  ++j;
+	} // end-of-fabs(diff>3)
+	  
+      } // end-of-for(Int_t i=0; i<fill[k].nRun)
+      
+    }// end-of-if (StandardDeviation > RATE_FIT_STANDARD_DEVIATION) 
+
+
+
+    if (j) { // this superpose routine is not working 
+      TGraph * tg = new TGraph(j, fill[k].bad.Clock, fill[k].bad.Rate);
+      tg -> SetMarkerStyle(25);
+      tg -> SetMarkerColor(6);
+      tg -> Draw("same");
+    }
+
+    
+  } // end-of-if (Mode)
+  Fill.bad.rate.data += j;
+
+  return;
+
+}
+
+
+
+//
+// Class name  : OfflinePol
+// Method name : GetDropRate(Int_t k, Int_t i)
+//
+// Description : Calculate Drop in Rate compared with the maximum rate exected after the "i"th measurement  
+// Input       : Int_t k, Int_t i
+// Return      : Ratio between present "i"th Rate and max rate after "i"th measurement
+//
+Float_t
+OfflinePol::GetDropRate(Int_t k, Int_t i){
+
+  for (Int_t j=0; j<fill[k].nRun-i; j++) {
+    fill[k].RateRest[j] = fill[k].Rate[i+j];
+  }
+  
+  // GetMax(fill[k].RateRest, fill[k].nRun-i) returns the maximum rate from the
+  // any measurements after "i"th one.
+  return fill[k].Rate[i]/GetMax(fill[k].RateRest, fill[k].nRun-i); 
 
 }
