@@ -181,13 +181,14 @@ OfflinePol::GetData(Char_t * DATAFILE){
       dP_online[i] = atof(strtok(NULL," "));
       RunStatus    = strtok(NULL," ");
 
-      // 31 : process if RunStatus != "N/A-","Junk","Bad","BadP","Tune" 
+      // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       if (RunStatusFilter(31, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
 
 	  MeasType      = strtok(NULL," ");
+	  // 15 : mask MeasType == "PROF","TUNE","PHYS"
 	  if (MeasTypeFilter(15,MeasType)){
 
 	    Energy[i]     = atof(strtok(NULL," "));
