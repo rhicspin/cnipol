@@ -544,10 +544,10 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 9  (Offline,fit)
     //  Mode += 13 (Offline,Rate,fit)
     //  Mode += 18 (Rate, Rate_fit)
-    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
     break;
   }
 

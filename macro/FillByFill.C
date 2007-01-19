@@ -319,6 +319,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   // ------------------------------------------------------------------- // 
   if (Mode>>4&1){
     RateFit(k, 0);
+    // RateFit(k, 1);  // linear fit
   }
 
 
