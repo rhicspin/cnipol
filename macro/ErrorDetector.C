@@ -13,7 +13,7 @@
 #define Debug 0
 
 const Int_t N=2000;
-const Int_t MB=4; // Most Significant Bit for Bunch Error Code
+const Int_t MB=4; // Most Significant Bit for Bunch&Strip Error Code
 const Int_t NSTRIP=72;
 const Int_t NSTRIP_PER_DETECTOR=12;
 const Int_t NDETECTOR=6;
@@ -22,6 +22,7 @@ class ErrorDetector
 {
 
 private:
+  ofstream fout;
   struct StructBunch {
     Float_t NBunch[N];
     Float_t NBad[N];
@@ -88,6 +89,7 @@ private:
 public:
   Int_t Initiarize();
   Int_t OverflowControl(Int_t index);
+  Int_t ErrorCodeHandler(Int_t i);
   Int_t GetData(Char_t * DATAFILE);
   void  DrawFrame(Int_t Mode, Int_t ndata);
   Int_t MakePlots(Int_t Mode, TCanvas * CurC, TPostScript * ps);
@@ -200,6 +202,57 @@ ErrCodeDecorder(Char_t *ErrCode, Int_t MB, Int_t EArray[]){
       EArray[i] = i;
     }
   }
+
+  return 0;
+}
+
+//
+// Class name  : ErrorDetector
+// Method name : ErrorCodeHandler(Int_t i)
+//
+// Description : Fill Error Code histograms
+// Input       : 
+// Return      : 
+//
+Int_t
+ErrorDetector::ErrorCodeHandler(Int_t i){
+
+  // Bunch Error Code
+  Int_t EArray[MB];
+  if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
+    for (Int_t k=0; k<MB; k++) {
+      if (EArray[k] != -1) {
+
+	// Fill Histogram
+	BunchErrCode->Fill(EArray[k]);
+
+	// print anomaly run to output data file
+	  if (EArray[k]==1) fout << " " << setprecision(7) << data.RunID[i] << " : found anomaly in Y45 asymmmetry " << endl;
+	  if (EArray[k]==2) fout << " " << setprecision(7) << data.RunID[i] << " : found anomaly in X45 asymmmetry " << endl;
+	  if (EArray[k]==3) fout << " " << setprecision(7) << data.RunID[i] << " : found anomaly in X90 asymmmetry " << endl;
+
+      } // end-of-if(EArray[k]!=1)
+
+    } // end-of-for(Int_t k) loop
+
+  }// end-of-if(!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) 
+
+
+  // Strip Error Code
+  for (int j=0;j<MB;j++) EArray[j]=0;
+  if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
+    for (Int_t k=0; k<MB; k++) {
+      if (EArray[k] != -1) {
+
+	// Fill Histograms
+	StripErrCode->Fill(EArray[k]);
+
+	// print out anomaly to the output data file
+	if (EArray[k]==1) fout << " " << setprecision(7) << data.RunID[i] << " : found anomaly in #good events in banana. " << endl;
+      }//end-of-if(EArray[k])
+    }
+  }
+
 
   return 0;
 }
@@ -551,8 +604,11 @@ ErrorDetector::GetData(Char_t * DATAFILE){
       RunStatus = strtok(NULL," ");
       MeasType  = strtok(NULL," ");
       
-      if ( strcmp(RunStatus,"Bad")*strcmp(RunStatus,"N/A")*strcmp(RunStatus,"Junk") ) {
-	if ( strcmp(MeasType,"PROF")*strcmp(MeasType,"TUNE")*strcmp(MeasType,"PHYS") ) {
+      // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
+      if (RunStatusFilter(31, RunStatus)){
+
+	// 15 : mask MeasType == "PROF","TUNE","PHYS"
+	if (MeasTypeFilter(15,MeasType)){
 
 	  nevents = atof(strtok(NULL," "));
 	  data.bunch.NBunch[i] = atof(strtok(NULL," " ));
@@ -580,19 +636,8 @@ ErrorDetector::GetData(Char_t * DATAFILE){
 	  // Overflows
 	  OverflowControl(i);
 
-	  // Error Code Decorder
-	  Int_t EArray[4];
-	  if (!ErrCodeDecorder(data.bunch.ErrCode, MB, EArray)) { 
-	    for (Int_t k=0; k<MB; k++) {
-	      if (EArray[k] != -1) BunchErrCode->Fill(EArray[k]);
-	    }
-	  }
-	  for (int j=0;j<4;j++) EArray[j]=0;
-	  if (!ErrCodeDecorder(data.strip.ErrCode, MB, EArray)) { 
-	    for (Int_t k=0; k<MB; k++) {
-	      if (EArray[k] != -1) StripErrCode->Fill(EArray[k]);
-	    }
-	  }
+	  // Fill Error Code Histograms
+	  ErrorCodeHandler(i);
 
 	  // Fill 1-dim histograms
 	  BadBunchRate->Fill(data.bunch.BadRate[i]);
@@ -808,9 +853,9 @@ ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
       BunchErrCode->SetXTitle("Bunch Error Code ");
       BunchErrCode->SetFillColor(Color);
       BunchErrCode->GetXaxis()->SetBinLabel(1,"Specific Luminosity");
-      BunchErrCode->GetXaxis()->SetBinLabel(2,"X90 Asymmetry");
+      BunchErrCode->GetXaxis()->SetBinLabel(2,"Y45 Asymmetry");
       BunchErrCode->GetXaxis()->SetBinLabel(3,"X45 Asymmetry");
-      BunchErrCode->GetXaxis()->SetBinLabel(4,"Y45 Asymmetry");
+      BunchErrCode->GetXaxis()->SetBinLabel(4,"X90 Asymmetry");
       BunchErrCode->Draw();
       break;
     case 135:
@@ -940,7 +985,6 @@ ErrorDetector::MakePlots(Int_t Mode, TCanvas * CurC, TPostScript *ps){
   CurC -> Update();
   ps->NewPage();
 
-
   return 0;
 
 } // end-of-Plot()
@@ -964,13 +1008,18 @@ ErrorDetector::ErrorDetector()
   Int_t Mode=0; // 0 - regular , 100 - individual strip history
   Char_t HEADER[100], psfile[100], text[100];
 
-  // load header macro
+  // load header macros
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
-
-  // some utility macros
   sprintf(HEADER,"%s/Utility.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
+
+  // Output Datafile
+  Char_t outfile[100];
+  sprintf(outfile,"summary/ErrorDetector.dat");
+  fout.open(outfile,ios::out);
+  
+
 
   // Cambus Setup
   CurC = new TCanvas("CurC","",1);
@@ -988,10 +1037,13 @@ ErrorDetector::ErrorDetector()
     sprintf(psfile,"ps/ErrorDetector.ps");
     ps = new TPostScript(psfile,112);
 
+    /*
     MakePlots(100, CurC, ps); // Total Number of Bunches
     MakePlots(110, CurC, ps); // Bad Bunch Rate
     MakePlots(115, CurC, ps); // Bad Bunch Rate (1-dim hist)
+    */
     MakePlots(125, CurC, ps); // Bunch Error Code (1-dim hist)
+    /*
     MakePlots(135, CurC, ps); // Max Specific Luminosity Deviation (1-dim hist)
     MakePlots(200, CurC, ps); // Energy Slope
     MakePlots(205, CurC, ps); // Energy Slope (1-dim hist)
@@ -1009,10 +1061,15 @@ ErrorDetector::ErrorDetector()
     MakePlots(353, CurC, ps); // Bad Strip History
     CurC->SetGridy();
     MakePlots(355, CurC, ps); // Bad Strip Statistics (1-dim)
+    */
 
   }
 
+  // close output file
+  cout << "output data file: " << outfile << endl;
+  fout.close();
 
+  // close postscript file
   cout << "ps file : " << psfile << endl;
   ps->Close();
     
