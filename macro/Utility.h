@@ -26,6 +26,10 @@ Float_t StandardDeviation(Int_t n, Float_t Y[], Float_t y[]){
 // 	         Bit 2 - Bad-;      
 //               Bit 1 - Junk;
 // 	         Bit 0 - N/A-;     
+// 
+//               31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
+//               19 : mask RunStatus == "N/A-","Junk","Tune" 
+//
 // Input       : (Int_t Mask, Char *RunStatus)
 // Return      : 1 if true, 0 if false
 //

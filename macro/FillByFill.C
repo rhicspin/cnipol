@@ -44,6 +44,28 @@ OfflinePol::FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas 
 
 }
 
+//
+// Class name  : OfflinePol
+// Method name : SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps)
+//
+// Description : Makes single fill plot
+// Input       : Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps
+// Return      : (Int_t)Number of Fills
+//
+Int_t 
+OfflinePol::SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps){
+
+  Int_t nFill = FillByFillAnalysis(RUN, ndata);
+
+  gStyle->SetOptStat(kFALSE);
+  for (Int_t k=0; k<nFill; k++) {
+    if (fill[k].FillID == FillID ) FillByFillPlot(Mode-1000, k, Color); 
+  }
+
+  return 0;
+
+}
+
 
 //
 // Class name  : OfflinePol
@@ -98,11 +120,13 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
 
   }
 
-  cout << "Total Number of Fill = " << j << endl;
+  cout << "Total Number of Fill = " << j+1 << endl;
 
-  return j;
+  return j+1;
 
 }
+
+
 
 //
 // Class name  : OfflinePol
