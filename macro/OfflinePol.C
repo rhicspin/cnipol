@@ -101,6 +101,7 @@ public:
   Int_t GetData(Char_t * DATAFILE);
   // following functions are defined in FillByFill.C
   Int_t FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps);
   Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
@@ -182,7 +183,9 @@ OfflinePol::GetData(Char_t * DATAFILE){
       RunStatus    = strtok(NULL," ");
 
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
-      if (RunStatusFilter(31, RunStatus)){
+      // 19 : mask RunStatus == "N/A-","Junk","Tune" 
+      //      if (RunStatusFilter(31, RunStatus)){
+      if (RunStatusFilter(19, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -549,6 +552,9 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
     break;
+  case 1100:
+    SingleFillPlot(Mode+9, RUN, ndata, 7327, Color, CurC, ps);
+    break;
   }
 
   return 0;
@@ -650,7 +656,8 @@ OfflinePol::OfflinePol()
     Char_t outfile[100]; 
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
-    RunBothBeam(1000,  CurC, ps); // onlineP and offlineP vs. RunID
+    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
+    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
 
     // close output file
     cout << "output data file: " << outfile << endl;
