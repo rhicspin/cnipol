@@ -49,20 +49,24 @@ share/
 
 SRC
   ./cnipol/src
-	AsymMain.cc    "main program. hundle options"
-	AsymRead.cc    "read in raw data and decode"
-	AsymRunDB.cc   "read in condistions for runs from run.db" 
-	AsymHbook.cc   "histogram booking"
-	AsymRecover.cc "recoverly routines for unusual treatments of data"
-	hb_lib.f       "utility library to call hbook from c++"
-	AsymProcess.cc "event looop processing program"
-   	AsymCalc.cc    "end of run routine"
-
+	AsymMain.cc            "main program. hundle options"
+	AsymRead.cc            "read in raw data and decode"
+	AsymRunDB.cc           "read in condistions for runs from run.db" 
+	AsymHbook.cc           "hbook histogram booking"
+	AsymROOT.cc            "root histogram booking and close"
+	AsymRecover.cc         "recoverly routines for unusual treatments of data"
+	hb_lib.f               "utility library to call hbook from c++"
+	AsymProcess.cc         "event looop processing program"
+   	AsymCalc.cc            "end of run routine"
+	AsymErrorDetecotr.cc   "software error detector functions"
 
 	Asym.h
 	AsymMain.h
+	AsymROOT.h
 	AsymCalc.h
+	AsymErrorDetector.h
 	AsymRecoverUserDefined.h
+	AsymRunDB.h
 	AsymRecover.h
 	AsymProcess.h
 	Kinema.h
@@ -79,6 +83,7 @@ SRC
 
   Executables : try -h and -x options for more details
 	Asym           "Main analysis program"
+	AsymPlot       "A plot viewer"  
 	RunDBReader    "portable run.db reader/printer"
 	dLayerChecker  "deadlayer fit checker"
 	KinFunc.cc     "kinematics reconstructer from deposited energy"
@@ -179,7 +184,7 @@ Working directory and Running executables:
     
    output:
 	hbookfile: outsampleex.hbook
-    
+	rootfile : runid.root    
     
 
 The utility program to run Asym and browse histograms:
@@ -187,6 +192,7 @@ The utility program to run Asym and browse histograms:
 
     Some directrories to be created
     $ASYMDIR/hbook                   : store hbook files
+    $ASYMDIR/root                    : store root files
     $ASYMDIR/log                     : offline log directory	   
     $ASYMDIR/ps                      : for postscript outputs
 
