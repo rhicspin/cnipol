@@ -24,6 +24,7 @@
 StructHist Eslope;
 
 // Direcotories
+TDirectory * Run;
 TDirectory * Kinema;
 TDirectory * Bunch;
 TDirectory * ErrDet;
@@ -37,6 +38,9 @@ TDirectory * Asymmetry;
 //  in Run06 which are target events. These histograms are deleted before ROOT file closing 
 //  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
 //
+// Run Dir
+TH2F * rate_vs_delim;
+
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
@@ -89,6 +93,7 @@ Root::RootFile(char *filename){
   rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
 
   // directory structure
+  Run       = rootfile->mkdir("Run");
   Kinema    = rootfile->mkdir("Kinema");
   Bunch     = rootfile->mkdir("Bunch");
   ErrDet    = rootfile->mkdir("ErrDet");

@@ -43,6 +43,8 @@ StructStripCheck strpchk;
 int 
 DetectorAnomaly(){
 
+  Kinema->cd();
+
   TF1 * expf = new TF1("expf","expo");
   expf -> SetParameters(1,-60);
   expf -> SetLineColor(2);

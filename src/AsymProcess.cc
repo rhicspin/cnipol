@@ -490,11 +490,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 int time=0;
 		if (runinfo.Run==5){
                     time = delim;
+		    ++cntr.good[delim];
                     NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
                 } else { 
                     time = (int)cntr.revolution/RHIC_REVOLUTION_FREQ;
                     if (time<MAXDELIM) {
-                        NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
+		      ++cntr.good[delim];
+		      NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
                     }else{
 		      cerr << "ERROR: time constructed from revolution # " << time << "exeeds MAXDELIM=" << MAXDELIM << " defined\n" << endl;
                     }
@@ -524,8 +526,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 		    }
 		*/
 
-                // Study mode for multiple purpise
-                
                 // Spin Tune
                 if (dproc.STUDYMODE==1) {
                     HHF1(40000+(int)(st/12), 

@@ -47,10 +47,14 @@ extern const float MSIZE;
 
 
 // ROOT Histograms
+extern TDirectory * Run;
 extern TDirectory * Kinema;
 extern TDirectory * Bunch;
 extern TDirectory * ErrDet;
 extern TDirectory * Asymmetry;
+
+// Run Dir
+extern TH2F * rate_vs_delim;
 
 // Kinema Direcotry
 extern TH2F * t_vs_e[TOT_WFD_CH];
