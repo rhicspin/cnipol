@@ -131,6 +131,8 @@ int end_process(recordConfigRhicStruct *cfginfo)
 int
 CompleteHistogram(){
 
+  char htitle[100];
+
   // Draw reg./alt. event selection borders in Invariant Mass plots
   float MASS_12C_k2G=MASS_12C*k2G;
   for (int i=0; i<NSTRIP; i++) {
@@ -156,7 +158,8 @@ CompleteHistogram(){
   }
   anal.max_rate = GetMax(ndelim,y);
   GetMinMax(ndelim, y, margin, min, max);
-  rate_vs_delim = new TH2F("rate_vs_delim","Rate vs Deliminter", 100, 0, ndelim+1, 100, min, max);
+  sprintf(htitle,"%8.3f : Rate vs Deliminter", runinfo.RUNID);
+  rate_vs_delim = new TH2F("rate_vs_delim",htitle, 100, 0, ndelim+1, 100, min, max);
   rate_vs_delim -> GetXaxis() -> SetTitle("Deliminter");
   rate_vs_delim -> GetYaxis() -> SetTitle("Rate/Deliminter [MHz]");
   TGraphErrors * rate_delim = new TGraphErrors(ndelim, x, y, dx, dy);
