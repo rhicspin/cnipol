@@ -215,7 +215,7 @@ int readloop() {
                 wcmdist[bid] = wcmdat.fillDataM[bid*3];
 		Nwcmtot+=wcmdist[bid]*fillpat[bid];
             }
-	    runinfo.WcmAve  =  Nwcmtot/float(runinfo.NFilledBunch);
+	    runinfo.WcmAve  =  Nwcmtot/float(runinfo.NFilledBunch-runinfo.NDisableBunch);
 	    ReadFlag.WCMADO = 1;
 	  }
 	  break;

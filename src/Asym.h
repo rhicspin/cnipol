@@ -24,6 +24,7 @@ using namespace std;      // declare string in structure
 #define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
 #define MAXDELIM 410               // maximum number of delimiter (dynamic motion only)
+#define SEC_PER_DELIM 1            // second per deliminter
 #define TARGETINDEX 1000           // maximum target full array size including static motion
 #define NTBIN 14                   // number of -t bin
 
@@ -33,8 +34,9 @@ using namespace std;      // declare string in structure
 #define NDETECTOR 6                // Number of detectors
 #define NBUNCH 120                 // Maximum bunch number
 #define R2D 57.29577951            // [rad] -> [degree]
-#define G2k 1e6                    // GeV -> keV
-#define k2G 1e-6                   // keV -> GeV
+#define MHz 1e-6                   // [Hz]  -> [MHz]
+#define G2k 1e6                    // [GeV] -> [keV]
+#define k2G 1e-6                   // [keV] -> [GeV]
 #define MASS_12C 11.187e6          // Mass Carbon in [keV]
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
 #define TGT_STEP 0.11              // target motion [mm]/step
@@ -154,6 +156,7 @@ typedef struct {
 } StructSinPhi;
 
 typedef struct {
+  float max_rate;
   float TshiftAve;
   float A_N[2];
   float P[2];
@@ -263,6 +266,7 @@ typedef struct {
 } StructStripCounter;
 
 typedef struct {
+  long int good[MAXDELIM];
   long int revolution;
   long int tgtMotion;
   StructStripCounter reg, alt;

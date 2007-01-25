@@ -131,6 +131,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
 int
 CompleteHistogram(){
 
+  // Draw reg./alt. event selection borders in Invariant Mass plots
   float MASS_12C_k2G=MASS_12C*k2G;
   for (int i=0; i<NSTRIP; i++) {
     float max = mass_nocut[i]->GetMaximum();
@@ -143,8 +144,26 @@ CompleteHistogram(){
     DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.3, 4, 1);
   }
 
-  
 
+  // Make rate _vs deliminter plots
+  Run->cd();
+  float min=fabs(ASYM_DEFAULT), max; float margin=0.2;
+  float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
+  for (int i=0; i<ndelim; i++) {
+    x[i]=float(i); dx[i]=0; 
+    y[i]=float(cntr.good[i])/float(SEC_PER_DELIM)*MHz; 
+    dy[i]=float(sqrt(cntr.good[i]))/float(SEC_PER_DELIM)*MHz; 
+  }
+  anal.max_rate = GetMax(ndelim,y);
+  GetMinMax(ndelim, y, margin, min, max);
+  rate_vs_delim = new TH2F("rate_vs_delim","Rate vs Deliminter", 100, 0, ndelim+1, 100, min, max);
+  rate_vs_delim -> GetXaxis() -> SetTitle("Deliminter");
+  rate_vs_delim -> GetYaxis() -> SetTitle("Rate/Deliminter [MHz]");
+  TGraphErrors * rate_delim = new TGraphErrors(ndelim, x, y, dx, dy);
+  rate_delim -> SetMarkerStyle(20);
+  rate_delim -> SetMarkerColor(4);
+  rate_vs_delim -> GetListOfFunctions() -> Add(rate_delim,"P");
+  
   return 0;
 
 }
@@ -717,6 +736,7 @@ PrintRunResults(StructHistStat hstat){
     printf("-----------------------------   Analysis Results   --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10d\n",   runinfo.RunTime);
+    printf(" Good Carbon Rate      [MHz] = %10.4f\n", anal.max_rate);
     printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
     printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
     printf(" Target                      =          %c\n",     runinfo.target);
