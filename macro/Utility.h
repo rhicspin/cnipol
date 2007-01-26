@@ -1,3 +1,12 @@
+//  Some general utility routines for root macros
+//  file name :   Utility.h
+//
+//  Author    :   Itaru Nakagawa
+//  Creation  :   01/26/2007
+//
+
+
+
 //
 // Class name  : 
 // Method name : StandardDeviation(Int_t n; Float_t Y[], Float_t y[]);
@@ -153,4 +162,50 @@ void GetScalePrefix(float prefix, int N, float A[], float margin, float &min, fl
   if ( fabs(min)<prefix ) min = -prefix;
   if ( fabs(max)<prefix ) max =  prefix;
   return ;
+}
+
+
+
+
+//
+// Class name  : 
+// Method name : DrawLine()
+//
+// Description : DrawLines in TH2F histogram
+//             : Assumes  (x1,x2) y=y0=y1
+// Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
+// Return      : 
+//
+void 
+DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
+
+  TLine * l = new TLine(x0, y, x1, y);
+  l -> SetLineStyle(lstyle);
+  l -> SetLineColor(color);
+  l -> SetLineWidth(lwidth);
+  h -> GetListOfFunctions()->Add(l);
+
+  return;
+}
+
+
+//
+// Class name  : 
+// Method name : DrawText(TH2F * h, float x, float y, int color, char * text)
+//
+// Description : draw text on histogram. 
+//             : 
+// Input       : TH2F * h, float x, float y, int color, char * text
+// Return      : 
+//
+void 
+DrawText(TH2F * h, float x, float y, int color, char * text){
+
+  TText * t = new TText(x, y, text);
+  t->SetTextColor(color);
+  t->SetTextSize(0.1);
+  t->SetTextAlign(21);
+  h->GetListOfFunctions()->Add(t);
+
+  return;
 }

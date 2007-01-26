@@ -87,7 +87,8 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill){
 	    }
 	  }
 
-	  PrintPeriodByPeriodArray(i,k,j, array_index);
+	  // Print out period by period arrays for debugging purpose
+	  //	  PrintPeriodByPeriodArray(i,k,j, array_index);
 	  ++period[j].nRun;
 
 	} // end-of-for(k=0;fill[i].nRun)
