@@ -13,12 +13,28 @@ extern Float_t POLARIZATION_FIT_SIGMA_DATA ;
 //
 Int_t 
 OfflinePol::TimeDecoder(){
+  Int_t day=0;
+
+  string str(time.Month_c);
+  if (!str.compare("Jan")){ time.Month = 1; day=31;};
+  if (!str.compare("Feb")){ time.Month = 2; day=29;};
+  if (!str.compare("Mar")){ time.Month = 3; day=31;};
+  if (!str.compare("Apr")){ time.Month = 4; day=30;};
+  if (!str.compare("May")){ time.Month = 5; day=31;};
+  if (!str.compare("Jun")){ time.Month = 6; day=30;};
+  if (!str.compare("Jul")){ time.Month = 7; day=31;};
+  if (!str.compare("Aug")){ time.Month = 8; day=31;};
+  if (!str.compare("Sep")){ time.Month = 9; day=30;};
+  if (!str.compare("Oct")){ time.Month = 10; day=31;};
+  if (!str.compare("Nov")){ time.Month = 11; day=30;};
+  if (!str.compare("Dec")){ time.Month = 12; day=31;};
+  if (!day) cerr << "OfflinePol::TimeDecoder()  Error in decoding time.Month_c" << endl;
 
   time.Hour   = atoi(strtok(time.Time,":"));
   time.Minute = atoi(strtok(NULL,":"));
   time.Sec    = atoi(strtok(NULL,":"));
 
-  Int_t time = time.Sec + 60*(time.Minute + 60*(time.Hour + 24*time.Day));
+  Int_t time = time.Sec + 60*(time.Minute + 60*(time.Hour + 24*(time.Day + time.Month*day)));
 
   return time;
 
@@ -46,14 +62,14 @@ OfflinePol::FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas 
 
 //
 // Class name  : OfflinePol
-// Method name : SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps)
+// Method name : SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color)
 //
 // Description : Makes single fill plot
-// Input       : Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps
+// Input       : Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color
 // Return      : (Int_t)Number of Fills
 //
 Int_t 
-OfflinePol::SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps){
+OfflinePol::SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color){
 
   Int_t nFill = FillByFillAnalysis(RUN, ndata);
 
@@ -65,6 +81,8 @@ OfflinePol::SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int
   return 0;
 
 }
+
+
 
 
 //
@@ -105,20 +123,22 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     fill[j].dP_online[array_index]  = dP_online[i];
     fill[j].P_offline[array_index]  = P_offline[i] * sign;
     fill[j].dP_offline[array_index] = dP_offline[i];
-    fill[j].Clock[array_index]      = (Float_t(Time[i]) - fill[j].Clock0)/3600;
     fill[j].Rate[array_index]       = Rate[i];
-    /*
-    printf("i=%d ",i);
-    printf("j=%d ",j);
-    printf("fill[%d].nRun=%d ",j,fill[j].nRun);
-    printf("fill[%d].Index[%d]=%d ",j, array_index, fill[j].Index[array_index]);
-    printf("fill[%d].RunID[%d]=%8.3f ",j, array_index, fill[j].RunID[array_index]);
-    printf("fill[%d].P_offline[%d]=%f",j, array_index, fill[j].P_offline[array_index]);
-    printf("fill[%d].Clock[%d]=%5.1f",j, array_index, fill[j].Clock[array_index]);
-    printf("\n");
-    */
+    fill[j].WCM[array_index]        = WCM[i];
+    fill[j].Time[array_index]       = Float_t(Time[i]);
+    fill[j].Clock[array_index]      = (Float_t(Time[i]) - fill[j].Clock0)/3600;
+    fill[j].dum[array_index]        = 0;
+    if (array_index) {
+      fill[j].dt[array_index]       = fill[j].Clock[array_index]-fill[j].Clock[array_index-1];
+    }else{
+      fill[j].dt[array_index]       = 0;
+    }
 
-  }
+
+    // print out fill by fill arrays for debugging
+    //    PrintFillByFillArray(i, j, array_index);
+
+  } // end-of-for(i=0;ndata) lope
 
   cout << "Total Number of Fill = " << j+1 << endl;
 
@@ -126,6 +146,37 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
 
 }
 
+
+
+
+
+
+//
+// Class name  : OfflinePol
+// Method name : PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index)
+//
+// Description : Print fill by fill arrays for diagnose
+// Input       : Int_t i, Int_t j, Int_t array_index
+// Return      : 
+//
+Int_t 
+OfflinePol::PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index){
+
+
+    printf("i=%d ",i);
+    printf("j=%d ",j);
+    printf("fill[%d].nRun=%d ",j,fill[j].nRun);
+    printf("fill[%d].Index[%d]=%d ",j, array_index, fill[j].Index[array_index]);
+    printf("fill[%d].RunID[%d]=%8.3f ",j, array_index, fill[j].RunID[array_index]);
+    printf("fill[%d].P_offline[%d]=%5.1f ",j, array_index, fill[j].P_offline[array_index]);
+    printf("fill[%d].Clock[%d]=%4.1f ",j, array_index, fill[j].Clock[array_index]);
+    printf("fill[%d].dt[%d]=%4.1f ",j,array_index, fill[j].dt[array_index]);
+    printf("fill[%d].WCM[%d]=%4.1f ",j,array_index, fill[j].WCM[array_index]);
+    printf("\n");
+
+    return 0;
+
+}
 
 
 //

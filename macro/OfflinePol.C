@@ -10,12 +10,38 @@
 #include <math.h>
 #include <iomanip>
 
+#ifndef __CINT__
+
+#include <getopt.h>
+#include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH2D.h"
+#include "TF1.h"
+#include "TGraphErrors.h"
+#include "TStyle.h"
+#include "TText.h"
+#include "TLine.h"
+#include "TCanvas.h"
+#include "TPostScript.h"
+#include "TSystem.h"
+#include "TLegend.h"
+
+#endif
+
+
 #define Debug 0
 
 const Int_t N=2000;
 const Int_t MAX_NMEAS_PER_FILL=99;
+const Int_t MAX_NMEAS_PER_PERIOD=1000;
+
 Int_t RUN=5;
 
+// Initialization of analysis options
+Int_t FILL=0;
+Int_t FILL_BY_FILL_ANALYSIS=1;
+Int_t OFFLINE_POL=1;
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -26,6 +52,23 @@ Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;     // [sigma]
 
 Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
 
+
+// Jet Period Setting for Run05
+const Int_t nJetRun5=19;
+Int_t JetRun5[nJetRun5+1]     = {6945, 6973, 6975, 6980, 6988, 6988, 
+				 7007, 7046, 7088, 7114, 7120, 7139, 
+				 7172, 7224, 7263, 7300, 7303, 7317, 
+				 7319, 7328};
+Int_t JetRun5type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
+				    3,    3,    4,    5,    3,    5,
+				    7,    5,    3,    5,    5,    6,
+				    3};
+
+
+
+//
+// Class OfflinePol
+//
 class OfflinePol
 {
 
@@ -34,25 +77,28 @@ private:
   struct StructFillByFill {
     Int_t FillID;
     Int_t nRun;
-    Float_t Clock0;
-    Float_t Clock[MAX_NMEAS_PER_FILL];
+    Float_t Clock0; // The time stamp of the first measurement in store
+    Float_t Clock[MAX_NMEAS_PER_FILL]; // time duration from the first measurement in [h]
+    Float_t Time[MAX_NMEAS_PER_FILL]; // time stamp of the measurement 
+    Float_t dt[MAX_NMEAS_PER_FILL]; // time duration between measurement in [h]
     Float_t RunID[MAX_NMEAS_PER_FILL];
     Float_t Index[MAX_NMEAS_PER_FILL];
-    Float_t P_online[N];
-    Float_t dP_online[N];
-    Float_t P_offline[N];
-    Float_t dP_offline[N];
-    Float_t Rate[N];
-    Float_t sRate[N]; // scaled rate for superpose plot on polarization
-    Float_t RateRest[N];
-    Float_t dum[N];
+    Float_t P_online[MAX_NMEAS_PER_FILL];
+    Float_t dP_online[MAX_NMEAS_PER_FILL];
+    Float_t P_offline[MAX_NMEAS_PER_FILL];
+    Float_t dP_offline[MAX_NMEAS_PER_FILL];
+    Float_t Rate[MAX_NMEAS_PER_FILL];
+    Float_t sRate[MAX_NMEAS_PER_FILL]; // scaled rate for superpose plot on polarization
+    Float_t RateRest[MAX_NMEAS_PER_FILL];
+    Float_t WCM[MAX_NMEAS_PER_FILL];
+    Float_t dum[MAX_NMEAS_PER_FILL];
     Float_t Chi2[2];
     Int_t DoF;
-    Float_t FitAve[N];
+    Float_t FitAve[MAX_NMEAS_PER_FILL];
     struct StructBad {
-      Float_t Clock[N];
-      Float_t P_offline[N];
-      Float_t Rate[N];
+      Float_t Clock[MAX_NMEAS_PER_FILL];
+      Float_t P_offline[MAX_NMEAS_PER_FILL];
+      Float_t Rate[MAX_NMEAS_PER_FILL];
       struct StructCounter {
 	Int_t data;
 	Int_t fill;
@@ -62,12 +108,38 @@ private:
     TGraphErrors *meas_vs_Rate;
   } fill[N], Fill ;
 
+  struct PeroidByPeriod {
+    Int_t PeriodID;
+    Int_t nPeriod;
+    Int_t nRun;
+    Int_t Begin_FillID;
+    Int_t End_FillID;
+    Int_t Type;
+    Int_t flag;
+    Float_t Clock0; // The time stamp of the first measurement in store
+    Float_t Clock[MAX_NMEAS_PER_PERIOD]; // time duration from the first measurement in [h]
+    Float_t ClockM[MAX_NMEAS_PER_PERIOD]; // time duration from the first measurement in [h]
+    Float_t RunID[MAX_NMEAS_PER_PERIOD];
+    Float_t P_online[MAX_NMEAS_PER_PERIOD];
+    Float_t dP_online[MAX_NMEAS_PER_PERIOD];
+    Float_t P_offline[MAX_NMEAS_PER_PERIOD];
+    Float_t dP_offline[MAX_NMEAS_PER_PERIOD];
+    Float_t Weight[MAX_NMEAS_PER_PERIOD];
+    Float_t dt[MAX_NMEAS_PER_PERIOD];
+    Float_t WCM[MAX_NMEAS_PER_PERIOD];
+    Float_t sWCM[MAX_NMEAS_PER_PERIOD];
+    Float_t dum[MAX_NMEAS_PER_PERIOD];
+    Float_t wAve[2];
+    TGraphErrors *meas_vs_P[2];
+    TGraphErrors *meas_vs_WCM;
+  } Period, period[MAX_NMEAS_PER_PERIOD] ;
 
   struct StructTime {
     Char_t *Week;
-    Char_t *Month;
+    Char_t *Month_c;
     Int_t Day;
     Char_t *Time;
+    Int_t Month;
     Int_t Hour;
     Int_t Minute;
     Int_t Sec;
@@ -80,10 +152,10 @@ private:
     Int_t Color;
   } r;
 
-  Int_t Fill[N], nRun[N], Time[N];
+  Int_t nRun[N], Time[N];
   Float_t Energy[N];
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
-  Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],SpeLumi[N],DiffP[N];
+  Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],WCM[N],SpeLumi[N],DiffP[N];
   Float_t P_alt[N],dP_alt[N],R_Preg_Palt[N],dR_Preg_Palt[N];
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
@@ -97,17 +169,25 @@ public:
   Int_t PlotControlCenter(Char_t*, Int_t, TCanvas *CurC,  TPostScript *ps);
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
-  Int_t OfflinePol();
   Int_t GetData(Char_t * DATAFILE);
+  Int_t OfflinePol();
   // following functions are defined in FillByFill.C
   Int_t FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
-  Int_t SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color);
   Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
+  Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
   Int_t RateFit(Int_t k, Int_t Mode);
   Float_t GetDropRate(Int_t k, Int_t i);
   Int_t TimeDecoder();
+  // following functions are defined in PeriodByPeriod.C
+  Int_t PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill);
+  Int_t PrintPeriodByPeriodArray(Int_t i, Int_t j, Int_t array_index);
+  Int_t MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
+  Int_t PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color);
+  Int_t CalcWeightedMean();
 
 }; // end-class Offline
 
@@ -124,7 +204,8 @@ void
 OfflinePol::Initiarization(Int_t i){
   
   RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
-  P_alt[i]=dP_alt[i]= 0;
+  Rate[i] = WCM[i] = 0;
+  P_alt[i] = dP_alt[i] = 0;
   P_offline[i] =  phi[i]  = -9999;
   index[i]=0;
 
@@ -196,7 +277,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
 	    Energy[i]     = atof(strtok(NULL," "));
 	    time.Week     = strtok(NULL," ");
-	    time.Month    = strtok(NULL," ");
+	    time.Month_c  = strtok(NULL," ");
 	    time.Day      = atoi(strtok(NULL," "));
 	    time.Time     = strtok(NULL," ");
 
@@ -209,6 +290,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	    target        = strtok(NULL," ");
 	    tgtOp         = strtok(NULL," ");
 	    Rate[i]       = atof(strtok(NULL," "));
+	    WCM[i]        = atof(strtok(NULL," "));
 	    SpeLumi[i]    = atof(strtok(NULL," "));
 	    DiffP[i]      = atof(strtok(NULL," "));
 	    P_alt[i]      = atof(strtok(NULL," "));
@@ -440,7 +522,6 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   frame -> GetYaxis()->SetTitle(ytitle);
   frame -> Draw();
 
-
   // Superpose some beam operational comments on the frame 
   SuperposeComments(Mode, frame);
 
@@ -553,7 +634,18 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
-    SingleFillPlot(Mode+9, RUN, ndata, 7327, Color, CurC, ps);
+    SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
+    break;
+  case 2000:
+    if (RUN=5){
+      Period.nPeriod=nJetRun5;
+      for (Int_t i=0; i<Period.nPeriod; i++){
+	period[i].Begin_FillID = JetRun5[i];
+	period[i].End_FillID   = JetRun5[i+1];
+	period[i].Type         = JetRun5type[i];
+      }
+    }
+    PeroidByPeriod(Mode, RUN, ndata, Color, CurC, ps);
     break;
   }
 
@@ -599,9 +691,43 @@ OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 // Return      : 
 //
 
-Int_t 
-OfflinePol::OfflinePol()
-{
+
+#ifndef __CINT__
+Int_t main(int argc, char **argv) {
+
+  int opt, option_index = 0;
+  static struct option long_options[] = {
+    {"fill-by-fill", 1, 0, 'f'},
+    {"fill", 0, 0, 'F'},
+  };
+
+  while (EOF != (opt = getopt_long (argc, argv, "fh?xFg", long_options, &option_index))) {
+    switch (opt) {
+    case -1:
+      break;
+    case 'f':
+      FILL_BY_FILL_ANALYSIS=1;
+      OFFLINE_POL=0;
+      break;
+    case 'F':
+      FILL=atoi(optarg);
+      OFFLINE_POL=0;
+      break;
+    case 'g':
+      GHOSTVIEW=1;
+      break;
+    case 'h':
+    case '?':
+    case '*':
+      Usage(argv);
+      break;
+    }
+  }
+
+#else
+Int_t OfflinePol::OfflinePol() {
+#endif
+
 
   // load header macro
   Char_t HEADER[100];
@@ -610,6 +736,8 @@ OfflinePol::OfflinePol()
   sprintf(HEADER,"%s/SuperposeSummaryPlot.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
   sprintf(HEADER,"%s/FillByFill.C",gSystem->Getenv("MACRODIR"));
+  gROOT->LoadMacro(HEADER);
+  sprintf(HEADER,"%s/PeriodByPeriod.C",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
     // Cambus Setup
@@ -624,12 +752,12 @@ OfflinePol::OfflinePol()
     // ==============================================================
     //                   Run By Run Analysis
     // ==============================================================
-    RunBothBeam(12,  CurC, ps); // onlineP and Linear Fit
     /*
+    RunBothBeam(12,  CurC, ps); // onlineP and Linear Fit
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
     //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
-    RunBothBeam(30,  CurC, ps); // 2-sigma/3-sigma ratio vs. RunID
-    RunBothBeam(130,  CurC, ps); // 2-sigma/3-sigma ratio Distribution
+    RunBothBeam(30,  CurC, ps); // reg-sigma/alternative-sigma ratio vs. RunID
+    RunBothBeam(130,  CurC, ps); // reg-sigma/alternative-sigma ratio Distribution
     RunBothBeam(50,  CurC, ps); // onlineP-offlineP vs. RunID
     RunBothBeam(150, CurC, ps); // onlineP-offlineP Distribution
     RunBothBeam(60,  CurC, ps); // phi-angle vs. RunID
@@ -640,8 +768,7 @@ OfflinePol::OfflinePol()
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
     RunBothBeam(90,  CurC, ps); // Specific Luminosity  vs. RunID
     //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
-    */
-
+*/
     cout << "ps file : " << psfile << endl;
     ps->Close();
     CurC->Clear();
@@ -656,8 +783,9 @@ OfflinePol::OfflinePol()
     Char_t outfile[100]; 
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
-    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
-    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
+    //    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
+    //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
+    RunBothBeam(2000, CurC, ps); // period by period analysis
 
     // close output file
     cout << "output data file: " << outfile << endl;
