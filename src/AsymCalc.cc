@@ -749,10 +749,12 @@ PrintRunResults(StructHistStat hstat){
         printf(" Reconstructed Duration  [s] = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
         printf(" Target Motion Counter       = %10d\n",cntr.tgtMotion);
     }
+    printf(" WCM Sum                     = %10.1f\n", runinfo.WcmSum);
     printf(" WCM Average                 = %10.1f\n", runinfo.WcmAve);
     printf(" WCM Average w/in rnge       = %10.1f\n", average.average);
     printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
     printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
+    printf(" # of Active Bunch           = %10d\n", runinfo.NActiveBunch);
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
     printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);

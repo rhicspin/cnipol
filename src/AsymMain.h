@@ -85,6 +85,7 @@ StructRunInfo runinfo = {
     0, // EvntRate;
     0, // ReadRate;
     0, // WcmAve;
+    0, // WcmSum;
     0, // BeamEnergy;
     0, // RHICBeam;
     0, // MaxRevolution;
@@ -92,7 +93,7 @@ StructRunInfo runinfo = {
     0, // TgtOperation (Initialization is done in Initialization() )
     {  // ActiveDetector[NDETECTOR]
       0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
-    }, // ActiveStrip[NSTRIP]
+    }, 
     {  // ActiveStrip[NSTRIP]
       1,1,1,1,1,1,1,1,1,1,1,1,
       1,1,1,1,1,1,1,1,1,1,1,1,
@@ -112,6 +113,7 @@ StructRunInfo runinfo = {
       0,0,0,0,0,0,0,0,0,0,0,0
     },
     0, // NFilledBunch;
+    0, // NActiveBunch;
     0  // NDisableBunch,
 }; 
 
@@ -198,7 +200,6 @@ float ramptshift[500];  // ramp timing shift
 long int Nevcut=0;       // number of events after 1st cut (whole data)
 long int Nevtot=0;       // number of total events (whole data) 
 long int Nread=0;        // real total events (completely everything)
-long int Nwcmtot=0;      // number of total wall current monitor data.
 int Nskip=1;             // number of events to be skipped in data process 
 long int Ngood[120];     // number of events after carbon cut (each bunch)
 long int Ntotal[120];    // number of events before carbon cut (each bunch)
