@@ -213,9 +213,9 @@ int readloop() {
             memcpy(&wcmdat, &rec.wcmado.data,sizeof(wcmdat));
             for (bid=0;bid<120;bid++){
                 wcmdist[bid] = wcmdat.fillDataM[bid*3];
-		Nwcmtot+=wcmdist[bid]*fillpat[bid];
+		runinfo.WcmSum += wcmdist[bid]*fillpat[bid];
             }
-	    runinfo.WcmAve  =  Nwcmtot/float(runinfo.NFilledBunch-runinfo.NDisableBunch);
+	    runinfo.WcmAve  =  runinfo.WcmSum/float(runinfo.NActiveBunch);
 	    ReadFlag.WCMADO = 1;
 	  }
 	  break;
@@ -283,6 +283,9 @@ int readloop() {
 	      cout << "Masked Fill Pattern : " << endl;
 	      PrintPattern("fill");
 	    }
+
+	    // Active Bunch 
+	    runinfo.NActiveBunch = runinfo.NFilledBunch - runinfo.NDisableBunch;
 
 	    ReadFlag.BEAMADO = 1;
 

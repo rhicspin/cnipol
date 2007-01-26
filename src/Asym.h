@@ -179,6 +179,7 @@ typedef struct {
   float EvntRate;
   float ReadRate;
   float WcmAve;
+  float WcmSum;
   double BeamEnergy;
   int RHICBeam;
   int MaxRevolution;
@@ -190,6 +191,7 @@ typedef struct {
   int NDisableStrip;
   int DisableStrip[NSTRIP];
   int NFilledBunch;
+  int NActiveBunch;
   int NDisableBunch;
   int DisableBunch[NBUNCH];
 } StructRunInfo;
@@ -365,7 +367,6 @@ extern float ramptshift[500]; // ramp timing shift
 extern long int Nevcut;   // number of events after 1st cut (whole data)
 extern long int Nevtot;   // number of total events (whole data) 
 extern long int Nread;    // real total events (completely everything)
-extern long int Nwcmtot;  // number of total wall current monitor data.
 extern int Nskip;         // number of events to be skipped in data process 
 extern int NFilledBunch;  // number of filled bunch
 
