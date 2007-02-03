@@ -202,6 +202,8 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   Float_t OverFlow=10;
   TH1F * FillByFillChi2[4];
   Char_t htitle[100];
+  TH1F * nRunPerFill = new TH1F("nRunPerFill","Number of Runs per Fill", 21, -0.5, 20.5);
+  nRunPerFill -> SetFillColor(Color);
   for (Int_t i=0; i<4; i++) {
     sprintf(htitle,"FillByFillChi2_%d",i);
     FillByFillChi2[i] = new TH1F(htitle,"Fill By Fill Polarization Chi2/D.o.F", 42, 0, OverFlow);
@@ -228,7 +230,10 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   
   Int_t j=0;
   for (Int_t k=0; k<nFill; k++) {
+    nRunPerFill -> Fill(fill[k].nRun);
+    cout << fill[k].FillID << " " << fill[k].nRun << endl;
 
+    // Fill Ch-2 distribution histograms
       if (fill[k].nRun>1) {
 	C->cd(j%10+1);
 	FillByFillPlot(Mode, k, Color); C->Update();
@@ -253,6 +258,7 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
     gStyle->SetTitleFontSize(0.05);
     gStyle->SetOptStat(kTRUE);
     TCanvas * C2 = new TCanvas("C2","Chi2 Distribution", 1100, 800);
+    nRunPerFill->Draw(""); C2-> Update(); ps->NewPage(); C2->Clear();
     C2->Divide(2);
 
     C2->cd(1);
