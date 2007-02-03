@@ -59,10 +59,23 @@ Int_t JetRun5[nJetRun5+1]     = {6945, 6973, 6975, 6980, 6988, 6988,
 				 7007, 7046, 7088, 7114, 7120, 7139, 
 				 7172, 7224, 7263, 7300, 7303, 7317, 
 				 7319, 7328};
-Int_t JetRun5type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
+const Int_t JetRun5nType=8;
+Int_t JetRun5Type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
 				    3,    3,    4,    5,    3,    5,
 				    7,    5,    3,    5,    5,    6,
 				    3};
+
+const Int_t nJetFill=99;
+Int_t JetFill[nJetFill] = { 6945, 6947, 6957, 6959, 6963, 6967, 6968, 6969, 6971, 6972, 
+			    6973, 6975, 6980, 6988, 6990, 6992, 6994, 6997, 6998, 6999,
+			    7001, 7002, 7007, 7010, 7028, 7029, 7030, 7032, 7034, 7035,
+			    7036, 7039, 7051, 7059, 7064, 7067, 7068, 7069, 7070, 7072, 
+			    7088, 7092, 7102, 7103, 7110, 7112, 7114, 7118, 7120, 7122, 
+			    7123, 7125, 7129, 7131, 7133, 7134, 7138, 7139, 7142, 7143,
+			    7151, 7153, 7154, 7163, 7164, 7165, 7172, 7232, 7237, 7245,
+			    7249, 7253, 7255, 7263, 7264, 7266, 7270, 7271, 7272, 7274,
+			    7276, 7278, 7279, 7293, 7294, 7295, 7300, 7301, 7302, 7303,
+			    7304, 7305, 7306, 7308, 7317, 7318, 7319, 7320, 7325};
 
 
 
@@ -115,6 +128,7 @@ private:
     Int_t Begin_FillID;
     Int_t End_FillID;
     Int_t Type;
+    Int_t nType;
     Int_t flag;
     Float_t Clock0; // The time stamp of the first measurement in store
     Float_t Clock[MAX_NMEAS_PER_PERIOD]; // time duration from the first measurement in [h]
@@ -125,13 +139,14 @@ private:
     Float_t P_offline[MAX_NMEAS_PER_PERIOD];
     Float_t dP_offline[MAX_NMEAS_PER_PERIOD];
     Float_t Weight[MAX_NMEAS_PER_PERIOD];
-    Float_t dt[MAX_NMEAS_PER_PERIOD];
+    Float_t dt[MAX_NMEAS_PER_PERIOD];   // interval time between consequtive measurements in [sec]
     Float_t WCM[MAX_NMEAS_PER_PERIOD];
     Float_t sWCM[MAX_NMEAS_PER_PERIOD];
     Float_t dum[MAX_NMEAS_PER_PERIOD];
     Float_t wAve[2];
     TGraphErrors *meas_vs_P[2];
     TGraphErrors *meas_vs_WCM;
+    Float_t pC_Ave[2][3][2];
   } Period, period[MAX_NMEAS_PER_PERIOD] ;
 
   struct StructTime {
@@ -186,7 +201,10 @@ public:
   Int_t PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill);
   Int_t PrintPeriodByPeriodArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
-  Int_t PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color);
+  Float_t PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]);
+  Int_t JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
+  Int_t PlotJet(Int_t Beam, Int_t index, Float_t xmin);
+  Int_t Normalization(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
   Int_t CalcWeightedMean();
 
 }; // end-class Offline
@@ -266,7 +284,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       // 19 : mask RunStatus == "N/A-","Junk","Tune" 
       //      if (RunStatusFilter(31, RunStatus)){
-      if (RunStatusFilter(19, RunStatus)){
+      if (RunStatusFilter(31, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -507,7 +525,6 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   case 100:
     GetScale(RunID, ndata, margin, xmin, xmax);
     GetScale(A_N, ndata, margin, ymin, ymax);
-    cout << ymin << " " << ymax;
     Char_t xtitle[100]="Fill Number";
     Char_t ytitle[100]="A_N";
     sprintf(title,"Energy Spectrum Weighted Average A_N %s", Beam, subtitle);
@@ -628,7 +645,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 9  (Offline,fit)
     //  Mode += 13 (Offline,Rate,fit)
     //  Mode += 18 (Rate, Rate_fit)
-    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
@@ -638,14 +655,25 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     break;
   case 2000:
     if (RUN=5){
-      Period.nPeriod=nJetRun5;
+      Period.nPeriod  = nJetRun5;
+      Period.nType    = JetRun5nType;
       for (Int_t i=0; i<Period.nPeriod; i++){
 	period[i].Begin_FillID = JetRun5[i];
 	period[i].End_FillID   = JetRun5[i+1];
-	period[i].Type         = JetRun5type[i];
+	period[i].Type         = JetRun5Type[i];
+      }
+    } else if (RUN==6) {
+      Period.nPeriod  = nJetRun5;
+      Period.nType    = JetRun5nType;
+      for (Int_t i=0; i<Period.nPeriod; i++){
+	period[i].Begin_FillID = JetRun5[i];
+	period[i].End_FillID   = JetRun5[i+1];
+	period[i].Type         = JetRun5Type[i];
       }
     }
+
     PeroidByPeriod(Mode, RUN, ndata, Color, CurC, ps);
+    //   PeroidByPeriod(Mode+128, RUN, ndata, Color, CurC, ps); // period by period (Diagnose purpose)
     break;
   }
 
@@ -785,12 +813,26 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     //    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
-    RunBothBeam(2000, CurC, ps); // period by period analysis
 
     // close output file
     cout << "output data file: " << outfile << endl;
     fout.close();
+    cout << "ps file : " << psfile << endl;
+    ps->Close();
 
+    // ==============================================================
+    //                   Period by Period Analysis
+    // ==============================================================
+    sprintf(psfile,"ps/PeriodByPeriod.ps");
+    TPostScript *ps = new TPostScript(psfile,112);
+
+    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+
+    Char_t outfile[100]; 
+    sprintf(outfile,"summary/PeriodByPeriod.dat");
+    fout.open(outfile,ios::out);
+    cout << "output data file: " << outfile << endl;
+    fout.close();
     cout << "ps file : " << psfile << endl;
     ps->Close();
 
