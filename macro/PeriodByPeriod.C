@@ -145,7 +145,7 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 // Class name  : OfflinePol
 // Method name : PrintPeriodByPeriodArray(Int_t i, Int_t k, Int_t j, Int_t array_index)
 //
-// Description : Print period by period arrays for diagnose
+// Description : Print period by period arrays for debugging
 // Input       : Int_t i, Int_t k, Int_t j, Int_t array_index
 // Return      : 
 //

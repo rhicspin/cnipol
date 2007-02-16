@@ -193,7 +193,8 @@ public:
   Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
-  Int_t RateFit(Int_t k, Int_t Mode);
+  Int_t RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax);
+  Float_t GetDropRate(Int_t k, Int_t i, Int_t &iMax);
   Float_t GetDropRate(Int_t k, Int_t i);
   Int_t TimeDecoder();
   // following functions are defined in PeriodByPeriod.C
@@ -283,8 +284,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       // 19 : mask RunStatus == "N/A-","Junk","Tune" 
-      //      if (RunStatusFilter(31, RunStatus)){
       if (RunStatusFilter(31, RunStatus)){
+      //      if (RunStatusFilter(19, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -643,7 +644,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 3  (Offline,Online)
     //  Mode += 7  (Offline,Online,Rate)
     //  Mode += 9  (Offline,fit)
-    //  Mode += 13 (Offline,Rate,fit)
+    //  Mode += 13 (Offline,fit,Rate)
     //  Mode += 18 (Rate, Rate_fit)
     //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
@@ -663,17 +664,11 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
 	period[i].Type         = JetRun5Type[i];
       }
     } else if (RUN==6) {
-      Period.nPeriod  = nJetRun5;
-      Period.nType    = JetRun5nType;
-      for (Int_t i=0; i<Period.nPeriod; i++){
-	period[i].Begin_FillID = JetRun5[i];
-	period[i].End_FillID   = JetRun5[i+1];
-	period[i].Type         = JetRun5Type[i];
-      }
+      cerr << "Jet info for Run06 is not impremented yet" << endl;
     }
 
-    PeroidByPeriod(Mode, RUN, ndata, Color, CurC, ps);
-    //   PeroidByPeriod(Mode+128, RUN, ndata, Color, CurC, ps); // period by period (Diagnose purpose)
+    //PeroidByPeriod(Mode, RUN, ndata, Color, CurC, ps);
+    PeroidByPeriod(Mode+128, RUN, ndata, Color, CurC, ps); // period by period (Diagnose purpose)
     break;
   }
 
@@ -827,7 +822,7 @@ Int_t OfflinePol::OfflinePol() {
     TPostScript *ps = new TPostScript(psfile,112);
 
     RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
-
+   
     Char_t outfile[100]; 
     sprintf(outfile,"summary/PeriodByPeriod.dat");
     fout.open(outfile,ios::out);
