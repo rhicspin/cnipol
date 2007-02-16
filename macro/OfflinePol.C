@@ -33,6 +33,7 @@
 #define Debug 0
 
 const Int_t N=2000;
+const Int_t MAX_JET_RUNTIME_DATA=500;
 const Int_t MAX_NMEAS_PER_FILL=99;
 const Int_t MAX_NMEAS_PER_PERIOD=1000;
 
@@ -130,6 +131,7 @@ private:
     Int_t Type;
     Int_t nType;
     Int_t flag;
+    Float_t Time[MAX_NMEAS_PER_PERIOD]; // time stamp of the measurement in [s]
     Float_t Clock0; // The time stamp of the first measurement in store
     Float_t Clock[MAX_NMEAS_PER_PERIOD]; // time duration from the first measurement in [h]
     Float_t ClockM[MAX_NMEAS_PER_PERIOD]; // time duration from the first measurement in [h]
@@ -159,6 +161,17 @@ private:
     Int_t Minute;
     Int_t Sec;
   }time;
+
+  // Structure for jet runtime data
+  struct Jet {
+    Int_t ndata;
+    Int_t FillID[MAX_JET_RUNTIME_DATA];
+    Int_t start[MAX_JET_RUNTIME_DATA];
+    Int_t stop[MAX_JET_RUNTIME_DATA];
+    Int_t dt[MAX_JET_RUNTIME_DATA];
+    Float_t start_time[MAX_JET_RUNTIME_DATA];
+    Float_t RunID[MAX_JET_RUNTIME_DATA];
+  } jet;
 
   // scale rate for fill by fill analysis plot
   struct Rate {
@@ -198,11 +211,12 @@ public:
   Float_t GetDropRate(Int_t k, Int_t i);
   Int_t TimeDecoder();
   // following functions are defined in PeriodByPeriod.C
-  Int_t PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
+  Int_t PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Char_t *Beam, Int_t Color, TCanvas *CurC, TPostScript *ps);
   Int_t PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill);
   Int_t PrintPeriodByPeriodArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
   Float_t PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]);
+  Int_t GetJetRunTime(Char_t *Beam);
   Int_t JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
   Int_t PlotJet(Int_t Beam, Int_t index, Float_t xmin);
   Int_t Normalization(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
@@ -227,6 +241,8 @@ OfflinePol::Initiarization(Int_t i){
   P_alt[i] = dP_alt[i] = 0;
   P_offline[i] =  phi[i]  = -9999;
   index[i]=0;
+
+  jet.ndata=0;
 
   return;
 
@@ -667,8 +683,8 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       cerr << "Jet info for Run06 is not impremented yet" << endl;
     }
 
-    //PeroidByPeriod(Mode, RUN, ndata, Color, CurC, ps);
-    PeroidByPeriod(Mode+128, RUN, ndata, Color, CurC, ps); // period by period (Diagnose purpose)
+    PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
+    //    PeroidByPeriod(Mode+128, RUN, ndata, Beam, Color, CurC, ps); // period by period (Diagnose purpose)
     break;
   }
 

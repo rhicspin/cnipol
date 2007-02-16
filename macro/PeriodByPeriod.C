@@ -1,5 +1,7 @@
 extern const Int_t MAX_NMEAS_PER_PERIOD;
+extern const Int_t MAX_JET_RUNTIME_DATA;
 
+Int_t PlotJetRunPeriod=1;
 
 Float_t JetPol[2][3]  = {43.8, 48.2, 49.4,     // Blue
 			 41.9, 41.1, 45.4};    // Yellow
@@ -12,14 +14,14 @@ Float_t JetdTotPol[2][3] = { 3.0,  4.0,  2.0,  // Blue   total error (SysErr=1.1
 
 //
 // Class name  : OfflinePol
-// Method name : PeroidByPeriodPlot(Int_t Mode, Int_t ndata, TCanvas *CurC, TPostScript *ps)
+// Method name : PeroidByPeriodPlot(Int_t Mode, Int_t ndata, Char_t *Beam, Int_t Color, TCanvas *CurC, TPostScript *ps)
 //
 // Description : Main function of Peroid by Peroid Analysis 
-// Input       : Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps
+// Input       : Int_t Mode, Int_t RUN, Int_t ndata, Char_t *Beam, Int_t Color, TCanvas *CurC, TPostScript *ps
 // Return      : 
 //
 Int_t 
-OfflinePol::PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps){
+OfflinePol::PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Char_t *Beam, Int_t Color, TCanvas *CurC, TPostScript *ps){
 
   Mode -= 2000;
 
@@ -30,7 +32,12 @@ OfflinePol::PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCan
   Int_t nPeriod = PeriodByPeriodAnalysis(RUN, nFill, Mode);
 
   // Make Period By Period Plot
-  MakePeriodByPeriodPlot(nPeriod, Mode+15, Color, ps);
+  if (PlotJetRunPeriod) {
+    jet.ndata=GetJetRunTime(Beam);
+    MakePeriodByPeriodPlot(nPeriod, Mode+15+16, Color, ps);
+  }else{
+    MakePeriodByPeriodPlot(nPeriod, Mode+15, Color, ps);
+  }
 
   // Compare with Jet
   if (!(Mode>>7&1)) JetComparison(nPeriod, Mode+15, Color, ps);
@@ -93,9 +100,11 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	  period[index].P_online[array_index]   = fill[i].P_online[k];
 	  period[index].dP_online[array_index]  = fill[i].dP_online[k];
 	  period[index].P_offline[array_index]  = fill[i].P_offline[k];
-	  period[index].dP_offline[array_index] = fill[i].dP_offline[k];
+	  //	  period[index].dP_offline[array_index] = fill[i].dP_offline[k];
+	  period[index].dP_offline[array_index] = sqrt(fill[i].dP_offline[k]*fill[i].dP_offline[k]+3*3);
 	  period[index].WCM[array_index]        = fill[i].WCM[k];
 	  peroid[index].dum[array_index]        = 0;
+	  period[index].Time[array_index]       = fill[i].Time[k];
 	  if (k==fill[i].nRun-1) fill[i].dt[k+1] = 0;
 	  period[index].dt[array_index]         = (fill[i].dt[k+1]/2+fill[i].dt[k]/2)/2/24;
 	  if (fill[i].nRun==1) period[index].dt[array_index]=1./24.;  // alocate 1 hour 
@@ -161,19 +170,95 @@ OfflinePol::PrintPeriodByPeriodArray(Int_t i, Int_t k, Int_t j, Int_t array_inde
     printf("fill[%d].RunID[%d]=%8.3f ",i, k, fill[i].RunID[k]);
     //    printf("fill[%d].P_offline[%d]=%5.1f ",i, k, fill[i].P_offline[k]);
     printf("fill[%d].dt[%d]=%4.2f ",i,k, fill[i].dt[k]);
-    //    printf("fill[%d].Time[%d]=%4.1f ",i,k, fill[i].Time[k]);
+    printf("period[%d].Time[%d]=%d ",j, array_index, period[j].Time[array_index]);
     printf("period[%d].dt[%d]=%4.3f ",j, array_index, period[j].dt[array_index]);
     printf("period[%d].Clock[%d]=%4.1f ",j, array_index, period[j].Clock[array_index]);
     //    printf("period[%d].ClockM[%d]=%4.2f ",j, array_index, period[j].ClockM[array_index]);
-   printf("period[%d].WCM[%d]=%4.1f ",j, array_index, period[j].WCM[array_index]);
+    //   printf("period[%d].WCM[%d]=%4.1f ",j, array_index, period[j].WCM[array_index]);
     printf("\n");
 
     return 0;
 
 }
 
+
 //
 // Class name  : OfflinePol
+// Method name : GetJetRunningTime(Char_t *Beam)
+//
+// Description : Get jet running time data from jet data file.
+// Input       : (Char_t *Beam)
+// Return      : number of data
+//
+Int_t 
+OfflinePol::GetJetRunTime(Char_t *Beam){
+
+  Char_t datfile[100];
+  sprintf(datfile,"summary/JetRun_%s.dat",Beam);
+
+  ifstream fin;
+  fin.open(datfile,ios::in);
+  printf("Jet Run Time file =%s\n",datfile);
+  if (fin.fail()){
+    cerr << "ERROR: " << DATAFILE << " doesn't exist. Force exit." << endl;
+    exit(-1);
+  }
+
+  cout << MAX_JET_RUNTIME_DATA << endl;
+  Int_t ch=0, i=0;
+  while ( ( ch = fin.peek()) != EOF ) {
+    fin >> jet.FillID[i] >> jet.start[i] >> jet.stop[i] >> jet.dt[i] >> jet.start_time[i] >> jet.RunID[i];
+
+    ++i;
+    if (i>MAX_JET_RUNTIME_DATA) {
+      cerr << "GetJetRunTime()::ERROR! number lines exeeds predefined array size " << MAX_JET_RUNTIME_DATA << endl;
+      exit(-1);
+    }
+
+  }
+
+  --i;
+
+
+  return i;
+
+}
+
+
+//
+// Class name  : OfflinePol
+// Method name : PlotJetRunningTime(Char_t *Beam)
+//
+// Description : Plot jet running time data
+// Input       : (Int_t k, Float_t ymin)
+// Return      : number of data
+//
+Int_t 
+OfflinePol::PlotJetRunTime(Int_t k, Float_t ymin){
+
+  TLine * l;
+
+  Int_t t0 = period[k].Time[0];
+  for (Int_t i=0; i<period[k].nRun; i++) {
+    for (Int_t j=0; j<jet.ndata; j++)  {
+      if (Int_t(period[k].RunID[i])==jet.FillID[j]){
+	Float_t x0 = Float_t(jet.start[j] - t0)/3600/24;
+	Float_t x1 = Float_t(jet.stop[j]  - t0)/3600/24;
+	l = new TLine(x0, ymin, x1, ymin);
+	l->SetLineWidth(5);
+	l->SetLineColor(7);
+	l -> Draw("same");
+      }	
+
+    }//end-of-if(j<jet.ndata)
+
+  }//end-of-if(i<period[k].nRun)
+
+  return 0;
+
+}
+
+// name  : OfflinePol
 // Method name : PlotJet(Int_t Beam, Int_t index, Float_t xmin)
 //
 // Description : Plot jet average data point on the current frame
@@ -289,6 +374,7 @@ OfflinePol::Normalization(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
   pC2 -> SetMarkerStyle(20);
   pC2 -> SetMarkerColor(Color);
   pC2 -> Draw("P"); 
+  C1->Update();
 
   PlotJet(0, 0, 1.1); 
   PlotJet(0, 1, 2.1); 
@@ -297,35 +383,54 @@ OfflinePol::Normalization(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
   PlotJet(1, 1, 5.1); 
   PlotJet(1, 2, 6.1); 
 
+  C1->Update(); ps->NewPage();
+  C1->Clear();
+  C1->Divide(1,2);
 
-  /*
-  C->Update(); ps->NewPage();
 
-  TH2F * Ratio = new TH2F("Ratio","Normarization", 6, 0.5, 6.5, 10, 0.5, 1.5); 
-  Ratio -> Draw("");
+  
+  struct Normarization {
+    Float_t ratio[3];
+    Float_t dratio[3];
+  } nrm[2];
 
-  Float_t ratio[6], dratio[6], dx[6]; 
+
+  Float_t dx[6]; 
   Float_t x[6]={1,2,3,4,5,6};
-  ratio[0] = Period.pC_Ave[0][0][0]/JetPol[0][0];
-  ratio[1] = Period.pC_Ave[0][1][0]/JetPol[0][1];
-  ratio[2] = Period.pC_Ave[0][2][0]/JetPol[0][2];
-  ratio[3] = Period.pC_Ave[1][0][0]/JetPol[1][0];
-  ratio[4] = Period.pC_Ave[1][1][0]/JetPol[1][1];
-  ratio[5] = Period.pC_Ave[1][2][0]/JetPol[1][2];
+  nrm[0].ratio[0] = JetPol[0][0]/Period.pC_Ave[0][0][0];
+  nrm[0].ratio[1] = JetPol[0][1]/Period.pC_Ave[0][1][0];
+  nrm[0].ratio[2] = JetPol[0][2]/Period.pC_Ave[0][2][0];
+  nrm[1].ratio[0] = JetPol[1][0]/Period.pC_Ave[1][0][0];
+  nrm[1].ratio[1] = JetPol[1][1]/Period.pC_Ave[1][1][0];
+  nrm[1].ratio[2] = JetPol[1][2]/Period.pC_Ave[1][2][0];
 
-  dratio[0] = JetPol[0][0];
-  dratio[1] = JetPol[0][1];
-  dratio[2] = JetPol[0][2];
-  dratio[3] = JetPol[1][0];
-  dratio[4] = JetPol[1][1];
-  dratio[5] = JetPol[1][2];
+  nrm[0].dratio[0] = QuadraticDivideError(JetPol[0][0], Period.pC_Ave[0][0][0], JetdPol[0][0], Period.pC_Ave[0][0][1]);
+  nrm[0].dratio[1] = QuadraticDivideError(JetPol[0][1], Period.pC_Ave[0][1][0], JetdPol[0][1], Period.pC_Ave[0][1][1]);
+  nrm[0].dratio[2] = QuadraticDivideError(JetPol[0][2], Period.pC_Ave[0][2][0], JetdPol[0][2], Period.pC_Ave[0][2][1]);
+  nrm[1].dratio[0] = QuadraticDivideError(JetPol[1][0], Period.pC_Ave[1][0][0], JetdPol[1][0], Period.pC_Ave[1][0][1]);
+  nrm[1].dratio[1] = QuadraticDivideError(JetPol[1][1], Period.pC_Ave[1][1][0], JetdPol[1][1], Period.pC_Ave[1][1][1]);
+  nrm[1].dratio[2] = QuadraticDivideError(JetPol[1][2], Period.pC_Ave[1][2][0], JetdPol[1][2], Period.pC_Ave[1][2][1]);
 
-  TGraphErrors * tg = new TGraphErrors(6, x, ratio, dx, dratio);
-  tg->SetMarkerStyle(20);
-  tg->SetMarkerColor(2);
-  tg->Draw("P");
-  */
+  TH2F * Ratio = new TH2F("Ratio","Normalization", 6, 0.5, 3.5, 10, 0.7, 1.2); 
+  Ratio->GetYaxis()->SetTitle("Jet/pC");
 
+  TGraphErrors * tgB = new TGraphErrors(3, x, nrm[0].ratio, dx, nrm[0].dratio);
+  tgB->SetMarkerStyle(20);
+  tgB->SetMarkerColor(4);
+
+  TGraphErrors * tgY = new TGraphErrors(3, x, nrm[1].ratio, dx, nrm[1].dratio);
+  tgY->SetMarkerStyle(20);
+  tgY->SetMarkerColor(94);
+
+  C1->cd(1); 
+  Ratio -> Draw("");
+  tgB->Draw("P");
+  tgB->Fit("pol0");
+
+  C1->cd(2); 
+  Ratio -> Draw("");
+  tgY->Draw("P");
+  tgY->Fit("pol0");
 
 
   return 0 ;
@@ -387,7 +492,7 @@ OfflinePol::MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPost
 //                   Bit 1 - P_Offline Liniear fit
 //                   Bit 2 - Plot Wall Current Monitor 
 //                   Bit 3 - 
-//                   Bit 4 - 
+//                   Bit 4 - Plot jet operation time
 //                   Bit 5 - 
 //                   Bit 6 - 
 //                   Bit 7 - TRUE:duration[day], FALSE:FillID on x-axis
@@ -488,6 +593,12 @@ OfflinePol::PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
 
   }
 
+  // ------------------------------------------------------------------- // 
+  //                     Superpose Jet operation Time                    // 
+  // ------------------------------------------------------------------- // 
+  if (Mode>>4&1){
+    PlotJetRunTime(k, ymin);
+  }
 
   // ------------------------------------------------------------------- // 
   //                WCM/dt Weighted Mean on Polarization                 // 

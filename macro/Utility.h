@@ -17,6 +17,23 @@ Float_t RATIO_SQRT(Float_t x, Float_t y){
   return sqrt(x*x+y*y);
 }
 
+//
+// Class name  : 
+// Method name : 
+// Description : Calculate quadratic error propagation for x/y
+// Input       : 
+// Return      : 
+//
+Float_t QuadraticDivideError(Float_t x, Float_t y, Float_t dx, Float_t dy){
+
+  if (x*y==0) {
+    cerr << "QuadraticDivideError():ERROR! Divided by zero" << endl;
+    exit(-1);
+  }
+
+  return x/y*sqrt(dx*dx/x/x+dy*dy/y/y);
+}
+
 
 //
 // Class name  : 
