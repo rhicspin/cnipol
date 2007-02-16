@@ -7,34 +7,45 @@ extern Float_t POLARIZATION_FIT_SIGMA_DATA ;
 // Class name  : Offline
 // Method name : Int_t OfflinePol::TimeDecoder(){
 //
-// Description : Decode Character encoded time to integer time
+// Description : Decode Character encoded time to total time from Jan. 1st in unit of [sec].
+//             : This is not unix time yet, because it is not necessary. In case that run 
+//             : continues from Dec. to Jan., need to imprement Year.
 // Input       : 
 // Return      : time in the unit of seconds
 //
 Int_t 
 OfflinePol::TimeDecoder(){
-  Int_t day=0;
+  //               Jan,Feb,Mar,Apr,May,Jun,Jul,Aut,Sep,Oct,Nov,Dec
+  Int_t day[13]={0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  Int_t days_from_Jan_1st=0;
 
   string str(time.Month_c);
-  if (!str.compare("Jan")){ time.Month = 1; day=31;};
-  if (!str.compare("Feb")){ time.Month = 2; day=29;};
-  if (!str.compare("Mar")){ time.Month = 3; day=31;};
-  if (!str.compare("Apr")){ time.Month = 4; day=30;};
-  if (!str.compare("May")){ time.Month = 5; day=31;};
-  if (!str.compare("Jun")){ time.Month = 6; day=30;};
-  if (!str.compare("Jul")){ time.Month = 7; day=31;};
-  if (!str.compare("Aug")){ time.Month = 8; day=31;};
-  if (!str.compare("Sep")){ time.Month = 9; day=30;};
-  if (!str.compare("Oct")){ time.Month = 10; day=31;};
-  if (!str.compare("Nov")){ time.Month = 11; day=30;};
-  if (!str.compare("Dec")){ time.Month = 12; day=31;};
+  if (!str.compare("Jan")) time.Month =  1;
+  if (!str.compare("Feb")) time.Month =  2;
+  if (!str.compare("Mar")) time.Month =  3;
+  if (!str.compare("Apr")) time.Month =  4;
+  if (!str.compare("May")) time.Month =  5;
+  if (!str.compare("Jun")) time.Month =  6; 
+  if (!str.compare("Jul")) time.Month =  7;
+  if (!str.compare("Aug")) time.Month =  8; 
+  if (!str.compare("Sep")) time.Month =  9; 
+  if (!str.compare("Oct")) time.Month = 10;
+  if (!str.compare("Nov")) time.Month = 11;
+  if (!str.compare("Dec")) {time.Month = 12; 
+  cerr << "CAUTION!: Perent time format don't takes into account year. Rridge Dec. -> Jan. will reset the time stamp." << endl;
+  cerr << "        : Add year in the time format. (TimeDecorder() @ FillByFill.C) " << endl;
+  }
   if (!day) cerr << "OfflinePol::TimeDecoder()  Error in decoding time.Month_c" << endl;
+
+  // count number of days from January 1st
+  for (Int_t i=1;i<time.Month; i++) days_from_Jan_1st+=day[i];
 
   time.Hour   = atoi(strtok(time.Time,":"));
   time.Minute = atoi(strtok(NULL,":"));
   time.Sec    = atoi(strtok(NULL,":"));
 
-  Int_t time = time.Sec + 60*(time.Minute + 60*(time.Hour + 24*(time.Day + time.Month*day)));
+  // total time from Jan. 1st in unit of [sec]
+  Int_t time = time.Sec + 60*(time.Minute + 60*(time.Hour + 24*(time.Day + days_from_Jan_1st)));
 
   return time;
 
@@ -169,9 +180,10 @@ OfflinePol::PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index){
     printf("fill[%d].Index[%d]=%d ",j, array_index, fill[j].Index[array_index]);
     printf("fill[%d].RunID[%d]=%8.3f ",j, array_index, fill[j].RunID[array_index]);
     printf("fill[%d].P_offline[%d]=%5.1f ",j, array_index, fill[j].P_offline[array_index]);
+    printf("fill[%d].Time[%d]=%11d ",j, array_index, fill[j].Time[array_index]);
     printf("fill[%d].Clock[%d]=%4.1f ",j, array_index, fill[j].Clock[array_index]);
-    printf("fill[%d].dt[%d]=%4.1f ",j,array_index, fill[j].dt[array_index]);
-    printf("fill[%d].WCM[%d]=%4.1f ",j,array_index, fill[j].WCM[array_index]);
+    //    printf("fill[%d].dt[%d]=%4.1f ",j,array_index, fill[j].dt[array_index]);
+    //    printf("fill[%d].WCM[%d]=%4.1f ",j,array_index, fill[j].WCM[array_index]);
     printf("\n");
 
     return 0;
@@ -231,7 +243,6 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   Int_t j=0;
   for (Int_t k=0; k<nFill; k++) {
     nRunPerFill -> Fill(fill[k].nRun);
-    cout << fill[k].FillID << " " << fill[k].nRun << endl;
 
     // Fill Ch-2 distribution histograms
       if (fill[k].nRun>1) {
@@ -331,7 +342,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
   // scaled rate default parameters
   r.ymin=0;
-  r.ymax=1.6;
+  r.ymax=0.065;
   r.Color = 30;
 
 
@@ -345,7 +356,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   TH2F * fillbyfill     = new TH2F(hname, htitle, 10, xmin, xmax, 100, ymin, ymax); 
   fillbyfill->GetXaxis()->SetTitle("Hours from first measurement at store");
   fillbyfill->GetYaxis()->SetTitle("Polarization [%]");
-  if (Mode>>4&1)  fillbyfill->GetYaxis()->SetTitle("Good Carbon Rate [MHz]");
+  if (Mode>>4&1)  fillbyfill->GetYaxis()->SetTitle("Good Carbon Rate/WCM_sum [MHz]");
 
   // Print Vertical Range
   sprintf(text,"V-Range = %d", Range);
@@ -399,8 +410,8 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   //                            Rate Fit       .                         // 
   // ------------------------------------------------------------------- // 
   if (Mode>>4&1){
-    RateFit(k, 0);
-    // RateFit(k, 1);  // linear fit
+    RateFit(k, 0, xmin, xmax);
+    // RateFit(k, 1, xmin, xmax);  // linear fit
   }
 
 
@@ -480,14 +491,19 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
 //
 // Class name  : OfflinePol
-// Method name : RateFit()
+// Method name : RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax)
 //
-// Description : 
-// Input       : 
+// Description : Extract major drop data in rate for fill[k].  
+//             : Mode 1: Linear fit.and check the standard deviation
+//             : Mode 0: No fit. Just compare with Maximum rate data point in the fill[k].
+//                    Maximum rate option (Int_t Option)
+//                       0 : Get maximum rate from data set after "i"th datum
+//                       1 : Get maximum rate from all data set
+// Input       : Int_t k, Int_t Mode, Float_t xmin, Float_t xmax
 // Return      : 
 //
 void 
-OfflinePol::RateFit(Int_t k, Int_t Mode){
+OfflinePol::RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax){
   
   Int_t j=0; // bad run counter
   Char_t text[100];
@@ -507,9 +523,24 @@ OfflinePol::RateFit(Int_t k, Int_t Mode){
   //     No fit. Just check if the rate is not significantly low than expected    //
   //==============================================================================//
   if (Mode==0){
+    // Maximum rate option
+    //  0 : Get maximum rate from data set after "i"th datum
+    //  1 : Get maximum rate from all data set
+    Int_t Option=0;
 
     for (Int_t i=0; i<fill[k].nRun; i++) {
-      Float_t DropRate = GetDropRate(k, i);
+
+      if (!Option){
+	Float_t DropRate = GetDropRate(k, i);
+      }else{
+	Int_t iMax;
+	Float_t DropRate = GetDropRate(k, i, iMax);
+	// draw max rate line
+	TLine *l = new TLine(xmin, fill[k].Rate[iMax], xmax, fill[k].Rate[iMax]);
+	l->SetLineColor(2);
+	l->Draw("same");
+      }
+
       if ( DropRate < RATE_DROP_ALLOWANCE) {
 	++j;
 	fout << "    ====> RunID: " << std::setprecision(7) << fill[k].RunID[i] << " rate drop " 
@@ -598,7 +629,7 @@ OfflinePol::RateFit(Int_t k, Int_t Mode){
 // Method name : GetDropRate(Int_t k, Int_t i)
 //
 // Description : Calculate Drop in Rate compared with the maximum rate exected after the "i"th measurement  
-// Input       : Int_t k, Int_t i
+// Input       : Int_t k, Int_t i, Int_t &iMax
 // Return      : Ratio between present "i"th Rate and max rate after "i"th measurement
 //
 Float_t
@@ -611,5 +642,22 @@ OfflinePol::GetDropRate(Int_t k, Int_t i){
   // GetMax(fill[k].RateRest, fill[k].nRun-i) returns the maximum rate from the
   // any measurements after "i"th one.
   return fill[k].Rate[i]/GetMax(fill[k].RateRest, fill[k].nRun-i); 
+
+}
+
+//
+// Class name  : OfflinePol
+// Method name : GetDropRate(Int_t k, Int_t i, Int_t &iMax)
+//
+// Description : Calculate Drop in Rate compared with the maximum rate of all the data in the fill
+// Input       : Int_t k, Int_t i
+// Return      : Ratio between present "i"th rate and max rate, and index "iMax"
+//
+Float_t
+OfflinePol::GetDropRate(Int_t k, Int_t i, Int_t &iMax){
+
+  Float_t rate =fill[k].Rate[i]/GetMax(fill[k].Rate, fill[k].nRun, iMax); 
+
+  return rate;
 
 }

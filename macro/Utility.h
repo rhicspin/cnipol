@@ -6,6 +6,17 @@
 //
 
 
+//
+// Class name  : 
+// Method name : 
+// Description : 
+// Input       : 
+// Return      : 
+//
+Float_t RATIO_SQRT(Float_t x, Float_t y){
+  return sqrt(x*x+y*y);
+}
+
 
 //
 // Class name  : 
@@ -102,6 +113,27 @@ Float_t
 GetMax(Float_t *x, Int_t N){
   Float_t Max=x[0];
   for (Int_t i=1; i<N; i++) Max = x[i]>Max ? x[i] : Max;
+  return Max;
+}
+
+//
+// Class name  : 
+// Method name : GetMax(Float_t *x, Int_t N)
+//
+// Description : Calculate maximum out of array x[] 
+// Input       : Float_t *x, Int_t N, Int_t &iMax)
+// Return      : Float_t Max and index "iMax"
+//
+Float_t 
+GetMax(Float_t *x, Int_t N, Int_t &iMax){
+  Float_t Max=x[0];
+  for (Int_t i=1; i<N; i++) {
+    if (x[i]>Max){
+      Max = x[i]; iMax = i;
+    }else{
+      Max = Max;
+    }
+  }
   return Max;
 }
 
