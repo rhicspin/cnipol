@@ -14,7 +14,7 @@
 
 #include <getopt.h>
 #include "TFile.h"
-#include "TH1F.h"
+#include "TH1F.h" 
 #include "TH2F.h"
 #include "TH2D.h"
 #include "TF1.h"
@@ -36,6 +36,7 @@ const Int_t N=2000;
 const Int_t MAX_JET_RUNTIME_DATA=500;
 const Int_t MAX_NMEAS_PER_FILL=99;
 const Int_t MAX_NMEAS_PER_PERIOD=1000;
+const Int_t MAX_TARGET_PERIOD=10;
 
 Int_t RUN=5;
 
@@ -48,6 +49,7 @@ Int_t OFFLINE_POL=1;
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
 Float_t RATE_FIT_STANDARD_DEVIATION_DATA = 1.5;   // [sigma]
 Float_t RATE_DROP_ALLOWANCE              = 0.6;   // Maximum rate drop factor
+Float_t REFERENCE_RATE_DROP_ALLOWANCE    = 2;     // 3 [sigmas] from reference rate
 Float_t POLARIZATION_FIT_CHI2            = 5;   
 Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;     // [sigma]
 
@@ -66,17 +68,18 @@ Int_t JetRun5Type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
 				    7,    5,    3,    5,    5,    6,
 				    3};
 
-const Int_t nJetFill=99;
-Int_t JetFill[nJetFill] = { 6945, 6947, 6957, 6959, 6963, 6967, 6968, 6969, 6971, 6972, 
-			    6973, 6975, 6980, 6988, 6990, 6992, 6994, 6997, 6998, 6999,
-			    7001, 7002, 7007, 7010, 7028, 7029, 7030, 7032, 7034, 7035,
-			    7036, 7039, 7051, 7059, 7064, 7067, 7068, 7069, 7070, 7072, 
-			    7088, 7092, 7102, 7103, 7110, 7112, 7114, 7118, 7120, 7122, 
-			    7123, 7125, 7129, 7131, 7133, 7134, 7138, 7139, 7142, 7143,
-			    7151, 7153, 7154, 7163, 7164, 7165, 7172, 7232, 7237, 7245,
-			    7249, 7253, 7255, 7263, 7264, 7266, 7270, 7271, 7272, 7274,
-			    7276, 7278, 7279, 7293, 7294, 7295, 7300, 7301, 7302, 7303,
-			    7304, 7305, 7306, 7308, 7317, 7318, 7319, 7320, 7325};
+// Target period
+Float_t BlueTargetRun5[MAX_TARGET_PERIOD]  = {6789.001,
+					      7028.001,  // Vertical Background
+					      7255.004,  // Vertical Target-3
+					      7328.001}; // Vertical Target-1
+Float_t YellowTargetRun5[MAX_TARGET_PERIOD]= {6789.101,	
+					      6976.101,  // Vertical Target-2
+					      6997.106,  // Vertical Background
+					      6997.110,  // Vertical Target-2
+					      7051.101,  // Vertical Target-3
+					      7052.101,  // Vertical Target-2
+					      7328.101}; // Vertical Target-1
 
 
 
@@ -93,14 +96,17 @@ private:
     Int_t nRun;
     Float_t Clock0; // The time stamp of the first measurement in store
     Float_t Clock[MAX_NMEAS_PER_FILL]; // time duration from the first measurement in [h]
+    Float_t ClockM[MAX_NMEAS_PER_FILL];// time stamp for horizontal error bar in [h] 
     Float_t Time[MAX_NMEAS_PER_FILL]; // time stamp of the measurement 
     Float_t dt[MAX_NMEAS_PER_FILL]; // time duration between measurement in [h]
+    Float_t dT[MAX_NMEAS_PER_FILL]; // time duration between measurement in [h]
     Float_t RunID[MAX_NMEAS_PER_FILL];
     Float_t Index[MAX_NMEAS_PER_FILL];
     Float_t P_online[MAX_NMEAS_PER_FILL];
     Float_t dP_online[MAX_NMEAS_PER_FILL];
     Float_t P_offline[MAX_NMEAS_PER_FILL];
     Float_t dP_offline[MAX_NMEAS_PER_FILL];
+    Float_t Weight[MAX_NMEAS_PER_FILL];  // weight factor for fill by fill average
     Float_t Rate[MAX_NMEAS_PER_FILL];
     Float_t sRate[MAX_NMEAS_PER_FILL]; // scaled rate for superpose plot on polarization
     Float_t RateRest[MAX_NMEAS_PER_FILL];
@@ -150,6 +156,25 @@ private:
     TGraphErrors *meas_vs_WCM;
     Float_t pC_Ave[2][3][2];
   } Period, period[MAX_NMEAS_PER_PERIOD] ;
+
+
+  struct StructBeam {
+    struct TargetByTarget {
+      Int_t nPeriod;
+      Float_t Begin_RunID;
+      Float_t End_RunID;
+      Float_t Type;
+      Float_t Mean;
+      Float_t Sigma;
+      Float_t Threshold;
+      TH1F * UniversalRate;
+    } Target, target[MAX_TARGET_PERIOD];
+  } blue, yellow;
+
+
+  struct StructFlag {
+    Int_t UniversalRate;
+  } flag;
 
   struct StructTime {
     Char_t *Week;
@@ -206,10 +231,14 @@ public:
   Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
-  Int_t RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax);
+  Int_t RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Color);
   Float_t GetDropRate(Int_t k, Int_t i, Int_t &iMax);
   Float_t GetDropRate(Int_t k, Int_t i);
+  Float_t GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate);
   Int_t TimeDecoder();
+  Int_t TargetByTarget(Int_t k, Int_t Color);
+  Int_t TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *ps);
+
   // following functions are defined in PeriodByPeriod.C
   Int_t PeroidByPeriod(Int_t Mode, Int_t RUN, Int_t ndata, Char_t *Beam, Int_t Color, TCanvas *CurC, TPostScript *ps);
   Int_t PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill);
@@ -236,6 +265,7 @@ public:
 void 
 OfflinePol::Initiarization(Int_t i){
   
+  
   RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
   Rate[i] = WCM[i] = 0;
   P_alt[i] = dP_alt[i] = 0;
@@ -243,6 +273,10 @@ OfflinePol::Initiarization(Int_t i){
   index[i]=0;
 
   jet.ndata=0;
+
+  // flag
+  flag.UniversalRate = 0;
+
 
   return;
 
@@ -656,22 +690,40 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       sfitchi2->Draw();
       break;
   case 1000:
+    // Target by target period allocation
+    if (RUN==5){
+      for (Int_t i=0; i<MAX_TARGET_PERIOD; i++){
+	if (BlueTargetRun5[i]==0) {blue.Target.nPeriod=i-1; break;}
+	blue.target[i].Begin_RunID = BlueTargetRun5[i];
+	blue.target[i].End_RunID   = BlueTargetRun5[i+1];
+	blue.target[i].Type        = i;
+      }
+      for (Int_t i=0; i<MAX_TARGET_PERIOD; i++){
+	if (YellowTargetRun5[i]==0) {yellow.Target.nPeriod=i-1; break;}
+	yellow.target[i].Begin_RunID = YellowTargetRun5[i];
+	yellow.target[i].End_RunID   = YellowTargetRun5[i+1];
+	yellow.target[i].Type        = i;
+      }
+    } else if (RUN==6) {
+      cerr << "Targett info for Run06 is not impremented yet" << endl;
+    };
     //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
     //  Mode += 3  (Offline,Online)
     //  Mode += 7  (Offline,Online,Rate)
     //  Mode += 9  (Offline,fit)
     //  Mode += 13 (Offline,fit,Rate)
-    //  Mode += 18 (Rate, Rate_fit)
+    //  Mode += 18 (Rate, Rate_filter)
     //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
     break;
   case 2000:
-    if (RUN=5){
+    if (RUN==5){
       Period.nPeriod  = nJetRun5;
       Period.nType    = JetRun5nType;
       for (Int_t i=0; i<Period.nPeriod; i++){
@@ -679,7 +731,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
 	period[i].End_FillID   = JetRun5[i+1];
 	period[i].Type         = JetRun5Type[i];
       }
-    } else if (RUN==6) {
+    } else {
       cerr << "Jet info for Run06 is not impremented yet" << endl;
     }
 

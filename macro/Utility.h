@@ -220,6 +220,28 @@ void GetScalePrefix(float prefix, int N, float A[], float margin, float &min, fl
 // Class name  : 
 // Method name : DrawLine()
 //
+// Description : DrawLines in TH1F histogram
+//             : Assumes x=x0=x1, y0=0, y1=y1
+// Input       : TH1F * h, float x, float y1, int color
+// Return      : 
+//
+void 
+DrawLine(TH1F * h, float x, float y1, int color, int lwidth){
+
+  TLine * l = new TLine(x, 0, x, y1);
+  l -> SetLineStyle(2);
+  l -> SetLineColor(color);
+  l -> SetLineWidth(lwidth);
+  h -> GetListOfFunctions()->Add(l);
+
+  return;
+}
+
+
+//
+// Class name  : 
+// Method name : DrawLine()
+//
 // Description : DrawLines in TH2F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
