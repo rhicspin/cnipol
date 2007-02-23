@@ -95,11 +95,12 @@ private:
     Int_t FillID;
     Int_t nRun;
     Float_t Clock0; // The time stamp of the first measurement in store
-    Float_t Clock[MAX_NMEAS_PER_FILL]; // time duration from the first measurement in [h]
-    Float_t ClockM[MAX_NMEAS_PER_FILL];// time stamp for horizontal error bar in [h] 
-    Float_t Time[MAX_NMEAS_PER_FILL]; // time stamp of the measurement 
-    Float_t dt[MAX_NMEAS_PER_FILL]; // time duration between measurement in [h]
-    Float_t dT[MAX_NMEAS_PER_FILL]; // time duration between measurement in [h]
+    Float_t Clock[MAX_NMEAS_PER_FILL];  // time duration from the first measurement in [h]
+    Float_t ClockM[MAX_NMEAS_PER_FILL]; // time stamp for horizontal error bar in [h] 
+    Float_t Time[MAX_NMEAS_PER_FILL];   // time stamp of the measurement 
+    Float_t dT[MAX_NMEAS_PER_FILL];     // time interval between k+1 and k data point 
+    Float_t dt[MAX_NMEAS_PER_FILL];     // 1/2 time interval between k+1 and k-1 data point for "k"th data point. 
+    Float_t dt_err[MAX_NMEAS_PER_FILL]; // divided dt[k] by half for horizontal error bar plotting purpose
     Float_t RunID[MAX_NMEAS_PER_FILL];
     Float_t Index[MAX_NMEAS_PER_FILL];
     Float_t P_online[MAX_NMEAS_PER_FILL];
@@ -148,6 +149,7 @@ private:
     Float_t dP_offline[MAX_NMEAS_PER_PERIOD];
     Float_t Weight[MAX_NMEAS_PER_PERIOD];
     Float_t dt[MAX_NMEAS_PER_PERIOD];   // interval time between consequtive measurements in [sec]
+    Float_t dt_err[MAX_NMEAS_PER_PERIOD];   // dt divided by 2 for horizontal error bar plotting purpose
     Float_t WCM[MAX_NMEAS_PER_PERIOD];
     Float_t sWCM[MAX_NMEAS_PER_PERIOD];
     Float_t dum[MAX_NMEAS_PER_PERIOD];
@@ -713,11 +715,13 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 9  (Offline,fit)
     //  Mode += 13 (Offline,fit,Rate)
     //  Mode += 18 (Rate, Rate_filter)
+    //  Mode += 32 (Rate fileter with universal rate target by target) 
     //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);

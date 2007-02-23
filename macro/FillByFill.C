@@ -167,22 +167,25 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     for (Int_t k=0; k<fill[i].nRun; k++) {
  
       // pre-define dt[fill[i].nRun] is zero 
-      if (k==fill[i].nRun-1) fill[i].dt[k+1] = 0;
+      if (k==fill[i].nRun-1) fill[i].dt_err[k+1] = 0;
       
-      // delta_t is half if interval between adjacent data
-      fill[i].dt[k] = (fill[i].dt[k+1]/2+fill[i].dt[k]/2)/2;
-      
-      // assign 1 hour for datum where only one measurement per fill
-      if (fill[i].nRun==1) fill[i].dt[k+1]=1;
+      // this is actually time interval between k+1 and k-1 data point for "k"th data point. 
+      fill[i].dt[k] = fill[i].dT[k+1]/2 + fill[i].dT[k]/2;
 
-      // weight by product of WCM_sum and dt 
+      // further divide dt[k] by half for plotting purpose of horizontal bar
+      fill[i].dt_err[k] = fill[i].dt[k]/2; 
+
+      // assign 1 hour for datum where only one measurement per fill
+      if (fill[i].nRun==1) fill[i].dt_err[k]=1;
+
+      // weight by product of WCM_sum and dt
       fill[i].Weight[k]     = fill[i].WCM[k]*fill[i].dt[k];
 
       // some trick to plot horizonatal asymmetric error on plot
       if (k==0) {
-	fill[i].ClockM[k] = fill[i].Clock[k] + fill[i].dt[k];
+	fill[i].ClockM[k] = fill[i].Clock[k] + fill[i].dt_err[k];
       } else {
-	fill[i].ClockM[k] = fill[i].ClockM[k-1] + fill[i].dt[k-1] + fill[i].dt[k];
+	fill[i].ClockM[k] = fill[i].ClockM[k-1] + fill[i].dt_err[k-1] + fill[i].dt_err[k];
       }
 
     } // end-of-for (k<fill[i].nRun) loop
@@ -502,6 +505,7 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 //                   Bit 3 - P_Offline Fit
 //                   Bit 4 - Rate Filter
 //                   Bit 5 - Rater Filter by Universal rate on Target By Target
+//                   Bit 6 - delta_t horizontal error
 //               Mode=7 (Offline,Online,Rate), Mode=9 (Offline,fit)
 // Input       : Int_t Mode, Int_t k, Int_t Color
 // Return      : 
@@ -546,12 +550,23 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   fillbyfill->Draw();
   if (Mode>>3&0) t1->Draw("same");
 
+  // plot horizontal delta_t error bars
+  if (Mode>>6&1) {
+    TGraphErrors * fill[k].meas_vs_fakeP = new TGraphErrors(fill[k].nRun, fill[k].ClockM, fill[k].P_offline, fill[k].dt_err, fill[k].dum);
+    fill[k].meas_vs_fakeP ->Draw("P");
+  }
+
   // plot offline data points
   fill[k].meas_vs_P[0] = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].P_offline, fill[k].dum, fill[k].dP_offline);
   fill[k].meas_vs_P[0] -> SetMarkerStyle(20);
   fill[k].meas_vs_P[0] -> SetMarkerColor(Color);
-  if (Mode>>0&1) fill[k].meas_vs_P[0] -> Draw("PL");
-  
+  if (Mode>>0&1) { 
+    if (Mode>>6&1) {
+      fill[k].meas_vs_P[0] -> Draw("P") ;
+    }else{
+      fill[k].meas_vs_P[0] -> Draw("PL"); };
+  }
+
   // plot online data points
   fill[k].meas_vs_P[1] = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].P_online, fill[k].dum, fill[k].dP_online);
   fill[k].meas_vs_P[1] -> SetMarkerStyle(24);
