@@ -33,6 +33,7 @@
 #define Debug 0
 
 const Int_t N=2000;
+const Int_t MAX_NFILL=500;
 const Int_t MAX_JET_RUNTIME_DATA=500;
 const Int_t MAX_NMEAS_PER_FILL=99;
 const Int_t MAX_NMEAS_PER_PERIOD=1000;
@@ -112,10 +113,12 @@ private:
     Float_t sRate[MAX_NMEAS_PER_FILL]; // scaled rate for superpose plot on polarization
     Float_t RateRest[MAX_NMEAS_PER_FILL];
     Float_t WCM[MAX_NMEAS_PER_FILL];
+    Float_t sWCM[MAX_NMEAS_PER_FILL]; // scaled Wall current monitor for superpose plot
     Float_t dum[MAX_NMEAS_PER_FILL];
     Float_t Chi2[2];
     Int_t DoF;
     Float_t FitAve[MAX_NMEAS_PER_FILL];
+    Float_t wAve[2];  // [0] : weighted average [1]: error
     struct StructBad {
       Float_t Clock[MAX_NMEAS_PER_FILL];
       Float_t P_offline[MAX_NMEAS_PER_FILL];
@@ -157,6 +160,12 @@ private:
     TGraphErrors *meas_vs_P[2];
     TGraphErrors *meas_vs_WCM;
     Float_t pC_Ave[2][3][2];
+    Int_t fill_id[MAX_NFILL];
+    Float_t fill_ave[MAX_NFILL];
+    Float_t fill_dave[MAX_NFILL];
+    Float_t fill_ave_t[MAX_NFILL];
+    Int_t nfill;
+    Float_t t_jet[MAX_NFILL];
   } Period, period[MAX_NMEAS_PER_PERIOD] ;
 
 
@@ -207,6 +216,13 @@ private:
     Int_t Color;
   } r;
 
+  // scale wcm for fill by fill analysis plot
+  struct WCM {
+    Float_t ymin;
+    Float_t ymax;
+    Int_t Color;
+  } wcm;
+
   Int_t nRun[N], Time[N];
   Float_t Energy[N];
   Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
@@ -246,6 +262,7 @@ public:
   Int_t PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill);
   Int_t PrintPeriodByPeriodArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
+  Int_t PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]);
   Float_t PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]);
   Int_t GetJetRunTime(Char_t *Beam);
   Int_t JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *ps);
@@ -278,7 +295,6 @@ OfflinePol::Initiarization(Int_t i){
 
   // flag
   flag.UniversalRate = 0;
-
 
   return;
 
@@ -716,6 +732,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //  Mode += 13 (Offline,fit,Rate)
     //  Mode += 18 (Rate, Rate_filter)
     //  Mode += 32 (Rate fileter with universal rate target by target) 
+    //  Mode += 64 (Fill by Fill average)
     //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
@@ -878,7 +895,7 @@ Int_t OfflinePol::OfflinePol() {
     Char_t outfile[100]; 
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
-    //    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
+    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
 
     // close output file

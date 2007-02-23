@@ -554,7 +554,41 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   if (Mode>>6&1) {
     TGraphErrors * fill[k].meas_vs_fakeP = new TGraphErrors(fill[k].nRun, fill[k].ClockM, fill[k].P_offline, fill[k].dt_err, fill[k].dum);
     fill[k].meas_vs_fakeP ->Draw("P");
-  }
+
+    // ------------------------------------------------------------------- // 
+    //                WCM/dt Weighted Mean on Polarization                 // 
+    // ------------------------------------------------------------------- // 
+    calcWeightedMean(fill[k].P_offline, fill[k].dP_offline, fill[k].Weight, fill[k].nRun, fill[k].wAve[0], fill[k].wAve[1]);
+    DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0], 2, 1, 3);
+    DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]+fill[k].wAve[1], 2, 3, 2);
+    DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[1], 2, 3, 2);
+    sprintf(text,"ave(P)=%.2f +/- %.3f ", fill[k].wAve[0], fill[k].wAve[1]);
+    DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
+
+
+  // ------------------------------------------------------------------- // 
+  //                        Superpose WCM plot.                          // 
+  // ------------------------------------------------------------------- // 
+    wcm.ymin=20; wcm.ymax=100; 
+    TGaxis * A1 = new TGaxis(xmax, ymin, xmax, ymax, wcm.ymin, wcm.ymax, 510, "+L");
+    A1 -> SetTitle("WCM Sum [10^11 protons]");
+    A1 -> SetLineColor(r.Color);
+    A1 -> SetLabelColor(r.Color);
+    A1 -> Draw("same");
+      
+    // Scale wcm to vertical axis(polarization). fill[k].WCM[i] -> fill[k].sWCM[i] 
+    for (Int_t i=0; i<fill[k].nRun; i++) 
+      fill[k].sWCM[i] = (ymax - ymin)/(wcm.ymax - wcm.ymin)*(fill[k].WCM[i] - wcm.ymax) + ymax;
+
+    fill[k].meas_vs_WCM = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].sWCM, fill[k].dum, fill[k].dum);
+    fill[k].meas_vs_WCM -> SetMarkerStyle(22);
+    fill[k].meas_vs_WCM -> SetMarkerColor(r.Color);
+    fill[k].meas_vs_WCM -> SetLineColor(r.Color);
+    fill[k].meas_vs_WCM -> Draw("P");
+
+  } // end-of-if (Mode>>6&1)
+
+
 
   // plot offline data points
   fill[k].meas_vs_P[0] = new TGraphErrors(fill[k].nRun, fill[k].Clock, fill[k].P_offline, fill[k].dum, fill[k].dP_offline);
