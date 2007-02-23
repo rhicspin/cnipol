@@ -105,20 +105,20 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	  period[index].WCM[array_index]        = fill[i].WCM[k];
 	  peroid[index].dum[array_index]        = 0;
 	  period[index].Time[array_index]       = fill[i].Time[k];
-	  if (k==fill[i].nRun-1) fill[i].dt[k+1] = 0;
-	  period[index].dt[array_index]         = (fill[i].dT[k+1]/2+fill[i].dT[k]/2)/2/24;
-	  if (fill[i].nRun==1) period[index].dt[array_index]=1./24.;  // alocate 1 hour 
+	  period[index].dt[array_index]         = fill[i].dt[k]/24;
+	  period[index].dt_err[array_index]     = fill[i].dt_err[k]/24;
 	  period[index].Clock[array_index]      = (fill[i].Time[k] - period[index].Clock0)/3600/24;
-	  period[index].Weight[array_index]     = period[index].WCM[array_index]*period[index].dt[array_index];
+	  period[index].Weight[array_index]     = period[index].WCM[array_index]*period[index].dt_err[array_index];
 
 	  // some trick to plot horizonatal asymmetric error on plot
 	  if (array_index==0) {
-	    period[index].ClockM[array_index] = period[index].dt[array_index];
+	    period[index].ClockM[array_index] = period[index].dt_err[array_index];
 	  } else {
 	    if (k) {
-	      period[index].ClockM[array_index] = period[index].ClockM[array_index-1] + period[index].dt[array_index-1] + period[index].dt[array_index];
+	      period[index].ClockM[array_index] 
+		= period[index].ClockM[array_index-1] + period[index].dt_err[array_index-1] + period[index].dt_err[array_index];
 	    }else{
-	      period[index].ClockM[array_index] = period[index].Clock[array_index] + period[index].dt[array_index];
+	      period[index].ClockM[array_index] = period[index].Clock[array_index] + period[index].dt_err[array_index];
 	    }
 	  }
 
@@ -549,7 +549,7 @@ OfflinePol::PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
   if (Mode>>3&0) t1->Draw("same");
 
   // plot offline data points horizontal error bars
-  period[k].meas_vs_P[1] = new TGraphErrors(period[k].nRun, period[k].ClockM, period[k].P_offline, period[k].dt, period[k].dum);
+  period[k].meas_vs_P[1] = new TGraphErrors(period[k].nRun, period[k].ClockM, period[k].P_offline, period[k].dt_err, period[k].dum);
   if (Mode>>7&1) period[k].meas_vs_P[1] -> Draw("P");
 
   // plot offline data points
