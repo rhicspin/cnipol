@@ -106,7 +106,7 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	  peroid[index].dum[array_index]        = 0;
 	  period[index].Time[array_index]       = fill[i].Time[k];
 	  if (k==fill[i].nRun-1) fill[i].dt[k+1] = 0;
-	  period[index].dt[array_index]         = (fill[i].dt[k+1]/2+fill[i].dt[k]/2)/2/24;
+	  period[index].dt[array_index]         = (fill[i].dT[k+1]/2+fill[i].dT[k]/2)/2/24;
 	  if (fill[i].nRun==1) period[index].dt[array_index]=1./24.;  // alocate 1 hour 
 	  period[index].Clock[array_index]      = (fill[i].Time[k] - period[index].Clock0)/3600/24;
 	  period[index].Weight[array_index]     = period[index].WCM[array_index]*period[index].dt[array_index];

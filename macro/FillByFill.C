@@ -1,5 +1,7 @@
 extern Float_t RATE_FIT_STANDARD_DEVIATION ;
 extern Float_t RATE_FIT_STANDARD_DEVIATION_DATA ;
+extern Float_t RATE_DROP_ALLOWANCE ;
+extern Float_t REFERENCE_RATE_DROP_ALLOWANCE ;
 extern Float_t POLARIZATION_FIT_CHI2 ;
 extern Float_t POLARIZATION_FIT_SIGMA_DATA ;
 
@@ -62,9 +64,14 @@ OfflinePol::TimeDecoder(){
 Int_t 
 OfflinePol::FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps){
 
+
   Int_t nFill = FillByFillAnalysis(RUN, ndata);
 
-  MakeFillByFillPlot(nFill, Mode-1000, ndata, Color, ps);
+  Mode-=1000;
+  // Universal Rate Target by Target
+  if (Mode>>5&1) TargetByTargetUniversalRate(nFill, Color, ps);
+
+  MakeFillByFillPlot(nFill, Mode, ndata, Color, ps);
 
 
   return 0;
@@ -140,20 +147,51 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     fill[j].Clock[array_index]      = (Float_t(Time[i]) - fill[j].Clock0)/3600;
     fill[j].dum[array_index]        = 0;
     if (array_index) {
-      fill[j].dt[array_index]       = fill[j].Clock[array_index]-fill[j].Clock[array_index-1];
+      fill[j].dT[array_index]       = fill[j].Clock[array_index]-fill[j].Clock[array_index-1];
     }else{
-      fill[j].dt[array_index]       = 0;
+      fill[j].dT[array_index]       = 0;
     }
-
 
     // print out fill by fill arrays for debugging
     //    PrintFillByFillArray(i, j, array_index);
 
   } // end-of-for(i=0;ndata) lope
 
+
+
+  //-------------------------------------------------------------------//
+  //              Assign delta_t for each run                          //
+  //-------------------------------------------------------------------//
+  Int_t nFill=j+1;
+  for (Int_t i=0; i<nFill; i++) {
+    for (Int_t k=0; k<fill[i].nRun; k++) {
+ 
+      // pre-define dt[fill[i].nRun] is zero 
+      if (k==fill[i].nRun-1) fill[i].dt[k+1] = 0;
+      
+      // delta_t is half if interval between adjacent data
+      fill[i].dt[k] = (fill[i].dt[k+1]/2+fill[i].dt[k]/2)/2;
+      
+      // assign 1 hour for datum where only one measurement per fill
+      if (fill[i].nRun==1) fill[i].dt[k+1]=1;
+
+      // weight by product of WCM_sum and dt 
+      fill[i].Weight[k]     = fill[i].WCM[k]*fill[i].dt[k];
+
+      // some trick to plot horizonatal asymmetric error on plot
+      if (k==0) {
+	fill[i].ClockM[k] = fill[i].Clock[k] + fill[i].dt[k];
+      } else {
+	fill[i].ClockM[k] = fill[i].ClockM[k-1] + fill[i].dt[k-1] + fill[i].dt[k];
+      }
+
+    } // end-of-for (k<fill[i].nRun) loop
+
+  } // end-of-for (i<nFill) loop
+
   cout << "Total Number of Fill = " << j+1 << endl;
 
-  return j+1;
+  return nFill;
 
 }
 
@@ -191,6 +229,138 @@ OfflinePol::PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index){
 }
 
 
+
+//
+// Class name  : OfflinePol
+// Method name : TargetByTarget(Int_t k, Int_t Color)
+//
+// Description : Make universal rate plots Target by Target and apply gaussian fit to
+//             : define mean value. This mean will be reference to the expected rate 
+//             : with a given target.
+// Input       : TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *ps)
+// Return      : 
+//
+Int_t 
+OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *ps){
+
+  // Turn flag on 
+  flag.UniversalRate = 1;
+
+  Char_t htitle[100];
+  Float_t xmax=0.10;
+
+  ps->NewPage();
+
+  //--------------------------------------------------------------------------//
+  //            Define Universal Rate of Target Period Histograms             //
+  //--------------------------------------------------------------------------//
+  for (Int_t i=0; i<blue.Target.nPeriod; i++)   { // blue beam
+    sprintf(htitle,"Blue:Universal Rate Period %8.3f - %8.3f", blue.target[i].Begin_RunID, blue.target[i].End_RunID);
+    blue.target[i].UniversalRate = new TH1F("UniversalRate", htitle, 20, 0, xmax);
+    blue.target[i].UniversalRate -> SetFillColor(Color);
+    blue.target[i].UniversalRate -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
+  }  
+  for (Int_t i=0; i<yellow.Target.nPeriod; i++) { // yellow beam
+    sprintf(htitle,"Yellow:Universal Rate Period %8.3f - %8.3f", yellow.target[i].Begin_RunID, yellow.target[i].End_RunID);
+    yellow.target[i].UniversalRate = new TH1F("UniversalRate", htitle, 20, 0, xmax);
+    yellow.target[i].UniversalRate -> SetFillColor(Color);
+    yellow.target[i].UniversalRate -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
+  }
+
+
+
+
+  //--------------------------------------------------------------------------//
+  //                   Fill Universal Rate Histograms                         //
+  //--------------------------------------------------------------------------//
+  for (Int_t k=0; k<nFill; k++) TargetByTarget(k, Color);
+
+
+
+  //--------------------------------------------------------------------------//
+  // Plot Universal rate histograms and fit with gaussian to find the mean    //
+  //--------------------------------------------------------------------------//
+  gStyle->SetTitleFontSize(0.15);
+  gStyle->SetOptStat(kTRUE);
+  gStyle->SetOptFit(111);
+  TCanvas * C2 = new TCanvas("C2","Universal Rate for Target Period", 1100, 800);
+  
+  TF1 * g = new TF1("gauss","gaus");
+  g->SetLineColor(2);
+
+  if (Color==4) {  // blue beam
+    C2->Divide(1, blue.Target.nPeriod);
+    for (Int_t i=0; i<blue.Target.nPeriod; i++) {
+      C2->cd(i+1) ; blue.target[i].UniversalRate->Draw();
+      blue.target[i].UniversalRate->Fit(g);
+      blue.target[i].Mean = g->GetParameter(1);
+      blue.target[i].Sigma = g->GetParameter(2);
+      blue.target[i].Threshold = blue.target[i].Mean * RATE_DROP_ALLOWANCE;
+      Float_t ymax = blue.target[i].UniversalRate->GetMaximum()*0.8;
+      DrawLine(blue.target[i].UniversalRate, blue.target[i].Threshold, ymax, 1, 2);
+      DrawLine(blue.target[i].UniversalRate, blue.target[i].Mean-blue.target[i].Sigma*REFERENCE_RATE_DROP_ALLOWANCE, ymax, 7, 2);
+    }
+  }else{ // yellow beam
+    C2->Divide(1, yellow.Target.nPeriod);
+    for (Int_t i=0; i<yellow.Target.nPeriod; i++) {
+      C2->cd(i+1) ; yellow.target[i].UniversalRate->Draw();
+      yellow.target[i].UniversalRate->Fit(g);
+      yellow.target[i].Mean = g->GetParameter(1);
+      yellow.target[i].Sigma = g->GetParameter(2);
+      yellow.target[i].Threshold = yellow.target[i].Mean * RATE_DROP_ALLOWANCE;
+      Float_t ymax = yellow.target[i].UniversalRate->GetMaximum()*0.8;
+      DrawLine(yellow.target[i].UniversalRate, yellow.target[i].Threshold, ymax, 1, 2);
+      DrawLine(yellow.target[i].UniversalRate, yellow.target[i].Mean - yellow.target[i].Sigma*REFERENCE_RATE_DROP_ALLOWANCE, ymax, 7, 2);
+    }
+  }
+
+  C2->Update(); ps->NewPage(); 
+
+
+  return 0;
+
+}
+
+
+//
+// Class name  : OfflinePol
+// Method name : TargetByTarget(Int_t k, Int_t Color)
+//
+// Description : Stack data for Target by Target period and fill the relevant universal rate histogram. 
+// Input       : TargetByTarget(Int_t k, Int_t Color)
+// Return      : 
+//
+Int_t 
+OfflinePol::TargetByTarget(Int_t k, Int_t Color){
+
+
+  for (Int_t j=0; j<fill[k].nRun; j++){
+
+    if (Color==4){ // blue beam
+
+      for (Int_t i=0;i<blue.Target.nPeriod; i++){
+	if ((blue.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<blue.target[i].End_RunID)) {
+	  blue.target[i].UniversalRate->Fill(fill[k].Rate[j]);
+	}
+      } // end-of-(i<blue.Target.nPeriod) loop
+
+    }else{ // yellow beam
+
+      for (Int_t i=0;i<yellow.Target.nPeriod; i++){
+	if ((yellow.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<yellow.target[i].End_RunID)) {
+	  yellow.target[i].UniversalRate->Fill(fill[k].Rate[j]);
+	}
+      } // end-of-(i<yellow.Target.nPeriod) loop
+
+    }// end-of-(j<fill[k].nRun) loop
+
+  };// end-of-fill[k].nRun loop
+
+  return 0;
+}
+
+
+
 //
 // Class name  : OfflinePol
 // Method name : FillByFillPlot(Int_t Mode, Int_t ndata, TCanvas *CurC, TPostScript *ps)
@@ -209,6 +379,8 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   };
 
   ps->NewPage();
+
+
 
   // Define Chi2 Distribution
   Float_t OverFlow=10;
@@ -231,33 +403,35 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
     }
   }
 
+
   // Reset counters
   Fill.bad.rate.fill = Fill.bad.rate.data = Fill.bad.P.fill = Fill.bad.P.data = 0;
-
+  
 
   gStyle->SetOptStat(kFALSE);
   gStyle->SetTitleFontSize(0.08);
   TCanvas * C = new TCanvas("C","fill by fill", 1100, 850);
   C->Divide(2,5);
   
+  // Fill By Fill loop
   Int_t j=0;
   for (Int_t k=0; k<nFill; k++) {
     nRunPerFill -> Fill(fill[k].nRun);
 
     // Fill Ch-2 distribution histograms
-      if (fill[k].nRun>1) {
-	C->cd(j%10+1);
-	FillByFillPlot(Mode, k, Color); C->Update();
-	for (Int_t i=0; i<2; i++)  fill[k].Chi2[i] = fill[k].Chi2[i]>OverFlow ? OverFlow*0.99 : fill[k].Chi2[i];
-	if (fill[k].Chi2[1]) FillByFillChi2[1]->Fill(fill[k].Chi2[1]);   // Exponential Fit
-	if (fill[k].Chi2[0]) {
-	  FillByFillChi2[0]->Fill(fill[k].Chi2[0]);                      // Linear Fit
-	  if (fill[k].DoF>1)  FillByFillChi2[2]->Fill(fill[k].Chi2[0]);  // D.o.F>1
-	  if (fill[k].DoF==1) FillByFillChi2[3]->Fill(fill[k].Chi2[0]);  // D.o.F=1
-	}
-	if ((j+1)%10==0) ps->NewPage();
-	++j;
+    if (fill[k].nRun>1) {
+      C->cd(j%10+1);
+      FillByFillPlot(Mode, k, Color); C->Update();
+      for (Int_t i=0; i<2; i++)  fill[k].Chi2[i] = fill[k].Chi2[i]>OverFlow ? OverFlow*0.99 : fill[k].Chi2[i];
+      if (fill[k].Chi2[1]) FillByFillChi2[1]->Fill(fill[k].Chi2[1]);   // Exponential Fit
+      if (fill[k].Chi2[0]) {
+	FillByFillChi2[0]->Fill(fill[k].Chi2[0]);                      // Linear Fit
+	if (fill[k].DoF>1)  FillByFillChi2[2]->Fill(fill[k].Chi2[0]);  // D.o.F>1
+	if (fill[k].DoF==1) FillByFillChi2[3]->Fill(fill[k].Chi2[0]);  // D.o.F=1
       }
+      if ((j+1)%10==0) ps->NewPage();
+      ++j;
+    }
 
   } // for (k=0; k<nFill)
 
@@ -301,7 +475,7 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
     fout << "  Large Chi2 Pol  data                : " << Fill.bad.P.data    << endl;
     fout << " ===========================================================" << endl;
 
-  } else if (Mode>>4&1) {
+  } else if ((Mode>>4&1)||(Mode>>5&1)) {
 
     fout << "\n ===========================================================" << endl;
     if (Fill.bad.rate.fill) fout << "  RATE Drop Suspicious fills : " << Fill.bad.rate.fill << endl;
@@ -326,7 +500,8 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 //                   Bit 1 - P_Online
 //                   Bit 2 - Rate
 //                   Bit 3 - P_Offline Fit
-//                   Bit 4 - Rate Fit
+//                   Bit 4 - Rate Filter
+//                   Bit 5 - Rater Filter by Universal rate on Target By Target
 //               Mode=7 (Offline,Online,Rate), Mode=9 (Offline,fit)
 // Input       : Int_t Mode, Int_t k, Int_t Color
 // Return      : 
@@ -352,11 +527,11 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   sprintf(hname,"Fill%d",hid); ++hid;
   if (fill[k].nRun>1) GetScale(fill[k].Clock, fill[k].nRun, margin, xmin, xmax);
   Float_t Range = GetScalePrefixRange(prefix_range, fill[k].P_offline, fill[k].nRun, margin, ymin, ymax);
-  if (Mode>>4&1) {ymin=r.ymin; ymax=r.ymax;};
+  if ((Mode>>4&1)||(Mode>>5&1)) {ymin=r.ymin; ymax=r.ymax;};
   TH2F * fillbyfill     = new TH2F(hname, htitle, 10, xmin, xmax, 100, ymin, ymax); 
   fillbyfill->GetXaxis()->SetTitle("Hours from first measurement at store");
   fillbyfill->GetYaxis()->SetTitle("Polarization [%]");
-  if (Mode>>4&1)  fillbyfill->GetYaxis()->SetTitle("Good Carbon Rate/WCM_sum [MHz]");
+  if ((Mode>>4&1)||(Mode>>5&1))  fillbyfill->GetYaxis()->SetTitle("Good Carbon Rate/WCM_sum [MHz]");
 
   // Print Vertical Range
   sprintf(text,"V-Range = %d", Range);
@@ -407,19 +582,19 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
 
   // ------------------------------------------------------------------- // 
-  //                            Rate Fit       .                         // 
+  //                            Rate Filter    .                         // 
   // ------------------------------------------------------------------- // 
-  if (Mode>>4&1){
-    RateFit(k, 0, xmin, xmax);
-    // RateFit(k, 1, xmin, xmax);  // linear fit
+  if ((Mode>>4&1)||(Mode>>5&1)){
+    RateFilter(k, 0, xmin, xmax, Color);
+    // RateFit(k, 1, xmin, xmax, Color);  // linear fit
   }
-
 
 
   // ------------------------------------------------------------------- // 
   //                     Fitting  on Polarization                        // 
   // ------------------------------------------------------------------- // 
   if (Mode>>3&1){
+
     Float_t P0, P1;
     gStyle->SetOptFit(111);
     if (fill[k].nRun>2) {
@@ -491,7 +666,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 
 //
 // Class name  : OfflinePol
-// Method name : RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax)
+// Method name : RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax)
 //
 // Description : Extract major drop data in rate for fill[k].  
 //             : Mode 1: Linear fit.and check the standard deviation
@@ -499,15 +674,16 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
 //                    Maximum rate option (Int_t Option)
 //                       0 : Get maximum rate from data set after "i"th datum
 //                       1 : Get maximum rate from all data set
-// Input       : Int_t k, Int_t Mode, Float_t xmin, Float_t xmax
+//                       2 : Get maximum rate from gaussian mean fit on universal rate target by target
+
+// Input       : Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Color
 // Return      : 
 //
 void 
-OfflinePol::RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax){
+OfflinePol::RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Color){
   
   Int_t j=0; // bad run counter
   Char_t text[100];
-
 
   Float_t P0, P1;
   gStyle->SetOptFit(111);
@@ -526,17 +702,24 @@ OfflinePol::RateFit(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax){
     // Maximum rate option
     //  0 : Get maximum rate from data set after "i"th datum
     //  1 : Get maximum rate from all data set
-    Int_t Option=0;
+    //  2 : Get maximum rate from gaussian mean fit on universal rate target by target
+    Int_t Option= flag.UniversalRate ? 2 : 0;
 
     for (Int_t i=0; i<fill[k].nRun; i++) {
 
-      if (!Option){
+      if (Option==0){
 	Float_t DropRate = GetDropRate(k, i);
-      }else{
+      }else if (Option==1){
 	Int_t iMax;
 	Float_t DropRate = GetDropRate(k, i, iMax);
 	// draw max rate line
 	TLine *l = new TLine(xmin, fill[k].Rate[iMax], xmax, fill[k].Rate[iMax]);
+	l->SetLineColor(2);
+	l->Draw("same");
+      }else if (Option==2){
+	Float_t RefRate;
+	Float_t DropRate = GetDropRate(k, i, Color, RefRate);
+	TLine *l = new TLine(xmin, RefRate, xmax, RefRate);
 	l->SetLineColor(2);
 	l->Draw("same");
       }
@@ -645,6 +828,9 @@ OfflinePol::GetDropRate(Int_t k, Int_t i){
 
 }
 
+
+
+
 //
 // Class name  : OfflinePol
 // Method name : GetDropRate(Int_t k, Int_t i, Int_t &iMax)
@@ -659,5 +845,48 @@ OfflinePol::GetDropRate(Int_t k, Int_t i, Int_t &iMax){
   Float_t rate =fill[k].Rate[i]/GetMax(fill[k].Rate, fill[k].nRun, iMax); 
 
   return rate;
+
+}
+
+
+//
+// Class name  : OfflinePol
+// Method name : GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate)
+//
+// Description : Calculate Drop in Rate compared with the reference rate determined from gaussian fit on 
+//             : universal rate distribution target by target. This routine is custumized for blue/yellow 
+//             : beams, respectively. The beam is distinguished by the argument "Int_t Color".
+// Input       : Int_t k, Int_t i, Int_t Color, Float_t RefRate
+// Return      : Reference rate and Ratio between present "i"th Rate and reference universal rate target by target
+//
+Float_t
+OfflinePol::GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate){
+
+  if (Color==4) { // blue beam
+
+    for (Int_t j=0;j<blue.Target.nPeriod; j++){
+      if ((blue.target[j].Begin_RunID<=fill[k].RunID[i])&&(fill[k].RunID[i]<blue.target[j].End_RunID)) {
+	RefRate = blue.target[j].Mean;
+	break;
+      }
+    } // end-of-for(j<blue.Target.nPeriod) loop
+
+  }else{ // yellow beam
+
+    for (Int_t j=0;j<yellow.Target.nPeriod; j++){
+      if ((yellow.target[j].Begin_RunID<=fill[k].RunID[i])&&(fill[k].RunID[i]<yellow.target[j].End_RunID)) {
+	RefRate = yellow.target[j].Mean;
+	break;
+      }
+    } // end-of-for(j<yellow.Target.nPeriod) loop
+
+  } // end-of-if(Color)
+
+  if (RefRate==0) {
+    cerr << "GetDropRate::ERROR RefRate is zero. Check blue/yellow.target[i].Mean has finite value." << endl;
+    exit;
+  }
+
+  return fill[k].Rate[i]/RefRate;
 
 }
