@@ -72,11 +72,12 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
   for (Int_t j=0; j<Period.nPeriod; j++) {
     period[j].nRun = 0;
     period[j].flag = 0;
+    period[j].nfill= 0;
   }
 
 
   // Fill-by-Fill loop
-  Int_t index;
+  Int_t index; 
   for (Int_t i=0; i<nFill; i++){
 
     for (Int_t j=0; j<Period.nPeriod; j++) {
@@ -85,14 +86,13 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	period[j].PeriodID = j+1;
 	index=j;
 	if (!(Mode>>7&1)) {period[j].PeriodID = period[j].Type; index=period[j].Type;}
-
+	
 	for (Int_t k=0; k<fill[i].nRun; k++) {
 
 	  // reset clock to be zero for the first measurement for the period[index]
 	  if (!period[index].flag){
 	    period[index].Clock0 = fill[i].Time[k];
 	    period[index].flag = 1;
-	    cout << "========" << endl;
 	  }
 
 	  Int_t array_index = period[index].nRun;
@@ -100,8 +100,7 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	  period[index].P_online[array_index]   = fill[i].P_online[k];
 	  period[index].dP_online[array_index]  = fill[i].dP_online[k];
 	  period[index].P_offline[array_index]  = fill[i].P_offline[k];
-	  //	  period[index].dP_offline[array_index] = fill[i].dP_offline[k];
-	  period[index].dP_offline[array_index] = sqrt(fill[i].dP_offline[k]*fill[i].dP_offline[k]+3*3);
+	  period[index].dP_offline[array_index] = fill[i].dP_offline[k];
 	  period[index].WCM[array_index]        = fill[i].WCM[k];
 	  peroid[index].dum[array_index]        = 0;
 	  period[index].Time[array_index]       = fill[i].Time[k];
@@ -127,6 +126,15 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 	  ++period[index].nRun;
 
 	} // end-of-for(k=0;fill[i].nRun)
+
+
+	// fill average
+	period[index].fill_id[period[index].nfill] = fill[i].FillID;
+	period[index].fill_ave[period[index].nfill]   = fill[i].wAve[0]; 
+	period[index].fill_dave[period[index].nfill]  = fill[i].wAve[1];
+	period[index].fill_ave_t[period[index].nfill] = (fill[i].Time[0] - period[index].Clock0)/3600/24;
+	++period[index].nfill;
+
 
       } // end-of-for(i=0;period.nPeriod);
 
@@ -204,10 +212,19 @@ OfflinePol::GetJetRunTime(Char_t *Beam){
     exit(-1);
   }
 
-  cout << MAX_JET_RUNTIME_DATA << endl;
   Int_t ch=0, i=0;
   while ( ( ch = fin.peek()) != EOF ) {
     fin >> jet.FillID[i] >> jet.start[i] >> jet.stop[i] >> jet.dt[i] >> jet.start_time[i] >> jet.RunID[i];
+
+
+    for (Int_t j=0;j<Period.nPeriod;j++){
+      for (Int_t k=0;k<period[j].nfill;k++){
+	if (period[j].fill_id[k]==jet.FillID[i] ) {
+	  period[j].t_jet[k] += Float_t(jet.dt[i])/3600/24;
+	  cout << period[j].fill_id[k] << " " << period[j].t_jet[k] << endl;
+	}
+      }
+    }
 
     ++i;
     if (i>MAX_JET_RUNTIME_DATA) {
@@ -315,21 +332,40 @@ OfflinePol::JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
   ps->NewPage();
 
   Float_t xmin; 
-
-  if (Color==4){ // Blue
-    C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
-    PlotJet(Beam, 0, xmin); C->Update();
-    C->cd(2) ; xmin=PeriodByPeriodPlot(Mode, 4, Color, Period.pC_Ave[Beam][1]); 
-    PlotJet(Beam, 1, xmin); C->Update();
-    C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 5, Color, Period.pC_Ave[Beam][2]); 
-    PlotJet(Beam, 2, xmin); C->Update();
-  } else {
-    C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
-    PlotJet(Beam, 0, xmin); C->Update();
-    C->cd(2) ; xmin=PeriodByPeriodPlot(Mode, 2, Color, Period.pC_Ave[Beam][1]); 
-    PlotJet(Beam, 1, xmin); C->Update();
-    C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 3, Color, Period.pC_Ave[Beam][2]); 
-    PlotJet(Beam, 2, xmin); C->Update();
+  
+  Mode=1;
+  if (Mode>>0&1) {
+    if (Color==4){ // Blue
+      C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
+      PlotJet(Beam, 0, xmin); C->Update();
+      C->cd(2) ; xmin=PeriodByPeriodPlot(Mode, 4, Color, Period.pC_Ave[Beam][1]); 
+      PlotJet(Beam, 1, xmin); C->Update();
+      C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 5, Color, Period.pC_Ave[Beam][2]); 
+      PlotJet(Beam, 2, xmin); C->Update();
+    } else {
+      C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
+      PlotJet(Beam, 0, xmin); C->Update();
+      C->cd(2) ; xmin=PeriodByPeriodPlot(Mode, 2, Color, Period.pC_Ave[Beam][1]); 
+      PlotJet(Beam, 1, xmin); C->Update();
+      C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 3, Color, Period.pC_Ave[Beam][2]); 
+      PlotJet(Beam, 2, xmin); C->Update();
+    }
+  }else{
+    if (Color==4){ // Blue
+      C->cd(1) ; xmin=PeriodByPeriodFillAverage(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
+      PlotJet(Beam, 0, xmin); C->Update();
+      C->cd(2) ; xmin=PeriodByPeriodFillAverage(Mode, 4, Color, Period.pC_Ave[Beam][1]); 
+      PlotJet(Beam, 1, xmin); C->Update();
+      C->cd(3) ; xmin=PeriodByPeriodFillAverage(Mode, 5, Color, Period.pC_Ave[Beam][2]); 
+      PlotJet(Beam, 2, xmin); C->Update();
+    } else {
+      C->cd(1) ; xmin=PeriodByPeriodFillAverage(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
+      PlotJet(Beam, 0, xmin); C->Update();
+      C->cd(2) ; xmin=PeriodByPeriodFillAverage(Mode, 2, Color, Period.pC_Ave[Beam][1]); 
+      PlotJet(Beam, 1, xmin); C->Update();
+      C->cd(3) ; xmin=PeriodByPeriodFillAverage(Mode, 3, Color, Period.pC_Ave[Beam][2]); 
+      PlotJet(Beam, 2, xmin); C->Update();
+    }
   }
 
   C->Update(); ps->NewPage();
@@ -488,6 +524,57 @@ OfflinePol::MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPost
 //
 // Description : Make Plots Period by Period 
 //               Mode Description
+// Input       : Int_t Mode, Int_t k, Int_t Color
+// Return      : Float_t xmin
+//
+Float_t 
+OfflinePol::PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
+
+  static Int_t hid;
+  Char_t htitle[100], xtitle[100], hname[100];
+  sprintf(htitle,"Period Type-%d", k);
+  sprintf(hname,"Period%d",hid); ++hid;
+  sprintf(xtitle,"Duration from the first Measurement [day]");
+
+  Float_t margin=0.05, xmin, xmax, ymin=20, ymax=80;
+  GetScale(period[k].Clock, period[k].nRun, margin, xmin, xmax);
+
+  TH2F * periodbyperiod = new TH2F(hname, htitle, 10, xmin, xmax, 100, ymin, ymax); 
+  periodbyperiod->GetXaxis()->SetTitle(xtitle);
+  periodbyperiod->GetYaxis()->SetTitle("Polarization [%]");
+  periodbyperiod->Draw();
+
+  TGraphErrors * tg = new TGraphErrors(period[k].nfill, period[k].fill_ave_t, period[k].fill_ave, period[k].dum, period[k].fill_dave);
+  tg -> SetMarkerStyle(20);
+  tg -> SetMarkerColor(Color);
+  tg -> Draw("P");
+
+  // superpose jet running time
+  PlotJetRunTime(k, ymin);
+
+  // ------------------------------------------------------------------- // 
+  //                WCM/dt Weighted Mean on Polarization                 // 
+  // ------------------------------------------------------------------- // 
+  Char_t text[1000];
+  calcWeightedMean(period[k].fill_ave, period[k].fill_dave, period[k].t_jet, period[k].nRun, Ave[0], Ave[1]);
+  //  cout << period[k].PeriodID << " " << Ave[0] << " " << Ave[1] << endl;
+  DrawLine(periodbyperiod, xmin, xmax, Ave[0], 2, 1, 3);
+  DrawLine(periodbyperiod, xmin, xmax, Ave[0]+Ave[1], 2, 3, 2);
+  DrawLine(periodbyperiod, xmin, xmax, Ave[0]-Ave[1], 2, 3, 2);
+  sprintf(text,"ave(P)=%.2f +/- %.3f ", Ave[0], Ave[1]);
+  DrawText(periodbyperiod, (xmin+xmax)/2, ymin*1.05, 2, text);
+
+  return 0;
+
+}
+
+
+//
+// Class name  : OfflinePol
+// Method name : PeriodByPeriodPlot(Int_t Mode, Int_t k)
+//
+// Description : Make Plots Period by Period 
+//               Mode Description
 //                   Bit 0 -
 //                   Bit 1 - P_Offline Liniear fit
 //                   Bit 2 - Plot Wall Current Monitor 
@@ -605,7 +692,7 @@ OfflinePol::PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
   // ------------------------------------------------------------------- // 
 
   calcWeightedMean(period[k].P_offline, period[k].dP_offline, period[k].Weight, period[k].nRun, Ave[0], Ave[1]);
-  cout << period[k].PeriodID << " " << Ave[0] << " " << Ave[1] << endl;
+  //  cout << period[k].PeriodID << " " << Ave[0] << " " << Ave[1] << endl;
   DrawLine(periodbyperiod, xmin, xmax, Ave[0], 2, 1, 3);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]+Ave[1], 2, 3, 2);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]-Ave[1], 2, 3, 2);
