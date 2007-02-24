@@ -71,8 +71,9 @@ StructFlag Flag = {
 };
 
 StructCounter cntr = {
-    0,    // revolution number
-    0     // taret motion entries
+  0,    // good_event;
+  0,    // revolution number
+  0     // taret motion entries
 };
 	 
 
@@ -82,6 +83,7 @@ StructRunInfo runinfo = {
     0, // StartTime;
     0, // StopTime;
     0, // RunTime;
+    0, // GoodEventRate;
     0, // EvntRate;
     0, // ReadRate;
     0, // WcmAve;
@@ -90,6 +92,7 @@ StructRunInfo runinfo = {
     0, // RHICBeam;
     0, // MaxRevolution;
   'V', // target
+  '-',// targetID
     0, // TgtOperation (Initialization is done in Initialization() )
     {  // ActiveDetector[NDETECTOR]
       0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF

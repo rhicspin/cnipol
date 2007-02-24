@@ -152,6 +152,7 @@ CompleteHistogram(){
   float min=fabs(ASYM_DEFAULT), max; float margin=0.2;
   float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
   for (int i=0; i<ndelim; i++) {
+    cntr.good_event += cntr.good[i];
     x[i]=float(i); dx[i]=0; 
     y[i]=float(cntr.good[i])/float(SEC_PER_DELIM)*MHz; 
     dy[i]=float(sqrt(cntr.good[i]))/float(SEC_PER_DELIM)*MHz; 
@@ -722,10 +723,12 @@ PrintWarning(){
 void
 PrintRunResults(StructHistStat hstat){
 
-    runinfo.RunTime = runinfo.StopTime - runinfo.StartTime;
-    runinfo.EvntRate = float(Nevtot)/float(runinfo.RunTime);
-    runinfo.ReadRate = float(Nread)/float(runinfo.RunTime);
-
+  //    runinfo.RunTime = runinfo.StopTime - runinfo.StartTime;
+    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+    
     printf("-----------------------------------------------------------------------------------------\n");
     printf("-----------------------------  Operation Messages  --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
@@ -738,20 +741,23 @@ PrintRunResults(StructHistStat hstat){
     printf("-----------------------------------------------------------------------------------------\n");
     printf("-----------------------------   Analysis Results   --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
-    printf(" RunTime                 [s] = %10d\n",   runinfo.RunTime);
-    printf(" Good Carbon Rate      [MHz] = %10.4f\n", anal.max_rate);
-    printf(" Event Rate             [Hz] = %10.1f\n", runinfo.EvntRate);
-    printf(" Read Rate              [Hz] = %10.1f\n", runinfo.ReadRate);
-    printf(" Target                      =          %c\n",     runinfo.target);
+    printf(" RunTime                 [s] = %10.1f\n", runinfo.RunTime);
+    printf(" Total events in banana      = %10d\n",   cntr.good_event);
+    printf(" Good Carbon Max Rate  [MHz] = %10.4f\n", anal.max_rate);
+    printf(" Good Carbon Rate      [MHz] = %10.4f\n", runinfo.GoodEventRate);
+    printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", runinfo.GoodEventRate/runinfo.WcmSum*100);
+    printf(" Event Rate            [MHz] = %10.4f\n", runinfo.EvntRate);
+    printf(" Read Rate             [MHz] = %10.4f\n", runinfo.ReadRate);
+    printf(" Target                      =         %c%c\n", runinfo.target, runinfo.targetID);
     printf(" Target Operation            =      %s\n",     runinfo.TgtOperation);
     if (runinfo.Run>=6){
         printf(" Maximum Revolution #        = %10d\n", runinfo.MaxRevolution);
         printf(" Reconstructed Duration  [s] = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
         printf(" Target Motion Counter       = %10d\n",cntr.tgtMotion);
     }
-    printf(" WCM Sum                     = %10.1f\n", runinfo.WcmSum);
-    printf(" WCM Average                 = %10.1f\n", runinfo.WcmAve);
-    printf(" WCM Average w/in rnge       = %10.1f\n", average.average);
+    printf(" WCM Sum     [10^11 protons] = %10.1f\n", runinfo.WcmSum/100);
+    printf(" WCM Average [10^9  protons] = %10.1f\n", runinfo.WcmAve);
+    printf(" WCM Average w/in range      = %10.1f\n", average.average);
     printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
     printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
     printf(" # of Active Bunch           = %10d\n", runinfo.NActiveBunch);
