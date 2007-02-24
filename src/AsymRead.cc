@@ -24,6 +24,7 @@
 
 #define REC_BEAMMASK 0x00030000
 void PrintPattern(char*);
+void DecodeTargetID(polDataStruct poldat);
 
 
 // ================= 
@@ -62,6 +63,7 @@ int readloop() {
     } rec;
     
     recordConfigRhicStruct  *cfginfo;
+    polDataStruct poldat;
     beamDataStruct beamdat;
     targetDataStruct tgtdat1;
     targetDataStruct tgtdat2;
@@ -145,7 +147,9 @@ int readloop() {
 	  break;
 
         case REC_POLADO:
-            break; // later
+            memcpy(&poldat, &rec.polado.data,sizeof(poldat));
+	    DecodeTargetID(poldat);
+            break; 
 
         case REC_TAGADO:
 	    memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));	    
@@ -569,6 +573,48 @@ calcRunConst(recordConfigRhicStruct *cfginfo){
 }
 
 
+//
+// Class name  :
+// Method name : DecodeTargetID(polDataStruct poldat)
+//
+// Description : Decorde target infomation.
+//             : presently the target ID is assumed to be appear at the last of 
+//             : character string poldat.targetIdS.
+// Input       : polDataStruct poldat
+// Return      : 
+//             : 
+//
+void 
+DecodeTargetID(polDataStruct poldat){
+
+  cout << endl << "target ID = " << poldat.targetIdS << endl;
+
+  // initiarization
+  runinfo.targetID='-';
+
+  string str(poldat.targetIdS);
+  if (str.find("Background") < str.size())   runinfo.targetID='B';
+  if (str.find("1")         == str.size()-1) runinfo.targetID='1';
+  if (str.find("2")         == str.size()-1) runinfo.targetID='2';
+  if (str.find("3")         == str.size()-1) runinfo.targetID='3';
+  if (str.find("4")         == str.size()-1) runinfo.targetID='4';
+  if (str.find("5")         == str.size()-1) runinfo.targetID='5';
+  if (str.find("6")         == str.size()-1) runinfo.targetID='6';
+  if (str.find("7")         == str.size()-1) runinfo.targetID='7';
+  if (str.find("8")         == str.size()-1) runinfo.targetID='-';
+
+  // Restore Vertical or Horizontal target information
+  // in case this information isn't decorded correctly
+  // within REC_PCTARGET routine
+  if (runinfo.target=='-') {
+    cout << str.find("Vert") << endl;
+    if (str.find("Vert") == 0) runinfo.target='V';
+    if (str.find("Horz") == 0) runinfo.target='H';
+  }
 
 
+
+  return;
+  
+}
 

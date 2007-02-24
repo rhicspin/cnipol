@@ -175,7 +175,8 @@ typedef struct {
   double RUNID;
   int StartTime;
   int StopTime;
-  int RunTime;
+  float RunTime;
+  float GoodEventRate;
   float EvntRate;
   float ReadRate;
   float WcmAve;
@@ -184,6 +185,7 @@ typedef struct {
   int RHICBeam;
   int MaxRevolution;
   char target;
+  char targetID;
   char * TgtOperation;
   int ActiveDetector[NDETECTOR];
   int ActiveStrip[NSTRIP];
@@ -268,9 +270,10 @@ typedef struct {
 } StructStripCounter;
 
 typedef struct {
-  long int good[MAXDELIM];
+  long int good_event;
   long int revolution;
   long int tgtMotion;
+  long int good[MAXDELIM];
   StructStripCounter reg, alt;
 } StructCounter;
 
