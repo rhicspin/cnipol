@@ -198,7 +198,7 @@ MeasTypeAbbriviator(){
 ShowIndex(){
 
     printf "=================================================================================================";
-    printf "============================\n";
+    printf "================================================\n";
     printf " RunID ";
     printf "       Online";
     printf "  Status  ";
@@ -208,11 +208,14 @@ ShowIndex(){
     printf "         Offline";
     printf "    Phase [deg] ";
     printf " chi2 ";
-    printf " A_N ";
-    printf " Target";
+    printf " A_N  ";
+    printf " Target ";
     printf " Rate";
+    printf "   WCM"
     printf " SpLm";
     printf "   on-off";
+    printf " Alternative";
+    printf " ";
     printf "\n";
     printf "          ";
     printf "   P     dP ";
@@ -223,14 +226,16 @@ ShowIndex(){
     printf "     phi  dphi";
     printf " /dof ";
     printf "  ave ";
-    printf "       ";
-    printf "[MHz]"
-    printf "  RMS"
-    printf "   Error"
+    printf "         ";
+    printf "[MHz] ";
+    printf "  Sum";
+    printf "  RMS";
+    printf "   Error ";
+    printf "  Pol ";
+    printf " dPol";
     printf "\n";
     printf "=================================================================================================";
-    printf "============================\n";
-
+    printf "================================================\n";
 
 }
 
@@ -442,6 +447,7 @@ OnlineDatabase(){
    TRIG_THRESHOLD=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $1}' | tail -n 1 | sed -e 's/TrigThreshold://'`;
    BZ_DELAY=`grep 'TrigThreshold:' $ONLINE_LOG | gawk '{print $2}' | tail -n 1 | sed -e 's/BZDelay://'`
    AT_BUNCH=`grep 'AT Bunch:' $ONLINE_LOG | gawk '{print $2}' | tail -n 1 | sed -e 's/Bunch://'`;
+
    A_N=`grep 'Average analyzing power' $ONLINE_ANLOG | tail -n 1 | gawk '{print $7}' | sed -e '{s/NAN/0/}'`;
 
    if [ ! $MONTH ] ; then
@@ -467,9 +473,12 @@ OnlineDatabase(){
    energy2=`grep "GeV" $ONLINE_LOG | tail -n 1 | gawk '{print $6}'`
    if [ $energy2 = "GeV;" ] 2>/dev/null ; then
        ENERGY=$energy1
+       TARGET=`grep 'Target: ' $ONLINE_LOG | gawk '{print $8}'` ;
    else
        ENERGY=$energy2
+       TARGET=`grep 'Target: ' $ONLINE_LOG | gawk '{print $9}'` ;
    fi
+
 
    echo -e -n "$RunID";
    printf " %s %2d %s " $MONTH $DATE $TIME;
@@ -482,6 +491,7 @@ OnlineDatabase(){
    printf " %6.4f "   $A_N;
    printf " %5.1f "   $dlAve;
    printf " %s  "     $CONFIG_FILE;
+   printf " %s  "     $TARGET;
    echo -e -n "\n";
 
 
@@ -525,9 +535,9 @@ dLayerConfig(){
 }
 
 #############################################################################
-#                                grepit()                                   #
+#                             OfflineDatabase()                             #
 #############################################################################
-grepit(){
+OfflineDatabase(){
 
     echo -e -n "$RunID";
 #    GetOnlinePolarization;
@@ -561,9 +571,10 @@ grepit(){
 	grep 'Phase' $LOGFILE | gawk '{printf(" %7.1f %5.1f",$5,$6)}'
 	grep 'chi2/d.o.f (sinphi fit)     ' $LOGFILE | gawk '{printf(" %4.2f",$5)}'
 	grep 'Analyzing Power Average     ' $LOGFILE | gawk '{printf(" %6.4f",$5)}'
-	grep 'Target                      ' $LOGFILE | gawk '{printf(" %c",$3)}'      
+	grep 'Target                      ' $LOGFILE | gawk '{printf(" %s",$3)}'      
 	grep 'Target Operation            ' $LOGFILE | sed -e 's/fixed/fixd/' | gawk '{printf(" %s",$4)}' 
-	grep 'Read Rate' $LOGFILE | gawk '{printf(" %4.2f",$5/1e6)}'
+	grep 'Good Carbon Rate/WCM_sum'     $LOGFILE | gawk '{printf(" %6.4f",$5)}';
+	grep 'WCM Sum '                     $LOGFILE | gawk '{printf(" %5.1f", $6)}';
 	grep 'Specific Luminosity         ' $LOGFILE | gawk '{printf(" %5.3f",$6)}'
 	OfflineP=`grep 'Polarization (sinphi)' $LOGFILE | gawk '{printf(" %6.1f ",$4*100)}'`
 	echo $OnlineP $OfflineP | gawk '{printf(" %6.2f",$1-$2)}'
@@ -617,7 +628,7 @@ for f in `cat $DATADIR/raw_data.list` ;
 			  elif [ $ExeErrorDetector -eq 1 ] ; then
 			      ErrorDetector;
 			  else
-			      grepit;
+			      OfflineDatabase;
 			  fi
 		      else 
 			  echo -e -n "$RunID $LOGFILE missing\n";
