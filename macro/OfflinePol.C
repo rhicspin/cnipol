@@ -179,6 +179,7 @@ private:
       Float_t Sigma;
       Float_t Threshold;
       TH1F * UniversalRate;
+      TH2F * UniversalRate_vs_P;
     } Target, target[MAX_TARGET_PERIOD];
   } blue, yellow;
 
@@ -352,8 +353,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       // 19 : mask RunStatus == "N/A-","Junk","Tune" 
-      if (RunStatusFilter(31, RunStatus)){
-      //      if (RunStatusFilter(19, RunStatus)){
+      //     if (RunStatusFilter(31, RunStatus)){
+      if (RunStatusFilter(19, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -737,8 +738,8 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+   FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+   //    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
@@ -910,7 +911,7 @@ Int_t OfflinePol::OfflinePol() {
     sprintf(psfile,"ps/PeriodByPeriod.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+    //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
    
     Char_t outfile[100]; 
     sprintf(outfile,"summary/PeriodByPeriod.dat");
