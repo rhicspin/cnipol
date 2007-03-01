@@ -262,12 +262,25 @@ OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *p
     blue.target[i].UniversalRate = new TH1F("UniversalRate", htitle, 20, 0, xmax);
     blue.target[i].UniversalRate -> SetFillColor(Color);
     blue.target[i].UniversalRate -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
+
+    sprintf(htitle,"Blue:Universal Rate Period %8.3f - %8.3f", blue.target[i].Begin_RunID, blue.target[i].End_RunID);
+    blue.target[i].UniversalRate_vs_P = new TH2F("UniversalRate_vs_P", htitle, 20, 0, xmax, 60, 20, 80);
+    blue.target[i].UniversalRate_vs_P -> SetMarkerStyle(20);
+    blue.target[i].UniversalRate_vs_P -> SetMarkerColor(Color);
+    blue.target[i].UniversalRate_vs_P -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
   }  
   for (Int_t i=0; i<yellow.Target.nPeriod; i++) { // yellow beam
     sprintf(htitle,"Yellow:Universal Rate Period %8.3f - %8.3f", yellow.target[i].Begin_RunID, yellow.target[i].End_RunID);
     yellow.target[i].UniversalRate = new TH1F("UniversalRate", htitle, 20, 0, xmax);
     yellow.target[i].UniversalRate -> SetFillColor(Color);
     yellow.target[i].UniversalRate -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
+
+    sprintf(htitle,"Yellow:Universal Rate Period %8.3f - %8.3f", yellow.target[i].Begin_RunID, yellow.target[i].End_RunID);
+    yellow.target[i].UniversalRate_vs_P = new TH2F("UniversalRate_vs_P", htitle, 20, 0, xmax, 60, 20, 80);
+    yellow.target[i].UniversalRate_vs_P -> SetMarkerStyle(20);
+    yellow.target[i].UniversalRate_vs_P -> SetMarkerColor(Color);
+    yellow.target[i].UniversalRate_vs_P -> SetXTitle("#12C_banana/Delta_t/WCM_sum");
+
   }
 
 
@@ -303,6 +316,10 @@ OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *p
       DrawLine(blue.target[i].UniversalRate, blue.target[i].Threshold, ymax, 1, 2);
       DrawLine(blue.target[i].UniversalRate, blue.target[i].Mean-blue.target[i].Sigma*REFERENCE_RATE_DROP_ALLOWANCE, ymax, 7, 2);
     }
+  C2->Update(); ps->NewPage(); 
+    for (Int_t i=0; i<blue.Target.nPeriod; i++) {
+      C2->cd(i+1) ; blue.target[i].UniversalRate_vs_P->Draw("P");
+    }
   }else{ // yellow beam
     C2->Divide(1, yellow.Target.nPeriod);
     for (Int_t i=0; i<yellow.Target.nPeriod; i++) {
@@ -314,6 +331,10 @@ OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *p
       Float_t ymax = yellow.target[i].UniversalRate->GetMaximum()*0.8;
       DrawLine(yellow.target[i].UniversalRate, yellow.target[i].Threshold, ymax, 1, 2);
       DrawLine(yellow.target[i].UniversalRate, yellow.target[i].Mean - yellow.target[i].Sigma*REFERENCE_RATE_DROP_ALLOWANCE, ymax, 7, 2);
+    }
+  C2->Update(); ps->NewPage(); 
+    for (Int_t i=0; i<yellow.Target.nPeriod; i++) {
+      C2->cd(i+1) ; yellow.target[i].UniversalRate_vs_P->Draw("P");
     }
   }
 
@@ -344,6 +365,7 @@ OfflinePol::TargetByTarget(Int_t k, Int_t Color){
       for (Int_t i=0;i<blue.Target.nPeriod; i++){
 	if ((blue.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<blue.target[i].End_RunID)) {
 	  blue.target[i].UniversalRate->Fill(fill[k].Rate[j]);
+	  blue.target[i].UniversalRate_vs_P->Fill(fill[k].Rate[j], fill[k].P_offline[j]);
 	}
       } // end-of-(i<blue.Target.nPeriod) loop
 
@@ -352,6 +374,7 @@ OfflinePol::TargetByTarget(Int_t k, Int_t Color){
       for (Int_t i=0;i<yellow.Target.nPeriod; i++){
 	if ((yellow.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<yellow.target[i].End_RunID)) {
 	  yellow.target[i].UniversalRate->Fill(fill[k].Rate[j]);
+	  yellow.target[i].UniversalRate_vs_P->Fill(fill[k].Rate[j], fill[k].P_offline[j]);
 	}
       } // end-of-(i<yellow.Target.nPeriod) loop
 
