@@ -227,7 +227,6 @@ int main (int argc, char *argv[]){
         }
     }
 
-
     // RunID 
     char  RunID[8];
     strncpy(RunID,ifile,8);
@@ -259,7 +258,7 @@ int main (int argc, char *argv[]){
 
     
     // ---------------------------------------------------- // 
-    //                 Histogram Booking                    //
+    //            Hbook Histogram Booking                   //
     // ---------------------------------------------------- // 
     fprintf(stdout,"Booking ... histgram file\n");
     if (hist_book(hbk_outfile) != 0) {
@@ -310,6 +309,7 @@ int main (int argc, char *argv[]){
         perror("Error: DeleteHistogram()");
         exit(-1);
     }
+
 
     // ---------------------------------------------------- // 
     //                  Closing Histogram File              //
