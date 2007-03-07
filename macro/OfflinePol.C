@@ -749,8 +749,8 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);

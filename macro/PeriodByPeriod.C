@@ -692,7 +692,6 @@ OfflinePol::PeriodByPeriodPlot(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
   // ------------------------------------------------------------------- // 
 
   calcWeightedMean(period[k].P_offline, period[k].dP_offline, period[k].Weight, period[k].nRun, Ave[0], Ave[1]);
-  //  cout << period[k].PeriodID << " " << Ave[0] << " " << Ave[1] << endl;
   DrawLine(periodbyperiod, xmin, xmax, Ave[0], 2, 1, 3);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]+Ave[1], 2, 3, 2);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]-Ave[1], 2, 3, 2);
