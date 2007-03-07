@@ -11,6 +11,7 @@ ExeOnlineNevents=0;
 ExeOnlineDatabase=0;
 ExeDlayerConfig=0;
 ExeErrorDetector=0;
+ExeRunCondition=0;
 StripTable=0;
 ExpertMode=0;
 FROM_FILL=7537;
@@ -65,7 +66,7 @@ ShowExample(){
     echo    " "
     echo    "    mkDB.sh -a"
     echo    " "
-    echo    "3. make exclusive database for blue from <runlist> and dump to <file>"
+    echo    "3. make exclusive offline database for blue from <runlist> and dump to <file>"
     echo    " "
     echo    "    mkDB.sh --blue -f <runlist> --exclusive | tee <file>"
     echo    " "
@@ -534,6 +535,33 @@ dLayerConfig(){
 
 }
 
+
+#############################################################################
+#                          RunCondition()                                   #
+#############################################################################
+RunCondition(){
+
+    echo -e -n "$RunID";
+    MEAS_TYPE=`grep 'MEAS. TYPE' $LOGFILE | gawk '{print $4}'`;
+    MeasTypeAbbriviator;
+
+    RUN_STATUS=`grep 'RUN STATUS' $LOGFILE |  gawk '{printf(" %s ",$4)}'`
+    RunStatusAbbriviator;
+
+#    printf "  %4s  %5s" $RUN_STATUS $MEAS_TYPE;
+    grep 'Polarization (sinphi)     ' $LOGFILE | gawk '{printf(" %6.1f %5.1f",$4*100,$5*100)}'
+    grep 'Good Carbon Rate/WCM_sum'     $LOGFILE | gawk '{printf(" %6.4f ",$5)}';
+    grep 'RunTime       ' $LOGFILE | gawk '{printf(" %d",$4)}';
+    grep 'Total events in banana ' $LOGFILE | gawk '{printf(" %d",$6)}';
+    grep 'WCM Sum     ' $LOGFILE | gawk '{printf(" %6.1f", $6)}';
+    grep '@  ' $LOGFILE | gawk '{printf(" %d\n", $4)}';
+
+   
+}
+
+
+
+
 #############################################################################
 #                             OfflineDatabase()                             #
 #############################################################################
@@ -627,6 +655,8 @@ for f in `cat $DATADIR/raw_data.list` ;
 			      dLayerConfig;
 			  elif [ $ExeErrorDetector -eq 1 ] ; then
 			      ErrorDetector;
+			  elif [ $ExeRunCondition -eq 1 ] ; then
+			      RunCondition;
 			  else
 			      OfflineDatabase;
 			  fi
@@ -690,6 +720,7 @@ while test $# -ne 0; do
   --dlayer-config) ExeDlayerConfig=1;;
   --error-detector) ExeErrorDetector=1; ExclusiveMode=1;;
   --strip) StripTable=1; ExclusiveMode=1;;
+  --run-condition) ExeRunCondition=1;;
   -X | --expert) ExpertMode=1;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
