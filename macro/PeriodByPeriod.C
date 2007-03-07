@@ -718,6 +718,8 @@ WeightedMean(Float_t A[MAX_NMEAS_PER_PERIOD], Float_t dA[MAX_NMEAS_PER_PERIOD], 
   Float_t sum1, sum2, dA2, WM;
   sum1 = sum2 = dA2 = 0;
 
+  if (NDAT==1) return A[0];
+
   for ( int i=0 ; i<NDAT ; i++ ) {
     if (dA[i]){  // skip dA=0 data
       dA2 = dA[i]*dA[i];
@@ -745,6 +747,8 @@ WeightedMeanError(Float_t dA[MAX_NMEAS_PER_PERIOD], Float_t W[MAX_NMEAS_PER_PERI
 
   Float_t sum, dA2, dWM;
   sum = dA2 = dWM = 0;
+
+  if (NDAT==1) return dA[0];
 
   for ( int i=0 ; i<NDAT ; i++ ) {
     if (dA[i]){

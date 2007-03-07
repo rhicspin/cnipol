@@ -49,7 +49,7 @@ Int_t OFFLINE_POL=1;
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
 Float_t RATE_FIT_STANDARD_DEVIATION_DATA = 1.5;   // [sigma]
-Float_t RATE_DROP_ALLOWANCE              = 0.6;   // Maximum rate drop factor
+Float_t RATE_DROP_ALLOWANCE              = 0.5;   // Maximum rate drop factor
 Float_t REFERENCE_RATE_DROP_ALLOWANCE    = 2;     // 3 [sigmas] from reference rate
 Float_t POLARIZATION_FIT_CHI2            = 5;   
 Float_t POLARIZATION_FIT_SIGMA_DATA      = 3;     // [sigma]
@@ -69,6 +69,16 @@ Int_t JetRun5Type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
 				    7,    5,    3,    5,    5,    6,
 				    3};
 
+// 0: both beams (60 bunch mode)
+// 1: both beams (120 bunch mode - not available)
+// 2: yellow beam (60 bunch mode)
+// 3: yellow beam (120 bunch mode)
+// 4: blue beam (60 bunch mode)
+// 5: blue beam (120 bunch mode)
+// 6: bad jet position
+// 7: 205 GeV running
+
+
 // Target period
 Float_t BlueTargetRun5[MAX_TARGET_PERIOD]  = {6789.001,
 					      7028.001,  // Vertical Background
@@ -78,8 +88,9 @@ Float_t YellowTargetRun5[MAX_TARGET_PERIOD]= {6789.101,
 					      6976.101,  // Vertical Target-2
 					      6997.106,  // Vertical Background
 					      6997.110,  // Vertical Target-2
-					      7051.101,  // Vertical Target-3
-					      7052.101,  // Vertical Target-2
+					      7048.105,  // Vertical Target-3
+					      7052.101,  // Vertical Target-1
+					      7064.109,  // Vertical Target-2
 					      7328.101}; // Vertical Target-1
 
 
@@ -353,8 +364,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       // 19 : mask RunStatus == "N/A-","Junk","Tune" 
-      //     if (RunStatusFilter(31, RunStatus)){
-      if (RunStatusFilter(19, RunStatus)){
+     if (RunStatusFilter(31, RunStatus)){
+       //      if (RunStatusFilter(19, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -738,8 +749,8 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-   FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-   //    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);

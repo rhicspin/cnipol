@@ -4,6 +4,7 @@ extern Float_t RATE_DROP_ALLOWANCE ;
 extern Float_t REFERENCE_RATE_DROP_ALLOWANCE ;
 extern Float_t POLARIZATION_FIT_CHI2 ;
 extern Float_t POLARIZATION_FIT_SIGMA_DATA ;
+extern Int_t   RUN;
 
 //
 // Class name  : Offline
@@ -308,6 +309,9 @@ OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *p
     C2->Divide(1, blue.Target.nPeriod);
     for (Int_t i=0; i<blue.Target.nPeriod; i++) {
       C2->cd(i+1) ; blue.target[i].UniversalRate->Draw();
+      g->SetParameter(0,blue.target[i].UniversalRate->GetMaximum());
+      g->SetParameter(1,blue.target[i].UniversalRate->GetMean());
+      g->SetParameter(2,blue.target[i].UniversalRate->GetRMS());
       blue.target[i].UniversalRate->Fit(g);
       blue.target[i].Mean = g->GetParameter(1);
       blue.target[i].Sigma = g->GetParameter(2);
@@ -323,6 +327,11 @@ OfflinePol::TargetByTargetUniversalRate(Int_t nFill, Int_t Color, TPostScript *p
   }else{ // yellow beam
     C2->Divide(1, yellow.Target.nPeriod);
     for (Int_t i=0; i<yellow.Target.nPeriod; i++) {
+      g->SetParameter(0,yellow.target[i].UniversalRate->GetMaximum());
+      g->SetParameter(1,yellow.target[i].UniversalRate->GetMean());
+      g->SetParameter(2,yellow.target[i].UniversalRate->GetRMS());
+      // following line is some ugry trick to force fit to converge
+      if ((i==3)&&(RUN==5)) { g->SetParLimits(1, 0.035, 0.05); g->SetParLimits(2, 0.0001, 0.01);}
       C2->cd(i+1) ; yellow.target[i].UniversalRate->Draw();
       yellow.target[i].UniversalRate->Fit(g);
       yellow.target[i].Mean = g->GetParameter(1);
@@ -445,7 +454,7 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
     nRunPerFill -> Fill(fill[k].nRun);
 
     // Fill Ch-2 distribution histograms
-    if (fill[k].nRun>1) {
+    if (fill[k].nRun>0) {
       C->cd(j%10+1);
       FillByFillPlot(Mode, k, Color); C->Update();
       for (Int_t i=0; i<2; i++)  fill[k].Chi2[i] = fill[k].Chi2[i]>OverFlow ? OverFlow*0.99 : fill[k].Chi2[i];
@@ -573,7 +582,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   fillbyfill->Draw();
   if (Mode>>3&0) t1->Draw("same");
 
-  // plot horizontal delta_t error bars
+  // Fill by Fill Average weighted by delta_t and WCM_sum 
   if (Mode>>6&1) {
     TGraphErrors * fill[k].meas_vs_fakeP = new TGraphErrors(fill[k].nRun, fill[k].ClockM, fill[k].P_offline, fill[k].dt_err, fill[k].dum);
     fill[k].meas_vs_fakeP ->Draw("P");
