@@ -374,10 +374,8 @@
 [6928.006]@
 	CONFIG=6928.006.config.dat;@
 
-[6928.007]
+[6928.007]@
 	CONFIG=6928.007.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [6928.101]@
 	RUN_STATUS=Good;
@@ -389,7 +387,8 @@
 [6928.104]
 	CONFIG=6928.104.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+	
 
 [6928.105]@
 	CONFIG=6928.105.config.dat;@
@@ -466,18 +465,10 @@
 	CONFIG=6943.014.config.dat;
 	COMMENT="Strip 60 invariant mass is incompatible with 6959.003.config.dat.";
 
-[6943.014]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[6943.015]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [6943.105]@
 	CONFIG=6943.105.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6943.106]@
 	RUN_STATUS*=Junk;@
@@ -509,8 +500,10 @@
 
 [6945.003]@
 	CONFIG=6945.003.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+
+[6945.011]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
 
 [6945.011]@
 	RUN_STATUS*=Junk;@
@@ -522,7 +515,7 @@
 [6945.103]
 	CONFIG=6945.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6945.104]@
 	CONFIG=6945.104.config.dat;@
@@ -575,10 +568,10 @@
 [6963.105]@
 	CONFIG=6963.105.config.dat;@
 
-[6963.107]
+[6963.107]@
 	CONFIG=6963.107.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6963.108]@
 	CONFIG=6963.108.config.dat;@
@@ -642,10 +635,8 @@
 [6980.002]@
 	CONFIG=6980.002.config.dat;@
 
-[6980.102]
+[6980.102]@
 	CONFIG=6980.102.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [6980.103]@
 	CONFIG=6980.103.config.dat;@
@@ -659,26 +650,8 @@
 [6987.103]@
 	CONFIG=6987.103.config.dat;@
 
-[6988.103]
+[6988.103]@
 	CONFIG=6988.103.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[6988.104]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[6988.106]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[6988.107]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[6988.109]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [6988.108]@
 	CONFIG=6988.108.config.dat;@
@@ -689,10 +662,6 @@
 [6988.110]@
 	CONFIG=6988.110.config.dat;@
 
-[6990.103]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [6990.105]@
 	CONFIG=6990.105.config.dat;@
 
@@ -702,21 +671,22 @@
 [6992.005]@
 	CONFIG=6992.005.config.dat;@
 
-[6992.102]
+[6992.102]@
 	CONFIG=6992.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6992.104]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6993.103]@
 	CONFIG=6993.103.config.dat;@
 
+
 [6994.102]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [6994.104]@
 	CONFIG=6994.104.config.dat;@
@@ -738,7 +708,8 @@
 
 [6997.105]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
 
 [6997.106]@
 	RUN_STATUS*=Junk;
@@ -747,17 +718,13 @@
 [6997.108]@
 	CONFIG=6997.108.config.dat;@
 
-[6998.002]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [6998.102]@
 	CONFIG=6998.102.config.dat;@
 
 [6998.103]
 	CONFIG=6998.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 
 [6998.104]@
@@ -827,6 +794,7 @@
 	CONFIG=7009.107.config.dat;
 
 
+
 [7007.102]@
 	CONFIG=7007.102.config.dat;@
 
@@ -858,7 +826,7 @@
 [7010.105]@
 	CONFIG=7010.105.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 
 [7010.106]@
@@ -964,7 +932,7 @@
 [7029.104]
 	CONFIG=7029.104.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7029.105]@
 	CONFIG=7029.105.config.dat;@
@@ -1029,11 +997,10 @@
 [7035.105]@
 	CONFIG=7035.105.config.dat;@
 
-[7035.108]@
+[7035.108]
 	CONFIG=7035.108.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7035.109]@
 	CONFIG=7035.109.config.dat;@
@@ -1063,25 +1030,29 @@
 [7045.103]
 	CONFIG=7045.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7045.104]
 	CONFIG=7045.104.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="This is actually injection measurement after flattop. Obviously fill number wasn't renewed";
 
 [7045.105]@
 	CONFIG=7045.105.config.dat;@
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
+[7045.106]
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7046.009]
 	RUN_STATUS*=Good;
 	COMMENT*="Bunch 52 asymmetry appears 5.0 sigma away from X45 average, but this is statistical fluctuation.";
 
+
 [7046.103]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7046.106]
 	RUN_STATUS*=Junk;
@@ -1089,15 +1060,15 @@
 
 [7046.107]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7046.108]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7046.109]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7047.101]@
 	CONFIG=7047.101.config.dat;@
@@ -1182,10 +1153,8 @@
 [7054.101]@
 	CONFIG=7054.101.config.dat;@
 
-[7054.103]
+[7054.103]@
 	CONFIG=7054.103.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7054.104]@
 	CONFIG=7054.104.config.dat;@
@@ -1232,14 +1201,12 @@
 	COMMENT="Suspicious bunches ID 70 - 80 in yellow are now back to normal.";
 
 [7059.102]
-	CONFIG=7059.102.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7059.103]
 	RUN_STATUS=Good;
-	CONFIG=7059.103.config.dat;@
+	CONFIG=7059.102.config.dat;@
 	COMMENT="Suspicious bunches ID 70 - 80 are now back to normal.";
+
+[7059.103]@
+	CONFIG=7059.103.config.dat;@
 
 [7061.001]@
 	CONFIG=7061.001.config.dat;@
@@ -1318,7 +1285,7 @@
 
 [7067.105]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7067.106]@
 	CONFIG=7067.106.config.dat;@
@@ -1357,11 +1324,11 @@
 [7069.102]
 	CONFIG=7069.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7069.103]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 
 [7069.104]
@@ -1369,6 +1336,8 @@
 
 [7069.105]@
 	CONFIG=7069.105.config.dat;@
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7069.106]@
 	RUN_STATUS*=Junk;
@@ -1384,11 +1353,12 @@
 [7070.105]
 	CONFIG=7070.105.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7070.106]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
 
 [7070.107]@
 	CONFIG=7070.107.config.dat;
@@ -1412,7 +1382,8 @@
 [7072.102]
 	CONFIG=7072.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
 
 [7072.103]@
 	CONFIG=7072.103.config.dat;@
@@ -1441,7 +1412,7 @@
 [7079.102]@
 	CONFIG=7079.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7079.103]@
 	CONFIG=7079.103.config.dat;@
@@ -1509,19 +1480,6 @@
 	CONFIG=7101.102.config.dat;@
 
 
-[7102.004]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7102.005]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7102.006]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-
 [7102.008]@
 	CONFIG=7102.008.config.dat;@
 
@@ -1552,10 +1510,6 @@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
-[7114.002]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7114.005]
 	RUN_STATUS*=Junk;
 	COMMENT*="Just poor statistics";
@@ -1573,7 +1527,7 @@
 [7114.107]
 	CONFIG=7114.107.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7114.108]@
 	CONFIG=7114.108.config.dat;@
@@ -1598,14 +1552,18 @@
 [7122.102]@
 	CONFIG=7122.102.config.dat;@
 
-[7123.006]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7123.104]@
 	CONFIG=7123.104.config.dat;@
 
 [7124.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7124.005]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 50k.";@
+
+[7124.007]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
@@ -1616,7 +1574,7 @@
 [7124.102]
 	CONFIG=7124.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7124.103]@
 	CONFIG=7124.103.config.dat;@
@@ -1624,15 +1582,15 @@
 [7124.105]@
 	CONFIG=7124.105.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7124.106]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7124.107]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7124.108]
 	RUN_STATUS*=Junk;
@@ -1644,20 +1602,17 @@
 [7125.102]@
 	CONFIG=7125.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7125.103]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7125.104]@
 	CONFIG=7125.104.config.dat;@
 
-[7128.009]
+[7128.009]@
 	CONFIG=7128.009.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 
 [7129.004]@
 	CONFIG=7129.004.config.dat;@
@@ -1670,9 +1625,6 @@
 
 [7131.002]@
 	CONFIG=7131.002.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 
 [7131.006]@
 	RUN_STATUS*=Junk;@
@@ -1685,7 +1637,7 @@
 [7131.102]
 	CONFIG=7131.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7131.103]
 	RUN_STATUS*=Junk;
@@ -1736,20 +1688,8 @@
 [7139.003]@
 	CONFIG=7139.003.config.dat;@
 
-[7142.003]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7142.106]@
 	CONFIG=7142.106.config.dat;@
-
-[7143.002]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7143.004]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7143.102]@
 	CONFIG=7143.102.config.dat;@
@@ -1757,12 +1697,13 @@
 [7143.103]
 	CONFIG=7143.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7143.104]@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 	CONFIG=7143.104.config.dat;@
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
 
 
 [7151.002]@
@@ -1793,8 +1734,7 @@
 [7151.105]
 	CONFIG=7151.105.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7151.107]
 	MEASUREMENT_TYPE=PROFILE;
@@ -1819,21 +1759,16 @@
 
 [7153.002]@
 	CONFIG=7153.002.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 
 [7154.102]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7154.104]@
 	CONFIG=7154.104.config.dat;@
 
 [7161.002]@
 	CONFIG=7161.002.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7161.005]@
 	RUN_STATUS*=Junk;@
@@ -1861,7 +1796,7 @@
 
 [7161.103]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7162.003]@
 	RUN_STATUS*=Junk;@
@@ -1890,8 +1825,7 @@
 [7162.102]
 	CONFIG=7162.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7162.103]@
 	RUN_STATUS*=Junk;
@@ -2068,9 +2002,6 @@
 
 [7234.002]@
 	CONFIG=7234.002.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 
 [7234.003]@
 	CONFIG=7234.003.config.dat;@
@@ -2078,14 +2009,16 @@
 [7234.102]
 	CONFIG=7234.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7234.103]@
 	CONFIG=7234.103.config.dat;@
 
 [7234.104]@
 	CONFIG=7234.104.config.dat;@
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
+
 
 [7235.102]@
 	CONFIG=7235.102.config.dat;@
@@ -2097,17 +2030,13 @@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
-[7237.004]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7237.103]@
 	CONFIG=7237.103.config.dat;@
 
 [7237.104]
 	CONFIG=7237.104.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7237.105]@
 	CONFIG=7237.105.config.dat;@
@@ -2133,14 +2062,14 @@
 [7240.004]@
 	CONFIG=7240.004.config.dat;@
 
-[7240.105]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+[7240.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7240.106]
 	CONFIG=7240.106.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7240.107]@
 	CONFIG=7240.107.config.dat;@
@@ -2157,7 +2086,7 @@
 [7245.104]
 	CONFIG=7245.104.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7245.105]@
 	CONFIG=7245.105.config.dat;@
@@ -2172,21 +2101,11 @@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
-[7249.006]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7249.102]@
 	CONFIG=7249.102.config.dat;@
 
-[7249.103]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7249.104]
+[7249.104]@
 	CONFIG=7249.104.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7249.105]@
 	CONFIG=7249.105.config.dat;@
@@ -2205,8 +2124,6 @@
 
 [7255.002]
 	CONFIG=7255.002.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7255.003]@
 	CONFIG=7255.003.config.dat;@
@@ -2214,7 +2131,7 @@
 [7255.102]
 	CONFIG=7255.102.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7255.103]@
 	CONFIG=7255.103.config.dat;@
@@ -2302,7 +2219,7 @@
 [7263.103]@
 	CONFIG=7263.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7263.104]@
 	CONFIG=7263.104.config.dat;@
@@ -2388,7 +2305,7 @@
 [7272.103]@
 	CONFIG=7272.103.config.dat;@
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7272.104]@
 	CONFIG=7272.104.config.dat;@
@@ -2416,7 +2333,7 @@
 
 [7274.006]@
 	MEASUREMENT_TYPE*=PROFILE;
-	RUN_STATUS*=Tune;
+	RUN_STATUS=Tune;
 	CONFIG=7274.006.config.dat;@
 
 [7274.102]@
@@ -2427,7 +2344,7 @@
 
 [7274.106]@
 	MEASUREMENT_TYPE*=PROFILE;
-	RUN_STATUS*=Tune;
+	RUN_STATUS=Tune;
 	CONFIG=7274.106.config.dat;@
 
 [7276.003]@
@@ -2461,14 +2378,6 @@
 	MEAS_TYPE*=PROFILE;
 	CONFIG=7278.103.config.dat;@
 
-[7278.104]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7278.105]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7278.106]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
@@ -2492,14 +2401,8 @@
 [7279.005]
 	CONFIG=7279.005.config.dat;
 
-[7279.102]
+[7279.102]@
 	CONFIG=7279.102.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7279.103]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7279.104]@
 	CONFIG=7279.104.config.dat;@
@@ -2647,12 +2550,6 @@
 
 [7294.103]@
 	CONFIG=7294.103.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Suscicious rate drop";
-
-[7294.104]@
-	RUN_STATUS*=Bad;
-	COMMENT*="Suscicious rate drop";
 
 [7294.105]
 	RUN_STATUS*=Junk;
@@ -2684,7 +2581,7 @@
 
 [7295.102]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7295.103]
 	RUN_STATUS*=Junk;
@@ -2709,9 +2606,9 @@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
 
-[7300.002]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+[7300.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [7300.003]@
 	RUN_STATUS*=Suspicious;@
@@ -2747,16 +2644,12 @@
 
 [7302.106]@
 	CONFIG=7302.106.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Suscicious rate drop";
 
 [7302.107]@
 	CONFIG=7302.107.config.dat;@
 
 [7302.108]@
 	CONFIG=7302.108.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Suscicious rate drop";
 
 [7302.109]@
 	CONFIG=7302.109.config.dat;@
@@ -2903,27 +2796,13 @@
 [7317.103]
 	CONFIG=7317.103.config.dat;
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7317.104]@
 	CONFIG=7317.104.config.dat;@
 
-[7318.002]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
 [7318.003]@
 	CONFIG=7318.003.config.dat;@
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7318.004]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
-
-[7318.005]
-	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
 
 [7318.006]@
 	CONFIG=7318.006.config.dat;@
@@ -2971,7 +2850,7 @@
 
 [7319.102]
 	RUN_STATUS*=Bad;
-	COMMENT*="Counting rate seems to low. Possible profile effect";
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7319.106]
 	MEASUREMENT_TYPE*=PROFILE;
@@ -3004,6 +2883,8 @@
 
 [7320.107]@
 	CONFIG=7320.107.config.dat;@
+	RUN_STATUS*=Bad;
+	COMMENT="Significantly low rate than what expected from the average rate for a given target."
 
 [7320.108]@
 	MEASUREMENT_TYPE*=PROFILE;
