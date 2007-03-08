@@ -45,6 +45,7 @@ Int_t RUN=5;
 Int_t FILL=0;
 Int_t FILL_BY_FILL_ANALYSIS=1;
 Int_t OFFLINE_POL=1;
+bool FILL_BY_FILL_AVERAGE = true;     // Period By Period Average thru Fill-By-Fill averaged polarizations
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -328,7 +329,7 @@ Int_t
 OfflinePol::GetData(Char_t * DATAFILE){
                  
   //define histograms
-  Pratio   = new TH1D("Pratio",   "Offline Pol Event Selection Dependence",60,0.5,1.5);
+  Pratio  = new TH1D("Pratio",  "Offline Pol Event Selection Dependence",60,0.5,1.5);
   Pdiff   = new TH1D("Pdiff",   "Online/Offline Polarization Consistency",60,-20,20);
   phiDist = new TH1D("phiDist", "phi angle distribution",60,-35,35);
   sfitchi2= new TH1D("sfitchi2","chi2 distribution of P*sin(phi) fit",30,0,4);
@@ -749,8 +750,8 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
@@ -922,7 +923,7 @@ Int_t OfflinePol::OfflinePol() {
     sprintf(psfile,"ps/PeriodByPeriod.ps");
     TPostScript *ps = new TPostScript(psfile,112);
 
-    //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
    
     Char_t outfile[100]; 
     sprintf(outfile,"summary/PeriodByPeriod.dat");

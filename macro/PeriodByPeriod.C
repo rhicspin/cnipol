@@ -1,5 +1,7 @@
 extern const Int_t MAX_NMEAS_PER_PERIOD;
 extern const Int_t MAX_JET_RUNTIME_DATA;
+extern Int_t FILL_BY_FILL_AVERAGE;
+
 
 Int_t PlotJetRunPeriod=1;
 
@@ -333,8 +335,7 @@ OfflinePol::JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
 
   Float_t xmin; 
   
-  Mode=1;
-  if (Mode>>0&1) {
+  if (!FILL_BY_FILL_AVERAGE) { // Period by Period Average from individual measurements
     if (Color==4){ // Blue
       C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
       PlotJet(Beam, 0, xmin); C->Update();
@@ -342,7 +343,7 @@ OfflinePol::JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
       PlotJet(Beam, 1, xmin); C->Update();
       C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 5, Color, Period.pC_Ave[Beam][2]); 
       PlotJet(Beam, 2, xmin); C->Update();
-    } else {
+    } else { // Yellow
       C->cd(1) ; xmin=PeriodByPeriodPlot(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
       PlotJet(Beam, 0, xmin); C->Update();
       C->cd(2) ; xmin=PeriodByPeriodPlot(Mode, 2, Color, Period.pC_Ave[Beam][1]); 
@@ -350,7 +351,7 @@ OfflinePol::JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
       C->cd(3) ; xmin=PeriodByPeriodPlot(Mode, 3, Color, Period.pC_Ave[Beam][2]); 
       PlotJet(Beam, 2, xmin); C->Update();
     }
-  }else{
+  }else{ // Period by Period through the fill averaged polarization
     if (Color==4){ // Blue
       C->cd(1) ; xmin=PeriodByPeriodFillAverage(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
       PlotJet(Beam, 0, xmin); C->Update();
@@ -358,7 +359,7 @@ OfflinePol::JetComparison(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
       PlotJet(Beam, 1, xmin); C->Update();
       C->cd(3) ; xmin=PeriodByPeriodFillAverage(Mode, 5, Color, Period.pC_Ave[Beam][2]); 
       PlotJet(Beam, 2, xmin); C->Update();
-    } else {
+    } else { // Yellow
       C->cd(1) ; xmin=PeriodByPeriodFillAverage(Mode, 0, Color, Period.pC_Ave[Beam][0]); 
       PlotJet(Beam, 0, xmin); C->Update();
       C->cd(2) ; xmin=PeriodByPeriodFillAverage(Mode, 2, Color, Period.pC_Ave[Beam][1]); 
@@ -432,41 +433,59 @@ OfflinePol::Normalization(Int_t nPeriod, Int_t Mode, Int_t Color, TPostScript *p
 
 
   Float_t dx[6]; 
-  Float_t x[6]={1,2,3,4,5,6};
-  nrm[0].ratio[0] = JetPol[0][0]/Period.pC_Ave[0][0][0];
+  Float_t x[6]={3,2,1,4,5,6};
+  nrm[0].ratio[2] = JetPol[0][0]/Period.pC_Ave[0][0][0];
   nrm[0].ratio[1] = JetPol[0][1]/Period.pC_Ave[0][1][0];
-  nrm[0].ratio[2] = JetPol[0][2]/Period.pC_Ave[0][2][0];
-  nrm[1].ratio[0] = JetPol[1][0]/Period.pC_Ave[1][0][0];
+  nrm[0].ratio[0] = JetPol[0][2]/Period.pC_Ave[0][2][0];
+  nrm[1].ratio[2] = JetPol[1][0]/Period.pC_Ave[1][0][0];
   nrm[1].ratio[1] = JetPol[1][1]/Period.pC_Ave[1][1][0];
-  nrm[1].ratio[2] = JetPol[1][2]/Period.pC_Ave[1][2][0];
+  nrm[1].ratio[0] = JetPol[1][2]/Period.pC_Ave[1][2][0];
 
-  nrm[0].dratio[0] = QuadraticDivideError(JetPol[0][0], Period.pC_Ave[0][0][0], JetdPol[0][0], Period.pC_Ave[0][0][1]);
+  nrm[0].dratio[2] = QuadraticDivideError(JetPol[0][0], Period.pC_Ave[0][0][0], JetdPol[0][0], Period.pC_Ave[0][0][1]);
   nrm[0].dratio[1] = QuadraticDivideError(JetPol[0][1], Period.pC_Ave[0][1][0], JetdPol[0][1], Period.pC_Ave[0][1][1]);
-  nrm[0].dratio[2] = QuadraticDivideError(JetPol[0][2], Period.pC_Ave[0][2][0], JetdPol[0][2], Period.pC_Ave[0][2][1]);
-  nrm[1].dratio[0] = QuadraticDivideError(JetPol[1][0], Period.pC_Ave[1][0][0], JetdPol[1][0], Period.pC_Ave[1][0][1]);
+  nrm[0].dratio[0] = QuadraticDivideError(JetPol[0][2], Period.pC_Ave[0][2][0], JetdPol[0][2], Period.pC_Ave[0][2][1]);
+  nrm[1].dratio[2] = QuadraticDivideError(JetPol[1][0], Period.pC_Ave[1][0][0], JetdPol[1][0], Period.pC_Ave[1][0][1]);
   nrm[1].dratio[1] = QuadraticDivideError(JetPol[1][1], Period.pC_Ave[1][1][0], JetdPol[1][1], Period.pC_Ave[1][1][1]);
-  nrm[1].dratio[2] = QuadraticDivideError(JetPol[1][2], Period.pC_Ave[1][2][0], JetdPol[1][2], Period.pC_Ave[1][2][1]);
+  nrm[1].dratio[0] = QuadraticDivideError(JetPol[1][2], Period.pC_Ave[1][2][0], JetdPol[1][2], Period.pC_Ave[1][2][1]);
+
+  // define linear function
+  TF1 * p0 = new TF1("p0","pol0");
 
   TH2F * Ratio = new TH2F("Ratio","Normalization", 6, 0.5, 3.5, 10, 0.7, 1.2); 
   Ratio->GetYaxis()->SetTitle("Jet/pC");
 
+  // Define graph objects to be fitted
   TGraphErrors * tgB = new TGraphErrors(3, x, nrm[0].ratio, dx, nrm[0].dratio);
   tgB->SetMarkerStyle(20);
   tgB->SetMarkerColor(4);
+
+  TGraphErrors * tgB2 = new TGraphErrors(2, x, nrm[0].ratio, dx, nrm[0].dratio);
+  tgB2->SetMarkerStyle(20);
+  tgB2->SetMarkerColor(4);
 
   TGraphErrors * tgY = new TGraphErrors(3, x, nrm[1].ratio, dx, nrm[1].dratio);
   tgY->SetMarkerStyle(20);
   tgY->SetMarkerColor(94);
 
+  TGraphErrors * tgY2 = new TGraphErrors(2, x, nrm[1].ratio, dx, nrm[1].dratio);
+  tgY2->SetMarkerStyle(20);
+  tgY2->SetMarkerColor(94);
+
+
+  // Now make plots
   C1->cd(1); 
   Ratio -> Draw("");
-  tgB->Draw("P");
-  tgB->Fit("pol0");
+  //  p0 -> SetLineColor(15);  p0 -> SetLineStyle(2);   tgB->Fit(p0);   
+  tgB->Draw("same,P");
+  p0 -> SetLineColor(2);   p0 -> SetLineStyle(1);   tgB2->Fit(p0);  tgB2->Draw("same,P");
+  C1->Update();
 
   C1->cd(2); 
   Ratio -> Draw("");
-  tgY->Draw("P");
-  tgY->Fit("pol0");
+  //  p0 -> SetLineColor(15);  p0 -> SetLineStyle(2);   tgY->Fit(p0);   
+  tgY->Draw("same,P");
+  p0 -> SetLineColor(2);   p0 -> SetLineStyle(1);   tgY2->Fit(p0);  tgY2->Draw("same,P");
+  C1->Update();
 
 
   return 0 ;
@@ -520,12 +539,11 @@ OfflinePol::MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPost
 
 //
 // Class name  : OfflinePol
-// Method name : PeriodByPeriodPlot(Int_t Mode, Int_t k)
+// Method name : PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[])
 //
-// Description : Make Plots Period by Period 
-//               Mode Description
-// Input       : Int_t Mode, Int_t k, Int_t Color
-// Return      : Float_t xmin
+// Description : Make Plots for Period by Period of fill average polarization
+// Input       : Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]
+// Return      : 
 //
 Float_t 
 OfflinePol::PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]){
