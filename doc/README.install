@@ -83,10 +83,10 @@ SRC
 
   Executables : try -h and -x options for more details
 	Asym           "Main analysis program"
-	AsymPlot       "A plot viewer"  
+	AsymPlot       "A plot viewer. Creates a postscript file from .root file."  
 	RunDBReader    "portable run.db reader/printer"
 	dLayerChecker  "deadlayer fit checker"
-	KinFunc.cc     "kinematics reconstructer from deposited energy"
+	KinFunc        "kinematics reconstructer from deposited energy"
 
 DOCUMENTAIONS
   ./cnipol/doc
