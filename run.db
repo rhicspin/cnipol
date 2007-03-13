@@ -1662,6 +1662,7 @@
 	MEASUREMENT_TYPE=PROFILE;
 	COMMENT="Fixed target profile scan. Off-centered target position. 7133.106 - 7133.115";
 
+
 [7133.108]@
 	CONFIG=7133.108.config.dat;@
 
@@ -1733,6 +1734,71 @@
 	MEASUREMENT_TYPE=PROFILE;
 	COMMENT="Fixed target profile scan. Off-centered target position. 7151.007 - 7151.019";
 
+//	DisableBunch=0;
+//	DisableBunch=2;
+//	DisableBunch=4;
+//	DisableBunch=6;
+//	DisableBunch=8;
+//	DisableBunch=9;
+//	DisableBunch=10;
+//	DisableBunch=12;
+//	DisableBunch=14;
+//	DisableBunch=16;
+//	DisableBunch=18;
+//	DisableBunch=20;
+//	DisableBunch=22;
+//	DisableBunch=24;
+//	DisableBunch=26;
+//	DisableBunch=28;
+//	DisableBunch=40;
+//	DisableBunch=42;
+//	DisableBunch=44;
+//	DisableBunch=46;
+//	DisableBunch=48;
+//	DisableBunch=49;
+//	DisableBunch=50;
+//	DisableBunch=52;
+//	DisableBunch=54;
+//	DisableBunch=56;
+//	DisableBunch=58;
+//	DisableBunch=60;
+//	DisableBunch=62;
+//	DisableBunch=64;
+//	DisableBunch=66;
+//	DisableBunch=68;
+//	DisableBunch=80;
+//	DisableBunch=82;
+//	DisableBunch=84;
+//	DisableBunch=86;
+//	DisableBunch=88;
+//	DisableBunch=89;
+//	DisableBunch=90;
+//	DisableBunch=92;
+//	DisableBunch=94;
+//	DisableBunch=96;
+//	DisableBunch=98;
+//	DisableBunch=100;
+//	DisableBunch=102;
+//	DisableBunch=104;
+//	DisableBunch=106;
+//	DisableBunch=108;
+//	DisableBunch=110;
+//	DisableBunch=112;
+
+//  Exclude Uncolliding Bunches
+//	DisableBunch=30;
+//	DisableBunch=32;
+//	DisableBunch=34;
+//	DisableBunch=36;
+//	DisableBunch=38;
+//	DisableBunch=40;
+//	DisableBunch=72;
+//	DisableBunch=74;
+//	DisableBunch=76;
+//	DisableBunch=78;
+//	DisableBunch=80;
+
+
 [7151.016]@
 	CONFIG=7151.016.config.dat;@
 
@@ -1747,6 +1813,7 @@
 [7151.107]
 	MEASUREMENT_TYPE=PROFILE;
 	COMMENT="Fixed target profile scan. Off-centered target position. 7151.107 - 7151.119";
+
 
 [7151.112]@
 	CONFIG=7151.112.config.dat;@
