@@ -22,6 +22,7 @@ struct StructProfile {
   Float_t Chi2NDF[N];
   Int_t Threshold;
   Int_t Color;
+  Int_t LineStyle;
   struct StructFitResults{
     Float_t Const;
     Float_t Mean;
@@ -31,6 +32,8 @@ struct StructProfile {
 
 yellow[0].Color = yellow[1].Color = 95;
 Blue.Color = 4;
+yellow[0].LineStyle = 2; yellow[1].LineStyle=1;
+Blue.LineStyle = 1;
 
 yellow[0].beam_center  = 161.3;
 yellow[1].beam_center  = 160.4;
@@ -79,8 +82,6 @@ Int_t GetData(Char_t *filename, StructProfile &profile)
 }
 
 
-
-
 Float_t 
 PolarizationProfile(StructProfile &profile, Int_t ndata, Int_t Color, Int_t FitMode){
 
@@ -96,13 +97,14 @@ PolarizationProfile(StructProfile &profile, Int_t ndata, Int_t Color, Int_t FitM
 
   TF1 * f1 = new TF1("f1","pol0");
   TF1 * g1 = new TF1("g1","gaus");
-  g1->FixParameter(1,0); // mean=0. force symmetric profile
   // if Dofit, then do polinomial-0 fit
   if (FitMode==1) {
     Pol->Fit(f1,"same");
     Chi2DOF=f1->GetChisquare()/f1->GetNDF();
   } else if (FitMode==2) {
-    Pol->Fit(g1,"same");
+    g1->SetParameters(profile.P[0], 0, 2);
+    g1->SetParLimits(1,1,1);               // mean=0. force symmetric profile
+    Pol->Fit(g1,"b");
     Chi2DOF=g1->GetChisquare()/g1->GetNDF();
     profile.pol.Const = g1->GetParameter(0);
     profile.pol.Mean  = g1->GetParameter(1);
@@ -113,19 +115,84 @@ PolarizationProfile(StructProfile &profile, Int_t ndata, Int_t Color, Int_t FitM
 
 }
 
+//
+// Class name  : 
+// Method name : PlotProfileResults(StructProfile profile, TPostScript * ps)
+//
+// Description : Make Polarization vs Rate correlation plot
+//             :
+// Input       : (StructProfile profile, TPostScript * ps)
+// Return      : 
+//
+Int_t 
+PlotProfileResults(StructProfile profile, Int_t Mode){
 
-Double_t rate_vs_xpos(Double_t *x, Double_t par)
-{
-  return par[3]*sqrt(2*log(par[1]/x));
+  Char_t  ytitle[100];
+  Float_t sigma;
+
+  if (Mode==0){
+    sprintf(ytitle,"Normarized Rate");
+    sigma = profile.R.Sigma;
+  } else {
+    sprintf(ytitle,"Normalized Polarization");
+    sigma = profile.pol.Sigma;
+  }
+
+  TF1 * prof = new TF1("prof","exp(-x*x/[0]/[0])", -2, 2);
+  prof -> SetParameter(0,sigma);
+  prof -> SetLineColor(profile.Color);
+  prof -> SetLineStyle(profile.LineStyle);
+  prof -> Draw("L,same");
+  prof -> GetXaxis()->SetTitle("Target position [mm]");
+  prof -> GetYaxis()->SetTitle(ytitle);
+
+  return 0;
+
 }
+
+
 
 //
 // Class name  : 
-// Method name : 
+// Method name : PolarizationVsRateCorrelation(StructProfile profile, TPostScript * ps)
 //
-// Description : 
+// Description : Make Polarization vs Rate correlation plot
+//             :
+// Input       : (StructProfile profile, TPostScript * ps)
+// Return      : 
+//
+Int_t 
+RateVsPol(StructProfile &profile, Int_t Mode){
+
+  Float_t xmin=0.1, xmax=1;
+  Char_t title[100], htitle[100];
+  sprintf(title,"%s",profile.hname);
+
+  TF1 * corr_rel = new TF1("corr_rel","(([2]-[2]*exp(-[1]*[1]/[3]/[3]*log([0]/x)))/[2])*100", 0.01, 1);
+  sprintf(htitle,"%s : Rate vs. Polarization drop from center (Relative)", title);
+  corr_rel -> SetTitle(htitle);
+  corr_rel -> SetParameters(profile.R.Const, profile.R.Sigma, profile.pol.Const, profile.pol.Sigma);
+  corr_rel -> SetLineColor(profile.Color);
+  corr_rel -> SetLineStyle(profile.LineStyle);
+  Mode == 0 ? corr_rel -> Draw("LA") : corr_rel -> Draw("L,same");
+  corr_rel -> GetXaxis()->SetTitle("Rate relative to center");
+  corr_rel -> GetYaxis()->SetTitle("{P(0)-P(rate)}/P(0) [%]");
+
+  return 0;
+
+}
+
+
+//
+// Class name  : 
+// Method name : PolarizationVsRateCorrelation(StructProfile profile, TPostScript * ps)
+//
+// Description : Make following three plots
+//             :  1. rate .vs target position
+//             :  2. polarization profile as a function of rate
+//             :  3. polarization drop from peak polarization in relative scale as a function of rate
 //             : 
-// Input       : 
+// Input       : StructProfile profile, TPostScript * ps
 // Return      : 
 //
 Int_t 
@@ -146,6 +213,7 @@ PolarizationVsRateCorrelation(StructProfile profile, TPostScript * ps){
   rate_vs_xpos -> SetTitle(htitle);
   rate_vs_xpos -> SetParameters(profile.R.Const, profile.R.Sigma, profile.pol.Const, profile.pol.Sigma);
   rate_vs_xpos -> SetLineColor(profile.Color);
+  rate_vs_xpos -> SetLineStyle(profile.LineStyle);
   rate_vs_xpos -> Draw("LA");
   rate_vs_xpos -> GetXaxis()->SetTitle("Rate relative to center");
   rate_vs_xpos -> GetYaxis()->SetTitle("Target position from center [mm]");
@@ -156,19 +224,13 @@ PolarizationVsRateCorrelation(StructProfile profile, TPostScript * ps){
   corr_abs -> SetTitle(htitle);
   corr_abs -> SetParameters(profile.R.Const, profile.R.Sigma, profile.pol.Const, profile.pol.Sigma);
   corr_abs -> SetLineColor(profile.Color);
+  corr_abs -> SetLineStyle(profile.LineStyle);
   corr_abs -> Draw("LA");
   corr_abs -> GetXaxis()->SetTitle("Rate relative to center");
   corr_abs -> GetYaxis()->SetTitle("P(rate)[%]");
 
   C->cd(3);
-  TF1 * corr_rel = new TF1("corr_rel","(([2]-[2]*exp(-[1]*[1]/[3]/[3]*log([0]/x)))/[2])*100", 0.01, 1);
-  sprintf(htitle,"%s : Rate vs. Polarization drop from center (Relative)", title);
-  corr_rel -> SetTitle(htitle);
-  corr_rel -> SetParameters(profile.R.Const, profile.R.Sigma, profile.pol.Const, profile.pol.Sigma);
-  corr_rel -> SetLineColor(profile.Color);
-  corr_rel -> Draw("LA");
-  corr_rel -> GetXaxis()->SetTitle("Rate relative to center");
-  corr_rel -> GetYaxis()->SetTitle("{P(0)-P(rate)}/P(0) [%]");
+  RateVsPol(profile, 0);
 
   C->Update();
 
@@ -310,7 +372,7 @@ Int_t Chi2Distribution(StructProfile profile, TPostScript * ps){
 
 
 
-Int_t DataLoop(StructProfile profile, TPostScript * ps){
+Int_t DataLoop(StructProfile &profile, TPostScript * ps){
 
   // Make polarization and beam intensity profile plots without drawing fit
   MakePlot(profile, ps, 0, 0); 
@@ -352,7 +414,7 @@ Int_t DataLoop(StructProfile profile, TPostScript * ps){
 }
 
 
-Int_t ProfileControl(StructProfile profile){
+Int_t ProfileControl(StructProfile &profile){
 
   TPostScript * ps = new TPostScript(profile.psfile,112);
   ps->NewPage();
@@ -362,7 +424,52 @@ Int_t ProfileControl(StructProfile profile){
   cout << "ps file: " << profile.psfile << endl;
   ps->Close();
 
+  return 0;
 }
+
+
+
+Int_t ProfileControl(StructProfile profile1, StructProfile profile2, StructProfile profile3){
+
+
+  Char_t psfile[100]="ps/Profile.ps";
+  TPostScript * ps = new TPostScript(psfile,112);
+  ps->NewPage();
+
+  TCanvas * C = new TCanvas();
+
+  TH2F * frame = new TH2F("frame", "Rate vs. Polarization drop from center (relative)", 10, 0, 1, 10, 0, 80);
+  frame -> Draw();
+
+  RateVsPol(profile1, 1); // yellow 7131
+  RateVsPol(profile2, 1); // yellow 7151
+  RateVsPol(profile3, 1); // blue 7151
+
+  C -> Update(); ps->NewPage(); C->Clear();
+  C -> Divide(1,2);
+  
+  C->cd(1);
+  TH2F * frame = new TH2F("frame","Polarization Profile", 100, -2, 2, 100, 0, 1.1);
+  frame -> Draw();
+  PlotProfileResults(profile1, 1);
+  PlotProfileResults(profile2, 1);
+  PlotProfileResults(profile3, 1);
+
+  C->cd(2);
+  TH2F * frame = new TH2F("frame","Intensity Profile", 100, -2, 2, 100, 0, 1.1);
+  frame -> Draw();
+  PlotProfileResults(profile1, 0);
+  PlotProfileResults(profile2, 0);
+  PlotProfileResults(profile3, 0);
+
+  cout << "ps file: " << psfile << endl;
+  ps->Close();
+
+
+  return 0;
+
+}
+
 
 
 
@@ -402,6 +509,8 @@ Int_t Profile()
   ProfileControl(yellow[1]); // Yellow - 7151
   ProfileControl(Blue);      // Blue   - 7151
 
+
+  ProfileControl(yellow[0],yellow[1],Blue);      
 
 
   return 0;
