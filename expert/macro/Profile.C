@@ -28,6 +28,11 @@ struct StructProfile {
     Float_t Mean;
     Float_t Sigma;
   } pol, R;
+  struct BunchSelection {
+    struct StructBeam {
+      Float_t sigma;
+    } pol, rate;
+  } col, uncol;
 } yellow[2], Blue;
 
 yellow[0].Color = yellow[1].Color = 95;
@@ -46,6 +51,23 @@ Blue.max_rate          = 0.02633;
 yellow[0].Threshold    = 4;
 yellow[1].Threshold    = 7;
 Blue.Threshold         =12;
+
+// Colliding Bunch and non-colliding bunches
+// Yellow - 7133
+yellow[0].col.pol.sigma    = 1.48; 
+yellow[0].col.rate.sigma   = 0.69;
+yellow[0].uncol.pol.sigma  = 1.75;
+yellow[0].uncol.rate.sigma = 0.69;
+// Yellow - 7151
+yellow[1].col.pol.sigma    = 1.10;
+yellow[1].col.rate.sigma   = 0.83;
+yellow[1].uncol.pol.sigma  = 0.97;
+yellow[1].uncol.rate.sigma = 0.62;
+// Blue - 7151
+Blue.col.pol.sigma         = 2.89;
+Blue.col.rate.sigma        = 0.87;
+Blue.uncol.pol.sigma       = 6000;
+Blue.uncol.rate.sigma      = 0.82;
 
 
 Int_t GetData(Char_t *filename, StructProfile &profile)
@@ -125,26 +147,18 @@ PolarizationProfile(StructProfile &profile, Int_t ndata, Int_t Color, Int_t FitM
 // Return      : 
 //
 Int_t 
-PlotProfileResults(StructProfile profile, Int_t Mode){
-
-  Char_t  ytitle[100];
-  Float_t sigma;
-
-  if (Mode==0){
-    sprintf(ytitle,"Normarized Rate");
-    sigma = profile.R.Sigma;
-  } else {
-    sprintf(ytitle,"Normalized Polarization");
-    sigma = profile.pol.Sigma;
-  }
+PlotProfileResults(StructProfile profile, Float_t sigma, Int_t Color, Int_t LineStyle, TLegend * lg){
 
   TF1 * prof = new TF1("prof","exp(-x*x/[0]/[0])", -2, 2);
   prof -> SetParameter(0,sigma);
-  prof -> SetLineColor(profile.Color);
-  prof -> SetLineStyle(profile.LineStyle);
+  prof -> SetLineColor(Color);
+  prof -> SetLineStyle(LineStyle);
   prof -> Draw("L,same");
-  prof -> GetXaxis()->SetTitle("Target position [mm]");
-  prof -> GetYaxis()->SetTitle(ytitle);
+
+  Char_t text[100];
+  Color == 20 ? sprintf(text,"Uncolliding") :  sprintf(text,"%s",profile.hname);
+  lg -> AddEntry(prof, text, "L");
+
 
   return 0;
 
@@ -431,7 +445,8 @@ Int_t ProfileControl(StructProfile &profile){
 
 Int_t ProfileControl(StructProfile profile1, StructProfile profile2, StructProfile profile3){
 
-
+  
+  Char_t htitle[100];
   Char_t psfile[100]="ps/Profile.ps";
   TPostScript * ps = new TPostScript(psfile,112);
   ps->NewPage();
@@ -445,23 +460,114 @@ Int_t ProfileControl(StructProfile profile1, StructProfile profile2, StructProfi
   RateVsPol(profile2, 1); // yellow 7151
   RateVsPol(profile3, 1); // blue 7151
 
+
   C -> Update(); ps->NewPage(); C->Clear();
   C -> Divide(1,2);
   
   C->cd(1);
+  TLegend * lg = new TLegend(0.35,0.1,0.65,0.4);
   TH2F * frame = new TH2F("frame","Polarization Profile", 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Polarization");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
   frame -> Draw();
-  PlotProfileResults(profile1, 1);
-  PlotProfileResults(profile2, 1);
-  PlotProfileResults(profile3, 1);
+  PlotProfileResults(yellow[0], profile1.pol.Sigma, profile1.Color, profile1.LineStyle, lg);
+  PlotProfileResults(yellow[1], profile2.pol.Sigma, profile2.Color, profile2.LineStyle, lg);
+  PlotProfileResults(Blue,      profile3.pol.Sigma, profile3.Color, profile3.LineStyle, lg);
+  lg->Draw("same");
 
   C->cd(2);
+  TLegend * lg = new TLegend(0.35,0.1,0.65,0.4);
   TH2F * frame = new TH2F("frame","Intensity Profile", 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Rate");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
   frame -> Draw();
-  PlotProfileResults(profile1, 0);
-  PlotProfileResults(profile2, 0);
-  PlotProfileResults(profile3, 0);
+  PlotProfileResults(yellow[0], profile1.R.Sigma, profile1.Color, profile1.LineStyle, lg);
+  PlotProfileResults(yellow[1], profile2.R.Sigma, profile2.Color, profile2.LineStyle, lg);
+  PlotProfileResults(Blue,      profile3.R.Sigma, profile3.Color, profile3.LineStyle, lg);
+  lg->Draw("same");
 
+  // ==================================================================== // 
+  //                Colliding / Non-Collidng Bunch                        //
+  // ==================================================================== // 
+  C -> Update(); ps->NewPage();
+
+  // yellow - 7133
+  C->cd(1);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Polarization Profile", yellow[0].hname);
+  TH2F * frame = new TH2F("frame",htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Polarization");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(yellow[0], yellow[0].col.pol.sigma, yellow[0].Color, 1, lg);
+  PlotProfileResults(yellow[0], yellow[0].uncol.pol.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+  C->cd(2);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Intensity Profile", yellow[0].hname);
+  TH2F * frame = new TH2F("frame", htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Rate");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(yellow[0], yellow[0].col.rate.sigma, yellow[0].Color, 1, lg);
+  PlotProfileResults(yellow[0], yellow[0].uncol.rate.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+  C->Update(); ps->NewPage();
+
+
+  // yellow - 7151
+  C->cd(1);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Polarization Profile", yellow[1].hname);
+  TH2F * frame = new TH2F("frame",htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Polarization");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(yellow[1], yellow[1].col.pol.sigma, yellow[1].Color, 1, lg);
+  PlotProfileResults(yellow[1], yellow[1].uncol.pol.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+  C->cd(2);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Intensity Profile", yellow[1].hname);
+  TH2F * frame = new TH2F("frame", htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Rate");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(yellow[1], yellow[1].col.rate.sigma, yellow[1].Color, 1, lg);
+  PlotProfileResults(yellow[1], yellow[1].uncol.rate.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+  C->Update(); ps->NewPage();
+
+  // blue - 7151
+  C->cd(1);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Polarization Profile", Blue.hname);
+  TH2F * frame = new TH2F("frame",htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Polarization");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(Blue, Blue.col.pol.sigma, Blue.Color, 1, lg);
+  PlotProfileResults(Blue, Blue.uncol.pol.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+  C->cd(2);
+  TLegend * lg = new TLegend(0.4,0.1,0.6,0.3);
+  sprintf(htitle,"%s : Intensity Profile", Blue.hname);
+  TH2F * frame = new TH2F("frame", htitle, 100, -2, 2, 100, 0, 1.1);
+  frame -> GetYaxis() -> SetTitle("Normarized Rate");
+  frame -> GetXaxis() -> SetTitle("Relative target position to peak [mm]");
+  frame -> Draw();
+  PlotProfileResults(Blue, Blue.col.rate.sigma, Blue.Color, 1, lg);
+  PlotProfileResults(Blue, Blue.uncol.rate.sigma, 20, 1, lg);
+  lg->Draw("same");
+
+
+
+  
   cout << "ps file: " << psfile << endl;
   ps->Close();
 
