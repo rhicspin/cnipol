@@ -47,6 +47,7 @@
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
 	DisableStrip=6;
 	DisableStrip=15;
 	DisableStrip=23;
@@ -64,13 +65,18 @@
 	TSHIFT=0;	
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
 	DisableStrip=52;
 	DisableStrip=56;
 	DisableBunch=20;
 	COMMENT="Blue target was longitudinally off centered. Energy Slope shows -75 ~ -90";
 
 [6789.003]
+	REFERENCE_RATE=0.02957;
 	CONFIG=6789.003.config.dat;
+
+[6789.101]
+	REFERENCE_RATE=0.05133;
 
 [6790.102]@
 	CONFIG=6790.102.config.dat;@
@@ -631,6 +637,9 @@
 [6975.108]@
 	CONFIG=6975.108.config.dat;@
 
+[6976.101]
+	REFERENCE_RATE=0.03301;
+
 [6978.003]
 	ENERGY_CALIB=blue_calib_0419-100v;
 
@@ -722,9 +731,14 @@
 [6997.106]@
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+	REFERENCE_RATE=0.06175;
 
 [6997.108]@
 	CONFIG=6997.108.config.dat;@
+
+[6997.110]
+	REFERENCE_RATE=0.0432;
+
 
 [6998.102]@
 	CONFIG=6998.102.config.dat;@
@@ -893,6 +907,7 @@
 [7028.001]@
 	RUN_STATUS*=Junk;@
 	COMMENT*="Number of events < 50k.";@
+	REFERENCE_RATE=0.02313;
 
 [7028.002]@
 	RUN_STATUS*=Junk;@
@@ -1102,6 +1117,7 @@
 
 [7048.105]@
 	CONFIG=7048.105.config.dat;@
+	REFERENCE_RATE=0.0500;
 
 [7048.108]@
 	CONFIG=7048.108.config.dat;@
@@ -1148,6 +1164,7 @@
 
 [7052.101]@
 	CONFIG=7052.101.config.dat;@
+	REFERENCE_RATE=0.0500;
 
 [7053.001]
 	RUN_STATUS=BadP;
@@ -1264,6 +1281,7 @@
 	RUN_STATUS=Good;
 	COMMENT="";
 	CONFIG=7064.109.config.dat;@
+	REFERENCE_RATE=0.04353;
 
 [7067.001]
 	EnableStrip=6;
@@ -2203,6 +2221,9 @@
 [7255.003]@
 	CONFIG=7255.003.config.dat;@
 
+[7255.004]
+	REFERENCE_RATE=0.02756;
+
 [7255.102]
 	CONFIG=7255.102.config.dat;@
 	RUN_STATUS*=Bad;
@@ -3086,10 +3107,12 @@
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
 	EnableStrip=1;
 	EnableStrip=15;
 	EnableStrip=23;
 	DisableStrip=66;
+	COMMENT="Run6"
 
 [7400.101]
 	MEASUREMENT_TYPE=NORM;
@@ -3098,8 +3121,10 @@
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
 	EnableStrip=52;
 	EnableStrip=56;
+	COMMENT="Run6"
 
 [7450.001]
 	CONFIG=7450.001.config.dat;
