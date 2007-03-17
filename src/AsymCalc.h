@@ -78,7 +78,10 @@ void binary_zero(int n, int mb);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
 
-
+//===========================================================================
+//                        Profile Error
+//===========================================================================
+float ProfileError(float x);
 
 //===========================================================================
 //           Some utility routines to determin histogram range

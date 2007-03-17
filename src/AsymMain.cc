@@ -37,6 +37,7 @@ int main (int argc, char *argv[]){
     // Initialize Variables
     Initialization();
 
+
     // prefix directories
     char * datadir = getenv("DATADIR");
     if ( datadir == NULL ){
@@ -260,7 +261,6 @@ int main (int argc, char *argv[]){
     }
     */
 
-    
     // ---------------------------------------------------- // 
     //            Hbook Histogram Booking                   //
     // ---------------------------------------------------- // 
@@ -580,6 +580,7 @@ int sqass(float A, float B, float C, float D, float *asym, float *easym) {
 //
 int
 Initialization(){
+
 
   for (int i=0; i<NSTRIP; i++) {
     feedback.mdev[i] = 0.;

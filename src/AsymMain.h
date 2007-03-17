@@ -28,7 +28,7 @@ datprocStruct dproc = {
     999.05,     // Wall Current Monitor process Fill range +/-5[%] 
     8,          // Lower Mass limit for peak position adjustment fit default :8 GeV
     100,        // <thinout> event rate to be feed into feedback routine
-    0           // Expected universal rate for given target
+    1           // Expected universal rate for given target
 };  // data process modes 
 
 
@@ -86,6 +86,7 @@ StructRunInfo runinfo = {
     0, // StopTime;
     0, // RunTime;
     0, // GoodEventRate;
+    0, // UniversalRate;
     0, // EvntRate;
     0, // ReadRate;
     0, // WcmAve;
