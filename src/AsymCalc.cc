@@ -730,7 +730,10 @@ PrintRunResults(StructHistStat hstat){
     runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
     runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
     runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-    
+    float wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+    runinfo.UniversalRate = wcm_norm_event_rate/dproc.reference_rate;
+    if (runinfo.Run==5)  anal.profile_error = runinfo.UniversalRate<1 ? ProfileError(runinfo.UniversalRate) : 0;
+
     printf("-----------------------------------------------------------------------------------------\n");
     printf("-----------------------------  Operation Messages  --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
@@ -747,7 +750,8 @@ PrintRunResults(StructHistStat hstat){
     printf(" Total events in banana      = %10d\n",   cntr.good_event);
     printf(" Good Carbon Max Rate  [MHz] = %10.4f\n", anal.max_rate);
     printf(" Good Carbon Rate      [MHz] = %10.4f\n", runinfo.GoodEventRate);
-    printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", runinfo.GoodEventRate/runinfo.WcmSum*100);
+    printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", wcm_norm_event_rate);
+    printf(" Universal Rate              = %10.5f\n", runinfo.UniversalRate);
     printf(" Event Rate            [MHz] = %10.4f\n", runinfo.EvntRate);
     printf(" Read Rate             [MHz] = %10.4f\n", runinfo.ReadRate);
     printf(" Target                      =         %c%c\n", runinfo.target, runinfo.targetID);
@@ -772,6 +776,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" Polarization (sinphi)       = %10.4f%9.4f\n",anal.sinphi[0].P[0],anal.sinphi[0].P[1]);
     printf(" Phase (sinphi)  [deg.]      = %10.4f%9.4f\n",anal.sinphi[0].dPhi[0]*R2D,anal.sinphi[0].dPhi[1]*R2D);
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi[0].chi2);
+    if (runinfo.Run==5)   printf(" profile error (absolute)[%] = %10.4f\n",anal.profile_error*fabs(anal.P[0]));
     printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
     printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[1]);
@@ -1000,6 +1005,20 @@ calcWeightedMean(float A[N], float dA[N], int NDAT, float &Ave, float &dAve){
 }
 
 
+
+//
+// Class name  : 
+// Method name : ProfileError(float_t x)
+//
+// Description : calculates profile error for given universal rate x
+//             : For run5, zero for blue beam
+// Input       : 
+// Return      : 
+//
+float
+ProfileError(float x){
+  return   runinfo.RHICBeam == 1 ? exp(-0.152*log(1/x)) : 0 ;
+}
 
 
 //
