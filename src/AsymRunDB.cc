@@ -75,7 +75,7 @@ readdb(double RUNID) {
 			if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
 			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
 			if (str.find("DEFINE_FILL_PATTERN") ==1) rundb.define_fill_pattern_s = GetVariables(str);
-			if (str.find("UNIVERSAL_RATE")      ==1) rundb.universal_rate_s      = GetVariables(str);
+			if (str.find("REFERENCE_RATE")      ==1) rundb.reference_rate_s      = GetVariables(str);
 			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
 			if (str.find("DisableBunch")        ==1){
 			rundb.disable_bunch_s     = GetVariables(str);
@@ -132,8 +132,8 @@ readdb(double RUNID) {
   // TSHIFT for injection with respect to flattop timing
   dproc.inj_tshift = strtof(rundb.inj_tshift_s.c_str(),NULL);
 
-  // Expected rate for given target
-  dproc.universal_rate = strtof(rundb.universal_rate_s.c_str(),NULL);
+  // Expected universal rate for given target
+  dproc.reference_rate = strtof(rundb.reference_rate_s.c_str(),NULL);
 
   // Optimize setting for Run
   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
@@ -338,6 +338,7 @@ PrintRunDB(){
   printf("TSHIFT           = %5.1f\n", strtof(rundb.tshift_s.c_str(),NULL));
   printf("INJ_TSHIFT       = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
   printf("MEASUREMENT_TYPE = %5.1f\n", strtof(rundb.measurement_type_s.c_str(),NULL));
+  printf("REFERENCE_RATE   = %7.3f\n", strtof(rundb.reference_rate_s.c_str(),NULL));
   printf("COMMENT          = %s\n",    rundb.comment_s.c_str());
 
   return;
@@ -380,6 +381,9 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // tshift in [ns]
     fprintf(stdout,"             TSHIFT = %.1f\n",dproc.tshift);
+
+    // expected reference rate
+    if (runinfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",dproc.reference_rate);
 
     // Disabled bunch
     fprintf(stdout,"      #DisableBunch = %d\n", runinfo.NDisableBunch);
