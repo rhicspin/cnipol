@@ -95,6 +95,7 @@ typedef struct {
   float WCMRANGE;      // Wall Current Monitor process Fill range
   float MassLimit;     // Lower Mass limit for peak position adjustment fit
   int thinout;         // Every <thinout> event to be feed into feedback routine
+  float universal_rate;// Expected universal rate for given target
 } datprocStruct; 
 
 
@@ -163,7 +164,7 @@ typedef struct {
   float P_sigma_ratio[2];
   float P_sigma_ratio_norm[2];
   float energy_slope[2];    // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
-  StructSinPhi sinphi[2];   // [0]: regular,  [1]: alternative sigma cut
+  StructSinPhi sinphi[4];   // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch
   StructAnomaly anomaly;
   StructUnrecognized unrecog;
 } StructAnalysis;
@@ -213,6 +214,7 @@ typedef struct {
   string enable_bunch_s;
   string define_spin_pattern_s;
   string define_fill_pattern_s;
+  string universal_rate_s;
   string comment_s;
 }StructRunDB ;
 
@@ -262,6 +264,7 @@ typedef struct {
   int spin_pattern;
   int fill_pattern;
   int mask_bunch;
+  int EXE_ANOMALY_CHECK;
 } StructFlag;
 
 
@@ -274,7 +277,7 @@ typedef struct {
   long int revolution;
   long int tgtMotion;
   long int good[MAXDELIM];
-  StructStripCounter reg, alt;
+  StructStripCounter reg, alt, phx, str;
 } StructCounter;
 
 
@@ -290,6 +293,12 @@ typedef struct {
         float x[TARGETINDEX];  // target position in [mm]
     } all;
 } StructTarget;
+
+
+typedef struct {
+  int bunchpat[NBUNCH];
+} StructBunchPattern;
+
 
 // Hbook Associated Stuff
 extern "C" {
@@ -392,6 +401,7 @@ extern StructFlag Flag;
 extern StructReadFlag ReadFlag;
 extern StructAnalysis anal;
 extern StructTarget tgt;
+extern StructBunchPattern phx, str;
 
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
