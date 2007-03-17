@@ -75,6 +75,7 @@ readdb(double RUNID) {
 			if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
 			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
 			if (str.find("DEFINE_FILL_PATTERN") ==1) rundb.define_fill_pattern_s = GetVariables(str);
+			if (str.find("UNIVERSAL_RATE")      ==1) rundb.universal_rate_s      = GetVariables(str);
 			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
 			if (str.find("DisableBunch")        ==1){
 			rundb.disable_bunch_s     = GetVariables(str);
@@ -130,6 +131,9 @@ readdb(double RUNID) {
 
   // TSHIFT for injection with respect to flattop timing
   dproc.inj_tshift = strtof(rundb.inj_tshift_s.c_str(),NULL);
+
+  // Expected rate for given target
+  dproc.universal_rate = strtof(rundb.universal_rate_s.c_str(),NULL);
 
   // Optimize setting for Run
   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05

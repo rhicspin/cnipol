@@ -508,11 +508,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 		HHF1(38050, TgtIndex[time], 1);
 		HHF1(38060, time, 1);
 
+		// counters
 		cntr.reg.NStrip[spbit][st]++;
 		if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e) 
 		  cntr.alt.NStrip[spbit][st]++;
+		if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
+		if (str.bunchpat[event->bid]) cntr.str.NStrip[spbit][st]++;
 
-                
                 // Ramp measurements binning
                 // 20 Hz delimiters
 		/*

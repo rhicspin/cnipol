@@ -25,6 +25,7 @@
 #define REC_BEAMMASK 0x00030000
 void PrintPattern(char*);
 void DecodeTargetID(polDataStruct poldat);
+void PrepareCollidingBunchPattern();
 
 
 // ================= 
@@ -129,7 +130,6 @@ int readloop() {
 	  break;
 	}
 
-
 	//=============================================================
 	//                          Main Switch
 	//=============================================================
@@ -142,6 +142,9 @@ int readloop() {
             cout << "Unix Time Stamp: " << rec.begin.header.timestamp.time << endl;
 	    runinfo.StartTime=rec.begin.header.timestamp.time ;
 	    
+	    // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
+	    PrepareCollidingBunchPattern();
+
 	    ReadFlag.RECBEGIN = 1;
 	  }
 	  break;
@@ -616,5 +619,42 @@ DecodeTargetID(polDataStruct poldat){
 
   return;
   
+}
+
+
+
+
+//
+// Class name  :
+// Method name : PrepareCollidingBunchPattern(runinfo.RHICBeam)
+//
+// Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
+//             : 
+// Input       : 
+// Return      : 
+//             : 
+//
+void 
+PrepareCollidingBunchPattern(){
+
+
+  for (int i=0; i<NBUNCH; i++){
+    phx.bunchpat[i] = 1;
+    str.bunchpat[i] = 1;
+  }
+
+  if (runinfo.RHICBeam==1) { // Yellow Beam
+    for (int j=31; j<40; j++) str.bunchpat[j] = phx.bunchpat[j+40] = 0;
+  }else if (runinfo.RHICBeam==0){ // Blue Beam
+    for (int j=31; j<40; j++) phx.bunchpat[j] = str.bunchpat[j+40] = 0;
+  }
+
+  cout << "===== Colliding Bunch pattern =======" << endl;
+  cout << " IP2,IP8 : " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
+  cout << " IP6,IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
+  cout << "=====================================" << endl;
+
+  return;
+
 }
 

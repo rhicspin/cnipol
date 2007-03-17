@@ -77,25 +77,27 @@ int end_process(recordConfigRhicStruct *cfginfo)
     calcBunchAsymmetry();
 
     //-------------------------------------------------------
-    //  Check for bunch anomaly 
-    //-------------------------------------------------------
-    BunchAnomalyDetector();
-
-    //-------------------------------------------------------
     // Strip-by-Strip Asymmetries
     //-------------------------------------------------------
     StripAsymmetry();
 
-    //-------------------------------------------------------
-    //  Check for 12C Invariant Mass and energy dependences
-    //-------------------------------------------------------
-    TshiftFinder(Flag.feedback, 2);
+    if (Flag.EXE_ANOMALY_CHECK) {
+      //-------------------------------------------------------
+      //  Check for 12C Invariant Mass and energy dependences
+      //-------------------------------------------------------
+      TshiftFinder(Flag.feedback, 2);
 
-    //-------------------------------------------------------
-    //  Check for slope of Energy Spectrum 
-    //-------------------------------------------------------
-    DetectorAnomaly();
+      //-------------------------------------------------------
+      //  Check for slope of Energy Spectrum 
+      //-------------------------------------------------------
+      DetectorAnomaly();
 
+      //-------------------------------------------------------
+      //  Check for bunch anomaly 
+      //-------------------------------------------------------
+      BunchAnomalyDetector();
+
+    }
 
     //-------------------------------------------------------
     //  Complete Histograms
@@ -774,6 +776,8 @@ PrintRunResults(StructHistStat hstat){
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
     printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[1]);
     printf(" Ratio ((alt-reg)/reg)       = %10.3f%9.3f\n", anal.P_sigma_ratio_norm[0],anal.P_sigma_ratio_norm[1]);
+    printf(" Polarization (PHENIX)       = %10.4f%9.4f\n",anal.sinphi[2].P[0],anal.sinphi[2].P[1]);
+    printf(" Polarization (STAR)         = %10.4f%9.4f\n",anal.sinphi[3].P[0],anal.sinphi[3].P[1]);
     printf("-----------------------------------------------------------------------------------------\n");
 
 
@@ -1404,15 +1408,21 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
 //
 // Description : call calcStripAsymmetry() subroutines for 
 //             : regular and alternative sigma banana cuts, respectively.
+//             : Also call for PHENIX and STAR colliding bunches asymmetries
 // Input       : 
 // Return      : 
 //
 void
 StripAsymmetry(){
 
+  // Calculate Asymmetries for colliding bunches at PHENIX
+  CalcStripAsymmetry(anal.A_N[1], 2, cntr.phx.NStrip);  
+  // Calculate Asymmetries for colliding bunches at STAR
+  CalcStripAsymmetry(anal.A_N[1], 3, cntr.str.NStrip);  
+
   float diff[2];
-  CalcStripAsymmetry(anal.A_N[1], 1);  // alternative sigma cut
-  CalcStripAsymmetry(anal.A_N[1], 0);  // regular sigma cut
+  CalcStripAsymmetry(anal.A_N[1], 1, cntr.alt.NStrip);  // alternative sigma cut
+  CalcStripAsymmetry(anal.A_N[1], 0, cntr.reg.NStrip);  // regular sigma cut
   if (anal.sinphi[0].P[0]) {
 
     // calculate differences and ratio
@@ -1428,6 +1438,7 @@ StripAsymmetry(){
       QuadErrorDiv(diff[0],anal.sinphi[0].P[0],diff[1],anal.sinphi[0].P[1]);
   }
 
+
   return;
 }
 
@@ -1438,11 +1449,11 @@ StripAsymmetry(){
 // Method name : CalcStripAsymmetry
 //
 // Description : calculate asymmetries strip by strip
-// Input       : aveA_N
+// Input       : float aveA_N, int Mode, long int nstrip[][NSTRIP]
 // Return      : 
 //
 void
-CalcStripAsymmetry(float aveA_N, int Mode){
+CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]){
 
 
     //-------------------------------------------------------
@@ -1465,13 +1476,13 @@ CalcStripAsymmetry(float aveA_N, int Mode){
 
 	// Calculate Luminosity. Own Strip and ones in cross geometry are excluded.
 	if (!ExclusionList(i,j,runinfo.RHICBeam)){
-	  for (int k=0; k<=1; k++) LumiSum[k][i] += Mode ? cntr.alt.NStrip[k][j] : cntr.reg.NStrip[k][j];
+	  for (int k=0; k<=1; k++) LumiSum[k][i] += nstrip[k][j];
 	}
 
       } // end-of-j-loop. 
 
-      counts[0] = Mode ? cntr.alt.NStrip[0][i] : cntr.reg.NStrip[0][i] ;
-      counts[1] = Mode ? cntr.alt.NStrip[1][i] : cntr.reg.NStrip[1][i] ;
+      counts[0] = nstrip[0][i] ;
+      counts[1] = nstrip[1][i] ;
 
       // Luminosity Ratio
       LumiRatio[i] = (float)LumiSum[0][i]/(float)LumiSum[1][i];
@@ -1585,7 +1596,7 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   sprintf(htitle,"Run%8.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
   asym_sinphi_fit   =  new TH2F("asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
   asym_sinphi_fit   -> GetXaxis()->SetTitle("phi [deg.]");
-  asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry * A_N [%]");
+  asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry / A_N [%]");
   DrawLine(asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
 
   // define sin(phi) fit function & initialize parmaeters

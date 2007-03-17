@@ -65,7 +65,7 @@ int main (int argc, char *argv[]){
     char threshold[20],bunchid[20],enerange[20],cwidth[20],*ptr;
     int lth, uth;
 
-    while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:bCDTABZF:MNW:UGRS"))!=-1) {
+    while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:baCDTABZF:MNW:UGRS"))!=-1) {
         switch (c) {
         case 'h':
         case '?':
@@ -74,32 +74,33 @@ int main (int argc, char *argv[]){
             cout << " -f <filename>        : input data file name " <<endl;
             cout << " -n <number>          : evnt skip (n=1 noskip)" <<endl;
             cout << " -o <filename>        : Output hbk file" <<endl;
-            cout << " -r <filename>        : ramp timing file" <<endl;
+	    //            cout << " -r <filename>        : ramp timing file" <<endl;
             cout << " -t <time shift>      : TOF timing shift in [ns]" <<endl;
             cout << "                      : addition to TSHIFT defined in run.db " 
 		 <<endl;
             cout << " -e <lower:upper>     : kinetic energy range" <<endl;
             cout << "                      : default (400:900) keV" <<endl;
             cout << "                                       " <<endl;
-            cout << " <MODE> ---------------(default on)---------" <<endl;
-            cout << " -B                   : create banana curve on" <<endl;
-            cout << " -G                   : mass mode on " <<endl;
+	    //            cout << " <MODE> ---------------(default on)---------" <<endl;
+	    //            cout << " -B                   : create banana curve on" <<endl;
+	    //            cout << " -G                   : mass mode on " <<endl;
+	    cout << " -a                   : anomaly check off " << endl;
             cout << " <MODE> ---------------(default off)--------" <<endl;
 	    cout << " -b                   : feedback mode on " << endl;
             cout << " -C                   : Calibration mode on " <<endl;
             cout << " -D                   : Dead layer  mode on " <<endl;
-            cout << " -T                   : T0 study    mode on " <<endl;
-            cout << " -A                   : A0,A1 study mode on " <<endl;
-            cout << " -Z                   : without T0 subtraction" <<endl;
+	    //            cout << " -T                   : T0 study    mode on " <<endl;
+	    //            cout << " -A                   : A0,A1 study mode on " <<endl;
+	    //            cout << " -Z                   : without T0 subtraction" <<endl;
             cout << " -F <file>            : overwrite conf file defined in run.db" <<endl;
-            cout << " -M                   : exit after run message" <<endl;
+	    //            cout << " -M                   : exit after run message" <<endl;
             cout << " -W <lower:upper>     : const width banana cut" <<endl;
 	    cout << " -m <sigma>           : banana cut by <sigma> from 12C mass [def]:3 sigma" 
 		 << endl; 
             cout << " -U                   : update histogram" <<endl;
             cout << " -N                   : store Ntuple events" <<endl;
-            cout << " -R                   : ramp measurement 1sec bin" <<endl;
-            cout << " -S                   : study mode" <<endl;
+	    //            cout << " -R                   : ramp measurement 1sec bin" <<endl;
+	    //            cout << " -S                   : study mode" <<endl;
             exit(0);
         case 'f':
             sprintf(ifile, optarg);
@@ -144,6 +145,9 @@ int main (int argc, char *argv[]){
                 exit(0);
             }
             break;
+	case 'a':
+	  Flag.EXE_ANOMALY_CHECK=0;
+	  break;
         case 'F':
 	  sprintf(cfile, optarg);
           if (!strstr(cfile,"/")) {
@@ -586,7 +590,7 @@ Initialization(){
 
   // Initiarize Strip counters
   for (int i=0; i<NSTRIP; i++) {
-    for (int j=0; j<3; j++) cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = 0;
+    for (int j=0; j<3; j++) cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
   }
 
   return 1;

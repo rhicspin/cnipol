@@ -28,6 +28,7 @@ datprocStruct dproc = {
     999.05,     // Wall Current Monitor process Fill range +/-5[%] 
     8,          // Lower Mass limit for peak position adjustment fit default :8 GeV
     100,        // <thinout> event rate to be feed into feedback routine
+    0           // Expected universal rate for given target
 };  // data process modes 
 
 
@@ -67,7 +68,8 @@ StructFlag Flag = {
   0,       // feedback mode
   -1,      // spin_pattern
   -1,      // fill_pattern
-  0        // mask_bunch
+  0,       // mask_bunch
+  1,       // EXE_ANOMALY_CHECK;
 };
 
 StructCounter cntr = {
@@ -178,6 +180,7 @@ StructAverage average;
 StructFeedBack feedback;
 StructRunConst runconst;
 StructAnalysis anal;
+StructBunchPattern phx, str;
 
 
 int spinpat[120]; // spin pattern 120 bunches (ADO info)
