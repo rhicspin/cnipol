@@ -1,0 +1,16 @@
+######################################################################
+# README.analysis
+# March.18,2007
+# I. Nakagawa
+# Tips for serious offline analysis
+#####################################################################
+
+
+# About machine dependence
+
+There are some random generator plugged in AsymProcess.cc program applied to each ADC, TDC events 
+to smear out events below the resolution limit. As a consequence, it will makes tiny dependence on 
+a machine you run, because
+it makes slightly difference in number of events passes banana cut.
+Because of this, you may not get exactly the same results in different machines, however, the results 
+should be agree less than a percent level if the statistics is abundant.
