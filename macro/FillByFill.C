@@ -136,12 +136,15 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
 
     // stack polarizations into fill by fill arrays
     Int_t array_index = fill[j].nRun-1;
+    fill[j].GlobalIndex[array_index]= i;
     fill[j].Index[array_index]      = fill[j].nRun;
     fill[j].RunID[array_index]      = RunID[i];
     fill[j].P_online[array_index]   = P_online[i] * sign;
     fill[j].dP_online[array_index]  = dP_online[i];
     fill[j].P_offline[array_index]  = P_offline[i] * sign;
     fill[j].dP_offline[array_index] = dP_offline[i];
+    fill[j].dProf[array_index]      = dProf[i];
+    if (PROFILE_ERROR) dP_offline[array_index] = QuadraticSumSQRT(dP_offline[i], dProf[i]);
     fill[j].Rate[array_index]       = Rate[i];
     fill[j].WCM[array_index]        = WCM[i];
     fill[j].Time[array_index]       = Float_t(Time[i]);
@@ -395,6 +398,17 @@ OfflinePol::TargetByTarget(Int_t k, Int_t Color){
 }
 
 
+Double_t pol_vs_rate(Double_t *x, Double_t *par)
+{
+  if (x[0]>1){
+    TF1::RejectPoint();
+    return 0;
+  }
+  return par[0]*exp(-par[2]*par[2]/par[1]/par[1]*log(1/x[0]));
+
+}
+
+
 
 //
 // Class name  : OfflinePol
@@ -409,8 +423,16 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 
   if (Color==4){
     fout << "\n Blue:" << endl;
+    blue.UniversalRateDrop   = new TH1F("blue_UniversalRateDrop","Universal Rate Distribution (Blue)", 40, 0, 2);
+    blue.UniversalRateDrop -> SetFillColor(Color);
+    blue.UniversalRateDrop_vs_p= new TH2F("blue_UniversalRateDrop_vs_P","Universal Rate vs P (Blue)", 40, 0, 2, 40, -80, -20);
+    blue.NormP_vs_univR = new TH2F("blue_NormP_vs_univR","Universal Rate vs normP (Blue)", 40, 0, 1.5, 40, 0, 2);
   }else{
     fout << "\n Yellow:" << endl;
+    yellow.UniversalRateDrop = new TH1F("yellow_UniversalRateDrop","Universal Rate Distribution (Yellow)", 40, 0, 2);
+    yellow.UniversalRateDrop -> SetFillColor(Color);
+    yellow.UniversalRateDrop_vs_p= new TH2F("yellow_UniversalRateDrop_vs_P","Universal Rate vs P (Yellow)", 40, 0, 2, 40, -80, -20);
+    yellow.NormP_vs_univR = new TH2F("yellow_NormP_vs_univR","Universal Rate vs normP (Yellow)", 40, 0, 1.5, 40, 0, 2);
   };
 
   ps->NewPage();
@@ -512,6 +534,96 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
 
   } else if ((Mode>>4&1)||(Mode>>5&1)) {
 
+    C2->Update(); 
+    C2->Divide(); C2->Clear();
+
+    TF1 * f1 = new TF1("f1",pol_vs_rate,0.01,1,3);
+    f1->SetParameters(0,1,0.7);
+    f1->SetParLimits(2,0.7,0.7);
+    if (Color==4){
+
+      blue.UniversalRateDrop->Draw(); C2->Update(); ps->NewPage();
+
+      TGraphErrors * rate_vs_P = new TGraphErrors(ndata, RelRate, P_offline, dx, dP_offline); 
+      rate_vs_P -> SetMarkerStyle(20);
+      rate_vs_P -> SetMarkerColor(Color);
+      blue.UniversalRateDrop_vs_p -> Draw();
+      rate_vs_P -> Draw("same,P");
+      rate_vs_P -> Fit(f1); 
+
+      // draw predictions from Blue_7151 profile scan
+      TF1 * f2 = new TF1("f2",pol_vs_rate, 0.01, 1, 3);
+      f2->SetParameters(f1->GetParameter(0), 3.08, 0.8625);
+      f2->SetLineColor(2);
+      f2->Draw("same");
+
+      C2->Update(); ps->NewPage();
+      TH1F * dUnivDistH = new TH1F("dUnivDistH","Data - Best Fit", 40, -30, 30);
+      for (Int_t i=0; i<ndata; i++) {
+	dUnivDist[i] = P_offline[i] + 49.79;
+	if (RelRate[i]<1) dUnivDistH -> Fill(dUnivDist[i],1/dP_offline[i]);
+      }
+      dUnivDistH -> SetFillColor(Color);
+      dUnivDistH -> Draw("");
+      dUnivDistH -> Fit("gaus");
+
+      // normalized polarization  by fill average
+      C2->Update(); ps->NewPage();
+      blue.NormP_vs_univR->Draw();
+      TGraphErrors * rate_vs_normP = new TGraphErrors(ndata, RelRate, P_norm_Ave, dx, dP_norm_Ave); 
+      rate_vs_normP -> SetMarkerStyle(20);
+      rate_vs_normP -> SetMarkerColor(Color);
+      rate_vs_normP -> Draw("same,P");
+      rate_vs_normP -> Fit(f1); 
+
+    } else {
+
+      yellow.UniversalRateDrop->Draw(); C2->Update(); ps->NewPage();
+
+      TGraphErrors * rate_vs_P = new TGraphErrors(ndata, RelRate, P_offline, dx, dP_offline); 
+      rate_vs_P -> SetMarkerStyle(20);
+      rate_vs_P -> SetMarkerColor(Color);
+      yellow.UniversalRateDrop_vs_p -> Draw();
+      rate_vs_P -> Draw("same,P");
+      rate_vs_P -> Fit(f1); 
+
+      // draw predictions from Yellow 7151
+      TF1 * f2 = new TF1("f2",pol_vs_rate, 0.01, 1, 3);
+      f2->SetParameters(f1->GetParameter(0), 1.1, 0.8229); // 7151
+      f2->SetLineColor(2);
+      f2->Draw("same");
+
+      // draw predictions from Yellow 7133
+      TF1 * f3 = new TF1("f3",pol_vs_rate, 0.01, 1, 3);
+      f3->SetParameters(f1->GetParameter(0), 1.541, 0.6913); // 7133
+      f3->SetLineColor(2);
+      f3->SetLineStyle(2);
+      f3->Draw("same");
+
+      C2->Update(); ps->NewPage();
+      TH1F * dUnivDistH = new TH1F("dUnivDistH","Data - Best Fit", 40, -30, 30);
+      for (Int_t i=0; i<ndata; i++) {
+	dUnivDist[i] = P_offline[i] + 47.69*exp(-0.152*log(1/RelRate[i])) ;
+	if (RelRate[i]<1) dUnivDistH -> Fill(dUnivDist[i],1/dP_offline[i]);
+      }
+      dUnivDistH -> SetFillColor(Color);
+      dUnivDistH -> Draw("");
+      dUnivDistH -> Fit("gaus");
+
+      // normalized polarization by average
+      C2->Update(); ps->NewPage();
+      yellow.NormP_vs_univR->Draw();
+      TGraphErrors * rate_vs_normP = new TGraphErrors(ndata, RelRate, P_norm_Ave, dx, dP_norm_Ave); 
+      rate_vs_normP -> SetMarkerStyle(20);
+      rate_vs_normP -> SetMarkerColor(Color);
+      rate_vs_normP -> Draw("same,P");
+      rate_vs_normP -> Fit(f1); 
+
+
+    }
+
+
+    C2->Update(); ps->NewPage();
     fout << "\n ===========================================================" << endl;
     if (Fill.bad.rate.fill) fout << "  RATE Drop Suspicious fills : " << Fill.bad.rate.fill << endl;
     fout << "  RATE Drop Suspicoius data  : " << Fill.bad.rate.data << endl;
@@ -523,6 +635,7 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   return 0;
     
 }
+
 
 
 //
@@ -596,6 +709,8 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
     DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[1], 2, 3, 2);
     sprintf(text,"ave(P)=%.2f +/- %.3f ", fill[k].wAve[0], fill[k].wAve[1]);
     DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
+    fout << "    ====> FillID: " << std::setprecision(7) << fill[k].FillID 
+	 << std::setprecision(4) << " P_ave = "  << fill[k].wAve[0] << " +/- " << fill[k].wAve[1] << endl;
 
 
   // ------------------------------------------------------------------- // 
@@ -800,11 +915,20 @@ OfflinePol::RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Co
       }else if (Option==2){
 	Float_t RefRate;
 	Float_t DropRate = GetDropRate(k, i, Color, RefRate);
+	RelRate[fill[k].GlobalIndex[i]] = DropRate;
+	// PROFILE_ERROR
+	P_norm_Ave[fill[k].GlobalIndex[i]]  = fill[k].P_offline[i]/fill[k].wAve[0];
+	dP_norm_Ave[fill[k].GlobalIndex[i]] = QuadraticDivideError(fill[k].P_offline[i],fill[k].wAve[0],fill[k].dP_offline[i],fill[k].wAve[1]);
 	TLine *l = new TLine(xmin, RefRate, xmax, RefRate);
 	l->SetLineColor(2);
 	l->Draw("same");
       }
 
+
+      // fill UnviversalRateDrop histograms
+      Color == 4 ? blue.UniversalRateDrop -> Fill(DropRate) : yellow.UniversalRateDrop->Fill(DropRate);
+
+      // Significant rate drop data extraction
       if ( DropRate < RATE_DROP_ALLOWANCE) {
 	++j;
 	fout << "    ====> RunID: " << std::setprecision(7) << fill[k].RunID[i] << " rate drop " 
