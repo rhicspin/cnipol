@@ -19,6 +19,19 @@ Float_t RATIO_SQRT(Float_t x, Float_t y){
 
 //
 // Class name  : 
+// Method name : QuadraticSumSQRT(Float_t x, Float_t y)
+// Description : Calculate quadratic sum 
+// Input       : 
+// Return      : 
+//
+Float_t QuadraticSumSQRT(Float_t x, Float_t y){
+  return sqrt(x*x+y*y);
+}
+
+
+
+//
+// Class name  : 
 // Method name : 
 // Description : Calculate quadratic error propagation for x/y
 // Input       : 
@@ -155,6 +168,7 @@ GetMax(Float_t *x, Int_t N, Int_t &iMax){
 }
 
 
+
 //
 // Class name  : 
 // Method name : GetScale(Float_t *x, Int_t N, Float_t margin, Float& min, Float& max);
@@ -171,6 +185,34 @@ GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
     if (x[i]) {
       if (x[i]<min) min=x[i];
       if (x[i]>max) max=x[i];
+    }
+  }
+
+  Float_t interval = max - min;
+  min -= interval*margin;
+  max += interval*margin;
+
+  return ;
+
+}
+
+
+//
+// Class name  : 
+// Method name : GetScale(Int_t *x, Int_t N, Float_t margin, Float& min, Float& max);
+//
+// Description : Calculate min and max from array x(N)
+// Input       : 
+// Return      : Float_t min, Float_t max
+//
+void
+GetScale(Int_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max){
+
+  min = max = Float_t(x[0]);
+  for (Int_t i=0; i<N; i++) {
+    if (x[i]) {
+      if (x[i]<min) min=Float_t(x[i]);
+      if (x[i]>max) max=Float_t(x[i]);
     }
   }
 

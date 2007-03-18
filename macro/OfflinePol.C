@@ -46,6 +46,7 @@ Int_t FILL=0;
 Int_t FILL_BY_FILL_ANALYSIS=1;
 Int_t OFFLINE_POL=1;
 bool FILL_BY_FILL_AVERAGE = true;     // Period By Period Average thru Fill-By-Fill averaged polarizations
+bool PROFILE_ERROR = true             // Activate profile error
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -62,7 +63,7 @@ Float_t CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db);
 const Int_t nJetRun5=19;
 Int_t JetRun5[nJetRun5+1]     = {6945, 6973, 6975, 6980, 6988, 6988, 
 				 7007, 7046, 7088, 7114, 7120, 7139, 
-				 7172, 7224, 7263, 7300, 7303, 7317, 
+				 7173, 7224, 7263, 7300, 7303, 7317, 
 				 7319, 7328};
 const Int_t JetRun5nType=8;
 Int_t JetRun5Type[nJetRun5]   = {   0,    2,    0,    2,    0,    2,
@@ -116,10 +117,12 @@ private:
     Float_t dt_err[MAX_NMEAS_PER_FILL]; // divided dt[k] by half for horizontal error bar plotting purpose
     Float_t RunID[MAX_NMEAS_PER_FILL];
     Float_t Index[MAX_NMEAS_PER_FILL];
+    Int_t GlobalIndex[MAX_NMEAS_PER_FILL]; // global index contains initial index of individual data 
     Float_t P_online[MAX_NMEAS_PER_FILL];
     Float_t dP_online[MAX_NMEAS_PER_FILL];
     Float_t P_offline[MAX_NMEAS_PER_FILL];
     Float_t dP_offline[MAX_NMEAS_PER_FILL];
+    Float_t dProf[MAX_NMEAS_PER_FILL];   // polarization profile error
     Float_t Weight[MAX_NMEAS_PER_FILL];  // weight factor for fill by fill average
     Float_t Rate[MAX_NMEAS_PER_FILL];
     Float_t sRate[MAX_NMEAS_PER_FILL]; // scaled rate for superpose plot on polarization
@@ -172,7 +175,7 @@ private:
     TGraphErrors *meas_vs_P[2];
     TGraphErrors *meas_vs_WCM;
     Float_t pC_Ave[2][3][2];
-    Int_t fill_id[MAX_NFILL];
+    Float_t FillID[MAX_NFILL];
     Float_t fill_ave[MAX_NFILL];
     Float_t fill_dave[MAX_NFILL];
     Float_t fill_ave_t[MAX_NFILL];
@@ -193,6 +196,9 @@ private:
       TH1F * UniversalRate;
       TH2F * UniversalRate_vs_P;
     } Target, target[MAX_TARGET_PERIOD];
+    TH1F * UniversalRateDrop;
+    TH2F * UniversalRateDrop_vs_p;
+    TH2F * NormP_vs_univR;
   } blue, yellow;
 
 
@@ -238,9 +244,10 @@ private:
 
   Int_t nRun[N], Time[N];
   Float_t Energy[N];
-  Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N];
-  Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],WCM[N],SpeLumi[N],DiffP[N];
+  Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N], dProf[N];
+  Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],RelRate[N],dUnivDist[N],WCM[N],SpeLumi[N],DiffP[N];
   Float_t P_alt[N],dP_alt[N],R_Preg_Palt[N],dR_Preg_Palt[N];
+  Float_t P_norm_Ave[N], dP_norm_Ave[N]; // Polariztion normalized by fill average 
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
   TH1D* Pdiff ;
@@ -254,6 +261,7 @@ public:
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
   Int_t GetData(Char_t * DATAFILE);
+  Int_t TargetByTargetOperation();
   Int_t OfflinePol();
   // following functions are defined in FillByFill.C
   Int_t FillByFill(Int_t Mode, Int_t RUN, Int_t ndata, Int_t Color, TCanvas *CurC, TPostScript *ps);
@@ -262,7 +270,7 @@ public:
   Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
-  Int_t RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Color);
+  Int_t RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Color);
   Float_t GetDropRate(Int_t k, Int_t i, Int_t &iMax);
   Float_t GetDropRate(Int_t k, Int_t i);
   Float_t GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate);
@@ -299,6 +307,7 @@ OfflinePol::Initiarization(Int_t i){
   
   
   RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
+  dProf[i] = 0;
   Rate[i] = WCM[i] = 0;
   P_alt[i] = dP_alt[i] = 0;
   P_offline[i] =  phi[i]  = -9999;
@@ -721,6 +730,66 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       sfitchi2->Draw();
       break;
   case 1000:
+    TargetByTargetOperation();
+    //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
+    //  Mode += 3  (Offline,Online)
+    //  Mode += 7  (Offline,Online,Rate)
+    //  Mode += 9  (Offline,fit)
+    //  Mode += 13 (Offline,fit,Rate)
+    //  Mode += 18 (Rate, Rate_filter)
+    //  Mode += 32 (Rate fileter with universal rate target by target) 
+    //  Mode += 64 (Fill by Fill average)
+    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    //    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    break;
+  case 1100:
+    SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
+    break;
+  case 1200:
+    Mode-=200;
+    TargetByTargetOperation();
+    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    break;
+  case 2000:
+    if (RUN==5){
+      Period.nPeriod  = nJetRun5;
+      Period.nType    = JetRun5nType;
+      for (Int_t i=0; i<Period.nPeriod; i++){
+	period[i].Begin_FillID = JetRun5[i];
+	period[i].End_FillID   = JetRun5[i+1];
+	period[i].Type         = JetRun5Type[i];
+      }
+    } else {
+      cerr << "Jet info for Run06 is not impremented yet" << endl;
+    }
+
+    if (FILL_BY_FILL_AVERAGE) FillByFill(1000+64+1, RUN, ndata, Color, CurC, ps);
+    PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
+    //    PeroidByPeriod(Mode+128, RUN, ndata, Beam, Color, CurC, ps); // period by period (Diagnose purpose)
+    break;
+  }
+
+  return 0;
+
+} // End-of-PlotControlCenter()
+
+
+//
+// Class name  : Offline
+// Method name : TargetByTargetOperation(){
+//
+// Description : fill beam dependent target arrays for target period
+// Input       : 
+// Return      : 
+//
+Int_t 
+OfflinePol::TargetByTargetOperation(){
+
     // Target by target period allocation
     if (RUN==5){
       for (Int_t i=0; i<MAX_TARGET_PERIOD; i++){
@@ -738,47 +807,9 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     } else if (RUN==6) {
       cerr << "Targett info for Run06 is not impremented yet" << endl;
     };
-    //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
-    //  Mode += 3  (Offline,Online)
-    //  Mode += 7  (Offline,Online,Rate)
-    //  Mode += 9  (Offline,fit)
-    //  Mode += 13 (Offline,fit,Rate)
-    //  Mode += 18 (Rate, Rate_filter)
-    //  Mode += 32 (Rate fileter with universal rate target by target) 
-    //  Mode += 64 (Fill by Fill average)
-    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
-    break;
-  case 1100:
-    SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
-    break;
-  case 2000:
-    if (RUN==5){
-      Period.nPeriod  = nJetRun5;
-      Period.nType    = JetRun5nType;
-      for (Int_t i=0; i<Period.nPeriod; i++){
-	period[i].Begin_FillID = JetRun5[i];
-	period[i].End_FillID   = JetRun5[i+1];
-	period[i].Type         = JetRun5Type[i];
-      }
-    } else {
-      cerr << "Jet info for Run06 is not impremented yet" << endl;
-    }
 
-    PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
-    //    PeroidByPeriod(Mode+128, RUN, ndata, Beam, Color, CurC, ps); // period by period (Diagnose purpose)
-    break;
-  }
-
-  return 0;
-
-} // End-of-PlotControlCenter()
-
-
+    return 0;
+}
 
 //
 // Class name  : Offline
@@ -797,7 +828,6 @@ OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
   if (frame) frame->Delete();
 
   ps->NewPage();
-
 
   PlotControlCenter("Yellow",Mode, CurC, ps);
   CurC -> Update();
@@ -908,8 +938,9 @@ Int_t OfflinePol::OfflinePol() {
     Char_t outfile[100]; 
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
-    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
+    //    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
+    RunBothBeam(1200,  CurC, ps);  // Polarization Profile dependent analysis
 
     // close output file
     cout << "output data file: " << outfile << endl;
@@ -922,13 +953,14 @@ Int_t OfflinePol::OfflinePol() {
     // ==============================================================
     sprintf(psfile,"ps/PeriodByPeriod.ps");
     TPostScript *ps = new TPostScript(psfile,112);
-
-    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
    
     Char_t outfile[100]; 
     sprintf(outfile,"summary/PeriodByPeriod.dat");
     fout.open(outfile,ios::out);
     cout << "output data file: " << outfile << endl;
+
+    //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+
     fout.close();
     cout << "ps file : " << psfile << endl;
     ps->Close();
