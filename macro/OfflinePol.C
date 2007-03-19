@@ -46,7 +46,10 @@ Int_t FILL=0;
 Int_t FILL_BY_FILL_ANALYSIS=1;
 Int_t OFFLINE_POL=1;
 bool FILL_BY_FILL_AVERAGE = true;     // Period By Period Average thru Fill-By-Fill averaged polarizations
-bool PROFILE_ERROR = true             // Activate profile error
+bool PROFILE_ERROR = true;            // Activate profile error. Fill by fill average polariations are weighted by profile error.
+bool SECOND_ROUND  = false;           // This will turned on in second round operation of profile error in the program
+//if (PROFILE_ERROR) FILL_BY_FILL_AVERAGE = true;   // profile error requires Fill_BY_FILL_AVERAGE
+
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -123,6 +126,7 @@ private:
     Float_t P_offline[MAX_NMEAS_PER_FILL];
     Float_t dP_offline[MAX_NMEAS_PER_FILL];
     Float_t dProf[MAX_NMEAS_PER_FILL];   // polarization profile error
+    Float_t dP_tot[MAX_NMEAS_PER_FILL];   // total error quad_sum of dP_offline(sts) & dProf
     Float_t Weight[MAX_NMEAS_PER_FILL];  // weight factor for fill by fill average
     Float_t Rate[MAX_NMEAS_PER_FILL];
     Float_t sRate[MAX_NMEAS_PER_FILL]; // scaled rate for superpose plot on polarization
@@ -199,6 +203,8 @@ private:
     TH1F * UniversalRateDrop;
     TH2F * UniversalRateDrop_vs_p;
     TH2F * NormP_vs_univR;
+    TH2F * DataMinusFit_vs_univR;
+    TH1D * dPdistGaus;
   } blue, yellow;
 
 
@@ -244,16 +250,18 @@ private:
 
   Int_t nRun[N], Time[N];
   Float_t Energy[N];
-  Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N], dProf[N];
+  Float_t RunID[N],P_online[N],dP_online[N],P_offline[N],dP_offline[N], dProf[N], dProf_err[N];
   Float_t phi[N], dphi[N],chi2[N],A_N[N],Rate[N],RelRate[N],dUnivDist[N],WCM[N],SpeLumi[N],DiffP[N];
   Float_t P_alt[N],dP_alt[N],R_Preg_Palt[N],dR_Preg_Palt[N];
-  Float_t P_norm_Ave[N], dP_norm_Ave[N]; // Polariztion normalized by fill average 
+  Float_t P_fillave[N], P_norm_Ave[N], dP_norm_Ave[N]; // Polariztion normalized by fill average 
   Float_t index[N],dx[N],dy[N];
   TH2D* frame ;
   TH1D* Pdiff ;
   TH1D* phiDist;
   TH1D* sfitchi2;
-
+  TH1D* dPdist;
+  TH1D* dPdistGaus;
+  
 public:
   void Initiarization(Int_t);
   Int_t Plot(Int_t, Int_t, Int_t, Char_t *, Int_t, TLegend *aLegend);
@@ -268,6 +276,7 @@ public:
   Int_t SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int_t Color);
   Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
   Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
+  Int_t PolarizationProfile(StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
   Int_t RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Color);
@@ -342,6 +351,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
   Pdiff   = new TH1D("Pdiff",   "Online/Offline Polarization Consistency",60,-20,20);
   phiDist = new TH1D("phiDist", "phi angle distribution",60,-35,35);
   sfitchi2= new TH1D("sfitchi2","chi2 distribution of P*sin(phi) fit",30,0,4);
+  dPdist  = new TH1D("dPdist",  "Offline Pol Error Distribution", 20, 0, 5);
+  dPdistGaus  = new TH1D("dPdistGaus",  "Offline Pol Error Distribution", 100, -0.5, 0.5);
 
     ifstream fin;
     fin.open(DATAFILE,ios::in);
@@ -419,6 +430,7 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	    Pdiff->Fill(DiffP[i]);
 	    phiDist->Fill(phi[i]);
 	    sfitchi2->Fill(chi2[i]);
+	    dPdist->Fill(dP_offline[i]);
 
 	    index[i]=i; ++i; 
 
@@ -723,6 +735,13 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
   case 100:
       Plot(Mode,    ndata, 20, " ",  Color, aLegend);
       break;
+  case 115:
+    MakeOfflinePolErrorDistribution(Color, ndata);
+    break;
+  case 116:
+      dPdist->SetFillColor(Color);
+      dPdist->Draw();
+      break;
   case 180:
       sfitchi2->SetXTitle("sin(phi) fit chi2");
       sfitchi2->SetYTitle(ytitle);
@@ -732,28 +751,30 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
   case 1000:
     TargetByTargetOperation();
     //  Mode Selection, see OfflinePol::FillByFillPlot() @ FillByFill.C
-    //  Mode += 3  (Offline,Online)
-    //  Mode += 7  (Offline,Online,Rate)
-    //  Mode += 9  (Offline,fit)
-    //  Mode += 13 (Offline,fit,Rate)
-    //  Mode += 18 (Rate, Rate_filter)
-    //  Mode += 32 (Rate fileter with universal rate target by target) 
-    //  Mode += 64 (Fill by Fill average)
-    //    FillByFill(Mode+18, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+7, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+9, RUN, ndata, Color, CurC, ps);
-    //    FillByFill(Mode+13, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
-    //    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
+    //  Mode = 3  (Offline,Online)
+    //  Mode = 7  (Offline,Online,Rate)
+    //  Mode = 9  (Offline,fit)
+    //  Mode = 13 (Offline,fit,Rate)
+    //  Mode = 18 (Rate, Rate_filter)
+    //  Mode = 32 (Rate fileter with universal rate target by target) 
+    //  Mode = 64 (Fill by Fill average)
+    //    FillByFill(18, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(7, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(9, RUN, ndata, Color, CurC, ps);
+    //    FillByFill(13, RUN, ndata, Color, CurC, ps);
+    FillByFill(32, RUN, ndata, Color, CurC, ps);
+    //    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
     break;
   case 1200:
-    Mode-=200;
     TargetByTargetOperation();
-    if (FILL_BY_FILL_AVERAGE) FillByFill(Mode+64+1, RUN, ndata, Color, CurC, ps);
-    FillByFill(Mode+32, RUN, ndata, Color, CurC, ps);
+    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1, RUN, ndata, Color, CurC, ps);
+    FillByFill(32, RUN, ndata, Color, CurC, ps);
+    SECOND_ROUND=true; // turn off superposing wcm plot
+    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    FillByFill(32, RUN, ndata, Color, CurC, ps);
     break;
   case 2000:
     if (RUN==5){
@@ -777,6 +798,27 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
   return 0;
 
 } // End-of-PlotControlCenter()
+
+//
+// Class name  : OfflinePol
+// Method name : MakeOfflinePolErrorDistribution(Int_t Color, Int_t ndata)
+//
+// Description : make offline polarization error distribution
+// Input       : Int_t Color, Int_t ndata
+// Return      : 
+//
+Int_t 
+OfflinePol::MakeOfflinePolErrorDistribution(Int_t Color, Int_t ndata){
+
+  gStyle->SetOptFit(111);
+  TRandom * ran = new TRandom(0);
+  dPdistGaus->SetFillColor(Color);
+  for (Int_t i=0; i<ndata; i++) dPdistGaus->Fill(ran->Gaus(0, dP_offline[i]/100));
+  dPdistGaus->Fit("gaus");
+
+  return 0;
+
+}
 
 
 //
@@ -923,6 +965,8 @@ Int_t OfflinePol::OfflinePol() {
     RunBothBeam(180, CurC, ps); // sin(phi) fit chi2 Distribution
     RunBothBeam(90,  CurC, ps); // Specific Luminosity  vs. RunID
     //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
+    RunBothBeam(115, CurC, ps); // dP_offline distribution Gaussian
+    RunBothBeam(116, CurC, ps); // dP_offline distribution
 */
     cout << "ps file : " << psfile << endl;
     ps->Close();
@@ -938,9 +982,10 @@ Int_t OfflinePol::OfflinePol() {
     Char_t outfile[100]; 
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
-    //    RunBothBeam(1000,  CurC, ps); // Fill By Fill Analysis
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
-    RunBothBeam(1200,  CurC, ps);  // Polarization Profile dependent analysis
+    Int_t Mode = PROFILE_ERROR ? 1200 : 1000; // 1000: Fill By Fill Analysis, 1200: Polarization Profile dependent analysis
+    RunBothBeam(Mode,  CurC, ps);  
+
 
     // close output file
     cout << "output data file: " << outfile << endl;
