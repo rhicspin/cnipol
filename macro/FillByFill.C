@@ -143,7 +143,7 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     fill[j].P_offline[array_index]  = P_offline[i] * sign;
     fill[j].dP_offline[array_index] = dP_offline[i];
     fill[j].dProf[array_index]      = dProf[i];
-    if (PROFILE_ERROR) fill[j].dP_tot[array_index] = QuadraticSumSQRT(dP_offline[i], dProf[i]);
+    fill[j].dP_tot[array_index]     = PROFILE_ERROR  ? QuadraticSumSQRT(dP_offline[i], dProf[i]) : dP_offline[i];
     fill[j].Rate[array_index]       = Rate[i];
     fill[j].WCM[array_index]        = WCM[i];
     fill[j].Time[array_index]       = Float_t(Time[i]);
@@ -419,6 +419,87 @@ Double_t pol_vs_rate(Float_t x, Float_t par[0], Float_t par[1], Float_t par[2]) 
   return par[0]*exp(-par[2]*par[2]/par[1]/par[1]*log(1/x));
 }
 
+//
+// Class name  : 
+// Method name : pol_vs_rate(Float_t x, Float_t par)
+//
+// Description : function to relate polarization and rate
+// Input       : 
+// Return      : 
+//
+Double_t pol_vs_rateR(Float_t x, Float_t par[0], Float_t par[1]){
+  return par[0]*x**par[1];
+}
+
+
+
+//
+// Class name  : OfflinePol
+// Method name : PolarizationProfileNoFit(StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps)
+//
+// Description : Make plots for Polarization Profile vs. Rate correlations, but no fit applied. Just draw pre-defined
+//             : functions
+// Input       : (StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps)
+// Return      : 
+//
+Int_t 
+OfflinePol::PolarizationProfileNoFit(StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps){
+
+  gStyle->SetOptStat(kFALSE);
+  gStyle->SetTitleFontSize(0.04);
+  //========================================================================//
+  //            Define Fitting Function pol_vs_rate()                       //
+  //========================================================================//
+  TF1 * f1 = new TF1("f1",pol_vs_rate, 0, 1, 3);  
+  TF1 * f2 = new TF1("f2",pol_vs_rate, 0, 1, 3);  f2->SetLineColor(2);
+  TF1 * f3 = new TF1("f3",pol_vs_rate, 0, 1, 3);  f3->SetLineColor(2); f3->SetLineStyle(2);
+  TF1 * f4 = new TF1("f4",pol_vs_rate, 0, 1, 3);  f4->SetLineStyle(2);
+  TF1 * f5 = new TF1("f5",pol_vs_rate, 0, 1, 3);  f5->SetLineStyle(2);
+
+  //========================================================================//
+  //            Pol vs. Rate 2-Dim Scatter Plot and Fit                     //
+  //========================================================================//
+  beam.UniversalRateDrop->Draw(); C2->Update(); ps->NewPage();
+  beam.UniversalRateDrop_vs_p-> GetXaxis() -> SetTitle("Rate/Expected Universal Rate");
+  beam.UniversalRateDrop_vs_p-> GetYaxis() -> SetTitle("Polarization [%]");
+  beam.UniversalRateDrop_vs_p -> Draw(); 
+  TGraphErrors * rate_vs_P = new TGraphErrors(ndata, RelRate, P_offline, dx, dP_offline); 
+  rate_vs_P -> SetMarkerStyle(20);
+  rate_vs_P -> SetMarkerColor(Color);
+  rate_vs_P -> Draw("same,P"); 
+
+    // draw predictions from profile scan
+  if (Color==4){ // blue 7151
+    f1->SetParameters(-49.9, 6000, 0);
+    f1->Draw("same");
+    f2->SetParameters(-49.9, 3.080, 0.8625); // blue 7151
+    f2->Draw("same");
+    f4->SetParameters(-49.9, 1/0.09, 1);     // best fit from Sasha - 0.08 systematic error
+    f4->Draw("same");
+  } else {   
+    f1->SetParameters(-47.6, 1/SigR_SigP, 1);       // best fit from Sasha 
+    f1->Draw("same");
+    f2->SetParameters(-47.6, 1.100, 0.8229);   // yellow - 7151 
+    f2->Draw("same");
+    f3->SetParameters(-47.6, 1.541, 0.6913);   // yellow - 7133
+    f3->Draw("same");
+    f4->SetParameters(-47.6, 1/(SigR_SigP+0.08), 1);       // best fit from Sasha + 0.08 systematic error 
+    f4->Draw("same"); 
+    f5->SetParameters(-47.6, 1/(SigR_SigP-0.08), 1);       // best fit from Sasha - 0.08 systematic error
+    f5->Draw("same");
+
+  }
+
+  C2->Update(); ps->NewPage();
+
+
+
+  return;
+
+}
+
+
+
 
 //
 // Class name  : OfflinePol
@@ -448,7 +529,7 @@ OfflinePol::PolarizationProfile(StructBeam beam, TCanvas * C2, Int_t ndata, Int_
   //========================================================================//
   //            Pol vs. Rate 2-Dim Scatter Plot and Fit                     //
   //========================================================================//
-  if (!PROFILE_ERROR){
+  if (!NORMALIZED_POL){
     beam.UniversalRateDrop->Draw(); C2->Update(); ps->NewPage();
     beam.UniversalRateDrop_vs_p -> Draw(); 
     TGraphErrors * rate_vs_P = new TGraphErrors(ndata, RelRate, P_offline, dx, dP_offline); 
@@ -483,13 +564,13 @@ OfflinePol::PolarizationProfile(StructBeam beam, TCanvas * C2, Int_t ndata, Int_
   //            Projection of Data onto Best Fit Plane                      //
   //========================================================================//
   Char_t title[100]="Data - Best Fit";
-  PROFILE_ERROR ? sprintf(title,"Data - Best Fit (Normarized by Pol Average)");
+  NORMALIZED_POL ? sprintf(title,"Data - Best Fit (Normarized by Pol Average)");
   TH1F * dUnivDistH = new TH1F("dUnivDistH",title, 40, xmin, xmax);
   dUnivDistH->GetXaxis()->SetTitle("Data - Best Fit");
-  PROFILE_ERROR ? dUnivDistH->GetYaxis()->SetTitle("# of Runs/error") : dUnivDistH->GetYaxis()->SetTitle("# of Runs") ; 
+  NORMALIZED_POL ? dUnivDistH->GetYaxis()->SetTitle("# of Runs/error") : dUnivDistH->GetYaxis()->SetTitle("# of Runs") ; 
   for (Int_t i=0; i<ndata; i++) {
-    Float_t  y = PROFILE_ERROR ?  P_norm_Ave[i] :  P_offline[i];
-    Float_t dy = PROFILE_ERROR ? dP_norm_Ave[i] : dP_offline[i];
+    Float_t  y = NORMALIZED_POL ?  P_norm_Ave[i] :  P_offline[i];
+    Float_t dy = NORMALIZED_POL ? dP_norm_Ave[i] : dP_offline[i];
     if (RelRate[i]<1) {
       dUnivDist[i] = y - f1->Eval(RelRate[i]);
       dUnivDistH -> Fill(dUnivDist[i],1/dy);
@@ -509,7 +590,7 @@ OfflinePol::PolarizationProfile(StructBeam beam, TCanvas * C2, Int_t ndata, Int_
   C2->Update(); ps->NewPage();
 
   // In 2-dim histogram
-  if (PROFILE_ERROR) {
+  if (NORMALIZED_POL) {
     gStyle->SetOptStat(kTRUE); gStyle->SetOptStat(1);
     beam.dPdistGaus->SetFillColor(Color);
     beam.dPdistGaus->Fit("gaus");
@@ -660,7 +741,8 @@ OfflinePol::MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color
   } else if ((Mode>>4&1)||(Mode>>5&1)) {
 
     TCanvas * C3 = new TCanvas("C3"); 
-    Color == 4 ? PolarizationProfile(blue, C3, ndata, Color, ps) : PolarizationProfile(yellow, C, ndata, Color, ps);
+    //    Color == 4 ? PolarizationProfile(blue, C3, ndata, Color, ps) : PolarizationProfile(yellow, C, ndata, Color, ps);
+    Color == 4 ? PolarizationProfileNoFit(blue, C3, ndata, Color, ps) : PolarizationProfileNoFit(yellow, C, ndata, Color, ps);
 
     fout << "\n ===========================================================" << endl;
     if (Fill.bad.rate.fill) fout << "  RATE Drop Suspicious fills : " << Fill.bad.rate.fill << endl;
@@ -754,7 +836,7 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
   // ------------------------------------------------------------------- // 
   //                        Superpose WCM plot.                          // 
   // ------------------------------------------------------------------- // 
-    if (!SECOND_ROUND){
+    if (!PLOT_PROFILE_ERROR){
       wcm.ymin=20; wcm.ymax=100; 
       TGaxis * A1 = new TGaxis(xmax, ymin, xmax, ymax, wcm.ymin, wcm.ymax, 510, "+L");
       A1 -> SetTitle("WCM Sum [10^11 protons]");
@@ -959,10 +1041,14 @@ OfflinePol::RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Co
 	Float_t DropRate = GetDropRate(k, i, Color, RefRate);
 	RelRate[fill[k].GlobalIndex[i]] = DropRate;
 	if (PROFILE_ERROR){
-	  P_fillave[fill[k].GlobalIndex[i]]   = fill[k].wAve[0];
-	  P_norm_Ave[fill[k].GlobalIndex[i]]  = fill[k].P_offline[i]/fill[k].wAve[0];
-	  dP_norm_Ave[fill[k].GlobalIndex[i]] = 
-	    QuadraticDivideError(fill[k].P_offline[i],fill[k].wAve[0],fill[k].dP_offline[i],fill[k].wAve[1]);
+	  if (RelRate[fill[k].GlobalIndex[i]]<1)  
+	    dProf[fill[k].GlobalIndex[i]] = Color == 4 ? 0 : (1-RelRate[fill[k].GlobalIndex[i]]**(SigR_SigP*SigR_SigP))*fill[k].P_offline[i];
+	  if (NORMALIZED_POL){
+	    P_fillave[fill[k].GlobalIndex[i]]   = fill[k].wAve[0];
+	    P_norm_Ave[fill[k].GlobalIndex[i]]  = fill[k].P_offline[i]/fill[k].wAve[0];
+	    dP_norm_Ave[fill[k].GlobalIndex[i]] = 
+	      QuadraticDivideError(fill[k].P_offline[i],fill[k].wAve[0],fill[k].dP_offline[i],fill[k].wAve[1]);
+	  }
 	}
 	TLine *l = new TLine(xmin, RefRate, xmax, RefRate);
 	l->SetLineColor(2);
@@ -1113,6 +1199,7 @@ Float_t
 OfflinePol::GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate){
 
   if (Color==4) { // blue beam
+    if (RUN==5) blue.target[0].Mean = 0.02957 ; blue.target[1].Mean = 0.02313; blue.target[2].Mean = 0.02756;
 
     for (Int_t j=0;j<blue.Target.nPeriod; j++){
       if ((blue.target[j].Begin_RunID<=fill[k].RunID[i])&&(fill[k].RunID[i]<blue.target[j].End_RunID)) {
@@ -1122,6 +1209,11 @@ OfflinePol::GetDropRate(Int_t k, Int_t i, Int_t Color, Float_t &RefRate){
     } // end-of-for(j<blue.Target.nPeriod) loop
 
   }else{ // yellow beam
+    if (RUN==5) {
+      yellow.target[0].Mean = 0.05133 ; yellow.target[1].Mean = 0.03301; yellow.target[2].Mean = 0.06175;
+      yellow.target[3].Mean = 0.04321 ; yellow.target[4].Mean = 0.05000; yellow.target[5].Mean = 0.05000;
+      yellow.target[6].Mean = 0.04353 ;
+    }
 
     for (Int_t j=0;j<yellow.Target.nPeriod; j++){
       if ((yellow.target[j].Begin_RunID<=fill[k].RunID[i])&&(fill[k].RunID[i]<yellow.target[j].End_RunID)) {

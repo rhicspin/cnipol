@@ -131,7 +131,7 @@ OfflinePol::PeriodByPeriodAnalysis(Int_t RUN, Int_t nFill, Int_t Mode){
 
 
 	// fill average
-	period[index].fill_id[period[index].nfill] = fill[i].FillID;
+	period[index].FillID[period[index].nfill]     = Float_t (fill[i].FillID);
 	period[index].fill_ave[period[index].nfill]   = fill[i].wAve[0]; 
 	period[index].fill_dave[period[index].nfill]  = fill[i].wAve[1];
 	period[index].fill_ave_t[period[index].nfill] = (fill[i].Time[0] - period[index].Clock0)/3600/24;
@@ -221,9 +221,8 @@ OfflinePol::GetJetRunTime(Char_t *Beam){
 
     for (Int_t j=0;j<Period.nPeriod;j++){
       for (Int_t k=0;k<period[j].nfill;k++){
-	if (period[j].fill_id[k]==jet.FillID[i] ) {
+	if (Int_t (period[j].FillID[k])==jet.FillID[i] ) {
 	  period[j].t_jet[k] += Float_t(jet.dt[i])/3600/24;
-	  cout << period[j].fill_id[k] << " " << period[j].t_jet[k] << endl;
 	}
       }
     }
@@ -537,11 +536,12 @@ OfflinePol::MakePeriodByPeriodPlot(Int_t nPeriod, Int_t Mode, Int_t Color, TPost
 
 
 
-//
-// Class name  : OfflinePol
+// // Class name  : OfflinePol
 // Method name : PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t Ave[])
 //
 // Description : Make Plots for Period by Period of fill average polarization
+//             : For debugging purpose, FillID as xaxis is available. In order to make plot
+//             : with FillID, activate Mode+=127; otherwise, default xaxis is Clock.
 // Input       : Int_t Mode, Int_t k, Int_t Color, Float_t Ave[]
 // Return      : 
 //
@@ -552,17 +552,33 @@ OfflinePol::PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t 
   Char_t htitle[100], xtitle[100], hname[100];
   sprintf(htitle,"Period Type-%d", k);
   sprintf(hname,"Period%d",hid); ++hid;
-  sprintf(xtitle,"Duration from the first Measurement [day]");
 
   Float_t margin=0.05, xmin, xmax, ymin=20, ymax=80;
-  GetScale(period[k].Clock, period[k].nRun, margin, xmin, xmax);
+  if (Mode>>7&1){
+    sprintf(xtitle,"Fill Number ");
+    GetScale(period[k].FillID, period[k].nRun, margin, xmin, xmax);
+  }else{
+    sprintf(xtitle,"Duration from the first Measurement [day]");
+    GetScale(period[k].Clock, period[k].nRun, margin, xmin, xmax);
+  }
 
   TH2F * periodbyperiod = new TH2F(hname, htitle, 10, xmin, xmax, 100, ymin, ymax); 
   periodbyperiod->GetXaxis()->SetTitle(xtitle);
   periodbyperiod->GetYaxis()->SetTitle("Polarization [%]");
   periodbyperiod->Draw();
 
-  TGraphErrors * tg = new TGraphErrors(period[k].nfill, period[k].fill_ave_t, period[k].fill_ave, period[k].dum, period[k].fill_dave);
+  fout << "===========================================================================" << endl;
+  fout << "Period-" << k << endl;
+  for (Int_t i=0; i<period[k].nfill; i++){
+    fout <<  i << " FillID=" << period[k].FillID[i] << " " << period[k].fill_ave[i] << endl; 
+  }
+
+  //  Mode+=127;
+  if (Mode>>7&1){
+    TGraphErrors * tg = new TGraphErrors(period[k].nfill, period[k].FillID, period[k].fill_ave, period[k].dum, period[k].fill_dave);
+  } else {
+    TGraphErrors * tg = new TGraphErrors(period[k].nfill, period[k].fill_ave_t, period[k].fill_ave, period[k].dum, period[k].fill_dave);
+  }
   tg -> SetMarkerStyle(20);
   tg -> SetMarkerColor(Color);
   tg -> Draw("P");
@@ -600,7 +616,7 @@ OfflinePol::PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t 
 //                   Bit 4 - Plot jet operation time
 //                   Bit 5 - 
 //                   Bit 6 - 
-//                   Bit 7 - TRUE:duration[day], FALSE:FillID on x-axis
+//                   Bit 7 - TRUE:FillID on x-axis, FALSE:duration[day]
 // Input       : Int_t Mode, Int_t k, Int_t Color
 // Return      : Float_t xmin
 //
