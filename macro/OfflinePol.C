@@ -45,10 +45,14 @@ Int_t RUN=5;
 Int_t FILL=0;
 Int_t FILL_BY_FILL_ANALYSIS=1;
 Int_t OFFLINE_POL=1;
-bool FILL_BY_FILL_AVERAGE = true;     // Period By Period Average thru Fill-By-Fill averaged polarizations
-bool PROFILE_ERROR = true;            // Activate profile error. Fill by fill average polariations are weighted by profile error.
-bool SECOND_ROUND  = false;           // This will turned on in second round operation of profile error in the program
+bool FILL_BY_FILL_AVERAGE = true;      // Period By Period Average thru Fill-By-Fill averaged polarizations
+bool NORMALIZED_POL       = false;     // Polarization average normalized by fill-by-fill averaged polarization approach
+bool PROFILE_ERROR        = false;      // Activate profile error. Fill by fill average polariations are weighted by profile error.
+bool PLOT_PROFILE_ERROR   = true;     // This will turned on in second round operation of profile error in the program
 //if (PROFILE_ERROR) FILL_BY_FILL_AVERAGE = true;   // profile error requires Fill_BY_FILL_AVERAGE
+
+
+Float_t SigR_SigP   = 0.36;            // Sigma_R/Sigma_P for run05 yellow beam                    
 
 
 // Bad data point criterias for Fitting
@@ -277,6 +281,7 @@ public:
   Int_t FillByFillAnalysis(Int_t RUN, Int_t ndata);
   Int_t PrintFillByFillArray(Int_t i, Int_t j, Int_t array_index);
   Int_t PolarizationProfile(StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps);
+  Int_t PolarizationProfileNoFit(StructBeam beam, TCanvas * C2, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t MakeFillByFillPlot(Int_t nFill, Int_t Mode, Int_t ndata, Int_t Color, TPostScript *ps);
   Int_t FillByFillPlot(Int_t Mode, Int_t k, Int_t Color);
   Int_t RateFilter(Int_t k, Int_t Mode, Float_t xmin, Float_t xmax, Int_t Color);
@@ -772,7 +777,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     TargetByTargetOperation();
     if (FILL_BY_FILL_AVERAGE) FillByFill(64+1, RUN, ndata, Color, CurC, ps);
     FillByFill(32, RUN, ndata, Color, CurC, ps);
-    SECOND_ROUND=true; // turn off superposing wcm plot
+    PLOT_PROFILE_ERROR=true; // turn off superposing wcm plot
     if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
     FillByFill(32, RUN, ndata, Color, CurC, ps);
     break;
@@ -789,7 +794,9 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       cerr << "Jet info for Run06 is not impremented yet" << endl;
     }
 
-    if (FILL_BY_FILL_AVERAGE) FillByFill(1000+64+1, RUN, ndata, Color, CurC, ps);
+    TargetByTargetOperation();
+    if (PROFILE_ERROR) FillByFill(32, RUN, ndata, Color, CurC, ps);
+    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
     PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
     //    PeroidByPeriod(Mode+128, RUN, ndata, Beam, Color, CurC, ps); // period by period (Diagnose purpose)
     break;
@@ -983,8 +990,8 @@ Int_t OfflinePol::OfflinePol() {
     sprintf(outfile,"summary/FillByFill.dat");
     fout.open(outfile,ios::out);
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
-    Int_t Mode = PROFILE_ERROR ? 1200 : 1000; // 1000: Fill By Fill Analysis, 1200: Polarization Profile dependent analysis
-    RunBothBeam(Mode,  CurC, ps);  
+    //    RunBothBeam(1000,  CurC, ps);  
+    if (NORMALIZED_POL) RunBothBeam(1200,  CurC, ps);  // P[i]/P_ave(fill) apprach profile error (Need PROFILE_ERROR=true)
 
 
     // close output file
@@ -1004,7 +1011,7 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     cout << "output data file: " << outfile << endl;
 
-    //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
 
     fout.close();
     cout << "ps file : " << psfile << endl;
