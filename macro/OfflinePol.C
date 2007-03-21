@@ -47,13 +47,14 @@ Int_t FILL_BY_FILL_ANALYSIS=1;
 Int_t OFFLINE_POL=1;
 bool FILL_BY_FILL_AVERAGE = true;      // Period By Period Average thru Fill-By-Fill averaged polarizations
 bool NORMALIZED_POL       = false;     // Polarization average normalized by fill-by-fill averaged polarization approach
-bool PROFILE_ERROR        = false;      // Activate profile error. Fill by fill average polariations are weighted by profile error.
-bool PLOT_PROFILE_ERROR   = true;     // This will turned on in second round operation of profile error in the program
+bool PROFILE_ERROR        = true;      // Activate profile error. Fill by fill average polariations are weighted by profile error.
+bool PLOT_PROFILE_ERROR   = true;      // This will turned on in second round operation of profile error in the program
+bool PEAK_TO_AVERAGE      = true;      // Apply peak to average conversion factor to polarization 
 //if (PROFILE_ERROR) FILL_BY_FILL_AVERAGE = true;   // profile error requires Fill_BY_FILL_AVERAGE
+bool RUN5_JETNORMALIZATION= true;      // Condition for Run05 jet normalization
 
-
-Float_t SigR_SigP   = 0.36;            // Sigma_R/Sigma_P for run05 yellow beam                    
-
+Float_t SigR_SigP         = 0.38;            // Sigma_R/Sigma_P for run05 yellow beam                    
+Float_t Peak_to_Average   = 0.93;            // Peak to Average conversion factor for yellow run05
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -272,7 +273,7 @@ public:
   Int_t PlotControlCenter(Char_t*, Int_t, TCanvas *CurC,  TPostScript *ps);
   Int_t RunBothBeam(Int_t Mode, TCanvas *CurC,  TPostScript *ps);
   Int_t DrawFrame(Int_t Mode,Int_t ndata, Char_t*);
-  Int_t GetData(Char_t * DATAFILE);
+  Int_t GetData(Char_t * DATAFILE, Int_t Color);
   Int_t TargetByTargetOperation();
   Int_t OfflinePol();
   // following functions are defined in FillByFill.C
@@ -342,14 +343,14 @@ OfflinePol::Initiarization(Int_t i){
 
 //
 // Class name  : Offline
-// Method name : GetData(Char_t *DATAFILE)
+// Method name : GetData(Char_t *DATAFILE, Int_t Color)
 //
 // Description : Get Data from DATAFILE
-// Input       : Char_t *filename
+// Input       : Char_t *filename, Int_t Color
 // Return      : Number of lines read
 //
 Int_t
-OfflinePol::GetData(Char_t * DATAFILE){
+OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
                  
   //define histograms
   Pratio  = new TH1D("Pratio",  "Offline Pol Event Selection Dependence",60,0.5,1.5);
@@ -390,8 +391,8 @@ OfflinePol::GetData(Char_t * DATAFILE){
 
       // 31 : mask RunStatus == "N/A-","Junk","Bad","BadP","Tune" 
       // 19 : mask RunStatus == "N/A-","Junk","Tune" 
-     if (RunStatusFilter(31, RunStatus)){
-       //      if (RunStatusFilter(19, RunStatus)){
+      if (RunStatusFilter(31, RunStatus)){
+      //      if (RunStatusFilter(19, RunStatus)){
 
 	// Skip incomplete lines due to half way running Asym. 
 	if (strlen(line)>50) { 
@@ -421,6 +422,12 @@ OfflinePol::GetData(Char_t * DATAFILE){
 	    P_alt[i]      = atof(strtok(NULL," "));
 	    dP_alt[i]     = atof(strtok(NULL," "));
 
+	    // Apply peak to average conversion factor for run05 yellow
+	    if ((RunID[0]<7400)&&(PEAK_TO_AVERAGE)&&(Color!=4)){
+	      P_offline[i] *= Peak_to_Average;
+	      P_alt[i]     *= Peak_to_Average;
+	    }
+	    
 	    // Time decorder should be at the end of buffer read loop
 	    Time[i] = TimeDecoder();
 
@@ -670,7 +677,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
 
   Char_t DATAFILE[256];
   sprintf(DATAFILE,"summary/OfflinePol_%s.dat",Beam);
-  Int_t ndata = GetData(DATAFILE);
+  Int_t ndata = GetData(DATAFILE, Color);
 
   Int_t FILL[2];
   FILL[0] = int(RunID[0]);
@@ -768,10 +775,12 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(9, RUN, ndata, Color, CurC, ps);
     //    FillByFill(13, RUN, ndata, Color, CurC, ps);
     FillByFill(32, RUN, ndata, Color, CurC, ps);
-    //    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1, RUN, ndata, Color, CurC, ps);
+    Int_t plot_rate = PROFILE_ERROR ? 4 : 0;
+    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+plot_rate, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
-    SingleFillPlot(Mode+9, RUN, ndata, 7272, Color);
+    //    SingleFillPlot(9, RUN, ndata, 7035, Color);
+    SingleFillPlot(7, RUN, ndata, 7035, Color);
     break;
   case 1200:
     TargetByTargetOperation();
@@ -796,9 +805,24 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
 
     TargetByTargetOperation();
     if (PROFILE_ERROR) FillByFill(32, RUN, ndata, Color, CurC, ps);
-    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    Int_t plot_rate = PROFILE_ERROR ? 4 : 0;
+    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+plot_rate, RUN, ndata, Color, CurC, ps);
     PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
     //    PeroidByPeriod(Mode+128, RUN, ndata, Beam, Color, CurC, ps); // period by period (Diagnose purpose)
+    break;
+  case 2005:
+    Period.nPeriod  = nJetRun5;
+    Period.nType    = JetRun5nType;
+    for (Int_t i=0; i<Period.nPeriod; i++){
+      period[i].Begin_FillID = JetRun5[i];
+      period[i].End_FillID   = JetRun5[i+1];
+      period[i].Type         = JetRun5Type[i];
+    }
+    TargetByTargetOperation();
+    PROFILE_ERROR=true; FILL_BY_FILL_AVERAGE=true; PEAK_TO_AVERAGE=true; Peak_to_Average=0.93;
+    FillByFill(32, RUN, ndata, Color, CurC, ps);
+    FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
     break;
   }
 
@@ -974,7 +998,8 @@ Int_t OfflinePol::OfflinePol() {
     //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
     RunBothBeam(115, CurC, ps); // dP_offline distribution Gaussian
     RunBothBeam(116, CurC, ps); // dP_offline distribution
-*/
+    */
+
     cout << "ps file : " << psfile << endl;
     ps->Close();
     CurC->Clear();
@@ -992,7 +1017,7 @@ Int_t OfflinePol::OfflinePol() {
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
     //    RunBothBeam(1000,  CurC, ps);  
     if (NORMALIZED_POL) RunBothBeam(1200,  CurC, ps);  // P[i]/P_ave(fill) apprach profile error (Need PROFILE_ERROR=true)
-
+    
 
     // close output file
     cout << "output data file: " << outfile << endl;
@@ -1011,7 +1036,8 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     cout << "output data file: " << outfile << endl;
 
-    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
+    if (RUN5_JETNORMALIZATION)  RunBothBeam(2005, CurC, ps); // period by period (Jet Run Type combined) fixed options for Run05 jet norm
+    //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
 
     fout.close();
     cout << "ps file : " << psfile << endl;

@@ -93,7 +93,7 @@ OfflinePol::SingleFillPlot(Int_t Mode, Int_t RUN, Int_t ndata, Int_t FillID, Int
 
   gStyle->SetOptStat(kFALSE);
   for (Int_t k=0; k<nFill; k++) {
-    if (fill[k].FillID == FillID ) FillByFillPlot(Mode-1000, k, Color); 
+    if (fill[k].FillID == FillID ) FillByFillPlot(Mode, k, Color); 
   }
 
   return 0;
@@ -483,9 +483,9 @@ OfflinePol::PolarizationProfileNoFit(StructBeam beam, TCanvas * C2, Int_t ndata,
     f2->Draw("same");
     f3->SetParameters(-47.6, 1.541, 0.6913);   // yellow - 7133
     f3->Draw("same");
-    f4->SetParameters(-47.6, 1/(SigR_SigP+0.08), 1);       // best fit from Sasha + 0.08 systematic error 
+    f4->SetParameters(-47.6, 1/(SigR_SigP+0.07), 1);       // best fit from Sasha + 0.08 systematic error 
     f4->Draw("same"); 
-    f5->SetParameters(-47.6, 1/(SigR_SigP-0.08), 1);       // best fit from Sasha - 0.08 systematic error
+    f5->SetParameters(-47.6, 1/(SigR_SigP-0.07), 1);       // best fit from Sasha - 0.08 systematic error
     f5->Draw("same");
 
   }
