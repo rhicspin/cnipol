@@ -66,7 +66,7 @@ int main (int argc, char *argv[]){
     char threshold[20],bunchid[20],enerange[20],cwidth[20],*ptr;
     int lth, uth;
 
-    while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:baCDTABZF:MNW:UGRS"))!=-1) {
+    while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:d:baCDTABZF:MNW:UGRS"))!=-1) {
         switch (c) {
         case 'h':
         case '?':
@@ -90,6 +90,7 @@ int main (int argc, char *argv[]){
 	    cout << " -b                   : feedback mode on " << endl;
             cout << " -C                   : Calibration mode on " <<endl;
             cout << " -D                   : Dead layer  mode on " <<endl;
+	    cout << " -d  <dlayer>         : Additional deadlayer thickness [ug/cm2]" << endl;
 	    //            cout << " -T                   : T0 study    mode on " <<endl;
 	    //            cout << " -A                   : A0,A1 study mode on " <<endl;
 	    //            cout << " -Z                   : without T0 subtraction" <<endl;
@@ -129,6 +130,9 @@ int main (int argc, char *argv[]){
         case 't': // set timing shift in banana cut
             dproc.tshift = atoi(optarg);
 	    extinput.TSHIFT = 1;
+            break;
+        case 'd': // set timing shift in banana cut
+            dproc.dx_offset = atoi(optarg);
             break;
         case 'e': // set energy range
 	    strcpy(enerange, optarg);
@@ -440,7 +444,7 @@ void reConfig(recordConfigRhicStruct *cfginfo){
             a0n = atof(strtok(NULL," "));
             a1n = atof(strtok(NULL," "));
             ealphn = atof(strtok(NULL," "));
-            dwidthn = atof(strtok(NULL," "));
+            dwidthn = atof(strtok(NULL," ")) + dproc.dx_offset; // extra thickness 
             peden = atof(strtok(NULL," "));
             c0n = atof(strtok(NULL," "));
             c1n = atof(strtok(NULL," "));
