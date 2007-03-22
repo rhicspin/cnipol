@@ -25,6 +25,7 @@ datprocStruct dproc = {
     1.5e6,      // 1-sigma of 12C mass peak => 1.5e6 [keV] 
     0,          // Time shift in [ns]
     0,          // Time shift in [ns] for injection w.r.t. flattop
+    0,          // additional deadlayer offset [ug/cm2]
     999.05,     // Wall Current Monitor process Fill range +/-5[%] 
     8,          // Lower Mass limit for peak position adjustment fit default :8 GeV
     100,        // <thinout> event rate to be feed into feedback routine
