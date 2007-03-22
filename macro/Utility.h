@@ -28,6 +28,17 @@ Float_t QuadraticSumSQRT(Float_t x, Float_t y){
   return sqrt(x*x+y*y);
 }
 
+//
+// Class name  : 
+// Method name : QuadraticSumSQRT(Float_t x, Float_t y, Float_t z)
+// Description : Calculate quadratic sum 
+// Input       : 
+// Return      : 
+//
+Float_t QuadraticSumSQRT(Float_t x, Float_t y, Float_t z){
+  return sqrt(x*x+y*y+z*z);
+}
+
 
 
 //

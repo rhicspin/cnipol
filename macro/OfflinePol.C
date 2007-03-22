@@ -49,9 +49,11 @@ bool FILL_BY_FILL_AVERAGE = true;      // Period By Period Average thru Fill-By-
 bool NORMALIZED_POL       = false;     // Polarization average normalized by fill-by-fill averaged polarization approach
 bool PROFILE_ERROR        = true;      // Activate profile error. Fill by fill average polariations are weighted by profile error.
 bool PLOT_PROFILE_ERROR   = true;      // This will turned on in second round operation of profile error in the program
-bool PEAK_TO_AVERAGE      = true;      // Apply peak to average conversion factor to polarization 
+bool PEAK_TO_AVERAGE      = false;      // Apply peak to average conversion factor to polarization 
 //if (PROFILE_ERROR) FILL_BY_FILL_AVERAGE = true;   // profile error requires Fill_BY_FILL_AVERAGE
-bool RUN5_JETNORMALIZATION= true;      // Condition for Run05 jet normalization
+bool RUN5_JETNORMALIZATION= false;      // Condition for Run05 jet normalization
+bool PROFILE_CORRECTION   = true;       // profile correction 
+bool PROFILE_CORRECTION_ERROR = false;   // profile correction error
 
 Float_t SigR_SigP         = 0.38;            // Sigma_R/Sigma_P for run05 yellow beam                    
 Float_t Peak_to_Average   = 0.93;            // Peak to Average conversion factor for yellow run05
@@ -142,7 +144,10 @@ private:
     Float_t Chi2[2];
     Int_t DoF;
     Float_t FitAve[MAX_NMEAS_PER_FILL];
-    Float_t wAve[2];  // [0] : weighted average [1]: error
+    Float_t wAve[5];  // [0] : weighted average [1]: statistical error [2]:profile error [3]:dead-layer error  [4]:total error
+    struct StrctProfileCorrection{
+      Float_t wAve;   // tempolary storage of profile corrected fill average polarization 
+    } prof_corr;
     struct StructBad {
       Float_t Clock[MAX_NMEAS_PER_FILL];
       Float_t P_offline[MAX_NMEAS_PER_FILL];
@@ -784,11 +789,18 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     break;
   case 1200:
     TargetByTargetOperation();
-    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1, RUN, ndata, Color, CurC, ps);
     FillByFill(32, RUN, ndata, Color, CurC, ps);
-    PLOT_PROFILE_ERROR=true; // turn off superposing wcm plot
-    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    break;
+  case 1300:
+    // Fill-by-Fill average in profile correction mode
+    FILL_BY_FILL_AVERAGE=true; PLOT_PROFILE_ERROR=true; PROFILE_CORRECTION=true;
+    TargetByTargetOperation();
     FillByFill(32, RUN, ndata, Color, CurC, ps);
+    FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    PROFILE_CORRECTION=false; PROFILE_CORRECTION_ERROR=true;
+    FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
+    PROFILE_CORRECTION_ERROR=false; for (Int_t i=0; i<ndata; i++) dProf[i]=0;
     break;
   case 2000:
     if (RUN==5){
@@ -1017,6 +1029,7 @@ Int_t OfflinePol::OfflinePol() {
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
     //    RunBothBeam(1000,  CurC, ps);  
     if (NORMALIZED_POL) RunBothBeam(1200,  CurC, ps);  // P[i]/P_ave(fill) apprach profile error (Need PROFILE_ERROR=true)
+    if (PROFILE_CORRECTION) RunBothBeam(1300,  CurC, ps);  // Profile Correction and profile error estimation
     
 
     // close output file
@@ -1036,7 +1049,7 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     cout << "output data file: " << outfile << endl;
 
-    if (RUN5_JETNORMALIZATION)  RunBothBeam(2005, CurC, ps); // period by period (Jet Run Type combined) fixed options for Run05 jet norm
+    //    if (RUN5_JETNORMALIZATION)  RunBothBeam(2005, CurC, ps); // period by period (Jet Run Type combined) fixed options for Run05 jet norm
     //    RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
 
     fout.close();
