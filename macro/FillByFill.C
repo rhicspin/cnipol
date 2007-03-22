@@ -140,8 +140,8 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     fill[j].RunID[array_index]      = RunID[i];
     fill[j].P_online[array_index]   = P_online[i] * sign;
     fill[j].dP_online[array_index]  = dP_online[i];
-    fill[j].P_offline[array_index]  = P_offline[i] * sign;
-    fill[j].dP_offline[array_index] = dP_offline[i];
+    fill[j].P_offline[array_index]  = PROFILE_CORRECTION ? P_offline[i] * sign + dProf[i] : P_offline[i] * sign;
+    fill[j].dP_offline[array_index] = dP_offline[i]; 
     fill[j].dProf[array_index]      = dProf[i];
     fill[j].dP_tot[array_index]     = PROFILE_ERROR  ? QuadraticSumSQRT(dP_offline[i], dProf[i]) : dP_offline[i];
     fill[j].Rate[array_index]       = Rate[i];
@@ -827,11 +827,29 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
     DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0], 2, 1, 3);
     DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]+fill[k].wAve[1], 2, 3, 2);
     DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[1], 2, 3, 2);
-    sprintf(text,"ave(P)=%.2f +/- %.3f ", fill[k].wAve[0], fill[k].wAve[1]);
-    DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
-    fout << "    ====> FillID: " << std::setprecision(7) << fill[k].FillID 
-	 << std::setprecision(4) << " P_ave = "  << fill[k].wAve[0] << " +/- " << fill[k].wAve[1] << endl;
+    if (!PROFILE_CORRECTION_ERROR){
+      sprintf(text,"ave(P)=%.2f +/- %.2f ", fill[k].wAve[0], fill[k].wAve[1]);
+      DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
+      fout << "    ====> FillID: " << std::setprecision(7) << fill[k].FillID 
+	   << std::setprecision(4) << " P_ave = "  << fill[k].wAve[0] << " +/- " << fill[k].wAve[1] << endl;
+    } else { // complete all errors
+      fill[k].wAve[2] = fill[k].prof_corr.wAve - fill[k].wAve[0]; // profile error
+      fill[k].wAve[3] = Color == 4 ? fill[k].wAve[0]*0.015 : fill[k].wAve[0]*0.017;
+      fill[k].wAve[4] = QuadraticSumSQRT(fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3]);
+      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]+fill[k].wAve[4], 4, 3, 2);
+      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[4], 4, 3, 2);
+      sprintf(text,"ave(P)=%.2f +/- %.2f +/- %.2f +/- %.2f",  fill[k].wAve[0], fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3]);
+      DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
+      fout << fixed;
+      fout << std::setprecision(2)    << fill[k].FillID   << "   " 
+	   << fill[k].wAve[0] << "   "  << fill[k].wAve[1]  << "   " 
+	   << fill[k].wAve[2] << "   "  << fill[k].wAve[3]  << "   " << fill[k].wAve[4] << endl;
+      fill[k].wAve[0] = fill[k].wAve[1] = fill[k].wAve[2] = fill[k].wAve[3] = fill[k].wAve[4] = fill[k].prof_corr.wAve = 0;
+    }
 
+    // for profile correction error. Store fill average polarization with profile correction
+    fill[k].prof_corr.wAve = fill[k].wAve[0] ;
+      
 
   // ------------------------------------------------------------------- // 
   //                        Superpose WCM plot.                          // 
