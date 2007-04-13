@@ -492,7 +492,7 @@ OnlineDatabase(){
    printf " %6.4f "   $A_N;
    printf " %5.1f "   $dlAve;
    printf " %s  "     $CONFIG_FILE;
-   printf " %s  "     $TARGET;
+#   printf " %s  "     $TARGET;
    echo -e -n "\n";
 
 
