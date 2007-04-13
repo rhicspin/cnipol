@@ -386,6 +386,8 @@ OfflinePol::TargetByTarget(Int_t k, Int_t Color){
 	if ((yellow.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<yellow.target[i].End_RunID)) {
 	  yellow.target[i].UniversalRate->Fill(fill[k].Rate[j]);
 	  yellow.target[i].UniversalRate_vs_P->Fill(fill[k].Rate[j], fill[k].P_offline[j]);
+	  fout << fixed;
+	  fout << i << " " << setprecision(3) << fill[k].RunID[j] << " " << fill[k].Rate[j] << " " << fill[k].P_offline[j] << " " << fill[k].dP_offline[j] << endl;
 	}
       } // end-of-(i<yellow.Target.nPeriod) loop
 
@@ -833,18 +835,23 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
       fout << "    ====> FillID: " << std::setprecision(7) << fill[k].FillID 
 	   << std::setprecision(4) << " P_ave = "  << fill[k].wAve[0] << " +/- " << fill[k].wAve[1] << endl;
     } else { // complete all errors
-      fill[k].wAve[2] = fill[k].prof_corr.wAve - fill[k].wAve[0]; // profile error
-      fill[k].wAve[3] = Color == 4 ? fill[k].wAve[0]*0.015 : fill[k].wAve[0]*0.017;
-      fill[k].wAve[4] = QuadraticSumSQRT(fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3]);
-      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]+fill[k].wAve[4], 4, 3, 2);
-      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[4], 4, 3, 2);
-      sprintf(text,"ave(P)=%.2f +/- %.2f +/- %.2f +/- %.2f",  fill[k].wAve[0], fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3]);
+      fill[k].wAve[2] = Color == 4 ? fill[k].wAve[0]*0.015 : fill[k].wAve[0]*0.017;
+      fill[k].wAve[3] = Color == 4 ? fill[k].wAve[0]*0.043 : fill[k].wAve[0]*0.057;
+      fill[k].wAve[4] = fill[k].prof_corr.wAve - fill[k].wAve[0]; // profile error
+      fill[k].wAve[5] = QuadraticSumSQRT(fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3], fill[k].wAve[4]);
+      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]+fill[k].wAve[5], 4, 3, 2);
+      DrawLine(fillbyfill, xmin, xmax, fill[k].wAve[0]-fill[k].wAve[5], 4, 3, 2);
+      sprintf(text,"ave(P)=%.2f +/- %.2f +/- %.2f +/- %.2f +/- %.2f",  fill[k].wAve[0], fill[k].wAve[1], fill[k].wAve[2], fill[k].wAve[3], fill[k].wAve[4]);
       DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
       fout << fixed;
+      for (Int_t kk=0;kk<fill[k].nRun;kk++) 
+	fout << std::setprecision(3)    << " " << fill[k].RunID[kk] << "   " 
+	     << std::setprecision(1) << fill[k].P_offline[kk] << "    " << fill[k].dP_offline[kk] 
+	     << "    " << fill[k].dP_tot[kk] << "    " << fill[k].WCM[kk] << "    " << fill[k].dt[kk] << endl;
       fout << std::setprecision(2)    << fill[k].FillID   << "   " 
-	   << fill[k].wAve[0] << "   "  << fill[k].wAve[1]  << "   " 
-	   << fill[k].wAve[2] << "   "  << fill[k].wAve[3]  << "   " << fill[k].wAve[4] << endl;
-      fill[k].wAve[0] = fill[k].wAve[1] = fill[k].wAve[2] = fill[k].wAve[3] = fill[k].wAve[4] = fill[k].prof_corr.wAve = 0;
+	   << fill[k].wAve[0] << "   "  << fill[k].wAve[1]  << "   " << fill[k].wAve[2] << " " 
+	   << fill[k].wAve[3] << "   "  << fill[k].wAve[4]  << "   " << fill[k].wAve[5] << endl;
+      fill[k].wAve[0] = fill[k].wAve[1] = fill[k].wAve[2] = fill[k].wAve[3] = fill[k].wAve[4] = fill[k].wAve[5] = fill[k].prof_corr.wAve = 0;
     }
 
     // for profile correction error. Store fill average polarization with profile correction
