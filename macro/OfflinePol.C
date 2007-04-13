@@ -144,7 +144,7 @@ private:
     Float_t Chi2[2];
     Int_t DoF;
     Float_t FitAve[MAX_NMEAS_PER_FILL];
-    Float_t wAve[5];  // [0] : weighted average [1]: statistical error [2]:profile error [3]:dead-layer error  [4]:total error
+    Float_t wAve[6];  // [0] : weighted average [1]: statistical error [2]:dead-layer error [3]:DeltaC_prof [4]:rate dependent profile error [5]:total error
     struct StrctProfileCorrection{
       Float_t wAve;   // tempolary storage of profile corrected fill average polarization 
     } prof_corr;
@@ -431,6 +431,11 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 	    if ((RunID[0]<7400)&&(PEAK_TO_AVERAGE)&&(Color!=4)){
 	      P_offline[i] *= Peak_to_Average;
 	      P_alt[i]     *= Peak_to_Average;
+	    }
+
+	    if ((RunID[0]<7400)&&(Color==4)){
+	      P_offline[i] *= 0.99;
+	      P_alt[i]     *= 0.99;
 	    }
 	    
 	    // Time decorder should be at the end of buffer read loop
@@ -781,7 +786,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
     //    FillByFill(13, RUN, ndata, Color, CurC, ps);
     FillByFill(32, RUN, ndata, Color, CurC, ps);
     Int_t plot_rate = PROFILE_ERROR ? 4 : 0;
-    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+plot_rate, RUN, ndata, Color, CurC, ps);
+    //    if (FILL_BY_FILL_AVERAGE) FillByFill(64+1+plot_rate, RUN, ndata, Color, CurC, ps);
     break;
   case 1100:
     //    SingleFillPlot(9, RUN, ndata, 7035, Color);
@@ -908,7 +913,7 @@ Int_t
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
-  PlotControlCenter("Blue",Mode, CurC, ps);
+  //  PlotControlCenter("Blue",Mode, CurC, ps);
   CurC -> Update();
   if (frame) frame->Delete();
 
@@ -1028,7 +1033,7 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     //    RunBothBeam(1100,  CurC, ps); // Single Fill Plot
     //    RunBothBeam(1000,  CurC, ps);  
-    if (NORMALIZED_POL) RunBothBeam(1200,  CurC, ps);  // P[i]/P_ave(fill) apprach profile error (Need PROFILE_ERROR=true)
+    //    if (NORMALIZED_POL) RunBothBeam(1200,  CurC, ps);  // P[i]/P_ave(fill) apprach profile error (Need PROFILE_ERROR=true)
     if (PROFILE_CORRECTION) RunBothBeam(1300,  CurC, ps);  // Profile Correction and profile error estimation
     
 
