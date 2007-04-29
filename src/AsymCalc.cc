@@ -64,7 +64,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //-------------------------------------------------------
     //              CumulativeAsymmetry()    
     //-------------------------------------------------------
-    CumulativeAsymmetry();
+    //    CumulativeAsymmetry();
 
     //-------------------------------------------------------
     // Specific Luminosity 
@@ -151,13 +151,13 @@ CompleteHistogram(){
 
   // Make rate _vs deliminter plots
   Run->cd();
-  float min=fabs(ASYM_DEFAULT), max; float margin=0.2;
+  float min=fabs(double(ASYM_DEFAULT)), max; float margin=0.2;
   float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
   for (int i=0; i<ndelim; i++) {
     cntr.good_event += cntr.good[i];
     x[i]=float(i); dx[i]=0; 
     y[i]=float(cntr.good[i])/float(SEC_PER_DELIM)*MHz; 
-    dy[i]=float(sqrt(cntr.good[i]))/float(SEC_PER_DELIM)*MHz; 
+    dy[i]=float(sqrt(double(cntr.good[i])))/float(SEC_PER_DELIM)*MHz; 
   }
   anal.max_rate = GetMax(ndelim,y);
   GetMinMax(ndelim, y, margin, min, max);
@@ -635,7 +635,7 @@ CumulativeAsymmetry(){
 // Return      : writes out n in binary 
 //
 void binary_zero(int n, int mb) {
-  int X=pow(2,mb-1);
+  int X=pow(double(2),double(mb-1));
 
   for (int i=0; i<mb; i++) {
     int j = n << i & X ? 1 : 0 ;
@@ -1045,7 +1045,7 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
 
   for (bid=0; bid<NBUNCH; bid++) {
     SpeLumi.Cnts[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
-    SpeLumi.dCnts[bid] = sqrt(Ngood[bid]);
+    SpeLumi.dCnts[bid] = sqrt(double(Ngood[bid]));
     specific_luminosity->Fill(bid,SpeLumi.Cnts[bid]);
     if (fillpat[bid]) {
       if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
@@ -1106,6 +1106,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
   float ex[NSTRIP];
   char htitle[50];
   TGraphErrors * tg;
+  TF1 * f1 = new TF1("f1","gaus");
 
   for (int st=0; st<NSTRIP; st++){
     feedback.strip[st]=st+1;
@@ -1123,11 +1124,15 @@ TshiftFinder(int Mode, int FeedBackLevel){
     case 2:   // Level 2 Gaussian Fit
 
       // parameter initialization 
-      par[0] = HHMAX(hid);         // amplitude
+      par[0] = Mode ? mass_feedback[st]->GetMaximum() : mass_yescut[st]->GetMaximum(); // amplitude
       par[1] = MASS_12C*k2G;       // mean [GeV]
       par[2] = dproc.OneSigma*k2G; // sigma [GeV]
       if (par[0]) { // Gaussian Fit unless histogram isn't empty
-	HHFITHN(hid, chfun, chopt, np, par, step, pmin, pmax, sigpar, chi2); 
+	Mode ? mass_feedback[st]->Fit(f1,"Q") : mass_yescut[st]->Fit(f1,"Q");
+	sigpar[1]=f1->GetParError(2);
+	par[1] = f1->GetParameter(1);
+	par[2] = f1->GetParameter(2);
+	chi2   = f1->GetChisquare();
       }else{
 	par[1] = MASS_12C*k2G + ASYM_DEFAULT;
 	par[2] = ASYM_DEFAULT;
