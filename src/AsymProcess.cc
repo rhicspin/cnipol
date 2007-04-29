@@ -95,7 +95,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 	delt = t - runconst.E2T/sqrt(e);  
 
-	if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  HHF1(16200+st+1, Mass, 1.);
+	if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  mass_feedback[st]->Fill(Mass) ; 
 
       } // tdc>6ns
 

@@ -250,8 +250,8 @@ StripAnomalyDetector(){
 
       // MASS vs. Energy correlation
       InvariantMassCorrelation(i);
-      if (!i) strpchk.p1.max   = fabs(strpchk.ecorr.p[1][i]);  // initialize max w/ strip 0
-      if (fabs(strpchk.ecorr.p[1][i]) > fabs(strpchk.p1.max) ) {
+      if (!i) strpchk.p1.max   = fabs(double(strpchk.ecorr.p[1][i]));  // initialize max w/ strip 0
+      if (fabs(double(strpchk.ecorr.p[1][i])) > fabs(double(strpchk.p1.max)) ) {
 	strpchk.p1.max = strpchk.ecorr.p[1][i];
 	strpchk.p1.st  = i;
       }
@@ -262,11 +262,11 @@ StripAnomalyDetector(){
       }
       // Gaussian Mass fit Largest chi2
       if (feedback.chi2[i] > strpchk.chi2.max) {
-	strpchk.chi2.max  = fabs(feedback.chi2[i]);
+	strpchk.chi2.max  = fabs(double(feedback.chi2[i]));
 	strpchk.chi2.st   = i;
       }
       // Good carbon events within banana
-      evntdev[i]=fabs(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0])/strpchk.evnt.average[0] ;
+      evntdev[i]=fabs(double(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0]))/strpchk.evnt.average[0] ;
       if (evntdev[i]>strpchk.evnt.max) {
 	strpchk.evnt.max  = evntdev[i];
 	strpchk.evnt.st   = i;
@@ -310,14 +310,14 @@ StripAnomalyDetector(){
     if (runinfo.ActiveStrip[i]){ // process only if the strip is active
 
       // deviation from average width of 12C mass distribution
-      if (fabs(feedback.RMS[i])-strpchk.width.average[0]>strpchk.width.allowance) {
+      if (fabs(double(feedback.RMS[i]))-strpchk.width.average[0]>strpchk.width.allowance) {
 	strip_err_code += 1;  
 	printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, feedback.RMS[i], strpchk.width.allowance);
 	DrawText(mass_sigma_vs_strip, float(i+1), feedback.RMS[i], 2, text);
       }      
       // Invariant mass peak position deviation from 12C mass
-      if (fabs(feedback.mdev[i]) > fabs(strpchk.dev.allowance)) {
+      if (fabs(double(feedback.mdev[i])) > fabs(double(strpchk.dev.allowance))) {
 	strip_err_code += 2;
 	printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, feedback.mdev[i], strpchk.dev.allowance);
@@ -332,7 +332,7 @@ StripAnomalyDetector(){
 	DrawText(good_carbon_events_strip, float(i+1), good_carbon_events_strip->GetBinContent(i+1), 2, text);
       }
       // mass vs. 12C kinetic energy correlation
-      if (fabs(strpchk.ecorr.p[1][i]) > strpchk.p1.allowance) {
+      if (fabs(double(strpchk.ecorr.p[1][i])) > strpchk.p1.allowance) {
 	strip_err_code += 8; 
 	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
 	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
@@ -534,12 +534,12 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
 
       if (spinpat[bid] == 1) { 
 	local.active_bunch[0]++;
-	local.dev =  fabs(A[bid] - mean); 
+	local.dev =  fabs(double(A[bid] - mean)); 
 	local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
       }
       if (spinpat[bid] == -1) {
 	local.active_bunch[1]++;  
-	local.dev =  fabs(A[bid] - (-1)*mean); 
+	local.dev =  fabs(double(A[bid] - (-1)*mean)); 
 	local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
       }
 

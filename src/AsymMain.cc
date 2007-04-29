@@ -513,7 +513,7 @@ int ConfigureActiveStrip(int mask){
     // skip if the detector is already disabled
     if ((mask>>det)&1) { 
       strip = runinfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
-      runinfo.ActiveDetector[det] ^= int(pow(2,strip)); // mask strips of detector=det
+      runinfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
       runinfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
       runinfo.NActiveStrip--;
     }

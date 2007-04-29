@@ -53,6 +53,7 @@ TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
 TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
+TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -167,6 +168,13 @@ Root::RootHistBook(StructRunInfo runinfo){
     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_yescut[i] -> SetLineColor(2);
 
+    sprintf(hname,"mass_feedback_st%d",i+1);
+    sprintf(htitle,"%8.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
+    mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+    mass_feedback[i] -> SetLineColor(2);
+
+
   }
 
 
@@ -251,15 +259,15 @@ Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack
     }
 
     // energy cut low
-    low  = runconst.E2T/sqrt(dproc.enel)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
-    high = runconst.E2T/sqrt(dproc.enel)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.enel);
+    low  = runconst.E2T/sqrt(double(dproc.enel))-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.enel));
+    high = runconst.E2T/sqrt(double(dproc.enel))+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.enel));
     energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
     energy_cut_l[i] ->SetLineColor(Color);
     energy_cut_l[i] ->SetLineWidth(Width);
 
     // energy cut high
-    low  = runconst.E2T/sqrt(dproc.eneu)-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
-    high = runconst.E2T/sqrt(dproc.eneu)+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(dproc.eneu);
+    low  = runconst.E2T/sqrt(double(dproc.eneu))-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.eneu));
+    high = runconst.E2T/sqrt(double(dproc.eneu))+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.eneu));
     energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
     energy_cut_h[i] ->SetLineColor(Color);
     energy_cut_h[i] ->SetLineWidth(Width);
