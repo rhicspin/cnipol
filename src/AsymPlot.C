@@ -20,6 +20,7 @@
 #endif
 
 static Int_t GHOSTVIEW=0;
+static Int_t FEEDBACK=0;
 static Int_t PLOT_BANANA=1;
 static Int_t ERROR_DETECTOR=1;
 static Int_t SUMMARY=1;
@@ -32,8 +33,11 @@ private:
   
 public:
   Int_t GetHistograms(TFile * rootfile);
+  Int_t PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   Int_t PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   Int_t PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
+  // Directory "FeedBack"
+  TH2F * mdev_feedback;  
   // Directory "ErrDet"
   TH2F * mass_e_correlation_strip;
   TH2F * mass_chi2_vs_strip;
@@ -68,6 +72,7 @@ Usage(char *argv[]){
   cout << "\n Options:" << endl;
   cout << "\t -f <runID> " << endl;
   cout << "\t --error-detector  plot error detector histograms" << endl;
+  cout << "\t --feedback        plot feedback histograms" << endl;
   cout << "\t --banana          plot kinematics reconstruction for all strips" << endl;
   cout << "\t --summary         plot summary" << endl;
   cout << "\t --strip <stID>    plot kinematics reconstruction for strip <stID>" << endl;
@@ -257,12 +262,68 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 }
 
 
+
+
 Int_t 
 PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
   PlotBanana(rootfile, CurC, ps);   // Plot Individual Strip
   PlotMassEnergyCorrelation(rootfile, CurC, ps);   // Plot Individual Strip
   PlotInvariantMass(rootfile, CurC, ps);   // Plot Individual Strip
+
+  return 0;
+
+}
+
+
+
+Int_t 
+PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+  gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
+
+  gStyle -> SetPalette (55);
+  ps->NewPage();
+  rootfile->cd(); rootfile->cd("FeedBack");  
+  
+  CurC->Divide(4,3);
+  
+  Char_t histname[100];
+  Int_t stID;
+  for (Int_t det=0; det<NDETECTOR; det++) {
+
+    for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
+      stID=det*NSTRIP_PER_DETECTOR+st;
+      CurC->cd(st); 
+      sprintf(histname,"mass_feedback_st%d",stID);
+      gDirectory->Get(histname) -> Draw(""); 
+      CurC->Update();    
+
+    }// end-of-strip loop
+
+    if (det!=NDETECTOR-1) ps->NewPage();
+
+  }
+
+
+  return 0;
+}
+
+
+Int_t
+AsymPlot::PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+
+  // following two lines should go to GetHistograms routine once all run05 data are replayed
+  rootfile->cd(); rootfile->cd("FeedBack");  
+  mdev_feedback              = (TH2F*)gDirectory->Get("mdev_feedback");
+
+  //  ps->NewPage(); CurC->Clear(); CurC->Divide(1,1); 
+  rootfile->cd(); rootfile->cd("Kinema");
+  mdev_feedback->Draw(); CurC->Update(); ps->NewPage(); CurC->Clear();
+
+  PlotFeedbackStrip(rootfile, CurC, ps);
+
+
+  // energy slope
 
   return 0;
 
@@ -289,6 +350,7 @@ AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript 
   CurC->cd(3) ; asym_vs_bunch_y45 -> Draw(); 
   rootfile->cd(); rootfile->cd("ErrDet");
   CurC->cd(4) ; spelumi_vs_bunch -> Draw(); CurC->Update(); 
+
 
   return 0;
 
@@ -355,6 +417,7 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 Int_t 
 AsymPlot::GetHistograms(TFile * rootfile){
 
+
   rootfile->cd(); rootfile->cd("ErrDet");  
   mass_e_correlation_strip   = (TH2F*)gDirectory->Get("mass_e_correlation_strip");
   mass_sigma_vs_strip        = (TH2F*)gDirectory->Get("mass_sigma_vs_strip");
@@ -397,6 +460,7 @@ int main(int argc, char **argv) {
   static struct option long_options[] = {
     {"strip", 1, 0, 's'},
     {"banana", 0, 0, 'b'},
+    {"feedback", 0, 0, 'F'},
     {"error-detector", 0, 0, 'e'},
     {"summary", 0, 0, 'S'},
     {"create", 1, 0, 'c'},
@@ -404,7 +468,7 @@ int main(int argc, char **argv) {
     {0, 0, 0, 0}
   };
 
-  while (EOF != (opt = getopt_long (argc, argv, "geSh?xf:s:b:", long_options, &option_index))) {
+  while (EOF != (opt = getopt_long (argc, argv, "geSFh?xf:s:b:", long_options, &option_index))) {
     switch (opt) {
     case -1:
       break;
@@ -421,6 +485,12 @@ int main(int argc, char **argv) {
       break;
     case 'f':
       RUNID=optarg;
+      break;
+    case 'F':
+      FEEDBACK=1;
+      SUMMARY=0;
+      ERROR_DETECTOR=0;
+      PLOT_BANANA=0;
       break;
     case 'S':
       SUMMARY=1;
@@ -473,6 +543,7 @@ int AsymPlot() {
   asymplot.GetHistograms(rootfile);
 
   if (stID) PlotStrip(rootfile, CurC, ps, stID);
+  if (FEEDBACK)     asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
   if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
