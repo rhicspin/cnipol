@@ -148,12 +148,31 @@ CompleteHistogram(){
     DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.3, 4, 1);
   }
 
+  TgtHist();
+
+  return 0;
+
+}
+
+
+//
+// Class name  :
+// Method name : TgtHist()
+//
+// Description : Make target histograms
+// Input       : 
+// Return      : 
+//
+int TgtHist(){
+
+  char htitle[100];
 
   // Make rate _vs deliminter plots
   Run->cd();
   float min=fabs(double(ASYM_DEFAULT)), max; float margin=0.2;
   float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-  for (int i=0; i<ndelim; i++) {
+  int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim ;
+  for (int i=0; i<X_index; i++) {
     cntr.good_event += cntr.good[i];
     x[i]=float(i); dx[i]=0; 
     y[i]=float(cntr.good[i])/float(SEC_PER_DELIM)*MHz; 
@@ -169,10 +188,13 @@ CompleteHistogram(){
   rate_delim -> SetMarkerStyle(20);
   rate_delim -> SetMarkerColor(4);
   rate_vs_delim -> GetListOfFunctions() -> Add(rate_delim,"P");
-  
+
+
   return 0;
 
-}
+}// end-of-TgtHist()
+
+
 
 
 //
@@ -1096,29 +1118,28 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
 float
 TshiftFinder(int Mode, int FeedBackLevel){
 
-  char CHOICE[5]="HIST";
-  const int np=3;
+  int np=3;
   float par[np], step[np], pmin[np], pmax[np], sigpar[np];
-  char chfun[3]="G";
-  char chopt[2]="Q";
   float chi2, hmax;
   float mdev,adev;
   float ex[NSTRIP];
   char htitle[50];
   TGraphErrors * tg;
   TF1 * f1 = new TF1("f1","gaus");
+  float min,max;
+  float margin=0.2;
 
   for (int st=0; st<NSTRIP; st++){
     feedback.strip[st]=st+1;
     chi2 = sigpar[1] = 0; ex[st]=0; feedback.err[st]=1; // initialization
-    int hid= Mode ? 16200+st+1 : 17200+st+1 ;
 
     switch(FeedBackLevel){
 
     case 1:     // Level 1 Histogram Maximum and Mean
+      
+      cerr << "TshiftFinder:: Case=1 is no longer avarilable" << endl;
+      exit(-1);
 
-      feedback.mdev[st] = HHSTATI(hid, 1, CHOICE, 0) - MASS_12C*k2G;
-      feedback.RMS[st]  = HHSTATI(hid, 2, CHOICE, 0) ;
       break;
 
     case 2:   // Level 2 Gaussian Fit
@@ -1138,7 +1159,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
 	par[2] = ASYM_DEFAULT;
 	feedback.err[st] = 0; // set weight 0
       }
-      feedback.err[st]  = sigpar[1] * chi2 * chi2;
+      feedback.err[st]  = Mode ? sigpar[1] : sigpar[1] * chi2 * chi2;
       feedback.mdev[st] = par[1] - MASS_12C*k2G; 
       feedback.RMS[st]  = par[2]; 
       feedback.chi2[st] = chi2;
@@ -1151,18 +1172,24 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
 
   if (Mode) {
-    // Fill summary histograms
-    HHPAK(16300,feedback.mdev);  
-    HHPAKE(16300,feedback.err);
 
+    FeedBack->cd();
+
+    TGraphErrors * gre = new TGraphErrors(NSTRIP, feedback.strip, feedback.mdev, ex, feedback.err);
+    gre -> SetMarkerSize(MSIZE);
+    gre -> SetMarkerStyle(20);
+    gre -> SetMarkerColor(4);
+    GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
+    mdev_feedback = new TH2F("mdev_feedback", "Mass Deviation in FeedBack Mode", NSTRIP, -0.5, NSTRIP+0.5, 50, min, max);
+    mdev_feedback -> GetListOfFunctions() -> Add(gre,"P");
+    mdev_feedback -> GetXaxis()->SetTitle("Strip ID");
+    mdev_feedback -> GetYaxis()->SetTitle("Mass Deviation [GeV]");
 
   } else {
 
     ErrDet->cd();
 
     // Mass Position Deviation from M_12 
-    float min,max;
-    float margin=0.2;
     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
     sprintf(htitle,"Run%8.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);

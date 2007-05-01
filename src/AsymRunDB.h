@@ -10,6 +10,7 @@ int readdb(double RUNID) ;
 //const char * GetVariables(string str);
 string GetVariables(string str);
 //const char* GetVariables(string str);
+int SetDefault();
 float GetVariablesFloat(string str);
 int ContinueScan(double ThisRunID, double RunID);
 int MatchBeam(double ThisRunID, double RunID);

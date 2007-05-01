@@ -25,6 +25,7 @@ StructHist Eslope;
 
 // Direcotories
 TDirectory * Run;
+TDirectory * FeedBack;
 TDirectory * Kinema;
 TDirectory * Bunch;
 TDirectory * ErrDet;
@@ -41,6 +42,10 @@ TDirectory * Asymmetry;
 // Run Dir
 TH2F * rate_vs_delim;
 
+// FeedBack Dir
+TH2F  * mdev_feedback;
+TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
+
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
@@ -53,7 +58,6 @@ TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
 TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
 TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
-TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
 // Bunch Distribution
 TH1F * bunch_dist;                  // counts per bunch
@@ -95,6 +99,7 @@ Root::RootFile(char *filename){
 
   // directory structure
   Run       = rootfile->mkdir("Run");
+  FeedBack  = rootfile->mkdir("FeedBack");
   Kinema    = rootfile->mkdir("Kinema");
   Bunch     = rootfile->mkdir("Bunch");
   ErrDet    = rootfile->mkdir("ErrDet");
@@ -168,12 +173,20 @@ Root::RootHistBook(StructRunInfo runinfo){
     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_yescut[i] -> SetLineColor(2);
 
+
+
+  }
+
+
+  // FeedBack Directory
+  FeedBack->cd();
+  for (int i=0; i<TOT_WFD_CH; i++) { 
+
     sprintf(hname,"mass_feedback_st%d",i+1);
     sprintf(htitle,"%8.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
     mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);     
     mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_feedback[i] -> SetLineColor(2);
-
 
   }
 

@@ -360,6 +360,7 @@ void checkForBadBunches();
 
 extern int spinpat[120]; // spin pattern 120 bunches
 extern int fillpat[120]; // fill pattern 120 bunches
+extern int ActiveBunch[NBUNCH];
 extern int wcmfillpat[120]; //  fill pattern within the Wall Current Monitor Average Ragne 
 extern float wcmdist[120];  // wall current monitor 120 bunches
 
