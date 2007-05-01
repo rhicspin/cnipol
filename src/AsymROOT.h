@@ -48,6 +48,7 @@ extern const float MSIZE;
 
 // ROOT Histograms
 extern TDirectory * Run;
+extern TDirectory * FeedBack;
 extern TDirectory * Kinema;
 extern TDirectory * Bunch;
 extern TDirectory * ErrDet;
@@ -55,6 +56,10 @@ extern TDirectory * Asymmetry;
 
 // Run Dir
 extern TH2F * rate_vs_delim;
+
+// FeedBack Dir
+extern TH2F * mdev_feedback;  
+extern TH1F * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 // Kinema Direcotry
 extern TH2F * t_vs_e[TOT_WFD_CH];
@@ -68,7 +73,6 @@ extern TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
 extern TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
 extern TH1F  * mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
 extern TH1F  * mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
-extern TH1F  * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 
 // Bunch Distribution
