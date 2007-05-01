@@ -1011,7 +1011,7 @@ DlayerAnalyzer::SpecialPlots(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 Int_t 
 DlayerAnalyzer::DlayerAnalyzer()
 {
-  gStyle->SetOptFit(111)
+  gStyle->SetOptFit(111);
 
   // load header macro
   Char_t HEADER[100];
