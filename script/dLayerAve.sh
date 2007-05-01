@@ -172,10 +172,10 @@ for (( i=1; i<=$NLINE ; i++ )) ;
     if [ -f $DlayerFile ] ; then
 
 	    EVENT_RATES=`grep 'Event Rate'  $LOGFILE | gawk '{printf("%4.2f", $4*1e-6)}'`
-	    READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5*1e-6)}'`
+	    READ_RATES=`grep 'Read Rate' $LOGFILE | gawk '{printf("%4.2f", $5)}'`
 	    AVE_Dl=`grep "dlave =" $FITLOGFILE | gawk '{printf("%6.2f",$3)}'`
 	    AVE_Dl_ERROR=`grep "Deviation/strip=" $FITLOGFILE | gawk '{printf("%5.2f", $2)}'`
-	    AVE_WCM=`grep 'WCM Average  ' $LOGFILE | gawk '{printf("%7.1f", $4)}'`
+	    AVE_WCM=`grep 'WCM Average \[10^9' $LOGFILE | gawk '{printf("%7.1f", $6)}'`
 	    FILL_BUNCH=`grep '# of Filled Bunch' $LOGFILE | gawk '{printf(" %3d", $6)}'`
 	    SPECIFIC_LUMI=`grep 'Specific Luminosity' $LOGFILE | gawk '{printf("%6.3f",$6)}'`
 	    TGT_POS=`grep @ $LOGFILE | gawk '{print $4}'`
