@@ -462,7 +462,7 @@ OnlineDatabase(){
    fi
 
    dlAve=0;
-   if [ $CONFIG_FILE ] ; then
+   if [ $CONFIG_FILE ]&&[ -f $ONLINE_CONFIG_DLAYERAVE ] ; then
        grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE > /dev/null
        if [ $? -eq 0 ]; then
 	   dlAve=`grep $CONFIG_FILE $ONLINE_CONFIG_DLAYERAVE | gawk '{print $2}'`;
@@ -492,7 +492,7 @@ OnlineDatabase(){
    printf " %6.4f "   $A_N;
    printf " %5.1f "   $dlAve;
    printf " %s  "     $CONFIG_FILE;
-#   printf " %s  "     $TARGET;
+   printf " %s  "     $TARGET;
    echo -e -n "\n";
 
 
