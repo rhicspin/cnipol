@@ -187,6 +187,7 @@ StructBunchPattern phx, str;
 
 int spinpat[120]; // spin pattern 120 bunches (ADO info)
 int fillpat[120]; // spin pattern 120 bunches (ADO info)
+int ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
 int wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
 float wcmdist[120];  // wall current monitor 120 bunches (ADO info)
 

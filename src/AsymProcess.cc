@@ -495,18 +495,20 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                 } else { 
                     time = (int)cntr.revolution/RHIC_REVOLUTION_FREQ;
                     if (time<MAXDELIM) {
-		      ++cntr.good[delim];
+		      ++cntr.good[TgtIndex[time]];
 		      NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
                     }else{
 		      cerr << "ERROR: time constructed from revolution # " << time << "exeeds MAXDELIM=" << MAXDELIM << " defined\n" << endl;
                     }
                 }
+
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
 		if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid]==-1?1:0);
 		if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid]==1?1:0);
 		if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid]==-1?1:0);
 		HHF1(38050, TgtIndex[time], 1);
 		HHF1(38060, time, 1);
+
 
 		// counters
 		cntr.reg.NStrip[spbit][st]++;

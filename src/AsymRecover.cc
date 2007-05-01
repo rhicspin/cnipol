@@ -79,7 +79,7 @@ AsymRecover::OverwriteFillPattern(int index){
 //
 int
 AsymRecover::MaskFillPattern(){
- 
+
   for (int i=0; i<runinfo.NDisableBunch;i++) {
     for (int j=0; j<NBUNCH; j++) {
       fillpat[j] = runinfo.DisableBunch[i] == j ? 0 : fillpat[j];

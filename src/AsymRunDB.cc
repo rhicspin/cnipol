@@ -66,6 +66,7 @@ readdb(double RUNID) {
       if (match){
 	      if(str.find("*=")==-1 || RUNID==rundb.RunID) //a "*" after the flag name means only apply the flag to this run
 	      {
+		if (str.find("RESET_ALL=Default") == 1) SetDefault();
 			if (str.find("CONFIG")              ==1) rundb.config_file_s         = GetVariables(str);
 			if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
 			if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
@@ -181,6 +182,41 @@ StripHandler(int st, int flag){
   return 0;
 }
 
+
+//
+// Class name  :
+// Method name : SetDefault()
+//
+// Description : Reset Active strip and bunch to be dafault.
+//             : The default is currently all active
+// Input       : 
+// Return      : 
+//
+int 
+SetDefault(){
+
+  cout << "______________ Reset Active Strip and Bunch to default _______________" << endl;
+
+  // initialize strip arrays
+  for (int i=0; i<NSTRIP; i++) {
+    ProcessStrip[i]         = 0;
+    runinfo.ActiveStrip[i]  = 1;
+    runinfo.DisableStrip[i] = 0;
+    runinfo.NActiveStrip    = NSTRIP;
+    runinfo.NDisableStrip   = 0;
+  }
+
+  // initialize bunch arrays
+  for (int i=0; i<NBUNCH; i++) {
+    ProcessBunch[i]         = 0;
+    runinfo.DisableBunch[i] = 0;
+    runinfo.NActiveBunch    = 0;
+    runinfo.NDisableBunch   = 0;
+  }
+
+
+  return 0;
+}
 
 //
 // Class name  :

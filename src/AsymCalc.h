@@ -14,6 +14,7 @@ extern const int ASYM_DEFAULT;
 //===========================================================================
 int end_process(recordConfigRhicStruct *cfginfo);
 int CompleteHistogram();
+int TgtHist();
 
 //===========================================================================
 //                       Anaolyzing power

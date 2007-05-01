@@ -292,6 +292,11 @@ int readloop() {
 	    }
 
 	    // Active Bunch 
+	    for (int k=0; k<NBUNCH; k++) {
+	      ActiveBunch[k]=fillpat[k];
+	      cout << ActiveBunch[k] ;
+	    } 
+	    cout << endl;
 	    runinfo.NActiveBunch = runinfo.NFilledBunch - runinfo.NDisableBunch;
 
 	    ReadFlag.BEAMADO = 1;
@@ -409,7 +414,7 @@ int readloop() {
 
                         }// if (runinfo.Run>=6)
 
-                        /*
+			/*
                         cout << " i " <<i
                           << " Nevent " << Nevent
                           << " St " << event.stN  
@@ -418,25 +423,22 @@ int readloop() {
                           << " bid " << event.bid 
 			     << " rev0 " << event.rev0 
 			     << " rev  " << event.rev 
-                             << " revolusion #=" << cntr.revolusion << endl;
-                        */
+                             << " revolusion #=" << cntr.revolution << endl;
+			     }*/
                         
 
                         // process event for following case:
                         //      fill pattern = 1
                         //      Calibration mode = 1
-                        //      strip #72 - #76 (Run6 target events)
 			if ((fillpat[event.bid]==1)||(dproc.CMODE==1)||(event.stN>=72)) {
 
 			  // process only if strip is active
 			  if (runinfo.ActiveStrip[event.stN]){
 
 			     // Event Processing
-                            if (event_process(&event,cfginfo)!=0) {
-                                fprintf(stdout, 
-                                        "Error event process Si:%d Ev:%d\n",
-                                        nreadsi,j);
-                            }
+			    if (event_process(&event,cfginfo)!=0) 
+			      fprintf(stdout,"Error event process Si:%d Ev:%d\n", nreadsi,j);
+
 
 			  } // if (runinfo.ActiveStrip)
 
