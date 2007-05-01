@@ -823,7 +823,7 @@ Int_t
 ErrorDetector::GetDataAndPlot(Int_t Mode, Char_t * Beam, Int_t Color){
 
   Char_t DATAFILE[100],text[100], histname[100], htitle[100];
-  sprintf(DATAFILE,"summary/ErrorDet_%s_phys.dat",Beam);
+  sprintf(DATAFILE,"summary/ErrorDet_%s.dat",Beam);
   cout << "DATAFILE=" << DATAFILE << endl;
 
   Int_t ndata = GetData(DATAFILE);
@@ -1037,13 +1037,10 @@ ErrorDetector::ErrorDetector()
     sprintf(psfile,"ps/ErrorDetector.ps");
     ps = new TPostScript(psfile,112);
 
-    /*
     MakePlots(100, CurC, ps); // Total Number of Bunches
     MakePlots(110, CurC, ps); // Bad Bunch Rate
     MakePlots(115, CurC, ps); // Bad Bunch Rate (1-dim hist)
-    */
     MakePlots(125, CurC, ps); // Bunch Error Code (1-dim hist)
-    /*
     MakePlots(135, CurC, ps); // Max Specific Luminosity Deviation (1-dim hist)
     MakePlots(200, CurC, ps); // Energy Slope
     MakePlots(205, CurC, ps); // Energy Slope (1-dim hist)
@@ -1061,7 +1058,6 @@ ErrorDetector::ErrorDetector()
     MakePlots(353, CurC, ps); // Bad Strip History
     CurC->SetGridy();
     MakePlots(355, CurC, ps); // Bad Strip Statistics (1-dim)
-    */
 
   }
 
