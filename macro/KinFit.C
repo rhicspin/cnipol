@@ -1,3 +1,4 @@
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -344,7 +345,6 @@ void KinFit::Fit(Int_t mode)
 		    dlESi[j] = dlE[St];
 		    valstn++;
 		  }; // End-of-Loop : Valid Strip 
-
               } else if (mode&1){
                   if (!DisableList(RHIC_Beam,St)){
                       T0.Valid[St]=t0s[St];
@@ -376,7 +376,6 @@ void KinFit::Fit(Int_t mode)
 	      SiDev[Si]+= fabs(dlsum[Si]- dl[St]);
 	    }
 	  }
-
 	  totSiDev+=SiDev[Si];
 	  NValidSt+=valstn;
 	  dlave+=dl_accum;
@@ -388,14 +387,14 @@ void KinFit::Fit(Int_t mode)
 
 
     if (!mode&1){
-      dlave = (Float_t)WeightedMean(dlValid,dlEValid,72);
+      dlave = (Float_t)WeightedMean(dlValid,dlEValid,NSTRIP);
       if (NValidSt) {
 	//dlave/=float(NValidSt);
-	devpst=WeightedMean(StDev,dlEValid,NValidSt);
+	devpst=WeightedMean(StDev,dlEValid,NSTRIP);
       }
     } else if (mode&1) {
-      T0.ave=(Float_t)WeightedMean(T0.Valid,T0.ValidE,NValidSt);
-      T0.Delta/=(NValidSt-1);
+      T0.ave=(Float_t)WeightedMean(T0.Valid,T0.ValidE,NSTRIP);
+      T0.Delta/=(NValidSt-1); 
       printf("\n\n");
       printf("-----------------------------------------------------------\n");
       printf(" number of valid strips %3d\n", NValidSt);
@@ -1291,7 +1290,6 @@ WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT){
 
   Float_t sum1, sum2, dA2, WM;
   sum1 = sum2 = dA2 = 0;
-
   for ( int i=0 ; i<NDAT ; i++ ) {
     if (dA[i]){  // skip dA=0 data
       dA2 = dA[i]*dA[i];
@@ -1299,7 +1297,6 @@ WeightedMean(Float_t A[72], Float_t dA[72], Int_t NDAT){
       sum2 += 1/dA2 ;
     }
   }
-
   WM = dA2 == 0 ? 0 : sum1/sum2 ;
   return WM ;
 
