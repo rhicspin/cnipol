@@ -100,9 +100,14 @@ int end_process(recordConfigRhicStruct *cfginfo)
     }
 
     //-------------------------------------------------------
-    //  Complete Histograms
+    //       Complete Histograms
     //-------------------------------------------------------
     CompleteHistogram();
+
+    //-------------------------------------------------------
+    //        Calculate Statistics
+    //-------------------------------------------------------
+    CalcStatistics();
 
 
   }//end-of-if(!dproc.DMODE)
@@ -113,6 +118,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
   //-------------------------------------------------------
   PrintWarning();
   PrintRunResults(hstat);
+
 
   return(0);
 
@@ -148,6 +154,7 @@ CompleteHistogram(){
     DrawLine(mass_nocut[i], MASS_12C_k2G-feedback.RMS[i]*k2G*dproc.MassSigmaAlt,max*0.3, 4, 1);
   }
 
+  // target associated histograms
   TgtHist();
 
   return 0;
@@ -166,28 +173,44 @@ CompleteHistogram(){
 int TgtHist(){
 
   char htitle[100];
-
-  // Make rate _vs deliminter plots
-  Run->cd();
-  float min=fabs(double(ASYM_DEFAULT)), max; float margin=0.2;
+  float xmin=fabs(double(ASYM_DEFAULT)), xmax; float margin=0.2;
   float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
   int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim ;
+  GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
+
+  Run->cd();
+  //---------------------------------------------------------------------------------
+  //                      Make rate _vs deliminter plots
+  //---------------------------------------------------------------------------------
   for (int i=0; i<X_index; i++) {
-    cntr.good_event += cntr.good[i];
-    x[i]=float(i); dx[i]=0; 
-    y[i]=float(cntr.good[i])/float(SEC_PER_DELIM)*MHz; 
-    dy[i]=float(sqrt(double(cntr.good[i])))/float(SEC_PER_DELIM)*MHz; 
+    cntr.good_event += cntr.good[i];    dx[i]=0; 
+    y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ; 
+    dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0; 
   }
-  anal.max_rate = GetMax(ndelim,y);
-  GetMinMax(ndelim, y, margin, min, max);
-  sprintf(htitle,"%8.3f : Rate vs Deliminter", runinfo.RUNID);
-  rate_vs_delim = new TH2F("rate_vs_delim",htitle, 100, 0, ndelim+1, 100, min, max);
-  rate_vs_delim -> GetXaxis() -> SetTitle("Deliminter");
-  rate_vs_delim -> GetYaxis() -> SetTitle("Rate/Deliminter [MHz]");
-  TGraphErrors * rate_delim = new TGraphErrors(ndelim, x, y, dx, dy);
+  anal.max_rate = GetMax(X_index,y);
+  float ymin=fabs(double(ASYM_DEFAULT)), ymax; 
+  GetMinMax(X_index, y, margin, ymin, ymax);
+  sprintf(htitle,"%8.3f : Rate vs Taret Postion", runinfo.RUNID);
+  rate_vs_delim = new TH2F("rate_vs_delim",htitle, 100, xmin, xmax, 100, ymin, ymax);
+  rate_vs_delim -> GetXaxis() -> SetTitle("Target Position [mm]");
+  rate_vs_delim -> GetYaxis() -> SetTitle("Carbon in Banana Rate[MHz]");
+  TGraphErrors * rate_delim = new TGraphErrors(nTgtIndex, tgt.X, y, dx, dy);
   rate_delim -> SetMarkerStyle(20);
   rate_delim -> SetMarkerColor(4);
   rate_vs_delim -> GetListOfFunctions() -> Add(rate_delim,"P");
+
+
+  //---------------------------------------------------------------------------------
+  //                           Target Position vs Time
+  //---------------------------------------------------------------------------------
+  sprintf(htitle,"%8.3f : Taret Postion vs. Time", runinfo.RUNID);
+  TH2F * tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
+  tgtx_vs_time -> GetYaxis() -> SetTitle("Duration from Measurement Start [s]");
+  tgtx_vs_time -> GetXaxis() -> SetTitle("Target Position [mm]");
+  TGraph * tgtx_time = new TGraph(nTgtIndex, tgt.X, tgt.Time);
+  tgtx_time -> SetMarkerStyle(20);
+  tgtx_time -> SetMarkerColor(4);
+  tgtx_vs_time ->  GetListOfFunctions() -> Add(tgtx_time,"P");
 
 
   return 0;
@@ -669,7 +692,29 @@ void binary_zero(int n, int mb) {
 }
 
 
+//
+// Class name  :
+// Method name : CalcStatistics(){
+//
+// Description : Calculate Statistics
+// Input       : 
+// Return      : 
+//
+void
+CalcStatistics(){
 
+    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+    anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+    anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
+    if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
+    cout<< "CalcStatistics !" << cntr.good_event << " " << runinfo.RunTime << " " << runinfo.GoodEventRate << endl;
+
+    return ;
+
+}
 
 //
 // Class name  :
@@ -747,15 +792,6 @@ PrintWarning(){
 void
 PrintRunResults(StructHistStat hstat){
 
-  //    runinfo.RunTime = runinfo.StopTime - runinfo.StartTime;
-    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
-    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
-    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
-    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-    float wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
-    runinfo.UniversalRate = wcm_norm_event_rate/dproc.reference_rate;
-    if (runinfo.Run==5)  anal.profile_error = runinfo.UniversalRate<1 ? ProfileError(runinfo.UniversalRate) : 0;
-
     printf("-----------------------------------------------------------------------------------------\n");
     printf("-----------------------------  Operation Messages  --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
@@ -772,8 +808,8 @@ PrintRunResults(StructHistStat hstat){
     printf(" Total events in banana      = %10d\n",   cntr.good_event);
     printf(" Good Carbon Max Rate  [MHz] = %10.4f\n", anal.max_rate);
     printf(" Good Carbon Rate      [MHz] = %10.4f\n", runinfo.GoodEventRate);
-    printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", wcm_norm_event_rate);
-    printf(" Universal Rate              = %10.5f\n", runinfo.UniversalRate);
+    printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", anal.wcm_norm_event_rate);
+    printf(" Universal Rate              = %10.5f\n", anal.UniversalRate);
     printf(" Event Rate            [MHz] = %10.4f\n", runinfo.EvntRate);
     printf(" Read Rate             [MHz] = %10.4f\n", runinfo.ReadRate);
     printf(" Target                      =         %c%c\n", runinfo.target, runinfo.targetID);
