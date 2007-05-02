@@ -186,11 +186,16 @@ int readloop() {
                         runinfo.target = 'H';
                     }
                     tgt.x = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM;
+		    tgt.Time[i] = k;
+		    tgt.X[i] = tgt.x;
                     printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);
 		} else {
 		  TgtIndex[k] = i;
 		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
+		    tgt.X[TgtIndex[k]] = tgt.Rotary[k][tgt.VHtarget];
+		    tgt.Time[TgtIndex[k]] = float(k);
+		    tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
 		    ++nTgtIndex;
                     if (nTgtIndex>TGT_OPERATION) runinfo.TgtOperation=" scan";
                     printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);

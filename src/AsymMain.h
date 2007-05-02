@@ -87,7 +87,6 @@ StructRunInfo runinfo = {
     0, // StopTime;
     0, // RunTime;
     0, // GoodEventRate;
-    0, // UniversalRate;
     0, // EvntRate;
     0, // ReadRate;
     0, // WcmAve;
@@ -127,7 +126,8 @@ StructRunInfo runinfo = {
 StructTarget tgt = {
     0,  // target position x
     -1, // target motion sign
-    0   // eventID
+    0,  // eventID
+    0   // Vertical:[0], Horizontal:[1]
 };
 
 // Following arrays correspond to phi agnle of each strips. These phi angles are

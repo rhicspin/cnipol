@@ -160,6 +160,8 @@ typedef struct {
 typedef struct {
   float max_rate;
   float TshiftAve;
+  float wcm_norm_event_rate; 
+  float UniversalRate;
   float A_N[2];
   float P[2];
   float P_sigma_ratio[2];
@@ -180,7 +182,6 @@ typedef struct {
   int StopTime;
   float RunTime;
   float GoodEventRate;
-  float UniversalRate;
   float EvntRate;
   float ReadRate;
   float WcmAve;
@@ -285,16 +286,19 @@ typedef struct {
 
 
 typedef struct {
-    float x;                     // (arbitarary) target postion [mm]
-    int vector;
-    long int eventID;
-    int VHtarget;
-    int Index[MAXDELIM];
-    int Linear[MAXDELIM][2];   // Vertical:[0], Horizontal:[1]
-    int Rotary[MAXDELIM][2];
-    struct StructAll {
-        float x[TARGETINDEX];  // target position in [mm]
-    } all;
+  float x;                    // (arbitarary) target postion [mm]
+  int vector;
+  long int eventID;
+  int VHtarget;               // Vertical:[0], Horizontal:[1]
+  int Index[MAXDELIM];
+  int Linear[MAXDELIM][2];   
+  int Rotary[MAXDELIM][2];
+  float X[MAXDELIM];          // target position [mm] array excluding static position 
+  float Interval[MAXDELIM];   // time interval of given target postiion [sec]
+  float Time[MAXDELIM];       // duration from measurement start in [sec]
+  struct StructAll {
+    float x[TARGETINDEX];  // target position in [mm] including static position
+  } all;
 } StructTarget;
 
 

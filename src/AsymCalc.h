@@ -73,8 +73,9 @@ int BunchAsymmetry(int, float A[], float dA[]);
 
 
 //===========================================================================
-//                        Result Printing
+//           Calculate Statistics adn  Result Printing
 //===========================================================================
+void CalcStatistics();
 void binary_zero(int n, int mb);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
