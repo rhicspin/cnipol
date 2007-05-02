@@ -3130,6 +3130,7 @@
 //=======                   Run06                      =========
 //==============================================================
 [7400.001]
+	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=0;
 	ENERGY_CALIB=0213.007;
@@ -3144,6 +3145,7 @@
 	COMMENT="Run6"
 
 [7400.101]
+	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=0;
 	ENERGY_CALIB=60217.101;
@@ -4827,7 +4829,7 @@
 	RUN_STATUS=Suspicious;
 	COMMENT="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
 
-
+ 
 [7792.001]
 	RUN_STATUS=Good;
 	COMMENT="";
@@ -4916,6 +4918,10 @@
 	EnableStrip=53;
 	EnableStrip=71;
 	COMMENT="";
+
+[7815.002] 
+	CONFIG=7815.002.config.dat;
+
 
 [7817.002]
 	RUN_STATUS=Suspicious;
