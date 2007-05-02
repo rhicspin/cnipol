@@ -3138,9 +3138,7 @@
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
-	EnableStrip=1;
-	EnableStrip=15;
-	EnableStrip=23;
+	DisableBunch=20;
 	DisableStrip=66;
 	COMMENT="Run6"
 
@@ -3153,8 +3151,7 @@
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
-	EnableStrip=52;
-	EnableStrip=56;
+	DisableBunch=20;
 	COMMENT="Run6"
 
 [7450.001]
