@@ -56,9 +56,9 @@ cd macro
 cd ..
 
 # install physics database into $SHARE/phys
-cd phys
-./install.sh
-cd ..
+#cd phys
+#./install.sh
+#cd ..
 
 # make necessary directories for analysis
 if [ ! -d $ASYMDIR ] ; then
