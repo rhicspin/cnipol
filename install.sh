@@ -10,7 +10,7 @@ fi
 
 # Check temporary output directory
 if [ ! -d $TMPOUTDIR ] ; then
-    mkdir $TMPOUTDIR
+    mkdir -p $TMPOUTDIR
     chmod 777 $TMPOUTDIR
     echo "Create $TMPOUTDIR";
 fi
@@ -56,6 +56,9 @@ cd phys
 cd ..
 
 # make necessary directories for analysis
+if [ ! -d $ASYMDIR ] ; then
+    mkdir $ASYMDIR
+fi
 if [ ! -d $ASYMDIR/config ] ; then
     mkdir $ASYMDIR/config
 fi
