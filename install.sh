@@ -7,6 +7,11 @@ else
 	echo "Create $INSTALLDIR";
 	mkdir -p $INSTALLDIR
 fi
+if [ ! -d $MACRODIR ] ; then
+	echo "Create $MACRODIR";
+	mkdir -p $MACRODIR
+fi
+
 
 # Check temporary output directory
 if [ ! -d $TMPOUTDIR ] ; then
