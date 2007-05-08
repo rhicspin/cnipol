@@ -55,6 +55,34 @@ cd phys
 ./install.sh
 cd ..
 
+# make necessary directories for analysis
+if [ ! -d $ASYMDIR/config ] ; then
+    mkdir $ASYMDIR/config
+fi
+if [ ! -d $ASYMDIR/calib ] ; then
+    mkdir $ASYMDIR/calib
+fi
+if [ ! -d $ASYMDIR/dlayer ] ; then
+    mkdir $ASYMDIR/dlayer
+fi
+if [ ! -d $ASYMDIR/hbook ] ; then
+    mkdir $ASYMDIR/hbook
+fi
+if [ ! -d $ASYMDIR/root ] ; then
+    mkdir $ASYMDIR/root
+fi
+if [ ! -d $ASYMDIR/log ] ; then
+    mkdir $ASYMDIR/log
+fi
+if [ ! -d $ASYMDIR/ps ] ; then
+    mkdir $ASYMDIR/ps
+fi
+if [ ! -d $ASYMDIR/summary ] ; then
+    mkdir $ASYMDIR/summary
+fi
+
+
+
 
 if [ $CNI_EXPERT ] ; then
     if [ -d expert ] ; then
