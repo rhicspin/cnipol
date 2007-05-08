@@ -5,7 +5,7 @@ if [ -d $INSTALLDIR ] ; then
 	echo "install executables to $INSTALLDIR"
 else
 	echo "Create $INSTALLDIR";
-	mkdir $INSTALLDIR
+	mkdir -p $INSTALLDIR
 fi
 
 # Check temporary output directory
