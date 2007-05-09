@@ -60,7 +60,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
       //    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
     anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
 
-
     //-------------------------------------------------------
     //              CumulativeAsymmetry()    
     //-------------------------------------------------------
@@ -100,14 +99,14 @@ int end_process(recordConfigRhicStruct *cfginfo)
     }
 
     //-------------------------------------------------------
-    //       Complete Histograms
-    //-------------------------------------------------------
-    CompleteHistogram();
-
-    //-------------------------------------------------------
     //        Calculate Statistics
     //-------------------------------------------------------
     CalcStatistics();
+
+    //-------------------------------------------------------
+    //       Complete Histograms
+    //-------------------------------------------------------
+    CompleteHistogram();
 
 
   }//end-of-if(!dproc.DMODE)
@@ -183,7 +182,7 @@ int TgtHist(){
   //                      Make rate _vs deliminter plots
   //---------------------------------------------------------------------------------
   for (int i=0; i<X_index; i++) {
-    cntr.good_event += cntr.good[i];    dx[i]=0; 
+    dx[i]=0; 
     y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ; 
     dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0; 
   }
@@ -703,18 +702,23 @@ void binary_zero(int n, int mb) {
 void
 CalcStatistics(){
 
-    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
-    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
-    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
-    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-    anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
-    anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
-    if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
-    cout<< "CalcStatistics !" << cntr.good_event << " " << runinfo.RunTime << " " << runinfo.GoodEventRate << endl;
+  int nIndex = runinfo.Run>=6 ? nTgtIndex : ndelim;
+  for (int i=0; i<nIndex; i++) cntr.good_event += cntr.good[i];
 
-    return ;
+  runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+  runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+  runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+  runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+  anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+  anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
+
+  // Profile error dependends on universal rate for Run05
+  if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
+
+  return ;
 
 }
+
 
 //
 // Class name  :
@@ -825,8 +829,6 @@ PrintRunResults(StructHistStat hstat){
     printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
     printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
     printf(" # of Active Bunch           = %10d\n", runinfo.NActiveBunch);
-    printf(" bunch w/in WCM range        = %10d\n", average.counter);
-    printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
