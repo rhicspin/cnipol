@@ -3,7 +3,6 @@
 # I. Nakagawa
 # syntax for run.db
 
-
 o Some brief instructions about run.db:
 
   	The run.db should contain all necessary parameters 
@@ -134,6 +133,16 @@ o Some tips:
 	right after that even though such a measurement doesn't exist yet. 
 	Just in case to aviod you go home with keeping RUN_STATUS=Junk for
 	future measurements. 
+
+
+   3)   In order not to inherit Disable/Enable strip/bunch setting from previous
+        RHIC RUN to next year, then it is a convenient to insert follows at the 
+        begging of the next year setting in run.db:
+
+ 	RESET_ALL=Default;
+
+	This will set the all strips and bunches status to be default. The current
+        default is all active.
 
 
 
