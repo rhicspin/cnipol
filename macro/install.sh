@@ -2,7 +2,7 @@
 
 # install paw macros:
 if [ -d $MACRODIR ] ; then
-	echo "install paw macros to $MACRODIR";
+	echo "Install root/paw macros to $MACRODIR";
 else
 	echo "Create $MACRODIR";
 	mkdir $MACRODIR
