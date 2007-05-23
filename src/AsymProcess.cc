@@ -512,6 +512,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 		// counters
 		cntr.reg.NStrip[spbit][st]++;
+		cntr_tgt.reg.NStrip[(int)TgtIndex[time]][spbit][st]++;
+
 		if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e) 
 		  cntr.alt.NStrip[spbit][st]++;
 		if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
