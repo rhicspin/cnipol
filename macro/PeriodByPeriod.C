@@ -4,11 +4,22 @@ extern Int_t FILL_BY_FILL_AVERAGE;
 
 
 Int_t PlotJetRunPeriod=1;
-
+/*
 Float_t JetPol[2][3]  = {43.8, 48.2, 49.4,     // Blue
 			 41.9, 41.1, 45.4};    // Yellow
 Float_t JetdPol[2][3] = { 2.8,  3.8,  1.7,     // Blue   statistical error
 			  2.9,  2.9,  1.4};    // Yellow statistical error
+*/
+Float_t JetPol[2][3]  = {44.55, 48.23, 49.46,     // Blue
+			 47.89, 41.27, 45.02};    // Yellow
+Float_t JetdPol[2][3] = { 2.86,  3.75,  1.65,     // Blue   statistical error
+			  3.52,  2.93,  1.40};    // Yellow statistical error
+/*
+Float_t JetPol[2][3]  = {43.95, 48.38, 49.58,     // Blue
+			 42.04, 41.33, 45.14};    // Yellow
+Float_t JetdPol[2][3] = { 2.79,  3.77,  1.66,     // Blue   statistical error
+			  2.93,  2.94,  1.40};    // Yellow statistical error
+*/
 Float_t JetdTotPol[2][3] = { 3.0,  4.0,  2.0,  // Blue   total error (SysErr=1.1 Added in Quadruture)
 			     3.1,  3.1,  1.8}; // Yellow total error (SysErr=1.1 Added in Quadruture)
 
@@ -260,7 +271,7 @@ OfflinePol::PlotJetRunTime(Int_t k, Float_t ymin){
   for (Int_t i=0; i<period[k].nRun; i++) {
     for (Int_t j=0; j<jet.ndata; j++)  {
       if (Int_t(period[k].RunID[i])==jet.FillID[j]){
-	Float_t x0 = Float_t(jet.start[j] - t0)/3600/24;
+	Float_t x0 = Float_t(jet.start[j] - t0)/3600/24;   // unit is day
 	Float_t x1 = Float_t(jet.stop[j]  - t0)/3600/24;
 	l = new TLine(x0, ymin, x1, ymin);
 	l->SetLineWidth(5);
@@ -591,7 +602,6 @@ OfflinePol::PeriodByPeriodFillAverage(Int_t Mode, Int_t k, Int_t Color, Float_t 
   // ------------------------------------------------------------------- // 
   Char_t text[1000];
   calcWeightedMean(period[k].fill_ave, period[k].fill_dave, period[k].t_jet, period[k].nRun, Ave[0], Ave[1]);
-  //  cout << period[k].PeriodID << " " << Ave[0] << " " << Ave[1] << endl;
   DrawLine(periodbyperiod, xmin, xmax, Ave[0], 2, 1, 3);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]+Ave[1], 2, 3, 2);
   DrawLine(periodbyperiod, xmin, xmax, Ave[0]-Ave[1], 2, 3, 2);
