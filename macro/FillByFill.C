@@ -140,7 +140,7 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     fill[j].RunID[array_index]      = RunID[i];
     fill[j].P_online[array_index]   = P_online[i] * sign;
     fill[j].dP_online[array_index]  = dP_online[i];
-    fill[j].P_offline[array_index]  = PROFILE_CORRECTION ? P_offline[i] * sign + dProf[i] : P_offline[i] * sign;
+    fill[j].P_offline[array_index]  = ABSOLUTE_PROFILE_CORRECTION ? P_offline[i] * sign + dProf[i] : P_offline[i] * sign;
     fill[j].dP_offline[array_index] = dP_offline[i]; 
     fill[j].dProf[array_index]      = dProf[i];
     fill[j].dP_tot[array_index]     = PROFILE_ERROR  ? QuadraticSumSQRT(dP_offline[i], dProf[i]) : dP_offline[i];
@@ -154,6 +154,7 @@ OfflinePol::FillByFillAnalysis(Int_t RUN, Int_t ndata){
     }else{
       fill[j].dT[array_index]       = 0;
     }
+    fill[j].dT[array_index+1]       = 0; // needs to be zero
 
     // print out fill by fill arrays for debugging
     //    PrintFillByFillArray(i, j, array_index);
@@ -386,8 +387,6 @@ OfflinePol::TargetByTarget(Int_t k, Int_t Color){
 	if ((yellow.target[i].Begin_RunID<=fill[k].RunID[j])&&(fill[k].RunID[j]<yellow.target[i].End_RunID)) {
 	  yellow.target[i].UniversalRate->Fill(fill[k].Rate[j]);
 	  yellow.target[i].UniversalRate_vs_P->Fill(fill[k].Rate[j], fill[k].P_offline[j]);
-	  fout << fixed;
-	  fout << i << " " << setprecision(3) << fill[k].RunID[j] << " " << fill[k].Rate[j] << " " << fill[k].P_offline[j] << " " << fill[k].dP_offline[j] << endl;
 	}
       } // end-of-(i<yellow.Target.nPeriod) loop
 
@@ -845,9 +844,11 @@ OfflinePol::FillByFillPlot(Int_t Mode, Int_t k, Int_t Color){
       DrawText(fillbyfill, (xmin+xmax)/2, ymin*1.05, 2, text);
       fout << fixed;
       for (Int_t kk=0;kk<fill[k].nRun;kk++) 
-	fout << std::setprecision(3)    << " " << fill[k].RunID[kk] << "   " 
-	     << std::setprecision(1) << fill[k].P_offline[kk] << "    " << fill[k].dP_offline[kk] 
-	     << "    " << fill[k].dP_tot[kk] << "    " << fill[k].WCM[kk] << "    " << fill[k].dt[kk] << endl;
+	if (VERBOSE) {
+	  fout << std::setprecision(3)    << " " << fill[k].RunID[kk] << "   " 
+	       << std::setprecision(1) << fill[k].P_offline[kk] << "    " << fill[k].dP_offline[kk] 
+	       << "    " << fill[k].dP_tot[kk] << "    " << fill[k].WCM[kk] << "    " << fill[k].dt[kk] << endl;
+	}
       fout << std::setprecision(2)    << fill[k].FillID   << "   " 
 	   << fill[k].wAve[0] << "   "  << fill[k].wAve[1]  << "   " << fill[k].wAve[2] << " " 
 	   << fill[k].wAve[3] << "   "  << fill[k].wAve[4]  << "   " << fill[k].wAve[5] << endl;
