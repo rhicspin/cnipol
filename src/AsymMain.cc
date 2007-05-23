@@ -590,12 +590,14 @@ Initialization(){
     feedback.mdev[i] = 0.;
     feedback.RMS[i] = dproc.OneSigma ;
   }
-
   runinfo.TgtOperation = "fixed";
 
   // Initiarize Strip counters
   for (int i=0; i<NSTRIP; i++) {
     for (int j=0; j<3; j++) cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
+    for (int j=0; j<3; j++) {
+      for(int kk=0;kk<MAXDELIM;kk++) cntr_tgt.reg.NStrip[kk][j][i] = 0;
+    }
   }
 
   return 1;

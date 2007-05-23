@@ -79,6 +79,7 @@ void CalcStatistics();
 void binary_zero(int n, int mb);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
+void DrawPlotvsTar(void);
 
 //===========================================================================
 //                        Profile Error

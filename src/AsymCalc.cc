@@ -60,6 +60,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
       //    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
     anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
 
+
     //-------------------------------------------------------
     //              CumulativeAsymmetry()    
     //-------------------------------------------------------
@@ -99,14 +100,19 @@ int end_process(recordConfigRhicStruct *cfginfo)
     }
 
     //-------------------------------------------------------
-    //        Calculate Statistics
-    //-------------------------------------------------------
-    CalcStatistics();
-
-    //-------------------------------------------------------
     //       Complete Histograms
     //-------------------------------------------------------
     CompleteHistogram();
+
+
+    //-------------------------------------------------------
+    //        Draw polarization vs target position
+    //-------------------------------------------------------
+    DrawPlotvsTar();
+    //-------------------------------------------------------
+    //        Calculate Statistics
+    //-------------------------------------------------------
+    CalcStatistics();
 
 
   }//end-of-if(!dproc.DMODE)
@@ -182,7 +188,7 @@ int TgtHist(){
   //                      Make rate _vs deliminter plots
   //---------------------------------------------------------------------------------
   for (int i=0; i<X_index; i++) {
-    dx[i]=0; 
+    cntr.good_event += cntr.good[i];    dx[i]=0; 
     y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ; 
     dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0; 
   }
@@ -702,23 +708,18 @@ void binary_zero(int n, int mb) {
 void
 CalcStatistics(){
 
-  int nIndex = runinfo.Run>=6 ? nTgtIndex : ndelim;
-  for (int i=0; i<nIndex; i++) cntr.good_event += cntr.good[i];
+    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+    anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+    anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
+    if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
+    cout<< "CalcStatistics !" << cntr.good_event << " " << runinfo.RunTime << " " << runinfo.GoodEventRate << endl;
 
-  runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
-  runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
-  runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
-  runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-  anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
-  anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
-
-  // Profile error dependends on universal rate for Run05
-  if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
-
-  return ;
+    return ;
 
 }
-
 
 //
 // Class name  :
@@ -829,6 +830,8 @@ PrintRunResults(StructHistStat hstat){
     printf(" Specific Luminosity         = %10.2f%10.2f%10.4f\n",hstat.mean, hstat.RMS, hstat.RMSnorm);
     printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
     printf(" # of Active Bunch           = %10d\n", runinfo.NActiveBunch);
+    printf(" bunch w/in WCM range        = %10d\n", average.counter);
+    printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
@@ -844,10 +847,36 @@ PrintRunResults(StructHistStat hstat){
     printf(" Polarization (PHENIX)       = %10.4f%9.4f\n",anal.sinphi[2].P[0],anal.sinphi[2].P[1]);
     printf(" Polarization (STAR)         = %10.4f%9.4f\n",anal.sinphi[3].P[0],anal.sinphi[3].P[1]);
     printf("-----------------------------------------------------------------------------------------\n");
-
-
-
+    for(Int_t i=0;i<nTgtIndex+1;i++) 
+      printf(" Polarization tgt pos %f    = %10.4f%9.4f\n",tgt.all.x[(int)tgt.Time[i]],anal.sinphi[100+i].P[0],anal.sinphi[100+i].P[1]);
+    printf("-----------------------------------------------------------------------------------------\n");
+    
     return;
+
+}
+
+
+void DrawPlotvsTar(void){
+
+  Double_t polvstar[nTgtIndex+1],epolvstar[nTgtIndex+1],posvstar[nTgtIndex+1];
+  for(Int_t i=0;i<nTgtIndex+1;i++){ 
+    polvstar[i]=anal.sinphi[100+i].P[0];
+    epolvstar[i]=anal.sinphi[100+i].P[1];
+    posvstar[i]=tgt.all.x[(int)tgt.Time[i]];
+  }
+  
+  Asymmetry->cd();
+  TH2F *h_vstar=new TH2F("Pol_vs_tarpos","Polarization vs target position",100,posvstar[0]-1,posvstar[nTgtIndex]+1,100,0,1);
+  TGraphErrors *gpolvstar=new TGraphErrors(nTgtIndex+1,posvstar,polvstar,0,epolvstar);
+  h_vstar->GetXaxis()->SetTitle("Target position (mm)");
+  h_vstar->GetYaxis()->SetTitle("Polarization");
+  gpolvstar->SetMarkerStyle(20);
+  gpolvstar->SetMarkerColor(kGreen+100);
+  DrawLine(h_vstar,posvstar[0]-1,posvstar[nTgtIndex]+1,anal.sinphi[0].P[0], kRed, 1,2);
+  DrawLine(h_vstar,posvstar[0]-1,posvstar[nTgtIndex]+1,anal.sinphi[0].P[0]-anal.sinphi[0].P[1], kRed, 1,1);
+  DrawLine(h_vstar,posvstar[0]-1,posvstar[nTgtIndex]+1,anal.sinphi[0].P[0]+anal.sinphi[0].P[1], kRed, 1,1);
+  h_vstar->GetListOfFunctions()->Add(gpolvstar,"P");
+  return;
 
 }
 
@@ -1510,8 +1539,12 @@ StripAsymmetry(){
   CalcStripAsymmetry(anal.A_N[1], 3, cntr.str.NStrip);  
 
   float diff[2];
+
+  for(Int_t i=0;i<nTgtIndex+1;i++) CalcStripAsymmetry(anal.A_N[1],100+i,cntr_tgt.reg.NStrip[i]);
+
   CalcStripAsymmetry(anal.A_N[1], 1, cntr.alt.NStrip);  // alternative sigma cut
   CalcStripAsymmetry(anal.A_N[1], 0, cntr.reg.NStrip);  // regular sigma cut
+
   if (anal.sinphi[0].P[0]) {
 
     // calculate differences and ratio

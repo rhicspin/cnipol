@@ -79,6 +79,12 @@ StructCounter cntr = {
   0     // taret motion entries
 };
 	 
+StructCounterTgt cntr_tgt = {
+  0,    // good_event;
+  0,    // revolution number
+  0     // taret motion entries
+};
+
 
 StructRunInfo runinfo = {
     6, // Run05, Run06,..
