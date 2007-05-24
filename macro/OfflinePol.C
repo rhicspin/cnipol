@@ -50,14 +50,14 @@ bool FILL_BY_FILL_AVERAGE = true;      // Period By Period Average thru Fill-By-
 bool NORMALIZED_POL       = false;     // Polarization average normalized by fill-by-fill averaged polarization approach
 bool PROFILE_ERROR        = true;      // Activate profile error. Fill by fill average polariations are weighted by profile error.
 bool PLOT_PROFILE_ERROR   = true;      // This will turned on in second round operation of profile error in the program
-bool PEAK_TO_AVERAGE      = false;      // Apply peak to average conversion factor to polarization 
+bool PEAK_TO_AVERAGE      = true;      // Apply peak to average conversion factor to polarization 
 //if (PROFILE_ERROR) FILL_BY_FILL_AVERAGE = true;   // profile error requires Fill_BY_FILL_AVERAGE
 bool RUN5_JETNORMALIZATION= true;      // Condition for Run05 jet normalization
-bool ABSOLUTE_PROFILE_CORRECTION   = true; // Correct polarization by profile error. Used for systematic error estimation.
+bool ABSOLUTE_PROFILE_CORRECTION = false; // Correct polarization by profile error. Used for systematic error estimation.
 bool PROFILE_CORRECTION_ERROR = false;   // profile correction error
 
 Float_t SigR_SigP         = 0.38;            // Sigma_R/Sigma_P for run05 yellow beam                    
-Float_t Peak_to_Average   = 0.93;            // Peak to Average conversion factor for yellow run05
+Float_t Peak_to_Average   = 0.9348;          // Peak to Average conversion factor for yellow run05
 
 // Bad data point criterias for Fitting
 Float_t RATE_FIT_STANDARD_DEVIATION      = 0.2;   // [MHz]
@@ -435,10 +435,12 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 	    }
 
 	    // Run05 analyzing power normalization
+	    /*
 	    if ((RunID[0]<7400)&&(Color==4)){
 	      P_offline[i] *= 0.99;
 	      P_alt[i]     *= 0.99;
-	    }
+	      }*/
+
 
 	    // Time decorder should be at the end of buffer read loop
 	    Time[i] = TimeDecoder();
@@ -838,7 +840,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
       period[i].Type         = JetRun5Type[i];
     }
     TargetByTargetOperation();
-    PROFILE_ERROR=true; FILL_BY_FILL_AVERAGE=true; PEAK_TO_AVERAGE=true; Peak_to_Average=0.93;
+    PROFILE_ERROR=true; FILL_BY_FILL_AVERAGE=true; PEAK_TO_AVERAGE=true; Peak_to_Average=0.9348;
     FillByFill(32, RUN, ndata, Color, CurC, ps);
     FillByFill(64+1+4, RUN, ndata, Color, CurC, ps);
     PeroidByPeriod(Mode, RUN, ndata, Beam, Color, CurC, ps);
@@ -915,7 +917,7 @@ Int_t
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
 
-  //  PlotControlCenter("Blue",Mode, CurC, ps);
+  PlotControlCenter("Blue",Mode, CurC, ps);
   CurC -> Update();
   if (frame) frame->Delete();
 
@@ -1055,7 +1057,7 @@ Int_t OfflinePol::OfflinePol() {
     fout.open(outfile,ios::out);
     cout << "output data file: " << outfile << endl;
 
-    //    if (RUN5_JETNORMALIZATION)  RunBothBeam(2005, CurC, ps); // period by period (Jet Run Type combined) fixed options for Run05 jet norm
+    if (RUN5_JETNORMALIZATION)  RunBothBeam(2005, CurC, ps); // period by period (Jet Run Type combined) fixed options for Run05 jet norm
     //   RunBothBeam(2000, CurC, ps); // period by period (Jet Run Type combined)
 
     fout.close();
