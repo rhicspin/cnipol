@@ -1,8 +1,8 @@
 
 C++    = g++
 
-SRC    = calcPhi.cc  interval.cc converge.cc CompareRunNmbr.cc mkTable.cc ReconstructTime.cc
-BINARY = calcPhi interval converge CompareRunNmbr mkTable ReconstructTime
+SRC    = calcPhi.cc  interval.cc converge.cc CompareRunNmbr.cc mkTable.cc ReconstructTime.cc dedx.cc eLoss.cc
+BINARY = calcPhi interval converge CompareRunNmbr mkTable ReconstructTime dedx eLoss
 
 CDEV=/usr/local/lib/cdev
 LIB_PATHS = -L$(CDEV) -L$(CDEV)/Linux 
@@ -12,10 +12,16 @@ CFLAGS = $(INC_PATHS) -pthread
 CXXFLAGS = $(INC_PATHS) -pthread
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
-all: calcPhi interval converge CompareRunNmbr mkTable ReconstructTime
+all: calcPhi interval converge CompareRunNmbr mkTable ReconstructTime dedx eLoss
 
 
 calcPhi: calcPhi.o
+	$(C++) $^ -o $@
+
+dedx: dedx.o
+	$(C++) $^ -o $@
+
+eLoss: eLoss.o
 	$(C++) $^ -o $@
 
 CompareRunNmbr: CompareRunNmbr.o
