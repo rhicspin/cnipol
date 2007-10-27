@@ -954,7 +954,7 @@ DlayerAnalyzer::DlayerPlot(Char_t *Beam, Int_t Mode){
 Int_t 
 DlayerAnalyzer::BlueAndYellowBeams(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
-  CurC -> Divide(1,2);
+  //  CurC -> Divide(1,2);
 
   DlayerPlot("Blue",Mode);
   CurC -> Update();
