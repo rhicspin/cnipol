@@ -70,6 +70,9 @@ fi
 if [ ! -d $ASYMDIR/calib ] ; then
     mkdir $ASYMDIR/calib
 fi
+if [ ! -d $ASYMDIR/douts ] ; then
+    mkdir $ASYMDIR/douts
+fi
 if [ ! -d $ASYMDIR/dlayer ] ; then
     mkdir $ASYMDIR/dlayer
 fi
