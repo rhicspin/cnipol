@@ -6,6 +6,7 @@
 #cnipol_daemon in to_be_analyzed_list mode;
 TO_BE_ANALYZED_LIST=$ASYMDIR/.cnipol_daemon_to_be_analyzed_asym.list;
 ANALYZE_FROM_FILE=0;
+PROCESS_ONE=0;
 
 RUNLIST=$DATADIR/raw_data.list;
 CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
@@ -43,7 +44,7 @@ fi
 #############################################################################
 help(){
     echo    " "
-    echo    " cnipol_daemon.sh [-xh][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
+    echo    " cnipol_daemon.sh [-xh][-f <RunID>][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>]"; 
     echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list]";
     echo    "    : search for new run from <runlist> which has not been analyized and then run"
@@ -52,6 +53,7 @@ help(){
     echo -e "   --analyze-from-list       analyzed from <file> without checking .cnipol_daemon_run.list."
     echo -e "                             [def <file>]=$TO_BE_ANALYZED_LIST";
     echo -e "   --runlist <runlist>       data run list file [def]:$RUNLIST";
+    echo -e "   -f <RunID>                process dead-layer fit and Asym for <RunID> ";
     echo -e "   -F <Fill#>                run program for runs in <Fill#>"
     echo -e "   --fill-from <Fill#>       run program for runs from <Fill#> [def]:$FROM_FILL";
     echo -e "   --fill-till <Fill#>       run program for runs till <Fill#> [def]:$TILL_FILL";
@@ -186,12 +188,10 @@ RunAsym(){
     dLayerChecker -f $RunID;
     if [ $? -eq 0 ] ; then
 	dLayerChecker -z $RunID
-#	rundb_updater.pl 
 	rundb_inserter.sh 
     fi
 
-#    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
-    nice -n 1 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
     mv $RunID.root root/.;
     echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
@@ -297,7 +297,6 @@ while [ 1 ] ;
 }
 
 
-
 #############################################################################
 #                                    Main                                   #
 #############################################################################
@@ -306,6 +305,7 @@ while test $# -ne 0; do
   case "$1" in
   --analyze-from-list)        ANALYZE_FROM_FILE=1;;
   --runlist)       shift ; RUNLIST=$1 ;;
+  -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1; ExeRunAsym=1 ;;
   -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from)     shift ; FROM_FILL=$1;;
   --fill-till)     shift ; TILL_FILL=$1;;
@@ -327,6 +327,10 @@ done
 if [ $ANALYZE_FROM_FILE -eq 1 ] ; then
     CNIPOL_DAEMON_FROM_LIST;
 else
-    CNIPOL_DAEMON;
+    if [ $PROCESS_ONE -eq 1 ]; then
+	CNI_Operation;
+    else
+	CNIPOL_DAEMON;
+    fi
 fi
 
