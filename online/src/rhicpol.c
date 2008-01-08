@@ -1,3 +1,4 @@
+#define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -12,11 +13,14 @@
 
 FILE *LogFile;
 beamDataStruct beamData;
+beamDataStruct beamOtherData;
 targetDataStruct targetData[2];
 polDataStruct polData;
 configRhicDataStruct Conf;
 SiChanStruct * SiConf = NULL;
 wcmDataStruct wcmData;
+wcmDataStruct wcmOtherData;
+jetPositionStruct jetPosition;
 
 int NoADO	= 0;
 float mTime 	= 10.0;
@@ -68,11 +72,12 @@ int main(int argc, char **argv)
     int i, j, k, ev;
     char * buf;
     time_t t;
-    
+    char mode = 'd';	// default is data mode, but actually only emittance mode changes anything here
+
     LogFile = stdout;
     recRing = 0;
     
-    while ((i = getopt(argc, argv, "c:Ce:f:ghi:IJl:nPt:T:v:")) != -1) switch(i) {
+    while ((i = getopt(argc, argv, "c:Ce:f:ghi:IJl:nPt:T:v:m:")) != -1) switch(i) {
     case 'c' :
 	strncpy(comment, optarg, sizeof(comment));
 	break;
@@ -115,6 +120,9 @@ int main(int argc, char **argv)
     case 'v':
 	iDebug = strtol(optarg, NULL, 0);
         break;
+    case 'm':
+	mode = optarg[0];
+	break;
     default:
 	iHelp = 1;
 	break;
@@ -159,6 +167,8 @@ int main(int argc, char **argv)
 		polData.statusS |= (WARN_INT);
 		LogFile = stdout;
 	    }
+// No buffering for log file : Ron 4/06 -- Also comment out fflush(LogFile) throughout code
+        setlinebuf(LogFile);
 	}
 	t = time(NULL);
 	fprintf(LogFile, 
@@ -170,6 +180,7 @@ int main(int argc, char **argv)
 	    polData.statusS |= (STATUS_ERROR | ERR_INT);
 	    polexit();
 	}
+//	fflush(LogFile);
 /* If tshift in effect move sensitive window boundaries */
 	for (i=0; i<Conf.NumChannels; i++) {
 	    j = (int)SiConf[i].Window.split.Beg + tshift/Conf.WFDTUnit;
@@ -192,8 +203,7 @@ int main(int argc, char **argv)
 	}    
 
 	if (NoADO == 0) {
-	    getAdoInfo();
-	    if ((recRing & REC_JET) == 0) UpdateMessage("Running...");
+	    getAdoInfo(mode);
 	    /* change default pol pattern */
 	    memset(&Conf.Pattern, 0, sizeof(Conf.Pattern));
 	    for (i=0;i<120;i++) {
@@ -277,6 +287,7 @@ int main(int argc, char **argv)
 	    polData.runIdS = beamData.fillNumberM + 0.001;
 	    if (recRing == REC_YELLOW) polData.runIdS += 0.1;
 	    if (recRing == REC_JET) polData.runIdS += 0.2;
+	    if (mode == 'e') polData.runIdS += 0.4;
 	}
 	if (NoADO == 0) 
 	    fprintf(LogFile,"CNIPOL-INFO : RunID: %8.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
@@ -293,6 +304,7 @@ int main(int argc, char **argv)
 	    polexit();
 	} 
 	
+	if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Running...");
 	setAlarm(mTime);
 	polData.startTimeS = time(NULL);
 	clearVetoFlipFlop();

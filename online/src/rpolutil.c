@@ -1,3 +1,4 @@
+#define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,9 +18,12 @@
 
 extern FILE *LogFile;
 extern beamDataStruct beamData;
+extern beamDataStruct beamOtherData;
 extern targetDataStruct targetData[2];
 extern polDataStruct polData;
 extern wcmDataStruct wcmData;
+extern wcmDataStruct wcmOtherData;
+extern jetPositionStruct jetPosition;
 extern int NoADO;
 extern float mTime;
 extern int mEvent;
@@ -30,7 +34,6 @@ extern float ANALPOW;
 extern float ANALPOWE;
 extern int iCicleRun;
 int MyRing = 0;
-long *targetHistory;
 
 char ReadMode[4];
 int OutRegBits = 0;	// we can not read it and it just writes on F16
@@ -55,6 +58,19 @@ extern int iSig;
 extern int iDebug;
 
 long memReadCount[MAXCRATES][MAXSTATIONS][4];
+
+carbTargStat ctss = { -1, "Undef", "Undef", "Undef", "Undef"};
+
+int RP_CommitChain(CMC_chain *ch, int C)
+{
+    int irc = CMC_CommitChain(ch, C);
+    if (irc == -ETIMEDOUT || irc == -ENODEV) {
+	fprintf(LogFile, "FATAL: USB timedout or CAMAC switched off. Aborting the run.\n");
+	polData.statusS |= (STATUS_ERROR | ERR_CAMAC);
+	polexit();
+    }
+    return irc;
+}
 
 void alarmHandler(int sig)
 {
@@ -127,7 +143,10 @@ int readConfig (char * cfgname, int update) {
     {"UseMemory",             "B:4:1",  0, &Conf.CSR,              "1"},
     {"2DHistFine",            "B:5:1",  0, &Conf.CSR,              "1"},
     {"Filter",                "B:8:1",  0, &Conf.CSR,              "1"},
+    {"CFDThreshold",          "B:8:1",  0, &Conf.CSR,              "1"},
+    {"DisableAllDelimeters",  "B:9:1",  0, &Conf.CSR,              "0"},
     {"120Bunch",              "B:10:1", 0, &Conf.CSR,              "1"},
+    {"EnableTrigWin",         "B:11:1", 0, &Conf.CSR,              "0"},
     {"MemRectLookUp",         "B:12:1", 0, &Conf.CSR,              "1"},
     {"RevolutionDelimeter",   "B:13:1", 0, &Conf.CSR,              "0"},
     {"Calibration",           "S", sizeof(chanconf), &chanconf[0], ""},
@@ -151,7 +170,9 @@ int readConfig (char * cfgname, int update) {
     {"AtomicNumber",	      "F", 0, &Conf.AtomicNumber,	   "12.0"},
     {"ReadMode",              "S", sizeof(ReadMode), &ReadMode[0], "D2"},
     {"Ring",		      "I", 0, &MyRing,			   "0"},
-    {"OutReg",	      	      "I", 0, &OutRegSet,		   "0"}
+    {"OutReg",	      	      "I", 0, &OutRegSet,		   "0"},
+    {"FPGAVersion",           "I", 0, &Conf.FPGAVersion,           "9"},
+    {"JetDelay",              "I", 0, &Conf.JetDelay,              "0x520"}
     };
 
     FILE * fconf;
@@ -442,6 +463,12 @@ int CheckConfig() {
 	Conf.CSR.split.MemEn = 1;
 	iRC++; 	
     }
+    if (Conf.FPGAVersion == 10 && Conf.CSR.split.Mode == 0) {
+	fprintf(LogFile,"RHICPOL-WARN : V10 FPGA does not support RAW mode. Switching to waveform mode.\n");
+	polData.statusS |= WARN_INT;
+	Conf.CSR.split.Mode = 1;
+	iRC++; 		
+    }
     if (Conf.BZDelay < 0) {
 	fprintf(LogFile,"RHICPOL-WARN : BZDelay must be >=0. Set to 0.\n");
 	polData.statusS |= WARN_INT;
@@ -647,8 +674,8 @@ int polWrite(recordHeaderStruct *header, long *data)
     header->num = dataNum++;
     irc = fwrite(header, sizeof(recordHeaderStruct), 1, OutFile);
     if (irc != 1) {
-	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error: %s.\n",
-	    strerror(errno));
+	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (header) rec=%8.8X: %s.\n",
+	    header->type, strerror(errno));
 	polData.statusS |= (STATUS_ERROR | ERR_INT);
 	fclose(OutFile);
 	OutFile = NULL;
@@ -657,14 +684,15 @@ int polWrite(recordHeaderStruct *header, long *data)
     }
     irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
     if (irc != 1) {
-	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error: %s.\n",
-	    strerror(errno));
+	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8X: %s.\n",
+	    header->type, strerror(errno));
 	polData.statusS |= (STATUS_ERROR | ERR_INT);
 	fclose(OutFile);
 	OutFile = NULL;
 	pthread_mutex_unlock(&mutex);
 	return 1;
     }
+    fflush(OutFile);
     pthread_mutex_unlock(&mutex);
     return 0;	
 }
@@ -686,7 +714,7 @@ void camacClose(void)
 	    if (!((i == Conf.NSc && j == Conf.CrSc) || (i == Conf.NOut && j == Conf.CrOut))) 
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8)); 
 	}
-	CMC_CommitChain(ch, Crate[j]);
+	RP_CommitChain(ch, Crate[j]);
 	CMC_Close(Crate[j]);
 	Crate[j] = -1;
     }
@@ -793,7 +821,7 @@ void clearVetoFlipFlop(void)
     CMC_Add2Chain(ch, CMC_STDNFA(Conf.NOut, 16, 0));
     CMC_Add2Chain(ch, OutRegBits | CMC_CMDDATA);
     CMC_Add2Chain(ch, CMC_STDNFA(Conf.NOut, 16, 0));
-    CMC_CommitChain(ch, Crate[Conf.CrOut]);
+    RP_CommitChain(ch, Crate[Conf.CrOut]);
     CMC_ReleaseChain(ch);
 }
 
@@ -805,7 +833,7 @@ void pulseDelimiter(void)
     CMC_Add2Chain(ch, CMC_STDNFA(Conf.NOut, 16, 0));
     CMC_Add2Chain(ch, OutRegBits | CMC_CMDDATA);
     CMC_Add2Chain(ch, CMC_STDNFA(Conf.NOut, 16, 0));
-    CMC_CommitChain(ch, Crate[Conf.CrOut]);
+    RP_CommitChain(ch, Crate[Conf.CrOut]);
     CMC_ReleaseChain(ch);
 }
 
@@ -836,7 +864,7 @@ void pulseAllProgs(void)
 	CMC_Add2Chain(ch, CMC_CMDDATA | 8); 	// Pulse PROG
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[j][i].yes) 
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
-	CMC_CommitChain(ch, Crate[j]);
+	RP_CommitChain(ch, Crate[j]);
     }
     CMC_ReleaseChain(ch);
     nsleep(4.0); 				// should be enough
@@ -849,10 +877,10 @@ void pulseAllProgs(void)
  *   4     - enable output to SDRAM					*
  *   5     - 2-dim histogram mode 					*
  *   6,7   - channel ID							*
- *   8     - enable 3-point filter					*
- *   9     - enable maximum correction					*
+ *   8     - enable 3-point filter, v10 : CFD threshold			*
+ *   9     - enable maximum correction, v10 : Disable all delimeters	*
  *   10    - 120/60 bunch mode 						*
- *   11    - 140 MHz output ON (obsolete)				*
+ *   11    - 140 MHz output ON (obsolete), v10, jet mode: enable window	*
  *   12    - rectangular lookup for events going to memory (AT mode only)*
  *   13    - external (0) /revolution (1) delimeter switch		*
  *   14 (RO) - dumping histogramms to emmory is active			*
@@ -865,12 +893,12 @@ int initWFDs(void)
 //	Pulse Prog if required
     if (iPulseProg) pulseAllProgs();
     ch = CMC_AllocateChain(0, MAXSTATIONS);
-//	check modiules present and Xilinxes are DONE
+//	check modules present and Xilinxes are DONE
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
 	CMC_ResetChain(ch);
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) 
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 8));
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
 	ii = 0;
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
 	    disFlag = 0;
@@ -878,7 +906,7 @@ int initWFDs(void)
 	    ii++;
 	    if ((j & (CMC_QMASK | CMC_XMASK)) != (CMC_QMASK | CMC_XMASK)) {
 	    /* Module not found */
-		fprintf(LogFile, "CNIPOL-ERR : Cannot find WFD module at station %d.%d\n", cr+1, i);
+		fprintf(LogFile, "CNIPOL-ERR : Cannot find WFD module at station %d.%d\n", cr, i);
 		polData.statusS |= (STATUS_ERROR | ERR_CAMAC | ERR_WFD);
 		disFlag=1;
 		iRC++;
@@ -890,7 +918,7 @@ int initWFDs(void)
 		    nsleep(0.1);
 		}
 		if (k == 40) {
-		    fprintf(LogFile, "CNIPOL-ERR : Found unloaded WFD module at station %d.%d and failed to reload\n", cr+1, i);
+		    fprintf(LogFile, "CNIPOL-ERR : Found unloaded WFD module at station %d.%d and failed to reload\n", cr, i);
 		    polData.statusS |= ERR_WFD;
 		    disFlag=1;
 		    iRC++;
@@ -920,14 +948,14 @@ int initWFDs(void)
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 7));	// reset DLL (to be done in WFD)
 	}
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
     nsleep(0.005);	// 5 ms is quite enough to reset DLLs
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
 	CMC_ResetChain(ch);
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) 
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 0));	// reset ALL
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
     nsleep(0.001);	// 1 ms is quite enough
     /*	Set registers */
@@ -949,6 +977,8 @@ int initWFDs(void)
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 2));
 		CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].Window.reg); // set window
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 3));
+		CMC_Add2Chain(ch, CMC_CMDDATA | (Conf.JetDelay & 0xFFFF));// set long waveform 
+		CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 4));
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));		// reset addresses
 		for (k=0; k<512; k++) {				// load lookup table
 		    CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].LookUp[k]);
@@ -985,7 +1015,7 @@ int initWFDs(void)
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));		// reset scalers
 	    }
 	}
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
 /*	Enable memory	*/
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
@@ -1009,7 +1039,7 @@ int initWFDs(void)
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 1);		// enable accept data
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
 	}
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
     CMC_ReleaseChain(ch);
 //	wait while we reset scalers
@@ -1039,7 +1069,7 @@ void fastInitWFDs(void)
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
 	}
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
 /*	Enable memory	*/
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
@@ -1053,7 +1083,7 @@ void fastInitWFDs(void)
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 1);		// enable accept data
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
 	}
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
     }
     CMC_ReleaseChain(ch);
 }
@@ -1066,14 +1096,12 @@ void initScalers(void)
 
 void getJetStatus(unsigned short * data)
 {
-    int i;
-    CMC_chain *ch;
-    ch = CMC_AllocateChain(0, 3);
-    CMC_Single(Crate[Conf.CrIn], Conf.NIn, 11, 0, 0);		// reset previous state
-    for (i=0; i<3; i++) CMC_Add2Chain(ch, CMC_STDNFA(Conf.NIn, 2, i));	// read data
-    CMC_CommitChain(ch, Crate[Conf.CrIn]);
-    for (i=0; i<3; i++) data[i] = ch->rdata[i] & CMC_DMASK;
-    CMC_ReleaseChain(ch);
+    int i;    
+    CMC_Single(Crate[Conf.CrIn], Conf.NIn, 16, 0, JET_VETO | JET_PLUS | JET_MINUS); 	// Set mask
+    CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);			// reset previous state
+    data[0] = CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);		// read qand reset
+    data[1] = getJetBits();						// read CDEV Jet bits
+    data[2] = 0;
 }
 
 int testJetVeto(void)
@@ -1088,13 +1116,14 @@ static char *getJetStatusString(void)
     unsigned short data[3];
     static char statuses[][10] = {"NONE", "PLUS", "MINUS", "ZERO"};
     getJetStatus(data);
-    return statuses[(data[1]/JET_PLUS) & 3];
+    return statuses[(data[0]/JET_PLUS) & 3];
 }
 
 void writeJetStatus(void)
 {
     static int num = 0;
     recordHJetSwitchStruct rec;
+    recordHeaderStruct header;
 
     memset(&rec, 0, sizeof(rec));
     num++;
@@ -1104,6 +1133,71 @@ void writeJetStatus(void)
     rec.Num = num;
     getJetStatus(rec.data);
     polWrite(&rec.header, (long *)&rec.Num);
+/*	We will also write positions here	*/
+    header.type = REC_HJPOSADO | recRing;
+    header.len = sizeof(header) + sizeof(jetPosition);
+    header.timestamp.time = time(NULL);
+    getJetPosition();
+    polWrite(&header, (long *)&jetPosition);
+}
+
+int testCarbTarg(void)
+// returns true on target state change
+{
+    carbTargStat cts;
+    static time_t t0;
+  
+    if (ctss.good == -1) {
+	getCarbTarg(&ctss);
+	return !(ctss.good);
+    }
+    getCarbTarg(&cts);
+    switch (ctss.good) {
+	case 1:
+	    if (!(cts.good)) {
+		memcpy(&ctss, &cts, sizeof(cts));
+		fprintf(LogFile, "\nCarbon Target State Change. Now: INSERTED (%s %s %s %s)\n",
+		    cts.carbtarg[0], cts.carbtarg[1], cts.carbtarg[2], cts.carbtarg[3]);
+		return 1;
+	    }
+	    break;
+	case 0:
+	    if (cts.good) {
+		memcpy(&ctss, &cts, sizeof(cts));
+		t0 = time(NULL);	// start waiting 1 minute for the targets to finish
+		ctss.good=-2;
+		return 0;
+	    }
+	    break;
+	case -2:
+	    if (!(cts.good)) break;
+	    if ((time(NULL)-t0) > JETWAIT4CARB) {  // assume carbon targets in safe place
+		memcpy(&ctss, &cts, sizeof(cts));
+		fprintf(LogFile, "\nCarbon Target State Change. Now: RETRACTED (%s %s %s %s)\n",
+		    cts.carbtarg[0], cts.carbtarg[1], cts.carbtarg[2], cts.carbtarg[3]);
+		return 1;
+	    } 
+	    return 0;
+	default:
+	    fprintf(LogFile,"\nTestCarbTarg-ERROR-Should never be here\n");
+	    break;
+    }
+    memcpy(&ctss, &cts, sizeof(cts));
+    return 0;
+}
+
+void writeCarbTarg(void)
+{
+    recordHJetCarbTargStruct rec;
+
+    memset(&rec, 0, sizeof(rec));
+    rec.header.type = REC_HJCARBT | recRing;
+    rec.header.len = sizeof(rec);
+    rec.header.timestamp.time = time(NULL);
+    memcpy(&rec.targstat, &ctss, sizeof(ctss));
+    if (rec.targstat.good < 0) rec.targstat.good = 0;
+    polWrite(&rec.header, (long *)&rec.targstat);
+
 }
 
 void writeWcmInfo(void)
@@ -1134,12 +1228,13 @@ int checkChainResult(CMC_chain *ch, int cr)
 
 int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 {
+    int array[8];
     int Cnt;
     int cr, i, j, ii, k, kk;
     CMC_chain *ch;
     
     Cnt = 0;
-    ch = CMC_AllocateChain(0, MAXSTATIONS*100);
+    ch = CMC_AllocateChain(0, MAXSTATIONS*150);
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
 //	send read chain
 	CMC_ResetChain(ch);
@@ -1149,13 +1244,13 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 	    CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));	// select virtex
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 3));
-	    CMC_Add2Chain(ch, CMC_CMDREPEAT | 21); // 21 = 16 + 6 - 1 - must be enough
-	    ii += 23;
+	    CMC_Add2Chain(ch, CMC_CMDREPEAT | 31); // 21 = 16 + 16 - 1 - must be enough
+	    ii += 33;
 	}
 	if (iDebug > 1500) fprintf(LogFile, "RHICPOL-INFO : Read dedicated scalers crate #%d CAMAC cmds = %d.\n",
 	    cr, ii);
 	if (ii == 0) continue;
-	i = CMC_CommitChain(ch, Crate[cr]);
+	i = RP_CommitChain(ch, Crate[cr]);
 	if (i < 0) {
 	    fprintf(LogFile, "RHICPOL-ERROR : Read dedicated scalers crate #%d error %d (%s)\n", 
 	        cr, -i, strerror(-i));
@@ -1176,16 +1271,24 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) 
 	    for (j=0; j<4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
 	    for (k=1; k<17; k++) if ((ch->rdata[k+ii] & 0xF0000) == 0) break; // read zero scaler also latches all
-	    for (kk = 0; kk < 6; kk += 2) {// only 3 scalers out of 8 are used here
+	    for (kk = 0; kk < 16; kk += 2) {
 		if ((ch->rdata[kk+k+ii] & 0xF0000) != kk*0x10000 || 
 		    (ch->rdata[kk+k+ii+1] & 0xF0000) != (kk+1)*0x10000) {
 		    fprintf(LogFile, "\nRHICPOL-WARN: Wrong dedicated scalers readout at %d.%d.%d@%d: %8.8X %8.8X\n",
 			cr, i, j+1, kk, ch->rdata[kk+k+ii], ch->rdata[kk+k+ii+1]);
 		} else {
-		    Cnt += (ch->rdata[kk+k+ii] & 0xFFFF) + ((ch->rdata[kk+k+ii+1] & 0xFFFF) << 16);
+		    array[kk/2] = (ch->rdata[kk+k+ii] & 0xFFFF) + ((ch->rdata[kk+k+ii+1] & 0xFFFF) << 16);
 		}
 	    }
-	    ii += 23;
+	    switch (Conf.CSR.split.Mode) {
+	    case MOD_AT:
+	    case MOD_ALL:
+		Cnt += array[0] + array[1] + array[2];
+		break;
+	    case MOD_SUB:
+		Cnt += array[5] - array[6];
+	    }
+	    ii += 33;
 	}
     }
     CMC_ReleaseChain(ch);
@@ -1203,19 +1306,39 @@ int getEvents(int Number)
     long *targetHistory;
     long targetHistoryLen;
     long targetHistoryPtr;
+    long *countHistory;
+    long countHistoryLen;
+    long countHistoryPtr;
     
     Cnt = 0;
     lCnt = 0;
     l10Cnt = 0;
     l10Val = 0;
     l10 = 0;
-    targetHistoryPtr = 0;	
     
-    if (NoADO == 0 && (recRing & REC_JET) == 0 && Conf.CSR.split.RevDelim == 0) {
+    if (NoADO == 0 && (recRing & REC_JET) == 0) {
 	targetHistoryLen = 8192;
 	targetHistory = (long *)malloc(targetHistoryLen);
-	GetTargetEncodings(&targetHistory[targetHistoryPtr/sizeof(long)]);
-	targetHistoryPtr += 4*sizeof(long);
+	if (targetHistory == NULL) {
+	    targetHistoryLen = 0;
+	} else {
+	    GetTargetEncodings(targetHistory);
+    	    targetHistoryPtr = 4*sizeof(long);
+	}
+    } else {
+	targetHistoryPtr = 0;
+	targetHistoryLen = 0;
+	targetHistory = NULL;
+    }
+
+    if ((recRing & REC_JET) == 0) {
+	countHistoryLen = 8192;
+	countHistory = (long *)malloc(countHistoryLen);
+	countHistoryPtr = 0;	
+    } else {
+	countHistoryPtr = 0;
+	countHistoryLen = 0;
+	countHistory = NULL;
     }
     
     gettimeofday(&tv, NULL);
@@ -1263,24 +1386,43 @@ int getEvents(int Number)
 	    if (NoADO == 0 && (recRing & REC_JET) == 0) {
 		UpdateProgress(Cnt, (int)((Cnt-lCnt)/(t-tlast)));
 //	get target information
-		if (Conf.CSR.split.RevDelim == 0) {
-		    if (targetHistoryPtr >= targetHistoryLen) {
-			targetHistory = (long *)realloc(targetHistory, targetHistoryLen+8192);
-		    }
+		if (targetHistoryPtr >= targetHistoryLen) {
+		    targetHistory = (long *)realloc(targetHistory, targetHistoryLen+8192);
+		    targetHistoryLen += 8192;
+		}
+		if (targetHistory != NULL) {
 		    GetTargetEncodings(&targetHistory[targetHistoryPtr/sizeof(long)]);
 		    targetHistoryPtr += 4*sizeof(long);
-		    pulseDelimiter();
+		} else {
+		    targetHistoryPtr = 0;
+		    targetHistoryLen = 0;
+		}
+		if (Conf.CSR.split.RevDelim == 0) pulseDelimiter();
+	    }
+	    if ((recRing & REC_JET) == 0) {
+//	get target information
+		if (countHistoryPtr >= countHistoryLen) {
+		    countHistory = (long *)realloc(countHistory, countHistoryLen+8192);
+		    countHistoryLen += 8192;
+		}
+		if (countHistory != NULL) {
+		    countHistory[countHistoryPtr/sizeof(long)] = (Cnt-lCnt)/(t-tlast);
+		    countHistoryPtr += sizeof(long);
+		} else {
+		    countHistoryPtr = 0;
+		    countHistoryLen = 0;		    
 		}
 	    }
 	    tlast = t;
 	    lCnt = Cnt;
     	}		
-	if (iCicleRun) forseWrite = testJetVeto();
+	if (iCicleRun) forseWrite = (testJetVeto() || testCarbTarg());
 	if (iDebug > 140 && forseWrite) fprintf(LogFile, "Debug: Jet state changed. Writing.\n");
 	if (forseWrite && !Conf.OnlyHist) {
 	    setOutInhibit();
 	    readMemory();
 	    writeJetStatus();
+	    writeCarbTarg();
 	    fastInitWFDs();
 	    clearVetoFlipFlop();
 	    resetOutInhibit();
@@ -1292,6 +1434,12 @@ int getEvents(int Number)
 	header.type = REC_PCTARGET;
 	header.timestamp.time = time(NULL);
 	polWrite(&header, targetHistory);
+    }
+    if (countHistoryPtr != 0) {
+	header.len = sizeof(header)+countHistoryPtr;
+	header.type = REC_COUNTRATE;
+	header.timestamp.time = time(NULL);
+	polWrite(&header, countHistory);
     }
     return Cnt;
 }
@@ -1331,7 +1479,7 @@ void readWFD()
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | 1535);	// 1535 = 1536 - 1
 	        ii += 1557;
 	    }
-	    j = CMC_CommitChain(ch, Crate[cr]);
+	    j = RP_CommitChain(ch, Crate[cr]);
     	    if (j < 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d error %d (%s)\n", cr, i, -j, strerror(-j));
 		continue;
@@ -1402,7 +1550,7 @@ void *readThread(void *arg)
         head.type = REC_READRAW;
         break;
     case MOD_SUB:
-        head.type = REC_READSUB;
+        head.type = (Conf.FPGAVersion == 10) ? REC_READLONG : REC_READSUB;
         break;
     case MOD_AT:
         head.type = REC_READAT;
@@ -1417,11 +1565,11 @@ void *readThread(void *arg)
     for (i=0; i<4; i++) bf[i] = malloc(BSIZE*sizeof(short));
     ch = CMC_AllocateChain(0, BSIZE);
     if (bf[0] == NULL || bf[1] == NULL || bf[2] == NULL || bf[3] == NULL || ch == NULL) {
-	CMC_ReleaseChain(ch);
-	for (i=0; i<4; i++) if (bf[i] != NULL) free(bf[i]);
-	fprintf(LogFile, "RHICPOL-ERROR : Unable to allocate buffers to readout memory at Crate #%d\n", cr);
-	polData.statusS |= WARN_INT;
-	return NULL;
+	   CMC_ReleaseChain(ch);
+	   for (i=0; i<4; i++) if (bf[i] != NULL) free(bf[i]);
+	   fprintf(LogFile, "RHICPOL-ERROR : Unable to allocate buffers to readout memory at Crate #%d\n", cr);
+	   polData.statusS |= WARN_INT;
+	   return NULL;
     }
     if(iDebug > 100) fprintf(LogFile, "RHICPOL-INFO : Thread for crate %d started successfully.\n", cr);
     for (i=0; i<MAXSTATIONS && iSig!=SIGTERM; i++) if (WFDinCAMAC[cr][i].yes) {
@@ -1458,7 +1606,7 @@ void *readThread(void *arg)
 	}
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));	
 	CMC_Add2Chain(ch, CMC_CMDDELAY | 40);		// delay ~ 100 us
-	CMC_CommitChain(ch, Crate[cr]);
+	RP_CommitChain(ch, Crate[cr]);
 	len  = ((ch->rdata[3] & 0xFFFF) + ((ch->rdata[4] & 0xFFFF) << 16));	// bytes
 	if (len >= WFDMEMSIZE) {
 	    fprintf(LogFile, "RHICPOL-WARN : Memory overflow at station %d.%d, the tail of data is lost\n", cr, i);
@@ -1493,7 +1641,7 @@ void *readThread(void *arg)
     		CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 0, i, 0, 0));
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | (rpt - 1));
 	    }
-	    j = CMC_CommitChain(ch, Crate[cr]);
+	    j = RP_CommitChain(ch, Crate[cr]);
     	    if (j < 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read memory WFD %d.%d error %d (%s)\n", cr, i, -j, strerror(-j));
 		err++;
@@ -1526,8 +1674,10 @@ void *readThread(void *arg)
 		    } else {
 			type = REC_DATA;
 			switch (Conf.CSR.split.Mode) {
-			case MOD_RAW :
 			case MOD_SUB :
+			    tlen = (Conf.FPGAVersion == 10) ? 3*(Conf.JetDelay & 0xFF) + 4 : 49;
+			    break;
+			case MOD_RAW :
 			case MOD_ALL :
 			    tlen = 49;
 			    break;
@@ -1546,7 +1696,7 @@ void *readThread(void *arg)
 		    if (tlen == 1) {
 			evt[Vn]++;
 //	correct backward for 120 bunch mode short waveforms
-			if (Conf.CSR.split.Mode != MOD_AT && Conf.CSR.split.B120) {
+			if (Conf.CSR.split.Mode != MOD_AT && Conf.CSR.split.B120 && Conf.FPGAVersion < 10) {
 			    ptr[Vn] -= 24;
 			    bf[Vn][ptr[Vn]-3] = bf[Vn][ptr[Vn]+21];
 			    bf[Vn][ptr[Vn]-2] = bf[Vn][ptr[Vn]+22];
@@ -1558,7 +1708,7 @@ void *readThread(void *arg)
 		if (tlen > 0) tlen --;	// record word counter
 		if (tlen == 0) {
 //			We shell write here if delimeter changed or no space left and tlen = 0
-		    if (((type == REC_DELIM && ptr[Vn] > 2) || (type == REC_DATA && ptr[Vn] > BSIZE - 100))
+		    if (((type == REC_DELIM && ptr[Vn] > 2) || (type == REC_DATA && ptr[Vn] > BSIZE - 1000))
 		    	&& WFDinCAMAC[cr][i].si[Vn] >= 0) {
 			bf[Vn][0] = WFDinCAMAC[cr][i].si[Vn] + (((evt[Vn] - 1) & 0xFF) << 8);
 			bf[Vn][1] = (evt[Vn] - 1) >> 8;
@@ -1581,6 +1731,8 @@ void *readThread(void *arg)
 	    if (type == REC_DATA) {
 		if (Conf.CSR.split.Mode == MOD_AT) {
 		    ptr[Vn] -= 3 - tlen;
+		} else if (Conf.FPGAVersion == 10 && Conf.CSR.split.Mode == MOD_SUB) {
+		    ptr[Vn] -= 3*(Conf.JetDelay & 0xFF) + 3 - tlen;
 		} else {
 		    ptr[Vn] -= 48 - tlen;
 		}
@@ -1629,17 +1781,19 @@ void readMemory()
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr] && th[cr] != 0) pthread_join(th[cr], NULL);
 /*	some printout				*/
     GrandTotal = totalSum(&memReadCount[0][0][0], sizeof(memReadCount)/sizeof(long));
-    if (iCicleRun == 0 || iDebug > 5) fprintf(LogFile,"RHICPOL-INFO : Total %qd events read from memory\n", GrandTotal);
+    if (iCicleRun == 0 || iDebug > 5) 
+	fprintf(LogFile,"RHICPOL-INFO : Total %qd events read from memory\n", GrandTotal);
     if (iCicleRun) {
-	fprintf(LogFile, "\nReadMem INFO:   %15qd events so far. New HJet state: %s\n", GrandTotal, getJetStatusString());
+	fprintf(LogFile, "\nReadMem INFO:   %15qd events in last memory buffer. New HJet state: %s\n", 
+	    GrandTotal, getJetStatusString());
 	fprintf(LogFile, "Events in the last memory buffer:\n");
 	for(i=0; i<Conf.NumChannels; i++) {
-	    fprintf(LogFile, "Si%2d:%7d ", i+1, 
-		memReadCount[SiConf[i].CrateN][SiConf[i].CamacN][SiConf[i].VirtexN]);
+	    fprintf(LogFile, "Si%2d:%7d ", i+1, (SiConf[i].CrateN < 0) ? 0 :
+		memReadCount[SiConf[i].CrateN][SiConf[i].CamacN][SiConf[i].VirtexN-1]);
 	    if ((i%6) == 5) fprintf(LogFile, "\n");
 	}
 	if (i%6) fprintf(LogFile, "\n");
-	fflush(LogFile);
+//	fflush(LogFile);
     }
 }
 
@@ -1652,7 +1806,7 @@ void readScalers()
     if (Conf.NSc < 1 || Conf.CrSc < 0) return;
     ch = CMC_AllocateChain(0, 12);
     for (i=0; i<12; i++) CMC_Add2Chain(ch, CMC_STDNFA(Conf.NSc, 0, i));
-    CMC_CommitChain(ch, Conf.CrSc);
+    RP_CommitChain(ch, Conf.CrSc);
     for (i=0; i<6; i++) rec.data[i] = ((long long) (ch->rdata[2*i] & CMC_DMASK)) +
 	(((long long) (ch->rdata[2*i+1] & CMC_DMASK)) << 24);
     rec.header.type = REC_SCALERS | recRing;
@@ -1663,14 +1817,25 @@ void readScalers()
 
 void closeDataFile(char * comment)
 {
+    int len;
+    long *data;
     recordEndStruct rec;
     recordHeaderStruct header;
     if (OutFile == NULL) return;
+    if ((recRing & REC_JET) == 0) {
+//	Target movement record for profiles
+	header.type = REC_TAGMOVEADO | recRing;
+	len = getTagetMovementInfo(&data);
+	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
+	header.timestamp.time = time(NULL);
+	polWrite(&header, data);
+	free(data);
 //	Polarimeter specific data to be passed to data2hbook
-    header.type = REC_POLADO | recRing;
-    header.len = sizeof(recordPolAdoStruct);
-    header.timestamp.time = time(NULL);
-    polWrite(&header, (long *)&polData);
+	header.type = REC_POLADO | recRing;
+	header.len = sizeof(recordPolAdoStruct);
+	header.timestamp.time = time(NULL);
+	polWrite(&header, (long *)&polData);
+    }
 //
     strncpy(rec.comment, comment, sizeof(rec.comment));
     rec.header.type = REC_END | recRing;
@@ -1721,6 +1886,15 @@ int openDataFile(char *fname, char *comment, int noAdo)
     header.len = sizeof(recordBeamAdoStruct);
     header.timestamp.time = time(NULL);
     polWrite(&header, (long *)&beamData);
+//	Store the other beam parameters
+    if (recRing & REC_JET) {
+	header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
+	if (recRing & REC_BLUE) header.type |= REC_YELLOW;
+	if (recRing & REC_YELLOW) header.type |= REC_BLUE;
+	header.len = sizeof(recordBeamAdoStruct);
+	header.timestamp.time = time(NULL);
+	polWrite(&header, (long *)&beamOtherData);
+    }
 //
     if (noAdo) return 0;
 //	target data
@@ -1735,6 +1909,16 @@ int openDataFile(char *fname, char *comment, int noAdo)
     header.timestamp.time = time(NULL);
     polWrite(&header, (long *)&wcmData);
 
+//	Store the other beam parameters
+    if (recRing & REC_JET) {
+	header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
+	if (recRing & REC_BLUE) header.type |= REC_YELLOW;
+	if (recRing & REC_YELLOW) header.type |= REC_BLUE;
+	header.len = sizeof(recordWcmAdoStruct);
+	header.timestamp.time = time(NULL);
+	polWrite(&header, (long *)&wcmOtherData);
+    }
+    
     return 0;
 }
 

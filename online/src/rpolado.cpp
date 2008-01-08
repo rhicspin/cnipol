@@ -135,8 +135,13 @@ void StartMeasurement(int mode)
     data.get("value", &maxTime);
     DEVSEND(pol, "get numberEventsToDoS", NULL, &data, LogFile, irc);
     data.get("value", &numberEvents);
-    DEVSEND(pol, "get runIdS", NULL, &data, LogFile, irc);
-    data.get("value", &runId);
+    if (mode==2) {  // read run number for emit. scans
+      DEVSEND(pol, "get emitRunIdS", NULL, &data, LogFile, irc);
+      data.get("value", &runId);      
+    } else {        // or get run number for polarization measurements
+      DEVSEND(pol, "get runIdS", NULL, &data, LogFile, irc);
+      data.get("value", &runId);
+    }
     DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc);
     data.get("value", &fillNumber);
     DEVSEND(spec, "get beamEnergyM", NULL, &data, LogFile, irc);
@@ -169,7 +174,11 @@ void StartMeasurement(int mode)
     } else {
 	ID.fill = fillNumber;
 	ID.run = 1;
-	ID.ring = (MyPolarimeter == 0) ? 1 : 0;
+	if (mode==2) {
+	  ID.ring = (MyPolarimeter == 0) ? 5 : 4;  // for emit. scans
+	} else {
+	  ID.ring = (MyPolarimeter == 0) ? 1 : 0;
+	}
     }
     runId = ID.fill + 0.1*ID.ring + 0.001*ID.run;
 
@@ -191,6 +200,8 @@ void StartMeasurement(int mode)
             sprintf(s6, "s");    // scaler mode
         } else if (mode==1) {
             sprintf(s6, "d");    // data mode
+        } else if (mode==2) {
+            sprintf(s6, "e");    // emittance scan
         } else {
             sprintf(s6, "t");     // target scan
         }            
@@ -287,6 +298,9 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
 	break;
     case 'D': 
         iCmd = CMD_DATA | (CMD_YELLOW << MyPolarimeter);	    
+	break;
+    case 'E': 
+        iCmd = CMD_EMIT | (CMD_YELLOW << MyPolarimeter);	    
 	break;
     case 'T': 
         iCmd = CMD_TEST | (CMD_YELLOW << MyPolarimeter);	    
@@ -450,8 +464,11 @@ int main(int argc, char** argv)
 	    case CMD_DATA :
 		StartMeasurement(1);
 		break;
-	    case CMD_TEST :
+	    case CMD_EMIT :
 		StartMeasurement(2);
+		break;
+	    case CMD_TEST :
+		StartMeasurement(3);
 		break;
 	    case CMD_STOP :
 	    case CMD_CAN :
