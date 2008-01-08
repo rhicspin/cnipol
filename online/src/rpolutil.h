@@ -31,8 +31,12 @@ void setAlarm(float mTime);
 void clearAlarm(void);
 void alarmHandler(int sig);
 
-void getAdoInfo(void);
+int getJetbits(void);
+void getJetPosition(void);
+int getTagetMovementInfo(long **data);
+void getAdoInfo(char mode);
 void getWcmInfo(void);
+void getCarbTarg(carbTargStat * targstat);
 void GetTargetEncodings(long *res);
 void UpdateProgress(int evDone, int rate);
 void UpdateStatus(void);
@@ -48,5 +52,7 @@ void getJetStatus(unsigned short * data);
 int testJetVeto(void);
 static char * getJetStatusString(void);
 void writeJetStatus(void);
+int testCarbTarg(void);
+void writeCarbTarg(void);
 
 #endif

@@ -1,3 +1,4 @@
+#define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +29,9 @@ struct {
 } runpars_;
 
 void mybook_(int *num);
+void histrate_(long *data, long *num);
 void histdelim_(long *data, long *num);
+void histtagmov_(long *data, long *num);
 
 //	Common /atdata/ (for n-tuple)
 struct {
@@ -498,6 +501,14 @@ int readandfill_(void)
 	case REC_PCTARGET:
 	    i = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
 	    histdelim_((long *)&rec.buffer[sizeof(rec.header)], (long *)&i);
+	    break;
+	case REC_COUNTRATE:
+	    i = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+	    histrate_((long *)&rec.buffer[sizeof(rec.header)], (long *)&i);
+	    break;
+	case REC_TAGMOVEADO:
+	    i = (rec.header.len - sizeof(rec.header))/(2*sizeof(long));
+	    histtagmov_((long *)&rec.buffer[sizeof(rec.header)], (long *)&i);	    
 	    break;
 	case REC_WCMADO:
 	    break;

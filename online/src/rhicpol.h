@@ -6,8 +6,9 @@
 #define MAXSTATIONS 	24
 
 #define WFDMEMSIZE	0x4000000
-#define MAXERR		1000
+#define MAXERR		10000
 #define MAXNTEVENTS	2000000
+#define V10BASELINE	8
 
 #define SHELL		"/bin/bash"
 
@@ -37,7 +38,8 @@
 #define CMD_CAN		0x0002
 #define CMD_START	0x0100
 #define CMD_DATA	0x0200
-#define CMD_TEST	0x0300
+#define CMD_EMIT	0x0300
+#define CMD_TEST	0x0400
 #define CMD_YELLOW	0x1000
 #define CMD_BLUE	0x2000
 #define CMD_DONE	0x4000
@@ -46,6 +48,7 @@
 #define MAXANALYSISTIME		120	// sec
 #define RTIMEPEREVENT		60.E-6	// sec/event for readout from memory 
 					// including that fact that memory has more events than scalers
+#define JETWAIT4CARB		60	// seconds to wait in jet data runs for carbon polarimeter target retraction
 
 #define CFG_INIT	0
 #define CFG_UPDATE	1
@@ -115,6 +118,11 @@ typedef struct {
     float wcmBeamM;
 } wcmDataStruct;
 
+typedef struct {
+    int jetAbsolutePosition;
+    int rbpm[8];
+} jetPositionStruct;
+
 // Bits in output register
 #define OUT_INHIBIT	0x0001
 #define OUT_DELIM	0x0002
@@ -128,9 +136,9 @@ typedef struct {
 #define OUT_BLUE	0
 
 // masks for input register
-#define JET_VETO	0x0008
-#define JET_PLUS	0x0200
-#define JET_MINUS	0x0400
+#define JET_VETO	0x0001
+#define JET_PLUS	0x0002
+#define JET_MINUS	0x0004
 
 typedef struct {
     short int CrateN;	// crate number
@@ -195,10 +203,10 @@ typedef struct {
 	    unsigned MemEn:1;  	// [4] Output to memory enabled if 1
 	    unsigned Mod2D:1;  	// [5] 0-coarse, 1-fine (in t)
 	    unsigned VirtN:2;  	// [7:6] Channel number to appear in data stream to memory
-	    unsigned Filter:1; 	// [8] Enable 3pt filter
+	    unsigned Filter:1; 	// [8] Enable 3pt filter, CFD threshold for v.10
 	    unsigned MaxCor:1; 	// [9] Enable maximum correction (no effect unless the tables are programmed)
 	    unsigned B120:1;   	// [10] Enable 120 bunch mode
-	    unsigned G140:1;   	// [11] Dummy in this design
+	    unsigned G140:1;   	// [11] Dummy in this design, enable trig. window for jet mode v. 10
 	    unsigned RMemLUp:1;	// [12] Selection of events to memory: 0-regular
 			        // lookup, 1-rectangular lookup (ampl thresh=FineHistBeg,
 			        // time thresh=Window.Beg)
@@ -240,7 +248,9 @@ typedef struct {
     float SleepFraction; // [0..1] - fraction of time to set inhibit to optimize memory usage
     float CicleTime;	// time period to test jet Veto
     float TrigMin;	// trigger level for internal 2-dim histogram and for rectangular cut for memory
-    int Dummy[37];	// For futher use to keep the whole length the same
+    int JetDelay;	// Value to be written into delay register of version 10
+    int FPGAVersion;	// FPGA version. We don't support various versions in one run
+    int Dummy[35];	// For futher use to keep the whole length the same
     int NumChannels;		// number of silicon strips
     SiChanStruct chan[1];	// array of NumChannels size
 } configRhicDataStruct;

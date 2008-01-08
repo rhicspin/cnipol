@@ -38,10 +38,16 @@ void sendresult_(int *recRing) {
 
     if(!DEVSEND(spec, "get fillNumberM", NULL, &data, stdout, irc))
 	data.get("value", &fillNumberM);
+    
 //	Update runId only if it really corresponds to fillNumber
     if ((int)(poldat_.runIdS) == fillNumberM) {
 	data.insert("value", poldat_.runIdS);
-	DEVSEND(pol, "set runIdS", &data, NULL, stdout, irc);
+//	Update runIdS or emitRunIdS
+	if ((((int)(10*poldat_.runIdS)) % 10) >= 4) {
+	    DEVSEND(pol, "set emitRunIdS", &data, NULL, stdout, irc);
+	} else {
+	    DEVSEND(pol, "set runIdS", &data, NULL, stdout, irc);
+	}
     }
 
     data.insert("value", poldat_.startTimeS);

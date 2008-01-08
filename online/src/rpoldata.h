@@ -6,11 +6,14 @@
 
 #define BSIZE 0x40000			// 256 k
 
-#define REC_BEGIN	0x00000001
-#define REC_POLADO	0x00000101
-#define REC_TAGADO	0x00000102
-#define REC_BEAMADO	0x00000103
-#define REC_WCMADO      0x00000104
+#define REC_BEGIN	0x00000001	// Begin of the file
+#define REC_POLADO	0x00000101	// Polarimeter ADO record
+#define REC_TAGADO	0x00000102	// Target ADO record
+#define REC_BEAMADO	0x00000103	// Beam ADO record
+#define REC_WCMADO      0x00000104	// Wall current monitor ADO record
+#define REC_HJPOSADO	0x00000105	// Beam position and HJET position ADO record
+#define REC_TAGMOVEADO	0x00000106	// Target movement history ADO record
+#define REC_HJCARBT	0x00000107	// Carbon polarimeter target status in JET data runs
 #define REC_CONFIG	0x00000111	// obsolete
 //#define REC_RHIC_CONF   0x00000112	// Instead of REC_CONFIG since Apr2003
 #define REC_RHIC_CONF   0x00000113	// New parameters added, but I don't want to change the name. 14/04/04
@@ -22,12 +25,14 @@
 #define REC_READSUB	0x00000222	// New parameters added, but I don't want to change the name. 14/04/04	
 #define REC_READALL	0x00000223	// New parameters added, but I don't want to change the name. 14/04/04
 #define REC_READAT	0x00000231	// New parameters added, but I don't want to change the name. 14/04/04
+#define REC_READLONG	0x00000241	// Long waveform
 #define REC_WFDSCAL	0x00000301	// obsolete
 #define REC_HISTAT	0x00000302	// obsolete
 #define REC_WFDV8SCAL   0x00000303
 #define REC_SCALERS	0x00000401
 #define REC_HJETSWITCH	0x00000501	// jet switch record
 #define REC_PCTARGET	0x00000502	// target history record
+#define REC_COUNTRATE	0x00000503	// count rate history record
 #define REC_END		0x00000999
 #define REC_TYPEMASK	0x00007FFF
 #define REC_YELLOW	0x00010000 // or'ed with the type
@@ -64,6 +69,16 @@ typedef struct {
     unsigned short data[3];	// just 3 16-bit words
     long reserved[16];		// just for future extensions
 } recordHJetSwitchStruct;
+
+typedef struct {
+    int good;			// 1 if all targets out of beam, zero otherwise
+    char carbtarg[4][10];	// 4 carbon targets positions
+} carbTargStat;
+
+typedef struct {
+    recordHeaderStruct header;
+    carbTargStat targstat;
+} recordHJetCarbTargStruct;
 
 typedef struct {
     recordHeaderStruct header;
@@ -140,6 +155,18 @@ typedef struct {
     unsigned char rev;	// next 8 bits of revolution counter
 } ALLMode120Struct;
 
+typedef struct {
+    unsigned char length; // total waveform length in 70 MHz clocks (6 points)
+    unsigned char before; // length in 70 MHz clocks (6 points) before trigger
+    unsigned char trt:4;  // 4 bit trigger time from bunch pulse in 70 MHz clocks
+    unsigned char bl:4;   // bunch number 
+    unsigned char bh:3;   // bunch number 
+    unsigned char revl:5; // revolution number
+    unsigned char revm;   // revolution number
+    unsigned char revh;   // revolution number
+    unsigned char d[1];	  // actual length of data is <length>*6
+} longWaveStruct;
+
 /*
     All data structures have the following format:
 */
@@ -168,6 +195,11 @@ typedef struct {
     subheadStruct subhead;
     waveformStruct data[1];
 } recordReadWaveStruct;
+
+typedef struct {
+    subheadStruct subhead;
+    char data[1];		// we don't know event length !!!
+} recordLongWaveStruct;
 
 typedef struct {
     subheadStruct subhead;
@@ -239,4 +271,8 @@ typedef struct {
     char comment[256];
 } recordEndStruct;
 
+typedef struct {
+    recordHeaderStruct   header;
+    char                 data[1];
+} ReadBufferStruct;
 #endif
