@@ -268,11 +268,12 @@ DeadLayer Fit:
    % cd $ASYMDIR
 
    for const. time cut:
-   % dLayer.pl -f 7279.005 
+   % dLayer.pl -f 7279.005 -i 
 
    for banana cut:
-   % dLayer.pl -b -f 7279.005 
+   % dLayer.pl -b -f 7279.005 -i 
 
+   option "-i" interprets the energy range as reconstructed energy.
 
 
 Create new configulation:
