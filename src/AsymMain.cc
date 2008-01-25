@@ -237,12 +237,12 @@ int main (int argc, char *argv[]){
         }
     }
 
-
     // RunID 
     int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 7999.001.data - .data = 7999.001 
-    char  RunID[chrlen];
-    strncpy(RunID,ifile,chrlen);
+    char RunID[chrlen];
+    strncpy(RunID,ifile,chrlen); RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
     runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
+
 
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
     // Otherwise, data filename with characters skip readdb and reconfig routines
