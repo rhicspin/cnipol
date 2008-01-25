@@ -1,10 +1,10 @@
 #!/bin/bash
 # mklink.sh
-# March. 8, 2006
+# Mar. 8, 2006
 # I.Nakagawa
 LOGFILE="/tmp/log/mklink.log";
 RAW_DATALIST="$DATADIR/raw_data.list";
-SOURCEDIR=/$BEAM/2008/$Mode
+RUN_YEAR=2008;
 ExeStandAlonePC2PC=0;
 ExeDoublePC=0;
 ExeSimple=0;
@@ -59,6 +59,7 @@ MakeLinks(){
 
     
     #make simbolik link if there is no existing links
+    SOURCEDIR=/$BEAM/$RUN_YEAR/$Mode
     for f in `ls $SOURCEDIR | grep $Mode` ; 
       do 
       filename=`basename $f`
