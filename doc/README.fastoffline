@@ -5,9 +5,19 @@
 This README file instructs the setup for the fast offline analysis of pC 
 software packages. Here is the setup for Run06:
 
-o pc2pc 
+o at pc2pc 
+
+  Update year in ~/cnipol/script/mklink.sh. 
+   
+  For example:
+  RUN_YEAR=2008
+
+  This is the only place you need to update year by year.
+  Once modified, then execute ~/cnipol/script/install.sh
+  Make sure to update in cvs repository accordingly.
 
   Make links to bluepc/yellowpc data files to $DATADIR
+  by executing MkLink.sh at 
 
   /etc/cron.hourly/MkLink.sh
 
@@ -21,10 +31,11 @@ o pc2pc
 
 	#Update raw data file list in $RAWDATA_LIST
 	cd $DATADIR
-	ls [7-8]???.???.data | sed -e 's/.data//' > $RAWDATA_LIST
+	ls [7-9]???.???.data          | sed -e 's/.data//' > $RAWDATA_LIST
+        ls 1????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
+
 	chown e950:e950 $RAWDATA_LIST
 	cd -
-
 
 o bluepc
 
