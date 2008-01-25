@@ -195,7 +195,7 @@ int TgtHist(){
   anal.max_rate = GetMax(X_index,y);
   float ymin=fabs(double(ASYM_DEFAULT)), ymax; 
   GetMinMax(X_index, y, margin, ymin, ymax);
-  sprintf(htitle,"%8.3f : Rate vs Taret Postion", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Rate vs Taret Postion", runinfo.RUNID);
   rate_vs_delim = new TH2F("rate_vs_delim",htitle, 100, xmin, xmax, 100, ymin, ymax);
   rate_vs_delim -> GetXaxis() -> SetTitle("Target Position [mm]");
   rate_vs_delim -> GetYaxis() -> SetTitle("Carbon in Banana Rate[MHz]");
@@ -208,7 +208,7 @@ int TgtHist(){
   //---------------------------------------------------------------------------------
   //                           Target Position vs Time
   //---------------------------------------------------------------------------------
-  sprintf(htitle,"%8.3f : Taret Postion vs. Time", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Taret Postion vs. Time", runinfo.RUNID);
   TH2F * tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
   tgtx_vs_time -> GetYaxis() -> SetTitle("Duration from Measurement Start [s]");
   tgtx_vs_time -> GetXaxis() -> SetTitle("Target Position [mm]");
@@ -1258,7 +1258,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
     // Mass Position Deviation from M_12 
     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
-    sprintf(htitle,"Run%8.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
+    sprintf(htitle,"Run%.3f:Invariant mass position deviation vs. strip", runinfo.RUNID); 
     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
     tg->SetName("tg");
@@ -1268,7 +1268,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
 
     // RMS width mapping of 12C mass peak
     GetMinMax(NSTRIP, feedback.RMS, margin, min, max);
-    sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID); 
+    sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID); 
     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
     tg->SetName("tg");
@@ -1277,7 +1277,7 @@ TshiftFinder(int Mode, int FeedBackLevel){
     mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
 
     // Chi2 mapping of Gaussian fit on 12C mass peak
-    sprintf(htitle,"Run%8.3f:Gaussian fit on Invariant mass chi2 vs. strip",runinfo.RUNID); 
+    sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass chi2 vs. strip",runinfo.RUNID); 
     GetMinMax(NSTRIP, feedback.chi2, margin, min, max);
     mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
     tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
@@ -1391,19 +1391,19 @@ calcBunchAsymmetry(){
     float min, max;
     float margin=0.2;
     float prefix=0.028;
-    sprintf(htitle,"Run%8.3f : Raw Asymmetry X90", runinfo.RUNID);
+    sprintf(htitle,"Run%.3f : Raw Asymmetry X90", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ax90[0], margin, min, max);
     asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
     DrawLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
-    sprintf(htitle,"Run%8.3f : Raw Asymmetry X45", runinfo.RUNID);
+    sprintf(htitle,"Run%.3f : Raw Asymmetry X45", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ax45[0], margin, min, max);
     asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
     asym_vs_bunch_x45 -> GetYaxis() -> SetTitle("Counts weighted by error");
     asym_vs_bunch_x45 -> GetXaxis() -> SetTitle("Raw Asymmetry");
     DrawLine(asym_vs_bunch_x45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
-    sprintf(htitle,"Run%8.3f : Raw Asymmetry Y45", runinfo.RUNID);
+    sprintf(htitle,"Run%.3f : Raw Asymmetry Y45", runinfo.RUNID);
     GetMinMaxOption(prefix, NBUNCH, basym.Ay45[0], margin, min, max);
     asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
     asym_vs_bunch_y45 -> GetYaxis() -> SetTitle("Counts weighted by error");
@@ -1715,7 +1715,7 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   Asymmetry->cd();
   float min, max, prefix, margin; prefix=margin=0.3;
   GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
-  sprintf(htitle,"Run%8.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+  sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
   asym_sinphi_fit   =  new TH2F("asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
   asym_sinphi_fit   -> GetXaxis()->SetTitle("phi [deg.]");
   asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry / A_N [%]");

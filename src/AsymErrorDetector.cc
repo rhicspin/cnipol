@@ -105,7 +105,7 @@ InvariantMassCorrelation(int st){
   TH1D *hslice_1 = (TH1D*)gDirectory->Get("hslice_1");
   sprintf(histname,"mass_vs_energy_corr_st%d",st+1);
   hslice_1 -> SetName(histname);
-  sprintf(htitle,"%8.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",runinfo.RUNID,st+1);
+  sprintf(htitle,"%.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",runinfo.RUNID,st+1);
   hslice_1 -> SetTitle(htitle);
   hslice_1 -> GetXaxis()->SetTitle("12C Kinetic Energy [keV]");
   hslice_1 -> GetYaxis()->SetTitle("Invariant Mass [GeV]");
@@ -135,7 +135,7 @@ InvariantMassCorrelation(int st){
     float min,max;
     float margin=0.2;
     GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
-    sprintf(htitle,"Run%8.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
+    sprintf(htitle,"Run%.3f : P[1] distribution for Mass vs. Energy Correlation", runinfo.RUNID);
     mass_e_correlation_strip = new TH2F("mass_e_correlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
     TGraphErrors * mass_e_gr = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
     mass_e_gr -> SetName("mass_e_gr");
@@ -702,7 +702,7 @@ HotBunchFinder(int err_code){
   // define rate distribution and fill the histogram
   ErrDet->cd();
   char hname[100];
-  sprintf(hname,"%8.3f : Specific Luminosiry / bunch", runinfo.RUNID);
+  sprintf(hname,"%.3f : Specific Luminosiry / bunch", runinfo.RUNID);
   bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
   bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events/bunch / WCM");
   bunch_spelumi -> GetYaxis()->SetTitle("# Bunches weighted by 1/sqrt(12C Events)");

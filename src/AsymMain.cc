@@ -65,6 +65,7 @@ int main (int argc, char *argv[]){
     int i;
     char threshold[20],bunchid[20],enerange[20],cwidth[20],*ptr;
     int lth, uth;
+    char suffix[] = ".data"; // suffix of data file
 
     while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:d:baCDTABZF:MNW:UGRS"))!=-1) {
         switch (c) {
@@ -107,7 +108,7 @@ int main (int argc, char *argv[]){
         case 'f':
             sprintf(ifile, optarg);
 	    // if ifile lack of suffix ".data", attach ".data"
-	    if (strstr(ifile,".data")==NULL) strcat(ifile,".data"); 
+	    if (strstr(ifile,suffix)==NULL) strcat(ifile,suffix); 
 	    strcat(datafile, datadir);
 	    strcat(datafile,     "/");
 	    strcat(datafile,   ifile);
@@ -236,9 +237,11 @@ int main (int argc, char *argv[]){
         }
     }
 
+
     // RunID 
-    char  RunID[8];
-    strncpy(RunID,ifile,8);
+    int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 7999.001.data - .data = 7999.001 
+    char  RunID[chrlen];
+    strncpy(RunID,ifile,chrlen);
     runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
 
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
@@ -256,14 +259,6 @@ int main (int argc, char *argv[]){
         fprintf(stdout,"Hbook DEFAULT file: %s \n",hbk_outfile); 
     }        
 
-    /*
-    if (ramp_read == 0) {
-        fprintf(stdout, "Ramp timing file not specified\n");
-    } else if (read_ramptiming(ramptiming) != 0) {
-        perror("Error: read ramp");
-        exit(1);
-    }
-    */
 
     // ---------------------------------------------------- // 
     //            Hbook Histogram Booking                   //
@@ -279,7 +274,7 @@ int main (int argc, char *argv[]){
     // ---------------------------------------------------- // 
     char filename[50];
     Root rt;
-    sprintf(filename,"%8.3f.root",runinfo.RUNID);
+    sprintf(filename,"%.3f.root",runinfo.RUNID);
     fprintf(stdout,"Booking ROOT histgrams ...\n");
     if (rt.RootFile(filename) != 0) {
         perror("Error: RootFile()");
