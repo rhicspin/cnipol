@@ -55,9 +55,15 @@ readdb(double RUNID) {
     
     string str(line);
     if (str[0] == '[') { // Get Run Number
-      s = str.substr(1,8);
+      if (str[9] == ']') {
+	s = str.substr(1,8) ;
+      }else if (str[10] == ']') {
+	s = str.substr(1,9) ;
+      }else{
+	printf("AsymRunDB:ERROR invarid [RunID] statement in run.db. Ignored.");
+      }
       rundb.RunID = strtod(s.c_str(),NULL);
-      //      printf("%8.3f\n",rundb.RunID);
+      //      printf("AsymRunDB: %.3f\n",rundb.RunID);
       match = MatchBeam(RUNID,rundb.RunID);
       if (match){
 	if (RUNID<rundb.RunID) break;

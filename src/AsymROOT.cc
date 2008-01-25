@@ -131,11 +131,11 @@ Root::RootHistBook(StructRunInfo runinfo){
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
   for (int i=0; i<NDETECTOR; i++) {
     sprintf(hname,"energy_spectrum_det%d",i+1);
-    sprintf(htitle,"%8.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i+1);
     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
     energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
   }
-  sprintf(htitle,"%8.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
+  sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
   energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
 
@@ -145,30 +145,30 @@ Root::RootHistBook(StructRunInfo runinfo){
   for (int i=0; i<TOT_WFD_CH; i++) { 
 
     sprintf(hname,"t_vs_e_st%d",i+1);
-    sprintf(htitle,"%8.3f : t vs. Kin.Energy Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ",runinfo.RUNID, i+1);
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-    sprintf(htitle,"%8.3f : t vs. Kin.Energy (with cut) Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ",runinfo.RUNID, i+1);
     t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-    sprintf(htitle,"%8.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ",runinfo.RUNID, i+1);
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
     sprintf(hname,"mass_nocut_st%d",i+1);
-    sprintf(htitle,"%8.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
     mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);     
     mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
 
     sprintf(hname,"mass_yescut_st%d",i+1);
-    sprintf(htitle,"%8.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
     mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);     
     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_yescut[i] -> SetLineColor(2);
@@ -183,7 +183,7 @@ Root::RootHistBook(StructRunInfo runinfo){
   for (int i=0; i<TOT_WFD_CH; i++) { 
 
     sprintf(hname,"mass_feedback_st%d",i+1);
-    sprintf(htitle,"%8.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
     mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);     
     mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_feedback[i] -> SetLineColor(2);
@@ -193,19 +193,19 @@ Root::RootHistBook(StructRunInfo runinfo){
 
   // Bunch Directory
   Bunch->cd();
-  sprintf(htitle,"%8.3f : Counts per Bunch ", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Counts per Bunch ", runinfo.RUNID);
   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
   bunch_dist -> GetYaxis() -> SetTitle("Counts");
   bunch_dist -> SetFillColor(13);
 
-  sprintf(htitle,"%8.3f : Wall Current Monitor", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Wall Current Monitor", runinfo.RUNID);
   wall_current_monitor = new TH1F("wall_current_monitor", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
   wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
   wall_current_monitor -> SetFillColor(13);
 
-  sprintf(htitle,"%8.3f : Specific Luminosity", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Specific Luminosity", runinfo.RUNID);
   specific_luminosity = new TH1F("specific_luminosity", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
   specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
@@ -213,13 +213,13 @@ Root::RootHistBook(StructRunInfo runinfo){
 
   // Error detectors
   ErrDet->cd();
-  sprintf(htitle,"%8.3f : Bunch Asymmetry X90", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Bunch Asymmetry X90", runinfo.RUNID);
   asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%8.3f : Bunch Asymmetry X45", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Bunch Asymmetry X45", runinfo.RUNID);
   asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%8.3f : Bunch Asymmetry Y45", runinfo.RUNID);
+  sprintf(htitle,"%.3f : Bunch Asymmetry Y45", runinfo.RUNID);
   asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%8.3f : # of Events in Banana Cut per strip", runinfo.RUNID);
+  sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", runinfo.RUNID);
   good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
   good_carbon_events_strip->SetFillColor(17);
 
