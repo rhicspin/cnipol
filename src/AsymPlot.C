@@ -488,6 +488,7 @@ int main(int argc, char **argv) {
     case 'b':
       PLOT_BANANA=1;
       ERROR_DETECTOR=0;
+      SUMMARY=0;
       break;
     case 'e':
       ERROR_DETECTOR=1;
