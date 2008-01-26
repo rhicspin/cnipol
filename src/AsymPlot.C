@@ -114,30 +114,6 @@ ColorSkime(){
 
 }
 
-/*
-Int_t 
-ColorSkime(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-
-  const Int_t colNum = 20;
-  Int_t palette[colNum];
-  double red, green, blue;
-  for (Int_t c = 0; c < colNum; c++) {
-    red   =  0.9 * c / (colNum * 1.);
-    green =  1. - 1.0 * c / (colNum * 1.);
-    blue  =  1. - 0.2 * c / (colNum * 1.);
-    cout << red << " " << blue << " " << green << " " << red+blue+green << endl;
-    if (!gROOT -> GetColor (230 + c))
-      TColor *color = new TColor (230 + c, red, green, blue);
-    else {
-      TColor *color = gROOT -> GetColor (230 + c);
-      color -> SetRGB (red, green, blue);
-    }
-    palette[c] = 230 + c;
-    gStyle -> SetPalette (colNum, palette);
-  }
-
-}
-*/
 
 
 Int_t GetHistograms(TFile * rootfile);
@@ -535,11 +511,7 @@ int AsymPlot() {
 
   Char_t filename[50], text[100];
   if (!RUNID) RUNID="7279.005"; // default
-  sprintf(filename,"%s.root",RUNID);
-  
-  // some tricks to open rootfile in a subdirectory
-  sprintf(text,"ln -s root/%s %s",filename,filename);
-  gSystem->Exec(text);
+  sprintf(filename,"root/%s.root",RUNID);
 
   // setup color skime
   //  ColorSkime();
@@ -565,17 +537,11 @@ int AsymPlot() {
   if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
 
-  // remove link
-  sprintf(text,"rm -f %s",filename);
-  gSystem->Exec(text);
-
   cout << "ps file : " << psfile << endl;
   ps->Close();
 
   sprintf(text,"gv -landscape %s",psfile);
   if (GHOSTVIEW) gSystem->Exec(text);
-  //  gSystem->Exec("gv ps/AsymErrorDetctor.ps");
-
 
   return 0;
 
