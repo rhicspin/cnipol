@@ -98,6 +98,22 @@ Example(char *argv[]){
 
 
 
+void 
+ColorSkime(){
+
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    //    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+
+}
+
 /*
 Int_t 
 ColorSkime(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
@@ -132,7 +148,7 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
   cout << "PlotStrip stID=" << stID << endl;
 
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
-  gStyle -> SetPalette (55);
+  gStyle -> SetPalette (1);
 
   ps->NewPage();
   rootfile->cd(); rootfile->cd("Kinema");  
@@ -166,8 +182,8 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
 Int_t 
 PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
+  gStyle -> SetPalette (1);
 
-  gStyle -> SetPalette (55);
   ps->NewPage();
   rootfile->cd(); rootfile->cd("Kinema");  
   
@@ -197,7 +213,6 @@ Int_t
 PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
 
-  gStyle -> SetPalette (55);
   ps->NewPage();
   rootfile->cd(); rootfile->cd("Kinema");  
   
@@ -230,7 +245,6 @@ Int_t
 PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
 
-  gStyle -> SetPalette (55);
   ps->NewPage();
   rootfile->cd(); rootfile->cd("Kinema");  
   
@@ -281,7 +295,6 @@ Int_t
 PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
 
-  gStyle -> SetPalette (55);
   ps->NewPage();
   rootfile->cd(); rootfile->cd("FeedBack");  
   
@@ -526,6 +539,9 @@ int AsymPlot() {
   // some tricks to open rootfile in a subdirectory
   sprintf(text,"ln -s root/%s %s",filename,filename);
   gSystem->Exec(text);
+
+  // setup color skime
+  //  ColorSkime();
 
   // Root file open.
   cout << filename << endl;
