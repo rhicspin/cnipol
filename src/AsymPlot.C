@@ -511,14 +511,13 @@ int AsymPlot() {
 
   Char_t filename[50], text[100];
   if (!RUNID) RUNID="7279.005"; // default
-  sprintf(filename,"root/%s.root",RUNID);
+  sprintf(filename,"%s.root",RUNID);
+  sprintf(text,"ln -s root/%s %s",filename,filename);
+  gSystem->Exec(text);
+  TFile * rootfile = TFile::Open(filename);
 
   // setup color skime
   //  ColorSkime();
-
-  // Root file open.
-  cout << filename << endl;
-  TFile * rootfile = TFile::Open(filename);
 
   // Cambus Setup
   TCanvas *CurC = new TCanvas("CurC","",1);
@@ -539,6 +538,10 @@ int AsymPlot() {
 
   cout << "ps file : " << psfile << endl;
   ps->Close();
+
+  // remove symboric link to root file in root directory
+  sprintf(text,"rm %s ",filename);    
+  gSystem->Exec(text);  
 
   sprintf(text,"gv -landscape %s",psfile);
   if (GHOSTVIEW) gSystem->Exec(text);
