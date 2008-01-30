@@ -61,5 +61,30 @@ o bluepc
  
 
 
+================
 
+Here is some tip for the fast offline analysis. 
+Some of you might
+already experienced error message "data file doesn't exist" when you
+try to analyze the data you just took. This is because the offline analysis code assume 
+the data is available at default directory
 
+DATADIR=/usr/local/cnipol/data
+
+whereas the actual data are directory saved in
+
+yellowpc.rhic.bnl.gov:/mnt/disk2/data
+bluepc.rhic.bnl.gov:/mnt/disk2/data
+
+ There is an script running in pc2pc
+/etc/cron.hourly/MkLink.sh
+which makes symbolic link from these data directories to the 
+/usr/local/cnipol/data so that you don't have to specify the data directory each time 
+for blue or yellow data. However, the script only updates these links every hour. 
+So if you want to analyze the data immediately, then you can execute the script manualy 
+with e950 account:
+
+mklink.sh --double-pc
+
+from whichever directory you are. Make sure you analyze
+the data in $ASYMDIR. 
