@@ -3192,6 +3192,9 @@
 [7517.104]
 	CONFIG=7517.104.config.dat;
 
+[7529.003]@
+	CONFIG=7529.003.config.dat;@
+
 [7534.005]
 	CONFIG=7534.005.config.dat;
 
@@ -3201,12 +3204,54 @@
 [7558.001]
 	ENERGY_CALIB=calib0103.001.scale;
 
-[7558.101]
-	ENERGY_CALIB=calib0103.101.scale;
-
-
 [7558.004]
 	CONFIG=7534.005.14ns.config.dat;
+
+[7558.007]
+        RUN_STATUS*=Suspicious;
+        COMMENT*="Deadlayer fit failure. Don't update config file";
+
+[7558.008]
+        CONFIG=7558.008.config.dat;
+
+[7558.009]
+        CONFIG=7558.009.config.dat;
+
+[7558.010]
+        CONFIG=7558.010.config.dat;
+
+[7558.011]
+        CONFIG=7558.011.config.dat;
+
+[7558.012]
+        CONFIG=7558.012.config.dat;
+
+[7558.013]
+        CONFIG=7558.013.config.dat;
+
+[7558.014]
+        CONFIG=7558.014.config.dat;
+
+[7558.015]
+        CONFIG=7558.015.config.dat;
+
+[7558.016]
+        CONFIG=7558.016.config.dat;
+
+[7558.017]
+        CONFIG=7558.017.config.dat;
+
+[7558.018]
+        CONFIG=7558.018.config.dat;
+
+[7558.019]
+        CONFIG=7558.019.config.dat;
+
+[7558.020]
+        CONFIG=7558.020.config.dat;
+
+[7558.101]
+	ENERGY_CALIB=calib0103.101.scale;
 
 [7558.104]
 	CONFIG=7534.105.14ns.config.dat;
@@ -3217,6 +3262,43 @@
 
 [7559.106]
 	CONFIG=7559.106.config.dat;
+
+[7560.001]
+	CONFIG=7560.001.config.dat;
+
+[7560.002]
+	CONFIG=7560.002.config.dat;
+
+[7560.003]
+	CONFIG=7560.003.config.dat;
+
+[7560.004]
+	CONFIG=7560.004.config.dat;
+
+[7560.005]
+	CONFIG=7560.005.config.dat;
+
+[7560.006]
+	CONFIG=7560.006.config.dat;
+
+[7560.007]
+	CONFIG=7560.007.config.dat;
+
+[7560.008]
+        RUN_STATUS*=Suspicious;
+        COMMENT*="Deadlayer fit failure. Don't update config file";
+
+[7560.009]
+	CONFIG=7560.009.config.dat;
+
+[7560.010]
+	CONFIG=7560.010.config.dat;
+
+[7560.011]
+	CONFIG=7560.011.config.dat;
+
+[7560.012]
+	CONFIG=7560.012.config.dat;
 
 [7560.013]
 	CONFIG=7560.013.config.dat;
@@ -3233,11 +3315,20 @@
 [7560.017]
 	CONFIG=7560.017.config.dat;
 
+[7560.018]
+	CONFIG=7560.018.config.dat;
+
 [7560.019]
 	CONFIG=7560.019.config.dat;
 
+[7560.020]
+	CONFIG=7560.020.config.dat;
+
 [7560.021]
 	CONFIG=7560.021.config.dat;
+
+[7560.022]
+	CONFIG=7560.022.config.dat;
 
 [7560.023]
 	CONFIG=7560.023.config.dat;  
@@ -3245,11 +3336,17 @@
 [7560.024]
 	CONFIG=7560.024.config.dat;
 
+[7560.025]
+	CONFIG=7560.025.config.dat;
+
+[7560.026]
+	CONFIG=7560.026.config.dat;
+
 [7560.101]
 	CONFIG=7560.101.config.dat;
 
 [7562.002]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7562.003]
 	RUN_STATUS=Good;
@@ -3306,7 +3403,7 @@
 	EnableStrip=70;
 	EnableStrip=72;
 	CONFIG=7563.001.config.dat;
-	COMMENT="Wrong spin pattern. Fill 7563 (blue)";
+	COMMENT*="Wrong spin pattern. Fill 7563 (blue)";
 
 [7563.002]
 // wrong spin pattern
@@ -3334,24 +3431,22 @@
 	CONFIG=7563.102.config.dat;
 
 [7564.001]
-	//numbering scheme changes to 1-72. updating enables and 
-	//disables
+	//numbering scheme changes to 1-72. updating enables and disables
 	EnableStrip=17;
 	EnableStrip=53;
 	DisableStrip=18;
 	DisableStrip=54;
 	CONFIG=7564.001.config.dat;
-	COMMENT="";
 
 [7564.101]
 	CONFIG=7564.101.config.dat;
 
 [7568.001]
-	//very low polarization
+	RUN_STATUS*=Suspicious;
 	EnableStrip=18;
 	EnableStrip=54;
 	EnableStrip=72;
-	RUN_STATUS=Suspicious;
+	//very low polarization
 
 [7568.002]
 	CONFIG=7568.002.config.dat;
@@ -3366,10 +3461,10 @@
 	CONFIG=7568.005.config.dat;
 
 [7568.006]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7568.007]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS=*Suspicious;
 	CONFIG=7568.007.config.dat;
 
 [7568.101]
@@ -3381,12 +3476,101 @@
 [7568.104]
 	CONFIG=7568.104.config.dat;
 
+[7571.001]
+	CONFIG=7571.001.config.dat;
+
+[7571.002]
+	CONFIG=7571.002.config.dat;
+
+[7571.003]
+	CONFIG=7571.003.config.dat;
+
+[7571.004]
+	CONFIG=7571.004.config.dat;
+
+[7571.005]
+	CONFIG=7571.005.config.dat;
+
+[7571.008]
+	CONFIG=7571.008.config.dat;
+
+[7571.009]
+	CONFIG=7571.009.config.dat;
+
+[7571.010]
+	CONFIG=7571.010.config.dat;
+
+[7571.101]
+	CONFIG=7571.101.config.dat;
+
+[7571.102]
+	CONFIG=7571.102.config.dat;
+
+[7571.103]
+	CONFIG=7571.103.config.dat;
+
+[7571.104]
+	CONFIG=7571.104.config.dat;
+
+[7571.105]
+	CONFIG=7571.105.config.dat;
+
+[7571.106]
+	CONFIG=7571.106.config.dat;
+
+[7571.107]
+	CONFIG=7571.107.config.dat;
+
+[7572.001]
+	CONFIG=7572.001.config.dat;
+
+[7572.002]
+	CONFIG=7572.002.config.dat;
+
+[7572.003]
+	CONFIG=7572.003.config.dat;
+
+[7572.006]
+	CONFIG=7572.006.config.dat;
+
+[7572.007]
+	CONFIG=7572.007.config.dat;
+
+[7572.101]
+	CONFIG=7572.101.config.dat;
+
+[7572.102]
+	CONFIG=7572.102.config.dat;
+
+[7572.103]
+	CONFIG=7572.103.config.dat;
+
+[7575.001]
+	CONFIG=7575.001.config.dat;
+
+[7575.004]
+	CONFIG=7575.004.config.dat;
+
+[7575.105]
+	CONFIG=7575.105.config.dat;
+
 [7576.001]
 	CONFIG=7576.001.config.dat;
 
 [7576.002]
 	CONFIG=7576.002.config.dat;
 
+[7576.003]
+	CONFIG=7576.003.config.dat;
+
+[7576.004]
+	CONFIG=7576.004.config.dat;
+
+[7576.005]
+	CONFIG=7576.005.config.dat;
+
+[7576.006]
+	CONFIG=7576.006.config.dat;
 
 [7576.101]
 	CONFIG=7576.101.config.dat;
@@ -3397,39 +3581,167 @@
 [7576.103]
 	CONFIG=7576.103.config.dat;
 
+[7576.104]
+	CONFIG=7576.104.config.dat;
+
 [7576.105]
 	CONFIG=7576.105.config.dat;
 
+[7576.106]
+	CONFIG=7576.106.config.dat;
+
+[7581.001]
+	CONFIG=7581.001.config.dat;
+
+[7581.101]
+	CONFIG=7581.101.config.dat;
+
+[7581.103]
+	CONFIG=7581.103.config.dat;
+
+[7581.104]
+	CONFIG=7581.104.config.dat;
+
+[7584.001]
+	CONFIG=7584.001.config.dat;
+
+[7584.003]
+	CONFIG=7584.003.config.dat;
+
+[7584.004]
+	CONFIG=7584.004.config.dat;
+
+[7584.005]
+	CONFIG=7584.005.config.dat;
+
+[7584.007]
+	CONFIG=7584.007.config.dat;
+
+[7586.001]
+	CONFIG=7586.001.config.dat;
+
+[7586.002]
+	CONFIG=7586.002.config.dat;
+
+[7586.003]
+	CONFIG=7586.003.config.dat;
+
+[7586.005]
+	CONFIG=7586.005.config.dat;
+
+[7586.006]
+	CONFIG=7586.006.config.dat;
+
+[7586.007]
+	CONFIG=7586.007.config.dat;
+
+[7586.009]
+	CONFIG=7586.009.config.dat;
+
+[7586.010]
+	CONFIG=7586.010.config.dat;
+
+[7586.011]
+	CONFIG=7586.011.config.dat;
+
+[7586.012]
+	CONFIG=7586.012.config.dat;
+
+[7586.013]
+	CONFIG=7586.013.config.dat;
 
 [7586.014]
 	CONFIG=7586.014.config.dat;
 
+[7586.017]
+	CONFIG=7586.017.config.dat;
 
 [7586.020]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7586.021]
+	RUN_STATUS=*Suspicious;
+	CONFIG=7586.021.config.dat;
 	//Beam spreads longitudinally and contaminates prompts into banana from next bunch
-	RUN_STATUS=Suspicious;
 
+[7586.022]
+	CONFIG=7586.022.config.dat;
+
+[7586.023]
+	CONFIG=7586.023.config.dat;
+
+[7586.025]
+	CONFIG=7586.025.config.dat;
+
+[7586.028]
+	CONFIG=7586.028.config.dat;
+
+[7586.101]
+	CONFIG=7586.101.config.dat;
+
+[7586.102]
+	CONFIG=7586.102.config.dat;
+
+[7586.103]
+	CONFIG=7586.103.config.dat;
+
+[7586.105]
+	CONFIG=7586.105.config.dat;
+
+[7586.106]
+	CONFIG=7586.106.config.dat;
+
+[7586.108]
+	CONFIG=7586.108.config.dat;
+
+[7586.109]
+	CONFIG=7586.109.config.dat;
+
+[7586.112]
+	CONFIG=7586.112.config.dat;
 
 [7586.114]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7586.115]
+	CONFIG=7586.115.config.dat;
+
+[7586.117]
+	CONFIG=7586.117.config.dat;
+
+[7586.118]
+	CONFIG=7586.118.config.dat;
 
 [7586.119]
 	RUN_STATUS=Good;
+	CONFIG=7586.119.config.dat;
+
+[7586.121]
+	CONFIG=7586.121.config.dat;
+
+[7586.122]
+	CONFIG=7586.122.config.dat;
+
+[7586.124]
 	CONFIG=7586.124.config.dat;
+
+[7586.128]
+	CONFIG=7586.128.config.dat;
+
+[7587.001]
+	CONFIG=7587.001.config.dat;
+
+[7587.101]
+	CONFIG=7587.101.config.dat;
 
 [7588.001]
 	RUN_STATUS=Good;
+	CONFIG=7588.001.config.dat;
 
 [7588.101]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7596.001]
-	// spin orientation = 45 deg.
-	// Bunch 70 noisy.
-	// noise below banana. Strip 27&45 are noisy WFD. Others could be radiation damage.
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=61;
@@ -3437,17 +3749,29 @@
 	DisableStrip=63;
 	DisableStrip=64;
 	DisableStrip=65;
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7596.001.config.dat;
+	// Spin orientation = 45 deg.
+	// Bunch 70 noisy.
+	// noise below banana. Strip 27&45 are noisy WFD. Others could be radiation damage.
+
+[7596.002]
 	CONFIG=7596.002.config.dat;
 	
 [7596.101]
-	COMMENT="Significantly large faulse asymmetry in bunch 71";
-	RUN_STATUS=Recovered;
+	RUN_STATUS*=Recovered;
 	DisableBunch=71;
+	CONFIG=7596.101.config.dat;
+	COMMENT*="Significantly large faulse asymmetry in bunch 71";
 
+[7596.102]
+	CONFIG=7596.102.config.dat;
+
+[7596.103]
+	CONFIG=7596.103.config.dat;
 
 [7597.001]
-	// noise is gone.
+	RUN_STATUS=Good;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=61;
@@ -3455,12 +3779,151 @@
 	EnableStrip=63;
 	EnableStrip=64;
 	EnableStrip=65;
-	RUN_STATUS=Good;
+	CONFIG=7597.001.config.dat;
+	// Noise is gone.
+
+[7597.002]
+	CONFIG=7597.002.config.dat;
+
+[7597.003]
+	CONFIG=7597.003.config.dat;
+
+[7597.004]
+	CONFIG=7597.004.config.dat;
 
 [7597.101]
 	RUN_STATUS=Good;
 	EnableBunch=71;
+	CONFIG=7597.101.config.dat;
 
+[7597.102]
+	CONFIG=7597.102.config.dat;
+
+[7597.103]
+	CONFIG=7597.103.config.dat;
+
+[7597.104]
+	CONFIG=7597.104.config.dat;
+
+[7597.105]
+	CONFIG=7597.105.config.dat;
+
+[7597.106]
+	CONFIG=7597.106.config.dat;
+
+[7597.107]
+	CONFIG=7597.107.config.dat;
+
+[7598.001]
+	CONFIG=7598.001.config.dat;
+
+[7598.003]
+	CONFIG=7598.003.config.dat;
+
+[7598.004]
+	CONFIG=7598.004.config.dat;
+
+[7598.005]
+	CONFIG=7598.005.config.dat;
+
+[7598.006]
+	CONFIG=7598.006.config.dat;
+
+[7598.007]
+	CONFIG=7598.007.config.dat;
+
+[7598.101]
+	CONFIG=7598.101.config.dat;
+
+[7598.103]
+	CONFIG=7598.103.config.dat;
+
+[7598.104]
+	CONFIG=7598.104.config.dat;
+
+[7598.105]
+	CONFIG=7598.105.config.dat;
+
+[7598.106]
+	CONFIG=7598.106.config.dat;
+
+[7600.001]
+	CONFIG=7600.001.config.dat;
+
+[7600.002]
+	CONFIG=7600.002.config.dat;
+
+[7600.004]
+	CONFIG=7600.004.config.dat;
+
+[7600.005]
+	CONFIG=7600.005.config.dat;
+
+[7600.006]
+	CONFIG=7600.006.config.dat;
+
+[7600.008]
+	CONFIG=7600.008.config.dat;
+
+[7600.009]
+	CONFIG=7600.009.config.dat;
+
+[7600.010]
+	CONFIG=7600.010.config.dat;
+
+[7600.012]
+	CONFIG=7600.012.config.dat;
+
+[7600.101]
+	CONFIG=7600.101.config.dat;
+
+[7600.102]
+	CONFIG=7600.102.config.dat;
+
+[7600.105]
+	CONFIG=7600.105.config.dat;
+
+[7600.107]
+	CONFIG=7600.107.config.dat;
+
+[7600.108]
+	CONFIG=7600.108.config.dat;
+
+[7600.109]
+	CONFIG=7600.109.config.dat;
+
+[7600.110]
+	CONFIG=7600.110.config.dat;
+
+[7601.001]
+	CONFIG=7601.001.config.dat;
+
+[7601.002]
+	CONFIG=7601.002.config.dat;
+
+[7601.003]
+	CONFIG=7601.003.config.dat;
+
+[7601.004]
+	CONFIG=7601.004.config.dat;
+
+[7601.005]
+	CONFIG=7601.005.config.dat;
+
+[7601.006]
+	CONFIG=7601.006.config.dat;
+
+[7601.007]
+	CONFIG=7601.007.config.dat;
+
+[7601.101]
+	CONFIG=7601.101.config.dat;
+
+[7601.102]
+	CONFIG=7601.102.config.dat;
+
+[7601.103]
+	CONFIG=7601.103.config.dat;
 
 [7602.001]
 	RUN_STATUS=Good;
@@ -3474,9 +3937,7 @@
 	RUN_STATUS=Good;
 	CONFIG=7602.003.config.dat;
 
-
 [7602.004]
-	// fracky WFD moduels. Could be happening earlier.
 	DisableStrip=9;
 	DisableStrip=10;
 	DisableStrip=12;
@@ -3495,85 +3956,287 @@
 	DisableStrip=64;
 	DisableStrip=65;
 	DisableStrip=68;
-	// Beside above, bottom of banana's for strips{16,18,34,36,52,54,70,72} are
-        // chopped off. Energy range cannot be expanded beyond 900keV for these strips.
 	CONFIG=7602.004.config.dat;
+	// Fracky WFD moduels. Could be happening earlier.
+	// Beside above, bottom of banana's for strips{16,18,34,36,52,54,70,72} are chopped off. 
+        // Energy range cannot be expanded beyond 900keV for these strips.
+
+[7602.006]
+	CONFIG=7602.006.config.dat;
 
 [7602.007]
 	RUN_STATUS=Good;
 	CONFIG=7602.007.config.dat;
 
+[7602.008]
+	CONFIG=7602.008.config.dat;
+
+[7602.101]
+	CONFIG=7602.101.config.dat;
+
+[7602.102]
+	CONFIG=7602.102.config.dat;
+
+[7602.103]
+	CONFIG=7602.103.config.dat;
+
+[7602.104]
+	CONFIG=7602.104.config.dat;
+
+[7602.105]
+	CONFIG=7602.105.config.dat;
+
 [7603.001]
+	RUN_STATUS=Good;
 	TSHIFT=1;
 	CONFIG=7603.001.config.dat;
 
+[7603.002]
+	RUN_STATUS=Good;
+	CONFIG=7603.002.config.dat;
+
 [7603.003]
+	RUN_STATUS=Good;
 	TSHIFT=0;
 	CONFIG=7603.003.config.dat;
 
 [7603.005]
+	RUN_STATUS=Good;
 	CONFIG=7603.005.config.dat;
 
+[7603.007]
+	RUN_STATUS=Good;
+	CONFIG=7603.007.config.dat;
+
 [7603.008]
+	DisableStrip*=18;
+	DisableStrip*=36;
+	DisableStrip*=54;
+	DisableStrip*=72;
+	RUN_STATUS=Good;
 	CONFIG=7603.008.config.dat;
 
+[7603.009]
+	RUN_STATUS=Good;
+	CONFIG=7603.009.config.dat;
+
 [7603.010]
+	RUN_STATUS=Good;
 	CONFIG=7603.010.config.dat;
 
 [7603.101]
+	RUN_STATUS=Good;
 	TSHIFT=1;
+	CONFIG=7603.101.config.dat;
+
+[7603.102]  
+	RUN_STATUS=Good;
+	CONFIG=7603.102.config.dat;
 
 [7603.103]
+	RUN_STATUS=Good;
 	TSHIFT=0;
+	DisableStrip=11;  // Add by Han
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT*="Bad WFD module";
+	CONFIG=7603.103.config.dat;
 
+[7603.104]  
+	RUN_STATUS=Good;
+	CONFIG=7603.104.config.dat;
+
+[7603.105]  
+	RUN_STATUS=Good;
+	CONFIG=7603.105.config.dat;
+
+[7603.106]  
+	RUN_STATUS=Good;
+	CONFIG=7603.106.config.dat;
+
+[7603.107]
+	RUN_STATUS=Good;
+	CONFIG=7603.107.config.dat;
+
+[7603.108]
+	RUN_STATUS=Good;
+	CONFIG=7603.108.config.dat;
 
 [7605.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	DisableBunch*=30;
 	TSHIFT=0;
 	CONFIG=7605.001.config.dat;
-	//cannot fix with tshift, strips offset by different times
-
+	//Can not fix with tshift, strips offset by different times
 
 [7605.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	DisableBunch*=30;
 	CONFIG=7605.003.config.dat;
 
-
 [7605.004]
-	COMMENT="Strips are bad and bananas are being cut off at bottom. delta P > 10%";
 	CONFIG=7605.004.config.dat;
-
+	DisableBunch*=30;
+	COMMENT*="Strips are bad and bananas are being cut off at bottom. delta P > 10%";
 
 [7605.006]
-	COMMENT="";
+	DisableBunch*=30;
 	CONFIG=7605.006.config.dat;
-
 
 [7605.101]
 	INJ_TSHIFT=8;
+	CONFIG=7605.101.config.dat;
 
 [7605.103]
 	INJ_TSHIFT=7;
 	TSHIFT=-0.4;
+	CONFIG=7605.103.config.dat;
 
 [7605.104]
 	TSHIFT=-0.4;
+	CONFIG=7605.104.config.dat;
 
 [7605.107]
 	TSHIFT=-0.4;
+	CONFIG=7605.107.config.dat;
+
+[7609.001] 
+	CONFIG=7609.001.config.dat;
 
 [7609.003]
 	// Timing tune
-	RUN_STATUS=Tune;
+	RUN_STATUS*=Tune;
+	CONFIG=7609.003.config.dat;
 
+[7609.005] 
+	RUN_STATUS=Good;
+	DisableStrip*=2;
+	DisableStrip*=16;
+	DisableStrip*=19;
+	DisableStrip*=43;
+	DisableStrip*=67;
+	CONFIG=7609.005.config.dat;
+
+[7609.006] 
+	DisableStrip*=3;
+	DisableStrip*=5;
+	DisableStrip*=6;
+	DisableStrip*=17;
+	DisableStrip*=25;
+	DisableStrip*=29;
+	DisableStrip*=42;
+	DisableStrip*=35;
+	DisableStrip*=51;
+	DisableStrip*=55;
+	DisableStrip*=58;
+	DisableStrip*=59;
+	DisableStrip*=60;
+	DisableStrip*=67;
+	CONFIG=7609.006.config.dat;
+
+[7609.007] 
+	DisableStrip*=26;
+	DisableStrip*=49;
+	CONFIG=7609.007.config.dat;
+
+[7609.008] 
+	CONFIG=7609.008.config.dat;
 
 [7609.009]
 	RUN_STATUS=Good;
-// The banana of these strips have been interfaring with time window cut.
+	CONFIG=7609.009.config.dat;
+//      The banana of these strips have been interfaring with time window cut.
 //	EnableStrip=18;
 //	EnableStrip=54;
 //	EnableStrip=72;
-	CONFIG=7609.009.config.dat;
+
+[7609.011] 
+	CONFIG=7609.011.config.dat;
+
+[7609.013] 
+	CONFIG=7609.013.config.dat;
+
+[7609.015] 
+	CONFIG=7609.015.config.dat;
+
+[7609.017] 
+	CONFIG=7609.017.config.dat;
+
+[7609.019] 
+	CONFIG=7609.019.config.dat;
+
+[7609.101] 
+	CONFIG=7609.101.config.dat;
+
+[7609.102] 
+	CONFIG=7609.102.config.dat;
+
+[7609.103] 
+	CONFIG=7609.103.config.dat;
+
+[7609.104] 
+	CONFIG=7609.104.config.dat;
+
+[7609.105] 
+	CONFIG=7609.105.config.dat;
+
+[7609.106] 
+	CONFIG=7609.106.config.dat;
+
+[7609.107] 
+	CONFIG=7609.107.config.dat;
+
+[7609.108] 
+	CONFIG=7609.108.config.dat;
+
+[7610.001]
+	CONFIG=7610.001.config.dat;
+
+[7610.003]  
+	CONFIG=7610.003.config.dat;
+
+[7610.005]  
+	CONFIG=7610.005.config.dat;
+
+[7610.007]  
+	CONFIG=7610.007.config.dat;
+
+[7610.009]  
+	CONFIG=7610.009.config.dat;
+
+[7610.010]  
+	CONFIG=7610.010.config.dat;
+
+[7610.012]  
+	CONFIG=7610.012.config.dat;
+
+[7610.101]  
+	CONFIG=7610.101.config.dat;
+
+[7610.102]  
+	CONFIG=7610.102.config.dat;
+
+[7610.103]  
+	CONFIG=7610.103.config.dat;
+
+[7610.104]  
+	CONFIG=7610.104.config.dat;
+
+[7610.105]  
+	CONFIG=7610.105.config.dat;
+
+[7610.106]  
+	CONFIG=7610.106.config.dat;
+
+[7610.107]  
+	CONFIG=7610.107.config.dat;
+
+[7612.001]
+	CONFIG=7612.001.config.dat;
+
+[7612.002] 
+	CONFIG=7612.002.config.dat;
 
 [7614.001]
 	//strips back to normal, but check fill 7610 and 7612
@@ -3596,33 +4259,147 @@
 	EnableStrip=65;
 	EnableStrip=68;
 	EnableStrip=70;
-	MEASUREMENT_TYPE=SPIN_TUNE;
+	MEASUREMENT_TYPE*=SPIN_TUNE;
 	TSHIFT=1;
 	CONFIG=7614.001.config.dat;
 
+[7614.002]  
+	CONFIG=7614.002.config.dat;
+
+[7614.003]  
+	CONFIG=7614.003.config.dat;
+
+[7614.004]  
+	CONFIG=7614.004.config.dat;
+
 [7614.005]
 	TSHIFT=0.7;
+	CONFIG=7614.005.config.dat; 
+
+[7614.006]  
+	CONFIG=7614.006.config.dat;
+
+[7614.007]  
+	CONFIG=7614.007.config.dat;
+
+[7614.008]  
+	CONFIG=7614.008.config.dat;
+
+[7614.009]  
+	CONFIG=7614.009.config.dat;
+
+[7614.010]  
+	CONFIG=7614.010.config.dat;
+
+[7614.011]
+	CONFIG=7614.011.config.dat;
 
 [7614.012]
 	TSHIFT=0.7;
 	CONFIG=7614.012.config.dat;
 
-	
+[7614.013]  
+	CONFIG=7614.013.config.dat;
+
+[7614.014]
+	CONFIG=7614.014.config.dat;
 
 [7620.001]
 	// blue timing has shifted by 10 ns
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 	MEASUREMENT_TYPE=NORM;
 	TSHIFT=0;
 	ENERGY_CALIB=calib.1503.002.scale;
-	CONFIG=7621.003.config.dat;
+	CONFIG=7620.001.config.dat; 
+
+[7620.003]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7620.003.config.dat; 
 
 [7620.101]
 	ENERGY_CALIB=calib.1503.102.scale;
-	
+	CONFIG=7620.101.config.dat; 
+
+[7620.103]  
+	CONFIG=7620.103.config.dat;
+
+[7621.001]  
+	DisableStrip=9;  // Add by Han
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT*="Bad WFD module";
+	CONFIG=7621.001.config.dat;
+
+[7621.003]  
+	CONFIG=7621.003.config.dat;
+
+[7621.005]  
+	CONFIG=7621.005.config.dat;
+
+[7621.007]  
+	CONFIG=7621.007.config.dat;
+
+[7621.101]  
+	CONFIG=7621.101.config.dat;
+
+[7621.103]  
+	CONFIG=7621.103.config.dat;
+
+[7621.105]  
+	CONFIG=7621.105.config.dat;
+
+[7621.107]  
+	CONFIG=7621.107.config.dat;
+
 [7622.001]
-	// timing tune 
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	// Timing tune 
+
+[7622.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.002.config.dat;
+
+[7622.003]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.003.config.dat;
+
+[7622.004]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.004.config.dat;
+
+[7622.005]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.005.config.dat;
+
+[7622.006]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.006.config.dat;
+
+[7622.007]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.007.config.dat;
+
+[7622.008]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7622.008.config.dat;
+
+[7622.009]
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7622.009.config.dat;
+
+[7622.011]
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7622.011.config.dat;
 
 [7622.012]
 	RUN_STATUS=Good;
@@ -3630,112 +4407,227 @@
 
 [7622.013]
 	CONFIG=7622.013.config.dat;
-	COMMENT="";
+
+[7622.015]
+	CONFIG=7622.015.config.dat;
+
+[7622.017]
+	CONFIG=7622.017.config.dat;
 
 [7622.019]
 	CONFIG=7622.019.config.dat;
 
+[7622.021]
+	CONFIG=7622.021.config.dat;
+
+[7622.022]
+	CONFIG=7622.022.config.dat;
+
 [7622.101]
 	// timing tune
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7622.102]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7622.102.config.dat;
 
 [7622.104]
 	RUN_STATUS=Good;
+	EnableStrip*=11; // Add by Han
+	EnableStrip*=29;
+	EnableStrip*=47;
+	EnableStrip*=65;
 	CONFIG=7622.104.config.dat;
-
 
 [7622.105]
 	TSHIFT=0;
 	CONFIG=7622.105.config.dat;
 
+[7622.107]
+	CONFIG=7622.107.config.dat;
+
 [7622.109]
 	CONFIG=7622.109.config.dat;
 
+[7622.111]  
+	CONFIG=7622.111.config.dat;
+
+[7622.113]  
+	CONFIG=7622.113.config.dat;
 
 [7626.001] 
-	// timing tune in online
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	// Timing tune in online
+
+[7626.002]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7626.002.config.dat;  
 
 [7626.004] 
-	RUN_STATUS=Tune;
+	RUN_STATUS*=Tune;
+	CONFIG=7626.004.config.dat;  
 
 [7626.101] 
 	// timing tune in online
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7626.102] 
-	// timing tune in online
-	RUN_STATUS=Tune;
+	RUN_STATUS*=Tune;
+	// Timing tune in online
 
 [7627.001] 
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7627.002] 
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7627.002.config.dat;
+
+
 
 [7627.004] 
 	RUN_STATUS=Good;
+	EnableStrip*=9; // Add by Han
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=7627.004.config.dat;
+
+[7627.005]  
+	RUN_STATUS*=Suspicious; 
+	DisableBunch*=104;
+	CONFIG=7627.005.config.dat;
+
+[7627.007]  
+	CONFIG=7627.007.config.dat;
+
+[7627.009]  
+	CONFIG=7627.009.config.dat;
+
+[7627.011]  
+	CONFIG=7627.011.config.dat;
 
 [7627.101] 
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7627.102] 
-	RUN_STATUS=Good;
+	RUN_STATUS*=Junk;
+//	COMMENT*="Number of events < 50k.";
+	CONFIG=7627.102.config.dat; 
+
+[7627.103]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7627.103.config.dat;
+
+[7627.105]  
+	CONFIG=7627.105.config.dat;
+
+[7627.107]  
+	CONFIG=7627.107.config.dat;
+
+[7627.109]  
+	CONFIG=7627.109.config.dat;
 
 [7630.001]
 	CONFIG=7630.001.config.dat;
 
+[7630.002]  
+	CONFIG=7630.002.config.dat;
+
 [7630.004]
 	CONFIG=7630.004.config.dat;
+
+[7630.006]  
+	CONFIG=7630.006.config.dat;
+
+[7630.008]  
+	CONFIG=7630.008.config.dat;
+
+[7630.010]  
+	CONFIG=7630.010.config.dat;
 
 [7630.101]
 	CONFIG=7630.101.config.dat;
 
 [7630.103]
 	TSHIFT=-2;
-
-[7630.105]
-
-[7630.004]
-	CONFIG=7630.004.config.dat;
-
-[7630.101]
-	CONFIG=7630.101.config.dat;
-
-[7630.103]
-	TSHIFT=-2;
+	CONFIG=7630.103.config.dat;
 
 [7630.105]
 	TSHIFT=0;
 	CONFIG=7630.105.config.dat;
 
+[7630.107]  
+	CONFIG=7630.107.config.dat;
+
+[7630.109]  
+	CONFIG=7630.109.config.dat;
+
+[7632.001]  
+	CONFIG=7632.001.config.dat;
+
+[7632.002]  
+	CONFIG=7632.002.config.dat;
+
+[7632.004]  
+	CONFIG=7632.004.config.dat;
+
+[7632.006]  
+	CONFIG=7632.006.config.dat;
+
+[7632.008]
+	CONFIG=7632.008.config.dat;
+
+[7632.010]
+	CONFIG=7632.010.config.dat;
+
+[7632.012]
+	CONFIG=7632.012.config.dat;
+
+[7632.014]
+	CONFIG=7632.014.config.dat;
+
+[7632.101]
+	CONFIG=7632.101.config.dat;
+
+[7632.102]
+	CONFIG=7632.102.config.dat;
+
+[7632.104]
+	CONFIG=7632.104.config.dat;
+
+[7632.106]
+	CONFIG=7632.106.config.dat;
+
+[7632.108]
+	CONFIG=7632.108.config.dat;
+
+[7632.110]
+	CONFIG=7632.110.config.dat;
+
+[7632.112]
+	CONFIG=7632.112.config.dat;
+
+[7632.114]
+	CONFIG=7632.114.config.dat;
+
 [7633.001]
-
-[7630.004]
-	CONFIG=7630.004.config.dat;
-
-[7630.101]
-	CONFIG=7630.101.config.dat;
-
-[7630.103]
-	TSHIFT=-2;
-
-[7630.105]
-
-[7630.004]
-	CONFIG=7630.004.config.dat;
-
-[7630.101]
-	CONFIG=7630.101.config.dat;
-
-[7630.103]
-	TSHIFT=-2;
-
-[7630.105]
 	RUN_STATUS=Good;
+	EnableStrip=9; // Add by Han
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
 	CONFIG=7633.001.config.dat;
 
 [7633.003]
 	CONFIG=7633.003.config.dat;
 
 [7633.101]
+	EnableStrip=11; // Add by Han
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
 	CONFIG=7633.101.config.dat;
 
 [7633.103]
@@ -3751,49 +4643,97 @@
 [7637.003]
 	CONFIG=7637.003.config.dat;
 
+[7637.005]
+	CONFIG=7637.005.config.dat;
+
+[7637.007]
+	CONFIG=7637.007.config.dat;
+
 [7637.009]
 	CONFIG=7637.009.config.dat;
 
+[7637.011]
+	CONFIG=7637.011.config.dat;
+
 [7637.101]
-	//Jump in t dependent asymmetries.  See elog.
-	//Bunch now masked out and everything looks good
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
 	DisableBunch=64;
 	CONFIG=7637.101.config.dat;
+	//  Jump in t dependent asymmetries.  See elog.
+	//  Bunch now masked out and everything looks good
 
 [7637.103]
 	RUN_STATUS=Good;
 	EnableBunch=64;
 	CONFIG=7637.103.config.dat;
 
+[7637.105]  
+	CONFIG=7637.105.config.dat;
+
+[7637.107]  
+	CONFIG=7637.107.config.dat;
+
+[7637.109]  
+	CONFIG=7637.109.config.dat;
+
+[7637.111]  
+	CONFIG=7637.111.config.dat;
+
 [7639.001]
 	CONFIG=7639.001.config.dat;
 
 [7639.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7639.003.config.dat;
 
 [7639.005]
 	RUN_STATUS=Good;
+	CONFIG=7639.005.config.dat;
 
 [7639.007]
 	CONFIG=7639.007.config.dat;
 
+[7639.009]  
+	CONFIG=7639.009.config.dat;
+
+[7639.011]  
+	CONFIG=7639.011.config.dat;
+
+[7639.013]  
+	CONFIG=7639.013.config.dat;
+
+[7639.015]  
+	CONFIG=7639.015.config.dat;
+
+[7639.101]  
+	CONFIG=7639.101.config.dat;
+
 [7639.103]
 	CONFIG=7639.103.config.dat;
+
+[7639.105]  
+	CONFIG=7639.105.config.dat;
 
 [7639.107]
 	CONFIG=7639.107.config.dat;
 
+[7639.109]
+	CONFIG=7639.109.config.dat;
+
+[7639.111]
+	CONFIG=7639.111.config.dat;
+
 [7639.113]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7639.113.config.dat;
 
 [7639.115]
 	RUN_STATUS=Good;
+	CONFIG=7639.115.config.dat;
 
 [7640.001]
 	EnableStrip=9;
@@ -3807,20 +4747,40 @@
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
+	CONFIG=7640.002.config.dat;
 
+[7640.004]
+	CONFIG=7640.004.config.dat;
+
+[7640.005]
+	CONFIG=7640.005.config.dat;
 
 [7640.006]
+	RUN_STATUS*=Suspicious;
 	DisableBunch=19;
-	RUN_STATUS=Suspicious;
-	COMMENT="Bunch ID 19 is 10 times hotter than other bunches";
+	COMMENT*="Bunch ID 19 is 10 times hotter than other bunches";
+	CONFIG=7640.006.config.dat;
+
+[7640.007]
+	CONFIG=7640.007.config.dat;
+
+[7640.008]
+	CONFIG=7640.008.config.dat;
+
+[7640.009]
+	CONFIG=7640.009.config.dat;
+
+[7640.010]
+	CONFIG=7640.010.config.dat;
 
 [7640.011]
 	EnableBunch=19;
-	RUN_STATUS=Suspicious;
-	COMMENT="";
+	RUN_STATUS*=Suspicious;
+	CONFIG=7640.011.config.dat;
 
 [7640.012]
 	RUN_STATUS=Good;
+	CONFIG=7640.012.config.dat;
 
 [7640.014]
 	CONFIG=7640.014.config.dat;
@@ -3828,23 +4788,31 @@
 [7640.101]
 	CONFIG=7640.101.config.dat;
 
+[7640.102]
+	CONFIG=7640.102.config.dat;
+
 [7640.104]
 	CONFIG=7640.104.config.dat;
+
+[7640.105]
+	CONFIG=7640.105.config.dat;
 
 [7640.106]
 	CONFIG=7640.106.config.dat;
 
 [7640.107]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7640.107.config.dat;
 
 [7640.108]
 	RUN_STATUS=Good;
+	CONFIG=7640.108.config.dat;
 
 [7640.110]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7640.111]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7640.111.config.dat;
 
 [7641.001]
@@ -3854,14 +4822,36 @@
 [7641.003]
 	CONFIG=7641.003.config.dat;
 
+[7641.005]  
+	CONFIG=7641.005.config.dat;
+
+[7641.007]  
+	CONFIG=7641.007.config.dat;
+
+[7641.009]  
+	CONFIG=7641.009.config.dat;
+
+[7641.011]  
+	CONFIG=7641.011.config.dat;
+
 [7641.101]
 	CONFIG=7641.101.config.dat;
 
 [7641.103]
 	CONFIG=7641.103.config.dat;
 
+[7641.105]  
+	CONFIG=7641.105.config.dat;
+
+[7641.107]  
+	CONFIG=7641.107.config.dat;
+
+[7641.109]  
+	CONFIG=7641.109.config.dat;
+
 [7641.111]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7641.111.config.dat;
 
 [7642.001]
 	CONFIG=7642.001.config.dat;
@@ -3869,40 +4859,70 @@
 [7642.003]
 	CONFIG=7642.003.config.dat;
 
+[7642.005]  
+	CONFIG=7642.005.config.dat;
+
+[7642.007]  
+	CONFIG=7642.007.config.dat;
+
+[7642.009]  
+	CONFIG=7642.009.config.dat;
+
+[7642.011]  
+	CONFIG=7642.011.config.dat;
+
 [7642.013]
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
+	CONFIG=7642.013.config.dat;
 
 [7642.101]
+	RUN_STATUS=Good;
 	DisableBunch=6;
 	DisableBunch=55;
-	RUN_STATUS=Good;
 	CONFIG=7642.101.config.dat;
 	COMMENT*="13.4 and 14.7 sigmas off from Y45 asymmetry average in bunch 6 and 55, respectively";
 
-[7642.102]
+[7642.102]  // No data available for this measurement ?
+	RUN_STATUS=Good;
 	EnableBunch=6;
 	EnableBunch=55;
-	RUN_STATUS=Good;
-	CONFIG=7642.101.config.dat;
 	COMMENT*="Enabled bunches are not confirmed yet";
+	CONFIG=7642.102.config.dat;
 
 [7642.103]
 	CONFIG=7642.103.config.dat;
+
+[7642.105]  
+	CONFIG=7642.105.config.dat;
+
+[7642.107]  
+	CONFIG=7642.107.config.dat;
+
+[7642.109]  
+	CONFIG=7642.109.config.dat;
+
+[7642.111]  
+	CONFIG=7642.111.config.dat;
 
 [7642.113]
 	EnableStrip=11;
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;
+	CONFIG=7642.113.config.dat;
+
+[7643.001] 
+	CONFIG=7643.001.config.dat;
 
 [7643.101]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7643.102]
 	RUN_STATUS=Good;
+	CONFIG=7643.102.config.dat;
 
 [7644.001]
 	CONFIG=7644.001.config.dat;
@@ -3917,81 +4937,331 @@
 	CONFIG=7644.103.config.dat;
 
 [7645.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7645.002]
 	RUN_STATUS=Good;
 	CONFIG=7645.002.config.dat;
 
-[7645.004]
+[7645.004]	
 	CONFIG=7645.004.config.dat;
 
-[7651.001]
-	RUN_STATUS=Junk;
+[7645.005]  
+	CONFIG=7645.005.config.dat;
 
-[7651.101]
-	RUN_STATUS=Junk;
+[7645.007]  
+	CONFIG=7645.007.config.dat;
+
+[7645.101]  
+	CONFIG=7645.101.config.dat;
+
+[7645.103]  
+	CONFIG=7645.103.config.dat;
+
+[7645.104]  
+	CONFIG=7645.104.config.dat;
+
+[7645.106]  
+	CONFIG=7645.106.config.dat;
+
+[7646.001]  
+	CONFIG=7646.001.config.dat;
+
+[7646.004]  
+	CONFIG=7646.004.config.dat;
+
+[7646.006]  
+	CONFIG=7646.006.config.dat;
+
+[7646.008]  
+	CONFIG=7646.008.config.dat;
+
+[7646.010]  
+	CONFIG=7646.010.config.dat;
+
+[7646.101]  
+	CONFIG=7646.101.config.dat;
+
+[7646.103]  
+	CONFIG=7646.103.config.dat;
+
+[7646.105]  
+	CONFIG=7646.105.config.dat;
+
+[7646.107]  
+	CONFIG=7646.107.config.dat;
+
+[7646.109]  
+	CONFIG=7646.109.config.dat;
+
+[7651.001]
+	RUN_STATUS*=Junk;
+
+[7651.002]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7651.002.config.dat;
 
 [7651.003]
 	RUN_STATUS=Good;
+	CONFIG=7651.003.config.dat;
+
+[7651.004]  
+	CONFIG=7651.004.config.dat;
+
+[7651.005]  
+	CONFIG=7651.005.config.dat;
+
+[7651.006]  
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	CONFIG=7651.006.config.dat;
+
+[7651.007]  
+	CONFIG=7651.007.config.dat;
+
+[7651.008]  
+	CONFIG=7651.008.config.dat;
+
+[7651.009]  
+	CONFIG=7651.009.config.dat;
+
+[7651.010]  
+	CONFIG=7651.010.config.dat;
+
+[7651.101]
+	RUN_STATUS*=Junk;
+
+[7651.102]  
+	RUN_STATUS*=Suspicious; 
+	DisableStrip*=9;
+	DisableStrip*=11;
+	DisableStrip*=26;
+	DisableStrip*=31;
+	DisableStrip*=37;
+	DisableStrip*=44;
+	DisableStrip*=55;
+	DisableStrip*=59;
+	DisableStrip*=63;
+	DisableStrip*=69;
+	DisableStrip*=71;
+	CONFIG=7651.102.config.dat;
 
 [7651.103]
 	RUN_STATUS=Good;
+	CONFIG=7651.103.config.dat;
+
+[7651.104]  
+	CONFIG=7651.104.config.dat;
+
+[7651.105]  
+	CONFIG=7651.105.config.dat;
+
+[7651.106]  
+	CONFIG=7651.106.config.dat;
+
+[7651.107]  
+	CONFIG=7651.107.config.dat;
+
+[7651.108]  
+	CONFIG=7651.108.config.dat;
+
+[7651.109]  
+	CONFIG=7651.109.config.dat;
+
+[7651.110]  
+	DisableStrip*=15;
+	DisableStrip*=28;
+	DisableStrip*=38;
+	DisableStrip*=42;
+	CONFIG=7651.110.config.dat;
+
+[7651.111]  
+	CONFIG=7651.111.config.dat;
+
+[7652.001]  
+	CONFIG=7652.001.config.dat;
+
+[7652.002]  
+	CONFIG=7652.002.config.dat;
+
+[7652.003]  
+	CONFIG=7652.003.config.dat;
+
+[7652.004]  
+	CONFIG=7652.004.config.dat;
+
+[7652.005]  
+	CONFIG=7652.005.config.dat;
+
+[7652.101]  
+	CONFIG=7652.101.config.dat;
+
+[7652.102]  
+	CONFIG=7652.102.config.dat;
+
+[7652.103]  
+	CONFIG=7652.103.config.dat;
+
+[7652.104] 
+	CONFIG=7652.104.config.dat;
+
+[7652.105] 
+	CONFIG=7652.105.config.dat;
 
 [7654.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="The profile scan is wrong";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="The profile scan is wrong";
+	CONFIG=7654.001.config.dat;
 
 [7654.002]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7654.002.config.dat;  
+
+[7654.003]  
+	CONFIG=7654.003.config.dat; 
+
+[7654.004]  
+	CONFIG=7654.004.config.dat; 
+
+[7654.005]  
+	CONFIG=7654.005.config.dat; 
+
+[7654.006]  
+	CONFIG=7654.006.config.dat; 
+
+[7654.007]  
+	CONFIG=7654.007.config.dat; 
 
 [7654.008]
-	RUN_STATUS=Suspicious;
-	COMMENT="Some strips are wrong, target may be fixed but no e-log entry";
+	RUN_STATUS*=Suspicious;
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	COMMENT*="Some strips are wrong, target may be fixed but no e-log entry";
+	CONFIG=7654.008.config.dat; 
 
 [7654.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="The profile scan is wrong"
+	RUN_STATUS*=Suspicious;
+	COMMENT*="The profile scan is wrong";
+	CONFIG=7654.101.config.dat;  
+
+[7654.102] 
+	CONFIG=7654.102.config.dat; 
 
 [7654.103]
-	RUN_STATUS=Junk;
-	COMMENT="Data size is small";
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
+
+[7654.104]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7654.104.config.dat; 
+
+[7654.105]  
+	CONFIG=7654.105.config.dat; 
+
+[7654.106]  
+	CONFIG=7654.106.config.dat; 
+
+
+[7654.107]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 1M";@
+
+[7654.107]  
+	CONFIG=7654.107.config.dat; 
+
+[7654.108]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7654.108.config.dat; 
+
+[7654.109]  
+	RUN_STATUS=Good;
+	CONFIG=7654.109.config.dat; 
+
+[7654.110]  
+	CONFIG=7654.110.config.dat; 
+
+[7654.111]  
+	CONFIG=7654.111.config.dat; 
+
+[7654.112]  
+	CONFIG=7654.112.config.dat; 
+
+[7654.113]  
+	CONFIG=7654.113.config.dat; 
+
+[7654.114]  
+	CONFIG=7654.114.config.dat; 
+
+[7655.001]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7655.001.config.dat;
 
 [7655.002]
+	RUN_STATUS=Good;
 	CONFIG=7655.002.config.dat;
 
 [7655.003]
-	// Big phi error leading to big P error
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7655.003.config.dat;
+	// Big phi error leading to big P error
 
 [7655.004]
 	RUN_STATUS=Good;
+	CONFIG=7655.004.config.dat; 
+
+[7655.005]  
+	CONFIG=7655.005.config.dat;
+
+[7655.006]  
+	CONFIG=7655.006.config.dat;
+
+[7655.007]  
+	CONFIG=7655.007.config.dat;
 
 [7655.008]
-	//As far as I can see this is the beginning of the strange
-	//strip behavior
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
 	CONFIG=7655.008.config.dat;
+	//As far as I can see this is the beginning of the strange strip behavior
 
 [7655.101]
 	CONFIG=7655.101.config.dat;
-	COMMENT="";
 
 [7655.102]
 	CONFIG=7655.102.config.dat;
 
+[7655.103]  
+	CONFIG=7655.103.config.dat;
+
 [7655.104]
 	CONFIG=7655.104.config.dat;
 
+[7655.105]  
+	CONFIG=7655.105.config.dat;
+
+[7655.106]  
+	CONFIG=7655.106.config.dat;
+
+[7655.107]  
+	CONFIG=7655.107.config.dat;
+
 [7655.108]
-	//target may have been lost?
-	//See E-log for pp 3/24/06 14:59
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	//Target may have been lost?  See E-log for pp 3/24/06 14:59
+
+[7655.109]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7655.109.config.dat;
 
 [7657.001]
 	RUN_STATUS=Good;
@@ -4000,38 +5270,72 @@
 [7657.002]
 	CONFIG=7657.002.config.dat;
 
-[7657.002]
-	CONFIG=7657.002.config.dat;
+[7657.003]  
+	CONFIG=7657.003.config.dat;
+
+[7657.004]  
+	CONFIG=7657.004.config.dat;
 
 [7657.005]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7657.005.config.dat;  
 
 [7657.006]
 	RUN_STATUS=Good;
+	CONFIG=7657.006.config.dat; 
+
+[7657.007]  
+	CONFIG=7657.007.config.dat;
+
+[7657.008]  
+	CONFIG=7657.008.config.dat;
 
 [7657.101]
+	RUN_STATUS*=Suspicious; 
 	CONFIG=7657.101.config.dat;
 
 [7657.102]
 	CONFIG=7657.102.config.dat;
 
+[7657.103]  
+	CONFIG=7657.103.config.dat;
+
+[7657.104]  
+	CONFIG=7657.104.config.dat;
+
+[7657.105]  
+	CONFIG=7657.105.config.dat;
+
+[7657.106]  
+	CONFIG=7657.106.config.dat;
+
 [7657.107]
 	CONFIG=7657.107.config.dat;
+
+[7657.108]  
+	CONFIG=7657.108.config.dat;
+
+[7658.001]  
+	CONFIG=7658.001.config.dat;
+
+[7658.002]  
+	CONFIG=7658.002.config.dat;
 
 [7658.101]
 	CONFIG=7658.101.config.dat;
 
 [7658.102]
-	//online error = 100.0
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7658.102.config.dat;
+	//Online error = 100.0
 
 [7661.001]
-	//strange strip behavior gone
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
 	CONFIG=7661.001.config.dat;
+	//Strange strip behavior gone
 
 [7661.101]
 	CONFIG=7661.101.config.dat;
@@ -4039,129 +5343,335 @@
 [7662.001]
 	CONFIG=7662.001.config.dat;
 
+[7662.002]  
+	CONFIG=7662.002.config.dat;
+
+[7662.003]  
+	CONFIG=7662.003.config.dat;
+
+[7662.004]  
+	CONFIG=7662.004.config.dat;
+
+[7662.005]
+	CONFIG=7662.005.config.dat;
+
 [7662.101]
-	//big phi errors
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7662.101.config.dat;
+	//Big phi errors
 
 [7662.102]
 	RUN_STATUS=Good;
+	CONFIG=7662.102.config.dat; 
+
+[7662.103]  
+	CONFIG=7662.103.config.dat;
+
+[7662.104]  
+	CONFIG=7662.104.config.dat;
+
+[7662.105]  
+	CONFIG=7662.105.config.dat;
 
 [7671.001]
 	CONFIG=7671.001.config.dat;
 
+[7671.002]
+	CONFIG=7671.002.config.dat;
+
 [7671.003]
 	CONFIG=7671.003.config.dat;
 
+[7671.004]  
+	CONFIG=7671.004.config.dat;
+
+[7671.005]  
+	CONFIG=7671.005.config.dat;
+
+[7671.006]  
+	CONFIG=7671.006.config.dat;
+
+[7671.007]  
+	CONFIG=7671.007.config.dat;
+
+[7671.008]  
+	CONFIG=7671.008.config.dat;
+
 [7671.101]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7671.102]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7671.102.config.dat;
+
+[7671.103]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.103.config.dat;
+
+[7671.104]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7671.104.config.dat;
+
+[7671.105]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.105.config.dat;
+
+[7671.106]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.106.config.dat;
+
+[7654.108]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 1M";@
+
+
+
+[7671.107]@
+	RUN_STATUS*=Junk;@
+	COMMENT*="Number of events < 1M";@
+
+[7671.107]  
+	RUN_STATUS*=Suspicious; 
+	DisableStrip*=3;
+	DisableStrip*=29;
+	DisableStrip*=61;
+	CONFIG=7671.107.config.dat;
+
+[7671.108]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.108.config.dat;
+
+[7671.109]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.109.config.dat;
+
+[7671.110]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.110.config.dat;
+
+[7671.111]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7671.111.config.dat;
 
 [7671.112]
-	//both online and offline P are negative
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7671.112.config.dat;
+	//Both online and offline P are negative
 
 [7671.113]
 	RUN_STATUS=Good;
 	CONFIG=7671.113.config.dat;
+
+[7671.114]  
+	CONFIG=7671.114.config.dat;
+
+[7671.115]  
+	CONFIG=7671.115.config.dat;
+
+[7671.116]  
+	CONFIG=7671.116.config.dat;
+
+[7671.117]  
+	CONFIG=7671.117.config.dat;
+
+[7671.118]
+	CONFIG=7671.118.config.dat;
 
 [7671.119]
 	RUN_STATUS=Good;
 	CONFIG=7671.119.config.dat;
 
 [7671.120]
-	RUN_STATUS=Junk;
-	COMMENT="Small Data size";
+	RUN_STATUS*=Junk;
+	COMMENT*="Small Data size";
 
 [7672.001]
-	//huge time shift, don't know why.
-	//config file replaced and now good.
 	RUN_STATUS=Good;
 	CONFIG=7672.001.config.dat;
+	// Huge time shift, don't know why.  Config file replaced and now good.
 
 [7672.002]
 	RUN_STATUS=Good;
 	CONFIG=7672.002.config.dat;
 
-[7672.002]
-	CONFIG=7672.002.config.dat;
+[7672.003]  
+	CONFIG=7672.003.config.dat;
 
 [7672.004]
-	//negative polarization?  But may just be a sign issue
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	DEFINE_SPIN_PATTERN*=6;
 	CONFIG=7672.004.config.dat;
+	//Negative polarization?  But may just be a sign issue
+
+[7672.005]  
+	DEFINE_SPIN_PATTERN*=6;
+	CONFIG=7672.005.config.dat;
+
+[7672.006]  
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	DEFINE_SPIN_PATTERN*=6;
+	CONFIG=7672.006.config.dat;
 
 [7672.101]
-	COMMENT="very bizzare timing issues as evidenced in the offline plots, not a run I would trust, but not ready to junk just yet.";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7672.101.config.dat;
+	COMMENT*="very bizzare timing issues as evidenced in the offline plots, not a run I would trust, but not ready to junk just yet.";
 
 [7672.102]
-	COMMENT=""
 	RUN_STATUS=Good;
 	CONFIG=7672.102.config.dat;
-
 
 [7672.103]
 	CONFIG=7672.103.config.dat;
 
+[7672.104]  
+	CONFIG=7672.104.config.dat;
+
+[7672.105]  
+	CONFIG=7672.105.config.dat;
+
+[7672.106]  
+	CONFIG=7672.106.config.dat;
+
 [7672.107]
-	RUN_STATUS=Suspicious;
-	// reversed spin sign from CDEV.
+	RUN_STATUS*=Suspicious;
+	DEFINE_SPIN_PATTERN*=7;
+	CONFIG=7672.107.config.dat;
+	// Reversed spin sign from CDEV.
+
+[7672.108]  
+	DEFINE_SPIN_PATTERN*=7;
+	CONFIG=7672.108.config.dat;
+
+[7672.109]  
+	DEFINE_SPIN_PATTERN*=7;
+	CONFIG=7672.109.config.dat;
+
+[7672.110]  
+	DEFINE_SPIN_PATTERN*=7;
+	CONFIG=7672.110.config.dat;
 
 [7673.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7673.002]  
+	RUN_STATUS*=Suspicious; 
+	DisableStrip*=4;
+	DisableStrip*=18;
+	DisableStrip*=31;
+	DisableStrip*=48;
+	CONFIG=7673.002.config.dat;
 
 [7673.003]
-	//online plots not too tight, 6 bunch injection
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7673.003.config.dat;
+	//Online plots not too tight, 6 bunch injection
 
 [7673.004]
 	RUN_STATUS=Good;
 	CONFIG=7673.004.config.dat;
 
 [7673.005]
-	//Bunch By Bunch dist looks strange and has huge errors
-	//low statistics?
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7673.005.config.dat;
+	//Bunch By Bunch dist looks strange and has huge errors, low statistics?
+
+[7673.006]  
+	CONFIG=7673.006.config.dat;
 
 [7673.007]
 	RUN_STATUS=Good;
+	CONFIG=7673.007.config.dat;
 
 [7673.008]
-	//run excluded from Elog, and then repeated 2 minutes later
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7673.008.config.dat;
+	//Run excluded from Elog, and then repeated 2 minutes later
 
-[7673.007]
+[7673.009]
 	RUN_STATUS=Good;
+	CONFIG=7673.009.config.dat;
 
 [7673.010]
-	//not sure about this one, timing issues and exclusion from elog
-	//very tempted to junk this one
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7673.010.config.dat;
+	//Not sure about this one, timing issues and exclusion from elog
+	//Very tempted to junk this one
 
 [7673.101]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7673.101.config.dat;  
+
+[7673.102]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7673.102.config.dat;
+
+[7673.103]  
+	DisableStrip*=6;
+	DisableStrip*=27;
+	DisableStrip*=33;
+	CONFIG=7673.103.config.dat;  
+
+[7673.104]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7673.104.config.dat;
+
+[7673.105]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7673.105.config.dat;
+
+[7673.106]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7673.106.config.dat;
+
+[7673.107]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7673.107.config.dat;
+
+[7673.108]  
+	CONFIG=7673.108.config.dat;  
 
 [7673.109]
-	//According to Elog, they missed a bunch and then dumped and refilled
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7673.109.config.dat;
+	//According to Elog, they missed a bunch and then dumped and refilled
 
 [7673.110]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7673.110.config.dat;  
 
 [7673.111]
 	//big jump between online and offline
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7673.111.config.dat;
 
+[7673.112]  
+	CONFIG=7673.112.config.dat;
+
 [7673.113]
-	RUN_STATUS=Suspicious;
-	COMMENT="only 4 million carbons?  perhaps low statistics? And profile scan does not make it all the way through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="only 4 million carbons?  perhaps low statistics? And profile scan does not make it all the way through beam.";
 	CONFIG=7673.113.config.dat;
+
+[7673.114]  
+	CONFIG=7673.114.config.dat;
+
+[7673.115]  
+	CONFIG=7673.115.config.dat;  
 
 [7673.116]
 	//something is very wrong with the second and fifth detector
@@ -4190,15 +5700,19 @@
 	DisableStrip=58;
 	DisableStrip=59;
 	DisableStrip=60;
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Suspicious strips.";
+	CONFIG=7673.116.config.dat;  
 
 [7673.117]
-	RUN_STATUS=Junk;
-	COMMENT="";
+	RUN_STATUS*=Junk;
 
 [7673.118]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7673.118.config.dat;  
+
+[7673.119]  
+	CONFIG=7673.119.config.dat;  
 
 [7674.001]
 	RUN_STATUS=Good;
@@ -4232,48 +5746,116 @@
 	RUN_STATUS=Good;
 	CONFIG=7674.101.config.dat;
 
+[7680.001]  
+	CONFIG=7680.001.config.dat;
+
+[7680.002]  
+	CONFIG=7680.002.config.dat;
+
+[7680.101]  
+	CONFIG=7680.101.config.dat;
+
+[7680.102]  
+	CONFIG=7680.102.config.dat;
+
 [7681.001]
 	CONFIG=7681.001.config.dat;
 
+[7681.002]  
+	CONFIG=7681.002.config.dat;
+
 [7681.003]
-	//background noise in the sixth detector, but not too high to warrent
-	//"disable" status
+	CONFIG=7681.003.config.dat; 
+	//Background noise in the sixth detector, but not too high to warrent "disable" status
 
 [7681.004]
 	CONFIG=7681.004.config.dat;
 
+[7681.005]  
+	CONFIG=7681.005.config.dat; 
+
+[7681.006]  
+	CONFIG=7681.006.config.dat; 
+
+[7681.007]  
+	CONFIG=7681.007.config.dat; 
+
 [7681.008]
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	RUN_STATUS=Suspicious;
+	CONFIG=7681.008.config.dat; 
 
 [7681.101]
 	CONFIG=7681.101.config.dat;
 
+[7681.102]  
+	CONFIG=7681.102.config.dat; 
+
+[7681.103]  
+	CONFIG=7681.103.config.dat; 
+
 [7681.104]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7681.104.config.dat; 
 
 [7681.105]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Scan is messed up.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Scan is messed up.";
 	CONFIG=7681.105.config.dat;
 
 [7681.106]
 	CONFIG=7681.106.config.dat;
 
+[7681.107]  
+	CONFIG=7681.107.config.dat;
+
+[7681.108]  
+	CONFIG=7681.108.config.dat;
+
+[7681.109]  
+	CONFIG=7681.109.config.dat;
+
+[7681.110]  
+	CONFIG=7681.110.config.dat;
+
+[7681.111]  
+	CONFIG=7681.111.config.dat;
+
+[7681.112]  
+	CONFIG=7681.112.config.dat;
+
+[7681.113]  
+	CONFIG=7681.113.config.dat;
+
+[7681.114]  
+	CONFIG=7681.114.config.dat;
+
+[7681.115]  
+	CONFIG=7681.115.config.dat;
+
 [7682.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7682.001.config.dat;
 
+[7682.002]  
+	CONFIG=7682.002.config.dat; 
+
 [7682.003]
+	RUN_STATUS=Good;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	RUN_STATUS=Good;	
+	CONFIG=7682.003.config.dat; 
 	
+[7682.004]  
+	CONFIG=7682.004.config.dat; 
+
+[7682.005]  
+	CONFIG=7682.005.config.dat; 
 
 [7682.006]
 	CONFIG=7682.006.config.dat;
@@ -4281,8 +5863,17 @@
 [7682.101]
 	CONFIG=7682.101.config.dat;
 
+[7682.102]  	
+	CONFIG=7682.102.config.dat; 
+
+[7682.103]  
+	CONFIG=7682.103.config.dat; 
+
 [7682.104]
 	CONFIG=7682.104.config.dat;
+
+[7682.105]  
+	CONFIG=7682.105.config.dat; 
 
 [7685.001]
 	CONFIG=7685.001.config.dat;
@@ -4290,20 +5881,41 @@
 [7685.002]
 	CONFIG=7685.002.config.dat;
 
+[7685.003]  
+	CONFIG=7685.003.config.dat;
+
 [7685.101]
 	CONFIG=7685.101.config.dat;
+
+[7685.102]  
+	CONFIG=7685.102.config.dat;
 
 [7688.001]
 	CONFIG=7688.001.config.dat;
 
 [7688.002]
-	// big errors on the online asymmetry values.
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7688.002.config.dat;
+	// Big errors on the online asymmetry values.
 
 [7688.003]
 	RUN_STATUS=Good;
 	CONFIG=7688.003.config.dat;
+
+[7688.004]  
+	CONFIG=7688.004.config.dat;
+
+[7688.005]  
+	CONFIG=7688.005.config.dat;
+
+[7688.006]  
+	CONFIG=7688.006.config.dat;
+
+[7688.007]  
+	CONFIG=7688.007.config.dat;
+
+[7688.008]  
+	CONFIG=7688.008.config.dat;
 
 [7688.101]
 	CONFIG=7688.101.config.dat;
@@ -4311,294 +5923,623 @@
 [7688.102]
 	CONFIG=7688.102.config.dat;
 
+[7688.103]  
+	CONFIG=7688.103.config.dat;
+
+[7688.104]  
+	CONFIG=7688.104.config.dat;
+
+[7688.105]  
+	CONFIG=7688.105.config.dat;
+
+[7688.106]  
+	CONFIG=7688.106.config.dat;
+
+[7688.107]  
+	CONFIG=7688.107.config.dat;
+
+[7689.001]  
+	CONFIG=7689.001.config.dat;
+
 [7689.101]
 	CONFIG=7689.101.config.dat;
+
+[7690.001]  
+	CONFIG=7690.001.config.dat;
 
 [7690.101]
 	CONFIG=7690.101.config.dat;
 
+[7690.102]  
+	CONFIG=7690.102.config.dat;
+
 [7691.001]
-	CONFIG=7690.001.config.dat;
+	CONFIG=7691.001.config.dat;
+
+[7691.002]  
+	CONFIG=7691.002.config.dat;
+
+[7691.003]  
+	CONFIG=7691.003.config.dat;
+
+[7691.004]  
+	CONFIG=7691.004.config.dat;
+
+[7691.005]  
+	CONFIG=7691.005.config.dat;
+
+[7691.006]  
+	CONFIG=7691.006.config.dat;
 
 [7691.101]
 	CONFIG=7691.101.config.dat;
 
-[7691.106]
-	//something about emittance measurement.  See Sandro's note in
-	//the rhic_pp elog
-	RUN_STATUS=Junk;
+[7691.102]  
+	CONFIG=7691.102.config.dat;
 
+[7691.103]  
+	CONFIG=7691.103.config.dat;
+
+[7691.104]  
+	CONFIG=7691.104.config.dat;
+
+[7691.105]  
+	CONFIG=7691.105.config.dat;
+
+[7691.106]
+	RUN_STATUS*=Junk;
+	CONFIG=7691.106.config.dat; 
+	//Something about emittance measurement.  See Sandro's note in the rhic_pp elog
+
+[7697.001]  
+	RUN_STATUS=Good;
+	CONFIG=7697.001.config.dat;
+
+[7697.002]  
+	CONFIG=7697.002.config.dat;
 
 [7697.101]
 	RUN_STATUS=Good;
+	CONFIG=7697.101.config.dat; 
+
+[7697.102]  
+	CONFIG=7697.102.config.dat;
+
+[7699.001]  
+	CONFIG=7699.001.config.dat;
+
+[7699.002]  
+	CONFIG=7699.002.config.dat;
+
+[7699.101]
+	CONFIG=7699.101.config.dat;
+
+[7699.102]  
+	CONFIG=7699.102.config.dat;
 
 [7700.001]
-	RUN_STATUS=Junk;
-	COMMENT="Data size is small";
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
+
+[7700.002]
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7700.002.config.dat;
 
 [7700.101]
-	RUN_STATUS=Junk;
-	COMMENT="Data size is small";
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
+
+[7700.102]
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7700.102.config.dat;
+
+[7706.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
+	CONFIG=7706.001.config.dat;
+
+[7706.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
+	CONFIG=7706.002.config.dat;
+
+[7706.101]
+	CONFIG=7706.101.config.dat;
+
+[7706.102]
+	CONFIG=7706.102.config.dat;
 
 [7710.001]
-	RUN_STATUS=Junk;
-	COMMENT="Data size is small";
+	RUN_STATUS*=Junk;
+	COMMENT*="Data size is small";
 
 [7710.002]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7710.002.config.dat; 
+
+[7710.003]  
+	CONFIG=7710.003.config.dat;
+
+[7710.101]  
+	CONFIG=7710.101.config.dat;
+
+[7710.102]  
+	CONFIG=7710.102.config.dat;
+
+[7711.001]  
+	CONFIG=7711.001.config.dat;
+
+[7711.101]  
+	CONFIG=7711.101.config.dat;
+
+[7711.102]  
+	CONFIG=7711.102.config.dat;
 
 [7712.001]
 	CONFIG=7712.001.config.dat;
 
+[7712.002]  
+	CONFIG=7712.002.config.dat;
+
 [7712.101]
 	CONFIG=7712.101.config.dat;
+
+[7712.102]  
+	CONFIG=7712.102.config.dat;
+
+[7718.001]  
+	CONFIG=7718.001.config.dat;
+
+[7718.002]  
+	CONFIG=7718.002.config.dat;
+
+[7718.003]  
+	CONFIG=7718.003.config.dat;
+
+[7718.004]  
+	CONFIG=7718.004.config.dat;
 
 [7718.005]
 	CONFIG=7718.005.config.dat;
 
 [7718.006]
-	RUN_STATUS=Suspicious;
-	COMMENT="fixed target measurement with very low rate"	
+	RUN_STATUS*=Suspicious;
+	COMMENT*="fixed target measurement with very low rate";
 	CONFIG=7718.006.config.dat;
 
 [7718.007]
 	RUN_STATUS=Good;
 	CONFIG=7718.007.config.dat;
 
-[7712.103]
-	RUN_STATUS=Junk;
+[7718.101]  
+	CONFIG=7718.101.config.dat;
+
+[7718.102]  
+	CONFIG=7718.102.config.dat;
+
+[7718.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7718.103.config.dat;
 
 [7718.104]
 	RUN_STATUS=Good;
 	CONFIG=7718.104.config.dat;
 
+[7718.105]  
+	CONFIG=7718.105.config.dat;
+
+[7718.106]  
+	CONFIG=7718.106.config.dat;
+
+[7718.107]  
+	CONFIG=7718.107.config.dat;
+
 [7719.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7719.002]
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7719.002.config.dat;
+
+[7719.003]
+	CONFIG=7719.003.config.dat;
 	
 [7719.004]
 	CONFIG=7719.004.config.dat;
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange intensity profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange intensity profile";
 	
 [7719.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide intensity profile"
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wide intensity profile"
 	CONFIG=7719.101.config.dat;
 	
 [7722.001]
 	RUN_STATUS=Good;
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
 	CONFIG=7722.001.config.dat;
-	COMMENT="";
 	
 [7722.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide intensity profile";
-	
+	RUN_STATUS*=Suspicious;
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	COMMENT*="Wide intensity profile";
+	CONFIG=7722.002.config.dat;  
+
 [7722.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide intensity profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wide intensity profile";
+	CONFIG=7722.003.config.dat;  
 	
 [7722.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide intensity profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wide intensity profile";
+	CONFIG=7722.004.config.dat;  
 	
 [7722.005]
-	RUN_STATUS=Suspicious;
-	COMMENT="Intensity profile is too wide";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Intensity profile is too wide";
+	CONFIG=7722.005.config.dat;  
+
+[7722.006]  
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	CONFIG=7722.006.config.dat;  
 
 [7722.101]
 	RUN_STATUS=Good;
-	COMMENT="";
 	CONFIG=7722.101.config.dat;
 	
+[7722.102]  
+	CONFIG=7722.102.config.dat; 
+
+[7722.103]  
+	CONFIG=7722.103.config.dat; 
+
+[7722.104]  
+	CONFIG=7722.104.config.dat; 
+
+[7722.105]  
+	CONFIG=7722.105.config.dat; 
+
 [7722.106]
-	COMMENT="low statistics, low polarization";
-	RUN_STATUS=Junk;
+	COMMENT*="low statistics, low polarization";
+	RUN_STATUS*=Junk;
+	CONFIG=7722.106.config.dat;  
 
 [7723.001]
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Some strips have low statistics, and the profile scan wrong";
-	RUN_STATUS=Suspicious;
+	COMMENT*="Some strips have low statistics, and the profile scan wrong";
+	CONFIG=7723.001.config.dat;  
 
 [7723.101]
-	COMMENT="";
 	RUN_STATUS=Good;
+	CONFIG=7723.101.config.dat;  
+
+[7724.001]  
+	CONFIG=7724.001.config.dat; 
 
 [7724.002]
+	RUN_STATUS*=Suspicious;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="The profile scan is wrong, and the plots show a number of false Y45 asymmetries";
-	RUN_STATUS=Suspicious;
+	COMMENT*="The profile scan is wrong, and the plots show a number of false Y45 asymmetries";
+	CONFIG=7724.002.config.dat;  
 
 [7724.003]
-	COMMENT="The profile scan is wrong";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	COMMENT*="The profile scan is wrong";
+	CONFIG=7724.003.config.dat;  
 
 [7724.004]
-	COMMENT="Profile scan begins in the middle of the beam";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan begins in the middle of the beam";
+	CONFIG=7724.004.config.dat;  
+
+[7724.005]  
+	CONFIG=7724.005.config.dat; 
+
+[7724.006]  
+	CONFIG=7724.006.config.dat; 
+
+[7724.007]  
+	CONFIG=7724.007.config.dat; 
 
 [7724.101]
-	COMMENT="";
 	RUN_STATUS=Good;
+	CONFIG=7724.101.config.dat;  
+
+[7724.102]  
+	CONFIG=7724.102.config.dat; 
+
+[7724.103]  
+	CONFIG=7724.103.config.dat; 
+
+[7724.104]  
+	CONFIG=7724.104.config.dat; 
+
+[7724.105]  
+	CONFIG=7724.105.config.dat; 
 
 [7724.106]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7724.106.config.dat;  
 
 [7724.107]
-	RUN_STATUS=;
+	RUN_STATUS*=Suspicious;
+	CONFIG=7724.107.config.dat;  
 
 [7725.001]
-	COMMENT="Profile scan begins in the middle of the beam";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan begins in the middle of the beam";
+	CONFIG=7725.001.config.dat;  
 
 [7725.002]
-	COMMENT="Some strips are wrong and profile scan begins in middle of beam";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
+	COMMENT*="Some strips are wrong and profile scan begins in middle of beam";
+	CONFIG=7725.002.config.dat;  
 	
 [7725.003]
-	COMMENT="Strange structure in bunch crossing and WCM plots and profile scan begins in middle of beam";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange structure in bunch crossing and WCM plots and profile scan begins in middle of beam";
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
+	CONFIG=7725.003.config.dat;  
 
 [7725.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide intensity profile";	
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wide intensity profile";	
+	CONFIG=7725.004.config.dat;  
 
 [7725.005]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange structure in bunch crossing and wide intensity profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange structure in bunch crossing and wide intensity profile";
+	CONFIG=7725.005.config.dat;  
+
+[7725.006]  
+	CONFIG=7725.006.config.dat; 
+
+[7725.007]  
+	CONFIG=7725.007.config.dat; 
+
+[7725.008]  	
+	CONFIG=7725.008.config.dat; 
 
 [7725.009]
 	RUN_STATUS=Good;
-	COMMENT="Target is fixed and it was checked with e-log";
+	COMMENT*="Target is fixed and it was checked with e-log";
+	CONFIG=7725.009.config.dat;  
 
 [7725.101]
 	RUN_STATUS=Good;
-	COMMENT="";	
+	CONFIG=7725.101.config.dat;  
 	
+[7725.102]  
+	CONFIG=7725.102.config.dat; 
+
+[7725.103]  
+	CONFIG=7725.103.config.dat; 
+
+[7725.104]  
+	CONFIG=7725.104.config.dat; 
+
+[7725.105]  
+	CONFIG=7725.105.config.dat; 
+
+[7725.106]  
+	CONFIG=7725.106.config.dat; 
+
+[7725.107]  
+	CONFIG=7725.107.config.dat; 
+
 [7725.108]
-	RUN_STATUS=Junk;
-	COMMENT="less than 2M events, no elog entry";
+	RUN_STATUS*=Junk;
+	COMMENT*="less than 2M events, no elog entry";
+	CONFIG=7725.108.config.dat;  
 
 [7725.109]
 	RUN_STATUS=Good;
-	COMMENT="Target is fixed and it was checked with e-log";
-
+	COMMENT*="Target is fixed and it was checked with e-log";
+	CONFIG=7725.109.config.dat; 
 	
 [7729.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7729.001.config.dat;  
+
+[7729.002]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7729.002.config.dat;
 
 [7729.003]
-	COMMENT="Intensity profile is still wide.";
-	RUN_STATUS=Suspicious;
+	COMMENT*="Intensity profile is still wide.";
+	RUN_STATUS*=Suspicious;
+	CONFIG=7729.003.config.dat;  
 
 [7729.004]
-	RUN_STATUS=Suspicious;
-	COMMENT= "Offline bunch crossing and WCM plots are weird.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*= "Offline bunch crossing and WCM plots are weird.";
+	CONFIG=7729.004.config.dat;  
+
+[7729.005]  
+	CONFIG=7729.005.config.dat;
+
+[7729.006]  
+	CONFIG=7729.006.config.dat;
 
 [7729.007]
 	RUN_STATUS=Good;
-	COMMENT="Intensity profile problem (begining at 7719) has been fixed";
+	COMMENT*="Intensity profile problem (begining at 7719) has been fixed";
+	CONFIG=7729.007.config.dat;  
 
 [7729.008]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7729.009]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7729.009.config.dat; 
+
+[7729.010]  
+	CONFIG=7729.010.config.dat;  
+
+[7729.011]  
+	CONFIG=7729.011.config.dat;  
+
+[7729.012]  
+	CONFIG=7729.012.config.dat;  
+
+[7729.013]  
+	CONFIG=7729.013.config.dat;  
+
+[7729.014]  
+	CONFIG=7729.014.config.dat;  
+
+[7729.015]  
+	CONFIG=7729.015.config.dat;  
+
+[7729.101]  
+	CONFIG=7729.101.config.dat;  
+
+[7729.102]  
+	CONFIG=7729.102.config.dat;  
 
 [7729.103]
 	CONFIG=7729.103.config.dat;
-	COMMENT="";
+
+[7729.104]  
+	CONFIG=7729.104.config.dat;  
+
+[7729.105]  
+	CONFIG=7729.105.config.dat;  
+
+[7729.106]  
+	CONFIG=7729.106.config.dat;  
+
+[7729.107]  
+	CONFIG=7729.107.config.dat;  
 
 [7732.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Large chi^2 in online phi fit.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Large chi^2 in online phi fit.";
 	CONFIG=7732.001.config.dat;
 
 [7732.002]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7732.002.config.dat;  
 
 [7732.003]
 	CONFIG=7732.003.config.dat;
 
 [7732.101]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7732.101.config.dat;  
 
 [7732.102]
 	RUN_STATUS=Good;
-	CONFIG=7732.102.config.dat;
 	COMMENT*="Injection";
+	CONFIG=7732.102.config.dat;
 
 [7732.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="Spin pattern is definitely not right."
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Spin pattern is definitely not right."
 	CONFIG=7732.103.config.dat;
 
 [7732.104]
-	RUN_STATUS=Suspicious;
-	COMMENT="Spin pattern is definitely not right."
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Spin pattern is definitely not right."
+	CONFIG=7732.104.config.dat;  
 
 [7733.001]
-	COMMENT="";
-	CONFIG=7733.001.config.dat;
 	RUN_STATUS=Good;
+	CONFIG=7733.001.config.dat;
+
+[7733.002]  
+	CONFIG=7733.002.config.dat;
 
 [7733.003]
 	CONFIG=7733.003.config.dat;
 
 [7733.101]
-	COMMENT="";
 	RUN_STATUS=Good;
 	CONFIG=7733.101.config.dat;
 
 [7733.102]
-	COMMENT="Physics asymmetries are zero even bunch by bunch. 7733.103 as well";
-	RUN_STATUS=Junk;
+	COMMENT*="Physics asymmetries are zero even bunch by bunch. 7733.103 as well";
+	RUN_STATUS*=Junk;
+	CONFIG=7733.102.config.dat;  
+
+[7733.103]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7733.103.config.dat;
 
 [7737.001]
-	COMMENT="Profile scan is messed up";
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan is messed up";
 	CONFIG=7737.001.config.dat;
-
-[7738.001]
-	RUN_STATUS=Good;
-	COMMENT="";
-	CONFIG=7738.001.config.dat;
 
 [7737.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7737.101.config.dat; 
+
+[7738.001]
+	RUN_STATUS=Good;
+	CONFIG=7738.001.config.dat;
 
 [7738.002]
 	CONFIG=7738.002.config.dat;
 
 [7738.101]
 	RUN_STATUS=Good;
-	COMMENT="";
 	CONFIG=7738.101.config.dat;
 
 [7738.102]
 	CONFIG=7738.102.config.dat;
 
+[7739.001]  
+	CONFIG=7739.001.config.dat;
+
 [7739.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="large chi^2 in sinphi plot";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="large chi^2 in sinphi plot";
+	CONFIG=7739.002.config.dat; 
+
+[7739.101]  
+	CONFIG=7739.101.config.dat;
+
+[7739.102]  
+	CONFIG=7739.102.config.dat;
 
 [7740.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7740.001.config.dat; 
+
+[7740.002]  
+	CONFIG=7740.002.config.dat; 
+
+[7740.003]  
+	CONFIG=7740.003.config.dat; 
+
+[7740.004]  
+	CONFIG=7740.004.config.dat; 
 
 [7740.101]
 	CONFIG=7740.101.config.dat;
@@ -4606,67 +6547,189 @@
 [7740.102]
 	CONFIG=7740.102.config.dat;
 
+[7740.103]  
+	CONFIG=7740.103.config.dat; 
+
+[7740.104]  
+	CONFIG=7740.104.config.dat; 
+
 [7744.001]
 	RUN_STATUS=Good;
+	CONFIG=7744.001.config.dat; 
+
+[7744.002]  
+	CONFIG=7744.002.config.dat; 
+
+[7744.003]  
+	CONFIG=7744.003.config.dat; 
+
+[7744.004]  
+	CONFIG=7744.004.config.dat; 
+
+[7744.005]  
+	CONFIG=7744.005.config.dat; 
+
+[7744.101]  
+	CONFIG=7744.101.config.dat; 
+
+[7744.102]  
+	CONFIG=7744.102.config.dat; 
 
 [7744.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="large chi^2 in sinphi plot";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="large chi^2 in sinphi plot";
 	CONFIG=7744.103.config.dat;
 
 [7744.104]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7744.104.config.dat; 
+
+[7744.105]  
+	CONFIG=7744.105.config.dat; 
 
 [7745.001]
 	RUN_STATUS=Recovered;
-	COMMENT="Wrong spin pattern loaded";
+	COMMENT*="Wrong spin pattern loaded";
 	DEFINE_SPIN_PATTERN=1;
+	CONFIG=7745.001.config.dat; 
+
+[7745.002]  
+	CONFIG=7745.002.config.dat; 
 
 [7745.003]
 	RUN_STATUS=Good;
-	COMMENT="";
 	DEFINE_SPIN_PATTERN=-1;
+	CONFIG=7745.003.config.dat; 
+
+[7745.004]  
+	CONFIG=7745.004.config.dat; 
+
+[7745.101]  
+	CONFIG=7745.101.config.dat; 
+
+[7745.102]  
+	CONFIG=7745.102.config.dat; 
+
+[7745.103]  
+	CONFIG=7745.103.config.dat; 
 
 [7749.001]
 	CONFIG=7749.001.config.dat;
 
-
-[7749.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="polarization seems too low, and the online timing may be off.";
+[7749.002] 
+	RUN_STATUS*=Suspicious;
+	COMMENT*="polarization seems too low, and the online timing may be off.";
+//	DisableStrip=49;
+//	DisableStrip=61;
+//	DisableStrip=62;
+//	DisableStrip=64;
 	CONFIG=7749.002.config.dat;
-	DisableStrip=49;
-	DisableStrip=61;
-	DisableStrip=62;
-	DisableStrip=64;
 
-[7749.002]
-	EnableStrip=49;
-	EnableStrip=61;
-	EnableStrip=62;
-	EnableStrip=64;
+//[7749.002] // Check
+//	EnableStrip=49;
+//	EnableStrip=61;
+//	EnableStrip=62;
+//	EnableStrip=64;
+
+[7749.003]  
+	CONFIG=7749.003.config.dat;
 
 [7749.101]
 	CONFIG=7749.101.config.dat;
 
 [7749.102]
-	RUN_STATUS=Suspicious;
-	COMMENT="Intensity scan does not make it all the way through the beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Intensity scan does not make it all the way through the beam.";
 	CONFIG=7749.102.config.dat;
 
 [7749.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="Intensity scan does not make it all the way through the beam and we see false Y45 asymmetries.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Intensity scan does not make it all the way through the beam and we see false Y45 asymmetries.";
+	CONFIG=7749.103.config.dat; 
 
 [7749.104]
-	RUN_STATUS=Suspicious;
-	COMMENT="Intensity scan does not make it all the way through the beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Intensity scan does not make it all the way through the beam.";
+	CONFIG=7749.104.config.dat; 
+
+[7749.105]  
+	CONFIG=7749.105.config.dat;
+
+[7749.106]  
+	CONFIG=7749.106.config.dat;
+
+[7749.107]  
+	CONFIG=7749.107.config.dat;
+
+[7749.108]  
+	CONFIG=7749.108.config.dat;
+
+[7749.109]  
+	CONFIG=7749.109.config.dat;
+
+[7749.110]  
+	CONFIG=7749.110.config.dat;
+
+[7753.001]  
+	CONFIG=7753.001.config.dat; 
+
+[7753.002]  
+	CONFIG=7753.002.config.dat; 
+
+[7753.003]  
+	CONFIG=7753.003.config.dat; 
+
+[7753.004]  
+	CONFIG=7753.004.config.dat; 
+
+[7753.005]  
+	CONFIG=7753.005.config.dat; 
+
+[7753.006]  
+	CONFIG=7753.006.config.dat; 
+
+[7753.101]  
+	CONFIG=7753.101.config.dat; 
+
+[7753.102]  
+	CONFIG=7753.102.config.dat; 
+
+[7753.103]  
+	CONFIG=7753.103.config.dat; 
+
+[7753.104]  
+	CONFIG=7753.104.config.dat; 
+
+[7753.105]  
+	CONFIG=7753.105.config.dat; 
+
+[7753.106]  
+	CONFIG=7753.106.config.dat; 
+
+[7756.001]  
+	CONFIG=7756.001.config.dat; 
+
+[7756.002]  
+	CONFIG=7756.002.config.dat; 
+
+[7756.003]  
+	CONFIG=7756.003.config.dat; 
+
+[7756.004]  
+	CONFIG=7756.004.config.dat; 
+
+[7756.005]  
+	CONFIG=7756.005.config.dat; 
+
+[7756.006]  
+	CONFIG=7756.006.config.dat; 
 
 [7756.101]
 	RUN_STATUS=Good;
-	COMMENT="";
 	CONFIG=7756.101.config.dat;
+
+[7756.102]  
+	CONFIG=7756.102.config.dat; 
 
 [7756.103]
 	CONFIG=7756.103.config.dat;
@@ -4677,79 +6740,132 @@
 [7756.105]
 	CONFIG=7756.105.config.dat;
 
+[7757.001] 
+	CONFIG=7757.001.config.dat;
+
+[7757.002] 
+	CONFIG=7757.002.config.dat;
+
 [7757.101]
 	CONFIG=7757.101.config.dat;
 
+[7757.102] 
+	CONFIG=7757.102.config.dat;
 
 [7758.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wrong Spin Pattern Loaded";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wrong Spin Pattern Loaded";
+	CONFIG=7758.001.config.dat;
+
+[7758.002] 
+	CONFIG=7758.002.config.dat;
+
+[7758.003] 
+	CONFIG=7758.003.config.dat;
+
+[7758.101] 
+	CONFIG=7758.101.config.dat;
 
 [7759.001]
-	RUN_STATUS=Junk;
-	COMMENT="wrong spin pattern followed by quick beam dump";
+	RUN_STATUS*=Junk;
+	COMMENT*="wrong spin pattern followed by quick beam dump";
+	CONFIG=7759.001.config.dat;  
 
 [7759.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="No corresponding yellow measurement.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="No corresponding yellow measurement.";
 	CONFIG=7759.002.config.dat;
-
 
 // ------------------------------------------------------------//
 // One week shutdown due to the arc flash accident in STAR.
 // ------------------------------------------------------------//
 [7766.001]
 	RUN_STATUS=Good;
-	COMMENT="First measurement after a week shutdown.";
+	COMMENT*="First measurement after a week shutdown.";
+	CONFIG=7766.001.config.dat;  
 
-[7766.002]
-	RUN_STATUS=Good;
-	COMMENT="";
-
+[7766.002] //Check, No measurement 
+	COMMENT*="No data";
 
 [7766.101]
 	RUN_STATUS=Good;
+	COMMENT*="First measurement after a week shutdown.";
 	CONFIG=7766.101.config.dat;
-	COMMENT="First measurement after a week shutdown.";
 
-[7766.102]
-	COMMENT="";
+[7766.102] //Check, No measurement 
+	COMMENT*="No data";
 
 [7772.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7772.001.config.dat; 
 
 [7772.002]
-	RUN_STATUS=Suspicious;	
-	COMMENT="Several parts of Bunchcrossing are outstanding.";
-	
+	RUN_STATUS*=Suspicious;	
+	COMMENT*="Several parts of Bunchcrossing are outstanding.";
+	CONFIG=7772.002.config.dat; 
+
+[7772.003]  
+	CONFIG=7772.003.config.dat; 
+
 [7772.101]		
-	RUN_STATUS=Good;	
+	RUN_STATUS=Good;
+	CONFIG=7772.101.config.dat; 
 
 [7772.102]	
 	RUN_STATUS=Good;	
 	CONFIG=7772.102.config.dat;
 
 [7772.103]	
-	RUN_STATUS=Suspicious;
-	COMMENT="Several parts of Bunchcrossing are outstanding.";			
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Several parts of Bunchcrossing are outstanding.";			
 	CONFIG=7772.103.config.dat;
+
+[7772.104]  
+	CONFIG=7772.104.config.dat;
 
 [7775.001]	
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7775.001.config.dat; 
+
+[7775.002]  
+	CONFIG=7775.002.config.dat; 
 
 [7775.003]
-	RUN_STATUS=Suspicious;	
-	COMMENT="The profile scan is wide.";
+	RUN_STATUS*=Suspicious;	
+	COMMENT*="The profile scan is wide.";
+	CONFIG=7775.003.config.dat; 
+
+[7775.004]  
+	CONFIG=7775.004.config.dat; 
+
+[7775.005]  
+	CONFIG=7775.005.config.dat; 
 
 [7775.101]
-	RUN_STATUS=Junk;	
-	COMMENT="Becouse the profile scan is imcopleted and date size is about 12kB.";	
+	RUN_STATUS*=Junk;	
+	COMMENT*="Becouse the profile scan is imcopleted and date size is about 12kB.";	
+	CONFIG=7775.101.config.dat; 
 	
 [7775.102]
-	RUN_STATUS=Junk;	
-	COMMENT="The date size is about 12kB.";	
+	RUN_STATUS*=Junk;	
+	COMMENT*="The date size is about 12kB.";	
+	CONFIG=7775.102.config.dat; 
+
+[7775.103]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7775.103.config.dat; 
+
+[7775.104]  
+	CONFIG=7775.104.config.dat; 
+
+[7775.105]  
+	CONFIG=7775.105.config.dat; 
+
+[7777.001]  
+	CONFIG=7777.001.config.dat; 
+
+[7777.101]  
+	CONFIG=7777.101.config.dat; 
 
 [7780.001]
 	CONFIG=7780.001.config.dat;
@@ -4757,159 +6873,747 @@
 [7780.002]
 	CONFIG=7780.002.config.dat;
 
+[7780.003]  
+	CONFIG=7780.003.config.dat; 
+
+[7780.004]  
+	CONFIG=7780.004.config.dat; 
+
+[7780.005]  
+	CONFIG=7780.005.config.dat; 
+
+[7780.006]  
+	CONFIG=7780.006.config.dat; 
+
+[7780.007]  
+	CONFIG=7780.007.config.dat; 
+
+[7780.008]  
+	CONFIG=7780.008.config.dat; 
+
+[7780.009]  
+	CONFIG=7780.009.config.dat; 
+
+[7780.010]  
+	CONFIG=7780.010.config.dat; 
+
+[7780.101]  
+	CONFIG=7780.101.config.dat; 
+
+[7780.102]  
+	CONFIG=7780.102.config.dat; 
+
+[7780.103]  
+	CONFIG=7780.103.config.dat; 
+
+[7780.104]  
+	CONFIG=7780.104.config.dat; 
+
+[7780.105]  
+	CONFIG=7780.105.config.dat; 
+
+[7780.106]  
+	CONFIG=7780.106.config.dat; 
+
+[7780.107]  
+	CONFIG=7780.107.config.dat; 
+
+[7780.108]  
+	CONFIG=7780.108.config.dat; 
+
+[7780.109]  
+	CONFIG=7780.109.config.dat; 
+
+[7780.110]  
+	CONFIG=7780.110.config.dat; 
+
+[7780.111]  
+	CONFIG=7780.111.config.dat; 
+
+[7780.112]  
+	CONFIG=7780.112.config.dat; 
+
+[7780.113]  
+	CONFIG=7780.113.config.dat; 
+
+[7780.114]  
+	CONFIG=7780.114.config.dat; 
+
 [7781.001]
 	CONFIG=7781.001.config.dat;
 	
+[7781.002]  
+	CONFIG=7781.002.config.dat; 
+
+[7781.003]  
+	CONFIG=7781.003.config.dat; 
+
+[7781.004]  
+	CONFIG=7781.004.config.dat; 
+
+[7781.005]  
+	CONFIG=7781.005.config.dat; 
+
+[7781.006]  
+	CONFIG=7781.006.config.dat; 
+
 [7781.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7781.101.config.dat;
-	COMMENT="Problem in target motion. Scan stopped half way thru the beam";
+	COMMENT*="Problem in target motion. Scan stopped half way thru the beam";
+
+[7781.102]  
+	CONFIG=7781.102.config.dat; 
 
 [7781.103]
 	RUN_STATUS=Good;
-	COMMENT="Target problem fixed.";
+	COMMENT*="Target problem fixed.";
+	CONFIG=7781.103.config.dat; 
 
 [7781.104]
-	COMMENT="";
+	CONFIG=7781.104.config.dat; 
+
+[7781.105]  
+	CONFIG=7781.105.config.dat; 
 
 [7781.106]
 	CONFIG=7781.106.config.dat;
 
+// ----------------------------------------------------------------//
+//   End of 200 GeV Transverse run. Begin 200 GeV Longitudinal Run
+// ----------------------------------------------------------------//
+
+[7784.001]  
+	CONFIG=7784.001.config.dat; 
+
+[7784.002]  
+	CONFIG=7784.002.config.dat; 
+
+[7784.003]  
+	CONFIG=7784.003.config.dat; 
+
+[7784.004]  
+	CONFIG=7784.004.config.dat; 
+
+[7784.101]  
+	CONFIG=7784.101.config.dat; 
+
+[7784.102]  
+	CONFIG=7784.102.config.dat; 
 
 [7785.001]
 	RUN_STATUS=Good;
-	COMMENT="";
 	CONFIG=7785.001.config.dat;
-
 
 [7785.002]
 	CONFIG=7785.002.config.dat;
 
+[7785.003]  
+	CONFIG=7785.003.config.dat; 
+
+[7785.004]  
+	CONFIG=7785.004.config.dat; 
+
+[7785.005]  
+	CONFIG=7785.005.config.dat; 
+
+[7785.006]  
+	CONFIG=7785.006.config.dat; 
+
+[7785.101]  
+	CONFIG=7785.101.config.dat; 
+
+[7785.102]  
+	CONFIG=7785.102.config.dat; 
+
+[7785.103]  
+	CONFIG=7785.103.config.dat; 
+
+[7785.104]  
+	CONFIG=7785.104.config.dat; 
+
+[7785.105]  
+	CONFIG=7785.105.config.dat; 
+
+[7785.106]  
+	CONFIG=7785.106.config.dat; 
+
+[7786.001]  
+	CONFIG=7786.001.config.dat; 
+
 [7786.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange structure in WCM and Bunch Crossing Dist.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange structure in WCM and Bunch Crossing Dist.";
+	CONFIG=7786.002.config.dat; 
+
+[7786.003]  
+	CONFIG=7786.003.config.dat; 
+
+[7786.101]  
+	CONFIG=7786.101.config.dat; 
+
+[7786.102]  
+	CONFIG=7786.102.config.dat; 
 
 [7788.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7788.001.config.dat; 
+
+[7788.002]  
+	CONFIG=7788.002.config.dat; 
+
+[7788.003]  
+	CONFIG=7788.003.config.dat; 
 
 [7788.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange structure in WCM and Bunch Crossing Dist.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange structure in WCM and Bunch Crossing Dist.";
+	CONFIG=7788.004.config.dat; 
 
+[7788.005]  
+	CONFIG=7788.005.config.dat; 
+
+[7788.006]  
+	CONFIG=7788.006.config.dat; 
+
+[7788.007]  
+	CONFIG=7788.007.config.dat; 
+
+[7788.008]  
+	CONFIG=7788.008.config.dat; 
+
+[7788.101]  
+	CONFIG=7788.101.config.dat; 
+
+[7788.102]  
+	CONFIG=7788.102.config.dat; 
+
+[7788.103]  
+	CONFIG=7788.103.config.dat; 
+
+[7788.104]  
+	CONFIG=7788.104.config.dat; 
+
+[7788.105]  
+	CONFIG=7788.105.config.dat; 
+
+[7788.106]  
+	CONFIG=7788.106.config.dat; 
+
+[7788.107]  
+	CONFIG=7788.107.config.dat; 
 
 [7789.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7789.001.config.dat; 
+
+[7789.002]  
+	CONFIG=7789.002.config.dat; 
+
+[7789.003]  
+	CONFIG=7789.003.config.dat; 
+
+[7789.004]  
+	CONFIG=7789.004.config.dat; 
+
+[7789.005]  
+	CONFIG=7789.005.config.dat; 
+
+[7789.006]  
+	CONFIG=7789.006.config.dat; 
+
+[7789.101]  
+	CONFIG=7789.101.config.dat; 
+
+[7789.102]  
+	CONFIG=7789.102.config.dat; 
+
+[7789.103]  
+	CONFIG=7789.103.config.dat; 
 
 [7789.104]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through beam.";
+	CONFIG=7789.104.config.dat; 
+
+[7789.105]  
+	CONFIG=7789.105.config.dat; 
+
+[7789.106]  	
+	CONFIG=7789.106.config.dat; 
+
+[7789.107]  
+	CONFIG=7789.107.config.dat; 
+
+[7789.108]  
+	CONFIG=7789.108.config.dat; 
 
 [7789.109]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7789.110]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7789.110.config.dat; 
+
+[7790.001]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7790.001.config.dat; 
+
+[7790.002]  
+	CONFIG=7790.002.config.dat; 
+
+[7790.003]  
+	CONFIG=7790.003.config.dat; 
+
+[7790.004]  
+	CONFIG=7790.004.config.dat; 
+
+[7790.005]  
+	CONFIG=7790.005.config.dat; 
 
 [7790.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through beam.";
+	CONFIG=7790.101.config.dat;   
 
 [7790.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7790.102.config.dat;   
+
+[7790.103]  
+	CONFIG=7790.103.config.dat; 
+
+[7790.104]  
+	CONFIG=7790.104.config.dat; 
+
+[7790.105]  
+	CONFIG=7790.105.config.dat; 
 
 [7790.106]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7790.107]
-	CONFIG=7790.107.config.dat;
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7790.107.config.dat;
+
+[7791.001]  
+	CONFIG=7791.001.config.dat; 
+
+[7791.002]  
+	CONFIG=7791.002.config.dat; 
+
+[7791.003]  
+	CONFIG=7791.003.config.dat; 
+
+[7791.004]  
+	CONFIG=7791.004.config.dat; 
 
 [7791.005]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+	CONFIG=7791.005.config.dat; 
 
- 
+[7791.101]  
+	CONFIG=7791.101.config.dat; 
+
+[7791.102]  
+	CONFIG=7791.102.config.dat; 
+
+[7791.103]  
+	CONFIG=7791.103.config.dat; 
+
+[7791.104]  
+	CONFIG=7791.104.config.dat; 
+
+[7791.105]  
+	CONFIG=7791.105.config.dat; 
+
 [7792.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7792.001.config.dat; 
+
+[7792.002]  
+	CONFIG=7792.002.config.dat; 
+
+[7792.003]  
+	CONFIG=7792.003.config.dat; 
+
+[7792.004]  
+	CONFIG=7792.004.config.dat; 
 
 [7792.005]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strange profile scan, looks like it was supposed to be fixed target, but failed somehow.";
+	CONFIG=7792.005.config.dat; 
+
+[7792.101]  
+	CONFIG=7792.101.config.dat; 
+
+[7792.102]  
+	CONFIG=7792.102.config.dat; 
+
+[7792.103]  
+	CONFIG=7792.103.config.dat; 
+
+[7792.104]  
+	CONFIG=7792.104.config.dat; 
+
+[7792.105]  
+	CONFIG=7792.105.config.dat; 
 
 [7794.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7794.001.config.dat; 
 
+[7794.002]  
+	CONFIG=7794.002.config.dat; 
+
+[7794.003]  
+	CONFIG=7794.003.config.dat; 
+
+[7794.004]  
+	CONFIG=7794.004.config.dat; 
+
+[7794.005]  
+	CONFIG=7794.005.config.dat; 
+
+[7794.101]  
+	CONFIG=7794.101.config.dat; 
+
+[7794.102]  
+	CONFIG=7794.102.config.dat; 
+
+[7794.103]  
+	CONFIG=7794.103.config.dat; 
+
+[7794.104]  
+	CONFIG=7794.104.config.dat; 
+
+[7794.105]  
+	CONFIG=7794.105.config.dat; 
+
+[7795.001]  
+	CONFIG=7795.001.config.dat; 
+
+[7795.002]  
+	CONFIG=7795.002.config.dat; 
+
+[7795.101]  
+	CONFIG=7795.101.config.dat; 
+
+[7795.102]  
+	CONFIG=7795.102.config.dat; 
+
+[7796.001]  
+	CONFIG=7796.001.config.dat; 
+
+[7796.002]  
+	CONFIG=7796.002.config.dat; 
+
+[7796.003]  
+	CONFIG=7796.003.config.dat; 
+
+[7796.004]  
+	CONFIG=7796.004.config.dat; 
+
+[7796.005]  
+	CONFIG=7796.005.config.dat; 
+
+[7796.101]  
+	CONFIG=7796.101.config.dat; 
+
+[7796.102]  
+	CONFIG=7796.102.config.dat; 
+
+[7796.103]  
+	CONFIG=7796.103.config.dat; 
+
+[7796.104]  
+	CONFIG=7796.104.config.dat; 
+
+[7796.105]  
+	CONFIG=7796.105.config.dat; 
+
+[7797.001]  
+	CONFIG=7797.001.config.dat; 
+
+[7797.002]  
+	CONFIG=7797.002.config.dat; 
+
+[7797.003]  
+	CONFIG=7797.003.config.dat; 
+
+[7797.004]  
+	CONFIG=7797.004.config.dat; 
+
+[7797.005]  
+	CONFIG=7797.005.config.dat; 
+
+[7797.006]  
+	CONFIG=7797.006.config.dat; 
+
+[7797.101]  
+	CONFIG=7797.101.config.dat; 
+
+[7797.102]  
+	CONFIG=7797.102.config.dat; 
+
+[7797.103]  
+	CONFIG=7797.103.config.dat; 
+
+[7797.104]  
+	CONFIG=7797.104.config.dat; 
+
+[7797.105]  
+	CONFIG=7797.105.config.dat; 
+
+[7797.106]  
+	CONFIG=7797.106.config.dat; 
+
+[7797.107]  
+	CONFIG=7797.107.config.dat; 
+
+[7799.001]  
+	CONFIG=7799.001.config.dat; 
+
+[7800.001]  
+	CONFIG=7800.001.config.dat; 
 
 [7800.002]
-	RUN_STATUS=Junk;
-	COMMENT="This is where we lost a blue target, from now on we will use target 3";
+	RUN_STATUS*=Junk;
+	COMMENT*="This is where we lost a blue target, from now on we will use target 3";
 
 [7800.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3, wide profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3, wide profile";
+	CONFIG=7800.003.config.dat; 
+
+[7800.004]  
+	CONFIG=7800.004.config.dat; 
+
+[7800.005]  
+	CONFIG=7800.005.config.dat; 
 
 [7800.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through the beam";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through the beam";
+	CONFIG=7800.101.config.dat; 
 
 [7800.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7800.102.config.dat; 
+
+[7801.001]  
+	CONFIG=7801.001.config.dat; 
+
+[7801.101]  
+	CONFIG=7801.101.config.dat; 
+
+[7803.001]  
+	CONFIG=7803.001.config.dat; 
+
+[7803.002]  
+	CONFIG=7803.002.config.dat; 
+
+[7803.003]  
+	CONFIG=7803.003.config.dat; 
+
+[7803.004]  
+	CONFIG=7803.004.config.dat; 
+
+[7803.101]  
+	CONFIG=7803.101.config.dat; 
+
+[7803.102]  
+	CONFIG=7803.102.config.dat; 
+
+[7803.103]  
+	CONFIG=7803.103.config.dat; 
+
+[7803.104]  
+	CONFIG=7803.104.config.dat; 
 
 [7804.001]
+	RUN_STATUS*=Suspicious;
+	DisableStrip=1;
+	DisableStrip=2;
+	DisableStrip=3;
+	DisableStrip=4;
+	DisableStrip=5;
+	DisableStrip=6;
+	DisableStrip=7;
+	DisableStrip=8;
+	DisableStrip=9;
+	DisableStrip=10;
+	DisableStrip=11;
+	DisableStrip=12;
+	DisableStrip=37;
+	DisableStrip=38;
+	COMMENT*="Target 6 is used, and there are problems with the profile scan as well as high backgrounds and other problems.";
 	CONFIG=7804.001.config.dat;
-	RUN_STATUS=Suspicious;
-	COMMENT="Target 6 is used, and there are problems with the profile scan as well as high backgrounds and other problems.";
+
+[7804.002]  
+	CONFIG=7804.002.config.dat; 
+
+[7804.003]  
+	CONFIG=7804.003.config.dat; 
+
+[7804.004]  
+	DisableStrip*=15;
+	DisableStrip=39;
+	CONFIG=7804.004.config.dat; 
 
 [7804.005]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7804.006]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7804.101]
-	RUN_STATUS=Junk;
-	COMMENT="";
+	RUN_STATUS*=Junk;
 
 [7804.102]
-	CONFIG=7804.102.config.dat;
 	RUN_STATUS=Good;
-	COMMENT="analyzed by hand";
+	COMMENT*="analyzed by hand";
+	CONFIG=7804.102.config.dat;
+
+[7804.103]  
+	CONFIG=7804.103.config.dat; 
+
+[7804.104]  
+	CONFIG=7804.104.config.dat; 
+
+[7804.105]  
+	CONFIG=7804.105.config.dat; 
+
+[7804.106]  
+	CONFIG=7804.106.config.dat; 
 
 [7805.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Back to target 3, with its known profile problems";
+	RUN_STATUS*=Suspicious;
+	EnableStrip=1;
+	EnableStrip=2;
+	EnableStrip=3;
+	EnableStrip=4;
+	EnableStrip=5;
+	EnableStrip=6;
+	EnableStrip=7;
+	EnableStrip=8;
+	EnableStrip=9;
+	EnableStrip=10;
+	EnableStrip=11;
+	EnableStrip=12;
+	EnableStrip=37;
+	EnableStrip=38;
+	EnableStrip=39;
+	COMMENT*="Back to target 3, with its known profile problems";
+	CONFIG=7805.001.config.dat; 
+
+[7805.002]  
+	CONFIG=7805.002.config.dat; 
+
+[7805.003]  
+	CONFIG=7805.003.config.dat; 
+
+[7805.004]  
+	CONFIG=7805.004.config.dat; 
+
+[7805.005]  
+	CONFIG=7805.005.config.dat; 
 
 [7805.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7805.101.config.dat; 
+
+[7805.102]  
+	CONFIG=7805.102.config.dat; 
+
+[7805.103]  
+	CONFIG=7805.103.config.dat; 
+
+[7805.104]  
+	CONFIG=7805.104.config.dat; 
 
 [7810.001]
 	CONFIG=7810.001.config.dat;
 
+[7810.002]  
+	CONFIG=7810.002.config.dat; 
+
+[7810.003]  
+	CONFIG=7810.003.config.dat; 
+
+[7810.004]  
+	CONFIG=7810.004.config.dat; 
+
+[7810.005]  
+	CONFIG=7810.005.config.dat; 
+
+[7810.006]  
+	CONFIG=7810.006.config.dat; 
+
+[7810.007]  
+	CONFIG=7810.007.config.dat; 
+
 [7810.101]
-	RUN_STATUS=Junk;
-	COMMENT="Measurements done with HV tripped off.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Measurements done with HV tripped off.";
+	CONFIG=7810.101.config.dat; 
+
+[7810.102]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7810.102.config.dat;
+
+[7810.103]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7810.103.config.dat;
 
 [7810.104]
 	//this is where the suspicious strips start, have to mark them, although it is hard to see which ones exactly are bad.
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
 	DisableStrip=71;
-	COMMENT="Profile scan only goes halfway through, and error checker finds a few bad strips";
+	COMMENT*="Profile scan only goes halfway through, and error checker finds a few bad strips";
+	CONFIG=7810.104.config.dat; 
+
+[7810.105]  
+	CONFIG=7810.105.config.dat; 
+
+[7810.106]  
+	CONFIG=7810.106.config.dat; 
 
 [7810.107]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue is resolved, but still some suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue is resolved, but still some suspicious strips.";
+	CONFIG=7810.107.config.dat; 
+
+[7810.108]  
+	CONFIG=7810.108.config.dat; 
+
+[7810.109]  
+	CONFIG=7810.109.config.dat;
+
+[7810.110]  
+	CONFIG=7810.110.config.dat; 
+
+[7810.111]  
+	CONFIG=7810.111.config.dat; 
+
+[7811.001]  
+	CONFIG=7811.001.config.dat; 
 
 [7811.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through, and error checker finds suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through, and error checker finds suspicious strips.";
+	CONFIG=7811.101.config.dat;   
+
+[7812.001]  
+	CONFIG=7812.001.config.dat; 
 
 [7812.101]
 	RUN_STATUS=Good;
@@ -4917,14 +7621,43 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;
-	COMMENT="";
+	CONFIG=7812.101.config.dat;   
 
-[7815.002] 
-	CONFIG=7815.002.config.dat;
+[7815.001]
+	CONFIG=7815.001.config.dat;
 
+[7815.002]  
+	CONFIG=7815.002.config.dat; 
+
+[7815.003]  
+	CONFIG=7815.003.config.dat; 
+
+[7815.004]  
+	CONFIG=7815.004.config.dat; 
+
+[7815.005]  
+	CONFIG=7815.005.config.dat; 
+
+[7815.101]
+	CONFIG=7815.101.config.dat;
+
+[7815.102]  
+	CONFIG=7815.102.config.dat; 
+
+[7815.103]  
+	CONFIG=7815.103.config.dat; 
+
+[7815.104]  
+	CONFIG=7815.104.config.dat; 
+
+[7815.105]  
+	CONFIG=7815.105.config.dat; 
+
+[7817.001]  
+	CONFIG=7817.001.config.dat; 
 
 [7817.002]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=13;
 	DisableStrip=31;
 	DisableStrip=49;
@@ -4933,10 +7666,11 @@
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Target-3 plus suspicious strips";
+	COMMENT*="Target-3 plus suspicious strips";
+	CONFIG=7817.002.config.dat; 
 
 [7817.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=13;
 	EnableStrip=31;
 	EnableStrip=49;
@@ -4945,18 +7679,35 @@
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="Target-3 plus suspicious strips";
+	COMMENT*="Target-3 plus suspicious strips";
+	CONFIG=7817.003.config.dat; 
+
+[7817.004]  
+	CONFIG=7817.004.config.dat; 
+
+[7817.005]  
+	CONFIG=7817.005.config.dat; 
 
 [7817.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7817.101.config.dat; 
 
 [7817.102]
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Suspicious strips";
+	CONFIG=7817.102.config.dat; 
+
+[7817.103]  
+	CONFIG=7817.103.config.dat; 
+
+[7817.104]  
+	CONFIG=7817.104.config.dat; 
+
+[7817.105]  
+	CONFIG=7817.105.config.dat; 
 
 [7820.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
@@ -4969,11 +7720,36 @@
 	DisableStrip=23;
 	DisableStrip=41;
 	DisableStrip=59;
-	COMMENT="Target-3 plus suspicious strips";
+	COMMENT*="Target-3 plus suspicious strips";
+	CONFIG=7820.001.config.dat; 
+
+[7820.002]  
+	CONFIG=7820.002.config.dat; 
+
+[7820.003]  
+	CONFIG=7820.003.config.dat; 
+
+[7820.004]  
+	CONFIG=7820.004.config.dat; 
+
+[7820.005]  
+	CONFIG=7820.005.config.dat; 
 
 [7820.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7820.101.config.dat; 
+
+[7820.102]  
+	CONFIG=7820.102.config.dat; 
+
+[7820.103]  
+	CONFIG=7820.103.config.dat; 
+
+[7820.104]  
+	CONFIG=7820.104.config.dat; 
+
+[7820.105]  
+	CONFIG=7820.105.config.dat; 
 
 [7823.001]
 	RUN_STATUS*=Good;
@@ -4989,30 +7765,57 @@
 	EnableStrip*=23;
 	EnableStrip*=41;
 	EnableStrip*=59;
-	COMMENT*="";
+	CONFIG=7823.001.config.dat; 
 
 [7823.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus some suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3 plus some suspicious strips.";
+	CONFIG=7823.002.config.dat; 
+
+[7823.003]  
+	CONFIG=7823.003.config.dat; 
+
+[7823.004]  
+	CONFIG=7823.004.config.dat; 
+
+[7823.005]  
+	CONFIG=7823.005.config.dat; 
 
 [7823.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip*=17;
 	DisableStrip*=35;
 	DisableStrip*=53;
 	DisableStrip*=71;
-	COMMENT="Profile scan only goes halfway through beam and suspicious strips.";
+	COMMENT*="Profile scan only goes halfway through beam and suspicious strips.";
+	CONFIG=7823.101.config.dat; 
 
 [7823.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7823.102.config.dat; 
+
+[7823.103]  
+	CONFIG=7823.103.config.dat; 
+
+[7823.104]  
+	CONFIG=7823.104.config.dat; 
+
+[7823.105]  
+	CONFIG=7823.105.config.dat; 
 
 [7824.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus some suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3 plus some suspicious strips.";
+	CONFIG=7824.001.config.dat; 
+
+[7824.002]  
+	CONFIG=7824.002.config.dat; 
+
+[7824.003]  
+	CONFIG=7824.003.config.dat; 
 
 [7824.004]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
@@ -5021,30 +7824,46 @@
 	EnableStrip=23;
 	EnableStrip=41;
 	EnableStrip=59;
-	COMMENT="Target-3 plus some suspicious strips.";
+	COMMENT*="Target-3 plus some suspicious strips.";
+	CONFIG=7824.004.config.dat; 
+
+[7824.005]  
+	CONFIG=7824.005.config.dat; 
 
 [7824.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through beam.";
+	CONFIG=7824.101.config.dat; 
 
 [7824.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7824.102.config.dat; 
+
+[7824.103]  
+	CONFIG=7824.103.config.dat; 
 
 [7824.104]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
 	DisableStrip=71;
-	COMMENT="Some bad strips";
+	COMMENT*="Some bad strips";
+	CONFIG=7824.104.config.dat; 
+
+[7824.105]  
+	CONFIG=7824.105.config.dat; 
 
 [7825.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus some suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3 plus some suspicious strips.";
+	CONFIG=7825.001.config.dat; 
+
+[7825.002]  
+	CONFIG=7825.002.config.dat; 
 
 [7825.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
@@ -5053,7 +7872,20 @@
 	DisableStrip=23;
 	DisableStrip=41;
 	DisableStrip=59;
-	COMMENT="Target-3 plus some suspicious strips.";
+	COMMENT*="Target-3 plus some suspicious strips.";
+	CONFIG=7825.003.config.dat; 
+
+[7825.004]  
+	CONFIG=7825.004.config.dat; 
+
+[7825.005]  
+	CONFIG=7825.005.config.dat; 
+
+[7825.101]  
+	CONFIG=7825.101.config.dat; 
+
+[7825.102]  
+	CONFIG=7825.102.config.dat; 
 
 [7825.103]
 	RUN_STATUS=Good;
@@ -5061,56 +7893,164 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;
-	COMMENT="";
+	CONFIG=7825.103.config.dat; 
+
+[7825.104]  
+	CONFIG=7825.104.config.dat; 
+
+[7825.105]  
+	CONFIG=7825.105.config.dat; 
 
 [7826.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3, plus now there are many suspicious strips";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3, plus now there are many suspicious strips";
+	CONFIG=7826.001.config.dat; 
+
+[7826.002]  
+	CONFIG=7826.002.config.dat; 
+
+[7826.003]  
+	CONFIG=7826.003.config.dat; 
+
+[7826.004]  
+	CONFIG=7826.004.config.dat; 
+
+[7826.005]  
+	CONFIG=7826.005.config.dat; 
 
 [7826.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7826.101.config.dat; 
 
+[7826.102]  
+	CONFIG=7826.102.config.dat; 
+
+[7826.103]  
+	CONFIG=7826.103.config.dat; 
+
+[7826.104]  
+	CONFIG=7826.104.config.dat; 
+
+[7826.105]  
+	CONFIG=7826.105.config.dat; 
+
+[7827.001]  
+	CONFIG=7827.001.config.dat; 
+
+[7827.002]  
+	CONFIG=7827.002.config.dat; 
+
+[7827.101]  
+	CONFIG=7827.101.config.dat; 
+
+[7827.102]  
+	CONFIG=7827.102.config.dat; 
 
 [7830.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3, plus suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3, plus suspicious strips.";
+	CONFIG=7830.001.config.dat; 
+
+[7830.002]  
+	CONFIG=7830.002.config.dat; 
+
+[7830.003]  
+	CONFIG=7830.003.config.dat; 
+
+[7830.004]  
+	CONFIG=7830.004.config.dat; 
 
 [7830.005]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	COMMENT*="Target-3, plus suspicious strips, analyzed by hand.";
+	CONFIG=7830.005.config.dat; 
 
 [7830.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan only goes halfway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan only goes halfway through beam.";
+	CONFIG=7830.101.config.dat; 
 
 [7830.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7830.102.config.dat; 
 
 [7830.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile scan does not make it all the way through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan does not make it all the way through beam.";
+	CONFIG=7830.103.config.dat; 
+
+[7830.104]  
+	CONFIG=7830.104.config.dat; 
 
 [7830.105]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7830.105.config.dat; 
+
+[7830.106]  
+	CONFIG=7830.106.config.dat; 
 
 [7831.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3 plus suspicious strips.";
+	CONFIG=7831.001.config.dat; 
+
+[7831.002]  
+	CONFIG=7831.002.config.dat; 
+
+[7831.003]  
+	CONFIG=7831.003.config.dat; 
+
+[7831.004]  
+	CONFIG=7831.004.config.dat; 
 
 [7831.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile scan does not make it all the way through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile scan does not make it all the way through beam.";
+	CONFIG=7831.101.config.dat; 
 
 [7831.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7831.102.config.dat; 
 
-[7834.001]
+[7831.103]  
+	CONFIG=7831.103.config.dat; 
+
+[7831.104]  
+	CONFIG=7831.104.config.dat; 
+
+[7832.001]  
+	CONFIG=7832.001.config.dat; 
+
+[7832.101]  
+	CONFIG=7832.101.config.dat; 
+
+[7833.001]  
+	CONFIG=7833.001.config.dat; 
+
+[7833.002]  
+	CONFIG=7833.002.config.dat; 
+
+[7833.003]  
+	CONFIG=7833.003.config.dat; 
+
+[7833.004]  
+	CONFIG=7833.004.config.dat; 
+
+[7833.101]  
+	CONFIG=7833.101.config.dat; 
+
+[7833.102]  
+	CONFIG=7833.102.config.dat; 
+
+[7833.103]  
+	CONFIG=7833.103.config.dat; 
+
+[7833.104]  
+	CONFIG=7833.104.config.dat; 
+
+[7834.001] 
 	MEASUREMENT_TYPE=SPIN_TUNE;
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
@@ -5119,48 +8059,115 @@
 	EnableStrip=23;
 	EnableStrip=41;
 	EnableStrip=59;
-	COMMENT="Target-3 plus strips";
+	COMMENT*="Target-3 plus strips";
+	CONFIG=7834.001.config.dat; 
 
-[7834.101]
-	RUN_STATUS=Junk;
+[7834.101] 
+	RUN_STATUS*=Junk;
 
 [7834.102]
+	RUN_STATUS*=Suspicious; 
 	MEASUREMENT_TYPE=SPIN_TUNE;
+	CONFIG=7834.102.config.dat; 
 
 [7834.103]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7834.104]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Good;
+	CONFIG=7834.104.config.dat; 
 
 [7834.105]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
 
 [7834.106]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Good;
+	CONFIG=7834.106.config.dat; 
+
+[7834.107]  
+	CONFIG=7834.107.config.dat; 
+
+[7834.108]  
+	CONFIG=7834.108.config.dat; 
+
+[7834.109]  
+	CONFIG=7834.109.config.dat; 
+
+[7834.110]  
+	CONFIG=7834.110.config.dat; 
+
+[7834.111]  
+	CONFIG=7834.111.config.dat; 
+
+[7834.112]  
+	CONFIG=7834.112.config.dat; 
+
+[7834.113]  
+	CONFIG=7834.113.config.dat; 
+
+[7834.114]  
+	CONFIG=7834.114.config.dat; 
+
+[7834.115]  
+	CONFIG=7834.115.config.dat; 
 
 [7835.001]
 	MEASUREMENT_TYPE=SPIN_TUNE;
-	RUN_STATUS=Suspicious;
-	COMMENT="Target-3 plus suspicious strips.  Many suspicious strips, not worth marking.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Target-3 plus suspicious strips.  Many suspicious strips, not worth marking.";
+	CONFIG=7835.001.config.dat; 
+
+[7835.002]  
+	CONFIG=7835.002.config.dat; 
+
+[7835.003]  
+	CONFIG=7835.003.config.dat; 
+
+[7835.004]  
+	CONFIG=7835.004.config.dat; 
+
+[7835.005]  
+	CONFIG=7835.005.config.dat; 
 
 [7835.101]
 	MEASUREMENT_TYPE=SPIN_TUNE;
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Suspicious strips.";
+	CONFIG=7835.101.config.dat; 
 	
+[7835.102]  
+	CONFIG=7835.102.config.dat; 
 
+[7835.103]  
+	CONFIG=7835.103.config.dat; 
+
+[7835.104]  
+	CONFIG=7835.104.config.dat; 
+
+[7835.105]  
+	CONFIG=7835.105.config.dat; 
+
+[7835.106]  
+	CONFIG=7835.106.config.dat; 
+
+[7835.107]  
+	CONFIG=7835.107.config.dat; 
 
 // ------------------------------------------------------------//
 //    Broke the vacuum and replaced all blue targets           //
 // ------------------------------------------------------------//
 [7840.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7840.001.config.dat; 
 
 [7840.002]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+
+[7840.003]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7840.003.config.dat; 
 
 [7840.004]
 	MEASUREMENT_TYPE=NORM;
@@ -5169,74 +8176,128 @@
 	EnableStrip=31;
 	EnableStrip=49;
 	EnableStrip=67;
-	COMMENT="Target commissioning";
+	COMMENT*="Target commissioning";
+	CONFIG=7840.004.config.dat; 
+
+[7840.005]  
+	CONFIG=7840.005.config.dat; 
 
 [7840.006]
 	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Tune;
-	COMMENT="Target commissioning plus bad strips in a few detectors (not WFD problem.)";
+	COMMENT*="Target commissioning plus bad strips in a few detectors (not WFD problem.)";
+	CONFIG=7840.006.config.dat; 
+
+[7840.007]  
+	CONFIG=7840.007.config.dat; 
+
+[7840.008]  
+	CONFIG=7840.008.config.dat; 
 
 [7842.001]
-	RUN_STATUS=Junk;
+	RUN_STATUS*=Junk;
+	CONFIG=7842.001.config.dat; 
+
+[7842.002]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7842.002.config.dat; 
+
+[7842.003]  
+	CONFIG=7842.003.config.dat; 
+
+[7842.004]  
+	CONFIG=7842.004.config.dat; 
 
 [7842.005]
 	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Tune;
-	COMMENT="Target commissioning";
+	COMMENT*="Target commissioning";
+	CONFIG=7842.005.config.dat; 
 
-[7843.001]
+[7843.001]  // Check, No data
 	//Not yet confirmed.
 	RUN_STATUS=Good;
-	COMMENT="";
+	COMMENT*="No data";
 
-[7843.101]
+[7843.101]  // Check, No data
 	//Not yet confirmed.
 	RUN_STATUS=Good;
-	COMMENT="";
+	COMMENT*="No data";
+
+[7846.001]  
+	CONFIG=7846.001.config.dat; 
+
+[7846.002]  
+	CONFIG=7846.002.config.dat; 
 
 [7846.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
 	DisableStrip=71;
-	COMMENT="suspicious strips";
+	COMMENT*="suspicious strips";
+	CONFIG=7846.101.config.dat; 
 
 [7847.001]
-	RUN_STATUS=Suspicious
-	COMMENT="Profile scan problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile scan problems.";
+	CONFIG=7847.001.config.dat; 
 
 [7847.002]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7847.002.config.dat; 
+
+[7847.003]  
+	CONFIG=7847.003.config.dat; 
 
 [7847.004]
 	CONFIG=7847.004.config.dat;
 
+[7847.005]  
+	CONFIG=7847.005.config.dat; 
+
 [7847.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Suspicious strips.";
+	CONFIG=7847.101.config.dat; 
+
+[7847.102]  
+	CONFIG=7847.102.config.dat; 
+
+[7847.103]  
+	CONFIG=7847.103.config.dat; 
+
+[7847.104]
+	CONFIG=7847.104.config.dat;
+
+[7847.105]  
+	CONFIG=7847.105.config.dat; 
 
 [7849.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7849.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile scan issues.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile scan issues.";
+	CONFIG=7849.002.config.dat; 
 
 [7849.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7849.102]  
+	CONFIG=7849.102.config.dat;
 
 [7850.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7850.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile problems.";
+	CONFIG=7850.002.config.dat; 
 
 [7850.003]
 	RUN_STATUS*=Junk;
@@ -5244,59 +8305,133 @@
 
 [7850.004]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7850.004.config.dat; 
+
+[7850.005]  
+	CONFIG=7850.005.config.dat; 
+
+[7850.006]  
+	CONFIG=7850.006.config.dat; 
 
 [7850.007]
-	RUN_STATUS=Suspicious;
-	COMMENT="Fixed target with low rate";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Fixed target with low rate";
+	CONFIG=7850.007.config.dat; 
+
+[7850.008]  
+	CONFIG=7850.008.config.dat; 
 
 [7850.009]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="profile problems.";
+	CONFIG=7850.009.config.dat; 
+
+[7850.010]  
+	CONFIG=7850.010.config.dat; 
 
 [7850.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="suspicious strips.";
+	CONFIG=7850.101.config.dat; 
+
+[7850.102]  
+	CONFIG=7850.102.config.dat; 
+
+[7850.103]  
+	CONFIG=7850.103.config.dat; 
+
+[7850.104]  
+	CONFIG=7850.104.config.dat; 
+
+[7850.105]  
+	CONFIG=7850.105.config.dat; 
 
 [7851.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7851.001.config.dat; 
 
 [7851.002]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile problems.";
+	CONFIG=7851.002.config.dat; 
+
+[7851.003]  
+	CONFIG=7851.003.config.dat; 
+
+[7851.004]  
+	CONFIG=7851.004.config.dat; 
+
+[7851.005]  
+	CONFIG=7851.005.config.dat; 
 
 [7851.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile problems";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile problems";
+	CONFIG=7851.101.config.dat; 
+
+[7851.102]  
+	CONFIG=7851.102.config.dat; 
 
 [7851.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="suspicious strips.";
+	CONFIG=7851.103.config.dat; 
+
+[7851.104]  
+	CONFIG=7851.104.config.dat; 
 
 [7851.105]
-	COMMENT="suspicious strips and profile problems.";
+	COMMENT*="suspicious strips and profile problems.";
+	CONFIG=7851.105.config.dat; 
 
 [7851.106]
 	RUN_STATUS*=Junk;
-	COMMENT*="";
 
 [7851.107]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=7851.107.config.dat; 
 
-[7582.001]
+[7852.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7852.001.config.dat; 
+
+[7852.002]  
+	CONFIG=7852.002.config.dat; 
+
+[7852.003]  
+	CONFIG=7852.003.config.dat; 
+
+[7852.004]  
+	CONFIG=7852.004.config.dat; 
+
+[7852.005]  
+	CONFIG=7852.005.config.dat; 
 
 [7852.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="suspicious strips.";
+	CONFIG=7852.101.config.dat; 
+
+[7852.102]  
+	CONFIG=7852.102.config.dat; 
 
 [7852.103]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7852.104]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7852.104.config.dat; 
+
+[7852.105]  
+	CONFIG=7852.105.config.dat; 
+
+[7852.106]  
+	CONFIG=7852.106.config.dat; 
+
+[7852.107]  
+	CONFIG=7852.107.config.dat; 
 
 [7853.001]
 	RUN_STATUS*=Junk;
@@ -5307,16 +8442,24 @@
 	COMMENT*="Number of events < 50k.";
 
 [7853.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="wide profile.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="wide profile.";
+	CONFIG=7853.003.config.dat; 
+
+[7853.004]  
+	CONFIG=7853.004.config.dat; 
 
 [7853.005]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Double Peaked profile scan.";
+	CONFIG=7853.005.config.dat; 
 
 [7853.006]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7853.006.config.dat; 
+
+[7853.007]  
+	CONFIG=7853.007.config.dat; 
 
 [7853.008]
 	RUN_STATUS*=Junk;
@@ -5330,112 +8473,232 @@
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7853.011]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7853.011.config.dat; 
+
+[7853.012]  
+	CONFIG=7853.012.config.dat; 
+
+[7853.013]  
+	CONFIG=7853.013.config.dat; 
+
 [7853.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="suspicious strips.";
+	CONFIG=7853.101.config.dat; 
+
+[7853.102]  
+	CONFIG=7853.102.config.dat; 
+
+[7853.103]  
+	CONFIG=7853.103.config.dat; 
+
+[7853.104]  
+	CONFIG=7853.104.config.dat; 
 
 [7853.105]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=7853.105.config.dat; 
 
 [7854.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7854.001.config.dat; 
 
 [7854.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7854.102]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile scan issues and suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile scan issues and suspicious strips.";
+	CONFIG=7854.102.config.dat; 
 
 [7855.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7855.001.config.dat; 
+
+[7855.002]  
+	CONFIG=7855.002.config.dat; 
+
+[7855.003]  
+	CONFIG=7855.003.config.dat; 
+
+[7855.004]  
+	CONFIG=7855.004.config.dat; 
+
+[7855.101]  
+	CONFIG=7855.101.config.dat; 
+
+[7855.102]  
+	CONFIG=7855.102.config.dat; 
+
+[7855.103]  
+	CONFIG=7855.103.config.dat; 
+
+[7855.104]  
+	CONFIG=7855.104.config.dat; 
+
+[7855.105]  
+	CONFIG=7855.105.config.dat; 
 
 [7856.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7856.001.config.dat; 
+
+[7856.002]  
+	CONFIG=7856.002.config.dat; 
+
+[7856.003]  
+	CONFIG=7856.003.config.dat; 
+
+[7856.004]  
+	CONFIG=7856.004.config.dat; 
+
+[7856.005]  
+	CONFIG=7856.005.config.dat; 
 
 [7856.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile scan issues and suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile scan issues and suspicious strips.";
+	CONFIG=7856.101.config.dat; 
+
+[7856.102]  
+	CONFIG=7856.102.config.dat; 
+
+[7856.103]  
+	CONFIG=7856.103.config.dat; 
+
+[7856.104]  
+	CONFIG=7856.104.config.dat; 
 
 [7856.105]
-	RUN_STATUS=Suspicious;
-	COMMENT="Suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Suspicious strips.";
+	CONFIG=7856.105.config.dat; 
 
 [7857.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7857.101.config.dat;
-	COMMENT="suspicious strips.";
-
+	COMMENT*="suspicious strips.";
 
 [7858.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
 [7858.002]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7858.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile scan issues.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile scan issues.";
+	CONFIG=7858.003.config.dat; 
+
+[7858.004]  
+	CONFIG=7858.004.config.dat; 
+
+[7858.005]  
+	CONFIG=7858.005.config.dat; 
+
+[7858.006]  
+	CONFIG=7858.006.config.dat; 
 
 [7858.007]
-	RUN_STATUS=Suspicious;
-	COMMENT="very strange run, from bizzare strips and unusual bunches (phi fit does not work for ~1/2 of the bunches, no separation in the phase, tempted to junk.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="very strange run, from bizzare strips and unusual bunches (phi fit does not work for ~1/2 of the bunches, no separation in the phase, tempted to junk.";
+	CONFIG=7858.007.config.dat; 
 
+[7858.008]  
+	DisableStrip*=12;   // Add by Han
+	DisableStrip*=30;
+	DisableStrip*=48;
+	CONFIG=7858.008.config.dat; 
+
+[7858.009]  
+	DisableStrip*=12;   // Add by Han
+	DisableStrip*=30;
+	DisableStrip*=48;
+	CONFIG=7858.009.config.dat; 
 
 [7858.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Unsuccessful deadlayer fit. Don't update config file, also profile scan issues and suspicious strips";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file, also profile scan issues and suspicious strips";
+	CONFIG=7858.101.config.dat; 
+
+[7858.102]  
+	CONFIG=7858.102.config.dat; 
 
 [7858.103]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
 [7858.104]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7858.105]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7858.105.config.dat;
-	COMMENT="strange beam profile and suspicious strips.";
+	COMMENT*="strange beam profile and suspicious strips.";
+
+[7858.106]  
+	CONFIG=7858.106.config.dat; 
 
 [7859.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7859.001.config.dat;  
+
+[7859.002]  
+	CONFIG=7859.002.config.dat; 
 
 [7859.003]
-	RUN_STATUS=Junk;
-	COMMENT="Measurement yeilds zero and problems with strips and bunches etc.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Measurement yeilds zero and problems with strips and bunches etc.";
+	CONFIG=7859.003.config.dat;  
+
+[7859.004]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7859.004.config.dat; 
+
+[7859.005]  // check, no data
+	CONFIG=7859.005.config.dat; 
 
 [7859.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7859.101.config.dat;
-	COMMENT="suspicious strips and profile problems.";
+	COMMENT*="suspicious strips and profile problems.";
 
 [7860.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7860.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile problems.";
+	CONFIG=7860.002.config.dat; 
 
 [7860.003]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7860.003.config.dat; 
+
+[7860.004]  
+	CONFIG=7860.004.config.dat; 
+
+[7860.005]  
+	CONFIG=7860.005.config.dat; 
+
+[7860.006]  
+	CONFIG=7860.006.config.dat; 
 
 [7860.007]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7860.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile problems and suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile problems and suspicious strips.";
 	CONFIG=7860.101.config.dat;
 
 [7860.102]
@@ -5443,8 +8706,12 @@
 	COMMENT*="Number of events < 50k.";
 
 [7860.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="suspicious strips.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="suspicious strips.";
+	CONFIG=7860.103.config.dat; 
+
+[7860.104]  
+	CONFIG=7860.104.config.dat; 
 
 [7860.105]
 	RUN_STATUS=Good;
@@ -5452,36 +8719,85 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;
-	COMMENT="";
+	CONFIG=7860.105.config.dat; 
+
+[7860.106]  
+	CONFIG=7860.106.config.dat; 
+
+[7863.001]  
+	CONFIG=7863.001.config.dat; 
+
+[7863.002]  
+	CONFIG=7863.002.config.dat; 
 
 [7863.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile problems.";
+	CONFIG=7863.003.config.dat; 
+
+[7863.004]  
+	CONFIG=7863.004.config.dat; 
 
 [7863.005]
 	RUN_STATUS*=Good;
-	CONFIG=7863.003.config.dat;
 	COMMENT*="fixed target.";
+	CONFIG=7863.005.config.dat;
 	
 [7863.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
 	DisableStrip=71;
-	COMMENT="suspicious strips.";
+	COMMENT*="suspicious strips.";
+	CONFIG=7863.101.config.dat; 
 
 [7863.102]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7863.103]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7863.103.config.dat; 
+
+[7863.104]  
+	CONFIG=7863.104.config.dat; 
+
+[7863.105]  
+	CONFIG=7863.105.config.dat; 
+
+[7863.106]  
+	CONFIG=7863.106.config.dat; 
+
+[7864.001]  
+	CONFIG=7864.001.config.dat; 
+
+[7864.002]  
+	CONFIG=7864.002.config.dat; 
+
 [7864.003]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7864.003.config.dat; 
+
+[7864.004]  
+	CONFIG=7864.004.config.dat; 
+
+[7864.005]  
+	CONFIG=7864.005.config.dat; 
 
 [7864.006]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
+[7864.007]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7864.007.config.dat; 
+
+[7864.101]  
+	CONFIG=7864.101.config.dat; 
+
+[7864.102]  
+	CONFIG=7864.102.config.dat; 
 
 [7864.103]
 	RUN_STATUS=Good;
@@ -5489,26 +8805,42 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;
-	COMMENT="";
+	CONFIG=7864.103.config.dat; 
+
+[7864.104]  
+	CONFIG=7864.104.config.dat; 
+
+[7864.105]  
+	CONFIG=7864.105.config.dat; 
 
 [7865.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7865.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile problems.";
+	CONFIG=7865.002.config.dat; 
+
+[7865.003]  
+	CONFIG=7865.003.config.dat; 
 
 [7865.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wide Profile";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wide Profile";
+	CONFIG=7865.004.config.dat; 
 
+[7865.101]  
+	CONFIG=7865.101.config.dat; 
+
+[7865.102]  
+	CONFIG=7865.102.config.dat; 
 
 [7866.001]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Tune;
 	CONFIG=7866.001.config.dat;
-	COMMENT="Profile Problems.";
+	COMMENT*="Profile Problems.";
 
 [7866.101]
 	MEASUREMENT_TYPE=SPIN_TUNE;
@@ -5518,16 +8850,24 @@
 
 [7867.001]
 	RUN_STATUS=Tune;
-	COMMENT="Horizontal target?  Many strip problems.";
+	COMMENT*="Horizontal target?  Many strip problems.";
+	CONFIG=7867.001.config.dat; 
+
+[7867.002]  
+	CONFIG=7867.002.config.dat; 
+
+[7867.003]  
+	CONFIG=7867.003.config.dat; 
 
 [7867.004]
 	RUN_STATUS*=Tune;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target";
-
+	CONFIG=7867.004.config.dat; 
 
 [7867.005]
 	RUN_STATUS*=Tune;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target.";
+	CONFIG=7867.005.config.dat; 
 
 [7867.006]
 	RUN_STATUS*=Junk;
@@ -5536,33 +8876,79 @@
 [7867.007]
 	RUN_STATUS*=Tune;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file plus horizontal target.";
+	CONFIG=7867.007.config.dat; 
 
 [7868.001]
 	RUN_STATUS=Tune;
-	COMMENT="Wide mass peaks and background issues.";
+	COMMENT*="Wide mass peaks and background issues.";
+	CONFIG=7868.001.config.dat; 
 
 [7868.002]
 	CONFIG=7868.002.config.dat;
 
 [7868.003]
-	COMMENT="Wide mass peaks and wide profile.";
+	COMMENT*="Wide mass peaks and wide profile.";
+	CONFIG=7868.003.config.dat; 
+
+[7868.004]  
+	CONFIG=7868.004.config.dat; 
+
+[7868.005]  
+	CONFIG=7868.005.config.dat; 
+
+[7868.006]  
+	CONFIG=7868.006.config.dat; 
 
 [7868.007]
 	RUN_STATUS=Tune;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks";
+	CONFIG=7868.007.config.dat; 
 
 [7868.008]
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks.";
+	CONFIG=7868.008.config.dat; 
 
 [7868.009]
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file and wide mass peaks.";
+	CONFIG=7868.009.config.dat; 
 
 [7868.101]
 	RUN_STATUS=Tune;
-	COMMENT="";
+	CONFIG=7868.101.config.dat; 
+
+[7868.102]  
+	CONFIG=7868.102.config.dat; 
+
+[7868.103]  
+	CONFIG=7868.103.config.dat; 
+
+[7868.104]  
+	CONFIG=7868.104.config.dat; 
+
+[7868.105]  
+	CONFIG=7868.105.config.dat; 
+
+[7868.106]  
+	CONFIG=7868.106.config.dat; 
+
+[7868.107]  
+	CONFIG=7868.107.config.dat; 
 
 [7868.108]
 	RUN_STATUS*=Junk;
+
+[7868.109]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7868.109.config.dat; 
+
+[7868.110]  
+	CONFIG=7868.110.config.dat; 
+
+[7868.111]  
+	CONFIG=7868.111.config.dat; 
+
+[7868.112]  
+	CONFIG=7868.112.config.dat; 
 
 [7868.113]
 	RUN_STATUS*=Junk;
@@ -5571,114 +8957,204 @@
 [7869.001]
 	RUN_STATUS=Tune;
 	CONFIG=7869.001.config.dat;
-	COMMENT="";
+
+[7869.002]  
+	CONFIG=7869.002.config.dat; 
+
+[7869.003]  
+	CONFIG=7869.003.config.dat; 
+
+[7869.004]  
+	CONFIG=7869.004.config.dat; 
+
+[7869.005]  
+	CONFIG=7869.005.config.dat; 
+
+[7869.006]  
+	CONFIG=7869.006.config.dat; 
 
 [7871.001]
 	MEASUREMENT_TYPE=NORM;
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile problems";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile problems";
 	CONFIG=7871.001.config.dat;
 
 [7871.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Wider profile, but better than previous.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Wider profile, but better than previous.";
+	CONFIG=7871.002.config.dat; 
+
+[7871.003]  
+	CONFIG=7871.003.config.dat; 
 
 [7871.101]
 	MEASUREMENT_TYPE=NORM;
 	RUN_STATUS=Good;
-	COMMENT="";
 	CONFIG=7871.101.config.dat;
 
+[7871.102]  
+	CONFIG=7871.102.config.dat; 
+
+[7871.103]  
+	CONFIG=7871.103.config.dat; 
+
 [7872.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=64;
-	COMMENT="Profile problems, and strip 64 seems to flakey, could be false signal however."
+	COMMENT*="Profile problems, and strip 64 seems to flakey, could be false signal however."
+	CONFIG=7872.001.config.dat; 
 
 [7872.002]
 	RUN_STATUS=Good;
 	EnableStrip=64;
-	COMMENT="";
+	CONFIG=7872.002.config.dat; 
+
+[7872.003]  
+	CONFIG=7872.003.config.dat; 
+
+[7872.004]  
+	CONFIG=7872.004.config.dat; 
+
+[7872.005]  
+	CONFIG=7872.005.config.dat; 
+
+[7872.101]  
+	CONFIG=7872.101.config.dat; 
+
+[7872.102]  
+	CONFIG=7872.102.config.dat; 
 
 [7872.103]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
-	DisableStrip=71;	
-	COMMENT="Flakey WFD strips are back, but not as pronounced."
+	DisableStrip=71;
+	COMMENT*="Flakey WFD strips are back, but not as pronounced."
+	CONFIG=7872.103.config.dat; 
+
+[7872.104]  
+	CONFIG=7872.104.config.dat; 
+
+[7872.105]  
+	CONFIG=7872.105.config.dat; 
 
 [7875.001]
-	RUN_STATUS=Junk;
-	COMMENT="All sorts of problems including bad strips and seemingly low event numbers ~300000 carbons but this was a 6 bunch run so not too worried, after looking at the scalar plots, I decided this was junk.";
+	RUN_STATUS*=Junk;
+	COMMENT*="All sorts of problems including bad strips and seemingly low event numbers ~300000 carbons but this was a 6 bunch run so not too worried, after looking at the scalar plots, I decided this was junk.";
+
+[7875.002]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7875.002.config.dat; 
 
 [7875.101]
-	RUN_STATUS=Junk;
-	COMMENT="Similar problems to 7875.001.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Similar problems to 7875.001.";
 
 [7878.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7878.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="profile issue. scan stops midway through the beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="profile issue. scan stops midway through the beam.";
+	CONFIG=7878.002.config.dat; 
 
 [7878.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7878.102]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan starts midway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan starts midway through beam.";
+	CONFIG=7878.102.config.dat; 
 
 [7882.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan starts midway through the beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan starts midway through the beam.";
+	CONFIG=7882.001.config.dat; 
 
 [7882.101]
-	COMMENT="Suspicious strips";
+	COMMENT*="Suspicious strips";
+	CONFIG=7882.101.config.dat; 
 
 [7882.102]
-	COMMENT="Profile issue: scan starts midway through the beam.";
+	COMMENT*="Profile issue: scan starts midway through the beam.";
+	CONFIG=7882.102.config.dat; 
+
+[7883.001]  
+	CONFIG=7883.001.config.dat; 
 
 [7883.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan stops midway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan stops midway through beam.";
+	CONFIG=7883.002.config.dat; 
+
+[7883.101]  
+	CONFIG=7883.101.config.dat; 
+
+[7883.102]  
+	CONFIG=7883.102.config.dat; 
 
 [7885.001]
 	CONFIG=7885.001.config.dat;
-	COMMENT="six bunch mode, with low rates and associated problems.";
+	COMMENT*="six bunch mode, with low rates and associated problems.";
+
+[7885.002]  
+	CONFIG=7885.002.config.dat; 
 
 [7885.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="six bunch mode and associated problems.";
 
 [7886.001]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan stops midway through beam.";
 	CONFIG=7886.001.config.dat;
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan stops midway through beam.";
 
 [7886.002]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7886.003]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7886.003.config.dat; 
+
+[7886.004]  
+	CONFIG=7886.004.config.dat; 
+
+[7886.005]  
+	CONFIG=7886.005.config.dat; 
+
+[7886.006]  
+	CONFIG=7886.006.config.dat; 
+
 [7886.007]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7886.007.config.dat; 
+
+[7886.008]  
+	CONFIG=7886.008.config.dat; 
+
+[7886.009]  
+	CONFIG=7886.009.config.dat; 
 
 [7886.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7886.102]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan starts midway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan starts midway through beam.";
+	CONFIG=7886.102.config.dat; 
 
 [7886.103]
-	COMMENT="Profile issue: only three points in the scan?";
+	COMMENT*="Profile issue: only three points in the scan?";
+	CONFIG=7886.103.config.dat; 
 
 [7886.104]
-	COMMENT="Profile issue: scan only sees second half of the beam.";
+	COMMENT*="Profile issue: scan only sees second half of the beam.";
+	CONFIG=7886.104.config.dat; 
 
 [7886.105]
 	RUN_STATUS=Good;
@@ -5686,63 +9162,257 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;
-	COMMENT="";
+	CONFIG=7886.105.config.dat; 
+
+[7886.106]  
+	CONFIG=7886.106.config.dat; 
+
+[7886.107]  
+	CONFIG=7886.107.config.dat; 
+
+[7886.108]  
+	CONFIG=7886.108.config.dat; 
+
+[7887.001]  
+	CONFIG=7887.001.config.dat; 
+
+[7887.002]  
+	CONFIG=7887.002.config.dat; 
+
+[7887.101]  
+	CONFIG=7887.101.config.dat; 
+
+[7887.102]  
+	CONFIG=7887.102.config.dat; 
+
+[7887.103]  
+	CONFIG=7887.103.config.dat; 
 
 [7889.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7889.002]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: wide profile, flattop.";
+	CONFIG=7889.002.config.dat; 
+
 [7889.003]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: bunch right?";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: bunch right?";
+	CONFIG=7889.003.config.dat; 
 
 [7889.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan stops midway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan stops midway through beam.";
+	CONFIG=7889.004.config.dat; 
 
 [7889.005]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7889.005.config.dat; 
 
-[7889.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: wide profile, flattop.";
+[7889.006]  
+	CONFIG=7889.006.config.dat; 
+
+[7889.101]  
+	CONFIG=7889.101.config.dat; 
+
+[7889.102]  
+	CONFIG=7889.102.config.dat; 
+
+[7889.103]  
+	CONFIG=7889.103.config.dat; 
+
+[7889.104]  
+	CONFIG=7889.104.config.dat; 
+
+[7889.105]  
+	CONFIG=7889.105.config.dat; 
+
+[7890.001]  
+	CONFIG=7890.001.config.dat; 
+
+[7890.002]  
+	CONFIG=7890.002.config.dat; 
+
+[7890.003]  
+	CONFIG=7890.003.config.dat; 
+
+[7890.004]  
+	CONFIG=7890.004.config.dat; 
+
+[7890.101]  
+	CONFIG=7890.101.config.dat; 
+
+[7890.102]  
+	CONFIG=7890.102.config.dat; 
+
+[7890.103]  
+	CONFIG=7890.103.config.dat; 
+
+[7890.104]  
+	CONFIG=7890.104.config.dat; 
+
+[7891.001]  
+	CONFIG=7891.001.config.dat; 
+
+[7891.002]  
+	CONFIG=7891.002.config.dat; 
+
+[7891.003]  
+	CONFIG=7891.003.config.dat; 
+
+[7891.004]  
+	CONFIG=7891.004.config.dat; 
+
+[7891.101]  
+	CONFIG=7891.101.config.dat; 
+
+[7891.102]  
+	CONFIG=7891.102.config.dat; 
+
+[7891.103]  
+	CONFIG=7891.103.config.dat; 
+
+[7891.104]  
+	CONFIG=7891.104.config.dat; 
 
 [7892.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7892.002]  
+	CONFIG=7892.002.config.dat; 
+
+[7892.003]  
+	CONFIG=7892.003.config.dat; 
+
+[7892.004]  
+	CONFIG=7892.004.config.dat; 
+
+[7892.101]  
+	CONFIG=7892.101.config.dat; 
+
+[7892.102]  
+	CONFIG=7892.102.config.dat; 
+
+[7892.103]  
+	CONFIG=7892.103.config.dat; 
+
 [7893.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7893.001.config.dat; 
+
+[7893.002]  
+	CONFIG=7893.002.config.dat; 
+
+[7893.101]  
+	CONFIG=7893.101.config.dat; 
+
+[7893.102]  
+	CONFIG=7893.102.config.dat; 
+
+[7896.001]  
+	CONFIG=7896.001.config.dat; 
+
+[7896.002]  
+	CONFIG=7896.002.config.dat; 
+
+[7896.003]  
+	CONFIG=7896.003.config.dat; 
+
+[7896.004]  
+	CONFIG=7896.004.config.dat; 
+
+[7896.005]  
+	CONFIG=7896.005.config.dat; 
+
+[7896.006]  
+	CONFIG=7896.006.config.dat; 
+
+[7896.007]
+	CONFIG=7896.007.config.dat;
+
+[7896.008]
+	CONFIG=7896.008.config.dat;
+
+[7896.101]  
+	CONFIG=7896.101.config.dat; 
+
+[7896.102]  
+	CONFIG=7896.102.config.dat; 
+
+[7896.103]  
+	CONFIG=7896.103.config.dat; 
+
+[7896.104]  
+	CONFIG=7896.104.config.dat; 
 
 [7896.105]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
+[7896.106]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7896.106.config.dat; 
+
+[7896.107]  
+	CONFIG=7896.107.config.dat; 
+
+[7896.108]
+	CONFIG=7896.108.config.dat;
+
+[7896.109]  
+	CONFIG=7896.109.config.dat; 
 
 [7898.001]
 	RUN_STATUS*=Recovered;
 	DEFINE_SPIN_PATTERN*=2;
 	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
+	CONFIG=7898.001.config.dat; 
 
 [7898.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: scan stops midway through beam.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: scan stops midway through beam.";
+	CONFIG=7898.002.config.dat; 
 
 [7898.003]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7898.003.config.dat; 
+
+[7898.004]  
+	CONFIG=7898.004.config.dat; 
+
+[7898.005]  
+	CONFIG=7898.005.config.dat; 
+
+[7898.006]  
+	CONFIG=7898.006.config.dat; 
 
 [7898.101]
 	RUN_STATUS*=Recovered;
 	DEFINE_SPIN_PATTERN*=3;
 	DEFINE_FILL_PATTERN*=0; 
 	COMMENT*="Spin and Fill Pattern are screwed up.";
+	CONFIG=7898.101.config.dat; 
+
+[7898.102]  
+	CONFIG=7898.102.config.dat; 
+
+[7898.103]  
+	CONFIG=7898.103.config.dat; 
+
+[7898.104]  
+	CONFIG=7898.104.config.dat; 
+
+[7898.105]  
+	CONFIG=7898.105.config.dat; 
 
 [7898.106]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=7898.106.config.dat; 
 
 [7901.001]
 	RUN_STATUS*=Junk;
@@ -5750,76 +9420,137 @@
 
 [7901.002]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7901.002.config.dat; 
+
+[7901.003]  
+	CONFIG=7901.003.config.dat; 
+
+[7901.004]  
+	CONFIG=7901.004.config.dat; 
 
 [7901.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7901.102]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7901.102.config.dat; 
+
 [7901.103]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
+[7901.104]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7901.104.config.dat; 
 
 [7904.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
+[7906.001]  
+	CONFIG=7906.001.config.dat; 
+
 [7906.002]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile issue: scan ends midway through the beam.";
+	CONFIG=7906.002.config.dat; 
 
 [7906.003]
 	CONFIG=7906.003.config.dat;
 
+[7906.101]  
+	CONFIG=7906.101.config.dat; 
+
+[7906.102]  
+	CONFIG=7906.102.config.dat; 
+
 [7908.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7908.001.config.dat;
-	COMMENT="Profile issue: flattop, and scan stops midway through scan.";
+	COMMENT*="Profile issue: flattop, and scan stops midway through scan.";
 
 [7908.002]
 	COMMENT*="Scalar mode yields zero polarization.  Event mode looks good.";
+	CONFIG=7908.002.config.dat; 
+
+[7908.003]  
+	CONFIG=7908.003.config.dat; 
 
 [7908.004]
-	COMMENT="Profile issue: flattop and bunched right.";
+	COMMENT*="Profile issue: flattop and bunched right.";
+	CONFIG=7908.004.config.dat; 
 
 [7908.005]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7908.005.config.dat; 
 
 [7908.006]
 	RUN_STATUS*=Junk;
 
+[7908.007]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7908.007.config.dat; 
+
+[7908.008]  
+	CONFIG=7908.008.config.dat; 
+
+[7908.009]  
+	CONFIG=7908.009.config.dat; 
+
+[7908.010]  
+	CONFIG=7908.010.config.dat; 
+
 [7908.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7908.101.config.dat; 
+
+[7908.102]  
+	CONFIG=7908.102.config.dat; 
+
+[7908.103]  
+	CONFIG=7908.103.config.dat; 
+
+[7908.104]  
+	CONFIG=7908.104.config.dat; 
+
+[7908.105]  
+	CONFIG=7908.105.config.dat; 
 
 [7908.106]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=17;
 	DisableStrip=35;
 	DisableStrip=53;
 	DisableStrip=71;	
-	COMMENT="Flakey WFD";
+	COMMENT*="Flakey WFD";
+	CONFIG=7908.106.config.dat; 
 
 [7908.107]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file. and flakey WFD.";
+	CONFIG=7908.107.config.dat; 
 
 [7909.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: flattop and scan stops halfway through the scan.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: flattop and scan stops halfway through the scan.";
+	CONFIG=7909.001.config.dat; 
+
+[7909.002]  
+	CONFIG=7909.002.config.dat; 
 
 [7909.003]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7909.003.config.dat; 
 
 [7909.004]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: bizzare profile shape.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: bizzare profile shape.";
+	CONFIG=7909.004.config.dat; 
 
 [7909.005]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7909.005.config.dat; 
 
 [7909.101]
 	RUN_STATUS=Good;
@@ -5827,53 +9558,134 @@
 	EnableStrip=35;
 	EnableStrip=53;
 	EnableStrip=71;	
-	COMMENT="";
+	CONFIG=7909.101.config.dat; 
+
+[7909.102]  
+	CONFIG=7909.102.config.dat; 
+
+[7909.103]  
+	CONFIG=7909.103.config.dat; 
+
+[7909.104]  
+	CONFIG=7909.104.config.dat; 
+
+[7909.105]  
+	CONFIG=7909.105.config.dat; 
 
 [7911.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7911.001.config.dat; 
+
+[7911.002]  
+	CONFIG=7911.002.config.dat; 
 
 [7911.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7911.101.config.dat; 
+
+[7911.102]  
+	CONFIG=7911.102.config.dat; 
+
+[7913.001]  
+	CONFIG=7913.001.config.dat; 
+
+[7913.002]  
+	CONFIG=7913.002.config.dat; 
+
+[7913.003]  
+	CONFIG=7913.003.config.dat; 
+
+[7913.101]  
+	CONFIG=7913.101.config.dat; 
+
+[7913.102]  
+	CONFIG=7913.102.config.dat; 
 
 [7915.001]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7915.002]
-	RUN_STATUS=Suspicious;
-	COMMENT="There might be a hot bunch, but the asymmetries look good, so it is not masked out.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="There might be a hot bunch, but the asymmetries look good, so it is not masked out.";
+	CONFIG=7915.002.config.dat; 
+
+[7915.003]  
+	CONFIG=7915.003.config.dat; 
+
+[7915.004]  
+	CONFIG=7915.004.config.dat; 
+
+[7915.005]  
+	CONFIG=7915.005.config.dat; 
+
+[7915.006]  
+	CONFIG=7915.006.config.dat; 
+
+[7915.101]  
+	CONFIG=7915.101.config.dat; 
 
 [7915.102]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
+
+[7915.103]  
+	CONFIG=7915.103.config.dat; 
+
+[7915.104]  
+	CONFIG=7915.104.config.dat; 
+
+[7915.105]  
+	CONFIG=7915.105.config.dat; 
+
+[7915.106]  
+	CONFIG=7915.106.config.dat; 
 
 [7915.107]
 	CONFIG=7915.107.config.dat;
 
 [7916.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7916.001.config.dat; 
+
+[7916.002]  
+	CONFIG=7916.002.config.dat; 
 
 [7916.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Bad WFD module.";
+	COMMENT*="Bad WFD module.";
+	CONFIG=7916.003.config.dat; 
+
+[7916.004]  
+	CONFIG=7916.004.config.dat; 
+
+[7916.005]  
+	CONFIG=7916.005.config.dat; 
+
+[7916.006]  
+	CONFIG=7916.006.config.dat; 
 
 [7916.101]
 	CONFIG=7916.101.config.dat;
 
+[7916.102]  
+	CONFIG=7916.102.config.dat; 
+
 [7916.103]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	COMMENT="Bad WFD module.";
+	COMMENT*="Bad WFD module.";
+	CONFIG=7916.103.config.dat; 
+
+[7916.104]  
+	CONFIG=7916.104.config.dat; 
 
 [7916.105]
 	RUN_STATUS*=Good;
@@ -5881,7 +9693,10 @@
 	EnableStrip*=29;
 	EnableStrip*=47;
 	EnableStrip*=65;
-	COMMENT*="";
+	CONFIG=7916.105.config.dat; 
+
+[7916.106]  
+	CONFIG=7916.106.config.dat; 
 
 [7918.001]
 	RUN_STATUS*=Junk;
@@ -5893,15 +9708,28 @@
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="";
+	CONFIG=7918.002.config.dat; 
+
+[7918.003]  
+	CONFIG=7918.003.config.dat; 
+
+[7918.004]  
+	CONFIG=7918.004.config.dat; 
+
+[7918.005]  
+	CONFIG=7918.005.config.dat; 
 
 [7918.006]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Bad WFD module.";
+	COMMENT*="Bad WFD module.";
+	CONFIG=7918.006.config.dat; 
+
+[7918.007]  
+	CONFIG=7918.007.config.dat; 
 
 [7918.101]
 	RUN_STATUS=Good;
@@ -5909,7 +9737,22 @@
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;
-	COMMENT="";
+	CONFIG=7918.101.config.dat; 
+
+[7918.102]  
+	CONFIG=7918.102.config.dat; 
+
+[7918.103]  
+	CONFIG=7918.103.config.dat; 
+
+[7918.104]  
+	CONFIG=7918.104.config.dat; 
+
+[7918.105]  
+	CONFIG=7918.105.config.dat; 
+
+[7921.001]  
+	CONFIG=7921.001.config.dat; 
 
 [7921.002]
 	RUN_STATUS=Good;
@@ -5917,12 +9760,59 @@
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="";
 	CONFIG=7921.002.config.dat;
 
+[7921.003]  
+	CONFIG=7921.003.config.dat; 
+
 [7921.101]
-	RUN_STATUS=Junk;
-	COMMENT="Vertical target 6 lost.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Vertical target 6 lost.";
+
+[7921.102]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7921.102.config.dat; 
+
+[7921.103]  
+	RUN_STATUS*=Suspicious; 
+	DisableStrip*=11; // Add by Han
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=7921.103.config.dat; 
+
+[7921.104]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7921.104.config.dat; 
+
+[7921.105]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7921.105.config.dat; 
+
+[7921.106]  
+	DisableStrip*=11; // Add by Han
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=7921.106.config.dat; 
+
+[7921.107]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=7921.107.config.dat; 
+
+[7921.108]  
+	DisableStrip*=11; // Add by Han
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=7921.108.config.dat; 
 
 [7921.109]
 	RUN_STATUS*=Suspicious;
@@ -5931,17 +9821,49 @@
 	DisableStrip*=47;
 	DisableStrip*=65;
 	COMMENT*="Bad WFD module.";
+	CONFIG=7921.109.config.dat; 
 
 [7921.110]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile issue: Flattop.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile issue: Flattop.";
+	CONFIG=7921.110.config.dat; 
 
 [7921.111]
 	CONFIG=7921.111.config.dat;
 
+[7922.001]  
+	CONFIG=7922.001.config.dat; 
+
+[7922.002]  
+	CONFIG=7922.002.config.dat; 
+
+[7922.101]  
+	CONFIG=7922.101.config.dat; 
+
+[7922.102]  
+	CONFIG=7922.102.config.dat; 
+
+[7926.001]  
+	CONFIG=7926.001.config.dat; 
+
+[7926.002]  
+	CONFIG=7926.002.config.dat; 
+
+[7926.003]  
+	CONFIG=7926.003.config.dat; 
+
+[7926.004]  
+	CONFIG=7926.004.config.dat; 
+
+[7926.101]  
+	CONFIG=7926.101.config.dat; 
+
 [7926.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7926.102.config.dat; 
+
+[7926.103]  
+	CONFIG=7926.103.config.dat; 
 
 [7926.104]
 	RUN_STATUS*=Junk;
@@ -5956,114 +9878,175 @@
 	COMMENT*="Number of events < 50k.";
 
 [7928.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Bad WFD module.";
+	COMMENT*="Bad WFD module.";
+	CONFIG=7928.003.config.dat; 
 
 [7928.101]
 	RUN_STATUS*=Junk;
 	COMMENT*="Number of events < 50k.";
 
 [7928.102]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	COMMENT="Bad WFD module.";
+	COMMENT*="Bad WFD module.";
+	CONFIG=7928.102.config.dat; 
 
+[7930.001] 
+	CONFIG=7930.001.config.dat; 
+
+[7930.002] 
+	CONFIG=7930.002.config.dat; 
+
+[7930.003] 
+	CONFIG=7930.003.config.dat; 
 
 [7930.101]
 	CONFIG=7930.101.config.dat;
 
 [7930.102]
-	COMMENT="Bad WFD module and Profile issue: wide profile.";
+	COMMENT*="Bad WFD module and Profile issue: wide profile.";
+	CONFIG=7930.102.config.dat; 
 
 [7930.103]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=11;
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;	
-	COMMENT="Profile issue: wide profile.";
+	COMMENT*="Profile issue: wide profile.";
+	CONFIG=7930.103.config.dat; 
+
+[7930.104] 
+	CONFIG=7930.104.config.dat; 
+
+[7930.105] 
+	CONFIG=7930.105.config.dat; 
 
 [7934.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7934.001.config.dat; 
 
 [7935.001]
 	RUN_STATUS*=Junk;
+	CONFIG=7935.001.config.dat; 
 
 [7936.001]
 	RUN_STATUS*=Junk;
-	COMMENT="";
+	CONFIG=7936.001.config.dat; 
 
 [7936.002]
 	RUN_STATUS=Tune;
 	CONFIG=7936.002.config.dat;
-	COMMENT="Mei and Jeff were doing a spin flip study.";
+	COMMENT*="Mei and Jeff were doing a spin flip study.";
+
+[7936.003] 
+	CONFIG=7936.003.config.dat; 
 
 [7936.004]
 	RUN_STATUS*=Junk;
 
+[7936.005] 
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7936.005.config.dat; 
+
+[7936.006] 
+	CONFIG=7936.006.config.dat; 
+
+[7936.007] 
+	CONFIG=7936.007.config.dat; 
+
 [7936.008]
 	RUN_STATUS*=Junk;
+	CONFIG=7936.008.config.dat; 
 
 [7936.009]
 	RUN_STATUS*=Junk;
+
+[7936.010] 
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7936.010.config.dat; 
 
 [7936.011]
 	RUN_STATUS*=Junk;
 
 [7937.001]
-	RUN_STATUS=Junk;
-	COMMENT="Beam studies.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Beam studies.";
+	CONFIG=7937.001.config.dat; 
+
+[7937.002]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7937.002.config.dat; 
 
 [7937.003]
 	RUN_STATUS=Tune;
 	CONFIG=7937.003.config.dat;
-	COMMENT="Beam Studies, and horizontal target problems.";
+	COMMENT*="Beam Studies, and horizontal target problems.";
 
 [7937.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Horizontal target, and other problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal target, and other problems.";
+	CONFIG=7937.101.config.dat; 
+
+[7937.102]  
+	CONFIG=7937.102.config.dat; 
 
 [7940.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7940.001.config.dat;
-	COMMENT="Profile issue: bunch left. And horizontal target problems.";
+	COMMENT*="Profile issue: bunch left. And horizontal target problems.";
 
 [7940.101]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile issue: double hump.";
+	CONFIG=7940.101.config.dat; 
 
 [7944.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Horizontal target, plus flakey WFD module.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal target, plus flakey WFD module.";
+	CONFIG=7944.001.config.dat; 
 
 [7944.002]
-	COMMENT="Proflie issue: bunch left and long tail plus flakey WFD and Horizontal target issues.";
+	COMMENT*="Proflie issue: bunch left and long tail plus flakey WFD and Horizontal target issues.";
+	CONFIG=7944.002.config.dat; 
+
+[7944.003]  
+	CONFIG=7944.003.config.dat; 
+
+[7944.004]  
+	CONFIG=7944.004.config.dat; 
 
 [7944.005]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="Profile Issue: Bunch left and long tail.";
+	COMMENT*="Profile Issue: Bunch left and long tail.";
+	CONFIG=7944.005.config.dat; 
 
 [7944.006]
 	RUN_STATUS*=Junk;
 	DEFINE_FILL_PATTERN*=0;
 	COMMENT*="Recovery failed";
 
+[7944.007]  
+	RUN_STATUS*=Junk;
+	COMMENT*="Remove from Mass-Width analysis";
+	CONFIG=7944.007.config.dat;
+
 [7944.008]
 	RUN_STATUS*=Junk;
 	DEFINE_FILL_PATTERN*=0;
-	COMMENT="Recovery Failed.";
+	COMMENT*="Recovery Failed.";
 
 [7944.009]
 	RUN_STATUS*=Junk;
@@ -6075,396 +10058,799 @@
 	DEFINE_FILL_PATTERN*=0;
 	COMMENT*="Recovery Failed.";
 
+
 [7944.011]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DEFINE_FILL_PATTERN*=0;
-	COMMENT="";
+	CONFIG=7944.011.config.dat; 
 
 [7944.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	COMMENT="Unsuccessful deadlayer fit. Don't update config file, and flakey WFD module and profile issue: double hump.";
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file, and flakey WFD module and profile issue: double hump.";
+	CONFIG=7944.101.config.dat; 
+
+[7944.102]  
+	CONFIG=7944.102.config.dat; 
+
+[7944.103]  
+	CONFIG=7944.103.config.dat; 
 
 [7944.104]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=11;
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;
-	COMMENT="Unsuccessful deadlayer fit. Don't update config file,and proflie issue: double hump.";
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file,and proflie issue: double hump.";
+	CONFIG=7944.104.config.dat; 
+
+[7944.105]  
+	CONFIG=7944.105.config.dat; 
 
 [7946.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
+	DisableStrip*=9;   // Add by Han
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	COMMENT*="Flakey WFD module.";
 	CONFIG=7946.001.config.dat;
-	COMMENT="Flakey WFD module.";
 
 [7946.101]
-	RUN_STATUS=Suspicious;
-	CONFIG=7946.101.config.dat;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	COMMENT="Profile Issue: wide profile, and flakey WFD module.";
+	COMMENT*="Profile Issue: wide profile, and flakey WFD module.";
+	CONFIG=7946.101.config.dat;
 
 [7949.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Flakey WFD module and profile issue: bunch left and long tail and horizontal target issues.";
+	COMMENT*="Flakey WFD module and profile issue: bunch left and long tail and horizontal target issues.";
+	CONFIG=7949.001.config.dat; 
 
 [7949.002]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=9;
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="Profile Issue: bunch left and long tail and horizontal target issues.";
+	COMMENT*="Profile Issue: bunch left and long tail and horizontal target issues.";
+	CONFIG=7949.002.config.dat; 
+
+[7949.003]  
+	CONFIG=7949.003.config.dat; 
 
 [7949.004]
 	RUN_STATUS*=Junk;
 
+[7949.005]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=7949.005.config.dat; 
+
+[7949.006]  
+	CONFIG=7949.006.config.dat; 
+
 [7949.007]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7949.007.config.dat; 
 	
 [7949.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issues: double humped profile, and flakey WFD.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issues: double humped profile, and flakey WFD.";
+	CONFIG=7949.101.config.dat; 
 
 [7949.102]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	EnableStrip=11;
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;
-	COMMENT="Profile Issue: double humped profile.";
+	COMMENT*="Profile Issue: double humped profile.";
+	CONFIG=7949.102.config.dat; 
+
+[7949.103]  
+	CONFIG=7949.103.config.dat; 
+
+[7949.104]  
+	CONFIG=7949.104.config.dat; 
+
+[7949.105]  
+	CONFIG=7949.105.config.dat; 
 
 [7951.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=7951.001.config.dat;
-	COMMENT="Profile Issue: bunched left and tail.";
+	COMMENT*="Profile Issue: bunched left and tail.";
+
+[7951.002]  
+	CONFIG=7951.002.config.dat; 
 
 [7951.003]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Tune;
-	COMMENT="Tune measurements.";
+	COMMENT*="Tune measurements.";
+	CONFIG=7951.003.config.dat; 
+
+[7951.004]  
+	DisableStrip*=12;
+	DisableStrip*=30;
+	DisableStrip*=48;
+	DisableStrip*=67;
+	DisableStrip*=68;
+	CONFIG=7951.004.config.dat; 
+
+[7951.101]  
+	CONFIG=7951.101.config.dat; 
+
+[7951.102]  
+	CONFIG=7951.102.config.dat; 
 
 [7952.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: bunch left and long tail, also horizontal target.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: bunch left and long tail, also horizontal target.";
+	CONFIG=7952.001.config.dat; 
+
+[7952.002]  
+	CONFIG=7952.002.config.dat; 
+
+[7952.003]  
+	CONFIG=7952.003.config.dat; 
+
+[7952.004]  
+	CONFIG=7952.004.config.dat; 
+
+[7952.005]  
+	CONFIG=7952.005.config.dat; 
+
+[7952.006]  
+	CONFIG=7952.006.config.dat; 
 
 [7952.007]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Horizontal target.";
+	CONFIG=7952.007.config.dat; 
 
 [7952.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: double hump.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: double hump.";
+	CONFIG=7952.101.config.dat; 
+
+[7952.102]  
+	CONFIG=7952.102.config.dat; 
+
+[7952.103]  
+	CONFIG=7952.103.config.dat; 
+
+[7952.104]  
+	CONFIG=7952.104.config.dat; 
+
+[7952.105]  
+	CONFIG=7952.105.config.dat; 
 
 [7952.106]
 	RUN_STATUS*=Good;
-	COMMENT*="";
+	CONFIG=7952.106.config.dat; 
 
 [7954.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Horizontal targets, profile looking better.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal targets, profile looking better.";
+	CONFIG=7954.001.config.dat; 
+
+[7954.002]  
+	CONFIG=7954.002.config.dat; 
+
+[7954.003]  
+	CONFIG=7954.003.config.dat; 
+
+[7954.004]  
+	CONFIG=7954.004.config.dat; 
+
+[7954.005]  
+	CONFIG=7954.005.config.dat; 
 
 [7954.006]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strip problems, perhaps a spin tune measurement?";
+	RUN_STATUS*=Suspicious;
+	DisableStrip*=67;
+	DisableStrip*=68;
+	COMMENT*="Strip problems, perhaps a spin tune measurement?";
+	CONFIG=7954.006.config.dat; 
 
 [7954.007]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Tune;
-	COMMENT="Tune measurements.";	
+	DisableStrip*=12;
+	DisableStrip*=30;
+	DisableStrip*=48;
+	DisableStrip*=67;
+	DisableStrip*=68;
+	COMMENT*="Tune measurements.";	
+	CONFIG=7954.007.config.dat; 
+
+[7954.008]  
+	CONFIG=7954.008.config.dat; 
 
 [7954.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: double hump.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: double hump.";
+	CONFIG=7954.101.config.dat; 
 
 [7954.102]
 	CONFIG=7954.102.config.dat;
 
+[7954.103]  
+	CONFIG=7954.103.config.dat; 
+
+[7954.104]  
+	CONFIG=7954.104.config.dat; 
+
 [7954.105]
-	RUN_STATUS=Suspicious;
-	COMMENT="Strip issues.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Strip issues.";
+	CONFIG=7954.105.config.dat; 
 
 [7957.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Horizontal Target problems.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Horizontal Target problems.";
+	CONFIG=7957.001.config.dat; 
+
+[7957.002]  
+	CONFIG=7957.002.config.dat; 
+
+[7957.003]  
+	CONFIG=7957.003.config.dat; 
+
+[7957.004]  
+	CONFIG=7957.004.config.dat; 
 
 [7957.005]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile issue: bunch left.";
+	CONFIG=7957.005.config.dat; 
+
+[7957.006]  
+	CONFIG=7957.006.config.dat; 
+
+[7957.007]  
+	CONFIG=7957.007.config.dat; 
 
 [7957.008]
 	RUN_STATUS*=Suspicious;
+	DisableStrip*=12;
+	DisableStrip*=30;
+	DisableStrip*=48;
+	DisableStrip*=67;
+	DisableStrip*=68;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=7957.008.config.dat; 
 
 [7957.009]
 	MEASUREMENT_TYPE=SPIN_TUNE;
 	RUN_STATUS=Tune;
-	COMMENT="Tune measurements.";
+	DisableStrip*=12;
+	DisableStrip*=30;
+	DisableStrip*=48;
+	DisableStrip*=67;
+	DisableStrip*=68;
+	COMMENT*="Tune measurements.";
+	CONFIG=7957.009.config.dat; 
+
+[7957.010]  
+	DisableStrip*=12;
+	DisableStrip*=30;
+	DisableStrip*=48;
+	DisableStrip*=67;
+	DisableStrip*=68;
+	CONFIG=7957.010.config.dat; 
 
 [7957.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: double hump.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: double hump.";
+	CONFIG=7957.101.config.dat; 
+
+[7957.102]  
+	CONFIG=7957.102.config.dat; 
+
+[7957.103]  
+	CONFIG=7957.103.config.dat; 
 
 [7957.104]
-	COMMENT="Profile Issue: bunch left and double hump.";
+	COMMENT*="Profile Issue: bunch left and double hump.";
+	CONFIG=7957.104.config.dat; 
+
+[7957.105]  
+	CONFIG=7957.105.config.dat; 
 
 [7957.106]
-	COMMENT="Fixed Target Vertical Scan 7957.106 - 7957.111";
+	COMMENT*="Fixed Target Vertical Scan 7957.106 - 7957.111";
+	CONFIG=7957.106.config.dat; 
 
+[7957.107]  
+	CONFIG=7957.107.config.dat; 
+
+[7957.108]  
+	CONFIG=7957.108.config.dat; 
+
+[7957.109]  
+	CONFIG=7957.109.config.dat; 
+
+[7957.110]  
+	CONFIG=7957.110.config.dat; 
+
+[7957.111]  
+	CONFIG=7957.111.config.dat; 
 
 // ------------------------------------------------------------//
 // End of 200 GeV run. Begin 62.4 GeV Run
 // ------------------------------------------------------------//
 
-
 [7962.001]
 	MEASUREMENT_TYPE=NORM;
-	RUN_STATUS=Junk;
-	COMMENT="";
+	RUN_STATUS*=Junk;
 
 [7962.101]
 	MEASUREMENT_TYPE=NORM;
-	RUN_STATUS=Junk;
-	COMMENT="";
+	RUN_STATUS*=Junk;
 	
 [7987.101]
-	RUN_STATUS=Junk;
-	COMMENT="";
+	RUN_STATUS*=Junk;
+
+[7987.102] 
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7987.102.config.dat;
 
 [7989.001]
 	RUN_STATUS=Good;
 	CONFIG=7989.001.config.dat;
-	COMMENT="";
 
 [7989.101]
-	RUN_STATUS=Junk;
-	COMMENT="Number of events < 50k.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
 
 [7989.102]
-	RUN_STATUS=Junk;
-	COMMENT="Number of events < 50k.";
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[7989.103]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=7989.103.config.dat; 
+
+[7989.104]  
+	CONFIG=7989.104.config.dat; 
 
 [7989.105]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7989.105.config.dat; 
 
 [7991.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Mass peaks are flakey, don't know why.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Mass peaks are flakey, don't know why.";
+	CONFIG=7991.001.config.dat; 
 
 [7991.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Mass peaks are flakey, don't know why.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Mass peaks are flakey, don't know why.";
+	CONFIG=7991.101.config.dat; 
 
 [7992.001]
-	COMMENT="Mass peaks look a bit better, but not perfect.";
+	COMMENT*="Mass peaks look a bit better, but not perfect.";
+	CONFIG=7992.001.config.dat; 
 
 [7992.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7992.101.config.dat; 
 
 [7994.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7994.001.config.dat; 
 
 [7994.101]
 	CONFIG=7994.101.config.dat;
 
-[7998.001]
+[7998.001]  
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=7998.001.config.dat;
 
 [7998.002]
-	RUN_STATUS*=Junk;
-	COMMENT*="Number of events < 50k.";
+//	RUN_STATUS*=Junk;
+//	COMMENT*="Number of events < 50k.";
+	CONFIG=7998.002.config.dat;
 
 [7998.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: bunch right and only partial scan.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: bunch right and only partial scan.";
+	CONFIG=7998.101.config.dat; 
 
-[8003.001]
+[8003.001]  
 	CONFIG=8003.001.config.dat;
-	COMMENT="Wide profile, but looks good.";
+	COMMENT*="Wide profile, but looks good.";
 
-[8003.002]
+[8003.002]  
 	CONFIG=8003.002.config.dat;
 
-[8003.101]
+[8003.003]  
+	CONFIG=8003.003.config.dat;
+
+[8003.004]  
+	CONFIG=8003.004.config.dat;
+
+[8003.101]  
 	RUN_STATUS=Good;
-	COMMENT="Wide profile, but looks good.";
+	COMMENT*="Wide profile, but looks good.";
+	CONFIG=8003.101.config.dat;
 
-[8003.102]
+[8003.102]  
 	CONFIG=8003.102.config.dat;
-	COMMENT="Large Errors on the cumulative asymmetries.";
+	COMMENT*="Large Errors on the cumulative asymmetries.";
 
-[8003.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="many problems, including bizzare banana windows and strips problem.";
+[8003.103]  
+	RUN_STATUS*=Junk;
+	COMMENT*="many problems, including bizzare banana windows and strips problem.";
+	CONFIG=8003.103.config.dat;
 
-[8003.104]
+[8003.104]  
 	RUN_STATUS=Good;
 	CONFIG=8003.104.config.dat;
-	COMMENT="Wide profile, but looks good otherwise.";
+	COMMENT*="Wide profile, but looks good otherwise.";
+
+[8003.105]  
+	CONFIG=8003.105.config.dat;
 
 [8005.001]
 	RUN_STATUS=Good;
-	COMMENT="Wide profile, but looks good otherwise.";
+	COMMENT*="Wide profile, but looks good otherwise.";
+	CONFIG=8005.001.config.dat; 
+
+[8005.002]  
+	CONFIG=8005.002.config.dat; 
+
+[8005.003]  
+	CONFIG=8005.003.config.dat; 
 
 [8005.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: scan ends early.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: scan ends early.";
+	CONFIG=8005.101.config.dat; 
 
 [8005.102]
-	COMMENT="Wide profiles.";
+	COMMENT*="Wide profiles.";
+	CONFIG=8005.102.config.dat; 
 
-[8006.001]
+[8005.103]
+	CONFIG=8005.103.config.dat; 
+
+[8006.001] 
 	RUN_STATUS=Good;
 	CONFIG=8006.001.config.dat;
-	COMMENT="";
 
-[8006.002]
+[8006.002] 
 	RUN_STATUS=Good;
 	CONFIG=8006.002.config.dat;
-	COMMENT="wide mass peaks.";
+	COMMENT*="wide mass peaks.";
 
 [8006.003]
 	RUN_STATUS=Good;
 	CONFIG=8006.003.config.dat;
-	COMMENT="";
 
 [8006.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8006.101.config.dat;
 
 [8006.102]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8006.102.config.dat;
+
+[8006.103]
+	CONFIG=8006.103.config.dat;
 
 [8008.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8008.001.config.dat;
 
 [8008.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8008.101.config.dat;
 
-[8015.101]
+[8014.001]  
+	CONFIG=8014.001.config.dat; 
+
+[8014.002]  
+	CONFIG=8014.002.config.dat; 
+
+[8014.003]  
+	CONFIG=8014.003.config.dat; 
+
+[8014.101]  
+	CONFIG=8014.101.config.dat; 
+
+[8014.102]  
+	CONFIG=8014.102.config.dat; 
+
+[8014.103]  
+	CONFIG=8014.103.config.dat; 
+
+[8015.001]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Issue: bunch right.";
+	CONFIG=8015.001.config.dat; 
+
+[8015.002]  
+	CONFIG=8015.002.config.dat; 
+
+[8015.101]  
+	CONFIG=8015.101.config.dat; 
+
+[8015.102]  
+	CONFIG=8015.102.config.dat; 
 
 [8016.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: Wide profile.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: Wide profile.";
+	CONFIG=8016.001.config.dat; 
+
+[8016.002]  
+	CONFIG=8016.002.config.dat; 
+
+[8016.003]  
+//	DisableStrip*=1;
+//	DisableStrip*=23;
+//	DisableStrip*=63;
+	CONFIG=8016.003.config.dat; 
+
+[8016.101]  
+	CONFIG=8016.101.config.dat; 
+
+[8016.102]  
+	CONFIG=8016.102.config.dat; 
 
 [8018.001]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8018.001.config.dat; 
+
+[8018.101]  
+	CONFIG=8018.101.config.dat; 
+
+[8019.001]  
+	CONFIG=8019.001.config.dat; 
+
+[8019.002]  
+	CONFIG=8019.002.config.dat; 
 
 [8019.003]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=8019.003.config.dat;
-	COMMENT="Strange banana plots and problems stemming from these.";
+	COMMENT*="Strange banana plots and problems stemming from these.";
+
+[8019.101]  
+	CONFIG=8019.101.config.dat; 
 
 [8019.102]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Issue: Bunch Right.";
+	CONFIG=8019.102.config.dat; 
+
+[8019.103]  
+	CONFIG=8019.103.config.dat; 
 
 [8020.001]
 	RUN_STATUS=Good;
 	CONFIG=8020.001.config.dat;
-	COMMENT="";
+
+[8020.002]  
+	CONFIG=8020.002.config.dat; 
+
+[8020.003]  
+	CONFIG=8020.003.config.dat; 
+
+[8020.101]  
+	CONFIG=8020.101.config.dat; 
+
+[8020.102]  
+	CONFIG=8020.102.config.dat; 
+
+[8020.103]  
+	CONFIG=8020.103.config.dat; 
+
+[8021.001]  
+	CONFIG=8021.001.config.dat; 
 
 [8021.002]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=8021.002.config.dat;
-	COMMENT="Profile Issue: bunch right. Correct mass peaks recovered.";
+	COMMENT*="Profile Issue: bunch right. Correct mass peaks recovered.";
 
 [8021.003]
-	COMMENT="Profile Issue: Wide profile. Correct mass peaks recovered";
+	COMMENT*="Profile Issue: Wide profile. Correct mass peaks recovered";
+	CONFIG=8021.003.config.dat; 
+
+[8021.004]  
+	CONFIG=8021.004.config.dat; 
 
 [8021.005]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8021.005.config.dat; 
 
 [8021.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8021.101.config.dat; 
+
+[8021.102]  
+	CONFIG=8021.102.config.dat; 
+
+[8021.103]  
+	CONFIG=8021.103.config.dat; 
+
+[8021.104]  
+	CONFIG=8021.104.config.dat; 
 
 [8021.105]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Profile Issue: wide profile.";
+	CONFIG=8021.105.config.dat; 
+
+[8021.106]  
+	CONFIG=8021.106.config.dat; 
 
 [8022.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="asymmetric mass peaks.";
+	CONFIG=8022.001.config.dat; 
 
 [8022.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8022.002.config.dat; 
+
+[8022.003]  
+	CONFIG=8022.003.config.dat; 
+
+[8022.004]  
+	CONFIG=8022.004.config.dat; 
 
 [8022.101]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8022.101.config.dat; 
+
+[8022.102]  
+	CONFIG=8022.102.config.dat; 
+
+[8022.103]  
+	CONFIG=8022.103.config.dat; 
+
+[8022.104]  
+	CONFIG=8022.104.config.dat; 
 
 [8023.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Asymmetric mass peaks.";
+	CONFIG=8023.001.config.dat; 
 
 [8023.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8023.002.config.dat; 
+
+[8023.003]  
+	CONFIG=8023.003.config.dat; 
+
+[8023.101]  
+	CONFIG=8023.101.config.dat; 
+
+[8023.102]  
+	CONFIG=8023.102.config.dat; 
+
+[8023.103]  
+	CONFIG=8023.103.config.dat; 
 
 [8024.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Asymmetric mass peaks.";
+	CONFIG=8024.001.config.dat; 
 
 [8024.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8024.002.config.dat; 
+
+[8024.003]  
+	CONFIG=8024.003.config.dat; 
+
+[8024.004]  
+//	DisableStrip*=1;
+//	DisableStrip*=23;
+	CONFIG=8024.004.config.dat; 
+
+[8024.101]  
+	CONFIG=8024.101.config.dat; 
+
+[8024.102]  
+	CONFIG=8024.102.config.dat; 
 
 [8025.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Slightly asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Slightly asymmetric mass peaks.";
+	CONFIG=8025.001.config.dat; 
 
 [8025.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8025.002.config.dat; 
+
+[8025.101]  
+	CONFIG=8025.101.config.dat; 
+
+[8025.102]  
+	CONFIG=8025.102.config.dat; 
 
 [8026.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Slightly asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Slightly asymmetric mass peaks.";
+	CONFIG=8026.001.config.dat; 
 
 [8026.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+//	DisableStrip*=1;
+//	DisableStrip*=23;
+//	DisableStrip*=63;
+	COMMENT*="Correct mass peaks recovered.";
+	CONFIG=8026.002.config.dat; 
+
+[8026.101]  
+	CONFIG=8026.101.config.dat; 
+
+[8026.102]  
+	CONFIG=8026.102.config.dat; 
 
 [8031.001]
-	RUN_STATUS=Suspicious;
-	COMMENT="Slightly asymmetric mass peaks.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Slightly asymmetric mass peaks.";
+	CONFIG=8031.001.config.dat; 
 
 [8031.002]
 	RUN_STATUS=Good;
-	COMMENT="Correct mass peaks recovered.";
+	COMMENT*="Correct mass peaks recovered.";
 	CONFIG=8031.002.config.dat;
 
+[8031.003]  
+	CONFIG=8031.003.config.dat; 
+
+[8031.101]  
+	CONFIG=8031.101.config.dat; 
+
+[8031.102]  
+	CONFIG=8031.102.config.dat; 
+
+[8031.103]  
+	CONFIG=8031.103.config.dat; 
+
 [8032.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=9;
 	DisableStrip=27;
 	DisableStrip=45;
 	DisableStrip=63;
-	COMMENT="Flakey WFD module.";
+	COMMENT*="Flakey WFD module.";
+	CONFIG=8032.001.config.dat; 
+
+[8032.002]  
+	CONFIG=8032.002.config.dat; 
+
+[8032.003]  
+	CONFIG=8032.003.config.dat; 
+
+[8032.004]  
+	CONFIG=8032.004.config.dat; 
 
 [8032.005]
 	RUN_STATUS=Good;
@@ -6472,15 +10858,38 @@
 	EnableStrip=27;
 	EnableStrip=45;
 	EnableStrip=63;
-	COMMENT="";
+	CONFIG=8032.005.config.dat; 
+
+[8032.006]  
+//	DisableStrip*=1;
+//	DisableStrip*=15;
+//	DisableStrip*=23;
+//	DisableStrip*=63;
+	CONFIG=8032.006.config.dat; 
+
+[8032.007]  
+	CONFIG=8032.007.config.dat; 
+
+[8032.008]  
+	CONFIG=8032.008.config.dat; 
 
 [8032.101]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	DisableStrip=11;
 	DisableStrip=29;
 	DisableStrip=47;
 	DisableStrip=65;
-	COMMENT="Flakey WFD module.";
+	COMMENT*="Flakey WFD module.";
+	CONFIG=8032.101.config.dat; 
+
+[8032.102]  
+	CONFIG=8032.102.config.dat; 
+
+[8032.103]  
+	CONFIG=8032.103.config.dat; 
+
+[8032.104]  
+	CONFIG=8032.104.config.dat; 
 
 [8032.105]
 	RUN_STATUS=Good;
@@ -6488,130 +10897,377 @@
 	EnableStrip=29;
 	EnableStrip=47;
 	EnableStrip=65;
-	COMMENT="";
+	CONFIG=8032.105.config.dat; 
+
+[8032.106]  
+	CONFIG=8032.106.config.dat; 
+
+[8032.107]  
+	CONFIG=8032.107.config.dat; 
+
+[8032.108]  
+	CONFIG=8032.108.config.dat; 
+
+[8032.109]  
+	CONFIG=8032.109.config.dat; 
 
 [8033.001]
 	RUN_STATUS=Tune;
+	CONFIG=8033.001.config.dat; 
 
 [8033.002]
-	COMMENT="Strange strip phenomenon,perhaps WFD, but larger, not smaller counts.";
+	COMMENT*="Strange strip phenomenon,perhaps WFD, but larger, not smaller counts.";
+	CONFIG=8033.002.config.dat; 
 
 [8033.003]
-	COMMENT="";
+	CONFIG=8033.003.config.dat; 
+
+[8033.004] 
+	CONFIG=8033.004.config.dat; 
+
+[8033.005] 
+	CONFIG=8033.005.config.dat; 
 
 [8033.006]
-	COMMENT="Strange strip phenomenon. perhaps WFD, but large, not smaller counts.";
+	COMMENT*="Strange strip phenomenon. perhaps WFD, but large, not smaller counts.";
+	CONFIG=8033.006.config.dat; 
 
 [8033.007]
-	COMMENT="All sorts of trouble in the strips.";
+	COMMENT*="All sorts of trouble in the strips.";
+	CONFIG=8033.007.config.dat; 
+
+[8033.008] 
+	CONFIG=8033.008.config.dat; 
 
 [8033.009]
 	RUN_STATUS*=Junk;
-	COMMENT*="Number of events < 50k.";
+	CONFIG=8033.009.config.dat; 
 
 [8033.010]
 	RUN_STATUS*=Tune;
 	COMMENT*="seems like only four of the detectors are in use (and only partially)?";
+	CONFIG=8033.010.config.dat; 
+
+[8033.011] 
+	CONFIG=8033.011.config.dat; 
+
+[8033.012] 
+	CONFIG=8033.012.config.dat; 
+
+[8033.013] 
+	CONFIG=8033.013.config.dat; 
+
+[8033.014] 
+	CONFIG=8033.014.config.dat; 
+
+[8033.015] 
+	CONFIG=8033.015.config.dat; 
 
 [8033.101]
 	RUN_STATUS=Tune;
 	CONFIG=8033.101.config.dat;
-	COMMENT="strange mass peak behavior.";
+	COMMENT*="strange mass peak behavior.";
 
 [8033.102]
 	CONFIG=8033.102.config.dat;
-	COMMENT="";
+
+[8033.103] 
+	CONFIG=8033.103.config.dat;
+
+[8033.104] 
+	CONFIG=8033.104.config.dat;
+
+[8033.105] 
+	CONFIG=8033.105.config.dat;
+
+[8033.106] 
+	CONFIG=8033.106.config.dat;
+
+[8033.107] 
+	CONFIG=8033.107.config.dat;
+
+[8033.108] 
+	CONFIG=8033.108.config.dat;
 
 [8033.109]
 	RUN_STATUS*=Junk;
 	COMMENT*="Unrecoverable spin pattern.";
 
+[8033.110] 
+	CONFIG=8033.110.config.dat;
+
+[8033.111] 
+	CONFIG=8033.111.config.dat;
+
+[8033.112] 
+	CONFIG=8033.112.config.dat;
+
+[8033.113] 
+	CONFIG=8033.113.config.dat;
+
+[8033.114] 
+	CONFIG=8033.114.config.dat;
+
+[8033.115] 
+	CONFIG=8033.115.config.dat;
+
+[8033.116] 
+	CONFIG=8033.116.config.dat;
+
 [8033.117]
 	DEFINE_SPIN_PATTERN*=5;
 	COMMENT*="Recovered spin patter.";
+	CONFIG=8033.117.config.dat; 
+
+[8033.118] 
+	CONFIG=8033.118.config.dat;
+
+[8033.119] 
+	CONFIG=8033.119.config.dat;
 
 [8035.001]
-	RUN_STATUS=Junk;
-	COMMENT="Number of events < 50k.";
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.001.config.dat;
+
+[8035.002]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.002.config.dat;
+
+[8035.003]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.003.config.dat;
+
+[8035.004]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.004.config.dat;
+
+[8035.005]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.005.config.dat;
+
+[8035.006]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.006.config.dat;
+
+[8035.007]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.007.config.dat;
+
+[8035.008]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.008.config.dat;
+
+[8035.009]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.009.config.dat;
+
+[8035.010]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.010.config.dat;
+
+[8035.011]  
+	//RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+	CONFIG=8035.011.config.dat;
+
+[8035.101]  
+	RUN_STATUS*=Suspicious;
+	CONFIG=8035.101.config.dat; 
+
+[8035.102]  
+	CONFIG=8035.102.config.dat; 
 
 [8035.103]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: incomplete scan.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: incomplete scan.";
+	CONFIG=8035.103.config.dat; 
+
+[8035.104]  
+	CONFIG=8035.104.config.dat; 
 
 [8035.105]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8035.105.config.dat; 
 
 [8036.001]
-	RUN_STATUS=Suspicious;
+	RUN_STATUS*=Suspicious;
 	CONFIG=8036.001.config.dat;
-	COMMENT="Profile Issue: bunch left. Horizontal target.";
+	COMMENT*="Profile Issue: bunch left. Horizontal target.";
 
 [8036.002]
-	COMMENT="Horizontal target";
+	COMMENT*="Horizontal target";
+	CONFIG=8036.002.config.dat; 
 
 [8036.003]
-	COMMENT="Profile Issue: bunch left.  Horizontal target.";
+	COMMENT*="Profile Issue: bunch left.  Horizontal target.";
+	CONFIG=8036.003.config.dat; 
+
+[8036.004]  
+	CONFIG=8036.004.config.dat; 
 
 [8036.005]
-	COMMENT="Horizontal target.";
+	COMMENT*="Horizontal target.";
+	CONFIG=8036.005.config.dat; 
+
+[8036.006]  
+	CONFIG=8036.006.config.dat; 
+
+[8036.007]  
+	CONFIG=8036.007.config.dat; 
+
+[8036.008]  
+	CONFIG=8036.008.config.dat; 
+
+[8036.009]  
+	CONFIG=8036.009.config.dat; 
+
+[8036.010]  
+	CONFIG=8036.010.config.dat; 
 
 [8036.101]
-	RUN_STATUS=Suspicious;
-	COMMENT="Profile Issue: bunch right.";
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Profile Issue: bunch right.";
+	CONFIG=8036.101.config.dat; 
 
 [8036.102]
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8036.102.config.dat; 
+
+[8036.103]  
+	CONFIG=8036.103.config.dat; 
+
+[8036.104]  
+	CONFIG=8036.104.config.dat; 
+
+[8036.105]  
+	CONFIG=8036.105.config.dat; 
+
+[8036.106]  
+	CONFIG=8036.106.config.dat; 
+
+[8036.107]  
+	CONFIG=8036.107.config.dat; 
+
+[8036.108]  
+	CONFIG=8036.108.config.dat; 
+
+[8036.109]  
+	CONFIG=8036.109.config.dat; 
+
+[8036.110]  
+	CONFIG=8036.110.config.dat; 
 
 [8037.001]
 	RUN_STATUS=Tune;
-	COMMENT="Sandro's vertical scan with horizontal target.";
+	COMMENT*="Sandro's vertical scan with horizontal target.";
+	CONFIG=8037.001.config.dat; 
 
 [8037.002]
 	CONFIG=8037.002.config.dat;
 
+[8037.003]  
+	CONFIG=8037.003.config.dat; 
+
+[8037.004]  
+	CONFIG=8037.004.config.dat; 
+
 [8037.005]
 	RUN_STATUS=Good;
 	MEASUREMENT_TYPE=PHYS;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 1 (8037.005 - 008)";
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 1 (8037.005 - 008)";
+	CONFIG=8037.005.config.dat; 
+
+[8037.006]  
+	CONFIG=8037.006.config.dat; 
+
+[8037.007]  
+	CONFIG=8037.007.config.dat; 
+
+[8037.008]  
+	CONFIG=8037.008.config.dat; 
 
 [8037.009]
-	RUN_STATUS=Junk;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3, but wrong blue_at.ini (009-011)";
+	RUN_STATUS*=Junk;
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 3, but wrong blue_at.ini (009-011)";
+	CONFIG=8037.009.config.dat; 
+
+[8037.010]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=8037.010.config.dat; 
+
+[8037.011]  
+	CONFIG=8037.011.config.dat; 
 
 [8037.012]
-	RUN_STATUS=Junk;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Low statistics test.";
+	RUN_STATUS*=Junk;
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 3. Low statistics test.";
+	CONFIG=8037.012.config.dat; 
 
 [8037.013]
-	RUN_STATUS=Junk;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Target broke during measurment. Switch to yellow.";
+	RUN_STATUS*=Junk;
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 3. Target broke during measurment. Switch to yellow.";
+
+[8037.101]  
+	RUN_STATUS*=Suspicious; 
+	CONFIG=8037.101.config.dat; 
 
 [8037.102]
 	RUN_STATUS=Tune;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. Tuning timing.";
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 3. Tuning timing.";
+	CONFIG=8037.102.config.dat; 
 
 [8037.103]
 	MEASUREMENT_TYPE=PHYS;
 	RUN_STATUS=Good;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 3. (8037.103 - .106)";
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 3. (8037.103 - .106)";
+	CONFIG=8037.103.config.dat; 
+
+[8037.104]  
+	CONFIG=8037.104.config.dat; 
+
+[8037.105]  
+	CONFIG=8037.105.config.dat; 
+
+[8037.106]  
+	CONFIG=8037.106.config.dat; 
 
 [8037.107]
-	RUN_STATUS=Junk;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 5. Tuning.(.107-.108)";
+	RUN_STATUS*=Junk;
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 5. Tuning.(.107-.108)";
+	CONFIG=8037.107.config.dat; 
 
 [8037.108]
 	RUN_STATUS=Good;
-	COMMENT="A_N measurement at 31 GeV. Attenuation factor = 5. (8037.109 - .112);
+	COMMENT*="A_N measurement at 31 GeV. Attenuation factor = 5. (8037.109 - .112)";
+	CONFIG=8037.108.config.dat; 
 
+[8037.109]  
+	CONFIG=8037.109.config.dat; 
+
+[8037.110]  
+	CONFIG=8037.110.config.dat; 
+
+[8037.111]  
+	CONFIG=8037.111.config.dat; 
+
+[8037.112]  
+	CONFIG=8037.112.config.dat; 
 
 [8038.001]
+	RUN_STATUS=Good;
 	//not yet confirmed
 	MEASUREMENT_TYPE=NORM;
-	CONFIG=8038.001.config.dat;@
-	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8038.001.config.dat;
 
 [8038.002]
 	CONFIG=8038.002.config.dat;
@@ -6619,236 +11275,799 @@
 [8038.003]
 	RUN_STATUS*=Suspicious;
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file...off by 3.9 ug/cm^2, but looks ok";
+	CONFIG=8038.003.config.dat; 
 
 [8038.101]
+	RUN_STATUS=Good;
 	//not yet confirmed
 	MEASUREMENT_TYPE=NORM;
 	CONFIG=8038.101.config.dat;
+
+[8038.102]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8038.102.config.dat; 
+
+[8038.103]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8038.103.config.dat; 
+
+[8039.001]  
+	CONFIG=8039.001.config.dat; 
+
+[8039.101]
+	CONFIG=8039.101.config.dat;
+
+[8040.001]  
+	CONFIG=8040.001.config.dat; 
+
+[8040.002]  
+	CONFIG=8040.002.config.dat; 
+
+[8040.003]  
+	CONFIG=8040.003.config.dat; 
+
+[8040.101]  
+	CONFIG=8040.101.config.dat; 
+
+[8040.102]  
+	CONFIG=8040.102.config.dat; 
+
+[8040.103]  
+	CONFIG=8040.103.config.dat; 
+
+[8042.001]  
+	CONFIG=8042.001.config.dat; 
+
+[8042.101]  
+	CONFIG=8042.101.config.dat; 
+
+[8042.102]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8045.001]  
 	RUN_STATUS=Good;
-	COMMENT="";
+	CONFIG=8045.001.config.dat; 
 
-[8038.102]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8045.101]  
+	CONFIG=8045.101.config.dat; 
 
+[8047.001]  
+	CONFIG=8047.001.config.dat; 
 
-[8038.103]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8047.002]  
+	CONFIG=8047.002.config.dat; 
 
+[8047.003]  
+	CONFIG=8047.003.config.dat; 
 
-[8039.101]@
-	CONFIG=8039.101.config.dat;@
+[8047.004]  
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8047.004.config.dat; 
 
-[8042.102]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
+[8047.005]  
+	CONFIG=8047.005.config.dat; 
 
-[8049.001]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8047.101]  
+	CONFIG=8047.101.config.dat; 
 
+[8047.102]  
+	CONFIG=8047.102.config.dat; 
 
-[8049.005]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8047.103]  
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8047.103.config.dat; 
 
+[8047.104]  
+	CONFIG=8047.104.config.dat; 
 
-[8049.102]@
-	CONFIG=8049.102.config.dat;@
+[8048.001]  
+	CONFIG=8048.001.config.dat; 
 
+[8048.002]  
+	CONFIG=8048.002.config.dat; 
 
-[8052.101]@
-	CONFIG=8052.101.config.dat;@
+[8048.003]  
+	CONFIG=8048.003.config.dat; 
 
+[8048.004]  
+	DisableStrip*=33;
+	DisableStrip*=36;
+	CONFIG=8048.004.config.dat; 
 
-[8054.008]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8048.101]  
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8048.101.config.dat; 
 
+[8048.102]  
+	CONFIG=8048.102.config.dat; 
 
-[8054.011]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8048.103]  
+	CONFIG=8048.103.config.dat; 
 
+[8049.001]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8049.001.config.dat; 
 
-[8054.014]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8049.002]  
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8049.002.config.dat; 
 
+[8049.003]  
+	CONFIG=8049.003.config.dat; 
 
-[8056.105]@
-	CONFIG=8056.105.config.dat;@
+[8049.004]  
+	CONFIG=8049.004.config.dat; 
 
+[8049.005]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8049.005.config.dat; 
 
-[8056.011]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8049.101]  
+	CONFIG=8049.101.config.dat; 
 
+[8049.102]
+	CONFIG=8049.102.config.dat;
 
-[8058.011]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8049.103]  
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	CONFIG=8049.103.config.dat; 
 
+[8049.104]  
+	CONFIG=8049.104.config.dat; 
 
-[8058.108]@
-	CONFIG=8058.108.config.dat;@
+[8049.105]  
+	CONFIG=8049.105.config.dat; 
 
+[8051.001]  
+	CONFIG=8051.001.config.dat; 
 
-[8058.012]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8051.101]  
+	CONFIG=8051.101.config.dat;
 
+[8052.001]  
+	CONFIG=8052.001.config.dat; 
 
-[8058.014]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8052.002]  
+//	DisableStrip*=1;
+//	DisableStrip*=63;
+	CONFIG=8052.002.config.dat;
 
+[8052.101]
+	CONFIG=8052.101.config.dat;
 
-[8059.010]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8052.102]  
+	CONFIG=8052.102.config.dat;
 
+[8053.001]  
+	CONFIG=8053.001.config.dat; 
 
-[8060.001]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+[8053.002]  
+	CONFIG=8053.002.config.dat;
 
+[8053.101]
+	CONFIG=8053.101.config.dat;
 
-[8060.101]@
-	CONFIG=8060.101.config.dat;@
+[8053.102]  
+	CONFIG=8053.102.config.dat;
 
-[8061.001]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
+[8054.001]  
+	CONFIG=8054.001.config.dat;
 
+[8054.002]  
+	CONFIG=8054.002.config.dat;
+
+[8054.003]  
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8054.003.config.dat;
+
+[8054.004]  
+	CONFIG=8054.004.config.dat;
+
+[8054.005]  
+	CONFIG=8054.005.config.dat;
+
+[8054.006]  
+	CONFIG=8054.006.config.dat;
+
+[8054.007]  
+	CONFIG=8054.007.config.dat;
+
+[8054.008]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8054.008.config.dat; 
+
+[8054.009]  
+	EnableStrip=9;
+	EnableStrip=27;
+	EnableStrip=45;
+	EnableStrip=63;
+	CONFIG=8054.009.config.dat;
+
+[8054.010]  
+//	DisableStrip*=1;
+//	DisableStrip*=63;
+	CONFIG=8054.010.config.dat;
+
+[8054.011]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8054.011.config.dat; 
+
+[8054.012]  
+	CONFIG=8054.012.config.dat;
+
+[8054.013]  
+	CONFIG=8054.013.config.dat;
+
+[8054.014]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8054.014.config.dat; 
+
+[8054.015]  
+	CONFIG=8054.015.config.dat;
+
+[8054.016]  
+	CONFIG=8054.016.config.dat;
+
+[8054.017]  
+//	DisableStrip*=1;
+//	DisableStrip*=63;
+	CONFIG=8054.017.config.dat;
+
+[8054.018]  
+//	DisableStrip*=1;
+//	DisableStrip*=63;
+	CONFIG=8054.018.config.dat;
+
+[8054.019]  
+//	DisableStrip*=1;
+//	DisableStrip*=63;
+	CONFIG=8054.019.config.dat;
+
+[8054.101]  
+	CONFIG=8054.101.config.dat;
+
+[8054.102]  
+	CONFIG=8054.102.config.dat;
+
+[8054.103]  
+	CONFIG=8054.103.config.dat;
+
+[8054.104]  
+	CONFIG=8054.104.config.dat;
+
+[8054.105]  
+	CONFIG=8054.105.config.dat;
+
+[8054.106]  
+	CONFIG=8054.106.config.dat;
+
+[8054.107]  
+	CONFIG=8054.107.config.dat;
+
+[8054.108]  
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8054.108.config.dat;
+
+[8054.109]  
+	CONFIG=8054.109.config.dat;
+
+[8054.110]  
+	CONFIG=8054.110.config.dat;
+
+[8054.111]  
+	CONFIG=8054.111.config.dat;
+
+[8054.112]  
+	CONFIG=8054.112.config.dat;
+
+[8054.113]  
+	CONFIG=8054.113.config.dat;
+
+[8054.114]  
+	CONFIG=8054.114.config.dat;
+
+[8054.115]  
+	CONFIG=8054.115.config.dat;
+
+[8054.116]  
+	CONFIG=8054.116.config.dat;
+
+[8054.117]  
+	CONFIG=8054.117.config.dat;
+
+[8054.118]  
+	CONFIG=8054.118.config.dat;
+
+[8054.119]  
+	CONFIG=8054.119.config.dat;
+
+[8055.001]  
+	CONFIG=8055.001.config.dat;
+
+[8055.002]  
+	CONFIG=8055.002.config.dat;
+
+[8055.101]  
+	CONFIG=8055.101.config.dat;
+
+[8055.102]  
+	CONFIG=8055.102.config.dat;
+
+[8056.001]  
+	DisableStrip=9;
+	DisableStrip=27;
+	DisableStrip=45;
+	DisableStrip=63;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8056.001.config.dat;
+
+[8056.002]  
+	CONFIG=8056.002.config.dat;
+
+[8056.003]  
+	CONFIG=8056.003.config.dat;
+
+[8056.004]  
+	CONFIG=8056.004.config.dat;
+
+[8056.005]  
+	CONFIG=8056.005.config.dat;
+
+[8056.006]  
+	CONFIG=8056.006.config.dat;
+
+[8056.007]  
+	CONFIG=8056.007.config.dat;
+
+[8056.008]  
+	CONFIG=8056.008.config.dat;
+
+[8056.009]  
+	CONFIG=8056.009.config.dat;
+
+[8056.010]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8056.010.config.dat;
+
+[8056.011]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8056.011.config.dat; 
+
+[8056.012]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8056.012.config.dat;
+
+[8056.013]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8056.013.config.dat;
+
+[8056.014] 
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8056.014.config.dat; 
+
+[8056.015]  
+	CONFIG=8056.015.config.dat;
+
+[8056.016]  
+	CONFIG=8056.016.config.dat;
+
+[8056.101]  
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8056.101.config.dat;
+
+[8056.102]  
+	CONFIG=8056.102.config.dat;
+
+[8056.103]  
+	CONFIG=8056.103.config.dat;
+
+[8056.104]  
+	CONFIG=8056.104.config.dat;
+
+[8056.105]
+	CONFIG=8056.105.config.dat;
+
+[8056.106]  
+	CONFIG=8056.106.config.dat;
+
+[8056.107]  
+	CONFIG=8056.107.config.dat;
+
+[8056.108]  
+	CONFIG=8056.108.config.dat;
+
+[8056.109]  
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	CONFIG=8056.109.config.dat;
+
+[8056.110]  
+	CONFIG=8056.110.config.dat;
+
+[8056.111]  
+	CONFIG=8056.111.config.dat;
+
+[8056.112]  
+	CONFIG=8056.112.config.dat;
+
+[8056.113]  
+	CONFIG=8056.113.config.dat;
+
+[8056.114]  
+	CONFIG=8056.114.config.dat;
+
+[8056.115]  
+	DisableStrip=11;
+	DisableStrip=29;
+	DisableStrip=47;
+	DisableStrip=65;
+	COMMENT*="Bad WFD module.";
+	CONFIG=8056.115.config.dat;
+
+[8056.116]  
+	CONFIG=8056.116.config.dat;
+
+[8058.001]  
+	CONFIG=8058.001.config.dat;
+
+[8058.002]  
+	CONFIG=8058.002.config.dat;
+
+[8058.003]  
+	CONFIG=8058.003.config.dat;
+
+[8058.004]  
+	CONFIG=8058.004.config.dat;
+
+[8058.005]  
+	CONFIG=8058.005.config.dat;
+
+[8058.006]  
+	CONFIG=8058.006.config.dat;
+
+[8058.007]  
+	CONFIG=8058.007.config.dat;
+
+[8058.008]  
+	CONFIG=8058.008.config.dat;
+
+[8058.009]  
+	CONFIG=8058.009.config.dat;
+
+[8058.010]  
+	CONFIG=8058.010.config.dat;
+
+[8058.011]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8058.011.config.dat; 
+
+[8058.012]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8058.012.config.dat; 
+
+[8058.013]  
+	CONFIG=8058.013.config.dat;
+
+[8058.014]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8058.014.config.dat; 
+
+[8058.101]  
+	CONFIG=8058.101.config.dat;
+
+[8058.102]  
+	CONFIG=8058.102.config.dat;
+
+[8058.103]  
+	CONFIG=8058.103.config.dat;
+
+[8058.104]  
+	CONFIG=8058.104.config.dat;
+
+[8058.105]
+	CONFIG=8058.105.config.dat;
+
+[8058.106]  
+	CONFIG=8058.106.config.dat;
+
+[8058.107]  
+	CONFIG=8058.107.config.dat;
+
+[8058.108]
+	CONFIG=8058.108.config.dat;
+
+[8058.109]  
+	CONFIG=8058.109.config.dat;
+
+[8058.110]  
+	CONFIG=8058.110.config.dat;
+
+[8058.111]  
+	CONFIG=8058.111.config.dat;
+
+[8059.001]  
+	CONFIG=8059.001.config.dat;
+
+[8059.002]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8059.002.config.dat;
+
+[8059.003]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8059.003.config.dat;
+
+[8059.004]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8059.004.config.dat;
+
+[8059.005]  
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	CONFIG=8059.005.config.dat;
+
+[8059.006]  
+	CONFIG=8059.006.config.dat;
+
+[8059.007]  
+	CONFIG=8059.007.config.dat;
+
+[8059.008]  
+	CONFIG=8059.008.config.dat;
+
+[8059.009]  
+	CONFIG=8059.009.config.dat;
+
+[8059.010]
+	RUN_STATUS*=Suspicious;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8059.010.config.dat; 
+
+[8059.101]  
+	EnableStrip=11;
+	EnableStrip=29;
+	EnableStrip=47;
+	EnableStrip=65;
+	CONFIG=8059.101.config.dat;
+
+[8059.102]  
+	CONFIG=8059.102.config.dat;
+
+[8059.103]  
+	CONFIG=8059.103.config.dat;
+
+[8059.104]  
+	CONFIG=8059.104.config.dat;
+
+[8059.105]
+	CONFIG=8059.105.config.dat;
+
+[8059.106]  
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8059.106.config.dat;
+
+[8059.107]  
+	CONFIG=8059.107.config.dat;
+
+[8059.108]
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8059.108.config.dat;
+
+[8059.109]  
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8059.109.config.dat;
+
+[8060.001]
+	RUN_STATUS*=Suspicious;
+	EnableStrip*=9;
+	EnableStrip*=27;
+	EnableStrip*=45;
+	EnableStrip*=63;
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";
+	CONFIG=8060.001.config.dat;  
+
+[8060.101]
+	CONFIG=8060.101.config.dat;
+
+[8061.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8061.002]  
+	RUN_STATUS*=Suspicious;
+	DisableStrip*=61;
+	DisableStrip*=62;
+	DisableStrip*=64;
+	CONFIG=8061.002.config.dat;
+
+[8061.003]  
+	CONFIG=8061.003.config.dat;
+
+[8061.004]  
+	CONFIG=8061.004.config.dat;
+
+[8061.005]  
+	DisableStrip*=9;
+	DisableStrip*=27;
+	DisableStrip*=45;
+	DisableStrip*=63;
+	CONFIG=8061.005.config.dat;
+
+[8061.101]  
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8061.101.config.dat;
+
+[8061.102]
+	DisableStrip*=11;
+	DisableStrip*=29;
+	DisableStrip*=47;
+	DisableStrip*=65;
+	CONFIG=8061.102.config.dat;
 
 // ------------------------------------------------------------//
 // End of 62.4 GeV Run. Begin 500 GeV Commissioning            //
 // ------------------------------------------------------------//
 
+[8092.003]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
 
-[8092.003]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[8092.005]@
-	RUN_STATUS*=Suspicious;@
+[8092.005]
+	RUN_STATUS*=Suspicious;
 	CONFIG=8092.005.config.dat;
-	COMMENT="First measurment at 250 GeV with the horizontal target. One bad WFD, but otherwise seems OK.";
-
-
-
-
-[8114.001]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8114.002]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.001]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.002]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.101]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.102]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.103]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.104]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.105]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.106]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-[8117.003]@
-	RUN_STATUS*=Junk;@
-	COMMENT*="Number of events < 50k.";@
-
-[8122.001]@
-	CONFIG=8122.001.config.dat;@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	COMMENT*="First measurment at 250 GeV with the horizontal target. One bad WFD, but otherwise seems OK.";
+
+[8114.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8114.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.001]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.002]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.101]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.102]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.103]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.104]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.105]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.106]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8117.003]
+	RUN_STATUS*=Junk;
+	COMMENT*="Number of events < 50k.";
+
+[8122.001]
+	CONFIG=8122.001.config.dat;
+
+
+
+//==============================================================
+//=======                   Run08                      =========
+//==============================================================
+[8500.001]
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=0;
+	ENERGY_CALIB=0213.007;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
+	DisableBunch=20;
+	COMMENT="Run08"
+
+[8500.101]
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=0;
+	ENERGY_CALIB=60217.101;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
+	DisableBunch=20;
+	COMMENT="Run08"
 
