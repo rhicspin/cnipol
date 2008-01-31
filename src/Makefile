@@ -64,6 +64,7 @@ AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
 AsymROOT.o : AsymROOT.h
 KinFunc.o  : AsymProcess.h
+AsymPlot.o : AsymHeader.h
 
 .f.o:
 	$(FC) -O -c $<
@@ -73,7 +74,7 @@ Host:
 
 install : $(BINARY)
 	install -v -C $^ $(INSTALLDIR)
-	install *.C -v -C --mode 666 $(MACRODIR)
+	install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
 
 ##############################
 clean : 
