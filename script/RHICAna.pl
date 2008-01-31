@@ -375,6 +375,7 @@ sub startana {
     $DATAFILE="$Runn.data";
     $logfile = "$BASEDIR/log/$Runn.log";
     $command = "Asym";
+    $LinkUpDate = "0";
 
     # Number of events to be skipped 1: all the events
     $NEVOPT = " -n $nskip";
@@ -402,12 +403,6 @@ sub startana {
 	    
 	    $info = "Analyzing .... data ".$fillnumber.".".$runnumber;
 	    
-	    # make symbolik links for data files
-	    if ($mklinkinfo eq "On") {
-		$info = "Update Symbolic Links to Data Files";
-		system ("mklink.sh --double-pc");
-	    }
-
 
 	    system ("xterm -e tcsh -c \"$command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift $fopt -o $Runn.hbook | tee $logfile\" "); 
 
@@ -422,11 +417,22 @@ sub startana {
 	    }
 	    close(LOG);
 	    $text->yviewMoveto(1.0);
-	
+
     } else {
-	warning_file();
+
+	    # make symbolik links for data files
+	    if ($mklinkinfo eq "On") {
+		$info = "Update Symbolic Links to Data Files";
+		system ("mklink.sh --double-pc");
+		if ($LinkUpDate == "0") {startana();}
+		$LinkUpDate = "1";
+	    } else {
+		warning_file();
+	    }
     } 
 }
+
+
 
 # -------------------------
 # option for feedback
