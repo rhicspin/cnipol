@@ -27,8 +27,8 @@ Instructions are avaliable on following web site(note password protected) :
 Here are some directory structure of CNI libraries required to run
 the program: CNILIB=/usr/local/cnipol 
 
-% ls $CNIPOL
-   data/   online/  share/
+% ls $CNILIB
+   data/   online/  share/  
 
 data/ 
   symboric links to yellowpc and bluepc data direcotries.
@@ -135,9 +135,11 @@ Set up environment and install executables and macros.
 	Make src files and install executable binaries and scripts to $INDTALLDIR.
 	% ./install.sh
           
+3. Install CNI library data files
+	% cd cnipol/cnilib
+	% ./install.sh
 
-
-3. Add following lines to your $HOME/.pawlogon.kumac
+4. Add following lines to your $HOME/.pawlogon.kumac
 
 	alias/cr pson 'exe ~/.pawlogon#on'
 	alias/cr psoff 'exe ~/.pawlogon#off'
