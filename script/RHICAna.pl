@@ -58,6 +58,7 @@ $runnumber="005";                # default run number
 $opt_bwidth="-15:15";            # banana cut width in ns
 $info = "not started";
 $ploption = "all";
+$mklinkinfo = "On";
 $feedbackinfo = "Off";
 $ENV{"PLOT"} = "all";
 $tshift = "0.0";
@@ -96,6 +97,26 @@ $frame=$mw->Frame->pack(-side=>'top',-fill=>'x');
 $frame2=$mw->Frame->pack(-side=>'top',-fill=>'x');
 $frame3=$mw->Frame->pack(-side=>'top',-fill=>'x');
 $frame4=$mw->Frame->pack(-side=>'top',-fill=>'x');
+
+# ----------------------------
+# menu bar for feedback mode
+# ----------------------------
+$frame->Label(-text => "mklink")
+    ->pack(-side=>'left',-anchor=>'w');;
+
+$menu=$frame->Menubutton(-textvariable=>\$mklinkinfo,
+                          -indicatoron=>1,
+                          -relief=>'raised')
+    ->pack(-side=>'left',-anchor=>'w');
+
+foreach (qw/Off On/){
+
+    $menu->radiobutton(-label=> $_,
+			 -value=> $_,
+			 -variable=> \$mklinkinfo);
+}
+
+
 
 # -------------------
 # Fill list button 
@@ -381,6 +402,13 @@ sub startana {
 	    
 	    $info = "Analyzing .... data ".$fillnumber.".".$runnumber;
 	    
+	    # make symbolik links for data files
+	    if ($mklinkinfo eq "On") {
+		$info = "Update Symbolic Links to Data Files";
+		system ("mklink.sh --double-pc");
+	    }
+
+
 	    system ("xterm -e tcsh -c \"$command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift $fopt -o $Runn.hbook | tee $logfile\" "); 
 
 	    system ("mv $Runn.hbook hbook/");
@@ -415,6 +443,7 @@ else {
 }
 
 }
+
 # -------------------------
 # option for beam energy
 # -------------------------
