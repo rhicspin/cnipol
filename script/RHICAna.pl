@@ -61,6 +61,7 @@ $ploption = "all";
 $mklinkinfo = "On";
 $feedbackinfo = "Off";
 $ENV{"PLOT"} = "all";
+$PLOTROUTINE = "";
 $tshift = "0.0";
 $energyinfo = "flattop";
 $nskip = "1";
@@ -177,6 +178,7 @@ $menub=$frame->Menubutton(-textvariable=>\$ploption,
     ->pack(-side=>'left',-anchor=>'w');
 
 foreach (qw/all 
+	 AsymPlot
 	 plot_banana 
 	 mass
 	 strips 
@@ -368,14 +370,17 @@ MainLoop;
 # -------------------------
 # start the analysis
 # -------------------------
-
+sub ExeAnalysis {
+	 $LinkUpDate = "0";
+	 startana();
+}	 
+  
 sub startana {
     $Runn = sprintf("%04d.%03d",$fillnumber,$runnumber);
     $datafile = "$DATADIR/$Runn.data";
     $DATAFILE="$Runn.data";
     $logfile = "$BASEDIR/log/$Runn.log";
     $command = "Asym";
-    $LinkUpDate = "0";
 
     # Number of events to be skipped 1: all the events
     $NEVOPT = " -n $nskip";
@@ -400,13 +405,11 @@ sub startana {
 	    }
 	    
 	    # start program
-	    
 	    $info = "Analyzing .... data ".$fillnumber.".".$runnumber;
-	    
-
 	    system ("xterm -e tcsh -c \"$command $NEVOPT -f $DATAFILE $option -e $emin:$emax  -t $tshift $fopt -o $Runn.hbook | tee $logfile\" "); 
 
 	    system ("mv $Runn.hbook hbook/");
+	    system ("mv $Runn.root  root/");
 	    $info = "Finished Analysis";
 	    
 	    # SHOW the log file 
@@ -421,11 +424,11 @@ sub startana {
     } else {
 
 	    # make symbolik links for data files
-	    if ($mklinkinfo eq "On") {
+	    if (($mklinkinfo eq "On")&&($LinkUpDate == "0")) {
+		$LinkUpDate = "1";
 		$info = "Update Symbolic Links to Data Files";
 		system ("mklink.sh --double-pc");
-		if ($LinkUpDate == "0") {startana();}
-		$LinkUpDate = "1";
+		startana();
 	    } else {
 		warning_file();
 	    }
@@ -498,8 +501,13 @@ sub optenergy {
 sub show_result {
     $Runn = sprintf("%04d.%03d",$fillnumber,$runnumber);
     $ENV{"RUN"} = $Runn;
-    system("xterm -e tcsh -c \"paw -w 1 -b $MACRODIR/asymplot.kumac \" &");
-    
+    if ($PLOTROUTINE == "AsymPlot" ) {
+	printf "Launching AsymPlot  ...";
+	system("AsymPlot -f $Runn -g &");
+    } else {
+	system("xterm -e tcsh -c \"paw -w 1 -b $MACRODIR/asymplot.kumac \" &");
+    }
+
 }
 
 
@@ -510,6 +518,8 @@ sub show_result {
 sub pl_optchange {
     if ($ploption eq "all"){
 	$ENV{"PLOT"} = "all";
+    } elsif ($ploption eq "AsymPlot") {
+	$PLOTROUTINE = "AsymPlot";
     } elsif ($ploption eq "plot_banana") {
 	$ENV{"PLOT"} = "plot_banana";
     } elsif ($ploption eq "mass") {
@@ -641,7 +651,7 @@ sub popup_start(){
     $wt->title("WARNING");
     $wt->Label(-text=>"Are you sure? (this will take some time)")
 	->pack(-side=>'top');
-    $wt->Button(-text=>"Yes",-command=>sub{startana();$wt->withdraw})
+    $wt->Button(-text=>"Yes",-command=>sub{ExeAnalysis();$wt->withdraw})
 	->pack(-side=>'left');
     $wt->Button(-text=>"No",-command=>sub{$wt->withdraw})
 	->pack(-side=>'left');
