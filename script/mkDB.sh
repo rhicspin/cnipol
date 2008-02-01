@@ -18,9 +18,11 @@ FROM_FILL=7537;
 if [ $RHICRUN ] ; then
     if [ $RHICRUN -eq 5 ] ; then
 	FROM_FILL=6600;
+    elif [ $RHICRUN -eq 8 ] ; then
+	FROM_FILL=9500;
     fi
 fi
-TILL_FILL=9000;
+TILL_FILL=15000;
 LOGDIR=$ASYMDIR/log;
 DISTRIBUTION=0;
 
@@ -615,6 +617,12 @@ OfflineDatabase(){
 	    basename `grep CONFIG $LOGFILE | gawk '{print $3}'` 2> /dev/null | gawk '{printf(" %s",$1)}';
 #	    grep 'MIGRAD' $LOGFILE | sed -e 's/STATUS=//' | gawk '{printf(" %6s",$4)}' ; 
 #	    grep 'MATRIX' $LOGFILE | gawk '{printf(" %6s %s",$6,$7)}' ; 
+	    grep REC_PCTARGET $LOGFILE > /dev/null;
+	    if [ $? -eq 1 ] ; then
+		echo -e -n  " NoTarget";
+            else
+		grep '@    ' $LOGFILE  | tail -n 1 | gawk '{printf(" %d %d",$4,$5)}'
+	    fi
         fi
 	echo -e -n "\n";
     fi
