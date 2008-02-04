@@ -13,7 +13,7 @@ CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
 DLAYERDIR=$ASYMDIR/dlayer
 HBOOKDIR=$ASYMDIR/hbook
 LOGDIR=$ASYMDIR/log
-FROM_FILL=8000;
+FROM_FILL=9000;
 TILL_FILL=15000;
 SLEEP_TIME=1800;
 
@@ -53,7 +53,7 @@ help(){
     echo -e "   --analyze-from-list       analyzed from <file> without checking .cnipol_daemon_run.list."
     echo -e "                             [def <file>]=$TO_BE_ANALYZED_LIST";
     echo -e "   --runlist <runlist>       data run list file [def]:$RUNLIST";
-    echo -e "   -f <RunID>                process dead-layer fit and Asym for <RunID> ";
+    echo -e "   -f <RunID>                process dead-layer fit for <RunID> ";
     echo -e "   -F <Fill#>                run program for runs in <Fill#>"
     echo -e "   --fill-from <Fill#>       run program for runs from <Fill#> [def]:$FROM_FILL";
     echo -e "   --fill-till <Fill#>       run program for runs till <Fill#> [def]:$TILL_FILL";
@@ -83,6 +83,10 @@ ShowExample(){
     echo    "3. run deadlayer fit without iteration."
     echo    " "
     echo    "    cnipol_daemon.sh --dlayer-fit --iteration 0."
+    echo    " "
+    echo    "4. Single run analysis for <RunID>. Deadlayer fit (iteration) and Asym."
+    echo    " "
+    echo    "    cnipol_daemon.sh -f <RunID> --run-Asym"
     echo    " "
     exit;
 
@@ -305,7 +309,7 @@ while test $# -ne 0; do
   case "$1" in
   --analyze-from-list)        ANALYZE_FROM_FILE=1;;
   --runlist)       shift ; RUNLIST=$1 ;;
-  -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1; ExeRunAsym=1 ;;
+  -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1; ;
   -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from)     shift ; FROM_FILL=$1;;
   --fill-till)     shift ; TILL_FILL=$1;;
