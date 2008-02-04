@@ -5,6 +5,19 @@
 # Tips for serious offline analysis
 #####################################################################
 
+# Automated analysis
+
+ The analysis for <RunID> including dead-layer fit is automated and can be done 
+ by executing one command.
+
+ % cnipol_daemon.sh -f <RunID> --run-Asym 
+
+ The script will first execute dead-layer fit for <RunID> in iterative manner and
+ newly created configuration file is published $CONFDIR/<RunID>.config.dat, if it 
+ looks healthy. Then the script may update run.db to quote for new config file if
+ it is different enough from the currently defined one. The execution of Asym is
+ followed next. AsymPlot -f <RunID> -g to see the result.
+
 
 # About machine dependence
 
