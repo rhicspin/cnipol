@@ -11,7 +11,12 @@ o The basics of dead-layer analysis is described in README.install.
  
   % cnipol_daemon.sh -f <RunID>
 
-  Then the script runs dead-layer fit in iterative manner until it converges. 
+  Then the script runs dead-layer fit in iterative manner until it converges. The optimized
+  energy range and the convergence can be checked in 
+
+  .cnipol_daemon_dlayer_erange
+  .cnipol_daemon_dlayer_iteration
+
   Although new configuration files are published in library area ($CONFDIR), the run.db 
   wouldn't be updated. 
 
