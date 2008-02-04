@@ -1,9 +1,31 @@
-# 00README.dlayer
+# README.dlayer
 # I.Nakagawa
 # April 22, 2006
 
+o The basics of dead-layer analysis is described in README.install.
+  Here more expertized way to analyze dead-layer is described. In the current analysis,
+  the dead-layer is optimized in iterative manner 
+  ([ref.] I. Nakagawa et al. RHIC/CAD Accelerator Physics Note Vol.275 (2007)).
+  Such a iteration is automated in the routine "RunDlyer() in cnipol_daemon.sh.
+  Try cnipol_daemon.sh -x for example of use. To run dead-layer fit for <RunID>,
+ 
+  % cnipol_daemon.sh -f <RunID>
 
-The deadlayer fit output file xxxx.xxx.temp.dat will be generated after deadlayer fit in
+  Then the script runs dead-layer fit in iterative manner until it converges. 
+  Although new configuration files are published in library area ($CONFDIR), the run.db 
+  wouldn't be updated. 
+
+
+  The new configuration file is only be updated in run.db when you run with option
+
+  % cnipol_daemon.sh -f <RunID> --run-Asym
+
+  which executes Asym after dead-layer analysis is completed.
+
+
+
+
+o The deadlayer fit output file xxxx.xxx.temp.dat will be generated after deadlayer fit in
 $ASYMDIR/dlayer. The data file looks like follows:
 
 
