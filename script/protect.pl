@@ -5,12 +5,14 @@
 
 # defaults
 $BASEDIR=$ENV{"ASYMDIR"};
+$ROOTDIR="$BASEDIR/root";
 $HBOOKDIR="$BASEDIR/hbook";
 $LOGDIR="$BASEDIR/log";
 $RUNLIST="analyzed_run.list";
 $EXE_SCAN=0;
 $EXE_UN=0;
 $MOD_HBOOK=444;
+$MOD_ROOT=$MOD_HBOOK;
 $MOD_LOG=$MOD_HBOOK;
 
 
@@ -43,6 +45,7 @@ if ($opt{f}) {
 }
 
 if ($opt{u}) {
+    $MOD_ROOT=644;
     $MOD_HBOOK=644;
     $MOD_LOG=664;
 }
@@ -53,12 +56,12 @@ sub help() {
     print "Usage:\n    $0 -hu [-f <runID>][-l <runlist>]\n\n"; 
     print "    Switches the write protection on/off of hbook and log files\n";
     print "    in order to protect them to be overwritten accidentally.\n\n";
-    print "\t -f <runid>   protect hbook and log files for run <runid> \n";
+    print "\t -f <runid>   protect root, hbook and log files for run <runid> \n";
     print "\t -l <runlist> prtects all runs in list \n";
     print "\t -u           unprotect file \n"; 
     print "\t -h           show this menu\n";
     print "\n";
-    print "    ex.1) change 7559.106 hbook & log files to be protected mode\n\n";
+    print "    ex.1) change 7559.106 root, hbook & log files to be protected mode\n\n";
     print "           protect.pl -f 7669.106\n\n";
     print "    ex.2) change list of runs in <run.list> to be unprotected mode\n\n";
     print "           protect.pl -l run.list -u \n\n";
@@ -72,6 +75,8 @@ sub help() {
 sub protect() {
 
 #    printf("Changing Mode $Runn.hbook -> $MOD_HBOOK, $Runn.log -> $MOD_LOG \n");
+    system("chmod $MOD_ROOT $ROOTDIR/$Runn.root");
+    system("ls -lh $ROOTDIR/$Runn.root");
     system("chmod $MOD_HBOOK $HBOOKDIR/$Runn.hbook");
     system("ls -lh $HBOOKDIR/$Runn.hbook");
     system("chmod $MOD_LOG   $LOGDIR/$Runn.log");
