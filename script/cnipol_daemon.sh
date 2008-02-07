@@ -309,7 +309,7 @@ while test $# -ne 0; do
   case "$1" in
   --analyze-from-list)        ANALYZE_FROM_FILE=1;;
   --runlist)       shift ; RUNLIST=$1 ;;
-  -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1; ;
+  -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1;;
   -F)              shift ; FROM_FILL=$1 ;TILL_FILL=$1 ;;
   --fill-from)     shift ; FROM_FILL=$1;;
   --fill-till)     shift ; TILL_FILL=$1;;
