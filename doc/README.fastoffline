@@ -37,6 +37,19 @@ o at pc2pc
 	chown e950:e950 $RAWDATA_LIST
 	cd -
 
+	#Many of online scripts scan over the data files based on the $RAWDATA_LIST,
+         and make tables of runs in the list. 
+         So you may wanna constrain the list of runs of interest, for example..
+
+	cd $DATADIR
+	ls 9???.???.data          | sed -e 's/.data//' > $RAWDATA_LIST
+        ls 1????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
+
+
+	is the setting for Run08.
+
+
+
 o bluepc
 
   1) Run deadlayer/polarization analysis programs in background:
