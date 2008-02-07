@@ -61,7 +61,7 @@ $ploption = "all";
 $mklinkinfo = "On";
 $feedbackinfo = "Off";
 $ENV{"PLOT"} = "all";
-$PLOTROUTINE = "";
+$PLOTROUTINE = "paw";
 $tshift = "0.0";
 $energyinfo = "flattop";
 $nskip = "1";
@@ -501,9 +501,10 @@ sub optenergy {
 sub show_result {
     $Runn = sprintf("%04d.%03d",$fillnumber,$runnumber);
     $ENV{"RUN"} = $Runn;
-    if ($PLOTROUTINE == "AsymPlot" ) {
+    if ($PLOTROUTINE eq "AsymPlot" ) {
 	printf "Launching AsymPlot  ...";
 	system("AsymPlot -f $Runn -g &");
+	$PLOTROUTINE="paw";
     } else {
 	system("xterm -e tcsh -c \"paw -w 1 -b $MACRODIR/asymplot.kumac \" &");
     }
