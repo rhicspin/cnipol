@@ -71,7 +71,7 @@ MakeLinks(){
 
 
     # show list of files after making links
-    ls --color=tty $DESTDIR
+    ls --color=tty $DESTDIR 
 
 }
 
