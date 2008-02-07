@@ -48,6 +48,10 @@ o at pc2pc
 
 	is the setting for Run08.
 
+	#Update Online Polarzation table
+	/usr/local/cnipol/share/bin/OnlinePol.sh --update
+	chown e950:e950 $DATADIR/OnlinePol.dat
+
 
 
 o bluepc
