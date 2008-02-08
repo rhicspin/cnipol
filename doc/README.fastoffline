@@ -3,7 +3,7 @@
 # June 30, 2006
 
 This README file instructs the setup for the fast offline analysis of pC 
-software packages. Here is the setup for Run06:
+software packages. Here is the setup for Run08:
 
 o at pc2pc 
 
@@ -23,8 +23,9 @@ o at pc2pc
 
 	#!/bin/bash
 
-	export DATADIR=/usr/local/cnipol/data
-	export ONLINEDIR=/usr/local/cnipol/online
+	if [ $HOME/.cni ] ; then
+		source $HOME/.cni
+	fi 
 	RAWDATA_LIST=raw_data.list
 
 	/usr/local/cnipol/share/bin/mklink.sh --double-pc
@@ -52,6 +53,8 @@ o at pc2pc
 	/usr/local/cnipol/share/bin/OnlinePol.sh --update
 	chown e950:e950 $DATADIR/OnlinePol.dat
 
+
+   Note the MkLink.sh is executed every hour by root.
 
 
 o bluepc
