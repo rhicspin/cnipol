@@ -54,7 +54,9 @@ o at pc2pc
 	chown e950:e950 $DATADIR/OnlinePol.dat
 
 
-   Note the MkLink.sh is executed every hour by root.
+   Note the MkLink.sh is executed every hour by root and requires
+   cni environment file /home/root/.cni. The environments needs to
+   be consistent with default cni environments.
 
 
 o bluepc
