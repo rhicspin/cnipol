@@ -450,7 +450,7 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 
 	    // overflow
 	    if (fabs(DiffP[i])>25) DiffP[i]=25;
-
+	    
 	    // fill 1-dim histograms
 	    Pratio->Fill(R_Preg_Palt[i]);
 	    Pdiff->Fill(DiffP[i]);
@@ -476,6 +476,7 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 
     // Run-5, Run-6, Run-7....
     if (RunID[0]>7400) RUN=6;
+    if (RunID[0]>9000) RUN=8;
 
     fin.close();
     cout << "Total run =" << i-1 << endl;
@@ -584,6 +585,7 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
 
   ymin=-70 ; ymax=-20;
   if (RUN==6) {ymin=20; ymax=80;}
+  if (RUN==8) {ymin=20; ymax=80;}
 
   // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
@@ -692,6 +694,7 @@ OfflinePol::PlotControlCenter(Char_t *Beam, Int_t Mode, TCanvas *CurC, TPostScri
   Char_t DATAFILE[256];
   sprintf(DATAFILE,"summary/OfflinePol_%s.dat",Beam);
   Int_t ndata = GetData(DATAFILE, Color);
+  cout << "finished data reading" << endl;
 
   Int_t FILL[2];
   FILL[0] = int(RunID[0]);
@@ -916,7 +919,6 @@ OfflinePol::TargetByTargetOperation(){
 Int_t 
 OfflinePol::RunBothBeam(Int_t Mode, TCanvas *CurC, TPostScript *ps){
 
-
   PlotControlCenter("Blue",Mode, CurC, ps);
   CurC -> Update();
   if (frame) frame->Delete();
@@ -989,6 +991,7 @@ Int_t OfflinePol::OfflinePol() {
   sprintf(HEADER,"%s/PeriodByPeriod.C",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
+
     // Cambus Setup
     TCanvas *CurC = new TCanvas("CurC","",1);
     CurC -> SetGridy();
@@ -1001,7 +1004,6 @@ Int_t OfflinePol::OfflinePol() {
     // ==============================================================
     //                   Run By Run Analysis
     // ==============================================================
-    /*
     RunBothBeam(12,  CurC, ps); // onlineP and Linear Fit
     RunBothBeam(10,  CurC, ps); // onlineP and offlineP vs. RunID
     //    RunBothBeam(15,  CurC, ps); // onlineP and offlineP vs. index
@@ -1019,13 +1021,13 @@ Int_t OfflinePol::OfflinePol() {
     //    RunBothBeam(100, CurC, ps); //A_N vs. RunID
     RunBothBeam(115, CurC, ps); // dP_offline distribution Gaussian
     RunBothBeam(116, CurC, ps); // dP_offline distribution
-    */
+
 
     cout << "ps file : " << psfile << endl;
     ps->Close();
     CurC->Clear();
 
-
+    /*
     // ==============================================================
     //                   Fill by Fill Analysis
     // ==============================================================
@@ -1063,7 +1065,7 @@ Int_t OfflinePol::OfflinePol() {
     fout.close();
     cout << "ps file : " << psfile << endl;
     ps->Close();
-
+    */
 
     //    gSystem->Exec("gv ps/OfflinePol.ps");
 
