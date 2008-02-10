@@ -109,13 +109,13 @@ int end_process(recordConfigRhicStruct *cfginfo)
     //        Draw polarization vs target position
     //-------------------------------------------------------
     DrawPlotvsTar();
-    //-------------------------------------------------------
-    //        Calculate Statistics
-    //-------------------------------------------------------
-    CalcStatistics();
-
 
   }//end-of-if(!dproc.DMODE)
+
+  //-------------------------------------------------------
+  //        Calculate Statistics
+  //-------------------------------------------------------
+  CalcStatistics();
 
 
   //-------------------------------------------------------
@@ -709,11 +709,13 @@ void
 CalcStatistics(){
 
     runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
-    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
-    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
-    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-    anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
-    anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
+    if (runinfo.RunTime) {
+      runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+      runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+      runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+    }
+    if (runinfo.WcmSum)  anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+    if (dproc.reference_rate)  anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
     if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
     cout<< "CalcStatistics !" << cntr.good_event << " " << runinfo.RunTime << " " << runinfo.GoodEventRate << endl;
 
