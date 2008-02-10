@@ -110,6 +110,7 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
 
     // Run-5, Run-6, Run-7....
     if (RunID[0]>7400) RUN=6;
+    if (RunID[0]>9000) RUN=8;
 
 
     fin.close();
@@ -194,6 +195,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     GetScale(RunID, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=50  ; ymax=75;}
+    if (RUN==8) {ymin=60  ; ymax=90;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title,"DeadLayer History (%s)",Beam);
@@ -202,6 +204,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     xmin=0.0 ; xmax=1.5;
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=60  ; ymax=75;}
+    if (RUN==8) {ymin=60  ; ymax=90;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title," DeadLayer Rate Dependence (%s)",Beam);
@@ -240,6 +243,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     GetScale(AveT0, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
     if (RUN==6) {ymin=60  ; ymax=75;}
+    if (RUN==8) {ymin=60  ; ymax=90;}
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
     sprintf(title," t0-deadlayer Correlation (%s)",Beam);
