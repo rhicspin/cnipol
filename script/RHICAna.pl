@@ -872,6 +872,7 @@ sub timeplot{
 
 sub offlineopt() {
     system("root -b -q $MACRODIR/OfflinePol.C");
+    system("gv ps/OfflinePol.ps");
 }
 
 sub dlayeropt() {
