@@ -19,7 +19,7 @@ if [ $RHICRUN ] ; then
     if [ $RHICRUN -eq 5 ] ; then
 	FROM_FILL=6600;
     elif [ $RHICRUN -eq 8 ] ; then
-	FROM_FILL=9500;
+	FROM_FILL=9804;
     fi
 fi
 TILL_FILL=15000;
@@ -100,7 +100,7 @@ MakeAnalyzedRunList(){
   fi
   touch $TMPLIST;
 
-  for a in alanH alanD jeffW itaru daemn koich; 
+  for a in daemn; 
   do 
 
     f="$ASYMDIR/analyzed_runlist.$a"
