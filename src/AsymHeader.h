@@ -19,7 +19,5 @@
 #define k2G 1e-6                   // [keV] -> [GeV]
 #define MASS_12C 11.187e6          // Mass Carbon in [keV]
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
-#define TGT_STEP 0.11              // target motion [mm]/step
-#define TGT_COUNT_MM 0.1           // target [count] -> [mm]
 const int TGT_OPERATION=6;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
 const int TOT_WFD_CH=NSTRIP+NTGTWFD;//Total WFD channels including target WFD channels.
