@@ -83,6 +83,7 @@ readdb(double RUNID) {
 			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
 			if (str.find("DEFINE_FILL_PATTERN") ==1) rundb.define_fill_pattern_s = GetVariables(str);
 			if (str.find("REFERENCE_RATE")      ==1) rundb.reference_rate_s      = GetVariables(str);
+			if (str.find("TARGET_COUNT_MM")     ==1) rundb.target_count_mm_s     = GetVariables(str);
 			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
 			if (str.find("DisableBunch")        ==1){
 			rundb.disable_bunch_s     = GetVariables(str);
@@ -141,6 +142,10 @@ readdb(double RUNID) {
 
   // Expected universal rate for given target
   dproc.reference_rate = strtof(rundb.reference_rate_s.c_str(),NULL);
+
+  // Target count/mm conversion 
+  dproc.target_count_mm = strtof(rundb.target_count_mm_s.c_str(),NULL);
+  cout << "++++++++++++ dproc.target_count_mm" << endl;
 
   // Optimize setting for Run
   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
@@ -381,6 +386,7 @@ PrintRunDB(){
   printf("INJ_TSHIFT       = %5.1f\n", strtof(rundb.inj_tshift_s.c_str(),NULL));
   printf("MEASUREMENT_TYPE = %5.1f\n", strtof(rundb.measurement_type_s.c_str(),NULL));
   printf("REFERENCE_RATE   = %7.3f\n", strtof(rundb.reference_rate_s.c_str(),NULL));
+  printf("TARGET_COUNT_MM  = %8.5f\n", strtof(rundb.target_count_mm_s.c_str(),NULL));
   printf("COMMENT          = %s\n",    rundb.comment_s.c_str());
 
   return;
@@ -426,6 +432,9 @@ printConfig(recordConfigRhicStruct *cfginfo){
 
     // expected reference rate
     if (runinfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",dproc.reference_rate);
+
+    // target count/mm 
+    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",dproc.target_count_mm);
 
     // Disabled bunch
     fprintf(stdout,"      #DisableBunch = %d\n", runinfo.NDisableBunch);

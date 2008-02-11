@@ -185,24 +185,26 @@ int readloop() {
                         tgt.VHtarget = 1;
                         runinfo.target = 'H';
                     }
-                    tgt.x = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM;
+                    tgt.x = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
 		    tgt.Time[i] = k;
 		    tgt.X[i] = tgt.x;
-                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);
+                    printf("@%8d%8d%7.1f%7.1f\n", 
+			   i, k, tgt.Rotary[k][0]*dproc.target_count_mm, tgt.Rotary[k][1]*dproc.target_count_mm);
 		} else {
 		  TgtIndex[k] = i;
 		  if ((tgt.Rotary[k][1] != tgt.Rotary[k-1][1])||(tgt.Rotary[k][0] != tgt.Rotary[k-1][0])) {
 		    TgtIndex[k] = ++i ;
-		    tgt.X[TgtIndex[k]] = tgt.Rotary[k][tgt.VHtarget];
+		    tgt.X[TgtIndex[k]] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
 		    tgt.Time[TgtIndex[k]] = float(k);
 		    tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
 		    ++nTgtIndex;
                     if (nTgtIndex>TGT_OPERATION) runinfo.TgtOperation=" scan";
-                    printf("@%8d%8d%8d%8d\n", i, k, tgt.Rotary[k][0], tgt.Rotary[k][1]);
+                    printf("@%8d%8d%7.1f%7.1f\n", 
+			   i, k, tgt.Rotary[k][0]*dproc.target_count_mm, tgt.Rotary[k][1]*dproc.target_count_mm);
 		  }
 		}							  
                 // target position array including static target motion
-                tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * TGT_COUNT_MM ;
+                tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
 
             } // end-of-for(ndelim)-loop
 
@@ -396,12 +398,14 @@ int readloop() {
                         event.tdcmax = ATPtr -> data[j].tmax; 
                         event.rev0 = ATPtr -> data[j].rev0;
                         event.rev = ATPtr -> data[j].rev;
+			// Finer Target Position Resolution by counting stepping moter
+			// This feature became available after Run06
                         if (runinfo.Run>=6){
                             cntr.revolution=event.delim*512 + event.rev*2 + event.rev0 ;
                             if (cntr.revolution>runinfo.MaxRevolution) 
                                 runinfo.MaxRevolution = cntr.revolution;
                             if ((event.stN==72)&&(event.delim!=tgt.eventID)){
-                                tgt.x += TGT_STEP * (float)tgt.vector ;
+                                tgt.x += dproc.target_count_mm * (float)tgt.vector ;
                                 tgt.vector=-1;
                             }
                             if ((event.stN==72)||(event.stN==73)) {

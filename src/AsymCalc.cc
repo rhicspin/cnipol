@@ -51,8 +51,14 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
     return 0;
 
-  }else if (!dproc.DMODE) {
+  } // end-of-if(Flag.feedback)
 
+  //-------------------------------------------------------
+  //        Calculate Statistics
+  //-------------------------------------------------------
+  CalcStatistics();
+
+  if (!dproc.DMODE) {
 
     //-------------------------------------------------------
     //    Energy Yeild Weighted Average Analyzing Power
@@ -97,13 +103,12 @@ int end_process(recordConfigRhicStruct *cfginfo)
       //-------------------------------------------------------
       BunchAnomalyDetector();
 
-    }
+    }//end-of-if(Flag.EXE_ANOMALY_CHECK)
 
     //-------------------------------------------------------
     //       Complete Histograms
     //-------------------------------------------------------
     CompleteHistogram();
-
 
     //-------------------------------------------------------
     //        Draw polarization vs target position
@@ -111,11 +116,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
     DrawPlotvsTar();
 
   }//end-of-if(!dproc.DMODE)
-
-  //-------------------------------------------------------
-  //        Calculate Statistics
-  //-------------------------------------------------------
-  CalcStatistics();
 
 
   //-------------------------------------------------------
@@ -188,7 +188,7 @@ int TgtHist(){
   //                      Make rate _vs deliminter plots
   //---------------------------------------------------------------------------------
   for (int i=0; i<X_index; i++) {
-    cntr.good_event += cntr.good[i];    dx[i]=0; 
+    dx[i]=0; 
     y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ; 
     dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0; 
   }
@@ -203,7 +203,6 @@ int TgtHist(){
   rate_delim -> SetMarkerStyle(20);
   rate_delim -> SetMarkerColor(4);
   rate_vs_delim -> GetListOfFunctions() -> Add(rate_delim,"P");
-
 
   //---------------------------------------------------------------------------------
   //                           Target Position vs Time
@@ -708,20 +707,30 @@ void binary_zero(int n, int mb) {
 void
 CalcStatistics(){
 
-    runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
-    if (runinfo.RunTime) {
-      runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
-      runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
-      runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
-    }
-    if (runinfo.WcmSum)  anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
-    if (dproc.reference_rate)  anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
-    if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
-    cout<< "CalcStatistics !" << cntr.good_event << " " << runinfo.RunTime << " " << runinfo.GoodEventRate << endl;
+  // Integrate good carbon events in banana
+  cntr.good_event=0;
+  int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim ;
+  for (int i=0; i<X_index; i++) cntr.good_event += cntr.good[i];
 
-    return ;
+  // Run time duration
+  runinfo.RunTime  = runinfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+  
+  // Calculate rates
+  if (runinfo.RunTime) {
+    runinfo.GoodEventRate = float(cntr.good_event)/runinfo.RunTime/1e6;
+    runinfo.EvntRate = float(Nevtot)/runinfo.RunTime/1e6;
+    runinfo.ReadRate = float(Nread)/runinfo.RunTime/1e6;
+  }
+
+  // Misc
+  if (runinfo.WcmSum)  anal.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
+  if (dproc.reference_rate)  anal.UniversalRate = anal.wcm_norm_event_rate/dproc.reference_rate;
+  if (runinfo.Run==5)  anal.profile_error = anal.UniversalRate<1 ? ProfileError(anal.UniversalRate) : 0;
+
+  return ;
 
 }
+
 
 //
 // Class name  :

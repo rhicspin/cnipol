@@ -76,6 +76,7 @@ typedef struct {
   float MassLimit;     // Lower Mass limit for peak position adjustment fit
   int thinout;         // Every <thinout> event to be feed into feedback routine
   float reference_rate;// Expected universal rate for given target
+  float target_count_mm;//Target count/mm conversion
 } datprocStruct; 
 
 
@@ -198,6 +199,7 @@ typedef struct {
   string define_spin_pattern_s;
   string define_fill_pattern_s;
   string reference_rate_s;
+  string target_count_mm_s;
   string comment_s;
 }StructRunDB ;
 
