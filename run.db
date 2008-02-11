@@ -13,6 +13,16 @@
 //      SPIN_TUNE     : Spin tune measurments
 //      PROFILE       : Polarization profile measurements by scanning mode (Run05 only)
 //
+// DEFINE_SPIN_PATTERN:
+//       -1;          : Take spin pattern from data stream. 
+//      >-1;          : See AsymRecoverUserDefined.h for other options.
+//
+// DEFINE_FILL_PATTERN:
+//       -1;          : Take Fill pattern from data stream. 
+//        0;          : All 112 bunches are true.
+//       <1;          : See AsymRecoverUserDefined.h for other options.
+//
+
 
 
 //==============================================================
@@ -25,6 +35,7 @@
 	INJ_TSHIFT=7;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	TARGET_COUNT_MM=0.11 ; // target counts/mm conversion
 
 [4000.101]
 	MEASUREMENT_TYPE=NORM;
@@ -33,6 +44,7 @@
 	INJ_TSHIFT=7;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	TARGET_COUNT_MM=0.11 ; // target counts/mm conversion
 
 
 //==============================================================
@@ -12050,24 +12062,157 @@
 [8500.001]
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
-	INJ_TSHIFT=0;
-	ENERGY_CALIB=0213.007;
+	INJ_TSHIFT=7;
+	ENERGY_CALIB=calib2008-02-02.90b;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
+	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
 	DisableBunch=20;
+	DisableStrip=40;
+	DisableStrip=64;
 	COMMENT="Run08"
 
 [8500.101]
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
-	INJ_TSHIFT=0;
-	ENERGY_CALIB=60217.101;
+	INJ_TSHIFT=7;
+	ENERGY_CALIB=calib2008-02-01b;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
+	TARGET_COUNT_MM=0.123 ; // target counts/mm conversion
 	REFERENCE_RATE=1;
 	DisableBunch=20;
 	COMMENT="Run08"
+
+[9000.001]
+	CONFIG=9670.011.config.dat;
+
+[9000.101]
+	CONFIG=9670.112.config.dat;
+
+
+
+[9670.008]@
+	CONFIG=9670.008.config.dat;@
+
+[9670.009]@
+	CONFIG=9670.009.config.dat;@
+
+[9670.010]@
+	CONFIG=9670.010.config.dat;@
+
+[9670.011]@
+	CONFIG=9670.011.config.dat;@
+
+[9778.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9779.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9779.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9779.007]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9803.001]@
+	CONFIG=9803.001.config.dat;@
+
+[9803.002]@
+	CONFIG=9803.002.config.dat;@
+
+[9803.004]@
+	CONFIG=9803.004.config.dat;@
+
+[9803.005]@
+	CONFIG=9803.005.config.dat;@
+
+[9803.006]@
+	CONFIG=9803.006.config.dat;@
+
+[9803.011]@
+	CONFIG=9803.011.config.dat;@
+
+[9803.102]@
+	CONFIG=9803.102.config.dat;@
+
+[9804.001]@
+	CONFIG=9804.001.config.dat;@
+
+[9804.002]@
+	CONFIG=9804.002.config.dat;@
+
+[9804.003]@
+	CONFIG=9804.003.config.dat;@
+
+[9804.103]@
+	CONFIG=9804.103.config.dat;@
+
+[9814.002]@
+	CONFIG=9814.002.config.dat;@
+
+[9815.001]@
+	CONFIG=9815.001.config.dat;@
+
+[9815.103]@
+	CONFIG=9815.103.config.dat;@
+
+[9816.002]@
+	CONFIG=9816.002.config.dat;@
+
+[9816.101]@
+	CONFIG=9816.101.config.dat;@
+
+[9816.102]@
+	CONFIG=9816.102.config.dat;@
+
+[9816.004]
+	CONFIG=9816.004.config.dat;
+
+[9816.104]@
+	CONFIG=9816.104.config.dat;@
+
+[9817.002]@
+	CONFIG=9817.002.config.dat;@
+
+[9817.003]@
+	CONFIG=9817.003.config.dat;@
+
+[9817.004]@
+	CONFIG=9817.004.config.dat;@
+
+[9817.005]@
+	CONFIG=9817.005.config.dat;@
+
+[9817.104]@
+	CONFIG=9817.104.config.dat;@
+
+[9823.101]@
+	CONFIG=9823.101.config.dat;@
+
+[9823.102]@
+	CONFIG=9823.102.config.dat;@
+
+[9832.003]
+	CONFIG=9832.003.config.dat;
+
+[9832.012]
+	CONFIG=9832.012.config.dat;
+
+[9832.102]@
+	CONFIG=9832.102.config.dat;@
+
+[9832.110]
+	CONFIG=9832.110.config.dat;
+
+[9835.102]
+	CONFIG=9835.102.config.dat;
 
