@@ -11,6 +11,7 @@ ONLINE_DB=$DATADIR/OnlinePol.dat;
 SLEEP_INTERVAL=1800;
 DAEMON=0;
 UPDATE=0;
+GET_ENERGY=0;
 A_NCorrection=0;
 
 #############################################################################
@@ -20,12 +21,13 @@ help(){
     COMMAND=`basename $0`;
     echo    " "
     echo    " $COMMAND [-xh][-f <RunID>][--nevents][--online][-s -sleeep <s>][-M]";
-    echo    "          [--dlayer-average][--update]"
+    echo    "          [--dlayer-average][--update][--energy]"
     echo    "    : Calculate Online Polarization & show online records / make deadlyaer average in online config."
     echo    " "
     echo -e "   -f <RunID>       Calculate Online Polarization of <RunID>";
     echo -e "   --update         Update the online Pol data file $ONLINE_DB";
     echo -e "   --online         Dynamicly update online Pol data file $ONLINE_DB"; 
+    echo -e "   --energy         Display Energy of <RunID>";
     echo -e "   -s --sleep <s>   Sleep interval for Online mode in sec. [Def]:$SLEEP_INTERVAL";               
     echo -e "   --nevents        Print Online # of Events ";
     echo -e "    -M              Nevents in Million unit ";
@@ -121,7 +123,18 @@ CheckRunID(){
 
 
 #############################################################################
-#                               GetOnlinePolariztion                                   #
+#                                GetEnergy()                                #
+#############################################################################
+GetEnergy(){
+
+   ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
+   grep 'GeV' $ONLINE_LOG | gawk '{print $5}' | sed -e "s/E=//" | gawk '{printf("%d\n",$1)}'
+
+}
+
+
+#############################################################################
+#                               GetOnlinePolariztion                        #
 #############################################################################
 GetOnlinePolarization(){
 
@@ -224,6 +237,7 @@ while test $# -ne 0; do
   --dlayer-average) ExeDlayerAverage=1;;
   --A_NCorrection) A_NCorrection=1;;
   --nevents) ExeNevents=1; ExeOnlinePol=0;;
+  --energy) GET_ENERGY=1;;
   --update) UPDATE=1;;
   --online) DAEMON=1;UPDATE=1;;
   -s | -sleep) shift ; SLEEP_INTERVAL=$1;;
@@ -240,6 +254,11 @@ done
 
 if [ $ExeDlayerAverage -eq 1 ] ; then
     DlayerAverage;
+    exit;
+fi
+
+if [ $GET_ENERGY -eq 1 ] ; then
+    GetEnergy;
     exit;
 fi
 
