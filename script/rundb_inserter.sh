@@ -73,7 +73,6 @@ AppendTag() {
 
 for (( i=1; i<=$DbN; i++ )) do
     RefN=`line.sh "$i" $TMPOUTDIR/tmplist.txt | gawk '{printf("%.3f",$1)}'`;
-    echo "RefN == $RefN"
     Test=`CompareRunNmbr $RefN $RunN`;
     if [[ $Test == 1 ]]; then
  	break;

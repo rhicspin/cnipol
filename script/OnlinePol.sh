@@ -128,7 +128,13 @@ CheckRunID(){
 GetEnergy(){
 
    ONLINE_LOG=$ONLINEDIR/log/$RunID.log;
-   grep 'GeV' $ONLINE_LOG | gawk '{print $5}' | sed -e "s/E=//" | gawk '{printf("%d\n",$1)}'
+   ENERGY=`grep 'GeV' $ONLINE_LOG | gawk '{print $5}' | sed -e "s/E=//" | gawk '{printf("%d\n",$1)}'`
+   
+   if [ $ENERGY -lt 99 ]; then
+       ENERGY=`grep 'GeV' $ONLINE_LOG | gawk '{print $6}' | gawk '{printf("%d\n",$1)}'`
+   fi
+
+   echo "$ENERGY";
 
 }
 
