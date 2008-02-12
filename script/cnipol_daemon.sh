@@ -204,8 +204,8 @@ RunAsym(){
 	rundb_inserter.sh 
     fi
 
-#    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
-#    mv $RunID.root root/.;
+    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook --raw | tee log/$RunID.log;	
+    mv $RunID.root root/.;
     echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
 }
