@@ -20,8 +20,8 @@ void Usage(char* argv[]){
   cout<<" Usage of " << argv[0] <<endl;
   cout << " -f <RunID>        : check dead layer consitency between <RunID> and whatever config file";
   cout <<                     " defined in run.db" <<endl;
-  cout << " -z <RunID>        : check the quality of dead layer fit for <RunID>" <<endl << endl;
-  
+  cout << " -z <RunID>        : check the quality of dead layer fit for <RunID>" <<endl ;
+  cout << " -s                : CONFIG*=<RunID> instead of CONFIG=<RunID> def:off" << endl << endl;
   exit(-1);
 
   return;
@@ -34,6 +34,7 @@ void Usage(char* argv[]){
 int main (int argc, char *argv[])
 {
 
+        bool SINGLE_CONFIG_MODE=false;
 	bool optgiven=false;
 	fitresult=0;
 	runfit=false;
@@ -64,7 +65,7 @@ int main (int argc, char *argv[])
 		exit(-1);
 	}
 	
-	while ((c = getopt(argc, argv, "?f:z:h"))!=-1)
+	while ((c = getopt(argc, argv, "?sf:z:h"))!=-1)
 	{
 		switch (c)
 		{
@@ -92,6 +93,9 @@ int main (int argc, char *argv[])
 				Mode=1;
 				getPreviousRun();
 				break;
+  		        case 's':
+			        SINGLE_CONFIG_MODE=true;
+			        break;
 			default:
 				fprintf(stdout,"Invalid Option \n");
 				cout<<"run with option -h for help"<<endl;
@@ -115,7 +119,12 @@ int main (int argc, char *argv[])
 		{
 			cout<<"dlayer fit is successful"<<endl;
 			out << endl << "[" << runid << "]@" << endl;
-			out << "\tCONFIG=" << runid << ".config.dat;@" << endl << endl;
+			if (SINGLE_CONFIG_MODE) {
+			  out << "\tCONFIG*=" ;
+			} else {
+			  out << "\tCONFIG="  ;
+			}
+			out << runid << ".config.dat;@" << endl << endl;
 		}
 		else 
 		{

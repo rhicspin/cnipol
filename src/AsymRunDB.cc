@@ -145,7 +145,6 @@ readdb(double RUNID) {
 
   // Target count/mm conversion 
   dproc.target_count_mm = strtof(rundb.target_count_mm_s.c_str(),NULL);
-  cout << "++++++++++++ dproc.target_count_mm" << endl;
 
   // Optimize setting for Run
   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
