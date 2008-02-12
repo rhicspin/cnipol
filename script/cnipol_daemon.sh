@@ -175,6 +175,7 @@ RunDlayer(){
 #                             RunAsym()                                     #
 #############################################################################
 RunAsym(){
+    OPT="";
     
     NEVENTS=`OnlinePol.sh -f $RunID --nevents -k`;
     if [ $NEVENTS -lt 1000 ] ; then
@@ -189,21 +190,22 @@ RunAsym(){
 	fi
     fi
 
-    # Update Configuration File Only for Flattop Energy
-    Test=`OnlinePol.sh -f $RunID --energy`
-    if [ $Test -gt 25 ] ; then
-
-	echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
-	dLayerChecker -f $RunID;
-	if [ $? -eq 0 ] ; then
-	    dLayerChecker -z $RunID
-	    rundb_inserter.sh 
-	fi
-
+    # Get Energy, If injection, then execute dLayerChecker with -s option
+    ENERGY=`OnlinePol.sh -f $RunID --energy`
+    if [ $ENERGY -lt 25 ] ; then
+	OPT="-s";
     fi
 
-    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
-    mv $RunID.root root/.;
+    echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
+    dLayerChecker -f $RunID;
+    if [ $? -eq 0 ] ; then
+	echo -e "dLayerChecker -z $RunID $OPT"
+	dLayerChecker -z $RunID $OPT
+	rundb_inserter.sh 
+    fi
+
+#    nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
+#    mv $RunID.root root/.;
     echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
 }
