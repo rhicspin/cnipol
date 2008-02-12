@@ -21,6 +21,7 @@
 
 static Int_t GHOSTVIEW=0;
 static Int_t FEEDBACK=0;
+static Int_t PLOT_RAW=0;
 static Int_t PLOT_BANANA=1;
 static Int_t ERROR_DETECTOR=1;
 static Int_t SUMMARY=1;
@@ -34,10 +35,17 @@ private:
 public:
   Int_t GetHistograms(TFile * rootfile);
   Int_t PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
+  Int_t PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   Int_t PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   Int_t PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
   // Directory "FeedBack"
   TH2F * mdev_feedback;  
+  // Raw Directory
+  TH1F * bunch_dist_raw;              // counts per bunch (raw)
+  TH1F * strip_dist_raw;              // counts per strip (raw)
+  TH1F * tdc_raw;                     // tdc (raw)
+  TH1F * adc_raw;                     // adc (raw)
+  TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
   // Directory "ErrDet"
   TH2F * mass_e_correlation_strip;
   TH2F * mass_chi2_vs_strip;
@@ -73,6 +81,7 @@ Usage(char *argv[]){
   cout << "\t -f <runID> " << endl;
   cout << "\t --error-detector  plot error detector histograms" << endl;
   cout << "\t --feedback        plot feedback histograms" << endl;
+  cout << "\t --raw             plot raw histograms" << endl;
   cout << "\t --banana          plot kinematics reconstruction for all strips" << endl;
   cout << "\t --summary         plot summary" << endl;
   cout << "\t --strip <stID>    plot kinematics reconstruction for strip <stID>" << endl;
@@ -318,6 +327,45 @@ AsymPlot::PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
 }
 
+Int_t
+AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+
+
+  rootfile->cd(); rootfile->cd("Raw");  
+  bunch_dist_raw              = (TH1F*)gDirectory->Get("bunch_dist_raw");
+  strip_dist_raw              = (TH1F*)gDirectory->Get("strip_dist_raw");
+  tdc_raw                     = (TH1F*)gDirectory->Get("tdc_raw");
+  adc_raw                     = (TH1F*)gDirectory->Get("adc_raw");
+  tdc_vs_adc_raw              = (TH2F*)gDirectory->Get("tdc_vs_adc_raw");
+  rootfile->cd(); rootfile->cd("Bunch");  
+  bunch_dist                 = (TH1F*)gDirectory->Get("bunch_dist");
+
+  rootfile->cd(); rootfile->cd("Kinema");
+  gStyle->SetOptLogz(1);
+  bunch_dist_raw->Draw(); 
+  bunch_dist->Draw("same"); CurC->Update(); ps->NewPage(); 
+  gStyle->SetOptLogz(0);
+  strip_dist_raw->Draw(); CurC->Update(); ps->NewPage(); 
+  tdc_raw->Draw(); CurC->Update(); ps->NewPage(); 
+  adc_raw->Draw(); CurC->Update(); ps->NewPage(); 
+  tdc_vs_adc_raw->Draw(); CurC->Update(); ps->NewPage(); 
+
+  CurC->Clear(); CurC->Divide(2,2); 
+  CurC->cd(1) ; bunch_dist_raw->Draw(); bunch_dist->Draw("same");
+  CurC->cd(2) ; strip_dist_raw->Draw();
+  CurC->cd(3) ; tdc_raw->Draw();
+  CurC->cd(4) ; adc_raw -> Draw(); CurC->Update(); 
+
+  gStyle -> SetPalette (1);  ColorSkime();
+  ps->NewPage();
+  CurC->cd(1) ; tdc_vs_adc_raw->Draw(); 
+  CurC->cd(2) ; tdc_vs_adc_raw->Draw("colz"); 
+  CurC->cd(3) ; tdc_vs_adc_raw->Draw("lego"); CurC->Update(); ps->NewPage(); 
+
+  return 0;
+
+}
+
 
 Int_t 
 AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
@@ -350,7 +398,7 @@ AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript 
 Int_t 
 AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
-  CurC -> SetGridx();
+  CurC -> SetGridx();   gStyle -> SetPalette (1);
   ps->NewPage(); CurC->Clear(); CurC->Divide(1,1); 
 
   // energy slope
@@ -450,6 +498,7 @@ int main(int argc, char **argv) {
     {"strip", 1, 0, 's'},
     {"banana", 0, 0, 'b'},
     {"feedback", 0, 0, 'F'},
+    {"raw", 0, 0, 'r'},
     {"error-detector", 0, 0, 'e'},
     {"summary", 0, 0, 'S'},
     {"create", 1, 0, 'c'},
@@ -457,7 +506,7 @@ int main(int argc, char **argv) {
     {0, 0, 0, 0}
   };
 
-  while (EOF != (opt = getopt_long (argc, argv, "geSFh?xf:s:b:", long_options, &option_index))) {
+  while (EOF != (opt = getopt_long (argc, argv, "gerSFh?xf:s:b:", long_options, &option_index))) {
     switch (opt) {
     case -1:
       break;
@@ -465,6 +514,12 @@ int main(int argc, char **argv) {
       PLOT_BANANA=1;
       ERROR_DETECTOR=0;
       SUMMARY=0;
+      break;
+    case 'r':
+      PLOT_BANANA=0;
+      ERROR_DETECTOR=0;
+      SUMMARY=0;
+      PLOT_RAW=1;
       break;
     case 'e':
       ERROR_DETECTOR=1;
@@ -535,6 +590,7 @@ int AsymPlot() {
   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
   if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
+  if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
 
   cout << "ps file : " << psfile << endl;
   ps->Close();

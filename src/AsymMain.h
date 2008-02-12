@@ -6,6 +6,7 @@ datprocStruct dproc = {
     400,900,    // energy
     -30,30,     // banana cut width (Constant mode only)
     0,          // FEEDBACKMODE
+    0,          // RAWHISTOGRAM   
     0,          // CMODE
     0,          // DMODE
     0,          // TMODE

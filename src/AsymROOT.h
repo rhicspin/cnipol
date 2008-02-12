@@ -48,6 +48,7 @@ extern const float MSIZE;
 
 // ROOT Histograms
 extern TDirectory * Run;
+extern TDirectory * Raw;
 extern TDirectory * FeedBack;
 extern TDirectory * Kinema;
 extern TDirectory * Bunch;
@@ -60,6 +61,13 @@ extern TH2F * rate_vs_delim;
 // FeedBack Dir
 extern TH2F * mdev_feedback;  
 extern TH1F * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
+
+// Raw Directory
+extern TH1F * bunch_dist_raw;              // counts per bunch (raw)
+extern TH1F * strip_dist_raw;              // counts per strip (raw)
+extern TH1F * tdc_raw;                     // tdc (raw)
+extern TH1F * adc_raw;                     // adc (raw)
+extern TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
 
 // Kinema Direcotry
 extern TH2F * t_vs_e[TOT_WFD_CH];

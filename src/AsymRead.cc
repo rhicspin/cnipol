@@ -436,8 +436,14 @@ int readloop() {
 			     }*/
                         
 
-			// bunch distribution (raw)
-			if (!Flag.feedback) bunch_dist_raw -> Fill(event.bid);
+			// Raw histograms
+			if ((!Flag.feedback)&&(dproc.RAWHISTOGRAM)) {
+			  bunch_dist_raw -> Fill(event.bid);
+			  strip_dist_raw -> Fill(event.stN);
+			  tdc_raw        -> Fill(event.tdc);
+			  adc_raw        -> Fill(event.amp);
+			  tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
+			}
 
                         // process event for following case:
                         //      fill pattern = 1
