@@ -60,6 +60,7 @@ TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
 
 // Bunch Distribution
+TH1F * bunch_dist_raw;              // counts per bunch (raw)
 TH1F * bunch_dist;                  // counts per bunch
 TH1F * wall_current_monitor;        // wall current monitor
 TH1F * specific_luminosity;         // specific luminosity
@@ -193,6 +194,12 @@ Root::RootHistBook(StructRunInfo runinfo){
 
   // Bunch Directory
   Bunch->cd();
+  sprintf(htitle,"%.3f : Raw Counts per Bunch ", runinfo.RUNID);
+  bunch_dist_raw = new TH1F("bunch_dist_raw", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+  bunch_dist_raw -> GetXaxis() -> SetTitle("Bunch ID");
+  bunch_dist_raw -> GetYaxis() -> SetTitle("Counts");
+  bunch_dist_raw -> SetFillColor(17);
+
   sprintf(htitle,"%.3f : Counts per Bunch ", runinfo.RUNID);
   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");

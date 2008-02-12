@@ -436,6 +436,9 @@ int readloop() {
 			     }*/
                         
 
+			// bunch distribution (raw)
+			if (!Flag.feedback) bunch_dist_raw -> Fill(event.bid);
+
                         // process event for following case:
                         //      fill pattern = 1
                         //      Calibration mode = 1
