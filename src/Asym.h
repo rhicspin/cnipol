@@ -52,6 +52,7 @@ typedef struct {
     int widthl;        // lower banana cut (ns)
     int widthu;        // upper banana cut (ns)
     int FEEDBACKMODE;  // fit 12C peak first and feedback tshift and sigma
+    int RAWHISTOGRAM;  //Fill raw histograms 
     int CMODE;         // Calibration mode 0:off 1:on
     int DMODE;         // dead layer study mode 0:off 1:on
     int TMODE;         // T0 study mode 0:off 1:on

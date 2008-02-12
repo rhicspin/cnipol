@@ -25,6 +25,7 @@ StructHist Eslope;
 
 // Direcotories
 TDirectory * Run;
+TDirectory * Raw;
 TDirectory * FeedBack;
 TDirectory * Kinema;
 TDirectory * Bunch;
@@ -46,6 +47,13 @@ TH2F * rate_vs_delim;
 TH2F  * mdev_feedback;
 TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
+// Raw Directory
+TH1F * bunch_dist_raw;              // counts per bunch (raw)
+TH1F * strip_dist_raw;              // counts per strip (raw)
+TH1F * tdc_raw;                     // tdc (raw)
+TH1F * adc_raw;                     // adc (raw)
+TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
+
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
@@ -59,8 +67,8 @@ TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
 TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
 
+
 // Bunch Distribution
-TH1F * bunch_dist_raw;              // counts per bunch (raw)
 TH1F * bunch_dist;                  // counts per bunch
 TH1F * wall_current_monitor;        // wall current monitor
 TH1F * specific_luminosity;         // specific luminosity
@@ -100,6 +108,7 @@ Root::RootFile(char *filename){
 
   // directory structure
   Run       = rootfile->mkdir("Run");
+  Raw       = rootfile->mkdir("Raw");
   FeedBack  = rootfile->mkdir("FeedBack");
   Kinema    = rootfile->mkdir("Kinema");
   Bunch     = rootfile->mkdir("Bunch");
@@ -192,14 +201,40 @@ Root::RootHistBook(StructRunInfo runinfo){
   }
 
 
-  // Bunch Directory
-  Bunch->cd();
+
+  // Raw Directory
+  Raw->cd();
   sprintf(htitle,"%.3f : Raw Counts per Bunch ", runinfo.RUNID);
   bunch_dist_raw = new TH1F("bunch_dist_raw", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist_raw -> GetXaxis() -> SetTitle("Bunch ID");
   bunch_dist_raw -> GetYaxis() -> SetTitle("Counts");
   bunch_dist_raw -> SetFillColor(17);
 
+  sprintf(htitle,"%.3f : Raw Counts per Strip ", runinfo.RUNID);
+  strip_dist_raw = new TH1F("strip_dist_raw", htitle, NSTRIP, -0.5, NSTRIP-0.5);
+  strip_dist_raw -> GetXaxis() -> SetTitle("Strip ID");
+  strip_dist_raw -> GetYaxis() -> SetTitle("Counts");
+  strip_dist_raw -> SetFillColor(17);
+
+  sprintf(htitle,"%.3f : Raw TDC (All Strips)", runinfo.RUNID);
+  tdc_raw = new TH1F("tdc_raw", htitle, 100, 0, 100);
+  tdc_raw -> GetXaxis() -> SetTitle("TDC [channel]");
+  tdc_raw -> SetFillColor(17);
+
+  sprintf(htitle,"%.3f : Raw ADC (All Strips)", runinfo.RUNID);
+  adc_raw = new TH1F("adc_raw", htitle, 257, -0.5, 256.5);
+  adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+  adc_raw -> SetFillColor(17);
+
+  sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips)", runinfo.RUNID);
+  tdc_vs_adc_raw = new TH2F("tdc_vs_adc_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
+  tdc_vs_adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+  tdc_vs_adc_raw -> GetYaxis() -> SetTitle("TDC [channel]");
+  tdc_vs_adc_raw -> SetFillColor(17);
+
+
+  // Bunch Directory
+  Bunch->cd();
   sprintf(htitle,"%.3f : Counts per Bunch ", runinfo.RUNID);
   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");

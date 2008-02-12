@@ -15,6 +15,7 @@
 #include <string.h>
 #include <iostream.h>
 #include <fstream.h>
+#include <getopt.h>
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
@@ -67,43 +68,48 @@ int main (int argc, char *argv[]){
     int lth, uth;
     char suffix[] = ".data"; // suffix of data file
 
-    while ((c = getopt(argc, argv, "?f:n:ho:r:t:m:e:d:baCDTABZF:MNW:UGRS"))!=-1) {
+    int opt, option_index = 0;
+    static struct option long_options[] = {
+      {"raw", 0, 0, 'r'},
+      {"feedback", 0, 0, 'b'},
+      {"no-error-detector", 0, 0, 'a'},
+      {0, 0, 0, 0}
+    };
+
+    while ((c = getopt_long(argc, argv, "?f:n:ho:rt:m:e:d:baCDTABZF:MNW:UGRS", long_options, &option_index))!=-1) {
         switch (c) {
         case 'h':
         case '?':
             cout << "Usage of " << argv[0] <<endl;
-            cout << " -h(or?)              : print this help" <<endl;
-            cout << " -f <filename>        : input data file name " <<endl;
-            cout << " -n <number>          : evnt skip (n=1 noskip)" <<endl;
-            cout << " -o <filename>        : Output hbk file" <<endl;
+            cout << " -h(or?)                : print this help" <<endl;
+            cout << " -f <filename>          : input data file name " <<endl;
+            cout << " -n <number>            : evnt skip (n=1 noskip)" <<endl;
+            cout << " -o <filename>          : Output hbk file" <<endl;
 	    //            cout << " -r <filename>        : ramp timing file" <<endl;
-            cout << " -t <time shift>      : TOF timing shift in [ns]" <<endl;
-            cout << "                      : addition to TSHIFT defined in run.db " 
+            cout << " -t <time shift>        : TOF timing shift in [ns]" <<endl;
+            cout << "                        : addition to TSHIFT defined in run.db " 
 		 <<endl;
-            cout << " -e <lower:upper>     : kinetic energy range" <<endl;
-            cout << "                      : default (400:900) keV" <<endl;
-            cout << "                                       " <<endl;
-	    //            cout << " <MODE> ---------------(default on)---------" <<endl;
+            cout << " -e <lower:upper>       : kinetic energy range" <<endl;
+            cout << "                        : default (400:900) keV" <<endl;
+	    cout << " <MODE> ---------------(default on)---------" <<endl;
 	    //            cout << " -B                   : create banana curve on" <<endl;
 	    //            cout << " -G                   : mass mode on " <<endl;
-	    cout << " -a                   : anomaly check off " << endl;
+	    cout << " -a --no-error-detector : anomaly check off " << endl;
             cout << " <MODE> ---------------(default off)--------" <<endl;
-	    cout << " -b                   : feedback mode on " << endl;
-            cout << " -C                   : Calibration mode on " <<endl;
-            cout << " -D                   : Dead layer  mode on " <<endl;
-	    cout << " -d  <dlayer>         : Additional deadlayer thickness [ug/cm2]" << endl;
+	    cout << " -r --raw               : raw histograms on " << endl;
+	    cout << " -b                     : feedback mode on " << endl;
+            cout << " -C                     : Calibration mode on " <<endl;
+            cout << " -D                     : Dead layer  mode on " <<endl;
+	    cout << " -d  <dlayer>           : Additional deadlayer thickness [ug/cm2]" << endl;
 	    //            cout << " -T                   : T0 study    mode on " <<endl;
 	    //            cout << " -A                   : A0,A1 study mode on " <<endl;
 	    //            cout << " -Z                   : without T0 subtraction" <<endl;
-            cout << " -F <file>            : overwrite conf file defined in run.db" <<endl;
-	    //            cout << " -M                   : exit after run message" <<endl;
-            cout << " -W <lower:upper>     : const width banana cut" <<endl;
-	    cout << " -m <sigma>           : banana cut by <sigma> from 12C mass [def]:3 sigma" 
+            cout << " -F <file>              : overwrite conf file defined in run.db" <<endl;
+            cout << " -W <lower:upper>       : const width banana cut" <<endl;
+	    cout << " -m <sigma>             : banana cut by <sigma> from 12C mass [def]:3 sigma" 
 		 << endl; 
-            cout << " -U                   : update histogram" <<endl;
-            cout << " -N                   : store Ntuple events" <<endl;
-	    //            cout << " -R                   : ramp measurement 1sec bin" <<endl;
-	    //            cout << " -S                   : study mode" <<endl;
+            cout << " -U                     : update histogram" <<endl;
+            cout << " -N                     : store Ntuple events" <<endl;
             exit(0);
         case 'f':
             sprintf(ifile, optarg);
@@ -122,11 +128,6 @@ int main (int argc, char *argv[]){
             sprintf(hbk_outfile, optarg);
             fprintf(stdout,"Output hbk file: %s \n",hbk_outfile); 
             hbk_read = 1;
-            break;
-        case 'r': // ramp timing file to be read
-            strcpy(ramptiming, optarg);
-            fprintf(stdout,"Ramp Timing file : %s \n",ramptiming); 
-            ramp_read = 1;
             break;
         case 't': // set timing shift in banana cut
             dproc.tshift = atoi(optarg);
@@ -167,6 +168,9 @@ int main (int argc, char *argv[]){
 	case 'b':
             dproc.FEEDBACKMODE = Flag.feedback = 1;
             break;
+	case 'r':
+            dproc.RAWHISTOGRAM = 1;
+            break;
         case 'C':
             dproc.CMODE = 1;
 	    dproc.RECONFMODE = 0;
@@ -187,9 +191,6 @@ int main (int argc, char *argv[]){
         case 'Z':
             dproc.ZMODE = 1;
             break;
-        case 'M':
-            dproc.MESSAGE = 1;
-            break;
         case 'U':
             dproc.UPDATE = 1;
             break;
@@ -198,14 +199,6 @@ int main (int argc, char *argv[]){
             break;
         case 'N':
             dproc.NTMODE = 1;
-            break;
-        case 'R':
-            dproc.RAMPMODE=1;
-            fprintf(stdout,"RAMP MEASUREMENT ON\n"); 
-            break;
-        case 'S':
-            dproc.STUDYMODE=1;
-            fprintf(stdout,"STUDY MODE ON\n"); 
             break;
         case 'W': // constant width banana cut
             dproc.CBANANA = 1;
