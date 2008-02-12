@@ -76,6 +76,7 @@ extern TH1F  * mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
 
 
 // Bunch Distribution
+extern TH1F * bunch_dist_raw;              // counts per bunch (raw)
 extern TH1F * bunch_dist;                  // counts per bunch
 extern TH1F * wall_current_monitor;        // wall current monitor
 extern TH1F * specific_luminosity;         // specific luminosity
