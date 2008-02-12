@@ -188,11 +188,18 @@ RunAsym(){
 	    rundb_inserter.sh 
 	fi
     fi
-    echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
-    dLayerChecker -f $RunID;
-    if [ $? -eq 0 ] ; then
-	dLayerChecker -z $RunID
-	rundb_inserter.sh 
+
+    # Update Configuration File Only for Flattop Energy
+    Test=`OnlinePol.sh -f $RunID --energy`
+    if [ $Test -gt 25 ] ; then
+
+	echo -e "Deadlayer File Check : dLayerChecker -f $RunID";
+	dLayerChecker -f $RunID;
+	if [ $? -eq 0 ] ; then
+	    dLayerChecker -z $RunID
+	    rundb_inserter.sh 
+	fi
+
     fi
 
     nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook | tee log/$RunID.log;	
