@@ -438,11 +438,14 @@ int readloop() {
 
 			// Raw histograms
 			if ((!Flag.feedback)&&(dproc.RAWHISTOGRAM)) {
-			  bunch_dist_raw -> Fill(event.bid);
-			  strip_dist_raw -> Fill(event.stN);
-			  tdc_raw        -> Fill(event.tdc);
-			  adc_raw        -> Fill(event.amp);
-			  tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
+			  if (event.stN<72){
+			    bunch_dist_raw -> Fill(event.bid);
+			    strip_dist_raw -> Fill(event.stN);
+			    tdc_raw        -> Fill(event.tdc);
+			    adc_raw        -> Fill(event.amp);
+			    tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
+			    if (fillpat[event.bid]!=1) tdc_vs_adc_false_bunch_raw -> Fill(event.amp,event.tdc);
+			  }
 			}
 
                         // process event for following case:

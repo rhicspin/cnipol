@@ -53,6 +53,7 @@ TH1F * strip_dist_raw;              // counts per strip (raw)
 TH1F * tdc_raw;                     // tdc (raw)
 TH1F * adc_raw;                     // adc (raw)
 TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
+TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
 
 // Kinema Dir
 TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
@@ -230,7 +231,12 @@ Root::RootHistBook(StructRunInfo runinfo){
   tdc_vs_adc_raw = new TH2F("tdc_vs_adc_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
   tdc_vs_adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
   tdc_vs_adc_raw -> GetYaxis() -> SetTitle("TDC [channel]");
-  tdc_vs_adc_raw -> SetFillColor(17);
+
+  sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips) false bunch", runinfo.RUNID);
+  tdc_vs_adc_false_bunch_raw = new TH2F("tdc_vs_adc_false_bunch_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
+  tdc_vs_adc_false_bunch_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+  tdc_vs_adc_false_bunch_raw -> GetYaxis() -> SetTitle("TDC [channel]");
+  tdc_vs_adc_false_bunch_raw -> SetMarkerColor(2);
 
 
   // Bunch Directory
