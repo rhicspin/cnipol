@@ -128,6 +128,16 @@ ColorSkime(){
 Int_t GetHistograms(TFile * rootfile);
 
 
+// =======================================================================================
+//                                    Histogram Checker 
+// =======================================================================================
+Int_t IsOK(Char_t histname[]){
+  Int_t OK = Int_t(gDirectory->Get(histname));
+  if (!OK) cerr << "The histogram : " << histname << " doesn't exist in root file. Ignored." << endl;
+  return OK;
+}
+
+
 Int_t 
 PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
   cout << "PlotStrip stID=" << stID << endl;
@@ -141,23 +151,20 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
   Char_t histname[100];
   // banana
   sprintf(histname,"t_vs_e_st%d",stID);
-  gDirectory->Get(histname) -> Draw("colz");  CurC->Update();  ps->NewPage();
+  if (IsOK(histname)) gDirectory->Get(histname) -> Draw("colz");  CurC->Update();  ps->NewPage();
 
   // mass_vs_e correlation
   sprintf(histname,"mass_vs_e_ecut_st%d",stID);
-  gDirectory->Get(histname) -> Draw("contz"); 
+  if (IsOK(histname)) gDirectory->Get(histname) -> Draw("contz"); 
   sprintf(histname,"mass_vs_energy_corr_st%d",stID);
-  if (gDirectory->Get(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
+  if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
   ps->NewPage();
 
   // invariant mass
   sprintf(histname,"mass_nocut_st%d",stID);
-  gDirectory->Get(histname) -> Draw("");  
+  if (IsOK(histname)) gDirectory->Get(histname) -> Draw("");  
   sprintf(histname,"mass_yescut_st%d",stID);
-  if (gDirectory->Get(histname)){
-    gDirectory->Get(histname) -> Draw("same");  
-  }
-  CurC->Update();    
+  if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");    CurC->Update();    
 
   return 0;
 
@@ -182,7 +189,7 @@ PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       stID=det*NSTRIP_PER_DETECTOR+st;
       CurC->cd(st);
       sprintf(histname,"t_vs_e_st%d",stID);
-      gDirectory->Get(histname) -> Draw("colz");  CurC->Update();    
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw("colz");  CurC->Update();    
 
     }// end-of-strip loop
 
@@ -211,10 +218,10 @@ PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       stID=det*NSTRIP_PER_DETECTOR+st;
       CurC->cd(st); 
       sprintf(histname,"mass_vs_e_ecut_st%d",stID);
-      gDirectory->Get(histname) -> Draw("contz");  CurC->Update();    
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw("contz");  CurC->Update();    
 
       sprintf(histname,"mass_vs_energy_corr_st%d",stID);
-      if (gDirectory->Get(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
 
     }// end-of-strip loop
 
@@ -243,11 +250,9 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       stID=det*NSTRIP_PER_DETECTOR+st;
       CurC->cd(st); 
       sprintf(histname,"mass_nocut_st%d",stID);
-      gDirectory->Get(histname) -> Draw(""); 
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw(""); 
       sprintf(histname,"mass_yescut_st%d",stID);
-      if (gDirectory->Get(histname)){
-	gDirectory->Get(histname) -> Draw("same");  
-      }
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  
       CurC->Update();    
 
     }// end-of-strip loop
@@ -293,7 +298,7 @@ PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       stID=det*NSTRIP_PER_DETECTOR+st;
       CurC->cd(st); 
       sprintf(histname,"mass_feedback_st%d",stID);
-      gDirectory->Get(histname) -> Draw(""); 
+      if (IsOK(histname)) gDirectory->Get(histname) -> Draw(""); 
       CurC->Update();    
 
     }// end-of-strip loop
@@ -360,7 +365,7 @@ AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   ps->NewPage();
   CurC->cd(1) ; tdc_vs_adc_raw->Draw(); 
   CurC->cd(2) ; tdc_vs_adc_raw->Draw("colz"); 
-  CurC->cd(3) ; tdc_vs_adc_raw->Draw("lego"); CurC->Update(); ps->NewPage(); 
+  CurC->cd(3) ; tdc_vs_adc_raw->Draw("lego"); CurC->Update(); 
 
   return 0;
 
