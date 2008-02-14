@@ -375,19 +375,19 @@ AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript 
   ps->NewPage();
   CurC->Clear(); CurC->Divide(2,2); 
   rootfile->cd(); rootfile->cd("ErrDet");  
-  CurC->cd(1) ; mass_e_correlation_strip -> Draw(); 
-  CurC->cd(2) ; mass_sigma_vs_strip -> Draw(); 
-  CurC->cd(3) ; good_carbon_events_strip -> Draw(); 
-  CurC->cd(4) ; mass_pos_dev_vs_strip -> Draw(); CurC->Update(); 
-  ps->NewPage();
+  CurC->cd(1) ; if (gDirectory->Get("mass_e_correlation_strip")!=0) mass_e_correlation_strip -> Draw(); 
+  CurC->cd(2) ; if (gDirectory->Get("mass_sigma_vs_strip")!=0) mass_sigma_vs_strip -> Draw(); 
+  CurC->cd(3) ; if (gDirectory->Get("good_carbon_events_strip")!=0) good_carbon_events_strip -> Draw(); 
+  CurC->cd(4) ; if (gDirectory->Get("mass_pos_dev_vs_strip")!=0) mass_pos_dev_vs_strip -> Draw(); 
+  CurC->Update();   ps->NewPage();
   
   rootfile->cd("Asymmetry");
-  CurC->cd(1) ; asym_vs_bunch_x90 -> Draw(); 
-  CurC->cd(2) ; asym_vs_bunch_x45 -> Draw(); 
-  CurC->cd(3) ; asym_vs_bunch_y45 -> Draw(); 
+  CurC->cd(1) ; if (gDirectory->Get("asym_vs_bunch_x90")!=0) asym_vs_bunch_x90 -> Draw(); 
+  CurC->cd(2) ; if (gDirectory->Get("asym_vs_bunch_x45")!=0) asym_vs_bunch_x45 -> Draw(); 
+  CurC->cd(3) ; if (gDirectory->Get("asym_vs_bunch_y45")!=0) asym_vs_bunch_y45 -> Draw(); 
   rootfile->cd(); rootfile->cd("ErrDet");
-  CurC->cd(4) ; spelumi_vs_bunch -> Draw(); CurC->Update(); 
-
+  CurC->cd(4) ; if (gDirectory->Get("spelumi_vs_bunch")!=0) spelumi_vs_bunch -> Draw(); 
+  CurC->Update(); 
 
   return 0;
 
@@ -403,21 +403,21 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
   // energy slope
   rootfile->cd(); rootfile->cd("Kinema");
-  energy_spectrum_all->Draw(); CurC->Update();
+  if (gDirectory->Get("energy_spectrum_all")!=0) {energy_spectrum_all->Draw(); CurC->Update();}
 
   // bunch detailes 
   rootfile->cd("Asymmetry");
   gStyle->SetStatStyle(0);
-  asym_vs_bunch_x90 -> Draw(); CurC -> Update(); ps->NewPage(); 
-  asym_vs_bunch_x45 -> Draw(); CurC -> Update(); ps->NewPage();
-  asym_vs_bunch_y45 -> Draw(); CurC -> Update(); ps->NewPage();
+  if (gDirectory->Get("asym_vs_bunch_x90")!=0) {asym_vs_bunch_x90 -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("asym_vs_bunch_x45")!=0) {asym_vs_bunch_x45 -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("asym_vs_bunch_y45")!=0) {asym_vs_bunch_y45 -> Draw(); CurC -> Update(); ps->NewPage();}
 
   rootfile->cd(); rootfile->cd("ErrDet");
   gStyle->SetOptFit(111);
-  asym_bunch_x90   -> Draw(); CurC -> Update(); ps->NewPage();
-  asym_bunch_x45   -> Draw(); CurC -> Update(); ps->NewPage();
-  asym_bunch_y45   -> Draw(); CurC -> Update(); ps->NewPage();
-  spelumi_vs_bunch -> Draw(); CurC -> Update(); ps->NewPage();
+  if (gDirectory->Get("asym_bunch_x90")!=0) {asym_bunch_x90   -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("asym_bunch_x45")!=0) {asym_bunch_x45   -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("asym_bunch_y45")!=0){asym_bunch_y45   -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("spelumi_vs_bunch")!=0){spelumi_vs_bunch -> Draw(); CurC -> Update(); ps->NewPage();}
 
   rootfile->cd(); rootfile->cd("Bunch");
   bunch_spelumi  -> Draw(); CurC -> Update(); ps->NewPage();
