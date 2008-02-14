@@ -68,6 +68,7 @@ extern TH1F * strip_dist_raw;              // counts per strip (raw)
 extern TH1F * tdc_raw;                     // tdc (raw)
 extern TH1F * adc_raw;                     // adc (raw)
 extern TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
+extern TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
 
 // Kinema Direcotry
 extern TH2F * t_vs_e[TOT_WFD_CH];
