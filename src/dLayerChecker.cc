@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
 	out.open(ofile);
 	if (out.fail()) {
 	  cerr << "\n Cannot create output file " << ofile << "." << endl;
-	  cerr << " Likely either no /tmp/cnipol directory or write permission problem." << endl;
+	  cerr << " Likely either no " << tmpdir << " directory or write permission problem." << endl;
 	}
 
 	if ( confdir == NULL )
@@ -75,19 +75,15 @@ int main (int argc, char *argv[])
 			case 'f':
 				sprintf(runid, optarg);
 	    			// if ifile lack of suffix ".data", attach ".data"
-				strcat(configfile, confdir);
-				strcat(configfile,     "/");
-				strcat(configfile,   runid);
-				strcat(configfile,   ".config.dat");
 				optgiven=true;
 				sprintf(OperationMode,"(Consistency Check Mode)          ");
 				break;
 			case 'z':
 				sprintf(runid, optarg);
-				strcat(configfile, sharedir);
-				strcat(configfile,     "/dlayer/");
-				strcat(configfile,   runid);
-				strcat(configfile,   ".temp.dat");
+				strcat(dlayerfile, sharedir);
+				strcat(dlayerfile,     "/dlayer/");
+				strcat(dlayerfile,   runid);
+				strcat(dlayerfile,   ".temp.dat");
 				runfit=true;
 				sprintf(OperationMode,"(DeadLayer Fit Quality Check Mode)");
 				Mode=1;
@@ -101,6 +97,13 @@ int main (int argc, char *argv[])
 				cout<<"run with option -h for help"<<endl;
 				exit(-1);
 		}
+
+		// define configfile
+		strcat(configfile, confdir);
+		strcat(configfile,     "/");
+		strcat(configfile,   runid);
+		strcat(configfile,   ".config.dat");
+
 	}
 	
 
@@ -111,17 +114,24 @@ int main (int argc, char *argv[])
 	printf("******************************************************************************\n");
 
 	// OperationMode == Deadalyer Fit Quality Check
-	if (Mode) checkChi2(configfile);
-	
+	if (Mode) {
+	  checkChi2(dlayerfile);
+	  readDLayer(configfile);
+	  // if t0 are all same for strips for 90 degrees detectors, then this is horizontal target run.
+	  if (!(t0_diff_sum[1]+t0_diff_sum[4])) SINGLE_CONFIG_MODE=true;
+	}
+
 	if(runfit==true)
 	{
 		if(fitresult==1)
 		{
-			cout<<"dlayer fit is successful"<<endl;
+		        cout<<"dlayer fit is successful.";
 			out << endl << "[" << runid << "]@" << endl;
 			if (SINGLE_CONFIG_MODE) {
+			  cout << " Write out in single config mode" << endl;
 			  out << "\tCONFIG*=" ;
 			} else {
+			  cout << endl;
 			  out << "\tCONFIG="  ;
 			}
 			out << runid << ".config.dat;@" << endl << endl;
@@ -246,12 +256,13 @@ int readDLayer(char *infile)
 {
 	
 	double deadwidth[strips_per_detector*num_detectors + 10];
-	
+	double t0[strips_per_detector*num_detectors + 10];
+
 	int countstrip=0;
 	int countdetector=0;
 	
 	int st,strip;
-	float t0,acoef,edead,ecoef,A0,A1,iasigma;
+	float acoef,edead,ecoef,A0,A1,iasigma;
 	
 	
 	ifstream configFile;
@@ -299,6 +310,7 @@ int readDLayer(char *infile)
 			
 			
 			deadwidth[stripn-1]=dwidthn;
+			t0[stripn-1]=t0n;
 			
 			
 		}
@@ -312,15 +324,22 @@ int readDLayer(char *infile)
 	
 	for(unsigned short detector=0;detector<num_detectors;detector++)
 	{
-		countstrip=0;
+	  // for detector active/non-active test
+	  float t0_ref=0;
+
+		countstrip=t0_diff_sum[detector]=0;
 		for(unsigned short strip=0;strip<strips_per_detector;strip++)
 		  {
 			if(isStripAlive(strips_per_detector*detector + strip)==true)
 			{
 				countstrip++;
-// 				tempwidth[detector]+=cfginfo.data.chan[strips_per_detector*detector + strip].dwidth;
 				tempwidth[detector]+=deadwidth[strips_per_detector*detector + strip];
 			}
+
+			// reference t0 is always the first strip in detector. calculate diff. 
+			if (!strip) t0_ref = t0[strips_per_detector*detector + strip];
+			t0_diff_sum[detector] += fabs(t0_ref - t0[strips_per_detector*detector + strip]);
+
 		}
 		if(countstrip!=0)
 		{
@@ -330,6 +349,7 @@ int readDLayer(char *infile)
 		{
 			cout<<"warning: detector "<<detector<<" has no live strips"<<endl;
 		}
+
 	}
 	
 	
