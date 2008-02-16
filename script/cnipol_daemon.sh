@@ -206,6 +206,7 @@ RunAsym(){
 
     nice -n 19 Asym -f $RunID -b -o hbook/$RunID.hbook --raw | tee log/$RunID.log;	
     mv $RunID.root root/.;
+    nice -n 19 AsymPlot -f $RunID ;
     echo $RunID >> $ANALYZED_RUNLIST_DAEMON
 
 }
