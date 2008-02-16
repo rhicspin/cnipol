@@ -11,8 +11,13 @@ $ONLINE_CONFIG="";
 $OUTPUTDIR=".";
 $ONE_PAR_FIT_OPTION=1;
 
-$DLAYER_WIDTH=50;
+#Default Dlayer Width
+$DLAYER_WIDTH_DEFAULT=50;
+$DLAYER_WIDTH=$DLAYER_WIDTH_DEFAULT;
+#Default Dlayer Width Maximum. Beyond this, force reset tobe $DLAYER_WIDTH_DEFAULT;
+$DLAYER_WIDTH_MAX=150;
 $INVERT_KINEMA=0;
+
 
 
 
@@ -149,6 +154,11 @@ sub ConvertEdep2Ekin(){
 		$DLAYER_WIDTH = "$F3";
 	    }
 	}
+	if ($DLAYER_WIDTH>$DLAYER_WIDTH_MAX) {
+	    printf "DeadLayer $DLAYER_WIDTH exceeds limit $DLAYER_WIDTH_MAX. ";
+	    printf "Reset default $DLAYER_WIDTH_DEFAULT\n";
+	    $DLAYER_WIDTH=$DLAYER_WIDTH_DEFAULT;
+	}
     }else{
 	print "$FITLOGFILE doesn't exist. Use default <dwidth>=$DLAYER_WIDTH\n";
     }
@@ -225,14 +235,17 @@ sub PrintRunCondition(){
 #                             Main Routine
 #----------------------------------------------------------------------
 
+
 # Get Run Conditions from Offline Log file
 GetLog();
 
 # Get Online Configulation file name for online monitoring.
 GetOnlineConfig();
 
+
 # Calculate EMIN:EMAX range from kinetic energies for given dlayer thickness
 if ( $INVERT_KINEMA ) { ConvertEdep2Ekin(); };
+
 
 # Print Run Conditions
 PrintRunCondition();
