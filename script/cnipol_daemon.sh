@@ -45,7 +45,7 @@ fi
 help(){
     echo    " "
     echo    " cnipol_daemon.sh [-xh][-f <RunID>][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
-    echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>]"; 
+    echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>][--tolerance <int>]"; 
     echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list]";
     echo    "    : search for new run from <runlist> which has not been analyized and then run"
     echo    "      analysis program."
@@ -60,7 +60,7 @@ help(){
     echo -e "   --run-Asym                run Asym"
     echo -e "   --delayer-fit             run deadlayer fit"
     echo -e "   --max-iteration <int>     Maximum iteration for deadlayer fit [def]:$MAX_ITERATION";
-    echo -e "   --toleratnce <[%]>        Tolerance in [%] to be converged. [def]:$TOLERANCE";
+    echo -e "   --tolerance <[%]>         Tolerance in [%] to be converged. [def]:$TOLERANCE";
     echo -e "   -s --sleep <time>         Sleep <time> in sec [def]:$SLEEP_TIME";
     echo -e "   -h | --help               Show this help"
     echo -e "   -x                        Show example"
