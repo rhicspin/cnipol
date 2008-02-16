@@ -67,6 +67,7 @@ CalcInvertKinema(float Ekin, float x){
 
     Ekin0 = ekin(dE,x);
     dE += Precision;
+    if (Ekin-Ekin0<0) return dE;
 
   }
 
