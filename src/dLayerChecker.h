@@ -15,6 +15,7 @@ bool runfit;
 
 
 //input data files
+char dlayerfile[256];
 char configfile[256];
 char configfile2[256];
 
@@ -36,6 +37,7 @@ const float dlayer_consistency=3.; // [ug/cm2]
 //average deadwidth[which file][which detector]
 float deadwidth[2][num_detectors];
 float tempwidth[num_detectors];
+float t0_diff_sum[num_detectors];
 
 //whether the dead layers from the two input files are consistent
 bool dead_layers_consistent;
