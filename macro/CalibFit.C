@@ -22,6 +22,7 @@
 
 #define AMPEAK 5486.0
 #define CCONST 0.2000      // regular calibration 
+//#define CCONST 0.1000      // regular calibration 
 //#define CCONST 0.4000       // attenuation (x2) runs
 
 
