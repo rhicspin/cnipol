@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <string.h>
 #include <iostream.h>
+#include <fstream.h>
 #include <getopt.h>
 #include "TString.h"
 #include "TMath.h"
@@ -27,6 +28,8 @@ static Int_t ERROR_DETECTOR=1;
 static Int_t SUMMARY=1;
 static Int_t stID=0;
 static char * RUNID;
+
+extern  ofstream logfile;
 
 class AsymPlot
 {
@@ -132,8 +135,9 @@ Int_t GetHistograms(TFile * rootfile);
 //                                    Histogram Checker 
 // =======================================================================================
 Int_t IsOK(Char_t histname[]){
+  ofstream logfile;
   Int_t OK = Int_t(gDirectory->Get(histname));
-  if (!OK) cerr << "The histogram : " << histname << " doesn't exist in root file. Ignored." << endl;
+  if (!OK) logfile << "The histogram : " << histname << " doesn't exist in root file. Ignored." << endl;
   return OK;
 }
 
@@ -421,26 +425,26 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   gStyle->SetOptFit(111);
   if (gDirectory->Get("asym_bunch_x90")!=0) {asym_bunch_x90   -> Draw(); CurC -> Update(); ps->NewPage();}
   if (gDirectory->Get("asym_bunch_x45")!=0) {asym_bunch_x45   -> Draw(); CurC -> Update(); ps->NewPage();}
-  if (gDirectory->Get("asym_bunch_y45")!=0){asym_bunch_y45   -> Draw(); CurC -> Update(); ps->NewPage();}
+  if (gDirectory->Get("asym_bunch_y45")!=0) {asym_bunch_y45   -> Draw(); CurC -> Update(); ps->NewPage();}
   if (gDirectory->Get("spelumi_vs_bunch")!=0){spelumi_vs_bunch -> Draw(); CurC -> Update(); ps->NewPage();}
 
   rootfile->cd(); rootfile->cd("Bunch");
-  bunch_spelumi  -> Draw(); CurC -> Update(); ps->NewPage();
-  bunch_dist     -> Draw(); CurC -> Update(); ps->NewPage();
-  wall_current_monitor -> Draw(); CurC -> Update(); ps->NewPage();
+  if (IsOK("bunch_spelumi")) bunch_spelumi -> Draw(); CurC -> Update(); ps->NewPage();
+  if (IsOK("bunch_dist"))    bunch_dist    -> Draw(); CurC -> Update(); ps->NewPage();
+  if (IsOK("wall_current_monitor")) wall_current_monitor -> Draw(); CurC -> Update(); ps->NewPage();
 
   // strip details
   rootfile->cd(); rootfile->cd("ErrDet");
-  mass_e_correlation_strip -> Draw(); CurC->Update(); 
-  mass_sigma_vs_strip -> Draw(); CurC->Update(); 
-  mass_chi2_vs_strip -> Draw(); CurC->Update(); 
-  good_carbon_events_strip -> Draw(); CurC->Update(); 
-  mass_pos_dev_vs_strip -> Draw(); CurC->Update(); 
+  if (IsOK("mass_e_correlation_strip")) mass_e_correlation_strip -> Draw(); CurC->Update(); 
+  if (IsOK("mass_sigma_vs_strip"))      mass_sigma_vs_strip      -> Draw(); CurC->Update(); 
+  if (IsOK("mass_chi2_vs_strip"))       mass_chi2_vs_strip       -> Draw(); CurC->Update(); 
+  if (IsOK("good_carbon_events_strip")) good_carbon_events_strip -> Draw(); CurC->Update(); 
+  if (IsOK("mass_pos_dev_vs_strip"))    mass_pos_dev_vs_strip    -> Draw(); CurC->Update(); 
 
   // sin(phi) fit
   rootfile->cd(); rootfile->cd("Asymmetry");
   gStyle->SetOptFit(111); gStyle->SetOptStat(0);
-  asym_sinphi_fit->Draw(); CurC->Update();
+  if (IsOK("asym_sinphi_fit")) asym_sinphi_fit->Draw(); CurC->Update();
 
   return 0;
 
@@ -572,9 +576,15 @@ int AsymPlot() {
   Char_t filename[50], text[100];
   if (!RUNID) RUNID="7279.005"; // default
   sprintf(filename,"%s.root",RUNID);
-  sprintf(text,"ln -s root/%s %s",filename,filename);
+  sprintf(text,"ln -s root/%s AsymPlot.root",filename);
   gSystem->Exec(text);
-  TFile * rootfile = TFile::Open(filename);
+  TFile * rootfile = TFile::Open("AsymPlot.root");
+
+  // Log file handling
+  ofstream logfile;
+  logfile.open(".AsymPlot.log");
+  if (logfile.fail()){ cerr << "Warning: Cannot open .AsymPlot.log." << endl;}
+
 
   // setup color skime
   //  ColorSkime();
@@ -597,11 +607,15 @@ int AsymPlot() {
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
   if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
 
+  // close ps file
   cout << "ps file : " << psfile << endl;
   ps->Close();
 
+  // close logfile
+  //  logfile.close();
+
   // remove symboric link to root file in root directory
-  sprintf(text,"rm %s ",filename);    
+  sprintf(text,"rm AsymPlot.root ",filename);    
   gSystem->Exec(text);  
 
   sprintf(text,"gv -landscape %s",psfile);
