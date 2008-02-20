@@ -12825,3 +12825,48 @@
 
 [9906.102]@
 	CONFIG*=9906.102.config.dat;@
+
+[9906.112]@
+	CONFIG=9906.112.config.dat;@
+
+[9909.002]@
+	CONFIG=9909.002.config.dat;@
+
+[9909.003]@
+	CONFIG=9909.003.config.dat;@
+
+[9909.101]@
+	CONFIG=9909.101.config.dat;@
+
+[9910.002]@
+	CONFIG=9910.002.config.dat;@
+
+[9916.002]@
+	CONFIG*=9916.002.config.dat;@
+
+[9916.003]@
+	CONFIG=9916.003.config.dat;@
+
+[9917.001]@
+	CONFIG*=9917.001.config.dat;@
+
+[9917.002]@
+	CONFIG*=9917.002.config.dat;@
+
+[9917.003]@
+	CONFIG*=9917.003.config.dat;@
+
+[9917.004]@
+	CONFIG*=9917.004.config.dat;@
+
+[9917.005]@
+	CONFIG*=9917.005.config.dat;@
+
+[9917.007]@
+	CONFIG*=9917.007.config.dat;@
+
+[9917.008]@
+	CONFIG*=9917.008.config.dat;@
+
+[9917.010]@
+	CONFIG*=9917.010.config.dat;@
