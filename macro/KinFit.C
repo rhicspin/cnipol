@@ -563,14 +563,15 @@ void KinFit::FitOne(Int_t St, Int_t mode)
         // Calculate the Linear Function Coefficients
         // Using the reference of 400-900keV fit
         //             const0   const1  const2     slope0  slope1    
+	// 204-583keV  0.2035   1.1013  0.0075     1.0098  0.0036
         // 300-900keV  -0.480095 1.81638 0.00702198 1.00975 0.00213976
         // 400-900keV  -0.545298 2.05241 0.00689393 1.00961 0.00182463
         // 500-900keV  -0.71873 2.27486 0.00654193 1.00909 0.0015731
         
-        Const[St] = -0.545 + 2.052 * dlsum[(Int_t)St/12] 
-            + 0.0069 * dlsum[(Int_t)St/12]*dlsum[(Int_t)St/12];
+        Const[St] = 0.235 + 1.1013 * dlsum[(Int_t)St/12] 
+            + 0.0075 * dlsum[(Int_t)St/12]*dlsum[(Int_t)St/12];
         
-        Slope[St] = 1.0096 + 0.0018 * dlsum[(Int_t)St/12]; 
+        Slope[St] = 1.0098 + 0.0036 * dlsum[(Int_t)St/12]; 
 
         // Write Out the Result on File
     
