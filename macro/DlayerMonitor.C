@@ -96,7 +96,8 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
             >> AveT0[i] >> DeltaT0[i] >> Emin[i] >> Emax[i] >> Bunch[i] >> dum[3] >> dum[4] 
             >> dum[5] >> dum[6] >> dum[7] >> dum[8] >> dum[9] ;
 
-	Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
+	// rate correction for Run05
+	if (RunID[0]<7400) Dl[i] -= (3.66*ReadRate[i]*ReadRate[i]-0.02*ReadRate[i]);
 	
       ++i; dx[i]=dy[i]=0;
 
@@ -195,7 +196,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     GetScale(RunID, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=50  ; ymax=75;}
-    if (RUN==8) {ymin=60  ; ymax=90;}
+    if (RUN==8) {ymin=70  ; ymax=100;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title,"DeadLayer History (%s)",Beam);
@@ -204,7 +205,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     xmin=0.0 ; xmax=1.5;
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=60  ; ymax=75;}
-    if (RUN==8) {ymin=60  ; ymax=90;}
+    if (RUN==8) {ymin=70  ; ymax=100; xmax=10;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title," DeadLayer Rate Dependence (%s)",Beam);
@@ -228,6 +229,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     xmin=0.0 ; xmax=1.5;
     if (RUN==5) {ymin=-20  ; ymax=20;}
     if (RUN==6) {ymin=-20  ; ymax=0;}
+    if (RUN==8) {ymin=-20  ; ymax=0; xmax=10;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"t0 Average [ns]");
     sprintf(title," t0 Average Rate Dependence (%s)",Beam);
@@ -235,6 +237,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   case 60:
     GetScale(RunID, ndata, margin, xmin, xmax);
     ymin=0.0 ; ymax=1.5;
+    if (RUN==8) {ymax=10;}
     sprintf(ytitle,"Event Rate [MHz]");
     sprintf(xtitle,"Fill Number");
     sprintf(title," Event Rate History",Beam);
@@ -251,6 +254,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
   case 101:
     if (RUN==5) {xmin=-5; xmax=8; ymin=20; ymax=65;}
     if (RUN==6) {xmin=-20 ; xmax=-14;  ymin=58; ymax=80;
+    if (RUN==8) {ymin=70 ; ymax=100;}
     if (Beam=="Blue") {xmin=-16; xmax=-10;}
     }
     sprintf(xtitle,"t0 Average [ns]");
