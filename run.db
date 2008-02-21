@@ -12981,6 +12981,12 @@
 [9917.121]@
 	CONFIG*=9917.121.config.dat;@
 
+[9919.002]
+	CONFIG=9919.002.config.dat;
+
+[9919.102]
+	CONFIG=9919.102.config.dat;
+
 [9920.001]@
 	CONFIG=9920.001.config.dat;@
 
