@@ -154,7 +154,7 @@ void CalibFit::Fit()
     fout.close();
 
 
-    PlotRatio();
+    //    PlotRatio();
     ps.Close();
 
 };
