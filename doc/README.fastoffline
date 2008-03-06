@@ -3,10 +3,66 @@
 # June 30, 2006
 
 This README file instructs the setup for the fast offline analysis of pC 
-software packages. Here is the setup for Run08:
+polarimeter at the beginning of new RUN:
 
-o at pc2pc 
+0) make sure to install latest cnipol package from cvs repository.
+   Although the $HOME/cnipol directory is shared between bluepc and yellowpc, 
+   (compilation and) installation needs to be done in bluepc and yellowpc 
+   locally, respectively because the installation directories are local.
 
+1) update run.db
+
+In run.db, some parameters better be resetted to avoid unique setting of previous years.
+Following is some example:
+
+//==============================================================
+//=======                   Run08                      =========
+//==============================================================
+[8500.001]
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=7;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	COMMENT="";
+
+[8500.101]
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=7;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	COMMENT="";
+
+
+2) Parameters to be updated at the begining of New RUN
+
+
+Following parameters could be tuned year by year, so better be reviewed at the beginig of run.
+
+macro/CalibFit.C
+ CCONST 0.2000  // the attenuation factor for the calibration
+
+src/AsymHeader.h
+ TGT_COUNT_MM 0.1  //  set to 0.1 [mm] for Run05, Run06
+ 
+
+src/AsymMain.h
+ phiRun?[NSTRIP]   // phi angle of each strip. This changes once the distance from target to the 
+                   // detector is changed. An utility program to calculate phi angles for 72 strips
+                   // with given distance is available in src/util/calcPhi.cc. 
+
+
+
+================================== daemon scripts for fast offline =================================
+
+o at bluepc (or yellowpc) 
+
+  Update environment in .bashrc. For example for Run08, 
+  RHICRUN=8 
+	
   Update year in ~/cnipol/script/mklink.sh. 
    
   For example:
@@ -16,71 +72,36 @@ o at pc2pc
   Once modified, then execute ~/cnipol/script/install.sh
   Make sure to update in cvs repository accordingly.
 
-  Make links to bluepc/yellowpc data files to $DATADIR
-  by executing MkLink.sh at 
 
-  /etc/cron.hourly/MkLink.sh
-
-	#!/bin/bash
-
-	if [ $HOME/.cni ] ; then
-		source $HOME/.cni
-	fi 
-	RAWDATA_LIST=raw_data.list
-
-	/usr/local/cnipol/share/bin/mklink.sh --double-pc
-
-	#Update raw data file list in $RAWDATA_LIST
-	cd $DATADIR
-	ls [7-9]???.???.data          | sed -e 's/.data//' > $RAWDATA_LIST
-        ls 1????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
-
-	chown e950:e950 $RAWDATA_LIST
-	cd -
-
-	#Many of online scripts scan over the data files based on the $RAWDATA_LIST,
-         and make tables of runs in the list. 
-         So you may wanna constrain the list of runs of interest, for example..
-
-	cd $DATADIR
-	ls 9???.???.data          | sed -e 's/.data//' > $RAWDATA_LIST
-        ls 1????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
-
-
-	is the setting for Run08.
-
-	#Update Online Polarzation table
-	/usr/local/cnipol/share/bin/OnlinePol.sh --update
-	chown e950:e950 $DATADIR/OnlinePol.dat
-
-
-   Note the MkLink.sh is executed every hour by root and requires
-   cni environment file /home/root/.cni. The environments needs to
-   be consistent with default cni environments.
-
-
-o bluepc
-
-  1) Run deadlayer/polarization analysis programs in background:
+o Run deadlayer/polarization analysis programs in background:
 
      cd $ASYMDIR
      cnipol_daemon.sh --dlayer-fit --run-Asym | tee $TMPOUTDIR/cnipol_daemon.log &
 
 
-  2) Make deadlayer & offline polarization database and plots:
+o Copy and paste in crontab followings. Make deadlayer & offline polarization database and plots:
    
 [e950@bluepc cnipol]$ crontab -l
- 30 2 * * * source ~/.bashrc ; cd $ASYMDIR ; dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
- 30 3 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/DlayerMonitor.C
- 30 4 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
- 30 5 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/OfflinePol.C
+ 0  * * * * source ~/.bashrc ; cd $ASYMDIR ; MkLink.sh
+ 30 2 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --online --yellow | tee summary/Online_Yellow.dat ; mkDB.sh --online --blue | tee summary/Online_Blue.dat
+ 30 3 * * * source ~/.bashrc ; cd $ASYMDIR ; dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
+ 30 4 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/DlayerMonitor.C
+ 30 5 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
+ 0  6 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/OfflinePol.C
+ 30 6 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --error-detector --blue > summary/ErrorDet_Blue_all.dat ; mkDB.sh --error-detector --yellow > summary/ErrorDet_Yellow_all.dat
+ 0  7 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b /usr/local/bin/macro/ErrorDetector.C
 
  Resulting summary data/postscript files are found in:
  $ASYMDIR/summary/dLayer_Blue(Yellow)_FTP(INJ)_all.dat   ; deadlayer summary data
  $ASYMDIR/ps/DlayerMonitor.ps                            ; Deadlayer summary plot
  $ASYMDIR/summary/OfflinePol_Blue(Yellow)_all.dat        ; Offline Polarization summary data
  $ASYMDIR/ps/OfflinePol.ps	 			 ; Offline Polarization summary plot
- 
+ $ASYMDIR/summary/ErrorDet_Blue(Yellow)_all.dat          ; summary table of anomalies 
+ $ASYMDIR/ps/ErrorDetector.ps                            ; summary plot of anomalies
+
+
+
+
 
 
 ================
@@ -108,25 +129,4 @@ with e950 account:
 
 mklink.sh --double-pc
 
-from whichever directory you are. Make sure you analyze
-the data in $ASYMDIR. 
-
-
-
-================================================================================================
-Parameters to be updated at the begining of New RUN
-
-
-Following parameters could be tuned year by year, so better be reviewed at the beginig of run.
-
-macro/CalibFit.C
- CCONST 0.2000  // the attenuation factor for the calibration
-
-src/AsymHeader.h
- TGT_COUNT_MM 0.1  //  set to 0.1 [mm] for Run05, Run06
- 
-
-src/AsymMain.h
- phiRun?[NSTRIP]   // phi angle of each strip. This changes once the distance from target to the 
-                   // detector is changed. An utility program to calculate phi angles for 72 strips
-                   // with given distance is available in src/util/calcPhi.cc. 
+from whichever directory you are. Make sure you analyze the data in $ASYMDIR. 
