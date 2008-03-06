@@ -12072,7 +12072,7 @@
 	DisableBunch=20;
 	DisableStrip=40;
 	DisableStrip=64;
-	COMMENT="Run08"
+	COMMENT="Run08";
 
 [8500.101]
 	RESET_ALL=Default;
@@ -12085,7 +12085,7 @@
 	TARGET_COUNT_MM=0.123 ; // target counts/mm conversion
 	REFERENCE_RATE=1;
 	DisableBunch=20;
-	COMMENT="Run08"
+	COMMENT="Run08";
 
 [9000.001]
 	CONFIG=9670.011.config.dat;
