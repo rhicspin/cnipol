@@ -12072,7 +12072,7 @@
 	DisableBunch=20;
 	DisableStrip=40;
 	DisableStrip=64;
-	COMMENT="Run08";
+	COMMENT="Run08"
 
 [8500.101]
 	RESET_ALL=Default;
@@ -12085,7 +12085,7 @@
 	TARGET_COUNT_MM=0.123 ; // target counts/mm conversion
 	REFERENCE_RATE=1;
 	DisableBunch=20;
-	COMMENT="Run08";
+	COMMENT="Run08"
 
 [9000.001]
 	CONFIG=9670.011.config.dat;
@@ -12421,6 +12421,12 @@
 
 [9834.103]@
 	CONFIG*=9832.103.config.dat;@
+
+[9842.003]@
+	CONFIG=9842.003.config.dat;@
+
+[9842.101]@
+	CONFIG=9842.101.config.dat;@
 
 [9846.102]
 	CONFIG=9846.102.config.dat;
@@ -13010,3 +13016,520 @@
 
 [9920.106]@
 	CONFIG=9920.106.config.dat;@
+
+[9933.101]@
+	CONFIG*=9933.101.config.dat;@
+
+[9935.101]@
+	CONFIG=9935.101.config.dat;@
+
+[9937.101]@
+	CONFIG*=9937.101.config.dat;@
+
+[9937.102]@
+	CONFIG*=9937.102.config.dat;@
+
+[9938.101]@
+	CONFIG*=9938.101.config.dat;@
+
+[9938.102]@
+	CONFIG*=9938.102.config.dat;@
+
+[9938.103]@
+	CONFIG*=9938.103.config.dat;@
+
+[9939.101]@
+	CONFIG*=9939.101.config.dat;@
+
+[9939.104]@
+	CONFIG=9939.104.config.dat;@
+
+[9939.105]@
+	CONFIG=9939.105.config.dat;@
+
+[9939.107]@
+	CONFIG=9939.107.config.dat;@
+
+[9940.002]@
+	CONFIG*=9940.002.config.dat;@
+
+[9940.102]@
+	CONFIG*=9940.102.config.dat;@
+
+[9940.104]@
+	CONFIG*=9940.104.config.dat;@
+
+[9940.108]@
+	CONFIG=9940.108.config.dat;@
+
+[9940.109]@
+	CONFIG=9940.109.config.dat;@
+
+[9941.101]@
+	CONFIG*=9941.101.config.dat;@
+
+[9942.002]@
+	CONFIG*=9942.002.config.dat;@
+
+[9942.005]@
+	CONFIG=9942.005.config.dat;@
+
+[9942.007]@
+	CONFIG=9942.007.config.dat;@
+
+[9942.012]@
+	CONFIG=9942.012.config.dat;@
+
+[9942.101]@
+	CONFIG*=9942.101.config.dat;@
+
+[9942.102]@
+	CONFIG*=9942.102.config.dat;@
+
+[9942.106]@
+	CONFIG=9942.106.config.dat;@
+
+[9943.001]@
+	CONFIG*=9943.001.config.dat;@
+
+[9943.002]@
+	CONFIG*=9943.002.config.dat;@
+
+[9943.102]@
+	CONFIG*=9943.102.config.dat;@
+
+[9946.001]@
+	CONFIG*=9946.001.config.dat;@
+
+[9946.002]@
+	CONFIG*=9946.002.config.dat;@
+
+[9946.101]@
+	CONFIG*=9946.101.config.dat;@
+
+[9947.001]@
+	CONFIG=9947.001.config.dat;@
+
+[9947.002]@
+	CONFIG=9947.002.config.dat;@
+
+[9947.005]@
+	CONFIG=9947.005.config.dat;@
+
+[9947.006]@
+	CONFIG=9947.006.config.dat;@
+
+[9948.001]@
+	CONFIG*=9948.001.config.dat;@
+
+[9948.002]@
+	CONFIG*=9948.002.config.dat;@
+
+[9948.003]@
+	CONFIG=9948.003.config.dat;@
+
+[9948.004]@
+	CONFIG=9948.004.config.dat;@
+
+[9948.009]@
+	CONFIG=9948.009.config.dat;@
+
+[9948.101]@
+	CONFIG*=9948.101.config.dat;@
+
+[9948.102]@
+	CONFIG*=9948.102.config.dat;@
+
+[9948.104]@
+	CONFIG=9948.104.config.dat;@
+
+[9948.105]@
+	CONFIG=9948.105.config.dat;@
+
+[9948.107]@
+	CONFIG=9948.107.config.dat;@
+
+[9949.001]@
+	CONFIG*=9949.001.config.dat;@
+
+[9949.002]@
+	CONFIG*=9949.002.config.dat;@
+
+[9949.003]@
+	CONFIG*=9949.003.config.dat;@
+
+[9949.004]@
+	CONFIG*=9949.004.config.dat;@
+
+[9949.005]@
+	CONFIG=9949.005.config.dat;@
+
+[9949.008]@
+	CONFIG=9949.008.config.dat;@
+
+[9949.015]@
+	CONFIG*=9949.015.config.dat;@
+
+[9949.016]@
+	CONFIG*=9949.016.config.dat;@
+
+[9949.105]@
+	CONFIG=9949.105.config.dat;@
+
+[9949.107]@
+	CONFIG=9949.107.config.dat;@
+
+[9950.001]@
+	CONFIG*=9950.001.config.dat;@
+
+[9950.002]@
+	CONFIG*=9950.002.config.dat;@
+
+[9950.003]@
+	CONFIG*=9950.003.config.dat;@
+
+[9950.004]@
+	CONFIG*=9950.004.config.dat;@
+
+[9950.005]@
+	CONFIG*=9950.005.config.dat;@
+
+[9950.101]@
+	CONFIG*=9950.101.config.dat;@
+
+[9950.102]@
+	CONFIG*=9950.102.config.dat;@
+
+[9950.103]@
+	CONFIG*=9950.103.config.dat;@
+
+[9950.105]@
+	CONFIG=9950.105.config.dat;@
+
+[9951.001]@
+	CONFIG*=9951.001.config.dat;@
+
+[9951.002]@
+	CONFIG*=9951.002.config.dat;@
+
+[9951.003]@
+	CONFIG*=9951.003.config.dat;@
+
+[9951.005]@
+	CONFIG*=9951.005.config.dat;@
+
+[9951.006]@
+	CONFIG*=9951.006.config.dat;@
+
+[9951.101]@
+	CONFIG*=9951.101.config.dat;@
+
+[9951.102]@
+	CONFIG*=9951.102.config.dat;@
+
+[9951.103]@
+	CONFIG=9951.103.config.dat;@
+
+[9959.001]@
+	CONFIG*=9959.001.config.dat;@
+
+[9959.002]@
+	CONFIG*=9959.002.config.dat;@
+
+[9959.003]@
+	CONFIG*=9959.003.config.dat;@
+
+[9959.004]@
+	CONFIG*=9959.004.config.dat;@
+
+[9959.005]@
+	CONFIG*=9959.005.config.dat;@
+
+[9959.007]@
+	CONFIG*=9959.007.config.dat;@
+
+[9959.008]@
+	CONFIG*=9959.008.config.dat;@
+
+[9960.001]@
+	CONFIG*=9960.001.config.dat;@
+
+[9960.002]@
+	CONFIG*=9960.002.config.dat;@
+
+[9961.001]@
+	CONFIG*=9961.001.config.dat;@
+
+[9961.002]@
+	CONFIG*=9961.002.config.dat;@
+
+[9961.003]@
+	CONFIG*=9961.003.config.dat;@
+
+[9961.004]@
+	CONFIG*=9961.004.config.dat;@
+
+[9961.005]@
+	CONFIG*=9961.005.config.dat;@
+
+[9961.006]@
+	CONFIG*=9961.006.config.dat;@
+
+[9961.007]@
+	CONFIG*=9961.007.config.dat;@
+
+[9961.008]@
+	CONFIG*=9961.008.config.dat;@
+
+[9961.009]@
+	CONFIG*=9961.009.config.dat;@
+
+[9961.010]@
+	CONFIG*=9961.010.config.dat;@
+
+[9961.011]@
+	CONFIG*=9961.011.config.dat;@
+
+[9961.012]@
+	CONFIG*=9961.012.config.dat;@
+
+[9961.013]@
+	CONFIG*=9961.013.config.dat;@
+
+[9961.014]@
+	CONFIG*=9961.014.config.dat;@
+
+[9961.015]@
+	CONFIG*=9961.015.config.dat;@
+
+[9961.016]@
+	CONFIG*=9961.016.config.dat;@
+
+[9961.017]@
+	CONFIG*=9961.017.config.dat;@
+
+[9961.018]@
+	CONFIG*=9961.018.config.dat;@
+
+[9964.001]@
+	CONFIG*=9964.001.config.dat;@
+
+[9965.001]@
+	CONFIG*=9965.001.config.dat;@
+
+[9965.002]@
+	CONFIG*=9965.002.config.dat;@
+
+[9965.003]@
+	CONFIG*=9965.003.config.dat;@
+
+[9965.004]@
+	CONFIG*=9965.004.config.dat;@
+
+[9965.005]@
+	CONFIG*=9965.005.config.dat;@
+
+[9965.006]@
+	CONFIG*=9965.006.config.dat;@
+
+[9965.008]@
+	CONFIG*=9965.008.config.dat;@
+
+[9965.009]@
+	CONFIG*=9965.009.config.dat;@
+
+[9965.010]@
+	CONFIG*=9965.010.config.dat;@
+
+[9965.011]@
+	CONFIG*=9965.011.config.dat;@
+
+[9965.102]@
+	CONFIG*=9965.102.config.dat;@
+
+[9965.105]@
+	CONFIG=9965.105.config.dat;@
+
+[9966.001]@
+	CONFIG*=9966.001.config.dat;@
+
+[9966.002]@
+	CONFIG*=9966.002.config.dat;@
+
+[9966.003]@
+	CONFIG*=9966.003.config.dat;@
+
+[9966.004]@
+	CONFIG*=9966.004.config.dat;@
+
+[9966.005]@
+	CONFIG*=9966.005.config.dat;@
+
+[9966.006]@
+	CONFIG*=9966.006.config.dat;@
+
+[9966.007]@
+	CONFIG*=9966.007.config.dat;@
+
+[9966.009]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9969.001]@
+	CONFIG*=9969.001.config.dat;@
+
+[9971.001]@
+	CONFIG*=9971.001.config.dat;@
+
+[9971.002]@
+	CONFIG*=9971.002.config.dat;@
+
+[9971.003]@
+	CONFIG*=9971.003.config.dat;@
+
+[9971.004]@
+	CONFIG*=9971.004.config.dat;@
+
+[9971.005]@
+	CONFIG*=9971.005.config.dat;@
+
+[9971.006]@
+	CONFIG*=9971.006.config.dat;@
+
+[9971.007]@
+	CONFIG*=9971.007.config.dat;@
+
+[9971.009]@
+	CONFIG*=9971.009.config.dat;@
+
+[9971.010]@
+	CONFIG*=9971.010.config.dat;@
+
+[9971.011]@
+	CONFIG*=9971.011.config.dat;@
+
+[9972.001]@
+	CONFIG*=9972.001.config.dat;@
+
+[9972.002]@
+	CONFIG*=9972.002.config.dat;@
+
+[9972.003]@
+	CONFIG*=9972.003.config.dat;@
+
+[9972.004]@
+	CONFIG*=9972.004.config.dat;@
+
+[9972.006]@
+	CONFIG*=9972.006.config.dat;@
+
+[9972.007]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9972.008]@
+	CONFIG*=9972.008.config.dat;@
+
+[9972.009]@
+	CONFIG*=9972.009.config.dat;@
+
+[9973.001]@
+	CONFIG*=9973.001.config.dat;@
+
+[9973.002]@
+	CONFIG*=9973.002.config.dat;@
+
+[9973.003]@
+	CONFIG*=9973.003.config.dat;@
+
+[9973.004]@
+	CONFIG*=9973.004.config.dat;@
+
+[9973.006]@
+	CONFIG*=9973.006.config.dat;@
+
+[9973.007]@
+	CONFIG*=9973.007.config.dat;@
+
+[9973.008]@
+	CONFIG*=9973.008.config.dat;@
+
+[9973.009]@
+	CONFIG*=9973.009.config.dat;@
+
+[9973.010]@
+	CONFIG*=9973.010.config.dat;@
+
+[9973.101]@
+	CONFIG*=9973.101.config.dat;@
+
+[9973.109]@
+	CONFIG=9973.109.config.dat;@
+
+[9974.001]@
+	CONFIG*=9974.001.config.dat;@
+
+[9974.002]@
+	CONFIG*=9974.002.config.dat;@
+
+[9974.003]@
+	CONFIG*=9974.003.config.dat;@
+
+[9975.001]@
+	CONFIG*=9975.001.config.dat;@
+
+[9975.002]@
+	CONFIG*=9975.002.config.dat;@
+
+[9975.003]@
+	CONFIG*=9975.003.config.dat;@
+
+[9975.004]@
+	CONFIG*=9975.004.config.dat;@
+
+[9975.005]@
+	CONFIG*=9975.005.config.dat;@
+
+[9975.006]@
+	CONFIG*=9975.006.config.dat;@
+
+[9975.007]@
+	CONFIG*=9975.007.config.dat;@
+
+[9975.008]@
+	CONFIG*=9975.008.config.dat;@
+
+[9976.001]@
+	CONFIG*=9976.001.config.dat;@
+
+[9977.001]@
+	CONFIG*=9977.001.config.dat;@
+
+[9977.002]@
+	CONFIG*=9977.002.config.dat;@
+
+[9977.003]@
+	CONFIG*=9977.003.config.dat;@
+
+[9977.004]@
+	CONFIG*=9977.004.config.dat;@
+
+[9977.005]@
+	CONFIG*=9977.005.config.dat;@
+
+[9977.006]@
+	CONFIG*=9977.006.config.dat;@
+
+[9978.001]@
+	CONFIG*=9978.001.config.dat;@
+
+[9979.112]@
+	CONFIG=9979.112.config.dat;@
+
+[9980.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9981.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
