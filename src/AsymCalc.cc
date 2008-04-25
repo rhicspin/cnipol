@@ -1551,7 +1551,7 @@ StripAsymmetry(){
 
   float diff[2];
 
-  for(Int_t i=0;i<nTgtIndex+1;i++) CalcStripAsymmetry(anal.A_N[1],100+i,cntr_tgt.reg.NStrip[i]);
+
 
   CalcStripAsymmetry(anal.A_N[1], 1, cntr.alt.NStrip);  // alternative sigma cut
   CalcStripAsymmetry(anal.A_N[1], 0, cntr.reg.NStrip);  // regular sigma cut
@@ -1571,6 +1571,9 @@ StripAsymmetry(){
       QuadErrorDiv(diff[0],anal.sinphi[0].P[0],diff[1],anal.sinphi[0].P[1]);
   }
 
+
+  // Calculate Asymmetries for each target position 
+for(Int_t i=0;i<nTgtIndex+1;i++) CalcStripAsymmetry(anal.A_N[1],100+i,cntr_tgt.reg.NStrip[i]);
 
   return;
 }
@@ -1677,11 +1680,18 @@ CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]){
     HHPAK(36250, phi); 
 
     // Fit phi-distribution
-    AsymFit asymfit;
-    asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi[Mode].P, anal.sinphi[Mode].dPhi, anal.sinphi[Mode].chi2);
+    if (Mode < 100) // Fit everything other than scan data 
+    {
+      AsymFit asymfit;
+      asymfit.SinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi[Mode].P, anal.sinphi[Mode].dPhi, anal.sinphi[Mode].chi2);
+    }
+    if (Mode >= 100) //Fit scan data
+    {
+      AsymFit asymfit;
+      asymfit.ScanSinPhiFit(anal.P[0], RawP, dRawP, phi, anal.sinphi[Mode].P, anal.sinphi[Mode].dPhi, anal.sinphi[Mode].chi2);
+    }
     //asymfit.SinPhiFit(anal.P[0], anal.sinphi.P, anal.sinphi.dPhi, anal.sinphi.chi2);
-
-    return;
+return;
 
 }
 
@@ -1768,6 +1778,81 @@ AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
   return ;
 
 }// end-of-AsymFit::SinPhiFit()
+
+
+
+// April, 2008; Introduced by Vipuli to keep dphi fixed at anal.sinphi[0].dPhi[0] 
+// when doing the fit to data taken at each scaned position 
+//
+// Class name  : AsymFit
+// Method name : ScanSinPhiFit()
+//
+// Description : Master Routine for sin(phi) root-fit  
+// Input       : Float_t p0 (1-par Polarization for par[0] initialization)
+//             : Float_t *RawP, Float_t *dRawP, Float_t *phi (vectors to be fit)
+// Return      : Float_t *P, Float_t *dphi, Float_t &chi2dof
+//
+void
+AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
+		   Float_t *P, Float_t *dphi, Float_t &chi2dof)
+{
+
+  
+  char htitle[100];
+  float dx[NSTRIP];
+  for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
+
+  // define TH2D sin(phi) histogram
+  Asymmetry->cd();
+  float min, max, prefix, margin; prefix=margin=0.3;
+  GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
+  sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+  scan_asym_sinphi_fit   =  new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
+  scan_asym_sinphi_fit   -> GetXaxis()->SetTitle("phi [deg.]");
+  scan_asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+  DrawLine(scan_asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
+
+  // define sin(phi) fit function & initialize parmaeters
+  TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
+  func -> SetParameters(p0,0);
+  func -> SetParLimits(0, -1, 1);
+  // Keeping phi fixed - chnged by Vipuli April 2008
+  printf("************************************ \n");
+  printf("keeping phi fixed at = %12.3e \n",anal.sinphi[0].dPhi[0]);
+  printf("************************************ \n");
+  func -> SetParLimits(1,anal.sinphi[0].dPhi[0],anal.sinphi[0].dPhi[0]);
+  //func -> SetParLimits(1,-M_PI, M_PI);
+  func -> SetParNames("P","dPhi");
+  func -> SetLineColor(2);
+
+
+  // define TGraphError obect for fitting
+  TGraphErrors * tg =  AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
+
+  // Perform sin(phi) fit
+  tg -> Fit("sin_phi","R");
+  tg -> SetName("tg");
+
+  // Dump TGraphError obect to TH2D histogram
+  scan_asym_sinphi_fit   -> GetListOfFunctions() -> Add(tg,"p");
+
+    
+  // Get fitting results
+  P[0] = func->GetParameter(0);
+  P[1] = func->GetParError(0);
+  dphi[0] = func->GetParameter(1);
+  dphi[1] = func->GetParError(1);
+  chi2dof = func->GetChisquare()/func->GetNDF();
+
+  // Write out fitting results on plot
+  char text[50];
+  sprintf(text,"%7.2f * sin(phi+%5.2f)",P[0],dphi[0]);
+  TText * txt = new TText(0.5,max*0.8,text);
+  scan_asym_sinphi_fit -> GetListOfFunctions() -> Add(txt);
+
+  return ;
+
+}// end-of-AsymFit::ScanSinPhiFit()
 
 
 

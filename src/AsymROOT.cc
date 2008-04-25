@@ -91,6 +91,7 @@ TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
 TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
 TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
 TH2F * asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
+TH2F * scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
 
 
 //
