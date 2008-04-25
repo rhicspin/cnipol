@@ -36,6 +36,8 @@ class AsymFit
  public:
   void SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
 		 Float_t *P, Float_t *dphi, Float_t &chi2dof);
+  void ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi, 
+  		 Float_t *P, Float_t *dphi, Float_t &chi2dof);
 
   // following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.
   /*

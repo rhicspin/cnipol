@@ -107,6 +107,7 @@ extern TH2F * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
 extern TH2F * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
 extern TH2F * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
 extern TH2F * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  
+extern TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit  
 
 
 
