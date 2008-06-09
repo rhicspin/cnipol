@@ -18,9 +18,12 @@ int
 Usage(char *argv[]){
 
   cout << "\n Usage:" << argv[0] << "[-h] [-x]" << endl;
-  cout << "\n Description: " << endl;
-  cout << "\t Trancated phi {45,90,135,225,270,315} [def]:off  " << endl;
+  cout << "\n Description: An utility program to calculate phi angles of strips for given distance " ;
+  cout << "\n              from target to detector. The output is in the format defined in AsymMain.h";
+  cout << "\n              Edit change DIST in main() routine here for relevant distance in the unit"; 
+  cout << "\n              of [mm]. And then run calcPhi" << endl;
   cout << "\n Options:" << endl;
+  cout << "\t -t \t trancated phi {45,90,135,225,270,315} [def]:off  " << endl;
   cout << "\t -h \t show this help    " << endl;
   cout << "\t -x \t show example    " << endl;
   cout << endl;
