@@ -12085,6 +12085,7 @@
 	TARGET_COUNT_MM=0.123 ; // target counts/mm conversion
 	REFERENCE_RATE=1;
 	DisableBunch=20;
+	DisableStrip=37;  // strip 37 was disconnected
 	COMMENT="Run08"
 
 [9000.001]
@@ -12092,8 +12093,6 @@
 
 [9000.101]
 	CONFIG=9670.112.config.dat;
-
-
 
 [9670.008]@
 	CONFIG=9670.008.config.dat;@
@@ -12171,14 +12170,14 @@
 [9816.002]@
 	CONFIG=9816.002.config.dat;@
 
+[9816.004]
+	CONFIG=9816.004.config.dat;
+
 [9816.101]@
 	CONFIG=9816.101.config.dat;@
 
 [9816.102]@
 	CONFIG=9816.102.config.dat;@
-
-[9816.004]
-	CONFIG=9816.004.config.dat;
 
 [9816.104]@
 	CONFIG=9816.104.config.dat;@
@@ -12279,11 +12278,20 @@
 [9829.001]@
 	CONFIG*=9829.001.config.dat;@
 
+[9829.002]@
+	CONFIG=9829.002.config.dat;@
+
 [9829.003]@
 	CONFIG=9829.003.config.dat;@
 
 [9829.004]@
 	CONFIG=9829.004.config.dat;@
+
+[9829.005]@
+	CONFIG=9829.005.config.dat;@
+
+[9829.008]@
+	CONFIG=9829.008.config.dat;@
 
 [9829.102]@
 	CONFIG*=9829.102.config.dat;@
@@ -12324,7 +12332,6 @@
 [9831.108]@
 	CONFIG=9831.108.config.dat;@
 
-
 //-------------------------------------------------------------------------------------
 //        First Serious commissioning.  Timing Tune Fill 9832
 //-------------------------------------------------------------------------------------
@@ -12333,7 +12340,6 @@
 
 [9832.101]@
 	CONFIG*=9832.101.config.dat;@
-
 
 [9832.102]@
 	CONFIG*=9832.102.config.dat;@
@@ -12370,6 +12376,9 @@
 	CONFIG*=9833.003.config.dat;@
 
 [9834.002]@
+	CONFIG=9834.002.config.dat;@
+
+[9834.002]@
 	CONFIG=9834.003.config.dat;@
        	COMMENT*="Bad run"
 
@@ -12378,6 +12387,9 @@
 
 [9834.004]@
 	CONFIG=9834.003.config.dat;@
+
+[9834.005]@
+	CONFIG=9834.005.config.dat;@
 
 [9834.005]@
 	CONFIG=9834.003.config.dat;@
@@ -12422,6 +12434,30 @@
 [9834.103]@
 	CONFIG*=9832.103.config.dat;@
 
+[9834.104]@
+	CONFIG=9834.104.config.dat;@
+
+[9834.106]@
+	CONFIG=9834.106.config.dat;@
+
+[9834.107]@
+	CONFIG=9834.107.config.dat;@
+
+[9834.110]@
+	CONFIG=9834.110.config.dat;@
+
+[9834.112]@
+	CONFIG*=9834.112.config.dat;@
+
+[9834.113]@
+	CONFIG*=9834.113.config.dat;@
+
+[9842.001]@
+	CONFIG=9842.001.config.dat;@
+
+[9842.002]@
+	CONFIG=9842.002.config.dat;@
+
 [9842.003]@
 	CONFIG=9842.003.config.dat;@
 
@@ -12435,6 +12471,9 @@
 [9846.102]
 	CONFIG=9846.102.config.dat;
 	COMMENT*="Many bad events contamination?";
+
+[9850.001]@
+	CONFIG=9850.001.config.dat;@
 
 [9850.002]@
 	CONFIG*=9850.002.config.dat;@
@@ -12462,6 +12501,9 @@
 [9850.012]@
 	CONFIG*=9850.012.config.dat;@
 
+[9850.013]@
+	CONFIG*=9850.013.config.dat;@
+
 [9850.101]@
 	CONFIG=9850.101.config.dat;@
 
@@ -12471,14 +12513,29 @@
 [9850.103]@
 	CONFIG=9850.103.config.dat;@
 
+[9850.104]@
+	CONFIG*=9850.104.config.dat;@
+
 [9850.105]@
 	CONFIG=9850.105.config.dat;@
 
 [9850.106]@
 	CONFIG*=9850.106.config.dat;@
 
+[9850.107]@
+	CONFIG*=9850.107.config.dat;@
+
 [9850.108]@
 	CONFIG=9850.108.config.dat;@
+
+[9850.109]@
+	CONFIG=9850.109.config.dat;@
+
+[9850.110]@
+	CONFIG*=9850.110.config.dat;@
+
+[9850.111]@
+	CONFIG*=9850.111.config.dat;@
 
 [9857.003]
 	CONFIG=9857.003.config.dat;
@@ -12487,9 +12544,53 @@
 	RUN_STATUS=Bad;
 	COMMENT="Had more leak events from unfilled bunches. Measurements are bad during this fill.";
 
+[9859.002]@
+	CONFIG*=9859.002.config.dat;@
+
+[9859.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9859.004]@
+	CONFIG=9859.004.config.dat;@
+
+[9859.005]@
+	CONFIG=9859.005.config.dat;@
+
+[9859.006]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9859.007]@
+	CONFIG*=9859.007.config.dat;@
+
+[9859.008]@
+	CONFIG*=9859.008.config.dat;@
+
+[9859.101]@
+	CONFIG=9859.101.config.dat;@
+
+[9859.102]@
+	CONFIG*=9859.102.config.dat;@
+
+[9859.103]@
+	CONFIG*=9859.103.config.dat;@
+
+[9859.104]@
+	CONFIG=9859.104.config.dat;@
+
 [9859.104]
 	RUN_STATUS=Bad;
 	COMMENT="Had more leak events from unfilled bunches. Measurements are bad during this fill.";
+
+[9859.106]@
+	CONFIG*=9859.106.config.dat;@
+
+[9859.107]@
+	CONFIG*=9859.107.config.dat;@
+
+[9859.108]@
+	CONFIG*=9859.108.config.dat;@
 
 [9860.001]
 	RUN_STATUS=Good;
@@ -12509,21 +12610,57 @@
 //        Dedicated timing tune measurements during 9866 (Feb.14)
 /////////////////////////////////////////////////////////////////////////////////
 
+[9866.001]@
+	CONFIG=9866.001.config.dat;@
+
+[9866.003]@
+	CONFIG=9866.003.config.dat;@
+
 [9866.004]@
 	CONFIG=9866.004.config.dat;@
+
+[9866.005]@
+	CONFIG=9866.005.config.dat;@
+
+[9866.006]@
+	CONFIG=9866.006.config.dat;@
+
+[9866.007]@
+	CONFIG=9866.007.config.dat;@
 
 [9866.008]@
 	CONFIG=9866.008.config.dat;@
 
-[9866.013]@
-	CONFIG=9866.105.config.dat;@
+[9866.012]@
+	CONFIG=9866.012.config.dat;@
 
+[9866.013]@
+	CONFIG=9866.013.config.dat;@
+
+/////////////////////////////////////
+// Goog physics runs
+////////////////////////////////////
+
+[9866.014]@
+	CONFIG=9866.014.config.dat;@
 
 [9866.016]@
 	CONFIG=9866.016.config.dat;@
 
 [9866.017]@
 	CONFIG*=9866.017.config.dat;@
+
+[9866.018]@
+	CONFIG*=9866.018.config.dat;@
+
+///////////////////////////////////
+// commissioning
+///////////////////////////////////
+[9866.101]@
+	CONFIG=9866.101.config.dat;@
+
+[9866.102]@
+	CONFIG=9866.102.config.dat;@
 
 [9866.103]@
 	CONFIG=9866.103.config.dat;@
@@ -12543,10 +12680,17 @@
 [9866.111]
 	CONFIG=9866.111.config.dat;
 
+//////////////////////////////////
+// good physics runs
+//////////////////////////////////
+[9866.114]@
+	CONFIG=9866.114.config.dat;@
+
+[9866.115]@
+	CONFIG=9866.115.config.dat;@
 
 [9866.117]@
 	CONFIG=9866.117.config.dat;@
-
 
 //----------------------------------------------------------------------------------
 //          Timing tune for Injection Fill 9880 and 9881
@@ -12573,8 +12717,12 @@
 [9880.009]@
 	CONFIG*=9880.009.config.dat;@
 
-[9880.010]	
+[9880.010]@
 	MEASUREMENT_TYPE=NORM;
+	CONFIG=9880.010.config.dat;@
+
+[9880.013]@
+	CONFIG=9880.013.config.dat;@
 
 [9880.101]
 	MEASUREMENT_TYPE=Tune;
@@ -12592,6 +12740,18 @@
 	RUN_STATUS=Good;
 	MEASUREMENT_TYPE=NORM;
 
+//////////////////////////////
+// End commisioning
+//////////////////////////////
+[9880.106]@
+	CONFIG=9880.106.config.dat;@
+
+[9880.109]@
+	CONFIG=9880.109.config.dat;@
+
+[9880.111]@
+	CONFIG=9880.111.config.dat;@
+
 [9881.001]
 	MEASUREMENT_TYPE=NORM;
 	COMMENT="";
@@ -12599,7 +12759,6 @@
 [9881.101]
 	MEASUREMENT_TYPE=NORM;
 	COMMENT="";
-
 
 [9883.002]@
 	CONFIG*=9883.002.config.dat;@
@@ -12610,15 +12769,42 @@
 [9884.002]@
 	CONFIG*=9884.002.config.dat;@
 
+[9884.005]@
+	DisableStrip=18;
+	CONFIG=9884.005.config.dat;@
+
+[9884.006]@
+	CONFIG=9884.006.config.dat;@
+
+[9884.007]@
+	EnableStrip=18;
+	CONFIG=9884.007.config.dat;@
+
 [9884.009]@
 	RUN_STATUS*=Junk;
 	COMMENT*="Low statistics";
+
+[9884.015]@
+	DisableStrip=18;
+	CONFIG=9884.015.config.dat;@
+
+[9884.016]@
+	EnableStrip=18;
 
 [9884.101]@
 	CONFIG*=9884.101.config.dat;@
 
 [9884.104]@
 	CONFIG*=9884.104.config.dat;@
+
+[9884.105]@
+	CONFIG=9884.105.config.dat;@
+
+[9884.106]@
+	CONFIG=9884.106.config.dat;@
+
+[9884.107]@
+	CONFIG=9884.107.config.dat;@
 
 [9884.108]@
 	CONFIG=9884.108.config.dat;@
@@ -12629,6 +12815,19 @@
 [9884.113]@
 	CONFIG=9884.113.config.dat;@
 
+[9884.114]@
+	CONFIG=9884.114.config.dat;@
+
+[9885.001]@
+	CONFIG=9885.001.config.dat;@
+
+[9885.008]
+	DisableStrip=18;
+	CONFIG=9885.008.config.dat;@
+
+[9885.009]
+	EnableStrip=18;
+
 [9885.010]
 	RUN_STATUS*=Junk;
 	COMMENT="LV tripped off.";
@@ -12637,12 +12836,15 @@
 	RUN_STATUS*=Junk;
 	COMMENT="LV tripped off.";
 
+[9885.012]@
+	CONFIG=9885.012.config.dat;@
+
 [9885.012]
 	RUN_STATUS*=Suspicious;
 	COMMENT="LV tripped off. Should be bad...";
 
-
 [9885.013]@
+	RUN_STATUS*=Good;
 	CONFIG*=9885.013.config.dat;@
 
 [9885.101]@
@@ -12650,6 +12852,9 @@
 
 [9885.106]@
 	CONFIG=9885.106.config.dat;@
+
+[9885.107]@
+	CONFIG=9885.107.config.dat;@
 
 [9885.110]
 	RUN_STATUS*=Junk;
@@ -12667,14 +12872,18 @@
 	COMMENT=" ";
 
 [9886.101]@
-	CONFIG*=9886.101.config.dat;@
-
-[9886.101]
 	RUN_STATUS=Good;
 	COMMENT=" ";
+	CONFIG*=9886.101.config.dat;@
+
+[9886.102]@
+	CONFIG=9886.102.config.dat;@
 
 [9886.104]@
 	CONFIG=9886.104.config.dat;@
+
+[9887.001]@
+	CONFIG=9887.001.config.dat;@
 
 [9887.102]@
 	CONFIG*=9887.102.config.dat;@
@@ -12683,14 +12892,15 @@
 	CONFIG=9888.002.config.dat;@
 
 [9888.003]@
+	DisableStrip=18;
 	CONFIG=9888.003.config.dat;@
 
 [9888.004]@
+	EnableStrip=18;
 	CONFIG=9888.004.config.dat;@
 
 [9888.005]@
 	CONFIG=9888.005.config.dat;@
-
 
 [9888.101]@
 	CONFIG*=9888.101.config.dat;@
@@ -12707,11 +12917,20 @@
 [9896.003]@
 	CONFIG=9896.003.config.dat;@
 
+[9896.101]@
+	CONFIG=9896.101.config.dat;@
+
+[9896.103]@
+	CONFIG=9896.103.config.dat;@
+
 [9897.001]@
 	CONFIG*=9897.001.config.dat;@
 
 [9897.002]@
 	CONFIG*=9897.002.config.dat;@
+
+[9897.102]@
+	CONFIG=9897.102.config.dat;@
 
 [9898.001]@
 	CONFIG*=9898.001.config.dat;@
@@ -12719,8 +12938,31 @@
 [9898.003]@
 	CONFIG=9898.003.config.dat;@
 
+[9898.004]@
+	CONFIG=9898.004.config.dat;@
+
+[9898.006]@
+	DisableStrip=18;
+	DisableStrip=28;
+	DisableStrip=68;
+	CONFIG=9898.006.config.dat;@
+
+[9898.007]@
+	EnableStrip=28;
+	EnableStrip=68;
+	CONFIG=9898.007.config.dat;@
+
+[9898.008]@
+	CONFIG=9898.008.config.dat;@
+
+[9898.009]@
+	EnableStrip=18;
+
 [9898.101]@
 	CONFIG*=9898.101.config.dat;@
+
+[9898.107]@
+	CONFIG=9898.107.config.dat;@
 
 [9899.001]@
 	CONFIG*=9899.001.config.dat;@
@@ -12738,11 +12980,29 @@
 [9900.003]@
 	CONFIG=9900.003.config.dat;@
 
+[9900.101]@
+	CONFIG=9900.101.config.dat;@
+
+[9900.103]@
+	CONFIG=9900.103.config.dat;@
+
 [9900.108]@
 	CONFIG=9900.108.config.dat;@
 
+[9901.001]@
+	CONFIG=9901.001.config.dat;@
+
 [9901.003]@
 	CONFIG*=9901.003.config.dat;@
+
+[9901.004]@
+	CONFIG=9901.004.config.dat;@
+
+[9901.005]@
+	CONFIG=9901.005.config.dat;@
+
+[9901.007]@
+	CONFIG=9901.007.config.dat;@
 
 [9901.010]@
 	CONFIG=9901.010.config.dat;@
@@ -12751,9 +13011,11 @@
 	CONFIG=9901.012.config.dat;@
 
 [9901.013]@
+	DisableStrip=18;
 	CONFIG=9901.013.config.dat;@
 
 [9901.014]@
+	EnableStrip=18;
 	CONFIG=9901.014.config.dat;@
 
 [9901.101]@
@@ -12790,11 +13052,32 @@
 [9902.002]@
 	CONFIG=9902.002.config.dat;@
 
+[9902.004]@
+	CONFIG=9902.004.config.dat;@
+
+[9902.005]@
+	CONFIG=9902.005.config.dat;@
+
+[9902.006]@
+	CONFIG=9902.006.config.dat;@
+
+[9902.106]@
+	CONFIG=9902.106.config.dat;@
+
 [9903.001]@
 	CONFIG*=9903.001.config.dat;@
 
 [9903.002]@
 	CONFIG*=9903.002.config.dat;@
+
+[9903.101]@
+	DisableStrip=72;
+
+[9903.102]@
+	CONFIG=9903.102.config.dat;@
+
+[9903.103]@
+	EnableStrip=72;
 
 [9905.001]@
 	CONFIG*=9905.001.config.dat;@
@@ -12803,7 +13086,16 @@
 	CONFIG*=9905.002.config.dat;@
 
 [9905.003]@
+	DisableStrip=6;
+	DisableStrip=69;
 	CONFIG*=9905.003.config.dat;@
+
+[9905.004]@
+	EnableStrip=6;
+	EnableStrip=69;
+
+[9905.005]@
+	CONFIG=9905.005.config.dat;@
 
 [9905.006]@
 	CONFIG=9905.006.config.dat;@
@@ -12812,7 +13104,16 @@
 	CONFIG=9905.007.config.dat;@
 
 [9905.009]@
+	DisableStrip=18;
+	DisableStrip=54;
+	DisableStrip=68;
 	CONFIG=9905.009.config.dat;@
+
+[9905.010]@
+	EnableStrip=18;
+	EnableStrip=54;
+	EnableStrip=68;
+	CONFIG=9905.010.config.dat;@
 
 [9905.101]@
 	CONFIG=9905.101.config.dat;@
@@ -12820,23 +13121,59 @@
 [9905.104]@
 	CONFIG=9905.104.config.dat;@
 
+[9905.105]@
+	CONFIG=9905.105.config.dat;@
+
+[9905.108]@
+	CONFIG=9905.108.config.dat;@
+
 [9906.001]@
 	CONFIG*=9906.001.config.dat;@
 
 [9906.002]@
+	DisableStrip=6;
+	DisableStrip=18;
+	DisableStrip=69;
 	CONFIG*=9906.002.config.dat;@
 
 [9906.003]@
+	EnableStrip=6;
+	EnableStrip=18;
+	EnableStrip=69;
 	CONFIG=9906.003.config.dat;@
+
+[9906.005]@
+	CONFIG=9906.005.config.dat;@
 
 [9906.007]@
 	CONFIG=9906.007.config.dat;@
+
+[9906.011]@
+	CONFIG=9906.011.config.dat;@
+
+[9906.012]@
+	CONFIG=9906.012.config.dat;@
+
+[9906.013]@
+	DisableStrip=54;
+	DisableStrip=68;
+	CONFIG=9906.013.config.dat;@
+
+[9906.014]@
+	CONFIG=9906.014.config.dat;@
+
+[9906.015]@
+	EnableStrip=54;
+	EnableStrip=68;
 
 [9906.101]@
 	CONFIG*=9906.101.config.dat;@
 
 [9906.102]@
 	CONFIG*=9906.102.config.dat;@
+
+[9906.103]@
+	CONFIG=9906.103.config.dat;@
 
 [9906.112]@
 	CONFIG=9906.112.config.dat;@
@@ -12852,6 +13189,29 @@
 
 [9910.002]@
 	CONFIG=9910.002.config.dat;@
+
+[9910.004]@
+	DisableStrip=18;
+	CONFIG=9910.004.config.dat;@
+
+[9910.005]@
+	EnableStrip=18;
+
+[9910.006]@
+	DisableStrip=18;
+	CONFIG=9910.006.config.dat;@
+
+[9910.007]@
+	EnableStrip=18;
+
+[9910.101]@
+	CONFIG=9910.101.config.dat;@
+
+[9910.103]@
+	CONFIG=9910.103.config.dat;@
+
+[9910.104]@
+	CONFIG=9910.104.config.dat;@
 
 [9916.002]@
 	CONFIG*=9916.002.config.dat;@
@@ -12948,6 +13308,7 @@
 [9917.030]@
 	CONFIG*=9917.030.config.dat;@
 
+
 [9917.104]@
 	CONFIG*=9917.104.config.dat;@
 
@@ -12987,8 +13348,19 @@
 [9917.121]@
 	CONFIG*=9917.121.config.dat;@
 
+[9919.001]
+	DisableStrip=6;
+	DisableStrip=18;
+	CONFIG=9919.001.config.dat;
+
 [9919.002]
 	CONFIG=9919.002.config.dat;
+
+[9919.003]
+	CONFIG=9919.003.config.dat;
+
+[9919.004]
+	CONFIG=9919.004.config.dat;
 
 [9919.102]
 	CONFIG=9919.102.config.dat;
@@ -12996,10 +13368,24 @@
 [9920.001]@
 	CONFIG=9920.001.config.dat;@
 
+[9920.002]@
+	CONFIG=9920.002.config.dat;@
+
+[9920.003]@
+	CONFIG=9920.003.config.dat;@
+
+[9920.004]@
+	CONFIG=9920.004.config.dat;@
+
+[9920.005]@
+	EnableStrip=18;
+	CONFIG=9920.005.config.dat;@
+
 [9920.006]@
 	CONFIG*=9920.006.config.dat;@
 
 [9920.007]@
+	EnableStrip=6;
 	CONFIG*=9920.007.config.dat;@
 
 [9920.008]@
@@ -13009,7 +13395,11 @@
 	CONFIG*=9920.009.config.dat;@
 
 [9920.010]@
+	DisableStrip=6;
 	CONFIG*=9920.010.config.dat;@
+
+[9920.011]@
+	EnableStrip=6;
 
 [9920.103]@
 	CONFIG=9920.103.config.dat;@
@@ -13020,14 +13410,116 @@
 [9933.101]@
 	CONFIG*=9933.101.config.dat;@
 
+[9935.001]@
+	DisableStrip=6;
+	DisableStrip=18;
+	CONFIG*=9935.001.config.dat;@
+
+[9935.002]@
+	EnableStrip=6;
+	CONFIG*=9935.002.config.dat;@
+
+[9935.003]@
+	CONFIG*=9935.003.config.dat;@
+
+[9935.004]@
+	CONFIG*=9935.004.config.dat;@
+
+[9935.005]@
+	CONFIG*=9935.005.config.dat;@
+
+[9935.006]@
+	EnableStrip=18;
+
 [9935.101]@
 	CONFIG=9935.101.config.dat;@
 
+[9936.001]@
+	DisableStrip=6;
+	DisableStrip=18;
+	CONFIG*=9936.001.config.dat;@
+
+[9937.002]@
+	EnableStrip=6;
+	EnableStrip=18;
+	CONFIG=9937.002.config.dat;@
+
+[9937.003]@
+	DisableStrip=6;
+	CONFIG=9937.003.config.dat;@
+
+[9937.004]@
+	DisableStrip=18;
+	CONFIG=9937.004.config.dat;@
+
+[9937.005]@
+	EnableStrip=6;
+	EnableStrip=18;
+	CONFIG=9937.005.config.dat;@
+
+[9937.007]@
+	DisableStrip=6;
+	DisableStrip=18;
+	CONFIG=9937.007.config.dat;@
+
+[9937.008]@
+	CONFIG=9937.008.config.dat;@
+
+[9937.008]@
+	EnableStrip=6;
+	EnableStrip=18;
+
 [9937.101]@
+	DisableStrip=19;
 	CONFIG*=9937.101.config.dat;@
 
 [9937.102]@
 	CONFIG*=9937.102.config.dat;@
+
+[9937.110]@
+	CONFIG=9937.110.config.dat;@
+
+[9938.001]@
+	CONFIG=9938.001.config.dat;@
+
+[9938.002]@
+	CONFIG=9938.002.config.dat;@
+
+[9938.003]@
+	DisableStrip=6;
+	CONFIG=9938.003.config.dat;@
+
+[9938.004]@
+	DisableStrip=18;
+	CONFIG=9938.004.config.dat;@
+
+[9938.005]@
+	DisableStrip=69;
+	CONFIG=9938.005.config.dat;@
+
+[9938.006]@
+	DisableStrip=56;
+	CONFIG=9938.006.config.dat;@
+
+[9938.007]@
+	DisableStrip=28;
+	DisableStrip=70;
+	CONFIG=9938.007.config.dat;@
+
+[9938.008]@
+	DisableStrip=17;
+	CONFIG=9938.008.config.dat;@
+
+[9938.009]@
+	EnableStrip=6;
+	EnableStrip=17;
+	EnableStrip=18;
+	EnableStrip=28;
+	EnableStrip=54;
+	EnableStrip=56;
+	EnableStrip=69;
+	EnableStrip=70;
+	CONFIG=9938.009.config.dat;@
 
 [9938.101]@
 	CONFIG*=9938.101.config.dat;@
@@ -13038,7 +13530,41 @@
 [9938.103]@
 	CONFIG*=9938.103.config.dat;@
 
+[9938.104]@
+	CONFIG=9938.104.config.dat;@
+
+[9939.002]@
+	DisableStrip=6;
+	DisableStrip=18;
+	DisableStrip=56;
+	DisableStrip=69;
+	CONFIG=9939.002.config.dat;@
+
+[9939.003]@
+	CONFIG=9939.003.config.dat;@
+
+[9939.004]@
+	CONFIG=9939.004.config.dat;@
+
+[9939.005]@
+	DisableStrip=28;
+	DisableStrip=54;
+	CONFIG=9939.005.config.dat;@
+
+[9939.006]@
+	EnableStrip=54;
+	CONFIG=9939.006.config.dat;@
+
+[9939.007]@
+	EnableStrip=6;
+	EnableStrip=18;
+	EnableStrip=28;
+	EnableStrip=56;
+	EnableStrip=69;
+	CONFIG=9939.007.config.dat;@
+
 [9939.101]@
+	EnableStrip=19;
 	CONFIG*=9939.101.config.dat;@
 
 [9939.104]@
@@ -13050,34 +13576,137 @@
 [9939.107]@
 	CONFIG=9939.107.config.dat;@
 
+[9940.001]@
+	DisableStrip=6;
+	DisableStrip=18;
+	DisableStrip=69;
+	CONFIG*=9940.001.config.dat;@
+
 [9940.002]@
+	EnableStrip=6;
+	EnableStrip=18;
+	EnableStrip=69;
 	CONFIG*=9940.002.config.dat;@
 
+[9940.003]@
+	DisableStrip=18;
+	CONFIG*=9940.003.config.dat;@
+
+[9940.004]@
+	CONFIG*=9940.004.config.dat;@
+
+[9940.005]@
+	DisableStrip=6;
+	CONFIG*=9940.005.config.dat;@
+
+[9940.006]@
+	DisableStrip=54;
+	DisableStrip=56;
+	DisableStrip=70;
+	CONFIG*=9940.006.config.dat;@
+
+[9940.007]@
+	EnableStrip=54;
+	EnableStrip=56;
+	EnableStrip=70;
+	CONFIG=9940.007.config.dat;@
+
+[9940.009]@
+	CONFIG=9940.009.config.dat;@
+
+[9940.010]@
+	CONFIG=9940.010.config.dat;@
+
+[9940.011]@
+	CONFIG=9940.011.config.dat;@
+
+[9940.012]@
+	EnableStrip=6;
+	EnableStrip=18;
+
+[9940.101]@
+	DisableStrip=19;
+	DisableStrip=36;
+	DisableStrip=72;
+	CONFIG=9940.101.config.dat;@
+
 [9940.102]@
+	DisableStrip=32;
+	EnableStrip=36;
+	EnableStrip=72;
 	CONFIG*=9940.102.config.dat;@
+
+[9940.103]@
+	EnableStrip=32;
 
 [9940.104]@
 	CONFIG*=9940.104.config.dat;@
+
+[9940.106]@
+	CONFIG=9940.106.config.dat;@
+
+[9940.107]@
+	CONFIG=9940.107.config.dat;@
 
 [9940.108]@
 	CONFIG=9940.108.config.dat;@
 
 [9940.109]@
+	EnableStrip=19;
 	CONFIG=9940.109.config.dat;@
+
+[9941.001]@
+	CONFIG=9941.001.config.dat;@
 
 [9941.101]@
 	CONFIG*=9941.101.config.dat;@
 
+[9941.102]@
+	CONFIG=9941.102.config.dat;@
+
 [9942.002]@
 	CONFIG*=9942.002.config.dat;@
 
+[9942.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9942.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
 [9942.005]@
+	DisableBunch=0;
+	DisableBunch=1;
+	DisableBunch=3;
 	CONFIG=9942.005.config.dat;@
+
+[9942.006]@
+	EnableBunch=1;
+	EnableBunch=3;
+	CONFIG=9942.006.config.dat;@
 
 [9942.007]@
 	CONFIG=9942.007.config.dat;@
 
+[9942.008]@
+	CONFIG=9942.008.config.dat;@
+
+[9942.009]@
+	EnableBunch=0;
+	DisableBunch=3;
+	CONFIG=9942.009.config.dat;@
+
+[9942.010]@
+	EnableBunch=3;
+	CONFIG=9942.010.config.dat;@
+
+[9942.011]@
+	DisableStrip=68;
+	CONFIG=9942.011.config.dat;@
+
 [9942.012]@
+	EnableStrip=68;
 	CONFIG=9942.012.config.dat;@
 
 [9942.101]@
@@ -13086,8 +13715,20 @@
 [9942.102]@
 	CONFIG*=9942.102.config.dat;@
 
+[9942.105]@
+	DisableStrip=54;
+
 [9942.106]@
+	EnableStrip=54;
+	DisableStrip=72;
 	CONFIG=9942.106.config.dat;@
+
+[9942.108]@
+	DisableStrip=54;
+
+[9942.109]@
+	EnableStrip=54;
+	EnableStrip=72;
 
 [9943.001]@
 	CONFIG*=9943.001.config.dat;@
@@ -13095,7 +13736,15 @@
 [9943.002]@
 	CONFIG*=9943.002.config.dat;@
 
+[9943.101]@
+	DisableStrip=36;
+	DisableStrip=54;
+	DisableStrip=72;
+
 [9943.102]@
+	EnableStrip=36;
+	EnableStrip=54;
+	EnableStrip=72;
 	CONFIG*=9943.102.config.dat;@
 
 [9946.001]@
@@ -13105,19 +13754,51 @@
 	CONFIG*=9946.002.config.dat;@
 
 [9946.101]@
+	DisableStrip=36;
 	CONFIG*=9946.101.config.dat;@
+
+[9946.102]@
+	DisableStrip=54;
+	DisableStrip=72;
+
+[9946.103]@
+	EnableStrip=36;
+	EnableStrip=54;
+	EnableStrip=72;
 
 [9947.001]@
 	CONFIG=9947.001.config.dat;@
 
 [9947.002]@
+	DisableBunch=4;
+	DisableBunch=5;
 	CONFIG=9947.002.config.dat;@
 
+[9947.003]@
+	EnableBunch=4;
+	EnableBunch=5;
+	CONFIG=9947.003.config.dat;@
+
+[9947.004]@
+	DisableBunch=4;
+	CONFIG=9947.004.config.dat;@
+
 [9947.005]@
+	EnableBunch=4;
 	CONFIG=9947.005.config.dat;@
 
 [9947.006]@
 	CONFIG=9947.006.config.dat;@
+
+[9947.102]@
+	DisableStrip=72;
+
+[9947.103]@
+	DisableStrip=54;
+
+[9947.107]@
+	EnableStrip=54;
+	EnableStrip=72;
 
 [9948.001]@
 	CONFIG*=9948.001.config.dat;@
@@ -13129,15 +13810,25 @@
 	CONFIG=9948.003.config.dat;@
 
 [9948.004]@
+	DisableBunch=0;
 	CONFIG=9948.004.config.dat;@
+
+[9948.005]@
+	EnableBunch=0;
+	CONFIG=9948.005.config.dat;@
+
+[9948.006]@
+	CONFIG=9948.006.config.dat;@
 
 [9948.009]@
 	CONFIG=9948.009.config.dat;@
 
 [9948.101]@
+	DisableStrip=36;
 	CONFIG*=9948.101.config.dat;@
 
 [9948.102]@
+	EnableStrip=36;
 	CONFIG*=9948.102.config.dat;@
 
 [9948.104]@
@@ -13146,26 +13837,72 @@
 [9948.105]@
 	CONFIG=9948.105.config.dat;@
 
+[9948.106]@
+	DisableStrip=72;
+
 [9948.107]@
+	DisableStrip=54;
 	CONFIG=9948.107.config.dat;@
+
+[9948.110]@
+	EnableStrip=54;
+	EnableStrip=72;
 
 [9949.001]@
 	CONFIG*=9949.001.config.dat;@
 
 [9949.002]@
+	DisableStrip=6;
 	CONFIG*=9949.002.config.dat;@
 
 [9949.003]@
 	CONFIG*=9949.003.config.dat;@
 
 [9949.004]@
+	DisableStrip=18;
+	DisableStrip=28;
 	CONFIG*=9949.004.config.dat;@
 
 [9949.005]@
+	EnableStrip=6;
+	EnableStrip=18;
+	EnableStrip=28;
 	CONFIG=9949.005.config.dat;@
 
+[9949.006]@
+	DisableBunch=0;
+	CONFIG=9949.006.config.dat;@
+
+[9949.007]@
+	EnableBunch=0;
+	DisableBunch=1;
+	DisableBunch=2;
+	CONFIG=9949.007.config.dat;@
+
 [9949.008]@
+	DisableBunch=0;
+	EnableBunch=1;
+	EnableBunch=2;
 	CONFIG=9949.008.config.dat;@
+
+[9949.009]@
+	CONFIG=9949.009.config.dat;@
+
+[9949.012]@
+	DisableBunch=1;
+	DisableBunch=2;
+	DisableBunch=3;
+	CONFIG=9949.012.config.dat;@
+
+[9949.013]@
+	EnableBunch=0;
+	EnableBunch=1;
+	EnableBunch=2;
+	EnableBunch=3;
+	CONFIG*=9949.013.config.dat;@
+
+[9949.014]@
+	CONFIG*=9949.014.config.dat;@
 
 [9949.015]@
 	CONFIG*=9949.015.config.dat;@
@@ -13173,11 +13910,43 @@
 [9949.016]@
 	CONFIG*=9949.016.config.dat;@
 
+[9949.101]@
+	DisableStrip=36;
+	DisableStrip=54;
+	DisableStrip=72;
+	CONFIG=9949.101.config.dat;@
+
+[9949.102]@
+	CONFIG=9949.102.config.dat;@
+
+[9949.103]@
+	EnableStrip=36;
+	EnableStrip=54;
+	EnableStrip=72;
+	CONFIG=9949.103.config.dat;@
+
 [9949.105]@
 	CONFIG=9949.105.config.dat;@
 
+[9949.106]@
+	DisableStrip=72;
+
 [9949.107]@
+	DisableStrip=54;
 	CONFIG=9949.107.config.dat;@
+
+[9949.108]@
+	CONFIG=9949.108.config.dat;@
+
+[9949.110]@
+	CONFIG=9949.110.config.dat;@
+
+[9949.113]@
+	CONFIG=9949.113.config.dat;@
+
+[9949.114]@
+	EnableStrip=54;
+	EnableStrip=72;
 
 [9950.001]@
 	CONFIG*=9950.001.config.dat;@
@@ -13203,6 +13972,9 @@
 [9950.103]@
 	CONFIG*=9950.103.config.dat;@
 
+[9950.104]@
+	CONFIG=9950.104.config.dat;@
+
 [9950.105]@
 	CONFIG=9950.105.config.dat;@
 
@@ -13213,12 +13985,19 @@
 	CONFIG*=9951.002.config.dat;@
 
 [9951.003]@
+	DisableStrip=6;
 	CONFIG*=9951.003.config.dat;@
 
+[9951.004]@
+	EnableStrip=6;
+	CONFIG*=9951.004.config.dat;@
+
 [9951.005]@
+	DisableStrip=6;
 	CONFIG*=9951.005.config.dat;@
 
 [9951.006]@
+	EnableStrip=6;
 	CONFIG*=9951.006.config.dat;@
 
 [9951.101]@
@@ -13245,6 +14024,9 @@
 [9959.005]@
 	CONFIG*=9959.005.config.dat;@
 
+[9959.006]@
+	CONFIG*=9959.006.config.dat;@
+
 [9959.007]@
 	CONFIG*=9959.007.config.dat;@
 
@@ -13261,6 +14043,8 @@
 	CONFIG*=9961.001.config.dat;@
 
 [9961.002]@
+	DisableStrip=22;
+	DisableStrip=58;
 	CONFIG*=9961.002.config.dat;@
 
 [9961.003]@
@@ -13311,8 +14095,19 @@
 [9961.018]@
 	CONFIG*=9961.018.config.dat;@
 
+[9962.001]
+	EnableStrip=22;
+	EnableStrip=58;
+
 [9964.001]@
 	CONFIG*=9964.001.config.dat;@
+
+[9964.101]@
+	DisableStrip=19;
+	CONFIG=9964.101.config.dat;@
+
+[9964.103]@
+	EnableStrip=19;
 
 [9965.001]@
 	CONFIG*=9965.001.config.dat;@
@@ -13321,9 +14116,11 @@
 	CONFIG*=9965.002.config.dat;@
 
 [9965.003]@
+	DisableStrip=6;
 	CONFIG*=9965.003.config.dat;@
 
 [9965.004]@
+	EnableStrip=6;
 	CONFIG*=9965.004.config.dat;@
 
 [9965.005]@
@@ -13332,10 +14129,31 @@
 [9965.006]@
 	CONFIG*=9965.006.config.dat;@
 
+[9965.007]@
+	CONFIG*=9965.007.config.dat;@
+
+[9965.007]@
+	DisableStrip=2;
+	DisableStrip=4;
+	DisableStrip=6;
+	DisableStrip=8;
+	DisableStrip=44;
+	DisableStrip=68;
+	DisableStrip=69;
+	DisableStrip=70;
+
 [9965.008]@
+	EnableStrip=2;
+	EnableStrip=4;
+	EnableStrip=8;
+	EnableStrip=44;
+	EnableStrip=68;
+	EnableStrip=69;
+	EnableStrip=70;
 	CONFIG*=9965.008.config.dat;@
 
 [9965.009]@
+	EnableStrip=6;
 	CONFIG*=9965.009.config.dat;@
 
 [9965.010]@
@@ -13344,10 +14162,18 @@
 [9965.011]@
 	CONFIG*=9965.011.config.dat;@
 
+[9965.101]@
+	CONFIG=9965.101.config.dat;@
+
 [9965.102]@
 	CONFIG*=9965.102.config.dat;@
 
+[9965.103]@
+	DisableStrip=19;
+	CONFIG=9965.103.config.dat;@
+
 [9965.105]@
+	EnableStrip=19;
 	CONFIG=9965.105.config.dat;@
 
 [9966.001]@
@@ -13371,12 +14197,70 @@
 [9966.007]@
 	CONFIG*=9966.007.config.dat;@
 
+[9966.008]@
+	CONFIG*=9966.008.config.dat;@
+
 [9966.009]@
+	CONFIG*=9966.009.config.dat;@
+
+[9966.009]@
+	DisableStrip=2;
+	DisableStrip=3;
+	DisableStrip=4;
+	DisableStrip=6;
+	DisableStrip=8;
+	DisableStrip=68;
+	DisableStrip=69;
+	DisableStrip=70;
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9966.010]@
+	EnableStrip=2;
+	EnableStrip=3;
+	EnableStrip=4;
+	EnableStrip=6;
+	EnableStrip=8;
+	EnableStrip=68;
+	EnableStrip=69;
+	EnableStrip=70;
+	RUN_STATUS*=Good;@
+	COMMENT*="";@
+
+[9966.101]@
+	DisableStrip=19;
+
+[9966.102]@
+	EnableStrip=19;
+
+[9966.105]@
+	DisableStrip=19;
+
+[9966.106]@
+	EnableStrip=19;
+
+[9966.111]@
+	CONFIG=9966.111.config.dat;@
+
+[9966.113]@
+	CONFIG=9966.113.config.dat;@
+
+[9966.117]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
 [9969.001]@
 	CONFIG*=9969.001.config.dat;@
+
+[9969.101]@
+	DisableStrip=54;
+	DisableStrip=72;
+	CONFIG=9969.101.config.dat;@
+
+[9969.102]@
+	EnableStrip=54;
+	EnableStrip=72;
+
 
 [9971.001]@
 	CONFIG*=9971.001.config.dat;@
@@ -13391,13 +14275,18 @@
 	CONFIG*=9971.004.config.dat;@
 
 [9971.005]@
+	DisableStrip=6;
 	CONFIG*=9971.005.config.dat;@
 
 [9971.006]@
+	EnableStrip=6;
 	CONFIG*=9971.006.config.dat;@
 
 [9971.007]@
 	CONFIG*=9971.007.config.dat;@
+
+[9971.008]@
+	CONFIG*=9971.008.config.dat;@
 
 [9971.009]@
 	CONFIG*=9971.009.config.dat;@
@@ -13407,6 +14296,35 @@
 
 [9971.011]@
 	CONFIG*=9971.011.config.dat;@
+
+[9971.101]@
+	CONFIG=9971.101.config.dat;@
+
+[9971.102]@
+	DisableStrip=19;
+
+[9971.103]@
+	DisableStrip=31;
+	CONFIG=9971.103.config.dat;@
+
+[9971.105]@
+	EnableStrip=19;
+	EnableStrip=31;
+	CONFIG=9971.105.config.dat;@
+
+[9971.106]@
+	CONFIG=9971.106.config.dat;@
+
+[9971.107]@
+	DisableStrip=72;
+	CONFIG=9971.107.config.dat;@
+
+[9971.109]@
+	CONFIG=9971.109.config.dat;@
+
+[9971.110]@
+	EnableStrip=72;
+	CONFIG=9971.110.config.dat;@
 
 [9972.001]@
 	CONFIG*=9972.001.config.dat;@
@@ -13420,18 +14338,46 @@
 [9972.004]@
 	CONFIG*=9972.004.config.dat;@
 
+[9972.005]@
+	CONFIG*=9972.005.config.dat;@
+
 [9972.006]@
 	CONFIG*=9972.006.config.dat;@
 
 [9972.007]@
-	RUN_STATUS*=Suspicious;@
-	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	CONFIG*=9972.007.config.dat;@
 
 [9972.008]@
 	CONFIG*=9972.008.config.dat;@
 
 [9972.009]@
 	CONFIG*=9972.009.config.dat;@
+
+[9972.102]@
+	DisableStrip=54;
+	CONFIG=9972.102.config.dat;@
+
+[9972.103]@
+	EnableStrip=54;
+	CONFIG=9972.103.config.dat;@
+
+[9972.104]@
+	DisableStrip=72;
+
+[9972.105]@
+	EnableStrip=72;
+
+[9972.106]@
+	DisableStrip=54;
+	DisableStrip=72;
+	CONFIG=9972.106.config.dat;@
+
+[9972.106]@
+	EnableStrip=54;
+
+[9972.108]@
+	EnableStrip=72;
+	CONFIG=9972.108.config.dat;@
 
 [9973.001]@
 	CONFIG*=9973.001.config.dat;@
@@ -13463,8 +14409,21 @@
 [9973.101]@
 	CONFIG*=9973.101.config.dat;@
 
+[9973.104]@
+	DisableStrip=54;
+
+[9973.105]@
+	CONFIG=9973.105.config.dat;@
+
+[9973.106]@
+	DisableStrip=72;
+	CONFIG=9973.106.config.dat;@
+
 [9973.109]@
 	CONFIG=9973.109.config.dat;@
+
+[9973.110]@
+	CONFIG=9973.110.config.dat;@
 
 [9974.001]@
 	CONFIG*=9974.001.config.dat;@
@@ -13474,6 +14433,18 @@
 
 [9974.003]@
 	CONFIG*=9974.003.config.dat;@
+
+[9974.101]@
+	CONFIG=9974.101.config.dat;@
+
+[9974.102]@
+	CONFIG=9974.102.config.dat;@
+
+[9974.103]@
+	CONFIG=9974.103.config.dat;@
+
+[9974.104]@
+	CONFIG=9974.104.config.dat;@
 
 [9975.001]@
 	CONFIG*=9975.001.config.dat;@
@@ -13499,8 +14470,26 @@
 [9975.008]@
 	CONFIG*=9975.008.config.dat;@
 
+[9975.101]@
+	CONFIG=9975.101.config.dat;@
+
+[9975.102]@
+	CONFIG=9975.102.config.dat;@
+
+[9975.103]@
+	CONFIG=9975.103.config.dat;@
+
+[9975.104]@
+	CONFIG=9975.104.config.dat;@
+
+[9975.107]@
+	CONFIG=9975.107.config.dat;@
+
 [9976.001]@
 	CONFIG*=9976.001.config.dat;@
+
+[9976.101]@
+	CONFIG=9976.101.config.dat;@
 
 [9977.001]@
 	CONFIG*=9977.001.config.dat;@
@@ -13520,16 +14509,729 @@
 [9977.006]@
 	CONFIG*=9977.006.config.dat;@
 
+[9977.101]@
+	CONFIG=9977.101.config.dat;@
+
+[9977.105]@
+	CONFIG=9977.105.config.dat;@
+
+[9977.106]@
+	CONFIG=9977.106.config.dat;@
+
 [9978.001]@
 	CONFIG*=9978.001.config.dat;@
 
+[9978.002]@
+	CONFIG*=9978.002.config.dat;@
+
+[9978.003]@
+	CONFIG*=9978.003.config.dat;@
+
+[9978.004]@
+	CONFIG*=9978.004.config.dat;@
+
+[9978.005]@
+	CONFIG*=9978.005.config.dat;@
+
+[9978.006]@
+	CONFIG*=9978.006.config.dat;@
+
+[9978.007]@
+	CONFIG*=9978.007.config.dat;@
+
+[9978.101]@
+	CONFIG=9978.101.config.dat;@
+
+[9978.102]@
+	DisableStrip=23;
+	DisableStrip=36;
+	CONFIG=9978.102.config.dat;@
+
+[9978.103]@
+	CONFIG=9978.103.config.dat;@
+
+[9978.104]@
+	CONFIG=9978.104.config.dat;@
+
+[9978.106]@
+	CONFIG=9978.106.config.dat;@
+
+[9979.001]@
+	CONFIG*=9979.001.config.dat;@
+
+[9979.002]@
+	CONFIG*=9979.002.config.dat;@
+
+[9979.003]@
+	CONFIG*=9979.003.config.dat;@
+
+[9979.004]@
+	CONFIG*=9979.004.config.dat;@
+
+[9979.005]@
+	CONFIG*=9979.005.config.dat;@
+
+[9979.006]@
+	CONFIG*=9979.006.config.dat;@
+
+[9979.007]@
+	CONFIG*=9979.007.config.dat;@
+
+[9979.008]@
+	CONFIG*=9979.008.config.dat;@
+
+[9979.009]@
+	CONFIG*=9979.009.config.dat;@
+
+[9979.010]@
+	CONFIG*=9979.010.config.dat;@
+
+[9979.011]@
+	CONFIG*=9979.011.config.dat;@
+
+[9979.013]@
+	DisableStrip=7;
+	DisableStrip=11;
+	DisableStrip=61;
+	DisableStrip=38;
+	DisableStrip=46;
+	DisableStrip=69;
+	CONFIG*=9979.013.config.dat;@
+
+[9979.014]@
+	EnableStrip=7;
+	EnableStrip=11;
+	EnableStrip=61;
+	EnableStrip=38;
+	EnableStrip=46;
+	EnableStrip=69;
+	CONFIG*=9979.014.config.dat;@
+
+[9979.015]@
+	CONFIG*=9979.015.config.dat;@
+
+[9979.016]@
+	CONFIG*=9979.016.config.dat;@
+
+[9979.101]@
+	CONFIG=9979.101.config.dat;@
+
+[9979.102]@
+	CONFIG=9979.102.config.dat;@
+
+[9979.103]@
+	EnableStrip=54;
+
+[9979.109]@
+	CONFIG=9979.109.config.dat;@
+
 [9979.112]@
 	CONFIG=9979.112.config.dat;@
+
+[9979.113]@
+	CONFIG=9979.113.config.dat;@
+
+[9979.115]@
+	CONFIG=9979.115.config.dat;@
+
+[9979.116]@
+	CONFIG=9979.116.config.dat;@
+
+[9980.001]@
+	DisableStrip=37; // strip 37 disconnected after this
+	CONFIG*=9980.001.config.dat;@
+
+[9980.002]@
+//	EnableStrip=37;
+	CONFIG*=9980.002.config.dat;@
+
+[9980.003]@
+	CONFIG*=9980.003.config.dat;@
+
+[9980.004]@
+	CONFIG*=9980.004.config.dat;@
+
+[9980.005]@
+	CONFIG*=9980.005.config.dat;@
+
+[9980.006]@
+	CONFIG*=9980.006.config.dat;@
+
+[9980.007]@
+	CONFIG*=9980.007.config.dat;@
+
+[9980.008]@
+	CONFIG*=9980.008.config.dat;@
+
+[9980.009]@
+	CONFIG*=9980.009.config.dat;@
+
+[9980.010]@
+	CONFIG*=9980.010.config.dat;@
+
+[9980.101]@
+	DisableStrip=54;
+	CONFIG=9980.101.config.dat;@
+
+[9980.102]@
+	CONFIG=9980.102.config.dat;@
+
+[9980.104]@
+	CONFIG=9980.104.config.dat;@
 
 [9980.104]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
 
+[9980.107]@
+	CONFIG=9980.107.config.dat;@
+
+[9981.001]@
+	CONFIG*=9981.001.config.dat;@
+
+[9981.002]@
+	CONFIG*=9981.002.config.dat;@
+
+[9981.003]@
+	CONFIG*=9981.003.config.dat;@
+
+[9981.004]@
+	CONFIG*=9981.004.config.dat;@
+
+[9981.005]@
+	CONFIG*=9981.005.config.dat;@
+
+[9981.008]@
+	CONFIG*=9981.008.config.dat;@
+
+[9981.009]@
+	CONFIG*=9981.009.config.dat;@
+
+[9981.010]@
+	CONFIG*=9981.010.config.dat;@
+
+[9981.011]@
+	CONFIG*=9981.011.config.dat;@
+
+[9981.013]@
+	CONFIG*=9981.013.config.dat;@
+
+[9981.101]@
+	CONFIG=9981.101.config.dat;@
+
+[9981.102]@
+	EnableStrip=54;
+
 [9981.103]@
 	RUN_STATUS*=Suspicious;@
 	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+	CONFIG=9981.103.config.dat;@
+
+[9981.104]@
+	CONFIG=9981.104.config.dat;@
+
+[9981.105]@
+	CONFIG=9981.105.config.dat;@
+
+[9981.106]@
+	CONFIG=9981.106.config.dat;@
+
+[9981.107]@
+	CONFIG=9981.107.config.dat;@
+
+[9981.110]@
+	CONFIG=9981.110.config.dat;@
+
+[9983.001]@
+	CONFIG*=9983.001.config.dat;@
+
+[9983.101]@
+	CONFIG=9983.101.config.dat;@
+
+[9983.102]@
+	CONFIG=9983.102.config.dat;@
+
+[9985.001]@
+	CONFIG*=9985.001.config.dat;@
+
+[9985.002]@
+	CONFIG*=9985.002.config.dat;@
+
+[9985.101]@
+	CONFIG=9985.101.config.dat;@
+
+[9986.001]@
+	CONFIG*=9986.001.config.dat;@
+
+[9986.002]@
+	CONFIG*=9986.002.config.dat;@
+
+[9986.003]@
+	CONFIG*=9986.003.config.dat;@
+
+[9986.004]@
+	CONFIG*=9986.004.config.dat;@
+
+[9986.005]@
+	CONFIG*=9986.005.config.dat;@
+
+[9986.006]@
+	CONFIG*=9986.006.config.dat;@
+
+[9986.008]@
+	CONFIG*=9986.008.config.dat;@
+
+[9986.009]@
+	CONFIG*=9986.009.config.dat;@
+
+[9986.010]@
+	CONFIG*=9986.010.config.dat;@
+
+[9986.011]@
+	CONFIG*=9986.011.config.dat;@
+
+[9986.101]@
+	CONFIG=9986.101.config.dat;@
+
+[9986.102]@
+	DisableStrip=54;
+
+[9986.103]@
+	EnableStrip=54;
+	CONFIG=9986.103.config.dat;@
+
+[9986.106]@
+	CONFIG=9986.106.config.dat;@
+
+[9986.109]@
+	CONFIG=9986.109.config.dat;@
+
+[9986.112]@
+	CONFIG=9986.112.config.dat;@
+
+[9988.001]@
+	CONFIG*=9988.001.config.dat;@
+
+[9988.002]@
+	CONFIG*=9988.002.config.dat;@
+
+[9988.003]@
+	CONFIG*=9988.003.config.dat;@
+
+[9988.004]@
+	CONFIG*=9988.004.config.dat;@
+
+[9988.005]@
+	CONFIG*=9988.005.config.dat;@
+
+[9988.006]@
+	CONFIG*=9988.006.config.dat;@
+
+[9988.007]@
+	CONFIG*=9988.007.config.dat;@
+
+[9988.008]@
+	CONFIG*=9988.008.config.dat;@
+
+[9988.009]@
+	CONFIG*=9988.009.config.dat;@
+
+[9988.010]@
+	CONFIG*=9988.010.config.dat;@
+
+[9988.011]@
+	CONFIG*=9988.011.config.dat;@
+
+[9988.012]@
+	CONFIG*=9988.012.config.dat;@
+
+[9988.013]@
+	CONFIG*=9988.013.config.dat;@
+
+[9988.014]@
+	CONFIG*=9988.014.config.dat;@
+
+[9988.015]@
+	CONFIG*=9988.015.config.dat;@
+
+[9988.019]@
+	CONFIG*=9988.019.config.dat;@
+
+[9988.020]@
+	CONFIG*=9988.020.config.dat;@
+
+[9988.101]@
+	CONFIG=9988.101.config.dat;@
+
+[9988.104]@
+	CONFIG=9988.104.config.dat;@
+
+[9988.107]@
+	CONFIG=9988.107.config.dat;@
+
+[9988.120]@
+	CONFIG=9988.120.config.dat;@
+
+[9988.123]@
+	CONFIG=9988.123.config.dat;@
+
+[9989.001]@
+	CONFIG*=9989.001.config.dat;@
+
+[9989.002]@
+	CONFIG*=9989.002.config.dat;@
+
+[9989.003]@
+	CONFIG*=9989.003.config.dat;@
+
+[9989.004]@
+	CONFIG*=9989.004.config.dat;@
+
+[9989.006]@
+	CONFIG*=9989.006.config.dat;@
+
+[9989.101]@
+	DisableStrip=54;
+	CONFIG=9989.101.config.dat;@
+
+[9989.102]@
+	EnableStrip=54;
+
+[9989.103]@
+	CONFIG=9989.103.config.dat;@
+
+[9989.104]@
+	CONFIG=9989.104.config.dat;@
+
+[9989.106]@
+	CONFIG=9989.106.config.dat;@
+
+[9990.001]@
+	CONFIG*=9990.001.config.dat;@
+
+[9990.002]@
+	CONFIG*=9990.002.config.dat;@
+
+[9990.003]@
+	CONFIG*=9990.003.config.dat;@
+
+[9990.005]@
+	CONFIG*=9990.005.config.dat;@
+
+[9990.006]@
+	CONFIG*=9990.006.config.dat;@
+
+[9990.008]@
+	CONFIG*=9990.008.config.dat;@
+
+[9990.010]@
+	CONFIG*=9990.010.config.dat;@
+
+[9990.101]@
+	DisableStrip=54;
+	CONFIG=9990.101.config.dat;@
+
+[9990.102]@
+	EnableStrip=54;
+
+[9990.104]@
+	CONFIG=9990.104.config.dat;@
+
+[9990.106]@
+	CONFIG=9990.106.config.dat;@
+
+[9990.108]@
+	CONFIG=9990.108.config.dat;@
+
+[9990.110]@
+	CONFIG=9990.110.config.dat;@
+
+[9991.001]@
+	CONFIG*=9991.001.config.dat;@
+
+[9991.002]@
+	CONFIG*=9991.002.config.dat;@
+
+[9991.003]@
+	CONFIG*=9991.003.config.dat;@
+
+[9991.004]@
+	CONFIG*=9991.004.config.dat;@
+
+[9991.005]@
+	CONFIG*=9991.005.config.dat;@
+
+[9991.008]@
+	CONFIG*=9991.008.config.dat;@
+
+[9991.008]@
+	DisableStrip=4;
+
+[9991.009]@
+	EnableStrip=4;
+	CONFIG*=9991.009.config.dat;@
+
+[9991.010]@
+	CONFIG*=9991.010.config.dat;@
+
+[9991.101]@
+	DisableStrip=54;
+	CONFIG=9991.101.config.dat;@
+
+[9991.102]@
+	EnableStrip=54;
+	CONFIG=9991.102.config.dat;@
+
+[9991.103]@
+	CONFIG=9991.103.config.dat;@
+
+[9991.106]@
+	CONFIG=9991.106.config.dat;@
+
+[9991.107]@
+	CONFIG=9991.107.config.dat;@
+
+[9992.001]@
+	CONFIG*=9992.001.config.dat;@
+
+[9992.003]@
+	CONFIG*=9992.003.config.dat;@
+
+[9992.005]@
+	CONFIG*=9992.005.config.dat;@
+
+[9992.006]@
+	CONFIG*=9992.006.config.dat;@
+
+[9992.007]@
+	CONFIG*=9992.007.config.dat;@
+
+[9992.008]@
+	CONFIG*=9992.008.config.dat;@
+
+[9992.009]@
+	CONFIG*=9992.009.config.dat;@
+
+[9992.101]@
+	DisableStrip=54;
+	CONFIG=9992.101.config.dat;@
+
+[9992.102]@
+	EnableStrip=54;
+
+[9992.103]@
+	CONFIG=9992.103.config.dat;@
+
+[9992.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9992.108]@
+	CONFIG=9992.108.config.dat;@
+
+[9992.110]@
+	CONFIG=9992.110.config.dat;@
+
+[9992.111]@
+	CONFIG=9992.111.config.dat;@
+
+[9996.001]@
+	CONFIG*=9996.001.config.dat;@
+
+[9996.002]@
+	CONFIG*=9996.002.config.dat;@
+
+[9996.003]@
+	CONFIG*=9996.003.config.dat;@
+
+[9996.004]@
+	CONFIG*=9996.004.config.dat;@
+
+[9996.005]@
+	CONFIG*=9996.005.config.dat;@
+
+[9996.006]@
+	CONFIG*=9996.006.config.dat;@
+
+[9996.101]@
+	CONFIG=9996.101.config.dat;@
+
+[9996.102]@
+	CONFIG=9996.102.config.dat;@
+
+[9996.103]@
+	CONFIG=9996.103.config.dat;@
+
+[9996.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9996.104]@
+	CONFIG=9996.104.config.dat;@
+
+[9996.106]@
+	CONFIG=9996.106.config.dat;@
+
+[9996.107]@
+	CONFIG=9996.107.config.dat;@
+
+[9997.001]@
+	CONFIG*=9997.001.config.dat;@
+
+[9997.002]@
+	CONFIG*=9997.002.config.dat;@
+
+[9997.003]@
+	CONFIG*=9997.003.config.dat;@
+
+[9997.004]@
+	CONFIG*=9997.004.config.dat;@
+
+[9997.005]@
+	CONFIG*=9997.005.config.dat;@
+
+[9997.006]@
+	CONFIG*=9997.006.config.dat;@
+
+[9997.008]@
+	CONFIG*=9997.008.config.dat;@
+
+[9997.101]@
+	DisableStrip=54;
+	CONFIG=9997.101.config.dat;@
+
+[9997.102]@
+	EnableStrip=54;
+	CONFIG=9997.102.config.dat;@
+
+[9997.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9997.103]@
+	CONFIG=9997.103.config.dat;@
+
+[9997.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9997.106]@
+	DisableStrip=54;
+	CONFIG=9997.106.config.dat;@
+
+[9998.001]@
+	CONFIG*=9998.001.config.dat;@
+
+[9998.002]@
+	CONFIG*=9998.002.config.dat;@
+
+[9998.003]@
+	CONFIG*=9998.003.config.dat;@
+
+[9998.004]@
+	CONFIG*=9998.004.config.dat;@
+
+[9998.005]@
+	CONFIG*=9998.005.config.dat;@
+
+[9998.006]@
+	CONFIG*=9998.006.config.dat;@
+
+[9998.007]@
+	CONFIG*=9998.007.config.dat;@
+
+[9998.101]@
+	CONFIG=9998.101.config.dat;@
+
+[9998.102]@
+	CONFIG=9998.102.config.dat;@
+
+[9998.103]@
+	CONFIG=9998.103.config.dat;@
+
+[9998.103]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9998.104]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9998.105]@
+	EnableStrip=54;
+
+[9998.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[9998.107]@
+	CONFIG=9998.107.config.dat;@
+
+[10000.001]@
+	CONFIG*=10000.001.config.dat;@
+
+[10000.002]@
+	CONFIG*=10000.002.config.dat;@
+
+[10000.003]@
+	CONFIG*=10000.003.config.dat;@
+
+[10000.004]@
+	CONFIG*=10000.004.config.dat;@
+
+[10000.005]@
+	CONFIG*=10000.005.config.dat;@
+
+[10000.006]@
+	CONFIG*=10000.006.config.dat;@
+
+[10000.007]@
+	CONFIG*=10000.007.config.dat;@
+
+[10000.008]@
+	CONFIG*=10000.008.config.dat;@
+
+[10000.101]@
+	CONFIG=10000.101.config.dat;@
+
+[10000.102]@
+	CONFIG=10000.102.config.dat;@
+
+[10000.103]@
+	CONFIG=10000.103.config.dat;@
+
+[10000.105]@
+	CONFIG=10000.105.config.dat;@
+
+[10001.001]@
+	CONFIG*=10001.001.config.dat;@
+
+[10001.002]@
+	CONFIG*=10001.002.config.dat;@
+
+[10001.003]@
+	CONFIG*=10001.003.config.dat;@
+
+[10001.005]@
+	CONFIG*=10001.005.config.dat;@
+
+[10001.006]@
+	CONFIG*=10001.006.config.dat;@
+
+[10001.101]@
+	EnableStrip=36;
+	CONFIG=10001.101.config.dat;@
+
+[10001.102]@
+	EnableStrip=23;
+	EnableStrip=72;
+	CONFIG=10001.102.config.dat;@
+
+[10002.002]@
+	CONFIG*=10002.002.config.dat;@
+
+[10002.003]@
+	CONFIG*=10002.003.config.dat;@
+
+[10002.101]@
+	CONFIG=10002.101.config.dat;@
