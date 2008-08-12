@@ -38,6 +38,15 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
 //
 float ekin(float edep, float dtheck);
 
+//
+// Class name  : 
+// Method name : SpinTuneOutput(int bid, double si)
+//
+// Description : output routine for spin tune measurements upon request by Mei Bai
+// Input       : int bid, double si
+// Return      : 
+//
+int SpinTuneOutput(int bid, double si);
 
 
 
