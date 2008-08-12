@@ -14,6 +14,14 @@
 #include "Kinema.h"
 #include "AsymROOT.h"
 
+// --------------------------------------------------------------------------------
+// A manual switch operation is required for following routine.
+// This routine calls special text output routine for spin tune measurements
+// --------------------------------------------------------------------------------
+// SpinTuneOutput(event->bid,si);
+
+
+
 extern void HHF1(int, float, float);
 extern void HHF2(int, float, float, float);
 
@@ -502,6 +510,10 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     }
                 }
 
+		// call special text output routine for spin tune measurements
+		//		SpinTuneOutput(event->bid,si);
+		
+
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
 		if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid]==-1?1:0);
 		if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid]==1?1:0);
@@ -597,5 +609,32 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
 }
 
 
+
+//
+// Class name  : 
+// Method name : SpinTuneOutput(int bid, double si)
+//
+// Description : output routine for spin tune measurements
+// Input       : int bid, double si
+// Return      : 
+//
+int
+SpinTuneOutput(int bid, double si){
+
+
+  fprintf(stderr,"%10d", cntr.revolution);
+  fprintf(stderr,"%10d", bid);
+  //printf("%5d", si);
+  si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  si==2 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  si==3 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  si==4 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  si==5 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  fprintf(stderr,"\n");
+
+  return 0;
+
+}
 
 
