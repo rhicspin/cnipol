@@ -614,16 +614,23 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
 // Class name  : 
 // Method name : SpinTuneOutput(int bid, double si)
 //
-// Description : output routine for spin tune measurements
+// Description : output routine for Mei Bai's spin tune measurements
+//             : The output should be stderr. Following two commands 
+//             : creat data file without unnecessary Warnings. 
+//             : 1) Asym -f 9961.002 -b 2> tmp.dat
+//             : 2) grep -v "Warning" tmp.dat > SpinTune9961.002.dat
+//             : 
 // Input       : int bid, double si
-// Return      : 
+// Ouput       : revolusion#, bid, det1, det2, det3, det4, det5, det6 hits
+//             : output Bunch ID starts from 1, not zero 
+// Return      : 0
 //
 int
 SpinTuneOutput(int bid, double si){
 
 
   fprintf(stderr,"%10d", cntr.revolution);
-  fprintf(stderr,"%10d", bid);
+  fprintf(stderr,"%10d", bid+1);
   //printf("%5d", si);
   si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
