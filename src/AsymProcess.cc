@@ -628,16 +628,17 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
 int
 SpinTuneOutput(int bid, double si){
 
-
   fprintf(stderr,"%10d", cntr.revolution);
   fprintf(stderr,"%10d", bid+1);
-  //printf("%5d", si);
+  printf("%5d", si+1);
+  /*
   si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==2 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==3 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==4 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==5 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+  */
   fprintf(stderr,"\n");
 
   return 0;
