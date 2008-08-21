@@ -510,8 +510,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     }
                 }
 
-		// call special text output routine for spin tune measurements
-		//		SpinTuneOutput(event->bid,si);
+		// Following function call is for special text output routine of spin tune measurements
+		// This routine is commented out by default. Activate this upon necessity.
+		SpinTuneOutput(event->bid,si);
 		
 
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
@@ -621,7 +622,7 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
 //             : 2) grep -v "Warning" tmp.dat > SpinTune9961.002.dat
 //             : 
 // Input       : int bid, double si
-// Ouput       : revolusion#, bid, det1, det2, det3, det4, det5, det6 hits
+// Ouput       : revolusion#, bid, si 
 //             : output Bunch ID starts from 1, not zero 
 // Return      : 0
 //
@@ -629,8 +630,10 @@ int
 SpinTuneOutput(int bid, double si){
 
   fprintf(stderr,"%10d", cntr.revolution);
-  fprintf(stderr,"%10d", bid+1);
-  printf("%5d", si+1);
+  fprintf(stderr,"%5d", bid+1);
+  fprintf(stderr,"%5d", spinpat[bid]);
+  fprintf(stderr,"%5d", int(si)+1);
+
   /*
   si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
@@ -639,6 +642,7 @@ SpinTuneOutput(int bid, double si){
   si==4 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   si==5 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
   */
+
   fprintf(stderr,"\n");
 
   return 0;
