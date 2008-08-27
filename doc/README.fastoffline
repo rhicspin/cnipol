@@ -54,6 +54,14 @@ src/AsymMain.h
                    // detector is changed. An utility program to calculate phi angles for 72 strips
                    // with given distance is available in src/util/calcPhi.cc. 
 
+macro/KinFit.C 
+KinFit::FitOne(Int_t St, Int_t mode)
+	Const[St]  // Linear parametization of dead-layer energy correction. 
+	Slope[St]  // These parameters are used for online analysis via configuration file.
+	           // See cnipol/expert/dedx/00README.LinearFit for more details. 
+
+
+
 
 
 ================================== daemon scripts for fast offline =================================
