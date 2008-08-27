@@ -1,0 +1,184 @@
+
+ Note on the kinematic parameters which are used in determining the 
+ dead layer of silicon detectors.
+
+                                             Jan. 2005
+
+This text describes the detailed procedures of how those parameters 
+are obtained from the original standard dE/dx world wide database.
+The format of the parameters are determined in order to optimize the 
+dead layer estimation of RHIC pC polarimeters from energy-TOF correlation 
+plot (so called banana locus). 
+
+All the files explained in this text are found in 
+pa2pa.phy.bnl.gov: /home/josamu/work/0904/DlayerRevisit/Dlayer_dedx 
+
+ (1) original source for the dedx information is taken from the software
+     "mstar ver2.00" which can be obtained from the web site 
+     http://www.exphys.uni-linz.ac.at/Stopping/MstarWWW/MSTARInstr.htm
+
+ (2) output from mstar is "C14c.msl"
+     The condition in use is 
+       injection particle C
+       target material Silicon (state mode c)
+       column E is in unit (MeV/nucleon) : injection energy
+       column C14c (in MeV cm2 /mg) : output dedx
+
+     file "carbon_ini_silicon_c14c.dat" is the same file as C14c.msl 
+     except only the numbers are left to be used as input file
+     state mode d (see the detail in the document from mstar) looks
+     more reliable than "c". the parameter is made for "d" and only
+     numerical part is extracted in file "carbon_in_silicon_c14d.dat"
+
+ (3) from the data points in this dat file, we need to make a set of 
+     parameters which discribes the dedx curve.
+     
+     with the kumac script file, fit_dedx.kumac, you can extract the 
+     polynominal coefficients by,
+
+     PAW> exe fit_dedx#hikaku
+
+     closed points are the data points from mSTAR c mode, open points
+     are from d mode. The lines interpolating the points are the 
+     fit result. The solid smooth line is the 5 dimensional polynomial 
+     function which had been used before and obtained from several papers.
+
+     they are slightly different But at least we can confirm that we 
+     are seeing the right thing. The result is in file hikaku3dedx.ps
+
+     fit result for the "d" mode is written on the plot. They are
+    
+ FCN= 3.727931   FROM MINOS     STATUS=SUCCESSFUL  1897 CALLS     2161 TOTAL
+                     EDM=  0.22E-04    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME        VALUE          ERROR      NEGATIVE      POSITIVE   
+   1      P1       0.37992       0.88500E-02  -0.18629E-01   0.18624E-01
+   2      P2       0.86999E-02   0.33682E-04  -0.14516E-03   0.14517E-03
+   3      P3      -0.76529E-05   0.33954E-07  -0.29794E-06   0.29808E-06
+   4      P4       0.33133E-08   0.20693E-10  -0.22045E-09   0.22035E-09
+   5      P5      -0.55159E-12   0.74799E-14  -0.53098E-13   0.53112E-13
+ CHISQUARE = 0.7169E-01  NPFIT =    57
+ assuming 1 % error for each point. 
+
+
+     Followings are assuming to use "d" mode.
+     Other utilities in "fit_dedx.kumac",
+      o #variety 
+         fit the integrated outputs with linear function and extract 
+         the two parameters (must have done the integration process 
+         described below)
+      o #relation
+         after executing #variery,  plot the 2-d graph with 
+         X- p0 Y- p1 and fit with linear function, and this way 
+         we can discribe two correlated parameters with one.
+      o #edead_width
+         show (plot) the relation between the cross points (keV) 
+         of each linear fit funtion as a function of the dead layer 
+         width (ug/cm^2)
+ 
+ (4) with obtained dedx function above, now we can calculate the 
+     dead layer energy loss, by integrating over the thickness.
+     it is done by "integ_eloss#main2".
+
+     typically 50keV intercept (constant term) corresponds to about 
+     70ug/cm2, the thickness range was chosen as 20-100ug/cm2.
+
+     The output files are stored in "./Integ_dat_moded/output*.dat"
+     (for mode c, they are stored in Integ_dat_modec/)
+     The format are 
+            Ekin (keV), Edep(keV)
+
+ (5) From the each file above, the relation btw Ekin and Edep are 
+     fit with the routine, "integ_eloss#fit_p4".(use option "1" 
+     and confirm with "y" for kinematic --> Deposit)   
+
+     output file is renamed as "carbon_k2d_p4.dat"
+     format is 
+     dwidth 5parameters (value, error) ...
+  
+     with the same procedure, you can get deposit --> Kinematic, 
+     "carbon_d2k_p4.dat"
+  
+ (6) Above 5 parameters have dependence on dead layer thickness,
+     Ekin =  p0(Wid) + p1(Wid) * Edep^1 + p2(Wid) * Edep^2 +
+	     p3(Wid) * Edep^3 + p4(Wid) *Edep^4   
+      
+     To fit the above parameters as a function of dead layer width (Wid)
+     we have the routine, "integ_eloss#fit_coef". Again we should use
+     option =2 as in default (Deposit->Kinetic).
+
+     the result of the fit is visually seen in "coef_fit_d2k_moded.ps"
+     the actual number is seen in "coef_fit_d2k_moded.vec".
+
+  -0.5174        1.0000        0.2990E-05   -0.8258E-08    0.3652E-11
+   0.4172        0.8703E-02   -0.7937E-05    0.4031E-08   -0.8652E-12
+   0.3610E-02    0.1252E-04   -0.2219E-07    0.9673E-12    0.4059E-14
+  -0.1286E-05    0.6948E-07   -0.2877E-09    0.3661E-12   -0.1294E-15
+
+     p0 = -0.5174 0.4172*Wid +  0.3610E-02*Wid^2 + -0.1286E-05*Wid^3     
+     p1,p2,p3,p4 basically the same (using 2nd, 3rd ,,, row).
+
+C.F. for k->d (coef_fit_k2d_moded.vec)
+  -0.1717         1.002       -0.3864E-05    0.2371E-08   -0.4595E-12
+  -0.3646       -0.8881E-02    0.7985E-05   -0.3518E-08    0.5915E-12
+   0.3680E-02    0.1641E-04   -0.3778E-07    0.2536E-10   -0.5451E-14
+  -0.1527E-04    0.4465E-07   -0.1435E-10   -0.1482E-13    0.6444E-17
+
+
+In the actual two parameter (T0, dlayer) fit for banana curve, the 
+following function was used.
+(Note x[0] is Edeposit, par[0] is dlayer, par[1] is Tzero, and 
+1181.6 is the constant for RHIC chamber size. for AGS we need a factor
+x 5./3.)
+
+
+//
+//  get parameters(dlayer, tzero) and energy deposit and return
+//  time of flight
+//
+Double_t KinFunc(Double_t *x, Double_t *par){
+
+    const Double_t cp0[4] = {-0.5174,0.4172,0.3610E-02,-0.1286E-05};
+    const Double_t cp1[4] = {1.0000,0.8703E-02,0.1252E-04,0.6948E-07};
+    const Double_t cp2[4] = {0.2990E-05,-0.7937E-05,-0.2219E-07,-0.2877E-09};
+    const Double_t cp3[4] = {-0.8258E-08,0.4031E-08,0.9673E-12,0.3661E-12};
+    const Double_t cp4[4] = {0.3652E-11,-0.8652E-12,0.4059E-14,-0.1294E-15};
+    Double_t pp[5];
+
+    Double_t par0;
+    Double_t x0 = x[0];
+    if (par[0]>=0.) {
+        par0 = fabs(par[0]);
+    } else {
+        par0 = 0.;
+    }
+
+    pp[0] = cp0[0] + cp0[1]*par0 + cp0[2]*pow(par0,2) + cp0[3]*pow(par0,3);
+    pp[1] = cp1[0] + cp1[1]*par0 + cp1[2]*pow(par0,2) + cp1[3]*pow(par0,3);
+    pp[2] = cp2[0] + cp2[1]*par0 + cp2[2]*pow(par0,2) + cp2[3]*pow(par0,3);
+    pp[3] = cp3[0] + cp3[1]*par0 + cp3[2]*pow(par0,2) + cp3[3]*pow(par0,3);
+    pp[4] = cp4[0] + cp4[1]*par0 + cp4[2]*pow(par0,2) + cp4[3]*pow(par0,3);
+
+    Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*pow(x0,2)
+        + pp[3]*pow(x0,3) + pp[4]*pow(x0,4);
+
+    Double_t tof;
+    if (Ekin != 0.0) {
+        tof = 1181.6/sqrt(Ekin) + par[1] ;
+    } else {
+        tof =0.0;
+    }
+    return tof;
+};
+
+ 
+
+
+
+
+
+
+
+
+
+
