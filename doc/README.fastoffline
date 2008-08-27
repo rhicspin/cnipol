@@ -59,9 +59,9 @@ KinFit::FitOne(Int_t St, Int_t mode)
 	Const[St]  // Linear parametization of dead-layer energy correction. 
 	Slope[St]  // These parameters are used for online analysis via configuration file.
 	           // See cnipol/expert/dedx/00README.LinearFit for more details. 
-
-
-
+	           // To install linear parametrization tools:
+	           // % cd cnipol/expert/dedx
+                   // % install.sh 
 
 
 ================================== daemon scripts for fast offline =================================
