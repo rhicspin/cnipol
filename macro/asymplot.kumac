@@ -8,13 +8,16 @@
    if ([plot].eq.'nothing') then
      plot = $ENV(PLOT)
    endif
+   hbookdir = $ENV(HBOOKDIR)
 
    pson
    glo/cre run [run]
+   glo/cre hbookdir [hbookdir]
+
    exe setting
    exe file HID1=30000 HID2=30100
    exe polarization
-	
+
    mess [run] [plot]
    glo/cre plot [plot]
    
@@ -79,13 +82,13 @@
 * **************************
 * Read Files 
 * ***************************
- macro file HID1=[HID] HID2=[HID2]
+ macro file HID1=[HID1] HID2=[HID2]
    glo/imp run
+   glo/imp hbookdir
    v/del *
    h/del *
    close 1   
-   DIR=$ENV(ASYMDIR)
-   h/file 1 [DIR]/hbook/[run].hbook 1024
+   h/file 1 [hbookdir]/[run].hbook 1024
    
    v/cre an(1) R
    get_vec/cont 34000 an
@@ -358,7 +361,7 @@ return
 * Plot Centers
    opt utit
    title_gl 'Centroids' U 
-   null 0. 72. 10. 13.
+   null 0. 72. 5. 14.
    line 0. 11.17 72. 11.17 	| Carbon Mass indicator
    Do i=1,6
      line $RSIGMA(12*[i]+0.5) 5. $RSIGMA(12*[i]+0.5) 14. | Si Separators
@@ -1542,12 +1545,8 @@ last:
    title_gl '' U
    zone 
 
-
-
-
-
    
-   LOGFILE=$ENV(ASYMDIR)/log/[run].log
+   LOGFILE=$ENV(DAQDIR)/log/[run].log
    MACRODIR=$ENV(MACRODIR)
    sh [MACRODIR]/getTbin.sh [LOGFILE]
 
@@ -2096,7 +2095,7 @@ next:
    exe target
    wait
 
-   LOGFILE=$ENV(ASYMDIR)/log/[run].log
+   LOGFILE=$ENV(DAQDIR)/log/[run].log
    MACRODIR=$ENV(MACRODIR)
    sh [MACRODIR]/filter.sh [LOGFILE]
 

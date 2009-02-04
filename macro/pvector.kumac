@@ -13,9 +13,18 @@ macro main run='-1' nowait='-1'
    endif
    mess 'RUN '//[run]
 
-   psfile=ps/pvector_run[run].ps
-   for/file 60 [psfile]
-   meta 60 -111
+   file=$ENV(HBOOKFILE)
+
+* where is the polarization vector
+pvectfile='/usr/local/polarim/config/log/pvect.dat'
+
+psfile=ps/pvector_run[run].ps
+   if [nowait]<0 then
+     dir=$ENV(ONLINEDIR)/hbook/
+     file=[dir]//[run]//'.hbook'
+     for/file 60 [psfile]
+     meta 60 -111
+   endif
 
    set *FON -60
    set TXFP -60
@@ -54,24 +63,22 @@ macro main run='-1' nowait='-1'
    v/cre MCNT(6) R
    v/cre an(1) R
    
-   v/read x90p,x90pe /tmp/cnipol/pvect.dat OPT='O'
-   v/read x45p,x45pe /tmp/cnipol/pvect.dat OPT=' '
-   v/read y45p,y45pe /tmp/cnipol/pvect.dat OPT=' '
-   v/read c45p,c45pe /tmp/cnipol/pvect.dat OPT=' '
-   v/read c14p,c14pe /tmp/cnipol/pvect.dat OPT=' '
-   v/read c36p,c36pe /tmp/cnipol/pvect.dat OPT=' '
-   v/read xchp,xchpe /tmp/cnipol/pvect.dat OPT=' '
-   v/read ychp,ychpe /tmp/cnipol/pvect.dat OPT=' '
-   v/read an /tmp/cnipol/pvect.dat OPT=' '
-   v/read pcnt /tmp/cnipol/pvect.dat OPT=' '
-   v/read mcnt /tmp/cnipol/pvect.dat OPT='C'
+   v/read x90p,x90pe [pvectfile] OPT='O'
+   v/read x45p,x45pe [pvectfile] OPT=' '
+   v/read y45p,y45pe [pvectfile] OPT=' '
+   v/read c45p,c45pe [pvectfile] OPT=' '
+   v/read c14p,c14pe [pvectfile] OPT=' '
+   v/read c36p,c36pe [pvectfile] OPT=' '
+   v/read xchp,xchpe [pvectfile] OPT=' '
+   v/read ychp,ychpe [pvectfile] OPT=' '
+   v/read an [pvectfile] OPT=' '
+   v/read pcnt [pvectfile] OPT=' '
+   v/read mcnt [pvectfile] OPT='C'
    zone 1 2 
    v/cre angle(6) R 45. 90. 135. 225. 270. 315.
    v/cre ratio(6) R
    v/cre ratioe(6) R
 
-   dir=$ENV(ONLINEDIR)/hbook/
-   file=[dir]//[run]//'.hbook'
    h/file 1 [file]
    
    v/cre lumi(2) R  
@@ -297,10 +304,10 @@ c
    
 *   psoff
 
-   close 60 
-   mess psfile=[psfile]
-   sh rm -f /tmp/cnipol/pvect.dat
+*   sh 'rm -f pvect.dat'
    if [nowait]<0 then
+     close 60 
+     mess psfile=[psfile]
      wait
    endif
    

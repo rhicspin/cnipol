@@ -41,8 +41,7 @@
 * exitm
 * endif
  
- dir=$ENV(ONLINEDIR)/hbook/
- file=[dir]//[run]//'.hbook'
+ file='/data/2006/hbook/'//[run]//'.hbook'
 
  if ($FEXIST([file]).EQ.1) then
    hi/file 21 [file] 0 X

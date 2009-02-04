@@ -2,19 +2,19 @@
 
 $run = $ARGV[0];
 
-$ONLINEDIR=$ENV{"ONLINEDIR"};
-$TMPOUTDIR=$ENV{"TMPOUTDIR"};
-$OUTFILE = ">$TMPOUTDIR/pvect.dat";
-$LOGFILE = "$ONLINEDIR/log/an$run.log";
+# $ONLINEDIR=$ENV{"ONLINEDIR"};
 
-open(OUTFILE,$OUTFILE) || die "Can't open file $OUTFILE";
-open(LOGFILE,$LOGFILE) || die "Can't open file $LOGFILE";
+# $OUTFILE = ">pvect.dat";
+$OUTFILE = ">/usr/local/polarim/config/log/pvect.dat";
+# $LOGFILE = "$ONLINEDIR/log/an$run.log";
+$LOGFILE = "/usr/local/polarim/config/log/an$run.log";
 
-#Initiarization
+#printf "Processing run $run ($LOGFILE)\n";
+
+open(OUTFILE,$OUTFILE);
+open(LOGFILE,$LOGFILE);
+
 $SQ2 = 1.4142;
-$pol = 0;
-$pole= 0;
-
 while ($line = <LOGFILE>) {
     chop($line);
     @words = split(/\s+/,$line);
@@ -136,13 +136,6 @@ while ($line = <LOGFILE>) {
     
 }
 
-if ($A_N != 0) {
-    $pol = $xchp/$A_N*100;
-    $pole = $xchpe/$A_N*100;
-    if (abs($pol)>999)  {$pol=999;};
-    if (abs($pole)>999) {$pole=999;};
-}
-
 printf OUTFILE "$x90p $x90pe\n";
 printf OUTFILE "$x45p $x45pe\n";
 printf OUTFILE "$y45p $y45pe\n";
@@ -154,7 +147,8 @@ printf OUTFILE "$ychp $ychpe\n";
 printf OUTFILE "$A_N\n";
 printf OUTFILE "$PCNT[0] $PCNT[1] $PCNT[2] $PCNT[3] $PCNT[4] $PCNT[5]\n";
 printf OUTFILE "$MCNT[0] $MCNT[1] $MCNT[2] $MCNT[3] $MCNT[4] $MCNT[5]\n";
-printf OUTFILE "%10.5f  %10.5f\n",$pol,$pole;
+
+
 
 close(OUTFILE);
 close(LOGFILE);
