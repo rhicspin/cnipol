@@ -62,8 +62,8 @@ void sendresult_(int *recRing) {
     data.insert("value", poldat_.cutIdS);
     DEVSEND(pol, "set cutIdS", &data, NULL, stdout, irc);
 
-    data.insert("value", poldat_.targetIdS);
-    DEVSEND(pol, "set targetIdS", &data, NULL, stdout, irc);
+//    data.insert("value", poldat_.targetIdS);
+//    DEVSEND(pol, "set targetIdS", &data, NULL, stdout, irc);
 
     data.insert("value", poldat_.encoderPositionS, 2);
     DEVSEND(pol, "set encoderPositionS", &data, NULL, stdout, irc);

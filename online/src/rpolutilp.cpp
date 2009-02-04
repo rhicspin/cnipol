@@ -220,34 +220,39 @@ void getAdoInfo(char mode)
 
 //	get data one by one
     irc = 0;
+
+//  target name in targetIdS
+    if(!DEVSEND(pol, "get targetIdS", NULL, &data, LogFile, irc))
+	   data.get("value", polData.targetIdS, sizeof(polData.targetIdS));
 //	horizontal target
     if(!DEVSEND(htarget, "get movingM", NULL, &data, LogFile, irc))
-	data.get("value", &targetData[0].movingM);
+	   data.get("value", &targetData[0].movingM);
     if(!DEVSEND(htarget, "get positionEncM", NULL, &data, LogFile, irc))
         data.get("value", targetData[0].positionEncM);
     if(!DEVSEND(htarget, "get statusM", NULL, &data, LogFile, irc))
-	data.get("value", targetData[0].statusM, sizeof(targetData[0].statusM));
+	   data.get("value", targetData[0].statusM, sizeof(targetData[0].statusM));
     if(!DEVSEND(htarget, "get positionS", NULL, &data, LogFile, irc))
-	data.get("value", targetData[0].positionS, sizeof(targetData[0].positionS));
+	   data.get("value", targetData[0].positionS, sizeof(targetData[0].positionS));
 //	vertical target
     if(!DEVSEND(vtarget, "get movingM", NULL, &data, LogFile, irc))
-	data.get("value", &targetData[1].movingM);
+	   data.get("value", &targetData[1].movingM);
     if(!DEVSEND(vtarget, "get positionEncM", NULL, &data, LogFile, irc))
-	data.get("value", targetData[1].positionEncM);
+	   data.get("value", targetData[1].positionEncM);
     if(!DEVSEND(vtarget, "get statusM", NULL, &data, LogFile, irc))
-	data.get("value", targetData[1].statusM, sizeof(targetData[0].statusM));
+	   data.get("value", targetData[1].statusM, sizeof(targetData[0].statusM));
     if(!DEVSEND(vtarget, "get positionS", NULL, &data, LogFile, irc))
-	data.get("value", targetData[1].positionS, sizeof(targetData[0].positionS));
+	   data.get("value", targetData[1].positionS, sizeof(targetData[0].positionS));
+
 //	ringSpec
     if(!DEVSEND(spec, "get beamEnergyM", NULL, &data, LogFile, irc))
-	data.get("value", &beamData.beamEnergyM);
+	   data.get("value", &beamData.beamEnergyM);
     if(!DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc))
-	data.get("value", &beamData.fillNumberM);
+	   data.get("value", &beamData.fillNumberM);
 //	buckets
     if(!DEVSEND(buckets, "get measuredFillPatternM", NULL, &data, LogFile, irc))
-	data.get("value", beamData.measuredFillPatternM);    
+	   data.get("value", beamData.measuredFillPatternM);    
     if(!DEVSEND(buckets, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
-	data.get("value", beamData.polarizationFillPatternS);
+	   data.get("value", beamData.polarizationFillPatternS);
 //	It looks that they changed type to char ...
 	for (int i=0; i<360; i++) if (beamData.polarizationFillPatternS[i] > 127)
 	    beamData.polarizationFillPatternS[i] -= 256;

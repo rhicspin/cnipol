@@ -226,6 +226,11 @@ c	Si           1-12      23-24	 25-36       37-48	49-60    61-72
 	data siname/'UpRight','90Right','DownRight','DownLeft','90Left','UpLeft'/
 C
 c 		Book histogramms
+
+c   Information histogram...
+	call hbook1(10, 'polDat Information', 1, 0., 1., 0)
+	call hfill(10, 0.5, 0., beamEnergyS)
+
 	do i=1,6
 	    call hbook1(9290+i, 'Bunch No for '//siname(i), 120, 0., 120., 0)
 	    call hbook1(9390+i, 'Energy keV, unpol, for '//siname(i), 128, 

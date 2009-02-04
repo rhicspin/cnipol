@@ -245,7 +245,13 @@ int main(int argc, char **argv)
 	    sprintf(polData.cutIdS,"ET:%s_IA:%s", ETLUTNames[i], IALUTNames[Conf.IALookUp]);
 	}
 
+/*
+// Comment this out - Ron 2/19/2008.
+// Replaced by targetIdS from polarimeter.[blu,yel] which
+// is loaded in rpolutilp.
+
 	polData.targetIdS[0] = '\0';
+
 	for (j=0,k=-1;j<2;j++) {
 	    if (toupper(targetData[j].positionS[0]) != 'R' && 
 		toupper(targetData[j].positionS[0]) != 'P' ) {
@@ -258,6 +264,8 @@ int main(int argc, char **argv)
 	    sprintf(polData.targetIdS,"NoTarget");
 	    polData.statusS |= (STATUS_ERROR | ERR_TARGET);
 	}
+*/
+
 	polData.encoderPositionS[0] = targetData[k].positionEncM[0];
 	polData.encoderPositionS[1] = targetData[k].positionEncM[1];
 	polData.beamEnergyS = beamData.beamEnergyM;
@@ -290,7 +298,7 @@ int main(int argc, char **argv)
 	    if (mode == 'e') polData.runIdS += 0.4;
 	}
 	if (NoADO == 0) 
-	    fprintf(LogFile,"CNIPOL-INFO : RunID: %8.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
+	    fprintf(LogFile,"CNIPOL-INFO : RunID: %9.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
 		polData.runIdS, beamData.beamEnergyM,
 		polData.targetIdS, polData.encoderPositionS[0], polData.encoderPositionS[1]);
 	if (setRing()) polexit();

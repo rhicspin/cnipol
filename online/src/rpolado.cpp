@@ -25,6 +25,7 @@ char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
 char bucketCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
 char targetCDEVName[4][30] = {"pol.y-htarget", 
  "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};
+char muxCDEVName[2][20] = {"polarMux.RHIC.yel", "polarMux.RHIC.blu"};
 
 FILE *LogFile;
 char LogFileName[200] = "polarimeter.log";
@@ -34,7 +35,7 @@ int iVerbose = 0;
 pid_t ChildPid = 0;
 int CurrentPolarimeter = -1;
 int MyPolarimeter = -1;
-int iTarget = -1;
+int iTarget = -1;	// Use with polarMux: 0 = no polarimeter selected; 1,2 = polarimeter (1,2)
 int Status = 0;
 
 int iCmd=0;
@@ -131,6 +132,8 @@ void StartMeasurement(int mode)
     // first get necessary parameters
     cdevDevice & pol = cdevDevice::attachRef(polCDEVName[MyPolarimeter]);
     cdevDevice & spec = cdevDevice::attachRef(specCDEVName[MyPolarimeter]);
+    cdevDevice & mux = cdevDevice::attachRef(muxCDEVName[MyPolarimeter]);
+    
     DEVSEND(pol, "get maxTimeToRunS", NULL, &data, LogFile, irc);
     data.get("value", &maxTime);
     DEVSEND(pol, "get numberEventsToDoS", NULL, &data, LogFile, irc);
@@ -154,6 +157,9 @@ void StartMeasurement(int mode)
 	CurrentPolarimeter = -1;
 	return;
     }
+    DEVSEND(mux, "get polNumM", NULL, &data, LogFile, irc);
+    data.get("value", &iTarget);
+    
 //	Run number
     if (fillNumber <= 0) {
 	char sss[80];
@@ -180,6 +186,7 @@ void StartMeasurement(int mode)
 	  ID.ring = (MyPolarimeter == 0) ? 1 : 0;
 	}
     }
+    if (iTarget == 2) ID.ring += 2;
     runId = ID.fill + 0.1*ID.ring + 0.001*ID.run;
 
     tm=time(NULL);

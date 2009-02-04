@@ -305,6 +305,13 @@ int readConfig (char * cfgname, int update) {
 	if (buf=envz_get(ENVZ, ENVLEN, "IACutW"))
 	    SiConf[i].IACutW = strtod(buf, NULL);
     }
+
+//  Write WinBegin, WinEnd values into LogFile... Ron - 2/15/2008
+	if (buf=envz_get(ENVZ, ENVLEN, "WinBegin")) 
+        fprintf(LogFile,"WinBegin = %d\n", strtol(buf, NULL, 0));
+	if (buf=envz_get(ENVZ, ENVLEN, "WinEnd"))
+        fprintf(LogFile,"WinEnd = %d\n", strtol(buf, NULL, 0));
+
 //	Process channels
     for (i=0;i<Conf.NumChannels;i++) {
 	char sss[] = {"ChannelXX"};
@@ -1825,7 +1832,7 @@ void closeDataFile(char * comment)
     if ((recRing & REC_JET) == 0) {
 //	Target movement record for profiles
 	header.type = REC_TAGMOVEADO | recRing;
-	len = getTagetMovementInfo(&data);
+	if (NoADO == 0) len = getTagetMovementInfo(&data);
 	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
 	header.timestamp.time = time(NULL);
 	polWrite(&header, data);
