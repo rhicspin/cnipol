@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CDEV_NAME_SERVER=acnlin89.pbn.bnl.gov
+export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
 #export CDEVSHOBJ=/usr/local/CDEV/store/X86/lib
 export CDEVSHOBJ=/usr/local/lib/cdev
 export LD_LIBRARY_PATH=${CDEVSHOBJ}/Linux:${LD_LIBRARY_PATH}

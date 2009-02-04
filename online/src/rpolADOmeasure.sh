@@ -16,9 +16,10 @@ BINDIR=$POLDIR/bin
 DATADIR=$CONFDIR/data
 LOGDIR=$CONFDIR/log
 HBOOKDIR=$CONFDIR/hbook
+ROOTDIR=$CONFDIR/root
 POLCMD=$BINDIR/rhicpol
 ANACMD=$BINDIR/rhic2hbook
-EMITCMD=$BINDIR/emit
+EMITCMD=$BINDIR/emitscan
 
 RUN=$1
 TIME=$2
@@ -65,15 +66,16 @@ if [ $ENERGY -gt 25 ]; then
 	TSHIFT=-3.0
     else
 # BLUE at FLATTOP
-	TSHIFT=-4.0
+	TSHIFT=2.0
     fi
 else
     if [ $RING == "y" ]; then
 # YELLOW at INJECTION
 	TSHIFT=7.0
     else
+# Injection TSHIFT ~ Flattop TSHIFT + 7
 # BLUE at INJECTION
-	TSHIFT=6.0
+	TSHIFT=9.0
     fi
 fi
 
@@ -142,6 +144,9 @@ if [ x$JOB != "x" ]; then
     done
 
     if [ $MODE != "t" ]; then
+    if [ $MODE == "e" ]; then
+        echo "IRC is $IRC (0, 130, or 142 is good)" >> $LOGDIR/e$RUN.log 2>&1
+    fi
 	if [ $IRC -eq 0 ] || [ $IRC -eq 130 ] || [ $IRC -eq 142 ]; then
 	    export RUN=$RUN
 	    export MACDIR=$BINDIR/macro
@@ -150,8 +155,12 @@ if [ x$JOB != "x" ]; then
 	    if [ $MODE == "e" ]; then
 		export HBOOKFILE=$HBOOKDIR/e$RUN.hbook
 		export PSFILE=$LOGDIR/e$RUN.ps
-		$EMITCMD -f $DATADIR/e$RUN.data -o $HBOOKDIR/e$RUN.hbook > $LOGDIR/eana$RUN.log
-		pawX11 -n -b $MACDIR/emitplot.kumac >> $LOGDIR/eana$RUN.log 2>&1
+######
+# Use new emitscan analysis program 3/1/2008
+######
+        $EMITCMD -f $DATADIR/e$RUN.data -o $ROOTDIR/e$RUN.root > $LOGDIR/eana$RUN.log
+#		$EMITCMD -f $DATADIR/e$RUN.data -o $HBOOKDIR/e$RUN.hbook > $LOGDIR/eana$RUN.log
+#		pawX11 -n -b $MACDIR/emitplot.kumac >> $LOGDIR/eana$RUN.log 2>&1
 		convert $PSFILE -trim $LOGDIR/e$RUN.gif >> $LOGDIR/eana$RUN.log 2>&1
 		$BINDIR/sndeplot $RING $LOGDIR/e$RUN.gif >> $LOGDIR/eana$RUN.log 2>&1
 	    else
