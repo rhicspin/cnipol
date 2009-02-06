@@ -16,6 +16,7 @@ void nsleep(double time);
 int setRing(void);
 void pulseAllProgs(void);
 int initWFDs(void);
+void fastInitWFDs(int clr_hist);
 void initScalers(void);
 int getNumberOfEvents(void);
 int getEvents(int Number);
@@ -26,6 +27,7 @@ long long totalSum(long *data, int len);
 
 void closeDataFile(char * comment);
 int openDataFile(char *fname, char *comment, int noAdo);
+void writeSubrun(int N);
 
 void setAlarm(float mTime);
 void clearAlarm(void);
@@ -47,7 +49,6 @@ void polexit(void);
 void setOutInhibit(void);
 void resetOutInhibit(void);
 void clearVetoFlipFlop(void);
-void fastInitWFDs(void);
 void getJetStatus(unsigned short * data);
 int testJetVeto(void);
 static char * getJetStatusString(void);

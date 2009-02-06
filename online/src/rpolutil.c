@@ -1054,7 +1054,7 @@ int initWFDs(void)
     return iRC;
 }
 
-void fastInitWFDs(void)
+void fastInitWFDs(int clr_hist)
 {
     int cr, i, j;
     CMC_chain *ch;
@@ -1067,6 +1067,9 @@ void fastInitWFDs(void)
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 0xF);	// select all but memory
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));	// RS_ADR
+	    if (clr_hist != 0) {
+		CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));	// Clear histograms/scalers
+	    }
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);	// select memory controller
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
 	    CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// disable cache
@@ -1218,6 +1221,20 @@ void writeWcmInfo(void)
     polWrite(&header, (long *)&wcmData);    
 }
 
+void writeSubrun(int n)
+{
+    recordSubrunStruct rec;
+
+    memset(&rec, 0, sizeof(rec));
+    rec.header.type = REC_SUBRUN | recRing;
+    rec.header.len = sizeof(rec);
+    rec.header.timestamp.time = time(NULL);
+    rec.subrun = n;
+    polWrite(&rec.header, (long *)&rec.subrun);
+
+}
+
+
 int checkChainResult(CMC_chain *ch, int cr)
 {
     int i, err, mask, val;
@@ -1355,7 +1372,7 @@ int getEvents(int Number)
 //	Main Cicle
     for (;;) {
         if (Number > 0 && Cnt >= Number) {
-	    fprintf(LogFile, "RHICPOL-INFO : %d events collected. Exiting...\n", Cnt);
+	    fprintf(LogFile, "\nRHICPOL-INFO : %d events collected. Exiting...\n", Cnt);
 	    break; 
         }
         if (IStop != 0) {
@@ -1430,7 +1447,7 @@ int getEvents(int Number)
 	    readMemory();
 	    writeJetStatus();
 	    writeCarbTarg();
-	    fastInitWFDs();
+	    fastInitWFDs(0);
 	    clearVetoFlipFlop();
 	    resetOutInhibit();
 	    writeWcmInfo();	    
@@ -1778,18 +1795,25 @@ void readMemory()
     pthread_t th[MAXCRATES];
     int cr, i;
     long long GrandTotal;
+    struct timeval tv;
+    double t,t0;
 /*	Clear counters	*/
     memset(memReadCount, 0, sizeof(memReadCount));
 /*	start read threads - one per crate	*/
     memset(th, 0, sizeof(th));
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Creating memory readout threads\n");
+    gettimeofday(&tv, NULL);
+    t0 = tv.tv_sec + tv.tv_usec * 1.0E-6;
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) pthread_create(&th[cr], NULL, readThread, (void *)cr);
 /*	wait them to finish			*/
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr] && th[cr] != 0) pthread_join(th[cr], NULL);
 /*	some printout				*/
+    gettimeofday(&tv, NULL);
+    t = tv.tv_sec + tv.tv_usec * 1.0E-6;
     GrandTotal = totalSum(&memReadCount[0][0][0], sizeof(memReadCount)/sizeof(long));
     if (iCicleRun == 0 || iDebug > 5) 
-	fprintf(LogFile,"RHICPOL-INFO : Total %qd events read from memory\n", GrandTotal);
+	fprintf(LogFile,"RHICPOL-INFO : Total %qd events read from memory in %.2f sec (%.2f Mevt/s)\n", 
+	    GrandTotal, t-t0, GrandTotal/(t-t0)*1.0e-6);
     if (iCicleRun) {
 	fprintf(LogFile, "\nReadMem INFO:   %15qd events in last memory buffer. New HJet state: %s\n", 
 	    GrandTotal, getJetStatusString());
@@ -1831,12 +1855,23 @@ void closeDataFile(char * comment)
     if (OutFile == NULL) return;
     if ((recRing & REC_JET) == 0) {
 //	Target movement record for profiles
+<<<<<<< rpolutil.c
+	if (NoADO == 0) {
+	    header.type = REC_TAGMOVEADO | recRing;
+	    len = getTagetMovementInfo(&data);
+	    header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
+	    header.timestamp.time = time(NULL);
+	    polWrite(&header, data);
+	    free(data);
+	}
+=======
 	header.type = REC_TAGMOVEADO | recRing;
 	if (NoADO == 0) len = getTagetMovementInfo(&data);
 	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
 	header.timestamp.time = time(NULL);
 	polWrite(&header, data);
 	free(data);
+>>>>>>> 1.3
 //	Polarimeter specific data to be passed to data2hbook
 	header.type = REC_POLADO | recRing;
 	header.len = sizeof(recordPolAdoStruct);

@@ -7,6 +7,7 @@
 #define BSIZE 0x40000			// 256 k
 
 #define REC_BEGIN	0x00000001	// Begin of the file
+#define REC_SUBRUN	0x00000002	// Begin of subrun
 #define REC_POLADO	0x00000101	// Polarimeter ADO record
 #define REC_TAGADO	0x00000102	// Target ADO record
 #define REC_BEAMADO	0x00000103	// Beam ADO record
@@ -56,6 +57,12 @@ typedef struct {
     long version;
     char comment[256];
 } recordBeginStruct;
+
+typedef struct {
+    recordHeaderStruct header;
+    long subrun;
+} recordSubrunStruct;
+
 
 typedef struct {
     recordHeaderStruct header;

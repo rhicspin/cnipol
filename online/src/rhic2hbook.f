@@ -14,12 +14,16 @@
 	ilsas = 0
 	j = IArgC()
 	trigmin = -1.
+	nsubrun = 0
 	ipar = 0
 	
 	do i=1,j
 	    call getarg(i, str)
-	    if (ipar.ne.0) then
+	    if (ipar.eq.1) then
 		read (str, *) trigmin
+		ipar = 0
+	    else if (ipar.eq.2) then
+		read (str, *) nsubrun
 		ipar = 0
 	    else if (str.eq.'-s') then
 		isend = 1
@@ -34,29 +38,33 @@
 		ilsas = 1
 	    else if (str.eq.'-T') then
 		ipar = 1
+	    else if (str.eq.'-N') then
+		ipar = 2
 	    else if (fin.eq.'?') then
 		fin = str
 	    else if (fout.eq.'?') then
 		fout = str
 	    else
-		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] filein fileout'
+		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] filein fileout'
 		print *, '       -s to send results to ADO database'
 		print *, '       -n to write ntuples, otherwize only histograms'
 		print *, '       -r to write raw data ntuples'
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
 		print *, '       -T trigmin trigmin value to override for old files'
+		print *, '       -N subrun number to extract (default = 0)'
 		stop 	
 	    endif
 	enddo
 	if (fin.eq.'?') then
-		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] filein fileout'
+		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] filein fileout'
 		print *, '       -s to send results to ADO database'
 		print *, '       -n to write ntuples, otherwize only histograms'
 		print *, '       -r to write raw data ntuples'
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
 		print *, '       -T trigmin trigmin value to override for old files'
+		print *, '       -N subrun number to extract (default = 0)'
 	    stop
 	endif	
 	if (fout.eq.'?') fout = fin//'.hbook'
@@ -71,7 +79,7 @@
         iquest(10) = 65000
 	call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
 c	
-	irecring = readandfill()
+	irecring = readandfill(nsubrun)
 c
 	if (iproc.ne.0) call process
 c	
