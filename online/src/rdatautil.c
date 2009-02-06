@@ -97,12 +97,13 @@ void icclose_(void)
     close(fin);
 }
 
-int readandfill_(void)
+int readandfill_(int* subrun)
 {
 //	buffer to read the next record - static due to its size
     static union {
 	recordHeaderStruct   header;
 	recordBeginStruct    begin;
+	recordSubrunStruct   subrun;
         recordDataStruct     data;
         recordWFDV8ArrayStruct wfd;
         recordEndStruct      end;
@@ -126,6 +127,7 @@ int readandfill_(void)
     int i, j, k, l, m, n, cnt=0, cnt1=0;
     int recRing;
     long s1, s2, s3, s4;
+    int curSubrun = -1;
     
     memset(&poldat_, 0, sizeof(poldat_));    
     memset(&rhic_, 0, sizeof(rhic_));    
@@ -168,6 +170,11 @@ int readandfill_(void)
 	recRing |= rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
 //	printf("Record %5d type %8.8X  len %8d timestamp %8.8X\n", 
 //	    rec.header.num, rec.header.type, rec.header.len, rec.header.timestamp.time);
+	if ((rec.header.type & REC_TYPEMASK) == REC_SUBRUN) {
+	    curSubrun = rec.subrun.subrun;
+	    if (curSubrun == *subrun) printf("Processing subrun %d\n", curSubrun);
+	}
+	if ((curSubrun >= 0) && (curSubrun != *subrun)) continue;
 	switch(rec.header.type & REC_TYPEMASK) {
 	case REC_BEGIN:
 	    if (rec.begin.version < 20000) {
@@ -183,6 +190,8 @@ int readandfill_(void)
 	    } else printf("unknown");
 	    printf(" ring.\n%s : %s", rec.begin.comment,
 		ctime(&rec.header.timestamp.time));
+	    break;
+	case REC_SUBRUN:
 	    break;
 	case REC_END:
 	    printf("R2HBOOK-INFO : End of data set at record %d : %s\n", 

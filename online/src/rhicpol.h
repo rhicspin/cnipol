@@ -1,8 +1,8 @@
 #ifndef POLADO_H
 #define POLADO_H
 
-#define VERSION		30100
-#define DAQVERSION	30110
+#define VERSION		30200
+#define DAQVERSION	30200
 #define MAXSTATIONS 	24
 
 #define WFDMEMSIZE	0x4000000

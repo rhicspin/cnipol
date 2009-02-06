@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     float tshift = 0.;
     int iHelp = 0;
     int iNotify = 0;
+    int nLoop = 1;	// Number of subruns
     int i, j, k, ev;
     char * buf;
     time_t t;
@@ -77,7 +78,7 @@ int main(int argc, char **argv)
     LogFile = stdout;
     recRing = 0;
     
-    while ((i = getopt(argc, argv, "c:Ce:f:ghi:IJl:nPt:T:v:m:")) != -1) switch(i) {
+    while ((i = getopt(argc, argv, "c:Ce:f:ghi:IJl:nN:Pt:T:v:m:")) != -1) switch(i) {
     case 'c' :
 	strncpy(comment, optarg, sizeof(comment));
 	break;
@@ -107,6 +108,9 @@ int main(int argc, char **argv)
 	break;
     case 'n':
 	iNotify = 1;
+        break;
+    case 'N':
+	nLoop = strtod(optarg, NULL);
         break;
     case 'P':
 	iPulseProg = 1;
@@ -142,6 +146,7 @@ int main(int argc, char **argv)
 "\t-l filename : logfile name, default is stdout\n"
 "\t-n : notify parent process (SIGUSR1) about the end of data taking\n"
 "\t     (to take the target out before memory readout)\n"
+"\t-N number : make <number> subruns (duration of each subrun is specified by '-e' or '-t' option)\n"
 "\t-P Pulse PROG pin for all WFDs.\n"
 "\t-t time : maximum time of the measurement, seconds.\n"
 "\t-T value : ns, everything (lookups, windows) is shifted according to this value.\n"
@@ -312,38 +317,47 @@ int main(int argc, char **argv)
 	    polexit();
 	} 
 	
-	if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Running...");
-	setAlarm(mTime);
-	polData.startTimeS = time(NULL);
-	clearVetoFlipFlop();
-	resetInhibit();
-	writeJetStatus();	// hopefully fast (we can not get jet state with crate inhibit)
+	for (j=0; j<nLoop; j++) {
+	    fastInitWFDs(1);
+	    writeSubrun(j);
+	    if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Running...");
+	    setAlarm(mTime);
+	    polData.startTimeS = time(NULL);
+	    clearVetoFlipFlop();
+	    resetInhibit();
+	    writeJetStatus();	// hopefully fast (we can not get jet state with crate inhibit)
 	
-	ev = getEvents(mEvent);
+	    ev = getEvents(mEvent);
 	
-	setInhibit();
-	polData.stopTimeS = time(NULL);
-	clearAlarm();
-	if (iNotify) kill( getppid(), SIGUSR1);
-	if (iCntrlC) signal(SIGINT, alarmHandler);
-	else signal(SIGINT, SIG_IGN);
-	if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Reading Data...");
-	signal(SIGTERM, alarmHandler);
-	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
-	readScalers();
-	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD xilinxes.\n");
-	readWFD();
-	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD memory.\n");
-	if (!Conf.OnlyHist) readMemory();
+	    setInhibit();
+	    polData.stopTimeS = time(NULL);
+	    clearAlarm();
+	    if (iNotify && j == (nLoop-1)) kill( getppid(), SIGUSR1);
+	    if (iCntrlC) signal(SIGINT, alarmHandler);
+	    else signal(SIGINT, SIG_IGN);
+	    if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Reading Data...");
+	    signal(SIGTERM, alarmHandler);
+	    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
+	    readScalers();
+	    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD xilinxes.\n");
+	    readWFD();
+	    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD memory.\n");
+	    if (!Conf.OnlyHist) readMemory();
+	    signal(SIGTERM, SIG_DFL);
+	    signal(SIGINT, SIG_DFL);
+	    t = time(NULL);
+	    if (nLoop == 1) {
+		fprintf(LogFile, 	">>> %s Measurement finished with %9d events.\n",
+		    cctime(&t), ev);
+	    } else {
+		fprintf(LogFile, 	">>> %s Subrun %d finished with %9d events.\n",
+		    cctime(&t), j, ev);
+	    }
+	}
 	resetInhibit();
-	closeDataFile("End of RHICpol run.");
 	camacClose();
-	signal(SIGTERM, SIG_DFL);
-	signal(SIGINT, SIG_DFL);
-	t = time(NULL);
-	fprintf(LogFile, 
-	">>> %s Measurement finished with %9d events.\n",
-	    cctime(&t), ev);
+	writeSubrun(-1);
+	closeDataFile("End of RHICpol run.");
 
     }
     if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
