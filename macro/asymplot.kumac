@@ -8,21 +8,26 @@
    if ([plot].eq.'nothing') then
      plot = $ENV(PLOT)
    endif
-   hbookdir = $ENV(HBOOKDIR)
-
-   pson
+   
+ **  pson
    glo/cre run [run]
-   glo/cre hbookdir [hbookdir]
-
    exe setting
-   exe file HID1=30000 HID2=30100
+   exe file 
    exe polarization
-
+   
    mess [run] [plot]
    glo/cre plot [plot]
    
    if ([plot].eq.'all') then
+
+     exe plot_banana1 ;     wait
+
      exe plot_banana ;     wait
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
      exe strip       ;     wait
      exe mass        ;     wait
      exe splumi      ;     wait
@@ -34,16 +39,14 @@
      exe ratio       ;     wait 
 
 **** Perform a "reset" to free some  memory...
-     exe file HID1=30000 HID2=30100
+     exe file
      exe polarization
 
      exe timing      ;     wait
      exe diff_t      ;     wait
      exe t_dep       ;     wait
      exe chisq       ;     wait
-     exe bunchselect ;     wait
-     exe profile     ;     wait
-     exe ErrorDetector;    wait
+     exe bunchselect ;
    else 
      exe [plot]      ;     wait
    endif
@@ -55,7 +58,7 @@
 * **********************************
  macro setting
    opt nbox
-
+* opt pto
    filecase KEEP
    opt nfile 
    opt nstat
@@ -82,13 +85,13 @@
 * **************************
 * Read Files 
 * ***************************
- macro file HID1=[HID1] HID2=[HID2]
+ macro file 
    glo/imp run
-   glo/imp hbookdir
    v/del *
    h/del *
    close 1   
-   h/file 1 [hbookdir]/[run].hbook 1024
+   DIR=/home/e950/pol2004-offl/Kumac
+   h/file 1 [DIR]/Hbooks/[run].hbook 1024
    
    v/cre an(1) R
    get_vec/cont 34000 an
@@ -108,11 +111,10 @@
    v/cre px45(120) R
    v/cre px45e(120) R
    
-   get_vec/cont [HID1] px90
-   get_vec/err  [HID1] px90e
-   get_vec/cont [HID2] px45
-   get_vec/err  [HID2] px45e
-
+   get_vec/cont 30000 px90
+   get_vec/err  30000 px90e
+   get_vec/cont 30100 px45
+   get_vec/err  30100 px45e
 * ----------------------
    v/cre spin(120) R 
    v/cre ngood(120) R 
@@ -126,7 +128,6 @@
    v/cre BT45E(120) R 
    
    get_vec/cont 31000 spin
-
  return
  
 * ***********************************
@@ -134,13 +135,13 @@
 * ***********************************
  macro polarization
    v/cre amean(2) R
-   v/cre pol(2) R  0. 0.
+   v/cre pol(2) R
    application comis quit
       subroutine mean()
       implicit None
       vector px90,px45,px90e,px45e,amean,an,pol
       real x90,x90e,x45,x45e
-      real sq,ssq,prod
+      real sq,ssq
       
       x90=px90(120)
       x90e=px90e(120)
@@ -149,14 +150,12 @@
       
       sq=(x45e**2+x90e**2) 
       ssq=sqrt(sq)
-
-      if (ssq*sq.ne.0) then 
-       amean(1) = (x90*x45e**2+x45*x90e**2)/sq
-       amean(2) = (x45e*x90e)/ssq
-       pol(1) = amean(1)/an(1)
-       pol(2) = amean(2)/an(1)
-      endif
-
+      
+* write(*,*) sq,ssq
+      amean(1) = (x90*x45e**2+x45*x90e**2)/sq
+      amean(2) = (x45e*x90e)/ssq
+      pol(1) = amean(1)/an(1)
+      pol(2) = amean(2)/an(1)
       end
    quit
 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -165,6 +164,46 @@
 * mess POLARIZATION $EVAL(pol(1)) +- $EVAL(pol(2))
  return
  
+* ******************************************************
+* Plot banana Plot for each strip: simple plots
+* ******************************************************
+ macro plot_banana1
+   exe setting 
+   glo/imp run
+   set MTYP 0
+   opt utit
+   opt ngri
+   set MSCF 0.1
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   
+   lnum=0
+
+zone 2 2
+opt pto
+opt linz
+   Do i=1,72
+     title_gl 'st-'//[i] U
+     hid = $EVAL(13000+[i])	|  Ekin vs. ToF
+     h/pl [hid](200.:1400.,0.:120.)
+
+**** Perform a "reset" to free some  memory...
+     if ([i].eq.36) then
+       exe file
+       exe polarization
+     endif
+
+   EndDo
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
+opt npto
+
+return
+
 * ******************************************************
 * Plot banana Plot for each strip
 * ******************************************************
@@ -185,10 +224,11 @@
    title_gl '' U
    
    lnum=0
+
+zone 3 4
    Do i=1,72
      title_gl 'st-'//[i] U
      
-     set hwid 5
      hid = $EVAL(13000+[i])	|  Ekin vs. ToF
      h/pro [hid]
      hnum = $HINFO([hid],'ENTRIES')
@@ -197,40 +237,38 @@
 
 *     max [hid] 60. 	
 *     min [hid] 1. 	
-
-     xmin=300.01
-     xmax=1200.01     
-     ymin=20.01
-     ymax=85.01
-***** high -t setting ***
-*     xmax=7000
-*     ymin=10
-*************************
-     h/pl [hid]([xmin]:[xmax],[ymin]:[ymax]) color
-*     h/pl [hid]([xmin]:[xmax],[ymin]:[ymax]) 
+     
+     h/pl [hid](300.:1199.,30.:89.) color
 
      set YLAB 0.6
      atitle 'Energy (keV)' 'tof (ns)'
      lid = $EVAL(13500+[i]) 
      uid = $EVAL(13600+[i])
      set HCOL 2 
-     max [lid] 100.
-     min [uid] 10.
-     h/pl [lid]([xmin]:[xmax]) s
-     h/pl [uid]([xmin]:[xmax]) s
-
-     hi/del [lid]
-     hi/del [uid]
-     hi/del [hid]
+     max [lid] 80.
+     min [uid] 20.
+     h/pl [lid](350.:1099.) s
+     h/pl [uid](350.:1099.) s
 
      set HCOL 1 
-
+     
      if (([lnum].eq.12).or.([lnum].eq.24).or.([lnum].eq.36.)_
        .or.([lnum].eq.48).or.([lnum].eq.60)) then
      wait
      endif
-     
+
+**** Perform a "reset" to free some  memory...
+     if ([i].eq.36) then
+       exe file
+       exe polarization
+     endif
+
    Enddo 
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
 return
  
 * ***************************************
@@ -332,10 +370,11 @@ return
        Nev = $HINFO($EVAL(16000+[strip]),'ENTRIES')
        if ([Nev].ge.100) then
 	 v/input ppar(1) [max]
-	 v/input ppar(2) 11.189 
-	 v/input ppar(3) 1.5 
+	 v/input ppar(2) 11. 
+	 v/input ppar(3) 3. 
 * ------------------------------------------------------------------
-	 h/fit $EVAL(16000+[strip])(8.:14.) G Q0 3 ppar pstep ppmin ppmax ppare
+*	 h/fit $EVAL(16000+[strip])(8.:14.) G Q0 3 par=ppar errpar=ppare 
+	 h/fit $EVAL(16000+[strip])(8.:14.) G 0Q 3 ppar pstep ppmin ppmax ppare
 * ------------------------------------------------------------------
 	 v/input fitc([strip]) $EVAL(abs(ppar(2)))
 	 v/input fitce([strip]) $EVAL(abs(ppare(2)))
@@ -344,7 +383,7 @@ return
        endif
      Enddo  
    Enddo
-   
+  
    wait 
    
 * ===== 2nd Page === Fit results 
@@ -369,7 +408,7 @@ return
    set HCOL 4; set PMCI 4
    hp/err st fitc ex fitce N=72 ISYMB=20 SSIZE=0.2
    atitle 'Strip-N' 'GeV/c^2'  
-
+   
 * Plot Sigmas
    title_gl 'Sigmas' U 
    null 0. 72. 0. 3.
@@ -378,17 +417,8 @@ return
    Enddo
    hp/err st fitw ex fitwe N=72 ISYMB=20 SSIZE=0.2
    atitle 'Strip-N' 'GeV/c^2'  
-   wait
-
- 
-   title_gl ' ' U 
-   null -0.5 71.5 -2 2
-   line -0.5 0 71.5 0 
-   set dmod 1
-   hi/plot 16300 sp 	   
-   atitle 'Strip-N' 'Peak - 12C Mass \133 GeV/c^2 \135' ! 220
-
-
+*   wait
+   
  return
  
 * ********************************************************
@@ -455,17 +485,10 @@ return
    title_gl _
      'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
    
-   xmin=100.01
-   xmax=1400.01
-
-*** high -t setting ***
-   xmax=8000.01
-***********************
-
    Do si=1,6
      title_gl 'Si-'//[si] U
      set HCOL 4 
-     h/pl $EVAL(10400+[si])([xmin]:[xmax])
+     h/pl $EVAL(10400+[si])(200.:1500.)
      set HCOL 4404
      h/pl $EVAL(10410+[si]) s
      atitle 'Energy (keV)' ''
@@ -477,7 +500,7 @@ return
      endif
      
    Enddo
-
+   
    wait 
    
 * Show the overlapped energy spectrums (6 detectors)
@@ -495,7 +518,7 @@ return
    opt utit
    set HWID 5
    MAX 10411 $RSIGMA(1.2*[max])
-   set HCOL 1 ;   h/pl 10411([xmin]:[xmax])
+   set HCOL 1 ;   h/pl 10411(200.:1500.)
    set HCOL 3 ;   h/pl 10413 s  
    set HCOL 4 ;   h/pl 10414 s  
    set HCOL 6 ;   h/pl 10416 s
@@ -524,7 +547,7 @@ return
    set HCOL 1 ; set HWID 5
    MAX 10411 $RSIGMA(1.2*[max])
    MIN 10411 $RSIGMA([max]/100.)
-   h/pl 10411([xmin]:[xmax])
+   h/pl 10411(200.:1500.)
    set HCOL 3 ;   h/pl 10413 s  
    set HCOL 4 ;   h/pl 10414 s  
    set HCOL 6 ;   h/pl 10416 s
@@ -537,7 +560,7 @@ return
 * -62*2*11.17*100**(-2)
 * = -0.001519
    slope = 0.001385
-   f/plot [max]*exp(-[slope]*x) 100. 1100. s
+   f/plot [max]*exp(-[slope]*x) 200. 1500. s
    
    opt liny
    null 0. 1. 0. 1. ABS
@@ -545,73 +568,72 @@ return
    itx 0.05 0.9 'LOG'
    
    wait 
-* -*- disabled integral plots Feb.20,2006 (I.Nakagawa) -*-
 * Show the overlapped energy spectrums with Integral (6 detectors)
-*   title_gl 'Run '//[run]//'Energy spectrum Integral (time cut)' U
-*   zone 1 2 
-*   opt liny
-*   max = 0.
-*   Do i=1,6
-*     h/pro $EVAL(10420+[i])
-*     candi = $HINFO(10420+[i],'MAX')
-*     if ([candi].ge.[max]) then
-*       max = [candi]
-*     endif
-*   Enddo
+   title_gl 'Run '//[run]//'Energy spectrum Integral (time cut)' U
+   zone 1 2 
+   opt liny
+   max = 0.
+   Do i=1,6
+     h/pro $EVAL(10420+[i])
+     candi = $HINFO(10420+[i],'MAX')
+     if ([candi].ge.[max]) then
+       max = [candi]
+     endif
+   Enddo
    
-*   opt utit
-*   set HWID 5
-*   MAX 10421 $RSIGMA(1.2*[max])
-*   set HCOL 1 ; h/pl 10421(200.:1500.)
-*   set HCOL 3 ; h/pl 10423 s  
-*   set HCOL 4 ; h/pl 10424 s  
-*   set HCOL 6 ; h/pl 10426 s
-*   set HCOL 2 ; h/pl 10422 s 
-*   set HCOL 7 ; h/pl 10425 s
-*   set HCOL 1 
-*   atitle 'Ekin (keV)' ''
+   opt utit
+   set HWID 5
+   MAX 10421 $RSIGMA(1.2*[max])
+   set HCOL 1 ; h/pl 10421(200.:1500.)
+   set HCOL 3 ; h/pl 10423 s  
+   set HCOL 4 ; h/pl 10424 s  
+   set HCOL 6 ; h/pl 10426 s
+   set HCOL 2 ; h/pl 10422 s 
+   set HCOL 7 ; h/pl 10425 s
+   set HCOL 1 
+   atitle 'Ekin (keV)' ''
    
-*   set LWID 5
-*   set CSIZ 0.4
-*   null 0. 1. 0. 1. ABS
-*   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
-*   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
-*   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
-*   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
-*   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
-*   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
+   set LWID 5
+   set CSIZ 0.4
+   null 0. 1. 0. 1. ABS
+   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
+   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
+   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
+   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
+   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
+   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
    
-*   set CHHE 0.7
-*   itx 0.05 0.9 'LINEAR'
+   set CHHE 0.7
+   itx 0.05 0.9 'LINEAR'
    
-*   opt logy
+   opt logy
    
-*   max = $RSIGMA([max]*2.)
-*   set HCOL 1 ; set HWID 5
-*   MAX 10421 $RSIGMA(1.2*[max])
-*   MIN 10421 $RSIGMA([max]/1000.)
-*   set HCOL 1 ;   h/pl 10421(400.:1000.)
-*   set HCOL 3 ;   h/pl 10423 s  
-*   set HCOL 4 ;   h/pl 10424 s  
-*   set HCOL 6 ;   h/pl 10426 s
-*   set HCOL 2 ;   h/pl 10422 s 
-*   set HCOL 7 ;   h/pl 10425 s
-*   set HCOL 1 
-*   atitle 'Ekin (keV)' ''
+   max = $RSIGMA([max]*2.)
+   set HCOL 1 ; set HWID 5
+   MAX 10421 $RSIGMA(1.2*[max])
+   MIN 10421 $RSIGMA([max]/1000.)
+   set HCOL 1 ;   h/pl 10421(200.:1500.)
+   set HCOL 3 ;   h/pl 10423 s  
+   set HCOL 4 ;   h/pl 10424 s  
+   set HCOL 6 ;   h/pl 10426 s
+   set HCOL 2 ;   h/pl 10422 s 
+   set HCOL 7 ;   h/pl 10425 s
+   set HCOL 1 
+   atitle 'Ekin (keV)' ''
    
 * slope parameter exp(-68*t)
 * -62*2*11.17*100**(-2)
 * = -0.001519 (68)
 * = -0.001385 (62)
-*   slope = 0.001385
-*   f/plot 2.*[max]*exp(-[slope]*x) 200. 1100. s
+   slope = 0.001385
+   f/plot 2.*[max]*exp(-[slope]*x) 200. 1500. s
    
-*   opt liny
-*   null 0. 1. 0. 1. ABS
-*   set CHHE 0.7
-*   itx 0.05 0.9 'LOG'
+   opt liny
+   null 0. 1. 0. 1. ABS
+   set CHHE 0.7
+   itx 0.05 0.9 'LOG'
    
-*   wait 
+   wait 
    
 * Show all the strips for Plus bunches only
    set DMOD 1 
@@ -638,7 +660,7 @@ return
    exec ploteachsi si=5 base=10600
    exec ploteachsi si=6 base=10600
    
-   wait
+*   wait
    
    if ([plot].ne.'all') then
      mess plot is [plot] 
@@ -669,16 +691,13 @@ return
  macro ploteachsi si=1 base=10500 
    title_gl ' Si-'//[si] U
    
-   xmin=100.
-   xmax=1400.
-
    starth=$EVAL(([si]-1)*12+1)
    stoph=$EVAL(([si])*12)
    
    useh = $EVAL([base]+[starth]+6)
    h/pro [useh]
    max = $HINFO([useh],'MAX')
-   null [xmin] [xmax] 0. $RSIGMA([max]*1.2)
+   null 240. 1300. 0. $RSIGMA([max]*1.2)
    
    set HCOL 1  
    Do i=[starth],[stoph]
@@ -998,14 +1017,6 @@ return
    v/cre bid0(120) R 
    v/cre ex0(120) R 120*0.
    SQRT2 = '1.414'
-
-
-   X45MIN=$RSIGMA(RL45(1)*[SQRT2])
-   X45MAX=$RSIGMA(RL45(1)*[SQRT2])
-   X90MIN=RL90(1)
-   X90MAX=RL90(1)
-   Y45MIN=$RSIGMA(BT45(1)*[SQRT2])
-   Y45MAX=$RSIGMA(BT45(1)*[SQRT2])
    Do i=1,120
      v/input bid0([i]) $RSIGMA([i])
      if (spin([i]).eq.1) then
@@ -1029,51 +1040,7 @@ return
        v/input RL450([i])  $RSIGMA(RL45([i])*[SQRT2])
        v/input BT450([i])  $RSIGMA(BT45([i])*[SQRT2])
      endif
-
-    if (RL45([i]) .ne. 0 ) then
-	     if ($RSIGMA(RL45([i])*[SQRT2]) .lt. [X45MIN]) then
-		X45MIN=$RSIGMA(RL45([i])*[SQRT2])
-	     endif	
-	     if ($RSIGMA(RL45([i])*[SQRT2]) .gt. [X45MAX]) then
-		X45MAX=$RSIGMA(RL45([i])*[SQRT2])
-	     endif
-    endif	
-    if (RL90([i]) .ne. 0 ) then
-	     if (RL90([i]) .lt. [X90MIN]) then
-		X90MIN=RL90([i])
-	     endif	
-	     if (RL90([i]) .gt. [X90MAX]) then
-		X90MAX=RL90([i])
-	     endif	
-    endif	
-    if (BT45([i]) .ne. 0 ) then
-	     if ($RSIGMA(BT45([i])*[SQRT2]) .lt. [Y45MIN]) then
-		Y45MIN=$RSIGMA(BT45([i])*[SQRT2])
-	     endif	
-	     if ($RSIGMA(BT45([i])*[SQRT2]) .gt. [Y45MAX]) then
-		Y45MAX=$RSIGMA(BT45([i])*[SQRT2])
-	     endif
-   endif
-
    Enddo
-
-   INTERVAL=[X45MAX]-[X45MIN]
-   X45MIN=[X45MIN]-[INTERVAL]*0.1
-   X45MAX=[X45MAX]+[INTERVAL]*0.1
-   INTERVAL=([X90MAX]-[X90MIN])
-   X90MIN=[X90MIN]-([INTERVAL]*0.1)
-   X90MAX=[X90MAX]+([INTERVAL]*0.1)
-   INTERVAL=[Y45MAX]-[Y45MIN]
-   Y45MIN=[Y45MIN]-[INTERVAL]*0.1
-   Y45MAX=[Y45MAX]+[INTERVAL]*0.1
-
-* Manual Scale
-*   X45MIN=-0.02
-*   X45MAX=0.02
-*   X90MIN=-0.03
-*   X90MAX=0.01
-*   Y45MIN=-0.04
-*   Y45MAX=-0.01
 
    opt utit
    set YHTI 0.7
@@ -1083,10 +1050,9 @@ return
 * ---------------------------------------------------------------------
    1d 999 '' 40 -0.1 0.1
    hfill id=999 vname='RL45U'
-   low45X = $HINFO(999,'MEAN')-0.02
-   upp45X = $HINFO(999,'MEAN')+0.02
-*   null 0. 120. [low45X] [upp45X]
-   null 0. 120. [X45MIN] [X45MAX]
+   low45X = $HINFO(999,'MEAN')-0.04
+   upp45X = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low45X] [upp45X]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 RL45U ex0 RL45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
@@ -1102,10 +1068,9 @@ return
    h/del 999
    1d 999 '' 40 -0.1 0.1
    hfill id=999 vname='RL90U'
-   low90X = $HINFO(999,'MEAN')-0.02
-   upp90X = $HINFO(999,'MEAN')+0.02
-*   null 0. 120. [low90X] [upp90X]
-   null 0. 120. [X90MIN] [X90MAX]
+   low90X = $HINFO(999,'MEAN')-0.04
+   upp90X = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low90X] [upp90X]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 RL90U ex0 RL90EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
@@ -1121,10 +1086,9 @@ return
    h/del 999
    1d 999 '' 40 -0.1 0.1
    hfill id=999 vname='BT45U'
-   low45Y = $HINFO(999,'MEAN')-0.02
-   upp45Y = $HINFO(999,'MEAN')+0.02
-*   null 0. 120. [low45Y] [upp45Y]
-   null 0. 120. [Y45MIN] [Y45MAX]
+   low45Y = $HINFO(999,'MEAN')-0.04
+   upp45Y = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low45Y] [upp45Y]
    atitle 'BID' 'asymmetry'
    set PMCI 4
    hp/err bid0 BT45U ex0 BT45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
@@ -1334,12 +1298,12 @@ return
    title_gl _
      'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
 
-   v/cre timec(121) R 
-   v/cre timew(121) R
-   v/cre timece(121) R
-   v/cre timewe(121) R
-   v/cre tbid(121) R 
-   v/cre ex(121) R 
+   v/cre timec(120) R 
+   v/cre timew(120) R
+   v/cre timece(120) R
+   v/cre timewe(120) R
+   v/cre tbid(120) R 
+   v/cre ex(120) R 
    v/cre ppar(3) R 1000. 50. 3.
    v/cre ppare(3) R 1. 1. 1. 
 
@@ -1353,7 +1317,7 @@ return
    sum = 0.
    nval = 0.
    
-   Do bid=0, 120
+   Do bid=0, 55
      num=$EVAL([bid]+1)
      v/input tbid([num]) [num]
      
@@ -1361,25 +1325,22 @@ return
      h/pro [hid]
      NCONT = $HINFO([hid],'ENTRIES')
      if ([NCONT] .ge. 1000.) then
-       v/input ppar(1)  $HINFO([hid],'MAX')
-       v/input ppar(2)  $HINFO([hid],'MEAN')
-       v/input ppar(3) 	$HINFO([hid],'RMS')
+       v/input ppar(1) [expamp] 
+       v/input ppar(2) 40. 
+       v/input ppar(3) 3. 
 * -------------------------------------------------------------
 *       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 par=ppar errpar=ppare
-       h/fit $EVAL(11000+[bid]) G Q0E 3 ppar pstep ppmin ppmax ppare
+       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 ppar pstep ppmin ppmax ppare
 * -------------------------------------------------------------
        v/input timec([num]) $EVAL(ppar(2))
        v/input timew([num]) $EVAL(abs(ppar(3))) 
        v/input timece([num]) $EVAL(ppare(2)) 
        v/input timewe([num]) $EVAL(ppare(3))
-
-
+       
        timec = $EVAL(timec([num]))
-	if [timec].gt.0 .and. [timec].lt.100 then
-	       sum = $RSIGMA([sum] + timec([num]))
-	       nval = $RSIGMA([nval]+1)
-	endif
-
+       sum = $RSIGMA([sum] + timec([num]))
+       nval = $RSIGMA([nval]+1)
+       
 * mess $EVAL([bid])//' '//$EVAL(ppar(2))//' '//$EVAL(ppar(3))//' '_
 * $EVAL([expamp])
      else 
@@ -1387,9 +1348,9 @@ return
      endif
    Enddo
    
-   Do bid=0, 54
+   Do bid=0, 55
      num=$EVAL([bid]+1)
-*     mess [bid] $EVAL(timec([num])) $EVAL(timec([num])-[sum]/[nval]) $EVAL([sum]/[nval])   
+*     mess [bid] $EVAL(timec([num])-[sum]/[nval]) $EVAL([sum]/[nval])   
      v/input timec([num]) $EVAL(timec([num])-[sum]/[nval])
    Enddo
    
@@ -1399,24 +1360,24 @@ return
    
    set XLAB 2.0
 * ==== 1st plot
-   null 0. 60. -2. 2. 
+   null 0. 120. -5. 5. 
    set DMOD 2 
-   line 0. 0. 60. 0.
-   line 0.  1. 60.  1.
-   line 0. -1. 60. -1.
+   line 0. 0. 120. 0.
+   line 0.  1. 120.  1.
+   line 0. -1. 120. -1.
    set DMOD 1; set MTYP 20; set HCOL 4
-   hp/err tbid timec ex timece 55 ISYMB=20
+   hp/err tbid timec ex timece 120 ISYMB=20
    atitle 'bunch ID' 'T shift w.r.t. average timing (ns)'
    
 * ===== 2nd plot 
    title_gl 'Banana Width at 600-650 keV' U
    set DMOD 2
-   null 0. 60. 0. 10. 
+   null 0. 120. 0. 10. 
    Do i=1,10
-     line 0. [i]. 60. [i].	| horizontal grid
+     line 0. [i]. 120. [i].	| horizontal grid
    Enddo
    set DMOD 1; set MTYP 20; set HCOL 4
-   hp/err tbid timew ex timewe 55 ISYMB=20
+   hp/err tbid timew ex timewe 120 ISYMB=20
    atitle 'bunch ID' 'banana width (ns)'
    
  return
@@ -1492,7 +1453,7 @@ return
    v/cre strip(72) R
    v/cre fraction(72) R
    Do st=1,72
-     hid = $EVAL(11200+[st])
+     hid = $EVAL(11100+[st])
      h/pro [hid]
      
      nent = $HINFO([hid], 'ENTRIES')
@@ -1536,27 +1497,20 @@ last:
    set YMGL 4.
    set XLAB 3.0
    set YLAB 1.2
-   v/del minust
-   v/del ex
-
    
    title_gl _
      'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
    title_gl '' U
    zone 
-
    
-   LOGFILE=$ENV(DAQDIR)/log/[run].log
-   MACRODIR=$ENV(MACRODIR)
-   sh [MACRODIR]/getTbin.sh [LOGFILE]
+* Variables for 
+   v/del ex
 
-   ve/read minust tbin.dat
-   ve/read ex tdbin.dat
-   sh rm -f tbin.dat
-   sh rm -f tdbin.dat
-
-   nbin=$vdim(minust,1)
-
+   nbin=6
+   v/cre minust([nbin]) R 360. 440. 540. 700. 900. 1100.
+   v/cre ex([nbin]) R 40. 40. 60. 100. 100. 100.
+*   v/cre minust([nbin]) R 340. 380. 420. 460. 500. 540. 580. 700. 900. 1100.
+*   v/cre ex([nbin])     R  20.  20.  20.  20.  20.  20.  20. 100. 100.  100. 
    v/cre tx90([nbin]) R
    v/cre tx90e([nbin]) R
    v/cre tx45([nbin]) R
@@ -1615,7 +1569,7 @@ last:
       vector masym,masyme
       integer i
       
-      Do i=1,27			! 1-6 t-regions
+      Do i=1,6			! 1-6 t-regions
 	x90  = tx90(i)
 	x90e = tx90e(i)
 	x45  = tx45(i)
@@ -1637,7 +1591,7 @@ last:
    call meanm
    
 * Define Plot Range
-   PXMAX = 1200.5
+   PXMAX = 1200.
    PXMIN = 200.
    PYMIN = -0.02
    PYMAX = 0.02
@@ -1658,13 +1612,9 @@ last:
    hp/err minust tc45 ex tc45e [nbin] ISYMB=22 ssize=0.4
    
    set HCOL 2; set PMCI 2; set HWID 5;
-   hp/err minust masym ex masyme [nbin] ISYMB=20 ssize=0.4 
-*   ve/write masym dat/asym_t_[run].dat
-*   ve/write masyme dat/asym_t_[run]e.dat
+   hp/err minust masym ex masyme [nbin] ISYMB=20 ssize=0.4
    atitle 'Kinetic Energy (keV)' 'Physics Asymmetry' 
    
-*   ve/write minust,masym,masyme tmp.dat (F15.5,F15.5,F15.5)
-
    set HWID 0
    
 * Show Legends
@@ -1708,7 +1658,6 @@ last:
      0.0109786 0.0100245 0.00913435 0.00830108 0.00751878 _
      0.00678244 0.00608782 0.00543127 0.00480969 0.00422038
 
-
 *  A_N for 100 GeV
    v/cre asymth(25) R _
         0.0297964  0.0372334  0.0345393  0.0306988  0.0272192 _
@@ -1716,12 +1665,18 @@ last:
         0.0145340  0.0132021  0.0119941  0.0108907  0.00987651 _
         0.00893914  0.00806877  0.00725722  0.00649782  0.00578491 _
         0.00511384  0.00448062  0.00388186  0.00331461  0.00277642
-
    
    v/cre ant(25) R
    Do i = 1,25
      v/input ant([i]) $RSIGMA(0.0010 + 0.001*([i]-1))
    Enddo
+   
+* v/cre antold(10) R 0.0030 0.0055 0.0080 0.0105 0.0130 _
+* 0.0155 0.0180 0.0205 0.0230 0.0255
+* v/cre asymthold(10) R 0.034445 0.026340 0.020389 0.016051 0.012707 _
+* 0.010014 0.007777 0.005875 0.004233 0.002799
+* vscale asymthold $EVAL(pol(1)) polthold
+* graph 10 antold polthold C
    
    vscale asymth $EVAL(pol(1)) polth
    set LWID 3
@@ -1737,15 +1692,6 @@ last:
 * *************************
  macro chisq
 * *************************
-   exe setting 
-*   size 18 16
-   
-*   opt htit
-*   null -0.05 6.28 -0.8 0.8
-*   hi/plot 36230 s
-*   atitle 'strip phi-angle \133 rad \135' 'Polarization \133 % \135' ! 220
-*   wait
-
 
    exe setting 
    zone 4 5 
@@ -1843,8 +1789,8 @@ last:
      endif       
      
      
-*  ===== Plot each fit (55 bunches) =========
-     title_gl 'bunch-'//$SIGMA(([i]+1)/2) U
+*  ===== Plot each fit (120 bunches) =========
+     title_gl 'bunch-'//$SIGMA([i]) U
      null 0. 7. [min] [max]
      set HCOL 2 
      f/plot fitfunc 0. 7. s    
@@ -1887,14 +1833,17 @@ last:
      endif
      
      v/input rphie([i]) $EVAL(fitpare(3)) 
-     v/input bunch([i]) $EVAL([i]/2.)
+     v/input bunch([i]) $EVAL([i])
 * ** mess CHISQ = $EVAL(chisq([i])) 
      nvalid=[nvalid]+1
      
      if (([nvalid].eq.20).or.([nvalid].eq.40).or.([nvalid].eq.60)) then
-       wait
+      wait
      endif
-     
+     if (([nvalid].eq.80).or.([nvalid].eq.100).or.([nvalid].eq.120)) then
+      wait
+     endif
+    
      outloop:
    Enddo
    
@@ -1913,24 +1862,24 @@ last:
    set ASIZ 0.4
    
 * ----- Plot Amplitude ----
-   null 0. 60. -0.00005 0.00070
+   null 0. 120. -0.00005 0.00070
    hp/err bunch p ex pe 120 ISYMB=20
    atitle 'Bunch Number' 'Amplitude'
    set LWID 3. 
    set PLCI 1 
-   line 0. 0. 60. 0.
+   line 0. 0. 120. 0.
    
 * ----- Plot Phase ---- 
-   null 0. 60. -1.2 1.2
+   null 0. 120. -1.2 1.2
    hp/aerr bunch rcos ex ex rcosl rcosu 120 ISYMB=20 
    set PLCI 2 
-   line 0. 1. 60. 1.
-   line 0. -1. 60. -1.
+   line 0. 1. 120. 1.
+   line 0. -1. 120. -1.
    set PLCI 1 
    atitle 'Bunch Number' 'Phase (Cos)'
    
 * ----- Plot Chi2 -----
-   null 0. 60. -0.1 10.
+   null 0. 120. -0.1 10.
    Do i=1,120
      chisq = $EVAL(chisq([i]))
      if ([chisq].ge.10) then
@@ -1994,7 +1943,7 @@ last:
    f/pl chifunc 0. 4. s  
    set XLAB 2.0
    atitle 'Reduced Chi2' 'Number of Bunches'
-   
+
  return
  
 * **************************************************************
@@ -2071,260 +2020,3 @@ next:
    wait
    
  return
-
-* **************************************************************
- macro profile
-* **************************************************************
-   set *
-   exe setting
-   glo/imp run
-   v/del *
-   h/del *
-   close 1   
-   
-   igset mtyp 20 
-   igset pmci 2 
-   zone
-   size 18 16
-
-   exe file HID1=30000 HID2=30100
-   exe polarization
-   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
-   title_gl '' U
-
-   exe target
-   wait
-
-   LOGFILE=$ENV(DAQDIR)/log/[run].log
-   MACRODIR=$ENV(MACRODIR)
-   sh [MACRODIR]/filter.sh [LOGFILE]
-
-   ve/read index,delim,x,y tgt.dat ! ! -/*/
-   ve/cr time($vdim(index,1))
-   do i=1,$vdim(index,1)
-       exe file HID1=$EVAL(36999+[i]) HID2=$EVAL(37499+[i])
-       exe polarization 
-       spol[i]=pol(1)
-       dspol[i]=pol(2)
-   enddo
- 
-
-   ve/read index,delim,x,y tgt.dat ! ! -/*/
-   ve/cr dx($vdim(index,1))
-   ve/cr  P($vdim(index,1))
-   ve/cr dP($vdim(index,1))
-
-   Orientation=Horizontal
-   scan=H
-* Incert Target Values to x for Vertical Scan
-   test=$EVAL(x(1)*x(2)*x(3))
-   if [test].eq.0 then
-	  sigma x=y
-	  Orientation=Vertical
-	  scan=V
-   endif
-
-   do i=1,$vdim(index,1)
-       ve/inp  P([i])  [spol[i]]
-       ve/inp dP([i]) [dspol[i]]
-   enddo
-
-   xtitle=Target [Orientation] Position \133 counts \135
-
-*   exec simple xtitle=[xtitle]
-
-*   psfile=ps/profile_[run].ps
-*   close 60;   for/file 60 [psfile]
-*   meta 60 -111
-   
-   custum=custum
-   exec detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
-
-   sh rm -f tgt.dat
-*   mess psfile=[psfile]
-*   close 60
-   
-return
-
-* **************************************************************
- macro detail xtitle=[xtitle] run=[run] scan=[scan] custum=[custum]
-* **************************************************************
-   size 20 20
-   zone 1 2
-
-*   opt utit
-*   set hcol 2 ;   hi/plot 38010 
-*   set hcol 4 ;   hi/plot 38020 s
-
-*   set hcol 2 ;   hi/plot 38030 
-*   set hcol 4 ;   hi/plot 38040 s
-*   set hcol 1
-
-   ve/cr nevnt(45)
-   get_vect/contents 38010 nevnt
-   ve/cr k($vdim(index,1)
-   do i=1,$vdim(index,1)
-     t=nevnt([i])
-     ve/inp k([i]) [t]
-   enddo
-   sigma rate=k/delim
-
-   ve/cr drate($vdim(rate,1))
-   if [run].lt.7600 then
-      sigma drate=1/delim*rate
-   endif
-	
-   opt=w,1
-   if [custum].eq.custum then
-	   exe CallNull mode=polarization
-	   opt=1
-   endif
-   hp/err x P dx dP $vdim(index,1) 20 0.4 [opt]
-   atitle [xtitle] 'Polarization' ! 220
-
-   opt=w,l1
-   if [custum].eq.custum then
-	   exe CallNull mode=rate
-	   opt=l1
-   endif
-   hp/err x rate dx drate $vdim(index,1) 20 0.4 [opt]
-*   ve/write x,P,dP,rate,drate profile/profile_[run].[scan].dat 'F10.0,2(F10.5,2x),2(E10.5,2x)'
-   atitle [xtitle] 'Rate \133 a.u. \135' ! 220
-
-return
-
-
-* **************************************************************
-macro simple xtitle=[xtitle]
-* **************************************************************
-
-   hp/err x P dx dP $vdim(index,1) 20 0.35 w,1
-   atitle [xtitle] 'Polarization' ! 220
-
-   set fcol 4 ; set fwid 4
-   ve/cr par(1)
-   ve/cr epar(1)
-   opt fit
-   set fit 1111
-   ve/fit x P dP /home/itaru/kumac/p0.f s 1 par ! ! ! epar
-   fu/plot /home/itaru/kumac/p0.f $GRAFINFO('WNXMIN') $GRAFINFO('WNXMAX') s
-   sigma par=par-epar
-   fu/plot /home/itaru/kumac/p0.f $GRAFINFO('WNXMIN') $GRAFINFO('WNXMAX') s
-
-   igset plci 1
-   wait
-
-return
-
-
-* **************************************************************
-macro target
-* **************************************************************
-   exe setting
-   opt utit
-
-
-   set hcol 1	
-   hi/plot 25060 box 
-   igset mtyp 20;
-   set hcol 2;
-   hi/plot 25050 box,s
-
-   null 0 10 0 10 abs
-   igset pmci 1 ; key 0.5 5   25 'Stepping Moter' 
-   igset pmci 2 ; key 0.5 4.5 25 'Encoder Readout'
-	
-   atitle 'Time in [s] from Measurement Start' 'target Position in [mm]' ! 220
-
-return
-
-
-* **************************************************************
-macro CallNull mode=[mode]
-* **************************************************************
-
-   RateLimit=1e4
-   xmin=x(1)
-   xmax=x($vdim(index,1))
-
-   do i=1,$vdim(index,1)
-	if (rate([i]).gt.[RateLimit]) then
-	  xmin=x([i])
-	  goto label1
-        endif
-   enddo
-
-label1:
-
-   do i=$vdim(index,1),1,-1
-	if (rate([i]).gt.[RateLimit]) then
-	  xmax=x([i])
-	  goto label2
-        endif
-   enddo
-
-label2:
-
-tmp=[xmin]
-if [xmin].gt.[xmax] then
-	xmin=[xmax]
-	xmax=[tmp]
-endif
-xmin=[xmin]-10
-xmax=[xmax]+10
-
-if [mode].eq.polarization then
-   null [xmin] [xmax] 0 0.8
-else 
-   ymax=0
-   do i=1,$vdim(index,1) 
-	if (rate([i]).gt.[ymax]) then
-	   ymax=rate([i])
-        endif
-   enddo
-   ymax=[ymax]*1.1
-   null [xmin] [xmax] 0 [ymax]
-endif
-
-
-
-return
-
-
-* **************************************************************
-macro ErrorDetector
-* **************************************************************
-   exe setting
-   glo/imp run
-   zone 1 2
-   igset pmci 4; set hcol 4;
-   opt utit
- 
-   title 'RUN '//[run]//' : Error Detector (Strip)'
-
-   null -0.5 71.5 0 3
-   set dmod 1
-   igset mtyp 20 
-   hi/plot 16310 sp
-   igset plci 2
-   set hcol 2 ; hi/plot 16320 s
-   set dmod 2 ; hi/plot 16330 s
-   atitle 'Strip-N' '12C Mass Sigma \133 GeV/c^2 \135' ! 220
-   null 0 10 0 10 abs
-   igset dmod 1 
-   key 0.5 9 1 'Average' ! l
-   key 0.5 8 2 'Allowance' ! l
-
-   set dmod 1
-   set hcol 1
-
-   set dmod 1
-   igset mtyp 20 
-   hi/plot 16340 p
-   set hcol 2; set dmod 2 ; hi/plot 16350 s
-   atitle 'Strip-N' '12C Mass Fit Chi2 \133 GeV/c^2 \135' ! 220
-   null 0 10 0 10 abs
-   key 0.5 9 2 'Allowance' ! l
-   
-
-return
