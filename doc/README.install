@@ -1,6 +1,6 @@
 #####################################################################
 # README.install
-# July.26,2006
+# Feb.10,2009
 # I. Nakagawa
 # pC offline analysis package
 #####################################################################
@@ -219,11 +219,11 @@ Create necessary directories:
 	% mkdir $ASYMDIR/douts
 	% mkdir $ASYMDIR/calib
 	% mkdir $ASYMDIR/config
-	% mkdir $ASYMDIR/integ
 	% mkdir $ASYMDIR/dlayer
+	% mkdir $ASYMDIR/integ
 	% mkdir $ASYMDIR/ps
 
-Energy Calibration
+Energy Calibration:
 
 0. Make sure all the environments are defined as described above.
    Calibration data supposed to be stored at $DATADIR as well as
@@ -280,30 +280,35 @@ DeadLayer Fit:
 
 Create new configulation:
 
-0. Make sure calibration file is defined in run.db
+STEP-0. Make sure calibration file is defined in run.db. 
+	If your are done with dead-layer fit as described above, skip 
+	STEP-1.
 
-1. To perform deadlayer fit and make new configulation:
+STEP-1. To perform deadlayer fit and make new configulation:
    (-b option for banana cut)
 
     % mkConfig.pl -f 7279.005 -D -b
 
-   To make configulation file with existing deadlayer data
+STEP-2. To make configulation file with existing deadlayer data
 
     % mkConfig.pl -f 7279.005
 
-   New configulation file will be created 
+     New configulation file will be created 
 
     ./config/7279.005.config.data
 
 
-2. Copy new configulation file to shared library and update
-   on run.db to use new configulation.
+STEP-3. Copy new configulation file to shared library and update
+        on run.db to use new configulation.
+
+   %mkConfig.pl -f 7279.005 -p     <- recommanded
+
+   or 
 
    %cp ./config/7279.005.config.data $CONFDIR/.
 
-	or 
 
-   %mkConfig.pl -f 7279.005 -p
+STEP-4.
 
    in run.db add:
    [7279.005]
