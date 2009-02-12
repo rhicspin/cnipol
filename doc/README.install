@@ -32,7 +32,6 @@ the program: CNILIB=/usr/local/cnipol
 
 data/ 
   symboric links to yellowpc and bluepc data direcotries.
-  (symboric links to 2005 data available on pb2pb.phy.bnl.gov)
 
 online/
     hbook/  : symboric link to online hbook files.
@@ -93,9 +92,10 @@ DOCUMENTAIONS
  	README.install     : this document
   	README.rundb       : run.db syntax
     	README.dlayer      : deadlayer instructions
+	README.online      : instruction to creat online configuration file
 	README.fastoffline : instruction for fast offline setup
-
-
+	README.analysis    : some tips about offline analysis
+	README.dedx        : pointer to dedx model document
 
 Set up environment and install executables and macros.
 
@@ -139,31 +139,8 @@ Set up environment and install executables and macros.
 	% cd cnipol/cnilib
 	% ./install.sh
 
-4. Add following lines to your $HOME/.pawlogon.kumac
-
-	alias/cr pson 'exe ~/.pawlogon#on'
-	alias/cr psoff 'exe ~/.pawlogon#off'
-	opt zfl1	
-	FILECASE keep
-	defaults ./kumac,$ENV(KUMACDIR)
-	return
-
-	*===================================================
-	macro on fn=paw.ps met=-111
-	 fortran/file 66 [fn]
-	 graphics/metafile 66 [met]
-	return
-
-	*===================================================
-	macro off 
-	 close 66
-	return
-
-	*===================================================
-	macro eon fn=paw.eps met=-113
-	 fortran/file 66 [fn]
-	 graphics/metafile 66 [met]
-	return
+4. (optional) $HOME/.pawlogon.kumac setting for paw user. See <Appendix> at the
+   end of this document. Unless you are not a big fan of paw, just ignore. 
 
 
 
@@ -318,7 +295,33 @@ STEP-4.
 
    
 
+<Appendix>
+$HOME/ .pawlogon.kumac settings:
 
+
+	alias/cr pson 'exe ~/.pawlogon#on'
+	alias/cr psoff 'exe ~/.pawlogon#off'
+	opt zfl1	
+	FILECASE keep
+	defaults ./kumac,$ENV(KUMACDIR)
+	return
+
+	*===================================================
+	macro on fn=paw.ps met=-111
+	 fortran/file 66 [fn]
+	 graphics/metafile 66 [met]
+	return
+
+	*===================================================
+	macro off 
+	 close 66
+	return
+
+	*===================================================
+	macro eon fn=paw.eps met=-113
+	 fortran/file 66 [fn]
+	 graphics/metafile 66 [met]
+	return
 
 
 
