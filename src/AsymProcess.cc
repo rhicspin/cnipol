@@ -512,7 +512,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
 		// Following function call is for special text output routine of spin tune measurements
 		// This routine is commented out by default. Activate this upon necessity.
-		SpinTuneOutput(event->bid,si);
+		//		SpinTuneOutput(event->bid,si);
 		
 
 		if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
