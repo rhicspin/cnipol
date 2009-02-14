@@ -144,13 +144,12 @@ GetEnergy(){
 #############################################################################
 GetOnlinePolarization(){
 
- TMPOUTDIR=/tmp/cnipol;
  if [ ! -d $TMPOUTDIR ]; then
      mkdir $TMPOUTDIR;
  fi
 
  if [ -f $ONLINEDIR/log/an$RunID.log ] ; then
-     $MACRODIR/pvector.pl $RunID
+     $MACRODIR/CalcOnlinePol.pl $RunID
      OnlineP=`tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f\n",$1)}'`; 
      dOnlineP=`tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f\n",$2)}'`; 
      #tail -n 1 $TMPOUTDIR/pvect.dat | gawk '{printf("%7.1f %5.1f\n",$1,$2)}' 
