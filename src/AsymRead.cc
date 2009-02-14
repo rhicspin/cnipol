@@ -120,13 +120,16 @@ int readloop() {
             continue;  
         }
 
-	// Distinguish between blue & yellow beam
-        switch (rec.header.type & REC_BEAMMASK) {
+	// Distinguish between blue & yellow beam. 
+	// Presently, it overwrites pre-defined runinfo.RHICBeam 
+        // in GetPolarimetryID_and_RHICBeam(char RunID[]).
+	// Could be used as cross check for the future
+	switch (rec.header.type & REC_BEAMMASK) {
 	case REC_YELLOW:
-	  runinfo.RHICBeam=1;
+	  runinfo.RHICBeam=1 ;
 	  break;
 	case REC_BLUE:
-	  runinfo.RHICBeam=0;
+	  runinfo.RHICBeam=0 ;
 	  break;
 	}
 
@@ -662,8 +665,8 @@ PrepareCollidingBunchPattern(){
 
 
   for (int i=0; i<NBUNCH; i++){
-    phx.bunchpat[i] = 1;
-    str.bunchpat[i] = 1;
+    phx.bunchpat[i] = 1; // PHENIX bunch patterns
+    str.bunchpat[i] = 1; // STAR bunch patterns
   }
 
   if (runinfo.RHICBeam==1) { // Yellow Beam

@@ -12,10 +12,10 @@
 #include <math.h>
 #include <errno.h>
 #include <signal.h>
-#include <string.h>
 #include <iostream.h>
 #include <fstream.h>
 #include <getopt.h>
+#include <string.h>
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"
@@ -230,11 +230,16 @@ int main (int argc, char *argv[]){
         }
     }
 
-    // RunID 
-    int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 7999.001.data - .data = 7999.001 
+    // Extract RunID from input filename
+    int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001 
     char RunID[chrlen];
     strncpy(RunID,ifile,chrlen); RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
     runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
+
+
+    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
+    GetPolarimetryID_and_RHICBeam(RunID);
+
 
 
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
@@ -353,6 +358,48 @@ int BunchSelect(int bid){
 }
  
 
+//
+// Class name  :
+// Method name : GetPolarimetryID_and_RHICBeam(char RunID[])
+//
+// Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
+// Input       : char RunID[]
+// Return      : 
+//
+int 
+GetPolarimetryID_and_RHICBeam(char RunID[]){
+
+  char ID = *(strrchr(RunID,'.')+1);
+
+  switch (ID) {
+  case '0':
+    runinfo.RHICBeam=0;
+    runinfo.PolarimetryID=1; //   blue polarimeter-1
+    break;
+  case '1':
+    runinfo.RHICBeam=1;
+    runinfo.PolarimetryID=1; // yellow polarimeter-1  
+    break;
+  case '2':
+    runinfo.RHICBeam=0;
+    runinfo.PolarimetryID=2; //   blue polarimeter-2
+    break;
+  case '3':
+    runinfo.RHICBeam=1;
+    runinfo.PolarimetryID=2; // yellow polarimeter-2
+    break;
+  default:
+    fprintf(stdout,"Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
+    break;
+  }
+
+  fprintf(stdout,"RUNINFO: RunID=%.3f RHICBeam=%d PolarimetryID=%d\n", 
+	  runinfo.RUNID, runinfo.RHICBeam, runinfo.PolarimetryID);
+
+
+  return 0;
+
+}
 
 
 

@@ -101,6 +101,7 @@ StructRunInfo runinfo = {
     0, // WcmSum;
     0, // BeamEnergy;
     0, // RHICBeam;
+    1, // PolarimetryID; Polarimetry-1 or Polarimetry-2
     0, // MaxRevolution;
   'V', // target
   '-',// targetID

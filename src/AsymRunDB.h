@@ -13,7 +13,7 @@ string GetVariables(string str);
 int SetDefault();
 float GetVariablesFloat(string str);
 int ContinueScan(double ThisRunID, double RunID);
-int MatchBeam(double ThisRunID, double RunID);
+int MatchPolarimetry(double ThisRunID, double RefRunID);
 void PrintRunDB();
 int StripHandler(int, int);
 int FindDisableStrip();
