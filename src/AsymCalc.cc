@@ -988,11 +988,6 @@ ExclusionList(int k, int j, int RHICBeam){
   int i = k>35 ? k-36: k;
   if ((j==i)||(j==35-i)||(j==36+i)||(j==71-i)) test = 1;
 
-  // This is because of dead channel 62. (Strip#63) in blue
-  //  if (!RHICBeam) {
-  //    if ((j==26)||(j==9)||(j==62)||(j==45)) test = 1;
-  //  }
-
   return test;
 
 }

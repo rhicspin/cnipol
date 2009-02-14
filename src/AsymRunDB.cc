@@ -15,6 +15,7 @@
 #include <string.h>
 using namespace std;
 #include <iostream.h>
+#include <iomanip>
 #include <fstream.h>
 #include "rhicpol.h"
 #include "rpoldata.h"
@@ -64,7 +65,7 @@ readdb(double RUNID) {
       }
       rundb.RunID = strtod(s.c_str(),NULL);
       //      printf("AsymRunDB: %.3f\n",rundb.RunID);
-      match = MatchBeam(RUNID,rundb.RunID);
+      match = MatchPolarimetry(RUNID,rundb.RunID);
       if (match){
 	if (RUNID<rundb.RunID) break;
       }
@@ -302,22 +303,26 @@ FindDisableBunch(){
 
 //
 // Class name  :
-// Method name : MatchBeam
+// Method name : MatchPolarimetry
 //
-// Description : check yellow or blue beam 
-// Input       : double ThisRunID, double RunID
-// Return      : 1 if ThisRunID and RunID are both blue or yellow beam
+// Description : Match  the Polarimety ID between ThisRunID and RefRunID
+// Input       : double ThisRunID, double RefRunID
+// Return      : 1 if ThisRunID and RunID are matchs Polarimetry ID
 //
 int 
-MatchBeam(double ThisRunID, double RunID){
+MatchPolarimetry(double ThisRunID, double RefRunID){
 
-  int match=0;
+  struct runid {
+    char runid[10];
+    char * polarimetry_id;
+  } This, Ref;
 
-  int ThisRun = int((ThisRunID-int(ThisRunID))*1e3);
-  int Run     = int((RunID-int(RunID))*1e3);
+  sprintf(This.runid,"%.3f",ThisRunID); This.polarimetry_id = strrchr(This.runid,'.') + 1;
+  sprintf(Ref.runid,"%.3f",RefRunID);   Ref.polarimetry_id = strrchr(Ref.runid,'.') +1  ;
 
-  if ((ThisRun>=100)&&(Run>=100)) match=1;
-  if ((ThisRun<= 99)&&(Run<=99))  match=1;
+  int match = (*This.polarimetry_id-*Ref.polarimetry_id) ? 0  : 1 ;
+
+  cout << fixed << setprecision(3) << ThisRunID << " " << RefRunID << " " << match << endl;
 
   return match;
 

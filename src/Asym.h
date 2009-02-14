@@ -169,6 +169,7 @@ typedef struct {
   float WcmSum;
   double BeamEnergy;
   int RHICBeam;
+  int PolarimetryID;
   int MaxRevolution;
   char target;
   char targetID;
@@ -338,6 +339,7 @@ int spill_end(recordConfigRhicStruct *);
 int sqass(float, float, float, float, float *, float *);
 int end_process(recordConfigRhicStruct *);
 
+int GetPolarimetryID_and_RHICBeam(char RunID[]);
 int printConfig(recordConfigRhicStruct *);
 void reConfig(recordConfigRhicStruct *);
 void calcRunConst(recordConfigRhicStruct *);
