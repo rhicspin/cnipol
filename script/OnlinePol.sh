@@ -163,7 +163,7 @@ GetOnlinePolarization(){
  else 
      printf "%7.1f %5.1f\n" 0 0;
  fi
-# rm -f $TMPOUTDIR/pvect.dat;
+ rm -f $TMPOUTDIR/pvect.dat;
 
 }
 
