@@ -11,6 +11,7 @@ RAWDATA_LIST=raw_data.list
 cd $DATADIR
 ls 9???.???.data          | sed -e 's/.data//' >  $RAWDATA_LIST
 ls 1????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
+#ls 2????.???.data 2>/dev/null | sed -e 's/.data//' >> $RAWDATA_LIST
 chown e950:e950 $RAWDATA_LIST
 cd -
 
