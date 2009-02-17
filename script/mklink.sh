@@ -4,7 +4,7 @@
 # I.Nakagawa
 LOGFILE="/tmp/log/mklink.log";
 RAW_DATALIST="$DATADIR/raw_data.list";
-RUN_YEAR=2008;
+RUN_YEAR=2009;
 ExeStandAlonePC2PC=0;
 ExeDoublePC=0;
 ExeSimple=0;
@@ -82,7 +82,7 @@ MakeLinks(){
 
 DoublePC(){
 
-    for BEAM in Bdata Ydata ; do 
+    for BEAM in Bdata Ydata data ; do 
 
 	DESTDIR=$DATADIR;
 	Mode=data;
