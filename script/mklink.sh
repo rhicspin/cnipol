@@ -53,7 +53,7 @@ MakeLinks(){
     #create directory if there is no such a directory
     if [ ! -d $DESTDIR ] ; then
 	echo -e "Create $DESTDIR";
-	mkdir $DESTDIR
+	mkdir -p $DESTDIR
     fi
     echo $BEAM - $DESTDIR 
 
