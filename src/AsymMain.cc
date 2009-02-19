@@ -230,16 +230,15 @@ int main (int argc, char *argv[]){
         }
     }
 
+
     // Extract RunID from input filename
     int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001 
     char RunID[chrlen];
     strncpy(RunID,ifile,chrlen); RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
     runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
 
-
     // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
-    GetPolarimetryID_and_RHICBeam(RunID);
-
+    if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
 
 
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
