@@ -22,7 +22,7 @@ Following is some example:
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=7;
-	CONFIG=config_init.dat;
+	CONFIG=config_init.dat;  <- assumes t0=0, dl=40ug/cm^2
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	COMMENT="";
@@ -138,3 +138,46 @@ with e950 account:
 mklink.sh --double-pc
 
 from whichever directory you are. Make sure you analyze the data in $ASYMDIR. 
+
+
+======================== bluepc and yellowpc disk system setup  =================================
+As of beginning of Run09
+
+[e950@yellowpc ~]$ cat /etc/fstab
+# This file is edited by fstab-sync - see 'man fstab-sync' for details
+LABEL=/                 /                       ext3    defaults        1 1
+LABEL=/boot             /boot                   ext3    defaults        1 2
+none                    /dev/pts                devpts  gid=5,mode=620  0 0
+none                    /dev/shm                tmpfs   defaults        0 0
+LABEL=yd1               /yd1                    ext3    defaults        1 2
+none                    /proc                   proc    defaults        0 0
+none                    /sys                    sysfs   defaults        0 0
+LABEL=SWAP-sda6         swap                    swap    defaults        0 0
+
+bluepc.rhic.bnl.gov:/data  /Bdata     nfs     rw,soft,intr,rsize=32786,wsize=32768  0 0
+bluepc.rhic.bnl.gov:/bd1   /bd1       nfs     rw,soft,intr,rsize=32786,wsize=32768  0 0
+bluepc.rhic.bnl.gov:/usr/local/cnipol   /usr/local/cnipol  nfs  rw,soft,intr,rsize=32786,wsize=32768  0 0
+
+/dev/hdd                /media/cdrecorder       auto    pamconsole,exec,noauto,managed 0 0
+/dev/hdc                /media/cdrecorder1      auto    pamconsole,exec,noauto,managed 0 0
+/dev/fd0                /media/floppy           auto    pamconsole,exec,noauto,managed 0 0
+
+
+[e950@bluepc script]$ cat /etc/fstab
+# This file is edited by fstab-sync - see 'man fstab-sync' for details
+LABEL=/                 /                       ext3    defaults        1 1
+LABEL=/boot             /boot                   ext3    defaults        1 2
+none                    /dev/pts                devpts  gid=5,mode=620  0 0
+none                    /dev/shm                tmpfs   defaults        0 0
+LABEL=bd1               /bd1                    ext3    defaults        1 2
+none                    /proc                   proc    defaults        0 0
+none                    /sys                    sysfs   defaults        0 0
+LABEL=SWAP-sda6         swap                    swap    defaults        0 0
+
+yellowpc.rhic.bnl.gov:/data  /Ydata   nfs     rw,soft,intr,rsize=32768,wsize=32768  0 0
+yellowpc.rhic.bnl.gov:/yd1   /yd1     nfs     rw,soft,intr,rsize=32768,wsize=32768  0 0
+yellowpc.rhic.bnl.gov:/home/e950/offline   /home/e950/offline   nfs   rw,soft,intr,rsize=32768,wsize=32768  0 0
+
+/dev/hdd                /media/cdrecorder       auto    pamconsole,exec,noauto,managed 0 0
+/dev/hdc                /media/cdrecorder1      auto    pamconsole,exec,noauto,managed 0 0
+/dev/fd0                /media/floppy           auto    pamconsole,exec,noauto,managed 0 0
