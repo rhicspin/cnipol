@@ -322,8 +322,6 @@ MatchPolarimetry(double ThisRunID, double RefRunID){
 
   int match = (*This.polarimetry_id-*Ref.polarimetry_id) ? 0  : 1 ;
 
-  cout << fixed << setprecision(3) << ThisRunID << " " << RefRunID << " " << match << endl;
-
   return match;
 
 }
