@@ -26,7 +26,8 @@ if [ ! -d $CONFDIR ] ; then
     mkdir -p $CONFDIR;
 fi
 
-tar xvzf Run06_config.tgz -C $CONFDIR
+#tar xvzf Run06_config.tgz -C $CONFDIR
+tar xvzf run08_config.tgz -C $CONFDIR
 
 
 # Install DeadLayer Files
