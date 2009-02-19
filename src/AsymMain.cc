@@ -240,7 +240,6 @@ int main (int argc, char *argv[]){
     // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
     if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
 
-
     // For normal runs, RUNID != 0. Then read run conditions from run.db.
     // Otherwise, data filename with characters skip readdb and reconfig routines
     // assuming these are energy calibration or test runs.
@@ -392,9 +391,10 @@ GetPolarimetryID_and_RHICBeam(char RunID[]){
     break;
   }
 
+  /*
   fprintf(stdout,"RUNINFO: RunID=%.3f RHICBeam=%d PolarimetryID=%d\n", 
 	  runinfo.RUNID, runinfo.RHICBeam, runinfo.PolarimetryID);
-
+  */
 
   return 0;
 
