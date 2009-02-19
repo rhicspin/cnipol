@@ -28,7 +28,7 @@ sub help(){
     print "\t -f <filename> energy calibration filename.\n";
     print "\t -h           Show this help\n";
     print "\n\n";
-    print "    ex.) CalibCal.pl -f blue_calib_0504\n";
+    print "    ex.) CalibGen.pl -f blue_calib_0504\n";
     print "\n";
     exit(0);
 }
