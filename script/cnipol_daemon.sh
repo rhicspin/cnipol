@@ -13,7 +13,7 @@ CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
 DLAYERDIR=$ASYMDIR/dlayer
 HBOOKDIR=$ASYMDIR/hbook
 LOGDIR=$ASYMDIR/log
-FROM_FILL=9000;
+FROM_FILL=10000;
 TILL_FILL=15000;
 SLEEP_TIME=1800;
 
@@ -46,10 +46,11 @@ help(){
     echo    " "
     echo    " cnipol_daemon.sh [-xh][-f <RunID>][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>][--tolerance <int>]"; 
-    echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list]";
+    echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list][--fast-offline]";
     echo    "    : search for new run from <runlist> which has not been analyized and then run"
     echo    "      analysis program."
     echo    " "
+    echo -e "   --fast-offline            fast offline mode";
     echo -e "   --analyze-from-list       analyzed from <file> without checking .cnipol_daemon_run.list."
     echo -e "                             [def <file>]=$TO_BE_ANALYZED_LIST";
     echo -e "   --runlist <runlist>       data run list file [def]:$RUNLIST";
@@ -71,6 +72,9 @@ help(){
  
 ShowExample(){
  
+    echo    " "
+    echo    "0. run cnipol_daemon.sh in fast offline mode"
+    echo    "    cnipol_daemon.sh --fast-offline"
     echo    " "
     echo    "1. run deadlayer analysis in background from fill#7575 till 7590"
     echo    " "
@@ -317,6 +321,7 @@ while [ 1 ] ;
 
 while test $# -ne 0; do
   case "$1" in
+  --fast-offline)          ExeRunAsym=1;ExeDlayerFit=1;;
   --analyze-from-list)        ANALYZE_FROM_FILE=1;;
   --runlist)       shift ; RUNLIST=$1 ;;
   -f)              shift ; RunID=$1; PROCESS_ONE=1 ; ExeDlayerFit=1;;
