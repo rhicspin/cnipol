@@ -82,7 +82,7 @@ MakeLinks(){
 
 DoublePC(){
 
-    for BEAM in Bdata Ydata data ; do 
+    for BEAM in Bdata Ydata ; do 
 
 	DESTDIR=$DATADIR;
 	Mode=data;
