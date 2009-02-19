@@ -2,7 +2,6 @@
 # mklink.sh
 # Mar. 8, 2006
 # I.Nakagawa
-LOGFILE="/tmp/log/mklink.log";
 RAW_DATALIST="$DATADIR/raw_data.list";
 RUN_YEAR=2009;
 ExeStandAlonePC2PC=0;
@@ -64,7 +63,7 @@ MakeLinks(){
       do 
       filename=`basename $f`
       if [ ! -e $DESTDIR/$filename ] ; then
-	  echo -e -n "$f\n" >> $LOGFILE
+	  echo -e -n "$f\n" /dev/null
 	  ln -s $SOURCEDIR/$f $DESTDIR
       fi
     done
