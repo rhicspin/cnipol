@@ -117,6 +117,12 @@ MakeAnalyzedRunList(){
 	  elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
 	      Beam="Blue"
 	      echo -e -n "$RunID $a\n"  >> $TMPLIST
+	  elif [ $Test -eq 2 ]&&[ $DISTRIBUTION -eq 1 ] ; then
+	      Beam="Blue"
+	      echo -e -n "$RunID $a\n"  >> $TMPLIST
+	  elif [ $Test -eq 3 ]&&[ $DISTRIBUTION -eq 2 ] ; then
+	      Beam="Yellow"
+	      echo -e -n "$RunID $a\n"  >> $TMPLIST
 	  elif [ $DISTRIBUTION -eq 0 ] ; then
 	      echo -e -n "$RunID $a\n"  >> $TMPLIST
 	  fi
