@@ -53,11 +53,15 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
   } // end-of-if(Flag.feedback)
 
+
+  if (dproc.CMODE) return 0;
+
   //-------------------------------------------------------
   //        Calculate Statistics
   //-------------------------------------------------------
   CalcStatistics();
 
+  // Skip end-of-run analysis routines for deadlayer and calibration modes.
   if (!dproc.DMODE) {
 
     //-------------------------------------------------------
@@ -123,7 +127,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
   //-------------------------------------------------------
   PrintWarning();
   PrintRunResults(hstat);
-
 
   return(0);
 

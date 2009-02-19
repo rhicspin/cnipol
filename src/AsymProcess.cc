@@ -505,7 +505,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
                     if (time<MAXDELIM) {
 		      ++cntr.good[TgtIndex[time]];
 		      NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
-                    }else{
+                    }else if (!dproc.CMODE) {
 		      cerr << "ERROR: time constructed from revolution # " << time << "exeeds MAXDELIM=" << MAXDELIM << " defined\n" << endl;
                     }
                 }
