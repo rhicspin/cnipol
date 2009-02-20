@@ -84,7 +84,7 @@ o at bluepc (or yellowpc)
 o Run deadlayer/polarization analysis programs in background:
 
      cd $ASYMDIR
-     cnipol_daemon.sh --dlayer-fit --run-Asym | tee $TMPOUTDIR/cnipol_daemon.log &
+     cnipol_daemon.sh --fast-offline | tee $TMPOUTDIR/cnipol_daemon.log &
 
 
 o Copy and paste in crontab followings. Make deadlayer & offline polarization database and plots:
