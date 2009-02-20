@@ -650,6 +650,10 @@ for f in `cat $DATADIR/raw_data.list` ;
       Test=`echo $RunID $Fill | gawk '{RunN=($1-$2)*10; printf("%1d",RunN)}'`
       if [ $Test -eq 1 ]&&[ $DISTRIBUTION -eq 2 ] ; then
 	  PROCESS=1;
+      elif [ $Test -eq 2 ]&&[ $DISTRIBUTION -eq 1 ] ; then
+	  PROCESS=1;
+      elif [ $Test -eq 3 ]&&[ $DISTRIBUTION -eq 2 ] ; then
+	  PROCESS=1;
       elif [ $Test -eq 0 ]&&[ $DISTRIBUTION -eq 1 ] ; then
 	  PROCESS=1;
       fi
