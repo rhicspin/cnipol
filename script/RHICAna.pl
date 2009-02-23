@@ -53,8 +53,8 @@ use English;
 # Define default variables
 # ******************************************
 
-$fillnumber="7279";              # default fill number
-$runnumber="005";                # default run number 
+$fillnumber="10019";              # default fill number
+$runnumber="101";                # default run number 
 $opt_bwidth="-15:15";            # banana cut width in ns
 $info = "not started";
 $ploption = "all";
