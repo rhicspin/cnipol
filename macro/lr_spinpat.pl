@@ -2,12 +2,12 @@
 
 $run = $ARGV[0];
 
-# $ONLINEDIR=$ENV{"ONLINEDIR"};
+$ONLINEDIR=$ENV{"ONLINEDIR"};
 
-# $OUTFILE = ">spinpat.dat";
-$OUTFILE = ">/usr/local/polarim/config/log/spinpat.dat";
-# $LOGFILE = "$ONLINEDIR/log/an$run.log";
-$LOGFILE = "/usr/local/polarim/config/log/an$run.log";
+$OUTFILE = ">spinpat.dat";
+#$OUTFILE = ">/usr/local/polarim/config/log/spinpat.dat";
+$LOGFILE = "$ONLINEDIR/log/an$run.log";
+#$LOGFILE = "/usr/local/polarim/config/log/an$run.log";
 
 #printf "Processing run $run \n";
 
