@@ -32,7 +32,9 @@
  if ([emin].eq.'-5') then
    emin = $ENV(EMIN)
  endif
- 
+
+hbookdir=$ENV(ONLINEDIR)/hbook/
+
  mess 'Trigger threshold was '//[emin]//' keV'
  
  
@@ -41,7 +43,7 @@
 * exitm
 * endif
  
- file='/data/2006/hbook/'//[run]//'.hbook'
+ file=[hbookdir]//[run]//'.hbook'
 
  if ($FEXIST([file]).EQ.1) then
    hi/file 21 [file] 0 X
