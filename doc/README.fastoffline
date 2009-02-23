@@ -15,26 +15,59 @@ polarimeter at the beginning of new RUN:
 In run.db, some parameters better be resetted to avoid unique setting of previous years.
 Following is some example:
 
-//==============================================================
-//=======                   Run08                      =========
-//==============================================================
-[8500.001]
-	RESET_ALL=Default;
-	MEASUREMENT_TYPE=NORM;
-	INJ_TSHIFT=7;
-	CONFIG=config_init.dat;  <- assumes t0=0, dl=40ug/cm^2
-	DEFINE_SPIN_PATTERN=-1;
-	DEFINE_FILL_PATTERN=-1;
-	COMMENT="";
 
-[8500.101]
+//==============================================================
+//=======                   Run09                      =========
+//==============================================================
+[10018.001] // Blue Polarimeter-1
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
 	INJ_TSHIFT=7;
+	ENERGY_CALIB=alpha_blue1_2_10_2009b;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
-	COMMENT="";
+	REFERENCE_RATE=1;
+	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
+	COMMENT="Run09"
+
+[10018.101] // Yellow Polarimeter-1
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=7;
+	ENERGY_CALIB=alpha_yellow2_2_19_2009;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
+	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
+	COMMENT="Run09"
+
+[10018.201] // Blue Polarimeter-2
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=7;
+	ENERGY_CALIB=alpha_blue2_2_19_2009; 
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
+	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
+	COMMENT="Run09"
+
+[10018.301] // Yellow Polarimeter-2
+	RESET_ALL=Default;
+	MEASUREMENT_TYPE=NORM;
+	INJ_TSHIFT=7;
+	ENERGY_CALIB=alpha_yellow2_2_19_2009;
+	CONFIG=config_init.dat;
+	DEFINE_SPIN_PATTERN=-1;
+	DEFINE_FILL_PATTERN=-1;
+	REFERENCE_RATE=1;
+	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
+	COMMENT="Run09"
+
+
 
 
 2) Parameters to be updated at the begining of New RUN
