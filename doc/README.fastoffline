@@ -15,7 +15,6 @@ polarimeter at the beginning of new RUN:
 In run.db, some parameters better be resetted to avoid unique setting of previous years.
 Following is some example:
 
-
 //==============================================================
 //=======                   Run09                      =========
 //==============================================================
@@ -29,7 +28,7 @@ Following is some example:
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Blue Polarimeter-1"
 
 [10018.101] // Yellow Polarimeter-1
 	RESET_ALL=Default;
@@ -41,7 +40,7 @@ Following is some example:
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Yellow Polarimeter-1"
 
 [10018.201] // Blue Polarimeter-2
 	RESET_ALL=Default;
@@ -53,7 +52,8 @@ Following is some example:
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Blue Polarimeter-2"
+
 
 [10018.301] // Yellow Polarimeter-2
 	RESET_ALL=Default;
@@ -65,9 +65,7 @@ Following is some example:
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
-
-
+	COMMENT="Run09: yellow Polarimeter-2"
 
 
 2) Parameters to be updated at the begining of New RUN
