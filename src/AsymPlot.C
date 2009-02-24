@@ -28,8 +28,16 @@ static Int_t ERROR_DETECTOR=1;
 static Int_t SUMMARY=1;
 static Int_t stID=0;
 static char * RUNID;
+static Char_t lnkfile[50]="AsymPlot.root";
 
 extern  ofstream logfile;
+
+void FindRootFile();
+Int_t FileNotOK(Char_t file[]){
+  ifstream f;
+  f.open(file);
+  return f.fail();
+}
 
 class AsymPlot
 {
@@ -453,7 +461,7 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
 
 //
-// Class name  : 
+// Class name  : AsymPlot
 // Method name : GetHistograms(TFile * rootfile)
 //
 // Description : Get histogram pointers from rootfile
@@ -462,7 +470,6 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 //
 Int_t 
 AsymPlot::GetHistograms(TFile * rootfile){
-
 
   rootfile->cd(); rootfile->cd("ErrDet");  
   mass_e_correlation_strip   = (TH2F*)gDirectory->Get("mass_e_correlation_strip");
@@ -497,6 +504,50 @@ AsymPlot::GetHistograms(TFile * rootfile){
 }
 
 
+
+//
+// Class name  : 
+// Method name : FindRootFile(TFile * rootfile)
+//
+// Description : Search for root file in ./root directory. If the root file is not
+//             : found in ./root direcotry, then search for current working directory. 
+//             : The root file is accessed via symbolic link to the data file. If root
+//             : file is found in pwd, then the file is moved to root directry then
+//             : symbolic linked.
+// Input       : 
+// Return      : 
+//
+void 
+FindRootFile(){
+
+  // rootfile operation
+  Char_t filename[50], text[100];
+
+  // remove existing ./AsymPlot.root 
+  sprintf(text,"rm -f %s", lnkfile); gSystem->Exec(text); 
+  if (!RUNID) RUNID="7279.005"; // default
+
+  // First search for ./root directory 
+  sprintf(filename,"root/%s.root",RUNID);
+  if (FileNotOK(filename)) {
+    cout<< filename << " is not found. Search for pwd." << endl;
+    sprintf(filename,"%s.root",RUNID); // then look for pwd
+    if (FileNotOK(filename)) { 
+      cerr << "./" << filename << " is not found neither. Force exit." << endl;
+      exit(-1);
+    } else {
+      sprintf(text,"mv -f %s root/.", filename); gSystem->Exec(text);
+      sprintf(filename,"root/%s.root",RUNID);
+    }
+  }
+	
+  // make symbolic link from root/RUNID.root to ./AsymPlot.root
+  sprintf(text,"ln -s %s %s",filename,lnkfile);
+  gSystem->Exec(text);
+
+  return;
+
+ }
 
 
 #ifndef __CINT__
@@ -569,16 +620,15 @@ int AsymPlot() {
 #endif
 
   // load header file
-  Char_t HEADER[100];
+  Char_t HEADER[100], text[100], filename[100];
   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
-  Char_t filename[50], text[100];
-  if (!RUNID) RUNID="7279.005"; // default
-  sprintf(filename,"%s.root",RUNID);
-  sprintf(text,"ln -s root/%s AsymPlot.root",filename);
-  gSystem->Exec(text);
-  TFile * rootfile = TFile::Open("AsymPlot.root");
+
+  // open rootfile 
+  FindRootFile();
+  TFile * rootfile = TFile::Open(lnkfile);
+
 
   // Log file handling
   ofstream logfile;
