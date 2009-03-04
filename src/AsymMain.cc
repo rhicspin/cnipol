@@ -293,7 +293,7 @@ int main (int argc, char *argv[]){
 
 
     // ---------------------------------------------------- // 
-    //                       Main Loop                      //
+    //                  Main Event Loop                     //
     // ---------------------------------------------------- // 
     if (readloop() != 0) {
         perror("Error: readloop");
@@ -553,6 +553,23 @@ int ConfigureActiveStrip(int mask){
     }
 
   } // end-of-for(runinof.NDisableStrip) loop
+
+
+
+    // Active Detector and Strip Configulation
+    printf("ReConfigured Active Detector =");
+    for (int i=0; i<NDETECTOR; i++)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
+    printf("\n");
+    //    printf("Active Strip Config =");
+    //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
+    //    printf("\n");
+    printf("Reconfigured Active Strip Config =");
+    for (int i=0; i<NSTRIP; i++) {
+      if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
+      printf("%d", runinfo.ActiveStrip[i]);
+    }
+    printf("\n");
+
 
 
   return 0;
