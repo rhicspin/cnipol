@@ -636,12 +636,9 @@ DecodeTargetID(polDataStruct poldat){
   // in case this information isn't decorded correctly
   // within REC_PCTARGET routine
   if (runinfo.target=='-') {
-    cout << str.find("Vert") << endl;
-    if (str.find("Vert") == 0) runinfo.target='V';
-    if (str.find("Horz") == 0) runinfo.target='H';
+    if ((str.find("Vert") == 0)||(str.find("V") == 0)) runinfo.target='V';
+    if ((str.find("Horz") == 0)||(str.find("H") == 0)) runinfo.target='H';
   }
-
-
 
   return;
   
