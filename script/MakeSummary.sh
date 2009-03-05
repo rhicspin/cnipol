@@ -53,13 +53,16 @@ mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/Of
 root -b -q $MACRODIR/OfflinePol.C
 mkDB.sh --error-detector --blue > summary/ErrorDet_Blue_all.dat ; mkDB.sh --error-detector --yellow > summary/ErrorDet_Yellow_all.dat
 root -b /usr/local/bin/macro/ErrorDetector.C
+
 }
 
 
 
 cd $ASYMDIR;
-LINK_FILE;
 
+#Check Symbolic links to summary data
+LINK_FILE;
+#Make summary
 MAIN;
 
 
