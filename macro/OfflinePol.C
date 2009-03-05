@@ -388,6 +388,7 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 	for (int j=0; j<4; j++) fin.getline(buffer, sizeof(buffer), '\n'); 
       }
       Initiarization(i);
+      sprintf(line,buffer);
 
       // main read-in routine
       RunID[i]     = atof(strtok(buffer," "));
@@ -477,6 +478,7 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
     // Run-5, Run-6, Run-7....
     if (RunID[0]>7400) RUN=6;
     if (RunID[0]>9000) RUN=8;
+    if (RunID[0]>10040) RUN=9;
 
     fin.close();
     cout << "Total run =" << i-1 << endl;
@@ -586,6 +588,7 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   ymin=-70 ; ymax=-20;
   if (RUN==6) {ymin=20; ymax=80;}
   if (RUN==8) {ymin=20; ymax=80;}
+  if (RUN==9) {ymin=-70; ymax=0;}
 
   // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
