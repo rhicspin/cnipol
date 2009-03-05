@@ -13,7 +13,7 @@ CNI_DAEMON_RUNLIST=$ASYMDIR/.cnipol_daemon_run.list;
 DLAYERDIR=$ASYMDIR/dlayer
 HBOOKDIR=$ASYMDIR/hbook
 LOGDIR=$ASYMDIR/log
-FROM_FILL=10000;
+FROM_FILL=10050;
 TILL_FILL=15000;
 SLEEP_TIME=1800;
 
@@ -47,8 +47,9 @@ help(){
     echo    " cnipol_daemon.sh [-xh][-f <RunID>][-F <Fill#>][--fill-from <Fill#>][--fill-till <Fill#>]"
     echo    "                  [--dlayer-fit][-s --sleep <time>][--max-iteration <int>][--tolerance <int>]"; 
     echo    "                  [--run-Asym][--runlist <runlist>][--analyze-from-list][--fast-offline]";
-    echo    "    : search for new run from <runlist> which has not been analyized and then run"
-    echo    "      analysis program."
+    echo    " "
+    echo    "      Search for new run from <runlist> which has not been analyized and then run"
+    echo    "      analysis program. Reference completed run list is $CNI_DAEMON_RUNLIST";
     echo    " "
     echo -e "   --fast-offline            fast offline mode";
     echo -e "   --analyze-from-list       analyzed from <file> without checking .cnipol_daemon_run.list."
