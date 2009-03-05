@@ -1069,8 +1069,8 @@ ErrorDetector::ErrorDetector()
   cout << "ps file : " << psfile << endl;
   ps->Close();
     
-  sprintf(text,"gv -landscape %s", psfile );
-  gSystem->Exec(text);
+ sprintf(text,"gv -landscape %s", psfile );
+  //  gSystem->Exec(text);
  
   return 0;
 
