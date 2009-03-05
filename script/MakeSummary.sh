@@ -45,7 +45,7 @@ LINK_FILE(){
 
 
 MAIN(){
-
+cd $ASYMDIR
 mkDB.sh --online --yellow | tee summary/Online_Yellow.dat ; mkDB.sh --online --blue | tee summary/Online_Blue.dat
 dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
 root -b -q $MACRODIR/DlayerMonitor.C
@@ -57,8 +57,6 @@ root -b /usr/local/bin/macro/ErrorDetector.C
 }
 
 
-
-cd $ASYMDIR;
 
 #Check Symbolic links to summary data
 LINK_FILE;
