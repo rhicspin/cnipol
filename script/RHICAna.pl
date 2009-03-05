@@ -61,7 +61,7 @@ $ploption = "all";
 $mklinkinfo = "On";
 $feedbackinfo = "Off";
 $ENV{"PLOT"} = "all";
-$PLOTROUTINE = "paw";
+$PLOTROUTINE = "AsymPlot";
 $tshift = "0.0";
 $energyinfo = "flattop";
 $nskip = "1";
@@ -179,6 +179,7 @@ $menub=$frame->Menubutton(-textvariable=>\$ploption,
 
 foreach (qw/all 
 	 AsymPlot
+	 AsymPlotRaw
 	 plot_banana 
 	 mass
 	 strips 
@@ -505,6 +506,10 @@ sub show_result {
 	printf "Launching AsymPlot  ...";
 	system("AsymPlot -f $Runn -g &");
 	$PLOTROUTINE="paw";
+    } elsif ($PLOTROUTINE eq "AsymPlotRaw" ) {
+	printf "Launching AsymPlot  ...";
+	system("AsymPlot -f $Runn --raw -g &");
+	$PLOTROUTINE="paw";
     } else {
 	system("xterm -e tcsh -c \"paw -w 1 -b $MACRODIR/asymplot.kumac \" &");
     }
@@ -521,6 +526,8 @@ sub pl_optchange {
 	$ENV{"PLOT"} = "all";
     } elsif ($ploption eq "AsymPlot") {
 	$PLOTROUTINE = "AsymPlot";
+    } elsif ($ploption eq "AsymPlot(Raw)") {
+	$PLOTROUTINE = "AsymPlotRaw";
     } elsif ($ploption eq "plot_banana") {
 	$ENV{"PLOT"} = "plot_banana";
     } elsif ($ploption eq "mass") {
@@ -877,6 +884,7 @@ sub offlineopt() {
 
 sub dlayeropt() {
     system("root -b -q $MACRODIR/DlayerMonitor.C");
+    system("gv ps/DlayerMonitor.ps");
 }
 
 
