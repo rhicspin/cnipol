@@ -11,6 +11,7 @@ ONLINE_DB=$DATADIR/OnlinePol.dat;
 SLEEP_INTERVAL=1800;
 DAEMON=0;
 UPDATE=0;
+RENEW=0;
 GET_ENERGY=0;
 A_NCorrection=0;
 
@@ -21,11 +22,12 @@ help(){
     COMMAND=`basename $0`;
     echo    " "
     echo    " $COMMAND [-xh][-f <RunID>][--nevents][--online][-s -sleeep <s>][-M]";
-    echo    "          [--dlayer-average][--update][--energy]"
+    echo    "          [--dlayer-average][--update]]--renew][--energy]"
     echo    "    : Calculate Online Polarization & show online records / make deadlyaer average in online config."
     echo    " "
     echo -e "   -f <RunID>       Calculate Online Polarization of <RunID>";
     echo -e "   --update         Update the online Pol data file $ONLINE_DB";
+    echo -e "   --renew          Renew Online Pol database $ONLINE_DB and update";
     echo -e "   --online         Dynamicly update online Pol data file $ONLINE_DB"; 
     echo -e "   --energy         Display Energy of <RunID>";
     echo -e "   -s --sleep <s>   Sleep interval for Online mode in sec. [Def]:$SLEEP_INTERVAL";               
@@ -244,6 +246,7 @@ while test $# -ne 0; do
   --nevents) ExeNevents=1; ExeOnlinePol=0;;
   --energy) GET_ENERGY=1;;
   --update) UPDATE=1;;
+  --renew)  RENEW=1;UPDATE=1;;
   --online) DAEMON=1;UPDATE=1;;
   -s | -sleep) shift ; SLEEP_INTERVAL=$1;;
   -M) UnitMillion=1;;
@@ -267,6 +270,9 @@ if [ $GET_ENERGY -eq 1 ] ; then
     exit;
 fi
 
+if [ $RENEW -eq 1 ]; then
+    rm -f $ONLINE_DB ;
+fi
 
 if [ $UPDATE -eq 1 ] ; then
     if [ ! -f $ONLINE_DB ] ; then
