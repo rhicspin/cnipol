@@ -397,7 +397,7 @@ DlayerMonitor::DlayerMonitor()
     cout << "ps file : " << psfile << endl;
     ps->Close();
 
-    gSystem->Exec("gv ps/DlayerMonitor.ps");
+    //    gSystem->Exec("gv ps/DlayerMonitor.ps");
 
     return 0;
 
