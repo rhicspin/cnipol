@@ -90,8 +90,8 @@
    v/del *
    h/del *
    close 1   
-   DIR=/home/e950/pol2004-offl/Kumac
-   h/file 1 [DIR]/Hbooks/[run].hbook 1024
+   DIR=$ENV(ASYMDIR)
+   h/file 1 [DIR]/hbook/[run].hbook 1024
    
    v/cre an(1) R
    get_vec/cont 34000 an
