@@ -112,6 +112,7 @@ DlayerMonitor::GetData(Char_t * DATAFILE){
     // Run-5, Run-6, Run-7....
     if (RunID[0]>7400) RUN=6;
     if (RunID[0]>9000) RUN=8;
+    if (RunID[0]>10040) RUN=9;
 
 
     fin.close();
@@ -197,6 +198,7 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=50  ; ymax=75;}
     if (RUN==8) {ymin=70  ; ymax=100;}
+    if (RUN==9) {ymin=30  ; ymax=100;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title,"DeadLayer History (%s)",Beam);
