@@ -44,6 +44,10 @@ LINK_FILE(){
 }
 
 
+
+
+
+
 MAIN(){
 
 cd $ASYMDIR
@@ -65,7 +69,7 @@ root -b -q $MACRODIR/OfflinePol.C
 
 # Error Detector Summary
 mkDB.sh --error-detector --blue > summary/ErrorDet_Blue_all.dat ; mkDB.sh --error-detector --yellow > summary/ErrorDet_Yellow_all.dat
-root -b /usr/local/bin/macro/ErrorDetector.C
+root -b -q /usr/local/bin/macro/ErrorDetector.C
 
 }
 
