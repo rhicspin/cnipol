@@ -2,6 +2,36 @@
 	common/pawc/pawc(2000000)
 	common/quest/ iquest(100)
 	common/runpars/ intp, iraw, iproc, ilsas, trigmin
+	common/subrun/ nofsubruns, itimestamp(500), asymX(500), asymErrX(500), 
+     +      asymX90(500), asymErrX90(500), asymX45(500), asymErrX45(500)
+	common /poldat/ runIdS, startTimeS, stopTimeS,
+     +	    daqVersionS, cutIdS, targetIdS, encoderPositionS,
+     +      statusS, statusStringS, totalCountsS, upCountsS,
+     +	    downCountsS, unpolCountsS, countsUpLeftS,
+     + 	    countsLeftS, countsDownLeftS, countsDownRightS,
+     +	    countsRightS, countsUpRightS, avgAsymXS,
+     +	    avgAsymX45S, avgAsymX90S, avgAsymYS,
+     +	    avgAsymErrorXS, avgAsymErrorX45S, avgAsymErrorX90S,
+     +      avgAsymErrorYS, bunchAsymXS, bunchAsymYS,
+     +	    bunchAsymErrorXS, bunchAsymErrorYS, beamEnergyS,
+     +      analyzingPowerS, analyzingPowerErrorS, numberEventsS,
+     +	    maxTimeS
+        double precision runIdS
+	integer startTimeS, stopTimeS
+	character daqVersionS(80), cutIdS(80), targetIdS(80)
+	integer encoderPositionS(2), statusS
+	character statusStringS(80)
+	integer totalCountsS, upCountsS, downCountsS, unpolCountsS
+	integer countsUpLeftS(360), countsLeftS(360)
+	integer countsDownLeftS(360), countsDownRightS(360)
+	integer countsRightS(360), countsUpRightS(360)
+	real avgAsymXS, avgAsymX45S, avgAsymX90S, avgAsymYS
+	real avgAsymErrorXS, avgAsymErrorX45S, avgAsymErrorX90S
+	real avgAsymErrorYS, bunchAsymXS(360), bunchAsymYS(360)
+	real bunchAsymErrorXS(360), bunchAsymErrorYS(360)
+	real beamEnergyS, analyzingPowerS, analyzingPowerErrorS
+	integer numberEventsS, maxTimeS
+
 	character*256 fin, fout, str
 	integer readandfill
 	
@@ -52,10 +82,14 @@
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
 		print *, '       -T trigmin trigmin value to override for old files'
-		print *, '       -N subrun number to extract (default = 0)'
+		print *, '       -N <subrun number> to extract (default = 0)'
+		print *, '	    if <subrun number> >=0, only it is processed and the result is'
+		print *, '	    send as for a single measurement, otherwize all subruns are'
+		print *, '	    processed and send as array for the ramp measurement'
 		stop 	
 	    endif
 	enddo
+
 	if (fin.eq.'?') then
 		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] filein fileout'
 		print *, '       -s to send results to ADO database'
@@ -64,31 +98,76 @@
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
 		print *, '       -T trigmin trigmin value to override for old files'
-		print *, '       -N subrun number to extract (default = 0)'
+		print *, '       -N <subrun number> to extract (default = 0)'
+		print *, '	    if <subrun number> >=0, only it is processed and the result is'
+		print *, '	    send as for a single measurement, otherwize all subruns are'
+		print *, '	    processed and send as array for the ramp measurement'
 	    stop
 	endif	
 	if (fout.eq.'?') fout = fin//'.hbook'
 		
 	call hlimit(2000000)
 	call mninit(5, 6, 7)
-	
-	if (icopen(fin(1:len_trim(fin)), len_trim(fin)).ne.0) then
-	    print *, 'Cannot open input file ', fin(1:len_trim(fin))
-	    stop
-        endif
-        iquest(10) = 65000
-	call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
+
+	if (nsubrun.ge.0) then
+	    if (icopen(fin(1:len_trim(fin)), len_trim(fin)).ne.0) then
+		print *, 'Cannot open input file ', fin(1:len_trim(fin))
+		stop
+    	    endif
+    	    iquest(10) = 65000
+	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
 c	
-	irecring = readandfill(nsubrun)
+	    irecring = readandfill(nsubrun)
+c	    print *, 'After readandfill (nsubrun>=0) nsubrun = ',nsubrun
 c
-	if (iproc.ne.0) call process
+	    if (iproc.ne.0) call process
 c	
-	call hrout(0, irc, ' ')
-	call hrend('data')
-	call icclose
+	    call hrout(0, irc, ' ')
+	    call hrend('data')
+	    call icclose
 c
-	if (isend.ne.0) call sendresult(irecring)
+c	    print *, 'IRECRING=', irecring
+	    if (isend.ne.0) call sendresult(irecring)
 c
+	else
+	    isubr = 0
+	    call vzero(itimestamp,500)
+c
+10	    if (icopen(fin(1:len_trim(fin)), len_trim(fin)).ne.0) then
+		print *, 'Cannot open input file ', fin(1:len_trim(fin))
+		stop
+    	    endif
+    	    iquest(10) = 65000
+	    call hdelet(0)
+	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
+c
+	    irecring = readandfill(isubr)
+c   	    print *, 'After readandfill (nsubrun<0) isubr = ',isubr
+c
+	    if (iproc.ne.0) then
+	    
+		call process
+c
+		asymX(isubr+1) = avgAsymXS
+		asymX90(isubr+1) = avgAsymX90S
+		asymX45(isubr+1) = avgAsymX45S
+		asymErrX(isubr+1) = avgAsymErrorXS
+		asymErrX90(isubr+1) = avgAsymErrorX90S
+		asymErrX45(isubr+1) = avgAsymErrorX45S
+		
+	    endif
+c	
+	    call hrout(0, irc, ' ')
+	    call hrend('data')
+	    call icclose
+	    if (itimestamp(isubr+1).eq.0.or.isubr.ge.499) goto 99
+	    isubr = isubr + 1
+	    goto 10
+c	    	    
+99	    if (isend.ne.0) call sendsubresult(irecring)
+c
+	end if
+c	
 	stop
 	end
 c
@@ -148,13 +227,17 @@ c
 c
 	subroutine histdelim(IPOS, LEN)
 	integer ipos(4*LEN)
+
 	call hbook1(3000, 'Horizontal target linear position', LEN, 0., 1.0*LEN, 0)
 	call hbook1(3001, 'Horizontal target rotary position', LEN, 0., 1.0*LEN, 0)
 	call hbook1(3002, 'Vertical target linear position', LEN, 0., 1.0*LEN, 0)
 	call hbook1(3003, 'Vertical target rotary position', LEN, 0., 1.0*LEN, 0)
+
+	print *, 'Target data length = ', LEN
 	do i=1,LEN
 	    do j=1,4
 		call hfill(2999+j, 1.*i-0.5, 0., 1.0*IPOS(4*(i-1)+j))
+C	print *, i,' histdelim: Filling ',2999+j,'  ',1.*i-0.5,'  ',1.0*IPOS(4*(i-1)+j)
 	    enddo
 	enddo
 	return
@@ -225,6 +308,7 @@ c
 	character*30 str
 	integer totalE, unpolE, upE, downE
 	integer totalS, unpolS, upS, downS
+	integer isy2
 	
 	common/runpars/ intp, iraw, iproc, ilsas, trigmin
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
@@ -291,9 +375,23 @@ c	call testpol
 	    print *, '>>>' 
 	    print *, '>>>  INFO: horizonal target used --> ignoring 90-degree detectors'
 	    print *, '>>>' 
+	else if (targetIdS(1) .eq. 'V') then
+	    print *, '>>>'
+	    print *, '>>>  INFO: vertical target used'
+	    print *, '>>>' 
+	else
+	    print *, '>>>'
+	    print *, '>>>  INFO: did not understand targetIdS(1) = ', targetIdS(1)
+	    print *, '>>>'
 	endif
 
 c		Get various counts
+
+C	If we are using yellow-2 (new detectors) skip them in the analysis
+C	isy2 = 2 if blue-2 and isy2 = 3 if yellow-2
+
+	isy2 = nint(10.*runIdS) - 10*int(runIdS)
+C	print *, 'R2HBOOK-INFO : isy2 = ',isy2
 
 C	Counts from WFD special scalers
 	call vzero(scnt, 18)
@@ -303,7 +401,8 @@ C	Counts from WFD special scalers
 	unpolS = 0
 	do i=1,6
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H').and.((i.eq.2).or.(i.eq.5)))) then
+	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3) 
+     +		.and.((i.eq.2).or.(i.eq.5)))) then
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
 			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+3)
@@ -328,7 +427,8 @@ C	Counts from energy histograms
 	unpolE = 0
 	do i=1,6
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H').and.((i.eq.2).or.(i.eq.5)))) then
+	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
+     +		.and.((i.eq.2).or.(i.eq.5)))) then
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
 			if (hexist(300+12*(i-1)+j)) then
@@ -363,7 +463,7 @@ C		lets try not to use 90-degree detectors with horizontal targets
 	    endif
 	enddo
 c
-
+		
 C	call AnaPow
 	if (analyzingPowerErrorS.lt.0.0) call AnaPow
 
@@ -380,8 +480,7 @@ c		fill counts for ADO
 	    countsRightS(3*i-2) = hi(9292, i)
 	    countsUpRightS(3*i-2) = hi(9291, i)	    
 	enddo
-
-
+	
 	call vzero(cnt, 18)
 	totalCountsS = 0
 	upCountsS = 0
@@ -395,7 +494,8 @@ C	   if (((runIDS-int(runIDS))*100.ge.100)
 C     +		.and.((i.eq.2).or.(i.eq.5))) then 
 C	   else
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H').and.((i.eq.2).or.(i.eq.5)))) then
+	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
+     +		.and. ((i.eq.2).or.(i.eq.5)))) then
 		do j=1, 120
 		    if (fillpat(j).ne.0) then
 			hn = hi(9290+i, j)
@@ -464,7 +564,7 @@ c	actually right - left, because we are looking at recoiled particle
 C100	format('Asym ', A25, ' = ', F10.6, '+-', F8.6)
 	
 	print *, ' TYPE           PHYSICS                LUMINOSITY             ACCEPTANCE'
- 100	format(A13,F10.6,'+-',F8.6,3X,F10.6,'+-',F8.6,3X,F10.6,'+-',F8.6)
+ 100	format(A20,F10.6,'+-',F8.6,3X,F10.6,'+-',F8.6,3X,F10.6,'+-',F8.6)
         call sqass(cnt(2,2), cnt(5,3), cnt(2,3), cnt(5,2), assp, eassp)
 	
 C	print 100, 'X90 physics', assp, eassp
@@ -572,10 +672,11 @@ c
 		bunchAsymXS(3*i-2) = bassX(i)
 		bunchAsymErrorXS(3*i-2) = ebassX(i)
 		print 100, str, bassX(i), ebassX(i)
+
 		write(str, *) 'Bunch', i, ' Y physics'
 		bunchAsymYS(3*i-2) = bassY(i)
 		bunchAsymErrorYS(3*i-2) = ebassY(i)
-		print 100, str, bassY(i), ebassY(i)	    
+		print 100, str, bassY(i), ebassY(i)
 	    enddo
 	endif
 c

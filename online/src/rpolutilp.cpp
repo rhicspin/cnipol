@@ -196,7 +196,11 @@ void getAdoInfo(char mode)
     char bucketsCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
     char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
     char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
+//    char muxCDEVName[2][20] = {"polarMux.RHIC.yel", "polarMux.RHIC.blu"};
+
     int irc, N;
+//    int iTarget = -1;
+
     cdevData data;
 
 //**************************************************************
@@ -213,6 +217,7 @@ void getAdoInfo(char mode)
     cdevDevice & buckets =  cdevDevice::attachRef(bucketsCDEVName[N]);
     cdevDevice & wcm =  cdevDevice::attachRef(wcmCDEVName[N]);
     cdevDevice & pol =  cdevDevice::attachRef(polCDEVName[N]);
+//    cdevDevice & mux = cdevDevice::attachRef(muxCDEVName[N]);
 //	the other ring for jet mode
     cdevDevice & speco =  cdevDevice::attachRef(specCDEVName[1-N]);
     cdevDevice & bucketso =  cdevDevice::attachRef(bucketsCDEVName[1-N]);
@@ -284,13 +289,18 @@ void getAdoInfo(char mode)
     	    data.get("value", &wcmOtherData.wcmBeamM);
     }
 //	pol
+//    DEVSEND(mux, "get polNumM", NULL, &data, LogFile, irc);
+//    data.get("value", &iTarget);
+/*
     if (mode == 'e') {
-	if(!DEVSEND(pol, "get emitRunIdS", NULL, &data, LogFile, irc))
+ 	 if(!DEVSEND(pol, "get emitRunIdS", NULL, &data, LogFile, irc))
 	    data.get("value", &polData.runIdS);
-    } else {
-	if(!DEVSEND(pol, "get runIdS", NULL, &data, LogFile, irc))
+    } 
+	else {
+	 if(!DEVSEND(pol, "get runIdS", NULL, &data, LogFile, irc))
 	    data.get("value", &polData.runIdS);
     }
+*/
 
     if (irc != 0) {
 	fprintf(LogFile, "%d errors getting RHIC information.\n", irc);
@@ -325,10 +335,10 @@ void GetTargetEncodings(long *res)
 }
 
 extern "C" {
-    void UpdateProgress(int evDone, int rate);
+    void UpdateProgress(int evDone, int rate, double ts);
 }
 
-void UpdateProgress(int evDone, int rate) {
+void UpdateProgress(int evDone, int rate, double ts) {
 
     char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
     static int StopUpdate=0;
@@ -344,7 +354,10 @@ void UpdateProgress(int evDone, int rate) {
     irc = 0;
     data = evDone;
     DEVSEND(pol, "set progressS", &data, NULL, LogFile, irc);
-    data = rate;
+//    data = rate;
+    data.addTag("timeStamp");
+    data.insert("value", rate);
+    data.insert("timeStamp", ts);
     DEVSEND(pol, "set countRateS", &data, NULL, LogFile, irc);
 
     if (irc != 0) {
