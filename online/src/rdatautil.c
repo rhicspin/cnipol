@@ -71,6 +71,19 @@ polDataStruct poldat_;
 beamDataStruct beamdat_;
 targetDataStruct tgtdat1_;
 targetDataStruct tgtdat2_;
+
+//	Common /subrun/
+struct {
+    int nofsubruns;
+    long timestamp[500];
+    float asymX[500];
+    float asymErrX[500];
+    float asymX90[500];
+    float asymErrX90[500];
+    float asymX45[500];
+    float asymErrX45[500];
+} subrun_;
+
 long long scalers_[6]; // LecRoy 48-bit scalers
 
 int sscal_[288];
@@ -167,12 +180,16 @@ int readandfill_(int* subrun)
 	    poldat_.statusS |= (STATUS_ERROR | ERR_INT);
 	    break;
 	}
-	recRing |= rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
+	recRing = rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
 //	printf("Record %5d type %8.8X  len %8d timestamp %8.8X\n", 
 //	    rec.header.num, rec.header.type, rec.header.len, rec.header.timestamp.time);
 	if ((rec.header.type & REC_TYPEMASK) == REC_SUBRUN) {
 	    curSubrun = rec.subrun.subrun;
-	    if (curSubrun == *subrun) printf("Processing subrun %d\n", curSubrun);
+	    if (curSubrun == *subrun) {
+		printf("Processing subrun %d\n", curSubrun);
+		subrun_.timestamp[*subrun] = rec.header.timestamp.time;
+		subrun_.nofsubruns++;
+	    }
 	}
 	if ((curSubrun >= 0) && (curSubrun != *subrun)) continue;
 	switch(rec.header.type & REC_TYPEMASK) {

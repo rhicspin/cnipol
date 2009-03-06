@@ -40,7 +40,7 @@ void getAdoInfo(char mode);
 void getWcmInfo(void);
 void getCarbTarg(carbTargStat * targstat);
 void GetTargetEncodings(long *res);
-void UpdateProgress(int evDone, int rate);
+void UpdateProgress(int evDone, int rate, double ts);
 void UpdateStatus(void);
 void UpdateMessage(char *message);
 
