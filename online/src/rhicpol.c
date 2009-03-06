@@ -293,7 +293,8 @@ int main(int argc, char **argv)
 		fprintf(LogFile,"Can't get fill number, setting %d\n",&beamData.fillNumberM);
 	    }
 	}
-	
+// But, we already have the run number in $RUN, so we don't do the following...
+/*
 	if (((int) polData.runIdS) == beamData.fillNumberM) {
 	    polData.runIdS += 0.001;
 	} else {
@@ -302,6 +303,11 @@ int main(int argc, char **argv)
 	    if (recRing == REC_JET) polData.runIdS += 0.2;
 	    if (mode == 'e') polData.runIdS += 0.4;
 	}
+*/
+// Instead, we just do...
+	polData.runIdS = atof(getenv("RUN"));
+	fprintf(LogFile, "RHICPOL-INFO : This is run %9.3f\n", polData.runIdS);
+
 	if (NoADO == 0) 
 	    fprintf(LogFile,"CNIPOL-INFO : RunID: %9.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
 		polData.runIdS, beamData.beamEnergyM,
@@ -320,7 +326,7 @@ int main(int argc, char **argv)
 	for (j=0; j<nLoop; j++) {
 	    fastInitWFDs(1);
 	    writeSubrun(j);
-	    if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Running...");
+	    if (NoADO == 0 && (recRing & REC_JET) == 0 && j == 0) UpdateMessage("Running...");
 	    setAlarm(mTime);
 	    polData.startTimeS = time(NULL);
 	    clearVetoFlipFlop();
@@ -335,7 +341,7 @@ int main(int argc, char **argv)
 	    if (iNotify && j == (nLoop-1)) kill( getppid(), SIGUSR1);
 	    if (iCntrlC) signal(SIGINT, alarmHandler);
 	    else signal(SIGINT, SIG_IGN);
-	    if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateMessage("Reading Data...");
+	    if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data...");
 	    signal(SIGTERM, alarmHandler);
 	    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
 	    readScalers();
