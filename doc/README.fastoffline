@@ -105,35 +105,24 @@ o at bluepc (or yellowpc)
   Update year in ~/cnipol/script/mklink.sh. 
    
   For example:
-  RUN_YEAR=2008
+  RUN_YEAR=2009
 
   This is the only place you need to update year by year.
   Once modified, then execute ~/cnipol/script/install.sh
   Make sure to update in cvs repository accordingly.
 
 
-o Run deadlayer/polarization analysis programs in background:
-
-     cd $ASYMDIR
-     cnipol_daemon.sh --fast-offline | tee $TMPOUTDIR/cnipol_daemon.log &
-
-
 o Copy and paste in crontab followings. Make deadlayer & offline polarization database and plots:
    
-[e950@bluepc cnipol]$ crontab -l
+[e950@bluepc offline]$ crontab -l
+ 30 * * * * source ~/.bashrc ; cd $ASYMDIR ; CnipolDaemon.sh
  0  * * * * source ~/.bashrc ; cd $ASYMDIR ; MkLink.sh
- 30 2 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --online --yellow | tee summary/Online_Yellow.dat ; mkDB.sh --online --blue | tee summary/Online_Blue.dat
- 30 3 * * * source ~/.bashrc ; cd $ASYMDIR ; dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
- 30 4 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/DlayerMonitor.C
- 30 5 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
- 0  6 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b -q $MACRODIR/OfflinePol.C
- 30 6 * * * source ~/.bashrc ; cd $ASYMDIR ; mkDB.sh --error-detector --blue > summary/ErrorDet_Blue_all.dat ; mkDB.sh --error-detector --yellow > summary/ErrorDet_Yellow_all.dat
- 0  7 * * * source ~/.bashrc ; cd $ASYMDIR ; root -b /usr/local/bin/macro/ErrorDetector.C
+ 0,30 * * * * source ~/.bashrc ; cd $ASYMDIR ; MakeSummary.sh > $TMPOUTDIR/MakeSummary.log
 
  Resulting summary data/postscript files are found in:
  $ASYMDIR/summary/dLayer_Blue(Yellow)_FTP(INJ)_all.dat   ; deadlayer summary data
  $ASYMDIR/ps/DlayerMonitor.ps                            ; Deadlayer summary plot
- $ASYMDIR/summary/OfflinePol_Blue(Yellow)_all.dat        ; Offline Polarization summary data
+ $ASYMDIR/summary/OfflinePol_Blue(Yellow)_all(FTP).dat   ; Offline Polarization summary data
  $ASYMDIR/ps/OfflinePol.ps	 			 ; Offline Polarization summary plot
  $ASYMDIR/summary/ErrorDet_Blue(Yellow)_all.dat          ; summary table of anomalies 
  $ASYMDIR/ps/ErrorDetector.ps                            ; summary plot of anomalies
