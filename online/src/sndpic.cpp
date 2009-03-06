@@ -21,6 +21,9 @@ int main(int argc, char **argv)
     int len;
     int file;
     int tm;
+	int irc;
+
+    printf("Starting sndpic...\n");
 
     if (argc != 3) {
 	printf("SNDPIC-Usage: sndpic y|b picfile.gif\n");
@@ -56,23 +59,33 @@ int main(int argc, char **argv)
 
     cdevData::addTag("timeStamp");
     cdevDevice & pol = cdevDevice::attachRef(polCDEVName[N]);
-        
 
     tm = time(NULL);
     data.insert("timeStamp", tm);
     data.insert("value", ptr, len);
 
     group.start();
-    pol.sendNoBlock("set plotData", &data, NULL);
+    irc = pol.sendNoBlock("set plotData", &data, NULL);
     group.end();
-    
-    pol.sendNoBlock("set plotData", &data, NULL);
+    if (irc != 0) printf("SNDPIC - Error first call status %d\n",irc);
+
+    irc = pol.sendNoBlock("set plotData", &data, NULL);
+    if (irc != 0) printf("SNDPIC - Error second call status %d\n",irc);
+
     for (i=0; i<MAXWAIT; i++) {
 	group.pend(1.0);
-	if (group.allFinished()) break;
+	if (group.allFinished()) {
+	 printf("SNDPIC - Finished took %d seconds to send. Time stamp = %d\n",i,tm);
+	 break;
+	}
     }    
-    if (i == MAXWAIT) printf("SNDPIC-Error picture was not send in %d seconds\n", i);
+    if (i == MAXWAIT) printf("SNDPIC-Error picture was not sent in %d seconds. Time stamp = %d\n", i,tm);
+
+//	irc = pol.send("set plotData", &data, NULL);
+//	if (irc != 0) printf("SNDPIC-Error picture was not sent in 10 seconds\n");
     
+    //printf("Sndpic is finished.\n");
+
     free(ptr);
     close(file);
     return 0;

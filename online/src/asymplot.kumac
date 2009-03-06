@@ -1,0 +1,2024 @@
+* ************************************
+*  data quality check plots 
+* ************************************
+ macro main run='-1' plot='nothing'
+   if ([run].eq.'-1') then
+     run = $ENV(RUN)
+   endif
+   if ([plot].eq.'nothing') then
+     plot = $ENV(PLOT)
+   endif
+   hbookdir = $ENV(HBOOKDIR)   
+
+ **  pson
+   glo/cre run [run]
+   glo/cre hbookdir [hbookdir]
+
+   exe setting
+   exe file 
+   exe polarization
+   
+   mess [run] [plot]
+   glo/cre plot [plot]
+   
+   if ([plot].eq.'all') then
+
+     exe plot_banana1 ;     wait
+
+     exe plot_banana ;     wait
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
+     exe strip       ;     wait
+     exe mass        ;     wait
+     exe splumi      ;     wait
+     exe energy      ;     wait
+     exe physasym    ;     wait
+     exe asymother   ;     wait
+     exe pol_each    ;     wait
+     exe RL          ;     wait
+     exe ratio       ;     wait 
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
+     exe timing      ;     wait
+     exe diff_t      ;     wait
+     exe t_dep       ;     wait
+     exe chisq       ;     wait
+     exe bunchselect ;
+   else 
+     exe [plot]      ;     wait
+   endif
+     pol_each
+ return
+ 
+* **********************************
+* Setting 
+* **********************************
+ macro setting
+   opt nbox
+* opt pto
+   filecase KEEP
+   opt nfile 
+   opt nstat
+   opt ndate
+   opt fit
+   opt grid
+   
+   set GRID 3
+   set *FON -60
+   
+   set XSIZ 22
+   set YSIZ 28
+   
+   set GSIZ 0.6
+   set YGTI 1.0
+   set XMGR 0.5
+   
+   set VSIZ 0.35
+   set ASIZ 0.35
+   set TSIZ 0.4
+   set MSCF 1.0
+ return
+   
+* **************************
+* Read Files 
+* ***************************
+ macro file 
+   glo/imp run
+   glo/imp hbookdir
+   v/del *
+   h/del *
+   close 1   
+   h/file 1 [hbookdir]/[run].hbook 1024
+   v/cre an(1) R
+   get_vec/cont 34000 an
+* ---------------------------------------------------
+* counts for each detector (not accumulated)
+   v/cre bid(120) R 
+   Do i=1,120
+     v/input bid([i]) $RSIGMA([i]-1)
+   Enddo
+   Do i=1, 6
+     v/cre si[i](120) R
+     get_vec/cont 310[i]0 si[i]
+   Enddo
+* ---------------------------------------------------
+   v/cre px90(120) R
+   v/cre px90e(120) R
+   v/cre px45(120) R
+   v/cre px45e(120) R
+   
+   get_vec/cont 30000 px90
+   get_vec/err  30000 px90e
+   get_vec/cont 30100 px45
+   get_vec/err  30100 px45e
+* ----------------------
+   v/cre spin(120) R 
+   v/cre ngood(120) R 
+   v/cre nback(120) R 
+   v/cre ntotal(120) R 
+   v/cre RL90(120) R 
+   v/cre RL45(120) R 
+   v/cre BT45(120) R 
+   v/cre RL90E(120) R 
+   v/cre RL45E(120) R 
+   v/cre BT45E(120) R 
+   
+   get_vec/cont 31000 spin
+ return
+ 
+* ***********************************
+* Calculate Polarization for Display
+* ***********************************
+ macro polarization
+   v/cre amean(2) R
+   v/cre pol(2) R
+   application comis quit
+      subroutine mean()
+      implicit None
+      vector px90,px45,px90e,px45e,amean,an,pol
+      real x90,x90e,x45,x45e
+      real sq,ssq
+      
+      x90=px90(120)
+      x90e=px90e(120)
+      x45=px45(120)*1.414
+      x45e=px45e(120)*1.414
+      
+      sq=(x45e**2+x90e**2) 
+      ssq=sqrt(sq)
+      
+* write(*,*) sq,ssq
+      amean(1) = (x90*x45e**2+x45*x90e**2)/sq
+      amean(2) = (x45e*x90e)/ssq
+      pol(1) = amean(1)/an(1)
+      pol(2) = amean(2)/an(1)
+      end
+   quit
+* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   call mean
+* mess ASYMMETRY $EVAL(amean(1)) +- $EVAL(amean(2))
+* mess POLARIZATION $EVAL(pol(1)) +- $EVAL(pol(2))
+ return
+ 
+* ******************************************************
+* Plot banana Plot for each strip: simple plots
+* ******************************************************
+ macro plot_banana1
+   exe setting 
+   glo/imp run
+   set MTYP 0
+   opt utit
+   opt ngri
+   set MSCF 0.1
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   
+   lnum=0
+
+zone 2 2
+opt pto
+opt linz
+   Do i=1,72
+     title_gl 'st-'//[i] U
+     hid = $EVAL(13000+[i])	|  Ekin vs. ToF
+     h/pl [hid](200.:1400.,0.:120.)
+
+**** Perform a "reset" to free some  memory...
+     if ([i].eq.36) then
+       exe file
+       exe polarization
+     endif
+
+   EndDo
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
+opt npto
+
+return
+
+* ******************************************************
+* Plot banana Plot for each strip
+* ******************************************************
+ macro plot_banana
+   exe setting 
+   glo/imp run
+   set MTYP 0
+   zone 3 4 
+   opt utit
+   opt ngri
+   set MSCF 0.1
+   
+* opt logz
+   set ncol 40
+   palette 1
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   
+   lnum=0
+
+zone 3 4
+   Do i=1,72
+     title_gl 'st-'//[i] U
+     
+     hid = $EVAL(13000+[i])	|  Ekin vs. ToF
+     h/pro [hid]
+     hnum = $HINFO([hid],'ENTRIES')
+
+     lnum = $EVAL([lnum]+1)
+
+*     max [hid] 60. 	
+*     min [hid] 1. 	
+     
+     h/pl [hid](300.:1199.,30.:89.) color
+
+     set YLAB 0.6
+     atitle 'Energy (keV)' 'tof (ns)'
+     lid = $EVAL(13500+[i]) 
+     uid = $EVAL(13600+[i])
+     set HCOL 2 
+     max [lid] 80.
+     min [uid] 20.
+     h/pl [lid](350.:1099.) s
+     h/pl [uid](350.:1099.) s
+
+     set HCOL 1 
+     
+     if (([lnum].eq.12).or.([lnum].eq.24).or.([lnum].eq.36.)_
+       .or.([lnum].eq.48).or.([lnum].eq.60)) then
+     wait
+     endif
+
+**** Perform a "reset" to free some  memory...
+     if ([i].eq.36) then
+       exe file
+       exe polarization
+     endif
+
+   Enddo 
+
+**** Perform a "reset" to free some  memory...
+     exe file
+     exe polarization
+
+return
+ 
+* ***************************************
+*  Strip Distribution
+* ***************************************
+ macro strip
+* Show Strip Distribution with/without carbon cut
+   exe setting 
+   glo/imp run
+   
+   zone 2 3
+   
+   set NDVX 10212
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   
+   Do si=1,6
+     title_gl 'Si-'//[si]//' ('//$EVAL(([si]-1)*12+1)//'-'//$EVAL([si]*12)//')' U
+     set HCOL 1
+     h/pl $EVAL(10300+[si]) b
+     set HCOL 2202
+     h/pl $EVAL(10310+[si]) sb
+     set HCOL 4404
+     h/pl $EVAL(10320+[si]) sb
+     atitle 'Strip' ''
+   enddo
+   
+   set TXFP -130
+   set CHHE 0.45
+   null 0. 1. 0. 1. ABS
+   itx 0.65 3.780 'empty / total'
+   itx 0.65 3.70 ' red   / tof cut '
+   itx 0.65 3.62 ' blue  / tof + -t cut '
+   
+ return
+ 
+* *******************************
+*  Show Carbon Mass Distribution 
+* *******************************
+ macro mass
+   exe setting 
+   glo/imp run
+   zone 2 3
+   
+   opt NGRI
+   set YLAB 0.7
+   
+   v/cre ppar(3) R 0. 0. 0. 
+   v/cre ppare(3) R 1. 1. 1. 
+
+*  Needed for h/fit to work...
+   v/cre pstep(3) 
+   v/cre ppmin(3)
+   v/cre ppmax(3)
+   
+   v/cre fitc(72) R 0.
+   v/cre fitce(72) R 0.
+   
+   v/cre fitw(72) R 0.
+   v/cre fitwe(72) R 0.
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+* ===== Each Strip ================
+   Do si=1,6
+     opt utitX
+     title_gl _
+       'Si-'//[si]//' ( St:'//$EVAL(([si]-1)*12+1)//'-'//$EVAL([si]*12)//')' U
+
+     if ($HEXIST(16099) .eq. 1) then
+       h/del 16099
+     endif
+
+* Find max value within the carbon mass range
+     cst = $EVAL(([si]-1)*12+1)
+     hcst = $EVAL(16000+[cst])
+     h/copy [hcst](5.:16.) 16099 
+     max = $HINFO(16099,'MAX')
+     if ([max] .eq. 0) then
+       cst = $EVAL(([si]-1)*12+3)
+       hcst = $EVAL(16000+[cst])
+       h/copy [hcst](5.:16.) 16099 
+       max = $HINFO(16099,'MAX')
+     endif
+     
+     null 0. 20. 0. $RSIGMA([max]*1.2) 
+     line 11.17 0. 11.17 $RSIGMA([max]*1.2)
+
+     Do st=1,12
+       strip = $EVAL(([si]-1)*12+[st])
+       
+       set HCOL 1
+       h/pl $EVAL(16000+[strip])(0.:20.) s
+       atitle 'Mass (GeV/c2)' ''
+
+* Fit with gaussian 
+       Nev = $HINFO($EVAL(16000+[strip]),'ENTRIES')
+       if ([Nev].ge.100) then
+	 v/input ppar(1) [max]
+	 v/input ppar(2) 11. 
+	 v/input ppar(3) 3. 
+* ------------------------------------------------------------------
+*	 h/fit $EVAL(16000+[strip])(8.:14.) G Q0 3 par=ppar errpar=ppare 
+	 h/fit $EVAL(16000+[strip])(8.:14.) G 0Q 3 ppar pstep ppmin ppmax ppare
+* ------------------------------------------------------------------
+	 v/input fitc([strip]) $EVAL(abs(ppar(2)))
+	 v/input fitce([strip]) $EVAL(abs(ppare(2)))
+	 v/input fitw([strip]) $EVAL(abs(ppar(3)))
+	 v/input fitwe([strip]) $EVAL(abs(ppare(3)))
+       endif
+     Enddo  
+   Enddo
+  
+   wait 
+   
+* ===== 2nd Page === Fit results 
+   zone 1 2 
+   v/cre ex(72) R 
+   v/cre st(72) R 
+   Do i=1,72
+     v/input st([i]) $RSIGMA([i])
+     v/input ex([i]) 0.
+   Enddo
+*   v/print fitce
+   opt htit
+   title_gl 'Invariant Mass Fit Results'  
+* Plot Centers
+   opt utit
+   title_gl 'Centroids' U 
+   null 0. 72. 5. 14.
+   line 0. 11.17 72. 11.17 	| Carbon Mass indicator
+   Do i=1,6
+     line $RSIGMA(12*[i]+0.5) 5. $RSIGMA(12*[i]+0.5) 14. | Si Separators
+   Enddo
+   set HCOL 4; set PMCI 4
+   hp/err st fitc ex fitce N=72 ISYMB=20 SSIZE=0.2
+   atitle 'Strip-N' 'GeV/c^2'  
+   
+* Plot Sigmas
+   title_gl 'Sigmas' U 
+   null 0. 72. 0. 3.
+   Do i=1,6
+     line $RSIGMA(12*[i]+0.5) 0. $RSIGMA(12*[i]+0.5) 3. | Si Separators
+   Enddo
+   hp/err st fitw ex fitwe N=72 ISYMB=20 SSIZE=0.2
+   atitle 'Strip-N' 'GeV/c^2'  
+*   wait
+   
+ return
+ 
+* ********************************************************
+* Show Bunch Dists/ Intensity Dists/ Specific Luminosity 
+* ********************************************************
+ macro splumi
+* opt logy
+   exe setting 
+   glo/imp run
+   zone 1 3 
+   set XLAB 2.0
+   opt utit
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   set HCOL 4404
+   title_gl 'Bunch crossing dist' U
+   min 10010 1
+   h/pl 10010 B
+   atitle 'Bunch Crossing (0-119)' 'Events'
+   
+*  Wall Current Monitor
+   h/pro 10030
+   Nent = $HINFO(10030, 'EVENTS')
+   
+* if the intensity dist is available
+   if ([Nent].ne.0) then
+     title_gl 'Wall Current Monitor' U
+     min 10030 0.01
+     h/pl 10030 B
+     atitle 'Bunch Crossing (0-119)' 'Beamion mon (x10^9!)'
+   
+     
+     h/ope/div 10010 10030 9909
+     title_gl 'Specific Luminisity' U
+     min 9909 1
+     h/pl 9909 B
+     atitle 'Bunch Crossing (0-119)' 'Ratio (x 10~-9!)'
+   endif
+   opt liny
+   
+   wait
+* ***** NEXT PAGE
+   zone 1 2
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   title_gl 'Spin Pattern' U
+   h/pl 31000 B
+   atitle 'Bunch Crossing (0-119)' 'SpinSign'
+
+ return
+
+* *******************************************************************
+* Show the energy spectrum before/after the carbon cut 
+* *******************************************************************
+ macro energy
+   exe setting 
+   glo/imp run
+   glo/imp plot
+   zone 2 3 
+   set CHHE 0.2
+   opt NGRI 
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   Do si=1,6
+     title_gl 'Si-'//[si] U
+     set HCOL 4 
+     h/pl $EVAL(10400+[si])(200.:1500.)
+     set HCOL 4404
+     h/pl $EVAL(10410+[si]) s
+     atitle 'Energy (keV)' ''
+     
+     if ([si].eq.1) then
+       null 0. 1. 0. 1. ABS
+       key 0.6 0.9 IATT=0 TEXT='total' DX=1. CHOPT=F 
+       key 0.6 0.75 IATT=4 TEXT='carbon' DX=1. CHOPT=F 
+     endif
+     
+   Enddo
+   
+   wait 
+   
+* Show the overlapped energy spectrums (6 detectors)
+   title_gl 'Run '//[run]//'Energy spectrum (time cut)' U
+   zone 1 2 
+   opt liny
+   max = 0.
+   Do i=1,6
+     candi = $HINFO(10410+[i],'MAX')
+     if ([candi].ge.[max]) then
+       max = [candi]
+     endif
+   Enddo
+   
+   opt utit
+   set HWID 5
+   MAX 10411 $RSIGMA(1.2*[max])
+   set HCOL 1 ;   h/pl 10411(200.:1500.)
+   set HCOL 3 ;   h/pl 10413 s  
+   set HCOL 4 ;   h/pl 10414 s  
+   set HCOL 6 ;   h/pl 10416 s
+   set HCOL 2 ;   h/pl 10412 s 
+   set HCOL 7 ;   h/pl 10415 s
+   set HCOL 1 ;
+   atitle 'Ekin (keV)' ''
+   
+   set LWID 5
+   set CSIZ 0.4
+   null 0. 1. 0. 1. ABS
+   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
+   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
+   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
+   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
+   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
+   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
+   
+   set CHHE 0.7
+   itx 0.05 0.9 'LINEAR'
+   
+   opt logy
+   
+   max = $RSIGMA([max]*2.)
+
+   set HCOL 1 ; set HWID 5
+   MAX 10411 $RSIGMA(1.2*[max])
+   MIN 10411 $RSIGMA([max]/100.)
+   h/pl 10411(200.:1500.)
+   set HCOL 3 ;   h/pl 10413 s  
+   set HCOL 4 ;   h/pl 10414 s  
+   set HCOL 6 ;   h/pl 10416 s
+   set HCOL 2 ;   h/pl 10412 s 
+   set HCOL 7 ;   h/pl 10415 s
+   set HCOL 1 
+   atitle 'Ekin (keV)' ''
+   
+* slope parameter exp(-62*t)
+* -62*2*11.17*100**(-2)
+* = -0.001519
+   slope = 0.001385
+   f/plot [max]*exp(-[slope]*x) 200. 1500. s
+   
+   opt liny
+   null 0. 1. 0. 1. ABS
+   set CHHE 0.7
+   itx 0.05 0.9 'LOG'
+   
+   wait 
+* Show the overlapped energy spectrums with Integral (6 detectors)
+   title_gl 'Run '//[run]//'Energy spectrum Integral (time cut)' U
+   zone 1 2 
+   opt liny
+   max = 0.
+   Do i=1,6
+     h/pro $EVAL(10420+[i])
+     candi = $HINFO(10420+[i],'MAX')
+     if ([candi].ge.[max]) then
+       max = [candi]
+     endif
+   Enddo
+   
+   opt utit
+   set HWID 5
+   MAX 10421 $RSIGMA(1.2*[max])
+   set HCOL 1 ; h/pl 10421(200.:1500.)
+   set HCOL 3 ; h/pl 10423 s  
+   set HCOL 4 ; h/pl 10424 s  
+   set HCOL 6 ; h/pl 10426 s
+   set HCOL 2 ; h/pl 10422 s 
+   set HCOL 7 ; h/pl 10425 s
+   set HCOL 1 
+   atitle 'Ekin (keV)' ''
+   
+   set LWID 5
+   set CSIZ 0.4
+   null 0. 1. 0. 1. ABS
+   set PLCI 1 ;   key 0.8 0.95 IATT=1 TEXT='Si-1' DX=1. CHOPT=L 
+   set PLCI 2 ;   key 0.8 0.91 IATT=1 TEXT='Si-2' DX=1. CHOPT=L 
+   set PLCI 3 ;   key 0.8 0.87 IATT=1 TEXT='Si-3' DX=1. CHOPT=L 
+   set PLCI 4 ;   key 0.8 0.83 IATT=1 TEXT='Si-4' DX=1. CHOPT=L 
+   set PLCI 7 ;   key 0.8 0.79 IATT=1 TEXT='Si-5' DX=1. CHOPT=L 
+   set PLCI 6 ;   key 0.8 0.75 IATT=1 TEXT='Si-6' DX=1. CHOPT=L 
+   
+   set CHHE 0.7
+   itx 0.05 0.9 'LINEAR'
+   
+   opt logy
+   
+   max = $RSIGMA([max]*2.)
+   set HCOL 1 ; set HWID 5
+   MAX 10421 $RSIGMA(1.2*[max])
+   MIN 10421 $RSIGMA([max]/1000.)
+   set HCOL 1 ;   h/pl 10421(200.:1500.)
+   set HCOL 3 ;   h/pl 10423 s  
+   set HCOL 4 ;   h/pl 10424 s  
+   set HCOL 6 ;   h/pl 10426 s
+   set HCOL 2 ;   h/pl 10422 s 
+   set HCOL 7 ;   h/pl 10425 s
+   set HCOL 1 
+   atitle 'Ekin (keV)' ''
+   
+* slope parameter exp(-68*t)
+* -62*2*11.17*100**(-2)
+* = -0.001519 (68)
+* = -0.001385 (62)
+   slope = 0.001385
+   f/plot 2.*[max]*exp(-[slope]*x) 200. 1500. s
+   
+   opt liny
+   null 0. 1. 0. 1. ABS
+   set CHHE 0.7
+   itx 0.05 0.9 'LOG'
+   
+   wait 
+   
+* Show all the strips for Plus bunches only
+   set DMOD 1 
+   title_gl 'Run '//[run]//'Energy Hists for Plus bunch' 
+   zone 2 3
+   opt utit
+   
+   exec ploteachsi si=1 base=10500
+   exec ploteachsi si=2 base=10500
+   exec ploteachsi si=3 base=10500
+   exec ploteachsi si=4 base=10500
+   exec ploteachsi si=5 base=10500
+   exec ploteachsi si=6 base=10500
+   
+   wait 
+   
+* Show all the strips for Minus bunches only
+   title_gl 'Run '//[run]//'Energy Hists for Minus bunch' 
+   zone 2 3
+   exec ploteachsi si=1 base=10600
+   exec ploteachsi si=2 base=10600
+   exec ploteachsi si=3 base=10600
+   exec ploteachsi si=4 base=10600
+   exec ploteachsi si=5 base=10600
+   exec ploteachsi si=6 base=10600
+   
+*   wait
+   
+   if ([plot].ne.'all') then
+     mess plot is [plot] 
+     Do si=1,6
+       opt htit
+       zone 3 4 
+       start = $EVAL(([si]-1)*12+1)
+       stop  = $EVAL([si]*12)
+       title_gl 'Run '//[run]//' Si-'//[si]//' Black (+) Blue (-)' 
+       opt utit
+       Do i=[start],[stop]
+	 hid = $EVAL(10500+[i])
+	 N = $HINFO([hid],'ENTRIES')
+	 h/copy [hid](:1000.) 999
+	 hmax = $HINFO(999,'MAX')
+	 title_gl 'st-'//[i] U 
+	 null 0. 1300. 0. $EVAL([hmax]*1.2)
+	 set HCOL 1 ;  h/pl $EVAL(10500+[i]) s 
+	 set HCOL 4 ;  h/pl $EVAL(10600+[i]) s 
+	 atitle 'Energy (keV)' ''
+       enddo
+       wait
+     Enddo
+   endif
+   
+ return
+* ----------------
+ macro ploteachsi si=1 base=10500 
+   title_gl ' Si-'//[si] U
+   
+   starth=$EVAL(([si]-1)*12+1)
+   stoph=$EVAL(([si])*12)
+   
+   useh = $EVAL([base]+[starth]+6)
+   h/pro [useh]
+   max = $HINFO([useh],'MAX')
+   null 240. 1300. 0. $RSIGMA([max]*1.2)
+   
+   set HCOL 1  
+   Do i=[starth],[stoph]
+     h/pl $EVAL([base]+[i]) s
+   enddo 
+   atitle 'KeV' ''
+ return
+ 
+* **********************************************
+*  Physics Asymmetry along the Bunch Crossing
+* **********************************************
+ macro physasym
+
+   exe setting 
+   glo/imp run
+   zone 1 2 
+   set ASIZ 0.4
+   set XLAB 2.0
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   opt utit
+   title_gl 'Accumulation of Physics asymmetry' U
+   v/del ex   
+   v/cre ex(119) R 119*0.
+   sq2=1.414
+   
+   h/ope/add 30100 30100 30101 [sq2] 0.
+   h/ope/add 30200 30200 30201 [sq2] 0.
+   
+*  ----- 1st plot --------
+*   null 0. 120. -0.004 0.01
+   null 0. 120. -0.01 0.01
+   
+*** X90...
+   set HCOL 4 ; set PMCI 4
+   set KSIZ 0.2; set MTYP 21
+   h/pl 30000 Ps 
+
+*** X45...
+   set HCOL 1 ; set PMCI 1
+   set MTYP 25
+   h/pl 30101 Ps
+
+*** Y45...
+   set HCOL 2 ; set PMCI 2
+   set MTYP 20
+   h/pl 30201 Ps
+   
+   set PLCI 1
+   line 0. 0. 120. 0.
+   set PLCI 0
+   
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.5
+   set HCOL 1; set PMCI 1; key 0.83 0.90 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set HCOL 4; set PMCI 4; key 0.83 0.85 IATT=20 TEXT='X90' DX='1.' CHOPT=' '
+   set HCOL 2; set PMCI 2; key 0.83 0.80 IATT=21 TEXT='Y45' DX='1.' CHOPT=' '
+   
+   atitle 'Bunch ID' 'Physics Asym'   
+   
+* ***********************************************
+* Calculate for every 4 bunches 
+* ***********************************************
+* 1:RU 2:RD, 3:LU 4:LD
+   title_gl 'Physics asymmetry for every 4 bunch' U
+   v/cre result(2) R
+* =========================================
+   application comis quit
+      subroutine sqroot(x,y,w,z)
+      Implicit None
+      real x,y,w,z,den
+      vector result
+* ---------------------
+      den = (sqrt(x*y)+sqrt(w*z))
+      if (den.eq.0) then
+	result(1) = 0.
+	result(2) = 0.
+      else
+	result(1) = (sqrt(x*y)-sqrt(w*z))/den
+	result(2) = sqrt(x*y*(w+z)+w*z*(x+y))/den**2
+      endif
+      end 
+   quit
+* =========================================
+
+   v/cre EPOL90(120) R
+   v/cre EPOL45(120) R
+   v/cre EPOL90E(120) R
+   v/cre EPOL45E(120) R
+   v/cre EPOLY(120) R
+   v/cre EPOLYE(120) R
+   Do i=1,113,8
+     RU90 = 0
+     RD90 = 0   
+     LU90 = 0
+     LD90 = 0   
+     RU45 = 0
+     RD45 = 0   
+     LU45 = 0
+     LD45 = 0   
+     RUY = 0
+     RDY = 0   
+     LUY = 0
+     LDY = 0   
+     Do j=[i],[i]+7,2
+*       mess 'spin'//$EVAL(spin([j]))
+       if (spin([j]).eq.1) then
+	 RU90 = $EVAL([RU90]+si2([j]))
+	 LU90 = $EVAL([LU90]+si5([j]))
+	 RU45 = $EVAL([RU45]+si1([j])+si3([j]))
+	 LU45 = $EVAL([LU45]+si4([j])+si6([j]))
+	 RUY = $EVAL([RUY]+si3([j])+si4([j]))
+	 LUY = $EVAL([LUY]+si1([j])+si6([j]))
+       elseif (spin([j]).eq.-1) then
+	 RD90 = $EVAL([RD90]+si2([j]))
+	 LD90 = $EVAL([LD90]+si5([j]))
+	 RD45 = $EVAL([RD45]+si1([j])+si3([j]))
+	 LD45 = $EVAL([LD45]+si4([j])+si6([j]))
+	 RDY = $EVAL([RDY]+si3([j])+si4([j]))
+	 LDY = $EVAL([LDY]+si1([j])+si6([j]))
+       endif
+     Enddo
+     SQRT2 = 1.4142
+     call sqroot([RU90].,[LD90].,[RD90].,[LU90].)
+     v/input EPOL90($EVAL([i]+4)) $EVAL(result(1)) 
+     v/input EPOL90E($EVAL([i]+4)) $EVAL(result(2)) 
+     call sqroot([RU45].,[LD45].,[RD45].,[LU45].)
+     v/input EPOL45($EVAL([i]+4)) $EVAL(result(1)*[SQRT2]) 
+     v/input EPOL45E($EVAL([i]+4)) $EVAL(result(2)*[SQRT2]) 
+     call sqroot([RUY].,[LDY].,[RDY].,[LUY].)
+     v/input EPOLY($EVAL([i]+4)) $EVAL(result(1)*[SQRT2]) 
+     v/input EPOLYE($EVAL([i]+4)) $EVAL(result(2)*[SQRT2]) 
+     
+*     mess [i] : $EVAL(result(1)*[SQRT2])  +-  $EVAL(result(2)*[SQRT2]) 
+   Enddo
+   
+* ----- 2nd plot ------
+*   null 0. 120. -0.004 0.01
+   null 0. 120. -0.01 0.01
+   v/del ex
+   v/cre ex(120) R 120*0.
+   
+   set KSIZ 0.2
+   set HCOL 4; set PMCI 4; set MTYP 21
+   hp/err bid EPOL90 ex EPOL90E N=120 ISYMB=21 SSIZE=0.3
+
+   set HCOL 1; set PMCI 1; set MTYP 25
+   hp/err bid EPOL45 ex EPOL45E N=120 ISYMB=25 SSIZE=0.3
+
+   set HCOL 2; set PMCI 2; set MTYP 20
+   hp/err bid EPOLY ex EPOLYE N=120 ISYMB=20 SSIZE=0.3
+
+   set PLCI 1
+   line 0. 0. 120. 0.
+   set PLCI 0
+ 
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.5
+   set HCOL 1; set PMCI 1; key 0.83 0.90 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set HCOL 4; set PMCI 4; key 0.83 0.85 IATT=20 TEXT='X90' DX='1.' CHOPT=' '
+   set HCOL 2; set PMCI 2; key 0.83 0.80 IATT=21 TEXT='Y45' DX='1.' CHOPT=' '
+
+*   v/print bid
+*   v/print EPOL90
+   atitle 'Bunch ID' 'Physics Asym'   
+
+ return
+
+* ********************
+ macro asymother
+* ********************
+   exe setting 
+   glo/imp run
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   
+   zone 1 2 
+   v/del ex
+   v/cre ex(119) R 119*0.
+   title_gl 'Luminosity Asymmetry (accumulation)' U
+   null 0. 120. -0.2 0.2 
+   set KSIZ 0.2
+* Luminosity
+   set MTYP 21; set PMCI 4; h/pl 30020 Ps
+   set MTYP 25; set PMCI 1; h/pl 30120 Ps
+   set MTYP 20; set PMCI 2; h/pl 30220 Ps
+   
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.5
+   set PMCI 1; key 0.83 0.90 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set PMCI 4; key 0.83 0.85 IATT=21 TEXT='X90' DX='1.' CHOPT=' '
+   set PMCI 2; key 0.83 0.80 IATT=20 TEXT='Y45' DX='1.' CHOPT=' '
+
+   set PLCI 2
+   line 0. 0. 120. 0.
+   set PLCI 0
+   
+   title_gl 'Acceptance Asymmetry (accumulation)' U
+   null 0. 120. -0.1 0.1 
+* Acceptance
+   set MTYP 21; set PMCI 4; h/pl 30010 Ps
+   set MTYP 25; set PMCI 1; h/pl 30110 Ps
+   set MTYP 20; set PMCI 2; h/pl 30210 Ps
+   
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.5
+   set PMCI 1; key 0.83 0.90 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set PMCI 4; key 0.83 0.85 IATT=21 TEXT='X90' DX='1.' CHOPT=' '
+   set PMCI 2; key 0.83 0.80 IATT=20 TEXT='Y45' DX='1.' CHOPT=' '
+
+   set PLCI 2
+   line 0. 0. 120. 0.
+   set PLCI 0
+ return
+ 
+* **************************************
+* polarization for each strip
+* **************************************
+ macro pol_each
+   exe setting
+   glo/imp run
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   v/del st
+
+   v/cre up(72) R 72*0.
+   v/cre dw(72) R 72*0.
+   v/cre st(72) R 72*0.
+   v/cre asym(72) R 72*0. 
+   
+   get_vec/cont 36000 up
+   get_vec/cont 36100 dw
+* ====================================================
+   application comis quit
+      subroutine asymmetry(xdummy)
+      implicit None  
+      real Sup,Sdw,Rup,Rdw,xdummy
+      integer i,j
+      vector st,asym,up,dw
+      
+      Do i=1,72
+     
+	Sup = 0.
+	Sdw = 0.
+     
+	st(i) = float(i)
+     
+	Do j=1,72
+	  if (j.ne.i) then 
+	    Sup = Sup + up(j)
+	    Sdw = Sdw + dw(j)
+	  endif
+	Enddo
+	
+	Rup = up(i)
+	Rdw = dw(i)
+	if (Rup .gt. 0) then
+*	  v/input asym(i) (Rup - Sup*Rdw/Sdw)/(Rup + Sup*Rdw/Sdw)
+         asym(i) = (Rup - Sup*Rdw/Sdw)/(Rup + Sup*Rdw/Sdw)
+	Endif
+*       write(*,'(a,i2,a,f10.6)') 'Strip - ',i, '  ',asym(i)
+      Enddo
+      
+      end
+  quit	
+  
+  call asymmetry(1.)
+  set HCOL 4
+  v/draw asym 
+  atitle 'Strip Number' 'Strip-by Strip Asym'
+
+  v/del up
+  v/del dw
+  v/del st
+  v/del asym
+  
+ return
+ 
+* *********************
+ macro RL
+* *********************
+   exe setting 
+   glo/imp run
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+
+   opt htit
+   zone 1 4  
+   get_vec/cont 31100 RL90
+   get_vec/err  31100 RL90E
+   get_vec/cont 31110 RL45
+   get_vec/err  31110 RL45E
+   get_vec/cont 31120 BT45
+   get_vec/err  31120 BT45E
+  
+* Right-Left asymmetry as a function of bid
+   v/cre RL90U(120) R 120*5.
+   v/cre RL90D(120) R 120*5.
+   v/cre RL900(120) R 120*5.
+   v/cre RL45U(120) R 120*5.
+   v/cre RL45D(120) R 120*5.
+   v/cre RL450(120) R 120*5.
+   v/cre BT45U(120) R 120*5.
+   v/cre BT45D(120) R 120*5.
+   v/cre BT450(120) R 120*5.
+   
+   v/cre RL90EU(120) R 120*0.
+   v/cre RL90ED(120) R 120*0.
+   v/cre RL45EU(120) R 120*0.
+   v/cre RL45ED(120) R 120*0.
+   v/cre BT45EU(120) R 120*0.
+   v/cre BT45ED(120) R 120*0.
+   
+   v/cre bid0(120) R 
+   v/cre ex0(120) R 120*0.
+   SQRT2 = '1.414'
+   Do i=1,120
+     v/input bid0([i]) $RSIGMA([i])
+     if (spin([i]).eq.1) then
+       v/input RL90U([i])  RL90([i])
+       v/input RL45U([i])  $RSIGMA(RL45([i])*[SQRT2])
+       v/input BT45U([i])  $RSIGMA(BT45([i])*[SQRT2])
+       v/input RL90EU([i])  RL90E([i])
+       v/input RL45EU([i])  $RSIGMA(RL45E([i])*[SQRT2])
+       v/input BT45EU([i])  $RSIGMA(BT45E([i])*[SQRT2])
+     endif
+     if (spin([i]).eq.-1) then
+       v/input RL90D([i])  RL90([i])
+       v/input RL45D([i])  $RSIGMA(RL45([i])*[SQRT2])
+       v/input BT45D([i])  $RSIGMA(BT45([i])*[SQRT2])
+       v/input RL90ED([i])  RL90E([i])
+       v/input RL45ED([i])  $RSIGMA(RL45E([i])*[SQRT2])
+       v/input BT45ED([i])  $RSIGMA(BT45E([i])*[SQRT2])
+     endif
+     if (spin([i]).eq.0) then
+       v/input RL900([i])  RL90([i])
+       v/input RL450([i])  $RSIGMA(RL45([i])*[SQRT2])
+       v/input BT450([i])  $RSIGMA(BT45([i])*[SQRT2])
+     endif
+   Enddo
+
+   opt utit
+   set YHTI 0.7
+   
+* ---------------------------------------------------------------------
+   title_gl 'Right-Left Asymmetry X45' U
+* ---------------------------------------------------------------------
+   1d 999 '' 40 -0.1 0.1
+   hfill id=999 vname='RL45U'
+   low45X = $HINFO(999,'MEAN')-0.04
+   upp45X = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low45X] [upp45X]
+   atitle 'BID' 'asymmetry'
+   set PMCI 4
+   hp/err bid0 RL45U ex0 RL45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
+   set PMCI 2
+   hp/err bid0 RL45D ex0 RL45ED N=120 ISYMB=21 SSIZE=0.20 CHOPT='0'
+   set LWID 4
+   line 0. 0. 120. 0.
+   set LWID 0
+   
+* ---------------------------------------------------------------------
+   title_gl 'Right-Left Asymmetry X90' U
+* ---------------------------------------------------------------------
+   h/del 999
+   1d 999 '' 40 -0.1 0.1
+   hfill id=999 vname='RL90U'
+   low90X = $HINFO(999,'MEAN')-0.04
+   upp90X = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low90X] [upp90X]
+   atitle 'BID' 'asymmetry'
+   set PMCI 4
+   hp/err bid0 RL90U ex0 RL90EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
+   set PMCI 2 
+   hp/err bid0 RL90D ex0 RL90ED N=120 ISYMB=21 SSIZE=0.20 CHOPT='0'
+   set LWID 4
+   line 0. 0. 120. 0.
+   set LWID 0
+
+* ---------------------------------------------------------------------
+   title_gl 'Bottom-Top Asymmetry Y45' U
+* ---------------------------------------------------------------------
+   h/del 999
+   1d 999 '' 40 -0.1 0.1
+   hfill id=999 vname='BT45U'
+   low45Y = $HINFO(999,'MEAN')-0.04
+   upp45Y = $HINFO(999,'MEAN')+0.04
+   null 0. 120. [low45Y] [upp45Y]
+   atitle 'BID' 'asymmetry'
+   set PMCI 4
+   hp/err bid0 BT45U ex0 BT45EU N=120 ISYMB=20 SSIZE=0.20 CHOPT='0'
+   set PMCI 2
+   hp/err bid0 BT45D ex0 BT45ED N=120 ISYMB=21 SSIZE=0.20 CHOPT='0'
+   set LWID 4
+   line 0. 0. 120. 0.
+   set LWID 0
+   
+* ---------------------------------------------------------------------
+*  explanation for Points
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.45
+   set PMCI 4
+   key 0.05 1.10 IATT=20 TEXT='UP SPIN ' DX='1.' CHOPT=' '
+   set PMCI 2
+   key 0.05 1.25 IATT=21 TEXT='DW SPIN' DX='1.' CHOPT=' '
+   
+   zone 3 4 10 s
+   opt htit
+
+* Projection of Right-Left asymmetry for X45
+   1d 2000 '' 50 [low45X] [upp45X]
+   1d 2001 '' 50 [low45X] [upp45X]
+   hfill id=2000 vname=RL45U
+   hfill id=2001 vname=RL45D
+   
+   set HCOL 4 ; set HTYP 4
+   h/pl 2000
+   set HCOL 2 ; set HTYP 5
+   h/pl 2001 s
+   set HCOL 0
+   atitle  'asymmetry X45' ''
+ 
+* explanation for boxes
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.45
+   set FACI 4
+   key 0.1 1.10 IATT=4 TEXT='UP SPIN ' DX='1.' CHOPT='H'
+   set FACI 2
+   key 0.1 1.25 IATT=5 TEXT='DOWN SPIN' DX='1.' CHOPT='H'
+   
+* Projection of Right-Left asymmetry for X90
+   h/del 2000
+   h/del 2001
+   1d 2000 '' 50 [low90X] [upp90X]
+   1d 2001 '' 50 [low90X] [upp90X]
+   hfill id=2000 vname=RL90U
+   hfill id=2001 vname=RL90D
+   
+   set HCOL 4 ; set HTYP 4
+   h/pl 2000
+   set HCOL 2 ; set HTYP 5
+   h/pl 2001 s
+   set HCOL 0
+   atitle  'asymmetry X90' ''
+
+* Projection of Bottom - Top asymmetry for Y45
+   h/del 2000
+   h/del 2001
+   1d 2000 '' 50 [low45Y] [upp45Y]
+   1d 2001 '' 50 [low45Y] [upp45Y]
+   hfill id=2000 vname=BT45U
+   hfill id=2001 vname=BT45D
+   
+   set HCOL 4 ; set HTYP 4
+   h/pl 2000
+   set HCOL 2 ; set HTYP 5
+   h/pl 2001 s
+   set HCOL 0
+   atitle  'asymmetry Y45' ''
+   
+ return
+ 
+* ***************************
+ macro ratio 
+* ***************************
+   exe setting 
+   glo/imp run
+   set PMCI 4
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   opt utit
+   zone 1 4  
+   title_gl 'Ratio (time + -t cut)/total events' U
+* ------------------------------------
+* ratio of good (time and -t cut) to total events
+* ------------------------------------
+   get_vec/cont 33000 ngood
+   get_vec/cont 33010 nback
+   get_vec/cont 33020 ntotal
+   
+   vdiv ngood ntotal rgood
+   1d 2010 '' 120 -0.5 119.5
+   put_vec/cont id=2010 vname=rgood
+   
+   set MTYP 20
+   h/pl 2010 P0
+   atitle 'BID' 'ratio'
+   
+* projection
+   1d 2011 'projection' 100 0. 1.0
+*   1d 2021 'projection' 100 0. 1.0
+   hfill id=2011 vname=rgood
+*   h/del 2021
+   h/copy 2011(0.1:) 2021
+   
+   lowrange=$HINFO(2021,'MEAN')-0.02
+   upprange=$HINFO(2021,'MEAN')+0.02
+   h/del 2021
+   1d 2021 '' 40 $EVAL([lowrange]) $EVAL([upprange])
+   hfill id=2021 vname=rgood
+   title_gl 'Ratio good/total events(projection)' U
+   
+   set HCOL 4404
+   h/pl 2021
+   atitle 'ratio' 'Nbunch' 
+   
+* ------------------------------------
+* ratio of background to good events
+* ------------------------------------
+   title_gl 'Ratio background/good events' U
+   vdiv nback ngood rback
+   1d 2012 '' 120 -0.5 119.5
+   put_vec/cont id=2012 vname=rback
+   
+   set MTYP 20
+   h/pl 2012 P0
+   atitle 'BID' 'ratio'
+
+* projection
+   title_gl 'Ratio background/good events(projection)' U
+   1d 2013 'projection' 100 0.0 0.1
+*   1d 2023 'projection' 100 0.0 0.1
+   hfill id=2013 vname=rback
+*   h/del 2023
+   h/copy 2013(0.01:) 2023
+   
+   lowrange=$HINFO(2023,'MEAN')-0.005
+   upprange=$HINFO(2023,'MEAN')+0.005
+   h/del 2023
+   1d 2023 '' 40 $EVAL([lowrange]) $EVAL([upprange])
+   hfill id=2023 vname=rback
+   h/pl 2023 
+   atitle 'ratio' 'Nbunch'
+   
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   
+   wait
+* ------------------------------------
+* timing cut stability 
+* ------------------------------------
+   opt utit
+   zone 1 4  
+   title_gl 'Timing cut stability' U
+   
+* vdiv ngood ntotal rgood
+* 1d 2024 '' 120 -0.5 119.5
+* put_vec/cont id=2010 vname=rgood
+   
+   h/ope/div 10010 10020 2014 1. 1.
+   set MTYP 20
+   h/pl 2014 P0
+   atitle 'BID' 'ratio'
+   
+* projection
+   v/cre tstability(120) R
+   get_vect/cont 2014 tstability 
+*   v/print tstability
+   
+   1d 2015 'projection' 100 0. 1.0
+*   1d 2025 'projection' 100 0. 1.0
+   
+   hfill id=2015 vname=tstability
+*   h/del 2025
+   h/copy 2015(0.1:) 2025
+   
+   lowrange=$HINFO(2025,'MEAN')-0.1
+   upprange=$HINFO(2025,'MEAN')+0.1
+   h/del 2025
+   1d 2025 '' 40 $EVAL([lowrange]) $EVAL([upprange])
+   h/del 2025
+   h/copy 2015(0.1:) 2025
+
+   title_gl 'Ratio timing + -t cut/-t cut (projection)' U
+   
+   set HCOL 4404
+   h/pl 2025
+   atitle 'ratio' 'Nbunch' 
+   
+ return
+  
+* ***********************************
+* Banana Timing at 600-650keV 
+* ***********************************
+ macro timing 
+   exe setting 
+   glo/imp run
+   set PMCI 4
+
+   opt ngri
+   set VSIZ 0.5
+   set ASIZ 0.5
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+
+   v/cre timec(120) R 
+   v/cre timew(120) R
+   v/cre timece(120) R
+   v/cre timewe(120) R
+   v/cre tbid(120) R 
+   v/cre ex(120) R 
+   v/cre ppar(3) R 1000. 50. 3.
+   v/cre ppare(3) R 1. 1. 1. 
+
+* Needed for h/fit to work...
+   v/cre pstep(3)
+   v/cre ppmin(3)
+   v/cre ppmax(3)
+   
+   h/pro 11000
+   expamp = $HINFO(11000,'MAX')
+   sum = 0.
+   nval = 0.
+   
+   Do bid=0, 55
+     num=$EVAL([bid]+1)
+     v/input tbid([num]) [num]
+     
+     hid = $EVAL(11000+[bid])
+     h/pro [hid]
+     NCONT = $HINFO([hid],'ENTRIES')
+     if ([NCONT] .ge. 1000.) then
+       v/input ppar(1) [expamp] 
+       v/input ppar(2) 40. 
+       v/input ppar(3) 3. 
+* -------------------------------------------------------------
+*       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 par=ppar errpar=ppare
+       h/fit $EVAL(11000+[bid])(40.:) G Q0E 3 ppar pstep ppmin ppmax ppare
+* -------------------------------------------------------------
+       v/input timec([num]) $EVAL(ppar(2))
+       v/input timew([num]) $EVAL(abs(ppar(3))) 
+       v/input timece([num]) $EVAL(ppare(2)) 
+       v/input timewe([num]) $EVAL(ppare(3))
+       
+       timec = $EVAL(timec([num]))
+       sum = $RSIGMA([sum] + timec([num]))
+       nval = $RSIGMA([nval]+1)
+       
+* mess $EVAL([bid])//' '//$EVAL(ppar(2))//' '//$EVAL(ppar(3))//' '_
+* $EVAL([expamp])
+     else 
+       mess 'Skipped'
+     endif
+   Enddo
+   
+   Do bid=0, 55
+     num=$EVAL([bid]+1)
+*     mess [bid] $EVAL(timec([num])-[sum]/[nval]) $EVAL([sum]/[nval])   
+     v/input timec([num]) $EVAL(timec([num])-[sum]/[nval])
+   Enddo
+   
+   opt utit
+   zone 1 2
+   title_gl 'Banana Timing Shift at 600-650keV' U
+   
+   set XLAB 2.0
+* ==== 1st plot
+   null 0. 120. -5. 5. 
+   set DMOD 2 
+   line 0. 0. 120. 0.
+   line 0.  1. 120.  1.
+   line 0. -1. 120. -1.
+   set DMOD 1; set MTYP 20; set HCOL 4
+   hp/err tbid timec ex timece 120 ISYMB=20
+   atitle 'bunch ID' 'T shift w.r.t. average timing (ns)'
+   
+* ===== 2nd plot 
+   title_gl 'Banana Width at 600-650 keV' U
+   set DMOD 2
+   null 0. 120. 0. 10. 
+   Do i=1,10
+     line 0. [i]. 120. [i].	| horizontal grid
+   Enddo
+   set DMOD 1; set MTYP 20; set HCOL 4
+   hp/err tbid timew ex timewe 120 ISYMB=20
+   atitle 'bunch ID' 'banana width (ns)'
+   
+ return
+   
+* *************************************************************************
+* Plot various variables in different -t bins in Bid
+* *************************************************************************
+ macro diff_t
+   exe setting 
+   glo/imp run
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   zone 1 3
+   opt utit
+   set CSIZ 0.5
+   set DMOD 1 
+   
+   title_gl 'physics asym 320-400 keV' U
+   exe one_tbin_plot 1 
+   title_gl 'physics asym 400-480 keV' U
+   exe one_tbin_plot 2 
+   title_gl 'physics asym 480-600 keV' U
+   exe one_tbin_plot 3 
+   wait 
+   title_gl 'physics asym 600-800 keV' U
+   exe one_tbin_plot 4 
+   title_gl 'physics asym 800-1000 keV' U
+   exe one_tbin_plot 5 
+   title_gl 'physics asym 1000-1200 keV' U
+   exe one_tbin_plot 6 
+   
+ return
+
+ macro one_tbin_plot tbin=1
+   null 0. 120. -0.015 0.015
+   set PMCI 4
+   sq2=1.414
+
+   H/OPE/ADD 3210[tbin] 3210[tbin] 3211[tbin] [sq2] 0. 
+   H/OPE/ADD 3220[tbin] 3220[tbin] 3221[tbin] [sq2] 0. 
+
+   set PMCI 4; set MTYP 21; set HCOL 4
+   set KSIZ 0.20
+   h/pl 3200[tbin] Ps | X90
+
+   set PMCI 1; set MTYP 25; set HCOL 1
+   set KSIZ 0.20
+   h/pl 3211[tbin] Ps | X45
+
+   set PMCI 2; set MTYP 20; set HCOL 2
+   set KSIZ 0.20
+   h/pl 3221[tbin] Ps | Y45
+
+   atitle 'Bunch Crossing' 'RAW ASYMMETRY'
+   null 0. 1. 0. 1. ABS
+   set PMCI 1; key 0.83 0.90 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set PMCI 4; key 0.83 0.80 IATT=21 TEXT='X90' DX='1.' CHOPT=' '
+   set PMCI 2; key 0.83 0.70 IATT=20 TEXT='Y45' DX='1.' CHOPT=' '
+
+ return   
+
+* *************************************************************************
+* TDC Dists first bin fraction
+* *************************************************************************
+ macro first_tdc_bin
+   exe setting 
+   glo/imp run
+   title_gl 'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   opt utit
+   set CSIZ 0.5
+   set DMOD 1 
+   
+   v/cre hcont(256) R
+   v/cre strip(72) R
+   v/cre fraction(72) R
+   Do st=1,72
+     hid = $EVAL(11100+[st])
+     h/pro [hid]
+     
+     nent = $HINFO([hid], 'ENTRIES')
+     
+     if ([nent].ne.0) then
+       get_vec/cont [hid] hcont
+       bount = 0
+       Do i=1,256
+	 bcont = $EVAL(hcont([i]))
+	 if ([bcont].gt.0) then
+	   goto last
+	 endif
+       Enddo
+last:
+       v/input fraction([st]) $RSIGMA([bcont]/[nent])
+     endif
+     v/input strip([st]) $EVAL([st])
+   Enddo
+   
+   v/print fraction
+   
+   null 0. 72. 0. 1. 
+   set PMCI 4
+   set MTYP 20
+   set MSCF 1
+   graph 72 strip fraction P 
+   
+   
+   
+ return
+
+* ******************
+* A_N -t dependence 
+* ******************
+ macro t_dep
+   exe setting 
+   glo/imp run
+   opt ngri
+   set VSIZ 0.6
+   set ASIZ 0.6
+   set YMGL 4.
+   set XLAB 3.0
+   set YLAB 1.2
+   
+   title_gl _
+     'RUN '//[run]//'   P='//$FORMAT(pol(1),F5.3)//'+-'//$FORMAT(pol(2),F5.3)
+   title_gl '' U
+   zone 
+   
+* Variables for 
+   v/del ex
+
+   nbin=6
+   v/cre minust([nbin]) R 360. 440. 540. 700. 900. 1100.
+   v/cre ex([nbin]) R 40. 40. 60. 100. 100. 100.
+*   v/cre minust([nbin]) R 340. 380. 420. 460. 500. 540. 580. 700. 900. 1100.
+*   v/cre ex([nbin])     R  20.  20.  20.  20.  20.  20.  20. 100. 100.  100. 
+   v/cre tx90([nbin]) R
+   v/cre tx90e([nbin]) R
+   v/cre tx45([nbin]) R
+   v/cre tx45e([nbin]) R
+   v/cre ty45([nbin]) R
+   v/cre ty45e([nbin]) R
+   v/cre tc45([nbin]) R
+   v/cre tc45e([nbin]) R
+   
+   Do i=1,[nbin]
+* Create empty Vectors
+     v/cre t[i]x90(120) R  
+     v/cre t[i]x45(120) R  
+     v/cre t[i]y45(120) R  
+     v/cre t[i]c45(120) R  
+     
+     v/cre t[i]x90e(120) R  
+     v/cre t[i]x45e(120) R  
+     v/cre t[i]y45e(120) R  
+     v/cre t[i]c45e(120) R  
+     
+     
+* Recover From Histograms
+     get_vec/cont $EVAL(32000+[i]) t[i]x90
+     get_vec/err  $EVAL(32000+[i]) t[i]x90e
+     
+     get_vec/cont $EVAL(32100+[i]) t[i]x45
+     get_vec/err  $EVAL(32100+[i]) t[i]x45e
+     
+     get_vec/cont $EVAL(32200+[i]) t[i]y45
+     get_vec/err  $EVAL(32200+[i]) t[i]y45e
+     
+     get_vec/cont $EVAL(32300+[i]) t[i]c45
+     get_vec/err  $EVAL(32300+[i]) t[i]c45e
+     
+* Use last value 
+     v/input tx90([i]) t[i]x90(120) 
+     v/input tx90e([i]) t[i]x90e(120) 
+     v/input tx45([i]) $RSIGMA(t[i]x45(120)*1.414) 
+     v/input tx45e([i]) $RSIGMA(t[i]x45e(120)*1.414) 
+     v/input ty45([i]) $RSIGMA(t[i]y45(120)*1.414) 
+     v/input ty45e([i]) $RSIGMA(t[i]y45e(120)*1.414) 
+     v/input tc45([i]) $RSIGMA(t[i]c45(120)*1.414) 
+     v/input tc45e([i]) $RSIGMA(t[i]c45e(120)*1.414) 
+   Enddo
+   
+   v/cre masym([nbin]) R
+   v/cre masyme([nbin]) R
+   
+* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   application comis quit
+      subroutine meanm()
+      implicit None
+      vector tx90,tx45,tx90e,tx45e
+      real x90,x90e,x45,x45e,sq,ssq
+      vector masym,masyme
+      integer i
+      
+      Do i=1,6			! 1-6 t-regions
+	x90  = tx90(i)
+	x90e = tx90e(i)
+	x45  = tx45(i)
+	x45e = tx45e(i)
+
+	sq = (x45e**2+x90e**2)
+	ssq = sq**0.5
+	if (sq.ne.0.) then
+	  masym(i) = (x90*x45e**2+x45*x90e**2)/sq
+	  masyme(i) = (x45e*x90e)/ssq
+	else
+	  masym(i) = 0.
+	  masyme(i) = 0.
+	endif
+      enddo
+      end
+   quit
+* ===================================================
+   call meanm
+   
+* Define Plot Range
+   PXMAX = 1200.
+   PXMIN = 200.
+   PYMIN = -0.02
+   PYMAX = 0.02
+   
+   null [PXMIN] [PXMAX] [PYMIN] [PYMAX] 
+   line [PXMIN] 0. [PXMAX] 0.	| horizontal line
+   
+* Plot Points 
+   set KSIZ .3
+   set MSCF .3
+   set HCOL 3; set PMCI 3; set HWID 2;  
+   hp/err minust tx90 ex tx90e [nbin] ISYMB=24 ssize=0.4
+   set HCOL 1; set PMCI 1; set HWID 2;
+   hp/err minust tx45 ex tx45e [nbin] ISYMB=25 ssize=0.4
+   set HCOL 4; set PMCI 4; set HWID 5;
+   hp/err minust ty45 ex ty45e [nbin] ISYMB=21 ssize=0.4
+   set HCOL 6; set PMCI 6; set HWID 5;
+   hp/err minust tc45 ex tc45e [nbin] ISYMB=22 ssize=0.4
+   
+   set HCOL 2; set PMCI 2; set HWID 5;
+   hp/err minust masym ex masyme [nbin] ISYMB=20 ssize=0.4
+   atitle 'Kinetic Energy (keV)' 'Physics Asymmetry' 
+   
+   set HWID 0
+   
+* Show Legends
+   null 0. 1. 0. 1. ABS
+   set CSIZ 0.45
+   set PMCI 2; key 0.6 0.95 IATT=20 TEXT='Mean (X90,X45)' DX='1.' CHOPT=' '
+   set PMCI 4; key 0.6 0.92 IATT=21 TEXT='Radial (Y45)' DX='1.' CHOPT=' '
+   
+   set PMCI 3; key 0.6 0.85 IATT=24 TEXT='X90' DX='1.' CHOPT=' '
+   set PMCI 1; key 0.6 0.82 IATT=25 TEXT='X45' DX='1.' CHOPT=' '
+   set PMCI 6; key 0.6 0.79 IATT=22 TEXT='C45' DX='1.' CHOPT=' '
+   
+* ------ rewrite t axis ----------------
+   
+   amu=1.e6
+   cy=$EVAL(2*11.17*[amu]/1.e12)
+   
+   set TXFP -60
+   
+   null $EVAL([cy]*[PXMIN]) $EVAL([cy]*[PXMAX]) [PYMIN] [PYMAX] ABS
+   set LAOF 0.0001 
+   axis $EVAL([cy]*[PXMIN]) $EVAL([cy]*[PXMAX]) [PYMAX] [PYMAX]  _
+     $EVAL([cy]*[PXMIN]) $EVAL([cy]*[PXMAX]) 505 '+CD' 
+   
+* ------ OverRay A_N line -----------------
+   
+*  A_N values from L. Trueman
+*      data anth/0.034445, 0.026340, 0.020389, 0.016051, 0.012707,
+*                0.010014, 0.007777, 0.005875, 0.004233, 0.002799/
+*      t values: 0.0030,   0.0055,   0.0080,   0.0105,   0.0130, 
+*                0.0155,   0.0180,   0.0205,   0.0230,   0.0255
+* 
+*       t = e * 22.18 / 1000000.
+*       Emin = (0.0030-0.0025/2.)*1e6/22.18
+*       Emax = (0.0255+0.0025/2.)*1e6/22.18
+
+*  A_N for 24 GeV 
+   v/cre asymth(25) R 0.0324757 0.0401093 0.0377283 0.0339981 0.0304917 _
+     0.0274323 0.0247887 0.0224906 0.020473  0.0186837 _
+     0.0170816 0.0156351 0.0143192 0.0131145 0.0120052 _
+     0.0109786 0.0100245 0.00913435 0.00830108 0.00751878 _
+     0.00678244 0.00608782 0.00543127 0.00480969 0.00422038
+
+*  A_N for 100 GeV
+   v/cre asymth(25) R _
+        0.0297964  0.0372334  0.0345393  0.0306988  0.0272192 _
+        0.0242531  0.0217307  0.0195634  0.017677   0.0160148 _
+        0.0145340  0.0132021  0.0119941  0.0108907  0.00987651 _
+        0.00893914  0.00806877  0.00725722  0.00649782  0.00578491 _
+        0.00511384  0.00448062  0.00388186  0.00331461  0.00277642
+   
+   v/cre ant(25) R
+   Do i = 1,25
+     v/input ant([i]) $RSIGMA(0.0010 + 0.001*([i]-1))
+   Enddo
+   
+* v/cre antold(10) R 0.0030 0.0055 0.0080 0.0105 0.0130 _
+* 0.0155 0.0180 0.0205 0.0230 0.0255
+* v/cre asymthold(10) R 0.034445 0.026340 0.020389 0.016051 0.012707 _
+* 0.010014 0.007777 0.005875 0.004233 0.002799
+* vscale asymthold $EVAL(pol(1)) polthold
+* graph 10 antold polthold C
+   
+   vscale asymth $EVAL(pol(1)) polth
+   set LWID 3
+   graph 25 ant polth C
+   
+   null 0. 1. 0. 1. ABS
+   set CHHE 0.6
+   itx 0.85 1.03 '-t (GeV/c)^2!'
+   set YMGL 0
+   
+ return
+
+* *************************
+ macro chisq
+* *************************
+
+   exe setting 
+   zone 4 5 
+   set HCOL 2
+   v/cre phi(6) R 0.785 1.570 2.355 3.925 4.710 5.495 
+   v/cre phie(6) R 6*0.
+   v/cre y(6) R
+   v/cre ye(6) R
+   v/cre fitpar(3) R
+   v/cre fitpare(3) R
+   v/cre step(3) R
+   v/cre pmin(3) R
+   v/cre pmax(3) R
+   v/cre chi2(1) R
+   v/cre p(120) R 120*0.
+   v/cre pe(120) R 120*0.
+   v/cre rphi(120) R 120*0.
+   v/cre rphie(120) R 120*0.
+   v/cre rcos(120) R 120*0.
+   v/cre rcosu(120) R 120*0.
+   v/cre rcosl(120) R 120*0.
+   v/cre bunch(120) R 120*0.
+   opt utit
+   set PMCI 4
+   set PLCI 4
+* ======================================
+   application comis quit
+* 12345
+      real function fitfunc(x)
+      Implicit None
+      COMMON/PAWPAR/fitpar(3)    
+      real x
+      fitfunc = fitpar(1) + fitpar(2)*sin(x-fitpar(3))
+      end 
+* ---------------------------------------
+      SUBROUTINE chiq
+* NPFITS  Number of points used in the fit
+* NFPAR   Number of free parameters
+* FITCHI  Chisquare
+* FITPAR  Values of parameters
+* FITSIG  Errors on parameters
+      COMMON/HCFITS/NCFITS,NPFITS,NFPAR,FITCHI,FITPAR(35),FITSIG(35)
+     +  ,FITDER(35)
+      vector chi2
+      chi2(1)=fitchi
+      END
+   quit   
+* ======================================
+   
+   v/cre chisq(120) R 120*0.
+   nvalid=0
+   
+* Recover From Histograms
+   v/cre Nsi(6) R
+   Do si=1,6
+     
+     hid = $EVAL(31000+10*[si])
+     h/pro [hid]
+     
+     v/del si[si]
+     v/cre si[si](120) R
+     get_vec/cont [hid] si[si] | each bunch
+     
+     v/input Nsi([si]) $HINFO([hid], 'ENTRIES') | Total
+     
+   Enddo
+   
+   v/cre used_bunch(1) R 0. 
+* Loop through bunches 
+   Do i=1,120
+     if (si1([i]).eq.0) then 
+       goto outloop		| skip embty bunch
+     endif
+     v/input used_bunch(1) $EVAL(used_bunch(1)+1)
+     
+*     mess [i]//'-th bunch'
+     Do j=1,6
+       v/input y([j]) $RSIGMA(si[j]([i])/Nsi([j]))  
+       v/input ye([j]) $RSIGMA(sqrt(si[j]([i])/Nsi([j])/Nsi([j])))
+* mess y $EVAL(y([j])) ye $EVAL(ye([j]))
+     Enddo
+     v/input fitpar(1) 0.01
+     v/input fitpar(2) 0.001
+     v/input fitpar(3) 0.
+     
+     v/fit phi y ye fitfunc 'Q0E' NP=3 PAR=fitpar step pmin pmax ERRPAR=fitpare
+     
+     amp=$EVAL(fitpar(2))
+     if ([amp].ge.0.0001) then
+       min=$EVAL(fitpar(1)-3*abs(fitpar(2)))
+       max=$EVAL(fitpar(1)+3*abs(fitpar(2)))
+     else
+       min=$EVAL(fitpar(1)-3*0.0001)
+       max=$EVAL(fitpar(1)+3*0.0001)
+     endif       
+     
+     
+*  ===== Plot each fit (120 bunches) =========
+     title_gl 'bunch-'//$SIGMA([i]) U
+     null 0. 7. [min] [max]
+     set HCOL 2 
+     f/plot fitfunc 0. 7. s    
+     set HCOL 4
+     hp/err phi y phie ye 6 20 0.20  ' '
+     
+     call chiq
+     v/input chisq([i]) $EVAL(chi2(1))
+     
+     if (fitpar(2).le.0.) then
+       v/input fitpar(2) $EVAL(fitpar(2)*(-1.))
+       v/input fitpar(3) $EVAL(fitpar(3)+3.14)
+     endif
+     
+     v/input p([i]) $EVAL(fitpar(2)) 
+     v/input pe([i]) $EVAL(fitpare(2)) 
+     origphi = $EVAL(fitpar(3))
+     
+     if ([origphi].ge.9.) then
+       
+       v/input rphi([i]) $EVAL(fitpar(3)-6.28)
+       v/input rcos([i]) $RSIGMA(cos(rphi([i])))
+       v/input rcosu([i]) $RSIGMA(cos(rphi([i])+fitpare(3))-cos(rphi([i])))
+       v/input rcosl([i]) $RSIGMA(cos(rphi([i]))-cos(rphi([i])-fitpare(3)))
+       
+     elseif ([origphi].le.2.) then
+       
+       v/input rphi([i]) $EVAL(fitpar(3)+6.28)
+       v/input rcos([i]) $RSIGMA(cos(rphi([i])))
+       v/input rcosu([i]) $RSIGMA(cos(rphi([i])+fitpare(3))-cos(rphi([i])))
+       v/input rcosl([i]) $RSIGMA(cos(rphi([i]))-cos(rphi([i])-fitpare(3)))
+       
+     else
+       
+       v/input rphi([i]) $EVAL(fitpar(3))
+       v/input rcos([i]) $RSIGMA(cos(rphi([i])))
+       v/input rcosu([i]) $RSIGMA(cos(rphi([i])+fitpare(3))-cos(rphi([i])))
+       v/input rcosl([i]) $RSIGMA(cos(rphi([i]))-cos(rphi([i])-fitpare(3)))
+       
+     endif
+     
+     v/input rphie([i]) $EVAL(fitpare(3)) 
+     v/input bunch([i]) $EVAL([i])
+* ** mess CHISQ = $EVAL(chisq([i])) 
+     nvalid=[nvalid]+1
+     
+     if (([nvalid].eq.20).or.([nvalid].eq.40).or.([nvalid].eq.60)) then
+      wait
+     endif
+     if (([nvalid].eq.80).or.([nvalid].eq.100).or.([nvalid].eq.120)) then
+      wait
+     endif
+    
+     outloop:
+   Enddo
+   
+   wait
+   
+* ==== Plot Fit Result (Amplitude, Phase, Chi2) ======
+   title_gl '' U
+   zone 1 3 
+   set LWID 4.
+
+   v/del ex
+   v/cre ex(120) R
+
+   set XLAB 1.4
+   set VSIZ 0.4
+   set ASIZ 0.4
+   
+* ----- Plot Amplitude ----
+   null 0. 120. -0.00005 0.00070
+   hp/err bunch p ex pe 120 ISYMB=20
+   atitle 'Bunch Number' 'Amplitude'
+   set LWID 3. 
+   set PLCI 1 
+   line 0. 0. 120. 0.
+   
+* ----- Plot Phase ---- 
+   null 0. 120. -1.2 1.2
+   hp/aerr bunch rcos ex ex rcosl rcosu 120 ISYMB=20 
+   set PLCI 2 
+   line 0. 1. 120. 1.
+   line 0. -1. 120. -1.
+   set PLCI 1 
+   atitle 'Bunch Number' 'Phase (Cos)'
+   
+* ----- Plot Chi2 -----
+   null 0. 120. -0.1 10.
+   Do i=1,120
+     chisq = $EVAL(chisq([i]))
+     if ([chisq].ge.10) then
+       v/input chisq([i]) 10.
+     endif
+   Enddo
+*   v/print chisq
+   hp/err bunch chisq ex ex 120 ISYMB=20 chopt='0'
+   atitle 'Bunch Number' 'chi square'
+   
+   set LWID 0
+   wait 
+   
+* ==== PLOT CHISQ DISTRIBUTION ========================
+   zone 
+   v/cre fitpar(1) R
+   application comis quit
+      real function chifunc(x)
+      Implicit None
+      vector used_bunch
+      real x
+      
+* Degree of freedom = 4 
+* chifunc = 55*(x*4)*exp(-(x*4)/2)/4
+* Degree of freedom = 3 
+      chifunc = used_bunch(1)*((x*3)**0.5)*(exp(-(x*3)/2))/
+     + (2**0.5*sqrt(3.14))
+      end 
+   
+* 12345
+      real function fitchi(x)
+      Implicit None
+      COMMON/PAWPAR/fitpar(1)    
+      real x
+   
+      fitchi = fitpar(1)*(x*4)*exp(-(x*4)/2)/4
+      end 
+   quit
+   
+   opt utit
+   title_gl 'Chi Square of Phi Fits' 
+* the binning must be 4/16=0.25 to ensure the scaling for DOF=4 
+* the binning must be 5/15=0.33 to ensure the scaling for DOF=3 
+   1d 100 '' 15 0.001 5.001
+   hfill chisq 100
+   
+* set FCOL 2
+* h/fit 100 fitchi ' ' 1 fitpar  
+   opt ngri
+   set *WID 5
+   set HCOL 4
+   set YMGL 3.0
+   set YLAB 2.0
+   set VSIZ 0.6
+   set ASIZ 0.6
+   set MTYP 20
+   
+   h/pl 100 e
+   h/pl 100 sHIST
+   set HCOL 2 
+   f/pl chifunc 0. 4. s  
+   set XLAB 2.0
+   atitle 'Reduced Chi2' 'Number of Bunches'
+
+ return
+ 
+* **************************************************************
+ macro bunchselect
+* **************************************************************
+   
+* 1:RU 2:RD, 3:LU 4:LD
+   v/cre N90(4) R 
+   v/cre N45(4) R 
+   do i=1,120
+* if ([i].eq.29) then
+* mess skipped ... [i]
+* goto next
+* endif
+     if (([i].ge.70).and.([i].le.80)) then
+       mess skipped ... [i]
+       goto next
+     endif
+     if (([i].ge.95).and.([i].le.110)) then
+       mess skipped ... [i]
+       goto next
+     endif
+     if (spin([i]).eq.1) then
+* X90
+       v/input N90(1) $EVAL(N90(1)+si2([i]))
+       v/input N90(3) $EVAL(N90(3)+si5([i]))
+* X45
+       v/input N45(1) $EVAL(N45(1)+si1([i])+si3([i]))
+       v/input N45(3) $EVAL(N45(3)+si4([i])+si6([i]))
+* v/input N45(1) $EVAL(N45(1)+si3([i]))
+* v/input N45(3) $EVAL(N45(3)+si6([i]))
+* v/input N45(1) $EVAL(N45(1)+si1([i]))
+* v/input N45(3) $EVAL(N45(3)+si4([i]))
+     elseif (spin([i]).eq.-1) then
+* X90
+       v/input N90(2) $EVAL(N90(2)+si2([i]))
+       v/input N90(4) $EVAL(N90(4)+si5([i]))
+* X45
+       v/input N45(2) $EVAL(N45(2)+si1([i])+si3([i]))
+       v/input N45(4) $EVAL(N45(4)+si4([i])+si6([i]))
+* v/input N45(2) $EVAL(N45(2)+si3([i]))
+* v/input N45(4) $EVAL(N45(4)+si6([i]))
+* v/input N45(2) $EVAL(N45(2)+si1([i]))
+* v/input N45(4) $EVAL(N45(4)+si4([i]))
+     endif       
+next:
+   enddo
+   
+   v/cre result(1) R
+   application comis quit
+      subroutine sqroot(x,y,w,z)
+      Implicit None
+      real x,y,w,z
+      vector result
+* ---------------------
+      result(1) = (sqrt(x*y)-sqrt(w*z))/(sqrt(x*y)+sqrt(w*z))
+      end 
+   quit
+
+   RU = $EVAL(N90(1)) 
+   RD = $EVAL(N90(2))
+   LU = $EVAL(N90(3))
+   LD = $EVAL(N90(4))
+   call sqroot([RU].,[LD].,[RD].,[LU].)
+   mess $EVAL(result(1))
+   
+   RU = $EVAL(N45(1))
+   RD = $EVAL(N45(2))
+   LU = $EVAL(N45(3))
+   LD = $EVAL(N45(4))
+   call sqroot([RU].,[LD].,[RD].,[LU].)
+   mess $EVAL(result(1)*1.414)
+
+   wait
+   
+ return

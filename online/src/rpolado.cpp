@@ -110,11 +110,13 @@ void StartMeasurement(int mode)
 {
     int irc;
     cdevData data;
-    int i;
+    int i, j;
     pid_t pid;
     time_t tm;
     long maxTime, numberEvents, fillNumber;
     double beamEnergy, runId;
+	char str1[20];
+
     struct {
 	int fill;
 	int ring;
@@ -159,6 +161,12 @@ void StartMeasurement(int mode)
     }
     DEVSEND(mux, "get polNumM", NULL, &data, LogFile, irc);
     data.get("value", &iTarget);
+    if (mode == 4) {
+	DEVSEND(pol, "get rampMeasTimeS", NULL, &data, LogFile, irc);
+	data.get("value", &maxTime);	// never directly used by .sh
+	numberEvents = maxTime / 2;	// the meaning is the number of 2 sec subruns
+	beamEnergy = 100.;		// we always synchronize like @ 100 GeV
+    }
     
 //	Run number
     if (fillNumber <= 0) {
@@ -171,24 +179,45 @@ void StartMeasurement(int mode)
 	fflush(LogFile);
 	SetStatus(MyPolarimeter);
 	fillNumber = strtol(sss, NULL, 0);
+    runId = (float)fillNumber + 0.001;
     }
-    ID.fill = (int) runId;
-    ID.ring = (int)(10.0*runId - 10.0*ID.fill);
-    ID.run =  (int)(1000.0*runId - 100.0*ID.ring - 1000.0*ID.fill);
-    if (ID.fill == fillNumber) {
-	ID.run ++;
-    } else {
-	ID.fill = fillNumber;
-	ID.run = 1;
-	if (mode==2) {
-	  ID.ring = (MyPolarimeter == 0) ? 5 : 4;  // for emit. scans
-	} else {
-	  ID.ring = (MyPolarimeter == 0) ? 1 : 0;
-	}
-    }
-    if (iTarget == 2) ID.ring += 2;
-    runId = ID.fill + 0.1*ID.ring + 0.001*ID.run;
 
+    double frun, fring, intpart; 
+
+    frun = modf(runId, &intpart);
+    ID.fill = (int)floor(intpart+0.5);
+    fring = modf(10.*frun, &intpart);
+    ID.ring = (int)floor(fring+0.5);
+    ID.run = (int)floor(100*fring+0.5);
+
+    if (ID.fill == fillNumber) {
+	 ID.run++;
+    }
+    else {
+	 ID.fill = fillNumber;
+	 ID.run = 1;
+    }
+	if (mode==2) {
+	 ID.ring = (MyPolarimeter == 0) ? 5 : 4;  // for emit. scans
+	} 
+    else {
+	 ID.ring = (MyPolarimeter == 0) ? 1 : 0;
+	}
+    if (iTarget == 2) ID.ring += 2;
+
+// we can only have 1 ramp meas per fill, let it have always runid=0
+    if (mode != 4) runId = ID.fill + 0.1*ID.ring + 0.001*ID.run;
+    else runId = ID.fill + 0.1*ID.ring;
+/*
+// Now write the new run number to CDEV...
+    data.insert("value", runId);
+    if (mode==2) {  // run number for emittance scans
+      DEVSEND(pol, "set emitRunIdS", &data, NULL, LogFile, irc);  
+    } 
+    else {        // run number for polarization measurements
+      DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
+    }
+*/
     tm=time(NULL);
     fprintf(LogFile,"RHICADO-INFO : %s: Starting for %s ring @ %5.2f GeV RunID =%8.3f\n",
 	cctime(&tm), myColor[MyPolarimeter], beamEnergy, runId);
@@ -209,13 +238,15 @@ void StartMeasurement(int mode)
             sprintf(s6, "d");    // data mode
         } else if (mode==2) {
             sprintf(s6, "e");    // emittance scan
-        } else {
+        } else if (mode==3) {
             sprintf(s6, "t");     // target scan
-        }            
-        fprintf(LogFile,"RHICADO-INFO : %s %s %s %s %s \n",s1,s2,s3,s4,s6);
+        } else if (mode==4) {
+            sprintf(s6, "r");     // ramp scaler measurement
+	}
+        fprintf(LogFile,"RHICADO-INFO : %s %s %s %s %s %s %s \n",s1,s2,s3,s4,(MyPolarimeter == 0)?"y":"b",(iTarget == 2)?"2":"1",s6);
 	fflush(LogFile);
 	execl (SHELL, SHELL, ScriptName, s1, s2, s3, s4,
-		 (MyPolarimeter == 0)?"y":"b", s6, NULL);
+		 (MyPolarimeter == 0)?"y":"b", (iTarget == 2)?"2":"1", s6, NULL);
        _exit (EXIT_FAILURE);
     } else if (pid < 0) {
 	/* The fork failed.  Report failure.  */
@@ -311,6 +342,9 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
 	break;
     case 'T': 
         iCmd = CMD_TEST | (CMD_YELLOW << MyPolarimeter);	    
+	break;
+    case 'P': 
+        iCmd = CMD_RAMP | (CMD_YELLOW << MyPolarimeter);	    
 	break;
     default :
 	fprintf(LogFile,"RHICADO-WARN : Unknown command %s from dataAcquisitionS: %s\n",
@@ -476,6 +510,9 @@ int main(int argc, char** argv)
 		break;
 	    case CMD_TEST :
 		StartMeasurement(3);
+		break;
+	    case CMD_RAMP :
+		StartMeasurement(4);
 		break;
 	    case CMD_STOP :
 	    case CMD_CAN :

@@ -8,7 +8,7 @@ CFLAGS = $(INC_PATHS) -pthread
 CXXFLAGS = $(INC_PATHS) -pthread
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
-target : rhicpol rhic2hbook sync2rtdltime rpolado sndpic printpos getCdevValue
+target : rhicpol rhic2hbook sync2rtdltime rpolado sndpic printpos getCdevValue testrunid setCdevString sendFailResults
 
 rhicpol : rhicpol.o rpolutil.o rpolutilp.o stat2str.o ../libcmc/libcmc.o
 
@@ -27,6 +27,12 @@ printpos : printpos.o
 
 getCdevValue : getCdevValue.o
 
+testrunid : testrunid
+
+setCdevString : setCdevString.o
+
+sendFailResults : sendFailResults.o
+
 clean :
 	-rm -f rhicpol
 	-rm -f rhic2hbook
@@ -35,4 +41,8 @@ clean :
 	-rm -f sndpic
 	-rm -f sync2rtdltime
 	-rm -f printpos
+	-rm -f getCdevValue
+	-rm -f setCdevString
+	-rm -f sendFailResults
 	-rm -f *.o
+
