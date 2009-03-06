@@ -40,6 +40,7 @@
 #define CMD_DATA	0x0200
 #define CMD_EMIT	0x0300
 #define CMD_TEST	0x0400
+#define CMD_RAMP	0x0500
 #define CMD_YELLOW	0x1000
 #define CMD_BLUE	0x2000
 #define CMD_DONE	0x4000

@@ -1408,7 +1408,7 @@ int getEvents(int Number)
 	    } 
 // indicate progress
 	    if (NoADO == 0 && (recRing & REC_JET) == 0) {
-		UpdateProgress(Cnt, (int)((Cnt-lCnt)/(t-tlast)));
+		UpdateProgress(Cnt, (int)((Cnt-lCnt)/(t-tlast)), t);
 //	get target information
 		if (targetHistoryPtr >= targetHistoryLen) {
 		    targetHistory = (long *)realloc(targetHistory, targetHistoryLen+8192);
@@ -1855,7 +1855,7 @@ void closeDataFile(char * comment)
     if (OutFile == NULL) return;
     if ((recRing & REC_JET) == 0) {
 //	Target movement record for profiles
-<<<<<<< rpolutil.c
+//<<<<<<< rpolutil.c
 	if (NoADO == 0) {
 	    header.type = REC_TAGMOVEADO | recRing;
 	    len = getTagetMovementInfo(&data);
@@ -1864,14 +1864,15 @@ void closeDataFile(char * comment)
 	    polWrite(&header, data);
 	    free(data);
 	}
-=======
+//======= Dima: This is very bad, because causes segmentation fault in case
+// NoADO==1 -- data == NULL and len undefined
 	header.type = REC_TAGMOVEADO | recRing;
 	if (NoADO == 0) len = getTagetMovementInfo(&data);
 	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
 	header.timestamp.time = time(NULL);
 	polWrite(&header, data);
 	free(data);
->>>>>>> 1.3
+//>>>>>>> 1.3
 //	Polarimeter specific data to be passed to data2hbook
 	header.type = REC_POLADO | recRing;
 	header.len = sizeof(recordPolAdoStruct);
