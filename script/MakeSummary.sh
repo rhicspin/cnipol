@@ -50,8 +50,12 @@ LINK_FILE(){
 
 MAIN(){
 
-cd $ASYMDIR
+echo "=====================================================================";
+date
+echo "=====================================================================";
 
+
+cd $ASYMDIR
 # Online Summary
 mkDB.sh --online --yellow | tee summary/Online_Yellow.dat ; mkDB.sh --online --blue | tee summary/Online_Blue.dat
 
