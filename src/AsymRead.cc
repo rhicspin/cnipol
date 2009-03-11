@@ -177,17 +177,27 @@ int readloop() {
                 
 		// force 0 for +/-1 tiny readout as target position. 
 		if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
+
+		// identify Horizontal or Vertical target from the first target rotary position readout.
 		if (k==0) {
+		  long int tgt_identifyV = runinfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
+		  long int tgt_identifyH = runinfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
                     if (((!tgt.Rotary[k][0])&&(!tgt.Rotary[k][1]))||((tgt.Rotary[k][0])&&(tgt.Rotary[k][1]))){
                         cerr << "ERROR: no target rotary info. Don't know H/V target" << endl;
                         runinfo.target='-';
-                    } else if (tgt.Rotary[k][0]) {
+                    } 
+		    if (tgt_identifyV) { 
                         tgt.VHtarget = 0;
                         runinfo.target = 'V';
-                    } else if (tgt.Rotary[k][1]) {
+			cout << "Vertical Target in finite position" << endl;
+                    } else if (tgt_identifyH) {
                         tgt.VHtarget = 1;
                         runinfo.target = 'H';
+			cout << "Horizontal Target in finite position" << endl;
+		    }else{
+		      cout << "Warning: Target infomation cannot be recognized.." << endl;
                     }
+
                     tgt.x = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
 		    tgt.Time[i] = k;
 		    tgt.X[i] = tgt.x;
@@ -634,10 +644,18 @@ DecodeTargetID(polDataStruct poldat){
 
   // Restore Vertical or Horizontal target information
   // in case this information isn't decorded correctly
-  // within REC_PCTARGET routine
+  // within REC_PCTARGET routine. If the target is horizontal,
+  // then mask 90 degree detector.
   if (runinfo.target=='-') {
-    if ((str.find("Vert") == 0)||(str.find("V") == 0)) runinfo.target='V';
-    if ((str.find("Horz") == 0)||(str.find("H") == 0)) runinfo.target='H';
+    if ((str.find("Vert") == 0)||(str.find("V") == 0)) {runinfo.target='V'; tgt.VHtarget=0;}
+    if ((str.find("Horz") == 0)||(str.find("H") == 0)) {
+      runinfo.target='H'; 
+      tgt.VHtarget=1;
+      // This is too late to reconfigure strip mask because this routine is 
+      // executed at the end of event loop. Too bad. /* March 5,'09 IN */
+      //      mask.detector = 0x2D;
+      //      ConfigureActiveStrip(mask.detector);
+    }
   }
 
   return;
