@@ -60,7 +60,7 @@ help(){
     echo -e "   --fill-from <Fill#>       run program for runs from <Fill#> [def]:$FROM_FILL";
     echo -e "   --fill-till <Fill#>       run program for runs till <Fill#> [def]:$TILL_FILL";
     echo -e "   --run-Asym                run Asym"
-    echo -e "   --delayer-fit             run deadlayer fit"
+    echo -e "   --dlayer-fit             run deadlayer fit"
     echo -e "   --max-iteration <int>     Maximum iteration for deadlayer fit [def]:$MAX_ITERATION";
     echo -e "   --tolerance <[%]>         Tolerance in [%] to be converged. [def]:$TOLERANCE";
     echo -e "   -s --sleep <time>         Sleep <time> in sec [def]:$SLEEP_TIME";
