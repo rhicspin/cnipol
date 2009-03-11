@@ -247,6 +247,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
         float amp_int = (Integ - cfginfo->data.chan[st].A0)/ 
             cfginfo->data.chan[st].A1;
+
         
         // ========================================
         //              Energy  
@@ -306,6 +307,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
 
         }        
 	
+
 
         delt = t - runconst.E2T/sqrt_e;  
 
@@ -455,7 +457,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo) {
             
             if ((e>Emin) && (e<Emax)) {
 
-	      // t vs. E (banana with no cut)
+	      // t vs. E (banana with cut)
 	      t_vs_e_yescut[st] -> Fill(e, t);
 
 	      // mass_with energy & mass sigma cut
