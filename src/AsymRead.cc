@@ -180,6 +180,7 @@ int readloop() {
 
 		// identify Horizontal or Vertical target from the first target rotary position readout.
 		if (k==0) {
+		  // From Run09 on, the horizontal/vertical targets are identified by linear motion
 		  long int tgt_identifyV = runinfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
 		  long int tgt_identifyH = runinfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
                     if (((!tgt.Rotary[k][0])&&(!tgt.Rotary[k][1]))||((tgt.Rotary[k][0])&&(tgt.Rotary[k][1]))){
