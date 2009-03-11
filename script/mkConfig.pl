@@ -157,10 +157,10 @@ sub Publish(){
 ######################################################################
 for ($st=0;$st<76;$st++) {
 
-    $tzero[$st] = 5.0;
+    $tzero[$st] = -17.0;
     $ecoef[$st] = 1.1; $edead[$st] = 100.;
     $a0[$st] =10. ; $a1[$st] = 100.; $acoef[$st] = 8.5;
-    $dwidth[$st] = 50.; $pede[$st] = 0.;
+    $dwidth[$st] = 60.; $pede[$st] = 0.;
     $pcoef0[$st] = 40.; $pcoef1[$st] = 1.00; 
     $pcoef2[$st] = 0.001; $pcoef3[$st] = 0.001; 
     $pcoef4[$st] =0.001;
