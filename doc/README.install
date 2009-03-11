@@ -116,7 +116,7 @@ Set up environment and install executables and macros.
 	export ASYMDIR=$HOME/offline
 
 	# temporary output directory
-	export TMPOUTDIR=/tmp/cnipol
+	export TMPOUTDIR=/tmp/`whoami`
 
 	# installation destination 
 	export INSTALLDIR=$ASYMDIR/bin
@@ -128,6 +128,7 @@ Set up environment and install executables and macros.
 
 	export PATH=$INSTALLDIR:$PATH
 	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
+
 
 2. Make and install src files:
 	% cd cnipol
