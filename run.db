@@ -15262,53 +15262,252 @@
 //==============================================================
 //=======                   Run09                      =========
 //==============================================================
-[10030.001] // Blue Polarimeter-1
+[10018.001] // Blue Polarimeter-1
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
+	MASSCUT=3;
+	TSHIFT=0;	
 	INJ_TSHIFT=7;
-	ENERGY_CALIB=calib2008-02-13d;
+	ENERGY_CALIB=alpha_blue1_2_10_2009b;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Blue Polarimeter-1"
+	DisableBunch=20;
 
-[10030.101] // Yellow Polarimeter-1
+[10018.101] // Yellow Polarimeter-1
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
+	MASSCUT=3;
+	TSHIFT=0;	
 	INJ_TSHIFT=7;
-	ENERGY_CALIB=calib2008-02-13d;
+	ENERGY_CALIB=alpha_yellow2_2_19_2009;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Yellow Polarimeter-1"
+	DisableBunch=20;
+	DisableStrip=51;
+	DisableStrip=54;
+	DisableStrip=56;
+	DisableStrip=71;
 
-[10030.201] // Blue Polarimeter-2
+[10018.201] // Blue Polarimeter-2
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
+	MASSCUT=3;
+	TSHIFT=0;	
 	INJ_TSHIFT=7;
-	ENERGY_CALIB=calib2008-02-13d;
+	ENERGY_CALIB=alpha_blue2_2_19_2009; 
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: Blue Polarimeter-2"
+	DisableBunch=20;
 
-[10030.301] // Yellow Polarimeter-2
+
+[10018.301] // Yellow Polarimeter-2
 	RESET_ALL=Default;
 	MEASUREMENT_TYPE=NORM;
+	MASSCUT=3;
+	TSHIFT=0;	
 	INJ_TSHIFT=7;
-	ENERGY_CALIB=calib2008-02-13d;
+	ENERGY_CALIB=alpha_yellow2_2_19_2009;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;
 	REFERENCE_RATE=1;
 	TARGET_COUNT_MM=0.00137 ; // target counts/mm conversion
-	COMMENT="Run09"
+	COMMENT="Run09: yellow Polarimeter-2"
+	DisableBunch=20;
+	DisableStrip=13;
+	DisableStrip=15;
+	DisableStrip=16;
+	DisableStrip=17;
+	DisableStrip=18;
+	DisableStrip=19;
+	DisableStrip=20;
+	DisableStrip=21;
+	DisableStrip=23;
+	DisableStrip=24;
+	DisableStrip=32;
+	DisableStrip=49;
+	DisableStrip=50;
+	DisableStrip=51;
+	DisableStrip=52;
+	DisableStrip=53;
+	DisableStrip=54;
+	DisableStrip=55;
+	DisableStrip=56;
+	DisableStrip=57;
+	DisableStrip=59;
+	DisableStrip=60;
+
+[10102.108]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10108.101]@
+	CONFIG=10108.101.config.dat;@
+
+[10110.101]@
+	CONFIG*=10110.101.config.dat;@
+
+[10111.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10112.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10117.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10130.101]@
+	CONFIG*=10130.101.config.dat;@
+
+[10147.101]@
+	CONFIG*=10147.101.config.dat;@
+
+[10176.107]@
+	CONFIG*=10176.107.config.dat;@
+
+[10179.104]@
+	CONFIG*=10179.104.config.dat;@
+
+[10179.107]@
+	CONFIG*=10179.107.config.dat;@
+
+[10179.108]@
+	CONFIG*=10179.108.config.dat;@
+
+[10179.112]@
+	CONFIG=10179.112.config.dat;@
+
+
+[10180.104]@
+	CONFIG*=10180.104.config.dat;@
+
+[10180.205]@
+	CONFIG*=10180.205.config.dat;@
+
+[10201.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10201.101]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10202.002]@
+	CONFIG*=10202.002.config.dat;@
+
+[10202.003]@
+	CONFIG*=10202.003.config.dat;@
+
+[10202.004]@
+	CONFIG*=10202.004.config.dat;@
+
+[10202.102]@
+	CONFIG*=10202.102.config.dat;@
+
+[10203.001]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10203.002]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10207.004]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10207.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10207.106]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10212.102]@
+	CONFIG*=10212.102.config.dat;@
+
+[10213.003]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10219.002]@
+	CONFIG*=10219.002.config.dat;@
+
+[10219.003]@
+	CONFIG*=10219.003.config.dat;@
+
+[10219.004]@
+	CONFIG*=10219.004.config.dat;@
+
+[10219.005]@
+	CONFIG*=10219.005.config.dat;@
+
+[10219.006]@
+	CONFIG*=10219.006.config.dat;@
+
+[10219.104]@
+	CONFIG=10219.104.config.dat;@
+
+[10219.105]@
+	CONFIG=10219.105.config.dat;@
+
+[10220.003]@
+	CONFIG=10220.003.config.dat;@
+
+[10220.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10225.002]@
+	CONFIG=10225.002.config.dat;@
+
+[10225.102]@
+	CONFIG=10225.102.config.dat;@
+
+[10228.001]@
+	CONFIG=10228.001.config.dat;@
+
+[10228.101]@
+	CONFIG=10228.101.config.dat;@
+
+[10228.102]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+[10228.103]@
+	CONFIG=10228.103.config.dat;@
+
+[10228.105]@
+	RUN_STATUS*=Suspicious;@
+	COMMENT*="Unsuccessful deadlayer fit. Don't update config file";@
+
+
+[10305.204]
+	CONFIG=10305.204.config.dat;@
+
+[10337.206]
+	CONFIG=10337.206.config.dat;@
 
 
 
+[10337.306]@
+	CONFIG=10337.306.config.dat;@
+
+[10337.307]@
+	CONFIG=10337.307.config.dat;@
