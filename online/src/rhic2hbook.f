@@ -110,12 +110,12 @@
 	call mninit(5, 6, 7)
 
 	if (nsubrun.ge.0) then
-	    if (icopen(fin(1:len_trim(fin)), len_trim(fin)).ne.0) then
+	  if (icopen(fin(1:len_trim(fin)), len_trim(fin)).ne.0) then
 		print *, 'Cannot open input file ', fin(1:len_trim(fin))
 		stop
-    	    endif
-    	    iquest(10) = 65000
-	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
+      endif
+      iquest(10) = 65000
+	  call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
 c	
 	    irecring = readandfill(nsubrun)
 c	    print *, 'After readandfill (nsubrun>=0) nsubrun = ',nsubrun
@@ -168,6 +168,7 @@ c
 c
 	end if
 c	
+	print *,'The end of RHIC2HBOOK.'
 	stop
 	end
 c
@@ -314,9 +315,48 @@ c
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
 	
 C	names as from upstream of the beam
-c	Si           1-12      23-24	 25-36       37-48	49-60    61-72
+c	Si           1-12      23-24	 25-36       37-48	    49-60    61-72
 	data siname/'UpRight','90Right','DownRight','DownLeft','90Left','UpLeft'/
 C
+
+C	If we are using yellow-1 or yellow-2 (new detectors) skip them in the 
+C	analysis for 2009 run.
+C
+C	isy2 = 0 if Blue-1 and isy2 = 1 if yellow-1
+C	isy2 = 2 if blue-2 and isy2 = 3 if yellow-2
+
+	isy2 = nint(10.*runIdS) - 10*int(runIdS)
+	if (isy2 .eq. 0) then
+	  print *, 'R2HBOOK-INFO : Blue-1'
+	else if (isy2 .eq. 1) then
+	  print *, 'R2HBOOK-INFO : Yellow-1'
+	else if (isy2 .eq. 2) then
+	  print *, 'R2HBOOK-INFO : Blue-2'
+	else if (isy2 .eq. 3) then
+	  print *, 'R2HBOOK-INFO : Yellow-2'
+	endif
+C
+C	Print out some messages about the target...
+C
+	if (targetIdS(1) .eq. 'H') then
+	    print *, '>>>' 
+	    print *, '>>>  INFO: horizonal target used --> ignoring 90-degree detectors'
+	    print *, '>>>' 
+	else if (targetIdS(1) .eq. 'V') then
+	    print *, '>>>'
+	    print *, '>>>  INFO: vertical target used'
+	    print *, '>>>' 
+	else
+	    print *, '>>>'
+	    print *, '>>>  INFO: did not understand targetIdS(1) = ', targetIdS(1)
+	    print *, '>>>'
+	endif
+	if (isy2 .eq. 1 .or. isy2 .eq. 3) then
+	    print *, '>>>'
+	    print *, '>>>  INFO: 2009 ignoring 90-degree detectors for this polarimeter'
+	    print *, '>>>' 
+	endif
+
 c 		Book histogramms
 
 c   Information histogram...
@@ -338,6 +378,10 @@ c   Information histogram...
 	call hbook1(600, 'Energy keV, ALL pol for ALL Si', 128, 0., 1280., 0)
 c		Fill histogramms
 	do i=1,6
+C	Added 3/23/09 - Ron...
+		if (.not.((i.eq.2 .or. i.eq.5)
+     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
+     +		)) then
 	    do j=1,12
 		if (hexist(200+12*(i-1)+j).and.mark(12*(i-1)+j).eq.0) then
 c	Bunch #
@@ -367,31 +411,12 @@ c	Energy keV, pol down
 c
 		endif
 	    enddo
+	  endif
 	enddo
 c		call this for debugging only
 c	call testpol
 
-	if (targetIdS(1) .eq. 'H') then
-	    print *, '>>>' 
-	    print *, '>>>  INFO: horizonal target used --> ignoring 90-degree detectors'
-	    print *, '>>>' 
-	else if (targetIdS(1) .eq. 'V') then
-	    print *, '>>>'
-	    print *, '>>>  INFO: vertical target used'
-	    print *, '>>>' 
-	else
-	    print *, '>>>'
-	    print *, '>>>  INFO: did not understand targetIdS(1) = ', targetIdS(1)
-	    print *, '>>>'
-	endif
-
 c		Get various counts
-
-C	If we are using yellow-2 (new detectors) skip them in the analysis
-C	isy2 = 2 if blue-2 and isy2 = 3 if yellow-2
-
-	isy2 = nint(10.*runIdS) - 10*int(runIdS)
-C	print *, 'R2HBOOK-INFO : isy2 = ',isy2
 
 C	Counts from WFD special scalers
 	call vzero(scnt, 18)
@@ -401,12 +426,19 @@ C	Counts from WFD special scalers
 	unpolS = 0
 	do i=1,6
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3) 
-     +		.and.((i.eq.2).or.(i.eq.5)))) then
+C
+C	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3) 
+C     +		.and.((i.eq.2).or.(i.eq.5))) 
+C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
+C
+		if (.not.((i.eq.2 .or. i.eq.5)
+     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
+     +		)) then
+       print *,'WFD Scalers : Processing detector ',i
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
 			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+3)
-    			unpolS = unpolS + ssscal(3*(12*(i-1)+j-1)+3)
+    		unpolS = unpolS + ssscal(3*(12*(i-1)+j-1)+3)
 			scnt(i,1) = scnt(i,1) + ssscal(3*(12*(i-1)+j-1)+3)
 			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+1)
 			upS    =    upS + ssscal(3*(12*(i-1)+j-1)+1)
@@ -427,8 +459,15 @@ C	Counts from energy histograms
 	unpolE = 0
 	do i=1,6
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
-     +		.and.((i.eq.2).or.(i.eq.5)))) then
+C
+C	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
+C     +		.and.((i.eq.2).or.(i.eq.5))) 
+C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
+C
+		if (.not.((i.eq.2 .or. i.eq.5)
+     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
+     +		)) then
+       print *,'Energy Histograms : Processing detector ',i
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
 			if (hexist(300+12*(i-1)+j)) then
@@ -494,8 +533,14 @@ C	   if (((runIDS-int(runIDS))*100.ge.100)
 C     +		.and.((i.eq.2).or.(i.eq.5))) then 
 C	   else
 C		lets try not to use 90-degree detectors with horizontal targets
-	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
-     +		.and. ((i.eq.2).or.(i.eq.5)))) then
+C	    if (.not.((targetIdS(1) .eq. 'H' .or. isy2 .ge. 3)
+C     +		.and. ((i.eq.2).or.(i.eq.5))) 
+C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
+C
+		if (.not.((i.eq.2 .or. i.eq.5)
+     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
+     +		)) then
+       print *,'ADO : Processing detector ',i
 		do j=1, 120
 		    if (fillpat(j).ne.0) then
 			hn = hi(9290+i, j)
@@ -575,7 +620,7 @@ C	print 100, 'X90 physics', assp, eassp
 C	print 100, 'X90 luminosity', assl, eassl
 
 	call sqass(cnt(5,2), cnt(5,3), cnt(2,3), cnt(2,2), assa, eassa)
-C	print 100, 'X90 accepttence', assa, eassa
+C	print 100, 'X90 acceptance', assa, eassa
 
 	print 100, 'X90 :',assp,eassp,assl,eassl,assa,eassa
 
