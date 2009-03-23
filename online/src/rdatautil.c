@@ -186,7 +186,7 @@ int readandfill_(int* subrun)
 	if ((rec.header.type & REC_TYPEMASK) == REC_SUBRUN) {
 	    curSubrun = rec.subrun.subrun;
 	    if (curSubrun == *subrun) {
-		printf("Processing subrun %d\n", curSubrun);
+//		printf("Processing subrun %d\n", curSubrun);
 		subrun_.timestamp[*subrun] = rec.header.timestamp.time;
 		subrun_.nofsubruns++;
 	    }

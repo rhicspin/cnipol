@@ -61,24 +61,24 @@ void sendresult_(int *recRing) {
     if(!DEVSEND(spec, "get fillNumberM", NULL, &data, stdout, irc))
 	data.get("value", &fillNumberM);
 
+/* Now done in rhicpol, after data file is closed. 3/19/2009
 // Set the new run number in CDEV...
-
 //	Update runId only if it really corresponds to fillNumber
     if ((int)(poldat_.runIdS) == fillNumberM) {
 	 data.insert("value", poldat_.runIdS);
 //	Update runIdS or emitRunIdS 
 //	3/6/09 note: emittance scans are NOT analyzed by this program, so
-//	the update of emitRunIdS shoudl never be executed here.
-	 if ((((int)(10*poldat_.runIdS)) % 10) >= 4) {
-	    DEVSEND(pol, "set emitRunIdS", &data, NULL, stdout, irc);
-        printf("CDEV: set emitRunIdS %9.3f\n",poldat_.runIdS);
-	 } 
-	 else {
+//	the update of emitRunIdS should never be executed here.
+//	 if ((((int)(10*poldat_.runIdS)) % 10) >= 4) {
+//	    DEVSEND(pol, "set emitRunIdS", &data, NULL, stdout, irc);
+//        printf("CDEV: set emitRunIdS %9.3f\n",poldat_.runIdS);
+//	 } 
+//	 else {
 	    DEVSEND(pol, "set runIdS", &data, NULL, stdout, irc);
         printf("CDEV: set runIdS %9.3f\n",poldat_.runIdS);
-	 }
+//	 }
     }
-
+*/
     data.insert("value", poldat_.startTimeS);
     DEVSEND(pol, "set startTimeS", &data, NULL, stdout, irc);
     printf("CDEV: set startTimeS %d\n",poldat_.startTimeS);

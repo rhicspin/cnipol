@@ -11,7 +11,8 @@ macro main run='-5'
 *   oldir=$ENV(ONLINEDIR)
 
 * where is the spin pattern
-spinfile='/usr/local/polarim/config/log/spinpat.dat'
+*spinfile='/usr/local/polarim/config/log/spinpat.dat'
+ spinfile=$ENV(LOGDIR)//'/spinpat.dat'
 
 ** open ps output file 
 *   psfile=ps/test_onli[run].ps
@@ -277,7 +278,6 @@ spinfile='/usr/local/polarim/config/log/spinpat.dat'
    COLOR_TABLE 10 0.6875 0.7656 0.8672 | light steel blue
    fill = $RSIGMA(int([run]))
    glo/cre prun $RSIGMA(int(10*([run]-int([run]))))
-**   [prun] = int(10*[prun])
 
 * ********************************
 * asymmetry plots
@@ -443,12 +443,15 @@ spinfile='/usr/local/polarim/config/log/spinpat.dat'
    else
      peakbin = $eval($format(peakpar(2),I3.3) - [xmin] + 2)
    endif
+
    peak = $eval(tcont([peakbin]))
    mess '** Target peak: '//[peak]//' '//[peakbin]//' '//$eval(peakpar(2))
    if ([hid]=3001) then
-     title_gl 'H Target Peak Position = '//[peak] U
+*     title_gl 'H Target Peak Position = '//[peak] U
+     title_gl 'H Target Position' U
    else
-     title_gl 'V Target Peak Position = '//[peak] U 
+*     title_gl 'V Target Peak Position = '//[peak] U 
+    title_gl 'V Target Position' U
    endif
 
 ** rescale target position to superimpose on count rate
