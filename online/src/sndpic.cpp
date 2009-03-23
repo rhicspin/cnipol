@@ -76,10 +76,14 @@ int main(int argc, char **argv)
 	group.pend(1.0);
 	if (group.allFinished()) {
 	 printf("SNDPIC - Finished took %d seconds to send. Time stamp = %d\n",i,tm);
+	 irc = 0;
 	 break;
 	}
     }    
-    if (i == MAXWAIT) printf("SNDPIC-Error picture was not sent in %d seconds. Time stamp = %d\n", i,tm);
+    if (i == MAXWAIT) {
+	 printf("SNDPIC-Error picture was not sent in %d seconds. Time stamp = %d\n", i,tm);
+	 irc = -1;
+	}
 
 //	irc = pol.send("set plotData", &data, NULL);
 //	if (irc != 0) printf("SNDPIC-Error picture was not sent in 10 seconds\n");
@@ -88,5 +92,5 @@ int main(int argc, char **argv)
 
     free(ptr);
     close(file);
-    return 0;
+    return irc;
 }

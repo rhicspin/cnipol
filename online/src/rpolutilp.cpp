@@ -16,6 +16,53 @@ extern int iDebug;
 //**************************************************
 extern int NoADO;
 
+int getMuxSetting(int N)
+// Get mux setting to find out which polarimeter (1 or 2) is being used.
+// "N" is the ring number (0 = yellow, 1 = blue). The mux returns 1 or 2
+// or 0 if not active. A -1 is returned for an error. The default is 1.
+// The returned value is 0 or 1 so that it can be used as an array index.
+{
+ char muxCDEVName[2][20] = {"polarMux.RHIC.yel", "polarMux.RHIC.blu"};
+ int polnum;
+ int irc;
+ cdevData data;
+ 
+ cdevDevice & mux = cdevDevice::attachRef(muxCDEVName[N]);
+ DEVSEND(mux, "get polNumM", NULL, &data, LogFile, irc);
+ data.get("value", &polnum);
+ polnum--;
+ if (polnum != 1) polnum = 0;
+ 
+ return(polnum);
+}
+
+extern "C" {
+	void sendRunIdS(int N);
+}
+
+void sendRunIdS(int N)
+{
+ char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
+ char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
+ int irc = 0;
+ int fillNumberM = 0;
+ cdevData data;
+
+ cdevDevice & pol = cdevDevice::attachRef(polCDEVName[N]);
+ cdevDevice & spec =  cdevDevice::attachRef(specCDEVName[N]);
+
+ if(!DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc))
+ data.get("value", &fillNumberM);
+
+//	Update runId only if it really corresponds to fillNumber
+ if ((int)(polData.runIdS) == fillNumberM) {
+  data.insert("value", polData.runIdS);
+  DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
+  fprintf(LogFile,"RHICPOL-INFO : set runIdS %9.3f\n",polData.runIdS);
+ }
+ else fprintf(LogFile,"RHICPOL-INFO : %9.3f is not for this fill.\n",polData.runIdS);
+
+}
 
 extern "C" {
     int getJetBits(void);
@@ -99,10 +146,13 @@ extern "C" {
 
 void getCarbTarg(carbTargStat * targstat)
 {
-    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
+    char targetCDEVName[2][4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget",
+    		"pol2.y-htarget", "pol2.y-vtarget", "pol2.b-htarget", "pol2.b-vtarget"};
+//    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
     cdevData data;
     int irc=0;
-    int i;
+    int N, i;
+	int mux;
 
 
 //***************************************************************
@@ -113,13 +163,17 @@ void getCarbTarg(carbTargStat * targstat)
  }
 //***************************************************************
 
-
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : GetCarbTarget\n");
+// Get the mux setting...
+    N = 0;
+    if (recRing & REC_BLUE) N = 1; 
+    mux = getMuxSetting(N);
+
 //	create devices
-    cdevDevice & yhtarget = cdevDevice::attachRef(targetCDEVName[0]);
-    cdevDevice & yvtarget = cdevDevice::attachRef(targetCDEVName[1]);
-    cdevDevice & bhtarget = cdevDevice::attachRef(targetCDEVName[2]);
-    cdevDevice & bvtarget = cdevDevice::attachRef(targetCDEVName[3]);
+    cdevDevice & yhtarget = cdevDevice::attachRef(targetCDEVName[mux][0]);
+    cdevDevice & yvtarget = cdevDevice::attachRef(targetCDEVName[mux][1]);
+    cdevDevice & bhtarget = cdevDevice::attachRef(targetCDEVName[mux][2]);
+    cdevDevice & bvtarget = cdevDevice::attachRef(targetCDEVName[mux][3]);
 
     if(!DEVSEND(yhtarget, "get positionS", NULL, &data, LogFile, irc))
 	data.get("value", targstat->carbtarg[0], sizeof(targstat->carbtarg[0]));
@@ -194,12 +248,15 @@ void getAdoInfo(char mode)
     char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
     char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
     char bucketsCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
-    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
+    char targetCDEVName[2][4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget",
+    		"pol2.y-htarget", "pol2.y-vtarget", "pol2.b-htarget", "pol2.b-vtarget"};
+//    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
     char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
 //    char muxCDEVName[2][20] = {"polarMux.RHIC.yel", "polarMux.RHIC.blu"};
 
     int irc, N;
 //    int iTarget = -1;
+	int mux;
 
     cdevData data;
 
@@ -210,9 +267,12 @@ void getAdoInfo(char mode)
     N = 0;
     if (recRing & REC_BLUE) N = 1; 
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : AdoInfo - %s\n", polCDEVName[N]);
+// Get the mux setting...
+	mux = getMuxSetting(N);
+
 //	create devices
-    cdevDevice & htarget = cdevDevice::attachRef(targetCDEVName[2*N]);
-    cdevDevice & vtarget = cdevDevice::attachRef(targetCDEVName[2*N+1]);
+    cdevDevice & htarget = cdevDevice::attachRef(targetCDEVName[mux][2*N]);
+    cdevDevice & vtarget = cdevDevice::attachRef(targetCDEVName[mux][2*N+1]);
     cdevDevice & spec =  cdevDevice::attachRef(specCDEVName[N]);
     cdevDevice & buckets =  cdevDevice::attachRef(bucketsCDEVName[N]);
     cdevDevice & wcm =  cdevDevice::attachRef(wcmCDEVName[N]);
@@ -314,15 +374,22 @@ extern "C" {
 
 void GetTargetEncodings(long *res)
 {
-    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
+    char targetCDEVName[2][4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget",
+    		"pol2.y-htarget", "pol2.y-vtarget", "pol2.b-htarget", "pol2.b-vtarget"};
+//    char targetCDEVName[4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};	
     int irc, N;
+	int mux;
     cdevData data;
 
 //	determine the ring
     N = 0;
     if (recRing & REC_BLUE) N = 1; 
-    cdevDevice & htarget = cdevDevice::attachRef(targetCDEVName[2*N]);
-    cdevDevice & vtarget = cdevDevice::attachRef(targetCDEVName[2*N+1]);
+
+// Get the mux setting...
+	mux = getMuxSetting(N);
+
+    cdevDevice & htarget = cdevDevice::attachRef(targetCDEVName[mux][2*N]);
+    cdevDevice & vtarget = cdevDevice::attachRef(targetCDEVName[mux][2*N+1]);
     irc = 0;
     if(!DEVSEND(htarget, "get positionEncM", NULL, &data, LogFile, irc))
         data.get("value", res);

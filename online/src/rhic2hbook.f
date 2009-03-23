@@ -351,7 +351,7 @@ C
 	    print *, '>>>  INFO: did not understand targetIdS(1) = ', targetIdS(1)
 	    print *, '>>>'
 	endif
-	if (isy2 .eq. 1 .or. isy2 .eq. 3) then
+	if (isy2.eq.1 .or. isy2.eq.2 .or. isy2.eq.3) then
 	    print *, '>>>'
 	    print *, '>>>  INFO: 2009 ignoring 90-degree detectors for this polarimeter'
 	    print *, '>>>' 
@@ -380,8 +380,8 @@ c		Fill histogramms
 	do i=1,6
 C	Added 3/23/09 - Ron...
 		if (.not.((i.eq.2 .or. i.eq.5)
-     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
-     +		)) then
+     +		.and. (targetIdS(1).eq.'H' 
+     +		.or. isy2.eq.1 .or. isy2.eq.2 .or. isy2.eq.3))) then
 	    do j=1,12
 		if (hexist(200+12*(i-1)+j).and.mark(12*(i-1)+j).eq.0) then
 c	Bunch #
@@ -432,8 +432,8 @@ C     +		.and.((i.eq.2).or.(i.eq.5)))
 C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
 C
 		if (.not.((i.eq.2 .or. i.eq.5)
-     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
-     +		)) then
+     +		.and. (targetIdS(1).eq.'H' 
+     +		.or. isy2.eq.1 .or. isy2.eq.2 .or. isy2.eq.3))) then
        print *,'WFD Scalers : Processing detector ',i
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
@@ -465,8 +465,8 @@ C     +		.and.((i.eq.2).or.(i.eq.5)))
 C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
 C
 		if (.not.((i.eq.2 .or. i.eq.5)
-     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
-     +		)) then
+     +		.and. (targetIdS(1).eq.'H' 
+     +		.or. isy2.eq.1 .or. isy2.eq.2 .or. isy2.eq.3))) then
        print *,'Energy Histograms : Processing detector ',i
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
@@ -538,8 +538,8 @@ C     +		.and. ((i.eq.2).or.(i.eq.5)))
 C     +		.and.(.not.(isy2.eq.1 .and. ((i.eq.2).or.(i.eq.5))))) then
 C
 		if (.not.((i.eq.2 .or. i.eq.5)
-     +		.and. (targetIdS(1).eq.'H' .or. isy2.eq.1 .or. isy2.eq.3)
-     +		)) then
+     +		.and. (targetIdS(1).eq.'H' 
+     +		.or. isy2.eq.1 .or. isy2.eq.2 .or. isy2.eq.3))) then
        print *,'ADO : Processing detector ',i
 		do j=1, 120
 		    if (fillpat(j).ne.0) then
