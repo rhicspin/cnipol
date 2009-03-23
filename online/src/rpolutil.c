@@ -1488,7 +1488,7 @@ void readWFD()
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
 	    ii = 1;
 	    CMC_ResetChain(ch);
-    	    CMC_Add2Chain(ch, CMC_CMDDATA | 0);	// better go to internal clocks for readout
+    	CMC_Add2Chain(ch, CMC_CMDDATA | 0);	// better go to internal clocks for readout
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));	    
 	    for (j=0; j<4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
 		CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));	// select virtex
@@ -1501,39 +1501,39 @@ void readWFD()
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | 15);		// 15 = 16 - 1
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 1));		// read histograms	21-1536
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | 1535);	// 1535 = 1536 - 1
-	        ii += 1557;
+	    ii += 1557;
 	    }
 	    j = RP_CommitChain(ch, Crate[cr]);
-    	    if (j < 0) {
+    	if (j < 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d error %d (%s)\n", cr, i, -j, strerror(-j));
 		continue;
 	    }
-    	    if (j != ii) {
+    	if (j != ii) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d wrong number of words  %d (%d)\n", cr, i, j, ii);
-	        continue;
+	    continue;
 	    }
-    	    j = checkChainResult(ch, cr);
+    	j = checkChainResult(ch, cr);
 	    if (j != 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d - %d bad responses\n", cr, i, j);
-	        continue;
+	    continue;
 	    }
 //	process the result
 	    ii = 1; // to account for select clock command	    
 	    for (j=0; j<4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
-	        rec.siNum = WFDinCAMAC[cr][i].si[j];
+	    rec.siNum = WFDinCAMAC[cr][i].si[j];
 		rec.csr = ch->rdata[ii+1] & CMC_DMASK;
 		rec.trg = ch->rdata[ii+2] & CMC_DMASK;
 		rec.win = ch->rdata[ii+3] & CMC_DMASK;
 	        for(k=0; k<8; k++) {
-	    	    rec.scalers[k] = (ch->rdata[ii+2*k+5] & 0xFFFF) + 
+	    	rec.scalers[k] = (ch->rdata[ii+2*k+5] & 0xFFFF) + 
 			((ch->rdata[ii+2*k+6] & 0xFFFF) << 16);
-	    	    if (k<3) cnt+=rec.scalers[k];
+	    	if (k<3) cnt+=rec.scalers[k];
 		}
 	        for(k=0; k<1536; k++) {
 		    rec.hist[k] = ch->rdata[ii+k+21] & CMC_DMASK;
 	    	if (k<128) cnt1 += rec.hist[k];
 		}
-	        ii += 1557;
+	    ii += 1557;
 		rec.header.timestamp.time = time(NULL);
 		polWrite(&rec.header, (long *)&rec.siNum);
 	    }
@@ -1602,29 +1602,29 @@ void *readThread(void *arg)
 	CMC_ResetChain(ch);
 	CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// better go to internal clocks for readout	0
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
-	CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);		// select memory controller			1
+	CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);		// select memory controller 1
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
 	CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// disable memory functions
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));	
 	CMC_Add2Chain(ch, CMC_CMDDELAY | 10);		// delay ~ 25 us
-	CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 0));		// read the address				3
-	CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));		//						4
+	CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 0));		// read the address	3
+	CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));		// read the address	4
 	CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// clear the address
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));	
 	CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// clear the address
 	CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));	
 	switch (ReadMode[0]) {
 	case 'D' :
-	    CMC_Add2Chain(ch, CMC_CMDDATA | 6);		// enable cash & both edges 
+	    CMC_Add2Chain(ch, CMC_CMDDATA | 6);		// enable cache & both edges 
 	    break;
 	case 'A' :
-	    CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cash		
+	    CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cache		
 	    break;
 	default :
 	    if (ReadMode[1] < '4') {
-		CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cash		
+		CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cache		
 	    } else {
-		CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// no cash for standard read
+		CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// no cache for standard read
 	    }
 	    break;	
 	}
@@ -1646,7 +1646,7 @@ void *readThread(void *arg)
 	memset(delim, 0, sizeof(delim));
 	type = REC_NONE;
 	tlen = 0;
-//	read cicle
+//	read cycle
 	for (l = 0; l < len && err<MAXERR; l += rpt) {
 //		Read
 	    rpt = (len - l < BSIZE) ? len - l : BSIZE;
@@ -1655,29 +1655,29 @@ void *readThread(void *arg)
 	    case 'D' :
 		CMC_Add2Chain(ch, CMC_CMDLOADLOOP | (rpt+1)/2);
 		CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 1, 2, i, 0, 0));
-    		if (!(rpt & 1)) CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 0, i, 0, 0));
+    	if (!(rpt & 1)) CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 0, i, 0, 0));
 		break;
 	    case 'A' :
 		CMC_Add2Chain(ch, CMC_CMDLOADLOOP | rpt);
 		CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 1, i, 0, 0));
 		break;
 	    default :
-    		CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 0, i, 0, 0));
+    	CMC_Add2Chain(ch, CMC_FASTNFA((ReadMode[1] - '0'), 0, 0, 0, 0, 0, i, 0, 0));
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | (rpt - 1));
 	    }
 	    j = RP_CommitChain(ch, Crate[cr]);
-    	    if (j < 0) {
+    	if (j < 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read memory WFD %d.%d error %d (%s)\n", cr, i, -j, strerror(-j));
 		err++;
 		rpt = 0;
 		continue;
 	    }
-    	    if (j != rpt) {
+    	if (j != rpt) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read memory WFD %d.%d wrong number of words  %d (%d)\n", cr, i, j, rpt);
 		err++;
 		rpt = j;
 	    }
-    	    j = checkChainResult(ch, cr);
+    	j = checkChainResult(ch, cr);
 	    if (j != 0) fprintf(LogFile, "RHICPOL-ERROR : Read memory WFD %d.%d - %d bad responses\n", cr, i, j);
 //		Process
 	    for(j=0; j<rpt && err < MAXERR; j++) {
