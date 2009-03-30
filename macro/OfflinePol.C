@@ -442,7 +442,6 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 	      P_alt[i]     *= 0.99;
 	      }*/
 
-
 	    // Time decorder should be at the end of buffer read loop
 	    Time[i] = TimeDecoder();
 
@@ -490,7 +489,7 @@ OfflinePol::GetData(Char_t * DATAFILE, Int_t Color){
 
 Float_t 
 CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db){
-  return b ? a/b*sqrt((da/a)*(da/a)-(db/b)*(db/b)) : 0;
+  return b*a ? a/b*sqrt((da/a)*(da/a)-(db/b)*(db/b)) : 0;
 }
 
 //
@@ -588,7 +587,7 @@ OfflinePol::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam, Char_t subtitle[]){
   ymin=-70 ; ymax=-20;
   if (RUN==6) {ymin=20; ymax=80;}
   if (RUN==8) {ymin=20; ymax=80;}
-  if (RUN==9) {ymin=-70; ymax=0;}
+  if (RUN==9) {ymin=20; ymax=80;}
 
   // determine xmin, xmax, ymin, ymax of frame
   switch (Mode) {
