@@ -154,6 +154,8 @@ readdb(double RUNID) {
   } else if (RUNID>=7400) { // Run06
       runinfo.Run=6;
     for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
+  } else if (RUNID>=10018) { // Run09
+      runinfo.Run=9;
   }
 
   // Spin Pattern Recoverly
