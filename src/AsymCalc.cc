@@ -687,7 +687,7 @@ CumulativeAsymmetry(){
 // Return      : writes out n in binary 
 //
 void binary_zero(int n, int mb) {
-  int X=pow(double(2),double(mb-1));
+  int X=int(pow(double(2),double(mb-1)));
 
   for (int i=0; i<mb; i++) {
     int j = n << i & X ? 1 : 0 ;
@@ -853,6 +853,8 @@ PrintRunResults(StructHistStat hstat){
     printf(" Polarization (sinphi)       = %10.4f%9.4f\n",anal.sinphi[0].P[0],anal.sinphi[0].P[1]);
     printf(" Phase (sinphi)  [deg.]      = %10.4f%9.4f\n",anal.sinphi[0].dPhi[0]*R2D,anal.sinphi[0].dPhi[1]*R2D);
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi[0].chi2);
+    printf(" Polarization (bunch ave)    = %10.4f%9.4f\n",basym.ave.Ax[0]/anal.A_N[1], basym.ave.Ax[1]/anal.A_N[1]);
+    printf(" Phase (bunch ave)           = %10.4f%9.4f\n",basym.ave.phase[0]*R2D, basym.ave.phase[1]*R2D);
     if (runinfo.Run==5)   printf(" profile error (absolute)[%] = %10.4f\n",anal.profile_error*fabs(anal.P[0]));
     printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
@@ -1050,6 +1052,7 @@ WeightedMean(float A[N], float dA[N], int NDAT){
   }
 
   WM = dA2 == 0 ? 0 : sum1/sum2 ;
+
   return WM ;
 
 } // end-of-WeightedMean()
@@ -1059,7 +1062,7 @@ WeightedMean(float A[N], float dA[N], int NDAT){
 // Class name  : 
 // Method name : WeightedMeanError(float dA[N], int NDAT)
 //
-// Description : calculate weighted mean error 
+// Description : calculate weighted mean error. A[i] is skipped if dA[i]=0.
 // Input       : float dA[N], int NDAT
 // Return      : weighted mean error
 //
@@ -1377,6 +1380,27 @@ AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]){
 }
 
 
+
+//
+// Class name  : 
+// Method name : calcDivisionError
+//
+// Description : Calculates error propagation of x/y for (x,dx) and (y,dy)
+//             : 
+// Input       : float x, float y, float dx, float dy
+// Return      : error propagation of x/y
+//
+float 
+calcDivisionError(float x, float y, float dx, float dy){
+
+  if (x*y) {
+    return x/y * sqrt ( dx*dx/x/x + dy*dy/y/y );
+  }else{
+    return 0;
+  }
+}
+
+
 //
 // Class name  : 
 // Method name : calcBunchAsymmetry
@@ -1393,6 +1417,7 @@ calcBunchAsymmetry(){
     BunchAsymmetry(0,  basym.Ax90[0], basym.Ax90[1]);
     BunchAsymmetry(1,  basym.Ax45[0], basym.Ax45[1]);
     BunchAsymmetry(2,  basym.Ay45[0], basym.Ay45[1]);
+
 
     // Define TH2F histograms first
     Asymmetry->cd();
@@ -1456,6 +1481,10 @@ calcBunchAsymmetry(){
 
     }// end-of-for(spin) loop
 
+
+    // bunch asymmetry averages
+    calcBunchAsymmetryAverage();
+    
 
   return 0;
 
@@ -1527,6 +1556,117 @@ BunchAsymmetry(int Mode, float A[], float dA[]){
   return 0;
 
 }
+
+//
+// Class name  : 
+// Method name : calcBunchAsymmetryAverage(){
+//
+// Description : calculate average left-right and top-bottom asymmetry from bunch by bunch asymmetris.
+//             : also calculate phase from LR and Top-Bottom asymmetry
+// Input       : 
+// Return      : 
+//
+void
+calcBunchAsymmetryAverage(){
+
+  // flip the sign of negative spin bunches
+  for (int i=0; i<NBUNCH; i++) {
+    if (spinpat[i]==-1) {
+      basym.Ax90[0][i] *= -1;
+      basym.Ax45[0][i] *= -1;
+      basym.Ay45[0][i] *= -1;
+    }
+  };
+
+  // Calculate weighgted beam for Ax90, Ax45, Ay45 combinations
+  calcWeightedMean(basym.Ax90[0], basym.Ax90[1], NBUNCH, basym.ave.Ax90[0], basym.ave.Ax90[1]);
+  calcWeightedMean(basym.Ax45[0], basym.Ax45[1], NBUNCH, basym.ave.Ax45[0], basym.ave.Ax45[1]);
+  calcWeightedMean(basym.Ay45[0], basym.Ay45[1], NBUNCH, basym.ave.Ay45[0], basym.ave.Ay45[1]);
+
+  // Calculate Left-Right asymmetry using Ax90 and Ax45
+  calcLRAsymmetry(basym.ave.Ax90, basym.ave.Ax45, basym.ave.Ax[0], basym.ave.Ax[1]);
+  
+  // Calculate Top-Bottom asymmetry using Ay45 
+  basym.ave.Ay[0] = basym.ave.Ay45[0] * M_SQRT2;
+  basym.ave.Ay[1] = basym.ave.Ay45[1] * M_SQRT2;
+
+  // Calculate phase (spin pointing vector w.r.t. vertical axis) from Ax and Ay
+  if (basym.ave.Ay[0]) {
+    float r_xy = basym.ave.Ax[0]/basym.ave.Ay[0];
+    basym.ave.phase[0] = atan(r_xy) - M_PI_2;
+  }else{
+    basym.ave.phase[0] = 0;
+  }
+  basym.ave.phase[1] = calcDivisionError(basym.ave.Ax[0],basym.ave.Ay[0],basym.ave.Ax[1],basym.ave.Ay[1]);
+  basym.ave.phase[1] = atan(basym.ave.phase[1]) ? fabs( atan(basym.ave.phase[1]) - M_PI_2 ) : 0 ;
+
+  // Calculate Polarization
+  if (anal.A_N[0]){
+    anal.basym[0].P[0] = basym.ave.Ax[0]/anal.A_N[0];
+    anal.basym[0].P[1] = basym.ave.Ax[1]/anal.A_N[0];
+  } else { anal.basym[0].P[0] = anal.basym[0].P[1] = 0; };
+
+
+    cout << "========== bunch asymmetry average ===========" << endl;
+    cout << basym.ave.Ax90[0] << " " << basym.ave.Ax90[1] << " " 
+	 << basym.ave.Ax45[0] << " " << basym.ave.Ax45[1] << " " 
+	 << basym.ave.Ay45[0] << " " << basym.ave.Ay45[1] << " " << endl;
+    cout << basym.ave.Ax[0]   << " " << basym.ave.Ax[1] << endl;
+    cout << "========== bunch asymmetry average ===========" << endl;
+
+
+    return ;
+
+}
+
+
+
+
+
+
+
+//
+// Class name  : 
+// Method name : calcLRAsymmetry
+//
+// Description : Calculate Left-Right asymmetry from X90 and X45 asymmetry combination
+//             : 
+// Input       : float X90[2], float X45[2]
+// Return      : LR asymmetry and error : float &A, float &dA
+//
+void
+calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA){
+
+  float X45[2]={0,0};
+
+  // give sqrt(2) weight to X45 asymmetry
+  X45[0] = X45_tmp[0] * M_SQRT2;
+  X45[1] = X45_tmp[1] * M_SQRT2;
+
+  // if horizontal target or X90 is zero, then return X45*sqrt(2) as LR asymmetry
+  if (tgt.VHtarget) { A=X45[0]; dA=X45[1]; return ;}
+
+  // define error squares
+  float dX45 = X45[1]*X45[1];
+  float dX90 = X90[1]*X90[1];
+
+  // calculate weighted mean of X90 and X45 asymetries
+  if (dX90+dX45 != 0 ) {
+    A  = (X90[0]*dX45 + X45[0]*dX90)/(dX90 + dX45);
+    dA = (X90[1]*X45[1])/sqrt(dX90 + dX45);
+  }else{
+    printf(" WARNING: denominator is zero in calcLRAsymmetry(). Assign zero LR asymmetry.");
+    A = dA = 0;
+  }
+
+  return ;
+
+}
+
+
+
+
+
 
 
 //

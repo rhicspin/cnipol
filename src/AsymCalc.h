@@ -1,6 +1,7 @@
 // Header file for AsymCalc
 // Author   : Itaru Nakagawa
 // Creation : 02/25/2006         
+#include <math.h>
 #include "AsymROOT.h"
 
 #ifndef ASYM_CALC_H
@@ -52,10 +53,18 @@ class AsymFit
 //===========================================================================
 //                          Bunch by Bunch
 //===========================================================================
-struct BunchAsym {
+struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
   float Ax90[2][NBUNCH];
   float Ax45[2][NBUNCH];
   float Ay45[2][NBUNCH];
+  struct Ave {
+    float Ax90[2];  // bunch averaged asymmetry 
+    float Ax45[2];
+    float Ay45[2];
+    float Ax[2];   // left-right average asymmetry 
+    float Ay[2];   // top-bottom average asymmetry
+    float phase[2];// spin vector angle w.r.t vertical axis [rad]
+  } ave;
 } ;
 extern BunchAsym basym;
 struct StructSpeLumi {
@@ -71,6 +80,12 @@ int calcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 int BunchAsymmetry(int, float A[], float dA[]);
+
+// bunch asymmetry average routines
+void calcBunchAsymmetryAverage();
+void calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
+float calcDivisionError(float x, float y, float dx, float dy);
+
 
 
 
