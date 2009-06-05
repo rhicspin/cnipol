@@ -12,7 +12,7 @@
 
 #define Debug 0
 
-const Int_t N=2000;
+const Int_t N=10000;
 Int_t RUN=5;
 
 void GetScale(Float_t *x, Int_t N, Float_t margin, Float_t & min, Float_t & max);
@@ -188,12 +188,13 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
 
   Float_t xmin, xmax, ymin, ymax;
   Float_t margin=0.05;
+  GetScale(RunID, ndata, margin, xmin, xmax);  ymin=0; ymax=100;
   Char_t xtitle[100],ytitle[100];
   Char_t title[100],htitle[100];
   sprintf(title,"DeadLayer History (%s)",Beam);
 
   switch (Mode) {
-  case 10:
+  case 10: // Dlayer vs. RunID 
     GetScale(RunID, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=50  ; ymax=75;}
@@ -203,60 +204,66 @@ DlayerMonitor::DrawFrame(Int_t Mode, Int_t ndata, Char_t *Beam){
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title,"DeadLayer History (%s)",Beam);
     break;
-  case 20:
-    xmin=0.0 ; xmax=1.5;
+  case 20: // Dlayer vs. ReadRate
+    xmin=0.0 ; xmax=5.0;
     if (RUN==5) {ymin=20  ; ymax=65;}
     if (RUN==6) {ymin=60  ; ymax=75;}
     if (RUN==8) {ymin=70  ; ymax=100; xmax=10;}
+    if (RUN==9) {ymin=30  ; ymax=100; xmax=15;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"DeadLayer Thickness [ug/cm^2]");
     sprintf(title," DeadLayer Rate Dependence (%s)",Beam);
     break;
-  case 30:
+  case 30: // Average t0 vs. RunID
     GetScale(RunID, ndata, margin, xmin, xmax);
     GetScale(AveT0, ndata, margin, ymin, ymax);
     if (RUN==6) {ymin=-20  ; ymax=0;}
+    if (RUN==9) {ymax=-8;}
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"t0 Average [ns]");
     sprintf(title," t0 Average History (%s)",Beam);
     break;
-  case 40:
+  case 40: // Delta t0 vs. RunID
     GetScale(RunID, ndata, margin, xmin, xmax);
     GetScale(DeltaT0, ndata, margin, ymin, ymax);
     sprintf(xtitle,"Fill Number");
     sprintf(ytitle,"Delta_t0 [ns]");
     sprintf(title," Delta_t0 History (%s)",Beam);
     break;
-  case 50:
+  case 50: // Average t0 vs. ReadRate
     xmin=0.0 ; xmax=1.5;
     if (RUN==5) {ymin=-20  ; ymax=20;}
     if (RUN==6) {ymin=-20  ; ymax=0;}
     if (RUN==8) {ymin=-20  ; ymax=0; xmax=10;}
+    if (RUN==9) {ymin=-25  ; ymax=0; xmax=15;}
     sprintf(xtitle,"Event Rate [MHz]");
     sprintf(ytitle,"t0 Average [ns]");
     sprintf(title," t0 Average Rate Dependence (%s)",Beam);
     break;
-  case 60:
+  case 60: // ReadRate vs. RunID
     GetScale(RunID, ndata, margin, xmin, xmax);
     ymin=0.0 ; ymax=1.5;
     if (RUN==8) {ymax=10;}
+    if (RUN==9) {ymax=15;}
     sprintf(ytitle,"Event Rate [MHz]");
     sprintf(xtitle,"Fill Number");
     sprintf(title," Event Rate History",Beam);
     break;
-  case 100:
+  case 100: // Average t0 vs. DeadLayer
     GetScale(AveT0, ndata, margin, xmin, xmax);
     if (RUN==5) {ymin=20  ; ymax=65; xmax= Beam=="Blue" ? -6 : xmax; }
     if (RUN==6) {ymin=60  ; ymax=75;}
     if (RUN==8) {ymin=60  ; ymax=90;}
+    if (RUN==9) {ymin=60  ; ymax=90;}
     sprintf(xtitle,"t0 Average [ns]");
     sprintf(ytitle,"Deadlayer Thickness [ug/cm^2]");
     sprintf(title," t0-deadlayer Correlation (%s)",Beam);
     break;
-  case 101:
+  case 101: //Deadlayer vs. Average t0
     if (RUN==5) {xmin=-5; xmax=8; ymin=20; ymax=65;}
     if (RUN==6) {xmin=-20 ; xmax=-14;  ymin=58; ymax=80;
     if (RUN==8) {ymin=70 ; ymax=100;}
+    if (RUN==9) {ymin=70 ; ymax=100;}
     if (Beam=="Blue") {xmin=-16; xmax=-10;}
     }
     sprintf(xtitle,"t0 Average [ns]");
@@ -389,9 +396,9 @@ DlayerMonitor::DlayerMonitor()
     BlueAndYellowBeams(20, CurC, ps);   // Rate vs. Deadlayer
     BlueAndYellowBeams(30, CurC, ps);   // Fill vs. Average t0
     BlueAndYellowBeams(40, CurC, ps);   // Fill vs. Delta_t0
-    BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
+    //    BlueAndYellowBeams(50, CurC, ps);   // Rate vs. Averega t0
     BlueAndYellowBeams(60, CurC, ps);   // Event Rate History
-    BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer
+    //    BlueAndYellowBeams(100, CurC, ps);  // Average T0 vs. Deadlayer (corrected)
     BlueAndYellowBeams(101, CurC, ps);  // Average T0 vs. Deadlayer (zoom)
 
     cout << "ps file : " << psfile << endl;
