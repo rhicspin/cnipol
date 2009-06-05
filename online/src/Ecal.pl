@@ -217,6 +217,7 @@ sub tunit {
 
 # Start the run...
 sub p_start {
+  $nloop = 0;	# Seconds waiting for WFD read out to finish
   $info = "Starting run...";
 # First, get the run parameters and switches...
   $thisruntime = $runtime * $timeunits;
@@ -320,6 +321,12 @@ sub p_stop {
       $dbgid = substr(`ps ax | grep cnidebug`,0,5);
       system "kill -9 $dbgid";
     }
+	while (`ps -p $pid_rpol --noheading` != 0) {
+	  $nloop++;
+      $info = "Waiting for readout to finish ".$nloop;
+	  $mw->idletasks;
+	  sleep(1);
+	}
   }
 # But always do this...
 # The order here is IMPORTANT, and necessary.
@@ -327,7 +334,7 @@ sub p_stop {
   system "kill -s INT $pid_tail";       # Second, kill the tail process
   close(MESS);                          # Third, close the "MESS" file
 
-  $tdiff = time() - $starttimeI - $wait4read;
+  $tdiff = time() - $starttimeI - $wait4read - $nloop;
   $info = "Stopped...  Run Time was ".$tdiff." sec.";
   $start_b->configure(-state=>"normal");
   $start_b->configure(-foreground=>'ForestGreen');
@@ -377,16 +384,22 @@ sub rselect {
 
 sub TimeInfoMessage() {
   if ($running == 1) {
-	$tdiff = time() - $starttimeI;
-	$info = "Running .... data ".$runname."      Started : ".$starttime."   (".$tdiff." sec completed so far)";
-    $mw->idletasks;
+	if ($nloop == 0) {
+	  $tdiff = time() - $starttimeI;
+	  $info = "Running .... data ".$runname."      Started : ".$starttime."   (".$tdiff." sec completed so far)";
+      $mw->idletasks;
+	}
+    else {
+      $info = "Waiting for readout to finish ".$nloop;
+	  $nloop++;
+	}
 
-#    if ($DEBUG != 0) {
       if ($tdiff >= $thisruntime+$wait4read) {
-        $text->insert('end',"Stopped due to timeout.");
-        p_stop();
+	    if ($nloop == 0) {
+          $text->insert('end',"Stopping due to timeout.\n");
+	      $nloop++;
+	    }
       }
-#    }
     $mw->after(1000, \&TimeInfoMessage);
   }
 }
