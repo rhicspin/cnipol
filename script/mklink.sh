@@ -7,19 +7,20 @@ RUN_YEAR=2009;
 ExeStandAlonePC2PC=0;
 ExeDoublePC=0;
 ExeSimple=0;
- 
+ExeCustomDir=0; 
  
 #############################################################################
 #                                     Help                                  #
 #############################################################################
 help(){
     echo    " "
-    echo    " mklink.sh [-xh][--pc2pc-stand-alone][--double-pc][--pb2pb-2005]"
+    echo    " mklink.sh [-xh][--pc2pc-stand-alone][--double-pc][--pb2pb-2005][--dir <dir>]"
     echo    "    : make symbolic links"
     echo    " "
     echo -e "   --pc2pc-stand-alone    Stand alone pc2pc configulation";
     echo -e "   --double-pc            Double PC configulation";
     echo -e "   --pb2pb-2005           cd to DATADIR, ONLINE/log, hbook and execute ln.sh"
+    echo -e "   --dir <dir>            make symbolic links of files in /<dir>/$RUN_YEAR/ directory"
     echo -e "   -h | --help            Show this help"
     echo -e "   -x                     Show example"
     echo    " "
@@ -34,9 +35,13 @@ ShowExample(){
     echo    " "
     echo    "    mklink.sh --pc2pc-stand-alone --double-pc"
     echo    " "
-    echo    "1. three external disc configulation on Run05 pb2pb"
+    echo    "2. three external disc configulation on Run05 pb2pb"
     echo    " "
     echo    "    mklink.sh --pb2pb-2005"
+    echo    " "
+    echo    "3. specify directory for /bd2/data/2009"
+    echo    " "
+    echo    "    mklink.sh --dir bd2/data "
     echo    " "
     exit;
 
@@ -45,7 +50,7 @@ ShowExample(){
 
 
 #############################################################################
-#                                   DoublePC                                #
+#                                   MakeLinks                               #
 #############################################################################
 MakeLinks(){
 
@@ -64,7 +69,7 @@ MakeLinks(){
       filename=`basename $f`
       if [ ! -e $DESTDIR/$filename ] ; then
 	  echo -e -n "$f\n" /dev/null
-	  ln -s $SOURCEDIR/$f $DESTDIR
+	  ln -f -s $SOURCEDIR/$f $DESTDIR
       fi
     done
 
@@ -96,7 +101,10 @@ DoublePC(){
 	MakeLinks;
 
     done
+
+    
 }
+
 
 #############################################################################
 #                               StandAlonePC2PC                             #
@@ -105,6 +113,28 @@ DoublePC(){
 StandAlonePC2PC(){
 
     BEAM=data
+
+    DESTDIR=$DATADIR;
+    Mode=data;
+    MakeLinks;
+
+    DESTDIR=$ONLINEDIR/log;
+    Mode=log;
+    MakeLinks;
+
+    DESTDIR=$ONLINEDIR/hbook;
+    Mode=hbook;
+    MakeLinks;
+
+}
+
+
+#############################################################################
+#                               Custom Dir                                  #
+#############################################################################
+
+CustomDir(){
+
 
     DESTDIR=$DATADIR;
     Mode=data;
@@ -158,6 +188,7 @@ while test $# -ne 0; do
   --pc2pc-stand-alone) ExeStandAlonePC2PC=1 ;;
   --double-pc) ExeDoublePC=1 ;; 
   --pb2pb-2005) ExeSimple=1 ;;
+  --dir) shift ; BEAM=$1 ; ExeCustomDir=1 ;;
   -x) shift ; ShowExample ;;
   -h | --help) help ;;
   *)  echo "Error: Invarid Option $1"
@@ -175,5 +206,8 @@ if [ $ExeDoublePC -eq 1 ] ; then
 fi;
 if [ $ExeSimple -eq 1 ] ; then
     Simple;
+fi
+if [ $ExeCustomDir -eq 1 ] ; then
+    CustomDir;
 fi
 
