@@ -60,8 +60,8 @@ cd $ASYMDIR
 mkDB.sh --online --yellow | tee summary/Online_Yellow.dat ; mkDB.sh --online --blue | tee summary/Online_Blue.dat
 
 # DeadLayer Summary
-dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
-root -b -q $MACRODIR/DlayerMonitor.C
+#dLayerAve.sh -f .cnipol_daemon_run.list --distribute | tee /tmp/cnipol/dLayerAve.log
+#root -b -q $MACRODIR/DlayerMonitor.C
 
 #Offline Polarization Summary
 mkDB.sh --blue > summary/OfflinePol_Blue_all.dat ; mkDB.sh --yellow > summary/OfflinePol_Yellow_all.dat
