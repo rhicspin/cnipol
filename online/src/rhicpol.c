@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 	fprintf(LogFile, 
 	    ">>>>> %s Starting measurement for time %7.2f s or %d events.\n",
 	    cctime(&t), mTime, mEvent);
-/* Reading main configuratyion file */
+/* Reading main configuration file */
 	if (readConfig(buf, CFG_INIT)) {
 	    fprintf(LogFile,"RHICPOL-FATAL : Cannot open config file %s\n",cfgname);
 	    polData.statusS |= (STATUS_ERROR | ERR_INT);
@@ -331,6 +331,7 @@ int main(int argc, char **argv)
 	    polData.startTimeS = time(NULL);
 	    clearVetoFlipFlop();
 	    resetInhibit();
+		setRunGo();
 	    writeJetStatus();	// hopefully fast (we can not get jet state with crate inhibit)
 	
 	    ev = getEvents(mEvent);
@@ -359,6 +360,11 @@ int main(int argc, char **argv)
 		fprintf(LogFile, 	">>> %s Subrun %d finished with %9d events.\n",
 		    cctime(&t), j, ev);
 	    }
+// Writing is done, send a message to mcr...
+	    if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data Finished.");
+
+// Send runIdS (the run name) to CDEV...
+		if (NoADO == 0 && j == nLoop-1) sendRunIdS((int)(recRing == REC_YELLOW) ? 0 : 1);
 	}
 	resetInhibit();
 	camacClose();

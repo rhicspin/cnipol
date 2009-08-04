@@ -130,6 +130,7 @@ typedef struct {
 #define OUT_SWITCH	0x0004
 #define OUT_MUXA	0x0008
 #define OUT_MUXB	0x0010
+#define OUT_RUN		0x0004
 #define OUT_CLRLAM	0x0020
 #define OUT_JETINH	0x0040
 // values for OUT_SWITCH
