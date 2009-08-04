@@ -2,21 +2,13 @@
 # Run regular polarimeter run, not supposed to be run manually
 # catches SIGINT and exits gracefully
 # catches SIGTERM and exits without reprocessing the data
-
-# exports not needed since are now defined in /etc/profile.d/cdev.sh
 #
-#export CDEV_NAME_SERVER=acnlin89.pbn.bnl.gov
-#export CDEVSHOBJ=/usr/local/lib/cdev/
-#export LD_LIBRARY_PATH=${CDEVSHOBJ}/Linux:${LD_LIBRARY_PATH}
-#export CDEVDDL=/usr/local/etc/PolarClient.ddl
-
-#export PATH=$PATH:/usr/local/cern/root:/usr/local/cern/root/lib:/usr/bin:/usr/local/bin
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cern/root/lib
+# Checks return code and sends error mesage(s) and failed.gif
+# to mcr application.
 
 umask 0002
 
 POLDIR=/usr/local/polarim
-#POLDIR=`pwd`
 CONFDIR=$POLDIR/config
 BINDIR=$POLDIR/bin
 DATADIR=$CONFDIR/data
@@ -42,6 +34,7 @@ declare -i MUX
 
 export RUN=$RUN
 export MUX=$MUX
+export LOGDIR=$LOGDIR
 
 EXIT_MODE=0
 IRC=0
@@ -71,15 +64,17 @@ trap targetout SIGUSR1
 trap childexit SIGCHLD
 trap mysoftexit SIGINT
 trap myhardexit SIGTERM
-
+#
+# NOTE: larger tshift MOVES banana DOWN.
+#
 if [ $ENERGY -gt 25 ]; then
   if [ $RING == "y" ]; then
   # YELLOW at FLATTOP
-	TSHIFT=-3.0
+	TSHIFT=0.0
   else
     if [ $RING == "b" ]; then
-    # BLUE at FLATTOP larger tshift MOVES banana DOWN.
-	  TSHIFT=2.0
+    # BLUE at FLATTOP
+	  TSHIFT=-2.0
     fi
   fi
 else
@@ -90,7 +85,7 @@ else
   else
     if [ $RING == "b" ]; then
     # BLUE at INJECTION
-	  TSHIFT=9.0
+	  TSHIFT=5.0
     fi
   fi
 fi
@@ -177,42 +172,62 @@ if [ x$JOB != "x" ]; then
     done
 
     if [ $MODE != "t" ]; then
-    if [ $MODE == "e" ]; then
-        echo "IRC is $IRC (0, 130, or 142 is good)" >> $LOGDIR/e$RUN.log 2>&1
-    fi
 	if [ $IRC -eq 0 ] || [ $IRC -eq 130 ] || [ $IRC -eq 142 ]; then
-	   # export RUN=$RUN
-
-	    if [ $MODE == "e" ]; then
+	    if [ $MODE == "e" ]; then		# emittance scan run
 		export PSFILE=$LOGDIR/e$RUN.ps
         $EMITCMD -f $DATADIR/e$RUN.data -o $ROOTDIR/e$RUN.root > $LOGDIR/eana$RUN.log
         chmod ug+w $LOGDIR/eana$RUN.log
 
 		convert $PSFILE -trim $LOGDIR/e$RUN.gif >> $LOGDIR/eana$RUN.log 2>&1
 		$BINDIR/sndeplot $RING $LOGDIR/e$RUN.gif >> $LOGDIR/eana$RUN.log 2>&1
-	#printenv >> $LOGDIR/eana$RUN.log 2>&1
 	    else
 	    export MACDIR=$BINDIR/macro
-	    #export PATH=$PATH:/usr/local/cern/bin/:/usr/bin/:/usr/local/bin/:
-	    #export CERN=/usr/local/cern
-		if [ $MODE == "r" ]; then
+		if [ $MODE == "r" ]; then		# Ramp measurement run
 			echo "Analyzing RAMP measurement" >> $LOGDIR/$RUN.log 2>&1
 		    $ANACMD -l -s -N -1 $DATADIR/$RUN.data $HBOOKDIR/$RUN.hbook >$LOGDIR/ramp$RUN.log
-		else
+			chmod ug+w $HBOOKDIR/$RUN.hbook
+		else							# Regular run
+			if [ $RING == "y" ]; then
+				POLDEV=ploarimeter.yel
+			else
+				POLDEV=polarimeter.blu
+			fi
 		    $ANACMD -l -s $DATADIR/$RUN.data $HBOOKDIR/$RUN.hbook >$LOGDIR/an$RUN.log
-		    export HBOOKFILE=$HBOOKDIR/$RUN.hbook
-		    export PSFILE=$LOGDIR/$RUN.ps
-		    $MACDIR/lr_spinpat.pl $RUN
-		    $MACDIR/pvector.pl $RUN
-		    pawX11 -n -b $MACDIR/onliplot.kumac >> $LOGDIR/plot$RUN.log 2>&1 
-		    convert $PSFILE -trim $LOGDIR/$RUN.gif >> $LOGDIR/plot$RUN.log 2>&1
-		    $BINDIR/sndpic $RING $LOGDIR/$RUN.gif >> $LOGDIR/plot$RUN.log 2>&1 
-	#printenv >>$LOGDIR/an$RUN.log 2>&1 
+			chmod ug+w $HBOOKDIR/$RUN.hbook
+			if [ $? -ne 0 ]; then		# Analysis failed
+				$BINDIR/sendFailResults $RING $RUN
+				echo "E-ANAL analysis failed." >> $LOGDIR/an$RUN.log 2>&1
+				$BINDIR/sndpic $RING $BINDIR/failed.gif >> $LOGDIR/an$RUN.log 2>&1
+			else						# Analysis was OK
+		    	export HBOOKFILE=$HBOOKDIR/$RUN.hbook
+		    	export PSFILE=$LOGDIR/$RUN.ps
+			    $MACDIR/lr_spinpat.pl $RUN
+			    $MACDIR/pvector.pl $RUN
+			    pawX11 -n -b $MACDIR/onliplot.kumac >> $LOGDIR/plot$RUN.log 2>&1 
+				if [ $? -ne 0 ]; then	# PAW plot making failed
+					$BINDIR/setCdevString $POLDEV statusStringS "E-PAW making plot failed"
+					echo "E-PAW making plot failed." >> $LOGDIR/plot$RUN.log 2>&1
+					$BINDIR/sndpic $RING $BINDIR/failed.gif >> $LOGDIR/plot$RUN.log 2>&1
+				else
+				    convert $PSFILE -trim $LOGDIR/$RUN.gif >> $LOGDIR/plot$RUN.log 2>&1
+					if [ $? -ne 0 ]; then	# Convert from PS to GIF failed
+						$BINDIR/setCdevString $POLDEV statusStringS "E-PS2GIF converting plot failed"
+						echo "E-PS2GIF converting plot failed." >> $LOGDIR/plot$RUN.log 2>&1
+						$BINDIR/sndpic $RING $BINDIR/failed.gif >> $LOGDIR/plot$RUN.log 2>&1
+					else
+					    $BINDIR/sndpic $RING $LOGDIR/$RUN.gif >> $LOGDIR/plot$RUN.log 2>&1 
+						if [ $? -ne 0 ]; then	# Sending picture failed
+							$BINDIR/setCdevString $POLDEV statusStringS "E-SNDPIC sending plot failed"
+							echo "E-SNDPIC sending plot failed." >> $LOGDIR/plot$RUN.log 2>&1
+							$BINDIR/sndpic $RING $BINDIR/failed.gif >> $LOGDIR/plot$RUN.log 2>&1
+						fi
+					fi
+				fi
+			fi
 		fi
 	    fi
 	fi
     fi
-
 fi
 
 if [ x$DISPLAY != "x" ] ; then
