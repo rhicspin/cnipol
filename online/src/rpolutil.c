@@ -853,8 +853,22 @@ void nsleep(double time)
     nanosleep(&t, NULL);
 }
 
+void setRunGo(void)
+{
+ OutRegSet |= OUT_RUN;
+ OutRegBits = OutRegSet;
+ CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
+}
+
 int setRing(void)
 {
+// Get the MUX setting for the current polarimeter...
+	int n = atoi(getenv("MUX"));
+	fprintf(LogFile,"RHICPOL-INFO : MUX setting = %d\n", n);
+
+	if (n == 1) OutRegSet |= OUT_MUXA;
+	else if (n == 2) OutRegSet |= OUT_MUXB;
+
     OutRegBits = OutRegSet;
     if (iCicleRun) OutRegBits |= OUT_JETINH;
     CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
@@ -1895,6 +1909,8 @@ int openDataFile(char *fname, char *comment, int noAdo)
     recordHeaderStruct header;
     void * buf;
     
+	fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
+
     if (OutFile != NULL) closeDataFile("New file open.");
     OutFile = fopen(fname, "wb");
     if (OutFile == NULL) {

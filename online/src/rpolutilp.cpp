@@ -57,8 +57,14 @@ void sendRunIdS(int N)
 //	Update runId only if it really corresponds to fillNumber
  if ((int)(polData.runIdS) == fillNumberM) {
   data.insert("value", polData.runIdS);
-  DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
-  fprintf(LogFile,"RHICPOL-INFO : set runIdS %9.3f\n",polData.runIdS);
+  if ((((int)(10*polData.runIdS)) % 10) >= 4) {
+   DEVSEND(pol, "set emitRunIdS", &data, NULL, stdout, irc);
+   fprintf(LogFile,"RHICPOL-INFO : set emitRunIdS %9.3f\n",polData.runIdS);
+  }
+  else {
+   DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
+   fprintf(LogFile,"RHICPOL-INFO : set runIdS %9.3f\n",polData.runIdS);
+  }
  }
  else fprintf(LogFile,"RHICPOL-INFO : %9.3f is not for this fill.\n",polData.runIdS);
 
