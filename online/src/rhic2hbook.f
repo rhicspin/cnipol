@@ -42,6 +42,7 @@
 	iraw = 0
 	iproc = 1
 	ilsas = 0
+	ifixfill = 0
 	j = IArgC()
 	trigmin = -1.
 	nsubrun = 0
@@ -70,12 +71,14 @@
 		ipar = 1
 	    else if (str.eq.'-N') then
 		ipar = 2
+	    else if (str.eq.'-R') then
+		ifixfill = 1
 	    else if (fin.eq.'?') then
 		fin = str
 	    else if (fout.eq.'?') then
 		fout = str
 	    else
-		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] filein fileout'
+		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] [-R] filein fileout'
 		print *, '       -s to send results to ADO database'
 		print *, '       -n to write ntuples, otherwize only histograms'
 		print *, '       -r to write raw data ntuples'
@@ -83,6 +86,7 @@
 		print *, '       -p not to process data for the polarization'
 		print *, '       -T trigmin trigmin value to override for old files'
 		print *, '       -N <subrun number> to extract (default = 0)'
+		print *, '       -R Repair fill/spin pattern'
 		print *, '	    if <subrun number> >=0, only it is processed and the result is'
 		print *, '	    send as for a single measurement, otherwize all subruns are'
 		print *, '	    processed and send as array for the ramp measurement'
@@ -118,7 +122,9 @@
 	  call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
 c	
 	    irecring = readandfill(nsubrun)
+
 c	    print *, 'After readandfill (nsubrun>=0) nsubrun = ',nsubrun
+		if (ifixfill.ne.0) call fixfill
 c
 	    if (iproc.ne.0) call process
 c	
@@ -1089,4 +1095,66 @@ C	20% error
 	
 	print *, 'Average analyzing power from L.Trueman''s fit=',analyzingPowerS
 	
+	end
+
+	Subroutine fixfill
+c
+c	Routine to overwrite the fill and spin pattern.
+c	Copy a good pattern to the file: /usr/local/polarim/config/fixfill.dat
+c	To make this file, just copy the +-. pattern from a log file.
+c
+	common /RHIC/ fillpat(120), polpat(120)
+	integer fillpat, polpat
+	character*60 fills
+	character*120 newpat
+
+	print *,'Attempting to fix bad fill and/or spin pattern.'
+
+	open(unit=17, file='/usr/local/polarim/config/fixfill.dat', status='old')
+	do i=1,2
+	 read(17,*) fills(1:60)
+	 do j=1,60
+	  n = 60*(i-1) + j
+	  if (fills(j:j) .eq. '+') then
+	   fillpat(n) = 1
+	   polpat(n) = 1
+	  elseif (fills(j:j) .eq. '-') then
+	   fillpat(n) = 1
+	   polpat(n) = -1
+	  elseif (fills(j:j) .eq. '0') then
+	   fillpat(n) = 1
+	   polpat(n) = 0
+	  elseif (fills(j:j) .eq. '.') then
+	   fillpat(n) = 0
+	   polpat(n) = 0
+	  endif
+	 enddo
+	enddo
+c
+c	Print out the new patterns
+c
+	do i=1,120
+	 if (fillpat(i) .eq. 0) then
+	  newpat(i:i) = '_'
+	 else
+	  newpat(i:i) = '|'
+	 endif
+	enddo
+	print *, 'New Fill Pattern : ',newpat
+
+	do i=1,120
+	 if (polpat(i) .eq. -1) then
+	  newpat(i:i) = '-'
+	 elseif (polpat(i) .eq. 1) then
+	  newpat(i:i) = '+'
+	 elseif (polpat(i) .eq. 0 .and. fillpat(i) .ne. 0) then
+	  newpat(i:i) = '0'
+	 else 
+	  newpat(i:i) = '.'
+	 endif
+	enddo
+	print *, 'New Spin Pattern : ',newpat
+
+	close(17)
+	return
 	end
