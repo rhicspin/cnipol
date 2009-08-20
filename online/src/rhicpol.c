@@ -309,7 +309,7 @@ int main(int argc, char **argv)
 	fprintf(LogFile, "RHICPOL-INFO : This is run %9.3f\n", polData.runIdS);
 
 	if (NoADO == 0) 
-	    fprintf(LogFile,"CNIPOL-INFO : RunID: %9.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
+	    fprintf(LogFile,"RHICPOL-INFO : RunID: %9.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
 		polData.runIdS, beamData.beamEnergyM,
 		polData.targetIdS, polData.encoderPositionS[0], polData.encoderPositionS[1]);
 	if (setRing()) polexit();
