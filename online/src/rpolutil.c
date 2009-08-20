@@ -182,12 +182,20 @@ int readConfig (char * cfgname, int update) {
     struct stat finfo;
     int i, j, k, ii, mask;
     char * endptr;
+    char str[512];
 
     if ((fconf=fopen(cfgname, "rt")) == NULL) return 1;
     
     fprintf(LogFile, "RHICPOL-INFO : Reading configuration from file %s.\n",
 	cfgname);
-
+// List the contents of each configuration file...
+    while (!feof(fconf)) {
+     fgets(str, 512, fconf);
+     if (!feof(fconf)) fprintf(LogFile,"%s",str);
+    }
+    fprintf(LogFile,"\n******************************************************************\n");
+    rewind(fconf);
+    
     stat(cfgname, &finfo);
     buf = (char *)malloc(finfo.st_size);
     if (buf==NULL) {
@@ -305,12 +313,16 @@ int readConfig (char * cfgname, int update) {
 	if (buf=envz_get(ENVZ, ENVLEN, "IACutW"))
 	    SiConf[i].IACutW = strtod(buf, NULL);
     }
-
+    
+/*
+ * No longer needed since contents of ini files are now written to
+ * the log file. - Ron 8/20/2009
 //  Write WinBegin, WinEnd values into LogFile... Ron - 2/15/2008
 	if (buf=envz_get(ENVZ, ENVLEN, "WinBegin")) 
         fprintf(LogFile,"WinBegin = %d\n", strtol(buf, NULL, 0));
 	if (buf=envz_get(ENVZ, ENVLEN, "WinEnd"))
         fprintf(LogFile,"WinEnd = %d\n", strtol(buf, NULL, 0));
+*/
 
 //	Process channels
     for (i=0;i<Conf.NumChannels;i++) {
@@ -356,7 +368,14 @@ int readConfig (char * cfgname, int update) {
 	    polexit();
 	} 
 	fprintf(LogFile,"RHICPOL-INFO : Reading calibration parameters from file %s\n", chanconf);
-
+// List the contents of the calibration file...
+    while (!feof(fconf)) {
+     fgets(str, 512, fconf);
+     if (!feof(fconf)) fprintf(LogFile,"%s",str);
+    }
+    fprintf(LogFile,"\n******************************************************************\n\n");
+    rewind(fconf);	
+	
 	stat(chanconf, &finfo);
 	buf = (char *)malloc(finfo.st_size);
 	fread(buf, 1, finfo.st_size, fconf);
@@ -374,7 +393,7 @@ int readConfig (char * cfgname, int update) {
 		    ptr[j] = strtod(bufc, (char **)&bufc);
 		}
 		if (k) {
-		    fprintf(LogFile," : CNIPOL-ERR : %s : missing %d initializer(s) in calibration data file\n", sss, k);
+		    fprintf(LogFile,"RHICPOL-ERR : %s : missing %d initializer(s) in calibration data file\n", sss, k);
 		    polData.statusS |= (STATUS_ERROR | ERR_CONF);
 		    free(ENVZC);
 		    return -10;
@@ -927,7 +946,7 @@ int initWFDs(void)
 	    ii++;
 	    if ((j & (CMC_QMASK | CMC_XMASK)) != (CMC_QMASK | CMC_XMASK)) {
 	    /* Module not found */
-		fprintf(LogFile, "CNIPOL-ERR : Cannot find WFD module at station %d.%d\n", cr, i);
+		fprintf(LogFile, "RHICPOL-ERR : Cannot find WFD module at station %d.%d\n", cr, i);
 		polData.statusS |= (STATUS_ERROR | ERR_CAMAC | ERR_WFD);
 		disFlag=1;
 		iRC++;
@@ -939,7 +958,7 @@ int initWFDs(void)
 		    nsleep(0.1);
 		}
 		if (k == 40) {
-		    fprintf(LogFile, "CNIPOL-ERR : Found unloaded WFD module at station %d.%d and failed to reload\n", cr, i);
+		    fprintf(LogFile, "RHICPOL-ERR : Found unloaded WFD module at station %d.%d and failed to reload\n", cr, i);
 		    polData.statusS |= ERR_WFD;
 		    disFlag=1;
 		    iRC++;
