@@ -39,5 +39,3 @@ fi
 tar xvzf Run06_dlayer.tgz -C $SHAREDIR/dlayer
 
 echo "Installation completed."
-
-
