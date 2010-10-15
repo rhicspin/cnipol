@@ -3,20 +3,20 @@
  *                                                                           *
  *****************************************************************************/
 
-#include "AnaEvent.h"
+#include "ChannelData.h"
 
-ClassImp(AnaEvent)
+ClassImp(ChannelData)
 
 using namespace std;
 
 /** Default constructor. */
-AnaEvent::AnaEvent() : TObject(), fEventId(), fChannels()
+ChannelData::ChannelData() : TObject(), fAmpltd(-1), fTdc(-1), fIntgrl(-1)
 {
 };
 
 
 /** Default destructor. */
-AnaEvent::~AnaEvent()
+ChannelData::~ChannelData()
 {
 };
 
@@ -24,9 +24,9 @@ AnaEvent::~AnaEvent()
 /**
  *
  */
-void AnaEvent::Print(const Option_t* opt) const
+void ChannelData::Print(const Option_t* opt) const
 {
    opt = "";
 
-   printf("AnaEvent:\n");
+   printf("ChannelData:\n");
 }

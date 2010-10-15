@@ -4,41 +4,38 @@
  *****************************************************************************/
 
 
-#ifndef AnaEvent_h
-#define AnaEvent_h
+#ifndef ChannelData_h
+#define ChannelData_h
 
 #include <map>
 #include <vector>
 
 #include "TObject.h"
 
-#include "AnaEventId.h"
-#include "ChannelData.h"
+class ChannelData;
 
-class AnaEvent;
-
-typedef std::vector<AnaEvent> AnaEventVec;
-typedef std::map<AnaEventId, AnaEvent> AnaEventMap;
+typedef std::vector<ChannelData> ChannelDataVec;
+typedef std::map<UShort_t, ChannelData> ChannelDataMap;
 
 /**
  *
  */
-class AnaEvent : public TObject
+class ChannelData : public TObject
 {
 public:
 
-	AnaEventId     fEventId;
-   //GntChannelVec fChannels;
-   ChannelDataMap fChannels;
+   Short_t  fAmpltd;
+   Short_t  fTdc;
+   Short_t  fIntgrl;
 
 public:
 
-   AnaEvent();
-   ~AnaEvent();
+   ChannelData();
+   ~ChannelData();
 
    virtual void Print(const Option_t* opt="") const;
 
-   ClassDef(AnaEvent, 1)
+   ClassDef(ChannelData, 1)
 };
 
 #endif
