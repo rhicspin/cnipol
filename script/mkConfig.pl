@@ -1,6 +1,7 @@
 #! /usr/bin/perl
 # mkConfig.pl
 # Feb.18, 2006 I.Nakagawa
+
 $SHAREDIR = $ENV{"SHAREDIR"};
 $INSTALL_CONFIG_DIR ="$SHAREDIR/config";
 $INSTALL_DLAYER_DIR ="$SHAREDIR/dlayer";

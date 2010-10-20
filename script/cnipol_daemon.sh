@@ -1,7 +1,12 @@
 #!/bin/bash
+#
 # run deadlayer fit / Asym calculation in background
 # March, 15, 2006
 # I. Nakagawa
+# 
+# Oct 4, 2010 - Dmitri Smirnov
+#    - Did some minor corrections while reading this script
+#
 
 #cnipol_daemon in to_be_analyzed_list mode;
 TO_BE_ANALYZED_LIST=$ASYMDIR/.cnipol_daemon_to_be_analyzed_asym.list;
@@ -338,7 +343,7 @@ while test $# -ne 0; do
   -s | --sleep)    shift ; SLEEP_TIME=$1 ;;
   -x)              shift ; ShowExample ;;
   -h | --help)              help ;;
-  *)  echo "Error: Invarid Option $1"
+  *)  echo "Error: Invalid Option $1"
       help;;
   esac
   shift

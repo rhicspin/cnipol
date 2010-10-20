@@ -6,31 +6,31 @@
 #####################################################################
 
 Get SRC files from cvs server:
-	
-	export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
-	
-	% cvs login 
-	CVS password: (standard e950 password)
-	% cvs checkout cnipol
+
+        export CVSROOT=:pserver:e950@cvs.bnl.gov:/data01/CVS
+
+        % cvs login
+        CVS password: (standard e950 password)
+        % cvs checkout cnipol
         sources will be downloaded in ./cnipol directory.
 
-Instructions are avaliable on following web site(note password protected) : 
+Instructions are avaliable on following web site(note password protected) :
 
-	http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
+        http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
 
-	However, the lastest & up-to-date instruction should be found
+        However, the lastest & up-to-date instruction should be found
         in doc/README.install from cvs repository.
 
 #####################################################################
 
 
 Here are some directory structure of CNI libraries required to run
-the program: CNILIB=/usr/local/cnipol 
+the program: CNILIB=/usr/local/cnipol
 
 % ls $CNILIB
-   data/   online/  share/  
+   data/   online/  share/
 
-data/ 
+data/
   symboric links to yellowpc and bluepc data direcotries.
 
 online/
@@ -38,134 +38,134 @@ online/
     log/    : symboric link to online log files.
 
 share/
-    calib/  : database for the energy calibration 
+    calib/  : database for the energy calibration
     config/ : configulation database for analysis program Asym
     dlayer/ : deadlayer database for DeadLayer Monitor
     macro/  : macro for plotting and deadlayer fits.
-    bin/    : executable binaries and scripts. 
+    bin/    : executable binaries and scripts.
     phys/   : physics database
 
 
 SRC
   ./cnipol/src
-	AsymMain.cc            "main program. hundle options"
-	AsymRead.cc            "read in raw data and decode"
-	AsymRunDB.cc           "read in condistions for runs from run.db" 
-	AsymHbook.cc           "hbook histogram booking"
-	AsymROOT.cc            "root histogram booking and close"
-	AsymRecover.cc         "recoverly routines for unusual treatments of data"
-	hb_lib.f               "utility library to call hbook from c++"
-	AsymProcess.cc         "event looop processing program"
-   	AsymCalc.cc            "end of run routine"
-	AsymErrorDetecotr.cc   "software error detector functions"
+        AsymMain.cc            "main program. hundle options"
+        AsymRead.cc            "read in raw data and decode"
+        AsymRunDB.cc           "read in condistions for runs from run.db"
+        AsymHbook.cc           "hbook histogram booking"
+        AsymROOT.cc            "root histogram booking and close"
+        AsymRecover.cc         "recoverly routines for unusual treatments of data"
+        hb_lib.f               "utility library to call hbook from c++"
+        AsymProcess.cc         "event looop processing program"
+        AsymCalc.cc            "end of run routine"
+        AsymErrorDetecotr.cc   "software error detector functions"
 
-	Asym.h
-	AsymMain.h
-	AsymROOT.h
-	AsymCalc.h
-	AsymErrorDetector.h
-	AsymRecoverUserDefined.h
-	AsymRunDB.h
-	AsymRecover.h
-	AsymProcess.h
-	Kinema.h
-	rpoldata.h
-	rhicpol.h
-	WeightedMean.h
+        Asym.h
+        AsymMain.h
+        AsymROOT.h
+        AsymCalc.h
+        AsymErrorDetector.h
+        AsymRecoverUserDefined.h
+        AsymRunDB.h
+        AsymRecover.h
+        AsymProcess.h
+        Kinema.h
+        rpoldata.h
+        rhicpol.h
+        WeightedMean.h
 
   ./cnipol/src/util
-	some utility programs.		
+        some utility programs.
 
   ./cnipol/src/cdev
-	cdev interface utility programs.		
-	(installs only if /usr/local/lib/cdev library exists.)
+        cdev interface utility programs.
+        (installs only if /usr/local/lib/cdev library exists.)
 
   Executables : try -h and -x options for more details
-	Asym           "Main analysis program"
-	AsymPlot       "A plot viewer. Creates a postscript file from .root file."  
-	RunDBReader    "portable run.db reader/printer"
-	dLayerChecker  "deadlayer fit checker"
-	KinFunc        "kinematics reconstructer from deposited energy"
+        Asym           "Main analysis program"
+        AsymPlot       "A plot viewer. Creates a postscript file from .root file."
+        RunDBReader    "portable run.db reader/printer"
+        dLayerChecker  "deadlayer fit checker"
+        KinFunc        "kinematics reconstructer from deposited energy"
 
 DOCUMENTAIONS
   ./cnipol/doc
- 	README.install     : this document
-  	README.rundb       : run.db syntax
-    	README.dlayer      : deadlayer instructions
-	README.online      : instruction to creat online configuration file
-	README.fastoffline : instruction for fast offline setup
-	README.analysis    : some tips about offline analysis
-	README.dedx        : pointer to dedx model document
+        README.install     : this document
+        README.rundb       : run.db syntax
+        README.dlayer      : deadlayer instructions
+        README.online      : instruction to creat online configuration file
+        README.fastoffline : instruction for fast offline setup
+        README.analysis    : some tips about offline analysis
+        README.dedx        : pointer to dedx model document
 
 Set up environment and install executables and macros.
 
 1. Environmental variables (in bash format) copy & paste in your ~/.bashrc
 
-	# define path to root of your system
-	export ROOTSYS=/usr/local/cern/root
-	export LD_LIBRARY_PATH=$ROOTSYS/lib/
+        # define path to root of your system
+        export ROOTSYS=/usr/local/cern/root
+        export LD_LIBRARY_PATH=$ROOTSYS/lib/
 
-	export CNILIB=/usr/local/cnipol
-	export ONLINEDIR=$CNILIB/online
-	export DATADIR=$CNILIB/data
-	export SHAREDIR=$CNILIB/share
-	export CONFDIR=$SHAREDIR/config
-	export CALIBDIR=$SHAREDIR/calib
+        export CNILIB=/usr/local/cnipol
+        export ONLINEDIR=$CNILIB/online
+        export DATADIR=$CNILIB/data
+        export SHAREDIR=$CNILIB/share
+        export CONFDIR=$SHAREDIR/config
+        export CALIBDIR=$SHAREDIR/calib
 
-	# working directory
-	export ASYMDIR=$HOME/offline
+        # working directory
+        export ASYMDIR=$HOME/offline
 
-	# temporary output directory
-	export TMPOUTDIR=/tmp/`whoami`
+        # temporary output directory
+        export TMPOUTDIR=/tmp/`whoami`
 
-	# installation destination 
-	export INSTALLDIR=$ASYMDIR/bin
-	export MACRODIR=$ASYMDIR/macro
+        # installation destination
+        export INSTALLDIR=$ASYMDIR/bin
+        export MACRODIR=$ASYMDIR/macro
 #    for developers use followings instead of above two lines
-#	export INSTALLDIR=$SHAREDIR/bin
-#	export MACRODIR=$SHAREDIR/macro
-#	export CNI_EXPERT=1;
+#       export INSTALLDIR=$SHAREDIR/bin
+#       export MACRODIR=$SHAREDIR/macro
+#       export CNI_EXPERT=1;
 
-	export PATH=$INSTALLDIR:$PATH
-	export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
+        export PATH=$INSTALLDIR:$PATH
+        export LD_LIBRARY_PATH=$MACRODIR:$LD_LIBRARY_PATH
 
 
 2. Make and install src files:
-	% cd cnipol
-	% source ~/.bashrc
-	Make src files and install executable binaries and scripts to $INDTALLDIR.
-	% ./install.sh
-          
+        % cd cnipol
+        % source ~/.bashrc
+        Make src files and install executable binaries and scripts to $INDTALLDIR.
+        % ./install.sh
+
 3. Install CNI library data files
-	% cd cnipol/cnilib
-	% ./install.sh
+        % cd cnipol/cnilib
+        % ./install.sh
 
 4. (optional) $HOME/.pawlogon.kumac setting for paw user. See <Appendix> at the
-   end of this document. Unless you are not a big fan of paw, just ignore. 
+   end of this document. Unless you are not a big fan of paw, just ignore.
 
 
 
 
 Working directory and Running executables:
 
-	create working directory
-	% mkdir $ASYMDIR
-	% cd $ASYMDIR
-	copy or symbilic link run.db from the repository
-	% cp $HOME/cnipol/run.db .
-	       or
-	% ln -s $HOME/cnipol/run.db .
-	
-	 *run.db has to be at working directory*
-	 see doc/README.rundb for syntax 
+        create working directory
+        % mkdir $ASYMDIR
+        % cd $ASYMDIR
+        copy or symbilic link run.db from the repository
+        % cp $HOME/cnipol/run.db .
+               or
+        % ln -s $HOME/cnipol/run.db .
 
-	% Asym -f 7069.101.data
-	  (try Asym -h for options)
-    
+         *run.db has to be at working directory*
+         see doc/README.rundb for syntax
+
+        % Asym -f 7069.101.data
+          (try Asym -h for options)
+
    output:
-	hbookfile: outsampleex.hbook
-	rootfile : runid.root    
-    
+        hbookfile: outsampleex.hbook
+        rootfile : runid.root
+
 
 The utility program to run Asym and browse histograms:
    %> RHICAna.pl &
@@ -173,7 +173,7 @@ The utility program to run Asym and browse histograms:
     Some directrories to be created
     $ASYMDIR/hbook                   : store hbook files
     $ASYMDIR/root                    : store root files
-    $ASYMDIR/log                     : offline log directory	   
+    $ASYMDIR/log                     : offline log directory
     $ASYMDIR/ps                      : for postscript outputs
 
 
@@ -181,8 +181,8 @@ The utility program to run Asym and browse histograms:
     http://www4.rcf.bnl.gov/~cnipol/Analysis/OsamuDocs/index.html
 
     o   Brief summary of online monitoring scripts
-    o   CNI polarimeter monitoring GUI user guide  
-    
+    o   CNI polarimeter monitoring GUI user guide
+
 
 
 
@@ -191,15 +191,15 @@ The utility program to run Asym and browse histograms:
 #########   For Calibration and DeadLayer Studies:       ##########
 ###################################################################
 
-	
+
 Create necessary directories:
 
-	% mkdir $ASYMDIR/douts
-	% mkdir $ASYMDIR/calib
-	% mkdir $ASYMDIR/config
-	% mkdir $ASYMDIR/dlayer
-	% mkdir $ASYMDIR/integ
-	% mkdir $ASYMDIR/ps
+        % mkdir $ASYMDIR/douts
+        % mkdir $ASYMDIR/calib
+        % mkdir $ASYMDIR/config
+        % mkdir $ASYMDIR/dlayer
+        % mkdir $ASYMDIR/integ
+        % mkdir $ASYMDIR/ps
 
 Energy Calibration:
 
@@ -223,8 +223,8 @@ Energy Calibration:
 
    % Calib.pl -f blue_calib_0513c -p
 
-   to use the results for forthcomming polarization measurements, 
-   add following line in $ASYMDIR/run.db at adequate [RUNID] 
+   to use the results for forthcomming polarization measurements,
+   add following line in $ASYMDIR/run.db at adequate [RUNID]
    location e.g. [7067.001] here:
 
 [7067.001]
@@ -232,8 +232,8 @@ Energy Calibration:
 
 
 4. Create new configulation for e.g. run#7067.001:
-	
-    % mkConfig.pl -f 7067.001 
+
+    % mkConfig.pl -f 7067.001
       (Try mkConfig.pl -h for help)
 
    see below "Create new configulation" for more detail.
@@ -248,19 +248,19 @@ DeadLayer Fit:
    % cd $ASYMDIR
 
    for const. time cut:
-   % dLayer.pl -f 7279.005 -i 
+   % dLayer.pl -f 7279.005 -i
 
    for banana cut:
-   % dLayer.pl -b -f 7279.005 -i 
+   % dLayer.pl -b -f 7279.005 -i
 
    option "-i" interprets the energy range as reconstructed energy.
 
 
 Create new configulation:
 
-STEP-0. Make sure calibration file is defined in run.db. 
-	If your are done with dead-layer fit as described above, skip 
-	STEP-1.
+STEP-0. Make sure calibration file is defined in run.db.
+        If your are done with dead-layer fit as described above, skip
+        STEP-1.
 
 STEP-1. To perform deadlayer fit and make new configulation:
    (-b option for banana cut)
@@ -271,7 +271,7 @@ STEP-2. To make configulation file with existing deadlayer data
 
     % mkConfig.pl -f 7279.005
 
-     New configulation file will be created 
+     New configulation file will be created
 
     ./config/7279.005.config.data
 
@@ -281,7 +281,7 @@ STEP-3. Copy new configulation file to shared library and update
 
    %mkConfig.pl -f 7279.005 -p     <- recommanded
 
-   or 
+   or
 
    %cp ./config/7279.005.config.data $CONFDIR/.
 
@@ -290,39 +290,39 @@ STEP-4.
 
    in run.db add:
    [7279.005]
-	CONFIG=7279.005.config.dat;
+        CONFIG=7279.005.config.dat;
 
 
 
-   
+
 
 <Appendix>
 $HOME/ .pawlogon.kumac settings:
 
 
-	alias/cr pson 'exe ~/.pawlogon#on'
-	alias/cr psoff 'exe ~/.pawlogon#off'
-	opt zfl1	
-	FILECASE keep
-	defaults ./kumac,$ENV(KUMACDIR)
-	return
+        alias/cr pson 'exe ~/.pawlogon#on'
+        alias/cr psoff 'exe ~/.pawlogon#off'
+        opt zfl1
+        FILECASE keep
+        defaults ./kumac,$ENV(KUMACDIR)
+        return
 
-	*===================================================
-	macro on fn=paw.ps met=-111
-	 fortran/file 66 [fn]
-	 graphics/metafile 66 [met]
-	return
+        *===================================================
+        macro on fn=paw.ps met=-111
+         fortran/file 66 [fn]
+         graphics/metafile 66 [met]
+        return
 
-	*===================================================
-	macro off 
-	 close 66
-	return
+        *===================================================
+        macro off
+         close 66
+        return
 
-	*===================================================
-	macro eon fn=paw.eps met=-113
-	 fortran/file 66 [fn]
-	 graphics/metafile 66 [met]
-	return
+        *===================================================
+        macro eon fn=paw.eps met=-113
+         fortran/file 66 [fn]
+         graphics/metafile 66 [met]
+        return
 
 
 

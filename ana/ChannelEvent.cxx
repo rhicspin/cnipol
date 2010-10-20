@@ -28,5 +28,10 @@ void ChannelEvent::Print(const Option_t* opt) const
 {
    opt = "";
 
-   printf("ChannelEvent:\n");
+   printf("ChannelEvent:");
+   printf("\n\t");
+   fEventId.Print();
+   printf("\n\t");
+   fChannel.Print();
+   printf("\n");
 }

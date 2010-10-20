@@ -18,7 +18,7 @@
 class ChannelEvent;
 
 typedef std::vector<ChannelEvent> ChannelEventVec;
-typedef std::map<ChannelEventId, ChannelEvent> ChannelEventMap;
+typedef std::map<ChannelEventId, ChannelEvent, ChannelEventId> ChannelEventMap;
 
 /**
  *
