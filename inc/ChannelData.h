@@ -24,9 +24,9 @@ class ChannelData : public TObject
 {
 public:
 
-   Short_t  fAmpltd;
-   Short_t  fTdc;
-   Short_t  fIntgrl;
+   UChar_t  fAmpltd;
+   UChar_t  fTdc;
+   UChar_t  fIntgrl;
 
 public:
 
