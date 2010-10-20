@@ -1,5 +1,4 @@
 
-
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
 #define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
@@ -19,5 +18,6 @@
 #define k2G 1e-6                   // [keV] -> [GeV]
 #define MASS_12C 11.187e6          // Mass Carbon in [keV]
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
+
 const int TGT_OPERATION=6;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
 const int TOT_WFD_CH=NSTRIP+NTGTWFD;//Total WFD channels including target WFD channels.

@@ -3,42 +3,45 @@
 # Author              : Itaru Nakagawa
 # Creation data       : Feb.6,2006
 
-LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib
-INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include
-LIBS =  -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc 
-ROOTLIB =`root-config --cflags` `root-config --libs` -lMinuit -Wl,-rpath,$(ROOTSYS)
+LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib -L$(CNIDIR)/lib
+INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIDIR)/inc
+LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
+ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -Wl,-rpath,$(ROOTSYS)
 
 CC = g++
 ##C_FLAG = -g  -O2 -Wall -w 
 ##C_FLAG = -O2 -ggdb 
 C_FLAG = -O3  
 
-CXXFLAGS = $(INC_PATHS)
+CXXFLAGS  = $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 D_FLAG = -Df2cFortran
 FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
 
+LIB_DIR    = $(CNIDIR)/lib
+CNIANA_LIB = $(LIB_DIR)/libcniana.so
 
-AsymOBJ = AsymMain.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymROOT.o AsymErrorDetector.o
+AsymOBJ = AsymMain.o AsymROOT.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o
 
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
 
 dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
 
-KinFuncOBJ = KinFunc.o
+KinFuncOBJ = KinFunc.o Kinema.o
 
 AsymPlotOBJ = AsymPlot.o AsymROOT.o
 
 testOBJ = test.o AsymROOT.o
 
 BINARY = Asym RunDBReader dLayerChecker KinFunc AsymPlot
+
 all: $(BINARY)
 
 ######## BINARY ##################
 
-Asym : $(AsymOBJ)
+Asym : $(AsymOBJ) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(AsymOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 RunDBReader : $(RunDBReaderOBJ)
@@ -56,6 +59,9 @@ KinFunc : $(KinFuncOBJ)
 test : $(testOBJ) 
 	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
+$(CNIANA_LIB): $(wildcard $(CNIDIR)/ana/*.cxx) $(wildcard $(CNIDIR)/inc/*.h)
+	make -C $(CNIDIR)/ana
+
 ######## OBJECT ##################
 
 AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h 
@@ -64,7 +70,9 @@ AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
 AsymROOT.o : AsymROOT.h
 KinFunc.o  : AsymProcess.h
-AsymPlot.o : AsymHeader.h
+AsymProcess.o  : AsymProcess.h
+#AsymPlot.o : AsymPlot.h AsymHeader.h
+AsymPlot.o : AsymPlot.h
 
 .f.o:
 	$(FC) -O -c $<
@@ -81,7 +89,4 @@ clean :
 	rm -f $(BINARY)
 	rm -f *.o
 	rm -f *~ 
-
-
-
 

@@ -15,8 +15,8 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include "rpoldata.h"
 #include "Asym.h"
 #include "AsymRecover.h"

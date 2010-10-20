@@ -4,26 +4,33 @@
 //  Author    :   I. Nakagawa
 //  Creation  :   7/11/2006
 //                
+/**
+ *
+ * Oct 18, 2010 - Dmitri Smirnov
+ *    - Added SaveChannelTrees() and SaveEventTree(), PrintEventMap()
+ *
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include <iostream.h>
-#include <fstream.h>
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+//#include <math.h>
+//#include <errno.h>
+//#include <signal.h>
+//#include <string.h>
+//#include <iostream>
+//#include <fstream>
+//#include "rhicpol.h"
+//#include "rpoldata.h"
+
 #include "AsymROOT.h"
 
+// defaults
+const float MSIZE=1.2; // Marker size
 
-// global declarations
 StructHist Eslope;
 
-// Direcotories
+// ROOT Histograms
 TDirectory * Run;
 TDirectory * Raw;
 TDirectory * FeedBack;
@@ -32,20 +39,12 @@ TDirectory * Bunch;
 TDirectory * ErrDet;
 TDirectory * Asymmetry;
 
-
-//
-//  Histogram Definitions 
-//
-//  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
-//  in Run06 which are target events. These histograms are deleted before ROOT file closing 
-//  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
-//
 // Run Dir
 TH2F * rate_vs_delim;
 
 // FeedBack Dir
-TH2F  * mdev_feedback;
-TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
+TH2F * mdev_feedback;  
+TH1F * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 // Raw Directory
 TH1F * bunch_dist_raw;              // counts per bunch (raw)
@@ -55,44 +54,60 @@ TH1F * adc_raw;                     // adc (raw)
 TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
 TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
 
-// Kinema Dir
-TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
-TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
-TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
-TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
-TLine * energy_cut_l[NSTRIP];        // energy cut low 
-TLine * energy_cut_h[NSTRIP];        // energy cut high
-TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
-TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
-TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
-TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
+// Kinema Direcotry
+TH2F * t_vs_e[TOT_WFD_CH];
+TH2F * t_vs_e_yescut[TOT_WFD_CH];
+TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
+TF1  * banana_cut_l[NSTRIP][2];     // banana cut low 
+TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
+TLine  * energy_cut_l[NSTRIP];      // energy cut low 
+TLine  * energy_cut_h[NSTRIP];      // energy cut high
+TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
+TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
+TH1F  * mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+TH1F  * mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
 
 
 // Bunch Distribution
+//TH1F * bunch_dist_raw;              // counts per bunch (raw)
 TH1F * bunch_dist;                  // counts per bunch
 TH1F * wall_current_monitor;        // wall current monitor
 TH1F * specific_luminosity;         // specific luminosity
 
-// ErrDet dir
-TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
+// ErrDet Direcotry
+TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
 TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 TH1I * good_carbon_events_strip;    // number of good carbon events per strip
-TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
-TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
-TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
-TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
-TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45 
+TH2F * spelumi_vs_bunch;            // Counting rate vs. bunch
+TH1F * bunch_spelumi;               // Counting rate per bunch hisogram
+TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45 
+TH1F * asym_bunch_x90;              // Bunch asymmetry histogram for x90 
+TH1F * asym_bunch_y45;              // Bunch asymmetry histogram for y45 
 
-// Asymmetry dir
-TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
-TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
-TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
-TH2F * asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
-TH2F * scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
+// Asymmetry Directory
+TH2F * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
+TH2F * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
+TH2F * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
+TH2F * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  
+TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit  
 
+
+/**
+ *
+ */
+Root::Root()
+{
+   fRawEventTree = 0;
+   fChannelEvent = new ChannelEvent();
+}
+
+/** Default destructor. */
+Root::~Root()
+{
+   //delete fRawEventTree;
+}
 
 //
 // Class name  : Root
@@ -118,9 +133,156 @@ Root::RootFile(char *filename){
   Asymmetry = rootfile->mkdir("Asymmetry");
 
   return 0;
-
 }
 
+
+/**
+ *
+ */
+void Root::CreateTree()
+{
+   fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
+
+   fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent, 32000, 99);
+}
+
+
+void Root::AddChannelEvent(processEvent &event)
+{
+   fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
+   fChannelEvent->fEventId.fBunchId      = event.bid;
+   fChannelEvent->fEventId.fChannelId    = event.stN;
+   fChannelEvent->fChannel.fAmpltd       = event.amp;
+   fChannelEvent->fChannel.fTdc          = event.tdc;
+   fChannelEvent->fChannel.fIntgrl       = event.intg;
+
+   if (dproc.SAVETREES.test(2) || dproc.SAVETREES.test(3)) {
+      fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
+   }
+}
+
+
+/**
+ *
+ */
+void Root::FillTree()
+{
+   fRawEventTree->Fill();
+}
+
+
+/**
+ *
+ */
+void Root::PrintEventMap()
+{
+   ChannelEventMap::const_iterator mi;
+   ChannelEventMap::const_iterator mb = fChannelEvents.begin();
+   ChannelEventMap::const_iterator me = fChannelEvents.end();
+
+   for (mi=mb; mi!=me; mi++) {
+      //mi->first.Print();
+      mi->second.Print();
+   }
+}
+
+
+/**
+ *
+ */
+void Root::SaveChannelTrees()
+{
+   if (fChannelEvents.size() <= 0) {
+      printf("No channels to save\n");
+      return;
+   }
+
+   vector<TTree*> chEventTrees;
+   TTree *chEventTree = 0;
+   //ChannelEvent *chEvent = new ChannelEvent();
+   ChannelData *chData = new ChannelData();
+   char tmpCharStr[19]; 
+
+   for (int i=0; i!=NSTRIP; i++) {
+      sprintf(tmpCharStr, "ChannelEventTree%02d", i);
+      chEventTree = new TTree(tmpCharStr, "Channel Event Tree");
+      chEventTree->Branch("ChannelData", "ChannelData", &chData, 32000, 99);
+      chEventTrees.push_back(chEventTree);
+      //printf("size: %d\n", chEventTrees.size());
+   }
+
+   ChannelEventMap::iterator mi;
+   ChannelEventMap::iterator mb = fChannelEvents.begin();
+   ChannelEventMap::iterator me = fChannelEvents.end();
+
+   for (mi=mb; mi!=me; mi++) {
+      chData = &mi->second.fChannel;
+      chEventTrees[mi->first.fChannelId]->Fill();
+   }
+
+   if (rootfile) {
+
+      rootfile->cd();
+
+      for (int i=0; i!=NSTRIP; i++) {
+         chEventTrees[i]->Write();
+         chEventTrees[i]->Delete();
+      }
+   }
+}
+
+
+/**
+ *
+ */
+void Root::SaveEventTree()
+{
+   if (fChannelEvents.size() <= 0) {
+      printf("No channels to save\n");
+      return;
+   }
+
+   AnaEvent *anaEvent = new AnaEvent();
+   char tmpCharStr[14]; 
+
+   TTree *anaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
+   anaEventTree->Branch("AnaEvent", "AnaEvent", &anaEvent, 32000, 99);
+
+   ChannelEventMap::iterator mi;
+   ChannelEventMap::iterator mb = fChannelEvents.begin();
+   ChannelEventMap::iterator me = fChannelEvents.end();
+   ChannelEventMap::iterator nextmi;
+
+   for (mi=mb; mi!=me; mi++) {
+     
+      //mi->second.Print();
+
+      anaEvent->fEventId = mi->second.fEventId;
+      anaEvent->fChannels[mi->first.fChannelId] = mi->second.fChannel;
+
+      // Pointer to the next element, can be end of map
+      nextmi = mi; nextmi++;
+
+      if (anaEvent->fEventId < nextmi->second.fEventId || nextmi == me) {
+
+         anaEventTree->Fill();
+         //printf("Filled ana event\n");
+         //if (anaEvent->fChannels.size() >= 2) {
+         //   printf("XXX size: %d\n", anaEvent->fChannels.size());
+         //}
+
+         anaEvent->fChannels.clear();
+      }
+   }
+
+   if (rootfile) {
+      rootfile->cd();
+      anaEventTree->Write();
+      anaEventTree->Delete();
+   }
+
+   //delete anaEventTree;
+}
 
 
 //
@@ -133,9 +295,8 @@ Root::RootFile(char *filename){
 // Return      : 
 //
 int 
-Root::RootHistBook(StructRunInfo runinfo){
-
-
+Root::RootHistBook(StructRunInfo runinfo)
+{
   Char_t hname[100], htitle[100];
 
   Kinema->cd();
@@ -421,6 +582,13 @@ Root::CloseROOTFile(){
   if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write();
 
   */
+
+  if (fRawEventTree) {
+     rootfile->cd();
+     fRawEventTree->Write();
+     fRawEventTree->Delete();
+     //delete fRawEventTree;
+  }
 
   rootfile->Write();
 

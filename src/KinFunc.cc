@@ -1,13 +1,15 @@
 //
 // 
 //
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
 #include "Kinema.h"
+
+using namespace std;
 
 // defaults
 float x=50;   // [ug/cm*2]

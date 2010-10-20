@@ -1,6 +1,30 @@
 #ifndef ASYM_MAIN_H
 #define ASYM_MAIN_H
 
+#include <string>
+#include <sstream>
+#include <bitset>
+#include <getopt.h>
+
+//#include <stdio>
+//#include <stdlib.h>
+//#include <unistd.h>
+//#include <math.h>
+//#include <errno.h>
+//#include <signal.h>
+#include <iostream>
+//#include <fstream>
+//#include <getopt.h>
+//#include <string.h>
+
+#include "rhicpol.h"
+#include "rpoldata.h"
+
+#include "Asym.h"
+#include "AsymProcess.h"
+#include "AsymRead.h"
+#include "AsymROOT.h"
+
 // Default Values for Run Condition
 datprocStruct dproc = { 
     400,900,    // energy
@@ -21,6 +45,7 @@ datprocStruct dproc = {
     1,          // RECONFMODE
     0,          // RAMPMODE
     0,          // STUDYMODE
+    0,          // SAVETREES
     3,          // MassSigma banana curve cut within <MassSigma> away from the 12C mass
     2,          // MassSigma banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
     1.5e6,      // 1-sigma of 12C mass peak => 1.5e6 [keV] 
