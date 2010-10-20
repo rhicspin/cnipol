@@ -256,4 +256,3 @@ typedef struct {
 } configRhicDataStruct;
 
 #endif
-

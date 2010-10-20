@@ -12,8 +12,8 @@
 #include <signal.h>
 #include <string.h>
 using namespace std;
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include "rhicpol.h"
 #include "rpoldata.h"
 #include "Asym.h"

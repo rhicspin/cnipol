@@ -6,24 +6,7 @@
 //  Creation  :   08/01/2006
 //                
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include <iostream.h>
-#include "TMinuit.h"
-#include "TString.h"
-#include "TMath.h"
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
-#include "AsymROOT.h"
-#include "WeightedMean.h"
 #include "AsymErrorDetector.h"
-#include "AsymCalc.h"
 
 StructBunchCheck bnchchk;
 StructStripCheck strpchk;
@@ -52,7 +35,7 @@ DetectorAnomaly(){
   // limit fitting range between energy cuts. Be careful to change this
   // not to include small entry bins at the both edge of the histogram
   // into the fit.
-  extern StructHist Eslope;
+  //ds: extern StructHist Eslope;
   float dbin  = (Eslope.xmax - Eslope.xmin)/float(Eslope.nxbin);
   float min_t = 2*dproc.enel*MASS_12C*k2G*k2G + dbin; 
   float max_t = 2*dproc.eneu*MASS_12C*k2G*k2G - dbin;

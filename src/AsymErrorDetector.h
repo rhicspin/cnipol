@@ -1,10 +1,34 @@
 // Header file for AsymErrorDetector
 // Author   : Itaru Nakagawa
 // Creation : 08/01/2006         
-#include "AsymROOT.h"
 
 #ifndef ASYM_ERROR_DETECTOR_H
 #define ASYM_ERROR_DETECTOR_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <math.h>
+#include <errno.h>
+#include <signal.h>
+#include <string.h>
+#include <iostream>
+
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TMinuit.h"
+#include "TString.h"
+#include "TText.h"
+
+#include "rhicpol.h"
+#include "rpoldata.h"
+
+#include "Asym.h"
+//#include "AsymROOT.h"
+#include "WeightedMean.h"
+#include "AsymCalc.h"
+
 
 //=================================================================//
 //                     Strip Error Detector                        //

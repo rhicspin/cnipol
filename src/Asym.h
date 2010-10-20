@@ -2,16 +2,35 @@
 // Author   : Itaru Nakagawa
 // Creation : 11/18/2005         
 
+/**
+ *
+ * 15 Oct, 2010 - Dmitri Smirnov
+ *    - Modified readloop to take an object of Root class as an argument 
+ *
+ */
+
 #ifndef ASYM_STREAM_H
 #define ASYM_STREAM_H
-#include <string.h>       // This is funny, but need to be included here to 
-#include <AsymHeader.h>
+
+#include <bitset>
+
+#include "TDirectory.h"
+#include "TH1F.h"
+#include "TH1I.h"
+#include "TH2F.h"
+#include "TF1.h"
+#include "TLine.h"
+
+#include "rpoldata.h"
+
+#include "AsymHeader.h"
 
 using namespace std;      // declare string in structure
 
 #ifdef NULL
 #undef NULL
 #endif
+
 #define NULL 0
 
 #define NWORDS_PAWC 20000000       // paw memory size 
@@ -20,7 +39,6 @@ using namespace std;      // declare string in structure
 #define HMAXENE 1500.              // maximum energy for histograms
 #define HENEBIN 180                // number of energy bin in banana plot
 #define NTLIMIT 100000000
-
 
 
 // whole info for one event
@@ -67,6 +85,7 @@ typedef struct {
     int RECONFMODE;    // if 1 reconfigure from file 
     int RAMPMODE;      // if 1 prepare the histograms for ramp measurement
     int STUDYMODE;     // if 1 study mode
+bitset<3> SAVETREES;   // bitmask telling which ROOT trees to save
   float MassSigma;     // banana curve cut within <MassSigma> away from the 12C mass
   float MassSigmaAlt;  // banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
   float OneSigma;      // 1-sigma of 12C mass distribution in [keV]
@@ -326,9 +345,6 @@ extern "C" {
 
 }
 
-
-int readloop(void);
-
 int readdb(double RUNID);
 void tgtHistBook();
 int hist_book(char *);
@@ -420,13 +436,90 @@ extern int ndelim ;
 extern int TgtIndex[MAXDELIM];
 extern int nTgtIndex;
 
+
+struct StructHist {
+  int nxbin;
+  float xmin;
+  float xmax;
+  int nybin;
+  float ymin;
+  float ymax;
+};
+
+// global constants
+extern const float MSIZE;
+
+// global declarations
+extern StructHist Eslope;
+
+// Direcotories
+extern TDirectory * Run;
+extern TDirectory * Raw;
+extern TDirectory * FeedBack;
+extern TDirectory * Kinema;
+extern TDirectory * Bunch;
+extern TDirectory * ErrDet;
+extern TDirectory * Asymmetry;
+
+
+//
+//  Histogram Definitions 
+//
+//  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
+//  in Run06 which are target events. These histograms are deleted before ROOT file closing 
+//  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
+//
+// Run Dir
+extern TH2F * rate_vs_delim;
+
+// FeedBack Dir
+extern TH2F  * mdev_feedback;
+extern TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
+
+// Raw Directory
+extern TH1F * bunch_dist_raw;              // counts per bunch (raw)
+extern TH1F * strip_dist_raw;              // counts per strip (raw)
+extern TH1F * tdc_raw;                     // tdc (raw)
+extern TH1F * adc_raw;                     // adc (raw)
+extern TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
+extern TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
+
+// Kinema Dir
+extern TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
+extern TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
+extern TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
+extern TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
+extern TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
+extern TLine * energy_cut_l[NSTRIP];        // energy cut low 
+extern TLine * energy_cut_h[NSTRIP];        // energy cut high
+extern TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
+extern TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
+extern TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
+extern TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
+
+
+// Bunch Distribution
+extern TH1F * bunch_dist;                  // counts per bunch
+extern TH1F * wall_current_monitor;        // wall current monitor
+extern TH1F * specific_luminosity;         // specific luminosity
+
+// ErrDet dir
+extern TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
+extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
+extern TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+extern TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
+extern TH1I * good_carbon_events_strip;    // number of good carbon events per strip
+extern TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
+extern TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
+extern TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
+extern TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
+extern TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45 
+
+// Asymmetry dir
+extern TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
+extern TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
+extern TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
+extern TH2F * asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
+extern TH2F * scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
+
 #endif
-
-
-
-
-
-
-
-
-

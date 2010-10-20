@@ -6,23 +6,26 @@
 //  Creation  :   01/21/2006
 //                
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include <iostream.h>
-#include "TMinuit.h"
-#include "TString.h"
-#include "TMath.h"
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
-#include "WeightedMean.h"
-#include "AsymErrorDetector.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+//#include <math.h>
+//#include <errno.h>
+//#include <signal.h>
+//#include <string.h>
+//#include <iostream>
+//#include "TMinuit.h"
+//#include "TString.h"
+//#include "TMath.h"
+//#include "rhicpol.h"
+//#include "rpoldata.h"
+//#include "Asym.h"
+//#include "WeightedMean.h"
+//#include "AsymErrorDetector.h"
+
 #include "AsymCalc.h"
+
+using namespace std;
 
 StructSpeLumi SpeLumi;
 BunchAsym basym;

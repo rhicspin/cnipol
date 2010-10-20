@@ -1,11 +1,31 @@
 // Header file for AsymCalc
 // Author   : Itaru Nakagawa
 // Creation : 02/25/2006         
-#include <math.h>
-#include "AsymROOT.h"
 
 #ifndef ASYM_CALC_H
 #define ASYM_CALC_H
+
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+#include <math.h>
+//#include <errno.h>
+//#include <signal.h>
+//#include <string.h>
+//#include <iostream>
+
+//#include "TMinuit.h"
+//#include "TString.h"
+//#include "TMath.h"
+#include "TGraphErrors.h"
+
+#include "rhicpol.h"
+#include "rpoldata.h"
+
+#include "Asym.h"
+#include "WeightedMean.h"
+#include "AsymErrorDetector.h"
+//#include "AsymROOT.h"
 
 const int ASYM_DEFAULT=-999;
 extern const int ASYM_DEFAULT;
@@ -29,6 +49,7 @@ void StripAsymmetry();
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]);
 Double_t sin_phi(Double_t *x, Double_t *par);
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
+
 class AsymFit
 {
 
@@ -66,6 +87,7 @@ struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
     float phase[2];// spin vector angle w.r.t vertical axis [rad]
   } ave;
 } ;
+
 extern BunchAsym basym;
 struct StructSpeLumi {
   float Cnts[NBUNCH];
@@ -74,6 +96,7 @@ struct StructSpeLumi {
   float max;
   float min;
 } ;
+
 extern StructSpeLumi SpeLumi;
 int  CumulativeAsymmetry();
 int calcBunchAsymmetry();
@@ -127,9 +150,5 @@ extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par,
 	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
 	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
-
-
-
-
 
 #endif /* ASYM_CALC_H */
