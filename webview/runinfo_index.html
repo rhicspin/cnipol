@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Run Summary and Fast Offline Results (Index)</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="10%">
+
+<td width="80%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+
+<table border="0" cellpadding="2" cellspacing="2" align="center" width="100%">
+
+<?php
+foreach($rs as $runId => $s):
+?>
+
+<tr>
+   <td width=10%>
+   <a href=index.php?runid=<?=$runId?> ><?=$runId?></a>
+   <td width=90%>
+
+<tr>
+   <td width=10%>
+   <td width=90%>
+   NumChannels = <?=$s['NumChannels']?>
+
+<?php
+endforeach;
+?>
+
+</table>
+
+
+<pre>
+<?php //print_r($rc); ?>
+</pre>
+
+
+<!-- Main text ends here-->
+
+<td width="10%">
+
+<tr>
+<td width="10%">
+
+<td width="80%">
+
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+</div>
+
+<td width="10%">
+
+</table>
+
+</body>
+</html>
