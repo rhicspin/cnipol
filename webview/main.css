@@ -103,13 +103,13 @@ BODY {
 }
 
 H1.count:before {
-	content: counter(counterH1) " ";
+	/*content: counter(counterH1) " ";*/
 	counter-increment: counterH1;  /* Add 1 to chapter */
 }
 
 H1.count {
 	counter-reset: counterH2;      /* Set section to 0 */
-	background-color: #bbbbff;
+	/*background-color: #bbbbff;*/
 }
 
 H2.count:before {
@@ -120,7 +120,7 @@ H2.count:before {
 
 H2.count {
 	counter-reset: counterH3;      /* Set section to 0 */
-	background-color: #ccccff;
+	/*background-color: #ccccff;*/
 }
 
 H3.count:before {
