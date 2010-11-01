@@ -8,17 +8,20 @@
 #define AnaEvent_h
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "TObject.h"
 
 #include "AnaEventId.h"
 #include "ChannelData.h"
+#include "EventConfig.h"
 
 class AnaEvent;
 
 typedef std::vector<AnaEvent> AnaEventVec;
 typedef std::map<AnaEventId, AnaEvent> AnaEventMap;
+typedef std::set<AnaEvent, AnaEvent> AnaEventSet;
 
 /**
  *
@@ -36,6 +39,9 @@ public:
    AnaEvent();
    ~AnaEvent();
 
+   float GetEnergy(EventConfig *ec, ChannelDataPair &ch);
+   float GetEnergyIntegral(EventConfig *ec, ChannelDataPair &ch);
+   float GetTime(EventConfig *ec, ChannelDataPair &ch);
    virtual void Print(const Option_t* opt="") const;
 
    ClassDef(AnaEvent, 1)

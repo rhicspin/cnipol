@@ -1,21 +1,13 @@
 #ifndef ASYM_MAIN_H
 #define ASYM_MAIN_H
 
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
 #include <bitset>
 #include <getopt.h>
-
-//#include <stdio>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <math.h>
-//#include <errno.h>
-//#include <signal.h>
-#include <iostream>
-//#include <fstream>
-//#include <getopt.h>
-//#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "rhicpol.h"
 #include "rpoldata.h"
@@ -23,7 +15,7 @@
 #include "Asym.h"
 #include "AsymProcess.h"
 #include "AsymRead.h"
-#include "AsymROOT.h"
+
 
 // Default Values for Run Condition
 datprocStruct dproc = { 
@@ -130,7 +122,7 @@ StructRunInfo runinfo = {
     0, // MaxRevolution;
   'V', // target
   '-',// targetID
-    0, // TgtOperation (Initialization is done in Initialization() )
+    "", // TgtOperation (Initialization is done in Initialization() )
     {  // ActiveDetector[NDETECTOR]
       0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
     }, 
@@ -207,17 +199,12 @@ float phi[NSTRIP]={
 5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 } ;
 
-
-
-
-
 atdata_struct atdata;
 StructAverage average;
 StructFeedBack feedback;
 StructRunConst runconst;
 StructAnalysis anal;
 StructBunchPattern phx, str;
-
 
 int spinpat[120]; // spin pattern 120 bunches (ADO info)
 int fillpat[120]; // spin pattern 120 bunches (ADO info)
@@ -243,6 +230,7 @@ float ramptshift[500];  // ramp timing shift
 long int Nevcut=0;       // number of events after 1st cut (whole data)
 long int Nevtot=0;       // number of total events (whole data) 
 long int Nread=0;        // real total events (completely everything)
+int gMaxEventsUser=-1;    // number of events to process
 int Nskip=1;             // number of events to be skipped in data process 
 long int Ngood[120];     // number of events after carbon cut (each bunch)
 long int Ntotal[120];    // number of events before carbon cut (each bunch)

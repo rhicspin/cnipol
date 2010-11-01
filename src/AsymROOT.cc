@@ -11,19 +11,10 @@
  *
  */
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <math.h>
-//#include <errno.h>
-//#include <signal.h>
-//#include <string.h>
-//#include <iostream>
-//#include <fstream>
-//#include "rhicpol.h"
-//#include "rpoldata.h"
 
 #include "AsymROOT.h"
+
+using namespace std;
 
 // defaults
 const float MSIZE=1.2; // Marker size
@@ -97,17 +88,33 @@ TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
 /**
  *
  */
-Root::Root()
+Root::Root() : fChannelEventTrees(), fChannelEvents()
 {
+   fOutTreeFile  = 0;
+   fTreeFileId   = 0;
+
    fRawEventTree = 0;
+   fAnaEventTree = 0;
+
+   fAnaEvent     = new AnaEvent();
    fChannelEvent = new ChannelEvent();
+   fChannelData  = new ChannelData();
+   fEventConfig  = new EventConfig();
+
+   //printf("sizeof: %d\n", sizeof(int));
+   //printf("sizeof: %d\n", sizeof(long));
+   //printf("sizeof: %d\n", sizeof(ChannelEvent));
+   //printf("sizeof: %d\n", sizeof(processEvent));
+   //printf("sizeof: %d\n", sizeof(ChannelEventSet));
 }
+
 
 /** Default destructor. */
 Root::~Root()
 {
    //delete fRawEventTree;
 }
+
 
 //
 // Class name  : Root
@@ -118,8 +125,7 @@ Root::~Root()
 // Input       : char *filename
 // Return      : 
 //
-int 
-Root::RootFile(char *filename){
+int Root::RootFile(char *filename){
 
   rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
 
@@ -139,14 +145,51 @@ Root::RootFile(char *filename){
 /**
  *
  */
-void Root::CreateTree()
+void Root::CreateTrees()
 {
-   fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
+   if (fTreeFileId > 99) {
+      cout << "Error: Root::CreateTrees(): fTreeFileId too big" << endl;
+      exit(-1);
+   }
 
-   fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent, 32000, 99);
+   char filename[256];
+   sprintf(filename,"%s/%.3f_tree_%02d.root", gEnv["CNI_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
+
+   fOutTreeFile = new TFile(filename, "RECREATE", "ROOT Histogram file");
+
+   // Create trees with raw data
+   if (dproc.SAVETREES.test(0) ) {
+
+      fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
+      fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent);
+   }
+
+   // Create trees with channel events
+   if (dproc.SAVETREES.test(1) ) {
+
+      char tmpCharStr[19]; 
+
+      for (int i=0; i!=NSTRIP; i++) {
+         sprintf(tmpCharStr, "ChannelEventTree%02d", i);
+         TTree *chEventTree = new TTree(tmpCharStr, "Channel Event Tree");
+         chEventTree->Branch("ChannelData", "ChannelData", &fChannelData);
+         fChannelEventTrees.push_back(chEventTree);
+         //printf("size: %d\n", chEventTrees.size());
+      }
+   }
+
+   // Create tree with time ordered events
+   if (dproc.SAVETREES.test(2) ) {
+
+      fAnaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
+      fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
+   }
 }
 
 
+/**
+ *
+ */
 void Root::AddChannelEvent(processEvent &event)
 {
    fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
@@ -156,8 +199,44 @@ void Root::AddChannelEvent(processEvent &event)
    fChannelEvent->fChannel.fTdc          = event.tdc;
    fChannelEvent->fChannel.fIntgrl       = event.intg;
 
-   if (dproc.SAVETREES.test(2) || dproc.SAVETREES.test(3)) {
-      fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
+   if (dproc.SAVETREES.test(0))
+      fRawEventTree->Fill();
+
+   if (dproc.SAVETREES.test(1) || dproc.SAVETREES.test(2)) {
+      //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
+
+      fChannelEvents.insert(*fChannelEvent);
+      
+      //int sizeb = fChannelEvents.size()*sizeof(ChannelEvent);
+      int sizen = fChannelEvents.size();
+
+      // a factor of 2 comes from some root overhead
+      //if (sizeb > 100000000*2) {
+      if (sizen >= 12000000) { // corresponds to 300Mb if all 3 trees are saved
+
+         //printf("sizeb: %d\n", sizeb);
+         printf("sizen: %d\n", sizen);
+
+         //PrintEventMap();
+
+         //fEventConfig->PrintAsPhp();
+         fEventConfig->Write("EventConfig");
+         SaveChannelTrees();
+         SaveEventTree();
+
+         fTreeFileId++;
+         WriteTreeFile();
+         fOutTreeFile->Close();
+         fOutTreeFile->Delete();
+
+         //fOutTreeFile  = 0;
+         fRawEventTree = 0;
+         fAnaEventTree = 0;
+
+         fChannelEvents.clear();
+         //fChannelEvent
+         CreateTrees();
+      }
    }
 }
 
@@ -165,9 +244,34 @@ void Root::AddChannelEvent(processEvent &event)
 /**
  *
  */
-void Root::FillTree()
+void Root::WriteTreeFile()
 {
-   fRawEventTree->Fill();
+   fOutTreeFile->cd();
+
+   // Write run configuration object
+   //fEventConfig->PrintAsPhp();
+   fEventConfig->Write("EventConfig");
+
+   if (fRawEventTree) {
+      fRawEventTree->Write();
+      fRawEventTree->Delete();
+   }
+
+   if (fChannelEventTrees.size()>0) {
+      for (int i=0; i!=NSTRIP; i++) {
+         if (fChannelEventTrees[i]->GetEntries() > 0)
+            fChannelEventTrees[i]->Write();
+         fChannelEventTrees[i]->Delete();
+      }
+      fChannelEventTrees.clear();
+   }
+
+   if (fAnaEventTree) {
+      fAnaEventTree->Write();
+      fAnaEventTree->Delete();
+      //delete fAnaEventTree;
+   }
+   
 }
 
 
@@ -176,13 +280,13 @@ void Root::FillTree()
  */
 void Root::PrintEventMap()
 {
-   ChannelEventMap::const_iterator mi;
-   ChannelEventMap::const_iterator mb = fChannelEvents.begin();
-   ChannelEventMap::const_iterator me = fChannelEvents.end();
+   ChannelEventSet::const_iterator mi;
+   ChannelEventSet::const_iterator mb = fChannelEvents.begin();
+   ChannelEventSet::const_iterator me = fChannelEvents.end();
 
    for (mi=mb; mi!=me; mi++) {
       //mi->first.Print();
-      mi->second.Print();
+      mi->Print();
    }
 }
 
@@ -192,42 +296,23 @@ void Root::PrintEventMap()
  */
 void Root::SaveChannelTrees()
 {
+   if (!dproc.SAVETREES.test(1)) return;
+
    if (fChannelEvents.size() <= 0) {
-      printf("No channels to save\n");
+      printf("No channels to save in ChannelTree\n");
       return;
    }
 
-   vector<TTree*> chEventTrees;
-   TTree *chEventTree = 0;
-   //ChannelEvent *chEvent = new ChannelEvent();
-   ChannelData *chData = new ChannelData();
-   char tmpCharStr[19]; 
+   ChannelEventSet::iterator mi;
+   ChannelEventSet::iterator mb = fChannelEvents.begin();
+   ChannelEventSet::iterator me = fChannelEvents.end();
 
-   for (int i=0; i!=NSTRIP; i++) {
-      sprintf(tmpCharStr, "ChannelEventTree%02d", i);
-      chEventTree = new TTree(tmpCharStr, "Channel Event Tree");
-      chEventTree->Branch("ChannelData", "ChannelData", &chData, 32000, 99);
-      chEventTrees.push_back(chEventTree);
-      //printf("size: %d\n", chEventTrees.size());
-   }
-
-   ChannelEventMap::iterator mi;
-   ChannelEventMap::iterator mb = fChannelEvents.begin();
-   ChannelEventMap::iterator me = fChannelEvents.end();
+   ChannelEvent *chev;
 
    for (mi=mb; mi!=me; mi++) {
-      chData = &mi->second.fChannel;
-      chEventTrees[mi->first.fChannelId]->Fill();
-   }
-
-   if (rootfile) {
-
-      rootfile->cd();
-
-      for (int i=0; i!=NSTRIP; i++) {
-         chEventTrees[i]->Write();
-         chEventTrees[i]->Delete();
-      }
+      *fChannelData = (mi->fChannel);
+      //mi->fChannel.Print();
+      fChannelEventTrees[mi->fEventId.fChannelId]->Fill();
    }
 }
 
@@ -237,51 +322,45 @@ void Root::SaveChannelTrees()
  */
 void Root::SaveEventTree()
 {
+   if (!dproc.SAVETREES.test(2)) return;
+
    if (fChannelEvents.size() <= 0) {
-      printf("No channels to save\n");
+      printf("No channels to save in EventTree\n");
       return;
    }
 
-   AnaEvent *anaEvent = new AnaEvent();
-   char tmpCharStr[14]; 
-
-   TTree *anaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
-   anaEventTree->Branch("AnaEvent", "AnaEvent", &anaEvent, 32000, 99);
-
-   ChannelEventMap::iterator mi;
-   ChannelEventMap::iterator mb = fChannelEvents.begin();
-   ChannelEventMap::iterator me = fChannelEvents.end();
-   ChannelEventMap::iterator nextmi;
+   ChannelEventSet::iterator mi;
+   ChannelEventSet::iterator mb = fChannelEvents.begin();
+   ChannelEventSet::iterator me = fChannelEvents.end();
+   ChannelEventSet::iterator nextmi;
 
    for (mi=mb; mi!=me; mi++) {
      
-      //mi->second.Print();
+      //mi->Print();
 
-      anaEvent->fEventId = mi->second.fEventId;
-      anaEvent->fChannels[mi->first.fChannelId] = mi->second.fChannel;
+      fAnaEvent->fEventId = mi->fEventId;
+      fAnaEvent->fChannels[mi->fEventId.fChannelId] = mi->fChannel;
 
       // Pointer to the next element, can be end of map
       nextmi = mi; nextmi++;
 
-      if (anaEvent->fEventId < nextmi->second.fEventId || nextmi == me) {
+      //printf("check event ids\n");
+      //fAnaEvent->fEventId.Print();
+      //printf("\t");
+      //nextmi->fEventId.Print();
+      //printf("\n\n");
 
-         anaEventTree->Fill();
+      if (fAnaEvent->fEventId < nextmi->fEventId || nextmi == me) {
+
+         fAnaEventTree->Fill();
          //printf("Filled ana event\n");
-         //if (anaEvent->fChannels.size() >= 2) {
-         //   printf("XXX size: %d\n", anaEvent->fChannels.size());
+         //if (fAnaEvent->fChannels.size() >= 2) {
+         //   printf("XXX size: %d\n", fAnaEvent->fChannels.size());
          //}
 
-         anaEvent->fChannels.clear();
+         fAnaEvent->fChannels.clear();
       }
    }
-
-   if (rootfile) {
-      rootfile->cd();
-      anaEventTree->Write();
-      anaEventTree->Delete();
-   }
-
-   //delete anaEventTree;
 }
 
 
@@ -298,8 +377,11 @@ int
 Root::RootHistBook(StructRunInfo runinfo)
 {
   Char_t hname[100], htitle[100];
+ 
+  rootfile->cd();
 
   Kinema->cd();
+
   // 1-dim Energy Spectrum
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
   for (int i=0; i<NDETECTOR; i++) {
@@ -311,7 +393,6 @@ Root::RootHistBook(StructRunInfo runinfo)
   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
   energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
-
 
   // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
   // target events strip [73 - 76].
@@ -346,10 +427,7 @@ Root::RootHistBook(StructRunInfo runinfo)
     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_yescut[i] -> SetLineColor(2);
 
-
-
   }
-
 
   // FeedBack Directory
   FeedBack->cd();
@@ -448,9 +526,11 @@ Root::RootHistBook(StructRunInfo runinfo)
 // Return      : 
 //
 int 
-Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback){
-
+Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback)
+{
+  rootfile->cd();
   Kinema->cd();
+
   char formula[100],fname[100];
   float low, high, sqrte, sigma;
   int Color=2;
@@ -545,18 +625,20 @@ Root::DeleteHistogram(){
 // Input       : 
 // Return      : 
 //
-int 
-Root::CloseROOTFile(){
-  
-
+int Root::CloseROOTFile()
+{
+  rootfile->cd();
   Kinema->cd();
+
   TLine * l;
+
   for (int i=0;i<NSTRIP; i++){
     if (t_vs_e[i]) {
       for (int j=0; j<2; j++){
 	if (banana_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_l[i][j]);
 	if (banana_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_h[i][j]);
       }
+
       if (energy_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_l[i]);
       if (energy_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_h[i]);
     }
@@ -583,18 +665,29 @@ Root::CloseROOTFile(){
 
   */
 
-  if (fRawEventTree) {
-     rootfile->cd();
-     fRawEventTree->Write();
-     fRawEventTree->Delete();
-     //delete fRawEventTree;
-  }
+  //if (fRawEventTree) {
+  //   fOutTreeFile->cd();
+  //   fRawEventTree->Write();
+  //   fRawEventTree->Delete();
+  //   //delete fRawEventTree;
+  //}
 
+  rootfile->cd();
   rootfile->Write();
 
+  //fEventConfig->PrintAsPhp();
+  fEventConfig->Write("EventConfig");
 
   // close rootfile
   rootfile->Close();
+
+  if (dproc.SAVETREES.any()) { 
+     SaveChannelTrees();
+     SaveEventTree();
+     WriteTreeFile();
+     fOutTreeFile->Close();
+     fOutTreeFile->Delete();
+  }
 
   return 0;
 

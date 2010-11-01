@@ -1,6 +1,8 @@
 #ifndef ASYM_ROOT_H
 #define ASYM_ROOT_H
 
+#include <iostream>
+
 #include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -11,6 +13,7 @@
 #include "Asym.h"
 #include "AnaEvent.h"
 #include "ChannelEvent.h"
+#include "EventConfig.h"
 
 
 class Root
@@ -19,14 +22,25 @@ private:
 
 protected:
 
-   TTree        *fRawEventTree;
+   TFile             *rootfile;
+   TFile             *fOutTreeFile;
 
+   UInt_t             fTreeFileId;
+
+   TTree             *fRawEventTree;
+   TTree             *fAnaEventTree;
+   vector<TTree*>     fChannelEventTrees;
+
+   AnaEvent          *fAnaEvent;
+   ChannelEvent      *fChannelEvent;
+   ChannelData       *fChannelData;
+   //ChannelEventMap   fChannelEvents;
+   ChannelEventSet    fChannelEvents;
+  
 public:
 
-   TFile           *rootfile;
-   ChannelEvent    *fChannelEvent;
-   ChannelEventMap  fChannelEvents;
-  
+   EventConfig       *fEventConfig;
+
 public:
 
    Root();
@@ -37,12 +51,12 @@ public:
    int  RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback);
    int  DeleteHistogram();
    int  CloseROOTFile();
-   void CreateTree();
+   void CreateTrees();
    void AddChannelEvent(processEvent &event);
-   void FillTree();
    void PrintEventMap();
    void SaveChannelTrees();
    void SaveEventTree();
+   void WriteTreeFile();
 
 };
 

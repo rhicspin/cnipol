@@ -35,3 +35,11 @@ void ChannelEvent::Print(const Option_t* opt) const
    fChannel.Print();
    printf("\n");
 }
+
+
+bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
+{
+   if (ch1.fEventId < ch2.fEventId) return true;
+
+   return false;
+}

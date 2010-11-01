@@ -5,22 +5,22 @@
 #ifndef ASYM_PROCESS_H
 #define ASYM_PROCESS_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
 #include <errno.h>
 #include <signal.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 #include <fstream>
 
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-//#include "Asym.h"
+#include "Asym.h"
 #include "Kinema.h"
 #include "AsymROOT.h"
+#include "AsymROOTGlobals.h"
 
 //
 // Class name  : 

@@ -143,6 +143,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       // Wall Current Monitor Operation
       average.total   = 0;
       average.counter = 0;
+
       for (j=0;j<120;j++){
         wall_current_monitor->Fill(j,wcmdist[j]);
           HHF1(10030,(float)j, (float)wcmdist[j]);
@@ -158,8 +159,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       // ---------------------------------------------------- //
       //   Root Histogram Booking using feedback results      //
       // ---------------------------------------------------- //
-      Root rt;
-      rt.RootHistBook2(dproc, runconst, feedback);
+      //Root rt;
+      gMyRoot.RootHistBook2(dproc, runconst, feedback);
 
 
       // Online Banana Cut
@@ -238,8 +239,10 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
         // ========================================
         Integ = (event->intg) << (2+cfginfo->data.CSR.split.iDiv);
 
+        //ds: Some manipulations with ADC counts...
         float amp_int = (Integ - cfginfo->data.chan[st].A0) / cfginfo->data.chan[st].A1;
-
+         
+        //printf();
 
         // ========================================
         //              Energy
@@ -251,7 +254,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
         // energy deposit in Si strip
         //ds: Are we using the same acoef??? for amp and int?
         float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
-        float edepo_int = cfginfo->data.chan[st].acoef * (amp_int+rand2-0.5);
+        //ds: edepo_int = deposited energy in keV?
+        //float edepo_int = cfginfo->data.chan[st].acoef * (amp_int+rand2-0.5);
+        float edepo_int = cfginfo->data.chan[st].ecoef * (amp_int+rand2-0.5);
 
         // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry
         e = ekin(edepo, cfginfo->data.chan[st].dwidth);
@@ -271,12 +276,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
         }
 
         HHF1(10400+si+1, e, 1.);
+
         if (spinpat[event->bid]>0) {
             HHF1(10500+st+1,e,1.);
         } else {
             HHF1(10600+st+1,e,1.);
         }
-
 
         // ========================================
         //              Time Of Flight
@@ -298,8 +303,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
             t =  runconst.Ct * (event->tdc + rand1 - 0.5) - dproc.tshift ;
 
         }
-
-
 
         delt = t - runconst.E2T/sqrt_e;
 
@@ -344,7 +347,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
         }
         */
 
-
         // integral vs. amplitede
         if (dproc.AMODE ==1){
             HHF2(12200+st+1,event->amp,Integ,1.);
@@ -358,9 +360,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
             HHF1(10460+si+1, 2*11.18*e_int/1000000.,1.);
         }
 
-
         // t vs. E (banana with no cut)
-        t_vs_e[st] -> Fill(e, t);
+        //ds:
+        //t_vs_e[st] -> Fill(e, t);
+        //ds:
+        t_vs_e[st] -> Fill(e_int, t);
 
         // =========================================
         // Ntuple fill
@@ -419,7 +423,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
             }
 
-
             // fine -t bins
             int spbit = 2;
             if (spinpat[event->bid]==1) {
@@ -437,8 +440,6 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
                 }
             }
             HHF1(35000+st+100*spbit, iebin, 1.);
-
-
 
             // Strip distribution (time cut, before Energy Cut)
             HHF1(10310+si+1,(float)(st-si*12)+1,1.);
@@ -545,27 +546,20 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
                          (float)event->bid/2. + (float)event->rev0 * 60., 1.);
                 }
 
-
             } // Emin<e<Emax Cut
 
         } // Banana Cut
 
     } // tdc>6ns
 
-
-
-
     // Target Histogram
     if ((st>=72)&&(st<=75)) {
         HHF2(25060, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
     }
 
-
     return(0);
 
 } // end-of-event_process()
-
-
 
 
 //
@@ -602,7 +596,6 @@ KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfgi
   return 1;
 
 }
-
 
 
 //
@@ -642,5 +635,3 @@ SpinTuneOutput(int bid, double si){
   return 0;
 
 }
-
-
