@@ -16,8 +16,11 @@
  */
 
 #include "AsymMain.h"
+#include "AsymMainGlobals.h"
 
 using namespace std;
+
+Root gMyRoot;
 
 // =================
 // beginning of main
@@ -71,7 +74,7 @@ int main (int argc, char *argv[])
       {0, 0, 0, 0}
    };
 
-   while ((c = getopt_long(argc, argv, "?f:n:ho:rt:m:e:d:baCDTABZF:MNW:UGR:S",
+   while ((c = getopt_long(argc, argv, "?f:n:s:ho:rt:m:e:d:baCDTABZF:MNW:UGR:S",
                            long_options, &option_index))!=-1)
    {
       switch (c) {
@@ -80,7 +83,11 @@ int main (int argc, char *argv[])
          cout << "Usage of " << argv[0] <<endl;
          cout << " -h(or?)                : print this help" <<endl;
          cout << " -f <filename>          : input data file name " <<endl;
-         cout << " -n <number>            : evnt skip (n=1 noskip)" <<endl;
+         cout << " -n <number>            : maximum number of events to process"
+              << " (default \"-n -1\" all events)" <<endl;
+         cout << " -s <number>            : only every <number> event will be"
+              << " processed (default \"-s 1\" no skip)" <<endl;
+
          cout << " -o <filename>          : Output hbk file" <<endl;
          //            cout << " -r <filename>        : ramp timing file" <<endl;
          cout << " -t <time shift>        : TOF timing shift in [ns]" <<endl;
@@ -117,11 +124,15 @@ int main (int argc, char *argv[])
          strcat(datafile, datadir);
          strcat(datafile,     "/");
          strcat(datafile,   ifile);
-         fprintf(stdout,"Input data file : %s\n",datafile);
+         fprintf(stdout,"Input data file : %s\n", datafile);
          break;
       case 'n':
+         gMaxEventsUser = atol(optarg);
+         fprintf(stdout, "Max events to process: %d\n", gMaxEventsUser);
+         break;
+      case 's':
          Nskip = atol(optarg);
-         fprintf(stdout,"Events skiped by : %d\n",Nskip);
+         fprintf(stdout, "Events to skip: %d\n", Nskip);
          break;
       case 'o': // determine output hbk file
          sprintf(hbk_outfile, optarg);
@@ -234,14 +245,12 @@ int main (int argc, char *argv[])
       }
    }
 
-   //ds
-   //exit(0);
-
    // Extract RunID from input filename
    int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
    char RunID[chrlen];
-   strncpy(RunID,ifile,chrlen); RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
-   runinfo.RUNID = strtod(RunID,NULL); // return 0 when "RunID" contains alphabetical char.
+   strncpy(RunID, ifile, chrlen);
+   RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
+   runinfo.RUNID = strtod(RunID, NULL); // return 0 when "RunID" contains alphabetical char.
 
    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
    if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
@@ -273,55 +282,68 @@ int main (int argc, char *argv[])
    // ---------------------------------------------------- //
    //                 Root Histogram Booking               //
    // ---------------------------------------------------- //
-   char filename[50];
-   Root rt;
-   sprintf(filename,"%.3f.root",runinfo.RUNID);
-   fprintf(stdout,"Booking ROOT histgrams ...\n");
-   if (rt.RootFile(filename) != 0) {
+   char filename[256];
+   const char* tmpEnv = getenv("CNI_RESULTS_DIR");
+
+   if (tmpEnv) gEnv["CNI_RESULTS_DIR"] = tmpEnv;
+   else        gEnv["CNI_RESULTS_DIR"] = ".";
+
+   gEnv["CNI_RESULTS_DIR"].append("/");
+   gEnv["CNI_RESULTS_DIR"].append(RunID);
+
+   if (gEnv["CNI_RESULTS_DIR"].size() > 200) {
+      printf("ERROR: Results dir name too long\n"); exit(-1);
+   }
+
+   umask(0);
+   if (mkdir(gEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0) 
+      printf("WARNING: Perhaps dir already exists: %s\n", gEnv["CNI_RESULTS_DIR"].c_str());
+
+   sprintf(filename, "%s/%.3f.root", gEnv["CNI_RESULTS_DIR"].data(), runinfo.RUNID);
+
+   fprintf(stdout, "Booking ROOT histgrams: %s\n", filename);
+
+   if (gMyRoot.RootFile(filename) != 0) {
        perror("Error: RootFile()");
        exit(-1);
    }
 
-   rt.RootHistBook(runinfo);
+   gMyRoot.RootHistBook(runinfo);
 
    // Create tree if requested
-   if (dproc.SAVETREES.test(0)) {
-      rt.CreateTree();
-   }
+   if (dproc.SAVETREES.any()) { gMyRoot.CreateTrees(); }
 
    // ---------------------------------------------------- //
    // Quick Scan and Fit for tshift and mass sigma fit     //
    // ---------------------------------------------------- //
    if (dproc.FEEDBACKMODE){
-     printf("Feedback Sparcification Factor = 1/%d \n",dproc.thinout);
+
+     printf("Feedback Sparcification Factor = 1/%d \n", dproc.thinout);
+
      if (readloop() != 0) {
        perror("Error: readloop");
        exit(-1);
      }
+
      Flag.feedback=0;
+
+   } else {
+      // ---------------------------------------------------- //
+      //                  Main Event Loop                     //
+      // ---------------------------------------------------- //
+      if (readloop() != 0) {
+         perror("Error: readloop");
+         exit(-1);
+      }
    }
-
-   // ---------------------------------------------------- //
-   //                  Main Event Loop                     //
-   // ---------------------------------------------------- //
-   if (readloop(&rt) != 0) {
-       perror("Error: readloop");
-       exit(-1);
-   }
-
-   //rt.PrintEventMap();
-   if (dproc.SAVETREES.test(1)) rt.SaveChannelTrees();
-   if (dproc.SAVETREES.test(2)) rt.SaveEventTree();
-
 
    // ---------------------------------------------------- //
    //        Delete Unnecessary ROOT Histograms            //
    // ---------------------------------------------------- //
-   if (rt.DeleteHistogram() !=0) {
+   if (gMyRoot.DeleteHistogram() !=0) {
        perror("Error: DeleteHistogram()");
        exit(-1);
    }
-
 
    // ---------------------------------------------------- //
    //                  Closing Histogram File              //
@@ -334,7 +356,7 @@ int main (int argc, char *argv[])
    // ---------------------------------------------------- //
    //                     Closing ROOT File                //
    // ---------------------------------------------------- //
-   if (rt.CloseROOTFile() !=0) {
+   if (gMyRoot.CloseROOTFile() !=0) {
        perror("Error: CloseROOTFile()");
        exit(-1);
    }
@@ -344,12 +366,11 @@ int main (int argc, char *argv[])
 } // end of main
 
 
-
 // ===================================
 // for Bunch by Bunch base analysis
 // ===================================
-int BunchSelect(int bid){
-
+int BunchSelect(int bid)
+{
   int go = 0;
   //  int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,
@@ -377,9 +398,8 @@ int BunchSelect(int bid){
 // Input       : char RunID[]
 // Return      :
 //
-int
-GetPolarimetryID_and_RHICBeam(char RunID[]){
-
+int GetPolarimetryID_and_RHICBeam(char RunID[])
+{
   char ID = *(strrchr(RunID,'.')+1);
 
   switch (ID) {
@@ -414,13 +434,13 @@ GetPolarimetryID_and_RHICBeam(char RunID[]){
 }
 
 
-
 // =========================
 // Read the parameter file
 // =========================
 
 // Ramp timing file
-int read_ramptiming(char *filename){
+int read_ramptiming(char *filename)
+{
     int i, strip;
 
     fprintf(stdout,"\nReading ... cut parameter file : %s \n", filename);
@@ -447,8 +467,8 @@ int read_ramptiming(char *filename){
 }
 
 // Calibration parameter
-void reConfig(recordConfigRhicStruct *cfginfo){
-
+void reConfig(recordConfigRhicStruct *cfginfo)
+{
     int st,strip;
     float t0,acoef,edead,ecoef,A0,A1,iasigma;
 
@@ -467,7 +487,6 @@ void reConfig(recordConfigRhicStruct *cfginfo){
 
     cout << "Reading configuration info from : " << reConfFile <<endl;
 
-
     char temp[13][20];
     char *tempchar, *stripchar, *T0char;
 
@@ -475,7 +494,6 @@ void reConfig(recordConfigRhicStruct *cfginfo){
     int stripn;
     float t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
     float c0n, c1n, c2n, c3n, c4n;
-
 
     int linen=0;
     while (!configFile.eof()) {
@@ -526,7 +544,6 @@ void reConfig(recordConfigRhicStruct *cfginfo){
         linen ++;
     }
 
-
     configFile.close();
 }
 
@@ -539,55 +556,50 @@ void reConfig(recordConfigRhicStruct *cfginfo){
 // Input       : int mask.detector
 // Return      : runinfo.ActiveDetector[i] remains masked strip configulation
 //
-int ConfigureActiveStrip(int mask){
+int ConfigureActiveStrip(int mask)
+{
+   // Disable Detector First
+   for (int i=0; i<NDETECTOR; i++) {
+     if ((~mask>>i)&1) {
+       runinfo.ActiveDetector[i] = 0x000;
+       for (int j=0;j<NSTRIP_PER_DETECTOR; j++) {
+         runinfo.NActiveStrip--;
+         runinfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
+       }
+     }
+   }
 
-  // Disable Detector First
-  for (int i=0; i<NDETECTOR; i++) {
-    if ((~mask>>i)&1) {
-      runinfo.ActiveDetector[i] = 0x000;
-      for (int j=0;j<NSTRIP_PER_DETECTOR; j++) {
-        runinfo.NActiveStrip--;
-        runinfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
-      }
-    }
-  }
+   // Configure Active Strips
+   int det, strip=0;
+   for (int i=0; i<runinfo.NDisableStrip; i++) {
+     det   = runinfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
 
-  // Configure Active Strips
-  int det, strip=0;
-  for (int i=0; i<runinfo.NDisableStrip; i++) {
-    det   = runinfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
+     // skip if the detector is already disabled
+     if ((mask>>det)&1) {
+       strip = runinfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
+       runinfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
+       runinfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
+       runinfo.NActiveStrip--;
+     }
 
-    // skip if the detector is already disabled
-    if ((mask>>det)&1) {
-      strip = runinfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
-      runinfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
-      runinfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
-      runinfo.NActiveStrip--;
-    }
+   } // end-of-for(runinof.NDisableStrip) loop
 
-  } // end-of-for(runinof.NDisableStrip) loop
+   // Active Detector and Strip Configulation
+   printf("ReConfigured Active Detector =");
+   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
+   printf("\n");
+   //    printf("Active Strip Config =");
+   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
+   //    printf("\n");
+   printf("Reconfigured Active Strip Config =");
+   for (int i=0; i<NSTRIP; i++) {
+     if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
+     printf("%d", runinfo.ActiveStrip[i]);
+   }
+   printf("\n");
 
-
-
-    // Active Detector and Strip Configulation
-    printf("ReConfigured Active Detector =");
-    for (int i=0; i<NDETECTOR; i++)  printf(" %1d", runinfo.ActiveDetector[i] ? 1 : 0 );
-    printf("\n");
-    //    printf("Active Strip Config =");
-    //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", runinfo.ActiveDetector[i]);
-    //    printf("\n");
-    printf("Reconfigured Active Strip Config =");
-    for (int i=0; i<NSTRIP; i++) {
-      if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
-      printf("%d", runinfo.ActiveStrip[i]);
-    }
-    printf("\n");
-
-
-
-  return 0;
+   return 0;
 }
-
 
 
 //
@@ -613,14 +625,13 @@ DisabledDet(int det){
 */
 
 
-
 // ===================
 // square root formula
 // ===================
 // A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
 // elastic Carbons are scattered off more in Right for Up
-int sqass(float A, float B, float C, float D, float *asym, float *easym) {
-
+int sqass(float A, float B, float C, float D, float *asym, float *easym)
+{
     float den;
     den = sqrt(A*B) + sqrt(C*D);
     if ((A*B==0.)&&(C*D==0.)) {
@@ -633,10 +644,6 @@ int sqass(float A, float B, float C, float D, float *asym, float *easym) {
 }
 
 
-
-
-
-
 //
 // Class name  :
 // Method name : Initialization
@@ -646,25 +653,27 @@ int sqass(float A, float B, float C, float D, float *asym, float *easym) {
 // Input       :
 // Return      :
 //
-int
-Initialization(){
-
-
+int Initialization()
+{
   for (int i=0; i<NSTRIP; i++) {
     feedback.mdev[i] = 0.;
     feedback.RMS[i] = dproc.OneSigma ;
   }
-  runinfo.TgtOperation = "fixed";
+
+  //runinfo.TgtOperation = "fixed";
+  strcpy(runinfo.TgtOperation, "fixed");
 
   // Initiarize Strip counters
   for (int i=0; i<NSTRIP; i++) {
-    for (int j=0; j<3; j++) cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
+
+    for (int j=0; j<3; j++)
+       cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
+
     for (int j=0; j<3; j++) {
-      for(int kk=0;kk<MAXDELIM;kk++) cntr_tgt.reg.NStrip[kk][j][i] = 0;
+       for(int kk=0;kk<MAXDELIM;kk++)
+          cntr_tgt.reg.NStrip[kk][j][i] = 0;
     }
   }
 
   return 1;
-
 }
-

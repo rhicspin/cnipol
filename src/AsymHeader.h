@@ -1,4 +1,7 @@
 
+#ifndef ASYM_HEADER_H
+#define ASYM_HEADER_H
+
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
 #define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
@@ -21,3 +24,5 @@
 
 const int TGT_OPERATION=6;         // if nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed"
 const int TOT_WFD_CH=NSTRIP+NTGTWFD;//Total WFD channels including target WFD channels.
+
+#endif

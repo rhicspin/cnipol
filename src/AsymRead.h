@@ -3,6 +3,9 @@
  * 15 Oct, 2010 - Dmitri Smirnov
  *    - Modified readloop to take an object of Root class as an argument 
  *
+ * 18 Oct, 2010 - Dmitri Smirnov
+ *    - Made the Root object global, redefined readloop back
+ *
  */
 
 #ifndef ASYM_READ_H
@@ -20,10 +23,13 @@
 
 #include "rhicpol.h"
 #include "rpoldata.h"
+
+#include "Asym.h"
 #include "AsymProcess.h"
 #include "AsymRecover.h"
-#include "AsymROOT.h"
+//#include "AsymROOT.h"
+#include "AsymROOTGlobals.h"
 
-int readloop(Root *root=0);
+int readloop();
 
 #endif

@@ -29,6 +29,7 @@ void AnaEventId::Print(const Option_t* opt) const
    opt = "";
 
    printf("AnaEventId:\n");
+   printf("RevId, BuId: %12d, %12d", fRevolutionId, fBunchId);
 }
 
 
@@ -41,30 +42,30 @@ AnaEventId & AnaEventId::operator=(const AnaEventId &evId)
 }
 
 
-//bool AnaEventId::operator<(const AnaEventId &anaEvId, const ChannelEventId &evId)
-bool AnaEventId::operator<(const ChannelEventId &evId)
+//bool AnaEventId::operator<(const AnaEventId &anaEvId, const ChannelEventId &chEvId)
+bool AnaEventId::operator<(const ChannelEventId &chEvId)
 {
-   if (this->fRevolutionId < evId.fRevolutionId) return true;
-   else if (this->fRevolutionId == evId.fRevolutionId) {
+   if (this->fRevolutionId < chEvId.fRevolutionId) return true;
+   else if (this->fRevolutionId == chEvId.fRevolutionId) {
 
-      if (this->fBunchId < evId.fBunchId) return true;
+      if (this->fBunchId < chEvId.fBunchId) return true;
       else return false;
 
    } else return false;
 }
 
 
-AnaEventId & AnaEventId::operator=(const ChannelEventId &evId)
+AnaEventId & AnaEventId::operator=(const ChannelEventId &chEvId)
 {
-   this->fRevolutionId = evId.fRevolutionId;
-   this->fBunchId      = evId.fBunchId;
+   this->fRevolutionId = chEvId.fRevolutionId;
+   this->fBunchId      = chEvId.fBunchId;
 
    return *this;
 }
 
 
-void AnaEventId::Assign(const ChannelEventId &evId)
+void AnaEventId::Assign(const ChannelEventId &chEvId)
 {
-   fRevolutionId = evId.fRevolutionId;
-   fBunchId      = evId.fBunchId;
+   fRevolutionId = chEvId.fRevolutionId;
+   fBunchId      = chEvId.fBunchId;
 }

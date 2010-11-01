@@ -29,7 +29,9 @@ public:
 
    virtual void Print(const Option_t* opt="") const;
    //static bool  Compare(const ChannelEventId &id1, const ChannelEventId &id2);
-   bool  operator()(const ChannelEventId &id1, const ChannelEventId &id2);
+   bool operator()(const ChannelEventId &id1, const ChannelEventId &id2);
+   //bool operator<(const ChannelEventId &chEvId) const;
+   friend bool operator<(const ChannelEventId &chEvId1, const ChannelEventId &chEvId2);
 
    ClassDef(ChannelEventId, 1)
 };

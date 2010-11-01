@@ -23,7 +23,7 @@ CXX           = g++
 CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
-CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR)
+CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIDIR)/src
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g
@@ -68,7 +68,7 @@ snns2root: $(SRC_DIR)/snns2root.o
 
 $(CNIANA_DICT_SRC): $(HDRS) $(INC_DIR)/LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
-	@rootcint -f $(CNIANA_DICT_SRC) -c $^
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(CNIDIR)/src $^
 
 main-%: main-%.$(ObjSuf) $(OBJS)
 	$(LD) $(LDFLAGS) $< $(OBJS) $(LIBS) -o $(BIN_DIR)/$*$(ExeSuf)

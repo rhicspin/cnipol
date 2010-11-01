@@ -7,7 +7,9 @@
 #ifndef ChannelEvent_h
 #define ChannelEvent_h
 
+#include <limits.h>
 #include <map>
+#include <set>
 #include <vector>
 
 #include "TObject.h"
@@ -19,6 +21,7 @@ class ChannelEvent;
 
 typedef std::vector<ChannelEvent> ChannelEventVec;
 typedef std::map<ChannelEventId, ChannelEvent, ChannelEventId> ChannelEventMap;
+typedef std::set<ChannelEvent, ChannelEvent> ChannelEventSet;
 
 /**
  *
@@ -35,7 +38,9 @@ public:
    ChannelEvent();
    ~ChannelEvent();
 
-   virtual void Print(const Option_t* opt="") const;
+   //virtual void Print(const Option_t* opt="") const;
+   void Print(const Option_t* opt="") const;
+   bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
 
    ClassDef(ChannelEvent, 1)
 };

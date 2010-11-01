@@ -14,6 +14,7 @@
 
 #include <bitset>
 
+#include "TBuffer.h"
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH1I.h"
@@ -22,7 +23,6 @@
 #include "TLine.h"
 
 #include "rpoldata.h"
-
 #include "AsymHeader.h"
 
 using namespace std;      // declare string in structure
@@ -40,6 +40,7 @@ using namespace std;      // declare string in structure
 #define HENEBIN 180                // number of energy bin in banana plot
 #define NTLIMIT 100000000
 
+extern std::map<std::string, std::string> gEnv;
 
 // whole info for one event
 typedef struct {
@@ -85,7 +86,7 @@ typedef struct {
     int RECONFMODE;    // if 1 reconfigure from file 
     int RAMPMODE;      // if 1 prepare the histograms for ramp measurement
     int STUDYMODE;     // if 1 study mode
-bitset<3> SAVETREES;   // bitmask telling which ROOT trees to save
+std::bitset<3> SAVETREES;   // bitmask telling which ROOT trees to save
   float MassSigma;     // banana curve cut within <MassSigma> away from the 12C mass
   float MassSigmaAlt;  // banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
   float OneSigma;      // 1-sigma of 12C mass distribution in [keV]
@@ -176,7 +177,7 @@ typedef struct {
 
 
 
-typedef struct {
+typedef struct StructRunInfo {
   int Run;
   double RUNID;
   int StartTime;
@@ -193,7 +194,8 @@ typedef struct {
   int MaxRevolution;
   char target;
   char targetID;
-  char * TgtOperation;
+  //char * TgtOperation;
+  char TgtOperation[16];
   int ActiveDetector[NDETECTOR];
   int ActiveStrip[NSTRIP];
   int NActiveStrip;
@@ -203,7 +205,14 @@ typedef struct {
   int NActiveBunch;
   int NDisableBunch;
   int DisableBunch[NBUNCH];
+
+  void Streamer(TBuffer &buf);
+
 } StructRunInfo;
+
+TBuffer & operator<<(TBuffer &buf, StructRunInfo *&rec);
+TBuffer & operator>>(TBuffer &buf, StructRunInfo *&rec);
+
 
 typedef struct {
   double RunID;
@@ -399,6 +408,7 @@ extern float ramptshift[500]; // ramp timing shift
 extern long int Nevcut;   // number of events after 1st cut (whole data)
 extern long int Nevtot;   // number of total events (whole data) 
 extern long int Nread;    // real total events (completely everything)
+extern int gMaxEventsUser;         // number of events to process
 extern int Nskip;         // number of events to be skipped in data process 
 extern int NFilledBunch;  // number of filled bunch
 

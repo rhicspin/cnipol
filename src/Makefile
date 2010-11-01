@@ -12,6 +12,7 @@ CC = g++
 ##C_FLAG = -g  -O2 -Wall -w 
 ##C_FLAG = -O2 -ggdb 
 C_FLAG = -O3  
+SOFLAGS = -shared
 
 CXXFLAGS  = $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
@@ -22,22 +23,41 @@ FLIB = -lg2c -lgcc -lm -lnsl
 
 LIB_DIR    = $(CNIDIR)/lib
 CNIANA_LIB = $(LIB_DIR)/libcniana.so
+CNIPOL_LIB = $(LIB_DIR)/libcnipol.so
 
-AsymOBJ = AsymMain.o AsymROOT.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o
+AsymOBJ = AsymMain.o AsymROOT.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
+	  AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
+          Asym.o
 
-RunDBReaderOBJ = AsymRunDB.o RunDBReader.o 
+RunDBReaderOBJ = AsymRunDB.o RunDBReader.o Asym.o
 
-dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o
+dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o Asym.o
 
-KinFuncOBJ = KinFunc.o Kinema.o
+KinFuncOBJ = KinFunc.o Kinema.o Asym.o
 
-AsymPlotOBJ = AsymPlot.o AsymROOT.o
+AsymPlotOBJ = AsymPlot.o AsymROOT.o Asym.o
 
 testOBJ = test.o AsymROOT.o
 
 BINARY = Asym RunDBReader dLayerChecker KinFunc AsymPlot
+BINARY_OBJS = $(BINARY:=.o)
+
+HDRS = $(wildcard *.h)
+SRCS = $(wildcard *.cc)
+OBJS = $(SRCS:.cc=.o)
+
+#CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) 
+CNIPOL_LIB_OBJS = $(AsymOBJ) 
 
 all: $(BINARY)
+
+lib: $(CNIPOL_LIB)
+#	@echo "SRCS: $(SRCS)"
+	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
+
+$(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
+	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $(CNIPOL_LIB)
+	@echo "$@ done"
 
 ######## BINARY ##################
 
@@ -86,7 +106,7 @@ install : $(BINARY)
 
 ##############################
 clean : 
-	rm -f $(BINARY)
+	rm -f $(BINARY) $(CNIPOL_LIB)
 	rm -f *.o
 	rm -f *~ 
 

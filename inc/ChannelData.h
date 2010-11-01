@@ -12,10 +12,14 @@
 
 #include "TObject.h"
 
+#include "EventConfig.h"
+
 class ChannelData;
 
 typedef std::vector<ChannelData> ChannelDataVec;
 typedef std::map<UShort_t, ChannelData> ChannelDataMap;
+typedef std::pair<const UShort_t, ChannelData> ChannelDataPair;
+
 
 /**
  *
@@ -33,7 +37,9 @@ public:
    ChannelData();
    ~ChannelData();
 
-   virtual void Print(const Option_t* opt="") const;
+   //virtual void Print(const Option_t* opt="") const;
+   float ChannelData::GetTime(EventConfig *ec);
+   void Print(const Option_t* opt="") const;
 
    ClassDef(ChannelData, 1)
 };

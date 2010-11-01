@@ -1,85 +1,20 @@
-#ifndef __CINT__
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <getopt.h>
-#include "TString.h"
-#include "TMath.h"
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
-#include "AsymROOT.h"
+/**
+ *
+ * 18 Oct, 2010 - Dmitri Smirnov
+ *    - Reorganized the file structure. Moved all definitions into the header file
+ *
+ */
 
 
-#endif
+#include "AsymPlot.h"
+#include "AsymMain.h"
 
-static Int_t GHOSTVIEW=0;
-static Int_t FEEDBACK=0;
-static Int_t PLOT_RAW=0;
-static Int_t PLOT_BANANA=1;
-static Int_t ERROR_DETECTOR=1;
-static Int_t SUMMARY=1;
-static Int_t stID=0;
-static char * RUNID;
-static Char_t lnkfile[50]="AsymPlot.root";
 
-extern  ofstream logfile;
-
-void FindRootFile();
 Int_t FileNotOK(Char_t file[]){
   ifstream f;
   f.open(file);
   return f.fail();
 }
-
-class AsymPlot
-{
-private:
-  
-public:
-  Int_t GetHistograms(TFile * rootfile);
-  Int_t PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
-  Int_t PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
-  Int_t PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
-  Int_t PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps);
-  // Directory "FeedBack"
-  TH2F * mdev_feedback;  
-  // Raw Directory
-  TH1F * bunch_dist_raw;              // counts per bunch (raw)
-  TH1F * strip_dist_raw;              // counts per strip (raw)
-  TH1F * tdc_raw;                     // tdc (raw)
-  TH1F * adc_raw;                     // adc (raw)
-  TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
-  // Directory "ErrDet"
-  TH2F * mass_e_correlation_strip;
-  TH2F * mass_chi2_vs_strip;
-  TH1I * good_carbon_events_strip;
-  TH2F * mass_pos_dev_vs_strip;
-  TH2F * spelumi_vs_bunch;
-  TH1F * bunch_spelumi;
-  TH1F * asym_bunch_x90;
-  TH1F * asym_bunch_x45;
-  TH1F * asym_bunch_y45;
-  // Directory "Asymmetry"
-  TH2F * asym_vs_bunch_x90;
-  TH2F * asym_vs_bunch_x45;
-  TH2F * asym_vs_bunch_y45;
-  TH2F * asym_sinphi_fit;
-  // Directory "Bunch"
-  TH1F * bunch_dist;
-  TH1F * wall_current_monitor;
-  TH1F * specific_luminosity;
-  // Directory "Kinema"
-  TH1F * energy_spectrum_all;
-
-};
 
 
 Int_t
@@ -104,8 +39,8 @@ Usage(char *argv[]){
 
 }
 
-Int_t
-Example(char *argv[]){
+
+Int_t Example(char *argv[]){
 
   cout << "\n Exapmle: " << endl;
   cout << "\t" << argv[0] << " -f 7279.005 -g" << endl;
@@ -116,10 +51,7 @@ Example(char *argv[]){
 }
 
 
-
-
-void 
-ColorSkime(){
+void ColorSkime(){
 
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
@@ -136,7 +68,7 @@ ColorSkime(){
 
 
 
-Int_t GetHistograms(TFile * rootfile);
+//Int_t GetHistograms(TFile * rootfile);
 
 
 // =======================================================================================
@@ -276,7 +208,6 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
   return 0;
 }
-
 
 
 
@@ -550,7 +481,7 @@ FindRootFile(){
  }
 
 
-#ifndef __CINT__
+//#ifndef __CINT__
 int main(int argc, char **argv) {
 
   int opt, option_index = 0;
@@ -613,11 +544,9 @@ int main(int argc, char **argv) {
     }
   }
 
-
-
-#else
-int AsymPlot() {
-#endif
+//#else
+//int AsymPlot() {
+//#endif
 
   // load header file
   Char_t HEADER[100], text[100], filename[100];
@@ -674,4 +603,3 @@ int AsymPlot() {
   return 0;
 
 }
-  

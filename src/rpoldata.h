@@ -3,6 +3,7 @@
 #include <time.h>
 #include "rhicpol.h"
 
+#include "TBuffer.h"
 
 #define BSIZE 0x1000000			// 16 MByte
 
@@ -85,13 +86,16 @@ typedef struct {
     wcmDataStruct data;
 } recordWcmAdoStruct;
 
-typedef struct {
+typedef struct recordConfigRhicStruct {
     recordHeaderStruct header;
     configRhicDataStruct data;
     SiChanStruct chanconf[1];	// chanconf[data.NumChannels-1]
 				// Actual length is defined from the record
 				// length or from NumChannels memeber
+
+    void Streamer(TBuffer &R__b);
 } recordConfigRhicStruct;
+
 
 // New data structures for the V9 version, but keeping the same names
 
