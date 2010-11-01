@@ -8,7 +8,7 @@
 
 <html>
 <head>
-  <title>Run Summary and Fast Offline Results</title>
+  <title>Run <?=$gRunId?>: Summary and Fast Offline Results</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="main.css">
 </head>
 
@@ -24,24 +24,142 @@
 
 <p><a name="content"/>
 
-<table border="1" cellpadding="2" cellspacing="2" align="center" width="100%">
+<h1 class="count">Run <?=$gRunId?>: Summary and Fast Offline Results</h1>
 
-<?php
-foreach($imgs as $img):
-?>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="bunch_lumi" class="count">Bunch and Luminosity Info</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
 <tr>
-<td width="100%" align=center>
+<td align=center>
+<?=$gP->img('wall_current_monitor')?>
+<td align=center>
+<?=$gP->img('bunch_dist')?>
+<td align=center>
+<?=$gP->img('bunch_dist_raw')?>
+<tr>
+<td align=center>
+<?=$gP->img('bunch_spelumi')?>
+<td align=center>
+<?=$gP->img('specific_luminosity')?>
+<td align=center>
+<?=$gP->img('spelumi_vs_bunch')?>
 
-<p>
-<a href="<?=$runId."/".$img?>"><img width="400" src="<?=$runId."/".$img?>" ></a>
-
-<?php
-endforeach;
-?>
 
 </table>
 
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="raw_data" class="count">Raw Data</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<tr>
+<td align=center>
+<?=$gP->img('strip_dist_raw');?>
+
+<td align=center>
+<?=$gP->img('tdc_raw');?>
+
+<td align=center>
+<?=$gP->img('adc_raw');?>
+
+<tr>
+<td align=center>
+<?=$gP->img('tdc_vs_adc_raw');?>
+
+<td align=center>
+<?=$gP->img('tdc_vs_adc_false_bunch_raw');?>
+
+</table>
+
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="energy" class="count">Energy</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('energy_spectrum_all')?>
+<tr>
+<td align=center>
+<?=$gP->img('energy_spectrum_det1')?>
+<td align=center>
+<?=$gP->img('energy_spectrum_det2')?>
+<td align=center>
+<?=$gP->img('energy_spectrum_det3')?>
+<tr>
+<td align=center>
+<?=$gP->img('energy_spectrum_det4')?>
+<td align=center>
+<?=$gP->img('energy_spectrum_det5')?>
+<td align=center>
+<?=$gP->img('energy_spectrum_det6')?>
+
+</table>
+
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="mass_fit" class="count">Mass Fit</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('mass_pos_dev_vs_strip')?>
+<td align=center>
+<?=$gP->img('mass_sigma_vs_strip')?>
+<td align=center>
+<?=$gP->img('good_carbon_events_strip')?>
+<tr>
+<td align=center>
+<?=$gP->img('mass_chi2_vs_strip')?>
+<td align=center>
+<?=$gP->img('mass_e_correlation_strip')?>
+
+</table>
+
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="asymmetry" class="count">Asymmetry</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('asym_bunch_x45')?>
+<td align=center>
+<?=$gP->img('asym_bunch_x90')?>
+<td align=center>
+<?=$gP->img('asym_bunch_y45')?>
+<tr>
+<td align=center>
+<?=$gP->img('asym_vs_bunch_x45')?>
+<td align=center>
+<?=$gP->img('asym_vs_bunch_x90')?>
+<td align=center>
+<?=$gP->img('asym_vs_bunch_y45')?>
+<tr>
+<td align=center>
+<?=$gP->img('asym_sinphi_fit')?>
+
+</table>
+
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="misc" class="count">Misc</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('rate_vs_delim')?>
+<td align=center>
+<?=$gP->img('scan_asym_sinphi_fit')?>
+
+</table>
 
 <!-- Main text ends here-->
 

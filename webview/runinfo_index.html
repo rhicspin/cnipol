@@ -22,24 +22,100 @@
 
 <!-- Main text starts here-->
 
+<h1>Analyzed Run Index</h1>
+
 <p><a name="content"/>
 
 
 <table border="0" cellpadding="2" cellspacing="2" align="center" width="100%">
 
 <?php
-foreach($rs as $runId => $s):
+foreach($rs as $gRunId => $s):
+
+$rc = array();
+
+include($gRunId."/runconfig.php"); 
+
+if (count($rc) == 0) continue;
+
 ?>
 
 <tr>
-   <td width=10%>
-   <a href=index.php?runid=<?=$runId?> ><?=$runId?></a>
-   <td width=90%>
+   <td width=10%>&nbsp;
+   <td width=90%>&nbsp;
 
 <tr>
-   <td width=10%>
-   <td width=90%>
-   NumChannels = <?=$s['NumChannels']?>
+   <td class=align_lb>
+   <a href=index.php?runid=<?=$gRunId?> ><?=$gRunId?></a>
+   <td>
+   	<span class=my-h2>Run <?=$rc['RUNID']?></span>
+		&nbsp; &nbsp; &nbsp;
+   	<span class=s150>
+		<?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> ring
+		&nbsp; &nbsp;
+		Polarimeter <?=$rc['PolarimetryID']?>
+		</span>
+
+<tr>
+   <td>
+   <td>
+
+<table border="1" cellpadding="3" cellspacing="0" align="center" width="100%">
+<tr>
+   <td>
+   <b>Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <td>
+   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
+   <td>
+   <b>Active Strips:</b> <?=$rc['NActiveStrip']?>
+   <td>
+	<b>Size:</b> 
+	<?=$s['dirsize']?>
+
+<tr>
+   <td>
+   <b>End Time:</b> <?=date("M j, Y H:i:s", $rc['StopTime'])?>
+   <td>
+   <b>Target ID:</b> <?=$rc['targetID']?>
+   <td>
+   <b>Disable Strips:</b> <?=$rc['NDisableStrip']?>
+   <td>
+	&nbsp;
+
+<tr>
+   <td>
+   <b>Duration:</b> <?=$rc['RunTime']?>&nbsp;s
+   <td> &nbsp;
+   <td> &nbsp;
+   <td> &nbsp;
+
+<tr>
+   <td> &nbsp;
+   <td> &nbsp;
+   <td> &nbsp;
+   <td> &nbsp;
+
+<tr>
+   <td colspan=4>
+
+   <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+   <?php
+      $row1 = ""; $row2 = "";
+
+   	foreach($rc['ActiveStrip'] as $siId => $siS) {
+
+   	   $row1 .= "<td>$siId";
+   	   $row2 .= "<td>".($siS ? "x" : "o");
+   
+   		if (($siId+1) % 36 == 0) {
+   		   print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+            $row1 = ""; $row2 = "";
+   	   }
+   	}
+   ?>
+   </table>
+
+</table>
 
 <?php
 endforeach;
