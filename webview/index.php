@@ -2,20 +2,25 @@
 
 //include("config.php");
 
-$sss="test";
+date_default_timezone_set('GMT');
 
 
 if (isset($_GET['runid'])) {
 
    // check for correct and existing  runid
 
-	$runId = $_GET['runid'];
+	$gRunId = $_GET['runid'];
 
    // Read information about this run
-   include($runId."/runconfig.php"); 
+   include($gRunId."/runconfig.php"); 
+   include("./config_plots.php"); 
+   include_once("PlotHelper.php"); 
+
+   $dir = "./$gRunId/images/";
+   $gP = new PlotHelper($dir, $plots_set1);
 
 	// Get all images in this folder
-   $dir = opendir($runId);
+   $dir = opendir($gRunId."/images/");
 	$imgs = array();
    
    while (false !== ($file = readdir($dir))) {
@@ -40,10 +45,11 @@ while (false !== ($file = readdir($dir))) {
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $file) && is_dir($file)) {
 
-      //echo "$file<br>\n";
-      include($file."/runconfig.php"); 
-      $runId = $file;
-      $rs[$runId]['NumChannels'] = $rc['data']['NumChannels'];
+      //echo "$file ".$rs['dirsize']."<br>\n";
+      //include($file."/runconfig.php"); 
+      $gRunId = $file;
+      //$rs[$gRunId]['NumChannels'] = $rc['data']['NumChannels'];
+      $rs[$gRunId]['dirsize'] = exec( "du -h -s $file" );
    }
 }
 
