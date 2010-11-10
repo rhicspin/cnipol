@@ -30,7 +30,7 @@
 <table border="0" cellpadding="2" cellspacing="2" align="center" width="100%">
 
 <?php
-foreach($rs as $gRunId => $s):
+foreach($rs as $gRunId):
 
 $rc = array();
 
@@ -47,6 +47,9 @@ if (count($rc) == 0) continue;
 <tr>
    <td class=align_lb>
    <a href=index.php?runid=<?=$gRunId?> ><?=$gRunId?></a>
+
+<?  if ($rc['CMODE'] == 0): ?>
+
    <td>
    	<span class=my-h2>Run <?=$rc['RUNID']?></span>
 		&nbsp; &nbsp; &nbsp;
@@ -55,6 +58,11 @@ if (count($rc) == 0) continue;
 		&nbsp; &nbsp;
 		Polarimeter <?=$rc['PolarimetryID']?>
 		</span>
+
+<?  else: ?>
+   <td>
+   	<span class=my-h2>Calibration Run</span>
+<?  endif; ?>
 
 <tr>
    <td>
@@ -69,8 +77,9 @@ if (count($rc) == 0) continue;
    <td>
    <b>Active Strips:</b> <?=$rc['NActiveStrip']?>
    <td>
-	<b>Size:</b> 
-	<?=$s['dirsize']?>
+	<!--
+	<b>Size:</b> <?//=$s['dirsize']?>
+	-->
 
 <tr>
    <td>
@@ -102,14 +111,17 @@ if (count($rc) == 0) continue;
    <?php
       $row1 = ""; $row2 = "";
 
-   	foreach($rc['ActiveStrip'] as $siId => $siS) {
+   	foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
-   	   $row1 .= "<td>$siId";
-   	   $row2 .= "<td>".($siS ? "x" : "o");
+         $chanId += 1;
+
+   	   $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   	   //$row2 .= "<td>".($siS ? "x" : "o");
    
-   		if (($siId+1) % 36 == 0) {
-   		   print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
-            $row1 = ""; $row2 = "";
+   		if (($chanId) % 36 == 0) {
+   		   //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+   		   print "<tr class=align_cm>$row1\n";
+            $row1 = "";// $row2 = "";
    	   }
    	}
    ?>
