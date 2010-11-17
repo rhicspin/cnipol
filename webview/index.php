@@ -1,11 +1,11 @@
 <?php
 
+include("utils.php"); 
 //include("config.php");
 
 //date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'en');
 putenv("TZ=America/New_York");
-
 
 // Run details view
 if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
@@ -19,7 +19,10 @@ if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
    }
 
    // Read information about this run
+   $rc = array();
    include("$gRunId/runconfig.php");
+   if (count($rc) == 0) exit;
+
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
@@ -51,7 +54,10 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    }
 
    // Read information about this run
+   $rc = array();
    include("$gRunId/runconfig.php");
+   if (count($rc) == 0) exit;
+
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
