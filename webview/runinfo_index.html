@@ -30,11 +30,12 @@
 <table border="0" cellpadding="2" cellspacing="2" align="center" width="100%">
 
 <?php
+
 foreach($rs as $gRunId):
 
 $rc = array();
 
-include($gRunId."/runconfig.php"); 
+include($gRunId."/runconfig.php");
 
 if (count($rc) == 0) continue;
 
@@ -51,17 +52,17 @@ if (count($rc) == 0) continue;
 <?  if ($rc['CMODE'] == 0): ?>
 
    <td>
-   	<span class=my-h2>Run <?=$rc['RUNID']?></span>
-		&nbsp; &nbsp; &nbsp;
-   	<span class=s150>
-		<?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> ring
-		&nbsp; &nbsp;
-		Polarimeter <?=$rc['PolarimetryID']?>
-		</span>
+      <span class=my-h2>Run <?=$rc['RUNID']?></span>
+      &nbsp; &nbsp; &nbsp;
+      <span class=s150>
+      <?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> ring
+      &nbsp; &nbsp;
+      Polarimeter <?=$rc['PolarimetryID']?>
+      </span>
 
 <?  else: ?>
    <td>
-   	<span class=my-h2>Calibration Run</span>
+      <span class=my-h2>Calibration Run</span>
 <?  endif; ?>
 
 <tr>
@@ -71,61 +72,55 @@ if (count($rc) == 0) continue;
 <table border="1" cellpadding="3" cellspacing="0" align="center" width="100%">
 <tr>
    <td>
-   <b>Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <td>
+   <b>Total events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
    <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
    <td>
    <b>Active Strips:</b> <?=$rc['NActiveStrip']?>
-   <td>
-	<!--
-	<b>Size:</b> <?//=$s['dirsize']?>
-	-->
+   <!--
+   <b>Size:</b> <?//=$s['dirsize']?>
+   -->
 
 <tr>
    <td>
-   <b>End Time:</b> <?=date("M j, Y H:i:s", $rc['StopTime'])?>
+   <!--<b>Run End Time:</b> <?=date("M j, Y H:i:s", $rc['StopTime'])?>-->
+   <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['procDateTime'])?>&nbsp;
+   (<?=sprintf("%.0f", $rc['procTimeReal']);?>&nbsp;s)
+   <td>
+   <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
+   <? if ($rc['thinout'] > 0): ?><br>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <? endif; ?>
    <td>
    <b>Target ID:</b> <?=$rc['targetID']?>
    <td>
-   <b>Disable Strips:</b> <?=$rc['NDisableStrip']?>
-   <td>
-	&nbsp;
+   <b>Disabled Strips:</b> <?=$rc['NDisableStrip']?>
 
-<tr>
-   <td>
-   <b>Duration:</b> <?=$rc['RunTime']?>&nbsp;s
-   <td> &nbsp;
-   <td> &nbsp;
-   <td> &nbsp;
-
-<tr>
-   <td> &nbsp;
-   <td> &nbsp;
-   <td> &nbsp;
-   <td> &nbsp;
-
+<!--
 <tr>
    <td colspan=4>
 
    <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
    <?php
-      $row1 = ""; $row2 = "";
+   //   $row1 = ""; $row2 = "";
 
-   	foreach($rc['ActiveStrip'] as $chanId => $siS) {
+   // foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
-         $chanId += 1;
+   //      $chanId += 1;
 
-   	   $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
-   	   //$row2 .= "<td>".($siS ? "x" : "o");
-   
-   		if (($chanId) % 36 == 0) {
-   		   //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
-   		   print "<tr class=align_cm>$row1\n";
-            $row1 = "";// $row2 = "";
-   	   }
-   	}
+   //    $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   //    //$row2 .= "<td>".($siS ? "x" : "o");
+   //
+   //    if (($chanId) % 36 == 0) {
+   //       //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+   //       print "<tr class=align_cm>$row1\n";
+   //         $row1 = "";// $row2 = "";
+   //    }
+   // }
    ?>
    </table>
+-->
 
 </table>
 
