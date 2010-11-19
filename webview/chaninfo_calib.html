@@ -26,6 +26,35 @@
 
 <h1 class="count">Calibration Run <?=$gRunId?>, Channel <?=$gChanId?></h1>
 
+<p>
+<a href="./index.php"><span class=s150>Run Index</span></a> &mdash;
+<a href="./index.php?runid=<?=$gRunId?>"><span class=s150>Run Summary</span></a> &mdash;
+
+<span class=s150>Channels:</span>
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<?php
+   $row1 = ""; $row2 = "";
+
+   foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+      $chanId += 1;
+
+      $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+      //$row2 .= "<td>".($siS ? "x" : "o");
+
+      if (($chanId) % 36 == 0) {
+         //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+         print "<tr class=align_cm>$row1\n";
+         $row1 = "";// $row2 = "";
+      }
+   }
+?>
+</table>
+
+
 <?
 $gChanId = sprintf("%02d", $gChanId);
 $gP->dir .= "channel$gChanId/";
@@ -39,6 +68,8 @@ $gP->dir .= "channel$gChanId/";
 <h2 id="bunch_lumi" class="count">Summary</h2>
 <div id="div:bunch_lumi" class="section">
 
+<p>
+
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
 <tr>
@@ -46,25 +77,29 @@ $gP->dir .= "channel$gChanId/";
 <?=$gP->img("hAmpltd_st$gChanId")?>
 <td align=center>
 <?=$gP->img("hAmpltd_cut1_st$gChanId")?>
+<td align=center>
 
 <tr>
 <td align=center>
 <?=$gP->img("hIntgrl_st$gChanId")?>
 <td align=center>
 <?=$gP->img("hIntgrl_cut1_st$gChanId")?>
+<td align=center>
 
 <tr>
-<td align=center colspan=2>
+<td align=center colspan=3>
 <?=$gP->img("hTdc_st$gChanId")?>
 
 <tr>
 <td align=center>
 <?=$gP->img("hTvsA_st$gChanId")?>
 <td align=center>
+<?=$gP->img("hTvsA_zoom_st$gChanId")?>
+<td align=center>
 <?=$gP->img("hTvsI_st$gChanId")?>
 
 <tr>
-<td align=center colspan=2>
+<td align=center colspan=3>
 <?=$gP->img("hIvsA_st$gChanId")?>
 
 

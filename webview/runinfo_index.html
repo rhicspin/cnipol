@@ -22,7 +22,7 @@
 
 <!-- Main text starts here-->
 
-<h1>Analyzed Run Index</h1>
+<h1>Cnipol Run Index</h1>
 
 <p><a name="content"/>
 
@@ -72,7 +72,8 @@ if (count($rc) == 0) continue;
 <table border="1" cellpadding="3" cellspacing="0" align="center" width="100%">
 <tr>
    <td>
-   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>&nbsp;
+   (<?=dateTimeDiff($rc['StartTime'], $rc['StopTime'])?>)
    <td>
    <b>Total events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
@@ -85,12 +86,12 @@ if (count($rc) == 0) continue;
 
 <tr>
    <td>
-   <!--<b>Run End Time:</b> <?=date("M j, Y H:i:s", $rc['StopTime'])?>-->
+   <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
    <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['procDateTime'])?>&nbsp;
-   (<?=sprintf("%.0f", $rc['procTimeReal']);?>&nbsp;s)
+   (<?=sprintf("%.0f", $rc['procTimeReal']);?>s)
    <td>
    <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
-   <? if ($rc['thinout'] > 0): ?><br>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <? if ($rc['thinout'] > 1): ?><br>(every <?=ordinal_suffix($rc['thinout'])?> event)
    <? endif; ?>
    <td>
    <b>Target ID:</b> <?=$rc['targetID']?>
