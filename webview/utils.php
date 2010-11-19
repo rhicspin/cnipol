@@ -18,4 +18,31 @@ function ordinal_suffix($n) {
      }
 }
 
+
+function dateTimeDiff($startStamp, $endStamp)
+{
+   $d = $endStamp - $startStamp;
+
+   if ($d < 0) return "";
+
+   $secondsInMin  = 60;
+   $secondsInHour = 3600;
+   $secondsInDay  = 86400;
+
+   $fullDays  = floor($d/$secondsInDay);
+   $d = $d % $secondsInDay;
+   $fullHours = floor($d/$secondsInHour);
+   $d = $d % $secondsInHour;
+   $fullMins  = floor($d/$secondsInMin);
+   $d = $d % $secondsInMin;
+   $fullSecs  = $d;
+
+   $diff  = $fullDays ? "{$fullDays}d:" : "";
+   $diff .= $fullHours ? "{$fullHours}h:" : "";
+   $diff .= $fullMins ? "{$fullMins}m:" : "";
+   $diff .= $fullSecs ? "{$fullSecs}s" : "";
+
+   return $diff;
+} 
+
 ?>
