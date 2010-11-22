@@ -42,6 +42,10 @@ span.red {
 	text-align: left;
 }
 
+.align_r {
+	text-align: right;
+}
+
 .align_lb {
 	text-align: left;
 	vertical-align: bottom;
@@ -58,6 +62,10 @@ span.red {
 
 .strike {
 	text-decoration: line-through;
+}
+
+.feature {
+	background-color: pink;
 }
 
 span.feature {
@@ -124,13 +132,13 @@ H2.count {
 }
 
 H3.count:before {
-	content: counter(counterH1) "." counter(counterH2) "." counter(counterH3) " ";
+	content: counter(counterH2) "." counter(counterH3) " ";
 	counter-increment: counterH3;
 }
 
 H3.count {
 	counter-reset: counterH4;      /* Set section to 0 */
-	background-color: #ddddff;
+	/*background-color: #ddddff;*/
 }
 
 H4.count:before {
