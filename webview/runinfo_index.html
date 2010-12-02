@@ -75,7 +75,7 @@ if (count($rc) == 0) continue;
    <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>&nbsp;
    (<?=dateTimeDiff($rc['StartTime'], $rc['StopTime'])?>)
    <td>
-   <b>Total events:</b> <?=number_format($rc['nEventsTotal'])?>
+   <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
    <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
    <td>
