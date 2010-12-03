@@ -1,6 +1,6 @@
 /************************************************************************
  *   Library for CMC100 CAMAC USB controller with cmcamac driver.	*
- *	D.Svirida & I.Alekseev @itep.ru, 2005				*
+ *	D.Svirida & I.Alekseev @itep.ru, 2005-10			*
  *	file: libcmc.c							*
  ************************************************************************/
 
@@ -8,11 +8,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+// Added #include <stdlib.h> and <string.h> Nov. 17, 2008
+#include <stdlib.h>
+#include <string.h>
 #include "libcmc.h"
 
 #define CMC_CTL_RESET	_IO('Z', 0)
 #define CMC_CTL_R1	_IO('Z', 1)
-
 
 int __Crates[MAXCRATES] = {-1, -1, -1, -1, -1, -1, -1, -1};
 int __QX;
@@ -25,10 +27,14 @@ int CMC_Open(int C)
 	CMC_Close(C);
 	sprintf(name, "/dev/usb/cmcamac%d", C);
 	__Crates[C] = open(name, O_RDWR);
-	if (__Crates[C] < 0) 
-	{
-	    __Crates[C] = -1;
-	    return -errno;
+	if (__Crates[C] < 0) {
+	    sprintf(name, "/dev/cmcamac%d", C);
+	    __Crates[C] = open(name, O_RDWR);
+	    if (__Crates[C] < 0) 
+	    {
+		__Crates[C] = -1;
+		return -errno;
+	    }
 	}
 	return C;
 }
@@ -188,7 +194,8 @@ long CMC_Single(int C, int N, int F, int A, long data)
     CMC_chain * ch;
     int retval;
 
-    __QX = 0;    
+    __QX = 0;
+    if (C < 0 || C >= MAXCRATES) return -EINVAL;    
     if (__Crates[C] < 0) {
 	if ((retval = CMC_Open(C)) < 0) return retval;
     }
