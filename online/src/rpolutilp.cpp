@@ -120,15 +120,18 @@ void getJetPosition(void)
 }
 
 extern "C" {
-    int getTagetMovementInfo(long **data);
+    int getTargetMovementInfo(long **data);
 }
 
-int getTagetMovementInfo(long **res)
+int getTargetMovementInfo(long **res)
 {
     int N, irc;
     cdevData data;
     size_t len;
     char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
+
+    *res = NULL;
+
 //	determine the ring
     N = 0;
     if (recRing & REC_BLUE) N = 1; 

@@ -12,7 +12,7 @@ int camacOpen(void);
 void setInhibit(void);
 void resetInhibit(void);
 void nsleep(double time);
-
+void setRunGo(void);
 int setRing(void);
 void pulseAllProgs(void);
 int initWFDs(void);
@@ -35,7 +35,7 @@ void alarmHandler(int sig);
 
 int getJetbits(void);
 void getJetPosition(void);
-int getTagetMovementInfo(long **data);
+int getTargetMovementInfo(long **data);
 void getAdoInfo(char mode);
 void getWcmInfo(void);
 void getCarbTarg(carbTargStat * targstat);
