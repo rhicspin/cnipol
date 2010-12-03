@@ -1,0 +1,1 @@
+libcmc.o : libcmc.c
