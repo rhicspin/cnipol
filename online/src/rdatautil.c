@@ -23,15 +23,30 @@ struct {
     int   mark[96];
 } sipar_;
 
+//	common/runpars/ intp, iraw, iproc, ilsas, trigmin, ichanntp(96)
 struct {
     int intp;
     int iraw;
+    int iproc;
+    int ilsas;
+    float trigmin;
+    int iskip;
+    int ichanntp[96];
 } runpars_;
 
 void mybook_(int *num);
 void histrate_(long *data, long *num);
 void histdelim_(long *data, long *num);
 void histtagmov_(long *data, long *num);
+void wfana_(float *data, int *len, int *chan);
+
+void wfana(unsigned char *data, int *len, int *chan)
+{
+    float fdata[100];
+    int i;
+    for(i=0; i<*len; i++) fdata[i] = data[i];
+    wfana_(fdata, len, chan);
+}
 
 //	Common /atdata/ (for n-tuple)
 struct {
@@ -136,8 +151,9 @@ int readandfill_(int* subrun)
     recordALLMode120Struct * ALL120Ptr;
     
     float data[1536];
-    char waveform[100];
+    unsigned char waveform[100];
     int i, j, k, l, m, n, cnt=0, cnt1=0;
+    int ntcnt = 0;
     int recRing;
     long s1, s2, s3, s4;
     int curSubrun = -1;
@@ -169,6 +185,7 @@ int readandfill_(int* subrun)
 	    }
 	    continue;
 	}
+	if (rec.header.len > sizeof(recordHeaderStruct)) {
 	i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin); 
 	if (feof(fin)) {
 	    poldat_.statusS |= WARN_INT;
@@ -179,6 +196,7 @@ int readandfill_(int* subrun)
 	    printf("R2HBOOK-ERR : IO error on input file (data) %s.\n", strerror(errno));
 	    poldat_.statusS |= (STATUS_ERROR | ERR_INT);
 	    break;
+	}
 	}
 	recRing = rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
 //	printf("Record %5d type %8.8X  len %8d timestamp %8.8X\n", 
@@ -313,12 +331,16 @@ int readandfill_(int* subrun)
 			atraw_.irev = 2*ALL120Ptr->data[j].rev +  ALL120Ptr->data[j].rev0;
 			atdata_.rev = atraw_.irev;
 			m = sizeof(ALL120Ptr->data[j].d); 
-			n = REC_READSUB;
-			wfana_(waveform, &m, &n);
-			if (runpars_.intp) HFNT(k+1);
-			if (cnt1 > MAXNTEVENTS && runpars_.intp == 1) {
+			n = k + 1;
+			if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
+			if (runpars_.intp && runpars_.ichanntp[k]) {
+			    if (ntcnt < MAXNTEVENTS) {
+				HFNT(k+1);
+				ntcnt++;
+			    } else {
 			    printf("Warning: Number of events is above NTuple limit (%d)\n", MAXNTEVENTS);
 			    runpars_.intp = 0;
+			}
 			}
 			cnt1++;
 		    }
@@ -349,12 +371,16 @@ int readandfill_(int* subrun)
 			atraw_.irev = 2*ALLPtr->data[j].rev +  ALLPtr->data[j].rev0;
 			atdata_.rev = atraw_.irev;
 			m = sizeof(ALLPtr->data[j].d); 
-			n = REC_READSUB;
-			wfana_(waveform, &m, &n);
-			if (runpars_.intp) HFNT(k+1);
-			if (cnt1 > MAXNTEVENTS && runpars_.intp == 1) {
+			n = k + 1;
+			if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
+			if (runpars_.intp && runpars_.ichanntp[k]) {
+			    if (ntcnt < MAXNTEVENTS) {
+				HFNT(k+1);
+				ntcnt++;
+			    } else {
 			    printf("Warning: Number of events is above NTuple limit (%d)\n", MAXNTEVENTS);
 			    runpars_.intp = 0;
+			}
 			}
 			cnt1++;
 		    }
@@ -392,12 +418,16 @@ int readandfill_(int* subrun)
 			atraw_.irev = 2*atraw_.irev  + wave120Ptr->data[j].rev0;
 			atdata_.rev = atraw_.irev;
 			m = sizeof(wave120Ptr->data[j].d); 
-			n = rec.header.type & REC_TYPEMASK;
-			wfana_(waveform, &m, &n);
-			if (runpars_.intp) HFNT(k+1);
-			if (cnt1 > MAXNTEVENTS && runpars_.intp == 1) {
+			n = k + 1;
+			if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
+			if (runpars_.intp && runpars_.ichanntp[k]) {
+			    if (ntcnt < MAXNTEVENTS) {
+				HFNT(k+1);
+				ntcnt++;
+			    } else {
 			    printf("Warning: Number of events is above NTuple limit (%d)\n", MAXNTEVENTS);
 			    runpars_.intp = 0;
+			}
 			}
 			cnt1++;
 		    }
@@ -429,12 +459,16 @@ int readandfill_(int* subrun)
 			atraw_.irev = 2*atraw_.irev  + wavePtr->data[j].rev0;
 			atdata_.rev = atraw_.irev;
 			m = sizeof(wavePtr->data[j].d); 
-			n = rec.header.type & REC_TYPEMASK;
-			wfana_(waveform, &m, &n);
-			if (runpars_.intp) HFNT(k+1);
-			if (cnt1 > MAXNTEVENTS && runpars_.intp == 1) {
+			n = k + 1;
+			if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
+			if (runpars_.intp && runpars_.ichanntp[k]) {
+			    if (ntcnt < MAXNTEVENTS) {
+				HFNT(k+1);
+				ntcnt++;
+			    } else {
 			    printf("Warning: Number of events is above NTuple limit (%d)\n", MAXNTEVENTS);
 			    runpars_.intp = 0;
+			}
 			}
 			cnt1++;
 		    }
@@ -467,10 +501,14 @@ int readandfill_(int* subrun)
 		    atdata_.b = atraw_.ib;
 		    atraw_.irev = 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
 		    atdata_.rev = atraw_.irev;
-		    if (runpars_.intp) HFNT(k+1);
-		    if (cnt1 > MAXNTEVENTS && runpars_.intp == 1) {
+		    if (runpars_.intp && runpars_.ichanntp[k]) {
+			if (ntcnt < MAXNTEVENTS) {
+			    HFNT(k+1);
+			    ntcnt++;
+			} else {
 			printf("Warning: Number of events is above NTuple limit (%d)\n", MAXNTEVENTS);
 			runpars_.intp = 0;
+		    }
 		    }
 		    cnt1++;
 		}

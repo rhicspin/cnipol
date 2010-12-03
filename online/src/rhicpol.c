@@ -305,13 +305,15 @@ int main(int argc, char **argv)
 	}
 */
 // Instead, we just do...
-	polData.runIdS = atof(getenv("RUN"));
-	fprintf(LogFile, "RHICPOL-INFO : This is run %9.3f\n", polData.runIdS);
 
-	if (NoADO == 0) 
+	if (NoADO == 0) {
+	    char *sRUN = getenv("RUN");
+	    if (sRUN) polData.runIdS = atof(sRUN);
+	    fprintf(LogFile, "RHICPOL-INFO : This is run %9.3f\n", polData.runIdS);
 	    fprintf(LogFile,"RHICPOL-INFO : RunID: %9.3f; E=%6.2f GeV; Target: %s @ %d %d\n",
 		polData.runIdS, beamData.beamEnergyM,
 		polData.targetIdS, polData.encoderPositionS[0], polData.encoderPositionS[1]);
+	}
 	if (setRing()) polexit();
 	if (IStop != 0) polexit();
 	if (openDataFile(fname, comment, NoADO)) polexit();
@@ -339,7 +341,7 @@ int main(int argc, char **argv)
 	    setInhibit();
 	    polData.stopTimeS = time(NULL);
 	    clearAlarm();
-	    if (iNotify && j == (nLoop-1)) kill( getppid(), SIGUSR1);
+	    if (iNotify && j == (nLoop-1)) kill(getppid(), SIGUSR1);
 	    if (iCntrlC) signal(SIGINT, alarmHandler);
 	    else signal(SIGINT, SIG_IGN);
 	    if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data...");

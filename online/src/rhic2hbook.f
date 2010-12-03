@@ -1,7 +1,8 @@
 	program rhic2hbook
 	common/pawc/pawc(2000000)
 	common/quest/ iquest(100)
-	common/runpars/ intp, iraw, iproc, ilsas, trigmin
+	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
+	common/wfsel/ ibunch, irevfirst
 	common/subrun/ nofsubruns, itimestamp(500), asymX(500), asymErrX(500), 
      +      asymX90(500), asymErrX90(500), asymX45(500), asymErrX45(500)
 	common /poldat/ runIdS, startTimeS, stopTimeS,
@@ -42,11 +43,16 @@
 	iraw = 0
 	iproc = 1
 	ilsas = 0
+	iskip = 0
 	ifixfill = 0
 	j = IArgC()
 	trigmin = -1.
 	nsubrun = 0
 	ipar = 0
+	irevfirst = 0
+	ibunch = -1
+
+	call vzero(ichanntp, 96)
 	
 	do i=1,j
 	    call getarg(i, str)
@@ -55,6 +61,21 @@
 		ipar = 0
 	    else if (ipar.eq.2) then
 		read (str, *) nsubrun
+		ipar = 0
+	    else if (ipar.eq.3) then
+		read (str, *) j
+		if (j.gt.0.and.j.le.96) then
+		    ichanntp(j) = 1
+		endif
+		ipar = 0
+	    else if (ipar.eq.4) then
+		read (str, *) iskip
+		ipar = 0
+	    else if (ipar.eq.5) then
+		read (str, *) ibunch
+		ipar = 0
+	    else if (ipar.eq.6) then
+		read (str, *) irevfirst
 		ipar = 0
 	    else if (str.eq.'-s') then
 		isend = 1
@@ -73,20 +94,32 @@
 		ipar = 2
 	    else if (str.eq.'-R') then
 		ifixfill = 1
+	    else if (str.eq.'-c') then
+		ipar = 3
+	    else if (str.eq.'-S') then
+		ipar = 4
+	    else if (str.eq.'-B') then
+		ipar = 5
+	    else if (str.eq.'-v') then
+		ipar = 6
 	    else if (fin.eq.'?') then
 		fin = str
 	    else if (fout.eq.'?') then
 		fout = str
 	    else
-		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] [-R] filein fileout'
+		print *, 'Usage: rhic2hbook [options] filein fileout'
 		print *, '       -s to send results to ADO database'
 		print *, '       -n to write ntuples, otherwize only histograms'
 		print *, '       -r to write raw data ntuples'
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
-		print *, '       -T trigmin trigmin value to override for old files'
+		print *, '       -T <trigmin> trigmin value to override for old files'
 		print *, '       -N <subrun number> to extract (default = 0)'
 		print *, '       -R Repair fill/spin pattern'
+		print *, '       -c <channel number> write channel to n-tuple. This option can be repeated.'
+		print *, '       -S <number> skip number of events before writing waveforms'
+		print *, '       -B <number> select bunch number for waveforms'
+		print *, '       -v <number> start with revolution number for waveforms'
 		print *, '	    if <subrun number> >=0, only it is processed and the result is'
 		print *, '	    send as for a single measurement, otherwize all subruns are'
 		print *, '	    processed and send as array for the ramp measurement'
@@ -95,20 +128,34 @@
 	enddo
 
 	if (fin.eq.'?') then
-		print *, 'Usage: rhic2hbook [-s] [-n] [-r] [-p] [-l] [-T] [-N] filein fileout'
+		print *, 'Usage: rhic2hbook [options] filein fileout'
 		print *, '       -s to send results to ADO database'
 		print *, '       -n to write ntuples, otherwize only histograms'
 		print *, '       -r to write raw data ntuples'
 		print *, '       -l to calculate least square asymmetries'
 		print *, '       -p not to process data for the polarization'
-		print *, '       -T trigmin trigmin value to override for old files'
+		print *, '       -T <trigmin> trigmin value to override for old files'
 		print *, '       -N <subrun number> to extract (default = 0)'
+		print *, '       -c <channel number> write channel to n-tuple. This option can be repeated.'
+		print *, '       -S <number> skip number of events before writing waveforms'
+		print *, '       -B <number> select bunch number for waveforms'
+		print *, '       -v <number> start with revolution number for waveforms'
 		print *, '	    if <subrun number> >=0, only it is processed and the result is'
 		print *, '	    send as for a single measurement, otherwize all subruns are'
 		print *, '	    processed and send as array for the ramp measurement'
 	    stop
 	endif	
 	if (fout.eq.'?') fout = fin//'.hbook'
+c		Make that if no '-c' option given but n-tuple requested than all channels go to n-tuple
+	j = 0
+	do i=1, 96
+	    j = j + ichanntp(i)
+	enddo
+	if (j.eq.0) then
+	    do i=1, 96
+	        ichanntp(i) = 1
+	    enddo
+	endif
 		
 	call hlimit(2000000)
 	call mninit(5, 6, 7)
@@ -151,7 +198,6 @@ c
 c   	    print *, 'After readandfill (nsubrun<0) isubr = ',isubr
 c
 	    if (iproc.ne.0) then
-	    
 		call process
 c
 		asymX(isubr+1) = avgAsymXS
@@ -183,13 +229,13 @@ c
 	character chname*5
 	common /atdata/ a, t, tmax, s, ib, id, irev, ijet
 	common /atraw/ ia, it, itmax, is, iib, iid, iirev, iijet
-	common/runpars/ intp, iraw, iproc, ilsas, trigmin
+	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
 	
 	if (trigmin.gt.0) etrg = trigmin
 	
 	write(chname, '(I4)') i
-	if (intp.eq.1) then
+	if (intp.eq.1.and.ichanntp(i).ne.0) then
 	    if (iraw.eq.1) then
 		call hbnt(i, 'AT events RAW for Si'//chname, ' ')
 		call hbname(i, 'ATRAW', ia, 'A:U:8, T:U:8, TMAX:U:8, S:I, B:U:7, D:U, REV:U, P:U:2')
@@ -229,6 +275,10 @@ c
 
 	call hbook1(2000+i, 'Low integral cut (raw) for Si'//chname, 256, 0., 256., 0)
 	call hbook1(2100+i, 'Up  integral cut (raw) for Si'//chname, 256, 0., 256., 0)
+	
+	call hbook1(2200+i, 'Baseline for prompt estimate for Si'//chname, 240, 0., 240., 0)
+	call hbook1(2300+i, 'Prompts for Si'//chname, 240, 0., 240., 0)
+
 	return
 	end
 c
@@ -317,7 +367,7 @@ c
 	integer totalS, unpolS, upS, downS
 	integer isy2
 	
-	common/runpars/ intp, iraw, iproc, ilsas, trigmin
+	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
 	
 C	names as from upstream of the beam
@@ -938,7 +988,7 @@ c		luminosity and acceptence
 c
 	return
 	end
-c	
+C	
 	subroutine testpol
 	common /RHIC/ fillpat(120), polpat(120)
 	integer fillpat, polpat
@@ -949,7 +999,7 @@ c
 	integer itm(3)
 	data sn /0.707106781, 1., 0.707106781,
      ,		-0.707106781, -1., -0.707106781/
-c
+C 
 	call itime(itm)
 	call srand(itm(3) + 60*(itm(2) + 60*itm(3)))
 	do i=1,120
@@ -971,26 +1021,44 @@ c
 	return
 	end
 c	
-c
-	subroutine wfana(data, length, mode)
-C
-	integer*1 data(100)
-	real rdata(100)
-	character chnum*8
+
+	subroutine wfana(rdata, length, ichan)
+	real rdata(*)
+	common /runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
+	common /atraw/ ia, it, itmax, is, iib, iid, iirev, iijet
+	common/wfsel/ ibunch, irevfirst
+	character chnum*10, chchan*10, chbrev*30
 	save icnt
 	data icnt /0/
-c
-	if (icnt.lt.1000) then
-	    icnt = icnt + 1
-	    do i=1,length
-		rdata(i) = real(data(i))
-		if (rdata(i) < 0) rdata(i) = 256 + rdata(i)
-	    enddo
-	    write (chnum, '(I4)') icnt
+	save ihcnt
+	data ihcnt /0/
+	real rbase(96) 
+	save rbase
+	data rbase /96*-1/
+c 
+	if ((ihcnt.lt.10000).and.(icnt.ge.iskip).and.((ibunch.lt.0).or.(ibunch.eq.iib)).and.(iirev.ge.irevfirst)) then
+	    write (chnum, '(I5)') ihcnt
+	    write (chchan, '(I3)') ichan
+	    write (chbrev, '(I8,'':'',I3)') iirev, iib
 	    flength = length
-	    call hbook1(10000+icnt, 'Wveform No '//chnum, length, 0., flength, 0)
-	    call hpak(10000+icnt, rdata)
+	    call hbook1(10000+ihcnt, 'Waveform No '//chnum//' of chan No '//chchan//' at '//chbrev, length, 0., flength, 0)
+	    call hpak(10000+ihcnt, rdata)
+	    ihcnt=ihcnt+1
 	endif
+
+	if (rbase(ichan).lt.0..and.iirev.ge.irevfirst) then
+	    call hnoent(2200+ichan, k)
+	    if (k.lt.200) then
+		call hfill(2200+ichan, rdata(34), 0., 1.)
+	    else
+		rbase(ichan) = HSTATI(2200+ichan, 1, 'HIST', 0)
+	    endif
+	else
+	    if (abs(rdata(34) - rbase(ichan)).lt.3) then
+		call hfill(2300+ichan, rbase(ichan) - rdata(41), 0., 1.)
+	    endif
+	endif
+    	icnt = icnt + 1
 c
 	end
 c

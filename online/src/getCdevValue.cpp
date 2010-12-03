@@ -7,14 +7,13 @@ int main (int argc, char *argv[])
  int irc;
  char *cdevval;
  char command[100];
-// FILE *aLogFile;
 
+    if (argc < 3) return -9999;
  sprintf(command, "get %s", argv[2]);
  cdevDevice & dev = cdevDevice::attachRef(argv[1]);
-// if(!DEVSEND(dev, command, NULL, &cdat, aLogFile, irc)) 
  if(!DEVSEND(dev, command, NULL, &cdat, stdout, irc)) {
   cdat.get("value", &cdevval);
   printf("%s\n", cdevval);
-}
- exit(0);
+    }
+    return irc;
 }

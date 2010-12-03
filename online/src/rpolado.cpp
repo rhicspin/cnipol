@@ -1,7 +1,7 @@
 /****************************************
 /*	RHIC Polarimeter Main Program	*/
 /*	I. Alekseev and D. Svirida	*/
-/*		2001-2005		*/
+/*		2001-2010		*/
 /****************************************/
 #include <time.h>
 #include <errno.h>
@@ -19,30 +19,24 @@
 #include "rcdev.h"
 #include "rhicpol.h"
 
-char myColor[2][20] = {"YELLOW", "BLUE"};
-char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
-char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
-char bucketCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
-char targetCDEVName[4][30] = {"pol.y-htarget", 
- "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget"};
-char muxCDEVName[2][20] = {"polarMux.RHIC.yel", "polarMux.RHIC.blu"};
+char myName[2][20] = {"Upstream", "Downstream"};
+char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
+char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
+int  myDev[2][2] = {{0, 3}, {1, 2}};				// polCDEVName for Upstream/Downstream
 
 FILE *LogFile;
-char LogFileName[200] = "polarimeter.log";
-char ScriptName[256];
+char LogFileName[256] = "polarimeter.log";
+char ScriptName[256] = "rpolMeasure.sh";
 int iVerbose = 0;
 
 pid_t ChildPid = 0;
-int CurrentPolarimeter = -1;
-int MyPolarimeter = -1;
-int iTarget = -1;	// Use with polarMux: 0 = no polarimeter selected; 1,2 = polarimeter (1,2)
-int Status = 0;
-
-int iCmd=0;
-int iStop = 0;
-int iChild = 0;
-int iAlarm = 0;
-int iTargetOut = 0;
+int MyPolarimeter = -1;		// Upstream/downstream
+int CurrentPolarimeter = -1;	// we can run one of two our polarimeters only 
+int Status = 0;			// Our error status
+int iCmd   = 0;			// the last command
+int iStop  = 0;			// we should Stop
+int iChild = 0;			// child exitted
+int iAlarm = 0;			// 
 
 //	this function removes \n from the standard ctime function output
 char * cctime(time_t *itime)
@@ -53,7 +47,7 @@ char * cctime(time_t *itime)
     return str;
 }
 
-int UpdateMessage(int ring, char * fmt, ...)
+int UpdateMessage(int polarim, char * fmt, ...)
 {
     cdevData data; 
     char str[80];
@@ -64,7 +58,7 @@ int UpdateMessage(int ring, char * fmt, ...)
     vsprintf(str, fmt, ap);
     
     irc = 0;
-    cdevDevice & pol = cdevDevice::attachRef(polCDEVName[ring]);
+    cdevDevice & pol = cdevDevice::attachRef(polCDEVName[polarim]);
     data.insert("value", str);
     DEVSEND(pol, "set statusStringS", &data, NULL, LogFile, irc);
     return irc;
@@ -261,7 +255,6 @@ void StartMeasurement(int mode)
 	return;
     } else {
          /* This is the parent process. Only set alarm timer */
-//	UpdateMessage(MyPolarimeter, "Running...");
 	alarm(maxTime + MAXANALYSISTIME + (int)(numberEvents*RTIMEPEREVENT));
 	ChildPid = pid;
     }
@@ -377,11 +370,6 @@ void alarm_handle(int sig)
     iAlarm = 1;
 }
 
-void target_out_handle(int sig)
-{
-    iTargetOut = 1;
-}
-
 int main(int argc, char** argv)
 {
     int i, irc;
@@ -461,7 +449,6 @@ int main(int argc, char** argv)
     signal(SIGQUIT, exit_handle);
     signal(SIGALRM, alarm_handle);
     signal(SIGCHLD, child_handle);
-    signal(SIGUSR1, target_out_handle);
 //	print something
     itime = time(NULL);
     fprintf(LogFile, "RHICADO-INFO : %s: %s Polarimeter daemon started.\n", cctime(&itime), myColor[MyPolarimeter]);
@@ -482,21 +469,15 @@ int main(int argc, char** argv)
     cdevDevice & myring = cdevDevice::attachRef(polCDEVName[MyPolarimeter]);
     myring.sendCallback("monitorOn dataAcquisitionS", NULL, cb);
 
-    for (iCmd=0 ; iStop==0; ) {
+    for (iCmd=0; iStop==0; ) {
         defSystem.pend((double)0.5);
 	if (iChild != 0) {
 	    iCmd = CMD_STOP | CMD_DONE;
 	    iChild = 0;
-	    iTargetOut = 0;
 	}
 	if (iAlarm != 0) {
 	    iCmd = CMD_CAN;
 	    iAlarm = 0;
-	    iTargetOut = 0;
-	}
-	if (iTargetOut != 0) {
-//	    UpdateMessage(MyPolarimeter,"Reading DATA...");
-	    iTargetOut = 0;
 	}
 	switch (iCmd & 0xFFF) {
 	    case CMD_START :
@@ -534,6 +515,5 @@ int main(int argc, char** argv)
     signal(SIGQUIT, SIG_DFL);
     signal(SIGALRM, SIG_DFL);
     signal(SIGCHLD, SIG_DFL);
-    signal(SIGUSR1, SIG_DFL);
     return 0;
 }

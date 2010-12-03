@@ -1,17 +1,18 @@
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <errno.h>
-#include <string.h>
 #include <envz.h>
-#include <time.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <math.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "../libcmc/libcmc.h"
 #include "rpolutil.h"
@@ -708,6 +709,7 @@ int polWrite(recordHeaderStruct *header, long *data)
 	pthread_mutex_unlock(&mutex);
 	return 1;
     }
+    if (data != NULL && header->len != sizeof(recordHeaderStruct)) {
     irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
     if (irc != 1) {
 	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8X: %s.\n",
@@ -717,6 +719,7 @@ int polWrite(recordHeaderStruct *header, long *data)
 	OutFile = NULL;
 	pthread_mutex_unlock(&mutex);
 	return 1;
+    }
     }
     fflush(OutFile);
     pthread_mutex_unlock(&mutex);
@@ -882,7 +885,10 @@ void setRunGo(void)
 int setRing(void)
 {
 // Get the MUX setting for the current polarimeter...
-	int n = atoi(getenv("MUX"));
+    char *str = getenv("MUX");
+    int n = 1;
+    
+    if (str) n = atoi(str);
 	fprintf(LogFile,"RHICPOL-INFO : MUX setting = %d\n", n);
 
 	if (n == 1) OutRegSet |= OUT_MUXA;
@@ -1889,23 +1895,13 @@ void closeDataFile(char * comment)
     if ((recRing & REC_JET) == 0) {
 //	Target movement record for profiles
 //<<<<<<< rpolutil.c
-	if (NoADO == 0) {
-	    header.type = REC_TAGMOVEADO | recRing;
-	    len = getTagetMovementInfo(&data);
-	    header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
-	    header.timestamp.time = time(NULL);
-	    polWrite(&header, data);
-	    free(data);
-	}
-//======= Dima: This is very bad, because causes segmentation fault in case
-// NoADO==1 -- data == NULL and len undefined
+//	It looks that we need this record even without other ADO staff
 	header.type = REC_TAGMOVEADO | recRing;
-	if (NoADO == 0) len = getTagetMovementInfo(&data);
+	len = getTargetMovementInfo(&data);
 	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
 	header.timestamp.time = time(NULL);
 	polWrite(&header, data);
-	free(data);
-//>>>>>>> 1.3
+	if (data) free(data);
 //	Polarimeter specific data to be passed to data2hbook
 	header.type = REC_POLADO | recRing;
 	header.len = sizeof(recordPolAdoStruct);
