@@ -162,10 +162,13 @@ void StartMeasurement(int polarim, char *cmd)
     pid = fork ();
     if (pid == 0) {
     	/* This is the child process.  Execute the shell command. */
-	sprintf(str, "%8.3f", runId);
-        fprintf(LogFile,"RHICDAEMON-INFO : %s %s %s\n", polCDEVName[polarim], cmd, str);
+        fprintf(LogFile,"RHICDAEMON-INFO : %s %s %8.3f\n", polCDEVName[polarim], cmd, runId);
 	fflush(LogFile);
 	execl(SHELL, SHELL, ScriptName, polCDEVName[polarim], cmd, str);
+        fprintf(LogFile,"RHICDAEMON-ERROR : unable to run script %s\n", ScriptName);
+	fflush(LogFile);
+	Status |= STATUS_ERROR | ERR_FAILSTART;
+	UpdateMessage(polarim, "Start FAILED");
         _exit(EXIT_FAILURE);	// we shell never be here ...
     } else if (pid < 0) {
 	/* The fork failed.  Report failure.  */
