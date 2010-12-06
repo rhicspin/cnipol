@@ -131,6 +131,7 @@ void StartMeasurement(int polarim, char *cmd)
     data.get("value", &runId);
     DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc);
     data.get("value", &fillNumber);
+
     if (irc != 0 || fillNumber <= 0) {
 	Status |= (STATUS_ERROR | WARN_NOBEAM | ERR_NOADO);
 	UpdateMessage(polarim, "Run parameters unaccessible");
@@ -163,7 +164,8 @@ void StartMeasurement(int polarim, char *cmd)
     fprintf(LogFile,"RHICDAEMON-INFO : %s: Starting %s for %s RunID=%8.3f\n", cctime(&tm), cmd, polCDEVName[polarim], runId);
     fflush(LogFile);
     UpdateMessage(polarim, "Starting...");
-//	Start the script to measure polarization
+
+    // Start the script to measure polarization
     pid = fork ();
     if (pid == 0) {
     	/* This is the child process.  Execute the shell command. */
@@ -242,9 +244,12 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
     int i;
 
     cdevDevice& device = req.device();
-    //	Find from which polarimeter. We will look for all possible, ignoring here error of getting from other DAQ.
+
+    //	Find from which polarimeter. We will look for all possible, ignoring
+    //	here error of getting from other DAQ.
     //	This should never happen...
     for (i=0; i<4; i++) if (strcmp(polCDEVName[i], device.name()) == 0) break;
+
     if (i == 4) {
 	fprintf(LogFile,"RHICDAEMON-WARN : Unexpected source of event %s\n", device.name());
 	fflush(LogFile);
@@ -276,7 +281,7 @@ int main(int argc, char** argv)
     int i, irc;
     time_t itime;
     
-//	process comman line options
+    // process comman line options
     while ((i = getopt(argc, argv, "UDhvl:r:")) != -1) switch(i) {
     case 'U' :
 	MyPolarimeter = 0;
@@ -304,20 +309,24 @@ int main(int argc, char** argv)
 	strncpy(ScriptName, optarg, sizeof(ScriptName));
 	break;
     }
+
     if (MyPolarimeter < 0) {
 	printf("You must select Upstream or Downstream! Exitting ...\n");
 	return 0;
     }
-// Create logfile.
+
+    // Create logfile.
     LogFile = fopen(LogFileName, "at");
     if (LogFile == NULL) LogFile = stdout;
-//	catch these signals to exit grecefully
+
+    //	catch these signals to exit grecefully
     signal(SIGINT, exit_handle);	// normal exit
     signal(SIGHUP, exit_handle);	
     signal(SIGTERM, exit_handle);
     signal(SIGQUIT, exit_handle);
     signal(SIGCHLD, child_handle);	// end of measurement
-//	print something
+
+    //	print something
     itime = time(NULL);
     fprintf(LogFile, "RHICDAEMON-INFO : %s: %s Polarimeter daemon started.\n", cctime(&itime), myName[MyPolarimeter]);
     fflush(LogFile);

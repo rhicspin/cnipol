@@ -1,21 +1,23 @@
-CDEV=/usr/local/lib/cdev
+CDEV      = /usr/local/lib/cdev
 
-LIB_PATHS = -L/usr/local/CDEV/store/X86/lib -L$(CDEV) -L$(CDEV)/Linux -L/usr/local/cern/lib 
+LIB_PATHS = -L/usr/local/CDEV/store/X86/lib -L$(CDEV) -L$(CDEV)/Linux -L/usr/local/cern/lib
 INC_PATHS = -I/usr/local/include/cdev -I/usr/local/cern/include/cfortran
-LIBS =  -lcdev -lm -ldl -lstdc++ -lpthread
-FC = f95
+LIBS      = -lcdev -lm -ldl -lstdc++ -lpthread
+CXX       = g++
+FC        = f77
 
-FFLAGS = -ffixed-line-length-none
-CFLAGS = $(INC_PATHS) -pthread
-CXXFLAGS = $(INC_PATHS) -pthread
+FFLAGS    = -ffixed-line-length-none
+CFLAGS    = $(INC_PATHS) -pthread
+CXXFLAGS  = $(INC_PATHS) -pthread
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 target : rhicpol rhic2hbook sync2rtdltime rpolado sndpic printpos getCdevValue setCdevString sendFailResults
 
-rhicpol : rhicpol.o rpolutil.o rpolutilp.o stat2str.o ../libcmc/libcmc.o
+rhicpol : rhicpol.o rpolutil.o rpolutilp.o stat2str.o ../libcmc/libcmc.o \
+          globals.o
 
 rhic2hbook : rhic2hbook.o rdatautil.o rdatautilp.o stat2str.o
-	f95 $^ -Wno-globals -o $@ $(LIB_PATHS) \
+	$(FC) $^ -Wno-globals -o $@ $(LIB_PATHS) \
 	 -lpacklib -lkernlib -lmathlib \
 	 -lcdev -lm -ldl -lstdc++
 
@@ -32,6 +34,9 @@ getCdevValue : getCdevValue.o
 setCdevString : setCdevString.o
 
 sendFailResults : sendFailResults.o
+
+%.o : %.c
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 clean :
 	-rm -f rhicpol
