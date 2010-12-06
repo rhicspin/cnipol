@@ -1,7 +1,7 @@
 /************************************************
  *	RHIC polarimeters - 2010		*
  *	I. Alekseev & D. Svirida		*
- *	CDEV command tool		 	*
+ *	CDEV command tool - get/set only 	*
  ************************************************/
 
 #include <stdio.h>
@@ -14,15 +14,21 @@ int main (int argc, char *argv[])
     char *cdevval;
     char command[100];
 
-    if (argc < 4) {
-	printf("Usage: cdevCmd device verb object\n");
+    if (argc < 3) {
+	printf("Usage: cdevCmd device object [value]\n");
 	return -9999;
     }
-    sprintf(command, "%s %s", argv[2], argv[3]);
     cdevDevice & dev = cdevDevice::attachRef(argv[1]);
-    if(!DEVSEND(dev, command, NULL, &cdat, stdout, irc)) {
-	cdat.get("value", &cdevval);
-	printf("%s\n", cdevval);
+    if (argc > 3) {	// set
+	sprintf(command, "set %s", argv[2]);
+	cdat.insert("value", argv[3]);
+	DEVSEND(dev, command, &cdat, NULL, stdout, irc);
+    } else {		// get
+	sprintf(command, "get %s", argv[2]);
+	if(!DEVSEND(dev, command, NULL, &cdat, stdout, irc)) {
+	    cdat.get("value", &cdevval);
+	    printf("%s\n", cdevval);
+	}
     }
     return irc;
 }
