@@ -4,7 +4,6 @@ LIB_PATHS = -L/usr/local/CDEV/store/X86/lib -L$(CDEV) -L$(CDEV)/Linux -L/usr/loc
 INC_PATHS = -I/usr/local/include/cdev -I/usr/local/cern/include/cfortran
 LIBS      = -lcdev -lm -ldl -lstdc++ -lpthread
 CXX       = g++
-#GCC       = gcc
 FC        = f95
 
 FFLAGS    = -ffixed-line-length-none
@@ -36,7 +35,7 @@ setCdevString : setCdevString.o
 sendFailResults : sendFailResults.o
 
 %.o : %.c
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<

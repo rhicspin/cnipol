@@ -2,7 +2,9 @@
 #define POLUTIL_H
 
 #include "rpoldata.h"
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 int readConfig(char *fname, int update);
 int CheckConfig(void);
 void CreateLookup(float tshift);
@@ -57,5 +59,9 @@ static char * getJetStatusString(void);
 void writeJetStatus(void);
 int testCarbTarg(void);
 void writeCarbTarg(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
