@@ -1,4 +1,6 @@
+
 #include <ctype.h>
+
 #include "rcdev.h"
 #include "rpoldata.h"
 
@@ -36,10 +38,6 @@ int getMuxSetting(int N)
  return(polnum);
 }
 
-extern "C" {
-	void sendRunIdS(int N);
-}
-
 void sendRunIdS(int N)
 {
  char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
@@ -70,10 +68,6 @@ void sendRunIdS(int N)
 
 }
 
-extern "C" {
-    int getJetBits(void);
-}
-
 int getJetBits(void)
 {
     cdevData data;
@@ -95,9 +89,6 @@ int getJetBits(void)
 }
 
 
-extern "C" {
-    void getJetPosition(void);
-}
 
 void getJetPosition(void)
 {
@@ -119,9 +110,6 @@ void getJetPosition(void)
     }
 }
 
-extern "C" {
-    int getTargetMovementInfo(long **data);
-}
 
 int getTargetMovementInfo(long **res)
 {
@@ -149,9 +137,6 @@ int getTargetMovementInfo(long **res)
     return len;
 }
 
-extern "C" {
-    void getCarbTarg(carbTargStat * targstat);
-}
 
 void getCarbTarg(carbTargStat * targstat)
 {
@@ -206,9 +191,6 @@ void getCarbTarg(carbTargStat * targstat)
 }
 
 
-extern "C" {
-    void getWcmInfo(void);
-}
 
 void getWcmInfo(void)
 {
@@ -247,9 +229,6 @@ void getWcmInfo(void)
     }
 }
 
-extern "C" {
-    void getAdoInfo(char mode);
-}
 
 void getAdoInfo(char mode)
 {
@@ -377,10 +356,6 @@ void getAdoInfo(char mode)
     }
 }
 
-extern "C" {
-    void GetTargetEncodings(long *res);
-}
-
 void GetTargetEncodings(long *res)
 {
     char targetCDEVName[2][4][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget",
@@ -410,9 +385,6 @@ void GetTargetEncodings(long *res)
     }
 }
 
-extern "C" {
-    void UpdateProgress(int evDone, int rate, double ts);
-}
 
 void UpdateProgress(int evDone, int rate, double ts) {
 
@@ -444,13 +416,8 @@ void UpdateProgress(int evDone, int rate, double ts) {
 
 }
 
-extern "C" {
-    void UpdateStatus(void);
-}
-
 void UpdateStatus(void) 
 {
-
     char polCDEVName[2][20] = {"polarimeter.yel", "polarimeter.blu"};
     int N, irc;
     cdevData data;
@@ -472,9 +439,6 @@ void UpdateStatus(void)
     }
 }
 
-extern "C" {
-    void UpdateMessage(char * msg);
-}
 
 void UpdateMessage(char * msg) 
 {

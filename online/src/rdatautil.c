@@ -1,4 +1,5 @@
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,8 @@
 #include <cfortran.h>
 #include <hbook.h>
 #include <errno.h>
+
+#include "globals.h"
 #include "rhicpol.h"
 #include "rpoldata.h"
 
@@ -88,16 +91,7 @@ targetDataStruct tgtdat1_;
 targetDataStruct tgtdat2_;
 
 //	Common /subrun/
-struct {
-    int nofsubruns;
-    long timestamp[500];
-    float asymX[500];
-    float asymErrX[500];
-    float asymX90[500];
-    float asymErrX90[500];
-    float asymX45[500];
-    float asymErrX45[500];
-} subrun_;
+struct SubRun subrun_;
 
 long long scalers_[6]; // LecRoy 48-bit scalers
 
@@ -122,7 +116,7 @@ int icopen_(char *fname, int *len, int dummy)
 
 void icclose_(void)
 {
-    close(fin);
+    fclose(fin);
 }
 
 int readandfill_(int* subrun)

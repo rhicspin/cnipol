@@ -1,8 +1,9 @@
 #ifndef POLDATA_H
 #define POLDATA_H
-#include <time.h>
-#include "rhicpol.h"
 
+#include <time.h>
+
+#include "rhicpol.h"
 
 #define BSIZE 0x40000			// 256 k
 
@@ -282,4 +283,16 @@ typedef struct {
     recordHeaderStruct   header;
     char                 data[1];
 } ReadBufferStruct;
+
+struct SubRun {
+    int nofsubruns;
+    long timestamp[500];
+    float asymX[500];
+    float asymErrX[500];
+    float asymX90[500];
+    float asymErrX90[500];
+    float asymX45[500];
+    float asymErrX45[500];
+};
+
 #endif

@@ -8,6 +8,8 @@
 #include <math.h>
 #include <signal.h>
 #include <errno.h>
+
+#include "globals.h"
 #include "rhicpol.h"
 #include "rpolutil.h"
 

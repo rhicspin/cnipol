@@ -1,4 +1,6 @@
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
+
+#include <ctype.h>
 #include <envz.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -14,6 +16,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "globals.h"
 #include "../libcmc/libcmc.h"
 #include "rpolutil.h"
 
@@ -225,10 +228,10 @@ int readConfig (char * cfgname, int update) {
 	switch (KnownWords[i].type[0]) {
 	  case 'S' :
 	    if (((char *)buf)[0] != '"')
-		strncpy(KnownWords[i].ptr, buf, KnownWords[i].len);
+		strncpy((char*) KnownWords[i].ptr, buf, KnownWords[i].len);
 	    else {
 		((char *)buf)[strlen(buf)-1]='\0';
-		strncpy(KnownWords[i].ptr, &((char *)buf)[1], KnownWords[i].len);
+		strncpy((char*) KnownWords[i].ptr, &((char *)buf)[1], KnownWords[i].len);
 	    }
 	    if (strlen((char *)buf) > KnownWords[i].len) {
 		fprintf(LogFile,"RHICPOL-WARN : Parameter %s too long, truncated\n",
@@ -1625,7 +1628,7 @@ void *readThread(void *arg)
     head.type |= (recRing | REC_FROMMEMORY);
     if (Conf.CSR.split.B120) head.type |= REC_120BUNCH;
 
-    for (i=0; i<4; i++) bf[i] = malloc(BSIZE*sizeof(short));
+    for (i=0; i<4; i++) bf[i] = (unsigned short *) malloc(BSIZE*sizeof(short));
     ch = CMC_AllocateChain(0, BSIZE);
     if (bf[0] == NULL || bf[1] == NULL || bf[2] == NULL || bf[3] == NULL || ch == NULL) {
 	   CMC_ReleaseChain(ch);
