@@ -1,5 +1,6 @@
 #ifndef POLUTIL_H
 #define POLUTIL_H
+
 #include "rpoldata.h"
 
 int readConfig(char *fname, int update);
@@ -33,7 +34,8 @@ void setAlarm(float mTime);
 void clearAlarm(void);
 void alarmHandler(int sig);
 
-int getJetbits(void);
+void sendRunIdS(int N);
+int getJetBits();
 void getJetPosition(void);
 int getTargetMovementInfo(long **data);
 void getAdoInfo(char mode);

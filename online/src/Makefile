@@ -4,6 +4,7 @@ LIB_PATHS = -L/usr/local/CDEV/store/X86/lib -L$(CDEV) -L$(CDEV)/Linux -L/usr/loc
 INC_PATHS = -I/usr/local/include/cdev -I/usr/local/cern/include/cfortran
 LIBS      = -lcdev -lm -ldl -lstdc++ -lpthread
 CXX       = g++
+#GCC       = gcc
 FC        = f77
 
 FFLAGS    = -ffixed-line-length-none
@@ -13,8 +14,7 @@ LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 target : rhicpol rhic2hbook sync2rtdltime rpolado sndpic printpos getCdevValue setCdevString sendFailResults
 
-rhicpol : rhicpol.o rpolutil.o rpolutilp.o stat2str.o ../libcmc/libcmc.o \
-          globals.o
+rhicpol : globals.o rpolutilp.o rhicpol.o rpolutil.o stat2str.o ../libcmc/libcmc.o
 
 rhic2hbook : rhic2hbook.o rdatautil.o rdatautilp.o stat2str.o
 	$(FC) $^ -Wno-globals -o $@ $(LIB_PATHS) \
@@ -36,6 +36,9 @@ setCdevString : setCdevString.o
 sendFailResults : sendFailResults.o
 
 %.o : %.c
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+%.o : %.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 clean :

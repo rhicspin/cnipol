@@ -24,6 +24,7 @@
 #include <cdevCallback.h>
 #include <cdevSystem.h>
 
+#include "globals.h"
 #include "rcdev.h"
 #include "rhicpol.h"
 #include "rpolado_mux.h"
@@ -162,6 +163,7 @@ void StartMeasurement(int mode)
         return;
     }
     DEVSEND(mux, "get polNumM", NULL, &data, LogFile, irc);
+    int iTarget;
     data.get("value", &iTarget);
     if (mode == 4) {
         DEVSEND(pol, "get rampMeasTimeS", NULL, &data, LogFile, irc);

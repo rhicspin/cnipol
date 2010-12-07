@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <math.h>
+
+#include "globals.h"
 #include "rhicpol.h"
 #include "rpoldata.h"
 
@@ -21,16 +23,18 @@ extern "C" {
 extern polDataStruct poldat_;
 
 //	Common /subrun/
-struct {
-    int nofsubruns;
-    long timestamp[500];
-    float asymX[500];
-    float asymErrX[500];
-    float asymX90[500];
-    float asymErrX90[500];
-    float asymX45[500];
-    float asymErrX45[500];
-} subrun_;
+//struct {
+//    int nofsubruns;
+//    long timestamp[500];
+//    float asymX[500];
+//    float asymErrX[500];
+//    float asymX90[500];
+//    float asymErrX90[500];
+//    float asymX45[500];
+//    float asymErrX45[500];
+//} subrun_;
+
+extern SubRun subrun_;
 
 
 void sendresult_(int *recRing) {
