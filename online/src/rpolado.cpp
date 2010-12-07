@@ -27,10 +27,10 @@
 #include "globals.h"
 #include "rcdev.h"
 #include "rhicpol.h"
-#include "rpolado_mux.h"
+//#include "rpolado_mux.h"
 
 char myName[2][20] = {"Upstream", "Downstream"};
-char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
+//char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
 int  myDev[2][2] = {{0, 3}, {1, 2}};                            // polCDEVName for Upstream/Downstream
 
 FILE *LogFile;

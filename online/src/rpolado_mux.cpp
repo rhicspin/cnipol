@@ -19,7 +19,7 @@
 #include <cdevSystem.h>
 #include "rcdev.h"
 #include "rhicpol.h"
-#include "rpolado_mux.h"
+//#include "rpolado_mux.h"
 
 FILE *LogFile;
 char LogFileName[200] = "polarimeter.log";

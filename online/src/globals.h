@@ -27,6 +27,11 @@ extern "C" {
    int readandfill_(int* subrun);
    void icclose_(void);
    void wfana(unsigned char *data, int *len, int *chan);
+   void mybook_(int *num);
+   void histrate_(long *data, long *num);
+   void histdelim_(long *data, long *num);
+   void histtagmov_(long *data, long *num);
+   void wfana_(float *data, int *len, int *chan);
 }
 
 #endif
