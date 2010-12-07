@@ -5,7 +5,7 @@ INC_PATHS = -I/usr/local/include/cdev -I/usr/local/cern/include/cfortran
 LIBS      = -lcdev -lm -ldl -lstdc++ -lpthread
 CXX       = g++
 #GCC       = gcc
-FC        = f77
+FC        = f95
 
 FFLAGS    = -ffixed-line-length-none
 CFLAGS    = $(INC_PATHS) -pthread
@@ -21,7 +21,7 @@ rhic2hbook : rhic2hbook.o rdatautil.o rdatautilp.o stat2str.o
 	 -lpacklib -lkernlib -lmathlib \
 	 -lcdev -lm -ldl -lstdc++
 
-rpolado : rpolado.o stat2str.o
+rpolado : rpolado.o stat2str.o globals.o
 
 sync2rtdltime : sync2rtdltime.o
 
