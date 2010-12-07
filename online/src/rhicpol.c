@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	iNotify = 1;
         break;
     case 'N':
-	nLoop = strtod(optarg, NULL);
+	nLoop = strtol(optarg, NULL, 0);
         break;
     case 'P':
 	iPulseProg = 1;
@@ -190,10 +190,10 @@ int main(int argc, char **argv)
 //	fflush(LogFile);
 /* If tshift in effect move sensitive window boundaries */
 	for (i=0; i<Conf.NumChannels; i++) {
-	    j = (int)SiConf[i].Window.split.Beg + tshift/Conf.WFDTUnit;
+	    j = (int) (SiConf[i].Window.split.Beg + tshift/Conf.WFDTUnit);
 	    if (j<1) j=1; if(j>255) j=255;
 	    SiConf[i].Window.split.Beg = j;
-	    k = (int)SiConf[i].Window.split.End + tshift/Conf.WFDTUnit;
+	    k = (int) (SiConf[i].Window.split.End + tshift/Conf.WFDTUnit);
 	    if (k<j) k=j; if(k>255) k=255;
 	    SiConf[i].Window.split.End = k;
 	}
@@ -368,7 +368,7 @@ int main(int argc, char **argv)
 	    if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data Finished.");
 
 // Send runIdS (the run name) to CDEV...
-		if (NoADO == 0 && j == nLoop-1) sendRunIdS((int)(recRing == REC_YELLOW) ? 0 : 1);
+//		if (NoADO == 0 && j == nLoop-1) sendRunIdS((int)(recRing == REC_YELLOW) ? 0 : 1);
 	}
 	resetInhibit();
 	camacClose();

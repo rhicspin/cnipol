@@ -1,5 +1,4 @@
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
-
 #include <ctype.h>
 #include <envz.h>
 #include <errno.h>
@@ -16,7 +15,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "globals.h"
 #include "../libcmc/libcmc.h"
 #include "rpolutil.h"
 
@@ -95,8 +93,8 @@ void setAlarm(float mTime)
     signal(SIGHUP,  alarmHandler);
     t.it_interval.tv_sec = 0;
     t.it_interval.tv_usec = 0;
-    t.it_value.tv_sec = mTime;
-    t.it_value.tv_usec = (mTime - t.it_value.tv_sec) * 1000000;
+    t.it_value.tv_sec = (int) mTime;
+    t.it_value.tv_usec = (int) ((mTime - t.it_value.tv_sec) * 1000000);
     irc = setitimer(ITIMER_REAL, &t, NULL);
     if (irc != 0) {
 	fprintf(LogFile, "Error setting timer (%d.%d): %s.\n",
@@ -228,10 +226,10 @@ int readConfig (char * cfgname, int update) {
 	switch (KnownWords[i].type[0]) {
 	  case 'S' :
 	    if (((char *)buf)[0] != '"')
-		strncpy((char*) KnownWords[i].ptr, buf, KnownWords[i].len);
+		strncpy((char *)KnownWords[i].ptr, buf, KnownWords[i].len);
 	    else {
 		((char *)buf)[strlen(buf)-1]='\0';
-		strncpy((char*) KnownWords[i].ptr, &((char *)buf)[1], KnownWords[i].len);
+		strncpy((char *)KnownWords[i].ptr, &((char *)buf)[1], KnownWords[i].len);
 	    }
 	    if (strlen((char *)buf) > KnownWords[i].len) {
 		fprintf(LogFile,"RHICPOL-WARN : Parameter %s too long, truncated\n",
@@ -632,8 +630,8 @@ void CreateLookup(float tshift)
 	/* ET LookUp */
 	
 	/* Amplitude range */
-	iAmin = (Conf.Emin-SiConf[i].edead)/SiConf[i].ecoef;
-	iAmax = (Conf.Emax-SiConf[i].edead)/SiConf[i].ecoef;
+	iAmin = (int)((Conf.Emin-SiConf[i].edead)/SiConf[i].ecoef);
+	iAmax = (int)((Conf.Emax-SiConf[i].edead)/SiConf[i].ecoef);
 	if (iAmin < 0) iAmin = 0; if (iAmin > 255) iAmin = 255; 
 	if (iAmax < iAmin) iAmax = iAmin; if (iAmax > 255) iAmax = 255; 
 
@@ -643,8 +641,8 @@ void CreateLookup(float tshift)
 	    for (   ; j<iAmax; j++) {
 		tof = 22.7 * sqrt(Conf.AtomicNumber) * Conf.TOFLength / 
 		    sqrt(j * SiConf[i].ecoef + SiConf[i].edead); // ns
-		iTmin = 2 * (tof + SiConf[i].t0 - SiConf[i].ETCutW + tshift) / Conf.WFDTUnit;
-		iTmax = 2 * (tof + SiConf[i].t0 + SiConf[i].ETCutW + tshift) / Conf.WFDTUnit;
+		iTmin = (int)(2 * (tof + SiConf[i].t0 - SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
+		iTmax = (int)(2 * (tof + SiConf[i].t0 + SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
 		if (iTmin < SiConf[i].Window.split.Beg * 2 - 1) iTmin = SiConf[i].Window.split.Beg * 2 - 1; 
 		if (iTmin > 255) iTmin = 255; 
 		if (iTmax < iTmin) iTmax = iTmin; if (iTmax > 255) iTmax = 255; 
@@ -675,10 +673,10 @@ void CreateLookup(float tshift)
 	switch (Conf.IALookUp) {
 	  case 0 :	// Linear
 	    for (j=0; j<256; j++) {
-		iAmin = (SiConf[i].A0 + SiConf[i].A1 * j - SiConf[i].IACutW) / 
-			(Conf.CSR.split.iDiv +2);
-		iAmax = (SiConf[i].A0 + SiConf[i].A1 * j + SiConf[i].IACutW) / 
-			(Conf.CSR.split.iDiv +2);
+		iAmin = (int)((SiConf[i].A0 + SiConf[i].A1 * j - SiConf[i].IACutW) / 
+			(Conf.CSR.split.iDiv +2));
+		iAmax = (int)((SiConf[i].A0 + SiConf[i].A1 * j + SiConf[i].IACutW) / 
+			(Conf.CSR.split.iDiv +2));
 		if (iAmin < 0) iAmin = 0; if (iAmin > 255) iAmin = 255; 
 		if (iAmax < iAmin) iAmax = iAmin; if (iAmax > 255) iAmax = 255; 
 		SiConf[i].LookUp[j+256] = ((iAmax << 8) | iAmin); // Open
@@ -873,8 +871,8 @@ void pulseDelimiter(void)
 void nsleep(double time)
 {
     struct timespec t;
-    t.tv_sec = time;
-    t.tv_nsec = (time - t.tv_sec) * 1000000000;
+    t.tv_sec = (int)time;
+    t.tv_nsec = (int)((time - t.tv_sec) * 1000000000);
     nanosleep(&t, NULL);
 }
 
@@ -1019,7 +1017,7 @@ int initWFDs(void)
 		Conf.CSR.split.VirtN = j;			// Virtex signature in memory
 		CMC_Add2Chain(ch, CMC_CMDDATA | Conf.CSR.reg);	// set CSR
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
-		k = (Conf.TrigMin-SiConf[nSi].edead)/SiConf[nSi].ecoef;
+		k = (int)((Conf.TrigMin-SiConf[nSi].edead)/SiConf[nSi].ecoef);
 		if (k < 0) k = 0; if (k > 255) k = 255;
 		Conf.TRG.split.FineHistBeg = k;
 		CMC_Add2Chain(ch, CMC_CMDDATA | Conf.TRG.reg);	// set trigger
@@ -1472,7 +1470,7 @@ int getEvents(int Number)
 		    countHistoryLen += 8192;
 		}
 		if (countHistory != NULL) {
-		    countHistory[countHistoryPtr/sizeof(long)] = (Cnt-lCnt)/(t-tlast);
+		    countHistory[countHistoryPtr/sizeof(long)] = (long)((Cnt-lCnt)/(t-tlast));
 		    countHistoryPtr += sizeof(long);
 		} else {
 		    countHistoryPtr = 0;
