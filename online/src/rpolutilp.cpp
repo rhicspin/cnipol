@@ -1,8 +1,8 @@
-
 #include <ctype.h>
 
 #include "rcdev.h"
 #include "rpoldata.h"
+#include "rpolutil.h"
 
 extern FILE *LogFile;
 extern beamDataStruct beamData;
