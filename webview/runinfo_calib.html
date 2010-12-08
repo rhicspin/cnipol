@@ -106,7 +106,8 @@
 <?php
 
 $nColumns  = 2;
-$nChannels = $rc['NActiveStrip'];
+//$nChannels = $rc['NActiveStrip'];
+$nChannels = count($rc['ActiveStrip']);
 $nRows     = ceil($nChannels/$nColumns); 
 
 for ($ir=0; $ir<$nRows; $ir++) :
@@ -128,17 +129,17 @@ for ($ir=0; $ir<$nRows; $ir++) :
 
    for ($ic=0; $ic<$nColumns; $ic++) :
 
-      $chanId = $ic*$nRows + $ir;
+      $chanId = $ic*$nRows + $ir + 1;
       $coefs = $rc['calib'][$chanId];
 
       if ($chanId > $nChannels) continue;
 
-      $chanId += 1;
-      print "<td>$chanId\n";
+      //$chanId += 1;
+      print "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>\n";
       print "<td class=align_r>".sprintf("%7.4f", $coefs['ACoef'])."\n";
-      print "<td class=\"align_r ".($coefs['ACoefErr']<0?"feature":"")."\">".sprintf("%7.4f", $coefs['ACoefErr'])."\n";
+      print "<td class=\"align_r ".($coefs['ACoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ACoefErr'])."\n";
       print "<td class=align_r>".sprintf("%7.4f", $coefs['ICoef'])."\n";
-      print "<td class=\"align_r ".($coefs['ICoefErr']<0?"feature":"")."\">".sprintf("%7.4f", $coefs['ICoefErr'])."\n";
+      print "<td class=\"align_r ".($coefs['ICoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ICoefErr'])."\n";
       print "<td>&nbsp;&nbsp;\n";
 
    endfor;
