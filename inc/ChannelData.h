@@ -29,8 +29,9 @@ class ChannelData : public TObject
 public:
 
    UChar_t  fAmpltd;
-   UChar_t  fTdc;
    UChar_t  fIntgrl;
+   UChar_t  fTdc;
+   UChar_t  fTdcAMax;
 
 public:
 

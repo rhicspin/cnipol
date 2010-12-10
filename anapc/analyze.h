@@ -10,8 +10,11 @@
 #include "EventConfig.h"
 
 TFile        *gOutFile;
-TH2F         *hTvsE, *hTvsQ;
+TH1F         *hAmpltd, *hIntgrl, *hTdc;
+TH1F         *hEventSeq;
+TH2F         *hTvsE, *hTvsQ, *hEvsQ;
 TRandom      *gRandom;
+TCanvas      *c1;
 //TStyle      *gRandom;
 
 AnaEvent     *gAnaEvent;

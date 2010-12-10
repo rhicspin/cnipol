@@ -5,9 +5,10 @@
  *
  */
 
-
 #include "AsymPlot.h"
 #include "AsymMain.h"
+
+using namespace std;
 
 
 Int_t FileNotOK(Char_t file[]){
@@ -17,9 +18,8 @@ Int_t FileNotOK(Char_t file[]){
 }
 
 
-Int_t
-Usage(char *argv[]){
-
+Int_t Usage(char *argv[])
+{
   cout << "\n Usage:" << argv[0] << "[-hxg][-f <runID>][--banana][--error-detector]" << endl;
   cout << "\n Description: " << endl;
   cout << "\t Make plots for Run <runID>." << endl;
@@ -36,7 +36,6 @@ Usage(char *argv[]){
   cout << "\t -x \t show example    " << endl;
   cout << endl;
   exit(0);
-
 }
 
 
@@ -47,12 +46,11 @@ Int_t Example(char *argv[]){
   cout << 
   cout << endl;
   exit(0);
-
 }
 
 
-void ColorSkime(){
-
+void ColorSkime()
+{
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
 
@@ -60,8 +58,8 @@ void ColorSkime(){
     Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
     Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
     Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
-    //    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-    gStyle->CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    //gStyle->CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 
 }
@@ -553,17 +551,14 @@ int main(int argc, char **argv) {
   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
-
   // open rootfile 
   FindRootFile();
   TFile * rootfile = TFile::Open(lnkfile);
-
 
   // Log file handling
   ofstream logfile;
   logfile.open(".AsymPlot.log");
   if (logfile.fail()){ cerr << "Warning: Cannot open .AsymPlot.log." << endl;}
-
 
   // setup color skime
   //  ColorSkime();
@@ -594,12 +589,12 @@ int main(int argc, char **argv) {
   //  logfile.close();
 
   // remove symboric link to root file in root directory
-  sprintf(text,"rm AsymPlot.root ",filename);    
+  //sprintf(text, "rm AsymPlot.root ", filename);    
+  sprintf(text, "rm AsymPlot.root ");    
   gSystem->Exec(text);  
 
   sprintf(text,"gv -landscape %s",psfile);
   if (GHOSTVIEW) gSystem->Exec(text);
 
   return 0;
-
 }

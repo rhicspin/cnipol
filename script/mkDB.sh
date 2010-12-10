@@ -2,8 +2,10 @@
 #make run database
 #I.Nakagawa
 #March, 11, 2006
+
 ANALYZED_RUN_LIST="$ASYMDIR/analyzed_run.list";
 ONLINE_DB="$DATADIR/OnlinePol.dat";
+
 ExeAnalyzedRunList=0 ;
 ExeMakeDatabase=1;
 ExclusiveMode=0;
@@ -756,6 +758,7 @@ if [  $ExeAnalyzedRunList -eq 1 ] ; then
     CheckWritePermission;  # check the write permission of analyzed_run.list.
     MakeAnalyzedRunList;
 fi
+
 if [ $ExeMakeDatabase -eq 1 ] ; then
     if [ $ExeOnlineDatabase -eq 1 ]; then
 	ShowIndexOnline;
@@ -770,4 +773,3 @@ if [ $ExeMakeDatabase -eq 1 ] ; then
     fi
     MakeDatabase;
 fi;
-

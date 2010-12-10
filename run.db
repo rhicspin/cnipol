@@ -15284,6 +15284,7 @@
 	TSHIFT=0;	
 	INJ_TSHIFT=7;
 	ENERGY_CALIB=alpha_yellow1_2_22_2009.corr;
+	ENERGY_CALIB_ROOT_FILE=/home/dsmirnov/results/alpha0429.000/0.000.root;
 	CONFIG=config_init.dat;
 	DEFINE_SPIN_PATTERN=-1;
 	DEFINE_FILL_PATTERN=-1;

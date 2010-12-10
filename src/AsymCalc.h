@@ -5,27 +5,18 @@
 #ifndef ASYM_CALC_H
 #define ASYM_CALC_H
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
 #include <math.h>
-//#include <errno.h>
-//#include <signal.h>
-//#include <string.h>
-//#include <iostream>
 
-//#include "TMinuit.h"
-//#include "TString.h"
-//#include "TMath.h"
 #include "TGraphErrors.h"
+#include "TF1.h"
 
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "Asym.h"
+#include "AsymGlobals.h"
 #include "WeightedMean.h"
 #include "AsymErrorDetector.h"
-//#include "AsymROOT.h"
+
 
 const int ASYM_DEFAULT=-999;
 extern const int ASYM_DEFAULT;
@@ -50,9 +41,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]);
 Double_t sin_phi(Double_t *x, Double_t *par);
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 
+
 class AsymFit
 {
-
  private:
 
  public:
@@ -108,8 +99,6 @@ int BunchAsymmetry(int, float A[], float dA[]);
 void calcBunchAsymmetryAverage();
 void calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
 float calcDivisionError(float x, float y, float dx, float dy);
-
-
 
 
 //===========================================================================

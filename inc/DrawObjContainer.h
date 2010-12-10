@@ -11,11 +11,13 @@
 #include <iostream>
 
 #include "TCanvas.h"
+#include "TClass.h"
 #include "TH1.h"
 #include "TH2F.h"
 #include "TDirectory.h"
 #include "TObject.h"
 #include "TKey.h"
+#include "TSystem.h"
 
 class DrawObjContainer;
 
@@ -47,7 +49,12 @@ public:
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
    void SaveAllAs(TCanvas &c, std::string path="./");
+   void Draw(Option_t* option = "")
+      { ((TObject*)this)->Draw(option); }
    void Draw(TCanvas &c);
+   Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
+   Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
+   void Delete();
 
    ClassDef(DrawObjContainer, 1)
 };

@@ -1,23 +1,23 @@
 // Header file for AsymProcess
+//
 // Author   : Itaru Nakagawa
+//            Dmitri Smirnov
+//
 // Creation : 07/26/2006         
+//
 
 #ifndef ASYM_PROCESS_H
 #define ASYM_PROCESS_H
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "Asym.h"
+#include "TH1F.h"
+#include "TH2F.h"
+
+#include "DrawObjContainer.h"
+
+#include "AsymGlobals.h"
 #include "Kinema.h"
 #include "AsymROOT.h"
 #include "AsymROOTGlobals.h"

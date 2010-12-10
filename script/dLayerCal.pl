@@ -1,4 +1,9 @@
 #! /usr/bin/perl
+#
+# Nov 2, 2010 Dmitri Smirnov
+#    - Formatted for better reading experience
+#
+
 # defualts 
 $GHOSTVIEW=0;
 # HID:15000 (const.t) HID:15100: (banana)
@@ -19,8 +24,6 @@ $DLAYER_WIDTH_MAX=150;
 $INVERT_KINEMA=0;
 
 
-
-
 #----------------------------------------------------------------------
 #               Command Line Options
 #----------------------------------------------------------------------
@@ -28,21 +31,11 @@ use Getopt::Std;
 my %opt;
 getopts('d:E:f:O:ibgh', \%opt);
 
-if ( $opt{h} ) {
-    help();
-}
-if ( $opt{i} ) {
-    $INVERT_KINEMA = 1;
-}
-if ( $opt{g} ) {
-    $GHOSTVIEW = 1;
-}
-if ( $opt{b} ){
-    $HID = 15100;
-}
-if ( $opt{d} ){
-    $OUTPUTDIR=$opt{d};
-}
+if ( $opt{h} ) { help(); }
+if ( $opt{i} ) { $INVERT_KINEMA = 1; }
+if ( $opt{g} ) { $GHOSTVIEW = 1; }
+if ( $opt{b} ) { $HID = 15100; }
+if ( $opt{d} ) { $OUTPUTDIR=$opt{d}; }
 
 if ( $opt{O} ){
     $ONE_PAR_FIT_OPTION=$opt{O};
@@ -52,15 +45,13 @@ if ( $opt{O} ){
     }
 }
 
-
-
 # Get Run ID
 my $Runn = $opt{f};
+
 if (length ($Runn) == 0){
     print "Error: Specify <runID>.\n";
     help();
 }
-
 
 # Get Fit Energy Range
 if ( $opt{E} ){
@@ -68,7 +59,6 @@ if ( $opt{E} ){
     if (length($field[0]) != 0){ $EMIN=$field[0];}
     if (length($field[1]) != 0){ $EMAX=$field[1];}
 }
-
 
 sub help(){
     print "\n";
@@ -105,7 +95,6 @@ sub GhostView(){
 }
 
 
-
 #----------------------------------------------------------------------
 #               Directory Path Setup
 #----------------------------------------------------------------------
@@ -122,27 +111,28 @@ unless (-d $DLAYERDIR) {
 #----------------------------------------------------------------------
 #         Get Online Configulation File Name from Online Log
 #----------------------------------------------------------------------
-sub GetOnlineConfig(){
+sub GetOnlineConfig() {
 
-$ONLINEDIR    = $ENV{"ONLINEDIR"};
-$ONLINELOG    = "$ONLINEDIR/log/$Runn.log";
-unless (open(ONLINE_LOG_FILE,"$ONLINELOG")) {
-    print "Warning: $ONLINELOG doesn't exist. Deadlayer for online won't be plotted.\n";
+   $ONLINEDIR = $ENV{"ONLINEDIR"};
+   $ONLINELOG = "$ONLINEDIR/log/$Runn.log";
+   
+   unless (open(ONLINE_LOG_FILE,"$ONLINELOG")) {
+      print "Warning: $ONLINELOG doesn't exist. Deadlayer for online won't be plotted.\n";
+   }
+   
+   while (<ONLINE_LOG_FILE>) {
+      if (/Reading calibration parameters from file/) {
+         ($F1,$F2,$F3,$F4,$F5,$F6,$F7,$F8) = split;
+         $ONLINE_CONFIG="$CONFDIR/$F8";
+      };
+   };
 }
-while (<ONLINE_LOG_FILE>) {
-    if (/Reading calibration parameters from file/) {
-	($F1,$F2,$F3,$F4,$F5,$F6,$F7,$F8) = split;
-	$ONLINE_CONFIG="$CONFDIR/$F8";
-    };
-};
 
-}
 
 #----------------------------------------------------------------------
 #           Convert energy deposit to kinetic energy
 #----------------------------------------------------------------------
 sub ConvertEdep2Ekin(){
-
 
     #Get Average deadlayer width from fit log file
     $FITLOGFILE="dlayer/$Runn.fit.log";
@@ -159,7 +149,7 @@ sub ConvertEdep2Ekin(){
 	    printf "Reset default $DLAYER_WIDTH_DEFAULT\n";
 	    $DLAYER_WIDTH=$DLAYER_WIDTH_DEFAULT;
 	}
-    }else{
+    } else {
 	print "$FITLOGFILE doesn't exist. Use default <dwidth>=$DLAYER_WIDTH\n";
     }
 
@@ -170,7 +160,6 @@ sub ConvertEdep2Ekin(){
     $EMIN = $tmp[1];
     my @tmp = split(" ", `KinFunc -w $DLAYER_WIDTH -e $EMAX -i`);
     $EMAX = $tmp[1];
-
 }
 
 
@@ -179,29 +168,28 @@ sub ConvertEdep2Ekin(){
 #----------------------------------------------------------------------
 sub GetLog(){
 
-unless (open(LOGFILE,"douts/$Runn.dl.log")) {
-    die "Error: douts/$Runn.dl.log doesn't exist. Run dLayerGen.pl first.\n";
-}
-
-while (<LOGFILE>) {
-    if (/MASSCUT/) {
-	($F1,$F2,$F3) = split;
-	$MASSCUT=$F3;
-    } elsif (/Beam Energy/) {
-	($F1,$F2,$F3,$F4) = split;
-	$Bene=$F4;
-    } elsif (/RHIC Beam/) {
-	($F1,$F2,$F3,$F4) = split;
-	$RHICBeam=$F4;
-    } elsif (/Kinematic Const. E2T/) {
-	($F1,$F2,$F3,$F4,$F5) = split;
-	$E2T=$F5;
-    } elsif (/CONFIG/) {
-	($F1,$F2,$F3) = split;
-	$cfile=$F3;
-    };
-};
-
+   unless (open(LOGFILE,"douts/$Runn.dl.log")) {
+       die "Error: douts/$Runn.dl.log doesn't exist. Run dLayerGen.pl first.\n";
+   }
+   
+   while (<LOGFILE>) {
+      if (/MASSCUT/) {
+         ($F1,$F2,$F3) = split;
+         $MASSCUT=$F3;
+      } elsif (/Beam Energy/) {
+         ($F1,$F2,$F3,$F4) = split;
+         $Bene=$F4;
+      } elsif (/RHIC Beam/) {
+         ($F1,$F2,$F3,$F4) = split;
+         $RHICBeam=$F4;
+      } elsif (/Kinematic Const. E2T/) {
+         ($F1,$F2,$F3,$F4,$F5) = split;
+         $E2T=$F5;
+      } elsif (/CONFIG/) {
+         ($F1,$F2,$F3) = split;
+         $cfile=$F3;
+      };
+   };
 }
 
 
@@ -224,17 +212,12 @@ sub PrintRunCondition(){
     printf("Online Config        : $ONLINE_CONFIG \n");
     printf("One Par Fit option   : $ONE_PAR_FIT_OPTION \n");
     printf("Temporary output Dir : $OUTPUTDIR \n");
-
 }
-
-
-
 
 
 #----------------------------------------------------------------------
 #                             Main Routine
 #----------------------------------------------------------------------
-
 
 # Get Run Conditions from Offline Log file
 GetLog();
@@ -242,18 +225,15 @@ GetLog();
 # Get Online Configulation file name for online monitoring.
 GetOnlineConfig();
 
-
 # Calculate EMIN:EMAX range from kinetic energies for given dlayer thickness
 if ( $INVERT_KINEMA ) { ConvertEdep2Ekin(); };
-
 
 # Print Run Conditions
 PrintRunCondition();
 
-
-
 # Make input macro for fitting.
 system("echo '.x $MACRODIR/ExeKinFit.C(\"$Runn\", $Bene, $RHICBeam, $E2T, $EMIN, $EMAX, $HID,\"$cfile\",\"$ONLINE_CONFIG\",\"$OUTPUTDIR\", $ONE_PAR_FIT_OPTION)' > $OUTPUTDIR/input.C");
+
 # Execute deadlayer fitting on root
 system("root -b < $OUTPUTDIR/input.C | tee $DLAYERDIR/$Runn.fit.log");
     
@@ -264,8 +244,3 @@ if (-f "$OUTPUTDIR/residual.ps")    {system("mv $OUTPUTDIR/residual.ps $DLAYERDI
 if (-f "$OUTPUTDIR/input.C")        {system("rm $OUTPUTDIR/input.C");}
 
 if ($GHOSTVIEW) {GhostView();};
-
-
-
-
-

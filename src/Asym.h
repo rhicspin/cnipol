@@ -13,19 +13,17 @@
 #define ASYM_STREAM_H
 
 #include <bitset>
+#include <map>
+#include <set>
+#include <string>
+
+#include "rhicpol.h"
+#include "rpoldata.h"
 
 #include "TBuffer.h"
-#include "TDirectory.h"
-#include "TH1F.h"
-#include "TH1I.h"
-#include "TH2F.h"
-#include "TF1.h"
-#include "TLine.h"
+#include "TString.h"
 
-#include "rpoldata.h"
 #include "AsymHeader.h"
-
-using namespace std;      // declare string in structure
 
 #ifdef NULL
 #undef NULL
@@ -39,8 +37,6 @@ using namespace std;      // declare string in structure
 #define HMAXENE 1500.              // maximum energy for histograms
 #define HENEBIN 180                // number of energy bin in banana plot
 #define NTLIMIT 100000000
-
-extern std::map<std::string, std::string> gEnv;
 
 // whole info for one event
 typedef struct {
@@ -64,41 +60,55 @@ typedef struct {
     float lumiE;        // luminosity asymmetry error
 } asymStruct;
 
-typedef struct {
-    // Constraint parameter for Data processing 
-    int enel;          // lower kinetic energy threshold (keV) 
-    int eneu;          // upper kinetic energy threshold (keV)
-    int widthl;        // lower banana cut (ns)
-    int widthu;        // upper banana cut (ns)
-    int FEEDBACKMODE;  // fit 12C peak first and feedback tshift and sigma
-    int RAWHISTOGRAM;  //Fill raw histograms 
-    int CMODE;         // Calibration mode 0:off 1:on
-    int DMODE;         // dead layer study mode 0:off 1:on
-    int TMODE;         // T0 study mode 0:off 1:on
-    int AMODE;         // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on
-    int BMODE;         // create banana curve (E-T) plots 0:off 1:on
-    int ZMODE;         // with/out T0 subtraction 0:with 1:without
-    int MESSAGE;       // message mode 1: exit just after run begin 
-    int CBANANA;       // constant width banana cut :1, <sigma> Mass Cut :2
-    int UPDATE;        // 1: keep update of the histogram
-    int MMODE;         // mass mode 
-    int NTMODE;        // if 1 store NTUPLEv
-    int RECONFMODE;    // if 1 reconfigure from file 
-    int RAMPMODE;      // if 1 prepare the histograms for ramp measurement
-    int STUDYMODE;     // if 1 study mode
-std::bitset<3> SAVETREES;   // bitmask telling which ROOT trees to save
-  float MassSigma;     // banana curve cut within <MassSigma> away from the 12C mass
-  float MassSigmaAlt;  // banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
-  float OneSigma;      // 1-sigma of 12C mass distribution in [keV]
-  float tshift;        // time shift in [ns]
-  float inj_tshift;    // time shift in [ns] for injection w.r.t. flattop
-  float dx_offset;     // additional deadlayer offset [ug/cm2]
-  float WCMRANGE;      // Wall Current Monitor process Fill range
-  float MassLimit;     // Lower Mass limit for peak position adjustment fit
-  int thinout;         // Every <thinout> event to be feed into feedback routine
-  float reference_rate;// Expected universal rate for given target
-  float target_count_mm;//Target count/mm conversion
-} datprocStruct; 
+
+typedef struct TDatprocStruct
+{
+   // Constraint parameter for Data processing 
+   int            enel;               // lower kinetic energy threshold (keV)
+   int            eneu;               // upper kinetic energy threshold (keV)
+   int            widthl;             // lower banana cut (ns)
+   int            widthu;             // upper banana cut (ns)
+   int            FEEDBACKMODE;       // fit 12C peak first and feedback tshift and sigma
+   int            RAWHISTOGRAM;       // Fill raw histograms
+   int            CMODE;              // Calibration mode 0:off 1:on
+   int            DMODE;              // dead layer study mode 0:off 1:on
+   int            TMODE;              // T0 study mode 0:off 1:on
+   int            AMODE;              // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on
+   int            BMODE;              // create banana curve (E-T) plots 0:off 1:on
+   int            ZMODE;              // with/out T0 subtraction 0:with 1:without
+   int            MESSAGE;            // message mode 1: exit just after run begin
+   int            CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
+   int            UPDATE;             // 1: keep update of the histogram
+   int            MMODE;              // mass mode
+   int            NTMODE;             // if 1 store NTUPLEv
+   int            RECONFMODE;         // if 1 reconfigure from file
+   int            RAMPMODE;           // if 1 prepare the histograms for ramp measurement
+   int            STUDYMODE;          // if 1 study mode
+   std::bitset<3> SAVETREES;          // bitmask telling which ROOT trees to save
+   float          MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
+   float          MassSigmaAlt;       // banana curve alternative cut within
+                                      // <MassSigmaAlt> away from the 12C mass
+   float          OneSigma;           // 1-sigma of 12C mass distribution in [keV]
+   float          tshift;             // time shift in [ns]
+   float          inj_tshift;         // time shift in [ns] for injection w.r.t. flattop
+   float          dx_offset;          // additional deadlayer offset [ug/cm2]
+   float          WCMRANGE;           // Wall Current Monitor process Fill range
+   float          MassLimit;          // Lower Mass limit for peak position adjustment fit
+   UInt_t         nEventsProcessed;   // number of events processed from raw data file
+   UInt_t         nEventsTotal;       // number of total events in raw data file
+   UInt_t         thinout;            // Every <thinout> event to be feed into feedback routine
+   float          reference_rate;     // Expected universal rate for given target
+   float          target_count_mm;    // Target count/mm conversion
+   time_t         procDateTime;       // Date/time when processing started
+   Double_t       procTimeReal;       // Time in seconds to process input raw file
+   Double_t       procTimeCpu;        // Time in seconds to process input raw file
+   std::string    userCalibFile;    // Calibration file pass by user as argument
+
+   void Streamer(TBuffer &buf);
+};
+
+TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec);
+TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec);
 
 
 typedef struct {
@@ -176,63 +186,85 @@ typedef struct {
 } StructAnalysis;
 
 
+struct TStructRunInfo {
+   int          Run;
+   double       RUNID;
+   std::string  runName;
+   int          StartTime;
+   int          StopTime;
+   float        RunTime;
+   float        GoodEventRate;
+   float        EvntRate;
+   float        ReadRate;
+   float        WcmAve;
+   float        WcmSum;
+   double       BeamEnergy;
+   int          RHICBeam;
+   int          PolarimetryID;
+   int          MaxRevolution;
+   char         target;
+   char         targetID;
+   char         TgtOperation[16];
+   int          ActiveDetector[NDETECTOR];
+   int          ActiveStrip[NSTRIP];
+   int          NActiveStrip;
+   int          NDisableStrip;
+   int          DisableStrip[NSTRIP];
+   int          NFilledBunch;
+   int          NActiveBunch;
+   int          NDisableBunch;
+   int          DisableBunch[NBUNCH];
 
-typedef struct StructRunInfo {
-  int Run;
-  double RUNID;
-  int StartTime;
-  int StopTime;
-  float RunTime;
-  float GoodEventRate;
-  float EvntRate;
-  float ReadRate;
-  float WcmAve;
-  float WcmSum;
-  double BeamEnergy;
-  int RHICBeam;
-  int PolarimetryID;
-  int MaxRevolution;
-  char target;
-  char targetID;
-  //char * TgtOperation;
-  char TgtOperation[16];
-  int ActiveDetector[NDETECTOR];
-  int ActiveStrip[NSTRIP];
-  int NActiveStrip;
-  int NDisableStrip;
-  int DisableStrip[NSTRIP];
-  int NFilledBunch;
-  int NActiveBunch;
-  int NDisableBunch;
-  int DisableBunch[NBUNCH];
+   TStructRunInfo();
+   ~TStructRunInfo();
+   void Streamer(TBuffer &buf);
 
-  void Streamer(TBuffer &buf);
+};// StructRunInfo;
 
-} StructRunInfo;
-
-TBuffer & operator<<(TBuffer &buf, StructRunInfo *&rec);
-TBuffer & operator>>(TBuffer &buf, StructRunInfo *&rec);
+TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec);
+TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec);
 
 
-typedef struct {
-  double RunID;
-  string calib_file_s;
-  string config_file_s;
-  string masscut_s;
-  string tshift_s;
-  string inj_tshift_s;
-  string run_status_s; 
-  string measurement_type_s;
-  string disable_strip_s;
-  string enable_strip_s;
-  string disable_bunch_s;
-  string enable_bunch_s;
-  string define_spin_pattern_s;
-  string define_fill_pattern_s;
-  string reference_rate_s;
-  string target_count_mm_s;
-  string comment_s;
-}StructRunDB ;
+typedef struct TStructRunDB {
+   double      RunID;
+   std::string runName;
+   UInt_t      fillId;
+   UInt_t      polarimeterId;
+   UInt_t      measurementId;
+   time_t      timeStamp;
+   std::string dateTime;
+   Bool_t      isCalibRun;
+   std::string calib_file_s;
+   std::string alpha_calib_run_name;
+   std::string config_file_s;
+   std::string masscut_s;
+   std::string tshift_s;
+   std::string inj_tshift_s;
+   std::string run_status_s; 
+   std::string measurement_type_s;
+   std::string disable_strip_s;
+   std::string enable_strip_s;
+   std::string disable_bunch_s;
+   std::string enable_bunch_s;
+   std::string define_spin_pattern_s;
+   std::string define_fill_pattern_s;
+   std::string reference_rate_s;
+   std::string target_count_mm_s;
+   std::string comment_s;
+
+   bool operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const;
+   void Streamer(TBuffer &buf);
+   void Print(const Option_t* opt="") const;
+
+} StructRunDB;
+
+TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec);
+TBuffer & operator>>(TBuffer &buf, TStructRunDB *&rec);
+
+//struct TStructRunDBCompare {
+//}
+
+typedef std::set<TStructRunDB, TStructRunDB> DBRunSet;
 
 
 typedef struct {
@@ -330,12 +362,21 @@ typedef struct {
 } StructBunchPattern;
 
 
+struct StructHist {
+  int nxbin;
+  float xmin;
+  float xmax;
+  int nybin;
+  float ymin;
+  float ymax;
+};
+
+
 // Hbook Associated Stuff
 extern "C" {
 
   void hhbook1d_(int*, char*, int*, float*, float*,  int);
-  void hhbook2d_(int*, char*, 
-		 int*, float*, float*, int*, float*, float*,  int);
+  void hhbook2d_(int*, char*, int*, float*, float*, int*, float*, float*,  int);
   void hhf1_(int*, float*, float*);
   void hhf2_(int*, float*, float*, float*);
   void hhlimit_(int*);
@@ -351,10 +392,8 @@ extern "C" {
   //  void hhkind_(int*, int*, char*, int);
   void hfith_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
   void hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
-
 }
 
-int readdb(double RUNID);
 void tgtHistBook();
 int hist_book(char *);
 int hist_close(char *);
@@ -365,171 +404,19 @@ int spill_end(recordConfigRhicStruct *);
 int sqass(float, float, float, float, float *, float *);
 int end_process(recordConfigRhicStruct *);
 
-int GetPolarimetryID_and_RHICBeam(char RunID[]);
+//int GetPolarimetryID_and_RHICBeam(char RunID[]);
 int printConfig(recordConfigRhicStruct *);
-void reConfig(recordConfigRhicStruct *);
-void calcRunConst(recordConfigRhicStruct *);
+//void reConfig(recordConfigRhicStruct *);
+//void calcRunConst(recordConfigRhicStruct *);
 int ExclusionList(int i, int j, int RHICBeam);
 int calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 //int DisabledDet(int det);
-int ConfigureActiveStrip(int);
+//int ConfigureActiveStrip(int);
 void SpecificLuminosity(float&, float&, float&);
 float TshiftFinder(int, int);
-int BunchSelect(int);
+//int BunchSelect(int);
 void CalcAsymmetry(float);
 void PrintRunResults(StructHistStat);
 void checkForBadBunches();
-
-
-// GLOBAL VARIABLES
-
-extern int spinpat[120]; // spin pattern 120 bunches
-extern int fillpat[120]; // fill pattern 120 bunches
-extern int ActiveBunch[NBUNCH];
-extern int wcmfillpat[120]; //  fill pattern within the Wall Current Monitor Average Ragne 
-extern float wcmdist[120];  // wall current monitor 120 bunches
-
-extern long int Ncounts[6][120]; // counts 6detectors 120 bunches
-extern long int NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
-extern long int NDcounts[6][120][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
-extern long int NStrip[3][72]; // counts 72 strips 3 spin states
- 
-extern long int NRcounts[6][120][RAMPTIME];// counts 6det 120bunch RAMPTIME sec
-
-extern char * confdir;
-extern char * calibdir;
-extern char datafile[256];   // data file name 
-extern char reConfFile[256];         // update configuration file for T0 info
-extern char conf_file[256];          // update configuration file for T0 info
-extern char CalibFile[256];          // Energy calibration file
-
-extern float ramptshift[500]; // ramp timing shift 
-
-extern long int Nevcut;   // number of events after 1st cut (whole data)
-extern long int Nevtot;   // number of total events (whole data) 
-extern long int Nread;    // real total events (completely everything)
-extern int gMaxEventsUser;         // number of events to process
-extern int Nskip;         // number of events to be skipped in data process 
-extern int NFilledBunch;  // number of filled bunch
-
-extern long int Ngood[120];   // number of evts after carbon cut 
-extern long int Ntotal[120];  // number of evts before carbon cut 
-extern long int Nback[120];   // number of evts below the curbon cut
-extern datprocStruct dproc;
-extern ErrorDetector errdet;
-extern atdata_struct atdata;
-extern StructRunDB rundb;
-extern StructRunInfo runinfo;
-extern StructExtInput extinput;
-extern StructAverage average;
-extern StructHistStat hstat;
-extern StructFeedBack feedback;
-extern int toto;
-extern StructCounter cntr;
-extern StructCounterTgt cntr_tgt;
-extern StructRunConst runconst;
-extern StructMask mask;
-extern StructFlag Flag;
-extern StructReadFlag ReadFlag;
-extern StructAnalysis anal;
-extern StructTarget tgt;
-extern StructBunchPattern phx, str;
-
-extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
-extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
-extern float phit[NSTRIP];      // phi-angle for each strips in approximation 45,90,135... 
-extern float phi[NSTRIP];       // phi-angle
-
-
-// target position infomation 
-extern int ndelim ;
-extern int TgtIndex[MAXDELIM];
-extern int nTgtIndex;
-
-
-struct StructHist {
-  int nxbin;
-  float xmin;
-  float xmax;
-  int nybin;
-  float ymin;
-  float ymax;
-};
-
-// global constants
-extern const float MSIZE;
-
-// global declarations
-extern StructHist Eslope;
-
-// Direcotories
-extern TDirectory * Run;
-extern TDirectory * Raw;
-extern TDirectory * FeedBack;
-extern TDirectory * Kinema;
-extern TDirectory * Bunch;
-extern TDirectory * ErrDet;
-extern TDirectory * Asymmetry;
-
-
-//
-//  Histogram Definitions 
-//
-//  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
-//  in Run06 which are target events. These histograms are deleted before ROOT file closing 
-//  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
-//
-// Run Dir
-extern TH2F * rate_vs_delim;
-
-// FeedBack Dir
-extern TH2F  * mdev_feedback;
-extern TH1F  * mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
-
-// Raw Directory
-extern TH1F * bunch_dist_raw;              // counts per bunch (raw)
-extern TH1F * strip_dist_raw;              // counts per strip (raw)
-extern TH1F * tdc_raw;                     // tdc (raw)
-extern TH1F * adc_raw;                     // adc (raw)
-extern TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
-extern TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
-
-// Kinema Dir
-extern TH2F  * t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
-extern TH2F  * t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
-extern TH2F  * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-extern TF1   * banana_cut_l[NSTRIP][2];     // banana cut low     [0]: regular [1] alternative sigma cut
-extern TF1   * banana_cut_h[NSTRIP][2];     // banana cut high    [0]: regular [1] alternative sigma cut
-extern TLine * energy_cut_l[NSTRIP];        // energy cut low 
-extern TLine * energy_cut_h[NSTRIP];        // energy cut high
-extern TH1F  * energy_spectrum[NDETECTOR];  // energy spectrum per detector
-extern TH1F  * energy_spectrum_all;         // energy spectrum for all detector sum
-extern TH1F  * mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
-extern TH1F  * mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
-
-
-// Bunch Distribution
-extern TH1F * bunch_dist;                  // counts per bunch
-extern TH1F * wall_current_monitor;        // wall current monitor
-extern TH1F * specific_luminosity;         // specific luminosity
-
-// ErrDet dir
-extern TH2F * mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
-extern TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
-extern TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
-extern TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
-extern TH1I * good_carbon_events_strip;    // number of good carbon events per strip
-extern TH2F * spelumi_vs_bunch;                    // Specific Luminosity vs. bunch
-extern TH1F * bunch_spelumi;                       // Specific Luminosity bunch hisogram
-extern TH1F * asym_bunch_x45;                      // Bunch asymmetry histogram for x45 
-extern TH1F * asym_bunch_x90;                      // Bunch asymmetry histogram for x90 
-extern TH1F * asym_bunch_y45;                      // Bunch asymmetry histogram for y45 
-
-// Asymmetry dir
-extern TH2F * asym_vs_bunch_x45;                   // Asymmetry vs. bunch (x45)
-extern TH2F * asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
-extern TH2F * asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
-extern TH2F * asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
-extern TH2F * scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
 
 #endif

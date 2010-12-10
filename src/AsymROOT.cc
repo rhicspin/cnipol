@@ -88,24 +88,12 @@ TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
 /**
  *
  */
-Root::Root() : fChannelEventTrees(), fChannelEvents()
+Root::Root() : rootfile(), fOutTreeFile(), fTreeFileId(0),
+   fRawEventTree(0), fAnaEventTree(0),
+   fChannelEventTrees(), fAnaEvent(new AnaEvent()),
+   fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
+   fChannelEvents(), fEventConfig(), fCnipolHists(0)
 {
-   fOutTreeFile  = 0;
-   fTreeFileId   = 0;
-
-   fRawEventTree = 0;
-   fAnaEventTree = 0;
-
-   fAnaEvent     = new AnaEvent();
-   fChannelEvent = new ChannelEvent();
-   fChannelData  = new ChannelData();
-   fEventConfig  = new EventConfig();
-
-   //printf("sizeof: %d\n", sizeof(int));
-   //printf("sizeof: %d\n", sizeof(long));
-   //printf("sizeof: %d\n", sizeof(ChannelEvent));
-   //printf("sizeof: %d\n", sizeof(processEvent));
-   //printf("sizeof: %d\n", sizeof(ChannelEventSet));
 }
 
 
@@ -125,8 +113,8 @@ Root::~Root()
 // Input       : char *filename
 // Return      : 
 //
-int Root::RootFile(char *filename){
-
+int Root::RootFile(char *filename)
+{
   rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
 
   // directory structure
@@ -137,6 +125,9 @@ int Root::RootFile(char *filename){
   Bunch     = rootfile->mkdir("Bunch");
   ErrDet    = rootfile->mkdir("ErrDet");
   Asymmetry = rootfile->mkdir("Asymmetry");
+
+  if (!dproc.CMODE)
+     fCnipolHists = new CnipolHists(rootfile);
 
   return 0;
 }
@@ -153,7 +144,10 @@ void Root::CreateTrees()
    }
 
    char filename[256];
-   sprintf(filename,"%s/%.3f_tree_%02d.root", gEnv["CNI_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
+   sprintf(filename,"%s/%s_tree_%02d.root",
+           gAsymEnv["CNI_RESULTS_DIR"].c_str(), runinfo.runName.c_str(), fTreeFileId);
+   //sprintf(filename,"%s/%.3f_tree_%02d.root",
+   //        gAsymEnv["CNI_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
 
    fOutTreeFile = new TFile(filename, "RECREATE", "ROOT Histogram file");
 
@@ -184,21 +178,53 @@ void Root::CreateTrees()
       fAnaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
       fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
    }
+
+   //fOutTreeFile->ls();
+}
+
+
+/** */
+Bool_t Root::UseCalibFile(std::string cfname)
+{
+   if (cfname == "" && fEventConfig) return true; // check if config is already set
+   else if (cfname != "") {
+
+      TFile *f = TFile::Open(cfname.c_str());
+      fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+      
+      if (fEventConfig) {
+
+         fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
+         //fEventConfig->fDatproc->CMODE = 0;
+         fChannelEvent->fEventConfig = fEventConfig;
+
+         return  true;
+
+      } else return false;
+   } else return false;
+}
+
+
+/**
+ * Sets current event with data from raw file.
+ */
+void Root::SetChannelEvent(processEvent &event)
+{
+   fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
+   fChannelEvent->fEventId.fBunchId      = event.bid;
+   fChannelEvent->fEventId.fChannelId    = event.stN;
+   fChannelEvent->fChannel.fAmpltd       = event.amp;
+   fChannelEvent->fChannel.fIntgrl       = event.intg;
+   fChannelEvent->fChannel.fTdc          = event.tdc;
+   fChannelEvent->fChannel.fTdcAMax      = event.tdcmax;
 }
 
 
 /**
  *
  */
-void Root::AddChannelEvent(processEvent &event)
+void Root::AddChannelEvent()
 {
-   fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
-   fChannelEvent->fEventId.fBunchId      = event.bid;
-   fChannelEvent->fEventId.fChannelId    = event.stN;
-   fChannelEvent->fChannel.fAmpltd       = event.amp;
-   fChannelEvent->fChannel.fTdc          = event.tdc;
-   fChannelEvent->fChannel.fIntgrl       = event.intg;
-
    if (dproc.SAVETREES.test(0))
       fRawEventTree->Fill();
 
@@ -220,7 +246,7 @@ void Root::AddChannelEvent(processEvent &event)
          //PrintEventMap();
 
          //fEventConfig->PrintAsPhp();
-         fEventConfig->Write("EventConfig");
+         //fEventConfig->Write("EventConfig");
          SaveChannelTrees();
          SaveEventTree();
 
@@ -271,7 +297,6 @@ void Root::WriteTreeFile()
       fAnaEventTree->Delete();
       //delete fAnaEventTree;
    }
-   
 }
 
 
@@ -291,9 +316,21 @@ void Root::PrintEventMap()
 }
 
 
-/**
- *
- */
+/** */
+void Root::UpdateRunConfig()
+{
+   // Existing calibrator will be replaced so, delete it first
+   delete fEventConfig->fCalibrator;
+
+   Calibrator *calibrator = new DeadLayerCalibrator();
+
+   calibrator->Calibrate(fCnipolHists);
+
+   fEventConfig->fCalibrator = calibrator;
+}
+
+
+/** */
 void Root::SaveChannelTrees()
 {
    if (!dproc.SAVETREES.test(1)) return;
@@ -306,8 +343,6 @@ void Root::SaveChannelTrees()
    ChannelEventSet::iterator mi;
    ChannelEventSet::iterator mb = fChannelEvents.begin();
    ChannelEventSet::iterator me = fChannelEvents.end();
-
-   ChannelEvent *chev;
 
    for (mi=mb; mi!=me; mi++) {
       *fChannelData = (mi->fChannel);
@@ -373,8 +408,7 @@ void Root::SaveEventTree()
 // Input       : 
 // Return      : 
 //
-int 
-Root::RootHistBook(StructRunInfo runinfo)
+int Root::RootHistBook(TStructRunInfo runinfo)
 {
   Char_t hname[100], htitle[100];
  
@@ -440,8 +474,6 @@ Root::RootHistBook(StructRunInfo runinfo)
     mass_feedback[i] -> SetLineColor(2);
 
   }
-
-
 
   // Raw Directory
   Raw->cd();
@@ -512,7 +544,6 @@ Root::RootHistBook(StructRunInfo runinfo)
   good_carbon_events_strip->SetFillColor(17);
 
   return 0;
-
 }
 
 
@@ -525,63 +556,65 @@ Root::RootHistBook(StructRunInfo runinfo)
 // Input       : 
 // Return      : 
 //
-int 
-Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack feedback)
+int Root::RootHistBook2(TDatprocStruct &dproc, StructRunConst &runconst,
+   StructFeedBack &feedback)
 {
   rootfile->cd();
   Kinema->cd();
 
-  char formula[100],fname[100];
-  float low, high, sqrte, sigma;
-  int Color=2;
-  int Width=2;
+  char  formula[100],fname[100];
+  float low, high, sigma;
+  int   Color=2;
+  int   Width=2;
 
   for (int i=0; i<NSTRIP; i++) {
 
     for (int j=0; j<2; j++) {
-      
-      sigma = j ? runconst.M2T*feedback.RMS[i]*dproc.MassSigmaAlt : runconst.M2T*feedback.RMS[i]*dproc.MassSigma;
-      int Style = j + 1 ; 
 
-      // lower limit 
-      sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
-      sprintf(fname,"banana_cut_l_st%d_mode%d",i,j);
-      banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-      banana_cut_l[i][j] -> SetLineColor(Color); 
-      banana_cut_l[i][j] -> SetLineWidth(Width); 
-      banana_cut_l[i][j] -> SetLineStyle(Style); 
+       sigma = j ? runconst.M2T*feedback.RMS[i]*dproc.MassSigmaAlt :
+                   runconst.M2T*feedback.RMS[i]*dproc.MassSigma;
+       int Style = j + 1 ; 
 
-      // upper limit 
-      sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, sigma);
-      sprintf(fname,"banana_cut_h_st%d",i);
-      banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-      banana_cut_h[i][j] -> SetLineColor(Color); 
-      banana_cut_h[i][j] -> SetLineWidth(Width); 
-      banana_cut_h[i][j] -> SetLineStyle(Style); 
+       // lower limit 
+       sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
+       sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
+       banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+       banana_cut_l[i][j] -> SetLineColor(Color); 
+       banana_cut_l[i][j] -> SetLineWidth(Width); 
+       banana_cut_l[i][j] -> SetLineStyle(Style); 
 
+       // upper limit 
+       sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, sigma);
+       sprintf(fname, "banana_cut_h_st%d", i);
+       banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+       banana_cut_h[i][j] -> SetLineColor(Color); 
+       banana_cut_h[i][j] -> SetLineWidth(Width); 
+       banana_cut_h[i][j] -> SetLineStyle(Style); 
     }
 
     // energy cut low
-    low  = runconst.E2T/sqrt(double(dproc.enel))-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.enel));
-    high = runconst.E2T/sqrt(double(dproc.enel))+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.enel));
+    low  = runconst.E2T / sqrt(double(dproc.enel)) -
+              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
+    high = runconst.E2T / sqrt(double(dproc.enel)) +
+              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
+
     energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
     energy_cut_l[i] ->SetLineColor(Color);
     energy_cut_l[i] ->SetLineWidth(Width);
 
     // energy cut high
-    low  = runconst.E2T/sqrt(double(dproc.eneu))-runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.eneu));
-    high = runconst.E2T/sqrt(double(dproc.eneu))+runconst.M2T*feedback.RMS[i]*dproc.MassSigma/sqrt(double(dproc.eneu));
+    low  = runconst.E2T / sqrt(double(dproc.eneu)) -
+              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
+    high = runconst.E2T / sqrt(double(dproc.eneu)) +
+              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
+
     energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
     energy_cut_h[i] ->SetLineColor(Color);
     energy_cut_h[i] ->SetLineWidth(Width);
-
   }
 
-
   return 0;
-
 }
-
 
 
 //
@@ -593,9 +626,8 @@ Root::RootHistBook2(datprocStruct dproc, StructRunConst runconst, StructFeedBack
 // Input       : 
 // Return      : 
 //
-int 
-Root::DeleteHistogram(){
-
+int Root::DeleteHistogram()
+{
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles 
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
@@ -607,13 +639,9 @@ Root::DeleteHistogram(){
     //    mass_yescut[i] -> Delete();
 
   }
-
   
   return 0;
-
 }
-
-
 
 
 //
@@ -629,8 +657,6 @@ int Root::CloseROOTFile()
 {
   rootfile->cd();
   Kinema->cd();
-
-  TLine * l;
 
   for (int i=0;i<NSTRIP; i++){
     if (t_vs_e[i]) {
@@ -662,7 +688,6 @@ int Root::CloseROOTFile()
   if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write();
   if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write();
   if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write();
-
   */
 
   //if (fRawEventTree) {
@@ -673,8 +698,15 @@ int Root::CloseROOTFile()
   //}
 
   rootfile->cd();
+
+  if (!dproc.CMODE) {
+     fCnipolHists->Write();
+     fCnipolHists->Delete();
+  }
+
   rootfile->Write();
 
+  rootfile->cd();
   //fEventConfig->PrintAsPhp();
   fEventConfig->Write("EventConfig");
 
@@ -689,8 +721,7 @@ int Root::CloseROOTFile()
      fOutTreeFile->Delete();
   }
 
+  delete fEventConfig;
+
   return 0;
-
 }
-
-

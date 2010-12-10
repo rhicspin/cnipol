@@ -9,10 +9,8 @@ $BASEDIR      = $ENV{"ASYMDIR"};
 use Getopt::Std;
 my %opt;
 getopts('f:h', \%opt);
-if ( $opt{h} ) {
-    help();
-}
 
+if ( $opt{h} ) { help(); }
 
 # Get Run ID
 my $Runn = $opt{f};
@@ -33,12 +31,10 @@ sub help(){
     exit(0);
 }
 
-
 $CHECKDATA= "$DATADIR/$Runn.data";
 $DATAFILE = "$Runn.data";
 $LOGFILE  = "$BASEDIR/douts/$Runn.calib.log";
 $COMMAND  = "Asym";
-
 
 
 #########################################################################
@@ -61,16 +57,13 @@ if (-e $CHECKDATA) {
 	$NEVOPT = " -n 1 ";    
 	$options = " -C ";     # TOF vs. EDEP without Tzero subtraction
 	
-	
 	printf "nice -19 $COMMAND $NEVOPT -f $DATAFILE $options  -o $Runn.calib.hbook $tshiftopt| tee $LOGFILE\n "; 
 
 	##### START #####
 	system ("nice -19 $COMMAND $NEVOPT -f $DATAFILE $options -o $Runn.calib.hbook $tshiftopt| tee $LOGFILE "); 
-	
 	system ("h2root $Runn.calib.hbook ");
 	system ("mv $Runn.calib.root ./douts");
 	system ("rm $Runn.calib.hbook");
-
     }
     
 } else {
@@ -81,7 +74,3 @@ if (-e $CHECKDATA) {
     printf (" check $datafile \n");
     
 } 
-
-
-
-

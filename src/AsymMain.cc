@@ -1,11 +1,10 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
 //  file name :   AsymMain.cc
 //
-//
 //  Authors   :   Itaru Nakagawa
 //                Dmitri Smirnov
-//  Creation  :   11/17/2005
 //
+//  Creation  :   11/17/2005
 //
 
 /**
@@ -16,7 +15,6 @@
  */
 
 #include "AsymMain.h"
-#include "AsymMainGlobals.h"
 
 using namespace std;
 
@@ -25,13 +23,15 @@ Root gMyRoot;
 // =================
 // beginning of main
 // =================
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
+   // Create stopwatch and start it
+   TStopwatch stopwatch;
+   TTimeStamp timestamp;
+
    // for get option
-   int c;
    extern char *optarg;
-   extern int optind;
-   extern StructRunDB rundb;
+   //extern int optind;
 
    // Initialize Variables
    Initialization();
@@ -54,68 +54,64 @@ int main (int argc, char *argv[])
    }
 
    // files
-   char ifile[32], cfile[32], hbk_outfile[256];
-   char ramptiming[256];
-   int hbk_read = 0;  // hbk file read from argument:1 default:0
-   int ramp_read = 0;  // ramp timing file read from argument:1 default:0
+   char   ifile[32], cfile[32], hbk_outfile[256];
+   int    hbk_read = 0;  // hbk file read from argument:1 default:0
+   //int  ramp_read = 0;  // ramp timing file read from argument:1 default:0
 
    // misc
-   int i;
-   char threshold[20],bunchid[20],enerange[20],cwidth[20],*ptr;
-   int lth, uth;
+   char enerange[20], cwidth[20], *ptr;
    char suffix[] = ".data"; // suffix of data file
    stringstream sstr;
 
-   int opt, option_index = 0;
+   int option_index = 0;
    static struct option long_options[] = {
+      {"run-name", required_argument, 0, 'f'},
       {"raw", 0, 0, 'r'},
       {"feedback", 0, 0, 'b'},
       {"no-error-detector", 0, 0, 'a'},
       {0, 0, 0, 0}
    };
 
-   while ((c = getopt_long(argc, argv, "?f:n:s:ho:rt:m:e:d:baCDTABZF:MNW:UGR:S",
-                           long_options, &option_index))!=-1)
+   int c;
+
+   while ((c = getopt_long(argc, argv, "?f:n:s:c:ho:rt:m:e:d:baCDTABZF:MNW:UGR:S",
+                           long_options, &option_index)) != -1)
    {
       switch (c) {
       case 'h':
       case '?':
-         cout << "Usage of " << argv[0] <<endl;
-         cout << " -h(or?)                : print this help" <<endl;
-         cout << " -f <filename>          : input data file name " <<endl;
-         cout << " -n <number>            : maximum number of events to process"
-              << " (default \"-n -1\" all events)" <<endl;
-         cout << " -s <number>            : only every <number> event will be"
+         cout << "Usage of " << argv[0] << endl;
+         cout << " -h, -?                   : print this help" <<endl;
+         cout << " -f, --run-name <run_name>: name of run with raw data in $DATADIR directory" <<endl;
+         cout << " -n <number>              : maximum number of events to process"
+              << " (default \"-n 0\" all events)" <<endl;
+         cout << " -s <number>              : only every <number> event will be"
               << " processed (default \"-s 1\" no skip)" <<endl;
-
-         cout << " -o <filename>          : Output hbk file" <<endl;
+         cout << " -c <calib_file_name>     : root file with calibration info" << endl;
+         cout << " -o <filename>            : Output hbk file" <<endl;
          //            cout << " -r <filename>        : ramp timing file" <<endl;
-         cout << " -t <time shift>        : TOF timing shift in [ns]" <<endl;
-         cout << "                        : addition to TSHIFT defined in run.db "
-              <<endl;
-         cout << " -e <lower:upper>       : kinetic energy range" <<endl;
-         cout << "                        : default (400:900) keV" <<endl;
-         cout << " <MODE> ---------------(default on)---------" <<endl;
+         cout << " -t <time shift>          : TOF timing shift in [ns], addition to TSHIFT defined in run.db " << endl;
+         cout << " -e <lower:upper>         : kinetic energy range (default [400:900] keV)" <<endl;
+         //cout << " <MODE> ---------------(default on)---------" <<endl;
          //            cout << " -B                   : create banana curve on" <<endl;
          //            cout << " -G                   : mass mode on " <<endl;
-         cout << " -a --no-error-detector : anomaly check off " << endl;
-         cout << " <MODE> ---------------(default off)--------" <<endl;
-         cout << " -r --raw               : raw histograms on " << endl;
-         cout << " -b                     : feedback mode on " << endl;
-         cout << " -C                     : Calibration mode on " <<endl;
-         cout << " -D                     : Dead layer  mode on " <<endl;
-         cout << " -d  <dlayer>           : Additional deadlayer thickness [ug/cm2]" << endl;
+         cout << " -a, --no-error-detector  : anomaly check off " << endl;
+         //cout << " <MODE> ---------------(default off)--------" <<endl;
+         cout << " -r, --raw                : raw histograms on " << endl;
+         cout << " -b                       : feedback mode on " << endl;
+         cout << " -C                       : Calibration mode on " <<endl;
+         cout << " -D                       : Dead layer  mode on " <<endl;
+         cout << " -d <dlayer>              : Additional deadlayer thickness [ug/cm2]" << endl;
          //            cout << " -T                   : T0 study    mode on " <<endl;
          //            cout << " -A                   : A0,A1 study mode on " <<endl;
          //            cout << " -Z                   : without T0 subtraction" <<endl;
-         cout << " -F <file>              : overwrite conf file defined in run.db" <<endl;
-         cout << " -W <lower:upper>       : const width banana cut" <<endl;
-         cout << " -m <sigma>             : banana cut by <sigma> from 12C mass [def]:3 sigma"
-              << endl;
-         cout << " -U                     : update histogram" <<endl;
-         cout << " -N                     : store Ntuple events" <<endl;
-         cout << " -R <bitmask>           : save events in Root trees" <<endl;
-         cout << "                          e.g. <bitmask> = 101     " <<endl;
+         cout << " -F <file>                : overwrite conf file defined in run.db" <<endl;
+         cout << " -W <lower:upper>         : const width banana cut" <<endl;
+         cout << " -m <sigma>               : banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
+         cout << " -U                       : update histogram" <<endl;
+         cout << " -N                       : store Ntuple events" <<endl;
+         cout << " -R <bitmask>             : save events in Root trees, " <<
+                 "e.g. \"-R 101\"" <<endl;
          exit(0);
       case 'f':
          sprintf(ifile, optarg);
@@ -124,15 +120,28 @@ int main (int argc, char *argv[])
          strcat(datafile, datadir);
          strcat(datafile,     "/");
          strcat(datafile,   ifile);
-         fprintf(stdout,"Input data file : %s\n", datafile);
+         // Add checks for runName suffix
+         sprintf(&runinfo.runName[0], optarg);
+         fprintf(stdout, "runName:         %s\n", runinfo.runName.c_str());
+         fprintf(stdout, "Input data file: %s\n", datafile);
          break;
       case 'n':
          gMaxEventsUser = atol(optarg);
          fprintf(stdout, "Max events to process: %d\n", gMaxEventsUser);
          break;
       case 's':
-         Nskip = atol(optarg);
-         fprintf(stdout, "Events to skip: %d\n", Nskip);
+         dproc.thinout = atol(optarg);
+         fprintf(stdout, "Events to skip: %d\n", dproc.thinout);
+         break;
+      case 'c':
+         dproc.userCalibFile = optarg;
+         fprintf(stdout, "User defined calibration file: %s\n", dproc.userCalibFile.c_str());
+
+         if (!gMyRoot.UseCalibFile(dproc.userCalibFile)) {
+            perror("Error: Supplied calibration file is not valid\n");
+            exit(-1);
+         }
+
          break;
       case 'o': // determine output hbk file
          sprintf(hbk_outfile, optarg);
@@ -149,14 +158,14 @@ int main (int argc, char *argv[])
       case 'e': // set energy range
          strcpy(enerange, optarg);
          if (ptr = strrchr(enerange,':')){
-             ptr++;
-             dproc.eneu = atoi(ptr);
-             strtok(enerange,":");
-             dproc.enel = atoi(enerange);
-             if ((dproc.enel==NULL)||(dproc.enel<0)) { dproc.enel=0;}
-             if ((dproc.eneu==NULL)||(dproc.eneu>12000)) { dproc.eneu=2000;}
-             fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n",
-                     dproc.enel,dproc.eneu);
+            ptr++;
+            dproc.eneu = atoi(ptr);
+            strtok(enerange,":");
+            dproc.enel = atoi(enerange);
+            if (dproc.enel == NULL || dproc.enel<0)     { dproc.enel=0;}
+            if (dproc.eneu == NULL || dproc.eneu>12000) { dproc.eneu=2000;}
+            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n",
+                    dproc.enel,dproc.eneu);
          } else {
              cout << "Wrong specification for energy threshold" <<endl;
              exit(0);
@@ -168,11 +177,11 @@ int main (int argc, char *argv[])
       case 'F':
          sprintf(cfile, optarg);
          if (!strstr(cfile,"/")) {
-             strcat(reConfFile,confdir);
-             strcat(reConfFile,    "/");
+             strcat(reConfFile, confdir);
+             strcat(reConfFile, "/");
          }
          strcat(reConfFile,  cfile);
-         fprintf(stdout,"overwrite conf file : %s \n",reConfFile);
+         fprintf(stdout,"overwrite conf file : %s \n", reConfFile);
          extinput.CONFIG = 1;
          break;
       case 'b':
@@ -184,6 +193,7 @@ int main (int argc, char *argv[])
       case 'C':
          dproc.CMODE = 1;
          dproc.RECONFMODE = 0;
+         gMyRoot.fEventConfig = new EventConfig();
          break;
       case 'D':
          dproc.DMODE = 1;
@@ -249,7 +259,7 @@ int main (int argc, char *argv[])
    int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
    char RunID[chrlen];
    strncpy(RunID, ifile, chrlen);
-   RunID[chrlen]='\0'; // Without RunID[chrlen]='\0', RunID screwed up.
+   RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
    runinfo.RUNID = strtod(RunID, NULL); // return 0 when "RunID" contains alphabetical char.
 
    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
@@ -263,6 +273,9 @@ int main (int argc, char *argv[])
    } else {
        dproc.RECONFMODE = 0;
    }
+
+   //PrintDB();
+   //exit(-1);
 
    // if output hbk file is not specified
    if (hbk_read == 0 ) {
@@ -285,27 +298,29 @@ int main (int argc, char *argv[])
    char filename[256];
    const char* tmpEnv = getenv("CNI_RESULTS_DIR");
 
-   if (tmpEnv) gEnv["CNI_RESULTS_DIR"] = tmpEnv;
-   else        gEnv["CNI_RESULTS_DIR"] = ".";
+   if (tmpEnv) gAsymEnv["CNI_RESULTS_DIR"] = tmpEnv;
+   else        gAsymEnv["CNI_RESULTS_DIR"] = ".";
 
-   gEnv["CNI_RESULTS_DIR"].append("/");
-   gEnv["CNI_RESULTS_DIR"].append(RunID);
+   gAsymEnv["CNI_RESULTS_DIR"].append("/");
+   gAsymEnv["CNI_RESULTS_DIR"].append(RunID);
 
-   if (gEnv["CNI_RESULTS_DIR"].size() > 200) {
+   if (gAsymEnv["CNI_RESULTS_DIR"].size() > 200) {
       printf("ERROR: Results dir name too long\n"); exit(-1);
    }
 
+   //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNI_RESULTS_DIR"].c_str());
+
    umask(0);
-   if (mkdir(gEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0) 
-      printf("WARNING: Perhaps dir already exists: %s\n", gEnv["CNI_RESULTS_DIR"].c_str());
+   if (mkdir(gAsymEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0) 
+      printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNI_RESULTS_DIR"].c_str());
 
-   sprintf(filename, "%s/%.3f.root", gEnv["CNI_RESULTS_DIR"].data(), runinfo.RUNID);
+   sprintf(filename, "%s/%s.root", gAsymEnv["CNI_RESULTS_DIR"].data(), runinfo.runName.c_str());
 
-   fprintf(stdout, "Booking ROOT histgrams: %s\n", filename);
+   fprintf(stdout, "Booking ROOT histograms: %s\n", filename);
 
    if (gMyRoot.RootFile(filename) != 0) {
-       perror("Error: RootFile()");
-       exit(-1);
+      perror("Error: RootFile()");
+      exit(-1);
    }
 
    gMyRoot.RootHistBook(runinfo);
@@ -353,6 +368,39 @@ int main (int argc, char *argv[])
        exit(-1);
    }
 
+   // Update calibration constants if requested
+   if (dproc.UPDATE)
+      gMyRoot.UpdateRunConfig();
+
+   // Stop stopwatch and save results
+   stopwatch.Stop();
+   dproc.procDateTime =  timestamp.GetSec();
+   dproc.procTimeReal =  stopwatch.RealTime();
+   dproc.procTimeCpu  =  stopwatch.CpuTime();
+
+   printf("Processing started: %s\n",   timestamp.AsString("l"));
+   printf("Process time: %f seconds\n", dproc.procTimeReal);
+
+   // Set pointers to global structures for later saving in ROOT file
+   if (!gMyRoot.UseCalibFile() || dproc.CMODE) {
+
+      gMyRoot.fEventConfig->fConfigInfo = cfginfo;
+      //printf("fConfigInfo: %#x\n", gMyRoot.fEventConfig->fConfigInfo);
+      //gMyRoot.fEventConfig->PrintAsPhp(stdout);
+   }
+
+   // if previously allocated delete object
+   delete gMyRoot.fEventConfig->fRunInfo;
+   gMyRoot.fEventConfig->fRunInfo    = &runinfo;
+
+   //delete gMyRoot.fEventConfig->fDatproc;
+   gMyRoot.fEventConfig->fDatproc    = &dproc;
+
+   delete gMyRoot.fEventConfig->fRunDB;
+   gMyRoot.fEventConfig->fRunDB      = &rundb;
+
+   //gMyRoot.fEventConfig->PrintAsPhp(stdout);
+
    // ---------------------------------------------------- //
    //                     Closing ROOT File                //
    // ---------------------------------------------------- //
@@ -362,8 +410,7 @@ int main (int argc, char *argv[])
    }
 
    exit(1);
-
-} // end of main
+}
 
 
 // ===================================
@@ -376,7 +423,6 @@ int BunchSelect(int bid)
   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,
                      73,76,83,86,93,96,103,106};
 
-
   for (int i=0; i<14; i++) {
     //    BunchList[i]++;
     if (bid == BunchList[i]) {
@@ -386,7 +432,6 @@ int BunchSelect(int bid)
   }
 
   return go;
-
 }
 
 
@@ -404,23 +449,23 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 
   switch (ID) {
   case '0':
-    runinfo.RHICBeam=0;
-    runinfo.PolarimetryID=1; //   blue polarimeter-1
+    runinfo.RHICBeam = 0;
+    runinfo.PolarimetryID = 1; //   blue polarimeter-1
     break;
   case '1':
-    runinfo.RHICBeam=1;
-    runinfo.PolarimetryID=1; // yellow polarimeter-1
+    runinfo.RHICBeam = 1;
+    runinfo.PolarimetryID = 1; // yellow polarimeter-1
     break;
   case '2':
-    runinfo.RHICBeam=0;
-    runinfo.PolarimetryID=2; //   blue polarimeter-2
+    runinfo.RHICBeam = 0;
+    runinfo.PolarimetryID = 2; //   blue polarimeter-2
     break;
   case '3':
-    runinfo.RHICBeam=1;
-    runinfo.PolarimetryID=2; // yellow polarimeter-2
+    runinfo.RHICBeam = 1;
+    runinfo.PolarimetryID = 2; // yellow polarimeter-2
     break;
   default:
-    fprintf(stdout,"Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
+    fprintf(stdout, "Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
     break;
   }
 
@@ -430,7 +475,6 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
   */
 
   return 0;
-
 }
 
 
@@ -441,8 +485,6 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 // Ramp timing file
 int read_ramptiming(char *filename)
 {
-    int i, strip;
-
     fprintf(stdout,"\nReading ... cut parameter file : %s \n", filename);
 
     ifstream rtiming;
@@ -466,86 +508,84 @@ int read_ramptiming(char *filename)
     return(0);
 }
 
+
 // Calibration parameter
 void reConfig(recordConfigRhicStruct *cfginfo)
 {
-    int st,strip;
-    float t0,acoef,edead,ecoef,A0,A1,iasigma;
+    ifstream configFile;
+    configFile.open(reConfFile);
+
+    if (!configFile) {
+       cerr << "Failed to open Config File : " << reConfFile << endl;
+       cerr << "Proceed with original configuration from raw data file" << endl;
+       return;
+    }
 
     fprintf(stdout,"**********************************\n");
     fprintf(stdout,"** Configuration is overwritten **\n");
     fprintf(stdout,"**********************************\n");
 
-    ifstream configFile;
-
-    configFile.open(reConfFile);
-
-    if (!configFile) {
-        cerr << "failed to open Config File : " << reConfFile << endl;
-        exit(1);
-    }
-
     cout << "Reading configuration info from : " << reConfFile <<endl;
 
-    char temp[13][20];
-    char *tempchar, *stripchar, *T0char;
+    char  *tempchar;
+    char   buffer[300];
+    float  t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
+    float  c0n, c1n, c2n, c3n, c4n;
+    int    stripn;
+    int    linen = 0;
 
-    char buffer[300];
-    int stripn;
-    float t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
-    float c0n, c1n, c2n, c3n, c4n;
-
-    int linen=0;
     while (!configFile.eof()) {
 
-        configFile.getline(buffer, sizeof(buffer), '\n');
-        if (strstr(buffer,"Channel")!=0) {
+       configFile.getline(buffer, sizeof(buffer), '\n');
 
-            tempchar = strtok(buffer,"l");
-            stripn = atoi(strtok(NULL, "="));
-            t0n = atof(strtok(NULL," "));
-            ecn = atof(strtok(NULL," "));
-            edeadn = atof(strtok(NULL," "));
-            a0n = atof(strtok(NULL," "));
-            a1n = atof(strtok(NULL," "));
-            ealphn = atof(strtok(NULL," "));
-            dwidthn = atof(strtok(NULL," ")) + dproc.dx_offset; // extra thickness
-            peden = atof(strtok(NULL," "));
-            c0n = atof(strtok(NULL," "));
-            c1n = atof(strtok(NULL," "));
-            c2n = atof(strtok(NULL," "));
-            c3n = atof(strtok(NULL," "));
-            c4n = atof(strtok(NULL," "));
+       if (strstr(buffer,"Channel")!=0) {
 
-            cfginfo->data.chan[stripn-1].edead = edeadn;
-            cfginfo->data.chan[stripn-1].ecoef = ecn;
-            cfginfo->data.chan[stripn-1].t0 = t0n;
-            cfginfo->data.chan[stripn-1].A0 = a0n;
-            cfginfo->data.chan[stripn-1].A1 = a1n;
-            cfginfo->data.chan[stripn-1].acoef = ealphn;
-            cfginfo->data.chan[stripn-1].dwidth = dwidthn;
-            cfginfo->data.chan[stripn-1].pede = peden;
-            cfginfo->data.chan[stripn-1].C[0] = c0n;
-            cfginfo->data.chan[stripn-1].C[1] = c1n;
-            cfginfo->data.chan[stripn-1].C[2] = c2n;
-            cfginfo->data.chan[stripn-1].C[3] = c3n;
-            cfginfo->data.chan[stripn-1].C[4] = c4n;
+          tempchar = strtok(buffer,"l");
+          stripn   = atoi(strtok(NULL, "="));
+          t0n      = atof(strtok(NULL, " "));
+          ecn      = atof(strtok(NULL, " "));
+          edeadn   = atof(strtok(NULL, " "));
+          a0n      = atof(strtok(NULL, " "));
+          a1n      = atof(strtok(NULL, " "));
+          ealphn   = atof(strtok(NULL, " "));
+          dwidthn  = atof(strtok(NULL, " ")) + dproc.dx_offset; // extra thickness
+          peden    = atof(strtok(NULL, " "));
+          c0n      = atof(strtok(NULL, " "));
+          c1n      = atof(strtok(NULL, " "));
+          c2n      = atof(strtok(NULL, " "));
+          c3n      = atof(strtok(NULL, " "));
+          c4n      = atof(strtok(NULL, " "));
 
-            cout << " Strip " << stripn;
-            cout << " Ecoef " << ecn;
-            cout << " T0 " << t0n;
-            cout << " A0 " << a0n;
-            cout << " A1 " << a1n;
-            cout << " Acoef " << ealphn;
-            cout << " Dwidth " << dwidthn;
-            cout << " Pedestal " << peden << endl;
-        }
+          cfginfo->data.chan[stripn-1].edead  = edeadn;
+          cfginfo->data.chan[stripn-1].ecoef  = ecn;
+          cfginfo->data.chan[stripn-1].t0     = t0n;
+          cfginfo->data.chan[stripn-1].A0     = a0n;
+          cfginfo->data.chan[stripn-1].A1     = a1n;
+          cfginfo->data.chan[stripn-1].acoef  = ealphn;
+          cfginfo->data.chan[stripn-1].dwidth = dwidthn;
+          cfginfo->data.chan[stripn-1].pede   = peden;
+          cfginfo->data.chan[stripn-1].C[0]   = c0n;
+          cfginfo->data.chan[stripn-1].C[1]   = c1n;
+          cfginfo->data.chan[stripn-1].C[2]   = c2n;
+          cfginfo->data.chan[stripn-1].C[3]   = c3n;
+          cfginfo->data.chan[stripn-1].C[4]   = c4n;
 
-        linen ++;
+          cout << " Strip "    << stripn;
+          cout << " Ecoef "    << ecn;
+          cout << " T0 "       << t0n;
+          cout << " A0 "       << a0n;
+          cout << " A1 "       << a1n;
+          cout << " Acoef "    << ealphn;
+          cout << " Dwidth "   << dwidthn;
+          cout << " Pedestal " << peden    << endl;
+       }
+
+       linen ++;
     }
 
     configFile.close();
 }
+
 
 //
 // Class name  :

@@ -8,24 +8,17 @@
 #ifndef ASYMPLOT_H
 #define ASYMPLOT_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
 #include <iostream>
 #include <fstream>
-#include <getopt.h>
 
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TColor.h"
 #include "TH1F.h"
 #include "TH2F.h"
-#include "TMath.h"
 #include "TPostScript.h"
-#include "TString.h"
+#include "TROOT.h"
 #include "TStyle.h"
 #include "TSystem.h"
 
@@ -33,7 +26,6 @@
 #include "rpoldata.h"
 
 #include "Asym.h"
-//#include "AsymROOT.h"
 
 static Int_t GHOSTVIEW=0;
 static Int_t FEEDBACK=0;
@@ -90,6 +82,5 @@ public:
   TH1F * energy_spectrum_all;
 
 };
-
 
 #endif

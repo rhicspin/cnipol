@@ -1,31 +1,22 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name :   AsymRunDB.cc
-// 
-// 
-//  Author    :   Itaru Nakagawa
-//  Creation  :   11/18/2005
-//                
+//  file name:    AsymRunDB.cc
+//
+//  Authors:      Itaru Nakagawa
+//                Dmitri Smirnov
+//
+//  Creation:     11/18/2005
+//
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-using namespace std;
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
-#include "AsymRecover.h"
 #include "AsymRunDB.h"
 
-StructRunDB rundb;
+using namespace std;
 
+TStructRunDB rundb;
+TStructRunDB gCurrentRunInfo;
+DBRunSet     gDBRuns; // container for run info read from run.db
 
+int ProcessStrip[NSTRIP];
+int ProcessBunch[NBUNCH];
 
 //
 // Class name  :
@@ -35,141 +26,207 @@ StructRunDB rundb;
 // Input       : double RUNID
 // Return      : int 1
 //
-int 
-readdb(double RUNID) {
+int readdb(double RUNID)
+{
+   // read DB file
+   char *dbfile = "run.db";
+   FILE *in_file;
 
-  // run DB file
-  char *dbfile="run.db";
-  FILE * in_file;
-  if ((in_file = fopen(dbfile,"r")) == NULL) {
-      printf("ERROR: %s file not found. Force exit.\n",dbfile);;
-      exit(-1);
-  } 
+   if ((in_file = fopen(dbfile,"r")) == NULL) {
+       printf("ERROR: %s file not found. Force exit.\n",dbfile);;
+       exit(-1);
+   }
+ 
+   char   *line = NULL;
+   size_t  len  = 0;
+   int match    = 0;
+   string s;
+   ssize_t read;
+   TStructRunDB *currRun;
+   currRun = new TStructRunDB();
+   bool isFirstRunInFile = true;
+ 
+   while ((read = getline(&line, &len, in_file)) != -1) {
+ 
+      string str(line);
+      //cout << str;
 
+      if (TPRegexp("\\[([\\w,\\W]+)\\]").MatchB(str)) {
+      
+         //cout << "XXX matched" << endl;
 
-  string s;
-  char * line = NULL;
-  size_t len = 0;
-  ssize_t read;
-  int match=0;
-  while ((read = getline(&line, &len, in_file)) != -1){
-    
-    string str(line);
-    if (str[0] == '[') { // Get Run Number
-      if (str[9] == ']') {
-	s = str.substr(1,8) ;
-      }else if (str[10] == ']') {
-	s = str.substr(1,9) ;
-      }else{
-	printf("AsymRunDB:ERROR invarid [RunID] statement in run.db. Ignored.");
+         if (!isFirstRunInFile) {
+            //printf("\nsaved prev run\n");
+            //currRun->Print();
+            //printf("\n^^^^^saved prev run\n");
+            gDBRuns.insert(*currRun);
+            delete currRun;
+            currRun = new TStructRunDB();
+         } else {
+            isFirstRunInFile = false;
+         }
+
+         TObjArray *subStrL = TPRegexp("\\[([\\w,\\W]+)\\]").MatchS(str);
+         TString subStr = ((TObjString *) subStrL->At(1))->GetString();
+
+         //printf("XXX found %s\n", subStr.Data());
+
+         currRun->RunID = subStr.Atof();
+         //currRun->RunID = 0;
+      } else {
+
+         if (str.find("CONFIG") == 1)                  
+            currRun->config_file_s     = GetVariables(str);
+         if (str.find("ENERGY_CALIB_ROOT_FILE=") == 1) 
+            currRun->alpha_calib_run_name = GetVariables(str);
+         if (str.find("ENERGY_CALIB=")       == 1)     
+            currRun->calib_file_s      = GetVariables(str);
+         if (str.find("COMMENT")             == 1)
+            currRun->comment_s      = GetVariables(str);
       }
-      rundb.RunID = strtod(s.c_str(),NULL);
-      //      printf("AsymRunDB: %.3f\n",rundb.RunID);
-      match = MatchPolarimetry(RUNID,rundb.RunID);
-      if (match){
-	if (RUNID<rundb.RunID) break;
+ 
+      if (str[0] == '[') { // Get Run Number
+
+        if (str[9] == ']') {
+          s = str.substr(1,8) ;
+        } else if (str[10] == ']') {
+          s = str.substr(1,9) ;
+        } else {
+          printf("AsymRunDB:ERROR invalid [RunID] statement in run.db. Ignored.");
+        }
+
+        rundb.RunID = strtod(s.c_str(),NULL);
+        //      printf("AsymRunDB: %.3f\n",rundb.RunID);
+        match = MatchPolarimetry(RUNID, rundb.RunID);
+
+        if (match){
+           //currRun.RunID = rundb.RunID;
+
+           if (RUNID<rundb.RunID) break;
+        }
+
+      } else {
+         if (match) {
+            // a "*" after the flag name means only apply the flag to this run
+            if(str.find("*=") == -1 || RUNID == rundb.RunID)
+            {
+               if (str.find("RESET_ALL=Default")   == 1) SetDefault();
+               if (str.find("CONFIG")              == 1) rundb.config_file_s         = GetVariables(str);
+               if (str.find("MASSCUT")             == 1) rundb.masscut_s             = GetVariables(str);
+               if (str.find("TSHIFT")              == 1) rundb.tshift_s              = GetVariables(str);
+               if (str.find("ALPHA_CALIB_RUN_NAME=") == 1) rundb.alpha_calib_run_name = GetVariables(str);
+               if (str.find("ENERGY_CALIB=")       == 1) rundb.calib_file_s          = GetVariables(str);
+               if (str.find("INJ_TSHIFT")          == 1) rundb.inj_tshift_s          = GetVariables(str);
+               if (str.find("RUN_STATUS")          == 1) rundb.run_status_s          = GetVariables(str);
+               if (str.find("MEASUREMENT_TYPE")    == 1) rundb.measurement_type_s    = GetVariables(str);
+               if (str.find("DEFINE_SPIN_PATTERN") == 1) rundb.define_spin_pattern_s = GetVariables(str);
+               if (str.find("DEFINE_FILL_PATTERN") == 1) rundb.define_fill_pattern_s = GetVariables(str);
+               if (str.find("REFERENCE_RATE")      == 1) rundb.reference_rate_s      = GetVariables(str);
+               if (str.find("TARGET_COUNT_MM")     == 1) rundb.target_count_mm_s     = GetVariables(str);
+               if (str.find("COMMENT")             == 1) rundb.comment_s             = GetVariables(str);
+               if (str.find("DisableBunch")        == 1) {
+                  rundb.disable_bunch_s     = GetVariables(str);
+                  BunchHandler(atoi(rundb.disable_bunch_s.c_str()), 1);
+               }
+               if (str.find("EnableBunch")         ==1) {
+                  rundb.enable_bunch_s      = GetVariables(str);
+                  BunchHandler(atoi(rundb.enable_bunch_s.c_str()),-1);
+               }
+               if (str.find("DisableStrip")        ==1) {
+                  rundb.disable_strip_s     = GetVariables(str);
+                  StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);
+               }
+               if (str.find("EnableStrip")         ==1) {
+                  rundb.enable_strip_s      = GetVariables(str);
+                  StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);
+               }
+            }
+         }
       }
-    }else{
-      if (match){
-	      if(str.find("*=")==-1 || RUNID==rundb.RunID) //a "*" after the flag name means only apply the flag to this run
-	      {
-		if (str.find("RESET_ALL=Default") == 1) SetDefault();
-			if (str.find("CONFIG")              ==1) rundb.config_file_s         = GetVariables(str);
-			if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
-			if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
-			if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
-			if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
-			if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
-			if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
-			if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
-			if (str.find("DEFINE_FILL_PATTERN") ==1) rundb.define_fill_pattern_s = GetVariables(str);
-			if (str.find("REFERENCE_RATE")      ==1) rundb.reference_rate_s      = GetVariables(str);
-			if (str.find("TARGET_COUNT_MM")     ==1) rundb.target_count_mm_s     = GetVariables(str);
-			if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
-			if (str.find("DisableBunch")        ==1){
-			rundb.disable_bunch_s     = GetVariables(str);
-			BunchHandler(atoi(rundb.disable_bunch_s.c_str()), 1);}
-			if (str.find("EnableBunch")        ==1){
-			rundb.enable_bunch_s     = GetVariables(str);
-			BunchHandler(atoi(rundb.enable_bunch_s.c_str()),-1);}
-			if (str.find("DisableStrip")        ==1){
-			rundb.disable_strip_s     = GetVariables(str);
-			StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
-			if (str.find("EnableStrip")         ==1) {
-			rundb.enable_strip_s      = GetVariables(str);
-			StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
-	      }
-      }
-    }
+   }
 
-  } // end-of-while(getline-loop)
+   // Insert the last run in container
+   gDBRuns.insert(*currRun);
+   delete currRun;
+ 
+   // Find Disable Strip List
+   runinfo.NDisableStrip = FindDisableStrip();
+ 
+   // Find Disable Bunch List
+   runinfo.NDisableBunch = FindDisableBunch();
+   if (runinfo.NDisableBunch) Flag.mask_bunch = 1;
+ 
+   // processing conditions
+   if (!extinput.CONFIG){
+     strcat(reConfFile, confdir);
+     strcat(reConfFile,     "/");
+     strcat(reConfFile, rundb.config_file_s.c_str());
+   }
+ 
+   // calib directories
+   calibdir = getenv("CALIBDIR");
+   if ( calibdir == NULL ){
+     cerr << "environment CALIBDIR is not defined" << endl;
+     cerr << "e.g. export CALIBDIR=/usr/local/cnipol/calib" << endl;
+     exit(-1);
+   }
 
-  // Find Disable Strip List
-  runinfo.NDisableStrip = FindDisableStrip();
-
-  // Find Disable Bunch List
-  runinfo.NDisableBunch = FindDisableBunch();
-  if (runinfo.NDisableBunch) Flag.mask_bunch = 1;
-
-  // processing conditions
-  if (!extinput.CONFIG){
-    strcat(reConfFile,confdir);
-    strcat(reConfFile,    "/");
-    strcat(reConfFile,rundb.config_file_s.c_str());
-  }
-
-
-    // calib directories
-    calibdir = getenv("CALIBDIR");
-    if ( calibdir == NULL ){
-      cerr << "environment CALIBDIR is not defined" << endl;
-      cerr << "e.g. export CALIBDIR=/usr/local/cnipol/calib" << endl;
-      exit(-1);
-    }
-    strcat(CalibFile,calibdir);
-    strcat(CalibFile,    "/");
-    strcat(CalibFile,rundb.calib_file_s.c_str());
-
-
-  // Mass Cut sigma 
-  if (!extinput.MASSCUT)
-    dproc.MassSigma = strtof(rundb.masscut_s.c_str(),NULL);
-
-  // TSHIFT will be cumulated TSHIFT from run.db and -t option
-  dproc.tshift  += strtof(rundb.tshift_s.c_str(),NULL);
-
-  // TSHIFT for injection with respect to flattop timing
-  dproc.inj_tshift = strtof(rundb.inj_tshift_s.c_str(),NULL);
-
-  // Expected universal rate for given target
-  dproc.reference_rate = strtof(rundb.reference_rate_s.c_str(),NULL);
-
-  // Target count/mm conversion 
-  dproc.target_count_mm = strtof(rundb.target_count_mm_s.c_str(),NULL);
-
-  // Optimize setting for Run
-  if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
+   strcat(CalibFile,calibdir);
+   strcat(CalibFile,    "/");
+   strcat(CalibFile,rundb.calib_file_s.c_str());
+ 
+   // Mass Cut sigma
+   if (!extinput.MASSCUT)
+     dproc.MassSigma = strtof(rundb.masscut_s.c_str(),NULL);
+ 
+   // TSHIFT will be cumulated TSHIFT from run.db and -t option
+   dproc.tshift  += strtof(rundb.tshift_s.c_str(),NULL);
+ 
+   // TSHIFT for injection with respect to flattop timing
+   dproc.inj_tshift = strtof(rundb.inj_tshift_s.c_str(),NULL);
+ 
+   // Expected universal rate for given target
+   dproc.reference_rate = strtof(rundb.reference_rate_s.c_str(),NULL);
+ 
+   // Target count/mm conversion
+   dproc.target_count_mm = strtof(rundb.target_count_mm_s.c_str(),NULL);
+ 
+   // Optimize setting for Run
+   if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
       runinfo.Run=5;
-    for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
-  } else if (RUNID>=7400) { // Run06
+      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
+   } else if (RUNID>=7400) { // Run06
       runinfo.Run=6;
-    for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
-  } else if (RUNID>=10018) { // Run09
+      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
+   } else if (RUNID>=10018) { // Run09
       runinfo.Run=9;
-  }
+   }
+ 
+   // Spin Pattern Recoverly
+   Flag.spin_pattern = atoi(rundb.define_spin_pattern_s.c_str());
+ 
+   // Fill Pattern Recoverly
+   Flag.fill_pattern = atoi(rundb.define_fill_pattern_s.c_str());
+ 
+   // VERBOSE mode
+   if (Flag.VERBOSE) PrintRunDB();
+ 
+   return 1;
+}
 
-  // Spin Pattern Recoverly
-  Flag.spin_pattern = atoi(rundb.define_spin_pattern_s.c_str());
+/** */
+void PrintDB()
+{
+   printf("Run DB: %d\n", gDBRuns.size());
 
-  // Fill Pattern Recoverly
-  Flag.fill_pattern = atoi(rundb.define_fill_pattern_s.c_str());
+   DBRunSet::iterator ir;
+   DBRunSet::iterator br = gDBRuns.begin();
+   DBRunSet::iterator er = gDBRuns.end();
 
-
-  // VERBOSE mode
-  if (Flag.VERBOSE) PrintRunDB();
-
-  return 1;
-
+   for (ir=br; ir!=er; ir++) {
+      printf("\n\n");
+      ir->Print();
+   }
 }
 
 
@@ -180,11 +237,10 @@ readdb(double RUNID) {
 // Description : handle enable/disable strips
 //             : Any strips ended up with ProcessStrip[st]>0 are disabled.
 // Input       : int st, int enable/disable flag
-// Return      : 
+// Return      :
 //
-int 
-StripHandler(int st, int flag){
-
+int StripHandler(int st, int flag)
+{
   static int Initiarize = 1;
   if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
 
@@ -202,10 +258,10 @@ StripHandler(int st, int flag){
 //
 // Description : Reset Active strip and bunch to be dafault.
 //             : The default is currently all active
-// Input       : 
-// Return      : 
+// Input       :
+// Return      :
 //
-int 
+int
 SetDefault(){
 
   cout << "______________ Reset Active Strip and Bunch to default _______________" << endl;
@@ -236,12 +292,11 @@ SetDefault(){
 // Method name : FindDisableStrip()
 //
 // Description : This subtoutine is under construction (April 4, 06)
-// Input       : 
+// Input       :
 // Return      : NDisableStrip
 //
-int 
-FindDisableStrip(){
-
+int FindDisableStrip()
+{
   int NDisableStrip=0;
   for (int i=0;i<NSTRIP; i++) {
     if (ProcessStrip[i]>0) {
@@ -251,7 +306,6 @@ FindDisableStrip(){
   }
 
   return NDisableStrip;
-
 }
 
 
@@ -262,11 +316,10 @@ FindDisableStrip(){
 // Description : handle enable/disable bunch
 //             : Any bunches ended up with ProcessBunch[bid]>0 are disabled.
 // Input       : int bunch, int enable/disable flag
-// Return      : 
+// Return      :
 //
-int 
-BunchHandler(int bunch, int flag){
-
+int BunchHandler(int bunch, int flag)
+{
   static int Initiarize = 1;
   if (Initiarize) for (int i=0; i<NBUNCH; i++) ProcessBunch[i]=0;
 
@@ -283,12 +336,11 @@ BunchHandler(int bunch, int flag){
 // Method name : FindDisableBunch()
 //
 // Description : dump disabled bunches into runinfo.DisableBunch array
-// Input       : 
+// Input       :
 // Return      : NDisableBunch
 //
-int 
-FindDisableBunch(){
-
+int FindDisableBunch()
+{
   int NDisableBunch=0;
   for (int i=0;i<NBUNCH; i++) {
     if (ProcessBunch[i]>0) {
@@ -298,7 +350,6 @@ FindDisableBunch(){
   }
 
   return NDisableBunch;
-
 }
 
 
@@ -309,23 +360,24 @@ FindDisableBunch(){
 //
 // Description : Match  the Polarimety ID between ThisRunID and RefRunID
 // Input       : double ThisRunID, double RefRunID
-// Return      : 1 if ThisRunID and RunID are matchs Polarimetry ID
+// Return      : 1 if ThisRunID and RunID match Polarimetry ID
 //
-int 
-MatchPolarimetry(double ThisRunID, double RefRunID){
+int MatchPolarimetry(double ThisRunID, double RefRunID)
+{
+   struct runid {
+      char runid[10];
+      char * polarimetry_id;
+   } This, Ref;
 
-  struct runid {
-    char runid[10];
-    char * polarimetry_id;
-  } This, Ref;
+   sprintf(This.runid, "%.3f", ThisRunID);
+   This.polarimetry_id = strrchr(This.runid,'.') + 1;
 
-  sprintf(This.runid,"%.3f",ThisRunID); This.polarimetry_id = strrchr(This.runid,'.') + 1;
-  sprintf(Ref.runid,"%.3f",RefRunID);   Ref.polarimetry_id = strrchr(Ref.runid,'.') +1  ;
+   sprintf(Ref.runid, "%.3f", RefRunID);
+   Ref.polarimetry_id = strrchr(Ref.runid,'.') +1  ;
 
-  int match = (*This.polarimetry_id-*Ref.polarimetry_id) ? 0  : 1 ;
+   int match = (*This.polarimetry_id-*Ref.polarimetry_id) ? 0  : 1 ;
 
-  return match;
-
+   return match;
 }
 
 
@@ -333,7 +385,7 @@ MatchPolarimetry(double ThisRunID, double RefRunID){
 // Class name  :
 // Method name : ContinueScan(double ThisRunID, double RunID)
 //
-// Description : compare ThisRunID and RunID and determine wheather 
+// Description : compare ThisRunID and RunID and determine wheather
 //             : to be coninued scanning run.db
 // Input       : double ThisRunID, double RunID
 // Return      : 1 if ThisRunID <= RunID to pickup up-to-date or matching conditions
@@ -358,7 +410,7 @@ ContinueScan(double ThisRunID, double RunID){
   runid THAT;
   THAT.Fill = int(RunID);
   THAT.Run = int((RunID-THAT.Fill)*1e3+0.001);
-  
+
   if (THIS.Fill>=THAT.Fill){
     if (THIS.Run<THAT.Run) Continue = 0 ;
   }
@@ -373,15 +425,14 @@ ContinueScan(double ThisRunID, double RunID){
 // Class name  :
 // Method name : PrintRunDB()
 //
-// Description : Printout final varibles read from run.db 
-//             : for Debugging 
-// Input       : 
-// Return      : 
-//             : 
+// Description : Printout final varibles read from run.db
+//             : for Debugging
+// Input       :
+// Return      :
+//             :
 //
-void
-PrintRunDB(){
-
+void PrintRunDB()
+{
   printf("Run Status       = %s\n",    rundb.run_status_s.c_str());
   printf("Config File      = %s\n",    rundb.config_file_s.c_str());
   printf("Calib File       = %s\n",    rundb.calib_file_s.c_str());
@@ -399,12 +450,10 @@ PrintRunDB(){
 
 
 // =====================================
-// Print Out Configuration information 
+// Print Out Configuration information
 // =====================================
-int 
-printConfig(recordConfigRhicStruct *cfginfo){
-
-
+int printConfig(recordConfigRhicStruct *cfginfo)
+{
     int ccutwu;
     int ccutwl;
 
@@ -413,10 +462,10 @@ printConfig(recordConfigRhicStruct *cfginfo){
     fprintf(stdout,"================================================\n");
 
     // Configulation File
-    fprintf(stdout,"         RUN STATUS = %s\n",    rundb.run_status_s.c_str());
-    fprintf(stdout,"         MEAS. TYPE = %s\n",    rundb.measurement_type_s.c_str());
-    fprintf(stdout,"             CONFIG = %s\n",reConfFile);
-    fprintf(stdout,"              CALIB = %s\n",CalibFile);
+    fprintf(stdout,"         RUN STATUS = %s\n", rundb.run_status_s.c_str());
+    fprintf(stdout,"         MEAS. TYPE = %s\n", rundb.measurement_type_s.c_str());
+    fprintf(stdout,"             CONFIG = %s\n", reConfFile);
+    fprintf(stdout,"              CALIB = %s\n", CalibFile);
 
     // banana cut configulation
     if (dproc.CBANANA == 0) {
@@ -428,7 +477,7 @@ printConfig(recordConfigRhicStruct *cfginfo){
         ccutwl = (int)dproc.widthl;
         ccutwu = (int)dproc.widthu;
     }
-    if (dproc.CBANANA!=2) 
+    if (dproc.CBANANA!=2)
       fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
 
     // tshift in [ns]
@@ -437,7 +486,7 @@ printConfig(recordConfigRhicStruct *cfginfo){
     // expected reference rate
     if (runinfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",dproc.reference_rate);
 
-    // target count/mm 
+    // target count/mm
     fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",dproc.target_count_mm);
 
     // Disabled bunch
@@ -514,18 +563,16 @@ GetVariables(string strdyn){
 // Input       : string str
 // Return      : string variables
 //
-string
-GetVariables(string str){
+string GetVariables(string str)
+{
 
-  string::size_type begin = str.find("=")+ 1;
-  string::size_type end = str.find(";");
+  string::size_type begin  = str.find("=") + 1;
+  string::size_type end    = str.find(";");
   string::size_type length = end - begin ;
 
   string s = str.substr(begin,length);
   return s;
-
 }
-
 
 
 /*

@@ -3,26 +3,25 @@
 //
 //
 //  Author    :   Itaru Nakagawa
+//                Dmitri Smirnov
 //  Creation  :   02/06/2006
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <string.h>
-using namespace std;
+/**
+ *
+ * 1 Nov, 2010 - Dmitri Smirnov
+ *    - Cleaned up the code
+ *
+ */
+
 #include <iostream>
-#include <fstream>
-#include "rhicpol.h"
-#include "rpoldata.h"
-#include "Asym.h"
+
 #include "AsymMain.h"
 
+using namespace std;
 
-int
-Usage(char *argv[]){
-
+int Usage(char *argv[])
+{
   cout << "\n Usage:" << argv[0] << "[-h] [-x][-f <runID>]" << endl;
   cout << "\n Description: " << endl;
   cout << "\t Read configulations from run.db and print" << endl;
@@ -32,60 +31,51 @@ Usage(char *argv[]){
   cout << "\t -x \t show example    " << endl;
   cout << endl;
   exit(0);
-
 }
 
-int 
-Example(char *argv[]){
-
+int Example(char *argv[])
+{
   cout << "\n Exapmle: " << endl;
   cout << "\t" << argv[0] << " -f 7279.005" << endl;
   cout << 
   cout << endl;
   exit(0);
-
 }
 
 
-int 
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+   extern StructRunDB rundb;
+   recordConfigRhicStruct  *cfginfo;
+   extern int printConfig(recordConfigRhicStruct *);
 
-  extern StructRunDB rundb;
-  recordConfigRhicStruct  *cfginfo;
-  extern int printConfig(recordConfigRhicStruct *);
+   char * RunID;
+   confdir = getenv("CONFDIR");
 
+   int opt;
 
-  char * RunID;
-  confdir = getenv("CONFDIR");
-
-
-  int opt;
    while (EOF != (opt = getopt(argc, argv, "f:hx?"))) {
-    switch (opt) {
-    case 'x':
-      Example(argv);
-      break;
-    case 'f':
-      RunID = optarg;
-      break;
-    case 'h':
-    case '?':
-    case '*':
-      Usage(argv);
-    }
-
+      switch (opt) {
+      case 'x':
+         Example(argv);
+         break;
+      case 'f':
+         RunID = optarg;
+         break;
+      case 'h':
+      case '?':
+      case '*':
+         Usage(argv);
+      }
    }
-      
 
-    // RunID 
-    double RUNID = strtod(RunID,NULL);
+   // RunID 
+   double RUNID = strtod(RunID, NULL);
 
-    // Read Conditions from run.db
-    readdb(RUNID);
+   // Read Conditions from run.db
+   readdb(RUNID);
 
-    printConfig(cfginfo);
+   printConfig(cfginfo);
 
-
-   return 0 ;
+   return 0;
 }
-

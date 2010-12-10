@@ -1,3 +1,10 @@
+/**
+ *
+ * Nov 2, 2010 - Dmitri Smirnov
+ *    - Minor code clean-up
+ *
+ */
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -25,140 +32,132 @@
 //#define CCONST 0.1000      // regular calibration 
 //#define CCONST 0.4000       // attenuation (x2) runs
 
-
 gROOT->Reset();
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //  MAIN
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-class CalibFit {
+class CalibFit
+{
 public:
-    CalibFit(Char_t *);
-    ~CalibFit();
 
-    void Fit(Int_t);
-    void PlotResult();
-    void PlotRatio();
+   CalibFit(Char_t *);
+   ~CalibFit();
 
-    ofstream fout;
-    
-    Char_t runid[50];
+   void Fit(Int_t);
+   void PlotResult();
+   void PlotRatio();
 
-    Float_t peak[72], peakE[72];   
-    Float_t acoef[72], acoefE[72];
-    Float_t gwidth[72], gwidthE[72];
+   ofstream fout;
+   
+   Char_t runid[50];
 
+   Float_t peak[72], peakE[72];   
+   Float_t acoef[72], acoefE[72];
+   Float_t gwidth[72], gwidthE[72];
 };
+
 
 // Initialization of the class
-CalibFit::CalibFit(Char_t *runidinput){
+CalibFit::CalibFit(Char_t *runidinput)
+{
     sprintf(runid,"%s",runidinput);
-    memset(peak,0, sizeof(peak));
-    memset(peakE,0, sizeof(peakE));
-    memset(acoef,0, sizeof(acoef));
-    memset(acoefE,0, sizeof(acoefE));
-    memset(gwidth,0, sizeof(gwidth));
-    memset(gwidthE,0, sizeof(gwidthE));
+    memset(peak,    0, sizeof(peak));
+    memset(peakE,   0, sizeof(peakE));
+    memset(acoef,   0, sizeof(acoef));
+    memset(acoefE,  0, sizeof(acoefE));
+    memset(gwidth,  0, sizeof(gwidth));
+    memset(gwidthE, 0, sizeof(gwidthE));
 };
+
 CalibFit::~CalibFit(){};
 
-// -------------------------------------------------------------------
+
 void CalibFit::Fit() 
-// -------------------------------------------------------------------
 {    
+   fout.open("testfit.dat");
+   
+   gStyle->SetGridColor(1);
+   gStyle->SetGridStyle(2);
+   gStyle->SetPalette(1,0);
+   gStyle->SetOptFit();
 
-    fout.open("testfit.dat");
-    
-    gStyle->SetGridColor(1);
-    gStyle->SetGridStyle(2);
-    gStyle->SetPalette(1,0);
-    gStyle->SetOptFit();
+   TCanvas *CurC = new TCanvas("CurC","",1);
+   TPostScript ps("testfit.ps",112);
+   
+   CurC -> Divide(4,3);
+   ps.NewPage();
+   
+   for (Int_t Si=0;Si<6;Si++) {
+       
+       Int_t Padn=0;
 
+       for (Int_t St=Si*12; St<Si*12+12; St++) {
+           Char_t hName[100];
+           sprintf(hName, "h%d", 12000+St+1);  
 
-    TCanvas *CurC = new TCanvas("CurC","",1);
-    TPostScript ps("testfit.ps",112);
-    
-    CurC -> Divide(4,3);
-    ps.NewPage();
-    
-    for (Int_t Si=0;Si<6;Si++) {
-        
-        Int_t Padn=0;
+           TH1D* hadc = (TH1D*) gDirectory->Get(hName);
 
-        for (Int_t St=Si*12; St<Si*12+12; St++) {
-            Char_t hName[100];
-            sprintf(hName,"h%d",12000+St+1);  
+           Padn++;   // change pad even if the histograms is empty
+           CurC->cd(Padn);
+           
+           // Fit Only non-empty Hists
 
-            TH1D* hadc = (TH1D*) gDirectory->Get(hName);
+           if (hadc->GetEntries() > 30) {
 
-            Padn++;   // change pad even if the histograms is empty
-            CurC->cd(Padn);
-            
-            // Fit Only non-empty Hists
+               Float_t MaxPosition = hadc->GetMaximumBin( );
+               
+               hadc -> Fit("gaus","E", "0",MaxPosition-20., MaxPosition+20.);
 
-            if (hadc->GetEntries() > 30) {
+               TF1 *fitf = (TF1*)hadc->GetFunction("gaus");;
+               
+               peak[St] = fitf->GetParameter(1);
+               peakE[St] = fitf->GetParError(1);
+       	       gwidth[St] = fitf->GetParameter(2);
+       	       gwidthE[St] = fitf->GetParError(2);                
+               
+               // Draw +/- 7sigma region
+               hadc -> GetXaxis()-> 
+                   SetRangeUser(
+                                peak[St] - 7.* fitf->GetParameter(2),
+                                peak[St] + 7.* fitf->GetParameter(2));
+               
+               fitf -> SetLineColor(2);
+               hadc -> SetLineColor(4);
+               hadc -> Draw();
 
-                Float_t MaxPosition = hadc->GetMaximumBin( );
-                
-                hadc -> Fit("gaus","E", "0",MaxPosition-20., MaxPosition+20.);
+               if (peak[St]!=0.) {
+                   acoef[St]  = AMPEAK * CCONST/peak[St];
+                   acoefE[St] = AMPEAK * CCONST/pow(peak[St],2)*peakE[St];   
+               }
 
-                TF1 *fitf = (TF1*)hadc->GetFunction("gaus");;
+               // ==== Force Default Numbers ==============
+               //acoef[St] = 5.0;
+               
+               fout << St <<" ";
+               fout << setprecision(4) << acoef[St]<<" ";
+               fout << setprecision(4) << acoefE[St]<<" ";
+               fout << setprecision(4) << peak[St]<<" ";
+               fout << setprecision(4) << peakE[St]<<" ";
+               fout << setprecision(3) << fitf->GetChisquare()
+                   /fitf->GetNDF() <<" ";
+               fout << fitf->GetNDF()<<" ";
+               fout << gMinuit->fCstatu.Data() << endl;
 
-                
-                peak[St] = fitf->GetParameter(1);
-                peakE[St] = fitf->GetParError(1);
-		gwidth[St] = fitf->GetParameter(2);
-		gwidthE[St] = fitf->GetParError(2);                
-                
-                
-                // Draw +/- 7sigma region
-                hadc -> GetXaxis()-> 
-                    SetRangeUser(
-                                 peak[St] - 7.* fitf->GetParameter(2),
-                                 peak[St] + 7.* fitf->GetParameter(2));
-                
-                
-                fitf -> SetLineColor(2);
-                hadc -> SetLineColor(4);
-                hadc -> Draw();
+           }
+       }
 
-                if (peak[St]!=0.) {
-                    acoef[St]  = AMPEAK * CCONST/peak[St];
-                    acoefE[St] = AMPEAK * CCONST/pow(peak[St],2)*peakE[St];   
-                }
+       CurC->Update();
+       ps.NewPage();
+   }
 
-                // ==== Force Default Numbers ==============
-                //acoef[St] = 5.0;
+   CurC->Update();
+   fout.close();
 
-                
-                fout << St <<" ";
-                fout << setprecision(4) << acoef[St]<<" ";
-                fout << setprecision(4) << acoefE[St]<<" ";
-                fout << setprecision(4) << peak[St]<<" ";
-                fout << setprecision(4) << peakE[St]<<" ";
-                fout << setprecision(3) << fitf->GetChisquare()
-                    /fitf->GetNDF() <<" ";
-                fout << fitf->GetNDF()<<" ";
-                fout << gMinuit->fCstatu.Data() << endl;
-
-            }
-        }
-
-        CurC->Update();
-        ps.NewPage();
-    }
-
-    CurC->Update();
-    fout.close();
-
-
-    //    PlotRatio();
-    ps.Close();
-
+   //    PlotRatio();
+   ps.Close();
 };
-
 
 
 // -------------------------------------------------------------------
@@ -166,7 +165,6 @@ void CalibFit::Fit()
 // -------------------------------------------------------------------
 void CalibFit::PlotResult()
 {
-
     TCanvas *CurC = new TCanvas("CurC","",1);
     TPostScript ps("testsummary.ps",112);
     
@@ -195,7 +193,6 @@ void CalibFit::PlotResult()
         l -> Draw();
     }
 
-
     TGraphErrors* tgae = new TGraphErrors(72, strip, acoef, stripE, acoefE);
     tgae -> SetMarkerStyle(20);
     tgae -> SetMarkerSize(0.5);
@@ -207,7 +204,6 @@ void CalibFit::PlotResult()
 
     CurC -> Update();
     ps.Close();
-
 }
 
 
@@ -216,8 +212,6 @@ void CalibFit::PlotResult()
 // -------------------------------------------------------------------
 void CalibFit::PlotRatio()
 {
-
-
     Float_t strip[72], stripE[72];
     Float_t ratio[72], ratioE[72];
     Char_t title[40];

@@ -1,23 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include <iostream>
-#include <fstream>
+
 #include "dLayerChecker.h"
-#include "AsymRunDB.h"
+
+using namespace std;
 
 
-
-void Usage(char* argv[]){
-
+void Usage(char* argv[])
+{
   cout << endl;
-  cout<<" This program compares the dead layers from two data files."<<endl;
-  cout<<" Default output for -z test is " << ofile << endl;
-  cout<<" Usage of " << argv[0] <<endl;
+  cout << " This program compares the dead layers from two data files."<<endl;
+  cout << " Default output for -z test is " << ofile << endl;
+  cout << " Usage of " << argv[0] <<endl;
   cout << " -f <RunID>        : check dead layer consitency between <RunID> and whatever config file";
   cout <<                     " defined in run.db" <<endl;
   cout << " -z <RunID>        : check the quality of dead layer fit for <RunID>" <<endl ;
@@ -25,16 +17,12 @@ void Usage(char* argv[]){
   exit(-1);
 
   return;
-
 }
-
-
 
 
 int main (int argc, char *argv[])
 {
-
-        bool SINGLE_CONFIG_MODE=false;
+   bool SINGLE_CONFIG_MODE=false;
 	bool optgiven=false;
 	fitresult=0;
 	runfit=false;
@@ -106,8 +94,6 @@ int main (int argc, char *argv[])
 
 	}
 	
-
-
 	printf("\n");
 	printf("******************************************************************************\n");
 	printf("****         dLayerChecker Message %s     ****\n", OperationMode);
@@ -125,7 +111,7 @@ int main (int argc, char *argv[])
 	{
 		if(fitresult==1)
 		{
-		        cout<<"dlayer fit is successful.";
+		   cout<<"dlayer fit is successful.";
 			out << endl << "[" << runid << "]@" << endl;
 			if (SINGLE_CONFIG_MODE) {
 			  cout << " Write out in single config mode" << endl;
@@ -170,22 +156,15 @@ int main (int argc, char *argv[])
 		deadwidth[0][ii]=tempwidth[ii];
 	}
 	
-	
-	
 	getPreviousRun();
-	
-	
-	
 	
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		tempwidth[ii]=0;
 	}
 	
-	if(readDLayer(configfile2)!=1)
-	{
-		return -1;
-	}
+	if(readDLayer(configfile2)!=1) { return -1; }
+
 	for(unsigned short ii=0;ii<num_detectors;ii++)
 	{
 		deadwidth[1][ii]=tempwidth[ii];
@@ -226,14 +205,9 @@ int main (int argc, char *argv[])
 		printf("******************************************************************************\n\n");
 		return 0;
 	}
-	
 
 	out.close();
-
 }
-
-
-
 
 
 void getPreviousRun(bool thisrun){
@@ -254,16 +228,9 @@ void getPreviousRun(bool thisrun){
 
 int readDLayer(char *infile)
 {
-	
 	double deadwidth[strips_per_detector*num_detectors + 10];
 	double t0[strips_per_detector*num_detectors + 10];
-
 	int countstrip=0;
-	int countdetector=0;
-	
-	int st,strip;
-	float acoef,edead,ecoef,A0,A1,iasigma;
-	
 	
 	ifstream configFile;
 
@@ -273,7 +240,6 @@ int readDLayer(char *infile)
 		cerr << "failed to open Config File : " << infile << endl;
 		return -1;
 	}
-
     
 	char temp[13][20];
 	char *tempchar, *stripchar, *T0char;
@@ -282,7 +248,6 @@ int readDLayer(char *infile)
 	int stripn;
 	float t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
 	float c0n, c1n, c2n, c3n, c4n;
-
 
 	int linen=0;
 	while (!configFile.eof()) {
@@ -306,28 +271,23 @@ int readDLayer(char *infile)
 			c3n = atof(strtok(NULL," "));
 			c4n = atof(strtok(NULL," "));
 			
-			
-			
-			
 			deadwidth[stripn-1]=dwidthn;
 			t0[stripn-1]=t0n;
-			
-			
 		}
         
 		linen ++;
 	}
 
-
 	configFile.close();
-	
 	
 	for(unsigned short detector=0;detector<num_detectors;detector++)
 	{
 	  // for detector active/non-active test
 	  float t0_ref=0;
 
-		countstrip=t0_diff_sum[detector]=0;
+		countstrip = 0;
+      t0_diff_sum[detector] = 0;
+
 		for(unsigned short strip=0;strip<strips_per_detector;strip++)
 		  {
 			if(isStripAlive(strips_per_detector*detector + strip)==true)
@@ -352,11 +312,8 @@ int readDLayer(char *infile)
 
 	}
 	
-	
 	return 1;
-	
 }
-
 
 
 bool isStripAlive(unsigned short strp)
