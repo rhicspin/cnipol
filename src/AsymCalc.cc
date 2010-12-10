@@ -6,23 +6,6 @@
 //  Creation  :   01/21/2006
 //                
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <math.h>
-//#include <errno.h>
-//#include <signal.h>
-//#include <string.h>
-//#include <iostream>
-//#include "TMinuit.h"
-//#include "TString.h"
-//#include "TMath.h"
-//#include "rhicpol.h"
-//#include "rpoldata.h"
-//#include "Asym.h"
-//#include "WeightedMean.h"
-//#include "AsymErrorDetector.h"
-
 #include "AsymCalc.h"
 
 using namespace std;
@@ -39,23 +22,20 @@ int end_process(recordConfigRhicStruct *cfginfo)
 {
   StructHistStat hstat;
 
-  if (Flag.feedback){
+  //-------------------------------------------------------
+  //                Feedback Mode
+  //-------------------------------------------------------
+  if (Flag.feedback) {
+     int FeedBackLevel=2; // 1: no fit just max and mean  
+                          // 2: gaussian fit
+     anal.TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
 
-    //-------------------------------------------------------
-    //                Feedback Mode
-    //-------------------------------------------------------
-    int FeedBackLevel=2; // 1: no fit just max and mean  
-                         // 2: gaussian fit
-    anal.TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
+     // reset counters
+     Nevtot = Nread = 0;
+     for (int i=0;i<120;i++) Ntotal[i] = 0;
 
-    // reset counters
-    Nevtot = Nread = 0;
-    for (int i=0;i<120;i++) Ntotal[i] = 0;
-
-    return 0;
-
-  } // end-of-if(Flag.feedback)
-
+     return 0;
+  }
 
   if (dproc.CMODE) return 0;
 
@@ -124,7 +104,6 @@ int end_process(recordConfigRhicStruct *cfginfo)
 
   }//end-of-if(!dproc.DMODE)
 
-
   //-------------------------------------------------------
   // Run Informations
   //-------------------------------------------------------
@@ -132,11 +111,7 @@ int end_process(recordConfigRhicStruct *cfginfo)
   PrintRunResults(hstat);
 
   return(0);
-
-
 }
-
-
 
 
 //
@@ -147,11 +122,8 @@ int end_process(recordConfigRhicStruct *cfginfo)
 // Input       : 
 // Return      : 
 //
-int
-CompleteHistogram(){
-
-  char htitle[100];
-
+int CompleteHistogram()
+{
   // Draw reg./alt. event selection borders in Invariant Mass plots
   float MASS_12C_k2G=MASS_12C*k2G;
   for (int i=0; i<NSTRIP; i++) {
@@ -169,7 +141,6 @@ CompleteHistogram(){
   TgtHist();
 
   return 0;
-
 }
 
 
@@ -181,11 +152,11 @@ CompleteHistogram(){
 // Input       : 
 // Return      : 
 //
-int TgtHist(){
-
+int TgtHist()
+{
   char htitle[100];
   float xmin=fabs(double(ASYM_DEFAULT)), xmax; float margin=0.2;
-  float x[MAXDELIM], dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
+  float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
   int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim ;
   GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
 
@@ -198,6 +169,7 @@ int TgtHist(){
     y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ; 
     dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0; 
   }
+
   anal.max_rate = GetMax(X_index,y);
   float ymin=fabs(double(ASYM_DEFAULT)), ymax; 
   GetMinMax(X_index, y, margin, ymin, ymax);
@@ -222,12 +194,8 @@ int TgtHist(){
   tgtx_time -> SetMarkerColor(4);
   tgtx_vs_time ->  GetListOfFunctions() -> Add(tgtx_time,"P");
 
-
   return 0;
-
-}// end-of-TgtHist()
-
-
+}
 
 
 //
@@ -238,10 +206,8 @@ int TgtHist(){
 // Input       : 
 // Return      : 
 //
-int
-CumulativeAsymmetry(){
-
-
+int CumulativeAsymmetry()
+{
     int bid;
     asymStruct x90[120];  // x90[119] is total
     asymStruct x45[120];
@@ -255,17 +221,11 @@ CumulativeAsymmetry(){
     float BT45[120],BT45E[120];
     float NL,NR;
     float tmpasym,tmpasyme;
-    FILE *fp;
     float RU[120],RD[120],LU[120],LD[120];
-    long SIU[6],SID[6];
-    int tr,si;
-    int gbid[120];    // if 1:good and used 0: be discarded
+    int   gbid[120];    // if 1:good and used 0: be discarded
     float gtmin,gtmax,btmin,btmax;
-    float X[HENEBIN],Y[HENEBIN],EX[HENEBIN],EY[HENEBIN];
     float fspinpat[120];
-    int i,j,k;
-    long Nsi[6]={0,0,0,0,0,0};
-
+    long  Nsi[6]={0,0,0,0,0,0};
     
     //====================================================
     // Right-Left asymmetry
@@ -351,6 +311,7 @@ CumulativeAsymmetry(){
             }
         }
     }   
+
     // Counts for each detector
     for (bid=0;bid<120;bid++){
         Nsi[0]+=Ncounts[0][bid];
@@ -361,14 +322,12 @@ CumulativeAsymmetry(){
         Nsi[5]+=Ncounts[5][bid];
     }
 
-
     HHPAK(31010, (float*)Ncounts[0]);
     HHPAK(31020, (float*)Ncounts[1]);
     HHPAK(31030, (float*)Ncounts[2]);
     HHPAK(31040, (float*)Ncounts[3]);
     HHPAK(31050, (float*)Ncounts[4]);
     HHPAK(31060, (float*)Ncounts[5]);
-
 
     float x90phys[2][120], x90acpt[2][120], x90lumi[2][120];
     float x45phys[2][120], x45acpt[2][120], x45lumi[2][120];
@@ -401,6 +360,7 @@ CumulativeAsymmetry(){
         //        printf("%d : %d %f %f %f %f \n",bid,spinpat[bid],
         //       RU[bid],RD[bid],LU[bid],LD[bid]);
     }
+
     fprintf(stdout,"si2 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
     fprintf(stdout,"si5 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
 
@@ -428,6 +388,7 @@ CumulativeAsymmetry(){
         x45lumi[0][bid] = tmpasym;
         x45lumi[1][bid] = tmpasyme;
     }
+
     fprintf(stdout,"si1,3 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
     fprintf(stdout,"si4,6 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
 
@@ -498,9 +459,6 @@ CumulativeAsymmetry(){
     HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
     HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
 
-
-
-
     printf("*************** RESULT *******************\n");
     printf("        physics                luminosity             acceptance\n");
     printf("X90  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
@@ -521,10 +479,6 @@ CumulativeAsymmetry(){
             cr45[119].acpt,cr45[119].acptE);
 
     printf("*************** RESULT *******************\n");
-
-
-
-
 
     // Target Position Loop
     for (int i=0; i<=nTgtIndex; i++) {
@@ -569,17 +523,13 @@ CumulativeAsymmetry(){
 
     } // end-of-nTgtIndex loop
 
-
-
     // **** for different t range ****
-
     float txasym90[6][120], txasym90E[6][120];
     float txasym45[6][120], txasym45E[6][120];
     float tyasym45[6][120], tyasym45E[6][120];
     float tcasym45[6][120], tcasym45E[6][120];
 
-
-    for (tr=0;tr<NTBIN;tr++){
+    for (int tr=0;tr<NTBIN;tr++){
       float SUM=0;
         // X90 (2-5)
         for (bid=0;bid<120;bid++){
@@ -634,6 +584,7 @@ CumulativeAsymmetry(){
             ty45[bid][tr].phys = tmpasym; ty45[bid][tr].physE = tmpasyme; 
             tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme; 
         }
+
         // CROSS 45 (14-36)
         for (bid=0;bid<120;bid++){
             RU[bid] = ((bid==0)?0:RU[bid-1])
@@ -672,12 +623,8 @@ CumulativeAsymmetry(){
     HHPAK(36000, (float*)cntr.reg.NStrip[0]);
     HHPAK(36100, (float*)cntr.reg.NStrip[1]);
 
-
     return 0;
-
-} // end-of-CumulativeAsymmetry()
-
-
+}
 
 
 //
@@ -765,7 +712,7 @@ PrintWarning(){
 	   bnchchk.asym[0].sigma, bnchchk.asym[1].sigma, bnchchk.asym[2].sigma);
     if (bnchchk.rate.max_dev) printf(" Max SpeLumi deviation from average  : %6.1f\n",bnchchk.rate.max_dev);
     printf(" Number of Problemeatic Bunches      : %6d \n", anal.anomaly.nbunch);
-    printf(" Problemeatic Bunches Rate [%]       : %6.1f\n", anal.anomaly.bad_bunch_rate);
+    printf(" Problemeatic Bunches Rate [%%]      : %6.1f\n", anal.anomaly.bad_bunch_rate);
     printf(" Bunch error code                    :   "); binary_zero(anal.anomaly.bunch_err_code,4);printf("\n");
     printf(" Problemeatic Bunch ID's             : ");
     for (int i=0; i<anal.anomaly.nbunch; i++) printf("%d ",anal.anomaly.bunch[i]) ; 
@@ -827,7 +774,7 @@ PrintRunResults(StructHistStat hstat){
     printf("-----------------------------   Analysis Results   --------------------------------------\n");
     printf("-----------------------------------------------------------------------------------------\n");
     printf(" RunTime                 [s] = %10.1f\n", runinfo.RunTime);
-    printf(" Total events in banana      = %10d\n",   cntr.good_event);
+    printf(" Total events in banana      = %10ld\n",  cntr.good_event);
     printf(" Good Carbon Max Rate  [MHz] = %10.4f\n", anal.max_rate);
     printf(" Good Carbon Rate      [MHz] = %10.4f\n", runinfo.GoodEventRate);
     printf(" Good Carbon Rate/WCM_sum    = %10.5f\n", anal.wcm_norm_event_rate);
@@ -839,7 +786,7 @@ PrintRunResults(StructHistStat hstat){
     if (runinfo.Run>=6){
         printf(" Maximum Revolution #        = %10d\n", runinfo.MaxRevolution);
         printf(" Reconstructed Duration  [s] = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
-        printf(" Target Motion Counter       = %10d\n",cntr.tgtMotion);
+        printf(" Target Motion Counter       = %10ld\n",cntr.tgtMotion);
     }
     printf(" WCM Sum     [10^11 protons] = %10.1f\n", runinfo.WcmSum/100);
     printf(" WCM Average [10^9  protons] = %10.1f\n", runinfo.WcmAve);
@@ -848,7 +795,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" # of Filled Bunch           = %10d\n", runinfo.NFilledBunch);
     printf(" # of Active Bunch           = %10d\n", runinfo.NActiveBunch);
     printf(" bunch w/in WCM range        = %10d\n", average.counter);
-    printf(" process rate                = %10.1f [%]\n",(float)average.counter/(float)NFilledBunch*100);
+    printf(" process rate                = %10.1f [%%]\n",(float)average.counter/(float)NFilledBunch*100);
     printf(" Analyzing Power Average     = %10.4f \n", anal.A_N[1]);
     if (dproc.FEEDBACKMODE) 
       printf(" feedback average tshift     = %10.1f [ns]\n",anal.TshiftAve);
@@ -858,7 +805,7 @@ PrintRunResults(StructHistStat hstat){
     printf(" chi2/d.o.f (sinphi fit)     = %10.4f\n",anal.sinphi[0].chi2);
     printf(" Polarization (bunch ave)    = %10.4f%9.4f\n",basym.ave.Ax[0]/anal.A_N[1], basym.ave.Ax[1]/anal.A_N[1]);
     printf(" Phase (bunch ave)           = %10.4f%9.4f\n",basym.ave.phase[0]*R2D, basym.ave.phase[1]*R2D);
-    if (runinfo.Run==5)   printf(" profile error (absolute)[%] = %10.4f\n",anal.profile_error*fabs(anal.P[0]));
+    if (runinfo.Run==5)   printf(" profile error (absolute)[%%] = %10.4f\n",anal.profile_error*fabs(anal.P[0]));
     printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", dproc.MassSigmaAlt, dproc.MassSigma);
     printf(" Polarization (sinphi) alt   = %10.4f%9.4f\n", anal.sinphi[1].P[0],anal.sinphi[1].P[1]);
     printf(" Ratio (alt/reg)             = %10.2f%9.2f\n", anal.P_sigma_ratio[0],anal.P_sigma_ratio[1]);
@@ -1197,19 +1144,18 @@ SpecificLuminosity(float &mean, float &RMS, float &RMS_norm){
 //             :                   2) gaussian fit
 // Return      : average tshift [ns] @ 500keV
 //
-float
-TshiftFinder(int Mode, int FeedBackLevel){
-
-  int np=3;
-  float par[np], step[np], pmin[np], pmax[np], sigpar[np];
-  float chi2, hmax;
+float TshiftFinder(int Mode, int FeedBackLevel)
+{
+  int   np = 3;
+  float par[np], sigpar[np];
+  float chi2;
   float mdev,adev;
   float ex[NSTRIP];
-  char htitle[50];
-  TGraphErrors * tg;
-  TF1 * f1 = new TF1("f1","gaus");
+  char  htitle[50];
   float min,max;
   float margin=0.2;
+  TGraphErrors * tg;
+  TF1 * f1 = new TF1("f1","gaus");
 
   for (int st=0; st<NSTRIP; st++){
     feedback.strip[st]=st+1;
@@ -1218,14 +1164,11 @@ TshiftFinder(int Mode, int FeedBackLevel){
     switch(FeedBackLevel){
 
     case 1:     // Level 1 Histogram Maximum and Mean
-      
       cerr << "TshiftFinder:: Case=1 is no longer avarilable" << endl;
       exit(-1);
-
       break;
 
     case 2:   // Level 2 Gaussian Fit
-
       // parameter initialization 
       par[0] = Mode ? mass_feedback[st]->GetMaximum() : mass_yescut[st]->GetMaximum(); // amplitude
       par[1] = MASS_12C*k2G;       // mean [GeV]
@@ -1318,8 +1261,8 @@ TshiftFinder(int Mode, int FeedBackLevel){
   }
 
   return adev ;
-
 }
+
 
 //
 // Class name  : 
@@ -1682,9 +1625,8 @@ calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA){
 // Input       : 
 // Return      : 
 //
-void
-StripAsymmetry(){
-
+void StripAsymmetry()
+{
   // Calculate Asymmetries for colliding bunches at PHENIX
   CalcStripAsymmetry(anal.A_N[1], 2, cntr.phx.NStrip);  
   // Calculate Asymmetries for colliding bunches at STAR
@@ -1712,9 +1654,8 @@ StripAsymmetry(){
       QuadErrorDiv(diff[0],anal.sinphi[0].P[0],diff[1],anal.sinphi[0].P[1]);
   }
 
-
   // Calculate Asymmetries for each target position 
-for(Int_t i=0;i<nTgtIndex+1;i++) CalcStripAsymmetry(anal.A_N[1],100+i,cntr_tgt.reg.NStrip[i]);
+  for(Int_t i=0;i<nTgtIndex+1;i++) CalcStripAsymmetry(anal.A_N[1],100+i,cntr_tgt.reg.NStrip[i]);
 
   return;
 }

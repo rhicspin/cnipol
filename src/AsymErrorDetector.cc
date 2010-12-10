@@ -509,7 +509,8 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
 
   // Anomaly bunch finding
   char text[20];
-  local.nbunch = local.active_bunch[0] = local.active_bunch[1] = local.chi2[0] = local.chi2[1] = 0;
+  local.nbunch = local.active_bunch[0] = local.active_bunch[1] = 0;
+  local.chi2[0] = local.chi2[1] = 0;
   for (int bid=0;bid<NBUNCH;bid++) {
     local.bunch[bid] = -999; // default not to appear in plots
 

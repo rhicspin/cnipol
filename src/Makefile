@@ -1,25 +1,29 @@
 # File name           : Makefile
 #
 # Author              : Itaru Nakagawa
+#                     : Dmitri Smirnov
+#
 # Creation data       : Feb.6,2006
 
 LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib -L$(CNIDIR)/lib
 INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIDIR)/inc
 LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
-ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -Wl,-rpath,$(ROOTSYS)
+ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
+ROOTLIBS  = `root-config --libs`
 
 CC = g++
 ##C_FLAG = -g  -O2 -Wall -w 
 ##C_FLAG = -O2 -ggdb 
-C_FLAG = -O3  
+C_FLAG = -Wall #ds: -O3  
 SOFLAGS = -shared
 
-CXXFLAGS  = $(INC_PATHS)
+CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 D_FLAG = -Df2cFortran
 FC = g77
 FLIB = -lg2c -lgcc -lm -lnsl
+FLIB1 =   # -lg2c
 
 LIB_DIR    = $(CNIDIR)/lib
 CNIANA_LIB = $(LIB_DIR)/libcniana.so
@@ -46,8 +50,10 @@ HDRS = $(wildcard *.h)
 SRCS = $(wildcard *.cc)
 OBJS = $(SRCS:.cc=.o)
 
-#CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) 
-CNIPOL_LIB_OBJS = $(AsymOBJ) 
+#CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
+CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
+#CNIPOL_LIB_OBJS = Asym.o
+#CNIPOL_LIB_OBJS = $(AsymOBJ) 
 
 all: $(BINARY)
 
@@ -56,16 +62,16 @@ lib: $(CNIPOL_LIB)
 	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
 
 $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
-	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $(CNIPOL_LIB)
+	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(ROOTLIBS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $(CNIPOL_LIB)
 	@echo "$@ done"
 
 ######## BINARY ##################
 
 Asym : $(AsymOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(AsymOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+	$(CC) $(C_FLAG) $(AsymOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
-RunDBReader : $(RunDBReaderOBJ)
-	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $@
+RunDBReader : $(RunDBReaderOBJ) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 AsymPlot : $(AsymPlotOBJ)
 	$(CC) $(C_FLAG) $(AsymPlotOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
@@ -74,7 +80,7 @@ dLayerChecker : $(dLayerCheckerOBJ)
 	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 KinFunc : $(KinFuncOBJ)
-	$(CC) $(C_FLAG) $(KinFuncOBJ) $(INC_PATHS) -o $@
+	$(CC) $(C_FLAG) $(KinFuncOBJ) $(INC_PATHS) $(ROOTLIB) -o $@
 
 test : $(testOBJ) 
 	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
@@ -104,9 +110,10 @@ install : $(BINARY)
 	install -v -C $^ $(INSTALLDIR)
 	install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
 
-##############################
 clean : 
 	rm -f $(BINARY) $(CNIPOL_LIB)
 	rm -f *.o
 	rm -f *~ 
 
+lib.clean : 
+	rm -f $(CNIPOL_LIB)

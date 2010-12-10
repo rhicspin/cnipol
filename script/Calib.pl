@@ -1,5 +1,11 @@
 #! /usr/bin/perl
+#
 # Last modfied: Feb.16,2006
+#
+# Nov 2, 2010 Dmitri Smirnov
+#    - Formatted for better reading experience
+#
+
 ##############  defulats ##############
 $CALIBDIR     = $ENV{"CALIBDIR"};
 $OPT_GHOSTVIEW=" ";
@@ -14,15 +20,9 @@ use Getopt::Std;
 my %opt;
 getopts('f:hpg', \%opt);
 
-if ( $opt{h} ) {
-    help();
-}
-if ( $opt{p} ) {
-    $PUBLISH=1;
-}
-if ( $opt{g} ) {
-    $OPT_GHOSTVIEW="-g";
-}
+if ( $opt{h} ) { help(); }
+if ( $opt{p} ) { $PUBLISH=1; }
+if ( $opt{g} ) { $OPT_GHOSTVIEW="-g"; }
 
 # Get Run ID
 my $Runn = $opt{f};
@@ -64,16 +64,11 @@ sub Publish(){
 }
 
 
-
-
 #########################################################################
 ######                     Main Routine                           #######
 #########################################################################
-
 printf("CALIB DATA : $Runn \n");
 system("echo 'Generating histograms...\n'");
 system("CalibGen.pl -f $Runn \n");
 system("echo 'Executing Fitting...\n'");
 system("CalibCal.pl -f $Runn $OPT_GHOSTVIEW \n");
-
-

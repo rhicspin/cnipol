@@ -23,7 +23,8 @@ CXX           = g++
 CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
-CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIDIR)/src
+#CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIDIR)/src
+CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIDIR)/src
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g

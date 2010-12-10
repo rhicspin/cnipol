@@ -4,7 +4,9 @@
 #    - Created top level Makefile
 # 
 
-all: ana
+all: ana cnipol
+
+clean: ana.clean cnipol.clean
 
 ana: ana.all
 
@@ -16,6 +18,19 @@ ana.lib:
 
 ana.clean:
 	make -C ana clean
+
+cnipol: cnipol.all
+
+cnipol.all: cnipol.lib cnipol.install
+
+cnipol.lib:
+	make -C src lib
+
+cnipol.install:
+	make -C src install
+
+cnipol.clean:
+	make -C src clean
 
 anapc:
 	make -C anapc

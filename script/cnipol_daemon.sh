@@ -188,6 +188,7 @@ RunAsym(){
     OPT="";
     
     NEVENTS=`OnlinePol.sh -f $RunID --nevents -k`;
+
     if [ $NEVENTS -lt 1000 ] ; then
 	RUN_STATUS=`RunDBReader -f $f | grek "RUN STATUS" | gawk '{print $4}'`;
 	if [ $RUN_STATUS != "Junk" ] ; then
