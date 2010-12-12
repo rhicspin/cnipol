@@ -39,7 +39,7 @@ public:
    ~ChannelData();
 
    //virtual void Print(const Option_t* opt="") const;
-   float ChannelData::GetTime(EventConfig *ec);
+   float GetTime(EventConfig *ec);
    void Print(const Option_t* opt="") const;
 
    ClassDef(ChannelData, 1)
