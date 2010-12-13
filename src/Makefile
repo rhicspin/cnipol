@@ -5,7 +5,8 @@
 #
 # Creation data       : Feb.6,2006
 
-LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib -L$(CNIDIR)/lib
+#LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib -L$(CNIDIR)/lib
+LIB_PATHS = -L/usr/lib -L$(CNIDIR)/lib -L/usr/local/cern/lib
 INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIDIR)/inc
 LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
@@ -20,16 +21,16 @@ SOFLAGS = -shared
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 
-D_FLAG = -Df2cFortran
+#D_FLAG = -Df2cFortran
 FC = g77
-FLIB = -lg2c -lgcc -lm -lnsl
+FLIB = -lg2c -lgcc -lm -lnsl -lgfortran
 FLIB1 =   # -lg2c
 
 LIB_DIR    = $(CNIDIR)/lib
 CNIANA_LIB = $(LIB_DIR)/libcniana.so
 CNIPOL_LIB = $(LIB_DIR)/libcnipol.so
 
-AsymOBJ = AsymMain.o AsymROOT.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
+AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
 	  AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
           Asym.o
 
@@ -39,9 +40,9 @@ dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o Asym.o
 
 KinFuncOBJ = KinFunc.o Kinema.o Asym.o
 
-AsymPlotOBJ = AsymPlot.o AsymROOT.o Asym.o
+AsymPlotOBJ = AsymPlot.o AsymRoot.o Asym.o
 
-testOBJ = test.o AsymROOT.o
+testOBJ = test.o AsymRoot.o
 
 BINARY = Asym RunDBReader dLayerChecker KinFunc AsymPlot
 BINARY_OBJS = $(BINARY:=.o)
@@ -67,8 +68,8 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 
 ######## BINARY ##################
 
-Asym : $(AsymOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(AsymOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+Asym: $(AsymOBJ) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(AsymOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) -o $@
 
 RunDBReader : $(RunDBReaderOBJ) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
@@ -94,7 +95,7 @@ AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h
 AsymCalc.o : Asym.h AsymCalc.h AsymErrorDetector.h WeightedMean.h
 AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o : AsymMain.h Asym.h
-AsymROOT.o : AsymROOT.h
+AsymRoot.o : AsymRoot.h
 KinFunc.o  : AsymProcess.h
 AsymProcess.o  : AsymProcess.h
 #AsymPlot.o : AsymPlot.h AsymHeader.h

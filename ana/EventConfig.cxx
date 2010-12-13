@@ -113,7 +113,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n", fDatproc->nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n", fDatproc->nEventsTotal);
    fprintf(f, "$rc['thinout']                      = %u;\n", fDatproc->thinout);
-   fprintf(f, "$rc['procDateTime']                 = %u;\n", fDatproc->procDateTime);
+   fprintf(f, "$rc['procDateTime']                 = %u;\n", (UInt_t) fDatproc->procDateTime);
    fprintf(f, "$rc['procTimeReal']                 = %f;\n", fDatproc->procTimeReal);
    fprintf(f, "$rc['procTimeCpu']                  = %f;\n", fDatproc->procTimeCpu);
 

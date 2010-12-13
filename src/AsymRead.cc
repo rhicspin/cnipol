@@ -76,7 +76,7 @@ int readloop()
       }
  
       if ( (UInt_t) rec.header.len > BSIZE*sizeof(int)) {
-          fprintf(stdout, "Not enough buffer d: %d byte b: %d byte\n",
+          fprintf(stdout, "Not enough buffer d: %ld byte b: %u byte\n",
                   rec.header.len, sizeof(rec));
           break;
       }
@@ -338,10 +338,10 @@ int readloop()
          //if (!Flag.feedback){
          fprintf(stdout, "End of data stream \n");
          fprintf(stdout, "End Time: %s\n", ctime(&rec.end.header.timestamp.time));
-         fprintf(stdout, "%ld records found\n", Nread);
+         fprintf(stdout, "%u records found\n", Nread);
          fprintf(stdout, "Total number of counts \n");
          fprintf(stdout, "%ld Carbons are found in\n", Nevcut);
-         fprintf(stdout, "%ld Total events of intended fill pattern\n", Nevtot);
+         fprintf(stdout, "%u Total events of intended fill pattern\n", Nevtot);
          fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
          runinfo.StopTime=rec.end.header.timestamp.time;
          //}
@@ -467,9 +467,9 @@ int readloop()
                     }
                  }
  
-                 gMyRoot.SetChannelEvent(event);
+                 gAsymRoot.SetChannelEvent(event);
 
-                 if (dproc.SAVETREES.any()) { gMyRoot.AddChannelEvent(); }
+                 if (dproc.SAVETREES.any()) { gAsymRoot.AddChannelEvent(); }
  
                  //cout << " i "            << i
                  //     << " Nevent "       << Nevent
@@ -549,7 +549,7 @@ int readloop()
         break;
  
       default:    // unknown record
-         fprintf(stdout,"Encountered Unknown Record 0x%x\n",
+         fprintf(stdout,"Encountered Unknown Record 0x%lx\n",
                  rec.header.type & REC_TYPEMASK);
          break;
       }

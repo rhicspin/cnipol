@@ -471,16 +471,15 @@ DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidt
 // Input       : TH1F * h1, TH2F * h2, float A[], float dA[], int err_code
 // Return      : sigma of Gaussian fit
 //
-float 
-BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code){
-
+float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code)
+{
   // define Gaussian function
   TF1 * g = new TF1("g","gaus");
   g -> SetLineColor(2);
 
   // Perform Gaussian Fit 
   h1->Fit("g","Q");
-  float hight = g -> GetParameter(0);
+  //float hight = g -> GetParameter(0);
   float mean  = g -> GetParameter(1);
   float sigma = g -> GetParameter(2);
 
@@ -493,9 +492,8 @@ BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_c
   DrawLine(h2, -0.5, NBUNCH-0.5, -mean, 2, 2, 2);
 
   // axis titles
-  h1 -> GetYaxis() -> SetTitle("Counts devided by statistical error");
-  h1 -> GetXaxis() -> SetTitle("Raw Asymmetry");
-
+  h1->GetYaxis()->SetTitle("Counts devided by statistical error");
+  h1->GetXaxis()->SetTitle("Raw Asymmetry");
 
   // local anamaly bunch array and counter
   struct StructBUNCH {

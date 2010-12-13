@@ -19,8 +19,8 @@
 
 #include "AsymGlobals.h"
 #include "Kinema.h"
-#include "AsymROOT.h"
-#include "AsymROOTGlobals.h"
+#include "AsymRoot.h"
+#include "AsymRootGlobals.h"
 
 //
 // Class name  : 
