@@ -18,7 +18,7 @@
 
 using namespace std;
 
-Root gMyRoot;
+AsymRoot gAsymRoot;
 
 // =================
 // beginning of main
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
          dproc.userCalibFile = optarg;
          fprintf(stdout, "User defined calibration file: %s\n", dproc.userCalibFile.c_str());
 
-         if (!gMyRoot.UseCalibFile(dproc.userCalibFile)) {
+         if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
             perror("Error: Supplied calibration file is not valid\n");
             exit(-1);
          }
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
          break;
       case 'e': // set energy range
          strcpy(enerange, optarg);
-         if (ptr = strrchr(enerange,':')){
+         if ((ptr = strrchr(enerange, ':'))) {
             ptr++;
             dproc.eneu = atoi(ptr);
             strtok(enerange,":");
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
       case 'C':
          dproc.CMODE = 1;
          dproc.RECONFMODE = 0;
-         gMyRoot.fEventConfig = new EventConfig();
+         gAsymRoot.fEventConfig = new EventConfig();
          break;
       case 'D':
          dproc.DMODE = 1;
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
       case 'W': // constant width banana cut
          dproc.CBANANA = 1;
          strcpy(cwidth, optarg);
-         if (ptr = strrchr(cwidth,':')){
+         if ((ptr = strrchr(cwidth,':'))) {
              ptr++;
              dproc.widthu = atoi(ptr);
              strtok(cwidth,":");
@@ -311,22 +311,22 @@ int main(int argc, char *argv[])
    //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNI_RESULTS_DIR"].c_str());
 
    umask(0);
-   if (mkdir(gAsymEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0) 
+   if (mkdir(gAsymEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0)
       printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNI_RESULTS_DIR"].c_str());
 
    sprintf(filename, "%s/%s.root", gAsymEnv["CNI_RESULTS_DIR"].data(), runinfo.runName.c_str());
 
    fprintf(stdout, "Booking ROOT histograms: %s\n", filename);
 
-   if (gMyRoot.RootFile(filename) != 0) {
+   if (gAsymRoot.RootFile(filename) != 0) {
       perror("Error: RootFile()");
       exit(-1);
    }
 
-   gMyRoot.RootHistBook(runinfo);
+   gAsymRoot.BookHists(runinfo);
 
    // Create tree if requested
-   if (dproc.SAVETREES.any()) { gMyRoot.CreateTrees(); }
+   if (dproc.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
 
    // ---------------------------------------------------- //
    // Quick Scan and Fit for tshift and mass sigma fit     //
@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
    // ---------------------------------------------------- //
    //        Delete Unnecessary ROOT Histograms            //
    // ---------------------------------------------------- //
-   if (gMyRoot.DeleteHistogram() !=0) {
+   if (gAsymRoot.DeleteHistogram() !=0) {
        perror("Error: DeleteHistogram()");
        exit(-1);
    }
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
 
    // Update calibration constants if requested
    if (dproc.UPDATE)
-      gMyRoot.UpdateRunConfig();
+      gAsymRoot.UpdateRunConfig();
 
    // Stop stopwatch and save results
    stopwatch.Stop();
@@ -382,29 +382,29 @@ int main(int argc, char *argv[])
    printf("Process time: %f seconds\n", dproc.procTimeReal);
 
    // Set pointers to global structures for later saving in ROOT file
-   if (!gMyRoot.UseCalibFile() || dproc.CMODE) {
+   if (!gAsymRoot.UseCalibFile() || dproc.CMODE) {
 
-      gMyRoot.fEventConfig->fConfigInfo = cfginfo;
-      //printf("fConfigInfo: %#x\n", gMyRoot.fEventConfig->fConfigInfo);
-      //gMyRoot.fEventConfig->PrintAsPhp(stdout);
+      gAsymRoot.fEventConfig->fConfigInfo = cfginfo;
+      //printf("fConfigInfo: %#x\n", gAsymRoot.fEventConfig->fConfigInfo);
+      //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
    }
 
    // if previously allocated delete object
-   delete gMyRoot.fEventConfig->fRunInfo;
-   gMyRoot.fEventConfig->fRunInfo    = &runinfo;
+   delete gAsymRoot.fEventConfig->fRunInfo;
+   gAsymRoot.fEventConfig->fRunInfo    = &runinfo;
 
-   //delete gMyRoot.fEventConfig->fDatproc;
-   gMyRoot.fEventConfig->fDatproc    = &dproc;
+   //delete gAsymRoot.fEventConfig->fDatproc;
+   gAsymRoot.fEventConfig->fDatproc    = &dproc;
 
-   delete gMyRoot.fEventConfig->fRunDB;
-   gMyRoot.fEventConfig->fRunDB      = &rundb;
+   delete gAsymRoot.fEventConfig->fRunDB;
+   gAsymRoot.fEventConfig->fRunDB      = &rundb;
 
-   //gMyRoot.fEventConfig->PrintAsPhp(stdout);
+   //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
 
    // ---------------------------------------------------- //
    //                     Closing ROOT File                //
    // ---------------------------------------------------- //
-   if (gMyRoot.CloseROOTFile() !=0) {
+   if (gAsymRoot.CloseROOTFile() !=0) {
        perror("Error: CloseROOTFile()");
        exit(-1);
    }
@@ -672,15 +672,17 @@ DisabledDet(int det){
 // elastic Carbons are scattered off more in Right for Up
 int sqass(float A, float B, float C, float D, float *asym, float *easym)
 {
-    float den;
-    den = sqrt(A*B) + sqrt(C*D);
-    if ((A*B==0.)&&(C*D==0.)) {
-        *asym  = 0. ; *easym = 0.;
-    } else {
-        *asym  = (sqrt(A*B) - sqrt(C*D))/den;
-        *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
-    }
-    return(0);
+   float den;
+   den = sqrt(A*B) + sqrt(C*D);
+   if ( (A*B == 0.) && (C*D == 0.) ) {
+      *asym  = 0.;
+      *easym = 0.;
+   } else {
+      *asym  = (sqrt(A*B) - sqrt(C*D))/den;
+      *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
+   }
+
+   return(0);
 }
 
 

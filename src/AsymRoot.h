@@ -20,8 +20,9 @@
 #include "EventConfig.h"
 
 
-class Root
+class AsymRoot
 {
+
 private:
 
 protected:
@@ -45,13 +46,13 @@ public:
 
 public:
 
-   Root();
-   ~Root();
+   AsymRoot();
+   ~AsymRoot();
  
    Int_t  RootFile(char*filename);
-   Int_t  RootHistBook(TStructRunInfo runinfo);
-   Int_t  RootHistBook2(TDatprocStruct &dproc, StructRunConst &runconst,
-                        StructFeedBack &feedback);
+   Int_t  BookHists(TStructRunInfo runinfo);
+	Int_t  BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
+             StructFeedBack &feedback);
    Int_t  DeleteHistogram();
    Int_t  CloseROOTFile();
    void   CreateTrees();

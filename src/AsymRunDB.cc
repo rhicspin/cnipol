@@ -108,7 +108,7 @@ int readdb(double RUNID)
       } else {
          if (match) {
             // a "*" after the flag name means only apply the flag to this run
-            if(str.find("*=") == -1 || RUNID == rundb.RunID)
+            if(str.find("*=") == string::npos || RUNID == rundb.RunID)
             {
                if (str.find("RESET_ALL=Default")   == 1) SetDefault();
                if (str.find("CONFIG")              == 1) rundb.config_file_s         = GetVariables(str);

@@ -84,7 +84,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
        float Mass = t*t*e*runconst.T2M * k2G;
 
-       float delt = t - runconst.E2T/sqrt(e);
+       //float delt = t - runconst.E2T/sqrt(e);
 
        if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  mass_feedback[st]->Fill(Mass) ;
 
@@ -161,7 +161,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       // ---------------------------------------------------- //
       //   Root Histogram Booking using feedback results      //
       // ---------------------------------------------------- //
-      gMyRoot.RootHistBook2(dproc, runconst, feedback);
+      gAsymRoot.BookHists2(dproc, runconst, feedback);
 
       // Online Banana Cut
       for (int strip=0;strip<72;strip++) {
@@ -216,11 +216,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    }
 
    // Get address of the histogram container
-   ChannelEvent *ch = gMyRoot.fChannelEvent;
+   ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
-   gMyRoot.fCnipolHists->Fill(ch);
+   gAsymRoot.fCnipolHists->Fill(ch);
 
-   if (ch->PassQACut1()) gMyRoot.fCnipolHists->Fill(ch, "_cut1");
+   if (ch->PassQACut1()) gAsymRoot.fCnipolHists->Fill(ch, "_cut1");
 
    // 2*cfginfo->data.chan[st].Window.split.Beg = 6
    //if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg))
@@ -495,13 +495,14 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          mass_vs_e_ecut[st] -> Fill(e, Mass);
 
          Ncounts[(int)(st/12)][event->bid]++;
-         int time=0;
+         int time = 0;
+
          if (runinfo.Run==5){
              time = delim;
              ++cntr.good[delim];
              NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
          } else {
-             time = (int) cntr.revolution/RHIC_REVOLUTION_FREQ;
+             time = (int) (cntr.revolution/RHIC_REVOLUTION_FREQ);
              if (time<MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
                NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
@@ -609,7 +610,7 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
 //
 int SpinTuneOutput(int bid, double si)
 {
-  fprintf(stderr,"%10d", cntr.revolution);
+  fprintf(stderr,"%10ld", cntr.revolution);
   fprintf(stderr,"%5d", bid+1);
   fprintf(stderr,"%5d", spinpat[bid]);
   fprintf(stderr,"%5d", int(si)+1);

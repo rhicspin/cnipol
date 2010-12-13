@@ -33,7 +33,7 @@ void ChannelCalib::Print(const Option_t* opt) const
    //printf("ChannelCalib:\n");
    printf("fACoef, fACoefErr, fICoef, fICoefErr, fDLCoef, fDLCoefErr, fT0Coef, \
           fT0CoefErr, fAvrgEMiss, fAvrgEMissErr, fBananaChi2Ndf\n");
-   printf("%f, %f, %f, %f, %f, %f, %f, %f\n", fACoef, fACoefErr, fICoef,
+   printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n", fACoef, fACoefErr, fICoef,
           fICoefErr, fDLCoef, fDLCoefErr, fT0Coef, fT0CoefErr, fAvrgEMiss,
           fAvrgEMissErr, fBananaChi2Ndf);
 

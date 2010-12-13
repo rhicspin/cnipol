@@ -88,7 +88,7 @@ TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
 /**
  *
  */
-Root::Root() : rootfile(), fOutTreeFile(), fTreeFileId(0),
+AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
@@ -98,14 +98,14 @@ Root::Root() : rootfile(), fOutTreeFile(), fTreeFileId(0),
 
 
 /** Default destructor. */
-Root::~Root()
+AsymRoot::~AsymRoot()
 {
    //delete fRawEventTree;
 }
 
 
 //
-// Class name  : Root
+// Class name  : AsymRoot
 // Method name : RootFile(char * filename)
 //
 // Description : Open Root File and define directory structure of histograms
@@ -113,9 +113,9 @@ Root::~Root()
 // Input       : char *filename
 // Return      : 
 //
-int Root::RootFile(char *filename)
+int AsymRoot::RootFile(char *filename)
 {
-  rootfile = new TFile(filename,"RECREATE","ROOT Histogram file");
+  rootfile = new TFile(filename,"RECREATE","AsymRoot Histogram file");
 
   // directory structure
   Run       = rootfile->mkdir("Run");
@@ -136,10 +136,10 @@ int Root::RootFile(char *filename)
 /**
  *
  */
-void Root::CreateTrees()
+void AsymRoot::CreateTrees()
 {
    if (fTreeFileId > 99) {
-      cout << "Error: Root::CreateTrees(): fTreeFileId too big" << endl;
+      cout << "Error: AsymRoot::CreateTrees(): fTreeFileId too big" << endl;
       exit(-1);
    }
 
@@ -149,7 +149,7 @@ void Root::CreateTrees()
    //sprintf(filename,"%s/%.3f_tree_%02d.root",
    //        gAsymEnv["CNI_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
 
-   fOutTreeFile = new TFile(filename, "RECREATE", "ROOT Histogram file");
+   fOutTreeFile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
    if (dproc.SAVETREES.test(0) ) {
@@ -184,7 +184,7 @@ void Root::CreateTrees()
 
 
 /** */
-Bool_t Root::UseCalibFile(std::string cfname)
+Bool_t AsymRoot::UseCalibFile(std::string cfname)
 {
    if (cfname == "" && fEventConfig) return true; // check if config is already set
    else if (cfname != "") {
@@ -208,7 +208,7 @@ Bool_t Root::UseCalibFile(std::string cfname)
 /**
  * Sets current event with data from raw file.
  */
-void Root::SetChannelEvent(processEvent &event)
+void AsymRoot::SetChannelEvent(processEvent &event)
 {
    fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
    fChannelEvent->fEventId.fBunchId      = event.bid;
@@ -223,7 +223,7 @@ void Root::SetChannelEvent(processEvent &event)
 /**
  *
  */
-void Root::AddChannelEvent()
+void AsymRoot::AddChannelEvent()
 {
    if (dproc.SAVETREES.test(0))
       fRawEventTree->Fill();
@@ -270,7 +270,7 @@ void Root::AddChannelEvent()
 /**
  *
  */
-void Root::WriteTreeFile()
+void AsymRoot::WriteTreeFile()
 {
    fOutTreeFile->cd();
 
@@ -303,7 +303,7 @@ void Root::WriteTreeFile()
 /**
  *
  */
-void Root::PrintEventMap()
+void AsymRoot::PrintEventMap()
 {
    ChannelEventSet::const_iterator mi;
    ChannelEventSet::const_iterator mb = fChannelEvents.begin();
@@ -317,7 +317,7 @@ void Root::PrintEventMap()
 
 
 /** */
-void Root::UpdateRunConfig()
+void AsymRoot::UpdateRunConfig()
 {
    // Existing calibrator will be replaced so, delete it first
    delete fEventConfig->fCalibrator;
@@ -331,7 +331,7 @@ void Root::UpdateRunConfig()
 
 
 /** */
-void Root::SaveChannelTrees()
+void AsymRoot::SaveChannelTrees()
 {
    if (!dproc.SAVETREES.test(1)) return;
 
@@ -355,7 +355,7 @@ void Root::SaveChannelTrees()
 /**
  *
  */
-void Root::SaveEventTree()
+void AsymRoot::SaveEventTree()
 {
    if (!dproc.SAVETREES.test(2)) return;
 
@@ -400,15 +400,15 @@ void Root::SaveEventTree()
 
 
 //
-// Class name  : Root
-// Method name : RootHistBook()
+// Class name  : AsymRoot
+// Method name : BookHists()
 //
-// Description : Book ROOT Histograms
+// Description : Book AsymRoot Histograms
 //             : 
 // Input       : 
 // Return      : 
 //
-int Root::RootHistBook(TStructRunInfo runinfo)
+int AsymRoot::BookHists(TStructRunInfo runinfo)
 {
   Char_t hname[100], htitle[100];
  
@@ -556,7 +556,7 @@ int Root::RootHistBook(TStructRunInfo runinfo)
 // Input       : 
 // Return      : 
 //
-int Root::RootHistBook2(TDatprocStruct &dproc, StructRunConst &runconst,
+int AsymRoot::BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
    StructFeedBack &feedback)
 {
   rootfile->cd();
@@ -618,7 +618,7 @@ int Root::RootHistBook2(TDatprocStruct &dproc, StructRunConst &runconst,
 
 
 //
-// Class name  : Root
+// Class name  : AsymRoot
 // Method name : DeleteHistogram
 //
 // Description : Delete Unnecessary Histograms
@@ -626,7 +626,7 @@ int Root::RootHistBook2(TDatprocStruct &dproc, StructRunConst &runconst,
 // Input       : 
 // Return      : 
 //
-int Root::DeleteHistogram()
+int AsymRoot::DeleteHistogram()
 {
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles 
   // are for target channels and thus thes histograms wouldn't make any sense.
@@ -645,7 +645,7 @@ int Root::DeleteHistogram()
 
 
 //
-// Class name  : Root
+// Class name  : AsymRoot
 // Method name : RootFile(char * filename)
 //
 // Description : Write out objects in memory and dump in rootfile before closing it
@@ -653,7 +653,7 @@ int Root::DeleteHistogram()
 // Input       : 
 // Return      : 
 //
-int Root::CloseROOTFile()
+int AsymRoot::CloseROOTFile()
 {
   rootfile->cd();
   Kinema->cd();
