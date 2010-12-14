@@ -37,11 +37,9 @@ void EventConfig::Print(const Option_t* opt) const
 }
 
 
-/**
- *
- */
+/** */
 void EventConfig::PrintAsPhp(FILE *f) const
-{
+{ //{{{
    //printf("EventConfig:\n");
 
    fprintf(f, "<?php\n");
@@ -64,39 +62,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
       exit(-1);
    }
 
-   fprintf(f, "$rc['Run']                          = %d;\n",     fRunInfo->Run          );
-   fprintf(f, "$rc['RUNID']                        = %.3f;\n",   fRunInfo->RUNID        );
-   fprintf(f, "$rc['StartTime']                    = %d;\n",     fRunInfo->StartTime    );
-   fprintf(f, "$rc['StopTime']                     = %d;\n",     fRunInfo->StopTime     );
-   fprintf(f, "$rc['RunTime']                      = %f;\n",     fRunInfo->RunTime      );
-   fprintf(f, "$rc['GoodEventRate']                = %f;\n",     fRunInfo->GoodEventRate);
-   fprintf(f, "$rc['EvntRate']                     = %f;\n",     fRunInfo->EvntRate     );
-   fprintf(f, "$rc['ReadRate']                     = %f;\n",     fRunInfo->ReadRate     );
-   fprintf(f, "$rc['WcmAve']                       = %f;\n",     fRunInfo->WcmAve       );
-   fprintf(f, "$rc['WcmSum']                       = %f;\n",     fRunInfo->WcmSum       );
-   fprintf(f, "$rc['BeamEnergy']                   = %f;\n",     fRunInfo->BeamEnergy   );
-   fprintf(f, "$rc['RHICBeam']                     = %d;\n",     fRunInfo->RHICBeam     );
-   fprintf(f, "$rc['PolarimetryID']                = %d;\n",     fRunInfo->PolarimetryID);
-   fprintf(f, "$rc['MaxRevolution']                = %d;\n",     fRunInfo->MaxRevolution);
-   fprintf(f, "$rc['target']                       = %d;\n",     fRunInfo->target       );
-   fprintf(f, "$rc['targetID']                     = \"%c\";\n",     fRunInfo->targetID     );
-   fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", fRunInfo->TgtOperation );
-
-   for (int i=0; i!=NDETECTOR; i++)
-   fprintf(f, "$rc['ActiveDetector'][%d]           = %#X;\n", i, fRunInfo->ActiveDetector[i]);
-
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(ActiveStrip, NSTRIP);
-   fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, fRunInfo->ActiveStrip[i]);
-
-   fprintf(f, "$rc['NActiveStrip']                 = %d;\n", fRunInfo->NActiveStrip );
-   fprintf(f, "$rc['NDisableStrip']                = %d;\n", fRunInfo->NDisableStrip);
-
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(DisableStrip, NSTRIP);
-   fprintf(f, "$rc['DisableStrip'][%d]             = %d;\n", i, fRunInfo->DisableStrip[i]);
-      
-   fprintf(f, "$rc['NFilledBunch']                 = %d;\n", fRunInfo->NFilledBunch );
-   fprintf(f, "$rc['NActiveBunch']                 = %d;\n", fRunInfo->NActiveBunch );
-   fprintf(f, "$rc['NDisableBunch']                = %d;\n", fRunInfo->NDisableBunch);
+   fRunInfo->PrintAsPhp(f);
 
    //buf.WriteFastArray(DisableBunch, NBUNCH); // not implemented
 
@@ -122,9 +88,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
       exit(-1);
    }
 
-   fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", fRunDB->calib_file_s.c_str());
-   fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", fRunDB->alpha_calib_run_name.c_str());
-   fprintf(f, "$rc['config_file_s']                = \"%s\";\n", fRunDB->config_file_s.c_str());
+   fRunDB->PrintAsPhp(f);
 
    if (!fCalibrator) {
       fprintf(f, "ERROR: EventConfig::PrintAsPhp(): fCalibrator not defined\n");
@@ -134,10 +98,23 @@ void EventConfig::PrintAsPhp(FILE *f) const
    fCalibrator->PrintAsPhp(f);
    
    fprintf(f, "?>\n");
-}
+} //}}}
 
 
+/** */
+void EventConfig::PrintAsConfig(FILE *f) const
+{ //{{{
+	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
+	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->runName.c_str());
+	fprintf(f, "* for the Am calibration     : %s\n", fRunDB->alpha_calib_run_name.c_str());
+	fprintf(f, "* for the Integral/Amplitude : default\n");
+	fprintf(f, "* \n");
 
+   fCalibrator->PrintAsConfig(f);
+} //}}}
+
+
+/** */
 float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 { 
    return fConfigInfo->data.chan[chId].acoef * adc;

@@ -65,12 +65,14 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 
       TFitResultPtr fitres = Calibrate(htemp, hMeanTime);
 
-      if (fitres) {
+      if (fitres.Get()) {
          chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
          chCalib->fT0Coef        = fitres->Value(0);
          chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
          chCalib->fAvrgEMiss     = fitres->Value(1);
          chCalib->fAvrgEMissErr  = fitres->FitResult::Error(1);
+      } else {
+         Error("Calibrate", "Empty TFitResultPtr");
       }
    }
 }
@@ -110,9 +112,9 @@ TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
    //bananaFitFunc->SetParameters(10);
    //bananaFitFunc->SetParLimits(0, -10, 30);
 
-   //hMeanTime->Print();
-   TFitResultPtr result = hMeanTime->Fit(bananaFitFunc, "M E S", "");
-   //result->Print("V");
+   hMeanTime->Print();
+   TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S", "");
+   //fitres->Print("V");
 
    //h->Print();
    //h->Fit(bananaFitFunc2, "M E", "");
@@ -121,7 +123,7 @@ TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
    delete bananaFitFunc;
    //delete bananaFitFunc2;
 
-   return result;
+   return fitres;
 }
 
 

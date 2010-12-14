@@ -441,6 +441,46 @@ void TStructRunInfo::Streamer(TBuffer &buf)
 }
 
 
+/** */
+void TStructRunInfo::PrintAsPhp(FILE *f) const
+{ //{{{
+   fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
+   fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
+   fprintf(f, "$rc['runName']                      = \"%s\";\n", runName.c_str() );
+   fprintf(f, "$rc['StartTime']                    = %d;\n",     StartTime    );
+   fprintf(f, "$rc['StopTime']                     = %d;\n",     StopTime     );
+   fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
+   fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
+   fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
+   fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
+   fprintf(f, "$rc['WcmAve']                       = %f;\n",     WcmAve       );
+   fprintf(f, "$rc['WcmSum']                       = %f;\n",     WcmSum       );
+   fprintf(f, "$rc['BeamEnergy']                   = %f;\n",     BeamEnergy   );
+   fprintf(f, "$rc['RHICBeam']                     = %d;\n",     RHICBeam     );
+   fprintf(f, "$rc['PolarimetryID']                = %d;\n",     PolarimetryID);
+   fprintf(f, "$rc['MaxRevolution']                = %d;\n",     MaxRevolution);
+   fprintf(f, "$rc['target']                       = %d;\n",     target       );
+   fprintf(f, "$rc['targetID']                     = \"%c\";\n", targetID     );
+   fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", TgtOperation );
+
+   for (int i=0; i!=NDETECTOR; i++)
+   fprintf(f, "$rc['ActiveDetector'][%d]           = %#X;\n", i, ActiveDetector[i]);
+
+   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(ActiveStrip, NSTRIP);
+   fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, ActiveStrip[i]);
+
+   fprintf(f, "$rc['NActiveStrip']                 = %d;\n", NActiveStrip );
+   fprintf(f, "$rc['NDisableStrip']                = %d;\n", NDisableStrip);
+
+   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(DisableStrip, NSTRIP);
+   fprintf(f, "$rc['DisableStrip'][%d]             = %d;\n", i, DisableStrip[i]);
+      
+   fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
+   fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
+   fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
+} //}}}
+
+
 /**
  *
  */
@@ -600,6 +640,7 @@ bool TStructRunDB::operator()(const TStructRunDB &rec1, const TStructRunDB &rec2
 }
 
 
+/** */
 void TStructRunDB::Print(const Option_t* opt) const
 {
    printf("RunID:             %f\n", RunID);
@@ -611,3 +652,12 @@ void TStructRunDB::Print(const Option_t* opt) const
    printf("comment_s:         %s\n", comment_s.c_str());
    //cout << "RunID: " <<
 }
+
+
+/** */
+void TStructRunDB::PrintAsPhp(FILE *f) const
+{ //{{{
+   fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
+   fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
+   fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
+} //}}}

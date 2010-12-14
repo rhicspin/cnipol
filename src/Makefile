@@ -40,7 +40,7 @@ dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o Asym.o
 
 KinFuncOBJ = KinFunc.o Kinema.o Asym.o
 
-AsymPlotOBJ = AsymPlot.o AsymRoot.o Asym.o
+AsymPlotOBJ = AsymPlot.o AsymRoot.o Asym.o AsymRunDB.o
 
 testOBJ = test.o AsymRoot.o
 

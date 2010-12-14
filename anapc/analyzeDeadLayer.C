@@ -251,7 +251,7 @@ void analyzeDeadLayer_finalize()
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
-   gH->SaveAllAs(c, path.c_str());
+   //gH->SaveAllAs(c, path.c_str());
    //gH->Write();
    //gOutFile->Close();
 
@@ -262,6 +262,12 @@ void analyzeDeadLayer_finalize()
    FILE *f = fopen(fileName.c_str(), "w");
    ec->PrintAsPhp(f);
    ec->PrintAsPhp(stdout);
+
+   sprintf(&fileName[0], "%s/config_calib.dat", gOutDir.c_str());
+
+   f = fopen(fileName.c_str(), "w");
+   ec->PrintAsConfig(f);
+   ec->PrintAsConfig(stdout);
 
    // Delete from and Write updated run config object to root file
    //gInFile->cd();

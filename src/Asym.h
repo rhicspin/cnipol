@@ -218,6 +218,7 @@ struct TStructRunInfo {
    TStructRunInfo();
    ~TStructRunInfo();
    void Streamer(TBuffer &buf);
+   void PrintAsPhp(FILE *f=stdout) const;
 
 };// StructRunInfo;
 
@@ -255,6 +256,7 @@ typedef struct TStructRunDB {
    bool operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const;
    void Streamer(TBuffer &buf);
    void Print(const Option_t* opt="") const;
+   void PrintAsPhp(FILE *f=stdout) const;
 
 } StructRunDB;
 
