@@ -22,15 +22,15 @@ DeadLayerCalibrator::~DeadLayerCalibrator()
 }
 
 
+/** */
 void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 {
-   TH2F* htemp = 0;
-   TH1D* hMeanTime = 0;
+   TH2F*  htemp = 0;
+   TH1D*  hMeanTime = 0;
    string sSt("  ");
    string cutid = "_cut1";
 
    for (UShort_t i=1; i<=NSTRIP; i++) {
-
       //if (i != 28) continue;
 
       sprintf(&sSt[0], "%02d", i);
@@ -52,21 +52,31 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
          continue;
       }
 
+      ChannelCalib *chCalib;
+      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(i);
+
+      if (iChCalib != fChannelCalibs.end())  {
+         chCalib = &iChCalib->second;
+      } else {
+         ChannelCalib newChCalib;
+         fChannelCalibs[i] = newChCalib;
+         chCalib = &fChannelCalibs[i];
+      }
+
       TFitResultPtr fitres = Calibrate(htemp, hMeanTime);
-   
-      ChannelCalib tmpChCalib;
 
-      tmpChCalib.fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-      tmpChCalib.fT0Coef        = fitres->Value(0);
-      tmpChCalib.fT0CoefErr     = fitres->FitResult::Error(0);
-      tmpChCalib.fAvrgEMiss     = fitres->Value(1);
-      tmpChCalib.fAvrgEMissErr  = fitres->FitResult::Error(1);
-
-      fChannelCalibs[i] = tmpChCalib;
+      if (fitres) {
+         chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
+         chCalib->fT0Coef        = fitres->Value(0);
+         chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
+         chCalib->fAvrgEMiss     = fitres->Value(1);
+         chCalib->fAvrgEMissErr  = fitres->FitResult::Error(1);
+      }
    }
 }
 
 
+/** */
 TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
 {
    Double_t xmin = h->GetXaxis()->GetXmin();

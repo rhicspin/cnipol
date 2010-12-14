@@ -7,7 +7,7 @@
 //  Creation  :   10/17/2005
 //
 
-#include "AsymROOTGlobals.h"
+//#include "AsymRootGlobals.h"
 
 #include "AsymRead.h"
 
@@ -60,7 +60,7 @@ int readloop()
  
    // reading the data till its end ...
    if ((fp = fopen(datafile,"r")) == NULL) {
-     printf("ERROR: %s file not found. Fource exit.\n",datafile);;
+     printf("ERROR: %s file not found. Force exit.\n",datafile);;
      exit(-1);
    }
  

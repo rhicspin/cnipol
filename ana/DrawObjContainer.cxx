@@ -12,7 +12,9 @@ using namespace std;
 /** Default constructor. */
 DrawObjContainer::DrawObjContainer() : TObject(), fDir(), o(), d()
 {
-};
+   fDir = gDirectory;
+   fDir->cd();
+}
 
 DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d()
 {
@@ -43,6 +45,7 @@ void DrawObjContainer::ReadFromDir()
 
       // read obj into memeory and assign a pointer
       TObject* tmpObj = 0;
+
       if (io->second) {
          //delete io->second;
          tmpObj = io->second;
@@ -98,6 +101,7 @@ void DrawObjContainer::ReadFromDir()
 void DrawObjContainer::ReadFromDir(TDirectory *dir)
 {
    fDir = dir;
+   fDir->cd();
    ReadFromDir();
 }
 
@@ -256,6 +260,18 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) const
 {
    return ((const DrawObjContainer*)this)->Write(name, option, bufsize);
+}
+
+
+/** */
+void DrawObjContainer::Fill(ChannelEvent *ch, string cutid)
+{
+}
+
+
+/** */
+void DrawObjContainer::PostFill()
+{
 }
 
 

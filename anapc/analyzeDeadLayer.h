@@ -20,32 +20,36 @@
 
 #include "AnaEvent.h"
 #include "ChannelCalib.h"
-#include "CnipolCalibHists.h"
+#include "CnipolHists.h"
+#include "DrawObjContainer.h"
 #include "EventConfig.h"
 
+namespace {
 
-TFile        *gInFile;
-TFile        *gOutFile;
-TChain       *gChain;
-TH1F         *hAmpltd, *hIntgrl, *hTdc;
-TH1F         *hEventSeq;
-TH2F         *hTvsE, *hTvsQ, *hEvsQ;
-TRandom      *gRandom;
-TCanvas      *c1;
-//TStyle      *gRandom;
-std::string   gRunName;
-std::string   gOutDir;
+TFile            *gInFile;
+TFile            *gOutFile;
+TChain           *gChain;
+TH1F             *hAmpltd, *hIntgrl, *hTdc;
+TH1F             *hEventSeq;
+TH2F             *hTvsE, *hTvsQ, *hEvsQ;
+TRandom          *gRandom;
+TCanvas          *c1;
+//TStyle          *gRandom;
+std::string       gRunName;
+std::string       gOutDir;
 
 AnaEvent         *gAnaEvent;
-CnipolCalibHists *gH;
+DrawObjContainer *gH;
 EventConfig      *ec;
+
+}
 
 void analyzeDeadLayer(std::string runName, Long64_t nEvents=-1);
 void analyzeDeadLayer_initialize(std::string runName);
 //void analyzeDeadLayer_book_histograms();
-void analyzeDeadLayer_fill_histograms(Long64_t nEvents=-1);
-void analyzeDeadLayer_fit_histograms();
-TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f);
+//void analyzeDeadLayer_fill_histograms(Long64_t nEvents=-1);
+//void analyzeDeadLayer_fit_histograms();
+//TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f);
 //void analyzeDeadLayer_fill_histograms_derivative();
 void analyzeDeadLayer_finalize();
 

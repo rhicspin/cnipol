@@ -18,6 +18,9 @@
 #include "ChannelEventId.h"
 #include "EventConfig.h"
 
+class EventConfig;
+//class ChannelData;
+//class Calibrator;
 class ChannelEvent;
 
 typedef std::vector<ChannelEvent> ChannelEventVec;

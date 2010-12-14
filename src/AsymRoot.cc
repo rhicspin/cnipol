@@ -1,9 +1,12 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name :   AsymROOT.cc
+//  file name :   AsymRoot.cc
 // 
-//  Author    :   I. Nakagawa
+//  Authors   :   I. Nakagawa
+//                Dmitri Smirnov
+//
 //  Creation  :   7/11/2006
 //                
+
 /**
  *
  * Oct 18, 2010 - Dmitri Smirnov
@@ -12,7 +15,7 @@
  */
 
 
-#include "AsymROOT.h"
+#include "AsymRoot.h"
 
 using namespace std;
 
@@ -92,7 +95,7 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
-   fChannelEvents(), fEventConfig(), fCnipolHists(0)
+   fChannelEvents(), fEventConfig(), fHists(0)
 {
 }
 
@@ -115,21 +118,23 @@ AsymRoot::~AsymRoot()
 //
 int AsymRoot::RootFile(char *filename)
 {
-  rootfile = new TFile(filename,"RECREATE","AsymRoot Histogram file");
-
-  // directory structure
-  Run       = rootfile->mkdir("Run");
-  Raw       = rootfile->mkdir("Raw");
-  FeedBack  = rootfile->mkdir("FeedBack");
-  Kinema    = rootfile->mkdir("Kinema");
-  Bunch     = rootfile->mkdir("Bunch");
-  ErrDet    = rootfile->mkdir("ErrDet");
-  Asymmetry = rootfile->mkdir("Asymmetry");
-
-  if (!dproc.CMODE)
-     fCnipolHists = new CnipolHists(rootfile);
-
-  return 0;
+   rootfile = new TFile(filename,"RECREATE","AsymRoot Histogram file");
+ 
+   // directory structure
+   Run       = rootfile->mkdir("Run");
+   Raw       = rootfile->mkdir("Raw");
+   FeedBack  = rootfile->mkdir("FeedBack");
+   Kinema    = rootfile->mkdir("Kinema");
+   Bunch     = rootfile->mkdir("Bunch");
+   ErrDet    = rootfile->mkdir("ErrDet");
+   Asymmetry = rootfile->mkdir("Asymmetry");
+ 
+   if (dproc.CMODE)
+      fHists = new CnipolCalibHists(rootfile);
+   else
+      fHists = new CnipolHists(rootfile);
+ 
+   return 0;
 }
 
 
@@ -217,6 +222,13 @@ void AsymRoot::SetChannelEvent(processEvent &event)
    fChannelEvent->fChannel.fIntgrl       = event.intg;
    fChannelEvent->fChannel.fTdc          = event.tdc;
    fChannelEvent->fChannel.fTdcAMax      = event.tdcmax;
+}
+
+
+/** */
+void AsymRoot::PostProcess()
+{
+   fHists->PostFill();
 }
 
 
@@ -322,9 +334,15 @@ void AsymRoot::UpdateRunConfig()
    // Existing calibrator will be replaced so, delete it first
    delete fEventConfig->fCalibrator;
 
-   Calibrator *calibrator = new DeadLayerCalibrator();
+   Calibrator *calibrator;
 
-   calibrator->Calibrate(fCnipolHists);
+   if (dproc.CMODE) {
+      calibrator = new AlphaCalibrator();
+   } else {
+      calibrator = new DeadLayerCalibrator();
+   }
+
+   calibrator->Calibrate(fHists);
 
    fEventConfig->fCalibrator = calibrator;
 }
@@ -699,10 +717,10 @@ int AsymRoot::CloseROOTFile()
 
   rootfile->cd();
 
-  if (!dproc.CMODE) {
-     fCnipolHists->Write();
-     fCnipolHists->Delete();
-  }
+  //if (!dproc.CMODE) {
+  fHists->Write();
+  fHists->Delete();
+  //}
 
   rootfile->Write();
 

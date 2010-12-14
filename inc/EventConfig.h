@@ -19,7 +19,8 @@
 
 #include "Calibrator.h"
 
-class EventConfig;
+//class EventConfig;
+class Calibrator;
 
 /**
  *

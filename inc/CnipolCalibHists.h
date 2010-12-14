@@ -15,6 +15,7 @@
 
 #include "AsymHeader.h"
 
+#include "ChannelEvent.h"
 #include "DrawObjContainer.h"
 
 
@@ -35,6 +36,8 @@ public:
    void CnipolCalibHistsBook();
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
+   void Fill(ChannelEvent *ch, std::string cutid="");
+   void PostFill();
    void SaveAllAs(TCanvas &c, std::string path="./");
 
    ClassDef(CnipolCalibHists, 1)

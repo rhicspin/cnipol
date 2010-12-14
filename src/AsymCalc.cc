@@ -20,97 +20,99 @@ float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 // =========================
 int end_process(recordConfigRhicStruct *cfginfo)
 {
-  StructHistStat hstat;
-
-  //-------------------------------------------------------
-  //                Feedback Mode
-  //-------------------------------------------------------
-  if (Flag.feedback) {
-     int FeedBackLevel=2; // 1: no fit just max and mean  
-                          // 2: gaussian fit
-     anal.TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
-
-     // reset counters
-     Nevtot = Nread = 0;
-     for (int i=0;i<120;i++) Ntotal[i] = 0;
-
-     return 0;
-  }
-
-  if (dproc.CMODE) return 0;
-
-  //-------------------------------------------------------
-  //        Calculate Statistics
-  //-------------------------------------------------------
-  CalcStatistics();
-
-  // Skip end-of-run analysis routines for deadlayer and calibration modes.
-  if (!dproc.DMODE) {
-
-    //-------------------------------------------------------
-    //    Energy Yeild Weighted Average Analyzing Power
-    //-------------------------------------------------------
-      //    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
-    anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
-
-
-    //-------------------------------------------------------
-    //              CumulativeAsymmetry()    
-    //-------------------------------------------------------
-    //    CumulativeAsymmetry();
-
-    //-------------------------------------------------------
-    // Specific Luminosity 
-    //-------------------------------------------------------
-    SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
-
-    //-------------------------------------------------------
-    // Bunch Asymmetries
-    //-------------------------------------------------------
-    calcBunchAsymmetry();
-
-    //-------------------------------------------------------
-    // Strip-by-Strip Asymmetries
-    //-------------------------------------------------------
-    StripAsymmetry();
-
-    if (Flag.EXE_ANOMALY_CHECK) {
-      //-------------------------------------------------------
-      //  Check for 12C Invariant Mass and energy dependences
-      //-------------------------------------------------------
-      TshiftFinder(Flag.feedback, 2);
-
-      //-------------------------------------------------------
-      //  Check for slope of Energy Spectrum 
-      //-------------------------------------------------------
-      DetectorAnomaly();
-
-      //-------------------------------------------------------
-      //  Check for bunch anomaly 
-      //-------------------------------------------------------
-      BunchAnomalyDetector();
-
-    }//end-of-if(Flag.EXE_ANOMALY_CHECK)
-
-    //-------------------------------------------------------
-    //       Complete Histograms
-    //-------------------------------------------------------
-    CompleteHistogram();
-
-    //-------------------------------------------------------
-    //        Draw polarization vs target position
-    //-------------------------------------------------------
-    DrawPlotvsTar();
-
-  }//end-of-if(!dproc.DMODE)
-
-  //-------------------------------------------------------
-  // Run Informations
-  //-------------------------------------------------------
-  PrintWarning();
-  PrintRunResults(hstat);
-
-  return(0);
+   StructHistStat hstat;
+ 
+   //-------------------------------------------------------
+   //                Feedback Mode
+   //-------------------------------------------------------
+   if (Flag.feedback) {
+      int FeedBackLevel=2; // 1: no fit just max and mean  
+                           // 2: gaussian fit
+      anal.TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
+ 
+      // reset counters
+      Nevtot = Nread = 0;
+      for (int i=0;i<120;i++) Ntotal[i] = 0;
+ 
+      return 0;
+   }
+ 
+   if (dproc.CMODE) {
+      gAsymRoot.PostProcess();
+      return 0;
+   }
+ 
+   //-------------------------------------------------------
+   //        Calculate Statistics
+   //-------------------------------------------------------
+   CalcStatistics();
+ 
+   // Skip end-of-run analysis routines for deadlayer and calibration modes.
+   if (!dproc.DMODE) {
+ 
+     //-------------------------------------------------------
+     //    Energy Yeild Weighted Average Analyzing Power
+     //-------------------------------------------------------
+       //    anal.A_N[0]=WeightAnalyzingPower(10040); // no cut in energy spectra
+     anal.A_N[1]=WeightAnalyzingPower(10050); // banana cut in energy spectra
+ 
+ 
+     //-------------------------------------------------------
+     //              CumulativeAsymmetry()    
+     //-------------------------------------------------------
+     //    CumulativeAsymmetry();
+ 
+     //-------------------------------------------------------
+     // Specific Luminosity 
+     //-------------------------------------------------------
+     SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
+ 
+     //-------------------------------------------------------
+     // Bunch Asymmetries
+     //-------------------------------------------------------
+     calcBunchAsymmetry();
+ 
+     //-------------------------------------------------------
+     // Strip-by-Strip Asymmetries
+     //-------------------------------------------------------
+     StripAsymmetry();
+ 
+     if (Flag.EXE_ANOMALY_CHECK) {
+       //-------------------------------------------------------
+       //  Check for 12C Invariant Mass and energy dependences
+       //-------------------------------------------------------
+       TshiftFinder(Flag.feedback, 2);
+ 
+       //-------------------------------------------------------
+       //  Check for slope of Energy Spectrum 
+       //-------------------------------------------------------
+       DetectorAnomaly();
+ 
+       //-------------------------------------------------------
+       //  Check for bunch anomaly 
+       //-------------------------------------------------------
+       BunchAnomalyDetector();
+ 
+     }//end-of-if(Flag.EXE_ANOMALY_CHECK)
+ 
+     //-------------------------------------------------------
+     //       Complete Histograms
+     //-------------------------------------------------------
+     CompleteHistogram();
+ 
+     //-------------------------------------------------------
+     //        Draw polarization vs target position
+     //-------------------------------------------------------
+     DrawPlotvsTar();
+   }
+ 
+   //-------------------------------------------------------
+   // Run Informations
+   //-------------------------------------------------------
+   PrintWarning();
+   PrintRunResults(hstat);
+ 
+   return 0;
 }
 
 

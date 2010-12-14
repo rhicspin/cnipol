@@ -8,9 +8,9 @@ void analyzeCalib(string runName, Long64_t nEvents)
 {
    analyzeCalib_initialize(runName);
    //analyzeCalib_book_histograms();
-   analyzeCalib_fill_histograms(nEvents);
-   analyzeCalib_fit_histograms();
-   analyzeCalib_restore_channels();
+   //analyzeCalib_fill_histograms(nEvents);
+   //analyzeCalib_fit_histograms();
+   //analyzeCalib_restore_channels();
    //analyzeCalib_fill_histograms_derivative();
    analyzeCalib_finalize();
 }
@@ -27,7 +27,7 @@ void analyzeCalib_initialize(string runName)
    gStyle->SetStatH(0.12);
 
    gOutFile = new TFile("./out.root", "recreate");
-   gH = new CnipolCalibHists(gOutFile);
+   //gH = new CnipolCalibHists(gOutFile);
    //gH->fDir = gOutFile;
 
    gChain = new TChain("AnaEventTree");
@@ -46,25 +46,27 @@ void analyzeCalib_initialize(string runName)
 
    sprintf(&fileName[0], "%s/%s.root", gOutDir.c_str(), gRunName.c_str());
 
-   gInFile = TFile::Open(fileName.c_str(), "UPDATE");
+   gInFile = new TFile(fileName.c_str(), "READ");
 
    if (!gInFile) exit(-1);
 
+   gH = new CnipolCalibHists();
+   gH->ReadFromDir(gInFile);
+
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
    //ec->Print();
-   ec->fCalibrator->fChannelCalibs.clear();
+   //ec->fCalibrator->fChannelCalibs.clear();
 }
 
 
 void analyzeCalib_fill_histograms(Long64_t nEvents)
-{
-   //char hName[256];
-
+{ //{{{
    gRandom = new TRandom();
 
    Int_t maxEvents = gChain->GetEntries();
 
    if (nEvents < 0 || nEvents > maxEvents) nEvents = maxEvents;
+
    Long64_t nbytes = 0;
 
    for (Long64_t i=0; i<nEvents; i++) {
@@ -173,6 +175,7 @@ void analyzeCalib_fill_histograms(Long64_t nEvents)
       ((TH1F*) gH->d["channel"+sSi].o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
    }
 }
+// }}}
 
 
 void analyzeCalib_fit_histograms()
@@ -420,8 +423,8 @@ void analyzeCalib_finalize()
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
    gH->SaveAllAs(c, path.c_str());
-   gH->Write();
-   gOutFile->Close();
+   //gH->Write();
+   //gOutFile->Close();
 
    // Save config info to php file
    string fileName("", 255);
@@ -432,8 +435,8 @@ void analyzeCalib_finalize()
    ec->PrintAsPhp(stdout);
 
    // Delete from and Write updated run config object to root file
-   gInFile->cd();
-   gInFile->Delete("EventConfig;1");
-   ec->Write("EventConfig");
-   gInFile->Close();
+   //gInFile->cd();
+   //gInFile->Delete("EventConfig;1");
+   //ec->Write("EventConfig");
+   //gInFile->Close();
 }

@@ -14,6 +14,7 @@
 #include "rpoldata.h"
 
 #include "AsymGlobals.h"
+#include "AsymRootGlobals.h"
 #include "WeightedMean.h"
 #include "AsymErrorDetector.h"
 

@@ -22,9 +22,7 @@ ChannelData::~ChannelData()
 }
 
 
-/**
- *
- */
+/** */
 void ChannelData::Print(const Option_t* opt) const
 {
    opt = "";
@@ -34,7 +32,7 @@ void ChannelData::Print(const Option_t* opt) const
 }
 
 
-float ChannelData::GetTime(EventConfig *ec)
-{
-   return (ec->fConfigInfo->data.WFDTUnit/2.) * (fTdc + ec->fRandom->Rndm() - 0.5);
-}
+//float ChannelData::GetTime(EventConfig *ec)
+//{
+//   return (ec->fConfigInfo->data.WFDTUnit/2.) * (fTdc + ec->fRandom->Rndm() - 0.5);
+//}

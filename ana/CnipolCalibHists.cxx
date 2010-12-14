@@ -13,7 +13,7 @@ using namespace std;
 CnipolCalibHists::CnipolCalibHists() : DrawObjContainer()
 {
    CnipolCalibHistsBook();
-};
+}
 
 
 
@@ -21,13 +21,13 @@ CnipolCalibHists::CnipolCalibHists(TDirectory *dir) : DrawObjContainer(dir)
 {
    CnipolCalibHistsBook();
    //ReadFromDir();
-};
+}
 
 
 /** Default destructor. */
 CnipolCalibHists::~CnipolCalibHists()
 {
-};
+}
 
 
 void CnipolCalibHists::CnipolCalibHistsBook()
@@ -38,7 +38,7 @@ void CnipolCalibHists::CnipolCalibHistsBook()
    //sprintf(hName, "hEventSeq");
    //hEventSeq = new TH1F(hName, hName, 50000, 0, 35e6);
 
-   fDir->Print();
+   //fDir->Print();
 
    o["hAmpltd"]      = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
    ((TH2F*) o["hAmpltd"])->GetXaxis()->SetTitle("Amplitude, ADC");
@@ -112,17 +112,31 @@ void CnipolCalibHists::CnipolCalibHistsBook()
    ((TH2F*) o["hIntgrlW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
 
    char dName[256];
+   //string sSi("  ");
+   DrawObjContainer *oc;
+   DrawObjContainerMapIter isubdir;
 
    //for (int i=0; i<TOT_WFD_CH; i++)
    for (int i=1; i<=NSTRIP; i++) {
 
-      DrawObjContainer oc;
+      //sprintf(&sSi[0], "%02d", i+1);
 
       //fDir->cd();
       sprintf(dName, "channel%02d", i);
-      oc.fDir = new TDirectoryFile(dName, dName, "", fDir);
-      //oc.fDir->Build((TFile*)fDir);
-      //oc.fDir->cd();
+
+      isubdir = d.find(dName);
+
+      if ( isubdir == d.end()) { // if dir not found
+         // Delete existing directory in memory
+         //TKey *key = fDir->GetKey(dName);
+         //if (key) key->Delete("v");
+            //if (((TClass*) io->second->IsA())->InheritsFrom("TH1")) {
+
+         oc = new DrawObjContainer();
+         oc->fDir = new TDirectoryFile(dName, dName, "", fDir);
+      } else {
+         oc = &isubdir->second;
+      }
 
       //sprintf(hName,"mass_feedback_st%d", i+1);
       //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", runinfo.RUNID, i+1);
@@ -132,61 +146,63 @@ void CnipolCalibHists::CnipolCalibHistsBook()
       //( (TH1F*) feedback.o[hName]) -> SetLineColor(2);
 
       sprintf(hName, "hAmpltd_st%02d", i);
-      oc.o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc.o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
 
       sprintf(hName, "hAmpltd_cut1_st%02d", i);
-      //oc.o[hName] = new TH1F(hName, hName, 35, 165, 200);
-      oc.o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc.o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+      //oc->o[hName] = new TH1F(hName, hName, 35, 165, 200);
+      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
 
       sprintf(hName, "hIntgrl_st%02d", i);
-      oc.o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc.o[hName])->GetXaxis()->SetTitle("Integral, ADC");
+      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
 
       sprintf(hName, "hIntgrl_cut1_st%02d", i);
-      //oc.o[hName] = new TH1F(hName, hName, 40, 115, 155);
-      oc.o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc.o[hName])->GetXaxis()->SetTitle("Integral, ADC");
+      //oc->o[hName] = new TH1F(hName, hName, 40, 115, 155);
+      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
 
       sprintf(hName, "hTdc_st%02d", i);
-      oc.o[hName] = new TH1F(hName, hName, 80, 0, 80);
-      ((TH1F*) oc.o[hName])->GetXaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH1F(hName, hName, 80, 0, 80);
+      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("TDC");
 
       sprintf(hName, "hTvsA_st%02d", i);
-      oc.o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc.o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc.o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc.o[hName])->GetYaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
+      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
 
       sprintf(hName, "hTvsA_zoom_st%02d", i);
-      oc.o[hName] = new TH2F(hName, hName, 70, 130, 200, 30, 20, 50);
-      ((TH2F*) oc.o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc.o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc.o[hName])->GetYaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH2F(hName, hName, 70, 130, 200, 30, 20, 50);
+      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
 
       sprintf(hName, "hTvsI_st%02d", i);
-      oc.o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc.o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc.o[hName])->GetXaxis()->SetTitle("Integral, ADC");
-      ((TH2F*) oc.o[hName])->GetYaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
+      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
+      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
 
       sprintf(hName, "hIvsA_st%02d", i);
-      oc.o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-      ((TH2F*) oc.o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc.o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc.o[hName])->GetYaxis()->SetTitle("Integral, ADC");
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
+      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Integral, ADC");
 
       //sprintf(hName,"t_vs_e_st%d", i);
-      //kinema.oc.o[hName] = new TH2F();
+      //kinema.oc->o[hName] = new TH2F();
 
-      d[dName] = oc;
+      if ( isubdir == d.end()) {
+         d[dName] = *oc;
+         delete oc;
+      }
    }
-};
+}
 
-/**
- *
- */
+
+/** */
 void CnipolCalibHists::Print(const Option_t* opt) const
 {
    opt = "";
@@ -195,9 +211,88 @@ void CnipolCalibHists::Print(const Option_t* opt) const
 }
 
 
-/**
- *
- */
+/** */
+void CnipolCalibHists::Fill(ChannelEvent *ch, string cutid)
+{
+   ChannelEventId   &eventId = ch->fEventId;
+   ChannelData      &data    = ch->fChannel;
+
+   UChar_t chId = eventId.fChannelId;
+   string sSi("  ");
+   sprintf(&sSi[0], "%02d", chId+1);
+
+   DrawObjContainer &sd      = d["channel"+sSi];
+
+   ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
+   ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
+   ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
+   ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
+   ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
+   ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
+
+   ((TH1F*) sd.o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
+   ((TH1F*) sd.o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
+   ((TH1F*) sd.o["hTdc_st"+sSi])      ->Fill(data.fTdc);
+   ((TH2F*) sd.o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
+   ((TH2F*) sd.o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
+   ((TH2F*) sd.o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
+   ((TH2F*) sd.o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
+
+   //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
+   if (data.fTdc >=15 && data.fTdc <= 50) {
+      ((TH1F*) o["hAmpltd_cut1"])->Fill(data.fAmpltd);
+      ((TH1F*) sd.o["hAmpltd_cut1_st"+sSi])->Fill(data.fAmpltd);
+   }
+
+   //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
+   //if (data.fTdc >=12 && data.fTdc <= 16) 
+   if (data.fTdc >=12 && data.fTdc <= 30) {
+      ((TH1F*) o["hIntgrl_cut1"])->Fill(data.fIntgrl);
+      ((TH1F*) sd.o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
+   }
+}
+
+
+/** */
+void CnipolCalibHists::PostFill()
+{
+   // Adjust axis ranges
+   Int_t  maxBinA = ((TH1F*) o["hAmpltd_cut1"])->GetMaximumBin();
+   Double_t xminA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmin();
+   Double_t xmaxA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmax();
+
+   xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
+   xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
+
+   ((TH1F*) o["hAmpltd_cut1"])->SetAxisRange(xminA, xmaxA);
+
+   Int_t  maxBinI = ((TH1F*) o["hIntgrl_cut1"])->GetMaximumBin();
+   Double_t xminI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmin();
+   Double_t xmaxI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmax();
+
+   xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
+   xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
+
+   ((TH1F*) o["hIntgrl_cut1"])->SetAxisRange(xminI, xmaxI);
+
+   string  sSi("  ");
+
+   for (int i=1; i<=NSTRIP; i++) {
+      sprintf(&sSi[0], "%02d", i);
+
+      //maxBin = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetMaximumBin();
+      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
+      //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmax();
+      //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
+      //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
+
+      ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
+      ((TH1F*) d["channel"+sSi].o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
+   }
+}
+
+
+/** */
 void CnipolCalibHists::SaveAllAs(TCanvas &c, string path)
 {
    DrawObjContainer::SaveAllAs(c, path);

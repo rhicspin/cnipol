@@ -17,16 +17,17 @@
 #include "TF2.h"
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
+#include "TH1.h"
+#include "TH1D.h"
 #include "TMath.h"
 
 #include "AsymHeader.h"
 
 #include "Calibrator.h"
+#include "DrawObjContainer.h"
 
 
-/**
- *
- */
+/** */
 class DeadLayerCalibrator : public Calibrator
 {
 public:
@@ -37,9 +38,9 @@ public:
    DeadLayerCalibrator();
    ~DeadLayerCalibrator();
 
-   virtual void Calibrate(DrawObjContainer *c);
+   void Calibrate(DrawObjContainer *c);
    TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
-   virtual void Print(const Option_t* opt="") const;
+   void Print(const Option_t* opt="") const;
 
    static Double_t BananaFitFunc(Double_t *x, Double_t *par);
    static Double_t BananaFitFunc2(Double_t *x, Double_t *par);

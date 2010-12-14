@@ -33,6 +33,6 @@
    //gROOT->LoadMacro("test.C+");
    gROOT->LoadMacro("macro/KinFit.C+");
    gROOT->LoadMacro("analyzeCalib.C+");
-   //gROOT->LoadMacro("analyzeDeadLayer.C+");
-   gROOT->LoadMacro("createRunInfo.C+");
+   gROOT->LoadMacro("analyzeDeadLayer.C+");
+   //gROOT->LoadMacro("createRunInfo.C+");
 }

@@ -12,11 +12,14 @@
 #include "TTree.h"
 #include "TLine.h"
 
-#include "AsymGlobals.h"
+#include "AlphaCalibrator.h"
 #include "AnaEvent.h"
+#include "AsymGlobals.h"
 #include "ChannelEvent.h"
+#include "CnipolCalibHists.h"
 #include "CnipolHists.h"
 #include "DeadLayerCalibrator.h"
+#include "DrawObjContainer.h"
 #include "EventConfig.h"
 
 
@@ -42,7 +45,8 @@ public:
    //ChannelEventMap      fChannelEvents;
    ChannelEventSet       fChannelEvents;
    EventConfig          *fEventConfig;
-   CnipolHists          *fCnipolHists;
+   //CnipolHists          *fCnipolHists;
+   DrawObjContainer     *fHists;
 
 public:
 
@@ -58,6 +62,8 @@ public:
    void   CreateTrees();
    Bool_t UseCalibFile(std::string cfname="");
    void   SetChannelEvent(processEvent &event);
+   void   ProcessEvent() {};
+   void   PostProcess();
    void   AddChannelEvent();
    void   PrintEventMap();
    void   UpdateRunConfig();
