@@ -20,7 +20,7 @@
 #include "EventConfig.h"
 
 #include "AsymGlobals.h"
-#include "AsymROOT.h"
+#include "AsymRoot.h"
 #include "AsymRead.h"
 #include "AsymRunDB.h"
 

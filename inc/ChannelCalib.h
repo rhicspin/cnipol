@@ -27,8 +27,10 @@ public:
 
    Float_t  fACoef;
    Float_t  fACoefErr;
+   Float_t  fAChi2Ndf;
    Float_t  fICoef;
    Float_t  fICoefErr;
+   Float_t  fIChi2Ndf;
    Float_t  fDLCoef;    // Dead layer
    Float_t  fDLCoefErr;
    Float_t  fT0Coef;    // T0

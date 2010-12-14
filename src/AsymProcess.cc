@@ -66,32 +66,32 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    //------------------------------------------------------------------//
    if (Flag.feedback){
 
-     if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
+      // tdc > 6 ns, effectively...
+      if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
 
-       // random numbers in order to smear for the integer reading
-       int vlen = 1;
-       float rand1, rand2;
+         // random numbers in order to smear for the integer reading
+         int vlen = 1;
+         float rand1, rand2;
 
-       hhrammar_(&rand1, &vlen);
-       hhrammar_(&rand2, &vlen);
+         hhrammar_(&rand1, &vlen);
+         hhrammar_(&rand2, &vlen);
 
-       float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
-       float e = ekin(edepo, cfginfo->data.chan[st].dwidth);
-       //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
-       //  (event->amp + rand2 - 0.5);
+         float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+         float e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+         //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
+         //  (event->amp + rand2 - 0.5);
 
-       float t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+         float t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
 
-       float Mass = t*t*e*runconst.T2M * k2G;
+         float Mass = t*t*e*runconst.T2M * k2G;
 
-       //float delt = t - runconst.E2T/sqrt(e);
+         //float delt = t - runconst.E2T/sqrt(e);
 
-       if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  mass_feedback[st]->Fill(Mass) ;
+         if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  mass_feedback[st]->Fill(Mass) ;
+      }
 
-     } // tdc>6ns
-
-     return(0);
-   }// end-of-Flag.feedback
+      return(0);
+   }
 
    //------------------------------------------------------------------//
    //                          DeadLayer Mode                          //
@@ -120,7 +120,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    }
 
    // Calibration hists
-   if (dproc.CMODE == 1) {
+   if (dproc.CMODE) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -131,8 +131,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          // ds: HHF1(12000+st+1, event->amp+rand2-0.5, 1.);
          HHF1(12000+st+1, event->amp, 1.);
       //}
+
+      // Get address of the histogram container
+      ChannelEvent *ch = gAsymRoot.fChannelEvent;
+
+      gAsymRoot.fHists->Fill(ch);
       
-      return(0);
+      return 0;
    }
 
    //------------------------------------------------------------------//
@@ -218,9 +223,10 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    // Get address of the histogram container
    ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
-   gAsymRoot.fCnipolHists->Fill(ch);
+   gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassQACut1()) gAsymRoot.fCnipolHists->Fill(ch, "_cut1");
+   if (ch->PassQACut1())
+	   gAsymRoot.fHists->Fill(ch, "_cut1");
 
    // 2*cfginfo->data.chan[st].Window.split.Beg = 6
    //if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg))

@@ -8,8 +8,8 @@ void analyzeDeadLayer(string runName, Long64_t nEvents)
 {
    analyzeDeadLayer_initialize(runName);
    //analyzeDeadLayer_book_histograms();
-   analyzeDeadLayer_fill_histograms(nEvents);
-   analyzeDeadLayer_fit_histograms();
+   //analyzeDeadLayer_fill_histograms(nEvents);
+   //analyzeDeadLayer_fit_histograms();
    //analyzeDeadLayer_fill_histograms_derivative();
    analyzeDeadLayer_finalize();
 }
@@ -26,7 +26,7 @@ void analyzeDeadLayer_initialize(string runName)
    gStyle->SetStatH(0.12);
 
    gOutFile = new TFile("./out.root", "recreate");
-   gH = new CnipolCalibHists(gOutFile);
+   //gH = new CnipolCalibHists(gOutFile);
    //gH->fDir = gOutFile;
 
    gChain = new TChain("AnaEventTree");
@@ -45,22 +45,28 @@ void analyzeDeadLayer_initialize(string runName)
 
    sprintf(&fileName[0], "%s/%s.root", gOutDir.c_str(), gRunName.c_str());
 
-   gInFile = TFile::Open(fileName.c_str(), "UPDATE");
+   gInFile = new TFile(fileName.c_str(), "READ");
+
+   if (!gInFile) exit(-1);
+
+   gH = new CnipolHists();
+   gH->ReadFromDir(gInFile);
 
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
    //ec->Print();
+   //ec->fCalibrator->fChannelCalibs.clear();
 }
 
 
+/*
 void analyzeDeadLayer_fill_histograms(Long64_t nEvents)
-{
-   //char hName[256];
-
+{ //{{{
    gRandom = new TRandom();
 
    Int_t maxEvents = gChain->GetEntries();
 
    if (nEvents < 0 || nEvents > maxEvents) nEvents = maxEvents;
+
    Long64_t nbytes = 0;
 
    for (Long64_t i=0; i<nEvents; i++) {
@@ -133,10 +139,13 @@ void analyzeDeadLayer_fill_histograms(Long64_t nEvents)
       }
    }
 }
+// }}}
+*/
 
 
+/*
 void analyzeDeadLayer_fit_histograms()
-{
+{ // {{{
    string    sSi("  ");
    //float     chi2_max  = 0;
    Double_t  stat_max  = 0;
@@ -199,10 +208,13 @@ void analyzeDeadLayer_fit_histograms()
       //if (chi2 > chi2_max) chi2_max = chi2;
    }
 }
+// }}}
+*/
 
 
+/*
 TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f)
-{
+{ // {{{
    TFitResultPtr frp;
 
    if (h->Integral() < 10) {
@@ -228,24 +240,20 @@ TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f)
 
    return frp;
 }
+// }}}
+*/
 
 
 void analyzeDeadLayer_finalize()
-{
+{ // {{{
    TCanvas c("cName", "cName", 800, 600);
 
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
    gH->SaveAllAs(c, path.c_str());
-   gH->Write();
-   gOutFile->Close();
-
-   // Delete from and Write updated run config object to root file
-   gInFile->cd();
-   gInFile->Delete("EventConfig;1");
-   ec->Write("EventConfig");
-   gInFile->Close();
+   //gH->Write();
+   //gOutFile->Close();
 
    // Save config info to php file
    string fileName("", 255);
@@ -254,4 +262,10 @@ void analyzeDeadLayer_finalize()
    FILE *f = fopen(fileName.c_str(), "w");
    ec->PrintAsPhp(f);
    ec->PrintAsPhp(stdout);
-}
+
+   // Delete from and Write updated run config object to root file
+   //gInFile->cd();
+   //gInFile->Delete("EventConfig;1");
+   //ec->Write("EventConfig");
+   //gInFile->Close();
+} // }}}

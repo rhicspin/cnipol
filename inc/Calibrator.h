@@ -11,15 +11,18 @@
 #include <set>
 #include <vector>
 
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
 #include "TObject.h"
 
 #include "ChannelCalib.h"
 #include "DrawObjContainer.h"
 
 
-/**
- *
- */
+class DrawObjContainer;
+
+
+/** */
 class Calibrator : public TObject
 {
 public:
@@ -32,8 +35,10 @@ public:
    ~Calibrator();
 
    virtual void Calibrate(DrawObjContainer *c);
-   virtual void Print(const Option_t* opt="") const;
-   virtual void PrintAsPhp(FILE *f=stdout) const;
+   virtual TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
+   void Print(const Option_t* opt="") const;
+   void PrintAsPhp(FILE *f=stdout) const;
+   void PrintAsConfig(FILE *f=stdout) const;
 
    ClassDef(Calibrator, 1)
 };
