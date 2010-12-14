@@ -406,6 +406,82 @@ iobitText : iobitText.12a-hjet.11
             iobitText.12a-hjet.15;
 
 /*************************************/
+/***** polarControlDefaults **********/
+/*************************************/
+class polarControlDefaults {
+    verbs {get, getMetaData, monitorOn, monitorOff}
+    attributes {
+	rampInterval Polar {server=PolarServer};
+    }
+}
+
+polarControlDefaults :  polarControlDefaults.blu1
+			polarControlDefaults.blu2
+			polarControlDefaults.yel1
+			polarControlDefaults.yel2;
+
+
+class BsTrigChanYellow
+    {    
+    verbs {get, set, getMetaData, monitorOn, monitorOff}
+    attributes
+            {
+        positionDelay Polar {server=PolarServer};
+        linkStatus Polar {server=PolarServer};
+        mode Polar {server=PolarServer};
+        pulseWidthMode Polar {server=PolarServer};
+        fineDelayCounter Polar {server=PolarServer};
+        pulseWidthCounter Polar {server=PolarServer};
+        buckets Polar {server=PolarServer};
+        addBucket Polar {server=PolarServer};
+        removeBucket Polar {server=PolarServer};
+        nBuckets Polar {server=PolarServer};
+        bucketOffset Polar {server=PolarServer};
+        bucketOffsetS Polar {server=PolarServer};
+            }
+    }
+
+BsTrigChanYellow : bsTrigChan.12a-polar1.C.1
+                   bsTrigChan.12a-polar1.C.2
+                   bsTrigChan.12a-polar1.C.3
+                   bsTrigChan.12a-polar1.C.4
+                   bsTrigChan.12a-polar1.C.5
+                   bsTrigChan.12a-polar1.C.6
+                   bsTrigChan.12a-polar1.C.7
+                   bsTrigChan.12a-polar1.C.8
+                   bsTrigMod.12a-polar1.C;
+
+class BsTrigChanBlue
+    {    
+    verbs {get, set, getMetaData, monitorOn, monitorOff}
+    attributes
+            {
+        positionDelay Polar {server=PolarServer};
+        linkStatus Polar {server=PolarServer};
+        mode Polar {server=PolarServer};
+        pulseWidthMode Polar {server=PolarServer};
+        fineDelayCounter Polar {server=PolarServer};
+        pulseWidthCounter Polar {server=PolarServer};
+        buckets Polar {server=PolarServer};
+        addBucket Polar {server=PolarServer};
+        removeBucket Polar {server=PolarServer};
+        nBuckets Polar {server=PolarServer};
+        bucketOffset Polar {server=PolarServer};
+        bucketOffsetS Polar {server=PolarServer};
+            }
+    }
+
+BsTrigChanBlue : bsTrigChan.12a-polar1.D.1
+                   bsTrigChan.12a-polar1.D.2
+                   bsTrigChan.12a-polar1.D.3
+                   bsTrigChan.12a-polar1.D.4
+                   bsTrigChan.12a-polar1.D.5
+                   bsTrigChan.12a-polar1.D.6
+                   bsTrigChan.12a-polar1.D.7
+                   bsTrigChan.12a-polar1.D.8
+                   bsTrigMod.12a-polar1.D;
+
+/*************************************/
 /************* simple.test ***********/
 /*************************************/
 class simpleTest {
