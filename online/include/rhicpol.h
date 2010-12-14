@@ -1,8 +1,8 @@
 #ifndef POLADO_H
 #define POLADO_H
 
-#define VERSION		30200
-#define DAQVERSION	30200
+#define VERSION		40200
+#define DAQVERSION	40200
 #define MAXSTATIONS 	24
 
 #define WFDMEMSIZE	0x4000000
@@ -54,8 +54,6 @@
 #define CFG_INIT	0
 #define CFG_UPDATE	1
 
-
-char * stat2str(int stat);
 
 typedef struct {
     double runIdS;
@@ -124,18 +122,29 @@ typedef struct {
     int rbpm[8];
 } jetPositionStruct;
 
-// Bits in output register
-#define OUT_INHIBIT	0x0001
-#define OUT_DELIM	0x0002
-#define OUT_SWITCH	0x0004
-#define OUT_MUXA	0x0008
-#define OUT_MUXB	0x0010
-#define OUT_RUN		0x0004
-#define OUT_CLRLAM	0x0020
-#define OUT_JETINH	0x0040
-// values for OUT_SWITCH
-#define OUT_YELLOW 	1
-#define OUT_BLUE	0
+typedef struct {
+    unsigned short positionDelay;
+    unsigned short flags;		// what parameters to be send to CDEV: 0x8000 - positionDelay, 8 ls-bits individual channels
+    struct V124CHAN {
+	unsigned short fineDelay;
+	unsigned short pulseWidth;
+	unsigned short bucketOffset;
+	unsigned short bucketPeriod;
+    } chan[8];
+} V124Struct;
+
+// Bits in output register. Only OUT_INHIBIT, OUT_DELIM and OUT_CLRLAM are
+// set from code, others are taken from config file. Given here as a description
+#define OUT_INHIBIT	0x0001	// inhibit to WFD fron panel LEMO
+#define OUT_DELIM	0x0002	// delimiter to WFD fron panel LEMO
+#define OUT_SWITCH	0x0004	// switch V124 blue/yellow - clock and bunchZ
+#define OUT_MUXA	0x0008	// Old ATT1. Was moved by unknown reason
+#define OUT_MUXB	0x0010	// Old ATT1. Was moved by unknown reason
+#define OUT_CLRLAM	0x0020	// Clear LAM and Inhibit flip/Flop for HJET
+#define OUT_ATT1	0x0040	// select attenuation : 00 - 1/10, 01 - 1/5
+#define OUT_ATT2	0x0080  // 10 - 1/3, 11 - 1/1
+#define OUT_INHPULSE	0x0100	// Inhibit test pulse goiung to preamps
+#define OUT_TEST	0x0200	// set shaper board to test mode. NEVER used.
 
 // masks for input register
 #define JET_VETO	0x0001
@@ -171,7 +180,8 @@ typedef struct {
     float dwidth;	// dead layer width ug/cm^2
     float pede;		// pedestal of unknown nature (unitS ?)
     float C[5];		// nonlinear fit parameters: Ein = C[0] + C[1]*<ADC> + C[2]*<ADC>^2 ...			
-    long reserved[10];
+    float TOFLength;	// cm. 2010: we now have it different per detector !
+    long reserved[9];
 } SiChanStruct;
 
 #define CALIB_CONSTANTS	13
@@ -195,7 +205,7 @@ typedef struct {
     short int NLam;		// LAM    module N
     int DelimPrescaler;		// 78 KHz are prescaled with this number to make the delimeter		
     float WFDTUnit;		// 1/6 70 MHz period, ns, 2*LSB time measurement
-    float TOFLength;		// cm
+    float TOFLength;		// cm. 2010: Obsolete - moved to individual channels
     float AtomicNumber; 	// just atomic number of the recoiled particle (carbon or proton)
     union {
 	struct {
@@ -252,7 +262,9 @@ typedef struct {
     float TrigMin;	// trigger level for internal 2-dim histogram and for rectangular cut for memory
     int JetDelay;	// Value to be written into delay register of version 10
     int FPGAVersion;	// FPGA version. We don't support various versions in one run
-    int Dummy[35];	// For futher use to keep the whole length the same
+    float TshiftLow;	// tshift for injection
+    float TshiftHigh;	// tshift for flattop
+    int Dummy[33];	// For futher use to keep the whole length the same
     int NumChannels;		// number of silicon strips
     SiChanStruct chan[1];	// array of NumChannels size
 } configRhicDataStruct;
