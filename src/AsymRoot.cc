@@ -199,7 +199,8 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
       
       if (fEventConfig) {
 
-         fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
+         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
+         rundb.alpha_calib_run_name = fEventConfig->fRunInfo->runName;
          //fEventConfig->fDatproc->CMODE = 0;
          fChannelEvent->fEventConfig = fEventConfig;
 
@@ -332,19 +333,39 @@ void AsymRoot::PrintEventMap()
 void AsymRoot::UpdateRunConfig()
 {
    // Existing calibrator will be replaced so, delete it first
-   delete fEventConfig->fCalibrator;
+   //delete fEventConfig->fCalibrator;
 
-   Calibrator *calibrator;
+   //Calibrator *calibrator;
 
    if (dproc.CMODE) {
-      calibrator = new AlphaCalibrator();
+		//Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
+      //calibrator = new AlphaCalibrator();
+      AlphaCalibrator* calibrator = new AlphaCalibrator();
+      calibrator->Calibrate(fHists);
+      fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
+      //alphaCalibrator = (AlphaCalibrator*) fEventConfig->fCalibrator;
+      //AlphaCalibrator* alphaCalibrator = dynamic_cast<AlphaCalibrator*> (fEventConfig->fCalibrator);
+      //((AlphaCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
+      //alphaCalibrator->AlphaCalibrator::Calibrate(fHists);
+      //alphaCalibrator->Calibrate(fHists);
+      //(static_cast<AlphaCalibrator*> (fEventConfig->fCalibrator))->Calibrate(fHists);
+      delete calibrator;
    } else {
-      calibrator = new DeadLayerCalibrator();
+		//Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
+      //calibrator = new DeadLayerCalibrator();
+      //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
+      DeadLayerCalibrator* calibrator = new DeadLayerCalibrator();
+      calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
+      calibrator->Calibrate(fHists);
+      fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
+      delete calibrator;
    }
 
-   calibrator->Calibrate(fHists);
+   //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
 
-   fEventConfig->fCalibrator = calibrator;
+   //calibrator->Calibrate(fHists);
+
+   //fEventConfig->fCalibrator = calibrator;
 }
 
 
@@ -438,11 +459,11 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
   for (int i=0; i<NDETECTOR; i++) {
     sprintf(hname,"energy_spectrum_det%d",i+1);
-    sprintf(htitle,"%.3f : Energy Spectrum Detector %d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", runinfo.RUNID, i+1);
     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
     energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
   }
-  sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)",runinfo.RUNID);
+  sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", runinfo.RUNID);
   energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
 
@@ -451,19 +472,19 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
   for (int i=0; i<TOT_WFD_CH; i++) { 
 
     sprintf(hname,"t_vs_e_st%d",i+1);
-    sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", runinfo.RUNID, i+1);
     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-    sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", runinfo.RUNID, i+1);
     t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
     t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
     sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-    sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ",runinfo.RUNID, i+1);
+    sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", runinfo.RUNID, i+1);
     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");

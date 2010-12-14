@@ -38,7 +38,7 @@ public:
    DeadLayerCalibrator();
    ~DeadLayerCalibrator();
 
-   void Calibrate(DrawObjContainer *c);
+   virtual void Calibrate(DrawObjContainer *c);
    TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
    void Print(const Option_t* opt="") const;
 

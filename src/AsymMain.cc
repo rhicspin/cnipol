@@ -121,7 +121,8 @@ int main(int argc, char *argv[])
          strcat(datafile,     "/");
          strcat(datafile,   ifile);
          // Add checks for runName suffix
-         sprintf(&runinfo.runName[0], optarg);
+         //sprintf(&runinfo.runName[0], optarg);
+         runinfo.runName = optarg;
          fprintf(stdout, "runName:         %s\n", runinfo.runName.c_str());
          fprintf(stdout, "Input data file: %s\n", datafile);
          break;
@@ -136,12 +137,6 @@ int main(int argc, char *argv[])
       case 'c':
          dproc.userCalibFile = optarg;
          fprintf(stdout, "User defined calibration file: %s\n", dproc.userCalibFile.c_str());
-
-         if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
-            perror("Error: Supplied calibration file is not valid\n");
-            exit(-1);
-         }
-
          break;
       case 'o': // determine output hbk file
          sprintf(hbk_outfile, optarg);
@@ -276,6 +271,12 @@ int main(int argc, char *argv[])
 
    //PrintDB();
    //exit(-1);
+
+   // Overwrite some parameters with command line options
+   if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
+      perror("Error: Supplied calibration file is not valid\n");
+      exit(-1);
+   }
 
    // if output hbk file is not specified
    if (hbk_read == 0 ) {

@@ -422,7 +422,7 @@ void analyzeCalib_finalize()
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
-   gH->SaveAllAs(c, path.c_str());
+   //gH->SaveAllAs(c, path.c_str());
    //gH->Write();
    //gOutFile->Close();
 

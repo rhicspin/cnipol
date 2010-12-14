@@ -506,16 +506,16 @@ void KinFit::FitOne(TH2* h, Int_t St, Int_t mode)
    Slope[St] = 1.0098 + 0.0036 * dlsum[(Int_t)St/12];
 
    // Write Out the Result to File
-   fout << St << " ";
+   fout << St << " ";                                          // 0
 
    if (!(mode>>1)&1) {
-     fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";
+     fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";    // 1
    }else{
-     fout << setprecision(4) << dl[St] << " ";
+     fout << setprecision(4) << dl[St] << " ";                 // 1
    }
 
-   fout << setprecision(4) << t0s[St]  <<" ";
-   fout << setprecision(4) << t0sE[St] <<" ";
+   fout << setprecision(4) << t0s[St]  <<" "; // 2
+   fout << setprecision(4) << t0sE[St] <<" "; // 3
    fout << setprecision(4) << dl[St]  <<" ";
    fout << setprecision(4) << dlE[St] <<" ";
    fout << setprecision(4) << t0[St]  <<" ";
@@ -523,8 +523,8 @@ void KinFit::FitOne(TH2* h, Int_t St, Int_t mode)
    fout << setprecision(3) << kinf->GetChisquare()/kinf->GetNDF() <<" ";
    fout << kinf->GetNDF()  << " ";
    fout << gMinuit->fCstatu.Data() << " ";
-   fout << setprecision(4) << Const[St] << " ";
-   fout << setprecision(4) << Slope[St] << " ";
+   fout << setprecision(4) << Const[St] << " ";  // 11
+   fout << setprecision(4) << Slope[St] << " ";  // 12
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 0) <<" ";
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 1) <<" ";
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 2) <<" ";

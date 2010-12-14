@@ -24,6 +24,8 @@ AlphaCalibrator::~AlphaCalibrator()
 /** */
 void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 {
+	Warning("Calibrate", "Executing Calibrate()");
+
    string    sCh("  ");
    //float     chi2_max  = 0;
    //Double_t  stat_max  = 0;
@@ -93,7 +95,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
       fitres = Calibrate(htemp, fitfunc);
 
-      if (fitres) {
+      if (fitres.Get()) {
          //fitres->Print();
 
          chCalib->fICoef    = (ALPHA_KEV/fitres->Value(1)) * ATTEN;
@@ -108,6 +110,8 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          ((TH1F*) c->o["hICoef"])->SetBinError(i, chCalib->fICoefErr);
 
          ((TH1F*) c->o["hICoefDisp"])->Fill(chCalib->fICoef);
+      } else {
+         Error("Calibrate", "Empty TFitResultPtr");
       }
 
       //printf("%6.4f %6.4f %6.2f %6.2f %4.1f %3d  SUCCESSFUL\n",
@@ -157,7 +161,9 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    f->SetParLimits(2, 0.1, 3*expectedSigma); // sigma
 
    //h->Fit(f, "", "", apeak-awidth, apeak+awidth);
+   //h->Print();
    fitres = h->Fit(f, "BMS"); // B: use limits, M: improve fit, S: return fitres
+   //fitres->Print("V");
 
    return fitres;
 }
