@@ -24,6 +24,8 @@
 #include "rhicpol.h"
 #include "rcdev.h"
 
+#define EXIT_BADSCRIPT	127
+
 char myName[2][20] = {"Upstream", "Downstream"};
 char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
 char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
@@ -85,6 +87,59 @@ int SetState(int polarim, char * state)
     return irc;
 }
 
+//	Translate status bits to string message
+char * stat2str(int status) 
+{
+    static char ststr[80];
+    char longnames[32][50]={
+	"W-Internal warning, see logfile",
+	"W-Cancelled",
+	"W-No fill number availiable",
+	"W-WFD unreliable",
+	"W-CNTS small internal counts inconsistency",
+	"","","","","","","","","","","",
+	"E-This is not a real measurement, test only",
+	"E-Severe internal error, see logfile",
+	"E-Serious WFD error",
+	"E-Camac access error",
+	"E-Configuration file error",
+	"E-Can't switch shaper LV PS",
+	"E-Can't access RHIC ADO",
+	"",
+	"E-Can't start measurement script",
+	"E-Target control error",
+	"E-Device is busy",
+	"","","","",""
+    };
+    char shortnames[32][10]={
+	"WInt", "WCan", "WNoFill#", "WWFD",
+	"WCNTS","","","","","","","","","","","",
+	"ETest", "EIntr", "EWFD","ECAMAC","EConf","ELVPS",
+	"EADO", "", "EStart", "ETarg",
+	"EBUSY","","","","",""
+    };
+
+    int i,j,k;
+    // Count active status bits
+    for (i=0, j=0, k=-1; i<31; i++) if (((status>>i)&1) == 1) {
+	j++;
+	k=i;
+    }
+    if (j==0) {			// no errors or warnings
+	strcpy(ststr,"OK");
+    } else if (j==1) {		// one message only - give it full
+	strcpy(ststr, &longnames[k][0]);
+    } else {			// many messages - give them short
+	ststr[0]='\0';
+	for (i=0;i<31;i++) 
+	    if (((status>>i)&1) == 1) {
+		strncpy(&ststr[strlen(ststr)], &shortnames[i][0], sizeof(ststr)-strlen(ststr)-1);
+		strncpy(&ststr[strlen(ststr)], " ", sizeof(ststr)-strlen(ststr)-1);
+	    }
+    }
+    return ststr;
+}
+
 //	Send our status to CDEV:statusS 
 int SetStatus(int polarim) 
 {
@@ -95,6 +150,19 @@ int SetStatus(int polarim)
     cdevDevice & pol = cdevDevice::attachRef(polCDEVName[polarim]);
     data.insert("value", Status);
     DEVSEND(pol, "set statusS", &data, NULL, LogFile, irc);
+    return irc;
+}
+
+//	Get status from CDEV:statusS 
+int GetStatus(int polarim)
+{
+    cdevData data;
+    int irc;
+
+    irc = 0;
+    cdevDevice & pol = cdevDevice::attachRef(polCDEVName[polarim]);
+    DEVSEND(pol, "get statusS", NULL, &data, LogFile, irc);
+    data.get("value", &irc);
     return irc;
 }
 
@@ -158,24 +226,33 @@ void StartMeasurement(int polarim, char *cmd)
 	runId = 99999.999;
     } else {
 	runId = ID.fill + 0.1*ID.polarim + 0.001*ID.run;
+	data.insert("value", runId);
+	DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
+	if (irc) {
+    	    fprintf(LogFile,"RHICDAEMON-ERROR: %s set runIdS(%8.3f) irc= %d\n", polCDEVName[polarim], runId, irc);
+    	    fflush(LogFile);
+	}
     }
     
     tm=time(NULL);
     fprintf(LogFile,"RHICDAEMON-INFO : %s: Starting %s for %s RunID=%8.3f\n", cctime(&tm), cmd, polCDEVName[polarim], runId);
     fflush(LogFile);
     UpdateMessage(polarim, "Starting...");
-
+    
     // Start the script to measure polarization
     pid = fork ();
     if (pid == 0) {
     	/* This is the child process.  Execute the shell command. */
-        fprintf(LogFile,"RHICDAEMON-INFO : %s %s %8.3f\n", polCDEVName[polarim], cmd, runId);
-	fflush(LogFile);
-	execl(SHELL, SHELL, ScriptName, polCDEVName[polarim], cmd, str);
+	sprintf(str, "%8.3f", runId);
+        if (iVerbose) {
+    	    fprintf(LogFile,"RHICDAEMON-DEBUG : %s %s %s\n", polCDEVName[polarim], cmd, str);
+	    fflush(LogFile);
+	}
+	execl(SHELL, SHELL, ScriptName, polCDEVName[polarim], cmd, str, NULL);
 //	we shell never be here if script can be executed
 	fprintf(LogFile,"RHICDAEMON-ERROR : Unable to run the measurement script %s\n", ScriptName);
 	fflush(LogFile);
-        _exit(EXIT_FAILURE);
+        _exit(EXIT_BADSCRIPT);
     } else if (pid < 0) {
 	/* The fork failed.  Report failure.  */
 	Status |= STATUS_ERROR | ERR_FAILSTART;
@@ -189,12 +266,6 @@ void StartMeasurement(int polarim, char *cmd)
     } else {
          /* Everything is OK so far, this is the parent process - catch pid */
 	ChildPid = pid;
-	data.insert("value", runId);
-	DEVSEND(pol, "set runIdS", &data, NULL, LogFile, irc);
-	if (irc) {
-	    fprintf(LogFile,"RHICDAEMON-ERROR: %s set runIdS(%8.3f) irc= %d\n", polCDEVName[polarim], runId, irc);
-	    fflush(LogFile);
-	}
     }
 }
 
@@ -210,7 +281,7 @@ void StopMeasurement(int polarim)
     SetStatus(CurrentPolarimeter);
     
     tm=time(NULL);
-    fprintf(LogFile,"RHICDAEMON-INFO : %s: Stop for %s, status: %8.8X\n", cctime(&tm), polCDEVName[CurrentPolarimeter], Status);
+    fprintf(LogFile,"RHICDAEMON-INFO : %s: Stop pressed for %s, status: %8.8X\n", cctime(&tm), polCDEVName[CurrentPolarimeter], Status);
     fflush(LogFile);
 }
 
@@ -219,7 +290,7 @@ void CancelMeasurement(int polarim)
 {
     time_t tm;
 
-    if (CurrentPolarimeter < 0) {
+    if (CurrentPolarimeter != polarim) {
 	SetState(polarim, "Stop");		// return the button to Stop
 	return;
     }
@@ -234,6 +305,7 @@ void CancelMeasurement(int polarim)
     Status |= WARN_CANCELLED;
     SetStatus(CurrentPolarimeter);
     UpdateMessage(CurrentPolarimeter,"Cancelled");
+    SetState(CurrentPolarimeter, "Stop");
     
     CurrentPolarimeter = -1;
 }
@@ -279,7 +351,7 @@ void child_handle(int sig)
 int main(int argc, char** argv)
 {
     int i, irc;
-    time_t itime;
+    time_t itime, tm;
     
     // process comman line options
     while ((i = getopt(argc, argv, "UDhvl:r:")) != -1) switch(i) {
@@ -296,11 +368,11 @@ int main(int argc, char** argv)
     case '?' :
 	printf( "\n\n\t\tPolarimeter daemon\n"
 	        "Usage: rpoldaemon -U|D [-options]. Possible options are:\n"
-                "U/D - Upstream/Downstream DAQ;\n"
-		"h,? - print this message and exit;\n"
-		"r [filename]: script to run for polarization measurement;\n"
-		"l [filename]: log file name;\n"
-		"v: more printout (you may use more 'v' to get more).\n");
+                "U/D          - Upstream/Downstream DAQ;\n"
+		"h,?          - print this message and exit;\n"
+		"r [filename] - script to run for polarization measurement;\n"
+		"l [filename] - log file name;\n"
+		"v            - more printout (you may use more 'v' to get more).\n");
 	return 0;
     case 'l' :
 	strncpy(LogFileName, optarg, sizeof(LogFileName));
@@ -317,8 +389,11 @@ int main(int argc, char** argv)
 
     // Create logfile.
     LogFile = fopen(LogFileName, "at");
-    if (LogFile == NULL) LogFile = stdout;
-
+    if (LogFile == NULL) {
+	LogFile = stdout;
+	fprintf(LogFile, "RHICDAEMON-ERROR : can not open log file %s. Sending messages to stdout\n", LogFileName);
+	fflush(LogFile);
+    }
     //	catch these signals to exit grecefully
     signal(SIGINT, exit_handle);	// normal exit
     signal(SIGHUP, exit_handle);	
@@ -338,6 +413,8 @@ int main(int argc, char** argv)
 	sleep(60);
 	return -2;
     }
+    UpdateMessage(myDev[MyPolarimeter][0], "");
+    UpdateMessage(myDev[MyPolarimeter][1], "");
     
     /*	Hook Action button	*/
     cdevSystem   & defSystem = cdevSystem::defaultSystem();
@@ -363,28 +440,40 @@ int main(int argc, char** argv)
 		fflush(LogFile);	
 	    }
 	    ChildPid = 0;			// the measurement was over
-	    if (CurrentPolarimeter >= 0) SetState(CurrentPolarimeter, "Stop");
-	    if (iChild == (0x100000 + (EXIT_FAILURE << 8))) {
-		Status |= STATUS_ERROR | ERR_FAILSTART;
+	    if (CurrentPolarimeter >= 0) {
+		Status = GetStatus(CurrentPolarimeter);
+		SetState(CurrentPolarimeter, "Stop");
+		if (iChild == (0x100000 + (EXIT_BADSCRIPT << 8))) {
+		    Status |= STATUS_ERROR | ERR_FAILSTART;
+		}
 		SetStatus(CurrentPolarimeter);
-		UpdateMessage(CurrentPolarimeter,"CALL EXPERTS!");
+		UpdateMessage(CurrentPolarimeter, stat2str(Status));
+		tm = time(NULL);
+		fprintf(LogFile,"RHICDAEMON-INFO : %s: Finishing %s with %s\n", cctime(&tm), 
+		    polCDEVName[CurrentPolarimeter], stat2str(Status));
+		fflush(LogFile);
+		CurrentPolarimeter = -1;
 	    }
-	    CurrentPolarimeter = -1;
 	    iChild = 0;
 	}
-	
+
 	if (Request.polarim >= 0) {	// Process commands
+	    if (CurrentPolarimeter >= 0 && CurrentPolarimeter != Request.polarim) {
+		SetState(Request.polarim, "Stop");		// return the button to Stop
+		UpdateMessage(Request.polarim, "BUSY...");		
+	    } else {
 	//	Only the first letter of the command matters...
-	    switch (toupper(Request.cmd[0])) {
-	    case 'S': 	// Stop
-		StopMeasurement(Request.polarim);
+		switch (toupper(Request.cmd[0])) {
+		case 'S': 	// Stop
+		    StopMeasurement(Request.polarim);
+		    break;
+		case 'C': 	// Cancel
+		    CancelMeasurement(Request.polarim);
+		    break;
+		default :
+		    StartMeasurement(Request.polarim, Request.cmd);
 		break;
-	    case 'C': 	// Cancel
-		CancelMeasurement(Request.polarim);
-		break;
-	    default :
-		StartMeasurement(Request.polarim, Request.cmd);
-	    break;
+		}
 	    }
 	    Request.polarim = -1;
 	}
