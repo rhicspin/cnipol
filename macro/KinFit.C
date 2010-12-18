@@ -20,7 +20,7 @@ void ExeKinFit(string runName,  Float_t bene=0, Int_t RHICBeam=1, Float_t E2T=0,
    Char_t *online_cfile="", Char_t *outputdir="./", Int_t mode=1)
 {
    // open root file 
-   const char* resDir = getenv("CNI_RESULTS_DIR");
+   const char* resDir = getenv("CNIPOL_RESULTS_DIR");
 
    string outDir("");
    outDir.reserve(255);

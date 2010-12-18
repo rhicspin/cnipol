@@ -1,13 +1,15 @@
-# File name           : Makefile
 #
-# Author              : Itaru Nakagawa
-#                     : Dmitri Smirnov
+# Authors             : Itaru Nakagawa
+#                       Dmitri Smirnov
 #
 # Creation data       : Feb.6,2006
+#
 
-#LIB_PATHS = -L/usr/lib -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/cern/lib -L$(CNIDIR)/lib
-LIB_PATHS = -L/usr/lib -L$(CNIDIR)/lib -L/usr/local/cern/lib
-INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIDIR)/inc
+CNIPOL_LIB_DIR  = $(CNIPOL_DIR)/lib
+CERNLIB_LIB_DIR = $(CERNLIB_DIR)/lib
+
+LIB_PATHS = -L$(CNIPOL_LIB_DIR) -L$(CERNLIB_LIB_DIR)
+INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIPOL_DIR)/inc
 LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
@@ -23,16 +25,16 @@ LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 #D_FLAG = -Df2cFortran
 FC = g77
-FLIB = -lg2c -lgcc -lm -lnsl -lgfortran
-FLIB1 =   # -lg2c
+#FLIB = -lg2c -lgcc -lm -lnsl -lgfortran
+#FLIB = -lgcc -lm -lnsl -lgfortran
+FLIB = -lm -lnsl -lgfortran
 
-LIB_DIR    = $(CNIDIR)/lib
-CNIANA_LIB = $(LIB_DIR)/libcniana.so
-CNIPOL_LIB = $(LIB_DIR)/libcnipol.so
+CNIANA_LIB = $(CNIPOL_LIB_DIR)/libcniana.so
+CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
 AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
 	  AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
-          Asym.o
+	  Asym.o
 
 RunDBReaderOBJ = AsymRunDB.o RunDBReader.o Asym.o
 
@@ -56,11 +58,11 @@ CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
 #CNIPOL_LIB_OBJS = Asym.o
 #CNIPOL_LIB_OBJS = $(AsymOBJ) 
 
-all: $(BINARY)
+all: lib $(BINARY) install
 
 lib: $(CNIPOL_LIB)
 #	@echo "SRCS: $(SRCS)"
-	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
+#	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
 
 $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(ROOTLIBS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $(CNIPOL_LIB)
@@ -86,8 +88,8 @@ KinFunc : $(KinFuncOBJ)
 test : $(testOBJ) 
 	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
-$(CNIANA_LIB): $(wildcard $(CNIDIR)/ana/*.cxx) $(wildcard $(CNIDIR)/inc/*.h)
-	make -C $(CNIDIR)/ana
+$(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/*.h)
+	make -C $(CNIPOL_DIR)/ana
 
 ######## OBJECT ##################
 
@@ -108,13 +110,16 @@ Host:
 	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
 install : $(BINARY)
-	install -v -C $^ $(INSTALLDIR)
-	install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
+	install -v -C $^ $(CNIPOL_DIR)/bin
+	#install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
 
-clean : 
+clean: 
 	rm -f $(BINARY) $(CNIPOL_LIB)
 	rm -f *.o
 	rm -f *~ 
 
-lib.clean : 
+bin.clean: lib.clean
+	cd $(CNIPOL_DIR)/bin/; rm -f $(BINARY)
+
+lib.clean: 
 	rm -f $(CNIPOL_LIB)

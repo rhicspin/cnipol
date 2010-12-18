@@ -297,25 +297,25 @@ int main(int argc, char *argv[])
    //                 Root Histogram Booking               //
    // ---------------------------------------------------- //
    char filename[256];
-   const char* tmpEnv = getenv("CNI_RESULTS_DIR");
+   const char* tmpEnv = getenv("CNIPOL_RESULTS_DIR");
 
-   if (tmpEnv) gAsymEnv["CNI_RESULTS_DIR"] = tmpEnv;
-   else        gAsymEnv["CNI_RESULTS_DIR"] = ".";
+   if (tmpEnv) gAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
+   else        gAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
 
-   gAsymEnv["CNI_RESULTS_DIR"].append("/");
-   gAsymEnv["CNI_RESULTS_DIR"].append(RunID);
+   gAsymEnv["CNIPOL_RESULTS_DIR"].append("/");
+   gAsymEnv["CNIPOL_RESULTS_DIR"].append(RunID);
 
-   if (gAsymEnv["CNI_RESULTS_DIR"].size() > 200) {
+   if (gAsymEnv["CNIPOL_RESULTS_DIR"].size() > 200) {
       printf("ERROR: Results dir name too long\n"); exit(-1);
    }
 
-   //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNI_RESULTS_DIR"].c_str());
+   //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
 
    umask(0);
-   if (mkdir(gAsymEnv["CNI_RESULTS_DIR"].c_str(), 0777) < 0)
-      printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNI_RESULTS_DIR"].c_str());
+   if (mkdir(gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), 0777) < 0)
+      printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
 
-   sprintf(filename, "%s/%s.root", gAsymEnv["CNI_RESULTS_DIR"].data(), runinfo.runName.c_str());
+   sprintf(filename, "%s/%s.root", gAsymEnv["CNIPOL_RESULTS_DIR"].data(), runinfo.runName.c_str());
 
    fprintf(stdout, "Booking ROOT histograms: %s\n", filename);
 
