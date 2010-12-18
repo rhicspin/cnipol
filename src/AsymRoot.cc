@@ -150,9 +150,9 @@ void AsymRoot::CreateTrees()
 
    char filename[256];
    sprintf(filename,"%s/%s_tree_%02d.root",
-           gAsymEnv["CNI_RESULTS_DIR"].c_str(), runinfo.runName.c_str(), fTreeFileId);
+           gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), runinfo.runName.c_str(), fTreeFileId);
    //sprintf(filename,"%s/%.3f_tree_%02d.root",
-   //        gAsymEnv["CNI_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
+   //        gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
 
    fOutTreeFile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 

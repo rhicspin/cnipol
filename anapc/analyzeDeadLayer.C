@@ -31,7 +31,7 @@ void analyzeDeadLayer_initialize(string runName)
 
    gChain = new TChain("AnaEventTree");
 
-   const char* outDir = getenv("CNI_RESULTS_DIR");
+   const char* outDir = getenv("CNIPOL_RESULTS_DIR");
 
    gRunName = runName;
    gOutDir.reserve(255);

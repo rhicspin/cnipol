@@ -2,10 +2,10 @@
 # Makefile for CNIANA
 #
 
-LIB_DIR       = $(CNIDIR)/lib
-SRC_DIR       = $(CNIDIR)/ana
-INC_DIR       = $(CNIDIR)/inc
-BIN_DIR       = $(CNIDIR)/bin
+LIB_DIR       = $(CNIPOL_DIR)/lib
+SRC_DIR       = $(CNIPOL_DIR)/ana
+INC_DIR       = $(CNIPOL_DIR)/inc
+BIN_DIR       = $(CNIPOL_DIR)/bin
 
 ARCH         := $(shell root-config --arch)
 
@@ -23,8 +23,8 @@ CXX           = g++
 CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
-#CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIDIR)/src
-CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIDIR)/src
+#CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
+CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g
@@ -69,7 +69,7 @@ snns2root: $(SRC_DIR)/snns2root.o
 
 $(CNIANA_DICT_SRC): $(HDRS) $(INC_DIR)/LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
-	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(CNIDIR)/src $^
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(CNIPOL_DIR)/src $^
 
 main-%: main-%.$(ObjSuf) $(OBJS)
 	$(LD) $(LDFLAGS) $< $(OBJS) $(LIBS) -o $(BIN_DIR)/$*$(ExeSuf)
@@ -93,7 +93,9 @@ $(SRC_DIR)/%.o : $(SRC_DIR)/%.cxx $(INC_DIR)/%.h
 
 clean:
 	@echo "removing binaries and supplementary files..."
-	rm -f $(OBJS) $(CNIANA_LIB) $(CNIANA_DICT)
+	rm -f $(OBJS)
+	rm -f $(CNIANA_LIB)
+	rm -f $(CNIANA_DICT)
 
 cleanall: clean
 	@echo "removing executables in bin/..."
