@@ -1,8 +1,8 @@
 #ifndef RCDEV_H
 #define RCDEV_H
 
-#include <cdevDevice.h>
-#include <cdevData.h>
+#include "cdevDevice.h"
+#include "cdevData.h"
 
 #define DEVSEND(DEV, STR, IN, OUT, LOG, IRC)	({\
     int jjjjj, iiiii;				 \

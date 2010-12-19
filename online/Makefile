@@ -1,4 +1,5 @@
-SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit
+#SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit
+SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit rhic2hbook
 
 .PHONY: clean install subdirs $(SUBDIRS)
 

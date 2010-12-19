@@ -1,9 +1,18 @@
 #!/bin/bash
 
+source /usr/local/cern/root/bin/thisroot.sh
+
+export CERNLIB=/usr/local/cern/2006b
+export CDEV=/usr/local/cdev
+export CNIPOL=/usr/local/cnipol
+
+export CDEVDDL=${CNIPOL}/online/cdev/PolarClient.ddl
+
 export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-export CDEVSHOBJ=/usr/local/lib/cdev
-export LD_LIBRARY_PATH=${CDEVSHOBJ}/Linux:${LD_LIBRARY_PATH}
-export CDEVDDL=/usr/local/etc/PolarClient.ddl
+export CDEVSHOBJ=${CDEV}/lib
+export LD_LIBRARY_PATH=${CDEVSHOBJ}:${LD_LIBRARY_PATH}
+export PATH=${CERNLIB}/bin:${PATH}
+
 BINDIR=/usr/local/polarim/bin
 
 ${BINDIR}/rpoldaemon $1 -l ${BINDIR}/rpoldaemon${1}.log -r ${BINDIR}/rpolmeasure.sh 

@@ -22,14 +22,20 @@ umask 0002
 declare -i IRC
 
 #	Set directories etc
-POLDIR=/usr/local/polarim
-CONFDIR=$POLDIR/config
-BINDIR=$POLDIR/bin
-DATADIR=$CONFDIR/data
-LOGDIR=$CONFDIR/log
-HBOOKDIR=$CONFDIR/hbook
-MACDIR=$BINDIR/macro
-ROOTDIR=$CONFDIR/root
+export POLDIR=/usr/local/polarim
+export CONFDIR=$POLDIR/config
+export BINDIR=$POLDIR/bin
+#DATADIR=$CONFDIR/data
+#LOGDIR=$CONFDIR/log
+#HBOOKDIR=$CONFDIR/hbook
+export DATADIR=$POLDIR/data
+export LOGDIR=$POLDIR/log
+export HBOOKDIR=$POLDIR/hbook
+
+export MACDIR=$BINDIR/macro
+#ROOTDIR=$CONFDIR/root
+export ROOTDIR=$POLDIR/root
+
 POLCMD=$BINDIR/rhicpol
 ANACMD=$BINDIR/rhic2hbook
 EMITCMD=$BINDIR/emitscan
