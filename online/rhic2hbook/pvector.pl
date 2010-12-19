@@ -1,13 +1,15 @@
 #! /usr/bin/perl
 
+use Env;
+
 $run = $ARGV[0];
 
 # $ONLINEDIR=$ENV{"ONLINEDIR"};
 
 # $OUTFILE = ">pvect.dat";
-$OUTFILE = ">/usr/local/polarim/config/log/pvect.dat";
+$OUTFILE = ">".$LOGDIR."/pvect.dat";
 # $LOGFILE = "$ONLINEDIR/log/an$run.log";
-$LOGFILE = "/usr/local/polarim/config/log/an$run.log";
+$LOGFILE = $LOGDIR."/an$run.log";
 
 #printf "Processing run $run ($LOGFILE)\n";
 

@@ -3,7 +3,7 @@ MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl
 
 include ../include/common.mk
 
-INC_PATHS += -I/usr/local/cern/include/cfortran
+INC_PATHS += -I/usr/local/cern/2006b/include/cfortran
 LIB_PATHS += -L/usr/local/cern/lib
 
 rhic2hbook : rhic2hbook.o rdatautil.o rdatautilp.o
