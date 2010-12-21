@@ -47,8 +47,10 @@ RUN=$3
 
 # Select ini file based on the polarimeter
 CNF=${CONFDIR}/${POLARIM}.ini
+
 # Set data file
 DATA=${DATADIR}/${RUN}.data
+
 # Set log files
 LOG=${LOGDIR}/${RUN}.log
 ALOG=${LOGDIR}/an${RUN}.log
@@ -56,6 +58,7 @@ PSFILE=${LOGDIR}/${RUN}.ps
 ROOTFILE=${ROOTDIR}/${RUN}.root
 HBOOKFILE=${HBOOKDIR}/${RUN}.hbook
 ERRLOG=${LOGDIR}/${POLARIM}-err.log
+
 # General options - pulse prog and verbose level
 OPT="-P -v200"
 
