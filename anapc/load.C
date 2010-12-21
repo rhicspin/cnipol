@@ -9,17 +9,17 @@
    //gSystem->AddIncludePath("-I/home/dsmirnov/root_macros");
    //gSystem->AddIncludePath("-I/home/dsmirnov/root_macros/utils");
    //gSystem->AddIncludePath("-I./include/SRT_D0");
-   gSystem->AddIncludePath("-I$CNIDIR/inc");
-   gSystem->AddIncludePath("-I$CNIDIR/src");
-   gSystem->AddIncludePath("-I$CNIDIR/macro");
+   gSystem->AddIncludePath("-I$CNIPOL_DIR/inc");
+   gSystem->AddIncludePath("-I$CNIPOL_DIR/src");
+   gSystem->AddIncludePath("-I$CNIPOL_DIR/macro");
 
    //gSystem->AddLinkedLibs("$SRT_PUBLIC_CONTEXT/shlib/Linux2.4-GCC_3_4/libd0_util.so");
 
    TString macroPath = "";
 	macroPath += "./:";
 	macroPath += "~/root_macros:";
-   macroPath += "$CNIDIR:";
-   macroPath += "$CNIDIR/anapc:";
+   macroPath += "$CNIPOL_DIR:";
+   macroPath += "$CNIPOL_DIR/anapc:";
 
    gROOT->SetMacroPath(macroPath);
 
