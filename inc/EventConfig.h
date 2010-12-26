@@ -15,16 +15,20 @@
 
 #include "rpoldata.h"
 #include "rhicpol.h"
-#include "Asym.h"
+
+//#include "Asym.h"
+#include "AnaInfo.h"
+#include "AsymRunDB.h"
+#include "RunInfo.h"
 
 #include "Calibrator.h"
 
 //class EventConfig;
-class Calibrator;
+//class Calibrator;
+//class TStructRunDB;
 
-/**
- *
- */
+
+/** */
 class EventConfig : public TObject
 {
 public:

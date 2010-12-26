@@ -169,17 +169,17 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       gAsymRoot.BookHists2(dproc, runconst, feedback);
 
       // Online Banana Cut
-      for (int strip=0;strip<72;strip++) {
+      for (int strip=0; strip<72; strip++) {
 
          for (int j=0; j<HENEBIN; j++) {
 
-            float e = ((float)j+0.5)*(HMAXENE/float(HENEBIN));
+            float e = ((float) j + 0.5) * (HMAXENE/float(HENEBIN));
 
             // Outside Of energy cuts
-            if (e<Emin) {
+            if (e < Emin) {
                 HHF1(13500+strip+1, e, 0.);
                 HHF1(13600+strip+1, e, 0.);
-            } else if (e>Emax){
+            } else if (e > Emax){
                 HHF1(13500+strip+1, e, 0.);
                 HHF1(13600+strip+1, e, 0.);
             } else {
@@ -205,7 +205,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       }
 
       cout << "finished first event initialization "<<endl;
-   } // end-of-if(Nevent==1)
+   }
 
 
    // =================================================================================//

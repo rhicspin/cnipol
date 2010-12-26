@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "CnipolCalibHists.h"
+#include "ChannelEventId.h"
 
 ClassImp(CnipolCalibHists)
 

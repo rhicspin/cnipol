@@ -13,13 +13,12 @@
 
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
+#include "TH1.h"
+#include "TH1D.h"
 #include "TObject.h"
 
-#include "ChannelCalib.h"
 #include "DrawObjContainer.h"
-
-
-class DrawObjContainer;
+#include "ChannelCalib.h"
 
 
 /** */

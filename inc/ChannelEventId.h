@@ -11,9 +11,8 @@
 
 #include "TObject.h"
 
-/**
- *
- */
+
+/** */
 class ChannelEventId : public TObject
 {
 public:

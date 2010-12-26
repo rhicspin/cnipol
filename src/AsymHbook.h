@@ -7,6 +7,11 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
+#include "AnaInfo.h"
 #include "AsymGlobals.h"
+
+void tgtHistBook();
+int  hist_book(char *);
+int  hist_close(char *);
 
 #endif

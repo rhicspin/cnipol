@@ -346,6 +346,7 @@ void CnipolHists::PostFill()
 /** */
 void CnipolHists::SaveAllAs(TCanvas &c, string path)
 {
+   //Warning("SaveAllAs", "executing...");
    DrawObjContainer::SaveAllAs(c, path);
 
    //DrawObjContainerMapIter isubd;

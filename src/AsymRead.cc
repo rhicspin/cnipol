@@ -19,12 +19,8 @@ using namespace std;
 // =================
 int readloop()
 {
-   int rval;
-   int flag;     // exit from while when flag==1
-   //int THINOUT = Flag.feedback ? dproc.thinout : Nskip;
- 
-   static int READ_FLAG=0;
- 
+   static int READ_FLAG = 0;
+
    // Common structure for the data format
    static union {
        recordHeaderStruct      header;
@@ -43,104 +39,123 @@ int readloop()
        char                    buffer[BSIZE*sizeof(int)];
        recordDataStruct        data;
    } rec;
- 
+
    //recordConfigRhicStruct  *cfginfo;
    polDataStruct            poldat;
    beamDataStruct           beamdat;
    targetDataStruct         tgtdat1;
    targetDataStruct         tgtdat2;
    wcmDataStruct            wcmdat;
+
    processEvent             event;
    AsymRecover              recover;
- 
+
    FILE *fp;
- 
-   // -------------------------------------------------
-   flag = 0;
- 
+   int   rval;
+   int   recSize;
+   int   flag = 0;     // exit from while when flag==1
+   //int THINOUT = Flag.feedback ? dproc.thinout : Nskip;
+
    // reading the data till its end ...
-   if ((fp = fopen(datafile,"r")) == NULL) {
-     printf("ERROR: %s file not found. Force exit.\n",datafile);;
-     exit(-1);
-   }
- 
+   if ((fp = fopen(gDataFileName.c_str(), "r")) == NULL) {
+      printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+      exit(-1);
+   } else
+      printf("\nFound file %s\n", gDataFileName.c_str());
+
    while (flag == 0) {
 
-      if (fread(&rec.header, sizeof(recordHeaderStruct), 1, fp)!=1){
-          break;
-      }
- 
-      if (feof(fp)) {
-          fprintf(stdout, "Expected end of file\n");
-          break;
-      }
- 
-      if ( (UInt_t) rec.header.len > BSIZE*sizeof(int)) {
-          fprintf(stdout, "Not enough buffer d: %ld byte b: %u byte\n",
-                  rec.header.len, sizeof(rec));
-          break;
-      }
- 
-      // Read rest of the structure
-      rval = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fp);
+      if (fread(&rec.header, sizeof(recordHeaderStruct), 1, fp) != 1)
+         break;
+
+      //printf("Currently consider record:   %0#10x, len: %ld\n", (UInt_t) rec.header.type, rec.header.len);
 
       if (feof(fp)) {
-          perror("Unexpected end of file");
-          exit(1);
-          break;
+         fprintf(stdout, "Expected end of file\n");
+         break;
       }
- 
+
+      if ( (UInt_t) rec.header.len > BSIZE*sizeof(int)) {
+         fprintf(stdout, "Not enough buffer d: %ld byte b: %u byte\n",
+                 rec.header.len, sizeof(rec));
+         break;
+      }
+
+      
+      recSize = rec.header.len - sizeof(recordHeaderStruct);
+
+      // Skip empty data records
+      if (!recSize) continue;
+
+      // Read rest of the structure
+      rval = fread(&rec.begin.version, recSize, 1, fp);
+
+      if (feof(fp)) {
+         perror("Unexpected end of file");
+         exit(1);
+         break;
+      }
+
       if (rval != 1) {
-          fprintf(stdout,"IO error in stream (header) %s\n",strerror(errno));
-          continue;
+         fprintf(stdout, "IO error in stream (header) %s\n", strerror(errno));
+         fprintf(stdout, "IO error in stream (header) %s\n", strerror(ferror(fp)));
+         continue;
       }
- 
+
       //ds
       //printf("type: %#X\n", (rec.header.type & REC_TYPEMASK));
- 
+
       // Distinguish between blue & yellow beam.
       // Presently, it overwrites pre-defined runinfo.RHICBeam
       // in GetPolarimetryID_and_RHICBeam(char RunID[]).
       // Could be used as cross check for the future
-      switch (rec.header.type & REC_BEAMMASK) {
-      case REC_YELLOW:
-         runinfo.RHICBeam = 1;
-         break;
-      case REC_BLUE:
-         runinfo.RHICBeam = 0;
-         break;
-      }
- 
+      //switch (rec.header.type & REC_BEAMMASK) {
+      //case REC_YELLOW:
+      //   runinfo.RHICBeam = 1;
+      //   break;
+      //case REC_BLUE:
+      //   runinfo.RHICBeam = 0;
+      //   break;
+      //}
+
       //=============================================================
       //                          Main Switch
       //=============================================================
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
-        if (!ReadFlag.RECBEGIN){
-          cout << "Begin of data stream Ver: " << rec.begin.version                        << endl;
-          cout << "Comment: "                  << rec.begin.comment                        << endl;
-          cout << "Time Stamp: "               << ctime(&rec.begin.header.timestamp.time);
-          cout << "Unix Time Stamp: "          << rec.begin.header.timestamp.time          << endl;
-          runinfo.StartTime = rec.begin.header.timestamp.time;
- 
-          // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
-          PrepareCollidingBunchPattern();
- 
-          ReadFlag.RECBEGIN = 1;
-        }
-        break;
- 
+         if (ReadFlag.RECBEGIN) break; // ??? should encounter only once in each file
+
+         cout << "Begin of data stream Ver: " << rec.begin.version                        << endl;
+         cout << "Comment: "                  << rec.begin.comment                        << endl;
+         cout << "Time Stamp: "               << ctime(&rec.begin.header.timestamp.time);
+         cout << "Unix Time Stamp: "          << rec.begin.header.timestamp.time          << endl;
+
+         runinfo.StartTime = rec.begin.header.timestamp.time;
+
+         runinfo.RHICBeam   = (rec.header.type & REC_MASK_BEAM) >> 16;
+         runinfo.fPolStream = (rec.header.type & REC_MASK_STREAM) >> 20;
+
+         //printf("RHICBeam:   %#x\n", runinfo.RHICBeam);
+         //printf("fPolStream: %#x, %#x, %#x\n", runinfo.fPolStream, rec.header.type, REC_MASK_STREAM);
+
+         // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
+         PrepareCollidingBunchPattern();
+
+         ReadFlag.RECBEGIN = 1;
+         
+         break;
+
       case REC_POLADO:
          memcpy(&poldat, &rec.polado.data, sizeof(poldat));
          DecodeTargetID(poldat);
          break;
- 
+
       case REC_TAGADO:
          memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
          memcpy(&tgtdat2, &rec.tagado.data[1], sizeof(tgtdat2));
          break; // later
- 
+
       case REC_PCTARGET:
 
         // Do not process this record for calibration runs (CMODE). May contain
@@ -151,7 +166,7 @@ int readloop()
           long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
           --pointer;
           UShort_t i = 0;
- 
+
           printf("    index   total   x-pos   y-pos \n");
 
           for (int k=0; k<ndelim; k++) {
@@ -160,10 +175,10 @@ int readloop()
              tgt.Rotary[k][1] = *++pointer;
              tgt.Linear[k][0] = *++pointer; // Vertical target
              tgt.Rotary[k][0] = *++pointer;
- 
+
              // force 0 for +/-1 tiny readout as target position.
              if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
- 
+
              // identify Horizontal or Vertical target from the first target
              // rotary position readout.
              if (k==0) {
@@ -190,7 +205,7 @@ int readloop()
                 } else {
                    cout << "Warning: Target infomation cannot be recognized.." << endl;
                 }
- 
+
                 tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
                 tgt.Time[i] = k;
                 tgt.X[i]    = tgt.x;
@@ -223,19 +238,19 @@ int readloop()
              // target position array including static target motion
              tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
           }
- 
+
           printf("Number of Delimiters :%4d\n", ndelim);
           ReadFlag.PCTARGET = 1;
         }
- 
+
         // define target histograms
         tgtHistBook();
- 
+
         // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
         if (tgt.VHtarget) mask.detector = 0x2D;
- 
+
         break;
- 
+
       case REC_WCMADO:
          if (!ReadFlag.WCMADO) {
 
@@ -251,7 +266,7 @@ int readloop()
          }
 
          break;
- 
+
       case REC_BEAMADO:
 
          if (!ReadFlag.BEAMADO){
@@ -260,10 +275,10 @@ int readloop()
             runinfo.BeamEnergy = beamdat.beamEnergyM;
             fprintf(stdout,"Beam Energy: %8.2f\n",runinfo.BeamEnergy);
             fprintf(stdout,"RHIC Beam:   %1d\n", runinfo.RHICBeam);
- 
+
             // Add inj_tshift for injection measurements
             if (runinfo.BeamEnergy < 30) dproc.tshift+=dproc.inj_tshift;
- 
+
             int pat;
 
             for (int bid=0; bid<120; bid++) {
@@ -290,7 +305,7 @@ int readloop()
                    fillpat[bid] = 0;
                }
             }
- 
+
             //===================================================================
             //   Print Spin Pattern and Recover Spin Pattern by User Defined ones
             //===================================================================
@@ -300,7 +315,7 @@ int readloop()
               recover.OverwriteSpinPattern(Flag.spin_pattern);
               PrintPattern("spin");
             }
- 
+
             //===================================================================
             //   Print Fill Pattern and Recover Fill Pattern by User Defined ones
             //===================================================================
@@ -310,7 +325,7 @@ int readloop()
               recover.OverwriteFillPattern(Flag.fill_pattern);
               PrintPattern("fill");
             }
- 
+
             //===========================================================
             //       Masking on bad bunches
             //===========================================================
@@ -319,7 +334,7 @@ int readloop()
               cout << "Masked Fill Pattern : " << endl;
               PrintPattern("fill");
             }
- 
+
             // Active Bunch
             for (int k=0; k<NBUNCH; k++) {
               ActiveBunch[k]=fillpat[k];
@@ -330,12 +345,10 @@ int readloop()
             runinfo.NActiveBunch = runinfo.NFilledBunch - runinfo.NDisableBunch;
             ReadFlag.BEAMADO     = 1;
          }
- 
+
          break;
- 
+
       case REC_END:
-         //ds: useful info should be always reported
-         //if (!Flag.feedback){
          fprintf(stdout, "End of data stream \n");
          fprintf(stdout, "End Time: %s\n", ctime(&rec.end.header.timestamp.time));
          fprintf(stdout, "%u records found\n", Nread);
@@ -343,27 +356,27 @@ int readloop()
          fprintf(stdout, "%ld Carbons are found in\n", Nevcut);
          fprintf(stdout, "%u Total events of intended fill pattern\n", Nevtot);
          fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
-         runinfo.StopTime=rec.end.header.timestamp.time;
-         //}
+
+         runinfo.StopTime = rec.end.header.timestamp.time;
 
          if (end_process(cfginfo)!=0) {
            fprintf(stdout, "Error at end process \n");
          }
 
          break;
- 
+
       case REC_READRAW:
           break; // later
- 
+
       case REC_READSUB:
           break; // later
- 
+
       case REC_READALL:
           break; // later
- 
+
       case REC_WFDV8SCAL:
           break; // later
- 
+
       case REC_SCALERS:
         //ds: useful info should be always reported
         //if (!Flag.feedback){
@@ -372,37 +385,37 @@ int readloop()
                   ctime(&rec.scal.header.timestamp.time));
         //}
         break;
- 
+
       case REC_READAT:
- 
+
         // Display configuration and configure active strips just once
         if (!READ_FLAG) {
- 
+
            // Configure Active Strip Map
            ConfigureActiveStrip(mask.detector);
- 
+
            if (printConfig(cfginfo)!=0) {
                perror(" error in printing configuration");
                exit(1);
            }
 
-           READ_FLAG=1;
+           READ_FLAG = 1;
 
            if (rundb.run_status_s == "Junk") {
               cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n";
               exit(-1);
            }
         }
- 
+
         event.delim = rec.header.timestamp.delim;
         //int nreadsi     = 0;  // number of Si already read
         //int nreadbyte   = 0;  // number of bite already read
- 
+
         recordReadATStruct *ATPtr;
         int Nevent;
- 
+
         for (UInt_t i=0; i<rec.header.len - sizeof(recordHeaderStruct);) {
- 
+
            ATPtr     = (recordReadATStruct*) (&rec.data.rec[i]);
            event.stN = ATPtr->subhead.siNum; // si number
            Nevent    = ATPtr->subhead.Events + 1;
@@ -418,11 +431,11 @@ int readloop()
                    << event.stN << " Events= " << Nevent << endl;
               break;
            }
- 
+
            //ds:
            //printf("Nevent(s): %d, si number: %d, gMaxEventsUser %d, Nread %d\n", Nevent,
            //       event.stN, gMaxEventsUser, Nread);
- 
+
            for (int j=0; j<Nevent; j++, Nread++) {
 
               //ds: Skip events if already read enough events specified by user
@@ -466,11 +479,11 @@ int readloop()
                         }
                     }
                  }
- 
+
                  gAsymRoot.SetChannelEvent(event);
 
                  if (dproc.SAVETREES.any()) { gAsymRoot.AddChannelEvent(); }
- 
+
                  //cout << " i "            << i
                  //     << " Nevent "       << Nevent
                  //     << " St "           << event.stN
@@ -480,7 +493,7 @@ int readloop()
                  //     << " rev0 "         << event.rev0
                  //     << " rev  "         << event.rev
                  //     << " revolution #=" << cntr.revolution << endl;
- 
+
                  // Raw histograms
                  //ds: Why don't we save raw histograms in regular passes?
                  //if (!Flag.feedback && dproc.RAWHISTOGRAM)
@@ -495,7 +508,7 @@ int readloop()
                        tdc_vs_adc_false_bunch_raw->Fill(event.amp, event.tdc);
                  }
                  //}
- 
+
                  // process event for following case:
                  //    fill pattern     = 1
                  //    Calibration mode = 1
@@ -508,7 +521,7 @@ int readloop()
                           //fprintf(stdout,"Error event process Si:%d Ev:%d\n", nreadsi, j);
                     }
                  }
- 
+
                  if (Nevtot%10000==0) {
 
                     //ds: Can we simplify this by leaving only one report?
@@ -525,42 +538,48 @@ int readloop()
         }
 
         break;
- 
-      case REC_RHIC_CONF:
-        if (!ReadFlag.RHICCONF){
-          fprintf(stdout,"Read configure information\n");
-          cfginfo = (recordConfigRhicStruct *)
-              malloc(sizeof(recordConfigRhicStruct)+
-                     (rec.cfg.data.NumChannels-1)*sizeof(SiChanStruct));
- 
-          memcpy(cfginfo, &rec.cfg, sizeof(recordConfigRhicStruct)+
-                 (rec.cfg.data.NumChannels-1)*sizeof(SiChanStruct));
-          // when we mandatory provide cfg info
-          if (dproc.RECONFMODE==1) {
-              reConfig(cfginfo);
-          }
- 
-          // calculate Run Constants
-          calcRunConst(cfginfo);
-          if (dproc.MESSAGE == 1) exit(0);
-          ReadFlag.RHICCONF = 1;
-        }
 
+      case REC_RHIC_CONF:
+         if (!ReadFlag.RHICCONF) {
+            fprintf(stdout,"Read configure information\n");
+
+            cfginfo = (recordConfigRhicStruct *)
+                         malloc(sizeof(recordConfigRhicStruct) +
+                         (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
+
+            memcpy(cfginfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
+                   (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
+
+            // when we mandatory provide cfg info
+            if (dproc.RECONFMODE == 1) {
+                reConfig(cfginfo);
+            }
+
+            // calculate Run Constants
+            calcRunConst(cfginfo);
+            if (dproc.MESSAGE == 1) exit(0);
+            ReadFlag.RHICCONF = 1;
+         }
+
+         break;
+
+      case REC_SUBRUN:
+        printf("Processing record: REC_SUBRUN\n");
         break;
- 
+
       default:    // unknown record
-         fprintf(stdout,"Encountered Unknown Record 0x%lx\n",
-                 rec.header.type & REC_TYPEMASK);
+         fprintf(stdout, "Encountered Unknown Record \"%#x\"\n",
+            (UInt_t) rec.header.type & REC_TYPEMASK);
          break;
       }
    }
- 
+
    fprintf(stdout, "Total events in file %d\n", dproc.nEventsTotal);
    fprintf(stdout, "First %d events processed\n", Nread);
    fprintf(stdout, "%d events saved\n", Nevtot);
 
    dproc.nEventsProcessed = Nevtot;
- 
+
    // Some incompleted run don't even have REC_READAT flag. Force printConfig.
    if (!Nread && !READ_FLAG) {
       printConfig(cfginfo);
@@ -570,7 +589,7 @@ int readloop()
          exit(-1);
       }
    }
- 
+
    return(0);
 }
 

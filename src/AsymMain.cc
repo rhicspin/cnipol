@@ -18,14 +18,13 @@
 
 using namespace std;
 
-AsymRoot gAsymRoot;
 
 // =================
 // beginning of main
 // =================
 int main(int argc, char *argv[])
 {
-   // Create stopwatch and start it
+   // Create a stopwatch and start it
    TStopwatch stopwatch;
    TTimeStamp timestamp;
 
@@ -37,12 +36,10 @@ int main(int argc, char *argv[])
    Initialization();
 
    // prefix directories
-   char * datadir = getenv("DATADIR");
-   if ( datadir == NULL ){
-      cerr << "environment DATADIR is not defined" << endl;
-      cerr << "e.g. export DATADIR=$HOME/2005/data" << endl;
-      exit(-1);
-   }
+   const char* tmpEnv = getenv("DATADIR");
+
+   if (tmpEnv) gAsymEnv["DATADIR"] = tmpEnv;
+   else        gAsymEnv["DATADIR"] = ".";
 
    // config directories
    confdir = getenv("CONFDIR");
@@ -54,13 +51,12 @@ int main(int argc, char *argv[])
    }
 
    // files
-   char   ifile[32], cfile[32], hbk_outfile[256];
+   char   cfile[32], hbk_outfile[256];
    int    hbk_read = 0;  // hbk file read from argument:1 default:0
    //int  ramp_read = 0;  // ramp timing file read from argument:1 default:0
 
    // misc
    char enerange[20], cwidth[20], *ptr;
-   char suffix[] = ".data"; // suffix of data file
    stringstream sstr;
 
    int option_index = 0;
@@ -114,17 +110,15 @@ int main(int argc, char *argv[])
                  "e.g. \"-R 101\"" <<endl;
          exit(0);
       case 'f':
-         sprintf(ifile, optarg);
+         //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
-         if (strstr(ifile,suffix)==NULL) strcat(ifile,suffix);
-         strcat(datafile, datadir);
-         strcat(datafile,     "/");
-         strcat(datafile,   ifile);
+         //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
+         gDataFileName = gAsymEnv["DATADIR"] +  "/" + optarg + ".data";
+
          // Add checks for runName suffix
-         //sprintf(&runinfo.runName[0], optarg);
          runinfo.runName = optarg;
          fprintf(stdout, "runName:         %s\n", runinfo.runName.c_str());
-         fprintf(stdout, "Input data file: %s\n", datafile);
+         fprintf(stdout, "Input data file: %s\n", gDataFileName.c_str());
          break;
       case 'n':
          gMaxEventsUser = atol(optarg);
@@ -157,8 +151,8 @@ int main(int argc, char *argv[])
             dproc.eneu = atoi(ptr);
             strtok(enerange,":");
             dproc.enel = atoi(enerange);
-            if (dproc.enel == NULL || dproc.enel<0)     { dproc.enel=0;}
-            if (dproc.eneu == NULL || dproc.eneu>12000) { dproc.eneu=2000;}
+            if (dproc.enel == 0 || dproc.enel < 0)     { dproc.enel = 0;}
+            if (dproc.eneu == 0 || dproc.eneu > 12000) { dproc.eneu = 2000;}
             fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n",
                     dproc.enel,dproc.eneu);
          } else {
@@ -251,26 +245,41 @@ int main(int argc, char *argv[])
    }
 
    // Extract RunID from input filename
-   int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
-   char RunID[chrlen];
-   strncpy(RunID, ifile, chrlen);
-   RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
-   runinfo.RUNID = strtod(RunID, NULL); // return 0 when "RunID" contains alphabetical char.
+   //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
+   //char RunID[chrlen];
+   //strncpy(RunID, ifile, chrlen);
+   //RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
+
+   runinfo.RUNID = strtod(runinfo.runName.c_str(), NULL); // return 0 when "RunID" contains alphabetical char.
+   //printf("RUNID: %f\n", runinfo.RUNID);
 
    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
-   if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
+   // ds: not needed anymore since we are getting this info from raw data for all runs
+   //if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
 
    // For normal runs, RUNID != 0. Then read run conditions from run.db.
    // Otherwise, data filename with characters skip readdb and reconfig routines
    // assuming these are energy calibration or test runs.
-   if (runinfo.RUNID) {
-       readdb(runinfo.RUNID);
-   } else {
-       dproc.RECONFMODE = 0;
-   }
+   //if (runinfo.RUNID)
+   //   readdb(runinfo.RUNID);
+   //else
+   //   dproc.RECONFMODE = 0;
+
+   //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun(runinfo.runName);
+   //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun("10110.101");
+   //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun("testtest");
+
+   //gAsymRunDb.PrintCommon();
+
+   //if (currentRunDb) {
+   //   currentRunDb->Print();
+   //}
+
+   //delete currentRunDb;
+   gAsymRunDb.DeleteRun("test");
 
    //PrintDB();
-   //exit(-1);
+   exit(-1);
 
    // Overwrite some parameters with command line options
    if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
@@ -296,14 +305,14 @@ int main(int argc, char *argv[])
    // ---------------------------------------------------- //
    //                 Root Histogram Booking               //
    // ---------------------------------------------------- //
-   char filename[256];
-   const char* tmpEnv = getenv("CNIPOL_RESULTS_DIR");
+   char outRootFileName[256];
+   tmpEnv = getenv("CNIPOL_RESULTS_DIR");
 
    if (tmpEnv) gAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        gAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
 
    gAsymEnv["CNIPOL_RESULTS_DIR"].append("/");
-   gAsymEnv["CNIPOL_RESULTS_DIR"].append(RunID);
+   gAsymEnv["CNIPOL_RESULTS_DIR"].append(runinfo.runName);
 
    if (gAsymEnv["CNIPOL_RESULTS_DIR"].size() > 200) {
       printf("ERROR: Results dir name too long\n"); exit(-1);
@@ -315,11 +324,11 @@ int main(int argc, char *argv[])
    if (mkdir(gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), 0777) < 0)
       printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
 
-   sprintf(filename, "%s/%s.root", gAsymEnv["CNIPOL_RESULTS_DIR"].data(), runinfo.runName.c_str());
+   sprintf(outRootFileName, "%s/%s.root", gAsymEnv["CNIPOL_RESULTS_DIR"].data(), runinfo.runName.c_str());
 
-   fprintf(stdout, "Booking ROOT histograms: %s\n", filename);
+   fprintf(stdout, "Booking ROOT histograms: %s\n", outRootFileName);
 
-   if (gAsymRoot.RootFile(filename) != 0) {
+   if (gAsymRoot.RootFile(outRootFileName) != 0) {
       perror("Error: RootFile()");
       exit(-1);
    }
@@ -486,27 +495,28 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 // Ramp timing file
 int read_ramptiming(char *filename)
 {
-    fprintf(stdout,"\nReading ... cut parameter file : %s \n", filename);
+   fprintf(stdout, "\nReading ... cut parameter file : %s \n", filename);
 
-    ifstream rtiming;
-    rtiming.open(filename);
+   ifstream rtiming;
+   rtiming.open(filename);
 
-    if (!rtiming) {
-        cerr << "failed to open ramp timing file" <<endl;
-        exit(1);
-    }
-    memset(ramptshift, 0, sizeof(ramptshift));
+   if (!rtiming) {
+       cerr << "failed to open ramp timing file" <<endl;
+       exit(1);
+   }
 
-    float runt;
+   memset(ramptshift, 0, sizeof(ramptshift));
 
-    int index = 0;
-    while (!rtiming.eof()) {
-        rtiming >> runt >> ramptshift[index] ;
-        index ++;
-    }
+   float runt;
 
-    rtiming.close();
-    return(0);
+   int index = 0;
+   while (!rtiming.eof()) {
+       rtiming >> runt >> ramptshift[index] ;
+       index ++;
+   }
+
+   rtiming.close();
+   return(0);
 }
 
 
@@ -652,9 +662,8 @@ int ConfigureActiveStrip(int mask)
 // Return      : 1 if disabled. otherwise 0
 //
 /*
-int
-DisabledDet(int det){
-
+int DisabledDet(int det)
+{
   // det(0,1,2,3,4,5} => {0, 1, 0, 0, 1, 0} => 18
   int DeadDet = tgt.VHtarget ? 18 : 0 ;
   //                            ^   ^
@@ -664,27 +673,6 @@ DisabledDet(int det){
 
 }
 */
-
-
-// ===================
-// square root formula
-// ===================
-// A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
-// elastic Carbons are scattered off more in Right for Up
-int sqass(float A, float B, float C, float D, float *asym, float *easym)
-{
-   float den;
-   den = sqrt(A*B) + sqrt(C*D);
-   if ( (A*B == 0.) && (C*D == 0.) ) {
-      *asym  = 0.;
-      *easym = 0.;
-   } else {
-      *asym  = (sqrt(A*B) - sqrt(C*D))/den;
-      *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
-   }
-
-   return(0);
-}
 
 
 //

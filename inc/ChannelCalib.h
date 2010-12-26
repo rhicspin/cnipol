@@ -18,9 +18,8 @@ typedef std::vector<ChannelCalib> ChannelCalibVec;
 typedef std::map<UShort_t, ChannelCalib> ChannelCalibMap;
 typedef std::pair<const UShort_t, ChannelCalib> ChannelCalibPair;
 
-/**
- *
- */
+
+/** */
 class ChannelCalib : public TObject
 {
 public:

@@ -25,24 +25,22 @@ LOADLIBES = $(LIB_PATHS) $(LIBS)
 
 #D_FLAG = -Df2cFortran
 FC = g77
-#FLIB = -lg2c -lgcc -lm -lnsl -lgfortran
-#FLIB = -lgcc -lm -lnsl -lgfortran
 FLIB = -lm -lnsl -lgfortran
 
 CNIANA_LIB = $(CNIPOL_LIB_DIR)/libcniana.so
 CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
 AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
-	  AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
-	  Asym.o
+          AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
+          Asym.o RunInfo.o AnaInfo.o
 
-RunDBReaderOBJ = AsymRunDB.o RunDBReader.o Asym.o
+RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o
 
-dLayerCheckerOBJ = AsymRunDB.o dLayerChecker.o Asym.o
+dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o
 
-KinFuncOBJ = KinFunc.o Kinema.o Asym.o
+KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o
 
-AsymPlotOBJ = AsymPlot.o AsymRoot.o Asym.o AsymRunDB.o
+AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o
 
 testOBJ = test.o AsymRoot.o
 
@@ -74,34 +72,37 @@ Asym: $(AsymOBJ) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(AsymOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) -o $@
 
 RunDBReader : $(RunDBReaderOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
 AsymPlot : $(AsymPlotOBJ)
-	$(CC) $(C_FLAG) $(AsymPlotOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+	$(CC) $(C_FLAG) $(AsymPlotOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
 dLayerChecker : $(dLayerCheckerOBJ)
-	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
-KinFunc : $(KinFuncOBJ)
-	$(CC) $(C_FLAG) $(KinFuncOBJ) $(INC_PATHS) $(ROOTLIB) -o $@
+KinFunc : $(KinFuncOBJ) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(KinFuncOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
 test : $(testOBJ) 
-	$(CC) $(C_FLAG) $(testOBJ) $(INC_PATHS) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+	$(CC) $(C_FLAG) $(testOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
 $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/*.h)
 	make -C $(CNIPOL_DIR)/ana
 
 ######## OBJECT ##################
 
-AsymMain.o : Asym.h AsymMain.h AsymCalc.h WeightedMean.h rhicpol.h rpoldata.h 
-AsymCalc.o : Asym.h AsymCalc.h AsymErrorDetector.h WeightedMean.h
-AsymRecover.o : Asym.h AsymRecover.h AsymRecoverUserDefined.h
-RunDBReader.o : AsymMain.h Asym.h
-AsymRoot.o : AsymRoot.h
-KinFunc.o  : AsymProcess.h
-AsymProcess.o  : AsymProcess.h
-#AsymPlot.o : AsymPlot.h AsymHeader.h
-AsymPlot.o : AsymPlot.h
+AsymMain.o:    Asym.h AsymMain.h AsymCalc.h rhicpol.h rpoldata.h 
+AsymCalc.o:    Asym.h AsymCalc.h AsymErrorDetector.h
+AsymRecover.o: Asym.h AsymRecover.h AsymRecoverUserDefined.h
+RunDBReader.o: AsymRunDB.h
+AsymRoot.o:    AsymRoot.h
+KinFunc.o:     Kinema.h
+AsymProcess.o: AsymProcess.h
+#AsymPlot.o:    AsymPlot.h AsymHeader.h
+AsymPlot.o:    AsymPlot.h
+RunInfo.o:     RunInfo.h
+AnaInfo.o:     AnaInfo.h
+Asym.o:        Asym.h RunInfo.h AnaInfo.h AsymRunDB.h
 
 .f.o:
 	$(FC) -O -c $<

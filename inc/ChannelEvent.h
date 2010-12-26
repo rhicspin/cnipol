@@ -18,18 +18,18 @@
 #include "ChannelEventId.h"
 #include "EventConfig.h"
 
-class EventConfig;
+//class EventConfig;
 //class ChannelData;
 //class Calibrator;
-class ChannelEvent;
+//class ChannelEvent;
+
 
 typedef std::vector<ChannelEvent> ChannelEventVec;
 typedef std::map<ChannelEventId, ChannelEvent, ChannelEventId> ChannelEventMap;
 typedef std::set<ChannelEvent, ChannelEvent> ChannelEventSet;
 
-/**
- *
- */
+
+/** */
 class ChannelEvent : public TObject
 {
 public:

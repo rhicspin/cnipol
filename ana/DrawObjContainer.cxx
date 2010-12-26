@@ -264,9 +264,7 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) con
 
 
 /** */
-void DrawObjContainer::Fill(ChannelEvent *ch, string cutid)
-{
-}
+void DrawObjContainer::Fill(ChannelEvent *ch, string cutid) { }
 
 
 /** */

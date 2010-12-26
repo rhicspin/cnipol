@@ -15,7 +15,7 @@ void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax)
 {
     hhbook1d_(&hid, hname, &xnbin, &xmin, &xmax, strlen(hname));
     return;
-};
+}
 
 void HHBOOK2(int hid, char* hname, int xnbin, float xmin, float xmax,
              int ynbin, float ymin, float ymax)

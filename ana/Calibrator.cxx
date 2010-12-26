@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "Calibrator.h"
+#include "ChannelCalib.h"
 
 ClassImp(Calibrator)
 

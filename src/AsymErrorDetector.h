@@ -2,6 +2,11 @@
 // Author   : Itaru Nakagawa
 // Creation : 08/01/2006         
 
+/**
+ * 24 Dec, 2010 - Dmitri Smirnov
+ *    - Heavily modified and cleaned up...
+ */
+
 #ifndef ASYM_ERROR_DETECTOR_H
 #define ASYM_ERROR_DETECTOR_H
 
@@ -25,8 +30,7 @@
 #include "rpoldata.h"
 
 #include "Asym.h"
-//#include "AsymROOT.h"
-#include "WeightedMean.h"
+//#include "WeightedMean.h"
 #include "AsymCalc.h"
 
 
@@ -52,7 +56,8 @@ typedef struct {
 struct StructStripCheck {
   StructStrip dev, chi2, p1, width, evnt;
   StructEnergyCorr ecorr;
-} ;
+};
+
 extern StructStripCheck strpchk;
 
 
@@ -61,6 +66,7 @@ extern StructStripCheck strpchk;
 //=================================================================//
 int BunchAnomalyDetector();
 float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
+
 int HotBunchFinder(int err_code); 
 
 
@@ -74,7 +80,8 @@ struct StructBunch {
 
 struct StructBunchCheck {
   StructBunch rate, asym[3];// asym[0]:x90, asym[1]:x45, asym[2]:y45
-} ;
+};
+
 extern StructBunchCheck bnchchk;
 
 
@@ -97,7 +104,6 @@ void DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int 
 void DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);
+void  checkForBadBunches();
 
-
-
-#endif /* ASYM_ERROR_DETECTOR_H */
+#endif

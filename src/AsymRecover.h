@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "AsymGlobals.h"
+#include "RunInfo.h"
 
 
 class AsymRecover
