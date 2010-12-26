@@ -14,9 +14,7 @@
  *
  */
 
-#include <iostream>
-
-#include "AsymMain.h"
+#include "RunDBReader.h"
 
 using namespace std;
 
@@ -45,9 +43,9 @@ int Example(char *argv[])
 
 int main(int argc, char *argv[])
 {
-   extern StructRunDB rundb;
+   //extern TStructRunDB rundb;
    recordConfigRhicStruct  *cfginfo;
-   extern int printConfig(recordConfigRhicStruct *);
+   //extern int printConfig(recordConfigRhicStruct *);
 
    char * RunID;
    confdir = getenv("CONFDIR");

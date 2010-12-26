@@ -15,8 +15,9 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-#include "DrawObjContainer.h"
+//#include "DrawObjContainer.h"
 
+#include "AnaInfo.h"
 #include "AsymGlobals.h"
 #include "Kinema.h"
 #include "AsymRoot.h"
@@ -64,6 +65,4 @@ float ekin(float edep, float dtheck);
 //
 int SpinTuneOutput(int bid, double si);
 
-
-
-#endif /* ASYM_PROCESS_H */
+#endif

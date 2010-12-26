@@ -1,31 +1,27 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
 //  Error/Anomaly Finding Routine
 //  file name :   AsymErrorDetector.cc
-// 
+//
 //  Author    :   Itaru Nakagawa
 //  Creation  :   08/01/2006
-//                
+//
 
 #include "AsymErrorDetector.h"
 
 StructBunchCheck bnchchk;
 StructStripCheck strpchk;
 
-// function prototypes
-
-
 //
-// Class name  : 
+// Class name  :
 // Method name : int DetectorAnomaly()
 //
 // Description : Fit the slope of energy spectrum given in (-t) with exponential.
-//             : 
-// Input       : 
-// Return      : 
+//             :
+// Input       :
+// Return      :
 //
-int 
-DetectorAnomaly(){
-
+int DetectorAnomaly()
+{
   Kinema->cd();
 
   TF1 * expf = new TF1("expf","expo");
@@ -37,7 +33,7 @@ DetectorAnomaly(){
   // into the fit.
   //ds: extern StructHist Eslope;
   float dbin  = (Eslope.xmax - Eslope.xmin)/float(Eslope.nxbin);
-  float min_t = 2*dproc.enel*MASS_12C*k2G*k2G + dbin; 
+  float min_t = 2*dproc.enel*MASS_12C*k2G*k2G + dbin;
   float max_t = 2*dproc.eneu*MASS_12C*k2G*k2G - dbin;
   energy_spectrum_all -> Fit("expf"," "," ",min_t,max_t);
   anal.energy_slope[0] = expf -> GetParameter(1);
@@ -50,21 +46,19 @@ DetectorAnomaly(){
   energy_spectrum_all -> GetListOfFunctions()->Add(t);
 
   return 0;
-
 }
 
 
-
 //
-// Class name  : 
+// Class name  :
 // Method name : int InvariantMassCorrelation()
 //
 // Description : Check the Mass vs. 12C Kinetic Enegy Correlation. Apply linear fit on
 //             : Mass .vs Energy scatter plot and record resulting slops for all strips
 // Input       : int st
-// Return      : 
+// Return      :
 //
-int 
+int
 InvariantMassCorrelation(int st){
 
   Kinema->cd();
@@ -95,7 +89,7 @@ InvariantMassCorrelation(int st){
   hslice_1 -> Fit("f1","Q");
   TLine * l = new TLine(200, 1000, MASS_12C*k2G, MASS_12C*k2G);
   hslice_1 -> GetListOfFunctions() -> Add(l);
-  
+
   //Get Fitting results
   for (int j=0;j<2; j++) {
     strpchk.ecorr.p[j][st]    = f1->GetParameter(j);
@@ -114,7 +108,7 @@ InvariantMassCorrelation(int st){
 
     float strip[NSTRIP],ex[NSTRIP];
     for (int k=0;k<NSTRIP;k++) {strip[k]=k+1;ex[k]=0;}
-    
+
     float min,max;
     float margin=0.2;
     GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
@@ -125,8 +119,8 @@ InvariantMassCorrelation(int st){
     mass_e_correlation_strip -> GetListOfFunctions() -> Add(mass_e_gr,"p");
     mass_e_correlation_strip -> GetXaxis()->SetTitle("Strip Number");
     mass_e_correlation_strip -> GetYaxis()->SetTitle("slope [GeV/keV]");
-    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, strpchk.p1.allowance, 2, 2, 2); 
-    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, -strpchk.p1.allowance, 2, 2, 2); 
+    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, strpchk.p1.allowance, 2, 2, 2);
+    DrawLine(mass_e_correlation_strip, 0, NSTRIP+1, -strpchk.p1.allowance, 2, 2, 2);
 
   }
 
@@ -136,16 +130,16 @@ InvariantMassCorrelation(int st){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : BananaFit()
 //
 // Description : fit banana with kinematic function. This routine is incomplete.
-//             : 1. fix hard corded runconst.E2T consntant 1459.43. 
+//             : 1. fix hard corded runconst.E2T consntant 1459.43.
 //             : 2. delete hbananan_1 histograms
 // Input       : int st
-// Return      : 
+// Return      :
 //
-void 
+void
 BananaFit(int st){
 
   char f[50];
@@ -182,18 +176,18 @@ BananaFit(int st){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : StripAnomaryDetector()
 //
-// Description : find suspicious strips through folllowing three checks 
+// Description : find suspicious strips through folllowing three checks
 //             : (chi-2 check of Gaussian Fit on Inviariant Mass is not included now)
 //             : strip_err_code (1111)
 //             : Bit[0]: RMS width of Carbin Invariant Mass Deviation from Average
 //             : Bit[1]: Maximum deviation of invariant mass peak from 12Mass
 //             : Bit[2]: Number of events in Banana Cuts Deviation from Average
 //             : Bit[3]: Invariant Mass vs. Energy Correlation
-// Input       : 
-// Return      : 
+// Input       :
+// Return      :
 //
 int
 StripAnomalyDetector(){
@@ -205,7 +199,7 @@ StripAnomalyDetector(){
   strpchk.chi2.allowance   = errdet.MASS_CHI2_ALLOWANCE;
   strpchk.evnt.allowance   = errdet.GOOD_CARBON_EVENTS_ALLOWANCE;
 
-  // Get weighted average for width of 12C invariant mass distributions 
+  // Get weighted average for width of 12C invariant mass distributions
   strpchk.width.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
 
@@ -235,37 +229,37 @@ StripAnomalyDetector(){
       InvariantMassCorrelation(i);
       if (!i) strpchk.p1.max   = fabs(double(strpchk.ecorr.p[1][i]));  // initialize max w/ strip 0
       if (fabs(double(strpchk.ecorr.p[1][i])) > fabs(double(strpchk.p1.max)) ) {
-	strpchk.p1.max = strpchk.ecorr.p[1][i];
-	strpchk.p1.st  = i;
+        strpchk.p1.max = strpchk.ecorr.p[1][i];
+        strpchk.p1.st  = i;
       }
       // Maximum devistion of peak from 12C_MASS
       if ((fabs(feedback.mdev[i]) > strpchk.dev.max)&&(feedback.mdev[i]!=ASYM_DEFAULT)) {
-	strpchk.dev.max  = feedback.mdev[i];
-	strpchk.dev.st   = i;
+        strpchk.dev.max  = feedback.mdev[i];
+        strpchk.dev.st   = i;
       }
       // Gaussian Mass fit Largest chi2
       if (feedback.chi2[i] > strpchk.chi2.max) {
-	strpchk.chi2.max  = fabs(double(feedback.chi2[i]));
-	strpchk.chi2.st   = i;
+        strpchk.chi2.max  = fabs(double(feedback.chi2[i]));
+        strpchk.chi2.st   = i;
       }
       // Good carbon events within banana
       evntdev[i]=fabs(double(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0]))/strpchk.evnt.average[0] ;
       if (evntdev[i]>strpchk.evnt.max) {
-	strpchk.evnt.max  = evntdev[i];
-	strpchk.evnt.st   = i;
+        strpchk.evnt.max  = evntdev[i];
+        strpchk.evnt.st   = i;
       }
 
       // Calculate one sigma of RMS distribution
       if (feedback.err[i]){
-	sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
-	  /feedback.err[i]/feedback.err[i];
-	counter++;
+        sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
+          /feedback.err[i]/feedback.err[i];
+        counter++;
       }
 
     } // end-if-(runinfo.ActiveStrip[i])
 
   }// end-for-loop(NSTRIP)
-  sigma=sqrt(sigma)/counter; 
+  sigma=sqrt(sigma)/counter;
 
 
   // Draw lines to objects
@@ -273,7 +267,7 @@ StripAnomalyDetector(){
   DrawLine(mass_sigma_vs_strip, 0, NSTRIP+1, widthlimit, 2, 2, 2);
   float chi2limit={strpchk.chi2.allowance};
   DrawLine(mass_chi2_vs_strip, 0, NSTRIP+1, chi2limit, 2, 2, 2);
-  // draw average line for 12C mass width distribution 
+  // draw average line for 12C mass width distribution
   DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1,    strpchk.dev.allowance, 2, 2, 2);
   DrawLine(mass_pos_dev_vs_strip, 0, NSTRIP+1, -1*strpchk.dev.allowance, 2, 2, 2);
   // draw allowance for good_carbon_events_strip
@@ -283,7 +277,7 @@ StripAnomalyDetector(){
   DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
 
 
-  // register and count suspicious strips 
+  // register and count suspicious strips
   char text[36];
   anal.anomaly.nstrip = anal.anomaly.strip_err_code = 0;
   for (int i=0;i<NSTRIP; i++) {
@@ -294,60 +288,60 @@ StripAnomalyDetector(){
 
       // deviation from average width of 12C mass distribution
       if (fabs(double(feedback.RMS[i]))-strpchk.width.average[0]>strpchk.width.allowance) {
-	strip_err_code += 1;  
-	printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
-	       i+1, feedback.RMS[i], strpchk.width.allowance);
-	DrawText(mass_sigma_vs_strip, float(i+1), feedback.RMS[i], 2, text);
-      }      
+        strip_err_code += 1;
+        printf(" WARNING: strip # %d Mass width %8.4f exeeds allowance limit %8.4f\n",
+               i+1, feedback.RMS[i], strpchk.width.allowance);
+        DrawText(mass_sigma_vs_strip, float(i+1), feedback.RMS[i], 2, text);
+      }
       // Invariant mass peak position deviation from 12C mass
       if (fabs(double(feedback.mdev[i])) > fabs(double(strpchk.dev.allowance))) {
-	strip_err_code += 2;
-	printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
-	       i+1, feedback.mdev[i], strpchk.dev.allowance);
-	DrawText(mass_pos_dev_vs_strip, float(i+1), feedback.mdev[i], 2, text);
+        strip_err_code += 2;
+        printf(" WARNING: strip # %d Mass position deviation %8.4f exeeds allowance limit %8.4f\n",
+               i+1, feedback.mdev[i], strpchk.dev.allowance);
+        DrawText(mass_pos_dev_vs_strip, float(i+1), feedback.mdev[i], 2, text);
       }
       // number of carbon events per strip checker
       if (evntdev[i] > strpchk.evnt.allowance) {
-	strip_err_code += 4;    
-	printf(" WARNING: strip # %d number of events in banana cut  %6.2f exeeds allowance limit %6.2f\n",
-	       i+1, evntdev[i], strpchk.evnt.allowance);
-	// comment in h2 histogram
-	DrawText(good_carbon_events_strip, float(i+1), good_carbon_events_strip->GetBinContent(i+1), 2, text);
+        strip_err_code += 4;
+        printf(" WARNING: strip # %d number of events in banana cut  %6.2f exeeds allowance limit %6.2f\n",
+               i+1, evntdev[i], strpchk.evnt.allowance);
+        // comment in h2 histogram
+        DrawText(good_carbon_events_strip, float(i+1), good_carbon_events_strip->GetBinContent(i+1), 2, text);
       }
       // mass vs. 12C kinetic energy correlation
       if (fabs(double(strpchk.ecorr.p[1][i])) > strpchk.p1.allowance) {
-	strip_err_code += 8; 
-	printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
-	       i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
-	DrawText(mass_e_correlation_strip, float(i+1), strpchk.ecorr.p[1][i], 2, text);
+        strip_err_code += 8;
+        printf(" WARNING: strip # %d Mass-Energy Correlation %8.4f exeeds allowance limit %8.4f\n",
+               i+1, strpchk.ecorr.p[1][i],strpchk.p1.allowance);
+        DrawText(mass_e_correlation_strip, float(i+1), strpchk.ecorr.p[1][i], 2, text);
 
       }
 
       /* Currently chi2 is poor. Follwing routine is disabled until chi2 is inproved
       // chi2 of Gaussian fit on Inv. Mass peak
       if (feedback.chi2[i] > strpchk.chi2.allowance) {
-      strip_err_code += 4;    
+      strip_err_code += 4;
       printf(" WARNING: strip # %d chi2 of Gaussian fit on mass %8.4f exeeds allowance limit %8.4f\n",
       i+1, feedback.chi2[i], strpchk.chi2.allowance);
       }*/
 
 
       if (strip_err_code)
-	{
-	  anal.anomaly.st[anal.anomaly.nstrip]=i;
-	  ++anal.anomaly.nstrip;
-	}
-    
+        {
+          anal.anomaly.st[anal.anomaly.nstrip]=i;
+          ++anal.anomaly.nstrip;
+        }
+
       // register global strip error code
       anal.anomaly.strip_err_code = anal.anomaly.strip_err_code | strip_err_code ;
 
-    } // end-of-if(runinfo.ActiveStrip[i])      
+    } // end-of-if(runinfo.ActiveStrip[i])
 
   } // end-of-for(NSTRIP) loop
-    
+
   // register unrecognized anomaly strips
   UnrecognizedAnomaly(anal.anomaly.st,anal.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
-		      anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
+                      anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
 
 
   return 0;
@@ -356,15 +350,15 @@ StripAnomalyDetector(){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : DrawText(TH1I * h, float x, float y, int color, char * text)
 //
 // Description : draw text on histogram. Text alignment is (center,top) by default
-//             : 
+//             :
 // Input       : TH1I * h, float x, float y, int color, char * text
-// Return      : 
+// Return      :
 //
-void 
+void
 DrawText(TH1I * h, float x, float y, int color, char * text){
 
   TText * t = new TText(x, y, text);
@@ -376,15 +370,15 @@ DrawText(TH1I * h, float x, float y, int color, char * text){
 }
 
 //
-// Class name  : 
+// Class name  :
 // Method name : DrawText(TH2F * h, float x, float y, int color, char * text)
 //
-// Description : draw text on histogram. 
-//             : 
+// Description : draw text on histogram.
+//             :
 // Input       : TH2F * h, float x, float y, int color, char * text
-// Return      : 
+// Return      :
 //
-void 
+void
 DrawText(TH2F * h, float x, float y, int color, char * text){
 
   TText * t = new TText(x, y, text);
@@ -397,15 +391,15 @@ DrawText(TH2F * h, float x, float y, int color, char * text){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : DrawLine()
 //
 // Description : DrawLines in TH1F histogram
 //             : Assumes x=x0=x1, y0=0, y1=y1
 // Input       : TH1F * h, float x, float y1, int color
-// Return      : 
+// Return      :
 //
-void 
+void
 DrawLine(TH1F * h, float x, float y1, int color, int lwidth){
 
   TLine * l = new TLine(x, 0, x, y1);
@@ -418,15 +412,15 @@ DrawLine(TH1F * h, float x, float y1, int color, int lwidth){
 }
 
 //
-// Class name  : 
+// Class name  :
 // Method name : DrawLine()
 //
 // Description : DrawLines in TH2F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
-// Return      : 
+// Return      :
 //
-void 
+void
 DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
 
   TLine * l = new TLine(x0, y, x1, y);
@@ -438,18 +432,18 @@ DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidt
   return;
 }
 
+
 //
-// Class name  : 
+// Class name  :
 // Method name : DrawLine()
 //
 // Description : DrawLines in TH1F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH1I * h, float x0, float x1, float y, int color, int lstyle
-// Return      : 
+// Return      :
 //
-void 
-DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth){
-
+void DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth)
+{
   TLine * l = new TLine(x0, y, x1, y);
   l -> SetLineStyle(lstyle);
   l -> SetLineColor(color);
@@ -460,9 +454,8 @@ DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidt
 }
 
 
-
 //
-// Class name  : 
+// Class name  :
 // Method name : BunchAsymmetryGaussianFit()
 //
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
@@ -477,7 +470,7 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
   TF1 * g = new TF1("g","gaus");
   g -> SetLineColor(2);
 
-  // Perform Gaussian Fit 
+  // Perform Gaussian Fit
   h1->Fit("g","Q");
   //float hight = g -> GetParameter(0);
   float mean  = g -> GetParameter(1);
@@ -514,36 +507,32 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
 
     if ((fillpat[bid])&&(A[bid]!=-ASYM_DEFAULT)) {
 
-      if (spinpat[bid] == 1) { 
-	local.active_bunch[0]++;
-	local.dev =  fabs(double(A[bid] - mean)); 
-	local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
+      if (spinpat[bid] == 1) {
+        local.active_bunch[0]++;
+        local.dev =  fabs(double(A[bid] - mean));
+        local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
       }
       if (spinpat[bid] == -1) {
-	local.active_bunch[1]++;  
-	local.dev =  fabs(double(A[bid] - (-1)*mean)); 
-	local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
+        local.active_bunch[1]++;
+        local.dev =  fabs(double(A[bid] - (-1)*mean));
+        local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
       }
 
       if (local.dev/dA[bid] > errdet.BUNCH_ASYM_SIGMA_ALLOWANCE) {
-	
-	local.bunch[local.nbunch] = bid;
-	local.A[local.nbunch] = A[bid];
-	local.nbunch++;
-	printf(" WARNING: bunch # %d asym sigma %6.1f exeeds %6.1f limit from average\n", 
-	       bid, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
 
-	// comment in h2 histogram
-	sprintf(text,"%6.1f sigma (%d)", local.dev/dA[bid],bid);
-	TText * t = new TText(bid+2, A[bid], text);
-	h2 -> GetListOfFunctions()->Add(t);
-	
+         local.bunch[local.nbunch] = bid;
+         local.A[local.nbunch] = A[bid];
+         local.nbunch++;
+         printf(" WARNING: bunch # %d asym sigma %6.1f exeeds %6.1f limit from average\n",
+                bid, local.dev/dA[bid], errdet.BUNCH_ASYM_SIGMA_ALLOWANCE);
+
+         // comment in h2 histogram
+         sprintf(text,"%6.1f sigma (%d)", local.dev/dA[bid],bid);
+         TText * t = new TText(bid+2, A[bid], text);
+         h2 -> GetListOfFunctions()->Add(t);
       }
-
-    } // end-of-if(fillpat[bid])
-
-  }// end-of-for(bid) loop
-
+    }
+  }
 
   // print chi2 in plot
   sprintf(text,"chi2(+)=%6.1f", local.chi2[0]/float(local.active_bunch[0]));
@@ -561,7 +550,7 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
 
     // global registration
     RegisterAnomaly(local.bunch, local.nbunch, anal.anomaly.bunch, anal.anomaly.nbunch,
-		    anal.anomaly.bunch, anal.anomaly.nbunch);
+                    anal.anomaly.bunch, anal.anomaly.nbunch);
 
 
     // Superpose h2 histogram
@@ -581,49 +570,47 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
 }
 
 //
-// Class name  : 
+// Class name  :
 // Method name : BunchAsymmetryAnomaly()
 //
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
-//             : registered as problematic bunch ID. 
-//             : The last argument of the function BunchAsymmetryGaussianFit() is the 
-//             : error code to record which asymmetry gives warning. 
-// Input       : 
-// Return      : 
+//             : registered as problematic bunch ID.
+//             : The last argument of the function BunchAsymmetryGaussianFit() is the
+//             : error code to record which asymmetry gives warning.
+// Input       :
+// Return      :
 //
-int 
-BunchAsymmetryAnomaly(){
+int BunchAsymmetryAnomaly()
+{
+   // X90 Asymmetry Check
+   printf("BunchAsymmetryAnomaly(): check for x90\n");
+   bnchchk.asym[0].sigma =
+     BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1], 1);
 
-  // X90 Asymmetry Check
-  printf("BunchAsymmetryAnomaly(): check for x90\n");
-  bnchchk.asym[0].sigma =
-    BunchAsymmetryGaussianFit(asym_bunch_x90, asym_vs_bunch_x90, basym.Ax90[0], basym.Ax90[1], 1);
+   // X45 Asymmetry Check
+   printf("BunchAsymmetryAnomaly(): check for x45\n");
+   bnchchk.asym[1].sigma =
+     BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1], 2);
 
-  // X45 Asymmetry Check
-  printf("BunchAsymmetryAnomaly(): check for x45\n");
-  bnchchk.asym[1].sigma =
-    BunchAsymmetryGaussianFit(asym_bunch_x45, asym_vs_bunch_x45, basym.Ax45[0], basym.Ax45[1], 2);
+   // Y45 Asymmetry Check
+   printf("BunchAsymmetryAnomaly(): check for y45\n");
+   bnchchk.asym[2].sigma =
+     BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1], 4);
 
-  // Y45 Asymmetry Check
-  printf("BunchAsymmetryAnomaly(): check for y45\n");
-  bnchchk.asym[2].sigma =
-    BunchAsymmetryGaussianFit(asym_bunch_y45, asym_vs_bunch_y45, basym.Ay45[0], basym.Ay45[1], 4);
-
-  return 0;
-
+   return 0;
 }
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : BunchAnomaryDetector()
 //
 // Description : find suspicious bunch thru following two checks of bunch by bunch
 //             : Asymmetry anomaly check
 //             : counting rate anomaly check
-// Input       : 
-// Return      : 
+// Input       :
+// Return      :
 //
 int
 BunchAnomalyDetector(){
@@ -642,7 +629,7 @@ BunchAnomalyDetector(){
 
     // check unrecognized anomaly
     UnrecognizedAnomaly(anal.anomaly.bunch, anal.anomaly.nbunch, runinfo.DisableBunch,runinfo.NDisableBunch,
-		      anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+                      anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
 
     anal.anomaly.bad_bunch_rate = runinfo.NFilledBunch ? anal.anomaly.nbunch/float(runinfo.NFilledBunch)*100 : -1 ;
 
@@ -654,15 +641,14 @@ BunchAnomalyDetector(){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : HotBunchFinder(int err_code)
 //
 // Description : find hot bunch from specific luminosity distribution
 // Input       : err_code
-// Return      : 
+// Return      :
 //
-int
-HotBunchFinder(int err_code){
+int HotBunchFinder(int err_code){
 
   float err[NBUNCH], bindex[NBUNCH];
   float max, min;
@@ -672,7 +658,7 @@ HotBunchFinder(int err_code){
   for (int bnch=0; bnch<NBUNCH; bnch++){
 
     // inistiarization
-    bindex[bnch]=bnch; err[bnch]=1; 
+    bindex[bnch]=bnch; err[bnch]=1;
 
     // calculate min and max range of the histogram
     if ((SpeLumi.Cnts[bnch])&&(init_flag) ) {min=SpeLumi.Cnts[bnch]; init_flag=0;}
@@ -689,12 +675,12 @@ HotBunchFinder(int err_code){
   bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events/bunch / WCM");
   bunch_spelumi -> GetYaxis()->SetTitle("# Bunches weighted by 1/sqrt(12C Events)");
 
-  for (int bnch=0;bnch<NBUNCH;bnch++) { 
-    if ((SpeLumi.Cnts[bnch])&&(bnch!=EXCLUDE_BUNCH)) 
+  for (int bnch=0;bnch<NBUNCH;bnch++) {
+    if ((SpeLumi.Cnts[bnch])&&(bnch!=EXCLUDE_BUNCH))
       bunch_spelumi->Fill(SpeLumi.Cnts[bnch], 1/SpeLumi.dCnts[bnch]);
   }
 
-  // define rate vs. bunch plot 
+  // define rate vs. bunch plot
   TGraph * gr = new TGraph(NBUNCH, bindex, SpeLumi.Cnts);
   gr -> SetMarkerSize(MSIZE);
   gr -> SetMarkerStyle(20);
@@ -704,7 +690,7 @@ HotBunchFinder(int err_code){
   spelumi_vs_bunch -> GetXaxis()->SetTitle("Bunch Number");
   spelumi_vs_bunch -> GetYaxis()->SetTitle("12C Yields/WCM");
 
-  // define gaussian function 
+  // define gaussian function
   // mean (parameter-1) is constrained to be between min and max of entries
   // sigma (parameter-1) is constrained to be between 0 and max-min of entries
   TF1 * g1 = new TF1("g1","gaus");
@@ -715,7 +701,7 @@ HotBunchFinder(int err_code){
 
   // apply gaussian fit on specific luminosity distribution
   bunch_spelumi->Fit(g1);
-  
+
   // get mean from gaussian fit
   float ave = g1->GetParameter(1);
   DrawLine(spelumi_vs_bunch, -0.5, NBUNCH+0.5, ave, 1, 1, 1);
@@ -731,7 +717,7 @@ HotBunchFinder(int err_code){
 
   // anomaly bunch registration
   int flag=0;
-  char text[16]; 
+  char text[16];
   for (int bnch=0;bnch<NBUNCH;bnch++) {
     if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
       anal.anomaly.bunch[anal.anomaly.nbunch] = bnch;
@@ -739,7 +725,7 @@ HotBunchFinder(int err_code){
       float dev = (SpeLumi.Cnts[bnch] - ave)/sigma;
       bnchchk.rate.max_dev = bnchchk.rate.max_dev < dev ? dev : bnchchk.rate.max_dev ;
       printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, dev);
-      
+
       // comment in h2 histogram
       sprintf(text,"Bunch %d",bnch);
       TText * t = new TText(bnch+2, SpeLumi.Cnts[bnch], text);
@@ -757,11 +743,11 @@ HotBunchFinder(int err_code){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : RegisterAnomaly(float *x, int nx, int *y, int ny, int *z, int &nz)
 //
 // Description : converts float array x[] into integer and call RegisterAnomaly(int,...)
-//             : 
+//             :
 // Input       : float x[], int nx, int y[], int ny,
 // Return      : result of (x[]&y[]) -> array z[], and nz
 //
@@ -777,7 +763,7 @@ RegisterAnomaly(float x[], int nx, int y[], int ny, int z[], int &nz){
 }
 
 //
-// Class name  : 
+// Class name  :
 // Method name : RegisterAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz)
 //
 // Description : Check whether anomalies are recognized or not.
@@ -785,9 +771,8 @@ RegisterAnomaly(float x[], int nx, int y[], int ny, int z[], int &nz){
 // Input       : int x[], int nx, int y[], int ny,
 // Return      : result of (x[]&y[]) -> array z[], and nz
 //
-int
-RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
-
+int RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz)
+{
   // if ny=0, then copy x[] -> z[]. the main loop doesn't work for ny=0
   if (!ny) {
     for (int i=0;i<nx;i++) z[i]=x[i];
@@ -801,13 +786,13 @@ RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 
     for (int j=J; j<ny ; j++){
       if (y[j]<x[i]) {
-	z[nz]=y[j]; nz++; J++; 
+        z[nz]=y[j]; nz++; J++;
       } else if (y[j]==x[i]) {
-	z[nz]=y[j]; nz++; J++; 
-	break;
-      }	else {
-	z[nz]=x[i]; nz++;
-	break;
+        z[nz]=y[j]; nz++; J++;
+        break;
+      } else {
+        z[nz]=x[i]; nz++;
+        break;
       }
     } // end-of-for(j)
 
@@ -823,7 +808,7 @@ RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : UnrecognizedAnomaly(int *x, int nx, int *y, int ny, int *z, int &nz){
 //
 // Description : Check whether anomalies are recognized or not.
@@ -831,10 +816,10 @@ RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
 // Input       : int *x, int nx, int *y, int ny,
 // Return      : unrecongnized (strip/bunch) ID in array z, and nz
 //
-int
-UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
-
+int UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz)
+{
   int match[nx];
+
   for (int i=0;i<nx;i++) match[i]=x[i];
 
   // Check for mathing between two arrays x[nx], y[ny]
@@ -845,18 +830,17 @@ UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz){
   }
 
   nz=0;
+
   for (int i=0;i<nx; i++) {
     if (match[i]!=-1) { z[nz]=match[i] ;nz++ ;}
   }
 
-
   return 0;
-
 }
 
 
 //
-// Class name  : 
+// Class name  :
 // Method name : QuadErrorDiv(float x, float y, float dx, float dy){
 //
 // Description : calculate quadratic error of x/y
@@ -867,8 +851,9 @@ float QuadErrorDiv(float x, float y, float dx, float dy){
   return y*x ? x/y*sqrt(dx*dx/x/x+dy*dy/y/y): 0 ;
 }
 
+
 //
-// Class name  : 
+// Class name  :
 // Method name : QuadErrorDiv(float dx, float dy)
 //
 // Description : calculate quadratic sum
@@ -882,12 +867,12 @@ float QuadErrorSum(float dx, float dy){
 
 /*
 //
-// Class name  : 
+// Class name  :
 // Method name : checkForBadBunches()
 //
 // Description : check for bad bunches
-// Input       : 
-// Return      : 
+// Input       :
+// Return      :
 //
 void checkForBadBunches()
 {
@@ -897,47 +882,47 @@ void checkForBadBunches()
   bnchchk.rate.allowance=errdet.BUNCH_RATE_SIGMA_ALLOWANCE;
 
 
-	printf("checking for bad bunches\n");
-	
-	double avg;
-	double sigma;
-	for(int i=0;i<NDETECTOR;i++)
-	{
-		avg=0.;
-		for(int j=0;j<120;j++)
-		{
-			avg+=Ncounts[i][j];
-		}
-		avg=avg/120.;
-		
-		sigma=0.;
-		for(int j=0;j<120;j++)
-		{
-			sigma+=((Ncounts[i][j]-avg)*(Ncounts[i][j]-avg));
-		}
-		sigma=sigma/120.;
-		sigma=sqrt(sigma);
-		
-		for(int j=0;j<120;j++)
-		{
-			if((Ncounts[i][j]-avg)> bnchchk.rate.allowance*sigma)
-			{
-			  anal.anomaly.bunch[anal.anomaly.nbunch]=j+1;
-			  anal.anomaly.nbunch++;
-			  printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
+        printf("checking for bad bunches\n");
 
-			}
-		}
-		
-	}
+        double avg;
+        double sigma;
+        for(int i=0;i<NDETECTOR;i++)
+        {
+                avg=0.;
+                for(int j=0;j<120;j++)
+                {
+                        avg+=Ncounts[i][j];
+                }
+                avg=avg/120.;
+
+                sigma=0.;
+                for(int j=0;j<120;j++)
+                {
+                        sigma+=((Ncounts[i][j]-avg)*(Ncounts[i][j]-avg));
+                }
+                sigma=sigma/120.;
+                sigma=sqrt(sigma);
+
+                for(int j=0;j<120;j++)
+                {
+                        if((Ncounts[i][j]-avg)> bnchchk.rate.allowance*sigma)
+                        {
+                          anal.anomaly.bunch[anal.anomaly.nbunch]=j+1;
+                          anal.anomaly.nbunch++;
+                          printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
+
+                        }
+                }
+
+        }
 
 
-	UnrecognizedAnomaly(anal.anomaly.bunch,anal.anomaly.nbunch,runinfo.DisableBunch,runinfo.NDisableBunch,
-			    anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
+        UnrecognizedAnomaly(anal.anomaly.bunch,anal.anomaly.nbunch,runinfo.DisableBunch,runinfo.NDisableBunch,
+                            anal.unrecog.anomaly.bunch, anal.unrecog.anomaly.nbunch);
 
 
 }
 
 
-			
+
 */

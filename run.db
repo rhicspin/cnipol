@@ -2880,7 +2880,9 @@
 
 [7311.002]
 	RUN_STATUS=Junk;
-	COMMENT="Number of events < 1M" [7311.002 - 004];
+	COMMENT="Number of events < 1M"
+
+[7311.002 - 004];
 
 [7311.005]
 	RUN_STATUS=Good;

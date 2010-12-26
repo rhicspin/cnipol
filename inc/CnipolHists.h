@@ -38,7 +38,7 @@ public:
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
    void  Fill(ChannelEvent *ch, std::string cutid="");
    void  PostFill();
-   void  SaveAllAs(TCanvas &c, std::string path="./");
+   virtual void  SaveAllAs(TCanvas &c, std::string path="./");
 
    ClassDef(CnipolHists, 1)
 };

@@ -1,46 +1,12 @@
+
 #include "Asym.h"
+#include "AsymCalc.h"
+#include "AsymRoot.h"
+#include "AsymRunDB.h"
+
 
 using namespace std;
 
-// Default Values for Run Condition
-TDatprocStruct dproc = {
-   400, 900,   // energy
-   -30, 30,    // banana cut width (Constant mode only)
-   0,          // FEEDBACKMODE
-   0,          // RAWHISTOGRAM
-   0,          // CMODE
-   0,          // DMODE
-   0,          // TMODE
-   0,          // AMODE
-   1,          // BMODE
-   0,          // ZMODE
-   0,          // MESSAGE
-   2,          // CBANANA
-   0,          // UPDATE
-   1,          // MMODE
-   0,          // NTMODE
-   1,          // RECONFMODE
-   0,          // RAMPMODE
-   0,          // STUDYMODE
-   0,          // SAVETREES
-   3,          // MassSigma banana curve cut within <MassSigma> away from the 12C mass
-   2,          // MassSigma banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
-   1.5e6,      // 1-sigma of 12C mass peak => 1.5e6 [keV]
-   0,          // tshift: Time shift in [ns]
-   0,          // Time shift in [ns] for injection w.r.t. flattop
-   0,          // additional deadlayer offset [ug/cm2]
-   999.05,     // Wall Current Monitor process Fill range +/-5[%]
-   8,          // Lower Mass limit for peak position adjustment fit default :8 GeV
-   0,          // nEventsProcessed
-   0,          // nEventsTotal
-   1,          // <thinout> event rate to be feed into feedback routine
-   1,          // Expected universal rate for given target
-   0.11,       // Target count/mm conversion
-   0,          // procDateTime date and time
-   0,          // procTimeReal
-   0,          // procTimeCpu
-   ""          // userCalibFile
-};
 
 StructMask mask = {
   0x3F          // detector mask 0x3F={11 1111} All detector active
@@ -56,8 +22,6 @@ ErrorDetector errdet = {
   5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
   20            // NBUNCH_REQUIREMENT;
 };
-
-
 
 StructExtInput extinput = {
   0, // CONFIG
@@ -94,97 +58,6 @@ StructCounterTgt cntr_tgt = {
   0     // taret motion entries
 };
 
-
-TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' ')
-{
-   //Run                   = 6;  // Run05, Run06,..
-   //RUNID                 = 7279.005; // RUNID
-   //runName;
-   StartTime             = 0; // StartTime;
-   StopTime              = 0; // StopTime;
-   RunTime               = 0; // RunTime;
-   GoodEventRate         = 0; // GoodEventRate;
-   EvntRate              = 0; // EvntRate;
-   ReadRate              = 0; // ReadRate;
-   WcmAve                = 0; // WcmAve;
-   WcmSum                = 0; // WcmSum;
-   BeamEnergy            = 0; // BeamEnergy;
-   RHICBeam              = 0; // RHICBeam;
-   PolarimetryID         = 1; // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution         = 0; // MaxRevolution;
-   target                = 'V'; // target
-   targetID              = '-'; // targetID
-   //TgtOperation;              // TgtOperation (Initialization is done in Initialization() )
-   for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
-   //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[NDETECTOR]
-   for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; DisableStrip[i] = 0; }
-   //ActiveStrip           = { 1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,
-   //                          1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1, 
-   //                          1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1 }; // ActiveStrip[NSTRIP]
-   NActiveStrip          = NSTRIP; // NAactiveStrip;
-   NDisableStrip         = 0; // NDisableStrip
-   //DisableStrip          = { 0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,
-   //                          0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0, 
-   //                          0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0 }; // DisableStrip[NSTRIP]
-   NFilledBunch          = 0; // NFilledBunch;
-   NActiveBunch          = 0; // NActiveBunch;
-   NDisableBunch         = 0; // NDisableBunch,
-   for (int i=0; i<NBUNCH; i++) { DisableBunch[i] = 0; }
-   //DisableBunch[NBUNCH]
-}
-
-TStructRunInfo::~TStructRunInfo()
-{
-}
-
-TStructRunInfo runinfo;
-
-/*
-TStructRunInfo runinfo = {
-    6, // Run05, Run06,..
-    7279.005, // RUNID
-    //"                            ",//(string(" ", 100)),
-    0, // StartTime;
-    0, // StopTime;
-    0, // RunTime;
-    0, // GoodEventRate;
-    0, // EvntRate;
-    0, // ReadRate;
-    0, // WcmAve;
-    0, // WcmSum;
-    0, // BeamEnergy;
-    0, // RHICBeam;
-    1, // PolarimetryID; Polarimetry-1 or Polarimetry-2
-    0, // MaxRevolution;
-  'V', // target
-  '-',// targetID
-    "", // TgtOperation (Initialization is done in Initialization() )
-    {  // ActiveDetector[NDETECTOR]
-      0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
-    },
-    {  // ActiveStrip[NSTRIP]
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1
-    },
-    NSTRIP, // NAactiveStrip;
-    0, // NDisableStrip
-    {  // DisableStrip[NSTRIP]
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0
-    },
-    0, // NFilledBunch;
-    0, // NActiveBunch;
-    0  // NDisableBunch,
-};
-*/
 
 StructTarget tgt = {
     0,  // target position x
@@ -234,8 +107,14 @@ float phi[NSTRIP]={
 3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,3.92699,
 4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,4.71239,
 5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
-} ;
+};
 
+AsymRoot                 gAsymRoot;
+AsymRunDB                gAsymRunDb;
+TStructRunDB             rundb;
+//TStructRunDB             gCurrentRunInfo;
+TStructRunInfo           runinfo;
+TDatprocStruct           dproc;
 atdata_struct            atdata;
 StructAverage            average;
 StructFeedBack           feedback;
@@ -244,7 +123,10 @@ StructAnalysis           anal;
 StructBunchPattern       phx, str;
 recordConfigRhicStruct  *cfginfo;
 
-map<string, string> gAsymEnv;
+map<string, string>      gAsymEnv;
+
+BunchAsym     basym;
+StructSpeLumi SpeLumi;
 
 int spinpat[120]; // spin pattern 120 bunches (ADO info)
 int fillpat[120]; // spin pattern 120 bunches (ADO info)
@@ -260,7 +142,7 @@ long int NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
 
 char * confdir;
 char * calibdir;
-char datafile[256];   // data file name
+std::string gDataFileName;   // data file name
 char reConfFile[256];    // overwrite configuration for T0 info
 char conf_file[256];  // overwrite configuration file
 char CalibFile[256];  // energy calibration file
@@ -288,202 +170,6 @@ int nTgtIndex = 0 ;
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TDatprocStruct *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec)
-{
-   //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TDatprocStruct *rec) : \n");
-   // if object has been created already delete it
-   free(rec);
-   rec = (TDatprocStruct *) realloc(rec, sizeof(TDatprocStruct));
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-void TDatprocStruct::Streamer(TBuffer &buf)
-{
-   if (buf.IsReading()) {
-      //printf("reading TDatprocStruct::Streamer(TBuffer &buf) \n");
-      buf >> enel;
-      buf >> eneu;
-      buf >> widthl;
-      buf >> widthu;
-      buf >> CMODE;
-      buf >> nEventsProcessed;
-      buf >> nEventsTotal;
-      buf >> thinout;
-      buf >> procDateTime >> procTimeReal >> procTimeCpu;
-   } else {
-      //printf("writing TDatprocStruct::Streamer(TBuffer &buf) \n");
-      buf << enel;
-      buf << eneu;
-      buf << widthl;
-      buf << widthu;
-      buf << CMODE;
-      buf << nEventsProcessed;
-      buf << nEventsTotal;
-      buf << thinout;
-      buf << procDateTime << procTimeReal << procTimeCpu;
-   }
-}
-
-
-/** */
-TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/**
- *
- */
-TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec)
-{
-   //printf("operator>>(TBuffer &buf, TStructRunInfo *rec) : \n");
-
-   //if (!rec) {
-   //   printf("ERROR in operator>>\n");
-   //   exit(-1);
-   //}
-
-   // if object has been created already delete it
-   //free(rec);
-
-   //rec = (TStructRunInfo *) realloc(rec, sizeof(TStructRunInfo) + 11*sizeof(char));
-   //rec = (TStructRunInfo *) realloc(rec, sizeof(TStructRunInfo));
-   //rec->TgtOperation = new char[10];
-
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-void TStructRunInfo::Streamer(TBuffer &buf)
-{
-   if (buf.IsReading()) {
-      //printf("reading TStructRunInfo::Streamer(TBuffer &buf) \n");
-      buf >> Run;
-      buf >> RUNID;
-      TString tstr;
-      buf >> tstr; runName = tstr.Data();
-      buf >> StartTime;
-      buf >> StopTime;
-      buf >> RunTime;
-      buf >> GoodEventRate;
-      buf >> EvntRate;
-      buf >> ReadRate;
-      buf >> WcmAve;
-      buf >> WcmSum;
-      buf >> BeamEnergy;
-      buf >> RHICBeam;
-      buf >> PolarimetryID;
-      buf >> MaxRevolution;
-      buf >> target;
-      buf >> targetID;
-      buf >> TgtOperation;
-      //buf.ReadString(TgtOperation, 32);
-      buf.ReadFastArray(ActiveDetector, NDETECTOR);
-      buf.ReadFastArray(ActiveStrip, NSTRIP);
-      buf >> NActiveStrip;
-      buf >> NDisableStrip;
-      buf.ReadFastArray(DisableStrip, NSTRIP);
-      buf >> NFilledBunch;
-      buf >> NActiveBunch;
-      buf >> NDisableBunch;
-      buf.ReadFastArray(DisableBunch, NBUNCH);
-
-   } else {
-      //printf("writing TStructRunInfo::Streamer(TBuffer &buf) \n");
-      buf << Run;
-      buf << RUNID;
-      TString tstr = runName;
-      buf << tstr;
-      buf << StartTime;
-      buf << StopTime;
-      buf << RunTime;
-      buf << GoodEventRate;
-      buf << EvntRate;
-      buf << ReadRate;
-      buf << WcmAve;
-      buf << WcmSum;
-      buf << BeamEnergy;
-      buf << RHICBeam;
-      buf << PolarimetryID;
-      buf << MaxRevolution;
-      buf << target;
-      buf << targetID;
-      buf << TgtOperation;
-      buf.WriteFastArray(ActiveDetector, NDETECTOR);
-      buf.WriteFastArray(ActiveStrip, NSTRIP);
-      buf << NActiveStrip;
-      buf << NDisableStrip;
-      buf.WriteFastArray(DisableStrip, NSTRIP);
-      buf << NFilledBunch;
-      buf << NActiveBunch;
-      buf << NDisableBunch;
-      buf.WriteFastArray(DisableBunch, NBUNCH);
-   }
-}
-
-
-/** */
-void TStructRunInfo::PrintAsPhp(FILE *f) const
-{ //{{{
-   fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
-   fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
-   fprintf(f, "$rc['runName']                      = \"%s\";\n", runName.c_str() );
-   fprintf(f, "$rc['StartTime']                    = %d;\n",     StartTime    );
-   fprintf(f, "$rc['StopTime']                     = %d;\n",     StopTime     );
-   fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
-   fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
-   fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
-   fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
-   fprintf(f, "$rc['WcmAve']                       = %f;\n",     WcmAve       );
-   fprintf(f, "$rc['WcmSum']                       = %f;\n",     WcmSum       );
-   fprintf(f, "$rc['BeamEnergy']                   = %f;\n",     BeamEnergy   );
-   fprintf(f, "$rc['RHICBeam']                     = %d;\n",     RHICBeam     );
-   fprintf(f, "$rc['PolarimetryID']                = %d;\n",     PolarimetryID);
-   fprintf(f, "$rc['MaxRevolution']                = %d;\n",     MaxRevolution);
-   fprintf(f, "$rc['target']                       = %d;\n",     target       );
-   fprintf(f, "$rc['targetID']                     = \"%c\";\n", targetID     );
-   fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", TgtOperation );
-
-   for (int i=0; i!=NDETECTOR; i++)
-   fprintf(f, "$rc['ActiveDetector'][%d]           = %#X;\n", i, ActiveDetector[i]);
-
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(ActiveStrip, NSTRIP);
-   fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, ActiveStrip[i]);
-
-   fprintf(f, "$rc['NActiveStrip']                 = %d;\n", NActiveStrip );
-   fprintf(f, "$rc['NDisableStrip']                = %d;\n", NDisableStrip);
-
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(DisableStrip, NSTRIP);
-   fprintf(f, "$rc['DisableStrip'][%d]             = %d;\n", i, DisableStrip[i]);
-      
-   fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
-   fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
-   fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
-} //}}}
-
-
-/**
- *
- */
 TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 {
    if (!rec) return buf;
@@ -493,9 +179,7 @@ TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 }
 
 
-/**
- *
- */
+/** */
 TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 {
    //printf("operator>>(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
@@ -586,78 +270,3 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
       }
    }
 }
-
-
-/** */
-TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunDB *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, TStructRunDB *&rec)
-{
-   //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunDB *rec) : \n");
-   // if object has been created already delete it
-   //free(rec);
-   //rec = (TStructRunDB *) realloc(rec, sizeof(TStructRunDB ));
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-void TStructRunDB::Streamer(TBuffer &buf)
-{
-   if (buf.IsReading()) {
-      TString tstr;
-      //printf("reading TStructRunDB::Streamer(TBuffer &buf) \n");
-      buf >> RunID;
-      buf >> isCalibRun;
-      buf >> tstr; calib_file_s      = tstr.Data();
-      buf >> tstr; alpha_calib_run_name = tstr.Data();
-      buf >> tstr; config_file_s     = tstr.Data();
-   } else {
-      TString tstr;
-      //printf("writing TStructRunDB::Streamer(TBuffer &buf) \n");
-      buf << RunID;
-      buf << isCalibRun;
-      tstr = calib_file_s;      buf << tstr;
-      tstr = alpha_calib_run_name; buf << tstr;
-      tstr = config_file_s;     buf << tstr;
-   }
-}
-
-
-bool TStructRunDB::operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const
-{
-  return (rec1.RunID < rec2.RunID);
-}
-
-
-/** */
-void TStructRunDB::Print(const Option_t* opt) const
-{
-   printf("RunID:             %f\n", RunID);
-   printf("isCalibRun:        %c\n", isCalibRun);
-   printf("calib_file_s:      %s\n", calib_file_s.c_str());
-   printf("alpha_calib_run_name: %s\n", alpha_calib_run_name.c_str());
-   printf("config_file_s:     %s\n", config_file_s.c_str());
-   printf("masscut_s:         %s\n", masscut_s.c_str());
-   printf("comment_s:         %s\n", comment_s.c_str());
-   //cout << "RunID: " <<
-}
-
-
-/** */
-void TStructRunDB::PrintAsPhp(FILE *f) const
-{ //{{{
-   fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
-   fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
-   fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
-} //}}}

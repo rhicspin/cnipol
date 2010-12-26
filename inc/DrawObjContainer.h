@@ -19,7 +19,7 @@
 #include "TKey.h"
 #include "TSystem.h"
 
-#include "ChannelEvent.h"
+//#include "ChannelEvent.h"
 
 class ChannelEvent;
 class DrawObjContainer;
@@ -29,9 +29,8 @@ typedef std::map<std::string, TObject*>::iterator ObjMapIter;
 typedef std::map<std::string, DrawObjContainer> DrawObjContainerMap;
 typedef std::map<std::string, DrawObjContainer>::iterator DrawObjContainerMapIter;
 
-/**
- *
- */
+
+/** */
 class DrawObjContainer : public TObject
 {
 public:
@@ -45,20 +44,20 @@ public:
 
    DrawObjContainer();
    DrawObjContainer(TDirectory *dir);
-   ~DrawObjContainer();
+   virtual ~DrawObjContainer();
 
    void ReadFromDir();
    void ReadFromDir(TDirectory *dir);
    //virtual void Print(const Option_t* opt="") const;
+   virtual void Fill(ChannelEvent *ch, std::string cutid="");
    void Print(const Option_t* opt="") const;
-   void SaveAllAs(TCanvas &c, std::string path="./");
+   virtual void PostFill();
+   virtual void SaveAllAs(TCanvas &c, std::string path="./");
    void Draw(Option_t* option = "")
       { ((TObject*)this)->Draw(option); }
    void Draw(TCanvas &c);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
-   virtual void Fill(ChannelEvent *ch, std::string cutid="");
-   virtual void PostFill();
    void Delete();
 
    ClassDef(DrawObjContainer, 1)

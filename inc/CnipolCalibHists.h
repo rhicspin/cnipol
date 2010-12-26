@@ -15,13 +15,13 @@
 
 #include "AsymHeader.h"
 
-#include "ChannelEvent.h"
 #include "DrawObjContainer.h"
+#include "ChannelEvent.h"
+
+//class ChannelEvent;
 
 
-/**
- *
- */
+/** */
 class CnipolCalibHists : public DrawObjContainer
 {
 public:
@@ -31,7 +31,7 @@ public:
 
    CnipolCalibHists();
    CnipolCalibHists(TDirectory *dir);
-   ~CnipolCalibHists();
+   virtual ~CnipolCalibHists();
 
    void CnipolCalibHistsBook();
    //virtual void Print(const Option_t* opt="") const;

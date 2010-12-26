@@ -22,11 +22,13 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
+#include "AsymCalc.h"
 #include "AsymGlobals.h"
+#include "AsymHbook.h"
+#include "AsymMain.h"
 #include "AsymProcess.h"
 #include "AsymRecover.h"
 #include "AsymRootGlobals.h"
-#include "AsymMain.h"
 
 int  readloop();
 void PrintPattern(char*);

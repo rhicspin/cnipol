@@ -1,12 +1,14 @@
 //
 // 
 //
+
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
+
 #include "Kinema.h"
 
 using namespace std;
@@ -16,9 +18,9 @@ float x=50;   // [ug/cm*2]
 float dE=400; // [keV]
 const float Precision = 0.1; // [keV]
 
-int
-Usage(char *argv[]){
 
+int Usage(char *argv[])
+{
   cout << "\n Usage:" << argv[0] << "[-w <dwidth>][-e <energy>][-i][-s][-h][-x]" << endl;
   cout << "\n Description: " << endl;
   cout << "\t Convert energy deposit <Edep> in [keV] to kinetic energy <Ekin> of 12C " << endl;
@@ -37,9 +39,9 @@ Usage(char *argv[]){
 
 }
 
-int 
-Example(char *argv[]){
 
+int Example(char *argv[])
+{
   cout << "\n Exapmle: " << endl;
   cout << "  1) Calculate <Ekin> for <Edep>=400 and <dwidth>=55 " << endl;
   cout << "\t" << argv[0] << " -e 400 -w 55 " << endl << endl;
@@ -47,7 +49,6 @@ Example(char *argv[]){
   cout << "\t" << argv[0] << " -e 900 -w 70 -i " << endl;
   cout << endl;
   exit(0);
-
 }
 
 
@@ -60,76 +61,69 @@ Example(char *argv[]){
 // Input       : (float Ekin, float x)
 // Return      : dE
 //
-float 
-CalcInvertKinema(float Ekin, float x){
-
-  float Ekin0 = 0;
-  float dE = 1; // [keV]
-  while (fabs(Ekin-Ekin0)>Precision) {
-
-    Ekin0 = ekin(dE,x);
-    dE += Precision;
-    if (Ekin-Ekin0<0) return dE;
-
-  }
-
-  return dE;
-
+float CalcInvertKinema(float Ekin, float x)
+{
+   float Ekin0 = 0;
+   float dE = 1; // [keV]
+   while (fabs(Ekin-Ekin0)>Precision) {
+ 
+      Ekin0 = ekin(dE,x);
+      dE += Precision;
+      if (Ekin-Ekin0<0) return dE;
+   }
+ 
+   return dE;
 }
 
 
-int 
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+   bool  InvertKinema = false;
+   bool  ShowUnit = false;
+   float Ekin;
+   int   opt;
 
-  bool InvertKinema = false;
-  bool ShowUnit = false;
-  float Ekin;
-
-  int opt;
    while (EOF != (opt = getopt(argc, argv, "w:e:ishx?"))) {
-    switch (opt) {
-    case 'w':
-      x=atof(optarg);
-      break;
-    case 'e':
-      dE=atof(optarg);
-      break;
-    case 'i':
-      InvertKinema = true;
-      break;
-    case 's':
-      ShowUnit = true;
-      break;
-    case 'x':
-      Example(argv);
-      break;
-    case 'h':
-    case '?':
-    case '*':
-      Usage(argv);
-    }
-
+      switch (opt) {
+      case 'w':
+         x=atof(optarg);
+         break;
+      case 'e':
+         dE=atof(optarg);
+         break;
+      case 'i':
+         InvertKinema = true;
+         break;
+      case 's':
+         ShowUnit = true;
+         break;
+      case 'x':
+         Example(argv);
+         break;
+      case 'h':
+      case '?':
+      case '*':
+         Usage(argv);
+      }
    }
       
    if (InvertKinema) {// Search dE close enough to resulting Ekin
-    Ekin = dE; 
-    dE = CalcInvertKinema(Ekin, x);
+      Ekin = dE; 
+      dE = CalcInvertKinema(Ekin, x);
    }
    
    // Call Main routine
    Ekin = ekin(dE,x);
-
+ 
    // print results
    if (ShowUnit) {
-     printf("=====================================================\n");
-     printf("   Ekin[keV]   Edep[keV]  Eloss[keV]  dwidth[ug/cm^2]\n");
-     printf("=====================================================\n");
+      printf("=====================================================\n");
+      printf("   Ekin[keV]   Edep[keV]  Eloss[keV]  dwidth[ug/cm^2]\n");
+      printf("=====================================================\n");
    }
-
+ 
    float Eloss = Ekin - dE;
    printf("%12.2f%12.2f%12.2f%12.2f\n",Ekin,dE,Eloss,x);
-
+ 
    return 0;
-
 }
-

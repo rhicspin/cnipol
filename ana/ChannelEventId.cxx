@@ -75,9 +75,7 @@ bool ChannelEventId::operator()(const ChannelEventId &id1, const ChannelEventId 
 //}
 
 
-/**
- *
- */
+/** */
 bool operator<(const ChannelEventId &chEvId1, const ChannelEventId &chEvId2)
 {
    if (chEvId1.fRevolutionId < chEvId2.fRevolutionId) return true;

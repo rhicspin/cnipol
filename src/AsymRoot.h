@@ -12,15 +12,23 @@
 #include "TTree.h"
 #include "TLine.h"
 
+#include "Asym.h"
 #include "AlphaCalibrator.h"
 #include "AnaEvent.h"
 #include "AsymGlobals.h"
+#include "AnaInfo.h"
+#include "RunInfo.h"
+
 #include "ChannelEvent.h"
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
+
+struct StructRunConst;
+struct StructFeedBack;
+struct processEvent;
 
 
 class AsymRoot

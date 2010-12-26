@@ -9,10 +9,43 @@
 #include "TH2F.h"
 #include "TLine.h"
 
-#include "AsymHeader.h"
+//#include "AnaInfo.h"
 #include "Asym.h"
+#include "AsymHeader.h"
+//#include "AsymRoot.h"
+#include "AsymRunDB.h"
+//#include "RunInfo.h"
+
+class AsymRoot;
+class AsymRunDB;
+class TDatprocStruct;
+struct ErrorDetector;
+struct atdata_struct           ;
+class TStructRunDB;
+class TStructRunInfo;
+struct StructExtInput          ;
+struct StructAverage           ;
+struct StructHistStat          ;
+struct StructFeedBack          ;
+struct StructCounter           ;
+struct StructCounterTgt        ;
+struct StructRunConst          ;
+struct StructMask              ;
+struct StructFlag              ;
+struct StructReadFlag          ;
+struct StructAnalysis          ;
+struct StructTarget            ;
+struct StructBunchPattern      ;
+struct StructHist;
+struct BunchAsym;
+struct StructSpeLumi;
 
 extern std::map<std::string, std::string> gAsymEnv;
+
+extern BunchAsym basym;
+extern StructSpeLumi SpeLumi;
+
+extern const int ASYM_DEFAULT;
 
 extern int spinpat[120]; // spin pattern 120 bunches
 extern int fillpat[120]; // fill pattern 120 bunches
@@ -29,7 +62,7 @@ extern long int NRcounts[6][120][RAMPTIME];// counts 6det 120bunch RAMPTIME sec
 
 extern char * confdir;
 extern char * calibdir;
-extern char datafile[256];   // data file name 
+extern std::string gDataFileName;   // data file name 
 extern char reConfFile[256];         // update configuration file for T0 info
 extern char conf_file[256];          // update configuration file for T0 info
 extern char CalibFile[256];          // Energy calibration file
@@ -46,24 +79,27 @@ extern int      NFilledBunch;   // number of filled bunch
 extern long int Ngood[120];   // number of evts after carbon cut 
 extern long int Ntotal[120];  // number of evts before carbon cut 
 extern long int Nback[120];   // number of evts below the curbon cut
-extern TDatprocStruct      dproc;
-extern ErrorDetector       errdet;
-extern atdata_struct       atdata;
-extern TStructRunDB        rundb;
-extern TStructRunInfo      runinfo;
-extern StructExtInput      extinput;
-extern StructAverage       average;
-extern StructHistStat      hstat;
-extern StructFeedBack      feedback;
-extern StructCounter       cntr;
-extern StructCounterTgt    cntr_tgt;
-extern StructRunConst      runconst;
-extern StructMask          mask;
-extern StructFlag          Flag;
-extern StructReadFlag      ReadFlag;
-extern StructAnalysis      anal;
-extern StructTarget        tgt;
-extern StructBunchPattern  phx, str;
+
+extern AsymRoot                gAsymRoot;
+extern AsymRunDB               gAsymRunDb;
+extern TDatprocStruct          dproc;
+extern ErrorDetector           errdet;
+extern atdata_struct           atdata;
+extern TStructRunDB            rundb;
+extern TStructRunInfo          runinfo;
+extern StructExtInput          extinput;
+extern StructAverage           average;
+extern StructHistStat          hstat;
+extern StructFeedBack          feedback;
+extern StructCounter           cntr;
+extern StructCounterTgt        cntr_tgt;
+extern StructRunConst          runconst;
+extern StructMask              mask;
+extern StructFlag              Flag;
+extern StructReadFlag          ReadFlag;
+extern StructAnalysis          anal;
+extern StructTarget            tgt;
+extern StructBunchPattern      phx, str;
 extern recordConfigRhicStruct *cfginfo;
 
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)

@@ -1,11 +1,11 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
 //  file name :   AsymRoot.cc
-// 
+//
 //  Authors   :   I. Nakagawa
 //                Dmitri Smirnov
 //
 //  Creation  :   7/11/2006
-//                
+//
 
 /**
  *
@@ -37,7 +37,7 @@ TDirectory * Asymmetry;
 TH2F * rate_vs_delim;
 
 // FeedBack Dir
-TH2F * mdev_feedback;  
+TH2F * mdev_feedback;
 TH1F * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 // Raw Directory
@@ -51,10 +51,10 @@ TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
 // Kinema Direcotry
 TH2F * t_vs_e[TOT_WFD_CH];
 TH2F * t_vs_e_yescut[TOT_WFD_CH];
-TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy 
-TF1  * banana_cut_l[NSTRIP][2];     // banana cut low 
+TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
+TF1  * banana_cut_l[NSTRIP][2];     // banana cut low
 TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
-TLine  * energy_cut_l[NSTRIP];      // energy cut low 
+TLine  * energy_cut_l[NSTRIP];      // energy cut low
 TLine  * energy_cut_h[NSTRIP];      // energy cut high
 TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
 TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
@@ -70,22 +70,22 @@ TH1F * specific_luminosity;         // specific luminosity
 
 // ErrDet Direcotry
 TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
-TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip 
+TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip
 TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
 TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
 TH1I * good_carbon_events_strip;    // number of good carbon events per strip
 TH2F * spelumi_vs_bunch;            // Counting rate vs. bunch
 TH1F * bunch_spelumi;               // Counting rate per bunch hisogram
-TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45 
-TH1F * asym_bunch_x90;              // Bunch asymmetry histogram for x90 
-TH1F * asym_bunch_y45;              // Bunch asymmetry histogram for y45 
+TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45
+TH1F * asym_bunch_x90;              // Bunch asymmetry histogram for x90
+TH1F * asym_bunch_y45;              // Bunch asymmetry histogram for y45
 
 // Asymmetry Directory
 TH2F * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
 TH2F * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
 TH2F * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
-TH2F * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit  
-TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit  
+TH2F * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit
+TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
 
 
 /**
@@ -112,14 +112,14 @@ AsymRoot::~AsymRoot()
 // Method name : RootFile(char * filename)
 //
 // Description : Open Root File and define directory structure of histograms
-//             : 
+//             :
 // Input       : char *filename
-// Return      : 
+// Return      :
 //
 int AsymRoot::RootFile(char *filename)
 {
    rootfile = new TFile(filename,"RECREATE","AsymRoot Histogram file");
- 
+
    // directory structure
    Run       = rootfile->mkdir("Run");
    Raw       = rootfile->mkdir("Raw");
@@ -128,12 +128,12 @@ int AsymRoot::RootFile(char *filename)
    Bunch     = rootfile->mkdir("Bunch");
    ErrDet    = rootfile->mkdir("ErrDet");
    Asymmetry = rootfile->mkdir("Asymmetry");
- 
+
    if (dproc.CMODE)
       fHists = new CnipolCalibHists(rootfile);
    else
       fHists = new CnipolHists(rootfile);
- 
+
    return 0;
 }
 
@@ -166,7 +166,7 @@ void AsymRoot::CreateTrees()
    // Create trees with channel events
    if (dproc.SAVETREES.test(1) ) {
 
-      char tmpCharStr[19]; 
+      char tmpCharStr[19];
 
       for (int i=0; i!=NSTRIP; i++) {
          sprintf(tmpCharStr, "ChannelEventTree%02d", i);
@@ -196,7 +196,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
       TFile *f = TFile::Open(cfname.c_str());
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
-      
+
       if (fEventConfig) {
 
          //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
@@ -245,7 +245,7 @@ void AsymRoot::AddChannelEvent()
       //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
 
       fChannelEvents.insert(*fChannelEvent);
-      
+
       //int sizeb = fChannelEvents.size()*sizeof(ChannelEvent);
       int sizen = fChannelEvents.size();
 
@@ -338,7 +338,7 @@ void AsymRoot::UpdateRunConfig()
    //Calibrator *calibrator;
 
    if (dproc.CMODE) {
-		//Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
+                //Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
       //calibrator = new AlphaCalibrator();
       AlphaCalibrator* calibrator = new AlphaCalibrator();
       calibrator->Calibrate(fHists);
@@ -351,7 +351,7 @@ void AsymRoot::UpdateRunConfig()
       //(static_cast<AlphaCalibrator*> (fEventConfig->fCalibrator))->Calibrate(fHists);
       delete calibrator;
    } else {
-		//Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
+                //Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
       //calibrator = new DeadLayerCalibrator();
       //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
       DeadLayerCalibrator* calibrator = new DeadLayerCalibrator();
@@ -409,7 +409,7 @@ void AsymRoot::SaveEventTree()
    ChannelEventSet::iterator nextmi;
 
    for (mi=mb; mi!=me; mi++) {
-     
+
       //mi->Print();
 
       fAnaEvent->fEventId = mi->fEventId;
@@ -443,33 +443,34 @@ void AsymRoot::SaveEventTree()
 // Method name : BookHists()
 //
 // Description : Book AsymRoot Histograms
-//             : 
-// Input       : 
-// Return      : 
+//             :
+// Input       :
+// Return      :
 //
 int AsymRoot::BookHists(TStructRunInfo runinfo)
 {
   Char_t hname[100], htitle[100];
- 
-  rootfile->cd();
 
+  rootfile->cd();
   Kinema->cd();
 
   // 1-dim Energy Spectrum
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
+
   for (int i=0; i<NDETECTOR; i++) {
     sprintf(hname,"energy_spectrum_det%d",i+1);
     sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", runinfo.RUNID, i+1);
     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
     energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
   }
+
   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", runinfo.RUNID);
   energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
 
   // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
   // target events strip [73 - 76].
-  for (int i=0; i<TOT_WFD_CH; i++) { 
+  for (int i=0; i<TOT_WFD_CH; i++) {
 
     sprintf(hname,"t_vs_e_st%d",i+1);
     sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", runinfo.RUNID, i+1);
@@ -491,12 +492,12 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
 
     sprintf(hname,"mass_nocut_st%d",i+1);
     sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
     mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
 
     sprintf(hname,"mass_yescut_st%d",i+1);
     sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_yescut[i] -> SetLineColor(2);
 
@@ -504,11 +505,11 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
 
   // FeedBack Directory
   FeedBack->cd();
-  for (int i=0; i<TOT_WFD_CH; i++) { 
+  for (int i=0; i<TOT_WFD_CH; i++) {
 
     sprintf(hname,"mass_feedback_st%d",i+1);
     sprintf(htitle,"%.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);     
+    mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
     mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
     mass_feedback[i] -> SetLineColor(2);
 
@@ -592,8 +593,8 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
 //
 // Description : Book ROOT Functions and Histograms using Feedback infomations
 //             : This routine shuould be called after Feedback operation
-// Input       : 
-// Return      : 
+// Input       :
+// Return      :
 //
 int AsymRoot::BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
    StructFeedBack &feedback)
@@ -612,23 +613,23 @@ int AsymRoot::BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
 
        sigma = j ? runconst.M2T*feedback.RMS[i]*dproc.MassSigmaAlt :
                    runconst.M2T*feedback.RMS[i]*dproc.MassSigma;
-       int Style = j + 1 ; 
+       int Style = j + 1 ;
 
-       // lower limit 
-       sprintf(formula,"%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
+       // lower limit
+       sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
        sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
        banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-       banana_cut_l[i][j] -> SetLineColor(Color); 
-       banana_cut_l[i][j] -> SetLineWidth(Width); 
-       banana_cut_l[i][j] -> SetLineStyle(Style); 
+       banana_cut_l[i][j] -> SetLineColor(Color);
+       banana_cut_l[i][j] -> SetLineWidth(Width);
+       banana_cut_l[i][j] -> SetLineStyle(Style);
 
-       // upper limit 
+       // upper limit
        sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, sigma);
        sprintf(fname, "banana_cut_h_st%d", i);
        banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-       banana_cut_h[i][j] -> SetLineColor(Color); 
-       banana_cut_h[i][j] -> SetLineWidth(Width); 
-       banana_cut_h[i][j] -> SetLineStyle(Style); 
+       banana_cut_h[i][j] -> SetLineColor(Color);
+       banana_cut_h[i][j] -> SetLineWidth(Width);
+       banana_cut_h[i][j] -> SetLineStyle(Style);
     }
 
     // energy cut low
@@ -661,24 +662,22 @@ int AsymRoot::BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
 // Method name : DeleteHistogram
 //
 // Description : Delete Unnecessary Histograms
-//             : 
-// Input       : 
-// Return      : 
+//             :
+// Input       :
+// Return      :
 //
 int AsymRoot::DeleteHistogram()
 {
-  // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles 
+  // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
-
-    t_vs_e[i] -> Delete();
-    t_vs_e_yescut[i] -> Delete();
-    mass_vs_e_ecut[i] -> Delete();  // Mass vs. 12C Kinetic Energy 
-    mass_nocut[i] -> Delete();
-    //    mass_yescut[i] -> Delete();
-
+     t_vs_e[i]->Delete();
+     t_vs_e_yescut[i]->Delete();
+     mass_vs_e_ecut[i]->Delete();  // Mass vs. 12C Kinetic Energy
+     mass_nocut[i]->Delete();
+     //    mass_yescut[i] -> Delete();
   }
-  
+
   return 0;
 }
 
@@ -688,25 +687,25 @@ int AsymRoot::DeleteHistogram()
 // Method name : RootFile(char * filename)
 //
 // Description : Write out objects in memory and dump in rootfile before closing it
-//             : 
-// Input       : 
-// Return      : 
+//             :
+// Input       :
+// Return      :
 //
 int AsymRoot::CloseROOTFile()
 {
   rootfile->cd();
   Kinema->cd();
 
-  for (int i=0;i<NSTRIP; i++){
-    if (t_vs_e[i]) {
-      for (int j=0; j<2; j++){
-	if (banana_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_l[i][j]);
-	if (banana_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(banana_cut_h[i][j]);
-      }
+  for (int i=0; i<NSTRIP; i++) {
+     if (t_vs_e[i]) {
+        for (int j=0; j<2; j++){
+           if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
+           if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
+        }
 
-      if (energy_cut_l[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_l[i]);
-      if (energy_cut_h[i]) t_vs_e[i] -> GetListOfFunctions() -> Add(energy_cut_h[i]);
-    }
+        if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
+        if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
+     }
   }
 
   // Write out memory before closing
@@ -752,7 +751,7 @@ int AsymRoot::CloseROOTFile()
   // close rootfile
   rootfile->Close();
 
-  if (dproc.SAVETREES.any()) { 
+  if (dproc.SAVETREES.any()) {
      SaveChannelTrees();
      SaveEventTree();
      WriteTreeFile();

@@ -50,9 +50,7 @@ Float_t ChannelEvent::GetTime()
 }
 
 
-/**
- *
- */
+/** */
 void ChannelEvent::Print(const Option_t* opt) const
 {
    opt = "";
@@ -66,6 +64,7 @@ void ChannelEvent::Print(const Option_t* opt) const
 }
 
 
+/** */
 bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
 {
    if (ch1.fEventId < ch2.fEventId) return true;
@@ -74,6 +73,7 @@ bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
 }
 
 
+/** */
 Bool_t ChannelEvent::PassQACut1()
 {
    //if (GetEnergyA() < 150) return false;  // keV

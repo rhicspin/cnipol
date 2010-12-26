@@ -13,14 +13,15 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
+#include "AnaInfo.h"
 #include "AsymGlobals.h"
 #include "AsymRootGlobals.h"
-#include "WeightedMean.h"
+//#include "WeightedMean.h"
 #include "AsymErrorDetector.h"
 
+struct StructHistStat;
 
-const int ASYM_DEFAULT=-999;
-extern const int ASYM_DEFAULT;
+//const int N=NSTRIP;
 
 //===========================================================================
 //                      Main End Process Routine
@@ -33,6 +34,7 @@ int TgtHist();
 //                       Anaolyzing power
 //===========================================================================
 float WeightAnalyzingPower(int hid);
+int   ExclusionList(int i, int j, int RHICBeam);
 
 //===========================================================================
 //                              Strip by Strip
@@ -59,48 +61,50 @@ class AsymFit
   Float_t sinx(Float_t, Double_t *);
   Double_t GetFittingErrors(TMinuit *gMinuit, Int_t NUM);
   */
-
 };
-
 
 //===========================================================================
 //                          Bunch by Bunch
 //===========================================================================
 struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
-  float Ax90[2][NBUNCH];
-  float Ax45[2][NBUNCH];
-  float Ay45[2][NBUNCH];
-  struct Ave {
-    float Ax90[2];  // bunch averaged asymmetry 
-    float Ax45[2];
-    float Ay45[2];
-    float Ax[2];   // left-right average asymmetry 
-    float Ay[2];   // top-bottom average asymmetry
-    float phase[2];// spin vector angle w.r.t vertical axis [rad]
-  } ave;
-} ;
+   float Ax90[2][NBUNCH];
+   float Ax45[2][NBUNCH];
+   float Ay45[2][NBUNCH];
+   struct Ave {
+      float Ax90[2];  // bunch averaged asymmetry 
+      float Ax45[2];
+      float Ay45[2];
+      float Ax[2];   // left-right average asymmetry 
+      float Ay[2];   // top-bottom average asymmetry
+      float phase[2];// spin vector angle w.r.t vertical axis [rad]
+   } ave;
+};
 
-extern BunchAsym basym;
 struct StructSpeLumi {
-  float Cnts[NBUNCH];
-  float dCnts[NBUNCH];
-  float ave;
-  float max;
-  float min;
-} ;
+   float Cnts[NBUNCH];
+   float dCnts[NBUNCH];
+   float ave;
+   float max;
+   float min;
+};
 
-extern StructSpeLumi SpeLumi;
+int  sqass(float A, float B, float C, float D, float *asym, float *easym);
 int  CumulativeAsymmetry();
-int calcBunchAsymmetry();
+int  calcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
-int BunchAsymmetry(int, float A[], float dA[]);
+int  BunchAsymmetry(int, float A[], float dA[]);
+
+void  calcWeightedMean(float A[], float dA[], int NDAT, float &Ave, float &dAve);
+float WeightedMean(float A[], float dA[], int NDAT);
+float WeightedMeanError(float A[], float dA[], float Ave, int NDAT);
 
 // bunch asymmetry average routines
-void calcBunchAsymmetryAverage();
-void calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
+void  calcBunchAsymmetryAverage();
+void  calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
 float calcDivisionError(float x, float y, float dx, float dy);
-
+int   calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
+float TshiftFinder(int, int);
 
 //===========================================================================
 //           Calculate Statistics adn  Result Printing
@@ -116,13 +120,15 @@ void DrawPlotvsTar(void);
 //===========================================================================
 float ProfileError(float x);
 
+void  SpecificLuminosity(float&, float&, float&);
+
 //===========================================================================
 //           Some utility routines to determin histogram range
 //===========================================================================
 float GetMax(int N, float A[]);
 float GetMin(int N, float A[]);
-void GetMinMax(int N, float A[], float margin, float &min, float &max);
-void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
+void  GetMinMax(int N, float A[], float margin, float &min, float &max);
+void  GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
 float QuadErrorDiv(float x, float y, float dx, float dy);
 
 

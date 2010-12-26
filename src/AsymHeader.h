@@ -13,6 +13,7 @@
 #define NSTRIP_PER_DETECTOR 12     // Number of strips per detector
 #define NTGTWFD 4                  // Number of target WFD channels
 #define NDETECTOR 6                // Number of detectors
+#define NPOLARIMETERS 4            // Number of polarimeters
 #define NBUNCH 120                 // Maximum bunch number
 #define R2D 57.29577951            // [rad] -> [degree]
 #define MHz 1e-6                   // [Hz]  -> [MHz]
@@ -24,6 +25,13 @@
 #define REC_BEAMMASK 0x00030000
 
 #define CARBON_PATH_DISTANCE 18    // distance traveled by carbon, 18 cm in 2009 run
+
+#define NWORDS_PAWC 20000000       // paw memory size 
+#define RECLEN 1024
+#define HMINENE 100.               // minimum energy for histograms 
+#define HMAXENE 1500.              // maximum energy for histograms
+#define HENEBIN 180                // number of energy bin in banana plot
+#define NTLIMIT 100000000
 
 // 241 Am peak 5.486MeV (85%)
 // 

@@ -23,6 +23,7 @@
 #include "AsymRoot.h"
 #include "AsymRead.h"
 #include "AsymRunDB.h"
+#include "AsymHbook.h"
 
 
 int  BunchSelect(int bid);
@@ -31,7 +32,6 @@ int  read_ramptiming(char *filename);
 void reConfig(recordConfigRhicStruct *cfginfo);
 int  ConfigureActiveStrip(int mask);
 //int DisabledDet(int det);
-int  sqass(float A, float B, float C, float D, float *asym, float *easym);
 int  Initialization();
 
 #endif /* ASYM_MAIN_H */

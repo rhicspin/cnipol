@@ -8,8 +8,10 @@
 #include "TBuffer.h"
 
 #define BSIZE 0x1000000			// 16 MByte
+//#define BSIZE 0x40000
 
-#define REC_BEGIN	0x00000001
+#define REC_BEGIN    0x00000001
+#define REC_SUBRUN	0x00000002
 #define REC_POLADO	0x00000101
 #define REC_TAGADO	0x00000102
 #define REC_BEAMADO	0x00000103
@@ -33,8 +35,12 @@
 #define REC_PCTARGET    0x00000502        // target history record
 #define REC_END		0x00000999
 #define REC_TYPEMASK	0x00007FFF
+#define REC_MASK_BEAM   0x00010000 // Risky... assume that blue = ! yellow
 #define REC_YELLOW	0x00010000 // or'ed with the type
 #define REC_BLUE	0x00020000 // or'ed with the type
+#define REC_MASK_STREAM 0x00300000
+#define REC_UPSTREAM	   0x00100000 // or'ed with the type
+#define REC_DOWNSTREAM	0x00200000 // or'ed with the type
 #define REC_JET		0x00080000 // or'ed with the type and ring
 #define REC_120BUNCH	0x00008000 // or'ed with the mask where applicable
 #define REC_FROMMEMORY  0x00040000 // or'ed with the mask where applicable
