@@ -267,16 +267,22 @@ int main(int argc, char *argv[])
 
    //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun(runinfo.runName);
    //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun("10110.101");
-   //TStructRunDB *currentRunDb = gAsymRunDb.SelectRun("testtest");
+   TStructRunDB *currentRunDb = gAsymRunDb.SelectRun("yyyy4");
 
    //gAsymRunDb.PrintCommon();
 
-   //if (currentRunDb) {
-   //   currentRunDb->Print();
-   //}
+   if (currentRunDb) {
+      currentRunDb->Print();
+   }
 
    //delete currentRunDb;
-   gAsymRunDb.DeleteRun("test");
+   gAsymRunDb.DeleteRun("iiii");
+
+   TStructRunDB *r = new TStructRunDB();
+   r->fRunName = "rrrr";
+   r->fFields["POLARIMETER_ID"] = "2";
+   r->fFields["COMMENT"] = "rrr -:;  yyyx . sdfj .dfj , xx";
+   gAsymRunDb.Insert(r);
 
    //PrintDB();
    exit(-1);
