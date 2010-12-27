@@ -43,16 +43,36 @@ TStructRunDB::~TStructRunDB()
 /** */
 void TStructRunDB::PrintAsDbEntry(FILE *f) const
 {
-   printf("\n[%s]\n", fRunName.c_str());
+   fprintf(f, "\n[%s]\n", fRunName.c_str());
 
    DbFieldMap::const_iterator ifld;
    DbFieldMap::const_iterator bfld = fFields.begin();
    DbFieldMap::const_iterator efld = fFields.end();
 
    for (ifld=bfld; ifld!=efld; ifld++) {
-      fprintf(f, "\t%s = %s;\n", ifld->first.c_str(), ifld->second.c_str());
+      if (ifld->second.size() > 0)
+         fprintf(f, "\t%s = %s;\n", ifld->first.c_str(), ifld->second.c_str());
       //ir->Print();
    }
+   
+   fprintf(f, "\n");
+}
+
+
+void TStructRunDB::PrintAsDbEntry(ostream &o) const
+{
+   o << "["+fRunName+"]" << endl;
+
+   DbFieldMap::const_iterator ifld;
+   DbFieldMap::const_iterator bfld = fFields.begin();
+   DbFieldMap::const_iterator efld = fFields.end();
+
+   for (ifld=bfld; ifld!=efld; ifld++) {
+      if (ifld->second.size() > 0)
+         o << "\t" << ifld->first << " = " << ifld->second << ";" << endl;
+   }
+
+   o << endl;
 }
 
 
@@ -126,12 +146,12 @@ AsymRunDB::AsymRunDB() : TObject()
 {
    fDbFileName = "run1.db";
 
-   fDbFile = fopen(fDbFileName.c_str(), "r");
+   //fDbFile = fopen(fDbFileName.c_str(), "r");
 
-   if (!fDbFile) {
-      Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
-      exit(-1);
-   }
+   //if (!fDbFile) {
+   //   Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+   //   exit(-1);
+   //}
 
    for (UShort_t i=0; i<NPOLARIMETERS; i++) {
       commonRunDB[i] = 0;
@@ -142,6 +162,13 @@ AsymRunDB::AsymRunDB() : TObject()
 /** */
 TStructRunDB* AsymRunDB::SelectRun(string runName)
 {
+   fDbFile = fopen(fDbFileName.c_str(), "r");
+
+   if (!fDbFile) {
+      Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+      exit(-1);
+   }
+
    char   *line = NULL;
    size_t  len  = 0;
    ssize_t nBytes = 0;
@@ -248,6 +275,8 @@ TStructRunDB* AsymRunDB::SelectRun(string runName)
       }
    }
 
+   fclose(fDbFile);
+
    // Insert the last run in container
    //gDBRuns.insert(*currRun);
    //delete currRun;
@@ -259,12 +288,20 @@ TStructRunDB* AsymRunDB::SelectRun(string runName)
 /** */
 void AsymRunDB::DeleteRun(std::string runName)
 {
+   fDbFile = fopen(fDbFileName.c_str(), "r");
+
+   if (!fDbFile) {
+      Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+      exit(-1);
+   }
+
+   string newDbFileName = "run99.db";
    char   *line = NULL;
    size_t  len  = 0;
    ssize_t nBytes = 0;
    bool    skipLine = false;
-   ofstream newRunDbFile;
-   newRunDbFile.open("run33.db");
+   ofstream newDbFile;
+   newDbFile.open(newDbFileName.c_str());
 
    while (true) {
 
@@ -280,7 +317,7 @@ void AsymRunDB::DeleteRun(std::string runName)
 
       if (subStrL->GetEntriesFast() < 2) {
          delete subStrL;
-         if (!skipLine) newRunDbFile << sline;
+         if (!skipLine) newDbFile << sline;
          continue;
       }
 
@@ -293,23 +330,48 @@ void AsymRunDB::DeleteRun(std::string runName)
       } else
          skipLine = false;
 
-      if (!skipLine) newRunDbFile << sline;
+      if (!skipLine) newDbFile << sline;
    }
 
-   newRunDbFile.close();
+   newDbFile.close();
+   fclose(fDbFile);
+
+   //remove(fDbFileName.c_str());
+
+   int errcode = rename(newDbFileName.c_str(), fDbFileName.c_str());
+   //printf("outfile %s\n", fDbFileName.c_str());
+
+   if (errcode == 0)
+      printf("DB file was updated\n");
+   else
+      printf("ERROR: DB file was NOT updated: %s\n", strerror(errno));
 }
 
 
 /** */
-void AsymRunDB::WriteRun(TStructRunDB *dbrun)
+void AsymRunDB::Insert(TStructRunDB *dbrun)
 {
+   //fDbFile = fopen(fDbFileName.c_str(), "r");
+
+   //if (!fDbFile) {
+   //   Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+   //   exit(-1);
+   //}
+
+   ofstream dbFile;
+   dbFile.open(fDbFileName.c_str(), ios_base::in|ios_base::ate);
+
+   //dbFile << "uuu" << endl;
+   dbrun->PrintAsDbEntry(dbFile);
+
+   dbFile.close();
 }
 
 
 /** */
 AsymRunDB::~AsymRunDB()
 {
-   fclose(fDbFile);
+   //if (fDbFile) fclose(fDbFile);
 }
 
 
@@ -880,7 +942,7 @@ void TStructRunDB::Print(const Option_t* opt) const
    //printf("comment_s:         %s\n", comment_s.c_str());
    //cout << "RunID: " <<
 
-   PrintAsDbEntry();
+   PrintAsDbEntry(stdout);
 
 } //}}}
 

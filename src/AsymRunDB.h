@@ -1,6 +1,7 @@
 #ifndef ASYM_RUNDB_H
 #define ASYM_RUNDB_H
 
+#include <errno.h>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -76,6 +77,7 @@ public:
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
    void PrintAsDbEntry(FILE *f=stdout) const;
+   void PrintAsDbEntry(std::ostream &o=std::cout) const;
    void UpdateFields(TStructRunDB *dbrun);
 };
 
@@ -105,7 +107,7 @@ public:
 
    TStructRunDB* SelectRun(std::string runName);
    void DeleteRun(std::string runName);
-   void WriteRun(TStructRunDB *dbrun);
+   void Insert(TStructRunDB *dbrun);
    void UpdateCommonFields(TStructRunDB *dbrun);
    void PrintCommon();
 };
