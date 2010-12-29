@@ -35,7 +35,7 @@ foreach($rs as $gRunId):
 
 $rc = array();
 
-include($gRunId."/runconfig.php");
+include(DATA_DIR."/$gRunId/runconfig.php");
 
 if (count($rc) == 0) continue;
 
@@ -49,21 +49,30 @@ if (count($rc) == 0) continue;
    <td class=align_lb>
    <a href=index.php?runid=<?=$gRunId?> ><?=$gRunId?></a>
 
-<?  if ($rc['CMODE'] == 0): ?>
+<?
+$runName = "unknown";
+
+if ($rc['CMODE'] == 0) $runName = "Run {$rc['runName']}";
+else $runName = "Calibration/Test Run {$rc['runName']}";
+
+$polStream = "";
+//$polStream = "unknown";
+
+if ($rc['fPolStream'] == 1 ) $polStream = ", Upstream";
+if ($rc['fPolStream'] == 2 ) $polStream = ", Downstream";
+?>
 
    <td>
-      <span class=my-h2>Run <?=$rc['RUNID']?></span>
+      <span class=my-h2><?=$runName?></span>
       &nbsp; &nbsp; &nbsp;
       <span class=s150>
-      <?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> ring
+      <?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> <?=$polStream?>
+		<!--
       &nbsp; &nbsp;
-      Polarimeter <?=$rc['PolarimetryID']?>
+      Polarimeter <?//=$rc['PolarimetryID']?>
+		-->
       </span>
 
-<?  else: ?>
-   <td>
-      <span class=my-h2>Calibration Run</span>
-<?  endif; ?>
 
 <tr>
    <td>

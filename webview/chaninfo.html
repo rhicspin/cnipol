@@ -26,18 +26,50 @@
 
 <h1 class="count">Run <?=$gRunId?>, Channel <?=$gChanId?></h1>
 
+<p>
+<a href="./index.php"><span class=s150>Run Index</span></a> &mdash;
+<a href="./index.php?runid=<?=$gRunId?>"><span class=s150>Run Summary</span></a> &mdash;
+
+<span class=s150>Channels:</span>
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<?php
+   $row1 = ""; $row2 = "";
+
+   foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+      $chanId += 1;
+
+      $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+      //$row2 .= "<td>".($siS ? "x" : "o");
+
+      if (($chanId) % 36 == 0) {
+         //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+         print "<tr class=align_cm>$row1\n";
+         $row1 = "";// $row2 = "";
+      }
+   }
+?>
+</table>
+
+
 <?
 //$gChanId = sprintf("%02d", $gChanId);
 //$gP->dir .= "channel$gChanId/";
 ?>
 
-<p>
 
-<!--
+
+<p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
--->
-<h2 id="bunch_lumi" class="count">Summary</h2>
-<div id="div:bunch_lumi" class="section">
+
+<h2 id="summary" class="count">Summary</h2>
+<!-- {{{ -->
+<div id="div:summary" class="section">
+
+<p>
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
@@ -57,26 +89,56 @@
 <td align=center colspan=2>
 <?=$gP->img("Kinema/mass_yescut_st$gChanId")?>
 
-
 </table>
+
 </div>
+<!-- }}} -->
 
 
 
-<!--
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary_new" class="count">Summary (new)</h2>
+<!-- {{{ -->
+<div id="div:summary_new" class="section">
+
 <p>
 
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
-<h2 id="misc" class="count">Misc</h2>
+<?
+$gChanId = sprintf("%02d", $gChanId);
+$gP->dir .= "channel$gChanId/";
+?>
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
 <tr>
 <td align=center>
+<?=$gP->img("hTvsA_st$gChanId")?>
 <td align=center>
+<?=$gP->img("hTvsI_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_st$gChanId")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_cut1_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hTvsI_cut1_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut1_st$gChanId")?>
+
+<tr>
+<td align=center>
+<td align=center>
+<td align=center>
+<?=$gP->img("combo_st$gChanId")?>
 
 </table>
--->
+
+</div>
+<!-- }}} -->
+
 
 <!-- Main text ends here-->
 
