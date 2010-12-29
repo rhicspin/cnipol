@@ -1,7 +1,7 @@
 <?php
 
 include("utils.php"); 
-//include("config.php");
+include("config.php");
 
 //date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'en');
@@ -13,20 +13,20 @@ if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
    $gRunId = $_GET['runid'];
 
    // check for correct and existing  runid
-   if (!is_dir($gRunId) || !file_exists("$gRunId/runconfig.php")) {
-      print "No results for $gRunId\n";
+   if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig.php")) {
+      print "No results for ".DATA_DIR."/$gRunId\n";
       exit;
    }
 
    // Read information about this run
    $rc = array();
-   include("$gRunId/runconfig.php");
+   include(DATA_DIR."/$gRunId/runconfig.php");
    if (count($rc) == 0) exit;
 
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "./$gRunId/images/";
+   $dir = "/runs/$gRunId/images/";
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['CMODE'] == 0) {
@@ -48,20 +48,20 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    $gChanId = $_GET['chanid'];
 
    // check for correct and existing  runid
-   if (!is_dir($gRunId) || !file_exists("$gRunId/runconfig.php")) {
+   if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig.php")) {
       print "No results for $gRunId\n";
       exit;
    }
 
    // Read information about this run
    $rc = array();
-   include("$gRunId/runconfig.php");
+   include(DATA_DIR."/$gRunId/runconfig.php");
    if (count($rc) == 0) exit;
 
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "./$gRunId/images/";
+   $dir = "/runs/$gRunId/images/";
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['CMODE'] == 0) {
@@ -77,28 +77,38 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
 
 //Form default output
-$dir = opendir('.');
+$dir = opendir(DATA_DIR);
 
 if (!$dir) exit("ERROR\n");
 
 $rs = array();
 
-while (false !== ($file = readdir($dir))) {
+print "<pre>\n";
 
-   if (is_dir($file) && file_exists("$file/runconfig.php")) {
+while (false !== ($file = readdir($dir))) {
+	//print "$file\n";
+
+   if (is_dir(DATA_DIR."/$file") && file_exists(DATA_DIR."/$file/runconfig.php")) {
       //if (ereg("[0-9]{3,}\.[0-9]{3}", $file) && is_dir($file))
 
       //echo "$file ".$rs['dirsize']."<br>\n";
       //include("$file/runconfig.php");
       $rs[] = $file;
+	   //print "ok: $file\n";
       //$rs[$gRunId]['NumChannels'] = $rc['data']['NumChannels'];
       //$rs[$gRunId]['dirsize'] = exec( "du -h -s $file" );
    }
 }
 
+print "</pre>\n";
+
 closedir($dir);
 
 sort($rs);
+
+//print "<pre>\n";
+//print_r($rs);
+//print "</pre>\n";
 
 include("runinfo_index.html");
 
