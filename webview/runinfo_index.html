@@ -60,13 +60,18 @@ $polStream = "";
 
 if ($rc['fPolStream'] == 1 ) $polStream = ", Upstream";
 if ($rc['fPolStream'] == 2 ) $polStream = ", Downstream";
+
+$beam = $rc['fPolBeam'];
+
 ?>
 
    <td>
       <span class=my-h2><?=$runName?></span>
       &nbsp; &nbsp; &nbsp;
       <span class=s150>
-      <?=( isset($rc['RHICBeam']) ? ($rc['RHICBeam'] == 0 ? "<span class=blue3>Blue</span>" : "<span class=yellow3>Yellow</span>") : "Unknown");?> <?=$polStream?>
+      <?=( isset($beam) ?
+           ($beam == 2 ? "<span class=blue3>{$RHIC_BEAM[$beam]}</span>" :
+                         "<span class=yellow3>{$RHIC_BEAM[$beam]}</span>") : "Unknown");?> <?=$polStream?>
 		<!--
       &nbsp; &nbsp;
       Polarimeter <?//=$rc['PolarimetryID']?>
