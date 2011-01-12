@@ -50,6 +50,7 @@ public:
    void ReadFromDir(TDirectory *dir);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
+   virtual void FillPreProcess(ChannelEvent *ch);
    void Print(const Option_t* opt="") const;
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string path="./");

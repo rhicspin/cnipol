@@ -14,6 +14,8 @@
 
 #include "TObject.h"
 
+#include "Kinema.h"
+
 #include "ChannelData.h"
 #include "ChannelEventId.h"
 #include "EventConfig.h"
@@ -44,12 +46,23 @@ public:
    ~ChannelEvent();
 
    Float_t GetEnergyA();
+   Float_t GetKinEnergyA();
+   Float_t GetKinEnergyAEstimate();
+   Float_t GetFunnyEnergyA();
    Float_t GetEnergyI();
+   //Float_t GetTotalEnergyI();
    Float_t GetTime();
+   Float_t GetTimeOfFlight();
+   Float_t GetTimeOfFlightEstimate();
+   Float_t GetCarbonMass();
+   Float_t GetCarbonMassEstimate();
+
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
    bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
+   Bool_t PassQACutRaw();
    Bool_t PassQACut1();
+   Bool_t PassQACutCarbonMass();
 
    ClassDef(ChannelEvent, 1)
 };
