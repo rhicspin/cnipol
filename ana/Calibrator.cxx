@@ -30,6 +30,13 @@ void Calibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
+void Calibrator::CalibrateFast(DrawObjContainer *c)
+{
+	Warning("CalibrateFast", "Executing CalibrateFast()");
+}
+
+
+/** */
 TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
 {
    //TFitResultPtr result = 0;
@@ -95,11 +102,11 @@ void Calibrator::PrintAsConfig(FILE *f) const
 
    for (mi=mb; mi!=me; mi++) {
   
-      chId = mi->first;
-      ch = &mi->second;
+      chId =  mi->first;
+      ch   = &mi->second;
 
       fprintf(f, "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
-         chId, ch->fT0Coef, ch->fACoef, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.);
+         chId, -1*ch->fT0Coef, ch->fACoef, ch->fAvrgEMiss, 10., 100., ch->fACoef, 0., 0., 0., 0., 0., 0., 0.);
    }
 
 	// XXX need to add 8 more default channels here

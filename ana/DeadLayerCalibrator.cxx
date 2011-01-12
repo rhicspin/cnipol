@@ -28,7 +28,7 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
    TH2F*  htemp = 0;
    TH1D*  hMeanTime = 0;
    string sSt("  ");
-   string cutid = "_cut1";
+   string cutid = "_cut2";
 
    for (UShort_t i=1; i<=NSTRIP; i++) {
       //if (i != 28) continue;
@@ -79,6 +79,50 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
+void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
+{
+   TH2F *htemp     = (TH2F*) c->d["preproc"].o["hTimeVsEnergyA"];
+   TH1D *hMeanTime = (TH1D*) c->d["preproc"].o["hFitMeanTimeVsEnergyA"];
+
+   if (!htemp || !hMeanTime) {
+      Error("CalibrateFast", "Histogram preproc/hTimeVsEnergyA does not exist");
+      Error("CalibrateFast", "Histogram preproc/hFitMeanTimeVsEnergyA does not exist");
+      return;
+   }
+
+   if (htemp->Integral() < 1000) {
+      Error("CalibrateFast", "Too few entries in histogram preproc/hTimeVsEnergyA. Skipped");
+      return;
+   }
+
+   TFitResultPtr fitres = Calibrate(htemp, hMeanTime);
+
+   // Put results into "channel 0"
+   UInt_t chId = 0;
+   ChannelCalib *chCalib;
+   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
+
+   if (iChCalib != fChannelCalibs.end())  {
+      chCalib = &iChCalib->second;
+   } else {
+      ChannelCalib newChCalib;
+      fChannelCalibs[chId] = newChCalib;
+      chCalib = &fChannelCalibs[chId];
+   }
+
+   if (fitres.Get()) {
+      chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
+      chCalib->fT0Coef        = fitres->Value(0);
+      chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
+      chCalib->fAvrgEMiss     = fitres->Value(1);
+      chCalib->fAvrgEMissErr  = fitres->FitResult::Error(1);
+   } else {
+      Error("CalibrateFast", "Empty TFitResultPtr");
+   }
+}
+
+
+/** */
 TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
 {
    Double_t xmin = h->GetXaxis()->GetXmin();
@@ -98,13 +142,36 @@ TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
    hMeanTime->SetError(((TH1D*) fitResHists[2])->GetArray());
 
    TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibrator::BananaFitFunc, xmin, xmax, 2);
+
+   bananaFitFunc->SetNpx(1000);
+
    //TF2 *bananaFitFunc2 = new TF2("bananaFitFunc2",
    //   DeadLayerCalibrator::BananaFitFunc2, xmin, xmax, ymin, ymax, 1);
 
-   bananaFitFunc->SetParameters(20, 100);
+   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(0);
+
+   float meanT0     = 20;
+   float meanT0_err = 5;
+   float meanEm     = 130;
+   float meanEm_err = 20;
+
+   if (iChCalib != fChannelCalibs.end())  {
+      meanT0     = fChannelCalibs[0].fT0Coef;
+      meanT0_err = fChannelCalibs[0].fT0CoefErr;
+      meanEm     = fChannelCalibs[0].fAvrgEMiss;
+      meanEm_err = fChannelCalibs[0].fAvrgEMissErr;
+   }
+
+   printf("T0, T0_err, Em, Em_err: %f, %f, %f, %f\n", meanT0, meanT0_err, meanEm, meanEm_err);
+
+   bananaFitFunc->SetParameters(meanT0, meanEm);
+   bananaFitFunc->SetParLimits(0, meanT0-3*meanT0_err, meanT0+3*meanT0_err); // t0
+   bananaFitFunc->SetParLimits(1, meanEm-3*meanEm_err, meanEm+3*meanEm_err);
+
+   //bananaFitFunc->SetParameters(20, 100);
    //bananaFitFunc->SetParameters(0, 100, 0.5, 0.5, 0.5);
-   bananaFitFunc->SetParLimits(0, -30, 30); // t0
-   bananaFitFunc->SetParLimits(1, 0, 300);
+   //bananaFitFunc->SetParLimits(0, 5, 30); // t0
+   //bananaFitFunc->SetParLimits(1, 50, 200);
    //bananaFitFunc->SetParLimits(2, -1, 1);
    //bananaFitFunc->SetParLimits(3, -1, 1);
    //bananaFitFunc->SetParLimits(4, -1, 1);
@@ -113,7 +180,7 @@ TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
    //bananaFitFunc->SetParLimits(0, -10, 30);
 
    hMeanTime->Print();
-   TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S", "");
+   TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "I M E S R", "");
    //fitres->Print("V");
 
    //h->Print();

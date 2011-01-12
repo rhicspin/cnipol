@@ -436,6 +436,14 @@ void analyzeCalib_finalize()
 
    ec->PrintAsPhp(stdout);
 
+   sprintf(&fileName[0], "%s/config_calib.dat", gOutDir.c_str());
+
+   f = fopen(fileName.c_str(), "w");
+   ec->PrintAsConfig(f);
+   fclose(f);
+
+   ec->PrintAsConfig(stdout);
+
    // Delete from and Write updated run config object to root file
    //gInFile->cd();
    //gInFile->Delete("EventConfig;1");
