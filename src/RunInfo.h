@@ -11,6 +11,9 @@
 #include <string>
 
 #include "TBuffer.h"
+#include "TPRegexp.h"
+#include "TObjArray.h"
+#include "TObjString.h"
 #include "TString.h"
 
 #include "AsymHeader.h"
@@ -24,16 +27,18 @@ public:
    int          Run;
    double       RUNID;
    std::string  runName;
-   int          StartTime;
-   int          StopTime;
+   time_t       StartTime;
+   time_t       StopTime;
    float        RunTime;
+   int          fDataFormatVersion;
    float        GoodEventRate;
    float        EvntRate;
    float        ReadRate;
    float        WcmAve;
    float        WcmSum;
    double       BeamEnergy;
-   int          RHICBeam;
+   Short_t      fPolId;
+   UShort_t     fPolBeam;
    UShort_t     fPolStream;
    int          PolarimetryID;
    int          MaxRevolution;
@@ -55,8 +60,12 @@ public:
    TStructRunInfo();
    ~TStructRunInfo();
 
-   void Streamer(TBuffer &buf);
-   void PrintAsPhp(FILE *f=stdout) const;
+   void  Streamer(TBuffer &buf);
+   void  Print(const Option_t* opt="") const;
+   void  PrintAsPhp(FILE *f=stdout) const;
+   short GetPolarimeterId();
+   short GetPolarimeterId(short beamId, short streamId);
+   void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
 };
 
 TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec);

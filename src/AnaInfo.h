@@ -8,6 +8,7 @@
 #ifndef AnaInfo_h
 #define AnaInfo_h
 
+#include <iostream>
 #include <bitset>
 #include <string>
 
@@ -35,6 +36,7 @@ public:
    int            MESSAGE;            // message mode 1: exit just after run begin
    int            CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
    int            UPDATE;             // 1: keep update of the histogram
+   int            UPDATE_DB;          // 0: default, 1: update info in database
    int            MMODE;              // mass mode
    int            NTMODE;             // if 1 store NTUPLEv
    int            RECONFMODE;         // if 1 reconfigure from file
@@ -65,6 +67,7 @@ public:
    TDatprocStruct();
    ~TDatprocStruct();
 
+   void Print(const Option_t* opt="") const;
    void Streamer(TBuffer &buf);
 };
 

@@ -5,21 +5,17 @@ using namespace std;
 
 
 /** */
-TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' ')
+TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' '),
+   StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0)
 {
-   //Run                   = 6;  // Run05, Run06,..
-   //RUNID                 = 7279.005; // RUNID
-   //runName;
-   StartTime             = 0; // StartTime;
-   StopTime              = 0; // StopTime;
-   RunTime               = 0; // RunTime;
    GoodEventRate         = 0; // GoodEventRate;
    EvntRate              = 0; // EvntRate;
    ReadRate              = 0; // ReadRate;
    WcmAve                = 0; // WcmAve;
    WcmSum                = 0; // WcmSum;
    BeamEnergy            = 0; // BeamEnergy;
-   RHICBeam              = 0; // RHICBeam;
+   fPolId                = -1; // valid values 0 - 3
+   fPolBeam              = 0; // blue = 2 or yellow = 1
    fPolStream            = 0; // up =1 or down =2 stream
    PolarimetryID         = 1; // PolarimetryID; Polarimetry-1 or Polarimetry-2
    MaxRevolution         = 0; // MaxRevolution;
@@ -62,7 +58,7 @@ TStructRunInfo runinfo = {
     0, // WcmAve;
     0, // WcmSum;
     0, // BeamEnergy;
-    0, // RHICBeam;
+    0, // fPolBeam;
     1, // PolarimetryID; Polarimetry-1 or Polarimetry-2
     0, // MaxRevolution;
   'V', // target
@@ -146,7 +142,8 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf >> WcmAve;
       buf >> WcmSum;
       buf >> BeamEnergy;
-      buf >> RHICBeam;
+      buf >> fPolId;
+      buf >> fPolBeam;
       buf >> fPolStream;
       buf >> PolarimetryID;
       buf >> MaxRevolution;
@@ -179,7 +176,8 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf << WcmAve;
       buf << WcmSum;
       buf << BeamEnergy;
-      buf << RHICBeam;
+      buf << fPolId;
+      buf << fPolBeam;
       buf << fPolStream;
       buf << PolarimetryID;
       buf << MaxRevolution;
@@ -200,13 +198,20 @@ void TStructRunInfo::Streamer(TBuffer &buf)
 
 
 /** */
+void TStructRunInfo::Print(const Option_t* opt) const
+{
+   PrintAsPhp();
+}
+
+
+/** */
 void TStructRunInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
    fprintf(f, "$rc['runName']                      = \"%s\";\n", runName.c_str() );
-   fprintf(f, "$rc['StartTime']                    = %d;\n",     StartTime    );
-   fprintf(f, "$rc['StopTime']                     = %d;\n",     StopTime     );
+   fprintf(f, "$rc['StartTime']                    = %ld;\n",    StartTime    );
+   fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
@@ -214,7 +219,8 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['WcmAve']                       = %f;\n",     WcmAve       );
    fprintf(f, "$rc['WcmSum']                       = %f;\n",     WcmSum       );
    fprintf(f, "$rc['BeamEnergy']                   = %f;\n",     BeamEnergy   );
-   fprintf(f, "$rc['RHICBeam']                     = %d;\n",     RHICBeam     );
+   fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
+   fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );
    fprintf(f, "$rc['PolarimetryID']                = %d;\n",     PolarimetryID);
    fprintf(f, "$rc['MaxRevolution']                = %d;\n",     MaxRevolution);
@@ -238,3 +244,54 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
 } //}}}
+
+
+/** */
+short TStructRunInfo::GetPolarimeterId()
+{
+   TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
+
+   if (subStrL->GetEntriesFast() < 1) {
+      printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+      return -1;
+   }
+
+   TString spolid = ((TObjString *) subStrL->At(1))->GetString();
+   delete subStrL;
+
+   fPolId = spolid.Atoi();
+ 
+   if (fPolId >=0 && fPolId <=3)
+      GetBeamIdStreamId(fPolId, fPolBeam, fPolStream);
+   else {
+      printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+      return -1;
+   }
+
+   return fPolId;
+}
+
+
+/** */
+short TStructRunInfo::GetPolarimeterId(short beamId, short streamId)
+{
+   if (beamId == 1 && streamId == 1) { fPolId = 3; return 3; }
+   if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
+   if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
+   if (beamId == 2 && streamId == 2) { fPolId = 2; return 2; }
+   
+   printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+   return -1;
+}
+
+
+/** */
+void TStructRunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
+{
+   if (polId == 3) { beamId = 1; streamId = 1; };
+   if (polId == 1) { beamId = 1; streamId = 2; };
+   if (polId == 0) { beamId = 2; streamId = 1; };
+   if (polId == 2) { beamId = 2; streamId = 2; };
+
+   beamId = 0; streamId = 0;
+}

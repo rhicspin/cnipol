@@ -34,7 +34,7 @@ int TgtHist();
 //                       Anaolyzing power
 //===========================================================================
 float WeightAnalyzingPower(int hid);
-int   ExclusionList(int i, int j, int RHICBeam);
+int   ExclusionList(int i, int j, int polBeam=0);
 
 //===========================================================================
 //                              Strip by Strip

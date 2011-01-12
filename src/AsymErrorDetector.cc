@@ -139,11 +139,10 @@ InvariantMassCorrelation(int st){
 // Input       : int st
 // Return      :
 //
-void
-BananaFit(int st){
-
+void BananaFit(int st)
+{
   char f[50];
-  sprintf(f,"%8.3f/sqrt(x)",runconst.E2T);
+  sprintf(f,"%8.3f/sqrt(x)", gRunConsts[st+1].E2T);
   TF1 * functof = new TF1("functof", f,200,1500);
   functof->SetLineColor(2);
   functof->SetLineWidth(4);

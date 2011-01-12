@@ -19,73 +19,70 @@
 
 using namespace std;
 
-// defaults
-const float MSIZE=1.2; // Marker size
-
 StructHist Eslope;
 
 // ROOT Histograms
-TDirectory * Run;
-TDirectory * Raw;
-TDirectory * FeedBack;
-TDirectory * Kinema;
-TDirectory * Bunch;
-TDirectory * ErrDet;
-TDirectory * Asymmetry;
+TDirectory *Run;
+TDirectory *Raw;
+TDirectory *FeedBack;
+TDirectory *Kinema;
+TDirectory *Bunch;
+TDirectory *ErrDet;
+TDirectory *Asymmetry;
 
 // Run Dir
-TH2F * rate_vs_delim;
+TH2F  *rate_vs_delim;
 
 // FeedBack Dir
-TH2F * mdev_feedback;
-TH1F * mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
+TH2F  *mdev_feedback;
+TH1F  *mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 // Raw Directory
-TH1F * bunch_dist_raw;              // counts per bunch (raw)
-TH1F * strip_dist_raw;              // counts per strip (raw)
-TH1F * tdc_raw;                     // tdc (raw)
-TH1F * adc_raw;                     // adc (raw)
-TH2F * tdc_vs_adc_raw;              // tdc vs. adc (raw)
-TH2F * tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
+TH1F  *bunch_dist_raw;              // counts per bunch (raw)
+TH1F  *strip_dist_raw;              // counts per strip (raw)
+TH1F  *tdc_raw;                     // tdc (raw)
+TH1F  *adc_raw;                     // adc (raw)
+TH2F  *tdc_vs_adc_raw;              // tdc vs. adc (raw)
+TH2F  *tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
 
 // Kinema Direcotry
-TH2F * t_vs_e[TOT_WFD_CH];
-TH2F * t_vs_e_yescut[TOT_WFD_CH];
-TH2F * mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
-TF1  * banana_cut_l[NSTRIP][2];     // banana cut low
-TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
-TLine  * energy_cut_l[NSTRIP];      // energy cut low
-TLine  * energy_cut_h[NSTRIP];      // energy cut high
-TH1F  * energy_spectrum[NDETECTOR]; // energy spectrum per detector
-TH1F  * energy_spectrum_all;        // energy spectrum for all detector sum
-TH1F  * mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
-TH1F  * mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
+TH2F  *t_vs_e[TOT_WFD_CH];
+TH2F  *t_vs_e_yescut[TOT_WFD_CH];
+TH2F  *mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
+TF1   *banana_cut_l[NSTRIP][2];     // banana cut low
+TF1   *banana_cut_h[NSTRIP][2];     // banana cut high
+TLine *energy_cut_l[NSTRIP];      // energy cut low
+TLine *energy_cut_h[NSTRIP];      // energy cut high
+TH1F  *energy_spectrum[NDETECTOR]; // energy spectrum per detector
+TH1F  *energy_spectrum_all;        // energy spectrum for all detector sum
+TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+TH1F  *mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
 
 
 // Bunch Distribution
-//TH1F * bunch_dist_raw;              // counts per bunch (raw)
-TH1F * bunch_dist;                  // counts per bunch
-TH1F * wall_current_monitor;        // wall current monitor
-TH1F * specific_luminosity;         // specific luminosity
+//TH1F *bunch_dist_raw;              // counts per bunch (raw)
+TH1F  *bunch_dist;                  // counts per bunch
+TH1F  *wall_current_monitor;        // wall current monitor
+TH1F  *specific_luminosity;         // specific luminosity
 
 // ErrDet Direcotry
-TH2F * mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
-TH2F * mass_sigma_vs_strip;         // Mass sigma width vs. strip
-TH2F * mass_e_correlation_strip;    // Mass-energy correlation vs. strip
-TH2F * mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
-TH1I * good_carbon_events_strip;    // number of good carbon events per strip
-TH2F * spelumi_vs_bunch;            // Counting rate vs. bunch
-TH1F * bunch_spelumi;               // Counting rate per bunch hisogram
-TH1F * asym_bunch_x45;              // Bunch asymmetry histogram for x45
-TH1F * asym_bunch_x90;              // Bunch asymmetry histogram for x90
-TH1F * asym_bunch_y45;              // Bunch asymmetry histogram for y45
+TH2F  *mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
+TH2F  *mass_sigma_vs_strip;         // Mass sigma width vs. strip
+TH2F  *mass_e_correlation_strip;    // Mass-energy correlation vs. strip
+TH2F  *mass_pos_dev_vs_strip;       // Mass position deviation vs. strip
+TH1I  *good_carbon_events_strip;    // number of good carbon events per strip
+TH2F  *spelumi_vs_bunch;            // Counting rate vs. bunch
+TH1F  *bunch_spelumi;               // Counting rate per bunch hisogram
+TH1F  *asym_bunch_x45;              // Bunch asymmetry histogram for x45
+TH1F  *asym_bunch_x90;              // Bunch asymmetry histogram for x90
+TH1F  *asym_bunch_y45;              // Bunch asymmetry histogram for y45
 
 // Asymmetry Directory
-TH2F * asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
-TH2F * asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
-TH2F * asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
-TH2F * asym_sinphi_fit;             // strip asymmetry and sin(phi) fit
-TH2F * scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
+TH2F  *asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
+TH2F  *asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
+TH2F  *asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
+TH2F  *asym_sinphi_fit;             // strip asymmetry and sin(phi) fit
+TH2F  *scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
 
 
 /**
@@ -118,7 +115,7 @@ AsymRoot::~AsymRoot()
 //
 int AsymRoot::RootFile(char *filename)
 {
-   rootfile = new TFile(filename,"RECREATE","AsymRoot Histogram file");
+   rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
    // directory structure
    Run       = rootfile->mkdir("Run");
@@ -150,9 +147,9 @@ void AsymRoot::CreateTrees()
 
    char filename[256];
    sprintf(filename,"%s/%s_tree_%02d.root",
-           gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), runinfo.runName.c_str(), fTreeFileId);
+           gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.runName.c_str(), fTreeFileId);
    //sprintf(filename,"%s/%.3f_tree_%02d.root",
-   //        gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), runinfo.RUNID, fTreeFileId);
+   //        gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.RUNID, fTreeFileId);
 
    fOutTreeFile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
@@ -191,20 +188,34 @@ void AsymRoot::CreateTrees()
 /** */
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
 {
-   if (cfname == "" && fEventConfig) return true; // check if config is already set
-   else if (cfname != "") {
+   if (cfname == "" && dproc.CMODE) {
+
+      UpdateCalibrator();
+      return true; // check if config is already set
+
+   } else if (cfname == "" && fEventConfig) {
+      return true; // check if config is already set
+   } else if (cfname != "") {
 
       TFile *f = TFile::Open(cfname.c_str());
+
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
       if (fEventConfig) {
 
          //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
-         rundb.alpha_calib_run_name = fEventConfig->fRunInfo->runName;
+         gRunDb.alpha_calib_run_name = fEventConfig->fRunInfo->runName;
          //fEventConfig->fDatproc->CMODE = 0;
+
+         delete fChannelEvent->fEventConfig;
+
          fChannelEvent->fEventConfig = fEventConfig;
 
-         return  true;
+         // Update the calibrator based on the running mode, i.e. alpha or
+         // normal data
+         UpdateCalibrator();
+
+         return true;
 
       } else return false;
    } else return false;
@@ -226,10 +237,32 @@ void AsymRoot::SetChannelEvent(processEvent &event)
 }
 
 
+/**
+ * Sets current event with data from raw file.
+ */
+void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
+{
+   fChannelEvent->fEventId.fRevolutionId = delim*512 + at.rev*2 + at.rev0;
+   fChannelEvent->fEventId.fBunchId      = at.b;
+   fChannelEvent->fEventId.fChannelId    = chId;
+   fChannelEvent->fChannel.fAmpltd       = at.a;
+   fChannelEvent->fChannel.fIntgrl       = at.s;
+   fChannelEvent->fChannel.fTdc          = at.t;
+   fChannelEvent->fChannel.fTdcAMax      = at.tmax;
+}
+
+
 /** */
 void AsymRoot::PostProcess()
 {
    fHists->PostFill();
+}
+
+
+/** */
+void AsymRoot::FillPreProcess()
+{
+   fHists->FillPreProcess(fChannelEvent);
 }
 
 
@@ -330,42 +363,62 @@ void AsymRoot::PrintEventMap()
 
 
 /** */
-void AsymRoot::UpdateRunConfig()
+void AsymRoot::UpdateCalibrator()
 {
-   // Existing calibrator will be replaced so, delete it first
-   //delete fEventConfig->fCalibrator;
-
-   //Calibrator *calibrator;
+   Calibrator *calibrator;
 
    if (dproc.CMODE) {
-                //Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
+      //Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
       //calibrator = new AlphaCalibrator();
-      AlphaCalibrator* calibrator = new AlphaCalibrator();
-      calibrator->Calibrate(fHists);
-      fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
+      calibrator = new AlphaCalibrator();
+      //calibrator->Calibrate(fHists);
+      //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
       //alphaCalibrator = (AlphaCalibrator*) fEventConfig->fCalibrator;
       //AlphaCalibrator* alphaCalibrator = dynamic_cast<AlphaCalibrator*> (fEventConfig->fCalibrator);
       //((AlphaCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
       //alphaCalibrator->AlphaCalibrator::Calibrate(fHists);
       //alphaCalibrator->Calibrate(fHists);
       //(static_cast<AlphaCalibrator*> (fEventConfig->fCalibrator))->Calibrate(fHists);
-      delete calibrator;
+      //delete calibrator;
    } else {
-                //Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
+      //Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
       //calibrator = new DeadLayerCalibrator();
       //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
-      DeadLayerCalibrator* calibrator = new DeadLayerCalibrator();
-      calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
-      calibrator->Calibrate(fHists);
-      fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
-      delete calibrator;
+      calibrator = new DeadLayerCalibrator();
+      //calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
+      //calibrator->Calibrate(fHists);
+      //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
+      //delete calibrator;
    }
+
+   // Copy existing constants to the new calibrator
+   calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
+
+   // Existing calibrator will be replaced so, delete it first
+   delete fEventConfig->fCalibrator;
+
+   // and finally, assign the new calibrator
+   fEventConfig->fCalibrator = calibrator;
 
    //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
 
    //calibrator->Calibrate(fHists);
 
    //fEventConfig->fCalibrator = calibrator;
+}
+
+
+/** */
+void AsymRoot::Calibrate()
+{
+   fEventConfig->fCalibrator->Calibrate(fHists);
+}
+
+
+/** */
+void AsymRoot::CalibrateFast()
+{
+   fEventConfig->fCalibrator->CalibrateFast(fHists);
 }
 
 
@@ -596,64 +649,64 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
 // Input       :
 // Return      :
 //
-int AsymRoot::BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
-   StructFeedBack &feedback)
+int AsymRoot::BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback)
 {
-  rootfile->cd();
-  Kinema->cd();
-
-  char  formula[100],fname[100];
-  float low, high, sigma;
-  int   Color=2;
-  int   Width=2;
-
-  for (int i=0; i<NSTRIP; i++) {
-
-    for (int j=0; j<2; j++) {
-
-       sigma = j ? runconst.M2T*feedback.RMS[i]*dproc.MassSigmaAlt :
-                   runconst.M2T*feedback.RMS[i]*dproc.MassSigma;
-       int Style = j + 1 ;
-
-       // lower limit
-       sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", runconst.E2T, sigma);
-       sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
-       banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-       banana_cut_l[i][j] -> SetLineColor(Color);
-       banana_cut_l[i][j] -> SetLineWidth(Width);
-       banana_cut_l[i][j] -> SetLineStyle(Style);
-
-       // upper limit
-       sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", runconst.E2T, sigma);
-       sprintf(fname, "banana_cut_h_st%d", i);
-       banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
-       banana_cut_h[i][j] -> SetLineColor(Color);
-       banana_cut_h[i][j] -> SetLineWidth(Width);
-       banana_cut_h[i][j] -> SetLineStyle(Style);
-    }
-
-    // energy cut low
-    low  = runconst.E2T / sqrt(double(dproc.enel)) -
-              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
-    high = runconst.E2T / sqrt(double(dproc.enel)) +
-              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
-
-    energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
-    energy_cut_l[i] ->SetLineColor(Color);
-    energy_cut_l[i] ->SetLineWidth(Width);
-
-    // energy cut high
-    low  = runconst.E2T / sqrt(double(dproc.eneu)) -
-              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
-    high = runconst.E2T / sqrt(double(dproc.eneu)) +
-              runconst.M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
-
-    energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
-    energy_cut_h[i] ->SetLineColor(Color);
-    energy_cut_h[i] ->SetLineWidth(Width);
-  }
-
-  return 0;
+   rootfile->cd();
+   Kinema->cd();
+ 
+   char  formula[100],fname[100];
+   float low, high, sigma;
+   int   Color=2;
+   int   Width=2;
+ 
+   for (int i=0; i<NSTRIP; i++) {
+ 
+      for (int j=0; j<2; j++) {
+ 
+         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*dproc.MassSigmaAlt :
+                     gRunConsts[i+1].M2T*feedback.RMS[i]*dproc.MassSigma;
+ 
+         int Style = j + 1 ;
+ 
+         // lower limit
+         sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
+         sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
+         banana_cut_l[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+         banana_cut_l[i][j] -> SetLineColor(Color);
+         banana_cut_l[i][j] -> SetLineWidth(Width);
+         banana_cut_l[i][j] -> SetLineStyle(Style);
+ 
+         // upper limit
+         sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
+         sprintf(fname, "banana_cut_h_st%d", i);
+         banana_cut_h[i][j] = new TF1(fname, formula, dproc.enel, dproc.eneu);
+         banana_cut_h[i][j] -> SetLineColor(Color);
+         banana_cut_h[i][j] -> SetLineWidth(Width);
+         banana_cut_h[i][j] -> SetLineStyle(Style);
+      }
+ 
+      // energy cut low
+      low  = gRunConsts[i+1].E2T / sqrt(double(dproc.enel)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
+      high = gRunConsts[i+1].E2T / sqrt(double(dproc.enel)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.enel));
+ 
+      energy_cut_l[i] = new TLine(dproc.enel, low, dproc.enel, high);
+      energy_cut_l[i] ->SetLineColor(Color);
+      energy_cut_l[i] ->SetLineWidth(Width);
+ 
+      // energy cut high
+      low  = gRunConsts[i+1].E2T / sqrt(double(dproc.eneu)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
+      high = gRunConsts[i+1].E2T / sqrt(double(dproc.eneu)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * dproc.MassSigma / sqrt(double(dproc.eneu));
+ 
+      energy_cut_h[i] = new TLine(dproc.eneu, low, dproc.eneu, high);
+      energy_cut_h[i] ->SetLineColor(Color);
+      energy_cut_h[i] ->SetLineWidth(Width);
+   }
+ 
+   return 0;
 }
 
 
@@ -697,7 +750,9 @@ int AsymRoot::CloseROOTFile()
   Kinema->cd();
 
   for (int i=0; i<NSTRIP; i++) {
+
      if (t_vs_e[i]) {
+
         for (int j=0; j<2; j++){
            if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
            if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);

@@ -16,15 +16,15 @@
 
 class AsymRecover
 {
-   private:
+private:
     
-   public:
+public:
+   int index;
+   int flag;
+   struct StructSpinPattern {
       int index;
       int flag;
-      struct StructSpinPattern {
-         int index;
-         int flag;
-      } spin_pattern;
+   } spin_pattern;
  
    int OverwriteSpinPattern(int index);
    int OverwriteFillPattern(int index);

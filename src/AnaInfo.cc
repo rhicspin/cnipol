@@ -21,7 +21,8 @@ TDatprocStruct::TDatprocStruct()
    ZMODE            = 0;      // ZMODE
    MESSAGE          = 0;      // MESSAGE
    CBANANA          = 2;      // CBANANA
-   UPDATE           = 0;      // UPDATE
+   UPDATE           = 0;
+   UPDATE_DB        = 0;
    MMODE            = 1;      // MMODE
    NTMODE           = 0;      // NTMODE
    RECONFMODE       = 1;      // RECONFMODE
@@ -72,6 +73,52 @@ TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec)
    rec = (TDatprocStruct *) realloc(rec, sizeof(TDatprocStruct));
    rec->Streamer(buf);
    return buf;
+}
+
+
+/** */
+void TDatprocStruct::Print(const Option_t* opt) const
+{
+   cout
+   << "enel             = " << enel             << endl
+   << "eneu             = " << eneu             << endl
+   << "widthl           = " << widthl           << endl
+   << "widthu           = " << widthu           << endl
+   << "FEEDBACKMODE     = " << FEEDBACKMODE     << endl
+   << "RAWHISTOGRAM     = " << RAWHISTOGRAM     << endl
+   << "CMODE            = " << CMODE            << endl
+   << "DMODE            = " << DMODE            << endl
+   << "TMODE            = " << TMODE            << endl
+   << "AMODE            = " << AMODE            << endl
+   << "BMODE            = " << BMODE            << endl
+   << "ZMODE            = " << ZMODE            << endl
+   << "MESSAGE          = " << MESSAGE          << endl
+   << "CBANANA          = " << CBANANA          << endl
+   << "UPDATE           = " << UPDATE           << endl
+   << "UPDATE_DB        = " << UPDATE_DB        << endl
+   << "MMODE            = " << MMODE            << endl
+   << "NTMODE           = " << NTMODE           << endl
+   << "RECONFMODE       = " << RECONFMODE       << endl
+   << "RAMPMODE         = " << RAMPMODE         << endl
+   << "STUDYMODE        = " << STUDYMODE        << endl
+   << "SAVETREES        = " << SAVETREES        << endl
+   << "MassSigma        = " << MassSigma        << endl
+   << "MassSigmaAlt     = " << MassSigmaAlt     << endl
+   << "OneSigma         = " << OneSigma         << endl
+   << "tshift           = " << tshift           << endl
+   << "inj_tshift       = " << inj_tshift       << endl
+   << "dx_offset        = " << dx_offset        << endl
+   << "WCMRANGE         = " << WCMRANGE         << endl
+   << "MassLimit        = " << MassLimit        << endl
+   << "nEventsProcessed = " << nEventsProcessed << endl
+   << "nEventsTotal     = " << nEventsTotal     << endl
+   << "thinout          = " << thinout          << endl
+   << "reference_rate   = " << reference_rate   << endl
+   << "target_count_mm  = " << target_count_mm  << endl
+   << "procDateTime     = " << procDateTime     << endl
+   << "procTimeReal     = " << procTimeReal     << endl
+   << "procTimeCpu      = " << procTimeCpu      << endl
+   << "userCalibFile    = " << userCalibFile    << endl;
 }
 
 

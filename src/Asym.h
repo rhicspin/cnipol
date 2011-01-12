@@ -68,12 +68,21 @@ struct atdata_struct {
     int spin;
 };
 
-struct StructRunConst {
-  float Ct;    // TDC Count unit (ns/channel)
-  float E2T;   // kinetic energy -> tof
-  float M2T;   // Mass->tof
-  float T2M;   // ToF -> Mass
+
+class RunConst
+{
+public:
+   float L;     // Distance from target to detector
+   float Ct;    // TDC Count unit (ns/channel)
+   float E2T;   // kinetic energy -> tof
+   float M2T;   // Mass->tof     [ns/keV^(1/2)]
+   float T2M;   // ToF -> Mass
+
+   RunConst(float lL=CARBON_PATH_DISTANCE, float lCt=WFD_TIME_UNIT_HALF);
+   void Update(recordConfigRhicStruct *cfginfo=0, UShort_t ch=0);
+   void Print(const Option_t* opt="") const;
 };
+
 
 struct StructMask {
   int detector;
@@ -156,6 +165,7 @@ struct StructReadFlag {
   int RHICCONF;
 };
 
+
 struct StructFlag {
   int VERBOSE;
   int feedback;
@@ -167,11 +177,11 @@ struct StructFlag {
 
 
 struct StructStripCounter {
-  long int NStrip[3][NSTRIP];    // strip counters for 3 different spin states
+  long int NStrip[3][NSTRIP];   // strip counters for 3 different spin states
 };
 
 struct StructStripCounterTgt {
-  long int NStrip[MAXDELIM][3][NSTRIP];    // strip counters for 3 different spin states
+  long int NStrip[MAXDELIM][3][NSTRIP]; // strip counters for 3 different spin states
 };
 
 struct StructCounter {
