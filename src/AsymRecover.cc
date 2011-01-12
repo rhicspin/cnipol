@@ -28,7 +28,7 @@ int AsymRecover::OverwriteSpinPattern(int index)
   cerr << "Recovery: Spin pattern is ovewritten by user defined pattern index(" 
        << index << ")" << endl;
 
-  for (int i=0; i<RHIC_MAX_FILL; i++) spinpat[i] = UserDefinedSpinPattern[index][i] ;
+  for (int i=0; i<NBUNCH; i++) spinpat[i] = UserDefinedSpinPattern[index][i] ;
 
   return 1 ;
 }
@@ -47,7 +47,7 @@ int AsymRecover::OverwriteFillPattern(int index)
   cout << "Recovery: Fill pattern is ovewritten by user defined pattern index(" 
        << index << ")" << endl;
 
-  for (int i=0; i<RHIC_MAX_FILL; i++)  fillpat[i] = UserDefinedFillPattern[index][i] ;
+  for (int i=0; i<NBUNCH; i++)  fillpat[i] = UserDefinedFillPattern[index][i] ;
 
   return 1 ;
 }
@@ -64,11 +64,12 @@ int AsymRecover::OverwriteFillPattern(int index)
 //
 int AsymRecover::MaskFillPattern()
 {
-  for (int i=0; i<runinfo.NDisableBunch; i++) {
-    for (int j=0; j<NBUNCH; j++) {
-      fillpat[j] = runinfo.DisableBunch[i] == j ? 0 : fillpat[j];
-    }
-  }
+   for (int i=0; i<runinfo.NDisableBunch; i++) {
+
+      for (int j=0; j<NBUNCH; j++) {
+         fillpat[j] = runinfo.DisableBunch[i] == j ? 0 : fillpat[j];
+      }
+   }
 
   return 0;
 }

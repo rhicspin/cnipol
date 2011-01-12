@@ -219,7 +219,7 @@ void getPreviousRun(bool thisrun){
 
         if(thisrun==false)
         {
-                sprintf(configfile2, "%s/%s", confdir, rundb.config_file_s.c_str());
+                sprintf(configfile2, "%s/%s", confdir, gRunDb.config_file_s.c_str());
         }
 
         return;
@@ -412,38 +412,38 @@ void getPreviousRun(bool thisrun)
                 if (str[0] == '[') { // Get Run Number
                         s = str.substr(1,8);
                         sprintf(runid2, "%s", s.c_str());
-                        rundb.RunID = strtod(s.c_str(),NULL);
-      //printf("%8.3f\n",rundb.RunID);
-                        match = MatchBeam(RUNID,rundb.RunID);
+                        gRunDb.RunID = strtod(s.c_str(),NULL);
+      //printf("%8.3f\n",gRunDb.RunID);
+                        match = MatchBeam(RUNID,gRunDb.RunID);
                         if (match){
                                 if(thisrun==false)
                                 {
-                                        if (RUNID==rundb.RunID) break;
+                                        if (RUNID==gRunDb.RunID) break;
                                 }
                                 else
                                 {
-                                        if (RUNID<rundb.RunID) break;
+                                        if (RUNID<gRunDb.RunID) break;
                                 }
                         }
                 }else{
                         if (match){
-                                if(str.find("*=")==-1 || RUNID==rundb.RunID)
+                                if(str.find("*=")==-1 || RUNID==gRunDb.RunID)
                                 {
-                                if (str.find("CONFIG")              ==1) {rundb.config_file_s         = GetVariables(str);}
-                                if (str.find("MASSCUT")             ==1) rundb.masscut_s             = GetVariables(str);
-                                if (str.find("TSHIFT")              ==1) rundb.tshift_s              = GetVariables(str);
-                                if (str.find("ENERGY_CALIB")        ==1) rundb.calib_file_s          = GetVariables(str);
-                                if (str.find("INJ_TSHIFT")          ==1) rundb.inj_tshift_s          = GetVariables(str);
-                                if (str.find("RUN_STATUS")          ==1) rundb.run_status_s          = GetVariables(str);
-                                if (str.find("MEASUREMENT_TYPE")    ==1) rundb.measurement_type_s    = GetVariables(str);
-                                if (str.find("DEFINE_SPIN_PATTERN") ==1) rundb.define_spin_pattern_s = GetVariables(str);
-                                if (str.find("COMMENT")             ==1) rundb.comment_s             = GetVariables(str);
+                                if (str.find("CONFIG")              ==1) {gRunDb.config_file_s         = GetVariables(str);}
+                                if (str.find("MASSCUT")             ==1) gRunDb.masscut_s             = GetVariables(str);
+                                if (str.find("TSHIFT")              ==1) gRunDb.tshift_s              = GetVariables(str);
+                                if (str.find("ENERGY_CALIB")        ==1) gRunDb.calib_file_s          = GetVariables(str);
+                                if (str.find("INJ_TSHIFT")          ==1) gRunDb.inj_tshift_s          = GetVariables(str);
+                                if (str.find("RUN_STATUS")          ==1) gRunDb.run_status_s          = GetVariables(str);
+                                if (str.find("MEASUREMENT_TYPE")    ==1) gRunDb.measurement_type_s    = GetVariables(str);
+                                if (str.find("DEFINE_SPIN_PATTERN") ==1) gRunDb.define_spin_pattern_s = GetVariables(str);
+                                if (str.find("COMMENT")             ==1) gRunDb.comment_s             = GetVariables(str);
                                 if (str.find("DisableStrip")        ==1){
-                                        rundb.disable_strip_s     = GetVariables(str);
-                                        StripHandler(atoi(rundb.disable_strip_s.c_str()), 1);}
+                                        gRunDb.disable_strip_s     = GetVariables(str);
+                                        StripHandler(atoi(gRunDb.disable_strip_s.c_str()), 1);}
                                         if (str.find("EnableStrip")         ==1) {
-                                                rundb.enable_strip_s      = GetVariables(str);
-                                                StripHandler(atoi(rundb.enable_strip_s.c_str()),-1);}
+                                                gRunDb.enable_strip_s      = GetVariables(str);
+                                                StripHandler(atoi(gRunDb.enable_strip_s.c_str()),-1);}
                                 }
                         }
                 }
@@ -454,7 +454,7 @@ void getPreviousRun(bool thisrun)
 
         if(thisrun==false)
         {
-                sprintf(configfile2, "%s/%s", confdir, rundb.config_file_s.c_str());
+                sprintf(configfile2, "%s/%s", confdir, gRunDb.config_file_s.c_str());
         }
 }
 */

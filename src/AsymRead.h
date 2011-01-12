@@ -30,8 +30,11 @@
 #include "AsymRecover.h"
 #include "AsymRootGlobals.h"
 
+void readDataFast();
+void readRecBegin(TStructRunInfo &ri);
 int  readloop();
-void PrintPattern(char*);
+void UpdateRunConst(TRecordConfigRhicStruct *ci);
+void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);
 void DecodeTargetID(polDataStruct poldat);
 void PrepareCollidingBunchPattern();

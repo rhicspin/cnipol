@@ -2,7 +2,7 @@
 #define ASYM_HEADER_H
 
 #define RHIC_REVOLUTION_FREQ 78e3  // RHIC Revolution Frequency 78 [kHz]
-#define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
+//#define RHIC_MAX_FILL 120          // RHIC Maximum Fill Bunches
 #define RAMPTIME 350               // duration of the ramp measurement (sec)
 #define MAXDELIM 410               // maximum number of delimiter (dynamic motion only)
 #define SEC_PER_DELIM 1            // second per deliminter
@@ -24,14 +24,18 @@
 #define C_CMNS 29.98               // Speed of Light in [cm/ns]
 #define REC_BEAMMASK 0x00030000
 
-#define CARBON_PATH_DISTANCE 18    // distance traveled by carbon, 18 cm in 2009 run
+#define CARBON_PATH_DISTANCE   18   // distance traveled by carbon, 18 cm in 2009 run
+//#define CARBON_PATH_DISTANCE   19.5   // average distance traveled by carbon in Run11
+#define CARBON_MASS_PEAK_SIGMA 1.5e6  // 1-sigma of 12C mass peak = > 1.5e6 [keV]
+#define WFD_TIME_UNIT          2.369  // in ns
+#define WFD_TIME_UNIT_HALF     1.1845 // in ns
 
 #define NWORDS_PAWC 20000000       // paw memory size 
-#define RECLEN 1024
-#define HMINENE 100.               // minimum energy for histograms 
-#define HMAXENE 1500.              // maximum energy for histograms
-#define HENEBIN 180                // number of energy bin in banana plot
-#define NTLIMIT 100000000
+#define RECLEN      1024
+#define HMINENE     100.               // minimum energy for histograms 
+#define HMAXENE     1500.              // maximum energy for histograms
+#define HENEBIN     180                // number of energy bin in banana plot
+#define NTLIMIT     100000000
 
 // 241 Am peak 5.486MeV (85%)
 // 
@@ -41,10 +45,10 @@
 //  14db = 0.19953
 //  14.?db = 0.2000  setting of attenuator board
 
-#define AMPEAK 5486.0
+#define AMPEAK    5486.0
 #define ALPHA_KEV 5486.0
-#define ATTEN 0.2000       // regular calibration  
-#define CCONST 0.2000      // regular calibration  
+#define ATTEN     0.2000       // regular calibration  
+#define CCONST    0.2000      // regular calibration  
 //#define CCONST 0.1000    // regular calibration  
 //#define CCONST 0.4000    // attenuation (x2) runs
 

@@ -29,9 +29,10 @@
 
 class TStructRunDB;
 
-typedef std::set<TStructRunDB, TStructRunDB> DbRunSet;
+typedef std::set<TStructRunDB> DbRunSet;
 typedef std::map<std::string, std::string> DbFieldMap;
-typedef std::map<std::string, UShort_t> DbFieldSaveFlagMap;
+typedef std::map<std::string, void*> DbFieldMapNew;
+typedef std::map<std::string, Bool_t> DbFieldSaveFlagMap;
 
 
 class TStructRunDB {
@@ -41,7 +42,7 @@ public:
    double      RunID;
    std::string fRunName;
    UInt_t      fillId;
-   UShort_t    polarimeterId;
+   UShort_t    fPolId;
    UInt_t      measurementId;
    time_t      timeStamp;
    std::string dateTime;
@@ -72,13 +73,15 @@ public:
    TStructRunDB();
    ~TStructRunDB();
 
-   bool operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const;
+   //bool operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const;
+   bool operator<(const TStructRunDB &rhs) const;
    void Streamer(TBuffer &buf);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
-   void PrintAsDbEntry(FILE *f=stdout) const;
-   void PrintAsDbEntry(std::ostream &o=std::cout) const;
+   //void PrintAsDbEntry(FILE *f=stdout) const;
+   void PrintAsDbEntry(std::ostream &o=std::cout, Bool_t printCommonFields=false) const;
    void UpdateFields(TStructRunDB *dbrun);
+   void UpdateValues();
 };
 
 TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec);
@@ -87,7 +90,7 @@ TBuffer & operator>>(TBuffer &buf, TStructRunDB *&rec);
 //struct TStructRunDBCompare {
 //}
 
-
+typedef std::map<UShort_t, TStructRunDB*> DbCommonRunMap;
 
 class AsymRunDB : public TObject {
 
@@ -98,22 +101,26 @@ public:
 
    std::string fDbFileName;
    FILE *fDbFile;
-   std::map<UShort_t, TStructRunDB*> commonRunDB;
+   DbCommonRunMap fCommonRunDB;
+   DbRunSet fDBRuns; // container for run info read from run.db
 
 public:
 
    AsymRunDB();
    ~AsymRunDB();
 
-   TStructRunDB* SelectRun(std::string runName);
-   void DeleteRun(std::string runName);
+   TStructRunDB* Select(std::string runName="");
+   void Delete(std::string runName);
+   void Dump();
+   void Append(TStructRunDB *dbrun);
    void Insert(TStructRunDB *dbrun);
    void UpdateCommonFields(TStructRunDB *dbrun);
+   void DropCommonFields(TStructRunDB *dbrun);
+   void Print(const Option_t* opt="") const;
    void PrintCommon();
 };
 
 int   readdb(double RUNID);
-void  PrintDB();
 std::string GetVariables(std::string str);
 int   SetDefault();
 float GetVariablesFloat(std::string str);

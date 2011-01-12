@@ -63,18 +63,21 @@ public:
  
    Int_t  RootFile(char*filename);
    Int_t  BookHists(TStructRunInfo runinfo);
-	Int_t  BookHists2(TDatprocStruct &dproc, StructRunConst &runconst,
-             StructFeedBack &feedback);
+	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
    Int_t  DeleteHistogram();
+   void   Calibrate();
+   void   CalibrateFast();
    Int_t  CloseROOTFile();
    void   CreateTrees();
    Bool_t UseCalibFile(std::string cfname="");
    void   SetChannelEvent(processEvent &event);
+   void   SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void   ProcessEvent() {};
    void   PostProcess();
+   void   FillPreProcess();
    void   AddChannelEvent();
    void   PrintEventMap();
-   void   UpdateRunConfig();
+   void   UpdateCalibrator();
    void   SaveChannelTrees();
    void   SaveEventTree();
    void   WriteTreeFile();

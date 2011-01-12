@@ -43,10 +43,10 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
 int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 {
    int delim  = event->delim ;
-   int st     = event->stN;       // 0 - 71
-   int si     = (int)(st/12);     // 0 - 5
-   float Emin = (float)dproc.enel;
-   float Emax = (float)dproc.eneu;
+   int st     = event->stN;        // 0 - 71
+   int si     = (int) (st/12);     // 0 - 5
+   float Emin = (float) dproc.enel;
+   float Emax = (float) dproc.eneu;
 
    //Nevtot++;
    Ntotal[event->bid]++;
@@ -81,13 +81,14 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
          //  (event->amp + rand2 - 0.5);
 
-         float t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+         float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
 
-         float Mass = t*t*e*runconst.T2M * k2G;
+         float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
-         //float delt = t - runconst.E2T/sqrt(e);
+         //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
-         if ((e>Emin && e< Emax)&&(Mass>dproc.MassLimit)&&(Mass<20.))  mass_feedback[st]->Fill(Mass) ;
+         if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.)
+            mass_feedback[st]->Fill(Mass);
       }
 
       return(0);
@@ -109,7 +110,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          // Get rid of bunch zero due to laser event after Run09
          if (event->bid) HHF2(15000+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
 
-         if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e))
+         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e))
          {
             HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
             if ((e>Emin) && (e<Emax)) Ngood[event->bid]++;
@@ -136,6 +137,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
       gAsymRoot.fHists->Fill(ch);
+
+      //if (ch->PassQACut1()) {
+	   //   gAsymRoot.fHists->Fill(ch, "_cut1");
       
       return 0;
    }
@@ -150,11 +154,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       average.total   = 0;
       average.counter = 0;
 
-      for (int j=0; j<120; j++) {
+      for (int j=0; j<NBUNCH; j++) {
          wall_current_monitor->Fill(j, wcmdist[j]);
          HHF1(10030, (float) j, (float) wcmdist[j]);
 
-         if (( fabs(runinfo.WcmAve-wcmdist[j])/runinfo.WcmAve<dproc.WCMRANGE )&&(fillpat[j])) {
+         if ( (fabs(runinfo.WcmAve-wcmdist[j])/runinfo.WcmAve < dproc.WCMRANGE) && fillpat[j]) {
             average.total+=wcmdist[j];
             wcmfillpat[j]=1;
             ++average.counter;
@@ -166,7 +170,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       // ---------------------------------------------------- //
       //   Root Histogram Booking using feedback results      //
       // ---------------------------------------------------- //
-      gAsymRoot.BookHists2(dproc, runconst, feedback);
+      gAsymRoot.BookHists2(dproc, feedback);
 
       // Online Banana Cut
       for (int strip=0; strip<72; strip++) {
@@ -185,20 +189,20 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
             } else {
 
                if (dproc.CBANANA == 0){
-                   HHF1(13500+strip+1, e, runconst.E2T/sqrt(e)
+                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         -cfginfo->data.chan[strip].ETCutW);
-                   HHF1(13600+strip+1, e, runconst.E2T/sqrt(e)
+                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +cfginfo->data.chan[strip].ETCutW);
                } else if (dproc.CBANANA == 1) {
-                   HHF1(13500+strip+1, e, runconst.E2T/sqrt(e)
+                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +(float)(dproc.widthl));
-                   HHF1(13600+strip+1, e, runconst.E2T/sqrt(e)
+                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +(float)(dproc.widthu));
                } else if (dproc.CBANANA == 2) {
-                   HHF1(13500+strip+1, e, runconst.E2T/sqrt(e)
-                        + runconst.M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
-                   HHF1(13600+strip+1, e, runconst.E2T/sqrt(e)
-                        - runconst.M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
+                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
+                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
+                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
+                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
                }
             }
          }
@@ -225,8 +229,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
    gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassQACut1())
+   if (ch->PassQACut1()) {
 	   gAsymRoot.fHists->Fill(ch, "_cut1");
+
+      if (ch->PassQACutCarbonMass())
+	      gAsymRoot.fHists->Fill(ch, "_cut2");
+
+   }
 
    // 2*cfginfo->data.chan[st].Window.split.Beg = 6
    //if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg))
@@ -281,16 +290,16 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    */
 
    // For A_N Calculation (Cross section)
-   if ((e>Emin)&&(e<Emax)) {
+   if (e > Emin && e < Emax) {
        HHF1(10040, e, 1.);
    }
 
    HHF1(10400+si+1, e, 1.);
 
-   if (spinpat[event->bid]>0) {
-       HHF1(10500+st+1,e,1.);
+   if (spinpat[event->bid] > 0) {
+       HHF1(10500+st+1, e, 1.);
    } else {
-       HHF1(10600+st+1,e,1.);
+       HHF1(10600+st+1, e, 1.);
    }
 
    // ========================================
@@ -301,35 +310,39 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
    if (dproc.RAMPMODE == 1) {
 
-       t =  runconst.Ct * (event->tdc + rand1 - 0.5)
-           - cfginfo->data.chan[st].t0
-           - (ramptshift[(int)event->delim/20]-ramptshift[0]) - dproc.tshift;
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5)
+          - cfginfo->data.chan[st].t0
+          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - dproc.tshift;
 
    } else if (dproc.ZMODE == 0) {   // normal runs
 
-       t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0
            - dproc.tshift - feedback.tedev[st]/sqrt_e;
-
    } else  {
 
-       t =  runconst.Ct * (event->tdc + rand1 - 0.5) - dproc.tshift ;
-
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - dproc.tshift ;
    }
 
-   float delt = t - runconst.E2T/sqrt_e;
+   //ds:
+   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, dproc.tshift, gRunConsts[st+1].Ct);
+
+   float delt = t - gRunConsts[st+1].E2T/sqrt_e;
 
    // ========================================
    //              Invariant Mass
    // ========================================
-   float Mass = t*t*e*runconst.T2M * k2G;
+   float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
    mass_nocut[st]->Fill(Mass);
 
    // Mass mode
    if (dproc.MMODE == 1) {
-      if (e>Emin && e< Emax) {
+      if (e > Emin && e < Emax) {
+
          HHF1(16000+st+1, Mass, 1.);
-         if ((Mass>dproc.MassLimit)&&(Mass<14.)) HHF1(17200+st+1, Mass, 1.);
+
+         if (Mass > dproc.MassLimit && Mass < 14.)
+            HHF1(17200+st+1, Mass, 1.);
       }
    }
 
@@ -339,10 +352,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    }
 
    // Banana Plots (E-T)
-   if (dproc.BMODE == 1){
+   if (dproc.BMODE == 1) {
+
       HHF2(13000+st+1, e, t, 1.);
-      if (fabs(Mass-3.726)<2.5)  HHF2(13700+st+1, e, t, 1.);
-      if (fabs(Mass-3.726)>2.5)  HHF2(13800+st+1, e, t, 1.);
+
+      if (fabs(Mass - 3.726) < 2.5)  HHF2(13700+st+1, e, t, 1.);
+      if (fabs(Mass - 3.726) > 2.5)  HHF2(13800+st+1, e, t, 1.);
+
       HHF2(13100+st+1, event->amp, event->tdc, 1.);
       HHF2(13200+st+1, event->amp, event->tdcmax, 1.);
       HHF1(14000+st+1, event->bid, 1.);
@@ -360,21 +376,21 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    */
 
    // integral vs. amplitede
-   if (dproc.AMODE == 1){
-      HHF2(12200+st+1,event->amp,Integ,1.);
-      HHF2(12300+st+1,Integ,t,1.);
+   if (dproc.AMODE == 1) {
+      HHF2(12200+st+1, event->amp, Integ, 1.);
+      HHF2(12300+st+1, Integ, t, 1.);
    }
 
    // -t slope
-   if ((Mass<11.18+5.0)&&(Mass>11.18-5.0)){
-      HHF1(10450+si+1, 2*11.18*e/1000000.,1.);
-      HHF1(10460+si+1, 2*11.18*e_int/1000000.,1.);
+   if ( (Mass < 11.18 + 5.0) && (Mass > 11.18 - 5.0) ) {
+      HHF1(10450+si+1, 2*11.18*e/1000000., 1.);
+      HHF1(10460+si+1, 2*11.18*e_int/1000000., 1.);
    }
 
    // t vs. E (banana with no cut)
-   t_vs_e[st] -> Fill(e, t);
+   t_vs_e[st]->Fill(e, t);
    //ds:
-   //t_vs_e[st] -> Fill(e_int, t);
+   //t_vs_e[st]->Fill(e_int, t);
 
    // =========================================
    // Ntuple fill
@@ -397,13 +413,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    */
 
    // background estimation
-   if ((delt<=-2*cfginfo->data.chan[st].ETCutW)&&
-       (e>Emin)&&(e<Emax)){
-       Nback[event->bid]++;
+   if ( (delt <= -2*cfginfo->data.chan[st].ETCutW) && e>Emin && e<Emax)
+   {
+      Nback[event->bid]++;
    }
 
    // Bunch distribution (only -t cut)
-   if ((e>Emin) && (e<Emax)) {
+   if (e > Emin && e < Emax) {
        HHF1(10020,(float)event->bid,1.);
    }
 
@@ -412,57 +428,57 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    //------------------------------------------------------
    if ( ((delt> -1. * cfginfo->data.chan[st].ETCutW ) &&
          (delt<  1. * cfginfo->data.chan[st].ETCutW ) &&
-         (dproc.CBANANA==0))
+         (dproc.CBANANA == 0))
         ||
-        ((delt > (float)(dproc.widthl) )&&
-         (delt < (float)(dproc.widthu) )&&
-         (dproc.CBANANA==1))
+        ((delt > (float)(dproc.widthl) ) &&
+         (delt < (float)(dproc.widthu) ) &&
+         (dproc.CBANANA == 1))
         ||
-        ((fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e)
-          && (dproc.CBANANA==2))
+        ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e)
+          && (dproc.CBANANA == 2)) // default 
         )
    {
       // -t dependence
       float minus_t = 2 * e * MASS_12C * k2G * k2G;
 
-      if (e>EnergyBin[0]) {
-         for (int k=0; k<NTBIN ; k++) {
-            if ((e>=EnergyBin[k])&&(e<EnergyBin[k+1])){
-               NTcounts[(int)(st/12)][event->bid][k]++;
+      if (e > EnergyBin[0]) {
+         for (int k=0; k<NTBIN; k++) {
+            if (e >= EnergyBin[k] && e < EnergyBin[k+1]) {
+               NTcounts[(int) (st/12)][event->bid][k]++;
             }
          }
       }
 
       // fine -t bins
       int spbit = 2;
-      if (spinpat[event->bid]==1) {
-          spbit = 0;
-      } else if (spinpat[event->bid]==-1){
-          spbit = 1;
+
+      if (spinpat[event->bid] == 1) {
+         spbit = 0;
+      } else if (spinpat[event->bid] == -1) {
+         spbit = 1;
       }
 
-      float eRegion[11] = {380., 420., 460., 520., 580., 640.,
-                             700., 760., 840., 920., 1000.};
-      int iebin = 11;
+      int   iebin = 11;
+      float eRegion[11] = {380., 420., 460., 520., 580., 640., 700., 760., 840., 920., 1000.};
 
-      for (int ebin =0; ebin<10; ebin++) {
-          if ( e >= eRegion[ebin] && e< eRegion[ebin+1]) {
-              iebin = ebin;   // if found
-          }
+      for (int ebin=0; ebin<10; ebin++) {
+         if ( e >= eRegion[ebin] && e < eRegion[ebin+1]) {
+            iebin = ebin;   // if found
+         }
       }
 
       HHF1(35000+st+100*spbit, iebin, 1.);
 
       // Strip distribution (time cut, before Energy Cut)
-      HHF1(10310+si+1,(float)(st-si*12)+1,1.);
+      HHF1(10310+si+1, (float) (st-si*12)+1, 1.);
 
       //  ====================================================
       //  =                Energy Cut                        =
       //  ====================================================
-      if ((e>Emin) && (e<Emax)) {
+      if (e > Emin && e < Emax) {
 
          // t vs. E (banana with cut)
-         t_vs_e_yescut[st] -> Fill(e, t);
+         t_vs_e_yescut[st]->Fill(e, t);
 
          // mass_with energy & mass sigma cut
          mass_yescut[st]->Fill(Mass);
@@ -487,10 +503,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
          // energy distribution after carbon cut
          HHF1(10050, e, 1.);
-         HHF1(10410+si+1,e,1.);
-         HHF1(10420+si+1,e_int,1.);   // Integral
+         HHF1(10410+si+1, e, 1.);
+         HHF1(10420+si+1, e_int, 1.);   // Integral
+
          energy_spectrum[si]->Fill(minus_t);
          energy_spectrum_all->Fill(minus_t);
+
          if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t
 
          // Strip distribution (time + -t cut )
@@ -498,46 +516,48 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          good_carbon_events_strip->Fill(st+1);
 
          // Mass vs. Energy plots
-         mass_vs_e_ecut[st] -> Fill(e, Mass);
+         mass_vs_e_ecut[st]->Fill(e, Mass);
 
          Ncounts[(int)(st/12)][event->bid]++;
          int time = 0;
 
-         if (runinfo.Run==5){
-             time = delim;
-             ++cntr.good[delim];
-             NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
+         if (runinfo.Run == 5) {
+            time = delim;
+            ++cntr.good[delim];
+            NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
          } else {
-             time = (int) (cntr.revolution/RHIC_REVOLUTION_FREQ);
-             if (time<MAXDELIM) {
+            time = (int) (cntr.revolution/RHIC_REVOLUTION_FREQ);
+            if (time<MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
                NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
-             } else if (!dproc.CMODE) {
+            } else if (!dproc.CMODE) {
                cerr << "ERROR: time constructed from revolution # " << time
                     << "exeeds MAXDELIM=" << MAXDELIM << " defined" << endl;
                cerr << "Perhaps calibration data? Try running with -C option" << endl;
-             }
+            }
          }
 
          // Following function call is for special text output routine of spin tune measurements
          // This routine is commented out by default. Activate this upon necessity.
          //              SpinTuneOutput(event->bid,si);
 
-         if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid]==1?1:0);
-         if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid]==-1?1:0);
-         if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid]==1?1:0);
-         if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid]==-1?1:0);
+         if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
+         if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
+         if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
+         if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
+
          HHF1(38050, TgtIndex[time], 1);
          HHF1(38060, time, 1);
 
          // counters
          cntr.reg.NStrip[spbit][st]++;
 
-         //ds: printf("t, sp, st: %d, %d, %d, %d\n", TgtIndex[time],spbit, st);
-         cntr_tgt.reg.NStrip[(int)TgtIndex[time]][spbit][st]++;
+         //ds: printf("t, sp, st: %d, %d, %d, %d\n", TgtIndex[time], spbit, st);
+         cntr_tgt.reg.NStrip[(int) TgtIndex[time] ][spbit][st]++;
 
-         if (fabs(delt) < runconst.M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e)
-           cntr.alt.NStrip[spbit][st]++;
+         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e)
+            cntr.alt.NStrip[spbit][st]++;
+
          if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
          if (str.bunchpat[event->bid]) cntr.str.NStrip[spbit][st]++;
 
@@ -545,21 +565,21 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          // 20 Hz delimiters
          /*
          if (dproc.RAMPMODE==1) {
-             int rbin = (int)((event->delim)/20.);
-             //NRcounts[(int)(st/12)][event->bid][rbin]++;
+            int rbin = (int)((event->delim)/20.);
+            //NRcounts[(int)(st/12)][event->bid][rbin]++;
 
-             // Plus Spin 21000+Si
-             // Minus Spin 21100+Si
-             HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
-             }
+            // Plus Spin 21000+Si
+            // Minus Spin 21100+Si
+            HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
+         }
          */
 
          // Spin Tune
          if (dproc.STUDYMODE == 1) {
-             HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
+            HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
          }
-      } // Emin<e<Emax Cut
-   } // Banana Cut
+      }
+   }
 
    return(0);
 }
@@ -587,13 +607,13 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
   edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
 
   // ToF in [ns]
-  t =  runconst.Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
 
   // Kinetic energy assuming Carbon
   e = ekin(edepo, cfginfo->data.chan[st].dwidth);
 
   // Decrepancy between observed ToF and calculated t from energy
-  delt = t - runconst.E2T/sqrt(e);
+  delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
   return 1;
 }
@@ -616,10 +636,10 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
 //
 int SpinTuneOutput(int bid, double si)
 {
-  fprintf(stderr,"%10ld", cntr.revolution);
-  fprintf(stderr,"%5d", bid+1);
-  fprintf(stderr,"%5d", spinpat[bid]);
-  fprintf(stderr,"%5d", int(si)+1);
+  fprintf(stderr, "%10ld", cntr.revolution);
+  fprintf(stderr, "%5d", bid+1);
+  fprintf(stderr, "%5d", spinpat[bid]);
+  fprintf(stderr, "%5d", int(si)+1);
 
   /*
   si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
