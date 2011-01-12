@@ -268,6 +268,10 @@ void DrawObjContainer::Fill(ChannelEvent *ch, string cutid) { }
 
 
 /** */
+void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
+
+
+/** */
 void DrawObjContainer::PostFill()
 {
 }

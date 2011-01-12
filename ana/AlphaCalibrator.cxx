@@ -129,6 +129,13 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
+void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
+{
+	Warning("CalibrateFast", "Executing CalibrateFast()");
+}
+
+
+/** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
 {
    TFitResultPtr fitres = 0;

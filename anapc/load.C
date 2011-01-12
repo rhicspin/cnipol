@@ -23,6 +23,7 @@
 
    gROOT->SetMacroPath(macroPath);
 
+   gSystem->Load("libcnipol.so");
    gSystem->Load("libcniana.so");
    gSystem->Load("libcnipol.so");
 

@@ -50,6 +50,7 @@ HDRS       = $(filter-out $(INC_DIR)/LinkDef%,$(wildcard $(INC_DIR)/*.h))
 SRCS_CXX   = $(filter-out $(CNIANA_DICT_SRC),$(wildcard $(SRC_DIR)/*.cxx)) \
              $(CNIANA_DICT_SRC)
 OBJS       = $(SRCS_CXX:.cxx=.o)
+CNIPOL_OBJ = $(CNIPOL_DIR)/src/Kinema.o
 
 #------------------------------------------------------------------------------
 
@@ -58,8 +59,8 @@ all: lib
 
 lib: $(CNIANA_LIB)
 
-$(CNIANA_LIB): $(OBJS)
-	$(LD) $(SOFLAGS) $(OBJS) $(LIBS) -o $(CNIANA_LIB)
+$(CNIANA_LIB): $(OBJS) $(CNIPOL_OBJ)
+	$(LD) $(SOFLAGS) $(OBJS) $(CNIPOL_OBJ) $(LIBS) -o $(CNIANA_LIB)
 	@echo "$@ done"
 
 snns2root: $(SRC_DIR)/snns2root.o

@@ -31,7 +31,7 @@ CnipolCalibHists::~CnipolCalibHists()
 }
 
 
-void CnipolCalibHists::CnipolCalibHistsBook()
+void CnipolCalibHists::CnipolCalibHistsBook(std::string cutid)
 {
    char hName[256];
    //char hTitle[256];
@@ -219,6 +219,13 @@ void CnipolCalibHists::Fill(ChannelEvent *ch, string cutid)
    ChannelData      &data    = ch->fChannel;
 
    UChar_t chId = eventId.fChannelId;
+
+   // Do not consider channels other than silicon detectors
+   if (chId >= NSTRIP) return;
+
+   // Overall cut, XXX move it to ChannelEvent class???
+   //if (data.fAmpltd < 50) return;
+
    string sSi("  ");
    sprintf(&sSi[0], "%02d", chId+1);
 
@@ -252,6 +259,10 @@ void CnipolCalibHists::Fill(ChannelEvent *ch, string cutid)
       ((TH1F*) sd.o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
    }
 }
+
+
+/** */
+void CnipolCalibHists::FillPreProcess(ChannelEvent *ch) { }
 
 
 /** */
