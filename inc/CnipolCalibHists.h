@@ -33,10 +33,11 @@ public:
    CnipolCalibHists(TDirectory *dir);
    virtual ~CnipolCalibHists();
 
-   void CnipolCalibHistsBook();
+   void CnipolCalibHistsBook(std::string cutid="");
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
    void Fill(ChannelEvent *ch, std::string cutid="");
+   void FillPreProcess(ChannelEvent *ch);
    void PostFill();
    void SaveAllAs(TCanvas &c, std::string path="./");
 

@@ -46,9 +46,9 @@ public:
    ~EventConfig();
 
    //virtual void Print(const Option_t* opt="") const;
-   void Print(const Option_t* opt="") const;
-   void PrintAsPhp(FILE *f=stdout) const;
-   void PrintAsConfig(FILE *f=stdout) const;
+   void  Print(const Option_t* opt="") const;
+   void  PrintAsPhp(FILE *f=stdout) const;
+   void  PrintAsConfig(FILE *f=stdout) const;
    float ConvertToEnergy(UShort_t adc, UShort_t chId);
 
    ClassDef(EventConfig, 1)
