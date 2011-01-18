@@ -123,9 +123,7 @@ void DrawObjContainer::Print(const Option_t* opt) const
 }
 
 
-/**
- *
- */
+/** */
 void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
 {
    //Bool_t isBatch = gROOT->IsBatch();
@@ -163,14 +161,17 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
          } else { c.SetLogz(kFALSE); }
       }// else { c.SetLogz(kFALSE); }
 
+      if (io->second && ((TH1*) io->second)->Integral() > 1000 ) {
 
-      if (io->second) (io->second)->Draw();
-      //if (io->second) io->second->Print();
+         (io->second)->Draw();
 
-      //sprintf(fName, "%s/%s.eps", path.c_str(), cName);
-      //c.SaveAs(fName);
-      sprintf(fName, "%s/%s.png", path.c_str(), cName);
-      c.SaveAs(fName);
+         //if (io->second) io->second->Print();
+
+         //sprintf(fName, "%s/%s.eps", path.c_str(), cName);
+         //c.SaveAs(fName);
+         sprintf(fName, "%s/%s.png", path.c_str(), cName);
+         c.SaveAs(fName);
+      }
    }
 
    //return;
@@ -181,6 +182,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
 
       //XXX Temporary cond for test only
       //if (isubd->first.find("channel28") == string::npos) continue;
+      //if (isubd->first.find("preproc") == string::npos) continue;
 
       string parentPath = path;
       path += "/" + isubd->first;
@@ -192,9 +194,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
 }
 
 
-/**
- *
- */
+/** */
 void DrawObjContainer::Draw(TCanvas &c)
 {
    //Bool_t isBatch = gROOT->IsBatch();
@@ -291,6 +291,7 @@ void DrawObjContainer::Delete()
 
    for (io=o.begin(); io!=o.end(); ++io) {
       //sprintf(cName, "c_%s", io->first.c_str());
+      //cout << "YYY: " << io->first << endl;
       if (io->second) io->second->Delete();
    }
 

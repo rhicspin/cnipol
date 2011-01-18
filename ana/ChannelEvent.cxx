@@ -23,6 +23,27 @@ ChannelEvent::~ChannelEvent()
 
 
 /** */
+UChar_t ChannelEvent::GetDetectorId()
+{
+   return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1;
+}
+
+
+/** */
+UChar_t ChannelEvent::GetChannelId()
+{
+   return fEventId.fChannelId + 1;
+}
+
+
+/** */
+UChar_t ChannelEvent::GetBunchId()
+{
+   return fEventId.fBunchId;
+}
+
+
+/** */
 Float_t ChannelEvent::GetEnergyA()
 {
    UChar_t chId = fEventId.fChannelId + 1;
@@ -123,6 +144,13 @@ Float_t ChannelEvent::GetCarbonMassEstimate()
 
 
 /** */
+Float_t ChannelEvent::GetMandelstamT()
+{
+   return -2 * MASS_12C * k2G * k2G * GetKinEnergyAEstimate();
+}
+
+
+/** */
 void ChannelEvent::Print(const Option_t* opt) const
 {
    opt = "";
@@ -162,7 +190,7 @@ Bool_t ChannelEvent::PassQACutRaw()
    UChar_t chId = fEventId.fChannelId + 1;
    
    if (chId >= NSTRIP) return false;
-   if (chId <  0)      return false;
+   //if (chId <  0)      return false;
 
    return true;
 }
@@ -172,7 +200,7 @@ Bool_t ChannelEvent::PassQACutRaw()
 Bool_t ChannelEvent::PassQACut1()
 {
    //if (GetEnergyA() < 150) return false;  // keV
-   if (GetEnergyA() > 1150) return false; // keV
+   //if (GetEnergyA() > 1150) return false; // keV
 
    if (GetTime() < 15) return false; // ns
    if (GetTime() > 75) return false; // ns
@@ -194,4 +222,18 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
    //if ( fabs(delta) < gRunConsts[].M2T * dproc.OneSigma * dproc.MassSigma / sqrt(GetEnergyA()) ) return true;
 
    return false;
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutPulser()
+{
+   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && 
+       //fChannel.fTdc > 38 && fChannel.fTdc < 70) // blue-2
+       fChannel.fTdc > 50 && fChannel.fTdc < 70) // blue-1
+   {
+      return false;
+   }
+
+   return true;
 }
