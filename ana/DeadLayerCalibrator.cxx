@@ -80,7 +80,7 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 
 /** */
 void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
-{
+{ //{{{
    TH2F *htemp     = (TH2F*) c->d["preproc"].o["hTimeVsEnergyA"];
    TH1D *hMeanTime = (TH1D*) c->d["preproc"].o["hFitMeanTimeVsEnergyA"];
 
@@ -119,7 +119,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
    } else {
       Error("CalibrateFast", "Empty TFitResultPtr");
    }
-}
+} //}}}
 
 
 /** */

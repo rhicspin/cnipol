@@ -45,17 +45,21 @@ public:
    ChannelEvent();
    ~ChannelEvent();
 
-   Float_t GetEnergyA();
-   Float_t GetKinEnergyA();
-   Float_t GetKinEnergyAEstimate();
-   Float_t GetFunnyEnergyA();
-   Float_t GetEnergyI();
+   UChar_t  GetDetectorId();
+   UChar_t  GetChannelId();
+   UChar_t  GetBunchId();
+   Float_t  GetEnergyA();
+   Float_t  GetKinEnergyA();
+   Float_t  GetKinEnergyAEstimate();
+   Float_t  GetFunnyEnergyA();
+   Float_t  GetEnergyI();
    //Float_t GetTotalEnergyI();
-   Float_t GetTime();
-   Float_t GetTimeOfFlight();
-   Float_t GetTimeOfFlightEstimate();
-   Float_t GetCarbonMass();
-   Float_t GetCarbonMassEstimate();
+   Float_t  GetTime();
+   Float_t  GetTimeOfFlight();
+   Float_t  GetTimeOfFlightEstimate();
+   Float_t  GetCarbonMass();
+   Float_t  GetCarbonMassEstimate();
+   Float_t  GetMandelstamT();
 
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
@@ -63,6 +67,7 @@ public:
    Bool_t PassQACutRaw();
    Bool_t PassQACut1();
    Bool_t PassQACutCarbonMass();
+   Bool_t PassCutPulser();
 
    ClassDef(ChannelEvent, 1)
 };
