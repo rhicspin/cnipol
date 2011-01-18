@@ -58,9 +58,8 @@ int DetectorAnomaly()
 // Input       : int st
 // Return      :
 //
-int
-InvariantMassCorrelation(int st){
-
+int InvariantMassCorrelation(int st)
+{
   Kinema->cd();
 
   char htitle[100],histname[100];
@@ -168,10 +167,7 @@ void BananaFit(int st)
   TH1D *hbanana_2    = (TH1D*) gDirectory->Get("hbanana_2");
   TH1D *hbanana_chi2 = (TH1D*) gDirectory->Get("hbanana_chi2");
   hbanana_0->Delete();  hbanana_2->Delete();  hbanana_chi2->Delete();
-
-  return;
-};
-
+}
 
 
 //
@@ -188,9 +184,8 @@ void BananaFit(int st)
 // Input       :
 // Return      :
 //
-int
-StripAnomalyDetector(){
-
+int StripAnomalyDetector()
+{
   // Errror allowance
   strpchk.p1.allowance     = errdet.MASS_ENERGY_CORR_ALLOWANCE;
   strpchk.dev.allowance    = errdet.MASS_POSITION_ALLOWANCE;
@@ -216,50 +211,55 @@ StripAnomalyDetector(){
   float evntdev[NSTRIP];
   float sigma=0;
   int counter=0;
+
   for (int i=0; i<NSTRIP; i++) {
-    evntdev[i]=0;
-    printf("Anomary Check for strip=%d ...\r",i);
+     evntdev[i]=0;
+     printf("Anomary Check for strip=%d ...\r",i);
 
-    if (runinfo.ActiveStrip[i]) {
-      // t vs. Energy (this routine is incomplete)
-      //BananaFit(i);
+     if (runinfo.ActiveStrip[i]) {
+        // t vs. Energy (this routine is incomplete)
+        //BananaFit(i);
 
-      // MASS vs. Energy correlation
-      InvariantMassCorrelation(i);
-      if (!i) strpchk.p1.max   = fabs(double(strpchk.ecorr.p[1][i]));  // initialize max w/ strip 0
-      if (fabs(double(strpchk.ecorr.p[1][i])) > fabs(double(strpchk.p1.max)) ) {
-        strpchk.p1.max = strpchk.ecorr.p[1][i];
-        strpchk.p1.st  = i;
-      }
-      // Maximum devistion of peak from 12C_MASS
-      if ((fabs(feedback.mdev[i]) > strpchk.dev.max)&&(feedback.mdev[i]!=ASYM_DEFAULT)) {
-        strpchk.dev.max  = feedback.mdev[i];
-        strpchk.dev.st   = i;
-      }
-      // Gaussian Mass fit Largest chi2
-      if (feedback.chi2[i] > strpchk.chi2.max) {
-        strpchk.chi2.max  = fabs(double(feedback.chi2[i]));
-        strpchk.chi2.st   = i;
-      }
-      // Good carbon events within banana
-      evntdev[i]=fabs(double(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0]))/strpchk.evnt.average[0] ;
-      if (evntdev[i]>strpchk.evnt.max) {
-        strpchk.evnt.max  = evntdev[i];
-        strpchk.evnt.st   = i;
-      }
+        // MASS vs. Energy correlation
+        InvariantMassCorrelation(i);
 
-      // Calculate one sigma of RMS distribution
-      if (feedback.err[i]){
-        sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
-          /feedback.err[i]/feedback.err[i];
-        counter++;
-      }
+        if (!i) strpchk.p1.max   = fabs(double(strpchk.ecorr.p[1][i]));  // initialize max w/ strip 0
 
-    } // end-if-(runinfo.ActiveStrip[i])
+        if (fabs(double(strpchk.ecorr.p[1][i])) > fabs(double(strpchk.p1.max)) ) {
+          strpchk.p1.max = strpchk.ecorr.p[1][i];
+          strpchk.p1.st  = i;
+        }
 
-  }// end-for-loop(NSTRIP)
+        // Maximum devistion of peak from 12C_MASS
+        if ((fabs(feedback.mdev[i]) > strpchk.dev.max)&&(feedback.mdev[i]!=ASYM_DEFAULT)) {
+          strpchk.dev.max  = feedback.mdev[i];
+          strpchk.dev.st   = i;
+        }
+
+        // Gaussian Mass fit Largest chi2
+        if (feedback.chi2[i] > strpchk.chi2.max) {
+          strpchk.chi2.max  = fabs(double(feedback.chi2[i]));
+          strpchk.chi2.st   = i;
+        }
+
+        // Good carbon events within banana
+        evntdev[i]=fabs(double(good_carbon_events_strip->GetBinContent(i+1)-strpchk.evnt.average[0]))/strpchk.evnt.average[0] ;
+
+        if (evntdev[i]>strpchk.evnt.max) {
+          strpchk.evnt.max  = evntdev[i];
+          strpchk.evnt.st   = i;
+        }
+
+        // Calculate one sigma of RMS distribution
+        if (feedback.err[i]){
+          sigma += (feedback.RMS[i]-strpchk.width.average[0])*(feedback.RMS[i]-strpchk.width.average[0])
+            /feedback.err[i]/feedback.err[i];
+          counter++;
+        }
+     }
+  }
+
   sigma=sqrt(sigma)/counter;
-
 
   // Draw lines to objects
   float widthlimit=strpchk.width.allowance+strpchk.width.average[0];
@@ -274,7 +274,6 @@ StripAnomalyDetector(){
   DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
   evelim=(1-strpchk.evnt.allowance)*strpchk.evnt.average[0];
   DrawLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
-
 
   // register and count suspicious strips
   char text[36];
@@ -333,19 +332,14 @@ StripAnomalyDetector(){
 
       // register global strip error code
       anal.anomaly.strip_err_code = anal.anomaly.strip_err_code | strip_err_code ;
-
-    } // end-of-if(runinfo.ActiveStrip[i])
-
-  } // end-of-for(NSTRIP) loop
+    }
+  }
 
   // register unrecognized anomaly strips
   UnrecognizedAnomaly(anal.anomaly.st,anal.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
                       anal.unrecog.anomaly.st, anal.unrecog.anomaly.nstrip);
-
-
   return 0;
-
-  };
+}
 
 
 //

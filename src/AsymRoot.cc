@@ -19,8 +19,6 @@
 
 using namespace std;
 
-StructHist Eslope;
-
 // ROOT Histograms
 TDirectory *Run;
 TDirectory *Raw;
@@ -35,6 +33,7 @@ TH2F  *rate_vs_delim;
 
 // FeedBack Dir
 TH2F  *mdev_feedback;
+TH1F  *mass_feedback_all;
 TH1F  *mass_feedback[TOT_WFD_CH];  // invariant mass for feedback
 
 // Raw Directory
@@ -55,7 +54,9 @@ TLine *energy_cut_l[NSTRIP];      // energy cut low
 TLine *energy_cut_h[NSTRIP];      // energy cut high
 TH1F  *energy_spectrum[NDETECTOR]; // energy spectrum per detector
 TH1F  *energy_spectrum_all;        // energy spectrum for all detector sum
+TH1F  *mass_nocut_all;             // invariant mass without banana cut
 TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+TH1F  *mass_yescut_all;
 TH1F  *mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
 
 
@@ -113,7 +114,7 @@ AsymRoot::~AsymRoot()
 // Input       : char *filename
 // Return      :
 //
-int AsymRoot::RootFile(char *filename)
+void AsymRoot::RootFile(char *filename)
 {
    rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
@@ -128,16 +129,16 @@ int AsymRoot::RootFile(char *filename)
 
    if (dproc.CMODE)
       fHists = new CnipolCalibHists(rootfile);
-   else
+   else {
       fHists = new CnipolHists(rootfile);
 
-   return 0;
+      // a temporary fix...
+      //Kinema    = fHists->d["Kinema"].fDir;
+   }
 }
 
 
-/**
- *
- */
+/** */
 void AsymRoot::CreateTrees()
 {
    if (fTreeFileId > 99) {
@@ -511,65 +512,84 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
 
   for (int i=0; i<NDETECTOR; i++) {
-    sprintf(hname,"energy_spectrum_det%d",i+1);
-    sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", runinfo.RUNID, i+1);
-    energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
-    energy_spectrum[i] -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
+     sprintf(hname, "energy_spectrum_det%d", i+1);
+     sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", runinfo.RUNID, i+1);
+     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
+     energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
+     //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
   }
 
   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", runinfo.RUNID);
-  energy_spectrum_all = new TH1F("energy_spectrum_all",htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
+  energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
+  //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
+
+  sprintf(hname,"mass_nocut_all");
+  sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", runinfo.RUNID);
+  mass_nocut_all = new TH1F(hname, htitle, 100, 0, 20);
+  mass_nocut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
+
+  sprintf(hname,"mass_yescut_all");
+  sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", runinfo.RUNID);
+  mass_yescut_all = new TH1F(hname, htitle, 100, 0, 20);
+  mass_yescut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
+  mass_yescut_all->SetLineColor(2);
 
   // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
   // target events strip [73 - 76].
   for (int i=0; i<TOT_WFD_CH; i++) {
 
-    sprintf(hname,"t_vs_e_st%d",i+1);
-    sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", runinfo.RUNID, i+1);
-    t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
-    t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-    t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
+     sprintf(hname,"t_vs_e_st%d",i+1);
+     sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", runinfo.RUNID, i+1);
+     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
-    sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-    sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", runinfo.RUNID, i+1);
-    t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
-    t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-    t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
+     sprintf(hname,"t_vs_e_yescut_st%d",i+1);
+     sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", runinfo.RUNID, i+1);
+     t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+     t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+     t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
 
-    sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-    sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", runinfo.RUNID, i+1);
-    mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
-    mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-    mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
+     sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
+     sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", runinfo.RUNID, i+1);
+     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
+     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
-    sprintf(hname,"mass_nocut_st%d",i+1);
-    sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
-    mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+     sprintf(hname, "mass_nocut_st%d",i+1);
+     sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
+     mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
+     mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
 
-    sprintf(hname,"mass_yescut_st%d",i+1);
-    sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
-    mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-    mass_yescut[i] -> SetLineColor(2);
-
+     sprintf(hname, "mass_yescut_st%d",i+1);
+     sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
+     mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
+     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+     mass_yescut[i] -> SetLineColor(2);
   }
 
   // FeedBack Directory
   FeedBack->cd();
+
+  sprintf(hname, "mass_feedback_all");
+  sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", runinfo.RUNID);
+  mass_feedback_all = new TH1F(hname, htitle, 100, 0, 20);
+  mass_feedback_all -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+  mass_feedback_all -> SetLineColor(2);
+
   for (int i=0; i<TOT_WFD_CH; i++) {
 
-    sprintf(hname,"mass_feedback_st%d",i+1);
-    sprintf(htitle,"%.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
-    mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
-    mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-    mass_feedback[i] -> SetLineColor(2);
-
+     sprintf(hname, "mass_feedback_st%d", i+1);
+     sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
+     mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
+     mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+     mass_feedback[i] -> SetLineColor(2);
   }
 
   // Raw Directory
   Raw->cd();
+
   sprintf(htitle,"%.3f : Raw Counts per Bunch ", runinfo.RUNID);
   bunch_dist_raw = new TH1F("bunch_dist_raw", htitle, NBUNCH, -0.5, NBUNCH-0.5);
   bunch_dist_raw -> GetXaxis() -> SetTitle("Bunch ID");
@@ -602,7 +622,6 @@ int AsymRoot::BookHists(TStructRunInfo runinfo)
   tdc_vs_adc_false_bunch_raw -> GetXaxis() -> SetTitle("ADC [channel]");
   tdc_vs_adc_false_bunch_raw -> GetYaxis() -> SetTitle("TDC [channel]");
   tdc_vs_adc_false_bunch_raw -> SetMarkerColor(2);
-
 
   // Bunch Directory
   Bunch->cd();
@@ -728,7 +747,7 @@ int AsymRoot::DeleteHistogram()
      t_vs_e_yescut[i]->Delete();
      mass_vs_e_ecut[i]->Delete();  // Mass vs. 12C Kinetic Energy
      mass_nocut[i]->Delete();
-     //    mass_yescut[i] -> Delete();
+     mass_yescut[i]->Delete();
   }
 
   return 0;

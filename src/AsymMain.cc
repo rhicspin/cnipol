@@ -19,9 +19,7 @@
 using namespace std;
 
 
-// =================
-// beginning of main
-// =================
+/** Main program */
 int main(int argc, char *argv[])
 {
    // Create a stopwatch and start it
@@ -279,18 +277,30 @@ int main(int argc, char *argv[])
    // Read run info from database
    TStructRunDB *runDb = gAsymRunDb.Select(gRunDb.fRunName);
 
+   gRunDb.Print();
+
    // Replace gRunDb
    if (runDb) {
       gRunDb.UpdateFields(runDb);
+      gRunDb.Print();
       gRunInfo.fPolId = gRunDb.fPolId;
-   } else
-      printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
+   } else {
+      // Extract and overwrite (!) basic run info (gRunInfo) from raw data
+      readRecBegin(gRunInfo);
 
-   // Extract and overwrite (!) basic run info (gRunInfo) from raw data
-   readRecBegin(gRunInfo);
+      printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
+      gAsymRunDb.Select();
+      gAsymRunDb.Insert(&gRunDb);
+      gAsymRunDb.Dump();
+   }
+
+   gRunDb.Print();
+
+   // ds temp fix: disable strips
+   gRunInfo.DisableStrip[11] = 1;
+   gRunInfo.DisableStrip[65] = 1;
 
    //gAsymRunDb.PrintCommon();
-   //gRunDb.PrintAsDbEntry(cout);
 
    //gAsymRunDb.Print();
    //while(1) {};
@@ -342,11 +352,7 @@ int main(int argc, char *argv[])
 
    fprintf(stdout, "Booking ROOT histograms: %s\n", outRootFileName);
 
-   if (gAsymRoot.RootFile(outRootFileName) != 0) {
-      perror("Error: RootFile()");
-      exit(-1);
-   }
-
+   gAsymRoot.RootFile(outRootFileName);
    gAsymRoot.BookHists(gRunInfo);
 
    // Create tree if requested
@@ -359,6 +365,8 @@ int main(int argc, char *argv[])
 
    if (dproc.UPDATE == 1 && !dproc.CMODE)
       readDataFast();
+
+   //exit(-1);
 
    // Quick Scan and Fit for tshift and mass sigma fit
    if (dproc.FEEDBACKMODE){
@@ -405,8 +413,8 @@ int main(int argc, char *argv[])
    // Update calibration constants if requested
    if (dproc.UPDATE == 1) {
       gAsymRoot.Calibrate();
-      printf("YYY\n");
-      gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig(stdout);
+      //printf("YYY\n");
+      //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig(stdout);
    }
 
    // Update calibration constants if requested
@@ -529,8 +537,6 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 
   return 0;
 }
-
-
 
 
 // =========================
@@ -656,42 +662,50 @@ int ConfigureActiveStrip(int mask)
 {
    // Disable Detector First
    for (int i=0; i<NDETECTOR; i++) {
-     if ((~mask>>i)&1) {
-       gRunInfo.ActiveDetector[i] = 0x000;
-       for (int j=0;j<NSTRIP_PER_DETECTOR; j++) {
-         gRunInfo.NActiveStrip--;
-         gRunInfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
-       }
-     }
+
+      if ( (~mask>>i) & 1) {
+
+         gRunInfo.ActiveDetector[i] = 0x000;
+
+         for (int j=0; j<NSTRIP_PER_DETECTOR; j++) {
+            gRunInfo.NActiveStrip--;
+            gRunInfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
+         }
+      }
    }
 
    // Configure Active Strips
    int det, strip=0;
+
    for (int i=0; i<gRunInfo.NDisableStrip; i++) {
-     det   = gRunInfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
 
-     // skip if the detector is already disabled
-     if ((mask>>det)&1) {
-       strip = gRunInfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
-       gRunInfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
-       gRunInfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
-       gRunInfo.NActiveStrip--;
-     }
+      det = gRunInfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
 
-   } // end-of-for(runinof.NDisableStrip) loop
+      // skip if the detector is already disabled
+      if ((mask>>det)&1) {
+         strip = gRunInfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
+         gRunInfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
+         gRunInfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
+         gRunInfo.NActiveStrip--;
+      }
+   }
 
    // Active Detector and Strip Configulation
    printf("ReConfigured Active Detector =");
+
    for (int i=0; i<NDETECTOR; i++)  printf(" %1d", gRunInfo.ActiveDetector[i] ? 1 : 0 );
    printf("\n");
    //    printf("Active Strip Config =");
    //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", gRunInfo.ActiveDetector[i]);
    //    printf("\n");
+
    printf("Reconfigured Active Strip Config =");
+
    for (int i=0; i<NSTRIP; i++) {
-     if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
+     if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
      printf("%d", gRunInfo.ActiveStrip[i]);
    }
+
    printf("\n");
 
    return 0;

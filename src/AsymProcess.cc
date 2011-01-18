@@ -64,7 +64,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    //------------------------------------------------------------------//
    //                           Feedback Mode                          //
    //------------------------------------------------------------------//
-   if (Flag.feedback){
+   //if (Flag.feedback){
 
       // tdc > 6 ns, effectively...
       if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
@@ -87,12 +87,14 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
          //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
-         if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.)
+         if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.) {
             mass_feedback[st]->Fill(Mass);
+            mass_feedback_all->Fill(Mass);
+         }
       }
 
-      return(0);
-   }
+   //   return(0);
+   //}
 
    //------------------------------------------------------------------//
    //                          DeadLayer Mode                          //
@@ -229,7 +231,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
    gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassQACut1()) {
+   if (ch->PassQACut1() && gAsymRoot.fChannelEvent->PassCutPulser())
+   {
 	   gAsymRoot.fHists->Fill(ch, "_cut1");
 
       if (ch->PassQACutCarbonMass())
@@ -334,6 +337,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
    mass_nocut[st]->Fill(Mass);
+   mass_nocut_all->Fill(Mass);
 
    // Mass mode
    if (dproc.MMODE == 1) {
@@ -426,20 +430,23 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    //------------------------------------------------------
    //                Banana Curve Cut
    //------------------------------------------------------
-   if ( ((delt> -1. * cfginfo->data.chan[st].ETCutW ) &&
-         (delt<  1. * cfginfo->data.chan[st].ETCutW ) &&
-         (dproc.CBANANA == 0))
-        ||
-        ((delt > (float)(dproc.widthl) ) &&
-         (delt < (float)(dproc.widthu) ) &&
-         (dproc.CBANANA == 1))
-        ||
-        ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e)
-          && (dproc.CBANANA == 2)) // default 
-        )
+   //if ( ((delt> -1. * cfginfo->data.chan[st].ETCutW ) &&
+   //      (delt<  1. * cfginfo->data.chan[st].ETCutW ) &&
+   //      (dproc.CBANANA == 0))
+   //     ||
+   //     ((delt > (float)(dproc.widthl) ) &&
+   //      (delt < (float)(dproc.widthu) ) &&
+   //      (dproc.CBANANA == 1))
+   //     ||
+   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e)
+   //       && (dproc.CBANANA == 2)) // default 
+   //     )
+
+   if (ch->PassQACutCarbonMass())
    {
       // -t dependence
       float minus_t = 2 * e * MASS_12C * k2G * k2G;
+      //printf("UUU0: %d, %f\n", si, minus_t);
 
       if (e > EnergyBin[0]) {
          for (int k=0; k<NTBIN; k++) {
@@ -482,10 +489,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
          // mass_with energy & mass sigma cut
          mass_yescut[st]->Fill(Mass);
+         mass_yescut_all->Fill(Mass);
 
          // Timing info for Each bunch
-         if ((e>600.)&&(e<650.)) {
-           HHF1(11000+(int)event->bid, t, 1.);
+         if (e > 600. && e < 650.) {
+            HHF1(11000+(int)event->bid, t, 1.);
          }
 
          // delimiter distribution
@@ -498,21 +506,24 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          // bunch distribution (time + -t cut)
          HHF1(10010,(float)event->bid,1.);
          if (fmod((float)event->bid,2)==0) {
-             HHF1(10100+(si+1)*10,(float)event->bid,1.);
+            HHF1(10100+(si+1)*10,(float)event->bid,1.);
          }
 
          // energy distribution after carbon cut
          HHF1(10050, e, 1.);
+	      ((TH1F*) gAsymRoot.fHists->o["hKinEnergyA_oo"])->Fill(e);
+
          HHF1(10410+si+1, e, 1.);
          HHF1(10420+si+1, e_int, 1.);   // Integral
 
+         //printf("UUU: %d, %f\n", si, minus_t);
          energy_spectrum[si]->Fill(minus_t);
          energy_spectrum_all->Fill(minus_t);
 
          if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t
 
          // Strip distribution (time + -t cut )
-         HHF1(10320+si+1,(float)(st-si*12)+1,1.);
+         HHF1(10320+si+1, (float) (st-si*12)+1, 1.);
          good_carbon_events_strip->Fill(st+1);
 
          // Mass vs. Energy plots

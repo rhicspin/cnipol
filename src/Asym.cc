@@ -38,7 +38,7 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
-  0,       // VERBOSE mode
+  1,       // VERBOSE mode
   0,       // feedback mode
   -1,      // spin_pattern
   -1,      // fill_pattern
@@ -219,6 +219,8 @@ int TgtIndex[MAXDELIM];
 int nTgtIndex = 0 ;
 
 const float MSIZE = 1.2; // Marker size
+
+StructHist Eslope;
 
 
 /** */

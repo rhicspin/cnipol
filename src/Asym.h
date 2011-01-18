@@ -185,11 +185,11 @@ struct StructStripCounterTgt {
 };
 
 struct StructCounter {
-  long int good_event;
-  long int revolution;
-  long int tgtMotion;
-  long int good[MAXDELIM];
-  StructStripCounter reg, alt, phx, str;
+   long int good_event;
+   long int revolution;
+   long int tgtMotion;
+   long int good[MAXDELIM];
+   StructStripCounter reg, alt, phx, str;
 };
 
 struct StructCounterTgt {
