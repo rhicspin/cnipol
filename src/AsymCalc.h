@@ -92,8 +92,8 @@ int  sqass(float A, float B, float C, float D, float *asym, float *easym);
 int  CumulativeAsymmetry();
 int  calcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
-TGraphErrors * AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
-int  BunchAsymmetry(int, float A[], float dA[]);
+TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
+void BunchAsymmetry(int, float A[], float dA[]);
 
 void  calcWeightedMean(float A[], float dA[], int NDAT, float &Ave, float &dAve);
 float WeightedMean(float A[], float dA[], int NDAT);
@@ -103,7 +103,7 @@ float WeightedMeanError(float A[], float dA[], float Ave, int NDAT);
 void  calcBunchAsymmetryAverage();
 void  calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
 float calcDivisionError(float x, float y, float dx, float dy);
-int   calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
+void  calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 float TshiftFinder(int, int);
 
 //===========================================================================

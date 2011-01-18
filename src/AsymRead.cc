@@ -84,7 +84,8 @@ void readDataFast()
 
                gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
-               if (!gAsymRoot.fChannelEvent->PassQACutRaw()) continue;
+               if (!gAsymRoot.fChannelEvent->PassQACutRaw() ||
+                   !gAsymRoot.fChannelEvent->PassCutPulser()) continue;
 
                gAsymRoot.FillPreProcess();
 
@@ -422,18 +423,19 @@ int readloop()
          break;
 
       case REC_WCMADO:
+
          if (!ReadFlag.WCMADO) {
 
-           printf("Reading WCM information\n");
-           memcpy(&wcmdat, &rec.wcmado.data,sizeof(wcmdat));
+            printf("Reading WCM information\n");
+            memcpy(&wcmdat, &rec.wcmado.data,sizeof(wcmdat));
 
-           for (int bid=0;bid<120;bid++) {
-              wcmdist[bid] = wcmdat.fillDataM[bid*3];
-              gRunInfo.WcmSum += wcmdist[bid] * fillpat[bid];
-           }
+            for (int bid=0; bid<NBUNCH; bid++) {
+               wcmdist[bid] = wcmdat.fillDataM[bid*3];
+               gRunInfo.WcmSum += wcmdist[bid] * fillpat[bid];
+            }
 
-           gRunInfo.WcmAve = gRunInfo.WcmSum/float(gRunInfo.NActiveBunch);
-           ReadFlag.WCMADO = 1;
+            gRunInfo.WcmAve = gRunInfo.WcmSum/float(gRunInfo.NActiveBunch);
+            ReadFlag.WCMADO = 1;
          }
 
          gRunInfo.StopTime = rec.header.timestamp.time;
@@ -793,7 +795,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    float L  = ci->data.TOFLength;
 
    gRunConsts[0] = RunConst();
-   //gRunConsts[0].Print();
+   gRunConsts[0].Print();
 
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
@@ -806,8 +808,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
       //gRunConsts[i] = RunConst(L, Ct);
       gRunConsts[i] = RunConst();
 
-      //printf("Channel %-2d consts: \n", i);
-      //gRunConsts[i].Print();
+      printf("Channel %-2d consts: \n", i);
+      gRunConsts[i].Print();
    }
 }
 
@@ -879,18 +881,16 @@ void DecodeTargetID(polDataStruct poldat)
   // within REC_PCTARGET routine. If the target is horizontal,
   // then mask 90 degree detector.
   if (gRunInfo.target == '-') {
-    if (str.find("Vert") == 0 || str.find("V") == 0) { gRunInfo.target='V'; tgt.VHtarget=0;}
-    if (str.find("Horz") == 0 || str.find("H") == 0) {
-      gRunInfo.target='H';
-      tgt.VHtarget=1;
-      // This is too late to reconfigure strip mask because this routine is
-      // executed at the end of event loop. Too bad. /* March 5,'09 IN */
-      //      mask.detector = 0x2D;
-      //      ConfigureActiveStrip(mask.detector);
-    }
+     if (str.find("Vert") == 0 || str.find("V") == 0) { gRunInfo.target='V'; tgt.VHtarget=0;}
+     if (str.find("Horz") == 0 || str.find("H") == 0) {
+        gRunInfo.target='H';
+        tgt.VHtarget=1;
+        // This is too late to reconfigure strip mask because this routine is
+        // executed at the end of event loop. Too bad. /* March 5,'09 IN */
+        //      mask.detector = 0x2D;
+        //      ConfigureActiveStrip(mask.detector);
+     }
   }
-
-  return;
 }
 
 

@@ -52,7 +52,7 @@ extern int spinpat[120]; // spin pattern 120 bunches
 extern int fillpat[120]; // fill pattern 120 bunches
 extern int ActiveBunch[NBUNCH];
 extern int wcmfillpat[120]; //  fill pattern within the Wall Current Monitor Average Ragne 
-extern float wcmdist[120];  // wall current monitor 120 bunches
+extern float wcmdist[NBUNCH];  // wall current monitor 120 bunches
 
 extern long int Ncounts[6][120]; // counts 6detectors 120 bunches
 extern long int NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
@@ -144,6 +144,7 @@ extern TH2F *rate_vs_delim;
 
 // FeedBack Dir
 extern TH2F *mdev_feedback;
+extern TH1F *mass_feedback_all;
 extern TH1F *mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
 // Raw Directory
@@ -164,7 +165,9 @@ extern TLine *energy_cut_l[NSTRIP];        // energy cut low
 extern TLine *energy_cut_h[NSTRIP];        // energy cut high
 extern TH1F  *energy_spectrum[NDETECTOR];  // energy spectrum per detector
 extern TH1F  *energy_spectrum_all;         // energy spectrum for all detector sum
+extern TH1F  *mass_nocut_all;
 extern TH1F  *mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
+extern TH1F  *mass_yescut_all;
 extern TH1F  *mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
 
 // Bunch Distribution

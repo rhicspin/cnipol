@@ -61,7 +61,7 @@ public:
    AsymRoot();
    ~AsymRoot();
  
-   Int_t  RootFile(char*filename);
+   void   RootFile(char* filename);
    Int_t  BookHists(TStructRunInfo runinfo);
 	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
    Int_t  DeleteHistogram();

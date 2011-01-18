@@ -684,14 +684,14 @@ void AsymRunDB::Print(const Option_t* opt) const
 //
 int StripHandler(int st, int flag)
 {
-  static int Initiarize = 1;
-  if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
-
-  ProcessStrip[st-1] += flag;
-
-  Initiarize=0;
-
-  return 0;
+   static int Initiarize = 1;
+   if (Initiarize) for (int i=0; i<NSTRIP; i++) ProcessStrip[i]=0;
+ 
+   ProcessStrip[st-1] += flag;
+ 
+   Initiarize=0;
+ 
+   return 0;
 }
 
 
@@ -710,19 +710,19 @@ int SetDefault()
 
   // initialize strip arrays
   for (int i=0; i<NSTRIP; i++) {
-    ProcessStrip[i]         = 0;
-    gRunInfo.ActiveStrip[i]  = 1;
-    gRunInfo.DisableStrip[i] = 0;
-    gRunInfo.NActiveStrip    = NSTRIP;
-    gRunInfo.NDisableStrip   = 0;
+     ProcessStrip[i]          = 0;
+     gRunInfo.ActiveStrip[i]  = 1;
+     gRunInfo.DisableStrip[i] = 0;
+     gRunInfo.NActiveStrip    = NSTRIP;
+     gRunInfo.NDisableStrip   = 0;
   }
 
   // initialize bunch arrays
   for (int i=0; i<NBUNCH; i++) {
-    ProcessBunch[i]         = 0;
-    gRunInfo.DisableBunch[i] = 0;
-    gRunInfo.NActiveBunch    = 0;
-    gRunInfo.NDisableBunch   = 0;
+     ProcessBunch[i]          = 0;
+     gRunInfo.DisableBunch[i] = 0;
+     gRunInfo.NActiveBunch    = 0;
+     gRunInfo.NDisableBunch   = 0;
   }
 
   return 0;
