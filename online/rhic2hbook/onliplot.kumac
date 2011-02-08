@@ -294,12 +294,12 @@ macro main
 *   endif
 *
     case [prun] in
-    (0, 1)
+    (0, 2)
         set PMCI 6
-	title_gl 'RUN '//[run]//' (BLUE-'//$EVAL([prun]+1)//')'//' E='//[beamE]//' GeV'
-    (2, 3)
+	title_gl 'RUN '//[run]//' (BLUE-'//$EVAL(int([prun]/2)+1)//')'//' E ='//[beamE]//' GeV'
+    (1, 3)
         set PMCI 6
-	title_gl 'RUN '//[run]//' (YELLOW-'//$EVAL([prun]-1)//')'//' E='//[beamE]//' GeV'
+	title_gl 'RUN '//[run]//' (YELLOW-'//$EVAL(int(([prun]-1)/2)+1)//')'//' E ='//[beamE]//' GeV'
     endcase
 
     zone 1 3
@@ -336,7 +336,7 @@ macro main
     opt utit
     opt logy
     title_gl 'Bunch Distribution ' U
-    if ([prun].eq.2 .or. [prun].eq.3) then
+    if ([prun].eq.1 .or. [prun].eq.3) then
 *	yellow
         set HCOL 9909
     else
@@ -380,7 +380,7 @@ macro main
 * ****************************
 
     opt nsta
-    if ([prun].eq.2 .or. [prun].eq.3) then
+    if ([prun].eq.1 .or. [prun].eq.3) then
         set HCOL 9909
 * set HCOL 6606
     else

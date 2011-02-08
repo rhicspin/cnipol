@@ -6,6 +6,14 @@
  * configuration, programs CAMAC, takes data, writes    *
  * file.                                                *
  ********************************************************/
+
+/**
+ *
+ * Dec 22, 2010 - Dmitri Smirnov
+ *    - Added stream ID (up or down) in the raw data
+ *
+ */
+
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
 #include <stdio.h>
 #include <fcntl.h>
@@ -34,6 +42,7 @@ wcmDataStruct wcmData;			// Wall current monitor data from CDEV
 wcmDataStruct wcmOtherData;		// we need both beams for hjet
 jetPositionStruct jetPosition;		// Jet position from CDEV
 
+
 //	Run parameters and flags
 int NoADO	= 0;			// don't take anything from CDEV
 float mTime 	= -1.0;			// time to run (negative means not set in command line)
@@ -52,6 +61,7 @@ float ANALPOW;				// very approximate analyzing power
 float ANALPOWE;				// its error
 
 int recRing = 0;			// data mask with ring information etc.
+int recStream = 0;
 
 //	Code to exit - this is error only exit
 void polexit(void) 
@@ -92,7 +102,9 @@ int main(int argc, char **argv)
 
     LogFile = stdout;
     recRing = 0;    
-    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:")) != -1) switch(i) {
+
+    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:")) != -1)
+    switch(i) {
     case 'c' :	// comment
 	strncpy(comment, optarg, sizeof(comment));
 	break;
@@ -101,6 +113,15 @@ int main(int argc, char **argv)
         break;
     case 'd' :	// device name
 	strncpy(DeviceName, optarg, sizeof(DeviceName));
+	int iPol;
+        for (iPol=0; iPol<4; iPol++) {
+           if (strcmp(polCDEVName[iPol], DeviceName) == 0) {
+	      recStream = ( iPol==0 || iPol==3 ) ? REC_UPSTREAM : REC_DOWNSTREAM;
+	      // ds:
+	      //printf("pol: %s, %d, %x\n", DeviceName, iPol, recStream); break;
+	      break;
+	   }
+	}
 	break;    
     case 'e' :	// events
 	mEvent = strtol(optarg, NULL, 0);
@@ -168,6 +189,7 @@ int main(int argc, char **argv)
     } 
 
     polData.statusS = 0;
+
 /* We will set configuration file directory as current */
     strncpy(workdir, cfgname, sizeof(workdir));
     buf = strrchr(workdir, '/');
@@ -178,6 +200,7 @@ int main(int argc, char **argv)
     } else {
         buf = cfgname;
     }
+
 /* Open LogFile */
     if (strlen(logname) > 0) {
         LogFile=fopen(logname,"at");
@@ -290,7 +313,7 @@ int main(int argc, char **argv)
     sprintf(polData.daqVersionS,"%1d.%1d.%1d %s", DAQVERSION/10000, (DAQVERSION%10000)/100, DAQVERSION%100, &cfgname[j]);
     i = Conf.ETLookUp;
     if (i>2) i=2;
-    sprintf(polData.cutIdS,"ET:%s_IA:%s", ETLUTNames[i], IALUTNames[Conf.IALookUp]);
+    sprintf(polData.cutIdS, "ET:%s_IA:%s", ETLUTNames[i], IALUTNames[Conf.IALookUp]);
 //	Copy to polData ...
     polData.beamEnergyS = beamData.beamEnergyM;
     polData.analyzingPowerS = ANALPOW;

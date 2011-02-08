@@ -146,6 +146,10 @@ case $MODE in
 	trap myignore SIGINT	# ignore Stop on analysis stage
 	if [ $IRC -eq 0 ]; then	# analyze data if the measurement was OK
 	    $ANACMD -l -s $POLARIM -N -1 $DATA $HBOOKFILE >> $ALOG 2>&1
+	    export RUN PSFILE HBOOKFILE POLARIM	# no other way to pass arguments to kumac...
+	    pawX11 -n -b $MACDIR/rampplot.kumac >> $ALOG 2>&1 
+	    echo "Starting sendpict..." >> $ALOG
+	    mysendpict plotData $PSFILE >> $ALOG 2>&1
 	fi
 	;;
     * )

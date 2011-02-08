@@ -1,3 +1,18 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 macro main run='-5'
 
    if ([run].eq.'-5') then
@@ -471,10 +486,10 @@ macro main run='-5'
 *************************
 ** make Pol vector page
 *************************
-   set xlab 1.8
-   set xval 0.4
-   set HCOL 1
-   title_gl ' ' U
+    set xlab 1.8
+    set xval 0.4
+    set HCOL 1
+    title_gl ' ' U
    macdir=$ENV(MACDIR)
    default [macdir]//',macro,.'
 

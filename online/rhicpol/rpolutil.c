@@ -32,6 +32,7 @@ extern float mTime;
 extern int mEvent;
 extern int iPulseProg;
 extern int recRing;
+extern int recStream;
 extern int iExtClock;
 extern float ANALPOW;
 extern float ANALPOWE;
@@ -710,16 +711,16 @@ int polWrite(recordHeaderStruct *header, long *data)
 	return 1;
     }
     if (data != NULL && header->len != sizeof(recordHeaderStruct)) {
-    irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
-    if (irc != 1) {
-	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8X: %s.\n",
-	    header->type, strerror(errno));
-	polData.statusS |= (STATUS_ERROR | ERR_INT);
-	fclose(OutFile);
-	OutFile = NULL;
-	pthread_mutex_unlock(&mutex);
-	return 1;
-    }
+       irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
+       if (irc != 1) {
+           fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8X: %s.\n",
+               header->type, strerror(errno));
+           polData.statusS |= (STATUS_ERROR | ERR_INT);
+           fclose(OutFile);
+           OutFile = NULL;
+           pthread_mutex_unlock(&mutex);
+           return 1;
+       }
     }
     fflush(OutFile);
     pthread_mutex_unlock(&mutex);
@@ -1488,18 +1489,21 @@ int getEvents(int Number)
 	    writeWcmInfo();	    
 	}
     }
+
     if (targetHistoryPtr != 0) {
-	header.len = sizeof(header)+targetHistoryPtr;
+	header.len = sizeof(header) + targetHistoryPtr;
 	header.type = REC_PCTARGET;
 	header.timestamp.time = time(NULL);
 	polWrite(&header, targetHistory);
     }
+
     if (countHistoryPtr != 0) {
 	header.len = sizeof(header)+countHistoryPtr;
 	header.type = REC_COUNTRATE;
 	header.timestamp.time = time(NULL);
 	polWrite(&header, countHistory);
     }
+
     return Cnt;
 }
 
@@ -1523,7 +1527,7 @@ void readWFD()
 	for(i=0; i<MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
 	    ii = 1;
 	    CMC_ResetChain(ch);
-    	CMC_Add2Chain(ch, CMC_CMDDATA | 0);	// better go to internal clocks for readout
+            CMC_Add2Chain(ch, CMC_CMDDATA | 0);	// better go to internal clocks for readout
 	    CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));	    
 	    for (j=0; j<4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
 		CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));	// select virtex
@@ -1536,39 +1540,39 @@ void readWFD()
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | 15);		// 15 = 16 - 1
 		CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 1));		// read histograms	21-1536
 		CMC_Add2Chain(ch, CMC_CMDREPEAT | 1535);	// 1535 = 1536 - 1
-	    ii += 1557;
+	        ii += 1557;
 	    }
 	    j = RP_CommitChain(ch, Crate[cr]);
-    	if (j < 0) {
+    	    if (j < 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d error %d (%s)\n", cr, i, -j, strerror(-j));
 		continue;
 	    }
-    	if (j != ii) {
+    	    if (j != ii) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d wrong number of words  %d (%d)\n", cr, i, j, ii);
-	    continue;
+	        continue;
 	    }
-    	j = checkChainResult(ch, cr);
+    	    j = checkChainResult(ch, cr);
 	    if (j != 0) {
 		fprintf(LogFile, "RHICPOL-ERROR : Read WFD Xilinxes WFD %d.%d - %d bad responses\n", cr, i, j);
-	    continue;
+	        continue;
 	    }
 //	process the result
 	    ii = 1; // to account for select clock command	    
 	    for (j=0; j<4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
-	    rec.siNum = WFDinCAMAC[cr][i].si[j];
+	        rec.siNum = WFDinCAMAC[cr][i].si[j];
 		rec.csr = ch->rdata[ii+1] & CMC_DMASK;
 		rec.trg = ch->rdata[ii+2] & CMC_DMASK;
 		rec.win = ch->rdata[ii+3] & CMC_DMASK;
 	        for(k=0; k<8; k++) {
-	    	rec.scalers[k] = (ch->rdata[ii+2*k+5] & 0xFFFF) + 
-			((ch->rdata[ii+2*k+6] & 0xFFFF) << 16);
-	    	if (k<3) cnt+=rec.scalers[k];
+	    	    rec.scalers[k] = (ch->rdata[ii+2*k+5] & 0xFFFF) + 
+		    	((ch->rdata[ii+2*k+6] & 0xFFFF) << 16);
+	    	    if (k<3) cnt+=rec.scalers[k];
 		}
 	        for(k=0; k<1536; k++) {
 		    rec.hist[k] = ch->rdata[ii+k+21] & CMC_DMASK;
-	    	if (k<128) cnt1 += rec.hist[k];
+	    	    if (k<128) cnt1 += rec.hist[k];
 		}
-	    ii += 1557;
+	        ii += 1557;
 		rec.header.timestamp.time = time(NULL);
 		polWrite(&rec.header, (long *)&rec.siNum);
 	    }
@@ -1897,7 +1901,9 @@ void closeDataFile(char * comment)
 	header.len = sizeof(recordHeaderStruct) + len*sizeof(long);
 	header.timestamp.time = time(NULL);
 	polWrite(&header, data);
+
 	if (data) free(data);
+
 //	Polarimeter specific data to be passed to data2hbook
 	header.type = REC_POLADO | recRing;
 	header.len = sizeof(recordPolAdoStruct);
@@ -1920,24 +1926,30 @@ int openDataFile(char *fname, char *comment, int noAdo)
     recordHeaderStruct header;
     void * buf;
     
-	fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
+    fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
 
     if (OutFile != NULL) closeDataFile("New file open.");
     OutFile = fopen(fname, "wb");
+
     if (OutFile == NULL) {
 	fprintf(LogFile, "Unable to open file %s for data output: %s.\n",
 	    fname, strerror(errno));
 	polData.statusS |= (STATUS_ERROR | ERR_INT);
 	return errno;
     }
+
     dataNum = 0;
+
 //	begin record
     rec.version = VERSION;
     strncpy(rec.comment, comment, sizeof(rec.comment));
-    rec.header.type = REC_BEGIN | recRing;
+    rec.header.type = REC_BEGIN | recRing | recStream;
+    // ds:
+    //printf("begin type: %x\n", rec.header.type);
     rec.header.len = sizeof(rec);
     rec.header.timestamp.time = time(NULL);
     polWrite(&rec.header, (long *)&rec.version);
+
 //	config record
     buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct)*(Conf.NumChannels-1));
     header.type = REC_RHIC_CONF | recRing;
@@ -1951,11 +1963,13 @@ int openDataFile(char *fname, char *comment, int noAdo)
 	SiConf, sizeof(SiChanStruct) * Conf.NumChannels);
     polWrite(&header, (long *)buf);
     free(buf);
+
 //	beam data (have to write it anyway because rhic2hbook uses polpat from here)
     header.type = REC_BEAMADO | recRing;
     header.len = sizeof(recordBeamAdoStruct);
     header.timestamp.time = time(NULL);
     polWrite(&header, (long *)&beamData);
+
 //	Store the other beam parameters
     if (recRing & REC_JET) {
 	header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));

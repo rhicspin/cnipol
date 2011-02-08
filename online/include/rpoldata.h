@@ -40,6 +40,8 @@
 #define REC_TYPEMASK	0x00007FFF
 #define REC_YELLOW	0x00010000 // or'ed with the type
 #define REC_BLUE	0x00020000 // or'ed with the type
+#define REC_UPSTREAM	0x00100000 // or'ed with the type
+#define REC_DOWNSTREAM	0x00200000 // or'ed with the type
 #define REC_JET		0x00080000 // or'ed with the type and ring
 #define REC_120BUNCH	0x00008000 // or'ed with the mask where applicable
 #define REC_FROMMEMORY  0x00040000 // or'ed with the mask where applicable
