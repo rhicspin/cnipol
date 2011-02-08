@@ -258,10 +258,10 @@ void readandfill_(int* subrun)
 	    memcpy(&tgtdat2_, &rec.tag.data[1], sizeof(tgtdat2_));	    
 	    break;
 	case REC_RHIC_CONF:
-	    sipar_.idiv = rec.cfg.data.CSR.split.iDiv;
-	    sipar_.ifine = rec.cfg.data.CSR.split.Mod2D;
-	    sipar_.emin = rec.cfg.data.Emin;
-	    sipar_.trgmin = rec.cfg.data.TrigMin;
+	    sipar_.idiv      = rec.cfg.data.CSR.split.iDiv;
+	    sipar_.ifine     = rec.cfg.data.CSR.split.Mod2D;
+	    sipar_.emin      = rec.cfg.data.Emin;
+	    sipar_.trgmin    = rec.cfg.data.TrigMin;
 	    sipar_.nsperchan = rec.cfg.data.WFDTUnit;
 	    k = 0;
 	    for (i=0; i<rec.cfg.data.NumChannels; i++) {

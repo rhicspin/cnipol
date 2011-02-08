@@ -8,6 +8,7 @@
  * measurement. The script must take the following      *
  * arguments: polarimeter_name command runId   		*
  ********************************************************/
+
 #include <time.h>
 #include <errno.h>
 #include <unistd.h>
@@ -21,13 +22,14 @@
 #include <cdevRequestObject.h>
 #include <cdevCallback.h>
 #include <cdevSystem.h>
+
 #include "rhicpol.h"
 #include "rcdev.h"
 
 #define EXIT_BADSCRIPT	127
 
 char myName[2][20] = {"Upstream", "Downstream"};
-char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
+//char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
 char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
 int  myDev[2][2] = {{0, 3}, {1, 2}};				// polCDEVName for Upstream/Downstream
 
@@ -214,9 +216,9 @@ void StartMeasurement(int polarim, char *cmd)
     ID.polarim = (int) (10.0*(runId + 0.0001 - ID.fill));
     ID.run = (int) (1000.0*(runId + 0.0001 - ID.fill - 0.1*ID.polarim));
 
-    if (ID.fill == fillNumber) {
+    if (ID.fill == fillNumber) { // same fill number
 	 ID.run++;
-    } else {
+    } else { // new fill number
 	 ID.fill = fillNumber;
 	 ID.polarim = polarim;
 	 ID.run = 1;
@@ -327,6 +329,7 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
 	fflush(LogFile);
 	return;
     }
+
     data.get("value", Request.cmd, sizeof(Request.cmd));	// get the command
     Request.polarim = i;
 }
