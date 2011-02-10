@@ -65,12 +65,13 @@ int main(int argc, char *argv[])
       {"no-error-detector", 0, 0, 'a'},
       {"update-db", no_argument, 0, 0x100},
       {"pol-id", required_argument, 0, 0x200},
+      {"quick", no_argument, 0, 'q'},
       {0, 0, 0, 0}
    };
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?f:n:s:c:ho:rt:m:e:d:baCDTABZF:MNW:UGR:S",
+   while ((c = getopt_long(argc, argv, "?f:n:s:c:ho:rt:m:e:d:baCDTABZF:MNW:UGR:Sq",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
@@ -109,6 +110,7 @@ int main(int argc, char *argv[])
          cout << " -N                       : store Ntuple events" << endl;
          cout << " -R <bitmask>             : save events in Root trees, " <<
                  "e.g. \"-R 101\"" <<endl;
+         cout << " -q, --quick              : Skips the main loop. Use for a quick check" << endl;
          exit(0);
       case 'f':
          //sprintf(ifile, optarg);
@@ -247,6 +249,9 @@ int main(int argc, char *argv[])
       case 0x200:
          gRunInfo.fPolId = atoi(optarg);
          break;
+      case 'q':
+         dproc.QUICK_MODE = 1;
+         break;
       default:
          fprintf(stdout,"Invalid Option \n");
          exit(0);
@@ -296,9 +301,59 @@ int main(int argc, char *argv[])
 
    gRunDb.Print();
 
-   // ds temp fix: disable strips
-   gRunInfo.DisableStrip[11] = 1;
-   gRunInfo.DisableStrip[65] = 1;
+   // XXX temp fix: disable strips
+   // blue1
+   //gRunInfo.DisableStrip[11] = 1;
+   //gRunInfo.DisableStrip[65] = 1;
+   // blue2
+   //int disabledStrips[] = {
+   //   1, 1, 1, 1, 1, 1,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
+   //   0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1,  0, 0, 0, 0, 0, 0,
+   //   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1 };
+
+   if (gRunInfo.fPolId == 1 || gRunInfo.fPolId == 2) { // downstream
+
+      // disabled hamamatsu's
+      int disabledStrips[] = {
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+         1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
+      };
+
+      // disabled channels from crate 6
+      //int disabledStrips[] = {
+      //   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
+      //   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,
+      //   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1
+      //};
+
+      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+
+   } else if (gRunInfo.fPolId == 0) { // blue 1 upstream
+
+      int disabledStrips[] = {
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 1,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 1,  0, 0, 0, 0, 0, 0
+      };
+
+      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+
+   } else if (gRunInfo.fPolId == 3) { // yellow 2 upstream
+
+      //int disabledStrips[] = {
+      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
+      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
+      //};
+      int disabledStrips[] = {
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
+      };
+
+      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+   }
 
    //gAsymRunDb.PrintCommon();
 
@@ -369,7 +424,7 @@ int main(int argc, char *argv[])
    //exit(-1);
 
    // Quick Scan and Fit for tshift and mass sigma fit
-   if (dproc.FEEDBACKMODE){
+   //if (dproc.FEEDBACKMODE){
 
      //printf("Feedback Sparcification Factor = 1/%d \n", dproc.thinout);
 
@@ -380,7 +435,8 @@ int main(int argc, char *argv[])
 
      //Flag.feedback=0;
 
-   } else {
+   //} else {
+   if (!dproc.QUICK_MODE) {
 
       //dproc.Print();
       //exit(0);
@@ -393,6 +449,9 @@ int main(int argc, char *argv[])
 
       gAsymRoot.PostProcess();
    }
+   //}
+
+   gRunInfo.Print();
 
    //cfginfo->Print();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -413,8 +472,9 @@ int main(int argc, char *argv[])
    // Update calibration constants if requested
    if (dproc.UPDATE == 1) {
       gAsymRoot.Calibrate();
-      //printf("YYY\n");
-      //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig(stdout);
+      printf("YYY\n");
+      gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+      //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
    }
 
    // Update calibration constants if requested

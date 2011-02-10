@@ -23,6 +23,7 @@ TDatprocStruct::TDatprocStruct()
    CBANANA          = 2;      // CBANANA
    UPDATE           = 0;
    UPDATE_DB        = 0;
+   QUICK_MODE       = 0;
    MMODE            = 1;      // MMODE
    NTMODE           = 0;      // NTMODE
    RECONFMODE       = 1;      // RECONFMODE
@@ -96,6 +97,7 @@ void TDatprocStruct::Print(const Option_t* opt) const
    << "CBANANA          = " << CBANANA          << endl
    << "UPDATE           = " << UPDATE           << endl
    << "UPDATE_DB        = " << UPDATE_DB        << endl
+   << "QUICK_MODE       = " << QUICK_MODE       << endl
    << "MMODE            = " << MMODE            << endl
    << "NTMODE           = " << NTMODE           << endl
    << "RECONFMODE       = " << RECONFMODE       << endl

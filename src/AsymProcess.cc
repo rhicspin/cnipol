@@ -115,7 +115,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e))
          {
             HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
-            if ((e>Emin) && (e<Emax)) Ngood[event->bid]++;
+            if ( e > Emin && e < Emax) Ngood[event->bid]++;
          }
       }
 
@@ -140,7 +140,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
       gAsymRoot.fHists->Fill(ch);
 
-      //if (ch->PassQACut1()) {
+      //if (ch->PassCutDepEnergyTime()) {
 	   //   gAsymRoot.fHists->Fill(ch, "_cut1");
       
       return 0;
@@ -229,15 +229,17 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    // Get address of the histogram container
    ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
+   // XXX
+   if (!ch->PassQACutRaw()) return 0;
+
    gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassQACut1() && gAsymRoot.fChannelEvent->PassCutPulser())
+   if (ch->PassCutPulser() && ch->PassCutNoise() ) // ch->PassCutDepEnergyTime())
    {
 	   gAsymRoot.fHists->Fill(ch, "_cut1");
 
       if (ch->PassQACutCarbonMass())
 	      gAsymRoot.fHists->Fill(ch, "_cut2");
-
    }
 
    // 2*cfginfo->data.chan[st].Window.split.Beg = 6

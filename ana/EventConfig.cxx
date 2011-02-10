@@ -32,8 +32,7 @@ EventConfig::~EventConfig()
 
 void EventConfig::Print(const Option_t* opt) const
 {
-   opt = "";
-   printf("EventConfig:\n");
+   PrintAsPhp();
 }
 
 

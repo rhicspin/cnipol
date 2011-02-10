@@ -22,7 +22,7 @@ DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d()
 
 
 void DrawObjContainer::ReadFromDir()
-{
+{ //{{{
    ObjMapIter io;
    
    for (io=o.begin(); io!=o.end(); ++io) {
@@ -36,7 +36,7 @@ void DrawObjContainer::ReadFromDir()
       //TKey *key = gDirectory->GetKey(io->first.c_str());
 
       if (!key) {
-         cout << "ERROR: key not found: " << io->first << endl;
+         Warning("ReadFromDir", "Key %s not found", io->first.c_str());
          continue;
       }
 
@@ -68,7 +68,7 @@ void DrawObjContainer::ReadFromDir()
       TKey *key = fDir->GetKey(isub->first.c_str());
       
       if (!key) {
-         cout << "ERROR: key (dir) not found: " << isub->first << endl;
+         Warning("ReadFromDir", "Directory key %s not found", isub->first.c_str());
          continue;
       }
 
@@ -96,42 +96,93 @@ void DrawObjContainer::ReadFromDir()
       //isub->second.fDir = gDirectory;
       isub->second.ReadFromDir();
    }
-}
+} //}}}
 
+
+/** */
 void DrawObjContainer::ReadFromDir(TDirectory *dir)
-{
+{ //{{{
    fDir = dir;
    fDir->cd();
    ReadFromDir();
-}
+} //}}}
+
+
+/**
+ * Recursively adds objects (histograms) from another DrawObjContainer to this
+ * one.
+ */
+void DrawObjContainer::Add(DrawObjContainer *oc)
+{ //{{{
+   o.insert(oc->o.begin(), oc->o.end());
+
+   DrawObjContainerMapIter isubd;
+   pair<DrawObjContainerMapIter, bool> result;
+
+   oc->Print();
+
+   for (isubd=oc->d.begin(); isubd!=oc->d.end(); ++isubd) {
+
+      //isubd->second.Print();
+         
+      result = d.insert(*isubd);
+      if (result.second) {
+         //d
+         continue;
+      }
+
+      // This and oc objects contain subdir with the same name. Therefore add
+      // objects to the existing one
+      DrawObjContainer &existingOc = (*result.first).second;
+      existingOc.Add(&isubd->second);
+   }
+} //}}}
 
 
 /** Default destructor. */
 DrawObjContainer::~DrawObjContainer()
 {
-};
-
-
-/**
- *
- */
-void DrawObjContainer::Print(const Option_t* opt) const
-{
-   opt = "";
-
-   //printf("DrawObjContainer:\n");
 }
 
 
 /** */
-void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
+void DrawObjContainer::Print(const Option_t* opt) const
+{
+   //opt = "";
+
+   //printf("DrawObjContainer:\n");
+
+   if (!fDir) {
+      Error("Print", "fDir not defined");
+      return;
+   }
+
+   fDir->cd();
+
+   ObjMapConstIter io;
+
+   for (io=o.begin(); io!=o.end(); ++io) {
+      if (io->second) io->second->Print();
+   }
+
+   DrawObjContainerMapConstIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      cout << "Content of " << isubd->first << endl;
+      isubd->second.Print();
+   }
+}
+
+
+/** */
+void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
 {
    //Bool_t isBatch = gROOT->IsBatch();
 
    //gROOT->SetBatch(kTRUE);
 
    if (gSystem->mkdir(path.c_str()) < 0)
-      printf("WARNING: Perhaps dir already exists: %s\n", path.c_str());
+      Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
    else
       printf("created dir: %s\n", path.c_str());
 
@@ -161,16 +212,19 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
          } else { c.SetLogz(kFALSE); }
       }// else { c.SetLogz(kFALSE); }
 
-      if (io->second && ((TH1*) io->second)->Integral() > 1000 ) {
-
+      if (io->second)
          (io->second)->Draw();
 
-         //if (io->second) io->second->Print();
+      //if (io->second) io->second->Print();
 
-         //sprintf(fName, "%s/%s.eps", path.c_str(), cName);
-         //c.SaveAs(fName);
-         sprintf(fName, "%s/%s.png", path.c_str(), cName);
+      //sprintf(fName, "%s/%s.eps", path.c_str(), cName);
+      //c.SaveAs(fName);
+      sprintf(fName, "%s/%s.png", path.c_str(), cName);
+
+      if (TPRegexp(pattern).MatchB(fName)) {
          c.SaveAs(fName);
+      } else {
+         //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
       }
    }
 
@@ -186,7 +240,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, string path)
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second.SaveAllAs(c, path);
+      isubd->second.SaveAllAs(c, pattern, path);
       path = parentPath;
    }
 
@@ -232,7 +286,7 @@ void DrawObjContainer::Draw(TCanvas &c)
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 {
    if (!fDir) {
-      printf("ERROR: DrawObjContainer::Write(): fDir not defined\n");
+      Error("Write", "Directory fDir not defined");
       return 0;
    }
 
@@ -249,6 +303,7 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      cout << "Writing content of " << isubd->first << endl;
       isubd->second.Write();
    }
 

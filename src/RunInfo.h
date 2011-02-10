@@ -9,6 +9,7 @@
 #define RunInfo_h
 
 #include <string>
+#include <vector>
 
 #include "TBuffer.h"
 #include "TPRegexp.h"
@@ -50,6 +51,7 @@ public:
    int          NActiveStrip;
    int          NDisableStrip;
    int          DisableStrip[NSTRIP];
+   //std::vector<UShort_t>   fDisabledChannels;
    int          NFilledBunch;
    int          NActiveBunch;
    int          NDisableBunch;

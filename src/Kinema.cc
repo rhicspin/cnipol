@@ -32,5 +32,5 @@ float ekin(float edep, float dthick)
     float edep3 = edep2 * edep;
     float edep4 = edep3 * edep;
 
-    return(pp[0] + pp[1]*edep + pp[2]*edep2 + pp[3]*edep3 + pp[4]*edep4);
+    return pp[0] + pp[1]*edep + pp[2]*edep2 + pp[3]*edep3 + pp[4]*edep4;
 }

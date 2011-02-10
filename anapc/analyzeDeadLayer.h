@@ -23,6 +23,7 @@
 #include "CnipolHists.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
+#include "DeadLayerCalibratorEDepend.h"
 
 namespace {
 
@@ -44,13 +45,13 @@ EventConfig      *ec;
 
 }
 
-void analyzeDeadLayer(std::string runName, Long64_t nEvents=-1);
+void analyzeDeadLayer(std::string runName, std::string pattern="^.*$", Long64_t nEvents=-1);
 void analyzeDeadLayer_initialize(std::string runName);
 //void analyzeDeadLayer_book_histograms();
 //void analyzeDeadLayer_fill_histograms(Long64_t nEvents=-1);
-//void analyzeDeadLayer_fit_histograms();
+void analyzeDeadLayer_fit_histograms();
 //TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f);
 //void analyzeDeadLayer_fill_histograms_derivative();
-void analyzeDeadLayer_finalize();
+void analyzeDeadLayer_finalize(std::string pattern="^.*$");
 
 #endif

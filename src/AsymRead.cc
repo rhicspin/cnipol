@@ -84,8 +84,11 @@ void readDataFast()
 
                gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
-               if (!gAsymRoot.fChannelEvent->PassQACutRaw() ||
-                   !gAsymRoot.fChannelEvent->PassCutPulser()) continue;
+               if (!gAsymRoot.fChannelEvent->PassQACutRaw()  ||
+                   !gAsymRoot.fChannelEvent->PassCutPulser() ||
+                   !gAsymRoot.fChannelEvent->PassCutNoise() ||
+                   //!gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ||
+                   !gAsymRoot.fChannelEvent->PassCutEnabledChannel()) continue;
 
                gAsymRoot.FillPreProcess();
 
@@ -539,11 +542,12 @@ int readloop()
          break; // later
 
       case REC_WFDV8SCAL:
-         break; // later
+         ProcessRecord(rec.wfd);
+         break;
 
       case REC_SCALERS:
-         fprintf(stdout,"Scaler readtime \n");
-         fprintf(stdout,"Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
+         fprintf(stdout, "Scaler readtime \n");
+         fprintf(stdout, "Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
 
          gRunInfo.StopTime = rec.header.timestamp.time;
 
@@ -703,11 +707,14 @@ int readloop()
 
       case REC_RHIC_CONF:
          if (!ReadFlag.RHICCONF) {
-            fprintf(stdout,"Read configure information\n");
+
+            fprintf(stdout, "Read configure information\n");
 
             cfginfo = (recordConfigRhicStruct *)
                          malloc(sizeof(recordConfigRhicStruct) +
                          (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
+
+            //XXX printf("TTT: %d\n", rec.cfg.data.NumChannels);
 
             memcpy(cfginfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
                    (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
@@ -744,9 +751,7 @@ int readloop()
    fclose(fp);
 
    // Post processing
-   if (end_process(cfginfo) !=0) {
-     fprintf(stdout, "Error at end process \n");
-   }
+   end_process(cfginfo);
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo.StopTime));
@@ -790,6 +795,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 {
    if (!ci) return;
 
+   ci->Print();
+
    float Ct = ci->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
    //float L  = ci->data.TOFLength;
    float L  = ci->data.TOFLength;
@@ -799,14 +806,15 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
-      //if (gRunInfo.fDataFormatVersion == 40200 ) // XXX should be like this
-      //if (gRunInfo.fDataFormatVersion == 40200 && ci->data.chan[i-1].TOFLength != 0) {
-      //   L = ci->data.chan[i-1].TOFLength;
-      //} else
-      //   L = CARBON_PATH_DISTANCE;
+      //if (gRunInfo.fDataFormatVersion == 40200 ) { // XXX should be like this
+      if (gRunInfo.fDataFormatVersion == 40200 && (gRunInfo.fPolId == 1 || gRunInfo.fPolId == 2) ) // downstream
+      {
+         L = ci->data.chan[i-1].TOFLength;
+         //printf("LLL: %f\n", L);
+      } else
+         L = CARBON_PATH_DISTANCE;
 
-      //gRunConsts[i] = RunConst(L, Ct);
-      gRunConsts[i] = RunConst();
+      gRunConsts[i] = RunConst(L, Ct);
 
       printf("Channel %-2d consts: \n", i);
       gRunConsts[i].Print();
@@ -924,3 +932,73 @@ void PrepareCollidingBunchPattern()
  
    return;
 }
+
+
+/** */
+void ProcessRecord(recordPolAdoStruct &rec)
+{
+}
+
+
+/** */
+void ProcessRecord(recordWFDV8ArrayStruct &rec)
+{ //{{{
+   Int_t s1=0, s2=0, s3=0, s4=0;
+   float hist[1536];
+ 
+   UShort_t chId = rec.siNum + 1;
+
+   // Consider only silicon channels
+   if (chId > NSTRIP) return;
+ 
+   for (int i=0; i<1536; i++) {
+      //hist[i] = rec.hist[i];
+      //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
+   }
+
+   for (int i=0; i< 128; i++) s1 += rec.hist[i];        // bunch hist
+   for (int i=0; i< 128; i++) s2 += rec.hist[i+128];    // unpol energy
+   for (int i=0; i< 128; i++) s3 += rec.hist[i+256];    // pol+ energy
+   for (int i=0; i< 128; i++) s4 += rec.hist[i+384];    // pol- energy
+
+   //HPAKAD( 200 + chId, &hist[0]);
+   //HPAKAD( 300 + chId, &hist[128]);
+   //HPAKAD( 400 + chId, &hist[256]);
+   //HPAKAD( 500 + chId, &hist[384]);
+   //HPAKAD(1300 + chId, &hist[128]);
+   //HPAKAD(1400 + chId, &hist[256]);
+   //HPAKAD(1500 + chId, &hist[384]);
+ 
+   //if (sipar_.ifine == 0) {
+   //   //HPAKAD(600 + chId, &hist[512]);
+   //   //HPAKAD(1600 + chId, &hist[512]);
+   //} else {
+   //   //HPAKAD(700 + chId, &hist[512]);
+   //   //HPAKAD(1700 + chId, &hist[512]);
+   //}
+ 
+   printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12d  %12d  %12d  %12d",
+          rec.siNum + 1, rec.scalers[0], rec.scalers[1],
+          rec.scalers[2], rec.scalers[3], rec.scalers[4],
+          s1, s2, s3, s4);
+ 
+   gAsymRoot.FillScallerHists(rec.hist, chId);
+ 
+   // Check for hardware counts compatibility. Mark channel as bad if something is wrong
+   if (s2 < rec.scalers[2] || s3 != rec.scalers[0] ||
+       s4 != rec.scalers[1] || s1 < s2 + s3 + s4)
+   {
+      printf(" <- !!!");
+      //sipar_.mark[rec.siNum]++;
+   }
+ 
+   printf("\n");
+ 
+   Int_t cnt = 0;
+
+   cnt += rec.scalers[0] + rec.scalers[1] + rec.scalers[2];
+ 
+   for (int i=0; i<3; i++) {
+      //sscal_[rec.siNum * 3+i] += rec.scalers[i];
+   }
+} //}}}

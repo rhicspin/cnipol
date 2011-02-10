@@ -12,11 +12,12 @@
 
 #include "TCanvas.h"
 #include "TClass.h"
+#include "TDirectory.h"
 #include "TH1.h"
 #include "TH2F.h"
-#include "TDirectory.h"
-#include "TObject.h"
 #include "TKey.h"
+#include "TObject.h"
+#include "TPRegexp.h"
 #include "TSystem.h"
 
 //#include "ChannelEvent.h"
@@ -26,8 +27,10 @@ class DrawObjContainer;
 
 typedef std::map<std::string, TObject*> ObjMap;
 typedef std::map<std::string, TObject*>::iterator ObjMapIter;
+typedef std::map<std::string, TObject*>::const_iterator ObjMapConstIter;
 typedef std::map<std::string, DrawObjContainer> DrawObjContainerMap;
 typedef std::map<std::string, DrawObjContainer>::iterator DrawObjContainerMapIter;
+typedef std::map<std::string, DrawObjContainer>::const_iterator DrawObjContainerMapConstIter;
 
 
 /** */
@@ -48,12 +51,13 @@ public:
 
    void ReadFromDir();
    void ReadFromDir(TDirectory *dir);
+   void Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillPreProcess(ChannelEvent *ch);
    void Print(const Option_t* opt="") const;
    virtual void PostFill();
-   virtual void SaveAllAs(TCanvas &c, std::string path="./");
+   virtual void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
    void Draw(Option_t* option = "")
       { ((TObject*)this)->Draw(option); }
    void Draw(TCanvas &c);

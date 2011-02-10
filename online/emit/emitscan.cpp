@@ -191,7 +191,7 @@ int main(int argc, char **argv)
                  recStream = ( iPol==0 || iPol==3 ) ? REC_UPSTREAM : REC_DOWNSTREAM;
                  polId = iPol;
                  // ds:
-                 //printf("pol: %s, %d, %x\n", DeviceName, iPol, recStream); break;
+                 printf("pol: %s, %d, %x\n", devName, iPol, recStream); break;
                  break;
               }
            }
@@ -278,10 +278,10 @@ int main(int argc, char **argv)
            //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
            if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
            //ds
-           printf("numChannels: %d\n", rec.cfg.data.NumChannels);
-           printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
-           printf("polId: %d\n", polId);
-           printf("tarWfdCh, recRing: %d, %d\n", tarWfdCh, recRing&REC_BLUE);
+           //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
+           //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
+           //printf("polId: %d\n", polId);
+           //printf("tarWfdCh, recRing: %d, %d\n", tarWfdCh, recRing&REC_BLUE);
 
            break;
 
@@ -338,8 +338,8 @@ int main(int argc, char **argv)
            printf("Target is %s  Step Ch is %d\n",targID, stepCh);
            printf("Beam Energy = %f\n",poldat.beamEnergyS);
            //ds
-           printf("runIdS: %d\n", poldat.runIdS);
-           printf("polId: %d\n", polId);
+           //printf("runIdS: %d\n", poldat.runIdS);
+           //printf("polId: %d\n", polId);
 
            // find measurement duration to determine max orbit number
            measTime = rec.pol.data.stopTimeS-rec.pol.data.startTimeS;

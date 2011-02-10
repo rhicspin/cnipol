@@ -43,7 +43,7 @@ StructFlag Flag = {
   -1,      // spin_pattern
   -1,      // fill_pattern
   0,       // mask_bunch
-  1,       // EXE_ANOMALY_CHECK;
+  0,       // EXE_ANOMALY_CHECK;
 };
 
 StructCounter cntr = {
@@ -123,7 +123,7 @@ StructAverage            average;
 StructFeedBack           feedback;
 //RunConst                 runconst;
 map<UShort_t, RunConst>   gRunConsts;
-StructAnalysis           anal;
+StructAnalysis           gAnaResults;
 StructBunchPattern       phx, str;
 recordConfigRhicStruct  *cfginfo;
 
@@ -330,6 +330,9 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 {
    long len = header.len;
+   //         cfginfo = (recordConfigRhicStruct *)
+   //                      malloc(sizeof(recordConfigRhicStruct) +
+   //                      (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
    int nRecords  = (header.len - sizeof(recordHeaderStruct)) / sizeof(configRhicDataStruct);
    int nChannels = data.NumChannels;
 
@@ -337,7 +340,10 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
    //for (int i=0; i!=nRecords; i++) {
    for (int i=0; i!=nChannels; i++) {
-      printf("%02d, acoef: %f\n", i, data.chan[i].acoef);
+      printf("%02d, acoef: %f,", i, data.chan[i].acoef);
+      printf(" %f, TOFLength: %f\n", data.chan[i].t0, data.chan[i].TOFLength);
+
+      printf(" acoef: %f, %f, TOFLength: %f\n", chanconf[i].acoef, chanconf[i].t0, chanconf[i].TOFLength);
    }
 }
 

@@ -132,6 +132,16 @@ void AsymRoot::RootFile(char *filename)
    else {
       fHists = new CnipolHists(rootfile);
 
+      // also create scaler histograms and add them to the container
+      DrawObjContainer *scalerHists = new CnipolScalerHists(rootfile);
+
+      fHists->Add(scalerHists);
+      //fHists->Print();
+      //rootfile->cd();
+      //fHists->Write();
+      //rootfile->Close();
+      //exit(0);
+
       // a temporary fix...
       //Kinema    = fHists->d["Kinema"].fDir;
    }
@@ -255,16 +265,23 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 
 /** */
 void AsymRoot::PostProcess()
-{
+{ //{{{
    fHists->PostFill();
-}
+} //}}}
 
 
 /** */
 void AsymRoot::FillPreProcess()
-{
+{ //{{{
    fHists->FillPreProcess(fChannelEvent);
-}
+} //}}}
+
+
+/** */
+void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
+{ //{{{
+   ((CnipolScalerHists*) fHists)->Fill(hData, chId);
+} //}}}
 
 
 /**
@@ -385,7 +402,10 @@ void AsymRoot::UpdateCalibrator()
       //Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
       //calibrator = new DeadLayerCalibrator();
       //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
-      calibrator = new DeadLayerCalibrator();
+
+      //calibrator = new DeadLayerCalibrator();
+      calibrator = new DeadLayerCalibratorEDepend();
+
       //calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
       //calibrator->Calibrate(fHists);
       //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;

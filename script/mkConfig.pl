@@ -168,7 +168,7 @@ for ($st=0;$st<76;$st++) {
 #========================================
 # READ DEAD LAYER and TZERO
 #========================================
-open(Dlayer,$DlayerFile) || die "cannot open $DlayerFile";
+open(Dlayer, $DlayerFile) || die "cannot open $DlayerFile";
 printf "Reading $DlayerFile ... \n";
 
 while ($dline = <Dlayer>) {

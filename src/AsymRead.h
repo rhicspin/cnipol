@@ -39,4 +39,7 @@ void calcRunConst(recordConfigRhicStruct *cfginfo);
 void DecodeTargetID(polDataStruct poldat);
 void PrepareCollidingBunchPattern();
 
+void ProcessRecord(recordPolAdoStruct &rec);
+void ProcessRecord(recordWFDV8ArrayStruct &rec);
+
 #endif

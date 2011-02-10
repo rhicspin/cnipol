@@ -50,7 +50,9 @@ public:
    UChar_t  GetBunchId();
    Float_t  GetEnergyA();
    Float_t  GetKinEnergyA();
+   Float_t  GetKinEnergyAEDepend();
    Float_t  GetKinEnergyAEstimate();
+   Float_t  GetKinEnergyAEstimateEDepend();
    Float_t  GetFunnyEnergyA();
    Float_t  GetEnergyI();
    //Float_t GetTotalEnergyI();
@@ -65,9 +67,11 @@ public:
    void Print(const Option_t* opt="") const;
    bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
    Bool_t PassQACutRaw();
-   Bool_t PassQACut1();
+   Bool_t PassCutDepEnergyTime();
    Bool_t PassQACutCarbonMass();
    Bool_t PassCutPulser();
+   Bool_t PassCutNoise();
+   Bool_t PassCutEnabledChannel();
 
    ClassDef(ChannelEvent, 1)
 };
