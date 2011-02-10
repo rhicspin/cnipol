@@ -22,7 +22,9 @@
 #include "ChannelEvent.h"
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
+#include "CnipolScalerHists.h"
 #include "DeadLayerCalibrator.h"
+#include "DeadLayerCalibratorEDepend.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
 
@@ -75,6 +77,7 @@ public:
    void   ProcessEvent() {};
    void   PostProcess();
    void   FillPreProcess();
+   void   FillScallerHists(Long_t *hData, UShort_t chId);
    void   AddChannelEvent();
    void   PrintEventMap();
    void   UpdateCalibrator();

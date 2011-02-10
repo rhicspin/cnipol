@@ -58,30 +58,48 @@ Float_t ChannelEvent::GetEnergyA()
 /** */
 Float_t ChannelEvent::GetKinEnergyA()
 {
-   UChar_t chId  = fEventId.fChannelId + 1;
-   Float_t acoef = fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef;
+   UChar_t chId  = GetChannelId();
+   Float_t emeas = GetEnergyA();
    Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[chId].fAvrgEMiss;
-   return  acoef * fChannel.fAmpltd + eloss;
+   return  emeas + eloss;
+}
+
+
+/** */
+Float_t ChannelEvent::GetKinEnergyAEDepend()
+{
+   UChar_t chId    = GetChannelId();
+   Float_t emeas   = GetEnergyA();
+   Float_t dlwidth = fEventConfig->fCalibrator->fChannelCalibs[chId].fDLWidth;
+   return  ekin(emeas, dlwidth);
 }
 
 
 /** */
 Float_t ChannelEvent::GetKinEnergyAEstimate()
 {
-   UChar_t chId  = fEventId.fChannelId + 1;
-   Float_t acoef = fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef;
+   Float_t emeas = GetEnergyA();
    Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[0].fAvrgEMiss;
-   return  acoef * fChannel.fAmpltd + eloss;
+   return  emeas + eloss;
+}
+
+
+/** */
+Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
+{
+   Float_t emeas   = GetEnergyA();
+   Float_t dlwidth = fEventConfig->fCalibrator->fChannelCalibs[0].fDLWidth;
+   return  ekin(emeas, dlwidth);
 }
 
 
 /** */
 Float_t ChannelEvent::GetFunnyEnergyA()
 {
-   UChar_t chId = fEventId.fChannelId + 1;
-   float depoE  = fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
-   float funnyE = ekin(depoE, 60);
-   return funnyE;
+   UChar_t chId   = GetChannelId();
+   float   depoE  = fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
+   float   funnyE = ekin(depoE, 60);
+   return  funnyE;
 }
 
 
@@ -107,7 +125,7 @@ Float_t ChannelEvent::GetTime()
 /** */
 Float_t ChannelEvent::GetTimeOfFlight()
 {
-   UChar_t chId   = fEventId.fChannelId + 1;
+   UChar_t chId   = GetChannelId();
    Float_t t0coef = fEventConfig->fCalibrator->fChannelCalibs[chId].fT0Coef;
 
    return GetTime() + t0coef;
@@ -176,31 +194,32 @@ bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
 /** */
 Bool_t ChannelEvent::PassQACutRaw()
 {
-   //if (fChannel.fAmpltd < 30) return false; // ADC
+   ////if (fChannel.fAmpltd < 30) return false; // ADC
+   ////if (fChannel.fAmpltd > 215) return false; // ADC
+
+   //if (fChannel.fAmpltd < 15) return false; // ADC
    //if (fChannel.fAmpltd > 215) return false; // ADC
 
-   if (fChannel.fAmpltd < 15) return false; // ADC
-   if (fChannel.fAmpltd > 215) return false; // ADC
+   //if (fChannel.fTdc < 12) return false; // TDC
+   ////if (fChannel.fTdc > 65) return false; // TDC
 
-   if (fChannel.fTdc < 12) return false; // TDC
-   //if (fChannel.fTdc > 65) return false; // TDC
+   //if (fChannel.fTdc > 68) return false; // TDC
 
-   if (fChannel.fTdc > 68) return false; // TDC
-
-   UChar_t chId = fEventId.fChannelId + 1;
-   
-   if (chId >= NSTRIP) return false;
-   //if (chId <  0)      return false;
+   if (GetChannelId() > NSTRIP) return false;
 
    return true;
 }
 
 
 /** */
-Bool_t ChannelEvent::PassQACut1()
+Bool_t ChannelEvent::PassCutDepEnergyTime()
 {
    //if (GetEnergyA() < 150) return false;  // keV
    //if (GetEnergyA() > 1150) return false; // keV
+
+   //if (GetEnergyA() < 250) return false;  // keV
+   if (GetEnergyA() < 350) return false;  // keV  for yellow!
+   if (GetEnergyA() > 1400) return false; // keV
 
    if (GetTime() < 15) return false; // ns
    if (GetTime() > 75) return false; // ns
@@ -213,10 +232,11 @@ Bool_t ChannelEvent::PassQACut1()
 Bool_t ChannelEvent::PassQACutCarbonMass()
 {
    UChar_t chId = fEventId.fChannelId + 1;
-   float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimate());
+   //float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimate());
+   float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimateEDepend());
    //float delta = GetTime() - gRunConsts[].E2T/sqrt(GetEnergyA());
    
-   if (fabs(delta) <= 12) return true; // in ns
+   if (fabs(delta) <= 18) return true; // in ns
 
    //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * dproc.MassSigma/sqrt(GetEnergyA());
    //if ( fabs(delta) < gRunConsts[].M2T * dproc.OneSigma * dproc.MassSigma / sqrt(GetEnergyA()) ) return true;
@@ -228,12 +248,69 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
 /** */
 Bool_t ChannelEvent::PassCutPulser()
 {
-   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && 
-       //fChannel.fTdc > 38 && fChannel.fTdc < 70) // blue-2
-       fChannel.fTdc > 50 && fChannel.fTdc < 70) // blue-1
-   {
-      return false;
+   switch (gRunInfo.fPolId) {
+
+   case 0:   // B1U
+      if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
+         return false;
+      break;
+
+   case 1:   // Y1D
+      break;
+
+   case 2:   // B2D
+      if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && fChannel.fTdc > 50)
+         return false;
+
+      break;
+   case 3:   // Y2U
+      //if (fChannel.fAmpltd > 155 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50)
+      if (fChannel.fAmpltd > 140 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50) // 15039.302
+         return false;
+
+      break;
    }
 
    return true;
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutNoise()
+{
+   switch (gRunInfo.fPolId) {
+
+   case 0:   // B1U
+      //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
+      if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215 || fChannel.fAmpltd < 35)
+         return false;
+      break;
+
+   case 1:   // Y1D
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
+         return false;
+      break;
+
+   case 2:   // B2D
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
+         return false;
+
+      break;
+   case 3:   // Y2U
+      if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
+         return false;
+
+      break;
+   }
+
+   return true;
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutEnabledChannel()
+{
+   UShort_t chId = GetChannelId();
+
+   return !gRunInfo.DisableStrip[chId-1];
 }

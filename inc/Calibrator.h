@@ -35,7 +35,7 @@ public:
 
    virtual void Calibrate(DrawObjContainer *c);
    virtual void CalibrateFast(DrawObjContainer *c);
-   virtual TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
+   virtual TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime, Bool_t wideLimits=false);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
    void PrintAsConfig(FILE *f=stdout) const;

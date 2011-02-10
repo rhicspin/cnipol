@@ -30,12 +30,13 @@ public:
    Float_t  fICoef;
    Float_t  fICoefErr;
    Float_t  fIChi2Ndf;
-   Float_t  fDLCoef;    // Dead layer
-   Float_t  fDLCoefErr;
-   Float_t  fT0Coef;    // T0
+   Float_t  fDLWidth;       // Dead layer
+   Float_t  fDLWidthErr;
+   Float_t  fT0Coef;        // T0
    Float_t  fT0CoefErr;
    Float_t  fAvrgEMiss;
    Float_t  fAvrgEMissErr;
+   Float_t  fEMeasDLCorr;   //! a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
    Float_t  fBananaChi2Ndf;
 
 public:

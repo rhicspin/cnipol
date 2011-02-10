@@ -10,6 +10,7 @@
 #include "TDirectoryFile.h"
 #include "TF1.h"
 #include "TH2F.h"
+#include "TPaveStats.h"
 
 #include "AsymHeader.h"
 
@@ -41,7 +42,7 @@ public:
    void  Fill(ChannelEvent *ch, std::string cutid="");
    void  FillPreProcess(ChannelEvent *ch);
    void  PostFill();
-   virtual void  SaveAllAs(TCanvas &c, std::string path="./");
+   virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./");
 
    ClassDef(CnipolHists, 1)
 };

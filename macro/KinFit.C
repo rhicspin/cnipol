@@ -500,21 +500,20 @@ void KinFit::FitOne(TH2* h, Int_t St, Int_t mode)
    // 400-900keV  -0.545298 2.05241 0.00689393 1.00961 0.00182463
    // 500-900keV  -0.71873 2.27486 0.00654193 1.00909 0.0015731
 
-   Const[St] = 0.235 + 1.1013 * dlsum[(Int_t)St/12]
-       + 0.0075 * dlsum[(Int_t)St/12]*dlsum[(Int_t)St/12];
+   Const[St] = 0.235 + 1.1013 * dlsum[(Int_t)St/12] + 0.0075 * dlsum[(Int_t)St/12]*dlsum[(Int_t)St/12];
 
    Slope[St] = 1.0098 + 0.0036 * dlsum[(Int_t)St/12];
 
    // Write Out the Result to File
-   fout << St << " ";                                          // 0
+   fout << St << " ";                                          // 0, Strip
 
    if (!(mode>>1)&1) {
-     fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";    // 1
+     fout << setprecision(4) << dlsum[(Int_t)St/12]  <<" ";    // 1, dwidth
    }else{
-     fout << setprecision(4) << dl[St] << " ";                 // 1
+     fout << setprecision(4) << dl[St] << " ";                 // 1, dwidth
    }
 
-   fout << setprecision(4) << t0s[St]  <<" "; // 2
+   fout << setprecision(4) << t0s[St]  <<" "; // 2, tzero
    fout << setprecision(4) << t0sE[St] <<" "; // 3
    fout << setprecision(4) << dl[St]  <<" ";
    fout << setprecision(4) << dlE[St] <<" ";
@@ -523,8 +522,8 @@ void KinFit::FitOne(TH2* h, Int_t St, Int_t mode)
    fout << setprecision(3) << kinf->GetChisquare()/kinf->GetNDF() <<" ";
    fout << kinf->GetNDF()  << " ";
    fout << gMinuit->fCstatu.Data() << " ";
-   fout << setprecision(4) << Const[St] << " ";  // 11
-   fout << setprecision(4) << Slope[St] << " ";  // 12
+   fout << setprecision(4) << Const[St] << " ";  // 11, edead
+   fout << setprecision(4) << Slope[St] << " ";  // 12, ecoef
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 0) <<" ";
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 1) <<" ";
    fout << setprecision(5) << ExCoef(dlsum[(Int_t)St/12], 2) <<" ";

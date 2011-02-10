@@ -102,7 +102,7 @@ extern std::map<UShort_t, RunConst>   gRunConsts;
 extern StructMask               mask;
 extern StructFlag               Flag;
 extern StructReadFlag           ReadFlag;
-extern StructAnalysis           anal;
+extern StructAnalysis           gAnaResults;
 extern StructTarget             tgt;
 extern StructBunchPattern       phx, str;
 extern TRecordConfigRhicStruct *cfginfo;

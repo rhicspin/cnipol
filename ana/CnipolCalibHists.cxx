@@ -305,9 +305,9 @@ void CnipolCalibHists::PostFill()
 
 
 /** */
-void CnipolCalibHists::SaveAllAs(TCanvas &c, string path)
+void CnipolCalibHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 {
-   DrawObjContainer::SaveAllAs(c, path);
+   DrawObjContainer::SaveAllAs(c, pattern, path);
 
    return;
    
@@ -362,7 +362,7 @@ void CnipolCalibHists::SaveAllAs(TCanvas &c, string path)
       string parentPath = path;
       path += "/" + isubd->first;
       //printf("cd to path: %s\n", path.c_str());
-      isubd->second.SaveAllAs(c, path);
+      isubd->second.SaveAllAs(c, pattern, path);
       path = parentPath;
    }
 

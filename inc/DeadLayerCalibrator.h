@@ -21,7 +21,9 @@
 #include "TH1D.h"
 #include "TMath.h"
 
+#include "Asym.h"
 #include "AsymHeader.h"
+#include "AsymGlobals.h"
 
 #include "Calibrator.h"
 #include "DrawObjContainer.h"
@@ -40,7 +42,7 @@ public:
 
    virtual void Calibrate(DrawObjContainer *c);
    virtual void CalibrateFast(DrawObjContainer *c);
-   TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
+   TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime, Bool_t wideLimits=false);
    void Print(const Option_t* opt="") const;
 
    static Double_t BananaFitFunc(Double_t *x, Double_t *par);

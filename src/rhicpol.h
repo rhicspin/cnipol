@@ -173,7 +173,7 @@ typedef struct {
     float pede;         // pedestal of unknown nature (unitS ?)
     float C[5];         // nonlinear fit parameters: Ein = C[0] + C[1]*<ADC> + C[2]*<ADC>^2 ...
     float TOFLength;    // cm. 2010: we now have it different per detector !
-    long reserved[10];
+    long reserved[9];
 } SiChanStruct;
 
 #define CALIB_CONSTANTS 13
@@ -251,7 +251,12 @@ typedef struct {
     int OnlyHist;       // If 1, no data is read out, only internal histograms
     float SleepFraction; // [0..1] - fraction of time to set inhibit to optimize memory usage
     float CicleTime;    // time period to test jet Veto
-    int Dummy[38];      // For futher use to keep the whole length the same
+    float TrigMin;      // trigger level for internal 2-dim histogram and for rectangular cut for memory
+    int JetDelay;       // Value to be written into delay register of version 10
+    int FPGAVersion;    // FPGA version. We don't support various versions in one run
+    float TshiftLow;    // tshift for injection
+    float TshiftHigh;   // tshift for flattop
+    int Dummy[33];      // For futher use to keep the whole length the same
     int NumChannels;            // number of silicon strips
     SiChanStruct chan[1];       // array of NumChannels size
 } configRhicDataStruct;

@@ -26,9 +26,9 @@ struct StructHistStat;
 //===========================================================================
 //                      Main End Process Routine
 //===========================================================================
-int end_process(recordConfigRhicStruct *cfginfo);
-int CompleteHistogram();
-int TgtHist();
+void end_process(recordConfigRhicStruct *cfginfo);
+int  CompleteHistogram();
+int  TgtHist();
 
 //===========================================================================
 //                       Anaolyzing power

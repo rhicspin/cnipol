@@ -4,14 +4,14 @@
 using namespace std;
 
 
-void analyzeDeadLayer(string runName, Long64_t nEvents)
+void analyzeDeadLayer(string runName, std::string pattern, Long64_t nEvents)
 {
    analyzeDeadLayer_initialize(runName);
    //analyzeDeadLayer_book_histograms();
    //analyzeDeadLayer_fill_histograms(nEvents);
    //analyzeDeadLayer_fit_histograms();
    //analyzeDeadLayer_fill_histograms_derivative();
-   analyzeDeadLayer_finalize();
+   analyzeDeadLayer_finalize(pattern);
 }
 
 
@@ -20,10 +20,12 @@ void analyzeDeadLayer_initialize(string runName)
    gStyle->SetPalette(1);
    gStyle->SetOptFit(1111);
    gStyle->SetOptStat("emroui");
-   gStyle->SetStatX(0.98);
-   gStyle->SetStatY(0.98);
-   gStyle->SetStatW(0.17);
-   gStyle->SetStatH(0.12);
+   gStyle->SetStatX(0.99);
+   gStyle->SetStatY(0.99);
+   gStyle->SetStatW(0.15);
+   gStyle->SetStatH(0.15);
+
+   gStyle->SetPadRightMargin(0.30);
 
    gOutFile = new TFile("./out.root", "recreate");
    //gH = new CnipolCalibHists(gOutFile);
@@ -143,73 +145,16 @@ void analyzeDeadLayer_fill_histograms(Long64_t nEvents)
 */
 
 
-/*
 void analyzeDeadLayer_fit_histograms()
 { // {{{
-   string    sSi("  ");
-   //float     chi2_max  = 0;
-   Double_t  stat_max  = 0;
-   TH1F     *hAmp      = 0;
-   TH1F     *hInt      = 0;
-   TF1      *fitfunc   = new TF1("fitfunc", "gaus");
-   TFitResultPtr frp;
+   
+   //ec->fCalibrator->Calibrate(gH);
+   ((DeadLayerCalibratorEDepend*) ec->fCalibrator)->PostCalibrate();
 
-   fitfunc->SetLineColor(2);
-   fitfunc->SetLineWidth(3);
+   //ec->Print();
+   //ec->PrintAsConfig(stdout);
 
-   for (int i=0; i<NSTRIP; i++) {
-   //for (int i=33; i<34; i++)
-
-      sprintf(&sSi[0], "%02d", i+1);
-
-      // Just for shorthand
-      hAmp = (TH1F*) gH->d["channel"+sSi].o["hAmpltd_cut1_st"+sSi];
-      frp = analyzeDeadLayer_fit_histograms(hAmp, fitfunc);
-
-      float amp  = fitfunc->GetParameter(1);
-      float eamp = fitfunc->GetParError(1);
-      float chi2 = fitfunc->GetChisquare();
-      float cal, ecal;
-
-      //if (frp)
-         //((TH1F*) gH->o["hAmpltdW"])->SetBinContent(i+1, frp->Value(2));
-      ((TH1F*) gH->o["hAmpltdW"])->SetBinContent(i+1, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
-      ((TH1F*) gH->o["hAmpltdW"])->SetBinError(i+1, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
-
-      hInt = (TH1F*) gH->d["channel"+sSi].o["hIntgrl_cut1_st"+sSi];
-      frp = analyzeDeadLayer_fit_histograms(hInt, fitfunc);
-
-      //if (frp)
-         //((TH1F*) gH->o["hIntgrlW"])->SetBinContent(i+1, frp->Value(2));
-      ((TH1F*) gH->o["hIntgrlW"])->SetBinContent(i+1, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
-      ((TH1F*) gH->o["hIntgrlW"])->SetBinError(i+1, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
-
-      int ndf = fitfunc->GetNDF();
-
-      if (ndf <= 0) {
-         ndf = -1;
-         amp = eamp = cal = ecal = chi2 = 0;
-      } else {
-         cal  = (ALPHA_KEV/amp) * ATTEN;
-         ecal = cal * eamp/amp;
-      }
-
-      ec->fConfigInfo->data.chan[i].acoef = cal;
-      ec->fConfigInfo->data.chan[i].ecoef = ecal;
-      //ec->fConfigInfo->data.chan[i].icoef = fitfunc->GetParameter(1);
-
-      printf("%6.4f %6.4f %6.2f %6.2f %4.1f %3d  SUCCESSFUL\n",
-              cal, ecal, amp, eamp, chi2/ndf, ndf);
-      //fprintf(pf0,"%2d %6.4f %6.4f %6.2f %6.2f %4.1f %3d SUCCESSFUL\n",
-      //        i,cal[i],ecal[i],amp[i],eamp[i],chi2[i]/ndf,ndf);
-
-      Double_t stat = hAmp->GetEntries();
-      if (stat > stat_max) stat_max = stat;
-      //if (chi2 > chi2_max) chi2_max = chi2;
-   }
-}
-// }}}
-*/
+} // }}}
 
 
 /*
@@ -244,14 +189,17 @@ TFitResultPtr analyzeDeadLayer_fit_histograms(TH1 *h, TF1 *f)
 */
 
 
-void analyzeDeadLayer_finalize()
+void analyzeDeadLayer_finalize(string pattern)
 { // {{{
-   TCanvas c("cName", "cName", 800, 600);
+   TCanvas c("cName", "cName", 1200, 600);
 
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
-   gH->SaveAllAs(c, path.c_str());
+   //gH->SaveAllAs(c, "^.*c_combo.*$", path.c_str());
+   //gH->SaveAllAs(c, "^.*c_hTimeVsEnergyA.*$", path.c_str());
+   //gH->SaveAllAs(c, "^.*c_asym_sinphi_fit.*$", path.c_str());
+   gH->SaveAllAs(c, pattern, path.c_str());
    //gH->Write();
    //gOutFile->Close();
 

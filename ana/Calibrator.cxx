@@ -37,7 +37,7 @@ void Calibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime)
+TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, Bool_t wideLimits)
 {
    //TFitResultPtr result = 0;
    return 0;
@@ -79,8 +79,8 @@ void Calibrator::PrintAsPhp(FILE *f) const
       fprintf(f, "$rc['calib'][%d]['ACoefErr']       = %f;\n", chId, mi->second.fACoefErr);
       fprintf(f, "$rc['calib'][%d]['ICoef']          = %f;\n", chId, mi->second.fICoef);
       fprintf(f, "$rc['calib'][%d]['ICoefErr']       = %f;\n", chId, mi->second.fICoefErr);
-      fprintf(f, "$rc['calib'][%d]['DLCoef']         = %f;\n", chId, mi->second.fDLCoef);
-      fprintf(f, "$rc['calib'][%d]['DLCoefErr']      = %f;\n", chId, mi->second.fDLCoefErr);
+      fprintf(f, "$rc['calib'][%d]['DLWidth']         = %f;\n", chId, mi->second.fDLWidth);
+      fprintf(f, "$rc['calib'][%d]['DLWidthErr']      = %f;\n", chId, mi->second.fDLWidthErr);
       fprintf(f, "$rc['calib'][%d]['T0Coef']         = %f;\n", chId, mi->second.fT0Coef);
       fprintf(f, "$rc['calib'][%d]['T0CoefErr']      = %f;\n", chId, mi->second.fT0CoefErr);
       fprintf(f, "$rc['calib'][%d]['fAvrgEMiss']     = %f;\n", chId, mi->second.fAvrgEMiss);
@@ -106,7 +106,9 @@ void Calibrator::PrintAsConfig(FILE *f) const
       ch   = &mi->second;
 
       fprintf(f, "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
-         chId, -1*ch->fT0Coef, ch->fACoef, ch->fAvrgEMiss, 10., 100., ch->fACoef, 0., 0., 0., 0., 0., 0., 0.);
+         //chId, -1*ch->fT0Coef, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
+         chId, ch->fT0Coef, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
+         10., 100., ch->fACoef, 0., 0., 0., 0., 0., 0., 0.);
    }
 
 	// XXX need to add 8 more default channels here

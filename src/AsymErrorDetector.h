@@ -39,7 +39,7 @@
 //=================================================================//
 int InvariantMassCorrelation(int st);
 int BananaFit();
-int StripAnomalyDetector();
+void StripAnomalyDetector();
 
 typedef struct {
   float average[1];
@@ -64,11 +64,11 @@ extern StructStripCheck strpchk;
 //=================================================================//
 //                     Bunch Error Detector                        //
 //=================================================================//
-int BunchAnomalyDetector();
 float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
+void  BunchAsymmetryAnomaly();
+void  BunchAnomalyDetector();
 
 int HotBunchFinder(int err_code); 
-
 
 struct StructBunch {
   float average[1];
@@ -94,14 +94,14 @@ extern int DetectorAnomaly();
 //=================================================================//
 //                              Misc                               //
 //=================================================================//
-int RegisterAnomaly(float x[], int nx, int y[], int ny, int z[], int &nz);
-int RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
-int UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
-void DrawText(TH1I * h, float x, float y, int color, char * text);
-void DrawText(TH2F * h, float x, float y, int color, char * text);
-void DrawLine(TH1F * h, float x, float y1, int color, int lwidth);
-void DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
-void DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
+int   RegisterAnomaly(float x[], int nx, int y[], int ny, int z[], int &nz);
+int   RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
+int   UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz);
+void  DrawText(TH1I * h, float x, float y, int color, char * text);
+void  DrawText(TH2F * h, float x, float y, int color, char * text);
+void  DrawLine(TH1F * h, float x, float y1, int color, int lwidth);
+void  DrawLine(TH2F * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
+void  DrawLine(TH1I * h, float x0, float x1, float y, int color, int lstyle, int lwidth);
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);
 void  checkForBadBunches();

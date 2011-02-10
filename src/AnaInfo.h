@@ -37,6 +37,7 @@ public:
    int            CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
    int            UPDATE;             // 1: keep update of the histogram
    int            UPDATE_DB;          // 0: default, 1: update info in database
+   UShort_t       QUICK_MODE;         // 0: default, 1: quick mode
    int            MMODE;              // mass mode
    int            NTMODE;             // if 1 store NTUPLEv
    int            RECONFMODE;         // if 1 reconfigure from file
