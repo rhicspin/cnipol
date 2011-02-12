@@ -66,10 +66,10 @@ public:
    void   RootFile(char* filename);
    Int_t  BookHists(TStructRunInfo runinfo);
 	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
-   Int_t  DeleteHistogram();
+   void   DeleteHistogram();
    void   Calibrate();
    void   CalibrateFast();
-   Int_t  CloseROOTFile();
+   void   CloseROOTFile();
    void   CreateTrees();
    Bool_t UseCalibFile(std::string cfname="");
    void   SetChannelEvent(processEvent &event);

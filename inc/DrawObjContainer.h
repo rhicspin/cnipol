@@ -28,9 +28,9 @@ class DrawObjContainer;
 typedef std::map<std::string, TObject*> ObjMap;
 typedef std::map<std::string, TObject*>::iterator ObjMapIter;
 typedef std::map<std::string, TObject*>::const_iterator ObjMapConstIter;
-typedef std::map<std::string, DrawObjContainer> DrawObjContainerMap;
-typedef std::map<std::string, DrawObjContainer>::iterator DrawObjContainerMapIter;
-typedef std::map<std::string, DrawObjContainer>::const_iterator DrawObjContainerMapConstIter;
+typedef std::map<std::string, DrawObjContainer*> DrawObjContainerMap;
+typedef std::map<std::string, DrawObjContainer*>::iterator DrawObjContainerMapIter;
+typedef std::map<std::string, DrawObjContainer*>::const_iterator DrawObjContainerMapConstIter;
 
 
 /** */
@@ -49,21 +49,22 @@ public:
    DrawObjContainer(TDirectory *dir);
    virtual ~DrawObjContainer();
 
-   void ReadFromDir();
-   void ReadFromDir(TDirectory *dir);
-   void Add(DrawObjContainer* oc);
+   void  SetDir(TDirectory *dir);
+   void  ReadFromDir();
+   void  ReadFromDir(TDirectory *dir);
+   void  Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillPreProcess(ChannelEvent *ch);
-   void Print(const Option_t* opt="") const;
+   void  Print(const Option_t* opt="") const;
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
-   void Draw(Option_t* option = "")
+   void  Draw(Option_t* option = "")
       { ((TObject*)this)->Draw(option); }
-   void Draw(TCanvas &c);
+   void  Draw(TCanvas &c);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
-   void Delete();
+   void  Delete();
 
    ClassDef(DrawObjContainer, 1)
 };

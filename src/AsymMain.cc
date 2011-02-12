@@ -21,7 +21,7 @@ using namespace std;
 
 /** Main program */
 int main(int argc, char *argv[])
-{
+{ //{{{
    // Create a stopwatch and start it
    TStopwatch stopwatch;
    TTimeStamp timestamp;
@@ -45,27 +45,31 @@ int main(int argc, char *argv[])
    if ( confdir == NULL ){
       cerr << "environment CONFDIR is not defined" << endl;
       cerr << "e.g. export CONFDIR=/usr/local/cnipol/config" << endl;
-      exit(-1);
+      return 0;
    }
 
-   // files
    char   cfile[32], hbk_outfile[256];
    int    hbk_read = 0;  // hbk file read from argument:1 default:0
    //int  ramp_read = 0;  // ramp timing file read from argument:1 default:0
-
-   // misc
-   char enerange[20], cwidth[20], *ptr;
+   char   enerange[20], cwidth[20], *ptr;
    stringstream sstr;
+   int    option_index = 0;
 
-   int option_index = 0;
    static struct option long_options[] = {
-      {"run-name", required_argument, 0, 'f'},
-      {"raw", 0, 0, 'r'},
-      {"feedback", 0, 0, 'b'},
-      {"no-error-detector", 0, 0, 'a'},
-      {"update-db", no_argument, 0, 0x100},
-      {"pol-id", required_argument, 0, 0x200},
-      {"quick", no_argument, 0, 'q'},
+      {"run-name",            required_argument,   0,   'f'},
+      {"raw",                 0,                   0,   'r'},
+      {"feedback",            0,                   0,   'b'},
+      {"no-error-detector",   0,                   0,   'a'},
+      {"update-db",           no_argument,         0,   0x100},
+      {"pol-id",              required_argument,   0,   0x200},
+      {"quick",               no_argument,         0,   'q'},
+      {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
+      {"mode-normal",         no_argument,         0,   TDatprocStruct::MODE_NORMAL},
+      {"mode-no-normal",      no_argument,         0,   TDatprocStruct::MODE_NO_NORMAL},
+      {"mode-scaler",         no_argument,         0,   TDatprocStruct::MODE_SCALER},
+      {"mode-raw",            no_argument,         0,   TDatprocStruct::MODE_RAW},
+      {"mode-bunch",          no_argument,         0,   TDatprocStruct::MODE_BUNCH},
+      {"mode-full",           no_argument,         0,   TDatprocStruct::MODE_FULL},
       {0, 0, 0, 0}
    };
 
@@ -94,9 +98,7 @@ int main(int argc, char *argv[])
          //            cout << " -G                   : mass mode on " <<endl;
          cout << " -a, --no-error-detector  : anomaly check off " << endl;
          //cout << " <MODE> ---------------(default off)--------" <<endl;
-         cout << " -r, --raw                : raw histograms on " << endl;
          cout << " -b                       : feedback mode on " << endl;
-         cout << " -C                       : Calibration mode on " <<endl;
          cout << " -D                       : Dead layer  mode on " <<endl;
          cout << " -d <dlayer>              : Additional deadlayer thickness [ug/cm2]" << endl;
          //            cout << " -T                   : T0 study    mode on " <<endl;
@@ -111,7 +113,14 @@ int main(int argc, char *argv[])
          cout << " -R <bitmask>             : save events in Root trees, " <<
                  "e.g. \"-R 101\"" <<endl;
          cout << " -q, --quick              : Skips the main loop. Use for a quick check" << endl;
-         exit(0);
+         cout << " -C, --mode-alpha         : Use when run over alpha run data" << endl;
+         cout << "     --mode-normal        : Deafult set of histograms" << endl;
+         cout << "     --mode-no-normal     : Turn off the deafult set of histograms" << endl;
+         cout << "     --mode-scaler        : Fill and save only scaler histograms (from V124 memory)" << endl;
+         cout << " -r, --raw, --mode-raw    : Fill and save only raw histograms" << endl;
+
+         return 0;
+
       case 'f':
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
@@ -138,7 +147,7 @@ int main(int argc, char *argv[])
          break;
       case 'o': // determine output hbk file
          sprintf(hbk_outfile, optarg);
-         fprintf(stdout,"Output hbk file: %s \n",hbk_outfile);
+         fprintf(stdout, "Output hbk file: %s \n", hbk_outfile);
          hbk_read = 1;
          break;
       case 't': // set timing shift in banana cut
@@ -161,7 +170,7 @@ int main(int argc, char *argv[])
             fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", dproc.enel,dproc.eneu);
          } else {
              cout << "Wrong specification for energy threshold" << endl;
-             exit(0);
+             return 0;
          }
 
          break;
@@ -180,14 +189,6 @@ int main(int argc, char *argv[])
          break;
       case 'b':
          dproc.FEEDBACKMODE = Flag.feedback = 1;
-         break;
-      case 'r':
-         dproc.RAWHISTOGRAM = 1;
-         break;
-      case 'C':
-         dproc.CMODE = 1;
-         dproc.RECONFMODE = 0;
-         gAsymRoot.fEventConfig = new EventConfig();
          break;
       case 'D':
          dproc.DMODE = 1;
@@ -218,17 +219,17 @@ int main(int argc, char *argv[])
          dproc.CBANANA = 1;
          strcpy(cwidth, optarg);
          if ((ptr = strrchr(cwidth,':'))) {
-             ptr++;
-             dproc.widthu = atoi(ptr);
-             strtok(cwidth,":");
-             dproc.widthl = atoi(cwidth);
-             fprintf(stdout,"CONSTANT BANANA CUT LOWER:UPPER = %d:%d\n",
-                     dproc.widthl,dproc.widthu);
-             if (dproc.widthu == dproc.widthl)
-               fprintf(stdout,"WARNING: Banana Lower = Upper Cut\a\n");
+            ptr++;
+            dproc.widthu = atoi(ptr);
+            strtok(cwidth,":");
+            dproc.widthl = atoi(cwidth);
+            fprintf(stdout,"CONSTANT BANANA CUT LOWER:UPPER = %d:%d\n",
+                    dproc.widthl,dproc.widthu);
+            if (dproc.widthu == dproc.widthl)
+               fprintf(stdout, "WARNING: Banana Lower = Upper Cut\a\n");
          } else {
-             fprintf(stdout,"Wrong specification constant banana cut\n");
-             exit(0);
+            fprintf(stdout, "Wrong specification constant banana cut\n");
+            return 0;
          }
          fprintf(stdout,"BANANA Cut : %d <==> %d \n",
                  dproc.widthl,dproc.widthu);
@@ -252,11 +253,41 @@ int main(int argc, char *argv[])
       case 'q':
          dproc.QUICK_MODE = 1;
          break;
+
+      case 'C':
+      case TDatprocStruct::MODE_ALPHA:
+         dproc.fModes |= TDatprocStruct::MODE_ALPHA;
+         dproc.CMODE = 1;
+         dproc.RECONFMODE = 0;
+         dproc.fModes &= ~TDatprocStruct::MODE_NORMAL; // turn off normal mode
+         gAsymRoot.fEventConfig = new EventConfig();
+         break;
+
+      case TDatprocStruct::MODE_NO_NORMAL:
+         dproc.fModes &= ~TDatprocStruct::MODE_NORMAL;
+         break;
+
+      case TDatprocStruct::MODE_SCALER:
+         dproc.fModes |= TDatprocStruct::MODE_SCALER;
+         break;
+
+      case 'r':
+      case TDatprocStruct::MODE_RAW:
+         dproc.fModes |= TDatprocStruct::MODE_RAW;
+         dproc.RAWHISTOGRAM = 1;
+         break;
+      case TDatprocStruct::MODE_BUNCH:
+         dproc.fModes |= TDatprocStruct::MODE_BUNCH; break;
+      case TDatprocStruct::MODE_FULL:
+         dproc.fModes |= TDatprocStruct::MODE_FULL; break;
       default:
          fprintf(stdout,"Invalid Option \n");
-         exit(0);
+         return 0;
       }
    }
+
+   dproc.Print();
+   //return 0;
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -367,7 +398,7 @@ int main(int argc, char *argv[])
    // file
    if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
       perror("Error: Supplied calibration file is not valid\n");
-      exit(-1);
+      return 0;
    }
 
    // if output hbk file is not specified
@@ -378,10 +409,7 @@ int main(int argc, char *argv[])
 
    // Hbook Histogram Booking
    fprintf(stdout, "Booking HBOOK file\n");
-   if (hist_book(hbk_outfile) != 0) {
-      perror("Error: hist_book");
-      exit(-1);
-   }
+   hist_book(hbk_outfile);
 
    // Root Histogram Booking
    char outRootFileName[256];
@@ -394,7 +422,7 @@ int main(int argc, char *argv[])
    gAsymEnv["CNIPOL_RESULTS_DIR"].append(gRunInfo.runName);
 
    if (gAsymEnv["CNIPOL_RESULTS_DIR"].size() > 200) {
-      printf("ERROR: Results dir name too long\n"); exit(-1);
+      printf("ERROR: Results dir name too long\n"); return 0;
    }
 
    //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
@@ -421,8 +449,6 @@ int main(int argc, char *argv[])
    if (dproc.UPDATE == 1 && !dproc.CMODE)
       readDataFast();
 
-   //exit(-1);
-
    // Quick Scan and Fit for tshift and mass sigma fit
    //if (dproc.FEEDBACKMODE){
 
@@ -444,36 +470,29 @@ int main(int argc, char *argv[])
       // Main Event Loop
       if (readloop() != 0) {
          perror("Error: readloop");
-         exit(-1);
+         return 0;
       }
 
       gAsymRoot.PostProcess();
    }
    //}
 
-   gRunInfo.Print();
+   //gRunInfo.Print();
 
    //cfginfo->Print();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
    //exit(0);
 
    // Delete Unnecessary ROOT Histograms
-   if (gAsymRoot.DeleteHistogram() !=0) {
-       perror("Error: DeleteHistogram()");
-       exit(-1);
-   }
+   gAsymRoot.DeleteHistogram();
 
    // Closing Histogram File
-   if (hist_close(hbk_outfile) !=0) {
-       perror("Error: hist_close");
-       exit(-1);
-   }
+   hist_close(hbk_outfile);
 
    // Update calibration constants if requested
    if (dproc.UPDATE == 1) {
       gAsymRoot.Calibrate();
-      printf("YYY\n");
-      gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+      //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
    }
 
@@ -520,20 +539,17 @@ int main(int argc, char *argv[])
    //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
 
    // Closing ROOT File
-   if (gAsymRoot.CloseROOTFile() !=0) {
-       perror("Error: CloseROOTFile()");
-       exit(-1);
-   }
+   gAsymRoot.CloseROOTFile();
 
-   exit(1);
-}
+   return 1;
+} //}}}
 
 
 // ===================================
 // for Bunch by Bunch base analysis
 // ===================================
 int BunchSelect(int bid)
-{
+{ //{{{
   int go = 0;
   //  int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,
@@ -548,7 +564,7 @@ int BunchSelect(int bid)
   }
 
   return go;
-}
+} //}}}
 
 
 //
@@ -560,7 +576,7 @@ int BunchSelect(int bid)
 // Return      :
 //
 int GetPolarimetryID_and_RHICBeam(char RunID[])
-{
+{ //{{{
   char ID = *(strrchr(RunID,'.')+1);
 
   switch (ID) {
@@ -596,7 +612,7 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
   */
 
   return 0;
-}
+} //}}}
 
 
 // =========================
@@ -604,36 +620,35 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 // =========================
 
 // Ramp timing file
-int read_ramptiming(char *filename)
-{
-   fprintf(stdout, "\nReading ... cut parameter file : %s \n", filename);
+void ReadRampTiming(char *filename)
+{ //{{{
+   printf("\nReading ... cut parameter file : %s \n", filename);
 
    ifstream rtiming;
    rtiming.open(filename);
 
    if (!rtiming) {
-       cerr << "failed to open ramp timing file" <<endl;
-       exit(1);
+      cerr << "failed to open ramp timing file" <<endl;
+      exit(1);
    }
 
    memset(ramptshift, 0, sizeof(ramptshift));
 
    float runt;
-
    int index = 0;
+
    while (!rtiming.eof()) {
-       rtiming >> runt >> ramptshift[index] ;
-       index ++;
+      rtiming >> runt >> ramptshift[index] ;
+      index ++;
    }
 
    rtiming.close();
-   return(0);
-}
+} //}}}
 
 
 // Calibration parameter
 void reConfig(TRecordConfigRhicStruct *cfginfo)
-{
+{ //{{{
     ifstream configFile;
     configFile.open(reConfFile);
 
@@ -643,9 +658,9 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
        return;
     }
 
-    fprintf(stdout,"**********************************\n");
-    fprintf(stdout,"** Configuration is overwritten **\n");
-    fprintf(stdout,"**********************************\n");
+    printf("**********************************\n");
+    printf("** Configuration is overwritten **\n");
+    printf("**********************************\n");
 
     cout << "Reading configuration info from : " << reConfFile <<endl;
 
@@ -706,7 +721,7 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
     }
 
     configFile.close();
-}
+} //}}}
 
 
 //
@@ -718,8 +733,8 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
 // Input       : int mask.detector
 // Return      : gRunInfo.ActiveDetector[i] remains masked strip configulation
 //
-int ConfigureActiveStrip(int mask)
-{
+void ConfigureActiveStrip(int mask)
+{ //{{{
    // Disable Detector First
    for (int i=0; i<NDETECTOR; i++) {
 
@@ -767,9 +782,7 @@ int ConfigureActiveStrip(int mask)
    }
 
    printf("\n");
-
-   return 0;
-}
+} //}}}
 
 
 //
@@ -782,7 +795,7 @@ int ConfigureActiveStrip(int mask)
 //
 /*
 int DisabledDet(int det)
-{
+{ //{{{
   // det(0,1,2,3,4,5} => {0, 1, 0, 0, 1, 0} => 18
   int DeadDet = tgt.VHtarget ? 18 : 0 ;
   //                            ^   ^
@@ -790,21 +803,13 @@ int DisabledDet(int det)
 
   return DeadDet>>det & 1 ;
 
-}
+} //}}}
 */
 
 
-//
-// Class name  :
-// Method name : Initialization
-//
 // Description : Initialize variables
-//             :
-// Input       :
-// Return      :
-//
-int Initialization()
-{
+void Initialization()
+{ //{{{
    for (int i=0; i<NSTRIP; i++) {
       feedback.mdev[i] = 0.;
       feedback.RMS[i]  = dproc.OneSigma;
@@ -816,14 +821,14 @@ int Initialization()
    // Initiarize Strip counters
    for (int i=0; i<NSTRIP; i++) {
  
-      for (int j=0; j<3; j++)
-         cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
+      for (int j=0; j<3; j++) {
+         cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = 0;
+         cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
+      }
  
       for (int j=0; j<3; j++) {
          for(int kk=0; kk<MAXDELIM; kk++)
             cntr_tgt.reg.NStrip[kk][j][i] = 0;
       }
    }
- 
-   return 1;
-}
+} //}}}

@@ -249,7 +249,9 @@ int main(int argc, char **argv)
            poldat.statusS |= (STATUS_ERROR | ERR_INT);
            break;
        }
+
        recRing |= rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
+
        switch (rec.header.type & REC_TYPEMASK) {
 
        case REC_BEGIN:
@@ -281,30 +283,39 @@ int main(int argc, char **argv)
            //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
            //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
            //printf("polId: %d\n", polId);
-           //printf("tarWfdCh, recRing: %d, %d\n", tarWfdCh, recRing&REC_BLUE);
+           //printf("tarWfdCh, recRing: %d, %x\n", tarWfdCh, recRing&REC_BLUE);
 
            break;
 
        case REC_READAT:
            //printf("Found REC_READAT record\n");
            for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
+
                ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
                St      = ATPtr->subhead.siNum;
                delimtr = rec.header.timestamp.delim;
                nRecEvt = ATPtr->subhead.Events + 1;
+
                i += sizeof(subheadStruct) + nRecEvt*sizeof(ATStruct);
+
                if (i > rec.header.len - sizeof(recordHeaderStruct)) {
                    printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
                    break;
                }
+
+               //printf("tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+
                if (St == tarWfdCh || St == tarWfdCh+1) {       // we 'or' here vertical and horizontal...
-                   for (j=0; j<nRecEvt; j++) {
-                       orbitNo = delimtr*512 + 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
-                       if (firstOrb < 0) firstOrb = orbitNo;
-                       lastOrb = orbitNo;
-                       vStepOrb[nStepCnt] = orbitNo;
-                       nStepCnt++;
-                   }
+                  //ds
+                  printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+
+                  for (j=0; j<nRecEvt; j++) {
+                      orbitNo = delimtr*512 + 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
+                      if (firstOrb < 0) firstOrb = orbitNo;
+                      lastOrb = orbitNo;
+                      vStepOrb[nStepCnt] = orbitNo;
+                      nStepCnt++;
+                  }
                }
            }
            break;
@@ -333,6 +344,7 @@ int main(int argc, char **argv)
            }
 
            stepCh = tarWfdCh;
+
            if (strncmp(targID,"H",1) == 0) stepCh++;   // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
 
            printf("Target is %s  Step Ch is %d\n",targID, stepCh);
@@ -356,6 +368,7 @@ int main(int argc, char **argv)
            break;
        }
    }
+
    rewind(fin);  // go back to beginning of file
 
    //***************************************************************************************************
@@ -433,6 +446,7 @@ int main(int argc, char **argv)
    */
    printf("First Orbit = %d Last Orbit = %d Number Orbits = %d Orbits at midpoint = %d\n",
       firstOrb, lastOrb, totOrbs, vStepOrb[midStepCnt]);
+
    printf("Number of steps = %d First step orbit = %d Last step orbit = %d Midpoint steps = %d\n",
       nStepCnt, vStepOrb[0], vStepOrb[nStepCnt-1], midStepCnt);
 

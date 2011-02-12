@@ -21,6 +21,11 @@ DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d()
 }
 
 
+/** */
+void DrawObjContainer::SetDir(TDirectory *dir) { fDir = dir; fDir->cd(); }
+
+
+/** */
 void DrawObjContainer::ReadFromDir()
 { //{{{
    ObjMapIter io;
@@ -82,7 +87,7 @@ void DrawObjContainer::ReadFromDir()
 
       TDirectory *subdir = (TDirectory*) key->ReadObj();
       //TDirectory *subdir = fDir->GetDirectory(isub->first.c_str());
-      isub->second.fDir = subdir;
+      isub->second->fDir = subdir;
 
       //if (!subdir) {
       //   //subdir->Print();
@@ -94,7 +99,7 @@ void DrawObjContainer::ReadFromDir()
       // replace the object with the one from this dir/file
       //isub->second = tmpContainer;
       //isub->second.fDir = gDirectory;
-      isub->second.ReadFromDir();
+      isub->second->ReadFromDir();
    }
 } //}}}
 
@@ -119,11 +124,11 @@ void DrawObjContainer::Add(DrawObjContainer *oc)
    DrawObjContainerMapIter isubd;
    pair<DrawObjContainerMapIter, bool> result;
 
-   oc->Print();
+   //oc->Print();
 
    for (isubd=oc->d.begin(); isubd!=oc->d.end(); ++isubd) {
 
-      //isubd->second.Print();
+      //isubd->second->Print();
          
       result = d.insert(*isubd);
       if (result.second) {
@@ -132,9 +137,9 @@ void DrawObjContainer::Add(DrawObjContainer *oc)
       }
 
       // This and oc objects contain subdir with the same name. Therefore add
-      // objects to the existing one
-      DrawObjContainer &existingOc = (*result.first).second;
-      existingOc.Add(&isubd->second);
+      // objects to the existing one. result.first is a pointer to pair<string, DrawObjContainer*>
+      DrawObjContainer *existingOc = (result.first)->second;
+      existingOc->Add(isubd->second);
    }
 } //}}}
 
@@ -169,7 +174,7 @@ void DrawObjContainer::Print(const Option_t* opt) const
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       cout << "Content of " << isubd->first << endl;
-      isubd->second.Print();
+      isubd->second->Print();
    }
 }
 
@@ -240,7 +245,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second.SaveAllAs(c, pattern, path);
+      isubd->second->SaveAllAs(c, pattern, path);
       path = parentPath;
    }
 
@@ -273,7 +278,7 @@ void DrawObjContainer::Draw(TCanvas &c)
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second.Draw(c);
+      isubd->second->Draw(c);
    }
 
    //gROOT->SetBatch(isBatch);
@@ -304,7 +309,7 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       cout << "Writing content of " << isubd->first << endl;
-      isubd->second.Write();
+      isubd->second->Write();
    }
 
    return 0;//((TObject*)this)->Write(name, option, bufsize);
@@ -319,7 +324,14 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) con
 
 
 /** */
-void DrawObjContainer::Fill(ChannelEvent *ch, string cutid) { }
+void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
+{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->Fill(ch, sid);
+   }
+}
 
 
 /** */
@@ -353,6 +365,6 @@ void DrawObjContainer::Delete()
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second.Delete();
+      isubd->second->Delete();
    }
 }

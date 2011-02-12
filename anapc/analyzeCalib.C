@@ -4,7 +4,7 @@
 using namespace std;
 
 
-void analyzeCalib(string runName, Long64_t nEvents)
+void analyzeCalib(string runName, string pattern, Long64_t nEvents)
 {
    analyzeCalib_initialize(runName);
    //analyzeCalib_book_histograms();
@@ -12,7 +12,7 @@ void analyzeCalib(string runName, Long64_t nEvents)
    //analyzeCalib_fit_histograms();
    //analyzeCalib_restore_channels();
    //analyzeCalib_fill_histograms_derivative();
-   analyzeCalib_finalize();
+   analyzeCalib_finalize(pattern);
 }
 
 
@@ -415,14 +415,14 @@ void analyzeCalib_restore_channels()
 //}
 
 
-void analyzeCalib_finalize()
+void analyzeCalib_finalize(string pattern)
 {
    TCanvas c("cName", "cName", 800, 600);
 
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
-   gH->SaveAllAs(c, path.c_str());
+   gH->SaveAllAs(c, pattern, path.c_str());
    //gH->Write();
    //gOutFile->Close();
 

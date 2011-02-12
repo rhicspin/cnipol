@@ -52,6 +52,7 @@ public:
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();
    Float_t  GetKinEnergyAEstimate();
+   Float_t  GetKinEnergyADLCorrEstimate();
    Float_t  GetKinEnergyAEstimateEDepend();
    Float_t  GetFunnyEnergyA();
    Float_t  GetEnergyI();
@@ -68,6 +69,7 @@ public:
    bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
    Bool_t PassQACutRaw();
    Bool_t PassCutDepEnergyTime();
+   Bool_t PassCutKinEnergyADLCorrEstimate();
    Bool_t PassQACutCarbonMass();
    Bool_t PassCutPulser();
    Bool_t PassCutNoise();

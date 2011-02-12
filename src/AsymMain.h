@@ -28,10 +28,10 @@
 
 int  BunchSelect(int bid);
 int  GetPolarimetryID_and_RHICBeam(char RunID[]);
-int  read_ramptiming(char *filename);
+void ReadRampTiming(char *filename);
 void reConfig(recordConfigRhicStruct *cfginfo);
-int  ConfigureActiveStrip(int mask);
+void ConfigureActiveStrip(int mask);
 //int DisabledDet(int det);
-int  Initialization();
+void Initialization();
 
-#endif /* ASYM_MAIN_H */
+#endif

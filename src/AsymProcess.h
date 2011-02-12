@@ -23,15 +23,12 @@
 #include "AsymRoot.h"
 #include "AsymRootGlobals.h"
 
-//
-// Class name  : 
-// Method name : event_process
-//
-// Description : main process event routine. This routine is called event by event basis
-// Input       : processEvent *event, recordConfigRhicStruct *cfginfo
-// Return      : 0
-//
-int event_process(processEvent *event, recordConfigRhicStruct *cfginfo);
+/**
+ * Main process event routine. This routine is called event by event basis
+ * Input       : processEvent *event
+ * Return      : 0
+ */
+void event_process(processEvent *event);
 
 //
 // Class name  : 
@@ -41,7 +38,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo);
 // Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass
 //
-int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, 
+void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, 
 			 int st, float &edepo, float &e, float &t, float &delt, float &Mass);
 
 
@@ -63,6 +60,6 @@ float ekin(float edep, float dtheck);
 // Input       : int bid, double si
 // Return      : 
 //
-int SpinTuneOutput(int bid, double si);
+void SpinTuneOutput(int bid, double si);
 
 #endif

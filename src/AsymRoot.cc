@@ -115,7 +115,7 @@ AsymRoot::~AsymRoot()
 // Return      :
 //
 void AsymRoot::RootFile(char *filename)
-{
+{ //{{{
    rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
    // directory structure
@@ -127,32 +127,44 @@ void AsymRoot::RootFile(char *filename)
    ErrDet    = rootfile->mkdir("ErrDet");
    Asymmetry = rootfile->mkdir("Asymmetry");
 
-   if (dproc.CMODE)
-      fHists = new CnipolCalibHists(rootfile);
-   else {
-      fHists = new CnipolHists(rootfile);
+   // Create default empty hist container
+   fHists = new DrawObjContainer(rootfile);
 
-      // also create scaler histograms and add them to the container
-      DrawObjContainer *scalerHists = new CnipolScalerHists(rootfile);
-
-      fHists->Add(scalerHists);
-      //fHists->Print();
-      //rootfile->cd();
-      //fHists->Write();
-      //rootfile->Close();
-      //exit(0);
-
-      // a temporary fix...
-      //Kinema    = fHists->d["Kinema"].fDir;
+   if (dproc.fModes & TDatprocStruct::MODE_ALPHA) {
+      //DrawObjContainer *hists = new CnipolCalibHists(rootfile);
+      //fHists->Add(hists);
+      //delete hists;
+      TDirectory *dir = new TDirectoryFile("alpha", "alpha", "", rootfile);
+      fHists->d["alpha"] = new CnipolCalibHists(dir);
    }
-}
+
+   if (dproc.fModes & TDatprocStruct::MODE_NORMAL) {
+      //DrawObjContainer *hists = new CnipolHists(rootfile);
+      //fHists->Add(hists);
+      //delete hists;
+      TDirectory *dir = new TDirectoryFile("std", "std", "", rootfile);
+      fHists->d["std"] = new CnipolHists(dir);
+   }
+
+   // If requested create scaler histograms and add them to the container
+   if (dproc.fModes & TDatprocStruct::MODE_SCALER) {
+      //DrawObjContainer *hists = new CnipolScalerHists(rootfile);
+      //fHists->Add(hists);
+      //delete hists;
+      TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", rootfile);
+      fHists->d["scalers"] = new CnipolScalerHists(dir);
+   }
+
+   // a temporary fix...
+   //Kinema    = fHists->d["Kinema"].fDir;
+} //}}}
 
 
 /** */
 void AsymRoot::CreateTrees()
 {
    if (fTreeFileId > 99) {
-      cout << "Error: AsymRoot::CreateTrees(): fTreeFileId too big" << endl;
+      Fatal("CreateTrees", "fTreeFileId is too big");
       exit(-1);
    }
 
@@ -280,7 +292,7 @@ void AsymRoot::FillPreProcess()
 /** */
 void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
 { //{{{
-   ((CnipolScalerHists*) fHists)->Fill(hData, chId);
+   ((CnipolScalerHists*) fHists->d["scalers"])->Fill(hData, chId);
 } //}}}
 
 
@@ -758,8 +770,8 @@ int AsymRoot::BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback)
 // Input       :
 // Return      :
 //
-int AsymRoot::DeleteHistogram()
-{
+void AsymRoot::DeleteHistogram()
+{ //{{{
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
@@ -769,9 +781,7 @@ int AsymRoot::DeleteHistogram()
      mass_nocut[i]->Delete();
      mass_yescut[i]->Delete();
   }
-
-  return 0;
-}
+} //}}}
 
 
 //
@@ -783,7 +793,7 @@ int AsymRoot::DeleteHistogram()
 // Input       :
 // Return      :
 //
-int AsymRoot::CloseROOTFile()
+void AsymRoot::CloseROOTFile()
 {
   rootfile->cd();
   Kinema->cd();
@@ -854,6 +864,4 @@ int AsymRoot::CloseROOTFile()
   }
 
   delete fEventConfig;
-
-  return 0;
 }
