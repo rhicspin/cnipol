@@ -350,7 +350,7 @@ int readloop()
               tgt.Rotary[k][0] = *++pointer;
 
               // force 0 for +/-1 tiny readout as target position.
-              if (abs(tgt.Rotary[k][1])<=1) tgt.Rotary[k][1]=0;
+              if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
 
               // identify Horizontal or Vertical target from the first target
               // rotary position readout.
@@ -368,11 +368,11 @@ int readloop()
                  }
 
                  if (tgt_identifyV) {
-                    tgt.VHtarget = 0;
+                    tgt.VHtarget    = 0;
                     gRunInfo.target = 'V';
                     cout << "Vertical Target in finite position" << endl;
                  } else if (tgt_identifyH) {
-                    tgt.VHtarget = 1;
+                    tgt.VHtarget    = 1;
                     gRunInfo.target = 'H';
                     cout << "Horizontal Target in finite position" << endl;
                  } else {
@@ -533,16 +533,15 @@ int readloop()
          break;
 
       case REC_READRAW:
-         break; // later
-
       case REC_READSUB:
-         break; // later
+         break;
 
       case REC_READALL:
-         break; // later
+         break;
 
       case REC_WFDV8SCAL:
-         ProcessRecord(rec.wfd);
+         if (dproc.fModes & TDatprocStruct::MODE_SCALER)
+            ProcessRecord(rec.wfd);
          break;
 
       case REC_SCALERS:
@@ -683,9 +682,7 @@ int readloop()
                  if ( (fillpat[event.bid] == 1 || dproc.CMODE == 1 || event.stN >= 72) &&
                       gRunInfo.ActiveStrip[event.stN] )
                  {
-                    if (event_process(&event, cfginfo) != 0)
-                       fprintf(stdout,"Error event process Ev:%d\n", j);
-                       //fprintf(stdout,"Error event process Si:%d Ev:%d\n", nreadsi, j);
+                    event_process(&event);
                  }
 
                  if (Nevtot%10000==0) {
@@ -710,9 +707,8 @@ int readloop()
 
             fprintf(stdout, "Read configure information\n");
 
-            cfginfo = (recordConfigRhicStruct *)
-                         malloc(sizeof(recordConfigRhicStruct) +
-                         (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
+            cfginfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
+                      (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
 
             //XXX printf("TTT: %d\n", rec.cfg.data.NumChannels);
 
@@ -751,7 +747,7 @@ int readloop()
    fclose(fp);
 
    // Post processing
-   end_process(cfginfo);
+   if (!(dproc.fModes & TDatprocStruct::MODE_ALPHA)) end_process(cfginfo);
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo.StopTime));
@@ -951,10 +947,10 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
    // Consider only silicon channels
    if (chId > NSTRIP) return;
  
-   for (int i=0; i<1536; i++) {
-      //hist[i] = rec.hist[i];
-      //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
-   }
+   //for (int i=0; i<1536; i++) {
+   //   //hist[i] = rec.hist[i];
+   //   //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
+   //}
 
    for (int i=0; i< 128; i++) s1 += rec.hist[i];        // bunch hist
    for (int i=0; i< 128; i++) s2 += rec.hist[i+128];    // unpol energy

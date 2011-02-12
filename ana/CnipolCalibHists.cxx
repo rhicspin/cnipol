@@ -136,7 +136,7 @@ void CnipolCalibHists::CnipolCalibHistsBook(std::string cutid)
          oc = new DrawObjContainer();
          oc->fDir = new TDirectoryFile(dName, dName, "", fDir);
       } else {
-         oc = &isubdir->second;
+         oc = isubdir->second;
       }
 
       //sprintf(hName,"mass_feedback_st%d", i+1);
@@ -195,9 +195,9 @@ void CnipolCalibHists::CnipolCalibHistsBook(std::string cutid)
       //sprintf(hName,"t_vs_e_st%d", i);
       //kinema.oc->o[hName] = new TH2F();
 
+      // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
-         d[dName] = *oc;
-         delete oc;
+         d[dName] = oc;
       }
    }
 }
@@ -213,23 +213,23 @@ void CnipolCalibHists::Print(const Option_t* opt) const
 
 
 /** */
-void CnipolCalibHists::Fill(ChannelEvent *ch, string cutid)
+void CnipolCalibHists::Fill(ChannelEvent *ch, string sid)
 {
-   ChannelEventId   &eventId = ch->fEventId;
-   ChannelData      &data    = ch->fChannel;
+   //ch->Print();
 
-   UChar_t chId = eventId.fChannelId;
+   UChar_t      chId = ch->GetChannelId();
+   ChannelData &data = ch->fChannel;
 
    // Do not consider channels other than silicon detectors
-   if (chId >= NSTRIP) return;
+   if (chId > NSTRIP) return;
 
    // Overall cut, XXX move it to ChannelEvent class???
    //if (data.fAmpltd < 50) return;
 
    string sSi("  ");
-   sprintf(&sSi[0], "%02d", chId+1);
+   sprintf(&sSi[0], "%02d", chId);
 
-   DrawObjContainer &sd      = d["channel"+sSi];
+   DrawObjContainer *sd = d["channel"+sSi];
 
    ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
    ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
@@ -238,25 +238,25 @@ void CnipolCalibHists::Fill(ChannelEvent *ch, string cutid)
    ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
    ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
 
-   ((TH1F*) sd.o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
-   ((TH1F*) sd.o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
-   ((TH1F*) sd.o["hTdc_st"+sSi])      ->Fill(data.fTdc);
-   ((TH2F*) sd.o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
-   ((TH2F*) sd.o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
-   ((TH2F*) sd.o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
-   ((TH2F*) sd.o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
+   ((TH1F*) sd->o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
+   ((TH1F*) sd->o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
+   ((TH1F*) sd->o["hTdc_st"+sSi])      ->Fill(data.fTdc);
+   ((TH2F*) sd->o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
+   ((TH2F*) sd->o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
+   ((TH2F*) sd->o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
+   ((TH2F*) sd->o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
 
    //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
    if (data.fTdc >=15 && data.fTdc <= 50) {
       ((TH1F*) o["hAmpltd_cut1"])->Fill(data.fAmpltd);
-      ((TH1F*) sd.o["hAmpltd_cut1_st"+sSi])->Fill(data.fAmpltd);
+      ((TH1F*) sd->o["hAmpltd_cut1_st"+sSi])->Fill(data.fAmpltd);
    }
 
    //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
    //if (data.fTdc >=12 && data.fTdc <= 16) 
    if (data.fTdc >=12 && data.fTdc <= 30) {
       ((TH1F*) o["hIntgrl_cut1"])->Fill(data.fIntgrl);
-      ((TH1F*) sd.o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
+      ((TH1F*) sd->o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
    }
 }
 
@@ -298,8 +298,8 @@ void CnipolCalibHists::PostFill()
       //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
       //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
 
-      ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
-      ((TH1F*) d["channel"+sSi].o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
+      ((TH1F*) d["channel"+sSi]->o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
+      ((TH1F*) d["channel"+sSi]->o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
    }
 }
 
@@ -362,7 +362,7 @@ void CnipolCalibHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
       string parentPath = path;
       path += "/" + isubd->first;
       //printf("cd to path: %s\n", path.c_str());
-      isubd->second.SaveAllAs(c, pattern, path);
+      isubd->second->SaveAllAs(c, pattern, path);
       path = parentPath;
    }
 

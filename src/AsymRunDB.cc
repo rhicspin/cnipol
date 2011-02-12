@@ -1033,17 +1033,17 @@ void TStructRunDB::Streamer(TBuffer &buf)
       //printf("reading TStructRunDB::Streamer(TBuffer &buf) \n");
       buf >> RunID;
       buf >> isCalibRun;
-      buf >> tstr; calib_file_s      = tstr.Data();
+      buf >> tstr; calib_file_s         = tstr.Data();
       buf >> tstr; alpha_calib_run_name = tstr.Data();
-      buf >> tstr; config_file_s     = tstr.Data();
+      buf >> tstr; config_file_s        = tstr.Data();
    } else {
       TString tstr;
       //printf("writing TStructRunDB::Streamer(TBuffer &buf) \n");
       buf << RunID;
       buf << isCalibRun;
-      tstr = calib_file_s;      buf << tstr;
+      tstr = calib_file_s;         buf << tstr;
       tstr = alpha_calib_run_name; buf << tstr;
-      tstr = config_file_s;     buf << tstr;
+      tstr = config_file_s;        buf << tstr;
    }
 }
 

@@ -828,8 +828,6 @@ void DrawPlotvsTar(void)
    DrawLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaResults.sinphi[0].P[0] + gAnaResults.sinphi[0].P[1], kRed, 1,1);
 
    h_vstar->GetListOfFunctions()->Add(gpolvstar, "P");
- 
-   return;
 }
 
 

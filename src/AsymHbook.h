@@ -11,7 +11,7 @@
 #include "AsymGlobals.h"
 
 void tgtHistBook();
-int  hist_book(char *);
-int  hist_close(char *);
+void hist_book(char *filename);
+void hist_close(char *filename);
 
 #endif

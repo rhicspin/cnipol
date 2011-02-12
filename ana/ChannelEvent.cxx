@@ -46,7 +46,7 @@ UChar_t ChannelEvent::GetBunchId()
 /** */
 Float_t ChannelEvent::GetEnergyA()
 {
-   UChar_t chId = fEventId.fChannelId + 1;
+   UChar_t chId = GetChannelId();
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fAmpltd;
    return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
 
@@ -85,6 +85,17 @@ Float_t ChannelEvent::GetKinEnergyAEstimate()
 
 
 /** */
+Float_t ChannelEvent::GetKinEnergyADLCorrEstimate()
+{
+   Float_t emeas = GetEnergyA();
+   Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[0].fAvrgEMiss;
+   Float_t eMeasDLCorr = fEventConfig->fCalibrator->fChannelCalibs[0].fEMeasDLCorr;
+   return  emeas*eMeasDLCorr + eloss;
+   //return  emeas + eloss;
+}
+
+
+/** */
 Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
 {
    Float_t emeas   = GetEnergyA();
@@ -96,8 +107,7 @@ Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
 /** */
 Float_t ChannelEvent::GetFunnyEnergyA()
 {
-   UChar_t chId   = GetChannelId();
-   float   depoE  = fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
+   float   depoE  = GetEnergyA();
    float   funnyE = ekin(depoE, 60);
    return  funnyE;
 }
@@ -144,7 +154,7 @@ Float_t ChannelEvent::GetTimeOfFlightEstimate()
 /** */
 Float_t ChannelEvent::GetCarbonMass()
 {
-   UChar_t chId = fEventId.fChannelId + 1;
+   UChar_t chId = GetChannelId();
    Float_t tof  = GetTimeOfFlight();
    Float_t mass = tof * tof * GetKinEnergyA() * gRunConsts[chId].T2M * k2G;
    return mass;
@@ -154,7 +164,7 @@ Float_t ChannelEvent::GetCarbonMass()
 /** */
 Float_t ChannelEvent::GetCarbonMassEstimate()
 {
-   UChar_t chId = fEventId.fChannelId + 1;
+   UChar_t chId = GetChannelId();
    Float_t tof  = GetTimeOfFlightEstimate();
    Float_t mass = tof * tof * GetKinEnergyAEstimate() * gRunConsts[chId].T2M * k2G;
    return mass;
@@ -229,9 +239,19 @@ Bool_t ChannelEvent::PassCutDepEnergyTime()
 
 
 /** */
+Bool_t ChannelEvent::PassCutKinEnergyADLCorrEstimate()
+{
+   if (GetKinEnergyADLCorrEstimate() < 400) return false;  // keV
+   if (GetKinEnergyADLCorrEstimate() > 900) return false; // keV
+
+   return true;
+}
+
+
+/** */
 Bool_t ChannelEvent::PassQACutCarbonMass()
 {
-   UChar_t chId = fEventId.fChannelId + 1;
+   UChar_t chId = GetChannelId();
    //float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimate());
    float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimateEDepend());
    //float delta = GetTime() - gRunConsts[].E2T/sqrt(GetEnergyA());

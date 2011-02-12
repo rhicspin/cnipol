@@ -53,7 +53,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       }
 
       // Amplitude
-      htemp = (TH1F*) c->d["channel"+sCh].o["hAmpltd_cut1_st"+sCh];
+      htemp = (TH1F*) c->d["alpha"]->d["channel"+sCh]->o["hAmpltd_cut1_st"+sCh];
 
       if (!htemp) {
          Error("Calibrate", "Histogram channel%02d/hAmpltd_cut1_st%02d does not exist", i, i);
@@ -76,17 +76,17 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          chCalib->fACoefErr = chCalib->fACoef * fitres->FitResult::Error(1)/fitres->Value(1);
          chCalib->fAChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-         ((TH1F*) c->o["hAmpltdW"])->SetBinContent(i, 100*fitres->Value(2)/fitres->Value(1));
-         ((TH1F*) c->o["hAmpltdW"])->SetBinError(i, 100*fitres->FitResult::Error(2)/(fitres->Value(1)));
+         ((TH1F*) c->d["alpha"]->o["hAmpltdW"])->SetBinContent(i, 100*fitres->Value(2)/fitres->Value(1));
+         ((TH1F*) c->d["alpha"]->o["hAmpltdW"])->SetBinError(i, 100*fitres->FitResult::Error(2)/(fitres->Value(1)));
 
-         ((TH1F*) c->o["hACoef"])->SetBinContent(i, chCalib->fACoef);
-         ((TH1F*) c->o["hACoef"])->SetBinError(i, chCalib->fACoefErr);
+         ((TH1F*) c->d["alpha"]->o["hACoef"])->SetBinContent(i, chCalib->fACoef);
+         ((TH1F*) c->d["alpha"]->o["hACoef"])->SetBinError(i, chCalib->fACoefErr);
 
-         ((TH1F*) c->o["hACoefDisp"])->Fill(chCalib->fACoef);
+         ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->Fill(chCalib->fACoef);
       }
 
       // Integral
-      htemp = (TH1F*) c->d["channel"+sCh].o["hIntgrl_cut1_st"+sCh];
+      htemp = (TH1F*) c->d["alpha"]->d["channel"+sCh]->o["hIntgrl_cut1_st"+sCh];
 
       if (!htemp) {
          Error("Calibrate", "Histogram channel%02d/hAmpltd_cut1_st%02d does not exist", i, i);
@@ -103,13 +103,13 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          chCalib->fICoefErr = chCalib->fICoef * fitres->FitResult::Error(1)/fitres->Value(1);
          chCalib->fIChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-         ((TH1F*) c->o["hIntgrlW"])->SetBinContent(i, 100*fitres->Value(2)/fitres->Value(1));
-         ((TH1F*) c->o["hIntgrlW"])->SetBinError(i, 100*fitres->FitResult::Error(2)/(fitres->Value(1)));
+         ((TH1F*) c->d["alpha"]->o["hIntgrlW"])->SetBinContent(i, 100*fitres->Value(2)/fitres->Value(1));
+         ((TH1F*) c->d["alpha"]->o["hIntgrlW"])->SetBinError(i, 100*fitres->FitResult::Error(2)/(fitres->Value(1)));
 
-         ((TH1F*) c->o["hICoef"])->SetBinContent(i, chCalib->fICoef);
-         ((TH1F*) c->o["hICoef"])->SetBinError(i, chCalib->fICoefErr);
+         ((TH1F*) c->d["alpha"]->o["hICoef"])->SetBinContent(i, chCalib->fICoef);
+         ((TH1F*) c->d["alpha"]->o["hICoef"])->SetBinError(i, chCalib->fICoefErr);
 
-         ((TH1F*) c->o["hICoefDisp"])->Fill(chCalib->fICoef);
+         ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->Fill(chCalib->fICoef);
       } else {
          Error("Calibrate", "Empty TFitResultPtr");
       }
@@ -124,7 +124,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       //if (chi2 > chi2_max) chi2_max = chi2;
    }
 
-   CalibrateBadChannels(c);
+   //XXX CalibrateBadChannels(c);
 }
 
 

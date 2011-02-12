@@ -5,49 +5,49 @@ using namespace std;
 
 
 // Default Values for Run Condition
-TDatprocStruct::TDatprocStruct()
-{
-   enel             = 400;
-   eneu             = 900;    // energy
-   widthl           = -30;
-   widthu           = 30;     // banana cut width (Constant mode only)
-   FEEDBACKMODE     = 0;      // FEEDBACKMODE
-   RAWHISTOGRAM     = 0;      // RAWHISTOGRAM
-   CMODE            = 0;      // CMODE
-   DMODE            = 0;      // DMODE
-   TMODE            = 0;      // TMODE
-   AMODE            = 0;      // AMODE
-   BMODE            = 1;      // BMODE
-   ZMODE            = 0;      // ZMODE
-   MESSAGE          = 0;      // MESSAGE
-   CBANANA          = 2;      // CBANANA
-   UPDATE           = 0;
-   UPDATE_DB        = 0;
-   QUICK_MODE       = 0;
-   MMODE            = 1;      // MMODE
-   NTMODE           = 0;      // NTMODE
-   RECONFMODE       = 1;      // RECONFMODE
-   RAMPMODE         = 0;      // RAMPMODE
-   STUDYMODE        = 0;      // STUDYMODE
-   SAVETREES        = 0;      // SAVETREES
-   MassSigma        = 3;      // MassSigma banana curve cut within <MassSigma> away from the 12C mass
-   MassSigmaAlt     = 2;      // MassSigma banana curve alternative cut within <MassSigmaAlt> away from the 12C mass
-   OneSigma         = 1.5e6;  // 1-sigma of 12C mass peak = > 1.5e6 [keV]
-   tshift           = 0;      // tshift: Time shift in [ns]
-   inj_tshift       = 0;      // Time shift in [ns] for injection w.r.t. flattop
-   dx_offset        = 0;      // additional deadlayer offset [ug/cm2]
-   WCMRANGE         = 999.05; // Wall Current Monitor process Fill range +/-5[%]
-   MassLimit        = 8;      // Lower Mass limit for peak position adjustment fit default :8 GeV
-   nEventsProcessed = 0;      // nEventsProcessed
-   nEventsTotal     = 0;      // nEventsTotal
-   thinout          = 1;      // <thinout> event rate to be feed into feedback routine
-   reference_rate   = 1;      // Expected universal rate for given target
-   target_count_mm  = 0.11;   // Target count/mm conversion
-   procDateTime     = 0;      // procDateTime date and time
-   procTimeReal     = 0;      // procTimeReal
-   procTimeCpu      = 0;      // procTimeCpu
-   userCalibFile    = "";     // userCalibFile
-}
+TDatprocStruct::TDatprocStruct() :
+   enel             (400),
+   eneu             (900),   
+   widthl           (-30),
+   widthu           (3),    
+   fModes           (MODE_NORMAL),
+   FEEDBACKMODE     (0),     
+   RAWHISTOGRAM     (0),     
+   CMODE            (0),     
+   DMODE            (0),     
+   TMODE            (0),     
+   AMODE            (0),     
+   BMODE            (1),     
+   ZMODE            (0),     
+   MESSAGE          (0),     
+   CBANANA          (2),     
+   UPDATE           (0),
+   UPDATE_DB        (0),
+   QUICK_MODE       (0),
+   MMODE            (1),     
+   NTMODE           (0),     
+   RECONFMODE       (1),     
+   RAMPMODE         (0),     
+   STUDYMODE        (0),     
+   SAVETREES        (0),     
+   MassSigma        (3),     
+   MassSigmaAlt     (2),     
+   OneSigma         (1.5e6), 
+   tshift           (0),     
+   inj_tshift       (0),     
+   dx_offset        (0),     
+   WCMRANGE         (999.05),
+   MassLimit        (8),     
+   nEventsProcessed (0),     
+   nEventsTotal     (0),     
+   thinout          (1),     
+   reference_rate   (1),     
+   target_count_mm  (0.11),  
+   procDateTime     (0),     
+   procTimeReal     (0),     
+   procTimeCpu      (0),     
+   userCalibFile    ("")    
+{ }
 
 
 /** */
@@ -85,6 +85,7 @@ void TDatprocStruct::Print(const Option_t* opt) const
    << "eneu             = " << eneu             << endl
    << "widthl           = " << widthl           << endl
    << "widthu           = " << widthu           << endl
+   << "fModes           = " << hex << showbase << fModes << endl << dec << noshowbase
    << "FEEDBACKMODE     = " << FEEDBACKMODE     << endl
    << "RAWHISTOGRAM     = " << RAWHISTOGRAM     << endl
    << "CMODE            = " << CMODE            << endl
@@ -129,10 +130,14 @@ void TDatprocStruct::Streamer(TBuffer &buf)
 {
    if (buf.IsReading()) {
       //printf("reading TDatprocStruct::Streamer(TBuffer &buf) \n");
+
+      unsigned long uLong = 0;
+
       buf >> enel;
       buf >> eneu;
       buf >> widthl;
       buf >> widthu;
+      buf >> fModes;
       buf >> CMODE;
       buf >> nEventsProcessed;
       buf >> nEventsTotal;
@@ -144,6 +149,7 @@ void TDatprocStruct::Streamer(TBuffer &buf)
       buf << eneu;
       buf << widthl;
       buf << widthu;
+      buf << fModes;
       buf << CMODE;
       buf << nEventsProcessed;
       buf << nEventsTotal;

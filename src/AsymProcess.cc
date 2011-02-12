@@ -7,6 +7,10 @@
  * Oct 18, 2010 - Dmitri Smirnov
  *    - Minor code clean-up
  *
+ * Feb 10, 2011 - Dmitri Smirnov
+ *    - Significantly simplified the code. Removed unnecessary copies of global
+ *      variables
+ *
  */
 
 
@@ -14,10 +18,10 @@
 
 using namespace std;
 
-// --------------------------------------------------------------------------------
+
 // A manual switch operation is required for following routine.
 // This routine calls special text output routine for spin tune measurements
-// --------------------------------------------------------------------------------
+//
 // SpinTuneOutput(event->bid,si);
 
 extern void HHF1(int, float, float);
@@ -32,73 +36,68 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
 //float EnergyBin[NTBIN+1]={500,600,700,800,900,1000,1100,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3300,3600,3900,4500,5000,6000,7000,8000,9000,10000}; // 26+1
 
 
-//
-// Class name  :
-// Method name : event_process
-//
-// Description : main process event routine. This routine is called event by event basis
-// Input       : processEvent *event, recordConfigRhicStruct *cfginfo
-// Return      : 0
-//
-int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
+/**
+ * Main process event routine. This routine is called event by event basis
+ * Input       : processEvent *event
+ */
+void event_process(processEvent *event)
 {
-   int delim  = event->delim ;
-   int st     = event->stN;        // 0 - 71
-   int si     = (int) (st/12);     // 0 - 5
-   float Emin = (float) dproc.enel;
-   float Emax = (float) dproc.eneu;
+   int   delim = event->delim ;
+   int   st    = event->stN;        // 0 - 71
+   int   si    = (int) (st/12);     // 0 - 5
+   float Emin  = (float) dproc.enel;
+   float Emax  = (float) dproc.eneu;
 
-   //Nevtot++;
    Ntotal[event->bid]++;
 
    // write out t-dependence energy bin into log file (only once)
    if (!init) {
-      fprintf(stdout,"EnergyBin:");
-      for (int k=1; k<=NTBIN; k++) fprintf(stdout,"%6.0f",(EnergyBin[k]+EnergyBin[k-1])/2.);
-      fprintf(stdout,"\nEnergydBin:");
-      for (int k=1; k<=NTBIN; k++) fprintf(stdout,"%6.0f",(EnergyBin[k]-EnergyBin[k-1])/2.);
+      fprintf(stdout, "EnergyBin:");
+      for (int k=1; k<=NTBIN; k++) fprintf(stdout, "%6.0f", (EnergyBin[k]+EnergyBin[k-1])/2.);
+
+      fprintf(stdout, "\nEnergydBin:");
+      for (int k=1; k<=NTBIN; k++) fprintf(stdout, "%6.0f", (EnergyBin[k]-EnergyBin[k-1])/2.);
+
       fprintf(stdout,"\n");
-      init=1;
+      init = 1;
    }
 
-   //------------------------------------------------------------------//
-   //                           Feedback Mode                          //
-   //------------------------------------------------------------------//
+   // Feedback Mode
    //if (Flag.feedback){
 
-      // tdc > 6 ns, effectively...
-      if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
+   // tdc > 6 ns, effectively...
+   /*
+   if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
 
-         // random numbers in order to smear for the integer reading
-         int vlen = 1;
-         float rand1, rand2;
+      // random numbers in order to smear for the integer reading
+      int vlen = 1;
+      float rand1, rand2;
 
-         hhrammar_(&rand1, &vlen);
-         hhrammar_(&rand2, &vlen);
+      hhrammar_(&rand1, &vlen);
+      hhrammar_(&rand2, &vlen);
 
-         float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
-         float e = ekin(edepo, cfginfo->data.chan[st].dwidth);
-         //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
-         //  (event->amp + rand2 - 0.5);
+      float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+      float e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+      //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
+      //  (event->amp + rand2 - 0.5);
 
-         float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
 
-         float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
+      float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
-         //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
+      //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
-         if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.) {
-            mass_feedback[st]->Fill(Mass);
-            mass_feedback_all->Fill(Mass);
-         }
+      if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.) {
+         mass_feedback[st]->Fill(Mass);
+         mass_feedback_all->Fill(Mass);
       }
+   }
+   */
 
-   //   return(0);
+   //return;
    //}
 
-   //------------------------------------------------------------------//
-   //                          DeadLayer Mode                          //
-   //------------------------------------------------------------------//
+   // DeadLayer Mode
    if (dproc.DMODE) {
 
       // 2*cfginfo->data.chan[st].Window.split.Beg = 6
@@ -119,11 +118,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          }
       }
 
-      return(0);
+      return;
    }
 
    // Calibration hists
-   if (dproc.CMODE) {
+   if (dproc.fModes & TDatprocStruct::MODE_ALPHA) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -131,8 +130,8 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 
       // reducing the background
       //if ((event->tdc>50) && (event->tdc <200) && (event->amp<215))
-         // ds: HHF1(12000+st+1, event->amp+rand2-0.5, 1.);
-         HHF1(12000+st+1, event->amp, 1.);
+         //ds: HHF1(12000+st+1, event->amp+rand2-0.5, 1.);
+         //ds: HHF1(12000+st+1, event->amp, 1.);
       //}
 
       // Get address of the histogram container
@@ -143,13 +142,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       //if (ch->PassCutDepEnergyTime()) {
 	   //   gAsymRoot.fHists->Fill(ch, "_cut1");
       
-      return 0;
+      return;
    }
 
-   //------------------------------------------------------------------//
-   //                           Nomal Process Mode                     //
-   //------------------------------------------------------------------//
+   // Nomal Process Mode
    // fill profile histograms at the 1st visit
+   /*
    if (Nevtot==1) {
 
       // Wall Current Monitor Operation
@@ -210,43 +208,45 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          }
       }
 
-      cout << "finished first event initialization "<<endl;
+      cout << "Finished first event initialization" << endl;
    }
+   */
 
-
-   // =================================================================================//
-   //                        Main Process Routine event by event                       //
-   // =================================================================================//
+   // Main Process Routine event by event starts here
 
    // TDC Dists without Cut
-   HHF1(11200+st+1, (float)event->tdc, 1.);
+   //HHF1(11200+st+1, (float)event->tdc, 1.);
 
    // Target Histogram
-   if (st >= 72 && st <= 75) {
-      HHF2(25060, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
-   }
+   //if (st >= 72 && st <= 75) {
+   //   HHF2(25060, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
+   //}
 
    // Get address of the histogram container
    ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
    // XXX
-   if (!ch->PassQACutRaw()) return 0;
+   if (!ch->PassQACutRaw()) return;
 
-   gAsymRoot.fHists->Fill(ch);
+   //gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassCutPulser() && ch->PassCutNoise() ) // ch->PassCutDepEnergyTime())
+   if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
    {
-	   gAsymRoot.fHists->Fill(ch, "_cut1");
+	   //gAsymRoot.fHists->Fill(ch, "_cut1");
 
-      if (ch->PassQACutCarbonMass())
+      if (ch->PassQACutCarbonMass()) {
 	      gAsymRoot.fHists->Fill(ch, "_cut2");
+      }
    }
+
+   //ds
+   return;
 
    // 2*cfginfo->data.chan[st].Window.split.Beg = 6
    //if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg))
    //ds: Proceed only if the time value is greater than...
    if ((event->tdc <= 2*cfginfo->data.chan[st].Window.split.Beg))
-      return(0);
+      return;
 
    // random numbers in order to smear for the integer reading
    int   vlen = 1;
@@ -255,24 +255,18 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    hhrammar_(&rand2, &vlen);
 
    // Strip distribution
-   HHF1(10300+si+1, (float)(st-si*12)+1, 1.);
+   //HHF1(10300+si+1, (float)(st-si*12)+1, 1.);
 
    // bunch distribution
-   HHF1(10000, (float)event->bid, 1.);
+   //HHF1(10000, (float)event->bid, 1.);
    bunch_dist->Fill(event->bid);
 
-   // ========================================
-   //              Integral
-   // ========================================
+   // Integral
    float Integ = (event->intg) << (2+cfginfo->data.CSR.split.iDiv);
 
    //ds: Some manipulations with ADC counts...
    float amp_int = (Integ - cfginfo->data.chan[st].A0) / cfginfo->data.chan[st].A1;
     
-   // ========================================
-   //              Energy
-   // ========================================
-
    // Energy corrected with Dead layer info (keV)
 
    // energy deposit in Si strip
@@ -295,22 +289,19 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    */
 
    // For A_N Calculation (Cross section)
-   if (e > Emin && e < Emax) {
-       HHF1(10040, e, 1.);
-   }
+   //if (e > Emin && e < Emax) {
+   //    HHF1(10040, e, 1.);
+   //}
 
-   HHF1(10400+si+1, e, 1.);
+   //HHF1(10400+si+1, e, 1.);
 
-   if (spinpat[event->bid] > 0) {
-       HHF1(10500+st+1, e, 1.);
-   } else {
-       HHF1(10600+st+1, e, 1.);
-   }
+   //if (spinpat[event->bid] > 0) {
+   //    HHF1(10500+st+1, e, 1.);
+   //} else {
+   //    HHF1(10600+st+1, e, 1.);
+   //}
 
-   // ========================================
-   //              Time Of Flight
-   // ========================================
-
+   // Time Of Flight
    float t;
 
    if (dproc.RAMPMODE == 1) {
@@ -328,47 +319,45 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - dproc.tshift ;
    }
 
-   //ds:
+   //ds
    //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, dproc.tshift, gRunConsts[st+1].Ct);
 
    float delt = t - gRunConsts[st+1].E2T/sqrt_e;
 
-   // ========================================
-   //              Invariant Mass
-   // ========================================
-   float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
+   // Invariant Mass
+   float Mass = t * t * e * gRunConsts[st+1].T2M * k2G;
 
    mass_nocut[st]->Fill(Mass);
    mass_nocut_all->Fill(Mass);
 
    // Mass mode
-   if (dproc.MMODE == 1) {
-      if (e > Emin && e < Emax) {
+   //if (dproc.MMODE == 1) {
+   //   if (e > Emin && e < Emax) {
 
-         HHF1(16000+st+1, Mass, 1.);
+   //      HHF1(16000+st+1, Mass, 1.);
 
-         if (Mass > dproc.MassLimit && Mass < 14.)
-            HHF1(17200+st+1, Mass, 1.);
-      }
-   }
+   //      if (Mass > dproc.MassLimit && Mass < 14.)
+   //         HHF1(17200+st+1, Mass, 1.);
+   //   }
+   //}
 
    // for T0 (cable length dependence)
-   if (dproc.TMODE == 1 && edepo!=0.){
-      HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
-   }
+   //if (dproc.TMODE == 1 && edepo!=0.){
+   //   HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
+   //}
 
-   // Banana Plots (E-T)
-   if (dproc.BMODE == 1) {
+   //// Banana Plots (E-T)
+   //if (dproc.BMODE == 1) {
 
-      HHF2(13000+st+1, e, t, 1.);
+   //   HHF2(13000+st+1, e, t, 1.);
 
-      if (fabs(Mass - 3.726) < 2.5)  HHF2(13700+st+1, e, t, 1.);
-      if (fabs(Mass - 3.726) > 2.5)  HHF2(13800+st+1, e, t, 1.);
+   //   if (fabs(Mass - 3.726) < 2.5)  HHF2(13700+st+1, e, t, 1.);
+   //   if (fabs(Mass - 3.726) > 2.5)  HHF2(13800+st+1, e, t, 1.);
 
-      HHF2(13100+st+1, event->amp, event->tdc, 1.);
-      HHF2(13200+st+1, event->amp, event->tdcmax, 1.);
-      HHF1(14000+st+1, event->bid, 1.);
-   }
+   //   HHF2(13100+st+1, event->amp, event->tdc, 1.);
+   //   HHF2(13200+st+1, event->amp, event->tdcmax, 1.);
+   //   HHF1(14000+st+1, event->bid, 1.);
+   //}
 
    /*
    if (dproc.RAMPMODE==1) {0
@@ -381,26 +370,24 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    }
    */
 
-   // integral vs. amplitede
-   if (dproc.AMODE == 1) {
-      HHF2(12200+st+1, event->amp, Integ, 1.);
-      HHF2(12300+st+1, Integ, t, 1.);
-   }
+   //// integral vs. amplitede
+   //if (dproc.AMODE == 1) {
+   //   HHF2(12200+st+1, event->amp, Integ, 1.);
+   //   HHF2(12300+st+1, Integ, t, 1.);
+   //}
 
-   // -t slope
-   if ( (Mass < 11.18 + 5.0) && (Mass > 11.18 - 5.0) ) {
-      HHF1(10450+si+1, 2*11.18*e/1000000., 1.);
-      HHF1(10460+si+1, 2*11.18*e_int/1000000., 1.);
-   }
+   //// -t slope
+   //if ( (Mass < 11.18 + 5.0) && (Mass > 11.18 - 5.0) ) {
+   //   HHF1(10450+si+1, 2*11.18*e/1000000., 1.);
+   //   HHF1(10460+si+1, 2*11.18*e_int/1000000., 1.);
+   //}
 
    // t vs. E (banana with no cut)
    t_vs_e[st]->Fill(e, t);
    //ds:
    //t_vs_e[st]->Fill(e_int, t);
 
-   // =========================================
-   // Ntuple fill
-   // =========================================
+   // Fill ntuple
    /*
    if ((Nevtot<NTLIMIT)&&(dproc.NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
        atdata.ia = (long)event->amp;
@@ -425,9 +412,9 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
    }
 
    // Bunch distribution (only -t cut)
-   if (e > Emin && e < Emax) {
-       HHF1(10020,(float)event->bid,1.);
-   }
+   //if (e > Emin && e < Emax) {
+   //    HHF1(10020,(float)event->bid,1.);
+   //}
 
    //------------------------------------------------------
    //                Banana Curve Cut
@@ -476,14 +463,12 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          }
       }
 
-      HHF1(35000+st+100*spbit, iebin, 1.);
+      //ds HHF1(35000+st+100*spbit, iebin, 1.);
 
       // Strip distribution (time cut, before Energy Cut)
-      HHF1(10310+si+1, (float) (st-si*12)+1, 1.);
+      //ds HHF1(10310+si+1, (float) (st-si*12)+1, 1.);
 
-      //  ====================================================
-      //  =                Energy Cut                        =
-      //  ====================================================
+      // Energy Cut
       if (e > Emin && e < Emax) {
 
          // t vs. E (banana with cut)
@@ -494,38 +479,38 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          mass_yescut_all->Fill(Mass);
 
          // Timing info for Each bunch
-         if (e > 600. && e < 650.) {
-            HHF1(11000+(int)event->bid, t, 1.);
-         }
+         //if (e > 600. && e < 650.) {
+         //   HHF1(11000+(int)event->bid, t, 1.);
+         //}
 
          // delimiter distribution
-         HHF1(10200,(float)event->delim,1.);
+         //ds HHF1(10200,(float)event->delim,1.);
 
          // Fill event in memory
          Nevcut++;
          Ngood[event->bid]++;
 
          // bunch distribution (time + -t cut)
-         HHF1(10010,(float)event->bid,1.);
-         if (fmod((float)event->bid,2)==0) {
-            HHF1(10100+(si+1)*10,(float)event->bid,1.);
-         }
+         //ds HHF1(10010,(float)event->bid,1.);
+         //ds if (fmod((float)event->bid,2)==0) {
+         //ds    HHF1(10100+(si+1)*10,(float)event->bid,1.);
+         //ds }
 
          // energy distribution after carbon cut
-         HHF1(10050, e, 1.);
+         //ds HHF1(10050, e, 1.);
 	      ((TH1F*) gAsymRoot.fHists->o["hKinEnergyA_oo"])->Fill(e);
 
-         HHF1(10410+si+1, e, 1.);
-         HHF1(10420+si+1, e_int, 1.);   // Integral
+         //ds HHF1(10410+si+1, e, 1.);
+         //ds HHF1(10420+si+1, e_int, 1.);   // Integral
 
          //printf("UUU: %d, %f\n", si, minus_t);
          energy_spectrum[si]->Fill(minus_t);
          energy_spectrum_all->Fill(minus_t);
 
-         if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t
+         //ds if (st == 14) HHF1(10470+si+1,e*2.234e-5,1.); // -t
 
          // Strip distribution (time + -t cut )
-         HHF1(10320+si+1, (float) (st-si*12)+1, 1.);
+         //ds HHF1(10320+si+1, (float) (st-si*12)+1, 1.);
          good_carbon_events_strip->Fill(st+1);
 
          // Mass vs. Energy plots
@@ -554,13 +539,13 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          // This routine is commented out by default. Activate this upon necessity.
          //              SpinTuneOutput(event->bid,si);
 
-         if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
-         if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
-         if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
-         if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
 
-         HHF1(38050, TgtIndex[time], 1);
-         HHF1(38060, time, 1);
+         //ds HHF1(38050, TgtIndex[time], 1);
+         //ds HHF1(38060, time, 1);
 
          // counters
          cntr.reg.NStrip[spbit][st]++;
@@ -588,13 +573,11 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
          */
 
          // Spin Tune
-         if (dproc.STUDYMODE == 1) {
-            HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
-         }
+         //ds if (dproc.STUDYMODE == 1) {
+         //ds    HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
+         //ds }
       }
    }
-
-   return(0);
 }
 
 
@@ -606,7 +589,7 @@ int event_process(processEvent *event, recordConfigRhicStruct *cfginfo)
 // Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass
 //
-int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo,
+void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo,
                      int st, float &edepo, float &e, float &t, float &delt, float &Mass)
 {
   float rand1, rand2;
@@ -627,15 +610,9 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
 
   // Decrepancy between observed ToF and calculated t from energy
   delt = t - gRunConsts[st+1].E2T/sqrt(e);
-
-  return 1;
 }
 
 
-//
-// Class name  :
-// Method name : SpinTuneOutput(int bid, double si)
-//
 // Description : output routine for Mei Bai's spin tune measurements
 //             : The output should be stderr. Following two commands
 //             : creat data file without unnecessary Warnings.
@@ -647,23 +624,21 @@ int KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *
 //             : output Bunch ID starts from 1, not zero
 // Return      : 0
 //
-int SpinTuneOutput(int bid, double si)
+void SpinTuneOutput(int bid, double si)
 {
-  fprintf(stderr, "%10ld", cntr.revolution);
-  fprintf(stderr, "%5d", bid+1);
-  fprintf(stderr, "%5d", spinpat[bid]);
-  fprintf(stderr, "%5d", int(si)+1);
-
-  /*
-  si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  si==2 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  si==3 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  si==4 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  si==5 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
-  */
-
-  fprintf(stderr,"\n");
-
-  return 0;
+   fprintf(stderr, "%10ld", cntr.revolution);
+   fprintf(stderr,   "%5d", bid+1);
+   fprintf(stderr,   "%5d", spinpat[bid]);
+   fprintf(stderr,   "%5d", int(si)+1);
+ 
+   /*
+   si==0 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   si==1 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   si==2 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   si==3 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   si==4 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   si==5 ? fprintf(stderr,"%5d",1) : fprintf(stderr,"%5d",0);
+   */
+ 
+   fprintf(stderr, "\n");
 }

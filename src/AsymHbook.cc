@@ -167,7 +167,7 @@ float pawc_[NWORDS_PAWC];
 //  40000+Si  : 120 bunch dists for spin tune measurement
 
 
-int hist_book(char *filename)
+void hist_book(char *filename)
 {
     //cout << " In function hist_hbook " <<endl;
     int st,si,i,bid;
@@ -186,9 +186,9 @@ int hist_book(char *filename)
     sprintf(filecomment, "T-E INFO");
     sprintf(filestatus, "N");
     hhropen_(&lun, filecomment, filename, filestatus, &reclen, &icycle,
-             strlen(filecomment),strlen(filename),strlen(filestatus));
+             strlen(filecomment), strlen(filename), strlen(filestatus));
 
-    fprintf (stdout,"new hbook file : %s\n",filename);
+    fprintf (stdout, "new hbook file : %s\n", filename);
 
     // WCM
     sprintf(hcomment,"WCM Distribution");
@@ -207,7 +207,6 @@ int hist_book(char *filename)
             HHBOOK2(15000+st, hcomment, 100, 100., 1100.,  100, 0., 100.);
             HHBOOK2(15100+st, hcomment, 100, 100., 1100.,  100, 0., 100.);
         }
-        return 0;
     }
 
     //------------------------------------------------------------------//
@@ -370,7 +369,6 @@ int hist_book(char *filename)
         }
     }
 
-
     // Target Histograms
     sprintf(hcomment,"Target channel entries");
     HHBOOK1(25000,hcomment,4,71.5,75.5);
@@ -488,17 +486,13 @@ int hist_book(char *filename)
         }
     }
 
-    // ==================================
     // Study mode
-    // ==================================
     if (dproc.STUDYMODE == 1) {
         for (int Si=0; Si<6; Si++){
             sprintf(hcomment,"Spin Tune UpSpin Si-%d",Si+1);
             HHBOOK1(40000+Si, hcomment, 120, 0., 120.);
         }
     }
-
-    return(0);
 }
 
 
@@ -537,39 +531,28 @@ void tgtHistBook()
 //   histgram close
 // ==================
 // Writing on disk is needed only at the last moment
+void hist_close(char *filename)
+{ //{{{
+   // PAW STUFF
+   //int lun =1;
+   //int reclen = RECLEN;
+   int  icycle = 0;
+   char filecomment[100];
+   char filestatus[5];
+   char chopt[5];
+   int  idout = 0;
 
-int hist_close(char *filename) {
+   //fprintf(stdout,"\nClosing histgram file : %s \n", filename);
+   //fprintf(stdout,"Writing Hbook file on Disk \n");
 
-    // PAW STUFF
-    //int lun =1;
-    //int reclen = RECLEN;
-    int  icycle = 0;
-    char filecomment[100];
-    char filestatus[5];
-    char chopt[5];
-    int  idout = 0;
+   sprintf(filecomment, "T-E INFO");
+   sprintf(filestatus, "N");
 
-    //    fprintf(stdout,"\nClosing histgram file : %s \n",filename);
-    //    fprintf(stdout,"Writing Hbook file on Disk \n");
+   //hhropen_(&lun, filecomment, filename, filestatus, &reclen, &icycle,
+   //         strlen(filecomment),strlen(filename),strlen(filestatus));
 
-    sprintf(filecomment, "T-E INFO");
-    sprintf(filestatus, "N");
+   sprintf(chopt, "T");
 
-    //    hhropen_(&lun, filecomment, filename, filestatus, &reclen, &icycle,
-    //             strlen(filecomment),strlen(filename),strlen(filestatus));
-
-    sprintf(chopt, "T");
-
-    hhrout_(&idout, &icycle, chopt, strlen(chopt));
-    hhrend_(filecomment, strlen(filecomment));
-    return (0);
-}
-
-
-
-
-
-
-
-
-
+   hhrout_(&idout, &icycle, chopt, strlen(chopt));
+   hhrend_(filecomment, strlen(filecomment));
+} //}}}

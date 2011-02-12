@@ -35,8 +35,8 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 
       sprintf(&sSt[0], "%02d", i);
 
-      htemp     = (TH2F*) c->d["channel"+sSt].o["hTimeVsEnergyA"+cutid+"_st"+sSt];
-      hMeanTime = (TH1D*) c->d["channel"+sSt].o["hFitMeanTimeVsEnergyA"+cutid+"_st"+sSt];
+      htemp     = (TH2F*) c->d["channel"+sSt]->o["hTimeVsEnergyA"+cutid+"_st"+sSt];
+      hMeanTime = (TH1D*) c->d["channel"+sSt]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+sSt];
 
       if (!htemp || !hMeanTime) {
          Error("Calibrate", "Histogram channel%02d/hTimeVsEnergyA%s_st%02d does not exist",
@@ -81,8 +81,8 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 /** */
 void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
 { //{{{
-   TH2F *htemp     = (TH2F*) c->d["preproc"].o["hTimeVsEnergyA"];
-   TH1D *hMeanTime = (TH1D*) c->d["preproc"].o["hFitMeanTimeVsEnergyA"];
+   TH2F *htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
+   TH1D *hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
    if (!htemp || !hMeanTime) {
       Error("CalibrateFast", "Histogram preproc/hTimeVsEnergyA does not exist");
