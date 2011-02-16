@@ -16,7 +16,7 @@ using namespace std;
  * themselves.
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
-   fRunInfo(new TStructRunInfo()), fDatproc(0), fRunDB(new TStructRunDB()),
+   fRunInfo(new TStructRunInfo()), fDatproc(new TDatprocStruct()), fRunDB(new TStructRunDB()),
    fCalibrator(new Calibrator())
 {
 }
@@ -32,6 +32,7 @@ EventConfig::~EventConfig()
 
 void EventConfig::Print(const Option_t* opt) const
 {
+   printf("EventConfig:\n");
    PrintAsPhp();
 }
 
@@ -39,62 +40,42 @@ void EventConfig::Print(const Option_t* opt) const
 /** */
 void EventConfig::PrintAsPhp(FILE *f) const
 { //{{{
-   //printf("EventConfig:\n");
-
    fprintf(f, "<?php\n");
 
-   fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
-
-   /*
-   for (int i=0; i!=fConfigInfo->data.NumChannels; i++) {
-      fprintf(f, "$rc['data']['chan'][%d]['t0']    = %f;\n", i, fConfigInfo->data.chan[i].t0);
-      fprintf(f, "$rc['data']['chan'][%d]['ecoef'] = %f;\n", i, fConfigInfo->data.chan[i].ecoef);
-      fprintf(f, "$rc['data']['chan'][%d]['acoef'] = %f;\n", i, fConfigInfo->data.chan[i].acoef);
-      //fprintf(f, "$rc['data']['chan'][%d]['acoefE'] = %f;\n", i, fConfigInfo->data.chan[i].acoefE);
-      //fprintf(f, "$rc['data']['chan'][%d]['icoef'] = %f;\n", i, fConfigInfo->data.chan[i].icoef);
-      //fprintf(f, "$rc['data']['chan'][%d]['icoefE'] = %f;\n", i, fConfigInfo->data.chan[i].icoefE);
+   fprintf(f, "\n// TRecordConfigRhicStruct data\n");
+   if (!fConfigInfo) {
+      Error("PrintAsPhp", "fConfigInfo not defined");
+   } else {
+      fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
    }
-   */
 
+   fprintf(f, "\n// TStructRunInfo data\n");
    if (!fRunInfo) {
-      fprintf(f, "ERROR: EventConfig::PrintAsPhp(): fRunInfo not defined\n");
-      exit(-1);
+      Error("PrintAsPhp", "fRunInfo not defined");
+   } else {
+      fRunInfo->PrintAsPhp(f);
    }
 
-   fRunInfo->PrintAsPhp(f);
-
-   //buf.WriteFastArray(DisableBunch, NBUNCH); // not implemented
-
+   fprintf(f, "\n// TDatprocStruct data\n");
    if (!fDatproc) {
-      fprintf(f, "ERROR: EventConfig::PrintAsPhp(): fDatproc not defined\n");
-      exit(-1);
+      Error("PrintAsPhp", "fDatproc not defined");
+   } else {
+      fDatproc->PrintAsPhp(f);
    }
 
-   fprintf(f, "$rc['enel']                         = %d;\n", fDatproc->enel);
-   fprintf(f, "$rc['eneu']                         = %d;\n", fDatproc->eneu);
-   fprintf(f, "$rc['widthl']                       = %d;\n", fDatproc->widthl);
-   fprintf(f, "$rc['widthu']                       = %d;\n", fDatproc->widthu);
-   fprintf(f, "$rc['CMODE']                        = %d;\n", fDatproc->CMODE);
-   fprintf(f, "$rc['nEventsProcessed']             = %u;\n", fDatproc->nEventsProcessed);
-   fprintf(f, "$rc['nEventsTotal']                 = %u;\n", fDatproc->nEventsTotal);
-   fprintf(f, "$rc['thinout']                      = %u;\n", fDatproc->thinout);
-   fprintf(f, "$rc['procDateTime']                 = %u;\n", (UInt_t) fDatproc->procDateTime);
-   fprintf(f, "$rc['procTimeReal']                 = %f;\n", fDatproc->procTimeReal);
-   fprintf(f, "$rc['procTimeCpu']                  = %f;\n", fDatproc->procTimeCpu);
-
+   fprintf(f, "\n// TStructRunDB data\n");
    if (!fRunDB) {
-      fprintf(f, "ERROR: EventConfig::PrintAsPhp(): fRunDB not defined\n");
-      exit(-1);
+      Error("PrintAsPhp", "fRunDB not defined");
+   } else {
+      fRunDB->PrintAsPhp(f);
    }
 
-   fRunDB->PrintAsPhp(f);
-
+   fprintf(f, "\n// Calibrator data\n");
    if (!fCalibrator) {
-      fprintf(f, "ERROR: EventConfig::PrintAsPhp(): fCalibrator not defined\n");
-      exit(-1);
+      Error("PrintAsPhp", "fCalibrator not defined");
+   } else {
+      fCalibrator->PrintAsPhp(f);
    }
-
-   fCalibrator->PrintAsPhp(f);
    
    fprintf(f, "?>\n");
 } //}}}

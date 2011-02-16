@@ -30,9 +30,25 @@
 #include "AsymRecover.h"
 #include "AsymRootGlobals.h"
 
+class RawDataProcessor
+{
+public:
+   std::string    fFileName;
+   FILE          *fFile;
+   char          *fMem;
+   std::ifstream  fFileStream;
+
+public:
+   RawDataProcessor();
+   RawDataProcessor(std::string fname);
+   ~RawDataProcessor();
+
+   void ReadRecBegin(TStructRunInfo &ri);
+};
+
 void readDataFast();
-void readRecBegin(TStructRunInfo &ri);
-int  readloop();
+void ReadRecBegin(TStructRunInfo &ri);
+void  readloop();
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);

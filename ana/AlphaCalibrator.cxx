@@ -89,7 +89,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       htemp = (TH1F*) c->d["alpha"]->d["channel"+sCh]->o["hIntgrl_cut1_st"+sCh];
 
       if (!htemp) {
-         Error("Calibrate", "Histogram channel%02d/hAmpltd_cut1_st%02d does not exist", i, i);
+         Error("Calibrate", "Histogram channel%02d/hIntgrl_cut1_st%02d does not exist", i, i);
          continue;
       }
 
@@ -124,7 +124,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       //if (chi2 > chi2_max) chi2_max = chi2;
    }
 
-   //XXX CalibrateBadChannels(c);
+   CalibrateBadChannels(c);
 }
 
 
@@ -185,10 +185,10 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
 /** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 {
-   Double_t aMean = ((TH1F*) c->o["hACoefDisp"])->GetMean();
-   Double_t aRMS  = ((TH1F*) c->o["hACoefDisp"])->GetRMS();
-   Double_t iMean = ((TH1F*) c->o["hICoefDisp"])->GetMean();
-   Double_t iRMS  = ((TH1F*) c->o["hICoefDisp"])->GetRMS();
+   Double_t aMean = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetMean();
+   Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetRMS();
+   Double_t iMean = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetMean();
+   Double_t iRMS  = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetRMS();
 
    ChannelCalibMap::iterator mi, mi2;
    ChannelCalibMap::iterator mb  = fChannelCalibs.begin();

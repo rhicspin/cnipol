@@ -18,6 +18,7 @@
 #include "TString.h"
 
 #include "AsymHeader.h"
+#include "AsymRunDB.h"
 
 
 /** */
@@ -50,7 +51,7 @@ public:
    int          ActiveStrip[NSTRIP];
    int          NActiveStrip;
    int          NDisableStrip;
-   int          DisableStrip[NSTRIP];
+   int          fDisabledChannels[NSTRIP];
    //std::vector<UShort_t>   fDisabledChannels;
    int          NFilledBunch;
    int          NActiveBunch;
@@ -65,9 +66,12 @@ public:
    void  Streamer(TBuffer &buf);
    void  Print(const Option_t* opt="") const;
    void  PrintAsPhp(FILE *f=stdout) const;
+   std::string GetAlphaCalibFileName() const;
+   std::string GetDlCalibFileName() const;
    short GetPolarimeterId();
    short GetPolarimeterId(short beamId, short streamId);
    void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
+   void  Update(TStructRunDB &rundb);
 };
 
 TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec);

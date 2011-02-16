@@ -216,47 +216,43 @@ void CnipolCalibHists::Print(const Option_t* opt) const
 void CnipolCalibHists::Fill(ChannelEvent *ch, string sid)
 {
    //ch->Print();
-
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
-
-   // Do not consider channels other than silicon detectors
-   if (chId > NSTRIP) return;
-
-   // Overall cut, XXX move it to ChannelEvent class???
-   //if (data.fAmpltd < 50) return;
 
    string sSi("  ");
    sprintf(&sSi[0], "%02d", chId);
 
    DrawObjContainer *sd = d["channel"+sSi];
 
-   ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
-   ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
-   ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
-   ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
-   ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
-   ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
-
-   ((TH1F*) sd->o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
-   ((TH1F*) sd->o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
-   ((TH1F*) sd->o["hTdc_st"+sSi])      ->Fill(data.fTdc);
-   ((TH2F*) sd->o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
-   ((TH2F*) sd->o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
-   ((TH2F*) sd->o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
-   ((TH2F*) sd->o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
-
+   if (sid == "cut1") {
    //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
-   if (data.fTdc >=15 && data.fTdc <= 50) {
+   //if (data.fTdc >=15 && data.fTdc <= 50) {
       ((TH1F*) o["hAmpltd_cut1"])->Fill(data.fAmpltd);
       ((TH1F*) sd->o["hAmpltd_cut1_st"+sSi])->Fill(data.fAmpltd);
-   }
+   //}
 
    //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
    //if (data.fTdc >=12 && data.fTdc <= 16) 
-   if (data.fTdc >=12 && data.fTdc <= 30) {
+   //if (data.fTdc >=12 && data.fTdc <= 30) {
       ((TH1F*) o["hIntgrl_cut1"])->Fill(data.fIntgrl);
       ((TH1F*) sd->o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
+   //}
+   } else {
+
+      ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
+      ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
+      ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
+      ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
+      ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
+      ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
+
+      ((TH1F*) sd->o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
+      ((TH1F*) sd->o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
+      ((TH1F*) sd->o["hTdc_st"+sSi])      ->Fill(data.fTdc);
+      ((TH2F*) sd->o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
+      ((TH2F*) sd->o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
+      ((TH2F*) sd->o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
+      ((TH2F*) sd->o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
    }
 }
 
@@ -286,6 +282,8 @@ void CnipolCalibHists::PostFill()
    xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
 
    ((TH1F*) o["hIntgrl_cut1"])->SetAxisRange(xminI, xmaxI);
+
+   printf("xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f\n", xminA, xmaxA, xminI, xmaxI);
 
    string  sSi("  ");
 

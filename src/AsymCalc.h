@@ -26,9 +26,9 @@ struct StructHistStat;
 //===========================================================================
 //                      Main End Process Routine
 //===========================================================================
-void end_process(recordConfigRhicStruct *cfginfo);
+void end_process();
 int  CompleteHistogram();
-int  TgtHist();
+void TgtHist();
 
 //===========================================================================
 //                       Anaolyzing power
@@ -63,9 +63,7 @@ class AsymFit
   */
 };
 
-//===========================================================================
 //                          Bunch by Bunch
-//===========================================================================
 struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
    float Ax90[2][NBUNCH];
    float Ax45[2][NBUNCH];
@@ -90,7 +88,7 @@ struct StructSpeLumi {
 
 int  sqass(float A, float B, float C, float D, float *asym, float *easym);
 int  CumulativeAsymmetry();
-int  calcBunchAsymmetry();
+void CalcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 void BunchAsymmetry(int, float A[], float dA[]);

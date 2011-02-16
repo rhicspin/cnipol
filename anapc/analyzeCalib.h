@@ -41,10 +41,10 @@ EventConfig      *ec;
 void analyzeCalib(std::string runName, std::string pattern="^.*$", Long64_t nEvents=-1);
 void analyzeCalib_initialize(std::string runName);
 //void analyzeCalib_book_histograms();
-void analyzeCalib_fill_histograms(Long64_t nEvents=-1);
-void analyzeCalib_fit_histograms();
-TFitResultPtr analyzeCalib_fit_histograms(TH1 *h, TF1 *f);
-void analyzeCalib_restore_channels();
+//void analyzeCalib_fill_histograms(Long64_t nEvents=-1);
+//void analyzeCalib_fit_histograms();
+//TFitResultPtr analyzeCalib_fit_histograms(TH1 *h, TF1 *f);
+//void analyzeCalib_restore_channels();
 //void analyzeCalib_fill_histograms_derivative();
 void analyzeCalib_finalize(std::string pattern="^.*$");
 

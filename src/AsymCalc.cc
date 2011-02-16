@@ -18,7 +18,7 @@ float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 // =========================
 // End of data process
 // =========================
-void end_process(recordConfigRhicStruct *cfginfo)
+void end_process()
 {
    StructHistStat hstat;
 
@@ -38,7 +38,7 @@ void end_process(recordConfigRhicStruct *cfginfo)
       for (int i=0; i<120; i++) Ntotal[i] = 0;
    }
 
-   //        Calculate Statistics
+   // Calculate Statistics
    CalcStatistics();
 
    // Skip end-of-run analysis routines for deadlayer and calibration modes.
@@ -48,13 +48,18 @@ void end_process(recordConfigRhicStruct *cfginfo)
       //gAnaResults.A_N[0] = WeightAnalyzingPower(10040); // no cut in energy spectra
       gAnaResults.A_N[1] = WeightAnalyzingPower(10050); // banana cut in energy spectra
 
+      if (!gAnaResults.A_N[1]) {
+         printf("Zero analyzing power\n");
+         return;
+      }
+
       // CumulativeAsymmetry();
 
       // Specific Luminosity (ds: this one is not used in asymmetry calculation)
       SpecificLuminosity(hstat.mean, hstat.RMS, hstat.RMSnorm);
 
       // Bunch Asymmetries
-      //calcBunchAsymmetry();
+      CalcBunchAsymmetry();
 
       // Strip-by-Strip Asymmetries
       StripAsymmetry();
@@ -116,57 +121,58 @@ int CompleteHistogram()
 }
 
 
-//
-// Class name  :
-// Method name : TgtHist()
-//
 // Description : Make target histograms
-// Input       :
-// Return      :
-//
-int TgtHist()
+void TgtHist()
 {
-  char htitle[100];
-  float xmin=fabs(double(ASYM_DEFAULT)), xmax; float margin=0.2;
+  char  htitle[100];
+  float xmin   = fabs(double(ASYM_DEFAULT)), xmax;
+  float margin = 0.2;
   float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-  int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim ;
+  int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim;
+
   GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
 
   Run->cd();
-  //---------------------------------------------------------------------------------
-  //                      Make rate _vs deliminter plots
-  //---------------------------------------------------------------------------------
+
+  // Make rate _vs deliminter plots
   for (int i=0; i<X_index; i++) {
-    dx[i]=0;
-    y[i]  = tgt.Interval[i] ? float(cntr.good[i])/tgt.Interval[i]*MHz : 0 ;
-    dy[i] = tgt.Interval[i] ? float(sqrt(double(cntr.good[i])))/tgt.Interval[i]*MHz : 0;
+    dx[i] = 0;
+     y[i] = tgt.Interval[i] ? float(cntr.good[i]) / tgt.Interval[i] * MHz : 0 ;
+    dy[i] = tgt.Interval[i] ? float( sqrt( double(cntr.good[i]) ) ) / tgt.Interval[i] * MHz : 0;
   }
 
   gAnaResults.max_rate = GetMax(X_index,y);
   float ymin=fabs(double(ASYM_DEFAULT)), ymax;
   GetMinMax(X_index, y, margin, ymin, ymax);
   sprintf(htitle,"%.3f : Rate vs Taret Postion", runinfo.RUNID);
-  rate_vs_delim = new TH2F("rate_vs_delim",htitle, 100, xmin, xmax, 100, ymin, ymax);
-  rate_vs_delim -> GetXaxis() -> SetTitle("Target Position [mm]");
-  rate_vs_delim -> GetYaxis() -> SetTitle("Carbon in Banana Rate[MHz]");
-  TGraphErrors * rate_delim = new TGraphErrors(nTgtIndex, tgt.X, y, dx, dy);
-  rate_delim -> SetMarkerStyle(20);
-  rate_delim -> SetMarkerColor(4);
-  rate_vs_delim -> GetListOfFunctions() -> Add(rate_delim,"P");
 
-  //---------------------------------------------------------------------------------
-  //                           Target Position vs Time
-  //---------------------------------------------------------------------------------
+  //rate_vs_delim = new TH2F("rate_vs_delim", htitle, 100, xmin, xmax, 100, ymin, ymax);
+  rate_vs_delim->SetName("rate_vs_delim");
+  rate_vs_delim->SetTitle("rate_vs_delim");
+  rate_vs_delim->SetBins(100, xmin, xmax, 100, ymin, ymax);
+  rate_vs_delim->GetXaxis()->SetTitle("Target Position [mm]");
+  rate_vs_delim->GetYaxis()->SetTitle("Carbon in Banana Rate[MHz]");
+
+  TGraphErrors *rate_delim = new TGraphErrors(nTgtIndex, tgt.X, y, dx, dy);
+  rate_delim->SetMarkerStyle(20);
+  rate_delim->SetMarkerColor(4);
+  rate_vs_delim->GetListOfFunctions()->Add(rate_delim, "P");
+
+  // Target Position vs Time
   sprintf(htitle,"%.3f : Taret Postion vs. Time", runinfo.RUNID);
-  TH2F * tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
-  tgtx_vs_time -> GetYaxis() -> SetTitle("Duration from Measurement Start [s]");
-  tgtx_vs_time -> GetXaxis() -> SetTitle("Target Position [mm]");
-  TGraph * tgtx_time = new TGraph(nTgtIndex, tgt.X, tgt.Time);
-  tgtx_time -> SetMarkerStyle(20);
-  tgtx_time -> SetMarkerColor(4);
-  tgtx_vs_time ->  GetListOfFunctions() -> Add(tgtx_time,"P");
 
-  return 0;
+  TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
+
+  delete gAsymRoot.fHists->d["Run"]->o["tgtx_vs_time"];
+  gAsymRoot.fHists->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
+
+  tgtx_vs_time->GetYaxis()->SetTitle("Duration from Measurement Start [s]");
+  tgtx_vs_time->GetXaxis()->SetTitle("Target Position [mm]");
+
+  TGraph *tgtx_time = new TGraph(nTgtIndex, tgt.X, tgt.Time);
+  tgtx_time->SetMarkerStyle(20);
+  tgtx_time->SetMarkerColor(4);
+  tgtx_vs_time->GetListOfFunctions()->Add(tgtx_time, "P");
 }
 
 
@@ -669,8 +675,6 @@ void CalcStatistics()
   if (runinfo.WcmSum)        gAnaResults.wcm_norm_event_rate = runinfo.GoodEventRate/runinfo.WcmSum*100;
   if (dproc.reference_rate)  gAnaResults.UniversalRate       = gAnaResults.wcm_norm_event_rate/dproc.reference_rate;
   if (runinfo.Run==5)        gAnaResults.profile_error       = gAnaResults.UniversalRate<1 ? ProfileError(gAnaResults.UniversalRate) : 0;
-
-  return;
 }
 
 
@@ -831,19 +835,13 @@ void DrawPlotvsTar(void)
 }
 
 
-//
-// Class name  :
-// Method name : WeightAnalysingPower()
-//
 // Description : Caluclate Energy Yeild weighted Analyzing power
 //             : Histogram 34000 is filled only once, which is controled by CallFlag
-//             :
 // Input       : int HID
 // Return      : A_N
-//
 float WeightAnalyzingPower(int HID)
 {
-   static int CallFlag = 0;
+   //static int CallFlag = 0;
 
    // analyzing power
    //
@@ -866,8 +864,8 @@ float WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (runinfo.BeamEnergy > 200) { // XXX scale flattop values 250 GeV by 15%
-      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.15;
+   if (runinfo.BeamEnergy > 200) { // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
+      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176;
    } else if (runinfo.BeamEnergy > 50) {
       for (int i=0; i<25; i++) anth[i] = anth100[i];
    }
@@ -876,16 +874,16 @@ float WeightAnalyzingPower(int HID)
    float Emax = 1172.2;
    float DeltaE = (Emax - Emin)/25.;
 
-   int nbin   = HENEBIN;
-   int fstbin = 1;
-   int lstbin = HENEBIN;
+   //int nbin   = HENEBIN;
+   //int fstbin = 1;
+   //int lstbin = HENEBIN;
 
    float X[HENEBIN];
    float Y[HENEBIN];
-   float EX[HENEBIN];
-   float EY[HENEBIN];
+   //float EX[HENEBIN];
+   //float EY[HENEBIN];
 
-   hhrebin_(&HID, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
+   //ds hhrebin_(&HID, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
 
    int j      = 0;
    float sum  = 0.;
@@ -894,22 +892,25 @@ float WeightAnalyzingPower(int HID)
    for (int i=0; i<HENEBIN; i++){
       j = (int) ((X[i] - Emin)/DeltaE);
       sum  += Y[i];
-      suma += Y[i] * anth[j];
+      //suma += Y[i] * anth[j];
+      suma += Y[i] * anth[i];
       //printf("%d: Y %f AN %f X %f\n",i,Y[i],anth[j],X[i]);
    }
 
-   float aveA_N = suma/sum;
+   float aveA_N = sum != 0 ? suma/sum : 0;
 
    // ds fix
-   TH1F* hEnergy = (TH1F*) gAsymRoot.fHists->o["hKinEnergyA_o_cut2"];
+   TH1F* hEnergy = (TH1F*) gAsymRoot.fHists->d["std"]->o["hKinEnergyA_o_cut2"];
    //TH1F* hEnergy = (TH1F*) gAsymRoot.fHists->o["hKinEnergyA_oo"];
+
+   if (!hEnergy) return 0;
 
    j = sum = suma = 0.;
 
    for (int i=1; i<=hEnergy->GetNbinsX(); i++) {
       double bcont  = hEnergy->GetBinContent(i);
-      double bcentr = hEnergy->GetBinCenter(i);
-      double bwidth = hEnergy->GetBinWidth(i);
+      //double bcentr = hEnergy->GetBinCenter(i);
+      //double bwidth = hEnergy->GetBinWidth(i);
 
       //j = (int) ((bcentr - Emin)/bwidth);
 
@@ -918,7 +919,7 @@ float WeightAnalyzingPower(int HID)
       //suma += bcont * anth[j];
    }
 
-   float aveA_N_2 = suma/sum;
+   float aveA_N_2 = sum != 0 ? suma/sum : 0;
 
    printf("Average analyzing power: %10.8f %10.8f\n", aveA_N, aveA_N_2);
 
@@ -950,14 +951,9 @@ int ExclusionList(int k, int j, int polBeam)
 }
 
 
-//
-// Class name  :
-// Method name : calcAsymmetry
-//
 // Description : calculate Asymmetry
 // Input       : int a, int b, int atot, int btot
 // Return      : float Asym, float dAsym
-//
 void calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym)
 {
    float R = 0;
@@ -1332,18 +1328,12 @@ float calcDivisionError(float x, float y, float dx, float dy)
 }
 
 
-//
-// Class name  :
-// Method name : calcBunchAsymmetry
-//
 // Description : call BunchAsymmetry to calculate asymmetries bunch by bunch and
 //             : Fill out asym_vs_bunch_x90, x45, y45 histograms
-// Input       :
-// Return      :
-//
-int calcBunchAsymmetry()
+void CalcBunchAsymmetry()
 {
-   // calculate Bunch Asymmetries for x45, x90, y45
+   // Calculate bunch asymmetries [0] and corresponding errors [1] for x45,
+   // x90, y45
    BunchAsymmetry(0, basym.Ax90[0], basym.Ax90[1]);
    BunchAsymmetry(1, basym.Ax45[0], basym.Ax45[1]);
    BunchAsymmetry(2, basym.Ay45[0], basym.Ay45[1]);
@@ -1351,33 +1341,49 @@ int calcBunchAsymmetry()
    // Define TH2F histograms first
    Asymmetry->cd();
 
-   char htitle[100];
+   char  htitle[100];
    float min, max;
    float margin=0.2;
    float prefix=0.028;
 
-   sprintf(htitle,"Run%.3f : Raw Asymmetry X90", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Raw Asymmetry X90", runinfo.RUNID);
    GetMinMaxOption(prefix, NBUNCH, basym.Ax90[0], margin, min, max);
-   asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+
+   //asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   asym_vs_bunch_x90->SetName("asym_vs_bunch_x90");
+   asym_vs_bunch_x90->SetTitle(htitle);
+   asym_vs_bunch_x90->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+
    DrawLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
    sprintf(htitle,"Run%.3f : Raw Asymmetry X45", runinfo.RUNID);
    GetMinMaxOption(prefix, NBUNCH, basym.Ax45[0], margin, min, max);
-   asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+
+   //asym_vs_bunch_x45 = new TH2F("asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   asym_vs_bunch_x45->SetName("asym_vs_bunch_x45");
+   asym_vs_bunch_x45->SetTitle(htitle);
+   asym_vs_bunch_x45->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
    asym_vs_bunch_x45->GetYaxis()->SetTitle("Counts weighted by error");
    asym_vs_bunch_x45->GetXaxis()->SetTitle("Raw Asymmetry");
+
    DrawLine(asym_vs_bunch_x45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
    sprintf(htitle,"Run%.3f : Raw Asymmetry Y45", runinfo.RUNID);
    GetMinMaxOption(prefix, NBUNCH, basym.Ay45[0], margin, min, max);
-   asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+
+   //asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   asym_vs_bunch_y45->SetName("asym_vs_bunch_y45");
+   asym_vs_bunch_y45->SetTitle(htitle);
+   asym_vs_bunch_y45->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
    asym_vs_bunch_y45 -> GetYaxis() -> SetTitle("Counts weighted by error");
    asym_vs_bunch_y45 -> GetXaxis() -> SetTitle("Raw Asymmetry");
+
    DrawLine(asym_vs_bunch_y45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
    // fill bunch ID array [1 - NBUNCH], not [0 - NBUNCH-1]
    float bunch[NBUNCH], ex[NBUNCH];
-   for (int bid=0; bid<NBUNCH; bid++) { ex[bid]=0; bunch[bid]= bid; }
+
+   for (int bid=0; bid<NBUNCH; bid++) { ex[bid] = 0; bunch[bid] = bid; }
 
    // Superpose Positive/Negative Bunches arrays into TH2F histograms defined above
    TGraphErrors * asymgraph ;
@@ -1391,63 +1397,59 @@ int calcBunchAsymmetry()
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax90[0], ex, basym.Ax90[1]);
       asymgraph -> SetName("asymgraph");
       FillAsymmetryHistgram("x90", spin, NBUNCH, basym.Ax90[0], basym.Ax90[1], bunch);
-      asym_vs_bunch_x90 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x90 -> GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_x90 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+      asym_vs_bunch_x90->GetListOfFunctions() -> Add(asymgraph,"p");
+      asym_vs_bunch_x90->GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_x90->GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // X45
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ax45[0], ex, basym.Ax45[1]);
       FillAsymmetryHistgram("x45", spin, NBUNCH, basym.Ax45[0], basym.Ax45[1], bunch);
       asymgraph -> SetName("asymgraph");
-      asym_vs_bunch_x45 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x45 -> GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_x45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+      asym_vs_bunch_x45->GetListOfFunctions() -> Add(asymgraph,"p");
+      asym_vs_bunch_x45->GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_x45->GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // Y45
       asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, basym.Ay45[0], ex, basym.Ay45[1]);
       FillAsymmetryHistgram("y45", spin, NBUNCH, basym.Ay45[0], basym.Ay45[1], bunch);
-      asymgraph -> SetName("asymgraph");
-      asym_vs_bunch_y45 -> GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_y45 -> GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_y45 -> GetYaxis()->SetTitle("Raw Asymmetry ");
+      asymgraph->SetName("asymgraph");
+      asym_vs_bunch_y45->GetListOfFunctions()->Add(asymgraph, "p");
+      asym_vs_bunch_y45->GetXaxis()->SetTitle("Bunch Number");
+      asym_vs_bunch_y45->GetYaxis()->SetTitle("Raw Asymmetry ");
    }
 
    // bunch asymmetry averages
    calcBunchAsymmetryAverage();
-
-   return 0;
 }
 
 
-//
-// Class name  :
-// Method name : BunchAsymmetry
-//
 // Description : calculate asymmetries bunch by bunch
 // Input       : int Mode0[Ax90], 1[Ax45], 2[Ay45]
 // Return      : Asym[NBUNCH], dA[NBUNCH]
-//
 void BunchAsymmetry(int Mode, float A[], float dA[])
 {
    // Allocate adequate detector IDs involved in X90,X45,Y45, respectively
    int Rdet[2], Ldet[2];
+
    switch (Mode) {
    case 0:  // Ax90
-      Rdet[0]=1; Ldet[0]=4;
+      Rdet[0] = 1; Ldet[0] = 4;
       break;
    case 1:  // Ax45
-      Rdet[0]=0; Rdet[1]=2; Ldet[0]=3; Ldet[1]=5;
+      Rdet[0] = 0; Rdet[1] = 2; Ldet[0] = 3; Ldet[1] = 5;
       break;
    case 2:  // Ay45
-      Rdet[0]=0; Rdet[1]=5; Ldet[0]=2; Ldet[1]=3;
+      Rdet[0] = 0; Rdet[1] = 5; Ldet[0] = 2; Ldet[1] = 3;
       break;
    default:
       cerr << "BunchAsymmetry: No muching mode is coded in for " << Mode << endl;
       return;
    }
  
-   // Calculate detector luminosities by taking sum over R/L detectors and all bunches
-   long int LumiR = 0;   long int LumiL = 0;
+   // Calculate detector luminosities by taking sum over R/L detectors and all
+   // bunches
+   long int LumiR = 0;
+   long int LumiL = 0;
 
    for (int i=0; i<2; i++) { // run for 2 for X45 and Y45
       for (int bid=0; bid<NBUNCH; bid++) {
@@ -1460,32 +1462,28 @@ void BunchAsymmetry(int Mode, float A[], float dA[])
    }
  
    // Main bunch loop to calculate asymmetry bunch by bunch
-   for (int bid=0;bid<NBUNCH;bid++) {
+   for (int bid=0; bid<NBUNCH; bid++) {
  
-      int R = 0; int L = 0; A[bid] = ASYM_DEFAULT ; dA[bid] = 0;
+      int R = 0, L = 0;
+       A[bid] = ASYM_DEFAULT;
+      dA[bid] = 0;
+
       if (fillpat[bid]){
-        // Take sum of Up/Down for Right and Left detectors
-        for (int i=0; i<2; i++) {
-           R += Ncounts[Rdet[i]][bid];
-           L += Ncounts[Ldet[i]][bid];
-           if (!Mode) break; // no detector loop for X90
-        }
+         // Take sum of Up/Down for Right and Left detectors
+         for (int i=0; i<2; i++) {
+            R += Ncounts[Rdet[i]][bid];
+            L += Ncounts[Ldet[i]][bid];
+            if (!Mode) break; // no detector loop for X90
+         }
  
-        calcAsymmetry(R, L, LumiR, LumiL, A[bid], dA[bid]);
+         calcAsymmetry(R, L, LumiR, LumiL, A[bid], dA[bid]);
       }
    }
 }
 
 
-//
-// Class name  :
-// Method name : calcBunchAsymmetryAverage(){
-//
 // Description : calculate average left-right and top-bottom asymmetry from bunch by bunch asymmetris.
 //             : also calculate phase from LR and Top-Bottom asymmetry
-// Input       :
-// Return      :
-//
 void calcBunchAsymmetryAverage()
 {
    // flip the sign of negative spin bunches
@@ -1517,7 +1515,7 @@ void calcBunchAsymmetryAverage()
       basym.ave.phase[0] = 0;
    }
  
-   basym.ave.phase[1] = calcDivisionError(basym.ave.Ax[0],basym.ave.Ay[0],basym.ave.Ax[1],basym.ave.Ay[1]);
+   basym.ave.phase[1] = calcDivisionError(basym.ave.Ax[0], basym.ave.Ay[0], basym.ave.Ax[1], basym.ave.Ay[1]);
    basym.ave.phase[1] = atan(basym.ave.phase[1]) ? fabs( atan(basym.ave.phase[1]) - M_PI_2 ) : 0 ;
  
    // Calculate Polarization
@@ -1525,7 +1523,8 @@ void calcBunchAsymmetryAverage()
       gAnaResults.basym[0].P[0] = basym.ave.Ax[0]/gAnaResults.A_N[0];
       gAnaResults.basym[0].P[1] = basym.ave.Ax[1]/gAnaResults.A_N[0];
    } else {
-      gAnaResults.basym[0].P[0] = gAnaResults.basym[0].P[1] = 0;
+      gAnaResults.basym[0].P[0] = 0;
+      gAnaResults.basym[0].P[1] = 0;
    };
  
    cout << "========== bunch asymmetry average ===========" << endl;
@@ -1534,30 +1533,27 @@ void calcBunchAsymmetryAverage()
         << basym.ave.Ay45[0] << " " << basym.ave.Ay45[1] << " " << endl;
    cout << basym.ave.Ax[0]   << " " << basym.ave.Ax[1] << endl;
    cout << "========== bunch asymmetry average ===========" << endl;
- 
-   return;
 }
 
 
-//
-// Class name  :
-// Method name : calcLRAsymmetry
-//
 // Description : Calculate Left-Right asymmetry from X90 and X45 asymmetry combination
 //             :
 // Input       : float X90[2], float X45[2]
 // Return      : LR asymmetry and error : float &A, float &dA
-//
 void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 {
-   float X45[2]={0,0};
+   float X45[2] = {0, 0};
  
    // give sqrt(2) weight to X45 asymmetry
    X45[0] = X45_tmp[0] * M_SQRT2;
    X45[1] = X45_tmp[1] * M_SQRT2;
  
    // if horizontal target or X90 is zero, then return X45*sqrt(2) as LR asymmetry
-   if (tgt.VHtarget) { A=X45[0]; dA=X45[1]; return ;}
+   if (tgt.VHtarget) {
+       A = X45[0];
+      dA = X45[1];
+      return;
+   }
  
    // define error squares
    float dX45 = X45[1]*X45[1];
@@ -1565,14 +1561,12 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
  
    // calculate weighted mean of X90 and X45 asymetries
    if (dX90 + dX45 != 0 ) {
-      A  = (X90[0]*dX45 + X45[0]*dX90)/(dX90 + dX45);
-      dA = (X90[1]*X45[1])/sqrt(dX90 + dX45);
+       A = (X90[0] * dX45 + X45[0] * dX90) / (dX90 + dX45);
+      dA = (X90[1] * X45[1]) / sqrt(dX90 + dX45);
    } else {
       printf(" WARNING: denominator is zero in calcLRAsymmetry(). Assign zero LR asymmetry.");
       A = dA = 0;
    }
- 
-   return;
 }
 
 
@@ -1624,18 +1618,13 @@ void StripAsymmetry()
 }
 
 
-//
-// Class name  :
-// Method name : CalcStripAsymmetry
-//
 // Description : calculate asymmetries strip by strip
 // Input       : float aveA_N, int Mode, long int nstrip[][NSTRIP]
 // Return      :
-//
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
 {
    //ds : Overwrite nstrip array
-   TH2I* hSpVsCh = (TH2I*) gAsymRoot.fHists->o["hSpinVsChannel_cut2"];
+   TH2I* hSpVsCh = (TH2I*) gAsymRoot.fHists->d["std"]->o["hSpinVsChannel_cut2"];
 
    int ss_code = 0;
 
@@ -1714,7 +1703,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
       // ds temp fix: give huge errors to disabled strips
-      if (gRunInfo.DisableStrip[i]) {
+      if (gRunInfo.fDisabledChannels[i]) {
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
          dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;
       }
@@ -1814,9 +1803,13 @@ void AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
    GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
 
    sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
-   asym_sinphi_fit =  new TH2F("asym_sinphi_fit", htitle, 100, 0, 2*M_PI, 100, min, max);
-   asym_sinphi_fit -> GetXaxis()->SetTitle("phi [deg.]");
-   asym_sinphi_fit -> GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+
+   asym_sinphi_fit->SetName("asym_sinphi_fit");
+   asym_sinphi_fit->SetTitle(htitle);
+   asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
+   asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
+   asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+
    DrawLine(asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
  
    // define sin(phi) fit function & initialize parmaeters
@@ -1871,62 +1864,67 @@ void AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 void AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
                    Float_t *P, Float_t *dphi, Float_t &chi2dof)
 {
-  char htitle[100];
-  float dx[NSTRIP];
-  for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
-
-  // define TH2D sin(phi) histogram
-  Asymmetry->cd();
-  float min, max, prefix, margin; prefix=margin=0.3;
-  GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
-  sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
-  scan_asym_sinphi_fit   =  new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
-  scan_asym_sinphi_fit   -> GetXaxis()->SetTitle("phi [deg.]");
-  scan_asym_sinphi_fit   -> GetYaxis()->SetTitle("Asymmetry / A_N [%]");
-  DrawLine(scan_asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
-
-  // define sin(phi) fit function & initialize parmaeters
-  TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
-  func -> SetParameters(p0,0);
-  func -> SetParLimits(0, -1, 1);
-  // Keeping phi fixed - chnged by Vipuli April 2008
-  printf("************************************ \n");
-  printf("keeping phi fixed at = %12.3e \n",gAnaResults.sinphi[0].dPhi[0]);
-  printf("************************************ \n");
-  func -> SetParLimits(1,gAnaResults.sinphi[0].dPhi[0],gAnaResults.sinphi[0].dPhi[0]);
-  //func -> SetParLimits(1,-M_PI, M_PI);
-  func -> SetParNames("P","dPhi");
-  func -> SetLineColor(2);
-
-  // define TGraphError obect for fitting
-  TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
-
-  // Perform sin(phi) fit
-  tg->Fit("sin_phi","R");
-  tg->SetName("tg");
-
-  // Dump TGraphError obect to TH2D histogram
-  scan_asym_sinphi_fit->GetListOfFunctions()->Add(tg, "p");
-
-  // Get fitting results
-  P[0] = func->GetParameter(0);
-  P[1] = func->GetParError(0);
-  dphi[0] = func->GetParameter(1);
-  dphi[1] = func->GetParError(1);
-  chi2dof = func->GetChisquare()/func->GetNDF();
-
-  // Write out fitting results on plot
-  char text[80];
-
-  sprintf(text, "(%3.2f #pm %3.2f)* sin(phi+%5.2f)", P[0], P[1], dphi[0]);
-  TText *txt = new TText(0.5, max*0.8, text);
-
-  scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
-
-  sprintf(text, "chi^{2} = %5.2f", chi2dof);
-  txt = new TText(0.5, max*0.1, text);
-
-  scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
+   char htitle[100];
+   float dx[NSTRIP];
+   for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
+ 
+   // define TH2D sin(phi) histogram
+   Asymmetry->cd();
+   float min, max, prefix, margin; prefix=margin=0.3;
+   GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
+   sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+ 
+   //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
+   scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");
+   scan_asym_sinphi_fit->SetTitle(htitle);
+   scan_asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
+   scan_asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
+   scan_asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+ 
+   DrawLine(scan_asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
+ 
+   // define sin(phi) fit function & initialize parmaeters
+   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
+   func -> SetParameters(p0,0);
+   func -> SetParLimits(0, -1, 1);
+   // Keeping phi fixed - chnged by Vipuli April 2008
+   printf("************************************ \n");
+   printf("keeping phi fixed at = %12.3e \n",gAnaResults.sinphi[0].dPhi[0]);
+   printf("************************************ \n");
+   func -> SetParLimits(1,gAnaResults.sinphi[0].dPhi[0],gAnaResults.sinphi[0].dPhi[0]);
+   //func -> SetParLimits(1,-M_PI, M_PI);
+   func -> SetParNames("P","dPhi");
+   func -> SetLineColor(2);
+ 
+   // define TGraphError obect for fitting
+   TGraphErrors * tg = AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
+ 
+   // Perform sin(phi) fit
+   tg->Fit("sin_phi","R");
+   tg->SetName("tg");
+ 
+   // Dump TGraphError obect to TH2D histogram
+   scan_asym_sinphi_fit->GetListOfFunctions()->Add(tg, "p");
+ 
+   // Get fitting results
+   P[0] = func->GetParameter(0);
+   P[1] = func->GetParError(0);
+   dphi[0] = func->GetParameter(1);
+   dphi[1] = func->GetParError(1);
+   chi2dof = func->GetChisquare()/func->GetNDF();
+ 
+   // Write out fitting results on plot
+   char text[80];
+ 
+   sprintf(text, "(%3.2f #pm %3.2f)* sin(phi+%5.2f)", P[0], P[1], dphi[0]);
+   TText *txt = new TText(0.5, max*0.8, text);
+ 
+   scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
+ 
+   sprintf(text, "chi^{2} = %5.2f", chi2dof);
+   txt = new TText(0.5, max*0.1, text);
+ 
+   scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 }
 
 
@@ -1950,10 +1948,10 @@ float GetMin(int N, float A[])
 // Return Minimum and Maximum from array A[N]
 void GetMinMax(int N, float A[], float margin, float &min, float &max)
 {
-   min = GetMin(N,A);
-   max = GetMax(N,A);
-   min -= fabs(min)*margin;
-   max += fabs(max)*margin;
+   min  = GetMin(N, A);
+   max  = GetMax(N, A);
+   min -= fabs(min) * margin;
+   max += fabs(max) * margin;
 }
 
 

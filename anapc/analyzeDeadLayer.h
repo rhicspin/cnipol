@@ -21,6 +21,7 @@
 #include "AnaEvent.h"
 #include "ChannelCalib.h"
 #include "CnipolHists.h"
+#include "CnipolRunHists.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
 #include "DeadLayerCalibratorEDepend.h"

@@ -23,10 +23,6 @@
 
 #include "Calibrator.h"
 
-//class EventConfig;
-//class Calibrator;
-//class TStructRunDB;
-
 
 /** */
 class EventConfig : public TObject

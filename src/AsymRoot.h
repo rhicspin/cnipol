@@ -23,6 +23,7 @@
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
 #include "CnipolScalerHists.h"
+#include "CnipolRunHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 #include "DrawObjContainer.h"
@@ -64,7 +65,7 @@ public:
    ~AsymRoot();
  
    void   RootFile(char* filename);
-   Int_t  BookHists(TStructRunInfo runinfo);
+   void   BookHists();
 	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
    void   DeleteHistogram();
    void   Calibrate();
@@ -72,6 +73,7 @@ public:
    void   CloseROOTFile();
    void   CreateTrees();
    Bool_t UseCalibFile(std::string cfname="");
+   void   UpdateRunConfig();
    void   SetChannelEvent(processEvent &event);
    void   SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void   ProcessEvent() {};

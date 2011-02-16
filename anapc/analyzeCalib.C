@@ -50,8 +50,11 @@ void analyzeCalib_initialize(string runName)
 
    if (!gInFile) exit(-1);
 
+   TDirectory *dir = (TDirectory*) gInFile->GetKey("alpha")->ReadObj();
+
    gH = new CnipolCalibHists();
-   gH->ReadFromDir(gInFile);
+   //gH->ReadFromDir(gInFile);
+   gH->ReadFromDir(dir);
 
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
    //ec->Print();
@@ -59,6 +62,7 @@ void analyzeCalib_initialize(string runName)
 }
 
 
+/*
 void analyzeCalib_fill_histograms(Long64_t nEvents)
 { //{{{
    gRandom = new TRandom();
@@ -174,10 +178,11 @@ void analyzeCalib_fill_histograms(Long64_t nEvents)
       ((TH1F*) gH->d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
       ((TH1F*) gH->d["channel"+sSi].o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
    }
-}
-// }}}
+} // }}}
+*/
 
 
+/*
 void analyzeCalib_fit_histograms()
 {
    string    sSi("  ");
@@ -284,8 +289,10 @@ void analyzeCalib_fit_histograms()
       //if (chi2 > chi2_max) chi2_max = chi2;
    }
 }
+*/
 
 
+/*
 TFitResultPtr analyzeCalib_fit_histograms(TH1 *h, TF1 *f)
 {
    TFitResultPtr frp = 0;
@@ -321,8 +328,10 @@ TFitResultPtr analyzeCalib_fit_histograms(TH1 *h, TF1 *f)
 
    return frp;
 }
+*/
 
 
+/*
 void analyzeCalib_restore_channels()
 {
    Double_t aMean = ((TH1F*) gH->o["hACoefDisp"])->GetMean();
@@ -408,6 +417,7 @@ void analyzeCalib_restore_channels()
       ch.fICoef = detAve;
    }
 }
+*/
 
 
 //float analyzeCalib_restore_channels_average(UShort_t chId)

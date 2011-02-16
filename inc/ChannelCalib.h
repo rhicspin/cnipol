@@ -36,7 +36,7 @@ public:
    Float_t  fT0CoefErr;
    Float_t  fAvrgEMiss;
    Float_t  fAvrgEMissErr;
-   Float_t  fEMeasDLCorr;   //! a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
+   Float_t  fEMeasDLCorr;   //a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
    Float_t  fBananaChi2Ndf;
 
 public:
@@ -45,6 +45,7 @@ public:
    ~ChannelCalib();
 
    void Print(const Option_t* opt="") const;
+   void PrintAsPhp(FILE *f=stdout) const;
 
    ClassDef(ChannelCalib, 1)
 };

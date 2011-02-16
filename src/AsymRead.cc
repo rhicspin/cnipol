@@ -15,6 +15,115 @@ using namespace std;
 
 
 /** */
+RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
+   fFileStream()
+{
+   fclose(fFile);
+   delete[] fMem;
+   fFileStream.close();
+}
+
+
+/** */
+RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
+   fMem(0),
+   fFileStream(fFileName.c_str(), ios::binary)
+{
+   FILE *fFile = fopen(fFileName.c_str(), "r");
+
+   // reading the data till its end ...
+   if (!fFile) {
+      printf("ERROR: %s file not found. Force exit.\n", fFileName.c_str());
+      exit(-1);
+   } else
+      printf("\nFound file %s\n", fFileName.c_str());
+
+  // Create a BLOB with file content
+  fFileStream.seekg(0, ios::end);
+  int fileSize = fFileStream.tellg(); // in bytes
+  printf("fileSize: %d\n", fileSize);
+  fFileStream.seekg(0, ios::beg);
+  
+  fMem = new char[fileSize];
+  fFileStream.read(fMem, fileSize);
+  fFileStream.close();
+}
+
+
+/** */
+RawDataProcessor::~RawDataProcessor()
+{
+}
+
+
+/** */
+void RawDataProcessor::ReadRecBegin(TStructRunInfo &ri)
+{
+   recordBeginStruct *recBegin;
+
+   //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
+
+   recBegin = (recordBeginStruct*) fMem;
+
+   //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
+
+      cout << "Begin of data stream Ver: " << recBegin->version << endl;
+      cout << "Comment: "                  << recBegin->comment << endl;
+      cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
+      cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
+
+      ri.StartTime  = recBegin->header.timestamp.time;
+      ri.fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
+      ri.fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
+
+      //printf("fPolBeam:   %#x\n", ri.fPolBeam);
+      //printf("fPolStream: %#x, %#x, %#x\n", ri.fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
+
+      int polId = ri.GetPolarimeterId(ri.fPolBeam, ri.fPolStream);
+
+      if (polId < 0)
+         printf("WARNING: Polarimeter ID will be defined by other means\n");
+      
+      stringstream sstr;
+
+      // First, try to get polarimeter id from the data
+      if (polId >= 0) {
+         sstr << ri.fPolId;
+         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+         gRunDb.fPolId = ri.fPolId;
+
+      // if failed, get id from the file name
+      } else if (ri.GetPolarimeterId() >= 0) {
+         sstr.str("");
+         sstr << ri.fPolId;
+         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+         gRunDb.fPolId = ri.fPolId;
+
+      // see if the polarimeter id was set by command line argument 
+      } else if (ri.fPolId >= 0) {
+         sstr.str("");
+         sstr << ri.fPolId;
+         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+         gRunDb.fPolId = ri.fPolId;
+
+      } else { // cannot proceed
+
+         printf("ERROR: Unknown polarimeter ID\n");
+         exit(-1);
+      }
+
+      sstr.str("");
+      sstr << ri.StartTime;
+      gRunDb.fFields["START_TIME"] = sstr.str();
+      gRunDb.timeStamp = ri.StartTime; // should be always defined in raw data
+      //gRunDb.Print();
+
+   //} else
+      //printf("ERROR: Cannot read REC_BEGIN record\n");
+}
+
+
+/** */
 void readDataFast()
 { //{{{
    FILE *fp = fopen(gDataFileName.c_str(), "r");
@@ -29,7 +138,7 @@ void readDataFast()
    recordHeaderStruct header;
    //recordDataStruct   data;
 
-   //} else
+   // else
    //   printf("ERROR: Cannot read REC_BEGIN record\n");
 
    //int nEvent       = 0;
@@ -80,7 +189,8 @@ void readDataFast()
 
             if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
 
-            if (nReadEvents % dproc.thinout == 0) {
+            //if (nReadEvents % dproc.thinout == 0)
+            if (gRandom->Rndm() <= dproc.fFastCalibThinout) {
 
                gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
@@ -114,7 +224,7 @@ void readDataFast()
 
 
 /** */
-void readRecBegin(TStructRunInfo &ri)
+void ReadRecBegin(TStructRunInfo &ri)
 {
    FILE *fp = fopen(gDataFileName.c_str(), "r");
 
@@ -188,10 +298,11 @@ void readRecBegin(TStructRunInfo &ri)
    fclose(fp);
 }
 
+
 // =================
 // read loop routine
 // =================
-int readloop()
+void readloop()
 {
    static int READ_FLAG = 0;
 
@@ -335,85 +446,85 @@ int readloop()
          // invalid ndelim info
          if (!ReadFlag.PCTARGET && !dproc.CMODE) {
 
-           ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
-           long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
-           --pointer;
-           UShort_t i = 0;
+            ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
+            long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
+            --pointer;
+            UShort_t i = 0;
 
-           printf("    index   total   x-pos   y-pos \n");
+            printf("   index    total        x-pos        y-pos\n");
 
-           for (int k=0; k<ndelim; k++) {
+            for (int k=0; k<ndelim; k++) {
 
-              tgt.Linear[k][1] = *++pointer; // Horizontal target
-              tgt.Rotary[k][1] = *++pointer;
-              tgt.Linear[k][0] = *++pointer; // Vertical target
-              tgt.Rotary[k][0] = *++pointer;
+               tgt.Linear[k][1] = *++pointer; // Horizontal target
+               tgt.Rotary[k][1] = *++pointer;
+               tgt.Linear[k][0] = *++pointer; // Vertical target
+               tgt.Rotary[k][0] = *++pointer;
 
-              // force 0 for +/-1 tiny readout as target position.
-              if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
+               // force 0 for +/-1 tiny readout as target position.
+               if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
 
-              // identify Horizontal or Vertical target from the first target
-              // rotary position readout.
-              if (k==0) {
-                 // From Run09 on, the horizontal/vertical targets are
-                 // identified by linear motion
-                 long int tgt_identifyV = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
-                 long int tgt_identifyH = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
+               // identify Horizontal or Vertical target from the first target
+               // rotary position readout.
+               if (k == 0) {
+                  // From Run09 on, the horizontal/vertical targets are
+                  // identified by linear motion
+                  long int tgt_identifyV = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
+                  long int tgt_identifyH = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
 
-                 if ( ( !tgt.Rotary[k][0] && !tgt.Rotary[k][1] ) ||
-                      (  tgt.Rotary[k][0] && tgt.Rotary[k][1]  ) )
-                 {
-                    cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
-                    gRunInfo.target = '-';
-                 }
+                  if ( ( !tgt.Rotary[k][0] && !tgt.Rotary[k][1] ) ||
+                       (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1]  ) )
+                  {
+                     cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
+                     gRunInfo.target = '-';
+                  }
 
-                 if (tgt_identifyV) {
-                    tgt.VHtarget    = 0;
-                    gRunInfo.target = 'V';
-                    cout << "Vertical Target in finite position" << endl;
-                 } else if (tgt_identifyH) {
-                    tgt.VHtarget    = 1;
-                    gRunInfo.target = 'H';
-                    cout << "Horizontal Target in finite position" << endl;
-                 } else {
-                    cout << "Warning: Target infomation cannot be recognized.." << endl;
-                 }
+                  if (tgt_identifyV) {
+                     tgt.VHtarget    = 0;
+                     gRunInfo.target = 'V';
+                     cout << "Vertical Target in finite position" << endl;
+                  } else if (tgt_identifyH) {
+                     tgt.VHtarget    = 1;
+                     gRunInfo.target = 'H';
+                     cout << "Horizontal Target in finite position" << endl;
+                  } else {
+                     cout << "Warning: Target infomation cannot be recognized.." << endl;
+                  }
 
-                 tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
-                 tgt.Time[i] = k;
-                 tgt.X[i]    = tgt.x;
+                  tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+                  tgt.Time[i] = k;
+                  tgt.X[i]    = tgt.x;
 
-                 printf("@%8d %8d %7.1f %7.1f\n", i, k,
-                         tgt.Rotary[k][0]*dproc.target_count_mm,
-                         tgt.Rotary[k][1]*dproc.target_count_mm);
-              } else {
+                  printf("%8d %8d %12.3f %12.3f\n", i, k,
+                          tgt.Rotary[k][0]*dproc.target_count_mm,
+                          tgt.Rotary[k][1]*dproc.target_count_mm);
+               } else {
 
-                 TgtIndex[k] = i;
+                  TgtIndex[k] = i;
 
-                 if (tgt.Rotary[k][1] != tgt.Rotary[k-1][1] ||
-                     tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
-                 {
-                    TgtIndex[k]                 = ++i ;
-                    tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
-                    tgt.Time[TgtIndex[k]]       = float(k);
-                    tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
-                    ++nTgtIndex;
+                  if (tgt.Rotary[k][1] != tgt.Rotary[k-1][1] ||
+                      tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
+                  {
+                     TgtIndex[k]                 = ++i ;
+                     tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+                     tgt.Time[TgtIndex[k]]       = float(k);
+                     tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
+                     ++nTgtIndex;
 
-                    if (nTgtIndex>TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
-                       strcpy(gRunInfo.TgtOperation, " scan");
+                     if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
+                        strcpy(gRunInfo.TgtOperation, " scan");
 
-                    printf("@%8d%8d%7.1f%7.1f\n", i, k,
-                            tgt.Rotary[k][0]*dproc.target_count_mm,
-                            tgt.Rotary[k][1]*dproc.target_count_mm);
-                 }
-              }
+                     printf("%8d %8d %12.3f %12.3f\n", i, k,
+                             tgt.Rotary[k][0]*dproc.target_count_mm,
+                             tgt.Rotary[k][1]*dproc.target_count_mm);
+                  }
+               }
 
-              // target position array including static target motion
-              tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
-           }
+               // target position array including static target motion
+               tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
+            }
 
-           printf("Number of Delimiters :%4d\n", ndelim);
-           ReadFlag.PCTARGET = 1;
+            printf("Number of Delimiters :%4d\n", ndelim);
+            ReadFlag.PCTARGET = 1;
          }
 
          // define target histograms
@@ -747,13 +858,13 @@ int readloop()
    fclose(fp);
 
    // Post processing
-   if (!(dproc.fModes & TDatprocStruct::MODE_ALPHA)) end_process(cfginfo);
+   if ((dproc.fModes & TDatprocStruct::MODE_NORMAL) == TDatprocStruct::MODE_NORMAL)
+      end_process();
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo.StopTime));
    fprintf(stdout, "%ld Carbons are found in\n", Nevcut);
    //fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
-
    fprintf(stdout, "Total events in file %d\n", dproc.nEventsTotal);
    fprintf(stdout, "First %d events processed\n", Nread);
    fprintf(stdout, "%d events saved\n", Nevtot);
@@ -781,8 +892,6 @@ int readloop()
          exit(-1);
       }
    }
-
-   return(0);
 }
 
 

@@ -94,13 +94,69 @@ void TStructRunDB::PrintAsDbEntry(ostream &o, Bool_t printCommonFields) const
 
 
 /** */
-void AsymRunDB::UpdateCommonFields(TStructRunDB *dbrun)
+void TStructRunDB::ProcessLine(std::string sline)
+{
+   DbFieldMap::iterator ifld;
+   DbFieldMap::iterator bfld = fFields.begin();
+   DbFieldMap::iterator efld = fFields.end();
+
+   for (ifld=bfld; ifld!=efld; ifld++) {
+      //printf("%s=%s\n", ifld->first.c_str(), ifld->second.c_str());
+      TObjArray *subStrL = TPRegexp("^\\s+"+ifld->first+"\\s*(\\*?)=\\s*(.*)$").MatchS(sline);
+
+      if (subStrL && subStrL->GetEntriesFast() >= 3) {
+
+         // first pattern
+         TString subStr = ((TObjString *) subStrL->At(1))->GetString();
+
+         if (subStr == "*") fFieldFlags[ifld->first] = true;
+
+         // second pattern
+         subStr = ((TObjString *) subStrL->At(2))->GetString();
+         delete subStrL;
+
+         // remove comments
+         Ssiz_t npos = subStr.Index("//");
+         if (npos > 0) subStr.Remove(npos);
+
+         // remove other characters
+         subStr.Remove(TString::kBoth, ' ');
+         subStr.Remove(TString::kBoth, '\t');
+         subStr.Remove(TString::kBoth, ' ');
+         subStr.Remove(TString::kBoth, '@');
+         subStr.Remove(TString::kBoth, ';');
+         subStr.Remove(TString::kBoth, '\"');
+         subStr.Remove(TString::kBoth, ' ');
+
+         if (subStr.Length() == 0) {
+            ifld->second = "";
+         } else if (ifld->first == "DISABLED_BUNCHES" || ifld->first == "EnableBunch" ||
+            ifld->first == "DISABLED_CHANNELS" || ifld->first == "EnableStrip")
+         {
+            if (ifld->second == "none") ifld->second = "";
+            ifld->second += " ";
+            ifld->second += subStr;
+         } else
+            ifld->second = subStr;
+
+         //printf("XXX found field: %s = |%s| %d\n", ifld->first.c_str(), ifld->second.c_str(), fFieldFlags[ifld->first]);
+         //printf("XXX found field: %s = |%s|\n", ifld->first.c_str(), ifld->second.c_str());
+      }
+   }
+}
+
+
+/**
+ * Update common fields in  fCommonRunDb entries using the values from dbrun.
+ * dbrun is expected to have the POLARIMETER_ID set
+ */
+void AsymRunDB::UpdateCommonFields(TStructRunDB &dbrun)
 {
    // First check the polarimeter id
-   if (dbrun->fFields["POLARIMETER_ID"] != "none") {
-      dbrun->fPolId = atoi(dbrun->fFields["POLARIMETER_ID"].c_str());
+   if (dbrun.fFields["POLARIMETER_ID"] != "none") {
+      dbrun.fPolId = atoi(dbrun.fFields["POLARIMETER_ID"].c_str());
    } else {
-      TObjArray *subStrL = TPRegexp("\\d+\\.(\\d)\\d{2}").MatchS(dbrun->fRunName);
+      TObjArray *subStrL = TPRegexp("\\d+\\.(\\d)\\d{2}").MatchS(dbrun.fRunName);
 
       if (subStrL->GetEntriesFast() < 1) {
          printf("Fatal error: no pol id\n");
@@ -110,29 +166,29 @@ void AsymRunDB::UpdateCommonFields(TStructRunDB *dbrun)
       TString spolid = ((TObjString *) subStrL->At(1))->GetString();
       delete subStrL;
 
-      dbrun->fPolId = spolid.Atoi();
-      dbrun->fFields["POLARIMETER_ID"] = spolid;
+      dbrun.fPolId = spolid.Atoi();
+      dbrun.fFields["POLARIMETER_ID"] = spolid;
    }
 
-   if (dbrun->fFields["START_TIME"] != "none") {
-      dbrun->timeStamp = atoi(dbrun->fFields["START_TIME"].c_str());
+   if (dbrun.fFields["START_TIME"] != "none") {
+      dbrun.timeStamp = atoi(dbrun.fFields["START_TIME"].c_str());
    }
 
-   //if (dbrun->fPolId == UCHAR_MAX)
+   //if (dbrun.fPolId == UCHAR_MAX)
 
-   //printf("polId: %d\n", dbrun->fPolId);
+   //printf("polId: %d\n", dbrun.fPolId);
 
-   if (!fCommonRunDB[dbrun->fPolId]) {
+   if (!fCommonRunDB[dbrun.fPolId]) {
       TStructRunDB *cr = new TStructRunDB();
 
       cr->fFields["POLARIMETER_ID"] = " ";
-      sprintf(&cr->fFields["POLARIMETER_ID"][0], "%1d", dbrun->fPolId);
+      sprintf(&cr->fFields["POLARIMETER_ID"][0], "%1d", dbrun.fPolId);
 
-      cr->fPolId = dbrun->fPolId;
-      fCommonRunDB[dbrun->fPolId] = cr;
+      cr->fPolId = dbrun.fPolId;
+      fCommonRunDB[dbrun.fPolId] = cr;
    }
 
-   fCommonRunDB[dbrun->fPolId]->UpdateFields(dbrun);
+   fCommonRunDB[dbrun.fPolId]->UpdateFields(dbrun);
 }
 
 
@@ -185,10 +241,10 @@ const UShort_t AsymRunDB::sNFields = 28;
 
 const char* AsymRunDB::sFieldNames[] = {
    "RESET_ALL", "POLARIMETER_ID", "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
-   "INJ_TSHIFT", "ENERGY_CALIB", "ENERGY_CALIB_ROOT_FILE",
+   "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
    "ALPHA_CALIB_RUN_NAME", "CONFIG", "DEFINE_SPIN_PATTERN",
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
-   "DisableBunch", "EnableBunch", "DisableStrip", "EnableStrip", "DisabledBunches", "DisabledStrips",
+   "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
    "RUN_STATUS", "START_TIME", "STOP_TIME", "NEVENTS_TOTAL",
    "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID"};
 
@@ -214,6 +270,34 @@ AsymRunDB::AsymRunDB() : TObject()
 
 
 /** */
+AsymRunDB::~AsymRunDB()
+{
+   //if (fDbFile) fclose(fDbFile);
+   Clear();
+}
+
+
+/** */
+void AsymRunDB::Clear()
+{
+   //if (fDbFile) fclose(fDbFile);
+
+   // There must be a more elegant way for erasing pointers
+   DbCommonRunMap::iterator icr;
+   DbCommonRunMap::iterator bcr = fCommonRunDB.begin();
+   DbCommonRunMap::iterator ecr = fCommonRunDB.end();
+
+   for (icr=bcr; icr!=ecr; icr++) {
+      delete icr->second;
+      icr->second = 0;
+   }
+
+   fCommonRunDB.clear();
+   fDBRuns.clear();
+}
+
+
+/** */
 TStructRunDB* AsymRunDB::Select(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
@@ -224,63 +308,61 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
    }
 
    char    *line   = NULL;
+   UInt_t   iLine  = 1;
    size_t   len    = 0;
    ssize_t  nBytes = 0;
-   TStructRunDB *tmpRun = 0;
+   TStructRunDB *currentRun = 0;
 
    while (true) {
 
       ssize_t nb = getline(&line, &len, fDbFile);
-      //if (nb < 0) break;
-
       nBytes += nb;
 
-      string sline(line);
-      //cout << "line: " << sline;
+      // if reached the end of file
+      //if (nb < 0) { if (!currentRun) return 0; }
 
-      // Ignore comment lines
-      if (TPRegexp("^(\\s*)//(.*)$").MatchB(sline)) { continue; }
+      string sline(line);
+      //cout << setw(8) << iLine++ << " (" << setw(8) << nb << "): " << sline;
+
+      // Skip blank and comment lines
+      if ( TPRegexp("^(\\s*)//(.*)$").MatchB(sline) )// ||
+           //TPRegexp("^(\\s*)$").MatchB(sline) )
+      { continue; }
 
       if (TPRegexp("\\[([\\w,\\W]+)\\]").MatchB(sline) || nb < 0) {
 
-         if (tmpRun) {
-            //tmpRun->UpdateValues();
-            UpdateCommonFields(tmpRun);
-
+         if (currentRun) {
+            //currentRun->UpdateValues();
+            UpdateCommonFields(*currentRun);
             //PrintCommon();
-            //printf("--- %s, %s\n", runName.c_str(), tmpRun->fRunName.c_str());
+            //printf("--- %s, %s\n", runName.c_str(), currentRun->fRunName.c_str());
 
-            //if (nb < 0) { // This is just the last run ??? -> No info found for dbrun.fRunName. use propogated values for this polarimeter
-            //   //tmpRun->UpdateFields(fCommonRunDB[tmpRun->fPolId]);
-
-            //   if (runName == "") fDBRuns.insert(*tmpRun);
-
-            //   delete tmpRun;
-
-            //   fclose(fDbFile);
-            //   return 0;
-            //}
-
-            if (tmpRun->fRunName == runName) {
+            if (currentRun->fRunName == runName) {
                printf("Found run %s\n", runName.c_str());
-               tmpRun->UpdateFields(fCommonRunDB[tmpRun->fPolId]);
+               currentRun->UpdateFields(*fCommonRunDB[currentRun->fPolId]);
 
                fclose(fDbFile);
-               return tmpRun;
+               return currentRun;
 
             } else if (runName == "") {
 
-               fDBRuns.insert(*tmpRun);
-               delete tmpRun;
+               fDBRuns.insert(*currentRun);
+               delete currentRun;
 
-               if (nb < 0) { return 0; }
+               if (nb < 0) { fclose(fDbFile); return 0; }
 
             } else if (nb < 0) {
-               delete tmpRun;
+               delete currentRun;
+               fclose(fDbFile);
                return 0;
             } else {
-               delete tmpRun;
+               delete currentRun;
             }
+
+         } else if (nb < 0) {
+            delete currentRun;
+            fclose(fDbFile);
+            return 0;
          }
 
          TObjArray *subStrL = TPRegexp("\\[([\\w,\\W]+)\\]").MatchS(sline);
@@ -289,60 +371,16 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
 
          //printf("XXX found %s\n", subStr.Data());
 
-         tmpRun = new TStructRunDB();
-         tmpRun->fRunName = subStr;
+         currentRun = new TStructRunDB();
+         currentRun->fRunName = subStr;
 
-      } else if (tmpRun) {
-
-         DbFieldMap::iterator ifld;
-         DbFieldMap::iterator bfld = tmpRun->fFields.begin();
-         DbFieldMap::iterator efld = tmpRun->fFields.end();
-
-         for (ifld=bfld; ifld!=efld; ifld++) {
-            //printf("%s=%s\n", ifld->first.c_str(), ifld->second.c_str());
-            TObjArray *subStrL = TPRegexp("^\\s+"+ifld->first+"\\s*(\\*?)=\\s*(.*)$").MatchS(sline);
-
-            if (subStrL && subStrL->GetEntriesFast() >= 3) {
-
-               // first pattern
-               TString subStr = ((TObjString *) subStrL->At(1))->GetString();
-
-               if (subStr == "*") tmpRun->fFieldFlags[ifld->first] = true;
-
-               // second pattern
-               subStr = ((TObjString *) subStrL->At(2))->GetString();
-               delete subStrL;
-
-               // remove comments
-               Ssiz_t npos = subStr.Index("//");
-               if (npos > 0) subStr.Remove(npos);
-
-               // remove other characters
-               subStr.Remove(TString::kBoth, ' ');
-               subStr.Remove(TString::kBoth, '\t');
-               subStr.Remove(TString::kBoth, ' ');
-               subStr.Remove(TString::kBoth, '@');
-               subStr.Remove(TString::kBoth, ';');
-               subStr.Remove(TString::kBoth, '\"');
-               subStr.Remove(TString::kBoth, ' ');
-
-               if (subStr.Length() == 0) {
-                  ifld->second = "";
-               } else if (ifld->first == "DisableBunch" || ifld->first == "EnableBunch" ||
-                  ifld->first == "DisableStrip" || ifld->first == "EnableStrip")
-               {
-                  if (ifld->second == "none") ifld->second = "";
-                  ifld->second += " ";
-                  ifld->second += subStr;
-               } else
-                  ifld->second = subStr;
-
-               //printf("XXX found field: %s = |%s| %d\n", ifld->first.c_str(), ifld->second.c_str(), tmpRun->fFieldFlags[ifld->first]);
-               //printf("XXX found field: %s = |%s|\n", ifld->first.c_str(), ifld->second.c_str());
-            }
-         }
+      } else if (currentRun) {
+         currentRun->ProcessLine(sline);
       }
    }
+
+   // if ever get here return 0
+   return 0;
 }
 
 
@@ -421,7 +459,8 @@ void AsymRunDB::Dump()
    DbCommonRunMap::iterator ecr = fCommonRunDB.end();
 
    for (icr=bcr; icr!=ecr; icr++) {
-      if (icr->second) delete icr->second;
+      delete icr->second;
+      icr->second = 0;
    }
 
    DbRunSet::iterator ir;
@@ -436,7 +475,7 @@ void AsymRunDB::Dump()
 
       ir->PrintAsDbEntry(dbFile);
       //fCommonRunDB->UpdateFields(ir);
-      UpdateCommonFields((TStructRunDB*) &*ir);
+      UpdateCommonFields((TStructRunDB&) *ir);
    }
 
    dbFile.close();
@@ -488,15 +527,6 @@ void AsymRunDB::Insert(TStructRunDB *dbrun)
 
    printf("Inserting run \"%s\" in database\n", dbrun->fRunName.c_str());
    fDBRuns.insert(*dbrun);
-}
-
-
-/** */
-AsymRunDB::~AsymRunDB()
-{
-   //if (fDbFile) fclose(fDbFile);
-   fCommonRunDB.clear();
-   fDBRuns.clear();
 }
 
 
@@ -555,21 +585,22 @@ int readdb(double RUNID)
             // a "*" after the flag name means only apply the flag to this run
             if(str.find("*=") == string::npos || RUNID == gRunDb.RunID)
             {
-               if (str.find("RESET_ALL=Default")   == 1) SetDefault();
-               if (str.find("CONFIG")              == 1) gRunDb.config_file_s         = GetVariables(str);
-               if (str.find("MASSCUT")             == 1) gRunDb.masscut_s             = GetVariables(str);
-               if (str.find("TSHIFT")              == 1) gRunDb.tshift_s              = GetVariables(str);
-               if (str.find("ALPHA_CALIB_RUN_NAME=") == 1) gRunDb.alpha_calib_run_name = GetVariables(str);
-               if (str.find("ENERGY_CALIB=")       == 1) gRunDb.calib_file_s          = GetVariables(str);
-               if (str.find("INJ_TSHIFT")          == 1) gRunDb.inj_tshift_s          = GetVariables(str);
-               if (str.find("RUN_STATUS")          == 1) gRunDb.run_status_s          = GetVariables(str);
-               if (str.find("MEASUREMENT_TYPE")    == 1) gRunDb.measurement_type_s    = GetVariables(str);
-               if (str.find("DEFINE_SPIN_PATTERN") == 1) gRunDb.define_spin_pattern_s = GetVariables(str);
-               if (str.find("DEFINE_FILL_PATTERN") == 1) gRunDb.define_fill_pattern_s = GetVariables(str);
-               if (str.find("REFERENCE_RATE")      == 1) gRunDb.reference_rate_s      = GetVariables(str);
-               if (str.find("TARGET_COUNT_MM")     == 1) gRunDb.target_count_mm_s     = GetVariables(str);
-               if (str.find("COMMENT")             == 1) gRunDb.comment_s             = GetVariables(str);
-               if (str.find("DisableBunch")        == 1) {
+               if (str.find("RESET_ALL=Default")     == 1) SetDefault();
+               if (str.find("CONFIG")                == 1) gRunDb.config_file_s         = GetVariables(str);
+               if (str.find("MASSCUT")               == 1) gRunDb.masscut_s             = GetVariables(str);
+               if (str.find("TSHIFT")                == 1) gRunDb.tshift_s              = GetVariables(str);
+               if (str.find("DL_CALIB_RUN_NAME=")    == 1) gRunDb.dl_calib_run_name     = GetVariables(str);
+               if (str.find("ALPHA_CALIB_RUN_NAME=") == 1) gRunDb.alpha_calib_run_name  = GetVariables(str);
+               if (str.find("ENERGY_CALIB=")         == 1) gRunDb.calib_file_s          = GetVariables(str);
+               if (str.find("INJ_TSHIFT")            == 1) gRunDb.inj_tshift_s          = GetVariables(str);
+               if (str.find("RUN_STATUS")            == 1) gRunDb.run_status_s          = GetVariables(str);
+               if (str.find("MEASUREMENT_TYPE")      == 1) gRunDb.measurement_type_s    = GetVariables(str);
+               if (str.find("DEFINE_SPIN_PATTERN")   == 1) gRunDb.define_spin_pattern_s = GetVariables(str);
+               if (str.find("DEFINE_FILL_PATTERN")   == 1) gRunDb.define_fill_pattern_s = GetVariables(str);
+               if (str.find("REFERENCE_RATE")        == 1) gRunDb.reference_rate_s      = GetVariables(str);
+               if (str.find("TARGET_COUNT_MM")       == 1) gRunDb.target_count_mm_s     = GetVariables(str);
+               if (str.find("COMMENT")               == 1) gRunDb.comment_s             = GetVariables(str);
+               if (str.find("DISABLED_BUNCHES")          == 1) {
                   gRunDb.disable_bunch_s     = GetVariables(str);
                   BunchHandler(atoi(gRunDb.disable_bunch_s.c_str()), 1);
                }
@@ -577,7 +608,7 @@ int readdb(double RUNID)
                   gRunDb.enable_bunch_s      = GetVariables(str);
                   BunchHandler(atoi(gRunDb.enable_bunch_s.c_str()),-1);
                }
-               if (str.find("DisableStrip")        ==1) {
+               if (str.find("DISABLED_CHANNELS")        ==1) {
                   gRunDb.disable_strip_s     = GetVariables(str);
                   StripHandler(atoi(gRunDb.disable_strip_s.c_str()), 1);
                }
@@ -712,7 +743,7 @@ int SetDefault()
   for (int i=0; i<NSTRIP; i++) {
      ProcessStrip[i]          = 0;
      gRunInfo.ActiveStrip[i]  = 1;
-     gRunInfo.DisableStrip[i] = 0;
+     gRunInfo.fDisabledChannels[i] = 0;
      gRunInfo.NActiveStrip    = NSTRIP;
      gRunInfo.NDisableStrip   = 0;
   }
@@ -741,7 +772,7 @@ int FindDisableStrip()
   int NDisableStrip=0;
   for (int i=0;i<NSTRIP; i++) {
     if (ProcessStrip[i]>0) {
-      gRunInfo.DisableStrip[NDisableStrip] = i;
+      gRunInfo.fDisabledChannels[NDisableStrip] = i;
       NDisableStrip++;
     }
   }
@@ -927,18 +958,18 @@ int printConfig(recordConfigRhicStruct *cfginfo)
     fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",dproc.target_count_mm);
 
     // Disabled bunch
-    fprintf(stdout,"      #DisableBunch = %d\n", gRunInfo.NDisableBunch);
+    fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", gRunInfo.NDisableBunch);
     if (gRunInfo.NDisableBunch){
-      fprintf(stdout,"       DisableBunch = ");
+      fprintf(stdout,"       DISABLED_BUNCHES = ");
       for (int i=0;i<gRunInfo.NDisableBunch;i++) printf("%d ",gRunInfo.DisableBunch[i]);
       printf("\n");
     }
 
     // Disabled strips
-    fprintf(stdout,"      #DisableStrip = %d\n", gRunInfo.NDisableStrip);
+    fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", gRunInfo.NDisableStrip);
     if (gRunInfo.NDisableStrip){
-      fprintf(stdout,"       DisableStrip = ");
-      for (int i=0;i<gRunInfo.NDisableStrip;i++) printf("%d ",gRunInfo.DisableStrip[i]+1);
+      fprintf(stdout,"       DISABLED_CHANNELS = ");
+      for (int i=0;i<gRunInfo.NDisableStrip;i++) printf("%d ", gRunInfo.fDisabledChannels[i]+1);
       printf("\n");
     }
 
@@ -1034,6 +1065,7 @@ void TStructRunDB::Streamer(TBuffer &buf)
       buf >> RunID;
       buf >> isCalibRun;
       buf >> tstr; calib_file_s         = tstr.Data();
+      buf >> tstr; dl_calib_run_name    = tstr.Data();
       buf >> tstr; alpha_calib_run_name = tstr.Data();
       buf >> tstr; config_file_s        = tstr.Data();
    } else {
@@ -1042,6 +1074,7 @@ void TStructRunDB::Streamer(TBuffer &buf)
       buf << RunID;
       buf << isCalibRun;
       tstr = calib_file_s;         buf << tstr;
+      tstr = dl_calib_run_name;    buf << tstr;
       tstr = alpha_calib_run_name; buf << tstr;
       tstr = config_file_s;        buf << tstr;
    }
@@ -1093,26 +1126,27 @@ void TStructRunDB::Print(const Option_t* opt) const
 
 
 /**
- * Copies values from all fields except default ("none") and proprietary ("*")
- * ones.
+ * Copies values from dbrun to this. All fields except default ("none") and
+ * proprietary ("*") * ones.
  */
-void TStructRunDB::UpdateFields(TStructRunDB *dbrun)
+void TStructRunDB::UpdateFields(TStructRunDB &dbrun)
 {
    DbFieldMap::iterator ifld;
-   DbFieldMap::iterator bfld = dbrun->fFields.begin();
-   DbFieldMap::iterator efld = dbrun->fFields.end();
+   DbFieldMap::iterator bfld = dbrun.fFields.begin();
+   DbFieldMap::iterator efld = dbrun.fFields.end();
 
    for (ifld=bfld; ifld!=efld; ifld++) {
 
       string &field_name  = (string &) ifld->first;
       string &field_value = (string &) ifld->second;
 
-      bool flag_from = dbrun->fFieldFlags[field_name];
+      //printf("name, value: %s, %s\n", field_name.c_str(), field_value.c_str());
+
+      bool flag_from = dbrun.fFieldFlags[field_name];
       bool flag_to   = fFieldFlags[field_name];
 
       // For the same run all values are copied
-      if (fRunName == dbrun->fRunName) {
-
+      if (fRunName == dbrun.fRunName) {
          fFields[field_name] = field_value;
          fFieldFlags[field_name] = flag_from;
 
@@ -1140,6 +1174,7 @@ void TStructRunDB::UpdateValues()
 void TStructRunDB::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
+   fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());
    fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
    fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
 } //}}}

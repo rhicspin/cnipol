@@ -12,7 +12,6 @@ using namespace std;
 /** Default constructor. */
 CnipolHists::CnipolHists() : DrawObjContainer()
 {
-   //CnipolHistsBookOld();
    CnipolHistsBook();
    CnipolHistsBook("_cut1");
    CnipolHistsBook("_cut2");
@@ -24,7 +23,6 @@ CnipolHists::CnipolHists() : DrawObjContainer()
 
 CnipolHists::CnipolHists(TDirectory *dir) : DrawObjContainer(dir)
 {
-   //CnipolHistsBookOld();
    CnipolHistsBook();
    CnipolHistsBook("_cut1");
    CnipolHistsBook("_cut2");
@@ -41,130 +39,13 @@ CnipolHists::~CnipolHists()
 }
 
 
-void CnipolHists::CnipolHistsBookOld()
-{ //{{{
-/*
-   DrawObjContainer *run;
-   DrawObjContainer *raw;
-   DrawObjContainer *feedback;
-   DrawObjContainer *kinema;
-   DrawObjContainer *bunch;
-   DrawObjContainer *errdet;
-   DrawObjContainer *asymmetry;
-
-   run.fDir       = fDir;
-   raw.fDir       = fDir;
-   feedback.fDir  = fDir;
-   //kinema.fDir    = fDir;
-   kinema.fDir = new TDirectoryFile("Kinema2", "Kinema2", "", fDir);
-   //kinema.fDir    = Kinema;
-   bunch.fDir     = fDir;
-   errdet.fDir    = fDir;
-   asymmetry.fDir = fDir;
-
-   run.o["rate_vs_delim"] = new TH2F();
-
-   feedback.o["mdev_feedback"] = new TH2F();
-
-   //kinema.o["energy_spectrum_all"] = new TH1F();
-
-   char hName[256];
-   char hTitle[256];
-
-   // energy spectrum for all detector sum
-   sprintf(hName, "energy_spectrum_all");
-   sprintf(hTitle, "%.3f : Energy Spectrum (All Detectors)", gRunInfo.runName.c_str());
-   kinema.o[hName] = new TH1F(hName, hTitle, 100, 0, 0.03);
-   ((TH1F*) kinema.o[hName])->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
-
-   for (int i=1; i<=TOT_WFD_CH; i++) {
-
-      sprintf(hName,"mass_feedback_st%d", i);
-      //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", runinfo.RUNID, i+1);
-      sprintf(hTitle,"Invariant Mass for Strip-%d ", i);
-      feedback.o[hName] = new TH1F(hName, hTitle, 100, 0, 20);
-      ( (TH1F*) feedback.o[hName]) -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-      ( (TH1F*) feedback.o[hName]) -> SetLineColor(2);
-
-      sprintf(hName,"t_vs_e_st%d", i);
-      kinema.o[hName] = new TH2F();
-
-      sprintf(hName,"t_vs_e_yescut_st%d", i);
-      kinema.o[hName] = new TH2F();
-
-      sprintf(hName,"mass_vs_e_ecut_st%d", i);
-      kinema.o[hName] = new TH2F();  // Mass vs. 12C Kinetic Energy
-
-      sprintf(hName,"mass_nocut_st%d", i);
-      kinema.o[hName] = new TH1F();     // invariant mass without banana cut
-
-      sprintf(hName,"mass_yescut_st%d", i);
-      kinema.o[hName] = new TH1F();    // invariant mass with banana cut
-   }
-
-   for (int i=1; i<=NDETECTOR; i++) {
-      sprintf(hName,"energy_spectrum_det%d", i);
-      // energy spectrum per detector
-      kinema.o[hName] = new TH1F(hName, hName, 100, 0, 0.03);
-      ((TH1F*) kinema.o[hName])->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
-   }
-
-   //TF1  * banana_cut_l[NSTRIP][2];     // banana cut low
-   //TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
-   //TLine  * energy_cut_l[NSTRIP];      // energy cut low
-   //TLine  * energy_cut_h[NSTRIP];      // energy cut high
-
-   raw.o["bunch_dist_raw"]              = new TH1F();//"asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
-   raw.o["strip_dist_raw"]              = new TH1F();
-   raw.o["tdc_raw"]                     = new TH1F();
-   raw.o["adc_raw"]                     = new TH1F();
-   raw.o["tdc_vs_adc_raw"]              = new TH2F(); //((TH2F*) raw.o["tdc_vs_adc_raw"])->SetOption("LOGZ");
-   raw.o["tdc_vs_adc_false_bunch_raw"]  = new TH2F();
-
-   //bunch.o["bunch_dist_raw            = new TH1F();              // counts per bunch (raw)
-   bunch.o["bunch_dist"]                = new TH1F();                  // counts per bunch
-   bunch.o["wall_current_monitor"]      = new TH1F();        // wall current monitor
-   bunch.o["specific_luminosity"]       = new TH1F();         // specific luminosity
-
-   errdet.o["mass_chi2_vs_strip"]       = new TH2F();          // Chi2 of Gaussian Fit on Mass peak
-   errdet.o["mass_sigma_vs_strip"]      = new TH2F();         // Mass sigma width vs. strip
-   errdet.o["mass_e_correlation_strip"] = new TH2F();    // Mass-energy correlation vs. strip
-   errdet.o["mass_pos_dev_vs_strip"]    = new TH2F();       // Mass position deviation vs. strip
-   errdet.o["good_carbon_events_strip"] = new TH1I();    // number of good carbon events per strip
-   errdet.o["spelumi_vs_bunch"]         = new TH2F();            // Counting rate vs. bunch
-   errdet.o["bunch_spelumi"]            = new TH1F();               // Counting rate per bunch hisogram
-   errdet.o["asym_bunch_x45"]           = new TH1F();              // Bunch asymmetry histogram for x45
-   errdet.o["asym_bunch_x90"]           = new TH1F();              // Bunch asymmetry histogram for x90
-   errdet.o["asym_bunch_y45"]           = new TH1F();              // Bunch asymmetry histogram for y45
-
-   asymmetry.o["asym_vs_bunch_x45"]     = new TH2F();//"asym_vs_bunch_x45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
-   asymmetry.o["asym_vs_bunch_x90"]     = new TH2F();
-   asymmetry.o["asym_vs_bunch_y45"]     = new TH2F();
-   asymmetry.o["asym_sinphi_fit"]       = new TH2F();
-   asymmetry.o["scan_asym_sinphi_fit"]  = new TH2F();
-
-   d["Run"]       = run;
-   d["Raw"]       = raw;
-   d["FeedBack"]  = feedback;
-   d["Kinema2"]   = kinema;
-   d["Bunch"]     = bunch;
-   d["ErrDet"]    = errdet;
-   d["Asymmetry"] = asymmetry;
-
-   // 
-   sprintf(hName, "hKinEnergyA_oo");
-   o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
-   ((TH1F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-*/
-} //}}}
-
-
 /** */
 void CnipolHists::CnipolHistsBook(string sid)
 { //{{{
    char hName[256];
 
    //fDir->Print();
+   fDir->cd();
 
    //char  formula[100], fname[100];
    //sprintf(formula, "(%f/sqrt(x+130))-23", RunConst::E2T);
@@ -385,6 +266,7 @@ void CnipolHists::BookPreProcess()
    if ( isubdir == d.end()) { // if dir not found
       oc = new DrawObjContainer();
       oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      oc->fDir->cd();
    } else {
       oc = isubdir->second;
    }
@@ -425,8 +307,7 @@ void CnipolHists::Print(const Option_t* opt) const
 /** */
 Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
 { //{{{
-
-   //return DrawObjContainer::Write(name, option, bufsize);
+   return DrawObjContainer::Write(name, option, bufsize);
 
    // Temporary
    if (!fDir) {
@@ -448,9 +329,9 @@ Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       string sname(isubd->first);
       if (sname.find("channel") != string::npos ||
-          sname.find("preproc") != string::npos ||
-          sname.find("scalers") != string::npos ||
-          sname.find("Kinema2") != string::npos )
+          sname.find("preproc") != string::npos )// ||
+          //sname.find("scalers") != string::npos )// ||
+          //sname.find("Kinema2") != string::npos )
       {//continue;
          isubd->second->Write();
       }
@@ -474,9 +355,9 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    char hName[256];
    
    if (sid == "_cut2") { // fill these if only pass the carbon mass cut
-      ((TH1F*) d["Kinema2"]->o["energy_spectrum_all"])->Fill( fabs(ch->GetMandelstamT()) );
-      sprintf(hName,"energy_spectrum_det%d", detId);
-      ((TH1F*) d["Kinema2"]->o[hName])->Fill( fabs(ch->GetMandelstamT()) );
+      //((TH1F*) d["Kinema2"]->o["energy_spectrum_all"])->Fill( fabs(ch->GetMandelstamT()) );
+      //sprintf(hName,"energy_spectrum_det%d", detId);
+      //((TH1F*) d["Kinema2"]->o[hName])->Fill( fabs(ch->GetMandelstamT()) );
    }
 
    // by channel id
@@ -496,9 +377,6 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sSi])      ->Fill(ch->GetKinEnergyAEstimate(), tof);
    //((TH2F*)    o["hTofVsKinEnergyA"+sid])                ->Fill(ch->GetKinEnergyAEstimate(), tof);
    //((TH1F*)    o["hKinEnergyA_o"+sid])                   ->Fill(ch->GetKinEnergyAEstimate());
-
-   //ds XXX
-   //return;
 
    // Full kinematic carbon energy
    //Float_t energyEst = ch->GetKinEnergyAEstimate();          // from all channel fit
@@ -520,7 +398,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    ((TH1*)     o["hSpinVsChannel"+sid])                  ->Fill(ch->GetChannelId(), spinpat[bId]);
    //((TH1*)     o["hSpinVsBunch"+sid])                    ->Fill(bId, spinpat[bId]);
 
-   //ds
+   //ds XXX
    return;
 
    //((TH2F*)    o["hTimeVsFunnyEnergyA"+sid])             ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
@@ -547,8 +425,6 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
 /** */
 void CnipolHists::FillPreProcess(ChannelEvent *ch)
 { //{{{
-   UChar_t chId = ch->GetChannelId();
-
    DrawObjContainer *sd = d["preproc"];
 
    ((TH2F*) sd->o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
@@ -628,9 +504,6 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
    } else {
       //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
    }
-
-   // XXX
-   //return;
 
    // Draw superimposed for all channels
    for (UShort_t i=1; i<=NSTRIP; i++) {

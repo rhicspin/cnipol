@@ -34,10 +34,6 @@ int main(int argc, char *argv[])
    Initialization();
 
    // prefix directories
-   const char* tmpEnv = getenv("DATADIR");
-
-   if (tmpEnv) gAsymEnv["DATADIR"] = tmpEnv;
-   else        gAsymEnv["DATADIR"] = ".";
 
    // config directories
    confdir = getenv("CONFDIR");
@@ -60,16 +56,22 @@ int main(int argc, char *argv[])
       {"raw",                 0,                   0,   'r'},
       {"feedback",            0,                   0,   'b'},
       {"no-error-detector",   0,                   0,   'a'},
-      {"update-db",           no_argument,         0,   0x100},
-      {"pol-id",              required_argument,   0,   0x200},
+      {"update-db",           no_argument,         0,   0x0100},
+      {"no-update-db",        no_argument,         0,   0x0200},
+      {"pol-id",              required_argument,   0,   0x0300},
+      {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
       {"quick",               no_argument,         0,   'q'},
       {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
+      {"mode-calib",          no_argument,         0,   TDatprocStruct::MODE_CALIB},
       {"mode-normal",         no_argument,         0,   TDatprocStruct::MODE_NORMAL},
       {"mode-no-normal",      no_argument,         0,   TDatprocStruct::MODE_NO_NORMAL},
       {"mode-scaler",         no_argument,         0,   TDatprocStruct::MODE_SCALER},
       {"mode-raw",            no_argument,         0,   TDatprocStruct::MODE_RAW},
       {"mode-bunch",          no_argument,         0,   TDatprocStruct::MODE_BUNCH},
       {"mode-full",           no_argument,         0,   TDatprocStruct::MODE_FULL},
+      {"set-calib",           required_argument,   0,   0x3000},
+      {"set-calib-alpha",     required_argument,   0,   0x1000},
+      {"set-calib-dl",        required_argument,   0,   0x2000},
       {0, 0, 0, 0}
    };
 
@@ -114,6 +116,7 @@ int main(int argc, char *argv[])
                  "e.g. \"-R 101\"" <<endl;
          cout << " -q, --quick              : Skips the main loop. Use for a quick check" << endl;
          cout << " -C, --mode-alpha         : Use when run over alpha run data" << endl;
+         cout << "     --mode-calib, --calib: Update calibration constants" << endl;
          cout << "     --mode-normal        : Deafult set of histograms" << endl;
          cout << "     --mode-no-normal     : Turn off the deafult set of histograms" << endl;
          cout << "     --mode-scaler        : Fill and save only scaler histograms (from V124 memory)" << endl;
@@ -125,7 +128,7 @@ int main(int argc, char *argv[])
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
          //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
-         gDataFileName = gAsymEnv["DATADIR"] +  "/" + optarg + ".data";
+         gDataFileName = dproc.fAsymEnv["DATADIR"] +  "/" + optarg + ".data";
 
          // Add checks for runName suffix
          gRunInfo.runName = optarg;
@@ -167,7 +170,7 @@ int main(int argc, char *argv[])
             dproc.enel = atoi(enerange);
             if (dproc.enel == 0 || dproc.enel < 0)     { dproc.enel = 0;}
             if (dproc.eneu == 0 || dproc.eneu > 12000) { dproc.eneu = 2000;}
-            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", dproc.enel,dproc.eneu);
+            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", dproc.enel, dproc.eneu);
          } else {
              cout << "Wrong specification for energy threshold" << endl;
              return 0;
@@ -244,15 +247,31 @@ int main(int argc, char *argv[])
          sstr >> dproc.SAVETREES;
          cout << "SAVETREES: " << dproc.SAVETREES << endl;
          break;
-      case 0x100:
-         dproc.UPDATE_DB = 1;
+
+      case 0x0100:
+         dproc.UPDATE_DB = 1; break;
+
+      case 0x0200:
+         dproc.UPDATE_DB = 0; break;
+
+      case 0x0300:
+         gRunInfo.fPolId = atoi(optarg); break;
+
+      case 0x1000:
+         dproc.fAlphaCalibRun = optarg;
          break;
-      case 0x200:
-         gRunInfo.fPolId = atoi(optarg);
+
+      case 0x2000:
+         dproc.fDlCalibRun = optarg;
          break;
+
+      case 0x3000:
+         dproc.fAlphaCalibRun = optarg;
+         dproc.fDlCalibRun    = optarg;
+         break;
+
       case 'q':
-         dproc.QUICK_MODE = 1;
-         break;
+         dproc.QUICK_MODE = 1; break;
 
       case 'C':
       case TDatprocStruct::MODE_ALPHA:
@@ -261,6 +280,10 @@ int main(int argc, char *argv[])
          dproc.RECONFMODE = 0;
          dproc.fModes &= ~TDatprocStruct::MODE_NORMAL; // turn off normal mode
          gAsymRoot.fEventConfig = new EventConfig();
+         break;
+
+      case TDatprocStruct::MODE_CALIB:
+         dproc.fModes |= TDatprocStruct::MODE_CALIB;
          break;
 
       case TDatprocStruct::MODE_NO_NORMAL:
@@ -286,8 +309,7 @@ int main(int argc, char *argv[])
       }
    }
 
-   dproc.Print();
-   //return 0;
+   dproc.MakeOutDir();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -313,29 +335,53 @@ int main(int argc, char *argv[])
    // Read run info from database
    TStructRunDB *runDb = gAsymRunDb.Select(gRunDb.fRunName);
 
-   gRunDb.Print();
+   // Read data file into memory
+   RawDataProcessor *rawData = new RawDataProcessor(gDataFileName);
+
+   rawData->ReadRecBegin(gRunInfo);
 
    // Replace gRunDb
    if (runDb) {
-      gRunDb.UpdateFields(runDb);
-      gRunDb.Print();
+      printf("Run \"%s\" found in database\n", runDb->fRunName.c_str());
+      gRunDb.UpdateFields(*runDb);
+      //gRunDb.Print();
       gRunInfo.fPolId = gRunDb.fPolId;
+
+   // the following is pretty messed up... needs a clean up and better logic
    } else {
+
       // Extract and overwrite (!) basic run info (gRunInfo) from raw data
-      readRecBegin(gRunInfo);
+      //ReadRecBegin(gRunInfo);
 
       printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
-      gAsymRunDb.Select();
+      gAsymRunDb.Select(); // read all entries into memory
+      //gAsymRunDb.Print();
       gAsymRunDb.Insert(&gRunDb);
-      gAsymRunDb.Dump();
+      //gAsymRunDb.Print();
+      gAsymRunDb.Dump(); // write to DB file
+
+      gAsymRunDb.Clear();
+      runDb = gAsymRunDb.Select(gRunDb.fRunName); // now read all available common info for this run
+      gRunDb.UpdateFields(*runDb);
+      gRunInfo.fPolId = gRunDb.fPolId;
    }
 
+   // We should be done reading all common/default parameters from DB by now
    gRunDb.Print();
 
+   dproc.Update(gRunDb);
+   gRunInfo.Update(gRunDb);
+
+   dproc.Print();
+   //gRunInfo.Print();
+
+   // Manually set disabled channels... deprecated
+   //{{{
+   /*
    // XXX temp fix: disable strips
    // blue1
-   //gRunInfo.DisableStrip[11] = 1;
-   //gRunInfo.DisableStrip[65] = 1;
+   //gRunInfo.fDisabledChannels[11] = 1;
+   //gRunInfo.fDisabledChannels[65] = 1;
    // blue2
    //int disabledStrips[] = {
    //   1, 1, 1, 1, 1, 1,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
@@ -358,7 +404,7 @@ int main(int argc, char *argv[])
       //   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1
       //};
 
-      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
 
    } else if (gRunInfo.fPolId == 0) { // blue 1 upstream
 
@@ -368,7 +414,7 @@ int main(int argc, char *argv[])
          0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 1,  0, 0, 0, 0, 0, 0
       };
 
-      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
 
    } else if (gRunInfo.fPolId == 3) { // yellow 2 upstream
 
@@ -383,8 +429,10 @@ int main(int argc, char *argv[])
          0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
       };
 
-      memcpy(gRunInfo.DisableStrip, disabledStrips, sizeof(int)*72);
+      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
    }
+   */
+   //}}}
 
    //gAsymRunDb.PrintCommon();
 
@@ -392,14 +440,11 @@ int main(int argc, char *argv[])
    //while(1) {};
    //exit(-1);
 
-   // Overwrite some parameters with command line options
+   // Find RunConfig object in the calibration files and update
+   gAsymRoot.UpdateRunConfig();
 
-   // If this is successful we should have a EventConfig updated from the user
-   // file
-   if (!gAsymRoot.UseCalibFile(dproc.userCalibFile)) {
-      perror("Error: Supplied calibration file is not valid\n");
-      return 0;
-   }
+   //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+   //return 0;
 
    // if output hbk file is not specified
    if (hbk_read == 0 ) {
@@ -413,30 +458,14 @@ int main(int argc, char *argv[])
 
    // Root Histogram Booking
    char outRootFileName[256];
-   tmpEnv = getenv("CNIPOL_RESULTS_DIR");
 
-   if (tmpEnv) gAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
-   else        gAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
-
-   gAsymEnv["CNIPOL_RESULTS_DIR"].append("/");
-   gAsymEnv["CNIPOL_RESULTS_DIR"].append(gRunInfo.runName);
-
-   if (gAsymEnv["CNIPOL_RESULTS_DIR"].size() > 200) {
-      printf("ERROR: Results dir name too long\n"); return 0;
-   }
-
-   //printf("s: %s, %s, %s\n", ifile, RunID, gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
-
-   umask(0);
-   if (mkdir(gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), 0777) < 0)
-      printf("WARNING: Perhaps dir already exists: %s\n", gAsymEnv["CNIPOL_RESULTS_DIR"].c_str());
-
-   sprintf(outRootFileName, "%s/%s.root", gAsymEnv["CNIPOL_RESULTS_DIR"].data(), gRunInfo.runName.c_str());
+   sprintf(outRootFileName, "%s/%s/%s.root",
+      dproc.fAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.runName.c_str(),
+      gRunInfo.runName.c_str());
 
    fprintf(stdout, "Booking ROOT histograms: %s\n", outRootFileName);
 
    gAsymRoot.RootFile(outRootFileName);
-   gAsymRoot.BookHists(gRunInfo);
 
    // Create tree if requested
    if (dproc.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
@@ -446,60 +475,38 @@ int main(int argc, char *argv[])
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if (dproc.UPDATE == 1 && !dproc.CMODE)
+   if ( (dproc.fModes & TDatprocStruct::MODE_CALIB) && !dproc.CMODE)
       readDataFast();
 
-   // Quick Scan and Fit for tshift and mass sigma fit
-   //if (dproc.FEEDBACKMODE){
+   //return 0;
 
-     //printf("Feedback Sparcification Factor = 1/%d \n", dproc.thinout);
-
-     //if (readloop() != 0) {
-     //  perror("Error: readloop");
-     //  exit(-1);
-     //}
-
-     //Flag.feedback=0;
-
-   //} else {
    if (!dproc.QUICK_MODE) {
 
-      //dproc.Print();
-      //exit(0);
-
       // Main Event Loop
-      if (readloop() != 0) {
-         perror("Error: readloop");
-         return 0;
-      }
+      readloop();
 
       gAsymRoot.PostProcess();
    }
-   //}
 
    //gRunInfo.Print();
-
-   //cfginfo->Print();
-   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
-   //exit(0);
 
    // Delete Unnecessary ROOT Histograms
    gAsymRoot.DeleteHistogram();
 
-   // Closing Histogram File
+   // Close histogram file
    hist_close(hbk_outfile);
 
    // Update calibration constants if requested
-   if (dproc.UPDATE == 1) {
+   if (dproc.fModes & TDatprocStruct::MODE_CALIB) {
       gAsymRoot.Calibrate();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
    }
 
    // Update calibration constants if requested
-   gRunDb.Print();
+   //gRunDb.Print();
 
-   if (dproc.UPDATE_DB == 1) {
+   if (dproc.UPDATE_DB) {
       // Select all runs from database
       gAsymRunDb.Select();
       gAsymRunDb.Insert(&gRunDb);
@@ -515,16 +522,13 @@ int main(int argc, char *argv[])
    printf("Processing started: %s\n",   timestamp.AsString("l"));
    printf("Process time: %f seconds\n", dproc.procTimeReal);
 
-   //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
-   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig(stdout);
+   //gAsymRoot.fEventConfig->PrintAsPhp();
+   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
 
    // Set pointers to global structures for later saving in ROOT file
-   if (!gAsymRoot.UseCalibFile() || dproc.CMODE) {
-
-      gAsymRoot.fEventConfig->fConfigInfo = cfginfo;
-      //printf("fConfigInfo: %#x\n", gAsymRoot.fEventConfig->fConfigInfo);
-      //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
-   }
+   // if previously allocated delete object
+   //delete gAsymRoot.fEventConfig->fConfigInfo;
+   gAsymRoot.fEventConfig->fConfigInfo = cfginfo;
 
    // if previously allocated delete object
    delete gAsymRoot.fEventConfig->fRunInfo;
@@ -536,7 +540,8 @@ int main(int argc, char *argv[])
    delete gAsymRoot.fEventConfig->fRunDB;
    gAsymRoot.fEventConfig->fRunDB      = &gRunDb;
 
-   //gAsymRoot.fEventConfig->PrintAsPhp(stdout);
+   //gAsymRoot.fEventConfig->PrintAsPhp();
+   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
 
    // Closing ROOT File
    gAsymRoot.CloseROOTFile();
@@ -754,11 +759,11 @@ void ConfigureActiveStrip(int mask)
 
    for (int i=0; i<gRunInfo.NDisableStrip; i++) {
 
-      det = gRunInfo.DisableStrip[i]/NSTRIP_PER_DETECTOR;
+      det = gRunInfo.fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
 
       // skip if the detector is already disabled
       if ((mask>>det)&1) {
-         strip = gRunInfo.DisableStrip[i] - det*NSTRIP_PER_DETECTOR;
+         strip = gRunInfo.fDisabledChannels[i] - det*NSTRIP_PER_DETECTOR;
          gRunInfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
          gRunInfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
          gRunInfo.NActiveStrip--;
