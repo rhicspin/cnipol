@@ -338,8 +338,9 @@ void StripAnomalyDetector()
   }
 
   // register unrecognized anomaly strips
-  UnrecognizedAnomaly(gAnaResults.anomaly.st,gAnaResults.anomaly.nstrip,runinfo.DisableStrip,runinfo.NDisableStrip,
-                      gAnaResults.unrecog.anomaly.st, gAnaResults.unrecog.anomaly.nstrip);
+  UnrecognizedAnomaly(gAnaResults.anomaly.st, gAnaResults.anomaly.nstrip,
+     runinfo.fDisabledChannels, runinfo.NDisableStrip,
+     gAnaResults.unrecog.anomaly.st, gAnaResults.unrecog.anomaly.nstrip);
 }
 
 

@@ -48,7 +48,7 @@ void DrawObjContainer::ReadFromDir()
       //cout << "Found key: " << endl;
       //key->Print();
 
-      // read obj into memeory and assign a pointer
+      // read obj into memory and assign a pointer
       TObject* tmpObj = 0;
 
       if (io->second) {
@@ -59,13 +59,12 @@ void DrawObjContainer::ReadFromDir()
       io->second = key->ReadObj();
 
       // overwrite options
-      if (((TClass*) io->second->IsA())->InheritsFrom("TH1")) {
+      if (((TClass*) io->second->IsA())->InheritsFrom("TH1") && tmpObj) {
          ((TH1*) io->second)->SetOption( ((TH1*) tmpObj)->GetOption() );
       }
-
    }
 
-   // loop over sub containers
+   // loop over sub containers and call this function recursively
    DrawObjContainerMapIter isub;
    
    for (isub=d.begin(); isub!=d.end(); ++isub) {
@@ -341,6 +340,11 @@ void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
 /** */
 void DrawObjContainer::PostFill()
 {
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->PostFill();
+   }
 }
 
 

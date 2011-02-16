@@ -9,6 +9,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TLine.h"
+//#include "TRandom.h"
 
 //#include "AnaInfo.h"
 #include "Asym.h"
@@ -81,6 +82,7 @@ extern long int Ngood[120];   // number of evts after carbon cut
 extern long int Ntotal[120];  // number of evts before carbon cut 
 extern long int Nback[120];   // number of evts below the curbon cut
 
+//extern TRandom                  gRandom;
 extern AsymRoot                 gAsymRoot;
 extern AsymRunDB                gAsymRunDb;
 extern TDatprocStruct           dproc;

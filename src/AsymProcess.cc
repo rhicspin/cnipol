@@ -122,7 +122,8 @@ void event_process(processEvent *event)
    }
 
    // Calibration hists
-   if (dproc.fModes & TDatprocStruct::MODE_ALPHA) {
+   //if (dproc.fModes & TDatprocStruct::MODE_ALPHA)
+   if ( (dproc.fModes & TDatprocStruct::MODE_ALPHA) == TDatprocStruct::MODE_ALPHA) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -139,8 +140,9 @@ void event_process(processEvent *event)
 
       gAsymRoot.fHists->Fill(ch);
 
-      //if (ch->PassCutDepEnergyTime()) {
-	   //   gAsymRoot.fHists->Fill(ch, "_cut1");
+      if (ch->PassCutRawAlpha()) {
+	      gAsymRoot.fHists->Fill(ch, "cut1");
+      }
       
       return;
    }
@@ -228,11 +230,11 @@ void event_process(processEvent *event)
    // XXX
    if (!ch->PassQACutRaw()) return;
 
-   //gAsymRoot.fHists->Fill(ch);
+   gAsymRoot.fHists->Fill(ch);
 
    if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
    {
-	   //gAsymRoot.fHists->Fill(ch, "_cut1");
+	   gAsymRoot.fHists->Fill(ch, "_cut1");
 
       if (ch->PassQACutCarbonMass()) {
 	      gAsymRoot.fHists->Fill(ch, "_cut2");

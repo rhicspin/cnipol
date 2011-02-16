@@ -252,7 +252,7 @@ void KinFit::Fit(Int_t mode)
          sprintf(&sSt[0], "%02d", St+1);
 
          //TH2D* htemp = (TH2D*) gDirectory->Get(hName);
-         TH2F* htemp = (TH2F*) fHists->d["channel"+sSt].o["hTimeVsEnergyA_st"+sSt];
+         TH2F* htemp = (TH2F*) fHists->d["channel"+sSt]->o["hTimeVsEnergyA_st"+sSt];
 
          if (htemp) {
             htemp->Print();

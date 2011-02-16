@@ -51,8 +51,14 @@ void analyzeDeadLayer_initialize(string runName)
 
    if (!gInFile) exit(-1);
 
-   gH = new CnipolHists();
+   gH = new DrawObjContainer(gInFile);
+
+   gH->Add(new CnipolRunHists(gInFile));
+
+   gH->d["std"] = new CnipolHists();
+
    gH->ReadFromDir(gInFile);
+   //gH->ReadFromDir(dir);
 
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
    //ec->Print();
@@ -211,7 +217,7 @@ void analyzeDeadLayer_finalize(string pattern)
    ec->PrintAsPhp(f);
    fclose(f);
 
-   ec->PrintAsPhp(stdout);
+   //ec->PrintAsPhp(stdout);
 
    sprintf(&fileName[0], "%s/config_calib.dat", gOutDir.c_str());
 

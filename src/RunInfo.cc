@@ -1,4 +1,6 @@
 
+#include <sstream>
+
 #include "RunInfo.h"
 
 using namespace std;
@@ -24,15 +26,9 @@ TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' '),
    //TgtOperation;              // TgtOperation (Initialization is done in Initialization() )
    for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[NDETECTOR]
-   for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; DisableStrip[i] = 0; }
-   //ActiveStrip           = { 1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,
-   //                          1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1, 
-   //                          1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1 }; // ActiveStrip[NSTRIP]
+   for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
    NActiveStrip          = NSTRIP; // NAactiveStrip;
    NDisableStrip         = 0; // NDisableStrip
-   //DisableStrip          = { 0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,
-   //                          0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0, 
-   //                          0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0 }; // DisableStrip[NSTRIP]
    NFilledBunch          = 0; // NFilledBunch;
    NActiveBunch          = 0; // NActiveBunch;
    NDisableBunch         = 0; // NDisableBunch,
@@ -43,53 +39,6 @@ TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' '),
 
 /** */
 TStructRunInfo::~TStructRunInfo() { }
-
-/*
-TStructRunInfo runinfo = {
-    6, // Run05, Run06,..
-    7279.005, // RUNID
-    //"                            ",//(string(" ", 100)),
-    0, // StartTime;
-    0, // StopTime;
-    0, // RunTime;
-    0, // GoodEventRate;
-    0, // EvntRate;
-    0, // ReadRate;
-    0, // WcmAve;
-    0, // WcmSum;
-    0, // BeamEnergy;
-    0, // fPolBeam;
-    1, // PolarimetryID; Polarimetry-1 or Polarimetry-2
-    0, // MaxRevolution;
-  'V', // target
-  '-',// targetID
-    "", // TgtOperation (Initialization is done in Initialization() )
-    {  // ActiveDetector[NDETECTOR]
-      0xFFF,0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF
-    },
-    {  // ActiveStrip[NSTRIP]
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1,
-      1,1,1,1,1,1,1,1,1,1,1,1
-    },
-    NSTRIP, // NAactiveStrip;
-    0, // NDisableStrip
-    {  // DisableStrip[NSTRIP]
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,0
-    },
-    0, // NFilledBunch;
-    0, // NActiveBunch;
-    0  // NDisableBunch,
-};
-*/
 
 
 /** */
@@ -127,15 +76,17 @@ TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec)
 /** */
 void TStructRunInfo::Streamer(TBuffer &buf)
 {
+   TString tstr;
+
    if (buf.IsReading()) {
       //printf("reading TStructRunInfo::Streamer(TBuffer &buf) \n");
       buf >> Run;
       buf >> RUNID;
-      TString tstr;
       buf >> tstr; runName = tstr.Data();
       buf >> StartTime;
       buf >> StopTime;
       buf >> RunTime;
+      buf >> fDataFormatVersion;
       buf >> GoodEventRate;
       buf >> EvntRate;
       buf >> ReadRate;
@@ -155,7 +106,7 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf.ReadFastArray(ActiveStrip, NSTRIP);
       buf >> NActiveStrip;
       buf >> NDisableStrip;
-      buf.ReadFastArray(DisableStrip, NSTRIP);
+      buf.ReadFastArray(fDisabledChannels, NSTRIP);
       buf >> NFilledBunch;
       buf >> NActiveBunch;
       buf >> NDisableBunch;
@@ -165,11 +116,11 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       //printf("writing TStructRunInfo::Streamer(TBuffer &buf) \n");
       buf << Run;
       buf << RUNID;
-      TString tstr = runName;
-      buf << tstr;
+      tstr = runName; buf << tstr;
       buf << StartTime;
       buf << StopTime;
       buf << RunTime;
+      buf << fDataFormatVersion;
       buf << GoodEventRate;
       buf << EvntRate;
       buf << ReadRate;
@@ -188,7 +139,7 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf.WriteFastArray(ActiveStrip, NSTRIP);
       buf << NActiveStrip;
       buf << NDisableStrip;
-      buf.WriteFastArray(DisableStrip, NSTRIP);
+      buf.WriteFastArray(fDisabledChannels, NSTRIP);
       buf << NFilledBunch;
       buf << NActiveBunch;
       buf << NDisableBunch;
@@ -213,6 +164,7 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['StartTime']                    = %ld;\n",    StartTime    );
    fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
+   fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
@@ -228,18 +180,48 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['targetID']                     = \"%c\";\n", targetID     );
    fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", TgtOperation );
 
-   for (int i=0; i!=NDETECTOR; i++)
-   fprintf(f, "$rc['ActiveDetector'][%d]           = %#X;\n", i, ActiveDetector[i]);
+   stringstream ssChs("");
 
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(ActiveStrip, NSTRIP);
-   fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, ActiveStrip[i]);
+   ssChs << "array(";
+
+   for (int i=0; i!=NDETECTOR; i++) {
+      ssChs << noshowbase << dec << i+1 << " => " << showbase << hex << ActiveDetector[i];
+      ssChs << (i<NDETECTOR-1 ? ", " : "");
+   }
+
+   ssChs << ")";
+
+   fprintf(f, "$rc['ActiveDetector']               = %s;\n", ssChs.str().c_str());
+
+   ssChs << dec << noshowbase;
+
+   ssChs.str("");
+   ssChs << "array(";
+
+   for (int i=0; i!=NSTRIP; i++) {
+      ssChs << i+1 << " => " << (ActiveStrip[i] ? "1" : "0");
+      ssChs << (i<NSTRIP-1 ? ", " : "");
+   }
+
+   ssChs << ")";
+
+   fprintf(f, "$rc['ActiveStrip']                  = %s;\n", ssChs.str().c_str());
+   //fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, ActiveStrip[i]);
 
    fprintf(f, "$rc['NActiveStrip']                 = %d;\n", NActiveStrip );
    fprintf(f, "$rc['NDisableStrip']                = %d;\n", NDisableStrip);
 
-   for (int i=0; i!=NSTRIP; i++) //buf.WriteFastArray(DisableStrip, NSTRIP);
-   fprintf(f, "$rc['DisableStrip'][%d]             = %d;\n", i, DisableStrip[i]);
-      
+   ssChs.str("");
+   ssChs << "array(";
+
+   for (int i=0; i!=NSTRIP; i++) {
+      ssChs << i+1 << " => " << (fDisabledChannels[i] ? "1" : "0");
+      ssChs << (i<NSTRIP-1 ? ", " : "");
+   }
+
+   ssChs << ")";
+
+   fprintf(f, "$rc['fDisabledChannels']            = %s;\n", ssChs.str().c_str());
    fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
    fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
@@ -294,4 +276,17 @@ void TStructRunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t
    if (polId == 2) { beamId = 2; streamId = 2; };
 
    beamId = 0; streamId = 0;
+}
+
+
+/** */
+void TStructRunInfo::Update(TStructRunDB &rundb)
+{
+   stringstream sstr;
+
+   UShort_t chId;
+
+   sstr.str(""); sstr << rundb.fFields["DISABLED_CHANNELS"];
+
+   while (sstr >> chId) fDisabledChannels[chId-1] = 1;
 }

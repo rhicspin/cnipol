@@ -48,6 +48,7 @@ public:
    std::string dateTime;
    Bool_t      isCalibRun;
    std::string calib_file_s;
+   std::string dl_calib_run_name;
    std::string alpha_calib_run_name;
    std::string config_file_s;
    std::string masscut_s;
@@ -80,7 +81,8 @@ public:
    void PrintAsPhp(FILE *f=stdout) const;
    //void PrintAsDbEntry(FILE *f=stdout) const;
    void PrintAsDbEntry(std::ostream &o=std::cout, Bool_t printCommonFields=false) const;
-   void UpdateFields(TStructRunDB *dbrun);
+   void ProcessLine(std::string sline);
+   void UpdateFields(TStructRunDB &dbrun);
    void UpdateValues();
 };
 
@@ -111,10 +113,11 @@ public:
 
    TStructRunDB* Select(std::string runName="");
    void Delete(std::string runName);
+   void Clear();
    void Dump();
    void Append(TStructRunDB *dbrun);
    void Insert(TStructRunDB *dbrun);
-   void UpdateCommonFields(TStructRunDB *dbrun);
+   void UpdateCommonFields(TStructRunDB &dbrun);
    void DropCommonFields(TStructRunDB *dbrun);
    void Print(const Option_t* opt="") const;
    void PrintCommon();

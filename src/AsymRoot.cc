@@ -50,18 +50,16 @@ TH2F  *t_vs_e_yescut[TOT_WFD_CH];
 TH2F  *mass_vs_e_ecut[TOT_WFD_CH];  // Mass vs. 12C Kinetic Energy
 TF1   *banana_cut_l[NSTRIP][2];     // banana cut low
 TF1   *banana_cut_h[NSTRIP][2];     // banana cut high
-TLine *energy_cut_l[NSTRIP];      // energy cut low
-TLine *energy_cut_h[NSTRIP];      // energy cut high
-TH1F  *energy_spectrum[NDETECTOR]; // energy spectrum per detector
-TH1F  *energy_spectrum_all;        // energy spectrum for all detector sum
-TH1F  *mass_nocut_all;             // invariant mass without banana cut
-TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+TLine *energy_cut_l[NSTRIP];        // energy cut low
+TLine *energy_cut_h[NSTRIP];        // energy cut high
+TH1F  *energy_spectrum[NDETECTOR];  // energy spectrum per detector
+TH1F  *energy_spectrum_all;         // energy spectrum for all detector sum
+TH1F  *mass_nocut_all;              // invariant mass without banana cut
+TH1F  *mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  *mass_yescut_all;
-TH1F  *mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
-
+TH1F  *mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
 
 // Bunch Distribution
-//TH1F *bunch_dist_raw;              // counts per bunch (raw)
 TH1F  *bunch_dist;                  // counts per bunch
 TH1F  *wall_current_monitor;        // wall current monitor
 TH1F  *specific_luminosity;         // specific luminosity
@@ -79,11 +77,11 @@ TH1F  *asym_bunch_x90;              // Bunch asymmetry histogram for x90
 TH1F  *asym_bunch_y45;              // Bunch asymmetry histogram for y45
 
 // Asymmetry Directory
-TH2F  *asym_vs_bunch_x45;           // Asymmetry vs. bunch (x45)
-TH2F  *asym_vs_bunch_x90;           // Asymmetry vs. bunch (x90)
-TH2F  *asym_vs_bunch_y45;           // Asymmetry vs. bunch (y45)
-TH2F  *asym_sinphi_fit;             // strip asymmetry and sin(phi) fit
-TH2F  *scan_asym_sinphi_fit;        // scan asymmetry and sin(phi) fit
+TH2F  *asym_vs_bunch_x45;      // Asymmetry vs. bunch (x45)
+TH2F  *asym_vs_bunch_x90;      // Asymmetry vs. bunch (x90)
+TH2F  *asym_vs_bunch_y45;      // Asymmetry vs. bunch (y45)
+TH2F  *asym_sinphi_fit;        // strip asymmetry and sin(phi) fit
+TH2F  *scan_asym_sinphi_fit;   // scan asymmetry and sin(phi) fit
 
 
 /**
@@ -118,6 +116,11 @@ void AsymRoot::RootFile(char *filename)
 { //{{{
    rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
+   if (!rootfile) {
+      Fatal("RootFile", "Cannot open root file %s", filename);
+      exit(-1);
+   }
+
    // directory structure
    Run       = rootfile->mkdir("Run");
    Raw       = rootfile->mkdir("Raw");
@@ -127,10 +130,12 @@ void AsymRoot::RootFile(char *filename)
    ErrDet    = rootfile->mkdir("ErrDet");
    Asymmetry = rootfile->mkdir("Asymmetry");
 
+   BookHists();
+
    // Create default empty hist container
    fHists = new DrawObjContainer(rootfile);
 
-   if (dproc.fModes & TDatprocStruct::MODE_ALPHA) {
+   if ((dproc.fModes & TDatprocStruct::MODE_ALPHA) == TDatprocStruct::MODE_ALPHA) {
       //DrawObjContainer *hists = new CnipolCalibHists(rootfile);
       //fHists->Add(hists);
       //delete hists;
@@ -154,6 +159,11 @@ void AsymRoot::RootFile(char *filename)
       TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", rootfile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
+
+   // OLD common global histogram inherited from previous life
+   DrawObjContainer *hists = new CnipolRunHists(rootfile);
+   fHists->Add(hists);
+   delete hists;
 
    // a temporary fix...
    //Kinema    = fHists->d["Kinema"].fDir;
@@ -210,7 +220,7 @@ void AsymRoot::CreateTrees()
 
 /** */
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
-{
+{ //{{{
    if (cfname == "" && dproc.CMODE) {
 
       UpdateCalibrator();
@@ -218,6 +228,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
    } else if (cfname == "" && fEventConfig) {
       return true; // check if config is already set
+
    } else if (cfname != "") {
 
       TFile *f = TFile::Open(cfname.c_str());
@@ -241,8 +252,70 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
          return true;
 
       } else return false;
+
    } else return false;
-}
+} //}}}
+
+
+/**
+ * Updates the deafult fEventConfig to the one taken from the DL_CALIB_RUN_NAME
+ * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
+ * constants from that file.
+ */
+void AsymRoot::UpdateRunConfig()
+{ //{{{
+
+   // if not calib
+   if ( !(dproc.fModes & TDatprocStruct::MODE_CALIB) ) {
+
+      string fname = dproc.GetDlCalibFile();
+      Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
+      TFile *f = TFile::Open(fname.c_str());
+      fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+      //delete f;
+
+      if (!fEventConfig) {
+         Error("UpdateRunConfig", "No RunConfig object found in file %s", fname.c_str());
+         return;
+      }
+
+   // else if not alpha mode
+   } else if ( !(dproc.fModes & (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB)) ) {
+
+      // Now, if alpha calib file is different update alpha constants from that
+      // RunConfig
+      string fnameAlpha = dproc.GetAlphaCalibFile();
+      
+      // XXX not implemented. Need to fix it ASAP!
+      //if (fnameAlpha != fname) {
+         Info("UpdateRunConfig", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+
+         TFile *f = TFile::Open(fnameAlpha.c_str());
+         EventConfig *alphaRunConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+         //delete f;
+
+         if (!alphaRunConfig) {
+            Error("UpdateRunConfig", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
+            return;
+         }
+
+         fEventConfig = alphaRunConfig;
+         //fEventConfig->Print();
+
+         // XXX not implemented. Need to fix it ASAP!
+         // ....
+      //}
+   }
+
+   // Update the pointer to RunConfig object in the event
+   delete fChannelEvent->fEventConfig;
+   fChannelEvent->fEventConfig = fEventConfig;
+
+   // Update the calibrator based on the running mode, i.e. alpha or
+   // normal data
+   UpdateCalibrator();
+
+} //}}}
 
 
 /**
@@ -285,7 +358,7 @@ void AsymRoot::PostProcess()
 /** */
 void AsymRoot::FillPreProcess()
 { //{{{
-   fHists->FillPreProcess(fChannelEvent);
+   fHists->d["std"]->FillPreProcess(fChannelEvent);
 } //}}}
 
 
@@ -398,7 +471,7 @@ void AsymRoot::UpdateCalibrator()
    Calibrator *calibrator;
 
    if (dproc.CMODE) {
-      //Warning("UpdateRunConfig", "Executing AlphaCalibrator::Calibrate()");
+      //Warning("UpdateCalibrator", "Executing AlphaCalibrator::Calibrate()");
       //calibrator = new AlphaCalibrator();
       calibrator = new AlphaCalibrator();
       //calibrator->Calibrate(fHists);
@@ -411,7 +484,7 @@ void AsymRoot::UpdateCalibrator()
       //(static_cast<AlphaCalibrator*> (fEventConfig->fCalibrator))->Calibrate(fHists);
       //delete calibrator;
    } else {
-      //Warning("UpdateRunConfig", "Executing DeadLayerCalibrator::Calibrate()");
+      //Warning("UpdateCalibrator", "Executing DeadLayerCalibrator::Calibrate()");
       //calibrator = new DeadLayerCalibrator();
       //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
 
@@ -524,170 +597,175 @@ void AsymRoot::SaveEventTree()
 }
 
 
-//
-// Class name  : AsymRoot
-// Method name : BookHists()
-//
 // Description : Book AsymRoot Histograms
-//             :
-// Input       :
-// Return      :
-//
-int AsymRoot::BookHists(TStructRunInfo runinfo)
+void AsymRoot::BookHists()
 {
-  Char_t hname[100], htitle[100];
+   Char_t hname[100], htitle[100];
+ 
+   rootfile->cd();
 
-  rootfile->cd();
-  Kinema->cd();
+   Run->cd();
+   rate_vs_delim = new TH2F();
+ 
+   // FeedBack Directory
+   FeedBack->cd();
+ 
+   sprintf(hname, "mass_feedback_all");
+   sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", gRunInfo.RUNID);
+   mass_feedback_all = new TH1F(hname, htitle, 100, 0, 20);
+   mass_feedback_all -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+   mass_feedback_all -> SetLineColor(2);
+ 
+   for (int i=0; i<TOT_WFD_CH; i++) {
+ 
+      sprintf(hname, "mass_feedback_st%d", i+1);
+      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gRunInfo.RUNID, i+1);
+      mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
+      mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+      mass_feedback[i] -> SetLineColor(2);
+   }
 
-  // 1-dim Energy Spectrum
-  Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
+   // Raw Directory
+   Raw->cd();
+ 
+   sprintf(htitle,"%.3f : Raw Counts per Bunch ", gRunInfo.RUNID);
+   bunch_dist_raw = new TH1F("bunch_dist_raw", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   bunch_dist_raw -> GetXaxis() -> SetTitle("Bunch ID");
+   bunch_dist_raw -> GetYaxis() -> SetTitle("Counts");
+   bunch_dist_raw -> SetFillColor(17);
+ 
+   sprintf(htitle,"%.3f : Raw Counts per Strip ", gRunInfo.RUNID);
+   strip_dist_raw = new TH1F("strip_dist_raw", htitle, NSTRIP, -0.5, NSTRIP-0.5);
+   strip_dist_raw -> GetXaxis() -> SetTitle("Strip ID");
+   strip_dist_raw -> GetYaxis() -> SetTitle("Counts");
+   strip_dist_raw -> SetFillColor(17);
+ 
+   sprintf(htitle,"%.3f : Raw TDC (All Strips)", gRunInfo.RUNID);
+   tdc_raw = new TH1F("tdc_raw", htitle, 100, 0, 100);
+   tdc_raw -> GetXaxis() -> SetTitle("TDC [channel]");
+   tdc_raw -> SetFillColor(17);
+ 
+   sprintf(htitle,"%.3f : Raw ADC (All Strips)", gRunInfo.RUNID);
+   adc_raw = new TH1F("adc_raw", htitle, 257, -0.5, 256.5);
+   adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+   adc_raw -> SetFillColor(17);
+ 
+   sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips)", gRunInfo.RUNID);
+   tdc_vs_adc_raw = new TH2F("tdc_vs_adc_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
+   tdc_vs_adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+   tdc_vs_adc_raw -> GetYaxis() -> SetTitle("TDC [channel]");
+ 
+   sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips) false bunch", gRunInfo.RUNID);
+   tdc_vs_adc_false_bunch_raw = new TH2F("tdc_vs_adc_false_bunch_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
+   tdc_vs_adc_false_bunch_raw -> GetXaxis() -> SetTitle("ADC [channel]");
+   tdc_vs_adc_false_bunch_raw -> GetYaxis() -> SetTitle("TDC [channel]");
+   tdc_vs_adc_false_bunch_raw -> SetMarkerColor(2);
+ 
+   Kinema->cd();
 
-  for (int i=0; i<NDETECTOR; i++) {
-     sprintf(hname, "energy_spectrum_det%d", i+1);
-     sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", runinfo.RUNID, i+1);
-     energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
-     energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
-     //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
-  }
+   // 1-dim Energy Spectrum
+   Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
+ 
+   for (int i=0; i<NDETECTOR; i++) {
+      sprintf(hname, "energy_spectrum_det%d", i+1);
+      sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gRunInfo.RUNID, i+1);
+      energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
+      energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
+      //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
+   }
+ 
+   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gRunInfo.RUNID);
+   energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
+   energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
+   //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
+ 
+   sprintf(hname,"mass_nocut_all");
+   sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gRunInfo.RUNID);
+   mass_nocut_all = new TH1F(hname, htitle, 100, 0, 20);
+   mass_nocut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
+ 
+   sprintf(hname,"mass_yescut_all");
+   sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", gRunInfo.RUNID);
+   mass_yescut_all = new TH1F(hname, htitle, 100, 0, 20);
+   mass_yescut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
+   mass_yescut_all->SetLineColor(2);
+ 
+   // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
+   // target events strip [73 - 76].
+   for (int i=0; i<TOT_WFD_CH; i++) {
+ 
+      sprintf(hname,"t_vs_e_st%d",i+1);
+      sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", gRunInfo.RUNID, i+1);
+      t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+      t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+      t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
+ 
+      sprintf(hname,"t_vs_e_yescut_st%d",i+1);
+      sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gRunInfo.RUNID, i+1);
+      t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
+      t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+      t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
+ 
+      sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
+      sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", gRunInfo.RUNID, i+1);
+      mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
+      mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
+      mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
+ 
+      sprintf(hname, "mass_nocut_st%d",i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gRunInfo.RUNID, i+1);
+      mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
+      mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+ 
+      sprintf(hname, "mass_yescut_st%d",i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gRunInfo.RUNID, i+1);
+      mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
+      mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
+      mass_yescut[i] -> SetLineColor(2);
+   }
+ 
+   // Bunch Directory
+   Bunch->cd();
+   sprintf(htitle,"%.3f : Counts per Bunch ", gRunInfo.RUNID);
+   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
+   bunch_dist -> GetYaxis() -> SetTitle("Counts");
+   bunch_dist -> SetFillColor(13);
+ 
+   sprintf(htitle,"%.3f : Wall Current Monitor", gRunInfo.RUNID);
+   wall_current_monitor = new TH1F("wall_current_monitor", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
+   wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
+   wall_current_monitor -> SetFillColor(13);
+ 
+   sprintf(htitle,"%.3f : Specific Luminosity", gRunInfo.RUNID);
+   specific_luminosity = new TH1F("specific_luminosity", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
+   specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
+   specific_luminosity -> SetFillColor(13);
+ 
+   // Error detectors
+   ErrDet->cd();
+   sprintf(htitle,"%.3f : Bunch Asymmetry X90", gRunInfo.RUNID);
+   asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
 
-  sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", runinfo.RUNID);
-  energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
-  energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
-  //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
+   sprintf(htitle,"%.3f : Bunch Asymmetry X45", gRunInfo.RUNID);
+   asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
 
-  sprintf(hname,"mass_nocut_all");
-  sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", runinfo.RUNID);
-  mass_nocut_all = new TH1F(hname, htitle, 100, 0, 20);
-  mass_nocut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
+   sprintf(htitle,"%.3f : Bunch Asymmetry Y45", gRunInfo.RUNID);
+   asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
 
-  sprintf(hname,"mass_yescut_all");
-  sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", runinfo.RUNID);
-  mass_yescut_all = new TH1F(hname, htitle, 100, 0, 20);
-  mass_yescut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
-  mass_yescut_all->SetLineColor(2);
+   sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gRunInfo.RUNID);
+   good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
+   good_carbon_events_strip->SetFillColor(17);
 
-  // Need to book for TOT_WFD_CH instead of NSTRIP to avoid seg. fault by filling histograms by
-  // target events strip [73 - 76].
-  for (int i=0; i<TOT_WFD_CH; i++) {
 
-     sprintf(hname,"t_vs_e_st%d",i+1);
-     sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", runinfo.RUNID, i+1);
-     t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
-     t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-     t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
-
-     sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-     sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", runinfo.RUNID, i+1);
-     t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
-     t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-     t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
-
-     sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-     sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", runinfo.RUNID, i+1);
-     mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
-     mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-     mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
-
-     sprintf(hname, "mass_nocut_st%d",i+1);
-     sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",runinfo.RUNID, i+1);
-     mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
-     mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-
-     sprintf(hname, "mass_yescut_st%d",i+1);
-     sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",runinfo.RUNID, i+1);
-     mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
-     mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-     mass_yescut[i] -> SetLineColor(2);
-  }
-
-  // FeedBack Directory
-  FeedBack->cd();
-
-  sprintf(hname, "mass_feedback_all");
-  sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", runinfo.RUNID);
-  mass_feedback_all = new TH1F(hname, htitle, 100, 0, 20);
-  mass_feedback_all -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-  mass_feedback_all -> SetLineColor(2);
-
-  for (int i=0; i<TOT_WFD_CH; i++) {
-
-     sprintf(hname, "mass_feedback_st%d", i+1);
-     sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",runinfo.RUNID, i+1);
-     mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
-     mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
-     mass_feedback[i] -> SetLineColor(2);
-  }
-
-  // Raw Directory
-  Raw->cd();
-
-  sprintf(htitle,"%.3f : Raw Counts per Bunch ", runinfo.RUNID);
-  bunch_dist_raw = new TH1F("bunch_dist_raw", htitle, NBUNCH, -0.5, NBUNCH-0.5);
-  bunch_dist_raw -> GetXaxis() -> SetTitle("Bunch ID");
-  bunch_dist_raw -> GetYaxis() -> SetTitle("Counts");
-  bunch_dist_raw -> SetFillColor(17);
-
-  sprintf(htitle,"%.3f : Raw Counts per Strip ", runinfo.RUNID);
-  strip_dist_raw = new TH1F("strip_dist_raw", htitle, NSTRIP, -0.5, NSTRIP-0.5);
-  strip_dist_raw -> GetXaxis() -> SetTitle("Strip ID");
-  strip_dist_raw -> GetYaxis() -> SetTitle("Counts");
-  strip_dist_raw -> SetFillColor(17);
-
-  sprintf(htitle,"%.3f : Raw TDC (All Strips)", runinfo.RUNID);
-  tdc_raw = new TH1F("tdc_raw", htitle, 100, 0, 100);
-  tdc_raw -> GetXaxis() -> SetTitle("TDC [channel]");
-  tdc_raw -> SetFillColor(17);
-
-  sprintf(htitle,"%.3f : Raw ADC (All Strips)", runinfo.RUNID);
-  adc_raw = new TH1F("adc_raw", htitle, 257, -0.5, 256.5);
-  adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
-  adc_raw -> SetFillColor(17);
-
-  sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips)", runinfo.RUNID);
-  tdc_vs_adc_raw = new TH2F("tdc_vs_adc_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
-  tdc_vs_adc_raw -> GetXaxis() -> SetTitle("ADC [channel]");
-  tdc_vs_adc_raw -> GetYaxis() -> SetTitle("TDC [channel]");
-
-  sprintf(htitle,"%.3f : Raw TDC vs. ADC (All Strips) false bunch", runinfo.RUNID);
-  tdc_vs_adc_false_bunch_raw = new TH2F("tdc_vs_adc_false_bunch_raw", htitle, 100, -0.5, 256.6, 100, 0, 100);
-  tdc_vs_adc_false_bunch_raw -> GetXaxis() -> SetTitle("ADC [channel]");
-  tdc_vs_adc_false_bunch_raw -> GetYaxis() -> SetTitle("TDC [channel]");
-  tdc_vs_adc_false_bunch_raw -> SetMarkerColor(2);
-
-  // Bunch Directory
-  Bunch->cd();
-  sprintf(htitle,"%.3f : Counts per Bunch ", runinfo.RUNID);
-  bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
-  bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
-  bunch_dist -> GetYaxis() -> SetTitle("Counts");
-  bunch_dist -> SetFillColor(13);
-
-  sprintf(htitle,"%.3f : Wall Current Monitor", runinfo.RUNID);
-  wall_current_monitor = new TH1F("wall_current_monitor", htitle, NBUNCH, -0.5, NBUNCH-0.5);
-  wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
-  wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
-  wall_current_monitor -> SetFillColor(13);
-
-  sprintf(htitle,"%.3f : Specific Luminosity", runinfo.RUNID);
-  specific_luminosity = new TH1F("specific_luminosity", htitle, NBUNCH, -0.5, NBUNCH-0.5);
-  specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
-  specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
-  specific_luminosity -> SetFillColor(13);
-
-  // Error detectors
-  ErrDet->cd();
-  sprintf(htitle,"%.3f : Bunch Asymmetry X90", runinfo.RUNID);
-  asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%.3f : Bunch Asymmetry X45", runinfo.RUNID);
-  asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%.3f : Bunch Asymmetry Y45", runinfo.RUNID);
-  asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
-  sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", runinfo.RUNID);
-  good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
-  good_carbon_events_strip->SetFillColor(17);
-
-  return 0;
+   Asymmetry->cd();
+   asym_vs_bunch_x45    = new TH2F();
+   asym_vs_bunch_x90    = new TH2F();
+   asym_vs_bunch_y45    = new TH2F();
+   asym_sinphi_fit      = new TH2F();
+   scan_asym_sinphi_fit = new TH2F();
 }
 
 
@@ -799,7 +877,6 @@ void AsymRoot::CloseROOTFile()
   Kinema->cd();
 
   for (int i=0; i<NSTRIP; i++) {
-
      if (t_vs_e[i]) {
 
         for (int j=0; j<2; j++){
@@ -811,26 +888,6 @@ void AsymRoot::CloseROOTFile()
         if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
      }
   }
-
-  // Write out memory before closing
-  /*
-  ErrDet->cd();
-  if (mass_sigma_vs_strip)    mass_sigma_vs_strip      -> Write();
-  if (mass_chi2_vs_strip)       mass_chi2_vs_strip       -> Write();
-  if (mass_e_correlation_strip) mass_e_correlation_strip -> Write();
-  if (bunch_rate)               bunch_rate    -> Write();
-  if (rate_vs_bunch)            rate_vs_bunch -> Write();
-  if (asym_bunch_x90)           asym_bunch_x90-> Write();
-  if (asym_bunch_x45)           asym_bunch_x45-> Write();
-  if (asym_bunch_y45)           asym_bunch_y45-> Write();
-
-
-  Asymmetry->cd();
-  if (asym_sinphi_fit)   asym_sinphi_fit   -> Write();
-  if (asym_vs_bunch_x45) asym_vs_bunch_x45 -> Write();
-  if (asym_vs_bunch_x90) asym_vs_bunch_x90 -> Write();
-  if (asym_vs_bunch_y45) asym_vs_bunch_y45 -> Write();
-  */
 
   //if (fRawEventTree) {
   //   fOutTreeFile->cd();
@@ -846,7 +903,7 @@ void AsymRoot::CloseROOTFile()
   fHists->Delete();
   //}
 
-  rootfile->Write();
+  //rootfile->Write();
 
   rootfile->cd();
   //fEventConfig->PrintAsPhp();

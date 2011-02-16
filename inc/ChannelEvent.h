@@ -67,6 +67,7 @@ public:
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;
    bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
+   Bool_t PassCutRawAlpha();
    Bool_t PassQACutRaw();
    Bool_t PassCutDepEnergyTime();
    Bool_t PassCutKinEnergyADLCorrEstimate();

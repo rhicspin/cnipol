@@ -109,6 +109,7 @@ float phi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
+//TRandom                  gRandom;
 AsymRoot                 gAsymRoot;
 AsymRunDB                gAsymRunDb;
 //TStructRunDB             rundb;
@@ -125,7 +126,7 @@ StructFeedBack           feedback;
 map<UShort_t, RunConst>   gRunConsts;
 StructAnalysis           gAnaResults;
 StructBunchPattern       phx, str;
-recordConfigRhicStruct  *cfginfo;
+TRecordConfigRhicStruct  *cfginfo;
 
 
 /** */
@@ -173,6 +174,7 @@ void RunConst::Print(const Option_t* opt) const
 }
 
 
+// at some point this map should become a part of the AnaInfo class
 map<string, string>      gAsymEnv;
 
 BunchAsym     basym;
@@ -329,7 +331,7 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 /** */
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 {
-   long len = header.len;
+   //long len = header.len;
    //         cfginfo = (recordConfigRhicStruct *)
    //                      malloc(sizeof(recordConfigRhicStruct) +
    //                      (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));

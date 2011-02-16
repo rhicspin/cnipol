@@ -90,6 +90,7 @@ Float_t ChannelEvent::GetKinEnergyADLCorrEstimate()
    Float_t emeas = GetEnergyA();
    Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[0].fAvrgEMiss;
    Float_t eMeasDLCorr = fEventConfig->fCalibrator->fChannelCalibs[0].fEMeasDLCorr;
+   //printf("emeas, eMeasDLCorr, eloss: %f, %f, %f\n", emeas, eMeasDLCorr, eloss);
    return  emeas*eMeasDLCorr + eloss;
    //return  emeas + eloss;
 }
@@ -202,8 +203,25 @@ bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
 
 
 /** */
+Bool_t ChannelEvent::PassCutRawAlpha()
+{
+   // Do not consider channels other than silicon detectors
+   if (GetChannelId() > NSTRIP) return false;
+
+   if (fChannel.fAmpltd < 50) return false;
+
+   if (fChannel.fTdc < 15 || fChannel.fTdc > 50) return false;
+
+   return true;
+}
+
+
+/** */
 Bool_t ChannelEvent::PassQACutRaw()
 {
+   // Do not consider channels other than silicon detectors
+   if (GetChannelId() > NSTRIP) return false;
+
    ////if (fChannel.fAmpltd < 30) return false; // ADC
    ////if (fChannel.fAmpltd > 215) return false; // ADC
 
@@ -214,8 +232,6 @@ Bool_t ChannelEvent::PassQACutRaw()
    ////if (fChannel.fTdc > 65) return false; // TDC
 
    //if (fChannel.fTdc > 68) return false; // TDC
-
-   if (GetChannelId() > NSTRIP) return false;
 
    return true;
 }
@@ -332,5 +348,5 @@ Bool_t ChannelEvent::PassCutEnabledChannel()
 {
    UShort_t chId = GetChannelId();
 
-   return !gRunInfo.DisableStrip[chId-1];
+   return !gRunInfo.fDisabledChannels[chId-1];
 }

@@ -318,7 +318,7 @@ int readDLayer(char *infile)
 bool isStripAlive(unsigned short strp)
 {
    for(int jj=0;jj<runinfo.NDisableStrip;jj++) {
-      if((int)strp==runinfo.DisableStrip[jj]) {
+      if((int)strp==runinfo.fDisabledChannels[jj]) {
          return false;
       }
    }
