@@ -81,8 +81,6 @@
 
       foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
-         $chanId += 1;
-
          $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
          //$row2 .= "<td>".($siS ? "x" : "o");
 
@@ -295,11 +293,11 @@
 
 <tr>
 <td align=center>
-<?=$gP->img("preproc/hTimeVsEnergyA")?>
+<?=$gP->img("std/preproc/hTimeVsEnergyA")?>
 <td align=center>
-<?=$gP->img("preproc/hFitMeanTimeVsEnergyA")?>
+<?=$gP->img("std/preproc/hFitMeanTimeVsEnergyA")?>
 <td align=center>
-<?=$gP->img("preproc/combo")?>
+<?=$gP->img("std/preproc/combo")?>
 
 </table>
 
@@ -322,10 +320,8 @@
 
 foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
-   $chanId += 1;
-
    $chanId = sprintf("%02d", $chanId);
-   $gP->dir = "/runs/$gRunId/images/channel$chanId/";
+   $gP->dir = "/runs/$gRunId/images/std/channel$chanId/";
 
    //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
    //$row2 .= "<td>".($siS ? "x" : "o");
