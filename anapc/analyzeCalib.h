@@ -35,7 +35,7 @@ std::string   gRunName;
 std::string   gOutDir;
 
 AnaEvent         *gAnaEvent;
-CnipolCalibHists *gH;
+DrawObjContainer *gH;
 EventConfig      *ec;
 
 void analyzeCalib(std::string runName, std::string pattern="^.*$", Long64_t nEvents=-1);

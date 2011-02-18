@@ -568,7 +568,7 @@ void readandfill_(int* subrun)
 
         case REC_PCTARGET:
             i = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
-            histdelim_((long *)&rec.buffer[sizeof(rec.header)], (long *)&i);
+            histdelim_( (long*) &rec.buffer[sizeof(rec.header)], (long*) &i);
             break;
         case REC_COUNTRATE:
             i = (rec.header.len - sizeof(rec.header))/(sizeof(long));

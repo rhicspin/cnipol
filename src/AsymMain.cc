@@ -33,8 +33,6 @@ int main(int argc, char *argv[])
    // Initialize Variables
    Initialization();
 
-   // prefix directories
-
    // config directories
    confdir = getenv("CONFDIR");
 
@@ -52,14 +50,15 @@ int main(int argc, char *argv[])
    int    option_index = 0;
 
    static struct option long_options[] = {
-      {"run-name",            required_argument,   0,   'f'},
-      {"raw",                 0,                   0,   'r'},
+      {"run-name",            required_argument,   0,   'r'},
+      {"raw",                 0,                   0,   TDatprocStruct::MODE_RAW},
       {"feedback",            0,                   0,   'b'},
       {"no-error-detector",   0,                   0,   'a'},
       {"update-db",           no_argument,         0,   0x0100},
       {"no-update-db",        no_argument,         0,   0x0200},
       {"pol-id",              required_argument,   0,   0x0300},
       {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
+      {"target",              no_argument,         0,   TDatprocStruct::MODE_TARGET},
       {"quick",               no_argument,         0,   'q'},
       {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
       {"mode-calib",          no_argument,         0,   TDatprocStruct::MODE_CALIB},
@@ -67,7 +66,8 @@ int main(int argc, char *argv[])
       {"mode-no-normal",      no_argument,         0,   TDatprocStruct::MODE_NO_NORMAL},
       {"mode-scaler",         no_argument,         0,   TDatprocStruct::MODE_SCALER},
       {"mode-raw",            no_argument,         0,   TDatprocStruct::MODE_RAW},
-      {"mode-bunch",          no_argument,         0,   TDatprocStruct::MODE_BUNCH},
+      {"mode-run",            no_argument,         0,   TDatprocStruct::MODE_RUN},
+      {"mode-target",         no_argument,         0,   TDatprocStruct::MODE_TARGET},
       {"mode-full",           no_argument,         0,   TDatprocStruct::MODE_FULL},
       {"set-calib",           required_argument,   0,   0x3000},
       {"set-calib-alpha",     required_argument,   0,   0x1000},
@@ -77,63 +77,67 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?f:n:s:c:ho:rt:m:e:d:baCDTABZF:MNW:UGR:Sq",
+   while ((c = getopt_long(argc, argv, "?hr:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sq",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
-      case 'h':
       case '?':
+      case 'h':
          cout << "Usage of " << argv[0] << endl;
-         cout << " -h, -?                   : print this help" <<endl;
-         cout << " -f, --run-name <run_name>: name of run with raw data in $DATADIR directory" <<endl;
-         cout << " -n <number>              : maximum number of events to process"
+         cout << " -h, -?                      : Print this help" <<endl;
+         cout << " -r, --run-name <run_name>   : Name of run with raw data in $DATADIR directory" <<endl;
+         cout << " -n <number>                 : Maximum number of events to process"
               << " (default \"-n 0\" all events)" <<endl;
-         cout << " -s <number>              : only every <number> event will be"
+         cout << " -s <number>                 : Only every <number> event will be"
               << " processed (default \"-s 1\" no skip)" <<endl;
-         cout << " -c <calib_file_name>     : root file with calibration info" << endl;
-         cout << " -o <filename>            : Output hbk file" <<endl;
-         //            cout << " -r <filename>        : ramp timing file" <<endl;
-         cout << " -t <time shift>          : TOF timing shift in [ns], addition to TSHIFT defined in run.db " << endl;
-         cout << " -e <lower:upper>         : kinetic energy range (default [400:900] keV)" <<endl;
-         //cout << " <MODE> ---------------(default on)---------" <<endl;
-         //            cout << " -B                   : create banana curve on" <<endl;
-         //            cout << " -G                   : mass mode on " <<endl;
-         cout << " -a, --no-error-detector  : anomaly check off " << endl;
-         //cout << " <MODE> ---------------(default off)--------" <<endl;
-         cout << " -b                       : feedback mode on " << endl;
-         cout << " -D                       : Dead layer  mode on " <<endl;
-         cout << " -d <dlayer>              : Additional deadlayer thickness [ug/cm2]" << endl;
-         //            cout << " -T                   : T0 study    mode on " <<endl;
-         //            cout << " -A                   : A0,A1 study mode on " <<endl;
-         //            cout << " -Z                   : without T0 subtraction" <<endl;
-         cout << " -F <file>                : overwrite conf file defined in run.db" <<endl;
-         cout << " -W <lower:upper>         : const width banana cut" <<endl;
-         cout << " -m <sigma>               : banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
-         cout << " -U                       : update histogram" << endl;
-         cout << " --update-db              : update run info in database" << endl;
-         cout << " -N                       : store Ntuple events" << endl;
-         cout << " -R <bitmask>             : save events in Root trees, " <<
+         cout << " -c <calib_file_name>        : Set root file with calibration info (!)" << endl;
+         cout << " -o <filename>               : Output hbk file (!)" <<endl;
+         //cout << " -r <filename>               : ramp timing file" <<endl;
+         cout << " -t <time shift>             : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
+         cout << " -e <lower:upper>            : Kinetic energy range (default [400:900] keV) (!)" <<endl;
+         //cout << " -B                          : create banana curve on" <<endl;
+         //cout << " -G                          : mass mode on " <<endl;
+         cout << " -a, --no-error-detector     : Anomaly check off (!)" << endl;
+         cout << " -b                          : Feedback mode on (!)" << endl;
+         cout << " -D                          : Dead layer mode on (!)" <<endl;
+         cout << " -d <dlayer>                 : Additional deadlayer thickness [ug/cm2] (!)" << endl;
+         //cout << " -T                          : T0 study    mode on " <<endl;
+         //cout << " -A                          : A0,A1 study mode on " <<endl;
+         //cout << " -Z                          : without T0 subtraction" <<endl;
+         cout << " -F <file>                   : Overwrite conf file defined in run.db (!)" <<endl;
+         cout << " -W <lower:upper>            : Const width banana cut (!)" <<endl;
+         cout << " -m <sigma>                  : Banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
+         cout << " -U                          : Update histogram" << endl;
+         cout << "     --update-db             : Update run info in database" << endl;
+         cout << " -N                          : Store Ntuple events (!)" << endl;
+         cout << " -R <bitmask>                : Save events in Root trees, " <<
                  "e.g. \"-R 101\"" <<endl;
-         cout << " -q, --quick              : Skips the main loop. Use for a quick check" << endl;
-         cout << " -C, --mode-alpha         : Use when run over alpha run data" << endl;
-         cout << "     --mode-calib, --calib: Update calibration constants" << endl;
-         cout << "     --mode-normal        : Deafult set of histograms" << endl;
-         cout << "     --mode-no-normal     : Turn off the deafult set of histograms" << endl;
-         cout << "     --mode-scaler        : Fill and save only scaler histograms (from V124 memory)" << endl;
-         cout << " -r, --raw, --mode-raw    : Fill and save only raw histograms" << endl;
+         cout << " -q, --quick                 : Skips the main loop. Use for a quick check" << endl;
+         cout << " -C, --mode-alpha            : Use when run over alpha run data" << endl;
+         cout << "     --mode-calib, --calib   : Update calibration constants" << endl;
+         cout << "     --mode-normal           : Default set of histograms" << endl;
+         cout << "     --mode-no-normal        : Turn off the default set of histograms" << endl;
+         cout << "     --mode-scaler           : Fill and save scaler histograms (from V124 memory)" << endl;
+         cout << "     --mode-raw, --raw       : Fill and save raw histograms" << endl;
+         cout << "     --mode-run              : Fill and save bunch, lumi and other run related histograms" << endl;
+         cout << "     --mode-target, --target : Fill and save target histograms" << endl;
+         cout << "     --mode-full             : Fill and save all histograms" << endl;
+         cout << endl;
+         cout << "Options marked with (!) are not really supported" << endl << endl;
 
          return 0;
 
-      case 'f':
+      case 'r':
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
          //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
          gDataFileName = dproc.fAsymEnv["DATADIR"] +  "/" + optarg + ".data";
 
          // Add checks for runName suffix
+         dproc.fRunId     = optarg;
          gRunInfo.runName = optarg;
-         gRunDb.fRunName = optarg;
-         fprintf(stdout, "runName:         %s\n", gRunInfo.runName.c_str());
+         gRunDb.fRunName  = optarg;
+         fprintf(stdout, "Run name:        %s\n", dproc.fRunId.c_str());
          fprintf(stdout, "Input data file: %s\n", gDataFileName.c_str());
          break;
       case 'n':
@@ -294,21 +298,27 @@ int main(int argc, char *argv[])
          dproc.fModes |= TDatprocStruct::MODE_SCALER;
          break;
 
-      case 'r':
       case TDatprocStruct::MODE_RAW:
          dproc.fModes |= TDatprocStruct::MODE_RAW;
          dproc.RAWHISTOGRAM = 1;
          break;
-      case TDatprocStruct::MODE_BUNCH:
-         dproc.fModes |= TDatprocStruct::MODE_BUNCH; break;
+
+      case TDatprocStruct::MODE_RUN:
+         dproc.fModes |= TDatprocStruct::MODE_RUN; break;
+
+      case TDatprocStruct::MODE_TARGET:
+         dproc.fModes |= TDatprocStruct::MODE_TARGET; break;
+
       case TDatprocStruct::MODE_FULL:
          dproc.fModes |= TDatprocStruct::MODE_FULL; break;
+
       default:
          fprintf(stdout,"Invalid Option \n");
          return 0;
       }
    }
 
+   dproc.ProcessParameters();
    dproc.MakeOutDir();
 
    // Extract RunID from input filename
@@ -443,6 +453,7 @@ int main(int argc, char *argv[])
    // Find RunConfig object in the calibration files and update
    gAsymRoot.UpdateRunConfig();
 
+   //printf("calib= %d\n", dproc.HasCalibBit());
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
    //return 0;
 
@@ -475,7 +486,7 @@ int main(int argc, char *argv[])
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( (dproc.fModes & TDatprocStruct::MODE_CALIB) && !dproc.CMODE)
+   if ( dproc.HasCalibBit() && !dproc.CMODE)
       readDataFast();
 
    //return 0;
@@ -497,7 +508,7 @@ int main(int argc, char *argv[])
    hist_close(hbk_outfile);
 
    // Update calibration constants if requested
-   if (dproc.fModes & TDatprocStruct::MODE_CALIB) {
+   if (dproc.HasCalibBit()) {
       gAsymRoot.Calibrate();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -539,6 +550,10 @@ int main(int argc, char *argv[])
 
    delete gAsymRoot.fEventConfig->fRunDB;
    gAsymRoot.fEventConfig->fRunDB      = &gRunDb;
+
+   delete gAsymRoot.fEventConfig->fAnaResult;
+   gAnaResults.PrintAsPhp();
+   gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();

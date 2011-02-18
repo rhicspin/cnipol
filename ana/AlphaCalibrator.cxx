@@ -24,7 +24,7 @@ AlphaCalibrator::~AlphaCalibrator()
 /** */
 void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 {
-	Warning("Calibrate", "Executing Calibrate()");
+	Info("Calibrate", "Executing Calibrate()");
 
    string    sCh("  ");
    //float     chi2_max  = 0;
@@ -131,7 +131,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 /** */
 void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
 {
-	Warning("CalibrateFast", "Executing CalibrateFast()");
+	Info("CalibrateFast", "Executing CalibrateFast()");
 }
 
 

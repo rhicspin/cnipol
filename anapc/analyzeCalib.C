@@ -50,11 +50,14 @@ void analyzeCalib_initialize(string runName)
 
    if (!gInFile) exit(-1);
 
-   TDirectory *dir = (TDirectory*) gInFile->GetKey("alpha")->ReadObj();
+   gH = new DrawObjContainer(gInFile);
 
-   gH = new CnipolCalibHists();
-   //gH->ReadFromDir(gInFile);
-   gH->ReadFromDir(dir);
+   //TDirectory *dir = (TDirectory*) gInFile->GetKey("alpha")->ReadObj();
+
+   gH->d["alpha"] = new CnipolCalibHists();
+
+   gH->ReadFromDir(gInFile);
+   //gH->ReadFromDir(dir);
 
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
    //ec->Print();

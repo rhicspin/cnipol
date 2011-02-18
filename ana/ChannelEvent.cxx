@@ -318,7 +318,7 @@ Bool_t ChannelEvent::PassCutNoise()
 
    case 0:   // B1U
       //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
-      if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215 || fChannel.fAmpltd < 35)
+      if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
          return false;
       break;
 
@@ -328,7 +328,8 @@ Bool_t ChannelEvent::PassCutNoise()
       break;
 
    case 2:   // B2D
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
+      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
          return false;
 
       break;
@@ -349,4 +350,17 @@ Bool_t ChannelEvent::PassCutEnabledChannel()
    UShort_t chId = GetChannelId();
 
    return !gRunInfo.fDisabledChannels[chId-1];
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutTargetChannel()
+{
+   UShort_t chId = GetChannelId();
+
+   //if (chId > cfginfo->data.NumChannels-4 && chId <= cfginfo->data.NumChannels)
+   if (chId > NSTRIP && chId <= NSTRIP+4)
+      return true;
+
+  return false;
 }

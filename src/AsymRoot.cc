@@ -135,7 +135,7 @@ void AsymRoot::RootFile(char *filename)
    // Create default empty hist container
    fHists = new DrawObjContainer(rootfile);
 
-   if ((dproc.fModes & TDatprocStruct::MODE_ALPHA) == TDatprocStruct::MODE_ALPHA) {
+   if (dproc.HasAlphaBit()) {
       //DrawObjContainer *hists = new CnipolCalibHists(rootfile);
       //fHists->Add(hists);
       //delete hists;
@@ -143,7 +143,7 @@ void AsymRoot::RootFile(char *filename)
       fHists->d["alpha"] = new CnipolCalibHists(dir);
    }
 
-   if (dproc.fModes & TDatprocStruct::MODE_NORMAL) {
+   if (dproc.HasNormalBit()) {
       //DrawObjContainer *hists = new CnipolHists(rootfile);
       //fHists->Add(hists);
       //delete hists;
@@ -152,12 +152,17 @@ void AsymRoot::RootFile(char *filename)
    }
 
    // If requested create scaler histograms and add them to the container
-   if (dproc.fModes & TDatprocStruct::MODE_SCALER) {
+   if (dproc.HasScalerBit()) {
       //DrawObjContainer *hists = new CnipolScalerHists(rootfile);
       //fHists->Add(hists);
       //delete hists;
       TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", rootfile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
+   }
+   
+   if (dproc.HasTargetBit()) {
+      TDirectory *dir = new TDirectoryFile("targets", "targets", "", rootfile);
+      fHists->d["targets"] = new CnipolTargetHists(dir);
    }
 
    // OLD common global histogram inherited from previous life
@@ -266,7 +271,8 @@ void AsymRoot::UpdateRunConfig()
 { //{{{
 
    // if not calib
-   if ( !(dproc.fModes & TDatprocStruct::MODE_CALIB) ) {
+   //if ( !(dproc.fModes & TDatprocStruct::MODE_CALIB) ) 
+   if ( !dproc.HasCalibBit() ) {
 
       string fname = dproc.GetDlCalibFile();
       Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
@@ -279,8 +285,10 @@ void AsymRoot::UpdateRunConfig()
          return;
       }
 
-   // else if not alpha mode
-   } else if ( !(dproc.fModes & (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB)) ) {
+   // else if not alpha mode what am I trying to do here? 
+   //} else if ( !(dproc.fModes & (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB)) )
+   } else if ( !dproc.HasAlphaBit() && dproc.HasNormalBit()) {
+   //} else if ( dproc.HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
       // RunConfig
@@ -302,7 +310,7 @@ void AsymRoot::UpdateRunConfig()
          fEventConfig = alphaRunConfig;
          //fEventConfig->Print();
 
-         // XXX not implemented. Need to fix it ASAP!
+         // XXX not implemented. Need to fix it!
          // ....
       //}
    }
@@ -366,6 +374,13 @@ void AsymRoot::FillPreProcess()
 void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
 { //{{{
    ((CnipolScalerHists*) fHists->d["scalers"])->Fill(hData, chId);
+} //}}}
+
+
+/** */
+void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
+{ //{{{
+   ((CnipolTargetHists*) fHists->d["targets"])->Fill(n, hData);
 } //}}}
 
 
@@ -467,26 +482,14 @@ void AsymRoot::PrintEventMap()
 
 /** */
 void AsymRoot::UpdateCalibrator()
-{
+{ //{{{
    Calibrator *calibrator;
 
    if (dproc.CMODE) {
-      //Warning("UpdateCalibrator", "Executing AlphaCalibrator::Calibrate()");
-      //calibrator = new AlphaCalibrator();
+      Info("UpdateCalibrator", "Setting AlphaCalibrator");
       calibrator = new AlphaCalibrator();
-      //calibrator->Calibrate(fHists);
-      //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
-      //alphaCalibrator = (AlphaCalibrator*) fEventConfig->fCalibrator;
-      //AlphaCalibrator* alphaCalibrator = dynamic_cast<AlphaCalibrator*> (fEventConfig->fCalibrator);
-      //((AlphaCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
-      //alphaCalibrator->AlphaCalibrator::Calibrate(fHists);
-      //alphaCalibrator->Calibrate(fHists);
-      //(static_cast<AlphaCalibrator*> (fEventConfig->fCalibrator))->Calibrate(fHists);
-      //delete calibrator;
    } else {
-      //Warning("UpdateCalibrator", "Executing DeadLayerCalibrator::Calibrate()");
-      //calibrator = new DeadLayerCalibrator();
-      //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
+      Info("UpdateCalibrator", "Setting DeadLayerCalibrator");
 
       //calibrator = new DeadLayerCalibrator();
       calibrator = new DeadLayerCalibratorEDepend();
@@ -496,6 +499,8 @@ void AsymRoot::UpdateCalibrator()
       //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
       //delete calibrator;
    }
+
+   //if (!calibrator) exit(0);
 
    // Copy existing constants to the new calibrator
    calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
@@ -507,11 +512,9 @@ void AsymRoot::UpdateCalibrator()
    fEventConfig->fCalibrator = calibrator;
 
    //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
-
    //calibrator->Calibrate(fHists);
-
    //fEventConfig->fCalibrator = calibrator;
-}
+} //}}}
 
 
 /** */

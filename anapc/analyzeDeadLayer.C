@@ -202,9 +202,6 @@ void analyzeDeadLayer_finalize(string pattern)
    string path("", 255);
    sprintf(&path[0], "%s/images", gOutDir.c_str());
 
-   //gH->SaveAllAs(c, "^.*c_combo.*$", path.c_str());
-   //gH->SaveAllAs(c, "^.*c_hTimeVsEnergyA.*$", path.c_str());
-   //gH->SaveAllAs(c, "^.*c_asym_sinphi_fit.*$", path.c_str());
    gH->SaveAllAs(c, pattern, path.c_str());
    //gH->Write();
    //gOutFile->Close();

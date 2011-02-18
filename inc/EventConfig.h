@@ -20,6 +20,7 @@
 #include "AnaInfo.h"
 #include "AsymRunDB.h"
 #include "RunInfo.h"
+#include "AnaResult.h"
 
 #include "Calibrator.h"
 
@@ -35,6 +36,7 @@ public:
    TDatprocStruct          *fDatproc;
    TStructRunDB            *fRunDB;
    Calibrator              *fCalibrator;
+   StructAnalysis          *fAnaResult;
 
 public:
 
@@ -47,7 +49,7 @@ public:
    void  PrintAsConfig(FILE *f=stdout) const;
    float ConvertToEnergy(UShort_t adc, UShort_t chId);
 
-   ClassDef(EventConfig, 1)
+   ClassDef(EventConfig, 2)
 };
 
 #endif

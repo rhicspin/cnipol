@@ -279,7 +279,7 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 //}
 
 
-//______________________________________________________________________________
+/** */
 void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 {
    if (buf.IsReading()) {
