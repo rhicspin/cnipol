@@ -12,24 +12,23 @@ using namespace std;
 /** Default constructor. */
 CnipolHists::CnipolHists() : DrawObjContainer()
 {
-   CnipolHistsBook();
-   CnipolHistsBook("_cut1");
-   CnipolHistsBook("_cut2");
+   BookHists();
+   BookHists("_cut1");
+   BookHists("_cut2");
    BookPreProcess();
-   //CnipolHistsBookExtra();
-   //CnipolHistsBookExtra("_cut1");
+   //BookHistsExtra();
+   //BookHistsExtra("_cut1");
 }
 
 
 CnipolHists::CnipolHists(TDirectory *dir) : DrawObjContainer(dir)
 {
-   CnipolHistsBook();
-   CnipolHistsBook("_cut1");
-   CnipolHistsBook("_cut2");
+   BookHists();
+   BookHists("_cut1");
+   BookHists("_cut2");
    BookPreProcess();
-   //CnipolHistsBookExtra();
-   //CnipolHistsBookExtra("_cut1");
-   //ReadFromDir();
+   //BookHistsExtra();
+   //BookHistsExtra("_cut1");
 }
 
 
@@ -40,7 +39,7 @@ CnipolHists::~CnipolHists()
 
 
 /** */
-void CnipolHists::CnipolHistsBook(string sid)
+void CnipolHists::BookHists(string sid)
 { //{{{
    char hName[256];
 
@@ -229,7 +228,7 @@ void CnipolHists::CnipolHistsBook(string sid)
 
 
 /** */
-void CnipolHists::CnipolHistsBookExtra(string sid)
+void CnipolHists::BookHistsExtra(string sid)
 { //{{{
    //char hName[256];
 

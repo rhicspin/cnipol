@@ -32,8 +32,8 @@ public:
    CnipolHists(TDirectory *dir);
    ~CnipolHists();
 
-   void  CnipolHistsBook(std::string cutid="");
-   void  CnipolHistsBookExtra(std::string cutid="");
+   void  BookHists(std::string cutid="");
+   void  BookHistsExtra(std::string cutid="");
    void  BookPreProcess();
    //virtual void Print(const Option_t* opt="") const;
    void  Print(const Option_t* opt="") const;

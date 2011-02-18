@@ -905,7 +905,8 @@ float WeightAnalyzingPower(int HID)
 
    if (!hEnergy) return 0;
 
-   j = sum = suma = 0.;
+   j = 0;
+   sum = suma = 0;
 
    for (int i=1; i<=hEnergy->GetNbinsX(); i++) {
       double bcont  = hEnergy->GetBinContent(i);
@@ -1708,7 +1709,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
          dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;
       }
 
-      printf("ZZZ: %3d, %8.5f, %10d, %10d, %10d, %10d, %8.5f, %8.5f\n",
+      printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5f, %8.5f\n",
              i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
              Asym[i], dAsym[i]);
    }

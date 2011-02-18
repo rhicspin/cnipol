@@ -122,8 +122,7 @@ void event_process(processEvent *event)
    }
 
    // Calibration hists
-   //if (dproc.fModes & TDatprocStruct::MODE_ALPHA)
-   if ( (dproc.fModes & TDatprocStruct::MODE_ALPHA) == TDatprocStruct::MODE_ALPHA) {
+   if ( dproc.HasAlphaBit() ) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -227,17 +226,31 @@ void event_process(processEvent *event)
    // Get address of the histogram container
    ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
+   // Fill target histograms
+   if (dproc.HasTargetBit()) {
+
+      //if (ch->GetChannelId() > NSTRIP)
+      //   printf("channel1: %d, %d\n", ch->GetChannelId(), cfginfo->data.NumChannels);
+
+      if (ch->PassCutTargetChannel()) {
+         //printf("channel: %d\n", ch->GetChannelId());
+         gAsymRoot.fHists->d["targets"]->Fill(ch);
+      }
+   }
+
    // XXX
-   if (!ch->PassQACutRaw()) return;
+   if (dproc.HasNormalBit()) {
+      if (!ch->PassQACutRaw()) return;
 
-   gAsymRoot.fHists->Fill(ch);
+      gAsymRoot.fHists->Fill(ch);
 
-   if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-   {
-	   gAsymRoot.fHists->Fill(ch, "_cut1");
+      if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      {
+	      gAsymRoot.fHists->Fill(ch, "_cut1");
 
-      if (ch->PassQACutCarbonMass()) {
-	      gAsymRoot.fHists->Fill(ch, "_cut2");
+         if (ch->PassQACutCarbonMass()) {
+	         gAsymRoot.fHists->Fill(ch, "_cut2");
+         }
       }
    }
 

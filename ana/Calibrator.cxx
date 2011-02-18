@@ -25,14 +25,14 @@ Calibrator::~Calibrator()
 /** */
 void Calibrator::Calibrate(DrawObjContainer *c)
 {
-	Warning("Calibrate", "Executing Calibrate()");
+	Info("Calibrate", "Executing Calibrate()");
 }
 
 
 /** */
 void Calibrator::CalibrateFast(DrawObjContainer *c)
 {
-	Warning("CalibrateFast", "Executing CalibrateFast()");
+	Info("CalibrateFast", "Executing CalibrateFast()");
 }
 
 

@@ -67,6 +67,7 @@ void RawDataProcessor::ReadRecBegin(TStructRunInfo &ri)
 
    //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
 
+
       cout << "Begin of data stream Ver: " << recBegin->version << endl;
       cout << "Comment: "                  << recBegin->comment << endl;
       cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
@@ -405,15 +406,16 @@ void readloop()
       //=============================================================
       //                          Main Switch
       //=============================================================
+
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
          if (ReadFlag.RECBEGIN) break; // ??? should encounter only once in each file
 
-         cout << "Begin of data stream Ver: " << rec.begin.version                        << endl;
-         cout << "Comment: "                  << rec.begin.comment                        << endl;
-         cout << "Time Stamp: "               << ctime(&rec.begin.header.timestamp.time);
-         cout << "Unix Time Stamp: "          << rec.begin.header.timestamp.time          << endl;
+         cout << "Data stream version: " << rec.begin.version << endl;
+         cout << "Comment: "             << rec.begin.comment << endl;
+         cout << "Date & Time: "         << ctime(&rec.begin.header.timestamp.time);
+         cout << "Timestamp: "           << rec.begin.header.timestamp.time << endl;
 
          gRunInfo.StartTime = rec.begin.header.timestamp.time;
          gRunInfo.fDataFormatVersion = rec.begin.version;
@@ -448,6 +450,9 @@ void readloop()
 
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
+
+            ProcessRecordPCTarget(pointer, ndelim);
+
             --pointer;
             UShort_t i = 0;
 
@@ -472,7 +477,7 @@ void readloop()
                   long int tgt_identifyH = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
 
                   if ( ( !tgt.Rotary[k][0] && !tgt.Rotary[k][1] ) ||
-                       (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1]  ) )
+                       (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1] ) )
                   {
                      cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
                      gRunInfo.target = '-';
@@ -513,7 +518,7 @@ void readloop()
                      if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
                         strcpy(gRunInfo.TgtOperation, " scan");
 
-                     printf("%8d %8d %12.3f %12.3f\n", i, k,
+                     printf("%8d %8d %8d %12.3f %12.3f\n", i, k, nTgtIndex,
                              tgt.Rotary[k][0]*dproc.target_count_mm,
                              tgt.Rotary[k][1]*dproc.target_count_mm);
                   }
@@ -528,7 +533,7 @@ void readloop()
          }
 
          // define target histograms
-         tgtHistBook();
+         //tgtHistBook();
 
          // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
          if (tgt.VHtarget) mask.detector = 0x2D;
@@ -651,7 +656,7 @@ void readloop()
          break;
 
       case REC_WFDV8SCAL:
-         if (dproc.fModes & TDatprocStruct::MODE_SCALER)
+         if (dproc.HasScalerBit())
             ProcessRecord(rec.wfd);
          break;
 
@@ -790,8 +795,12 @@ void readloop()
                  //    fill pattern     = 1
                  //    Calibration mode = 1
                  // also process only if strip is active
-                 if ( (fillpat[event.bid] == 1 || dproc.CMODE == 1 || event.stN >= 72) &&
-                      gRunInfo.ActiveStrip[event.stN] )
+                 //if (event.stN >= NSTRIP)
+                    //printf("channel111: %d, %d\n", event.stN, gRunInfo.ActiveStrip[event.stN]);
+                    //printf("channel111: %d\n", event.stN);
+
+                 if ( fillpat[event.bid] == 1 || dproc.CMODE == 1) // || event.stN >= 72) ) //&&
+                      //gRunInfo.ActiveStrip[event.stN] )
                  {
                     event_process(&event);
                  }
@@ -816,7 +825,7 @@ void readloop()
       case REC_RHIC_CONF:
          if (!ReadFlag.RHICCONF) {
 
-            fprintf(stdout, "Read configure information\n");
+            fprintf(stdout, "Reading REC_RHIC_CONF record from file...\n");
 
             cfginfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
                       (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
@@ -858,7 +867,7 @@ void readloop()
    fclose(fp);
 
    // Post processing
-   if ((dproc.fModes & TDatprocStruct::MODE_NORMAL) == TDatprocStruct::MODE_NORMAL)
+   if (dproc.HasNormalBit())
       end_process();
 
    fprintf(stdout, "End of data stream \n");
@@ -900,7 +909,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 {
    if (!ci) return;
 
-   ci->Print();
+   //ci->Print();
 
    float Ct = ci->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
    //float L  = ci->data.TOFLength;
@@ -921,8 +930,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
       gRunConsts[i] = RunConst(L, Ct);
 
-      printf("Channel %-2d consts: \n", i);
-      gRunConsts[i].Print();
+      //printf("Channel %-2d consts: \n", i);
+      //gRunConsts[i].Print();
    }
 }
 
@@ -1049,7 +1058,7 @@ void ProcessRecord(recordPolAdoStruct &rec)
 void ProcessRecord(recordWFDV8ArrayStruct &rec)
 { //{{{
    Int_t s1=0, s2=0, s3=0, s4=0;
-   float hist[1536];
+   //float hist[1536];
  
    UShort_t chId = rec.siNum + 1;
 
@@ -1106,4 +1115,29 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
    for (int i=0; i<3; i++) {
       //sscal_[rec.siNum * 3+i] += rec.scalers[i];
    }
+} //}}}
+
+
+/** */
+void ProcessRecordPCTarget(long* rec, int n)
+{ //{{{
+   --rec;
+   //UShort_t i = 0;
+
+   // copy data to linear array
+   Double_t* linRec = new Double_t[n*4 + 8]; // there 2 under and ooverflow bins
+
+   for (UInt_t k=0; k<n; k++) {
+
+      *(linRec + k + 1      ) = *++rec; // Horizontal target
+      *(linRec + k + (n+2)  ) = *++rec;
+      *(linRec + k + (n+2)*2) = *++rec; // Vertical target
+      *(linRec + k + (n+2)*3) = *++rec;
+
+      printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, n, *(linRec + k + 1), *(linRec + k + (n+2)  ), *(linRec + k + (n+2)*2), *(linRec + k + (n+2)*3) );
+   }
+
+   gAsymRoot.FillTargetHists(n, linRec);
+
+   delete [] linRec;
 } //}}}

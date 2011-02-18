@@ -109,23 +109,6 @@ struct StructSinPhi {
   float chi2;
 };
 
-struct StructAnalysis {
-  float              max_rate;
-  float              TshiftAve;
-  float              wcm_norm_event_rate; 
-  float              UniversalRate;
-  float              A_N[2];
-  float              P[2];
-  float              P_sigma_ratio[2];
-  float              P_sigma_ratio_norm[2];
-  float              energy_slope[2];        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
-  float              profile_error;          // profile error
-  StructSinPhi       sinphi[100+MAXDELIM];   // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
-  StructSinPhi       basym[100+MAXDELIM];    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
-  StructAnomaly      anomaly;
-  StructUnrecognized unrecog;
-};
-
 struct StructExtInput {
   int CONFIG;
   int MASSCUT;
@@ -201,19 +184,19 @@ struct StructCounterTgt {
 };
 
 struct StructTarget {
-  float x;                    // (arbitarary) target postion [mm]
-  int vector;
-  long int eventID;
-  int VHtarget;               // Vertical:[0], Horizontal:[1]
-  int Index[MAXDELIM];
-  int Linear[MAXDELIM][2];   
-  int Rotary[MAXDELIM][2];
-  float X[MAXDELIM];          // target position [mm] array excluding static position 
-  float Interval[MAXDELIM];   // time interval of given target postiion [sec]
-  float Time[MAXDELIM];       // duration from measurement start in [sec]
-  struct StructAll {
-    float x[TARGETINDEX];  // target position in [mm] including static position
-  } all;
+   float x;                    // (arbitarary) target postion [mm]
+   int   vector;
+   long int eventID;
+   int   VHtarget;             // Vertical:[0], Horizontal:[1]
+   int   Index[MAXDELIM];
+   int   Linear[MAXDELIM][2];   
+   int   Rotary[MAXDELIM][2];
+   float X[MAXDELIM];          // target position [mm] array excluding static position 
+   float Interval[MAXDELIM];   // time interval of given target postiion [sec]
+   float Time[MAXDELIM];       // duration from measurement start in [sec]
+   struct StructAll {
+      float x[TARGETINDEX];    // target position in [mm] including static position
+   } all;
 };
 
 struct StructBunchPattern {

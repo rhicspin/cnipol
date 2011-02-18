@@ -8,48 +8,49 @@ using namespace std;
 
 // Default Values for Run Condition
 TDatprocStruct::TDatprocStruct() :
-   enel             (400),
-   eneu             (900),   
-   widthl           (-30),
-   widthu           (3),    
-   fModes           (MODE_NORMAL),
-   FEEDBACKMODE     (0),     
-   RAWHISTOGRAM     (0),     
-   CMODE            (0),     
-   DMODE            (0),     
-   TMODE            (0),     
-   AMODE            (0),     
-   BMODE            (1),     
-   ZMODE            (0),     
-   MESSAGE          (0),     
-   CBANANA          (2),     
-   UPDATE           (0),
-   UPDATE_DB        (1),
-   QUICK_MODE       (0),
-   MMODE            (1),     
-   NTMODE           (0),     
-   RECONFMODE       (1),     
-   RAMPMODE         (0),     
-   STUDYMODE        (0),     
-   SAVETREES        (0),     
-   MassSigma        (3),     
-   MassSigmaAlt     (2),     
-   OneSigma         (1.5e6), 
-   tshift           (0),     
-   inj_tshift       (0),     
-   dx_offset        (0),     
-   WCMRANGE         (999.05),
-   MassLimit        (8),     
-   nEventsProcessed (0),     
-   nEventsTotal     (0),     
-   thinout          (1),     
+   fRunId            (""),
+   enel              (400),
+   eneu              (900),   
+   widthl            (-30),
+   widthu            (3),    
+   fModes            (MODE_NORMAL),
+   FEEDBACKMODE      (0),     
+   RAWHISTOGRAM      (0),     
+   CMODE             (0),     
+   DMODE             (0),     
+   TMODE             (0),     
+   AMODE             (0),     
+   BMODE             (1),     
+   ZMODE             (0),     
+   MESSAGE           (0),     
+   CBANANA           (2),     
+   UPDATE            (0),
+   UPDATE_DB         (1),
+   QUICK_MODE        (0),
+   MMODE             (1),     
+   NTMODE            (0),     
+   RECONFMODE        (1),     
+   RAMPMODE          (0),     
+   STUDYMODE         (0),     
+   SAVETREES         (0),     
+   MassSigma         (3),     
+   MassSigmaAlt      (2),     
+   OneSigma          (1.5e6), 
+   tshift            (0),     
+   inj_tshift        (0),     
+   dx_offset         (0),     
+   WCMRANGE          (999.05),
+   MassLimit         (8),     
+   nEventsProcessed  (0),     
+   nEventsTotal      (0),     
+   thinout           (1),     
    fFastCalibThinout (0.10),     
-   reference_rate   (1),     
-   target_count_mm  (0.11),  
-   procDateTime     (0),     
-   procTimeReal     (0),     
-   procTimeCpu      (0),     
-   userCalibFile    (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv()
+   reference_rate    (1),     
+   target_count_mm   (0.11),  
+   procDateTime      (0),     
+   procTimeReal      (0),     
+   procTimeCpu       (0),     
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv()
 { 
    const char* tmpEnv = getenv("DATADIR");
 
@@ -81,9 +82,9 @@ void TDatprocStruct::MakeOutDir()
    //   printf("WARNING: Perhaps dir already exists: %s\n", GetOutDir().c_str());
 
    if (gSystem->mkdir(GetOutDir().c_str()) < 0)
-      gSystem->Error("TDatprocStruct::TDatprocStruct", "Directory %s already exists", GetOutDir().c_str());
+      gSystem->Warning("   TDatprocStruct::TDatprocStruct", "Directory %s already exists", GetOutDir().c_str());
    else
-      gSystem->Info("TDatprocStruct::TDatprocStruct", "Created directory %s", GetOutDir().c_str());
+      gSystem->Info("   TDatprocStruct::TDatprocStruct", "Created directory %s", GetOutDir().c_str());
 }
 
 
@@ -125,6 +126,17 @@ string TDatprocStruct::GetDlCalibFile()
 
 
 /** */
+void TDatprocStruct::ProcessParameters()
+{
+   if (fRunId.empty()) {
+      //gSystem->Fatal("   TDatprocStruct::ProcessParameters", "Run name has to be specified");
+      gSystem->Error("   TDatprocStruct::ProcessParameters", "Run name has to be specified");
+      exit(0);
+   }
+}
+
+
+/** */
 TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec)
 {
    if (!rec) return buf;
@@ -151,6 +163,7 @@ TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec)
 void TDatprocStruct::Print(const Option_t* opt) const
 {
    cout
+   << "fRunId           = " << fRunId           << endl
    << "enel             = " << enel             << endl
    << "eneu             = " << eneu             << endl
    << "widthl           = " << widthl           << endl
@@ -201,6 +214,7 @@ void TDatprocStruct::Print(const Option_t* opt) const
 /** */
 void TDatprocStruct::PrintAsPhp(FILE *f) const
 { //{{{
+   fprintf(f, "$rc['fRunId']                       = \"%s\";\n", fRunId.c_str());
    fprintf(f, "$rc['enel']                         = %d;\n", enel);
    fprintf(f, "$rc['eneu']                         = %d;\n", eneu);
    fprintf(f, "$rc['widthl']                       = %d;\n", widthl);
@@ -222,6 +236,7 @@ void TDatprocStruct::Streamer(TBuffer &buf)
 
    if (buf.IsReading()) {
       //printf("reading TDatprocStruct::Streamer(TBuffer &buf) \n");
+      buf >> tstr; fRunId = tstr.Data();
       buf >> enel;
       buf >> eneu;
       buf >> widthl;
@@ -237,6 +252,7 @@ void TDatprocStruct::Streamer(TBuffer &buf)
       buf >> tstr; fDlCalibRun = tstr.Data();
    } else {
       //printf("writing TDatprocStruct::Streamer(TBuffer &buf) \n");
+      tstr = fRunId; buf << tstr;
       buf << enel;
       buf << eneu;
       buf << widthl;

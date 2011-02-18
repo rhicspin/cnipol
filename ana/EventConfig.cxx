@@ -17,7 +17,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
    fRunInfo(new TStructRunInfo()), fDatproc(new TDatprocStruct()), fRunDB(new TStructRunDB()),
-   fCalibrator(new Calibrator())
+   fCalibrator(new Calibrator()), fAnaResult(new StructAnalysis())
 {
 }
 
@@ -75,6 +75,13 @@ void EventConfig::PrintAsPhp(FILE *f) const
       Error("PrintAsPhp", "fCalibrator not defined");
    } else {
       fCalibrator->PrintAsPhp(f);
+   }
+
+   fprintf(f, "\n// StructAnalysis data\n");
+   if (!fAnaResult) {
+      Error("PrintAsPhp", "fAnaResult not defined");
+   } else {
+      fAnaResult->PrintAsPhp(f);
    }
    
    fprintf(f, "?>\n");

@@ -27,14 +27,18 @@ class TDatprocStruct
 {
 public:
 
-   enum Mode {MODE_ALPHA =0x01010000, MODE_CALIB    =0x01000000,
-              MODE_NORMAL=0x00020000, MODE_NO_NORMAL=0x80020000,
-              MODE_SCALER=0x00040000,
-              MODE_RAW   =0x00080000,
-              MODE_BUNCH =0x00100000,
-              MODE_FULL  =0x001f0000};
+   // Various histogramming and running modes
+   enum Mode {MODE_ALPHA  = 0x01010000,
+              MODE_CALIB  = 0x01000000,
+              MODE_NORMAL = 0x00020000, MODE_NO_NORMAL = 0x80020000,
+              MODE_SCALER = 0x00040000,
+              MODE_RAW    = 0x00080000,
+              MODE_RUN    = 0x00100000,
+              MODE_TARGET = 0x00200000,
+              MODE_FULL   = 0x003f0000};
 
    // Constraint parameter for Data processing 
+   std::string      fRunId;             // Run name
    int              enel;               // lower kinetic energy threshold (keV)
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)
@@ -94,6 +98,14 @@ public:
    std::string GetOutDir();
    std::string GetAlphaCalibFile();
    std::string GetDlCalibFile();
+   void        ProcessParameters();
+   inline Bool_t HasAlphaBit();
+   inline Bool_t HasCalibBit();
+   inline Bool_t HasNormalBit();
+   inline Bool_t HasScalerBit();
+   inline Bool_t HasRawBit();
+   inline Bool_t HasRunBit();
+   inline Bool_t HasTargetBit();
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f) const;
    void Streamer(TBuffer &buf);
@@ -102,5 +114,16 @@ public:
 
 TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec);
 TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec);
+
+Bool_t TDatprocStruct::HasAlphaBit()  {
+   return (fModes & (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB))  == (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB);
+ }
+
+Bool_t TDatprocStruct::HasCalibBit()  { return (fModes & TDatprocStruct::MODE_CALIB)  == TDatprocStruct::MODE_CALIB; }
+Bool_t TDatprocStruct::HasNormalBit() { return (fModes & TDatprocStruct::MODE_NORMAL) == TDatprocStruct::MODE_NORMAL; }
+Bool_t TDatprocStruct::HasScalerBit() { return (fModes & TDatprocStruct::MODE_SCALER) == TDatprocStruct::MODE_SCALER; }
+Bool_t TDatprocStruct::HasRawBit()    { return (fModes & TDatprocStruct::MODE_RAW)    == TDatprocStruct::MODE_RAW; }
+Bool_t TDatprocStruct::HasRunBit()    { return (fModes & TDatprocStruct::MODE_RUN)    == TDatprocStruct::MODE_RUN; }
+Bool_t TDatprocStruct::HasTargetBit() { return (fModes & TDatprocStruct::MODE_TARGET) == TDatprocStruct::MODE_TARGET; }
 
 #endif

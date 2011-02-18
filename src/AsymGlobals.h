@@ -35,7 +35,7 @@ struct StructRunConst          ;
 struct StructMask              ;
 struct StructFlag              ;
 struct StructReadFlag          ;
-struct StructAnalysis          ;
+class StructAnalysis          ;
 struct StructTarget            ;
 struct StructBunchPattern      ;
 struct StructHist;
