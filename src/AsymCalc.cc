@@ -93,31 +93,24 @@ void end_process()
 }
 
 
-//
-// Class name  :
 // Method name : CompleteHistograms()
-//
 // Description : Complete dressing histograms
-// Input       :
-// Return      :
-//
-int CompleteHistogram()
+void CompleteHistogram()
 {
-  // Draw reg./alt. event selection borders in Invariant Mass plots
-  float MASS_12C_k2G=MASS_12C*k2G;
-
-  for (int i=0; i<NSTRIP; i++) {
-    float max = mass_nocut[i]->GetMaximum();
-    DrawLine(mass_nocut[i], MASS_12C_k2G, max*1.05, 14, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
-    DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
-    DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
-  }
-
-  return 0;
+   // Draw reg./alt. event selection borders in Invariant Mass plots
+   float MASS_12C_k2G = MASS_12C*k2G;
+ 
+   for (int i=0; i<NSTRIP; i++) {
+      float max = mass_nocut[i]->GetMaximum();
+ 
+      DrawLine(mass_nocut[i], MASS_12C_k2G, max*1.05, 14, 2);
+      DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
+      DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
+      DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
+      DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigma,    max*0.3, 4, 2);
+      DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
+      DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
+   }
 }
 
 
@@ -128,7 +121,7 @@ void TgtHist()
   float xmin   = fabs(double(ASYM_DEFAULT)), xmax;
   float margin = 0.2;
   float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-  int X_index = runinfo.Run>=6 ? nTgtIndex : ndelim;
+  int   X_index = runinfo.Run >= 6 ? nTgtIndex : ndelim;
 
   GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
 
@@ -141,7 +134,7 @@ void TgtHist()
     dy[i] = tgt.Interval[i] ? float( sqrt( double(cntr.good[i]) ) ) / tgt.Interval[i] * MHz : 0;
   }
 
-  gAnaResults.max_rate = GetMax(X_index,y);
+  gAnaResults.max_rate = GetMax(X_index, y);
   float ymin=fabs(double(ASYM_DEFAULT)), ymax;
   GetMinMax(X_index, y, margin, ymin, ymax);
   sprintf(htitle,"%.3f : Rate vs Taret Postion", runinfo.RUNID);
@@ -181,7 +174,7 @@ void TgtHist()
 // ===================
 // A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
 // elastic Carbons are scattered off more in Right for Up
-int sqass(float A, float B, float C, float D, float *asym, float *easym)
+void sqass(float A, float B, float C, float D, float *asym, float *easym)
 {
    float den;
    den = sqrt(A*B) + sqrt(C*D);
@@ -192,437 +185,423 @@ int sqass(float A, float B, float C, float D, float *asym, float *easym)
       *asym  = (sqrt(A*B) - sqrt(C*D))/den;
       *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
    }
-
-   return(0);
 }
 
 
-//
-// Class name  :
 // Method name : CumulativeAsymmetry(){
-//
 // Description : Caluclate bunch cumulative asymmetries
-// Input       :
-// Return      :
-//
-int CumulativeAsymmetry()
+void CumulativeAsymmetry()
 {
-    int bid;
-    asymStruct x90[120];  // x90[119] is total
-    asymStruct x45[120];
-    asymStruct y45[120];
-    asymStruct cr45[120];
-    asymStruct tx90[120][6];
-    asymStruct tx45[120][6];
-    asymStruct ty45[120][6];
-    float RL90[120],RL90E[120];
-    float RL45[120],RL45E[120];
-    float BT45[120],BT45E[120];
-    float NL,NR;
-    float tmpasym,tmpasyme;
-    float RU[120],RD[120],LU[120],LD[120];
-    int   gbid[120];    // if 1:good and used 0: be discarded
-    float gtmin,gtmax,btmin,btmax;
-    float fspinpat[120];
-    long  Nsi[6]={0,0,0,0,0,0};
+   asymStruct x90[120];  // x90[119] is total
+   asymStruct x45[120];
+   asymStruct y45[120];
+   asymStruct cr45[120];
+   asymStruct tx90[120][6];
+   asymStruct tx45[120][6];
+   asymStruct ty45[120][6];
+   float RL90[120],RL90E[120];
+   float RL45[120],RL45E[120];
+   float BT45[120],BT45E[120];
+   float NL,NR;
+   float tmpasym,tmpasyme;
+   float RU[120],RD[120],LU[120],LD[120];
+   int   gbid[120];    // if 1:good and used 0: be discarded
+   float gtmin,gtmax,btmin,btmax;
+   float fspinpat[120];
+   long  Nsi[6]={0,0,0,0,0,0};
 
-    //====================================================
-    // Right-Left asymmetry
-    //====================================================
-    for (bid=0;bid<120;bid++){
+   // Right-Left asymmetry
+   for (int bid=0; bid<120; bid++){
 
-        fspinpat[bid] = (float) spinpat[bid];
+       fspinpat[bid] = (float) spinpat[bid];
 
-        // R-L X90
-        if (Ncounts[2-1][bid]+Ncounts[5-1][bid]!=0) {
+       // R-L X90
+       if (Ncounts[2-1][bid]+Ncounts[5-1][bid]!=0) {
 
-            NR = Ncounts[2-1][bid];
-            NL = Ncounts[5-1][bid];
-            RL90[bid] = (float) (NR-NL)/(NR+NL);
-            RL90E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+           NR = Ncounts[2-1][bid];
+           NL = Ncounts[5-1][bid];
+           RL90[bid] = (float) (NR-NL)/(NR+NL);
+           RL90E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
-        } else {
-            RL90[bid] = 0.;
-            RL90E[bid] = 0.;
-        }
-        // R-L X45
-        if (Ncounts[1-1][bid]+Ncounts[3-1][bid]+
-            Ncounts[4-1][bid]+Ncounts[6-1][bid]!=0){
+       } else {
+           RL90[bid] = 0.;
+           RL90E[bid] = 0.;
+       }
+       // R-L X45
+       if (Ncounts[1-1][bid]+Ncounts[3-1][bid]+
+           Ncounts[4-1][bid]+Ncounts[6-1][bid]!=0){
 
-            NR = Ncounts[1-1][bid]+Ncounts[3-1][bid];
-            NL = Ncounts[4-1][bid]+Ncounts[6-1][bid];
-            RL45[bid] = (float) (NR-NL)/(NR+NL);
-            RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+           NR = Ncounts[1-1][bid]+Ncounts[3-1][bid];
+           NL = Ncounts[4-1][bid]+Ncounts[6-1][bid];
+           RL45[bid] = (float) (NR-NL)/(NR+NL);
+           RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
-        } else {
-            RL45[bid] = 0.;
-            RL45E[bid] = 0.;
-        }
-        // B-T Y45
-        if (Ncounts[3-1][bid]+Ncounts[4-1][bid]+
-            Ncounts[1-1][bid]+Ncounts[6-1][bid]!=0){
+       } else {
+           RL45[bid] = 0.;
+           RL45E[bid] = 0.;
+       }
 
-            NR = Ncounts[3-1][bid]+Ncounts[4-1][bid];
-            NL = Ncounts[1-1][bid]+Ncounts[6-1][bid];
+       // B-T Y45
+       if (Ncounts[3-1][bid]+Ncounts[4-1][bid]+
+           Ncounts[1-1][bid]+Ncounts[6-1][bid]!=0){
 
-            BT45[bid] = (float) (NR-NL)/(NR+NL);
-            BT45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+           NR = Ncounts[3-1][bid]+Ncounts[4-1][bid];
+           NL = Ncounts[1-1][bid]+Ncounts[6-1][bid];
 
-        } else {
-            BT45[bid] = 0.;
-            BT45E[bid] = 0.;
-        }
-    }
+           BT45[bid] = (float) (NR-NL)/(NR+NL);
+           BT45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
-    // *** GOOD/BAD BUNCH CRITERIA 1
+       } else {
+           BT45[bid] = 0.;
+           BT45E[bid] = 0.;
+       }
+   }
 
-    gtmin = 0.0;
-    gtmax = 1.0;
-    btmin = 0.0;
-    btmax = 1.00;
+   // *** GOOD/BAD BUNCH CRITERIA 1
+   gtmin = 0.0;
+   gtmax = 1.0;
+   btmin = 0.0;
+   btmax = 1.00;
 
-    for (bid=0;bid<120;bid++){
-        gbid[bid] = 1;
-        // good/total event rate
-        if (Ntotal[bid]!=0){
-            if (((float)Ngood[bid]/Ntotal[bid])<gtmin){
-                fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
-                        bid,(float)Ngood[bid]/Ntotal[bid]);
-                gbid[bid] = 0;
-            }
-            if (((float)Ngood[bid]/Ntotal[bid])>gtmax){
-                fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
-                        bid,(float)Ngood[bid]/Ntotal[bid]);
-                gbid[bid] = 0;
-            }
-        }
-        // background / carbon event rate
-        if (Ngood[bid]!=0){
-            if (((float)Nback[bid]/Ngood[bid])<btmin){
-                fprintf(stdout,"BID: %d discarded (BG/GOOD) %f \n",
-                        bid,(float)Nback[bid]/Ngood[bid]);
-                gbid[bid] = 0;
-            }
-            if (((float)Nback[bid]/Ngood[bid])>btmax) {
-                fprintf(stdout,"BID: %d discarded (BG/GOOD) %f \n",
-                        bid,(float)Nback[bid]/Ngood[bid]);
-                gbid[bid] = 0;
-            }
-        }
-    }
+   for (int bid=0; bid<120; bid++) {
+      gbid[bid] = 1;
 
-    // Counts for each detector
-    for (bid=0;bid<120;bid++){
-        Nsi[0]+=Ncounts[0][bid];
-        Nsi[1]+=Ncounts[1][bid];
-        Nsi[2]+=Ncounts[2][bid];
-        Nsi[3]+=Ncounts[3][bid];
-        Nsi[4]+=Ncounts[4][bid];
-        Nsi[5]+=Ncounts[5][bid];
-    }
+      // good/total event rate
+      if (Ntotal[bid]!=0){
+         if (((float)Ngood[bid]/Ntotal[bid])<gtmin){
+            fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
+                    bid,(float)Ngood[bid]/Ntotal[bid]);
+            gbid[bid] = 0;
+         }
+         if (((float)Ngood[bid]/Ntotal[bid])>gtmax){
+            fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
+                    bid,(float)Ngood[bid]/Ntotal[bid]);
+            gbid[bid] = 0;
+         }
+      }
+      // background / carbon event rate
+      if (Ngood[bid]!=0){
+         if (((float)Nback[bid]/Ngood[bid])<btmin){
+            fprintf(stdout,"BID: %d discarded (BG/GOOD) %f \n",
+                    bid,(float)Nback[bid]/Ngood[bid]);
+            gbid[bid] = 0;
+         }
+         if (((float)Nback[bid]/Ngood[bid])>btmax) {
+            fprintf(stdout,"BID: %d discarded (BG/GOOD) %f \n",
+                    bid,(float)Nback[bid]/Ngood[bid]);
+            gbid[bid] = 0;
+         }
+      }
+   }
 
-    HHPAK(31010, (float*)Ncounts[0]);
-    HHPAK(31020, (float*)Ncounts[1]);
-    HHPAK(31030, (float*)Ncounts[2]);
-    HHPAK(31040, (float*)Ncounts[3]);
-    HHPAK(31050, (float*)Ncounts[4]);
-    HHPAK(31060, (float*)Ncounts[5]);
+   // Counts for each detector
+   for (int bid=0; bid<NBUNCH; bid++){
+      Nsi[0]+=Ncounts[0][bid];
+      Nsi[1]+=Ncounts[1][bid];
+      Nsi[2]+=Ncounts[2][bid];
+      Nsi[3]+=Ncounts[3][bid];
+      Nsi[4]+=Ncounts[4][bid];
+      Nsi[5]+=Ncounts[5][bid];
+   }
 
-    float x90phys[2][120], x90acpt[2][120], x90lumi[2][120];
-    float x45phys[2][120], x45acpt[2][120], x45lumi[2][120];
-    float y45phys[2][120], y45acpt[2][120], y45lumi[2][120];
-    float c45phys[2][120], c45acpt[2][120], c45lumi[2][120];
+   HHPAK(31010, (float*)Ncounts[0]);
+   HHPAK(31020, (float*)Ncounts[1]);
+   HHPAK(31030, (float*)Ncounts[2]);
+   HHPAK(31040, (float*)Ncounts[3]);
+   HHPAK(31050, (float*)Ncounts[4]);
+   HHPAK(31060, (float*)Ncounts[5]);
 
+   float x90phys[2][120], x90acpt[2][120], x90lumi[2][120];
+   float x45phys[2][120], x45acpt[2][120], x45lumi[2][120];
+   float y45phys[2][120], y45acpt[2][120], y45lumi[2][120];
+   float c45phys[2][120], c45acpt[2][120], c45lumi[2][120];
 
-    // X90 (2-5) (C:1-4)
-    for (bid=0;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + Ncounts[2-1][bid]*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + Ncounts[2-1][bid]*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + Ncounts[5-1][bid]*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + Ncounts[5-1][bid]*((spinpat[bid]==-1)?1:0);
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
-        x90phys[0][bid] = tmpasym;
-        x90phys[1][bid] = tmpasyme;
-        sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x90[bid].acpt = tmpasym; x90[bid].acptE = tmpasyme;
-        x90acpt[0][bid] = tmpasym;
-        x90acpt[1][bid] = tmpasyme;
-        sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-        x90[bid].lumi = tmpasym; x90[bid].lumiE = tmpasyme;
-        x90lumi[0][bid] = tmpasym;
-        x90lumi[1][bid] = tmpasyme;
-        //        printf("%d : %d %f %f %f %f \n",bid,spinpat[bid],
-        //       RU[bid],RD[bid],LU[bid],LD[bid]);
-    }
+   // X90 (2-5) (C:1-4)
+   for (int bid=0; bid<120; bid++) {
+      RU[bid] = ((bid==0)?0:RU[bid-1])
+          + Ncounts[2-1][bid]*((spinpat[bid]==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1])
+          + Ncounts[2-1][bid]*((spinpat[bid]==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1])
+          + Ncounts[5-1][bid]*((spinpat[bid]==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1])
+          + Ncounts[5-1][bid]*((spinpat[bid]==-1)?1:0);
+      sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+      x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
+      x90phys[0][bid] = tmpasym;
+      x90phys[1][bid] = tmpasyme;
+      sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
+      x90[bid].acpt = tmpasym; x90[bid].acptE = tmpasyme;
+      x90acpt[0][bid] = tmpasym;
+      x90acpt[1][bid] = tmpasyme;
+      sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
+      x90[bid].lumi = tmpasym; x90[bid].lumiE = tmpasyme;
+      x90lumi[0][bid] = tmpasym;
+      x90lumi[1][bid] = tmpasyme;
+      //        printf("%d : %d %f %f %f %f \n",bid,spinpat[bid],
+      //       RU[bid],RD[bid],LU[bid],LD[bid]);
+   }
 
-    fprintf(stdout,"si2 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
-    fprintf(stdout,"si5 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
+   fprintf(stdout,"si2 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
+   fprintf(stdout,"si5 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
 
-    // X45 (13-46) (C:02-35)
-    for (bid=0;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[3-1][bid])*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[3-1][bid])*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + (Ncounts[4-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + (Ncounts[4-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
+   // X45 (13-46) (C:02-35)
+   for (int bid=0; bid<120; bid++) {
+       RU[bid] = ((bid==0)?0:RU[bid-1])
+           + (Ncounts[1-1][bid]+Ncounts[3-1][bid])*((spinpat[bid]==1)?1:0);
+       RD[bid] = ((bid==0)?0:RD[bid-1])
+           + (Ncounts[1-1][bid]+Ncounts[3-1][bid])*((spinpat[bid]==-1)?1:0);
+       LU[bid] = ((bid==0)?0:LU[bid-1])
+           + (Ncounts[4-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
+       LD[bid] = ((bid==0)?0:LD[bid-1])
+           + (Ncounts[4-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
 
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
-        x45phys[0][bid] = tmpasym;
-        x45phys[1][bid] = tmpasyme;
-        sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x45[bid].acpt = tmpasym; x45[bid].acptE = tmpasyme;
-        x45acpt[0][bid] = tmpasym;
-        x45acpt[1][bid] = tmpasyme;
-        sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-        x45[bid].lumi = tmpasym; x45[bid].lumiE = tmpasyme;
-        x45lumi[0][bid] = tmpasym;
-        x45lumi[1][bid] = tmpasyme;
-    }
+       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+       x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
+       x45phys[0][bid] = tmpasym;
+       x45phys[1][bid] = tmpasyme;
+       sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
+       x45[bid].acpt = tmpasym; x45[bid].acptE = tmpasyme;
+       x45acpt[0][bid] = tmpasym;
+       x45acpt[1][bid] = tmpasyme;
+       sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
+       x45[bid].lumi = tmpasym; x45[bid].lumiE = tmpasyme;
+       x45lumi[0][bid] = tmpasym;
+       x45lumi[1][bid] = tmpasyme;
+   }
 
-    fprintf(stdout,"si1,3 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
-    fprintf(stdout,"si4,6 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
+   fprintf(stdout,"si1,3 up :%10.0f down :%10.0f\n",RU[119],RD[119]);
+   fprintf(stdout,"si4,6 up :%10.0f down :%10.0f\n",LU[119],LD[119]);
 
-    // Y45 (34-16) (C:23-05)
-    for (bid=0;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
+   // Y45 (34-16) (C:23-05)
+   for (int bid=0; bid<120; bid++) {
+      RU[bid] = ((bid==0)?0:RU[bid-1])
+          + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1])
+          + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1])
+          + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1])
+          + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
 
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        y45[bid].phys = tmpasym; y45[bid].physE = tmpasyme;
-        y45phys[0][bid] = tmpasym;
-        y45phys[1][bid] = tmpasyme;
-        sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-        y45[bid].acpt = tmpasym; y45[bid].acptE = tmpasyme;
-        y45acpt[0][bid] = tmpasym;
-        y45acpt[1][bid] = tmpasyme;
-        sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-        y45[bid].lumi = tmpasym; y45[bid].lumiE = tmpasyme;
-        y45lumi[0][bid] = tmpasym;
-        y45lumi[1][bid] = tmpasyme;
-    }
-    // CR45 (14-36) (C:03-25)
-    for (bid=1;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
+      sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+      y45[bid].phys = tmpasym; y45[bid].physE = tmpasyme;
+      y45phys[0][bid] = tmpasym;
+      y45phys[1][bid] = tmpasyme;
+      sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
+      y45[bid].acpt = tmpasym; y45[bid].acptE = tmpasyme;
+      y45acpt[0][bid] = tmpasym;
+      y45acpt[1][bid] = tmpasyme;
+      sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
+      y45[bid].lumi = tmpasym; y45[bid].lumiE = tmpasyme;
+      y45lumi[0][bid] = tmpasym;
+      y45lumi[1][bid] = tmpasyme;
+   }
 
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        cr45[bid].phys = tmpasym; cr45[bid].physE = tmpasyme;
-        c45phys[0][bid]  = tmpasym;
-        c45phys[1][bid] = tmpasyme;
+   // CR45 (14-36) (C:03-25)
+   for (int bid=0; bid<120; bid++) {
+      RU[bid] = ((bid==0)?0:RU[bid-1])
+          + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1])
+          + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((spinpat[bid]==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1])
+          + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1])
+          + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((spinpat[bid]==-1)?1:0);
 
-        sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-        cr45[bid].acpt = tmpasym; cr45[bid].acptE = tmpasyme;
-        c45acpt[0][bid]  = tmpasym;
-        c45acpt[1][bid] = tmpasyme;
+      sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+      cr45[bid].phys = tmpasym; cr45[bid].physE = tmpasyme;
+      c45phys[0][bid]  = tmpasym;
+      c45phys[1][bid] = tmpasyme;
 
-        sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-        cr45[bid].lumi = tmpasym; cr45[bid].lumiE = tmpasyme;
-        c45lumi[0][bid]  = tmpasym;
-        c45lumi[1][bid] = tmpasyme;
-    }
+      sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
+      cr45[bid].acpt = tmpasym; cr45[bid].acptE = tmpasyme;
+      c45acpt[0][bid]  = tmpasym;
+      c45acpt[1][bid] = tmpasyme;
 
-    HHPAK(30000, x90phys[0]); HHPAKE(30000, x90phys[1]);
-    HHPAK(30010, x90acpt[0]); HHPAKE(30010, x90acpt[1]);
-    HHPAK(30020, x90lumi[0]); HHPAKE(30020, x90lumi[1]);
+      sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
+      cr45[bid].lumi = tmpasym; cr45[bid].lumiE = tmpasyme;
+      c45lumi[0][bid]  = tmpasym;
+      c45lumi[1][bid] = tmpasyme;
+   }
 
-    HHPAK(30100, x45phys[0]); HHPAKE(30100, x45phys[1]);
-    HHPAK(30110, x45acpt[0]); HHPAKE(30110, x45acpt[1]);
-    HHPAK(30120, x45lumi[0]); HHPAKE(30120, x45lumi[1]);
+   HHPAK(30000, x90phys[0]); HHPAKE(30000, x90phys[1]);
+   HHPAK(30010, x90acpt[0]); HHPAKE(30010, x90acpt[1]);
+   HHPAK(30020, x90lumi[0]); HHPAKE(30020, x90lumi[1]);
 
-    HHPAK(30200, y45phys[0]); HHPAKE(30200, y45phys[1]);
-    HHPAK(30210, y45acpt[0]); HHPAKE(30210, y45acpt[1]);
-    HHPAK(30220, y45lumi[0]); HHPAKE(30220, y45lumi[1]);
+   HHPAK(30100, x45phys[0]); HHPAKE(30100, x45phys[1]);
+   HHPAK(30110, x45acpt[0]); HHPAKE(30110, x45acpt[1]);
+   HHPAK(30120, x45lumi[0]); HHPAKE(30120, x45lumi[1]);
 
-    HHPAK(30300, c45phys[0]); HHPAKE(30300, c45phys[1]);
-    HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
-    HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
+   HHPAK(30200, y45phys[0]); HHPAKE(30200, y45phys[1]);
+   HHPAK(30210, y45acpt[0]); HHPAKE(30210, y45acpt[1]);
+   HHPAK(30220, y45lumi[0]); HHPAKE(30220, y45lumi[1]);
 
-    printf("*************** RESULT *******************\n");
-    printf("        physics                luminosity             acceptance\n");
-    printf("X90  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-            x90[119].phys,x90[119].physE,
-            x90[119].lumi,x90[119].lumiE,
-            x90[119].acpt,x90[119].acptE);
-    printf("X45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-            x45[119].phys,x45[119].physE,
-            x45[119].lumi,x45[119].lumiE,
-            x45[119].acpt,x45[119].acptE);
-    printf("Y45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-            y45[119].phys,y45[119].physE,
-            y45[119].lumi,y45[119].lumiE,
-            y45[119].acpt,y45[119].acptE);
-    printf("CR45 :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-            cr45[119].phys,cr45[119].physE,
-            cr45[119].lumi,cr45[119].lumiE,
-            cr45[119].acpt,cr45[119].acptE);
+   HHPAK(30300, c45phys[0]); HHPAKE(30300, c45phys[1]);
+   HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
+   HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
 
-    printf("*************** RESULT *******************\n");
+   printf("*************** RESULT *******************\n");
+   printf("        physics                luminosity             acceptance\n");
+   printf("X90  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
+           x90[119].phys,x90[119].physE,
+           x90[119].lumi,x90[119].lumiE,
+           x90[119].acpt,x90[119].acptE);
+   printf("X45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
+           x45[119].phys,x45[119].physE,
+           x45[119].lumi,x45[119].lumiE,
+           x45[119].acpt,x45[119].acptE);
+   printf("Y45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
+           y45[119].phys,y45[119].physE,
+           y45[119].lumi,y45[119].lumiE,
+           y45[119].acpt,y45[119].acptE);
+   printf("CR45 :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
+           cr45[119].phys,cr45[119].physE,
+           cr45[119].lumi,cr45[119].lumiE,
+           cr45[119].acpt,cr45[119].acptE);
+   printf("*************** RESULT *******************\n");
 
-    // Target Position Loop
-    for (int i=0; i<=nTgtIndex; i++) {
+   // Target Position Loop
+   for (int i=0; i<=nTgtIndex; i++) {
 
-    // X90 (2-5) (C:1-4)
-      for (bid=0;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + NDcounts[2-1][bid][i]*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + NDcounts[2-1][bid][i]*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + NDcounts[5-1][bid][i]*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + NDcounts[5-1][bid][i]*((spinpat[bid]==-1)?1:0);
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
-        x90phys[0][bid] = tmpasym;
-        x90phys[1][bid] = tmpasyme;
-
+      // X90 (2-5) (C:1-4)
+      for (int bid=0; bid<120; bid++) {
+         RU[bid] = ((bid==0)?0:RU[bid-1])
+             + NDcounts[2-1][bid][i]*((spinpat[bid]==1)?1:0);
+         RD[bid] = ((bid==0)?0:RD[bid-1])
+             + NDcounts[2-1][bid][i]*((spinpat[bid]==-1)?1:0);
+         LU[bid] = ((bid==0)?0:LU[bid-1])
+             + NDcounts[5-1][bid][i]*((spinpat[bid]==1)?1:0);
+         LD[bid] = ((bid==0)?0:LD[bid-1])
+             + NDcounts[5-1][bid][i]*((spinpat[bid]==-1)?1:0);
+         sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+         x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
+         x90phys[0][bid] = tmpasym;
+         x90phys[1][bid] = tmpasyme;
       }
 
-     HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
+      HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
 
-    // X45 (13-46) (C:02-35)
-    for (bid=0;bid<120;bid++){
-        RU[bid] = ((bid==0)?0:RU[bid-1])
-            + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((spinpat[bid]==1)?1:0);
-        RD[bid] = ((bid==0)?0:RD[bid-1])
-            + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((spinpat[bid]==-1)?1:0);
-        LU[bid] = ((bid==0)?0:LU[bid-1])
-            + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((spinpat[bid]==1)?1:0);
-        LD[bid] = ((bid==0)?0:LD[bid-1])
-            + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((spinpat[bid]==-1)?1:0);
+      // X45 (13-46) (C:02-35)
+      for (int bid=0; bid<120; bid++) {
+          RU[bid] = ((bid==0)?0:RU[bid-1])
+              + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((spinpat[bid]==1)?1:0);
+          RD[bid] = ((bid==0)?0:RD[bid-1])
+              + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((spinpat[bid]==-1)?1:0);
+          LU[bid] = ((bid==0)?0:LU[bid-1])
+              + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((spinpat[bid]==1)?1:0);
+          LD[bid] = ((bid==0)?0:LD[bid-1])
+              + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((spinpat[bid]==-1)?1:0);
 
-        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-        x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
-        x45phys[0][bid] = tmpasym;
-        x45phys[1][bid] = tmpasyme;
-    }
+          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+          x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
+          x45phys[0][bid] = tmpasym;
+          x45phys[1][bid] = tmpasyme;
+      }
 
-     HHPAK(37500+i, x45phys[0]); HHPAKE(37500+i, x45phys[1]);
+      HHPAK(37500+i, x45phys[0]); HHPAKE(37500+i, x45phys[1]);
+   }
 
-    } // end-of-nTgtIndex loop
+   // **** for different t range ****
+   float txasym90[6][120], txasym90E[6][120];
+   float txasym45[6][120], txasym45E[6][120];
+   float tyasym45[6][120], tyasym45E[6][120];
+   float tcasym45[6][120], tcasym45E[6][120];
 
-    // **** for different t range ****
-    float txasym90[6][120], txasym90E[6][120];
-    float txasym45[6][120], txasym45E[6][120];
-    float tyasym45[6][120], tyasym45E[6][120];
-    float tcasym45[6][120], tcasym45E[6][120];
+   for (int tr=0;tr<NTBIN;tr++){
+     float SUM=0;
+       // X90 (2-5)
+       for (int bid=0; bid<NBUNCH; bid++){
+           RU[bid] = ((bid==0)?0:RU[bid-1])
+               + NTcounts[2-1][bid][tr]*((spinpat[bid]==1)?1:0)*gbid[bid];
+           RD[bid] = ((bid==0)?0:RD[bid-1])
+               + NTcounts[2-1][bid][tr]*((spinpat[bid]==-1)?1:0)*gbid[bid];
+           LU[bid] = ((bid==0)?0:LU[bid-1])
+               + NTcounts[5-1][bid][tr]*((spinpat[bid]==1)?1:0)*gbid[bid];
+           LD[bid] = ((bid==0)?0:LD[bid-1])
+               + NTcounts[5-1][bid][tr]*((spinpat[bid]==-1)?1:0)*gbid[bid];
+           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+           tx90[bid][tr].phys = tmpasym; tx90[bid][tr].physE = tmpasyme;
+           txasym90[tr][bid] = tmpasym; txasym90E[tr][bid] = tmpasyme;
+           SUM+=NTcounts[2-1][bid][tr];
+       }
 
-    for (int tr=0;tr<NTBIN;tr++){
-      float SUM=0;
-        // X90 (2-5)
-        for (bid=0;bid<120;bid++){
-            RU[bid] = ((bid==0)?0:RU[bid-1])
-                + NTcounts[2-1][bid][tr]*((spinpat[bid]==1)?1:0)*gbid[bid];
-            RD[bid] = ((bid==0)?0:RD[bid-1])
-                + NTcounts[2-1][bid][tr]*((spinpat[bid]==-1)?1:0)*gbid[bid];
-            LU[bid] = ((bid==0)?0:LU[bid-1])
-                + NTcounts[5-1][bid][tr]*((spinpat[bid]==1)?1:0)*gbid[bid];
-            LD[bid] = ((bid==0)?0:LD[bid-1])
-                + NTcounts[5-1][bid][tr]*((spinpat[bid]==-1)?1:0)*gbid[bid];
-            sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-            tx90[bid][tr].phys = tmpasym; tx90[bid][tr].physE = tmpasyme;
-            txasym90[tr][bid] = tmpasym; txasym90E[tr][bid] = tmpasyme;
-            SUM+=NTcounts[2-1][bid][tr];
-        }
+       // X45 (13-46)
+       for (int bid=0; bid<120; bid++) {
+           RU[bid] = ((bid==0)?0:RU[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           RD[bid] = ((bid==0)?0:RD[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           LU[bid] = ((bid==0)?0:LU[bid-1])
+               + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           LD[bid] = ((bid==0)?0:LD[bid-1])
+               + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+           tx45[bid][tr].phys = tmpasym; tx45[bid][tr].physE = tmpasyme;
+           txasym45[tr][bid] = tmpasym; txasym45E[tr][bid] = tmpasyme;
+       }
 
-        // X45 (13-46)
-        for (bid=0;bid<120;bid++){
-            RU[bid] = ((bid==0)?0:RU[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            RD[bid] = ((bid==0)?0:RD[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            LU[bid] = ((bid==0)?0:LU[bid-1])
-                + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            LD[bid] = ((bid==0)?0:LD[bid-1])
-                + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-            tx45[bid][tr].phys = tmpasym; tx45[bid][tr].physE = tmpasyme;
-            txasym45[tr][bid] = tmpasym; txasym45E[tr][bid] = tmpasyme;
-        }
+       // Y45 (34-16)
+       for (int bid=0; bid<120; bid++) {
+           RU[bid] = ((bid==0)?0:RU[bid-1])
+               + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           RD[bid] = ((bid==0)?0:RD[bid-1])
+               + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           LU[bid] = ((bid==0)?0:LU[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           LD[bid] = ((bid==0)?0:LD[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+           ty45[bid][tr].phys = tmpasym; ty45[bid][tr].physE = tmpasyme;
+           tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme;
+       }
 
-        // Y45 (34-16)
-        for (bid=0;bid<120;bid++){
-            RU[bid] = ((bid==0)?0:RU[bid-1])
-                + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            RD[bid] = ((bid==0)?0:RD[bid-1])
-                + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            LU[bid] = ((bid==0)?0:LU[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            LD[bid] = ((bid==0)?0:LD[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-            ty45[bid][tr].phys = tmpasym; ty45[bid][tr].physE = tmpasyme;
-            tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme;
-        }
+       // CROSS 45 (14-36)
+       for (int bid=0; bid<120; bid++) {
+           RU[bid] = ((bid==0)?0:RU[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           RD[bid] = ((bid==0)?0:RD[bid-1])
+               + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           LU[bid] = ((bid==0)?0:LU[bid-1])
+               + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==1)?1:0)*gbid[bid];
+           LD[bid] = ((bid==0)?0:LD[bid-1])
+               + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
+               *((spinpat[bid]==-1)?1:0)*gbid[bid];
+           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+           tcasym45[tr][bid] = tmpasym; tcasym45E[tr][bid] = tmpasyme;
+       }
 
-        // CROSS 45 (14-36)
-        for (bid=0;bid<120;bid++){
-            RU[bid] = ((bid==0)?0:RU[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            RD[bid] = ((bid==0)?0:RD[bid-1])
-                + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            LU[bid] = ((bid==0)?0:LU[bid-1])
-                + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==1)?1:0)*gbid[bid];
-            LD[bid] = ((bid==0)?0:LD[bid-1])
-                + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
-                *((spinpat[bid]==-1)?1:0)*gbid[bid];
-            sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-            tcasym45[tr][bid] = tmpasym; tcasym45E[tr][bid] = tmpasyme;
-        }
-        // Fill Histograms
-        HHPAK(32000+tr+1, txasym90[tr]);  HHPAKE(32000+tr+1, txasym90E[tr]);
-        HHPAK(32100+tr+1, txasym45[tr]);  HHPAKE(32100+tr+1, txasym45E[tr]);
-        HHPAK(32200+tr+1, tyasym45[tr]);  HHPAKE(32200+tr+1, tyasym45E[tr]);
-        HHPAK(32300+tr+1, tcasym45[tr]);  HHPAKE(32300+tr+1, tcasym45E[tr]);
-    }
+       // Fill Histograms
+       HHPAK(32000+tr+1, txasym90[tr]);  HHPAKE(32000+tr+1, txasym90E[tr]);
+       HHPAK(32100+tr+1, txasym45[tr]);  HHPAKE(32100+tr+1, txasym45E[tr]);
+       HHPAK(32200+tr+1, tyasym45[tr]);  HHPAKE(32200+tr+1, tyasym45E[tr]);
+       HHPAK(32300+tr+1, tcasym45[tr]);  HHPAKE(32300+tr+1, tcasym45E[tr]);
+   }
 
-    // Fill Histograms
-    HHPAK(31000, fspinpat);
-    HHPAK(31100, RL90);    HHPAKE(31100, RL90E);
-    HHPAK(31110, RL45);    HHPAKE(31110, RL45E);
-    HHPAK(31120, BT45);    HHPAKE(31120, BT45E);
+   // Fill Histograms
+   HHPAK(31000, fspinpat);
+   HHPAK(31100, RL90);    HHPAKE(31100, RL90E);
+   HHPAK(31110, RL45);    HHPAKE(31110, RL45E);
+   HHPAK(31120, BT45);    HHPAKE(31120, BT45E);
 
-    HHPAK(33000, (float*)Ngood);
-    HHPAK(33010, (float*)Nback);
-    HHPAK(33020, (float*)Ntotal);
+   HHPAK(33000, (float*)Ngood);
+   HHPAK(33010, (float*)Nback);
+   HHPAK(33020, (float*)Ntotal);
 
-    // Spin Sorted Strip Distribution
-    HHPAK(36000, (float*)cntr.reg.NStrip[0]);
-    HHPAK(36100, (float*)cntr.reg.NStrip[1]);
-
-    return 0;
+   // Spin Sorted Strip Distribution
+   HHPAK(36000, (float*)cntr.reg.NStrip[0]);
+   HHPAK(36100, (float*)cntr.reg.NStrip[1]);
 }
 
 
@@ -803,12 +782,11 @@ void PrintRunResults(StructHistStat hstat)
    for(Int_t i=0;i<nTgtIndex+1;i++)
      printf(" Polarization tgt pos %f    = %10.4f%9.4f\n",tgt.all.x[(int)tgt.Time[i]],gAnaResults.sinphi[100+i].P[0],gAnaResults.sinphi[100+i].P[1]);
    printf("-----------------------------------------------------------------------------------------\n");
-
-   return;
 }
 
 
-void DrawPlotvsTar(void)
+/** */
+void DrawPlotvsTar()
 {
    Double_t polvstar[nTgtIndex+1],epolvstar[nTgtIndex+1],posvstar[nTgtIndex+1];
 
@@ -1761,18 +1739,24 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
                             gAnaResults.sinphi[Mode].dPhi, gAnaResults.sinphi[Mode].chi2);
    }
 
+   // Add info to database entry
+   char sPol[50];
+
+   sprintf(sPol, "% 8.3f, % 6.3f, % 8.3f, % 6.3f",
+      gAnaResults.sinphi[0].P[0],    gAnaResults.sinphi[0].P[1],
+      gAnaResults.sinphi[0].dPhi[0], gAnaResults.sinphi[0].dPhi[1]);
+
+   gRunDb.fFields["POLARIZATION"] = sPol;
+
    //asymfit.SinPhiFit(gAnaResults.P[0], gAnaResults.sinphi.P, gAnaResults.sinphi.dPhi, gAnaResults.sinphi.chi2);
 }
 
 
-//
-// Class name  :
 // Method name : sin_phi(Float_t x, Double_t *par)
 //
 // Description : sin(x) fit. Amplitude and phase as parameters
 // Input       : Double_t *x, Double_t *par
 // Return      : par[0]*sin(x+par[1])
-//
 Double_t sin_phi(Double_t *x, Double_t *par)
 {
    return par[0] * sin(-x[0] + par[1]);
@@ -1888,11 +1872,13 @@ void AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *
    TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
    func -> SetParameters(p0,0);
    func -> SetParLimits(0, -1, 1);
+
    // Keeping phi fixed - chnged by Vipuli April 2008
    printf("************************************ \n");
-   printf("keeping phi fixed at = %12.3e \n",gAnaResults.sinphi[0].dPhi[0]);
+   printf("keeping phi fixed at = %12.3e \n", gAnaResults.sinphi[0].dPhi[0]);
    printf("************************************ \n");
-   func -> SetParLimits(1,gAnaResults.sinphi[0].dPhi[0],gAnaResults.sinphi[0].dPhi[0]);
+
+   func -> SetParLimits(1, gAnaResults.sinphi[0].dPhi[0], gAnaResults.sinphi[0].dPhi[0]);
    //func -> SetParLimits(1,-M_PI, M_PI);
    func -> SetParNames("P","dPhi");
    func -> SetLineColor(2);

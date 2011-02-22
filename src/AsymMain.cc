@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
       {"no-update-db",        no_argument,         0,   0x0200},
       {"pol-id",              required_argument,   0,   0x0300},
       {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
+      {"scaler",              no_argument,         0,   TDatprocStruct::MODE_SCALER},
       {"target",              no_argument,         0,   TDatprocStruct::MODE_TARGET},
       {"quick",               no_argument,         0,   'q'},
       {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
          cout << "     --mode-calib, --calib   : Update calibration constants" << endl;
          cout << "     --mode-normal           : Default set of histograms" << endl;
          cout << "     --mode-no-normal        : Turn off the default set of histograms" << endl;
-         cout << "     --mode-scaler           : Fill and save scaler histograms (from V124 memory)" << endl;
+         cout << "     --mode-scaler, --scaler : Fill and save scaler histograms (from V124 memory)" << endl;
          cout << "     --mode-raw, --raw       : Fill and save raw histograms" << endl;
          cout << "     --mode-run              : Fill and save bunch, lumi and other run related histograms" << endl;
          cout << "     --mode-target, --target : Fill and save target histograms" << endl;
@@ -555,7 +556,7 @@ int main(int argc, char *argv[])
    gAnaResults.PrintAsPhp();
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
-   //gAsymRoot.fEventConfig->PrintAsPhp();
+   gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
 
    // Closing ROOT File

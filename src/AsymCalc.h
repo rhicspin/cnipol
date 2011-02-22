@@ -27,7 +27,7 @@ struct StructHistStat;
 //                      Main End Process Routine
 //===========================================================================
 void end_process();
-int  CompleteHistogram();
+void CompleteHistogram();
 void TgtHist();
 
 //===========================================================================
@@ -86,8 +86,8 @@ struct StructSpeLumi {
    float min;
 };
 
-int  sqass(float A, float B, float C, float D, float *asym, float *easym);
-int  CumulativeAsymmetry();
+void sqass(float A, float B, float C, float D, float *asym, float *easym);
+void CumulativeAsymmetry();
 void CalcBunchAsymmetry();
 void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
@@ -111,7 +111,7 @@ void CalcStatistics();
 void binary_zero(int n, int mb);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
-void DrawPlotvsTar(void);
+void DrawPlotvsTar();
 
 //===========================================================================
 //                        Profile Error

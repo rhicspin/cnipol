@@ -30,6 +30,7 @@ TStructRunDB::TStructRunDB() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFiel
 
    // Persistant fields
    fFieldFlags["POLARIMETER_ID"]    = true;
+   fFieldFlags["POLARIZATION"]      = true;
    fFieldFlags["START_TIME"]        = true;
    fFieldFlags["STOP_TIME"]         = true;
    fFieldFlags["NEVENTS_TOTAL"]     = true;
@@ -237,10 +238,11 @@ void AsymRunDB::PrintCommon()
 }
 
 
-const UShort_t AsymRunDB::sNFields = 28;
+const UShort_t AsymRunDB::sNFields = 29;
 
 const char* AsymRunDB::sFieldNames[] = {
-   "RESET_ALL", "POLARIMETER_ID", "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
+	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
+   "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
    "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
    "ALPHA_CALIB_RUN_NAME", "CONFIG", "DEFINE_SPIN_PATTERN",
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
@@ -538,7 +540,7 @@ void AsymRunDB::Insert(TStructRunDB *dbrun)
 // Input       : double RUNID
 // Return      : int 1
 //
-int readdb(double RUNID)
+void readdb(double RUNID)
 {
    // read DB file
    char *dbfile = "run.db";
@@ -684,8 +686,6 @@ int readdb(double RUNID)
 
    // VERBOSE mode
    if (Flag.VERBOSE) PrintRunDB();
-
-   return 1;
 }
 
 
@@ -1173,8 +1173,19 @@ void TStructRunDB::UpdateValues()
 /** */
 void TStructRunDB::PrintAsPhp(FILE *f) const
 { //{{{
-   fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
-   fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());
-   fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
-   fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
+   //fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
+   //fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());
+   //fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
+   //fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
+
+   DbFieldMap::const_iterator ifld;
+   DbFieldMap::const_iterator bfld = fFields.begin();
+   DbFieldMap::const_iterator efld = fFields.end();
+
+   for (ifld=bfld; ifld!=efld; ifld++) {
+
+      string &field_name  = (string &) ifld->first;
+      string &field_value = (string &) ifld->second;
+      fprintf(f, "$rc['%s']                = \"%s\";\n", field_name.c_str(), field_value.c_str());
+   }
 } //}}}

@@ -7,7 +7,7 @@ using namespace std;
 
 
 /** */
-TStructRunInfo::TStructRunInfo() : Run(0), RUNID(0.0), runName(100, ' '),
+TStructRunInfo::TStructRunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
    StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0)
 {
    GoodEventRate         = 0; // GoodEventRate;
@@ -289,4 +289,23 @@ void TStructRunInfo::Update(TStructRunDB &rundb)
    sstr.str(""); sstr << rundb.fFields["DISABLED_CHANNELS"];
 
    while (sstr >> chId) fDisabledChannels[chId-1] = 1;
+
+   // For compatibility reasons set the Run variable
+   // Taken from AsymRunDb
+   if (RUNID < 6500) { // Run undefined
+      gRunInfo.Run = 0;
+
+   } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
+      gRunInfo.Run = 5;
+      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
+
+   } else if (RUNID >= 7400) { // Run06
+      gRunInfo.Run = 6;
+      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
+
+   } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
+      gRunInfo.Run = 9;
+
+   } else
+      gRunInfo.Run = 11;
 }

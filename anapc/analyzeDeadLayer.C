@@ -214,7 +214,7 @@ void analyzeDeadLayer_finalize(string pattern)
    ec->PrintAsPhp(f);
    fclose(f);
 
-   //ec->PrintAsPhp(stdout);
+   ec->PrintAsPhp(stdout);
 
    sprintf(&fileName[0], "%s/config_calib.dat", gOutDir.c_str());
 
