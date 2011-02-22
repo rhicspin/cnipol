@@ -78,57 +78,58 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sq",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sq",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
       case '?':
       case 'h':
          cout << "Usage of " << argv[0] << endl;
-         cout << " -h, -?                      : Print this help" <<endl;
-         cout << " -r, --run-name <run_name>   : Name of run with raw data in $DATADIR directory" <<endl;
-         cout << " -n <number>                 : Maximum number of events to process"
+         cout << " -h, -?                          : Print this help" <<endl;
+         cout << " -r, -f, --run-name <run_name>   : Name of run with raw data in $DATADIR directory" <<endl;
+         cout << " -n <number>                     : Maximum number of events to process"
               << " (default \"-n 0\" all events)" <<endl;
-         cout << " -s <number>                 : Only every <number> event will be"
+         cout << " -s <number>                     : Only every <number> event will be"
               << " processed (default \"-s 1\" no skip)" <<endl;
-         cout << " -c <calib_file_name>        : Set root file with calibration info (!)" << endl;
-         cout << " -o <filename>               : Output hbk file (!)" <<endl;
-         //cout << " -r <filename>               : ramp timing file" <<endl;
-         cout << " -t <time shift>             : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
-         cout << " -e <lower:upper>            : Kinetic energy range (default [400:900] keV) (!)" <<endl;
-         //cout << " -B                          : create banana curve on" <<endl;
-         //cout << " -G                          : mass mode on " <<endl;
-         cout << " -a, --no-error-detector     : Anomaly check off (!)" << endl;
-         cout << " -b                          : Feedback mode on (!)" << endl;
-         cout << " -D                          : Dead layer mode on (!)" <<endl;
-         cout << " -d <dlayer>                 : Additional deadlayer thickness [ug/cm2] (!)" << endl;
-         //cout << " -T                          : T0 study    mode on " <<endl;
-         //cout << " -A                          : A0,A1 study mode on " <<endl;
-         //cout << " -Z                          : without T0 subtraction" <<endl;
-         cout << " -F <file>                   : Overwrite conf file defined in run.db (!)" <<endl;
-         cout << " -W <lower:upper>            : Const width banana cut (!)" <<endl;
-         cout << " -m <sigma>                  : Banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
-         cout << " -U                          : Update histogram" << endl;
-         cout << "     --update-db             : Update run info in database" << endl;
-         cout << " -N                          : Store Ntuple events (!)" << endl;
-         cout << " -R <bitmask>                : Save events in Root trees, " <<
+         cout << " -c <calib_file_name>            : Set root file with calibration info (!)" << endl;
+         cout << " -o <filename>                   : Output hbk file (!)" <<endl;
+         //cout << " -r <filename>                   : ramp timing file" <<endl;
+         cout << " -t <time shift>                 : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
+         cout << " -e <lower:upper>                : Kinetic energy range (default [400:900] keV) (!)" <<endl;
+         //cout << " -B                              : create banana curve on" <<endl;
+         //cout << " -G                              : mass mode on " <<endl;
+         cout << " -a, --no-error-detector         : Anomaly check off (!)" << endl;
+         cout << " -b                              : Feedback mode on (!)" << endl;
+         cout << " -D                              : Dead layer mode on (!)" <<endl;
+         cout << " -d <dlayer>                     : Additional deadlayer thickness [ug/cm2] (!)" << endl;
+         //cout << " -T                              : T0 study    mode on " <<endl;
+         //cout << " -A                              : A0,A1 study mode on " <<endl;
+         //cout << " -Z                              : without T0 subtraction" <<endl;
+         cout << " -F <file>                       : Overwrite conf file defined in run.db (!)" <<endl;
+         cout << " -W <lower:upper>                : Const width banana cut (!)" <<endl;
+         cout << " -m <sigma>                      : Banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
+         cout << " -U                              : Update histogram" << endl;
+         cout << "     --update-db                 : Update run info in database" << endl;
+         cout << " -N                              : Store Ntuple events (!)" << endl;
+         cout << " -R <bitmask>                    : Save events in Root trees, " <<
                  "e.g. \"-R 101\"" <<endl;
-         cout << " -q, --quick                 : Skips the main loop. Use for a quick check" << endl;
-         cout << " -C, --mode-alpha            : Use when run over alpha run data" << endl;
-         cout << "     --mode-calib, --calib   : Update calibration constants" << endl;
-         cout << "     --mode-normal           : Default set of histograms" << endl;
-         cout << "     --mode-no-normal        : Turn off the default set of histograms" << endl;
-         cout << "     --mode-scaler, --scaler : Fill and save scaler histograms (from V124 memory)" << endl;
-         cout << "     --mode-raw, --raw       : Fill and save raw histograms" << endl;
-         cout << "     --mode-run              : Fill and save bunch, lumi and other run related histograms" << endl;
-         cout << "     --mode-target, --target : Fill and save target histograms" << endl;
-         cout << "     --mode-full             : Fill and save all histograms" << endl;
+         cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
+         cout << " -C, --mode-alpha                : Use when run over alpha run data" << endl;
+         cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
+         cout << "     --mode-normal               : Default set of histograms" << endl;
+         cout << "     --mode-no-normal            : Turn off the default set of histograms" << endl;
+         cout << "     --mode-scaler, --scaler     : Fill and save scaler histograms (from V124 memory)" << endl;
+         cout << "     --mode-raw, --raw           : Fill and save raw histograms" << endl;
+         cout << "     --mode-run                  : Fill and save bunch, lumi and other run related histograms" << endl;
+         cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
+         cout << "     --mode-full                 : Fill and save all histograms" << endl;
          cout << endl;
          cout << "Options marked with (!) are not really supported" << endl << endl;
 
          return 0;
 
       case 'r':
+      case 'f':
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
          //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
