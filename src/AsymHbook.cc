@@ -496,9 +496,7 @@ void hist_book(char *filename)
 }
 
 
-//
 // Target Histograms
-//
 void tgtHistBook()
 {
     float XMIN, XMAX;

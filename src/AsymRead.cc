@@ -451,7 +451,7 @@ void readloop()
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
-            ProcessRecordPCTarget(pointer, ndelim);
+            if (dproc.HasTargetBit()) ProcessRecordPCTarget(pointer, ndelim);
 
             --pointer;
             UShort_t i = 0;
@@ -499,7 +499,7 @@ void readloop()
                   tgt.Time[i] = k;
                   tgt.X[i]    = tgt.x;
 
-                  printf("%8d %8d %12.3f %12.3f\n", i, k,
+                  printf("%8d %8d %8d %12.3f %12.3f\n", i, k, nTgtIndex,
                           tgt.Rotary[k][0]*dproc.target_count_mm,
                           tgt.Rotary[k][1]*dproc.target_count_mm);
                } else {
@@ -532,7 +532,7 @@ void readloop()
             ReadFlag.PCTARGET = 1;
          }
 
-         // define target histograms
+         // define target histograms (hbook)
          //tgtHistBook();
 
          // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
@@ -936,15 +936,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 }
 
 
-//
-// Class name  :
-// Method name : void PrintBunchPattern(char* Mode)
-//
 // Description : print out spin (Mode=0), fill (Mode=1) pattern
 // Input       : Mode
-// Return      :
-//             :
-//
 void PrintBunchPattern(int *pattern)
 {
    char symbol[3][2];
@@ -960,28 +953,21 @@ void PrintBunchPattern(int *pattern)
    }
  
    cout << endl;
- 
-   return;
 }
 
 
-//
-// Class name  :
-// Method name : DecodeTargetID(polDataStruct poldat)
-//
 // Description : Decorde target infomation.
 //             : presently the target ID is assumed to be appear at the last of
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
-// Return      :
-//             :
-//
 void DecodeTargetID(polDataStruct poldat)
 {
   cout << endl;
   cout << "target ID = " << poldat.targetIdS << endl;
   //cout << "startTimeS = " << poldat.startTimeS << endl;
   //cout << "stopTimeS = " << poldat.stopTimeS << endl;
+
+  gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
 
   // initiarization
   gRunInfo.targetID = '-';
@@ -1016,16 +1002,8 @@ void DecodeTargetID(polDataStruct poldat)
 }
 
 
-//
-// Class name  :
 // Method name : PrepareCollidingBunchPattern(gRunInfo.fPolBeam)
-//
 // Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
-//             :
-// Input       :
-// Return      :
-//             :
-//
 void PrepareCollidingBunchPattern()
 {
    for (int i=0; i<NBUNCH; i++){
@@ -1043,8 +1021,6 @@ void PrepareCollidingBunchPattern()
    cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
    cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
    cout << "=====================================" << endl;
- 
-   return;
 }
 
 

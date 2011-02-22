@@ -14,9 +14,8 @@
 #include <math.h>
 
 
-int
-Usage(char *argv[]){
-
+int Usage(char *argv[])
+{
   cout << "\n Usage:" << argv[0] << "[-h] [-x]" << endl;
   cout << "\n Description: An utility program to calculate phi angles of strips for given distance " ;
   cout << "\n              from target to detector. The output is in the format defined in AsymMain.h";
@@ -28,73 +27,64 @@ Usage(char *argv[]){
   cout << "\t -x \t show example    " << endl;
   cout << endl;
   exit(0);
-
 }
 
-int 
-Example(char *argv[]){
-
+int Example(char *argv[])
+{
   cout << "\n Exapmle: " << endl;
   cout << "\t" << argv[0] << " -x" << endl;
   cout << endl;
   exit(0);
-
 }
 
 
-int 
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int Trancate = 0;
 
   int opt;
-   while (EOF != (opt = getopt(argc, argv, "htx?"))) {
-    switch (opt) {
-    case 'x':
-      Example(argv);
-      break;
-    case 't':
-      Trancate = 1;
-      break;
-    case 'h':
-    case '?':
-    case '*':
-      Usage(argv);
+
+  while (EOF != (opt = getopt(argc, argv, "htx?"))) {
+     switch (opt) {
+     case 'x':
+        Example(argv);
+        break;
+     case 't':
+        Trancate = 1;
+        break;
+     case 'h':
+     case '?':
+     case '*':
+        Usage(argv);
+     }
+  }
+   
+  int DIST = 180; // distance between target to detector [mm]
+  float PHI[6];
+  PHI[0] = 1 * M_PI/4.; 
+  PHI[1] = 2 * M_PI/4.;
+  PHI[2] = 3 * M_PI/4.;
+  PHI[3] = 5 * M_PI/4.;
+  PHI[4] = 6 * M_PI/4.;
+  PHI[5] = 7 * M_PI/4.;
+
+  int str = 0;
+  float phi[72];
+  for (int det=0; det<=5; det++) {
+    
+    for (int i=1; i<=12; i++) {
+
+      str = det + i;
+      phi[str] = Trancate ? PHI[det] : PHI[det] + atan(2*(i-6.5)/DIST) ; 
+      /* 
+         cout << str << " " << PHI[det]/M_PI*180 << " " 
+           << phi[str] << " " << phi[str]/M_PI*180 << endl;
+      */
+      printf("%7.5f,", phi[str]);
     }
 
-   }
-      
-   
-   int DIST = 180; // distance between target to detector [mm]
-   float PHI[6];
-   PHI[0] = 1 * M_PI/4.; 
-   PHI[1] = 2 * M_PI/4.;
-   PHI[2] = 3 * M_PI/4.;
-   PHI[3] = 5 * M_PI/4.;
-   PHI[4] = 6 * M_PI/4.;
-   PHI[5] = 7 * M_PI/4.;
+    cout << endl;
+  }
 
-   int str = 0;
-   float phi[72];
-   for (int det=0; det<=5; det++) {
-     
-     for (int i=1; i<=12; i++) {
-
-       str = det + i;
-       phi[str] = Trancate ? PHI[det] : PHI[det] + atan(2*(i-6.5)/DIST) ; 
-       /* 
-	  cout << str << " " << PHI[det]/M_PI*180 << " " 
-	    << phi[str] << " " << phi[str]/M_PI*180 << endl;
-       */
-       
-       printf("%7.5f,",phi[str]);
-
-     } // end-of-i loop
-
-     cout << endl;
-
-   }//end-of-det loop
-
-   return 0;
-
+  return 0;
 }
-

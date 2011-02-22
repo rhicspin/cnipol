@@ -123,7 +123,7 @@ public:
    void PrintCommon();
 };
 
-int   readdb(double RUNID);
+void  readdb(double RUNID);
 std::string GetVariables(std::string str);
 int   SetDefault();
 float GetVariablesFloat(std::string str);
