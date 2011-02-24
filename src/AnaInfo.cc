@@ -6,7 +6,7 @@
 using namespace std;
 
 
-// Default Values for Run Condition
+/** */
 TDatprocStruct::TDatprocStruct() :
    fRunId            (""),
    enel              (400),
@@ -51,8 +51,75 @@ TDatprocStruct::TDatprocStruct() :
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv()
-{ 
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0)
+{
+   Init();
+}
+
+
+/**
+ * Default Values for Run Condition
+ */
+TDatprocStruct::TDatprocStruct(string runId) :
+   fRunId            (runId),
+   enel              (400),
+   eneu              (900),   
+   widthl            (-30),
+   widthu            (3),    
+   fModes            (MODE_NORMAL),
+   FEEDBACKMODE      (0),     
+   RAWHISTOGRAM      (0),     
+   CMODE             (0),     
+   DMODE             (0),     
+   TMODE             (0),     
+   AMODE             (0),     
+   BMODE             (1),     
+   ZMODE             (0),     
+   MESSAGE           (0),     
+   CBANANA           (2),     
+   UPDATE            (0),
+   UPDATE_DB         (1),
+   QUICK_MODE        (0),
+   MMODE             (1),     
+   NTMODE            (0),     
+   RECONFMODE        (1),     
+   RAMPMODE          (0),     
+   STUDYMODE         (0),     
+   SAVETREES         (0),     
+   MassSigma         (3),     
+   MassSigmaAlt      (2),     
+   OneSigma          (1.5e6), 
+   tshift            (0),     
+   inj_tshift        (0),     
+   dx_offset         (0),     
+   WCMRANGE          (999.05),
+   MassLimit         (8),     
+   nEventsProcessed  (0),     
+   nEventsTotal      (0),     
+   thinout           (1),     
+   fFastCalibThinout (0.10),     
+   reference_rate    (1),     
+   //target_count_mm   (0.11),  
+   target_count_mm   (1),   // Need to get the real value
+   procDateTime      (0),     
+   procTimeReal      (0),     
+   procTimeCpu       (0),     
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0)
+{
+   Init();
+}
+
+
+/** */
+TDatprocStruct::~TDatprocStruct()
+{
+   if (fFileRunInfo) fclose(fFileRunInfo);
+}
+
+
+/** */
+void TDatprocStruct::Init()
+{
    const char* tmpEnv = getenv("DATADIR");
 
    if (tmpEnv) fAsymEnv["DATADIR"] = tmpEnv;
@@ -63,10 +130,6 @@ TDatprocStruct::TDatprocStruct() :
    if (tmpEnv) fAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
 }
-
-
-/** */
-TDatprocStruct::~TDatprocStruct() { }
 
 
 /** */
@@ -90,39 +153,44 @@ void TDatprocStruct::MakeOutDir()
 
 
 /** */
-string TDatprocStruct::GetOutDir()
+string TDatprocStruct::GetOutDir() const
 {
-   string path = fAsymEnv["CNIPOL_RESULTS_DIR"];
-   path += "/" + gRunInfo.runName + "/";
-   return path;
+   return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second + "/" + fRunId;
 }
 
 
 /** */
-string TDatprocStruct::GetAlphaCalibFile()
+string TDatprocStruct::GetAlphaCalibFile() const
 {
    if (fAlphaCalibRun.empty()) {
       cout << "Alpha calibration run not defined" << endl;
       return "";
    }
 
-   string path = fAsymEnv["CNIPOL_RESULTS_DIR"];
+   string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fAlphaCalibRun + "/" + fAlphaCalibRun + ".root";
    return path;
 }
 
 
 /** */
-string TDatprocStruct::GetDlCalibFile()
+string TDatprocStruct::GetDlCalibFile() const
 {
    if (fDlCalibRun.empty()) {
       cout << "Dead layer calibration run not defined" << endl;
       return "";
    }
 
-   string path = fAsymEnv["CNIPOL_RESULTS_DIR"];
+   string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fDlCalibRun + "/" + fDlCalibRun + ".root";
    return path;
+}
+
+
+/** */
+string TDatprocStruct::GetRunInfoFileName() const
+{
+   return GetOutDir() + "/runconfig.php";
 }
 
 
@@ -134,6 +202,10 @@ void TDatprocStruct::ProcessParameters()
       gSystem->Error("   TDatprocStruct::ProcessParameters", "Run name has to be specified");
       exit(0);
    }
+
+   MakeOutDir();
+
+   fFileRunInfo = fopen(GetRunInfoFileName().c_str(), "w");
 }
 
 

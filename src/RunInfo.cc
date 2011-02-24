@@ -41,6 +41,14 @@ TStructRunInfo::TStructRunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
 TStructRunInfo::~TStructRunInfo() { }
 
 
+string TStructRunInfo::GetAlphaCalibFileName() const
+{ return ""; }
+
+
+string TStructRunInfo::GetDlCalibFileName() const
+{ return ""; }
+
+
 /** */
 TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec)
 {
@@ -167,7 +175,7 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
-   fprintf(f, "$rc['fAsymVersion']                 = %s;\n",     fAsymVersion.c_str());
+   fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
