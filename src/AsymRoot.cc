@@ -159,16 +159,24 @@ void AsymRoot::RootFile(char *filename)
       TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", rootfile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
-   
+
    if (dproc.HasTargetBit()) {
       TDirectory *dir = new TDirectoryFile("targets", "targets", "", rootfile);
       fHists->d["targets"] = new CnipolTargetHists(dir);
    }
 
+   if (dproc.HasProfileBit()) {
+      TDirectory *dir = new TDirectoryFile("profile", "profile", "", rootfile);
+      fHists->d["profile"] = new CnipolProfileHists(dir);
+   }
+
    // OLD common global histogram inherited from previous life
-   DrawObjContainer *hists = new CnipolRunHists(rootfile);
-   fHists->Add(hists);
-   delete hists;
+   //DrawObjContainer *hists = new CnipolRunHists(rootfile);
+   //fHists->Add(hists);
+   //delete hists;
+
+   TDirectory *dir = new TDirectoryFile("run", "run", "", rootfile);
+   fHists->d["run"] = new CnipolRunHists(dir);
 
    // a temporary fix...
    //Kinema    = fHists->d["Kinema"].fDir;
@@ -334,6 +342,7 @@ void AsymRoot::SetChannelEvent(processEvent &event)
    fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
    fChannelEvent->fEventId.fBunchId      = event.bid;
    fChannelEvent->fEventId.fChannelId    = event.stN;
+   fChannelEvent->fEventId.fDelimiterId  = event.delim;
    fChannelEvent->fChannel.fAmpltd       = event.amp;
    fChannelEvent->fChannel.fIntgrl       = event.intg;
    fChannelEvent->fChannel.fTdc          = event.tdc;
@@ -349,6 +358,7 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
    fChannelEvent->fEventId.fRevolutionId = delim*512 + at.rev*2 + at.rev0;
    fChannelEvent->fEventId.fBunchId      = at.b;
    fChannelEvent->fEventId.fChannelId    = chId;
+   fChannelEvent->fEventId.fDelimiterId  = delim;
    fChannelEvent->fChannel.fAmpltd       = at.a;
    fChannelEvent->fChannel.fIntgrl       = at.s;
    fChannelEvent->fChannel.fTdc          = at.t;
@@ -358,30 +368,30 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 
 /** */
 void AsymRoot::PostProcess()
-{ //{{{
+{
    fHists->PostFill();
-} //}}}
+}
 
 
 /** */
 void AsymRoot::FillPreProcess()
-{ //{{{
+{
    fHists->d["std"]->FillPreProcess(fChannelEvent);
-} //}}}
+}
 
 
 /** */
 void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
-{ //{{{
+{
    ((CnipolScalerHists*) fHists->d["scalers"])->Fill(hData, chId);
-} //}}}
+}
 
 
 /** */
 void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
-{ //{{{
+{
    ((CnipolTargetHists*) fHists->d["targets"])->Fill(n, hData);
-} //}}}
+}
 
 
 /**
@@ -761,7 +771,6 @@ void AsymRoot::BookHists()
    sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gRunInfo.RUNID);
    good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
    good_carbon_events_strip->SetFillColor(17);
-
 
    Asymmetry->cd();
    asym_vs_bunch_x45    = new TH2F();

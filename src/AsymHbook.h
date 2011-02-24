@@ -9,6 +9,7 @@
 
 #include "AnaInfo.h"
 #include "AsymGlobals.h"
+#include "TargetInfo.h"
 
 void tgtHistBook();
 void hist_book(char *filename);

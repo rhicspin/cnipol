@@ -20,6 +20,7 @@ public:
    UInt_t   fRevolutionId;
    UChar_t  fBunchId;
    UChar_t  fChannelId;
+   UShort_t fDelimiterId;
 
 public:
 

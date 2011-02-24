@@ -30,17 +30,19 @@ UChar_t ChannelEvent::GetDetectorId()
 
 
 /** */
-UChar_t ChannelEvent::GetChannelId()
-{
-   return fEventId.fChannelId + 1;
-}
+UInt_t ChannelEvent::GetRevolutionId() { return fEventId.fRevolutionId; }
 
 
 /** */
-UChar_t ChannelEvent::GetBunchId()
-{
-   return fEventId.fBunchId;
-}
+UChar_t ChannelEvent::GetChannelId() { return fEventId.fChannelId + 1; }
+
+
+/** */
+UChar_t ChannelEvent::GetBunchId() { return fEventId.fBunchId; }
+
+
+/** */
+UShort_t ChannelEvent::GetDelimiterId() { return fEventId.fDelimiterId; }
 
 
 /** */

@@ -61,14 +61,11 @@ struct StructStripCheck {
 extern StructStripCheck strpchk;
 
 
-//=================================================================//
-//                     Bunch Error Detector                        //
-//=================================================================//
+// Bunch Error Detector
 float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code);
 void  BunchAsymmetryAnomaly();
 void  BunchAnomalyDetector();
-
-int HotBunchFinder(int err_code); 
+int   HotBunchFinder(int err_code); 
 
 struct StructBunch {
   float average[1];

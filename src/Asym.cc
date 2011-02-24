@@ -38,7 +38,7 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
-  1,       // VERBOSE mode
+  0,       // VERBOSE mode
   0,       // feedback mode
   -1,      // spin_pattern
   -1,      // fill_pattern
@@ -59,12 +59,12 @@ StructCounterTgt cntr_tgt = {
 };
 
 
-StructTarget tgt = {
-    0,  // target position x
-    -1, // target motion sign
-    0,  // eventID
-    0   // Vertical:[0], Horizontal:[1]
-};
+//StructTarget tgt = {
+//    0,  // target position x
+//    -1, // target motion sign
+//    0,  // eventID
+//    0   // Vertical:[0], Horizontal:[1]
+//};
 
 // Following arrays correspond to phi agnle of each strips. These phi angles are
 // subject to change depends on TOFLength from target to detectors.
@@ -127,6 +127,7 @@ map<UShort_t, RunConst>   gRunConsts;
 StructAnalysis           gAnaResults;
 StructBunchPattern       phx, str;
 TRecordConfigRhicStruct  *cfginfo;
+TargetInfo               tgt;
 
 
 /** */

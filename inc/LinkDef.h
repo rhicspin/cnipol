@@ -21,6 +21,7 @@
 #pragma link C++ class CnipolRunHists;
 #pragma link C++ class CnipolScalerHists;
 #pragma link C++ class CnipolTargetHists;
+#pragma link C++ class CnipolProfileHists;
 #pragma link C++ class HistContainer;
 #pragma link C++ class HistManager;
 //#pragma link C++ class CnipolHistsAssymetry;

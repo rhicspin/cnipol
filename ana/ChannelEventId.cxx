@@ -11,7 +11,7 @@ using namespace std;
 
 /** Default constructor. */
 ChannelEventId::ChannelEventId() : TObject(), fRevolutionId(ULONG_MAX),
-   fBunchId(UCHAR_MAX), fChannelId(UCHAR_MAX)
+   fBunchId(UCHAR_MAX), fChannelId(UCHAR_MAX), fDelimiterId(USHRT_MAX)
 {
 };
 
@@ -26,12 +26,13 @@ ChannelEventId::~ChannelEventId()
  *
  */
 void ChannelEventId::Print(const Option_t* opt) const
-{
-   opt = "";
-
+{ //{{{
    printf("ChannelEventId: \n");
-   printf("RevId, BuId, ChId: %12d, %12d, %12d", fRevolutionId, fBunchId, fChannelId);
-}
+   printf("   fRevolutionId: %12d\n", fRevolutionId);
+   printf("   fBunchId:      %12d\n", fBunchId);
+   printf("   fChannelId:    %12d\n", fChannelId);
+   printf("   fDelimiterId:  %12d\n", fDelimiterId);
+} //}}}
 
 
 /**

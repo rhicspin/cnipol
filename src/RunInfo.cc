@@ -299,7 +299,7 @@ void TStructRunInfo::Update(TStructRunDB &rundb)
       gRunInfo.Run = 5;
       for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
 
-   } else if (RUNID >= 7400) { // Run06
+   } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
       gRunInfo.Run = 6;
       for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
 

@@ -46,7 +46,8 @@ TDatprocStruct::TDatprocStruct() :
    thinout           (1),     
    fFastCalibThinout (0.10),     
    reference_rate    (1),     
-   target_count_mm   (0.11),  
+   //target_count_mm   (0.11),  
+   target_count_mm   (1),   // Need to get the real value
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     

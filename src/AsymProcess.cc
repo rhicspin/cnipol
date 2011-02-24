@@ -250,6 +250,9 @@ void event_process(processEvent *event)
 
          if (ch->PassQACutCarbonMass()) {
 	         gAsymRoot.fHists->Fill(ch, "_cut2");
+
+            //((CnipolRunHists*) gAsymRoot.fHists)->Fill(ch);
+            //((TH1*) gAsymRoot.fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
          }
       }
    }
@@ -540,7 +543,8 @@ void event_process(processEvent *event)
             NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
          } else {
             time = (int) (cntr.revolution/RHIC_REVOLUTION_FREQ);
-            if (time<MAXDELIM) {
+
+            if (time < MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
                NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
             } else if (!dproc.CMODE) {

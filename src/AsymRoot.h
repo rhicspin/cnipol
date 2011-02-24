@@ -25,6 +25,7 @@
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolTargetHists.h"
+#include "CnipolProfileHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 #include "DrawObjContainer.h"

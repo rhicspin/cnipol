@@ -448,97 +448,16 @@ void readloop()
          // invalid ndelim info
          if (!ReadFlag.PCTARGET && !dproc.CMODE) {
 
+            printf("Reading REC_PCTARGET record...\n");
+
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
             if (dproc.HasTargetBit()) ProcessRecordPCTarget(pointer, ndelim);
 
-            --pointer;
-            UShort_t i = 0;
-
-            printf("   index    total        x-pos        y-pos\n");
-
-            for (int k=0; k<ndelim; k++) {
-
-               tgt.Linear[k][1] = *++pointer; // Horizontal target
-               tgt.Rotary[k][1] = *++pointer;
-               tgt.Linear[k][0] = *++pointer; // Vertical target
-               tgt.Rotary[k][0] = *++pointer;
-
-               // force 0 for +/-1 tiny readout as target position.
-               if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
-
-               // identify Horizontal or Vertical target from the first target
-               // rotary position readout.
-               if (k == 0) {
-                  // From Run09 on, the horizontal/vertical targets are
-                  // identified by linear motion
-                  long int tgt_identifyV = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
-                  long int tgt_identifyH = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
-
-                  if ( ( !tgt.Rotary[k][0] && !tgt.Rotary[k][1] ) ||
-                       (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1] ) )
-                  {
-                     cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
-                     gRunInfo.target = '-';
-                  }
-
-                  if (tgt_identifyV) {
-                     tgt.VHtarget    = 0;
-                     gRunInfo.target = 'V';
-                     cout << "Vertical Target in finite position" << endl;
-                  } else if (tgt_identifyH) {
-                     tgt.VHtarget    = 1;
-                     gRunInfo.target = 'H';
-                     cout << "Horizontal Target in finite position" << endl;
-                  } else {
-                     cout << "Warning: Target infomation cannot be recognized.." << endl;
-                  }
-
-                  tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
-                  tgt.Time[i] = k;
-                  tgt.X[i]    = tgt.x;
-
-                  printf("%8d %8d %8d %12.3f %12.3f\n", i, k, nTgtIndex,
-                          tgt.Rotary[k][0]*dproc.target_count_mm,
-                          tgt.Rotary[k][1]*dproc.target_count_mm);
-               } else {
-
-                  TgtIndex[k] = i;
-
-                  if (tgt.Rotary[k][1] != tgt.Rotary[k-1][1] ||
-                      tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
-                  {
-                     TgtIndex[k]                 = ++i ;
-                     tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
-                     tgt.Time[TgtIndex[k]]       = float(k);
-                     tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
-                     ++nTgtIndex;
-
-                     if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
-                        strcpy(gRunInfo.TgtOperation, " scan");
-
-                     printf("%8d %8d %8d %12.3f %12.3f\n", i, k, nTgtIndex,
-                             tgt.Rotary[k][0]*dproc.target_count_mm,
-                             tgt.Rotary[k][1]*dproc.target_count_mm);
-                  }
-               }
-
-               // target position array including static target motion
-               tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
-            }
-
-            printf("Number of Delimiters :%4d\n", ndelim);
             ReadFlag.PCTARGET = 1;
          }
 
-         // define target histograms (hbook)
-         //tgtHistBook();
-
-         // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
-         if (tgt.VHtarget) mask.detector = 0x2D;
-
-         gRunInfo.StopTime = rec.header.timestamp.time;
          break;
 
       case REC_WCMADO:
@@ -1095,25 +1014,120 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
 
 
 /** */
-void ProcessRecordPCTarget(long* rec, int n)
+void ProcessRecordPCTarget(long* rec, int ndelim)
 { //{{{
+   long* pointer = rec;
+
    --rec;
    //UShort_t i = 0;
 
-   // copy data to linear array
-   Double_t* linRec = new Double_t[n*4 + 8]; // there 2 under and ooverflow bins
+   // copy data to a linear array
+   Double_t* linRec = new Double_t[ndelim*4 + 8]; // there 2 under and ooverflow bins
 
-   for (UInt_t k=0; k<n; k++) {
+   for (UInt_t k=0; k<ndelim; k++) {
 
-      *(linRec + k + 1      ) = *++rec; // Horizontal target
-      *(linRec + k + (n+2)  ) = *++rec;
-      *(linRec + k + (n+2)*2) = *++rec; // Vertical target
-      *(linRec + k + (n+2)*3) = *++rec;
+      *(linRec + k + 1      )      = *++rec; // Horizontal target
+      *(linRec + k + (ndelim+2)  ) = *++rec;
+      *(linRec + k + (ndelim+2)*2) = *++rec; // Vertical target
+      *(linRec + k + (ndelim+2)*3) = *++rec;
 
-      printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, n, *(linRec + k + 1), *(linRec + k + (n+2)  ), *(linRec + k + (n+2)*2), *(linRec + k + (n+2)*3) );
+      //printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, ndelim, *(linRec + k + 1), *(linRec + k + (ndelim+2)  ), *(linRec + k + (ndelim+2)*2), *(linRec + k + (ndelim+2)*3) );
    }
 
-   gAsymRoot.FillTargetHists(n, linRec);
+   gAsymRoot.FillTargetHists(ndelim, linRec);
 
    delete [] linRec;
+
+   // 
+   tgt.fNDelim = ndelim;
+
+   --pointer;
+   UShort_t i = 0;
+
+   printf("   index    total        x-pos        y-pos\n");
+
+   for (int k=0; k<ndelim; k++) {
+
+      tgt.Linear[k][1] = *++pointer; // Horizontal target
+      tgt.Rotary[k][1] = *++pointer;
+      tgt.Linear[k][0] = *++pointer; // Vertical target
+      tgt.Rotary[k][0] = *++pointer;
+
+      // force 0 for +/-1 tiny readout as target position.
+      if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
+
+      // identify Horizontal or Vertical target from the first target
+      // rotary position readout.
+      if (k == 0) {
+         // From Run09 on, the horizontal/vertical targets are
+         // identified by linear motion
+         long int tgt_identifyV = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][0] : tgt.Linear[k][0];
+         long int tgt_identifyH = gRunInfo.RUNID < 10040 ? tgt.Rotary[k][1] : tgt.Linear[k][1];
+
+         if ( ( !tgt.Rotary[k][0] && !tgt.Rotary[k][1] ) ||
+              (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1] ) )
+         {
+            cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
+            gRunInfo.target = '-';
+         }
+
+         if (tgt_identifyV) {
+            tgt.VHtarget    = 0;
+            gRunInfo.target = 'V';
+            cout << "Vertical Target in finite position" << endl;
+         } else if (tgt_identifyH) {
+            tgt.VHtarget    = 1;
+            gRunInfo.target = 'H';
+            cout << "Horizontal Target in finite position" << endl;
+         } else {
+            cout << "Warning: Target infomation cannot be recognized.." << endl;
+         }
+
+         tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+         tgt.Time[i] = k;
+         tgt.X[i]    = tgt.x;
+
+         printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
+                 TgtIndex[k], tgt.X[TgtIndex[k]],
+                 tgt.Rotary[k][0]*dproc.target_count_mm,
+                 tgt.Rotary[k][1]*dproc.target_count_mm);
+      } else {
+
+         TgtIndex[k] = i;
+
+         if (tgt.Rotary[k][1] != tgt.Rotary[k-1][1] ||
+             tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
+         {
+            TgtIndex[k]                 = ++i;
+            tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+            tgt.Time[TgtIndex[k]]       = float(k);
+            tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
+            ++nTgtIndex;
+
+            printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
+               TgtIndex[k], tgt.X[TgtIndex[k]],
+               tgt.Rotary[k][0]*dproc.target_count_mm,
+               tgt.Rotary[k][1]*dproc.target_count_mm);
+
+            //++i;
+         }
+      }
+
+      // target position array including static target motion
+      tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
+   }
+
+   if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
+      strcpy(gRunInfo.TgtOperation, " scan");
+
+   printf("Number of delimiters: %4d\n", ndelim);
+   printf("nTgtIndex: %d\n", nTgtIndex);
+
+   tgt.Print();
+
+   // define target histograms (hbook)
+   //tgtHistBook();
+
+   // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
+   if (tgt.VHtarget) mask.detector = 0x2D;
 } //}}}
