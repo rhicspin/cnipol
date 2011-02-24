@@ -86,20 +86,28 @@ public:
    std::string      fAlphaCalibRun;     // Name of the alpha calib run
    std::string      fDlCalibRun;        // Name of the alpha calib run
    std::map<std::string, std::string> fAsymEnv;
+   FILE*            fFileRunInfo;
 
 public:
 
    TDatprocStruct();
+   TDatprocStruct(std::string runId);
    ~TDatprocStruct();
 
    //std::string GetOutDir() const;
    //std::string GetAlphaCalibFile() const;
    //std::string GetDlCalibFile() const;
-   void        MakeOutDir();
-   std::string GetOutDir();
-   std::string GetAlphaCalibFile();
-   std::string GetDlCalibFile();
-   void        ProcessParameters();
+   std::string GetOutDir() const;
+   std::string GetAlphaCalibFile() const;
+   std::string GetDlCalibFile() const;
+   std::string GetRunInfoFileName() const;
+   FILE*  GetRunInfoFile() const { return fFileRunInfo; }
+   void   ProcessParameters();
+   void   Print(const Option_t* opt="") const;
+   void   PrintAsPhp(FILE *f) const;
+   void   Streamer(TBuffer &buf);
+   void   Update(TStructRunDB &rundb);
+
    inline Bool_t HasAlphaBit();
    inline Bool_t HasCalibBit();
    inline Bool_t HasNormalBit();
@@ -108,10 +116,10 @@ public:
    inline Bool_t HasRunBit();
    inline Bool_t HasTargetBit();
    inline Bool_t HasProfileBit();
-   void Print(const Option_t* opt="") const;
-   void PrintAsPhp(FILE *f) const;
-   void Streamer(TBuffer &buf);
-   void Update(TStructRunDB &rundb);
+
+private:
+   void Init();
+   void MakeOutDir();
 };
 
 TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec);

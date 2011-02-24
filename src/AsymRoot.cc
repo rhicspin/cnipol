@@ -795,7 +795,7 @@ int AsymRoot::BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback)
    rootfile->cd();
    Kinema->cd();
  
-   char  formula[100],fname[100];
+   char  formula[100], fname[100];
    float low, high, sigma;
    int   Color=2;
    int   Width=2;

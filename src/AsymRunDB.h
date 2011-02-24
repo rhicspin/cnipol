@@ -84,6 +84,7 @@ public:
    void ProcessLine(std::string sline);
    void UpdateFields(TStructRunDB &dbrun);
    void UpdateValues();
+   void SetAsymVersion(std::string version);
 };
 
 TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec);

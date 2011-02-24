@@ -327,7 +327,6 @@ int main(int argc, char *argv[])
    }
 
    dproc.ProcessParameters();
-   dproc.MakeOutDir();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -383,6 +382,9 @@ int main(int argc, char *argv[])
       gRunDb.UpdateFields(*runDb);
       gRunInfo.fPolId = gRunDb.fPolId;
    }
+
+   // Overwrite the offline version (if set previously)
+   gRunDb.SetAsymVersion(gRunInfo.fAsymVersion);
 
    // We should be done reading all common/default parameters from DB by now
    gRunDb.Print();
@@ -560,10 +562,10 @@ int main(int argc, char *argv[])
    gAsymRoot.fEventConfig->fRunDB      = &gRunDb;
 
    delete gAsymRoot.fEventConfig->fAnaResult;
-   gAnaResults.PrintAsPhp();
+   //gAnaResults.PrintAsPhp();
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
-   //gAsymRoot.fEventConfig->PrintAsPhp();
+   gAsymRoot.fEventConfig->PrintAsPhp(dproc.GetRunInfoFile());
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
 
    // Closing ROOT File

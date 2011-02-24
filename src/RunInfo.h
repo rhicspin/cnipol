@@ -64,11 +64,11 @@ public:
    TStructRunInfo();
    ~TStructRunInfo();
 
+   std::string GetAlphaCalibFileName() const;
+   std::string GetDlCalibFileName() const;
    void  Streamer(TBuffer &buf);
    void  Print(const Option_t* opt="") const;
    void  PrintAsPhp(FILE *f=stdout) const;
-   std::string GetAlphaCalibFileName() const;
-   std::string GetDlCalibFileName() const;
    short GetPolarimeterId();
    short GetPolarimeterId(short beamId, short streamId);
    void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);

@@ -29,6 +29,7 @@ TStructRunDB::TStructRunDB() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFiel
    //cout << AsymRunDB::sFieldNames[0]<< endl;
 
    // Persistant fields
+   fFieldFlags["ASYM_VERSION"]      = true;
    fFieldFlags["POLARIMETER_ID"]    = true;
    fFieldFlags["POLARIZATION"]      = true;
    fFieldFlags["START_TIME"]        = true;
@@ -238,7 +239,7 @@ void AsymRunDB::PrintCommon()
 }
 
 
-const UShort_t AsymRunDB::sNFields = 29;
+const UShort_t AsymRunDB::sNFields = 30;
 
 const char* AsymRunDB::sFieldNames[] = {
 	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
@@ -248,7 +249,7 @@ const char* AsymRunDB::sFieldNames[] = {
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
    "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
    "RUN_STATUS", "START_TIME", "STOP_TIME", "NEVENTS_TOTAL",
-   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID"};
+   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION"};
 
 
 /** */
@@ -1167,6 +1168,13 @@ void TStructRunDB::UpdateValues()
    stringstream sstr;
    sstr.str(""); sstr << fFields["POLARIMETER_ID"]; sstr >> fPolId;
    sstr.str(""); sstr << fFields["START_TIME"];     sstr >> timeStamp;
+}
+
+
+/** */
+void TStructRunDB::SetAsymVersion(std::string version)
+{
+   fFields["ASYM_VERSION"] = version;
 }
 
 
