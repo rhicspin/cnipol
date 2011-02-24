@@ -17,6 +17,7 @@
 //#include "AsymRoot.h"
 #include "AsymRunDB.h"
 //#include "RunInfo.h"
+//#include "TargetInfo.h"
 
 class AsymRoot;
 class AsymRunDB;
@@ -35,8 +36,8 @@ struct StructRunConst          ;
 struct StructMask              ;
 struct StructFlag              ;
 struct StructReadFlag          ;
-class StructAnalysis          ;
-struct StructTarget            ;
+class  StructAnalysis          ;
+class  TargetInfo              ;
 struct StructBunchPattern      ;
 struct StructHist;
 struct BunchAsym;
@@ -105,7 +106,7 @@ extern StructMask               mask;
 extern StructFlag               Flag;
 extern StructReadFlag           ReadFlag;
 extern StructAnalysis           gAnaResults;
-extern StructTarget             tgt;
+extern TargetInfo               tgt;
 extern StructBunchPattern       phx, str;
 extern TRecordConfigRhicStruct *cfginfo;
 

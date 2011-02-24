@@ -32,15 +32,15 @@ CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
 AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
           AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
-          Asym.o RunInfo.o AnaInfo.o AnaResult.o
+          Asym.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
 
-RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o
+RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o
 
-dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o
+dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o
 
-KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o
+KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
 
-AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o
+AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
 
 testOBJ = test.o AsymRoot.o
 
@@ -102,8 +102,9 @@ AsymProcess.o: AsymProcess.h
 AsymPlot.o:    AsymPlot.h
 RunInfo.o:     RunInfo.h
 AnaInfo.o:     AnaInfo.h
+TargetInfo.o:  TargetInfo.h
 AnaResult.o:   AnaResult.h
-Asym.o:        Asym.h RunInfo.h AnaInfo.h AnaResult.h AsymRunDB.h
+Asym.o:        Asym.h RunInfo.h AnaInfo.h TargetInfo.h AnaResult.h AsymRunDB.h
 
 .f.o:
 	$(FC) -O -c $<

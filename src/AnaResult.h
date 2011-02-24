@@ -4,6 +4,7 @@
 
 #include "TBuffer.h"
 
+#include "AsymHeader.h"
 #include "Asym.h"
 
 

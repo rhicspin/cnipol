@@ -14,6 +14,7 @@
 #include "rpoldata.h"
 
 #include "AnaInfo.h"
+#include "TargetInfo.h"
 #include "AsymGlobals.h"
 #include "AsymRootGlobals.h"
 //#include "WeightedMean.h"

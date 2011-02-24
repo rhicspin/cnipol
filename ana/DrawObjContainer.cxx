@@ -284,9 +284,7 @@ void DrawObjContainer::Draw(TCanvas &c)
 }
 
 
-/**
- *
- */
+/** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 {
    if (!fDir) {
@@ -325,6 +323,19 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) con
 /** */
 void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
 {
+   //ObjMapIter io;
+
+   //for (io=o.begin(); io!=o.end(); ++io) {
+
+   //   //TObject* tmpObj = io->second ? io->second : 0;
+
+   //   // overwrite options
+   //   if (io->second && ((TClass*) io->second->IsA())->InheritsFrom("TH1") ) {
+   //      //sprintf(cName, "c_%s", io->first.c_str());
+   //      ((TH1*) io->second)->Fill(ch, sid);
+   //   }
+   //}
+
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {

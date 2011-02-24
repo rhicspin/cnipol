@@ -398,6 +398,30 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //((TH1*)     o["hSpinVsBunch"+sid])                    ->Fill(bId, spinpat[bId]);
 
    //ds XXX
+   UShort_t tstep = 0;
+
+   if (runinfo.Run == 5) {
+      tstep = ch->GetDelimiterId();
+      //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
+   } else if (runinfo.Run >= 6) {
+      UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
+
+      if (ttime < MAXDELIM) {
+         tstep = TgtIndex[ttime];
+         //++cntr.good[TgtIndex[ttime]];
+         //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
+      } else if (!dproc.CMODE) {
+         Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
+               "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
+      }
+   } else {
+      Warning("Fill", "Target tstep size is not defined for Run %d", runinfo.Run);
+   }
+
+   int ss_code = spinpat[bId] == 1 ? 0 : (spinpat[bId] == -1 ? 1 : 2);
+   cntr_tgt.reg.NStrip[tstep][ss_code][ch->GetChannelId()-1]++;
+
+   //ds: XXX
    return;
 
    //((TH2F*)    o["hTimeVsFunnyEnergyA"+sid])             ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());

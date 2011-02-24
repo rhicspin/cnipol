@@ -46,8 +46,10 @@ public:
    ~ChannelEvent();
 
    UChar_t  GetDetectorId();
+   UInt_t   GetRevolutionId();
    UChar_t  GetChannelId();
    UChar_t  GetBunchId();
+   UShort_t GetDelimiterId();
    Float_t  GetEnergyA();
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();

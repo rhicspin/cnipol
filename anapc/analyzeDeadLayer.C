@@ -55,7 +55,9 @@ void analyzeDeadLayer_initialize(string runName)
 
    gH->Add(new CnipolRunHists(gInFile));
 
-   gH->d["std"] = new CnipolHists();
+   gH->d["std"]     = new CnipolHists();
+   gH->d["profile"] = new CnipolProfileHists();
+   gH->d["run"]     = new CnipolRunHists();
 
    gH->ReadFromDir(gInFile);
    //gH->ReadFromDir(dir);

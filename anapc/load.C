@@ -6,7 +6,7 @@
    gROOT->Reset();
    gROOT->Clear();
 
-   //gSystem->AddIncludePath("-I/home/dsmirnov/root_macros");
+   gSystem->AddIncludePath("-I/home/dsmirnov/root_macros");
    //gSystem->AddIncludePath("-I/home/dsmirnov/root_macros/utils");
    //gSystem->AddIncludePath("-I./include/SRT_D0");
    gSystem->AddIncludePath("-I$CNIPOL_DIR/inc");
@@ -32,9 +32,11 @@
    // Choose one of the following macros:
    //gROOT->LoadMacro("analyze.C+");
    //gROOT->LoadMacro("test.C+");
+   gROOT->LoadMacro("utils/utils.C+");
    //gROOT->LoadMacro("macro/KinFit.C+");
    gROOT->LoadMacro("analyzeCalib.C+");
    gROOT->LoadMacro("analyzeDeadLayer.C+");
    //gROOT->LoadMacro("createRunInfo.C+");
    gROOT->LoadMacro("anaPulseResponse.C+");
+   gROOT->LoadMacro("manalyze.C+");
 }

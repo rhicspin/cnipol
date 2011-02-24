@@ -60,21 +60,26 @@ void CnipolTargetHists::BookHists(string sid)
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetHorzRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertLinear");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
+   //o[hName] = new TH1F(hName, hName, 1, 0, 1);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 } //}}}
 
 
