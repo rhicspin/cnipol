@@ -8,7 +8,7 @@ using namespace std;
 
 /** */
 TStructRunInfo::TStructRunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
-   StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0)
+   StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0), fAsymVersion(ASYM_VERSION)
 {
    GoodEventRate         = 0; // GoodEventRate;
    EvntRate              = 0; // EvntRate;
@@ -87,6 +87,7 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf >> StopTime;
       buf >> RunTime;
       buf >> fDataFormatVersion;
+      buf >> tstr; fAsymVersion = tstr.Data();
       buf >> GoodEventRate;
       buf >> EvntRate;
       buf >> ReadRate;
@@ -121,6 +122,7 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf << StopTime;
       buf << RunTime;
       buf << fDataFormatVersion;
+      tstr = fAsymVersion; buf << tstr;
       buf << GoodEventRate;
       buf << EvntRate;
       buf << ReadRate;
@@ -165,6 +167,7 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
+   fprintf(f, "$rc['fAsymVersion']                 = %s;\n",     fAsymVersion.c_str());
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
