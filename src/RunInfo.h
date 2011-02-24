@@ -33,6 +33,7 @@ public:
    time_t       StopTime;
    float        RunTime;
    int          fDataFormatVersion;
+   std::string  fAsymVersion;
    float        GoodEventRate;
    float        EvntRate;
    float        ReadRate;
