@@ -1011,6 +1011,7 @@ c
 	real bunchAsymErrorXS(360), bunchAsymErrorYS(360)
 	real beamEnergyS, analyzingPowerS, analyzingPowerErrorS
 	integer numberEventsS, maxTimeS
+	real scale250
 
 	real x(128), y(128), ex(128), ey(128)
 
@@ -1056,6 +1057,10 @@ c
      +   0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
      +   0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642/
 
+* scale for 250 GeV A_N = 1/0.823 = 1.215, P = 0.823 * P
+
+	scale250 = 1.215
+
 	Emin = 22.5
 	Emax = 1172.2
 	DeltaE = (Emax - Emin)/25.
@@ -1075,7 +1080,7 @@ c
             elseif(beamEnergyS.lt.150.0) then 
               sa = sa + Y(i)*anth100(j)
             else
-              sa = sa + Y(i)*anth100(j)*1.15
+              sa = sa + Y(i)*anth100(j)*scale250
             endif
 	enddo
 
