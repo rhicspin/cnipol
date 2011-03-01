@@ -11,6 +11,7 @@
 #include "TF1.h"
 #include "TTree.h"
 #include "TLine.h"
+#include "TStyle.h"
 
 #include "Asym.h"
 #include "AlphaCalibrator.h"
@@ -79,16 +80,20 @@ public:
    void   SetChannelEvent(processEvent &event);
    void   SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void   ProcessEvent() {};
+   void   PreProcess();
    void   PostProcess();
    void   FillPreProcess();
    void   FillScallerHists(Long_t *hData, UShort_t chId);
    void   FillTargetHists(Int_t n, Double_t *hData);
+   void   FillProfileHists(UInt_t n, Long_t *hData);
+   void   ProcessProfileHists();
    void   AddChannelEvent();
    void   PrintEventMap();
    void   UpdateCalibrator();
    void   SaveChannelTrees();
    void   SaveEventTree();
    void   WriteTreeFile();
+   void   SaveAs(std::string pattern="^.*$", std::string dir=".");
 };
 
 #endif /* ASYM_ROOT_H */

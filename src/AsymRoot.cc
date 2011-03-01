@@ -93,6 +93,19 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
    fChannelEvents(), fEventConfig(), fHists(0)
 {
+   gStyle->SetPalette(1);
+   gStyle->SetOptFit(1111);
+   gStyle->SetOptStat("emroui");
+   gStyle->SetStatX(0.99);
+   gStyle->SetStatY(0.99);
+   gStyle->SetStatW(0.15);
+   gStyle->SetStatH(0.15);
+
+   gStyle->SetMarkerStyle(kFullDotLarge);
+   gStyle->SetMarkerSize(1);
+   gStyle->SetMarkerColor(kRed);
+
+   gStyle->SetPadRightMargin(0.30);
 }
 
 
@@ -103,15 +116,7 @@ AsymRoot::~AsymRoot()
 }
 
 
-//
-// Class name  : AsymRoot
-// Method name : RootFile(char * filename)
-//
 // Description : Open Root File and define directory structure of histograms
-//             :
-// Input       : char *filename
-// Return      :
-//
 void AsymRoot::RootFile(char *filename)
 { //{{{
    rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
@@ -367,6 +372,15 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 
 
 /** */
+void AsymRoot::PreProcess()
+{
+   fHists->PreFill();
+   fHists->PreFill("_cut1");
+   fHists->PreFill("_cut2");
+}
+
+
+/** */
 void AsymRoot::PostProcess()
 {
    fHists->PostFill();
@@ -391,6 +405,20 @@ void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
 void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
 {
    ((CnipolTargetHists*) fHists->d["targets"])->Fill(n, hData);
+}
+
+
+/** */
+void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
+{
+   ((CnipolProfileHists*) fHists->d["profile"])->Fill(n, hData);
+}
+
+
+/** */
+void AsymRoot::ProcessProfileHists()
+{
+   ((CnipolProfileHists*) fHists->d["profile"])->Process();
 }
 
 
@@ -933,4 +961,13 @@ void AsymRoot::CloseROOTFile()
   }
 
   delete fEventConfig;
+}
+
+
+/** */
+void AsymRoot::SaveAs(string pattern, string dir)
+{
+   TCanvas c("cName", "cName", 1200, 600);
+
+   fHists->SaveAllAs(c, pattern, dir.c_str());
 }

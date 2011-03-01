@@ -30,6 +30,7 @@ public:
    // Various histogramming and running modes
    enum Mode {MODE_ALPHA   = 0x01010000,
               MODE_CALIB   = 0x01000000,
+              MODE_GRAPH   = 0x02000000, MODE_NO_GRAPH  = 0x82000000,
               MODE_NORMAL  = 0x00020000, MODE_NO_NORMAL = 0x80020000,
               MODE_SCALER  = 0x00040000,
               MODE_RAW     = 0x00080000,
@@ -87,6 +88,7 @@ public:
    std::string      fDlCalibRun;        // Name of the alpha calib run
    std::map<std::string, std::string> fAsymEnv;
    FILE*            fFileRunInfo;
+   FILE*            fFileRunConf;
 
 public:
 
@@ -94,22 +96,23 @@ public:
    TDatprocStruct(std::string runId);
    ~TDatprocStruct();
 
-   //std::string GetOutDir() const;
-   //std::string GetAlphaCalibFile() const;
-   //std::string GetDlCalibFile() const;
    std::string GetOutDir() const;
+   std::string GetImageDir() const { return GetOutDir() + "/images"; }
    std::string GetAlphaCalibFile() const;
    std::string GetDlCalibFile() const;
-   std::string GetRunInfoFileName() const;
-   FILE*  GetRunInfoFile() const { return fFileRunInfo; }
-   void   ProcessParameters();
-   void   Print(const Option_t* opt="") const;
-   void   PrintAsPhp(FILE *f) const;
-   void   Streamer(TBuffer &buf);
-   void   Update(TStructRunDB &rundb);
+   std::string GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
+   std::string GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
+   FILE*       GetRunInfoFile() const { return fFileRunInfo; }
+   FILE*       GetRunConfFile() const { return fFileRunConf; }
+   void        ProcessParameters();
+   void        Print(const Option_t* opt="") const;
+   void        PrintAsPhp(FILE *f) const;
+   void        Streamer(TBuffer &buf);
+   void        Update(TStructRunDB &rundb);
 
    inline Bool_t HasAlphaBit();
    inline Bool_t HasCalibBit();
+   inline Bool_t HasGraphBit();
    inline Bool_t HasNormalBit();
    inline Bool_t HasScalerBit();
    inline Bool_t HasRawBit();
@@ -130,6 +133,7 @@ Bool_t TDatprocStruct::HasAlphaBit()  {
  }
 
 Bool_t TDatprocStruct::HasCalibBit()   { return (fModes & TDatprocStruct::MODE_CALIB)   == TDatprocStruct::MODE_CALIB; }
+Bool_t TDatprocStruct::HasGraphBit()   { return (fModes & TDatprocStruct::MODE_GRAPH)   == TDatprocStruct::MODE_GRAPH; }
 Bool_t TDatprocStruct::HasNormalBit()  { return (fModes & TDatprocStruct::MODE_NORMAL)  == TDatprocStruct::MODE_NORMAL; }
 Bool_t TDatprocStruct::HasScalerBit()  { return (fModes & TDatprocStruct::MODE_SCALER)  == TDatprocStruct::MODE_SCALER; }
 Bool_t TDatprocStruct::HasRawBit()     { return (fModes & TDatprocStruct::MODE_RAW)     == TDatprocStruct::MODE_RAW; }

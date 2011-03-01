@@ -857,9 +857,13 @@ float WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (runinfo.BeamEnergy > 200) { // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
+   if (runinfo.BeamEnergy > 200) {
+      // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176; v1.2.0 and earlier
-      for (int i=0; i<25; i++) anth[i] = anth100[i];
+
+      // A new correction introduced in v1.3.1 scales pC polarization down by
+      // approx 18% (0.823 +/- 0.012) at 250 GeV 
+      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
    } else if (runinfo.BeamEnergy > 50) {
       for (int i=0; i<25; i++) anth[i] = anth100[i];
    }
@@ -1604,10 +1608,12 @@ void StripAsymmetry()
 
    TH1* hpp = 0;
    if (dproc.HasProfileBit()) {
-      hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolarizationProfile"];
+      hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolProfile"];
    }
 
-   for(Int_t i=0; i<nTgtIndex+1; i++) {
+   //ds:
+   //for(Int_t i=0; i<nTgtIndex+1; i++)
+   for(Int_t i=0; i<ndelim; i++) {
 
       CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
       printf("i, p: %d, %f\n", i, gAnaResults.sinphi[100+i].P[0]);
@@ -1618,6 +1624,7 @@ void StripAsymmetry()
       }
    }
    //for(Int_t i=20; i<21; i++) CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
+   gAsymRoot.ProcessProfileHists();
 }
 
 
@@ -1627,14 +1634,15 @@ void StripAsymmetry()
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
 {
    //ds : Overwrite nstrip array
+
+   int ss_code = 0;
+
    // only for Mode < 100
    if (Mode < 100) {
       TH2I* hSpVsCh = (TH2I*) gAsymRoot.fHists->d["std"]->o["hSpinVsChannel_cut2"];
 
-      int ss_code = 0;
-
-      for (int ix=1; ix<=hSpVsCh->GetNbinsX(); ix++) {
-         for (int iy=1; iy<=hSpVsCh->GetNbinsY(); iy++) {
+      for (int ix=1; ix<=hSpVsCh->GetNbinsX(); ix++) { // channels
+         for (int iy=1; iy<=hSpVsCh->GetNbinsY(); iy++) { // spin
 
             double bcont  = hSpVsCh->GetBinContent(ix, iy);
             //double bXcntr = hSpVsCh->GetBinCenter(ix, iy);
@@ -1644,7 +1652,33 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
             nstrip[ss_code][ix-1] = bcont;
          }
       }
+   } else if (Mode >= 100) {
+
+      UInt_t iDelim = Mode - 100;
+      char dName[256], hName[256];
+
+      // loop over strips and update nstrip array content
+      for (int i=1; i<=NSTRIP; i++) {
+
+         sprintf(dName, "channel%02d", i);
+
+         DrawObjContainer* oc = gAsymRoot.fHists->d["std"]->d.find(dName)->second;     
+
+         sprintf(hName, "hSpinVsDelim_cut2_st%02d", i);
+
+         TH1* hSpVsDelim = (TH1*) oc->o[hName];
+
+         for (int iy=1; iy<=hSpVsDelim->GetNbinsY(); iy++) { // spin
+
+            double bcont  = hSpVsDelim->GetBinContent(iDelim+1, iy);
+
+            ss_code = iy == 3 ? 0 : (iy == 1 ? 1 : 2); // spin down
+
+            nstrip[ss_code][i-1] = bcont;
+         }
+      }
    }
+
 
    // Strip-by-Strip Asymmetries
    int   LumiSum[2][NSTRIP];          // Total Luminosity [0]:Spin Up, [1]:Spin Down

@@ -63,7 +63,7 @@ void CnipolHists::BookHists(string sid)
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA%s", sid.c_str());
-   o[hName] = new TH2F(hName, hName, 50, 0, 2000, 50, 0, 100);
+   o[hName] = new TH2F(hName, hName, 50, 0, 2000, 60, 0, 120);
    ((TH2F*) o[hName])->SetOption("colz LOGZ");
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
@@ -177,7 +177,7 @@ void CnipolHists::BookHists(string sid)
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA%s_st%02d", sid.c_str(), i);
-      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 100);
+      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 60, 0, 120);
       ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
       ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Time, ns");
@@ -216,6 +216,10 @@ void CnipolHists::BookHists(string sid)
 
       sprintf(hName, "hPseudoMass%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH1D(hName, hName, 100, 0, 20);
+
+      // Delim (time) vs Spin vs Channel Id
+      sprintf(hName, "hSpinVsDelim%s_st%02d", sid.c_str(), i);
+      oc->o[hName] = new TH2I(hName, hName, 1, 0, 1, NUM_SPIN_STATES, -1.5, 1.5);
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -273,7 +277,7 @@ void CnipolHists::BookPreProcess()
    sprintf(hName, "hTimeVsEnergyA");
    //oc->o[hName] = new TH2F(hName, hName, 255, 0, 1530, 100, 0, 100);
    //oc->o[hName] = new TH2F(hName, hName, 255, 0, 2550, 100, 0, 100);
-   oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 50, 0, 100);
+   oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
    ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
    ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
    ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Time, ns");
@@ -421,6 +425,11 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    int ss_code = spinpat[bId] == 1 ? 0 : (spinpat[bId] == -1 ? 1 : 2);
    cntr_tgt.reg.NStrip[tstep][ss_code][ch->GetChannelId()-1]++;
 
+   
+   UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
+   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ch->GetDelimiterId(), spinpat[bId]);
+   ((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ttime, spinpat[bId]);
+
    //ds: XXX
    return;
 
@@ -452,6 +461,26 @@ void CnipolHists::FillPreProcess(ChannelEvent *ch)
 
    ((TH2F*) sd->o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
 } //}}}
+
+
+/** */
+void CnipolHists::PreFill(string sid)
+{
+   char dName[256];
+   char hName[256];
+   //string sSi("  ");
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir;
+
+   for (int i=1; i<=NSTRIP; i++) {
+
+      sprintf(dName, "channel%02d", i);
+      oc = d.find(dName)->second;
+
+      sprintf(hName, "hSpinVsDelim%s_st%02d", sid.c_str(), i);
+      ((TH1*) oc->o[hName])->SetBins(ndelim, 0, ndelim, NUM_SPIN_STATES, -1.5, 1.5);
+   }
+}
 
 
 /** */

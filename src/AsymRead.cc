@@ -162,7 +162,6 @@ void readDataFast()
       }
 
       // We are here if rec type is REC_READAT
-
       long delim = header.timestamp.delim;
 
       //nEvent++;
@@ -322,6 +321,7 @@ void readloop()
        recordEndStruct         end;
        recordScalersStruct     scal;
        recordWcmAdoStruct      wcmado;
+       recordCountRate         countRate;
        char                    buffer[BSIZE*sizeof(int)];
        recordDataStruct        data;
    } rec;
@@ -403,10 +403,10 @@ void readloop()
       //   break;
       //}
 
-      //=============================================================
-      //                          Main Switch
-      //=============================================================
+      Long_t my_i;
+      Long_t *my_pointer;
 
+      // Main Switch
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
@@ -453,11 +453,28 @@ void readloop()
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
-            if (dproc.HasTargetBit()) ProcessRecordPCTarget(pointer, ndelim);
+            if (dproc.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim); }
 
             ReadFlag.PCTARGET = 1;
          }
 
+         break;
+
+      case REC_COUNTRATE:
+         printf("Reading REC_COUNTRATE record... size = %d\n", recSize);
+
+         //my_i = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+         ////my_pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
+         //my_pointer = (Long_t *) rec.countRate.data;
+
+         //printf("len, size: %d, %d\n", rec.header.len, my_i);
+
+         //for (long i=0; i<my_i; i++) {                                        
+         //   printf("i: %d, %d\n", i, *(my_pointer+i));
+         //}
+
+         if (dproc.HasProfileBit()) 
+            ProcessRecord(rec.countRate);
          break;
 
       case REC_WCMADO:
@@ -1011,6 +1028,24 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
       //sscal_[rec.siNum * 3+i] += rec.scalers[i];
    }
 } //}}}
+
+
+/** */
+void ProcessRecord(recordCountRate &rec)
+{
+   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+   Long_t *pointer = (Long_t *) rec.data;
+   //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
+
+   printf("len, size: %d, %d\n", rec.header.len, size);
+
+   for (UInt_t i=0; i<size; i++) {
+      printf("i: %d, %d\n", i, *(pointer+i));
+   }
+
+   gAsymRoot.FillProfileHists(size, pointer);
+   //gAsymRoot.ProcessProfileHists();
+}
 
 
 /** */

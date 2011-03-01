@@ -51,7 +51,7 @@ TDatprocStruct::TDatprocStruct() :
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0)
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0), fFileRunConf(0)
 {
    Init();
 }
@@ -104,7 +104,7 @@ TDatprocStruct::TDatprocStruct(string runId) :
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0)
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0), fFileRunConf(0)
 {
    Init();
 }
@@ -114,6 +114,7 @@ TDatprocStruct::TDatprocStruct(string runId) :
 TDatprocStruct::~TDatprocStruct()
 {
    if (fFileRunInfo) fclose(fFileRunInfo);
+   if (fFileRunConf) fclose(fFileRunConf);
 }
 
 
@@ -188,13 +189,6 @@ string TDatprocStruct::GetDlCalibFile() const
 
 
 /** */
-string TDatprocStruct::GetRunInfoFileName() const
-{
-   return GetOutDir() + "/runconfig.php";
-}
-
-
-/** */
 void TDatprocStruct::ProcessParameters()
 {
    if (fRunId.empty()) {
@@ -206,6 +200,7 @@ void TDatprocStruct::ProcessParameters()
    MakeOutDir();
 
    fFileRunInfo = fopen(GetRunInfoFileName().c_str(), "w");
+   fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
 }
 
 
