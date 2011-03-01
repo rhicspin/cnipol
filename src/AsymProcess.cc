@@ -59,6 +59,10 @@ void event_process(processEvent *event)
       for (int k=1; k<=NTBIN; k++) fprintf(stdout, "%6.0f", (EnergyBin[k]-EnergyBin[k-1])/2.);
 
       fprintf(stdout,"\n");
+
+      //ds: XXX
+      gAsymRoot.PreProcess();
+
       init = 1;
    }
 

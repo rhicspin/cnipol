@@ -325,13 +325,15 @@ Bool_t ChannelEvent::PassCutNoise()
       break;
 
    case 1:   // Y1D
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
+      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for D outside the tunnel
          return false;
       break;
 
    case 2:   // B2D
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
+      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
          return false;
 
       break;

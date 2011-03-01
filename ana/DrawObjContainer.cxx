@@ -188,7 +188,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
    else
-      printf("created dir: %s\n", path.c_str());
+      Info("SaveAllAs", "Created dir: %s", path.c_str());
 
    ObjMapIter io;
 
@@ -346,6 +346,17 @@ void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
 
 /** */
 void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
+
+
+/** */
+void DrawObjContainer::PreFill(string sid)
+{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->PreFill(sid);
+   }
+}
 
 
 /** */

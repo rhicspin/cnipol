@@ -32,7 +32,8 @@
 #define REC_WFDV8SCAL   0x00000303
 #define REC_SCALERS     0x00000401
 #define REC_HJETSWITCH  0x00000501      // jet switch record
-#define REC_PCTARGET    0x00000502        // target history record
+#define REC_PCTARGET    0x00000502      // target history record
+#define REC_COUNTRATE   0x00000503      // cout rate history record
 #define REC_END         0x00000999
 #define REC_TYPEMASK    0x00007FFF
 #define REC_MASK_BEAM   0x00030000
@@ -83,6 +84,11 @@ typedef struct {
     recordHeaderStruct header;
     pCTargetStruct data;
 } recordpCTagAdoStruct;
+
+typedef struct {
+    recordHeaderStruct header;
+    long data[];
+} recordCountRate;
 
 typedef struct {
     recordHeaderStruct header;

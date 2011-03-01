@@ -57,6 +57,7 @@ public:
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillPreProcess(ChannelEvent *ch);
    void  Print(const Option_t* opt="") const;
+   virtual void PreFill(std::string sid="");
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
    void  Draw(Option_t* option = "")

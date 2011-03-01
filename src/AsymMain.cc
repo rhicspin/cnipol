@@ -62,8 +62,12 @@ int main(int argc, char *argv[])
       {"target",              no_argument,         0,   TDatprocStruct::MODE_TARGET},
       {"profile",             no_argument,         0,   TDatprocStruct::MODE_PROFILE},
       {"quick",               no_argument,         0,   'q'},
+      {"graph",               no_argument,         0,   TDatprocStruct::MODE_GRAPH},
+      {"no-graph",            no_argument,         0,   TDatprocStruct::MODE_NO_GRAPH},
       {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
       {"mode-calib",          no_argument,         0,   TDatprocStruct::MODE_CALIB},
+      {"mode-graph",          no_argument,         0,   TDatprocStruct::MODE_GRAPH},
+      {"mode-no-graph",       no_argument,         0,   TDatprocStruct::MODE_NO_GRAPH},
       {"mode-normal",         no_argument,         0,   TDatprocStruct::MODE_NORMAL},
       {"mode-no-normal",      no_argument,         0,   TDatprocStruct::MODE_NO_NORMAL},
       {"mode-scaler",         no_argument,         0,   TDatprocStruct::MODE_SCALER},
@@ -80,7 +84,7 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sq",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
@@ -125,7 +129,7 @@ int main(int argc, char *argv[])
          cout << "     --mode-run                  : Fill and save bunch, lumi and other run related histograms" << endl;
          cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
          cout << "     --mode-full                 : Fill and save all histograms" << endl;
-         cout << "-g,  --graph                     : Save histograms as png images (!)" << endl;
+         cout << "-g,  --graph                     : Save histograms as images" << endl;
          cout << endl;
          cout << "Options marked with (!) are not really supported" << endl << endl;
 
@@ -281,6 +285,15 @@ int main(int argc, char *argv[])
 
       case 'q':
          dproc.QUICK_MODE = 1; break;
+
+      case 'g':
+      case TDatprocStruct::MODE_GRAPH:
+         dproc.fModes |= TDatprocStruct::MODE_GRAPH;
+         break;
+
+      case TDatprocStruct::MODE_NO_GRAPH:
+         dproc.fModes &= ~TDatprocStruct::MODE_GRAPH;
+         break;
 
       case 'C':
       case TDatprocStruct::MODE_ALPHA:
@@ -503,6 +516,9 @@ int main(int argc, char *argv[])
 
    if (!dproc.QUICK_MODE) {
 
+      //ds: XXX
+      //gAsymRoot.PreProcess();
+
       // Main Event Loop
       readloop();
 
@@ -566,7 +582,10 @@ int main(int argc, char *argv[])
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
    gAsymRoot.fEventConfig->PrintAsPhp(dproc.GetRunInfoFile());
-   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
+   gAsymRoot.fEventConfig->PrintAsConfig(dproc.GetRunConfFile());
+
+   if (dproc.HasGraphBit())
+      gAsymRoot.SaveAs("((sinphi)|(combo)|(profile))", dproc.GetImageDir());
 
    // Closing ROOT File
    gAsymRoot.CloseROOTFile();
