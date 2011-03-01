@@ -16,9 +16,9 @@
 
 <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
 <tr>
-<td width="10%">
+<td width="5%">
 
-<td width="80%">
+<td width="90%">
 
 <!-- Main text starts here-->
 
@@ -26,140 +26,85 @@
 
 <p><a name="content"/>
 
+<?php
+
+//include("utils.php"); 
+//include("config.php");
+include("DbReader.php");
+
+$dbReader = new DbReader();
+$dbReader->ReadEntries();
+$es = $dbReader->entries;
+array_sort($es, '!START_TIME');
+
+?>
+
 <table border="1" cellpadding="2" cellspacing="2" align="center" width="100%">
 <tr>
    <th rowspan=2>Run
-   <th rowspan=2>Date/Time
+   <th rowspan=2>Date &amp; Time
    <th rowspan=2>Polarimeter
+   <th rowspan=2>Polarization, %
    <th rowspan=2>Type
-   <th rowspan=2>Beam Energy
+   <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Target
    <th colspan=2>Num. of Events
    <!--<th rowspan=2>Duration-->
-   <th rowspan=2>Analyzed
+   <th rowspan=2>Analyzed <br> (version)
 <tr>
    <th>Total
    <th>Processed
-</table>
 
-<table border="0" cellpadding="2" cellspacing="2" align="center" width="100%">
 
 <?php
+//print count($es);
+foreach($es as $e):
+   //$e->PrintThis();
 
-//error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+   $polarization = "&nbsp;";
 
-foreach($rs as $gRunId):
+   if (isset($e->f['POLARIZATION'])) {
+      $pols = preg_split("/[\s,]+/", $e->f['POLARIZATION']);
+		//$polarization = sprintf("%5.2f &plusmn; %5.2f<br>%5.2f &plusmn; %5.2f",
+      //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
+		$polarization = sprintf("%5.1f &plusmn; %5.1f",
+         $pols[0]*100, $pols[1]*100);
+   }
 
-$rc = array();
+   $targetId = "&nbsp;";
 
-include(DATA_DIR."/$gRunId/runconfig.php");
+   if (isset($e->f['TARGET_ID'])) {
+      $targetId = $e->f['TARGET_ID'];
+   }
 
-if (count($rc) == 0) continue;
+   $polId = $POLARIMETER_ID[$e->f['POLARIMETER_ID']];
 
+	// Set css class
+	$cssPol = "";
+
+	if ($polId[0] == 'B') $cssPol = "bluPol";
+	if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+	if ($polId[2] == 'U') $cssPol .= " bold";
+	#if ($polId[2] == 'D') $cssPol .= "";
+
+   // Deal with version now
+	$asymVersion = isset($e->f['ASYM_VERSION']) ? $e->f['ASYM_VERSION'] : "v0.0.0";
+	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
 ?>
 
 <tr>
-   <td width=10%>&nbsp;
-   <td width=90%>&nbsp;
+   <td><a href=index.php?runid=<?=$e->runId?> ><?=$e->runId?></a>
+   <td class=align_cm><tt><?=isset($e->f['START_TIME']) ? date("M d, Y H:i:s D", $e->f['START_TIME']) : "&nbsp;";?></tt>
+   <td class="<?=$cssPol?> align_cm"><?=isset($e->f['POLARIMETER_ID']) ? $POLARIMETER_ID[$e->f['POLARIMETER_ID']] : "&nbsp;";?>
+   <td class=align_cm><?=$polarization?>
+   <td>&nbsp;
+   <td class=align_cm><?=isset($e->f['BEAM_ENERGY']) ? sprintf("%6.2f", $e->f['BEAM_ENERGY']) : "&nbsp;";?>
+   <td class=align_cm><?=$targetId?>
+   <td align=right><?=isset($e->f['NEVENTS_TOTAL']) ? number_format($e->f['NEVENTS_TOTAL']) : "&nbsp;";?>
+   <td align=right><?=isset($e->f['NEVENTS_PROCESSED']) ? number_format($e->f['NEVENTS_PROCESSED']) : "&nbsp;";?>
+   <td class=align_cm><?=$asymVersion?>
 
-<tr>
-   <td class=align_lb>
-   <a href=index.php?runid=<?=$gRunId?> ><?=$gRunId?></a>
-
-<?
-$runName = "unknown";
-
-if ($rc['CMODE'] == 0) $runName = "Run {$rc['runName']}";
-else $runName = "Calibration/Test Run {$rc['runName']}";
-
-if (isset($rc['P'])) {
-   $polarization = sprintf(" P = %3.1f +/- %3.1f ", $rc['P'][0]*100, $rc['P'][1]*100);
-   $runName .= $polarization;
-}
-
-$polStream = "";
-//$polStream = "unknown";
-
-if ($rc['fPolStream'] == 1 ) $polStream = ", Upstream";
-if ($rc['fPolStream'] == 2 ) $polStream = ", Downstream";
-
-$beam = $rc['fPolBeam'];
-
-?>
-
-   <td>
-      <span class=my-h2><?=$runName?></span>
-      &nbsp; &nbsp; &nbsp;
-      <span class=s150>
-      <?=( isset($beam) ?
-           ($beam == 2 ? "<span class=blue3>{$RHIC_BEAM[$beam]}</span>" :
-                         "<span class=yellow3>{$RHIC_BEAM[$beam]}</span>") : "Unknown");?> <?=$polStream?>
-		<!--
-      &nbsp; &nbsp;
-      Polarimeter <?//=$rc['PolarimetryID']?>
-		-->
-      </span>
-
-
-<tr>
-   <td>
-   <td>
-
-<table border="1" cellpadding="3" cellspacing="0" align="center" width="100%">
-<tr>
-   <td>
-   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>&nbsp;
-   (<?=dateTimeDiff($rc['StartTime'], $rc['StopTime'])?>)
-   <td>
-   <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
-   <td>
-   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
-   <td>
-   <b>Active Strips:</b> <?=$rc['NActiveStrip']?>
-   <!--
-   <b>Size:</b> <?//=$s['dirsize']?>
-   -->
-
-<tr>
-   <td>
-   <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
-   <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['procDateTime'])?>&nbsp;
-   (<?=sprintf("%.0f", $rc['procTimeReal']);?>s)
-   <td>
-   <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
-   <? if ($rc['thinout'] > 1): ?><br>(every <?=ordinal_suffix($rc['thinout'])?> event)
-   <? endif; ?>
-   <td>
-   <b>Target ID:</b> <?=$rc['targetID']?>
-   <td>
-   <b>Disabled Strips:</b> <?=$rc['NDisableStrip']?>
-
-<!--
-<tr>
-   <td colspan=4>
-
-   <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
-   <?php
-   //   $row1 = ""; $row2 = "";
-
-   // foreach($rc['ActiveStrip'] as $chanId => $siS) {
-
-   //      $chanId += 1;
-
-   //    $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
-   //    //$row2 .= "<td>".($siS ? "x" : "o");
-   //
-   //    if (($chanId) % 36 == 0) {
-   //       //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
-   //       print "<tr class=align_cm>$row1\n";
-   //         $row1 = "";// $row2 = "";
-   //    }
-   // }
-   ?>
-   </table>
--->
-
-</table>
 
 <?php
 endforeach;
@@ -175,12 +120,11 @@ endforeach;
 
 <!-- Main text ends here-->
 
-<td width="10%">
+<td width="5%">
 
 <tr>
-<td width="10%">
-
-<td width="80%">
+<td>
+<td>
 
 <p>&nbsp;<br>
 <hr width="100%" size="2">
@@ -188,7 +132,7 @@ endforeach;
 <div align="left">
 </div>
 
-<td width="10%">
+<td>
 
 </table>
 

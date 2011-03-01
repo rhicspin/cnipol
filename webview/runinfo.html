@@ -100,6 +100,7 @@
 
 
 
+<!--
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
@@ -126,8 +127,10 @@
 
 </table>
 </div>
+-->
 
 
+<!--
 <p>
 
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
@@ -155,8 +158,10 @@
 </table>
 
 </div>
+-->
 
 
+<!--
 <p>
 
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
@@ -186,8 +191,10 @@
 </table>
 
 </div>
+-->
 
 
+<!--
 <p>
 
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
@@ -209,6 +216,7 @@
 <?=$gP->img('ErrDet/mass_e_correlation_strip')?>
 
 </table>
+-->
 
 
 <p>
@@ -218,6 +226,7 @@
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
+<!--
 <tr>
 <td align=center>
 <?=$gP->img('ErrDet/asym_bunch_x45')?>
@@ -227,18 +236,20 @@
 <?=$gP->img('ErrDet/asym_bunch_y45')?>
 <tr>
 <td align=center>
-<?=$gP->img('Asymmetry/asym_vs_bunch_x45')?>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_x45')?>
 <td align=center>
-<?=$gP->img('Asymmetry/asym_vs_bunch_x90')?>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_x90')?>
 <td align=center>
-<?=$gP->img('Asymmetry/asym_vs_bunch_y45')?>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_y45')?>
+-->
 <tr>
 <td align=center>
-<?=$gP->img('Asymmetry/asym_sinphi_fit')?>
+<?=$gP->img('run/Asymmetry/asym_sinphi_fit')?>
 
 </table>
 
 
+<!--
 <p>
 
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
@@ -250,9 +261,64 @@
 <td align=center>
 <?=$gP->img('Run/rate_vs_delim')?>
 <td align=center>
-<?=$gP->img('Asymmetry/scan_asym_sinphi_fit')?>
+<?=$gP->img('run/Asymmetry/scan_asym_sinphi_fit')?>
 
 </table>
+-->
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="profile_plots" class="count">Profile Plots</h2>
+<!- {{{ ->
+<div id="div:profile_plots" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("profile/hPolProfileFinal")?>
+<p>Beam polarization profile
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hProfile")?>
+<p>Intensity profile as a function of target steps
+
+<td align=center>
+<?=$gP->img("profile/hProfileFwd")?>
+<p>Intensity profile: Forward target motion
+
+<td align=center>
+<?=$gP->img("profile/hProfileBck")?>
+<p>Intensity profile: Backward target motion
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hPolProfile")?>
+<p>Beam polarization profile as a function of target steps
+
+<td align=center>
+<?=$gP->img("profile/hPolProfileFwd")?>
+<p>Beam polarization profile: Forward target motion
+
+<td align=center>
+<?=$gP->img("profile/hPolProfileBck")?>
+<p>Beam polarization profile: Backward target motion
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("profile/hPolProfileFold")?>
+<p>Beam polarization profile: Forward and Backward target motions
+
+</table>
+
+</div>
+<!-- }}} -->
+
 
 
 
@@ -260,13 +326,14 @@
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
 <h2 id="summary_plots" class="count">Summary Plots</h2>
-<!-- {{{ -->
+<!- {{{ ->
 <div id="div:summary_plots" class="section">
 
 <p>
 
 <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
 
+<!--
 <tr>
 <td align=center>
 <?=$gP->img("hTvsA")?>
@@ -291,11 +358,13 @@
 <td align=center>
 <?=$gP->img("hTimeVsEnergyA_cut2")?>
 
+-->
+
 <tr>
 <td align=center>
-<?=$gP->img("std/preproc/hTimeVsEnergyA")?>
+<!--<?=$gP->img("std/preproc/hTimeVsEnergyA")?>-->
 <td align=center>
-<?=$gP->img("std/preproc/hFitMeanTimeVsEnergyA")?>
+<!--<?=$gP->img("std/preproc/hFitMeanTimeVsEnergyA")?>-->
 <td align=center>
 <?=$gP->img("std/preproc/combo")?>
 
