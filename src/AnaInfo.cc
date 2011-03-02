@@ -150,7 +150,7 @@ void TDatprocStruct::MakeOutDir()
       gSystem->Warning("   TDatprocStruct::TDatprocStruct", "Directory %s already exists", GetOutDir().c_str());
    else {
       gSystem->Info("   TDatprocStruct::TDatprocStruct", "Created directory %s", GetOutDir().c_str());
-      gSystem->Chmod(GetOutDir().c_str(), 0x775);
+      gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
 }
 
