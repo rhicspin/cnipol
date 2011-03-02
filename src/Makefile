@@ -17,8 +17,8 @@ ROOTLIBS  = `root-config --libs`
 CC = g++
 ##C_FLAG = -g  -O2 -Wall -w 
 ##C_FLAG = -O2 -ggdb 
-C_FLAG = -Wall #ds: -O3  
-SOFLAGS = -shared
+C_FLAG = -Wall -m32 #ds: -O3  
+SOFLAGS = -shared -m32
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
@@ -51,7 +51,7 @@ HDRS = $(wildcard *.h)
 SRCS = $(wildcard *.cc)
 OBJS = $(SRCS:.cc=.o)
 
-#CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
+#CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o
 CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
 #CNIPOL_LIB_OBJS = Asym.o
 #CNIPOL_LIB_OBJS = $(AsymOBJ) 
@@ -107,13 +107,13 @@ AnaResult.o:   AnaResult.h
 Asym.o:        Asym.h RunInfo.h AnaInfo.h TargetInfo.h AnaResult.h AsymRunDB.h
 
 .f.o:
-	$(FC) -O -c $<
+	$(FC) -m32 -O -c $<
 
 Host:
 	echo -e -n "$(HOSTNAME) \n" > .compiled_host
 
 install : $(BINARY)
-	install -v -C $^ $(CNIPOL_DIR)/bin
+	install -v $^ $(CNIPOL_DIR)/bin
 	#install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
 
 clean: 

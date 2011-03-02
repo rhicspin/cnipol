@@ -28,7 +28,7 @@ CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g
-SOFLAGS       = -shared
+SOFLAGS       = -shared -m32
 
 CXXFLAGS     += $(ROOTCFLAGS)
 
