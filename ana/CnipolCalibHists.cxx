@@ -117,8 +117,8 @@ void CnipolCalibHists::CnipolCalibHistsBook(std::string cutid)
    DrawObjContainer *oc;
    DrawObjContainerMapIter isubdir;
 
-   //for (int i=0; i<TOT_WFD_CH; i++)
-   for (int i=1; i<=NSTRIP; i++) {
+   for (int i=0; i<TOT_WFD_CH; i++) {
+   //for (int i=1; i<=NSTRIP; i++) {
 
       //sprintf(&sSi[0], "%02d", i+1);
 
@@ -214,8 +214,7 @@ void CnipolCalibHists::Print(const Option_t* opt) const
 
 /** */
 void CnipolCalibHists::Fill(ChannelEvent *ch, string sid)
-{
-   //ch->Print();
+{ //{{{
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
 
@@ -254,7 +253,7 @@ void CnipolCalibHists::Fill(ChannelEvent *ch, string sid)
       ((TH2F*) sd->o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
       ((TH2F*) sd->o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
    }
-}
+} //}}}
 
 
 /** */
