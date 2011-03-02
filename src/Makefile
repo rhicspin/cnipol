@@ -9,7 +9,7 @@ CNIPOL_LIB_DIR  = $(CNIPOL_DIR)/lib
 CERNLIB_LIB_DIR = $(CERNLIB_DIR)/lib
 
 LIB_PATHS = -L$(CNIPOL_LIB_DIR) -L$(CERNLIB_LIB_DIR)
-INC_PATHS = -I. -I/usr/include -I$(ROOTSYS)/include -I$(CNIPOL_DIR)/inc
+INC_PATHS = -I. -I/usr/include `root-config --incdir` -I$(CNIPOL_DIR)/inc
 LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
