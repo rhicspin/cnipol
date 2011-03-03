@@ -39,7 +39,7 @@ public:
    void Fill(ChannelEvent *ch, std::string cutid="");
    void FillPreProcess(ChannelEvent *ch);
    void PostFill();
-   void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
+   //void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
 
    ClassDef(CnipolCalibHists, 1)
 };

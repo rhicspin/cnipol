@@ -169,10 +169,14 @@ void TgtHist()
    // Target Position vs Time
    sprintf(htitle,"%.3f : Taret Postion vs. Time", runinfo.RUNID);
  
-   TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
+   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
+
+   tgtx_vs_time->SetName("tgtx_vs_time");
+   tgtx_vs_time->SetTitle(htitle);
+   tgtx_vs_time->SetBins(10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
  
-   delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
-   gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
+   //delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
+   //gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
  
    tgtx_vs_time->GetYaxis()->SetTitle("Duration from Measurement Start [s]");
    tgtx_vs_time->GetXaxis()->SetTitle("Target Position");

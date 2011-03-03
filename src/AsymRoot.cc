@@ -30,6 +30,7 @@ TDirectory *Asymmetry;
 
 // Run Dir
 TH2F  *rate_vs_delim;
+TH2F  *tgtx_vs_time;
 
 // FeedBack Dir
 TH2F  *mdev_feedback;
@@ -101,10 +102,6 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    gStyle->SetStatW(0.15);
    gStyle->SetStatH(0.15);
 
-   gStyle->SetMarkerStyle(kFullDotLarge);
-   gStyle->SetMarkerSize(1);
-   gStyle->SetMarkerColor(kRed);
-
    gStyle->SetPadRightMargin(0.30);
 }
 
@@ -127,13 +124,13 @@ void AsymRoot::RootFile(char *filename)
    }
 
    // directory structure
-   Run       = rootfile->mkdir("Run");
-   Raw       = rootfile->mkdir("Raw");
-   FeedBack  = rootfile->mkdir("FeedBack");
-   Kinema    = rootfile->mkdir("Kinema");
-   Bunch     = rootfile->mkdir("Bunch");
-   ErrDet    = rootfile->mkdir("ErrDet");
-   Asymmetry = rootfile->mkdir("Asymmetry");
+   Run       = new TDirectoryFile("Run", "Run", "", rootfile);   //rootfile->mkdir("Run");
+   Raw       = new TDirectoryFile("Raw", "Raw", "", rootfile);   //rootfile->mkdir("Raw");
+   FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", rootfile);   //rootfile->mkdir("FeedBack");
+   Kinema    = new TDirectoryFile("Kinema", "Kinema", "", rootfile);   //rootfile->mkdir("Kinema");
+   Bunch     = new TDirectoryFile("Bunch", "Bunch", "", rootfile);   //rootfile->mkdir("Bunch");
+   ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", rootfile);   //rootfile->mkdir("ErrDet");
+   Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", rootfile);   //rootfile->mkdir("Asymmetry");
 
    BookHists();
 
@@ -180,8 +177,10 @@ void AsymRoot::RootFile(char *filename)
    //fHists->Add(hists);
    //delete hists;
 
-   TDirectory *dir = new TDirectoryFile("run", "run", "", rootfile);
-   fHists->d["run"] = new CnipolRunHists(dir);
+   //if (!dproc.HasAlphaBit()) {
+      TDirectory *dir = new TDirectoryFile("run", "run", "", rootfile);
+      fHists->d["run"] = new CnipolRunHists(dir);
+   //}
 
    // a temporary fix...
    //Kinema    = fHists->d["Kinema"].fDir;
@@ -647,6 +646,7 @@ void AsymRoot::BookHists()
 
    Run->cd();
    rate_vs_delim = new TH2F();
+   tgtx_vs_time  = new TH2F();
  
    // FeedBack Directory
    FeedBack->cd();
@@ -902,15 +902,7 @@ void AsymRoot::DeleteHistogram()
 } //}}}
 
 
-//
-// Class name  : AsymRoot
-// Method name : RootFile(char * filename)
-//
 // Description : Write out objects in memory and dump in rootfile before closing it
-//             :
-// Input       :
-// Return      :
-//
 void AsymRoot::CloseROOTFile()
 {
   rootfile->cd();
@@ -967,6 +959,12 @@ void AsymRoot::CloseROOTFile()
 /** */
 void AsymRoot::SaveAs(string pattern, string dir)
 {
+   if (!dproc.HasAlphaBit()) {
+      gStyle->SetMarkerStyle(kFullDotLarge);
+      gStyle->SetMarkerSize(1);
+      gStyle->SetMarkerColor(kRed);
+   }
+
    TCanvas c("cName", "cName", 1200, 600);
 
    fHists->SaveAllAs(c, pattern, dir.c_str());

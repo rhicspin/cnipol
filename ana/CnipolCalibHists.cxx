@@ -302,72 +302,72 @@ void CnipolCalibHists::PostFill()
 
 
 /** */
-void CnipolCalibHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
-{
-   DrawObjContainer::SaveAllAs(c, pattern, path);
-
-   return;
-   
-   if (gSystem->mkdir(path.c_str()) < 0)
-      printf("WARNING: Perhaps dir already exists: %s\n", path.c_str());
-   else
-      printf("created dir: %s\n", path.c_str());
-
-   ObjMapIter io;
-
-   char cName[256];
-   char fName[256];
-   string option("");
-
-   for (io=o.begin(); io!=o.end(); ++io) {
-
-      if (!io->second) {
-         printf("Object not found\n");
-         continue;
-      }
-
-      string sname(io->second->GetName());
-      //if (sname != "hAmpltdW" && sname != "hIntgrlW") continue;
-      //if (sname.find("hTvsA_st") == string::npos) continue;
-      //if (sname.find("hIntgrl_cut1_st") == string::npos &&
-      //    sname.find("hIntgrlW") == string::npos ) continue;
-
-      sprintf(cName, "c_%s", io->first.c_str());
-      c.cd();
-      c.SetName(cName);
-      c.SetTitle(cName);
-
-      if (((TClass*) io->second->IsA())->InheritsFrom("TH2")) {
-         c.SetLogz(kTRUE);
-         option = "colz";
-         //if (sname.find("hTvsA_st") != string::npos) c.SetLogz(kFALSE);
-      } else {
-         c.SetLogz(kFALSE);
-         option = "";
-      }
-
-      io->second->Draw(option.c_str());
-      //io->second->Print();
-
-      sprintf(fName, "%s/%s.png", path.c_str(), cName);
-      c.SaveAs(fName);
-   }
-
-   DrawObjContainerMapIter isubd;
-
-   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      string parentPath = path;
-      path += "/" + isubd->first;
-      //printf("cd to path: %s\n", path.c_str());
-      isubd->second->SaveAllAs(c, pattern, path);
-      path = parentPath;
-   }
-
-   // Special cases
-   //sprintf(cName, "c_%s", io->first.c_str());
-   //c.cd(); c.SetName(cName); c.SetTitle(cName);
-
-   //io->second->Draw(option.c_str());
-   //sprintf(fName, "%s/%s.png", path.c_str(), cName);
-   //c.SaveAs(fName);
-}
+//void CnipolCalibHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
+//{
+//   DrawObjContainer::SaveAllAs(c, pattern, path);
+//
+//   return;
+//   
+//   if (gSystem->mkdir(path.c_str()) < 0)
+//      printf("WARNING: Perhaps dir already exists: %s\n", path.c_str());
+//   else
+//      printf("created dir: %s\n", path.c_str());
+//
+//   ObjMapIter io;
+//
+//   char cName[256];
+//   char fName[256];
+//   string option("");
+//
+//   for (io=o.begin(); io!=o.end(); ++io) {
+//
+//      if (!io->second) {
+//         printf("Object not found\n");
+//         continue;
+//      }
+//
+//      string sname(io->second->GetName());
+//      //if (sname != "hAmpltdW" && sname != "hIntgrlW") continue;
+//      //if (sname.find("hTvsA_st") == string::npos) continue;
+//      //if (sname.find("hIntgrl_cut1_st") == string::npos &&
+//      //    sname.find("hIntgrlW") == string::npos ) continue;
+//
+//      sprintf(cName, "c_%s", io->first.c_str());
+//      c.cd();
+//      c.SetName(cName);
+//      c.SetTitle(cName);
+//
+//      if (((TClass*) io->second->IsA())->InheritsFrom("TH2")) {
+//         c.SetLogz(kTRUE);
+//         option = "colz";
+//         //if (sname.find("hTvsA_st") != string::npos) c.SetLogz(kFALSE);
+//      } else {
+//         c.SetLogz(kFALSE);
+//         option = "";
+//      }
+//
+//      io->second->Draw(option.c_str());
+//      //io->second->Print();
+//
+//      sprintf(fName, "%s/%s.png", path.c_str(), cName);
+//      c.SaveAs(fName);
+//   }
+//
+//   DrawObjContainerMapIter isubd;
+//
+//   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+//      string parentPath = path;
+//      path += "/" + isubd->first;
+//      //printf("cd to path: %s\n", path.c_str());
+//      isubd->second->SaveAllAs(c, pattern, path);
+//      path = parentPath;
+//   }
+//
+//   // Special cases
+//   //sprintf(cName, "c_%s", io->first.c_str());
+//   //c.cd(); c.SetName(cName); c.SetTitle(cName);
+//
+//   //io->second->Draw(option.c_str());
+//   //sprintf(fName, "%s/%s.png", path.c_str(), cName);
+//   //c.SaveAs(fName);
+//}
