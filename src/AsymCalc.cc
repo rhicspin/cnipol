@@ -1628,7 +1628,7 @@ void StripAsymmetry()
       }
    }
    //for(Int_t i=20; i<21; i++) CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
-   gAsymRoot.ProcessProfileHists();
+   if (dproc.HasProfileBit()) gAsymRoot.ProcessProfileHists();
 }
 
 
