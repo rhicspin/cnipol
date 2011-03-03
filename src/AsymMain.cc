@@ -585,7 +585,7 @@ int main(int argc, char *argv[])
    gAsymRoot.fEventConfig->PrintAsConfig(dproc.GetRunConfFile());
 
    if (dproc.HasGraphBit())
-      gAsymRoot.SaveAs("((sinphi)|(combo)|(profile))", dproc.GetImageDir());
+      gAsymRoot.SaveAs("^.*$", dproc.GetImageDir());
 
    // Closing ROOT File
    gAsymRoot.CloseROOTFile();

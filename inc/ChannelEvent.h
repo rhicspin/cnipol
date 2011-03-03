@@ -70,7 +70,7 @@ public:
    void Print(const Option_t* opt="") const;
    bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
    Bool_t PassCutRawAlpha();
-   Bool_t PassQACutRaw();
+   Bool_t PassCutDetectorChannel();
    Bool_t PassCutDepEnergyTime();
    Bool_t PassCutKinEnergyADLCorrEstimate();
    Bool_t PassQACutCarbonMass();

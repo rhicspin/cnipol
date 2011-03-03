@@ -141,6 +141,8 @@ void event_process(processEvent *event)
       // Get address of the histogram container
       ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
+      if (!ch->PassCutDetectorChannel()) return;
+
       gAsymRoot.fHists->Fill(ch);
 
       if (ch->PassCutRawAlpha()) {
@@ -244,7 +246,8 @@ void event_process(processEvent *event)
 
    // XXX
    if (dproc.HasNormalBit()) {
-      if (!ch->PassQACutRaw()) return;
+
+      if (!ch->PassCutDetectorChannel()) return;
 
       gAsymRoot.fHists->Fill(ch);
 
