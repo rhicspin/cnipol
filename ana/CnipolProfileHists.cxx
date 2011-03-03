@@ -322,7 +322,7 @@ void CnipolProfileHists::Process()
    gaus->SetParLimits(0, 0, 1);
    //gaus->SetParLimits(1, -0.1, 0);
    gaus->FixParameter(1, 0);
-   gaus->SetParLimits(2, 0.1, 1.);
+   gaus->SetParLimits(2, 0.1, 100);
 
    grPolVsIntensProfile->Fit("gaus", "M E R");
 
