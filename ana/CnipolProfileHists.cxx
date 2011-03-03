@@ -76,12 +76,18 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kRed);
 
    sprintf(hName, "hPolProfileBck");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kRed);
 
    sprintf(hName, "hPolProfileFold");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
@@ -96,10 +102,13 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
    //((TH1*) o[hName])->SetAxisRange(0, 1, "Y");
    //((TH1*) o[hName])->GetYaxis()->SetLimits(0, 1);
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kRed);
 
    sprintf(hName, "hPolVsIntensProfile");
-   o[hName] = new TH1F(hName, hName, 1, -1, 1);
-   //((TH1*) o[hName])->GetXaxis()->SetTitle("#frac{I - I_{max}}{I_{max}}");
+   o[hName] = new TH1F(hName, hName, 10, -1, 1);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("(I - I_{max})/I_{max}");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
 
 } //}}}
@@ -282,6 +291,7 @@ void CnipolProfileHists::Process()
    //hPolProfileFinal->SetAxisRange(minDistance*1.1, maxDistance*1.1, "X");
    //hPolProfileFinal->SetAxisRange(0, maxPol*1.1, "Y");
 
+   delete grPolProfileFinal;
 
    // Create graph polarization vs intensity
    TGraphErrors *grPolVsIntensProfile = new TGraphErrors();
@@ -306,8 +316,20 @@ void CnipolProfileHists::Process()
       grPolVsIntensProfile->SetPointError(i, intensErr, polarErr);
    }
 
+   TF1 *gaus = new TF1("gaus", "[0]*TMath::Gaus(x, [1], [2], 0)", -0.8, 0.8);
+
+   gaus->SetParameters(0.5, 0, 0.3);
+   gaus->SetParLimits(0, 0, 1);
+   //gaus->SetParLimits(1, -0.1, 0);
+   gaus->FixParameter(1, 0);
+   gaus->SetParLimits(2, 0.1, 1.);
+
+   grPolVsIntensProfile->Fit("gaus", "M E R");
+
    TH1* hPolVsIntensProfile = (TH1*) o["hPolVsIntensProfile"];
    hPolVsIntensProfile->GetListOfFunctions()->Add(grPolVsIntensProfile, "p");
+
+   delete gaus;
 
 } //}}}
 
