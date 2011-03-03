@@ -97,6 +97,11 @@ void CnipolProfileHists::BookHists(string sid)
    //((TH1*) o[hName])->SetAxisRange(0, 1, "Y");
    //((TH1*) o[hName])->GetYaxis()->SetLimits(0, 1);
 
+   sprintf(hName, "hPolVsIntensProfile");
+   o[hName] = new TH1F(hName, hName, 1, -1, 1);
+   //((TH1*) o[hName])->GetXaxis()->SetTitle("#frac{I - I_{max}}{I_{max}}");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+
 } //}}}
 
 
@@ -276,6 +281,33 @@ void CnipolProfileHists::Process()
    hPolProfileFinal->GetYaxis()->SetLimits(0, maxPol*1.1);
    //hPolProfileFinal->SetAxisRange(minDistance*1.1, maxDistance*1.1, "X");
    //hPolProfileFinal->SetAxisRange(0, maxPol*1.1, "Y");
+
+
+   // Create graph polarization vs intensity
+   TGraphErrors *grPolVsIntensProfile = new TGraphErrors();
+   grPolVsIntensProfile->SetName("grPolVsIntensProfile");
+   grPolVsIntensProfile->SetMarkerStyle(kFullDotLarge);
+   grPolVsIntensProfile->SetMarkerSize(1);
+   grPolVsIntensProfile->SetMarkerColor(kRed);
+
+   for (int i=1; i<=hProfile->GetNbinsX(); i++) {
+      float intens    = hProfile->GetBinContent(i);
+      float intensErr = hProfile->GetBinError(i);
+      float polar     = hPolProfile->GetBinContent(i);
+      float polarErr  = hPolProfile->GetBinError(i);
+
+      Int_t bmean = (i < bc ? bmean1 : bmean2);
+
+      intens = (i <= bmean ? intens - 1 : 1 - intens);
+
+      printf("%5d %5d %5.2f %5.2f %5.2f\n", i, bmean, intens, polar, polarErr);
+
+      grPolVsIntensProfile->SetPoint(i, intens, polar);
+      grPolVsIntensProfile->SetPointError(i, intensErr, polarErr);
+   }
+
+   TH1* hPolVsIntensProfile = (TH1*) o["hPolVsIntensProfile"];
+   hPolVsIntensProfile->GetListOfFunctions()->Add(grPolVsIntensProfile, "p");
 
 } //}}}
 
