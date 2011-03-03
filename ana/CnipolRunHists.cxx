@@ -65,7 +65,7 @@ void CnipolRunHists::BookHists(string sid)
    //errdet->fDir    = fDir;
 
    run->o["rate_vs_delim"] = rate_vs_delim;
-   run->o["tgtx_vs_time"]  = new TH2F();
+   run->o["tgtx_vs_time"]  = tgtx_vs_time; //new TH2F();
 
    //feedback->o["mdev_feedback"] = new TH2F();
 

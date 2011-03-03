@@ -144,6 +144,7 @@ extern TDirectory *Asymmetry;
 //
 // Run Dir
 extern TH2F *rate_vs_delim;
+extern TH2F *tgtx_vs_time;
 
 // FeedBack Dir
 extern TH2F *mdev_feedback;

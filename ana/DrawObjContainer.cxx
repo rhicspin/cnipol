@@ -228,7 +228,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       if (TPRegexp(pattern).MatchB(fName)) {
          c.SaveAs(fName);
       } else {
-         //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
+         Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
       }
    }
 
