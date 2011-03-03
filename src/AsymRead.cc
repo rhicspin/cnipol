@@ -194,7 +194,7 @@ void readDataFast()
 
                gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
-               if (!gAsymRoot.fChannelEvent->PassQACutRaw()  ||
+               if (!gAsymRoot.fChannelEvent->PassCutDetectorChannel()  ||
                    !gAsymRoot.fChannelEvent->PassCutPulser() ||
                    !gAsymRoot.fChannelEvent->PassCutNoise() ||
                    //!gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ||

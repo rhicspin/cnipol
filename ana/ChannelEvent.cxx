@@ -208,7 +208,7 @@ bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
 Bool_t ChannelEvent::PassCutRawAlpha()
 {
    // Do not consider channels other than silicon detectors
-   if (GetChannelId() > NSTRIP) return false;
+   //if (GetChannelId() > NSTRIP) return false;
 
    if (fChannel.fAmpltd < 50) return false;
 
@@ -219,7 +219,7 @@ Bool_t ChannelEvent::PassCutRawAlpha()
 
 
 /** */
-Bool_t ChannelEvent::PassQACutRaw()
+Bool_t ChannelEvent::PassCutDetectorChannel()
 {
    // Do not consider channels other than silicon detectors
    if (GetChannelId() > NSTRIP) return false;
