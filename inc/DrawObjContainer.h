@@ -17,6 +17,7 @@
 #include "TH2F.h"
 #include "TKey.h"
 #include "TObject.h"
+#include "TPaveStats.h"
 #include "TPRegexp.h"
 #include "TSystem.h"
 

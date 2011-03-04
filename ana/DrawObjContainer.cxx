@@ -216,8 +216,24 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
          } else { c.SetLogz(kFALSE); }
       }// else { c.SetLogz(kFALSE); }
 
-      if (io->second)
+      if (io->second) {
          (io->second)->Draw();
+
+         c.Modified();
+         c.Update();
+
+         TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
+
+         if (stats) {
+            printf("found stats\n");
+            stats->SetX1NDC(0.84);
+            stats->SetX2NDC(0.99);
+            stats->SetY1NDC(0.10);
+            stats->SetY2NDC(0.50);
+         } else {
+            //printf("could not find stats\n");
+         }
+      }
 
       //if (io->second) io->second->Print();
 
@@ -228,7 +244,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       if (TPRegexp(pattern).MatchB(fName)) {
          c.SaveAs(fName);
       } else {
-         Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
+         //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
       }
    }
 

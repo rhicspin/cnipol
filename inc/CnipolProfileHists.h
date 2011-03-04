@@ -14,6 +14,7 @@
 #include "TGraphErrors.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TPaveStats.h"
 
 #include "AsymHeader.h"
 #include "TargetInfo.h"
