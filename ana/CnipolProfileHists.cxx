@@ -260,6 +260,9 @@ void CnipolProfileHists::Process()
 
    TGraphErrors *grPolProfileFinal = new TGraphErrors();
    grPolProfileFinal->SetName("grPolProfileFinal");
+   grPolProfileFinal->SetMarkerStyle(kFullDotLarge);
+   grPolProfileFinal->SetMarkerSize(1);
+   grPolProfileFinal->SetMarkerColor(kRed);
 
    printf("\n%5s %5s %5s\n", "dist", "pol", "err");
 
@@ -284,14 +287,23 @@ void CnipolProfileHists::Process()
 
    printf("minmax: %5.2f %5.2f %5.2f\n", maxPol, minDistance, maxDistance);
 
-   grPolProfileFinal->Fit("gaus", "M E");
+   TF1 *my_gaus1 = new TF1("my_gaus1", "[0]*TMath::Gaus(x, [1], [2], 0)", minDistance, maxDistance);
+
+   my_gaus1->SetParameters(0.5, 0, 0.5);
+   my_gaus1->SetParLimits(0, 0, 1);
+   my_gaus1->SetParLimits(1, -2, 2);
+   //my_gaus1->FixParameter(1, 0);
+   my_gaus1->SetParLimits(2, 0.1, 10);
+
+   grPolProfileFinal->Fit("my_gaus1", "M E R");
+
    hPolProfileFinal->GetListOfFunctions()->Add(grPolProfileFinal, "p");
    hPolProfileFinal->GetXaxis()->SetLimits(minDistance*1.1, maxDistance*1.1);
    hPolProfileFinal->GetYaxis()->SetLimits(0, maxPol*1.1);
    //hPolProfileFinal->SetAxisRange(minDistance*1.1, maxDistance*1.1, "X");
    //hPolProfileFinal->SetAxisRange(0, maxPol*1.1, "Y");
 
-   delete grPolProfileFinal;
+   //delete grPolProfileFinal;
 
    // Create graph polarization vs intensity
    TGraphErrors *grPolVsIntensProfile = new TGraphErrors();
@@ -316,20 +328,32 @@ void CnipolProfileHists::Process()
       grPolVsIntensProfile->SetPointError(i, intensErr, polarErr);
    }
 
-   TF1 *gaus = new TF1("gaus", "[0]*TMath::Gaus(x, [1], [2], 0)", -0.8, 0.8);
+   TF1 *my_gaus = new TF1("my_gaus", "[0]*TMath::Gaus(x, [1], [2], 0)", -0.8, 0.8);
 
-   gaus->SetParameters(0.5, 0, 0.3);
-   gaus->SetParLimits(0, 0, 1);
-   //gaus->SetParLimits(1, -0.1, 0);
-   gaus->FixParameter(1, 0);
-   gaus->SetParLimits(2, 0.1, 100);
+   my_gaus->SetParameters(0.5, 0, 0.3);
+   my_gaus->SetParLimits(0, 0, 1);
+   //my_gaus->SetParLimits(1, -0.1, 0);
+   my_gaus->FixParameter(1, 0);
+   my_gaus->SetParLimits(2, 0.1, 100);
 
-   grPolVsIntensProfile->Fit("gaus", "M E R");
+   grPolVsIntensProfile->Fit("my_gaus", "M E R");
 
    TH1* hPolVsIntensProfile = (TH1*) o["hPolVsIntensProfile"];
    hPolVsIntensProfile->GetListOfFunctions()->Add(grPolVsIntensProfile, "p");
 
-   delete gaus;
+   TPaveStats *stats = (TPaveStats*) hPolVsIntensProfile->FindObject("stats");
+
+   if (stats) {
+      stats->SetX1NDC(0.84);
+      stats->SetX2NDC(0.99);
+      stats->SetY1NDC(0.10);
+      stats->SetY2NDC(0.50);
+   } else {
+      printf("could not find stats\n");
+      return;
+   }
+
+   delete my_gaus;
 
 } //}}}
 
