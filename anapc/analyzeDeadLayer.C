@@ -63,7 +63,7 @@ void analyzeDeadLayer_initialize(string runName)
    //gH->ReadFromDir(dir);
 
    ec = (EventConfig*) gInFile->FindObjectAny("EventConfig");
-   //ec->Print();
+   ec->Print();
    //ec->fCalibrator->fChannelCalibs.clear();
 }
 

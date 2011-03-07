@@ -2,11 +2,10 @@
 
 echo "Setting environmet variables:"
 
-source /afs/rhic.bnl.gov/opt/phenix/root-5.27.04/bin/thisroot.sh
-
 # ROOT variables
 if [ -z "$ROOTSYS" ]; then
-	source /usr/local/cern/root/bin/thisroot.sh
+   source /afs/rhic.bnl.gov/opt/phenix/root-5.27.04/bin/thisroot.sh
+	#source /usr/local/cern/root/bin/thisroot.sh
 	echo "\$ROOTSYS=$ROOTSYS"
 else
 	echo "\$ROOTSYS already set"

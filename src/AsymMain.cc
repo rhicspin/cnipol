@@ -586,6 +586,7 @@ int main(int argc, char *argv[])
 
    if (dproc.HasGraphBit())
       gAsymRoot.SaveAs("^.*$", dproc.GetImageDir());
+      //gAsymRoot.SaveAs("profile", dproc.GetImageDir());
 
    // Closing ROOT File
    gAsymRoot.CloseROOTFile();

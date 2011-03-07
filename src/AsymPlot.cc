@@ -3,6 +3,10 @@
  * 18 Oct, 2010 - Dmitri Smirnov
  *    - Reorganized the file structure. Moved all definitions into the header file
  *
+ *  7 Mar, 2011 - Dmitri Smirnov
+ *    - Fixed compiler warnings (const string to char* conversion)
+ *    - General clean-up
+ *
  */
 
 #include "AsymPlot.h"
@@ -39,8 +43,8 @@ Int_t Usage(char *argv[])
 }
 
 
-Int_t Example(char *argv[]){
-
+Int_t Example(char *argv[])
+{
   cout << "\n Exapmle: " << endl;
   cout << "\t" << argv[0] << " -f 7279.005 -g" << endl;
   cout << 
@@ -61,18 +65,14 @@ void ColorSkime()
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     //gStyle->CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
-
 }
-
 
 
 //Int_t GetHistograms(TFile * rootfile);
 
-
-// =======================================================================================
-//                                    Histogram Checker 
-// =======================================================================================
-Int_t IsOK(Char_t histname[]){
+// Histogram Checker 
+Int_t IsOK(const Char_t histname[])
+{
   ofstream logfile;
   Int_t OK = Int_t(gDirectory->Get(histname));
   if (!OK) logfile << "The histogram : " << histname << " doesn't exist in root file. Ignored." << endl;
@@ -80,8 +80,8 @@ Int_t IsOK(Char_t histname[]){
 }
 
 
-Int_t 
-PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
+Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID)
+{
   cout << "PlotStrip stID=" << stID << endl;
 
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
@@ -109,7 +109,6 @@ PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID){
   if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");    CurC->Update();    
 
   return 0;
-
 }
 
 
@@ -138,7 +137,6 @@ PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
     if (det!=NDETECTOR-1) ps->NewPage();
 
   }
-
 
   return 0;
 }
@@ -209,15 +207,13 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
 
 
-Int_t 
-PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-
+Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   PlotBanana(rootfile, CurC, ps);   // Plot Individual Strip
   PlotMassEnergyCorrelation(rootfile, CurC, ps);   // Plot Individual Strip
   PlotInvariantMass(rootfile, CurC, ps);   // Plot Individual Strip
 
   return 0;
-
 }
 
 
@@ -384,21 +380,12 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   if (IsOK("asym_sinphi_fit")) asym_sinphi_fit->Draw(); CurC->Update();
 
   return 0;
-
 }
 
 
-
-//
-// Class name  : AsymPlot
-// Method name : GetHistograms(TFile * rootfile)
-//
 // Description : Get histogram pointers from rootfile
-// Input       : TFile * rootfile
-// Return      : 
-//
-Int_t 
-AsymPlot::GetHistograms(TFile * rootfile){
+Int_t AsymPlot::GetHistograms(TFile * rootfile)
+{
 
   rootfile->cd(); rootfile->cd("ErrDet");  
   mass_e_correlation_strip   = (TH2F*)gDirectory->Get("mass_e_correlation_strip");
@@ -427,33 +414,23 @@ AsymPlot::GetHistograms(TFile * rootfile){
   rootfile->cd(); rootfile->cd("Kinema");
   energy_spectrum_all        = (TH1F*)gDirectory->Get("energy_spectrum_all");
 
-
   return 0;
-
 }
 
 
-
-//
-// Class name  : 
-// Method name : FindRootFile(TFile * rootfile)
-//
 // Description : Search for root file in ./root directory. If the root file is not
 //             : found in ./root direcotry, then search for current working directory. 
 //             : The root file is accessed via symbolic link to the data file. If root
 //             : file is found in pwd, then the file is moved to root directry then
 //             : symbolic linked.
-// Input       : 
-// Return      : 
-//
-void 
-FindRootFile(){
-
+void FindRootFile()
+{
   // rootfile operation
   Char_t filename[50], text[100];
 
   // remove existing ./AsymPlot.root 
   sprintf(text,"rm -f %s", lnkfile); gSystem->Exec(text); 
+
   if (!RUNID) RUNID="7279.005"; // default
 
   // First search for ./root directory 

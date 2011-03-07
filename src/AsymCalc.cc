@@ -1091,7 +1091,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    // Book and fill histograms
    char hcomment[256];
    sprintf(hcomment,"Specific Luminosity");
-   HHBOOK1(10035,hcomment,100,SpeLumi.ave-SpeLumi.ave/2,SpeLumi.ave+SpeLumi.ave/2.);
+   HHBOOK1(10035, hcomment,100,SpeLumi.ave-SpeLumi.ave/2,SpeLumi.ave+SpeLumi.ave/2.);
    for (bid=0;bid<120;bid++) HHF1(10035,SpeLumi.Cnts[bid],1);
  
    // Get variables
@@ -1252,7 +1252,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
 // Input       : char Mode[], int sign, int N, float A[], float dA[], float bunch[]
 // Return      :
 //
-void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[])
+void FillAsymmetryHistgram(const char Mode[], int sign, int N, float A[], float dA[], float bunch[])
 {
   float a[N];
 
