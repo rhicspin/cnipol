@@ -111,6 +111,22 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetXaxis()->SetTitle("(I - I_{max})/I_{max}");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
 
+   sprintf(hName, "hIntUniProfile");
+   o[hName] = new TH1F(hName, hName, 1, -3, 3);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
+
+   sprintf(hName, "grIntUniProfile");
+   o[hName] = new TGraphErrors();
+
+   sprintf(hName, "hPolUniProfile");
+   o[hName] = new TH1F(hName, hName, 1, -3, 3);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+
+   sprintf(hName, "grPolUniProfile");
+   o[hName] = new TGraphErrors();
+
 } //}}}
 
 
@@ -341,20 +357,79 @@ void CnipolProfileHists::Process()
    TH1* hPolVsIntensProfile = (TH1*) o["hPolVsIntensProfile"];
    hPolVsIntensProfile->GetListOfFunctions()->Add(grPolVsIntensProfile, "p");
 
-   TPaveStats *stats = (TPaveStats*) hPolVsIntensProfile->FindObject("stats");
+   //TPaveStats *stats = (TPaveStats*) hPolVsIntensProfile->FindObject("stats");
 
-   if (stats) {
-      stats->SetX1NDC(0.84);
-      stats->SetX2NDC(0.99);
-      stats->SetY1NDC(0.10);
-      stats->SetY2NDC(0.50);
-   } else {
-      printf("could not find stats\n");
-      return;
-   }
+   //if (stats) {
+   //   stats->SetX1NDC(0.84);
+   //   stats->SetX2NDC(0.99);
+   //   stats->SetY1NDC(0.10);
+   //   stats->SetY2NDC(0.50);
+   //} else {
+   //   printf("could not find stats\n");
+   //}
 
    delete my_gaus;
 
+   // Crazy new method
+
+   //TGraphErrors *grPolUniProfile = new TGraphErrors();
+   TGraphErrors *grPolUniProfile = (TGraphErrors*) o["grPolUniProfile"];
+   grPolUniProfile->SetName("grPolUniProfile");
+   grPolUniProfile->SetMarkerStyle(kFullDotLarge);
+   grPolUniProfile->SetMarkerSize(1);
+   grPolUniProfile->SetMarkerColor(kRed);
+
+   //TGraphErrors *grIntUniProfile = new TGraphErrors();
+   TGraphErrors *grIntUniProfile = (TGraphErrors*) o["grIntUniProfile"];
+   grIntUniProfile->SetName("grIntUniProfile");
+   grIntUniProfile->SetMarkerStyle(kFullDotLarge);
+   grIntUniProfile->SetMarkerSize(1);
+   grIntUniProfile->SetMarkerColor(kRed);
+
+   for (int i=1; i<=hProfile->GetNbinsX(); i++) {
+      float intens    = hProfile->GetBinContent(i);
+      float intensErr = hProfile->GetBinError(i);
+      float polar     = hPolProfile->GetBinContent(i);
+      float polarErr  = hPolProfile->GetBinError(i);
+
+      float xuni_p =    TMath::Sqrt(-2*TMath::Log(intens));
+      float xuni_m = -1*TMath::Sqrt(-2*TMath::Log(intens));
+
+      printf("%5d %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f\n", i, intens, intensErr, polar, polarErr, xuni_p, xuni_m);
+
+      grIntUniProfile->SetPoint( (i-1)*2 + 0, xuni_p, intens);
+      grIntUniProfile->SetPoint( (i-1)*2 + 1, xuni_m, intens);
+      grIntUniProfile->SetPointError( (i-1)*2 + 0, 0, intensErr);
+      grIntUniProfile->SetPointError( (i-1)*2 + 1, 0, intensErr);
+
+      grPolUniProfile->SetPoint( (i-1)*2 + 0, xuni_p, polar);
+      grPolUniProfile->SetPoint( (i-1)*2 + 1, xuni_m, polar);
+      grPolUniProfile->SetPointError( (i-1)*2 + 0, 0, polarErr);
+      grPolUniProfile->SetPointError( (i-1)*2 + 1, 0, polarErr);
+   }
+
+   TF1 *my_gaus2 = new TF1("my_gaus2", "[0]*TMath::Gaus(x, [1], [2], 0)", -3, 3);
+
+   my_gaus2->SetParameters(0.5, 0, 0.3);
+   my_gaus2->SetParLimits(0, 0, 1);
+   //my_gaus2->SetParLimits(1, -0.1, 0);
+   my_gaus2->FixParameter(1, 0);
+   my_gaus2->SetParLimits(2, 0.1, 1000);
+
+   grPolUniProfile->Fit("my_gaus2", "M E R");
+
+   TH1* hPolUniProfile = (TH1*) o["hPolUniProfile"];
+   hPolUniProfile->GetListOfFunctions()->Add(grPolUniProfile, "p");
+
+   TF1 *my_gaus3 = new TF1("my_gaus3", "TMath::Gaus(x, 0, [0], 0)", -3, 3);
+
+   my_gaus3->SetParameters(0.5, 0);
+   my_gaus3->SetParLimits(0, 0.1, 10);
+
+   grIntUniProfile->Fit("my_gaus3", "M E R");
+
+   TH1* hIntUniProfile = (TH1*) o["hIntUniProfile"];
+   hIntUniProfile->GetListOfFunctions()->Add(grIntUniProfile, "p");
 } //}}}
 
 
