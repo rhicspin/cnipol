@@ -187,8 +187,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
-   else
+   else {
+      gSystem->Chmod(path.c_str(), 0775);
       Info("SaveAllAs", "Created dir: %s", path.c_str());
+   }
 
    ObjMapIter io;
 
@@ -243,6 +245,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       if (TPRegexp(pattern).MatchB(fName)) {
          c.SaveAs(fName);
+         gSystem->Chmod(fName, 0775);
       } else {
          //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
       }
