@@ -202,7 +202,10 @@ void TDatprocStruct::ProcessParameters()
    MakeOutDir();
 
    fFileRunInfo = fopen(GetRunInfoFileName().c_str(), "w");
+   gSystem->Chmod(GetRunInfoFileName().c_str(), 0775);
+
    fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
+   gSystem->Chmod(GetRunConfFileName().c_str(), 0775);
 }
 
 
