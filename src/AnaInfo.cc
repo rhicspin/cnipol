@@ -51,7 +51,8 @@ TDatprocStruct::TDatprocStruct() :
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0), fFileRunConf(0)
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
+   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0), fFileStdLogName("stdoe.log")
 {
    Init();
 }
@@ -104,7 +105,8 @@ TDatprocStruct::TDatprocStruct(string runId) :
    procDateTime      (0),     
    procTimeReal      (0),     
    procTimeCpu       (0),     
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(), fFileRunInfo(0), fFileRunConf(0)
+   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
+   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0), fFileStdLogName("stdoe.log")
 {
    Init();
 }
@@ -115,6 +117,7 @@ TDatprocStruct::~TDatprocStruct()
 {
    if (fFileRunInfo) fclose(fFileRunInfo);
    if (fFileRunConf) fclose(fFileRunConf);
+   if (fFileStdLog)  fclose(fFileStdLog);
 }
 
 
@@ -191,11 +194,11 @@ string TDatprocStruct::GetDlCalibFile() const
 
 
 /** */
-void TDatprocStruct::ProcessParameters()
+void TDatprocStruct::ProcessOptions()
 {
    if (fRunId.empty()) {
-      //gSystem->Fatal("   TDatprocStruct::ProcessParameters", "Run name has to be specified");
-      gSystem->Error("   TDatprocStruct::ProcessParameters", "Run name has to be specified");
+      gSystem->Error("   TDatprocStruct::ProcessOptions", "Run name has to be specified");
+      PrintUsage();
       exit(0);
    }
 
@@ -206,6 +209,26 @@ void TDatprocStruct::ProcessParameters()
 
    fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
    gSystem->Chmod(GetRunConfFileName().c_str(), 0775);
+
+   // Set default standard log output
+   if (!fFileStdLogName.empty()) {
+      freopen(GetStdLogFileName().c_str(), "w", stdout);
+      fclose(stderr);
+      stderr = stdout;
+   }
+
+   //freopen(GetStdLogFileName().c_str(), "w", stderr);
+   //setbuf(stdout, NULL);
+   //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
+
+   // Various printouts. Should be combined with Print()?
+   cout << "Run name:                      " << fRunId << endl;
+   cout << "Input data file:               " << gDataFileName << endl;
+   cout << "Max events to process:         " << gMaxEventsUser << endl;
+   cout << "Events to skip:                " << thinout << endl;
+   cout << "User defined calibration file: " << userCalibFile << endl;
+   cout << "overwrite conf file:           " << reConfFile << endl;
+   cout << "SAVETREES:                     " << SAVETREES << endl;
 }
 
 
@@ -300,6 +323,57 @@ void TDatprocStruct::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['procTimeReal']                 = %f;\n", procTimeReal);
    fprintf(f, "$rc['procTimeCpu']                  = %f;\n", procTimeCpu);
 } //}}}
+
+
+/** */
+void TDatprocStruct::PrintUsage()
+{
+   cout << endl;
+   cout << "Options:" << endl;
+   cout << " -h, -?                          : Print this help" << endl;
+   cout << " -r, -f, --run-name <run_name>   : Name of run with raw data in $DATADIR directory" << endl;
+   cout << " -n <number>                     : Maximum number of events to process"
+        << " (default \"-n 0\" all events)" << endl;
+   cout << " -s <number>                     : Only every <number> event will be"
+        << " processed (default \"-s 1\" no skip)" << endl;
+   cout << " -c <calib_file_name>            : Set root file with calibration info (!)" << endl;
+   cout << " -o <filename>                   : Output hbk file (!)" << endl;
+   //cout << " -r <filename>                   : ramp timing file" << endl;
+   cout << " -l, --log=[filename]            : Optional log file to redirect stdout and stderr" << endl;
+   cout << " -t <time shift>                 : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
+   cout << " -e <lower:upper>                : Kinetic energy range (default [400:900] keV) (!)" << endl;
+   //cout << " -B                              : create banana curve on" << endl;
+   //cout << " -G                              : mass mode on " << endl;
+   cout << " -a, --no-error-detector         : Anomaly check off (!)" << endl;
+   cout << " -b                              : Feedback mode on (!)" << endl;
+   cout << " -D                              : Dead layer mode on (!)" << endl;
+   cout << " -d <dlayer>                     : Additional deadlayer thickness [ug/cm2] (!)" << endl;
+   //cout << " -T                              : T0 study    mode on " << endl;
+   //cout << " -A                              : A0,A1 study mode on " << endl;
+   //cout << " -Z                              : without T0 subtraction" << endl;
+   cout << " -F <file>                       : Overwrite conf file defined in run.db (!)" << endl;
+   cout << " -W <lower:upper>                : Const width banana cut (!)" << endl;
+   cout << " -m <sigma>                      : Banana cut by <sigma> from 12C mass [def]:3 sigma (!)" << endl;
+   cout << " -U                              : Update histogram" << endl;
+   cout << "     --update-db                 : Update run info in database" << endl;
+   cout << " -N                              : Store Ntuple events (!)" << endl;
+   cout << " -R <bitmask>                    : Save events in Root trees, " <<
+           "e.g. \"-R 101\"" << endl;
+   cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
+   cout << " -C, --mode-alpha, --alpha       : Use when run over alpha run data" << endl;
+   cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
+   cout << "     --mode-normal               : Default set of histograms" << endl;
+   cout << "     --mode-no-normal            : Turn off the default set of histograms" << endl;
+   cout << "     --mode-scaler, --scaler     : Fill and save scaler histograms (from V124 memory)" << endl;
+   cout << "     --mode-raw, --raw           : Fill and save raw histograms" << endl;
+   cout << "     --mode-run                  : Fill and save bunch, lumi and other run related histograms" << endl;
+   cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
+   cout << "     --mode-full                 : Fill and save all histograms" << endl;
+   cout << " -g, --graph                     : Save histograms as images" << endl;
+   cout << endl;
+   cout << "Options marked with (!) are not really supported" << endl;
+   cout << endl;
+}
 
 
 /** */
