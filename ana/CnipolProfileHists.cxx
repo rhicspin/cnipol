@@ -196,12 +196,12 @@ void CnipolProfileHists::Process()
 
    // Now split the hProfile hist into two: forward and backward motionsward motions
 
-   double chi2Ndf;
-   double sigma; 
-   double mean1;
-   double mean1Err;
-   double mean2;
-   double mean2Err;
+   double chi2Ndf  = 0;
+   double sigma    = 0;
+   double mean1    = 0;
+   double mean1Err = 0;
+   double mean2    = 0;
+   double mean2Err = 0;
 
    if (fitres.Get()) {
       chi2Ndf  = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
