@@ -123,6 +123,8 @@ void AsymRoot::RootFile(char *filename)
       exit(-1);
    }
 
+   gSystem->Chmod(filename, 0775);
+
    // directory structure
    Run       = new TDirectoryFile("Run", "Run", "", rootfile);   //rootfile->mkdir("Run");
    Raw       = new TDirectoryFile("Raw", "Raw", "", rootfile);   //rootfile->mkdir("Raw");

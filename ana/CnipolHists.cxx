@@ -553,6 +553,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
    if (TPRegexp(pattern).MatchB(fName.c_str())) {
       c.SaveAs(fName.c_str());
+      gSystem->Chmod(fName.c_str(), 0775);
    } else {
       //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
    }
@@ -606,6 +607,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       if (TPRegexp(pattern).MatchB(fName.c_str())) {
          c.SaveAs(fName.c_str());
+         gSystem->Chmod(fName.c_str(), 0775);
       } else {
          //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
       }
