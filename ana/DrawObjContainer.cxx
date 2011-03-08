@@ -209,7 +209,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       c.SetName(cName);
       c.SetTitle(cName);
 
-      if (((TClass*) io->second->IsA())->InheritsFrom("TH1")) {
+      if ( ((TClass*) io->second->IsA())->InheritsFrom("TH1") ) {
          //c.SetLogz(kTRUE);
          char *l = strstr(((TH1*)io->second)->GetOption(), "LOGZ");
          //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
@@ -227,7 +227,6 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
          TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
 
          if (stats) {
-            printf("found stats\n");
             stats->SetX1NDC(0.84);
             stats->SetX2NDC(0.99);
             stats->SetY1NDC(0.10);
