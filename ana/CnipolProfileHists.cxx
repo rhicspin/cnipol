@@ -116,6 +116,16 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
 
+   sprintf(hName, "hIntUniProfileBin");
+   o[hName] = new TH1F(hName, hName, 20, -3, 3);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
+   ((TH1*) o[hName])->SetOption("p");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   ((TH1*) o[hName])->Sumw2();
+
    //sprintf(hName, "grIntUniProfile");
    //o[hName] = new TGraphErrors();
 
@@ -123,6 +133,18 @@ void CnipolProfileHists::BookHists(string sid)
    o[hName] = new TH1F(hName, hName, 1, -3, 3);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+
+   sprintf(hName, "hPolUniProfileBin");
+   o[hName] = new TH1F(hName, hName, 20, -3, 3);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->SetOption("p");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   ((TH1*) o[hName])->Sumw2();
 
    //sprintf(hName, "grPolUniProfile");
    //o[hName] = new TGraphErrors();
@@ -145,7 +167,7 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    hdPtr    += 2; // offset by 2: 1 underflow bin and 1 lost one
    hdErrPtr += 2; // offset by 2: 1 underflow bin and 1 lost one
 
-   while (hPtr != hData+n) { *hdPtr++ = *hPtr++; *hdErrPtr++ = sqrt(*hPtr); }
+   while (hPtr != hData+n) { *hdPtr++ = *hPtr++; *hdErrPtr++ = 1./TMath::Sqrt(*hPtr); }
 
    for (UInt_t i=0; i<n+3; i++) {
       printf("i: %d, %ld, %f\n", i, *(hData+i), *(hd+i));
@@ -430,6 +452,76 @@ void CnipolProfileHists::Process()
 
    TH1* hIntUniProfile = (TH1*) o["hIntUniProfile"];
    hIntUniProfile->GetListOfFunctions()->Add(grIntUniProfile, "p");
+
+
+   // Fill hist from graph
+   TH1* hIntUniProfileBin = (TH1*) o["hIntUniProfileBin"];
+   TH1* hPolUniProfileBin = (TH1*) o["hPolUniProfileBin"];
+
+   Double_t x, xe, y, ye;
+
+   for (int i=0; i<grIntUniProfile->GetN(); i++) {
+
+      grIntUniProfile->GetPoint(i, x, y);
+
+      if (fabs(x) > 3) continue;
+
+      //xe = grIntUniProfile->GetErrorX(i);
+      ye = grIntUniProfile->GetErrorY(i);
+
+      Int_t    ib  = hIntUniProfileBin->FindBin(x);
+      Double_t ibc = hIntUniProfileBin->GetBinContent(ib);
+      Double_t ibe = hIntUniProfileBin->GetBinError(ib);
+
+      Double_t w1 = 1., w2 = 1.;
+      if (ye  > 0) w1 = 1./(ye*ye);
+      if (ibe > 0) w2 = 1./(ibe*ibe);
+
+      Double_t ibc_new = (w1*y + w2*ibc)/(w1 + w2);
+      Double_t ibe_new = 1./TMath::Sqrt(w1 + w2);
+
+      printf("i: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
+
+      hIntUniProfileBin->SetBinContent(ib, ibc_new);
+      hIntUniProfileBin->SetBinError(ib, ibe_new);
+
+      // Polarization part
+      grPolUniProfile->GetPoint(i, x, y);
+
+      //xe = grPolUniProfile->GetErrorX(i);
+      ye = grPolUniProfile->GetErrorY(i);
+
+      ib  = hPolUniProfileBin->FindBin(x);
+      ibc = hPolUniProfileBin->GetBinContent(ib);
+      ibe = hPolUniProfileBin->GetBinError(ib);
+
+      w1 = 1., w2 = 1.;
+      if (ye  > 0) w1 = 1./(ye*ye);
+      if (ibe > 0) w2 = 1./(ibe*ibe);
+
+      ibc_new = (w1*y + w2*ibc)/(w1 + w2);
+      ibe_new = 1./TMath::Sqrt(w1 + w2);
+
+      printf("p: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
+
+      hPolUniProfileBin->SetBinContent(ib, ibc_new);
+      hPolUniProfileBin->SetBinError(ib, ibe_new);
+   }
+
+   TF1 *my_gaus4 = new TF1("my_gaus4", "TMath::Gaus(x, 0, [0], 0)", -3, 3);
+
+   my_gaus4->SetParameter(0, 0.5);
+   my_gaus4->SetParLimits(0, 0.1, 10);
+
+   hPolUniProfileBin->Fit("my_gaus4", "M E R");
+
+   TF1 *my_gaus5 = new TF1("my_gaus5", "TMath::Gaus(x, 0, [0], 0)", -3, 3);
+
+   my_gaus5->SetParameter(0, 0.5);
+   my_gaus5->SetParLimits(0, 0.1, 10);
+
+   hIntUniProfileBin->Fit("my_gaus5", "M E R");
+
 } //}}}
 
 

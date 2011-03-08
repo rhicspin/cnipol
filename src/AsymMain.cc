@@ -42,8 +42,7 @@ int main(int argc, char *argv[])
       return 0;
    }
 
-   char   cfile[32], hbk_outfile[256];
-   int    hbk_read = 0;  // hbk file read from argument:1 default:0
+   char   cfile[32];
    //int  ramp_read = 0;  // ramp timing file read from argument:1 default:0
    char   enerange[20], cwidth[20], *ptr;
    stringstream sstr;
@@ -57,6 +56,8 @@ int main(int argc, char *argv[])
       {"update-db",           no_argument,         0,   0x0100},
       {"no-update-db",        no_argument,         0,   0x0200},
       {"pol-id",              required_argument,   0,   0x0300},
+      {"log",                 optional_argument,   0,   'l'},
+      {"alpha",               no_argument,         0,   TDatprocStruct::MODE_ALPHA},
       {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
       {"scaler",              no_argument,         0,   TDatprocStruct::MODE_SCALER},
       {"target",              no_argument,         0,   TDatprocStruct::MODE_TARGET},
@@ -84,56 +85,15 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:l::t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
+
       case '?':
       case 'h':
-         cout << "Usage of " << argv[0] << endl;
-         cout << " -h, -?                          : Print this help" << endl;
-         cout << " -r | -f | --run-name <run_name> : Name of run with raw data in $DATADIR directory" << endl;
-         cout << " -n <number>                     : Maximum number of events to process"
-              << " (default \"-n 0\" all events)" << endl;
-         cout << " -s <number>                     : Only every <number> event will be"
-              << " processed (default \"-s 1\" no skip)" << endl;
-         cout << " -c <calib_file_name>            : Set root file with calibration info (!)" << endl;
-         cout << " -o <filename>                   : Output hbk file (!)" << endl;
-         //cout << " -r <filename>                   : ramp timing file" << endl;
-         cout << " -t <time shift>                 : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
-         cout << " -e <lower:upper>                : Kinetic energy range (default [400:900] keV) (!)" << endl;
-         //cout << " -B                              : create banana curve on" << endl;
-         //cout << " -G                              : mass mode on " << endl;
-         cout << " -a, --no-error-detector         : Anomaly check off (!)" << endl;
-         cout << " -b                              : Feedback mode on (!)" << endl;
-         cout << " -D                              : Dead layer mode on (!)" << endl;
-         cout << " -d <dlayer>                     : Additional deadlayer thickness [ug/cm2] (!)" << endl;
-         //cout << " -T                              : T0 study    mode on " << endl;
-         //cout << " -A                              : A0,A1 study mode on " << endl;
-         //cout << " -Z                              : without T0 subtraction" << endl;
-         cout << " -F <file>                       : Overwrite conf file defined in run.db (!)" << endl;
-         cout << " -W <lower:upper>                : Const width banana cut (!)" << endl;
-         cout << " -m <sigma>                      : Banana cut by <sigma> from 12C mass [def]:3 sigma" << endl;
-         cout << " -U                              : Update histogram" << endl;
-         cout << "     --update-db                 : Update run info in database" << endl;
-         cout << " -N                              : Store Ntuple events (!)" << endl;
-         cout << " -R <bitmask>                    : Save events in Root trees, " <<
-                 "e.g. \"-R 101\"" << endl;
-         cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
-         cout << " -C, --mode-alpha                : Use when run over alpha run data" << endl;
-         cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
-         cout << "     --mode-normal               : Default set of histograms" << endl;
-         cout << "     --mode-no-normal            : Turn off the default set of histograms" << endl;
-         cout << "     --mode-scaler, --scaler     : Fill and save scaler histograms (from V124 memory)" << endl;
-         cout << "     --mode-raw, --raw           : Fill and save raw histograms" << endl;
-         cout << "     --mode-run                  : Fill and save bunch, lumi and other run related histograms" << endl;
-         cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
-         cout << "     --mode-full                 : Fill and save all histograms" << endl;
-         cout << "-g,  --graph                     : Save histograms as images" << endl;
-         cout << endl;
-         cout << "Options marked with (!) are not really supported" << endl << endl;
-
-         return 0;
+         dproc.PrintUsage();
+         exit(0);
 
       case 'r':
       case 'f':
@@ -146,33 +106,33 @@ int main(int argc, char *argv[])
          dproc.fRunId     = optarg;
          gRunInfo.runName = optarg;
          gRunDb.fRunName  = optarg;
-         fprintf(stdout, "Run name:        %s\n", dproc.fRunId.c_str());
-         fprintf(stdout, "Input data file: %s\n", gDataFileName.c_str());
          break;
+
       case 'n':
          gMaxEventsUser = atol(optarg);
-         fprintf(stdout, "Max events to process: %d\n", gMaxEventsUser);
          break;
+
       case 's':
          dproc.thinout = atol(optarg);
-         fprintf(stdout, "Events to skip: %d\n", dproc.thinout);
          break;
+
       case 'c':
          dproc.userCalibFile = optarg;
-         fprintf(stdout, "User defined calibration file: %s\n", dproc.userCalibFile.c_str());
          break;
-      case 'o': // determine output hbk file
-         sprintf(hbk_outfile, optarg);
-         fprintf(stdout, "Output hbk file: %s \n", hbk_outfile);
-         hbk_read = 1;
+
+      case 'l':
+         dproc.fFileStdLogName = (optarg != 0 ? optarg : "");
          break;
+
       case 't': // set timing shift in banana cut
          dproc.tshift = atoi(optarg);
          extinput.TSHIFT = 1;
          break;
+
       case 'd': // set timing shift in banana cut
          dproc.dx_offset = atoi(optarg);
          break;
+
       case 'e': // set energy range
          strcpy(enerange, optarg);
 
@@ -188,11 +148,12 @@ int main(int argc, char *argv[])
              cout << "Wrong specification for energy threshold" << endl;
              return 0;
          }
-
          break;
+
       case 'a':
          Flag.EXE_ANOMALY_CHECK=0;
          break;
+
       case 'F':
          sprintf(cfile, optarg);
          if (!strstr(cfile, "/")) {
@@ -200,9 +161,9 @@ int main(int argc, char *argv[])
              strcat(reConfFile, "/");
          }
          strcat(reConfFile, cfile);
-         fprintf(stdout,"overwrite conf file : %s \n", reConfFile);
          extinput.CONFIG = 1;
          break;
+
       case 'b':
          dproc.FEEDBACKMODE = Flag.feedback = 1;
          break;
@@ -211,7 +172,6 @@ int main(int argc, char *argv[])
          break;
       case 'T':
          dproc.TMODE = 1;
-         fprintf(stdout,"*****TMODE*****\n");
          break;
       case 'A':
          dproc.AMODE = 1;
@@ -250,15 +210,16 @@ int main(int argc, char *argv[])
          fprintf(stdout,"BANANA Cut : %d <==> %d \n",
                  dproc.widthl,dproc.widthu);
          break;
+
       case 'm':
          dproc.CBANANA = 2;
          dproc.MassSigma = atof(optarg);
          extinput.MASSCUT = 1;
          break;
+
       case 'R':
          sstr << optarg;
          sstr >> dproc.SAVETREES;
-         cout << "SAVETREES: " << dproc.SAVETREES << endl;
          break;
 
       case 0x0100:
@@ -328,18 +289,21 @@ int main(int argc, char *argv[])
          dproc.fModes |= TDatprocStruct::MODE_TARGET; break;
 
       case TDatprocStruct::MODE_PROFILE:
-         dproc.fModes |= TDatprocStruct::MODE_PROFILE; break;
+         dproc.fModes |= TDatprocStruct::MODE_PROFILE;
+         dproc.fModes |= TDatprocStruct::MODE_TARGET; // profile hists depend on target ones
+         break;
 
       case TDatprocStruct::MODE_FULL:
          dproc.fModes |= TDatprocStruct::MODE_FULL; break;
 
       default:
-         fprintf(stdout,"Invalid Option \n");
-         return 0;
+         gSystem->Error("   main", "Invalid Option");
+         dproc.PrintUsage();
+         exit(0);
       }
    }
 
-   dproc.ProcessParameters();
+   dproc.ProcessOptions();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -481,10 +445,8 @@ int main(int argc, char *argv[])
    //return 0;
 
    // if output hbk file is not specified
-   if (hbk_read == 0 ) {
-      sprintf(hbk_outfile, "outsampleex.hbook");
-      fprintf(stdout,"Hbook DEFAULT file: %s \n",hbk_outfile);
-   }
+   char hbk_outfile[256] = "out.hbook";
+   fprintf(stdout, "hBOOK default file: %s \n", hbk_outfile);
 
    // Hbook Histogram Booking
    fprintf(stdout, "Booking HBOOK file\n");

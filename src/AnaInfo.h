@@ -89,6 +89,8 @@ public:
    std::map<std::string, std::string> fAsymEnv;
    FILE*            fFileRunInfo;
    FILE*            fFileRunConf;
+   FILE*            fFileStdLog;
+   std::string      fFileStdLogName;
 
 public:
 
@@ -102,11 +104,13 @@ public:
    std::string GetDlCalibFile() const;
    std::string GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
    std::string GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
+   std::string GetStdLogFileName() const { return GetOutDir() + "/" + fFileStdLogName; }
    FILE*       GetRunInfoFile() const { return fFileRunInfo; }
    FILE*       GetRunConfFile() const { return fFileRunConf; }
-   void        ProcessParameters();
+   void        ProcessOptions();
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f) const;
+   void        PrintUsage();
    void        Streamer(TBuffer &buf);
    void        Update(TStructRunDB &rundb);
 

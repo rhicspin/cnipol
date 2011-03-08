@@ -203,6 +203,8 @@ void AsymRoot::CreateTrees()
    //sprintf(filename,"%s/%.3f_tree_%02d.root",
    //        gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.RUNID, fTreeFileId);
 
+   
+
    fOutTreeFile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
