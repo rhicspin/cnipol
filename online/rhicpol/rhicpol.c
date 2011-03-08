@@ -314,12 +314,14 @@ int main(int argc, char **argv)
     i = Conf.ETLookUp;
     if (i>2) i=2;
     sprintf(polData.cutIdS, "ET:%s_IA:%s", ETLUTNames[i], IALUTNames[Conf.IALookUp]);
-//	Copy to polData ...
-    polData.beamEnergyS = beamData.beamEnergyM;
-    polData.analyzingPowerS = ANALPOW;
+
+    // Copy to polData ...
+    polData.beamEnergyS          = beamData.beamEnergyM;
+    polData.analyzingPowerS      = ANALPOW;
     polData.analyzingPowerErrorS = ANALPOWE;
-    polData.numberEventsS = mEvent;
-    polData.maxTimeS = (int) mTime;
+    polData.numberEventsS        = mEvent;
+    polData.maxTimeS             = (int) mTime;
+
 /* If tshift in effect move sensitive window boundaries */
     if (iRamp) {
 	tshift = Conf.TshiftHigh;	// always like flattop for ramp
@@ -371,7 +373,11 @@ int main(int argc, char **argv)
 	setInhibit();
 	polData.stopTimeS = time(NULL);
 	clearAlarm();
+
 	if (iSig == SIGTERM) break;	// we are supposed to quit fast
+
+	if (iSig == SIGINT) j = nLoop - 1;
+
 	if (iCntrlC) {
 	    signal(SIGINT, alarmHandler);
 	} else {
