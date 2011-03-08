@@ -372,15 +372,15 @@ void CnipolProfileHists::Process()
 
    // Crazy new method
 
-   //TGraphErrors *grPolUniProfile = new TGraphErrors();
-   TGraphErrors *grPolUniProfile = (TGraphErrors*) o["grPolUniProfile"];
+   TGraphErrors *grPolUniProfile = new TGraphErrors();
+   //TGraphErrors *grPolUniProfile = (TGraphErrors*) o["grPolUniProfile"];
    grPolUniProfile->SetName("grPolUniProfile");
    grPolUniProfile->SetMarkerStyle(kFullDotLarge);
    grPolUniProfile->SetMarkerSize(1);
    grPolUniProfile->SetMarkerColor(kRed);
 
-   //TGraphErrors *grIntUniProfile = new TGraphErrors();
-   TGraphErrors *grIntUniProfile = (TGraphErrors*) o["grIntUniProfile"];
+   TGraphErrors *grIntUniProfile = new TGraphErrors();
+   //TGraphErrors *grIntUniProfile = (TGraphErrors*) o["grIntUniProfile"];
    grIntUniProfile->SetName("grIntUniProfile");
    grIntUniProfile->SetMarkerStyle(kFullDotLarge);
    grIntUniProfile->SetMarkerSize(1);
