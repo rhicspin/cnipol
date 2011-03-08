@@ -6,6 +6,7 @@
 #define ASYM_CALC_H
 
 #include <math.h>
+#include <string>
 
 #include "TGraphErrors.h"
 #include "TF1.h"
@@ -90,7 +91,7 @@ struct StructSpeLumi {
 void sqass(float A, float B, float C, float D, float *asym, float *easym);
 void CumulativeAsymmetry();
 void CalcBunchAsymmetry();
-void FillAsymmetryHistgram(char Mode[], int sign, int N, float A[], float dA[], float bunch[]);
+void FillAsymmetryHistgram(std::string mode, int sign, int N, float A[], float dA[], float bunch[]);
 TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 void BunchAsymmetry(int, float A[], float dA[]);
 

@@ -72,7 +72,7 @@ void CnipolRunHists::BookHists(string sid)
    //kinema->o["energy_spectrum_all"] = new TH1F();
 
    char hName[256];
-   char hTitle[256];
+   //char hTitle[256];
 
    // energy spectrum for all detector sum
    //sprintf(hName, "energy_spectrum_all");

@@ -425,153 +425,148 @@ Int_t AsymPlot::GetHistograms(TFile * rootfile)
 //             : symbolic linked.
 void FindRootFile()
 {
-  // rootfile operation
-  Char_t filename[50], text[100];
-
-  // remove existing ./AsymPlot.root 
-  sprintf(text,"rm -f %s", lnkfile); gSystem->Exec(text); 
-
-  if (!RUNID) RUNID="7279.005"; // default
-
-  // First search for ./root directory 
-  sprintf(filename,"root/%s.root",RUNID);
-  if (FileNotOK(filename)) {
-    cout<< filename << " is not found. Search for pwd." << endl;
-    sprintf(filename,"%s.root",RUNID); // then look for pwd
-    if (FileNotOK(filename)) { 
-      cerr << "./" << filename << " is not found neither. Force exit." << endl;
-      exit(-1);
-    } else {
-      sprintf(text,"mv -f %s root/.", filename); gSystem->Exec(text);
-      sprintf(filename,"root/%s.root",RUNID);
-    }
-  }
-	
-  // make symbolic link from root/RUNID.root to ./AsymPlot.root
-  sprintf(text,"ln -s %s %s",filename,lnkfile);
-  gSystem->Exec(text);
-
-  return;
-
- }
+   // rootfile operation
+   Char_t filename[50], text[100];
+ 
+   // remove existing ./AsymPlot.root 
+   sprintf(text,"rm -f %s", lnkfile); gSystem->Exec(text); 
+ 
+   if (RUNID.empty()) RUNID = "7279.005"; // default
+ 
+   // First search for ./root directory 
+   sprintf(filename, "root/%s.root", RUNID.c_str());
+   if (FileNotOK(filename)) {
+      cout<< filename << " is not found. Search for pwd." << endl;
+      sprintf(filename,"%s.root", RUNID.c_str()); // then look for pwd
+      if (FileNotOK(filename)) { 
+         cerr << "./" << filename << " is not found neither. Force exit." << endl;
+         exit(-1);
+      } else {
+         sprintf(text,"mv -f %s root/.", filename); gSystem->Exec(text);
+         sprintf(filename,"root/%s.root", RUNID.c_str());
+      }
+   }
+ 	
+   // make symbolic link from root/RUNID.root to ./AsymPlot.root
+   sprintf(text, "ln -s %s %s", filename, lnkfile);
+   gSystem->Exec(text);
+}
 
 
 //#ifndef __CINT__
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
+   int opt, option_index = 0;
+ 
+   static struct option long_options[] = {
+     {"strip", 1, 0, 's'},
+     {"banana", 0, 0, 'b'},
+     {"feedback", 0, 0, 'F'},
+     {"raw", 0, 0, 'r'},
+     {"error-detector", 0, 0, 'e'},
+     {"summary", 0, 0, 'S'},
+     {"create", 1, 0, 'c'},
+     {"file", 1, 0, 0},
+     {0, 0, 0, 0}
+   };
+ 
+   while (EOF != (opt = getopt_long (argc, argv, "gerSFh?xf:s:b:", long_options, &option_index)))
+   {
+      switch (opt) {
+      case -1:
+        break;
+      case 'b':
+        PLOT_BANANA=1;
+        ERROR_DETECTOR=0;
+        SUMMARY=0;
+        break;
+      case 'r':
+        PLOT_BANANA=0;
+        ERROR_DETECTOR=0;
+        SUMMARY=0;
+        PLOT_RAW=1;
+        break;
+      case 'e':
+        ERROR_DETECTOR=1;
+        PLOT_BANANA=0;
+        break;
+      case 'g':
+        GHOSTVIEW=1;
+        break;
+      case 'f':
+        RUNID = optarg;
+        break;
+      case 'F':
+        FEEDBACK=1;
+        SUMMARY=0;
+        ERROR_DETECTOR=0;
+        PLOT_BANANA=0;
+        break;
+      case 'S':
+        SUMMARY=1;
+        ERROR_DETECTOR=0;
+        PLOT_BANANA=0;
+        break;
+      case 's':
+        stID=atoi(optarg);
+        break;
+      case 'h':
+      case '?':
+      case '*':
+        Usage(argv);
+        break;
+      }
+   }
 
-  int opt, option_index = 0;
-  static struct option long_options[] = {
-    {"strip", 1, 0, 's'},
-    {"banana", 0, 0, 'b'},
-    {"feedback", 0, 0, 'F'},
-    {"raw", 0, 0, 'r'},
-    {"error-detector", 0, 0, 'e'},
-    {"summary", 0, 0, 'S'},
-    {"create", 1, 0, 'c'},
-    {"file", 1, 0, 0},
-    {0, 0, 0, 0}
-  };
-
-  while (EOF != (opt = getopt_long (argc, argv, "gerSFh?xf:s:b:", long_options, &option_index))) {
-    switch (opt) {
-    case -1:
-      break;
-    case 'b':
-      PLOT_BANANA=1;
-      ERROR_DETECTOR=0;
-      SUMMARY=0;
-      break;
-    case 'r':
-      PLOT_BANANA=0;
-      ERROR_DETECTOR=0;
-      SUMMARY=0;
-      PLOT_RAW=1;
-      break;
-    case 'e':
-      ERROR_DETECTOR=1;
-      PLOT_BANANA=0;
-      break;
-    case 'g':
-      GHOSTVIEW=1;
-      break;
-    case 'f':
-      RUNID=optarg;
-      break;
-    case 'F':
-      FEEDBACK=1;
-      SUMMARY=0;
-      ERROR_DETECTOR=0;
-      PLOT_BANANA=0;
-      break;
-    case 'S':
-      SUMMARY=1;
-      ERROR_DETECTOR=0;
-      PLOT_BANANA=0;
-      break;
-    case 's':
-      stID=atoi(optarg);
-      break;
-    case 'h':
-    case '?':
-    case '*':
-      Usage(argv);
-      break;
-    }
-  }
-
-//#else
-//int AsymPlot() {
-//#endif
-
-  // load header file
-  Char_t HEADER[100], text[100], filename[100];
-  sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
-  gROOT->LoadMacro(HEADER);
-
-  // open rootfile 
-  FindRootFile();
-  TFile * rootfile = TFile::Open(lnkfile);
-
-  // Log file handling
-  ofstream logfile;
-  logfile.open(".AsymPlot.log");
-  if (logfile.fail()){ cerr << "Warning: Cannot open .AsymPlot.log." << endl;}
-
-  // setup color skime
-  //  ColorSkime();
-
-  // Cambus Setup
-  TCanvas *CurC = new TCanvas("CurC","",1);
-
-  // postscript file
-  Char_t psfile[100];
-  sprintf(psfile,"ps/AsymPlot_%s.ps",RUNID);
-  TPostScript *ps = new TPostScript(psfile,112);
-
-  AsymPlot asymplot;
-  asymplot.GetHistograms(rootfile);
-
-  if (stID) PlotStrip(rootfile, CurC, ps, stID);
-  if (FEEDBACK)     asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
-  if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
-  if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
-  if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
-  if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
-
-  // close ps file
-  cout << "ps file : " << psfile << endl;
-  ps->Close();
-
-  // close logfile
-  //  logfile.close();
-
-  // remove symboric link to root file in root directory
-  //sprintf(text, "rm AsymPlot.root ", filename);    
-  sprintf(text, "rm AsymPlot.root ");    
-  gSystem->Exec(text);  
-
-  sprintf(text,"gv -landscape %s",psfile);
-  if (GHOSTVIEW) gSystem->Exec(text);
-
-  return 0;
+   // load header file
+   Char_t HEADER[100], text[100]; //, filename[100];
+   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
+   gROOT->LoadMacro(HEADER);
+ 
+   // open rootfile 
+   FindRootFile();
+   TFile * rootfile = TFile::Open(lnkfile);
+ 
+   // Log file handling
+   ofstream logfile;
+   logfile.open(".AsymPlot.log");
+   if (logfile.fail()){ cerr << "Warning: Cannot open .AsymPlot.log." << endl;}
+ 
+   // setup color skime
+   //  ColorSkime();
+ 
+   // Cambus Setup
+   TCanvas *CurC = new TCanvas("CurC","",1);
+ 
+   // postscript file
+   Char_t psfile[100];
+   sprintf(psfile,"ps/AsymPlot_%s.ps", RUNID.c_str());
+   TPostScript *ps = new TPostScript(psfile,112);
+ 
+   AsymPlot asymplot;
+   asymplot.GetHistograms(rootfile);
+ 
+   if (stID) PlotStrip(rootfile, CurC, ps, stID);
+   if (FEEDBACK)     asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
+   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
+   if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
+   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
+   if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
+ 
+   // close ps file
+   cout << "ps file : " << psfile << endl;
+   ps->Close();
+ 
+   // close logfile
+   //  logfile.close();
+ 
+   // remove symboric link to root file in root directory
+   //sprintf(text, "rm AsymPlot.root ", filename);    
+   sprintf(text, "rm AsymPlot.root ");    
+   gSystem->Exec(text);  
+ 
+   sprintf(text,"gv -landscape %s",psfile);
+   if (GHOSTVIEW) gSystem->Exec(text);
+ 
+   return 0;
 }
