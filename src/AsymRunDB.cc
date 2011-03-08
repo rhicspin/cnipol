@@ -311,7 +311,7 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
    }
 
    char    *line   = NULL;
-   UInt_t   iLine  = 1;
+   //UInt_t   iLine  = 1;
    size_t   len    = 0;
    ssize_t  nBytes = 0;
    TStructRunDB *currentRun = 0;
@@ -544,11 +544,11 @@ void AsymRunDB::Insert(TStructRunDB *dbrun)
 void readdb(double RUNID)
 {
    // read DB file
-   char *dbfile = "run.db";
+   string dbfile = "run.db";
    FILE *in_file;
 
-   if ((in_file = fopen(dbfile, "r")) == NULL) {
-       printf("ERROR: %s file not found. Force exit.\n", dbfile);;
+   if ((in_file = fopen(dbfile.c_str(), "r")) == NULL) {
+       gSystem->Error("   AsymRunDB::readdb", "%s file not found. Force exit", dbfile.c_str());
        exit(-1);
    }
 

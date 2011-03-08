@@ -403,8 +403,8 @@ void readloop()
       //   break;
       //}
 
-      Long_t my_i;
-      Long_t *my_pointer;
+      //Long_t my_i;
+      //Long_t *my_pointer;
 
       // Main Switch
       switch (rec.header.type & REC_TYPEMASK) {
@@ -1037,10 +1037,10 @@ void ProcessRecord(recordCountRate &rec)
    Long_t *pointer = (Long_t *) rec.data;
    //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
 
-   printf("len, size: %d, %d\n", rec.header.len, size);
+   printf("len, size: %ld, %d\n", rec.header.len, size);
 
    for (UInt_t i=0; i<size; i++) {
-      printf("i: %d, %d\n", i, *(pointer+i));
+      printf("i: %d, %ld\n", i, *(pointer+i));
    }
 
    gAsymRoot.FillProfileHists(size, pointer);

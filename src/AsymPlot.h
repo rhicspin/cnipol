@@ -11,6 +11,7 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "TFile.h"
 #include "TCanvas.h"
@@ -27,14 +28,14 @@
 
 #include "Asym.h"
 
-static Int_t GHOSTVIEW=0;
-static Int_t FEEDBACK=0;
-static Int_t PLOT_RAW=0;
-static Int_t PLOT_BANANA=1;
-static Int_t ERROR_DETECTOR=1;
-static Int_t SUMMARY=1;
-static Int_t stID=0;
-static char * RUNID;
+static Int_t GHOSTVIEW      = 0;
+static Int_t FEEDBACK       = 0;
+static Int_t PLOT_RAW       = 0;
+static Int_t PLOT_BANANA    = 1;
+static Int_t ERROR_DETECTOR = 1;
+static Int_t SUMMARY        = 1;
+static Int_t stID           = 0;
+static std::string RUNID;
 static Char_t lnkfile[50]="AsymPlot.root";
 
 extern  ofstream logfile;

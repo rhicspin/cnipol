@@ -1242,37 +1242,27 @@ float TshiftFinder(int Mode, int FeedBackLevel)
 }
 
 
-//
-// Class name  :
-// Method name : FillAsymmetryHistgram(char Mode[], int sign, int N, float y[])
-//
 // Description : Fill out bunch by bunch Asymmetry Histograms
 //             : asym_bunch_x90, asym_bunch_x45, asym_bunch_y45
 //             : These histograms are then applied Gaussian fit to check anomaly bunches
-// Input       : char Mode[], int sign, int N, float A[], float dA[], float bunch[]
-// Return      :
-//
-void FillAsymmetryHistgram(const char Mode[], int sign, int N, float A[], float dA[], float bunch[])
+// Input       : string mode, int sign, int N, float A[], float dA[], float bunch[]
+void FillAsymmetryHistgram(string mode, int sign, int N, float A[], float dA[], float bunch[])
 {
-  float a[N];
-
-  for (int i=0; i<N; i++) { // loop for bunch number
-
-    // flip the asymmetry sign for spin=-1 to be consistent with spin=+1
-    a[i] = A[i]*sign;
-
-    if ((fillpat[i])&&(dA[i])){
-
-      // process only active bunches
-      if (bunch[i] != -1){
-        if (Mode=="x90") asym_bunch_x90->Fill(a[i],1/dA[i]); //weighted by error
-        if (Mode=="x45") asym_bunch_x45->Fill(a[i],1/dA[i]);
-        if (Mode=="y45") asym_bunch_y45->Fill(a[i],1/dA[i]);
+   float a[N];
+ 
+   for (int i=0; i<N; i++) { // loop for bunch number
+      // flip the asymmetry sign for spin=-1 to be consistent with spin=+1
+      a[i] = A[i]*sign;
+ 
+      if ((fillpat[i])&&(dA[i])){
+         // process only active bunches
+         if (bunch[i] != -1){
+            if (mode == "x90") asym_bunch_x90->Fill(a[i],1/dA[i]); //weighted by error
+            if (mode == "x45") asym_bunch_x45->Fill(a[i],1/dA[i]);
+            if (mode == "y45") asym_bunch_y45->Fill(a[i],1/dA[i]);
+         }
       }
-    }
-  }
-
-  return;
+   }
 }
 
 

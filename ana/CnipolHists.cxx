@@ -348,14 +348,14 @@ Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
 void CnipolHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    UChar_t chId  = ch->GetChannelId();
-   UChar_t detId = ch->GetDetectorId();
+   //UChar_t detId = ch->GetDetectorId();
 
    // by detector id
    //DrawObjContainer &sd1 = d["Kinema"];
 
    //string sDetId(" ");
    //sprintf(&sDetId[0], "%1d", detId);
-   char hName[256];
+   //char hName[256];
    
    if (sid == "_cut2") { // fill these if only pass the carbon mass cut
       //((TH1F*) d["Kinema2"]->o["energy_spectrum_all"])->Fill( fabs(ch->GetMandelstamT()) );

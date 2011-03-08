@@ -116,16 +116,16 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
 
-   sprintf(hName, "grIntUniProfile");
-   o[hName] = new TGraphErrors();
+   //sprintf(hName, "grIntUniProfile");
+   //o[hName] = new TGraphErrors();
 
    sprintf(hName, "hPolUniProfile");
    o[hName] = new TH1F(hName, hName, 1, -3, 3);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
 
-   sprintf(hName, "grPolUniProfile");
-   o[hName] = new TGraphErrors();
+   //sprintf(hName, "grPolUniProfile");
+   //o[hName] = new TGraphErrors();
 
 } //}}}
 
@@ -147,8 +147,8 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 
    while (hPtr != hData+n) { *hdPtr++ = *hPtr++; *hdErrPtr++ = sqrt(*hPtr); }
 
-   for (int i=0; i<n+3; i++) {
-      printf("i: %d, %d, %f\n", i, *(hData+i), *(hd+i));
+   for (UInt_t i=0; i<n+3; i++) {
+      printf("i: %d, %ld, %f\n", i, *(hData+i), *(hd+i));
    }
 
    ((TH1*) o["hProfile"])->SetBins(n+1, 0, n+1);

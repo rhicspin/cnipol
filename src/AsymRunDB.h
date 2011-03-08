@@ -18,6 +18,7 @@
 #include "TObjString.h"
 #include "TPRegexp.h"
 #include "TString.h"
+#include "TSystem.h"
 
 #include "rhicpol.h"
 #include "rpoldata.h"
