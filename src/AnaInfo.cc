@@ -124,7 +124,14 @@ TDatprocStruct::~TDatprocStruct()
 /** */
 void TDatprocStruct::Init()
 {
-   const char* tmpEnv = getenv("DATADIR");
+   const char* tmpEnv;
+
+   tmpEnv = getenv("CNIPOL_DIR");
+
+   if (tmpEnv) fAsymEnv["CNIPOL_DIR"] = tmpEnv;
+   else        fAsymEnv["CNIPOL_DIR"] = ".";
+
+   tmpEnv = getenv("DATADIR");
 
    if (tmpEnv) fAsymEnv["DATADIR"] = tmpEnv;
    else        fAsymEnv["DATADIR"] = ".";

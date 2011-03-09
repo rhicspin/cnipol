@@ -253,11 +253,10 @@ const char* AsymRunDB::sFieldNames[] = {
 
 
 /** */
-AsymRunDB::AsymRunDB() : TObject()
+AsymRunDB::AsymRunDB() : TObject(), fDbFileName("run.db")
 {
-   fDbFileName = "run77.db";
-   //fDbFileName = "run1.db";
-   //fDbFileName = "run.db";
+   if ( !dproc.fAsymEnv["CNIPOL_DIR"].empty() )
+      fDbFileName = dproc.fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
 
    //fDbFile = fopen(fDbFileName.c_str(), "r");
 
