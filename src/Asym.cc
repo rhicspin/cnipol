@@ -109,6 +109,7 @@ float phi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
+TDatprocStruct           dproc;
 //TRandom                  gRandom;
 AsymRoot                 gAsymRoot;
 AsymRunDB                gAsymRunDb;
@@ -118,7 +119,6 @@ TStructRunDB            &gRunDb = gRunDb_tmp;
 //TStructRunDB             gCurrentRunInfo;
 TStructRunInfo           runinfo;
 TStructRunInfo          &gRunInfo = runinfo;
-TDatprocStruct           dproc;
 atdata_struct            atdata;
 StructAverage            average;
 StructFeedBack           feedback;
