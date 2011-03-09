@@ -222,6 +222,7 @@ void TDatprocStruct::ProcessOptions()
       freopen(GetStdLogFileName().c_str(), "w", stdout);
       fclose(stderr);
       stderr = stdout;
+      gSystem->Chmod(GetStdLogFileName().c_str(), 0775);
    }
 
    //freopen(GetStdLogFileName().c_str(), "w", stderr);
