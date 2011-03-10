@@ -508,17 +508,19 @@ void CnipolProfileHists::Process()
       hPolUniProfileBin->SetBinError(ib, ibe_new);
    }
 
-   TF1 *my_gaus4 = new TF1("my_gaus4", "TMath::Gaus(x, 0, [0], 0)", -3, 3);
+   TF1 *my_gaus4 = new TF1("my_gaus4", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
 
-   my_gaus4->SetParameter(0, 0.5);
-   my_gaus4->SetParLimits(0, 0.1, 10);
+   my_gaus4->SetParameter(1, 0.5);
+   my_gaus4->SetParLimits(0, 0.5, 1.5);
+   my_gaus4->SetParLimits(1, 0.1, 10);
 
    hPolUniProfileBin->Fit("my_gaus4", "M E R");
 
-   TF1 *my_gaus5 = new TF1("my_gaus5", "TMath::Gaus(x, 0, [0], 0)", -3, 3);
+   TF1 *my_gaus5 = new TF1("my_gaus5", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
 
-   my_gaus5->SetParameter(0, 0.5);
-   my_gaus5->SetParLimits(0, 0.1, 10);
+   my_gaus5->SetParameters(0.5, 1);
+   my_gaus5->SetParLimits(0, 0.0, 1.1);
+   my_gaus5->SetParLimits(1, 0.1, 100);
 
    hIntUniProfileBin->Fit("my_gaus5", "M E R");
 
