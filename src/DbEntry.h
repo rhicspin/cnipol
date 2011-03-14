@@ -8,6 +8,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <string>
+#include <limits.h>
 
 #include "TObject.h"
 
