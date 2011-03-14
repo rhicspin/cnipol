@@ -24,7 +24,7 @@ CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
 #CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
-CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
+CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g
@@ -46,8 +46,8 @@ CNIANA_DICT_OBJ = $(CNIANA_DICT_SRC:.cxx=.o)
 CNIANA_DICT     = $(CNIANA_DICT_SRC) $(CNIANA_DICT_HDR) \
                   $(CNIANA_DICT_OBJ)
 
-HDRS       = $(filter-out $(INC_DIR)/LinkDef%,$(wildcard $(INC_DIR)/*.h))
-SRCS_CXX   = $(filter-out $(CNIANA_DICT_SRC),$(wildcard $(SRC_DIR)/*.cxx)) \
+HDRS       = $(filter-out $(INC_DIR)/LinkDef%, $(wildcard $(INC_DIR)/*.h) )
+SRCS_CXX   = $(filter-out $(CNIANA_DICT_SRC), $(wildcard $(SRC_DIR)/*.cxx)) \
              $(CNIANA_DICT_SRC)
 OBJS       = $(SRCS_CXX:.cxx=.o)
 CNIPOL_OBJ = $(CNIPOL_DIR)/src/Kinema.o
@@ -70,7 +70,7 @@ snns2root: $(SRC_DIR)/snns2root.o
 
 $(CNIANA_DICT_SRC): $(HDRS) $(INC_DIR)/LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
-	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(CNIPOL_DIR)/src $^
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include $^
 
 main-%: main-%.$(ObjSuf) $(OBJS)
 	$(LD) $(LDFLAGS) $< $(OBJS) $(LIBS) -o $(BIN_DIR)/$*$(ExeSuf)

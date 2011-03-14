@@ -105,6 +105,14 @@ typedef struct {
     char positionS[80];
 } targetDataStruct;
 
+
+typedef struct{
+    long VertLinear ; // vertical target linear encorder
+    long VertRotary ; // vertical target rotary encorder
+    long HorLinear  ; // horizontal target linear encorder
+    long HorRotary  ; // horizontal target linear encorder
+} pCTargetStruct ;
+
 typedef struct {
     double beamEnergyM;
     long fillNumberM;
@@ -272,4 +280,3 @@ typedef struct {
 } configRhicDataStruct;
 
 #endif
-

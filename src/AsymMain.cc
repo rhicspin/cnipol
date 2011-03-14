@@ -444,24 +444,13 @@ int main(int argc, char *argv[])
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
    //return 0;
 
-   // if output hbk file is not specified
+   // Book HBOOK file (deprecated)
    char hbk_outfile[256] = "out.hbook";
-   fprintf(stdout, "hBOOK default file: %s \n", hbk_outfile);
-
-   // Hbook Histogram Booking
-   fprintf(stdout, "Booking HBOOK file\n");
+   printf("Booking HBOOK file %s\n", hbk_outfile);
    hist_book(hbk_outfile);
 
-   // Root Histogram Booking
-   char outRootFileName[256];
-
-   sprintf(outRootFileName, "%s/%s/%s.root",
-      dproc.fAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.runName.c_str(),
-      gRunInfo.runName.c_str());
-
-   fprintf(stdout, "Booking ROOT histograms: %s\n", outRootFileName);
-
-   gAsymRoot.RootFile(outRootFileName);
+   // Book root file
+   gAsymRoot.RootFile(dproc.GetRootFileName());
 
    // Create tree if requested
    if (dproc.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
@@ -472,7 +461,8 @@ int main(int argc, char *argv[])
    // to set preliminary cuts.
 
    if ( dproc.HasCalibBit() && !dproc.CMODE)
-      readDataFast();
+      rawData->ReadDataFast();
+      //readDataFast();
 
    //return 0;
 
@@ -524,8 +514,8 @@ int main(int argc, char *argv[])
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
 
-   // Set pointers to global structures for later saving in ROOT file
-   // if previously allocated delete object
+   // Set pointers to global structures to be saved in the ROOT file if
+   // previously allocated delete object
    //delete gAsymRoot.fEventConfig->fConfigInfo;
    gAsymRoot.fEventConfig->fConfigInfo = cfginfo;
 
@@ -540,7 +530,6 @@ int main(int argc, char *argv[])
    gAsymRoot.fEventConfig->fRunDB      = &gRunDb;
 
    delete gAsymRoot.fEventConfig->fAnaResult;
-   //gAnaResults.PrintAsPhp();
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
    gAsymRoot.fEventConfig->PrintAsPhp(dproc.GetRunInfoFile());
@@ -550,7 +539,7 @@ int main(int argc, char *argv[])
       gAsymRoot.SaveAs("^.*$", dproc.GetImageDir());
       //gAsymRoot.SaveAs("profile", dproc.GetImageDir());
 
-   // Closing ROOT File
+   // Close ROOT File
    gAsymRoot.CloseROOTFile();
 
    return 1;

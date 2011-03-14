@@ -9,7 +9,7 @@ CNIPOL_LIB_DIR  = $(CNIPOL_DIR)/lib
 CERNLIB_LIB_DIR = $(CERNLIB_DIR)/lib
 
 LIB_PATHS = -L$(CNIPOL_LIB_DIR) -L$(CERNLIB_LIB_DIR)
-INC_PATHS = -I. -I/usr/include -I`root-config --incdir` -I$(CNIPOL_DIR)/inc
+INC_PATHS = -I. -I/usr/include -I`root-config --incdir` -I$(CNIPOL_DIR)/inc -I$(CNIPOL_DIR)/online/include
 LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
@@ -32,15 +32,15 @@ CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
 AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
           AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
-          Asym.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
+          Asym.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
 
-RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o
+RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
 
-dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o
+dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
 
-KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
+KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
 
-AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o 
+AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
 
 testOBJ = test.o AsymRoot.o
 
@@ -91,7 +91,7 @@ $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/
 
 ######## OBJECT ##################
 
-AsymMain.o:    Asym.h AsymMain.h AsymCalc.h rhicpol.h rpoldata.h 
+AsymMain.o:    Asym.h AsymMain.h AsymCalc.h
 AsymCalc.o:    Asym.h AsymCalc.h AsymErrorDetector.h
 AsymRecover.o: Asym.h AsymRecover.h AsymRecoverUserDefined.h
 RunDBReader.o: AsymRunDB.h
@@ -104,7 +104,7 @@ RunInfo.o:     RunInfo.h
 AnaInfo.o:     AnaInfo.h
 TargetInfo.o:  TargetInfo.h
 AnaResult.o:   AnaResult.h
-Asym.o:        Asym.h RunInfo.h AnaInfo.h TargetInfo.h AnaResult.h AsymRunDB.h
+Asym.o:        Asym.h RunInfo.h AnaInfo.h TargetInfo.h AnaResult.h AsymRunDB.h DbEntry.h
 
 .f.o:
 	$(FC) -m32 -O -c $<
