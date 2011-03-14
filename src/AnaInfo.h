@@ -8,6 +8,7 @@
 #ifndef AnaInfo_h
 #define AnaInfo_h
 
+#include <cstdlib>
 #include <iostream>
 #include <bitset>
 #include <string>
