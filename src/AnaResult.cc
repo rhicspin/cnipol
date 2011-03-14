@@ -4,7 +4,7 @@
 
 /** */
 StructAnalysis::StructAnalysis() :
-   max_rate(0)
+   max_rate(0),
    //TshiftAve(0),
    //wcm_norm_event_rate(0), 
    //UniversalRate(0),
@@ -13,11 +13,12 @@ StructAnalysis::StructAnalysis() :
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
    //energy_slope[2],        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
-   //profile_error(0)          // profile error
+   profile_error(0),          // profile error
    //sinphi[100+MAXDELIM],   // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch, 100... target pos
    //basym[100+MAXDELIM],    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    //anomaly(),
    //unrecog()
+   fIntensPolarR(0)
 {
    //memset(A_N, 0, 2);
    //memset(P, 0, 2);
@@ -78,6 +79,8 @@ void StructAnalysis::Streamer(TBuffer &buf)
          buf >> sinphi[i].chi2;
       }
 
+      buf >> fIntensPolarR;
+
    } else {
       //printf("writing StructAnalysis::Streamer(TBuffer &buf) \n");
       buf << max_rate;
@@ -96,6 +99,8 @@ void StructAnalysis::Streamer(TBuffer &buf)
          buf << sinphi[i].dPhi[0] << sinphi[i].dPhi[1];
          buf << sinphi[i].chi2;
       }
+
+      buf << fIntensPolarR;
    }
 }
 
@@ -123,5 +128,6 @@ void StructAnalysis::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, ");\n");
+   fprintf(f, "$rc['fIntensPolarR']     = %f;\n",            fIntensPolarR);
 
 } //}}}

@@ -105,6 +105,8 @@ public:
    std::string GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
    std::string GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
    std::string GetStdLogFileName() const { return GetOutDir() + "/" + fFileStdLogName; }
+   std::string GetRootFileName() const { return GetOutDir() + "/" + fRunId + ".root"; }
+   std::string GetRootTreeFileName(UShort_t trid) const;
    FILE*       GetRunInfoFile() const { return fFileRunInfo; }
    FILE*       GetRunConfFile() const { return fFileRunConf; }
    void        ProcessOptions();

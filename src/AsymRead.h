@@ -30,12 +30,15 @@
 #include "AsymRecover.h"
 #include "AsymRootGlobals.h"
 
+#define BSIZE_OFFLINE 0x1000000                 // 16 MByte
+
 class RawDataProcessor
 {
 public:
    std::string    fFileName;
    FILE          *fFile;
    char          *fMem;
+   UInt_t         fMemSize;
    std::ifstream  fFileStream;
 
 public:
@@ -44,6 +47,7 @@ public:
    ~RawDataProcessor();
 
    void ReadRecBegin(TStructRunInfo &ri);
+   void ReadDataFast();
 };
 
 void readDataFast();

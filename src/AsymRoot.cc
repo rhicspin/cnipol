@@ -114,16 +114,18 @@ AsymRoot::~AsymRoot()
 
 
 // Description : Open Root File and define directory structure of histograms
-void AsymRoot::RootFile(char *filename)
+void AsymRoot::RootFile(string filename)
 { //{{{
-   rootfile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
+   printf("Creating ROOT file: %s\n", filename.c_str());
+
+   rootfile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    if (!rootfile) {
-      Fatal("RootFile", "Cannot open root file %s", filename);
+      Fatal("RootFile", "Cannot open ROOT file %s", filename.c_str());
       exit(-1);
    }
 
-   gSystem->Chmod(filename, 0775);
+   gSystem->Chmod(filename.c_str(), 0775);
 
    // directory structure
    Run       = new TDirectoryFile("Run", "Run", "", rootfile);   //rootfile->mkdir("Run");
@@ -197,15 +199,9 @@ void AsymRoot::CreateTrees()
       exit(-1);
    }
 
-   char filename[256];
-   sprintf(filename,"%s/%s_tree_%02d.root",
-           gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.runName.c_str(), fTreeFileId);
-   //sprintf(filename,"%s/%.3f_tree_%02d.root",
-   //        gAsymEnv["CNIPOL_RESULTS_DIR"].c_str(), gRunInfo.RUNID, fTreeFileId);
+   string filename = dproc.GetRootTreeFileName(fTreeFileId);
 
-   
-
-   fOutTreeFile = new TFile(filename, "RECREATE", "AsymRoot Histogram file");
+   fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
    if (dproc.SAVETREES.test(0) ) {
@@ -813,15 +809,8 @@ void AsymRoot::BookHists()
 }
 
 
-//
-// Class name  : Root
-// Method name : RootFuncBook()
-//
 // Description : Book ROOT Functions and Histograms using Feedback infomations
 //             : This routine shuould be called after Feedback operation
-// Input       :
-// Return      :
-//
 int AsymRoot::BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback)
 {
    rootfile->cd();

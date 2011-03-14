@@ -1602,7 +1602,7 @@ void StripAsymmetry()
 
    TH1* hpp = 0;
    if (dproc.HasProfileBit()) {
-      hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolProfile"];
+      hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolarProfile"];
    }
 
    //ds:
@@ -1610,7 +1610,7 @@ void StripAsymmetry()
    for(Int_t i=0; i<ndelim; i++) {
 
       CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
-      printf("i, p: %d, %f\n", i, gAnaResults.sinphi[100+i].P[0]);
+      //printf("i, p: %d, %f\n", i, gAnaResults.sinphi[100+i].P[0]);
 
       if (hpp) {
          hpp->SetBinContent(i+1, gAnaResults.sinphi[100+i].P[0]);

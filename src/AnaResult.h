@@ -27,6 +27,7 @@ public:
    StructSinPhi       basym[100+MAXDELIM];    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    StructAnomaly      anomaly;
    StructUnrecognized unrecog;
+   float              fIntensPolarR;        // Scale factor to define the ratio of intensity and polarization profiles
 
 public:
    StructAnalysis();

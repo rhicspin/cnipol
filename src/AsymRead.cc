@@ -8,6 +8,7 @@
 //
 
 //#include "AsymRootGlobals.h"
+#include "TStopwatch.h"
 
 #include "AsymRead.h"
 
@@ -38,15 +39,21 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    } else
       printf("\nFound file %s\n", fFileName.c_str());
 
-  // Create a BLOB with file content
-  fFileStream.seekg(0, ios::end);
-  int fileSize = fFileStream.tellg(); // in bytes
-  printf("fileSize: %d\n", fileSize);
-  fFileStream.seekg(0, ios::beg);
-  
-  fMem = new char[fileSize];
-  fFileStream.read(fMem, fileSize);
-  fFileStream.close();
+   // Create a BLOB with file content
+   printf("Reading into memory...\n");
+   TStopwatch sw;
+ 
+   fFileStream.seekg(0, ios::end);
+   fMemSize = fFileStream.tellg(); // in bytes
+   printf("fileSize: %d\n", fMemSize);
+   fFileStream.seekg(0, ios::beg);
+   
+   fMem = new char[fMemSize];
+   fFileStream.read(fMem, fMemSize);
+   fFileStream.close();
+
+   sw.Stop();
+   printf("Stopped reading into memory: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
@@ -125,8 +132,137 @@ void RawDataProcessor::ReadRecBegin(TStructRunInfo &ri)
 
 
 /** */
+void RawDataProcessor::ReadDataFast()
+{ //{{{
+   printf("Started reading data file...\n");
+   TStopwatch sw;
+
+   //FILE *fp = fopen(gDataFileName.c_str(), "r");
+
+   // reading the data till its end ...
+   //if (!fp) {
+   //   printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+   //   exit(-1);
+   //} else
+   //   printf("\nFound file %s\n", gDataFileName.c_str());
+
+   //recordHeaderStruct  header;
+   recordHeaderStruct *mHeader;
+   //recordDataStruct   data;
+
+   // else
+   //   printf("ERROR: Cannot read REC_BEGIN record\n");
+
+   //int nEvent       = 0;
+   UInt_t nTotalEvents = 0;
+   UInt_t nReadEvents  = 0;
+
+   char *mSeek = fMem;
+
+   while (true) {
+
+      //int nRecs = fread(&header, sizeof(recordHeaderStruct), 1, fp);
+
+      if (mSeek > fMem + fMemSize - 1) break;
+      //if (nRecs != 1) break;
+
+      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
+
+      mHeader = (recordHeaderStruct*) mSeek;
+
+      //mSeek = mSeek + mHeader->len;
+
+      //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
+
+      //if ((header.type & REC_TYPEMASK) != REC_READAT) {
+      if ((mHeader->type & REC_TYPEMASK) != REC_READAT) {
+
+         //long offset = header.len - sizeof(recordHeaderStruct);
+         //fseek(fp, offset, SEEK_CUR);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // We are here if rec type is REC_READAT
+      //long delim = header.timestamp.delim;
+      long delim = mHeader->timestamp.delim;
+
+      //nEvent++;
+
+      //if (nEvent > 1000) break;
+
+      //size_t recSize = header.len - sizeof(recordHeaderStruct);
+      size_t recSize = mHeader->len - sizeof(recordHeaderStruct);
+      //unsigned char* buffer = new unsigned char[recSize];
+
+      //nRecs = fread(buffer, recSize, 1, fp);
+
+      char *mSeekAT = mSeek;
+
+      mSeekAT += sizeof(recordHeaderStruct);
+
+      mSeek = mSeek + mHeader->len;
+
+      recordReadATStruct *ATPtrF;
+      recordReadATStruct *ATPtr;
+
+      for (UInt_t i=0; i<recSize; ) {
+
+         //ATPtrF     = (recordReadATStruct*) (buffer + i);
+         ATPtr     = (recordReadATStruct*) (mSeekAT + i);
+         unsigned chId   = ATPtr->subhead.siNum; // si number
+         unsigned Events = ATPtr->subhead.Events + 1;
+
+         //if (Events > 100) printf("events: %d, %d\n", siNum, Events);
+
+         i += sizeof(subheadStruct) + Events*sizeof(ATStruct);
+
+         for (unsigned j=0; j<Events; j++, nReadEvents++) {
+         
+            //printf("f: %d %d %d\n", ATPtrF->data[j].a, ATPtrF->data[j].t, ATPtrF->data[j].s);
+            //printf("m: %d %d %d\n", ATPtr->data[j].a, ATPtr->data[j].t, ATPtr->data[j].s);
+
+            if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
+
+            //if (nReadEvents % dproc.thinout == 0)
+            //if (nReadEvents > 100) break;
+
+            if (gRandom->Rndm() > dproc.fFastCalibThinout) continue;
+
+            gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
+
+            if ( !gAsymRoot.fChannelEvent->PassCutNoise() ) continue;
+            if ( !gAsymRoot.fChannelEvent->PassCutEnabledChannel() ) continue;
+            if ( !gAsymRoot.fChannelEvent->PassCutPulser() ) continue;
+            if ( !gAsymRoot.fChannelEvent->PassCutDetectorChannel() ) continue;
+            //if ( //!gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ) continue;
+
+            gAsymRoot.FillPreProcess();
+
+            nTotalEvents++;
+         }
+      }
+   }
+
+   sw.Stop();
+   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+
+   printf("Total events read:     %12d\n", nReadEvents);
+   printf("Total events accepted: %12d\n", nTotalEvents);
+
+   // (Roughly) Process all channel banana
+   gAsymRoot.CalibrateFast();
+
+} //}}}
+
+
+/** */
 void readDataFast()
 { //{{{
+   printf("Started reading data file...\n");
+   TStopwatch sw;
+
    FILE *fp = fopen(gDataFileName.c_str(), "r");
 
    // reading the data till its end ...
@@ -213,6 +349,9 @@ void readDataFast()
    }
 
    fclose(fp);
+
+   sw.Stop();
+   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 
    printf("Total events read:     %12d\n", nReadEvents);
    printf("Total events accepted: %12d\n", nTotalEvents);
@@ -322,7 +461,7 @@ void readloop()
        recordScalersStruct     scal;
        recordWcmAdoStruct      wcmado;
        recordCountRate         countRate;
-       char                    buffer[BSIZE*sizeof(int)];
+       char                    buffer[BSIZE_OFFLINE*sizeof(int)];
        recordDataStruct        data;
    } rec;
 
@@ -361,7 +500,7 @@ void readloop()
          break;
       }
 
-      if ( (UInt_t) rec.header.len > BSIZE*sizeof(int)) {
+      if ( (UInt_t) rec.header.len > BSIZE_OFFLINE*sizeof(int)) {
          fprintf(stdout, "Not enough buffer d: %ld byte b: %u byte\n",
                  rec.header.len, sizeof(rec));
          break;
@@ -612,10 +751,7 @@ void readloop()
            // Configure Active Strip Map
            ConfigureActiveStrip(mask.detector);
 
-           if (printConfig(cfginfo)!=0) {
-              perror(" error in printing configuration");
-              exit(1);
-           }
+           printConfig(cfginfo);
 
            READ_FLAG = 1;
 

@@ -67,7 +67,7 @@ public:
    AsymRoot();
    ~AsymRoot();
  
-   void   RootFile(char* filename);
+   void   RootFile(std::string filename);
    void   BookHists();
 	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
    void   DeleteHistogram();
