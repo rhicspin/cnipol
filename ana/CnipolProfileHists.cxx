@@ -428,7 +428,7 @@ void CnipolProfileHists::Process()
       float xuni_p =    TMath::Sqrt(-2*TMath::Log(intens));
       float xuni_m = -1*TMath::Sqrt(-2*TMath::Log(intens));
 
-      //printf("%5d %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f\n", i, intens, intensErr, polar, polarErr, xuni_p, xuni_m);
+      printf("%5d %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f\n", i, intens, intensErr, polar, polarErr, xuni_p, xuni_m);
 
       grIntensUniProfile->SetPoint( (i-1)*2 + 0, xuni_p, intens);
       grIntensUniProfile->SetPoint( (i-1)*2 + 1, xuni_m, intens);
@@ -472,7 +472,7 @@ void CnipolProfileHists::Process()
 
    // Fill hist from graph
    TH1* hIntensUniProfileBin = (TH1*) o["hIntensUniProfileBin"];
-   TH1* hPolarUniProfileBin = (TH1*) o["hPolarUniProfileBin"];
+   TH1* hPolarUniProfileBin  = (TH1*) o["hPolarUniProfileBin"];
 
    Double_t x, xe, y, ye;
 
@@ -480,7 +480,7 @@ void CnipolProfileHists::Process()
 
       grIntensUniProfile->GetPoint(i, x, y);
 
-      if (fabs(x) > 3) continue;
+      //if (fabs(x) > 3) continue;
 
       //xe = grIntensUniProfile->GetErrorX(i);
       ye = grIntensUniProfile->GetErrorY(i);
