@@ -20,17 +20,12 @@
 using namespace std;
 
 // ROOT Histograms
-TDirectory *Run;
 TDirectory *Raw;
 TDirectory *FeedBack;
 TDirectory *Kinema;
 TDirectory *Bunch;
 TDirectory *ErrDet;
 TDirectory *Asymmetry;
-
-// Run Dir
-TH2F  *rate_vs_delim;
-TH2F  *tgtx_vs_time;
 
 // FeedBack Dir
 TH2F  *mdev_feedback;
@@ -128,7 +123,6 @@ void AsymRoot::RootFile(string filename)
    gSystem->Chmod(filename.c_str(), 0775);
 
    // directory structure
-   Run       = new TDirectoryFile("Run", "Run", "", rootfile);   //rootfile->mkdir("Run");
    Raw       = new TDirectoryFile("Raw", "Raw", "", rootfile);   //rootfile->mkdir("Raw");
    FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", rootfile);   //rootfile->mkdir("FeedBack");
    Kinema    = new TDirectoryFile("Kinema", "Kinema", "", rootfile);   //rootfile->mkdir("Kinema");
@@ -644,10 +638,6 @@ void AsymRoot::BookHists()
  
    rootfile->cd();
 
-   Run->cd();
-   rate_vs_delim = new TH2F();
-   tgtx_vs_time  = new TH2F();
- 
    // FeedBack Directory
    FeedBack->cd();
  

@@ -92,6 +92,7 @@ public:
    FILE*            fFileRunConf;
    FILE*            fFileStdLog;
    std::string      fFileStdLogName;
+   Bool_t           fFlagCopyResults;
 
 public:
 
@@ -116,6 +117,7 @@ public:
    void        PrintUsage();
    void        Streamer(TBuffer &buf);
    void        Update(TStructRunDB &rundb);
+	void        CopyResults();
 
    inline Bool_t HasAlphaBit();
    inline Bool_t HasCalibBit();

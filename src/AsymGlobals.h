@@ -127,7 +127,6 @@ extern const float MSIZE; // marker size
 extern StructHist Eslope;
 
 // Direcotories
-extern TDirectory *Run;
 extern TDirectory *Raw;
 extern TDirectory *FeedBack;
 extern TDirectory *Kinema;
@@ -141,10 +140,6 @@ extern TDirectory *Asymmetry;
 //  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
 //  in Run06 which are target events. These histograms are deleted before ROOT file closing 
 //  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
-//
-// Run Dir
-extern TH2F *rate_vs_delim;
-extern TH2F *tgtx_vs_time;
 
 // FeedBack Dir
 extern TH2F *mdev_feedback;

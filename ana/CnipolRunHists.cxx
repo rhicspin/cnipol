@@ -36,10 +36,6 @@ void CnipolRunHists::BookHists(string sid)
 { //{{{
    TDirectory *dir;
 
-   //dir = new TDirectoryFile("run", "run", "", fDir);
-   dir = Run;
-   DrawObjContainer *run = new DrawObjContainer(dir);
-
    //dir = new TDirectoryFile("raw", "raw", "", fDir);
    dir = Raw;
    DrawObjContainer *raw = new DrawObjContainer(dir);
@@ -64,8 +60,6 @@ void CnipolRunHists::BookHists(string sid)
    ////kinema->fDir    = Kinema;
    //errdet->fDir    = fDir;
 
-   run->o["rate_vs_delim"] = rate_vs_delim;
-   run->o["tgtx_vs_time"]  = tgtx_vs_time; //new TH2F();
 
    //feedback->o["mdev_feedback"] = new TH2F();
 
@@ -145,7 +139,6 @@ void CnipolRunHists::BookHists(string sid)
    asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
    asymmetry->o["scan_asym_sinphi_fit"] = scan_asym_sinphi_fit;
 
-   d["Run"]       = run;
    d["Raw"]       = raw;
    //d["FeedBack"]  = feedback;
    //d["Kinema2"]   = kinema;
@@ -157,13 +150,6 @@ void CnipolRunHists::BookHists(string sid)
    sprintf(hName, "hKinEnergyA_oo");
    o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
    ((TH1F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-
-   // 
-   //sprintf(hName, "hSpinVsChannel%s", sid.c_str());
-   sprintf(hName, "hTargetSteps");
-   o[hName] = new TH1I(hName, hName, 100, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
 } //}}}
 
@@ -184,26 +170,4 @@ void CnipolRunHists::Fill(ChannelEvent *ch, string sid)
    //UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
    //UShort_t delim = ch->GetDelimiterId();
-
-   UShort_t tstep = 0;
-
-   if (runinfo.Run == 5) {
-      tstep = ch->GetDelimiterId();
-      //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   } else if (runinfo.Run >= 6) {
-      UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
-
-      if (ttime < MAXDELIM) {
-         tstep = TgtIndex[ttime];
-         //++cntr.good[TgtIndex[ttime]];
-         //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
-      } else if (!dproc.CMODE) {
-         Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
-               "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
-      }
-   } else {
-      Warning("Fill", "Target tstep size is not defined for Run %d", runinfo.Run);
-   }
-
-   ((TH1*) o["hTargetSteps"])->Fill(tstep);
 } //}}}

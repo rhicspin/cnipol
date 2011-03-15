@@ -6,6 +6,7 @@
 #include "CnipolTargetHists.h"
 
 #include "AsymGlobals.h"
+#include "TargetInfo.h"
 
 
 ClassImp(CnipolTargetHists)
@@ -39,6 +40,24 @@ void CnipolTargetHists::BookHists(string sid)
    if (!sid.empty()) sid = "_" + sid;
 
    char hName[256];
+
+   // Older histograms from earlier times
+   sprintf(hName, "rate_vs_delim");
+   o[hName] = new TH2F(hName, hName, 1, 0, 1, 1, 0, 1);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Position");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Carbon in Banana Rate, MHz");
+
+   sprintf(hName, "tgtx_vs_time");
+   o[hName] = new TH2F(hName, hName, 1, 0, 1, 1, 0, 1);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Position");
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Duration from Measurement Start, s");
+ 
+
+   // Newer histograms
+   sprintf(hName, "hTargetSteps");
+   o[hName] = new TH1I(hName, hName, 100, 0, 100);
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
+   ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetChanVertYel");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
@@ -100,18 +119,42 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
 
    switch (chIndex) {
    case 1:
-      ((TH1F*) o["hTargetChanVertYel"])->Fill(ch->fChannel.fAmpltd);
+      ((TH1*) o["hTargetChanVertYel"])->Fill(ch->fChannel.fAmpltd);
       break;
    case 2:
-      ((TH1F*) o["hTargetChanHorzYel"])->Fill(ch->fChannel.fAmpltd);
+      ((TH1*) o["hTargetChanHorzYel"])->Fill(ch->fChannel.fAmpltd);
       break;
    case 3:
-      ((TH1F*) o["hTargetChanVertBlu"])->Fill(ch->fChannel.fAmpltd);
+      ((TH1*) o["hTargetChanVertBlu"])->Fill(ch->fChannel.fAmpltd);
       break;
    case 4:
-      ((TH1F*) o["hTargetChanHorzBlu"])->Fill(ch->fChannel.fAmpltd);
+      ((TH1*) o["hTargetChanHorzBlu"])->Fill(ch->fChannel.fAmpltd);
       break;
    }
+
+   UShort_t tstep = 0;
+
+   if (gRunInfo.Run == 5) {
+      tstep = ch->GetDelimiterId();
+      //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
+   } else if (gRunInfo.Run >= 6) {
+      UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
+
+      if (ttime < MAXDELIM) {
+         tstep = TgtIndex[ttime];
+         //++cntr.good[TgtIndex[ttime]];
+         //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
+      } else if (!dproc.CMODE) {
+         Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
+               "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
+      }
+
+   } else {
+      Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo.Run);
+   }
+
+   ((TH1*) o["hTargetSteps"])->Fill(tstep);
+
 } //}}}
 
 
@@ -132,3 +175,68 @@ void CnipolTargetHists::Fill(Int_t n, Double_t* hData)
    ((TH1*) o["hTargetVertRotary"])->SetBins(n, 0, n);
    ((TH1*) o["hTargetVertRotary"])->SetContent(hData + 3*(n+2) - 1);
 } //}}}
+
+
+/** */
+void CnipolTargetHists::PostFill()
+{
+   //char  htitle[100];
+   float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
+   int   X_index = gRunInfo.Run >= 6 ? nTgtIndex : ndelim;
+ 
+   float xmin, xmax;
+   float margin = 0.02;
+
+   //GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
+   GetMinMax(X_index, tgt.X, margin, xmin, xmax);
+
+   printf("xmin, xmax: %f, %f, %d, %d\n", xmin, xmax, X_index, ndelim);
+ 
+   // Make rate _vs deliminter plots
+   for (int i=0; i<X_index; i++) {
+
+     UInt_t count = ((TH1*) o["hTargetSteps"])->GetBinContent(i+1);
+
+     dx[i] = 0;
+     // y[i] = tgt.Interval[i] ? float(cntr.good[i]) / tgt.Interval[i] * MHz : 0 ;
+     //dy[i] = tgt.Interval[i] ? float( sqrt( double(cntr.good[i]) ) ) / tgt.Interval[i] * MHz : 0;
+
+      y[i] = tgt.Interval[i] ? float(count) / tgt.Interval[i] * MHz : 0 ;
+     dy[i] = tgt.Interval[i] ? float(sqrt(count)) / tgt.Interval[i] * MHz : 0;
+   }
+ 
+   gAnaResults.max_rate = GetMax(X_index, y);
+
+   float ymin, ymax;
+
+   GetMinMax(X_index, y, margin, ymin, ymax);
+
+   //sprintf(htitle,"%.3f : Rate vs Taret Postion", gRunInfo.RUNID);
+ 
+   ((TH1*) o["rate_vs_delim"])->SetBins(100, xmin, xmax, 100, ymin, ymax);
+ 
+   //TGraphErrors *rate_delim = new TGraphErrors(nTgtIndex, tgt.X, y, dx, dy);
+   TGraphErrors *rate_delim = new TGraphErrors(X_index, tgt.X, y, dx, dy);
+
+   rate_delim->SetMarkerStyle(20);
+   rate_delim->SetMarkerColor(kBlue);
+   ((TH1*) o["rate_vs_delim"])->GetListOfFunctions()->Add(rate_delim, "P");
+	//delete rate_delim;
+ 
+   // Target Position vs Time
+   //sprintf(htitle,"%.3f : Taret Postion vs. Time", gRunInfo.RUNID);
+ 
+   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, gRunInfo.RunTime*1.2);
+
+   ((TH1*) o["tgtx_vs_time"])->SetBins(10, xmin, xmax, 10, 0.5, gRunInfo.RunTime*1.2);
+ 
+   //delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
+   //gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
+ 
+   //TGraph *tgtx_time = new TGraph(nTgtIndex, tgt.X, tgt.Time);
+   TGraph *tgtx_time = new TGraph(X_index, tgt.X, tgt.Time);
+   tgtx_time->SetMarkerStyle(20);
+   tgtx_time->SetMarkerColor(kBlue);
+   ((TH1*) o["tgtx_vs_time"])->GetListOfFunctions()->Add(tgtx_time, "P");
+	//delete tgtx_time;
+}

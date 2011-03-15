@@ -286,7 +286,7 @@ void CnipolHists::BookPreProcess()
    //oc->o[hName] = new TH1D(hName, hName, 255, 0, 1530);
    //oc->o[hName] = new TH1D(hName, hName, 255, 0, 2550);
    oc->o[hName] = new TH1D(hName, hName, 100, 0, 2500);
-   ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 100);
+   ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
    ((TH1D*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
    ((TH1D*) oc->o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
 

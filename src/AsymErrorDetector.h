@@ -29,7 +29,8 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "Asym.h"
+//#include "Asym.h"
+#include "AsymGlobals.h"
 //#include "WeightedMean.h"
 #include "AsymCalc.h"
 

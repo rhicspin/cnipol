@@ -53,10 +53,12 @@ int main(int argc, char *argv[])
       {"raw",                 0,                   0,   TDatprocStruct::MODE_RAW},
       {"feedback",            0,                   0,   'b'},
       {"no-error-detector",   0,                   0,   'a'},
-      {"update-db",           no_argument,         0,   0x0100},
-      {"no-update-db",        no_argument,         0,   0x0200},
-      {"pol-id",              required_argument,   0,   0x0300},
+      {"update-db",           no_argument,         0,   0x000100},
+      {"no-update-db",        no_argument,         0,   0x000200},
+      {"pol-id",              required_argument,   0,   0x000300},
       {"log",                 optional_argument,   0,   'l'},
+      {"copy",                no_argument,         0,   0x010000},
+      {"copy-results",        no_argument,         0,   0x010000},
       {"alpha",               no_argument,         0,   TDatprocStruct::MODE_ALPHA},
       {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
       {"scaler",              no_argument,         0,   TDatprocStruct::MODE_SCALER},
@@ -77,9 +79,9 @@ int main(int argc, char *argv[])
       {"mode-target",         no_argument,         0,   TDatprocStruct::MODE_TARGET},
       {"mode-profile",        no_argument,         0,   TDatprocStruct::MODE_PROFILE},
       {"mode-full",           no_argument,         0,   TDatprocStruct::MODE_FULL},
-      {"set-calib",           required_argument,   0,   0x3000},
-      {"set-calib-alpha",     required_argument,   0,   0x1000},
-      {"set-calib-dl",        required_argument,   0,   0x2000},
+      {"set-calib",           required_argument,   0,   0x003000},
+      {"set-calib-alpha",     required_argument,   0,   0x001000},
+      {"set-calib-dl",        required_argument,   0,   0x002000},
       {0, 0, 0, 0}
    };
 
@@ -122,6 +124,10 @@ int main(int argc, char *argv[])
 
       case 'l':
          dproc.fFileStdLogName = (optarg != 0 ? optarg : "");
+         break;
+
+      case 0x010000:
+         dproc.fFlagCopyResults = kTRUE;
          break;
 
       case 't': // set timing shift in banana cut
@@ -222,24 +228,24 @@ int main(int argc, char *argv[])
          sstr >> dproc.SAVETREES;
          break;
 
-      case 0x0100:
+      case 0x000100:
          dproc.UPDATE_DB = 1; break;
 
-      case 0x0200:
+      case 0x000200:
          dproc.UPDATE_DB = 0; break;
 
-      case 0x0300:
+      case 0x000300:
          gRunInfo.fPolId = atoi(optarg); break;
 
-      case 0x1000:
+      case 0x001000:
          dproc.fAlphaCalibRun = optarg;
          break;
 
-      case 0x2000:
+      case 0x002000:
          dproc.fDlCalibRun = optarg;
          break;
 
-      case 0x3000:
+      case 0x003000:
          dproc.fAlphaCalibRun = optarg;
          dproc.fDlCalibRun    = optarg;
          break;
@@ -534,6 +540,8 @@ int main(int argc, char *argv[])
 
    gAsymRoot.fEventConfig->PrintAsPhp(dproc.GetRunInfoFile());
    gAsymRoot.fEventConfig->PrintAsConfig(dproc.GetRunConfFile());
+	fclose(dproc.GetRunInfoFile()); dproc.fFileRunInfo = 0;
+	fclose(dproc.GetRunConfFile()); dproc.fFileRunConf = 0;
 
    if (dproc.HasGraphBit())
       gAsymRoot.SaveAs("^.*$", dproc.GetImageDir());
@@ -541,6 +549,8 @@ int main(int argc, char *argv[])
 
    // Close ROOT File
    gAsymRoot.CloseROOTFile();
+
+   dproc.CopyResults();
 
    return 1;
 } //}}}
