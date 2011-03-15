@@ -294,6 +294,8 @@ Bool_t ChannelEvent::PassCutPulser()
       break;
 
    case 1:   // Y1D
+      if (fChannel.fAmpltd > 120 && fChannel.fAmpltd < 170 && fChannel.fTdc > 54)
+         return false;
       break;
 
    case 2:   // B2D
@@ -326,7 +328,8 @@ Bool_t ChannelEvent::PassCutNoise()
 
    case 1:   // Y1D
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for D outside the tunnel
+      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.5*fChannel.fAmpltd + 70) ) // inclined cut
          return false;
       break;
 
@@ -335,12 +338,11 @@ Bool_t ChannelEvent::PassCutNoise()
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
       if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
          return false;
-
       break;
+
    case 3:   // Y2U
       if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
          return false;
-
       break;
    }
 

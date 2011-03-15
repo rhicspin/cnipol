@@ -356,3 +356,55 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 //   std::string::size_type const first = str.find_first_not_of(sepSet);
 //   return ( first==std::string::npos ) ? std::string() : str.substr(first, str.find_last_not_of(sepSet)-first+1);
 //}
+
+
+// Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
+float GetMax(int N, float A[]){
+  float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
+  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : max;
+  return max;
+}
+
+
+// Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
+float GetMin(int N, float A[])
+{
+  float min = A[0] != ASYM_DEFAULT ? A[0] : A[1];
+  for (int i=1; i<N; i++) min = (A[i]) && (min>A[i]) && (A[i] != ASYM_DEFAULT) ? A[i] : min;
+  return min;
+}
+
+
+/**
+ * Return Minimum and Maximum from array A[N]
+ *
+ * If margin is not 0 the maximum is increased by max*margin and minimum is
+ * decreased by min*margin
+ */
+void GetMinMax(int N, float A[], float margin, float &min, float &max)
+{
+   min  = GetMin(N, A);
+   max  = GetMax(N, A);
+   min -= fabs(min) * margin;
+   max += fabs(max) * margin;
+}
+
+
+// Return Minimum and Maximum from array A[N]. Same as GetMinMax() function. But
+// GetMinMaxOption takes prefix value which forces min, max to be prefix when the
+// absolute min,max are smaller than prefix.
+void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max)
+{
+   GetMinMax(N, A, margin, min, max);
+   if ( fabs(min) < prefix ) min = -prefix;
+   if ( fabs(max) < prefix ) max =  prefix;
+}
+
+
+// Description : calculate quadratic error of x/y
+// Input       : float x, float y, float dx, float dy
+// Return      : float quadratic error of x/y
+float QuadErrorDiv(float x, float y, float dx, float dy)
+{
+  return y*x ? x/y * sqrt(dx*dx/x/x + dy*dy/y/y): 0;
+}

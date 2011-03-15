@@ -52,7 +52,8 @@ TDatprocStruct::TDatprocStruct() :
    procTimeReal      (0),
    procTimeCpu       (0),
    userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
-   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0), fFileStdLogName("stdoe.log")
+   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE)
 {
    Init();
 }
@@ -444,4 +445,24 @@ void TDatprocStruct::Update(TStructRunDB &rundb)
 
    if (fDlCalibRun.empty())
       fDlCalibRun = rundb.fFields["DL_CALIB_RUN_NAME"];
+}
+
+
+/** */
+void TDatprocStruct::CopyResults()
+{
+   if (!fFlagCopyResults) return;
+
+   string cmd = "rsync -av " + GetOutDir() + " bluepc:/usr/local/polarim/root/";
+   //string cmd = "ls -l";
+
+   //system(cmd.c_str());
+   char result[1000];
+   FILE *fp = popen( cmd.c_str(), "r");
+
+   while (fgets(result, sizeof(result), fp) != NULL ) { printf("%s", result); }
+   //fread(result, 1, sizeof(result), fp);
+   //printf("%s", result);
+
+   pclose(fp);
 }

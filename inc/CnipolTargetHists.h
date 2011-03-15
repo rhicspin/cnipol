@@ -9,8 +9,10 @@
 
 #include "TDirectoryFile.h"
 #include "TH2F.h"
+#include "TGraphErrors.h"
 
 #include "AsymHeader.h"
+#include "Asym.h"
 
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
@@ -33,6 +35,7 @@ public:
    void BookHists(std::string sid="");
    void Fill(ChannelEvent *ch, std::string cutid="");
    void Fill(Int_t n, Double_t* hData);
+   void PostFill();
 
    ClassDef(CnipolTargetHists, 1)
 };

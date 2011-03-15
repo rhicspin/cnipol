@@ -10,8 +10,6 @@
 
 using namespace std;
 
-const int ASYM_DEFAULT = -999;
-
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 
 
@@ -80,9 +78,6 @@ void end_process()
       // Complete Histograms
       CompleteHistogram();
 
-      // target associated histograms
-      TgtHist();
-
       // Draw polarization vs target position
       DrawPlotvsTar();
    //}
@@ -111,81 +106,6 @@ void CompleteHistogram()
       DrawLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
       DrawLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * dproc.MassSigmaAlt, max*0.3, 4, 1);
    }
-}
-
-
-// Description : Make target histograms
-void TgtHist()
-{
-   char  htitle[100];
-   float xmin   = fabs(double(ASYM_DEFAULT)), xmax;
-   float margin = 0.02;
-   float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-   int   X_index = runinfo.Run >= 6 ? nTgtIndex : ndelim;
- 
-   //GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
-   GetMinMax(X_index, tgt.X, margin, xmin, xmax);
-
-   printf("xmin, xmax: %f, %f, %d, %d\n", xmin, xmax, X_index, ndelim);
- 
-   Run->cd();
-
-   TH1* h = (TH1*) gAsymRoot.fHists->d["run"]->o["hTargetSteps"];
- 
-   // Make rate _vs deliminter plots
-   for (int i=0; i<X_index; i++) {
-
-     UInt_t count = h->GetBinContent(i+1);
-
-     dx[i] = 0;
-     // y[i] = tgt.Interval[i] ? float(cntr.good[i]) / tgt.Interval[i] * MHz : 0 ;
-     //dy[i] = tgt.Interval[i] ? float( sqrt( double(cntr.good[i]) ) ) / tgt.Interval[i] * MHz : 0;
-
-      y[i] = tgt.Interval[i] ? float(count) / tgt.Interval[i] * MHz : 0 ;
-     dy[i] = tgt.Interval[i] ? float(sqrt(count)) / tgt.Interval[i] * MHz : 0;
-   }
- 
-   gAnaResults.max_rate = GetMax(X_index, y);
-
-   float ymin = fabs(double(ASYM_DEFAULT)), ymax;
-
-   GetMinMax(X_index, y, margin, ymin, ymax);
-
-   sprintf(htitle,"%.3f : Rate vs Taret Postion", runinfo.RUNID);
- 
-   //rate_vs_delim = new TH2F("rate_vs_delim", htitle, 100, xmin, xmax, 100, ymin, ymax);
-   rate_vs_delim->SetName("rate_vs_delim");
-   rate_vs_delim->SetTitle("rate_vs_delim");
-   rate_vs_delim->SetBins(100, xmin, xmax, 100, ymin, ymax);
-   rate_vs_delim->GetXaxis()->SetTitle("Target Position");
-   rate_vs_delim->GetYaxis()->SetTitle("Carbon in Banana Rate[MHz]");
- 
-   //TGraphErrors *rate_delim = new TGraphErrors(nTgtIndex, tgt.X, y, dx, dy);
-   TGraphErrors *rate_delim = new TGraphErrors(X_index, tgt.X, y, dx, dy);
-   rate_delim->SetMarkerStyle(20);
-   rate_delim->SetMarkerColor(4);
-   rate_vs_delim->GetListOfFunctions()->Add(rate_delim, "P");
- 
-   // Target Position vs Time
-   sprintf(htitle,"%.3f : Taret Postion vs. Time", runinfo.RUNID);
- 
-   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
-
-   tgtx_vs_time->SetName("tgtx_vs_time");
-   tgtx_vs_time->SetTitle(htitle);
-   tgtx_vs_time->SetBins(10, xmin, xmax, 10, 0.5, runinfo.RunTime*1.2);
- 
-   //delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
-   //gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
- 
-   tgtx_vs_time->GetYaxis()->SetTitle("Duration from Measurement Start [s]");
-   tgtx_vs_time->GetXaxis()->SetTitle("Target Position");
- 
-   //TGraph *tgtx_time = new TGraph(nTgtIndex, tgt.X, tgt.Time);
-   TGraph *tgtx_time = new TGraph(X_index, tgt.X, tgt.Time);
-   tgtx_time->SetMarkerStyle(20);
-   tgtx_time->SetMarkerColor(4);
-   tgtx_vs_time->GetListOfFunctions()->Add(tgtx_time, "P");
 }
 
 
@@ -643,14 +563,7 @@ void binary_zero(int n, int mb)
 }
 
 
-//
-// Class name  :
-// Method name : CalcStatistics(){
-//
 // Description : Calculate Statistics
-// Input       :
-// Return      :
-//
 void CalcStatistics()
 {
    // Integrate good carbon events in banana
@@ -1942,49 +1855,6 @@ void AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *
  
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 } //}}}
-
-
-// Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
-float GetMax(int N, float A[]){
-  float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
-  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : max;
-  return max;
-}
-
-
-// Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
-float GetMin(int N, float A[])
-{
-  float min = A[0] != ASYM_DEFAULT ? A[0] : A[1];
-  for (int i=1; i<N; i++) min = (A[i]) && (min>A[i]) && (A[i] != ASYM_DEFAULT) ? A[i] : min;
-  return min;
-}
-
-
-/**
- * Return Minimum and Maximum from array A[N]
- *
- * If margin is not 0 the maximum is increased by max*margin and minimum is
- * decreased by min*margin
- */
-void GetMinMax(int N, float A[], float margin, float &min, float &max)
-{
-   min  = GetMin(N, A);
-   max  = GetMax(N, A);
-   min -= fabs(min) * margin;
-   max += fabs(max) * margin;
-}
-
-
-// Return Minimum and Maximum from array A[N]. Same as GetMinMax() function. But
-// GetMinMaxOption takes prefix value which forces min, max to be prefix when the
-// absolute min,max are smaller than prefix.
-void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max)
-{
-   GetMinMax(N, A, margin, min, max);
-   if ( fabs(min) < prefix ) min = -prefix;
-   if ( fabs(max) < prefix ) max =  prefix;
-}
 
 
 /*       following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.

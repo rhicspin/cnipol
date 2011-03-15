@@ -106,35 +106,19 @@ float calcDivisionError(float x, float y, float dx, float dy);
 void  calcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
 float TshiftFinder(int, int);
 
-//===========================================================================
-//           Calculate Statistics adn  Result Printing
-//===========================================================================
+// Calculate Statistics adn  Result Printing
 void CalcStatistics();
 void binary_zero(int n, int mb);
 void PrintWarning();
 void PrintRunResults(StructHistStat hstat);
 void DrawPlotvsTar();
 
-//===========================================================================
-//                        Profile Error
-//===========================================================================
+//   Profile Error
 float ProfileError(float x);
 
 void  SpecificLuminosity(float&, float&, float&);
 
-//===========================================================================
-//           Some utility routines to determin histogram range
-//===========================================================================
-float GetMax(int N, float A[]);
-float GetMin(int N, float A[]);
-void  GetMinMax(int N, float A[], float margin, float &min, float &max);
-void  GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
-float QuadErrorDiv(float x, float y, float dx, float dy);
-
-
-//===========================================================================
-//                                  HBOOK stuff
-//===========================================================================
+// HBOOK stuff
 extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
 extern void HHPAK(int, float*);
 extern void HHPAKE(int, float*);

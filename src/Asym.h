@@ -23,6 +23,8 @@
 #include "AsymHeader.h"
 
 
+const int ASYM_DEFAULT = -999;
+
 // whole info for one event
 struct processEvent {
     int stN;   // strip number
@@ -233,5 +235,12 @@ extern "C" {
   void  hfith_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
   void  hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
 }
+
+// Some utility routines to determin histogram range
+float GetMax(int N, float A[]);
+float GetMin(int N, float A[]);
+void  GetMinMax(int N, float A[], float margin, float &min, float &max);
+void  GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
+float QuadErrorDiv(float x, float y, float dx, float dy);
 
 #endif
