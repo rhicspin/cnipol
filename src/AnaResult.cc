@@ -18,7 +18,8 @@ StructAnalysis::StructAnalysis() :
    //basym[100+MAXDELIM],    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    //anomaly(),
    //unrecog()
-   fIntensPolarR(0)
+   fIntensPolarR(0),
+   fIntensPolarRErr(0)
 {
    //memset(A_N, 0, 2);
    //memset(P, 0, 2);
@@ -80,6 +81,7 @@ void StructAnalysis::Streamer(TBuffer &buf)
       }
 
       buf >> fIntensPolarR;
+      buf >> fIntensPolarRErr;
 
    } else {
       //printf("writing StructAnalysis::Streamer(TBuffer &buf) \n");
@@ -101,6 +103,7 @@ void StructAnalysis::Streamer(TBuffer &buf)
       }
 
       buf << fIntensPolarR;
+      buf << fIntensPolarRErr;
    }
 }
 
@@ -128,6 +131,7 @@ void StructAnalysis::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, ");\n");
-   fprintf(f, "$rc['fIntensPolarR']     = %f;\n",            fIntensPolarR);
+   fprintf(f, "$rc['fIntensPolarR']       = %f;\n",            fIntensPolarR);
+   fprintf(f, "$rc['fIntensPolarRErr']    = %f;\n",            fIntensPolarRErr);
 
 } //}}}

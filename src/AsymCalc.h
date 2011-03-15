@@ -8,8 +8,9 @@
 #include <math.h>
 #include <string>
 
-#include "TGraphErrors.h"
 #include "TF1.h"
+#include "TGraphErrors.h"
+#include "TLatex.h"
 
 #include "rhicpol.h"
 #include "rpoldata.h"
@@ -43,7 +44,6 @@ int   ExclusionList(int i, int j, int polBeam=0);
 //===========================================================================
 void StripAsymmetry();
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]);
-Double_t sin_phi(Double_t *x, Double_t *par);
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 
 

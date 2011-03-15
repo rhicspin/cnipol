@@ -28,6 +28,7 @@ public:
    StructAnomaly      anomaly;
    StructUnrecognized unrecog;
    float              fIntensPolarR;        // Scale factor to define the ratio of intensity and polarization profiles
+   float              fIntensPolarRErr;
 
 public:
    StructAnalysis();

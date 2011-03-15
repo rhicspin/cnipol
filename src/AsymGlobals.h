@@ -113,7 +113,7 @@ extern TRecordConfigRhicStruct *cfginfo;
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
 extern float phit[NSTRIP];      // phi-angle for each strips in approximation 45,90,135... 
-extern float phi[NSTRIP];       // phi-angle
+extern float gPhi[NSTRIP];       // phi-angle
 
 // target position infomation 
 extern int ndelim;
