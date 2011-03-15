@@ -539,10 +539,10 @@ void readdb(double RUNID)
    // Optimize setting for Run
    if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
       gRunInfo.Run=5;
-      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun5[i];
+      for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun5[i];
    } else if (RUNID>=7400) { // Run06
       gRunInfo.Run=6;
-      for (int i=0; i<NSTRIP; i++) phi[i] = phiRun6[i];
+      for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun6[i];
    } else if (RUNID>=10018) { // Run09
       gRunInfo.Run=9;
    }

@@ -69,7 +69,8 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
    ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
 
    sprintf(hName, "hPolarProfileFwd");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
@@ -122,7 +123,7 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
 
    sprintf(hName, "hIntensUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 1, -3, 3);
+   o[hName] = new TH1F(hName, hName, 20, -3, 3);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
    ((TH1*) o[hName])->SetOption("p");
@@ -135,16 +136,18 @@ void CnipolProfileHists::BookHists(string sid)
    //o[hName] = new TGraphErrors();
 
    sprintf(hName, "hPolarUniProfile");
-   o[hName] = new TH1F(hName, hName, 1, -3, 3);
+   o[hName] = new TH1F(hName, hName, 1, -5, 5);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
 
    sprintf(hName, "hPolarUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 1, -3, 3);
+   o[hName] = new TH1F(hName, hName, 20, -3, 3);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
    ((TH1*) o[hName])->SetOption("p");
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
@@ -220,7 +223,7 @@ void CnipolProfileHists::Process()
    fitFunc->SetParLimits(2, (xmax-xmin)*0.6, xmax*0.9);
    fitFunc->SetParLimits(3, ymax*0.5, ymax*1.5);
 
-   TFitResultPtr fitres = hIntensProfile->Fit(fitFunc, "I M LL S R", "");
+   TFitResultPtr fitres = hIntensProfile->Fit(fitFunc, "I M S R", "");
 
    // Now split the hIntensProfile hist into two: forward and backward motionsward motions
 
@@ -388,7 +391,8 @@ void CnipolProfileHists::Process()
    TH1* hPolarVsIntensProfile = (TH1*) o["hPolarVsIntensProfile"];
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
 
-   gAnaResults.fIntensPolarR = mfPow->GetParameter(1);
+   gAnaResults.fIntensPolarR    = mfPow->GetParameter(1);
+   gAnaResults.fIntensPolarRErr = mfPow->GetParError(1);
 
    //TPaveStats *stats = (TPaveStats*) hPolarVsIntensProfile->FindObject("stats");
 
@@ -442,20 +446,6 @@ void CnipolProfileHists::Process()
    }
 
 
-   TF1 *my_gaus2 = new TF1("my_gaus2", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
-
-   my_gaus2->SetParNames("N_{scale}", "#sigma");
-   my_gaus2->SetParameter(0, 0.5);
-   my_gaus2->SetParameter(1, 0.3);
-   my_gaus2->SetParLimits(0, 0, 1);
-   my_gaus2->SetParLimits(1, 0.1, 100);
-
-   grPolarUniProfile->Fit("my_gaus2", "M E R");
-
-   TH1* hPolarUniProfile = (TH1*) o["hPolarUniProfile"];
-   hPolarUniProfile->GetListOfFunctions()->Add(grPolarUniProfile, "p");
-
-
    TF1 *my_gaus3 = new TF1("my_gaus3", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
 
    my_gaus3->SetParNames("N_{scale}", "#sigma");
@@ -470,11 +460,27 @@ void CnipolProfileHists::Process()
    hIntensUniProfile->GetListOfFunctions()->Add(grIntensUniProfile, "p");
 
 
+   TF1 *my_gaus2 = new TF1("my_gaus2", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
+
+   my_gaus2->SetParNames("N_{scale}", "#sigma");
+   my_gaus2->SetParameter(0, 0.5);
+   my_gaus2->SetParameter(1, 0.3);
+   my_gaus2->SetParLimits(0, 0, 1);
+   my_gaus2->SetParLimits(1, 0.1, 100);
+
+   grPolarUniProfile->Fit("my_gaus2", "M E R");
+
+   TH1* hPolarUniProfile = (TH1*) o["hPolarUniProfile"];
+   hPolarUniProfile->GetListOfFunctions()->Add(grPolarUniProfile, "p");
+
+
    // Fill hist from graph
    TH1* hIntensUniProfileBin = (TH1*) o["hIntensUniProfileBin"];
    TH1* hPolarUniProfileBin  = (TH1*) o["hPolarUniProfileBin"];
 
    Double_t x, xe, y, ye;
+
+   printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
 
    for (int i=0; i<grIntensUniProfile->GetN(); i++) {
 

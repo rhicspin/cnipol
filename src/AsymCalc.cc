@@ -1544,16 +1544,9 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 }
 
 
-//
-// Class name  :
-// Method name : StripAsymmetry
-//
 // Description : call calcStripAsymmetry() subroutines for
 //             : regular and alternative sigma banana cuts, respectively.
 //             : Also call for PHENIX and STAR colliding bunches asymmetries
-// Input       :
-// Return      :
-//
 void StripAsymmetry()
 {
    //// Calculate Asymmetries for colliding bunches at PHENIX
@@ -1598,15 +1591,13 @@ void StripAsymmetry()
          QuadErrorDiv(diff[0], gAnaResults.sinphi[0].P[0], diff[1], gAnaResults.sinphi[0].P[1]);
    }
  
-   // Calculate Asymmetries for each target position
+   // Calculate asymmetries for each target position
+   TH1 *hpp = 0;
 
-   TH1* hpp = 0;
    if (dproc.HasProfileBit()) {
       hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolarProfile"];
    }
 
-   //ds:
-   //for(Int_t i=0; i<nTgtIndex+1; i++)
    for(Int_t i=0; i<ndelim; i++) {
 
       CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
@@ -1617,18 +1608,18 @@ void StripAsymmetry()
          hpp->SetBinError(i+1, gAnaResults.sinphi[100+i].P[1]);
       }
    }
-   //for(Int_t i=20; i<21; i++) CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
+
    if (dproc.HasProfileBit()) gAsymRoot.ProcessProfileHists();
 }
 
 
-// Description : calculate asymmetries strip by strip
-// Input       : float aveA_N, int Mode, long int nstrip[][NSTRIP]
-// Return      :
+/**
+ * Calculates asymmetries strip by strip. This method updates the global object
+ * gAnaResults with a calculated polarization value for the give strip.
+ */
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
 {
    //ds : Overwrite nstrip array
-
    int ss_code = 0;
 
    // only for Mode < 100
@@ -1679,9 +1670,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    float LumiSum_r[2][NSTRIP];        // Reduced order Total luminosity for histograming
    float LumiRatio[NSTRIP];           // Luminosity Ratio
    float Asym[NSTRIP], dAsym[NSTRIP]; // Raw Asymmetries strip-by-strip
-   float P[NSTRIP],    dP[NSTRIP];    // phi corrected polarization
-   float Pt[NSTRIP],   dPt[NSTRIP];   // phi Trancated corrected polarization,
-   long int counts[2];                // local counter variables
+   float P[NSTRIP],    dP[NSTRIP];    // Strip phi corrected polarization
+   float Pt[NSTRIP],   dPt[NSTRIP];   // Strip phi truncated corrected polarization,
+   long  counts[2];                   // local counter variables
 
    for (int i=0; i<NSTRIP; i++) {
 
@@ -1729,8 +1720,8 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       dRawP[i] = (aveA_N != 0 ? (dAsym[i] / aveA_N) : 0);
 
       // Polarization with sin(phi) correction
-       P[i] = RawP[i] / sin(-phi[i]);
-      dP[i] = fabs(dRawP[i] / sin(-phi[i]));
+       P[i] = RawP[i] / sin(-gPhi[i]);
+      dP[i] = fabs(dRawP[i] / sin(-gPhi[i]));
 
       // Polarization with trancated sin(phi) correction
        Pt[i] = RawP[i] / sin(-phit[i]);
@@ -1755,7 +1746,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
 
       for (int i=0; i<NSTRIP; i++) {
          printf("%4d", i);
-         printf("%12.5f", phi[i]);
+         printf("%12.5f", gPhi[i]);
          printf("%12.5f %12.5f", Asym[i], dAsym[i]);
          printf("%12.5f %12.5f", RawP[i], dRawP[i]);
          printf("%12.5f %12.5f",    P[i],    dP[i]);
@@ -1778,33 +1769,24 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    //ds:HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
    //ds:HHPAK(36220, RawP);  HHPAKE(36220, dRawP);
    //ds:HHPAK(36240, P);     HHPAKE(36240, dP);
-   //ds:HHPAK(36250, phi);
+   //ds:HHPAK(36250, gPhi);
 
    // Fit phi-distribution
    // Fit everything other than scan data
    if (Mode < 100) {
       AsymFit asymfit;
-      asymfit.SinPhiFit(gAnaResults.P[0], RawP, dRawP, phi, gAnaResults.sinphi[Mode].P,
+      asymfit.SinPhiFit(gAnaResults.P[0], RawP, dRawP, gPhi, gAnaResults.sinphi[Mode].P,
                         gAnaResults.sinphi[Mode].dPhi, gAnaResults.sinphi[Mode].chi2);
    }
 
    // Fit scan data
    if (Mode >= 100) {
       AsymFit asymfit;
-      asymfit.ScanSinPhiFit(gAnaResults.P[0], RawP, dRawP, phi, gAnaResults.sinphi[Mode].P,
+      asymfit.ScanSinPhiFit(gAnaResults.P[0], RawP, dRawP, gPhi, gAnaResults.sinphi[Mode].P,
                             gAnaResults.sinphi[Mode].dPhi, gAnaResults.sinphi[Mode].chi2);
    }
 
    //asymfit.SinPhiFit(gAnaResults.P[0], gAnaResults.sinphi.P, gAnaResults.sinphi.dPhi, gAnaResults.sinphi.chi2);
-}
-
-
-// Description : sin(x) fit. Amplitude and phase as parameters
-// Input       : Double_t *x, Double_t *par
-// Return      : par[0]*sin(x+par[1])
-Double_t sin_phi(Double_t *x, Double_t *par)
-{
-   return par[0] * sin(-x[0] + par[1]);
 }
 
 
@@ -1815,34 +1797,40 @@ Double_t sin_phi(Double_t *x, Double_t *par)
 void AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
                         Float_t *P, Float_t *dphi, Float_t &chi2dof)
 {
-   char htitle[100];
+   char  htitle[100];
    float dx[NSTRIP];
-   for ( int i=0; i<NSTRIP; i++) dx[i] = 0;
+
+   for (int i=0; i<NSTRIP; i++) dx[i] = 0;
  
    // define TH2D sin(phi) histogram
    Asymmetry->cd();
 
-   float min, max, prefix, margin; prefix = margin = 0.3;
+   float min, max;
+	float prefix = 0.3;
+	float margin = 0.3;
 
    GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
 
-   sprintf(htitle,"Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", runinfo.RUNID);
 
    asym_sinphi_fit->SetName("asym_sinphi_fit");
    asym_sinphi_fit->SetTitle(htitle);
    asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
-   asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
-   asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+   asym_sinphi_fit->GetXaxis()->SetTitle("#phi");
+   asym_sinphi_fit->GetYaxis()->SetTitle("Polarization, %");
 
    DrawLine(asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
  
    // define sin(phi) fit function & initialize parmaeters
-   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
-   func->SetParameters(p0, 0);
-   func->SetParLimits(0, -1, 1);
+   TF1 *func = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
+
+   func->SetLineColor(kRed);
+   func->SetParNames("P", "#Delta#phi");
+   func->SetParameter(0, p0);
+   func->SetParameter(1, 0);
+   //func->SetParLimits(0, -1, 1);
+   func->SetParLimits(0, 0, 1);
    func->SetParLimits(1, -M_PI, M_PI);
-   func->SetParNames("P", "dPhi");
-   func->SetLineColor(2);
  
    // define TGraphError obect for fitting
    TGraphErrors *tg = AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
@@ -1863,12 +1851,12 @@ void AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
  
    // Write out fitting results on plot
    char text[80];
-   sprintf(text, "(%3.2f +/- %3.2f)* sin(phi%+5.2f)", P[0], P[1], dphi[0]);
-   TText *txt = new TText(0.5, max*0.8, text);
+   sprintf(text, "(%3.2f #pm %3.2f) * sin#left(#phi + (%+5.2f #pm %3.2f)#right)", P[0], P[1], dphi[0], dphi[1]);
+   TLatex *txt = new TLatex(0.3, max*0.85, text);
    asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 
-   sprintf(text, "chi/dof = %5.2f", chi2dof);
-   txt = new TText(0.5, max*0.1, text);
+   sprintf(text, "#chi^{2} / ndf = %5.2f", chi2dof);
+   txt = new TLatex(0.3, max*0.7, text);
 
    asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 }
@@ -1883,51 +1871,52 @@ void AsymFit::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
 // Return      : Float_t *P, Float_t *dphi, Float_t &chi2dof
 //
 void AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *phi,
-                   Float_t *P, Float_t *dphi, Float_t &chi2dof)
+                            Float_t *P, Float_t *dphi, Float_t &chi2dof)
 { //{{{
    float dx[NSTRIP];
 
    for (int i=0; i<NSTRIP; i++) dx[i] = 0;
- 
-   // define TH2D sin(phi) histogram
-   Asymmetry->cd();
 
-   float min, max, prefix=0.3, margin=0.3;
+   float min, max;
+	float prefix = 0.3;
+	float margin = 0.3;
 
    GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
 
    char htitle[100];
-   sprintf(htitle, "Run%.3f: Strip Asymmetry sin(phi) fit", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", runinfo.RUNID);
  
    //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
    scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");
    scan_asym_sinphi_fit->SetTitle(htitle);
    scan_asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
-   scan_asym_sinphi_fit->GetXaxis()->SetTitle("phi [deg.]");
-   scan_asym_sinphi_fit->GetYaxis()->SetTitle("Asymmetry / A_N [%]");
+   scan_asym_sinphi_fit->GetXaxis()->SetTitle("#phi");
+   scan_asym_sinphi_fit->GetYaxis()->SetTitle("Polarization");
  
    DrawLine(scan_asym_sinphi_fit, 0, 2*M_PI, 0, 1, 1, 1);
  
    // define sin(phi) fit function & initialize parmaeters
-   TF1 *func = new TF1("sin_phi", sin_phi, 0, 2*M_PI, 2);
-   func->SetParameters(p0, 0);
-   func->SetParLimits(0, -1, 1);
+   TF1 *func = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
 
+   func->SetLineColor(kRed);
+   func->SetParNames("P", "#Delta#phi");
+   func->SetParameter(0, p0);
+   func->SetParameter(1, 0);
+   //func->SetParLimits(0, -1, 1);
+   func->SetParLimits(0, 0, 1);
+   //func->SetParLimits(1, gAnaResults.sinphi[0].dPhi[0], gAnaResults.sinphi[0].dPhi[0]);
+   //func->SetParLimits(1,-M_PI, M_PI);
    // Keeping phi fixed - chnged by Vipuli April 2008
    //printf("************************************ \n");
    //printf("keeping phi fixed at = %12.3e \n", gAnaResults.sinphi[0].dPhi[0]);
    //printf("************************************ \n");
-
-   func->SetParLimits(1, gAnaResults.sinphi[0].dPhi[0], gAnaResults.sinphi[0].dPhi[0]);
-   //func->SetParLimits(1,-M_PI, M_PI);
-   func->SetParNames("P", "dPhi");
-   func->SetLineColor(2);
+   func->FixParameter(1, gAnaResults.sinphi[0].dPhi[0]);
  
    // define TGraphError obect for fitting
    TGraphErrors *tg = AsymmetryGraph(1, NSTRIP, phi, RawP, dx, dRawP);
  
    // Perform sin(phi) fit
-   tg->Fit("sin_phi","R Q");
+   tg->Fit("sin_phi", "R Q");
    tg->SetName("tg");
  
    // Dump TGraphError obect to TH2D histogram
@@ -1943,13 +1932,13 @@ void AsymFit::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP, Float_t *
    // Write out fitting results on plot
    char text[80];
  
-   sprintf(text, "(%3.2f +/- %3.2f)* sin(phi%+5.2f)", P[0], P[1], dphi[0]);
-   TText *txt = new TText(0.5, max*0.8, text);
+   sprintf(text, "(%3.2f +/- %3.2f) * sin(phi %+5.2f +/- %3.2f)", P[0], P[1], dphi[0], dphi[1]);
+   TLatex *txt = new TLatex(0.3, max*0.85, text);
  
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
  
-   sprintf(text, "chi^{2} = %5.2f", chi2dof);
-   txt = new TText(0.5, max*0.1, text);
+   sprintf(text, "#chi^{2} / ndf = %5.2f", chi2dof);
+   txt = new TLatex(0.3, max*0.7, text);
  
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
 } //}}}
