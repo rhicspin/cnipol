@@ -12,11 +12,19 @@
 #include "rpoldata.h"
 
 //      fortran subroutines
+extern "C" {
+
 void mybook_(int *num);
 void histrate_(long *data, long *num);
 void histdelim_(long *data, long *num);
 void histtagmov_(long *data, long *num);
 void wfana_(float *data, int *len, int *chan);
+
+int  icopen_(char *fname, int len);
+void icclose_(void);
+void readandfill_(int* subrun);
+
+}
 
 //
 //      fortran commons

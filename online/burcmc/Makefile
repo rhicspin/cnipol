@@ -1,8 +1,11 @@
 burcmc : burcmc.o ../libcmc/libcmc.o
 
-clean : 
+clean:
 	-rm -f *.o
 	-rm -f burcmc
 
+cleanall: clean
+	cd $(CNIPOL_DIR)/bin; rm -f burcmc
+
 install:
-	cp burcmc /usr/local/polarim/bin
+	cp burcmc $(CNIPOL_DIR)/bin
