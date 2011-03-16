@@ -25,6 +25,7 @@ TStructRunDB::TStructRunDB() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFiel
    fFieldFlags["ASYM_VERSION"]      = true;
    fFieldFlags["POLARIMETER_ID"]    = true;
    fFieldFlags["POLARIZATION"]      = true;
+   fFieldFlags["PROFILE_RATIO"]     = true;
    fFieldFlags["START_TIME"]        = true;
    fFieldFlags["STOP_TIME"]         = true;
    fFieldFlags["NEVENTS_TOTAL"]     = true;

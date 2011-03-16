@@ -108,7 +108,7 @@ void AsymRunDB::PrintCommon()
 }
 
 
-const UShort_t AsymRunDB::sNFields = 30;
+const UShort_t AsymRunDB::sNFields = 31;
 
 const char* AsymRunDB::sFieldNames[] = {
 	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
@@ -118,7 +118,7 @@ const char* AsymRunDB::sFieldNames[] = {
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
    "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
    "RUN_STATUS", "START_TIME", "STOP_TIME", "NEVENTS_TOTAL",
-   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION"};
+   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION", "PROFILE_RATIO"};
 
 
 /** */
