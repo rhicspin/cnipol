@@ -394,6 +394,12 @@ void CnipolProfileHists::Process()
    gAnaResults.fIntensPolarR    = mfPow->GetParameter(1);
    gAnaResults.fIntensPolarRErr = mfPow->GetParError(1);
 
+   char sratio[50];
+
+	sprintf(sratio, "% 8.3f, % 6.3f", gAnaResults.fIntensPolarR, gAnaResults.fIntensPolarRErr);
+
+	gRunDb.fFields["PROFILE_RATIO"] = sratio;
+
    //TPaveStats *stats = (TPaveStats*) hPolarVsIntensProfile->FindObject("stats");
 
    //if (stats) {
