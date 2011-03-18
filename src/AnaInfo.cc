@@ -376,8 +376,10 @@ void TDatprocStruct::PrintUsage()
    cout << " -U                              : Update histogram" << endl;
    cout << "     --update-db                 : Update run info in database" << endl;
    cout << " -N                              : Store Ntuple events (!)" << endl;
-   cout << " -R <bitmask>                    : Save events in Root trees, " <<
-           "e.g. \"-R 101\"" << endl;
+   cout << " -R <bitmask>                    : Save events in Root trees, e.g. \"-R 001\"" << endl;
+   cout << "                                   -R 001 for storing raw data in a tree" << endl;
+   cout << "                                   -R 010 creates an individual tree for each channel" << endl;
+   cout << "                                   -R 100 for time ordered events. Events can contain multiple channels" << endl;
    cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
    cout << " -C, --mode-alpha, --alpha       : Use when run over alpha run data" << endl;
    cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
