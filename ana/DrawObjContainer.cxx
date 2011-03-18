@@ -334,7 +334,7 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 /** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) const
 {
-   return ((const DrawObjContainer*)this)->Write(name, option, bufsize);
+   return ((const DrawObjContainer*) this)->Write(name, option, bufsize);
 }
 
 
@@ -389,10 +389,10 @@ void DrawObjContainer::PostFill()
 
 
 /** */
-void DrawObjContainer::Delete()
+void DrawObjContainer::Delete(Option_t* option)
 {
    if (!fDir) {
-      printf("ERROR: DrawObjContainer::Delete(): fDir not defined\n");
+      printf("ERROR: DrawObjContainer::Delete(Option_t* option): fDir not defined\n");
       return;
    }
 
@@ -403,12 +403,12 @@ void DrawObjContainer::Delete()
    for (io=o.begin(); io!=o.end(); ++io) {
       //sprintf(cName, "c_%s", io->first.c_str());
       //cout << "YYY: " << io->first << endl;
-      if (io->second) io->second->Delete();
+      if (io->second) io->second->Delete(option);
    }
 
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second->Delete();
+      isubd->second->Delete(option);
    }
 }

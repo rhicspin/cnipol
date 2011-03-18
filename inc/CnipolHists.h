@@ -38,6 +38,7 @@ public:
    //virtual void Print(const Option_t* opt="") const;
    void  Print(const Option_t* opt="") const;
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
+   Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
    void  Fill(ChannelEvent *ch, std::string cutid="");
    void  FillPreProcess(ChannelEvent *ch);
    void  PreFill(std::string sid="");
