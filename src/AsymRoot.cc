@@ -195,7 +195,14 @@ void AsymRoot::CreateTrees()
 
    string filename = dproc.GetRootTreeFileName(fTreeFileId);
 
-   fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
+   fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "Asym tree file");
+
+   if (!fOutTreeFile) {
+      Fatal("CreateTrees", "Cannot open ROOT file %s", filename.c_str());
+      exit(-1);
+   }
+
+   gSystem->Chmod(filename.c_str(), 0775);
 
    // Create trees with raw data
    if (dproc.SAVETREES.test(0) ) {
@@ -283,6 +290,12 @@ void AsymRoot::UpdateRunConfig()
       string fname = dproc.GetDlCalibFile();
       Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
+
+      if (!f) {
+         Fatal("UpdateRunConfig", "Calibration file not found %s", fname.c_str());
+         exit(-1);
+      }
+
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
       //delete f;
 
@@ -302,14 +315,20 @@ void AsymRoot::UpdateRunConfig()
       
       // XXX not implemented. Need to fix it ASAP!
       //if (fnameAlpha != fname) {
-         Info("UpdateRunConfig", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+         Info("UpdateRunConfig", "Reading RunConfig object from alpha calibration file %s", fnameAlpha.c_str());
 
          TFile *f = TFile::Open(fnameAlpha.c_str());
+
+         if (!f) {
+            Fatal("UpdateRunConfig", "Alpha calibration file not found %s", fnameAlpha.c_str());
+            exit(-1);
+         }
+
          EventConfig *alphaRunConfig = (EventConfig*) f->FindObjectAny("EventConfig");
          //delete f;
 
          if (!alphaRunConfig) {
-            Error("UpdateRunConfig", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
+            Error("UpdateRunConfig", "No RunConfig object found in alpha calibration file %s", fnameAlpha.c_str());
             return;
          }
 
@@ -432,8 +451,8 @@ void AsymRoot::AddChannelEvent()
       int sizen = fChannelEvents.size();
 
       // a factor of 2 comes from some root overhead
-      //if (sizeb > 100000000*2) {
-      if (sizen >= 12000000) { // corresponds to 300Mb if all 3 trees are saved
+      //if (sizeb > 100000000*2)
+      if (sizen >= 12000000) { // roughly corresponds to 300Mb if all 3 trees are saved
 
          //printf("sizeb: %d\n", sizeb);
          printf("sizen: %d\n", sizen);
