@@ -46,9 +46,9 @@ public:
    ~AsymRunDB();
 
    TStructRunDB* Select(std::string runName="");
-   void Delete(std::string runName);
-   void Clear();
-   void Dump();
+   void DeleteRun(std::string runName);
+   void Clear(Option_t* opt="");
+   void Save();
    void Append(TStructRunDB *dbrun);
    void Insert(TStructRunDB *dbrun);
    void UpdateCommonFields(TStructRunDB &dbrun);

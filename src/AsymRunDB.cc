@@ -149,7 +149,7 @@ AsymRunDB::~AsymRunDB()
 
 
 /** */
-void AsymRunDB::Clear()
+void AsymRunDB::Clear(Option_t* opt)
 {
    //if (fDbFile) fclose(fDbFile);
 
@@ -256,7 +256,7 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
 
 
 /** */
-void AsymRunDB::Delete(std::string runName)
+void AsymRunDB::DeleteRun(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -319,7 +319,7 @@ void AsymRunDB::Delete(std::string runName)
 
 
 /** */
-void AsymRunDB::Dump()
+void AsymRunDB::Save()
 {
    ofstream dbFile;
    dbFile.open(fDbFileName.c_str(), ios_base::out | ios_base::trunc);

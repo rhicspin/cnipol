@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
       //gAsymRunDb.Print();
       gAsymRunDb.Insert(&gRunDb);
       //gAsymRunDb.Print();
-      gAsymRunDb.Dump(); // write to DB file
+      gAsymRunDb.Save(); // write to DB file
 
       gAsymRunDb.Clear();
       runDb = gAsymRunDb.Select(gRunDb.fRunName); // now read all available common info for this run
@@ -505,7 +505,7 @@ int main(int argc, char *argv[])
       // Select all runs from database
       gAsymRunDb.Select();
       gAsymRunDb.Insert(&gRunDb);
-      gAsymRunDb.Dump();
+      gAsymRunDb.Save();
    }
 
    // Stop stopwatch and save results
