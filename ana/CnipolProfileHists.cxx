@@ -113,11 +113,18 @@ void CnipolProfileHists::BookHists(string sid)
    o[hName] = new TH1F(hName, hName, 10, 0, 1.1);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Relative Intensity I/I_{max}");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
 
    sprintf(hName, "hPolarVsIntensProfileBin");
    o[hName] = new TH1F(hName, hName, 22, 0, 1.1);
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Relative Intensity I/I_{max}");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   ((TH1*) o[hName])->SetOption("p");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(kBlue);
+   ((TH1*) o[hName])->Sumw2();
 
    sprintf(hName, "hIntensUniProfile");
    o[hName] = new TH1F(hName, hName, 1, -3, 3);
@@ -131,7 +138,7 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->SetOption("p");
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   ((TH1*) o[hName])->SetMarkerColor(kBlue);
    ((TH1*) o[hName])->Sumw2();
 
    //sprintf(hName, "grIntensUniProfile");
@@ -153,7 +160,7 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->SetOption("p");
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   ((TH1*) o[hName])->SetMarkerColor(kBlue);
    ((TH1*) o[hName])->Sumw2();
 
    //sprintf(hName, "grPolarUniProfile");
@@ -412,7 +419,7 @@ void CnipolProfileHists::Process()
    //   printf("could not find stats\n");
    //}
 
-   delete mfPow;
+   //delete mfPow;
 
    // Crazy new method
 
@@ -482,8 +489,9 @@ void CnipolProfileHists::Process()
 
 
    // Fill hist from graph
-   TH1* hIntensUniProfileBin = (TH1*) o["hIntensUniProfileBin"];
-   TH1* hPolarUniProfileBin  = (TH1*) o["hPolarUniProfileBin"];
+   TH1* hIntensUniProfileBin     = (TH1*) o["hIntensUniProfileBin"];
+   TH1* hPolarUniProfileBin      = (TH1*) o["hPolarUniProfileBin"];
+   TH1* hPolarVsIntensProfileBin = (TH1*) o["hPolarVsIntensProfileBin"];
 
    Double_t x, xe, y, ye;
 
@@ -514,6 +522,7 @@ void CnipolProfileHists::Process()
       hIntensUniProfileBin->SetBinContent(ib, ibc_new);
       hIntensUniProfileBin->SetBinError(ib, ibe_new);
 
+
       // Polarization part
       grPolarUniProfile->GetPoint(i, x, y);
 
@@ -535,6 +544,32 @@ void CnipolProfileHists::Process()
 
       hPolarUniProfileBin->SetBinContent(ib, ibc_new);
       hPolarUniProfileBin->SetBinError(ib, ibe_new);
+
+
+      // Polarization Vs Intens part
+		// consider only even data points
+		if (i%2 != 0) continue;
+
+      grPolarVsIntensProfile->GetPoint(i/2, x, y);
+
+      //xe = grPolarVsIntensProfile->GetErrorX(i);
+      ye = grPolarVsIntensProfile->GetErrorY(i/2);
+
+      ib  = hPolarVsIntensProfileBin->FindBin(x);
+      ibc = hPolarVsIntensProfileBin->GetBinContent(ib);
+      ibe = hPolarVsIntensProfileBin->GetBinError(ib);
+
+      w1 = 1., w2 = 1.;
+      if (ye  > 0) w1 = 1./(ye*ye);
+      if (ibe > 0) w2 = 1./(ibe*ibe);
+
+      ibc_new = (w1*y + w2*ibc)/(w1 + w2);
+      ibe_new = 1./TMath::Sqrt(w1 + w2);
+
+      printf("pvi: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
+
+      hPolarVsIntensProfileBin->SetBinContent(ib, ibc_new);
+      hPolarVsIntensProfileBin->SetBinError(ib, ibe_new);
    }
 
    TF1 *my_gaus5 = new TF1("my_gaus5", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
@@ -558,6 +593,10 @@ void CnipolProfileHists::Process()
 
    hPolarUniProfileBin->Fit("my_gaus4", "M E R");
    delete my_gaus4;
+
+   hPolarVsIntensProfileBin->Fit("mfPow", "M E R");
+
+	delete mfPow;
 } //}}}
 
 
