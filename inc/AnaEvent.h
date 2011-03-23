@@ -17,7 +17,7 @@
 //#include "EventConfig.h"
 #include "ChannelData.h"
 
-class EventConfig;
+//class EventConfig;
 class AnaEvent;
 
 typedef std::vector<AnaEvent> AnaEventVec;

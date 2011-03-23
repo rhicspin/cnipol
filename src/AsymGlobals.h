@@ -9,16 +9,11 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TLine.h"
-//#include "TRandom.h"
 
-//#include "AnaInfo.h"
 #include "Asym.h"
 #include "AsymHeader.h"
-//#include "AsymRoot.h"
 #include "AsymRunDB.h"
 #include "AsymCalc.h"
-//#include "RunInfo.h"
-//#include "TargetInfo.h"
 
 class  AsymRoot;
 class  AsymRunDB;
@@ -122,7 +117,7 @@ extern TRecordConfigRhicStruct *cfginfo;
 extern float phiRun5[NSTRIP];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[NSTRIP];   // phi-angle for each strips of Run6 (l=18.0cm)
 extern float phit[NSTRIP];      // phi-angle for each strips in approximation 45,90,135... 
-extern float gPhi[NSTRIP];       // phi-angle
+extern float gPhi[NSTRIP];      // phi-angle
 
 // target position infomation 
 extern int ndelim;
@@ -143,7 +138,6 @@ extern TDirectory *Bunch;
 extern TDirectory *ErrDet;
 extern TDirectory *Asymmetry;
 
-//
 //  Histogram Definitions 
 //
 //  Number arrays are TOT_WFD_CH, not NSTRIP, because there are events with strip>72,73,74,75
@@ -193,18 +187,5 @@ extern TH2F *asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
 extern TH2F *asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
 extern TH2F *asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
 extern TH2F *scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
-
-// HBOOK stuff
-//extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
-//extern void HHPAK(int, float*);
-//extern void HHPAKE(int, float*);
-//extern void HHF1(int, float, float);
-////extern void HHKIND(int, int*, char*);
-//extern float HHMAX(int);
-//extern float HHSTATI(int hid, int icase, char * choice, int num);
-//extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
-//	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
-//extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
-//	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 
 #endif

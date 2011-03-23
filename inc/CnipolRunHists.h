@@ -32,10 +32,10 @@ public:
    CnipolRunHists(TDirectory *dir);
    ~CnipolRunHists();
 
-   void BookHists(std::string sid="");
-   void Fill(ChannelEvent *ch, std::string sid="");
-   void PostFill();
-   void Print(const Option_t* opt="") const;
+   void  BookHists(std::string sid="");
+   //virtual void Print(const Option_t* opt="") const;
+   void  Print(const Option_t* opt="") const;
+   void  Fill(ChannelEvent *ch, std::string sid="");
 
    ClassDef(CnipolRunHists, 1)
 };

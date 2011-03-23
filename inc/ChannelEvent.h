@@ -36,7 +36,7 @@ class ChannelEvent : public TObject
 {
 public:
 
-   EventConfig    *fEventConfig;
+   EventConfig    *fEventConfig; //!
 	ChannelEventId  fEventId;
    ChannelData     fChannel;
 

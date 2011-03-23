@@ -5,10 +5,6 @@
 
 #include "ChannelEvent.h"
 
-#include "RunInfo.h"
-#include "Kinema.h"
-
-
 ClassImp(ChannelEvent)
 
 using namespace std;
@@ -24,6 +20,29 @@ ChannelEvent::ChannelEvent() : TObject(), fEventConfig(0), fEventId(),
 ChannelEvent::~ChannelEvent()
 {
 }
+
+
+/** */
+UChar_t ChannelEvent::GetDetectorId()
+{
+   return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1;
+}
+
+
+/** */
+UInt_t ChannelEvent::GetRevolutionId() { return fEventId.fRevolutionId; }
+
+
+/** */
+UChar_t ChannelEvent::GetChannelId() { return fEventId.fChannelId + 1; }
+
+
+/** */
+UChar_t ChannelEvent::GetBunchId() { return fEventId.fBunchId; }
+
+
+/** */
+UShort_t ChannelEvent::GetDelimiterId() { return fEventId.fDelimiterId; }
 
 
 /** */
@@ -257,8 +276,8 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
    
    if (fabs(delta) <= 18) return true; // in ns
 
-   //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo.MassSigma/sqrt(GetEnergyA());
-   //if ( fabs(delta) < gRunConsts[].M2T * gAnaInfo.OneSigma * gAnaInfo.MassSigma / sqrt(GetEnergyA()) ) return true;
+   //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * dproc.MassSigma/sqrt(GetEnergyA());
+   //if ( fabs(delta) < gRunConsts[].M2T * dproc.OneSigma * dproc.MassSigma / sqrt(GetEnergyA()) ) return true;
 
    return false;
 }
