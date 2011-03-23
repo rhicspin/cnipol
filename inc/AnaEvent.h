@@ -14,7 +14,7 @@
 #include "TObject.h"
 
 #include "AnaEventId.h"
-//#include "EventConfig.h"
+#include "EventConfig.h"
 #include "ChannelData.h"
 
 //class EventConfig;
