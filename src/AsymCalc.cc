@@ -1562,6 +1562,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
 
    sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", runinfo.RUNID);
 
+   //asym_sinphi_fit = (TH2F*) gAsymRoot.fHists->d["run"]->o["asym_sinphi_fit"];
    asym_sinphi_fit->SetName("asym_sinphi_fit");
    asym_sinphi_fit->SetTitle(htitle);
    asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
@@ -1591,7 +1592,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    // Dump TGraphError obect to TH2D histogram
    asym_sinphi_fit->GetListOfFunctions()->Add(tg, "p");
 
-   delete tg;
+   //delete tg;
  
    // Get fitting results
    P[0]     = func->GetParameter(0);
@@ -1609,12 +1610,12 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    sprintf(text, "(%3.2f #pm %3.2f) * sin#left(#phi + (%+5.2f #pm %3.2f)#right)", P[0], P[1], phase[0], phase[1]);
    txt = new TLatex(0.3, max*0.85, text);
    asym_sinphi_fit->GetListOfFunctions()->Add(txt);
-   delete txt;
+   //delete txt;
 
    sprintf(text, "#chi^{2} / ndf = %5.2f", chi2dof);
    txt = new TLatex(0.3, max*0.7, text);
    asym_sinphi_fit->GetListOfFunctions()->Add(txt);
-   delete txt;
+   //delete txt;
 }
 
 

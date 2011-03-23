@@ -35,20 +35,20 @@ CnipolRunHists::~CnipolRunHists()
 /** */
 void CnipolRunHists::BookHists(string sid)
 { //{{{
-   TDirectory *dir;
-
+   //TDirectory *dir;
    //dir = new TDirectoryFile("feedback", "feedback", "", fDir);
    //dir = Feedback;
    //DrawObjContainer *feedback = new DrawObjContainer(dir);
 
    //DrawObjContainer *kinema;
 
-   dir = Bunch;
-   DrawObjContainer *bunch = new DrawObjContainer(dir);
+   DrawObjContainer *bunch = new DrawObjContainer(Bunch);
 
    //DrawObjContainer *errdet;
 
-   dir = Asymmetry;
+   //Asymmetry->SetMother(fDir);
+   TDirectory *dir = new TDirectoryFile("Asymmetry", "Asymmetry", "", fDir);
+   //DrawObjContainer *asymmetry = new DrawObjContainer((TDirectory*) Asymmetry);
    DrawObjContainer *asymmetry = new DrawObjContainer(dir);
 
    //feedback->fDir  = fDir;
@@ -125,14 +125,19 @@ void CnipolRunHists::BookHists(string sid)
 
    //asymmetry->o["asym_vs_bunch_x90"]    = asym_vs_bunch_x90;
    //asymmetry->o["asym_vs_bunch_y45"]    = asym_vs_bunch_y45;
-   //asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
+   asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
    //asymmetry->o["scan_asym_sinphi_fit"] = scan_asym_sinphi_fit;
+
 
    sprintf(hName,  "asym_vs_bunch_x45");
    sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", runinfo.RUNID);
    o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");
+
+   //sprintf(hName,  "asym_sinphi_fit");
+   //sprintf(hTitle, "asym_sinphi_fit");
+   //o[hName] = new TH2F(hName, hTitle, 1, 0, 1, 1, 0, 1);
 
    //d["FeedBack"]  = feedback;
    //d["Kinema2"]   = kinema;
