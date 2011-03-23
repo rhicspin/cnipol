@@ -6,35 +6,18 @@
 #include <vector>
 
 #include "TFile.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TF1.h"
 #include "TTree.h"
-#include "TLine.h"
-#include "TStyle.h"
 
-#include "Asym.h"
-#include "AlphaCalibrator.h"
-#include "AnaEvent.h"
 #include "AsymGlobals.h"
-#include "AnaInfo.h"
-#include "RunInfo.h"
 
+#include "AnaEvent.h"
+#include "ChannelData.h"
 #include "ChannelEvent.h"
-#include "CnipolCalibHists.h"
-#include "CnipolHists.h"
-#include "CnipolRunHists.h"
-#include "CnipolScalerHists.h"
-#include "CnipolTargetHists.h"
-#include "CnipolProfileHists.h"
-#include "DeadLayerCalibrator.h"
-#include "DeadLayerCalibratorEDepend.h"
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
 
-struct StructRunConst;
-struct StructFeedBack;
-struct processEvent;
+//struct StructFeedBack;
+//struct processEvent;
 
 
 class AsymRoot
@@ -59,7 +42,6 @@ public:
    //ChannelEventMap      fChannelEvents;
    ChannelEventSet       fChannelEvents;
    EventConfig          *fEventConfig;
-   //CnipolHists          *fCnipolHists;
    DrawObjContainer     *fHists;
 
 public:
@@ -69,11 +51,11 @@ public:
  
    void   RootFile(std::string filename);
    void   BookHists();
-	Int_t  BookHists2(TDatprocStruct &dproc, StructFeedBack &feedback);
+	Int_t  BookHists2(StructFeedBack &feedback);
    void   DeleteHistogram();
    void   Calibrate();
    void   CalibrateFast();
-   void   CloseROOTFile();
+   void   Finalize();
    void   CreateTrees();
    Bool_t UseCalibFile(std::string cfname="");
    void   UpdateRunConfig();

@@ -14,7 +14,7 @@
 
 #include "TObject.h"
 
-#include "Kinema.h"
+#include "AsymGlobals.h"
 
 #include "ChannelData.h"
 #include "ChannelEventId.h"
@@ -23,7 +23,7 @@
 //class EventConfig;
 //class ChannelData;
 //class Calibrator;
-//class ChannelEvent;
+class ChannelEvent;
 
 
 typedef std::vector<ChannelEvent> ChannelEventVec;
@@ -36,7 +36,7 @@ class ChannelEvent : public TObject
 {
 public:
 
-   EventConfig    *fEventConfig; //!
+   EventConfig    *fEventConfig;
 	ChannelEventId  fEventId;
    ChannelData     fChannel;
 
@@ -45,11 +45,15 @@ public:
    ChannelEvent();
    ~ChannelEvent();
 
-   UChar_t  GetDetectorId();
-   UInt_t   GetRevolutionId();
-   UChar_t  GetChannelId();
-   UChar_t  GetBunchId();
-   UShort_t GetDelimiterId();
+   UChar_t  GetDetectorId()   { return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1; }
+   UInt_t   GetRevolutionId() { return fEventId.fRevolutionId; }
+   UChar_t  GetChannelId()    { return fEventId.fChannelId + 1; }
+   UChar_t  GetBunchId()      { return fEventId.fBunchId; }
+   UShort_t GetDelimiterId()  { return fEventId.fDelimiterId; }
+   UChar_t  GetAmpltd()       { return fChannel.fAmpltd; }
+   UChar_t  GetIntgrl()       { return fChannel.fIntgrl; }
+   UChar_t  GetTdc()          { return fChannel.fTdc; }
+   UChar_t  GetTdcAMax()      { return fChannel.fTdcAMax; }
    Float_t  GetEnergyA();
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();

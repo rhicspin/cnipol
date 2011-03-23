@@ -16,6 +16,8 @@
 
 #include "RunDBReader.h"
 
+#include <iostream>
+
 using namespace std;
 
 int Usage(char *argv[])
@@ -43,12 +45,12 @@ int Example(char *argv[])
 
 int main(int argc, char *argv[])
 {
-   //extern TStructRunDB rundb;
+   //extern DbEntry rundb;
    recordConfigRhicStruct  *cfginfo;
    //extern int printConfig(recordConfigRhicStruct *);
 
    char * RunID;
-   confdir = getenv("CONFDIR");
+   //char * confdir = getenv("CONFDIR");
 
    int opt;
 

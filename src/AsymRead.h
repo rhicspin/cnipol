@@ -22,13 +22,8 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "AsymCalc.h"
 #include "AsymGlobals.h"
-#include "AsymHbook.h"
-#include "AsymMain.h"
-#include "AsymProcess.h"
-#include "AsymRecover.h"
-#include "AsymRootGlobals.h"
+#include "RunInfo.h"
 
 #define BSIZE_OFFLINE 0x1000000                 // 16 MByte
 
@@ -46,13 +41,13 @@ public:
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
 
-   void ReadRecBegin(TStructRunInfo &ri);
+   void ReadRecBegin(RunInfo &ri);
    void ReadDataFast();
 };
 
 void readDataFast();
-void ReadRecBegin(TStructRunInfo &ri);
-void  readloop();
+void ReadRecBegin(RunInfo &ri);
+void readloop();
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);

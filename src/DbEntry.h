@@ -4,24 +4,18 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <set>
-#include <sstream>
 #include <stdio.h>
 #include <string>
-#include <limits.h>
 
 #include "TObject.h"
 
-#include "AsymRunDB.h"
-
-class TStructRunDB;
 
 typedef std::map<std::string, std::string> DbFieldMap;
 typedef std::map<std::string, void*> DbFieldMapNew;
 typedef std::map<std::string, Bool_t> DbFieldSaveFlagMap;
 
 
-class TStructRunDB {
+class DbEntry {
 
 public:
 
@@ -57,27 +51,27 @@ public:
 
 public:
 
-   TStructRunDB();
-   ~TStructRunDB();
+   DbEntry();
+   ~DbEntry();
 
-   //bool operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const;
-   bool operator<(const TStructRunDB &rhs) const;
-   bool operator==(const TStructRunDB &rhs) const;
+   //bool operator()(const DbEntry &rec1, const DbEntry &rec2) const;
+   bool operator<(const DbEntry &rhs) const;
+   bool operator==(const DbEntry &rhs) const;
    void Streamer(TBuffer &buf);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
    //void PrintAsDbEntry(FILE *f=stdout) const;
    void PrintAsDbEntry(std::ostream &o=std::cout, Bool_t printCommonFields=false) const;
    void ProcessLine(std::string sline);
-   void UpdateFields(TStructRunDB &dbrun);
+   void UpdateFields(DbEntry &dbrun);
    void UpdateValues();
    void SetAsymVersion(std::string version);
 };
 
-TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec);
-TBuffer & operator>>(TBuffer &buf, TStructRunDB *&rec);
+TBuffer & operator<<(TBuffer &buf, DbEntry *&rec);
+TBuffer & operator>>(TBuffer &buf, DbEntry *&rec);
 
-//struct TStructRunDBCompare {
+//struct DbEntryCompare {
 //}
 
 #endif

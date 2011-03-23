@@ -1,6 +1,11 @@
 
 #include "dLayerChecker.h"
 
+#include <string.h>
+
+#include "AsymRunDB.h"
+#include "RunInfo.h"
+
 using namespace std;
 
 
@@ -317,8 +322,8 @@ int readDLayer(char *infile)
 
 bool isStripAlive(unsigned short strp)
 {
-   for(int jj=0;jj<runinfo.NDisableStrip;jj++) {
-      if((int)strp==runinfo.fDisabledChannels[jj]) {
+   for(int jj=0;jj<gRunInfo.NDisableStrip;jj++) {
+      if((int)strp==gRunInfo.fDisabledChannels[jj]) {
          return false;
       }
    }
@@ -450,7 +455,7 @@ void getPreviousRun(bool thisrun)
 
         } // end-of-while(getline-loop)
 
-        runinfo.NDisableStrip = FindDisableStrip();
+        gRunInfo.NDisableStrip = FindDisableStrip();
 
         if(thisrun==false)
         {

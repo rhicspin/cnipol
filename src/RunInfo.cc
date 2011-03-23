@@ -1,13 +1,14 @@
+#include "RunInfo.h"
 
 #include <sstream>
 
-#include "RunInfo.h"
+#include "AsymGlobals.h"
 
 using namespace std;
 
 
 /** */
-TStructRunInfo::TStructRunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
+RunInfo::RunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
    StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0), fAsymVersion(ASYM_VERSION)
 {
    GoodEventRate         = 0; // GoodEventRate;
@@ -38,31 +39,31 @@ TStructRunInfo::TStructRunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
 
 
 /** */
-TStructRunInfo::~TStructRunInfo() { }
+RunInfo::~RunInfo() { }
 
 
-string TStructRunInfo::GetAlphaCalibFileName() const
+string RunInfo::GetAlphaCalibFileName() const
 { return ""; }
 
 
-string TStructRunInfo::GetDlCalibFileName() const
+string RunInfo::GetDlCalibFileName() const
 { return ""; }
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec)
+TBuffer & operator<<(TBuffer &buf, RunInfo *&rec)
 {
    if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunInfo *rec) : \n");
+   //printf("operator<<(TBuffer &buf, RunInfo *rec) : \n");
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec)
+TBuffer & operator>>(TBuffer &buf, RunInfo *&rec)
 {
-   //printf("operator>>(TBuffer &buf, TStructRunInfo *rec) : \n");
+   //printf("operator>>(TBuffer &buf, RunInfo *rec) : \n");
 
    //if (!rec) {
    //   printf("ERROR in operator>>\n");
@@ -72,8 +73,8 @@ TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec)
    // if object has been created already delete it
    //free(rec);
 
-   //rec = (TStructRunInfo *) realloc(rec, sizeof(TStructRunInfo) + 11*sizeof(char));
-   //rec = (TStructRunInfo *) realloc(rec, sizeof(TStructRunInfo));
+   //rec = (RunInfo *) realloc(rec, sizeof(RunInfo) + 11*sizeof(char));
+   //rec = (RunInfo *) realloc(rec, sizeof(RunInfo));
    //rec->TgtOperation = new char[10];
 
    rec->Streamer(buf);
@@ -82,12 +83,12 @@ TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec)
 
 
 /** */
-void TStructRunInfo::Streamer(TBuffer &buf)
+void RunInfo::Streamer(TBuffer &buf)
 {
    TString tstr;
 
    if (buf.IsReading()) {
-      //printf("reading TStructRunInfo::Streamer(TBuffer &buf) \n");
+      //printf("reading RunInfo::Streamer(TBuffer &buf) \n");
       buf >> Run;
       buf >> RUNID;
       buf >> tstr; runName = tstr.Data();
@@ -122,7 +123,7 @@ void TStructRunInfo::Streamer(TBuffer &buf)
       buf.ReadFastArray(DisableBunch, NBUNCH);
 
    } else {
-      //printf("writing TStructRunInfo::Streamer(TBuffer &buf) \n");
+      //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
       buf << Run;
       buf << RUNID;
       tstr = runName; buf << tstr;
@@ -159,14 +160,14 @@ void TStructRunInfo::Streamer(TBuffer &buf)
 
 
 /** */
-void TStructRunInfo::Print(const Option_t* opt) const
+void RunInfo::Print(const Option_t* opt) const
 {
    PrintAsPhp();
 }
 
 
 /** */
-void TStructRunInfo::PrintAsPhp(FILE *f) const
+void RunInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
@@ -240,12 +241,12 @@ void TStructRunInfo::PrintAsPhp(FILE *f) const
 
 
 /** */
-short TStructRunInfo::GetPolarimeterId()
+short RunInfo::GetPolarimeterId()
 {
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
 
    if (subStrL->GetEntriesFast() < 1) {
-      printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+      printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
       return -1;
    }
 
@@ -257,7 +258,7 @@ short TStructRunInfo::GetPolarimeterId()
    if (fPolId >=0 && fPolId <=3)
       GetBeamIdStreamId(fPolId, fPolBeam, fPolStream);
    else {
-      printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+      printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
       return -1;
    }
 
@@ -266,20 +267,20 @@ short TStructRunInfo::GetPolarimeterId()
 
 
 /** */
-short TStructRunInfo::GetPolarimeterId(short beamId, short streamId)
+short RunInfo::GetPolarimeterId(short beamId, short streamId)
 {
    if (beamId == 1 && streamId == 1) { fPolId = 3; return 3; }
    if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
    if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
    if (beamId == 2 && streamId == 2) { fPolId = 2; return 2; }
    
-   printf("WARNING: TStructRunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+   printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
    return -1;
 }
 
 
 /** */
-void TStructRunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
+void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
 {
    if (polId == 3) { beamId = 1; streamId = 1; };
    if (polId == 1) { beamId = 1; streamId = 2; };
@@ -291,7 +292,7 @@ void TStructRunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t
 
 
 /** */
-void TStructRunInfo::Update(TStructRunDB &rundb)
+void RunInfo::Update(DbEntry &rundb)
 {
    stringstream sstr;
 
@@ -304,19 +305,75 @@ void TStructRunInfo::Update(TStructRunDB &rundb)
    // For compatibility reasons set the Run variable
    // Taken from AsymRunDb
    if (RUNID < 6500) { // Run undefined
-      gRunInfo.Run = 0;
+      Run = 0;
 
    } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
-      gRunInfo.Run = 5;
+      Run = 5;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun5[i];
 
    } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
-      gRunInfo.Run = 6;
+      Run = 6;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun6[i];
 
    } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
-      gRunInfo.Run = 9;
+      Run = 9;
 
    } else
-      gRunInfo.Run = 11;
+      Run = 11;
 }
+
+
+// Description : Disable detector and configure active strips
+//
+// Input       : int mask.detector
+// Return      : gRunInfo.ActiveDetector[i] remains masked strip configulation
+void RunInfo::ConfigureActiveStrip(int mask)
+{ //{{{
+   // Disable Detector First
+   for (int i=0; i<NDETECTOR; i++) {
+
+      if ( (~mask>>i) & 1) {
+
+         ActiveDetector[i] = 0x000;
+
+         for (int j=0; j<NSTRIP_PER_DETECTOR; j++) {
+            NActiveStrip--;
+            ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
+         }
+      }
+   }
+
+   // Configure Active Strips
+   int det, strip=0;
+
+   for (int i=0; i<NDisableStrip; i++) {
+
+      det = fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
+
+      // skip if the detector is already disabled
+      if ( (mask >> det) & 1) {
+         strip = fDisabledChannels[i] - det * NSTRIP_PER_DETECTOR;
+         ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
+         ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
+         NActiveStrip--;
+      }
+   }
+
+   // Active Detector and Strip Configulation
+   printf("ReConfigured Active Detector =");
+
+   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   printf("\n");
+   //    printf("Active Strip Config =");
+   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
+   //    printf("\n");
+
+   printf("Reconfigured Active Strip Config =");
+
+   for (int i=0; i<NSTRIP; i++) {
+     if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
+     printf("%d", ActiveStrip[i]);
+   }
+
+   printf("\n");
+} //}}}

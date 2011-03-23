@@ -12,12 +12,9 @@
 #ifndef Asym_h
 #define Asym_h
 
-#include <bitset>
-#include <map>
-#include <set>
-#include <string>
+#include "TH1.h"
+#include "TGraphErrors.h"
 
-#include "rhicpol.h"
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
@@ -27,15 +24,15 @@ const int ASYM_DEFAULT = -999;
 
 // whole info for one event
 struct processEvent {
-    int stN;   // strip number
-    int amp;   // amplitude of signal
-    int tdc;   // time of flight
-    int tdcmax;  // tdc max amplitude
-    int intg;  // integral of signal
-    int bid;   // bunch crossing number
-    long delim;
-    int rev0;
-    int rev;
+   int  stN;   // strip number
+   int  amp;   // amplitude of signal
+   int  tdc;   // time of flight
+   int  tdcmax;  // tdc max amplitude
+   int  intg;  // integral of signal
+   int  bid;   // bunch crossing number
+   long delim;
+   int  rev0;
+   int  rev;
 };
 
 struct asymStruct {
@@ -59,17 +56,16 @@ struct ErrorDetector {
 };
 
 struct atdata_struct {
-    long ia;
-    long it;
-    long is;
-    long ib;
-    long id;
-    int strip;
-    float e;
-    float tof;
-    int spin;
+   long ia;
+   long it;
+   long is;
+   long ib;
+   long id;
+   int strip;
+   float e;
+   float tof;
+   int spin;
 };
-
 
 class RunConst
 {
@@ -85,30 +81,29 @@ public:
    void Print(const Option_t* opt="") const;
 };
 
-
 struct StructMask {
-  int detector;
+   int detector;
 };
 
 struct StructAnomaly {
-  int nstrip;
-  int st[NSTRIP];
-  float bad_st_rate;
-  int strip_err_code;
-  int nbunch;
-  int bunch[NBUNCH];
-  float bad_bunch_rate;
-  int bunch_err_code;
+   int nstrip;
+   int st[NSTRIP];
+   float bad_st_rate;
+   int strip_err_code;
+   int nbunch;
+   int bunch[NBUNCH];
+   float bad_bunch_rate;
+   int bunch_err_code;
 };
 
 struct StructUnrecognized {
-  StructAnomaly anomaly;
+   StructAnomaly anomaly;
 };
 
 struct StructSinPhi {
-  float P[2];
-  float dPhi[2];
-  float chi2;
+   float P[2];
+   float dPhi[2];
+   float chi2;
 };
 
 struct StructExtInput {
@@ -116,7 +111,6 @@ struct StructExtInput {
   int MASSCUT;
   int TSHIFT;
 };
-
 
 struct StructAverage {
   float total;
@@ -131,7 +125,6 @@ struct StructHistStat {
   float maxbin;
 };
 
-
 struct StructFeedBack {
   float RMS[NSTRIP];
   float mdev[NSTRIP];
@@ -141,7 +134,6 @@ struct StructFeedBack {
   float strip[NSTRIP];
 };
 
-
 struct StructReadFlag {
   int RECBEGIN;
   int PCTARGET;
@@ -149,7 +141,6 @@ struct StructReadFlag {
   int BEAMADO;
   int RHICCONF;
 };
-
 
 struct StructFlag {
   int VERBOSE;
@@ -159,7 +150,6 @@ struct StructFlag {
   int mask_bunch;
   int EXE_ANOMALY_CHECK;
 };
-
 
 struct StructStripCounter {
   long int NStrip[3][NSTRIP];   // strip counters for 3 different spin states
@@ -214,6 +204,58 @@ struct StructHist {
   float ymax;
 };
 
+// Bunch by Bunch
+struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
+   float Ax90[2][NBUNCH];
+   float Ax45[2][NBUNCH];
+   float Ay45[2][NBUNCH];
+   struct Ave {
+      float Ax90[2];  // bunch averaged asymmetry 
+      float Ax45[2];
+      float Ay45[2];
+      float Ax[2];   // left-right average asymmetry 
+      float Ay[2];   // top-bottom average asymmetry
+      float phase[2];// spin vector angle w.r.t vertical axis [rad]
+   } ave;
+};
+
+struct StructSpeLumi {
+   float Cnts[NBUNCH];
+   float dCnts[NBUNCH];
+   float ave;
+   float max;
+   float min;
+};
+
+struct StructStrip {
+  float average[1];
+  float allowance;
+  float max;
+  int   st;
+};
+
+struct StructEnergyCorr {
+  float p[3][NSTRIP];
+  float perr[3][NSTRIP];
+};
+
+struct StructStripCheck {
+  StructStrip dev, chi2, p1, width, evnt;
+  StructEnergyCorr ecorr;
+};
+
+struct StructBunch {
+  float average[1];
+  float sigma_over_mean;
+  float sigma;
+  float allowance;
+  float max_dev;
+};
+
+struct StructBunchCheck {
+   StructBunch rate, asym[3];// asym[0]:x90, asym[1]:x45, asym[2]:y45
+};
+
 // Hbook Associated Stuff
 extern "C" {
 
@@ -241,6 +283,21 @@ float GetMax(int N, float A[]);
 float GetMin(int N, float A[]);
 void  GetMinMax(int N, float A[], float margin, float &min, float &max);
 void  GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
+float WeightedMean(float *A, float *dA, int NDAT);
+float WeightedMeanError(float *dA, int NDAT);
+void  CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve);
+float CalcDivisionError(float x, float y, float dx, float dy);
+
 float QuadErrorDiv(float x, float y, float dx, float dy);
+float QuadErrorSum(float dx, float dy);
+void  DrawText(TH1 *h, float x, float y, int color, char *text);
+void  DrawLine(TH1 *h, float x1, float y1, float x2, float y2, int color, int lstyle, int lwidth);
+void  DrawHorizLine(TH1 *h, float x1, float x2, float y, int color, int lstyle, int lwidth);
+void  DrawVertLine (TH1 *h, float x, float y, int color, int lwidth);
+
+void  binary_zero(int n, int mb);
+void  sqass(float A, float B, float C, float D, float *asym, float *easym);
+
+TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
 
 #endif

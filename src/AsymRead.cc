@@ -7,10 +7,19 @@
 //  Creation  :   10/17/2005
 //
 
-//#include "AsymRootGlobals.h"
+#include "AsymRead.h"
+
+#include <sstream>
+
+#include "TRandom.h"
 #include "TStopwatch.h"
 
-#include "AsymRead.h"
+#include "AsymCalc.h"
+#include "AsymProcess.h"
+#include "AsymRecover.h"
+#include "AsymRoot.h"
+#include "AnaInfo.h"
+#include "TargetInfo.h"
 
 using namespace std;
 
@@ -64,7 +73,7 @@ RawDataProcessor::~RawDataProcessor()
 
 
 /** */
-void RawDataProcessor::ReadRecBegin(TStructRunInfo &ri)
+void RawDataProcessor::ReadRecBegin(RunInfo &ri)
 {
    recordBeginStruct *recBegin;
 
@@ -225,10 +234,10 @@ void RawDataProcessor::ReadDataFast()
 
             if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
 
-            //if (nReadEvents % dproc.thinout == 0)
+            //if (nReadEvents % gAnaInfo.thinout == 0)
             //if (nReadEvents > 100) break;
 
-            if (gRandom->Rndm() > dproc.fFastCalibThinout) continue;
+            if (gRandom->Rndm() > gAnaInfo.fFastCalibThinout) continue;
 
             gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
@@ -325,8 +334,8 @@ void readDataFast()
 
             if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
 
-            //if (nReadEvents % dproc.thinout == 0)
-            if (gRandom->Rndm() <= dproc.fFastCalibThinout) {
+            //if (nReadEvents % gAnaInfo.thinout == 0)
+            if (gRandom->Rndm() <= gAnaInfo.fFastCalibThinout) {
 
                gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
 
@@ -363,7 +372,7 @@ void readDataFast()
 
 
 /** */
-void ReadRecBegin(TStructRunInfo &ri)
+void ReadRecBegin(RunInfo &ri)
 {
    FILE *fp = fopen(gDataFileName.c_str(), "r");
 
@@ -479,7 +488,7 @@ void readloop()
    int   rval;
    int   recSize;
    int   flag = 0;     // exit from while when flag==1
-   //int THINOUT = Flag.feedback ? dproc.thinout : Nskip;
+   //int THINOUT = Flag.feedback ? gAnaInfo.thinout : Nskip;
 
    // reading the data till its end ...
    if ((fp = fopen(gDataFileName.c_str(), "r")) == NULL) {
@@ -585,14 +594,14 @@ void readloop()
       case REC_PCTARGET:
          // Do not process this record for calibration runs (CMODE). May contain
          // invalid ndelim info
-         if (!ReadFlag.PCTARGET && !dproc.CMODE) {
+         if (!ReadFlag.PCTARGET && !gAnaInfo.CMODE) {
 
             printf("Reading REC_PCTARGET record...\n");
 
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
-            if (dproc.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim); }
+            if (gAnaInfo.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim); }
 
             ReadFlag.PCTARGET = 1;
          }
@@ -612,7 +621,7 @@ void readloop()
          //   printf("i: %d, %d\n", i, *(my_pointer+i));
          //}
 
-         if (dproc.HasProfileBit()) 
+         if (gAnaInfo.HasProfileBit()) 
             ProcessRecord(rec.countRate);
          break;
 
@@ -625,7 +634,7 @@ void readloop()
 
             for (int bid=0; bid<NBUNCH; bid++) {
                wcmdist[bid] = wcmdat.fillDataM[bid*3];
-               gRunInfo.WcmSum += wcmdist[bid] * fillpat[bid];
+               gRunInfo.WcmSum += wcmdist[bid] * gFillPattern[bid];
             }
 
             gRunInfo.WcmAve = gRunInfo.WcmSum/float(gRunInfo.NActiveBunch);
@@ -648,7 +657,7 @@ void readloop()
             fprintf(stdout,"RHIC Beam:   %1d\n", gRunInfo.fPolBeam);
 
             // Add inj_tshift for injection measurements
-            if (gRunInfo.BeamEnergy < 30) dproc.tshift += dproc.inj_tshift;
+            if (gRunInfo.BeamEnergy < 30) gAnaInfo.tshift += gAnaInfo.inj_tshift;
 
             int pat;
 
@@ -657,49 +666,49 @@ void readloop()
                pat = beamdat.polarizationFillPatternS[bid*3];
 
                if (pat > 0) {
-                  spinpat[bid] = 1;
+                  gSpinPattern[bid] = 1;
                } else if (pat < 0) {
-                  spinpat[bid] = -1;
+                  gSpinPattern[bid] = -1;
                } else {
-                  spinpat[bid] = 0;
+                  gSpinPattern[bid] = 0;
                }
 
                pat = beamdat.measuredFillPatternM[bid*3];
 
                if (pat > 0) {
-                  fillpat[bid] = 1;
+                  gFillPattern[bid] = 1;
                   gRunInfo.NFilledBunch++;
                } else if (pat < 0) {
-                  fillpat[bid] = -1;
+                  gFillPattern[bid] = -1;
                   gRunInfo.NFilledBunch++;
                } else {
-                  fillpat[bid] = 0;
+                  gFillPattern[bid] = 0;
                }
             }
 
             // Print Spin Pattern and Recover Spin Pattern by User Defined ones
             cout << "\nSpin Pattern Used:" << endl;
-            PrintBunchPattern(spinpat);
+            PrintBunchPattern(gSpinPattern);
 
             if (Flag.spin_pattern >= 0) {
                recover.OverwriteSpinPattern(Flag.spin_pattern);
-               PrintBunchPattern(spinpat);
+               PrintBunchPattern(gSpinPattern);
             }
 
             // Print Fill Pattern and Recover Fill Pattern by User Defined ones
             cout << "\nFill Pattern Used:" << endl;
-            PrintBunchPattern(fillpat);
+            PrintBunchPattern(gFillPattern);
 
             if (Flag.fill_pattern >= 0) {
                recover.OverwriteFillPattern(Flag.fill_pattern);
-               PrintBunchPattern(fillpat);
+               PrintBunchPattern(gFillPattern);
             }
 
             // Mask bad/disabled bunches
             if (gRunInfo.NDisableBunch) {
                recover.MaskFillPattern();
                cout << "\nMasked Fill Pattern : " << endl;
-               PrintBunchPattern(fillpat);
+               PrintBunchPattern(gFillPattern);
             }
 
             // Print active Bunch
@@ -707,7 +716,7 @@ void readloop()
 
             for (int i=0; i<NBUNCH; i++) {
                if (i%10 == 0) cout << " ";
-               ActiveBunch[i] = fillpat[i];
+               ActiveBunch[i] = gFillPattern[i];
                cout << ActiveBunch[i];
             }
 
@@ -731,7 +740,7 @@ void readloop()
          break;
 
       case REC_WFDV8SCAL:
-         if (dproc.HasScalerBit())
+         if (gAnaInfo.HasScalerBit())
             ProcessRecord(rec.wfd);
          break;
 
@@ -749,7 +758,7 @@ void readloop()
         if (!READ_FLAG) {
 
            // Configure Active Strip Map
-           ConfigureActiveStrip(mask.detector);
+           gRunInfo.ConfigureActiveStrip(mask.detector);
 
            printConfig(cfginfo);
 
@@ -775,7 +784,7 @@ void readloop()
            Nevent    = ATPtr->subhead.Events + 1;
 
            // count the total number of event records in raw file
-           dproc.nEventsTotal += Nevent;
+           gAnaInfo.nEventsTotal += Nevent;
 
            i += sizeof(subheadStruct) + Nevent*sizeof(ATStruct);
 
@@ -795,7 +804,7 @@ void readloop()
               //ds: Skip events if already read enough events specified by user
               if (gMaxEventsUser > 0 && Nevtot >= gMaxEventsUser) break;
 
-              if (Nread % dproc.thinout == 0) {
+              if (Nread % gAnaInfo.thinout == 0) {
 
                  //Nread++;
                  Nevtot++;
@@ -817,7 +826,7 @@ void readloop()
                        gRunInfo.MaxRevolution = cntr.revolution;
 
                     if (event.stN == 72 && event.delim != tgt.eventID) {
-                       tgt.x += dproc.target_count_mm * (float)tgt.vector;
+                       tgt.x += gAnaInfo.target_count_mm * (float)tgt.vector;
                        tgt.vector=-1;
                     }
 
@@ -836,7 +845,7 @@ void readloop()
 
                  gAsymRoot.SetChannelEvent(event);
 
-                 if (dproc.SAVETREES.any()) { gAsymRoot.AddChannelEvent(); }
+                 if (gAnaInfo.SAVETREES.any()) { gAsymRoot.AddChannelEvent(); }
 
                  //cout << " i "            << i
                  //     << " Nevent "       << Nevent
@@ -850,18 +859,18 @@ void readloop()
 
                  // Raw histograms
                  //ds: Why don't we save raw histograms in regular passes?
-                 //if (!Flag.feedback && dproc.RAWHISTOGRAM)
-                 if (event.stN < 72) {
-                    bunch_dist_raw -> Fill(event.bid);
-                    strip_dist_raw -> Fill(event.stN);
-                    tdc_raw        -> Fill(event.tdc);
-                    adc_raw        -> Fill(event.amp);
-                    tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
+                 //if (!Flag.feedback && gAnaInfo.RAWHISTOGRAM)
+                 //if (event.stN < 72) {
+                 //   bunch_dist_raw -> Fill(event.bid);
+                 //   strip_dist_raw -> Fill(event.stN);
+                 //   tdc_raw        -> Fill(event.tdc);
+                 //   adc_raw        -> Fill(event.amp);
+                 //   tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
 
-                    //ds: Don't we need to compare absolute value of fillpat[bid] with 1?
-                    if (fabs(fillpat[event.bid]) != 1)
-                       tdc_vs_adc_false_bunch_raw->Fill(event.amp, event.tdc);
-                 }
+                 //   //ds: Don't we need to compare absolute value of gFillPattern[bid] with 1?
+                 //   if (fabs(gFillPattern[event.bid]) != 1)
+                 //      tdc_vs_adc_false_bunch_raw->Fill(event.amp, event.tdc);
+                 //}
 
                  // process event for following case:
                  //    fill pattern     = 1
@@ -871,7 +880,7 @@ void readloop()
                     //printf("channel111: %d, %d\n", event.stN, gRunInfo.ActiveStrip[event.stN]);
                     //printf("channel111: %d\n", event.stN);
 
-                 if ( fillpat[event.bid] == 1 || dproc.CMODE == 1) // || event.stN >= 72) ) //&&
+                 if ( gFillPattern[event.bid] == 1 || gAnaInfo.CMODE == 1) // || event.stN >= 72) ) //&&
                       //gRunInfo.ActiveStrip[event.stN] )
                  {
                     event_process(&event);
@@ -883,7 +892,7 @@ void readloop()
                     //if (Flag.feedback){
                     //   printf("Feedback Mode Ncounts = %ld \r", Nread) ;
                     //} else {
-                       printf("%.3f : Proccesing  Ncounts   = %u \r", gRunInfo.RUNID, Nevtot);
+                       printf("%.3f: Proccesing Ncounts = %u \r", gRunInfo.RUNID, Nevtot);
                     //}
 
                     fflush(stdout);
@@ -908,14 +917,14 @@ void readloop()
                    (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
 
             // when we mandatory provide cfg info
-            //if (dproc.RECONFMODE == 1) {
+            //if (gAnaInfo.RECONFMODE == 1) {
             //   reConfig(cfginfo);
             //}
 
             // Recalculate Run constants
             UpdateRunConst(cfginfo);
 
-            if (dproc.MESSAGE == 1) exit(0);
+            if (gAnaInfo.MESSAGE == 1) exit(0);
 
             ReadFlag.RHICCONF = 1;
          }
@@ -939,26 +948,26 @@ void readloop()
    fclose(fp);
 
    // Post processing
-   if (dproc.HasNormalBit())
+   if (gAnaInfo.HasNormalBit())
       end_process();
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo.StopTime));
    fprintf(stdout, "%ld Carbons are found in\n", Nevcut);
    //fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
-   fprintf(stdout, "Total events in file %d\n", dproc.nEventsTotal);
+   fprintf(stdout, "Total events in file %d\n", gAnaInfo.nEventsTotal);
    fprintf(stdout, "First %d events processed\n", Nread);
    fprintf(stdout, "%d events saved\n", Nevtot);
 
-   dproc.nEventsProcessed = Nevtot;
+   gAnaInfo.nEventsProcessed = Nevtot;
 
    // Add info to database entry
    stringstream sstr;
 
-   sstr.str(""); sstr << dproc.nEventsTotal;
+   sstr.str(""); sstr << gAnaInfo.nEventsTotal;
    gRunDb.fFields["NEVENTS_TOTAL"] = sstr.str();
 
-   sstr.str(""); sstr << dproc.nEventsProcessed;
+   sstr.str(""); sstr << gAnaInfo.nEventsProcessed;
    gRunDb.fFields["NEVENTS_PROCESSED"] = sstr.str();
 
    sstr.str(""); sstr << gRunInfo.BeamEnergy;
@@ -1068,7 +1077,7 @@ void DecodeTargetID(polDataStruct poldat)
         // This is too late to reconfigure strip mask because this routine is
         // executed at the end of event loop. Too bad. /* March 5,'09 IN */
         //      mask.detector = 0x2D;
-        //      ConfigureActiveStrip(mask.detector);
+        //      gRunInfo.ConfigureActiveStrip(mask.detector);
      }
   }
 }
@@ -1254,14 +1263,14 @@ void ProcessRecordPCTarget(long* rec, int ndelim)
             cout << "Warning: Target infomation cannot be recognized.." << endl;
          }
 
-         tgt.x       = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+         tgt.x       = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo.target_count_mm;
          tgt.Time[i] = k;
          tgt.X[i]    = tgt.x;
 
          printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
                  TgtIndex[k], tgt.X[TgtIndex[k]],
-                 tgt.Rotary[k][0]*dproc.target_count_mm,
-                 tgt.Rotary[k][1]*dproc.target_count_mm);
+                 tgt.Rotary[k][0]*gAnaInfo.target_count_mm,
+                 tgt.Rotary[k][1]*gAnaInfo.target_count_mm);
       } else {
 
          TgtIndex[k] = i;
@@ -1270,22 +1279,22 @@ void ProcessRecordPCTarget(long* rec, int ndelim)
              tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
          {
             TgtIndex[k]                 = ++i;
-            tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm;
+            tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo.target_count_mm;
             tgt.Time[TgtIndex[k]]       = float(k);
             tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
             ++nTgtIndex;
 
             printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
                TgtIndex[k], tgt.X[TgtIndex[k]],
-               tgt.Rotary[k][0]*dproc.target_count_mm,
-               tgt.Rotary[k][1]*dproc.target_count_mm);
+               tgt.Rotary[k][0]*gAnaInfo.target_count_mm,
+               tgt.Rotary[k][1]*gAnaInfo.target_count_mm);
 
             //++i;
          }
       }
 
       // target position array including static target motion
-      tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * dproc.target_count_mm ;
+      tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo.target_count_mm ;
    }
 
    if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";

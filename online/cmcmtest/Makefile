@@ -4,8 +4,6 @@ clean:
 	-rm -f cmcmtest
 	-rm -f *.o
 
-cleanall: clean
-	cd $(CNIPOL_DIR)/bin; rm -f cmcmtest
-
 install:
-	cp cmcmtest $(CNIPOL_DIR)/bin
+	cp cmcmtest /usr/local/polarim/bin
+

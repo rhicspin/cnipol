@@ -1,13 +1,16 @@
 
+#include "AnaInfo.h"
+
+#include "TString.h"
 #include "TSystem.h"
 
-#include "AnaInfo.h"
+#include "AsymGlobals.h"
 
 using namespace std;
 
 
 /** */
-TDatprocStruct::TDatprocStruct() :
+AnaInfo::AnaInfo() :
    fRunId            (""),
    enel              (400),
    eneu              (900),
@@ -62,7 +65,7 @@ TDatprocStruct::TDatprocStruct() :
 /**
  * Default Values for Run Condition
  */
-TDatprocStruct::TDatprocStruct(string runId) :
+AnaInfo::AnaInfo(string runId) :
    fRunId            (runId),
    enel              (400),
    eneu              (900),
@@ -114,7 +117,7 @@ TDatprocStruct::TDatprocStruct(string runId) :
 
 
 /** */
-TDatprocStruct::~TDatprocStruct()
+AnaInfo::~AnaInfo()
 {
    if (fFileRunInfo) fclose(fFileRunInfo);
    if (fFileRunConf) fclose(fFileRunConf);
@@ -123,7 +126,7 @@ TDatprocStruct::~TDatprocStruct()
 
 
 /** */
-void TDatprocStruct::Init()
+void AnaInfo::Init()
 {
    const char* tmpEnv;
 
@@ -145,7 +148,7 @@ void TDatprocStruct::Init()
 
 
 /** */
-void TDatprocStruct::MakeOutDir()
+void AnaInfo::MakeOutDir()
 {
    if (GetOutDir().size() > 200) {
       printf("ERROR: Output directory name is too long\n");
@@ -158,23 +161,23 @@ void TDatprocStruct::MakeOutDir()
    //   printf("WARNING: Perhaps dir already exists: %s\n", GetOutDir().c_str());
 
    if (gSystem->mkdir(GetOutDir().c_str()) < 0)
-      gSystem->Warning("   TDatprocStruct::TDatprocStruct", "Directory %s already exists", GetOutDir().c_str());
+      gSystem->Warning("   AnaInfo::AnaInfo", "Directory %s already exists", GetOutDir().c_str());
    else {
-      gSystem->Info("   TDatprocStruct::TDatprocStruct", "Created directory %s", GetOutDir().c_str());
+      gSystem->Info("   AnaInfo::AnaInfo", "Created directory %s", GetOutDir().c_str());
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
 }
 
 
 /** */
-string TDatprocStruct::GetOutDir() const
+string AnaInfo::GetOutDir() const
 {
    return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second + "/" + fRunId;
 }
 
 
 /** */
-string TDatprocStruct::GetAlphaCalibFile() const
+string AnaInfo::GetAlphaCalibFile() const
 {
    if (fAlphaCalibRun.empty()) {
       cout << "Alpha calibration run not defined" << endl;
@@ -188,7 +191,7 @@ string TDatprocStruct::GetAlphaCalibFile() const
 
 
 /** */
-string TDatprocStruct::GetDlCalibFile() const
+string AnaInfo::GetDlCalibFile() const
 {
    if (fDlCalibRun.empty()) {
       cout << "Dead layer calibration run not defined" << endl;
@@ -202,7 +205,7 @@ string TDatprocStruct::GetDlCalibFile() const
 
 
 /** */
-string TDatprocStruct::GetRootTreeFileName(UShort_t trid) const
+string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 {
    string filename;
    filename.reserve(GetOutDir().size() + fRunId.size() + 20);
@@ -212,10 +215,10 @@ string TDatprocStruct::GetRootTreeFileName(UShort_t trid) const
 
 
 /** */
-void TDatprocStruct::ProcessOptions()
+void AnaInfo::ProcessOptions()
 {
    if (fRunId.empty()) {
-      gSystem->Error("   TDatprocStruct::ProcessOptions", "Run name has to be specified");
+      gSystem->Error("   AnaInfo::ProcessOptions", "Run name has to be specified");
       PrintUsage();
       exit(0);
    }
@@ -252,30 +255,30 @@ void TDatprocStruct::ProcessOptions()
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec)
+TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec)
 {
    if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TDatprocStruct *rec) : \n");
+   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec)
+TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
 {
    //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TDatprocStruct *rec) : \n");
+   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
    // if object has been created already delete it
    //free(rec);
-   //rec = (TDatprocStruct *) realloc(rec, sizeof(TDatprocStruct));
+   //rec = (AnaInfo *) realloc(rec, sizeof(AnaInfo));
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-void TDatprocStruct::Print(const Option_t* opt) const
+void AnaInfo::Print(const Option_t* opt) const
 {
    cout
    << "fRunId           = " << fRunId           << endl
@@ -327,7 +330,7 @@ void TDatprocStruct::Print(const Option_t* opt) const
 
 
 /** */
-void TDatprocStruct::PrintAsPhp(FILE *f) const
+void AnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fRunId']                       = \"%s\";\n", fRunId.c_str());
    fprintf(f, "$rc['enel']                         = %d;\n", enel);
@@ -345,7 +348,7 @@ void TDatprocStruct::PrintAsPhp(FILE *f) const
 
 
 /** */
-void TDatprocStruct::PrintUsage()
+void AnaInfo::PrintUsage()
 {
    cout << endl;
    cout << "Options:" << endl;
@@ -376,10 +379,8 @@ void TDatprocStruct::PrintUsage()
    cout << " -U                              : Update histogram" << endl;
    cout << "     --update-db                 : Update run info in database" << endl;
    cout << " -N                              : Store Ntuple events (!)" << endl;
-   cout << " -R <bitmask>                    : Save events in Root trees, e.g. \"-R 001\"" << endl;
-   cout << "                                   -R 001 for storing raw data in a tree" << endl;
-   cout << "                                   -R 010 creates an individual tree for each channel" << endl;
-   cout << "                                   -R 100 for time ordered events. Events can contain multiple channels" << endl;
+   cout << " -R <bitmask>                    : Save events in Root trees, " <<
+           "e.g. \"-R 101\"" << endl;
    cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
    cout << " -C, --mode-alpha, --alpha       : Use when run over alpha run data" << endl;
    cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
@@ -398,12 +399,12 @@ void TDatprocStruct::PrintUsage()
 
 
 /** */
-void TDatprocStruct::Streamer(TBuffer &buf)
+void AnaInfo::Streamer(TBuffer &buf)
 {
    TString tstr;
 
    if (buf.IsReading()) {
-      //printf("reading TDatprocStruct::Streamer(TBuffer &buf) \n");
+      //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
       buf >> tstr; fRunId = tstr.Data();
       buf >> enel;
       buf >> eneu;
@@ -419,7 +420,7 @@ void TDatprocStruct::Streamer(TBuffer &buf)
       buf >> tstr; fAlphaCalibRun = tstr.Data();
       buf >> tstr; fDlCalibRun = tstr.Data();
    } else {
-      //printf("writing TDatprocStruct::Streamer(TBuffer &buf) \n");
+      //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
       tstr = fRunId; buf << tstr;
       buf << enel;
       buf << eneu;
@@ -439,7 +440,7 @@ void TDatprocStruct::Streamer(TBuffer &buf)
 
 
 /** */
-void TDatprocStruct::Update(TStructRunDB &rundb)
+void AnaInfo::Update(DbEntry &rundb)
 {
    // If user didn't specify his/her calibration file use the one from the DB
    if (fAlphaCalibRun.empty())
@@ -451,7 +452,7 @@ void TDatprocStruct::Update(TStructRunDB &rundb)
 
 
 /** */
-void TDatprocStruct::CopyResults()
+void AnaInfo::CopyResults()
 {
    if (!fFlagCopyResults) return;
 

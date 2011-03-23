@@ -16,10 +16,8 @@
 #include "TMath.h"
 #include "TPaveStats.h"
 
-#include "AsymHeader.h"
-#include "TargetInfo.h"
+//#include "AsymHeader.h"
 
-#include "ChannelEvent.h"
 #include "DrawObjContainer.h"
 
 
@@ -38,7 +36,6 @@ public:
    ~CnipolProfileHists();
 
    void BookHists(std::string sid="");
-   void Fill(ChannelEvent *ch, std::string cutid="") {}
    void Fill(UInt_t n, Long_t* hData);
    void PostFill();
    void Process();

@@ -9,24 +9,17 @@
 #include <string>
 
 #include "TObject.h"
-#include "TObjArray.h"
-#include "TObjString.h"
-#include "TPRegexp.h"
-#include "TString.h"
-#include "TSystem.h"
 
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "AsymGlobals.h"
 #include "AsymHeader.h"
-#include "AnaInfo.h"
+#include "AsymGlobals.h"
 #include "DbEntry.h"
-#include "RunInfo.h"
 
 
-typedef std::set<TStructRunDB> DbRunSet;
-typedef std::map<UShort_t, TStructRunDB*> DbCommonRunMap;
+typedef std::set<DbEntry> DbRunSet;
+typedef std::map<UShort_t, DbEntry*> DbCommonRunMap;
 
 class AsymRunDB : public TObject {
 
@@ -45,14 +38,14 @@ public:
    AsymRunDB();
    ~AsymRunDB();
 
-   TStructRunDB* Select(std::string runName="");
-   void DeleteRun(std::string runName);
-   void Clear(Option_t* opt="");
-   void Save();
-   void Append(TStructRunDB *dbrun);
-   void Insert(TStructRunDB *dbrun);
-   void UpdateCommonFields(TStructRunDB &dbrun);
-   void DropCommonFields(TStructRunDB *dbrun);
+   DbEntry* Select(std::string runName="");
+   void Delete(std::string runName);
+   void Clear();
+   void Dump();
+   void Append(DbEntry *dbrun);
+   void Insert(DbEntry *dbrun);
+   void UpdateCommonFields(DbEntry &dbrun);
+   void DropCommonFields(DbEntry *dbrun);
    void Print(const Option_t* opt="") const;
    void PrintCommon();
 };

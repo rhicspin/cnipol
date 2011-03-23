@@ -5,19 +5,24 @@
 
 #include "EventConfig.h"
 
+#include "AnaInfo.h"
+#include "AsymRunDB.h"
+#include "RunInfo.h"
+#include "AnaResult.h"
+
 ClassImp(EventConfig)
 
 using namespace std;
 
 /**
  * Default constructor.
- * We have to allocate memory for fRunInfo, fDatproc, and fRunDB as they can be
+ * We have to allocate memory for fRunInfo, fAnaInfo, and fDbEntry as they can be
  * read from a file with a streamer. The streamers do not allocate memory by
  * themselves.
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
-   fRunInfo(new TStructRunInfo()), fDatproc(new TDatprocStruct()), fRunDB(new TStructRunDB()),
-   fCalibrator(new Calibrator()), fAnaResult(new StructAnalysis())
+   fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), fDbEntry(new DbEntry()),
+   fCalibrator(new Calibrator()), fAnaResult(new AnaResult())
 {
 }
 
@@ -49,25 +54,25 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
    }
 
-   fprintf(f, "\n// TStructRunInfo data\n");
+   fprintf(f, "\n// RunInfo data\n");
    if (!fRunInfo) {
       Error("PrintAsPhp", "fRunInfo not defined");
    } else {
       fRunInfo->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// TDatprocStruct data\n");
-   if (!fDatproc) {
-      Error("PrintAsPhp", "fDatproc not defined");
+   fprintf(f, "\n// AnaInfo data\n");
+   if (!fAnaInfo) {
+      Error("PrintAsPhp", "fAnaInfo not defined");
    } else {
-      fDatproc->PrintAsPhp(f);
+      fAnaInfo->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// TStructRunDB data\n");
-   if (!fRunDB) {
-      Error("PrintAsPhp", "fRunDB not defined");
+   fprintf(f, "\n// DbEntry data\n");
+   if (!fDbEntry) {
+      Error("PrintAsPhp", "fDbEntry not defined");
    } else {
-      fRunDB->PrintAsPhp(f);
+      fDbEntry->PrintAsPhp(f);
    }
 
    fprintf(f, "\n// Calibrator data\n");
@@ -77,7 +82,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fCalibrator->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// StructAnalysis data\n");
+   fprintf(f, "\n// AnaResult data\n");
    if (!fAnaResult) {
       Error("PrintAsPhp", "fAnaResult not defined");
    } else {
@@ -93,7 +98,7 @@ void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
 	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->runName.c_str());
-	fprintf(f, "* for the Am calibration     : %s\n", fRunDB->alpha_calib_run_name.c_str());
+	fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
 	fprintf(f, "* \n");
 

@@ -16,8 +16,14 @@
 
 #include "AsymProcess.h"
 
-using namespace std;
+#include "TH1F.h"
 
+#include "AnaInfo.h"
+#include "AsymRoot.h"
+#include "Kinema.h"
+#include "RunInfo.h"
+
+using namespace std;
 
 // A manual switch operation is required for following routine.
 // This routine calls special text output routine for spin tune measurements
@@ -45,8 +51,8 @@ void event_process(processEvent *event)
    int   delim = event->delim ;
    int   st    = event->stN;        // 0 - 71
    int   si    = (int) (st/12);     // 0 - 5
-   float Emin  = (float) dproc.enel;
-   float Emax  = (float) dproc.eneu;
+   float Emin  = (float) gAnaInfo.enel;
+   float Emax  = (float) gAnaInfo.eneu;
 
    Ntotal[event->bid]++;
 
@@ -85,13 +91,13 @@ void event_process(processEvent *event)
       //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
       //  (event->amp + rand2 - 0.5);
 
-      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - gAnaInfo.tshift;
 
       float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
       //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
-      if (e > Emin && e < Emax && Mass > dproc.MassLimit && Mass < 20.) {
+      if (e > Emin && e < Emax && Mass > gAnaInfo.MassLimit && Mass < 20.) {
          mass_feedback[st]->Fill(Mass);
          mass_feedback_all->Fill(Mass);
       }
@@ -102,7 +108,7 @@ void event_process(processEvent *event)
    //}
 
    // DeadLayer Mode
-   if (dproc.DMODE) {
+   if (gAnaInfo.DMODE) {
 
       // 2*cfginfo->data.chan[st].Window.split.Beg = 6
       // ds: A prelim cut on tdc? 6 ns?
@@ -115,7 +121,7 @@ void event_process(processEvent *event)
          // Get rid of bunch zero due to laser event after Run09
          if (event->bid) HHF2(15000+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
 
-         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt(e))
+         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo.MassSigma/sqrt(e))
          {
             HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
             if ( e > Emin && e < Emax) Ngood[event->bid]++;
@@ -126,7 +132,7 @@ void event_process(processEvent *event)
    }
 
    // Calibration hists
-   if ( dproc.HasAlphaBit() ) {
+   if ( gAnaInfo.HasAlphaBit() ) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -165,7 +171,7 @@ void event_process(processEvent *event)
          wall_current_monitor->Fill(j, wcmdist[j]);
          HHF1(10030, (float) j, (float) wcmdist[j]);
 
-         if ( (fabs(runinfo.WcmAve-wcmdist[j])/runinfo.WcmAve < dproc.WCMRANGE) && fillpat[j]) {
+         if ( (fabs(gRunInfo.WcmAve-wcmdist[j])/gRunInfo.WcmAve < gAnaInfo.WCMRANGE) && gFillPattern[j]) {
             average.total+=wcmdist[j];
             wcmfillpat[j]=1;
             ++average.counter;
@@ -177,7 +183,7 @@ void event_process(processEvent *event)
       // ---------------------------------------------------- //
       //   Root Histogram Booking using feedback results      //
       // ---------------------------------------------------- //
-      gAsymRoot.BookHists2(dproc, feedback);
+      gAsymRoot.BookHists2(feedback);
 
       // Online Banana Cut
       for (int strip=0; strip<72; strip++) {
@@ -195,21 +201,21 @@ void event_process(processEvent *event)
                 HHF1(13600+strip+1, e, 0.);
             } else {
 
-               if (dproc.CBANANA == 0){
+               if (gAnaInfo.CBANANA == 0){
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         -cfginfo->data.chan[strip].ETCutW);
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +cfginfo->data.chan[strip].ETCutW);
-               } else if (dproc.CBANANA == 1) {
+               } else if (gAnaInfo.CBANANA == 1) {
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(dproc.widthl));
+                        +(float)(gAnaInfo.widthl));
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(dproc.widthu));
-               } else if (dproc.CBANANA == 2) {
+                        +(float)(gAnaInfo.widthu));
+               } else if (gAnaInfo.CBANANA == 2) {
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
+                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*gAnaInfo.MassSigma/sqrt(e)) ;
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*dproc.MassSigma/sqrt(e)) ;
+                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*gAnaInfo.MassSigma/sqrt(e)) ;
                }
             }
          }
@@ -233,7 +239,7 @@ void event_process(processEvent *event)
    ChannelEvent *ch = gAsymRoot.fChannelEvent;
 
    // Fill target histograms
-   if (dproc.HasTargetBit()) {
+   if (gAnaInfo.HasTargetBit()) {
 
       //if (ch->GetChannelId() > NSTRIP)
       //   printf("channel1: %d, %d\n", ch->GetChannelId(), cfginfo->data.NumChannels);
@@ -245,11 +251,13 @@ void event_process(processEvent *event)
    }
 
    // XXX
-   if (dproc.HasNormalBit()) {
+   if (gAnaInfo.HasNormalBit()) {
 
       if (!ch->PassCutDetectorChannel()) return;
 
       gAsymRoot.fHists->Fill(ch);
+
+      //   if (fabs(gFillPattern[event.bid]) != 1)
 
       if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       {
@@ -320,7 +328,7 @@ void event_process(processEvent *event)
 
    //HHF1(10400+si+1, e, 1.);
 
-   //if (spinpat[event->bid] > 0) {
+   //if (gSpinPattern[event->bid] > 0) {
    //    HHF1(10500+st+1, e, 1.);
    //} else {
    //    HHF1(10600+st+1, e, 1.);
@@ -329,23 +337,23 @@ void event_process(processEvent *event)
    // Time Of Flight
    float t;
 
-   if (dproc.RAMPMODE == 1) {
+   if (gAnaInfo.RAMPMODE == 1) {
 
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5)
           - cfginfo->data.chan[st].t0
-          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - dproc.tshift;
+          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - gAnaInfo.tshift;
 
-   } else if (dproc.ZMODE == 0) {   // normal runs
+   } else if (gAnaInfo.ZMODE == 0) {   // normal runs
 
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0
-           - dproc.tshift - feedback.tedev[st]/sqrt_e;
+           - gAnaInfo.tshift - feedback.tedev[st]/sqrt_e;
    } else  {
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - dproc.tshift ;
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gAnaInfo.tshift ;
    }
 
    //ds
-   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, dproc.tshift, gRunConsts[st+1].Ct);
+   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, gAnaInfo.tshift, gRunConsts[st+1].Ct);
 
    float delt = t - gRunConsts[st+1].E2T/sqrt_e;
 
@@ -356,23 +364,23 @@ void event_process(processEvent *event)
    mass_nocut_all->Fill(Mass);
 
    // Mass mode
-   //if (dproc.MMODE == 1) {
+   //if (gAnaInfo.MMODE == 1) {
    //   if (e > Emin && e < Emax) {
 
    //      HHF1(16000+st+1, Mass, 1.);
 
-   //      if (Mass > dproc.MassLimit && Mass < 14.)
+   //      if (Mass > gAnaInfo.MassLimit && Mass < 14.)
    //         HHF1(17200+st+1, Mass, 1.);
    //   }
    //}
 
    // for T0 (cable length dependence)
-   //if (dproc.TMODE == 1 && edepo!=0.){
+   //if (gAnaInfo.TMODE == 1 && edepo!=0.){
    //   HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
    //}
 
    //// Banana Plots (E-T)
-   //if (dproc.BMODE == 1) {
+   //if (gAnaInfo.BMODE == 1) {
 
    //   HHF2(13000+st+1, e, t, 1.);
 
@@ -385,7 +393,7 @@ void event_process(processEvent *event)
    //}
 
    /*
-   if (dproc.RAMPMODE==1) {0
+   if (gAnaInfo.RAMPMODE==1) {0
        // total RAMPTIME sec
        // 1sec for each bin, delimiters are 20Hz rate
        int rbin = (int)(event->delim/20);
@@ -396,7 +404,7 @@ void event_process(processEvent *event)
    */
 
    //// integral vs. amplitede
-   //if (dproc.AMODE == 1) {
+   //if (gAnaInfo.AMODE == 1) {
    //   HHF2(12200+st+1, event->amp, Integ, 1.);
    //   HHF2(12300+st+1, Integ, t, 1.);
    //}
@@ -414,7 +422,7 @@ void event_process(processEvent *event)
 
    // Fill ntuple
    /*
-   if ((Nevtot<NTLIMIT)&&(dproc.NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
+   if ((Nevtot<NTLIMIT)&&(gAnaInfo.NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
        atdata.ia = (long)event->amp;
        atdata.is = (long)event->intg;
        atdata.it = (long)event->tdc;
@@ -424,7 +432,7 @@ void event_process(processEvent *event)
        atdata.e = (float)e;
        atdata.tof = (float)t;
 
-       atdata.spin = spinpat[event->bid];
+       atdata.spin = gSpinPattern[event->bid];
 
        //HHFNT(1);
    }
@@ -446,14 +454,14 @@ void event_process(processEvent *event)
    //------------------------------------------------------
    //if ( ((delt> -1. * cfginfo->data.chan[st].ETCutW ) &&
    //      (delt<  1. * cfginfo->data.chan[st].ETCutW ) &&
-   //      (dproc.CBANANA == 0))
+   //      (gAnaInfo.CBANANA == 0))
    //     ||
-   //     ((delt > (float)(dproc.widthl) ) &&
-   //      (delt < (float)(dproc.widthu) ) &&
-   //      (dproc.CBANANA == 1))
+   //     ((delt > (float)(gAnaInfo.widthl) ) &&
+   //      (delt < (float)(gAnaInfo.widthu) ) &&
+   //      (gAnaInfo.CBANANA == 1))
    //     ||
-   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigma/sqrt_e)
-   //       && (dproc.CBANANA == 2)) // default 
+   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo.MassSigma/sqrt_e)
+   //       && (gAnaInfo.CBANANA == 2)) // default 
    //     )
 
    if (ch->PassQACutCarbonMass())
@@ -473,9 +481,9 @@ void event_process(processEvent *event)
       // fine -t bins
       int spbit = 2;
 
-      if (spinpat[event->bid] == 1) {
+      if (gSpinPattern[event->bid] == 1) {
          spbit = 0;
-      } else if (spinpat[event->bid] == -1) {
+      } else if (gSpinPattern[event->bid] == -1) {
          spbit = 1;
       }
 
@@ -544,7 +552,7 @@ void event_process(processEvent *event)
          Ncounts[(int)(st/12)][event->bid]++;
          int time = 0;
 
-         if (runinfo.Run == 5) {
+         if (gRunInfo.Run == 5) {
             time = delim;
             ++cntr.good[delim];
             NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
@@ -554,7 +562,7 @@ void event_process(processEvent *event)
             if (time < MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
                NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
-            } else if (!dproc.CMODE) {
+            } else if (!gAnaInfo.CMODE) {
                cerr << "ERROR: time constructed from revolution # " << time
                     << "exeeds MAXDELIM=" << MAXDELIM << " defined" << endl;
                cerr << "Perhaps calibration data? Try running with -C option" << endl;
@@ -565,10 +573,10 @@ void event_process(processEvent *event)
          // This routine is commented out by default. Activate this upon necessity.
          //              SpinTuneOutput(event->bid,si);
 
-         //ds if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
-         //ds if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
-         //ds if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], spinpat[event->bid] ==  1 ? 1 : 0);
-         //ds if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], spinpat[event->bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], gSpinPattern[event->bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], gSpinPattern[event->bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], gSpinPattern[event->bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], gSpinPattern[event->bid] == -1 ? 1 : 0);
 
          //ds HHF1(38050, TgtIndex[time], 1);
          //ds HHF1(38060, time, 1);
@@ -579,7 +587,7 @@ void event_process(processEvent *event)
          //ds: printf("t, sp, st: %d, %d, %d, %d\n", TgtIndex[time], spbit, st);
          cntr_tgt.reg.NStrip[(int) TgtIndex[time] ][spbit][st]++;
 
-         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*dproc.MassSigmaAlt/sqrt_e)
+         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo.MassSigmaAlt/sqrt_e)
             cntr.alt.NStrip[spbit][st]++;
 
          if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
@@ -588,7 +596,7 @@ void event_process(processEvent *event)
          // Ramp measurements binning
          // 20 Hz delimiters
          /*
-         if (dproc.RAMPMODE==1) {
+         if (gAnaInfo.RAMPMODE==1) {
             int rbin = (int)((event->delim)/20.);
             //NRcounts[(int)(st/12)][event->bid][rbin]++;
 
@@ -599,7 +607,7 @@ void event_process(processEvent *event)
          */
 
          // Spin Tune
-         //ds if (dproc.STUDYMODE == 1) {
+         //ds if (gAnaInfo.STUDYMODE == 1) {
          //ds    HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
          //ds }
       }
@@ -607,14 +615,9 @@ void event_process(processEvent *event)
 }
 
 
-//
-// Class name  :
-// Method name : KinemaReconstruction
-//
 // Description : calculate kinematics from ADC and TDC
 // Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass
-//
 void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo,
                      int st, float &edepo, float &e, float &t, float &delt, float &Mass)
 {
@@ -629,7 +632,7 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
   edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
 
   // ToF in [ns]
-  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - dproc.tshift;
+  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - gAnaInfo.tshift;
 
   // Kinetic energy assuming Carbon
   e = ekin(edepo, cfginfo->data.chan[st].dwidth);
@@ -654,7 +657,7 @@ void SpinTuneOutput(int bid, double si)
 {
    fprintf(stderr, "%10ld", cntr.revolution);
    fprintf(stderr,   "%5d", bid+1);
-   fprintf(stderr,   "%5d", spinpat[bid]);
+   fprintf(stderr,   "%5d", gSpinPattern[bid]);
    fprintf(stderr,   "%5d", int(si)+1);
  
    /*

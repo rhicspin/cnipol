@@ -5,11 +5,12 @@
 #include "TBuffer.h"
 
 #include "AsymHeader.h"
-#include "Asym.h"
+#include "AsymGlobals.h"
+//#include "Asym.h"
 
 
 /** */
-class StructAnalysis
+class AnaResult
 {
 public:
 
@@ -31,13 +32,13 @@ public:
    float              fIntensPolarRErr;
 
 public:
-   StructAnalysis();
-   ~StructAnalysis();
+   AnaResult();
+   ~AnaResult();
    void PrintAsPhp(FILE *f=stdout) const;
    void Streamer(TBuffer &buf);
 };
 
-TBuffer & operator<<(TBuffer &buf, StructAnalysis *&rec);
-TBuffer & operator>>(TBuffer &buf, StructAnalysis *&rec);
+TBuffer & operator<<(TBuffer &buf, AnaResult *&rec);
+TBuffer & operator>>(TBuffer &buf, AnaResult *&rec);
 
 #endif

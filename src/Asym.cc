@@ -1,40 +1,45 @@
 
 #include "Asym.h"
+
+#include <map>
+#include <string>
+
+#include "TMath.h"
+
 #include "AsymCalc.h"
 #include "AsymRoot.h"
 #include "AsymRunDB.h"
-
+#include "TargetInfo.h"
 
 using namespace std;
 
-
 StructMask mask = {
-  0x3F          // detector mask 0x3F={11 1111} All detector active
+   0x3F          // detector mask 0x3F={11 1111} All detector active
 };
 
 ErrorDetector errdet = {
-  0.10,         // MASS_WIDTH_DEV_ALLOWANCE [GeV]
-  0.50,         // MASS_POSITION_ALLOWANCE [GeV]
-  100,          // MASS_CHI2_ALLOWANCE [GeV]
-  0.001,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
-  0.2,          // GOOD_CARBON_EVENTS_ALLOWANCE fabs(events[st]-average)/average<GOOD_CARBON_EVENTS_ALLOWANCE
-  5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
-  5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
-  20            // NBUNCH_REQUIREMENT;
+   0.10,         // MASS_WIDTH_DEV_ALLOWANCE [GeV]
+   0.50,         // MASS_POSITION_ALLOWANCE [GeV]
+   100,          // MASS_CHI2_ALLOWANCE [GeV]
+   0.001,        // MASS_ENERGY_CORR_ALLOWANCE; [GeV/keV]
+   0.2,          // GOOD_CARBON_EVENTS_ALLOWANCE fabs(events[st]-average)/average<GOOD_CARBON_EVENTS_ALLOWANCE
+   5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
+   5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
+   20            // NBUNCH_REQUIREMENT;
 };
 
 StructExtInput extinput = {
-  0, // CONFIG
-  0, // MASSCUT
-  0  // TSHIFT
+   0, // CONFIG
+   0, // MASSCUT
+   0  // TSHIFT
 } ;
 
 StructReadFlag ReadFlag = {
-  0, // RECBEGIN
-  0, // PCTARGET
-  0, // WCMADO
-  0, // READADO
-  0  // RHICCONF
+   0, // RECBEGIN
+   0, // PCTARGET
+   0, // WCMADO
+   0, // READADO
+   0  // RHICCONF
 };
 
 StructFlag Flag = {
@@ -57,7 +62,6 @@ StructCounterTgt cntr_tgt = {
   0,    // revolution number
   0     // taret motion entries
 };
-
 
 //StructTarget tgt = {
 //    0,  // target position x
@@ -109,25 +113,31 @@ float gPhi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
-TDatprocStruct           dproc;
-//TRandom                  gRandom;
-AsymRoot                 gAsymRoot;
-AsymRunDB                gAsymRunDb;
-//TStructRunDB             rundb;
-TStructRunDB             gRunDb_tmp;
-TStructRunDB            &gRunDb = gRunDb_tmp;
-//TStructRunDB             gCurrentRunInfo;
-TStructRunInfo           runinfo;
-TStructRunInfo          &gRunInfo = runinfo;
-atdata_struct            atdata;
-StructAverage            average;
-StructFeedBack           feedback;
+AnaInfo                   gAnaInfo;
+AsymRoot                  gAsymRoot;
+AsymRunDB                 gAsymRunDb;
+//DbEntry              rundb;
+DbEntry              gRunDb_tmp;
+DbEntry             &gRunDb = gRunDb_tmp;
+//DbEntry             gCurrentRunInfo;
+RunInfo            runinfo;
+RunInfo           &gRunInfo = runinfo;
+atdata_struct             atdata;
+StructAverage             average;
+StructFeedBack            feedback;
 //RunConst                 runconst;
 map<UShort_t, RunConst>   gRunConsts;
-StructAnalysis           gAnaResults;
-StructBunchPattern       phx, str;
+AnaResult                 gAnaResults;
+StructBunchPattern        phx, str;
 TRecordConfigRhicStruct  *cfginfo;
-TargetInfo               tgt;
+TargetInfo                tgt;
+map<string, string>       gAsymEnv; // at some point this map should become a part of the AnaInfo class
+BunchAsym                 gBunchAsym;
+StructSpeLumi             SpeLumi;
+AsymCalculator            gAsymCalculator;
+StructBunchCheck          bnchchk;
+StructStripCheck          strpchk;
+StructHistStat            gHstat;
 
 
 /** */
@@ -174,17 +184,10 @@ void RunConst::Print(const Option_t* opt) const
   printf("\tT2M = %10.3f\n", T2M);
 }
 
-
-// at some point this map should become a part of the AnaInfo class
-map<string, string>      gAsymEnv;
-
-BunchAsym     basym;
-StructSpeLumi SpeLumi;
-
-int spinpat[120]; // spin pattern 120 bunches (ADO info)
-int fillpat[120]; // spin pattern 120 bunches (ADO info)
-int ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
-int wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
+int   gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
+int   gFillPattern[120]; // spin pattern 120 bunches (ADO info)
+int   ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
+int   wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
 float wcmdist[120];  // wall current monitor 120 bunches (ADO info)
 
 long int Ncounts[6][120]; // counts 6detectors 120 bunches
@@ -193,12 +196,12 @@ long int NRcounts[6][120][RAMPTIME]; // counts for 6det 120bunch RAMPTIME sec
 long int NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
 long int NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
 
-char * confdir;
-char * calibdir;
-std::string gDataFileName;   // data file name
-char reConfFile[256];    // overwrite configuration for T0 info
-char conf_file[256];  // overwrite configuration file
-char CalibFile[256];  // energy calibration file
+char   *confdir;
+char   *calibdir;
+string  gDataFileName;   // data file name
+char    reConfFile[256];    // overwrite configuration for T0 info
+char    conf_file[256];  // overwrite configuration file
+char    CalibFile[256];  // energy calibration file
 
 float ramptshift[500];  // ramp timing shift
 
@@ -212,14 +215,14 @@ long int Ntotal[120];    // number of events before carbon cut (each bunch)
 long int Nback[120];     // number of events below the curbon cut (each bunch)
 int NFilledBunch   = 0;  // number of Filled Bunch
 
-long int * pointer ;
-int ndelim ;
+long int *pointer;
+int       ndelim;
 //long int VtgtLinear[MAXDELIM];
 //long int VtgtRotary[MAXDELIM];
 //long int HtgtLinear[MAXDELIM];
 //long int HtgtRotary[MAXDELIM];
-int TgtIndex[MAXDELIM];
-int nTgtIndex = 0 ;
+int       TgtIndex[MAXDELIM];
+int       nTgtIndex = 0 ;
 
 const float MSIZE = 1.2; // Marker size
 
@@ -401,10 +404,173 @@ void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, f
 }
 
 
+// Description : calculate weighted mean
+// Input       : float A[N], float dA[N], int NDAT
+// Return      : weighted mean
+float WeightedMean(float *A, float *dA, int NDAT)
+{
+   float sum1 = 0;
+	float sum2 = 0;
+   float dA2  = 0;
+ 
+   for (int i=0; i<NDAT; i++) {
+      if (dA[i]) {  // skip dA=0 data
+         dA2 = dA[i]*dA[i];
+         sum1 += A[i]/dA2 ;
+         sum2 += 1/dA2 ;
+      }
+   }
+ 
+   return dA2 == 0 ? 0 : sum1/sum2;
+}
+
+
+// Description : calculate weighted mean error. A[i] is skipped if dA[i]=0.
+// Input       : float dA[N], int NDAT
+// Return      : weighted mean error
+float WeightedMeanError(float *dA, int NDAT)
+{
+   float sum = 0;
+   float dA2 = 0;
+ 
+   for ( int i=0 ; i<NDAT ; i++ ) {
+      if (dA[i]){
+         dA2 = dA[i]*dA[i];
+         sum += 1/dA2 ;
+      }
+   }
+ 
+   return sum == 0 ? 0 : sqrt(1/sum);
+}
+
+
+// Description : call weighted mean and error
+// Input       : float A[N], float dA[N], float Ave, int NDAT
+// Return      : Ave, dAve
+void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
+{
+   Ave  = WeightedMean(A, dA, NDAT);
+   dAve = WeightedMeanError(dA, NDAT);
+}
+
+
+// Description : Calculates error propagation of x/y for (x,dx) and (y,dy)
+//             :
+// Input       : float x, float y, float dx, float dy
+// Return      : error propagation of x/y
+float CalcDivisionError(float x, float y, float dx, float dy)
+{
+   if (x*y) {
+      return x/y * sqrt( dx*dx/x/x + dy*dy/y/y );
+   } else {
+      return 0;
+   }
+}
+
+
 // Description : calculate quadratic error of x/y
 // Input       : float x, float y, float dx, float dy
 // Return      : float quadratic error of x/y
 float QuadErrorDiv(float x, float y, float dx, float dy)
 {
-  return y*x ? x/y * sqrt(dx*dx/x/x + dy*dy/y/y): 0;
+  return y*x ? x/y * TMath::Sqrt(dx*dx/x/x + dy*dy/y/y) : 0;
+}
+
+
+// Description : calculate quadratic sum
+// Input       : float dx, float dy
+// Return      : float quadratic error sum of x+y or x-y
+//
+float QuadErrorSum(float dx, float dy)
+{
+   return TMath::Sqrt(dx*dx + dy*dy);
+}
+
+
+// Description : draw text on histogram. Text alignment is (center,top) by default
+void DrawText(TH1 *h, float x, float y, int color, char *text)
+{
+   TLatex *t = new TLatex(x, y, text);
+   t->SetTextColor(color);
+   t->SetTextAlign(21);
+   h->GetListOfFunctions()->Add(t);
+}
+
+
+// Description : DrawLines in TH2F histogram
+//             : Assumes  (x1,x2) y=y0=y1
+// Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
+void DrawLine(TH1 *h, float x1, float y1, float x2, float y2, int color, int lstyle, int lwidth)
+{
+   TLine *l = new TLine(x1, y1, x2, y2);
+   l->SetLineStyle(lstyle);
+   l->SetLineColor(color);
+   l->SetLineWidth(lwidth);
+   h->GetListOfFunctions()->Add(l);
+}
+
+
+/** */
+void DrawHorizLine(TH1 *h, float x1, float x2, float y, int color, int lstyle, int lwidth)
+{
+   DrawLine(h, x1, y, x2, y, color, lstyle, lwidth);
+}
+
+
+/** */
+void DrawVertLine(TH1 *h, float x, float y, int color, int lwidth)
+{
+   DrawLine(h, x, 0, x, y, color, 2, lwidth);
+}
+
+
+// Description : print integer in binary with zero filled from the most significant bit
+//             : to zero bit, f.i. 0101 for n=5, mb=4
+// Input       : int n, int mb(the most significant bit)
+// Return      : writes out n in binary
+void binary_zero(int n, int mb)
+{
+   int X = int(pow(double(2), double(mb-1)));
+ 
+   for (int i=0; i<mb; i++) {
+     int j = n << i & X ? 1 : 0;
+     cout << j ;
+   }
+}
+
+
+// square root formula
+// A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
+// elastic Carbons are scattered off more in Right for Up
+void sqass(float A, float B, float C, float D, float *asym, float *easym)
+{
+   float den = sqrt(A*B) + sqrt(C*D);
+
+   if ( (A*B == 0.) && (C*D == 0.) ) {
+      *asym  = 0.;
+      *easym = 0.;
+   } else {
+      *asym  = (sqrt(A*B) - sqrt(C*D))/den;
+      *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
+   }
+}
+
+
+// Description : Define net TGraphErrors object asymgraph for vectors x,y,ex,ey
+//             : specifies marker color based on mode
+//             : positive spin : blue
+//             : negative spin : red
+// Input       : int Mode, int N, float x[], float y[], float ex[], float ey[]
+// Return      : TGraphErrors * asymgraph
+//
+TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[])
+{
+  int Color = Mode == 1 ? kBlue : kRed;
+
+  TGraphErrors *asymgraph = new TGraphErrors(N, x, y, ex, ey);
+  asymgraph->SetMarkerStyle(kFullCircle);
+  asymgraph->SetMarkerSize(MSIZE);
+  asymgraph->SetMarkerColor(Color);
+
+  return asymgraph;
 }

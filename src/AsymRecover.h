@@ -1,7 +1,7 @@
 // Header file for AsymRecover
 //
-// Authors  : Itaru Nakagawa
-//            Dmitri Smirnov
+// Contributors: Itaru Nakagawa
+//               Dmitri Smirnov
 //
 // Creation : 04/12/2006         
 
@@ -21,14 +21,15 @@ private:
 public:
    int index;
    int flag;
+
    struct StructSpinPattern {
       int index;
       int flag;
    } spin_pattern;
  
-   int OverwriteSpinPattern(int index);
-   int OverwriteFillPattern(int index);
-   int MaskFillPattern();
+   void OverwriteSpinPattern(int index);
+   void OverwriteFillPattern(int index);
+   void MaskFillPattern();
 };
 
-#endif /* ASYM_RECOVER_H */
+#endif

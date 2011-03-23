@@ -10,6 +10,4 @@ $(SUBDIRS):
 
 clean: subdirs
 
-cleanall: subdirs
-
 install: subdirs

@@ -12,7 +12,6 @@
 #include "TGraphErrors.h"
 
 #include "AsymHeader.h"
-#include "Asym.h"
 
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
