@@ -18,12 +18,22 @@ void manalyze()
 void initialize()
 {
    TString filelist = "list.dat";
-	TString fileName;
-	string  histName = "hPolarizationProfile";
+   TString fileName;
+   //string  histName = "hPolarUniProfileBin";
+   string  histName = "hPolarVsIntensProfileBin";
 
-	TH1* havrg;// = new TH1F();
+   //TH1* havrg = new TH1F("havrg", "havrg", 20, -3, 3);
+   TH1* havrg = new TH1F("havrg", "havrg", 22, 0, 1.1);
 
-	UInt_t i = 0;
+   havrg->GetYaxis()->SetRangeUser(0, 1.05);
+   havrg->SetOption("p");
+   havrg->SetMarkerStyle(kFullDotLarge);
+   havrg->SetMarkerSize(1);
+   havrg->SetMarkerColor(kRed);
+   havrg->Sumw2();
+   havrg->SetBit(TH1::kIsAverage);
+
+   UInt_t i = 0;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -32,25 +42,30 @@ void initialize()
    while (next && (o = (*next)()) ) {
       //chain->AddFile(((TObjString*) o)->GetName());
       cout << (((TObjString*) o)->GetName()) << endl;
-		fileName = "";
-		fileName += "/usr/local/polarim/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
+      fileName = "";
+      //fileName += "/usr/local/polarim/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
+      fileName += "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
 
-		TFile *f = new TFile(fileName, "READ");
-   	if (!f) exit(-1);
+      TFile *f = new TFile(fileName, "READ");
+      if (!f) exit(-1);
 
       gH = new DrawObjContainer(f);
-		gH->d["profile"] = new CnipolProfileHists();
-		gH->ReadFromDir(f);
+      gH->d["profile"] = new CnipolProfileHists();
+      gH->ReadFromDir(f);
 
-		TH1* h = (TH1*) gH->d["profile"]->o[histName];
-		h->Print();
-		h->SetBit(TH1::kIsAverage);
+      TH1* h = (TH1*) gH->d["profile"]->o[histName];
+      h->Print();
+      h->SetBit(TH1::kIsAverage);
 
-		if (i == 0) havrg = h;
-		else havrg->Add(h);
+      //if (i == 0) havrg = h;
+      //else havrg->Add(h);
+      havrg->Add(h);
 
-		i++;
+      i++;
    }
 
-	havrg->Print();
+   havrg->Print();
+   havrg->GetYaxis()->SetRangeUser(0, 1.05);
+   havrg->Draw();
+   gPad->Update();
 }

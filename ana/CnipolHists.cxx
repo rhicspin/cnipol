@@ -348,6 +348,13 @@ Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
 
 
 /** */
+Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize) const
+{
+   return ((const CnipolHists*) this)->Write(name, option, bufsize);
+}
+
+
+/** */
 void CnipolHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    UChar_t chId  = ch->GetChannelId();

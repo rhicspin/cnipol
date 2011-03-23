@@ -10,14 +10,10 @@
 #define dLayerChecker_h
 
 #include <stdio.h>
-//#include <stdlib.h>
 #include <iostream>
 
-//#include "rhicpol.h"
-////#include "rpoldata.h"
-
 #include "AsymGlobals.h"
-//#include "AsymMain.h"
+
 
 char *datadir;
 char *sharedir;
