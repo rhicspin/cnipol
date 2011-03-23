@@ -1,8 +1,8 @@
 #
-# Authors             : Itaru Nakagawa
-#                       Dmitri Smirnov
+# Authors      : Itaru Nakagawa
+#                Dmitri Smirnov
 #
-# Creation data       : Feb.6,2006
+# Creation data: Feb.6,2006
 #
 
 CNIPOL_LIB_DIR  = $(CNIPOL_DIR)/lib
@@ -15,9 +15,7 @@ ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rp
 ROOTLIBS  = `root-config --libs`
 
 CC = g++
-##C_FLAG = -g  -O2 -Wall -w 
-##C_FLAG = -O2 -ggdb 
-C_FLAG = -Wall -m32 #ds: -O3  
+C_FLAG = -Wall -m32 #ds: -O2 -ggdb -w -g
 SOFLAGS = -shared -m32
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
@@ -30,20 +28,6 @@ FLIB = -lm -lnsl -lgfortran
 CNIANA_LIB = $(CNIPOL_LIB_DIR)/libcniana.so
 CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
-AsymOBJ = AsymMain.o AsymRoot.o AsymProcess.o AsymCalc.o hb_lib.o AsymHbook.o \
-          AsymRead.o AsymRunDB.o AsymRecover.o AsymErrorDetector.o Kinema.o \
-          Asym.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
-
-RunDBReaderOBJ = RunDBReader.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
-
-dLayerCheckerOBJ = dLayerChecker.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
-
-KinFuncOBJ = KinFunc.o Kinema.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
-
-AsymPlotOBJ = AsymPlot.o Asym.o AsymRunDB.o AsymRoot.o RunInfo.o AnaInfo.o AnaResult.o TargetInfo.o DbEntry.o
-
-testOBJ = test.o AsymRoot.o
-
 BINARY = Asym RunDBReader dLayerChecker KinFunc AsymPlot
 BINARY_OBJS = $(BINARY:=.o)
 
@@ -53,8 +37,6 @@ OBJS = $(SRCS:.cc=.o)
 
 #CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o
 CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
-#CNIPOL_LIB_OBJS = Asym.o
-#CNIPOL_LIB_OBJS = $(AsymOBJ) 
 
 all: lib $(BINARY) install
 
@@ -66,30 +48,24 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(ROOTLIBS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $(CNIPOL_LIB)
 	@echo "$@ done"
 
-######## BINARY ##################
 
-Asym: $(AsymOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(AsymOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) -o $@
+Asym: $(CNIPOL_LIB) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) -o $@
 
-RunDBReader : $(RunDBReaderOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(RunDBReaderOBJ) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
+RunDBReader: $(CNIPOL_LIB) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) -o $@
 
-AsymPlot : $(AsymPlotOBJ)
-	$(CC) $(C_FLAG) $(AsymPlotOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
+AsymPlot: $(CNIPOL_LIB)
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
-dLayerChecker : $(dLayerCheckerOBJ)
-	$(CC) $(C_FLAG) $(dLayerCheckerOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
+dLayerChecker: $(CNIPOL_LIB)
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
-KinFunc : $(KinFuncOBJ) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(KinFuncOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
-
-test : $(testOBJ) 
-	$(CC) $(C_FLAG) $(testOBJ) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
+KinFunc: $(CNIPOL_LIB) $(CNIANA_LIB)
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) -o $@
 
 $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/*.h)
 	make -C $(CNIPOL_DIR)/ana
-
-######## OBJECT ##################
 
 AsymMain.o:    Asym.h AsymMain.h AsymCalc.h
 AsymCalc.o:    Asym.h AsymCalc.h AsymErrorDetector.h
@@ -98,7 +74,6 @@ RunDBReader.o: AsymRunDB.h
 AsymRoot.o:    AsymRoot.h
 KinFunc.o:     Kinema.h
 AsymProcess.o: AsymProcess.h
-#AsymPlot.o:    AsymPlot.h AsymHeader.h
 AsymPlot.o:    AsymPlot.h
 RunInfo.o:     RunInfo.h
 AnaInfo.o:     AnaInfo.h
@@ -109,15 +84,14 @@ Asym.o:        Asym.h RunInfo.h AnaInfo.h TargetInfo.h AnaResult.h AsymRunDB.h D
 .f.o:
 	$(FC) -m32 -O -c $<
 
-Host:
-	echo -e -n "$(HOSTNAME) \n" > .compiled_host
-
 install : $(BINARY)
-	install -v $^ $(CNIPOL_DIR)/bin
-	#install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
+	install -v -p $^ $(CNIPOL_DIR)/bin
+	rm -f $^
 
-clean: 
-	rm -f $(BINARY) $(CNIPOL_LIB)
+#install AsymHeader.h *.C -v -C --mode 666 $(MACRODIR)
+
+clean: lib.clean
+	rm -f $(BINARY)
 	rm -f *.o
 	rm -f *~ 
 
@@ -126,3 +100,5 @@ bin.clean: lib.clean
 
 lib.clean: 
 	rm -f $(CNIPOL_LIB)
+
+cleanall: clean bin.clean lib.clean

@@ -15,16 +15,12 @@
 #include <sys/stat.h>
 
 #include "TBuffer.h"
-#include "TString.h"
 
-#include "AsymRunDB.h"
-
-
-class TStructRunDB;
+#include "DbEntry.h"
 
 
 /** */
-class TDatprocStruct
+class AnaInfo
 {
 public:
 
@@ -96,9 +92,9 @@ public:
 
 public:
 
-   TDatprocStruct();
-   TDatprocStruct(std::string runId);
-   ~TDatprocStruct();
+   AnaInfo();
+   AnaInfo(std::string runId);
+   ~AnaInfo();
 
    std::string GetOutDir() const;
    std::string GetImageDir() const { return GetOutDir() + "/images"; }
@@ -116,7 +112,7 @@ public:
    void        PrintAsPhp(FILE *f) const;
    void        PrintUsage();
    void        Streamer(TBuffer &buf);
-   void        Update(TStructRunDB &rundb);
+   void        Update(DbEntry &rundb);
 	void        CopyResults();
 
    inline Bool_t HasAlphaBit();
@@ -134,20 +130,20 @@ private:
    void MakeOutDir();
 };
 
-TBuffer & operator<<(TBuffer &buf, TDatprocStruct *&rec);
-TBuffer & operator>>(TBuffer &buf, TDatprocStruct *&rec);
+TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec);
+TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec);
 
-Bool_t TDatprocStruct::HasAlphaBit()  {
-   return (fModes & (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB))  == (TDatprocStruct::MODE_ALPHA^TDatprocStruct::MODE_CALIB);
+Bool_t AnaInfo::HasAlphaBit()  {
+   return (fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB))  == (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB);
  }
 
-Bool_t TDatprocStruct::HasCalibBit()   { return (fModes & TDatprocStruct::MODE_CALIB)   == TDatprocStruct::MODE_CALIB; }
-Bool_t TDatprocStruct::HasGraphBit()   { return (fModes & TDatprocStruct::MODE_GRAPH)   == TDatprocStruct::MODE_GRAPH; }
-Bool_t TDatprocStruct::HasNormalBit()  { return (fModes & TDatprocStruct::MODE_NORMAL)  == TDatprocStruct::MODE_NORMAL; }
-Bool_t TDatprocStruct::HasScalerBit()  { return (fModes & TDatprocStruct::MODE_SCALER)  == TDatprocStruct::MODE_SCALER; }
-Bool_t TDatprocStruct::HasRawBit()     { return (fModes & TDatprocStruct::MODE_RAW)     == TDatprocStruct::MODE_RAW; }
-Bool_t TDatprocStruct::HasRunBit()     { return (fModes & TDatprocStruct::MODE_RUN)     == TDatprocStruct::MODE_RUN; }
-Bool_t TDatprocStruct::HasTargetBit()  { return (fModes & TDatprocStruct::MODE_TARGET)  == TDatprocStruct::MODE_TARGET; }
-Bool_t TDatprocStruct::HasProfileBit() { return (fModes & TDatprocStruct::MODE_PROFILE) == TDatprocStruct::MODE_PROFILE; }
+Bool_t AnaInfo::HasCalibBit()   { return (fModes & AnaInfo::MODE_CALIB)   == AnaInfo::MODE_CALIB; }
+Bool_t AnaInfo::HasGraphBit()   { return (fModes & AnaInfo::MODE_GRAPH)   == AnaInfo::MODE_GRAPH; }
+Bool_t AnaInfo::HasNormalBit()  { return (fModes & AnaInfo::MODE_NORMAL)  == AnaInfo::MODE_NORMAL; }
+Bool_t AnaInfo::HasScalerBit()  { return (fModes & AnaInfo::MODE_SCALER)  == AnaInfo::MODE_SCALER; }
+Bool_t AnaInfo::HasRawBit()     { return (fModes & AnaInfo::MODE_RAW)     == AnaInfo::MODE_RAW; }
+Bool_t AnaInfo::HasRunBit()     { return (fModes & AnaInfo::MODE_RUN)     == AnaInfo::MODE_RUN; }
+Bool_t AnaInfo::HasTargetBit()  { return (fModes & AnaInfo::MODE_TARGET)  == AnaInfo::MODE_TARGET; }
+Bool_t AnaInfo::HasProfileBit() { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
 
 #endif

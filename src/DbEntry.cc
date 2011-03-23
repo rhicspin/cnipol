@@ -7,11 +7,20 @@
 
 #include "DbEntry.h"
 
+#include <limits.h>
+#include <sstream>
+
+#include "TObjString.h"
+#include "TPRegexp.h"
+
+#include "AsymRunDB.h"
+
+
 using namespace std;
 
 
 /** */
-TStructRunDB::TStructRunDB() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFieldFlags()
+DbEntry::DbEntry() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFieldFlags()
 {
    for (UShort_t i=0; i<AsymRunDB::sNFields; i++) {
       //printf("%s\n", AsymRunDB::sFieldNames[i]);
@@ -36,7 +45,7 @@ TStructRunDB::TStructRunDB() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFiel
 
 
 /** */
-TStructRunDB::~TStructRunDB()
+DbEntry::~DbEntry()
 {
    //printf("dest \n");
    fFields.clear();
@@ -46,7 +55,7 @@ TStructRunDB::~TStructRunDB()
 
 /** */
 /*
-void TStructRunDB::PrintAsDbEntry(FILE *f) const
+void DbEntry::PrintAsDbEntry(FILE *f) const
 {
    fprintf(f, "\n[%s]\n", fRunName.c_str());
 
@@ -67,7 +76,7 @@ void TStructRunDB::PrintAsDbEntry(FILE *f) const
 /**
  * Prints all fields except those having a default "none" value.
  */
-void TStructRunDB::PrintAsDbEntry(ostream &o, Bool_t printCommonFields) const
+void DbEntry::PrintAsDbEntry(ostream &o, Bool_t printCommonFields) const
 {
    o << "["+fRunName+"]" << endl;
 
@@ -90,7 +99,7 @@ void TStructRunDB::PrintAsDbEntry(ostream &o, Bool_t printCommonFields) const
 
 
 /** */
-void TStructRunDB::ProcessLine(std::string sline)
+void DbEntry::ProcessLine(std::string sline)
 {
    DbFieldMap::iterator ifld;
    DbFieldMap::iterator bfld = fFields.begin();
@@ -143,34 +152,34 @@ void TStructRunDB::ProcessLine(std::string sline)
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, TStructRunDB *&rec)
+TBuffer & operator<<(TBuffer &buf, DbEntry *&rec)
 {
    if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunDB *rec) : \n");
+   //printf("operator<<(TBuffer &buf, DbEntry *rec) : \n");
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, TStructRunDB *&rec)
+TBuffer & operator>>(TBuffer &buf, DbEntry *&rec)
 {
    //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, TStructRunDB *rec) : \n");
+   //printf("operator<<(TBuffer &buf, DbEntry *rec) : \n");
    // if object has been created already delete it
    //free(rec);
-   //rec = (TStructRunDB *) realloc(rec, sizeof(TStructRunDB ));
+   //rec = (DbEntry *) realloc(rec, sizeof(DbEntry ));
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-void TStructRunDB::Streamer(TBuffer &buf)
+void DbEntry::Streamer(TBuffer &buf)
 {
    if (buf.IsReading()) {
       TString tstr;
-      //printf("reading TStructRunDB::Streamer(TBuffer &buf) \n");
+      //printf("reading DbEntry::Streamer(TBuffer &buf) \n");
       buf >> RunID;
       buf >> isCalibRun;
       buf >> tstr; calib_file_s         = tstr.Data();
@@ -179,7 +188,7 @@ void TStructRunDB::Streamer(TBuffer &buf)
       buf >> tstr; config_file_s        = tstr.Data();
    } else {
       TString tstr;
-      //printf("writing TStructRunDB::Streamer(TBuffer &buf) \n");
+      //printf("writing DbEntry::Streamer(TBuffer &buf) \n");
       buf << RunID;
       buf << isCalibRun;
       tstr = calib_file_s;         buf << tstr;
@@ -191,14 +200,14 @@ void TStructRunDB::Streamer(TBuffer &buf)
 
 
 /** */
-//bool TStructRunDB::operator()(const TStructRunDB &rec1, const TStructRunDB &rec2) const
+//bool DbEntry::operator()(const DbEntry &rec1, const DbEntry &rec2) const
 //{
 //  return (rec1.RunID < rec2.RunID);
 //}
 
 
 /** */
-bool TStructRunDB::operator<(const TStructRunDB &rhs) const
+bool DbEntry::operator<(const DbEntry &rhs) const
 {
    // First, compare by start time
    if (timeStamp < rhs.timeStamp) return true;
@@ -218,7 +227,7 @@ bool TStructRunDB::operator<(const TStructRunDB &rhs) const
 
 
 /** */
-bool TStructRunDB::operator==(const TStructRunDB &rhs) const
+bool DbEntry::operator==(const DbEntry &rhs) const
 {
    // First, compare by start time
    //if (timeStamp < rhs.timeStamp) return true;
@@ -238,7 +247,7 @@ bool TStructRunDB::operator==(const TStructRunDB &rhs) const
 
 
 /** */
-void TStructRunDB::Print(const Option_t* opt) const
+void DbEntry::Print(const Option_t* opt) const
 { //{{{
    //printf("RunID:             %f\n", RunID);
    //printf("isCalibRun:        %d\n", isCalibRun);
@@ -258,7 +267,7 @@ void TStructRunDB::Print(const Option_t* opt) const
  * Copies values from dbrun to this. All fields except default ("none") and
  * proprietary ("*") * ones.
  */
-void TStructRunDB::UpdateFields(TStructRunDB &dbrun)
+void DbEntry::UpdateFields(DbEntry &dbrun)
 {
    DbFieldMap::iterator ifld;
    DbFieldMap::iterator bfld = dbrun.fFields.begin();
@@ -291,7 +300,7 @@ void TStructRunDB::UpdateFields(TStructRunDB &dbrun)
 
 
 /** */
-void TStructRunDB::UpdateValues()
+void DbEntry::UpdateValues()
 {
    stringstream sstr;
    sstr.str(""); sstr << fFields["POLARIMETER_ID"]; sstr >> fPolId;
@@ -300,14 +309,14 @@ void TStructRunDB::UpdateValues()
 
 
 /** */
-void TStructRunDB::SetAsymVersion(std::string version)
+void DbEntry::SetAsymVersion(std::string version)
 {
    fFields["ASYM_VERSION"] = version;
 }
 
 
 /** */
-void TStructRunDB::PrintAsPhp(FILE *f) const
+void DbEntry::PrintAsPhp(FILE *f) const
 { //{{{
    //fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
    //fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());

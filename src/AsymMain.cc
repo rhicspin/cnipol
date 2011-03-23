@@ -16,6 +16,22 @@
 
 #include "AsymMain.h"
 
+#include <iostream>
+#include <getopt.h>
+#include <sys/stat.h>
+#include <sstream>
+
+#include "TStopwatch.h"
+#include "TTimeStamp.h"
+
+#include "EventConfig.h"
+
+#include "AsymRoot.h"
+#include "AsymRead.h"
+#include "AsymRunDB.h"
+#include "AsymHbook.h"
+
+
 using namespace std;
 
 
@@ -50,7 +66,6 @@ int main(int argc, char *argv[])
 
    static struct option long_options[] = {
       {"run-name",            required_argument,   0,   'r'},
-      {"raw",                 0,                   0,   TDatprocStruct::MODE_RAW},
       {"feedback",            0,                   0,   'b'},
       {"no-error-detector",   0,                   0,   'a'},
       {"update-db",           no_argument,         0,   0x000100},
@@ -59,26 +74,27 @@ int main(int argc, char *argv[])
       {"log",                 optional_argument,   0,   'l'},
       {"copy",                no_argument,         0,   0x010000},
       {"copy-results",        no_argument,         0,   0x010000},
-      {"alpha",               no_argument,         0,   TDatprocStruct::MODE_ALPHA},
-      {"calib",               no_argument,         0,   TDatprocStruct::MODE_CALIB},
-      {"scaler",              no_argument,         0,   TDatprocStruct::MODE_SCALER},
-      {"target",              no_argument,         0,   TDatprocStruct::MODE_TARGET},
-      {"profile",             no_argument,         0,   TDatprocStruct::MODE_PROFILE},
+      {"alpha",               no_argument,         0,   AnaInfo::MODE_ALPHA},
+      {"calib",               no_argument,         0,   AnaInfo::MODE_CALIB},
+      {"scaler",              no_argument,         0,   AnaInfo::MODE_SCALER},
+      {"raw",                 no_argument,         0,   AnaInfo::MODE_RAW},
+      {"target",              no_argument,         0,   AnaInfo::MODE_TARGET},
+      {"profile",             no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"quick",               no_argument,         0,   'q'},
-      {"graph",               no_argument,         0,   TDatprocStruct::MODE_GRAPH},
-      {"no-graph",            no_argument,         0,   TDatprocStruct::MODE_NO_GRAPH},
-      {"mode-alpha",          no_argument,         0,   TDatprocStruct::MODE_ALPHA},
-      {"mode-calib",          no_argument,         0,   TDatprocStruct::MODE_CALIB},
-      {"mode-graph",          no_argument,         0,   TDatprocStruct::MODE_GRAPH},
-      {"mode-no-graph",       no_argument,         0,   TDatprocStruct::MODE_NO_GRAPH},
-      {"mode-normal",         no_argument,         0,   TDatprocStruct::MODE_NORMAL},
-      {"mode-no-normal",      no_argument,         0,   TDatprocStruct::MODE_NO_NORMAL},
-      {"mode-scaler",         no_argument,         0,   TDatprocStruct::MODE_SCALER},
-      {"mode-raw",            no_argument,         0,   TDatprocStruct::MODE_RAW},
-      {"mode-run",            no_argument,         0,   TDatprocStruct::MODE_RUN},
-      {"mode-target",         no_argument,         0,   TDatprocStruct::MODE_TARGET},
-      {"mode-profile",        no_argument,         0,   TDatprocStruct::MODE_PROFILE},
-      {"mode-full",           no_argument,         0,   TDatprocStruct::MODE_FULL},
+      {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
+      {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
+      {"mode-alpha",          no_argument,         0,   AnaInfo::MODE_ALPHA},
+      {"mode-calib",          no_argument,         0,   AnaInfo::MODE_CALIB},
+      {"mode-graph",          no_argument,         0,   AnaInfo::MODE_GRAPH},
+      {"mode-no-graph",       no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
+      {"mode-normal",         no_argument,         0,   AnaInfo::MODE_NORMAL},
+      {"mode-no-normal",      no_argument,         0,   AnaInfo::MODE_NO_NORMAL},
+      {"mode-scaler",         no_argument,         0,   AnaInfo::MODE_SCALER},
+      {"mode-raw",            no_argument,         0,   AnaInfo::MODE_RAW},
+      {"mode-run",            no_argument,         0,   AnaInfo::MODE_RUN},
+      {"mode-target",         no_argument,         0,   AnaInfo::MODE_TARGET},
+      {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
+      {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"set-calib",           required_argument,   0,   0x003000},
       {"set-calib-alpha",     required_argument,   0,   0x001000},
       {"set-calib-dl",        required_argument,   0,   0x002000},
@@ -94,7 +110,7 @@ int main(int argc, char *argv[])
 
       case '?':
       case 'h':
-         dproc.PrintUsage();
+         gAnaInfo.PrintUsage();
          exit(0);
 
       case 'r':
@@ -102,10 +118,10 @@ int main(int argc, char *argv[])
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
          //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
-         gDataFileName = dproc.fAsymEnv["DATADIR"] +  "/" + optarg + ".data";
+         gDataFileName = gAnaInfo.fAsymEnv["DATADIR"] +  "/" + optarg + ".data";
 
          // Add checks for runName suffix
-         dproc.fRunId     = optarg;
+         gAnaInfo.fRunId     = optarg;
          gRunInfo.runName = optarg;
          gRunDb.fRunName  = optarg;
          break;
@@ -115,28 +131,28 @@ int main(int argc, char *argv[])
          break;
 
       case 's':
-         dproc.thinout = atol(optarg);
+         gAnaInfo.thinout = atol(optarg);
          break;
 
       case 'c':
-         dproc.userCalibFile = optarg;
+         gAnaInfo.userCalibFile = optarg;
          break;
 
       case 'l':
-         dproc.fFileStdLogName = (optarg != 0 ? optarg : "");
+         gAnaInfo.fFileStdLogName = (optarg != 0 ? optarg : "");
          break;
 
       case 0x010000:
-         dproc.fFlagCopyResults = kTRUE;
+         gAnaInfo.fFlagCopyResults = kTRUE;
          break;
 
       case 't': // set timing shift in banana cut
-         dproc.tshift = atoi(optarg);
+         gAnaInfo.tshift = atoi(optarg);
          extinput.TSHIFT = 1;
          break;
 
       case 'd': // set timing shift in banana cut
-         dproc.dx_offset = atoi(optarg);
+         gAnaInfo.dx_offset = atoi(optarg);
          break;
 
       case 'e': // set energy range
@@ -144,12 +160,12 @@ int main(int argc, char *argv[])
 
          if ((ptr = strrchr(enerange, ':'))) {
             ptr++;
-            dproc.eneu = atoi(ptr);
+            gAnaInfo.eneu = atoi(ptr);
             strtok(enerange, ":");
-            dproc.enel = atoi(enerange);
-            if (dproc.enel == 0 || dproc.enel < 0)     { dproc.enel = 0;}
-            if (dproc.eneu == 0 || dproc.eneu > 12000) { dproc.eneu = 2000;}
-            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", dproc.enel, dproc.eneu);
+            gAnaInfo.enel = atoi(enerange);
+            if (gAnaInfo.enel == 0 || gAnaInfo.enel < 0)     { gAnaInfo.enel = 0;}
+            if (gAnaInfo.eneu == 0 || gAnaInfo.eneu > 12000) { gAnaInfo.eneu = 2000;}
+            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", gAnaInfo.enel, gAnaInfo.eneu);
          } else {
              cout << "Wrong specification for energy threshold" << endl;
              return 0;
@@ -171,145 +187,145 @@ int main(int argc, char *argv[])
          break;
 
       case 'b':
-         dproc.FEEDBACKMODE = Flag.feedback = 1;
+         gAnaInfo.FEEDBACKMODE = Flag.feedback = 1;
          break;
       case 'D':
-         dproc.DMODE = 1;
+         gAnaInfo.DMODE = 1;
          break;
       case 'T':
-         dproc.TMODE = 1;
+         gAnaInfo.TMODE = 1;
          break;
       case 'A':
-         dproc.AMODE = 1;
+         gAnaInfo.AMODE = 1;
          break;
       case 'B':
-         dproc.BMODE = 1;
+         gAnaInfo.BMODE = 1;
          break;
       case 'Z':
-         dproc.ZMODE = 1;
+         gAnaInfo.ZMODE = 1;
          break;
       case 'U':
-         dproc.UPDATE = 1;
+         gAnaInfo.UPDATE = 1;
          break;
       case 'G':
-         dproc.MMODE = 1;
+         gAnaInfo.MMODE = 1;
          break;
       case 'N':
-         dproc.NTMODE = 1;
+         gAnaInfo.NTMODE = 1;
          break;
       case 'W': // constant width banana cut
-         dproc.CBANANA = 1;
+         gAnaInfo.CBANANA = 1;
          strcpy(cwidth, optarg);
          if ((ptr = strrchr(cwidth,':'))) {
             ptr++;
-            dproc.widthu = atoi(ptr);
+            gAnaInfo.widthu = atoi(ptr);
             strtok(cwidth,":");
-            dproc.widthl = atoi(cwidth);
+            gAnaInfo.widthl = atoi(cwidth);
             fprintf(stdout,"CONSTANT BANANA CUT LOWER:UPPER = %d:%d\n",
-                    dproc.widthl,dproc.widthu);
-            if (dproc.widthu == dproc.widthl)
+                    gAnaInfo.widthl,gAnaInfo.widthu);
+            if (gAnaInfo.widthu == gAnaInfo.widthl)
                fprintf(stdout, "WARNING: Banana Lower = Upper Cut\a\n");
          } else {
             fprintf(stdout, "Wrong specification constant banana cut\n");
             return 0;
          }
          fprintf(stdout,"BANANA Cut : %d <==> %d \n",
-                 dproc.widthl,dproc.widthu);
+                 gAnaInfo.widthl,gAnaInfo.widthu);
          break;
 
       case 'm':
-         dproc.CBANANA = 2;
-         dproc.MassSigma = atof(optarg);
+         gAnaInfo.CBANANA = 2;
+         gAnaInfo.MassSigma = atof(optarg);
          extinput.MASSCUT = 1;
          break;
 
       case 'R':
          sstr << optarg;
-         sstr >> dproc.SAVETREES;
+         sstr >> gAnaInfo.SAVETREES;
          break;
 
       case 0x000100:
-         dproc.UPDATE_DB = 1; break;
+         gAnaInfo.UPDATE_DB = 1; break;
 
       case 0x000200:
-         dproc.UPDATE_DB = 0; break;
+         gAnaInfo.UPDATE_DB = 0; break;
 
       case 0x000300:
          gRunInfo.fPolId = atoi(optarg); break;
 
       case 0x001000:
-         dproc.fAlphaCalibRun = optarg;
+         gAnaInfo.fAlphaCalibRun = optarg;
          break;
 
       case 0x002000:
-         dproc.fDlCalibRun = optarg;
+         gAnaInfo.fDlCalibRun = optarg;
          break;
 
       case 0x003000:
-         dproc.fAlphaCalibRun = optarg;
-         dproc.fDlCalibRun    = optarg;
+         gAnaInfo.fAlphaCalibRun = optarg;
+         gAnaInfo.fDlCalibRun    = optarg;
          break;
 
       case 'q':
-         dproc.QUICK_MODE = 1; break;
+         gAnaInfo.QUICK_MODE = 1; break;
 
       case 'g':
-      case TDatprocStruct::MODE_GRAPH:
-         dproc.fModes |= TDatprocStruct::MODE_GRAPH;
+      case AnaInfo::MODE_GRAPH:
+         gAnaInfo.fModes |= AnaInfo::MODE_GRAPH;
          break;
 
-      case TDatprocStruct::MODE_NO_GRAPH:
-         dproc.fModes &= ~TDatprocStruct::MODE_GRAPH;
+      case AnaInfo::MODE_NO_GRAPH:
+         gAnaInfo.fModes &= ~AnaInfo::MODE_GRAPH;
          break;
 
       case 'C':
-      case TDatprocStruct::MODE_ALPHA:
-         dproc.fModes |= TDatprocStruct::MODE_ALPHA;
-         dproc.CMODE = 1;
-         dproc.RECONFMODE = 0;
-         dproc.fModes &= ~TDatprocStruct::MODE_NORMAL; // turn off normal mode
+      case AnaInfo::MODE_ALPHA:
+         gAnaInfo.fModes |= AnaInfo::MODE_ALPHA;
+         gAnaInfo.CMODE = 1;
+         gAnaInfo.RECONFMODE = 0;
+         gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL; // turn off normal mode
          gAsymRoot.fEventConfig = new EventConfig();
          break;
 
-      case TDatprocStruct::MODE_CALIB:
-         dproc.fModes |= TDatprocStruct::MODE_CALIB;
+      case AnaInfo::MODE_CALIB:
+         gAnaInfo.fModes |= AnaInfo::MODE_CALIB;
          break;
 
-      case TDatprocStruct::MODE_NO_NORMAL:
-         dproc.fModes &= ~TDatprocStruct::MODE_NORMAL;
+      case AnaInfo::MODE_NO_NORMAL:
+         gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL;
          break;
 
-      case TDatprocStruct::MODE_SCALER:
-         dproc.fModes |= TDatprocStruct::MODE_SCALER;
+      case AnaInfo::MODE_SCALER:
+         gAnaInfo.fModes |= AnaInfo::MODE_SCALER;
          break;
 
-      case TDatprocStruct::MODE_RAW:
-         dproc.fModes |= TDatprocStruct::MODE_RAW;
-         dproc.RAWHISTOGRAM = 1;
+      case AnaInfo::MODE_RAW:
+         gAnaInfo.fModes |= AnaInfo::MODE_RAW;
+         gAnaInfo.RAWHISTOGRAM = 1;
          break;
 
-      case TDatprocStruct::MODE_RUN:
-         dproc.fModes |= TDatprocStruct::MODE_RUN; break;
+      case AnaInfo::MODE_RUN:
+         gAnaInfo.fModes |= AnaInfo::MODE_RUN; break;
 
-      case TDatprocStruct::MODE_TARGET:
-         dproc.fModes |= TDatprocStruct::MODE_TARGET; break;
+      case AnaInfo::MODE_TARGET:
+         gAnaInfo.fModes |= AnaInfo::MODE_TARGET; break;
 
-      case TDatprocStruct::MODE_PROFILE:
-         dproc.fModes |= TDatprocStruct::MODE_PROFILE;
-         dproc.fModes |= TDatprocStruct::MODE_TARGET; // profile hists depend on target ones
+      case AnaInfo::MODE_PROFILE:
+         gAnaInfo.fModes |= AnaInfo::MODE_PROFILE;
+         gAnaInfo.fModes |= AnaInfo::MODE_TARGET; // profile hists depend on target ones
          break;
 
-      case TDatprocStruct::MODE_FULL:
-         dproc.fModes |= TDatprocStruct::MODE_FULL; break;
+      case AnaInfo::MODE_FULL:
+         gAnaInfo.fModes |= AnaInfo::MODE_FULL; break;
 
       default:
          gSystem->Error("   main", "Invalid Option");
-         dproc.PrintUsage();
+         gAnaInfo.PrintUsage();
          exit(0);
       }
    }
 
-   dproc.ProcessOptions();
+   gAnaInfo.ProcessOptions();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -322,7 +338,7 @@ int main(int argc, char *argv[])
 
    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
    // ds: not needed anymore since we are getting this info from raw data for all runs
-   //if (!dproc.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
+   //if (!gAnaInfo.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
 
    // For normal runs, RUNID != 0. Then read run conditions from run.db.
    // Otherwise, data filename with characters skip readdb and reconfig routines
@@ -330,10 +346,10 @@ int main(int argc, char *argv[])
    //if (gRunInfo.RUNID)
    //   readdb(gRunInfo.RUNID);
    //else
-   //   dproc.RECONFMODE = 0;
+   //   gAnaInfo.RECONFMODE = 0;
    
    // Read run info from database
-   TStructRunDB *runDb = gAsymRunDb.Select(gRunDb.fRunName);
+   DbEntry *runDb = gAsymRunDb.Select(gRunDb.fRunName);
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gDataFileName);
@@ -358,7 +374,7 @@ int main(int argc, char *argv[])
       //gAsymRunDb.Print();
       gAsymRunDb.Insert(&gRunDb);
       //gAsymRunDb.Print();
-      gAsymRunDb.Save(); // write to DB file
+      gAsymRunDb.Dump(); // write to DB file
 
       gAsymRunDb.Clear();
       runDb = gAsymRunDb.Select(gRunDb.fRunName); // now read all available common info for this run
@@ -372,10 +388,10 @@ int main(int argc, char *argv[])
    // We should be done reading all common/default parameters from DB by now
    gRunDb.Print();
 
-   dproc.Update(gRunDb);
+   gAnaInfo.Update(gRunDb);
    gRunInfo.Update(gRunDb);
 
-   dproc.Print();
+   gAnaInfo.Print();
    //gRunInfo.Print();
 
    // Manually set disabled channels... deprecated
@@ -446,7 +462,7 @@ int main(int argc, char *argv[])
    // Find RunConfig object in the calibration files and update
    gAsymRoot.UpdateRunConfig();
 
-   //printf("calib= %d\n", dproc.HasCalibBit());
+   //printf("calib= %d\n", gAnaInfo.HasCalibBit());
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
    //return 0;
 
@@ -456,23 +472,23 @@ int main(int argc, char *argv[])
    hist_book(hbk_outfile);
 
    // Book root file
-   gAsymRoot.RootFile(dproc.GetRootFileName());
+   gAsymRoot.RootFile(gAnaInfo.GetRootFileName());
 
    // Create tree if requested
-   if (dproc.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
+   if (gAnaInfo.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( dproc.HasCalibBit() && !dproc.CMODE)
+   if ( gAnaInfo.HasCalibBit() && !gAnaInfo.CMODE)
       rawData->ReadDataFast();
       //readDataFast();
 
    //return 0;
 
-   if (!dproc.QUICK_MODE) {
+   if (!gAnaInfo.QUICK_MODE) {
 
       //ds: XXX
       //gAsymRoot.PreProcess();
@@ -492,7 +508,7 @@ int main(int argc, char *argv[])
    hist_close(hbk_outfile);
 
    // Update calibration constants if requested
-   if (dproc.HasCalibBit()) {
+   if (gAnaInfo.HasCalibBit()) {
       gAsymRoot.Calibrate();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
       //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -501,21 +517,21 @@ int main(int argc, char *argv[])
    // Update calibration constants if requested
    //gRunDb.Print();
 
-   if (dproc.UPDATE_DB) {
+   if (gAnaInfo.UPDATE_DB) {
       // Select all runs from database
       gAsymRunDb.Select();
       gAsymRunDb.Insert(&gRunDb);
-      gAsymRunDb.Save();
+      gAsymRunDb.Dump();
    }
 
    // Stop stopwatch and save results
    stopwatch.Stop();
-   dproc.procDateTime =  timestamp.GetSec();
-   dproc.procTimeReal =  stopwatch.RealTime();
-   dproc.procTimeCpu  =  stopwatch.CpuTime();
+   gAnaInfo.procDateTime =  timestamp.GetSec();
+   gAnaInfo.procTimeReal =  stopwatch.RealTime();
+   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
 
    printf("Processing started: %s\n",   timestamp.AsString("l"));
-   printf("Process time: %f seconds\n", dproc.procTimeReal);
+   printf("Process time: %f seconds\n", gAnaInfo.procTimeReal);
 
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -529,36 +545,34 @@ int main(int argc, char *argv[])
    delete gAsymRoot.fEventConfig->fRunInfo;
    gAsymRoot.fEventConfig->fRunInfo    = &gRunInfo;
 
-   //delete gAsymRoot.fEventConfig->fDatproc;
-   gAsymRoot.fEventConfig->fDatproc    = &dproc;
+   //delete gAsymRoot.fEventConfig->fAnaInfo;
+   gAsymRoot.fEventConfig->fAnaInfo    = &gAnaInfo;
 
-   delete gAsymRoot.fEventConfig->fRunDB;
-   gAsymRoot.fEventConfig->fRunDB      = &gRunDb;
+   delete gAsymRoot.fEventConfig->fDbEntry;
+   gAsymRoot.fEventConfig->fDbEntry      = &gRunDb;
 
    delete gAsymRoot.fEventConfig->fAnaResult;
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
-   gAsymRoot.fEventConfig->PrintAsPhp(dproc.GetRunInfoFile());
-   gAsymRoot.fEventConfig->PrintAsConfig(dproc.GetRunConfFile());
-	fclose(dproc.GetRunInfoFile()); dproc.fFileRunInfo = 0;
-	fclose(dproc.GetRunConfFile()); dproc.fFileRunConf = 0;
+   gAsymRoot.fEventConfig->PrintAsPhp(gAnaInfo.GetRunInfoFile());
+   gAsymRoot.fEventConfig->PrintAsConfig(gAnaInfo.GetRunConfFile());
+	fclose(gAnaInfo.GetRunInfoFile()); gAnaInfo.fFileRunInfo = 0;
+	fclose(gAnaInfo.GetRunConfFile()); gAnaInfo.fFileRunConf = 0;
 
-   if (dproc.HasGraphBit())
-      gAsymRoot.SaveAs("^.*$", dproc.GetImageDir());
-      //gAsymRoot.SaveAs("profile", dproc.GetImageDir());
+   if (gAnaInfo.HasGraphBit())
+      gAsymRoot.SaveAs("^.*$", gAnaInfo.GetImageDir());
+      //gAsymRoot.SaveAs("profile", gAnaInfo.GetImageDir());
 
    // Close ROOT File
-   gAsymRoot.CloseROOTFile();
+   gAsymRoot.Finalize();
 
-   dproc.CopyResults();
+   gAnaInfo.CopyResults();
 
    return 1;
 } //}}}
 
 
-// ===================================
 // for Bunch by Bunch base analysis
-// ===================================
 int BunchSelect(int bid)
 { //{{{
   int go = 0;
@@ -578,14 +592,8 @@ int BunchSelect(int bid)
 } //}}}
 
 
-//
-// Class name  :
-// Method name : GetPolarimetryID_and_RHICBeam(char RunID[])
-//
 // Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
 // Input       : char RunID[]
-// Return      :
-//
 int GetPolarimetryID_and_RHICBeam(char RunID[])
 { //{{{
   char ID = *(strrchr(RunID,'.')+1);
@@ -593,7 +601,7 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
   switch (ID) {
   case '0':
     gRunInfo.fPolBeam      = 2;
-    gRunInfo.PolarimetryID = 1; //   blue polarimeter-1
+    gRunInfo.PolarimetryID = 1; // blue polarimeter-1
     gRunInfo.fPolStream    = 1;
     break;
   case '1':
@@ -604,7 +612,7 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
     break;
   case '2':
     gRunInfo.fPolBeam      = 2;
-    gRunInfo.PolarimetryID = 2; //   blue polarimeter-2
+    gRunInfo.PolarimetryID = 2; // blue polarimeter-2
     gRunInfo.fPolStream    = 2;
     break;
   case '3':
@@ -626,10 +634,7 @@ int GetPolarimetryID_and_RHICBeam(char RunID[])
 } //}}}
 
 
-// =========================
 // Read the parameter file
-// =========================
-
 // Ramp timing file
 void ReadRampTiming(char *filename)
 { //{{{
@@ -696,7 +701,7 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
           a0n      = atof(strtok(NULL, " "));
           a1n      = atof(strtok(NULL, " "));
           ealphn   = atof(strtok(NULL, " "));
-          dwidthn  = atof(strtok(NULL, " ")) + dproc.dx_offset; // extra thickness
+          dwidthn  = atof(strtok(NULL, " ")) + gAnaInfo.dx_offset; // extra thickness
           peden    = atof(strtok(NULL, " "));
           c0n      = atof(strtok(NULL, " "));
           c1n      = atof(strtok(NULL, " "));
@@ -735,71 +740,6 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
 } //}}}
 
 
-//
-// Class name  :
-// Method name : ConfigureActiveStrip(int mask.detector)
-//
-// Description : Disable detector and configure active strips
-//
-// Input       : int mask.detector
-// Return      : gRunInfo.ActiveDetector[i] remains masked strip configulation
-//
-void ConfigureActiveStrip(int mask)
-{ //{{{
-   // Disable Detector First
-   for (int i=0; i<NDETECTOR; i++) {
-
-      if ( (~mask>>i) & 1) {
-
-         gRunInfo.ActiveDetector[i] = 0x000;
-
-         for (int j=0; j<NSTRIP_PER_DETECTOR; j++) {
-            gRunInfo.NActiveStrip--;
-            gRunInfo.ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
-         }
-      }
-   }
-
-   // Configure Active Strips
-   int det, strip=0;
-
-   for (int i=0; i<gRunInfo.NDisableStrip; i++) {
-
-      det = gRunInfo.fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
-
-      // skip if the detector is already disabled
-      if ((mask>>det)&1) {
-         strip = gRunInfo.fDisabledChannels[i] - det*NSTRIP_PER_DETECTOR;
-         gRunInfo.ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
-         gRunInfo.ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
-         gRunInfo.NActiveStrip--;
-      }
-   }
-
-   // Active Detector and Strip Configulation
-   printf("ReConfigured Active Detector =");
-
-   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", gRunInfo.ActiveDetector[i] ? 1 : 0 );
-   printf("\n");
-   //    printf("Active Strip Config =");
-   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", gRunInfo.ActiveDetector[i]);
-   //    printf("\n");
-
-   printf("Reconfigured Active Strip Config =");
-
-   for (int i=0; i<NSTRIP; i++) {
-     if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
-     printf("%d", gRunInfo.ActiveStrip[i]);
-   }
-
-   printf("\n");
-} //}}}
-
-
-//
-// Class name  :
-// Method name : DisabledDet
-//
 // Description : Check Disabled detector
 // Input       : int strip nuumber
 // Return      : 1 if disabled. otherwise 0
@@ -823,7 +763,7 @@ void Initialization()
 { //{{{
    for (int i=0; i<NSTRIP; i++) {
       feedback.mdev[i] = 0.;
-      feedback.RMS[i]  = dproc.OneSigma;
+      feedback.RMS[i]  = gAnaInfo.OneSigma;
    }
  
    //gRunInfo.TgtOperation = "fixed";

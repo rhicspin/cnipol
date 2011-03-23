@@ -7,9 +7,17 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "AnaInfo.h"
 #include "AsymGlobals.h"
-#include "TargetInfo.h"
+
+void  HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
+void  HHPAK(int, float*);
+void  HHPAKE(int, float*);
+void  HHF1(int, float, float);
+//void  HHKIND(int, int*, char*);
+float HHMAX(int);
+float HHSTATI(int hid, int icase, char * choice, int num);
+void  HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+//void  HHFITH(int hid, char*fun, char*chopt, int np, float*par, float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 
 void tgtHistBook();
 void hist_book(char *filename);

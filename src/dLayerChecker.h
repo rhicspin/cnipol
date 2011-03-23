@@ -10,26 +10,21 @@
 #define dLayerChecker_h
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
+//#include <stdlib.h>
 #include <iostream>
 
-#include "rhicpol.h"
-#include "rpoldata.h"
+//#include "rhicpol.h"
+////#include "rpoldata.h"
 
-#include "Asym.h"
-#include "AsymMain.h"
-#include "AsymRunDB.h"
+#include "AsymGlobals.h"
+//#include "AsymMain.h"
 
 char *datadir;
 char *sharedir;
 char *tmpdir;
-char ofile[256];
-
-int fitresult;
-
-bool runfit;
+char  ofile[256];
+int   fitresult;
+bool  runfit;
 
 //input data files
 char dlayerfile[256];
@@ -57,7 +52,7 @@ bool dead_layers_consistent;
 
 void Usage(char* argv[]);
 void getPreviousRun(bool thisrun=false); //if thisrun is true, then look at current run instead of previous
-int readDLayer(char *infile);
+int  readDLayer(char *infile);
 bool isStripAlive(unsigned short strp);
 void checkChi2(char *infile);
 

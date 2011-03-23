@@ -16,10 +16,10 @@
 #include "rpoldata.h"
 #include "rhicpol.h"
 
-//#include "Asym.h"
+#include "AsymGlobals.h"
 #include "AnaInfo.h"
-#include "AsymRunDB.h"
 #include "RunInfo.h"
+#include "DbEntry.h"
 #include "AnaResult.h"
 
 #include "Calibrator.h"
@@ -32,11 +32,11 @@ public:
    
    TRandom                 *fRandom;
    TRecordConfigRhicStruct *fConfigInfo;
-   TStructRunInfo          *fRunInfo;
-   TDatprocStruct          *fDatproc;
-   TStructRunDB            *fRunDB;
+   RunInfo                 *fRunInfo;
+   AnaInfo                 *fAnaInfo;
+   DbEntry                 *fDbEntry;
    Calibrator              *fCalibrator;
-   StructAnalysis          *fAnaResult;
+   AnaResult               *fAnaResult;
 
 public:
 

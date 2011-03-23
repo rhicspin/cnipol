@@ -3,7 +3,7 @@
 
 
 /** */
-StructAnalysis::StructAnalysis() :
+AnaResult::AnaResult() :
    max_rate(0),
    //TshiftAve(0),
    //wcm_norm_event_rate(0), 
@@ -36,33 +36,33 @@ StructAnalysis::StructAnalysis() :
 
 
 /** */
-StructAnalysis::~StructAnalysis() { }
+AnaResult::~AnaResult() { }
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, StructAnalysis *&rec)
+TBuffer & operator<<(TBuffer &buf, AnaResult *&rec)
 {
    if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, StructAnalysis *rec) : \n");
+   //printf("operator<<(TBuffer &buf, AnaResult *rec) : \n");
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, StructAnalysis *&rec)
+TBuffer & operator>>(TBuffer &buf, AnaResult *&rec)
 {
-   //printf("operator>>(TBuffer &buf, StructAnalysis *rec) : \n");
+   //printf("operator>>(TBuffer &buf, AnaResult *rec) : \n");
    rec->Streamer(buf);
    return buf;
 }
 
 
 /** */
-void StructAnalysis::Streamer(TBuffer &buf)
+void AnaResult::Streamer(TBuffer &buf)
 {
    if (buf.IsReading()) {
-      //printf("reading StructAnalysis::Streamer(TBuffer &buf) \n");
+      //printf("reading AnaResult::Streamer(TBuffer &buf) \n");
       buf >> max_rate;
       buf >> TshiftAve;
       buf >> wcm_norm_event_rate; 
@@ -84,7 +84,7 @@ void StructAnalysis::Streamer(TBuffer &buf)
       buf >> fIntensPolarRErr;
 
    } else {
-      //printf("writing StructAnalysis::Streamer(TBuffer &buf) \n");
+      //printf("writing AnaResult::Streamer(TBuffer &buf) \n");
       buf << max_rate;
       buf << TshiftAve;
       buf << wcm_norm_event_rate; 
@@ -109,7 +109,7 @@ void StructAnalysis::Streamer(TBuffer &buf)
 
 
 /** */
-void StructAnalysis::PrintAsPhp(FILE *f) const
+void AnaResult::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['max_rate']            = %f;\n",            max_rate);
    fprintf(f, "$rc['TshiftAve']           = %f;\n",            TshiftAve);

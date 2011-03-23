@@ -66,7 +66,7 @@ public:
    void  Draw(TCanvas &c);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
    Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
-   void  Delete(Option_t* option="");
+   void  Delete();
 
    ClassDef(DrawObjContainer, 1)
 };

@@ -6,6 +6,7 @@
 #include "CnipolRunHists.h"
 
 #include "AsymGlobals.h"
+#include "RunInfo.h"
 
 
 ClassImp(CnipolRunHists)
@@ -36,10 +37,6 @@ void CnipolRunHists::BookHists(string sid)
 { //{{{
    TDirectory *dir;
 
-   //dir = new TDirectoryFile("raw", "raw", "", fDir);
-   dir = Raw;
-   DrawObjContainer *raw = new DrawObjContainer(dir);
-
    //dir = new TDirectoryFile("feedback", "feedback", "", fDir);
    //dir = Feedback;
    //DrawObjContainer *feedback = new DrawObjContainer(dir);
@@ -66,7 +63,7 @@ void CnipolRunHists::BookHists(string sid)
    //kinema->o["energy_spectrum_all"] = new TH1F();
 
    char hName[256];
-   //char hTitle[256];
+   char hTitle[256];
 
    // energy spectrum for all detector sum
    //sprintf(hName, "energy_spectrum_all");
@@ -111,13 +108,6 @@ void CnipolRunHists::BookHists(string sid)
    //TLine  * energy_cut_l[NSTRIP];      // energy cut low
    //TLine  * energy_cut_h[NSTRIP];      // energy cut high
 
-   raw->o["bunch_dist_raw"]              = bunch_dist_raw;
-   raw->o["strip_dist_raw"]              = strip_dist_raw;
-   raw->o["tdc_raw"]                     = tdc_raw;
-   raw->o["adc_raw"]                     = adc_raw;
-   raw->o["tdc_vs_adc_raw"]              = tdc_vs_adc_raw;
-   raw->o["tdc_vs_adc_false_bunch_raw"]  = tdc_vs_adc_false_bunch_raw;
-
    bunch->o["bunch_dist"]                = bunch_dist;
    bunch->o["wall_current_monitor"]      = wall_current_monitor;
    bunch->o["specific_luminosity"]       = specific_luminosity;
@@ -133,13 +123,17 @@ void CnipolRunHists::BookHists(string sid)
    //errdet->o["asym_bunch_x90"]           = new TH1F();              // Bunch asymmetry histogram for x90
    //errdet->o["asym_bunch_y45"]           = new TH1F();              // Bunch asymmetry histogram for y45
 
-   asymmetry->o["asym_vs_bunch_x45"]    = asym_vs_bunch_x45;
-   asymmetry->o["asym_vs_bunch_x90"]    = asym_vs_bunch_x90;
-   asymmetry->o["asym_vs_bunch_y45"]    = asym_vs_bunch_y45;
-   asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
-   asymmetry->o["scan_asym_sinphi_fit"] = scan_asym_sinphi_fit;
+   //asymmetry->o["asym_vs_bunch_x90"]    = asym_vs_bunch_x90;
+   //asymmetry->o["asym_vs_bunch_y45"]    = asym_vs_bunch_y45;
+   //asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
+   //asymmetry->o["scan_asym_sinphi_fit"] = scan_asym_sinphi_fit;
 
-   d["Raw"]       = raw;
+   sprintf(hName,  "asym_vs_bunch_x45");
+   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", runinfo.RUNID);
+   o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
+   ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");
+
    //d["FeedBack"]  = feedback;
    //d["Kinema2"]   = kinema;
    d["Bunch"]     = bunch;
@@ -155,19 +149,34 @@ void CnipolRunHists::BookHists(string sid)
 
 
 /** */
+void CnipolRunHists::Fill(ChannelEvent *ch, string sid)
+{ //{{{
+   //UChar_t chId  = ch->GetChannelId();
+   //UChar_t detId = ch->GetDetectorId();
+   //UShort_t delim = ch->GetDelimiterId();
+} //}}}
+
+
+/** */
+void CnipolRunHists::PostFill()
+{ //{{{
+   float min, max;
+   float margin=0.2;
+   float prefix=0.028;
+
+   DrawHorizLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
+
+   GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax45[0], margin, min, max);
+   ((TH1*) o["asym_vs_bunch_x45"])->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   DrawHorizLine( (TH1*) o["asym_vs_bunch_x45"], -0.5, NBUNCH-0.5, 0, 1, 1, 1);
+} //}}}
+
+
+/** */
 void CnipolRunHists::Print(const Option_t* opt) const
 { //{{{
    opt = "";
 
    //printf("CnipolHists:\n");
    DrawObjContainer::Print();
-} //}}}
-
-
-/** */
-void CnipolRunHists::Fill(ChannelEvent *ch, string sid)
-{ //{{{
-   //UChar_t chId  = ch->GetChannelId();
-   //UChar_t detId = ch->GetDetectorId();
-   //UShort_t delim = ch->GetDelimiterId();
 } //}}}

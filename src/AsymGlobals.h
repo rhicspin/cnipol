@@ -16,55 +16,65 @@
 #include "AsymHeader.h"
 //#include "AsymRoot.h"
 #include "AsymRunDB.h"
+#include "AsymCalc.h"
 //#include "RunInfo.h"
 //#include "TargetInfo.h"
 
-class AsymRoot;
-class AsymRunDB;
-class TDatprocStruct;
+class  AsymRoot;
+class  AsymRunDB;
+class  AnaInfo;
 struct ErrorDetector;
-struct atdata_struct           ;
-class TStructRunDB;
-class TStructRunInfo;
+struct atdata_struct;
+class  DbEntry;
+class  RunInfo;
 struct StructExtInput          ;
 struct StructAverage           ;
 struct StructHistStat          ;
 struct StructFeedBack          ;
 struct StructCounter           ;
 struct StructCounterTgt        ;
+class  RunConst;
 struct StructRunConst          ;
 struct StructMask              ;
 struct StructFlag              ;
 struct StructReadFlag          ;
-class  StructAnalysis          ;
+class  AnaResult;
 class  TargetInfo              ;
 struct StructBunchPattern      ;
 struct StructHist;
-struct BunchAsym;
 struct StructSpeLumi;
+struct AsymCalculator;
+struct BunchAsym;
+struct StructStripCheck;
+struct StructBunchCheck;
 
 extern std::map<std::string, std::string> gAsymEnv;
 
-extern BunchAsym basym;
-extern StructSpeLumi SpeLumi;
+
+extern AsymRoot         gAsymRoot;
+extern BunchAsym        gBunchAsym;
+extern StructSpeLumi    SpeLumi;
+extern AsymCalculator   gAsymCalculator;
+extern StructStripCheck strpchk;
+extern StructBunchCheck bnchchk;
 
 extern const int ASYM_DEFAULT;
 
-extern int spinpat[120]; // spin pattern 120 bunches
-extern int fillpat[120]; // fill pattern 120 bunches
-extern int ActiveBunch[NBUNCH];
-extern int wcmfillpat[120]; //  fill pattern within the Wall Current Monitor Average Ragne 
+extern int   gSpinPattern[NBUNCH]; // spin pattern 120 bunches
+extern int   gFillPattern[NBUNCH]; // fill pattern 120 bunches
+extern int   ActiveBunch[NBUNCH];
+extern int   wcmfillpat[NBUNCH]; //  fill pattern within the Wall Current Monitor Average Ragne 
 extern float wcmdist[NBUNCH];  // wall current monitor 120 bunches
 
-extern long int Ncounts[6][120]; // counts 6detectors 120 bunches
-extern long int NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
-extern long int NDcounts[6][120][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
-extern long int NStrip[3][72]; // counts 72 strips 3 spin states
+extern long int Ncounts[NDETECTOR][NBUNCH];          // counts per detector per bunch
+extern long int NTcounts[NDETECTOR][NBUNCH][NTBIN];  // counts 6detectors 120 bunches 6 tranges
+extern long int NDcounts[NDETECTOR][NBUNCH][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
+extern long int NStrip[NUM_SPIN_STATES][NSTRIP]; // counts 72 strips 3 spin states
  
-extern long int NRcounts[6][120][RAMPTIME];// counts 6det 120bunch RAMPTIME sec
+extern long int NRcounts[NDETECTOR][NBUNCH][RAMPTIME]; // counts 6det 120bunch RAMPTIME sec
 
-extern char * confdir;
-extern char * calibdir;
+extern char *confdir;
+extern char *calibdir;
 extern std::string gDataFileName;   // data file name 
 extern char reConfFile[256];         // update configuration file for T0 info
 extern char conf_file[256];          // update configuration file for T0 info
@@ -79,24 +89,23 @@ extern UInt_t   gMaxEventsUser; // number of events to process
 //extern int      Nskip;          // number of events to be skipped in data process 
 extern int      NFilledBunch;   // number of filled bunch
 
-extern long int Ngood[120];   // number of evts after carbon cut 
-extern long int Ntotal[120];  // number of evts before carbon cut 
-extern long int Nback[120];   // number of evts below the curbon cut
+extern long int Ngood[NBUNCH];   // number of evts after carbon cut 
+extern long int Ntotal[NBUNCH];  // number of evts before carbon cut 
+extern long int Nback[NBUNCH];   // number of evts below the curbon cut
 
-//extern TRandom                  gRandom;
 extern AsymRoot                 gAsymRoot;
 extern AsymRunDB                gAsymRunDb;
-extern TDatprocStruct           dproc;
+extern AnaInfo                  gAnaInfo;
 extern ErrorDetector            errdet;
 extern atdata_struct            atdata;
-//extern TStructRunDB             rundb;
-extern TStructRunDB             gRunDb_tmp;
-extern TStructRunDB            &gRunDb;
-extern TStructRunInfo           runinfo;
-extern TStructRunInfo          &gRunInfo;
+//extern DbEntry             rundb;
+extern DbEntry                  gRunDb_tmp;
+extern DbEntry                 &gRunDb;
+extern RunInfo                  runinfo;
+extern RunInfo                 &gRunInfo;
 extern StructExtInput           extinput;
 extern StructAverage            average;
-extern StructHistStat           hstat;
+extern StructHistStat           gHstat;
 extern StructFeedBack           feedback;
 extern StructCounter            cntr;
 extern StructCounterTgt         cntr_tgt;
@@ -105,7 +114,7 @@ extern std::map<UShort_t, RunConst>   gRunConsts;
 extern StructMask               mask;
 extern StructFlag               Flag;
 extern StructReadFlag           ReadFlag;
-extern StructAnalysis           gAnaResults;
+extern AnaResult                gAnaResults;
 extern TargetInfo               tgt;
 extern StructBunchPattern       phx, str;
 extern TRecordConfigRhicStruct *cfginfo;
@@ -146,14 +155,6 @@ extern TH2F *mdev_feedback;
 extern TH1F *mass_feedback_all;
 extern TH1F *mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
-// Raw Directory
-extern TH1F *bunch_dist_raw;              // counts per bunch (raw)
-extern TH1F *strip_dist_raw;              // counts per strip (raw)
-extern TH1F *tdc_raw;                     // tdc (raw)
-extern TH1F *adc_raw;                     // adc (raw)
-extern TH2F *tdc_vs_adc_raw;              // tdc vs. adc (raw)
-extern TH2F *tdc_vs_adc_false_bunch_raw;  // tdc vs. adc (raw) for false bunch
-
 // Kinema Dir
 extern TH2F  *t_vs_e[TOT_WFD_CH];          // t vs. 12C Kinetic Energy (banana with/o cut)
 extern TH2F  *t_vs_e_yescut[TOT_WFD_CH];   // t vs. 12C Kinetic Energy (banana with cut)
@@ -192,5 +193,18 @@ extern TH2F *asym_vs_bunch_x90;                   // Asymmetry vs. bunch (x90)
 extern TH2F *asym_vs_bunch_y45;                   // Asymmetry vs. bunch (y45)
 extern TH2F *asym_sinphi_fit;                     // strip asymmetry and sin(phi) fit 
 extern TH2F *scan_asym_sinphi_fit;                // scan asymmetry and sin(phi) fit 
+
+// HBOOK stuff
+//extern void HHBOOK1(int hid, char* hname, int xnbin, float xmin, float xmax) ;
+//extern void HHPAK(int, float*);
+//extern void HHPAKE(int, float*);
+//extern void HHF1(int, float, float);
+////extern void HHKIND(int, int*, char*);
+//extern float HHMAX(int);
+//extern float HHSTATI(int hid, int icase, char * choice, int num);
+//extern void HHFITHN(int hid, char*chfun, char*chopt, int np, float*par, 
+//	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
+//extern void HHFITH(int hid, char*fun, char*chopt, int np, float*par, 
+//	float*step, float*pmin, float*pmax, float*sigpar, float&chi2);
 
 #endif

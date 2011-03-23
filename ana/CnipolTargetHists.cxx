@@ -7,6 +7,9 @@
 
 #include "AsymGlobals.h"
 #include "TargetInfo.h"
+#include "RunInfo.h"
+#include "AnaInfo.h"
+#include "AnaResult.h"
 
 
 ClassImp(CnipolTargetHists)
@@ -144,7 +147,7 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
          tstep = TgtIndex[ttime];
          //++cntr.good[TgtIndex[ttime]];
          //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
-      } else if (!dproc.CMODE) {
+      } else if (!gAnaInfo.CMODE) {
          Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
                "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
       }

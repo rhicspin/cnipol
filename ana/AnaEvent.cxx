@@ -5,6 +5,10 @@
 
 #include "AnaEvent.h"
 
+#include "EventConfig.h"
+//#include "ChannelData.h"
+
+
 ClassImp(AnaEvent)
 
 using namespace std;

@@ -7,9 +7,16 @@
 //  Creation:     11/18/2005
 //
 
-#include <sstream>
-
 #include "AsymRunDB.h"
+
+#include "TObjArray.h"
+#include "TObjString.h"
+#include "TPRegexp.h"
+#include "TString.h"
+#include "TSystem.h"
+
+#include "AnaInfo.h"
+#include "RunInfo.h"
 
 using namespace std;
 
@@ -21,7 +28,7 @@ int ProcessBunch[NBUNCH];
  * Update common fields in  fCommonRunDb entries using the values from dbrun.
  * dbrun is expected to have the POLARIMETER_ID set
  */
-void AsymRunDB::UpdateCommonFields(TStructRunDB &dbrun)
+void AsymRunDB::UpdateCommonFields(DbEntry &dbrun)
 {
    // First check the polarimeter id
    if (dbrun.fFields["POLARIMETER_ID"] != "none") {
@@ -50,7 +57,7 @@ void AsymRunDB::UpdateCommonFields(TStructRunDB &dbrun)
    //printf("polId: %d\n", dbrun.fPolId);
 
    if (!fCommonRunDB[dbrun.fPolId]) {
-      TStructRunDB *cr = new TStructRunDB();
+      DbEntry *cr = new DbEntry();
 
       cr->fFields["POLARIMETER_ID"] = " ";
       sprintf(&cr->fFields["POLARIMETER_ID"][0], "%1d", dbrun.fPolId);
@@ -64,9 +71,9 @@ void AsymRunDB::UpdateCommonFields(TStructRunDB &dbrun)
 
 
 /** */
-void AsymRunDB::DropCommonFields(TStructRunDB *dbrun)
+void AsymRunDB::DropCommonFields(DbEntry *dbrun)
 {
-   TStructRunDB *cr = fCommonRunDB[dbrun->fPolId];
+   DbEntry *cr = fCommonRunDB[dbrun->fPolId];
 
    if (!cr) { return; }
 
@@ -124,8 +131,8 @@ const char* AsymRunDB::sFieldNames[] = {
 /** */
 AsymRunDB::AsymRunDB() : TObject(), fDbFileName("run.db")
 {
-   if ( !dproc.fAsymEnv["CNIPOL_DIR"].empty() )
-      fDbFileName = dproc.fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
+   if ( !gAnaInfo.fAsymEnv["CNIPOL_DIR"].empty() )
+      fDbFileName = gAnaInfo.fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
 
    //fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -149,7 +156,7 @@ AsymRunDB::~AsymRunDB()
 
 
 /** */
-void AsymRunDB::Clear(Option_t* opt)
+void AsymRunDB::Clear()
 {
    //if (fDbFile) fclose(fDbFile);
 
@@ -169,7 +176,7 @@ void AsymRunDB::Clear(Option_t* opt)
 
 
 /** */
-TStructRunDB* AsymRunDB::Select(std::string runName)
+DbEntry* AsymRunDB::Select(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -182,7 +189,7 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
    //UInt_t   iLine  = 1;
    size_t   len    = 0;
    ssize_t  nBytes = 0;
-   TStructRunDB *currentRun = 0;
+   DbEntry *currentRun = 0;
 
    while (true) {
 
@@ -242,7 +249,7 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
 
          //printf("XXX found %s\n", subStr.Data());
 
-         currentRun = new TStructRunDB();
+         currentRun = new DbEntry();
          currentRun->fRunName = subStr;
 
       } else if (currentRun) {
@@ -256,7 +263,7 @@ TStructRunDB* AsymRunDB::Select(std::string runName)
 
 
 /** */
-void AsymRunDB::DeleteRun(std::string runName)
+void AsymRunDB::Delete(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -319,7 +326,7 @@ void AsymRunDB::DeleteRun(std::string runName)
 
 
 /** */
-void AsymRunDB::Save()
+void AsymRunDB::Dump()
 {
    ofstream dbFile;
    dbFile.open(fDbFileName.c_str(), ios_base::out | ios_base::trunc);
@@ -340,13 +347,13 @@ void AsymRunDB::Save()
 
    for (ir=br; ir!=er; ir++) {
       if (fCommonRunDB[ir->fPolId]) {
-         DropCommonFields((TStructRunDB*) &*ir);
+         DropCommonFields((DbEntry*) &*ir);
          //printf("Dropping common fields from %s, %d\n", ir->fRunName.c_str(), ir->fPolId);
       }
 
       ir->PrintAsDbEntry(dbFile);
       //fCommonRunDB->UpdateFields(ir);
-      UpdateCommonFields((TStructRunDB&) *ir);
+      UpdateCommonFields((DbEntry&) *ir);
    }
 
    dbFile.close();
@@ -354,9 +361,9 @@ void AsymRunDB::Save()
 
 
 /** */
-void AsymRunDB::Append(TStructRunDB *dbrun)
+void AsymRunDB::Append(DbEntry *dbrun)
 {
-   TStructRunDB *comRun = fCommonRunDB[dbrun->fPolId];
+   DbEntry *comRun = fCommonRunDB[dbrun->fPolId];
 
    // First empty fields if in common block
    DbFieldMap::iterator ifld;
@@ -384,7 +391,7 @@ void AsymRunDB::Append(TStructRunDB *dbrun)
 
 
 /** */
-void AsymRunDB::Insert(TStructRunDB *dbrun)
+void AsymRunDB::Insert(DbEntry *dbrun)
 {
    DbRunSet::iterator irun = fDBRuns.find(*dbrun);
 
@@ -522,19 +529,19 @@ void readdb(double RUNID)
 
    // Mass Cut sigma
    if (!extinput.MASSCUT)
-     dproc.MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
+     gAnaInfo.MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
 
    // TSHIFT will be cumulated TSHIFT from run.db and -t option
-   dproc.tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
+   gAnaInfo.tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
 
    // TSHIFT for injection with respect to flattop timing
-   dproc.inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
+   gAnaInfo.inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
 
    // Expected universal rate for given target
-   dproc.reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
+   gAnaInfo.reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
 
    // Target count/mm conversion
-   dproc.target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
+   gAnaInfo.target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
 
    // Optimize setting for Run
    if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
@@ -749,26 +756,26 @@ void printConfig(recordConfigRhicStruct *cfginfo)
     fprintf(stdout,"              CALIB = %s\n", CalibFile);
 
     // banana cut configulation
-    if (dproc.CBANANA == 0) {
+    if (gAnaInfo.CBANANA == 0) {
         ccutwl = (int)cfginfo->data.chan[3].ETCutW;
         ccutwu = (int)cfginfo->data.chan[3].ETCutW;
-    } else if (dproc.CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n",dproc.MassSigma);
+    } else if (gAnaInfo.CBANANA == 2) {
+      fprintf(stdout,"            MASSCUT = %.1f\n",gAnaInfo.MassSigma);
     } else {
-        ccutwl = (int)dproc.widthl;
-        ccutwu = (int)dproc.widthu;
+        ccutwl = (int)gAnaInfo.widthl;
+        ccutwu = (int)gAnaInfo.widthu;
     }
-    if (dproc.CBANANA!=2)
+    if (gAnaInfo.CBANANA!=2)
       fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
 
     // tshift in [ns]
-    fprintf(stdout,"             TSHIFT = %.1f\n",dproc.tshift);
+    fprintf(stdout,"             TSHIFT = %.1f\n",gAnaInfo.tshift);
 
     // expected reference rate
-    if (gRunInfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",dproc.reference_rate);
+    if (gRunInfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",gAnaInfo.reference_rate);
 
     // target count/mm
-    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",dproc.target_count_mm);
+    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",gAnaInfo.target_count_mm);
 
     // Disabled bunch
     fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", gRunInfo.NDisableBunch);

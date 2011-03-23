@@ -5,6 +5,9 @@
 
 #include "CnipolHists.h"
 
+#include "AnaInfo.h"
+#include "RunInfo.h"
+
 ClassImp(CnipolHists)
 
 using namespace std;
@@ -239,7 +242,7 @@ void CnipolHists::BookHistsExtra(string sid)
    //TH2F* hData = (TH2F*) o["hTimeVsEnergyA"+sid];
 
    //char  formula[100], fname[100];
-   //float sigma = RunConst::M2T * ]*dproc.MassSigmaAlt :
+   //float sigma = RunConst::M2T * ]*gAnaInfo.MassSigmaAlt :
 
    //sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", RunConst::E2T, sigma);
    //sprintf(formula, "%f/sqrt(x)", RunConst::E2T);
@@ -345,13 +348,6 @@ Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
 
 
 /** */
-Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize) const
-{
-   return ((const CnipolHists*) this)->Write(name, option, bufsize);
-}
-
-
-/** */
 void CnipolHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    UChar_t chId  = ch->GetChannelId();
@@ -405,37 +401,37 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    
    UChar_t bId = ch->GetBunchId();
 
-   ((TH1*)     o["hSpinVsChannel"+sid])                  ->Fill(ch->GetChannelId(), spinpat[bId]);
-   //((TH1*)     o["hSpinVsBunch"+sid])                    ->Fill(bId, spinpat[bId]);
+   ((TH1*)     o["hSpinVsChannel"+sid])                  ->Fill(ch->GetChannelId(), gSpinPattern[bId]);
+   //((TH1*)     o["hSpinVsBunch"+sid])                    ->Fill(bId, gSpinPattern[bId]);
 
    //ds XXX
    UShort_t tstep = 0;
 
-   if (runinfo.Run == 5) {
+   if (gRunInfo.Run == 5) {
       tstep = ch->GetDelimiterId();
       //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   } else if (runinfo.Run >= 6) {
+   } else if (gRunInfo.Run >= 6) {
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
       if (ttime < MAXDELIM) {
          tstep = TgtIndex[ttime];
          //++cntr.good[TgtIndex[ttime]];
          //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
-      } else if (!dproc.CMODE) {
+      } else if (!gAnaInfo.CMODE) {
          Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
                "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
       }
    } else {
-      Warning("Fill", "Target tstep size is not defined for Run %d", runinfo.Run);
+      Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo.Run);
    }
 
-   int ss_code = spinpat[bId] == 1 ? 0 : (spinpat[bId] == -1 ? 1 : 2);
+   int ss_code = gSpinPattern[bId] == 1 ? 0 : (gSpinPattern[bId] == -1 ? 1 : 2);
    cntr_tgt.reg.NStrip[tstep][ss_code][ch->GetChannelId()-1]++;
 
    
    UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
-   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ch->GetDelimiterId(), spinpat[bId]);
-   ((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ttime, spinpat[bId]);
+   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
+   ((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ttime, gSpinPattern[bId]);
 
    //ds: XXX
    return;

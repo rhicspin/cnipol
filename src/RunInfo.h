@@ -18,11 +18,11 @@
 #include "TString.h"
 
 #include "AsymHeader.h"
-#include "AsymRunDB.h"
+#include "DbEntry.h"
 
 
 /** */
-class TStructRunInfo
+class RunInfo
 {
 public:
 
@@ -61,8 +61,8 @@ public:
 
 public:
 
-   TStructRunInfo();
-   ~TStructRunInfo();
+   RunInfo();
+   ~RunInfo();
 
    std::string GetAlphaCalibFileName() const;
    std::string GetDlCalibFileName() const;
@@ -72,10 +72,11 @@ public:
    short GetPolarimeterId();
    short GetPolarimeterId(short beamId, short streamId);
    void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
-   void  Update(TStructRunDB &rundb);
+   void  Update(DbEntry &rundb);
+   void  ConfigureActiveStrip(int mask);
 };
 
-TBuffer & operator<<(TBuffer &buf, TStructRunInfo *&rec);
-TBuffer & operator>>(TBuffer &buf, TStructRunInfo *&rec);
+TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
+TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
 
 #endif

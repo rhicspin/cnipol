@@ -7,6 +7,8 @@ all: ana cnipol
 
 clean: ana.clean cnipol.clean
 
+cleanall: ana.cleanall cnipol.cleanall
+
 ana: ana.all
 
 ana.all:
@@ -17,6 +19,10 @@ ana.lib:
 
 ana.clean:
 	make -C ana clean
+
+ana.cleanall:
+	make -C ana cleanall
+
 
 cnipol: cnipol.all
 
@@ -30,6 +36,10 @@ cnipol.install:
 
 cnipol.clean:
 	make -C src clean
+
+cnipol.cleanall:
+	make -C src cleanall
+
 
 anapc:
 	make -C anapc
