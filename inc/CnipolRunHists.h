@@ -34,6 +34,7 @@ public:
 
    void  BookHists(std::string sid="");
    //virtual void Print(const Option_t* opt="") const;
+   void  PostFill();
    void  Print(const Option_t* opt="") const;
    void  Fill(ChannelEvent *ch, std::string sid="");
 
