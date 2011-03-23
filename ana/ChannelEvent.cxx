@@ -27,6 +27,29 @@ ChannelEvent::~ChannelEvent()
 
 
 /** */
+UChar_t ChannelEvent::GetDetectorId()
+{
+   return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1;
+}
+
+
+/** */
+UInt_t ChannelEvent::GetRevolutionId() { return fEventId.fRevolutionId; }
+
+
+/** */
+UChar_t ChannelEvent::GetChannelId() { return fEventId.fChannelId + 1; }
+
+
+/** */
+UChar_t ChannelEvent::GetBunchId() { return fEventId.fBunchId; }
+
+
+/** */
+UShort_t ChannelEvent::GetDelimiterId() { return fEventId.fDelimiterId; }
+
+
+/** */
 Float_t ChannelEvent::GetEnergyA()
 {
    UChar_t chId = GetChannelId();
