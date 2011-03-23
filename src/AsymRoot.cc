@@ -391,7 +391,7 @@ void AsymRoot::PreProcess()
 /** */
 void AsymRoot::PostProcess()
 {
-   gAsymCalculator.CalcBunchAsymmetry();
+   //gAsymCalculator.CalcBunchAsymmetry();
 
    fHists->PostFill();
 }
