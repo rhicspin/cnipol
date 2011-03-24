@@ -17,7 +17,7 @@ void manalyze()
 
 void initialize()
 {
-   TString filelist = "list.dat";
+   TString filelist = "list_15221.2.v4.dat";
    TString fileName;
    //string  histName = "hPolarUniProfileBin";
    string  histName = "hPolarVsIntensProfileBin";
@@ -64,8 +64,19 @@ void initialize()
       i++;
    }
 
+   TF1 *mfPow = new TF1("mfPow", "[0]*TMath::Power(x, [1])", 0.1, 1);
+
+   mfPow->SetParNames("P_{max}", "r");
+   mfPow->SetParameter(0, 0.5);
+   mfPow->SetParLimits(0, 0, 1);
+   mfPow->SetParameter(1, 0.1);
+   mfPow->SetParLimits(1, -2, 2);
+
+   havrg->Fit("mfPow", "M E R");
+
    havrg->Print();
    havrg->GetYaxis()->SetRangeUser(0, 1.05);
    havrg->Draw();
    gPad->Update();
+   gPad->SaveAs("15221.2.v4.png");
 }
