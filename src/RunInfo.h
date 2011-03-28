@@ -17,6 +17,8 @@
 #include "TObjString.h"
 #include "TString.h"
 
+#include "rpoldata.h"
+
 #include "AsymHeader.h"
 #include "DbEntry.h"
 
@@ -69,6 +71,7 @@ public:
    void  Streamer(TBuffer &buf);
    void  Print(const Option_t* opt="") const;
    void  PrintAsPhp(FILE *f=stdout) const;
+   void  PrintConfig(recordConfigRhicStruct *cfginfo);
    short GetPolarimeterId();
    short GetPolarimeterId(short beamId, short streamId);
    void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);

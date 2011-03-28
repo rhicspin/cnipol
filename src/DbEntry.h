@@ -46,7 +46,7 @@ public:
    std::string target_count_mm_s;
    std::string comment_s;
 
-   DbFieldMap fFields;
+   DbFieldMap  fFields;
    DbFieldSaveFlagMap fFieldFlags;
 
 public:

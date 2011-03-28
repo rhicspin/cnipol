@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-#include "AsymRunDB.h"
+#include "AsymDbFile.h"
 #include "RunInfo.h"
 
 using namespace std;

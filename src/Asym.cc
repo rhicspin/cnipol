@@ -6,9 +6,9 @@
 
 #include "TMath.h"
 
-#include "AsymCalc.h"
+#include "AsymCalculator.h"
 #include "AsymRoot.h"
-#include "AsymRunDB.h"
+#include "AsymDbFile.h"
 #include "TargetInfo.h"
 
 using namespace std;
@@ -157,7 +157,7 @@ float gPhi[NSTRIP] = {
 
 AnaInfo                   gAnaInfo;
 AsymRoot                  gAsymRoot;
-AsymRunDB                 gAsymRunDb;
+AsymDb                   *gAsymDb = new AsymDbFile();
 DbEntry                   gRunDb;
 RunInfo                   gRunInfo;
 atdata_struct             atdata;

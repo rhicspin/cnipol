@@ -1,8 +1,7 @@
 #ifndef RunDBReader_h
 #define RunDBReader_h
 
-#include "AsymRunDB.h"
-
+#include "AsymDbFile.h"
 
 int Usage(char *argv[]);
 int Example(char *argv[]);

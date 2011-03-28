@@ -13,7 +13,7 @@
 #include "TObjString.h"
 #include "TPRegexp.h"
 
-#include "AsymRunDB.h"
+#include "AsymDbFile.h"
 
 
 using namespace std;
@@ -22,13 +22,13 @@ using namespace std;
 /** */
 DbEntry::DbEntry() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFieldFlags()
 {
-   for (UShort_t i=0; i<AsymRunDB::sNFields; i++) {
-      //printf("%s\n", AsymRunDB::sFieldNames[i]);
-      fFields[AsymRunDB::sFieldNames[i]] = "none";
-      fFieldFlags[AsymRunDB::sFieldNames[i]] = false;
+   for (UShort_t i=0; i<AsymDbFile::sNFields; i++) {
+      //printf("%s\n", AsymDbFile::sFieldNames[i]);
+      fFields[AsymDbFile::sFieldNames[i]] = "none";
+      fFieldFlags[AsymDbFile::sFieldNames[i]] = false;
    }
-   //printf("%s\n", AsymRunDB::sFieldNames[0].c_str());
-   //cout << AsymRunDB::sFieldNames[0]<< endl;
+   //printf("%s\n", AsymDbFile::sFieldNames[0].c_str());
+   //cout << AsymDbFile::sFieldNames[0]<< endl;
 
    // Persistant fields
    fFieldFlags["ASYM_VERSION"]      = true;
