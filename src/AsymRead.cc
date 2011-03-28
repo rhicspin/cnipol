@@ -73,7 +73,7 @@ RawDataProcessor::~RawDataProcessor()
 
 
 /** */
-void RawDataProcessor::ReadRecBegin(RunInfo &ri)
+void RawDataProcessor::ReadRecBegin()
 {
    recordBeginStruct *recBegin;
 
@@ -89,14 +89,14 @@ void RawDataProcessor::ReadRecBegin(RunInfo &ri)
       cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
       cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
 
-      ri.StartTime  = recBegin->header.timestamp.time;
-      ri.fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
-      ri.fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
+      gRunInfo.StartTime  = recBegin->header.timestamp.time;
+      gRunInfo.fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
+      gRunInfo.fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
 
-      //printf("fPolBeam:   %#x\n", ri.fPolBeam);
-      //printf("fPolStream: %#x, %#x, %#x\n", ri.fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
+      //printf("fPolBeam:   %#x\n", gRunInfo.fPolBeam);
+      //printf("fPolStream: %#x, %#x, %#x\n", gRunInfo.fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
 
-      int polId = ri.GetPolarimeterId(ri.fPolBeam, ri.fPolStream);
+      int polId = gRunInfo.GetPolarimeterId(gRunInfo.fPolBeam, gRunInfo.fPolStream);
 
       if (polId < 0)
          printf("WARNING: Polarimeter ID will be defined by other means\n");
@@ -105,23 +105,23 @@ void RawDataProcessor::ReadRecBegin(RunInfo &ri)
 
       // First, try to get polarimeter id from the data
       if (polId >= 0) {
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       // if failed, get id from the file name
-      } else if (ri.GetPolarimeterId() >= 0) {
+      } else if (gRunInfo.GetPolarimeterId() >= 0) {
          sstr.str("");
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       // see if the polarimeter id was set by command line argument 
-      } else if (ri.fPolId >= 0) {
+      } else if (gRunInfo.fPolId >= 0) {
          sstr.str("");
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       } else { // cannot proceed
 
@@ -130,9 +130,9 @@ void RawDataProcessor::ReadRecBegin(RunInfo &ri)
       }
 
       sstr.str("");
-      sstr << ri.StartTime;
+      sstr << gRunInfo.StartTime;
       gRunDb.fFields["START_TIME"] = sstr.str();
-      gRunDb.timeStamp = ri.StartTime; // should be always defined in raw data
+      gRunDb.timeStamp = gRunInfo.StartTime; // should be always defined in raw data
       //gRunDb.Print();
 
    //} else
@@ -372,7 +372,7 @@ void readDataFast()
 
 
 /** */
-void ReadRecBegin(RunInfo &ri)
+void ReadRecBegin()
 {
    FILE *fp = fopen(gDataFileName.c_str(), "r");
 
@@ -394,14 +394,14 @@ void ReadRecBegin(RunInfo &ri)
       cout << "Time Stamp: "               << ctime(&recBegin.header.timestamp.time);
       cout << "Unix Time Stamp: "          << recBegin.header.timestamp.time << endl;
 
-      ri.StartTime  = recBegin.header.timestamp.time;
-      ri.fPolBeam   = (recBegin.header.type & REC_MASK_BEAM) >> 16;
-      ri.fPolStream = (recBegin.header.type & REC_MASK_STREAM) >> 20;
+      gRunInfo.StartTime  = recBegin.header.timestamp.time;
+      gRunInfo.fPolBeam   = (recBegin.header.type & REC_MASK_BEAM) >> 16;
+      gRunInfo.fPolStream = (recBegin.header.type & REC_MASK_STREAM) >> 20;
 
-      //printf("fPolBeam:   %#x\n", ri.fPolBeam);
-      //printf("fPolStream: %#x, %#x, %#x\n", ri.fPolStream, (UInt_t) recBegin.header.type, REC_MASK_STREAM);
+      //printf("fPolBeam:   %#x\n", gRunInfo.fPolBeam);
+      //printf("fPolStream: %#x, %#x, %#x\n", gRunInfo.fPolStream, (UInt_t) recBegin.header.type, REC_MASK_STREAM);
 
-      int polId = ri.GetPolarimeterId(ri.fPolBeam, ri.fPolStream);
+      int polId = gRunInfo.GetPolarimeterId(gRunInfo.fPolBeam, gRunInfo.fPolStream);
 
       if (polId < 0)
          printf("WARNING: Polarimeter ID will be defined by other means\n");
@@ -410,23 +410,23 @@ void ReadRecBegin(RunInfo &ri)
 
       // First, try to get polarimeter id from the data
       if (polId >= 0) {
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       // if failed, get id from the file name
-      } else if (ri.GetPolarimeterId() >= 0) {
+      } else if (gRunInfo.GetPolarimeterId() >= 0) {
          sstr.str("");
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       // see if the polarimeter id was set by command line argument 
-      } else if (ri.fPolId >= 0) {
+      } else if (gRunInfo.fPolId >= 0) {
          sstr.str("");
-         sstr << ri.fPolId;
+         sstr << gRunInfo.fPolId;
          gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = ri.fPolId;
+         gRunDb.fPolId = gRunInfo.fPolId;
 
       } else { // cannot proceed
 
@@ -435,9 +435,9 @@ void ReadRecBegin(RunInfo &ri)
       }
 
       sstr.str("");
-      sstr << ri.StartTime;
+      sstr << gRunInfo.StartTime;
       gRunDb.fFields["START_TIME"] = sstr.str();
-      gRunDb.timeStamp = ri.StartTime; // should be always defined in raw data
+      gRunDb.timeStamp = gRunInfo.StartTime; // should be always defined in raw data
       //gRunDb.Print();
 
    } else

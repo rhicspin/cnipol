@@ -13,6 +13,22 @@ if [ -z "$CERNLIB_DIR" ]; then
 	export PATH+=:$CERNLIB_DIR/bin
 fi
 
+# MySQL
+export MYSQL_INCLUDE_DIR=/usr/include/mysql
+export MYSQL_LIB_DIR=/usr/lib/mysql
+
+export MYSQLPP_DIR=/eicdata/eic0005/mysql++
+export MYSQLPP_INCLUDE_DIR=$MYSQLPP_DIR/lib
+export MYSQLPP_LIB_DIR=$MYSQLPP_DIR
+
+if [[ $LD_LIBRARY_PATH != *MYSQL_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:\$MYSQL_LIB_DIR
+fi
+
+if [[ $LD_LIBRARY_PATH != *MYSQLPP_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:\$MYSQLPP_LIB_DIR
+fi
+
 # CNIPOL variables
 if [ -z "$CNIPOL_DIR" ]; then
 	export CNIPOL_DIR=/data1/cnipol

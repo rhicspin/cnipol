@@ -41,12 +41,12 @@ public:
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
 
-   void ReadRecBegin(RunInfo &ri);
+   void ReadRecBegin();
    void ReadDataFast();
 };
 
 void readDataFast();
-void ReadRecBegin(RunInfo &ri);
+void ReadRecBegin();
 void readloop();
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);

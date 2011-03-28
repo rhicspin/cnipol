@@ -353,7 +353,7 @@ int main(int argc, char *argv[])
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gDataFileName);
 
-   rawData->ReadRecBegin(gRunInfo);
+   rawData->ReadRecBegin();
 
    // Replace gRunDb
    if (runDb) {
@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
    } else {
 
       // Extract and overwrite (!) basic run info (gRunInfo) from raw data
-      //ReadRecBegin(gRunInfo);
+      //ReadRecBegin();
 
       printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
       gAsymRunDb.Select(); // read all entries into memory

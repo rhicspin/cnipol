@@ -13,6 +13,48 @@
 
 using namespace std;
 
+const float MSIZE = 1.2; // Marker size
+
+int     gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
+int     gFillPattern[120]; // spin pattern 120 bunches (ADO info)
+int     ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
+int     wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
+float   wcmdist[120];  // wall current monitor 120 bunches (ADO info)
+
+long    Ncounts[6][120]; // counts 6detectors 120 bunches
+long    NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
+long    NRcounts[6][120][RAMPTIME]; // counts for 6det 120bunch RAMPTIME sec
+long    NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
+long    NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
+
+char   *confdir;
+char   *calibdir;
+string  gDataFileName;   // data file name
+char    reConfFile[256];    // overwrite configuration for T0 info
+char    conf_file[256];  // overwrite configuration file
+char    CalibFile[256];  // energy calibration file
+
+float   ramptshift[500];  // ramp timing shift
+
+long    Nevcut         = 0; // number of events after 1st cut (whole data)
+UInt_t  Nevtot         = 0; // number of total events (whole data)
+UInt_t  Nread          = 0; // real total events (completely everything)
+UInt_t  gMaxEventsUser = 0; // number of events to process
+//UInt_t  Nskip          = 1; // number of events to be skipped in data process
+long    Ngood[120];     // number of events after carbon cut (each bunch)
+long    Ntotal[120];    // number of events before carbon cut (each bunch)
+long    Nback[120];     // number of events below the curbon cut (each bunch)
+int     NFilledBunch   = 0;  // number of Filled Bunch
+
+long   *pointer;
+int     ndelim;
+//long    VtgtLinear[MAXDELIM];
+//long    VtgtRotary[MAXDELIM];
+//long    HtgtLinear[MAXDELIM];
+//long    HtgtRotary[MAXDELIM];
+int     TgtIndex[MAXDELIM];
+int     nTgtIndex = 0;
+
 StructMask mask = {
    0x3F          // detector mask 0x3F={11 1111} All detector active
 };
@@ -116,12 +158,8 @@ float gPhi[NSTRIP] = {
 AnaInfo                   gAnaInfo;
 AsymRoot                  gAsymRoot;
 AsymRunDB                 gAsymRunDb;
-//DbEntry              rundb;
-DbEntry              gRunDb_tmp;
-DbEntry             &gRunDb = gRunDb_tmp;
-//DbEntry             gCurrentRunInfo;
-RunInfo            runinfo;
-RunInfo           &gRunInfo = runinfo;
+DbEntry                   gRunDb;
+RunInfo                   gRunInfo;
 atdata_struct             atdata;
 StructAverage             average;
 StructFeedBack            feedback;
@@ -138,6 +176,7 @@ AsymCalculator            gAsymCalculator;
 StructBunchCheck          bnchchk;
 StructStripCheck          strpchk;
 StructHistStat            gHstat;
+StructHist                Eslope;
 
 
 /** */
@@ -183,50 +222,6 @@ void RunConst::Print(const Option_t* opt) const
   printf("\tM2T = %10.3f\n", M2T);
   printf("\tT2M = %10.3f\n", T2M);
 }
-
-int   gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
-int   gFillPattern[120]; // spin pattern 120 bunches (ADO info)
-int   ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
-int   wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
-float wcmdist[120];  // wall current monitor 120 bunches (ADO info)
-
-long int Ncounts[6][120]; // counts 6detectors 120 bunches
-long int NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
-long int NRcounts[6][120][RAMPTIME]; // counts for 6det 120bunch RAMPTIME sec
-long int NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
-long int NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
-
-char   *confdir;
-char   *calibdir;
-string  gDataFileName;   // data file name
-char    reConfFile[256];    // overwrite configuration for T0 info
-char    conf_file[256];  // overwrite configuration file
-char    CalibFile[256];  // energy calibration file
-
-float ramptshift[500];  // ramp timing shift
-
-long int Nevcut         = 0; // number of events after 1st cut (whole data)
-UInt_t   Nevtot         = 0; // number of total events (whole data)
-UInt_t   Nread          = 0; // real total events (completely everything)
-UInt_t   gMaxEventsUser = 0; // number of events to process
-//UInt_t   Nskip          = 1; // number of events to be skipped in data process
-long int Ngood[120];     // number of events after carbon cut (each bunch)
-long int Ntotal[120];    // number of events before carbon cut (each bunch)
-long int Nback[120];     // number of events below the curbon cut (each bunch)
-int NFilledBunch   = 0;  // number of Filled Bunch
-
-long int *pointer;
-int       ndelim;
-//long int VtgtLinear[MAXDELIM];
-//long int VtgtRotary[MAXDELIM];
-//long int HtgtLinear[MAXDELIM];
-//long int HtgtRotary[MAXDELIM];
-int       TgtIndex[MAXDELIM];
-int       nTgtIndex = 0 ;
-
-const float MSIZE = 1.2; // Marker size
-
-StructHist Eslope;
 
 
 /** */

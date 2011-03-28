@@ -140,7 +140,7 @@ void CnipolCalibHists::CnipolCalibHistsBook(std::string cutid)
       }
 
       //sprintf(hName,"mass_feedback_st%d", i+1);
-      //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", runinfo.RUNID, i+1);
+      //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gRunInfo.RUNID, i+1);
       //sprintf(hTitle,"Invariant Mass for Strip-%d ", i+1);
       //feedback.o[hName] = new TH1F(hName, hTitle, 100, 0, 20);
       //( (TH1F*) feedback.o[hName]) -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");

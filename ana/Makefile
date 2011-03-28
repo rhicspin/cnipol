@@ -24,7 +24,8 @@ CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
 #CXXFLAGS      = -g -O -Wall -fPIC -Wno-deprecated -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src
-CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include
+CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src \
+   -I$(CNIPOL_DIR)/online/include
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 LDFLAGS       = -g

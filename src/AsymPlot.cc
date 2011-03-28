@@ -7,10 +7,15 @@
  *    - Fixed compiler warnings (const string to char* conversion)
  *    - General clean-up
  *
+ * 28 Mar, 2011 - Dmitri Smirnov
+ *    - Transformed code to a reasonable class
+ *
  */
 
 #include "AsymPlot.h"
-#include "AsymMain.h"
+//#include "AsymMain.h"
+
+#include <getopt.h>
 
 using namespace std;
 
@@ -80,7 +85,7 @@ Int_t IsOK(const Char_t histname[])
 }
 
 
-Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID)
+void AsymPlot::PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID)
 {
   cout << "PlotStrip stID=" << stID << endl;
 
@@ -91,6 +96,7 @@ Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID)
   rootfile->cd(); rootfile->cd("Kinema");  
 
   Char_t histname[100];
+
   // banana
   sprintf(histname,"t_vs_e_st%d",stID);
   if (IsOK(histname)) gDirectory->Get(histname) -> Draw("colz");  CurC->Update();  ps->NewPage();
@@ -107,15 +113,15 @@ Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps, Int_t stID)
   if (IsOK(histname)) gDirectory->Get(histname) -> Draw("");  
   sprintf(histname,"mass_yescut_st%d",stID);
   if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");    CurC->Update();    
-
-  return 0;
 }
 
 
-Int_t 
-PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-  gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
-  gStyle -> SetPalette (1);
+void AsymPlot::PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
+  gStyle->SetOptLogz(0);
+  gStyle->SetOptStat(11);
+  gStyle->SetOptFit(0);
+  gStyle->SetPalette(1);
 
   ps->NewPage();
   rootfile->cd(); rootfile->cd("Kinema");  
@@ -131,18 +137,15 @@ PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       CurC->cd(st);
       sprintf(histname,"t_vs_e_st%d",stID);
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw("colz");  CurC->Update();    
-
-    }// end-of-strip loop
+    }
 
     if (det!=NDETECTOR-1) ps->NewPage();
-
   }
-
-  return 0;
 }
 
-Int_t 
-PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+
+void AsymPlot::PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
 
   ps->NewPage();
@@ -162,19 +165,15 @@ PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
       sprintf(histname,"mass_vs_energy_corr_st%d",stID);
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
-
-    }// end-of-strip loop
+    }
 
     if (det!=NDETECTOR-1) ps->NewPage();
-
   }
-
-
-  return 0;
 }
 
-Int_t 
-PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
+
+void AsymPlot::PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
 
   ps->NewPage();
@@ -194,33 +193,26 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       sprintf(histname,"mass_yescut_st%d",stID);
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  
       CurC->Update();    
-
-    }// end-of-strip loop
+    }
 
     if (det!=NDETECTOR-1) ps->NewPage();
-
   }
-
-
-  return 0;
 }
 
 
-
-Int_t PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+void AsymPlot::PlotStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
 {
-  PlotBanana(rootfile, CurC, ps);   // Plot Individual Strip
-  PlotMassEnergyCorrelation(rootfile, CurC, ps);   // Plot Individual Strip
-  PlotInvariantMass(rootfile, CurC, ps);   // Plot Individual Strip
-
-  return 0;
+  PlotBanana(rootfile, CurC, ps);                // Plot Individual Strip
+  PlotMassEnergyCorrelation(rootfile, CurC, ps); // Plot Individual Strip
+  PlotInvariantMass(rootfile, CurC, ps);         // Plot Individual Strip
 }
 
 
-
-Int_t 
-PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-  gStyle->SetOptLogz(0);  gStyle->SetOptStat(11);  gStyle->SetOptFit(0);
+void AsymPlot::PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
+  gStyle->SetOptLogz(0);
+  gStyle->SetOptStat(11);
+  gStyle->SetOptFit(0);
 
   ps->NewPage();
   rootfile->cd(); rootfile->cd("FeedBack");  
@@ -237,21 +229,15 @@ PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
       sprintf(histname,"mass_feedback_st%d",stID);
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw(""); 
       CurC->Update();    
-
-    }// end-of-strip loop
+    }
 
     if (det!=NDETECTOR-1) ps->NewPage();
-
   }
-
-
-  return 0;
 }
 
 
-Int_t
-AsymPlot::PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-
+void AsymPlot::PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   // following two lines should go to GetHistograms routine once all run05 data are replayed
   rootfile->cd(); rootfile->cd("FeedBack");  
   mdev_feedback              = (TH2F*)gDirectory->Get("mdev_feedback");
@@ -261,25 +247,22 @@ AsymPlot::PlotFeedback(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   mdev_feedback->Draw(); CurC->Update(); ps->NewPage(); CurC->Clear();
 
   PlotFeedbackStrip(rootfile, CurC, ps);
-
-
   // energy slope
-
-  return 0;
-
 }
 
-Int_t
-AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
-
-  rootfile->cd(); rootfile->cd("Raw");  
+void AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
+  rootfile->cd();
+  rootfile->cd("Raw");  
   bunch_dist_raw              = (TH1F*)gDirectory->Get("bunch_dist_raw");
   strip_dist_raw              = (TH1F*)gDirectory->Get("strip_dist_raw");
   tdc_raw                     = (TH1F*)gDirectory->Get("tdc_raw");
   adc_raw                     = (TH1F*)gDirectory->Get("adc_raw");
   tdc_vs_adc_raw              = (TH2F*)gDirectory->Get("tdc_vs_adc_raw");
-  rootfile->cd(); rootfile->cd("Bunch");  
+
+  rootfile->cd();
+  rootfile->cd("Bunch");  
   bunch_dist                 = (TH1F*)gDirectory->Get("bunch_dist");
 
   rootfile->cd(); rootfile->cd("Kinema");
@@ -303,24 +286,20 @@ AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   CurC->cd(1) ; tdc_vs_adc_raw->Draw(); 
   CurC->cd(2) ; tdc_vs_adc_raw->Draw("colz"); 
   CurC->cd(3) ; tdc_vs_adc_raw->Draw("lego"); CurC->Update(); 
-
-  return 0;
-
 }
 
 
-Int_t 
-AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-
+void AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   CurC -> SetGridx();
 
   ps->NewPage();
   CurC->Clear(); CurC->Divide(2,2); 
   rootfile->cd(); rootfile->cd("ErrDet");  
-  CurC->cd(1) ; if (gDirectory->Get("mass_e_correlation_strip")!=0) mass_e_correlation_strip -> Draw(); 
-  CurC->cd(2) ; if (gDirectory->Get("mass_sigma_vs_strip")!=0) mass_sigma_vs_strip -> Draw(); 
-  CurC->cd(3) ; if (gDirectory->Get("good_carbon_events_strip")!=0) good_carbon_events_strip -> Draw(); 
-  CurC->cd(4) ; if (gDirectory->Get("mass_pos_dev_vs_strip")!=0) mass_pos_dev_vs_strip -> Draw(); 
+  CurC->cd(1) ; if (gDirectory->Get("mass_e_correlation_strip")!=0) mass_e_correlation_strip->Draw(); 
+  CurC->cd(2) ; if (gDirectory->Get("mass_sigma_vs_strip")!=0)      mass_sigma_vs_strip->Draw(); 
+  CurC->cd(3) ; if (gDirectory->Get("good_carbon_events_strip")!=0) good_carbon_events_strip->Draw(); 
+  CurC->cd(4) ; if (gDirectory->Get("mass_pos_dev_vs_strip")!=0)    mass_pos_dev_vs_strip->Draw(); 
   CurC->Update();   ps->NewPage();
   
   rootfile->cd("Asymmetry");
@@ -330,16 +309,11 @@ AsymPlot::PlotErrorDetectorSummary(TFile * rootfile, TCanvas *CurC, TPostScript 
   rootfile->cd(); rootfile->cd("ErrDet");
   CurC->cd(4) ; if (gDirectory->Get("spelumi_vs_bunch")!=0) spelumi_vs_bunch -> Draw(); 
   CurC->Update(); 
-
-  return 0;
-
-
 }
 
 
-Int_t 
-AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
-
+void AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
+{
   CurC -> SetGridx();   gStyle -> SetPalette (1);
   ps->NewPage(); CurC->Clear(); CurC->Divide(1,1); 
 
@@ -378,16 +352,14 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   rootfile->cd(); rootfile->cd("Asymmetry");
   gStyle->SetOptFit(111); gStyle->SetOptStat(0);
   if (IsOK("asym_sinphi_fit")) asym_sinphi_fit->Draw(); CurC->Update();
-
-  return 0;
 }
 
 
 // Description : Get histogram pointers from rootfile
-Int_t AsymPlot::GetHistograms(TFile * rootfile)
+void AsymPlot::GetHistograms(TFile * rootfile)
 {
-
-  rootfile->cd(); rootfile->cd("ErrDet");  
+  rootfile->cd();
+  rootfile->cd("ErrDet");  
   mass_e_correlation_strip   = (TH2F*)gDirectory->Get("mass_e_correlation_strip");
   mass_sigma_vs_strip        = (TH2F*)gDirectory->Get("mass_sigma_vs_strip");
   mass_chi2_vs_strip         = (TH2F*)gDirectory->Get("mass_chi2_vs_strip");
@@ -413,8 +385,6 @@ Int_t AsymPlot::GetHistograms(TFile * rootfile)
   // energy slope
   rootfile->cd(); rootfile->cd("Kinema");
   energy_spectrum_all        = (TH1F*)gDirectory->Get("energy_spectrum_all");
-
-  return 0;
 }
 
 
@@ -423,7 +393,7 @@ Int_t AsymPlot::GetHistograms(TFile * rootfile)
 //             : The root file is accessed via symbolic link to the data file. If root
 //             : file is found in pwd, then the file is moved to root directry then
 //             : symbolic linked.
-void FindRootFile()
+void AsymPlot::FindRootFile()
 {
    // rootfile operation
    Char_t filename[50], text[100];
@@ -453,7 +423,6 @@ void FindRootFile()
 }
 
 
-//#ifndef __CINT__
 int main(int argc, char **argv)
 {
    int opt, option_index = 0;
@@ -520,17 +489,19 @@ int main(int argc, char **argv)
 
    // load header file
    Char_t HEADER[100], text[100]; //, filename[100];
-   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
+   sprintf(HEADER, "%s/AsymHeader.h", gSystem->Getenv("MACRODIR"));
    gROOT->LoadMacro(HEADER);
  
+   AsymPlot asymplot;
    // open rootfile 
-   FindRootFile();
-   TFile * rootfile = TFile::Open(lnkfile);
+   asymplot.FindRootFile();
+   TFile *rootfile = TFile::Open(lnkfile);
  
    // Log file handling
    ofstream logfile;
    logfile.open(".AsymPlot.log");
-   if (logfile.fail()){ cerr << "Warning: Cannot open .AsymPlot.log." << endl;}
+   if (logfile.fail())
+	  cerr << "Warning: Cannot open .AsymPlot.log." << endl;
  
    // setup color skime
    //  ColorSkime();
@@ -543,15 +514,14 @@ int main(int argc, char **argv)
    sprintf(psfile,"ps/AsymPlot_%s.ps", RUNID.c_str());
    TPostScript *ps = new TPostScript(psfile,112);
  
-   AsymPlot asymplot;
    asymplot.GetHistograms(rootfile);
  
-   if (stID) PlotStrip(rootfile, CurC, ps, stID);
-   if (FEEDBACK)     asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
-   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
-   if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
-   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
-   if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
+   if (stID)           asymplot.PlotStrip(rootfile, CurC, ps, stID);
+   if (FEEDBACK)       asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
+   if (PLOT_BANANA)    asymplot.PlotStrip(rootfile, CurC, ps);              // Plot Individual Strip
+   if (SUMMARY)        asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
+   if (ERROR_DETECTOR) asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
+   if (PLOT_RAW)       asymplot.PlotRaw(rootfile, CurC, ps);
  
    // close ps file
    cout << "ps file : " << psfile << endl;

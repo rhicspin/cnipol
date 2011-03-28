@@ -74,7 +74,7 @@ void CnipolRunHists::BookHists(string sid)
    //for (int i=1; i<=TOT_WFD_CH; i++) {
 
    //   sprintf(hName,"mass_feedback_st%d", i);
-   //   //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", runinfo->RUNID, i+1);
+   //   //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gRunInfo->RUNID, i+1);
    //   sprintf(hTitle,"Invariant Mass for Strip-%d ", i);
    //   feedback->o[hName] = new TH1F(hName, hTitle, 100, 0, 20);
    //   ( (TH1F*) feedback->o[hName]) -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
@@ -130,7 +130,7 @@ void CnipolRunHists::BookHists(string sid)
 
 
    sprintf(hName,  "asym_vs_bunch_x45");
-   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", runinfo.RUNID);
+   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gRunInfo.RUNID);
    o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");

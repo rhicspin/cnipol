@@ -635,27 +635,27 @@ void PrintRunResults()
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------   Analysis Results   --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
-   printf(" RunTime                 [s]    = %10.1f\n", runinfo.RunTime);
+   printf(" RunTime                 [s]    = %10.1f\n", gRunInfo.RunTime);
    printf(" Total events in banana         = %10ld\n",  cntr.good_event);
    printf(" Good Carbon Max Rate  [MHz]    = %10.4f\n", gAnaResults.max_rate);
-   printf(" Good Carbon Rate      [MHz]    = %10.4f\n", runinfo.GoodEventRate);
+   printf(" Good Carbon Rate      [MHz]    = %10.4f\n", gRunInfo.GoodEventRate);
    printf(" Good Carbon Rate/WCM_sum       = %10.5f\n", gAnaResults.wcm_norm_event_rate);
    printf(" Universal Rate                 = %10.5f\n", gAnaResults.UniversalRate);
-   printf(" Event Rate            [MHz]    = %10.4f\n", runinfo.EvntRate);
-   printf(" Read Rate             [MHz]    = %10.4f\n", runinfo.ReadRate);
-   printf(" Target                         = %c%c\n",   runinfo.target, runinfo.targetID);
-   printf(" Target Operation               = %s\n",     runinfo.TgtOperation);
-   if (runinfo.Run >=6 ) {
-      printf(" Maximum Revolution #           = %10d\n", runinfo.MaxRevolution);
-      printf(" Reconstructed Duration  [s]    = %10.1f\n",runinfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
+   printf(" Event Rate            [MHz]    = %10.4f\n", gRunInfo.EvntRate);
+   printf(" Read Rate             [MHz]    = %10.4f\n", gRunInfo.ReadRate);
+   printf(" Target                         = %c%c\n",   gRunInfo.target, gRunInfo.targetID);
+   printf(" Target Operation               = %s\n",     gRunInfo.TgtOperation);
+   if (gRunInfo.Run >=6 ) {
+      printf(" Maximum Revolution #           = %10d\n", gRunInfo.MaxRevolution);
+      printf(" Reconstructed Duration  [s]    = %10.1f\n",gRunInfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
       printf(" Target Motion Counter          = %10ld\n",cntr.tgtMotion);
    }
-   printf(" WCM Sum     [10^11 protons]    = %10.1f\n", runinfo.WcmSum/100);
-   printf(" WCM Average [10^9  protons]    = %10.1f\n", runinfo.WcmAve);
+   printf(" WCM Sum     [10^11 protons]    = %10.1f\n", gRunInfo.WcmSum/100);
+   printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo.WcmAve);
    printf(" WCM Average w/in range         = %10.1f\n", average.average);
    printf(" Specific Luminosity            = %10.2f%10.2f%10.4f\n", gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
-   printf(" # of Filled Bunch              = %10d\n", runinfo.NFilledBunch);
-   printf(" # of Active Bunch              = %10d\n", runinfo.NActiveBunch);
+   printf(" # of Filled Bunch              = %10d\n", gRunInfo.NFilledBunch);
+   printf(" # of Active Bunch              = %10d\n", gRunInfo.NActiveBunch);
    printf(" bunch w/in WCM range           = %10d\n", average.counter);
    printf(" process rate                   = %10.1f [%%]\n", (float)average.counter/(float)NFilledBunch*100);
    printf(" Analyzing Power Average        = %10.4f \n",     gAnaResults.A_N[1]);
@@ -667,7 +667,7 @@ void PrintRunResults()
    printf(" chi2/d.o.f (sinphi fit)        = %10.4f\n",      gAnaResults.sinphi[0].chi2);
    printf(" Polarization (bunch ave)       = %10.4f%9.4f\n", gBunchAsym.ave.Ax[0]/gAnaResults.A_N[1], gBunchAsym.ave.Ax[1]/gAnaResults.A_N[1]);
    printf(" Phase (bunch ave)              = %10.4f%9.4f\n", gBunchAsym.ave.phase[0]*R2D, gBunchAsym.ave.phase[1]*R2D);
-   if (runinfo.Run == 5)
+   if (gRunInfo.Run == 5)
    printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaResults.profile_error * fabs(gAnaResults.P[0]));
    printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAnaInfo.MassSigmaAlt, gAnaInfo.MassSigma);
    printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaResults.sinphi[1].P[0],        gAnaResults.sinphi[1].P[1]);
@@ -741,14 +741,14 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (runinfo.BeamEnergy > 200) {
+   if (gRunInfo.BeamEnergy > 200) {
       // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176; v1.2.0 and earlier
 
       // A new correction introduced in v1.3.1 scales pC polarization down by
       // approx 18% (0.823 +/- 0.012) at 250 GeV 
       for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
-   } else if (runinfo.BeamEnergy > 50) {
+   } else if (gRunInfo.BeamEnergy > 50) {
       for (int i=0; i<25; i++) anth[i] = anth100[i];
    }
 
@@ -853,7 +853,7 @@ void AsymCalculator::CalcAsymmetry(int a, int b, int atot, int btot, float &Asym
 //             : For run5, zero for blue beam
 float ProfileError(float x)
 {
-   return runinfo.fPolBeam == 1 ? exp(-0.152*log(1/x)) : 0 ;
+   return gRunInfo.fPolBeam == 1 ? exp(-0.152*log(1/x)) : 0 ;
 }
 
 
@@ -994,7 +994,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
  
      // Mass Position Deviation from M_12
      GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
-     sprintf(htitle,"Run%.3f:Invariant mass position deviation vs. strip", runinfo.RUNID);
+     sprintf(htitle,"Run%.3f:Invariant mass position deviation vs. strip", gRunInfo.RUNID);
      mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
      tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
      tg->SetName("tg");
@@ -1004,7 +1004,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
  
      // RMS width mapping of 12C mass peak
      GetMinMax(NSTRIP, feedback.RMS, margin, min, max);
-     sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass sigma vs. strip", runinfo.RUNID);
+     sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass sigma vs. strip", gRunInfo.RUNID);
      mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
      tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
      tg->SetName("tg");
@@ -1013,7 +1013,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      mass_sigma_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
  
      // Chi2 mapping of Gaussian fit on 12C mass peak
-     sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass chi2 vs. strip",runinfo.RUNID);
+     sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass chi2 vs. strip",gRunInfo.RUNID);
      GetMinMax(NSTRIP, feedback.chi2, margin, min, max);
      mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
      tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
@@ -1085,7 +1085,7 @@ void AsymCalculator::CalcBunchAsymmetry()
    float margin=0.2;
    float prefix=0.028;
 
-   sprintf(htitle, "Run%.3f: Raw Asymmetry X90", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Raw Asymmetry X90", gRunInfo.RUNID);
    GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax90[0], margin, min, max);
 
    //asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
@@ -1095,7 +1095,7 @@ void AsymCalculator::CalcBunchAsymmetry()
    DrawHorizLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
 
-   sprintf(htitle,"Run%.3f : Raw Asymmetry Y45", runinfo.RUNID);
+   sprintf(htitle,"Run%.3f : Raw Asymmetry Y45", gRunInfo.RUNID);
    GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ay45[0], margin, min, max);
 
    //asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
@@ -1436,7 +1436,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       for (int j=0; j<NSTRIP; j++) {
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(i, j, runinfo.fPolBeam)) {
+         if (!AsymCalculator::ExcludeStrip(i, j, gRunInfo.fPolBeam)) {
             for (int k=0; k<=1; k++) LumiSum[k][i] += nstrip[k][j];
          }
       }
@@ -1560,7 +1560,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
 
    GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
 
-   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gRunInfo.RUNID);
 
    //asym_sinphi_fit = (TH2F*) gAsymRoot.fHists->d["run"]->o["asym_sinphi_fit"];
    asym_sinphi_fit->SetName("asym_sinphi_fit");
@@ -1641,7 +1641,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
 
    char htitle[100];
-   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", runinfo.RUNID);
+   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gRunInfo.RUNID);
  
    //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
    scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");

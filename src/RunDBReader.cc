@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+#include "AsymDb.h"
+
 using namespace std;
 
 int Usage(char *argv[])
@@ -45,6 +47,11 @@ int Example(char *argv[])
 
 int main(int argc, char *argv[])
 {
+
+   AsymDb asymDb;
+
+   return 0;
+
    //extern DbEntry rundb;
    recordConfigRhicStruct  *cfginfo;
    //extern int printConfig(recordConfigRhicStruct *);
