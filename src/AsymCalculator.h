@@ -1,11 +1,15 @@
-// Header file for AsymCalc
-// Author   : Itaru Nakagawa
-// Creation : 02/25/2006         
 
-#ifndef ASYM_CALC_H
-#define ASYM_CALC_H
+/**
+ * Header file for AsymCalc
+ * Author   : Itaru Nakagawa
+ *          : Dmitri Smirnov
+ *
+ * Creation : 02/25/2006         
+ */
 
-#include <math.h>
+#ifndef AsymCalculator_h
+#define AsymCalculator_h
+
 #include <string>
 
 #include "TF1.h"
@@ -15,8 +19,6 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-//#include "AnaInfo.h"
-//#include "TargetInfo.h"
 #include "AsymGlobals.h"
 #include "AsymErrorDetector.h"
 

@@ -1,12 +1,14 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
 //  End-of-Run routine
-//  file name :   AsymCalc.cc
+//  file name :   AsymCalculator.cc
 //
 //  Author    :   Itaru Nakagawa
 //  Creation  :   01/21/2006
 //
 
-#include "AsymCalc.h"
+#include "AsymCalculator.h"
+
+#include <math.h>
 
 #include "AsymHbook.h"
 #include "AsymRoot.h"
@@ -20,9 +22,7 @@ using namespace std;
 float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 
 
-// =========================
 // End of data process
-// =========================
 void end_process()
 {
    if (gAnaInfo.CMODE) {
