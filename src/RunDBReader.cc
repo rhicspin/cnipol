@@ -18,7 +18,8 @@
 
 #include <iostream>
 
-#include "AsymDb.h"
+//#include "AsymDb.h"
+#include "RunInfo.h"
 
 using namespace std;
 
@@ -47,14 +48,13 @@ int Example(char *argv[])
 
 int main(int argc, char *argv[])
 {
-
    AsymDb asymDb;
 
    return 0;
 
    //extern DbEntry rundb;
    recordConfigRhicStruct  *cfginfo;
-   //extern int printConfig(recordConfigRhicStruct *);
+   //extern int gRunInfo.PrintConfig(recordConfigRhicStruct *);
 
    char * RunID;
    //char * confdir = getenv("CONFDIR");
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
    // Read Conditions from run.db
    readdb(RUNID);
 
-   printConfig(cfginfo);
+   gRunInfo.PrintConfig(cfginfo);
 
    return 0;
 }

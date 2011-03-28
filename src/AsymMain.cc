@@ -28,7 +28,7 @@
 
 #include "AsymRoot.h"
 #include "AsymRead.h"
-#include "AsymRunDB.h"
+#include "AsymDb.h"
 #include "AsymHbook.h"
 
 using namespace std;
@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
    //   gAnaInfo.RECONFMODE = 0;
    
    // Read run info from database
-   DbEntry *runDb = gAsymRunDb.Select(gRunDb.fRunName);
+   DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gDataFileName);
@@ -369,14 +369,14 @@ int main(int argc, char *argv[])
       //ReadRecBegin();
 
       printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
-      gAsymRunDb.Select(); // read all entries into memory
-      //gAsymRunDb.Print();
-      gAsymRunDb.Insert(&gRunDb);
-      //gAsymRunDb.Print();
-      gAsymRunDb.Dump(); // write to DB file
+      gAsymDb->Select(); // read all entries into memory
+      //gAsymDb->Print();
+      gAsymDb->Insert(&gRunDb);
+      //gAsymDb->Print();
+      gAsymDb->Dump(); // write to DB file
 
-      gAsymRunDb.Clear();
-      runDb = gAsymRunDb.Select(gRunDb.fRunName); // now read all available common info for this run
+      gAsymDb->Clear();
+      runDb = gAsymDb->Select(gRunDb.fRunName); // now read all available common info for this run
       gRunDb.UpdateFields(*runDb);
       gRunInfo.fPolId = gRunDb.fPolId;
    }
@@ -452,9 +452,9 @@ int main(int argc, char *argv[])
    */
    //}}}
 
-   //gAsymRunDb.PrintCommon();
+   //gAsymDb->PrintCommon();
 
-   //gAsymRunDb.Print();
+   //gAsymDb->Print();
    //while(1) {};
    //exit(-1);
 
@@ -518,9 +518,9 @@ int main(int argc, char *argv[])
 
    if (gAnaInfo.UPDATE_DB) {
       // Select all runs from database
-      gAsymRunDb.Select();
-      gAsymRunDb.Insert(&gRunDb);
-      gAsymRunDb.Dump();
+      gAsymDb->Select();
+      gAsymDb->Insert(&gRunDb);
+      gAsymDb->Dump();
    }
 
    // Stop stopwatch and save results

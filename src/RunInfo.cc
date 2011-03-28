@@ -4,6 +4,8 @@
 
 #include "AsymGlobals.h"
 
+#include "AnaInfo.h"
+
 using namespace std;
 
 
@@ -376,4 +378,78 @@ void RunInfo::ConfigureActiveStrip(int mask)
    }
 
    printf("\n");
+} //}}}
+
+
+// Print Out Configuration information
+void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
+{ //{{{
+   fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
+
+   // Configulation File
+   fprintf(stdout,"         RUN STATUS = %s\n", gRunDb.run_status_s.c_str());
+   fprintf(stdout,"         MEAS. TYPE = %s\n", gRunDb.measurement_type_s.c_str());
+   fprintf(stdout,"             CONFIG = %s\n", reConfFile);
+   fprintf(stdout,"              CALIB = %s\n", CalibFile);
+
+   // banana cut configulation
+
+   int ccutwu;
+   int ccutwl;
+
+   if (gAnaInfo.CBANANA == 0) {
+      ccutwl = (int) cfginfo->data.chan[3].ETCutW;
+      ccutwu = (int) cfginfo->data.chan[3].ETCutW;
+   } else if (gAnaInfo.CBANANA == 2) {
+      fprintf(stdout,"            MASSCUT = %.1f\n",gAnaInfo.MassSigma);
+   } else {
+      ccutwl = (int) gAnaInfo.widthl;
+      ccutwu = (int) gAnaInfo.widthu;
+   }
+
+   if (gAnaInfo.CBANANA!=2)
+     fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
+
+   // tshift in [ns]
+   fprintf(stdout,"             TSHIFT = %.1f\n",gAnaInfo.tshift);
+
+   // expected reference rate
+   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",gAnaInfo.reference_rate);
+
+   // target count/mm
+   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",gAnaInfo.target_count_mm);
+
+   // Disabled bunch
+   fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
+   if (NDisableBunch){
+     fprintf(stdout,"       DISABLED_BUNCHES = ");
+     for (int i=0; i<NDisableBunch; i++) printf("%d ", DisableBunch[i]);
+     printf("\n");
+   }
+
+   // Disabled strips
+   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", gRunInfo.NDisableStrip);
+   if (gRunInfo.NDisableStrip){
+     fprintf(stdout,"       DISABLED_CHANNELS = ");
+     for (int i=0;i<gRunInfo.NDisableStrip;i++) printf("%d ", gRunInfo.fDisabledChannels[i]+1);
+     printf("\n");
+   }
+
+   // Active Detector and Strip Configulation
+   printf("    Active Detector =");
+   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", gRunInfo.ActiveDetector[i] ? 1 : 0 );
+   printf("\n");
+   //    printf("Active Strip Config =");
+   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", gRunInfo.ActiveDetector[i]);
+   //    printf("\n");
+   printf("Active Strip Config =");
+   for (int i=0; i<NSTRIP; i++) {
+     if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
+     printf("%d", gRunInfo.ActiveStrip[i]);
+   }
+   printf("\n");
+
+   // print comment
+   if (strlen(gRunDb.comment_s.c_str())>3)
+     printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
 } //}}}

@@ -6,7 +6,7 @@
 #include "EventConfig.h"
 
 #include "AnaInfo.h"
-#include "AsymRunDB.h"
+#include "DbEntry.h"
 #include "RunInfo.h"
 #include "AnaResult.h"
 

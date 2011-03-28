@@ -12,11 +12,11 @@
 
 #include "Asym.h"
 #include "AsymHeader.h"
-#include "AsymRunDB.h"
-#include "AsymCalc.h"
+#include "AsymCalculator.h"
+#include "AsymDb.h"
 
 class  AsymRoot;
-class  AsymRunDB;
+class  AsymDbFile;
 class  AnaInfo;
 struct ErrorDetector;
 struct atdata_struct;
@@ -89,7 +89,7 @@ extern long int Ntotal[NBUNCH];  // number of evts before carbon cut
 extern long int Nback[NBUNCH];   // number of evts below the curbon cut
 
 extern AsymRoot                 gAsymRoot;
-extern AsymRunDB                gAsymRunDb;
+extern AsymDb                  *gAsymDb;
 extern AnaInfo                  gAnaInfo;
 extern ErrorDetector            errdet;
 extern atdata_struct            atdata;

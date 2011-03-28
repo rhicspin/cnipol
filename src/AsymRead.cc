@@ -14,7 +14,7 @@
 #include "TRandom.h"
 #include "TStopwatch.h"
 
-#include "AsymCalc.h"
+#include "AsymCalculator.h"
 #include "AsymProcess.h"
 #include "AsymRecover.h"
 #include "AsymRoot.h"
@@ -759,8 +759,7 @@ void readloop()
 
            // Configure Active Strip Map
            gRunInfo.ConfigureActiveStrip(mask.detector);
-
-           printConfig(cfginfo);
+           gRunInfo.PrintConfig(cfginfo);
 
            READ_FLAG = 1;
 
@@ -973,9 +972,9 @@ void readloop()
    sstr.str(""); sstr << gRunInfo.BeamEnergy;
    gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
 
-   // Some incompleted run don't even have REC_READAT flag. Force printConfig.
+   // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
    if (!Nread && !READ_FLAG) {
-      printConfig(cfginfo);
+      gRunInfo.PrintConfig(cfginfo);
 
       if (gRunDb.run_status_s == "Junk") {
          cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n";
