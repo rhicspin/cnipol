@@ -1,7 +1,13 @@
 
+#include <time.h>
+
 #include "manalyze.h"
 
 #include "utils/utils.h"
+
+#include "EventConfig.h"
+
+EventConfig *gRC;
 
 using namespace std;
 
@@ -17,7 +23,19 @@ void manalyze()
 
 void initialize()
 {
-   TString filelist = "list_15221.2.v4.dat";
+   struct tm tm;
+   time_t firstDay;
+
+   if ( strptime("2011-02-01 00:00:00", "%Y-%m-%d %H:%M:%S", &tm) != NULL )
+      firstDay = mktime(&tm);
+
+   printf("firstDay %d\n", firstDay);
+
+   //TString filelist = "list_B1U.dat";
+   //TString filelist = "list_B2D.dat";
+   //TString filelist = "list_Y2U.dat";
+   TString filelist = "list_Y1D.dat";
+
    TString fileName;
    //string  histName = "hPolarUniProfileBin";
    string  histName = "hPolarVsIntensProfileBin";
@@ -33,6 +51,15 @@ void initialize()
    havrg->Sumw2();
    havrg->SetBit(TH1::kIsAverage);
 
+   TH1* hPolar = new TH1F("hPolar", "hPolar", 1, 0, 1);
+   TH1* hProfR = new TH1F("hProfR", "hProfR", 1, 0, 1);
+
+   TGraphErrors *grPolar = new TGraphErrors();
+   grPolar->SetName("grPolar");
+   grPolar->SetMarkerStyle(kFullDotLarge);
+   grPolar->SetMarkerSize(1);
+   grPolar->SetMarkerColor(kRed);
+
    UInt_t i = 0;
 
    // Fill chain with all input files from filelist
@@ -47,19 +74,34 @@ void initialize()
       fileName += "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
 
       TFile *f = new TFile(fileName, "READ");
-      if (!f) exit(-1);
+      if (!f) continue; //exit(-1);
 
-      gH = new DrawObjContainer(f);
-      gH->d["profile"] = new CnipolProfileHists();
-      gH->ReadFromDir(f);
+      gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+      if (!gRC) continue;
+      //gRC->Print();
 
-      TH1* h = (TH1*) gH->d["profile"]->o[histName];
-      h->Print();
-      h->SetBit(TH1::kIsAverage);
+      float beamEnergy = gRC->fRunInfo->BeamEnergy;
+
+      if (beamEnergy < 200) continue;
+
+      //if (beamEnergy < 20 || beamEnergy > 30) continue;
+
+      //gH = new DrawObjContainer(f);
+      //gH->d["profile"] = new CnipolProfileHists();
+      //gH->ReadFromDir(f);
+
+      //TH1* h = (TH1*) gH->d["profile"]->o[histName];
+      //h->Print();
+      //h->SetBit(TH1::kIsAverage);
+
+      Double_t day = (gRC->fRunInfo->StartTime - firstDay)/60./60./24.;
+      //grPolar->SetPoint(i, gRC->fRunInfo->RUNID, gRC->fAnaResult->sinphi[0].P[0]);
+      grPolar->SetPoint(i, day, gRC->fAnaResult->sinphi[0].P[0]);
+      grPolar->SetPointError(i, 0, gRC->fAnaResult->sinphi[0].P[1]);
 
       //if (i == 0) havrg = h;
       //else havrg->Add(h);
-      havrg->Add(h);
+      //havrg->Add(h);
 
       i++;
    }
@@ -76,7 +118,17 @@ void initialize()
 
    havrg->Print();
    havrg->GetYaxis()->SetRangeUser(0, 1.05);
-   havrg->Draw();
-   gPad->Update();
-   gPad->SaveAs("15221.2.v4.png");
+   //havrg->Draw();
+   //gPad->Update();
+   //gPad->SaveAs("15221.2.v4.png");
+
+
+   Double_t xmin, ymin, xmax, ymax;
+   grPolar->ComputeRange(xmin, ymin, xmax, ymax);
+   hPolar->GetListOfFunctions()->Add(grPolar, "p");
+   hPolar->GetXaxis()->SetLimits(xmin, xmax);
+   hPolar->GetYaxis()->SetLimits(ymin, ymax);
+   hPolar->Draw();
+
+   gPad->SaveAs("polar_Y1D_250.png");
 }

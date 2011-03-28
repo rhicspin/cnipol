@@ -24,97 +24,6 @@ int ProcessStrip[NSTRIP];
 int ProcessBunch[NBUNCH];
 
 
-/**
- * Update common fields in  fCommonRunDb entries using the values from dbrun.
- * dbrun is expected to have the POLARIMETER_ID set
- */
-void AsymRunDB::UpdateCommonFields(DbEntry &dbrun)
-{
-   // First check the polarimeter id
-   if (dbrun.fFields["POLARIMETER_ID"] != "none") {
-      dbrun.fPolId = atoi(dbrun.fFields["POLARIMETER_ID"].c_str());
-   } else {
-      TObjArray *subStrL = TPRegexp("\\d+\\.(\\d)\\d{2}").MatchS(dbrun.fRunName);
-
-      if (subStrL->GetEntriesFast() < 1) {
-         printf("Fatal error: no pol id\n");
-         exit(-1);
-      }
-
-      TString spolid = ((TObjString *) subStrL->At(1))->GetString();
-      delete subStrL;
-
-      dbrun.fPolId = spolid.Atoi();
-      dbrun.fFields["POLARIMETER_ID"] = spolid;
-   }
-
-   if (dbrun.fFields["START_TIME"] != "none") {
-      dbrun.timeStamp = atoi(dbrun.fFields["START_TIME"].c_str());
-   }
-
-   //if (dbrun.fPolId == UCHAR_MAX)
-
-   //printf("polId: %d\n", dbrun.fPolId);
-
-   if (!fCommonRunDB[dbrun.fPolId]) {
-      DbEntry *cr = new DbEntry();
-
-      cr->fFields["POLARIMETER_ID"] = " ";
-      sprintf(&cr->fFields["POLARIMETER_ID"][0], "%1d", dbrun.fPolId);
-
-      cr->fPolId = dbrun.fPolId;
-      fCommonRunDB[dbrun.fPolId] = cr;
-   }
-
-   fCommonRunDB[dbrun.fPolId]->UpdateFields(dbrun);
-}
-
-
-/** */
-void AsymRunDB::DropCommonFields(DbEntry *dbrun)
-{
-   DbEntry *cr = fCommonRunDB[dbrun->fPolId];
-
-   if (!cr) { return; }
-
-   DbFieldMap::iterator ifld;
-   DbFieldMap::iterator bfld = dbrun->fFields.begin();
-   DbFieldMap::iterator efld = dbrun->fFields.end();
-
-   for (ifld=bfld; ifld!=efld; ifld++) {
-
-      string &field_name  = (string&) ifld->first;
-      string &field_value = (string&) ifld->second;
-      string &common_field_value = cr->fFields[field_name];
-
-      bool isPrivate = dbrun->fFieldFlags[field_name];
-      //bool flag_to   = fFieldFlags[field_name];
-
-      if (!isPrivate && field_value != "none" &&
-           field_value == common_field_value)
-      {
-         field_value = "none";
-      }
-   }
-}
-
-
-/** */
-void AsymRunDB::PrintCommon()
-{
-   printf("\nCommon DB runs:\n");
-
-   DbCommonRunMap::iterator icr;
-   DbCommonRunMap::iterator bcr = fCommonRunDB.begin();
-   DbCommonRunMap::iterator ecr = fCommonRunDB.end();
-
-   for (icr=bcr; icr!=ecr; icr++) {
-      //fprintf(f, "%s = |%s|\n", ifld->first.c_str(), ifld->second.c_str());
-      if (icr->second) icr->second->Print();
-   }
-}
-
-
 const UShort_t AsymRunDB::sNFields = 31;
 
 const char* AsymRunDB::sFieldNames[] = {
@@ -408,10 +317,97 @@ void AsymRunDB::Insert(DbEntry *dbrun)
 }
 
 
-//
-// Class name  :
-// Method name : readdb(double RUNID)
-//
+/**
+ * Update common fields in  fCommonRunDb entries using the values from dbrun.
+ * dbrun is expected to have the POLARIMETER_ID set
+ */
+void AsymRunDB::UpdateCommonFields(DbEntry &dbrun)
+{
+   // First check the polarimeter id
+   if (dbrun.fFields["POLARIMETER_ID"] != "none") {
+      dbrun.fPolId = atoi(dbrun.fFields["POLARIMETER_ID"].c_str());
+   } else {
+      TObjArray *subStrL = TPRegexp("\\d+\\.(\\d)\\d{2}").MatchS(dbrun.fRunName);
+
+      if (subStrL->GetEntriesFast() < 1) {
+         printf("Fatal error: no pol id\n");
+         exit(-1);
+      }
+
+      TString spolid = ((TObjString *) subStrL->At(1))->GetString();
+      delete subStrL;
+
+      dbrun.fPolId = spolid.Atoi();
+      dbrun.fFields["POLARIMETER_ID"] = spolid;
+   }
+
+   if (dbrun.fFields["START_TIME"] != "none") {
+      dbrun.timeStamp = atoi(dbrun.fFields["START_TIME"].c_str());
+   }
+
+   //if (dbrun.fPolId == UCHAR_MAX)
+
+   //printf("polId: %d\n", dbrun.fPolId);
+
+   if (!fCommonRunDB[dbrun.fPolId]) {
+      DbEntry *cr = new DbEntry();
+
+      cr->fFields["POLARIMETER_ID"] = " ";
+      sprintf(&cr->fFields["POLARIMETER_ID"][0], "%1d", dbrun.fPolId);
+
+      cr->fPolId = dbrun.fPolId;
+      fCommonRunDB[dbrun.fPolId] = cr;
+   }
+
+   fCommonRunDB[dbrun.fPolId]->UpdateFields(dbrun);
+}
+
+
+/** */
+void AsymRunDB::DropCommonFields(DbEntry *dbrun)
+{
+   DbEntry *cr = fCommonRunDB[dbrun->fPolId];
+
+   if (!cr) { return; }
+
+   DbFieldMap::iterator ifld;
+   DbFieldMap::iterator bfld = dbrun->fFields.begin();
+   DbFieldMap::iterator efld = dbrun->fFields.end();
+
+   for (ifld=bfld; ifld!=efld; ifld++) {
+
+      string &field_name  = (string&) ifld->first;
+      string &field_value = (string&) ifld->second;
+      string &common_field_value = cr->fFields[field_name];
+
+      bool isPrivate = dbrun->fFieldFlags[field_name];
+      //bool flag_to   = fFieldFlags[field_name];
+
+      if (!isPrivate && field_value != "none" &&
+           field_value == common_field_value)
+      {
+         field_value = "none";
+      }
+   }
+}
+
+
+/** */
+void AsymRunDB::PrintCommon()
+{
+   printf("\nCommon DB runs:\n");
+
+   DbCommonRunMap::iterator icr;
+   DbCommonRunMap::iterator bcr = fCommonRunDB.begin();
+   DbCommonRunMap::iterator ecr = fCommonRunDB.end();
+
+   for (icr=bcr; icr!=ecr; icr++) {
+      //fprintf(f, "%s = |%s|\n", ifld->first.c_str(), ifld->second.c_str());
+      if (icr->second) icr->second->Print();
+   }
+}
+
+
 // Description : Read conditions from run.db
 // Input       : double RUNID
 // Return      : int 1

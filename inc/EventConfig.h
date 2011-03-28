@@ -34,7 +34,7 @@ public:
    TRecordConfigRhicStruct *fConfigInfo;
    RunInfo                 *fRunInfo;
    AnaInfo                 *fAnaInfo;
-   DbEntry                 *fDbEntry;
+   DbEntry                 *fDbEntry; //!
    Calibrator              *fCalibrator;
    AnaResult               *fAnaResult;
 
