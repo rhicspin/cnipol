@@ -1,5 +1,5 @@
-#ifndef ASYM_RUNDB_H
-#define ASYM_RUNDB_H
+#ifndef AsymDbFile_h
+#define AsymDbFile_h
 
 #include <errno.h>
 #include <fstream>
@@ -8,12 +8,11 @@
 #include <set>
 #include <string>
 
-#include "TObject.h"
-
 #include "rhicpol.h"
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
+#include "AsymDb.h"
 #include "AsymGlobals.h"
 #include "DbEntry.h"
 
@@ -21,7 +20,7 @@
 typedef std::set<DbEntry> DbRunSet;
 typedef std::map<UShort_t, DbEntry*> DbCommonRunMap;
 
-class AsymRunDB : public TObject {
+class AsymDbFile : public AsymDb {
 
 public:
 
@@ -35,8 +34,8 @@ public:
 
 public:
 
-   AsymRunDB();
-   ~AsymRunDB();
+   AsymDbFile();
+   ~AsymDbFile();
 
    DbEntry* Select(std::string runName="");
    void Delete(std::string runName);
@@ -57,7 +56,6 @@ void  SetDefault();
 int   ContinueScan(double ThisRunID, double RunID);
 int   MatchPolarimetry(double ThisRunID, double RefRunID);
 void  PrintRunDB();
-void  printConfig(recordConfigRhicStruct *);
 void  StripHandler(int, int);
 int   FindDisableStrip();
 void  BunchHandler(int, int);

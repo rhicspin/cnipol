@@ -1,5 +1,5 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name:    AsymRunDB.cc
+//  file name:    AsymDbFile.cc
 //
 //  Authors:      Itaru Nakagawa
 //                Dmitri Smirnov
@@ -7,7 +7,7 @@
 //  Creation:     11/18/2005
 //
 
-#include "AsymRunDB.h"
+#include "AsymDbFile.h"
 
 #include "TObjArray.h"
 #include "TObjString.h"
@@ -24,9 +24,9 @@ int ProcessStrip[NSTRIP];
 int ProcessBunch[NBUNCH];
 
 
-const UShort_t AsymRunDB::sNFields = 31;
+const UShort_t AsymDbFile::sNFields = 31;
 
-const char* AsymRunDB::sFieldNames[] = {
+const char* AsymDbFile::sFieldNames[] = {
 	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
    "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
    "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
@@ -38,7 +38,7 @@ const char* AsymRunDB::sFieldNames[] = {
 
 
 /** */
-AsymRunDB::AsymRunDB() : TObject(), fDbFileName("run.db")
+AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
 {
    if ( !gAnaInfo.fAsymEnv["CNIPOL_DIR"].empty() )
       fDbFileName = gAnaInfo.fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
@@ -46,7 +46,7 @@ AsymRunDB::AsymRunDB() : TObject(), fDbFileName("run.db")
    //fDbFile = fopen(fDbFileName.c_str(), "r");
 
    //if (!fDbFile) {
-   //   Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+   //   Error("AsymDbFile", "%s file not found. Force exit", fDbFileName.c_str());
    //   exit(-1);
    //}
 
@@ -57,7 +57,7 @@ AsymRunDB::AsymRunDB() : TObject(), fDbFileName("run.db")
 
 
 /** */
-AsymRunDB::~AsymRunDB()
+AsymDbFile::~AsymDbFile()
 {
    //if (fDbFile) fclose(fDbFile);
    Clear();
@@ -65,7 +65,7 @@ AsymRunDB::~AsymRunDB()
 
 
 /** */
-void AsymRunDB::Clear()
+void AsymDbFile::Clear()
 {
    //if (fDbFile) fclose(fDbFile);
 
@@ -85,12 +85,12 @@ void AsymRunDB::Clear()
 
 
 /** */
-DbEntry* AsymRunDB::Select(std::string runName)
+DbEntry* AsymDbFile::Select(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
 
    if (!fDbFile) {
-      Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+      Error("AsymDbFile", "%s file not found. Force exit", fDbFileName.c_str());
       exit(-1);
    }
 
@@ -172,12 +172,12 @@ DbEntry* AsymRunDB::Select(std::string runName)
 
 
 /** */
-void AsymRunDB::Delete(std::string runName)
+void AsymDbFile::Delete(std::string runName)
 {
    fDbFile = fopen(fDbFileName.c_str(), "r");
 
    if (!fDbFile) {
-      Error("AsymRunDB", "%s file not found. Force exit", fDbFileName.c_str());
+      Error("AsymDbFile", "%s file not found. Force exit", fDbFileName.c_str());
       exit(-1);
    }
 
@@ -235,7 +235,7 @@ void AsymRunDB::Delete(std::string runName)
 
 
 /** */
-void AsymRunDB::Dump()
+void AsymDbFile::Dump()
 {
    ofstream dbFile;
    dbFile.open(fDbFileName.c_str(), ios_base::out | ios_base::trunc);
@@ -270,7 +270,7 @@ void AsymRunDB::Dump()
 
 
 /** */
-void AsymRunDB::Append(DbEntry *dbrun)
+void AsymDbFile::Append(DbEntry *dbrun)
 {
    DbEntry *comRun = fCommonRunDB[dbrun->fPolId];
 
@@ -300,7 +300,7 @@ void AsymRunDB::Append(DbEntry *dbrun)
 
 
 /** */
-void AsymRunDB::Insert(DbEntry *dbrun)
+void AsymDbFile::Insert(DbEntry *dbrun)
 {
    DbRunSet::iterator irun = fDBRuns.find(*dbrun);
 
@@ -321,7 +321,7 @@ void AsymRunDB::Insert(DbEntry *dbrun)
  * Update common fields in  fCommonRunDb entries using the values from dbrun.
  * dbrun is expected to have the POLARIMETER_ID set
  */
-void AsymRunDB::UpdateCommonFields(DbEntry &dbrun)
+void AsymDbFile::UpdateCommonFields(DbEntry &dbrun)
 {
    // First check the polarimeter id
    if (dbrun.fFields["POLARIMETER_ID"] != "none") {
@@ -364,7 +364,7 @@ void AsymRunDB::UpdateCommonFields(DbEntry &dbrun)
 
 
 /** */
-void AsymRunDB::DropCommonFields(DbEntry *dbrun)
+void AsymDbFile::DropCommonFields(DbEntry *dbrun)
 {
    DbEntry *cr = fCommonRunDB[dbrun->fPolId];
 
@@ -393,7 +393,7 @@ void AsymRunDB::DropCommonFields(DbEntry *dbrun)
 
 
 /** */
-void AsymRunDB::PrintCommon()
+void AsymDbFile::PrintCommon()
 {
    printf("\nCommon DB runs:\n");
 
@@ -419,7 +419,7 @@ void readdb(double RUNID)
    FILE *in_file;
 
    if ((in_file = fopen(dbfile.c_str(), "r")) == NULL) {
-       gSystem->Error("   AsymRunDB::readdb", "%s file not found. Force exit", dbfile.c_str());
+       gSystem->Error("   AsymDbFile::readdb", "%s file not found. Force exit", dbfile.c_str());
        exit(-1);
    }
 
@@ -441,11 +441,11 @@ void readdb(double RUNID)
         } else if (str[10] == ']') {
           s = str.substr(1,9) ;
         } else {
-          printf("AsymRunDB:ERROR invalid [RunID] statement in run.db. Ignored.");
+          printf("AsymDbFile:ERROR invalid [RunID] statement in run.db. Ignored.");
         }
 
         gRunDb.RunID = strtod(s.c_str(),NULL);
-        //      printf("AsymRunDB: %.3f\n",gRunDb.RunID);
+        //      printf("AsymDbFile: %.3f\n",gRunDb.RunID);
         match = MatchPolarimetry(RUNID, gRunDb.RunID);
 
         if (match){
@@ -562,7 +562,7 @@ void readdb(double RUNID)
 
 
 /** */
-void AsymRunDB::Print(const Option_t* opt) const
+void AsymDbFile::Print(const Option_t* opt) const
 {
    printf("DB size: %d\n", fDBRuns.size());
 
@@ -732,84 +732,6 @@ void PrintRunDB()
    printf("REFERENCE_RATE   = %7.3f\n", strtof(gRunDb.reference_rate_s.c_str(),NULL));
    printf("TARGET_COUNT_MM  = %8.5f\n", strtof(gRunDb.target_count_mm_s.c_str(),NULL));
    printf("COMMENT          = %s\n",    gRunDb.comment_s.c_str());
-}
-
-
-// Print Out Configuration information
-void printConfig(recordConfigRhicStruct *cfginfo)
-{
-    int ccutwu;
-    int ccutwl;
-
-    fprintf(stdout,"================================================\n");
-    fprintf(stdout,"===  RHIC Polarimeter Configuration (BGN)    ===\n");
-    fprintf(stdout,"================================================\n");
-
-    // Configulation File
-    fprintf(stdout,"         RUN STATUS = %s\n", gRunDb.run_status_s.c_str());
-    fprintf(stdout,"         MEAS. TYPE = %s\n", gRunDb.measurement_type_s.c_str());
-    fprintf(stdout,"             CONFIG = %s\n", reConfFile);
-    fprintf(stdout,"              CALIB = %s\n", CalibFile);
-
-    // banana cut configulation
-    if (gAnaInfo.CBANANA == 0) {
-        ccutwl = (int)cfginfo->data.chan[3].ETCutW;
-        ccutwu = (int)cfginfo->data.chan[3].ETCutW;
-    } else if (gAnaInfo.CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n",gAnaInfo.MassSigma);
-    } else {
-        ccutwl = (int)gAnaInfo.widthl;
-        ccutwu = (int)gAnaInfo.widthu;
-    }
-    if (gAnaInfo.CBANANA!=2)
-      fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n",ccutwl,ccutwu);
-
-    // tshift in [ns]
-    fprintf(stdout,"             TSHIFT = %.1f\n",gAnaInfo.tshift);
-
-    // expected reference rate
-    if (gRunInfo.Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",gAnaInfo.reference_rate);
-
-    // target count/mm
-    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",gAnaInfo.target_count_mm);
-
-    // Disabled bunch
-    fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", gRunInfo.NDisableBunch);
-    if (gRunInfo.NDisableBunch){
-      fprintf(stdout,"       DISABLED_BUNCHES = ");
-      for (int i=0;i<gRunInfo.NDisableBunch;i++) printf("%d ",gRunInfo.DisableBunch[i]);
-      printf("\n");
-    }
-
-    // Disabled strips
-    fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", gRunInfo.NDisableStrip);
-    if (gRunInfo.NDisableStrip){
-      fprintf(stdout,"       DISABLED_CHANNELS = ");
-      for (int i=0;i<gRunInfo.NDisableStrip;i++) printf("%d ", gRunInfo.fDisabledChannels[i]+1);
-      printf("\n");
-    }
-
-    // Active Detector and Strip Configulation
-    printf("    Active Detector =");
-    for (int i=0; i<NDETECTOR; i++)  printf(" %1d", gRunInfo.ActiveDetector[i] ? 1 : 0 );
-    printf("\n");
-    //    printf("Active Strip Config =");
-    //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", gRunInfo.ActiveDetector[i]);
-    //    printf("\n");
-    printf("Active Strip Config =");
-    for (int i=0; i<NSTRIP; i++) {
-      if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
-      printf("%d", gRunInfo.ActiveStrip[i]);
-    }
-    printf("\n");
-
-    // print comment
-    if (strlen(gRunDb.comment_s.c_str())>3)
-      printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
-
-    fprintf(stdout,"================================================\n");
-    fprintf(stdout,"===  RHIC Polarimeter Configuration (END)    ===\n");
-    fprintf(stdout,"================================================\n");
 }
 
 
