@@ -361,11 +361,11 @@ int main(int argc, char *argv[])
       //mseRunInfo = gAsymDb2->SelectRun(gRunDb.fRunName);
       mseRunInfo = gAsymDb2->SelectRun("15335.209");
 
-   cout << "mseRunInfo: " << endl;
-   cout << mseRunInfo->run_name << endl;
-   //cout << (int) mseRunInfo->polarimeter_id << endl;
+   //cout << "mseRunInfo: " << endl;
+   //cout << mseRunInfo->run_name << endl;
+   ////cout << (int) mseRunInfo->polarimeter_id << endl;
 
-   exit(0);
+   //exit(0);
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
