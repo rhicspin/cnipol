@@ -30,6 +30,7 @@
 #include "AsymRead.h"
 #include "AsymDb.h"
 #include "AsymHbook.h"
+#include "MseRunInfo.h"
 
 using namespace std;
 
@@ -115,12 +116,6 @@ int main(int argc, char *argv[])
 
       case 'r':
       case 'f':
-         //sprintf(ifile, optarg);
-         // if ifile lack of suffix ".data", attach ".data"
-         //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
-         //gDataFileName = gAnaInfo.fAsymEnv["CNIPOL_DATA_DIR"] +  "/" + optarg + ".data";
-
-         // Add checks for runName suffix
          gAnaInfo.fRunId  = optarg;
          gRunInfo.runName = optarg;
          gRunDb.fRunName  = optarg;
@@ -360,10 +355,26 @@ int main(int argc, char *argv[])
 
    DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
+   MseRunInfo *mseRunInfo = 0;
+
+	if (gAnaInfo.fFlagUseDb)
+      //mseRunInfo = gAsymDb2->SelectRun(gRunDb.fRunName);
+      mseRunInfo = gAsymDb2->SelectRun("15335.209");
+
+   cout << "mseRunInfo: " << endl;
+   cout << mseRunInfo->run_name << endl;
+   //cout << (int) mseRunInfo->polarimeter_id << endl;
+
+   exit(0);
+
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
 
+   // Get basic information about the measurement from the data file
+	// and update the data base run info (mseRunInfo) if needed
    rawData->ReadRecBegin();
+
+   //gAsymDb2->VerifyRunInfo(mseRunInfo);
 
    // Replace gRunDb
    if (runDb) {
