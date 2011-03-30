@@ -70,7 +70,7 @@ extern long int NRcounts[NDETECTOR][NBUNCH][RAMPTIME]; // counts 6det 120bunch R
 
 extern char *confdir;
 extern char *calibdir;
-extern std::string gDataFileName;   // data file name 
+//extern std::string gDataFileName;   // data file name 
 extern char reConfFile[256];         // update configuration file for T0 info
 extern char conf_file[256];          // update configuration file for T0 info
 extern char CalibFile[256];          // Energy calibration file

@@ -19,6 +19,7 @@
 #include <iostream>
 
 //#include "AsymDb.h"
+#include "AsymDbSql.h"
 #include "RunInfo.h"
 
 using namespace std;
@@ -48,7 +49,18 @@ int Example(char *argv[])
 
 int main(int argc, char *argv[])
 {
-   AsymDb asymDb;
+   AsymDb *asymDbFile = new AsymDbFile();
+
+   DbEntry *dbEntry = asymDbFile->Select("15335.209");
+
+   dbEntry->Print();
+
+   AsymDb *asymDb = new AsymDbSql();
+
+   asymDb->Select();
+
+
+   asymDb->Insert(dbEntry);
 
    return 0;
 

@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
       {"log",                 optional_argument,   0,   'l'},
       {"copy",                no_argument,         0,   0x010000},
       {"copy-results",        no_argument,         0,   0x010000},
+      {"use-db",              no_argument,         0,   0x020000},
       {"alpha",               no_argument,         0,   AnaInfo::MODE_ALPHA},
       {"calib",               no_argument,         0,   AnaInfo::MODE_CALIB},
       {"scaler",              no_argument,         0,   AnaInfo::MODE_SCALER},
@@ -117,10 +118,10 @@ int main(int argc, char *argv[])
          //sprintf(ifile, optarg);
          // if ifile lack of suffix ".data", attach ".data"
          //if (strstr(ifile, suffix) == NULL) strcat(ifile,suffix);
-         gDataFileName = gAnaInfo.fAsymEnv["DATADIR"] +  "/" + optarg + ".data";
+         //gDataFileName = gAnaInfo.fAsymEnv["CNIPOL_DATA_DIR"] +  "/" + optarg + ".data";
 
          // Add checks for runName suffix
-         gAnaInfo.fRunId     = optarg;
+         gAnaInfo.fRunId  = optarg;
          gRunInfo.runName = optarg;
          gRunDb.fRunName  = optarg;
          break;
@@ -134,16 +135,17 @@ int main(int argc, char *argv[])
          break;
 
       case 'c':
-         gAnaInfo.userCalibFile = optarg;
-         break;
+         gAnaInfo.userCalibFile = optarg; break;
 
       case 'l':
          gAnaInfo.fFileStdLogName = (optarg != 0 ? optarg : "");
          break;
 
       case 0x010000:
-         gAnaInfo.fFlagCopyResults = kTRUE;
-         break;
+         gAnaInfo.fFlagCopyResults = kTRUE; break;
+
+      case 0x020000:
+         gAnaInfo.fFlagUseDb = kTRUE; break;
 
       case 't': // set timing shift in banana cut
          gAnaInfo.tshift = atoi(optarg);
@@ -348,10 +350,18 @@ int main(int argc, char *argv[])
    //   gAnaInfo.RECONFMODE = 0;
    
    // Read run info from database
+   // The logic is like this:
+	//    - Select data from database by run name
+	//    - If found read fields from database and create a DbEntry
+	//       - Make sure all missing fields are borrowed from the previous run
+	//    - Proceed with analysis using the info for this run on hand
+	//    - Modify/update DbEntry
+	//    - Save DbEntry to database if requested
+
    DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
    // Read data file into memory
-   RawDataProcessor *rawData = new RawDataProcessor(gDataFileName);
+   RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
 
    rawData->ReadRecBegin();
 

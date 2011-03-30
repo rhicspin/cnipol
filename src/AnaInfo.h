@@ -89,6 +89,7 @@ public:
    FILE*            fFileStdLog;
    std::string      fFileStdLogName;
    Bool_t           fFlagCopyResults;
+   Bool_t           fFlagUseDb;
 
 public:
 
@@ -96,6 +97,8 @@ public:
    AnaInfo(std::string runId);
    ~AnaInfo();
 
+   std::string GetRunName() const { return fRunId; }
+   std::string GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunId + ".data"; }
    std::string GetOutDir() const;
    std::string GetImageDir() const { return GetOutDir() + "/images"; }
    std::string GetAlphaCalibFile() const;

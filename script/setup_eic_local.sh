@@ -25,8 +25,8 @@ if [[ $LD_LIBRARY_PATH != *MYSQL_LIB_DIR* ]]; then
    export LD_LIBRARY_PATH+=:\$MYSQL_LIB_DIR
 fi
 
-if [[ $LD_LIBRARY_PATH != *MYSQLPP_LIB_DIR* ]]; then
-   export LD_LIBRARY_PATH+=:\$MYSQLPP_LIB_DIR/
+if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 fi
 
 # CNIPOL variables
