@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "mysql++.h"
-//#include "ssqls.h"
 
 #include "AsymDb.h"
 #include "DbEntry.h"

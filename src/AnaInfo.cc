@@ -56,7 +56,7 @@ AnaInfo::AnaInfo() :
    procTimeCpu       (0),
    userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE)
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE)
 {
    Init();
 }
@@ -135,10 +135,10 @@ void AnaInfo::Init()
    if (tmpEnv) fAsymEnv["CNIPOL_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_DIR"] = ".";
 
-   tmpEnv = getenv("DATADIR");
+   tmpEnv = getenv("CNIPOL_DATA_DIR");
 
-   if (tmpEnv) fAsymEnv["DATADIR"] = tmpEnv;
-   else        fAsymEnv["DATADIR"] = ".";
+   if (tmpEnv) fAsymEnv["CNIPOL_DATA_DIR"] = tmpEnv;
+   else        fAsymEnv["CNIPOL_DATA_DIR"] = ".";
 
    tmpEnv = getenv("CNIPOL_RESULTS_DIR");
 
@@ -217,11 +217,22 @@ string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 /** */
 void AnaInfo::ProcessOptions()
 {
+   // The run name must be specified
    if (fRunId.empty()) {
       gSystem->Error("   AnaInfo::ProcessOptions", "Run name has to be specified");
       PrintUsage();
       exit(0);
    }
+
+   // Check whether the raw data file exists
+	TString fileName = fRunId + ".data";
+
+   if (!gSystem->FindFile(fAsymEnv["CNIPOL_DATA_DIR"].c_str(), fileName ) )
+	{
+      gSystem->Error("   AnaInfo::ProcessOptions",
+		   "Raw data file \"%s.data\" not found in %s\n", fRunId.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
+      exit(0);
+	}
 
    MakeOutDir();
 
@@ -245,7 +256,7 @@ void AnaInfo::ProcessOptions()
 
    // Various printouts. Should be combined with Print()?
    cout << "Run name:                      " << fRunId << endl;
-   cout << "Input data file:               " << gDataFileName << endl;
+   cout << "Input data file:               " << GetRawDataFileName() << endl;
    cout << "Max events to process:         " << gMaxEventsUser << endl;
    cout << "Events to skip:                " << thinout << endl;
    cout << "User defined calibration file: " << userCalibFile << endl;
@@ -353,7 +364,7 @@ void AnaInfo::PrintUsage()
    cout << endl;
    cout << "Options:" << endl;
    cout << " -h, -?                          : Print this help" << endl;
-   cout << " -r, -f, --run-name <run_name>   : Name of run with raw data in $DATADIR directory" << endl;
+   cout << " -r, -f, --run-name <run_name>   : Name of run with raw data in $CNIPOL_DATA_DIR directory" << endl;
    cout << " -n <number>                     : Maximum number of events to process"
         << " (default \"-n 0\" all events)" << endl;
    cout << " -s <number>                     : Only every <number> event will be"
@@ -392,8 +403,11 @@ void AnaInfo::PrintUsage()
    cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
    cout << "     --mode-full                 : Fill and save all histograms" << endl;
    cout << " -g, --graph                     : Save histograms as images" << endl;
+   cout << "     --copy                      : Copy results to server (?)" << endl;
+   cout << "     --use-db                    : Run info will be retrieved from and saved into database" << endl;
    cout << endl;
    cout << "Options marked with (!) are not really supported" << endl;
+   cout << "Options marked with (?) need more work" << endl;
    cout << endl;
 }
 

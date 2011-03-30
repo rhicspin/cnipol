@@ -24,6 +24,8 @@ AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0
        // Catch-all for any other MySQL++ exceptions
        cerr << "Error: " << er.what() << endl;
    }
+
+   MseRunInfo::table("run_info");
 }
 
 
@@ -71,7 +73,47 @@ DbEntry* AsymDbSql::Select(std::string runName)
 
 /** */
 void AsymDbSql::Insert(DbEntry *dbrun)
-{}
+{
+   if (!dbrun) return;
+
+   //MseRunInfo mseRunInfo("", 0, sql_datetime(""), sql_datetime(""), 0);
+
+   stringstream sstr;
+
+   short polarimeter_id;
+   sstr.str("");
+	sstr << dbrun->fFields["POLARIMETER_ID"];
+	sstr >> polarimeter_id;
+
+   time_t start_time;
+   sstr.str("");
+	sstr << dbrun->fFields["START_TIME"];
+	sstr >> start_time;
+
+   time_t stop_time;
+   sstr.str("");
+	sstr << dbrun->fFields["STOP_TIME"];
+	sstr >> stop_time;
+
+   float beam_energy;
+   sstr.str("");
+	sstr << dbrun->fFields["BEAM_ENERGY"];
+	sstr >> beam_energy;
+
+   MseRunInfo mseRunInfo(dbrun->fRunName,
+                         sql_tinyint(polarimeter_id),
+                         sql_datetime(start_time),
+                         sql_datetime(stop_time),
+                         sql_float(beam_energy));
+
+	//mseRunInfo.instance_table("run_info");
+
+   Query query = fConnection->query();
+	query.insert(mseRunInfo);
+
+	cout << "Query: " << query << endl;
+	query.execute();
+}
 
 
 /** */

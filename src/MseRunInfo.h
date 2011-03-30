@@ -15,4 +15,5 @@ sql_create_5(MseRunInfo, 1, 5,
    mysqlpp::sql_datetime, stop_time,
    mysqlpp::sql_float,    beam_energy)
 
+
 #endif

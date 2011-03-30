@@ -9,6 +9,7 @@
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
 #include "AsymDbFile.h"
+#include "AsymDbSql.h"
 #include "TargetInfo.h"
 
 using namespace std;
@@ -29,7 +30,7 @@ long    NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
 
 char   *confdir;
 char   *calibdir;
-string  gDataFileName;   // data file name
+//string  gDataFileName;   // data file name
 char    reConfFile[256];    // overwrite configuration for T0 info
 char    conf_file[256];  // overwrite configuration file
 char    CalibFile[256];  // energy calibration file
@@ -157,7 +158,8 @@ float gPhi[NSTRIP] = {
 
 AnaInfo                   gAnaInfo;
 AsymRoot                  gAsymRoot;
-AsymDb                   *gAsymDb = new AsymDbFile();
+AsymDb                   *gAsymDb  = new AsymDbFile();
+AsymDb                   *gAsymDb2 = new AsymDbSql();
 DbEntry                   gRunDb;
 RunInfo                   gRunInfo;
 atdata_struct             atdata;

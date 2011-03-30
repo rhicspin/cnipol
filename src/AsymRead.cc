@@ -146,14 +146,14 @@ void RawDataProcessor::ReadDataFast()
    printf("Started reading data file...\n");
    TStopwatch sw;
 
-   //FILE *fp = fopen(gDataFileName.c_str(), "r");
+   //FILE *fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r");
 
    // reading the data till its end ...
    //if (!fp) {
-   //   printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+   //   printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
    //   exit(-1);
    //} else
-   //   printf("\nFound file %s\n", gDataFileName.c_str());
+   //   printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
 
    //recordHeaderStruct  header;
    recordHeaderStruct *mHeader;
@@ -272,14 +272,14 @@ void readDataFast()
    printf("Started reading data file...\n");
    TStopwatch sw;
 
-   FILE *fp = fopen(gDataFileName.c_str(), "r");
+   FILE *fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r");
 
    // reading the data till its end ...
    if (!fp) {
-      printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
       exit(-1);
    } else
-      printf("\nFound file %s\n", gDataFileName.c_str());
+      printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
 
    recordHeaderStruct header;
    //recordDataStruct   data;
@@ -374,14 +374,14 @@ void readDataFast()
 /** */
 void ReadRecBegin()
 {
-   FILE *fp = fopen(gDataFileName.c_str(), "r");
+   FILE *fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r");
 
    // reading the data till its end ...
    if (!fp) {
-      printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
       exit(-1);
    } else
-      printf("\nFound file %s\n", gDataFileName.c_str());
+      printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
 
    recordBeginStruct recBegin;
 
@@ -491,11 +491,11 @@ void readloop()
    //int THINOUT = Flag.feedback ? gAnaInfo.thinout : Nskip;
 
    // reading the data till its end ...
-   if ((fp = fopen(gDataFileName.c_str(), "r")) == NULL) {
-      printf("ERROR: %s file not found. Force exit.\n", gDataFileName.c_str());
+   if ((fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r")) == NULL) {
+      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
       exit(-1);
    } else
-      printf("\nFound file %s\n", gDataFileName.c_str());
+      printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
 
    while (flag == 0) {
 
