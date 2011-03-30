@@ -1,0 +1,97 @@
+macro main
+*	D.Svirida & I.Alekseev 2010
+*	Draw upto 6 "bananas" from ramp measurement
+*	Take global values
+    hi/file  21 $ENV('HBOOKFILE')
+    for/file 22 $ENV('PSFILE')
+    run=$ENV('RUN')
+    polarim=$ENV('POLARIM')
+*	Open graphics
+    gra/meta -22 -111
+
+    hrin 0
+    opt nbox
+    opt nsta
+    set MTYP 20
+    set *FON -60
+    set TXFP -60
+
+    set GSIZ 0.7
+    set YGTI 1.0
+    set xsiz 21.0
+    set ysiz 21.0
+    set XMGR 2.0
+    set XMGL 2.6
+   
+    set VSIZ 0.35
+    set ASIZ 0.35
+    set TSIZ 0.4
+    set MSCF 1.0
+    set XLAB 1.8
+    set LWID 4
+
+    title_gl 'Ramp RUN '//[run]//' in '//[polarim]
+
+*	Find number of subruns
+    subrnum=0
+    do i=1,500
+	id=$EVAL(4999+[i])
+	if ($hexist([id]).eq.1) then
+	    subrnum=[i]
+	endif
+    enddo
+    substep=$EVAL([subrnum]/6)
+    mess subrnum [subrnum] substep [substep]
+    
+    hi/copy 5000 5
+    hi/copy 6000 6
+    hi/copy 7000 7
+    
+    if ([substep].lt.1) then
+	hi/op/reset 5
+	hi/op/reset 6
+	hi/op/reset 7
+	do i=1,[subrnum]
+	    hi/op/add $EVAL(4999+[i]) 5 5 1.0 1.0
+	    hi/op/add $EVAL(5999+[i]) 6 6 1.0 1.0
+	    hi/op/add $EVAL(6999+[i]) 7 7 1.0 1.0
+	enddo
+	hi/op/add 6 6 6 $EVAL(1.0/[subrnum]) 0.0
+	hi/op/add 7 7 7 $EVAL(1.0/[subrnum]) 0.0
+	hi/plot 5 box
+	set hcol 2
+	hi/plot 6 same
+	set hcol 3
+	hi/plot 7 same
+	atitle 'E (keV)' 'tof (ns)'
+    else
+	zone 2 3
+	opt utit
+	vec/cre ii(2) i
+	do j=0,5
+	    vec/inp ii $EVAL(1+[j]*[substep]) $EVAL(([j]+1)*[substep])
+	    vec/pri ii
+	    title_gl 'Time vs Amplitude '//$EVAL(ii(1))//' - '//$EVAL(ii(2)) 'U'
+	    hi/op/reset 5
+	    hi/op/reset 6
+	    hi/op/reset 7
+	    do i=ii(1), ii(2)
+		hi/op/add $EVAL(4999+[i]) 5 5 1.0 1.0
+		hi/op/add $EVAL(5999+[i]) 6 6 1.0 1.0
+		hi/op/add $EVAL(6999+[i]) 7 7 1.0 1.0
+	    enddo
+	    hi/op/add 6 6 6 $EVAL(1.0/(ii(2)-ii(1)+1)) 0.0
+	    hi/op/add 7 7 7 $EVAL(1.0/(ii(2)-ii(1)+1)) 0.0
+	    set hcol 1
+	    hi/plot 5 box
+	    set hcol 2
+	    hi/plot 6 same
+	    set hcol 3
+	    hi/plot 7 same
+	    atitle 'E (keV)' 'tof (ns)'
+	enddo
+    endif
+
+    close 22
+    close 21
+return

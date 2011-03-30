@@ -100,8 +100,8 @@ clean:
 	rm -f $(CNIANA_DICT)
 
 cleanall: clean
-	@echo "removing executables in bin/..."
-	rm -fr $(BIN_DIR)/*
+	#@echo "removing executables in bin/..."
+	#rm -fr $(BIN_DIR)/*
 
 echoenv:
 	@echo ""

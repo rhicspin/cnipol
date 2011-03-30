@@ -21,8 +21,8 @@ export MYSQLPP_DIR=/eicdata/eic0005/mysql++
 export MYSQLPP_INCLUDE_DIR=$MYSQLPP_DIR/lib
 export MYSQLPP_LIB_DIR=$MYSQLPP_DIR
 
-if [[ $LD_LIBRARY_PATH != *MYSQL_LIB_DIR* ]]; then
-   export LD_LIBRARY_PATH+=:\$MYSQL_LIB_DIR
+if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
 fi
 
 if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
@@ -30,14 +30,17 @@ if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
 fi
 
 # CNIPOL variables
-if [ -z "$CNIPOL_DIR" ]; then
-	export CNIPOL_DIR=~/cnipol
-	export PATH+=:$CNIPOL_DIR/bin
-	export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
-fi
-
+export CNIPOL_DIR=~/cnipol
 export CNIPOL_DATA_DIR=/data1/run11/data
 export CNIPOL_RESULTS_DIR=/data1/run11/root
+
+if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
+	export PATH+=:$CNIPOL_DIR/bin
+fi
+
+if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
+	export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
+fi
 
 # Older variables
 export POLARIM_DIR=/data1/run11
@@ -66,8 +69,8 @@ echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
-echo "\$DATADIR=$DATADIR   <-- deprecated"
-echo "\$CONFDIR=$CONFDIR   <-- deprecated"
+echo "\$DATADIR=$DATADIR     <-- deprecated"
+echo "\$CONFDIR=$CONFDIR     <-- deprecated"
 echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"

@@ -19,7 +19,7 @@
 	end	
 c
 	program rhic2hbook
-	common/pawc/pawc(2000000)
+	common/pawc/pawc(8000000)
 	common/quest/ iquest(100)
 	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
 	common/wfsel/ ibunch, irevfirst
@@ -166,7 +166,7 @@ c		Hook for test 90-degree detectors in yel1 and blu2 (run 2010)
 	    i90OK = 1
 	endif
 c		initialize hbook
-	call hlimit(2000000)
+	call hlimit(8000000)
 	call mninit(5, 6, 7)
 	iquest(10) = 65000
 c
@@ -176,8 +176,11 @@ c		Single subrun processing (also normal measurement)
 		print *, 'Cannot open input file ', fin(1:len_trim(fin))
 		stop
     	    endif
+            print *, 'Openning output file ', fout(1:len_trim(fout))
 	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
 c	
+	    call flush(6)
+	    call flush(7)
 	    call readandfill(nsubrun)
 c
 	    if (iproc.ne.0) call process(i90OK)
@@ -197,10 +200,15 @@ c
 		print *, 'Cannot open input file ', fin(1:len_trim(fin))
 		stop
     	    endif
+    	    write(*,*) 'RHIC2HBOOK-INFO : isubr = ', isubr
     	    iquest(10) = 65000
 	    call hdelet(0)
-	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
+	    write(str,'(''_'', I4.4)') isubr+1
+            print *, 'Openning output file 2 ', fout(1:len_trim(fout))//str(1:len_trim(str))
+	    call hropen(10, 'data', fout(1:len_trim(fout))//str(1:len_trim(str)), 'NP', 1024, irc)
 c
+	    call flush(6)
+	    call flush(7)
 	    call readandfill(isubr)
 c   	    print *, 'After readandfill (nsubrun<0) isubr = ',isubr
 c
@@ -219,6 +227,7 @@ c
 	    call hrout(0, irc, ' ')
 	    call hrend('data')
 	    call icclose
+	    call addtosummary(isubr, i90OK, fout)
 	    if (itimestamp(isubr+1).eq.0.or.isubr.ge.499) goto 99
 	    isubr = isubr + 1
 	    goto 10
@@ -284,6 +293,62 @@ c
 	call hbook1(2200+i, 'Baseline for prompt estimate for Si'//chname, 240, 0., 240., 0)
 	call hbook1(2300+i, 'Prompts for Si'//chname, 240, 0., 240., 0)
 
+	return
+	end
+c		Here we make summary bananas for each subrun
+c	5000+isubr - 2-dim banana (from 700+N)
+c	6000+isubr - low cut (from 800+N)
+c	7000+isubr - high cut (from 900+N)
+c
+	subroutine addtosummary(isubr, i90OK, fname)
+	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
+	character*256 fname
+	logical HEXIST
+	
+c		make histograms like the 6th Si channel - middle of the 1st detector
+	if (ifine.eq.0) then
+	    call hbook2(5000+isubr, 'ET (keV ns) internal hist (coarse) for all channels', 
+     ,	    32, edead(6), 256.*ecoef(6)+edead(6), 32, tmin(6), tmin(6) + 32.*rnsperchan, 0)
+	else
+	    call hbook2(5000+isubr, 'ET (keV ns) internal hist (fine) for all channels', 
+     ,	    16, etrg, etrg+128*ecoef(6), 64, tmin(6), tmin(6) + 32.*rnsperchan, 0)
+	endif
+	call hbook1(6000+isubr, 'Low time cut', 256, edead(6), 256*ecoef(6)+edead(6), 0)
+	call hbook1(7000+isubr, 'Up  time cut', 256, edead(6), 256*ecoef(6)+edead(6), 0)
+c		Sum everything ...
+	N = 0
+	if (ifine.eq.0) then
+	    N2D = 600
+	else
+	    N2D = 700
+	endif
+	do i = 1, 72
+	    if (HEXIST(N2D+i).and.((i90OK.ne.0).or.(i.le.12).or.((i.gt.24).and.(i.le.48)).or.(i.gt.60))) then
+		call HOPERA(N2D+i, '+', 5000+isubr, 5000+isubr, 1.0, 1.0)
+		call HOPERA(800+i, '+', 6000+isubr, 6000+isubr, 1.0, 1.0)
+		call HOPERA(900+i, '+', 7000+isubr, 7000+isubr, 1.0, 1.0)
+		N = N + 1
+	    endif
+	enddo
+	if (N.gt.0) then
+	    call HOPERA(6000+isubr, '+', 6000+isubr, 6000+isubr, 1.0/N, 0.0)
+	    call HOPERA(7000+isubr, '+', 7000+isubr, 7000+isubr, 1.0/N, 0.0)
+	endif
+c
+	if (isubr.eq.0) then
+c		we are running the first time - create file
+            print *, 'Openning output file 3 ', fname(1:len_trim(fname))
+	    call hropen(10, 'sum', fname(1:len_trim(fname)), 'NP', 1024, irc)
+	else
+            print *, 'Openning output file 4 ', fname(1:len_trim(fname))
+	    call hropen(10, 'sum', fname(1:len_trim(fname)), 'UP', 1024, irc)
+	endif
+c
+	call hrout(5000+isubr, irc, ' ')
+	call hrout(6000+isubr, irc, ' ')
+	call hrout(7000+isubr, irc, ' ')
+	call hrend('sum')
+	
 	return
 	end
 c
