@@ -71,6 +71,17 @@
    <td>
    <b>Disabled Strips:</b> <?=$rc['NDisableStrip']?>
 
+<?
+$profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
+?>
+
+<tr>
+   <td>
+   <b>Profile Ratio:</b> r = <?=$profileRatio?>
+
+   <td colspan=3>
+   <b>Energy Calibration Run:</b> <a href="/rundb/?runid=<?=$rc['ALPHA_CALIB_RUN_NAME']?>"><?=$rc['ALPHA_CALIB_RUN_NAME']?></a>
+
 <tr>
    <td colspan=4>
    <b>Channels:</b><br>
@@ -279,39 +290,80 @@
 <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
 
 <tr>
-<td align=center colspan=3>
-<?=$gP->img("profile/hPolProfileFinal")?>
+<td class=align_cm>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<p>Polarization vs intensity as measured every second at each target step. The
+data is fitted with a function P = P_max * I^r
+
+<td class=align_cm>
+<?=$gP->img("profile/hPolarVsIntensProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned
+
+<tr>
+<td align=center width=50%>
+<?=$gP->img("profile/hIntensUniProfile")?>
+<p>If we assume a gaussian beam profile with the unit width the actuall
+position of the target in the beam can be deduced from the intensity measured
+at each step. Note that the plot is symmetric around X = 0 by construction
+
+<td align=center width=50%>
+<?=$gP->img("profile/hIntensUniProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned. Note
+that the plot is symmetric around X = 0 by construction
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hPolarUniProfile")?>
+<p>The beam polarization as a function of beam width in intesity sigma units
+
+<td align=center>
+<?=$gP->img("profile/hPolarUniProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned
+
+</table>
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td align=center colspan=2>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<p>Beam polarization profile
+
+<td align=center>
+<?=$gP->img("profile/hPolarProfileFinal")?>
 <p>Beam polarization profile
 
 <tr>
 <td align=center>
-<?=$gP->img("profile/hProfile")?>
+<?=$gP->img("profile/hIntensProfile")?>
 <p>Intensity profile as a function of target steps
 
 <td align=center>
-<?=$gP->img("profile/hProfileFwd")?>
+<?=$gP->img("profile/hIntensProfileFwd")?>
 <p>Intensity profile: Forward target motion
 
 <td align=center>
-<?=$gP->img("profile/hProfileBck")?>
+<?=$gP->img("profile/hIntensProfileBck")?>
 <p>Intensity profile: Backward target motion
 
 <tr>
 <td align=center>
-<?=$gP->img("profile/hPolProfile")?>
+<?=$gP->img("profile/hPolarProfile")?>
 <p>Beam polarization profile as a function of target steps
 
 <td align=center>
-<?=$gP->img("profile/hPolProfileFwd")?>
+<?=$gP->img("profile/hPolarProfileFwd")?>
 <p>Beam polarization profile: Forward target motion
 
 <td align=center>
-<?=$gP->img("profile/hPolProfileBck")?>
+<?=$gP->img("profile/hPolarProfileBck")?>
 <p>Beam polarization profile: Backward target motion
 
 <tr>
 <td align=center colspan=3>
-<?=$gP->img("profile/hPolProfileFold")?>
+<?=$gP->img("profile/hPolarProfileFold")?>
 <p>Beam polarization profile: Forward and Backward target motions
 
 </table>

@@ -10,7 +10,7 @@ class DbEntry {
       "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
       "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
       "RUN_STATUS", "START_TIME", "STOP_TIME", "NEVENTS_TOTAL",
-      "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION"
+      "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION", "PROFILE_RATIO"
    );
 
    var $f = array();

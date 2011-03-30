@@ -45,6 +45,7 @@ array_sort($es, '!START_TIME');
    <th rowspan=2>Date &amp; Time
    <th rowspan=2>Polarimeter
    <th rowspan=2>Polarization, %
+   <th rowspan=2>r
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Target
@@ -69,6 +70,13 @@ foreach($es as $e):
       //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
          $pols[0]*100, $pols[1]*100);
+   }
+
+   $profileRatio = "&nbsp;";
+
+   if (isset($e->f['PROFILE_RATIO'])) {
+      $values = preg_split("/[\s,]+/", $e->f['PROFILE_RATIO']);
+      $profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
    }
 
    $targetId = "&nbsp;";
@@ -98,6 +106,7 @@ foreach($es as $e):
    <td class=align_cm><tt><?=isset($e->f['START_TIME']) ? date("M d, Y H:i:s D", $e->f['START_TIME']) : "&nbsp;";?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e->f['POLARIMETER_ID']) ? $POLARIMETER_ID[$e->f['POLARIMETER_ID']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
+   <td class=align_cm><?=$profileRatio?>
    <td>&nbsp;
    <td class=align_cm><?=isset($e->f['BEAM_ENERGY']) ? sprintf("%6.2f", $e->f['BEAM_ENERGY']) : "&nbsp;";?>
    <td class=align_cm><?=$targetId?>
