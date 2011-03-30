@@ -13,8 +13,8 @@
 #include "Asym.h"
 #include "AsymHeader.h"
 #include "AsymCalculator.h"
-#include "AsymDb.h"
 
+class  AsymDb;
 class  AsymRoot;
 class  AsymDbFile;
 class  AnaInfo;
@@ -90,6 +90,7 @@ extern long int Nback[NBUNCH];   // number of evts below the curbon cut
 
 extern AsymRoot                 gAsymRoot;
 extern AsymDb                  *gAsymDb;
+extern AsymDb                  *gAsymDb2;
 extern AnaInfo                  gAnaInfo;
 extern ErrorDetector            errdet;
 extern atdata_struct            atdata;

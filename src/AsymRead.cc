@@ -83,7 +83,6 @@ void RawDataProcessor::ReadRecBegin()
 
    //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
 
-
       cout << "Begin of data stream Ver: " << recBegin->version << endl;
       cout << "Comment: "                  << recBegin->comment << endl;
       cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);

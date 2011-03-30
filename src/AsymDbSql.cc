@@ -72,6 +72,83 @@ DbEntry* AsymDbSql::Select(std::string runName)
 
 
 /** */
+MseRunInfo* AsymDbSql::SelectRun(std::string runName)
+{
+	string q = "select * from run_info where run_name=\"" + runName + "\"";
+
+   Query query = fConnection->query(q);
+
+   MseRunInfo* mseri = 0;
+
+	cout << "Query: " << query << endl;
+	//query.execute();
+
+   if (StoreQueryResult result = query.store()) {
+      //cout << "We have:" << endl;
+      //for (size_t i = 0; i < result.num_rows(); ++i) {
+      //    cout << '\t' << result[i][0] << endl;
+      //}
+
+		mseri = new MseRunInfo(result[0]);
+
+   } else {
+      cerr << "Failed to get item list: " << query.error() << endl;
+   }
+
+   //vector<stock> res;
+   //query.storein(res);
+
+   //// Display the items
+   //cout << "We have:" << endl;
+   //vector<stock>::iterator it;
+   //for (it = res.begin(); it != res.end(); ++it) {
+   //    cout << '\t' << it->item;
+   //    if (it->description != mysqlpp::null) {
+   //        cout << " (" << it->description << ")";
+   //    }
+   //    cout << endl;
+   //}
+
+   return mseri;
+}
+
+
+/** */
+vector<MseRunInfo>& AsymDbSql::SelectPriorRuns(MseRunInfo& run)
+{
+	string q = "select * from run_info where start_time < " + run.start_time;
+
+   Query query = fConnection->query(q);
+
+   vector<MseRunInfo> results;
+
+	cout << "Query: " << query << endl;
+	//query.execute();
+
+   if (StoreQueryResult result = query.store()) {
+
+      query.storein(results);
+
+   } else {
+      cerr << "Failed to get item list: " << query.error() << endl;
+   }
+
+   //// Display the items
+   //cout << "We have:" << endl;
+   //vector<stock>::iterator it;
+   //for (it = res.begin(); it != res.end(); ++it) {
+   //    cout << '\t' << it->item;
+   //    if (it->description != mysqlpp::null) {
+   //        cout << " (" << it->description << ")";
+   //    }
+   //    cout << endl;
+   //}
+
+   return results;
+}
+
+
+/** */
 void AsymDbSql::Insert(DbEntry *dbrun)
 {
    if (!dbrun) return;
