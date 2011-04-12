@@ -18,6 +18,8 @@
 
 #include "DbEntry.h"
 
+class MseRunInfoX;
+
 
 /** */
 class AnaInfo
@@ -116,6 +118,7 @@ public:
    void        PrintUsage();
    void        Streamer(TBuffer &buf);
    void        Update(DbEntry &rundb);
+   void        Update(MseRunInfoX& run);
 	void        CopyResults();
 
    inline Bool_t HasAlphaBit();

@@ -16,6 +16,7 @@
 #include "AnaResult.h"
 #include "RunInfo.h"
 #include "TargetInfo.h"
+#include "MseRunInfo.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ float RawP[72], dRawP[72]; // Raw Polarization (Not corrected for phi)
 
 
 // End of data process
-void end_process()
+void end_process(MseRunInfoX &run)
 {
    if (gAnaInfo.CMODE) {
       //gAsymRoot.PostProcess();
@@ -62,7 +63,7 @@ void end_process()
    SpecificLuminosity(gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
 
    // Strip-by-Strip Asymmetries
-   StripAsymmetry();
+   StripAsymmetry(run);
 
    // ds: these routines are skipped by default
    if (Flag.EXE_ANOMALY_CHECK) {
@@ -1301,7 +1302,7 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 // Description : call calcStripAsymmetry() subroutines for
 //             : regular and alternative sigma banana cuts, respectively.
 //             : Also call for PHENIX and STAR colliding bunches asymmetries
-void StripAsymmetry()
+void StripAsymmetry(MseRunInfoX &run)
 {
    //// Calculate Asymmetries for colliding bunches at PHENIX
    //CalcStripAsymmetry(gAnaResults.A_N[1], 2, cntr.phx.NStrip);
@@ -1323,6 +1324,10 @@ void StripAsymmetry()
       gAnaResults.sinphi[0].dPhi[0], gAnaResults.sinphi[0].dPhi[1]);
 
    gRunDb.fFields["POLARIZATION"] = sPol;
+   run.polarization       = gAnaResults.sinphi[0].P[0];
+   run.polarization_error = gAnaResults.sinphi[0].P[1],
+   run.phase              = gAnaResults.sinphi[0].dPhi[0];
+   run.phase_error        = gAnaResults.sinphi[0].dPhi[1];
  
    // Some consistency checks for different sigma cuts
    if (gAnaResults.sinphi[0].P[0]) {
@@ -1364,6 +1369,9 @@ void StripAsymmetry()
    }
 
    if (gAnaInfo.HasProfileBit()) gAsymRoot.ProcessProfileHists();
+
+   run.profile_ratio       = gAnaResults.fIntensPolarR;
+   run.profile_ratio_error = gAnaResults.fIntensPolarRErr;
 }
 
 

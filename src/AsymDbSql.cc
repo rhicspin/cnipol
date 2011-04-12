@@ -1,4 +1,6 @@
 
+#include <sstream>
+
 #include "AsymDbSql.h"
 
 
@@ -9,23 +11,24 @@ using namespace mysqlpp;
 /** */
 AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0, 0, 0, 0)
 {
-   try {                       
+   try {
       // Establish the connection to the database server.
       fConnection = new Connection("cnipol", "127.0.0.1", "cnipol2", "cnipol");
    } catch (const BadQuery& er) {
-       // Handle any query errors
-       cerr << "Query error: " << er.what() << endl;
+      // Handle any query errors
+      cerr << "Query error: " << er.what() << endl;
    } catch (const BadConversion& er) {
-       // Handle bad conversions; e.g. type mismatch populating 'stock'
-       cerr << "Conversion error: " << er.what() << endl <<
-               "\tretrieved data size: " << er.retrieved <<
-               ", actual size: " << er.actual_size << endl;
+      // Handle bad conversions; e.g. type mismatch populating 'stock'
+      cerr << "Conversion error: " << er.what() << endl <<
+              "\tretrieved data size: " << er.retrieved <<
+              ", actual size: " << er.actual_size << endl;
    } catch (const Exception& er) {
-       // Catch-all for any other MySQL++ exceptions
-       cerr << "Error: " << er.what() << endl;
+      // Catch-all for any other MySQL++ exceptions
+      cerr << "Error: " << er.what() << endl;
+      fConnection = 0;
    }
 
-   MseRunInfo::table("run_info");
+   MseRunInfoX::table("run_info");
 }
 
 
@@ -38,6 +41,11 @@ AsymDbSql::~AsymDbSql()
 /** */
 DbEntry* AsymDbSql::Select(std::string runName)
 {
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return 0;
+   }
+
    // Retrieve a subset of the stock table's columns, and store
    // the data in a vector of 'stock' SSQLS structures.  See the
    // user manual for the consequences arising from this quiet
@@ -72,24 +80,29 @@ DbEntry* AsymDbSql::Select(std::string runName)
 
 
 /** */
-MseRunInfo* AsymDbSql::SelectRun(std::string runName)
+MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
 {
-	string q = "select * from run_info where run_name=\"" + runName + "\"";
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return 0;
+   }
+
+   string q = "select * from run_info where run_name=\"" + runName + "\"";
 
    Query query = fConnection->query(q);
 
-   MseRunInfo* mseri = 0;
+   MseRunInfoX* mseri = 0;
 
-	cout << "Query: " << query << endl;
-	//query.execute();
+   cout << "Query: " << query << endl;
+   //query.execute();
 
    if (StoreQueryResult result = query.store()) {
       //cout << "We have:" << endl;
       //for (size_t i = 0; i < result.num_rows(); ++i) {
       //    cout << '\t' << result[i][0] << endl;
       //}
-
-		mseri = new MseRunInfo(result[0]);
+      if (!result.empty())
+         mseri = new MseRunInfoX(result[0]);
 
    } else {
       cerr << "Failed to get item list: " << query.error() << endl;
@@ -114,24 +127,66 @@ MseRunInfo* AsymDbSql::SelectRun(std::string runName)
 
 
 /** */
-vector<MseRunInfo>& AsymDbSql::SelectPriorRuns(MseRunInfo& run)
+void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
 {
-	string q = "select * from run_info where start_time < " + run.start_time;
+   vector<MseRunInfoX> runs = SelectPriorRuns(run);
+   vector<MseRunInfoX>::iterator irun;
 
-   Query query = fConnection->query(q);
+   for (irun=runs.begin(); irun!=runs.end(); irun++) {
+      cout << setw(10) << irun->run_name;
+      cout << setw(10) << irun->polarimeter_id;
+      cout << setw(10) << irun->start_time;
+      cout << setw(10) << irun->stop_time;
+      cout << setw(10) << irun->beam_energy;
+      cout << endl;
 
-   vector<MseRunInfo> results;
+      if ( !run.alpha_calib_run_name.empty() && !run.dl_calib_run_name.empty() &&
+           !run.disabled_channels.empty()    && !run.disabled_bunches.empty() )
+         break;
 
-	cout << "Query: " << query << endl;
-	//query.execute();
+      if (run.alpha_calib_run_name.empty() && !irun->alpha_calib_run_name.empty())
+         run.alpha_calib_run_name = irun->alpha_calib_run_name;
 
-   if (StoreQueryResult result = query.store()) {
+      if (run.dl_calib_run_name.empty() && !irun->dl_calib_run_name.empty())
+         run.dl_calib_run_name = irun->dl_calib_run_name;
+
+      if (run.disabled_channels.empty() && !irun->disabled_channels.empty())
+         run.disabled_channels = irun->disabled_channels;
+
+      if (run.disabled_bunches.empty() && !irun->disabled_bunches.empty())
+         run.disabled_bunches = irun->disabled_bunches;
+   }
+}
+
+
+/** */
+vector<MseRunInfoX> AsymDbSql::SelectPriorRuns(MseRunInfoX& run)
+{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      vector<MseRunInfoX> dummy;
+      return dummy;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `run_info` where `start_time` < '" << run.start_time << "' "
+        << "AND `polarimeter_id`='" << run.polarimeter_id << "' ORDER BY `start_time` DESC";
+
+   Query query = fConnection->query(sstr.str());
+
+   vector<MseRunInfoX> results;
+
+   cout << "Query: " << query << endl;
+   //query.execute();
+
+   //if (StoreQueryResult result = query.store()) {
 
       query.storein(results);
 
-   } else {
-      cerr << "Failed to get item list: " << query.error() << endl;
-   }
+   //} else {
+   //   cerr << "Failed to get item list: " << query.error() << endl;
+   //}
 
    //// Display the items
    //cout << "We have:" << endl;
@@ -153,43 +208,67 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 {
    if (!dbrun) return;
 
-   //MseRunInfo mseRunInfo("", 0, sql_datetime(""), sql_datetime(""), 0);
+   //MseRunInfoX mseRunInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
 
    stringstream sstr;
 
    short polarimeter_id;
    sstr.str("");
-	sstr << dbrun->fFields["POLARIMETER_ID"];
-	sstr >> polarimeter_id;
+   sstr << dbrun->fFields["POLARIMETER_ID"];
+   sstr >> polarimeter_id;
 
    time_t start_time;
    sstr.str("");
-	sstr << dbrun->fFields["START_TIME"];
-	sstr >> start_time;
+   sstr << dbrun->fFields["START_TIME"];
+   sstr >> start_time;
 
    time_t stop_time;
    sstr.str("");
-	sstr << dbrun->fFields["STOP_TIME"];
-	sstr >> stop_time;
+   sstr << dbrun->fFields["STOP_TIME"];
+   sstr >> stop_time;
 
    float beam_energy;
    sstr.str("");
-	sstr << dbrun->fFields["BEAM_ENERGY"];
-	sstr >> beam_energy;
+   sstr << dbrun->fFields["BEAM_ENERGY"];
+   sstr >> beam_energy;
 
-   MseRunInfo mseRunInfo(dbrun->fRunName,
-                         sql_tinyint(polarimeter_id),
+   MseRunInfoX mseRunInfoX(dbrun->fRunName,
+                         sql_smallint(polarimeter_id),
                          sql_datetime(start_time),
                          sql_datetime(stop_time),
                          sql_float(beam_energy));
 
-	//mseRunInfo.instance_table("run_info");
+   //mseRunInfoX.instance_table("run_info");
 
    Query query = fConnection->query();
-	query.insert(mseRunInfo);
+   query.insert(mseRunInfoX);
 
-	cout << "Query: " << query << endl;
-	query.execute();
+   cout << "Query: " << query << endl;
+   query.execute();
+}
+
+
+/** */
+void AsymDbSql::UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun)
+{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return;
+   }
+
+   Query query = fConnection->query();
+
+   // if original run is not defined just insert the new one
+   if (!orun) {
+      query.insert(*nrun);
+      cout << "Query: " << query << endl;
+      query.execute();
+
+   } else {
+      query.update(*orun, *nrun);
+      cout << "Query: " << query << endl;
+      query.execute();
+   }
 }
 
 

@@ -22,6 +22,8 @@
 #include "AsymHeader.h"
 #include "DbEntry.h"
 
+class MseRunInfoX;
+
 
 /** */
 class RunInfo
@@ -76,6 +78,7 @@ public:
    short GetPolarimeterId(short beamId, short streamId);
    void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    void  Update(DbEntry &rundb);
+   void  Update(MseRunInfoX& run);
    void  ConfigureActiveStrip(int mask);
 };
 

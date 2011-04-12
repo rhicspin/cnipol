@@ -22,14 +22,15 @@
 #include "AsymGlobals.h"
 #include "AsymErrorDetector.h"
 
+class MseRunInfoX;
 
 //  Main End Process Routine
-void end_process();
+void end_process(MseRunInfoX &run);
 void CompleteHistogram();
 void TgtHist();
 
 // Strip by Strip
-void StripAsymmetry();
+void StripAsymmetry(MseRunInfoX &run);
 void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]);
 //void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 

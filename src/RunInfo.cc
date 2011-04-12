@@ -5,6 +5,7 @@
 #include "AsymGlobals.h"
 
 #include "AnaInfo.h"
+#include "MseRunInfo.h"
 
 using namespace std;
 
@@ -297,10 +298,40 @@ void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &strea
 void RunInfo::Update(DbEntry &rundb)
 {
    stringstream sstr;
+   UShort_t     chId;
 
-   UShort_t chId;
+   sstr << rundb.fFields["DISABLED_CHANNELS"];
 
-   sstr.str(""); sstr << rundb.fFields["DISABLED_CHANNELS"];
+   while (sstr >> chId) fDisabledChannels[chId-1] = 1;
+
+   // For compatibility reasons set the Run variable
+   // Taken from AsymRunDb
+   if (RUNID < 6500) { // Run undefined
+      Run = 0;
+
+   } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
+      Run = 5;
+      for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun5[i];
+
+   } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
+      Run = 6;
+      for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun6[i];
+
+   } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
+      Run = 9;
+
+   } else
+      Run = 11;
+}
+
+
+/** */
+void RunInfo::Update(MseRunInfoX& run)
+{
+   stringstream sstr;
+   UShort_t     chId;
+
+   sstr << run.disabled_channels;
 
    while (sstr >> chId) fDisabledChannels[chId-1] = 1;
 
@@ -328,7 +359,7 @@ void RunInfo::Update(DbEntry &rundb)
 // Description : Disable detector and configure active strips
 //
 // Input       : int mask.detector
-// Return      : gRunInfo.ActiveDetector[i] remains masked strip configulation
+// Return      : ActiveDetector[i] remains masked strip configulation
 void RunInfo::ConfigureActiveStrip(int mask)
 { //{{{
    // Disable Detector First
@@ -428,24 +459,24 @@ void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
    }
 
    // Disabled strips
-   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", gRunInfo.NDisableStrip);
-   if (gRunInfo.NDisableStrip){
+   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", NDisableStrip);
+   if (NDisableStrip){
      fprintf(stdout,"       DISABLED_CHANNELS = ");
-     for (int i=0;i<gRunInfo.NDisableStrip;i++) printf("%d ", gRunInfo.fDisabledChannels[i]+1);
+     for (int i=0;i<NDisableStrip;i++) printf("%d ", fDisabledChannels[i]+1);
      printf("\n");
    }
 
    // Active Detector and Strip Configulation
    printf("    Active Detector =");
-   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", gRunInfo.ActiveDetector[i] ? 1 : 0 );
+   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
    printf("\n");
    //    printf("Active Strip Config =");
-   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", gRunInfo.ActiveDetector[i]);
+   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
    //    printf("\n");
    printf("Active Strip Config =");
    for (int i=0; i<NSTRIP; i++) {
      if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
-     printf("%d", gRunInfo.ActiveStrip[i]);
+     printf("%d", ActiveStrip[i]);
    }
    printf("\n");
 

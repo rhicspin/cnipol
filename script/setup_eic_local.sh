@@ -31,8 +31,8 @@ fi
 
 # CNIPOL variables
 export CNIPOL_DIR=~/cnipol
-export CNIPOL_DATA_DIR=/data1/run11/data
-export CNIPOL_RESULTS_DIR=/data1/run11/root
+export CNIPOL_DATA_DIR=/eicdata/eic0005/run11/data
+export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run11/root
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
 	export PATH+=:$CNIPOL_DIR/bin
@@ -64,6 +64,11 @@ echo "\$CERNLIB_DIR=$CERNLIB_DIR"
 echo "\$CNIPOL_DIR=$CNIPOL_DIR"
 echo "\$CNIPOL_DATA_DIR=$CNIPOL_DATA_DIR"
 echo "\$CNIPOL_RESULTS_DIR=$CNIPOL_RESULTS_DIR"
+echo
+echo "\$MYSQL_INCLUDE_DIR=$MYSQL_INCLUDE_DIR"
+echo "\$MYSQL_LIB_DIR=$MYSQL_LIB_DIR"
+echo "\$MYSQLPP_INCLUDE_DIR=$MYSQLPP_INCLUDE_DIR"
+echo "\$MYSQLPP_LIB_DIR=$MYSQLPP_LIB_DIR"
 echo
 echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
