@@ -21,11 +21,13 @@ public:
    AsymDbSql();
    ~AsymDbSql();
    
-   DbEntry*    Select(std::string runName="");
-   MseRunInfo* SelectRun(std::string runName="");
-   std::vector<MseRunInfo>& SelectPriorRuns(MseRunInfo& run);
-   void        Insert(DbEntry *dbrun);
-   void        Dump();
+   DbEntry*     Select(std::string runName="");
+   MseRunInfoX* SelectRun(std::string runName="");
+	void         CompleteRunInfo(MseRunInfoX& run);
+   std::vector<MseRunInfoX> SelectPriorRuns(MseRunInfoX& run);
+   void         Insert(DbEntry *dbrun);
+   void         UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun);
+   void         Dump();
    
 };
 

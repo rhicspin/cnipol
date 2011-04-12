@@ -24,6 +24,7 @@
 
 #include "AsymGlobals.h"
 #include "RunInfo.h"
+#include "MseRunInfo.h"
 
 #define BSIZE_OFFLINE 0x1000000                 // 16 MByte
 
@@ -41,22 +42,22 @@ public:
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
 
-   void ReadRecBegin();
+   void ReadRecBegin(MseRunInfoX* run=0);
    void ReadDataFast();
 };
 
 void readDataFast();
 void ReadRecBegin();
-void readloop();
+void readloop(MseRunInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);
-void DecodeTargetID(polDataStruct poldat);
+void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run);
 void PrepareCollidingBunchPattern();
 
 void ProcessRecord(recordPolAdoStruct &rec);
 void ProcessRecord(recordWFDV8ArrayStruct &rec);
 void ProcessRecord(recordCountRate &rec);
-void ProcessRecordPCTarget(long* rec, int ndelim);
+void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run);
 
 #endif

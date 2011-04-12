@@ -24,7 +24,7 @@ DbEntry* AsymDb::Select(std::string runName)
 
 
 /** */
-MseRunInfo* AsymDb::SelectRun(std::string runName)
+MseRunInfoX* AsymDb::SelectRun(std::string runName)
 {
    return 0;
 }

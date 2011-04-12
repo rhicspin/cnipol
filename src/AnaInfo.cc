@@ -5,6 +5,7 @@
 #include "TSystem.h"
 
 #include "AsymGlobals.h"
+#include "MseRunInfo.h"
 
 using namespace std;
 
@@ -254,6 +255,11 @@ void AnaInfo::ProcessOptions()
    //setbuf(stdout, NULL);
    //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
 
+   if (HasAlphaBit()) {
+      fAlphaCalibRun = fRunId;
+      fDlCalibRun    = "";
+   }
+
    // Various printouts. Should be combined with Print()?
    cout << "Run name:                      " << fRunId << endl;
    cout << "Input data file:               " << GetRawDataFileName() << endl;
@@ -462,6 +468,54 @@ void AnaInfo::Update(DbEntry &rundb)
 
    if (fDlCalibRun.empty())
       fDlCalibRun = rundb.fFields["DL_CALIB_RUN_NAME"];
+}
+
+
+/** */
+void AnaInfo::Update(MseRunInfoX& run)
+{
+	// A fix for alpha calib runs - Maybe this should go to the process options
+   // method
+   if (HasAlphaBit()) {
+      //fAlphaCalibRun = fRunId;
+      fAlphaCalibRun           = "";
+      fDlCalibRun              = "";
+      run.alpha_calib_run_name = "";
+      run.dl_calib_run_name    = "";
+   }
+
+   if (!fAlphaCalibRun.empty())
+      run.alpha_calib_run_name = fAlphaCalibRun;
+   else if (!run.alpha_calib_run_name.empty())
+      fAlphaCalibRun = run.alpha_calib_run_name;
+
+   if (fAlphaCalibRun.empty()) {
+      if (!HasAlphaBit()) {
+         gSystem->Error("   AnaInfo::CompleteRunInfo", "Alpha calibration run must be specified");
+         exit(0);
+      }
+   } else
+      gSystem->Info("   AnaInfo::CompleteRunInfo", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
+
+
+   // Set DL calib files
+   if (HasCalibBit()) {
+      fDlCalibRun           = "";
+      run.dl_calib_run_name = "";
+   }
+
+   if (!fDlCalibRun.empty())
+      run.dl_calib_run_name = fDlCalibRun;
+   else if (!run.dl_calib_run_name.empty())
+      fDlCalibRun = run.dl_calib_run_name;
+
+   if (fDlCalibRun.empty())
+      if (!HasCalibBit()) {
+         gSystem->Warning("   AnaInfo::CompleteRunInfo", "Calibration run is not specified.\n" \
+                          "\tOption --calib should be used");
+      }
+   else
+      gSystem->Info("   AnaInfo::CompleteRunInfo", "Using calibration run %s", run.dl_calib_run_name.c_str());
 }
 
 

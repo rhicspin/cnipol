@@ -20,6 +20,7 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sstream>
+#include <ctime>
 
 #include "TStopwatch.h"
 #include "TTimeStamp.h"
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
    // Create a stopwatch and start it
    TStopwatch stopwatch;
    TTimeStamp timestamp;
+   
+   time_t  gtime = time(0);
+   tm     *ltime = localtime(&gtime);
 
    // for get option
    extern char *optarg;
@@ -277,7 +281,7 @@ int main(int argc, char *argv[])
       case 'C':
       case AnaInfo::MODE_ALPHA:
          gAnaInfo.fModes |= AnaInfo::MODE_ALPHA;
-         gAnaInfo.CMODE = 1;
+         gAnaInfo.CMODE      = 1;
          gAnaInfo.RECONFMODE = 0;
          gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL; // turn off normal mode
          gAsymRoot.fEventConfig = new EventConfig();
@@ -355,26 +359,43 @@ int main(int argc, char *argv[])
 
    DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
-   MseRunInfo *mseRunInfo = 0;
+   MseRunInfoX *mseRunInfoX     = 0;
+   MseRunInfoX *mseRunInfoXOrig = 0;
 
+   // Check whether the run is in database
 	if (gAnaInfo.fFlagUseDb)
-      //mseRunInfo = gAsymDb2->SelectRun(gRunDb.fRunName);
-      mseRunInfo = gAsymDb2->SelectRun("15335.209");
+      mseRunInfoX = gAsymDb2->SelectRun(gRunDb.fRunName);
 
-   //cout << "mseRunInfo: " << endl;
-   //cout << mseRunInfo->run_name << endl;
-   ////cout << (int) mseRunInfo->polarimeter_id << endl;
+   // if run found in database save its copy
+   if (mseRunInfoX) {
+      mseRunInfoXOrig  = new MseRunInfoX(gRunDb.fRunName);
+		*mseRunInfoXOrig = *mseRunInfoX;
 
-   //exit(0);
+   // if run not found in database create it
+   } else {
+      mseRunInfoX = new MseRunInfoX(gRunDb.fRunName);
+   }
+
+   cout << "mseRunInfoX 1: " << endl;
+   mseRunInfoX->Print();
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
-	// and update the data base run info (mseRunInfo) if needed
-   rawData->ReadRecBegin();
+	// and overwrite the data base run info (mseRunInfoX) if needed
+   rawData->ReadRecBegin(mseRunInfoX);
 
-   //gAsymDb2->VerifyRunInfo(mseRunInfo);
+   cout << "mseRunInfoX 2: " << endl;
+   mseRunInfoX->Print();
+
+   // Do this only for normal runs, not alpha
+   if (!gAnaInfo.HasAlphaBit())
+      gAsymDb2->CompleteRunInfo(*mseRunInfoX);
+
+   cout << "mseRunInfoX 3: " << endl;
+   mseRunInfoX->Print();
+   //cout << *mseRunInfoX << endl;
 
    // Replace gRunDb
    if (runDb) {
@@ -404,80 +425,23 @@ int main(int argc, char *argv[])
 
    // Overwrite the offline version (if set previously)
    gRunDb.SetAsymVersion(gRunInfo.fAsymVersion);
+   mseRunInfoX->asym_version = gRunInfo.fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    gRunDb.Print();
 
-   gAnaInfo.Update(gRunDb);
-   gRunInfo.Update(gRunDb);
+   //gAnaInfo.Update(gRunDb);
+   //gRunInfo.Update(gRunDb);
+
+   gAnaInfo.Update(*mseRunInfoX);
+   gRunInfo.Update(*mseRunInfoX);
 
    gAnaInfo.Print();
    //gRunInfo.Print();
-
-   // Manually set disabled channels... deprecated
-   //{{{
-   /*
-   // XXX temp fix: disable strips
-   // blue1
-   //gRunInfo.fDisabledChannels[11] = 1;
-   //gRunInfo.fDisabledChannels[65] = 1;
-   // blue2
-   //int disabledStrips[] = {
-   //   1, 1, 1, 1, 1, 1,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
-   //   0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1,   1, 1, 1, 1, 1, 1,  0, 0, 0, 0, 0, 0,
-   //   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 0, 0, 0, 0, 0,  1, 1, 1, 1, 1, 1 };
-
-   if (gRunInfo.fPolId == 1 || gRunInfo.fPolId == 2) { // downstream
-
-      // disabled hamamatsu's
-      int disabledStrips[] = {
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-         1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
-      };
-
-      // disabled channels from crate 6
-      //int disabledStrips[] = {
-      //   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
-      //   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1,
-      //   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   0, 1, 0, 1, 0, 1,  0, 1, 0, 1, 0, 1
-      //};
-
-      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
-
-   } else if (gRunInfo.fPolId == 0) { // blue 1 upstream
-
-      int disabledStrips[] = {
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 1,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 1,  0, 0, 0, 0, 0, 0
-      };
-
-      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
-
-   } else if (gRunInfo.fPolId == 3) { // yellow 2 upstream
-
-      //int disabledStrips[] = {
-      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,
-      //   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
-      //};
-      int disabledStrips[] = {
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0
-      };
-
-      memcpy(gRunInfo.fDisabledChannels, disabledStrips, sizeof(int)*72);
-   }
-   */
-   //}}}
+   mseRunInfoX->Print();
 
    //gAsymDb->PrintCommon();
-
    //gAsymDb->Print();
-   //while(1) {};
-   //exit(-1);
 
    // Find RunConfig object in the calibration files and update
    gAsymRoot.UpdateRunConfig();
@@ -514,7 +478,7 @@ int main(int argc, char *argv[])
       //gAsymRoot.PreProcess();
 
       // Main Event Loop
-      readloop();
+      readloop(*mseRunInfoX);
 
       gAsymRoot.PostProcess();
    }
@@ -543,15 +507,6 @@ int main(int argc, char *argv[])
       gAsymDb->Insert(&gRunDb);
       gAsymDb->Dump();
    }
-
-   // Stop stopwatch and save results
-   stopwatch.Stop();
-   gAnaInfo.procDateTime =  timestamp.GetSec();
-   gAnaInfo.procTimeReal =  stopwatch.RealTime();
-   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
-
-   printf("Processing started: %s\n",   timestamp.AsString("l"));
-   printf("Process time: %f seconds\n", gAnaInfo.procTimeReal);
 
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -586,7 +541,25 @@ int main(int argc, char *argv[])
    // Close ROOT File
    gAsymRoot.Finalize();
 
+   // Stop stopwatch and save results
+   //stopwatch.Stop();
+   gAnaInfo.procDateTime =  timestamp.GetSec();
+   gAnaInfo.procTimeReal =  stopwatch.RealTime();
+   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
+
+   string sqlDateTime;
+   strftime(&sqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
+
+   mseRunInfoX->ana_start_time = mysqlpp::DateTime(sqlDateTime);
+   mseRunInfoX->ana_duration   = UInt_t(gAnaInfo.procTimeReal);
+
+	if (gAnaInfo.fFlagUseDb)
+      gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
+
    gAnaInfo.CopyResults();
+
+   printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
+   printf("Processing time: %f seconds\n", gAnaInfo.procTimeReal);
 
    return 1;
 } //}}}

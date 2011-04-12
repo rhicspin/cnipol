@@ -533,7 +533,7 @@ void AsymRoot::UpdateCalibrator()
 { //{{{
    Calibrator *calibrator;
 
-   if (gAnaInfo.CMODE) {
+   if (gAnaInfo.HasAlphaBit()) {
       Info("UpdateCalibrator", "Setting AlphaCalibrator");
       calibrator = new AlphaCalibrator();
    } else {

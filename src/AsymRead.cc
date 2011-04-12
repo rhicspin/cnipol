@@ -11,6 +11,8 @@
 
 #include <sstream>
 
+#include "mysql++.h"
+
 #include "TRandom.h"
 #include "TStopwatch.h"
 
@@ -73,7 +75,7 @@ RawDataProcessor::~RawDataProcessor()
 
 
 /** */
-void RawDataProcessor::ReadRecBegin()
+void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 {
    recordBeginStruct *recBegin;
 
@@ -133,6 +135,12 @@ void RawDataProcessor::ReadRecBegin()
       gRunDb.fFields["START_TIME"] = sstr.str();
       gRunDb.timeStamp = gRunInfo.StartTime; // should be always defined in raw data
       //gRunDb.Print();
+
+		if (run) {
+		   run->polarimeter_id = gRunDb.fPolId;
+         mysqlpp::DateTime dt(gRunDb.timeStamp);
+		   run->start_time     = dt;
+		}
 
    //} else
       //printf("ERROR: Cannot read REC_BEGIN record\n");
@@ -446,10 +454,8 @@ void ReadRecBegin()
 }
 
 
-// =================
 // read loop routine
-// =================
-void readloop()
+void readloop(MseRunInfoX &run)
 {
    static int READ_FLAG = 0;
 
@@ -582,7 +588,7 @@ void readloop()
 
       case REC_POLADO:
          memcpy(&poldat, &rec.polado.data, sizeof(poldat));
-         DecodeTargetID(poldat);
+         if (!gAnaInfo.HasAlphaBit()) DecodeTargetID(poldat, run);
          break;
 
       case REC_TAGADO:
@@ -593,14 +599,14 @@ void readloop()
       case REC_PCTARGET:
          // Do not process this record for calibration runs (CMODE). May contain
          // invalid ndelim info
-         if (!ReadFlag.PCTARGET && !gAnaInfo.CMODE) {
+         if (!ReadFlag.PCTARGET && !gAnaInfo.HasAlphaBit()) {
 
             printf("Reading REC_PCTARGET record...\n");
 
             ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
-            if (gAnaInfo.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim); }
+            if (gAnaInfo.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim, run); }
 
             ReadFlag.PCTARGET = 1;
          }
@@ -878,7 +884,7 @@ void readloop()
                     //printf("channel111: %d, %d\n", event.stN, gRunInfo.ActiveStrip[event.stN]);
                     //printf("channel111: %d\n", event.stN);
 
-                 if ( gFillPattern[event.bid] == 1 || gAnaInfo.CMODE == 1) // || event.stN >= 72) ) //&&
+                 if ( gFillPattern[event.bid] == 1 || gAnaInfo.HasAlphaBit() == 1) // || event.stN >= 72) ) //&&
                       //gRunInfo.ActiveStrip[event.stN] )
                  {
                     event_process(&event);
@@ -947,7 +953,7 @@ void readloop()
 
    // Post processing
    if (gAnaInfo.HasNormalBit())
-      end_process();
+      end_process(run);
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo.StopTime));
@@ -959,17 +965,30 @@ void readloop()
 
    gAnaInfo.nEventsProcessed = Nevtot;
 
+   mysqlpp::DateTime dt(gRunInfo.StopTime);
+	run.stop_time = dt;
+
    // Add info to database entry
    stringstream sstr;
 
    sstr.str(""); sstr << gAnaInfo.nEventsTotal;
    gRunDb.fFields["NEVENTS_TOTAL"] = sstr.str();
+   run.nevents_total = gAnaInfo.nEventsTotal;
 
    sstr.str(""); sstr << gAnaInfo.nEventsProcessed;
    gRunDb.fFields["NEVENTS_PROCESSED"] = sstr.str();
+   run.nevents_processed = gAnaInfo.nEventsProcessed;
 
-   sstr.str(""); sstr << gRunInfo.BeamEnergy;
-   gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
+   sstr.str("");
+   sstr << gRunInfo.BeamEnergy;
+
+   if (gAnaInfo.HasAlphaBit()) {
+      gRunDb.fFields["BEAM_ENERGY"] = "0";
+      run.beam_energy = 0;
+   } else {
+      gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
+      run.beam_energy = gRunInfo.BeamEnergy;
+   }
 
    // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
    if (!Nread && !READ_FLAG) {
@@ -1039,45 +1058,64 @@ void PrintBunchPattern(int *pattern)
 //             : presently the target ID is assumed to be appear at the last of
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
-void DecodeTargetID(polDataStruct poldat)
+void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
 {
-  cout << endl;
-  cout << "target ID = " << poldat.targetIdS << endl;
-  //cout << "startTimeS = " << poldat.startTimeS << endl;
-  //cout << "stopTimeS = " << poldat.stopTimeS << endl;
+   cout << endl;
+   cout << "target ID = " << poldat.targetIdS << endl;
+   //cout << "startTimeS = " << poldat.startTimeS << endl;
+   //cout << "stopTimeS = " << poldat.stopTimeS << endl;
+ 
+   gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
+ 
+   // initiarization
+   gRunInfo.targetID = '-';
+ 
+   string str(poldat.targetIdS);
+ 
+   if (str.find("Background") < str.size())   gRunInfo.targetID='B';
+   if (str.find("1")         == str.size()-1) gRunInfo.targetID='1';
+   if (str.find("2")         == str.size()-1) gRunInfo.targetID='2';
+   if (str.find("3")         == str.size()-1) gRunInfo.targetID='3';
+   if (str.find("4")         == str.size()-1) gRunInfo.targetID='4';
+   if (str.find("5")         == str.size()-1) gRunInfo.targetID='5';
+   if (str.find("6")         == str.size()-1) gRunInfo.targetID='6';
+   if (str.find("7")         == str.size()-1) gRunInfo.targetID='7';
+   if (str.find("8")         == str.size()-1) gRunInfo.targetID='-';
 
-  gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
+   if (str.find('V')         != string::npos) run.target_orient = 'V';
+   if (str.find('H')         != string::npos) run.target_orient = 'H';
 
-  // initiarization
-  gRunInfo.targetID = '-';
+   //cout << "target id str: " << str << " " << run.target_orient << endl;
 
-  string str(poldat.targetIdS);
+   stringstream sstr; 
+   int target_id;
+   sstr << gRunInfo.targetID;
+   sstr >> target_id;
+   //sstr >> (UShort_t) run.target_id;
+   run.target_id = target_id;
 
-  if (str.find("Background") < str.size())   gRunInfo.targetID='B';
-  if (str.find("1")         == str.size()-1) gRunInfo.targetID='1';
-  if (str.find("2")         == str.size()-1) gRunInfo.targetID='2';
-  if (str.find("3")         == str.size()-1) gRunInfo.targetID='3';
-  if (str.find("4")         == str.size()-1) gRunInfo.targetID='4';
-  if (str.find("5")         == str.size()-1) gRunInfo.targetID='5';
-  if (str.find("6")         == str.size()-1) gRunInfo.targetID='6';
-  if (str.find("7")         == str.size()-1) gRunInfo.targetID='7';
-  if (str.find("8")         == str.size()-1) gRunInfo.targetID='-';
-
-  // Restore Vertical or Horizontal target information
-  // in case this information isn't decorded correctly
-  // within REC_PCTARGET routine. If the target is horizontal,
-  // then mask 90 degree detector.
-  if (gRunInfo.target == '-') {
-     if (str.find("Vert") == 0 || str.find("V") == 0) { gRunInfo.target='V'; tgt.VHtarget=0;}
-     if (str.find("Horz") == 0 || str.find("H") == 0) {
-        gRunInfo.target='H';
-        tgt.VHtarget=1;
-        // This is too late to reconfigure strip mask because this routine is
-        // executed at the end of event loop. Too bad. /* March 5,'09 IN */
-        //      mask.detector = 0x2D;
-        //      gRunInfo.ConfigureActiveStrip(mask.detector);
-     }
-  }
+   // Restore Vertical or Horizontal target information
+   // in case this information isn't decorded correctly
+   // within REC_PCTARGET routine. If the target is horizontal,
+   // then mask 90 degree detector.
+   if (gRunInfo.target == '-') {
+ 
+      if (str.find("Vert") == 0 || str.find("V") == 0) {
+         gRunInfo.target   = 'V';
+         run.target_orient = 'V';
+         tgt.VHtarget      = 0;
+      }
+ 
+      if (str.find("Horz") == 0 || str.find("H") == 0) {
+         gRunInfo.target   = 'H';
+         run.target_orient = 'H';
+         tgt.VHtarget      = 1;
+         // This is too late to reconfigure strip mask because this routine is
+         // executed at the end of event loop. Too bad. /* March 5,'09 IN */
+         //      mask.detector = 0x2D;
+         //      gRunInfo.ConfigureActiveStrip(mask.detector);
+      }
+   }
 }
 
 
@@ -1192,7 +1230,7 @@ void ProcessRecord(recordCountRate &rec)
 
 
 /** */
-void ProcessRecordPCTarget(long* rec, int ndelim)
+void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
 { //{{{
    long* pointer = rec;
 
@@ -1250,13 +1288,17 @@ void ProcessRecordPCTarget(long* rec, int ndelim)
          }
 
          if (tgt_identifyV) {
-            tgt.VHtarget    = 0;
-            gRunInfo.target = 'V';
+            tgt.VHtarget      = 0;
+            gRunInfo.target   = 'V';
+            run.target_orient = 'V';
             cout << "Vertical Target in finite position" << endl;
+
          } else if (tgt_identifyH) {
-            tgt.VHtarget    = 1;
-            gRunInfo.target = 'H';
+            tgt.VHtarget      = 1;
+            gRunInfo.target   = 'H';
+            run.target_orient = 'H';
             cout << "Horizontal Target in finite position" << endl;
+
          } else {
             cout << "Warning: Target infomation cannot be recognized.." << endl;
          }
