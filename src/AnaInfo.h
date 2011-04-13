@@ -36,7 +36,8 @@ public:
               MODE_RUN     = 0x00100000,
               MODE_TARGET  = 0x00200000,
               MODE_PROFILE = 0x00400000,
-              MODE_FULL    = 0x007f0000};
+              MODE_FULL    = 0x007f0000,
+              MODE_ONLINE  = 0x04040000};
 
    // Constraint parameter for Data processing 
    std::string      fRunId;             // Run name
