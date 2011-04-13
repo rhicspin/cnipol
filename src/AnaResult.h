@@ -18,7 +18,7 @@ public:
    float              TshiftAve;
    float              wcm_norm_event_rate; 
    float              UniversalRate;
-   float              A_N[2];
+   float              A_N[2];                 // Analyzing power
    float              P[2];
    float              P_sigma_ratio[2];
    float              P_sigma_ratio_norm[2];
