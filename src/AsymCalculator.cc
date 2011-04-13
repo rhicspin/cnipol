@@ -131,7 +131,6 @@ void CumulativeAsymmetry()
    float tmpasym, tmpasyme;
    float RU[120], RD[120], LU[120], LD[120];
    int   gbid[120];    // if 1:good and used 0: be discarded
-   float gtmin, gtmax, btmin, btmax;
    float fspinpat[120];
    long  Nsi[6] = {0,0,0,0,0,0};
 
@@ -141,12 +140,12 @@ void CumulativeAsymmetry()
        fspinpat[bid] = (float) gSpinPattern[bid];
 
        // R-L X90
-       if (Ncounts[2-1][bid]+Ncounts[5-1][bid]!=0) {
-
+       if (Ncounts[2-1][bid] + Ncounts[5-1][bid] != 0)
+       {
            NR = Ncounts[2-1][bid];
            NL = Ncounts[5-1][bid];
-           RL90[bid]  = (float) (NR-NL)/(NR+NL);
-           RL90E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+           RL90[bid]  = (float) (NR - NL)/(NR + NL);
+           RL90E[bid] = (float) 2*NL*NR*sqrt( (1./NR) + (1./NL) ) / (NL+NR) / (NL+NR);
 
        } else {
            RL90[bid]  = 0.;
@@ -154,16 +153,16 @@ void CumulativeAsymmetry()
        }
 
        // R-L X45
-       if (Ncounts[1-1][bid]+Ncounts[3-1][bid]+
-           Ncounts[4-1][bid]+Ncounts[6-1][bid]!=0){
-
+       if (Ncounts[1-1][bid] + Ncounts[3-1][bid] +
+           Ncounts[4-1][bid] + Ncounts[6-1][bid] != 0)
+       {
            NR = Ncounts[1-1][bid]+Ncounts[3-1][bid];
            NL = Ncounts[4-1][bid]+Ncounts[6-1][bid];
            RL45[bid] = (float) (NR-NL)/(NR+NL);
            RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
        } else {
-           RL45[bid] = 0.;
+           RL45[bid]  = 0.;
            RL45E[bid] = 0.;
        }
 
@@ -171,7 +170,6 @@ void CumulativeAsymmetry()
        if (Ncounts[3-1][bid] + Ncounts[4-1][bid]+
            Ncounts[1-1][bid] + Ncounts[6-1][bid]!=0)
        {
-
            NR = Ncounts[3-1][bid] + Ncounts[4-1][bid];
            NL = Ncounts[1-1][bid] + Ncounts[6-1][bid];
 
@@ -185,30 +183,33 @@ void CumulativeAsymmetry()
    }
 
    // *** GOOD/BAD BUNCH CRITERIA 1
+   float gtmin, gtmax, btmin, btmax;
    gtmin = 0.0;
    gtmax = 1.0;
    btmin = 0.0;
    btmax = 1.00;
 
    for (int bid=0; bid<120; bid++) {
+
       gbid[bid] = 1;
 
       // good/total event rate
-      if (Ntotal[bid] != 0){
-         if (((float)Ngood[bid]/Ntotal[bid])<gtmin){
+      if (Ntotal[bid] != 0) {
+         if ( ((float) Ngood[bid]/Ntotal[bid]) < gtmin) {
             fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
-                    bid,(float)Ngood[bid]/Ntotal[bid]);
+                    bid, (float) Ngood[bid]/Ntotal[bid]);
             gbid[bid] = 0;
          }
-         if (((float)Ngood[bid]/Ntotal[bid])>gtmax){
+
+         if ( ((float) Ngood[bid]/Ntotal[bid]) > gtmax){
             fprintf(stdout,"BID: %d discarded (GOOD/TOTAL) %f \n",
-                    bid,(float)Ngood[bid]/Ntotal[bid]);
+                    bid, (float) Ngood[bid]/Ntotal[bid]);
             gbid[bid] = 0;
          }
       }
 
       // background / carbon event rate
-      if (Ngood[bid]!=0){
+      if (Ngood[bid]!=0) {
 
          if (((float)Nback[bid]/Ngood[bid]) < btmin){
             fprintf(stdout,"BID: %d discarded (BG/GOOD) %f \n",
@@ -225,7 +226,7 @@ void CumulativeAsymmetry()
    }
 
    // Counts for each detector
-   for (int bid=0; bid<NBUNCH; bid++){
+   for (int bid=0; bid<NBUNCH; bid++) {
       Nsi[0] += Ncounts[0][bid];
       Nsi[1] += Ncounts[1][bid];
       Nsi[2] += Ncounts[2][bid];
@@ -249,27 +250,29 @@ void CumulativeAsymmetry()
    // X90 (2-5) (C:1-4)
    for (int bid=0; bid<120; bid++) {
 
-      RU[bid] = ((bid==0)?0:RU[bid-1])
-          + Ncounts[2-1][bid]*((gSpinPattern[bid]==1)?1:0);
-      RD[bid] = ((bid==0)?0:RD[bid-1])
-          + Ncounts[2-1][bid]*((gSpinPattern[bid]==-1)?1:0);
-      LU[bid] = ((bid==0)?0:LU[bid-1])
-          + Ncounts[5-1][bid]*((gSpinPattern[bid]==1)?1:0);
-      LD[bid] = ((bid==0)?0:LD[bid-1])
-          + Ncounts[5-1][bid]*((gSpinPattern[bid]==-1)?1:0);
-      sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+      RU[bid] = ( bid == 0 ? 0 : RU[bid-1] ) + Ncounts[2-1][bid] * ((gSpinPattern[bid] ==  1)?1:0);
+      RD[bid] = ( bid == 0 ? 0 : RD[bid-1] ) + Ncounts[2-1][bid] * ((gSpinPattern[bid] == -1)?1:0);
+      LU[bid] = ( bid == 0 ? 0 : LU[bid-1] ) + Ncounts[5-1][bid] * ((gSpinPattern[bid] ==  1)?1:0);
+      LD[bid] = ( bid == 0 ? 0 : LD[bid-1] ) + Ncounts[5-1][bid] * ((gSpinPattern[bid] == -1)?1:0);
 
-      x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
+      sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+
+      x90[bid].phys   = tmpasym;
+      x90[bid].physE  = tmpasyme;
       x90phys[0][bid] = tmpasym;
       x90phys[1][bid] = tmpasyme;
 
-      sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-      x90[bid].acpt = tmpasym; x90[bid].acptE = tmpasyme;
+      sqass(RU[bid], RD[bid], LD[bid], LU[bid], &tmpasym, &tmpasyme);
+
+      x90[bid].acpt   = tmpasym;
+      x90[bid].acptE  = tmpasyme;
       x90acpt[0][bid] = tmpasym;
       x90acpt[1][bid] = tmpasyme;
 
-      sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-      x90[bid].lumi = tmpasym; x90[bid].lumiE = tmpasyme;
+      sqass(RU[bid], LU[bid], RD[bid], LD[bid], &tmpasym, &tmpasyme);
+
+      x90[bid].lumi   = tmpasym;
+      x90[bid].lumiE  = tmpasyme;
       x90lumi[0][bid] = tmpasym;
       x90lumi[1][bid] = tmpasyme;
       //        printf("%d : %d %f %f %f %f \n",bid,gSpinPattern[bid],
@@ -282,23 +285,21 @@ void CumulativeAsymmetry()
    // X45 (13-46) (C:02-35)
    for (int bid=0; bid<120; bid++) {
 
-       RU[bid] = ((bid==0)?0:RU[bid-1])
-           + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
-       RD[bid] = ((bid==0)?0:RD[bid-1])
-           + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
-       LU[bid] = ((bid==0)?0:LU[bid-1])
-           + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
-       LD[bid] = ((bid==0)?0:LD[bid-1])
-           + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
+       RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
+       RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
+       LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
+       LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
 
        sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
        x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
        x45phys[0][bid] = tmpasym;
        x45phys[1][bid] = tmpasyme;
+
        sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
        x45[bid].acpt = tmpasym; x45[bid].acptE = tmpasyme;
        x45acpt[0][bid] = tmpasym;
        x45acpt[1][bid] = tmpasyme;
+
        sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
        x45[bid].lumi = tmpasym; x45[bid].lumiE = tmpasyme;
        x45lumi[0][bid] = tmpasym;
@@ -311,23 +312,21 @@ void CumulativeAsymmetry()
    // Y45 (34-16) (C:23-05)
    for (int bid=0; bid<120; bid++) {
 
-      RU[bid] = ((bid==0)?0:RU[bid-1])
-          + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      RD[bid] = ((bid==0)?0:RD[bid-1])
-          + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==-1)?1:0);
-      LU[bid] = ((bid==0)?0:LU[bid-1])
-          + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      LD[bid] = ((bid==0)?0:LD[bid-1])
-          + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==-1)?1:0);
+      RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==-1)?1:0);
 
       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
       y45[bid].phys = tmpasym; y45[bid].physE = tmpasyme;
       y45phys[0][bid] = tmpasym;
       y45phys[1][bid] = tmpasyme;
+
       sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
       y45[bid].acpt = tmpasym; y45[bid].acptE = tmpasyme;
       y45acpt[0][bid] = tmpasym;
       y45acpt[1][bid] = tmpasyme;
+
       sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
       y45[bid].lumi = tmpasym; y45[bid].lumiE = tmpasyme;
       y45lumi[0][bid] = tmpasym;
@@ -336,6 +335,7 @@ void CumulativeAsymmetry()
 
    // CR45 (14-36) (C:03-25)
    for (int bid=0; bid<120; bid++) {
+
       RU[bid] = ((bid==0)?0:RU[bid-1])
           + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==1)?1:0);
       RD[bid] = ((bid==0)?0:RD[bid-1])
@@ -346,18 +346,24 @@ void CumulativeAsymmetry()
           + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==-1)?1:0);
 
       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-      cr45[bid].phys = tmpasym; cr45[bid].physE = tmpasyme;
-      c45phys[0][bid]  = tmpasym;
+
+      cr45[bid].phys  = tmpasym;
+      cr45[bid].physE = tmpasyme;
+      c45phys[0][bid] = tmpasym;
       c45phys[1][bid] = tmpasyme;
 
       sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-      cr45[bid].acpt = tmpasym; cr45[bid].acptE = tmpasyme;
-      c45acpt[0][bid]  = tmpasym;
+
+      cr45[bid].acpt  = tmpasym;
+      cr45[bid].acptE = tmpasyme;
+      c45acpt[0][bid] = tmpasym;
       c45acpt[1][bid] = tmpasyme;
 
       sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-      cr45[bid].lumi = tmpasym; cr45[bid].lumiE = tmpasyme;
-      c45lumi[0][bid]  = tmpasym;
+
+      cr45[bid].lumi  = tmpasym;
+      cr45[bid].lumiE = tmpasyme;
+      c45lumi[0][bid] = tmpasym;
       c45lumi[1][bid] = tmpasyme;
    }
 
@@ -402,16 +408,15 @@ void CumulativeAsymmetry()
 
       // X90 (2-5) (C:1-4)
       for (int bid=0; bid<120; bid++) {
-         RU[bid] = ((bid==0)?0:RU[bid-1])
-             + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
-         RD[bid] = ((bid==0)?0:RD[bid-1])
-             + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
-         LU[bid] = ((bid==0)?0:LU[bid-1])
-             + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
-         LD[bid] = ((bid==0)?0:LD[bid-1])
-             + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
+
          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-         x90[bid].phys = tmpasym; x90[bid].physE = tmpasyme;
+
+         x90[bid].phys = tmpasym;
+         x90[bid].physE = tmpasyme;
          x90phys[0][bid] = tmpasym;
          x90phys[1][bid] = tmpasyme;
       }
@@ -420,14 +425,10 @@ void CumulativeAsymmetry()
 
       // X45 (13-46) (C:02-35)
       for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1])
-              + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
-          RD[bid] = ((bid==0)?0:RD[bid-1])
-              + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
-          LU[bid] = ((bid==0)?0:LU[bid-1])
-              + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
-          LD[bid] = ((bid==0)?0:LD[bid-1])
-              + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
 
           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
           x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
@@ -444,19 +445,17 @@ void CumulativeAsymmetry()
    float tyasym45[6][120], tyasym45E[6][120];
    float tcasym45[6][120], tcasym45E[6][120];
 
-   for (int tr=0;tr<NTBIN;tr++) {
+   for (int tr=0; tr<NTBIN; tr++) {
 
       float SUM=0;
+
       // X90 (2-5)
       for (int bid=0; bid<NBUNCH; bid++){
-          RU[bid] = ((bid==0)?0:RU[bid-1])
-              + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1])
-              + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1])
-              + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1])
-              + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+
           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
           tx90[bid][tr].phys = tmpasym; tx90[bid][tr].physE = tmpasyme;
           txasym90[tr][bid] = tmpasym; txasym90E[tr][bid] = tmpasyme;
@@ -465,18 +464,11 @@ void CumulativeAsymmetry()
 
       // X45 (13-46)
       for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1])
-              + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1])
-              + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+
           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
           tx45[bid][tr].phys = tmpasym; tx45[bid][tr].physE = tmpasyme;
           txasym45[tr][bid] = tmpasym; txasym45E[tr][bid] = tmpasyme;
@@ -484,18 +476,10 @@ void CumulativeAsymmetry()
 
       // Y45 (34-16)
       for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1])
-              + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1])
-              + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
           ty45[bid][tr].phys = tmpasym; ty45[bid][tr].physE = tmpasyme;
           tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme;
@@ -503,18 +487,10 @@ void CumulativeAsymmetry()
 
       // CROSS 45 (14-36)
       for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1])
-              + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1])
-              + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1])
-              + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr])
-              *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
           sqass(RU[bid],LD[bid],RD[bid],LU[bid], &tmpasym, &tmpasyme);
           tcasym45[tr][bid] = tmpasym; tcasym45E[tr][bid] = tmpasyme;
       }
@@ -561,11 +537,11 @@ void CalcStatistics()
       gRunInfo.EvntRate      = float(Nevtot) / gRunInfo.RunTime / 1e6;
       gRunInfo.ReadRate      = float(Nread) / gRunInfo.RunTime / 1e6;
    }
- 
+
    // Misc
-   if (gRunInfo.WcmSum)      gAnaResults.wcm_norm_event_rate = gRunInfo.GoodEventRate/gRunInfo.WcmSum*100;
+   if (gRunInfo.WcmSum)         gAnaResults.wcm_norm_event_rate = gRunInfo.GoodEventRate/gRunInfo.WcmSum*100;
    if (gAnaInfo.reference_rate) gAnaResults.UniversalRate       = gAnaResults.wcm_norm_event_rate/gAnaInfo.reference_rate;
-   if (gRunInfo.Run==5)      gAnaResults.profile_error       = gAnaResults.UniversalRate < 1 ? ProfileError(gAnaResults.UniversalRate) : 0;
+   if (gRunInfo.Run == 5)       gAnaResults.profile_error       = gAnaResults.UniversalRate < 1 ? ProfileError(gAnaResults.UniversalRate) : 0;
 }
 
 
