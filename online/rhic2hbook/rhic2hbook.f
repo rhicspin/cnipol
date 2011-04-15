@@ -240,6 +240,7 @@ c
 	stop
 	end
 c
+c book channel histograms. i >= 1
 	subroutine mybook(i)
 	
 	character chname*5

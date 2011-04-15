@@ -30,6 +30,14 @@ class RunInfo
 {
 public:
 
+   // Different measurement types
+   enum MeasType {MEASTYPE_UNKNOWN = 0x00,
+                  MEASTYPE_ALPHA   = 0x01,
+                  MEASTYPE_SWEEP   = 0x02,
+                  MEASTYPE_FIXED   = 0x04,
+                  MEASTYPE_RAMP    = 0x08,
+                  MEASTYPE_EMIT    = 0x10};
+
    int          Run;
    double       RUNID;
    std::string  runName;
@@ -38,6 +46,7 @@ public:
    float        RunTime;
    int          fDataFormatVersion;
    std::string  fAsymVersion;
+   MeasType     fMeasType;
    float        GoodEventRate;
    float        EvntRate;
    float        ReadRate;

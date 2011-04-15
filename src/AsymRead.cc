@@ -1251,6 +1251,7 @@ void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
    }
 
    gAsymRoot.FillTargetHists(ndelim, linRec);
+   //gAsymRoot.AnalyzeTargetMoves();
 
    delete [] linRec;
 

@@ -6,6 +6,7 @@
 
 #include "AsymGlobals.h"
 #include "MseRunInfo.h"
+#include "RunInfo.h"
 
 using namespace std;
 
@@ -256,8 +257,9 @@ void AnaInfo::ProcessOptions()
    //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
 
    if (HasAlphaBit()) {
-      fAlphaCalibRun = fRunId;
-      fDlCalibRun    = "";
+      fAlphaCalibRun     = fRunId;
+      fDlCalibRun        = "";
+      gRunInfo.fMeasType = RunInfo::MEASTYPE_ALPHA;
    }
 
    // Various printouts. Should be combined with Print()?
@@ -509,13 +511,14 @@ void AnaInfo::Update(MseRunInfoX& run)
    else if (!run.dl_calib_run_name.empty())
       fDlCalibRun = run.dl_calib_run_name;
 
-   if (fDlCalibRun.empty())
+   if (fDlCalibRun.empty()) {
       if (!HasCalibBit()) {
          gSystem->Warning("   AnaInfo::CompleteRunInfo", "Calibration run is not specified.\n" \
                           "\tOption --calib should be used");
       }
-   else
+   } else {
       gSystem->Info("   AnaInfo::CompleteRunInfo", "Using calibration run %s", run.dl_calib_run_name.c_str());
+   }
 }
 
 

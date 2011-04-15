@@ -51,6 +51,14 @@ export DATADIR=$POLARIM_DIR/data
 export CONFDIR=$POLARIM_DIR/config
 export CALIBDIR=$POLARIM_DIR/share/config
 
+#UTILS
+export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
+export UTILS_INC_DIR=~dsmirnov/root_macros/
+
+if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
+	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
+fi
+
 # CDEV variables
 if [ -z "$CDEV_DIR" ]; then
 	export CDEV_DIR=/usr/local/cdev
@@ -64,6 +72,9 @@ echo "\$CERNLIB_DIR=$CERNLIB_DIR"
 echo "\$CNIPOL_DIR=$CNIPOL_DIR"
 echo "\$CNIPOL_DATA_DIR=$CNIPOL_DATA_DIR"
 echo "\$CNIPOL_RESULTS_DIR=$CNIPOL_RESULTS_DIR"
+echo
+echo "\$UTILS_LIB_DIR=$UTILS_LIB_DIR"
+echo "\$UTILS_INC_DIR=$UTILS_INC_DIR"
 echo
 echo "\$MYSQL_INCLUDE_DIR=$MYSQL_INCLUDE_DIR"
 echo "\$MYSQL_LIB_DIR=$MYSQL_LIB_DIR"
