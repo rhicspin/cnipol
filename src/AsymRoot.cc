@@ -429,6 +429,8 @@ void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 void AsymRoot::ProcessProfileHists()
 {
    ((CnipolProfileHists*) fHists->d["profile"])->Process();
+
+   gRunInfo.fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
 }
 
 

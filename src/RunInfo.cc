@@ -12,30 +12,31 @@ using namespace std;
 
 /** */
 RunInfo::RunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
-   StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0), fAsymVersion(ASYM_VERSION)
+	StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0),
+   fAsymVersion(ASYM_VERSION), fMeasType(MEASTYPE_UNKNOWN)
 {
-   GoodEventRate         = 0; // GoodEventRate;
-   EvntRate              = 0; // EvntRate;
-   ReadRate              = 0; // ReadRate;
-   WcmAve                = 0; // WcmAve;
-   WcmSum                = 0; // WcmSum;
-   BeamEnergy            = 0; // BeamEnergy;
-   fPolId                = -1; // valid values 0 - 3
-   fPolBeam              = 0; // blue = 2 or yellow = 1
-   fPolStream            = 0; // up =1 or down =2 stream
-   PolarimetryID         = 1; // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution         = 0; // MaxRevolution;
-   target                = 'V'; // target
-   targetID              = '-'; // targetID
-   //TgtOperation;              // TgtOperation (Initialization is done in Initialization() )
+   GoodEventRate         = 0;      // GoodEventRate;
+   EvntRate              = 0;      // EvntRate;
+   ReadRate              = 0;      // ReadRate;
+   WcmAve                = 0;      // WcmAve;
+   WcmSum                = 0;      // WcmSum;
+   BeamEnergy            = 0;      // BeamEnergy;
+   fPolId                = -1;     // valid values 0 - 3
+   fPolBeam              = 0;      // blue = 2 or yellow = 1
+   fPolStream            = 0;      // up =1 or down =2 stream
+   PolarimetryID         = 1;      // PolarimetryID; Polarimetry-1 or Polarimetry-2
+   MaxRevolution         = 0;      // MaxRevolution;
+   target                = 'V';    // target
+   targetID              = '-';    // targetID
+   //TgtOperation;                 // TgtOperation (Initialization is done in Initialization() )
    for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[NDETECTOR]
    for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
    NActiveStrip          = NSTRIP; // NAactiveStrip;
-   NDisableStrip         = 0; // NDisableStrip
-   NFilledBunch          = 0; // NFilledBunch;
-   NActiveBunch          = 0; // NActiveBunch;
-   NDisableBunch         = 0; // NDisableBunch,
+   NDisableStrip         = 0;      // NDisableStrip
+   NFilledBunch          = 0;      // NFilledBunch;
+   NActiveBunch          = 0;      // NActiveBunch;
+   NDisableBunch         = 0;      // NDisableBunch,
    for (int i=0; i<NBUNCH; i++) { DisableBunch[i] = 0; }
    //DisableBunch[NBUNCH]
 }
@@ -89,6 +90,7 @@ TBuffer & operator>>(TBuffer &buf, RunInfo *&rec)
 void RunInfo::Streamer(TBuffer &buf)
 {
    TString tstr;
+   Int_t   tint;
 
    if (buf.IsReading()) {
       //printf("reading RunInfo::Streamer(TBuffer &buf) \n");
@@ -100,6 +102,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> RunTime;
       buf >> fDataFormatVersion;
       buf >> tstr; fAsymVersion = tstr.Data();
+      buf >> tint; fMeasType = (MeasType) tint;
       buf >> GoodEventRate;
       buf >> EvntRate;
       buf >> ReadRate;
@@ -135,6 +138,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << RunTime;
       buf << fDataFormatVersion;
       tstr = fAsymVersion; buf << tstr;
+      buf << (Int_t) fMeasType;
       buf << GoodEventRate;
       buf << EvntRate;
       buf << ReadRate;
@@ -180,6 +184,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
+   fprintf(f, "$rc['fMeasType']                    = %#04X;\n",  fMeasType);
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );

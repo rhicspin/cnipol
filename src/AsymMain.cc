@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
       {"mode-target",         no_argument,         0,   AnaInfo::MODE_TARGET},
       {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
+      {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
       {"set-calib",           required_argument,   0,   0x003000},
       {"set-calib-alpha",     required_argument,   0,   0x001000},
       {"set-calib-dl",        required_argument,   0,   0x002000},

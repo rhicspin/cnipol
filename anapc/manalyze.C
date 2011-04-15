@@ -1,5 +1,6 @@
 
 #include <time.h>
+#include <map>
 
 #include "manalyze.h"
 
@@ -10,12 +11,12 @@
 
 #include "EventConfig.h"
 
-EventConfig *gRC;
-
 using namespace std;
 
+EventConfig *gRC;
 UShort_t gPolId    = 0;
 UShort_t gEnergyId = 0;
+map<UInt_t, UInt_t> flattopTimes;
 
 void manalyze(UShort_t polId, UShort_t eId)
 {
@@ -57,10 +58,15 @@ void initialize()
    case 3:
       filelist = "list_Y2U.dat"; color = kOrange; break;
    default:
-      filelist = "list_B1U_15418.dat"; color = kBlue-4; break;
+      //filelist = "list_B1U_15418.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_15418.dat"; color = kOrange; break;
       //filelist = "list_B2D_15418.dat"; color = kBlue-4; break;
       //filelist = "list_Y1D_15418.dat"; color = kOrange; break;
+
+      //filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
+      filelist = "list_Y1D_ramp.dat"; color = kOrange; break;
+      //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
+      //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
    }
 
    string sEnergyId;
@@ -91,9 +97,60 @@ void initialize()
 
    TH1* hProfR = new TH1F("hProfR", "hProfR", 1, 0, 1);
 
+   TH2* hAsymVsEnergy = new TH2F("hAsymVsEnergy", "hAsymVsEnergy", 1, 0, 450, 1, 0, 0.01);
+   hAsymVsEnergy->GetXaxis()->SetTitle("Beam Energy, GeV");
+   hAsymVsEnergy->GetYaxis()->SetTitle("Asymmetry");
+
+   TGraphErrors *grAsymVsEnergy = new TGraphErrors();
+   grAsymVsEnergy->SetName("grAsymVsEnergy");
+   grAsymVsEnergy->SetMarkerStyle(kFullCircle);
+   grAsymVsEnergy->SetMarkerSize(1);
+   grAsymVsEnergy->SetMarkerColor(color);
+
+   TH2* hAnaPowerVsEnergy = new TH2F("hAnaPowerVsEnergy", "hAnaPowerVsEnergy", 1, 0, 450, 1, 0.01, 0.02);
+   hAnaPowerVsEnergy->GetXaxis()->SetTitle("Analyzing Power");
+   hAnaPowerVsEnergy->GetYaxis()->SetTitle("Asymmetry");
+
+   TGraphErrors *grAnaPowerVsEnergy = new TGraphErrors();
+   grAnaPowerVsEnergy->SetName("grAnaPowerVsEnergy");
+   grAnaPowerVsEnergy->SetMarkerStyle(kFullCircle);
+   grAnaPowerVsEnergy->SetMarkerSize(1);
+   grAnaPowerVsEnergy->SetMarkerColor(color);
+
+   TH2* hPolarVsEnergy = new TH2F("hPolarVsEnergy", "hPolarVsEnergy", 1, 0, 450, 1, 0, 80);
+   hPolarVsEnergy->GetXaxis()->SetTitle("Beam Energy, GeV");
+   hPolarVsEnergy->GetYaxis()->SetTitle("Polarization, %");
+
+   TGraphErrors *grPolarVsEnergy = new TGraphErrors();
+   grPolarVsEnergy->SetName("grPolarVsEnergy");
+   grPolarVsEnergy->SetMarkerStyle(kFullCircle);
+   grPolarVsEnergy->SetMarkerSize(1);
+   grPolarVsEnergy->SetMarkerColor(color);
+
+   // Profile plots
+   TH2* hRVsEnergy = new TH2F("hRVsEnergy", "hRVsEnergy", 1, 0, 450, 1, -0.2, 0.5);
+   hRVsEnergy->GetXaxis()->SetTitle("Beam Energy, GeV");
+   hRVsEnergy->GetYaxis()->SetTitle("r");
+
+   TH1* hRVsEnergyBin = new TH1F("hRVsEnergyBin", "hRVsEnergyBin", 50, 0, 450);
+   hRVsEnergyBin->GetXaxis()->SetTitle("Beam Energy, GeV");
+   hRVsEnergyBin->GetYaxis()->SetTitle("r");
+   hRVsEnergyBin->GetYaxis()->SetRangeUser(-0.2, 0.5);
+   hRVsEnergyBin->SetMarkerStyle(kFullCircle);
+   hRVsEnergyBin->SetMarkerSize(1);
+   hRVsEnergyBin->SetMarkerColor(color);
+
+   TGraphErrors *grRVsEnergy = new TGraphErrors();
+   grRVsEnergy->SetName("grRVsEnergy");
+   grRVsEnergy->SetMarkerStyle(kFullCircle);
+   grRVsEnergy->SetMarkerSize(1);
+   grRVsEnergy->SetMarkerColor(color);
+
+   // 
    TH2* hPolar = new TH2F("hPolar", "hPolar", 1, 20, 100, 1, 20, 80);
    hPolar->GetXaxis()->SetTitle("Days");
    hPolar->GetYaxis()->SetTitle("Polarization, %");
+
    TGraphErrors *grPolar = new TGraphErrors();
    grPolar->SetName("grPolar");
    grPolar->SetMarkerStyle(kFullCircle);
@@ -163,7 +220,49 @@ void initialize()
    while (next && (o = (*next)()) )
    {
       //chain->AddFile(((TObjString*) o)->GetName());
-      cout << (((TObjString*) o)->GetName()) << endl;
+      //cout << (((TObjString*) o)->GetName()) << endl;
+      fileName = "";
+      fileName += "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
+
+      TFile *f = new TFile(fileName, "READ");
+      if (!f) {
+         gSystem->Error("", "file not found\n");
+         continue; //exit(-1);
+      }
+
+      gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+      if (!gRC) {
+         gSystem->Error("", "RC not found\n");
+         continue;
+         //gRC->Print();
+      }
+
+      UInt_t   beamEnergy = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
+      Double_t runId = gRC->fRunInfo->RUNID;
+      UInt_t   fillId = (UInt_t) runId;
+
+      //if (flattopTimes.find(fillId) == flattopTimes.end()) 
+      //   flattopTimes[fillId] = UINT_MAX;
+
+      if ( beamEnergy == 250) {
+         flattopTimes[fillId] = gRC->fRunInfo->StartTime;
+      }
+   }
+
+   map<UInt_t, UInt_t>::iterator ift;
+
+   for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
+      printf("%d -> %d\n", ift->first, ift->second);
+   }
+
+   //return;
+
+   next->Begin();
+
+   while (next && (o = (*next)()) )
+   {
+      //chain->AddFile(((TObjString*) o)->GetName());
+      //cout << (((TObjString*) o)->GetName()) << endl;
       fileName = "";
       //fileName += "/usr/local/polarim/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
       fileName += "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
@@ -181,7 +280,7 @@ void initialize()
       //gRC->Print();
       }
 
-      float beamEnergy = gRC->fRunInfo->BeamEnergy;
+      UInt_t beamEnergy = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
 
       //if (gEnergyId == 0 && (beamEnergy < 20 || beamEnergy > 30) ) continue;
       //if (gEnergyId == 1 &&  beamEnergy < 200) continue;
@@ -195,10 +294,23 @@ void initialize()
       //h->SetBit(TH1::kIsAverage);
 
       Double_t runId = gRC->fRunInfo->RUNID;
+      UInt_t   fillId = (UInt_t) runId;
+
+      if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
+         beamEnergy = 400;
+      }
+
+      //if ()
       
       Double_t day = (gRC->fRunInfo->StartTime - firstDay)/60./60./24.;
+      char strTime[80];
+      strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->StartTime));
       //grPolar->SetPoint(i, gRC->fRunInfo->RUNID, gRC->fAnaResult->sinphi[0].P[0]);
       //if ((gPolId == 1 || gPolId ==2) && day < 50) continue;
+
+      float ana_power     = gRC->fAnaResult->A_N[1];
+      float asymmetry     = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
+      float asymmetry_err = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
 
       float polarization     = gRC->fAnaResult->sinphi[0].P[0] * 100.;
       float polarization_err = gRC->fAnaResult->sinphi[0].P[1] * 100.;
@@ -212,13 +324,27 @@ void initialize()
       float tzero    = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
       float tzeroErr = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
-      printf("tzero: %f %f %f %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime);
+      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
+      printf("%d, %s, %3d, %f, %f, %f, %f, %f \n", (Int_t)runId, strTime, beamEnergy, asymmetry, asymmetry_err, ana_power, polarization, polarization_err);
 
       float profileRatio    = gRC->fAnaResult->fIntensPolarR;
       float profileRatioErr = gRC->fAnaResult->fIntensPolarRErr;
 
       //grPolar->SetPoint(i, day, tzero);
       //grPolar->SetPointError(i, 0, tzeroErr);
+
+      grAsymVsEnergy->SetPoint(i, beamEnergy, asymmetry);
+      grAsymVsEnergy->SetPointError(i, 0, asymmetry_err);
+
+      grAnaPowerVsEnergy->SetPoint(i, beamEnergy, ana_power);
+      grAnaPowerVsEnergy->SetPointError(i, 0, 0);
+
+      grPolarVsEnergy->SetPoint(i, beamEnergy, polarization);
+      grPolarVsEnergy->SetPointError(i, 0, polarization_err);
+
+      // Profiles
+      grRVsEnergy->SetPoint(i, beamEnergy, profileRatio);
+      grRVsEnergy->SetPointError(i, 0, profileRatioErr);
 
       grPolar->SetPoint(i, day, polarization);
       grPolar->SetPointError(i, 0, polarization_err);
@@ -244,6 +370,36 @@ void initialize()
 
    string imageName;
    TCanvas *c = new TCanvas("cName", "cName", 1200, 600);
+
+   hAsymVsEnergy->GetListOfFunctions()->Add(grAsymVsEnergy, "p");
+   hAsymVsEnergy->Draw();
+   imageName = "hAsymVsEnergy_" + filelist + ".png";
+   c->SaveAs(imageName.c_str());
+
+   hAnaPowerVsEnergy->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
+   hAnaPowerVsEnergy->Draw();
+   imageName = "hAnaPowerVsEnergy_" + filelist + ".png";
+   c->SaveAs(imageName.c_str());
+
+   hPolarVsEnergy->GetListOfFunctions()->Add(grPolarVsEnergy, "p");
+   hPolarVsEnergy->Draw();
+   imageName = "hPolarVsEnergy_" + filelist + ".png";
+   c->SaveAs(imageName.c_str());
+
+   // Profiles
+   hRVsEnergy->GetListOfFunctions()->Add(grRVsEnergy, "p");
+   hRVsEnergy->Draw();
+   imageName = "hRVsEnergy_" + filelist + ".png";
+   c->SaveAs(imageName.c_str());
+
+   utils::BinGraph(grRVsEnergy, hRVsEnergyBin);
+
+   TF1 *f1 = new TF1("f1", "[0] + [1]*x");
+   hRVsEnergyBin->Fit("f1");
+
+   hRVsEnergyBin->Draw();
+   imageName = "hRVsEnergyBin_" + filelist + ".png";
+   c->SaveAs(imageName.c_str());
 
    hPolar->GetListOfFunctions()->Add(grPolar, "p");
    hPolar->Draw();

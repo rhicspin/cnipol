@@ -10,11 +10,11 @@ CERNLIB_LIB_DIR = $(CERNLIB_DIR)/lib
 
 ROOT_INC_PATH   = $(shell root-config --incdir)
 
-LIB_PATHS = -L$(CNIPOL_LIB_DIR) -L$(CERNLIB_LIB_DIR) -L$(MYSQL_LIB_DIR) -L$(MYSQLPP_LIB_DIR)
+LIB_PATHS = -L$(CNIPOL_LIB_DIR) -L$(CERNLIB_LIB_DIR) -L$(MYSQL_LIB_DIR) -L$(MYSQLPP_LIB_DIR) -L$(UTILS_LIB_DIR)
 INC_PATHS = -I. -I/usr/include -I$(ROOT_INC_PATH) -I$(CNIPOL_DIR)/inc \
    -I$(CNIPOL_DIR)/online/include -I$(MYSQL_INCLUDE_DIR) -I$(MYSQLPP_INCLUDE_DIR)
 
-LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana -lmysqlpp -lmysqlclient
+LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana -lmysqlpp -lmysqlclient -lutils
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
 

@@ -13,13 +13,13 @@ FC = f95
 CXX = g++
 CC = g++
 
-all : $(PROGS)
+all: $(PROGS)
 
-clean :
+clean:
 	-rm -f $(PROGS)
 	-rm -f *.o
 
-cleanall : clean
+cleanall: clean
 	cd $(CNIPOL_DIR)/bin; rm -f $(PROGS) $(IPROGS); cd $(CNIPOL_DIR)/bin/macro; rm -f $(MPROGS)
 
 install:

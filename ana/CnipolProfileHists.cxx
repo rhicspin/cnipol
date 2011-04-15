@@ -7,6 +7,12 @@
 
 #include "CnipolProfileHists.h"
 
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+#include "TGraphErrors.h"
+
+#include "utils/utils.h"
+
 #include "AsymGlobals.h"
 #include "AnaResult.h"
 #include "TargetInfo.h"
@@ -493,7 +499,8 @@ void CnipolProfileHists::Process()
    TH1* hPolarUniProfileBin      = (TH1*) o["hPolarUniProfileBin"];
    TH1* hPolarVsIntensProfileBin = (TH1*) o["hPolarVsIntensProfileBin"];
 
-   Double_t x, xe, y, ye;
+   //Double_t x, xe, y, ye;
+   Double_t x, y, ye;
 
    printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
 
@@ -614,3 +621,32 @@ Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
 
    return g1 + g2;
 } //}}}
+
+
+/** */
+RunInfo::MeasType CnipolProfileHists::MeasurementType()
+{
+   TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
+
+	if (!hIntensProfile) {
+	   Error("MeasurementType", "Histogram (hIntensProfile) not defined");
+      return RunInfo::MEASTYPE_UNKNOWN;
+   }
+
+   Double_t ymax = hIntensProfile->GetMaximum();
+
+   if (ymax > 0) hIntensProfile->Scale(1./ymax);
+	else
+	   Error("MeasurementType", "Empty histogram (hIntensProfile) ?");
+
+   TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 10, 0, 1);
+
+	utils::ConvertToProfile(hIntensProfile, hIntensProj);
+
+	if (hIntensProj->GetBinContent(10) >= 0.3*hIntensProj->GetEntries())
+	   return RunInfo::MEASTYPE_FIXED;
+	else 
+	   return RunInfo::MEASTYPE_SWEEP;
+
+   return RunInfo::MEASTYPE_UNKNOWN;
+}

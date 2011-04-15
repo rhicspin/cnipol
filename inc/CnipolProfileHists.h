@@ -9,15 +9,13 @@
 
 #include "TDirectoryFile.h"
 #include "TF1.h"
-#include "TFitResult.h"
-#include "TFitResultPtr.h"
-#include "TGraphErrors.h"
 #include "TH2F.h"
 #include "TMath.h"
 #include "TPaveStats.h"
 
 #include "AsymHeader.h"
 #include "TargetInfo.h"
+#include "RunInfo.h"
 
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
@@ -42,6 +40,7 @@ public:
    void Fill(UInt_t n, Long_t* hData);
    void PostFill();
    void Process();
+   RunInfo::MeasType MeasurementType();
 
    static Double_t ProfileFitFunc(Double_t *x, Double_t *par);
 
