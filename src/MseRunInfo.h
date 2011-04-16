@@ -5,8 +5,12 @@
 #ifndef MseRunInfo_h
 #define MseRunInfo_h
 
+#include <stdio.h>
+
 #include "mysql++.h"
 #include "ssqls.h"
+
+#include "TObject.h"
 
 sql_create_23(MseRunInfo, 1, 5,
    mysqlpp::sql_varchar,           run_name,
@@ -54,7 +58,8 @@ public:
    { }
  
    void Init();
-   void Print();
+   void Print(const Option_t* opt="") const;
+   void PrintAsPhp(FILE *f=stdout) const;
 };
 
 #endif

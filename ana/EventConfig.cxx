@@ -9,6 +9,7 @@
 #include "DbEntry.h"
 #include "RunInfo.h"
 #include "AnaResult.h"
+#include "MseRunInfo.h"
 
 ClassImp(EventConfig)
 
@@ -22,7 +23,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
    fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), fDbEntry(new DbEntry()),
-   fCalibrator(new Calibrator()), fAnaResult(new AnaResult())
+   fCalibrator(new Calibrator()), fAnaResult(new AnaResult()), fMseRunInfoX(0)
 {
 }
 
@@ -87,6 +88,13 @@ void EventConfig::PrintAsPhp(FILE *f) const
       Error("PrintAsPhp", "fAnaResult not defined");
    } else {
       fAnaResult->PrintAsPhp(f);
+   }
+
+   fprintf(f, "\n// MseRunInfoX data\n");
+   if (!fMseRunInfoX) {
+      Error("PrintAsPhp", "fMseRunInfoX not defined");
+   } else {
+      fMseRunInfoX->PrintAsPhp(f);
    }
    
    fprintf(f, "?>\n");

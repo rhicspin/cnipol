@@ -24,6 +24,7 @@
 
 #include "Calibrator.h"
 
+class MseRunInfoX;
 
 /** */
 class EventConfig : public TObject
@@ -37,6 +38,7 @@ public:
    DbEntry                 *fDbEntry; //!
    Calibrator              *fCalibrator;
    AnaResult               *fAnaResult;
+   MseRunInfoX             *fMseRunInfoX; //!
 
 public:
 

@@ -999,6 +999,8 @@ void readloop(MseRunInfoX &run)
          exit(-1);
       }
    }
+
+   run.Print();
 }
 
 

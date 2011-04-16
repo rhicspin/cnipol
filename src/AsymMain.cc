@@ -530,6 +530,24 @@ int main(int argc, char *argv[])
    delete gAsymRoot.fEventConfig->fAnaResult;
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
 
+   // Stop stopwatch and save results
+   //stopwatch.Stop();
+   gAnaInfo.procDateTime =  timestamp.GetSec();
+   gAnaInfo.procTimeReal =  stopwatch.RealTime();
+   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
+
+   string tmpSqlDateTime(19, ' ');
+   strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
+
+   mseRunInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
+   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo.procTimeReal);
+   mseRunInfoX->measurement_type = UInt_t(gRunInfo.fMeasType);
+
+	if (gAnaInfo.fFlagUseDb)
+      gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
+
+   gAsymRoot.fEventConfig->fMseRunInfoX = mseRunInfoX;
+
    gAsymRoot.fEventConfig->PrintAsPhp(gAnaInfo.GetRunInfoFile());
    gAsymRoot.fEventConfig->PrintAsConfig(gAnaInfo.GetRunConfFile());
 	fclose(gAnaInfo.GetRunInfoFile()); gAnaInfo.fFileRunInfo = 0;
@@ -541,21 +559,6 @@ int main(int argc, char *argv[])
 
    // Close ROOT File
    gAsymRoot.Finalize();
-
-   // Stop stopwatch and save results
-   //stopwatch.Stop();
-   gAnaInfo.procDateTime =  timestamp.GetSec();
-   gAnaInfo.procTimeReal =  stopwatch.RealTime();
-   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
-
-   string sqlDateTime;
-   strftime(&sqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
-
-   mseRunInfoX->ana_start_time = mysqlpp::DateTime(sqlDateTime);
-   mseRunInfoX->ana_duration   = UInt_t(gAnaInfo.procTimeReal);
-
-	if (gAnaInfo.fFlagUseDb)
-      gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
 
    gAnaInfo.CopyResults();
 
