@@ -115,7 +115,7 @@ public:
    FILE*       GetRunConfFile() const { return fFileRunConf; }
    void        ProcessOptions();
    void        Print(const Option_t* opt="") const;
-   void        PrintAsPhp(FILE *f) const;
+   void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
    void        Streamer(TBuffer &buf);
    void        Update(DbEntry &rundb);

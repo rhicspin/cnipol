@@ -38,29 +38,37 @@ void MseRunInfoX::Init()
 
 
 /** */
-void MseRunInfoX::Print()
+void MseRunInfoX::Print(const Option_t* opt) const
 {
-   cout << " " << run_name << endl;
-   cout << "  " << polarimeter_id << endl;
-   cout << "   " << start_time << endl;
-   cout << "    " << stop_time << endl;
-   cout << "     " << beam_energy << endl;
-   cout << "     " << nevents_total << endl;
-   cout << "     " << nevents_processed << endl;
-   cout << "     " << polarization << endl;
-   cout << "     " << polarization_error << endl;
-   cout << "     " << phase << endl;
-   cout << "     " << phase_error << endl;
-   cout << "     " << profile_ratio << endl;
-   cout << "     " << profile_ratio_error << endl;
-   cout << "      " << target_orient << endl;
-   cout << "       " << target_id << endl;
-   cout << "       " << asym_version << endl;
-   cout << "        " << alpha_calib_run_name << endl;
-   cout << "         " << dl_calib_run_name << endl;
-   cout << "         " << measurement_type << endl;
-   cout << "         " << disabled_channels << endl;
-   cout << "         " << disabled_bunches << endl;
-   cout << "      " << ana_start_time << endl;
-   cout << "      " << ana_duration << endl;
+   PrintAsPhp();
 }
+
+
+/** */
+void MseRunInfoX::PrintAsPhp(FILE *f) const
+{ //{{{
+   fprintf(f, "$rc['run_name']                       = \"%s\";\n", run_name.c_str()          );
+   fprintf(f, "$rc['polarimeter_id']                 = %d;\n", (short) polarimeter_id    );
+   fprintf(f, "$rc['start_time']                     = %d;\n", (int) time_t(start_time)        );
+   fprintf(f, "$rc['stop_time']                      = %d;\n", (int) time_t(stop_time)         );
+   fprintf(f, "$rc['beam_energy']                    = %f;\n", beam_energy       );
+   fprintf(f, "$rc['nevents_total']                  = %d;\n", nevents_total     );
+   fprintf(f, "$rc['nevents_processed']              = %d;\n", nevents_processed );
+   fprintf(f, "$rc['polarization']                   = %f;\n", polarization      );
+   fprintf(f, "$rc['polarization_error']             = %f;\n", polarization_error);
+   fprintf(f, "$rc['phase']                          = %f;\n", phase             );
+   fprintf(f, "$rc['phase_error']                    = %f;\n", phase_error       );
+   fprintf(f, "$rc['profile_ratio']                  = %f;\n", profile_ratio     );
+   fprintf(f, "$rc['profile_ratio_error']            = %f;\n", profile_ratio_error);
+   fprintf(f, "$rc['target_orient']                  = \"%s\";\n", target_orient.c_str()     );
+   fprintf(f, "$rc['target_id']                      = %d;\n", target_id         );
+   fprintf(f, "$rc['asym_version']                   = \"%s\";\n", asym_version.c_str()      );
+   //cout << "|" << alpha_calib_run_name << "|" << endl;
+   fprintf(f, "$rc['alpha_calib_run_name']           = \"%s\";\n", string(alpha_calib_run_name).c_str());
+   fprintf(f, "$rc['dl_calib_run_name']              = \"%s\";\n", dl_calib_run_name.data() );
+   fprintf(f, "$rc['measurement_type']               = %d;\n", measurement_type  );
+   fprintf(f, "$rc['disabled_channels']              = \"%s\";\n", disabled_channels.c_str() );
+   fprintf(f, "$rc['disabled_bunches']               = \"%s\";\n", disabled_bunches.c_str()  );
+   fprintf(f, "$rc['ana_start_time']                 = %d;\n", (int) time_t(ana_start_time)    );
+   fprintf(f, "$rc['ana_duration']                   = %d;\n", ana_duration      );
+} //}}}
