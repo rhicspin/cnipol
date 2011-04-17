@@ -223,7 +223,12 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, Boo
    ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", &fitResHists);
 
    hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
-   hMeanTime->SetError(((TH1D*) fitResHists[1])->GetSumw2()->GetArray());
+
+   Double_t *errors = ((TH1D*) fitResHists[1])->GetSumw2()->GetArray();
+
+   if (errors)
+      hMeanTime->SetError(errors);
+
    //hMeanTime->SetError(((TH1D*) fitResHists[2])->GetArray());
 
    // Set reasonable errors...
