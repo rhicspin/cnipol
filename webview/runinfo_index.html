@@ -30,15 +30,53 @@
 
 //include("utils.php"); 
 //include("config.php");
-include("DbReader.php");
+//include("DbReader.php");
+include("SqlDbReader.php");
 
-$dbReader = new DbReader();
-$dbReader->ReadEntries();
-$es = $dbReader->entries;
-array_sort($es, '!START_TIME');
+//$dbReader = new DbReader();
+//$dbReader->ReadEntries();
+//$es = $dbReader->entries;
+//array_sort($es, '!START_TIME');
+
+$sqlDbReader = new SqlDbReader();
+
+$nRuns = $sqlDbReader->CountEntries();
+?>
+
+<p>
+Total runs: <?=$nRuns?>
+
+<p>
+Export to CSV: <a href="./export.php">download file</a>
+ 
+<?
+// Create page links
+$page = 1;
+$nRunsPerPage = 200;
+$nPages = ceil($nRuns/$nRunsPerPage);
+
+if ( isset($_GET['page']) ) $page = $_GET['page'];
+if ($page > $nPages || $page < 1) $page = 1;
+
+print "<p>\n";
+for ($i=1; $i<=$nPages; $i++) {
+   if ($i == $page) 
+      print "$i ";
+   else
+      print "<a href=./?page=$i>$i</a> ";
+}
+
+$rslt  = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
+
+//$row = mysql_fetch_assoc($result);
+ 
+//print "<pre>\n";
+//print_r($row); 
+//print "</pre>\n";
 
 ?>
 
+<p>
 <table border="1" cellpadding="2" cellspacing="2" align="center" width="100%">
 <tr>
    <th rowspan=2>Run
@@ -59,33 +97,49 @@ array_sort($es, '!START_TIME');
 
 <?php
 //print count($es);
-foreach($es as $e):
+//foreach($es as $e):
+while ($e = mysql_fetch_assoc($rslt)):
    //$e->PrintThis();
+
+   //print "<pre>\n";
+   //print_r($e); 
+   //print "</pre>\n";
 
    $polarization = "&nbsp;";
 
-   if (isset($e->f['POLARIZATION'])) {
-      $pols = preg_split("/[\s,]+/", $e->f['POLARIZATION']);
+   if (isset($e['polarization'])) {
+      //$pols = preg_split("/[\s,]+/", $e['polarization']);
 		//$polarization = sprintf("%5.2f &plusmn; %5.2f<br>%5.2f &plusmn; %5.2f",
       //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
+		//$polarization = sprintf("%5.1f &plusmn; %5.1f",
+      //   $pols[0]*100, $pols[1]*100);
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
-         $pols[0]*100, $pols[1]*100);
+         $e['polarization']*100, $e['polarization_error']*100);
    }
 
    $profileRatio = "&nbsp;";
 
-   if (isset($e->f['PROFILE_RATIO'])) {
-      $values = preg_split("/[\s,]+/", $e->f['PROFILE_RATIO']);
-      $profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+   if (isset($e['profile_ratio'])) {
+      //$values = preg_split("/[\s,]+/", $e['profile_ratio']);
+      //$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+      $profileRatio = sprintf("%5.2f &plusmn; %5.2f", $e['profile_ratio'], $e['profile_ratio_error']);
+   }
+
+   $measurementType = "&nbsp;";
+
+   if (isset($e['measurement_type']) && $e['measurement_type'] >= 0 ) {
+      //$values = preg_split("/[\s,]+/", $e['profile_ratio']);
+      //$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+      $measurementType = $MEASTYPE[$e['measurement_type']];
    }
 
    $targetId = "&nbsp;";
 
-   if (isset($e->f['TARGET_ID'])) {
-      $targetId = $e->f['TARGET_ID'];
+   if (isset($e['target_id'])) {
+      $targetId = "{$e['target_orient']}{$e['target_id']}";
    }
 
-   $polId = $POLARIMETER_ID[$e->f['POLARIMETER_ID']];
+   $polId = $POLARIMETER_ID[$e['polarimeter_id']];
 
 	// Set css class
 	$cssPol = "";
@@ -97,26 +151,27 @@ foreach($es as $e):
 	#if ($polId[2] == 'D') $cssPol .= "";
 
    // Deal with version now
-	$asymVersion = isset($e->f['ASYM_VERSION']) ? $e->f['ASYM_VERSION'] : "v0.0.0";
+	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
 	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
 ?>
 
 <tr>
-   <td><a href=index.php?runid=<?=$e->runId?> ><?=$e->runId?></a>
-   <td class=align_cm><tt><?=isset($e->f['START_TIME']) ? date("M d, Y H:i:s D", $e->f['START_TIME']) : "&nbsp;";?></tt>
-   <td class="<?=$cssPol?> align_cm"><?=isset($e->f['POLARIMETER_ID']) ? $POLARIMETER_ID[$e->f['POLARIMETER_ID']] : "&nbsp;";?>
+   <td><a href=index.php?runid=<?=$e['run_name']?> ><?=$e['run_name']?></a>
+   <td class=align_cm><tt><?=isset($e['start_time']) ? date("M d, Y H:i:s D", strtotime($e['start_time'])) : "&nbsp;";?></tt>
+   <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
    <td class=align_cm><?=$profileRatio?>
-   <td>&nbsp;
-   <td class=align_cm><?=isset($e->f['BEAM_ENERGY']) ? sprintf("%6.2f", $e->f['BEAM_ENERGY']) : "&nbsp;";?>
+   <td class=align_cm><?=$measurementType?>
+   <td class=align_cm><?=isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : "&nbsp;";?>
    <td class=align_cm><?=$targetId?>
-   <td align=right><?=isset($e->f['NEVENTS_TOTAL']) ? number_format($e->f['NEVENTS_TOTAL']) : "&nbsp;";?>
-   <td align=right><?=isset($e->f['NEVENTS_PROCESSED']) ? number_format($e->f['NEVENTS_PROCESSED']) : "&nbsp;";?>
+   <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
+   <td align=right><?=isset($e['nevents_processed']) ? number_format($e['nevents_processed']) : "&nbsp;";?>
    <td class=align_cm><?=$asymVersion?>
 
 
 <?php
-endforeach;
+//endforeach;
+endwhile;
 ?>
 
 </table>

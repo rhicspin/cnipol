@@ -26,7 +26,7 @@ if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "/runs/$gRunId/images/";
+   $dir = "../runs/$gRunId/images/";
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['CMODE'] == 0) {
@@ -85,20 +85,20 @@ $rs = array();
 
 print "<pre>\n";
 
-while (false !== ($file = readdir($dir))) {
-	//print "$file\n";
-
-   if (is_dir(DATA_DIR."/$file") && file_exists(DATA_DIR."/$file/runconfig.php")) {
-      //if (ereg("[0-9]{3,}\.[0-9]{3}", $file) && is_dir($file))
-
-      //echo "$file ".$rs['dirsize']."<br>\n";
-      //include("$file/runconfig.php");
-      $rs[] = $file;
-	   //print "ok: $file\n";
-      //$rs[$gRunId]['NumChannels'] = $rc['data']['NumChannels'];
-      //$rs[$gRunId]['dirsize'] = exec( "du -h -s $file" );
-   }
-}
+//while (false !== ($file = readdir($dir))) {
+//	//print "$file\n";
+//
+//   if (is_dir(DATA_DIR."/$file") && file_exists(DATA_DIR."/$file/runconfig.php")) {
+//      //if (ereg("[0-9]{3,}\.[0-9]{3}", $file) && is_dir($file))
+//
+//      //echo "$file ".$rs['dirsize']."<br>\n";
+//      //include("$file/runconfig.php");
+//      $rs[] = $file;
+//	   //print "ok: $file\n";
+//      //$rs[$gRunId]['NumChannels'] = $rc['data']['NumChannels'];
+//      //$rs[$gRunId]['dirsize'] = exec( "du -h -s $file" );
+//   }
+//}
 
 print "</pre>\n";
 
