@@ -17,16 +17,15 @@ fi
 export MYSQL_INCLUDE_DIR=/usr/include/mysql
 export MYSQL_LIB_DIR=/usr/lib/mysql
 
-export MYSQLPP_DIR=/eicdata/eic0005/mysql++
-export MYSQLPP_INCLUDE_DIR=$MYSQLPP_DIR/lib
-export MYSQLPP_LIB_DIR=$MYSQLPP_DIR
-
-if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
-   export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
-fi
+export MYSQLPP_INCLUDE_DIR=/usr/src/redhat/SOURCES/mysql++-3.0.9/lib
+export MYSQLPP_LIB_DIR=/usr/lib
 
 if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
    export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
+fi
+
+if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
 fi
 
 # CNIPOL variables
@@ -52,11 +51,15 @@ export CONFDIR=$POLARIM_DIR/config
 export CALIBDIR=$POLARIM_DIR/share/config
 
 # CDEV variables
-if [ -z "$CDEV_DIR" ]; then
-	export CDEV_DIR=/usr/local/cdev
-	export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-	export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-	export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
+export CDEV_DIR=/usr/local/cdev
+export CDEV=$CDEV_DIR
+export CDEVSHOBJ=${CDEV}/lib
+export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
+export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
+
+if [[ $LD_LIBRARY_PATH != *$CDEVSHOBJ* ]]; then
+	export LD_LIBRARY_PATH+=:$CDEVSHOBJ
 fi
 
 echo "\$ROOTSYS=$ROOTSYS"
