@@ -24,10 +24,6 @@ void manalyze(UShort_t polId, UShort_t eId)
    gEnergyId = eId;
 
    initialize();
-   //analyze_book_histograms();
-   //analyze_fill_histograms(nEvents);
-   //analyze_fill_histograms_derivative();
-   //analyze_finalize();
 }
 
 
@@ -58,11 +54,6 @@ void initialize()
    case 3:
       filelist = "list_Y2U.dat"; color = kOrange; break;
    default:
-      //filelist = "list_B1U_15418.dat"; color = kBlue-4; break;
-      //filelist = "list_Y2U_15418.dat"; color = kOrange; break;
-      //filelist = "list_B2D_15418.dat"; color = kBlue-4; break;
-      //filelist = "list_Y1D_15418.dat"; color = kOrange; break;
-
       //filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
       filelist = "list_Y1D_ramp.dat"; color = kOrange; break;
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
@@ -160,7 +151,6 @@ void initialize()
    TH2* hPolarVsTime = new TH2F("hPolarVsTime", "hPolarVsTime", 1, 20, 100, 1, 20, 80);
    hPolarVsTime->GetXaxis()->SetTitle("Date/Time");
    hPolarVsTime->GetYaxis()->SetTitle("Polarization, %");
-
    TGraphErrors *grPolarVsTime = new TGraphErrors();
    grPolarVsTime->SetName("grPolarVsTime");
    grPolarVsTime->SetMarkerStyle(kFullCircle);
@@ -230,7 +220,10 @@ void initialize()
          continue; //exit(-1);
       }
 
+      gSystem->Info("", "file found: %s", fileName.Data());
+
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+
       if (!gRC) {
          gSystem->Error("", "RC not found\n");
          continue;
@@ -247,6 +240,8 @@ void initialize()
       if ( beamEnergy == 250) {
          flattopTimes[fillId] = gRC->fRunInfo->StartTime;
       }
+
+      delete f;
    }
 
    map<UInt_t, UInt_t>::iterator ift;
@@ -256,8 +251,9 @@ void initialize()
    }
 
    //return;
-
-   next->Begin();
+   //next->Begin();
+   next->Reset();
+   //*next = next->Begin();
 
    while (next && (o = (*next)()) )
    {
@@ -273,17 +269,19 @@ void initialize()
          continue; //exit(-1);
       }
 
+      gSystem->Info("", "file found: %s", fileName.Data());
+
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+
       if (!gRC) {
          gSystem->Error("", "RC not found\n");
          continue;
-      //gRC->Print();
       }
 
-      UInt_t beamEnergy = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
+      //gRC->Print();
 
-      //if (gEnergyId == 0 && (beamEnergy < 20 || beamEnergy > 30) ) continue;
-      //if (gEnergyId == 1 &&  beamEnergy < 200) continue;
+      //Double_t energy = gRC->fRunInfo->BeamEnergy;
+      //printf("%f, %d\n", energy, beamEnergy);
 
       //gH = new DrawObjContainer(f);
       //gH->d["profile"] = new CnipolProfileHists();
@@ -293,42 +291,41 @@ void initialize()
       //h->Print();
       //h->SetBit(TH1::kIsAverage);
 
-      Double_t runId = gRC->fRunInfo->RUNID;
-      UInt_t   fillId = (UInt_t) runId;
+      //if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
+      //   beamEnergy = 400;
+      //}
 
-      if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
-         beamEnergy = 400;
-      }
-
-      //if ()
-      
       Double_t day = (gRC->fRunInfo->StartTime - firstDay)/60./60./24.;
       char strTime[80];
       strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->StartTime));
+
       //grPolar->SetPoint(i, gRC->fRunInfo->RUNID, gRC->fAnaResult->sinphi[0].P[0]);
       //if ((gPolId == 1 || gPolId ==2) && day < 50) continue;
 
-      float ana_power     = gRC->fAnaResult->A_N[1];
-      float asymmetry     = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
-      float asymmetry_err = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
-
-      float polarization     = gRC->fAnaResult->sinphi[0].P[0] * 100.;
-      float polarization_err = gRC->fAnaResult->sinphi[0].P[1] * 100.;
-
-      //if (polarization <= 1 || polarization_err > 5) {
-      //   continue;
-      //   //polarization     = 0;
-      //   //polarization_err = 0;
-      //}
-
-      float tzero    = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
-      float tzeroErr = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
+      Double_t runId            = gRC->fRunInfo->RUNID;
+      UInt_t   fillId           = (UInt_t) runId;
+      UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
+      Float_t  ana_power        = gRC->fAnaResult->A_N[1];
+      Float_t  asymmetry        = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
+      Float_t  asymmetry_err    = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
+      Float_t  polarization     = gRC->fAnaResult->sinphi[0].P[0] * 100.;
+      Float_t  polarization_err = gRC->fAnaResult->sinphi[0].P[1] * 100.;
+      Float_t  profileRatio     = gRC->fAnaResult->fIntensPolarR;
+      Float_t  profileRatioErr  = gRC->fAnaResult->fIntensPolarRErr;
+      Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
+      Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
-      printf("%d, %s, %3d, %f, %f, %f, %f, %f \n", (Int_t)runId, strTime, beamEnergy, asymmetry, asymmetry_err, ana_power, polarization, polarization_err);
+      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f \n", runId, strTime, beamEnergy, asymmetry, asymmetry_err, ana_power, polarization, polarization_err);
 
-      float profileRatio    = gRC->fAnaResult->fIntensPolarR;
-      float profileRatioErr = gRC->fAnaResult->fIntensPolarRErr;
+      if (gEnergyId == 0 && beamEnergy !=  24) continue;
+      if (gEnergyId == 1 && beamEnergy != 250) continue;
+
+      if (polarization <= 1 || polarization_err > 5) {
+         continue;
+         //polarization     = 0;
+         //polarization_err = 0;
+      }
 
       //grPolar->SetPoint(i, day, tzero);
       //grPolar->SetPointError(i, 0, tzeroErr);
@@ -366,6 +363,7 @@ void initialize()
       //havrg->Add(h);
 
       i++;
+      delete f;
    }
 
    string imageName;
@@ -409,10 +407,12 @@ void initialize()
    //hPolarVsTime->GetListOfFunctions()->Add(grPolarVsTime, "p");
    //hPolarVsTime->Draw();
    grPolarVsTime->Draw("AP");
+   //grPolarVsTime->Print();
    grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
    //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%d/%m/%y%F2011-02-01 12:00:00");
-   grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeOffset(6*3600, "local");
-   grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%H:%M:%S");
+   grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%d/%m/%y");
+   //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeOffset(6*3600, "local");
+   //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%H:%M:%S");
    //grPolarVsTime->Update("AP");
    c->Update();
    imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
@@ -420,23 +420,23 @@ void initialize()
 
    hPolarVsFill->GetListOfFunctions()->Add(grPolarVsFill, "p");
    hPolarVsFill->Draw();
-   imageName = "polar_fill_" + filelist + "_" + sEnergyId + ".png";
+   imageName = "hPolarVsFill_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
    utils::BinGraph(grPolarVsFill, hPolarVsFillBin);
 
    hPolarVsFillBin->Draw();
-   imageName = "polar_fill_bin_" + filelist + "_" + sEnergyId + ".png";
+   imageName = "hPolarVsFillBin_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
    hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
    hRVsTime->Draw();
-   imageName = "profr_" + filelist + "_" + sEnergyId + ".png";
+   imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
    hRVsFill->GetListOfFunctions()->Add(grRVsFill, "p");
    hRVsFill->Draw();
-   imageName = "profr_fill_" + filelist + "_" + sEnergyId + ".png";
+   imageName = "hRVsFill_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
    utils::BinGraph(grRVsFill, hRVsFillBin);
@@ -444,44 +444,4 @@ void initialize()
    hRVsFillBin->Draw();
    imageName = "profr_fill_bin_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
-
-   //return;
-
-/*
-   TF1 *mfPow = new TF1("mfPow", "[0]*TMath::Power(x, [1])", 0.1, 1);
-
-   mfPow->SetParNames("P_{max}", "r");
-   mfPow->SetParameter(0, 0.5);
-   mfPow->SetParLimits(0, 0, 1);
-   mfPow->SetParameter(1, 0.1);
-   mfPow->SetParLimits(1, -2, 2);
-
-   havrg->Fit("mfPow", "M E R");
-
-   havrg->Print();
-   havrg->GetYaxis()->SetRangeUser(0, 1.05);
-   //havrg->Draw();
-   //gPad->Update();
-   //gPad->SaveAs("15221.2.v4.png");
-
-
-   Double_t xmin, ymin, xmax, ymax;
-   grPolar->ComputeRange(xmin, ymin, xmax, ymax);
-   printf("%f %f %f %f\n", xmin, ymin, xmax, ymax);
-
-   hPolar->GetListOfFunctions()->Add(grPolar, "p");
-   //hPolar->GetXaxis()->SetLimits(xmin, xmax);
-   //hPolar->GetYaxis()->SetLimits(ymin, ymax);
-   //hPolar->GetYaxis()->SetLimits(0, 110);
-   //hPolar->GetYaxis()->SetRangeUser(ymin, ymax);
-   //hPolar->GetXaxis()->SetRangeUser(20, 100);
-   hPolar->GetYaxis()->SetRangeUser(0, 70);
-   //hPolar->GetYaxis()->SetRangeUser(-15, 25);
-   //hPolar->GetYaxis()->SetRangeUser(-30, 10);
-   hPolar->GetXaxis()->SetTitle("Days");
-   hPolar->GetYaxis()->SetTitle("Polarization, %");
-   //hPolar->GetYaxis()->SetTitle("t_0, ns");
-   //TCanvas *c = new TCanvas("cName", "cName", 1200, 600);
-   //hPolar->Draw();
-*/
 }
