@@ -8,14 +8,16 @@ class DbReader {
    var $dbFileName;
    var $entries = array();
 
-   function DbReader($dbFileName="run.db") {
+   function DbReader($dbFileName="run.db")
+   {
       $this->dbFileName = $dbFileName;
       $this->dbFile = @fopen($this->dbFileName, "r");
    }
 
-   /** */
-   function ReadEntries() {
 
+   /** */
+   function ReadEntries()
+   {
       $entry = array();
 
       while (($line = fgets($this->dbFile, 4096)) !== false) {
