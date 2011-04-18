@@ -1222,9 +1222,9 @@ void ProcessRecord(recordCountRate &rec)
 
    printf("len, size: %ld, %d\n", rec.header.len, size);
 
-   for (UInt_t i=0; i<size; i++) {
-      printf("i: %d, %ld\n", i, *(pointer+i));
-   }
+   //for (UInt_t i=0; i<size; i++) {
+   //   printf("i: %d, %ld\n", i, *(pointer+i));
+   //}
 
    gAsymRoot.FillProfileHists(size, pointer);
    //gAsymRoot.ProcessProfileHists();

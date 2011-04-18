@@ -189,11 +189,15 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    hdPtr    += 2; // offset by 2: 1 underflow bin and 1 lost one
    hdErrPtr += 2; // offset by 2: 1 underflow bin and 1 lost one
 
-   while (hPtr != hData+n) { *hdPtr++ = *hPtr++; *hdErrPtr++ = 1./TMath::Sqrt(*hPtr); }
-
-   for (UInt_t i=0; i<n+3; i++) {
-      //printf("i: %d, %ld, %f\n", i, *(hData+i), *(hd+i));
+   // Fill linear data and error arrays with proper dimensions, hd and hdErr
+   while (hPtr != hData+n) {
+      *hdPtr++ = *hPtr++;
+      *hdErrPtr++ = *hPtr ? 1./TMath::Sqrt(*hPtr) : 0;
    }
+
+   //for (UInt_t i=0; i<n+3; i++) {
+   //   printf("prof check i: %d, %ld, %f\n", i, *(hData+i), *(hd+i));
+   //}
 
    ((TH1*) o["hIntensProfile"])->SetBins(n+1, 0, n+1);
    ((TH1*) o["hIntensProfile"])->SetContent(hd);
@@ -256,7 +260,7 @@ void CnipolProfileHists::Process()
       mean2    = fitres->Value(2);
       mean2Err = fitres->FitResult::Error(2);
    }
-   
+
    TH1* hIntensProfileFwd  = (TH1*) o["hIntensProfileFwd"];
    TH1* hIntensProfileBck  = (TH1*) o["hIntensProfileBck"];
    TH1* hIntensProfileFold = (TH1*) o["hIntensProfileFold"];
@@ -410,9 +414,9 @@ void CnipolProfileHists::Process()
 
    char sratio[50];
 
-	sprintf(sratio, "% 8.3f, % 6.3f", gAnaResults.fIntensPolarR, gAnaResults.fIntensPolarRErr);
+   sprintf(sratio, "% 8.3f, % 6.3f", gAnaResults.fIntensPolarR, gAnaResults.fIntensPolarRErr);
 
-	gRunDb.fFields["PROFILE_RATIO"] = sratio;
+   gRunDb.fFields["PROFILE_RATIO"] = sratio;
 
    //TPaveStats *stats = (TPaveStats*) hPolarVsIntensProfile->FindObject("stats");
 
@@ -554,8 +558,8 @@ void CnipolProfileHists::Process()
 
 
       // Polarization Vs Intens part
-		// consider only even data points
-		if (i%2 != 0) continue;
+      // consider only even data points
+      if (i%2 != 0) continue;
 
       grPolarVsIntensProfile->GetPoint(i/2, x, y);
 
@@ -603,7 +607,7 @@ void CnipolProfileHists::Process()
 
    hPolarVsIntensProfileBin->Fit("mfPow", "M E R");
 
-	delete mfPow;
+   delete mfPow;
 } //}}}
 
 
@@ -628,25 +632,25 @@ RunInfo::MeasType CnipolProfileHists::MeasurementType()
 {
    TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
-	if (!hIntensProfile) {
-	   Error("MeasurementType", "Histogram (hIntensProfile) not defined");
+   if (!hIntensProfile) {
+      Error("MeasurementType", "Histogram (hIntensProfile) not defined");
       return RunInfo::MEASTYPE_UNKNOWN;
    }
 
    Double_t ymax = hIntensProfile->GetMaximum();
 
    if (ymax > 0) hIntensProfile->Scale(1./ymax);
-	else
-	   Error("MeasurementType", "Empty histogram (hIntensProfile) ?");
+   else
+      Error("MeasurementType", "Empty histogram (hIntensProfile) ?");
 
    TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 10, 0, 1);
 
-	utils::ConvertToProfile(hIntensProfile, hIntensProj);
+   utils::ConvertToProfile(hIntensProfile, hIntensProj);
 
-	if (hIntensProj->GetBinContent(10) >= 0.3*hIntensProj->GetEntries())
-	   return RunInfo::MEASTYPE_FIXED;
-	else 
-	   return RunInfo::MEASTYPE_SWEEP;
+   if (hIntensProj->GetBinContent(10) >= 0.3*hIntensProj->GetEntries())
+      return RunInfo::MEASTYPE_FIXED;
+   else
+      return RunInfo::MEASTYPE_SWEEP;
 
    return RunInfo::MEASTYPE_UNKNOWN;
 }
