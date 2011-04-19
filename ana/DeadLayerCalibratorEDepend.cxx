@@ -277,6 +277,7 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, Boo
    }
 
    bananaFitFunc->SetParameters(meanT0, meanDLW);
+   bananaFitFunc->SetParNames("t_0, ns", "DL, {#mu}g/cm^{2}");
    //bananaFitFunc->SetParLimits(0, meanT0-10*meanT0_err, meanT0+10*meanT0_err); // t0
    //bananaFitFunc->SetParLimits(1, meanDLW-10*meanDLW_err, meanDLW+10*meanDLW_err);
 
