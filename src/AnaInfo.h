@@ -40,7 +40,7 @@ public:
               MODE_ONLINE  = 0x04040000};
 
    // Constraint parameter for Data processing 
-   std::string      fRunId;             // Run name
+   std::string      fRunName;             // Run name
    int              enel;               // lower kinetic energy threshold (keV)
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)
@@ -100,8 +100,8 @@ public:
    AnaInfo(std::string runId);
    ~AnaInfo();
 
-   std::string GetRunName() const { return fRunId; }
-   std::string GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunId + ".data"; }
+   std::string GetRunName() const { return fRunName; }
+   std::string GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
    std::string GetOutDir() const;
    std::string GetImageDir() const { return GetOutDir() + "/images"; }
    std::string GetAlphaCalibFile() const;
@@ -109,7 +109,7 @@ public:
    std::string GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
    std::string GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
    std::string GetStdLogFileName() const { return GetOutDir() + "/" + fFileStdLogName; }
-   std::string GetRootFileName() const { return GetOutDir() + "/" + fRunId + ".root"; }
+   std::string GetRootFileName() const { return GetOutDir() + "/" + fRunName + ".root"; }
    std::string GetRootTreeFileName(UShort_t trid) const;
    FILE*       GetRunInfoFile() const { return fFileRunInfo; }
    FILE*       GetRunConfFile() const { return fFileRunConf; }

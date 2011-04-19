@@ -29,6 +29,7 @@ AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0
    }
 
    MseRunInfoX::table("run_info");
+   MseRunPeriodX::table("run_period");
 }
 
 
@@ -133,12 +134,13 @@ void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
    vector<MseRunInfoX>::iterator irun;
 
    for (irun=runs.begin(); irun!=runs.end(); irun++) {
-      cout << setw(10) << irun->run_name;
-      cout << setw(10) << irun->polarimeter_id;
-      cout << setw(10) << irun->start_time;
-      cout << setw(10) << irun->stop_time;
-      cout << setw(10) << irun->beam_energy;
-      cout << endl;
+
+      //cout << setw(10) << irun->run_name;
+      //cout << setw(10) << irun->polarimeter_id;
+      //cout << setw(10) << irun->start_time;
+      //cout << setw(10) << irun->stop_time;
+      //cout << setw(10) << irun->beam_energy;
+      //cout << endl;
 
       if ( !run.alpha_calib_run_name.empty() && !run.dl_calib_run_name.empty() &&
            !run.disabled_channels.empty()    && !run.disabled_bunches.empty() )
@@ -156,6 +158,25 @@ void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
       if (run.disabled_bunches.empty() && !irun->disabled_bunches.empty())
          run.disabled_bunches = irun->disabled_bunches;
    }
+}
+
+
+/** */
+void AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
+{
+   MseRunPeriodX* runPeriod = SelectRunPeriod(run);
+
+   if (runPeriod)
+      runPeriod->Print();
+   else {
+      Error("CompleteRunInfoByRunPeriod", "No run period selected");
+      return;
+   }
+
+   run.alpha_calib_run_name = runPeriod->alpha_calib_run_name;
+   run.dl_calib_run_name    = runPeriod->dl_calib_run_name;
+   run.disabled_channels    = runPeriod->disabled_channels;
+   run.disabled_bunches     = runPeriod->disabled_bunches;
 }
 
 
@@ -200,6 +221,36 @@ vector<MseRunInfoX> AsymDbSql::SelectPriorRuns(MseRunInfoX& run)
    //}
 
    return results;
+}
+
+
+/** */
+MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseRunInfoX& run)
+{
+   MseRunPeriodX* mserp = 0;
+
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return mserp;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `run_period` where `start_time` <= '" << run.start_time << "' "
+        << "AND `polarimeter_id`='" << run.polarimeter_id << "' ORDER BY `start_time` DESC";
+
+   Query query = fConnection->query(sstr.str());
+   cout << "Query: " << query << endl;
+
+   if (StoreQueryResult result = query.store()) {
+      if (!result.empty())
+         mserp = new MseRunPeriodX(result[0]);
+
+   } else {
+      cerr << "Failed to get item list: " << query.error() << endl;
+   }
+
+   return mserp;
 }
 
 

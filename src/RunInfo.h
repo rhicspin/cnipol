@@ -40,7 +40,7 @@ public:
 
    int          Run;
    double       RUNID;
-   std::string  runName;
+   std::string  fRunName;
    time_t       StartTime;
    time_t       StopTime;
    float        RunTime;

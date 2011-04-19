@@ -13,7 +13,7 @@ using namespace std;
 
 /** */
 AnaInfo::AnaInfo() :
-   fRunId            (""),
+   fRunName          (""),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -68,7 +68,7 @@ AnaInfo::AnaInfo() :
  * Default Values for Run Condition
  */
 AnaInfo::AnaInfo(string runId) :
-   fRunId            (runId),
+   fRunName          (runId),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -174,7 +174,7 @@ void AnaInfo::MakeOutDir()
 /** */
 string AnaInfo::GetOutDir() const
 {
-   return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second + "/" + fRunId;
+   return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second + "/" + fRunName;
 }
 
 
@@ -210,8 +210,8 @@ string AnaInfo::GetDlCalibFile() const
 string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 {
    string filename;
-   filename.reserve(GetOutDir().size() + fRunId.size() + 20);
-   sprintf(&filename[0], "%s/%s_tree_%02d.root", GetOutDir().c_str(), fRunId.c_str(), trid);
+   filename.reserve(GetOutDir().size() + fRunName.size() + 20);
+   sprintf(&filename[0], "%s/%s_tree_%02d.root", GetOutDir().c_str(), fRunName.c_str(), trid);
    return filename;
 }
 
@@ -220,19 +220,19 @@ string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 void AnaInfo::ProcessOptions()
 {
    // The run name must be specified
-   if (fRunId.empty()) {
+   if (fRunName.empty()) {
       gSystem->Error("   AnaInfo::ProcessOptions", "Run name has to be specified");
       PrintUsage();
       exit(0);
    }
 
    // Check whether the raw data file exists
-	TString fileName = fRunId + ".data";
+	TString fileName = fRunName + ".data";
 
    if (!gSystem->FindFile(fAsymEnv["CNIPOL_DATA_DIR"].c_str(), fileName ) )
 	{
       gSystem->Error("   AnaInfo::ProcessOptions",
-		   "Raw data file \"%s.data\" not found in %s\n", fRunId.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
+		   "Raw data file \"%s.data\" not found in %s\n", fRunName.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
       exit(0);
 	}
 
@@ -257,13 +257,13 @@ void AnaInfo::ProcessOptions()
    //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
 
    if (HasAlphaBit()) {
-      fAlphaCalibRun     = fRunId;
+      fAlphaCalibRun     = fRunName;
       fDlCalibRun        = "";
       gRunInfo.fMeasType = RunInfo::MEASTYPE_ALPHA;
    }
 
    // Various printouts. Should be combined with Print()?
-   cout << "Run name:                      " << fRunId << endl;
+   cout << "Run name:                      " << fRunName << endl;
    cout << "Input data file:               " << GetRawDataFileName() << endl;
    cout << "Max events to process:         " << gMaxEventsUser << endl;
    cout << "Events to skip:                " << thinout << endl;
@@ -300,7 +300,7 @@ TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
 void AnaInfo::Print(const Option_t* opt) const
 {
    cout
-   << "fRunId           = " << fRunId           << endl
+   << "fRunName         = " << fRunName         << endl
    << "enel             = " << enel             << endl
    << "eneu             = " << eneu             << endl
    << "widthl           = " << widthl           << endl
@@ -351,7 +351,7 @@ void AnaInfo::Print(const Option_t* opt) const
 /** */
 void AnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
-   fprintf(f, "$rc['fRunId']                       = \"%s\";\n", fRunId.c_str());
+   fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
    fprintf(f, "$rc['enel']                         = %d;\n", enel);
    fprintf(f, "$rc['eneu']                         = %d;\n", eneu);
    fprintf(f, "$rc['widthl']                       = %d;\n", widthl);
@@ -427,7 +427,7 @@ void AnaInfo::Streamer(TBuffer &buf)
 
    if (buf.IsReading()) {
       //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
-      buf >> tstr; fRunId = tstr.Data();
+      buf >> tstr; fRunName = tstr.Data();
       buf >> enel;
       buf >> eneu;
       buf >> widthl;
@@ -443,7 +443,7 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf >> tstr; fDlCalibRun = tstr.Data();
    } else {
       //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
-      tstr = fRunId; buf << tstr;
+      tstr = fRunName; buf << tstr;
       buf << enel;
       buf << eneu;
       buf << widthl;
@@ -479,7 +479,7 @@ void AnaInfo::Update(MseRunInfoX& run)
 	// A fix for alpha calib runs - Maybe this should go to the process options
    // method
    if (HasAlphaBit()) {
-      //fAlphaCalibRun = fRunId;
+      //fAlphaCalibRun = fRunName;
       fAlphaCalibRun           = "";
       fDlCalibRun              = "";
       run.alpha_calib_run_name = "";

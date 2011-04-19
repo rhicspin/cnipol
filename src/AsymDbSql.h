@@ -8,7 +8,9 @@
 #include "AsymDb.h"
 #include "DbEntry.h"
 
-#include "MstRunInfo.h"
+//#include "MstRunInfo.h"
+#include "MseRunInfo.h"
+#include "MseRunPeriod.h"
 
 
 class AsymDbSql : public AsymDb {
@@ -24,7 +26,9 @@ public:
    DbEntry*     Select(std::string runName="");
    MseRunInfoX* SelectRun(std::string runName="");
 	void         CompleteRunInfo(MseRunInfoX& run);
+	void         CompleteRunInfoByRunPeriod(MseRunInfoX& run);
    std::vector<MseRunInfoX> SelectPriorRuns(MseRunInfoX& run);
+   MseRunPeriodX*           SelectRunPeriod(MseRunInfoX& run);
    void         Insert(DbEntry *dbrun);
    void         UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun);
    void         Dump();
