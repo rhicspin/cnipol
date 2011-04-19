@@ -70,7 +70,17 @@ if (isset($rc['target_orient']) && isset($rc['target_id'])) {
    $targetId = "{$rc['target_orient']}{$rc['target_id']}";
 }
 
+$measurementType = "&nbsp;";
+
+if (isset($rc['measurement_type']) && $rc['measurement_type'] >= 0 ) {
+   $measurementType = $MEASTYPE[$rc['measurement_type']];
+}
+
 $profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
+
+// Deal with version now
+$asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
+$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
 ?>
 
 <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
@@ -92,7 +102,8 @@ $profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fInte
    <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
    <b>Profile Ratio:</b> r = <?=$profileRatio?>
-   <td> &nbsp;
+   <td>
+   <b>Run Type:</b> <?=$measurementType?>
    <!--
    <td>
    <b>Size:</b> <?//=$s['dirsize']?>
@@ -109,7 +120,8 @@ $profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fInte
    <? endif; ?>
    <td>
    <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
-   <td>&nbsp;
+   <td>
+   <b>Asym Version:</b> <?=$asymVersion?>
 
 <tr>
    <td colspan=4>
