@@ -263,8 +263,8 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
       if (fEventConfig) {
 
-         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->runName;
-         gRunDb.alpha_calib_run_name = fEventConfig->fRunInfo->runName;
+         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->fRunName;
+         gRunDb.alpha_calib_run_name = fEventConfig->fRunInfo->fRunName;
          //fEventConfig->fDatproc->CMODE = 0;
 
          delete fChannelEvent->fEventConfig;

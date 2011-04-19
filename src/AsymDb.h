@@ -19,6 +19,7 @@ public:
    virtual DbEntry* Select(std::string runName="");
    virtual MseRunInfoX* SelectRun(std::string runName="");
 	virtual void CompleteRunInfo(MseRunInfoX& run) {}
+	virtual void CompleteRunInfoByRunPeriod(MseRunInfoX& run) {}
    virtual void Insert(DbEntry *dbrun);
    virtual void UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun) {}
    virtual void Dump();

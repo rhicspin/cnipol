@@ -105,7 +105,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
 void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
-	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->runName.c_str());
+	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->fRunName.c_str());
 	fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
 	fprintf(f, "* \n");

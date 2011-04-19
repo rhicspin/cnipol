@@ -121,9 +121,9 @@ int main(int argc, char *argv[])
 
       case 'r':
       case 'f':
-         gAnaInfo.fRunId  = optarg;
-         gRunInfo.runName = optarg;
-         gRunDb.fRunName  = optarg;
+         gAnaInfo.fRunName = optarg;
+         gRunInfo.fRunName = optarg;
+         gRunDb.fRunName   = optarg;
          break;
 
       case 'n':
@@ -334,8 +334,8 @@ int main(int argc, char *argv[])
    //strncpy(RunID, ifile, chrlen);
    //RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
 
-   gRunInfo.RUNID = strtod(gRunInfo.runName.c_str(), NULL); // return 0 when "RunID" contains alphabetical char.
-   //printf("RUNID: %f\n", gRunInfo.RUNID);
+   // Set to 0 when "RunID" contains alphabetical chars
+   gRunInfo.RUNID = strtod(gRunInfo.fRunName.c_str(), NULL);
 
    // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
    // ds: not needed anymore since we are getting this info from raw data for all runs
@@ -358,25 +358,24 @@ int main(int argc, char *argv[])
 	//    - Modify/update DbEntry
 	//    - Save DbEntry to database if requested
 
-   DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
+   //DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
    MseRunInfoX *mseRunInfoX     = 0;
    MseRunInfoX *mseRunInfoXOrig = 0;
 
    // Check whether the run is in database
 	if (gAnaInfo.fFlagUseDb)
-      mseRunInfoX = gAsymDb2->SelectRun(gRunDb.fRunName);
+      mseRunInfoX = gAsymDb2->SelectRun(gRunInfo.fRunName);
 
-   // if run found in database save its copy
-   if (mseRunInfoX) {
-      mseRunInfoXOrig  = new MseRunInfoX(gRunDb.fRunName);
+   if (mseRunInfoX) { // if run found in database save its copy
+      mseRunInfoXOrig  = new MseRunInfoX(gRunInfo.fRunName);
 		*mseRunInfoXOrig = *mseRunInfoX;
 
-   // if run not found in database create it
-   } else {
-      mseRunInfoX = new MseRunInfoX(gRunDb.fRunName);
+   } else { // if run not found in database create it
+      mseRunInfoX = new MseRunInfoX(gRunInfo.fRunName);
    }
 
+   cout << endl;
    cout << "mseRunInfoX 1: " << endl;
    mseRunInfoX->Print();
 
@@ -387,49 +386,52 @@ int main(int argc, char *argv[])
 	// and overwrite the data base run info (mseRunInfoX) if needed
    rawData->ReadRecBegin(mseRunInfoX);
 
+   cout << endl;
    cout << "mseRunInfoX 2: " << endl;
    mseRunInfoX->Print();
 
    // Do this only for normal runs, not alpha
    if (!gAnaInfo.HasAlphaBit())
-      gAsymDb2->CompleteRunInfo(*mseRunInfoX);
+      //gAsymDb2->CompleteRunInfo(*mseRunInfoX);
+      gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
 
+   cout << endl;
    cout << "mseRunInfoX 3: " << endl;
    mseRunInfoX->Print();
    //cout << *mseRunInfoX << endl;
 
    // Replace gRunDb
-   if (runDb) {
-      printf("Run \"%s\" found in database\n", runDb->fRunName.c_str());
-      gRunDb.UpdateFields(*runDb);
-      //gRunDb.Print();
-      gRunInfo.fPolId = gRunDb.fPolId;
+   //if (runDb) {
+   //   printf("Run \"%s\" found in database\n", runDb->fRunName.c_str());
+   //   gRunDb.UpdateFields(*runDb);
+   //   //gRunDb.Print();
+   //   gRunInfo.fPolId = gRunDb.fPolId;
 
-   // the following is pretty messed up... needs a clean up and better logic
-   } else {
+   //// the following is pretty messed up... needs a clean up and better logic
+   //} else {
 
-      // Extract and overwrite (!) basic run info (gRunInfo) from raw data
-      //ReadRecBegin();
+   //   // Extract and overwrite (!) basic run info (gRunInfo) from raw data
+   //   //ReadRecBegin();
 
-      printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
-      gAsymDb->Select(); // read all entries into memory
-      //gAsymDb->Print();
-      gAsymDb->Insert(&gRunDb);
-      //gAsymDb->Print();
-      gAsymDb->Dump(); // write to DB file
+   //   printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
+   //   gAsymDb->Select(); // read all entries into memory
+   //   //gAsymDb->Print();
+   //   gAsymDb->Insert(&gRunDb);
+   //   //gAsymDb->Print();
+   //   gAsymDb->Dump(); // write to DB file
 
-      gAsymDb->Clear();
-      runDb = gAsymDb->Select(gRunDb.fRunName); // now read all available common info for this run
-      gRunDb.UpdateFields(*runDb);
-      gRunInfo.fPolId = gRunDb.fPolId;
-   }
+   //   gAsymDb->Clear();
+   //   runDb = gAsymDb->Select(gRunDb.fRunName); // now read all available common info for this run
+   //   gRunDb.UpdateFields(*runDb);
+   //   gRunInfo.fPolId = gRunDb.fPolId;
+   //}
 
    // Overwrite the offline version (if set previously)
-   gRunDb.SetAsymVersion(gRunInfo.fAsymVersion);
+   //gRunDb.SetAsymVersion(gRunInfo.fAsymVersion);
    mseRunInfoX->asym_version = gRunInfo.fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
-   gRunDb.Print();
+   //gRunDb.Print();
 
    //gAnaInfo.Update(gRunDb);
    //gRunInfo.Update(gRunDb);
@@ -437,6 +439,7 @@ int main(int argc, char *argv[])
    gAnaInfo.Update(*mseRunInfoX);
    gRunInfo.Update(*mseRunInfoX);
 
+   cout << endl;
    gAnaInfo.Print();
    //gRunInfo.Print();
    mseRunInfoX->Print();
@@ -502,12 +505,12 @@ int main(int argc, char *argv[])
    // Update calibration constants if requested
    //gRunDb.Print();
 
-   if (gAnaInfo.UPDATE_DB) {
-      // Select all runs from database
-      gAsymDb->Select();
-      gAsymDb->Insert(&gRunDb);
-      gAsymDb->Dump();
-   }
+   //if (gAnaInfo.UPDATE_DB) {
+   //   // Select all runs from database
+   //   gAsymDb->Select();
+   //   gAsymDb->Insert(&gRunDb);
+   //   gAsymDb->Dump();
+   //}
 
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();

@@ -11,7 +11,7 @@ using namespace std;
 
 
 /** */
-RunInfo::RunInfo() : Run(-1), RUNID(0.0), runName(100, ' '),
+RunInfo::RunInfo() : Run(-1), RUNID(0.0), fRunName(100, ' '),
 	StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION), fMeasType(MEASTYPE_UNKNOWN)
 {
@@ -96,7 +96,7 @@ void RunInfo::Streamer(TBuffer &buf)
       //printf("reading RunInfo::Streamer(TBuffer &buf) \n");
       buf >> Run;
       buf >> RUNID;
-      buf >> tstr; runName = tstr.Data();
+      buf >> tstr; fRunName = tstr.Data();
       buf >> StartTime;
       buf >> StopTime;
       buf >> RunTime;
@@ -132,7 +132,7 @@ void RunInfo::Streamer(TBuffer &buf)
       //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
       buf << Run;
       buf << RUNID;
-      tstr = runName; buf << tstr;
+      tstr = fRunName; buf << tstr;
       buf << StartTime;
       buf << StopTime;
       buf << RunTime;
@@ -178,7 +178,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
-   fprintf(f, "$rc['runName']                      = \"%s\";\n", runName.c_str() );
+   fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str() );
    fprintf(f, "$rc['StartTime']                    = %ld;\n",    StartTime    );
    fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
    fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
@@ -251,7 +251,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
 /** */
 short RunInfo::GetPolarimeterId()
 {
-   TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
+   TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(fRunName);
 
    if (subStrL->GetEntriesFast() < 1) {
       printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
