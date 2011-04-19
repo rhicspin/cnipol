@@ -648,19 +648,20 @@ RunInfo::MeasType CnipolProfileHists::MeasurementType()
    else
       Error("MeasurementType", "Empty histogram (hIntensProfile) ?");
 
-   TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 10, 0, 1);
+   TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 20, 0, 1);
 
    utils::ConvertToProfile(hIntensProfile, hIntensProj);
 
-   Double_t nTotal = hIntensProj->GetEntries();
+   Int_t nSteps = hIntensProfile->GetNbinsX();
 
-   for (Int_t i=1; i<=hIntensProj->GetNbinsX(); i++) {
-      if (hIntensProj->GetBinContent(i) >= nTotal/3.)
+   // start from the second bin (0.05 - 0.10 intensity) since we don't care
+   // about small intensity steps
+   for (Int_t i=2; i<=hIntensProj->GetNbinsX(); i++) {
+      //if (nTotal)
+      printf("proj: %f, %d\n", hIntensProj->GetBinContent(i), nSteps);
+      if (hIntensProj->GetBinContent(i) >= 0.5*nSteps)
          return RunInfo::MEASTYPE_FIXED;
    }
 
-   //else
-   //   return RunInfo::MEASTYPE_SWEEP;
-
-   return RunInfo::MEASTYPE_UNKNOWN;
+   return RunInfo::MEASTYPE_SWEEP;
 }
