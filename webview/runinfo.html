@@ -42,16 +42,58 @@
 
 <p>
 
-<table border="1" cellpadding="3" cellspacing="0" align="center" width="100%">
+<?
+
+$polId = $POLARIMETER_ID[$rc['polarimeter_id']];
+//$polId = "Y1D";
+
+$cssPol = "";
+
+if ($polId[0] == 'B') $cssPol = "bluPol";
+if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+if ($polId[2] == 'U') $cssPol .= " bold";
+#if ($polId[2] == 'D') $cssPol .= "";
+
+$polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
+
+$polarization = "&nbsp;";
+
+if (isset($rc['polarization'])) {
+	$polarization = sprintf("<span class=s150>%5.1f &plusmn; %5.1f %%</span>",
+      $rc['polarization']*100, $rc['polarization_error']*100);
+}
+
+$targetId = "&nbsp;";
+
+if (isset($rc['target_orient']) && isset($rc['target_id'])) {
+   $targetId = "{$rc['target_orient']}{$rc['target_id']}";
+}
+
+$profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
+?>
+
+<table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
+
+<tr>
+   <td>
+   <b>Polarimeter:</b> <?=$polId?>
+   <td>
+   <b>Polarization:</b> <?=$polarization?>
+   <td>
+   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
+   <td>
+   <b>Target:</b> <?=$targetId?>
+
 <tr>
    <td>
    <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
    <td>
    <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
-   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
+   <b>Profile Ratio:</b> r = <?=$profileRatio?>
    <td>
-   <b>Active Strips:</b> <?=$rc['NActiveStrip']?>
+   <b>Disabled Channels:</b> <?=$rc['disabled_channels']?>
    <!--
    <td>
    <b>Size:</b> <?//=$s['dirsize']?>
@@ -67,20 +109,14 @@
    <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
    <? endif; ?>
    <td>
-   <b>Target ID:</b> <?=$rc['targetID']?>
-   <td>
-   <b>Disabled Strips:</b> <?=$rc['NDisableStrip']?>
-
-<?
-$profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
-?>
+   <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
+   <td>&nbsp;
 
 <tr>
-   <td>
-   <b>Profile Ratio:</b> r = <?=$profileRatio?>
-
-   <td colspan=3>
-   <b>Energy Calibration Run:</b> <a href="/rundb/?runid=<?=$rc['ALPHA_CALIB_RUN_NAME']?>"><?=$rc['ALPHA_CALIB_RUN_NAME']?></a>
+   <td> &nbsp;
+   <td> &nbsp;
+   <td> &nbsp;
+   <td> &nbsp;
 
 <tr>
    <td colspan=4>
