@@ -185,18 +185,22 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    Long_t   *hPtr     = hData;
    Double_t *hdPtr    = hd;
    Double_t *hdErrPtr = hdErr;
+   //UInt_t    i = 0;
 
    hdPtr    += 2; // offset by 2: 1 underflow bin and 1 lost one
    hdErrPtr += 2; // offset by 2: 1 underflow bin and 1 lost one
 
    // Fill linear data and error arrays with proper dimensions, hd and hdErr
    while (hPtr != hData+n) {
-      *hdPtr++ = *hPtr++;
-      *hdErrPtr++ = *hPtr ? 1./TMath::Sqrt(*hPtr) : 0;
+      //printf("prof check i: %d, %d, %d\n", hPtr, hdPtr, hdErrPtr);
+      *hdPtr++ = (Double_t) *hPtr++;
+      *hdErrPtr++ = (*(hPtr-1) != 0 ? 1./TMath::Sqrt(*(hPtr-1)) : 0.);
+      //cout << "prof check i: " << *(hPtr-1) << ", " << *(hdPtr-1) << ", " << *(hdErrPtr-1) << endl;
+      //i++;
    }
 
    //for (UInt_t i=0; i<n+3; i++) {
-   //   printf("prof check i: %d, %ld, %f\n", i, *(hData+i), *(hd+i));
+   //   printf("prof check 2 i: %d, %ld, %f, %f\n", i, *(hData+i), *(hd+i), *(hdErr+i));
    //}
 
    ((TH1*) o["hIntensProfile"])->SetBins(n+1, 0, n+1);
@@ -205,6 +209,7 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    //((TH1*) o["hIntensProfile"])->Sumw2();
 
    delete [] hd;
+   delete [] hdErr;
 } //}}}
 
 
@@ -647,10 +652,15 @@ RunInfo::MeasType CnipolProfileHists::MeasurementType()
 
    utils::ConvertToProfile(hIntensProfile, hIntensProj);
 
-   if (hIntensProj->GetBinContent(10) >= 0.3*hIntensProj->GetEntries())
-      return RunInfo::MEASTYPE_FIXED;
-   else
-      return RunInfo::MEASTYPE_SWEEP;
+   Double_t nTotal = hIntensProj->GetEntries();
+
+   for (Int_t i=1; i<=hIntensProj->GetNbinsX(); i++) {
+      if (hIntensProj->GetBinContent(i) >= nTotal/3.)
+         return RunInfo::MEASTYPE_FIXED;
+   }
+
+   //else
+   //   return RunInfo::MEASTYPE_SWEEP;
 
    return RunInfo::MEASTYPE_UNKNOWN;
 }
