@@ -304,14 +304,14 @@ Bool_t ChannelEvent::PassCutNoise()
    case 0:   // B1U
       //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
       //if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
-      if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.5*fChannel.fAmpltd + 58)) // linear cut
+      if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 50)) // linear cut
          return false;
       break;
 
    case 1:   // Y1D
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.5*fChannel.fAmpltd + 70) ) // linear cut
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 50) ) // linear cut
          return false;
       break;
 
@@ -319,13 +319,14 @@ Bool_t ChannelEvent::PassCutNoise()
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.5*fChannel.fTdc + 58)) // linear cut
+      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 70)) // linear cut good for injection
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 60)) // linear cut
          return false;
       break;
 
    case 3:   // Y2U
       //if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
-      if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.5*fChannel.fAmpltd + 70) ) // linear cut
+      if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 50) ) // linear cut
          return false;
       break;
    }
