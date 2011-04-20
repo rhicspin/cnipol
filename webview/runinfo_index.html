@@ -32,22 +32,29 @@
 //include("config.php");
 //include("DbReader.php");
 include("SqlDbReader.php");
+include("RunSelector.php");
 
 //$dbReader = new DbReader();
 //$dbReader->ReadEntries();
 //$es = $dbReader->entries;
 //array_sort($es, '!START_TIME');
 
+$runSelector = new RunSelector();
+
+$runSelector->PrintForm();
+
 $sqlDbReader = new SqlDbReader();
+$sqlDbReader->SetSqlWhere($runSelector->sqlWhere);
 
 $nRuns = $sqlDbReader->CountEntries();
+
 ?>
 
 <p>
-Total runs: <?=$nRuns?>
+Runs selected: <?=$sqlDbReader->nResults?>
 
 <p>
-Export to CSV: <a href="./export.php">download file</a>
+Export to CSV file: <a href="./export.php">download</a>
  
 <?
 // Create page links
