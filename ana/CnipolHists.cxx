@@ -277,6 +277,12 @@ void CnipolHists::BookPreProcess()
       oc = isubdir->second;
    }
 
+   sprintf(hName, "hTvsA");
+   oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
+   ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+   ((TH1*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
+   ((TH1*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+
    sprintf(hName, "hTimeVsEnergyA");
    //oc->o[hName] = new TH2F(hName, hName, 255, 0, 1530, 100, 0, 100);
    //oc->o[hName] = new TH2F(hName, hName, 255, 0, 2550, 100, 0, 100);
@@ -381,7 +387,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //sd = d["channel"+sSi];
 
    //((TH2F*) sd.o["hTvsA"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
-   ////((TH2F*)    o["hTvsA"+sid])                           ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
+   ((TH2F*)    o["hTvsA"+sid])                           ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
    //((TH2F*) sd.o["hTvsI"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
    ////((TH2F*)    o["hTvsI"+sid])                           ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
    ((TH2F*) sd->o["hTimeVsEnergyA"+sid+"_st"+sSi])        ->Fill(ch->GetEnergyA(), ch->GetTime());
@@ -469,6 +475,7 @@ void CnipolHists::FillPreProcess(ChannelEvent *ch)
 { //{{{
    DrawObjContainer *sd = d["preproc"];
 
+   ((TH2F*) sd->o["hTvsA"])->Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH2F*) sd->o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
 } //}}}
 
