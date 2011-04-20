@@ -5,11 +5,32 @@
 
 class RunSelector {
 
+   var $urlQuery;
    var $sqlWhere;
+   static $queryVarNames = array("rn", "pi", "mt", "be", "to", "ti");
 
    function RunSelector()
    {
       global $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
+
+      $url = parse_url($_SERVER['REQUEST_URI']);
+      //$urlQuery = $url['query'];
+      parse_str($url['query'], $urlQuery);
+
+      // Copy only valid variables
+      $urlQueryNew = array();
+
+      foreach (self::$queryVarNames as $varName)
+      {
+         if (isset($urlQuery[$varName]))
+            $urlQueryNew[$varName] = $urlQuery[$varName];
+         else
+            $urlQueryNew[$varName] = "";
+      }
+
+      //$this->urlQuery = urlencode($url['query']);
+      //$this->urlQuery = $url['query'];
+      $this->urlQuery = http_build_query($urlQueryNew);
 
       $this->sqlWhere = "TRUE";
 
