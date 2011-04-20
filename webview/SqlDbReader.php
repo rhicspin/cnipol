@@ -1,20 +1,30 @@
 <?php
 
-include("DbEntry.php");
+//include_once("DbEntry.php");
+include_once("RunSelector.php");
 
 class SqlDbReader {
 
-   var $entries  = array();
-   var $result   = 0;
-   var $sqlQuery = "";
-   var $sqlWhere = "";
-   var $nResults = 0;
+   var $entries      = array();
+   var $result       = 0;
+   var $urlQuery     = "";
+   var $sqlQuery     = "";
+   var $sqlWhere     = "";
+   var $nResults     = 0;
+   var $nRunsPerPage = 200;
+   var $runSelector  = null;
 
    /** */
-   function SqlDbReader()
+   function SqlDbReader($runSelector=null)
    {
       mysql_connect("localhost", "cnipol2", "cnipol") or die(mysql_error());
       mysql_select_db("cnipol") or die(mysql_error());
+
+      if (!empty($runSelector)) {
+         $this->runSelector = $runSelector;
+         $this->sqlWhere = $runSelector->sqlWhere;
+         $this->urlQuery = $runSelector->urlQuery;
+      }
    }
 
    /** */
@@ -61,33 +71,29 @@ class SqlDbReader {
    /**
     * Create page links
     */
-   function HtmlPageIndex()
+   function HtmlPageIndex($nPages=1, $curPage=1)
    {
       $this->CountEntries();
 
-      $page = 1;
-      $nRunsPerPage = 200;
-      $nPages = ceil($nRuns/$nRunsPerPage);
-      
-      if ( isset($_GET['page']) ) $page = $_GET['page'];
-      if ($page > $nPages || $page < 1) $page = 1;
-      
-      $html = "<p>\n";
+      $html = "<div align=center class=s120>\n";
+
       for ($i=1; $i<=$nPages; $i++) {
-         if ($i == $page) 
-            $html = "$i ";
+         if ($i == $curPage) 
+            $html .= "$i ";
          else
-            $html = "<a href=./?page=$i>$i</a> ";
+            $html .= "<a href=?page=$i&{$this->urlQuery}>$i</a> ";
       }
+
+      $html .= "</div>\n";
 
       return $html;
    }
 
 
    /** */
-   function PrintPageIndex()
+   function PrintPageIndex($nPages=1, $curPage=1)
    {
-      print $this->HtmlPageIndex();
+      print $this->HtmlPageIndex($nPages, $curPage);
    }
 }
 
