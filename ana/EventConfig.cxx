@@ -23,7 +23,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
    fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), fDbEntry(new DbEntry()),
-   fCalibrator(new Calibrator()), fAnaResult(new AnaResult()), fMseRunInfoX(0)
+   fCalibrator(new Calibrator()), fAnaResult(new AnaResult()), fMseRunInfoX(new MseRunInfoX())
 {
 }
 
@@ -118,4 +118,55 @@ void EventConfig::PrintAsConfig(FILE *f) const
 float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 { 
    return fConfigInfo->data.chan[chId].acoef * adc;
+}
+
+
+/** */
+void EventConfig::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class EventConfig.
+
+   UInt_t R__s, R__c;
+   if (R__b.IsReading()) {
+      //Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+      //TObject::Streamer(R__b);
+      R__b >> fRandom;
+      R__b >> fConfigInfo;
+      R__b >> fRunInfo;
+      R__b >> fAnaInfo;
+      R__b >> fCalibrator;
+      R__b >> fAnaResult;
+      R__b >> fMseRunInfoX;
+      //R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
+   } else {
+      //R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
+      //TObject::Streamer(R__b);
+      R__b << fRandom;
+      R__b << fConfigInfo;
+      R__b << fRunInfo;
+      R__b << fAnaInfo;
+      R__b << fCalibrator;
+      R__b << fAnaResult;
+      R__b << fMseRunInfoX;
+      //R__b.SetByteCount(R__c, kTRUE);
+   }
+}
+
+
+/** */
+TBuffer & operator<<(TBuffer &buf, EventConfig *&rec)
+{
+   if (!rec) return buf;
+   //printf("operator<<(TBuffer &buf, EventConfig *rec) : \n");
+   rec->Streamer(buf);
+   return buf;
+}
+
+
+/** */
+TBuffer & operator>>(TBuffer &buf, EventConfig *&rec)
+{
+   //printf("operator>>(TBuffer &buf, EventConfig *rec) : \n");
+   rec->Streamer(buf);
+   return buf;
 }

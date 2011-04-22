@@ -620,12 +620,12 @@ void PrintRunResults()
    printf(" Universal Rate                 = %10.5f\n", gAnaResults.UniversalRate);
    printf(" Event Rate            [MHz]    = %10.4f\n", gRunInfo.EvntRate);
    printf(" Read Rate             [MHz]    = %10.4f\n", gRunInfo.ReadRate);
-   printf(" Target                         = %c%c\n",   gRunInfo.target, gRunInfo.targetID);
+   printf(" Target                         = %c%c\n",   gRunInfo.fTargetOrient, gRunInfo.targetID);
    printf(" Target Operation               = %s\n",     gRunInfo.TgtOperation);
    if (gRunInfo.Run >=6 ) {
-      printf(" Maximum Revolution #           = %10d\n", gRunInfo.MaxRevolution);
-      printf(" Reconstructed Duration  [s]    = %10.1f\n",gRunInfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
-      printf(" Target Motion Counter          = %10ld\n",cntr.tgtMotion);
+      printf(" Maximum Revolution #           = %10d\n",   gRunInfo.MaxRevolution);
+      printf(" Reconstructed Duration  [s]    = %10.1f\n", gRunInfo.MaxRevolution/RHIC_REVOLUTION_FREQ);
+      printf(" Target Motion Counter          = %10ld\n",  cntr.tgtMotion);
    }
    printf(" WCM Sum     [10^11 protons]    = %10.1f\n", gRunInfo.WcmSum/100);
    printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo.WcmAve);

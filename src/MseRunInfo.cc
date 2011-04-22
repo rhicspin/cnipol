@@ -1,10 +1,27 @@
 
 #define EXPAND_MY_SSQLS_STATICS
 
+#include "TString.h"
+
 #include "MseRunInfo.h"
+
 
 using namespace std;
 
+
+/** */
+MseRunInfoX::MseRunInfoX() : MseRunInfo()
+{
+   Init();
+}
+
+
+MseRunInfoX::~MseRunInfoX()
+{
+}
+
+
+/** */
 MseRunInfoX::MseRunInfoX(const mysqlpp::sql_varchar &p1) : MseRunInfo(p1)
 {
    Init();
@@ -72,3 +89,51 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['ana_start_time']                 = %d;\n", (int) time_t(ana_start_time)    );
    fprintf(f, "$rc['ana_duration']                   = %d;\n", ana_duration      );
 } //}}}
+
+
+/** */
+void MseRunInfoX::Streamer(TBuffer &buf)
+{
+   TString tstr;
+
+   //char smallint;
+   short smallint;
+
+   if (buf.IsReading()) {
+      //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
+      //buf >> tstr; fRunName = tstr.Data();
+      //buf >> smallint; printf("smallint: %d\n", smallint); target_id = mysqlpp::sql_smallint(smallint);
+      buf >> tstr; target_orient = tstr.Data();
+      buf >> target_id;
+      //buf >> procDateTime >> procTimeReal >> procTimeCpu;
+      //buf >> tstr; fAlphaCalibRun = tstr.Data();
+      //buf >> tstr; fDlCalibRun = tstr.Data();
+   } else {
+      //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
+      tstr = target_orient; buf << tstr;
+      //buf << (Char_t) target_orient;
+      buf << target_id;
+      //buf << procDateTime << procTimeReal << procTimeCpu;
+      //tstr = fAlphaCalibRun; buf << tstr;
+      //tstr = fDlCalibRun;    buf << tstr;
+   }
+}
+
+
+/** */
+TBuffer & operator<<(TBuffer &buf, MseRunInfoX *&rec)
+{
+   if (!rec) return buf;
+   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
+   rec->Streamer(buf);
+   return buf;
+}
+
+
+/** */
+TBuffer & operator>>(TBuffer &buf, MseRunInfoX *&rec)
+{
+   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
+   rec->Streamer(buf);
+   return buf;
+}

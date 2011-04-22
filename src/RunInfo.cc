@@ -26,7 +26,7 @@ RunInfo::RunInfo() : Run(-1), RUNID(0.0), fRunName(100, ' '),
    fPolStream            = 0;      // up =1 or down =2 stream
    PolarimetryID         = 1;      // PolarimetryID; Polarimetry-1 or Polarimetry-2
    MaxRevolution         = 0;      // MaxRevolution;
-   target                = 'V';    // target
+   fTargetOrient         = '-';
    targetID              = '-';    // targetID
    //TgtOperation;                 // TgtOperation (Initialization is done in Initialization() )
    for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
@@ -114,7 +114,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> fPolStream;
       buf >> PolarimetryID;
       buf >> MaxRevolution;
-      buf >> target;
+      buf >> fTargetOrient;
       buf >> targetID;
       buf >> TgtOperation;
       //buf.ReadString(TgtOperation, 32);
@@ -150,7 +150,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << fPolStream;
       buf << PolarimetryID;
       buf << MaxRevolution;
-      buf << target;
+      buf << fTargetOrient;
       buf << targetID;
       buf << TgtOperation;
       buf.WriteFastArray(ActiveDetector, NDETECTOR);
@@ -196,7 +196,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );
    fprintf(f, "$rc['PolarimetryID']                = %d;\n",     PolarimetryID);
    fprintf(f, "$rc['MaxRevolution']                = %d;\n",     MaxRevolution);
-   fprintf(f, "$rc['target']                       = %d;\n",     target       );
+   fprintf(f, "$rc['fTargetOrient']                = \"%c\";\n", fTargetOrient);
    fprintf(f, "$rc['targetID']                     = \"%c\";\n", targetID     );
    fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", TgtOperation );
 

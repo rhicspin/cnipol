@@ -10,6 +10,7 @@
 #include "mysql++.h"
 #include "ssqls.h"
 
+#include "TBuffer.h"
 #include "TObject.h"
 
 sql_create_23(MseRunInfo, 1, 5,
@@ -42,7 +43,8 @@ class MseRunInfoX : public MseRunInfo
 {
 public:
    // default constructor[13]
-   MseRunInfoX() : MseRunInfo() { }
+   MseRunInfoX();
+   ~MseRunInfoX();
  
    // for-comparison constructor[14]
    MseRunInfoX(const mysqlpp::sql_varchar &p1);
@@ -60,6 +62,10 @@ public:
    void Init();
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
+   void Streamer(TBuffer &buf);
 };
+
+TBuffer & operator<<(TBuffer &buf, MseRunInfoX *&rec);
+TBuffer & operator>>(TBuffer &buf, MseRunInfoX *&rec);
 
 #endif
