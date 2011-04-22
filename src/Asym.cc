@@ -94,17 +94,8 @@ StructFlag Flag = {
   0,       // EXE_ANOMALY_CHECK;
 };
 
-StructCounter cntr = {
-  0,    // good_event;
-  0,    // revolution number
-  0     // taret motion entries
-};
-
-StructCounterTgt cntr_tgt = {
-  0,    // good_event;
-  0,    // revolution number
-  0     // taret motion entries
-};
+StructCounter    cntr;
+StructCounterTgt cntr_tgt;
 
 //StructTarget tgt = {
 //    0,  // target position x
@@ -179,6 +170,52 @@ StructBunchCheck          bnchchk;
 StructStripCheck          strpchk;
 StructHistStat            gHstat;
 StructHist                Eslope;
+
+
+StructFeedBack::StructFeedBack()
+{
+   for (int i=0; i<N_CHANNELS; i++) {
+      RMS[i]  = CARBON_MASS_PEAK_SIGMA;
+      mdev[i] = tedev[i] = err[i] = chi2[i] = strip[i] = 0;
+   }
+}
+
+
+StructStripCounter::StructStripCounter()
+{
+   for (int i=0; i<NUM_SPIN_STATES; i++) {
+      for (int j=0; j<N_CHANNELS; j++) {
+         NStrip[i][j] = 0;
+      }
+   }
+}
+
+
+StructStripCounterTgt::StructStripCounterTgt()
+{
+   for(int i=0; i<MAXDELIM; i++) {
+      for (int j=0; j<NUM_SPIN_STATES; j++) {
+         for (int k=0; k<N_CHANNELS; k++)
+            cntr_tgt.reg.NStrip[i][j][k] = 0;
+      }
+   }
+}
+
+
+StructCounter::StructCounter() : good_event(0), revolution(0), tgtMotion(0),
+   reg(), alt(), phx(), str()
+{
+   for(int i=0; i<MAXDELIM; i++)
+      good[i] = 0;
+}
+
+
+StructCounterTgt::StructCounterTgt() : good_event(0), revolution(0),
+   tgtMotion(0), reg()
+{
+   for(int i=0; i<MAXDELIM; i++)
+      good[i] = 0;
+}
 
 
 /** */
@@ -558,9 +595,8 @@ void sqass(float A, float B, float C, float D, float *asym, float *easym)
 //             : positive spin : blue
 //             : negative spin : red
 // Input       : int Mode, int N, float x[], float y[], float ex[], float ey[]
-// Return      : TGraphErrors * asymgraph
 //
-TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[])
+TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey)
 {
   int Color = Mode == 1 ? kBlue : kRed;
 
@@ -571,3 +607,31 @@ TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], 
 
   return asymgraph;
 }
+
+
+// Read the parameter file
+// Ramp timing file
+void ReadRampTiming(char *filename)
+{ //{{{
+   printf("\nReading ramp timing file : %s \n", filename);
+
+   ifstream rtiming;
+   rtiming.open(filename);
+
+   if (!rtiming) {
+      cerr << "failed to open ramp timing file" <<endl;
+      exit(1);
+   }
+
+   memset(ramptshift, 0, sizeof(ramptshift));
+
+   float runt;
+   int   index = 0;
+
+   while (!rtiming.eof()) {
+      rtiming >> runt >> ramptshift[index] ;
+      index++;
+   }
+
+   rtiming.close();
+} //}}}

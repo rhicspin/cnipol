@@ -235,12 +235,12 @@ void CumulativeAsymmetry()
       Nsi[5] += Ncounts[5][bid];
    }
 
-   HHPAK(31010, (float*)Ncounts[0]);
-   HHPAK(31020, (float*)Ncounts[1]);
-   HHPAK(31030, (float*)Ncounts[2]);
-   HHPAK(31040, (float*)Ncounts[3]);
-   HHPAK(31050, (float*)Ncounts[4]);
-   HHPAK(31060, (float*)Ncounts[5]);
+   //HHPAK(31010, (float*)Ncounts[0]);
+   //HHPAK(31020, (float*)Ncounts[1]);
+   //HHPAK(31030, (float*)Ncounts[2]);
+   //HHPAK(31040, (float*)Ncounts[3]);
+   //HHPAK(31050, (float*)Ncounts[4]);
+   //HHPAK(31060, (float*)Ncounts[5]);
 
    float x90phys[2][120], x90acpt[2][120], x90lumi[2][120];
    float x45phys[2][120], x45acpt[2][120], x45lumi[2][120];

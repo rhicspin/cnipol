@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "TSystem.h"
+
 #include "AsymGlobals.h"
 
 #include "AnaInfo.h"
@@ -11,24 +13,32 @@ using namespace std;
 
 
 /** */
-RunInfo::RunInfo() : Run(-1), RUNID(0.0), fRunName(100, ' '),
-	StartTime(0), StopTime(0), RunTime(0), fDataFormatVersion(0),
-   fAsymVersion(ASYM_VERSION), fMeasType(MEASTYPE_UNKNOWN)
+RunInfo::RunInfo() :
+   Run(-1),
+	RUNID(0.0),
+	fRunName(100, ' '),
+	StartTime(0),
+	StopTime(0),
+	RunTime(0),
+	fDataFormatVersion(0),
+   fAsymVersion(ASYM_VERSION),
+   fMeasType(MEASTYPE_UNKNOWN),
+   GoodEventRate(0),      // GoodEventRate;
+   EvntRate     (0),      // EvntRate;
+   ReadRate     (0),      // ReadRate;
+   WcmAve       (0),      // WcmAve;
+   WcmSum       (0),      // WcmSum;
+   BeamEnergy   (0),      // BeamEnergy;
+   fPolId       (-1),     // valid values 0 - 3
+   fPolBeam     (0),      // blue = 2 or yellow = 1
+   fPolStream   (0),      // up =1 or down =2 stream
+   PolarimetryID(1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
+   MaxRevolution(0)       // MaxRevolution;
 {
-   GoodEventRate         = 0;      // GoodEventRate;
-   EvntRate              = 0;      // EvntRate;
-   ReadRate              = 0;      // ReadRate;
-   WcmAve                = 0;      // WcmAve;
-   WcmSum                = 0;      // WcmSum;
-   BeamEnergy            = 0;      // BeamEnergy;
-   fPolId                = -1;     // valid values 0 - 3
-   fPolBeam              = 0;      // blue = 2 or yellow = 1
-   fPolStream            = 0;      // up =1 or down =2 stream
-   PolarimetryID         = 1;      // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution         = 0;      // MaxRevolution;
    fTargetOrient         = '-';
    targetID              = '-';    // targetID
-   //TgtOperation;                 // TgtOperation (Initialization is done in Initialization() )
+   strcpy(TgtOperation, "fixed");
+ 
    for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[NDETECTOR]
    for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
@@ -37,8 +47,7 @@ RunInfo::RunInfo() : Run(-1), RUNID(0.0), fRunName(100, ' '),
    NFilledBunch          = 0;      // NFilledBunch;
    NActiveBunch          = 0;      // NActiveBunch;
    NDisableBunch         = 0;      // NDisableBunch,
-   for (int i=0; i<NBUNCH; i++) { DisableBunch[i] = 0; }
-   //DisableBunch[NBUNCH]
+   for (int i=0; i<N_BUNCHES; i++) { DisableBunch[i] = 0; }
 }
 
 
@@ -126,7 +135,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> NFilledBunch;
       buf >> NActiveBunch;
       buf >> NDisableBunch;
-      buf.ReadFastArray(DisableBunch, NBUNCH);
+      buf.ReadFastArray(DisableBunch, N_BUNCHES);
 
    } else {
       //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
@@ -161,7 +170,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << NFilledBunch;
       buf << NActiveBunch;
       buf << NDisableBunch;
-      buf.WriteFastArray(DisableBunch, NBUNCH);
+      buf.WriteFastArray(DisableBunch, N_BUNCHES);
    }
 }
 
@@ -437,7 +446,7 @@ void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
       ccutwl = (int) cfginfo->data.chan[3].ETCutW;
       ccutwu = (int) cfginfo->data.chan[3].ETCutW;
    } else if (gAnaInfo.CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n",gAnaInfo.MassSigma);
+      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo.MassSigma);
    } else {
       ccutwl = (int) gAnaInfo.widthl;
       ccutwu = (int) gAnaInfo.widthu;
@@ -488,4 +497,43 @@ void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
    // print comment
    if (strlen(gRunDb.comment_s.c_str())>3)
      printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
+} //}}}
+
+
+// Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
+// Input       : char RunID[]
+void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
+{ //{{{
+  char ID = *(strrchr(RunID,'.')+1);
+
+  switch (ID) {
+  case '0':
+     fPolBeam      = 2;
+     PolarimetryID = 1; // blue polarimeter-1
+     fPolStream    = 1;
+     break;
+  case '1':
+     fPolBeam      = 1;
+     PolarimetryID = 1; // yellow polarimeter-1
+     fPolStream    = 2;
+     break;
+  case '2':
+     fPolBeam      = 2;
+     PolarimetryID = 2; // blue polarimeter-2
+     fPolStream    = 2;
+     break;
+  case '3':
+     fPolBeam      = 1;
+     PolarimetryID = 2; // yellow polarimeter-2
+     fPolStream    = 1;
+     break;
+  default:
+     gSystem->Error("SetPolarimetrIdRhicBeam", "Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
+     break;
+  }
+
+  /*
+  fprintf(stdout,"RUNINFO: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
+          gRunInfo.RUNID, gRunInfo.fPolBeam, gRunInfo.PolarimetryID);
+  */
 } //}}}
