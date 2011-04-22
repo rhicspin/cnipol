@@ -53,68 +53,66 @@ class RunSelector {
          $this->sqlWhere .= " AND target_id = {$_GET['ti']}";
    }
 
+
    function PrintForm()
    {
-       // Create a table with the necessary header informations
-       echo "<form action='".$_SERVER['PHP_SELF']."' method='get' name='formRunSelector'>\n";
-       echo '<div align=center>
-             <table border=0>';
+      global $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
-       echo "  <tr>
-               <td colspan=4 class=padding2><b>Run:</b>
-               <input type=text name=rn>
+      // Create a table with the necessary header informations
+      echo "<form action='".$_SERVER['PHP_SELF']."' method='get' name='formRunSelector'>\n";
+      echo '<div align=center>
+            <table border=0>';
 
-               <tr>
-               <td class=\"align_cm padding2\"><b>Polarimeter:</b>
-	               <select name='pi'>
-						<option value=''></option>
-						<option value='0'>B1U</option>
-						<option value='1'>Y1D</option>
-						<option value='2'>B2D</option>
-						<option value='3'>Y2U</option>
-						</select>
+      echo "  <tr>
+              <td colspan=4 class=padding2><b>Run:</b>
+              <input type=text name=rn>
+              &nbsp;&nbsp;&nbsp;
+              Use \"%\" to match any number of characters, use \"_\" to match any single character in run name
 
-               <td class=\"align_cm padding2\"><b>Type:</b>
-	               <select name='mt'>
-						<option value=''></option>
-						<option value='0'>undef</option>
-						<option value='1'>alpha</option>
-						<option value='2'>sweep</option>
-						<option value='4'>fixed</option>
-						<option value='8'>ramp</option>
-						<option value='16'>emit</option>
-						</select>
+              <tr>
+              <td class=\"align_cm padding2\"><b>Polarimeter:</b>\n";
 
-               <td class=\"align_cm padding2\"><b>Beam Energy:</b>
-	               <select name='be'>
-						<option value=''></option>
-						<option value='24'>24</option>
-						<option value='100'>100</option>
-						<option value='250'>250</option>
-						</select>
+      $this->HtmlSelectField($POLARIMETER_ID, "pi");
 
-               <td class=\"align_cm padding2\"><b>Target:</b>
-	               <select name='to'>
-						<option value=''></option>
-						<option value='H'>H</option>
-						<option value='V'>V</option>
-						</select>
-	               <select name='ti'>
-						<option value=''></option>
-						<option value='1'>1</option>
-						<option value='2'>2</option>
-						<option value='3'>3</option>
-						<option value='4'>4</option>
-						<option value='5'>5</option>
-						<option value='6'>6</option>
-						</select>
-            ";
+      echo "  <td class=\"align_cm padding2\"><b>Type:</b>\n";
 
-       echo "<tr>\n";
-       echo "   <td colspan=5 class=\"align_cm padding2\">\n";
-       echo "   <p><input type='submit' name=sb value='Select'>\n";
-       echo "</table>\n";
-       echo "</div>\n";
-       echo "</form>\n";
+      $this->HtmlSelectField($MEASTYPE, "mt");
+
+      echo "  <td class=\"align_cm padding2\"><b>Beam Energy:</b>\n";
+
+      $this->HtmlSelectField($BEAM_ENERGY, "be");
+
+      echo "  <td class=\"align_cm padding2\"><b>Target:</b>\n";
+
+      $this->HtmlSelectField($TARGET_ORIENT, "to");
+      $this->HtmlSelectField($TARGET_ID, "ti");
+
+      echo "<tr>\n";
+      echo "   <td colspan=5 class=\"align_cm padding2\">\n";
+      echo "   <p><input type='submit' name=sb value='Select'>\n";
+      echo "</table>\n";
+      echo "</div>\n";
+      echo "</form>\n";
+   }
+
+
+   function HtmlSelectField($options, $v="")
+   {
+      //$key = key($vpair);
+
+      $html  = "<select name='$v'>\n";
+      $html .= "<option value=''></option>\n";
+
+      foreach($options as $ovalue => $oname) {
+
+         if (isset($_GET[$v]) && array_key_exists($_GET[$v], $options) && ($_GET[$v] == $ovalue) ) $select = "selected";
+         else $select = "";
+
+         $html .= "<option value='$ovalue' $select>$oname</option>\n";
+      }
+
+      $html .= "</select>\n";
+
+      print $html;
    }
 }
