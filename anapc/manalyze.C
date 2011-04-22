@@ -31,7 +31,7 @@ void initialize()
 {
    gStyle->SetOptTitle(0);
    gStyle->SetOptStat(0);
-   gStyle->SetPadRightMargin(0.01);
+   gStyle->SetPadRightMargin(0.05);
 
    struct tm tm;
    time_t firstDay;
@@ -47,6 +47,7 @@ void initialize()
    switch (gPolId) {
    case 0:
       filelist = "list_B1U.dat"; color = kBlue-4; break;
+      //filelist = "list_B1U_150XX.dat"; color = kBlue-4; break;
    case 1:
       filelist = "list_Y1D.dat"; color = kOrange; break;
    case 2:
@@ -54,8 +55,8 @@ void initialize()
    case 3:
       filelist = "list_Y2U.dat"; color = kOrange; break;
    default:
-      //filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
-      filelist = "list_Y1D_ramp.dat"; color = kOrange; break;
+      filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
+      //filelist = "list_Y1D_ramp.dat"; color = kOrange; break;
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
    }
@@ -200,8 +201,28 @@ void initialize()
    hRVsFillBin->SetMarkerSize(1);
    hRVsFillBin->SetMarkerColor(color);
 
+   // Target periods
+   TGraphErrors *grHTargetVsFill = new TGraphErrors();
+   grHTargetVsFill->SetName("grHTargetVsFill");
+   grHTargetVsFill->SetMarkerStyle(kFullCircle);
+   grHTargetVsFill->SetMarkerSize(0.8);
+   grHTargetVsFill->SetMarkerColor(color-1);
+
+   TGraphErrors *grVTargetVsFill = new TGraphErrors();
+   grVTargetVsFill->SetName("grVTargetVsFill");
+   grVTargetVsFill->SetMarkerStyle(34);
+   grVTargetVsFill->SetMarkerSize(0.8);
+   grVTargetVsFill->SetMarkerColor(color+1);
+
+   TH2* hTargetVsFill = new TH2F("hTargetVsFill", "hTargetVsFill", 1, 14900, 15500, 1, 0, 7);
+   hTargetVsFill->GetXaxis()->SetTitle("Fill");
+   hTargetVsFill->GetYaxis()->SetTitle("Target Id");
+   hTargetVsFill->GetListOfFunctions()->Add(grHTargetVsFill, "p");
+   hTargetVsFill->GetListOfFunctions()->Add(grVTargetVsFill, "p");
+
 
    UInt_t i = 0;
+   UInt_t iHTarget = 0, iVTarget = 0;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -315,8 +336,18 @@ void initialize()
       Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
       Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
+      // Get target id as integer
+      stringstream sstr;
+      UInt_t targetId;
+      sstr << gRC->fRunInfo->targetID;
+      sstr >> targetId;
+
+      Char_t targetOrient = gRC->fRunInfo->target;
+
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
-      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f \n", runId, strTime, beamEnergy, asymmetry, asymmetry_err, ana_power, polarization, polarization_err);
+      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %c%d \n", runId, strTime,
+         beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
+         polarization_err, targetOrient, targetId);
 
       if (gEnergyId == 0 && beamEnergy !=  24) continue;
       if (gEnergyId == 1 && beamEnergy != 250) continue;
@@ -352,11 +383,23 @@ void initialize()
       grPolarVsFill->SetPoint(i, runId, polarization);
       grPolarVsFill->SetPointError(i, 0, polarization_err);
 
-      grRVsTime->SetPoint(i, day, profileRatio);
+      grRVsTime->SetPoint(i, gRC->fRunInfo->StartTime, profileRatio);
       grRVsTime->SetPointError(i, 0, profileRatioErr);
 
       grRVsFill->SetPoint(i, runId, profileRatio);
       grRVsFill->SetPointError(i, 0, profileRatioErr);
+      
+      // Target periods
+      if (targetOrient == 'H') {
+         grHTargetVsFill->SetPoint(iHTarget, runId, targetId);
+         iHTarget++;
+      }
+
+      if (targetOrient == 'V') {
+         grVTargetVsFill->SetPoint(iVTarget, runId, targetId);
+         iVTarget++;
+      }
+
 
       //if (i == 0) havrg = h;
       //else havrg->Add(h);
@@ -365,6 +408,8 @@ void initialize()
       i++;
       delete f;
    }
+
+   Double_t xmin, ymin, xmax, ymax;
 
    string imageName;
    TCanvas *c = new TCanvas("cName", "cName", 1200, 600);
@@ -404,16 +449,16 @@ void initialize()
    imageName = "polar_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
-   //hPolarVsTime->GetListOfFunctions()->Add(grPolarVsTime, "p");
-   //hPolarVsTime->Draw();
-   grPolarVsTime->Draw("AP");
-   //grPolarVsTime->Print();
-   grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeDisplay(1);
-   //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%d/%m/%y%F2011-02-01 12:00:00");
-   grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%d/%m/%y");
-   //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeOffset(6*3600, "local");
-   //grPolarVsTime->GetHistogram()->GetXaxis()->SetTimeFormat("%H:%M:%S");
-   //grPolarVsTime->Update("AP");
+   hPolarVsTime->GetListOfFunctions()->Add(grPolarVsTime, "p");
+   grPolarVsTime->ComputeRange(xmin, ymin, xmax, ymax);
+   printf("xmin, xmax: %f, %f\n", xmin, xmax);
+   //gStyle->SetTimeOffset();
+   //hPolarVsTime->GetXaxis()->SetTimeOffset(6*3600, "local");
+   hPolarVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
+   hPolarVsTime->GetXaxis()->SetLimits(xmin, xmax);
+   hPolarVsTime->GetXaxis()->SetTimeDisplay(1);
+   hPolarVsTime->GetXaxis()->SetTimeFormat("%b %d");
+   hPolarVsTime->Draw();
    c->Update();
    imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
@@ -429,10 +474,27 @@ void initialize()
    imageName = "hPolarVsFillBin_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
+   grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
+   printf("xmin, xmax: %f, %f\n", xmin, xmax);
+   TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
+   grRVsTime->Fit("f2", "R");
+
    hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
+   hRVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
+   hRVsTime->GetXaxis()->SetLimits(xmin, xmax);
+   hRVsTime->GetXaxis()->SetTimeDisplay(1);
+   hRVsTime->GetXaxis()->SetTimeFormat("%b %d");
    hRVsTime->Draw();
    imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
+
+   utils::RemoveOutliers(grRVsFill, 2, 3);
+
+   TF1 *fRVsFill = new TF1("fRVsFill", "[0]");
+   fRVsFill->SetParameter(0, 0.02);
+   //fRVsFill->SetParLimits(0, -0.2, 0.5);
+   //grRVsFill->Print("all");
+   grRVsFill->Fit("fRVsFill");
 
    hRVsFill->GetListOfFunctions()->Add(grRVsFill, "p");
    hRVsFill->Draw();
@@ -441,7 +503,17 @@ void initialize()
 
    utils::BinGraph(grRVsFill, hRVsFillBin);
 
+   TF1 *fRVsFillBin = new TF1("fRVsFillBin", "[0]");
+   fRVsFillBin->SetParameters(0, 0.05);
+   //fRVsFillBin->SetParLimits(0, -0.2, 0.2);
+   hRVsFillBin->Fit("fRVsFillBin");
+
    hRVsFillBin->Draw();
-   imageName = "profr_fill_bin_" + filelist + "_" + sEnergyId + ".png";
+   imageName = "hRVsFillBin_" + filelist + "_" + sEnergyId + ".png";
+   c->SaveAs(imageName.c_str());
+
+   // Target periods
+   hTargetVsFill->Draw();
+   imageName = "hTargetVsFill_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 }

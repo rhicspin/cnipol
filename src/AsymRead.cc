@@ -1084,8 +1084,15 @@ void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
    if (str.find("7")         == str.size()-1) gRunInfo.targetID='7';
    if (str.find("8")         == str.size()-1) gRunInfo.targetID='-';
 
-   if (str.find('V')         != string::npos) run.target_orient = 'V';
-   if (str.find('H')         != string::npos) run.target_orient = 'H';
+   if (str.find('V') != string::npos) {
+      gRunInfo.fTargetOrient = 'V';
+      run.target_orient      = 'V';
+   }
+
+   if (str.find('H') != string::npos) {
+      gRunInfo.fTargetOrient = 'H';
+      run.target_orient      = 'H';
+   }
 
    //cout << "target id str: " << str << " " << run.target_orient << endl;
 
@@ -1100,18 +1107,18 @@ void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
    // in case this information isn't decorded correctly
    // within REC_PCTARGET routine. If the target is horizontal,
    // then mask 90 degree detector.
-   if (gRunInfo.target == '-') {
+   if (gRunInfo.fTargetOrient == '-') {
  
       if (str.find("Vert") == 0 || str.find("V") == 0) {
-         gRunInfo.target   = 'V';
-         run.target_orient = 'V';
-         tgt.VHtarget      = 0;
+         gRunInfo.fTargetOrient = 'V';
+         run.target_orient      = 'V';
+         tgt.VHtarget           = 0;
       }
  
       if (str.find("Horz") == 0 || str.find("H") == 0) {
-         gRunInfo.target   = 'H';
-         run.target_orient = 'H';
-         tgt.VHtarget      = 1;
+         gRunInfo.fTargetOrient = 'H';
+         run.target_orient      = 'H';
+         tgt.VHtarget           = 1;
          // This is too late to reconfigure strip mask because this routine is
          // executed at the end of event loop. Too bad. /* March 5,'09 IN */
          //      mask.detector = 0x2D;
@@ -1287,19 +1294,19 @@ void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
               (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1] ) )
          {
             cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
-            gRunInfo.target = '-';
+            gRunInfo.fTargetOrient = '-';
          }
 
          if (tgt_identifyV) {
-            tgt.VHtarget      = 0;
-            gRunInfo.target   = 'V';
-            run.target_orient = 'V';
+            tgt.VHtarget           = 0;
+            gRunInfo.fTargetOrient = 'V';
+            run.target_orient      = 'V';
             cout << "Vertical Target in finite position" << endl;
 
          } else if (tgt_identifyH) {
-            tgt.VHtarget      = 1;
-            gRunInfo.target   = 'H';
-            run.target_orient = 'H';
+            tgt.VHtarget           = 1;
+            gRunInfo.fTargetOrient = 'H';
+            run.target_orient      = 'H';
             cout << "Horizontal Target in finite position" << endl;
 
          } else {

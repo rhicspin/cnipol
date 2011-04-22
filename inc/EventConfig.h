@@ -21,6 +21,7 @@
 #include "RunInfo.h"
 #include "DbEntry.h"
 #include "AnaResult.h"
+//#include "MseRunInfo.h"
 
 #include "Calibrator.h"
 
@@ -38,7 +39,7 @@ public:
    DbEntry                 *fDbEntry; //!
    Calibrator              *fCalibrator;
    AnaResult               *fAnaResult;
-   MseRunInfoX             *fMseRunInfoX; //!
+   MseRunInfoX             *fMseRunInfoX;
 
 public:
 
@@ -50,8 +51,12 @@ public:
    void  PrintAsPhp(FILE *f=stdout) const;
    void  PrintAsConfig(FILE *f=stdout) const;
    float ConvertToEnergy(UShort_t adc, UShort_t chId);
+   //void  Streamer(TBuffer &R__b);
 
-   ClassDef(EventConfig, 2)
+   ClassDef(EventConfig, 3)
 };
+
+TBuffer & operator<<(TBuffer &buf, EventConfig *&rec);
+TBuffer & operator>>(TBuffer &buf, EventConfig *&rec);
 
 #endif

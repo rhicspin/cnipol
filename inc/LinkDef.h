@@ -4,7 +4,9 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class EventConfig;
+//#pragma link off class MseRunInfoX;
+
+#pragma link C++ class EventConfig-!;
 #pragma link C++ class AnaEvent;
 #pragma link C++ class AnaEventId;
 #pragma link C++ class Calibrator;

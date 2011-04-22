@@ -58,7 +58,7 @@ public:
    UShort_t     fPolStream;
    int          PolarimetryID;
    int          MaxRevolution;
-   char         target;
+   char         fTargetOrient;
    char         targetID;
    char         TgtOperation[16];
    int          ActiveDetector[NDETECTOR];
