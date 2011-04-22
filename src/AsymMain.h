@@ -11,11 +11,7 @@
 #include "rpoldata.h"
 
 int  BunchSelect(int bid);
-int  GetPolarimetryID_and_RHICBeam(char RunID[]);
-void ReadRampTiming(char *filename);
 void reConfig(recordConfigRhicStruct *cfginfo);
-void ConfigureActiveStrip(int mask);
 //int DisabledDet(int det);
-void Initialization();
 
 #endif

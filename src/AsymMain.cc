@@ -50,9 +50,6 @@ int main(int argc, char *argv[])
    extern char *optarg;
    //extern int optind;
 
-   // Initialize Variables
-   Initialization();
-
    // config directories
    confdir = getenv("CONFDIR");
 
@@ -337,10 +334,6 @@ int main(int argc, char *argv[])
    // Set to 0 when "RunID" contains alphabetical chars
    gRunInfo.RUNID = strtod(gRunInfo.fRunName.c_str(), NULL);
 
-   // Get PolarimetryID and RHIC Beam (Yellow or Blue) from RunID
-   // ds: not needed anymore since we are getting this info from raw data for all runs
-   //if (!gAnaInfo.CMODE) GetPolarimetryID_and_RHICBeam(RunID);
-
    // For normal runs, RUNID != 0. Then read run conditions from run.db.
    // Otherwise, data filename with characters skip readdb and reconfig routines
    // assuming these are energy calibration or test runs.
@@ -592,76 +585,6 @@ int BunchSelect(int bid)
 } //}}}
 
 
-// Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
-// Input       : char RunID[]
-int GetPolarimetryID_and_RHICBeam(char RunID[])
-{ //{{{
-  char ID = *(strrchr(RunID,'.')+1);
-
-  switch (ID) {
-  case '0':
-    gRunInfo.fPolBeam      = 2;
-    gRunInfo.PolarimetryID = 1; // blue polarimeter-1
-    gRunInfo.fPolStream    = 1;
-    break;
-  case '1':
-    gRunInfo.fPolBeam      = 1;
-    gRunInfo.PolarimetryID = 1; // yellow polarimeter-1
-    gRunInfo.fPolStream    = 2;
-    break;
-    break;
-  case '2':
-    gRunInfo.fPolBeam      = 2;
-    gRunInfo.PolarimetryID = 2; // blue polarimeter-2
-    gRunInfo.fPolStream    = 2;
-    break;
-  case '3':
-    gRunInfo.fPolBeam      = 1;
-    gRunInfo.PolarimetryID = 2; // yellow polarimeter-2
-    gRunInfo.fPolStream    = 1;
-    break;
-  default:
-    fprintf(stdout, "Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
-    break;
-  }
-
-  /*
-  fprintf(stdout,"RUNINFO: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
-          gRunInfo.RUNID, gRunInfo.fPolBeam, gRunInfo.PolarimetryID);
-  */
-
-  return 0;
-} //}}}
-
-
-// Read the parameter file
-// Ramp timing file
-void ReadRampTiming(char *filename)
-{ //{{{
-   printf("\nReading ... cut parameter file : %s \n", filename);
-
-   ifstream rtiming;
-   rtiming.open(filename);
-
-   if (!rtiming) {
-      cerr << "failed to open ramp timing file" <<endl;
-      exit(1);
-   }
-
-   memset(ramptshift, 0, sizeof(ramptshift));
-
-   float runt;
-   int index = 0;
-
-   while (!rtiming.eof()) {
-      rtiming >> runt >> ramptshift[index] ;
-      index ++;
-   }
-
-   rtiming.close();
-} //}}}
-
-
 // Calibration parameter
 void reConfig(TRecordConfigRhicStruct *cfginfo)
 { //{{{
@@ -756,30 +679,3 @@ int DisabledDet(int det)
 
 } //}}}
 */
-
-
-// Description : Initialize variables
-void Initialization()
-{ //{{{
-   for (int i=0; i<NSTRIP; i++) {
-      feedback.mdev[i] = 0.;
-      feedback.RMS[i]  = gAnaInfo.OneSigma;
-   }
- 
-   //gRunInfo.TgtOperation = "fixed";
-   strcpy(gRunInfo.TgtOperation, "fixed");
- 
-   // Initiarize Strip counters
-   for (int i=0; i<NSTRIP; i++) {
- 
-      for (int j=0; j<3; j++) {
-         cntr.reg.NStrip[j][i] = cntr.alt.NStrip[j][i] = 0;
-         cntr.phx.NStrip[j][i] = cntr.str.NStrip[j][i] = 0;
-      }
- 
-      for (int j=0; j<3; j++) {
-         for(int kk=0; kk<MAXDELIM; kk++)
-            cntr_tgt.reg.NStrip[kk][j][i] = 0;
-      }
-   }
-} //}}}

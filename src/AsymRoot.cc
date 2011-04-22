@@ -741,19 +741,19 @@ void AsymRoot::BookHists()
    // Bunch Directory
    Bunch->cd();
    sprintf(htitle,"%.3f : Counts per Bunch ", gRunInfo.RUNID);
-   bunch_dist = new TH1F("bunch_dist", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   bunch_dist = new TH1F("bunch_dist", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
    bunch_dist -> GetYaxis() -> SetTitle("Counts");
    bunch_dist -> SetFillColor(13);
  
    sprintf(htitle,"%.3f : Wall Current Monitor", gRunInfo.RUNID);
-   wall_current_monitor = new TH1F("wall_current_monitor", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   wall_current_monitor = new TH1F("wall_current_monitor", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
    wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
    wall_current_monitor -> SetFillColor(13);
  
    sprintf(htitle,"%.3f : Specific Luminosity", gRunInfo.RUNID);
-   specific_luminosity = new TH1F("specific_luminosity", htitle, NBUNCH, -0.5, NBUNCH-0.5);
+   specific_luminosity = new TH1F("specific_luminosity", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
    specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
    specific_luminosity -> SetFillColor(13);

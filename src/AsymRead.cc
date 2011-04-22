@@ -540,21 +540,7 @@ void readloop(MseRunInfoX &run)
          continue;
       }
 
-      //ds
       //printf("type: %#X\n", (rec.header.type & REC_TYPEMASK));
-
-      // Distinguish between blue & yellow beam.
-      // Presently, it overwrites pre-defined gRunInfo.fPolBeam
-      // in GetPolarimetryID_and_RHICBeam(char RunID[]).
-      // Could be used as cross check for the future
-      //switch (rec.header.type & REC_BEAMMASK) {
-      //case REC_YELLOW:
-      //   gRunInfo.fPolBeam = 1;
-      //   break;
-      //case REC_BLUE:
-      //   gRunInfo.fPolBeam = 0;
-      //   break;
-      //}
 
       //Long_t my_i;
       //Long_t *my_pointer;
@@ -1347,7 +1333,7 @@ void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
       tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo.target_count_mm ;
    }
 
-   if (nTgtIndex > TGT_OPERATION) //gRunInfo.TgtOperation=" scan";
+   if (nTgtIndex > TGT_OPERATION)
       strcpy(gRunInfo.TgtOperation, " scan");
 
    printf("Number of delimiters: %4d\n", ndelim);

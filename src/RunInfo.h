@@ -62,15 +62,15 @@ public:
    char         targetID;
    char         TgtOperation[16];
    int          ActiveDetector[NDETECTOR];
-   int          ActiveStrip[NSTRIP];
+   int          ActiveStrip[N_CHANNELS];
    int          NActiveStrip;
    int          NDisableStrip;
-   int          fDisabledChannels[NSTRIP];
+   int          fDisabledChannels[N_CHANNELS];
    //std::vector<UShort_t>   fDisabledChannels;
    int          NFilledBunch;
    int          NActiveBunch;
    int          NDisableBunch;
-   int          DisableBunch[NBUNCH];
+   int          DisableBunch[N_BUNCHES];
 
 public:
 
@@ -89,6 +89,7 @@ public:
    void  Update(DbEntry &rundb);
    void  Update(MseRunInfoX& run);
    void  ConfigureActiveStrip(int mask);
+   void  SetPolarimetrIdRhicBeam(const char* RunID);
 };
 
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);

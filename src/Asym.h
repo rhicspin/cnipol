@@ -87,11 +87,11 @@ struct StructMask {
 
 struct StructAnomaly {
    int nstrip;
-   int st[NSTRIP];
+   int st[N_CHANNELS];
    float bad_st_rate;
    int strip_err_code;
    int nbunch;
-   int bunch[NBUNCH];
+   int bunch[N_BUNCHES];
    float bad_bunch_rate;
    int bunch_err_code;
 };
@@ -126,12 +126,14 @@ struct StructHistStat {
 };
 
 struct StructFeedBack {
-  float RMS[NSTRIP];
-  float mdev[NSTRIP];
-  float tedev[NSTRIP];
-  float err[NSTRIP];
-  float chi2[NSTRIP];
-  float strip[NSTRIP];
+   float RMS[N_CHANNELS];
+   float mdev[N_CHANNELS];
+   float tedev[N_CHANNELS];
+   float err[N_CHANNELS];
+   float chi2[N_CHANNELS];
+   float strip[N_CHANNELS];
+
+   StructFeedBack();
 };
 
 struct StructReadFlag {
@@ -151,28 +153,38 @@ struct StructFlag {
   int EXE_ANOMALY_CHECK;
 };
 
-struct StructStripCounter {
-  long int NStrip[3][NSTRIP];   // strip counters for 3 different spin states
+struct StructStripCounter
+{
+   long int NStrip[NUM_SPIN_STATES][N_CHANNELS];   // strip counters for 3 different spin states
+
+   StructStripCounter();
 };
 
-struct StructStripCounterTgt {
-  long int NStrip[MAXDELIM][3][NSTRIP]; // strip counters for 3 different spin states
+struct StructStripCounterTgt
+{
+   long int NStrip[MAXDELIM][NUM_SPIN_STATES][N_CHANNELS]; // strip counters for 3 different spin states
+
+   StructStripCounterTgt();
 };
 
 struct StructCounter {
    long int good_event;
-   long int revolution;
-   long int tgtMotion;
+   long int revolution; // revolution number
+   long int tgtMotion;  // target motion entries
    long int good[MAXDELIM];
    StructStripCounter reg, alt, phx, str;
+
+   StructCounter();
 };
 
 struct StructCounterTgt {
-  long int good_event;
-  long int revolution;
-  long int tgtMotion;
-  long int good[MAXDELIM];
-  StructStripCounterTgt reg;
+   long int good_event; 
+   long int revolution;
+   long int tgtMotion;
+   long int good[MAXDELIM];
+   StructStripCounterTgt reg;
+
+   StructCounterTgt();
 };
 
 //struct StructTarget {
@@ -192,23 +204,23 @@ struct StructCounterTgt {
 //};
 
 struct StructBunchPattern {
-  int bunchpat[NBUNCH];
+  int bunchpat[N_BUNCHES];
 };
 
 struct StructHist {
-  int nxbin;
+  int   nxbin;
   float xmin;
   float xmax;
-  int nybin;
+  int   nybin;
   float ymin;
   float ymax;
 };
 
 // Bunch by Bunch
 struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
-   float Ax90[2][NBUNCH];
-   float Ax45[2][NBUNCH];
-   float Ay45[2][NBUNCH];
+   float Ax90[2][N_BUNCHES];
+   float Ax45[2][N_BUNCHES];
+   float Ay45[2][N_BUNCHES];
    struct Ave {
       float Ax90[2];  // bunch averaged asymmetry 
       float Ax45[2];
@@ -220,36 +232,36 @@ struct BunchAsym { // array[0]:asymmetry, array[1]:asymmetry error
 };
 
 struct StructSpeLumi {
-   float Cnts[NBUNCH];
-   float dCnts[NBUNCH];
+   float Cnts[N_BUNCHES];
+   float dCnts[N_BUNCHES];
    float ave;
    float max;
    float min;
 };
 
 struct StructStrip {
-  float average[1];
-  float allowance;
-  float max;
-  int   st;
+   float average[1];
+   float allowance;
+   float max;
+   int   st;
 };
 
 struct StructEnergyCorr {
-  float p[3][NSTRIP];
-  float perr[3][NSTRIP];
+   float p[3][N_CHANNELS];
+   float perr[3][N_CHANNELS];
 };
 
 struct StructStripCheck {
-  StructStrip dev, chi2, p1, width, evnt;
-  StructEnergyCorr ecorr;
+   StructStrip dev, chi2, p1, width, evnt;
+   StructEnergyCorr ecorr;
 };
 
 struct StructBunch {
-  float average[1];
-  float sigma_over_mean;
-  float sigma;
-  float allowance;
-  float max_dev;
+   float average[1];
+   float sigma_over_mean;
+   float sigma;
+   float allowance;
+   float max_dev;
 };
 
 struct StructBunchCheck {
@@ -259,23 +271,23 @@ struct StructBunchCheck {
 // Hbook Associated Stuff
 extern "C" {
 
-  void  hhbook1d_(int*, char*, int*, float*, float*,  int);
-  void  hhbook2d_(int*, char*, int*, float*, float*, int*, float*, float*,  int);
-  void  hhf1_(int*, float*, float*);
-  void  hhf2_(int*, float*, float*, float*);
-  void  hhlimit_(int*);
-  void  hhropen_(int*, char*, char*, char*, int*, int*,  int,int,int);
-  void  hhrend_(char*, int);
-  void  hhrout_(int*, int*, char*, int);
-  void  hhrammar_(float*, int*);
-  void  hhrebin_(int*, float*, float*, float*, float*, int*, int*, int*);
-  void  hhpak_(int*, float*);
-  void  hhpake_(int*, float*);
-  float hhmax_(int*);
-  float hhstati_(int*, int*, char*, int*, int);
-  //void  hhkind_(int*, int*, char*, int);
-  void  hfith_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
-  void  hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
+void  hhbook1d_(int*, char*, int*, float*, float*,  int);
+void  hhbook2d_(int*, char*, int*, float*, float*, int*, float*, float*,  int);
+void  hhf1_(int*, float*, float*);
+void  hhf2_(int*, float*, float*, float*);
+void  hhlimit_(int*);
+void  hhropen_(int*, char*, char*, char*, int*, int*,  int,int,int);
+void  hhrend_(char*, int);
+void  hhrout_(int*, int*, char*, int);
+void  hhrammar_(float*, int*);
+void  hhrebin_(int*, float*, float*, float*, float*, int*, int*, int*);
+void  hhpak_(int*, float*);
+void  hhpake_(int*, float*);
+float hhmax_(int*);
+float hhstati_(int*, int*, char*, int*, int);
+//void  hhkind_(int*, int*, char*, int);
+void  hfith_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
+void  hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, float*, int, int);
 }
 
 // Some utility routines to determin histogram range
@@ -298,6 +310,7 @@ void  DrawVertLine (TH1 *h, float x, float y, int color, int lwidth);
 void  binary_zero(int n, int mb);
 void  sqass(float A, float B, float C, float D, float *asym, float *easym);
 
-TGraphErrors* AsymmetryGraph(int Mode, int N, float x[], float y[], float ex[], float ey[]);
+TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey);
+void  ReadRampTiming(char *filename);
 
 #endif
