@@ -202,7 +202,7 @@ void AsymRoot::RootFile(string filename)
 
 /** */
 void AsymRoot::CreateTrees()
-{
+{ //{{{
    if (fTreeFileId > 99) {
       Fatal("CreateTrees", "fTreeFileId is too big");
       exit(-1);
@@ -241,7 +241,7 @@ void AsymRoot::CreateTrees()
    }
 
    //fOutTreeFile->ls();
-}
+} //}}}
 
 
 /** */
@@ -438,7 +438,7 @@ void AsymRoot::ProcessProfileHists()
  *
  */
 void AsymRoot::AddChannelEvent()
-{
+{ //{{{
    if (gAnaInfo.SAVETREES.test(0))
       fRawEventTree->Fill();
 
@@ -478,14 +478,14 @@ void AsymRoot::AddChannelEvent()
          CreateTrees();
       }
    }
-}
+} //}}}
 
 
 /**
  *
  */
 void AsymRoot::WriteTreeFile()
-{
+{ //{{{
    fOutTreeFile->cd();
 
    // Write run configuration object
@@ -511,7 +511,7 @@ void AsymRoot::WriteTreeFile()
       fAnaEventTree->Delete();
       //delete fAnaEventTree;
    }
-}
+} //}}}
 
 
 /**
@@ -607,7 +607,7 @@ void AsymRoot::SaveChannelTrees()
  *
  */
 void AsymRoot::SaveEventTree()
-{
+{ //{{{
    if (!gAnaInfo.SAVETREES.test(2)) return;
 
    if (fChannelEvents.size() <= 0) {
@@ -647,12 +647,12 @@ void AsymRoot::SaveEventTree()
          fAnaEvent->fChannels.clear();
       }
    }
-}
+} //}}}
 
 
 // Description : Book AsymRoot Histograms
 void AsymRoot::BookHists()
-{
+{ //{{{
    Char_t hname[100], htitle[100];
  
    rootfile->cd();
@@ -779,13 +779,13 @@ void AsymRoot::BookHists()
    asym_vs_bunch_y45    = new TH2F();
    asym_sinphi_fit      = new TH2F();
    scan_asym_sinphi_fit = new TH2F();
-}
+} //}}}
 
 
 // Description : Book ROOT Functions and Histograms using Feedback infomations
 //             : This routine shuould be called after Feedback operation
-int AsymRoot::BookHists2(StructFeedBack &feedback)
-{
+void AsymRoot::BookHists2(StructFeedBack &feedback)
+{ //{{{
    rootfile->cd();
    Kinema->cd();
  
@@ -840,19 +840,10 @@ int AsymRoot::BookHists2(StructFeedBack &feedback)
       energy_cut_h[i] ->SetLineColor(Color);
       energy_cut_h[i] ->SetLineWidth(Width);
    }
- 
-   return 0;
-}
+} //}}}
 
 
-//
-// Class name  : AsymRoot
-// Method name : DeleteHistogram
-//
 // Description : Delete Unnecessary Histograms
-//             :
-// Input       :
-// Return      :
 //
 void AsymRoot::DeleteHistogram()
 { //{{{
@@ -870,7 +861,7 @@ void AsymRoot::DeleteHistogram()
 
 // Description : Write out objects in memory and dump in rootfile before closing it
 void AsymRoot::Finalize()
-{
+{ //{{{
   rootfile->cd();
   Kinema->cd();
 
@@ -912,7 +903,7 @@ void AsymRoot::Finalize()
   }
 
   delete fEventConfig;
-}
+} //}}}
 
 
 /** */
