@@ -4,10 +4,12 @@
  *****************************************************************************/
 
 
-#ifndef CnipolTimeMHists_h
-#define CnipolTimeMHists_h
+#ifndef MAsymRunHists_h
+#define MAsymRunHists_h
 
 #include "TDirectoryFile.h"
+#include "TH2F.h"
+#include "TGraphErrors.h"
 
 #include "AsymHeader.h"
 
@@ -18,23 +20,23 @@
 /**
  *
  */
-class CnipolTimeMHists : public DrawObjContainer
+class MAsymRunHists : public DrawObjContainer
 {
 public:
 
 
 public:
 
-   CnipolTimeMHists();
-   CnipolTimeMHists(TDirectory *dir);
-   ~CnipolTimeMHists();
+   MAsymRunHists();
+   MAsymRunHists(TDirectory *dir);
+   ~MAsymRunHists();
 
-   void  BookHists(std::string cutid="");
-   //virtual void Print(const Option_t* opt="") const;
-   void  Print(const Option_t* opt="") const;
-   void  Fill(ChannelEvent *ch, std::string cutid="");
+   void BookHists(std::string sid="");
+   void Fill(ChannelEvent *ch, std::string cutid="");
+   void Fill(Int_t n, Double_t* hData);
+   void PostFill();
 
-   ClassDef(CnipolTimeMHists, 1)
+   ClassDef(MAsymRunHists, 1)
 };
 
 #endif

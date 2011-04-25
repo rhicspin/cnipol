@@ -3,36 +3,36 @@
  *                                                                           *
  *****************************************************************************/
 
-#include "CnipolTimeMHists.h"
+#include "MAsymRunHists.h"
 
 #include "RunInfo.h"
 
 
-ClassImp(CnipolTimeMHists)
+ClassImp(MAsymRunHists)
 
 using namespace std;
 
 /** Default constructor. */
-CnipolTimeMHists::CnipolTimeMHists() : DrawObjContainer()
+MAsymRunHists::MAsymRunHists() : DrawObjContainer()
 {
    BookHists();
 }
 
 
-CnipolTimeMHists::CnipolTimeMHists(TDirectory *dir) : DrawObjContainer(dir)
+MAsymRunHists::MAsymRunHists(TDirectory *dir) : DrawObjContainer(dir)
 {
    BookHists();
 }
 
 
 /** Default destructor. */
-CnipolTimeMHists::~CnipolTimeMHists()
+MAsymRunHists::~MAsymRunHists()
 {
 }
 
 
 /** */
-void CnipolTimeMHists::BookHists(string sid)
+void MAsymRunHists::BookHists(string sid)
 { //{{{
    char hName[256];
    char htitle[256];
@@ -84,17 +84,17 @@ void CnipolTimeMHists::BookHists(string sid)
 
 
 /** */
-void CnipolTimeMHists::Print(const Option_t* opt) const
+void MAsymRunHists::Print(const Option_t* opt) const
 { //{{{
    opt = "";
 
-   //printf("CnipolTimeMHists:\n");
+   //printf("MAsymRunHists:\n");
    DrawObjContainer::Print();
 } //}}}
 
 
 /** */
-void CnipolTimeMHists::Fill(ChannelEvent *ch, string sid)
+void MAsymRunHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    // Fill events with no cuts applied
    if (sid == "") {
