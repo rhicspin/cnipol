@@ -39,7 +39,7 @@ void initialize()
    if ( strptime("2011-01-01 00:00:00", "%Y-%m-%d %H:%M:%S", &tm) != NULL )
       firstDay = mktime(&tm);
 
-   printf("firstDay %d\n", firstDay);
+   //printf("firstDay %d\n", firstDay);
 
    TString filelist;
    Color_t color;
@@ -60,7 +60,7 @@ void initialize()
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
 
-      filelist = "list_152XX.dat"; color = kRed; break;
+      filelist = "list_150XX_tmp.dat"; color = kRed; break;
    }
 
    string sEnergyId;
