@@ -128,8 +128,8 @@ void EventConfig::Streamer(TBuffer &R__b)
 
    UInt_t R__s, R__c;
    if (R__b.IsReading()) {
-      //Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-      //TObject::Streamer(R__b);
+      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+      TObject::Streamer(R__b);
       R__b >> fRandom;
       R__b >> fConfigInfo;
       R__b >> fRunInfo;
@@ -137,10 +137,10 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b >> fCalibrator;
       R__b >> fAnaResult;
       R__b >> fMseRunInfoX;
-      //R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
+      R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
    } else {
-      //R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
-      //TObject::Streamer(R__b);
+      R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
+      TObject::Streamer(R__b);
       R__b << fRandom;
       R__b << fConfigInfo;
       R__b << fRunInfo;
@@ -148,7 +148,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b << fCalibrator;
       R__b << fAnaResult;
       R__b << fMseRunInfoX;
-      //R__b.SetByteCount(R__c, kTRUE);
+      R__b.SetByteCount(R__c, kTRUE);
    }
 }
 
