@@ -95,14 +95,15 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
 void MseRunInfoX::Streamer(TBuffer &buf)
 {
    TString tstr;
-
-   //char smallint;
-   short smallint;
+   short   smallint;
+   time_t  tmp_time_t;
 
    if (buf.IsReading()) {
       //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
-      //buf >> tstr; fRunName = tstr.Data();
-      //buf >> smallint; printf("smallint: %d\n", smallint); target_id = mysqlpp::sql_smallint(smallint);
+      buf >> tstr; run_name = tstr.Data();
+      buf >> polarimeter_id; 
+      buf >> tmp_time_t; start_time = mysqlpp::sql_datetime(tmp_time_t); 
+      buf >> tmp_time_t; stop_time = mysqlpp::sql_datetime(tmp_time_t); 
       buf >> tstr; target_orient = tstr.Data();
       buf >> target_id;
       //buf >> procDateTime >> procTimeReal >> procTimeCpu;
@@ -110,6 +111,10 @@ void MseRunInfoX::Streamer(TBuffer &buf)
       //buf >> tstr; fDlCalibRun = tstr.Data();
    } else {
       //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
+      tstr = run_name; buf << tstr;
+      buf << polarimeter_id;
+      buf << time_t(start_time); 
+      buf << time_t(stop_time); 
       tstr = target_orient; buf << tstr;
       //buf << (Char_t) target_orient;
       buf << target_id;
