@@ -36,7 +36,7 @@ RunInfo::RunInfo() :
    MaxRevolution(0)       // MaxRevolution;
 {
    fTargetOrient         = '-';
-   targetID              = '-';    // targetID
+   targetID              = '-';
    strcpy(TgtOperation, "fixed");
  
    for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
@@ -427,7 +427,7 @@ void RunInfo::ConfigureActiveStrip(int mask)
 
 
 // Print Out Configuration information
-void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
+void RunInfo::PrintConfig()
 { //{{{
    fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
 
@@ -443,8 +443,8 @@ void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
    int ccutwl;
 
    if (gAnaInfo.CBANANA == 0) {
-      ccutwl = (int) cfginfo->data.chan[3].ETCutW;
-      ccutwu = (int) cfginfo->data.chan[3].ETCutW;
+      ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
+      ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
    } else if (gAnaInfo.CBANANA == 2) {
       fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo.MassSigma);
    } else {
@@ -462,7 +462,7 @@ void RunInfo::PrintConfig(recordConfigRhicStruct *cfginfo)
    if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",gAnaInfo.reference_rate);
 
    // target count/mm
-   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n",gAnaInfo.target_count_mm);
+   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo.target_count_mm);
 
    // Disabled bunch
    fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);

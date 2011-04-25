@@ -55,10 +55,12 @@ void initialize()
    case 3:
       filelist = "list_Y2U.dat"; color = kOrange; break;
    default:
-      filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
+      //filelist = "list_B1U_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y1D_ramp.dat"; color = kOrange; break;
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
+
+      filelist = "list_152XX.dat"; color = kRed; break;
    }
 
    string sEnergyId;
@@ -204,14 +206,14 @@ void initialize()
    // Target periods
    TGraphErrors *grHTargetVsFill = new TGraphErrors();
    grHTargetVsFill->SetName("grHTargetVsFill");
-   grHTargetVsFill->SetMarkerStyle(kFullCircle);
-   grHTargetVsFill->SetMarkerSize(0.8);
+   grHTargetVsFill->SetMarkerStyle(kPlus);
+   grHTargetVsFill->SetMarkerSize(1);
    grHTargetVsFill->SetMarkerColor(color-1);
 
    TGraphErrors *grVTargetVsFill = new TGraphErrors();
    grVTargetVsFill->SetName("grVTargetVsFill");
-   grVTargetVsFill->SetMarkerStyle(34);
-   grVTargetVsFill->SetMarkerSize(0.8);
+   grVTargetVsFill->SetMarkerStyle(kMultiply);
+   grVTargetVsFill->SetMarkerSize(1);
    grVTargetVsFill->SetMarkerColor(color+1);
 
    TH2* hTargetVsFill = new TH2F("hTargetVsFill", "hTargetVsFill", 1, 14900, 15500, 1, 0, 7);
@@ -342,7 +344,7 @@ void initialize()
       sstr << gRC->fRunInfo->targetID;
       sstr >> targetId;
 
-      Char_t targetOrient = gRC->fRunInfo->target;
+      Char_t targetOrient = gRC->fRunInfo->fTargetOrient;
 
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
       printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %c%d \n", runId, strTime,

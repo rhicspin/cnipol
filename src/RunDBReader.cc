@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
    return 0;
 
    //extern DbEntry rundb;
-   recordConfigRhicStruct  *cfginfo;
+   //recordConfigRhicStruct  *cfginfo;
    //extern int gRunInfo.PrintConfig(recordConfigRhicStruct *);
 
    char * RunID;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
    // Read Conditions from run.db
    readdb(RUNID);
 
-   gRunInfo.PrintConfig(cfginfo);
+   gRunInfo.PrintConfig();
 
    return 0;
 }

@@ -109,7 +109,7 @@ extern StructReadFlag                ReadFlag;
 extern AnaResult                     gAnaResults;
 extern TargetInfo                    tgt;
 extern StructBunchPattern            phx, str;
-extern TRecordConfigRhicStruct      *cfginfo;
+extern TRecordConfigRhicStruct      *gConfigInfo;
 
 extern float phiRun5[N_CHANNELS];   // phi-angle for each strips of Run5 (l=18.5cm)
 extern float phiRun6[N_CHANNELS];   // phi-angle for each strips of Run6 (l=18.0cm)
