@@ -51,7 +51,7 @@ public:
  
    void   RootFile(std::string filename);
    void   BookHists();
-	Int_t  BookHists2(StructFeedBack &feedback);
+	void   BookHists2(StructFeedBack &feedback);
    void   DeleteHistogram();
    void   Calibrate();
    void   CalibrateFast();
@@ -78,4 +78,4 @@ public:
    void   SaveAs(std::string pattern="^.*$", std::string dir=".");
 };
 
-#endif /* ASYM_ROOT_H */
+#endif

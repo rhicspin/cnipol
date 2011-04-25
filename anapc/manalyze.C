@@ -10,13 +10,17 @@
 #include "utils/utils.h"
 
 #include "EventConfig.h"
+#include "MAsymRoot.h"
 
 using namespace std;
 
-EventConfig *gRC;
-UShort_t gPolId    = 0;
-UShort_t gEnergyId = 0;
-map<UInt_t, UInt_t> flattopTimes;
+MAsymRoot           *gMAsymRoot = 0;
+DrawObjContainer    *gH;
+EventConfig         *gRC;
+UShort_t             gPolId    = 0;
+UShort_t             gEnergyId = 0;
+map<UInt_t, UInt_t>  flattopTimes;
+
 
 void manalyze(UShort_t polId, UShort_t eId)
 {
@@ -32,6 +36,8 @@ void initialize()
    gStyle->SetOptTitle(0);
    gStyle->SetOptStat(0);
    gStyle->SetPadRightMargin(0.05);
+
+   gMAsymRoot = new MAsymRoot("masym_out.root");
 
    struct tm tm;
    time_t firstDay;
