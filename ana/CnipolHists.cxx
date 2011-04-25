@@ -387,7 +387,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //sd = d["channel"+sSi];
 
    //((TH2F*) sd.o["hTvsA"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
-   ((TH2F*)    o["hTvsA"+sid])                           ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
+   //((TH2F*)    o["hTvsA"+sid])                           ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
    //((TH2F*) sd.o["hTvsI"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
    ////((TH2F*)    o["hTvsI"+sid])                           ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
    ((TH2F*) sd->o["hTimeVsEnergyA"+sid+"_st"+sSi])        ->Fill(ch->GetEnergyA(), ch->GetTime());

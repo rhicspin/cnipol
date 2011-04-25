@@ -479,7 +479,6 @@ void readloop(MseRunInfoX &run)
        recordDataStruct        data;
    } rec;
 
-   //recordConfigRhicStruct  *cfginfo;
    polDataStruct            poldat;
    beamDataStruct           beamdat;
    targetDataStruct         tgtdat1;
@@ -750,7 +749,7 @@ void readloop(MseRunInfoX &run)
 
            // Configure Active Strip Map
            gRunInfo.ConfigureActiveStrip(mask.detector);
-           gRunInfo.PrintConfig(cfginfo);
+           gRunInfo.PrintConfig();
 
            READ_FLAG = 1;
 
@@ -898,21 +897,21 @@ void readloop(MseRunInfoX &run)
 
             fprintf(stdout, "Reading REC_RHIC_CONF record from file...\n");
 
-            cfginfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
+            gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
                       (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
 
             //XXX printf("TTT: %d\n", rec.cfg.data.NumChannels);
 
-            memcpy(cfginfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
+            memcpy(gConfigInfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
                    (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
 
             // when we mandatory provide cfg info
             //if (gAnaInfo.RECONFMODE == 1) {
-            //   reConfig(cfginfo);
+            //   reConfig(gConfigInfo);
             //}
 
             // Recalculate Run constants
-            UpdateRunConst(cfginfo);
+            UpdateRunConst(gConfigInfo);
 
             if (gAnaInfo.MESSAGE == 1) exit(0);
 
@@ -978,7 +977,7 @@ void readloop(MseRunInfoX &run)
 
    // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
    if (!Nread && !READ_FLAG) {
-      gRunInfo.PrintConfig(cfginfo);
+      gRunInfo.PrintConfig();
 
       if (gRunDb.run_status_s == "Junk") {
          cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n";

@@ -349,7 +349,7 @@ Bool_t ChannelEvent::PassCutTargetChannel()
 {
    UShort_t chId = GetChannelId();
 
-   //if (chId > cfginfo->data.NumChannels-4 && chId <= cfginfo->data.NumChannels)
+   //if (chId > gConfigInfo->data.NumChannels-4 && chId <= gConfigInfo->data.NumChannels)
    if (chId > NSTRIP && chId <= NSTRIP+4)
       return true;
 

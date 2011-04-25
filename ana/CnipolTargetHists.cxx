@@ -117,7 +117,7 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
 
    //if (!ch->PassCutTargetChannel()) return;
 
-   UChar_t chIndex = chId - cfginfo->data.NumChannels + 4;
+   UChar_t chIndex = chId - gConfigInfo->data.NumChannels + 4;
    //UChar_t chIndex = chId - NSTRIP;
 
    switch (chIndex) {

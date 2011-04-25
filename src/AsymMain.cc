@@ -511,7 +511,7 @@ int main(int argc, char *argv[])
    // Set pointers to global structures to be saved in the ROOT file if
    // previously allocated delete object
    //delete gAsymRoot.fEventConfig->fConfigInfo;
-   gAsymRoot.fEventConfig->fConfigInfo = cfginfo;
+   gAsymRoot.fEventConfig->fConfigInfo = gConfigInfo;
 
    // if previously allocated delete object
    delete gAsymRoot.fEventConfig->fRunInfo;
@@ -586,7 +586,7 @@ int BunchSelect(int bid)
 
 
 // Calibration parameter
-void reConfig(TRecordConfigRhicStruct *cfginfo)
+void reConfig()
 { //{{{
     ifstream configFile;
     configFile.open(reConfFile);
@@ -632,19 +632,19 @@ void reConfig(TRecordConfigRhicStruct *cfginfo)
           c3n      = atof(strtok(NULL, " "));
           c4n      = atof(strtok(NULL, " "));
 
-          cfginfo->data.chan[stripn-1].edead  = edeadn;
-          cfginfo->data.chan[stripn-1].ecoef  = ecn;
-          cfginfo->data.chan[stripn-1].t0     = t0n;
-          cfginfo->data.chan[stripn-1].A0     = a0n;
-          cfginfo->data.chan[stripn-1].A1     = a1n;
-          cfginfo->data.chan[stripn-1].acoef  = ealphn;
-          cfginfo->data.chan[stripn-1].dwidth = dwidthn;
-          cfginfo->data.chan[stripn-1].pede   = peden;
-          cfginfo->data.chan[stripn-1].C[0]   = c0n;
-          cfginfo->data.chan[stripn-1].C[1]   = c1n;
-          cfginfo->data.chan[stripn-1].C[2]   = c2n;
-          cfginfo->data.chan[stripn-1].C[3]   = c3n;
-          cfginfo->data.chan[stripn-1].C[4]   = c4n;
+          gConfigInfo->data.chan[stripn-1].edead  = edeadn;
+          gConfigInfo->data.chan[stripn-1].ecoef  = ecn;
+          gConfigInfo->data.chan[stripn-1].t0     = t0n;
+          gConfigInfo->data.chan[stripn-1].A0     = a0n;
+          gConfigInfo->data.chan[stripn-1].A1     = a1n;
+          gConfigInfo->data.chan[stripn-1].acoef  = ealphn;
+          gConfigInfo->data.chan[stripn-1].dwidth = dwidthn;
+          gConfigInfo->data.chan[stripn-1].pede   = peden;
+          gConfigInfo->data.chan[stripn-1].C[0]   = c0n;
+          gConfigInfo->data.chan[stripn-1].C[1]   = c1n;
+          gConfigInfo->data.chan[stripn-1].C[2]   = c2n;
+          gConfigInfo->data.chan[stripn-1].C[3]   = c3n;
+          gConfigInfo->data.chan[stripn-1].C[4]   = c4n;
 
           cout << " Strip "    << stripn;
           cout << " Ecoef "    << ecn;

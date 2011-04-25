@@ -160,7 +160,7 @@ StructFeedBack            feedback;
 map<UShort_t, RunConst>   gRunConsts;
 AnaResult                 gAnaResults;
 StructBunchPattern        phx, str;
-TRecordConfigRhicStruct  *cfginfo;
+TRecordConfigRhicStruct  *gConfigInfo;
 TargetInfo                tgt;
 map<string, string>       gAsymEnv; // at some point this map should become a part of the AnaInfo class
 BunchAsym                 gBunchAsym;
@@ -230,16 +230,16 @@ RunConst::RunConst(float lL, float lCt)
 
 
 /** */
-void RunConst::Update(recordConfigRhicStruct *cfginfo, UShort_t ch)
+void RunConst::Update(UShort_t ch)
 {
-  if (!cfginfo) return;
+  if (!gConfigInfo) return;
 
-   Ct = cfginfo->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
+   Ct = gConfigInfo->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
 
-   if (ch >= 1 && ch <= cfginfo->data.NumChannels) {
-      L = cfginfo->data.chan[ch-1].TOFLength; // ToF Distance [cm]
+   if (ch >= 1 && ch <= gConfigInfo->data.NumChannels) {
+      L = gConfigInfo->data.chan[ch-1].TOFLength; // ToF Distance [cm]
    } else {
-      L = cfginfo->data.TOFLength; // ToF Distance [cm]
+      L = gConfigInfo->data.TOFLength; // ToF Distance [cm]
    }
 
   // C_CMNS - speed of light
@@ -370,7 +370,7 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 {
    //long len = header.len;
-   //         cfginfo = (recordConfigRhicStruct *)
+   //         gConfigInfo = (recordConfigRhicStruct *)
    //                      malloc(sizeof(recordConfigRhicStruct) +
    //                      (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
    int nRecords  = (header.len - sizeof(recordHeaderStruct)) / sizeof(configRhicDataStruct);

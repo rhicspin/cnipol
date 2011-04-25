@@ -77,7 +77,7 @@ void event_process(processEvent *event)
 
    // tdc > 6 ns, effectively...
    /*
-   if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg)) {
+   if ((event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg)) {
 
       // random numbers in order to smear for the integer reading
       int vlen = 1;
@@ -86,12 +86,12 @@ void event_process(processEvent *event)
       hhrammar_(&rand1, &vlen);
       hhrammar_(&rand2, &vlen);
 
-      float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
-      float e = ekin(edepo, cfginfo->data.chan[st].dwidth);
-      //e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
+      float edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+      float e = ekin(edepo, gConfigInfo->data.chan[st].dwidth);
+      //e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
       //  (event->amp + rand2 - 0.5);
 
-      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - gAnaInfo.tshift;
+      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAnaInfo.tshift;
 
       float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
@@ -110,20 +110,20 @@ void event_process(processEvent *event)
    // DeadLayer Mode
    if (gAnaInfo.DMODE) {
 
-      // 2*cfginfo->data.chan[st].Window.split.Beg = 6
+      // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
       // ds: A prelim cut on tdc? 6 ns?
-      if (event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg) {
+      if (event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
      
          float edepo, e, t, delt, Mass;
 
-         KinemaReconstruction(1, event, cfginfo, st, edepo, e, t, delt, Mass);
+         KinemaReconstruction(1, event, gConfigInfo, st, edepo, e, t, delt, Mass);
 
          // Get rid of bunch zero due to laser event after Run09
-         if (event->bid) HHF2(15000+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+         if (event->bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
 
          if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo.MassSigma/sqrt(e))
          {
-            HHF2(15100+st+1, edepo, t + cfginfo->data.chan[st].t0, 1.);
+            HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
             if ( e > Emin && e < Emax) Ngood[event->bid]++;
          }
       }
@@ -203,9 +203,9 @@ void event_process(processEvent *event)
 
                if (gAnaInfo.CBANANA == 0){
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        -cfginfo->data.chan[strip].ETCutW);
+                        -gConfigInfo->data.chan[strip].ETCutW);
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +cfginfo->data.chan[strip].ETCutW);
+                        +gConfigInfo->data.chan[strip].ETCutW);
                } else if (gAnaInfo.CBANANA == 1) {
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +(float)(gAnaInfo.widthl));
@@ -242,7 +242,7 @@ void event_process(processEvent *event)
    if (gAnaInfo.HasTargetBit()) {
 
       //if (ch->GetChannelId() > NSTRIP)
-      //   printf("channel1: %d, %d\n", ch->GetChannelId(), cfginfo->data.NumChannels);
+      //   printf("channel1: %d, %d\n", ch->GetChannelId(), gConfigInfo->data.NumChannels);
 
       if (ch->PassCutTargetChannel()) {
          //printf("channel: %d\n", ch->GetChannelId());
@@ -275,10 +275,10 @@ void event_process(processEvent *event)
    //ds
    return;
 
-   // 2*cfginfo->data.chan[st].Window.split.Beg = 6
-   //if ((event->tdc > 2*cfginfo->data.chan[st].Window.split.Beg))
+   // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
+   //if ((event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg))
    //ds: Proceed only if the time value is greater than...
-   if ((event->tdc <= 2*cfginfo->data.chan[st].Window.split.Beg))
+   if ((event->tdc <= 2*gConfigInfo->data.chan[st].Window.split.Beg))
       return;
 
    // random numbers in order to smear for the integer reading
@@ -295,30 +295,30 @@ void event_process(processEvent *event)
    bunch_dist->Fill(event->bid);
 
    // Integral
-   float Integ = (event->intg) << (2+cfginfo->data.CSR.split.iDiv);
+   float Integ = (event->intg) << (2+gConfigInfo->data.CSR.split.iDiv);
 
    //ds: Some manipulations with ADC counts...
-   float amp_int = (Integ - cfginfo->data.chan[st].A0) / cfginfo->data.chan[st].A1;
+   float amp_int = (Integ - gConfigInfo->data.chan[st].A0) / gConfigInfo->data.chan[st].A1;
     
    // Energy corrected with Dead layer info (keV)
 
    // energy deposit in Si strip
    //ds: Are we using the same acoef??? for amp and int?
-   float edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+   float edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
    //ds: edepo_int = deposited energy in keV?
-   //float edepo_int = cfginfo->data.chan[st].acoef * (amp_int+rand2-0.5);
-   float edepo_int = cfginfo->data.chan[st].ecoef * (amp_int+rand2-0.5);
+   //float edepo_int = gConfigInfo->data.chan[st].acoef * (amp_int+rand2-0.5);
+   float edepo_int = gConfigInfo->data.chan[st].ecoef * (amp_int+rand2-0.5);
 
-   // === NEW float dwidth = cfginfo->data.chan[st].IACutW; // new entry
-   float e      = ekin(edepo, cfginfo->data.chan[st].dwidth);
-   float e_int  = ekin(edepo_int, cfginfo->data.chan[st].dwidth);
+   // === NEW float dwidth = gConfigInfo->data.chan[st].IACutW; // new entry
+   float e      = ekin(edepo, gConfigInfo->data.chan[st].dwidth);
+   float e_int  = ekin(edepo_int, gConfigInfo->data.chan[st].dwidth);
    float sqrt_e = sqrt(e);
 
    /*
-   e = cfginfo->data.chan[st].edead + cfginfo->data.chan[st].ecoef *
+   e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
      (event->amp + rand2 - 0.5);
-   e_int = cfginfo->data.chan[st].edead +
-           cfginfo->data.chan[st].ecoef * (amp_int + rand2 - 0.5);
+   e_int = gConfigInfo->data.chan[st].edead +
+           gConfigInfo->data.chan[st].ecoef * (amp_int + rand2 - 0.5);
    */
 
    // For A_N Calculation (Cross section)
@@ -340,12 +340,12 @@ void event_process(processEvent *event)
    if (gAnaInfo.RAMPMODE == 1) {
 
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5)
-          - cfginfo->data.chan[st].t0
+          - gConfigInfo->data.chan[st].t0
           - (ramptshift[(int)event->delim/20]-ramptshift[0]) - gAnaInfo.tshift;
 
    } else if (gAnaInfo.ZMODE == 0) {   // normal runs
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0
            - gAnaInfo.tshift - feedback.tedev[st]/sqrt_e;
    } else  {
 
@@ -439,7 +439,7 @@ void event_process(processEvent *event)
    */
 
    // background estimation
-   if ( (delt <= -2*cfginfo->data.chan[st].ETCutW) && e>Emin && e<Emax)
+   if ( (delt <= -2*gConfigInfo->data.chan[st].ETCutW) && e>Emin && e<Emax)
    {
       Nback[event->bid]++;
    }
@@ -452,8 +452,8 @@ void event_process(processEvent *event)
    //------------------------------------------------------
    //                Banana Curve Cut
    //------------------------------------------------------
-   //if ( ((delt> -1. * cfginfo->data.chan[st].ETCutW ) &&
-   //      (delt<  1. * cfginfo->data.chan[st].ETCutW ) &&
+   //if ( ((delt> -1. * gConfigInfo->data.chan[st].ETCutW ) &&
+   //      (delt<  1. * gConfigInfo->data.chan[st].ETCutW ) &&
    //      (gAnaInfo.CBANANA == 0))
    //     ||
    //     ((delt > (float)(gAnaInfo.widthl) ) &&
@@ -616,9 +616,9 @@ void event_process(processEvent *event)
 
 
 // Description : calculate kinematics from ADC and TDC
-// Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
+// Input       : int Mode, processEvent *event, recordConfigRhicStruct *gConfigInfo, int st
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass
-void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *cfginfo,
+void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *gConfigInfo,
                      int st, float &edepo, float &e, float &t, float &delt, float &Mass)
 {
   float rand1, rand2;
@@ -629,13 +629,13 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
   hhrammar_(&rand2, &vlen);
 
   // Energy deposit
-  edepo = cfginfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+  edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
 
   // ToF in [ns]
-  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - cfginfo->data.chan[st].t0 - gAnaInfo.tshift;
+  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAnaInfo.tshift;
 
   // Kinetic energy assuming Carbon
-  e = ekin(edepo, cfginfo->data.chan[st].dwidth);
+  e = ekin(edepo, gConfigInfo->data.chan[st].dwidth);
 
   // Decrepancy between observed ToF and calculated t from energy
   delt = t - gRunConsts[st+1].E2T/sqrt(e);
