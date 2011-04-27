@@ -52,7 +52,7 @@ void CnipolProfileHists::BookHists(string sid)
 
    sprintf(hName, "hIntensProfile");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
+   ((TH1*) o[hName])->GetXaxis()->SetTitle("time, s");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
    ((TH1*) o[hName])->Sumw2();
@@ -185,6 +185,7 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    Long_t   *hPtr     = hData;
    Double_t *hdPtr    = hd;
    Double_t *hdErrPtr = hdErr;
+   Double_t  nEntries = 0;
    //UInt_t    i = 0;
 
    hdPtr    += 2; // offset by 2: 1 underflow bin and 1 lost one
@@ -195,8 +196,9 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
       //printf("prof check i: %d, %d, %d\n", hPtr, hdPtr, hdErrPtr);
       *hdPtr++ = (Double_t) *hPtr++;
       *hdErrPtr++ = (*(hPtr-1) != 0 ? 1./TMath::Sqrt(*(hPtr-1)) : 0.);
-      //cout << "prof check i: " << *(hPtr-1) << ", " << *(hdPtr-1) << ", " << *(hdErrPtr-1) << endl;
+      cout << "prof check i: " << *(hPtr-1) << ", " << *(hdPtr-1) << ", " << *(hdErrPtr-1) << endl;
       //i++;
+      nEntries += *(hPtr-1);
    }
 
    //for (UInt_t i=0; i<n+3; i++) {
@@ -207,6 +209,7 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    ((TH1*) o["hIntensProfile"])->SetContent(hd);
    ((TH1*) o["hIntensProfile"])->SetError(hdErr);
    //((TH1*) o["hIntensProfile"])->Sumw2();
+   ((TH1*) o["hIntensProfile"])->SetEntries(nEntries);
 
    delete [] hd;
    delete [] hdErr;

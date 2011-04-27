@@ -141,6 +141,30 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsMeas, "p");
 
+   // t0
+   TGraphErrors *grT0VsMeas = new TGraphErrors();
+   grT0VsMeas->SetName("grT0VsMeas");
+   grT0VsMeas->SetMarkerStyle(kFullCircle);
+   grT0VsMeas->SetMarkerSize(1);
+   grT0VsMeas->SetMarkerColor(color);
+
+   sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, -20, 20);
+   ((TH1*) o[hName])->SetTitle(";Measurement;t_{0};");
+   //((TH1*) o[hName])->GetXaxis()->SetTitle("Measurement");
+   //((TH1*) o[hName])->GetYaxis()->SetTitle("t_{0}");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
+
+   sprintf(hName, "hT0VsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH1F(hName, hName, 600, 14900, 15500);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-20, 20);
+   ((TH1*) o[hName])->SetTitle(";Fill;t_{0};");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(color);
+   ((TH1*) o[hName])->SetOption("E1");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
+
 } //}}}
 
 
@@ -171,7 +195,6 @@ void MAsymRunHists::Fill(EventConfig &rc)
    string strPolId = RunConfig::AsString((EPolarimeterId) polId);
    string strBeamE = RunConfig::AsString((EBeamEnergy) beamEnergy);
 
-
    // Targets
    sprintf(hName, "hTargetVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
 
@@ -179,16 +202,10 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
    if (targetOrient == 'H') {
       graph = (TGraph*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grHTargetVsMeas");
-      //fHTargetVsRun[runId] = targetId;
-      //grHTargetVsMeas->SetPoint(iHTarget, runId, targetId);
-      //iHTarget++;
    }
 
    if (targetOrient == 'V') {
       graph = (TGraph*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grVTargetVsMeas");
-      //fVTargetVsRun[runId] = targetId;
-      //grVTargetVsMeas->SetPoint(iVTarget, runId, targetId);
-      //iVTarget++;
    }
 
    graph->SetPoint(graph->GetN(), runId, targetId);
@@ -196,9 +213,8 @@ void MAsymRunHists::Fill(EventConfig &rc)
    TGraphErrors* graphErrs;
    UInt_t graphNEntries;
 
-   // Profiles r
+   // Polarization
    sprintf(hName, "hPolarVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
-
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsMeas");
 
    graphNEntries = graphErrs->GetN();
@@ -208,13 +224,21 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
    // Profiles r
    sprintf(hName, "hRVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
-
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeas");
 
    graphNEntries = graphErrs->GetN();
    
    graphErrs->SetPoint(graphNEntries, runId, profileRatio);
    graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
+
+   // t0
+   sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
+
+   graphNEntries = graphErrs->GetN();
+   
+   graphErrs->SetPoint(graphNEntries, runId, tzero);
+   graphErrs->SetPointError(graphNEntries, 0, tzeroErr);
 }
 
 
@@ -292,6 +316,15 @@ void MAsymRunHists::PostFill()
          funcRVsFill->SetParameter(0, 0.02);
          ((TH1*) o[hName])->Fit("funcRVsFill");
          delete funcRVsFill;
+
+         // Profiles r
+         //sprintf(hName, "hT0VsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
+         //graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
+
+         ////utils::RemoveOutliers(graph, 2, 3);
+         //utils::BinGraph(graph, (TH1*) o[hName]);
+
+         //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
       }
    }
 }
