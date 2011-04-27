@@ -259,7 +259,7 @@ void AnaInfo::ProcessOptions()
    if (HasAlphaBit()) {
       fAlphaCalibRun     = fRunName;
       fDlCalibRun        = "";
-      gRunInfo.fMeasType = RunInfo::MEASTYPE_ALPHA;
+      gRunInfo.fMeasType = kMEASTYPE_ALPHA;
    }
 
    // Various printouts. Should be combined with Print()?

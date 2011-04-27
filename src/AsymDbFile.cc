@@ -50,7 +50,7 @@ AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
    //   exit(-1);
    //}
 
-   for (UShort_t i=0; i<NPOLARIMETERS; i++) {
+   for (UShort_t i=0; i<N_POLARIMETERS; i++) {
       fCommonRunDB[i] = 0;
    }
 }

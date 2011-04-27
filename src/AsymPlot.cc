@@ -130,7 +130,7 @@ void AsymPlot::PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -139,7 +139,7 @@ void AsymPlot::PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw("colz");  CurC->Update();    
     }
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
   }
 }
 
@@ -155,7 +155,7 @@ void AsymPlot::PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostS
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -167,7 +167,7 @@ void AsymPlot::PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostS
       if (IsOK(histname)) gDirectory->Get(histname) -> Draw("same");  CurC->Update();    
     }
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
   }
 }
 
@@ -183,7 +183,7 @@ void AsymPlot::PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * 
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -195,7 +195,7 @@ void AsymPlot::PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * 
       CurC->Update();    
     }
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
   }
 }
 
@@ -221,7 +221,7 @@ void AsymPlot::PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * 
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -231,7 +231,7 @@ void AsymPlot::PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * 
       CurC->Update();    
     }
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
   }
 }
 

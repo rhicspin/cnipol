@@ -96,7 +96,7 @@ void CnipolRunHists::BookHists(string sid)
    //   kinema->o[hName] = new TH1F();    // invariant mass with banana cut
    //}
 
-   //for (int i=1; i<=NDETECTOR; i++) {
+   //for (int i=1; i<=N_DETECTORS; i++) {
    //   sprintf(hName,"energy_spectrum_det%d", i);
    //   // energy spectrum per detector
    //   kinema->o[hName] = new TH1F(hName, hName, 100, 0, 0.03);
@@ -112,16 +112,16 @@ void CnipolRunHists::BookHists(string sid)
    bunch->o["wall_current_monitor"]      = wall_current_monitor;
    bunch->o["specific_luminosity"]       = specific_luminosity;
 
-   //errdet->o["mass_chi2_vs_strip"]       = new TH2F();          // Chi2 of Gaussian Fit on Mass peak
-   //errdet->o["mass_sigma_vs_strip"]      = new TH2F();         // Mass sigma width vs. strip
+   //errdet->o["mass_chi2_vs_strip"]       = new TH2F();    // Chi2 of Gaussian Fit on Mass peak
+   //errdet->o["mass_sigma_vs_strip"]      = new TH2F();    // Mass sigma width vs. strip
    //errdet->o["mass_e_correlation_strip"] = new TH2F();    // Mass-energy correlation vs-> strip
-   //errdet->o["mass_pos_dev_vs_strip"]    = new TH2F();       // Mass position deviation vs. strip
+   //errdet->o["mass_pos_dev_vs_strip"]    = new TH2F();    // Mass position deviation vs. strip
    //errdet->o["good_carbon_events_strip"] = new TH1I();    // number of good carbon events per strip
-   //errdet->o["spelumi_vs_bunch"]         = new TH2F();            // Counting rate vs. bunch
-   //errdet->o["bunch_spelumi"]            = new TH1F();               // Counting rate per bunch hisogram
-   //errdet->o["asym_bunch_x45"]           = new TH1F();              // Bunch asymmetry histogram for x45
-   //errdet->o["asym_bunch_x90"]           = new TH1F();              // Bunch asymmetry histogram for x90
-   //errdet->o["asym_bunch_y45"]           = new TH1F();              // Bunch asymmetry histogram for y45
+   //errdet->o["spelumi_vs_bunch"]         = new TH2F();    // Counting rate vs. bunch
+   //errdet->o["bunch_spelumi"]            = new TH1F();    // Counting rate per bunch hisogram
+   //errdet->o["asym_bunch_x45"]           = new TH1F();    // Bunch asymmetry histogram for x45
+   //errdet->o["asym_bunch_x90"]           = new TH1F();    // Bunch asymmetry histogram for x90
+   //errdet->o["asym_bunch_y45"]           = new TH1F();    // Bunch asymmetry histogram for y45
 
    //asymmetry->o["asym_vs_bunch_x90"]    = asym_vs_bunch_x90;
    //asymmetry->o["asym_vs_bunch_y45"]    = asym_vs_bunch_y45;

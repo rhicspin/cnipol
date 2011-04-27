@@ -12,6 +12,8 @@
 #ifndef Asym_h
 #define Asym_h
 
+#include <set>
+
 #include "TH1.h"
 #include "TGraphErrors.h"
 
@@ -20,7 +22,6 @@
 #include "AsymHeader.h"
 
 
-const int ASYM_DEFAULT = -999;
 
 // whole info for one event
 struct processEvent {

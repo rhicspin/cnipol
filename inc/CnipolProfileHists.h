@@ -16,6 +16,7 @@
 #include "AsymHeader.h"
 #include "TargetInfo.h"
 #include "RunInfo.h"
+#include "RunConfig.h"
 
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
@@ -40,7 +41,7 @@ public:
    void Fill(UInt_t n, Long_t* hData);
    void PostFill();
    void Process();
-   RunInfo::MeasType MeasurementType();
+   EMeasType MeasurementType();
 
    static Double_t ProfileFitFunc(Double_t *x, Double_t *par);
 

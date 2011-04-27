@@ -633,13 +633,13 @@ Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
 
 
 /** */
-RunInfo::MeasType CnipolProfileHists::MeasurementType()
+EMeasType CnipolProfileHists::MeasurementType()
 {
    TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
    if (!hIntensProfile) {
       Error("MeasurementType", "Histogram (hIntensProfile) not defined");
-      return RunInfo::MEASTYPE_UNKNOWN;
+      return kMEASTYPE_UNKNOWN;
    }
 
    Double_t ymax = hIntensProfile->GetMaximum();
@@ -660,8 +660,8 @@ RunInfo::MeasType CnipolProfileHists::MeasurementType()
       //if (nTotal)
       printf("proj: %f, %d\n", hIntensProj->GetBinContent(i), nSteps);
       if (hIntensProj->GetBinContent(i) >= 0.5*nSteps)
-         return RunInfo::MEASTYPE_FIXED;
+         return kMEASTYPE_FIXED;
    }
 
-   return RunInfo::MEASTYPE_SWEEP;
+   return kMEASTYPE_SWEEP;
 }

@@ -306,8 +306,7 @@ void DrawObjContainer::Draw(TCanvas &c)
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
 {
    if (!fDir) {
-      Error("Write", "Directory fDir not defined");
-      return 0;
+      Fatal("Write", "Directory fDir not defined");
    }
 
    fDir->cd();
@@ -392,8 +391,7 @@ void DrawObjContainer::PostFill()
 void DrawObjContainer::Delete(Option_t* option)
 {
    if (!fDir) {
-      printf("ERROR: DrawObjContainer::Delete(Option_t* option): fDir not defined\n");
-      return;
+      Fatal("Delete(Option_t* option)", "fDir not defined\n");
    }
 
    fDir->cd();

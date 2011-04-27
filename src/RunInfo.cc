@@ -22,7 +22,7 @@ RunInfo::RunInfo() :
 	RunTime(0),
 	fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION),
-   fMeasType(MEASTYPE_UNKNOWN),
+   fMeasType(kMEASTYPE_UNKNOWN),
    GoodEventRate(0),      // GoodEventRate;
    EvntRate     (0),      // EvntRate;
    ReadRate     (0),      // ReadRate;
@@ -39,8 +39,8 @@ RunInfo::RunInfo() :
    targetID              = '-';
    strcpy(TgtOperation, "fixed");
  
-   for (int i=0; i<NDETECTOR; i++) ActiveDetector[i] = 0xFFF;
-   //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[NDETECTOR]
+   for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
+   //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
    for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
    NActiveStrip          = NSTRIP; // NAactiveStrip;
    NDisableStrip         = 0;      // NDisableStrip
@@ -111,7 +111,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> RunTime;
       buf >> fDataFormatVersion;
       buf >> tstr; fAsymVersion = tstr.Data();
-      buf >> tint; fMeasType = (MeasType) tint;
+      buf >> tint; fMeasType = (EMeasType) tint;
       buf >> GoodEventRate;
       buf >> EvntRate;
       buf >> ReadRate;
@@ -127,7 +127,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> targetID;
       buf >> TgtOperation;
       //buf.ReadString(TgtOperation, 32);
-      buf.ReadFastArray(ActiveDetector, NDETECTOR);
+      buf.ReadFastArray(ActiveDetector, N_DETECTORS);
       buf.ReadFastArray(ActiveStrip, NSTRIP);
       buf >> NActiveStrip;
       buf >> NDisableStrip;
@@ -162,7 +162,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << fTargetOrient;
       buf << targetID;
       buf << TgtOperation;
-      buf.WriteFastArray(ActiveDetector, NDETECTOR);
+      buf.WriteFastArray(ActiveDetector, N_DETECTORS);
       buf.WriteFastArray(ActiveStrip, NSTRIP);
       buf << NActiveStrip;
       buf << NDisableStrip;
@@ -213,9 +213,9 @@ void RunInfo::PrintAsPhp(FILE *f) const
 
    ssChs << "array(";
 
-   for (int i=0; i!=NDETECTOR; i++) {
+   for (int i=0; i!=N_DETECTORS; i++) {
       ssChs << noshowbase << dec << i+1 << " => " << showbase << hex << ActiveDetector[i];
-      ssChs << (i<NDETECTOR-1 ? ", " : "");
+      ssChs << (i<N_DETECTORS-1 ? ", " : "");
    }
 
    ssChs << ")";
@@ -377,7 +377,7 @@ void RunInfo::Update(MseRunInfoX& run)
 void RunInfo::ConfigureActiveStrip(int mask)
 { //{{{
    // Disable Detector First
-   for (int i=0; i<NDETECTOR; i++) {
+   for (int i=0; i<N_DETECTORS; i++) {
 
       if ( (~mask>>i) & 1) {
 
@@ -409,10 +409,10 @@ void RunInfo::ConfigureActiveStrip(int mask)
    // Active Detector and Strip Configulation
    printf("ReConfigured Active Detector =");
 
-   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
    printf("\n");
    //    printf("Active Strip Config =");
-   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
+   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
    //    printf("\n");
 
    printf("Reconfigured Active Strip Config =");
@@ -482,10 +482,10 @@ void RunInfo::PrintConfig()
 
    // Active Detector and Strip Configulation
    printf("    Active Detector =");
-   for (int i=0; i<NDETECTOR; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
    printf("\n");
    //    printf("Active Strip Config =");
-   //    for (int i=NDETECTOR-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
+   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
    //    printf("\n");
    printf("Active Strip Config =");
    for (int i=0; i<NSTRIP; i++) {
