@@ -127,7 +127,7 @@ PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -137,7 +137,7 @@ PlotBanana(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
     }// end-of-strip loop
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
 
   }
 
@@ -156,7 +156,7 @@ PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -169,7 +169,7 @@ PlotMassEnergyCorrelation(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
     }// end-of-strip loop
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
 
   }
 
@@ -188,7 +188,7 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -201,7 +201,7 @@ PlotInvariantMass(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
     }// end-of-strip loop
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
 
   }
 
@@ -235,7 +235,7 @@ PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   
   Char_t histname[100];
   Int_t stID;
-  for (Int_t det=0; det<NDETECTOR; det++) {
+  for (Int_t det=0; det<N_DETECTORS; det++) {
 
     for (Int_t st=1; st<=NSTRIP_PER_DETECTOR; st++){
       stID=det*NSTRIP_PER_DETECTOR+st;
@@ -246,7 +246,7 @@ PlotFeedbackStrip(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
 
     }// end-of-strip loop
 
-    if (det!=NDETECTOR-1) ps->NewPage();
+    if (det!=N_DETECTORS-1) ps->NewPage();
 
   }
 

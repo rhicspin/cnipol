@@ -8,10 +8,12 @@
 #ifndef RunInfo_h
 #define RunInfo_h
 
-#include <string>
 #include <vector>
+#include <set>
+#include <string>
 
 #include "TBuffer.h"
+#include "TColor.h"
 #include "TPRegexp.h"
 #include "TObjArray.h"
 #include "TObjString.h"
@@ -20,6 +22,7 @@
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
+#include "RunConfig.h"
 #include "DbEntry.h"
 
 class MseRunInfoX;
@@ -30,13 +33,17 @@ class RunInfo
 {
 public:
 
-   // Different measurement types
-   enum MeasType {MEASTYPE_UNKNOWN = 0x00,
-                  MEASTYPE_ALPHA   = 0x01,
-                  MEASTYPE_SWEEP   = 0x02,
-                  MEASTYPE_FIXED   = 0x04,
-                  MEASTYPE_RAMP    = 0x08,
-                  MEASTYPE_EMIT    = 0x10};
+   //enum EPolarimeterId {B1U = 0, Y1D = 1, B2D = 2, Y2U = 3};
+
+   //// Different measurement types
+   //enum MeasType {MEASTYPE_UNKNOWN = 0x00,
+   //               MEASTYPE_ALPHA   = 0x01,
+   //               MEASTYPE_SWEEP   = 0x02,
+   //               MEASTYPE_FIXED   = 0x04,
+   //               MEASTYPE_RAMP    = 0x08,
+   //               MEASTYPE_EMIT    = 0x10};
+
+public:
 
    int          Run;
    double       RUNID;
@@ -46,7 +53,7 @@ public:
    float        RunTime;
    int          fDataFormatVersion;
    std::string  fAsymVersion;
-   MeasType     fMeasType;
+   EMeasType    fMeasType;
    float        GoodEventRate;
    float        EvntRate;
    float        ReadRate;
@@ -61,7 +68,7 @@ public:
    char         fTargetOrient;
    char         targetID;
    char         TgtOperation[16];
-   int          ActiveDetector[NDETECTOR];
+   int          ActiveDetector[N_DETECTORS];
    int          ActiveStrip[N_CHANNELS];
    int          NActiveStrip;
    int          NDisableStrip;

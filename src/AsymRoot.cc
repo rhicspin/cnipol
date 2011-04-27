@@ -59,7 +59,7 @@ TF1   *banana_cut_l[NSTRIP][2];     // banana cut low
 TF1   *banana_cut_h[NSTRIP][2];     // banana cut high
 TLine *energy_cut_l[NSTRIP];        // energy cut low
 TLine *energy_cut_h[NSTRIP];        // energy cut high
-TH1F  *energy_spectrum[NDETECTOR];  // energy spectrum per detector
+TH1F  *energy_spectrum[N_DETECTORS];  // energy spectrum per detector
 TH1F  *energy_spectrum_all;         // energy spectrum for all detector sum
 TH1F  *mass_nocut_all;              // invariant mass without banana cut
 TH1F  *mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
@@ -680,7 +680,7 @@ void AsymRoot::BookHists()
    // 1-dim Energy Spectrum
    Eslope.nxbin=100; Eslope.xmin=0; Eslope.xmax=0.03;
  
-   for (int i=0; i<NDETECTOR; i++) {
+   for (int i=0; i<N_DETECTORS; i++) {
       sprintf(hname, "energy_spectrum_det%d", i+1);
       sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gRunInfo.RUNID, i+1);
       energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);

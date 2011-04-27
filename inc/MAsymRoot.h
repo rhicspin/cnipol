@@ -13,6 +13,10 @@ public:
    MAsymRoot(std::string fileName);
    ~MAsymRoot();
 
+   //Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
+   //Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
+   
+
    ClassDef(MAsymRoot, 1)
 };
   

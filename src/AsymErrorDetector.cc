@@ -665,7 +665,7 @@ void checkForBadBunches()
  
    double avg;
    double sigma;
-   for(int i=0;i<NDETECTOR;i++)
+   for(int i=0;i<N_DETECTORS;i++)
    {
       avg=0.;
       for(int j=0;j<120;j++)

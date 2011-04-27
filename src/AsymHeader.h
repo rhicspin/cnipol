@@ -16,8 +16,8 @@
 #define N_CHANNELS 72                 // Number of channels
 #define NSTRIP_PER_DETECTOR 12        // Number of channels per silicon detector
 #define NTGTWFD 4                     // Number of target WFD channels
-#define NDETECTOR 6                   // Number of detectors
-#define NPOLARIMETERS 4               // Number of polarimeters
+#define N_DETECTORS 6                 // Number of detectors
+#define N_POLARIMETERS 4              // Number of polarimeters
 #define NBUNCH 120                    // Maximum bunch number
 #define N_BUNCHES 120                 // Maximum bunch number
 #define R2D 57.29577951               // [rad] -> [degree]

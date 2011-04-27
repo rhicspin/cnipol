@@ -4,22 +4,9 @@
 
 #include "manalyze.h"
 
-#include "TColor.h"
-#include "TStyle.h"
-
 #include "utils/utils.h"
 
-#include "EventConfig.h"
-#include "MAsymRoot.h"
-
 using namespace std;
-
-MAsymRoot           *gMAsymRoot = 0;
-DrawObjContainer    *gH;
-EventConfig         *gRC;
-UShort_t             gPolId    = 0;
-UShort_t             gEnergyId = 0;
-map<UInt_t, UInt_t>  flattopTimes;
 
 
 void manalyze(UShort_t polId, UShort_t eId)
@@ -38,6 +25,8 @@ void initialize()
    gStyle->SetPadRightMargin(0.05);
 
    gMAsymRoot = new MAsymRoot("masym_out.root");
+
+   gH = new MAsymRunHists(gMAsymRoot);
 
    struct tm tm;
    time_t firstDay;
@@ -66,7 +55,7 @@ void initialize()
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
 
-      filelist = "list_150XX_tmp.dat"; color = kRed; break;
+      filelist = "list_all.dat"; color = kRed; break;
    }
 
    string sEnergyId;
@@ -160,6 +149,7 @@ void initialize()
    TH2* hPolarVsTime = new TH2F("hPolarVsTime", "hPolarVsTime", 1, 20, 100, 1, 20, 80);
    hPolarVsTime->GetXaxis()->SetTitle("Date/Time");
    hPolarVsTime->GetYaxis()->SetTitle("Polarization, %");
+
    TGraphErrors *grPolarVsTime = new TGraphErrors();
    grPolarVsTime->SetName("grPolarVsTime");
    grPolarVsTime->SetMarkerStyle(kFullCircle);
@@ -186,6 +176,7 @@ void initialize()
    TH2* hRVsTime = new TH2F("hRVsTime", "hRVsTime", 1, 20, 100, 1, -0.1, 1);
    hRVsTime->GetXaxis()->SetTitle("Days");
    hRVsTime->GetYaxis()->SetTitle("r");
+
    TGraphErrors *grRVsTime = new TGraphErrors();
    grRVsTime->SetName("grRVsTime");
    grRVsTime->SetMarkerStyle(kFullCircle);
@@ -195,6 +186,7 @@ void initialize()
    TH2* hRVsFill = new TH2F("hRVsFill", "hRVsFill", 1, 14900, 15500, 1, -0.1, 1);
    hRVsFill->GetXaxis()->SetTitle("Fill");
    hRVsFill->GetYaxis()->SetTitle("r");
+
    TGraphErrors *grRVsFill = new TGraphErrors();
    grRVsFill->SetName("grRVsFill");
    grRVsFill->SetMarkerStyle(kFullCircle);
@@ -209,33 +201,13 @@ void initialize()
    hRVsFillBin->SetMarkerSize(1);
    hRVsFillBin->SetMarkerColor(color);
 
-   // Target periods
-   TGraphErrors *grHTargetVsFill = new TGraphErrors();
-   grHTargetVsFill->SetName("grHTargetVsFill");
-   grHTargetVsFill->SetMarkerStyle(kPlus);
-   grHTargetVsFill->SetMarkerSize(1);
-   grHTargetVsFill->SetMarkerColor(color-1);
-
-   TGraphErrors *grVTargetVsFill = new TGraphErrors();
-   grVTargetVsFill->SetName("grVTargetVsFill");
-   grVTargetVsFill->SetMarkerStyle(kMultiply);
-   grVTargetVsFill->SetMarkerSize(1);
-   grVTargetVsFill->SetMarkerColor(color+1);
-
-   TH2* hTargetVsFill = new TH2F("hTargetVsFill", "hTargetVsFill", 1, 14900, 15500, 1, 0, 7);
-   hTargetVsFill->GetXaxis()->SetTitle("Fill");
-   hTargetVsFill->GetYaxis()->SetTitle("Target Id");
-   hTargetVsFill->GetListOfFunctions()->Add(grHTargetVsFill, "p");
-   hTargetVsFill->GetListOfFunctions()->Add(grVTargetVsFill, "p");
-
-
    UInt_t i = 0;
-   UInt_t iHTarget = 0, iVTarget = 0;
 
    // Fill chain with all input files from filelist
    TObject *o;
    TIter   *next = new TIter(utils::getFileList(filelist));
 
+   /*
    while (next && (o = (*next)()) )
    {
       //chain->AddFile(((TObjString*) o)->GetName());
@@ -278,10 +250,11 @@ void initialize()
    for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
       printf("%d -> %d\n", ift->first, ift->second);
    }
+   */
 
    //return;
    //next->Begin();
-   next->Reset();
+   //next->Reset();
    //*next = next->Begin();
 
    while (next && (o = (*next)()) )
@@ -301,6 +274,8 @@ void initialize()
       gSystem->Info("", "file found: %s", fileName.Data());
 
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+      f->Close();
+      delete f;
 
       if (!gRC) {
          gSystem->Error("", "RC not found\n");
@@ -344,27 +319,21 @@ void initialize()
       Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
       Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
-      // Get target id as integer
-      stringstream sstr;
-      UInt_t targetId;
-      sstr << gRC->fRunInfo->targetID;
-      sstr >> targetId;
-
-      Char_t targetOrient = gRC->fRunInfo->fTargetOrient;
-
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
-      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %c%d \n", runId, strTime,
+      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f\n", runId, strTime,
          beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
-         polarization_err, targetOrient, targetId);
+         polarization_err);
 
       if (gEnergyId == 0 && beamEnergy !=  24) continue;
       if (gEnergyId == 1 && beamEnergy != 250) continue;
 
-      if (polarization <= 1 || polarization_err > 5) {
+      if (polarization <= 1 || polarization_err > 5 || polarization > 99.99) {
          continue;
          //polarization     = 0;
          //polarization_err = 0;
       }
+
+      gH->Fill(*gRC);
 
       //grPolar->SetPoint(i, day, tzero);
       //grPolar->SetPointError(i, 0, tzeroErr);
@@ -397,24 +366,11 @@ void initialize()
       grRVsFill->SetPoint(i, runId, profileRatio);
       grRVsFill->SetPointError(i, 0, profileRatioErr);
       
-      // Target periods
-      if (targetOrient == 'H') {
-         grHTargetVsFill->SetPoint(iHTarget, runId, targetId);
-         iHTarget++;
-      }
-
-      if (targetOrient == 'V') {
-         grVTargetVsFill->SetPoint(iVTarget, runId, targetId);
-         iVTarget++;
-      }
-
-
       //if (i == 0) havrg = h;
       //else havrg->Add(h);
       //havrg->Add(h);
 
       i++;
-      delete f;
    }
 
    Double_t xmin, ymin, xmax, ymax;
@@ -520,8 +476,14 @@ void initialize()
    imageName = "hRVsFillBin_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
-   // Target periods
-   hTargetVsFill->Draw();
-   imageName = "hTargetVsFill_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
+
+   gH->PostFill();
+
+   TCanvas canvas("cName2", "cName2", 1200, 600);
+   gH->SaveAllAs(canvas);
+
+   gH->Write();
+   //gH->Delete();
+
+   gMAsymRoot->Close();
 }

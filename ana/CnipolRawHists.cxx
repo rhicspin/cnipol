@@ -89,7 +89,7 @@ void CnipolRawHists::Print(const Option_t* opt) const
    opt = "";
 
    //printf("CnipolRawHists:\n");
-   DrawObjContainer::Print();
+   //DrawObjContainer::Print();
 } //}}}
 
 

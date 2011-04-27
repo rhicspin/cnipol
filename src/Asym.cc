@@ -14,7 +14,11 @@
 
 using namespace std;
 
-const float MSIZE = 1.2; // Marker size
+const int   ASYM_DEFAULT = -999;
+const float MSIZE = 1.2;         // Marker size
+
+//TPolarimeters::TPolarimeters() : set<EPolarimeterId> {};
+
 
 int     gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
 int     gFillPattern[120]; // spin pattern 120 bunches (ADO info)
@@ -153,6 +157,7 @@ AsymDb                   *gAsymDb  = new AsymDbFile();
 AsymDb                   *gAsymDb2 = new AsymDbSql();
 DbEntry                   gRunDb;
 RunInfo                   gRunInfo;
+RunConfig                 gRunConfig;
 atdata_struct             atdata;
 StructAverage             average;
 StructFeedBack            feedback;

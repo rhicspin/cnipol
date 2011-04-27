@@ -22,6 +22,7 @@ struct ErrorDetector;
 struct atdata_struct;
 class  DbEntry;
 class  RunInfo;
+class  RunConfig;
 struct StructExtInput;
 struct StructAverage;
 struct StructHistStat;
@@ -52,7 +53,9 @@ extern AsymCalculator   gAsymCalculator;
 extern StructStripCheck strpchk;
 extern StructBunchCheck bnchchk;
 
+// global constants
 extern const int ASYM_DEFAULT;
+extern const float MSIZE; // marker size
 
 extern int   gSpinPattern[N_BUNCHES]; // spin pattern 120 bunches
 extern int   gFillPattern[N_BUNCHES]; // fill pattern 120 bunches
@@ -60,12 +63,12 @@ extern int   ActiveBunch[N_BUNCHES];
 extern int   wcmfillpat[N_BUNCHES];   // fill pattern within the Wall Current Monitor Average Ragne 
 extern float wcmdist[N_BUNCHES];      // wall current monitor 120 bunches
 
-extern long int Ncounts[NDETECTOR][N_BUNCHES];          // counts per detector per bunch
-extern long int NTcounts[NDETECTOR][N_BUNCHES][NTBIN];  // counts 6detectors 120 bunches 6 tranges
-extern long int NDcounts[NDETECTOR][N_BUNCHES][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
+extern long int Ncounts[N_DETECTORS][N_BUNCHES];          // counts per detector per bunch
+extern long int NTcounts[N_DETECTORS][N_BUNCHES][NTBIN];  // counts 6detectors 120 bunches 6 tranges
+extern long int NDcounts[N_DETECTORS][N_BUNCHES][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
 extern long int NStrip[NUM_SPIN_STATES][N_CHANNELS]; // counts 72 strips 3 spin states
  
-extern long int NRcounts[NDETECTOR][N_BUNCHES][RAMPTIME]; // counts 6det 120bunch RAMPTIME sec
+extern long int NRcounts[N_DETECTORS][N_BUNCHES][RAMPTIME]; // counts 6det 120bunch RAMPTIME sec
 
 extern char *confdir;
 extern char *calibdir;
@@ -95,6 +98,7 @@ extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;
 extern DbEntry                       gRunDb;
 extern RunInfo                       gRunInfo;
+extern RunConfig                     gRunConfig;
 extern StructExtInput                extinput;
 extern StructAverage                 average;
 extern StructHistStat                gHstat;
@@ -120,9 +124,6 @@ extern float gPhi[N_CHANNELS];      // phi-angle
 extern int ndelim;
 extern int TgtIndex[MAXDELIM];
 extern int nTgtIndex;
-
-// global constants
-extern const float MSIZE; // marker size
 
 // global declarations
 extern StructHist Eslope;
@@ -154,7 +155,7 @@ extern TF1   *banana_cut_l[N_CHANNELS][2];    // banana cut low     [0]: regular
 extern TF1   *banana_cut_h[N_CHANNELS][2];    // banana cut high    [0]: regular [1] alternative sigma cut
 extern TLine *energy_cut_l[N_CHANNELS];       // energy cut low 
 extern TLine *energy_cut_h[N_CHANNELS];       // energy cut high
-extern TH1F  *energy_spectrum[NDETECTOR]; // energy spectrum per detector
+extern TH1F  *energy_spectrum[N_DETECTORS]; // energy spectrum per detector
 extern TH1F  *energy_spectrum_all;        // energy spectrum for all detector sum
 extern TH1F  *mass_nocut_all;
 extern TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
