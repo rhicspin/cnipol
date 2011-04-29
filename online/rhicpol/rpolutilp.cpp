@@ -274,19 +274,23 @@ void getAdoInfo(void)
     }
 }
 
-//	We look how our carbon target is moving
+// We look how our carbon target is moving
 void GetTargetEncodings(long *res)
 {
     int irc;
     cdevData data;
 
     if (NoADO != 0) return;
+
     cdevDevice & target = cdevDevice::attachRef(ourTargetCDEVName);
     irc = 0;
+
     if(!DEVSEND(target, "get positionEncM", NULL, &data, LogFile, irc))
         data.get("value", res);
+
     res[2] = res[0];	// do just a copy for compatibility ...
     res[3] = res[1];	
+
     if (irc != 0) {
 	fprintf(LogFile, "%d errors getting target information.\n", irc);
 	polData.statusS |= (STATUS_ERROR | ERR_NOADO);

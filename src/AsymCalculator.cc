@@ -524,12 +524,12 @@ void CalcStatistics()
    // Integrate good carbon events in banana
    cntr.good_event = 0;
  
-   int X_index = gRunInfo.Run >= 6 ? nTgtIndex : ndelim;
+   int X_index = gRunInfo.Run >= 6 ? nTgtIndex : gNDelimeters;
  
    for (int i=0; i<X_index; i++) cntr.good_event += cntr.good[i];
  
    // Run time duration
-   gRunInfo.RunTime = gRunInfo.Run == 5 ? ndelim : cntr.revolution/RHIC_REVOLUTION_FREQ;
+   gRunInfo.RunTime = gRunInfo.Run == 5 ? gNDelimeters : cntr.revolution/RHIC_REVOLUTION_FREQ;
  
    // Calculate rates
    if (gRunInfo.RunTime) {
@@ -1333,7 +1333,7 @@ void StripAsymmetry(MseRunInfoX &run)
       hpp = (TH1*) gAsymRoot.fHists->d["profile"]->o["hPolarProfile"];
    }
 
-   for(Int_t i=0; i<ndelim; i++) {
+   for(Int_t i=0; i<gNDelimeters; i++) {
 
       CalcStripAsymmetry(gAnaResults.A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
       //printf("i, p: %d, %f\n", i, gAnaResults.sinphi[100+i].P[0]);

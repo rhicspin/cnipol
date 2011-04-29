@@ -88,8 +88,7 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
    sprintf(hName, "hTargetVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 7);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Fill");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Target Id");
+   ((TH1*) o[hName])->SetTitle(";Measurement;Target Id;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grHTargetVsMeas, "p");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grVTargetVsMeas, "p");
 
@@ -102,15 +101,13 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
    sprintf(hName, "hPolarVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Measurement");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization, %");
+   ((TH1*) o[hName])->GetXaxis()->SetTitle(";Measurement;Polarization, %;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsMeas, "p");
 
    sprintf(hName, "hPolarVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH1F(hName, hName, 600, 14900, 15500);
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Fill");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization, %");
+   ((TH1*) o[hName])->GetXaxis()->SetTitle(";Fill;Polarization, %;");
    ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
    ((TH1*) o[hName])->SetMarkerSize(1);
    ((TH1*) o[hName])->SetMarkerColor(color);
@@ -165,6 +162,28 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
 
+   // DL
+   TGraphErrors *grDLVsMeas = new TGraphErrors();
+   grDLVsMeas->SetName("grDLVsMeas");
+   grDLVsMeas->SetMarkerStyle(kFullCircle);
+   grDLVsMeas->SetMarkerSize(1);
+   grDLVsMeas->SetMarkerColor(color);
+
+   sprintf(hName, "hDLVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 100);
+   ((TH1*) o[hName])->SetTitle(";Measurement;Dead Layer #mug/cm^{2};");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
+
+   sprintf(hName, "hDLVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH1F(hName, hName, 600, 14900, 15500);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 100);
+   ((TH1*) o[hName])->SetTitle(";Fill;Dead Layer #mug/cm^{2};");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(color);
+   ((TH1*) o[hName])->SetOption("E1");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
+
 } //}}}
 
 
@@ -184,8 +203,10 @@ void MAsymRunHists::Fill(EventConfig &rc)
    Float_t  polarizationErr  = rc.fAnaResult->sinphi[0].P[1] * 100.;
    Float_t  profileRatio     = rc.fAnaResult->fIntensPolarR;
    Float_t  profileRatioErr  = rc.fAnaResult->fIntensPolarRErr;
-   Float_t  tzero            = rc.fCalibrator->fChannelCalibs[7].fT0Coef;
-   Float_t  tzeroErr         = rc.fCalibrator->fChannelCalibs[7].fT0CoefErr;
+   Float_t  tzero            = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
+   Float_t  tzeroErr         = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
+   Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
+   Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    if (gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end())
       return;
@@ -239,6 +260,15 @@ void MAsymRunHists::Fill(EventConfig &rc)
    
    graphErrs->SetPoint(graphNEntries, runId, tzero);
    graphErrs->SetPointError(graphNEntries, 0, tzeroErr);
+
+   // Dead layer
+   sprintf(hName, "hDLVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsMeas");
+
+   graphNEntries = graphErrs->GetN();
+   
+   graphErrs->SetPoint(graphNEntries, runId, dl);
+   graphErrs->SetPointError(graphNEntries, 0, dlErr);
 }
 
 
@@ -317,14 +347,19 @@ void MAsymRunHists::PostFill()
          ((TH1*) o[hName])->Fit("funcRVsFill");
          delete funcRVsFill;
 
-         // Profiles r
-         //sprintf(hName, "hT0VsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
-         //graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
+         // t0
+         sprintf(hName, "hT0VsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
+         graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
 
-         ////utils::RemoveOutliers(graph, 2, 3);
-         //utils::BinGraph(graph, (TH1*) o[hName]);
+         //utils::RemoveOutliers(graph, 2, 3);
+         utils::BinGraph(graph, (TH1*) o[hName]);
 
-         //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
+         ((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
+
+         //TF1 *funcT0VsFill = new TF1("funcT0VsFill", "[0] + [1]*x");
+         //funcT0VsFill->SetParameters(0, 0);
+         //((TH1*) o[hName])->Fit("funcT0VsFill");
+         //delete funcT0VsFill;
       }
    }
 }

@@ -121,7 +121,7 @@ extern float phit[N_CHANNELS];      // phi-angle for each strips in approximatio
 extern float gPhi[N_CHANNELS];      // phi-angle
 
 // target position infomation 
-extern int ndelim;
+extern int gNDelimeters;
 extern int TgtIndex[MAXDELIM];
 extern int nTgtIndex;
 

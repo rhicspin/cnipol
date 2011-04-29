@@ -1,7 +1,7 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-#define ASYM_VERSION "v1.3.13"
+#define ASYM_VERSION "v1.3.14"
 
 #define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
 //#define RHIC_MAX_FILL 120             // RHIC Maximum Fill Bunches
