@@ -65,7 +65,7 @@ extern int iDebug;
 long memReadCount[MAXCRATES][MAXSTATIONS][4];
 carbTargStat ctss = { -1, "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef"};
 
-//	Send command chain to CMC CAMAC controller
+// Send command chain to CMC CAMAC controller
 int RP_CommitChain(CMC_chain *ch, int C)
 {
     int irc = CMC_CommitChain(ch, C);
@@ -867,7 +867,7 @@ void pulseDelimiter(void)
     CMC_ReleaseChain(ch);
 }
 
-//	Sleep this number in seconds
+// Sleep this number in seconds
 void nsleep(double time)
 {
     struct timespec t;
@@ -1274,6 +1274,7 @@ int checkChainResult(CMC_chain *ch, int cr)
     return err;
 }
 
+
 int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 {
     int array[8];
@@ -1283,6 +1284,7 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
     
     Cnt = 0;
     ch = CMC_AllocateChain(0, MAXSTATIONS*150);
+
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
 //	send read chain
 	CMC_ResetChain(ch);
@@ -1339,6 +1341,7 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 	    ii += 33;
 	}
     }
+
     CMC_ReleaseChain(ch);
     return Cnt;
 }
@@ -1352,21 +1355,23 @@ int getEvents(int Number)
     int sc;
     struct timeval tv;
     long *targetHistory;
-    long targetHistoryLen;
-    long targetHistoryPtr;
+    long  targetHistoryLen;
+    long  targetHistoryPtr;
     long *countHistory;
-    long countHistoryLen;
-    long countHistoryPtr;
+    long  countHistoryLen;
+    long  countHistoryPtr;
     
-    Cnt = 0;
-    lCnt = 0;
+    Cnt    = 0;
+    lCnt   = 0;
     l10Cnt = 0;
     l10Val = 0;
-    l10 = 0;
+    l10    = 0;
     
     if (NoADO == 0 && (recRing & REC_JET) == 0) {
+
 	targetHistoryLen = 8192;
-	targetHistory = (long *)malloc(targetHistoryLen);
+	targetHistory = (long *) malloc(targetHistoryLen);
+
 	if (targetHistory == NULL) {
 	    targetHistoryLen = 0;
 	} else {
@@ -1390,15 +1395,17 @@ int getEvents(int Number)
     }
     
     gettimeofday(&tv, NULL);
-    t = tv.tv_sec + tv.tv_usec * 1.0E-6;
-    t0 = t;
+    t     = tv.tv_sec + tv.tv_usec * 1.0E-6;
+    t0    = t;
     tlast = t;
-//	Main Cicle
+
+    // Main Cicle
     for (;;) {
         if (Number > 0 && Cnt >= Number) {
 	    fprintf(LogFile, "\nRHICPOL-INFO : %d events collected. Exiting...\n", Cnt);
 	    break; 
         }
+
         if (IStop != 0) {
     	    switch (iSig) {
     	    case SIGALRM:
@@ -1415,7 +1422,8 @@ int getEvents(int Number)
 	    }
 	    break; 
         }
-//	Here we wait ~ 1sec. and toggle Inhibit to ignore excessive events
+
+        // Here we wait ~ 1sec. and toggle Inhibit to ignore excessive events
 	if (Conf.SleepFraction > 0.0 && Conf.SleepFraction < 1.0) {
 	    nsleep(Conf.CicleTime*(1.0 - Conf.SleepFraction));
 	    setInhibit();
@@ -1424,9 +1432,11 @@ int getEvents(int Number)
 	} else { 
 	    nsleep(Conf.CicleTime);	// just wait	
 	}
-//	increment event counter if indirect readout mode
+
+        // increment event counter if indirect readout mode
 	gettimeofday(&tv, NULL);
 	t = tv.tv_sec + tv.tv_usec * 1.0E-6;
+
         if (t >= tlast + 1.0 || IStop != 0 || (Number > 0 && Cnt >= Number)) { // at least 1 second passed
 	    Cnt = getNumberOfEvents();
 	    l10++;
@@ -1442,14 +1452,16 @@ int getEvents(int Number)
 		printf("\r");
 		fflush(stdout);
 	    } 
-// indicate progress
+
+            // indicate progress
 	    if (NoADO == 0 && (recRing & REC_JET) == 0) {
 		UpdateProgress(Cnt, (int)((Cnt-lCnt)/(t-tlast)), t);
-//	get target information
+                // get target information
 		if (targetHistoryPtr >= targetHistoryLen) {
-		    targetHistory = (long *)realloc(targetHistory, targetHistoryLen+8192);
+		    targetHistory = (long *) realloc(targetHistory, targetHistoryLen+8192);
 		    targetHistoryLen += 8192;
 		}
+
 		if (targetHistory != NULL) {
 		    GetTargetEncodings(&targetHistory[targetHistoryPtr/sizeof(long)]);
 		    targetHistoryPtr += 4*sizeof(long);
@@ -1457,14 +1469,17 @@ int getEvents(int Number)
 		    targetHistoryPtr = 0;
 		    targetHistoryLen = 0;
 		}
+
 		if (Conf.CSR.split.RevDelim == 0) pulseDelimiter();
 	    }
+
 	    if ((recRing & REC_JET) == 0) {
-//	get target information
+                // get target information
 		if (countHistoryPtr >= countHistoryLen) {
-		    countHistory = (long *)realloc(countHistory, countHistoryLen+8192);
+		    countHistory = (long *) realloc(countHistory, countHistoryLen+8192);
 		    countHistoryLen += 8192;
 		}
+
 		if (countHistory != NULL) {
 		    countHistory[countHistoryPtr/sizeof(long)] = (long)((Cnt-lCnt)/(t-tlast));
 		    countHistoryPtr += sizeof(long);
@@ -1473,11 +1488,14 @@ int getEvents(int Number)
 		    countHistoryLen = 0;		    
 		}
 	    }
+
 	    tlast = t;
-	    lCnt = Cnt;
-    	}		
+	    lCnt  = Cnt;
+    	}
+
 	if (iCicleRun) forseWrite = (testJetVeto() || testCarbTarg());
 	if (iDebug > 140 && forseWrite) fprintf(LogFile, "Debug: Jet state changed. Writing.\n");
+
 	if (forseWrite && !Conf.OnlyHist) {
 	    setOutInhibit();
 	    readMemory();
@@ -1498,7 +1516,7 @@ int getEvents(int Number)
     }
 
     if (countHistoryPtr != 0) {
-	header.len = sizeof(header)+countHistoryPtr;
+	header.len  = sizeof(header) + countHistoryPtr;
 	header.type = REC_COUNTRATE;
 	header.timestamp.time = time(NULL);
 	polWrite(&header, countHistory);
@@ -1506,6 +1524,7 @@ int getEvents(int Number)
 
     return Cnt;
 }
+
 
 void readWFD()
 {
@@ -1581,6 +1600,7 @@ void readWFD()
     CMC_ReleaseChain(ch);
     fprintf(LogFile,"RHICPOL-INFO : Total number events from scalers: %d, from histo %d\n", cnt, cnt1);
 }
+
 
 long long totalSum(long *data, int len)
 {

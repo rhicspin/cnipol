@@ -37,8 +37,9 @@ public:
    ~CnipolProfileHists();
 
    void BookHists(std::string sid="");
-   void Fill(ChannelEvent *ch, std::string cutid="") {}
+   void Fill(ChannelEvent *ch, std::string cutid="");
    void Fill(UInt_t n, Long_t* hData);
+   void PreFill(std::string sid);
    void PostFill();
    void Process();
    EMeasType MeasurementType();

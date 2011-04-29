@@ -495,7 +495,7 @@ void CnipolHists::PreFill(string sid)
       oc = d.find(dName)->second;
 
       sprintf(hName, "hSpinVsDelim%s_st%02d", sid.c_str(), i);
-      ((TH1*) oc->o[hName])->SetBins(ndelim, 0, ndelim, NUM_SPIN_STATES, -1.5, 1.5);
+      ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, NUM_SPIN_STATES, -1.5, 1.5);
    }
 }
 

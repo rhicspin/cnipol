@@ -58,6 +58,6 @@ void PrepareCollidingBunchPattern();
 void ProcessRecord(recordPolAdoStruct &rec);
 void ProcessRecord(recordWFDV8ArrayStruct &rec);
 void ProcessRecord(recordCountRate &rec);
-void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run);
+void ProcessRecordPCTarget(long* rec, MseRunInfoX &run);
 
 #endif

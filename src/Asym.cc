@@ -52,7 +52,7 @@ long    Nback[120];     // number of events below the curbon cut (each bunch)
 int     NFilledBunch   = 0;  // number of Filled Bunch
 
 long   *pointer;
-int     ndelim;
+int     gNDelimeters;
 //long    VtgtLinear[MAXDELIM];
 //long    VtgtRotary[MAXDELIM];
 //long    HtgtLinear[MAXDELIM];

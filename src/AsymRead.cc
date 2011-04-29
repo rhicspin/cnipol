@@ -588,10 +588,10 @@ void readloop(MseRunInfoX &run)
 
             printf("Reading REC_PCTARGET record...\n");
 
-            ndelim  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
+            gNDelimeters  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
             long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
 
-            if (gAnaInfo.HasTargetBit()) { ProcessRecordPCTarget(pointer, ndelim, run); }
+            if (gAnaInfo.HasTargetBit()) { ProcessRecordPCTarget(pointer, run); }
 
             ReadFlag.PCTARGET = 1;
          }
@@ -1214,9 +1214,9 @@ void ProcessRecord(recordCountRate &rec)
 
    printf("len, size: %ld, %d\n", rec.header.len, size);
 
-   //for (UInt_t i=0; i<size; i++) {
-   //   printf("i: %d, %ld\n", i, *(pointer+i));
-   //}
+   for (UInt_t i=0; i<size; i++) {
+      printf("countrate: i: %d, %ld\n", i, *(pointer+i));
+   }
 
    gAsymRoot.FillProfileHists(size, pointer);
    //gAsymRoot.ProcessProfileHists();
@@ -1224,45 +1224,50 @@ void ProcessRecord(recordCountRate &rec)
 
 
 /** */
-void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
+void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
 { //{{{
    long* pointer = rec;
 
-   --rec;
+   //--rec;
    //UShort_t i = 0;
 
    // copy data to a linear array
-   Double_t* linRec = new Double_t[ndelim*4 + 8]; // there 2 under and ooverflow bins
+   Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
-   for (UInt_t k=0; k<ndelim; k++) {
+   for (UInt_t k=0; k<gNDelimeters; k++) {
 
-      *(linRec + k + 1      )      = *++rec; // Horizontal target
-      *(linRec + k + (ndelim+2)  ) = *++rec;
-      *(linRec + k + (ndelim+2)*2) = *++rec; // Vertical target
-      *(linRec + k + (ndelim+2)*3) = *++rec;
+      //*(linRec + k + 1      )      = *++rec; // Horizontal target
+      //*(linRec + k + (gNDelimeters+2)  ) = *++rec;
+      //*(linRec + k + (gNDelimeters+2)*2) = *++rec; // Vertical target
+      //*(linRec + k + (gNDelimeters+2)*3) = *++rec;
 
-      //printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, ndelim, *(linRec + k + 1), *(linRec + k + (ndelim+2)  ), *(linRec + k + (ndelim+2)*2), *(linRec + k + (ndelim+2)*3) );
+      *(linRec + k + 1                 ) = *rec++; // Horizontal target
+      *(linRec + k + (gNDelimeters+2)  ) = *rec++;
+      *(linRec + k + (gNDelimeters+2)*2) = *rec++; // Vertical target
+      *(linRec + k + (gNDelimeters+2)*3) = *rec++;
+
+      //printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, gNDelimeters, *(linRec + k + 1), *(linRec + k + (gNDelimeters+2)  ), *(linRec + k + (gNDelimeters+2)*2), *(linRec + k + (gNDelimeters+2)*3) );
    }
 
-   gAsymRoot.FillTargetHists(ndelim, linRec);
+   gAsymRoot.FillTargetHists(gNDelimeters, linRec);
    //gAsymRoot.AnalyzeTargetMoves();
 
    delete [] linRec;
 
    // 
-   tgt.fNDelim = ndelim;
+   tgt.fNDelim = gNDelimeters;
 
-   --pointer;
+   //--pointer;
    UShort_t i = 0;
 
    printf("   index    total        x-pos        y-pos\n");
 
-   for (int k=0; k<ndelim; k++) {
+   for (int k=0; k<gNDelimeters; k++) {
 
-      tgt.Linear[k][1] = *++pointer; // Horizontal target
-      tgt.Rotary[k][1] = *++pointer;
-      tgt.Linear[k][0] = *++pointer; // Vertical target
-      tgt.Rotary[k][0] = *++pointer;
+      tgt.Linear[k][1] = *pointer++; // Horizontal target
+      tgt.Rotary[k][1] = *pointer++;
+      tgt.Linear[k][0] = *pointer++; // Vertical target
+      tgt.Rotary[k][0] = *pointer++;
 
       // force 0 for +/-1 tiny readout as target position.
       if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
@@ -1335,7 +1340,7 @@ void ProcessRecordPCTarget(long* rec, int ndelim, MseRunInfoX &run)
    if (nTgtIndex > TGT_OPERATION)
       strcpy(gRunInfo.TgtOperation, " scan");
 
-   printf("Number of delimiters: %4d\n", ndelim);
+   printf("Number of delimiters: %4d\n", gNDelimeters);
    printf("nTgtIndex: %d\n", nTgtIndex);
 
    tgt.Print();

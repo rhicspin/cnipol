@@ -185,7 +185,7 @@ void CnipolTargetHists::PostFill()
 {
    //char  htitle[100];
    float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-   int   X_index = gRunInfo.Run >= 6 ? nTgtIndex : ndelim;
+   int   X_index = gRunInfo.Run >= 6 ? nTgtIndex : gNDelimeters;
  
    float xmin, xmax;
    float margin = 0.02;
@@ -193,7 +193,7 @@ void CnipolTargetHists::PostFill()
    //GetMinMax(nTgtIndex, tgt.X, margin, xmin, xmax);
    GetMinMax(X_index, tgt.X, margin, xmin, xmax);
 
-   printf("xmin, xmax: %f, %f, %d, %d\n", xmin, xmax, X_index, ndelim);
+   printf("xmin, xmax: %f, %f, %d, %d\n", xmin, xmax, X_index, gNDelimeters);
  
    // Make rate _vs deliminter plots
    for (int i=0; i<X_index; i++) {

@@ -513,7 +513,7 @@ void tgtHistBook()
     float XMIN, XMAX;
     XMIN = XMAX = tgt.all.x[0];
 
-    for (int i=0; i<ndelim; i++) {
+    for (int i=0; i<gNDelimeters; i++) {
         XMAX = tgt.all.x[i]>XMAX ? tgt.all.x[i] : XMAX ;
         XMIN = tgt.all.x[i]<XMIN ? tgt.all.x[i] : XMIN ;
     }
@@ -523,14 +523,14 @@ void tgtHistBook()
     int XBIN = (int) (fabs(XMAX - XMIN + 2*dX) / gAnaInfo.target_count_mm);
 
     sprintf(hcomment,"Target position vs. time ");
-    HHBOOK2(25050, hcomment, XBIN, -0.5, ndelim+0.5, ndelim+1, XMIN-dX, XMAX+dX);
-  //HHBOOK2(25050, hcomment, 1000, -0.5, ndelim+0.5, 500,XMIN-dX, XMAX+dX);
+    HHBOOK2(25050, hcomment, XBIN, -0.5, gNDelimeters+0.5, gNDelimeters+1, XMIN-dX, XMAX+dX);
+  //HHBOOK2(25050, hcomment, 1000, -0.5, gNDelimeters+0.5, 500,XMIN-dX, XMAX+dX);
 
     sprintf(hcomment,"Target position vs. time (tgt event)");
-    HHBOOK2(25060, hcomment, 100, -0.5, ndelim+0.5, 100, XMIN-dX, XMAX+dX);
+    HHBOOK2(25060, hcomment, 100, -0.5, gNDelimeters+0.5, 100, XMIN-dX, XMAX+dX);
 
     // Fill target histo with x[mm] vs.time [s]
-    for (int i=0; i<ndelim; i++) {
+    for (int i=0; i<gNDelimeters; i++) {
         HHF2(25050, (float)i, tgt.all.x[i], 1);
     }
 }
