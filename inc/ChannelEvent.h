@@ -44,14 +44,14 @@ public:
 
    UChar_t  GetDetectorId()   { return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1; }
    UInt_t   GetRevolutionId() { return fEventId.fRevolutionId; }
-   UChar_t  GetChannelId()    { return fEventId.fChannelId + 1; }
+   UChar_t  GetChannelId() const { return fEventId.fChannelId + 1; }
    UChar_t  GetBunchId()      { return fEventId.fBunchId; }
    UShort_t GetDelimiterId()  { return fEventId.fDelimiterId; }
    UChar_t  GetAmpltd()       { return fChannel.fAmpltd; }
    UChar_t  GetIntgrl()       { return fChannel.fIntgrl; }
    UChar_t  GetTdc()          { return fChannel.fTdc; }
    UChar_t  GetTdcAMax()      { return fChannel.fTdcAMax; }
-   Float_t  GetEnergyA();
+   Float_t  GetEnergyA() const;
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();
    Float_t  GetKinEnergyAEstimate();
@@ -60,7 +60,7 @@ public:
    Float_t  GetFunnyEnergyA();
    Float_t  GetEnergyI();
    //Float_t GetTotalEnergyI();
-   Float_t  GetTime();
+   Float_t  GetTime() const;
    Float_t  GetTimeOfFlight();
    Float_t  GetTimeOfFlightEstimate();
    Float_t  GetCarbonMass();

@@ -192,7 +192,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
 {
    Double_t runId            = rc.fRunInfo->RUNID;
    UInt_t   fillId           = (UInt_t) runId;
-   UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->BeamEnergy + 0.5);
+   UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
    Short_t  targetId         = rc.fMseRunInfoX->target_id;
    Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];

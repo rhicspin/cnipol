@@ -31,17 +31,11 @@ class MseRunInfoX;
 /** */
 class RunInfo
 {
-public:
+protected:
 
-   //enum EPolarimeterId {B1U = 0, Y1D = 1, B2D = 2, Y2U = 3};
-
-   //// Different measurement types
-   //enum MeasType {MEASTYPE_UNKNOWN = 0x00,
-   //               MEASTYPE_ALPHA   = 0x01,
-   //               MEASTYPE_SWEEP   = 0x02,
-   //               MEASTYPE_FIXED   = 0x04,
-   //               MEASTYPE_RAMP    = 0x08,
-   //               MEASTYPE_EMIT    = 0x10};
+   double       fBeamEnergy;
+   Short_t      fExpectedGlobalTdcOffset;
+   Float_t      fExpectedGlobalTimeOffset;
 
 public:
 
@@ -59,7 +53,6 @@ public:
    float        ReadRate;
    float        WcmAve;
    float        WcmSum;
-   double       BeamEnergy;
    Short_t      fPolId;
    UShort_t     fPolBeam;
    UShort_t     fPolStream;
@@ -79,6 +72,8 @@ public:
    int          NDisableBunch;
    int          DisableBunch[N_BUNCHES];
 
+   
+
 public:
 
    RunInfo();
@@ -86,20 +81,25 @@ public:
 
    std::string GetAlphaCalibFileName() const;
    std::string GetDlCalibFileName() const;
-   void  Streamer(TBuffer &buf);
-   void  Print(const Option_t* opt="") const;
-   void  PrintAsPhp(FILE *f=stdout) const;
-   void  PrintConfig();
-   short GetPolarimeterId();
-   short GetPolarimeterId(short beamId, short streamId);
-   void  GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
-   void  Update(DbEntry &rundb);
-   void  Update(MseRunInfoX& run);
-   void  ConfigureActiveStrip(int mask);
-   void  SetPolarimetrIdRhicBeam(const char* RunID);
+   void     Streamer(TBuffer &buf);
+   void     Print(const Option_t* opt="") const;
+   void     PrintAsPhp(FILE *f=stdout) const;
+   void     PrintConfig();
+   short    GetPolarimeterId();
+   short    GetPolarimeterId(short beamId, short streamId);
+   void     GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
+   void     Update(DbEntry &rundb);
+   void     Update(MseRunInfoX& run);
+   void     ConfigureActiveStrip(int mask);
+   void     SetBeamEnergy(Float_t beamEnergy);
+   Float_t  GetBeamEnergy();
+   void     SetPolarimetrIdRhicBeam(const char* RunID);
+   Float_t  GetExpectedGlobalTimeOffset();
+   Short_t  GetExpectedGlobalTdcOffset();
 };
 
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
 TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
+
 
 #endif

@@ -71,6 +71,7 @@ public:
    void   ProcessProfileHists();
    void   AddChannelEvent();
    void   PrintEventMap();
+   void   PrintChannelEvent();
    void   UpdateCalibrator();
    void   SaveChannelTrees();
    void   SaveEventTree();

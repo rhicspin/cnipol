@@ -220,7 +220,7 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, Boo
    TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
 
    //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
-   ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", &fitResHists);
+   ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G3", &fitResHists);
 
    hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
 
