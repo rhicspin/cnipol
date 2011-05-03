@@ -238,7 +238,8 @@ Bool_t ChannelEvent::PassCutDepEnergyTime()
       break;
 
    case 2:   // B2D
-      return true;
+      if ( GetEnergyA() < 200 || GetEnergyA() > 1000)// || GetTime() < 15 || GetTime() > 75)
+         return false;
       break;
 
    case 3:   // Y2U
@@ -337,7 +338,9 @@ Bool_t ChannelEvent::PassCutNoise()
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 70)) // linear cut good for injection
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 60)) // linear cut
+      if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 ||
+          (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
+          (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
          return false;
       break;
 
