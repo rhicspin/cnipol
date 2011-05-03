@@ -46,8 +46,6 @@ public:
    void ReadDataFast();
 };
 
-void readDataFast();
-void ReadRecBegin();
 void readloop(MseRunInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);

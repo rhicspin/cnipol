@@ -28,7 +28,9 @@ RunInfo::RunInfo() :
    ReadRate     (0),      // ReadRate;
    WcmAve       (0),      // WcmAve;
    WcmSum       (0),      // WcmSum;
-   BeamEnergy   (0),      // BeamEnergy;
+   fBeamEnergy  (0),
+	fExpectedGlobalTimeOffset(0),
+	fExpectedGlobalTdcOffset(0),
    fPolId       (-1),     // valid values 0 - 3
    fPolBeam     (0),      // blue = 2 or yellow = 1
    fPolStream   (0),      // up =1 or down =2 stream
@@ -53,6 +55,30 @@ RunInfo::RunInfo() :
 
 /** */
 RunInfo::~RunInfo() { }
+
+
+/** */
+void RunInfo::SetBeamEnergy(Float_t beamEnergy)
+{
+   fBeamEnergy = beamEnergy;
+
+   UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
+
+   if (approxBeamEnergy == kFLATTOP)
+	   fExpectedGlobalTimeOffset = -8;
+   else
+	   fExpectedGlobalTimeOffset = 0;
+
+   fExpectedGlobalTdcOffset = (Short_t) (fExpectedGlobalTimeOffset / WFD_TIME_UNIT_HALF + 0.5);
+
+   printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
+}
+
+Float_t RunInfo::GetBeamEnergy() { return fBeamEnergy; }
+
+Float_t RunInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffset; }
+
+Short_t RunInfo::GetExpectedGlobalTdcOffset() { return fExpectedGlobalTdcOffset; }
 
 
 string RunInfo::GetAlphaCalibFileName() const
@@ -117,7 +143,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> ReadRate;
       buf >> WcmAve;
       buf >> WcmSum;
-      buf >> BeamEnergy;
+      buf >> fBeamEnergy;
       buf >> fPolId;
       buf >> fPolBeam;
       buf >> fPolStream;
@@ -153,7 +179,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << ReadRate;
       buf << WcmAve;
       buf << WcmSum;
-      buf << BeamEnergy;
+      buf << fBeamEnergy;
       buf << fPolId;
       buf << fPolBeam;
       buf << fPolStream;
@@ -199,7 +225,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
    fprintf(f, "$rc['WcmAve']                       = %f;\n",     WcmAve       );
    fprintf(f, "$rc['WcmSum']                       = %f;\n",     WcmSum       );
-   fprintf(f, "$rc['BeamEnergy']                   = %f;\n",     BeamEnergy   );
+   fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );

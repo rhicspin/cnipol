@@ -252,9 +252,11 @@ void RawDataProcessor::ReadDataFast()
             if ( !gAsymRoot.fChannelEvent->PassCutEnabledChannel() ) continue;
             if ( !gAsymRoot.fChannelEvent->PassCutPulser() ) continue;
             if ( !gAsymRoot.fChannelEvent->PassCutDetectorChannel() ) continue;
-            //if ( //!gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ) continue;
+            if ( !gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ) continue;
 
             gAsymRoot.FillPreProcess();
+				//gAsymRoot.PrintChannelEvent();
+ 
 
             nTotalEvents++;
          }
@@ -272,186 +274,6 @@ void RawDataProcessor::ReadDataFast()
 
 } //}}}
 
-
-/** */
-void readDataFast()
-{ //{{{
-   printf("Started reading data file...\n");
-   TStopwatch sw;
-
-   FILE *fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r");
-
-   // reading the data till its end ...
-   if (!fp) {
-      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
-      exit(-1);
-   } else
-      printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
-
-   recordHeaderStruct header;
-   //recordDataStruct   data;
-
-   // else
-   //   printf("ERROR: Cannot read REC_BEGIN record\n");
-
-   //int nEvent       = 0;
-   UInt_t nTotalEvents = 0;
-   UInt_t nReadEvents  = 0;
-
-   while (true) {
-
-      int nRecs = fread(&header, sizeof(recordHeaderStruct), 1, fp);
-
-      if (nRecs != 1) break;
-
-      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
-
-      if ((header.type & REC_TYPEMASK) != REC_READAT) {
-
-         long offset = header.len - sizeof(recordHeaderStruct);
-         fseek(fp, offset, SEEK_CUR);
-         continue;
-      }
-
-      // We are here if rec type is REC_READAT
-      long delim = header.timestamp.delim;
-
-      //nEvent++;
-
-      //if (nEvent > 1000) break;
-
-      size_t recSize = header.len - sizeof(recordHeaderStruct);
-      unsigned char* buffer = new unsigned char[recSize];
-
-      nRecs = fread(buffer, recSize, 1, fp);
-
-      recordReadATStruct *ATPtr;
-
-      for (UInt_t i=0; i<recSize; ) {
-
-         ATPtr     = (recordReadATStruct*) (buffer + i);
-         unsigned chId   = ATPtr->subhead.siNum; // si number
-         unsigned Events = ATPtr->subhead.Events + 1;
-
-         //if (Events > 100) printf("events: %d, %d\n", siNum, Events);
-
-         i += sizeof(subheadStruct) + Events*sizeof(ATStruct);
-
-         for (unsigned j=0; j<Events; j++, nReadEvents++) {
-
-            if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
-
-            //if (nReadEvents % gAnaInfo.thinout == 0)
-            if (gRandom->Rndm() <= gAnaInfo.fFastCalibThinout) {
-
-               gAsymRoot.SetChannelEvent(ATPtr->data[j], delim, chId);
-
-               if (!gAsymRoot.fChannelEvent->PassCutDetectorChannel()  ||
-                   !gAsymRoot.fChannelEvent->PassCutPulser() ||
-                   !gAsymRoot.fChannelEvent->PassCutNoise() ||
-                   //!gAsymRoot.fChannelEvent->PassCutDepEnergyTime() ||
-                   !gAsymRoot.fChannelEvent->PassCutEnabledChannel()) continue;
-
-               gAsymRoot.FillPreProcess();
-
-               nTotalEvents++;
-            }
-
-            //if (Events > 100) printf("%d, %d\n", amp, tdc);
-         }
-      }
-
-      delete buffer;
-   }
-
-   fclose(fp);
-
-   sw.Stop();
-   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-
-   printf("Total events read:     %12d\n", nReadEvents);
-   printf("Total events accepted: %12d\n", nTotalEvents);
-
-   // (Roughly) Process all channel banana
-   gAsymRoot.CalibrateFast();
-
-} //}}}
-
-
-/** */
-void ReadRecBegin()
-{
-   FILE *fp = fopen(gAnaInfo.GetRawDataFileName().c_str(), "r");
-
-   // reading the data till its end ...
-   if (!fp) {
-      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo.GetRawDataFileName().c_str());
-      exit(-1);
-   } else
-      printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
-
-   recordBeginStruct recBegin;
-
-   int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
-
-   if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
-
-      cout << "Begin of data stream Ver: " << recBegin.version << endl;
-      cout << "Comment: "                  << recBegin.comment << endl;
-      cout << "Time Stamp: "               << ctime(&recBegin.header.timestamp.time);
-      cout << "Unix Time Stamp: "          << recBegin.header.timestamp.time << endl;
-
-      gRunInfo.StartTime  = recBegin.header.timestamp.time;
-      gRunInfo.fPolBeam   = (recBegin.header.type & REC_MASK_BEAM) >> 16;
-      gRunInfo.fPolStream = (recBegin.header.type & REC_MASK_STREAM) >> 20;
-
-      //printf("fPolBeam:   %#x\n", gRunInfo.fPolBeam);
-      //printf("fPolStream: %#x, %#x, %#x\n", gRunInfo.fPolStream, (UInt_t) recBegin.header.type, REC_MASK_STREAM);
-
-      int polId = gRunInfo.GetPolarimeterId(gRunInfo.fPolBeam, gRunInfo.fPolStream);
-
-      if (polId < 0)
-         printf("WARNING: Polarimeter ID will be defined by other means\n");
-      
-      stringstream sstr;
-
-      // First, try to get polarimeter id from the data
-      if (polId >= 0) {
-         sstr << gRunInfo.fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo.fPolId;
-
-      // if failed, get id from the file name
-      } else if (gRunInfo.GetPolarimeterId() >= 0) {
-         sstr.str("");
-         sstr << gRunInfo.fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo.fPolId;
-
-      // see if the polarimeter id was set by command line argument 
-      } else if (gRunInfo.fPolId >= 0) {
-         sstr.str("");
-         sstr << gRunInfo.fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo.fPolId;
-
-      } else { // cannot proceed
-
-         printf("ERROR: Unknown polarimeter ID\n");
-         exit(-1);
-      }
-
-      sstr.str("");
-      sstr << gRunInfo.StartTime;
-      gRunDb.fFields["START_TIME"] = sstr.str();
-      gRunDb.timeStamp = gRunInfo.StartTime; // should be always defined in raw data
-      //gRunDb.Print();
-
-   } else
-      printf("ERROR: Cannot read REC_BEGIN record\n");
-
-   fclose(fp);
-}
 
 
 // read loop routine
@@ -642,12 +464,12 @@ void readloop(MseRunInfoX &run)
             fprintf(stdout,"Reading Beam Information\n");
             memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
 
-            gRunInfo.BeamEnergy = beamdat.beamEnergyM;
-            fprintf(stdout,"Beam Energy: %8.2f\n", gRunInfo.BeamEnergy);
+            gRunInfo.SetBeamEnergy(beamdat.beamEnergyM);
+            fprintf(stdout,"Beam Energy: %8.2f\n", gRunInfo.GetBeamEnergy());
             fprintf(stdout,"RHIC Beam:   %1d\n", gRunInfo.fPolBeam);
 
             // Add inj_tshift for injection measurements
-            if (gRunInfo.BeamEnergy < 30) gAnaInfo.tshift += gAnaInfo.inj_tshift;
+            if (gRunInfo.GetBeamEnergy() < 30) gAnaInfo.tshift += gAnaInfo.inj_tshift;
 
             int pat;
 
@@ -965,14 +787,14 @@ void readloop(MseRunInfoX &run)
    run.nevents_processed = gAnaInfo.nEventsProcessed;
 
    sstr.str("");
-   sstr << gRunInfo.BeamEnergy;
+   sstr << gRunInfo.GetBeamEnergy();
 
    if (gAnaInfo.HasAlphaBit()) {
       gRunDb.fFields["BEAM_ENERGY"] = "0";
       run.beam_energy = 0;
    } else {
       gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
-      run.beam_energy = gRunInfo.BeamEnergy;
+      run.beam_energy = gRunInfo.GetBeamEnergy();
    }
 
    // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.

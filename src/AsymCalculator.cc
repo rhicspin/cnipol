@@ -718,14 +718,14 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (gRunInfo.BeamEnergy > 200) {
+   if (gRunInfo.GetBeamEnergy() > 200) {
       // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176; v1.2.0 and earlier
 
       // A new correction introduced in v1.3.1 scales pC polarization down by
       // approx 18% (0.823 +/- 0.012) at 250 GeV 
       for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
-   } else if (gRunInfo.BeamEnergy > 50) {
+   } else if (gRunInfo.GetBeamEnergy() > 50) {
       for (int i=0; i<25; i++) anth[i] = anth100[i];
    }
 

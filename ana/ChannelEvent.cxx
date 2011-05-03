@@ -27,7 +27,7 @@ ChannelEvent::~ChannelEvent()
 
 
 /** */
-Float_t ChannelEvent::GetEnergyA()
+Float_t ChannelEvent::GetEnergyA() const
 {
    UChar_t chId = GetChannelId();
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fAmpltd;
@@ -108,7 +108,7 @@ Float_t ChannelEvent::GetEnergyI()
 
 
 /** */
-Float_t ChannelEvent::GetTime()
+Float_t ChannelEvent::GetTime() const
 {
    return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
           (fChannel.fTdc + fEventConfig->fRandom->Rndm() - 0.5);
@@ -167,12 +167,13 @@ void ChannelEvent::Print(const Option_t* opt) const
 {
    opt = "";
 
-   printf("ChannelEvent:");
-   printf("\n\t");
-   fEventId.Print();
-   printf("\n\t");
-   fChannel.Print();
-   printf("\n");
+   //printf("ChannelEvent:");
+   //printf("\n\t");
+   //fEventId.Print();
+   //printf("\n\t");
+   //fChannel.Print();
+   printf("%12.3f %12.3f\n", GetEnergyA(), GetTime());
+   //printf("\n");
 }
 
 
@@ -223,15 +224,27 @@ Bool_t ChannelEvent::PassCutDetectorChannel()
 /** */
 Bool_t ChannelEvent::PassCutDepEnergyTime()
 {
-   //if (GetEnergyA() < 150) return false;  // keV
-   //if (GetEnergyA() > 1150) return false; // keV
+   switch (gRunInfo.fPolId) {
 
-   //if (GetEnergyA() < 250) return false;  // keV
-   if (GetEnergyA() < 350) return false;  // keV  for yellow!
-   if (GetEnergyA() > 1400) return false; // keV
+   case 0:   // B1U
+      return true;
+      break;
 
-   if (GetTime() < 15) return false; // ns
-   if (GetTime() > 75) return false; // ns
+   case 1:   // Y1D
+      if ( GetEnergyA() < 200 || GetEnergyA() > 1000)// || GetTime() < 15 || GetTime() > 75)
+          //(GetTime() + gRunInfo.GetExpectedGlobalTimeOffset()) < 15 ||
+          //(GetTime() + gRunInfo.GetExpectedGlobalTimeOffset()) > 75)
+         return false;
+      break;
+
+   case 2:   // B2D
+      return true;
+      break;
+
+   case 3:   // Y2U
+      return true;
+      break;
+   }
 
    return true;
 }
@@ -311,7 +324,11 @@ Bool_t ChannelEvent::PassCutNoise()
    case 1:   // Y1D
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
-      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 50) ) // linear cut
+      if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
+          (fChannel.fTdc < -0.28*fChannel.fAmpltd + 55 ) ||
+          (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
+          //(fChannel.fTdc < -0.28*fChannel.fAmpltd + 63 + gRunInfo.GetExpectedGlobalTdcOffset()) ||
+          //(fChannel.fTdc > -0.28*fChannel.fAmpltd + 91 + gRunInfo.GetExpectedGlobalTdcOffset()) )
          return false;
       break;
 
