@@ -22,7 +22,7 @@ void initialize()
 {
    gStyle->SetOptTitle(0);
    gStyle->SetOptStat(0);
-   gStyle->SetPadRightMargin(0.05);
+   gStyle->SetPadRightMargin(0.18);
 
    gMAsymRoot = new MAsymRoot("masym_out.root");
 
@@ -231,7 +231,7 @@ void initialize()
          //gRC->Print();
       }
 
-      UInt_t   beamEnergy = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
+      UInt_t   beamEnergy = (UInt_t) (gRC->fRunInfo->fBeamEnergy + 0.5);
       Double_t runId = gRC->fRunInfo->RUNID;
       UInt_t   fillId = (UInt_t) runId;
 
@@ -284,7 +284,7 @@ void initialize()
 
       //gRC->Print();
 
-      //Double_t energy = gRC->fRunInfo->BeamEnergy;
+      //Double_t energy = gRC->fRunInfo->fBeamEnergy;
       //printf("%f, %d\n", energy, beamEnergy);
 
       //gH = new DrawObjContainer(f);
@@ -308,7 +308,7 @@ void initialize()
 
       Double_t runId            = gRC->fRunInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
-      UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->BeamEnergy + 0.5);
+      UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->fBeamEnergy + 0.5);
       Float_t  ana_power        = gRC->fAnaResult->A_N[1];
       Float_t  asymmetry        = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
       Float_t  asymmetry_err    = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
@@ -476,10 +476,9 @@ void initialize()
    imageName = "hRVsFillBin_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
-
    gH->PostFill();
 
-   TCanvas canvas("cName2", "cName2", 1200, 600);
+   TCanvas canvas("cName2", "cName2", 1400, 600);
    gH->SaveAllAs(canvas);
 
    gH->Write();
