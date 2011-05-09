@@ -401,10 +401,11 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
 
 // Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
-float GetMax(int N, float A[]){
-  float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
-  for (int i=1; i<N; i++) max = (A[i])&&(max<A[i])&&(A[i]!=ASYM_DEFAULT) ? A[i] : max;
-  return max;
+float GetMax(int N, float A[])
+{
+   float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
+   for (int i=1; i<N; i++) max = (A[i] && max < A[i] && A[i] != ASYM_DEFAULT) ? A[i] : max;
+   return max;
 }
 
 
