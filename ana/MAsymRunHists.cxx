@@ -91,6 +91,21 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    string  strBeamE = RunConfig::AsString(beamE);
    Color_t color    = RunConfig::AsColor(polId);
 
+   // Rate
+   sprintf(hName, "grMaxRateVsMeas");
+   TGraphErrors *grMaxRateVsMeas = new TGraphErrors();
+   grMaxRateVsMeas->SetName(hName);
+   grMaxRateVsMeas->SetMarkerStyle(kFullCircle);
+   grMaxRateVsMeas->SetMarkerSize(1);
+   grMaxRateVsMeas->SetMarkerColor(color);
+
+   sprintf(hName, "hMaxRateVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 100);
+   ((TH1*) o[hName])->SetTitle(";Measurement;Target Id;");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grMaxRateVsMeas, "p");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grMaxRateVsMeas, "p");
+
+
    // Targets
    sprintf(hName, "grHTargetVsMeas");
    TGraphErrors *grHTargetVsMeas = new TGraphErrors();
@@ -274,6 +289,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    Float_t  polarizationErr  = rc.fAnaResult->sinphi[0].P[1] * 100.;
    Float_t  profileRatio     = rc.fAnaResult->fIntensPolarR;
    Float_t  profileRatioErr  = rc.fAnaResult->fIntensPolarRErr;
+   Float_t  max_rate         = rc.fAnaResult->max_rate;
    Float_t  tzero            = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
    Float_t  tzeroErr         = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
    Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
@@ -287,10 +303,18 @@ void MAsymRunHists::Fill(EventConfig &rc)
    string strPolId = RunConfig::AsString((EPolarimeterId) polId);
    string strBeamE = RunConfig::AsString((EBeamEnergy) beamEnergy);
 
+   TGraphErrors *graphErrs = 0;
+   TGraph       *graph = 0;
+   UInt_t        graphNEntries;
+
+   // Rate
+   sprintf(hName, "hMaxRateVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graph = (TGraph*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grMaxRateVsMeas");
+   graphNEntries = graph->GetN();
+   graph->SetPoint(graphNEntries, runId, max_rate);
+
    // Targets
    sprintf(hName, "hTargetVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
-
-   TGraph *graph = 0;
 
    if (targetOrient == 'H') {
       graph = (TGraph*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grHTargetVsMeas");
@@ -301,9 +325,6 @@ void MAsymRunHists::Fill(EventConfig &rc)
    }
 
    graph->SetPoint(graph->GetN(), runId, targetId);
-
-   TGraphErrors* graphErrs;
-   UInt_t graphNEntries;
 
    // Polarization
    sprintf(hName, "hPolarVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
