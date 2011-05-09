@@ -71,8 +71,8 @@ public:
    int          NActiveBunch;
    int          NDisableBunch;
    int          DisableBunch[N_BUNCHES];
-
-   
+	float        fProtoCutSlope;
+	float        fProtoCutOffset;
 
 public:
 
@@ -81,25 +81,24 @@ public:
 
    std::string GetAlphaCalibFileName() const;
    std::string GetDlCalibFileName() const;
-   void     Streamer(TBuffer &buf);
-   void     Print(const Option_t* opt="") const;
-   void     PrintAsPhp(FILE *f=stdout) const;
-   void     PrintConfig();
-   short    GetPolarimeterId();
-   short    GetPolarimeterId(short beamId, short streamId);
-   void     GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
-   void     Update(DbEntry &rundb);
-   void     Update(MseRunInfoX& run);
-   void     ConfigureActiveStrip(int mask);
-   void     SetBeamEnergy(Float_t beamEnergy);
-   Float_t  GetBeamEnergy();
-   void     SetPolarimetrIdRhicBeam(const char* RunID);
-   Float_t  GetExpectedGlobalTimeOffset();
-   Short_t  GetExpectedGlobalTdcOffset();
+   void        Streamer(TBuffer &buf);
+   void        Print(const Option_t* opt="") const;
+   void        PrintAsPhp(FILE *f=stdout) const;
+   void        PrintConfig();
+   short       GetPolarimeterId();
+   short       GetPolarimeterId(short beamId, short streamId);
+   void        GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
+   void        Update(DbEntry &rundb);
+   void        Update(MseRunInfoX& run);
+   void        ConfigureActiveStrip(int mask);
+   void        SetBeamEnergy(Float_t beamEnergy);
+   Float_t     GetBeamEnergy();
+   void        SetPolarimetrIdRhicBeam(const char* RunID);
+   Float_t     GetExpectedGlobalTimeOffset();
+   Short_t     GetExpectedGlobalTdcOffset();
 };
 
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
 TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
-
 
 #endif

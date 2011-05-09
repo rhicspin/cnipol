@@ -32,6 +32,7 @@
 #include "AsymDb.h"
 #include "AsymHbook.h"
 #include "MseRunInfo.h"
+#include "MseRunPeriod.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
    // Create a stopwatch and start it
    TStopwatch stopwatch;
    TTimeStamp timestamp;
-   
+
    time_t  gtime = time(0);
    tm     *ltime = localtime(&gtime);
 
@@ -341,28 +342,31 @@ int main(int argc, char *argv[])
    //   readdb(gRunInfo.RUNID);
    //else
    //   gAnaInfo.RECONFMODE = 0;
-   
+
    // Read run info from database
    // The logic is like this:
-	//    - Select data from database by run name
-	//    - If found read fields from database and create a DbEntry
-	//       - Make sure all missing fields are borrowed from the previous run
-	//    - Proceed with analysis using the info for this run on hand
-	//    - Modify/update DbEntry
-	//    - Save DbEntry to database if requested
+   //    - Select data from database by run name
+   //    - If found read fields from database and create a DbEntry
+   //       - Make sure all missing fields are borrowed from the previous run
+   //    - Proceed with analysis using the info for this run on hand
+   //    - Modify/update DbEntry
+   //    - Save DbEntry to database if requested
 
    //DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
-   MseRunInfoX *mseRunInfoX     = 0;
-   MseRunInfoX *mseRunInfoXOrig = 0;
+   MseRunInfoX   *mseRunInfoX     = 0;
+   MseRunInfoX   *mseRunInfoXOrig = 0;
+   MseRunPeriodX *mseRunPeriodX   = 0;
 
    // Check whether the run is in database
-	if (gAnaInfo.fFlagUseDb)
-      mseRunInfoX = gAsymDb2->SelectRun(gRunInfo.fRunName);
+   if (gAnaInfo.fFlagUseDb) {
+      mseRunInfoX   = gAsymDb2->SelectRun(gRunInfo.fRunName);
+      mseRunPeriodX = gAsymDb2->SelectRunPeriod(gRunInfo.fRunName);
+   }
 
    if (mseRunInfoX) { // if run found in database save its copy
       mseRunInfoXOrig  = new MseRunInfoX(gRunInfo.fRunName);
-		*mseRunInfoXOrig = *mseRunInfoX;
+      *mseRunInfoXOrig = *mseRunInfoX;
 
    } else { // if run not found in database create it
       mseRunInfoX = new MseRunInfoX(gRunInfo.fRunName);
@@ -376,7 +380,7 @@ int main(int argc, char *argv[])
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
-	// and overwrite the data base run info (mseRunInfoX) if needed
+   // and overwrite the data base run info (mseRunInfoX) if needed
    rawData->ReadRecBegin(mseRunInfoX);
 
    cout << endl;
@@ -384,9 +388,10 @@ int main(int argc, char *argv[])
    mseRunInfoX->Print();
 
    // Do this only for normal runs, not alpha
-   if (!gAnaInfo.HasAlphaBit())
-      //gAsymDb2->CompleteRunInfo(*mseRunInfoX);
+   if (!gAnaInfo.HasAlphaBit()) {
       gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
+      //gAsymDb2->CompleteRunInfo(*mseRunInfoX);
+   }
 
    cout << endl;
    cout << "mseRunInfoX 3: " << endl;
@@ -539,15 +544,15 @@ int main(int argc, char *argv[])
    mseRunInfoX->ana_duration     = UInt_t(gAnaInfo.procTimeReal);
    mseRunInfoX->measurement_type = UInt_t(gRunInfo.fMeasType);
 
-	if (gAnaInfo.fFlagUseDb)
+   if (gAnaInfo.fFlagUseDb)
       gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
 
    gAsymRoot.fEventConfig->fMseRunInfoX = mseRunInfoX;
 
    gAsymRoot.fEventConfig->PrintAsPhp(gAnaInfo.GetRunInfoFile());
    gAsymRoot.fEventConfig->PrintAsConfig(gAnaInfo.GetRunConfFile());
-	fclose(gAnaInfo.GetRunInfoFile()); gAnaInfo.fFileRunInfo = 0;
-	fclose(gAnaInfo.GetRunConfFile()); gAnaInfo.fFileRunConf = 0;
+   fclose(gAnaInfo.GetRunInfoFile()); gAnaInfo.fFileRunInfo = 0;
+   fclose(gAnaInfo.GetRunConfFile()); gAnaInfo.fFileRunConf = 0;
 
    if (gAnaInfo.HasGraphBit())
       gAsymRoot.SaveAs("^.*$", gAnaInfo.GetImageDir());

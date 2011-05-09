@@ -12,13 +12,15 @@
 
 #include "TObject.h"
 
-sql_create_6(MseRunPeriod, 1, 2,
-   mysqlpp::sql_datetime,          start_time,
-   mysqlpp::sql_smallint,          polarimeter_id,
-   mysqlpp::sql_varchar,           alpha_calib_run_name,
-   mysqlpp::sql_varchar,           dl_calib_run_name,
-   mysqlpp::sql_varchar,           disabled_channels,
-   mysqlpp::sql_varchar,           disabled_bunches)
+sql_create_8(MseRunPeriod, 1, 2,
+   mysqlpp::sql_datetime, start_time,
+   mysqlpp::sql_smallint, polarimeter_id,
+   mysqlpp::sql_varchar,  alpha_calib_run_name,
+   mysqlpp::sql_varchar,  dl_calib_run_name,
+   mysqlpp::sql_varchar,  disabled_channels,
+   mysqlpp::sql_varchar,  disabled_bunches,
+   mysqlpp::sql_float,    cut_proto_slope,
+   mysqlpp::sql_float,    cut_proto_offset)
 
 
 class MseRunPeriodX : public MseRunPeriod
