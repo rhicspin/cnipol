@@ -520,10 +520,12 @@ void RunInfo::PrintConfig()
    //    printf("Active Strip Config =");
    //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
    //    printf("\n");
+
    printf("Active Strip Config =");
+
    for (int i=0; i<NSTRIP; i++) {
-     if (i%NSTRIP_PER_DETECTOR==0) printf(" ");
-     printf("%d", ActiveStrip[i]);
+      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
+      printf("%d", ActiveStrip[i]);
    }
    printf("\n");
 

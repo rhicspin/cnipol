@@ -361,7 +361,6 @@ int main(int argc, char *argv[])
    // Check whether the run is in database
    if (gAnaInfo.fFlagUseDb) {
       mseRunInfoX   = gAsymDb2->SelectRun(gRunInfo.fRunName);
-      mseRunPeriodX = gAsymDb2->SelectRunPeriod(gRunInfo.fRunName);
    }
 
    if (mseRunInfoX) { // if run found in database save its copy
@@ -389,7 +388,7 @@ int main(int argc, char *argv[])
 
    // Do this only for normal runs, not alpha
    if (!gAnaInfo.HasAlphaBit()) {
-      gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
+      mseRunPeriodX = gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
       //gAsymDb2->CompleteRunInfo(*mseRunInfoX);
    }
 
