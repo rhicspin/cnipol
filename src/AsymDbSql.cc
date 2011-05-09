@@ -162,23 +162,23 @@ void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
 
 
 /** */
-void AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
+MseRunPeriodX* AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
 {
-   MseRunPeriodX* runPeriod = SelectRunPeriod(run);
+   MseRunPeriodX *runPeriod = SelectRunPeriod(run);
 
    if (runPeriod)
       runPeriod->Print();
    else {
       Error("CompleteRunInfoByRunPeriod", "No run period selected");
-      return;
+      return 0;
    }
 
    run.alpha_calib_run_name = runPeriod->alpha_calib_run_name;
    run.dl_calib_run_name    = runPeriod->dl_calib_run_name;
    run.disabled_channels    = runPeriod->disabled_channels;
    run.disabled_bunches     = runPeriod->disabled_bunches;
-   //run.cut_proto_slope      = runPeriod->cut_proto_slope;
-   //run.cut_proto_offset     = runPeriod->cut_proto_offset;
+
+   return runPeriod; 
 }
 
 

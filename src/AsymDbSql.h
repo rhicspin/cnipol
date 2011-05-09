@@ -23,15 +23,15 @@ public:
    AsymDbSql();
    ~AsymDbSql();
    
-   DbEntry*     Select(std::string runName="");
-   MseRunInfoX* SelectRun(std::string runName="");
-	void         CompleteRunInfo(MseRunInfoX& run);
-	void         CompleteRunInfoByRunPeriod(MseRunInfoX& run);
+   DbEntry*                 Select(std::string runName="");
+   MseRunInfoX*             SelectRun(std::string runName="");
    std::vector<MseRunInfoX> SelectPriorRuns(MseRunInfoX& run);
    MseRunPeriodX*           SelectRunPeriod(MseRunInfoX& run);
-   void         Insert(DbEntry *dbrun);
-   void         UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun);
-   void         Dump();
+	void                     CompleteRunInfo(MseRunInfoX& run);
+	MseRunPeriodX*           CompleteRunInfoByRunPeriod(MseRunInfoX& run);
+   void                     Insert(DbEntry *dbrun);
+   void                     UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun);
+   void                     Dump();
    
 };
 
