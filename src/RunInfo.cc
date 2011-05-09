@@ -35,10 +35,11 @@ RunInfo::RunInfo() :
    fPolBeam     (0),      // blue = 2 or yellow = 1
    fPolStream   (0),      // up =1 or down =2 stream
    PolarimetryID(1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution(0)       // MaxRevolution;
+   MaxRevolution(0),      // MaxRevolution;
+   fTargetOrient('-'),
+   targetID     ('-'),
+	fProtoCutSlope(0), fProtoCutOffset(0)
 {
-   fTargetOrient         = '-';
-   targetID              = '-';
    strcpy(TgtOperation, "fixed");
  
    for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
@@ -162,6 +163,8 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> NActiveBunch;
       buf >> NDisableBunch;
       buf.ReadFastArray(DisableBunch, N_BUNCHES);
+      buf >> fProtoCutSlope;
+      buf >> fProtoCutOffset;
 
    } else {
       //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
@@ -197,6 +200,8 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << NActiveBunch;
       buf << NDisableBunch;
       buf.WriteFastArray(DisableBunch, N_BUNCHES);
+      buf << fProtoCutSlope;
+      buf << fProtoCutOffset;
    }
 }
 
@@ -280,6 +285,8 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
    fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
+   fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
+   fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
 } //}}}
 
 

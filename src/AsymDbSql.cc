@@ -177,6 +177,8 @@ void AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
    run.dl_calib_run_name    = runPeriod->dl_calib_run_name;
    run.disabled_channels    = runPeriod->disabled_channels;
    run.disabled_bunches     = runPeriod->disabled_bunches;
+   //run.cut_proto_slope      = runPeriod->cut_proto_slope;
+   //run.cut_proto_offset     = runPeriod->cut_proto_offset;
 }
 
 
@@ -240,6 +242,7 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseRunInfoX& run)
         << "AND `polarimeter_id`='" << run.polarimeter_id << "' ORDER BY `start_time` DESC";
 
    Query query = fConnection->query(sstr.str());
+
    cout << "Query: " << query << endl;
 
    if (StoreQueryResult result = query.store()) {
