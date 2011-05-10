@@ -338,9 +338,11 @@ Bool_t ChannelEvent::PassCutNoise()
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fTdc < -0.33*fChannel.fAmpltd + 70)) // linear cut good for injection
-      if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 ||
-          (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
-          (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
+      //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 ||
+      //    (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
+      //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
+      if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
+          fabs( GetTdc() - (-0.28 * GetAmpltd() + fEventConfig) ) < 20 )
          return false;
       break;
 

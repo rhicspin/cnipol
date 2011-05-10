@@ -21,8 +21,8 @@ using namespace std;
  * read from a file with a streamer. The streamers do not allocate memory by
  * themselves.
  */
-EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), fConfigInfo(0),
-   fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), fDbEntry(new DbEntry()),
+EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0),
+   fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
    fCalibrator(new Calibrator()), fAnaResult(new AnaResult()), fMseRunInfoX(new MseRunInfoX())
 {
 }
@@ -48,12 +48,12 @@ void EventConfig::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "<?php\n");
 
-   fprintf(f, "\n// TRecordConfigRhicStruct data\n");
-   if (!fConfigInfo) {
-      Error("PrintAsPhp", "fConfigInfo not defined");
-   } else {
-      fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
-   }
+   //fprintf(f, "\n// TRecordConfigRhicStruct data\n");
+   //if (!fConfigInfo) {
+   //   Error("PrintAsPhp", "fConfigInfo not defined");
+   //} else {
+   //   fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
+   //}
 
    fprintf(f, "\n// RunInfo data\n");
    if (!fRunInfo) {
@@ -69,12 +69,12 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fAnaInfo->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// DbEntry data\n");
-   if (!fDbEntry) {
-      Error("PrintAsPhp", "fDbEntry not defined");
-   } else {
-      fDbEntry->PrintAsPhp(f);
-   }
+   //fprintf(f, "\n// DbEntry data\n");
+   //if (!fDbEntry) {
+   //   Error("PrintAsPhp", "fDbEntry not defined");
+   //} else {
+   //   fDbEntry->PrintAsPhp(f);
+   //}
 
    fprintf(f, "\n// Calibrator data\n");
    if (!fCalibrator) {
@@ -106,7 +106,8 @@ void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
 	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->fRunName.c_str());
-	fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
+	//fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
+	fprintf(f, "* for the Am calibration     : %s\n", fAnaInfo->GetAlphaCalibRun().c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
 	fprintf(f, "* \n");
 
@@ -117,7 +118,7 @@ void EventConfig::PrintAsConfig(FILE *f) const
 /** */
 float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 { 
-   return fConfigInfo->data.chan[chId].acoef * adc;
+   return 0; //fConfigInfo->data.chan[chId].acoef * adc;
 }
 
 
@@ -131,7 +132,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
       TObject::Streamer(R__b);
       R__b >> fRandom;
-      R__b >> fConfigInfo;
+      //R__b >> fConfigInfo;
       R__b >> fRunInfo;
       R__b >> fAnaInfo;
       R__b >> fCalibrator;
@@ -142,7 +143,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
       TObject::Streamer(R__b);
       R__b << fRandom;
-      R__b << fConfigInfo;
+      //R__b << fConfigInfo;
       R__b << fRunInfo;
       R__b << fAnaInfo;
       R__b << fCalibrator;
