@@ -110,9 +110,8 @@ Float_t ChannelEvent::GetEnergyI()
 /** */
 Float_t ChannelEvent::GetTime() const
 {
-   return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
-          (fChannel.fTdc + fEventConfig->fRandom->Rndm() - 0.5);
-          //(fChannel.fTdc);
+   //return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
+   return WFD_TIME_UNIT_HALF * (fChannel.fTdc + fEventConfig->fRandom->Rndm() - 0.5);
 }
 
 
@@ -342,7 +341,7 @@ Bool_t ChannelEvent::PassCutNoise()
       //    (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
       //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
       if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
-          fabs( GetTdc() - (-0.28 * GetAmpltd() + fEventConfig) ) < 20 )
+          fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) < 20 )
          return false;
       break;
 

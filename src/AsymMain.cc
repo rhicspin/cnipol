@@ -515,7 +515,7 @@ int main(int argc, char *argv[])
    // Set pointers to global structures to be saved in the ROOT file if
    // previously allocated delete object
    //delete gAsymRoot.fEventConfig->fConfigInfo;
-   gAsymRoot.fEventConfig->fConfigInfo = gConfigInfo;
+   //gAsymRoot.fEventConfig->fConfigInfo = gConfigInfo;
 
    // if previously allocated delete object
    delete gAsymRoot.fEventConfig->fRunInfo;
@@ -524,8 +524,8 @@ int main(int argc, char *argv[])
    //delete gAsymRoot.fEventConfig->fAnaInfo;
    gAsymRoot.fEventConfig->fAnaInfo    = &gAnaInfo;
 
-   delete gAsymRoot.fEventConfig->fDbEntry;
-   gAsymRoot.fEventConfig->fDbEntry    = &gRunDb;
+   //delete gAsymRoot.fEventConfig->fDbEntry;
+   //gAsymRoot.fEventConfig->fDbEntry    = &gRunDb;
 
    delete gAsymRoot.fEventConfig->fAnaResult;
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
