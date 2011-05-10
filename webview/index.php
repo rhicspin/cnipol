@@ -29,9 +29,9 @@ if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
    $dir = "../runs/$gRunId/images/";
    $gP = new PlotHelper($dir);
 
-   if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['CMODE'] == 0) {
+   if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
       include("runinfo.html");
-   } elseif ($rc['CMODE'] == 1) {
+   } elseif ($rc['measurement_type'] == 1) {
       include("runinfo_calib.html");
    } else {
       print "Problem with $gRunId\n";
@@ -61,12 +61,12 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "/runs/$gRunId/images/";
+   $dir = "../runs/$gRunId/images/";
    $gP = new PlotHelper($dir);
 
-   if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['CMODE'] == 0) {
+   if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
       include("chaninfo.html");
-   } elseif ($rc['CMODE'] == 1) {
+   } elseif ($rc['measurement_type'] == 1) {
       include("chaninfo_calib.html");
    } else {
       print "Problem with $gRunId\n";
