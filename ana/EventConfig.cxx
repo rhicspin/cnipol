@@ -36,6 +36,13 @@ EventConfig::~EventConfig()
 }
 
 
+RunInfo*     EventConfig::GetRunInfo()     { return fRunInfo; }
+AnaInfo*     EventConfig::GetAnaInfo()     { return fAnaInfo; }
+Calibrator*  EventConfig::GetCalibrator()  { return fCalibrator; }
+AnaResult*   EventConfig::GetAnaResult()   { return fAnaResult; }
+MseRunInfoX* EventConfig::GetMseRunInfoX() { return fMseRunInfoX; }
+
+
 void EventConfig::Print(const Option_t* opt) const
 {
    printf("EventConfig:\n");
@@ -97,7 +104,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fMseRunInfoX->PrintAsPhp(f);
    }
    
-   fprintf(f, "?>\n");
+   fprintf(f, "?>\n\n");
 } //}}}
 
 

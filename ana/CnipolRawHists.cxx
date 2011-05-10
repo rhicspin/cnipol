@@ -40,42 +40,42 @@ void CnipolRawHists::BookHists(string sid)
    fDir->cd();
 
    sprintf(hName, "bunch_dist_raw");
-   sprintf(htitle, "%.3f: Raw Counts per Bunch ", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw Counts per Bunch ", gRunInfo->RUNID);
    o[hName] = new TH1F(hName, htitle, NBUNCH, -0.5, NBUNCH-0.5);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("Bunch Id");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Events");
    ((TH2F*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "strip_dist_raw");
-   sprintf(htitle, "%.3f: Raw Counts per Strip ", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw Counts per Strip ", gRunInfo->RUNID);
    o[hName] = new TH1F(hName, htitle, NSTRIP, 1, NSTRIP);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("Strip Id");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Events");
    ((TH2F*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "tdc_raw");
-   sprintf(htitle, "%.3f: Raw TDC (All Strips)", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw TDC (All Strips)", gRunInfo->RUNID);
    o[hName] = new TH1F(hName, htitle, 100, 0, 100);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("TDC");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Events");
    ((TH2F*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "adc_raw");
-   sprintf(htitle, "%.3f: Raw ADC (All Strips)", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw ADC (All Strips)", gRunInfo->RUNID);
    o[hName] = new TH1F(hName, htitle, 255, 0, 255);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("ADC");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Events");
    ((TH2F*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "tdc_vs_adc_raw");
-   sprintf(htitle, "%.3f: Raw TDC vs ADC (All Strips)", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw TDC vs ADC (All Strips)", gRunInfo->RUNID);
    o[hName] = new TH2F(hName, htitle, 255, 0, 255, 100, 0, 100);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("ADC");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("TDC");
    ((TH2F*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "tdc_vs_adc_false_bunch_raw");
-   sprintf(htitle, "%.3f: Raw TDC vs ADC (All Strips) false bunch", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f: Raw TDC vs ADC (All Strips) false bunch", gRunInfo->RUNID);
    o[hName] = new TH2F(hName, htitle, 255, 0, 255, 100, 0, 100);
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("ADC");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("TDC");

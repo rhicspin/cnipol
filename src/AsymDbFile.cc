@@ -40,8 +40,8 @@ const char* AsymDbFile::sFieldNames[] = {
 /** */
 AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
 {
-   if ( !gAnaInfo.fAsymEnv["CNIPOL_DIR"].empty() )
-      fDbFileName = gAnaInfo.fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
+   if ( !gAnaInfo->fAsymEnv["CNIPOL_DIR"].empty() )
+      fDbFileName = gAnaInfo->fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
 
    //fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -496,11 +496,11 @@ void readdb(double RUNID)
    }
 
    // Find Disable Strip List
-   gRunInfo.NDisableStrip = FindDisableStrip();
+   gRunInfo->NDisableStrip = FindDisableStrip();
 
    // Find Disable Bunch List
-   gRunInfo.NDisableBunch = FindDisableBunch();
-   if (gRunInfo.NDisableBunch) Flag.mask_bunch = 1;
+   gRunInfo->NDisableBunch = FindDisableBunch();
+   if (gRunInfo->NDisableBunch) Flag.mask_bunch = 1;
 
    // processing conditions
    if (!extinput.CONFIG){
@@ -525,29 +525,29 @@ void readdb(double RUNID)
 
    // Mass Cut sigma
    if (!extinput.MASSCUT)
-     gAnaInfo.MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
+     gAnaInfo->MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
 
    // TSHIFT will be cumulated TSHIFT from run.db and -t option
-   gAnaInfo.tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
+   gAnaInfo->tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
 
    // TSHIFT for injection with respect to flattop timing
-   gAnaInfo.inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
+   gAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
 
    // Expected universal rate for given target
-   gAnaInfo.reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
+   gAnaInfo->reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
 
    // Target count/mm conversion
-   gAnaInfo.target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
+   gAnaInfo->target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
 
    // Optimize setting for Run
    if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
-      gRunInfo.Run=5;
+      gRunInfo->Run=5;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun5[i];
    } else if (RUNID>=7400) { // Run06
-      gRunInfo.Run=6;
+      gRunInfo->Run=6;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun6[i];
    } else if (RUNID>=10018) { // Run09
-      gRunInfo.Run=9;
+      gRunInfo->Run=9;
    }
 
    // Spin Pattern Recoverly
@@ -598,18 +598,18 @@ void SetDefault()
    // initialize strip arrays
    for (int i=0; i<NSTRIP; i++) {
       ProcessStrip[i]          = 0;
-      gRunInfo.ActiveStrip[i]  = 1;
-      gRunInfo.fDisabledChannels[i] = 0;
-      gRunInfo.NActiveStrip    = NSTRIP;
-      gRunInfo.NDisableStrip   = 0;
+      gRunInfo->ActiveStrip[i]  = 1;
+      gRunInfo->fDisabledChannels[i] = 0;
+      gRunInfo->NActiveStrip    = NSTRIP;
+      gRunInfo->NDisableStrip   = 0;
    }
  
    // initialize bunch arrays
    for (int i=0; i<NBUNCH; i++) {
       ProcessBunch[i]          = 0;
-      gRunInfo.DisableBunch[i] = 0;
-      gRunInfo.NActiveBunch    = 0;
-      gRunInfo.NDisableBunch   = 0;
+      gRunInfo->DisableBunch[i] = 0;
+      gRunInfo->NActiveBunch    = 0;
+      gRunInfo->NDisableBunch   = 0;
    }
 }
 
@@ -623,7 +623,7 @@ int FindDisableStrip()
    int NDisableStrip=0;
    for (int i=0;i<NSTRIP; i++) {
       if (ProcessStrip[i]>0) {
-         gRunInfo.fDisabledChannels[NDisableStrip] = i;
+         gRunInfo->fDisabledChannels[NDisableStrip] = i;
          NDisableStrip++;
       }
    }
@@ -645,7 +645,7 @@ void BunchHandler(int bunch, int flag)
 }
 
 
-// Description : dump disabled bunches into gRunInfo.DisableBunch array
+// Description : dump disabled bunches into gRunInfo->DisableBunch array
 // Input       :
 // Return      : NDisableBunch
 int FindDisableBunch()
@@ -653,7 +653,7 @@ int FindDisableBunch()
   int NDisableBunch=0;
   for (int i=0;i<NBUNCH; i++) {
     if (ProcessBunch[i]>0) {
-      gRunInfo.DisableBunch[NDisableBunch] = i;
+      gRunInfo->DisableBunch[NDisableBunch] = i;
       NDisableBunch++;
     }
   }

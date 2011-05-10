@@ -61,7 +61,6 @@ public:
    ULong_t          fModes;
    int              FEEDBACKMODE;       // fit 12C peak first and feedback tshift and sigma
    int              RAWHISTOGRAM;       // Fill raw histograms
-   int              CMODE;              // Calibration mode 0:off 1:on
    int              DMODE;              // dead layer study mode 0:off 1:on
    int              TMODE;              // T0 study mode 0:off 1:on
    int              AMODE;              // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on

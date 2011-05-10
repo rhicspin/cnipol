@@ -26,7 +26,6 @@
 
 typedef std::map<std::string, std::string> Str2StrMap;
 
-
 // whole info for one event
 struct processEvent {
    int  stN;   // strip number

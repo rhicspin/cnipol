@@ -94,7 +94,7 @@ TH2F  *scan_asym_sinphi_fit;   // scan asymmetry and sin(phi) fit
 /**
  *
  */
-AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
+AsymRoot::AsymRoot() : fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
@@ -109,8 +109,6 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    gStyle->SetStatH(0.15);
    gStyle->SetPadRightMargin(0.30);
 
-   cout << "size111: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
-
    fChannelEvent->fEventConfig = fEventConfig;
 }
 
@@ -118,7 +116,17 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
 /** Default destructor. */
 AsymRoot::~AsymRoot()
 {
-   //delete fRawEventTree;
+   if (!fOutRootFile)  delete fOutRootFile;
+   if (!fOutTreeFile)  delete fOutTreeFile;
+   if (!fRawEventTree) delete fRawEventTree;
+   if (!fAnaEventTree) delete fAnaEventTree;
+
+   delete fAnaEvent;
+   delete fChannelEvent;
+   delete fChannelData;
+   delete fEventConfig;
+
+   if (!fHists) delete fHists;
 }
 
 
@@ -127,9 +135,9 @@ void AsymRoot::RootFile(string filename)
 { //{{{
    printf("Creating ROOT file: %s\n", filename.c_str());
 
-   rootfile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
+   fOutRootFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
-   if (!rootfile) {
+   if (!fOutRootFile) {
       Fatal("RootFile", "Cannot open ROOT file %s", filename.c_str());
       exit(-1);
    }
@@ -137,64 +145,64 @@ void AsymRoot::RootFile(string filename)
    gSystem->Chmod(filename.c_str(), 0775);
 
    // directory structure
-   FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", rootfile);   //rootfile->mkdir("FeedBack");
-   Kinema    = new TDirectoryFile("Kinema", "Kinema", "", rootfile);   //rootfile->mkdir("Kinema");
-   Bunch     = new TDirectoryFile("Bunch", "Bunch", "", rootfile);   //rootfile->mkdir("Bunch");
-   ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", rootfile);   //rootfile->mkdir("ErrDet");
-   Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", rootfile);   //rootfile->mkdir("Asymmetry");
+   FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
+   Kinema    = new TDirectoryFile("Kinema", "Kinema", "", fOutRootFile);   //fOutRootFile->mkdir("Kinema");
+   Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
+   ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", fOutRootFile);   //fOutRootFile->mkdir("ErrDet");
+   Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", fOutRootFile);   //fOutRootFile->mkdir("Asymmetry");
 
    BookHists();
 
    // Create default empty hist container
-   fHists = new DrawObjContainer(rootfile);
+   fHists = new DrawObjContainer(fOutRootFile);
 
-   if (gAnaInfo.HasAlphaBit()) {
-      //DrawObjContainer *hists = new CnipolCalibHists(rootfile);
+   if (gAnaInfo->HasAlphaBit()) {
+      //DrawObjContainer *hists = new CnipolCalibHists(fOutRootFile);
       //fHists->Add(hists);
       //delete hists;
-      TDirectory *dir = new TDirectoryFile("alpha", "alpha", "", rootfile);
+      TDirectory *dir = new TDirectoryFile("alpha", "alpha", "", fOutRootFile);
       fHists->d["alpha"] = new CnipolCalibHists(dir);
    }
 
-   if (gAnaInfo.HasNormalBit()) {
-      //DrawObjContainer *hists = new CnipolHists(rootfile);
+   if (gAnaInfo->HasNormalBit()) {
+      //DrawObjContainer *hists = new CnipolHists(fOutRootFile);
       //fHists->Add(hists);
       //delete hists;
-      TDirectory *dir = new TDirectoryFile("std", "std", "", rootfile);
+      TDirectory *dir = new TDirectoryFile("std", "std", "", fOutRootFile);
       fHists->d["std"] = new CnipolHists(dir);
    }
 
    // If requested create scaler histograms and add them to the container
-   if (gAnaInfo.HasScalerBit()) {
-      //DrawObjContainer *hists = new CnipolScalerHists(rootfile);
+   if (gAnaInfo->HasScalerBit()) {
+      //DrawObjContainer *hists = new CnipolScalerHists(fOutRootFile);
       //fHists->Add(hists);
       //delete hists;
-      TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", rootfile);
+      TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
 
-   if (gAnaInfo.HasRawBit()) {
-      TDirectory *dir = new TDirectoryFile("raw", "raw", "", rootfile);
+   if (gAnaInfo->HasRawBit()) {
+      TDirectory *dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       fHists->d["raw"] = new CnipolRawHists(dir);
    }
 
-   if (gAnaInfo.HasTargetBit()) {
-      TDirectory *dir = new TDirectoryFile("targets", "targets", "", rootfile);
+   if (gAnaInfo->HasTargetBit()) {
+      TDirectory *dir = new TDirectoryFile("targets", "targets", "", fOutRootFile);
       fHists->d["targets"] = new CnipolTargetHists(dir);
    }
 
-   if (gAnaInfo.HasProfileBit()) {
-      TDirectory *dir = new TDirectoryFile("profile", "profile", "", rootfile);
+   if (gAnaInfo->HasProfileBit()) {
+      TDirectory *dir = new TDirectoryFile("profile", "profile", "", fOutRootFile);
       fHists->d["profile"] = new CnipolProfileHists(dir);
    }
 
    // OLD common global histogram inherited from previous life
-   //DrawObjContainer *hists = new CnipolRunHists(rootfile);
+   //DrawObjContainer *hists = new CnipolRunHists(fOutRootFile);
    //fHists->Add(hists);
    //delete hists;
 
-   //if (!gAnaInfo.HasAlphaBit()) {
-      TDirectory *dir = new TDirectoryFile("run", "run", "", rootfile);
+   //if (!gAnaInfo->HasAlphaBit()) {
+      TDirectory *dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
    //}
 
@@ -211,19 +219,19 @@ void AsymRoot::CreateTrees()
       exit(-1);
    }
 
-   string filename = gAnaInfo.GetRootTreeFileName(fTreeFileId);
+   string filename = gAnaInfo->GetRootTreeFileName(fTreeFileId);
 
    fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
-   if (gAnaInfo.fSaveTrees.test(0) ) {
+   if (gAnaInfo->fSaveTrees.test(0) ) {
 
       fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
       fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent);
    }
 
    // Create trees with channel events
-   if (gAnaInfo.fSaveTrees.test(1) ) {
+   if (gAnaInfo->fSaveTrees.test(1) ) {
 
       char tmpCharStr[19];
 
@@ -237,7 +245,7 @@ void AsymRoot::CreateTrees()
    }
 
    // Create tree with time ordered events
-   if (gAnaInfo.fSaveTrees.test(2) ) {
+   if (gAnaInfo->fSaveTrees.test(2) ) {
 
       fAnaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
       fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
@@ -251,7 +259,7 @@ void AsymRoot::CreateTrees()
 /*
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
 { //{{{
-   if (cfname == "" && gAnaInfo.CMODE) {
+   if (cfname == "" && gAnaInfo->CMODE) {
 
       UpdateCalibrator();
       return true; // check if config is already set
@@ -293,14 +301,14 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
  * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
  * constants from that file.
  */
-void AsymRoot::UpdateRunConfig(const AnaInfo& anaInfo)
+void AsymRoot::UpdateRunConfig(const AnaInfo* anaInfo)
 { //{{{
 
    // if not calib
    //if ( !(anaInfo.fModes & AnaInfo::MODE_CALIB) ) 
-   if ( !anaInfo.HasCalibBit() ) {
+   if ( !anaInfo->HasCalibBit() ) {
 
-      string fname = anaInfo.GetDlCalibFile();
+      string fname = anaInfo->GetDlCalibFile();
       Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
@@ -316,13 +324,13 @@ void AsymRoot::UpdateRunConfig(const AnaInfo& anaInfo)
       fChannelEvent->fEventConfig = fEventConfig;
 
    // else if not alpha mode what am I trying to do here? 
-   // else if ( !(anaInfo.fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
-   } else if ( !anaInfo.HasAlphaBit() && anaInfo.HasNormalBit()) {
-   // else if ( anaInfo.HasNormalBit())
+   // else if ( !(anaInfo->fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
+   } else if ( !anaInfo->HasAlphaBit() && anaInfo->HasNormalBit()) {
+   // else if ( anaInfo->HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
       // RunConfig
-      string fnameAlpha = anaInfo.GetAlphaCalibFile();
+      string fnameAlpha = anaInfo->GetAlphaCalibFile();
       
       // XXX not implemented. Need to fix it ASAP!
       //if (fnameAlpha != fname) {
@@ -439,7 +447,7 @@ void AsymRoot::ProcessProfileHists()
 {
    ((CnipolProfileHists*) fHists->d["profile"])->Process();
 
-   gRunInfo.fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
+   gRunInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
 }
 
 
@@ -448,10 +456,10 @@ void AsymRoot::ProcessProfileHists()
  */
 void AsymRoot::AddChannelEvent()
 { //{{{
-   if (gAnaInfo.fSaveTrees.test(0))
+   if (gAnaInfo->fSaveTrees.test(0))
       fRawEventTree->Fill();
 
-   if (gAnaInfo.fSaveTrees.test(1) || gAnaInfo.fSaveTrees.test(2)) {
+   if (gAnaInfo->fSaveTrees.test(1) || gAnaInfo->fSaveTrees.test(2)) {
       //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
 
       fChannelEvents.insert(*fChannelEvent);
@@ -549,11 +557,11 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
-   gSystem->Info("UpdateCalibrator", "PPPP");
+   //gSystem->Info("UpdateCalibrator", "PPPP");
 
    Calibrator *calibrator;
 
-   if (gAnaInfo.HasAlphaBit()) {
+   if (gAnaInfo->HasAlphaBit()) {
       Info("UpdateCalibrator", "Setting AlphaCalibrator");
       calibrator = new AlphaCalibrator();
    } else {
@@ -573,8 +581,8 @@ void AsymRoot::UpdateCalibrator()
    //fEventConfig->fCalibrator->Print();
 
    // Copy existing constants to the new calibrator
-   cout << "size: " << calibrator->fChannelCalibs.size() << endl;
-   cout << "size: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
+   //cout << "size: " << calibrator->fChannelCalibs.size() << endl;
+   //cout << "size: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
    calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
 
    //fEventConfig->fCalibrator->PrintAsPhp();
@@ -614,7 +622,7 @@ void AsymRoot::CalibrateFast()
 /** */
 void AsymRoot::SaveChannelTrees()
 {
-   if (!gAnaInfo.fSaveTrees.test(1)) return;
+   if (!gAnaInfo->fSaveTrees.test(1)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in ChannelTree\n");
@@ -638,7 +646,7 @@ void AsymRoot::SaveChannelTrees()
  */
 void AsymRoot::SaveEventTree()
 { //{{{
-   if (!gAnaInfo.fSaveTrees.test(2)) return;
+   if (!gAnaInfo->fSaveTrees.test(2)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in EventTree\n");
@@ -685,13 +693,13 @@ void AsymRoot::BookHists()
 { //{{{
    Char_t hname[100], htitle[100];
  
-   rootfile->cd();
+   fOutRootFile->cd();
 
    // FeedBack Directory
    FeedBack->cd();
  
    sprintf(hname, "mass_feedback_all");
-   sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", gRunInfo.RUNID);
+   sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", gRunInfo->RUNID);
    mass_feedback_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_feedback_all -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
    mass_feedback_all -> SetLineColor(2);
@@ -699,7 +707,7 @@ void AsymRoot::BookHists()
    for (int i=0; i<TOT_WFD_CH; i++) {
  
       sprintf(hname, "mass_feedback_st%d", i+1);
-      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gRunInfo.RUNID, i+1);
+      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gRunInfo->RUNID, i+1);
       mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_feedback[i] -> SetLineColor(2);
@@ -712,24 +720,24 @@ void AsymRoot::BookHists()
  
    for (int i=0; i<N_DETECTORS; i++) {
       sprintf(hname, "energy_spectrum_det%d", i+1);
-      sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gRunInfo->RUNID, i+1);
       energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
       energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
       //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
    }
  
-   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gRunInfo->RUNID);
    energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
    energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
    //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
  
    sprintf(hname,"mass_nocut_all");
-   sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gRunInfo->RUNID);
    mass_nocut_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_nocut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
  
    sprintf(hname,"mass_yescut_all");
-   sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", gRunInfo->RUNID);
    mass_yescut_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_yescut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
    mass_yescut_all->SetLineColor(2);
@@ -739,30 +747,30 @@ void AsymRoot::BookHists()
    for (int i=0; i<TOT_WFD_CH; i++) {
  
       sprintf(hname,"t_vs_e_st%d",i+1);
-      sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", gRunInfo->RUNID, i+1);
       t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
       t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
       t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
  
       sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-      sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gRunInfo->RUNID, i+1);
       t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
       t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
       t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
  
       sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-      sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", gRunInfo->RUNID, i+1);
       mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
       mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
       mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
  
       sprintf(hname, "mass_nocut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gRunInfo->RUNID, i+1);
       mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
  
       sprintf(hname, "mass_yescut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gRunInfo.RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gRunInfo->RUNID, i+1);
       mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_yescut[i] -> SetLineColor(2);
@@ -770,19 +778,19 @@ void AsymRoot::BookHists()
  
    // Bunch Directory
    Bunch->cd();
-   sprintf(htitle,"%.3f : Counts per Bunch ", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Counts per Bunch ", gRunInfo->RUNID);
    bunch_dist = new TH1F("bunch_dist", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
    bunch_dist -> GetYaxis() -> SetTitle("Counts");
    bunch_dist -> SetFillColor(13);
  
-   sprintf(htitle,"%.3f : Wall Current Monitor", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Wall Current Monitor", gRunInfo->RUNID);
    wall_current_monitor = new TH1F("wall_current_monitor", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
    wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
    wall_current_monitor -> SetFillColor(13);
  
-   sprintf(htitle,"%.3f : Specific Luminosity", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Specific Luminosity", gRunInfo->RUNID);
    specific_luminosity = new TH1F("specific_luminosity", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
    specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
@@ -790,16 +798,16 @@ void AsymRoot::BookHists()
  
    // Error detectors
    ErrDet->cd();
-   sprintf(htitle,"%.3f : Bunch Asymmetry X90", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry X90", gRunInfo->RUNID);
    asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : Bunch Asymmetry X45", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry X45", gRunInfo->RUNID);
    asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : Bunch Asymmetry Y45", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry Y45", gRunInfo->RUNID);
    asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gRunInfo.RUNID);
+   sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gRunInfo->RUNID);
    good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
    good_carbon_events_strip->SetFillColor(17);
 
@@ -816,7 +824,7 @@ void AsymRoot::BookHists()
 //             : This routine shuould be called after Feedback operation
 void AsymRoot::BookHists2(StructFeedBack &feedback)
 { //{{{
-   rootfile->cd();
+   fOutRootFile->cd();
    Kinema->cd();
  
    char  formula[100], fname[100];
@@ -828,15 +836,15 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
  
       for (int j=0; j<2; j++) {
  
-         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo.MassSigmaAlt :
-                     gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo.MassSigma;
+         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo->MassSigmaAlt :
+                     gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo->MassSigma;
  
          int Style = j + 1 ;
  
          // lower limit
          sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
          sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
-         banana_cut_l[i][j] = new TF1(fname, formula, gAnaInfo.enel, gAnaInfo.eneu);
+         banana_cut_l[i][j] = new TF1(fname, formula, gAnaInfo->enel, gAnaInfo->eneu);
          banana_cut_l[i][j] -> SetLineColor(Color);
          banana_cut_l[i][j] -> SetLineWidth(Width);
          banana_cut_l[i][j] -> SetLineStyle(Style);
@@ -844,29 +852,29 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
          // upper limit
          sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
          sprintf(fname, "banana_cut_h_st%d", i);
-         banana_cut_h[i][j] = new TF1(fname, formula, gAnaInfo.enel, gAnaInfo.eneu);
+         banana_cut_h[i][j] = new TF1(fname, formula, gAnaInfo->enel, gAnaInfo->eneu);
          banana_cut_h[i][j] -> SetLineColor(Color);
          banana_cut_h[i][j] -> SetLineWidth(Width);
          banana_cut_h[i][j] -> SetLineStyle(Style);
       }
  
       // energy cut low
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo.enel)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo.MassSigma / sqrt(double(gAnaInfo.enel));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo.enel)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo.MassSigma / sqrt(double(gAnaInfo.enel));
+      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->enel)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->enel));
+      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->enel)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->enel));
  
-      energy_cut_l[i] = new TLine(gAnaInfo.enel, low, gAnaInfo.enel, high);
+      energy_cut_l[i] = new TLine(gAnaInfo->enel, low, gAnaInfo->enel, high);
       energy_cut_l[i] ->SetLineColor(Color);
       energy_cut_l[i] ->SetLineWidth(Width);
  
       // energy cut high
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo.eneu)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo.MassSigma / sqrt(double(gAnaInfo.eneu));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo.eneu)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo.MassSigma / sqrt(double(gAnaInfo.eneu));
+      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->eneu)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->eneu));
+      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->eneu)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->eneu));
  
-      energy_cut_h[i] = new TLine(gAnaInfo.eneu, low, gAnaInfo.eneu, high);
+      energy_cut_h[i] = new TLine(gAnaInfo->eneu, low, gAnaInfo->eneu, high);
       energy_cut_h[i] ->SetLineColor(Color);
       energy_cut_h[i] ->SetLineWidth(Width);
    }
@@ -889,57 +897,53 @@ void AsymRoot::DeleteHistogram()
 } //}}}
 
 
-// Description : Write out objects in memory and dump in rootfile before closing it
+// Description : Write out objects in memory and dump in fOutRootFile before closing it
 void AsymRoot::Finalize()
 { //{{{
-  rootfile->cd();
-  Kinema->cd();
-
-  for (int i=0; i<NSTRIP; i++) {
-     if (t_vs_e[i]) {
-
-        for (int j=0; j<2; j++){
-           if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
-           if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
-        }
-
-        if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
-        if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
-     }
-  }
-
-  rootfile->cd();
-
-  //if (!gAnaInfo.CMODE) {
-  fHists->Write();
-  fHists->Delete();
-  //}
-
-  //rootfile->Write();
-
-  rootfile->cd();
-  //fEventConfig->PrintAsPhp();
-  fEventConfig->Write("EventConfig");
-
-  // close rootfile
-  rootfile->Close();
-
-  if (gAnaInfo.fSaveTrees.any()) {
-     SaveChannelTrees();
-     SaveEventTree();
-     WriteTreeFile();
-     fOutTreeFile->Close();
-     fOutTreeFile->Delete();
-  }
-
-  delete fEventConfig;
+   fOutRootFile->cd();
+   Kinema->cd();
+ 
+   for (int i=0; i<NSTRIP; i++) {
+      if (t_vs_e[i]) {
+ 
+         for (int j=0; j<2; j++){
+            if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
+            if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
+         }
+ 
+         if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
+         if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
+      }
+   }
+ 
+   fOutRootFile->cd();
+ 
+   fHists->Write();
+   //fHists->Delete();
+ 
+   //fOutRootFile->Write();
+ 
+   fOutRootFile->cd();
+   //fEventConfig->PrintAsPhp();
+   fEventConfig->Write("EventConfig");
+ 
+   // close fOutRootFile
+   fOutRootFile->Close();
+ 
+   if (gAnaInfo->fSaveTrees.any()) {
+      SaveChannelTrees();
+      SaveEventTree();
+      WriteTreeFile();
+      fOutTreeFile->Close();
+      fOutTreeFile->Delete();
+   }
 } //}}}
 
 
 /** */
 void AsymRoot::SaveAs(string pattern, string dir)
 {
-   if (!gAnaInfo.HasAlphaBit()) {
+   if (!gAnaInfo->HasAlphaBit()) {
       gStyle->SetMarkerStyle(kFullDotLarge);
       gStyle->SetMarkerSize(1);
       gStyle->SetMarkerColor(kRed);
@@ -948,4 +952,17 @@ void AsymRoot::SaveAs(string pattern, string dir)
    TCanvas c("cName", "cName", 1200, 600);
 
    fHists->SaveAllAs(c, pattern, dir.c_str());
+}
+
+
+EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
+
+
+void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaResult *&ar)
+{
+   if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }
+
+   ri = fEventConfig->GetRunInfo();
+   ai = fEventConfig->GetAnaInfo();
+   ar = fEventConfig->GetAnaResult();
 }

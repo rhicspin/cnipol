@@ -40,10 +40,10 @@ void AsymRecover::OverwriteFillPattern(int index)
 // Description : Mask fill pattern to disable suspicious bunches
 void AsymRecover::MaskFillPattern()
 {
-   for (int i=0; i<gRunInfo.NDisableBunch; i++) {
+   for (int i=0; i<gRunInfo->NDisableBunch; i++) {
 
       for (int j=0; j<NBUNCH; j++) {
-         gFillPattern[j] = gRunInfo.DisableBunch[i] == j ? 0 : gFillPattern[j];
+         gFillPattern[j] = gRunInfo->DisableBunch[i] == j ? 0 : gFillPattern[j];
       }
    }
 }

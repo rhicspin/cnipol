@@ -46,6 +46,12 @@ public:
    EventConfig();
    ~EventConfig();
 
+   RunInfo*     GetRunInfo();
+   AnaInfo*     GetAnaInfo();
+   Calibrator*  GetCalibrator();
+   AnaResult*   GetAnaResult();
+   MseRunInfoX* GetMseRunInfoX();
+
    //virtual void Print(const Option_t* opt="") const;
    void  Print(const Option_t* opt="") const;
    void  PrintAsPhp(FILE *f=stdout) const;

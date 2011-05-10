@@ -22,7 +22,6 @@ AnaInfo::AnaInfo() :
    fModes            (MODE_NORMAL),
    FEEDBACKMODE      (0),
    RAWHISTOGRAM      (0),
-   CMODE             (0),
    DMODE             (0),
    TMODE             (0),
    AMODE             (0),
@@ -76,7 +75,6 @@ AnaInfo::AnaInfo(string runId) :
    fModes            (MODE_NORMAL),
    FEEDBACKMODE      (0),
    RAWHISTOGRAM      (0),
-   CMODE             (0),
    DMODE             (0),
    TMODE             (0),
    AMODE             (0),
@@ -285,7 +283,7 @@ void AnaInfo::ProcessOptions()
    if (HasAlphaBit()) {
       fAlphaCalibRun     = fRunName;
       fDlCalibRun        = "";
-      gRunInfo.fMeasType = kMEASTYPE_ALPHA;
+      gRunInfo->fMeasType = kMEASTYPE_ALPHA;
    }
 }
 
@@ -316,51 +314,8 @@ TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
 /** */
 void AnaInfo::Print(const Option_t* opt) const
 {
+   gSystem->Info("AnaInfo::Print", "Print members:");
    PrintAsPhp();
-   //cout
-   //<< "fRunName         = " << fRunName         << endl
-   //<< "enel             = " << enel             << endl
-   //<< "eneu             = " << eneu             << endl
-   //<< "widthl           = " << widthl           << endl
-   //<< "widthu           = " << widthu           << endl
-   //<< "fModes           = " << hex << showbase << fModes << endl << dec << noshowbase
-   //<< "FEEDBACKMODE     = " << FEEDBACKMODE     << endl
-   //<< "RAWHISTOGRAM     = " << RAWHISTOGRAM     << endl
-   //<< "CMODE            = " << CMODE            << endl
-   //<< "DMODE            = " << DMODE            << endl
-   //<< "TMODE            = " << TMODE            << endl
-   //<< "AMODE            = " << AMODE            << endl
-   //<< "BMODE            = " << BMODE            << endl
-   //<< "ZMODE            = " << ZMODE            << endl
-   //<< "MESSAGE          = " << MESSAGE          << endl
-   //<< "CBANANA          = " << CBANANA          << endl
-   //<< "UPDATE           = " << UPDATE           << endl
-   //<< "QUICK_MODE       = " << QUICK_MODE       << endl
-   //<< "MMODE            = " << MMODE            << endl
-   //<< "NTMODE           = " << NTMODE           << endl
-   //<< "RECONFMODE       = " << RECONFMODE       << endl
-   //<< "RAMPMODE         = " << RAMPMODE         << endl
-   //<< "STUDYMODE        = " << STUDYMODE        << endl
-   //<< "fSaveTrees       = " << fSaveTrees       << endl
-   //<< "MassSigma        = " << MassSigma        << endl
-   //<< "MassSigmaAlt     = " << MassSigmaAlt     << endl
-   //<< "OneSigma         = " << OneSigma         << endl
-   //<< "tshift           = " << tshift           << endl
-   //<< "inj_tshift       = " << inj_tshift       << endl
-   //<< "dx_offset        = " << dx_offset        << endl
-   //<< "WCMRANGE         = " << WCMRANGE         << endl
-   //<< "MassLimit        = " << MassLimit        << endl
-   //<< "nEventsProcessed = " << nEventsProcessed << endl
-   //<< "nEventsTotal     = " << nEventsTotal     << endl
-   //<< "thinout          = " << thinout          << endl
-   //<< "fFastCalibThinout= " << fFastCalibThinout<< endl
-   //<< "reference_rate   = " << reference_rate   << endl
-   //<< "target_count_mm  = " << target_count_mm  << endl
-   //<< "procDateTime     = " << procDateTime     << endl
-   //<< "procTimeReal     = " << procTimeReal     << endl
-   //<< "procTimeCpu      = " << procTimeCpu      << endl
-   //<< "fAlphaCalibRun   = " << fAlphaCalibRun   << endl
-   //<< "fDlCalibRun      = " << fDlCalibRun      << endl;
 }
 
 
@@ -372,7 +327,6 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['eneu']                         = %d;\n",     eneu);
    fprintf(f, "$rc['widthl']                       = %d;\n",     widthl);
    fprintf(f, "$rc['widthu']                       = %d;\n",     widthu);
-   fprintf(f, "$rc['CMODE']                        = %d;\n",     CMODE);
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
@@ -404,6 +358,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    // Various printouts. Should be combined with Print()?
    //cout << "Input data file:               " << GetRawDataFileName() << endl;
    //cout << "Max events to process:         " << gMaxEventsUser << endl;
+   fprintf(f, "\n");
 } //}}}
 
 
@@ -473,7 +428,6 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf >> widthl;
       buf >> widthu;
       buf >> fModes;
-      buf >> CMODE;
       buf >> nEventsProcessed;
       buf >> nEventsTotal;
       buf >> thinout;
@@ -491,7 +445,6 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf << widthl;
       buf << widthu;
       buf << fModes;
-      buf << CMODE;
       buf << nEventsProcessed;
       buf << nEventsTotal;
       buf << thinout;

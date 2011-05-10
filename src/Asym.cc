@@ -3,13 +3,13 @@
 
 #include <map>
 #include <string>
+#include <fstream>
 
 #include "TMath.h"
 
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
-#include "AsymDbFile.h"
-#include "AsymDbSql.h"
+#include "AsymDb.h"
 #include "TargetInfo.h"
 
 using namespace std;
@@ -151,19 +151,19 @@ float gPhi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
-AnaInfo                   gAnaInfo;
-AsymRoot                  gAsymRoot;
-AsymDb                   *gAsymDb  = new AsymDbFile();
-AsymDb                   *gAsymDb2 = new AsymDbSql();
+AnaInfo                  *gAnaInfo;
+RunInfo                  *gRunInfo;
+AnaResult                *gAnaResult;
+AsymRoot                 *gAsymRoot;
+AsymDb                   *gAsymDb;
+AsymDb                   *gAsymDb2;
 DbEntry                   gRunDb;
-RunInfo                   gRunInfo;
 RunConfig                 gRunConfig;
 atdata_struct             atdata;
 StructAverage             average;
 StructFeedBack            feedback;
 //RunConst                 runconst;
 map<UShort_t, RunConst>   gRunConsts;
-AnaResult                 gAnaResults;
 StructBunchPattern        phx, str;
 TRecordConfigRhicStruct  *gConfigInfo;
 TargetInfo                tgt;
