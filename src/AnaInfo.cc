@@ -5,6 +5,7 @@
 #include "TSystem.h"
 
 #include "AsymGlobals.h"
+#include "DbEntry.h"
 #include "MseRunInfo.h"
 #include "RunInfo.h"
 
@@ -30,14 +31,13 @@ AnaInfo::AnaInfo() :
    MESSAGE           (0),
    CBANANA           (2),
    UPDATE            (0),
-   UPDATE_DB         (1),
    QUICK_MODE        (0),
    MMODE             (1),
    NTMODE            (0),
    RECONFMODE        (1),
    RAMPMODE          (0),
    STUDYMODE         (0),
-   SAVETREES         (0),
+   fSaveTrees        (0),
    MassSigma         (3),
    MassSigmaAlt      (2),
    OneSigma          (CARBON_MASS_PEAK_SIGMA),
@@ -56,9 +56,9 @@ AnaInfo::AnaInfo() :
    procDateTime      (0),
    procTimeReal      (0),
    procTimeCpu       (0),
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
+   fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE)
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE)
 {
    Init();
 }
@@ -85,14 +85,13 @@ AnaInfo::AnaInfo(string runId) :
    MESSAGE           (0),
    CBANANA           (2),
    UPDATE            (0),
-   UPDATE_DB         (1),
    QUICK_MODE        (0),
    MMODE             (1),
    NTMODE            (0),
    RECONFMODE        (1),
    RAMPMODE          (0),
    STUDYMODE         (0),
-   SAVETREES         (0),
+   fSaveTrees        (0),
    MassSigma         (3),
    MassSigmaAlt      (2),
    OneSigma          (CARBON_MASS_PEAK_SIGMA),
@@ -111,8 +110,9 @@ AnaInfo::AnaInfo(string runId) :
    procDateTime      (0),
    procTimeReal      (0),
    procTimeCpu       (0),
-   userCalibFile     (""), fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
-   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0), fFileStdLogName("stdoe.log")
+   fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
+   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE)
 {
    Init();
 }
@@ -169,6 +169,32 @@ void AnaInfo::MakeOutDir()
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
 }
+
+string AnaInfo::GetRunName()         const { return fRunName; }
+string AnaInfo::GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
+string AnaInfo::GetImageDir()        const { return GetOutDir() + "/images"; }
+string AnaInfo::GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
+string AnaInfo::GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
+string AnaInfo::GetStdLogFileName()  const { return GetOutDir() + "/" + fFileStdLogName; }
+string AnaInfo::GetRootFileName()    const { return GetOutDir() + "/" + fRunName + ".root"; }
+FILE*  AnaInfo::GetRunInfoFile()     const { return fFileRunInfo; }
+FILE*  AnaInfo::GetRunConfFile()     const { return fFileRunConf; }
+
+string AnaInfo::GetAlphaCalibRun()   const { return fAlphaCalibRun; }
+string AnaInfo::GetDlCalibRun()      const { return fDlCalibRun; }
+
+Bool_t AnaInfo::HasAlphaBit() const  {
+   return (fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB))  == (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB);
+ }
+
+Bool_t AnaInfo::HasCalibBit()   const { return (fModes & AnaInfo::MODE_CALIB)   == AnaInfo::MODE_CALIB; }
+Bool_t AnaInfo::HasGraphBit()   const { return (fModes & AnaInfo::MODE_GRAPH)   == AnaInfo::MODE_GRAPH; }
+Bool_t AnaInfo::HasNormalBit()  const { return (fModes & AnaInfo::MODE_NORMAL)  == AnaInfo::MODE_NORMAL; }
+Bool_t AnaInfo::HasScalerBit()  const { return (fModes & AnaInfo::MODE_SCALER)  == AnaInfo::MODE_SCALER; }
+Bool_t AnaInfo::HasRawBit()     const { return (fModes & AnaInfo::MODE_RAW)     == AnaInfo::MODE_RAW; }
+Bool_t AnaInfo::HasRunBit()     const { return (fModes & AnaInfo::MODE_RUN)     == AnaInfo::MODE_RUN; }
+Bool_t AnaInfo::HasTargetBit()  const { return (fModes & AnaInfo::MODE_TARGET)  == AnaInfo::MODE_TARGET; }
+Bool_t AnaInfo::HasProfileBit() const { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
 
 
 /** */
@@ -261,15 +287,6 @@ void AnaInfo::ProcessOptions()
       fDlCalibRun        = "";
       gRunInfo.fMeasType = kMEASTYPE_ALPHA;
    }
-
-   // Various printouts. Should be combined with Print()?
-   cout << "Run name:                      " << fRunName << endl;
-   cout << "Input data file:               " << GetRawDataFileName() << endl;
-   cout << "Max events to process:         " << gMaxEventsUser << endl;
-   cout << "Events to skip:                " << thinout << endl;
-   cout << "User defined calibration file: " << userCalibFile << endl;
-   cout << "overwrite conf file:           " << reConfFile << endl;
-   cout << "SAVETREES:                     " << SAVETREES << endl;
 }
 
 
@@ -299,52 +316,51 @@ TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
 /** */
 void AnaInfo::Print(const Option_t* opt) const
 {
-   cout
-   << "fRunName         = " << fRunName         << endl
-   << "enel             = " << enel             << endl
-   << "eneu             = " << eneu             << endl
-   << "widthl           = " << widthl           << endl
-   << "widthu           = " << widthu           << endl
-   << "fModes           = " << hex << showbase << fModes << endl << dec << noshowbase
-   << "FEEDBACKMODE     = " << FEEDBACKMODE     << endl
-   << "RAWHISTOGRAM     = " << RAWHISTOGRAM     << endl
-   << "CMODE            = " << CMODE            << endl
-   << "DMODE            = " << DMODE            << endl
-   << "TMODE            = " << TMODE            << endl
-   << "AMODE            = " << AMODE            << endl
-   << "BMODE            = " << BMODE            << endl
-   << "ZMODE            = " << ZMODE            << endl
-   << "MESSAGE          = " << MESSAGE          << endl
-   << "CBANANA          = " << CBANANA          << endl
-   << "UPDATE           = " << UPDATE           << endl
-   << "UPDATE_DB        = " << UPDATE_DB        << endl
-   << "QUICK_MODE       = " << QUICK_MODE       << endl
-   << "MMODE            = " << MMODE            << endl
-   << "NTMODE           = " << NTMODE           << endl
-   << "RECONFMODE       = " << RECONFMODE       << endl
-   << "RAMPMODE         = " << RAMPMODE         << endl
-   << "STUDYMODE        = " << STUDYMODE        << endl
-   << "SAVETREES        = " << SAVETREES        << endl
-   << "MassSigma        = " << MassSigma        << endl
-   << "MassSigmaAlt     = " << MassSigmaAlt     << endl
-   << "OneSigma         = " << OneSigma         << endl
-   << "tshift           = " << tshift           << endl
-   << "inj_tshift       = " << inj_tshift       << endl
-   << "dx_offset        = " << dx_offset        << endl
-   << "WCMRANGE         = " << WCMRANGE         << endl
-   << "MassLimit        = " << MassLimit        << endl
-   << "nEventsProcessed = " << nEventsProcessed << endl
-   << "nEventsTotal     = " << nEventsTotal     << endl
-   << "thinout          = " << thinout          << endl
-   << "fFastCalibThinout= " << fFastCalibThinout<< endl
-   << "reference_rate   = " << reference_rate   << endl
-   << "target_count_mm  = " << target_count_mm  << endl
-   << "procDateTime     = " << procDateTime     << endl
-   << "procTimeReal     = " << procTimeReal     << endl
-   << "procTimeCpu      = " << procTimeCpu      << endl
-   << "userCalibFile    = " << userCalibFile    << endl
-   << "fAlphaCalibRun   = " << fAlphaCalibRun   << endl
-   << "fDlCalibRun      = " << fDlCalibRun      << endl;
+   PrintAsPhp();
+   //cout
+   //<< "fRunName         = " << fRunName         << endl
+   //<< "enel             = " << enel             << endl
+   //<< "eneu             = " << eneu             << endl
+   //<< "widthl           = " << widthl           << endl
+   //<< "widthu           = " << widthu           << endl
+   //<< "fModes           = " << hex << showbase << fModes << endl << dec << noshowbase
+   //<< "FEEDBACKMODE     = " << FEEDBACKMODE     << endl
+   //<< "RAWHISTOGRAM     = " << RAWHISTOGRAM     << endl
+   //<< "CMODE            = " << CMODE            << endl
+   //<< "DMODE            = " << DMODE            << endl
+   //<< "TMODE            = " << TMODE            << endl
+   //<< "AMODE            = " << AMODE            << endl
+   //<< "BMODE            = " << BMODE            << endl
+   //<< "ZMODE            = " << ZMODE            << endl
+   //<< "MESSAGE          = " << MESSAGE          << endl
+   //<< "CBANANA          = " << CBANANA          << endl
+   //<< "UPDATE           = " << UPDATE           << endl
+   //<< "QUICK_MODE       = " << QUICK_MODE       << endl
+   //<< "MMODE            = " << MMODE            << endl
+   //<< "NTMODE           = " << NTMODE           << endl
+   //<< "RECONFMODE       = " << RECONFMODE       << endl
+   //<< "RAMPMODE         = " << RAMPMODE         << endl
+   //<< "STUDYMODE        = " << STUDYMODE        << endl
+   //<< "fSaveTrees       = " << fSaveTrees       << endl
+   //<< "MassSigma        = " << MassSigma        << endl
+   //<< "MassSigmaAlt     = " << MassSigmaAlt     << endl
+   //<< "OneSigma         = " << OneSigma         << endl
+   //<< "tshift           = " << tshift           << endl
+   //<< "inj_tshift       = " << inj_tshift       << endl
+   //<< "dx_offset        = " << dx_offset        << endl
+   //<< "WCMRANGE         = " << WCMRANGE         << endl
+   //<< "MassLimit        = " << MassLimit        << endl
+   //<< "nEventsProcessed = " << nEventsProcessed << endl
+   //<< "nEventsTotal     = " << nEventsTotal     << endl
+   //<< "thinout          = " << thinout          << endl
+   //<< "fFastCalibThinout= " << fFastCalibThinout<< endl
+   //<< "reference_rate   = " << reference_rate   << endl
+   //<< "target_count_mm  = " << target_count_mm  << endl
+   //<< "procDateTime     = " << procDateTime     << endl
+   //<< "procTimeReal     = " << procTimeReal     << endl
+   //<< "procTimeCpu      = " << procTimeCpu      << endl
+   //<< "fAlphaCalibRun   = " << fAlphaCalibRun   << endl
+   //<< "fDlCalibRun      = " << fDlCalibRun      << endl;
 }
 
 
@@ -352,17 +368,42 @@ void AnaInfo::Print(const Option_t* opt) const
 void AnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
-   fprintf(f, "$rc['enel']                         = %d;\n", enel);
-   fprintf(f, "$rc['eneu']                         = %d;\n", eneu);
-   fprintf(f, "$rc['widthl']                       = %d;\n", widthl);
-   fprintf(f, "$rc['widthu']                       = %d;\n", widthu);
-   fprintf(f, "$rc['CMODE']                        = %d;\n", CMODE);
-   fprintf(f, "$rc['nEventsProcessed']             = %u;\n", nEventsProcessed);
-   fprintf(f, "$rc['nEventsTotal']                 = %u;\n", nEventsTotal);
-   fprintf(f, "$rc['thinout']                      = %u;\n", thinout);
-   fprintf(f, "$rc['procDateTime']                 = %u;\n", (UInt_t) procDateTime);
-   fprintf(f, "$rc['procTimeReal']                 = %f;\n", procTimeReal);
-   fprintf(f, "$rc['procTimeCpu']                  = %f;\n", procTimeCpu);
+   fprintf(f, "$rc['enel']                         = %d;\n",     enel);
+   fprintf(f, "$rc['eneu']                         = %d;\n",     eneu);
+   fprintf(f, "$rc['widthl']                       = %d;\n",     widthl);
+   fprintf(f, "$rc['widthu']                       = %d;\n",     widthu);
+   fprintf(f, "$rc['CMODE']                        = %d;\n",     CMODE);
+   fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
+   fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
+   fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
+   fprintf(f, "$rc['thinout']                      = %u;\n",     thinout);
+   fprintf(f, "$rc['procDateTime']                 = %u;\n",     (UInt_t) procDateTime);
+   fprintf(f, "$rc['procTimeReal']                 = %f;\n",     procTimeReal);
+   fprintf(f, "$rc['procTimeCpu']                  = %f;\n",     procTimeCpu);
+   fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
+   fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
+
+   stringstream ssEnvs("");
+
+   ssEnvs << "array(";
+
+   for (Str2StrMap::const_iterator ienv=fAsymEnv.begin(); ienv!=fAsymEnv.end(); ienv++) {
+      ssEnvs << "'" << ienv->first << "'"  << " => " << "\"" << ienv->second << "\"";
+      ssEnvs << (ienv != (--fAsymEnv.end()) ? ", " : "");
+   }
+
+   ssEnvs << ")";
+
+   fprintf(f, "$rc['fAsymEnv']                     = %s;\n", ssEnvs.str().c_str());
+
+   fprintf(f, "$rc['fFileStdLogName']              = \"%s\";\n", fFileStdLogName.c_str());
+   fprintf(f, "$rc['fFlagCopyResults']             = %d;\n", fFlagCopyResults);
+   fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
+   fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
+
+   // Various printouts. Should be combined with Print()?
+   //cout << "Input data file:               " << GetRawDataFileName() << endl;
+   //cout << "Max events to process:         " << gMaxEventsUser << endl;
 } //}}}
 
 
@@ -377,7 +418,6 @@ void AnaInfo::PrintUsage()
         << " (default \"-n 0\" all events)" << endl;
    cout << " -s <number>                     : Only every <number> event will be"
         << " processed (default \"-s 1\" no skip)" << endl;
-   cout << " -c <calib_file_name>            : Set root file with calibration info (!)" << endl;
    cout << " -o <filename>                   : Output hbk file (!)" << endl;
    //cout << " -r <filename>                   : ramp timing file" << endl;
    cout << " -l, --log=[filename]            : Optional log file to redirect stdout and stderr" << endl;
@@ -396,7 +436,6 @@ void AnaInfo::PrintUsage()
    cout << " -W <lower:upper>                : Const width banana cut (!)" << endl;
    cout << " -m <sigma>                      : Banana cut by <sigma> from 12C mass [def]:3 sigma (!)" << endl;
    cout << " -U                              : Update histogram" << endl;
-   cout << "     --update-db                 : Update run info in database" << endl;
    cout << " -N                              : Store Ntuple events (!)" << endl;
    cout << " -R <bitmask>                    : Save events in Root trees, " <<
            "e.g. \"-R 101\"" << endl;
@@ -413,6 +452,7 @@ void AnaInfo::PrintUsage()
    cout << " -g, --graph                     : Save histograms as images" << endl;
    cout << "     --copy                      : Copy results to server (?)" << endl;
    cout << "     --use-db                    : Run info will be retrieved from and saved into database" << endl;
+   cout << "     --update-db                 : Update run info in database" << endl;
    cout << endl;
    cout << "Options marked with (!) are not really supported" << endl;
    cout << "Options marked with (?) need more work" << endl;
@@ -439,8 +479,10 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf >> thinout;
       buf >> fFastCalibThinout;
       buf >> procDateTime >> procTimeReal >> procTimeCpu;
-      buf >> tstr; fAlphaCalibRun = tstr.Data();
-      buf >> tstr; fDlCalibRun = tstr.Data();
+      buf >> tstr; fAlphaCalibRun  = tstr.Data();
+      buf >> tstr; fDlCalibRun     = tstr.Data();
+      buf >> tstr; fFileStdLogName = tstr.Data();
+      buf >> fFlagCopyResults >> fFlagUseDb >> fFlagUpdateDb;
    } else {
       //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
       tstr = fRunName; buf << tstr;
@@ -455,13 +497,16 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf << thinout;
       buf << fFastCalibThinout;
       buf << procDateTime << procTimeReal << procTimeCpu;
-      tstr = fAlphaCalibRun; buf << tstr;
-      tstr = fDlCalibRun;    buf << tstr;
+      tstr = fAlphaCalibRun;  buf << tstr;
+      tstr = fDlCalibRun;     buf << tstr;
+      tstr = fFileStdLogName; buf << tstr;
+      buf << fFlagCopyResults << fFlagUseDb << fFlagUpdateDb;
    }
 }
 
 
-/** */
+/** Deprecated. */
+/*
 void AnaInfo::Update(DbEntry &rundb)
 {
    // If user didn't specify his/her calibration file use the one from the DB
@@ -471,6 +516,7 @@ void AnaInfo::Update(DbEntry &rundb)
    if (fDlCalibRun.empty())
       fDlCalibRun = rundb.fFields["DL_CALIB_RUN_NAME"];
 }
+*/
 
 
 /** */

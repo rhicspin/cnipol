@@ -79,7 +79,7 @@ StructExtInput extinput = {
    0, // CONFIG
    0, // MASSCUT
    0  // TSHIFT
-} ;
+};
 
 StructReadFlag ReadFlag = {
    0, // RECBEGIN
@@ -90,12 +90,12 @@ StructReadFlag ReadFlag = {
 };
 
 StructFlag Flag = {
-  0,       // VERBOSE mode
-  0,       // feedback mode
-  -1,      // spin_pattern
-  -1,      // fill_pattern
-  0,       // mask_bunch
-  0,       // EXE_ANOMALY_CHECK;
+   0,       // VERBOSE mode
+   0,       // feedback mode
+   -1,      // spin_pattern
+   -1,      // fill_pattern
+   0,       // mask_bunch
+   0,       // EXE_ANOMALY_CHECK;
 };
 
 StructCounter    cntr;

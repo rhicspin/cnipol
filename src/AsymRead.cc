@@ -323,6 +323,7 @@ void readloop(MseRunInfoX &run)
    } else
       printf("\nFound file %s\n", gAnaInfo.GetRawDataFileName().c_str());
 
+
    while (flag == 0) {
 
       if (fread(&rec.header, sizeof(recordHeaderStruct), 1, fp) != 1)
@@ -465,8 +466,8 @@ void readloop(MseRunInfoX &run)
             memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
 
             gRunInfo.SetBeamEnergy(beamdat.beamEnergyM);
-            fprintf(stdout,"Beam Energy: %8.2f\n", gRunInfo.GetBeamEnergy());
-            fprintf(stdout,"RHIC Beam:   %1d\n", gRunInfo.fPolBeam);
+            fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo.GetBeamEnergy());
+            fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo.fPolBeam);
 
             // Add inj_tshift for injection measurements
             if (gRunInfo.GetBeamEnergy() < 30) gAnaInfo.tshift += gAnaInfo.inj_tshift;
@@ -656,7 +657,7 @@ void readloop(MseRunInfoX &run)
 
                  gAsymRoot.SetChannelEvent(event);
 
-                 if (gAnaInfo.SAVETREES.any()) { gAsymRoot.AddChannelEvent(); }
+                 if (gAnaInfo.fSaveTrees.any()) { gAsymRoot.AddChannelEvent(); }
 
                  //cout << " i "            << i
                  //     << " Nevent "       << Nevent
@@ -715,6 +716,7 @@ void readloop(MseRunInfoX &run)
         break;
 
       case REC_RHIC_CONF:
+
          if (!ReadFlag.RHICCONF) {
 
             fprintf(stdout, "Reading REC_RHIC_CONF record from file...\n");

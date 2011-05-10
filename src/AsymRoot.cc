@@ -98,7 +98,7 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
-   fChannelEvents(), fEventConfig(), fHists(0)
+   fChannelEvents(), fEventConfig(new EventConfig()), fHists(0)
 {
    gStyle->SetPalette(1);
    gStyle->SetOptFit(1111);
@@ -107,8 +107,9 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    gStyle->SetStatY(0.99);
    gStyle->SetStatW(0.15);
    gStyle->SetStatH(0.15);
-
    gStyle->SetPadRightMargin(0.30);
+
+   fChannelEvent->fEventConfig = fEventConfig;
 }
 
 
@@ -213,14 +214,14 @@ void AsymRoot::CreateTrees()
    fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
-   if (gAnaInfo.SAVETREES.test(0) ) {
+   if (gAnaInfo.fSaveTrees.test(0) ) {
 
       fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
       fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent);
    }
 
    // Create trees with channel events
-   if (gAnaInfo.SAVETREES.test(1) ) {
+   if (gAnaInfo.fSaveTrees.test(1) ) {
 
       char tmpCharStr[19];
 
@@ -234,7 +235,7 @@ void AsymRoot::CreateTrees()
    }
 
    // Create tree with time ordered events
-   if (gAnaInfo.SAVETREES.test(2) ) {
+   if (gAnaInfo.fSaveTrees.test(2) ) {
 
       fAnaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
       fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
@@ -244,7 +245,8 @@ void AsymRoot::CreateTrees()
 } //}}}
 
 
-/** */
+/** Deprecated. */
+/*
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
 { //{{{
    if (cfname == "" && gAnaInfo.CMODE) {
@@ -281,21 +283,22 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
    } else return false;
 } //}}}
+*/
 
 
 /**
- * Updates the deafult fEventConfig to the one taken from the DL_CALIB_RUN_NAME
+ * Updates the default fEventConfig to the one taken from the DL_CALIB_RUN_NAME
  * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
  * constants from that file.
  */
-void AsymRoot::UpdateRunConfig()
+void AsymRoot::UpdateRunConfig(const AnaInfo& anaInfo)
 { //{{{
 
    // if not calib
-   //if ( !(gAnaInfo.fModes & AnaInfo::MODE_CALIB) ) 
-   if ( !gAnaInfo.HasCalibBit() ) {
+   //if ( !(anaInfo.fModes & AnaInfo::MODE_CALIB) ) 
+   if ( !anaInfo.HasCalibBit() ) {
 
-      string fname = gAnaInfo.GetDlCalibFile();
+      string fname = anaInfo.GetDlCalibFile();
       Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
@@ -307,13 +310,13 @@ void AsymRoot::UpdateRunConfig()
       }
 
    // else if not alpha mode what am I trying to do here? 
-   //} else if ( !(gAnaInfo.fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
-   } else if ( !gAnaInfo.HasAlphaBit() && gAnaInfo.HasNormalBit()) {
-   //} else if ( gAnaInfo.HasNormalBit())
+   // else if ( !(anaInfo.fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
+   } else if ( !anaInfo.HasAlphaBit() && anaInfo.HasNormalBit()) {
+   // else if ( anaInfo.HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
       // RunConfig
-      string fnameAlpha = gAnaInfo.GetAlphaCalibFile();
+      string fnameAlpha = anaInfo.GetAlphaCalibFile();
       
       // XXX not implemented. Need to fix it ASAP!
       //if (fnameAlpha != fname) {
@@ -439,10 +442,10 @@ void AsymRoot::ProcessProfileHists()
  */
 void AsymRoot::AddChannelEvent()
 { //{{{
-   if (gAnaInfo.SAVETREES.test(0))
+   if (gAnaInfo.fSaveTrees.test(0))
       fRawEventTree->Fill();
 
-   if (gAnaInfo.SAVETREES.test(1) || gAnaInfo.SAVETREES.test(2)) {
+   if (gAnaInfo.fSaveTrees.test(1) || gAnaInfo.fSaveTrees.test(2)) {
       //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
 
       fChannelEvents.insert(*fChannelEvent);
@@ -540,6 +543,8 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
+   gSystem->Info("UpdateCalibrator", "XXX");
+
    Calibrator *calibrator;
 
    if (gAnaInfo.HasAlphaBit()) {
@@ -562,11 +567,18 @@ void AsymRoot::UpdateCalibrator()
    // Copy existing constants to the new calibrator
    calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
 
+   calibrator->Print();
+   calibrator->PrintAsPhp();
+
+   //fEventConfig->fCalibrator->PrintAsPhp();
+
    // Existing calibrator will be replaced so, delete it first
    delete fEventConfig->fCalibrator;
 
    // and finally, assign the new calibrator
    fEventConfig->fCalibrator = calibrator;
+
+   fEventConfig->fCalibrator->Print();
 
    //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
    //calibrator->Calibrate(fHists);
@@ -577,7 +589,11 @@ void AsymRoot::UpdateCalibrator()
 /** */
 void AsymRoot::Calibrate()
 {
-   fEventConfig->fCalibrator->Calibrate(fHists);
+   fEventConfig->Print();
+   //fEventConfig->fCalibrator->Print();
+
+   exit(0);
+   //fEventConfig->fCalibrator->Calibrate(fHists);
 }
 
 
@@ -591,7 +607,7 @@ void AsymRoot::CalibrateFast()
 /** */
 void AsymRoot::SaveChannelTrees()
 {
-   if (!gAnaInfo.SAVETREES.test(1)) return;
+   if (!gAnaInfo.fSaveTrees.test(1)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in ChannelTree\n");
@@ -615,7 +631,7 @@ void AsymRoot::SaveChannelTrees()
  */
 void AsymRoot::SaveEventTree()
 { //{{{
-   if (!gAnaInfo.SAVETREES.test(2)) return;
+   if (!gAnaInfo.fSaveTrees.test(2)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in EventTree\n");
@@ -901,7 +917,7 @@ void AsymRoot::Finalize()
   // close rootfile
   rootfile->Close();
 
-  if (gAnaInfo.SAVETREES.any()) {
+  if (gAnaInfo.fSaveTrees.any()) {
      SaveChannelTrees();
      SaveEventTree();
      WriteTreeFile();
