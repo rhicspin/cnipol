@@ -29,7 +29,8 @@
 
 #include "AsymRoot.h"
 #include "AsymRead.h"
-#include "AsymDb.h"
+#include "AsymDbFile.h"
+#include "AsymDbSql.h"
 #include "AsymHbook.h"
 #include "MseRunInfo.h"
 #include "MseRunPeriod.h"
@@ -46,6 +47,14 @@ int main(int argc, char *argv[])
 
    time_t  gtime = time(0);
    tm     *ltime = localtime(&gtime);
+
+   // Create all main (global) objects
+   gAsymRoot = new AsymRoot();
+
+   gAsymRoot->GetRunConfigs(gRunInfo, gAnaInfo, gAnaResult);
+
+   gAsymDb  = new AsymDbFile();
+   gAsymDb2 = new AsymDbSql();
 
    // for get option
    extern char *optarg;
@@ -114,13 +123,13 @@ int main(int argc, char *argv[])
 
       case '?':
       case 'h':
-         gAnaInfo.PrintUsage();
+         gAnaInfo->PrintUsage();
          exit(0);
 
       case 'r':
       case 'f':
-         gAnaInfo.fRunName = optarg;
-         gRunInfo.fRunName = optarg;
+         gAnaInfo->fRunName = optarg;
+         gRunInfo->fRunName = optarg;
          gRunDb.fRunName   = optarg;
          break;
 
@@ -129,37 +138,37 @@ int main(int argc, char *argv[])
          break;
 
       case 's':
-         gAnaInfo.thinout = atol(optarg);
+         gAnaInfo->thinout = atol(optarg);
          break;
 
       case 'l':
-         gAnaInfo.fFileStdLogName = (optarg != 0 ? optarg : "");
+         gAnaInfo->fFileStdLogName = (optarg != 0 ? optarg : "");
          break;
 
       case AnaInfo::FLAG_COPY:
-         gAnaInfo.fFlagCopyResults = kTRUE;
+         gAnaInfo->fFlagCopyResults = kTRUE;
          break;
 
       case AnaInfo::FLAG_UPDATE_DB:
-         gAnaInfo.fFlagUpdateDb = kTRUE;
+         gAnaInfo->fFlagUpdateDb = kTRUE;
          break;
 
       case AnaInfo::FLAG_NO_UPDATE_DB:
-         gAnaInfo.fFlagUpdateDb = kFALSE;
+         gAnaInfo->fFlagUpdateDb = kFALSE;
          break;
 
       case AnaInfo::FLAG_USE_DB:
-         gAnaInfo.fFlagUseDb    = kTRUE;
-         gAnaInfo.fFlagUpdateDb = kTRUE;
+         gAnaInfo->fFlagUseDb    = kTRUE;
+         gAnaInfo->fFlagUpdateDb = kTRUE;
          break;
 
       case 't': // set timing shift in banana cut
-         gAnaInfo.tshift = atoi(optarg);
+         gAnaInfo->tshift = atoi(optarg);
          extinput.TSHIFT = 1;
          break;
 
       case 'd': // set timing shift in banana cut
-         gAnaInfo.dx_offset = atoi(optarg);
+         gAnaInfo->dx_offset = atoi(optarg);
          break;
 
       case 'e': // set energy range
@@ -167,15 +176,15 @@ int main(int argc, char *argv[])
 
          if ((ptr = strrchr(enerange, ':'))) {
             ptr++;
-            gAnaInfo.eneu = atoi(ptr);
+            gAnaInfo->eneu = atoi(ptr);
             strtok(enerange, ":");
-            gAnaInfo.enel = atoi(enerange);
-            if (gAnaInfo.enel == 0 || gAnaInfo.enel < 0)     { gAnaInfo.enel = 0;}
-            if (gAnaInfo.eneu == 0 || gAnaInfo.eneu > 12000) { gAnaInfo.eneu = 2000;}
-            fprintf(stdout,"ENERGY RANGE LOWER:UPPER = %d:%d\n", gAnaInfo.enel, gAnaInfo.eneu);
+            gAnaInfo->enel = atoi(enerange);
+            if (gAnaInfo->enel == 0 || gAnaInfo->enel < 0)     { gAnaInfo->enel = 0;}
+            if (gAnaInfo->eneu == 0 || gAnaInfo->eneu > 12000) { gAnaInfo->eneu = 2000;}
+            fprintf(stdout, "ENERGY RANGE LOWER:UPPER = %d:%d\n", gAnaInfo->enel, gAnaInfo->eneu);
          } else {
-             cout << "Wrong specification for energy threshold" << endl;
-             return 0;
+            cout << "Wrong specification for energy threshold" << endl;
+            return 0;
          }
          break;
 
@@ -194,131 +203,129 @@ int main(int argc, char *argv[])
          break;
 
       case 'b':
-         gAnaInfo.FEEDBACKMODE = Flag.feedback = 1; break;
+         gAnaInfo->FEEDBACKMODE = Flag.feedback = 1; break;
       case 'D':
-         gAnaInfo.DMODE = 1; break;
+         gAnaInfo->DMODE = 1; break;
       case 'T':
-         gAnaInfo.TMODE = 1; break;
+         gAnaInfo->TMODE = 1; break;
       case 'A':
-         gAnaInfo.AMODE = 1; break;
+         gAnaInfo->AMODE = 1; break;
       case 'B':
-         gAnaInfo.BMODE = 1; break;
+         gAnaInfo->BMODE = 1; break;
       case 'Z':
-         gAnaInfo.ZMODE = 1; break;
+         gAnaInfo->ZMODE = 1; break;
       case 'U':
-         gAnaInfo.UPDATE = 1; break;
+         gAnaInfo->UPDATE = 1; break;
       case 'G':
-         gAnaInfo.MMODE = 1; break;
+         gAnaInfo->MMODE = 1; break;
       case 'N':
-         gAnaInfo.NTMODE = 1; break;
+         gAnaInfo->NTMODE = 1; break;
       case 'W': // constant width banana cut
-         gAnaInfo.CBANANA = 1;
+         gAnaInfo->CBANANA = 1;
          strcpy(cwidth, optarg);
          if ((ptr = strrchr(cwidth,':'))) {
             ptr++;
-            gAnaInfo.widthu = atoi(ptr);
+            gAnaInfo->widthu = atoi(ptr);
             strtok(cwidth,":");
-            gAnaInfo.widthl = atoi(cwidth);
+            gAnaInfo->widthl = atoi(cwidth);
             fprintf(stdout,"CONSTANT BANANA CUT LOWER:UPPER = %d:%d\n",
-                    gAnaInfo.widthl,gAnaInfo.widthu);
-            if (gAnaInfo.widthu == gAnaInfo.widthl)
+                    gAnaInfo->widthl,gAnaInfo->widthu);
+            if (gAnaInfo->widthu == gAnaInfo->widthl)
                fprintf(stdout, "WARNING: Banana Lower = Upper Cut\a\n");
          } else {
             fprintf(stdout, "Wrong specification constant banana cut\n");
             return 0;
          }
          fprintf(stdout,"BANANA Cut : %d <==> %d \n",
-                 gAnaInfo.widthl,gAnaInfo.widthu);
+                 gAnaInfo->widthl,gAnaInfo->widthu);
          break;
 
       case 'm':
-         gAnaInfo.CBANANA = 2;
-         gAnaInfo.MassSigma = atof(optarg);
+         gAnaInfo->CBANANA = 2;
+         gAnaInfo->MassSigma = atof(optarg);
          extinput.MASSCUT = 1;
          break;
 
       case 'R':
          sstr << optarg;
-         sstr >> gAnaInfo.fSaveTrees;
+         sstr >> gAnaInfo->fSaveTrees;
          break;
 
       case AnaInfo::OPTION_POL_ID:
-         gRunInfo.fPolId = atoi(optarg); break;
+         gRunInfo->fPolId = atoi(optarg); break;
 
       case AnaInfo::OPTION_SET_CALIB_ALPHA:
-         gAnaInfo.fAlphaCalibRun = optarg;
+         gAnaInfo->fAlphaCalibRun = optarg;
          break;
 
       case AnaInfo::OPTION_SET_CALIB_DL:
-         gAnaInfo.fDlCalibRun = optarg;
+         gAnaInfo->fDlCalibRun = optarg;
          break;
 
       case AnaInfo::OPTION_SET_CALIB:
-         gAnaInfo.fAlphaCalibRun = optarg;
-         gAnaInfo.fDlCalibRun    = optarg;
+         gAnaInfo->fAlphaCalibRun = optarg;
+         gAnaInfo->fDlCalibRun    = optarg;
          break;
 
       case 'q':
-         gAnaInfo.QUICK_MODE = 1; break;
+         gAnaInfo->QUICK_MODE = 1; break;
 
       case 'g':
       case AnaInfo::MODE_GRAPH:
-         gAnaInfo.fModes |= AnaInfo::MODE_GRAPH;
+         gAnaInfo->fModes |= AnaInfo::MODE_GRAPH;
          break;
 
       case AnaInfo::MODE_NO_GRAPH:
-         gAnaInfo.fModes &= ~AnaInfo::MODE_GRAPH;
+         gAnaInfo->fModes &= ~AnaInfo::MODE_GRAPH;
          break;
 
       case 'C':
       case AnaInfo::MODE_ALPHA:
-         gAnaInfo.fModes |= AnaInfo::MODE_ALPHA;
-         gAnaInfo.CMODE      = 1;
-         gAnaInfo.RECONFMODE = 0;
-         gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL; // turn off normal mode
-         //gAsymRoot.fEventConfig = new EventConfig();
+         gAnaInfo->fModes |= AnaInfo::MODE_ALPHA;
+         gAnaInfo->RECONFMODE = 0;
+         gAnaInfo->fModes &= ~AnaInfo::MODE_NORMAL; // turn off normal mode
          break;
 
       case AnaInfo::MODE_CALIB:
-         gAnaInfo.fModes |= AnaInfo::MODE_CALIB;
+         gAnaInfo->fModes |= AnaInfo::MODE_CALIB;
          break;
 
       case AnaInfo::MODE_NO_NORMAL:
-         gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL;
+         gAnaInfo->fModes &= ~AnaInfo::MODE_NORMAL;
          break;
 
       case AnaInfo::MODE_SCALER:
-         gAnaInfo.fModes |= AnaInfo::MODE_SCALER;
+         gAnaInfo->fModes |= AnaInfo::MODE_SCALER;
          break;
 
       case AnaInfo::MODE_RAW:
-         gAnaInfo.fModes |= AnaInfo::MODE_RAW;
-         gAnaInfo.RAWHISTOGRAM = 1;
+         gAnaInfo->fModes |= AnaInfo::MODE_RAW;
+         gAnaInfo->RAWHISTOGRAM = 1;
          break;
 
       case AnaInfo::MODE_RUN:
-         gAnaInfo.fModes |= AnaInfo::MODE_RUN; break;
+         gAnaInfo->fModes |= AnaInfo::MODE_RUN; break;
 
       case AnaInfo::MODE_TARGET:
-         gAnaInfo.fModes |= AnaInfo::MODE_TARGET; break;
+         gAnaInfo->fModes |= AnaInfo::MODE_TARGET; break;
 
       case AnaInfo::MODE_PROFILE:
-         gAnaInfo.fModes |= AnaInfo::MODE_PROFILE;
-         gAnaInfo.fModes |= AnaInfo::MODE_TARGET; // profile hists depend on target ones
+         gAnaInfo->fModes |= AnaInfo::MODE_PROFILE;
+         gAnaInfo->fModes |= AnaInfo::MODE_TARGET; // profile hists depend on target ones
          break;
 
       case AnaInfo::MODE_FULL:
-         gAnaInfo.fModes |= AnaInfo::MODE_FULL; break;
+         gAnaInfo->fModes |= AnaInfo::MODE_FULL; break;
 
       default:
          gSystem->Error("   main", "Invalid Option");
-         gAnaInfo.PrintUsage();
+         gAnaInfo->PrintUsage();
          exit(0);
       }
    }
 
-   gAnaInfo.ProcessOptions();
-   gAnaInfo.Print();
+   gAnaInfo->ProcessOptions();
+   gAnaInfo->Print();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -327,15 +334,15 @@ int main(int argc, char *argv[])
    //RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
 
    // Set to 0 when "RunID" contains alphabetical chars
-   gRunInfo.RUNID = strtod(gRunInfo.fRunName.c_str(), NULL);
+   gRunInfo->RUNID = strtod(gRunInfo->fRunName.c_str(), NULL);
 
    // For normal runs, RUNID != 0. Then read run conditions from run.db.
    // Otherwise, data filename with characters skip readdb and reconfig routines
    // assuming these are energy calibration or test runs.
-   //if (gRunInfo.RUNID)
-   //   readdb(gRunInfo.RUNID);
+   //if (gRunInfo->RUNID)
+   //   readdb(gRunInfo->RUNID);
    //else
-   //   gAnaInfo.RECONFMODE = 0;
+   //   gAnaInfo->RECONFMODE = 0;
 
    // Read run info from database
    // The logic is like this:
@@ -352,23 +359,23 @@ int main(int argc, char *argv[])
    MseRunInfoX   *mseRunInfoXOrig = 0;
 
    // Check whether the run is in database
-   if (gAnaInfo.fFlagUseDb) {
-      mseRunInfoX   = gAsymDb2->SelectRun(gRunInfo.fRunName);
+   if (gAnaInfo->fFlagUseDb) {
+      mseRunInfoX = gAsymDb2->SelectRun(gRunInfo->fRunName);
    }
 
    if (mseRunInfoX) { // if run found in database save its copy
-      mseRunInfoXOrig  = new MseRunInfoX(gRunInfo.fRunName);
+      mseRunInfoXOrig  = new MseRunInfoX(gRunInfo->fRunName);
       *mseRunInfoXOrig = *mseRunInfoX;
 
    } else { // if run not found in database create it
-      mseRunInfoX = new MseRunInfoX(gRunInfo.fRunName);
+      mseRunInfoX = new MseRunInfoX(gRunInfo->fRunName);
    }
 
    //cout << endl << "mseRunInfoX 1: " << endl;
    //mseRunInfoX->Print();
 
    // Read data file into memory
-   RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
+   RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
    // and overwrite the data base run info (mseRunInfoX) if needed
@@ -393,12 +400,12 @@ int main(int argc, char *argv[])
    //   printf("Run \"%s\" found in database\n", runDb->fRunName.c_str());
    //   gRunDb.UpdateFields(*runDb);
    //   //gRunDb.Print();
-   //   gRunInfo.fPolId = gRunDb.fPolId;
+   //   gRunInfo->fPolId = gRunDb.fPolId;
 
    //// the following is pretty messed up... needs a clean up and better logic
    //} else {
 
-   //   // Extract and overwrite (!) basic run info (gRunInfo) from raw data
+   //   // Extract and overwrite (!) basic run info (gRunInfo-> from raw data
    //   //ReadRecBegin();
 
    //   printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
@@ -411,27 +418,27 @@ int main(int argc, char *argv[])
    //   gAsymDb->Clear();
    //   runDb = gAsymDb->Select(gRunDb.fRunName); // now read all available common info for this run
    //   gRunDb.UpdateFields(*runDb);
-   //   gRunInfo.fPolId = gRunDb.fPolId;
+   //   gRunInfo->fPolId = gRunDb.fPolId;
    //}
 
    // Overwrite the offline version (if set previously)
-   //gRunDb.SetAsymVersion(gRunInfo.fAsymVersion);
-   mseRunInfoX->asym_version = gRunInfo.fAsymVersion;
+   //gRunDb.SetAsymVersion(gRunInfo->fAsymVersion);
+   mseRunInfoX->asym_version = gRunInfo->fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    //gRunDb.Print();
 
-   //gAnaInfo.Update(gRunDb);
-   //gRunInfo.Update(gRunDb);
+   //gAnaInfo->Update(gRunDb);
+   //gRunInfo->Update(gRunDb);
 
-   gAnaInfo.Update(*mseRunInfoX);
-   gRunInfo.Update(*mseRunInfoX);
-   gRunInfo.Update(*mseRunPeriodX);
+   gAnaInfo->Update(*mseRunInfoX);
+   gRunInfo->Update(*mseRunInfoX);
+   gRunInfo->Update(*mseRunPeriodX);
 
    cout << endl;
-   gAnaInfo.Print();
+   gAnaInfo->Print();
    cout << endl;
-   gRunInfo.Print();
+   gRunInfo->Print();
 
    cout << endl << "mseRunInfoX: " << endl;
    mseRunInfoX->Print();
@@ -442,115 +449,117 @@ int main(int argc, char *argv[])
    hist_book(hbk_outfile);
 
    // Book root file
-   gAsymRoot.RootFile(gAnaInfo.GetRootFileName());
+   gAsymRoot->RootFile(gAnaInfo->GetRootFileName());
 
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
 
-   gAsymRoot.fEventConfig->fCalibrator->Print();
+   gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Find RunConfig object in the calibration files and update
-   gAsymRoot.UpdateRunConfig(gAnaInfo);
+   gAsymRoot->UpdateRunConfig(gAnaInfo);
 
-   //printf("calib= %d\n", gAnaInfo.HasCalibBit());
-   gAsymRoot.fEventConfig->fCalibrator->Print();
+   //printf("calib= %d\n", gAnaInfo->HasCalibBit());
+   gAsymRoot->fEventConfig->fCalibrator->Print();
    //return 0;
 
    // Create tree if requested
-   if (gAnaInfo.fSaveTrees.any()) { gAsymRoot.CreateTrees(); }
+   if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAnaInfo.HasCalibBit() && !gAnaInfo.HasAlphaBit() ) //!gAnaInfo.CMODE
+   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
       rawData->ReadDataFast();
       //readDataFast();
 
-   if (!gAnaInfo.QUICK_MODE) {
+   if (!gAnaInfo->QUICK_MODE) {
 
       //ds: XXX
-      //gAsymRoot.PreProcess();
+      //gAsymRoot->PreProcess();
 
       // Main Event Loop
       readloop(*mseRunInfoX);
 
-      gAsymRoot.PostProcess();
+      gAsymRoot->PostProcess();
    }
 
-   gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+   gAsymRoot->fEventConfig->fCalibrator->PrintAsPhp();
 
 
    // Delete Unnecessary ROOT Histograms
-   gAsymRoot.DeleteHistogram();
+   gAsymRoot->DeleteHistogram();
 
    // Close histogram file
    hist_close(hbk_outfile);
 
    // Update calibration constants if requested
-   if (gAnaInfo.HasCalibBit()) {
-      gAsymRoot.Calibrate();
+   if (gAnaInfo->HasCalibBit()) {
+      gAsymRoot->Calibrate();
    }
 
    // Update calibration constants if requested
    //gRunDb.Print();
 
-   //gAsymRoot.fEventConfig->PrintAsPhp();
-   //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
+   //gAsymRoot->fEventConfig->PrintAsPhp();
+   //gAsymRoot->fEventConfig->fCalibrator->PrintAsConfig();
 
    // Set pointers to global structures to be saved in the ROOT file if
    // previously allocated delete object
-   //delete gAsymRoot.fEventConfig->fConfigInfo;
-   //gAsymRoot.fEventConfig->fConfigInfo = gConfigInfo;
+   //delete gAsymRoot->fEventConfig->fConfigInfo;
+   //gAsymRoot->fEventConfig->fConfigInfo = gConfigInfo;
 
    // if previously allocated delete object
-   delete gAsymRoot.fEventConfig->fRunInfo;
-   gAsymRoot.fEventConfig->fRunInfo    = &gRunInfo;
+   //delete gAsymRoot->fEventConfig->fRunInfo;
+   //gAsymRoot->fEventConfig->fRunInfo    = &gRunInfo;
 
-   //delete gAsymRoot.fEventConfig->fAnaInfo;
-   gAsymRoot.fEventConfig->fAnaInfo    = &gAnaInfo;
+   ////delete gAsymRoot->fEventConfig->fAnaInfo;
+   //gAsymRoot->fEventConfig->fAnaInfo    = &gAnaInfo;
 
-   //delete gAsymRoot.fEventConfig->fDbEntry;
-   //gAsymRoot.fEventConfig->fDbEntry    = &gRunDb;
+   ////delete gAsymRoot->fEventConfig->fDbEntry;
+   ////gAsymRoot->fEventConfig->fDbEntry    = &gRunDb;
 
-   delete gAsymRoot.fEventConfig->fAnaResult;
-   gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
+   //delete gAsymRoot->fEventConfig->fAnaResult;
+   //gAsymRoot->fEventConfig->fAnaResult  = &gAnaResult;
 
    // Stop stopwatch and save results
    //stopwatch.Stop();
-   gAnaInfo.procDateTime =  timestamp.GetSec();
-   gAnaInfo.procTimeReal =  stopwatch.RealTime();
-   gAnaInfo.procTimeCpu  =  stopwatch.CpuTime();
+   gAnaInfo->procDateTime =  timestamp.GetSec();
+   gAnaInfo->procTimeReal =  stopwatch.RealTime();
+   gAnaInfo->procTimeCpu  =  stopwatch.CpuTime();
 
    string tmpSqlDateTime(19, ' ');
    strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
 
    mseRunInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
-   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo.procTimeReal);
-   mseRunInfoX->measurement_type = UInt_t(gRunInfo.fMeasType);
+   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->procTimeReal);
+   mseRunInfoX->measurement_type = UInt_t(gRunInfo->fMeasType);
 
-   if (gAnaInfo.fFlagUpdateDb)
+   if (gAnaInfo->fFlagUpdateDb)
       gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
 
-   gAsymRoot.fEventConfig->fMseRunInfoX = mseRunInfoX;
+   gAsymRoot->fEventConfig->fMseRunInfoX = mseRunInfoX;
 
-   gAsymRoot.fEventConfig->PrintAsPhp(gAnaInfo.GetRunInfoFile());
-   gAsymRoot.fEventConfig->PrintAsConfig(gAnaInfo.GetRunConfFile());
-   fclose(gAnaInfo.GetRunInfoFile()); gAnaInfo.fFileRunInfo = 0;
-   fclose(gAnaInfo.GetRunConfFile()); gAnaInfo.fFileRunConf = 0;
+   gAsymRoot->fEventConfig->PrintAsPhp(gAnaInfo->GetRunInfoFile());
+   gAsymRoot->fEventConfig->PrintAsConfig(gAnaInfo->GetRunConfFile());
+   fclose(gAnaInfo->GetRunInfoFile()); gAnaInfo->fFileRunInfo = 0;
+   fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
 
-   if (gAnaInfo.HasGraphBit())
-      gAsymRoot.SaveAs("^.*$", gAnaInfo.GetImageDir());
-      //gAsymRoot.SaveAs("profile", gAnaInfo.GetImageDir());
+   if (gAnaInfo->HasGraphBit())
+      gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+      //gAsymRoot->SaveAs("profile", gAnaInfo->GetImageDir());
 
    // Close ROOT File
-   gAsymRoot.Finalize();
+   gAsymRoot->Finalize();
 
-   gAnaInfo.CopyResults();
+   delete gAsymRoot;
+
+   gAnaInfo->CopyResults();
 
    printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
-   printf("Processing time: %f seconds\n", gAnaInfo.procTimeReal);
+   printf("Processing time: %f seconds\n", gAnaInfo->procTimeReal);
 
    return 1;
 } //}}}
@@ -615,7 +624,7 @@ void reConfig()
           a0n      = atof(strtok(NULL, " "));
           a1n      = atof(strtok(NULL, " "));
           ealphn   = atof(strtok(NULL, " "));
-          dwidthn  = atof(strtok(NULL, " ")) + gAnaInfo.dx_offset; // extra thickness
+          dwidthn  = atof(strtok(NULL, " ")) + gAnaInfo->dx_offset; // extra thickness
           peden    = atof(strtok(NULL, " "));
           c0n      = atof(strtok(NULL, " "));
           c1n      = atof(strtok(NULL, " "));

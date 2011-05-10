@@ -322,8 +322,8 @@ int readDLayer(char *infile)
 
 bool isStripAlive(unsigned short strp)
 {
-   for(int jj=0;jj<gRunInfo.NDisableStrip;jj++) {
-      if((int)strp==gRunInfo.fDisabledChannels[jj]) {
+   for(int jj=0;jj<gRunInfo->NDisableStrip;jj++) {
+      if((int)strp==gRunInfo->fDisabledChannels[jj]) {
          return false;
       }
    }
@@ -455,7 +455,7 @@ void getPreviousRun(bool thisrun)
 
         } // end-of-while(getline-loop)
 
-        gRunInfo.NDisableStrip = FindDisableStrip();
+        gRunInfo->NDisableStrip = FindDisableStrip();
 
         if(thisrun==false)
         {

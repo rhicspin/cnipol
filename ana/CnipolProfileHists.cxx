@@ -452,12 +452,12 @@ void CnipolProfileHists::Process()
    TH1* hPolarVsIntensProfile = (TH1*) o["hPolarVsIntensProfile"];
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
 
-   gAnaResults.fIntensPolarR    = mfPow->GetParameter(1);
-   gAnaResults.fIntensPolarRErr = mfPow->GetParError(1);
+   gAnaResult->fIntensPolarR    = mfPow->GetParameter(1);
+   gAnaResult->fIntensPolarRErr = mfPow->GetParError(1);
 
    char sratio[50];
 
-   sprintf(sratio, "% 8.3f, % 6.3f", gAnaResults.fIntensPolarR, gAnaResults.fIntensPolarRErr);
+   sprintf(sratio, "% 8.3f, % 6.3f", gAnaResult->fIntensPolarR, gAnaResult->fIntensPolarRErr);
 
    gRunDb.fFields["PROFILE_RATIO"] = sratio;
 

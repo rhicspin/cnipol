@@ -212,7 +212,7 @@ void hist_book(char *filename)
     //------------------------------------------------------------------//
     //                          DeadLayer Mode                          //
     //------------------------------------------------------------------//
-    if (gAnaInfo.DMODE == 1) {
+    if (gAnaInfo->DMODE == 1) {
         for (st=1;st<=72;st++){
             sprintf(hcomment, "Tof vs Edep St - %d ", st);
             HHBOOK2(15000+st, hcomment, 100, 100., 1100.,  100, 0., 100.);
@@ -296,24 +296,24 @@ void hist_book(char *filename)
 
     // Energy distribution in given -t bin
     for (int ibin=0; ibin<10; ibin++) {
-        float Elow = 200. + ibin*100.;
-        float Eupp = 300. + ibin*100.;
+       float Elow = 200. + ibin*100.;
+       float Eupp = 300. + ibin*100.;
 
-        sprintf(hcomment,"Energy dist %d-bin",ibin);
-        HHBOOK1(10700+ibin+1,"",10,Elow,Eupp);
+       sprintf(hcomment,"Energy dist %d-bin",ibin);
+       HHBOOK1(10700+ibin+1,"",10,Elow,Eupp);
     }
 
     // Calibration hists
-    if (gAnaInfo.CMODE == 1) {
-        for (st=1;st<=72;st++){
-            sprintf(hcomment,"241 Am (5.486MeV) - strip %d ",st);
-            HHBOOK1(12000+st,hcomment,256,0.,256.);
-        }
+    if ( gAnaInfo->HasAlphaBit() ) {
+       for (st=1;st<=72;st++){
+          sprintf(hcomment,"241 Am (5.486MeV) - strip %d ",st);
+          HHBOOK1(12000+st,hcomment,256,0.,256.);
+       }
     }
 
     // for T0 (due to cable length) determination
-    if (gAnaInfo.TMODE == 1) {
-        if (gAnaInfo.ZMODE == 0) {
+    if (gAnaInfo->TMODE == 1) {
+        if (gAnaInfo->ZMODE == 0) {
             for (st=1;st<=72;st++){
                 sprintf(hcomment,"ST-%d abs t wo T0 subt vs. 1./sqrt(e)",st);
                 HHBOOK2(12100+st,hcomment,40,0.,0.1,40,60.,140.);
@@ -327,7 +327,7 @@ void hist_book(char *filename)
     }
 
     // signal integral vs. amplitude A0,A1, and iasigma determination
-    if (gAnaInfo.AMODE == 1){
+    if (gAnaInfo->AMODE == 1){
         for (st=1;st<=72;st++){
             sprintf(hcomment,"strip %d -- Int vs. Amp ",st);
             HHBOOK2(12200+st,hcomment,100,0.,200., 256,0.,4000.);
@@ -338,7 +338,7 @@ void hist_book(char *filename)
     }
 
     // banana plots (E-T)
-    if (gAnaInfo.BMODE == 1){
+    if (gAnaInfo->BMODE == 1){
         for (st=1;st<=72;st++){
             sprintf(hcomment,"st %d - tof vs ene ",st);
             HHBOOK2(13000+st,hcomment, HENEBIN, 0., HMAXENE, 160, -0.,200.);
@@ -370,7 +370,7 @@ void hist_book(char *filename)
     sprintf(hcomment,"Peak deviation from 12C Mass");
     HHBOOK1(16300,hcomment,72,-0.5, 71.5);
 
-    if (gAnaInfo.MMODE == 1) {
+    if (gAnaInfo->MMODE == 1) {
         for (st=1;st<=72;st++){
             sprintf(hcomment,"Mass st %d ",st);
             HHBOOK1(16000+st,hcomment,90,0.,30.);
@@ -480,7 +480,7 @@ void hist_book(char *filename)
     // =======================================
     // histogram during RAMP
     // =======================================
-    if (gAnaInfo.RAMPMODE==1) {
+    if (gAnaInfo->RAMPMODE==1) {
 
         // Timing spectrum
         for (i=0;i<300;i++){
@@ -498,7 +498,7 @@ void hist_book(char *filename)
     }
 
     // Study mode
-    if (gAnaInfo.STUDYMODE == 1) {
+    if (gAnaInfo->STUDYMODE == 1) {
         for (int Si=0; Si<6; Si++){
             sprintf(hcomment,"Spin Tune UpSpin Si-%d",Si+1);
             HHBOOK1(40000+Si, hcomment, 120, 0., 120.);
@@ -520,7 +520,7 @@ void tgtHistBook()
 
     char hcomment[256];
     float dX = XMAX - XMIN ? (XMAX - XMIN)*0.1 : 1;
-    int XBIN = (int) (fabs(XMAX - XMIN + 2*dX) / gAnaInfo.target_count_mm);
+    int XBIN = (int) (fabs(XMAX - XMIN + 2*dX) / gAnaInfo->target_count_mm);
 
     sprintf(hcomment,"Target position vs. time ");
     HHBOOK2(25050, hcomment, XBIN, -0.5, gNDelimeters+0.5, gNDelimeters+1, XMIN-dX, XMAX+dX);

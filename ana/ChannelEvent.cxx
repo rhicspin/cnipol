@@ -223,7 +223,7 @@ Bool_t ChannelEvent::PassCutDetectorChannel()
 /** */
 Bool_t ChannelEvent::PassCutDepEnergyTime()
 {
-   switch (gRunInfo.fPolId) {
+   switch (gRunInfo->fPolId) {
 
    case 0:   // B1U
       return true;
@@ -231,8 +231,8 @@ Bool_t ChannelEvent::PassCutDepEnergyTime()
 
    case 1:   // Y1D
       if ( GetEnergyA() < 200 || GetEnergyA() > 1000)// || GetTime() < 15 || GetTime() > 75)
-          //(GetTime() + gRunInfo.GetExpectedGlobalTimeOffset()) < 15 ||
-          //(GetTime() + gRunInfo.GetExpectedGlobalTimeOffset()) > 75)
+          //(GetTime() + gRunInfo->GetExpectedGlobalTimeOffset()) < 15 ||
+          //(GetTime() + gRunInfo->GetExpectedGlobalTimeOffset()) > 75)
          return false;
       break;
 
@@ -270,8 +270,8 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
    
    if (fabs(delta) <= 18) return true; // in ns
 
-   //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo.MassSigma/sqrt(GetEnergyA());
-   //if ( fabs(delta) < gRunConsts[].M2T * gAnaInfo.OneSigma * gAnaInfo.MassSigma / sqrt(GetEnergyA()) ) return true;
+   //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo->MassSigma/sqrt(GetEnergyA());
+   //if ( fabs(delta) < gRunConsts[].M2T * gAnaInfo->OneSigma * gAnaInfo->MassSigma / sqrt(GetEnergyA()) ) return true;
 
    return false;
 }
@@ -280,7 +280,7 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
 /** */
 Bool_t ChannelEvent::PassCutPulser()
 {
-   switch (gRunInfo.fPolId) {
+   switch (gRunInfo->fPolId) {
 
    case 0:   // B1U
       if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
@@ -312,7 +312,7 @@ Bool_t ChannelEvent::PassCutPulser()
 /** */
 Bool_t ChannelEvent::PassCutNoise()
 {
-   switch (gRunInfo.fPolId) {
+   switch (gRunInfo->fPolId) {
 
    case 0:   // B1U
       //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
@@ -327,8 +327,8 @@ Bool_t ChannelEvent::PassCutNoise()
       if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
           (fChannel.fTdc < -0.28*fChannel.fAmpltd + 55 ) ||
           (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
-          //(fChannel.fTdc < -0.28*fChannel.fAmpltd + 63 + gRunInfo.GetExpectedGlobalTdcOffset()) ||
-          //(fChannel.fTdc > -0.28*fChannel.fAmpltd + 91 + gRunInfo.GetExpectedGlobalTdcOffset()) )
+          //(fChannel.fTdc < -0.28*fChannel.fAmpltd + 63 + gRunInfo->GetExpectedGlobalTdcOffset()) ||
+          //(fChannel.fTdc > -0.28*fChannel.fAmpltd + 91 + gRunInfo->GetExpectedGlobalTdcOffset()) )
          return false;
       break;
 
@@ -361,7 +361,7 @@ Bool_t ChannelEvent::PassCutEnabledChannel()
 {
    UShort_t chId = GetChannelId();
 
-   return !gRunInfo.fDisabledChannels[chId-1];
+   return !gRunInfo->fDisabledChannels[chId-1];
 }
 
 

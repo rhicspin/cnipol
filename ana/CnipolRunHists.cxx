@@ -67,7 +67,7 @@ void CnipolRunHists::BookHists(string sid)
 
    // energy spectrum for all detector sum
    //sprintf(hName, "energy_spectrum_all");
-   //sprintf(hTitle, "%.3f : Energy Spectrum (All Detectors)", gRunInfo.runName.c_str());
+   //sprintf(hTitle, "%.3f : Energy Spectrum (All Detectors)", gRunInfo->runName.c_str());
    //kinema->o[hName] = new TH1F(hName, hTitle, 100, 0, 0.03);
    //((TH1F*) kinema->o[hName])->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
 
@@ -130,7 +130,7 @@ void CnipolRunHists::BookHists(string sid)
 
 
    sprintf(hName,  "asym_vs_bunch_x45");
-   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gRunInfo.RUNID);
+   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gRunInfo->RUNID);
    o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");

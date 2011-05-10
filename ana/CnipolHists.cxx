@@ -242,7 +242,7 @@ void CnipolHists::BookHistsExtra(string sid)
    //TH2F* hData = (TH2F*) o["hTimeVsEnergyA"+sid];
 
    //char  formula[100], fname[100];
-   //float sigma = RunConst::M2T * ]*gAnaInfo.MassSigmaAlt :
+   //float sigma = RunConst::M2T * ]*gAnaInfo->MassSigmaAlt :
 
    //sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", RunConst::E2T, sigma);
    //sprintf(formula, "%f/sqrt(x)", RunConst::E2T);
@@ -420,22 +420,22 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //ds XXX
    UShort_t tstep = 0;
 
-   if (gRunInfo.Run == 5) {
+   if (gRunInfo->Run == 5) {
       tstep = ch->GetDelimiterId();
       //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   } else if (gRunInfo.Run >= 6) {
+   } else if (gRunInfo->Run >= 6) {
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
       if (ttime < MAXDELIM) {
          tstep = TgtIndex[ttime];
          //++cntr.good[TgtIndex[ttime]];
          //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
-      } else if (!gAnaInfo.CMODE) {
+      } else if (!gAnaInfo->HasAlphaBit()) {
          Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
                "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
       }
    } else {
-      Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo.Run);
+      Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo->Run);
    }
 
    int ss_code = gSpinPattern[bId] == 1 ? 0 : (gSpinPattern[bId] == -1 ? 1 : 2);

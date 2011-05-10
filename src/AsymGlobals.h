@@ -46,7 +46,6 @@ struct StructBunchCheck;
 
 extern std::map<std::string, std::string> gAsymEnv;
 
-extern AsymRoot         gAsymRoot;
 extern BunchAsym        gBunchAsym;
 extern StructSpeLumi    SpeLumi;
 extern AsymCalculator   gAsymCalculator;
@@ -90,14 +89,15 @@ extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 
 extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
-extern AsymRoot                      gAsymRoot;
+extern AnaInfo                      *gAnaInfo;
+extern RunInfo                      *gRunInfo;
+extern AnaResult                    *gAnaResult;
+extern AsymRoot                     *gAsymRoot;
 extern AsymDb                       *gAsymDb;
 extern AsymDb                       *gAsymDb2;
-extern AnaInfo                       gAnaInfo;
 extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;
 extern DbEntry                       gRunDb;
-extern RunInfo                       gRunInfo;
 extern RunConfig                     gRunConfig;
 extern StructExtInput                extinput;
 extern StructAverage                 average;
@@ -110,7 +110,6 @@ extern std::map<UShort_t, RunConst>  gRunConsts;
 extern StructMask                    mask;
 extern StructFlag                    Flag;
 extern StructReadFlag                ReadFlag;
-extern AnaResult                     gAnaResults;
 extern TargetInfo                    tgt;
 extern StructBunchPattern            phx, str;
 extern TRecordConfigRhicStruct      *gConfigInfo;

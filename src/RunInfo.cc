@@ -210,6 +210,7 @@ void RunInfo::Streamer(TBuffer &buf)
 /** */
 void RunInfo::Print(const Option_t* opt) const
 {
+   gSystem->Info("RunInfo::Print", "Print members:");
    PrintAsPhp();
 }
 
@@ -288,6 +289,8 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
+
+   fprintf(f, "\n");
 } //}}}
 
 
@@ -484,27 +487,27 @@ void RunInfo::PrintConfig()
    int ccutwu;
    int ccutwl;
 
-   if (gAnaInfo.CBANANA == 0) {
+   if (gAnaInfo->CBANANA == 0) {
       ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
       ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
-   } else if (gAnaInfo.CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo.MassSigma);
+   } else if (gAnaInfo->CBANANA == 2) {
+      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo->MassSigma);
    } else {
-      ccutwl = (int) gAnaInfo.widthl;
-      ccutwu = (int) gAnaInfo.widthu;
+      ccutwl = (int) gAnaInfo->widthl;
+      ccutwu = (int) gAnaInfo->widthu;
    }
 
-   if (gAnaInfo.CBANANA!=2)
+   if (gAnaInfo->CBANANA!=2)
      fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
 
    // tshift in [ns]
-   fprintf(stdout,"             TSHIFT = %.1f\n",gAnaInfo.tshift);
+   fprintf(stdout,"             TSHIFT = %.1f\n", gAnaInfo->tshift);
 
    // expected reference rate
-   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n",gAnaInfo.reference_rate);
+   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAnaInfo->reference_rate);
 
    // target count/mm
-   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo.target_count_mm);
+   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo->target_count_mm);
 
    // Disabled bunch
    fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
@@ -578,6 +581,6 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 
   /*
   fprintf(stdout,"RUNINFO: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
-          gRunInfo.RUNID, gRunInfo.fPolBeam, gRunInfo.PolarimetryID);
+          gRunInfo->RUNID, gRunInfo->fPolBeam, gRunInfo->PolarimetryID);
   */
 } //}}}
