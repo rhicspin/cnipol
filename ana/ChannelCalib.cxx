@@ -45,18 +45,6 @@ void ChannelCalib::Print(const Option_t* opt) const
 /** */
 void ChannelCalib::PrintAsPhp(FILE *f) const
 { //{{{
-   //fprintf(f, "$calib['ACoef']          = %f;\n", fACoef);
-   //fprintf(f, "$calib['ACoefErr']       = %f;\n", fACoefErr);
-   //fprintf(f, "$calib['ICoef']          = %f;\n", fICoef);
-   //fprintf(f, "$calib['ICoefErr']       = %f;\n", fICoefErr);
-   //fprintf(f, "$calib['DLWidth']        = %f;\n", fDLWidth);
-   //fprintf(f, "$calib['DLWidthErr']     = %f;\n", fDLWidthErr);
-   //fprintf(f, "$calib['T0Coef']         = %f;\n", fT0Coef);
-   //fprintf(f, "$calib['T0CoefErr']      = %f;\n", fT0CoefErr);
-   //fprintf(f, "$calib['fAvrgEMiss']     = %f;\n", fAvrgEMiss);
-   //fprintf(f, "$calib['fAvrgEMissErr']  = %f;\n", fAvrgEMissErr);
-   //fprintf(f, "$calib['fBananaChi2Ndf'] = %f;\n", fBananaChi2Ndf);
-
    fprintf(f, "array(");
    fprintf(f, "'ACoef' => %7.4f, ",         fACoef);
    fprintf(f, "'ACoefErr' => %7.4f, ",      fACoefErr);

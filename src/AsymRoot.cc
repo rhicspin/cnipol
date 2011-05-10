@@ -109,6 +109,8 @@ AsymRoot::AsymRoot() : rootfile(), fOutTreeFile(), fTreeFileId(0),
    gStyle->SetStatH(0.15);
    gStyle->SetPadRightMargin(0.30);
 
+   cout << "size111: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
+
    fChannelEvent->fEventConfig = fEventConfig;
 }
 
@@ -309,6 +311,10 @@ void AsymRoot::UpdateRunConfig(const AnaInfo& anaInfo)
          return;
       }
 
+      // Update the pointer to RunConfig object in the event
+      delete fChannelEvent->fEventConfig;
+      fChannelEvent->fEventConfig = fEventConfig;
+
    // else if not alpha mode what am I trying to do here? 
    // else if ( !(anaInfo.fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
    } else if ( !anaInfo.HasAlphaBit() && anaInfo.HasNormalBit()) {
@@ -337,11 +343,11 @@ void AsymRoot::UpdateRunConfig(const AnaInfo& anaInfo)
          // XXX not implemented. Need to fix it!
          // ....
       //}
-   }
 
-   // Update the pointer to RunConfig object in the event
-   delete fChannelEvent->fEventConfig;
-   fChannelEvent->fEventConfig = fEventConfig;
+      // Update the pointer to RunConfig object in the event
+      delete fChannelEvent->fEventConfig;
+      fChannelEvent->fEventConfig = fEventConfig;
+   }
 
    // Update the calibrator based on the running mode, i.e. alpha or
    // normal data
@@ -543,7 +549,7 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
-   gSystem->Info("UpdateCalibrator", "XXX");
+   gSystem->Info("UpdateCalibrator", "PPPP");
 
    Calibrator *calibrator;
 
@@ -564,11 +570,12 @@ void AsymRoot::UpdateCalibrator()
 
    //if (!calibrator) exit(0);
 
-   // Copy existing constants to the new calibrator
-   calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
+   //fEventConfig->fCalibrator->Print();
 
-   calibrator->Print();
-   calibrator->PrintAsPhp();
+   // Copy existing constants to the new calibrator
+   cout << "size: " << calibrator->fChannelCalibs.size() << endl;
+   cout << "size: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
+   calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
 
    //fEventConfig->fCalibrator->PrintAsPhp();
 
@@ -589,11 +596,11 @@ void AsymRoot::UpdateCalibrator()
 /** */
 void AsymRoot::Calibrate()
 {
-   fEventConfig->Print();
+   //fEventConfig->Print();
    //fEventConfig->fCalibrator->Print();
 
-   exit(0);
-   //fEventConfig->fCalibrator->Calibrate(fHists);
+   //exit(0);
+   fEventConfig->fCalibrator->Calibrate(fHists);
 }
 
 

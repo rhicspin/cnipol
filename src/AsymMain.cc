@@ -447,11 +447,13 @@ int main(int argc, char *argv[])
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
 
+   gAsymRoot.fEventConfig->fCalibrator->Print();
+
    // Find RunConfig object in the calibration files and update
    gAsymRoot.UpdateRunConfig(gAnaInfo);
 
    //printf("calib= %d\n", gAnaInfo.HasCalibBit());
-   gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+   gAsymRoot.fEventConfig->fCalibrator->Print();
    //return 0;
 
    // Create tree if requested
@@ -470,20 +472,10 @@ int main(int argc, char *argv[])
 
       //ds: XXX
       //gAsymRoot.PreProcess();
-   gAsymRoot.fEventConfig->fCalibrator->Print();
-   gAsymRoot.fEventConfig->fCalibrator->Print();
-   gAsymRoot.fEventConfig->fCalibrator->Print();
-   gAsymRoot.fEventConfig->fCalibrator->Print();
-   
-   cout << "OOO" << endl;
 
       // Main Event Loop
       readloop(*mseRunInfoX);
 
-      gAsymRoot.fEventConfig->fCalibrator->Print();
-
-
-   cout << "TTT" << endl;
       gAsymRoot.PostProcess();
    }
 
@@ -496,14 +488,9 @@ int main(int argc, char *argv[])
    // Close histogram file
    hist_close(hbk_outfile);
 
-
-   gSystem->Info("   main", "YYYY");
-
    // Update calibration constants if requested
    if (gAnaInfo.HasCalibBit()) {
       gAsymRoot.Calibrate();
-      //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
-      //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
    }
 
    // Update calibration constants if requested
