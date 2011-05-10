@@ -70,13 +70,13 @@ int main(int argc, char *argv[])
       {"run-name",            required_argument,   0,   'r'},
       {"feedback",            0,                   0,   'b'},
       {"no-error-detector",   0,                   0,   'a'},
-      {"update-db",           no_argument,         0,   0x000100},
-      {"no-update-db",        no_argument,         0,   0x000200},
-      {"pol-id",              required_argument,   0,   0x000300},
+      {"copy",                no_argument,         0,   AnaInfo::FLAG_COPY},
+      {"copy-results",        no_argument,         0,   AnaInfo::FLAG_COPY},
+      {"update-db",           no_argument,         0,   AnaInfo::FLAG_UPDATE_DB},
+      {"no-update-db",        no_argument,         0,   AnaInfo::FLAG_NO_UPDATE_DB},
+      {"use-db",              no_argument,         0,   AnaInfo::FLAG_USE_DB},
+      {"pol-id",              required_argument,   0,   AnaInfo::OPTION_POL_ID},
       {"log",                 optional_argument,   0,   'l'},
-      {"copy",                no_argument,         0,   0x010000},
-      {"copy-results",        no_argument,         0,   0x010000},
-      {"use-db",              no_argument,         0,   0x020000},
       {"alpha",               no_argument,         0,   AnaInfo::MODE_ALPHA},
       {"calib",               no_argument,         0,   AnaInfo::MODE_CALIB},
       {"scaler",              no_argument,         0,   AnaInfo::MODE_SCALER},
@@ -99,15 +99,15 @@ int main(int argc, char *argv[])
       {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
-      {"set-calib",           required_argument,   0,   0x003000},
-      {"set-calib-alpha",     required_argument,   0,   0x001000},
-      {"set-calib-dl",        required_argument,   0,   0x002000},
+      {"set-calib",           required_argument,   0,   AnaInfo::OPTION_SET_CALIB},
+      {"set-calib-alpha",     required_argument,   0,   AnaInfo::OPTION_SET_CALIB_ALPHA},
+      {"set-calib-dl",        required_argument,   0,   AnaInfo::OPTION_SET_CALIB_DL},
       {0, 0, 0, 0}
    };
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:f:n:s:c:o:l::t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:o:l::t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
@@ -132,18 +132,26 @@ int main(int argc, char *argv[])
          gAnaInfo.thinout = atol(optarg);
          break;
 
-      case 'c':
-         gAnaInfo.userCalibFile = optarg; break;
-
       case 'l':
          gAnaInfo.fFileStdLogName = (optarg != 0 ? optarg : "");
          break;
 
-      case 0x010000:
-         gAnaInfo.fFlagCopyResults = kTRUE; break;
+      case AnaInfo::FLAG_COPY:
+         gAnaInfo.fFlagCopyResults = kTRUE;
+         break;
 
-      case 0x020000:
-         gAnaInfo.fFlagUseDb = kTRUE; break;
+      case AnaInfo::FLAG_UPDATE_DB:
+         gAnaInfo.fFlagUpdateDb = kTRUE;
+         break;
+
+      case AnaInfo::FLAG_NO_UPDATE_DB:
+         gAnaInfo.fFlagUpdateDb = kFALSE;
+         break;
+
+      case AnaInfo::FLAG_USE_DB:
+         gAnaInfo.fFlagUseDb    = kTRUE;
+         gAnaInfo.fFlagUpdateDb = kTRUE;
+         break;
 
       case 't': // set timing shift in banana cut
          gAnaInfo.tshift = atoi(optarg);
@@ -186,32 +194,23 @@ int main(int argc, char *argv[])
          break;
 
       case 'b':
-         gAnaInfo.FEEDBACKMODE = Flag.feedback = 1;
-         break;
+         gAnaInfo.FEEDBACKMODE = Flag.feedback = 1; break;
       case 'D':
-         gAnaInfo.DMODE = 1;
-         break;
+         gAnaInfo.DMODE = 1; break;
       case 'T':
-         gAnaInfo.TMODE = 1;
-         break;
+         gAnaInfo.TMODE = 1; break;
       case 'A':
-         gAnaInfo.AMODE = 1;
-         break;
+         gAnaInfo.AMODE = 1; break;
       case 'B':
-         gAnaInfo.BMODE = 1;
-         break;
+         gAnaInfo.BMODE = 1; break;
       case 'Z':
-         gAnaInfo.ZMODE = 1;
-         break;
+         gAnaInfo.ZMODE = 1; break;
       case 'U':
-         gAnaInfo.UPDATE = 1;
-         break;
+         gAnaInfo.UPDATE = 1; break;
       case 'G':
-         gAnaInfo.MMODE = 1;
-         break;
+         gAnaInfo.MMODE = 1; break;
       case 'N':
-         gAnaInfo.NTMODE = 1;
-         break;
+         gAnaInfo.NTMODE = 1; break;
       case 'W': // constant width banana cut
          gAnaInfo.CBANANA = 1;
          strcpy(cwidth, optarg);
@@ -240,27 +239,21 @@ int main(int argc, char *argv[])
 
       case 'R':
          sstr << optarg;
-         sstr >> gAnaInfo.SAVETREES;
+         sstr >> gAnaInfo.fSaveTrees;
          break;
 
-      case 0x000100:
-         gAnaInfo.UPDATE_DB = 1; break;
-
-      case 0x000200:
-         gAnaInfo.UPDATE_DB = 0; break;
-
-      case 0x000300:
+      case AnaInfo::OPTION_POL_ID:
          gRunInfo.fPolId = atoi(optarg); break;
 
-      case 0x001000:
+      case AnaInfo::OPTION_SET_CALIB_ALPHA:
          gAnaInfo.fAlphaCalibRun = optarg;
          break;
 
-      case 0x002000:
+      case AnaInfo::OPTION_SET_CALIB_DL:
          gAnaInfo.fDlCalibRun = optarg;
          break;
 
-      case 0x003000:
+      case AnaInfo::OPTION_SET_CALIB:
          gAnaInfo.fAlphaCalibRun = optarg;
          gAnaInfo.fDlCalibRun    = optarg;
          break;
@@ -283,7 +276,7 @@ int main(int argc, char *argv[])
          gAnaInfo.CMODE      = 1;
          gAnaInfo.RECONFMODE = 0;
          gAnaInfo.fModes &= ~AnaInfo::MODE_NORMAL; // turn off normal mode
-         gAsymRoot.fEventConfig = new EventConfig();
+         //gAsymRoot.fEventConfig = new EventConfig();
          break;
 
       case AnaInfo::MODE_CALIB:
@@ -325,6 +318,7 @@ int main(int argc, char *argv[])
    }
 
    gAnaInfo.ProcessOptions();
+   gAnaInfo.Print();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -356,7 +350,6 @@ int main(int argc, char *argv[])
 
    MseRunInfoX   *mseRunInfoX     = 0;
    MseRunInfoX   *mseRunInfoXOrig = 0;
-   MseRunPeriodX *mseRunPeriodX   = 0;
 
    // Check whether the run is in database
    if (gAnaInfo.fFlagUseDb) {
@@ -371,9 +364,8 @@ int main(int argc, char *argv[])
       mseRunInfoX = new MseRunInfoX(gRunInfo.fRunName);
    }
 
-   cout << endl;
-   cout << "mseRunInfoX 1: " << endl;
-   mseRunInfoX->Print();
+   //cout << endl << "mseRunInfoX 1: " << endl;
+   //mseRunInfoX->Print();
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo.GetRawDataFileName());
@@ -382,19 +374,18 @@ int main(int argc, char *argv[])
    // and overwrite the data base run info (mseRunInfoX) if needed
    rawData->ReadRecBegin(mseRunInfoX);
 
-   cout << endl;
-   cout << "mseRunInfoX 2: " << endl;
-   mseRunInfoX->Print();
+   //cout << endl << "mseRunInfoX 2: " << endl;
+   //mseRunInfoX->Print();
 
-   // Do this only for normal runs, not alpha
-   if (!gAnaInfo.HasAlphaBit()) {
-      mseRunPeriodX = gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
-      //gAsymDb2->CompleteRunInfo(*mseRunInfoX);
-   }
+   // We can do this for any run including alphas alpha
+   MseRunPeriodX *mseRunPeriodX = gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
+   //gAsymDb2->CompleteRunInfo(*mseRunInfoX); // deprecated
 
-   cout << endl;
-   cout << "mseRunInfoX 3: " << endl;
-   mseRunInfoX->Print();
+   if (!mseRunPeriodX)
+      gSystem->Fatal("   main", "Run period not specified");
+
+   //cout << endl << "mseRunInfoX 3: " << endl;
+   //mseRunInfoX->Print();
    //cout << *mseRunInfoX << endl;
 
    // Replace gRunDb
@@ -435,21 +426,15 @@ int main(int argc, char *argv[])
 
    gAnaInfo.Update(*mseRunInfoX);
    gRunInfo.Update(*mseRunInfoX);
+   gRunInfo.Update(*mseRunPeriodX);
 
    cout << endl;
    gAnaInfo.Print();
-   //gRunInfo.Print();
+   cout << endl;
+   gRunInfo.Print();
+
+   cout << endl << "mseRunInfoX: " << endl;
    mseRunInfoX->Print();
-
-   //gAsymDb->PrintCommon();
-   //gAsymDb->Print();
-
-   // Find RunConfig object in the calibration files and update
-   gAsymRoot.UpdateRunConfig();
-
-   //printf("calib= %d\n", gAnaInfo.HasCalibBit());
-   //gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
-   //return 0;
 
    // Book HBOOK file (deprecated)
    char hbk_outfile[256] = "out.hbook";
@@ -459,38 +444,60 @@ int main(int argc, char *argv[])
    // Book root file
    gAsymRoot.RootFile(gAnaInfo.GetRootFileName());
 
+   //gAsymDb->PrintCommon();
+   //gAsymDb->Print();
+
+   // Find RunConfig object in the calibration files and update
+   gAsymRoot.UpdateRunConfig(gAnaInfo);
+
+   //printf("calib= %d\n", gAnaInfo.HasCalibBit());
+   gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+   //return 0;
+
    // Create tree if requested
-   if (gAnaInfo.SAVETREES.any()) { gAsymRoot.CreateTrees(); }
+   if (gAnaInfo.fSaveTrees.any()) { gAsymRoot.CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAnaInfo.HasCalibBit() && !gAnaInfo.CMODE)
+   if ( gAnaInfo.HasCalibBit() && !gAnaInfo.HasAlphaBit() ) //!gAnaInfo.CMODE
       rawData->ReadDataFast();
       //readDataFast();
-
-   //return 0;
 
    if (!gAnaInfo.QUICK_MODE) {
 
       //ds: XXX
       //gAsymRoot.PreProcess();
+   gAsymRoot.fEventConfig->fCalibrator->Print();
+   gAsymRoot.fEventConfig->fCalibrator->Print();
+   gAsymRoot.fEventConfig->fCalibrator->Print();
+   gAsymRoot.fEventConfig->fCalibrator->Print();
+   
+   cout << "OOO" << endl;
 
       // Main Event Loop
       readloop(*mseRunInfoX);
 
+      gAsymRoot.fEventConfig->fCalibrator->Print();
+
+
+   cout << "TTT" << endl;
       gAsymRoot.PostProcess();
    }
 
-   //gRunInfo.Print();
+   gAsymRoot.fEventConfig->fCalibrator->PrintAsPhp();
+
 
    // Delete Unnecessary ROOT Histograms
    gAsymRoot.DeleteHistogram();
 
    // Close histogram file
    hist_close(hbk_outfile);
+
+
+   gSystem->Info("   main", "YYYY");
 
    // Update calibration constants if requested
    if (gAnaInfo.HasCalibBit()) {
@@ -501,13 +508,6 @@ int main(int argc, char *argv[])
 
    // Update calibration constants if requested
    //gRunDb.Print();
-
-   //if (gAnaInfo.UPDATE_DB) {
-   //   // Select all runs from database
-   //   gAsymDb->Select();
-   //   gAsymDb->Insert(&gRunDb);
-   //   gAsymDb->Dump();
-   //}
 
    //gAsymRoot.fEventConfig->PrintAsPhp();
    //gAsymRoot.fEventConfig->fCalibrator->PrintAsConfig();
@@ -525,7 +525,7 @@ int main(int argc, char *argv[])
    gAsymRoot.fEventConfig->fAnaInfo    = &gAnaInfo;
 
    delete gAsymRoot.fEventConfig->fDbEntry;
-   gAsymRoot.fEventConfig->fDbEntry      = &gRunDb;
+   gAsymRoot.fEventConfig->fDbEntry    = &gRunDb;
 
    delete gAsymRoot.fEventConfig->fAnaResult;
    gAsymRoot.fEventConfig->fAnaResult  = &gAnaResults;
@@ -543,7 +543,7 @@ int main(int argc, char *argv[])
    mseRunInfoX->ana_duration     = UInt_t(gAnaInfo.procTimeReal);
    mseRunInfoX->measurement_type = UInt_t(gRunInfo.fMeasType);
 
-   if (gAnaInfo.fFlagUseDb)
+   if (gAnaInfo.fFlagUpdateDb)
       gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
 
    gAsymRoot.fEventConfig->fMseRunInfoX = mseRunInfoX;

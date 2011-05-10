@@ -8,12 +8,16 @@
 
 #include "AnaInfo.h"
 #include "MseRunInfo.h"
+#include "MseRunPeriod.h"
 
 using namespace std;
 
 
 /** */
 RunInfo::RunInfo() :
+   fBeamEnergy  (0),
+	fExpectedGlobalTdcOffset(0),
+	fExpectedGlobalTimeOffset(0),
    Run(-1),
 	RUNID(0.0),
 	fRunName(100, ' '),
@@ -28,9 +32,6 @@ RunInfo::RunInfo() :
    ReadRate     (0),      // ReadRate;
    WcmAve       (0),      // WcmAve;
    WcmSum       (0),      // WcmSum;
-   fBeamEnergy  (0),
-	fExpectedGlobalTimeOffset(0),
-	fExpectedGlobalTdcOffset(0),
    fPolId       (-1),     // valid values 0 - 3
    fPolBeam     (0),      // blue = 2 or yellow = 1
    fPolStream   (0),      // up =1 or down =2 stream
@@ -400,6 +401,14 @@ void RunInfo::Update(MseRunInfoX& run)
 
    } else
       Run = 11;
+}
+
+
+/** */
+void RunInfo::Update(MseRunPeriodX& runPeriod)
+{
+   fProtoCutSlope  = runPeriod.cut_proto_slope;
+   fProtoCutOffset = runPeriod.cut_proto_offset;
 }
 
 

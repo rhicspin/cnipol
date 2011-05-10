@@ -12,7 +12,9 @@
 #ifndef Asym_h
 #define Asym_h
 
+#include <map>
 #include <set>
+#include <string>
 
 #include "TH1.h"
 #include "TGraphErrors.h"
@@ -21,6 +23,8 @@
 
 #include "AsymHeader.h"
 
+
+typedef std::map<std::string, std::string> Str2StrMap;
 
 
 // whole info for one event

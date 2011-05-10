@@ -57,8 +57,8 @@ public:
    void   CalibrateFast();
    void   Finalize();
    void   CreateTrees();
-   Bool_t UseCalibFile(std::string cfname="");
-   void   UpdateRunConfig();
+   //Bool_t UseCalibFile(std::string cfname=""); // Deprecated
+   void   UpdateRunConfig(const AnaInfo& anaInfo);
    void   SetChannelEvent(processEvent &event);
    void   SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void   ProcessEvent() {};

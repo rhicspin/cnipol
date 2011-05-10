@@ -16,8 +16,9 @@
 
 #include "TBuffer.h"
 
-#include "DbEntry.h"
+#include "Asym.h"
 
+class DbEntry;
 class MseRunInfoX;
 
 
@@ -26,21 +27,33 @@ class AnaInfo
 {
 public:
 
-   // Various histogramming and running modes
-   enum Mode {MODE_ALPHA   = 0x01010000,
-              MODE_CALIB   = 0x01000000,
-              MODE_GRAPH   = 0x02000000, MODE_NO_GRAPH  = 0x82000000,
-              MODE_NORMAL  = 0x00020000, MODE_NO_NORMAL = 0x80020000,
-              MODE_SCALER  = 0x00040000,
-              MODE_RAW     = 0x00080000,
-              MODE_RUN     = 0x00100000,
-              MODE_TARGET  = 0x00200000,
-              MODE_PROFILE = 0x00400000,
-              MODE_FULL    = 0x007f0000,
-              MODE_ONLINE  = 0x04040000};
+   // Flag options
+   enum Flag   {FLAG_COPY              = 0x00000400,
+                FLAG_READ_FROM_DB      = 0x00000100,
+                FLAG_UPDATE_DB         = 0x00000200, FLAG_NO_UPDATE_DB = 0x80000200,
+                FLAG_USE_DB            = 0x00000300};
 
-   // Constraint parameter for Data processing 
-   std::string      fRunName;             // Run name
+   // Flag options
+   enum Option {OPTION_POL_ID          = 0x00004000,
+                OPTION_SET_CALIB       = 0x00003000,
+                OPTION_SET_CALIB_ALPHA = 0x00001000,
+                OPTION_SET_CALIB_DL    = 0x00002000};
+
+   // Various histogramming and running modes
+   enum Mode   {MODE_ALPHA             = 0x01010000,
+                MODE_CALIB             = 0x01000000,
+                MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000,
+                MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
+                MODE_SCALER            = 0x00040000,
+                MODE_RAW               = 0x00080000,
+                MODE_RUN               = 0x00100000,
+                MODE_TARGET            = 0x00200000,
+                MODE_PROFILE           = 0x00400000,
+                MODE_FULL              = 0x007f0000,
+                MODE_ONLINE            = 0x04040000};
+
+   // Constraint parameter for data processing 
+   std::string      fRunName;           // Run name
    int              enel;               // lower kinetic energy threshold (keV)
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)
@@ -57,14 +70,13 @@ public:
    int              MESSAGE;            // message mode 1: exit just after run begin
    int              CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
    int              UPDATE;             // 1: keep update of the histogram
-   int              UPDATE_DB;          // 0: default, 1: update info in database
    UShort_t         QUICK_MODE;         // 0: default, 1: quick mode
    int              MMODE;              // mass mode
    int              NTMODE;             // if 1 store NTUPLEv
    int              RECONFMODE;         // if 1 reconfigure from file
    int              RAMPMODE;           // if 1 prepare the histograms for ramp measurement
    int              STUDYMODE;          // if 1 study mode
-   std::bitset<3>   SAVETREES;          // bitmask telling which ROOT trees to save
+   std::bitset<3>   fSaveTrees;         // bitmask telling which ROOT trees to save
    float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
    float            MassSigmaAlt;       // banana curve alternative cut within
                                         // <MassSigmaAlt> away from the 12C mass
@@ -83,16 +95,16 @@ public:
    time_t           procDateTime;       // Date/time when processing started
    Double_t         procTimeReal;       // Time in seconds to process input raw file
    Double_t         procTimeCpu;        // Time in seconds to process input raw file
-   std::string      userCalibFile;      // Calibration file pass by user as argument - DEPRECATED
-   std::string      fAlphaCalibRun;     // Name of the alpha calib run
-   std::string      fDlCalibRun;        // Name of the alpha calib run
-   std::map<std::string, std::string> fAsymEnv;
+   std::string      fAlphaCalibRun;     // Name of alpha calib run
+   std::string      fDlCalibRun;        // Name of dead layer calib run
+   Str2StrMap       fAsymEnv;
    FILE*            fFileRunInfo;
    FILE*            fFileRunConf;
    FILE*            fFileStdLog;
    std::string      fFileStdLogName;
    Bool_t           fFlagCopyResults;
    Bool_t           fFlagUseDb;
+   Bool_t           fFlagUpdateDb;
 
 public:
 
@@ -100,57 +112,47 @@ public:
    AnaInfo(std::string runId);
    ~AnaInfo();
 
-   std::string GetRunName() const { return fRunName; }
-   std::string GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
+   std::string GetRunName() const;
+   std::string GetRawDataFileName() const;
    std::string GetOutDir() const;
-   std::string GetImageDir() const { return GetOutDir() + "/images"; }
+   std::string GetImageDir() const;
+   std::string GetRunInfoFileName() const;
+   std::string GetRunConfFileName() const;
+   std::string GetStdLogFileName() const;
+   std::string GetRootFileName() const;
+   FILE*       GetRunInfoFile() const;
+   FILE*       GetRunConfFile() const;
    std::string GetAlphaCalibFile() const;
    std::string GetDlCalibFile() const;
-   std::string GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
-   std::string GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
-   std::string GetStdLogFileName() const { return GetOutDir() + "/" + fFileStdLogName; }
-   std::string GetRootFileName() const { return GetOutDir() + "/" + fRunName + ".root"; }
    std::string GetRootTreeFileName(UShort_t trid) const;
-   FILE*       GetRunInfoFile() const { return fFileRunInfo; }
-   FILE*       GetRunConfFile() const { return fFileRunConf; }
    void        ProcessOptions();
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
    void        Streamer(TBuffer &buf);
-   void        Update(DbEntry &rundb);
+   //void        Update(DbEntry &rundb); // Deprecated
    void        Update(MseRunInfoX& run);
 	void        CopyResults();
 
-   inline Bool_t HasAlphaBit();
-   inline Bool_t HasCalibBit();
-   inline Bool_t HasGraphBit();
-   inline Bool_t HasNormalBit();
-   inline Bool_t HasScalerBit();
-   inline Bool_t HasRawBit();
-   inline Bool_t HasRunBit();
-   inline Bool_t HasTargetBit();
-   inline Bool_t HasProfileBit();
+   std::string GetAlphaCalibRun() const;
+   std::string GetDlCalibRun() const;
+   Bool_t      HasAlphaBit() const;
+   Bool_t      HasCalibBit() const;
+   Bool_t      HasGraphBit() const;
+   Bool_t      HasNormalBit() const;
+   Bool_t      HasScalerBit() const;
+   Bool_t      HasRawBit() const;
+   Bool_t      HasRunBit() const;
+   Bool_t      HasTargetBit() const;
+   Bool_t      HasProfileBit() const;
 
 private:
    void Init();
    void MakeOutDir();
 };
 
+
 TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec);
 TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec);
-
-Bool_t AnaInfo::HasAlphaBit()  {
-   return (fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB))  == (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB);
- }
-
-Bool_t AnaInfo::HasCalibBit()   { return (fModes & AnaInfo::MODE_CALIB)   == AnaInfo::MODE_CALIB; }
-Bool_t AnaInfo::HasGraphBit()   { return (fModes & AnaInfo::MODE_GRAPH)   == AnaInfo::MODE_GRAPH; }
-Bool_t AnaInfo::HasNormalBit()  { return (fModes & AnaInfo::MODE_NORMAL)  == AnaInfo::MODE_NORMAL; }
-Bool_t AnaInfo::HasScalerBit()  { return (fModes & AnaInfo::MODE_SCALER)  == AnaInfo::MODE_SCALER; }
-Bool_t AnaInfo::HasRawBit()     { return (fModes & AnaInfo::MODE_RAW)     == AnaInfo::MODE_RAW; }
-Bool_t AnaInfo::HasRunBit()     { return (fModes & AnaInfo::MODE_RUN)     == AnaInfo::MODE_RUN; }
-Bool_t AnaInfo::HasTargetBit()  { return (fModes & AnaInfo::MODE_TARGET)  == AnaInfo::MODE_TARGET; }
-Bool_t AnaInfo::HasProfileBit() { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
 
 #endif

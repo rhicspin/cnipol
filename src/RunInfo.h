@@ -26,6 +26,7 @@
 #include "DbEntry.h"
 
 class MseRunInfoX;
+class MseRunPeriodX;
 
 
 /** */
@@ -90,6 +91,7 @@ public:
    void        GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    void        Update(DbEntry &rundb);
    void        Update(MseRunInfoX& run);
+   void        Update(MseRunPeriodX& runPeriod);
    void        ConfigureActiveStrip(int mask);
    void        SetBeamEnergy(Float_t beamEnergy);
    Float_t     GetBeamEnergy();
