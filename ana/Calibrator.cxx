@@ -23,6 +23,28 @@ Calibrator::~Calibrator()
 
 
 /** */
+void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
+{
+   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator mb = calibrator.fChannelCalibs.begin();
+   ChannelCalibMap::const_iterator me = calibrator.fChannelCalibs.end();
+
+   for (mi=mb; mi!=me; ++mi) {
+
+      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(mi->first);
+
+      if (iChCalib != fChannelCalibs.end()) {
+         iChCalib->second.CopyAlphaCoefs(mi->second);
+      } else {
+         ChannelCalib newChCalib;
+         newChCalib.CopyAlphaCoefs(mi->second);
+         fChannelCalibs[mi->first] = newChCalib;
+      }
+   }
+}
+
+
+/** */
 void Calibrator::Calibrate(DrawObjContainer *c)
 {
 	Info("Calibrate", "Executing Calibrate()");
@@ -37,7 +59,7 @@ void Calibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, Bool_t wideLimits)
+TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *&hMeanTime, UShort_t chId, Bool_t wideLimits)
 {
    return 0;
 }

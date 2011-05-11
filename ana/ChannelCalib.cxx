@@ -10,9 +10,11 @@ ClassImp(ChannelCalib)
 using namespace std;
 
 /** Default constructor. */
-ChannelCalib::ChannelCalib() : TObject(), fACoef(-1), fACoefErr(-1), fAChi2Ndf(0),
-   fICoef(-1), fICoefErr(-1), fIChi2Ndf(0), fDLWidth(0), fDLWidthErr(0), fT0Coef(0),
-   fT0CoefErr(0), fAvrgEMiss(0), fAvrgEMissErr(0), fEMeasDLCorr(0), fBananaChi2Ndf(0)
+ChannelCalib::ChannelCalib() : TObject(),
+   // Alpha calibration related params
+   fACoef(-1), fACoefErr(-1), fAChi2Ndf(0), fICoef(-1), fICoefErr(-1), fIChi2Ndf(0),
+   // DL calibration related params
+   fDLWidth(0), fDLWidthErr(0), fT0Coef(0), fT0CoefErr(0), fAvrgEMiss(0), fAvrgEMissErr(0), fEMeasDLCorr(0), fBananaChi2Ndf(0)
 {
 }
 
@@ -20,6 +22,18 @@ ChannelCalib::ChannelCalib() : TObject(), fACoef(-1), fACoefErr(-1), fAChi2Ndf(0
 /** Default destructor. */
 ChannelCalib::~ChannelCalib()
 {
+}
+
+
+/** */
+void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
+{
+   fACoef    = chCalib.fACoef   ;
+   fACoefErr = chCalib.fACoefErr;
+   fAChi2Ndf = chCalib.fAChi2Ndf;
+   fICoef    = chCalib.fICoef   ;
+   fICoefErr = chCalib.fICoefErr;
+   fIChi2Ndf = chCalib.fIChi2Ndf;
 }
 
 

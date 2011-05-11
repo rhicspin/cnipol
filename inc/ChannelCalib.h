@@ -14,8 +14,8 @@
 
 class ChannelCalib;
 
-typedef std::vector<ChannelCalib> ChannelCalibVec;
-typedef std::map<UShort_t, ChannelCalib> ChannelCalibMap;
+typedef std::vector<ChannelCalib>               ChannelCalibVec;
+typedef std::map<UShort_t, ChannelCalib>        ChannelCalibMap;
 typedef std::pair<const UShort_t, ChannelCalib> ChannelCalibPair;
 
 
@@ -44,6 +44,7 @@ public:
    ChannelCalib();
    ~ChannelCalib();
 
+   void CopyAlphaCoefs(const ChannelCalib &chCalib);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
 

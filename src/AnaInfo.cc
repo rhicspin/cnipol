@@ -492,11 +492,11 @@ void AnaInfo::Update(MseRunInfoX& run)
 
    if (fAlphaCalibRun.empty()) {
       if (!HasAlphaBit()) {
-         gSystem->Error("   AnaInfo::CompleteRunInfo", "Alpha calibration run must be specified");
+         gSystem->Error("   AnaInfo::Update", "Alpha calibration run must be specified");
          exit(0);
       }
    } else
-      gSystem->Info("   AnaInfo::CompleteRunInfo", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
+      gSystem->Info("   AnaInfo::Update", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
 
 
    // Set DL calib files
@@ -512,11 +512,11 @@ void AnaInfo::Update(MseRunInfoX& run)
 
    if (fDlCalibRun.empty()) {
       if (!HasCalibBit()) {
-         gSystem->Warning("   AnaInfo::CompleteRunInfo", "Calibration run is not specified.\n" \
+         gSystem->Warning("   AnaInfo::Update", "Calibration run is not specified.\n" \
                           "\tOption --calib should be used");
       }
    } else {
-      gSystem->Info("   AnaInfo::CompleteRunInfo", "Using calibration run %s", run.dl_calib_run_name.c_str());
+      gSystem->Info("   AnaInfo::Update", "Using calibration run %s", run.dl_calib_run_name.c_str());
    }
 }
 

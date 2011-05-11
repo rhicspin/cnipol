@@ -18,9 +18,6 @@ CnipolHists::CnipolHists() : DrawObjContainer()
    BookHists();
    BookHists("_cut1");
    BookHists("_cut2");
-   BookPreProcess();
-   //BookHistsExtra();
-   //BookHistsExtra("_cut1");
 }
 
 
@@ -29,9 +26,6 @@ CnipolHists::CnipolHists(TDirectory *dir) : DrawObjContainer(dir)
    BookHists();
    BookHists("_cut1");
    BookHists("_cut2");
-   BookPreProcess();
-   //BookHistsExtra();
-   //BookHistsExtra("_cut1");
 }
 
 
@@ -46,7 +40,6 @@ void CnipolHists::BookHists(string sid)
 { //{{{
    char hName[256];
 
-   //fDir->Print();
    fDir->cd();
 
    //char  formula[100], fname[100];
@@ -66,7 +59,7 @@ void CnipolHists::BookHists(string sid)
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA%s", sid.c_str());
-   o[hName] = new TH2F(hName, hName, 50, 0, 2000, 60, 0, 120);
+   o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
    ((TH2F*) o[hName])->SetOption("colz LOGZ");
    ((TH2F*) o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
    ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
@@ -114,9 +107,9 @@ void CnipolHists::BookHists(string sid)
    //((TH1D*) o[hName])->GetListOfFunctions()->Add(banana_cut_l);
 
    sprintf(hName, "hFitMeanTimeVsEnergyA%s", sid.c_str());
-   o[hName] = new TH1D(hName, hName, 100, 0, 2000);
+   o[hName] = new TH1D(hName, hName, 100, 0, 2500);
    //((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH1D*) o[hName])->GetYaxis()->SetRangeUser(0, 100);
+   ((TH1D*) o[hName])->GetYaxis()->SetRangeUser(0, 120);
    ((TH1D*) o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
    ((TH1D*) o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
 
@@ -180,7 +173,7 @@ void CnipolHists::BookHists(string sid)
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA%s_st%02d", sid.c_str(), i);
-      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 60, 0, 120);
+      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
       ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
       ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Time, ns");
@@ -194,9 +187,9 @@ void CnipolHists::BookHists(string sid)
       ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("ToF, ns");
 
       sprintf(hName, "hFitMeanTimeVsEnergyA%s_st%02d", sid.c_str(), i);
-      oc->o[hName] = new TH1D(hName, hName, 100, 0, 2000);
+      oc->o[hName] = new TH1D(hName, hName, 100, 0, 2500);
       //((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 100);
+      ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
       ((TH1D*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
       ((TH1D*) oc->o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
 
@@ -258,106 +251,48 @@ void CnipolHists::BookHistsExtra(string sid)
 } //}}}
 
 
-/** */
-void CnipolHists::BookPreProcess()
-{ //{{{
-   char hName[256];
-   string dName = "preproc";
-
-   DrawObjContainer *oc;
-   DrawObjContainerMapIter isubdir;
-
-   isubdir = d.find(dName);
-
-   if ( isubdir == d.end()) { // if dir not found
-      oc = new DrawObjContainer();
-      oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
-      oc->fDir->cd();
-   } else {
-      oc = isubdir->second;
-   }
-
-   sprintf(hName, "hTvsA");
-   oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-   ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-   ((TH1*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-   ((TH1*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
-
-   sprintf(hName, "hTimeVsEnergyA");
-   //oc->o[hName] = new TH2F(hName, hName, 255, 0, 1530, 100, 0, 100);
-   //oc->o[hName] = new TH2F(hName, hName, 255, 0, 2550, 100, 0, 100);
-   oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
-   ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-   ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Time, ns");
-
-   sprintf(hName, "hFitMeanTimeVsEnergyA");
-   //oc->o[hName] = new TH1D(hName, hName, 255, 0, 1530);
-   //oc->o[hName] = new TH1D(hName, hName, 255, 0, 2550);
-   oc->o[hName] = new TH1D(hName, hName, 100, 0, 2500);
-   ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
-   ((TH1D*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-   ((TH1D*) oc->o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
-
-   // If this is a new directory then we need to add it to the list
-   if ( isubdir == d.end()) {
-      d[dName] = oc;
-   }
-} //}}}
+///** */
+//Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
+//{ //{{{
+//   return DrawObjContainer::Write(name, option, bufsize);
+//
+//   // Temporary
+//   if (!fDir) {
+//      Error("Write", "Directory fDir not defined");
+//      return 0;
+//   }
+//
+//   fDir->cd();
+//
+//   ObjMapIter io;
+//
+//   for (io=o.begin(); io!=o.end(); ++io) {
+//      //sprintf(cName, "c_%s", io->first.c_str());
+//      if (io->second) io->second->Write();
+//   }
+//
+//   DrawObjContainerMapIter isubd;
+//
+//   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+//      string sname(isubd->first);
+//      if (sname.find("channel") != string::npos ||
+//          sname.find("preproc") != string::npos )// ||
+//          //sname.find("scalers") != string::npos )// ||
+//          //sname.find("Kinema2") != string::npos )
+//      {//continue;
+//         isubd->second->Write();
+//      }
+//   }
+//
+//   return 1;
+//} //}}}
 
 
-/** */
-void CnipolHists::Print(const Option_t* opt) const
-{ //{{{
-   opt = "";
-
-   //printf("CnipolHists:\n");
-   DrawObjContainer::Print();
-} //}}}
-
-
-/** */
-Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize)
-{ //{{{
-   return DrawObjContainer::Write(name, option, bufsize);
-
-   // Temporary
-   if (!fDir) {
-      Error("Write", "Directory fDir not defined");
-      return 0;
-   }
-
-   fDir->cd();
-
-   ObjMapIter io;
-
-   for (io=o.begin(); io!=o.end(); ++io) {
-      //sprintf(cName, "c_%s", io->first.c_str());
-      if (io->second) io->second->Write();
-   }
-
-   DrawObjContainerMapIter isubd;
-
-   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      string sname(isubd->first);
-      if (sname.find("channel") != string::npos ||
-          sname.find("preproc") != string::npos )// ||
-          //sname.find("scalers") != string::npos )// ||
-          //sname.find("Kinema2") != string::npos )
-      {//continue;
-         isubd->second->Write();
-      }
-   }
-
-   return 1;
-} //}}}
-
-
-/** */
-Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize) const
-{
-   return ((const CnipolHists*) this)->Write(name, option, bufsize);
-}
+///** */
+//Int_t CnipolHists::Write(const char* name, Int_t option, Int_t bufsize) const
+//{
+//   return ((const CnipolHists*) this)->Write(name, option, bufsize);
+//}
 
 
 /** */
@@ -471,16 +406,6 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
 
 
 /** */
-void CnipolHists::FillPreProcess(ChannelEvent *ch)
-{ //{{{
-   DrawObjContainer *sd = d["preproc"];
-
-   ((TH2F*) sd->o["hTvsA"])->Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH2F*) sd->o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
-} //}}}
-
-
-/** */
 void CnipolHists::PreFill(string sid)
 {
    char dName[256];
@@ -501,93 +426,27 @@ void CnipolHists::PreFill(string sid)
 
 
 /** */
-void CnipolHists::PostFill() { }
-
-
-/** */
 void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 { //{{{
    //Warning("SaveAllAs", "executing...");
    DrawObjContainer::SaveAllAs(c, pattern, path);
 
-   //DrawObjContainerMapIter isubd;
-
-   //for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-
-   //   // Temporary test only
-   //   if (isubd->first.find("channel28") == string::npos) continue;
-
-   //   string parentPath = path;
-   //   path += "/" + isubd->first;
-   //   printf("path: %s\n", path.c_str());
-   //   //isubd->second.SaveAllAs(c, pattern, path);
-   //   path = parentPath;
-   //}
-
-   string sSi("  ");
-   string dName;
-   string cName;
-   string fName;
    string sid = "_cut2";
-
-   DrawObjContainer *oc;
-   DrawObjContainerMapIter isubd;
-
-   // Draw superimposed histos
-   TH1* h1 = (TH1*) d["preproc"]->o["hTimeVsEnergyA"];
-   TH1* h2 = (TH1*) d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-
-   c.cd();
-   char *l = strstr(h1->GetOption(), "LOGZ");
-   //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-   if (l) { c.SetLogz(kTRUE);
-      //printf("XXX2: set logz \n");
-   } else { c.SetLogz(kFALSE); }
-
-   h1->Draw();
-   h2->Draw("sames");
-
-   c.Modified();
-   c.Update();
-
-   TPaveStats *stats = (TPaveStats*) h2->FindObject("stats");
-
-   if (stats) {
-      stats->SetX1NDC(0.84);
-      stats->SetX2NDC(0.99);
-      stats->SetY1NDC(0.10);
-      stats->SetY2NDC(0.50);
-   } else {
-      printf("could not find stats\n");
-      return;
-   }
-
-   fName = path + "/preproc/c_combo.png";
-   printf("path: %s\n", fName.c_str());
-
-   c.SetName(cName.c_str());
-   c.SetTitle(cName.c_str());
-
-   if (TPRegexp(pattern).MatchB(fName.c_str())) {
-      c.SaveAs(fName.c_str());
-      gSystem->Chmod(fName.c_str(), 0775);
-   } else {
-      //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
-   }
 
    // Draw superimposed for all channels
    for (UShort_t i=1; i<=NSTRIP; i++) {
 
       //if (i+1 != 28) continue;
 
+      string sSi("  ");
       sprintf(&sSi[0], "%02d", i);
-      dName = "channel"+sSi;
-      cName = "c_combo_st"+sSi;
+      string dName = "channel" + sSi;
+      string cName = "c_combo_st" + sSi;
 
-      oc = d.find(dName)->second;
+      DrawObjContainer* oc = d.find(dName)->second;
 
-      h1 = (TH1*) oc->o["hTimeVsEnergyA"+sid+"_st"+sSi];
-      h2 = (TH1*) oc->o["hFitMeanTimeVsEnergyA"+sid+"_st"+sSi];
+      TH1* h1 = (TH1*) oc->o["hTimeVsEnergyA"+sid+"_st"+sSi];
+      TH1* h2 = (TH1*) oc->o["hFitMeanTimeVsEnergyA"+sid+"_st"+sSi];
 
       c.cd();
 
@@ -615,7 +474,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
          return;
       }
 
-      fName = path + "/" + dName + "/" + cName + ".png";
+      string fName = path + "/" + dName + "/" + cName + ".png";
       //printf("Saving %s\n", fName.c_str());
 
       c.SetName(cName.c_str());

@@ -30,6 +30,7 @@
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolTargetHists.h"
+#include "CnipolPreprocHists.h"
 #include "CnipolProfileHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
@@ -131,14 +132,14 @@ AsymRoot::~AsymRoot()
 
 
 // Description : Open Root File and define directory structure of histograms
-void AsymRoot::RootFile(string filename)
+void AsymRoot::CreateRootFile(string filename)
 { //{{{
    printf("Creating ROOT file: %s\n", filename.c_str());
 
    fOutRootFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    if (!fOutRootFile) {
-      Fatal("RootFile", "Cannot open ROOT file %s", filename.c_str());
+      Fatal("CreateRootFile", "Cannot open ROOT file %s", filename.c_str());
       exit(-1);
    }
 
@@ -202,9 +203,12 @@ void AsymRoot::RootFile(string filename)
    //delete hists;
 
    //if (!gAnaInfo->HasAlphaBit()) {
-      TDirectory *dir = new TDirectoryFile("run", "run", "", fOutRootFile);
-      fHists->d["run"] = new CnipolRunHists(dir);
+   TDirectory *dir = new TDirectoryFile("run", "run", "", fOutRootFile);
+   fHists->d["run"] = new CnipolRunHists(dir);
    //}
+
+   dir = new TDirectoryFile("preproc", "preproc", "", fOutRootFile);
+   fHists->d["preproc"] = new CnipolPreprocHists(dir);
 
    // a temporary fix...
    //Kinema    = fHists->d["Kinema"].fDir;
@@ -297,25 +301,26 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
 
 /**
+ * Deprecated.
  * Updates the default fEventConfig to the one taken from the DL_CALIB_RUN_NAME
  * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
  * constants from that file.
  */
-void AsymRoot::UpdateRunConfig(const AnaInfo* anaInfo)
+void AsymRoot::UpdateRunConfig()
 { //{{{
+   AnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    // if not calib
-   //if ( !(anaInfo.fModes & AnaInfo::MODE_CALIB) ) 
    if ( !anaInfo->HasCalibBit() ) {
 
       string fname = anaInfo->GetDlCalibFile();
-      Info("UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
+      Info("AsymRoot::UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
       //delete f;
 
       if (!fEventConfig) {
-         Error("UpdateRunConfig", "No RunConfig object found in file %s", fname.c_str());
+         Error("AsymRoot::UpdateRunConfig", "No RunConfig object found in file %s", fname.c_str());
          return;
       }
 
@@ -334,14 +339,14 @@ void AsymRoot::UpdateRunConfig(const AnaInfo* anaInfo)
       
       // XXX not implemented. Need to fix it ASAP!
       //if (fnameAlpha != fname) {
-         Info("UpdateRunConfig", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+         Info("AsymRoot::UpdateRunConfig", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
 
          TFile *f = TFile::Open(fnameAlpha.c_str());
          EventConfig *alphaRunConfig = (EventConfig*) f->FindObjectAny("EventConfig");
          //delete f;
 
          if (!alphaRunConfig) {
-            Error("UpdateRunConfig", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
+            Error("AsymRoot::UpdateRunConfig", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
             return;
          }
 
@@ -417,7 +422,7 @@ void AsymRoot::PostProcess()
 /** */
 void AsymRoot::FillPreProcess()
 {
-   fHists->d["std"]->FillPreProcess(fChannelEvent);
+   fHists->d["preproc"]->FillPreProcess(fChannelEvent);
 }
 
 
@@ -557,47 +562,79 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
-   //gSystem->Info("UpdateCalibrator", "PPPP");
 
-   Calibrator *calibrator;
+   AnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
-   if (gAnaInfo->HasAlphaBit()) {
-      Info("UpdateCalibrator", "Setting AlphaCalibrator");
-      calibrator = new AlphaCalibrator();
+   if ( anaInfo->HasAlphaBit() && !anaInfo->HasCalibBit() ) {
+
+	   Error("AsymRoot::UpdateCalibrator", "Alpha runs must be (self) calibrated to produce reasonable results");
+		return;
+
+   } else if ( anaInfo->HasAlphaBit() && anaInfo->HasCalibBit() ) {
+
+      Info("AsymRoot::UpdateCalibrator", "Setting AlphaCalibrator");
+
+      // Existing calibrator will be replaced so, delete it first
+      delete fEventConfig->fCalibrator;
+      // and finally, assign the new calibrator
+      fEventConfig->fCalibrator = new AlphaCalibrator();
+
+   } else if ( anaInfo->HasNormalBit() ) { // regular data runs
+
+      if ( anaInfo->HasCalibBit() ) { // create new calibrator
+
+         Info("AsymRoot::UpdateCalibrator", "Setting DeadLayerCalibrator");
+
+         // Existing calibrator will be replaced so, delete it first
+         delete fEventConfig->fCalibrator;
+         // and finally, assign the new calibrator
+         fEventConfig->fCalibrator =  new DeadLayerCalibratorEDepend();
+         //fEventConfig->fCalibrator = new DeadLayerCalibrator();
+
+		} else { // use calibration consts from a DL file
+
+         string fname = anaInfo->GetDlCalibFile();
+         Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from file %s", fname.c_str());
+         TFile *f = TFile::Open(fname.c_str());
+         EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+         //delete f;
+
+         if (!eventConfig) {
+            Error("AsymRoot::UpdateCalibrator", "No RunConfig object found in file %s", fname.c_str());
+            return;
+         }
+
+         // Update the pointer to RunConfig object in the event
+         //delete fChannelEvent->fEventConfig;
+         //fChannelEvent->fEventConfig = fEventConfig;
+
+         // Copy all calibration consts from the file to the current one
+         fEventConfig->fCalibrator->fChannelCalibs = eventConfig->fCalibrator->fChannelCalibs;
+
+         delete eventConfig;
+			delete f;
+	   }
+
+	   // Now overwrite alpha calibration constants from an alpha calib file
+      string fnameAlpha = anaInfo->GetAlphaCalibFile();
+      Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+      TFile *f = TFile::Open(fnameAlpha.c_str());
+      EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+
+      if (!eventConfig) {
+         Error("UpdateCalibrator", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
+         return;
+      }
+
+		fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
+
+      delete eventConfig;
+      delete f;
+
    } else {
-      Info("UpdateCalibrator", "Setting DeadLayerCalibrator");
-
-      //calibrator = new DeadLayerCalibrator();
-      calibrator = new DeadLayerCalibratorEDepend();
-
-      //calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
-      //calibrator->Calibrate(fHists);
-      //fEventConfig->fCalibrator->fChannelCalibs = calibrator->fChannelCalibs;
-      //delete calibrator;
+      Error("UpdateCalibrator", "Cannot select calibrator for this kind of run");
    }
 
-   //if (!calibrator) exit(0);
-
-   //fEventConfig->fCalibrator->Print();
-
-   // Copy existing constants to the new calibrator
-   //cout << "size: " << calibrator->fChannelCalibs.size() << endl;
-   //cout << "size: " << fEventConfig->fCalibrator->fChannelCalibs.size() << endl;
-   calibrator->fChannelCalibs = fEventConfig->fCalibrator->fChannelCalibs;
-
-   //fEventConfig->fCalibrator->PrintAsPhp();
-
-   // Existing calibrator will be replaced so, delete it first
-   delete fEventConfig->fCalibrator;
-
-   // and finally, assign the new calibrator
-   fEventConfig->fCalibrator = calibrator;
-
-   fEventConfig->fCalibrator->Print();
-
-   //((DeadLayerCalibrator*) fEventConfig->fCalibrator)->Calibrate(fHists);
-   //calibrator->Calibrate(fHists);
-   //fEventConfig->fCalibrator = calibrator;
 } //}}}
 
 

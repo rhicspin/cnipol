@@ -150,7 +150,8 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 /** */
 void RawDataProcessor::ReadDataFast()
 { //{{{
-   printf("Started reading data file...\n");
+   Info("ReadDataFast", "Started reading data file...");
+
    TStopwatch sw;
 
    //FILE *fp = fopen(gAnaInfo->GetRawDataFileName().c_str(), "r");
@@ -256,7 +257,6 @@ void RawDataProcessor::ReadDataFast()
 
             gAsymRoot->FillPreProcess();
 				//gAsymRoot->PrintChannelEvent();
- 
 
             nTotalEvents++;
          }
@@ -272,6 +272,7 @@ void RawDataProcessor::ReadDataFast()
    // (Roughly) Process all channel banana
    gAsymRoot->CalibrateFast();
 
+   Info("ReadDataFast", "End of read data fast\n");
 } //}}}
 
 
