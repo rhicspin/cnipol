@@ -51,7 +51,7 @@ public:
    AsymRoot();
    ~AsymRoot();
  
-   void         RootFile(std::string filename);
+   void         CreateRootFile(std::string filename);
    void         BookHists();
 	void         BookHists2(StructFeedBack &feedback);
    void         DeleteHistogram();
@@ -60,7 +60,7 @@ public:
    void         Finalize();
    void         CreateTrees();
    //Bool_t       UseCalibFile(std::string cfname=""); // Deprecated
-   void         UpdateRunConfig(const AnaInfo* anaInfo);
+   void         UpdateRunConfig(); // Deprecated
    void         SetChannelEvent(processEvent &event);
    void         SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void         ProcessEvent() {};

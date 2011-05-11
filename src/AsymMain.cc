@@ -325,7 +325,6 @@ int main(int argc, char *argv[])
    }
 
    gAnaInfo->ProcessOptions();
-   gAnaInfo->Print();
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -343,17 +342,6 @@ int main(int argc, char *argv[])
    //   readdb(gRunInfo->RUNID);
    //else
    //   gAnaInfo->RECONFMODE = 0;
-
-   // Read run info from database
-   // The logic is like this:
-   //    - Select data from database by run name
-   //    - If found read fields from database and create a DbEntry
-   //       - Make sure all missing fields are borrowed from the previous run
-   //    - Proceed with analysis using the info for this run on hand
-   //    - Modify/update DbEntry
-   //    - Save DbEntry to database if requested
-
-   //DbEntry *runDb = gAsymDb->Select(gRunDb.fRunName);
 
    MseRunInfoX   *mseRunInfoX     = 0;
    MseRunInfoX   *mseRunInfoXOrig = 0;
@@ -395,32 +383,6 @@ int main(int argc, char *argv[])
    //mseRunInfoX->Print();
    //cout << *mseRunInfoX << endl;
 
-   // Replace gRunDb
-   //if (runDb) {
-   //   printf("Run \"%s\" found in database\n", runDb->fRunName.c_str());
-   //   gRunDb.UpdateFields(*runDb);
-   //   //gRunDb.Print();
-   //   gRunInfo->fPolId = gRunDb.fPolId;
-
-   //// the following is pretty messed up... needs a clean up and better logic
-   //} else {
-
-   //   // Extract and overwrite (!) basic run info (gRunInfo-> from raw data
-   //   //ReadRecBegin();
-
-   //   printf("Run \"%s\" NOT found in database. Consider an update\n", gRunDb.fRunName.c_str());
-   //   gAsymDb->Select(); // read all entries into memory
-   //   //gAsymDb->Print();
-   //   gAsymDb->Insert(&gRunDb);
-   //   //gAsymDb->Print();
-   //   gAsymDb->Dump(); // write to DB file
-
-   //   gAsymDb->Clear();
-   //   runDb = gAsymDb->Select(gRunDb.fRunName); // now read all available common info for this run
-   //   gRunDb.UpdateFields(*runDb);
-   //   gRunInfo->fPolId = gRunDb.fPolId;
-   //}
-
    // Overwrite the offline version (if set previously)
    //gRunDb.SetAsymVersion(gRunInfo->fAsymVersion);
    mseRunInfoX->asym_version = gRunInfo->fAsymVersion;
@@ -435,12 +397,8 @@ int main(int argc, char *argv[])
    gRunInfo->Update(*mseRunInfoX);
    gRunInfo->Update(*mseRunPeriodX);
 
-   cout << endl;
    gAnaInfo->Print();
-   cout << endl;
    gRunInfo->Print();
-
-   cout << endl << "mseRunInfoX: " << endl;
    mseRunInfoX->Print();
 
    // Book HBOOK file (deprecated)
@@ -449,18 +407,19 @@ int main(int argc, char *argv[])
    hist_book(hbk_outfile);
 
    // Book root file
-   gAsymRoot->RootFile(gAnaInfo->GetRootFileName());
+   gAsymRoot->CreateRootFile(gAnaInfo->GetRootFileName());
 
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
 
-   gAsymRoot->fEventConfig->fCalibrator->Print();
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Find RunConfig object in the calibration files and update
-   gAsymRoot->UpdateRunConfig(gAnaInfo);
+   //gAsymRoot->UpdateRunConfig();
+   gAsymRoot->UpdateCalibrator();
 
    //printf("calib= %d\n", gAnaInfo->HasCalibBit());
-   gAsymRoot->fEventConfig->fCalibrator->Print();
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
    //return 0;
 
    // Create tree if requested
@@ -473,7 +432,6 @@ int main(int argc, char *argv[])
 
    if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
       rawData->ReadDataFast();
-      //readDataFast();
 
    if (!gAnaInfo->QUICK_MODE) {
 
@@ -486,8 +444,12 @@ int main(int argc, char *argv[])
       gAsymRoot->PostProcess();
    }
 
-   gAsymRoot->fEventConfig->fCalibrator->PrintAsPhp();
+   //gAsymRoot->fEventConfig->fCalibrator->PrintAsPhp();
 
+   TH1D *hMeanTime = (TH1D*) gAsymRoot->fHists->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+   TCanvas ccc;
+   hMeanTime->Draw();
+   ccc.SaveAs("ccc.png");
 
    // Delete Unnecessary ROOT Histograms
    gAsymRoot->DeleteHistogram();
@@ -500,29 +462,16 @@ int main(int argc, char *argv[])
       gAsymRoot->Calibrate();
    }
 
+   hMeanTime = (TH1D*) gAsymRoot->fHists->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+   TCanvas ccc1;
+   hMeanTime->Draw();
+   ccc1.SaveAs("ccc1.png");
+
    // Update calibration constants if requested
    //gRunDb.Print();
 
    //gAsymRoot->fEventConfig->PrintAsPhp();
    //gAsymRoot->fEventConfig->fCalibrator->PrintAsConfig();
-
-   // Set pointers to global structures to be saved in the ROOT file if
-   // previously allocated delete object
-   //delete gAsymRoot->fEventConfig->fConfigInfo;
-   //gAsymRoot->fEventConfig->fConfigInfo = gConfigInfo;
-
-   // if previously allocated delete object
-   //delete gAsymRoot->fEventConfig->fRunInfo;
-   //gAsymRoot->fEventConfig->fRunInfo    = &gRunInfo;
-
-   ////delete gAsymRoot->fEventConfig->fAnaInfo;
-   //gAsymRoot->fEventConfig->fAnaInfo    = &gAnaInfo;
-
-   ////delete gAsymRoot->fEventConfig->fDbEntry;
-   ////gAsymRoot->fEventConfig->fDbEntry    = &gRunDb;
-
-   //delete gAsymRoot->fEventConfig->fAnaResult;
-   //gAsymRoot->fEventConfig->fAnaResult  = &gAnaResult;
 
    // Stop stopwatch and save results
    //stopwatch.Stop();
@@ -548,7 +497,8 @@ int main(int argc, char *argv[])
    fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())
-      gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+      //gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+      gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
       //gAsymRoot->SaveAs("profile", gAnaInfo->GetImageDir());
 
    // Close ROOT File

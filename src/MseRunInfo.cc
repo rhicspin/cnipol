@@ -2,6 +2,7 @@
 #define EXPAND_MY_SSQLS_STATICS
 
 #include "TString.h"
+#include "TSystem.h"
 
 #include "MseRunInfo.h"
 
@@ -57,6 +58,7 @@ void MseRunInfoX::Init()
 /** */
 void MseRunInfoX::Print(const Option_t* opt) const
 {
+   gSystem->Info("MseRunInfoX::Print", "Print members:");
    PrintAsPhp();
 }
 
@@ -88,6 +90,7 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['disabled_bunches']               = \"%s\";\n", disabled_bunches.c_str()  );
    fprintf(f, "$rc['ana_start_time']                 = %d;\n", (int) time_t(ana_start_time)    );
    fprintf(f, "$rc['ana_duration']                   = %d;\n", ana_duration      );
+   fprintf(f, "\n");
 } //}}}
 
 

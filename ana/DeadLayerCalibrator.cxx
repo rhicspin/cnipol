@@ -95,7 +95,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
       return;
    }
 
-   TFitResultPtr fitres = Calibrate(htemp, hMeanTime, true);
+   TFitResultPtr fitres = Calibrate(htemp, hMeanTime, 0, true);
 
    // Put results into "channel 0"
    UInt_t chId = 0;
@@ -123,7 +123,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, Bool_t wideLimits)
+TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *&hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
    Double_t xmin = h->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
