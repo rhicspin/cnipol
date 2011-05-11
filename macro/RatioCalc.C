@@ -112,17 +112,14 @@ void TwoGausFit(int i) {
 
 double gFitFunction(double* xs, double* pars) {
 
-  double x = xs[0];
+  double x    = xs[0];
   
-  double n1 = pars[0];
-  double mu1 = pars[1];
+  double n1   = pars[0];
+  double mu1  = pars[1];
   double sig1 = pars[2];
-  double n2 = pars[3];
-  double mu2 = pars[4];
+  double n2   = pars[3];
+  double mu2  = pars[4];
   double sig2 = pars[5];
-
-
-
 
   double g1 = n1*exp(-0.5*(x-mu1)*(x-mu1)/sig1);
   double g2 = n2*exp(-0.5*(x-mu2)*(x-mu2)/sig2);
