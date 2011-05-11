@@ -268,7 +268,7 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
    float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimateEDepend());
    //float delta = GetTime() - gRunConsts[].E2T/sqrt(GetEnergyA());
    
-   if (fabs(delta) <= 18) return true; // in ns
+   if (fabs(delta) <= 20) return true; // in ns
 
    //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo->MassSigma/sqrt(GetEnergyA());
    //if ( fabs(delta) < gRunConsts[].M2T * gAnaInfo->OneSigma * gAnaInfo->MassSigma / sqrt(GetEnergyA()) ) return true;
