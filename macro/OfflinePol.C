@@ -323,24 +323,19 @@ public:
 // Input       : array index i
 // Return      : 
 //
-void 
-OfflinePol::Initiarization(Int_t i){
-  
-  
-  RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
-  dProf[i] = 0;
-  Rate[i] = WCM[i] = 0;
-  P_alt[i] = dP_alt[i] = 0;
-  P_offline[i] =  phi[i]  = -9999;
-  index[i]=0;
-
-  jet.ndata=0;
-
-  // flag
-  flag.UniversalRate = 0;
-
-  return;
-
+void OfflinePol::Initiarization(Int_t i)
+{
+   RunID[i] = P_online[i] = dP_online[i]= dP_offline[i] = dphi[i] = dx[i] = dy[i] = 0;
+   dProf[i] = 0;
+   Rate[i] = WCM[i] = 0;
+   P_alt[i] = dP_alt[i] = 0;
+   P_offline[i] =  phi[i]  = -9999;
+   index[i]=0;
+ 
+   jet.ndata=0;
+ 
+   // flag
+   flag.UniversalRate = 0;
 }
 
 
@@ -500,10 +495,9 @@ CorrelatedError(Float_t a, Float_t da, Float_t b, Float_t db){
 // Input       : Int_t Mode, Int_t ndata
 // Return      : 
 //
-Int_t
-OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text, 
-		    Int_t Color, TLegend *aLegend){
-
+Int_t OfflinePol::Plot(Int_t Mode, Int_t ndata, Int_t Mtyp, Char_t*text, 
+		    Int_t Color, TLegend *aLegend)
+{
   switch (Mode) {
   case 10:
     TGraphErrors* tgae = new TGraphErrors(ndata, RunID, P_online, dx, dP_online);
@@ -1072,7 +1066,4 @@ Int_t OfflinePol::OfflinePol() {
     //    gSystem->Exec("gv ps/OfflinePol.ps");
 
     return 0;
-
 }
-
-
