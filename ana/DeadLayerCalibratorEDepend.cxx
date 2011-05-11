@@ -66,7 +66,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       // Set static RunConst with current channel RunConst
       //sRunConst = gRunConsts[iCh];
 
-      TFitResultPtr fitres = Calibrate(htemp, hMeanTime, iCh);
+      TFitResultPtr fitres = Calibrate(htemp, hMeanTime, iCh, false);
 
       if (fitres.Get()) {
          chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
@@ -262,7 +262,11 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
    //}
 
    // Remember that for this fit the second parameter is the DL width
-   TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibratorEDepend::BananaFitFunc, xmin, xmax, 3);
+   //TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibratorEDepend::BananaFitFunc, xmin, xmax, 2);
+
+   BananaFitFunctor *bff = new BananaFitFunctor(chId);
+
+   TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, xmin, xmax, 2, "BananaFitFunctor");
 
    bananaFitFunc->SetNpx(1000);
 
@@ -291,17 +295,26 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
       meanDLW_high = 200;
    }
 
-   bananaFitFunc->SetParameters(chId, meanT0, meanDLW);
-   bananaFitFunc->SetParNames("channel", "t_0, ns", "DL, #mug/cm^{2}");
+   //bananaFitFunc->SetParameters(chId, meanT0, meanDLW);
+   //bananaFitFunc->SetParNames("channel", "t_0, ns", "DL, #mug/cm^{2}");
+   bananaFitFunc->SetParameters(meanT0, meanDLW);
+   bananaFitFunc->SetParNames("t_0, ns", "DL, #mug/cm^{2}");
 
-   bananaFitFunc->FixParameter(0, chId);
-   bananaFitFunc->SetParLimits(1, meanT0_low,  meanT0_high);
-   bananaFitFunc->SetParLimits(2, meanDLW_low, meanDLW_high);
+   //bananaFitFunc->FixParameter(0, chId);
+   //bananaFitFunc->ReleaseParameter(1);
+   //bananaFitFunc->ReleaseParameter(2);
+   //bananaFitFunc->SetParLimits(0, chId,  chId);
+   bananaFitFunc->SetParLimits(0, meanT0_low,  meanT0_high);
+   bananaFitFunc->SetParLimits(1, meanDLW_low, meanDLW_high);
 
    //printf("T0, T0_err, Em, Em_err: %f, %f, %f, %f\n", meanT0, meanT0_err, meanDLW, meanDLW_err);
 
    hMeanTime->Print();
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
+
+   //bananaFitFunc->ReleaseParameter(0);
+   //bananaFitFunc->ReleaseParameter(1);
+   //bananaFitFunc->ReleaseParameter(2);
    //fitres->Print("V");
 
    //h->Print();
@@ -338,12 +351,12 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
    Double_t x0 = x[0];
    Double_t x2 = x0*x0;
 
-   UShort_t chId = (UShort_t) p[0];
+   //UShort_t chId = (UShort_t) p[0];
 
    //Double_t p1 = 0;
    //if (p[0] >= 0) p1 = TMath::Abs(p[0]);
    //if (p[1] < 0) p1 = TMath::Abs(p[1]);
-   Double_t p1 = TMath::Abs(p[2]);
+   Double_t p1 = TMath::Abs(p[1]);
    Double_t p2 = p1*p1;
    Double_t p3 = p1*p1*p1;
 
@@ -356,7 +369,59 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
    Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*x2 + pp[3]*x2*x0 + pp[4]*x2*x2;
 
    //Double_t tof = (Ekin != 0.0) ?  KinConst_E2T/sqrt(Ekin) + p[2] : 0.0;
-   Double_t t_meas = (Ekin != 0.0) ?  sRunConsts[chId].E2T/sqrt(Ekin) - p[1] : 0.0;
+   //Double_t t_meas = (Ekin != 0.0) ?  sRunConsts[chId].E2T/sqrt(Ekin) - p[1] : 0.0;
+   Double_t t_meas = (Ekin != 0.0) ?  sRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
 
    return t_meas;
 } //}}}
+
+
+BananaFitFunctor::BananaFitFunctor(UShort_t chId)
+{
+   for (int i=0; i<=4; i++) {
+      fCp0[i] = DeadLayerCalibratorEDepend::cp0[i];
+      fCp1[i] = DeadLayerCalibratorEDepend::cp1[i];
+      fCp2[i] = DeadLayerCalibratorEDepend::cp2[i];
+      fCp3[i] = DeadLayerCalibratorEDepend::cp3[i];
+      fCp4[i] = DeadLayerCalibratorEDepend::cp4[i];
+   }
+
+   fRunConst = gRunConsts[chId];
+}
+
+
+/** */
+BananaFitFunctor::~BananaFitFunctor()
+{ }
+
+
+/** */
+Double_t BananaFitFunctor::operator()(double *x, double *p)
+{
+   Double_t pp[5];
+   Double_t x0 = x[0];
+   Double_t x2 = x0*x0;
+
+   //UShort_t chId = (UShort_t) p[0];
+
+   //Double_t p1 = 0;
+   //if (p[0] >= 0) p1 = TMath::Abs(p[0]);
+   //if (p[1] < 0) p1 = TMath::Abs(p[1]);
+   Double_t p1 = TMath::Abs(p[1]);
+   Double_t p2 = p1*p1;
+   Double_t p3 = p1*p1*p1;
+
+   pp[0] = fCp0[0] + fCp0[1]*p1 + fCp0[2]*p2 + fCp0[3]*p3;
+   pp[1] = fCp1[0] + fCp1[1]*p1 + fCp1[2]*p2 + fCp1[3]*p3;
+   pp[2] = fCp2[0] + fCp2[1]*p1 + fCp2[2]*p2 + fCp2[3]*p3;
+   pp[3] = fCp3[0] + fCp3[1]*p1 + fCp3[2]*p2 + fCp3[3]*p3;
+   pp[4] = fCp4[0] + fCp4[1]*p1 + fCp4[2]*p2 + fCp4[3]*p3;
+
+   Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*x2 + pp[3]*x2*x0 + pp[4]*x2*x2;
+
+   //Double_t tof = (Ekin != 0.0) ?  KinConst_E2T/sqrt(Ekin) + p[2] : 0.0;
+   //Double_t t_meas = (Ekin != 0.0) ?  sRunConsts[chId].E2T/sqrt(Ekin) - p[1] : 0.0;
+   Double_t t_meas = (Ekin != 0.0) ?  fRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
+
+   return t_meas;
+}

@@ -59,4 +59,24 @@ public:
    ClassDef(DeadLayerCalibratorEDepend, 1)
 };
 
+class BananaFitFunctor
+{
+public:
+
+   Double_t fCp0[4];
+   Double_t fCp1[4];
+   Double_t fCp2[4];
+   Double_t fCp3[4];
+   Double_t fCp4[4];
+
+   RunConst fRunConst;
+  
+public:
+
+   BananaFitFunctor(UShort_t chId);
+   ~BananaFitFunctor();
+
+   Double_t operator()(double *x, double *p);
+};
+
 #endif
