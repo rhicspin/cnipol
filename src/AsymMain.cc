@@ -446,11 +446,6 @@ int main(int argc, char *argv[])
 
    //gAsymRoot->fEventConfig->fCalibrator->PrintAsPhp();
 
-   TH1D *hMeanTime = (TH1D*) gAsymRoot->fHists->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-   TCanvas ccc;
-   hMeanTime->Draw();
-   ccc.SaveAs("ccc.png");
-
    // Delete Unnecessary ROOT Histograms
    gAsymRoot->DeleteHistogram();
 
@@ -461,11 +456,6 @@ int main(int argc, char *argv[])
    if (gAnaInfo->HasCalibBit()) {
       gAsymRoot->Calibrate();
    }
-
-   hMeanTime = (TH1D*) gAsymRoot->fHists->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-   TCanvas ccc1;
-   hMeanTime->Draw();
-   ccc1.SaveAs("ccc1.png");
 
    // Update calibration constants if requested
    //gRunDb.Print();
@@ -497,8 +487,8 @@ int main(int argc, char *argv[])
    fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())
-      //gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
-      gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
+      gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+      //gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
       //gAsymRoot->SaveAs("profile", gAnaInfo->GetImageDir());
 
    // Close ROOT File

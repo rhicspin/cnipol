@@ -30,12 +30,6 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    string sSt("  ");
    string cutid     = "_cut2";
 
-   TH1* hMeanTime2 = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-   TCanvas ccc0;
-   ccc0.cd();
-   hMeanTime2->Draw();
-   ccc0.SaveAs("ttt0.png");
-
    for (UShort_t iCh=1; iCh<=N_CHANNELS; iCh++) {
       //if (iCh != 28) continue;
 
@@ -86,12 +80,6 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       //delete fitres.Get();
    }
-
-   TH1* hMeanTime1 = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-   TCanvas ccc;
-   ccc.cd();
-   hMeanTime1->Draw();
-   ccc.SaveAs("ttt1.png");
 
    PostCalibrate();
 } //}}}
@@ -188,11 +176,6 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
    //sRunConst = gRunConsts[0];
 
    TFitResultPtr fitres = Calibrate(htemp, hMeanTime, 0, true);
-
-   TCanvas ccc;
-   ccc.cd();
-   hMeanTime->Draw();
-   ccc.SaveAs("ttt.png");
 
    // Put results into "channel 0"
    UInt_t chId = 0;
