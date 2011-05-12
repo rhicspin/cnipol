@@ -3,6 +3,8 @@
  *                                                                           *
  *****************************************************************************/
 
+#include <ctime>
+
 #include "EventConfig.h"
 
 #include "AnaInfo.h"
@@ -158,6 +160,34 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b << fMseRunInfoX;
       R__b.SetByteCount(R__c, kTRUE);
    }
+}
+
+
+/** */
+string EventConfig::GetSignature()
+{
+   string strSignature = "";
+
+   if (fAnaInfo) {
+
+      //string strAnaEndTime(25, ' ');
+      char strAnaEndTime[25];
+      time_t anaEndTime = fAnaInfo->fAnaDateTime + (time_t) fAnaInfo->fAnaTimeReal;
+      printf("***anaEndTime: %u\n", anaEndTime);
+      tm *ltime = localtime(&anaEndTime);
+      strftime(strAnaEndTime, 25, "%c", ltime);
+
+      strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fUser;
+   }
+
+   if (fRunInfo) {
+      if (strSignature.size() != 0) 
+         strSignature += ", ";
+
+      strSignature += fRunInfo->fAsymVersion;
+   }
+
+   return strSignature;
 }
 
 

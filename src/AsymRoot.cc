@@ -988,6 +988,8 @@ void AsymRoot::SaveAs(string pattern, string dir)
 
    TCanvas c("cName", "cName", 1200, 600);
 
+   fHists->SetSignature(fEventConfig->GetSignature());
+
    fHists->SaveAllAs(c, pattern, dir.c_str());
 }
 

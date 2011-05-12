@@ -73,7 +73,6 @@ Blue.uncol.rate.sigma      = 0.82;
 Int_t GetData(Char_t *filename, StructProfile &profile)
 {
 
-
   ifstream fin;
   fin.open(filename, ios::in);
   
@@ -401,8 +400,6 @@ Int_t DataLoop(StructProfile &profile, TPostScript * ps){
   MakePlot(profile, ps, 0, 2);
 
   PolarizationVsRateCorrelation(profile, ps);
-
-
 
 
   //  =========================================================================//

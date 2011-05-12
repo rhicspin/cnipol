@@ -724,7 +724,30 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
 
       // A new correction introduced in v1.3.1 scales pC polarization down by
       // approx 18% (0.823 +/- 0.012) at 250 GeV 
-      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
+      //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
+
+      // A new correction to the H-jet introduced in v1.3.14 scales pC polarization up by
+      // approx 13% at 250 GeV 
+
+      Float_t a_n_scale_v1_3_14 = 1;
+
+      switch (gRunInfo->fPolId) {
+		case kB1U:
+		   a_n_scale_v1_3_14 = 0.8371;
+		   break;
+		case kY1D:
+		   a_n_scale_v1_3_14 = 0.8773;
+		   break;
+		case kB2D:
+		   a_n_scale_v1_3_14 = 0.7870;
+		   break;
+		case kY2U:
+		   a_n_scale_v1_3_14 = 0.8481;
+		   break;
+      }
+
+      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14;
+
    } else if (gRunInfo->GetBeamEnergy() > 50) {
       for (int i=0; i<25; i++) anth[i] = anth100[i];
    }

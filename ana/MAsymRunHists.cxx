@@ -217,20 +217,20 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    Int_t t0Lo = -30;
    Int_t t0Hi =  30;
 
-   Int_t dlLo = 50;
+   Int_t dlLo = 30;
    Int_t dlHi = 70;
 
    if (beamE == 250) {
       if (polId == kB1U || polId == kY2U) { t0Lo = -10; t0Hi = 5; }
       if (polId == kB2D || polId == kY1D) { t0Lo = -20; t0Hi = 5; }
 
-      if (polId == kB2D) { dlLo = 40; dlHi = 60; }
+      //if (polId == kB2D) { dlLo = 40; dlHi = 60; }
 
    } else if (beamE == 24) {
       if (polId == kB1U || polId == kY2U) { t0Lo = -20; t0Hi = 0; }
       if (polId == kB2D || polId == kY1D) { t0Lo = -30; t0Hi = 0; }
 
-      if (polId == kY1D) { dlLo = 60; dlHi = 80; }
+      //if (polId == kY1D) { dlLo = 60; dlHi = 80; }
    }
 
    sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());

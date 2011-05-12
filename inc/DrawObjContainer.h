@@ -37,6 +37,10 @@ typedef std::map<std::string, DrawObjContainer*>::const_iterator DrawObjContaine
 /** */
 class DrawObjContainer : public TObject
 {
+protected:
+
+	std::string          fSignature;
+
 public:
 
    //TFile  *f;
@@ -50,23 +54,24 @@ public:
    DrawObjContainer(TDirectory *dir);
    virtual ~DrawObjContainer();
 
-   void  SetDir(TDirectory *dir);
-   void  ReadFromDir();
-   void  ReadFromDir(TDirectory *dir);
-   void  Add(DrawObjContainer* oc);
+   std::string  GetSignature();
+   void         SetSignature(std::string signature);
+   void         SetDir(TDirectory *dir);
+   void         ReadFromDir();
+   void         ReadFromDir(TDirectory *dir);
+   void         Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillPreProcess(ChannelEvent *ch);
-   void  Print(const Option_t* opt="") const;
+   void         Print(const Option_t* opt="") const;
    virtual void PreFill(std::string sid="");
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./");
-   void  Draw(Option_t* option = "")
-      { ((TObject*)this)->Draw(option); }
-   void  Draw(TCanvas &c);
-   Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
-   Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
-   void  Delete(Option_t* option="");
+   void         Draw(Option_t* option = "") { ((TObject*)this)->Draw(option); }
+   void         Draw(TCanvas &c);
+   Int_t        Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
+   Int_t        Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
+   void         Delete(Option_t* option="");
 
    ClassDef(DrawObjContainer, 1)
 };

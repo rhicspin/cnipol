@@ -464,16 +464,16 @@ int main(int argc, char *argv[])
    //gAsymRoot->fEventConfig->fCalibrator->PrintAsConfig();
 
    // Stop stopwatch and save results
-   //stopwatch.Stop();
-   gAnaInfo->procDateTime =  timestamp.GetSec();
-   gAnaInfo->procTimeReal =  stopwatch.RealTime();
-   gAnaInfo->procTimeCpu  =  stopwatch.CpuTime();
+   stopwatch.Stop();
+   gAnaInfo->fAnaDateTime = timestamp.GetSec();
+   gAnaInfo->fAnaTimeReal = stopwatch.RealTime();
+   gAnaInfo->fAnaTimeCpu  = stopwatch.CpuTime();
 
    string tmpSqlDateTime(19, ' ');
    strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
 
    mseRunInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
-   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->procTimeReal);
+   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
    mseRunInfoX->measurement_type = UInt_t(gRunInfo->fMeasType);
 
    if (gAnaInfo->fFlagUpdateDb)
@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
    gAnaInfo->CopyResults();
 
    printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
-   printf("Processing time: %f seconds\n", gAnaInfo->procTimeReal);
+   printf("Processing time: %f seconds\n", gAnaInfo->fAnaTimeReal);
 
    return 1;
 } //}}}

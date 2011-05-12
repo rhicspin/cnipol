@@ -1,14 +1,16 @@
-#include <TROOT.h>
-#include <TChain.h>
-#include <TFile.h>
-#include <TH1.h>
-#include <TMinuit.h>
+
 #include <iostream.h>
 #include <fstream>
 #include <sstream>
 #include <string.h>
 #include <math.h>
 #include <iomanip>
+
+#include <TROOT.h>
+#include <TChain.h>
+#include <TFile.h>
+#include <TH1.h>
+#include <TMinuit.h>
 
 #define Debug 0
 
@@ -25,10 +27,7 @@ public:
     Int_t Plot(Int_t, Int_t);
     Int_t Pol2006();
     Int_t GetData(Char_t * DATAFILE);
-
-
-}; // end-class Pol2006
-
+};
 
 
 //

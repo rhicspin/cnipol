@@ -36,6 +36,7 @@ void initialize()
 
    //printf("firstDay %d\n", firstDay);
 
+   TString filelistPath("/eic/u/dsmirnov/run/");
    TString filelist;
    Color_t color;
 
@@ -55,7 +56,7 @@ void initialize()
       //filelist = "list_B2D_ramp.dat"; color = kBlue-4; break;
       //filelist = "list_Y2U_ramp.dat"; color = kOrange; break;
 
-      filelist = "list_all.dat"; color = kRed; break;
+      filelist = filelistPath + "runs_tmp2.dat"; color = kRed; break;
    }
 
    string sEnergyId;
@@ -156,23 +157,6 @@ void initialize()
    grPolarVsTime->SetMarkerSize(1);
    grPolarVsTime->SetMarkerColor(color);
 
-   TH2* hPolarVsFill = new TH2F("hPolarVsFill", "hPolarVsFill", 1, 14900, 15500, 1, 20, 80);
-   hPolarVsFill->GetXaxis()->SetTitle("Fill");
-   hPolarVsFill->GetYaxis()->SetTitle("Polarization, %");
-   TGraphErrors *grPolarVsFill = new TGraphErrors();
-   grPolarVsFill->SetName("grPolarVsFill");
-   grPolarVsFill->SetMarkerStyle(kFullCircle);
-   grPolarVsFill->SetMarkerSize(1);
-   grPolarVsFill->SetMarkerColor(color);
-
-   TH1F* hPolarVsFillBin = new TH1F("hPolarVsFillBin", "hPolarVsFillBin", 600, 14900, 15500);
-   hPolarVsFillBin->GetYaxis()->SetRangeUser(20, 80);
-   hPolarVsFillBin->GetXaxis()->SetTitle("Fill");
-   hPolarVsFillBin->GetYaxis()->SetTitle("Polarization, %");
-   hPolarVsFillBin->SetMarkerStyle(kFullCircle);
-   hPolarVsFillBin->SetMarkerSize(1);
-   hPolarVsFillBin->SetMarkerColor(color);
-
    TH2* hRVsTime = new TH2F("hRVsTime", "hRVsTime", 1, 20, 100, 1, -0.1, 1);
    hRVsTime->GetXaxis()->SetTitle("Days");
    hRVsTime->GetYaxis()->SetTitle("r");
@@ -182,24 +166,6 @@ void initialize()
    grRVsTime->SetMarkerStyle(kFullCircle);
    grRVsTime->SetMarkerSize(1);
    grRVsTime->SetMarkerColor(color);
-
-   TH2* hRVsFill = new TH2F("hRVsFill", "hRVsFill", 1, 14900, 15500, 1, -0.1, 1);
-   hRVsFill->GetXaxis()->SetTitle("Fill");
-   hRVsFill->GetYaxis()->SetTitle("r");
-
-   TGraphErrors *grRVsFill = new TGraphErrors();
-   grRVsFill->SetName("grRVsFill");
-   grRVsFill->SetMarkerStyle(kFullCircle);
-   grRVsFill->SetMarkerSize(1);
-   grRVsFill->SetMarkerColor(color);
-
-   TH1F* hRVsFillBin = new TH1F("hRVsFillBin", "hRVsFillBin", 600, 14900, 15500);
-   hRVsFillBin->GetYaxis()->SetRangeUser(-0.1, 1);
-   hRVsFillBin->GetXaxis()->SetTitle("Fill");
-   hRVsFillBin->GetYaxis()->SetTitle("r");
-   hRVsFillBin->SetMarkerStyle(kFullCircle);
-   hRVsFillBin->SetMarkerSize(1);
-   hRVsFillBin->SetMarkerColor(color);
 
    UInt_t i = 0;
 
@@ -357,14 +323,8 @@ void initialize()
       grPolarVsTime->SetPoint(i, gRC->fRunInfo->StartTime, polarization);
       grPolarVsTime->SetPointError(i, 0, polarization_err);
 
-      grPolarVsFill->SetPoint(i, runId, polarization);
-      grPolarVsFill->SetPointError(i, 0, polarization_err);
-
       grRVsTime->SetPoint(i, gRC->fRunInfo->StartTime, profileRatio);
       grRVsTime->SetPointError(i, 0, profileRatioErr);
-
-      grRVsFill->SetPoint(i, runId, profileRatio);
-      grRVsFill->SetPointError(i, 0, profileRatioErr);
       
       //if (i == 0) havrg = h;
       //else havrg->Add(h);
@@ -427,17 +387,6 @@ void initialize()
    imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
-   hPolarVsFill->GetListOfFunctions()->Add(grPolarVsFill, "p");
-   hPolarVsFill->Draw();
-   imageName = "hPolarVsFill_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
-
-   utils::BinGraph(grPolarVsFill, hPolarVsFillBin);
-
-   hPolarVsFillBin->Draw();
-   imageName = "hPolarVsFillBin_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
-
    grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
    printf("xmin, xmax: %f, %f\n", xmin, xmax);
    TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
@@ -452,31 +401,10 @@ void initialize()
    imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
    c->SaveAs(imageName.c_str());
 
-   utils::RemoveOutliers(grRVsFill, 2, 3);
-
-   TF1 *fRVsFill = new TF1("fRVsFill", "[0]");
-   fRVsFill->SetParameter(0, 0.02);
-   //fRVsFill->SetParLimits(0, -0.2, 0.5);
-   //grRVsFill->Print("all");
-   grRVsFill->Fit("fRVsFill");
-
-   hRVsFill->GetListOfFunctions()->Add(grRVsFill, "p");
-   hRVsFill->Draw();
-   imageName = "hRVsFill_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
-
-   utils::BinGraph(grRVsFill, hRVsFillBin);
-
-   TF1 *fRVsFillBin = new TF1("fRVsFillBin", "[0]");
-   fRVsFillBin->SetParameters(0, 0.05);
-   //fRVsFillBin->SetParLimits(0, -0.2, 0.2);
-   hRVsFillBin->Fit("fRVsFillBin");
-
-   hRVsFillBin->Draw();
-   imageName = "hRVsFillBin_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
 
    gH->PostFill();
+
+   gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
    gH->SaveAllAs(canvas);

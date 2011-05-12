@@ -10,14 +10,25 @@ ClassImp(DrawObjContainer)
 using namespace std;
 
 /** Default constructor. */
-DrawObjContainer::DrawObjContainer() : TObject(), fDir(), o(), d()
+DrawObjContainer::DrawObjContainer() : TObject(), fDir(), o(), d(), fSignature("")
 {
    fDir = gDirectory;
    fDir->cd();
 }
 
-DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d()
+DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d(), fSignature("")
 {
+}
+
+
+std::string DrawObjContainer::GetSignature()
+{
+   return fSignature;
+}
+
+void DrawObjContainer::SetSignature(std::string signature)
+{
+   fSignature = signature;
 }
 
 
@@ -234,6 +245,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
          } else {
             //printf("could not find stats\n");
          }
+
+         TText signature;
+         signature.SetTextSize(0.03);
+         signature.DrawTextNDC(0, 0, fSignature.c_str());
       }
 
       //if (io->second) io->second->Print();
@@ -259,6 +274,9 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       //XXX Temporary cond for test only
       //if (isubd->first.find("channel28") == string::npos) continue;
       //if (isubd->first.find("preproc") == string::npos) continue;
+
+      // Overwrite signature by setting it to the parent one
+      isubd->second->SetSignature(fSignature);
 
       string parentPath = path;
       path += "/" + isubd->first;

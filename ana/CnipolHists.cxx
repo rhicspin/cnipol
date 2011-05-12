@@ -83,7 +83,7 @@ void CnipolHists::BookHists(string sid)
 
    // Spin vs Strip Id
    sprintf(hName, "hSpinVsChannel%s", sid.c_str());
-   o[hName] = new TH2I(hName, hName, NSTRIP, 1, NSTRIP+1, NUM_SPIN_STATES, -1.5, 1.5);
+   o[hName] = new TH2I(hName, hName, N_CHANNELS, 1, N_CHANNELS+1, NUM_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[hName])->SetOption("colz");
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Channel Id");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Spin State");
@@ -142,7 +142,7 @@ void CnipolHists::BookHists(string sid)
    DrawObjContainerMapIter  isubdir;
 
    //for (int i=0; i<TOT_WFD_CH; i++)
-   for (int i=1; i<=NSTRIP; i++) {
+   for (int i=1; i<=N_CHANNELS; i++) {
 
       sprintf(dName, "channel%02d", i);
 
@@ -414,7 +414,7 @@ void CnipolHists::PreFill(string sid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   for (int i=1; i<=NSTRIP; i++) {
+   for (int i=1; i<=N_CHANNELS; i++) {
 
       sprintf(dName, "channel%02d", i);
       oc = d.find(dName)->second;
@@ -434,7 +434,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
    string sid = "_cut2";
 
    // Draw superimposed for all channels
-   for (UShort_t i=1; i<=NSTRIP; i++) {
+   for (UShort_t i=1; i<=N_CHANNELS; i++) {
 
       //if (i+1 != 28) continue;
 
@@ -480,6 +480,10 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
       c.SetName(cName.c_str());
       c.SetTitle(cName.c_str());
       //c.SaveAs(fName.c_str());
+
+      TText signature;
+      signature.SetTextSize(0.03);
+      signature.DrawTextNDC(0, 0, fSignature.c_str());
 
       if (TPRegexp(pattern).MatchB(fName.c_str())) {
          c.SaveAs(fName.c_str());
