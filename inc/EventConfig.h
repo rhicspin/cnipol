@@ -58,6 +58,7 @@ public:
    void  PrintAsConfig(FILE *f=stdout) const;
    float ConvertToEnergy(UShort_t adc, UShort_t chId);
    //void  Streamer(TBuffer &R__b);
+   std::string GetSignature();
 
    ClassDef(EventConfig, 3)
 };

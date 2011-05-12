@@ -113,6 +113,10 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
    c.SetName(cName.c_str());
    c.SetTitle(cName.c_str());
 
+   TText signature;
+   signature.SetTextSize(0.03);
+   signature.DrawTextNDC(0, 0, fSignature.c_str());
+
    if (TPRegexp(pattern).MatchB(fName.c_str())) {
       c.SaveAs(fName.c_str());
       gSystem->Chmod(fName.c_str(), 0775);

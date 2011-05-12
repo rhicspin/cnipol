@@ -12,17 +12,17 @@ struct StructData{
 } pres, prev;
 
 
-int main(){
-  
+int main()
+{
   ifstream in_file;
-  int ch=0;
-  int i=0;
-  int interval=0;
+  int ch       = 0;
+  int i        = 0;
+  int interval = 0;
+
   in_file.open("x.dat");
 
   while (( ch=in_file.peek()) != EOF )
-    {
-
+  {
       in_file >> pres.index >> pres.delim >> pres.xrot >> pres.yrot;
 
       interval = prev.delim != pres.delim ? pres.delim - prev.delim : 1;
@@ -35,12 +35,6 @@ int main(){
       prev.yrot  = pres.yrot;
 
       ++i;
-
-    }
-
-  
-
-
- return 0;
-
+  }
+  return 0;
 } 

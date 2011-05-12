@@ -69,7 +69,6 @@ double dE2E(double dE, double w){
 };
 
 
-
 int 
 main(int argc, char *argv[]) {
   double dE = 100 ; // [keV]
@@ -98,8 +97,4 @@ main(int argc, char *argv[]) {
    double Ekin = dE2E(dE,w);
    double dElossInDeadLayer=Ekin-dE;
    printf("%10.4f%10.4f%10.4f\n", w, Ekin-dE, Ekin);
-
-
 }
-
-

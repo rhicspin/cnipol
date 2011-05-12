@@ -10,8 +10,7 @@
 int Example(char *argv[]);
 
 
-int
-Usage(char *argv[]){
+int Usage(char *argv[]){
 
   cout << "\n Usage:" << argv[0] << "[-h] [-x]" << endl;
   cout << "\n Description: " << endl;
@@ -25,9 +24,8 @@ Usage(char *argv[]){
 
 }
 
-int 
-Example(char *argv[]){
-
+int Example(char *argv[])
+{
   cout << "\n Exapmle: " << endl;
   cout << "\t" << argv[0] << " -x" << endl;
   cout << "\n\tfor (( i=1; i<138; i++)) ; do line.sh $i JetRunBlue.dat | ReconstructTime ; done" << endl;
@@ -37,21 +35,19 @@ Example(char *argv[]){
 }
 
 
-int 
-main(int argc, char *argv[]) {
-
-  int opt;
+int main(int argc, char *argv[])
+{
+   int opt;
    while (EOF != (opt = getopt(argc, argv, "hx?"))) {
-    switch (opt) {
-    case 'x':
-      Example(argv);
-      break;
-    case 'h':
-    case '?':
-    case '*':
-      Usage(argv);
-    }
-
+      switch (opt) {
+      case 'x':
+         Example(argv);
+         break;
+      case 'h':
+      case '?':
+      case '*':
+         Usage(argv);
+      }
    }
 
    float X, Y;
@@ -59,10 +55,10 @@ main(int argc, char *argv[]) {
 
    cin >> X >> Y >> FillID >> Duration;
    
-   int Hour=int(X);
-   int Minute=int((X-float(Hour))*100);
-   int Day=int(Y/100);
-   int Month=int(Y-Day*100);
+   int Hour   = int(X);
+   int Minute = int((X-float(Hour))*100);
+   int Day    = int(Y/100);
+   int Month  = int(Y-Day*100);
    
    if (Month>=1) days=31;
    if (Month>2) days+=29;
@@ -77,7 +73,4 @@ main(int argc, char *argv[]) {
    printf("%8d %15d %10d %10d %10.2f %10.2f\n", FillID,time,time+Duration,Duration,X,Y);
 
    return 0;
-
 }
-
-

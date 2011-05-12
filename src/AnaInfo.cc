@@ -52,12 +52,13 @@ AnaInfo::AnaInfo() :
    reference_rate    (1),
    //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
-   procDateTime      (0),
-   procTimeReal      (0),
-   procTimeCpu       (0),
+   fAnaDateTime      (0),
+   fAnaTimeReal      (0),
+   fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE)
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fUserGroup(gSystem->GetUserInfo())
 {
    Init();
 }
@@ -105,12 +106,13 @@ AnaInfo::AnaInfo(string runId) :
    reference_rate    (1),
    //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
-   procDateTime      (0),
-   procTimeReal      (0),
-   procTimeCpu       (0),
+   fAnaDateTime      (0),
+   fAnaTimeReal      (0),
+   fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE)
+   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fUserGroup(gSystem->GetUserInfo())
 {
    Init();
 }
@@ -122,6 +124,8 @@ AnaInfo::~AnaInfo()
    if (fFileRunInfo) fclose(fFileRunInfo);
    if (fFileRunConf) fclose(fFileRunConf);
    if (fFileStdLog)  fclose(fFileStdLog);
+
+   delete fUserGroup; fUserGroup = 0;
 }
 
 
@@ -331,9 +335,9 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
    fprintf(f, "$rc['thinout']                      = %u;\n",     thinout);
-   fprintf(f, "$rc['procDateTime']                 = %u;\n",     (UInt_t) procDateTime);
-   fprintf(f, "$rc['procTimeReal']                 = %f;\n",     procTimeReal);
-   fprintf(f, "$rc['procTimeCpu']                  = %f;\n",     procTimeCpu);
+   fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
+   fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);
+   fprintf(f, "$rc['fAnaTimeCpu']                  = %f;\n",     fAnaTimeCpu);
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
 
@@ -354,6 +358,9 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fFlagCopyResults']             = %d;\n", fFlagCopyResults);
    fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
    fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
+
+   fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup->fUser.Data());
+   fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup->fRealName.Data());
 
    // Various printouts. Should be combined with Print()?
    //cout << "Input data file:               " << GetRawDataFileName() << endl;
@@ -432,11 +439,12 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf >> nEventsTotal;
       buf >> thinout;
       buf >> fFastCalibThinout;
-      buf >> procDateTime >> procTimeReal >> procTimeCpu;
+      buf >> fAnaDateTime >> fAnaTimeReal >> fAnaTimeCpu;
       buf >> tstr; fAlphaCalibRun  = tstr.Data();
       buf >> tstr; fDlCalibRun     = tstr.Data();
       buf >> tstr; fFileStdLogName = tstr.Data();
       buf >> fFlagCopyResults >> fFlagUseDb >> fFlagUpdateDb;
+      //buf >> fUserGroup;
    } else {
       //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
       tstr = fRunName; buf << tstr;
@@ -449,11 +457,12 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf << nEventsTotal;
       buf << thinout;
       buf << fFastCalibThinout;
-      buf << procDateTime << procTimeReal << procTimeCpu;
+      buf << fAnaDateTime << fAnaTimeReal << fAnaTimeCpu;
       tstr = fAlphaCalibRun;  buf << tstr;
       tstr = fDlCalibRun;     buf << tstr;
       tstr = fFileStdLogName; buf << tstr;
       buf << fFlagCopyResults << fFlagUseDb << fFlagUpdateDb;
+      //buf << fUserGroup;
    }
 }
 

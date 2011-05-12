@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 
 #include "TBuffer.h"
+#include "TSystem.h"
 
 #include "Asym.h"
 
@@ -91,19 +92,20 @@ public:
    Float_t          fFastCalibThinout;  // Approximate fraction of events to pass
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
-   time_t           procDateTime;       // Date/time when processing started
-   Double_t         procTimeReal;       // Time in seconds to process input raw file
-   Double_t         procTimeCpu;        // Time in seconds to process input raw file
+   time_t           fAnaDateTime;       // Date/time when data analysis started
+   Double_t         fAnaTimeReal;       // Time in seconds to process input raw file
+   Double_t         fAnaTimeCpu;        // Time in seconds to process input raw file
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    Str2StrMap       fAsymEnv;
-   FILE*            fFileRunInfo;
-   FILE*            fFileRunConf;
-   FILE*            fFileStdLog;
+   FILE            *fFileRunInfo;
+   FILE            *fFileRunConf;
+   FILE            *fFileStdLog;
    std::string      fFileStdLogName;
    Bool_t           fFlagCopyResults;
    Bool_t           fFlagUseDb;
    Bool_t           fFlagUpdateDb;
+   UserGroup_t     *fUserGroup;
 
 public:
 
