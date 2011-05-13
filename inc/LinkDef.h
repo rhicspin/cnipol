@@ -29,6 +29,7 @@
 #pragma link C++ class HistContainer;
 #pragma link C++ class HistManager;
 #pragma link C++ class MAsymFillHists;
+#pragma link C++ class MAsymRateHists;
 #pragma link C++ class MAsymRunHists;
 #pragma link C++ class MAsymRoot;
 //#pragma link C++ class CnipolHistsAssymetry;

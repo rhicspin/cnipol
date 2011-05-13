@@ -101,10 +101,8 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
    sprintf(hName, "hMaxRateVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 100);
-   ((TH1*) o[hName])->SetTitle(";Measurement;Target Id;");
+   ((TH1*) o[hName])->SetTitle(";Measurement;Max Rate;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grMaxRateVsMeas, "p");
-   ((TH1*) o[hName])->GetListOfFunctions()->Add(grMaxRateVsMeas, "p");
-
 
    // Targets
    sprintf(hName, "grHTargetVsMeas");
