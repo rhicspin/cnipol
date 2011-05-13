@@ -307,13 +307,11 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
    TGraphErrors *graphErrs = 0;
    TGraph       *graph = 0;
-   UInt_t        graphNEntries;
 
    // Rate
    sprintf(hName, "hMaxRateVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graph = (TGraph*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grMaxRateVsMeas");
-   graphNEntries = graph->GetN();
-   graph->SetPoint(graphNEntries, runId, max_rate);
+   graph->SetPoint(graph->GetN(), runId, max_rate);
 
    // Targets
    sprintf(hName, "hTargetVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
@@ -331,19 +329,15 @@ void MAsymRunHists::Fill(EventConfig &rc)
    // Polarization
    sprintf(hName, "hPolarVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsMeas");
-
-   graphNEntries = graphErrs->GetN();
-   
-   graphErrs->SetPoint(graphNEntries, runId, polarization);
-   graphErrs->SetPointError(graphNEntries, 0, polarizationErr);
+   graphErrs->SetPoint(graphErrs->GetN(), runId, polarization);
+   graphErrs->SetPointError(graphErrs->GetN(), 0, polarizationErr);
 
    // Profiles r
    sprintf(hName, "hRVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
 
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeas");
-   graphNEntries = graphErrs->GetN();
-   graphErrs->SetPoint(graphNEntries, runId, profileRatio);
-   graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
+   graphErrs->SetPoint(graphErrs->GetN(), runId, profileRatio);
+   graphErrs->SetPointError(graphErrs->GetN(), 0, profileRatioErr);
 
    if (targetOrient == 'H') {
       graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeasH");
@@ -353,27 +347,20 @@ void MAsymRunHists::Fill(EventConfig &rc)
       graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeasV");
    }
 
-   graphNEntries = graphErrs->GetN();
-   graphErrs->SetPoint(graphNEntries, runId, profileRatio);
-   graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
+   graphErrs->SetPoint(graphErrs->GetN(), runId, profileRatio);
+   graphErrs->SetPointError(graphErrs->GetN(), 0, profileRatioErr);
 
    // t0
    sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
-
-   graphNEntries = graphErrs->GetN();
-   
-   graphErrs->SetPoint(graphNEntries, runId, tzero);
-   graphErrs->SetPointError(graphNEntries, 0, tzeroErr);
+   graphErrs->SetPoint(graphErrs->GetN(), runId, tzero);
+   graphErrs->SetPointError(graphErrs->GetN(), 0, tzeroErr);
 
    // Dead layer
    sprintf(hName, "hDLVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsMeas");
-
-   graphNEntries = graphErrs->GetN();
-   
-   graphErrs->SetPoint(graphNEntries, runId, dl);
-   graphErrs->SetPointError(graphNEntries, 0, dlErr);
+   graphErrs->SetPoint(graphErrs->GetN(), runId, dl);
+   graphErrs->SetPointError(graphErrs->GetN(), 0, dlErr);
 }
 
 

@@ -15,7 +15,7 @@
 #include "CnipolProfileHists.h"
 
 MAsymRoot           *gMAsymRoot = 0;
-DrawObjContainer    *gH;
+//DrawObjContainer    *gH;
 //MAsymRunHists       *gH;
 EventConfig         *gRC;
 UShort_t             gPolId     = 0;

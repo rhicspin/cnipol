@@ -11,6 +11,8 @@
 
 using namespace std;
 
+//MAsymRateHists       *gH;
+DrawObjContainer    *gH;
 
 void manalyze(UShort_t polId, UShort_t eId)
 {
@@ -398,12 +400,12 @@ void initialize()
    //c->SaveAs(imageName.c_str());
 
 
-   //gH->PostFill();
+   gH->PostFill();
 
    gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   //gH->SaveAllAs(canvas);
+   gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();
