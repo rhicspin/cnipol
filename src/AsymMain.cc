@@ -487,8 +487,8 @@ int main(int argc, char *argv[])
    fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())
-      //gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
-      gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
+      gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+      //gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
       //gAsymRoot->SaveAs("profile", gAnaInfo->GetImageDir());
 
    // Close ROOT File
