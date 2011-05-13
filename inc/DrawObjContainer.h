@@ -25,6 +25,7 @@
 
 class ChannelEvent;
 class DrawObjContainer;
+class EventConfig;
 
 typedef std::map<std::string, TObject*> ObjMap;
 typedef std::map<std::string, TObject*>::iterator ObjMapIter;
@@ -62,6 +63,7 @@ public:
    void         Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
+   virtual void Fill(EventConfig &rc);
    virtual void FillPreProcess(ChannelEvent *ch);
    void         Print(const Option_t* opt="") const;
    virtual void PreFill(std::string sid="");

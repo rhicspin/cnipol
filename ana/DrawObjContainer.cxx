@@ -5,6 +5,8 @@
 
 #include "DrawObjContainer.h"
 
+#include "EventConfig.h"
+
 ClassImp(DrawObjContainer)
 
 using namespace std;
@@ -376,6 +378,19 @@ void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(ch, sid);
    }
+}
+
+
+/** */
+void DrawObjContainer::Fill(EventConfig &rc)
+{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->Fill(rc);
+   }
+
+   this->Fill(rc);
 }
 
 

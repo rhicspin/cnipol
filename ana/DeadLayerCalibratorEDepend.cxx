@@ -225,9 +225,13 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
 
    TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
 
-   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
-   ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", &fitResHists);
-   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
+   if (wideLimits) { // This is for the fast calibration
+      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
+      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", &fitResHists);
+      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
+   } else { // In case of the regular channel calibration
+      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
+   }
 
    delete gausFitFunc;
 
@@ -298,7 +302,7 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
    //bananaFitFunc->SetParameters(chId, meanT0, meanDLW);
    //bananaFitFunc->SetParNames("channel", "t_0, ns", "DL, #mug/cm^{2}");
    bananaFitFunc->SetParameters(meanT0, meanDLW);
-   bananaFitFunc->SetParNames("t_0, ns", "DL, #mug/cm^{2}");
+   bananaFitFunc->SetParNames("t_{0}, ns", "DL, #mug/cm^{2}");
 
    //bananaFitFunc->FixParameter(0, chId);
    //bananaFitFunc->ReleaseParameter(1);

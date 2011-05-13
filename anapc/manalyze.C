@@ -4,6 +4,9 @@
 
 #include "manalyze.h"
 
+#include "MAsymRunHists.h"
+#include "MAsymRateHists.h"
+
 #include "utils/utils.h"
 
 using namespace std;
@@ -26,7 +29,8 @@ void initialize()
 
    gMAsymRoot = new MAsymRoot("masym_out.root");
 
-   gH = new MAsymRunHists(gMAsymRoot);
+   //gH = new MAsymRunHists(gMAsymRoot);
+   gH = new MAsymRateHists(gMAsymRoot);
 
    struct tm tm;
    time_t firstDay;
@@ -394,7 +398,7 @@ void initialize()
    //c->SaveAs(imageName.c_str());
 
 
-   gH->PostFill();
+   //gH->PostFill();
 
    gH->SetSignature(gRC->GetSignature());
 
