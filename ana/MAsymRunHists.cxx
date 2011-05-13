@@ -295,6 +295,10 @@ void MAsymRunHists::Fill(EventConfig &rc)
    Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
    Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
+   //
+   if (polId == 3 && dl < 45) cout << "XXX DL: " << dl << endl;
+   //
+
    if (gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end())
       return;
 

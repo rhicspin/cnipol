@@ -340,24 +340,16 @@ void initialize()
 
    hAsymVsEnergy->GetListOfFunctions()->Add(grAsymVsEnergy, "p");
    hAsymVsEnergy->Draw();
-   imageName = "hAsymVsEnergy_" + filelist + ".png";
-   c->SaveAs(imageName.c_str());
 
    hAnaPowerVsEnergy->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
    hAnaPowerVsEnergy->Draw();
-   imageName = "hAnaPowerVsEnergy_" + filelist + ".png";
-   c->SaveAs(imageName.c_str());
 
    hPolarVsEnergy->GetListOfFunctions()->Add(grPolarVsEnergy, "p");
    hPolarVsEnergy->Draw();
-   imageName = "hPolarVsEnergy_" + filelist + ".png";
-   c->SaveAs(imageName.c_str());
 
    // Profiles
    hRVsEnergy->GetListOfFunctions()->Add(grRVsEnergy, "p");
    hRVsEnergy->Draw();
-   imageName = "hRVsEnergy_" + filelist + ".png";
-   c->SaveAs(imageName.c_str());
 
    utils::BinGraph(grRVsEnergy, hRVsEnergyBin);
 
@@ -365,13 +357,13 @@ void initialize()
    hRVsEnergyBin->Fit("f1");
 
    hRVsEnergyBin->Draw();
-   imageName = "hRVsEnergyBin_" + filelist + ".png";
-   c->SaveAs(imageName.c_str());
+   //imageName = "hRVsEnergyBin_" + filelist + ".png";
+   //c->SaveAs(imageName.c_str());
 
    hPolar->GetListOfFunctions()->Add(grPolar, "p");
    hPolar->Draw();
-   imageName = "polar_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
+   //imageName = "polar_" + filelist + "_" + sEnergyId + ".png";
+   //c->SaveAs(imageName.c_str());
 
    hPolarVsTime->GetListOfFunctions()->Add(grPolarVsTime, "p");
    grPolarVsTime->ComputeRange(xmin, ymin, xmax, ymax);
@@ -384,8 +376,8 @@ void initialize()
    hPolarVsTime->GetXaxis()->SetTimeFormat("%b %d");
    hPolarVsTime->Draw();
    c->Update();
-   imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
+   //imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
+   //c->SaveAs(imageName.c_str());
 
    grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
    printf("xmin, xmax: %f, %f\n", xmin, xmax);
@@ -398,8 +390,8 @@ void initialize()
    hRVsTime->GetXaxis()->SetTimeDisplay(1);
    hRVsTime->GetXaxis()->SetTimeFormat("%b %d");
    hRVsTime->Draw();
-   imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
-   c->SaveAs(imageName.c_str());
+   //imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
+   //c->SaveAs(imageName.c_str());
 
 
    gH->PostFill();
@@ -407,7 +399,7 @@ void initialize()
    gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas);
+   //gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();
