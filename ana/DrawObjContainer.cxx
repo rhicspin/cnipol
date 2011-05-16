@@ -389,8 +389,6 @@ void DrawObjContainer::Fill(EventConfig &rc)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc);
    }
-
-   this->Fill(rc);
 }
 
 

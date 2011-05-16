@@ -31,8 +31,10 @@ void initialize()
 
    gMAsymRoot = new MAsymRoot("masym_out.root");
 
-   //gH = new MAsymRunHists(gMAsymRoot);
-   gH = new MAsymRateHists(gMAsymRoot);
+   gH = new DrawObjContainer(gMAsymRoot);
+
+   gH->d["runs"] = new MAsymRunHists( new TDirectoryFile("runs", "runs", "", gMAsymRoot));
+   gH->d["rate"] = new MAsymRateHists(new TDirectoryFile("rate", "rate", "", gMAsymRoot));
 
    struct tm tm;
    time_t firstDay;
@@ -246,7 +248,6 @@ void initialize()
       gSystem->Info("", "file found: %s", fileName.Data());
 
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
-      f->Close();
       delete f;
 
       if (!gRC) {
@@ -400,7 +401,7 @@ void initialize()
    //c->SaveAs(imageName.c_str());
 
 
-   gH->PostFill();
+   //gH->PostFill();
 
    gH->SetSignature(gRC->GetSignature());
 
