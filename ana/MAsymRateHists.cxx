@@ -91,32 +91,32 @@ void MAsymRateHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beam
 
    sprintf(hName, "hMaxRateVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, hiRate);
-   ((TH1*) o[hName])->SetTitle(";Measurement;Max Rate;");
+   ((TH1*) o[hName])->SetTitle(";Measurement;Max Rate, MHz;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grMaxRateVsMeas, "p");
 
    // t0
-   TGraphErrors *grT0VsRate = new TGraphErrors();
-   grT0VsRate->SetName("grT0VsRate");
-   grT0VsRate->SetMarkerStyle(kFullCircle);
-   grT0VsRate->SetMarkerSize(1);
-   grT0VsRate->SetMarkerColor(color);
+   TGraphErrors *grT0VsMaxRate = new TGraphErrors();
+   grT0VsMaxRate->SetName("grT0VsMaxRate");
+   grT0VsMaxRate->SetMarkerStyle(kFullCircle);
+   grT0VsMaxRate->SetMarkerSize(1);
+   grT0VsMaxRate->SetMarkerColor(color);
 
-   sprintf(hName, "hT0VsRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   sprintf(hName, "hT0VsMaxRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 0, hiRate, 1, t0Lo, t0Hi);
-   ((TH1*) o[hName])->SetTitle(";Rate, MHz;t_{0};");
-   ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsRate, "p");
+   ((TH1*) o[hName])->SetTitle(";Max Rate, MHz;t_{0};");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsMaxRate, "p");
 
    // DL
-   TGraphErrors *grDLVsRate = new TGraphErrors();
-   grDLVsRate->SetName("grDLVsRate");
-   grDLVsRate->SetMarkerStyle(kFullCircle);
-   grDLVsRate->SetMarkerSize(1);
-   grDLVsRate->SetMarkerColor(color);
+   TGraphErrors *grDLVsMaxRate = new TGraphErrors();
+   grDLVsMaxRate->SetName("grDLVsMaxRate");
+   grDLVsMaxRate->SetMarkerStyle(kFullCircle);
+   grDLVsMaxRate->SetMarkerSize(1);
+   grDLVsMaxRate->SetMarkerColor(color);
 
-   sprintf(hName, "hDLVsRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   sprintf(hName, "hDLVsMaxRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
    o[hName] = new TH2F(hName, hName, 1, 0, hiRate, 1, dlLo, dlHi);
-   ((TH1*) o[hName])->SetTitle(";Rate, MHz;Dead Layer #mug/cm^{2};");
-   ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsRate, "p");
+   ((TH1*) o[hName])->SetTitle(";Max Rate, MHz;Dead Layer #mug/cm^{2};");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMaxRate, "p");
 
 } //}}}
 
@@ -168,14 +168,14 @@ void MAsymRateHists::Fill(EventConfig &rc)
    graph->SetPoint(graph->GetN(), runId, max_rate);
 
    // t0
-   sprintf(hName, "hT0VsRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
-   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsRate");
+   sprintf(hName, "hT0VsMaxRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMaxRate");
    graphErrs->SetPoint(graphErrs->GetN(), max_rate, tzero);
    graphErrs->SetPointError(graphErrs->GetN(), 0, tzeroErr);
 
    // Dead layer
-   sprintf(hName, "hDLVsRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
-   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsRate");
+   sprintf(hName, "hDLVsMaxRate_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsMaxRate");
    graphErrs->SetPoint(graphErrs->GetN(), max_rate, dl);
    graphErrs->SetPointError(graphErrs->GetN(), 0, dlErr);
 } //}}}
