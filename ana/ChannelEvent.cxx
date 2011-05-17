@@ -318,7 +318,7 @@ Bool_t ChannelEvent::PassCutNoise()
       //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
       //if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
       if ( fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 17 )
+           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 20 )
          return false;
       break;
 
@@ -326,7 +326,7 @@ Bool_t ChannelEvent::PassCutNoise()
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
       //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
       if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 17 )
+           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 20 )
          return false;
       break;
 
@@ -338,14 +338,14 @@ Bool_t ChannelEvent::PassCutNoise()
       //    (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
       //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
       if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 17 )
+           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 20 )
          return false;
       break;
 
    case 3:   // Y2U
       //if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
       if ( GetAmpltd() < 30 || GetAmpltd() > 215 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 17 )
+           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 20 )
          return false;
       break;
    }
