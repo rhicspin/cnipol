@@ -18,9 +18,7 @@ MAsymRoot           *gMAsymRoot = 0;
 //DrawObjContainer    *gH;
 //MAsymRunHists       *gH;
 EventConfig         *gRC;
-UShort_t             gPolId     = 0;
-UShort_t             gEnergyId  = 0;
 map<UInt_t, UInt_t>  flattopTimes;
 
-void manalyze(UShort_t polId=0, UShort_t eId=0);
+void manalyze();
 void initialize();

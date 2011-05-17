@@ -268,6 +268,18 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
 
+   // Banana fit params
+   TGraphErrors *grBananaChi2Ndf = new TGraphErrors();
+   grBananaChi2Ndf->SetName("grBananaChi2Ndf");
+   grBananaChi2Ndf->SetMarkerStyle(kFullCircle);
+   grBananaChi2Ndf->SetMarkerSize(1);
+   grBananaChi2Ndf->SetMarkerColor(color);
+
+   sprintf(hName, "hBananaChi2Ndf_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 5e4);
+   ((TH1*) o[hName])->SetTitle(";Measurement;#chi^{2}/ndf;");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grBananaChi2Ndf, "p");
+
 } //}}}
 
 
@@ -326,18 +338,22 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
    graph->SetPoint(graph->GetN(), runId, targetId);
 
+   UInt_t nPoints = 0;
+
    // Polarization
    sprintf(hName, "hPolarVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsMeas");
-   graphErrs->SetPoint(graphErrs->GetN(), runId, polarization);
-   graphErrs->SetPointError(graphErrs->GetN(), 0, polarizationErr);
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, polarization);
+   graphErrs->SetPointError(nPoints, 0, polarizationErr);
 
    // Profiles r
    sprintf(hName, "hRVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
 
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeas");
-   graphErrs->SetPoint(graphErrs->GetN(), runId, profileRatio);
-   graphErrs->SetPointError(graphErrs->GetN(), 0, profileRatioErr);
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, profileRatio);
+   graphErrs->SetPointError(nPoints, 0, profileRatioErr);
 
    if (targetOrient == 'H') {
       graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeasH");
@@ -347,20 +363,31 @@ void MAsymRunHists::Fill(EventConfig &rc)
       graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsMeasV");
    }
 
-   graphErrs->SetPoint(graphErrs->GetN(), runId, profileRatio);
-   graphErrs->SetPointError(graphErrs->GetN(), 0, profileRatioErr);
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, profileRatio);
+   graphErrs->SetPointError(nPoints, 0, profileRatioErr);
 
    // t0
    sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
-   graphErrs->SetPoint(graphErrs->GetN(), runId, tzero);
-   graphErrs->SetPointError(graphErrs->GetN(), 0, tzeroErr);
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, tzero);
+   graphErrs->SetPointError(nPoints, 0, tzeroErr);
 
    // Dead layer
    sprintf(hName, "hDLVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsMeas");
-   graphErrs->SetPoint(graphErrs->GetN(), runId, dl);
-   graphErrs->SetPointError(graphErrs->GetN(), 0, dlErr);
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, dl);
+   graphErrs->SetPointError(nPoints, 0, dlErr);
+
+   // Banana fit params
+   Float_t bananaChi2Ndf = rc.fCalibrator->fChannelCalibs[0].fBananaChi2Ndf;
+
+   sprintf(hName, "hBananaChi2Ndf_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grBananaChi2Ndf");
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId, bananaChi2Ndf);
 }
 
 
