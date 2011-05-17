@@ -83,7 +83,9 @@ public:
    RunConst(float lL=CARBON_PATH_DISTANCE, float lCt=WFD_TIME_UNIT_HALF);
    void Update(UShort_t ch=0);
    void Print(const Option_t* opt="") const;
+   static Bool_t IsSiliconChannel(UShort_t chId);
 };
+
 
 struct StructMask {
    int detector;

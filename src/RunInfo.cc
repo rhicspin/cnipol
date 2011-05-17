@@ -45,7 +45,7 @@ RunInfo::RunInfo() :
  
    for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
-   for (int i=0; i<NSTRIP; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
+   for (int i=0; i<N_SILICON_CHANNELS; i++) { ActiveStrip[i] = 1; fDisabledChannels[i] = 0; }
    NActiveStrip          = NSTRIP; // NAactiveStrip;
    NDisableStrip         = 0;      // NDisableStrip
    NFilledBunch          = 0;      // NFilledBunch;
@@ -276,9 +276,9 @@ void RunInfo::PrintAsPhp(FILE *f) const
    ssChs.str("");
    ssChs << "array(";
 
-   for (int i=0; i!=NSTRIP; i++) {
+   for (int i=0; i!=N_SILICON_CHANNELS; i++) {
       ssChs << i+1 << " => " << (fDisabledChannels[i] ? "1" : "0");
-      ssChs << (i<NSTRIP-1 ? ", " : "");
+      ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
    }
 
    ssChs << ")";

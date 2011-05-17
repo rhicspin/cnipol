@@ -47,6 +47,7 @@ public:
    void CopyAlphaCoefs(const ChannelCalib &chCalib);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
+   void ResetToZero();
 
    ClassDef(ChannelCalib, 1)
 };

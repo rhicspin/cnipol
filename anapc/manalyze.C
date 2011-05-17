@@ -8,6 +8,8 @@
 #include "MAsymRunHists.h"
 #include "MAsymRateHists.h"
 
+#include "AsymGlobals.h"
+
 #include "utils/utils.h"
 
 using namespace std;
@@ -31,8 +33,8 @@ void initialize()
 
    gH = new DrawObjContainer(gMAsymRoot);
 
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
-   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
+   //gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
 
    struct tm tm;
@@ -45,7 +47,12 @@ void initialize()
 
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
-   TString filelist = filelistPath + "runs11_rampupdown.dat";
+   //TString filelist = filelistPath + "runs11_rampupdown.dat";
+   //TString filelist = filelistPath + "runs_all.dat";
+   //TString filelist = filelistPath + "runs_tmp2.dat";
+   //TString filelist = filelistPath + "runs11_15393.dat";
+   //TString filelist = filelistPath + "runs11_15397.dat";
+   TString filelist = filelistPath + "runs11_15399.dat";
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -94,6 +101,8 @@ void initialize()
    grRVsTime->SetMarkerColor(color);
 
    UInt_t i = 0;
+   UInt_t minTime = UINT_MAX;
+   UInt_t maxTime = 0;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -130,6 +139,9 @@ void initialize()
       if ( beamEnergy == 250 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
          flattopTimes[fillId] = gRC->fRunInfo->StartTime;
       }
+
+      if (gRC->fRunInfo->StartTime < minTime ) minTime = gRC->fRunInfo->StartTime;
+      if (gRC->fRunInfo->StartTime > maxTime ) maxTime = gRC->fRunInfo->StartTime;
    }
 
    map<UInt_t, UInt_t>::iterator ift;
@@ -138,6 +150,14 @@ void initialize()
       printf("%d -> %d\n", ift->first, ift->second);
    }
 
+   //
+   if (gH->d["runs"]) {
+      ((MAsymRunHists*) gH->d["runs"])->fMinTime = minTime;
+      ((MAsymRunHists*) gH->d["runs"])->fMaxTime = maxTime;
+      ((MAsymRunHists*) gH->d["runs"])->UpdateLimits();
+   }
+
+   //gH->UpdateLimits();
 
    //return;
    next->Begin();
@@ -213,6 +233,7 @@ void initialize()
          continue;
       }
 
+      gRunInfo = gRC->fRunInfo;
       gH->Fill(*gRC);
 
       //grPolar->SetPoint(i, day, tzero);

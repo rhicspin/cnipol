@@ -6,6 +6,11 @@
 #include "Calibrator.h"
 #include "ChannelCalib.h"
 
+#include "Asym.h"
+#include "AsymGlobals.h"
+#include "RunInfo.h"
+
+
 ClassImp(Calibrator)
 
 using namespace std;
@@ -19,6 +24,45 @@ Calibrator::Calibrator() : TObject(), fChannelCalibs()
 /** Default destructor. */
 Calibrator::~Calibrator()
 {
+}
+
+
+/** */
+ChannelCalib* Calibrator::GetAverage()
+{
+	//Info("GetAverage", "Executing GetAverage()");
+
+   ChannelCalib *ch = new ChannelCalib();
+   ch->ResetToZero();
+
+   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
+   ChannelCalibMap::const_iterator me = fChannelCalibs.end();
+
+   UInt_t nChannels = 0;
+
+   for (mi=mb; mi!=me; ++mi) {
+      if (RunConst::IsSiliconChannel(mi->first) && !isnan(mi->second.fT0Coef) && !isinf(mi->second.fT0Coef) &&
+          !gRunInfo->fDisabledChannels[mi->first-1] && mi->second.fBananaChi2Ndf < 1e3)
+      {
+         ch->fT0Coef        += mi->second.fT0Coef;
+         ch->fT0CoefErr     += mi->second.fT0CoefErr;
+         ch->fDLWidth       += mi->second.fDLWidth;
+         ch->fDLWidthErr    += mi->second.fDLWidthErr;
+         ch->fBananaChi2Ndf += mi->second.fBananaChi2Ndf;
+         nChannels++;
+      }
+   }
+
+   if (nChannels) {
+      ch->fT0Coef        /= nChannels;
+      ch->fT0CoefErr     /= nChannels;
+      ch->fDLWidth       /= nChannels;
+      ch->fDLWidthErr    /= nChannels;
+      ch->fBananaChi2Ndf /= nChannels;
+   }
+
+   return ch;
 }
 
 

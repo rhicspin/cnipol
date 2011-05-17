@@ -22,6 +22,8 @@ class MAsymRunHists : public DrawObjContainer
 {
 public:
 
+   time_t fMinTime;
+   time_t fMaxTime;
 
 private:
 
@@ -42,6 +44,7 @@ public:
    void Fill(EventConfig &rc);
    void PostFill();
    void Print(const Option_t* opt="") const;
+   void UpdateLimits();
 
    ClassDef(MAsymRunHists, 1)
 };
