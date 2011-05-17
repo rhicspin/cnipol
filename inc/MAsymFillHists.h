@@ -35,7 +35,7 @@ public:
    ~MAsymFillHists();
 
    void BookHists(std::string sid="");
-   void BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE);
+   void BookHistsPolarimeter(EPolarimeterId polId);
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(ChannelEvent *ch, std::string cutid="");
    //void Fill(Int_t n, Double_t* hData);
