@@ -269,6 +269,15 @@ void RunConst::Print(const Option_t* opt) const
 
 
 /** */
+Bool_t RunConst::IsSiliconChannel(UShort_t chId)
+{
+   if (chId >=1 && chId <= N_SILICON_CHANNELS) return kTRUE;
+
+   return kFALSE;
+}
+
+
+/** */
 TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 {
    if (!rec) return buf;

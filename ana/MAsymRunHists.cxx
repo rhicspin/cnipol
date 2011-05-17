@@ -13,6 +13,7 @@
 
 //#include "RunInfo.h"
 #include "MseRunInfo.h"
+#include "ChannelCalib.h"
 
 
 ClassImp(MAsymRunHists)
@@ -20,13 +21,13 @@ ClassImp(MAsymRunHists)
 using namespace std;
 
 /** Default constructor. */
-MAsymRunHists::MAsymRunHists() : DrawObjContainer(), fHTargetVsRun(), fVTargetVsRun()
+MAsymRunHists::MAsymRunHists() : DrawObjContainer(), fMinTime(0), fMaxTime(UINT_MAX), fHTargetVsRun(), fVTargetVsRun()
 {
    BookHists();
 }
 
 
-MAsymRunHists::MAsymRunHists(TDirectory *dir) : DrawObjContainer(dir), fHTargetVsRun(), fVTargetVsRun()
+MAsymRunHists::MAsymRunHists(TDirectory *dir) : DrawObjContainer(dir), fMinTime(0), fMaxTime(UINT_MAX), fHTargetVsRun(), fVTargetVsRun()
 {
    BookHists();
 }
@@ -148,6 +149,32 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetMarkerColor(color);
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsMeas, "p");
+
+   // Polarization vs time
+   TGraphErrors *grPolarVsTime = new TGraphErrors();
+   grPolarVsTime->SetName("grPolarVsTime");
+   grPolarVsTime->SetMarkerStyle(kFullCircle);
+   grPolarVsTime->SetMarkerSize(1);
+   grPolarVsTime->SetMarkerColor(color);
+
+   sprintf(hName, "hPolarVsTime_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   o[hName] = new TH2F(hName, hName, 1, fMinTime, fMaxTime, 1, 0, 100);
+   ((TH1*) o[hName])->SetTitle(";Date & Time;Polarization, %;");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsTime, "p");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "gmt");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
+   //((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%b %d, %H:%M:%S");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H:%M");
+
+   //sprintf(hName, "hPolarVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   //o[hName] = new TH1F(hName, hName, 600, 14900, 15500);
+   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 100);
+   //((TH1*) o[hName])->SetTitle(";Fill;Polarization, %;");
+   //((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
+   //((TH1*) o[hName])->SetMarkerSize(1);
+   //((TH1*) o[hName])->SetMarkerColor(color);
+   //((TH1*) o[hName])->SetOption("E1");
+   //((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsTime, "p");
 
    // Profile r
    TGraphErrors *grRVsMeas = new TGraphErrors();
@@ -276,7 +303,8 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    grBananaChi2Ndf->SetMarkerColor(color);
 
    sprintf(hName, "hBananaChi2Ndf_%s_%s", strPolId.c_str(), strBeamE.c_str());
-   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 5e4);
+   //o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 5e4);
+   o[hName] = new TH2F(hName, hName, 1, 14900, 15500, 1, 0, 1000);
    ((TH1*) o[hName])->SetTitle(";Measurement;#chi^{2}/ndf;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grBananaChi2Ndf, "p");
 
@@ -290,6 +318,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
+   time_t   runStartTime     = rc.fRunInfo->StartTime;
    Short_t  targetId         = rc.fMseRunInfoX->target_id;
    Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
    Float_t  ana_power        = rc.fAnaResult->A_N[1];
@@ -305,9 +334,15 @@ void MAsymRunHists::Fill(EventConfig &rc)
    Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
    Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
-   //
-   if (polId == 3 && dl < 45) cout << "XXX DL: " << dl << endl;
-   //
+   ChannelCalib *chCalib     = rc.fCalibrator->GetAverage();
+   //tzero    = chCalib->fT0Coef;
+   //tzeroErr = chCalib->fT0CoefErr;
+   //dl       = chCalib->fDLWidth;
+   //dlErr    = chCalib->fDLWidthErr;
+
+   //if (isnan(tzero) || isinf(tzero))
+   //   printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+   //tzeroErr         = chCalib->fT0CoefErr;
 
    if (gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end())
       return;
@@ -347,6 +382,13 @@ void MAsymRunHists::Fill(EventConfig &rc)
    graphErrs->SetPoint(nPoints, runId, polarization);
    graphErrs->SetPointError(nPoints, 0, polarizationErr);
 
+   // Polarization vs time
+   sprintf(hName, "hPolarVsTime_%s_%s", strPolId.c_str(), strBeamE.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsTime");
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runStartTime, polarization);
+   graphErrs->SetPointError(nPoints, 0, polarizationErr);
+
    // Profiles r
    sprintf(hName, "hRVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
 
@@ -382,7 +424,8 @@ void MAsymRunHists::Fill(EventConfig &rc)
    graphErrs->SetPointError(nPoints, 0, dlErr);
 
    // Banana fit params
-   Float_t bananaChi2Ndf = rc.fCalibrator->fChannelCalibs[0].fBananaChi2Ndf;
+   //Float_t bananaChi2Ndf = rc.fCalibrator->fChannelCalibs[0].fBananaChi2Ndf;
+   Float_t bananaChi2Ndf = chCalib->fBananaChi2Ndf;
 
    sprintf(hName, "hBananaChi2Ndf_%s_%s", strPolId.c_str(), strBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grBananaChi2Ndf");
@@ -470,6 +513,16 @@ void MAsymRunHists::PostFill()
          funcPolarVsFill->SetParameter(0, 50);
          ((TH1*) o[hName])->Fit("funcPolarVsFill");
          delete funcPolarVsFill;
+
+         // Polarization vs time
+         sprintf(hName, "hPolarVsTime_%s_%s", strPolId.c_str(), strBeamE.c_str());
+         graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsTime");
+
+         TF1 *funcPolarVsTime = new TF1("funcPolarVsTime", "[0] + [1]*x");
+         //funcPolarVsTime->SetParameter(0, 0);
+         funcPolarVsTime->SetParNames("offset", "slope");
+         graph->Fit("funcPolarVsTime");
+         delete funcPolarVsTime;
 
          // Profiles r
          // H target = vert profile
@@ -564,5 +617,22 @@ void MAsymRunHists::PostFill()
       funcRatioVsFill->SetParNames("const");
       ((TH1*) o["hPolarYellowRatioVsFill_" + strBeamE])->Fit("funcRatioVsFill", "R");
       delete funcRatioVsFill;
+   }
+}
+
+
+void MAsymRunHists::UpdateLimits()
+{
+   char hName[256];
+
+   for (IterPolarimeterId iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId) {
+      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
+         string strPolId = RunConfig::AsString(*iPolId);
+         string strBeamE = RunConfig::AsString(*iBE);
+
+         sprintf(hName, "hPolarVsTime_%s_%s", strPolId.c_str(), strBeamE.c_str());
+
+         ((TH1*) o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
+      }
    }
 }

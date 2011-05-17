@@ -1,10 +1,9 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-#define ASYM_VERSION "v1.4.0"
+#define ASYM_VERSION "v1.4.1"
 
 #define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
-//#define RHIC_MAX_FILL 120             // RHIC Maximum Fill Bunches
 #define RAMPTIME 350                  // duration of the ramp measurement (sec)
 #define MAXDELIM 410                  // maximum number of delimiter (dynamic motion only)
 #define SEC_PER_DELIM 1               // second per deliminter
@@ -14,6 +13,7 @@
 
 #define NSTRIP 72                     // Number of channels
 #define N_CHANNELS 72                 // Number of channels
+#define N_SILICON_CHANNELS 72         // Number of channels
 #define NSTRIP_PER_DETECTOR 12        // Number of channels per silicon detector
 #define NTGTWFD 4                     // Number of target WFD channels
 #define N_DETECTORS 6                 // Number of detectors

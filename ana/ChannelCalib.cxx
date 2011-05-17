@@ -74,3 +74,23 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
    fprintf(f, "'fBananaChi2Ndf' => %7.4f",  fBananaChi2Ndf);
    fprintf(f, ")");
 } //}}}
+
+
+/** */
+void ChannelCalib::ResetToZero()
+{
+   fACoef         = 0;
+   fACoefErr      = 0;
+   fAChi2Ndf      = 0;
+   fICoef         = 0;
+   fICoefErr      = 0;
+   fIChi2Ndf      = 0;
+   fDLWidth       = 0;
+   fDLWidthErr    = 0;
+   fT0Coef        = 0;
+   fT0CoefErr     = 0;
+   fAvrgEMiss     = 0;
+   fAvrgEMissErr  = 0;
+   fEMeasDLCorr   = 0;
+   fBananaChi2Ndf = 0;
+}

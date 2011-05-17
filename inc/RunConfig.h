@@ -21,6 +21,7 @@ enum ETargetOrient {kTARGET_H = 0, kTARGET_V = 1};
 enum EBeamEnergy {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kFLATTOP = 250};
 
 typedef std::set<EBeamEnergy>::iterator IterBeamEnergy;
+typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
 
 
 class RunConfig

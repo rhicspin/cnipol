@@ -825,13 +825,13 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    //float L  = ci->data.TOFLength;
    float L  = ci->data.TOFLength;
 
-   gRunConsts[0] = RunConst();
-   gRunConsts[0].Print();
+   //gRunConsts[0] = RunConst();
+   //gRunConsts[0].Print();
 
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
-      //if (gRunInfo->fDataFormatVersion == 40200 ) { // XXX should be like this
-      if (gRunInfo->fDataFormatVersion == 40200 && (gRunInfo->fPolId == 1 || gRunInfo->fPolId == 2) ) // downstream
+      if (gRunInfo->fDataFormatVersion == 40200 ) // XXX should be like this
+      //if (gRunInfo->fDataFormatVersion == 40200 && (gRunInfo->fPolId == 1 || gRunInfo->fPolId == 2) ) // downstream
       {
          L = ci->data.chan[i-1].TOFLength;
          //printf("LLL: %f\n", L);
@@ -840,9 +840,29 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
       gRunConsts[i] = RunConst(L, Ct);
 
-      //printf("Channel %-2d consts: \n", i);
-      //gRunConsts[i].Print();
+      printf("Channel %-2d consts: \n", i);
+      gRunConsts[i].Print();
    }
+
+	// Set values for 0th channel to the average ones
+   Float_t sumL      = 0;
+	UInt_t  nChannels = 0;
+
+   map<UShort_t, RunConst>::iterator irc = gRunConsts.begin();
+
+	++irc; // start with the 1st channel
+
+	for (; irc!=gRunConsts.end(); ++irc) {
+		if (RunConst::IsSiliconChannel(irc->first)) {
+	      sumL += irc->second.L;
+			nChannels++;
+	   }
+	}
+
+   float avrgL = nChannels > 0 ? sumL / nChannels : CARBON_PATH_DISTANCE;
+
+	gRunConsts[0] = RunConst(avrgL, Ct);
+   gRunConsts[0].Print();
 }
 
 
