@@ -218,7 +218,7 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
       //printf("prof check i: %d, %d, %d\n", hPtr, hdPtr, hdErrPtr);
       *hdPtr++ = (Double_t) *hPtr++;
       *hdErrPtr++ = (*(hPtr-1) != 0 ? 1./TMath::Sqrt(*(hPtr-1)) : 0.);
-      cout << "prof check i: " << *(hPtr-1) << ", " << *(hdPtr-1) << ", " << *(hdErrPtr-1) << endl;
+      //cout << "prof check i: " << *(hPtr-1) << ", " << *(hdPtr-1) << ", " << *(hdErrPtr-1) << endl;
       //i++;
       nEntries += *(hPtr-1);
    }
@@ -549,7 +549,7 @@ void CnipolProfileHists::Process()
    //Double_t x, xe, y, ye;
    Double_t x, y, ye;
 
-   printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
+   //printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
 
    for (int i=0; i<grIntensUniProfile->GetN(); i++) {
 
@@ -594,7 +594,7 @@ void CnipolProfileHists::Process()
       ibc_new = (w1*y + w2*ibc)/(w1 + w2);
       ibe_new = 1./TMath::Sqrt(w1 + w2);
 
-      printf("p: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
+      //printf("p: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
 
       hPolarUniProfileBin->SetBinContent(ib, ibc_new);
       hPolarUniProfileBin->SetBinError(ib, ibe_new);
@@ -620,7 +620,7 @@ void CnipolProfileHists::Process()
       ibc_new = (w1*y + w2*ibc)/(w1 + w2);
       ibe_new = 1./TMath::Sqrt(w1 + w2);
 
-      printf("pvi: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
+      //printf("pvi: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
 
       hPolarVsIntensProfileBin->SetBinContent(ib, ibc_new);
       hPolarVsIntensProfileBin->SetBinError(ib, ibe_new);
@@ -696,7 +696,7 @@ EMeasType CnipolProfileHists::MeasurementType()
    // about small intensity steps
    for (Int_t i=2; i<=hIntensProj->GetNbinsX(); i++) {
       //if (nTotal)
-      printf("proj: %f, %d\n", hIntensProj->GetBinContent(i), nSteps);
+      //printf("proj: %f, %d\n", hIntensProj->GetBinContent(i), nSteps);
       if (hIntensProj->GetBinContent(i) >= 0.5*nSteps)
          return kMEASTYPE_FIXED;
    }

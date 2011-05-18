@@ -17,14 +17,10 @@ using namespace std;
 const int   ASYM_DEFAULT = -999;
 const float MSIZE = 1.2;         // Marker size
 
-//TPolarimeters::TPolarimeters() : set<EPolarimeterId> {};
-
-
 int     gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
 int     gFillPattern[120]; // spin pattern 120 bunches (ADO info)
 int     ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
 int     wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
-float   wcmdist[120];  // wall current monitor 120 bunches (ADO info)
 
 long    Ncounts[6][120]; // counts 6detectors 120 bunches
 long    NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
@@ -60,6 +56,8 @@ int     gNDelimeters;
 int     TgtIndex[MAXDELIM];
 int     nTgtIndex = 0;
 
+StructReadFlag gReadFlag;
+
 StructMask mask = {
    0x3F          // detector mask 0x3F={11 1111} All detector active
 };
@@ -79,14 +77,6 @@ StructExtInput extinput = {
    0, // CONFIG
    0, // MASSCUT
    0  // TSHIFT
-};
-
-StructReadFlag ReadFlag = {
-   0, // RECBEGIN
-   0, // PCTARGET
-   0, // WCMADO
-   0, // READADO
-   0  // RHICCONF
 };
 
 StructFlag Flag = {

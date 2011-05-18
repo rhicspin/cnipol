@@ -539,7 +539,7 @@ void CalcStatistics()
    }
 
    // Misc
-   if (gRunInfo->WcmSum)         gAnaResult->wcm_norm_event_rate = gRunInfo->GoodEventRate/gRunInfo->WcmSum*100;
+   if (gRunInfo->fWallCurMonSum)         gAnaResult->wcm_norm_event_rate = gRunInfo->GoodEventRate/gRunInfo->fWallCurMonSum*100;
    if (gAnaInfo->reference_rate) gAnaResult->UniversalRate       = gAnaResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
    if (gRunInfo->Run == 5)       gAnaResult->profile_error       = gAnaResult->UniversalRate < 1 ? ProfileError(gAnaResult->UniversalRate) : 0;
 }
@@ -627,8 +627,8 @@ void PrintRunResults()
       printf(" Reconstructed Duration  [s]    = %10.1f\n", gRunInfo->MaxRevolution/RHIC_REVOLUTION_FREQ);
       printf(" Target Motion Counter          = %10ld\n",  cntr.tgtMotion);
    }
-   printf(" WCM Sum     [10^11 protons]    = %10.1f\n", gRunInfo->WcmSum/100);
-   printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo->WcmAve);
+   printf(" WCM Sum     [10^11 protons]    = %10.1f\n", gRunInfo->fWallCurMonSum/100);
+   printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo->fWallCurMonAve);
    printf(" WCM Average w/in range         = %10.1f\n", average.average);
    printf(" Specific Luminosity            = %10.2f%10.2f%10.4f\n", gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
    printf(" # of Filled Bunch              = %10d\n", gRunInfo->NFilledBunch);
@@ -857,48 +857,54 @@ float ProfileError(float x)
 }
 
 
+// Specific Luminosity
 // Description : Handle Specific Luminosity
 // Input       : Histograms 10033, 11033, 10034, 11034
 // Return      : float &mean, float &RMS, float &RMS_norm
 void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
 {
-   //-------------------------------------------------------
-   // Specific Luminosity
-   //-------------------------------------------------------
-   int bid;
    float SpeLumi_norm[NBUNCH], dSpeLumi_norm[NBUNCH];
  
    // initialization
    SpeLumi.max = SpeLumi.Cnts[0];
    SpeLumi.min = 9999999;
  
-   for (bid=0; bid<NBUNCH; bid++) {
-      SpeLumi.Cnts[bid] = wcmdist[bid] != 0 ? Ngood[bid]/wcmdist[bid] : 0 ;
+   for (int bid=0; bid<NBUNCH; bid++) {
+	   
+		if (gRunInfo->fWallCurMon.find(bid+1) != gRunInfo->fWallCurMon.end() )
+
+      SpeLumi.Cnts[bid] = gRunInfo->fWallCurMon[bid+1] != 0 ? Ngood[bid]/gRunInfo->fWallCurMon[bid+1] : 0;
+
       SpeLumi.dCnts[bid] = sqrt(double(Ngood[bid]));
-      specific_luminosity->Fill(bid,SpeLumi.Cnts[bid]);
+
+      ((TH1*) gAsymRoot->fHists->d["run"]->o["specific_luminosity"])->Fill(bid+1, SpeLumi.Cnts[bid]);
+
       if (gFillPattern[bid]) {
-         if (SpeLumi.max<SpeLumi.Cnts[bid])SpeLumi.max=SpeLumi.Cnts[bid];
-         if (SpeLumi.min>SpeLumi.Cnts[bid])SpeLumi.min=SpeLumi.Cnts[bid];
+         if (SpeLumi.max < SpeLumi.Cnts[bid]) SpeLumi.max = SpeLumi.Cnts[bid];
+         if (SpeLumi.min > SpeLumi.Cnts[bid]) SpeLumi.min = SpeLumi.Cnts[bid];
       }
    }
 
-   HHPAK(10033, SpeLumi.Cnts);    HHPAKE(11033, SpeLumi.dCnts);
+   HHPAK(10033, SpeLumi.Cnts);
+	HHPAKE(11033, SpeLumi.dCnts);
+
    SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,NBUNCH);
  
-   if (SpeLumi.ave){
-     for (bid=0; bid<NBUNCH; bid++) {
-       SpeLumi_norm[bid] = SpeLumi.Cnts[bid]/SpeLumi.ave;
-       dSpeLumi_norm[bid] = SpeLumi.dCnts[bid]/SpeLumi.ave;
-     }
+   if (SpeLumi.ave) {
+      for (int bid=0; bid<NBUNCH; bid++) {
+         SpeLumi_norm[bid]  = SpeLumi.Cnts[bid] / SpeLumi.ave;
+         dSpeLumi_norm[bid] = SpeLumi.dCnts[bid] / SpeLumi.ave;
+      }
    }
 
    HHPAK(10034, SpeLumi_norm);    HHPAKE(11034, dSpeLumi_norm);
  
    // Book and fill histograms
    char hcomment[256];
-   sprintf(hcomment,"Specific Luminosity");
-   HHBOOK1(10035, hcomment,100,SpeLumi.ave-SpeLumi.ave/2,SpeLumi.ave+SpeLumi.ave/2.);
-   for (bid=0;bid<120;bid++) HHF1(10035,SpeLumi.Cnts[bid],1);
+   sprintf(hcomment, "Specific Luminosity");
+   HHBOOK1(10035, hcomment, 100, SpeLumi.ave-SpeLumi.ave/2, SpeLumi.ave + SpeLumi.ave/2.);
+
+   for (int bid=0; bid < 120; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
  
    // Get variables
    char CHOICE[5]="HIST";

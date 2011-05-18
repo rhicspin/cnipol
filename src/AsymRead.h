@@ -57,5 +57,6 @@ void ProcessRecord(recordPolAdoStruct &rec);
 void ProcessRecord(recordWFDV8ArrayStruct &rec);
 void ProcessRecord(recordCountRate &rec);
 void ProcessRecordPCTarget(long* rec, MseRunInfoX &run);
+void ProcessRecord(recordWcmAdoStruct &rec);
 
 #endif

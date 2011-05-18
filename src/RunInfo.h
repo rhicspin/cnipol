@@ -52,8 +52,9 @@ public:
    float        GoodEventRate;
    float        EvntRate;
    float        ReadRate;
-   float        WcmAve;
-   float        WcmSum;
+	std::map<UShort_t, Float_t> fWallCurMon;
+   Float_t      fWallCurMonAve;
+   Float_t      fWallCurMonSum;
    Short_t      fPolId;
    UShort_t     fPolBeam;
    UShort_t     fPolStream;

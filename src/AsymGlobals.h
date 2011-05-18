@@ -60,7 +60,6 @@ extern int   gSpinPattern[N_BUNCHES]; // spin pattern 120 bunches
 extern int   gFillPattern[N_BUNCHES]; // fill pattern 120 bunches
 extern int   ActiveBunch[N_BUNCHES];
 extern int   wcmfillpat[N_BUNCHES];   // fill pattern within the Wall Current Monitor Average Ragne 
-extern float wcmdist[N_BUNCHES];      // wall current monitor 120 bunches
 
 extern long int Ncounts[N_DETECTORS][N_BUNCHES];          // counts per detector per bunch
 extern long int NTcounts[N_DETECTORS][N_BUNCHES][NTBIN];  // counts 6detectors 120 bunches 6 tranges
@@ -109,7 +108,7 @@ extern StructCounterTgt              cntr_tgt;
 extern std::map<UShort_t, RunConst>  gRunConsts;
 extern StructMask                    mask;
 extern StructFlag                    Flag;
-extern StructReadFlag                ReadFlag;
+extern StructReadFlag                gReadFlag;
 extern TargetInfo                    tgt;
 extern StructBunchPattern            phx, str;
 extern TRecordConfigRhicStruct      *gConfigInfo;
@@ -131,7 +130,6 @@ extern StructHist Eslope;
 extern TDirectory *Raw;
 extern TDirectory *FeedBack;
 extern TDirectory *Kinema;
-extern TDirectory *Bunch;
 extern TDirectory *ErrDet;
 extern TDirectory *Asymmetry;
 
@@ -160,11 +158,6 @@ extern TH1F  *mass_nocut_all;
 extern TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
 extern TH1F  *mass_yescut_all;
 extern TH1F  *mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
-
-// Bunch Distribution
-extern TH1F *bunch_dist;                  // counts per bunch
-extern TH1F *wall_current_monitor;        // wall current monitor
-extern TH1F *specific_luminosity;         // specific luminosity
 
 // ErrDet dir
 extern TH2F *mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 
