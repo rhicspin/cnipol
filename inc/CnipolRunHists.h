@@ -37,6 +37,7 @@ public:
    void  PostFill();
    void  Print(const Option_t* opt="") const;
    void  Fill(ChannelEvent *ch, std::string sid="");
+   void  Fill(RunInfo &ri);
 
    ClassDef(CnipolRunHists, 1)
 };

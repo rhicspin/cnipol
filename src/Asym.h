@@ -15,6 +15,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 #include "TH1.h"
 #include "TGraphErrors.h"
@@ -148,6 +150,8 @@ struct StructReadFlag {
   int WCMADO;
   int BEAMADO;
   int RHICCONF;
+
+  StructReadFlag() : RECBEGIN(0), PCTARGET(0), WCMADO(0), BEAMADO(0), RHICCONF(0) {}
 };
 
 struct StructFlag {
@@ -318,5 +322,24 @@ void  sqass(float A, float B, float C, float D, float *asym, float *easym);
 
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey);
 void  ReadRampTiming(char *filename);
+
+template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m)
+{
+   std::stringstream ssChs("");
+
+   ssChs << "array(";
+
+   typename std::map<Key, T>::const_iterator im;
+
+   for (im=m.begin(); im!=m.end(); ++im) {
+      ssChs << "'" << im->first << "' => '" << im->second << "'";
+      ssChs << (++im == m.end() ? "" : ", ");
+      --im;
+   }
+
+   ssChs << ")";
+
+   return ssChs.str();
+}
 
 #endif

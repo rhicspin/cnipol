@@ -5,6 +5,7 @@
 #include "TSystem.h"
 
 #include "AsymGlobals.h"
+#include "Asym.h"
 
 #include "AnaInfo.h"
 #include "MseRunInfo.h"
@@ -27,18 +28,17 @@ RunInfo::RunInfo() :
 	fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION),
    fMeasType(kMEASTYPE_UNKNOWN),
-   GoodEventRate(0),      // GoodEventRate;
-   EvntRate     (0),      // EvntRate;
-   ReadRate     (0),      // ReadRate;
-   WcmAve       (0),      // WcmAve;
-   WcmSum       (0),      // WcmSum;
-   fPolId       (-1),     // valid values 0 - 3
-   fPolBeam     (0),      // blue = 2 or yellow = 1
-   fPolStream   (0),      // up =1 or down =2 stream
-   PolarimetryID(1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution(0),      // MaxRevolution;
-   fTargetOrient('-'),
-   targetID     ('-'),
+   GoodEventRate (0),      // GoodEventRate;
+   EvntRate      (0),      // EvntRate;
+   ReadRate      (0),      // ReadRate;
+	fWallCurMon(), fWallCurMonAve(0), fWallCurMonSum(0),
+   fPolId        (-1),     // valid values 0 - 3
+   fPolBeam      (0),      // blue = 2 or yellow = 1
+   fPolStream    (0),      // up =1 or down =2 stream
+   PolarimetryID (1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
+   MaxRevolution (0),      // MaxRevolution;
+   fTargetOrient ('-'),
+   targetID      ('-'),
 	fProtoCutSlope(0), fProtoCutOffset(0)
 {
    strcpy(TgtOperation, "fixed");
@@ -143,8 +143,9 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> GoodEventRate;
       buf >> EvntRate;
       buf >> ReadRate;
-      buf >> WcmAve;
-      buf >> WcmSum;
+      //buf >> fWallCurMon;
+      buf >> fWallCurMonAve;
+      buf >> fWallCurMonSum;
       buf >> fBeamEnergy;
       buf >> fPolId;
       buf >> fPolBeam;
@@ -181,8 +182,9 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << GoodEventRate;
       buf << EvntRate;
       buf << ReadRate;
-      buf << WcmAve;
-      buf << WcmSum;
+      //buf << fWallCurMon;
+      buf << fWallCurMonAve;
+      buf << fWallCurMonSum;
       buf << fBeamEnergy;
       buf << fPolId;
       buf << fPolBeam;
@@ -230,8 +232,9 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
-   fprintf(f, "$rc['WcmAve']                       = %f;\n",     WcmAve       );
-   fprintf(f, "$rc['WcmSum']                       = %f;\n",     WcmSum       );
+   fprintf(f, "$rc['fWallCurMon']                  = %s;\n",     MapAsPhpArray<UShort_t, Float_t>(fWallCurMon).c_str() );
+   fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
+   fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );

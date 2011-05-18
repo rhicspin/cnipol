@@ -43,7 +43,6 @@ using namespace std;
 // ROOT Histograms
 TDirectory *FeedBack;
 TDirectory *Kinema;
-TDirectory *Bunch;
 TDirectory *ErrDet;
 TDirectory *Asymmetry;
 
@@ -66,11 +65,6 @@ TH1F  *mass_nocut_all;              // invariant mass without banana cut
 TH1F  *mass_nocut[TOT_WFD_CH];      // invariant mass without banana cut
 TH1F  *mass_yescut_all;
 TH1F  *mass_yescut[TOT_WFD_CH];     // invariant mass with banana cut
-
-// Bunch Distribution
-TH1F  *bunch_dist;                  // counts per bunch
-TH1F  *wall_current_monitor;        // wall current monitor
-TH1F  *specific_luminosity;         // specific luminosity
 
 // ErrDet Direcotry
 TH2F  *mass_chi2_vs_strip;          // Chi2 of Gaussian Fit on Mass peak
@@ -148,7 +142,7 @@ void AsymRoot::CreateRootFile(string filename)
    // directory structure
    FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
    Kinema    = new TDirectoryFile("Kinema", "Kinema", "", fOutRootFile);   //fOutRootFile->mkdir("Kinema");
-   Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
+   //Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
    ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", fOutRootFile);   //fOutRootFile->mkdir("ErrDet");
    Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", fOutRootFile);   //fOutRootFile->mkdir("Asymmetry");
 
@@ -444,6 +438,13 @@ void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
 void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 {
    ((CnipolProfileHists*) fHists->d["profile"])->Fill(n, hData);
+}
+
+
+/** */
+void AsymRoot::FillRunHists()
+{
+   ((CnipolRunHists*) fHists->d["run"])->Fill(*gRunInfo);
 }
 
 
@@ -813,25 +814,6 @@ void AsymRoot::BookHists()
       mass_yescut[i] -> SetLineColor(2);
    }
  
-   // Bunch Directory
-   Bunch->cd();
-   sprintf(htitle,"%.3f : Counts per Bunch ", gRunInfo->RUNID);
-   bunch_dist = new TH1F("bunch_dist", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
-   bunch_dist -> GetXaxis() -> SetTitle("Bunch ID");
-   bunch_dist -> GetYaxis() -> SetTitle("Counts");
-   bunch_dist -> SetFillColor(13);
- 
-   sprintf(htitle,"%.3f : Wall Current Monitor", gRunInfo->RUNID);
-   wall_current_monitor = new TH1F("wall_current_monitor", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
-   wall_current_monitor -> GetXaxis() -> SetTitle("Bunch ID");
-   wall_current_monitor -> GetYaxis() -> SetTitle("x10^9 protons");
-   wall_current_monitor -> SetFillColor(13);
- 
-   sprintf(htitle,"%.3f : Specific Luminosity", gRunInfo->RUNID);
-   specific_luminosity = new TH1F("specific_luminosity", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5);
-   specific_luminosity -> GetXaxis() -> SetTitle("Bunch ID");
-   specific_luminosity -> GetYaxis() -> SetTitle("x10^9 protons");
-   specific_luminosity -> SetFillColor(13);
  
    // Error detectors
    ErrDet->cd();

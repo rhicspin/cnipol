@@ -306,7 +306,6 @@ void readloop(MseRunInfoX &run)
    beamDataStruct           beamdat;
    targetDataStruct         tgtdat1;
    targetDataStruct         tgtdat2;
-   wcmDataStruct            wcmdat;
 
    processEvent             event;
    AsymRecover              recover;
@@ -372,7 +371,7 @@ void readloop(MseRunInfoX &run)
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
-         if (ReadFlag.RECBEGIN) break; // ??? should encounter only once in each file
+         if (gReadFlag.RECBEGIN) break; // ??? should encounter only once in each file
 
          cout << "Data stream version: " << rec.begin.version << endl;
          cout << "Comment: "             << rec.begin.comment << endl;
@@ -391,7 +390,7 @@ void readloop(MseRunInfoX &run)
          // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
          PrepareCollidingBunchPattern();
 
-         ReadFlag.RECBEGIN = 1;
+         gReadFlag.RECBEGIN = 1;
          
          break;
 
@@ -408,7 +407,7 @@ void readloop(MseRunInfoX &run)
       case REC_PCTARGET:
 			// Do not process this record for calibration runs. May contain
 			// invalid ndelim info
-         if (!ReadFlag.PCTARGET && !gAnaInfo->HasAlphaBit()) {
+         if (!gReadFlag.PCTARGET && !gAnaInfo->HasAlphaBit()) {
 
             printf("Reading REC_PCTARGET record...\n");
 
@@ -417,7 +416,7 @@ void readloop(MseRunInfoX &run)
 
             if (gAnaInfo->HasTargetBit()) { ProcessRecordPCTarget(pointer, run); }
 
-            ReadFlag.PCTARGET = 1;
+            gReadFlag.PCTARGET = 1;
          }
 
          break;
@@ -436,32 +435,24 @@ void readloop(MseRunInfoX &run)
          //}
 
          if (gAnaInfo->HasProfileBit()) 
-            ProcessRecord(rec.countRate);
+            ProcessRecord( (recordCountRate &) rec.countRate);
+
          break;
 
       case REC_WCMADO:
+         if (gReadFlag.WCMADO) break; // Read record only once
 
-         if (!ReadFlag.WCMADO) {
+         printf("Reading REC_WCMADO record... size = %d\n", recSize);
 
-            printf("Reading WCM information\n");
-            memcpy(&wcmdat, &rec.wcmado.data,sizeof(wcmdat));
+         ProcessRecord( (recordWcmAdoStruct &) rec.wcmado);
 
-            for (int bid=0; bid<NBUNCH; bid++) {
-               wcmdist[bid] = wcmdat.fillDataM[bid*3];
-               gRunInfo->WcmSum += wcmdist[bid] * gFillPattern[bid];
-            }
-
-            gRunInfo->WcmAve = gRunInfo->WcmSum/float(gRunInfo->NActiveBunch);
-            ReadFlag.WCMADO = 1;
-         }
-
-         gRunInfo->StopTime = rec.header.timestamp.time;
+         gReadFlag.WCMADO = 1;
 
          break;
 
       case REC_BEAMADO:
 
-         if (!ReadFlag.BEAMADO) {
+         if (!gReadFlag.BEAMADO) {
 
             fprintf(stdout,"Reading Beam Information\n");
             memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
@@ -536,7 +527,7 @@ void readloop(MseRunInfoX &run)
 
             cout << endl;
             gRunInfo->NActiveBunch = gRunInfo->NFilledBunch - gRunInfo->NDisableBunch;
-            ReadFlag.BEAMADO = 1;
+            gReadFlag.BEAMADO = 1;
          }
 
          gRunInfo->StopTime = rec.header.timestamp.time;
@@ -718,7 +709,7 @@ void readloop(MseRunInfoX &run)
 
       case REC_RHIC_CONF:
 
-         if (!ReadFlag.RHICCONF) {
+         if (!gReadFlag.RHICCONF) {
 
             fprintf(stdout, "Reading REC_RHIC_CONF record from file...\n");
 
@@ -740,7 +731,7 @@ void readloop(MseRunInfoX &run)
 
             if (gAnaInfo->MESSAGE == 1) exit(0);
 
-            ReadFlag.RHICCONF = 1;
+            gReadFlag.RHICCONF = 1;
          }
 
          gRunInfo->StopTime = rec.header.timestamp.time;
@@ -841,7 +832,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
       gRunConsts[i] = RunConst(L, Ct);
 
       printf("Channel %-2d consts: \n", i);
-      gRunConsts[i].Print();
+      //gRunConsts[i].Print();
    }
 
 	// Set values for 0th channel to the average ones
@@ -862,7 +853,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    float avrgL = nChannels > 0 ? sumL / nChannels : CARBON_PATH_DISTANCE;
 
 	gRunConsts[0] = RunConst(avrgL, Ct);
-   gRunConsts[0].Print();
+   //gRunConsts[0].Print();
 }
 
 
@@ -1052,7 +1043,7 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
 
 /** */
 void ProcessRecord(recordCountRate &rec)
-{
+{ //{{{
    UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    Long_t *pointer = (Long_t *) rec.data;
    //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
@@ -1065,7 +1056,7 @@ void ProcessRecord(recordCountRate &rec)
 
    gAsymRoot->FillProfileHists(size, pointer);
    //gAsymRoot->ProcessProfileHists();
-}
+} //}}}
 
 
 /** */
@@ -1075,7 +1066,7 @@ void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
 
    //--rec;
    //UShort_t i = 0;
-
+  
    // copy data to a linear array
    Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
@@ -1195,4 +1186,27 @@ void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
 
    // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
    if (tgt.VHtarget) mask.detector = 0x2D;
+} //}}}
+
+
+/** */
+void ProcessRecord(recordWcmAdoStruct &rec)
+{ //{{{
+
+   for (int bid=1; bid<=N_BUNCHES; bid++) {
+	   
+		float data = rec.data.fillDataM[(bid-1)*3];
+
+		// save non-zero bunches only
+      if (!data) continue;
+
+      gRunInfo->fWallCurMon[bid] = data;
+      //gRunInfo->fWallCurMonSum += gRunInfo->fWallCurMon[bid] * gFillPattern[bid];
+      gRunInfo->fWallCurMonSum += gRunInfo->fWallCurMon[bid];
+   }
+
+   //gRunInfo->fWallCurMonAve = gRunInfo->fWallCurMonSum/float(gRunInfo->NActiveBunch);
+   gRunInfo->fWallCurMonAve = gRunInfo->fWallCurMonSum / gRunInfo->fWallCurMon.size();
+
+   gAsymRoot->FillRunHists();
 } //}}}

@@ -168,11 +168,11 @@ void event_process(processEvent *event)
       average.counter = 0;
 
       for (int j=0; j<NBUNCH; j++) {
-         wall_current_monitor->Fill(j, wcmdist[j]);
-         HHF1(10030, (float) j, (float) wcmdist[j]);
+         wall_current_monitor->Fill(j, gRunInfo->fWallCurMon[j+1]);
+         HHF1(10030, (float) j, (float) gRunInfo->fWallCurMon[j+1]);
 
-         if ( (fabs(gRunInfo->WcmAve-wcmdist[j])/gRunInfo->WcmAve < gAnaInfo->WCMRANGE) && gFillPattern[j]) {
-            average.total+=wcmdist[j];
+         if ( (fabs(gRunInfo->fWallCurMonAve-gRunInfo->fWallCurMon[j+1])/gRunInfo->fWallCurMonAve < gAnaInfo->WCMRANGE) && gFillPattern[j]) {
+            average.total+=gRunInfo->fWallCurMon[j+1];
             wcmfillpat[j]=1;
             ++average.counter;
          }
@@ -292,7 +292,7 @@ void event_process(processEvent *event)
 
    // bunch distribution
    //HHF1(10000, (float)event->bid, 1.);
-   bunch_dist->Fill(event->bid);
+   //gAsymRoot->bunch_dist->Fill(event->bid);
 
    // Integral
    float Integ = (event->intg) << (2+gConfigInfo->data.CSR.split.iDiv);

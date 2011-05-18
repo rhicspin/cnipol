@@ -41,9 +41,6 @@ void CnipolRunHists::BookHists(string sid)
    //DrawObjContainer *feedback = new DrawObjContainer(dir);
 
    //DrawObjContainer *kinema;
-
-   DrawObjContainer *bunch = new DrawObjContainer(Bunch);
-
    //DrawObjContainer *errdet;
 
    //Asymmetry->SetMother(fDir);
@@ -107,10 +104,21 @@ void CnipolRunHists::BookHists(string sid)
    //TF1  * banana_cut_h[NSTRIP][2];     // banana cut high
    //TLine  * energy_cut_l[NSTRIP];      // energy cut low
    //TLine  * energy_cut_h[NSTRIP];      // energy cut high
+ 
+   sprintf(hName, "wall_current_monitor");
+   o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
+   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^{9} protons;");
+   ((TH1*) o[hName])->SetFillColor(13);
 
-   bunch->o["bunch_dist"]                = bunch_dist;
-   bunch->o["wall_current_monitor"]      = wall_current_monitor;
-   bunch->o["specific_luminosity"]       = specific_luminosity;
+   sprintf(hName, "bunch_dist");
+   o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
+   ((TH1*) o[hName])->SetTitle(";Bunch ID;Counts;");
+   ((TH1*) o[hName])->SetFillColor(13);
+ 
+   sprintf(hName, "specific_luminosity");
+   o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
+   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^9 protons;");
+   ((TH1*) o[hName])->SetFillColor(13);
 
    //errdet->o["mass_chi2_vs_strip"]       = new TH2F();    // Chi2 of Gaussian Fit on Mass peak
    //errdet->o["mass_sigma_vs_strip"]      = new TH2F();    // Mass sigma width vs. strip
@@ -141,7 +149,6 @@ void CnipolRunHists::BookHists(string sid)
 
    //d["FeedBack"]  = feedback;
    //d["Kinema2"]   = kinema;
-   d["Bunch"]     = bunch;
    //d["ErrDet"]    = errdet;
    d["Asymmetry"] = asymmetry;
 
@@ -185,3 +192,15 @@ void CnipolRunHists::Print(const Option_t* opt) const
    //printf("CnipolHists:\n");
    DrawObjContainer::Print();
 } //}}}
+
+
+/** */
+void CnipolRunHists::Fill(RunInfo &ri)
+{
+   map<UShort_t, Float_t>::iterator ib;
+
+   for (ib=ri.fWallCurMon.begin(); ib!=ri.fWallCurMon.end(); ++ib) {
+
+      ((TH1*) o["wall_current_monitor"])->SetBinContent(ib->first, ib->second);
+   }
+}
