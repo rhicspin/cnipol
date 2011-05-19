@@ -22,6 +22,8 @@ class MAsymRunHists : public DrawObjContainer
 {
 public:
 
+   UInt_t fMinFill;
+   UInt_t fMaxFill;
    time_t fMinTime;
    time_t fMaxTime;
 

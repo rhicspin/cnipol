@@ -3,6 +3,7 @@
 
 using namespace std;
 
+
 /** */
 RunConfig::RunConfig() : fPolarimeters(), fMeasTypes()
 {
