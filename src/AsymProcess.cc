@@ -259,7 +259,8 @@ void event_process(processEvent *event)
 
       //   if (fabs(gFillPattern[event.bid]) != 1)
 
-      if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       {
 	      gAsymRoot->fHists->Fill(ch, "_cut1");
 

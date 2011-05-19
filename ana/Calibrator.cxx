@@ -103,7 +103,7 @@ void Calibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *&hMeanTime, UShort_t chId, Bool_t wideLimits)
+TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 {
    return 0;
 }

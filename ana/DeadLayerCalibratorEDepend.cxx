@@ -211,7 +211,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, UShort_t chId, Bool_t wideLimits)
+TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
    Double_t xmin = h->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
@@ -221,16 +221,17 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
    Double_t ymin = h->GetYaxis()->GetXmin();
    Double_t ymax = h->GetYaxis()->GetXmax();
 
-   TObjArray fitResHists;
+   TObjArray *fitResHists = new TObjArray();
 
    TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
 
    if (wideLimits) { // This is for the fast calibration
       //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
-      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", &fitResHists);
+      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResHists);
       //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
    } else { // In case of the regular channel calibration
-      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
+      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
+      ((TH2F*) h)->FitSlicesY(0, 0, -1, 0, "QNR", fitResHists);
    }
 
    delete gausFitFunc;
@@ -238,7 +239,7 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
    //hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
    //hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX(), ((TH1D*) fitResHists[1])->GetArray());
    // Copy 
-   TH1* hmeans  = (TH1D*) fitResHists[1];
+   TH1* hmeans  = (TH1D*) fitResHists->At(1);
    //TH1* hsigmas = (TH1D*) fitResHists[2];
 
    for (Int_t ib=1; ib<=hmeans->GetNbinsX(); ++ib) {
@@ -249,6 +250,8 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *&hMeanTime, US
       hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
       hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
    }
+
+   delete fitResHists;
 
    //Double_t *errors = ((TH1D*) fitResHists[1])->GetSumw2()->GetArray();
 

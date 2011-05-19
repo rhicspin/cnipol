@@ -33,8 +33,8 @@ void initialize()
 
    gH = new DrawObjContainer(gMAsymRoot);
 
-   //gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
-   //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
+   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
 
    struct tm tm;
@@ -48,11 +48,13 @@ void initialize()
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
    //TString filelist = filelistPath + "runs11_rampupdown.dat";
-   //TString filelist = filelistPath + "runs_all.dat";
+   TString filelist = filelistPath + "runs_all.dat";
    //TString filelist = filelistPath + "runs_tmp2.dat";
    //TString filelist = filelistPath + "runs11_15393.dat";
    //TString filelist = filelistPath + "runs11_15397.dat";
-   TString filelist = filelistPath + "runs11_15399.dat";
+   //TString filelist = filelistPath + "runs11_15399.dat";
+   //TString filelist = filelistPath + "run09_all_tmp.dat";
+   //TString filelist = filelistPath + "run09_all_.dat";
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -111,6 +113,7 @@ void initialize()
    // Loop over the runs and record the time of the last flattop measurement in the fill
    while (next && (o = (*next)()) )
    {
+      //TString fileName = "/data1/run09/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
       TString fileName = "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
 
       TFile *f = new TFile(fileName, "READ");
@@ -166,6 +169,7 @@ void initialize()
 
    while (next && (o = (*next)()) )
    {
+      //TString fileName = "/data1/run09/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
       TString fileName = "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
 
       TFile *f = new TFile(fileName, "READ");
@@ -297,8 +301,8 @@ void initialize()
 
    gH->SetSignature(gRC->GetSignature());
 
-   TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas);
+   //TCanvas canvas("cName2", "cName2", 1400, 600);
+   //gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();

@@ -251,7 +251,7 @@ void RawDataProcessor::ReadDataFast()
 
             if ( !gAsymRoot->fChannelEvent->PassCutNoise() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutPulser() ) continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutPulser() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutDetectorChannel() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
 
@@ -832,7 +832,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
       gRunConsts[i] = RunConst(L, Ct);
 
       printf("Channel %-2d consts: \n", i);
-      //gRunConsts[i].Print();
+      gRunConsts[i].Print();
    }
 
 	// Set values for 0th channel to the average ones
@@ -853,7 +853,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    float avrgL = nChannels > 0 ? sumL / nChannels : CARBON_PATH_DISTANCE;
 
 	gRunConsts[0] = RunConst(avrgL, Ct);
-   //gRunConsts[0].Print();
+   gRunConsts[0].Print();
 }
 
 
