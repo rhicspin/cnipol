@@ -46,23 +46,20 @@ void CnipolHists::BookHists(string sid)
    //sprintf(formula, "(%f/sqrt(x+130))-23", RunConst::E2T);
 
    sprintf(hName, "hTvsA%s", sid.c_str());
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("TDC");
+   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
    sprintf(hName, "hTvsI%s", sid.c_str());
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Integral, ADC");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("TDC");
+   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
    //sprintf(fname, "banana_nominal%s", sid.c_str());
    //TF1 *banana_cut_l = new TF1(fname, formula, 0, 1500);
@@ -72,69 +69,65 @@ void CnipolHists::BookHists(string sid)
    sprintf(hName, "hTofVsKinEnergyA%s", sid.c_str());
    //o[hName] = new TH2F(hName, hName, 255, 0, 1785, 100, 20, 120);
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 100);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("ToF, ns");
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
    // Kinematic Energy
    sprintf(hName, "hKinEnergyA_o%s", sid.c_str());
    o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
-   ((TH1F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
+   ((TH1F*) o[hName])->SetTitle(";Kinematic Energy, keV;;");
 
    // Spin vs Strip Id
    sprintf(hName, "hSpinVsChannel%s", sid.c_str());
    o[hName] = new TH2I(hName, hName, N_CHANNELS, 1, N_CHANNELS+1, NUM_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[hName])->SetOption("colz");
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Channel Id");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Spin State");
+   ((TH1*) o[hName])->SetTitle(";Channel Id;Spin State;");
 
    // Spin vs Bunch Id
    sprintf(hName, "hSpinVsBunch%s", sid.c_str());
    o[hName] = new TH2I(hName, hName, NBUNCH, 0, NBUNCH, NUM_SPIN_STATES, -1.5, 1.5);
-   ((TH1*) o[hName])->SetOption("colz");
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Bunch Id");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Spin State");
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Bunch Id;Spin State;");
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsFunnyEnergyA%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 100);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Funny Energy, keV");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
+   ((TH2F*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH2F*) o[hName])->SetTitle(";Funny Energy, keV;Time, ns;");
 
    //sprintf(fname, "banana_nominal_funny%s", sid.c_str());
    //banana_cut_l = new TF1(fname, formula, 0, 1500);
    //((TH1D*) o[hName])->GetListOfFunctions()->Add(banana_cut_l);
 
-   sprintf(hName, "hFitMeanTimeVsEnergyA%s", sid.c_str());
-   o[hName] = new TH1D(hName, hName, 100, 0, 2500);
-   //((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH1D*) o[hName])->GetYaxis()->SetRangeUser(0, 120);
-   ((TH1D*) o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-   ((TH1D*) o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
+   //sprintf(hName, "hFitMeanTimeVsEnergyA%s", sid.c_str());
+   //o[hName] = new TH1D(hName, hName, 100, 0, 2500);
+   //((TH1*) o[hName])->SetOption("NOIMG");
+   //((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 120);
 
    sprintf(hName, "hDLVsEnergyA%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
-   ((TH2F*) o[hName])->SetOption("colz");
-   //((TH2F*) o[hName])->GetYaxis()->SetRangeUser(0, 20000);
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
 
    sprintf(hName, "hDLVsTotalEnergy%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
-   ((TH2F*) o[hName])->SetOption("colz");
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
 
    sprintf(hName, "hDLVsTime%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 100, 100, 0, 400);
-   ((TH2F*) o[hName])->SetOption("colz");
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
 
    sprintf(hName, "hTotalEnergyVsEnergyA%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 2000);
-   ((TH2F*) o[hName])->SetOption("colz");
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
 
    sprintf(hName, "hTof%s", sid.c_str());
    o[hName] = new TH1D(hName, hName, 100, 0, 100);
+   ((TH1*) o[hName])->SetOption("NOIMG");
 
    sprintf(hName, "hPseudoMass%s", sid.c_str());
    o[hName] = new TH1D(hName, hName, 100, 0, 20);
+   ((TH1*) o[hName])->SetOption("NOIMG");
 
    char dName[256];
    //string sSi("  ");
@@ -142,7 +135,7 @@ void CnipolHists::BookHists(string sid)
    DrawObjContainerMapIter  isubdir;
 
    //for (int i=0; i<TOT_WFD_CH; i++)
-   for (int i=1; i<=N_CHANNELS; i++) {
+   for (int i=1; i<=N_SILICON_CHANNELS; i++) {
 
       sprintf(dName, "channel%02d", i);
 
@@ -156,17 +149,15 @@ void CnipolHists::BookHists(string sid)
       }
 
       sprintf(hName, "hTvsA%s_st%02d", sid.c_str(), i);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
       sprintf(hName, "hTvsI%s_st%02d", sid.c_str(), i);
       //sprintf(hName, "hTvsI", i+1);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
       //sprintf(fname, "banana_nominal%s_st%02d", sid.c_str(), i);
       //banana_cut_l = new TF1(fname, formula, 0, 1500);
@@ -174,48 +165,47 @@ void CnipolHists::BookHists(string sid)
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Time, ns");
-      //((TH2F*) oc->o[hName])->GetListOfFunctions()->Add(banana_cut_l);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+      //((TH1*) oc->o[hName])->GetListOfFunctions()->Add(banana_cut_l);
 
       // TOF vs Kinematic Energy
       sprintf(hName, "hTofVsKinEnergyA%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 100);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("ToF, ns");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) oc->o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
       sprintf(hName, "hFitMeanTimeVsEnergyA%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH1D(hName, hName, 100, 0, 2500);
       //((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH1D*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
-      ((TH1D*) oc->o[hName])->GetXaxis()->SetTitle("Deposited Energy, keV");
-      ((TH1D*) oc->o[hName])->GetYaxis()->SetTitle("Mean Time, ns");
+      ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+      ((TH1*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
 
       sprintf(hName, "hDLVsEnergyA%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
-      ((TH2F*) oc->o[hName])->SetOption("colz");
+      ((TH1*) oc->o[hName])->SetOption("colz NOIMG");
       //((TH2F*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 20000);
 
       sprintf(hName, "hDLVsTotalEnergy%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
-      ((TH2F*) oc->o[hName])->SetOption("colz");
+      ((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
       sprintf(hName, "hDLVsTime%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 100, 100, 0, 400);
-      ((TH2F*) oc->o[hName])->SetOption("colz");
+      ((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
       sprintf(hName, "hTotalEnergyVsEnergyA%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 2000);
-      ((TH2F*) oc->o[hName])->SetOption("colz");
+      ((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
       sprintf(hName, "hPseudoMass%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH1D(hName, hName, 100, 0, 20);
+      ((TH1*) oc->o[hName])->SetOption("NOIMG");
 
       // Delim (time) vs Spin vs Channel Id
       sprintf(hName, "hSpinVsDelim%s_st%02d", sid.c_str(), i);
       oc->o[hName] = new TH2I(hName, hName, 1, 0, 1, NUM_SPIN_STATES, -1.5, 1.5);
+      ((TH1*) oc->o[hName])->SetOption("NOIMG");
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -308,49 +298,45 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //sprintf(&sDetId[0], "%1d", detId);
    //char hName[256];
    
-   if (sid == "_cut2") { // fill these if only pass the carbon mass cut
-      //((TH1F*) d["Kinema2"]->o["energy_spectrum_all"])->Fill( fabs(ch->GetMandelstamT()) );
-      //sprintf(hName,"energy_spectrum_det%d", detId);
-      //((TH1F*) d["Kinema2"]->o[hName])->Fill( fabs(ch->GetMandelstamT()) );
-   }
+   //if (sid == "_cut2") { // fill these if only pass the carbon mass cut
+   //   //((TH1F*) d["Kinema2"]->o["energy_spectrum_all"])->Fill( fabs(ch->GetMandelstamT()) );
+   //   //sprintf(hName,"energy_spectrum_det%d", detId);
+   //   //((TH1F*) d["Kinema2"]->o[hName])->Fill( fabs(ch->GetMandelstamT()) );
+   //}
 
    // by channel id
-   string sSi("  ");
-   sprintf(&sSi[0], "%02d", chId);
+   string sChId("  ");
+   sprintf(&sChId[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel"+sSi];
-   //sd = d["channel"+sSi];
+   DrawObjContainer *sd = d["channel"+sChId];
 
-   //((TH2F*) sd.o["hTvsA"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
-   //((TH2F*)    o["hTvsA"+sid])                           ->Fill(ch->fChannel.fAmpltd, ch->fChannel.fTdc);
-   //((TH2F*) sd.o["hTvsI"+sid+"_st"+sSi])                 ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
-   ////((TH2F*)    o["hTvsI"+sid])                           ->Fill(ch->fChannel.fIntgrl, ch->fChannel.fTdc);
-   ((TH2F*) sd->o["hTimeVsEnergyA"+sid+"_st"+sSi])        ->Fill(ch->GetEnergyA(), ch->GetTime());
-   //((TH2F*)    o["hTimeVsEnergyA"+sid])                  ->Fill(ch->GetEnergyA(), ch->GetTime());
+   ((TH1*) sd->o["hTvsA"+sid+"_st"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) sd->o["hTvsI"+sid+"_st"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   ((TH1*) sd->o["hTimeVsEnergyA"+sid+"_st"+sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
 
-   //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sSi])      ->Fill(ch->GetKinEnergyAEstimate(), tof);
-   //((TH2F*)    o["hTofVsKinEnergyA"+sid])                ->Fill(ch->GetKinEnergyAEstimate(), tof);
-   //((TH1F*)    o["hKinEnergyA_o"+sid])                   ->Fill(ch->GetKinEnergyAEstimate());
+   //((TH1*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sChId])      ->Fill(ch->GetKinEnergyAEstimate(), tof);
+   //((TH1*)    o["hTofVsKinEnergyA"+sid])                ->Fill(ch->GetKinEnergyAEstimate(), tof);
+   //((TH1*)    o["hKinEnergyA_o"+sid])                   ->Fill(ch->GetKinEnergyAEstimate());
 
    // Full kinematic carbon energy
    //Float_t energyEst = ch->GetKinEnergyAEstimate();          // from all channel fit
    //Float_t energy    = ch->GetKinEnergyA();
 
    Float_t energyEst = ch->GetKinEnergyAEstimateEDepend(); // from all channel fit
-   Float_t energy    = ch->GetKinEnergyAEDepend();
+   //Float_t energy    = ch->GetKinEnergyAEDepend();
 
    Float_t tofEst    = ch->GetTimeOfFlightEstimate();
    //Float_t tof       = ch->GetTimeOfFlight();
 
-   //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sSi])      ->Fill(energy, tof);
-   //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sSi])      ->Fill(energyEst, tof);
+   //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sChId])      ->Fill(energy, tof);
+   //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sChId])      ->Fill(energyEst, tof);
    //((TH2F*)    o["hTofVsKinEnergyA"+sid])                ->Fill(energyEst, tofEst);
    ((TH1F*)    o["hKinEnergyA_o"+sid])                   ->Fill(energyEst);
    
    UChar_t bId = ch->GetBunchId();
 
-   ((TH1*)     o["hSpinVsChannel"+sid])                  ->Fill(ch->GetChannelId(), gSpinPattern[bId]);
-   //((TH1*)     o["hSpinVsBunch"+sid])                    ->Fill(bId, gSpinPattern[bId]);
+   ((TH1*) o["hSpinVsChannel"+sid]) -> Fill(ch->GetChannelId(), gSpinPattern[bId]);
+   //((TH1*) o["hSpinVsBunch"+sid]) -> Fill(bId, gSpinPattern[bId]);
 
    //ds XXX
    UShort_t tstep = 0;
@@ -378,30 +364,30 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
 
    
    UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
-   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
-   ((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ttime, gSpinPattern[bId]);
+   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sChId])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
+   ((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sChId])->Fill(ttime, gSpinPattern[bId]);
 
    //ds: XXX
    return;
 
-   //((TH2F*)    o["hTimeVsFunnyEnergyA"+sid])             ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
+   ////((TH2F*)    o["hTimeVsFunnyEnergyA"+sid])             ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
 
-   ((TH2F*) sd->o["hDLVsEnergyA"+sid+"_st"+sSi])          ->Fill(ch->GetEnergyA(), energy - ch->GetEnergyA());
-   //((TH2F*)    o["hDLVsEnergyA"+sid])                    ->Fill(ch->GetEnergyA(), energyEst - ch->GetEnergyA());
-   ((TH2F*) sd->o["hDLVsTotalEnergy"+sid+"_st"+sSi])      ->Fill(energy, energy - ch->GetEnergyA());
-   //((TH2F*)    o["hDLVsTotalEnergy"+sid])                ->Fill(energyEst, energyEst - ch->GetEnergyA());
-   ((TH2F*) sd->o["hDLVsTime"+sid+"_st"+sSi])             ->Fill(ch->GetTime(), energy - ch->GetEnergyA());
-   //((TH2F*)    o["hDLVsTime"+sid])                       ->Fill(ch->GetTime(), energyEst - ch->GetEnergyA());
-   ((TH2F*) sd->o["hTotalEnergyVsEnergyA"+sid+"_st"+sSi]) ->Fill(ch->GetEnergyA(), energy);
-   //((TH2F*)    o["hTotalEnergyVsEnergyA"+sid])           ->Fill(ch->GetEnergyA(), energyEst);
+   //((TH2F*) sd->o["hDLVsEnergyA"+sid+"_st"+sChId])          ->Fill(ch->GetEnergyA(), energy - ch->GetEnergyA());
+   ////((TH2F*)    o["hDLVsEnergyA"+sid])                    ->Fill(ch->GetEnergyA(), energyEst - ch->GetEnergyA());
+   //((TH2F*) sd->o["hDLVsTotalEnergy"+sid+"_st"+sChId])      ->Fill(energy, energy - ch->GetEnergyA());
+   ////((TH2F*)    o["hDLVsTotalEnergy"+sid])                ->Fill(energyEst, energyEst - ch->GetEnergyA());
+   //((TH2F*) sd->o["hDLVsTime"+sid+"_st"+sChId])             ->Fill(ch->GetTime(), energy - ch->GetEnergyA());
+   ////((TH2F*)    o["hDLVsTime"+sid])                       ->Fill(ch->GetTime(), energyEst - ch->GetEnergyA());
+   //((TH2F*) sd->o["hTotalEnergyVsEnergyA"+sid+"_st"+sChId]) ->Fill(ch->GetEnergyA(), energy);
+   ////((TH2F*)    o["hTotalEnergyVsEnergyA"+sid])           ->Fill(ch->GetEnergyA(), energyEst);
 
-   ((TH1F*)    o["hTof"+sid])->Fill(tofEst);
+   //((TH1F*)    o["hTof"+sid])->Fill(tofEst);
 
-   Float_t mass = ch->GetCarbonMassEstimate();
-   //cout << "mass: " << mass << endl;
+   //Float_t mass = ch->GetCarbonMassEstimate();
+   ////cout << "mass: " << mass << endl;
 
-   ((TH1F*) sd->o["hPseudoMass"+sid+"_st"+sSi])           ->Fill(mass);
-   //((TH1F*)    o["hPseudoMass"+sid])                     ->Fill(mass);
+   //((TH1F*) sd->o["hPseudoMass"+sid+"_st"+sChId])           ->Fill(mass);
+   ////((TH1F*)    o["hPseudoMass"+sid])                     ->Fill(mass);
 } //}}}
 
 
@@ -410,17 +396,54 @@ void CnipolHists::PreFill(string sid)
 {
    char dName[256];
    char hName[256];
-   //string sSi("  ");
-   DrawObjContainer        *oc;
-   DrawObjContainerMapIter  isubdir;
 
-   for (int i=1; i<=N_CHANNELS; i++) {
+   for (int i=1; i<=N_SILICON_CHANNELS; i++) {
 
       sprintf(dName, "channel%02d", i);
-      oc = d.find(dName)->second;
+      DrawObjContainer *oc = d.find(dName)->second;
 
       sprintf(hName, "hSpinVsDelim%s_st%02d", sid.c_str(), i);
       ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, NUM_SPIN_STATES, -1.5, 1.5);
+   }
+}
+
+
+/** */
+void CnipolHists::PostFill()
+{
+   char hName[256];
+
+   vector<string> cutIds;
+   vector<string>::const_iterator icut;
+   cutIds.push_back("");
+   cutIds.push_back("_cut1");
+   cutIds.push_back("_cut2");
+
+   for (icut=cutIds.begin(); icut!=cutIds.end(); ++icut) {
+
+      string sCutId = *icut;
+
+      TH1* hTvsA          = (TH1*) o["hTvsA"+sCutId];
+      TH1* hTvsI          = (TH1*) o["hTvsI"+sCutId];
+      TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"+sCutId];
+   
+      for (int i=1; i<=N_SILICON_CHANNELS; i++) {
+
+
+         string sChId("  ");
+         sprintf(&sChId[0], "%02d", i);
+
+         DrawObjContainer *oc = d.find("channel"+sChId)->second;
+
+         TH1* hTVsA_channel = (TH1*) oc->o["hTvsA"+sCutId+"_st"+sChId];
+         hTvsA->Add(hTVsA_channel);
+
+         TH1* hTVsI_channel = (TH1*) oc->o["hTvsI"+sCutId+"_st"+sChId];
+         hTvsI->Add(hTVsI_channel);
+
+         TH1* hTimeVsEnergyA_channel = (TH1*) oc->o["hTimeVsEnergyA"+sCutId+"_st"+sChId];
+         hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+      }
    }
 }
 

@@ -223,15 +223,18 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       c.SetTitle(cName);
 
       if ( ((TClass*) io->second->IsA())->InheritsFrom("TH1") ) {
-         //c.SetLogz(kTRUE);
-         char *l = strstr(((TH1*)io->second)->GetOption(), "LOGZ");
+
+         char *l = strstr(((TH1*)io->second)->GetOption(), "NOIMG");
+         if (l) continue;
+
+         l = strstr(((TH1*)io->second)->GetOption(), "LOGZ");
          //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-         if (l) { c.SetLogz(kTRUE);
-            //printf("XXX2: set logz \n");
-         } else { c.SetLogz(kFALSE); }
-      }// else { c.SetLogz(kFALSE); }
+         if (l) c.SetLogz(kTRUE);
+         else c.SetLogz(kFALSE);
+      }
 
       if (io->second) {
+
          (io->second)->Draw();
 
          c.Modified();

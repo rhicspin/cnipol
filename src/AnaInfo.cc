@@ -199,6 +199,12 @@ Bool_t AnaInfo::HasTargetBit()  const { return (fModes & AnaInfo::MODE_TARGET)  
 Bool_t AnaInfo::HasProfileBit() const { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
 
 
+string AnaInfo::GetResultsDir() const
+{
+   return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
+}
+
+
 /** */
 string AnaInfo::GetOutDir() const
 {

@@ -295,12 +295,12 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
    float meanDLW_low  = 0.5*meanDLW;
    float meanDLW_high = 1.5*meanDLW;
 
-   if (wideLimits) {
+   //if (wideLimits) {
       meanT0_low   = -30;
       meanT0_high  = 30;
       meanDLW_low  = 0;
       meanDLW_high = 200;
-   }
+   //}
 
    //bananaFitFunc->SetParameters(chId, meanT0, meanDLW);
    //bananaFitFunc->SetParNames("channel", "t_0, ns", "DL, #mug/cm^{2}");

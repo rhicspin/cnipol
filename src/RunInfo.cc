@@ -39,7 +39,8 @@ RunInfo::RunInfo() :
    MaxRevolution (0),      // MaxRevolution;
    fTargetOrient ('-'),
    targetID      ('-'),
-	fProtoCutSlope(0), fProtoCutOffset(0)
+	fProtoCutSlope(0), fProtoCutOffset(0),
+	fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255)
 {
    strcpy(TgtOperation, "fixed");
  
@@ -165,8 +166,8 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> NActiveBunch;
       buf >> NDisableBunch;
       buf.ReadFastArray(DisableBunch, N_BUNCHES);
-      buf >> fProtoCutSlope;
-      buf >> fProtoCutOffset;
+      buf >> fProtoCutSlope  >> fProtoCutOffset;
+	   //buf >> fProtoCutAdcMin >> fProtoCutAdcMax >> fProtoCutTdcMin >> fProtoCutTdcMax;
 
    } else {
       //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
@@ -203,8 +204,8 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << NActiveBunch;
       buf << NDisableBunch;
       buf.WriteFastArray(DisableBunch, N_BUNCHES);
-      buf << fProtoCutSlope;
-      buf << fProtoCutOffset;
+      buf << fProtoCutSlope << fProtoCutOffset;
+	   //buf << fProtoCutAdcMin << fProtoCutAdcMax << fProtoCutTdcMin << fProtoCutTdcMax;
    }
 }
 
@@ -292,6 +293,10 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
+   fprintf(f, "$rc['fProtoCutAdcMin']              = %f;\n", fProtoCutAdcMin);
+   fprintf(f, "$rc['fProtoCutAdcMax']              = %f;\n", fProtoCutAdcMax);
+   fprintf(f, "$rc['fProtoCutTdcMin']              = %f;\n", fProtoCutTdcMin);
+   fprintf(f, "$rc['fProtoCutTdcMax']              = %f;\n", fProtoCutTdcMax);
 
    fprintf(f, "\n");
 } //}}}
@@ -415,6 +420,10 @@ void RunInfo::Update(MseRunPeriodX& runPeriod)
 {
    fProtoCutSlope  = runPeriod.cut_proto_slope;
    fProtoCutOffset = runPeriod.cut_proto_offset;
+	fProtoCutAdcMin = runPeriod.cut_proto_adc_min;
+	fProtoCutAdcMax = runPeriod.cut_proto_adc_max;
+	fProtoCutTdcMin = runPeriod.cut_proto_tdc_min;
+	fProtoCutTdcMax = runPeriod.cut_proto_tdc_max;
 }
 
 
