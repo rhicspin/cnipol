@@ -75,6 +75,10 @@ public:
    int          DisableBunch[N_BUNCHES];
 	float        fProtoCutSlope;
 	float        fProtoCutOffset;
+	float        fProtoCutAdcMin; //!
+	float        fProtoCutAdcMax; //!
+	float        fProtoCutTdcMin; //!
+	float        fProtoCutTdcMax; //!
 
 public:
 

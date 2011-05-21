@@ -191,7 +191,18 @@ void RawDataProcessor::ReadDataFast()
 
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
-      //if ((header.type & REC_TYPEMASK) != REC_READAT) {
+      if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO) {
+
+         recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
+
+         gRunInfo->SetBeamEnergy(rec->data.beamEnergyM);
+         fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
+         fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
+
+         mSeek = mSeek + mHeader->len;
+			continue;
+		}
+
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT) {
 
          //long offset = header.len - sizeof(recordHeaderStruct);
@@ -1050,9 +1061,9 @@ void ProcessRecord(recordCountRate &rec)
 
    printf("len, size: %ld, %d\n", rec.header.len, size);
 
-   for (UInt_t i=0; i<size; i++) {
-      printf("countrate: i: %d, %ld\n", i, *(pointer+i));
-   }
+   //for (UInt_t i=0; i<size; i++) {
+   //   printf("countrate: i: %d, %ld\n", i, *(pointer+i));
+   //}
 
    gAsymRoot->FillProfileHists(size, pointer);
    //gAsymRoot->ProcessProfileHists();

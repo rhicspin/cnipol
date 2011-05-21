@@ -9,13 +9,15 @@
 #include "MAsymRateHists.h"
 
 #include "AsymGlobals.h"
+#include "AnaInfo.h"
 
 #include "utils/utils.h"
 
 using namespace std;
 
-//MAsymRateHists       *gH;
 DrawObjContainer    *gH;
+AnaInfo             *gAnaInfo;
+
 
 void manalyze()
 {
@@ -29,6 +31,7 @@ void initialize()
    gStyle->SetOptStat(0);
    gStyle->SetPadRightMargin(0.18);
 
+   gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot("masym_out.root");
 
    gH = new DrawObjContainer(gMAsymRoot);
@@ -49,6 +52,7 @@ void initialize()
    Color_t color = kRed;
    //TString filelist = filelistPath + "runs11_rampupdown.dat";
    TString filelist = filelistPath + "runs_all.dat";
+   //TString filelist = filelistPath + "run11_153XX_tmp.dat";
    //TString filelist = filelistPath + "runs_tmp2.dat";
    //TString filelist = filelistPath + "runs11_15393.dat";
    //TString filelist = filelistPath + "runs11_15397.dat";
@@ -113,8 +117,8 @@ void initialize()
    // Loop over the runs and record the time of the last flattop measurement in the fill
    while (next && (o = (*next)()) )
    {
-      //TString fileName = "/data1/run09/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
-      TString fileName = "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
+      string  fName    = string(((TObjString*) o)->GetName());
+      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + ".root";
 
       TFile *f = new TFile(fileName, "READ");
 
@@ -169,8 +173,8 @@ void initialize()
 
    while (next && (o = (*next)()) )
    {
-      //TString fileName = "/data1/run09/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
-      TString fileName = "/data1/run11/root/" + string(((TObjString*) o)->GetName()) + "/" + string(((TObjString*) o)->GetName()) + ".root";
+      string  fName    = string(((TObjString*) o)->GetName());
+      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + ".root";
 
       TFile *f = new TFile(fileName, "READ");
 

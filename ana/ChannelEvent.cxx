@@ -205,17 +205,6 @@ Bool_t ChannelEvent::PassCutDetectorChannel()
    // Do not consider channels other than silicon detectors
    if (GetChannelId() > NSTRIP) return false;
 
-   ////if (fChannel.fAmpltd < 30) return false; // ADC
-   ////if (fChannel.fAmpltd > 215) return false; // ADC
-
-   //if (fChannel.fAmpltd < 15) return false; // ADC
-   //if (fChannel.fAmpltd > 215) return false; // ADC
-
-   //if (fChannel.fTdc < 12) return false; // TDC
-   ////if (fChannel.fTdc > 65) return false; // TDC
-
-   //if (fChannel.fTdc > 68) return false; // TDC
-
    return true;
 }
 
@@ -312,6 +301,20 @@ Bool_t ChannelEvent::PassCutPulser()
 /** */
 Bool_t ChannelEvent::PassCutNoise()
 {
+
+   Double_t extraOffset = 0;
+
+   if ( UInt_t(fEventConfig->fRunInfo->GetBeamEnergy() + 0.5) != kINJECTION) 
+      extraOffset = -6; // 6 TDC units ~= 8 ns
+
+   if ( GetAmpltd() < fEventConfig->fRunInfo->fProtoCutAdcMin ||
+        GetAmpltd() > fEventConfig->fRunInfo->fProtoCutAdcMax ||
+        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset + extraOffset) ) > 20
+      )
+      return false;
+
+   return true;
+
    switch (gRunInfo->fPolId) {
 
    case 0:   // B1U

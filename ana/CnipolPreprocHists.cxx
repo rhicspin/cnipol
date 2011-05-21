@@ -40,7 +40,7 @@ CnipolPreprocHists::~CnipolPreprocHists()
 void CnipolPreprocHists::BookHists(string sid)
 { //{{{
 
-   o["hTvsA"] = new TH2F("hTvsA", "hTvsA", 255, 0, 255, 80, 0, 80);
+   o["hTvsA"] = new TH2F("hTvsA", "hTvsA", 255, 0, 255, 80, 10, 90);
    ((TH1*) o["hTvsA"])->SetOption("colz LOGZ");
    ((TH1*) o["hTvsA"])->SetTitle(";Amplitude, ADC;TDC;");
 

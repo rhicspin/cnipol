@@ -115,6 +115,7 @@ public:
 
    std::string GetRunName() const;
    std::string GetRawDataFileName() const;
+   std::string GetResultsDir() const;
    std::string GetOutDir() const;
    std::string GetImageDir() const;
    std::string GetRunInfoFileName() const;
