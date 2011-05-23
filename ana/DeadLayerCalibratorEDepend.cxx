@@ -274,11 +274,12 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
    BananaFitFunctor *bff = new BananaFitFunctor(chId);
 
    TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, xmin, xmax, 2, "BananaFitFunctor");
+   //TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, 0, 0, 2, "BananaFitFunctor");
 
    bananaFitFunc->SetNpx(1000);
 
    // Set expected values and limits
-   float meanT0  = 20;
+   float meanT0  = 0;
    float meanDLW = 60;
 
    // All channels are combined in the 0-th calib channel
