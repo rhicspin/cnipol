@@ -225,14 +225,14 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
 
    TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
 
-   if (wideLimits) { // This is for the fast calibration
-      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
-      ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResHists);
-      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
-   } else { // In case of the regular channel calibration
+   //if (wideLimits) { // This is for the fast calibration
+   //   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
+   //   ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResHists);
+   //   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
+   //} else { // In case of the regular channel calibration
       //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
       ((TH2F*) h)->FitSlicesY(0, 0, -1, 0, "QNR", fitResHists);
-   }
+   //}
 
    delete gausFitFunc;
 
