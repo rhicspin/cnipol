@@ -40,7 +40,8 @@ RunInfo::RunInfo() :
    fTargetOrient ('-'),
    targetID      ('-'),
 	fProtoCutSlope(0), fProtoCutOffset(0),
-	fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255)
+	fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
+	fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0)
 {
    strcpy(TgtOperation, "fixed");
  
@@ -168,6 +169,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf.ReadFastArray(DisableBunch, N_BUNCHES);
       buf >> fProtoCutSlope  >> fProtoCutOffset;
 	   //buf >> fProtoCutAdcMin >> fProtoCutAdcMax >> fProtoCutTdcMin >> fProtoCutTdcMax;
+	   //buf >> fPulserCutAdcMin >> fPulserCutAdcMax >> fPulserCutTdcMin >> fPulserCutTdcMax;
 
    } else {
       //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
@@ -206,6 +208,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf.WriteFastArray(DisableBunch, N_BUNCHES);
       buf << fProtoCutSlope << fProtoCutOffset;
 	   //buf << fProtoCutAdcMin << fProtoCutAdcMax << fProtoCutTdcMin << fProtoCutTdcMax;
+	   //buf << fPulserCutAdcMin << fPulserCutAdcMax << fPulserCutTdcMin << fPulserCutTdcMax;
    }
 }
 
@@ -297,6 +300,10 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fProtoCutAdcMax']              = %f;\n", fProtoCutAdcMax);
    fprintf(f, "$rc['fProtoCutTdcMin']              = %f;\n", fProtoCutTdcMin);
    fprintf(f, "$rc['fProtoCutTdcMax']              = %f;\n", fProtoCutTdcMax);
+   fprintf(f, "$rc['fPulserCutAdcMin']             = %f;\n", fPulserCutAdcMin);
+   fprintf(f, "$rc['fPulserCutAdcMax']             = %f;\n", fPulserCutAdcMax);
+   fprintf(f, "$rc['fPulserCutTdcMin']             = %f;\n", fPulserCutTdcMin);
+   fprintf(f, "$rc['fPulserCutTdcMax']             = %f;\n", fPulserCutTdcMax);
 
    fprintf(f, "\n");
 } //}}}
@@ -418,12 +425,16 @@ void RunInfo::Update(MseRunInfoX& run)
 /** */
 void RunInfo::Update(MseRunPeriodX& runPeriod)
 {
-   fProtoCutSlope  = runPeriod.cut_proto_slope;
-   fProtoCutOffset = runPeriod.cut_proto_offset;
-	fProtoCutAdcMin = runPeriod.cut_proto_adc_min;
-	fProtoCutAdcMax = runPeriod.cut_proto_adc_max;
-	fProtoCutTdcMin = runPeriod.cut_proto_tdc_min;
-	fProtoCutTdcMax = runPeriod.cut_proto_tdc_max;
+   fProtoCutSlope   = runPeriod.cut_proto_slope;
+   fProtoCutOffset  = runPeriod.cut_proto_offset;
+	fProtoCutAdcMin  = runPeriod.cut_proto_adc_min;
+	fProtoCutAdcMax  = runPeriod.cut_proto_adc_max;
+	fProtoCutTdcMin  = runPeriod.cut_proto_tdc_min;
+	fProtoCutTdcMax  = runPeriod.cut_proto_tdc_max;
+	fPulserCutAdcMin = runPeriod.cut_pulser_adc_min;
+	fPulserCutAdcMax = runPeriod.cut_pulser_adc_max;
+	fPulserCutTdcMin = runPeriod.cut_pulser_tdc_min;
+	fPulserCutTdcMax = runPeriod.cut_pulser_tdc_max;
 }
 
 

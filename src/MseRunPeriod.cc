@@ -24,6 +24,10 @@ void MseRunPeriodX::Init()
    cut_proto_adc_max    = 255;
    cut_proto_tdc_min    = 0;
    cut_proto_tdc_max    = 255;
+   cut_pulser_adc_min   = 255;
+   cut_pulser_adc_max   = 0;
+   cut_pulser_tdc_min   = 255;
+   cut_pulser_tdc_max   = 0;
 }
 
 
@@ -49,4 +53,8 @@ void MseRunPeriodX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['cut_proto_adc_max']              = %f;\n", cut_proto_adc_max);
    fprintf(f, "$rc['cut_proto_tdc_min']              = %f;\n", cut_proto_tdc_min);
    fprintf(f, "$rc['cut_proto_tdc_max']              = %f;\n", cut_proto_tdc_max);
+   fprintf(f, "$rc['cut_pulser_adc_min']             = %f;\n", cut_pulser_adc_min);
+   fprintf(f, "$rc['cut_pulser_adc_max']             = %f;\n", cut_pulser_adc_max);
+   fprintf(f, "$rc['cut_pulser_tdc_min']             = %f;\n", cut_pulser_tdc_min);
+   fprintf(f, "$rc['cut_pulser_tdc_max']             = %f;\n", cut_pulser_tdc_max);
 } //}}}

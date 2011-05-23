@@ -79,6 +79,10 @@ public:
 	float        fProtoCutAdcMax; //!
 	float        fProtoCutTdcMin; //!
 	float        fProtoCutTdcMax; //!
+	float        fPulserCutAdcMin; //!
+	float        fPulserCutAdcMax; //!
+	float        fPulserCutTdcMin; //!
+	float        fPulserCutTdcMax; //!
 
 public:
 

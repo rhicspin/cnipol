@@ -269,39 +269,47 @@ Bool_t ChannelEvent::PassQACutCarbonMass()
 /** */
 Bool_t ChannelEvent::PassCutPulser()
 {
-   switch (gRunInfo->fPolId) {
-
-   case 0:   // B1U
-      if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
-         return false;
-      break;
-
-   case 1:   // Y1D
-      if (fChannel.fAmpltd > 120 && fChannel.fAmpltd < 170 && fChannel.fTdc > 54)
-         return false;
-      break;
-
-   case 2:   // B2D
-      if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && fChannel.fTdc > 50)
-         return false;
-
-      break;
-   case 3:   // Y2U
-      //if (fChannel.fAmpltd > 155 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50)
-      if (fChannel.fAmpltd > 140 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50) // 15039.302
-         return false;
-
-      break;
-   }
+   if ( GetAmpltd() < fEventConfig->fRunInfo->fPulserCutAdcMax &&
+        GetAmpltd() > fEventConfig->fRunInfo->fPulserCutAdcMin &&
+        GetTdc() < fEventConfig->fRunInfo->fPulserCutTdcMax &&
+        GetTdc() > fEventConfig->fRunInfo->fPulserCutTdcMin
+      )
+      return false;
 
    return true;
+
+   //switch (gRunInfo->fPolId) {
+
+   //case 0:   // B1U
+   //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
+   //      return false;
+   //   break;
+
+   //case 1:   // Y1D
+   //   if (fChannel.fAmpltd > 120 && fChannel.fAmpltd < 170 && fChannel.fTdc > 54)
+   //      return false;
+   //   break;
+
+   //case 2:   // B2D
+   //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && fChannel.fTdc > 50)
+   //      return false;
+
+   //   break;
+   //case 3:   // Y2U
+   //   //if (fChannel.fAmpltd > 155 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50)
+   //   if (fChannel.fAmpltd > 140 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50) // 15039.302
+   //      return false;
+
+   //   break;
+   //}
+
+   //return true;
 }
 
 
 /** */
 Bool_t ChannelEvent::PassCutNoise()
 {
-
    Double_t extraOffset = 0;
 
    if ( UInt_t(fEventConfig->fRunInfo->GetBeamEnergy() + 0.5) != kINJECTION) 
@@ -309,55 +317,57 @@ Bool_t ChannelEvent::PassCutNoise()
 
    if ( GetAmpltd() < fEventConfig->fRunInfo->fProtoCutAdcMin ||
         GetAmpltd() > fEventConfig->fRunInfo->fProtoCutAdcMax ||
+        GetTdc() < fEventConfig->fRunInfo->fProtoCutTdcMin ||
+        GetTdc() > fEventConfig->fRunInfo->fProtoCutTdcMax ||
         fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset + extraOffset) ) > 20
       )
       return false;
 
    return true;
 
-   switch (gRunInfo->fPolId) {
+   //switch (gRunInfo->fPolId) {
 
-   case 0:   // B1U
-      //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
-      //if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
-      //if ( fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 ||
-      if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
-         return false;
-      break;
+   //case 0:   // B1U
+   //   //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
+   //   //if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
+   //   //if ( fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 ||
+   //   if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
+   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //      return false;
+   //   break;
 
-   case 1:   // Y1D
-      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
-      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
-      //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
-      if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
-         return false;
-      break;
+   //case 1:   // Y1D
+   //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 14958.101
+   //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
+   //   //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
+   //   if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
+   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //      return false;
+   //   break;
 
-   case 2:   // B2D
-      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
-      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
-      //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
-      //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 ||
-      //    (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
-      //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
-      //if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
-      if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
-         return false;
-      break;
+   //case 2:   // B2D
+   //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 220) // based on 14958.201
+   //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 100 || (fChannel.fAmpltd < 30 && fChannel.fTdc < 40)) // based on 15019.202
+   //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 || (fChannel.fAmpltd < 40 && fChannel.fTdc < 60)) // prelim values for BD outside the tunnel
+   //   //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 130 ||
+   //   //    (fChannel.fTdc < -0.28*fChannel.fAmpltd + 60) ||
+   //   //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
+   //   //if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
+   //   if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
+   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //      return false;
+   //   break;
 
-   case 3:   // Y2U
-      //if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
-      //if ( GetAmpltd() < 30 || GetAmpltd() > 215 ||
-      if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
-           fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
-         return false;
-      break;
-   }
+   //case 3:   // Y2U
+   //   //if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
+   //   //if ( GetAmpltd() < 30 || GetAmpltd() > 215 ||
+   //   if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
+   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //      return false;
+   //   break;
+   //}
 
-   return true;
+   //return true;
 }
 
 
