@@ -10,6 +10,8 @@ AnaResult::AnaResult() :
    //UniversalRate(0),
    //A_N[2],
    //P[2],
+   fAvrgPMAsym(0),
+   fAvrgPMAsymErr(0),
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
    //energy_slope[2],        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
@@ -69,6 +71,7 @@ void AnaResult::Streamer(TBuffer &buf)
       buf >> UniversalRate;
       buf.ReadFastArray(A_N, 2);
       buf.ReadFastArray(P, 2);
+      buf >> fAvrgPMAsym >> fAvrgPMAsymErr;
       buf.ReadFastArray(P_sigma_ratio, 2);
       buf.ReadFastArray(P_sigma_ratio_norm, 2);
       buf.ReadFastArray(energy_slope, 2);
@@ -91,6 +94,7 @@ void AnaResult::Streamer(TBuffer &buf)
       buf << UniversalRate;
       buf.WriteFastArray(A_N, 2);
       buf.WriteFastArray(P, 2);
+      buf << fAvrgPMAsym << fAvrgPMAsymErr;
       buf.WriteFastArray(P_sigma_ratio, 2);
       buf.WriteFastArray(P_sigma_ratio_norm, 2);
       buf.WriteFastArray(energy_slope, 2);
@@ -117,6 +121,8 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['UniversalRate']       = %f;\n",            UniversalRate);
    fprintf(f, "$rc['A_N']                 = array(%f, %f);\n", A_N[0], A_N[1]);
    fprintf(f, "$rc['P']                   = array(%f, %f);\n", P[0], P[1]);
+   fprintf(f, "$rc['fAvrgPMAsym']         = %f;\n",            fAvrgPMAsym);
+   fprintf(f, "$rc['fAvrgPMAsymErr']      = %f;\n",            fAvrgPMAsymErr);
    fprintf(f, "$rc['P_sigma_ratio']       = array(%f, %f);\n", P_sigma_ratio[0], P_sigma_ratio[1]);
    fprintf(f, "$rc['P_sigma_ratio_norm']  = array(%f, %f);\n", P_sigma_ratio_norm[0], P_sigma_ratio_norm[1]);
    fprintf(f, "$rc['energy_slope']        = array(%f, %f);\n", energy_slope[0], energy_slope[1]);

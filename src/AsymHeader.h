@@ -1,7 +1,7 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-#define ASYM_VERSION "v1.4.1"
+#define ASYM_VERSION "v1.5.0"
 
 #define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
 #define RAMPTIME 350                  // duration of the ramp measurement (sec)

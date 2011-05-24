@@ -52,6 +52,29 @@ void CnipolPreprocHists::BookHists(string sid)
    ((TH1*) o["hFitMeanTimeVsEnergyA"])->GetYaxis()->SetRangeUser(0, 120);
    ((TH1*) o["hFitMeanTimeVsEnergyA"])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
 
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
+
+      char   hName[256];
+      string sChId("  ");
+
+      sprintf(&sChId[0], "%02d", iCh);
+
+      //sprintf(hName, "hTvsA_ch%02d", iCh);
+      //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      //((TH1*) o[hName])->SetOption("colz LOGZ");
+      //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+
+      // Time vs Energy from amplitude
+      sprintf(hName, "hTimeVsEnergyA_ch%02d", iCh);
+      o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
+      ((TH1*) o[hName])->SetOption("colz LOGZ");
+      ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+
+      sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", iCh);
+      o[hName] = new TH1D(hName, hName, 100, 0, 2500);
+      ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 120);
+      ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+   }
 } //}}}
 
 
@@ -67,6 +90,15 @@ void CnipolPreprocHists::FillPreProcess(ChannelEvent *ch)
 
    ((TH1*) o["hTvsA"])->Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
+
+   UChar_t chId  = ch->GetChannelId();
+
+   string sChId("  ");
+   sprintf(&sChId[0], "%02d", chId);
+
+   //((TH1*) o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) o["hTimeVsEnergyA_ch"+sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+
 } //}}}
 
 

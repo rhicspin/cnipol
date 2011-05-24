@@ -107,6 +107,7 @@ public:
    void        SetPolarimetrIdRhicBeam(const char* RunID);
    Float_t     GetExpectedGlobalTimeOffset();
    Short_t     GetExpectedGlobalTdcOffset();
+	Bool_t      IsDisabledChannel(UShort_t chId);
 };
 
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);

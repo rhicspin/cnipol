@@ -257,14 +257,15 @@ void event_process(processEvent *event)
 
       gAsymRoot->fHists->Fill(ch);
 
-      //   if (fabs(gFillPattern[event.bid]) != 1)
+      //if (fabs(gFillPattern[event.bid]) != 1)
 
       //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
       {
 	      gAsymRoot->fHists->Fill(ch, "_cut1");
 
-         if (ch->PassQACutCarbonMass()) {
+         if (ch->PassCutCarbonMass()) {
 	         gAsymRoot->fHists->Fill(ch, "_cut2");
 
             //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
@@ -465,7 +466,7 @@ void event_process(processEvent *event)
    //       && (gAnaInfo->CBANANA == 2)) // default 
    //     )
 
-   if (ch->PassQACutCarbonMass())
+   if (ch->PassCutCarbonMass())
    {
       // -t dependence
       float minus_t = 2 * e * MASS_12C * k2G * k2G;

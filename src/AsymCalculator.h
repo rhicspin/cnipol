@@ -50,7 +50,7 @@ public:
  
    static void   CalcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym);
    static float  WeightAnalyzingPower(int hid);
-	static Bool_t ExcludeStrip(int i, int j, int polBeam=0);
+	static Bool_t ExcludeStrip(int i, int j);
 
    // following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.
    //void     SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2);

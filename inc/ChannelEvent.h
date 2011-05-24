@@ -73,8 +73,10 @@ public:
    Bool_t PassCutRawAlpha();
    Bool_t PassCutDetectorChannel();
    Bool_t PassCutDepEnergyTime();
+   Bool_t PassCutKinEnergyAEDepend();
    Bool_t PassCutKinEnergyADLCorrEstimate();
-   Bool_t PassQACutCarbonMass();
+   Bool_t PassCutCarbonMass();
+   Bool_t PassCutCarbonMassEstimate();
    Bool_t PassCutPulser();
    Bool_t PassCutNoise();
    Bool_t PassCutEnabledChannel();
