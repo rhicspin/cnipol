@@ -264,7 +264,7 @@ void RawDataProcessor::ReadDataFast()
             if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutPulser() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutDetectorChannel() ) continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
 
             gAsymRoot->FillPreProcess();
 				//gAsymRoot->PrintChannelEvent();

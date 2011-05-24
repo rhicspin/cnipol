@@ -607,3 +607,10 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
           gRunInfo->RUNID, gRunInfo->fPolBeam, gRunInfo->PolarimetryID);
   */
 } //}}}
+
+
+/** */
+Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
+{
+   return fDisabledChannels[chId-1] == 1;
+}

@@ -749,7 +749,30 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
       for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14;
 
    } else if (gRunInfo->GetBeamEnergy() > 50) {
+
       for (int i=0; i<25; i++) anth[i] = anth100[i];
+
+   } else if (gRunInfo->GetBeamEnergy() > 20) {
+      // A new correction to the H-jet polarization is introduced in v1.5.0 scales pC polarization up
+
+      Float_t a_n_scale_v1_5_0 = 1;
+
+      switch (gRunInfo->fPolId) {
+		case kB1U:
+		   a_n_scale_v1_5_0 = 0.8525;
+		   break;
+		case kY1D:
+		   a_n_scale_v1_5_0 = 0.8000;
+		   break;
+		case kB2D:
+		   a_n_scale_v1_5_0 = 0.9016;
+		   break;
+		case kY2U:
+		   a_n_scale_v1_5_0 = 0.9231;
+		   break;
+      }
+
+      for (int i=0; i<25; i++) anth[i] = anth[i] * a_n_scale_v1_5_0;
    }
 
    float Emin = 22.5;
@@ -818,18 +841,23 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
 // Description : returns true if strip #j is in exclusion candidate
 // Input       : int i, int j
 // Return      : true/false
-Bool_t AsymCalculator::ExcludeStrip(int k, int j, int polBeam)
+Bool_t AsymCalculator::ExcludeStrip(int k, int j)
 {
-   Bool_t test = kFALSE;
-   int i = (k > 35) ? k-36 : k;
-   if (j == i || j == 35-i || j == 36+i || j == 71-i ) test = kTRUE;
-   return test;
+   int i = (k >= 36) ? k-36 : k;
+
+   if (j == i || j == 35-i || j == 36+i || j == 71-i )
+      return kTRUE;
+
+   return kFALSE;
 }
 
 
 // Description : calculate Asymmetry
 // Input       : int a, int b, int atot, int btot
 // Return      : float Asym, float dAsym
+//
+// Asym = (A - R * B) / (A + R * B), where R = atot/btot
+//
 void AsymCalculator::CalcAsymmetry(int a, int b, int atot, int btot, float &Asym, float &dAsym)
 {
    float R    = 0;
@@ -1436,20 +1464,24 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    float LumiSum_r[2][NSTRIP];        // Reduced order Total luminosity for histograming
    float LumiRatio[NSTRIP];           // Luminosity Ratio
    float Asym[NSTRIP], dAsym[NSTRIP]; // Raw Asymmetries strip-by-strip
+   float AsymPhiCorr[NSTRIP], dAsymPhiCorr[NSTRIP]; // Phi corrected Asymmetries strip-by-strip
    float P[NSTRIP],    dP[NSTRIP];    // Strip phi corrected polarization
    float Pt[NSTRIP],   dPt[NSTRIP];   // Strip phi truncated corrected polarization,
    long  counts[2];                   // local counter variables
 
    for (int i=0; i<NSTRIP; i++) {
 
-      Asym[i] = dAsym[i] = RawP[i] = dRawP[i] = LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
-      LumiSum[0][i] = LumiSum[1][i] = 0;
+      Asym[i]         = dAsym[i]        = 0;
+      AsymPhiCorr[i]  = dAsymPhiCorr[i] = 0;
+      RawP[i]         = dRawP[i]        = 0;
+      LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
+      LumiSum[0][i]   = LumiSum[1][i]   = 0;
 
       // Loop for Total Luminosity
       for (int j=0; j<NSTRIP; j++) {
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(i, j, gRunInfo->fPolBeam)) {
+         if (!AsymCalculator::ExcludeStrip(i, j)) {
             for (int k=0; k<=1; k++) LumiSum[k][i] += nstrip[k][j];
          }
       }
@@ -1462,11 +1494,12 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       //       Asym[i], dAsym[i]);
 
       // Luminosity Ratio
-      LumiRatio[i] = (float) LumiSum[0][i]/(float)LumiSum[1][i];
+      LumiRatio[i] = float(LumiSum[0][i]) / float(LumiSum[1][i]);
 
       // Calculate raw asymmetries for the i-th strip
       if ( LumiSum[1][i] && counts[0] + counts[1] ) {
 
+         // Calculate Asym and dAsym
          AsymCalculator::CalcAsymmetry(counts[0], counts[1], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
 
          //printf("ZZZ: %3d, %8.5f, %10d, %10d, %10d, %10d, %8.5f, %8.5f\n",
@@ -1482,6 +1515,10 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       // Since this is the recoil asymmetries, flip the sign of asymmetry
       Asym[i] *= -1;
 
+      // Asymmetry with sin(phi) correction
+       AsymPhiCorr[i] = Asym[i] / sin(-gPhi[i]);
+      dAsymPhiCorr[i] = fabs( dAsym[i] / sin(-gPhi[i]) );
+
       // Raw polarization without phi angle weighted A_N
        RawP[i] = (aveA_N != 0 ? ( Asym[i] / aveA_N) : 0);
       dRawP[i] = (aveA_N != 0 ? (dAsym[i] / aveA_N) : 0);
@@ -1495,9 +1532,11 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
       // ds temp fix: give huge errors to disabled strips
-      if (gRunInfo->fDisabledChannels[i]) {
+      if ( gRunInfo->IsDisabledChannel(i+1) ) {
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
-         dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;
+         AsymPhiCorr[i] = 0;
+         dAsym[i] = dRawP[i] = dP[i] = dPt[i] = FLT_MAX;
+         dAsymPhiCorr[i] = FLT_MAX;
       }
 
       //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5f, %8.5f\n",
@@ -1526,6 +1565,8 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
 
    // Caluclate Weighted Average
    CalcWeightedMean(P, dP, NSTRIP, gAnaResult->P[0], gAnaResult->P[1]);
+
+   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, NSTRIP, gAnaResult->fAvrgPMAsym, gAnaResult->fAvrgPMAsymErr);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaResult->P[0], gAnaResult->P[1]);
 

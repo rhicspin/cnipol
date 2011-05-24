@@ -86,9 +86,7 @@ TH2F  *asym_sinphi_fit;        // strip asymmetry and sin(phi) fit
 TH2F  *scan_asym_sinphi_fit;   // scan asymmetry and sin(phi) fit
 
 
-/**
- *
- */
+/** */
 AsymRoot::AsymRoot() : fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
@@ -979,6 +977,7 @@ void AsymRoot::SaveAs(string pattern, string dir)
 EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
 
 
+/** */
 void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaResult *&ar)
 {
    if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }

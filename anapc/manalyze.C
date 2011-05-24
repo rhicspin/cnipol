@@ -50,8 +50,8 @@ void initialize()
 
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
-   //TString filelist = filelistPath + "runs11_rampupdown.dat";
-   TString filelist = filelistPath + "runs_all.dat";
+   TString filelist = filelistPath + "runs11_rampupdown.dat";
+   //TString filelist = filelistPath + "runs_all.dat";
    //TString filelist = filelistPath + "run11_153XX_tmp.dat";
    //TString filelist = filelistPath + "runs_tmp2.dat";
    //TString filelist = filelistPath + "runs11_15393.dat";
@@ -227,10 +227,10 @@ void initialize()
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
-      //if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
-      //   gRC->fRunInfo->fBeamEnergy = 400;
-      //   beamEnergy = 400;
-      //}
+      if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
+         gRC->fRunInfo->fBeamEnergy = 400;
+         beamEnergy = 400;
+      }
 
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
       printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f\n", runId, strTime,

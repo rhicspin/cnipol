@@ -88,6 +88,17 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->SetTitle(";Beam Energy;A_{N};");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
 
+   sprintf(hName, "hAnaPowerVsEnergyBinned_%s", strPolId.c_str());
+   Float_t energyBins[10] = {0, 14, 34, 90, 110, 240, 260, 390, 410, 450};
+   o[hName] = new TH1F(hName, hName, 9, energyBins);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0.01, 0.02);
+   ((TH1*) o[hName])->SetTitle(";Beam Energy;A_{N};");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(color);
+   ((TH1*) o[hName])->SetOption("hist");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
+
    // Polarization
    TGraphErrors *grPolarVsEnergy = new TGraphErrors();
    grPolarVsEnergy->SetName("grPolarVsEnergy");
@@ -345,6 +356,7 @@ void MAsymFillHists::Fill(EventConfig &rc)
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grAnaPowerVsEnergy");
    graphNEntries = graphErrs->GetN();
    graphErrs->SetPoint(graphNEntries, beamEnergy, anaPower);
+   graphErrs->SetPointError(graphNEntries, 1, 1);
 
    // Polarization
    sprintf(hName, "hPolarVsEnergy_%s", strPolId.c_str());
@@ -459,6 +471,14 @@ void MAsymFillHists::PostFill()
       string strPolId = RunConfig::AsString((EPolarimeterId) i);
 
       TGraphErrors *graph;
+
+      // Analyzing power
+      sprintf(hName, "hAnaPowerVsEnergyBinned_%s", strPolId.c_str());
+      graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grAnaPowerVsEnergy");
+
+      utils::BinGraph(graph, (TH1*) o[hName]);
+
+      ((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
 
       // Profiles r
       sprintf(hName, "hRVsEnergyBinned_%s", strPolId.c_str());
