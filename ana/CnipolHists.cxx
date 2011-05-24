@@ -7,6 +7,7 @@
 
 #include "AnaInfo.h"
 #include "RunInfo.h"
+#include "AsymRoot.h"
 
 ClassImp(CnipolHists)
 
@@ -325,7 +326,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    Float_t energyEst = ch->GetKinEnergyAEstimateEDepend(); // from all channel fit
    //Float_t energy    = ch->GetKinEnergyAEDepend();
 
-   Float_t tofEst    = ch->GetTimeOfFlightEstimate();
+   //Float_t tofEst    = ch->GetTimeOfFlightEstimate();
    //Float_t tof       = ch->GetTimeOfFlight();
 
    //((TH2F*) sd.o["hTofVsKinEnergyA"+sid+"_st"+sChId])      ->Fill(energy, tof);
@@ -411,7 +412,7 @@ void CnipolHists::PreFill(string sid)
 /** */
 void CnipolHists::PostFill()
 {
-   char hName[256];
+   //char hName[256];
 
    vector<string> cutIds;
    vector<string>::const_iterator icut;
@@ -427,22 +428,28 @@ void CnipolHists::PostFill()
       TH1* hTvsI          = (TH1*) o["hTvsI"+sCutId];
       TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"+sCutId];
    
-      for (int i=1; i<=N_SILICON_CHANNELS; i++) {
+      for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
 
          string sChId("  ");
-         sprintf(&sChId[0], "%02d", i);
+         sprintf(&sChId[0], "%02d", iCh);
 
          DrawObjContainer *oc = d.find("channel"+sChId)->second;
 
-         TH1* hTVsA_channel = (TH1*) oc->o["hTvsA"+sCutId+"_st"+sChId];
+         TH2* hTVsA_channel = (TH2*) oc->o["hTvsA"+sCutId+"_st"+sChId];
          hTvsA->Add(hTVsA_channel);
 
-         TH1* hTVsI_channel = (TH1*) oc->o["hTvsI"+sCutId+"_st"+sChId];
+         TH2* hTVsI_channel = (TH2*) oc->o["hTvsI"+sCutId+"_st"+sChId];
          hTvsI->Add(hTVsI_channel);
 
          TH1* hTimeVsEnergyA_channel = (TH1*) oc->o["hTimeVsEnergyA"+sCutId+"_st"+sChId];
          hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+
+         // Fill final kinematic histograms using calib constants
+
+         TH2* hTofVsKinEnergyA_channel = (TH2*) oc->o["hTofVsKinEnergyA"+sCutId+"_st"+sChId];
+         ConvertRawToKin(hTVsA_channel, hTofVsKinEnergyA_channel, iCh);
+
       }
    }
 }
@@ -513,6 +520,26 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
          gSystem->Chmod(fName.c_str(), 0775);
       } else {
          //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
+      }
+   }
+} //}}}
+
+
+/** */
+void CnipolHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
+{ //{{{
+   for (Int_t ibx=0; ibx<=hRaw->GetNbinsX(); ++ibx) {
+      for (Int_t iby=0; iby<=hRaw->GetNbinsY(); ++iby) {
+
+         Double_t bcont  = hRaw->GetBinContent(ibx, iby);
+         Double_t bAdc   = hRaw->GetXaxis()->GetBinCenter(ibx);
+         Double_t bTdc   = hRaw->GetYaxis()->GetBinCenter(iby);
+
+         Double_t kinE   = gAsymRoot->fEventConfig->fCalibrator->GetEnergyA(bAdc, chId);
+         Double_t kinToF = gAsymRoot->fEventConfig->fCalibrator->GetTimeOfFlight(bTdc, chId);
+         
+         //Int_t bin = hKin->FindBin(kinE, kinToF);
+         hKin->Fill(kinE, kinToF, bcont);
       }
    }
 } //}}}
