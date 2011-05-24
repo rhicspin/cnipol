@@ -25,7 +25,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0),
    fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
-   fCalibrator(new Calibrator()), fAnaResult(new AnaResult()), fMseRunInfoX(new MseRunInfoX())
+   fCalibrator(new Calibrator(fRandom)), fAnaResult(new AnaResult()), fMseRunInfoX(new MseRunInfoX())
 {
 }
 

@@ -15,6 +15,7 @@
 #include "TFitResultPtr.h"
 #include "TH1.h"
 #include "TH1D.h"
+#include "TRandom.h"
 #include "TObject.h"
 
 #include "DrawObjContainer.h"
@@ -26,17 +27,23 @@ class Calibrator : public TObject
 {
 public:
 
-   ChannelCalibMap fChannelCalibs;
+   TRandom         *fRandom; //!
+   ChannelCalibMap  fChannelCalibs;
 
 public:
 
    Calibrator();
+   Calibrator(TRandom *random);
    ~Calibrator();
 
    virtual ChannelCalib *GetAverage();
    virtual void          CopyAlphaCoefs(Calibrator &calibrator);
    virtual void          Calibrate(DrawObjContainer *c);
    virtual void          CalibrateFast(DrawObjContainer *c);
+   virtual Float_t       GetEnergyA(UShort_t adc, UShort_t chId) const;
+   virtual Float_t       GetKinEnergyA(UShort_t adc, UShort_t chId) const;
+   virtual Float_t       GetTime(UShort_t tdc) const;
+   virtual Float_t       GetTimeOfFlight(UShort_t tdc, UShort_t chId) const;
    virtual               TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
    void                  Print(const Option_t* opt="") const;
    virtual void          PrintAsPhp(FILE *f=stdout) const;

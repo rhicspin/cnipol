@@ -16,7 +16,13 @@ ClassImp(Calibrator)
 using namespace std;
 
 /** Default constructor. */
-Calibrator::Calibrator() : TObject(), fChannelCalibs()
+Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs()
+{
+}
+
+
+/** */
+Calibrator::Calibrator(TRandom *random) : TObject(), fRandom(random), fChannelCalibs()
 {
 }
 
@@ -99,6 +105,37 @@ void Calibrator::Calibrate(DrawObjContainer *c)
 void Calibrator::CalibrateFast(DrawObjContainer *c)
 {
 	Info("CalibrateFast", "Executing CalibrateFast()");
+}
+
+
+/** */
+Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
+{
+   return fChannelCalibs.find(chId)->second.fACoef * adc;
+}
+
+
+/** */
+Float_t Calibrator::GetKinEnergyA(UShort_t adc, UShort_t chId) const
+{
+   Float_t emeas = GetEnergyA(adc, chId);
+   Float_t eloss = fChannelCalibs.find(chId)->second.fAvrgEMiss;
+   return  emeas + eloss;
+}
+
+
+/** */
+Float_t Calibrator::GetTime(UShort_t tdc) const
+{
+   return WFD_TIME_UNIT_HALF * (tdc + fRandom->Rndm() - 0.5);
+}
+
+
+/** */
+Float_t Calibrator::GetTimeOfFlight(UShort_t tdc, UShort_t chId) const
+{
+   Float_t t0coef = fChannelCalibs.find(chId)->second.fT0Coef;
+   return GetTime(tdc) + t0coef;
 }
 
 

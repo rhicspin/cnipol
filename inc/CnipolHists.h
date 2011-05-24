@@ -23,6 +23,11 @@
  */
 class CnipolHists : public DrawObjContainer
 {
+
+protected:
+
+   void  ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId);
+
 public:
 
    CnipolHists();
