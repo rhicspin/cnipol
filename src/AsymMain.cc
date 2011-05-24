@@ -453,9 +453,9 @@ int main(int argc, char *argv[])
    hist_close(hbk_outfile);
 
    // Update calibration constants if requested
-   //if (gAnaInfo->HasCalibBit()) {
-   //   gAsymRoot->Calibrate();
-   //}
+   if (gAnaInfo->HasCalibBit()) {
+      gAsymRoot->Calibrate();
+   }
 
    // Update calibration constants if requested
    //gRunDb.Print();

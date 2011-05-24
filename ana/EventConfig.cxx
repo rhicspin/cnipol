@@ -178,6 +178,7 @@ string EventConfig::GetSignature()
       strftime(strAnaEndTime, 25, "%c", ltime);
 
       strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fUser;
+      //strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
    }
 
    if (fRunInfo) {

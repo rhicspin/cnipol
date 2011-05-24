@@ -90,7 +90,7 @@ $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/
 .f.o:
 	$(FC) -m32 -O -c $<
 
-%.o: %.cc %.h Asym.h
+%.o: %.cc %.h Asym.h AsymHeader.h
 	#echo $* $@
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
