@@ -53,7 +53,7 @@ void CnipolHists::BookHists(string sid)
 
    sprintf(hName, "hTvsI%s", sid.c_str());
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
    // Time vs Energy from amplitude
@@ -157,7 +157,7 @@ void CnipolHists::BookHists(string sid)
       sprintf(hName, "hTvsI%s_st%02d", sid.c_str(), i);
       //sprintf(hName, "hTvsI", i+1);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
       //sprintf(fname, "banana_nominal%s_st%02d", sid.c_str(), i);
@@ -312,8 +312,16 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    DrawObjContainer *sd = d["channel"+sChId];
 
    ((TH1*) sd->o["hTvsA"+sid+"_st"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) sd->o["hTvsI"+sid+"_st"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
-   ((TH1*) sd->o["hTimeVsEnergyA"+sid+"_st"+sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+
+   //Float_t mass = ch->GetCarbonMassEstimate();
+   Float_t mass = ch->GetCarbonMass();
+   //cout << "mass: " << mass << endl;
+
+   ((TH1*) sd->o["hPseudoMass"+sid+"_ch"+sChId]) -> Fill(mass);
+
+   if (sid == "") {
+      ((TH1*) sd->o["hTvsI"+sid+"_st"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   }
 
    // Full kinematic carbon kinEnergy
    //Float_t kinEnergyEst = ch->GetKinEnergyAEstimate();
@@ -324,10 +332,14 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //Float_t tofEst    = ch->GetTimeOfFlightEstimate();
    Float_t tof       = ch->GetTimeOfFlight();
 
-   ((TH2*) sd->o["hTofVsKinEnergyA"+sid+"_ch"+sChId]) -> Fill(kinEnergy, tof);
-   //((TH1*)     o["hKinEnergyA_o"+sid])              -> Fill(kinEnergy);
+   if (sid != "_cut2") return;
 
    ((TH1*) o["hKinEnergyA_o"+sid]) -> Fill(kinEnergy);
+
+   ((TH1*) sd->o["hTimeVsEnergyA"+sid+"_st"+sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+   ((TH2*) sd->o["hTofVsKinEnergyA"+sid+"_ch"+sChId]) -> Fill(kinEnergy, tof);
+
+   //((TH1*)     o["hKinEnergyA_o"+sid])              -> Fill(kinEnergy);
    
    UChar_t bId = ch->GetBunchId();
 
@@ -374,12 +386,6 @@ void CnipolHists::Fill(ChannelEvent *ch, string sid)
    //((TH2*)     o["hTotalEnergyVsEnergyA"+sid])             ->Fill(ch->GetEnergyA(), kinEnergyEst);
 
    //((TH1*)     o["hTof"+sid])                              ->Fill(tofEst);
-
-   //Float_t mass = ch->GetCarbonMassEstimate();
-   Float_t mass = ch->GetCarbonMass();
-   //cout << "mass: " << mass << endl;
-
-   ((TH1*) sd->o["hPseudoMass"+sid+"_ch"+sChId]) -> Fill(mass);
 } //}}}
 
 
