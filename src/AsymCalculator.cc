@@ -762,13 +762,13 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
 		   a_n_scale_v1_5_0 = 0.8525;
 		   break;
 		case kY1D:
-		   a_n_scale_v1_5_0 = 0.8000;
+		   a_n_scale_v1_5_0 = 0.9231;
 		   break;
 		case kB2D:
 		   a_n_scale_v1_5_0 = 0.9016;
 		   break;
 		case kY2U:
-		   a_n_scale_v1_5_0 = 0.9231;
+		   a_n_scale_v1_5_0 = 0.8000;
 		   break;
       }
 
