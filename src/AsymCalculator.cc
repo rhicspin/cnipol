@@ -1489,9 +1489,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       counts[0] = nstrip[0][i]; // spin up
       counts[1] = nstrip[1][i]; // spin down
 
-      //printf("XXX: %3d, %8.5f, %10d, %10d, %10d, %10d, %8.5f, %8.5f\n",
-      //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-      //       Asym[i], dAsym[i]);
+      printf("XXX: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+             i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+             Asym[i], dAsym[i]);
 
       // Luminosity Ratio
       LumiRatio[i] = float(LumiSum[0][i]) / float(LumiSum[1][i]);
@@ -1502,9 +1502,12 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
          // Calculate Asym and dAsym
          AsymCalculator::CalcAsymmetry(counts[0], counts[1], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
 
-         //printf("ZZZ: %3d, %8.5f, %10d, %10d, %10d, %10d, %8.5f, %8.5f\n",
-         //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-         //       Asym[i], dAsym[i]);
+         printf("YYY: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+                i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+                Asym[i], dAsym[i]);
+      } else {
+          Asym[i] = 0;
+         dAsym[i] = 1e6;
       }
 
       // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
@@ -1535,27 +1538,27 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       if ( gRunInfo->IsDisabledChannel(i+1) ) {
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
          AsymPhiCorr[i] = 0;
-         dAsym[i] = dRawP[i] = dP[i] = dPt[i] = FLT_MAX;
-         dAsymPhiCorr[i] = FLT_MAX;
+         dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;
+         dAsymPhiCorr[i] = 1e6;
       }
 
-      //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5f, %8.5f\n",
-      //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-      //       Asym[i], dAsym[i]);
+      printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+             i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+             Asym[i], dAsym[i]);
    }
 
    // printing routine
    //if (Flag.VERBOSE)
-   if (0) {
+   if (1) {
       printf("*========== strip by strip =============\n");
 
       for (int i=0; i<NSTRIP; i++) {
          printf("%4d", i);
          printf("%12.5f", gPhi[i]);
-         printf("%12.5f %12.5f", Asym[i], dAsym[i]);
-         printf("%12.5f %12.5f", RawP[i], dRawP[i]);
-         printf("%12.5f %12.5f",    P[i],    dP[i]);
-         printf("%12.5f %12.5f",   Pt[i],   dPt[i]);
+         printf("%12.5f %12.5e", Asym[i], dAsym[i]);
+         printf("%12.5f %12.5e", RawP[i], dRawP[i]);
+         printf("%12.5f %12.5e",    P[i],    dP[i]);
+         printf("%12.5f %12.5e",   Pt[i],   dPt[i]);
          printf("\n");
       }
 
@@ -1727,7 +1730,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    TGraphErrors *tg = AsymmetryGraph(1, NSTRIP, gPhi, RawP, dx, dRawP);
  
    // Perform sin(phi) fit
-   tg->Fit("sin_phi", "R Q");
+   tg->Fit("sin_phi", "R");
    tg->SetName("tg");
  
    // Dump TGraphError obect to TH2D histogram
