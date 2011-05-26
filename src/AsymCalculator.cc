@@ -39,7 +39,7 @@ void end_process(MseRunInfoX &run)
 
       // reset counters
       Nevtot = Nread = 0;
-      for (int i=0; i<NBUNCH; i++) Ntotal[i] = 0;
+      for (int i=0; i<N_BUNCHES; i++) Ntotal[i] = 0;
    }
 
    // Calculate Statistics
@@ -98,7 +98,7 @@ void CompleteHistogram()
    // Draw reg./alt. event selection borders in Invariant Mass plots
    float MASS_12C_k2G = MASS_12C*k2G;
  
-   for (int i=0; i<NSTRIP; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
 
       float max = mass_nocut[i]->GetMaximum();
  
@@ -226,7 +226,7 @@ void CumulativeAsymmetry()
    }
 
    // Counts for each detector
-   for (int bid=0; bid<NBUNCH; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
       Nsi[0] += Ncounts[0][bid];
       Nsi[1] += Ncounts[1][bid];
       Nsi[2] += Ncounts[2][bid];
@@ -450,16 +450,19 @@ void CumulativeAsymmetry()
       float SUM=0;
 
       // X90 (2-5)
-      for (int bid=0; bid<NBUNCH; bid++){
+      for (int bid=0; bid<N_BUNCHES; bid++){
+
           RU[bid] = ((bid==0)?0:RU[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           RD[bid] = ((bid==0)?0:RD[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
           LU[bid] = ((bid==0)?0:LU[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           LD[bid] = ((bid==0)?0:LD[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
 
-          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-          tx90[bid][tr].phys = tmpasym; tx90[bid][tr].physE = tmpasyme;
-          txasym90[tr][bid] = tmpasym; txasym90E[tr][bid] = tmpasyme;
-          SUM+=NTcounts[2-1][bid][tr];
+          sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+          tx90[bid][tr].phys  = tmpasym;
+          tx90[bid][tr].physE = tmpasyme;
+          txasym90[tr][bid]   = tmpasym;
+          txasym90E[tr][bid]  = tmpasyme;
+          SUM += NTcounts[2-1][bid][tr];
       }
 
       // X45 (13-46)
@@ -755,24 +758,28 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
    } else if (gRunInfo->GetBeamEnergy() > 20) {
       // A new correction to the H-jet polarization is introduced in v1.5.0 scales pC polarization up
 
-      Float_t a_n_scale_v1_5_0 = 1;
+      //Float_t a_n_scale_v1_5_0 = 1;
 
-      switch (gRunInfo->fPolId) {
-		case kB1U:
-		   a_n_scale_v1_5_0 = 0.8525;
-		   break;
-		case kY1D:
-		   a_n_scale_v1_5_0 = 0.9231;
-		   break;
-		case kB2D:
-		   a_n_scale_v1_5_0 = 0.9016;
-		   break;
-		case kY2U:
-		   a_n_scale_v1_5_0 = 1;
-		   break;
-      }
+      //switch (gRunInfo->fPolId) {
+		//case kB1U:
+		//   //a_n_scale_v1_5_0 = 0.8525;
+		//   a_n_scale_v1_5_0 = 1;
+		//   break;
+		//case kY1D:
+		//   //a_n_scale_v1_5_0 = 0.9231;
+		//   a_n_scale_v1_5_0 = 1;
+		//   break;
+		//case kB2D:
+		//   //a_n_scale_v1_5_0 = 0.9016;
+		//   a_n_scale_v1_5_0 = 1;
+		//   break;
+		//case kY2U:
+		//   //a_n_scale_v1_5_0 = 0.8000;
+		//   a_n_scale_v1_5_0 = 1;
+		//   break;
+      //}
 
-      for (int i=0; i<25; i++) anth[i] = anth[i] * a_n_scale_v1_5_0;
+      //for (int i=0; i<25; i++) anth[i] = anth[i] * a_n_scale_v1_5_0;
    }
 
    float Emin = 22.5;
@@ -891,13 +898,13 @@ float ProfileError(float x)
 // Return      : float &mean, float &RMS, float &RMS_norm
 void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
 {
-   float SpeLumi_norm[NBUNCH], dSpeLumi_norm[NBUNCH];
+   float SpeLumi_norm[N_BUNCHES], dSpeLumi_norm[N_BUNCHES];
  
    // initialization
    SpeLumi.max = SpeLumi.Cnts[0];
    SpeLumi.min = 9999999;
  
-   for (int bid=0; bid<NBUNCH; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 	   
 		if (gRunInfo->fWallCurMon.find(bid+1) != gRunInfo->fWallCurMon.end() )
 
@@ -916,10 +923,10 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    HHPAK(10033, SpeLumi.Cnts);
 	HHPAKE(11033, SpeLumi.dCnts);
 
-   SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,NBUNCH);
+   SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,N_BUNCHES);
  
    if (SpeLumi.ave) {
-      for (int bid=0; bid<NBUNCH; bid++) {
+      for (int bid=0; bid<N_BUNCHES; bid++) {
          SpeLumi_norm[bid]  = SpeLumi.Cnts[bid] / SpeLumi.ave;
          dSpeLumi_norm[bid] = SpeLumi.dCnts[bid] / SpeLumi.ave;
       }
@@ -955,7 +962,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
    float par[np], sigpar[np];
    float chi2;
    float mdev,adev;
-   float ex[NSTRIP];
+   float ex[N_SILICON_CHANNELS];
    char  htitle[50];
    float min,max;
    float margin = 0.2;
@@ -963,7 +970,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
    TGraphErrors *tg;
    TF1 *f1 = new TF1("f1", "gaus");
  
-   for (int st=0; st<NSTRIP; st++) {
+   for (int st=0; st<N_SILICON_CHANNELS; st++) {
  
       feedback.strip[st] = st + 1;
  
@@ -1009,14 +1016,14 @@ float TshiftFinder(int Mode, int FeedBackLevel)
  
      FeedBack->cd();
  
-     TGraphErrors *gre = new TGraphErrors(NSTRIP, feedback.strip, feedback.mdev, ex, feedback.err);
+     TGraphErrors *gre = new TGraphErrors(N_SILICON_CHANNELS, feedback.strip, feedback.mdev, ex, feedback.err);
      gre->SetMarkerSize(MSIZE);
      gre->SetMarkerStyle(20);
      gre->SetMarkerColor(4);
  
-     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
+     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, N_SILICON_CHANNELS, feedback.mdev, margin, min, max);
  
-     mdev_feedback = new TH2F("mdev_feedback", "Mass Deviation in FeedBack Mode", NSTRIP, -0.5, NSTRIP+0.5, 50, min, max);
+     mdev_feedback = new TH2F("mdev_feedback", "Mass Deviation in FeedBack Mode", N_SILICON_CHANNELS, -0.5, N_SILICON_CHANNELS+0.5, 50, min, max);
  
      mdev_feedback->GetListOfFunctions()->Add(gre,"P");
      mdev_feedback->GetXaxis()->SetTitle("Strip ID");
@@ -1027,20 +1034,20 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      ErrDet->cd();
  
      // Mass Position Deviation from M_12
-     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, NSTRIP, feedback.mdev, margin, min, max);
+     GetMinMaxOption(errdet.MASS_POSITION_ALLOWANCE*1.2, N_SILICON_CHANNELS, feedback.mdev, margin, min, max);
      sprintf(htitle,"Run%.3f:Invariant mass position deviation vs. strip", gRunInfo->RUNID);
-     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
-     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.mdev, ex, ex);
+     mass_pos_dev_vs_strip =  new TH2F("mass_pos_dev_vs_strip",htitle,N_SILICON_CHANNELS+1,0,N_SILICON_CHANNELS+1,50, min, max);
+     tg =  AsymmetryGraph(1, N_SILICON_CHANNELS, feedback.strip, feedback.mdev, ex, ex);
      tg->SetName("tg");
      mass_pos_dev_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
      mass_pos_dev_vs_strip -> GetYaxis() -> SetTitle("Peak - M_12C [GeV]");
      mass_pos_dev_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
  
      // RMS width mapping of 12C mass peak
-     GetMinMax(NSTRIP, feedback.RMS, margin, min, max);
+     GetMinMax(N_SILICON_CHANNELS, feedback.RMS, margin, min, max);
      sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass sigma vs. strip", gRunInfo->RUNID);
-     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,NSTRIP+1,0,NSTRIP+1,50, min, max);
-     tg =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.RMS, ex, feedback.err);
+     mass_sigma_vs_strip =  new TH2F("mass_sigma_vs_strip",htitle,N_SILICON_CHANNELS+1,0,N_SILICON_CHANNELS+1,50, min, max);
+     tg =  AsymmetryGraph(1, N_SILICON_CHANNELS, feedback.strip, feedback.RMS, ex, feedback.err);
      tg->SetName("tg");
      mass_sigma_vs_strip -> GetListOfFunctions()-> Add(tg,"p");
      mass_sigma_vs_strip -> GetYaxis() -> SetTitle("RMS Width of 12C Mass Peak[GeV]");
@@ -1048,9 +1055,9 @@ float TshiftFinder(int Mode, int FeedBackLevel)
  
      // Chi2 mapping of Gaussian fit on 12C mass peak
      sprintf(htitle,"Run%.3f:Gaussian fit on Invariant mass chi2 vs. strip",gRunInfo->RUNID);
-     GetMinMax(NSTRIP, feedback.chi2, margin, min, max);
-     mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
-     tg  =  AsymmetryGraph(1, NSTRIP, feedback.strip, feedback.chi2, ex, ex);
+     GetMinMax(N_SILICON_CHANNELS, feedback.chi2, margin, min, max);
+     mass_chi2_vs_strip =  new TH2F("mass_chi2_vs_strip", htitle, N_SILICON_CHANNELS+1, 0, N_SILICON_CHANNELS+1, 50, min, max);
+     tg  =  AsymmetryGraph(1, N_SILICON_CHANNELS, feedback.strip, feedback.chi2, ex, ex);
      tg->SetName("tg");
      mass_chi2_vs_strip -> GetListOfFunctions()-> Add(tg, "p");
      mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
@@ -1060,7 +1067,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      StripAnomalyDetector();
    //}
  
-   mdev = WeightedMean(feedback.mdev, feedback.err, NSTRIP);
+   mdev = WeightedMean(feedback.mdev, feedback.err, N_SILICON_CHANNELS);
    printf("Average Mass Deviation  = %10.2f [GeV/c]\n", mdev);
  
    adev = mdev * G2k * gRunConsts[0].M2T/sqrt(400.);
@@ -1068,7 +1075,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
    printf("Tshift Average @ 400keV = %10.2f [ns]\n", adev);
  
    // Unit Conversion [GeV] -> [keV]
-   for (int i=0; i<NSTRIP; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
      feedback.tedev[i] = feedback.mdev[i]*G2k* gRunConsts[i+1].M2T;
      feedback.RMS[i] *= G2k;
    }
@@ -1089,12 +1096,12 @@ void FillAsymmetryHistgram(string mode, int sign, int N, float A[], float dA[], 
       // flip the asymmetry sign for spin=-1 to be consistent with spin=+1
       a[i] = A[i]*sign;
  
-      if ((gFillPattern[i])&&(dA[i])){
+      if ( gFillPattern[i] && dA[i] ) {
          // process only active bunches
-         if (bunch[i] != -1){
-            if (mode == "x90") asym_bunch_x90->Fill(a[i],1/dA[i]); //weighted by error
-            if (mode == "x45") asym_bunch_x45->Fill(a[i],1/dA[i]);
-            if (mode == "y45") asym_bunch_y45->Fill(a[i],1/dA[i]);
+         if (bunch[i] != -1) {
+            if (mode == "x90") asym_bunch_x90->Fill(a[i], 1/dA[i]); //weighted by error
+            if (mode == "x45") asym_bunch_x45->Fill(a[i], 1/dA[i]);
+            if (mode == "y45") asym_bunch_y45->Fill(a[i], 1/dA[i]);
          }
       }
    }
@@ -1120,31 +1127,30 @@ void AsymCalculator::CalcBunchAsymmetry()
    float prefix=0.028;
 
    sprintf(htitle, "Run%.3f: Raw Asymmetry X90", gRunInfo->RUNID);
-   GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax90[0], margin, min, max);
+   GetMinMaxOption(prefix, N_BUNCHES, gBunchAsym.Ax90[0], margin, min, max);
 
-   //asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   //asym_vs_bunch_x90 = new TH2F("asym_vs_bunch_x90", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5, 100, min, max);
    asym_vs_bunch_x90->SetName("asym_vs_bunch_x90");
    asym_vs_bunch_x90->SetTitle(htitle);
-   asym_vs_bunch_x90->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
-   DrawHorizLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
-
+   asym_vs_bunch_x90->SetBins(N_BUNCHES, -0.5, N_BUNCHES-0.5, 100, min, max);
+   DrawHorizLine(asym_vs_bunch_x90, -0.5, N_BUNCHES-0.5, 0, 1, 1, 1);
 
    sprintf(htitle,"Run%.3f : Raw Asymmetry Y45", gRunInfo->RUNID);
-   GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ay45[0], margin, min, max);
+   GetMinMaxOption(prefix, N_BUNCHES, gBunchAsym.Ay45[0], margin, min, max);
 
-   //asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   //asym_vs_bunch_y45 = new TH2F("asym_vs_bunch_y45", htitle, N_BUNCHES, -0.5, N_BUNCHES-0.5, 100, min, max);
    asym_vs_bunch_y45->SetName("asym_vs_bunch_y45");
    asym_vs_bunch_y45->SetTitle(htitle);
-   asym_vs_bunch_y45->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
+   asym_vs_bunch_y45->SetBins(N_BUNCHES, -0.5, N_BUNCHES-0.5, 100, min, max);
    asym_vs_bunch_y45->GetYaxis()->SetTitle("Counts weighted by error");
    asym_vs_bunch_y45->GetXaxis()->SetTitle("Raw Asymmetry");
 
-   DrawHorizLine(asym_vs_bunch_y45, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
+   DrawHorizLine(asym_vs_bunch_y45, -0.5, N_BUNCHES-0.5, 0, 1, 1, 1);
 
-   // fill bunch ID array [1 - NBUNCH], not [0 - NBUNCH-1]
-   float bunch[NBUNCH], ex[NBUNCH];
+   // fill bunch ID array [1 - N_BUNCHES], not [0 - N_BUNCHES-1]
+   float bunch[N_BUNCHES], ex[N_BUNCHES];
 
-   for (int bid=0; bid<NBUNCH; bid++) { ex[bid] = 0; bunch[bid] = bid; }
+   for (int bid=0; bid<N_BUNCHES; bid++) { ex[bid] = 0; bunch[bid] = bid; }
 
    // Superpose Positive/Negative Bunches arrays into TH2F histograms defined above
    TGraphErrors *asymgraph ;
@@ -1152,27 +1158,29 @@ void AsymCalculator::CalcBunchAsymmetry()
    for (int spin=1; spin>=-1; spin-=2 ) {
 
       // Selectively disable bunch ID by matching spin pattern
-      for (int bid=0; bid<NBUNCH; bid++) { bunch[bid] = gSpinPattern[bid] == spin ? bid : -1 ;}
+      for (int bid=0; bid<N_BUNCHES; bid++) {
+         bunch[bid] = (gSpinPattern[bid] == spin ? bid : -1);
+      }
 
       // X90
-      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, gBunchAsym.Ax90[0], ex, gBunchAsym.Ax90[1]);
+      asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ax90[0], ex, gBunchAsym.Ax90[1]);
       asymgraph->SetName("asymgraph");
-      FillAsymmetryHistgram("x90", spin, NBUNCH, gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], bunch);
+      FillAsymmetryHistgram("x90", spin, N_BUNCHES, gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], bunch);
       asym_vs_bunch_x90->GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x90->GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x90->GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // X45
-      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, gBunchAsym.Ax45[0], ex, gBunchAsym.Ax45[1]);
-      FillAsymmetryHistgram("x45", spin, NBUNCH, gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], bunch);
+      asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ax45[0], ex, gBunchAsym.Ax45[1]);
+      FillAsymmetryHistgram("x45", spin, N_BUNCHES, gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], bunch);
       asymgraph -> SetName("asymgraph");
       asym_vs_bunch_x45->GetListOfFunctions() -> Add(asymgraph,"p");
       asym_vs_bunch_x45->GetXaxis()->SetTitle("Bunch Number");
       asym_vs_bunch_x45->GetYaxis()->SetTitle("Raw Asymmetry ");
 
       // Y45
-      asymgraph = AsymmetryGraph(spin, NBUNCH, bunch, gBunchAsym.Ay45[0], ex, gBunchAsym.Ay45[1]);
-      FillAsymmetryHistgram("y45", spin, NBUNCH, gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], bunch);
+      asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ay45[0], ex, gBunchAsym.Ay45[1]);
+      FillAsymmetryHistgram("y45", spin, N_BUNCHES, gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], bunch);
       asymgraph->SetName("asymgraph");
       asym_vs_bunch_y45->GetListOfFunctions()->Add(asymgraph, "p");
       asym_vs_bunch_y45->GetXaxis()->SetTitle("Bunch Number");
@@ -1186,21 +1194,24 @@ void AsymCalculator::CalcBunchAsymmetry()
 
 // Description : calculate asymmetries bunch by bunch
 // Input       : int Mode0[Ax90], 1[Ax45], 2[Ay45]
-// Return      : Asym[NBUNCH], dA[NBUNCH]
-void AsymCalculator::BunchAsymmetry(int Mode, float A[], float dA[])
+// Return      : Asym[N_BUNCHES], dA[N_BUNCHES]
+void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
 {
    // Allocate adequate detector IDs involved in X90,X45,Y45, respectively
    int Rdet[2], Ldet[2];
 
    switch (Mode) {
    case 0:  // Ax90
-      Rdet[0] = 1; Ldet[0] = 4;
+      Rdet[0] = 1;
+      Ldet[0] = 4;
       break;
    case 1:  // Ax45
-      Rdet[0] = 0; Rdet[1] = 2; Ldet[0] = 3; Ldet[1] = 5;
+      Rdet[0] = 0; Rdet[1] = 2;
+      Ldet[0] = 3; Ldet[1] = 5;
       break;
    case 2:  // Ay45
-      Rdet[0] = 0; Rdet[1] = 5; Ldet[0] = 2; Ldet[1] = 3;
+      Rdet[0] = 0; Rdet[1] = 5;
+      Ldet[0] = 2; Ldet[1] = 3;
       break;
    default:
       cerr << "BunchAsymmetry: No matching mode is coded in for " << Mode << endl;
@@ -1214,7 +1225,7 @@ void AsymCalculator::BunchAsymmetry(int Mode, float A[], float dA[])
 
    // If more than two detectors combine their counts
    for (int i=0; i<=1; i++) { // run for X45 and Y45
-      for (int bid=0; bid<NBUNCH; bid++) {
+      for (int bid=0; bid<N_BUNCHES; bid++) {
          if (gFillPattern[bid]){
             LumiR += Ncounts[Rdet[i]][bid];
             LumiL += Ncounts[Ldet[i]][bid];
@@ -1224,7 +1235,7 @@ void AsymCalculator::BunchAsymmetry(int Mode, float A[], float dA[])
    }
  
    // Main bunch loop to calculate asymmetry bunch by bunch
-   for (int bid=0; bid<NBUNCH; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
  
       int R = 0, L = 0;
        A[bid] = ASYM_DEFAULT;
@@ -1250,8 +1261,8 @@ void AsymCalculator::BunchAsymmetry(int Mode, float A[], float dA[])
 void calcBunchAsymmetryAverage()
 {
    // flip the sign of negative spin bunches
-   for (int i=0; i<NBUNCH; i++) {
-      if (gSpinPattern[i]==-1) {
+   for (int i=0; i<N_BUNCHES; i++) {
+      if (gSpinPattern[i] == -1) {
          gBunchAsym.Ax90[0][i] *= -1;
          gBunchAsym.Ax45[0][i] *= -1;
          gBunchAsym.Ay45[0][i] *= -1;
@@ -1259,9 +1270,9 @@ void calcBunchAsymmetryAverage()
    }
  
    // Calculate weighgted beam for Ax90, Ax45, Ay45 combinations
-   CalcWeightedMean(gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], NBUNCH, gBunchAsym.ave.Ax90[0], gBunchAsym.ave.Ax90[1]);
-   CalcWeightedMean(gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], NBUNCH, gBunchAsym.ave.Ax45[0], gBunchAsym.ave.Ax45[1]);
-   CalcWeightedMean(gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], NBUNCH, gBunchAsym.ave.Ay45[0], gBunchAsym.ave.Ay45[1]);
+   CalcWeightedMean(gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], N_BUNCHES, gBunchAsym.ave.Ax90[0], gBunchAsym.ave.Ax90[1]);
+   CalcWeightedMean(gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], N_BUNCHES, gBunchAsym.ave.Ax45[0], gBunchAsym.ave.Ax45[1]);
+   CalcWeightedMean(gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], N_BUNCHES, gBunchAsym.ave.Ay45[0], gBunchAsym.ave.Ay45[1]);
  
    // Calculate Left-Right asymmetry using Ax90 and Ax45
    calcLRAsymmetry(gBunchAsym.ave.Ax90, gBunchAsym.ave.Ax45, gBunchAsym.ave.Ax[0], gBunchAsym.ave.Ax[1]);
@@ -1282,9 +1293,9 @@ void calcBunchAsymmetryAverage()
    gBunchAsym.ave.phase[1] = atan(gBunchAsym.ave.phase[1]) ? fabs( atan(gBunchAsym.ave.phase[1]) - M_PI_2 ) : 0 ;
  
    // Calculate Polarization
-   if (gAnaResult->A_N[0]) {
-      gAnaResult->basym[0].P[0] = gBunchAsym.ave.Ax[0]/gAnaResult->A_N[0];
-      gAnaResult->basym[0].P[1] = gBunchAsym.ave.Ax[1]/gAnaResult->A_N[0];
+   if (gAnaResult->A_N[1]) {
+      gAnaResult->basym[0].P[0] = gBunchAsym.ave.Ax[0]/gAnaResult->A_N[1];
+      gAnaResult->basym[0].P[1] = gBunchAsym.ave.Ax[1]/gAnaResult->A_N[1];
    } else {
       gAnaResult->basym[0].P[0] = 0;
       gAnaResult->basym[0].P[1] = 0;
@@ -1338,16 +1349,16 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 void StripAsymmetry(MseRunInfoX &run)
 {
    //// Calculate Asymmetries for colliding bunches at PHENIX
-   //CalcStripAsymmetry(gAnaResult->A_N[1], 2, cntr.phx.NStrip);
+   //CalcStripAsymmetry(gAnaResult->A_N[1], 2);
  
    //// Calculate Asymmetries for colliding bunches at STAR
-   //CalcStripAsymmetry(gAnaResult->A_N[1], 3, cntr.str.NStrip);
+   //CalcStripAsymmetry(gAnaResult->A_N[1], 3);
  
    //// alternative sigma cut
-   //CalcStripAsymmetry(gAnaResult->A_N[1], 1, cntr.alt.NStrip);
+   //CalcStripAsymmetry(gAnaResult->A_N[1], 1);
  
    // regular sigma cut
-   CalcStripAsymmetry(gAnaResult->A_N[1], 0, cntr.reg.NStrip);
+   CalcStripAsymmetry(gAnaResult->A_N[1], 0);
 
    // Add info to database entry
    char sPol[50];
@@ -1392,7 +1403,7 @@ void StripAsymmetry(MseRunInfoX &run)
 
    for(Int_t i=0; i<gNDelimeters; i++) {
 
-      CalcStripAsymmetry(gAnaResult->A_N[1], 100+i, cntr_tgt.reg.NStrip[i]);
+      CalcStripAsymmetry(gAnaResult->A_N[1], 100+i);
       //printf("i, p: %d, %f\n", i, gAnaResult->sinphi[100+i].P[0]);
 
       if (hpp) {
@@ -1412,9 +1423,11 @@ void StripAsymmetry(MseRunInfoX &run)
  * Calculates asymmetries strip by strip. This method updates the global object
  * gAnaResult with a calculated polarization value for the give strip.
  */
-void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
+void CalcStripAsymmetry(float aveA_N, int Mode)
 {
    //ds : Overwrite nstrip array
+   long int nstrip[NUM_SPIN_STATES][N_SILICON_CHANNELS];
+
    int ss_code = 0;
 
    // only for Mode < 100
@@ -1438,7 +1451,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       char dName[256], hName[256];
 
       // loop over strips and update nstrip array content
-      for (int i=1; i<=NSTRIP; i++) {
+      for (int i=1; i<=N_SILICON_CHANNELS; i++) {
 
          sprintf(dName, "channel%02d", i);
 
@@ -1460,16 +1473,16 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    }
 
    // Strip-by-Strip Asymmetries
-   int   LumiSum[2][NSTRIP];          // Total Luminosity [0]:Spin Up, [1]:Spin Down
-   float LumiSum_r[2][NSTRIP];        // Reduced order Total luminosity for histograming
-   float LumiRatio[NSTRIP];           // Luminosity Ratio
-   float Asym[NSTRIP], dAsym[NSTRIP]; // Raw Asymmetries strip-by-strip
-   float AsymPhiCorr[NSTRIP], dAsymPhiCorr[NSTRIP]; // Phi corrected Asymmetries strip-by-strip
-   float P[NSTRIP],    dP[NSTRIP];    // Strip phi corrected polarization
-   float Pt[NSTRIP],   dPt[NSTRIP];   // Strip phi truncated corrected polarization,
+   int   LumiSum[2][N_SILICON_CHANNELS];          // Total Luminosity [0]:Spin Up, [1]:Spin Down
+   float LumiSum_r[2][N_SILICON_CHANNELS];        // Reduced order Total luminosity for histograming
+   float LumiRatio[N_SILICON_CHANNELS];           // Luminosity Ratio
+   float Asym[N_SILICON_CHANNELS], dAsym[N_SILICON_CHANNELS]; // Raw Asymmetries strip-by-strip
+   float AsymPhiCorr[N_SILICON_CHANNELS], dAsymPhiCorr[N_SILICON_CHANNELS]; // Phi corrected Asymmetries strip-by-strip
+   float P[N_SILICON_CHANNELS],    dP[N_SILICON_CHANNELS];    // Strip phi corrected polarization
+   float Pt[N_SILICON_CHANNELS],   dPt[N_SILICON_CHANNELS];   // Strip phi truncated corrected polarization,
    long  counts[2];                   // local counter variables
 
-   for (int i=0; i<NSTRIP; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
 
       Asym[i]         = dAsym[i]        = 0;
       AsymPhiCorr[i]  = dAsymPhiCorr[i] = 0;
@@ -1478,7 +1491,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
       LumiSum[0][i]   = LumiSum[1][i]   = 0;
 
       // Loop for Total Luminosity
-      for (int j=0; j<NSTRIP; j++) {
+      for (int j=0; j<N_SILICON_CHANNELS; j++) {
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
          if (!AsymCalculator::ExcludeStrip(i, j)) {
@@ -1552,7 +1565,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    if (1) {
       printf("*========== strip by strip =============\n");
 
-      for (int i=0; i<NSTRIP; i++) {
+      for (int i=0; i<N_SILICON_CHANNELS; i++) {
          printf("%4d", i);
          printf("%12.5f", gPhi[i]);
          printf("%12.5f %12.5e", Asym[i], dAsym[i]);
@@ -1567,9 +1580,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP])
    }
 
    // Caluclate Weighted Average
-   CalcWeightedMean(P, dP, NSTRIP, gAnaResult->P[0], gAnaResult->P[1]);
+   CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaResult->P[0], gAnaResult->P[1]);
 
-   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, NSTRIP, gAnaResult->fAvrgPMAsym, gAnaResult->fAvrgPMAsymErr);
+   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, gAnaResult->fAvrgPMAsym, gAnaResult->fAvrgPMAsymErr);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaResult->P[0], gAnaResult->P[1]);
 
@@ -1604,9 +1617,9 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
                         Float_t *P, Float_t *phase, Float_t &chi2dof)
 {
    char  htitle[100];
-   float dx[NSTRIP];
+   float dx[N_SILICON_CHANNELS];
 
-   for (int i=0; i<NSTRIP; i++) dx[i] = 0;
+   for (int i=0; i<N_SILICON_CHANNELS; i++) dx[i] = 0;
  
    // define TH2D sin(phi) histogram
    Asymmetry->cd();
@@ -1615,7 +1628,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
 	float prefix = 0.3;
 	float margin = 0.3;
 
-   GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
+   GetMinMaxOption(prefix, N_SILICON_CHANNELS, RawP, margin, min, max);
 
    sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gRunInfo->RUNID);
 
@@ -1640,7 +1653,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    func->SetParLimits(1, -M_PI, M_PI);
  
    // define TGraphError obect for fitting
-   TGraphErrors *tg = AsymmetryGraph(1, NSTRIP, gPhi, RawP, dx, dRawP);
+   TGraphErrors *tg = AsymmetryGraph(1, N_SILICON_CHANNELS, gPhi, RawP, dx, dRawP);
  
    // Perform sin(phi) fit
    tg->Fit("sin_phi", "R");
@@ -1687,15 +1700,15 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
 void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
                             Float_t *P, Float_t *phase, Float_t &chi2dof)
 { //{{{
-   float dx[NSTRIP];
+   float dx[N_SILICON_CHANNELS];
 
-   for (int i=0; i<NSTRIP; i++) dx[i] = 0;
+   for (int i=0; i<N_SILICON_CHANNELS; i++) dx[i] = 0;
 
    float min, max;
 	float prefix = 0.3;
 	float margin = 0.3;
 
-   GetMinMaxOption(prefix, NSTRIP, RawP, margin, min, max);
+   GetMinMaxOption(prefix, N_SILICON_CHANNELS, RawP, margin, min, max);
 
    char htitle[100];
    sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gRunInfo->RUNID);
@@ -1727,7 +1740,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
    func->FixParameter(1, gAnaResult->sinphi[0].dPhi[0]);
  
    // define TGraphError obect for fitting
-   TGraphErrors *tg = AsymmetryGraph(1, NSTRIP, gPhi, RawP, dx, dRawP);
+   TGraphErrors *tg = AsymmetryGraph(1, N_SILICON_CHANNELS, gPhi, RawP, dx, dRawP);
  
    // Perform sin(phi) fit
    tg->Fit("sin_phi", "R");
@@ -1779,7 +1792,7 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
    //calculate chisquare
    Float_t chisq = 0;
    Float_t delta;
-   for (Int_t i=0;i<NSTRIP; i++) {
+   for (Int_t i=0;i<N_SILICON_CHANNELS; i++) {
      if (dRawP[i]) delta  = (RawP[i]-asymfit.sinx(phi[i],par))/dRawP[i];
      chisq += delta*delta;
    }
@@ -1854,7 +1867,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &ch
    phi[1]=(Float_t)GetFittingErrors(gMinuit, 1);
 
    Int_t NDATA=0;
-   for (Int_t i=0;i<NSTRIP; i++) NDATA += dRawP[i] ? 1 : 0;
+   for (Int_t i=0;i<N_SILICON_CHANNELS; i++) NDATA += dRawP[i] ? 1 : 0;
    chi2dof = FitChi2/Float_t(NDATA-NPAR);
 
    return;

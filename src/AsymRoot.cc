@@ -32,6 +32,8 @@
 #include "CnipolTargetHists.h"
 #include "CnipolPreprocHists.h"
 #include "CnipolProfileHists.h"
+#include "CnipolAsymHists.h"
+#include "CnipolKinematHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 
@@ -187,6 +189,16 @@ void AsymRoot::CreateRootFile(string filename)
    if (gAnaInfo->HasProfileBit()) {
       TDirectory *dir = new TDirectoryFile("profile", "profile", "", fOutRootFile);
       fHists->d["profile"] = new CnipolProfileHists(dir);
+   }
+
+   if (gAnaInfo->HasAsymBit()) {
+      TDirectory *dir = new TDirectoryFile("asym", "asym", "", fOutRootFile);
+      fHists->d["asym"] = new CnipolAsymHists(dir);
+   }
+
+   if (gAnaInfo->HasKinematBit()) {
+      TDirectory *dir = new TDirectoryFile("kinemat", "kinemat", "", fOutRootFile);
+      fHists->d["kinemat"] = new CnipolKinematHists(dir);
    }
 
    // OLD common global histogram inherited from previous life
@@ -811,7 +823,6 @@ void AsymRoot::BookHists()
       mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_yescut[i] -> SetLineColor(2);
    }
- 
  
    // Error detectors
    ErrDet->cd();

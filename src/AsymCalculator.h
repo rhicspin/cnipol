@@ -31,7 +31,7 @@ void TgtHist();
 
 // Strip by Strip
 void StripAsymmetry(MseRunInfoX &run);
-void CalcStripAsymmetry(float aveA_N, int Mode, long int nstrip[][NSTRIP]);
+void CalcStripAsymmetry(float aveA_N, int Mode);
 //void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
 
 
@@ -42,7 +42,7 @@ private:
 public:
 
    void CalcBunchAsymmetry();
-   void BunchAsymmetry(int, float A[], float dA[]);
+   void BunchAsymmetry(int, float *A, float *dA);
 	void SinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,
  	   Float_t *P, Float_t *phase, Float_t &chi2dof);
    void ScanSinPhiFit(Float_t p0, Float_t *RawP, Float_t *dRawP,

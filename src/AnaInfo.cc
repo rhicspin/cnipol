@@ -197,6 +197,8 @@ Bool_t AnaInfo::HasRawBit()     const { return (fModes & AnaInfo::MODE_RAW)     
 Bool_t AnaInfo::HasRunBit()     const { return (fModes & AnaInfo::MODE_RUN)     == AnaInfo::MODE_RUN; }
 Bool_t AnaInfo::HasTargetBit()  const { return (fModes & AnaInfo::MODE_TARGET)  == AnaInfo::MODE_TARGET; }
 Bool_t AnaInfo::HasProfileBit() const { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
+Bool_t AnaInfo::HasAsymBit()    const { return (fModes & AnaInfo::MODE_ASYM)    == AnaInfo::MODE_ASYM; }
+Bool_t AnaInfo::HasKinematBit() const { return (fModes & AnaInfo::MODE_KINEMAT) == AnaInfo::MODE_KINEMAT; }
 
 
 string AnaInfo::GetResultsDir() const

@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
       {"raw",                 no_argument,         0,   AnaInfo::MODE_RAW},
       {"target",              no_argument,         0,   AnaInfo::MODE_TARGET},
       {"profile",             no_argument,         0,   AnaInfo::MODE_PROFILE},
+      {"asym",                no_argument,         0,   AnaInfo::MODE_ASYM},
+      {"kinemat",             no_argument,         0,   AnaInfo::MODE_KINEMAT},
       {"quick",               no_argument,         0,   'q'},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
       {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
@@ -106,6 +108,8 @@ int main(int argc, char *argv[])
       {"mode-run",            no_argument,         0,   AnaInfo::MODE_RUN},
       {"mode-target",         no_argument,         0,   AnaInfo::MODE_TARGET},
       {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
+      {"mode-asym",           no_argument,         0,   AnaInfo::MODE_ASYM},
+      {"mode-kinemat",        no_argument,         0,   AnaInfo::MODE_KINEMAT},
       {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
       {"set-calib",           required_argument,   0,   AnaInfo::OPTION_SET_CALIB},
@@ -312,6 +316,14 @@ int main(int argc, char *argv[])
       case AnaInfo::MODE_PROFILE:
          gAnaInfo->fModes |= AnaInfo::MODE_PROFILE;
          gAnaInfo->fModes |= AnaInfo::MODE_TARGET; // profile hists depend on target ones
+         break;
+
+      case AnaInfo::MODE_ASYM:
+         gAnaInfo->fModes |= AnaInfo::MODE_ASYM;
+         break;
+
+      case AnaInfo::MODE_KINEMAT:
+         gAnaInfo->fModes |= AnaInfo::MODE_KINEMAT;
          break;
 
       case AnaInfo::MODE_FULL:

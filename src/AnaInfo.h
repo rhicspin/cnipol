@@ -29,16 +29,16 @@ class AnaInfo
 public:
 
    // Flag options
-   enum Flag   {FLAG_COPY              = 0x00000400,
-                FLAG_READ_FROM_DB      = 0x00000100,
-                FLAG_UPDATE_DB         = 0x00000200, FLAG_NO_UPDATE_DB = 0x80000200,
-                FLAG_USE_DB            = 0x00000300};
+   enum Flag   {FLAG_COPY              = 0x10000400,
+                FLAG_READ_FROM_DB      = 0x10000100,
+                FLAG_UPDATE_DB         = 0x10000200, FLAG_NO_UPDATE_DB = 0x90000200,
+                FLAG_USE_DB            = 0x10000300};
 
    // Flag options
-   enum Option {OPTION_POL_ID          = 0x00004000,
-                OPTION_SET_CALIB       = 0x00003000,
-                OPTION_SET_CALIB_ALPHA = 0x00001000,
-                OPTION_SET_CALIB_DL    = 0x00002000};
+   enum Option {OPTION_POL_ID          = 0x20004000,
+                OPTION_SET_CALIB       = 0x20003000,
+                OPTION_SET_CALIB_ALPHA = 0x20001000,
+                OPTION_SET_CALIB_DL    = 0x20002000};
 
    // Various histogramming and running modes
    enum Mode   {MODE_ALPHA             = 0x01010000,
@@ -50,6 +50,8 @@ public:
                 MODE_RUN               = 0x00100000,
                 MODE_TARGET            = 0x00200000,
                 MODE_PROFILE           = 0x00400000,
+                MODE_ASYM              = 0x00800000,
+                MODE_KINEMAT           = 0x08000000,
                 MODE_FULL              = 0x007f0000,
                 MODE_ONLINE            = 0x04040000};
 
@@ -147,6 +149,8 @@ public:
    Bool_t      HasRunBit() const;
    Bool_t      HasTargetBit() const;
    Bool_t      HasProfileBit() const;
+   Bool_t      HasAsymBit() const;
+   Bool_t      HasKinematBit() const;
 
 private:
    void Init();

@@ -20,6 +20,8 @@
 #pragma link C++ class DrawObjContainer;
 #pragma link C++ class CnipolHists;
 #pragma link C++ class CnipolCalibHists;
+#pragma link C++ class CnipolAsymHists;
+#pragma link C++ class CnipolKinematHists;
 #pragma link C++ class CnipolRawHists;
 #pragma link C++ class CnipolRunHists;
 #pragma link C++ class CnipolScalerHists;
