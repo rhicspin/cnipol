@@ -255,11 +255,11 @@ void AsymPlot::PlotRaw(TFile * rootfile, TCanvas *CurC, TPostScript * ps)
 {
   rootfile->cd();
   rootfile->cd("Raw");  
-  bunch_dist_raw              = (TH1F*)gDirectory->Get("bunch_dist_raw");
-  strip_dist_raw              = (TH1F*)gDirectory->Get("strip_dist_raw");
-  tdc_raw                     = (TH1F*)gDirectory->Get("tdc_raw");
-  adc_raw                     = (TH1F*)gDirectory->Get("adc_raw");
-  tdc_vs_adc_raw              = (TH2F*)gDirectory->Get("tdc_vs_adc_raw");
+  TH1* bunch_dist_raw              = (TH1F*)gDirectory->Get("bunch_dist_raw");
+  TH1* strip_dist_raw              = (TH1F*)gDirectory->Get("strip_dist_raw");
+  TH1* tdc_raw                     = (TH1F*)gDirectory->Get("tdc_raw");
+  TH1* adc_raw                     = (TH1F*)gDirectory->Get("adc_raw");
+  TH1* tdc_vs_adc_raw              = (TH2F*)gDirectory->Get("tdc_vs_adc_raw");
 
   rootfile->cd();
   rootfile->cd("Bunch");  

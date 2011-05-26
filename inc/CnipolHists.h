@@ -36,10 +36,8 @@ public:
 
    void  BookHists(std::string cutid="");
    void  BookHistsExtra(std::string cutid="");
-   //Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);
-   //Int_t Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0) const;
    void  Fill(ChannelEvent *ch, std::string cutid="");
-   void  PreFill(std::string sid="");
+   void  PreFill(std::string cutid="");
    void  PostFill();
    void  SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./");
 

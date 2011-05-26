@@ -1,5 +1,5 @@
-#ifndef ASYM_ROOT_H
-#define ASYM_ROOT_H
+#ifndef AsymRoot_h
+#define AsymRoot_h
 
 #include <iostream>
 #include <math.h>
@@ -16,8 +16,6 @@
 #include "DrawObjContainer.h"
 #include "EventConfig.h"
 
-//struct StructFeedBack;
-//struct processEvent;
 
 class AnaInfo;
 

@@ -30,9 +30,8 @@ public:
    ~CnipolRawHists();
 
    void  BookHists(std::string cutid="");
-   //virtual void Print(const Option_t* opt="") const;
-   void  Print(const Option_t* opt="") const;
    void  Fill(ChannelEvent *ch, std::string cutid="");
+   void  PostFill();
 
    ClassDef(CnipolRawHists, 1)
 };
