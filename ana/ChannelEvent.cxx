@@ -411,3 +411,16 @@ Bool_t ChannelEvent::PassCutTargetChannel()
 
   return false;
 }
+
+
+/** */
+Bool_t ChannelEvent::PassCutPmtChannel()
+{
+   UShort_t chId = GetChannelId();
+
+   //if (chId > gConfigInfo->data.NumChannels-4 && chId <= gConfigInfo->data.NumChannels)
+   if (chId > NSTRIP && chId <= NSTRIP+4)
+      return true;
+
+  return false;
+}

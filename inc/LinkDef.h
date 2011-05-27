@@ -23,6 +23,7 @@
 #pragma link C++ class CnipolAsymHists;
 #pragma link C++ class CnipolKinematHists;
 #pragma link C++ class CnipolRawHists;
+#pragma link C++ class CnipolPmtHists;
 #pragma link C++ class CnipolRunHists;
 #pragma link C++ class CnipolScalerHists;
 #pragma link C++ class CnipolTargetHists;

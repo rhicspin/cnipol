@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
       {"profile",             no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"asym",                no_argument,         0,   AnaInfo::MODE_ASYM},
       {"kinemat",             no_argument,         0,   AnaInfo::MODE_KINEMAT},
+      {"pmt",                 no_argument,         0,   AnaInfo::MODE_PMT},
       {"quick",               no_argument,         0,   'q'},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
       {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
@@ -110,6 +111,7 @@ int main(int argc, char *argv[])
       {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"mode-asym",           no_argument,         0,   AnaInfo::MODE_ASYM},
       {"mode-kinemat",        no_argument,         0,   AnaInfo::MODE_KINEMAT},
+      {"mode-pmt",            no_argument,         0,   AnaInfo::MODE_PMT},
       {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
       {"set-calib",           required_argument,   0,   AnaInfo::OPTION_SET_CALIB},
@@ -324,6 +326,10 @@ int main(int argc, char *argv[])
 
       case AnaInfo::MODE_KINEMAT:
          gAnaInfo->fModes |= AnaInfo::MODE_KINEMAT;
+         break;
+
+      case AnaInfo::MODE_PMT:
+         gAnaInfo->fModes |= AnaInfo::MODE_PMT;
          break;
 
       case AnaInfo::MODE_FULL:
