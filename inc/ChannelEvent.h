@@ -81,6 +81,7 @@ public:
    Bool_t PassCutNoise();
    Bool_t PassCutEnabledChannel();
    Bool_t PassCutTargetChannel();
+   Bool_t PassCutPmtChannel();
 
    ClassDef(ChannelEvent, 1)
 };

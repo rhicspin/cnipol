@@ -34,6 +34,7 @@
 #include "CnipolProfileHists.h"
 #include "CnipolAsymHists.h"
 #include "CnipolKinematHists.h"
+#include "CnipolPmtHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 
@@ -199,6 +200,11 @@ void AsymRoot::CreateRootFile(string filename)
    if (gAnaInfo->HasKinematBit()) {
       TDirectory *dir = new TDirectoryFile("kinemat", "kinemat", "", fOutRootFile);
       fHists->d["kinemat"] = new CnipolKinematHists(dir);
+   }
+
+   if (gAnaInfo->HasPmtBit()) {
+      TDirectory *dir = new TDirectoryFile("pmt", "pmt", "", fOutRootFile);
+      fHists->d["pmt"] = new CnipolPmtHists(dir);
    }
 
    // OLD common global histogram inherited from previous life

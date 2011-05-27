@@ -494,7 +494,7 @@ void readloop(MseRunInfoX &run)
                if (pat > 0) {
                   gFillPattern[bid] = 1;
                   gRunInfo->NFilledBunch++;
-               } else if (pat < 0) {
+               } else if (pat < 0) { // this never happens
                   gFillPattern[bid] = -1;
                   gRunInfo->NFilledBunch++;
                } else {
@@ -646,7 +646,7 @@ void readloop(MseRunInfoX &run)
                     }
 
                     if (event.stN == 72 || event.stN == 73) {
-                        switch (event.stN){
+                        switch (event.stN) {
                         case 72:
                             tgt.eventID = event.delim;
                             ++cntr.tgtMotion;
@@ -695,11 +695,11 @@ void readloop(MseRunInfoX &run)
                     //printf("channel111: %d, %d\n", event.stN, gRunInfo->ActiveStrip[event.stN]);
                     //printf("channel111: %d\n", event.stN);
 
-                 if ( gFillPattern[event.bid] == 1 || gAnaInfo->HasAlphaBit() == 1) // || event.stN >= 72) ) //&&
-                      //gRunInfo->ActiveStrip[event.stN] )
-                 {
+                 //if ( gFillPattern[event.bid] == 1 || gAnaInfo->HasAlphaBit() == 1) // || event.stN >= 72) ) //&&
+                 //     //gRunInfo->ActiveStrip[event.stN] )
+                 //{
                     event_process(&event);
-                 }
+                 //}
 
                  if (Nevtot%10000==0) {
 

@@ -52,6 +52,7 @@ public:
                 MODE_PROFILE           = 0x00400000,
                 MODE_ASYM              = 0x00800000,
                 MODE_KINEMAT           = 0x08000000,
+                MODE_PMT               = 0x00000100,
                 MODE_FULL              = 0x007f0000,
                 MODE_ONLINE            = 0x04040000};
 
@@ -151,6 +152,7 @@ public:
    Bool_t      HasProfileBit() const;
    Bool_t      HasAsymBit() const;
    Bool_t      HasKinematBit() const;
+   Bool_t      HasPmtBit() const;
 
 private:
    void Init();

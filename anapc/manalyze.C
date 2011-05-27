@@ -63,11 +63,11 @@ void initialize()
    //TString filelist = filelistPath + "run09_all_tmp.dat";
    //TString filelist = filelistPath + "run09_all_.dat";
    //TString filelist = filelistPath + "run11_15XXX_2XX_3XX_4XX.dat";
-   TString filelist = filelistPath + "run11_153XX.dat";
+   //TString filelist = filelistPath + "run11_153XX.dat";
+   TString filelist = filelistPath + "run11_pol_decay.dat";
 
    string  histName = "hPolarVsIntensProfileBin";
 
-   //TH1* havrg = new TH1F("havrg", "havrg", 20, -3, 3);
    TH1* havrg = new TH1F("havrg", "havrg", 22, 0, 1.1);
 
    havrg->GetYaxis()->SetRangeUser(0, 1.05);
@@ -77,29 +77,6 @@ void initialize()
    havrg->SetMarkerColor(kRed);
    havrg->Sumw2();
    havrg->SetBit(TH1::kIsAverage);
-
-   TH1* hProfR = new TH1F("hProfR", "hProfR", 1, 0, 1);
-
-   // 
-   TH2* hPolar = new TH2F("hPolar", "hPolar", 1, 20, 100, 1, 20, 80);
-   hPolar->GetXaxis()->SetTitle("Days");
-   hPolar->GetYaxis()->SetTitle("Polarization, %");
-
-   TGraphErrors *grPolar = new TGraphErrors();
-   grPolar->SetName("grPolar");
-   grPolar->SetMarkerStyle(kFullCircle);
-   grPolar->SetMarkerSize(1);
-   grPolar->SetMarkerColor(color);
-
-   TH2* hPolarVsTime = new TH2F("hPolarVsTime", "hPolarVsTime", 1, 20, 100, 1, 20, 80);
-   hPolarVsTime->GetXaxis()->SetTitle("Date/Time");
-   hPolarVsTime->GetYaxis()->SetTitle("Polarization, %");
-
-   TGraphErrors *grPolarVsTime = new TGraphErrors();
-   grPolarVsTime->SetName("grPolarVsTime");
-   grPolarVsTime->SetMarkerStyle(kFullCircle);
-   grPolarVsTime->SetMarkerSize(1);
-   grPolarVsTime->SetMarkerColor(color);
 
    TH2* hRVsTime = new TH2F("hRVsTime", "hRVsTime", 1, 20, 100, 1, -0.1, 1);
    hRVsTime->GetXaxis()->SetTitle("Days");
@@ -211,11 +188,8 @@ void initialize()
       //h->Print();
       //h->SetBit(TH1::kIsAverage);
 
-      Double_t day = (gRC->fRunInfo->StartTime - firstDay)/60./60./24.;
       char strTime[80];
       strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->StartTime));
-
-      //grPolar->SetPoint(i, gRC->fRunInfo->RUNID, gRC->fAnaResult->sinphi[0].P[0]);
 
       Double_t runId            = gRC->fRunInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
@@ -243,27 +217,15 @@ void initialize()
          beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
          polarization_err, asymVersion.c_str());
 
-      if (runId == 15335.203)
-         continue;
+      //if (asymVersion != "v1.5.1")
+      //   continue;
 
-      if (asymVersion != "v1.5.1")
-         continue;
-
-      if (polarization <= 1 || polarization_err > 5 || polarization > 99) {
-         continue;
-      }
+      //if (polarization <= 1 || polarization_err > 5 || polarization > 99) {
+      //   continue;
+      //}
 
       gRunInfo = gRC->fRunInfo;
       gH->Fill(*gRC);
-
-      //grPolar->SetPoint(i, day, tzero);
-      //grPolar->SetPointError(i, 0, tzeroErr);
-
-      grPolar->SetPoint(i, day, polarization);
-      grPolar->SetPointError(i, 0, polarization_err);
-
-      grPolarVsTime->SetPoint(i, gRC->fRunInfo->StartTime, polarization);
-      grPolarVsTime->SetPointError(i, 0, polarization_err);
 
       grRVsTime->SetPoint(i, gRC->fRunInfo->StartTime, profileRatio);
       grRVsTime->SetPointError(i, 0, profileRatioErr);
@@ -278,47 +240,26 @@ void initialize()
    Double_t xmin, ymin, xmax, ymax;
 
    string imageName;
-   TCanvas *c = new TCanvas("cName", "cName", 1200, 600);
-
-   hPolar->GetListOfFunctions()->Add(grPolar, "p");
-   hPolar->Draw();
-   //imageName = "polar_" + filelist + "_" + sEnergyId + ".png";
-   //c->SaveAs(imageName.c_str());
-
-   hPolarVsTime->GetListOfFunctions()->Add(grPolarVsTime, "p");
-   grPolarVsTime->ComputeRange(xmin, ymin, xmax, ymax);
-   printf("xmin, xmax: %f, %f\n", xmin, xmax);
-   //gStyle->SetTimeOffset();
-   //hPolarVsTime->GetXaxis()->SetTimeOffset(6*3600, "local");
-   hPolarVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
-   hPolarVsTime->GetXaxis()->SetLimits(xmin, xmax);
-   hPolarVsTime->GetXaxis()->SetTimeDisplay(1);
-   hPolarVsTime->GetXaxis()->SetTimeFormat("%b %d");
-   hPolarVsTime->Draw();
-   c->Update();
-   //imageName = "hPolarVsTime_" + filelist + "_" + sEnergyId + ".png";
-   //c->SaveAs(imageName.c_str());
 
    grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
    printf("xmin, xmax: %f, %f\n", xmin, xmax);
    TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
    grRVsTime->Fit("f2", "R");
 
-   hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
-   hRVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
-   hRVsTime->GetXaxis()->SetLimits(xmin, xmax);
-   hRVsTime->GetXaxis()->SetTimeDisplay(1);
-   hRVsTime->GetXaxis()->SetTimeFormat("%b %d");
-   hRVsTime->Draw();
+   //hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
+   //hRVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
+   //hRVsTime->GetXaxis()->SetLimits(xmin, xmax);
+   //hRVsTime->GetXaxis()->SetTimeDisplay(1);
+   //hRVsTime->GetXaxis()->SetTimeFormat("%b %d");
+   //hRVsTime->Draw();
    //imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
-   //c->SaveAs(imageName.c_str());
 
    gH->PostFill();
 
    gH->SetSignature(gRC->GetSignature());
 
-   //TCanvas canvas("cName2", "cName2", 1400, 600);
-   //gH->SaveAllAs(canvas);
+   TCanvas canvas("cName2", "cName2", 1400, 600);
+   gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();

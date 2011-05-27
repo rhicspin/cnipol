@@ -84,7 +84,7 @@ string RunConfig::AsString(ETargetOrient targetOrient)
    }
 }
 
-//
+
 /** */
 string RunConfig::AsString(EBeamEnergy beamEnergy)
 {
