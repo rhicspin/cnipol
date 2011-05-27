@@ -31,6 +31,9 @@ void initialize()
    gStyle->SetOptStat(0);
    gStyle->SetPadRightMargin(0.18);
 
+   //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
+   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
+
    gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot("masym_out.root");
 
@@ -50,7 +53,7 @@ void initialize()
 
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
-   TString filelist = filelistPath + "runs11_rampupdown.dat";
+   //TString filelist = filelistPath + "runs11_rampupdown.dat";
    //TString filelist = filelistPath + "runs_all.dat";
    //TString filelist = filelistPath + "run11_153XX_tmp.dat";
    //TString filelist = filelistPath + "runs_tmp2.dat";
@@ -59,6 +62,8 @@ void initialize()
    //TString filelist = filelistPath + "runs11_15399.dat";
    //TString filelist = filelistPath + "run09_all_tmp.dat";
    //TString filelist = filelistPath + "run09_all_.dat";
+   //TString filelist = filelistPath + "run11_15XXX_2XX_3XX_4XX.dat";
+   TString filelist = filelistPath + "run11_153XX.dat";
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -215,6 +220,7 @@ void initialize()
       Double_t runId            = gRC->fRunInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
       UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->fBeamEnergy + 0.5);
+      string   asymVersion      = gRC->fRunInfo->fAsymVersion;
       Float_t  ana_power        = gRC->fAnaResult->A_N[1];
       Float_t  asymmetry        = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
       Float_t  asymmetry_err    = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
@@ -227,17 +233,23 @@ void initialize()
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
-      if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
-         gRC->fRunInfo->fBeamEnergy = 400;
-         beamEnergy = 400;
-      }
+      //if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
+      //   gRC->fRunInfo->fBeamEnergy = 400;
+      //   beamEnergy = 400;
+      //}
 
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
-      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f\n", runId, strTime,
+      printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
          beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
-         polarization_err);
+         polarization_err, asymVersion.c_str());
 
-      if (polarization <= 1 || polarization_err > 5 || polarization > 99.99) {
+      if (runId == 15335.203)
+         continue;
+
+      if (asymVersion != "v1.5.1")
+         continue;
+
+      if (polarization <= 1 || polarization_err > 5 || polarization > 99) {
          continue;
       }
 

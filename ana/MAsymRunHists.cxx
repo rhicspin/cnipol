@@ -6,6 +6,7 @@
 #include "TGraphErrors.h"
 #include "TH1.h"
 #include "TH2F.h"
+#include "TFitResult.h"
 
 #include "utils/utils.h"
 
@@ -22,8 +23,8 @@ using namespace std;
 
 /** Default constructor. */
 MAsymRunHists::MAsymRunHists() : DrawObjContainer(),
-   fMinFill(14900), fMaxFill(15500),
-   //fMinFill(15300), fMaxFill(15400),
+   //fMinFill(14900), fMaxFill(15500),
+   fMinFill(15300), fMaxFill(15400),
    //fMinFill(10000), fMaxFill(11000),
    //fMinFill(10940), fMaxFill(10962),
    fMinTime(0), fMaxTime(UINT_MAX), fHTargetVsRun(), fVTargetVsRun()
@@ -33,8 +34,8 @@ MAsymRunHists::MAsymRunHists() : DrawObjContainer(),
 
 
 MAsymRunHists::MAsymRunHists(TDirectory *dir) : DrawObjContainer(dir),
-   fMinFill(14900), fMaxFill(15500),
-   //fMinFill(15300), fMaxFill(15400),
+   //fMinFill(14900), fMaxFill(15500),
+   fMinFill(15300), fMaxFill(15400),
    //fMinFill(10000), fMaxFill(11000),
    //fMinFill(10940), fMaxFill(10962),
    fMinTime(0), fMaxTime(UINT_MAX), fHTargetVsRun(), fVTargetVsRun()
@@ -56,13 +57,36 @@ void MAsymRunHists::BookHists(string sid)
 { //{{{
    fDir->cd();
 
-   for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
+   char hName[256];
+
+   for (UShort_t i=0; i!=N_POLARIMETERS; i++) {
       for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
          BookHistsPolarimeter((EPolarimeterId) i, *iBE);
       }
-   }
 
-   char hName[256];
+      string strPolId = RunConfig::AsString((EPolarimeterId) i);
+      Color_t color   = RunConfig::AsColor((EPolarimeterId) i);
+
+      sprintf(hName, "hT0VsChannelDiff_%s", strPolId.c_str());
+      o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 1, N_SILICON_CHANNELS+1);
+      ((TH1*) o[hName])->SetTitle(";Channel;t_{0} Diff, ns;");
+
+      sprintf(hName, "hDLVsChannelDiff_%s", strPolId.c_str());
+      o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 1, N_SILICON_CHANNELS+1);
+      ((TH1*) o[hName])->SetTitle(";Channel;Dead Layer Diff, #mug/cm^{2};");
+
+      // t0 vs DL diff
+      TGraphErrors* grT0VsDLDiff = new TGraphErrors();
+      grT0VsDLDiff->SetName("grT0VsDLDiff");
+      grT0VsDLDiff->SetMarkerStyle(kFullCircle);
+      grT0VsDLDiff->SetMarkerSize(1);
+      grT0VsDLDiff->SetMarkerColor(color);
+
+      sprintf(hName, "hT0VsDLDiff_%s", strPolId.c_str());
+      o[hName] = new TH2F(hName, hName, 1000, 0, 1, 1000, 0, 1);
+      ((TH1*) o[hName])->SetTitle(";Dead Layer Diff, #mug/cm^{2};t_{0} Diff, ns;");
+      ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsDLDiff, "p");
+   }
 
    for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
    {
@@ -336,7 +360,9 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
       sprintf(hName, "hT0_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
       o[hName] = new TH1F(hName, hName, t0Hi-t0Lo, t0Lo, t0Hi);
+      //((TH1*) o[hName])->SetOption("hist");
       ((TH1*) o[hName])->SetTitle(";t_{0}, ns;Events;");
+      //((TH1*) o[hName])->Sumw2();
 
       // DL
       grDLVsMeas = new TGraphErrors();
@@ -414,10 +440,11 @@ void MAsymRunHists::Fill(EventConfig &rc)
    Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    ChannelCalib *chCalib     = rc.fCalibrator->GetAverage();
+
    t0    = chCalib->fT0Coef;
    t0Err = chCalib->fT0CoefErr;
-   dl       = chCalib->fDLWidth;
-   dlErr    = chCalib->fDLWidthErr;
+   dl    = chCalib->fDLWidth;
+   dlErr = chCalib->fDLWidthErr;
 
    //if (isnan(t0) || isinf(t0))
    //   printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -591,14 +618,15 @@ void MAsymRunHists::PostFill()
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
 
-      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
+      string strPolId = RunConfig::AsString((EPolarimeterId) i);
 
-         string strPolId = RunConfig::AsString((EPolarimeterId) i);
+      // Adjust axis range
+      Double_t xmin, ymin, xmax, ymax, xdelta, ydelta;
+      Double_t xminDL, yminDL, xmaxDL, ymaxDL, xdeltaDL, ydeltaDL;
+
+      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
+		{
          string strBeamE = RunConfig::AsString(*iBE);
-
-         // Adjust axis range
-         Double_t xmin, ymin, xmax, ymax, xdelta, ydelta;
-         Double_t xminDL, yminDL, xmaxDL, ymaxDL, xdeltaDL, ydeltaDL;
 
          sprintf(hName, "hT0VsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
          TGraphErrors *graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsMeas");
@@ -747,8 +775,27 @@ void MAsymRunHists::PostFill()
             sprintf(hName, "hT0_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
             TH1* hT0 = (TH1*) o[hName];
 
+            utils::RemoveOutliers(hT0);
+
+            //if (hT0->Integral()) {
+            //   TF1* myGaus = new TF1("myGaus", "gaus(0)");
+            //   //myGaus->SetParameters(hT0->Integral());
+            //   //myGaus->SetParameter(0, hT0->GetMaximum());
+            //   myGaus->SetNpx(1000);
+            //   myGaus->FixParameter(0, hT0->GetMaximum());
+            //   myGaus->SetParameter(1, hT0->GetMean());
+            //   myGaus->SetParLimits(1, hT0->GetMean()-5, hT0->GetMean()+5);
+            //   myGaus->SetParameter(2, 1);
+            //   myGaus->SetParLimits(2, 0, 10);
+            //   TFitResultPtr fitres = hT0->Fit(myGaus, "M I W S");
+
             hT0VsChannel->SetBinContent(iCh, hT0->GetMean());
             hT0VsChannel->SetBinError(iCh, hT0->GetRMS());
+            //hT0VsChannel->SetBinError(iCh, fitres->Parameter(2));
+
+            //   //delete fitres;
+            //   delete myGaus;
+            //}
 
             // Dead layer
             sprintf(hName, "hDL_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
@@ -767,7 +814,40 @@ void MAsymRunHists::PostFill()
             grT0VsDLMean->SetPoint(nPoints, hDL->GetMean(), hT0->GetMean());
             //grT0VsDLMean->SetPointError(nPoints, hDL->GetRMS(), hT0->GetRMS());
          }
+
+         sprintf(hName, "hT0VsDLMean_%s_%s", strPolId.c_str(), strBeamE.c_str());
+         grT0VsDLMean = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grT0VsDLMean");
+         grT0VsDLMean->ComputeRange(xmin, ymin, xmax, ymax);
+         ydelta = fabs(ymax - ymin)*0.1;
+         ((TH1*) o[hName])->GetYaxis()->SetLimits(ymin-ydelta, ymax+ydelta);
       }
+
+      TH1* hT0VsChannelDiff  = (TH1*) o["hT0VsChannelDiff_"+strPolId];
+      TH1* hT0VsChannelInj   = (TH1*) o["hT0VsChannel_"+strPolId+"_024"];
+      TH1* hT0VsChannelFlt   = (TH1*) o["hT0VsChannel_"+strPolId+"_250"];
+
+      hT0VsChannelDiff->Add(hT0VsChannelInj, hT0VsChannelFlt, 1, -1);
+
+      TH1* hDLVsChannelDiff  = (TH1*) o["hDLVsChannelDiff_"+strPolId];
+      TH1* hDLVsChannelInj   = (TH1*) o["hDLVsChannel_"+strPolId+"_024"];
+      TH1* hDLVsChannelFlt   = (TH1*) o["hDLVsChannel_"+strPolId+"_250"];
+
+      hDLVsChannelDiff->Add(hDLVsChannelInj, hDLVsChannelFlt, 1, -1);
+
+      TH1* hT0VsDLDiff  = (TH1*) o["hT0VsDLDiff_"+strPolId];
+      TGraphErrors* grT0VsDLDiff = (TGraphErrors*) hT0VsDLDiff->GetListOfFunctions()->FindObject("grT0VsDLDiff");
+
+      for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+      {
+         UInt_t nPoints = grT0VsDLDiff->GetN();
+         grT0VsDLDiff->SetPoint(nPoints, hDLVsChannelDiff->GetBinContent(iCh), hT0VsChannelDiff->GetBinContent(iCh));
+      }
+
+      grT0VsDLDiff->ComputeRange(xmin, ymin, xmax, ymax);
+      xdelta = fabs(xmax - xmin)*0.1;
+      ydelta = fabs(ymax - ymin)*0.1;
+      hT0VsDLDiff->GetXaxis()->SetLimits(xmin-xdelta, xmax+xdelta);
+      hT0VsDLDiff->GetYaxis()->SetLimits(ymin-ydelta, ymax+ydelta);
    }
 
 
