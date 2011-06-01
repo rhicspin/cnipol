@@ -422,6 +422,17 @@ void DrawObjContainer::PostFill()
 
 
 /** */
+void DrawObjContainer::UpdateLimits()
+{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->UpdateLimits();
+   }
+}
+
+
+/** */
 void DrawObjContainer::Delete(Option_t* option)
 {
    if (!fDir) {
