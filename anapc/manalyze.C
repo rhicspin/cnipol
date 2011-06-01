@@ -43,23 +43,15 @@ void initialize()
    gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
 
-   struct tm tm;
-   time_t firstDay;
-
-   if ( strptime("2011-01-01 00:00:00", "%Y-%m-%d %H:%M:%S", &tm) != NULL )
-      firstDay = mktime(&tm);
-
-   //printf("firstDay %d\n", firstDay);
-
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
    //TString filelist = filelistPath + "runs11_rampupdown.dat";
    //TString filelist = filelistPath + "runs_all.dat";
    //TString filelist = filelistPath + "run11_153XX_tmp.dat";
    //TString filelist = filelistPath + "runs_tmp2.dat";
-   //TString filelist = filelistPath + "runs11_15393.dat";
-   //TString filelist = filelistPath + "runs11_15397.dat";
-   //TString filelist = filelistPath + "runs11_15399.dat";
+   //TString filelist = filelistPath + "run11_15393.dat";
+   //TString filelist = filelistPath + "run11_15397.dat";
+   //TString filelist = filelistPath + "run11_15399.dat";
    //TString filelist = filelistPath + "run09_all_tmp.dat";
    //TString filelist = filelistPath + "run09_all_.dat";
    //TString filelist = filelistPath + "run11_15XXX_2XX_3XX_4XX.dat";
@@ -220,9 +212,10 @@ void initialize()
       //if (asymVersion != "v1.5.1")
       //   continue;
 
-      //if (polarization <= 1 || polarization_err > 5 || polarization > 99) {
-      //   continue;
-      //}
+      //if (polarization <= 1 || polarization_err > 5 || polarization > 99)
+      if (polarization <= 1 || polarization > 99) {
+         continue;
+      }
 
       gRunInfo = gRC->fRunInfo;
       gH->Fill(*gRC);
@@ -241,10 +234,10 @@ void initialize()
 
    string imageName;
 
-   grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
-   printf("xmin, xmax: %f, %f\n", xmin, xmax);
-   TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
-   grRVsTime->Fit("f2", "R");
+   //grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
+   //printf("xmin, xmax: %f, %f\n", xmin, xmax);
+   //TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
+   //grRVsTime->Fit("f2", "R");
 
    //hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
    //hRVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -254,12 +247,14 @@ void initialize()
    //hRVsTime->Draw();
    //imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
 
+   gH->UpdateLimits();
+
    gH->PostFill();
 
    gH->SetSignature(gRC->GetSignature());
 
-   TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas);
+   //TCanvas canvas("cName2", "cName2", 1400, 600);
+   //gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();

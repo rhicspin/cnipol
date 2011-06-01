@@ -21,7 +21,11 @@ AnaResult::AnaResult() :
    //anomaly(),
    //unrecog()
    fIntensPolarR(0),
-   fIntensPolarRErr(0)
+   fIntensPolarRErr(0),
+   fPmtV1T0(0),
+   fPmtV1T0Err(0),
+   fPmtS1T0(0),
+   fPmtS1T0Err(0)
 {
    //memset(A_N, 0, 2);
    //memset(P, 0, 2);
@@ -83,8 +87,9 @@ void AnaResult::Streamer(TBuffer &buf)
          buf >> sinphi[i].chi2;
       }
 
-      buf >> fIntensPolarR;
-      buf >> fIntensPolarRErr;
+      buf >> fIntensPolarR >> fIntensPolarRErr;
+      buf >> fPmtV1T0 >> fPmtV1T0Err;
+      buf >> fPmtS1T0 >> fPmtS1T0Err;
 
    } else {
       //printf("writing AnaResult::Streamer(TBuffer &buf) \n");
@@ -106,8 +111,9 @@ void AnaResult::Streamer(TBuffer &buf)
          buf << sinphi[i].chi2;
       }
 
-      buf << fIntensPolarR;
-      buf << fIntensPolarRErr;
+      buf << fIntensPolarR << fIntensPolarRErr;
+      buf << fPmtV1T0 << fPmtV1T0Err; 
+      buf << fPmtS1T0 << fPmtS1T0Err; 
    }
 }
 
@@ -139,5 +145,9 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, ");\n");
    fprintf(f, "$rc['fIntensPolarR']       = %f;\n",            fIntensPolarR);
    fprintf(f, "$rc['fIntensPolarRErr']    = %f;\n",            fIntensPolarRErr);
+   fprintf(f, "$rc['fPmtV1T0']            = %f;\n",            fPmtV1T0);
+   fprintf(f, "$rc['fPmtV1T0Err']         = %f;\n",            fPmtV1T0Err);
+   fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
+   fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
 
 } //}}}

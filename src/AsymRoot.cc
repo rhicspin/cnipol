@@ -433,6 +433,14 @@ void AsymRoot::PostProcess()
 void AsymRoot::FillPreProcess()
 {
    fHists->d["preproc"]->FillPreProcess(fChannelEvent);
+
+   //// Fill PMT histograms
+   //if (gAnaInfo->HasPmtBit()) {
+   //      //printf("channel: %d\n", ch->GetChannelId());
+   //      gAsymRoot->fHists->d["pmt"]->Fill(ch);
+   //      fHists->d["pmt"]->FillPreProcess(fChannelEvent);
+   //   }
+   //}
 }
 
 
@@ -670,6 +678,12 @@ void AsymRoot::Calibrate()
 void AsymRoot::CalibrateFast()
 {
    fEventConfig->fCalibrator->CalibrateFast(fHists);
+
+   // XXX this probably needs to be moved somewhere else
+   if (gAnaInfo->HasPmtBit()) {
+      //printf("channel: %d\n", ch->GetChannelId());
+      ((CnipolPmtHists*) fHists->d["pmt"])->PostPreProcess();
+   }
 }
 
 

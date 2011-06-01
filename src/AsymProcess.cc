@@ -238,18 +238,6 @@ void event_process(processEvent *event)
    // Get address of the histogram container
    ChannelEvent *ch = gAsymRoot->fChannelEvent;
 
-   // Fill PMT histograms
-   if (gAnaInfo->HasPmtBit()) {
-
-      //if (ch->GetChannelId() > NSTRIP)
-      //   printf("channel1: %d, %d\n", ch->GetChannelId(), gConfigInfo->data.NumChannels);
-
-      if (ch->PassCutPmtChannel()) {
-         //printf("channel: %d\n", ch->GetChannelId());
-         gAsymRoot->fHists->d["pmt"]->Fill(ch);
-      }
-   }
-
    // Fill target histograms
    if (gAnaInfo->HasTargetBit()) {
 
@@ -262,7 +250,6 @@ void event_process(processEvent *event)
       }
    }
 
-   // XXX
    if (gAnaInfo->HasNormalBit()) {
 
       if (!ch->PassCutDetectorChannel()) return;

@@ -31,6 +31,10 @@ public:
    StructUnrecognized unrecog;
    float              fIntensPolarR;        // Scale factor to define the ratio of intensity and polarization profiles
    float              fIntensPolarRErr;
+   float              fPmtV1T0;
+   float              fPmtV1T0Err;
+   float              fPmtS1T0;
+   float              fPmtS1T0Err;
 
 public:
    AnaResult();

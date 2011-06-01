@@ -418,9 +418,18 @@ Bool_t ChannelEvent::PassCutPmtChannel()
 {
    UShort_t chId = GetChannelId();
 
-   //if (chId > gConfigInfo->data.NumChannels-4 && chId <= gConfigInfo->data.NumChannels)
-   if (chId > NSTRIP && chId <= NSTRIP+4)
+   if ((EPolarimeterId) gRunInfo->fPolId == kY2U && chId > NSTRIP && chId <= NSTRIP+4)
       return true;
 
   return false;
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutPmtNoise()
+{
+   if ( GetAmpltd() < 50 || GetAmpltd() > 100)
+      return false;
+
+   return true;
 }

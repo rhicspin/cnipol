@@ -42,6 +42,7 @@ public:
    void Fill(EventConfig &rc);
    void PostFill();
    void Print(const Option_t* opt="") const;
+   void UpdateLimits();
 
    ClassDef(MAsymFillHists, 1)
 };
