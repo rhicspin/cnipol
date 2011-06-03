@@ -7,6 +7,7 @@
 #include "MAsymFillHists.h"
 #include "MAsymRunHists.h"
 #include "MAsymRateHists.h"
+#include "MAsymPmtHists.h"
 
 #include "AsymGlobals.h"
 #include "AnaInfo.h"
@@ -39,9 +40,10 @@ void initialize()
 
    gH = new DrawObjContainer(gMAsymRoot);
 
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
-   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
-   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
+   //gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
+   //gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
+   gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
 
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
@@ -56,7 +58,8 @@ void initialize()
    //TString filelist = filelistPath + "run09_all_.dat";
    //TString filelist = filelistPath + "run11_15XXX_2XX_3XX_4XX.dat";
    //TString filelist = filelistPath + "run11_153XX.dat";
-   TString filelist = filelistPath + "run11_pol_decay.dat";
+   TString filelist = filelistPath + "run11_153XX_Y2U.dat";
+   //TString filelist = filelistPath + "run11_pol_decay.dat";
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -132,7 +135,7 @@ void initialize()
    }
 
    //
-   if (gH->d["runs"]) {
+   if (gH->d.find("runs") != gH->d.end()) {
       ((MAsymRunHists*) gH->d["runs"])->fMinTime = minTime;
       ((MAsymRunHists*) gH->d["runs"])->fMaxTime = maxTime;
       ((MAsymRunHists*) gH->d["runs"])->UpdateLimits();
@@ -253,8 +256,8 @@ void initialize()
 
    gH->SetSignature(gRC->GetSignature());
 
-   //TCanvas canvas("cName2", "cName2", 1400, 600);
-   //gH->SaveAllAs(canvas);
+   TCanvas canvas("cName2", "cName2", 1400, 600);
+   gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();

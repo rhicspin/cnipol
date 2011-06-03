@@ -118,15 +118,15 @@ void CnipolPmtHists::FillPreProcess(ChannelEvent *ch)
    //DrawObjContainer *sd = d["channel"+sChId];
 
    ((TH1*) o["hAdc_ch"+sChId])  -> Fill(ch->GetAmpltd());
-   ((TH1*) o["hTdc_ch"+sChId])  -> Fill(ch->GetTdc());
-   ((TH1*) o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) o["hTvsI_ch"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   ((TH1*) o["hTdc_ch"+sChId])  -> Fill(ch->GetTime2());
+   ((TH1*) o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTime2());
+   ((TH1*) o["hTvsI_ch"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTime2());
 
    ((TH1*) o["bunch_dist_raw"])->Fill(ch->GetChannelId());
    ((TH1*) o["strip_dist_raw"])->Fill(ch->GetBunchId());
 
    //if (cutid == "cut_false_bunch")
-   //   ((TH1*) o["tdc_vs_adc_false_bunch_raw"])->Fill(ch->GetAmpltd(), ch->GetTdc());
+   //   ((TH1*) o["tdc_vs_adc_false_bunch_raw"])->Fill(ch->GetAmpltd(), ch->GetTime2());
 
 } //}}}
 

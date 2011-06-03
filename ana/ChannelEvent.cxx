@@ -116,6 +116,13 @@ Float_t ChannelEvent::GetTime() const
 
 
 /** */
+Float_t ChannelEvent::GetTime2() const
+{
+   return WFD_TIME_UNIT_HALF * fChannel.fTdc;
+}
+
+
+/** */
 Float_t ChannelEvent::GetTimeOfFlight()
 {
    UChar_t chId   = GetChannelId();
