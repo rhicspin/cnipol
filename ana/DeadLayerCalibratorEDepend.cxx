@@ -50,7 +50,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
          continue;
       }
 
-      if (htemp->Integral() < 1000) {
+      if (htemp->Integral() < 2000) {
          Error("Calibrate", "Too few entries in histogram channel%02d/hTimeVsEnergyA%s_st%02d. Skipped",
                iCh, cutid.c_str(), iCh);
          continue;
@@ -241,7 +241,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
          continue;
       }
 
-      if (htemp->Integral() < 1000) {
+      if (htemp->Integral() < 2000) {
          Error("Calibrate", "Too few entries in histogram preproc/hTimeVsEnergyA_ch%02d. Skipped", iCh, iCh);
 
          gRunInfo->SetDisabledChannel(iCh);
@@ -265,8 +265,27 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
       TFitResultPtr fitres = Calibrate(htemp, hMeanTime, iCh, false);
 
+      if (hMeanTime->Integral() < 0) {
+         gRunInfo->SetDisabledChannel(iCh);
+         continue;
+      }
+
       if (fitres.Get()) {
+
+         // If something wrong with the fit simply disable the channel
+         if (fitres->FitResult::Status() != 0) {
+            
+            gRunInfo->SetDisabledChannel(iCh);
+            continue;
+         }
+
          chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
+
+         if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
+            gRunInfo->SetDisabledChannel(iCh);
+            continue;
+         }
+
          chCalib->fT0Coef        = fitres->Value(0);
          chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
          chCalib->fDLWidth       = fitres->Value(1);
@@ -278,6 +297,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
          chCalib->fEMeasDLCorr   = 1.0098 + 0.0036 * chCalib->fDLWidth;
       } else {
          Error("Calibrate", "Empty TFitResultPtr");
+         gRunInfo->SetDisabledChannel(iCh);
       }
    }
 
