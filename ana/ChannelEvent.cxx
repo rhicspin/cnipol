@@ -269,7 +269,7 @@ Bool_t ChannelEvent::PassCutKinEnergyADLCorrEstimate()
 /** */
 Bool_t ChannelEvent::PassCutCarbonMass()
 {
-   if (fabs(GetCarbonMass() - MASS_12C * k2G) < 2.5*CARBON_MASS_PEAK_SIGMA*k2G )
+   if (fabs(GetCarbonMass() - MASS_12C * k2G) < 3.0*CARBON_MASS_PEAK_SIGMA*k2G )
       return true;
 
    return false;
