@@ -260,7 +260,8 @@ void RawDataProcessor::ReadDataFast()
 
             gAsymRoot->SetChannelEvent(ATPtr->data[j], delim, chId);
 
-            if (gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
+            if (gAnaInfo->HasPmtBit() &&
+					 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
                 gAsymRoot->fChannelEvent->PassCutPmtNoise() )
             {
                gAsymRoot->fHists->d["pmt"]->FillPreProcess(gAsymRoot->fChannelEvent);

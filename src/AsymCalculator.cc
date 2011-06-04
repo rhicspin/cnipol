@@ -1,8 +1,9 @@
 //  Asymmetry Analysis of RHIC pC Polarimeter
 //  End-of-Run routine
-//  file name :   AsymCalculator.cc
 //
-//  Author    :   Itaru Nakagawa
+//  Authors   :   Itaru Nakagawa
+//                Dmitri Smirnov
+//
 //  Creation  :   01/21/2006
 //
 
@@ -550,7 +551,7 @@ void CalcStatistics()
 
 // Description : print warnings
 void PrintWarning()
-{
+{ //{{{
    printf("-----------------------------------------------------------------------------------------\n");
    printf("------------------------------  Error Detector Results ----------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
@@ -595,14 +596,14 @@ void PrintWarning()
    printf(" Slope of Energy Spectrum (sum 6 det): %6.1f %6.2f\n", gAnaResult->energy_slope[0], gAnaResult->energy_slope[1]);
    printf("-----------------------------------------------------------------------------------------\n");
    printf("\n\n");
-}
+} //}}}
 
 
 // Method name : PrintRunResults()
 //
 // Description : print analysis results and run infomation
 void PrintRunResults()
-{
+{ //{{{
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------  Operation Messages  --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
@@ -661,7 +662,7 @@ void PrintRunResults()
    printf(" Polarization tgt pos %6.1f     = %10.4f %9.4f\n", tgt.all.x[(int) tgt.Time[i]], gAnaResult->sinphi[100+i].P[0], gAnaResult->sinphi[100+i].P[1]);
 
    printf("-----------------------------------------------------------------------------------------\n");
-}
+} //}}}
 
 
 /** */
@@ -1502,9 +1503,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
       counts[0] = nstrip[0][i]; // spin up
       counts[1] = nstrip[1][i]; // spin down
 
-      printf("XXX: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-             i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-             Asym[i], dAsym[i]);
+      //printf("XXX: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+      //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+      //       Asym[i], dAsym[i]);
 
       // Luminosity Ratio
       LumiRatio[i] = float(LumiSum[0][i]) / float(LumiSum[1][i]);
@@ -1515,9 +1516,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
          // Calculate Asym and dAsym
          AsymCalculator::CalcAsymmetry(counts[0], counts[1], LumiSum[0][i], LumiSum[1][i], Asym[i], dAsym[i]);
 
-         printf("YYY: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-                i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-                Asym[i], dAsym[i]);
+         //printf("YYY: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+         //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+         //       Asym[i], dAsym[i]);
       } else {
           Asym[i] = 0;
          dAsym[i] = 1e6;
@@ -1548,16 +1549,16 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
       // ds temp fix: give huge errors to disabled strips
-      if ( gRunInfo->IsDisabledChannel(i+1) ) {
+      if ( gRunInfo->IsDisabledChannel(i+1) || gRunInfo->IsHamaChannel(i+1) ) {
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
          AsymPhiCorr[i] = 0;
          dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;
          dAsymPhiCorr[i] = 1e6;
       }
 
-      printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-             i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
-             Asym[i], dAsym[i]);
+      //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
+      //       i, aveA_N, counts[0], counts[1], LumiSum[0][i], LumiSum[1][i],
+      //       Asym[i], dAsym[i]);
    }
 
    // printing routine
