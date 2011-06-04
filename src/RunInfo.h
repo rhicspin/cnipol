@@ -108,6 +108,9 @@ public:
    Float_t     GetExpectedGlobalTimeOffset();
    Short_t     GetExpectedGlobalTdcOffset();
 	Bool_t      IsDisabledChannel(UShort_t chId);
+	void        SetDisabledChannel(UShort_t chId);
+	Bool_t      IsHamaChannel(UShort_t chId);
+	Bool_t      IsPmtChannel(UShort_t chId);
 };
 
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);

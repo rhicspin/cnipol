@@ -403,7 +403,7 @@ Bool_t ChannelEvent::PassCutEnabledChannel()
 {
    UShort_t chId = GetChannelId();
 
-   return !gRunInfo->fDisabledChannels[chId-1];
+   return !gRunInfo->IsDisabledChannel(chId);
 }
 
 
@@ -425,7 +425,19 @@ Bool_t ChannelEvent::PassCutPmtChannel()
 {
    UShort_t chId = GetChannelId();
 
-   if ((EPolarimeterId) gRunInfo->fPolId == kY2U && chId > NSTRIP && chId <= NSTRIP+4)
+   if ( gRunInfo->IsPmtChannel(chId) )
+      return true;
+
+  return false;
+}
+
+
+/** */
+Bool_t ChannelEvent::PassCutHamaChannel()
+{
+   UShort_t chId = GetChannelId();
+
+   if ( gRunInfo->IsHamaChannel(chId) )
       return true;
 
   return false;

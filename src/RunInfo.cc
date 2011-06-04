@@ -614,3 +614,32 @@ Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
 {
    return fDisabledChannels[chId-1] == 1;
 }
+
+
+/** */
+void RunInfo::SetDisabledChannel(UShort_t chId)
+{
+   fDisabledChannels[chId-1] = 1;
+}
+
+
+/** */
+Bool_t RunInfo::IsHamaChannel(UShort_t chId)
+{
+   if ( ( (EPolarimeterId) fPolId == kB2D || (EPolarimeterId) fPolId == kY1D) &&
+        ( (chId >= 13 && chId <= 24) || (chId >= 49 && chId <= 60) )
+      )
+      return true;
+
+   return false;
+}
+
+
+/** */
+Bool_t RunInfo::IsPmtChannel(UShort_t chId)
+{
+   if ((EPolarimeterId) fPolId == kY2U && chId > NSTRIP && chId <= NSTRIP+4)
+      return true;
+
+   return false;
+}

@@ -35,6 +35,8 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
       //if (iCh != 28) continue;
 
+      if (gRunInfo->IsDisabledChannel(iCh)) continue;
+
       sprintf(&sSt[0], "%02d", iCh);
 
       htemp     = (TH2F*) c->d["std"]->d["channel"+sSt]->o["hTimeVsEnergyA"+cutid+"_st"+sSt];
@@ -217,6 +219,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
    TH1D*  hMeanTime = 0;
    string strChId("  ");
 
+   // iCh 0 is the sum of all channels
    for (UShort_t iCh=0; iCh<=N_SILICON_CHANNELS; iCh++) {
 
       sprintf(&strChId[0], "%02d", iCh);
@@ -226,7 +229,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
          hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
       } else {
 
-         //if (gRunInfo->IsDisabledChannel(iCh)) continue;
+         if (gRunInfo->IsDisabledChannel(iCh)) continue;
 
          htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
          hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
@@ -240,6 +243,9 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
       if (htemp->Integral() < 1000) {
          Error("Calibrate", "Too few entries in histogram preproc/hTimeVsEnergyA_ch%02d. Skipped", iCh, iCh);
+
+         gRunInfo->SetDisabledChannel(iCh);
+
          continue;
       }
 
