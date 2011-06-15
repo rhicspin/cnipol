@@ -8,7 +8,7 @@
 
 <html>
 <head>
-  <title>Run Summary and Fast Offline Results (Index)</title>
+  <title>Run Database: RHIC p-Carbon polarimeters</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="main.css">
 </head>
 
@@ -85,12 +85,13 @@ $rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Target
-   <th colspan=2>Num. of Events
+   <th rowspan=2>Total Events
    <!--<th rowspan=2>Duration-->
-   <th rowspan=2>Analyzed <br> (version)
+   <th colspan=3>Analyzed
 <tr>
-   <th>Total
-   <th>Processed
+   <th>Frac
+   <th>Ver
+   <th>Date &amp; Time
 
 
 <?php
@@ -148,6 +149,12 @@ while ($e = mysql_fetch_assoc($rslt)):
 	if ($polId[2] == 'U') $cssPol .= " bold";
 	#if ($polId[2] == 'D') $cssPol .= "";
 
+   // Offline processed fraction
+   $processedFrac = "-";
+
+   if ( isset($e['nevents_total']) && isset($e['nevents_processed']) && $e['nevents_total'] != 0 )
+      $processedFrac = sprintf("%4.2f", $e['nevents_processed']/$e['nevents_total']);
+
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
 	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
@@ -163,8 +170,9 @@ while ($e = mysql_fetch_assoc($rslt)):
    <td class=align_cm><?=isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : "&nbsp;";?>
    <td class=align_cm><?=$targetId?>
    <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
-   <td align=right><?=isset($e['nevents_processed']) ? number_format($e['nevents_processed']) : "&nbsp;";?>
+   <td class=align_cm><?=$processedFrac?>
    <td class=align_cm><?=$asymVersion?>
+   <td class=align_cm><tt><?=isset($e['ana_start_time']) ? date("M d, Y H:i", strtotime($e['ana_start_time'])) : "&nbsp;";?></tt>
 
 
 <?php
@@ -187,12 +195,13 @@ endwhile;
 
 <tr>
 <td>
-<td>
 
+<td>
 <p>&nbsp;<br>
 <hr width="100%" size="2">
 
 <div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dsmirnov>Dmitri Smirnov</a>
 </div>
 
 <td>
