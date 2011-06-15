@@ -65,7 +65,7 @@ class RunSelector {
 
       echo "  <tr>
               <td colspan=4 class=padding2><b>Run:</b>
-              <input type=text name=rn>
+              <input type=text name=rn value='{$_GET['rn']}'>
               &nbsp;&nbsp;&nbsp;
               Use \"%\" to match any number of characters, use \"_\" to match any single character in run name
 
