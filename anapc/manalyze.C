@@ -40,9 +40,9 @@ void initialize()
 
    gH = new DrawObjContainer(gMAsymRoot);
 
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
-   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
-   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
+   //gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
+   //gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
    gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
 
    TString filelistPath("/eic/u/dsmirnov/run/");
@@ -257,8 +257,8 @@ void initialize()
 
    gH->SetSignature(gRC->GetSignature());
 
-   //TCanvas canvas("cName2", "cName2", 1400, 600);
-   //gH->SaveAllAs(canvas);
+   TCanvas canvas("cName2", "cName2", 1400, 600);
+   gH->SaveAllAs(canvas);
 
    gH->Write();
    //gH->Delete();
