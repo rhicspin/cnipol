@@ -92,7 +92,7 @@ extern AnaInfo                      *gAnaInfo;
 extern RunInfo                      *gRunInfo;
 extern AnaResult                    *gAnaResult;
 extern AsymRoot                     *gAsymRoot;
-extern AsymDb                       *gAsymDb;
+//extern AsymDb                       *gAsymDb;
 extern AsymDb                       *gAsymDb2;
 extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;

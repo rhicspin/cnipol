@@ -63,7 +63,7 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
          chCalib = &fChannelCalibs[i];
       }
 
-      TFitResultPtr fitres = Calibrate(htemp, hMeanTime);
+      TFitResultPtr fitres = CalibrateOld(htemp, hMeanTime);
 
       if (fitres.Get()) {
          chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
@@ -95,7 +95,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
       return;
    }
 
-   TFitResultPtr fitres = Calibrate(htemp, hMeanTime, 0, true);
+   TFitResultPtr fitres = CalibrateOld(htemp, hMeanTime, 0, true);
 
    // Put results into "channel 0"
    UInt_t chId = 0;
@@ -123,7 +123,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
-TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
    Double_t xmin = h->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
@@ -220,6 +220,14 @@ TFitResultPtr DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t c
 
    return fitres;
 } //}}}
+
+
+/** */
+ChannelCalib& DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+{
+   ChannelCalib *chCalib = new ChannelCalib();
+   return *chCalib;
+}
 
 
 /** */

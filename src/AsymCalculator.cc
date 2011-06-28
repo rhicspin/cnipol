@@ -15,6 +15,7 @@
 #include "AsymRoot.h"
 #include "AnaInfo.h"
 #include "AnaResult.h"
+#include "ChannelCalib.h"
 #include "RunInfo.h"
 #include "TargetInfo.h"
 #include "MseRunInfo.h"
@@ -1549,7 +1550,9 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
       dPt[i] = fabs(dRawP[i] / sin(-phit[i]));
 
       // ds temp fix: give huge errors to disabled strips
-      if ( gRunInfo->IsDisabledChannel(i+1) || gRunInfo->IsHamaChannel(i+1) ) {
+      //if ( gRunInfo->IsDisabledChannel(i+1) ) {   // || gRunInfo->IsHamaChannel(i+1) ) {
+      if (gAsymRoot->fEventConfig->fCalibrator->GetChannelFitStatus(i+1) != kDLFIT_OK) {
+
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
          AsymPhiCorr[i] = 0;
          dAsym[i] = dRawP[i] = dP[i] = dPt[i] = 1e6;

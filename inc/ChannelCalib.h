@@ -12,6 +12,12 @@
 
 #include "TObject.h"
 
+enum EFitStatus {
+   kUNKNOWN,
+   kDLFIT_OK,
+   kDLFIT_FAIL
+};
+
 class ChannelCalib;
 
 typedef std::vector<ChannelCalib>               ChannelCalibVec;
@@ -36,8 +42,9 @@ public:
    Float_t  fT0CoefErr;
    Float_t  fAvrgEMiss;
    Float_t  fAvrgEMissErr;
-   Float_t  fEMeasDLCorr;   //a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
+   Float_t  fEMeasDLCorr;   // a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
    Float_t  fBananaChi2Ndf;
+   UInt_t   fFitStatus;
 
 public:
 

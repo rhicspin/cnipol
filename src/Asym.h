@@ -16,6 +16,7 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 
 #include "TH1.h"
@@ -322,6 +323,78 @@ void  sqass(float A, float B, float C, float D, float *asym, float *easym);
 
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey);
 void  ReadRampTiming(char *filename);
+
+
+/** */
+template<class T> void ReadStlContainer(TBuffer &buf, std::set<T> &s)
+{
+   s.clear();
+
+   int size = 0;
+   buf >> size;
+
+   T value;
+
+   for (int i=0; i<size; i++) {
+      buf >> value;
+      s.insert(value);
+   }
+}
+
+
+/** */
+template<class T> void WriteStlContainer(TBuffer &buf, std::set<T> &s)
+{
+   buf << s.size();
+
+   typename std::set<T>::const_iterator is;
+
+   for (is=s.begin(); is!=s.end(); ++is) {
+      buf << *is;
+   }
+}
+
+
+/** */
+template<class T> std::string VecAsPhpArray(const std::vector<T>& v)
+{
+   std::stringstream ssChs("");
+
+   ssChs << "array(";
+
+   typename std::vector<T>::const_iterator iv;
+
+   for (iv=v.begin(); iv!=v.end(); ++iv) {
+      ssChs << *iv;
+      ssChs << (++iv == v.end() ? "" : ", ");
+      --iv;
+   }
+
+   ssChs << ")";
+
+   return ssChs.str();
+}
+
+
+template<class T> std::string SetAsPhpArray(const std::set<T>& s)
+{
+   std::stringstream ssChs("");
+
+   ssChs << "array(";
+
+   typename std::set<T>::const_iterator is;
+
+   for (is=s.begin(); is!=s.end(); ++is) {
+      ssChs << *is;
+      ssChs << (++is == s.end() ? "" : ", ");
+      --is;
+   }
+
+   ssChs << ")";
+
+   return ssChs.str();
+}
+
 
 template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m)
 {

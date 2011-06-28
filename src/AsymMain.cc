@@ -29,7 +29,7 @@
 
 #include "AsymRoot.h"
 #include "AsymRead.h"
-#include "AsymDbFile.h"
+//#include "AsymDbFile.h"
 #include "AsymDbSql.h"
 #include "AsymHbook.h"
 #include "MseRunInfo.h"
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
    gAsymRoot->GetRunConfigs(gRunInfo, gAnaInfo, gAnaResult);
 
-   gAsymDb  = new AsymDbFile();
+   //gAsymDb  = new AsymDbFile();
    gAsymDb2 = new AsymDbSql();
 
    // for get option
@@ -117,6 +117,8 @@ int main(int argc, char *argv[])
       {"set-calib",           required_argument,   0,   AnaInfo::OPTION_SET_CALIB},
       {"set-calib-alpha",     required_argument,   0,   AnaInfo::OPTION_SET_CALIB_ALPHA},
       {"set-calib-dl",        required_argument,   0,   AnaInfo::OPTION_SET_CALIB_DL},
+      {"disable-det",         required_argument,   0,   AnaInfo::OPTION_DET_DISABLE},
+      {"sfx",                 required_argument,   0,   AnaInfo::OPTION_SUFFIX},
       {0, 0, 0, 0}
    };
 
@@ -253,6 +255,7 @@ int main(int argc, char *argv[])
          break;
 
       case 'R':
+         sstr.str("");
          sstr << optarg;
          sstr >> gAnaInfo->fSaveTrees;
          break;
@@ -271,6 +274,16 @@ int main(int argc, char *argv[])
       case AnaInfo::OPTION_SET_CALIB:
          gAnaInfo->fAlphaCalibRun = optarg;
          gAnaInfo->fDlCalibRun    = optarg;
+         break;
+
+      case AnaInfo::OPTION_DET_DISABLE:
+         sstr.str("");
+         sstr << optarg;
+         sstr >> gAnaInfo->fDisabledDetectors;
+         break;
+
+      case AnaInfo::OPTION_SUFFIX:
+         gAnaInfo->fSuffix = optarg;
          break;
 
       case 'q':

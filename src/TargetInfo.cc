@@ -36,7 +36,7 @@ void TargetInfo::Print(const Option_t* opt) const
       "Index", "Linear", "Linear", "Rotary", "Rotary", "X", "Interval",
       "Time");
 
-   for (int i=0; i!=fNDelim; i++) {
+   for (UInt_t i=0; i!=fNDelim; i++) {
       printf("%5d %10d %10d %10d %10d %13.3f %13.3f %13.3f\n",
          Index[i], Linear[i][0], Linear[i][1], Rotary[i][0], Rotary[i][1],
          X[i], Interval[i], Time[i]);

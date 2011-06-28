@@ -15,8 +15,6 @@
 
 #include "TF1.h"
 #include "TF2.h"
-#include "TFitResult.h"
-#include "TFitResultPtr.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TMath.h"
@@ -40,11 +38,11 @@ public:
    DeadLayerCalibratorEDepend();
    ~DeadLayerCalibratorEDepend();
 
-   virtual void  Calibrate(DrawObjContainer *c);
-   virtual void  CalibrateFast(DrawObjContainer *c);
-   TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
-   void          PostCalibrate();
-   void          Print(const Option_t* opt="") const;
+   virtual void          Calibrate(DrawObjContainer *c);
+   virtual void          CalibrateFast(DrawObjContainer *c);
+   virtual ChannelCalib& Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
+   void                  PostCalibrate();
+   void                  Print(const Option_t* opt="") const;
 
 
    static RunConst sRunConst;

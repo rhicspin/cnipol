@@ -145,7 +145,7 @@ AnaInfo                  *gAnaInfo;
 RunInfo                  *gRunInfo;
 AnaResult                *gAnaResult;
 AsymRoot                 *gAsymRoot;
-AsymDb                   *gAsymDb;
+//AsymDb                   *gAsymDb;
 AsymDb                   *gAsymDb2;
 DbEntry                   gRunDb;
 RunConfig                 gRunConfig;

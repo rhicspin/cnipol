@@ -8,9 +8,10 @@
 #ifndef RunInfo_h
 #define RunInfo_h
 
-#include <vector>
+#include <bitset>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "TBuffer.h"
 #include "TColor.h"
@@ -68,21 +69,22 @@ public:
    int          NActiveStrip;
    int          NDisableStrip;
    int          fDisabledChannels[N_CHANNELS];
-   //std::vector<UShort_t>   fDisabledChannels;
+   std::vector<UShort_t>   fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
+   std::set<UShort_t>   fActiveSiliconChannels;
    int          NFilledBunch;
    int          NActiveBunch;
    int          NDisableBunch;
    int          DisableBunch[N_BUNCHES];
 	float        fProtoCutSlope;
 	float        fProtoCutOffset;
-	float        fProtoCutAdcMin; //!
-	float        fProtoCutAdcMax; //!
-	float        fProtoCutTdcMin; //!
-	float        fProtoCutTdcMax; //!
-	float        fPulserCutAdcMin; //!
-	float        fPulserCutAdcMax; //!
-	float        fPulserCutTdcMin; //!
-	float        fPulserCutTdcMax; //!
+	float        fProtoCutAdcMin;
+	float        fProtoCutAdcMax;
+	float        fProtoCutTdcMin;
+	float        fProtoCutTdcMax;
+	float        fPulserCutAdcMin;
+	float        fPulserCutAdcMax;
+	float        fPulserCutTdcMin;
+	float        fPulserCutTdcMax;
 
 public:
 
@@ -107,6 +109,7 @@ public:
    void        SetPolarimetrIdRhicBeam(const char* RunID);
    Float_t     GetExpectedGlobalTimeOffset();
    Short_t     GetExpectedGlobalTdcOffset();
+   void        DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
 	Bool_t      IsDisabledChannel(UShort_t chId);
 	void        SetDisabledChannel(UShort_t chId);
 	Bool_t      IsHamaChannel(UShort_t chId);
