@@ -14,7 +14,7 @@ using namespace std;
 
 /** */
 AnaInfo::AnaInfo() :
-   fRunName          (""),
+   fRunName          (""), fSuffix(""),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -37,6 +37,7 @@ AnaInfo::AnaInfo() :
    RAMPMODE          (0),
    STUDYMODE         (0),
    fSaveTrees        (0),
+   fDisabledDetectors(0),
    MassSigma         (3),
    MassSigmaAlt      (2),
    OneSigma          (CARBON_MASS_PEAK_SIGMA),
@@ -57,7 +58,7 @@ AnaInfo::AnaInfo() :
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
    fUserGroup(gSystem->GetUserInfo())
 {
    Init();
@@ -68,7 +69,7 @@ AnaInfo::AnaInfo() :
  * Default Values for Run Condition
  */
 AnaInfo::AnaInfo(string runId) :
-   fRunName          (runId),
+   fRunName          (runId), fSuffix(""),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -91,6 +92,7 @@ AnaInfo::AnaInfo(string runId) :
    RAMPMODE          (0),
    STUDYMODE         (0),
    fSaveTrees        (0),
+   fDisabledDetectors(0),
    MassSigma         (3),
    MassSigmaAlt      (2),
    OneSigma          (CARBON_MASS_PEAK_SIGMA),
@@ -111,7 +113,7 @@ AnaInfo::AnaInfo(string runId) :
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe.log"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
    fUserGroup(gSystem->GetUserInfo())
 {
    Init();
@@ -173,12 +175,13 @@ void AnaInfo::MakeOutDir()
 }
 
 string AnaInfo::GetRunName()         const { return fRunName; }
+string AnaInfo::GetSuffix()          const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
 string AnaInfo::GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
-string AnaInfo::GetImageDir()        const { return GetOutDir() + "/images"; }
-string AnaInfo::GetRunInfoFileName() const { return GetOutDir() + "/runconfig.php"; }
-string AnaInfo::GetRunConfFileName() const { return GetOutDir() + "/config_calib.dat"; }
-string AnaInfo::GetStdLogFileName()  const { return GetOutDir() + "/" + fFileStdLogName; }
-string AnaInfo::GetRootFileName()    const { return GetOutDir() + "/" + fRunName + ".root"; }
+string AnaInfo::GetImageDir()        const { return GetOutDir() + "/images" + GetSuffix(); }
+string AnaInfo::GetRunInfoFileName() const { return GetOutDir() + "/runconfig" + GetSuffix() + ".php"; }
+string AnaInfo::GetRunConfFileName() const { return GetOutDir() + "/config_calib" + GetSuffix() + ".dat"; }
+string AnaInfo::GetStdLogFileName()  const { return GetOutDir() + "/" + fFileStdLogName + GetSuffix() + ".log"; }
+string AnaInfo::GetRootFileName()    const { return GetOutDir() + "/" + fRunName + GetSuffix() + ".root"; }
 FILE*  AnaInfo::GetRunInfoFile()     const { return fFileRunInfo; }
 FILE*  AnaInfo::GetRunConfFile()     const { return fFileRunConf; }
 
@@ -248,7 +251,7 @@ string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 {
    string filename;
    filename.reserve(GetOutDir().size() + fRunName.size() + 20);
-   sprintf(&filename[0], "%s/%s_tree_%02d.root", GetOutDir().c_str(), fRunName.c_str(), trid);
+   sprintf(&filename[0], "%s/%s%s_tree_%02d.root", GetOutDir().c_str(), fRunName.c_str(), GetSuffix().c_str(), trid);
    return filename;
 }
 
@@ -298,6 +301,11 @@ void AnaInfo::ProcessOptions()
       fDlCalibRun        = "";
       gRunInfo->fMeasType = kMEASTYPE_ALPHA;
    }
+
+   // Disable channels if requested by user
+   if ( fDisabledDetectors.any() ) {
+      gRunInfo->DisableChannels(fDisabledDetectors);
+   }
 }
 
 
@@ -336,11 +344,13 @@ void AnaInfo::Print(const Option_t* opt) const
 void AnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
+   fprintf(f, "$rc['fSuffix']                      = \"%s\";\n", fSuffix.c_str());
    fprintf(f, "$rc['enel']                         = %d;\n",     enel);
    fprintf(f, "$rc['eneu']                         = %d;\n",     eneu);
    fprintf(f, "$rc['widthl']                       = %d;\n",     widthl);
    fprintf(f, "$rc['widthu']                       = %d;\n",     widthu);
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
+   fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
    fprintf(f, "$rc['thinout']                      = %u;\n",     thinout);
@@ -439,6 +449,7 @@ void AnaInfo::Streamer(TBuffer &buf)
    if (buf.IsReading()) {
       //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
       buf >> tstr; fRunName = tstr.Data();
+      buf >> tstr; fSuffix  = tstr.Data();
       buf >> enel;
       buf >> eneu;
       buf >> widthl;
@@ -457,6 +468,7 @@ void AnaInfo::Streamer(TBuffer &buf)
    } else {
       //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
       tstr = fRunName; buf << tstr;
+      tstr = fSuffix;  buf << tstr;
       buf << enel;
       buf << eneu;
       buf << widthl;

@@ -12,13 +12,13 @@ ClassImp(DrawObjContainer)
 using namespace std;
 
 /** Default constructor. */
-DrawObjContainer::DrawObjContainer() : TObject(), fDir(), o(), d(), fSignature("")
+DrawObjContainer::DrawObjContainer() : TObject(), fSignature(""), fDir(), o(), d()
 {
    fDir = gDirectory;
    fDir->cd();
 }
 
-DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fDir(dir), d(), fSignature("")
+DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fSignature(""), fDir(dir), d()
 {
 }
 

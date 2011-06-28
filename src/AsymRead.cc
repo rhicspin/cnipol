@@ -232,7 +232,7 @@ void RawDataProcessor::ReadDataFast()
 
       mSeek = mSeek + mHeader->len;
 
-      recordReadATStruct *ATPtrF;
+      //recordReadATStruct *ATPtrF;
       recordReadATStruct *ATPtr;
 
       for (UInt_t i=0; i<recSize; ) {
@@ -1088,7 +1088,8 @@ void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
    // copy data to a linear array
    Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
-   for (UInt_t k=0; k<gNDelimeters; k++) {
+   //for (UInt_t k=0; k<gNDelimeters; k++)
+   for (Int_t k=0; k<gNDelimeters; k++) {
 
       //*(linRec + k + 1      )      = *++rec; // Horizontal target
       //*(linRec + k + (gNDelimeters+2)  ) = *++rec;

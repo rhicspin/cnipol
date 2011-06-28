@@ -98,7 +98,7 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
 void MseRunInfoX::Streamer(TBuffer &buf)
 {
    TString tstr;
-   short   smallint;
+   //short   smallint;
    time_t  tmp_time_t;
 
    if (buf.IsReading()) {

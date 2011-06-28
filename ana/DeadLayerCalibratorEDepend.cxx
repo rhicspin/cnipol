@@ -5,6 +5,9 @@
 
 #include "DeadLayerCalibratorEDepend.h"
 
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
+
 #include "RunInfo.h"
 
 ClassImp(DeadLayerCalibratorEDepend)
@@ -29,63 +32,69 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 { //{{{
    TH2F*  htemp     = 0;
    TH1D*  hMeanTime = 0;
-   string sSt("  ");
+   string strChId("  ");
    string cutid     = "_cut2";
 
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
-      //if (iCh != 28) continue;
+   // iCh=0 is the sum of all channels
+   // Special treatment for combined histogram
+   htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
+   hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
-      if (gRunInfo->IsDisabledChannel(iCh)) continue;
+   fChannelCalibs[0] = Calibrate(htemp, hMeanTime, 0, false);
 
-      sprintf(&sSt[0], "%02d", iCh);
+   // Now calibrate individual active channels
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
 
-      htemp     = (TH2F*) c->d["std"]->d["channel"+sSt]->o["hTimeVsEnergyA"+cutid+"_st"+sSt];
-      hMeanTime = (TH1D*) c->d["std"]->d["channel"+sSt]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+sSt];
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
 
-      if (!htemp || !hMeanTime) {
-         Error("Calibrate", "Histogram channel%02d/hTimeVsEnergyA%s_st%02d does not exist",
-               iCh, cutid.c_str(), iCh);
-         Error("Calibrate", "Histogram channel%02d/hFitMeanTimeVsEnergyA%s_st%02d does not exist",
-               iCh, cutid.c_str(), iCh);
-         continue;
-      }
+      // should be removed in the future
+      //if (gRunInfo->IsDisabledChannel(*iCh)) continue;
 
-      if (htemp->Integral() < 2000) {
-         Error("Calibrate", "Too few entries in histogram channel%02d/hTimeVsEnergyA%s_st%02d. Skipped",
-               iCh, cutid.c_str(), iCh);
-         continue;
-      }
+      sprintf(&strChId[0], "%02d", *iCh);
 
-      ChannelCalib *chCalib;
-      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(iCh);
+      htemp     = (TH2F*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_st"+strChId];
+      hMeanTime = (TH1D*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+strChId];
 
-      if (iChCalib != fChannelCalibs.end())  {
-         chCalib = &iChCalib->second;
-      } else {
-         ChannelCalib newChCalib;
-         fChannelCalibs[iCh] = newChCalib;
-         chCalib = &fChannelCalibs[iCh];
-      }
-
-      // Set static RunConst with current channel RunConst
-      //sRunConst = gRunConsts[iCh];
-
-      TFitResultPtr fitres = Calibrate(htemp, hMeanTime, iCh, false);
-
-      if (fitres.Get()) {
-         chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-         chCalib->fT0Coef        = fitres->Value(0);
-         chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
-         chCalib->fDLWidth       = fitres->Value(1);
-         chCalib->fDLWidthErr    = fitres->FitResult::Error(1);
-      } else {
-         Error("Calibrate", "Empty TFitResultPtr");
-      }
-
-      //delete fitres.Get();
+      fChannelCalibs[*iCh] = Calibrate(htemp, hMeanTime, *iCh, false);
    }
 
    PostCalibrate();
+} //}}}
+
+
+/** */
+void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
+{ //{{{
+   TH2F*  htemp     = 0;
+   TH1D*  hMeanTime = 0;
+   string strChId("  ");
+
+   // iCh=0 is the sum of all channels
+   // Special treatment for combined histogram
+   htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
+   hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+
+   fChannelCalibs[0] = Calibrate(htemp, hMeanTime, 0, false);
+
+   // Now calibrate individual active channels
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      // should be removed in the future
+      //if (gRunInfo->IsDisabledChannel(*iCh)) continue;
+
+      sprintf(&strChId[0], "%02d", *iCh);
+
+      htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
+      hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
+
+      fChannelCalibs[*iCh] = Calibrate(htemp, hMeanTime, *iCh, false);
+   }
 } //}}}
 
 
@@ -106,14 +115,14 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
    // This needs to be optimized! Unacceptable double loops
    for (mi=mb; mi!=me; ++mi) {
 
-      if (mi->first <= 0) continue;
+      if (mi->first <= 0) continue; // skip the common fit for all channels
 
-      ChannelCalib &ch = mi->second;
+      ChannelCalib &chCalib = mi->second;
       short iDet = (short) floor((mi->first-1)/12);
 
       //printf("\niDet: %d, %d\n", iDet, mi->first);
-      //printf("ch: %f, %f\n", detT0Coef[iDet], detDLWidth[iDet]);
-      //ch.Print();
+      //printf("chCalib: %f, %f\n", detT0Coef[iDet], detDLWidth[iDet]);
+      //chCalib.Print();
 
       // Check if the average was already found
       map<UShort_t, Float_t>::iterator iDetT0Coef = detT0Coef.find(iDet);
@@ -126,7 +135,7 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
 
          for (mi2=mb; mi2!=me; ++mi2) {
 
-            if (mi2->first <= 0) continue;
+            if (mi2->first <= 0) continue; // skip the common fit for all channels
 
             ChannelCalib &ch2 = mi2->second;
             short iDet2 = (short) floor((mi2->first-1)/12);
@@ -149,165 +158,33 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
       }
 
       // the following comes from run 9 analysis, see macro/KinFit.C
-      ch.fAvrgEMiss   = 0.235 + 1.1013 * detDLWidth[iDet] +
+      chCalib.fAvrgEMiss   = 0.235 + 1.1013 * detDLWidth[iDet] +
                         0.0075 * detDLWidth[iDet] * detDLWidth[iDet];
 
-      ch.fEMeasDLCorr = 1.0098 + 0.0036 * detDLWidth[iDet];
+      chCalib.fEMeasDLCorr = 1.0098 + 0.0036 * detDLWidth[iDet];
 
-      // Assign average to channels with no values
-      if (ch.fT0Coef == 0) ch.fT0Coef = detT0Coef[iDet];
+      // Assign average to channels with failed fits
+      if (chCalib.fFitStatus != kDLFIT_OK)
+         chCalib.fT0Coef = detT0Coef[iDet];
    }
 } //}}}
 
 
 /** */
-void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
+ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
+   ChannelCalib *chCalib = new ChannelCalib();
 
-/*
-   TH2F *htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
-   TH1D *hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-
-   if (!htemp || !hMeanTime) {
-      Error("CalibrateFast", "Histogram preproc/hTimeVsEnergyA does not exist");
-      Error("CalibrateFast", "Histogram preproc/hFitMeanTimeVsEnergyA does not exist");
-      return;
+   if (!h || !hMeanTime) {
+      Error("Calibrate", "Provided histogram for channel %02d does not exist", chId, chId);
+      return *chCalib;
    }
 
-   if (htemp->Integral() < 1000) {
-      Error("CalibrateFast", "Too few entries in histogram preproc/hTimeVsEnergyA. Skipped");
-      return;
+   if (h->Integral() < 2000) {
+      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", h->GetName());
+      return *chCalib;
    }
 
-   //sRunConst = gRunConsts[0];
-
-   TFitResultPtr fitres = Calibrate(htemp, hMeanTime, 0, true);
-
-   // Put results into "channel 0"
-   UInt_t chId = 0;
-   ChannelCalib *chCalib;
-   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
-
-   if (iChCalib != fChannelCalibs.end())  {
-      chCalib = &iChCalib->second;
-   } else {
-      ChannelCalib newChCalib;
-      fChannelCalibs[chId] = newChCalib;
-      chCalib = &fChannelCalibs[chId];
-   }
-
-   if (fitres.Get()) {
-      chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-      chCalib->fT0Coef        = fitres->Value(0);
-      chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
-      chCalib->fDLWidth       = fitres->Value(1);
-      chCalib->fDLWidthErr    = fitres->FitResult::Error(1);
-
-      // the following comes from run9 analysis, namely macro/KinFit.C
-      chCalib->fAvrgEMiss     = 0.235 + 1.1013 * chCalib->fDLWidth +
-                                0.0075 * chCalib->fDLWidth * chCalib->fDLWidth;
-      chCalib->fEMeasDLCorr   = 1.0098 + 0.0036 * chCalib->fDLWidth;
-   
-      //fitres.Get()->Delete();
-
-   } else {
-      Error("CalibrateFast", "Empty TFitResultPtr");
-   }
-*/
-
-   TH2F*  htemp     = 0;
-   TH1D*  hMeanTime = 0;
-   string strChId("  ");
-
-   // iCh 0 is the sum of all channels
-   for (UShort_t iCh=0; iCh<=N_SILICON_CHANNELS; iCh++) {
-
-      sprintf(&strChId[0], "%02d", iCh);
-
-      if (iCh == 0) {
-         htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
-         hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-      } else {
-
-         if (gRunInfo->IsDisabledChannel(iCh)) continue;
-
-         htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-         hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
-      }
-
-      if (!htemp || !hMeanTime) {
-         Error("Calibrate", "Histogram preproc/hTimeVsEnergyA_ch%02d does not exist", iCh, iCh);
-         Error("Calibrate", "Histogram preproc/hFitMeanTimeVsEnergyA_ch%02d does not exist", iCh, iCh);
-         continue;
-      }
-
-      if (htemp->Integral() < 2000) {
-         Error("Calibrate", "Too few entries in histogram preproc/hTimeVsEnergyA_ch%02d. Skipped", iCh, iCh);
-
-         gRunInfo->SetDisabledChannel(iCh);
-
-         continue;
-      }
-
-      ChannelCalib *chCalib;
-      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(iCh);
-
-      if (iChCalib != fChannelCalibs.end())  {
-         chCalib = &iChCalib->second;
-      } else {
-         ChannelCalib newChCalib;
-         fChannelCalibs[iCh] = newChCalib;
-         chCalib = &fChannelCalibs[iCh];
-      }
-
-      // Set static RunConst with current channel RunConst
-      //sRunConst = gRunConsts[iCh];
-
-      TFitResultPtr fitres = Calibrate(htemp, hMeanTime, iCh, false);
-
-      if (hMeanTime->Integral() < 0) {
-         gRunInfo->SetDisabledChannel(iCh);
-         continue;
-      }
-
-      if (fitres.Get()) {
-
-         // If something wrong with the fit simply disable the channel
-         if (fitres->FitResult::Status() != 0) {
-            
-            gRunInfo->SetDisabledChannel(iCh);
-            continue;
-         }
-
-         chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-
-         if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
-            gRunInfo->SetDisabledChannel(iCh);
-            continue;
-         }
-
-         chCalib->fT0Coef        = fitres->Value(0);
-         chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
-         chCalib->fDLWidth       = fitres->Value(1);
-         chCalib->fDLWidthErr    = fitres->FitResult::Error(1);
-
-         // the following comes from run9 analysis, namely macro/KinFit.C
-         chCalib->fAvrgEMiss     = 0.235 + 1.1013 * chCalib->fDLWidth +
-                                   0.0075 * chCalib->fDLWidth * chCalib->fDLWidth;
-         chCalib->fEMeasDLCorr   = 1.0098 + 0.0036 * chCalib->fDLWidth;
-      } else {
-         Error("Calibrate", "Empty TFitResultPtr");
-         gRunInfo->SetDisabledChannel(iCh);
-      }
-   }
-
-   //PostCalibrate();
-} //}}}
-
-
-/** */
-TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{ //{{{
    Double_t xmin = h->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
    //xmin = xmin == 0 ? 1 : xmin;
@@ -331,8 +208,8 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
 
    delete gausFitFunc;
 
-   //hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
-   //hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX(), ((TH1D*) fitResHists[1])->GetArray());
+   //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
+   //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX(), ((TH1D*) fitResHists[1])->GetArray());
    // Copy 
    TH1* hmeans  = (TH1D*) fitResHists->At(1);
    //TH1* hsigmas = (TH1D*) fitResHists[2];
@@ -344,6 +221,11 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
       //Double_t berr  = hsigmas->GetBinContent(ib);
       hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
       hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
+   }
+
+   if (hMeanTime->Integral() < 0) {
+      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", h->GetName());
+      return *chCalib;
    }
 
    delete fitResHists;
@@ -424,17 +306,49 @@ TFitResultPtr DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
 
    delete bananaFitFunc;
 
-   return fitres;
+   if (fitres.Get()) {
+
+      // If something is wrong with the channel mark it accordingly
+      if (fitres->FitResult::Status() != 0) {
+         chCalib->fFitStatus = kDLFIT_FAIL;
+         return *chCalib;
+      }
+
+      chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
+
+      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
+         chCalib->fFitStatus = kDLFIT_FAIL;
+         return *chCalib;
+      }
+
+      chCalib->fFitStatus     = kDLFIT_OK;
+      chCalib->fT0Coef        = fitres->Value(0);
+      chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
+      chCalib->fDLWidth       = fitres->Value(1);
+      chCalib->fDLWidthErr    = fitres->FitResult::Error(1);
+
+      // the following comes from run9 analysis, namely macro/KinFit.C
+      chCalib->fAvrgEMiss     = 0.235 + 1.1013 * chCalib->fDLWidth +
+                                0.0075 * chCalib->fDLWidth * chCalib->fDLWidth;
+      chCalib->fEMeasDLCorr   = 1.0098 + 0.0036 * chCalib->fDLWidth;
+
+   } else {
+      Error("Calibrate", "Empty TFitResultPtr");
+      chCalib->fFitStatus = kDLFIT_FAIL;
+   }
+
+   //return fitres;
+   return *chCalib;
 } //}}}
 
 
 /** */
 void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
-{
+{ //{{{
    opt = "";
 
    printf("DeadLayerCalibratorEDepend:\n");
-}
+} //}}}
 
 
 RunConst DeadLayerCalibratorEDepend::sRunConst  = RunConst();
@@ -480,7 +394,7 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
 
 
 BananaFitFunctor::BananaFitFunctor(UShort_t chId)
-{
+{ //{{{
    for (int i=0; i<=4; i++) {
       fCp0[i] = DeadLayerCalibratorEDepend::cp0[i];
       fCp1[i] = DeadLayerCalibratorEDepend::cp1[i];
@@ -490,7 +404,7 @@ BananaFitFunctor::BananaFitFunctor(UShort_t chId)
    }
 
    fRunConst = gRunConsts[chId];
-}
+} //}}}
 
 
 /** */
@@ -500,7 +414,7 @@ BananaFitFunctor::~BananaFitFunctor()
 
 /** */
 Double_t BananaFitFunctor::operator()(double *x, double *p)
-{
+{ //{{{
    Double_t pp[5];
    Double_t x0 = x[0];
    Double_t x2 = x0*x0;
@@ -527,4 +441,4 @@ Double_t BananaFitFunctor::operator()(double *x, double *p)
    Double_t t_meas = (Ekin != 0.0) ?  fRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
 
    return t_meas;
-}
+} //}}}

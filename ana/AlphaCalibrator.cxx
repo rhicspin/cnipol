@@ -9,6 +9,7 @@ ClassImp(AlphaCalibrator)
 
 using namespace std;
 
+
 /** Default constructor. */
 AlphaCalibrator::AlphaCalibrator() : Calibrator()
 {
@@ -23,7 +24,7 @@ AlphaCalibrator::~AlphaCalibrator()
 
 /** */
 void AlphaCalibrator::Calibrate(DrawObjContainer *c)
-{
+{ //{{{
 	Info("Calibrate", "Executing Calibrate()");
 
    string    sCh("  ");
@@ -125,7 +126,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    }
 
    CalibrateBadChannels(c);
-}
+} //}}}
 
 
 /** */
@@ -137,7 +138,7 @@ void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
 
 /** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
-{
+{ //{{{
    TFitResultPtr fitres = 0;
 
    h->Print();
@@ -173,7 +174,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
    //fitres->Print("V");
 
    return fitres;
-}
+} //}}}
 
 
 /** */
@@ -184,7 +185,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
 
 /** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
-{
+{ //{{{
    Double_t aMean = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetMean();
    Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetRMS();
    Double_t iMean = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetMean();
@@ -266,7 +267,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 
       ch.fICoef = detAve;
    }
-}
+} //}}}
 
 
 /** */

@@ -89,11 +89,11 @@ void MAsymPmtHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 void MAsymPmtHists::Fill(EventConfig &rc)
 { //{{{
    Double_t runId            = rc.fRunInfo->RUNID;
-   UInt_t   fillId           = (UInt_t) runId;
+   //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
-   Short_t  targetId         = rc.fMseRunInfoX->target_id;
-   Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
+   //Short_t  targetId         = rc.fMseRunInfoX->target_id;
+   //Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
    Float_t  pmtV1T0          = rc.fAnaResult->fPmtV1T0    * WFD_TIME_UNIT_HALF;
    Float_t  pmtV1T0Err       = rc.fAnaResult->fPmtV1T0Err * WFD_TIME_UNIT_HALF;
    Float_t  pmtS1T0          = rc.fAnaResult->fPmtS1T0    * WFD_TIME_UNIT_HALF;
@@ -116,7 +116,6 @@ void MAsymPmtHists::Fill(EventConfig &rc)
    string strBeamE = RunConfig::AsString((EBeamEnergy) beamEnergy);
 
    TGraphErrors *graphErrs = 0;
-   TGraph       *graph     = 0;
    UInt_t        nPoints   = 0;
 
    // t0

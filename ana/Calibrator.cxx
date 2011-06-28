@@ -15,6 +15,7 @@ ClassImp(Calibrator)
 
 using namespace std;
 
+
 /** Default constructor. */
 Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs()
 {
@@ -35,7 +36,7 @@ Calibrator::~Calibrator()
 
 /** */
 ChannelCalib* Calibrator::GetAverage()
-{
+{ //{{{
 	//Info("GetAverage", "Executing GetAverage()");
 
    ChannelCalib *ch = new ChannelCalib();
@@ -69,12 +70,12 @@ ChannelCalib* Calibrator::GetAverage()
    }
 
    return ch;
-}
+} //}}}
 
 
 /** */
 void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
-{
+{ //{{{
    ChannelCalibMap::const_iterator mi;
    ChannelCalibMap::const_iterator mb = calibrator.fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = calibrator.fChannelCalibs.end();
@@ -91,7 +92,7 @@ void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
          fChannelCalibs[mi->first] = newChCalib;
       }
    }
-}
+} //}}}
 
 
 /** */
@@ -140,9 +141,30 @@ Float_t Calibrator::GetTimeOfFlight(UShort_t tdc, UShort_t chId) const
 
 
 /** */
-TFitResultPtr Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+TFitResultPtr Calibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 {
    return 0;
+}
+
+
+/** */
+ChannelCalib& Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+{
+   ChannelCalib *chCalib = new ChannelCalib();
+   return *chCalib;
+}
+
+
+/** */
+UInt_t Calibrator::GetChannelFitStatus(UShort_t chId)
+{
+   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
+
+   if (iChCalib != fChannelCalibs.end()) {
+      return iChCalib->second.fFitStatus;
+   }
+
+   return kUNKNOWN;
 }
 
 

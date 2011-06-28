@@ -122,9 +122,13 @@ void CnipolHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   for (int i=1; i<=N_SILICON_CHANNELS; i++) {
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
 
-      sprintf(dName, "channel%02d", i);
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      sprintf(dName, "channel%02d", *iCh);
 
       isubdir = d.find(dName);
 
@@ -135,47 +139,47 @@ void CnipolHists::BookHists(string cutid)
          oc = isubdir->second;
       }
 
-      //sprintf(fname, "banana_nominal%s_st%02d", cutid.c_str(), i);
+      //sprintf(fname, "banana_nominal%s_st%02d", cutid.c_str(), *iCh);
       //banana_cut_l = new TF1(fname, formula, 0, 1500);
 
       // Time vs Energy from amplitude
-      sprintf(hName, "hTimeVsEnergyA%s_st%02d", cutid.c_str(), i);
+      sprintf(hName, "hTimeVsEnergyA%s_st%02d", cutid.c_str(), *iCh);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
       //((TH1*) oc->o[hName])->GetListOfFunctions()->Add(banana_cut_l);
 
       // TOF vs Kinematic Energy
-      sprintf(hName, "hTofVsKinEnergyA%s_ch%02d", cutid.c_str(), i);
+      sprintf(hName, "hTofVsKinEnergyA%s_ch%02d", cutid.c_str(), *iCh);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 100);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
-      sprintf(hName, "hFitMeanTimeVsEnergyA%s_st%02d", cutid.c_str(), i);
+      sprintf(hName, "hFitMeanTimeVsEnergyA%s_st%02d", cutid.c_str(), *iCh);
       oc->o[hName] = new TH1D(hName, hName, 100, 0, 2500);
       ((TH2F*) oc->o[hName])->SetOption("E1 NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
       ((TH1*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 120);
 
-      //sprintf(hName, "hDLVsEnergyA%s_st%02d", cutid.c_str(), i);
+      //sprintf(hName, "hDLVsEnergyA%s_st%02d", cutid.c_str(), *iCh);
       //oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
       //((TH1*) oc->o[hName])->SetOption("colz NOIMG");
       ////((TH2F*) oc->o[hName])->GetYaxis()->SetRangeUser(0, 20000);
 
-      //sprintf(hName, "hDLVsTotalEnergy%s_st%02d", cutid.c_str(), i);
+      //sprintf(hName, "hDLVsTotalEnergy%s_st%02d", cutid.c_str(), *iCh);
       //oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 400);
       //((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
-      //sprintf(hName, "hDLVsTime%s_st%02d", cutid.c_str(), i);
+      //sprintf(hName, "hDLVsTime%s_st%02d", cutid.c_str(), *iCh);
       //oc->o[hName] = new TH2F(hName, hName, 100, 0, 100, 100, 0, 400);
       //((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
-      //sprintf(hName, "hTotalEnergyVsEnergyA%s_st%02d", cutid.c_str(), i);
+      //sprintf(hName, "hTotalEnergyVsEnergyA%s_st%02d", cutid.c_str(), *iCh);
       //oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 100, 0, 2000);
       //((TH1*) oc->o[hName])->SetOption("colz NOIMG");
 
       // Delim (time) vs Spin vs Channel Id
-      sprintf(hName, "hSpinVsDelim%s_st%02d", cutid.c_str(), i);
+      sprintf(hName, "hSpinVsDelim%s_st%02d", cutid.c_str(), *iCh);
       oc->o[hName] = new TH2I(hName, hName, 1, 0, 1, NUM_SPIN_STATES, -1.5, 1.5);
       ((TH1*) oc->o[hName])->SetOption("NOIMG");
 
@@ -311,12 +315,16 @@ void CnipolHists::PreFill(string cutid)
    char dName[256];
    char hName[256];
 
-   for (int i=1; i<=N_SILICON_CHANNELS; i++) {
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
 
-      sprintf(dName, "channel%02d", i);
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      sprintf(dName, "channel%02d", *iCh);
       DrawObjContainer *oc = d.find(dName)->second;
 
-      sprintf(hName, "hSpinVsDelim%s_st%02d", cutid.c_str(), i);
+      sprintf(hName, "hSpinVsDelim%s_st%02d", cutid.c_str(), *iCh);
       ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, NUM_SPIN_STATES, -1.5, 1.5);
    }
 }
@@ -340,11 +348,14 @@ void CnipolHists::PostFill()
       TH1* hTimeVsEnergyA   = (TH1*) o["hTimeVsEnergyA"+sCutId];
       TH1* hTofVsKinEnergyA = (TH1*) o["hTofVsKinEnergyA"+sCutId];
    
-      for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
+      set<UShort_t>::const_iterator iCh;
+      set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+      set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
 
+      for (iCh=iChB; iCh!=iChE; ++iCh) {
 
          string sChId("  ");
-         sprintf(&sChId[0], "%02d", iCh);
+         sprintf(&sChId[0], "%02d", *iCh);
 
          DrawObjContainer *oc = d.find("channel"+sChId)->second;
 
@@ -356,8 +367,7 @@ void CnipolHists::PostFill()
 
          // Fill final kinematic histograms using calib constants
          //TH2* hTofVsKinEnergyA_channel = (TH2*) oc->o["hTofVsKinEnergyA"+sCutId+"_ch"+sChId];
-         //ConvertRawToKin(hTVsA_channel, hTofVsKinEnergyA_channel, iCh);
-
+         //ConvertRawToKin(hTVsA_channel, hTofVsKinEnergyA_channel, *iCh);
       }
    }
 }
@@ -372,12 +382,16 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
    string cutid = "_cut2";
 
    // Draw superimposed for all channels
-   for (UShort_t i=1; i<=N_CHANNELS; i++) {
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
 
       //if (i+1 != 28) continue;
 
       string sSi("  ");
-      sprintf(&sSi[0], "%02d", i);
+      sprintf(&sSi[0], "%02d", *iCh);
       string dName = "channel" + sSi;
       string cName = "c_combo_st" + sSi;
 

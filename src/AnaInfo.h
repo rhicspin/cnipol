@@ -38,7 +38,9 @@ public:
    enum Option {OPTION_POL_ID          = 0x20004000,
                 OPTION_SET_CALIB       = 0x20003000,
                 OPTION_SET_CALIB_ALPHA = 0x20001000,
-                OPTION_SET_CALIB_DL    = 0x20002000};
+                OPTION_SET_CALIB_DL    = 0x20002000,
+                OPTION_DET_DISABLE     = 0x20000001,
+                OPTION_SUFFIX          = 0x20000002};
 
    // Various histogramming and running modes
    enum Mode   {MODE_ALPHA             = 0x01010000,
@@ -58,6 +60,7 @@ public:
 
    // Constraint parameter for data processing 
    std::string      fRunName;           // Run name
+   std::string      fSuffix;            // Additional unique identifier for analysis job
    int              enel;               // lower kinetic energy threshold (keV)
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)
@@ -80,6 +83,7 @@ public:
    int              RAMPMODE;           // if 1 prepare the histograms for ramp measurement
    int              STUDYMODE;          // if 1 study mode
    std::bitset<3>   fSaveTrees;         // bitmask telling which ROOT trees to save
+   std::bitset<N_DETECTORS>   fDisabledDetectors;   // bitmask with disabled detector indeces
    float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
    float            MassSigmaAlt;       // banana curve alternative cut within
                                         // <MassSigmaAlt> away from the 12C mass
@@ -117,6 +121,7 @@ public:
    ~AnaInfo();
 
    std::string GetRunName() const;
+   std::string GetSuffix() const;
    std::string GetRawDataFileName() const;
    std::string GetResultsDir() const;
    std::string GetOutDir() const;
