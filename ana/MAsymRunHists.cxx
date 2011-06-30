@@ -455,15 +455,15 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 void MAsymRunHists::Fill(EventConfig &rc)
 {
    Double_t runId            = rc.fRunInfo->RUNID;
-   UInt_t   fillId           = (UInt_t) runId;
+   //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
    time_t   runStartTime     = rc.fRunInfo->StartTime;
    Short_t  targetId         = rc.fMseRunInfoX->target_id;
    Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
-   Float_t  ana_power        = rc.fAnaResult->A_N[1];
-   Float_t  asymmetry        = rc.fAnaResult->sinphi[0].P[0] * rc.fAnaResult->A_N[1];
-   Float_t  asymmetryErr     = rc.fAnaResult->sinphi[0].P[1] * rc.fAnaResult->A_N[1];
+   //Float_t  ana_power        = rc.fAnaResult->A_N[1];
+   //Float_t  asymmetry        = rc.fAnaResult->sinphi[0].P[0] * rc.fAnaResult->A_N[1];
+   //Float_t  asymmetryErr     = rc.fAnaResult->sinphi[0].P[1] * rc.fAnaResult->A_N[1];
    Float_t  polarization     = rc.fAnaResult->sinphi[0].P[0] * 100.;
    Float_t  polarizationErr  = rc.fAnaResult->sinphi[0].P[1] * 100.;
    Float_t  profileRatio     = rc.fAnaResult->fIntensPolarR;

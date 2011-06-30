@@ -130,10 +130,10 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
-void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
-{
-	Info("CalibrateFast", "Executing CalibrateFast()");
-}
+//void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
+//{
+//	Info("CalibrateFast", "Executing CalibrateFast()");
+//}
 
 
 /** */

@@ -33,12 +33,17 @@ FLIB = -lm -lnsl -lgfortran
 CNIANA_LIB = $(CNIPOL_LIB_DIR)/libcniana.so
 CNIPOL_LIB = $(CNIPOL_LIB_DIR)/libcnipol.so
 
+CNIANA_DICT_SRC = cnipol_dict.cxx
+CNIANA_DICT_HDR = $(CNIANA_DICT_SRC:.cxx=.h)
+CNIANA_DICT_OBJ = $(CNIANA_DICT_SRC:.cxx=.o)
+CNIANA_DICT     = $(CNIANA_DICT_SRC) $(CNIANA_DICT_HDR) $(CNIANA_DICT_OBJ)
+
 BINARIES = Asym RunDBReader dLayerChecker KinFunc AsymPlot
 BINARY_OBJS = $(BINARIES:=.o)
 
-HDRS = $(wildcard *.h)
+HDRS = $(filter-out LinkDef%, $(wildcard *.h))
 SRCS = $(wildcard *.cc)
-OBJS = $(SRCS:.cc=.o)
+OBJS = $(SRCS:.cc=.o) $(CNIANA_DICT_OBJ)
 
 #CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o
 CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) Asym.o hb_lib.o
@@ -50,6 +55,12 @@ lib: $(OBJS) $(CNIPOL_LIB)
 #	echo $(OBJS)
 #	@echo "SRCS: $(SRCS)"
 #	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
+
+$(CNIANA_DICT_SRC): AnaInfo.h AnaResult.h RunInfo.h LinkDef.h
+	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
+
+#@rootcint -f $(CNIANA_DICT_SRC) -c $(INC_PATHS) $^
 
 $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(ROOTLIBS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $(CNIPOL_LIB)
@@ -94,6 +105,9 @@ $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/
 	#echo $* $@
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(CNIANA_DICT_OBJ) : $(CNIANA_DICT_SRC)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 install: $(BINARIES)
 	install -v -p $^ $(CNIPOL_DIR)/bin
 	rm -f $^
@@ -104,6 +118,7 @@ clean: lib.clean
 	rm -f $(BINARIES)
 	rm -f *.o
 	rm -f *~ 
+	rm -f $(CNIANA_DICT)
 
 bin.clean: lib.clean
 	cd $(CNIPOL_DIR)/bin/; rm -f $(BINARIES)

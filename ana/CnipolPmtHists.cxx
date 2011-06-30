@@ -71,7 +71,7 @@ void CnipolPmtHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetTitle(";ADC;TDC;");
    ((TH1*) o[hName])->SetFillColor(kRed);
 
-   DrawObjContainer        *oc;
+   //DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {

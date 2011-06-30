@@ -113,6 +113,16 @@ struct StructSinPhi {
    float P[2];
    float dPhi[2];
    float chi2;
+
+   StructSinPhi() { P[0] = 0; P[1] = 0; dPhi[0] = 0; dPhi[1] = 0; chi2 = 0; }
+
+   void  Streamer(TBuffer &buf) {
+      if (buf.IsReading()) {
+         buf >> P[0] >> P[1];
+      } else {
+         buf << P[0] << P[1];
+      }
+   }
 };
 
 struct StructExtInput {

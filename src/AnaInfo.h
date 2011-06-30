@@ -8,13 +8,13 @@
 #ifndef AnaInfo_h
 #define AnaInfo_h
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <iostream>
 #include <bitset>
 #include <string>
 #include <sys/stat.h>
 
-#include "TBuffer.h"
+#include "TObject.h"
 #include "TSystem.h"
 
 #include "Asym.h"
@@ -24,7 +24,7 @@ class MseRunInfoX;
 
 
 /** */
-class AnaInfo
+class AnaInfo : public TObject
 {
 public:
 
@@ -82,8 +82,8 @@ public:
    int              RECONFMODE;         // if 1 reconfigure from file
    int              RAMPMODE;           // if 1 prepare the histograms for ramp measurement
    int              STUDYMODE;          // if 1 study mode
-   std::bitset<3>   fSaveTrees;         // bitmask telling which ROOT trees to save
-   std::bitset<N_DETECTORS>   fDisabledDetectors;   // bitmask with disabled detector indeces
+   std::bitset<3>   fSaveTrees;         //! bitmask telling which ROOT trees to save
+   std::bitset<N_DETECTORS>   fDisabledDetectors;   //! bitmask with disabled detector indeces
    float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
    float            MassSigmaAlt;       // banana curve alternative cut within
                                         // <MassSigmaAlt> away from the 12C mass
@@ -105,14 +105,14 @@ public:
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    Str2StrMap       fAsymEnv;
-   FILE            *fFileRunInfo;
-   FILE            *fFileRunConf;
-   FILE            *fFileStdLog;
+   FILE            *fFileRunInfo;       //!
+   FILE            *fFileRunConf;       //!
+   FILE            *fFileStdLog;        //!
    std::string      fFileStdLogName;
    Bool_t           fFlagCopyResults;
    Bool_t           fFlagUseDb;
    Bool_t           fFlagUpdateDb;
-   UserGroup_t     *fUserGroup;
+   UserGroup_t      fUserGroup;
 
 public:
 
@@ -139,7 +139,7 @@ public:
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
-   void        Streamer(TBuffer &buf);
+   //void        Streamer(TBuffer &buf);
    //void        Update(DbEntry &rundb); // Deprecated
    void        Update(MseRunInfoX& run);
 	void        CopyResults();
@@ -162,10 +162,12 @@ public:
 private:
    void Init();
    void MakeOutDir();
+
+   ClassDef(AnaInfo, 1)
 };
 
 
-TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec);
-TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec);
+//TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec);
+//TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec);
 
 #endif

@@ -435,7 +435,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       TText signature;
       signature.SetTextSize(0.03);
-      signature.DrawTextNDC(0, 0, fSignature.c_str());
+      signature.DrawTextNDC(0, 0.01, fSignature.c_str());
 
       if (TPRegexp(pattern).MatchB(fName.c_str())) {
          c.SaveAs(fName.c_str());

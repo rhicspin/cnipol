@@ -74,7 +74,8 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
    fprintf(f, "'fAvrgEMiss' => %7.4f, ",    fAvrgEMiss);
    fprintf(f, "'fAvrgEMissErr' => %7.4f, ", fAvrgEMissErr);
    fprintf(f, "'fEMeasDLCorr' => %7.4f, ",  fEMeasDLCorr);
-   fprintf(f, "'fBananaChi2Ndf' => %7.4f",  fBananaChi2Ndf);
+   fprintf(f, "'fBananaChi2Ndf' => %7.4f, ",  fBananaChi2Ndf);
+   fprintf(f, "'fFitStatus' => %7d",        fFitStatus);
    fprintf(f, ")");
 } //}}}
 

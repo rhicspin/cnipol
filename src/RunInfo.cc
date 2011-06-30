@@ -12,6 +12,8 @@
 #include "MseRunInfo.h"
 #include "MseRunPeriod.h"
 
+ClassImp(RunInfo)
+
 using namespace std;
 
 
@@ -103,18 +105,21 @@ string RunInfo::GetDlCalibFileName() const
 
 
 /** */
+/*
 TBuffer & operator<<(TBuffer &buf, RunInfo *&rec)
-{
+{ //{{{
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, RunInfo *rec) : \n");
    rec->Streamer(buf);
    return buf;
-}
+} //}}}
+*/
 
 
 /** */
+/*
 TBuffer & operator>>(TBuffer &buf, RunInfo *&rec)
-{
+{ //{{{
    //printf("operator>>(TBuffer &buf, RunInfo *rec) : \n");
 
    //if (!rec) {
@@ -131,12 +136,14 @@ TBuffer & operator>>(TBuffer &buf, RunInfo *&rec)
 
    rec->Streamer(buf);
    return buf;
-}
+} //}}}
+*/
 
 
 /** */
+/*
 void RunInfo::Streamer(TBuffer &buf)
-{
+{ //{{{
    TString tstr;
    Int_t   tint;
 
@@ -173,7 +180,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf >> NDisableStrip;
       buf.ReadFastArray(fDisabledChannels, N_CHANNELS);
       buf.ReadFastArray(&fDisabledChannelsVec[0],   fDisabledChannelsVec.size());
-      ReadStlContainer(buf, fActiveSiliconChannels);
+      //ReadStlContainer(buf, fActiveSiliconChannels);
       buf >> NFilledBunch;
       buf >> NActiveBunch;
       buf >> NDisableBunch;
@@ -214,7 +221,7 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << NDisableStrip;
       buf.WriteFastArray(fDisabledChannels, N_CHANNELS);
       buf.WriteFastArray(&fDisabledChannelsVec[0],   fDisabledChannelsVec.size());
-      WriteStlContainer(buf, fActiveSiliconChannels);
+      //WriteStlContainer(buf, fActiveSiliconChannels);
       buf << NFilledBunch;
       buf << NActiveBunch;
       buf << NDisableBunch;
@@ -223,7 +230,8 @@ void RunInfo::Streamer(TBuffer &buf)
       buf << fProtoCutAdcMin << fProtoCutAdcMax << fProtoCutTdcMin << fProtoCutTdcMax;
       buf << fPulserCutAdcMin << fPulserCutAdcMax << fPulserCutTdcMin << fPulserCutTdcMax;
    }
-}
+} //}}}
+*/
 
 
 /** */

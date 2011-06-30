@@ -37,7 +37,7 @@ public:
    ~AlphaCalibrator();
 
    virtual void Calibrate(DrawObjContainer *c);
-   virtual void CalibrateFast(DrawObjContainer *c);
+   //virtual void CalibrateFast(DrawObjContainer *c);
    //TFitResultPtr Calibrate(TH1 *h, TH1D *hMeanTime);
    TFitResultPtr Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits=false);
    void CalibrateBadChannels(DrawObjContainer *c);

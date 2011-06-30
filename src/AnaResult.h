@@ -2,14 +2,15 @@
 #ifndef AnaResult_h
 #define AnaResult_h
 
-#include "TBuffer.h"
+//#include "TBuffer.h"
+#include "TObject.h"
 
 #include "AsymHeader.h"
 #include "AsymGlobals.h"
 
 
 /** */
-class AnaResult
+class AnaResult : public TObject
 {
 public:
 
@@ -27,8 +28,8 @@ public:
    float              profile_error;          // profile error
    StructSinPhi       sinphi[100+MAXDELIM];   // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    StructSinPhi       basym[100+MAXDELIM];    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
-   StructAnomaly      anomaly;
-   StructUnrecognized unrecog;
+   StructAnomaly      anomaly; //!
+   StructUnrecognized unrecog; //!
    float              fIntensPolarR;        // Scale factor to define the ratio of intensity and polarization profiles
    float              fIntensPolarRErr;
    float              fPmtV1T0;
@@ -40,10 +41,12 @@ public:
    AnaResult();
    ~AnaResult();
    void PrintAsPhp(FILE *f=stdout) const;
-   void Streamer(TBuffer &buf);
+   //void Streamer(TBuffer &buf);
+
+   ClassDef(AnaResult, 1)
 };
 
-TBuffer & operator<<(TBuffer &buf, AnaResult *&rec);
-TBuffer & operator>>(TBuffer &buf, AnaResult *&rec);
+//TBuffer & operator<<(TBuffer &buf, AnaResult *&rec);
+//TBuffer & operator>>(TBuffer &buf, AnaResult *&rec);
 
 #endif
