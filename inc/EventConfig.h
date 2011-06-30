@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "TObject.h"
+#include "TBuffer.h"
 #include "TRandom.h"
 
 #include "rpoldata.h"

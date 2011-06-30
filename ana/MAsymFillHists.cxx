@@ -338,8 +338,8 @@ void MAsymFillHists::Fill(EventConfig &rc)
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
    time_t   runStartTime     = rc.fRunInfo->StartTime;
-   Short_t  targetId         = rc.fMseRunInfoX->target_id;
-   Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
+   //Short_t  targetId         = rc.fMseRunInfoX->target_id;
+   //Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
    Float_t  anaPower         = rc.fAnaResult->A_N[1];
    Float_t  asymmetry        = rc.fAnaResult->sinphi[0].P[0] * rc.fAnaResult->A_N[1];
    Float_t  asymmetryErr     = rc.fAnaResult->sinphi[0].P[1] * rc.fAnaResult->A_N[1];
@@ -347,11 +347,11 @@ void MAsymFillHists::Fill(EventConfig &rc)
    Float_t  polarizationErr  = rc.fAnaResult->sinphi[0].P[1] * 100.;
    Float_t  profileRatio     = rc.fAnaResult->fIntensPolarR;
    Float_t  profileRatioErr  = rc.fAnaResult->fIntensPolarRErr;
-   Float_t  max_rate         = rc.fAnaResult->max_rate;
-   Float_t  tzero            = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
-   Float_t  tzeroErr         = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
-   Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
-   Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
+   //Float_t  max_rate         = rc.fAnaResult->max_rate;
+   //Float_t  tzero            = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
+   //Float_t  tzeroErr         = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
+   //Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
+   //Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    char hName[256];
 

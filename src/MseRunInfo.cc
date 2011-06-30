@@ -107,6 +107,9 @@ void MseRunInfoX::Streamer(TBuffer &buf)
       buf >> polarimeter_id; 
       buf >> tmp_time_t; start_time = mysqlpp::sql_datetime(tmp_time_t); 
       buf >> tmp_time_t; stop_time = mysqlpp::sql_datetime(tmp_time_t); 
+      buf >> beam_energy; 
+      buf >> nevents_total; 
+      buf >> nevents_processed; 
       buf >> tstr; target_orient = tstr.Data();
       buf >> target_id;
       //buf >> procDateTime >> procTimeReal >> procTimeCpu;
@@ -118,6 +121,9 @@ void MseRunInfoX::Streamer(TBuffer &buf)
       buf << polarimeter_id;
       buf << time_t(start_time); 
       buf << time_t(stop_time); 
+      buf << beam_energy; 
+      buf << nevents_total; 
+      buf << nevents_processed; 
       tstr = target_orient; buf << tstr;
       //buf << (Char_t) target_orient;
       buf << target_id;

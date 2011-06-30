@@ -9,11 +9,13 @@
 #include "MseRunInfo.h"
 #include "RunInfo.h"
 
+ClassImp(AnaInfo)
+
 using namespace std;
 
 
 /** */
-AnaInfo::AnaInfo() :
+AnaInfo::AnaInfo() : TObject(),
    fRunName          (""), fSuffix(""),
    enel              (400),
    eneu              (900),
@@ -59,7 +61,7 @@ AnaInfo::AnaInfo() :
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
-   fUserGroup(gSystem->GetUserInfo())
+   fUserGroup(*gSystem->GetUserInfo())
 {
    Init();
 }
@@ -114,7 +116,7 @@ AnaInfo::AnaInfo(string runId) :
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
-   fUserGroup(gSystem->GetUserInfo())
+   fUserGroup(*gSystem->GetUserInfo())
 {
    Init();
 }
@@ -127,13 +129,13 @@ AnaInfo::~AnaInfo()
    if (fFileRunConf) fclose(fFileRunConf);
    if (fFileStdLog)  fclose(fFileStdLog);
 
-   delete fUserGroup; fUserGroup = 0;
+   //delete fUserGroup; fUserGroup = 0;
 }
 
 
 /** */
 void AnaInfo::Init()
-{
+{ //{{{
    const char* tmpEnv;
 
    tmpEnv = getenv("CNIPOL_DIR");
@@ -150,12 +152,12 @@ void AnaInfo::Init()
 
    if (tmpEnv) fAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
-}
+} //}}}
 
 
 /** */
 void AnaInfo::MakeOutDir()
-{
+{ //{{{
    if (GetOutDir().size() > 200) {
       printf("ERROR: Output directory name is too long\n");
    }
@@ -172,7 +174,7 @@ void AnaInfo::MakeOutDir()
       gSystem->Info("   AnaInfo::AnaInfo", "Created directory %s", GetOutDir().c_str());
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
-}
+} //}}}
 
 string AnaInfo::GetRunName()         const { return fRunName; }
 string AnaInfo::GetSuffix()          const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
@@ -258,7 +260,7 @@ string AnaInfo::GetRootTreeFileName(UShort_t trid) const
 
 /** */
 void AnaInfo::ProcessOptions()
-{
+{ //{{{
    // The run name must be specified
    if (fRunName.empty()) {
       gSystem->Error("   AnaInfo::ProcessOptions", "Run name has to be specified");
@@ -306,30 +308,30 @@ void AnaInfo::ProcessOptions()
    if ( fDisabledDetectors.any() ) {
       gRunInfo->DisableChannels(fDisabledDetectors);
    }
-}
+} //}}}
 
 
-/** */
-TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
-{
-   //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   // if object has been created already delete it
-   //free(rec);
-   //rec = (AnaInfo *) realloc(rec, sizeof(AnaInfo));
-   rec->Streamer(buf);
-   return buf;
-}
+///** */
+//TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec)
+//{
+//   if (!rec) return buf;
+//   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
+//   rec->Streamer(buf);
+//   return buf;
+//}
+//
+//
+///** */
+//TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec)
+//{
+//   //if (!rec) return buf;
+//   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
+//   // if object has been created already delete it
+//   //free(rec);
+//   //rec = (AnaInfo *) realloc(rec, sizeof(AnaInfo));
+//   rec->Streamer(buf);
+//   return buf;
+//}
 
 
 /** */
@@ -378,8 +380,8 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
    fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
 
-   fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup->fUser.Data());
-   fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup->fRealName.Data());
+   fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup.fUser.Data());
+   fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup.fRealName.Data());
 
    // Various printouts. Should be combined with Print()?
    //cout << "Input data file:               " << GetRawDataFileName() << endl;
@@ -390,7 +392,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
 
 /** */
 void AnaInfo::PrintUsage()
-{
+{ //{{{
    cout << endl;
    cout << "Options:" << endl;
    cout << " -h, -?                          : Print this help" << endl;
@@ -438,12 +440,13 @@ void AnaInfo::PrintUsage()
    cout << "Options marked with (!) are not really supported" << endl;
    cout << "Options marked with (?) need more work" << endl;
    cout << endl;
-}
+} //}}}
 
 
 /** */
+/*
 void AnaInfo::Streamer(TBuffer &buf)
-{
+{ //{{{
    TString tstr;
 
    if (buf.IsReading()) {
@@ -485,7 +488,8 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf << fFlagCopyResults << fFlagUseDb << fFlagUpdateDb;
       //buf << fUserGroup;
    }
-}
+} //}}}
+*/
 
 
 /** Deprecated. */

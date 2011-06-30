@@ -93,7 +93,7 @@ public:
 
    std::string GetAlphaCalibFileName() const;
    std::string GetDlCalibFileName() const;
-   void        Streamer(TBuffer &buf);
+   //void        Streamer(TBuffer &buf);
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintConfig();
@@ -114,9 +114,11 @@ public:
 	void        SetDisabledChannel(UShort_t chId);
 	Bool_t      IsHamaChannel(UShort_t chId);
 	Bool_t      IsPmtChannel(UShort_t chId);
+
+   ClassDef(RunInfo, 1)
 };
 
-TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
-TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
+//TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
+//TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
 
 #endif

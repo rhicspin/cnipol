@@ -1,13 +1,15 @@
 
 #include "AnaResult.h"
 
+ClassImp(AnaResult)
+
 
 /** */
-AnaResult::AnaResult() :
+AnaResult::AnaResult() : TObject(),
    max_rate(0),
-   //TshiftAve(0),
-   //wcm_norm_event_rate(0), 
-   //UniversalRate(0),
+   TshiftAve(0),
+   wcm_norm_event_rate(0), 
+   UniversalRate(0),
    //A_N[2],
    //P[2],
    fAvrgPMAsym(0),
@@ -27,17 +29,19 @@ AnaResult::AnaResult() :
    fPmtS1T0(0),
    fPmtS1T0Err(0)
 {
+   A_N[0] = 0; A_N[1] = 0;
+   P[0]   = 0; P[1]   = 0;
    //memset(A_N, 0, 2);
    //memset(P, 0, 2);
    //memset(P_sigma_ratio, 0, 2);
    //memset(P_sigma_ratio_norm, 0, 2);
    //memset(energy_slope, 0, 2);
 
-   //for (int i=0; i!=100+MAXDELIM; i++) {
-   //   StructSinPhi tmpSinPhi;
-   //   sinphi[i] = tmpSinPhi;
-   //   basym[i]  = tmpSinPhi;
-   //}
+   for (int i=0; i!=100+MAXDELIM; i++) {
+      StructSinPhi tmpSinPhi;
+      sinphi[i] = tmpSinPhi;
+      basym[i]  = tmpSinPhi;
+   }
 }
 
 
@@ -46,27 +50,28 @@ AnaResult::~AnaResult() { }
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, AnaResult *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, AnaResult *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
+//TBuffer & operator<<(TBuffer &buf, AnaResult *&rec)
+//{
+//   if (!rec) return buf;
+//   //printf("operator<<(TBuffer &buf, AnaResult *rec) : \n");
+//   rec->Streamer(buf);
+//   return buf;
+//}
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, AnaResult *&rec)
-{
-   //printf("operator>>(TBuffer &buf, AnaResult *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
+//TBuffer & operator>>(TBuffer &buf, AnaResult *&rec)
+//{
+//   //printf("operator>>(TBuffer &buf, AnaResult *rec) : \n");
+//   rec->Streamer(buf);
+//   return buf;
+//}
 
 
 /** */
+/*
 void AnaResult::Streamer(TBuffer &buf)
-{
+{ //{{{
    if (buf.IsReading()) {
       //printf("reading AnaResult::Streamer(TBuffer &buf) \n");
       buf >> max_rate;
@@ -115,7 +120,8 @@ void AnaResult::Streamer(TBuffer &buf)
       buf << fPmtV1T0 << fPmtV1T0Err; 
       buf << fPmtS1T0 << fPmtS1T0Err; 
    }
-}
+} //}}}
+*/
 
 
 /** */

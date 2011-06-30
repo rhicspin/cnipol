@@ -133,7 +133,7 @@ float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 
 /** */
 void EventConfig::Streamer(TBuffer &R__b)
-{
+{ //{{{
    // Stream an object of class EventConfig.
 
    UInt_t R__s, R__c;
@@ -160,7 +160,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b << fMseRunInfoX;
       R__b.SetByteCount(R__c, kTRUE);
    }
-}
+} //}}}
 
 
 /** */
@@ -177,7 +177,7 @@ string EventConfig::GetSignature()
       tm *ltime = localtime(&anaEndTime);
       strftime(strAnaEndTime, 25, "%c", ltime);
 
-      strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fUser;
+      strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup.fUser;
       //strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
    }
 

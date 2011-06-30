@@ -643,6 +643,9 @@ void AsymRoot::UpdateCalibrator()
 	   // Now overwrite alpha calibration constants from an alpha calib file
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
       Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+
+      exit(0);
+
       TFile *f = TFile::Open(fnameAlpha.c_str());
       EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
@@ -650,6 +653,10 @@ void AsymRoot::UpdateCalibrator()
          Error("UpdateCalibrator", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
          return;
       }
+
+      // XXX
+      //eventConfig->Print();
+      exit(0);
 
 		fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
