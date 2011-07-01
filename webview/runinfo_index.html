@@ -16,15 +16,15 @@
 
 <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
 <tr>
-<td width="5%">
+<td width="2%">
 
-<td width="90%">
+<td width="96%">
 
 <!-- Main text starts here-->
 
-<h1>Cnipol Run Index</h1>
-
 <p><a name="content"/>
+
+<h1>Cnipol Run Index</h1>
 
 <?php
 
@@ -53,7 +53,7 @@ $nRuns = $sqlDbReader->CountEntries();
 Runs selected: <?=$sqlDbReader->nResults?>
 
 <p>
-Export to CSV file: <a href="./export.php?<?=$runSelector->urlQuery?>">download</a>
+Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a>
  
 <?
 // Create page links
@@ -134,8 +134,10 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    $targetId = "&nbsp;";
 
-   if (isset($e['target_id'])) {
+   if ( isset($e['target_id']) && $e['target_id'] > 0 ) {
       $targetId = "{$e['target_orient']}{$e['target_id']}";
+   } else {
+      $targetId = "N/A";
    }
 
    $polId = $POLARIMETER_ID[$e['polarimeter_id']];
@@ -161,7 +163,7 @@ while ($e = mysql_fetch_assoc($rslt)):
 ?>
 
 <tr>
-   <td><a href=index.php?runid=<?=$e['run_name']?> ><?=$e['run_name']?></a>
+   <td><a href="?runid=<?=$e['run_name']?>"><?=$e['run_name']?></a>
    <td class=align_cm><tt><?=isset($e['start_time']) ? date("M d, Y H:i:s D", strtotime($e['start_time'])) : "&nbsp;";?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
@@ -191,7 +193,7 @@ endwhile;
 
 <!-- Main text ends here-->
 
-<td width="5%">
+<td width="2%">
 
 <tr>
 <td>
@@ -201,7 +203,7 @@ endwhile;
 <hr width="100%" size="2">
 
 <div align="left">
-Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dsmirnov>Dmitri Smirnov</a>
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
 </div>
 
 <td>
