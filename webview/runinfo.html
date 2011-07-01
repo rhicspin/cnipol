@@ -488,7 +488,7 @@ that the plot is symmetric around X = 0 by construction
 foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
    $chanId = sprintf("%02d", $chanId);
-   $gP->dir = "../runs/$gRunId/images/std/channel$chanId/";
+   $gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
 
    //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
    //$row2 .= "<td>".($siS ? "x" : "o");
