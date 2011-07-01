@@ -9,12 +9,10 @@
 <html>
 <head>
   <title>Run <?=$gRunId?>: Summary and Fast Offline Results</title>
-  <link REL="STYLESHEET" TYPE="text/css" HREF="main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="main.css.php">
 </head>
 
 <body bgcolor="#ffffff">
-
-<p>
 
 <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
 <tr>
@@ -23,6 +21,8 @@
 <td width="90%">
 
 <!-- Main text starts here-->
+
+<p><a name="content"/>
 
 <h1 class="count">Run <?=$gRunId?></h1>
 
@@ -40,12 +40,9 @@
 <!-- {{{ -->
 <div id="div:summary" class="section">
 
-<p>
-
 <?
 
 $polId = $POLARIMETER_ID[$rc['polarimeter_id']];
-//$polId = "Y1D";
 
 $cssPol = "";
 
@@ -66,8 +63,10 @@ if (isset($rc['polarization'])) {
 
 $targetId = "&nbsp;";
 
-if (isset($rc['target_orient']) && isset($rc['target_id'])) {
+if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
    $targetId = "{$rc['target_orient']}{$rc['target_id']}";
+} else {
+   $targetId = "N/A";
 }
 
 $measurementType = "&nbsp;";
@@ -82,6 +81,8 @@ $profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fInte
 $asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
 $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
 ?>
+
+<p>
 
 <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
 
@@ -520,7 +521,7 @@ foreach($rc['ActiveStrip'] as $chanId => $siS) {
 <hr width="100%" size="2">
 
 <div align="left">
-Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dsmirnov>Dmitri Smirnov</a>
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
 </div>
 
 <td>

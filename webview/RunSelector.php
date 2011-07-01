@@ -59,7 +59,8 @@ class RunSelector {
       global $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
       // Create a table with the necessary header informations
-      echo "<form action='".$_SERVER['PHP_SELF']."' method='get' name='formRunSelector'>\n";
+      //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formRunSelector'>\n";
+      echo "<form action='' method='get' name='formRunSelector'>\n";
       echo '<div align=center>
             <table border=0>';
 

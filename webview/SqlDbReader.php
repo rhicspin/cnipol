@@ -81,7 +81,7 @@ class SqlDbReader {
          if ($i == $curPage) 
             $html .= "$i ";
          else
-            $html .= "<a href=?page=$i&{$this->urlQuery}>$i</a> ";
+            $html .= "<a href=\"?page=$i&{$this->urlQuery}\">$i</a> ";
       }
 
       $html .= "</div>\n";

@@ -83,7 +83,7 @@ if (!$dir) exit("ERROR\n");
 
 $rs = array();
 
-print "<pre>\n";
+//print "<pre>\n";
 
 //while (false !== ($file = readdir($dir))) {
 //	//print "$file\n";
@@ -100,7 +100,7 @@ print "<pre>\n";
 //   }
 //}
 
-print "</pre>\n";
+//print "</pre>\n";
 
 closedir($dir);
 
