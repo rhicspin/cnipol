@@ -7,26 +7,33 @@ include("config.php");
 setlocale(LC_TIME, 'en');
 putenv("TZ=America/New_York");
 
+
+if ( isset($_GET['sfx']) && !empty($_GET['sfx']) )
+   $gSuffix = "_{$_GET['sfx']}";
+else
+   $gSuffix = "";
+
+
 // Run details view
 if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
 
    $gRunId = $_GET['runid'];
 
    // check for correct and existing  runid
-   if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig.php")) {
+   if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig$gSuffix.php")) {
       print "No results for ".DATA_DIR."/$gRunId\n";
       exit;
    }
 
    // Read information about this run
    $rc = array();
-   include(DATA_DIR."/$gRunId/runconfig.php");
+   include(DATA_DIR."/$gRunId/runconfig$gSuffix.php");
    if (count($rc) == 0) exit;
 
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "../runs/$gRunId/images/";
+   $dir = "../runs/$gRunId/images$gSuffix/";
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
