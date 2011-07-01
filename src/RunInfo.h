@@ -13,11 +13,11 @@
 #include <string>
 #include <vector>
 
-#include "TBuffer.h"
 #include "TColor.h"
 #include "TPRegexp.h"
 #include "TObjArray.h"
 #include "TObjString.h"
+#include "TObject.h"
 #include "TString.h"
 
 #include "rpoldata.h"
@@ -31,7 +31,7 @@ class MseRunPeriodX;
 
 
 /** */
-class RunInfo
+class RunInfo : public TObject
 {
 protected:
 
@@ -112,6 +112,7 @@ public:
    void        DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
 	Bool_t      IsDisabledChannel(UShort_t chId);
 	void        SetDisabledChannel(UShort_t chId);
+	Bool_t      IsSiliconChannel(UShort_t chId);
 	Bool_t      IsHamaChannel(UShort_t chId);
 	Bool_t      IsPmtChannel(UShort_t chId);
 

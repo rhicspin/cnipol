@@ -260,8 +260,7 @@ void event_process(processEvent *event)
 
       //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-      if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() )
+      if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
       {
 	      gAsymRoot->fHists->Fill(ch, "_cut1");
 

@@ -169,12 +169,13 @@ void AnaInfo::MakeOutDir()
    //   printf("WARNING: Perhaps dir already exists: %s\n", GetOutDir().c_str());
 
    if (gSystem->mkdir(GetOutDir().c_str()) < 0)
-      gSystem->Warning("   AnaInfo::AnaInfo", "Directory %s already exists", GetOutDir().c_str());
+      Warning("MakeOutDir", "Directory %s already exists", GetOutDir().c_str());
    else {
-      gSystem->Info("   AnaInfo::AnaInfo", "Created directory %s", GetOutDir().c_str());
+      Info("MakeOutDir", "Created directory %s", GetOutDir().c_str());
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
 } //}}}
+
 
 string AnaInfo::GetRunName()         const { return fRunName; }
 string AnaInfo::GetSuffix()          const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
@@ -238,12 +239,13 @@ string AnaInfo::GetAlphaCalibFile() const
 string AnaInfo::GetDlCalibFile() const
 {
    if (fDlCalibRun.empty()) {
-      cout << "Dead layer calibration run not defined" << endl;
+      Warning("GetDlCalibFile", "Dead layer calibration run not defined");
       return "";
    }
 
    string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fDlCalibRun + "/" + fDlCalibRun + ".root";
+
    return path;
 }
 
@@ -263,7 +265,7 @@ void AnaInfo::ProcessOptions()
 { //{{{
    // The run name must be specified
    if (fRunName.empty()) {
-      gSystem->Error("   AnaInfo::ProcessOptions", "Run name has to be specified");
+      Error("ProcessOptions", "Run name has to be specified");
       PrintUsage();
       exit(0);
    }
@@ -273,7 +275,7 @@ void AnaInfo::ProcessOptions()
 
    if (!gSystem->FindFile(fAsymEnv["CNIPOL_DATA_DIR"].c_str(), fileName ) )
 	{
-      gSystem->Error("   AnaInfo::ProcessOptions",
+      Error("ProcessOptions",
 		   "Raw data file \"%s.data\" not found in %s\n", fRunName.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
       exit(0);
 	}
@@ -337,7 +339,7 @@ void AnaInfo::ProcessOptions()
 /** */
 void AnaInfo::Print(const Option_t* opt) const
 {
-   gSystem->Info("AnaInfo::Print", "Print members:");
+   Info("Print", "Print members:");
    PrintAsPhp();
 }
 
@@ -508,7 +510,7 @@ void AnaInfo::Update(DbEntry &rundb)
 
 /** */
 void AnaInfo::Update(MseRunInfoX& run)
-{
+{ //{{{
 	// A fix for alpha calib runs - Maybe this should go to the process options
    // method
    if (HasAlphaBit()) {
@@ -526,11 +528,11 @@ void AnaInfo::Update(MseRunInfoX& run)
 
    if (fAlphaCalibRun.empty()) {
       if (!HasAlphaBit()) {
-         gSystem->Error("   AnaInfo::Update", "Alpha calibration run must be specified");
+         Error("Update", "Alpha calibration run must be specified");
          exit(0);
       }
    } else
-      gSystem->Info("   AnaInfo::Update", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
+      Info("Update", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
 
 
    // Set DL calib files
@@ -546,18 +548,17 @@ void AnaInfo::Update(MseRunInfoX& run)
 
    if (fDlCalibRun.empty()) {
       if (!HasCalibBit()) {
-         gSystem->Warning("   AnaInfo::Update", "Calibration run is not specified.\n" \
-                          "\tOption --calib should be used");
+         Warning("Update", "Calibration run is not specified.\n\tOption --calib should be used");
       }
    } else {
-      gSystem->Info("   AnaInfo::Update", "Using calibration run %s", run.dl_calib_run_name.c_str());
+      Info("Update", "Using calibration run %s", run.dl_calib_run_name.c_str());
    }
-}
+} //}}}
 
 
 /** */
 void AnaInfo::CopyResults()
-{
+{ //{{{
    if (!fFlagCopyResults) return;
 
    string cmd = "rsync -av " + GetOutDir() + " bluepc:/usr/local/polarim/root/";
@@ -572,4 +573,4 @@ void AnaInfo::CopyResults()
    //printf("%s", result);
 
    pclose(fp);
-}
+} //}}}

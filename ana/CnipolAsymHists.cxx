@@ -34,7 +34,7 @@ CnipolAsymHists::~CnipolAsymHists()
 /** */
 void CnipolAsymHists::BookHists(string cutid)
 { //{{{
-   char hName[256];
+   //char hName[256];
 
    fDir->cd();
 

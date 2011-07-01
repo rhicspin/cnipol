@@ -107,7 +107,6 @@ void CnipolPreprocHists::FillPreProcess(ChannelEvent *ch)
 /** */
 void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
 { //{{{
-   //Warning("SaveAllAs", "executing...");
    DrawObjContainer::SaveAllAs(c, pattern, path);
 
    string cName = "c_combo";
@@ -118,10 +117,12 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
 
    c.cd();
    char *l = strstr(h1->GetOption(), "LOGZ");
-   //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-   if (l) { c.SetLogz(kTRUE);
-      //printf("XXX2: set logz \n");
-   } else { c.SetLogz(kFALSE); }
+
+   if (l) {
+      c.SetLogz(kTRUE);
+   } else {
+      c.SetLogz(kFALSE);
+   }
 
    h1->Draw();
    h2->Draw("sames");

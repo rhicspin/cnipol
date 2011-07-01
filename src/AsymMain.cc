@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
          gAnaInfo->fModes |= AnaInfo::MODE_FULL; break;
 
       default:
-         gSystem->Error("   main", "Invalid Option");
+         gSystem->Error("   int main()", "Invalid Option");
          gAnaInfo->PrintUsage();
          exit(0);
       }
@@ -408,7 +408,7 @@ int main(int argc, char *argv[])
    //gAsymDb2->CompleteRunInfo(*mseRunInfoX); // deprecated
 
    if (!mseRunPeriodX)
-      gSystem->Fatal("   main", "Run period not specified");
+      gSystem->Fatal("   int main()", "Run period not specified");
 
    //cout << endl << "mseRunInfoX 3: " << endl;
    //mseRunInfoX->Print();
@@ -461,8 +461,15 @@ int main(int argc, char *argv[])
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
+   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() ) {
       rawData->ReadDataFast();
+
+      // XXX : remove
+      RunConst::PrintAll();
+
+      // (Roughly) Process all channel banana
+      gAsymRoot->CalibrateFast();
+   }
 
    if (!gAnaInfo->QUICK_MODE) {
 
@@ -485,6 +492,10 @@ int main(int argc, char *argv[])
 
    // Update calibration constants if requested
    if (gAnaInfo->HasCalibBit()) {
+
+      // XXX : remove
+      RunConst::PrintAll();
+
       gAsymRoot->Calibrate();
    }
 
