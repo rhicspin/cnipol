@@ -24,17 +24,17 @@
 #include "TStyle.h"
 
 #include "AlphaCalibrator.h"
+#include "CnipolAsymHists.h"
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
+#include "CnipolKinematHists.h"
+#include "CnipolPmtHists.h"
+#include "CnipolPreprocHists.h"
+#include "CnipolProfileHists.h"
 #include "CnipolRawHists.h"
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolTargetHists.h"
-#include "CnipolPreprocHists.h"
-#include "CnipolProfileHists.h"
-#include "CnipolAsymHists.h"
-#include "CnipolKinematHists.h"
-#include "CnipolPmtHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 
@@ -619,10 +619,16 @@ void AsymRoot::UpdateCalibrator()
 		} else { // use calibration consts from a DL file
 
          string fname = anaInfo->GetDlCalibFile();
+			
+			if (fname.empty()) {
+			   Error("AsymRoot::UpdateCalibrator", "Dead layer calibration file not specified. Use --calib option");
+				exit(-1);
+			}
+
          Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from file %s", fname.c_str());
          TFile *f = TFile::Open(fname.c_str());
+
          EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
-         //delete f;
 
          if (!eventConfig) {
             Error("AsymRoot::UpdateCalibrator", "No RunConfig object found in file %s", fname.c_str());
@@ -644,8 +650,6 @@ void AsymRoot::UpdateCalibrator()
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
       Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
 
-      exit(0);
-
       TFile *f = TFile::Open(fnameAlpha.c_str());
       EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
@@ -656,7 +660,7 @@ void AsymRoot::UpdateCalibrator()
 
       // XXX
       //eventConfig->Print();
-      exit(0);
+      //exit(0);
 
 		fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 

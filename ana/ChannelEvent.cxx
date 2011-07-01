@@ -206,19 +206,19 @@ Bool_t ChannelEvent::PassCutRawAlpha()
 }
 
 
-/** */
+/** Returns true for silicon channels. */
 Bool_t ChannelEvent::PassCutDetectorChannel()
-{
-   // Do not consider channels other than silicon detectors
-   if (GetChannelId() > NSTRIP) return false;
+{ //{{{
+   if ( gRunInfo->IsSiliconChannel(GetChannelId()) )
+      return true;
 
-   return true;
-}
+   return false;
+} //}}}
 
 
 /** */
 Bool_t ChannelEvent::PassCutDepEnergyTime()
-{
+{ //{{{
    switch (gRunInfo->fPolId) {
 
    case 0:   // B1U
@@ -243,7 +243,7 @@ Bool_t ChannelEvent::PassCutDepEnergyTime()
    }
 
    return true;
-}
+} //}}}
 
 
 /** */
@@ -283,7 +283,7 @@ Bool_t ChannelEvent::PassCutCarbonMassEstimate()
    //float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimate());
    float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimateEDepend());
    //float delta = GetTime() - gRunConsts[].E2T/sqrt(GetEnergyA());
-   
+
    if (fabs(delta) <= 20) return true; // in ns
 
    //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo->MassSigma/sqrt(GetEnergyA());
@@ -339,7 +339,7 @@ Bool_t ChannelEvent::PassCutNoise()
 {
    Double_t extraOffset = 0;
 
-   if ( UInt_t(fEventConfig->fRunInfo->GetBeamEnergy() + 0.5) != kINJECTION) 
+   if ( UInt_t(fEventConfig->fRunInfo->GetBeamEnergy() + 0.5) != kINJECTION)
       extraOffset = -6; // 6 TDC units ~= 8 ns
 
    if ( GetAmpltd() < fEventConfig->fRunInfo->fProtoCutAdcMin ||

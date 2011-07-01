@@ -1,6 +1,8 @@
 
 #define EXPAND_MY_SSQLS_STATICS
 
+#include "TSystem.h"
+
 #include "MseRunPeriod.h"
 
 using namespace std;
@@ -34,6 +36,7 @@ void MseRunPeriodX::Init()
 /** */
 void MseRunPeriodX::Print(const Option_t* opt) const
 {
+   gSystem->Info("MseRunPeriodX::Print", "Print members:");
    PrintAsPhp();
 }
 
@@ -57,4 +60,5 @@ void MseRunPeriodX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['cut_pulser_adc_max']             = %f;\n", cut_pulser_adc_max);
    fprintf(f, "$rc['cut_pulser_tdc_min']             = %f;\n", cut_pulser_tdc_min);
    fprintf(f, "$rc['cut_pulser_tdc_max']             = %f;\n", cut_pulser_tdc_max);
+   fprintf(f, "\n");
 } //}}}

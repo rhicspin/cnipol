@@ -259,12 +259,19 @@ void RunConst::Print(const Option_t* opt) const
 
 
 /** */
-Bool_t RunConst::IsSiliconChannel(UShort_t chId)
-{
-   if (chId >=1 && chId <= N_SILICON_CHANNELS) return kTRUE;
+void RunConst::PrintAll()
+{ //{{{
+   printf("Print gRunConsts:\n");
 
-   return kFALSE;
-}
+   map<UShort_t, RunConst>::iterator irc = gRunConsts.begin();
+
+	for (; irc!=gRunConsts.end(); ++irc) {
+      printf("Channel %-2d consts: \n", irc->first);
+	   irc->second.Print();
+   }
+
+   printf("\n");
+} //}}}
 
 
 /** */

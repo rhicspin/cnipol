@@ -18,8 +18,8 @@ using namespace std;
 
 
 /** */
-RunInfo::RunInfo() :
-   fBeamEnergy  (0),
+RunInfo::RunInfo() : TObject(),
+   fBeamEnergy(0),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
    Run(-1),
@@ -64,6 +64,7 @@ RunInfo::RunInfo() :
    NFilledBunch          = 0;      // NFilledBunch;
    NActiveBunch          = 0;      // NActiveBunch;
    NDisableBunch         = 0;      // NDisableBunch,
+
    for (int i=0; i<N_BUNCHES; i++) { DisableBunch[i] = 0; }
 }
 
@@ -96,10 +97,12 @@ Float_t RunInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffse
 Short_t RunInfo::GetExpectedGlobalTdcOffset() { return fExpectedGlobalTdcOffset; }
 
 
+/** */
 string RunInfo::GetAlphaCalibFileName() const
 { return ""; }
 
 
+/** */
 string RunInfo::GetDlCalibFileName() const
 { return ""; }
 
@@ -237,7 +240,7 @@ void RunInfo::Streamer(TBuffer &buf)
 /** */
 void RunInfo::Print(const Option_t* opt) const
 {
-   gSystem->Info("RunInfo::Print", "Print members:");
+   Info("Print", "Print members:");
    PrintAsPhp();
 }
 
@@ -386,7 +389,7 @@ void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &strea
 
 /** */
 void RunInfo::Update(DbEntry &rundb)
-{
+{ //{{{
    stringstream sstr;
    UShort_t     chId;
 
@@ -417,12 +420,12 @@ void RunInfo::Update(DbEntry &rundb)
 
    } else
       Run = 11;
-}
+} //}}}
 
 
 /** */
 void RunInfo::Update(MseRunInfoX& run)
-{
+{ //{{{
    stringstream sstr;
    UShort_t     chId;
 
@@ -453,12 +456,12 @@ void RunInfo::Update(MseRunInfoX& run)
 
    } else
       Run = 11;
-}
+} //}}}
 
 
 /** */
 void RunInfo::Update(MseRunPeriodX& runPeriod)
-{
+{ //{{{
    fProtoCutSlope   = runPeriod.cut_proto_slope;
    fProtoCutOffset  = runPeriod.cut_proto_offset;
    fProtoCutAdcMin  = runPeriod.cut_proto_adc_min;
@@ -469,7 +472,7 @@ void RunInfo::Update(MseRunPeriodX& runPeriod)
    fPulserCutAdcMax = runPeriod.cut_pulser_adc_max;
    fPulserCutTdcMin = runPeriod.cut_pulser_tdc_min;
    fPulserCutTdcMax = runPeriod.cut_pulser_tdc_max;
-}
+} //}}}
 
 
 // Description : Disable detector and configure active strips
@@ -632,7 +635,7 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
      fPolStream    = 1;
      break;
   default:
-     gSystem->Error("SetPolarimetrIdRhicBeam", "Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
+     Error("SetPolarimetrIdRhicBeam", "Unrecognized RHIC beam and Polarimeter-ID. Perhaps calibration data..?");
      break;
   }
 
@@ -646,8 +649,6 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 /** */
 Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
 {
-   //return fDisabledChannels[chId-1] == 1;
-
    return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
 }
 
@@ -679,15 +680,25 @@ void RunInfo::SetDisabledChannel(UShort_t chId)
 
 
 /** */
+Bool_t RunInfo::IsSiliconChannel(UShort_t chId)
+{ //{{{
+   if ( chId > 0 && chId <= N_SILICON_CHANNELS)
+      return true;
+
+   return false;
+} //}}}
+
+
+/** */
 Bool_t RunInfo::IsHamaChannel(UShort_t chId)
-{
+{ //{{{
    if ( ( (EPolarimeterId) fPolId == kB2D || (EPolarimeterId) fPolId == kY1D) &&
         ( (chId >= 13 && chId <= 24) || (chId >= 49 && chId <= 60) )
       )
       return true;
 
    return false;
-}
+} //}}}
 
 
 /** */

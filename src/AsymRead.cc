@@ -40,7 +40,7 @@ RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
 RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    fMem(0),
    fFileStream(fFileName.c_str(), ios::binary)
-{
+{ //{{{
    FILE *fFile = fopen(fFileName.c_str(), "r");
 
    // reading the data till its end ...
@@ -65,7 +65,7 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
 
    sw.Stop();
    printf("Stopped reading into memory: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-}
+} //}}}
 
 
 /** */
@@ -76,7 +76,7 @@ RawDataProcessor::~RawDataProcessor()
 
 /** */
 void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
-{
+{ //{{{
    recordBeginStruct *recBegin;
 
    //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
@@ -144,7 +144,7 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 
    //} else
       //printf("ERROR: Cannot read REC_BEGIN record\n");
-}
+} //}}}
 
 
 /** */
@@ -287,17 +287,13 @@ void RawDataProcessor::ReadDataFast()
    printf("Total events read:     %12d\n", nReadEvents);
    printf("Total events accepted: %12d\n", nTotalEvents);
 
-   // (Roughly) Process all channel banana
-   gAsymRoot->CalibrateFast();
-
    Info("ReadDataFast", "End of read data fast\n");
 } //}}}
 
 
-
 // read loop routine
 void readloop(MseRunInfoX &run)
-{
+{ //{{{
    static int READ_FLAG = 0;
 
    // Common structure for the data format
@@ -820,37 +816,30 @@ void readloop(MseRunInfoX &run)
    }
 
    run.Print();
-}
+} //}}}
 
 
 /** */
 void UpdateRunConst(TRecordConfigRhicStruct *ci)
-{
+{ //{{{
    if (!ci) return;
 
    //ci->Print();
 
    float Ct = ci->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
-   //float L  = ci->data.TOFLength;
    float L  = ci->data.TOFLength;
 
    //gRunConsts[0] = RunConst();
-   //gRunConsts[0].Print();
 
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
-      if (gRunInfo->fDataFormatVersion == 40200 ) // XXX should be like this
-      //if (gRunInfo->fDataFormatVersion == 40200 && (gRunInfo->fPolId == 1 || gRunInfo->fPolId == 2) ) // downstream
+      if (gRunInfo->fDataFormatVersion == 40200 ) // Run 11 version
       {
          L = ci->data.chan[i-1].TOFLength;
-         //printf("LLL: %f\n", L);
       } else
          L = CARBON_PATH_DISTANCE;
 
       gRunConsts[i] = RunConst(L, Ct);
-
-      printf("Channel %-2d consts: \n", i);
-      gRunConsts[i].Print();
    }
 
 	// Set values for 0th channel to the average ones
@@ -859,10 +848,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
    map<UShort_t, RunConst>::iterator irc = gRunConsts.begin();
 
-	++irc; // start with the 1st channel
-
 	for (; irc!=gRunConsts.end(); ++irc) {
-		if (RunConst::IsSiliconChannel(irc->first)) {
+		if (gRunInfo->IsSiliconChannel(irc->first)) {
 	      sumL += irc->second.L;
 			nChannels++;
 	   }
@@ -872,13 +859,13 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
 	gRunConsts[0] = RunConst(avrgL, Ct);
    gRunConsts[0].Print();
-}
+} //}}}
 
 
 // Description : print out spin (Mode=0), fill (Mode=1) pattern
 // Input       : Mode
 void PrintBunchPattern(int *pattern)
-{
+{ //{{{
    char symbol[3][2];
 
    sprintf(symbol[0], "-"); // -1
@@ -892,7 +879,7 @@ void PrintBunchPattern(int *pattern)
    }
  
    cout << endl;
-}
+} //}}}
 
 
 // Description : Decorde target infomation.
@@ -900,7 +887,7 @@ void PrintBunchPattern(int *pattern)
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
 void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
-{
+{ //{{{
    cout << endl;
    cout << "target ID = " << poldat.targetIdS << endl;
    //cout << "startTimeS = " << poldat.startTimeS << endl;
@@ -964,13 +951,13 @@ void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
          //      gRunInfo->ConfigureActiveStrip(mask.detector);
       }
    }
-}
+} //}}}
 
 
 // Method name : PrepareCollidingBunchPattern(gRunInfo->fPolBeam)
 // Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
 void PrepareCollidingBunchPattern()
-{
+{ //{{{
    for (int i=0; i<NBUNCH; i++){
       phx.bunchpat[i] = 1; // PHENIX bunch patterns
       str.bunchpat[i] = 1; // STAR bunch patterns
@@ -986,7 +973,7 @@ void PrepareCollidingBunchPattern()
    cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
    cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
    cout << "=====================================" << endl;
-}
+} //}}}
 
 
 /** */
