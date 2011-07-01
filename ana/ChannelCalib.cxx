@@ -46,12 +46,13 @@ void ChannelCalib::Print(const Option_t* opt) const
    opt = "";
 
    //printf("ChannelCalib:\n");
-   printf("fACoef, fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth, " \
-          "fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr, " \
-          "fBananaChi2Ndf " \
-          "fFitStatus");
-   printf("%12.3f  %12.3f  %12.3f  %12.3f  %12.3f  %12.3f  %12.3f  %12.3f  " \
-          "%12.3f  %12.3f  %12.3f  %12.3f  %12.3f  %12d\n", fACoef,
+   //printf("\n");
+   //printf("fACoef, fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth, " \
+   //       "fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr, " \
+   //       "fBananaChi2Ndf " \
+   //       "fFitStatus\n");
+   printf("%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  " \
+          "%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8d\n", fACoef,
           fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth,
           fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr,
           fBananaChi2Ndf, fFitStatus);

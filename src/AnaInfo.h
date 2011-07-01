@@ -8,7 +8,6 @@
 #ifndef AnaInfo_h
 #define AnaInfo_h
 
-//#include <cstdlib>
 #include <iostream>
 #include <bitset>
 #include <string>
@@ -70,10 +69,8 @@ public:
    int              RAWHISTOGRAM;       // Fill raw histograms
    int              DMODE;              // dead layer study mode 0:off 1:on
    int              TMODE;              // T0 study mode 0:off 1:on
-   int              AMODE;              // A0,A1 study (signal Amp vs. Int) mode 0:off 1:on
    int              BMODE;              // create banana curve (E-T) plots 0:off 1:on
    int              ZMODE;              // with/out T0 subtraction 0:with 1:without
-   int              MESSAGE;            // message mode 1: exit just after run begin
    int              CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
    int              UPDATE;             // 1: keep update of the histogram
    UShort_t         QUICK_MODE;         // 0: default, 1: quick mode
@@ -95,7 +92,7 @@ public:
    float            MassLimit;          // Lower Mass limit for peak position adjustment fit
    UInt_t           nEventsProcessed;   // number of events processed from raw data file
    UInt_t           nEventsTotal;       // number of total events in raw data file
-   UInt_t           thinout;            // Every <thinout> event to be feed into feedback routine
+   UInt_t           fThinout;           // Every <fThinout> event to be feed into feedback routine
    Float_t          fFastCalibThinout;  // Approximate fraction of events to pass
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
@@ -139,7 +136,6 @@ public:
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
-   //void        Streamer(TBuffer &buf);
    //void        Update(DbEntry &rundb); // Deprecated
    void        Update(MseRunInfoX& run);
 	void        CopyResults();
@@ -163,11 +159,7 @@ private:
    void Init();
    void MakeOutDir();
 
-   ClassDef(AnaInfo, 1)
+   ClassDef(AnaInfo, 2)
 };
-
-
-//TBuffer & operator<<(TBuffer &buf, AnaInfo *&rec);
-//TBuffer & operator>>(TBuffer &buf, AnaInfo *&rec);
 
 #endif

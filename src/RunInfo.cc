@@ -3,8 +3,6 @@
 #include <sstream>
 #include <algorithm>
 
-#include "TSystem.h"
-
 #include "AsymGlobals.h"
 #include "Asym.h"
 
@@ -43,6 +41,7 @@ RunInfo::RunInfo() : TObject(),
    fTargetOrient ('-'),
    targetID      ('-'),
    fDisabledChannelsVec(),
+   fSiliconChannels(),
    fActiveSiliconChannels(),
    fProtoCutSlope(0), fProtoCutOffset(0),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
@@ -56,6 +55,7 @@ RunInfo::RunInfo() : TObject(),
    for (int i=1; i<=N_SILICON_CHANNELS; i++) {
       ActiveStrip[i-1]       = 1;
       fDisabledChannels[i-1] = 0;
+      fSiliconChannels.insert(i);
       fActiveSiliconChannels.insert(i);
    }
 
@@ -317,6 +317,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
 
    fprintf(f, "$rc['fDisabledChannels']            = %s;\n", ssChs.str().c_str());
    fprintf(f, "$rc['fDisabledChannelsVec']         = %s;\n", VecAsPhpArray<UShort_t>(fDisabledChannelsVec).c_str());
+   fprintf(f, "$rc['fSiliconChannels']             = %s;\n", SetAsPhpArray<UShort_t>(fSiliconChannels).c_str());
    fprintf(f, "$rc['fActiveSiliconChannels']       = %s;\n", SetAsPhpArray<UShort_t>(fActiveSiliconChannels).c_str());
    fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
    fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
@@ -396,9 +397,6 @@ void RunInfo::Update(DbEntry &rundb)
    sstr << rundb.fFields["DISABLED_CHANNELS"];
 
    while (sstr >> chId) {
-      //fDisabledChannels[chId-1] = 1;
-      //fDisabledChannelsVec.push_back(chId);
-      //fActiveSiliconChannels.erase(chId);
       SetDisabledChannel(chId);
    }
 
@@ -432,9 +430,6 @@ void RunInfo::Update(MseRunInfoX& run)
    sstr << run.disabled_channels;
 
    while (sstr >> chId) {
-      //fDisabledChannels[chId-1] = 1;
-      //fDisabledChannelsVec.push_back(chId);
-      //fActiveSiliconChannels.erase(chId);
       SetDisabledChannel(chId);
    }
 

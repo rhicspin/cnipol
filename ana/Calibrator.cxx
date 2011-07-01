@@ -97,67 +97,66 @@ void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
 
 /** */
 void Calibrator::Calibrate(DrawObjContainer *c)
-{
+{ //{{{
 	Info("Calibrate", "Executing Calibrate()");
-}
+} //}}}
 
 
 /** */
 void Calibrator::CalibrateFast(DrawObjContainer *c)
-{
+{ //{{{
 	Info("CalibrateFast", "Executing CalibrateFast()");
-}
+} //}}}
 
 
 /** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
-{
+{ //{{{
    return fChannelCalibs.find(chId)->second.fACoef * adc;
-}
+} //}}}
 
 
 /** */
 Float_t Calibrator::GetKinEnergyA(UShort_t adc, UShort_t chId) const
-{
+{ //{{{
    Float_t emeas = GetEnergyA(adc, chId);
    Float_t eloss = fChannelCalibs.find(chId)->second.fAvrgEMiss;
    return  emeas + eloss;
-}
+} //}}}
 
 
 /** */
 Float_t Calibrator::GetTime(UShort_t tdc) const
-{
+{ //{{{
    return WFD_TIME_UNIT_HALF * (tdc + fRandom->Rndm() - 0.5);
-}
+} //}}}
 
 
 /** */
 Float_t Calibrator::GetTimeOfFlight(UShort_t tdc, UShort_t chId) const
-{
+{ //{{{
    Float_t t0coef = fChannelCalibs.find(chId)->second.fT0Coef;
    return GetTime(tdc) + t0coef;
-}
+} //}}}
 
 
 /** */
 TFitResultPtr Calibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{
+{ //{{{
    return 0;
-}
+} //}}}
 
 
 /** */
-ChannelCalib& Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{
-   ChannelCalib *chCalib = new ChannelCalib();
-   return *chCalib;
-}
+void Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+{ //{{{
+   return;
+} //}}}
 
 
 /** */
 UInt_t Calibrator::GetChannelFitStatus(UShort_t chId)
-{
+{ //{{{
    ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
 
    if (iChCalib != fChannelCalibs.end()) {
@@ -165,23 +164,26 @@ UInt_t Calibrator::GetChannelFitStatus(UShort_t chId)
    }
 
    return kUNKNOWN;
-}
+} //}}}
 
 
 /** */
 void Calibrator::Print(const Option_t* opt) const
 { //{{{
-   opt = "";
+   Info("Print", "Calibrator members:");
 
-   printf("Calibrator:\n");
+   printf("              fACoef fACoefErr fAChi2Ndf    fICoef fICoefErr fIChi2Ndf fDLWidth " \
+          "fDLWidthErr fT0Coef fT0CoefErr fAvrgEMiss fAvrgEMissErr " \
+          "fBananaChi2Ndf fFitStatus\n");
 
    ChannelCalibMap::const_iterator mi;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
 
    for (mi=mb; mi!=me; mi++) {
+	   printf("Channel %2d: ", mi->first);
 		mi->second.Print();
-      printf("\n");
+      //printf("\n");
    }
 } //}}}
 

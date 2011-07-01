@@ -253,7 +253,7 @@ void RawDataProcessor::ReadDataFast()
 
             if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
 
-            //if (nReadEvents % gAnaInfo->thinout == 0)
+            //if (nReadEvents % gAnaInfo->fThinout == 0)
             //if (nReadEvents > 100) break;
 
             if (gRandom->Rndm() > gAnaInfo->fFastCalibThinout) continue;
@@ -267,10 +267,10 @@ void RawDataProcessor::ReadDataFast()
                gAsymRoot->fHists->d["pmt"]->FillPreProcess(gAsymRoot->fChannelEvent);
 				}
 
-            if ( !gAsymRoot->fChannelEvent->PassCutNoise() ) continue;
+            if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutPulser() ) continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutDetectorChannel() ) continue;
+            if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
+            if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
 
             gAsymRoot->FillPreProcess();
@@ -328,7 +328,7 @@ void readloop(MseRunInfoX &run)
    int   rval;
    int   recSize;
    int   flag = 0;     // exit from while when flag==1
-   //int THINOUT = Flag.feedback ? gAnaInfo->thinout : Nskip;
+   //int THINOUT = Flag.feedback ? gAnaInfo->fThinout : Nskip;
 
    // reading the data till its end ...
    if ((fp = fopen(gAnaInfo->GetRawDataFileName().c_str(), "r")) == NULL) {
@@ -622,7 +622,7 @@ void readloop(MseRunInfoX &run)
               //ds: Skip events if already read enough events specified by user
               if (gMaxEventsUser > 0 && Nevtot >= gMaxEventsUser) break;
 
-              if (Nread % gAnaInfo->thinout == 0) {
+              if (Nread % gAnaInfo->fThinout == 0) {
 
                  //Nread++;
                  Nevtot++;
@@ -735,15 +735,13 @@ void readloop(MseRunInfoX &run)
             memcpy(gConfigInfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
                    (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
 
-            // when we mandatory provide cfg info
+            // when we mandatory provide cfg info -- derpecated
             //if (gAnaInfo->RECONFMODE == 1) {
             //   reConfig(gConfigInfo);
             //}
 
             // Recalculate Run constants
             UpdateRunConst(gConfigInfo);
-
-            if (gAnaInfo->MESSAGE == 1) exit(0);
 
             gReadFlag.RHICCONF = 1;
          }
@@ -814,8 +812,6 @@ void readloop(MseRunInfoX &run)
          exit(-1);
       }
    }
-
-   run.Print();
 } //}}}
 
 
@@ -858,6 +854,8 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    float avrgL = nChannels > 0 ? sumL / nChannels : CARBON_PATH_DISTANCE;
 
 	gRunConsts[0] = RunConst(avrgL, Ct);
+
+   printf("\nAverage RunConst:\n");
    gRunConsts[0].Print();
 } //}}}
 

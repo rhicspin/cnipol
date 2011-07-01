@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:f:n:s:o:l::t:e:m:d:baCDTABZF:MNW:UGR:Sqg",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:o:l::t:e:m:d:baCDTBZF:MNW:UGR:Sqg",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
          break;
 
       case 's':
-         gAnaInfo->thinout = atol(optarg);
+         gAnaInfo->fThinout = atol(optarg);
          break;
 
       case 'l':
@@ -216,8 +216,6 @@ int main(int argc, char *argv[])
          gAnaInfo->DMODE = 1; break;
       case 'T':
          gAnaInfo->TMODE = 1; break;
-      case 'A':
-         gAnaInfo->AMODE = 1; break;
       case 'B':
          gAnaInfo->BMODE = 1; break;
       case 'Z':
@@ -461,6 +459,9 @@ int main(int argc, char *argv[])
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
+   // XXX : debug
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
+
    if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() ) {
       rawData->ReadDataFast();
 
@@ -470,6 +471,9 @@ int main(int argc, char *argv[])
       // (Roughly) Process all channel banana
       gAsymRoot->CalibrateFast();
    }
+
+   // XXX : debug
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    if (!gAnaInfo->QUICK_MODE) {
 
@@ -482,28 +486,27 @@ int main(int argc, char *argv[])
       gAsymRoot->PostProcess();
    }
 
-   //gAsymRoot->fEventConfig->fCalibrator->PrintAsPhp();
-
    // Delete Unnecessary ROOT Histograms
    gAsymRoot->DeleteHistogram();
 
    // Close histogram file
    hist_close(hbk_outfile);
 
+   // XXX : debug
+   gAsymRoot->fEventConfig->fCalibrator->Print();
+
    // Update calibration constants if requested
    if (gAnaInfo->HasCalibBit()) {
 
       // XXX : remove
-      RunConst::PrintAll();
+      //RunConst::PrintAll();
 
       gAsymRoot->Calibrate();
    }
 
-   // Update calibration constants if requested
    //gRunDb.Print();
-
-   //gAsymRoot->fEventConfig->PrintAsPhp();
-   //gAsymRoot->fEventConfig->fCalibrator->PrintAsConfig();
+   //gAsymRoot->fEventConfig->Print();
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Stop stopwatch and save results
    stopwatch.Stop();
@@ -530,8 +533,6 @@ int main(int argc, char *argv[])
 
    if (gAnaInfo->HasGraphBit())
       gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
-      //gAsymRoot->SaveAs("preproc", gAnaInfo->GetImageDir());
-      //gAsymRoot->SaveAs("profile", gAnaInfo->GetImageDir());
 
    // Close ROOT File
    gAsymRoot->Finalize();

@@ -37,10 +37,10 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
    // iCh=0 is the sum of all channels
    // Special treatment for combined histogram
-   htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
-   hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+   //htemp     = (TH2F*) c->d["std"]->o["hTimeVsEnergyA"+cutid];
+   //hMeanTime = (TH1D*) c->d["std"]->o["hFitMeanTimeVsEnergyA"+cutid];
 
-   fChannelCalibs[0] = Calibrate(htemp, hMeanTime, 0, false);
+   //Calibrate(htemp, hMeanTime);
 
    // Now calibrate individual active channels
    set<UShort_t>::const_iterator iCh;
@@ -57,7 +57,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       htemp     = (TH2F*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_st"+strChId];
       hMeanTime = (TH1D*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+strChId];
 
-      fChannelCalibs[*iCh] = Calibrate(htemp, hMeanTime, *iCh, false);
+      Calibrate(htemp, hMeanTime, *iCh);
    }
 
    PostCalibrate();
@@ -76,7 +76,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
    htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
    hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
-   fChannelCalibs[0] = Calibrate(htemp, hMeanTime, 0, false);
+   Calibrate(htemp, hMeanTime);
 
    // Now calibrate individual active channels
    set<UShort_t>::const_iterator iCh;
@@ -93,7 +93,7 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
       hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
 
-      fChannelCalibs[*iCh] = Calibrate(htemp, hMeanTime, *iCh, false);
+      Calibrate(htemp, hMeanTime, *iCh);
    }
 } //}}}
 
@@ -171,18 +171,28 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
 
 
 /** */
-ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
-   ChannelCalib *chCalib = new ChannelCalib();
+   ChannelCalib *chCalib;
+
+   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
+
+   if ( iChCalib != fChannelCalibs.end() ) {
+	   chCalib = &iChCalib->second;
+	} else {
+      ChannelCalib ch;
+		fChannelCalibs[chId] = ch;
+		chCalib = &fChannelCalibs[chId];
+	}
 
    if (!h || !hMeanTime) {
-      Error("Calibrate", "Provided histogram for channel %02d does not exist", chId, chId);
-      return *chCalib;
+      Error("Calibrate", "Provided histogram for channel %2d does not exist", chId, chId);
+      return;
    }
 
    if (h->Integral() < 2000) {
-      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", h->GetName());
-      return *chCalib;
+      Error("Calibrate", "Too few entries (Integral = %d) in histogram %s. Skipping calibration", h->Integral(), h->GetName());
+      return;
    }
 
    Double_t xmin = h->GetXaxis()->GetXmin();
@@ -225,7 +235,7 @@ ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
 
    if (hMeanTime->Integral() < 0) {
       Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", h->GetName());
-      return *chCalib;
+      return;
    }
 
    delete fitResHists;
@@ -261,7 +271,7 @@ ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
 
    // All channels are combined in the 0-th calib channel
    // Use these values as expected in the fit
-   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(0);
+   iChCalib = fChannelCalibs.find(0);
 
    if ( iChCalib != fChannelCalibs.end() ) {
       meanT0  = fChannelCalibs[0].fT0Coef;
@@ -280,45 +290,40 @@ ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
       meanDLW_high = 200;
    //}
 
-   //bananaFitFunc->SetParameters(chId, meanT0, meanDLW);
-   //bananaFitFunc->SetParNames("channel", "t_0, ns", "DL, #mug/cm^{2}");
    bananaFitFunc->SetParameters(meanT0, meanDLW);
    bananaFitFunc->SetParNames("t_{0}, ns", "DL, #mug/cm^{2}");
 
-   //bananaFitFunc->FixParameter(0, chId);
-   //bananaFitFunc->ReleaseParameter(1);
-   //bananaFitFunc->ReleaseParameter(2);
-   //bananaFitFunc->SetParLimits(0, chId,  chId);
    bananaFitFunc->SetParLimits(0, meanT0_low,  meanT0_high);
    bananaFitFunc->SetParLimits(1, meanDLW_low, meanDLW_high);
 
-   //printf("T0, T0_err, Em, Em_err: %f, %f, %f, %f\n", meanT0, meanT0_err, meanDLW, meanDLW_err);
-
+   printf("\nFitting histogram:\n");
    hMeanTime->Print();
-   TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
+   //printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
+   //printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
 
-   //bananaFitFunc->ReleaseParameter(0);
-   //bananaFitFunc->ReleaseParameter(1);
-   //bananaFitFunc->ReleaseParameter(2);
+   //TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
+   TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");
+
    //fitres->Print("V");
-
-   //h->Print();
 
    delete bananaFitFunc;
 
    if (fitres.Get()) {
 
+	   //printf("status: %d\n", fitres->FitResult::Status());
+
       // If something is wrong with the channel mark it accordingly
       if (fitres->FitResult::Status() != 0) {
          chCalib->fFitStatus = kDLFIT_FAIL;
-         return *chCalib;
+         return;
       }
 
       chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
+      //if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
+      if (chCalib->fBananaChi2Ndf <= 0 ) {
          chCalib->fFitStatus = kDLFIT_FAIL;
-         return *chCalib;
+         return;
       }
 
       chCalib->fFitStatus     = kDLFIT_OK;
@@ -336,18 +341,14 @@ ChannelCalib& DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, USh
       Error("Calibrate", "Empty TFitResultPtr");
       chCalib->fFitStatus = kDLFIT_FAIL;
    }
-
-   //return fitres;
-   return *chCalib;
 } //}}}
 
 
 /** */
 void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
 { //{{{
-   opt = "";
-
-   printf("DeadLayerCalibratorEDepend:\n");
+   Info("Print", "");
+	Calibrator::Print(opt);
 } //}}}
 
 

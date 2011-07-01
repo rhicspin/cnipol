@@ -223,19 +223,18 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 
 
 /** */
-ChannelCalib& DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{
-   ChannelCalib *chCalib = new ChannelCalib();
-   return *chCalib;
-}
+//ChannelCalib& DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+//{ //{{{
+//   ChannelCalib *chCalib = new ChannelCalib();
+//   return *chCalib;
+//} //}}}
 
 
 /** */
 void DeadLayerCalibrator::Print(const Option_t* opt) const
 {
-   opt = "";
-
-   printf("DeadLayerCalibrator:\n");
+   Info("Print", "");
+	Calibrator::Print(opt);
 }
 
 

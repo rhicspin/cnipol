@@ -327,7 +327,7 @@ void hist_book(char *filename)
     }
 
     // signal integral vs. amplitude A0,A1, and iasigma determination
-    if (gAnaInfo->AMODE == 1){
+    //if (gAnaInfo->AMODE == 1){
         for (st=1;st<=72;st++){
             sprintf(hcomment,"strip %d -- Int vs. Amp ",st);
             HHBOOK2(12200+st,hcomment,100,0.,200., 256,0.,4000.);
@@ -335,7 +335,7 @@ void hist_book(char *filename)
             sprintf(hcomment,"strip %d -- Tof vs. Int",st);
             HHBOOK2(12300+st,hcomment,128,0.,4000.,80,20.,100.);
         }
-    }
+    //}
 
     // banana plots (E-T)
     if (gAnaInfo->BMODE == 1){
