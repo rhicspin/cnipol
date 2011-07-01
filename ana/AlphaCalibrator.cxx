@@ -273,7 +273,6 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 /** */
 void AlphaCalibrator::Print(const Option_t* opt) const
 {
-   printf("AlphaCalibrator:\n");
-
-   Calibrator::Print(opt);
+   Info("Print", "");
+	Calibrator::Print(opt);
 }

@@ -38,11 +38,11 @@ public:
    DeadLayerCalibratorEDepend();
    ~DeadLayerCalibratorEDepend();
 
-   virtual void          Calibrate(DrawObjContainer *c);
-   virtual void          CalibrateFast(DrawObjContainer *c);
-   virtual ChannelCalib& Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
-   void                  PostCalibrate();
-   void                  Print(const Option_t* opt="") const;
+   virtual void Calibrate(DrawObjContainer *c);
+   virtual void CalibrateFast(DrawObjContainer *c);
+   virtual void Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
+   void         PostCalibrate();
+   void         Print(const Option_t* opt="") const;
 
 
    static RunConst sRunConst;

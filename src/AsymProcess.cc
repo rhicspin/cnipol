@@ -147,7 +147,7 @@ void event_process(processEvent *event)
       // Get address of the histogram container
       ChannelEvent *ch = gAsymRoot->fChannelEvent;
 
-      if (!ch->PassCutDetectorChannel()) return;
+      if (!ch->PassCutSiliconChannel()) return;
 
       gAsymRoot->fHists->Fill(ch);
 
@@ -252,19 +252,24 @@ void event_process(processEvent *event)
 
    if (gAnaInfo->HasNormalBit()) {
 
-      if (!ch->PassCutDetectorChannel()) return;
+      if (!ch->PassCutSiliconChannel()) return;
 
       gAsymRoot->fHists->Fill(ch);
 
       //if (fabs(gFillPattern[event.bid]) != 1)
 
+      //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
+
       //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
+      //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
+      if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutSiliconChannel())
       {
+
 	      gAsymRoot->fHists->Fill(ch, "_cut1");
 
          if (ch->PassCutCarbonMass()) {
+
 	         gAsymRoot->fHists->Fill(ch, "_cut2");
 
             //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);

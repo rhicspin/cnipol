@@ -45,7 +45,7 @@ public:
    virtual Float_t        GetTime(UShort_t tdc) const;
    virtual Float_t        GetTimeOfFlight(UShort_t tdc, UShort_t chId) const;
    virtual TFitResultPtr  CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
-   virtual ChannelCalib&  Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
+   virtual void           Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
    virtual UInt_t         GetChannelFitStatus(UShort_t chId);
    void                   Print(const Option_t* opt="") const;
    virtual void           PrintAsPhp(FILE *f=stdout) const;

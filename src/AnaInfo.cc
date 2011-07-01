@@ -26,10 +26,8 @@ AnaInfo::AnaInfo() : TObject(),
    RAWHISTOGRAM      (0),
    DMODE             (0),
    TMODE             (0),
-   AMODE             (0),
    BMODE             (1),
    ZMODE             (0),
-   MESSAGE           (0),
    CBANANA           (2),
    UPDATE            (0),
    QUICK_MODE        (0),
@@ -50,7 +48,7 @@ AnaInfo::AnaInfo() : TObject(),
    MassLimit         (8),
    nEventsProcessed  (0),
    nEventsTotal      (0),
-   thinout           (1),
+   fThinout           (1),
    fFastCalibThinout (0.10),
    reference_rate    (1),
    //target_count_mm   (0.11),
@@ -81,10 +79,8 @@ AnaInfo::AnaInfo(string runId) :
    RAWHISTOGRAM      (0),
    DMODE             (0),
    TMODE             (0),
-   AMODE             (0),
    BMODE             (1),
    ZMODE             (0),
-   MESSAGE           (0),
    CBANANA           (2),
    UPDATE            (0),
    QUICK_MODE        (0),
@@ -105,7 +101,7 @@ AnaInfo::AnaInfo(string runId) :
    MassLimit         (8),
    nEventsProcessed  (0),
    nEventsTotal      (0),
-   thinout           (1),
+   fThinout           (1),
    fFastCalibThinout (0.10),
    reference_rate    (1),
    //target_count_mm   (0.11),
@@ -357,7 +353,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
-   fprintf(f, "$rc['thinout']                      = %u;\n",     thinout);
+   fprintf(f, "$rc['fThinout']                      = %u;\n",     fThinout);
    fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
    fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);
    fprintf(f, "$rc['fAnaTimeCpu']                  = %f;\n",     fAnaTimeCpu);
@@ -462,7 +458,7 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf >> fModes;
       buf >> nEventsProcessed;
       buf >> nEventsTotal;
-      buf >> thinout;
+      buf >> fThinout;
       buf >> fFastCalibThinout;
       buf >> fAnaDateTime >> fAnaTimeReal >> fAnaTimeCpu;
       buf >> tstr; fAlphaCalibRun  = tstr.Data();
@@ -481,7 +477,7 @@ void AnaInfo::Streamer(TBuffer &buf)
       buf << fModes;
       buf << nEventsProcessed;
       buf << nEventsTotal;
-      buf << thinout;
+      buf << fThinout;
       buf << fFastCalibThinout;
       buf << fAnaDateTime << fAnaTimeReal << fAnaTimeCpu;
       tstr = fAlphaCalibRun;  buf << tstr;

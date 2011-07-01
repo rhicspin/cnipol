@@ -123,8 +123,8 @@ void CnipolHists::BookHists(string cutid)
    DrawObjContainerMapIter  isubdir;
 
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -311,13 +311,13 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
 
 /** */
 void CnipolHists::PreFill(string cutid)
-{
+{ //{{{
    char dName[256];
    char hName[256];
 
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -327,12 +327,12 @@ void CnipolHists::PreFill(string cutid)
       sprintf(hName, "hSpinVsDelim%s_st%02d", cutid.c_str(), *iCh);
       ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, NUM_SPIN_STATES, -1.5, 1.5);
    }
-}
+} //}}}
 
 
 /** */
 void CnipolHists::PostFill()
-{
+{ //{{{
    //char hName[256];
 
    vector<string> cutIds;
@@ -349,8 +349,8 @@ void CnipolHists::PostFill()
       TH1* hTofVsKinEnergyA = (TH1*) o["hTofVsKinEnergyA"+sCutId];
    
       set<UShort_t>::const_iterator iCh;
-      set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-      set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+      set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+      set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
 
       for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -370,7 +370,7 @@ void CnipolHists::PostFill()
          //ConvertRawToKin(hTVsA_channel, hTofVsKinEnergyA_channel, *iCh);
       }
    }
-}
+} //}}}
 
 
 /** */
@@ -383,8 +383,8 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
    // Draw superimposed for all channels
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 

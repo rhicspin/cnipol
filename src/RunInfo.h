@@ -69,8 +69,9 @@ public:
    int          NActiveStrip;
    int          NDisableStrip;
    int          fDisabledChannels[N_CHANNELS];
-   std::vector<UShort_t>   fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
-   std::set<UShort_t>   fActiveSiliconChannels;
+   std::vector<UShort_t> fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
+   std::set<UShort_t>    fSiliconChannels;
+   std::set<UShort_t>    fActiveSiliconChannels;
    int          NFilledBunch;
    int          NActiveBunch;
    int          NDisableBunch;
@@ -93,7 +94,6 @@ public:
 
    std::string GetAlphaCalibFileName() const;
    std::string GetDlCalibFileName() const;
-   //void        Streamer(TBuffer &buf);
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintConfig();
@@ -118,8 +118,5 @@ public:
 
    ClassDef(RunInfo, 1)
 };
-
-//TBuffer & operator<<(TBuffer &buf, RunInfo *&rec);
-//TBuffer & operator>>(TBuffer &buf, RunInfo *&rec);
 
 #endif

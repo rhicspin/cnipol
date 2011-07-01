@@ -565,7 +565,7 @@ void AsymRoot::WriteTreeFile()
  *
  */
 void AsymRoot::PrintEventMap()
-{
+{ //{{{
    ChannelEventSet::const_iterator mi;
    ChannelEventSet::const_iterator mb = fChannelEvents.begin();
    ChannelEventSet::const_iterator me = fChannelEvents.end();
@@ -574,7 +574,7 @@ void AsymRoot::PrintEventMap()
       //mi->first.Print();
       mi->Print();
    }
-}
+} //}}}
 
 
 /** */
@@ -587,7 +587,6 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
-
    AnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    if ( anaInfo->HasAlphaBit() && !anaInfo->HasCalibBit() ) {
@@ -676,18 +675,18 @@ void AsymRoot::UpdateCalibrator()
 
 /** */
 void AsymRoot::Calibrate()
-{
+{ //{{{
    //fEventConfig->Print();
    //fEventConfig->fCalibrator->Print();
-
    //exit(0);
+
    fEventConfig->fCalibrator->Calibrate(fHists);
-}
+} //}}}
 
 
 /** */
 void AsymRoot::CalibrateFast()
-{
+{ //{{{
    fEventConfig->fCalibrator->CalibrateFast(fHists);
 
    // XXX this probably needs to be moved somewhere else
@@ -695,12 +694,12 @@ void AsymRoot::CalibrateFast()
       //printf("channel: %d\n", ch->GetChannelId());
       ((CnipolPmtHists*) fHists->d["pmt"])->PostPreProcess();
    }
-}
+} //}}}
 
 
 /** */
 void AsymRoot::SaveChannelTrees()
-{
+{ //{{{
    if (!gAnaInfo->fSaveTrees.test(1)) return;
 
    if (fChannelEvents.size() <= 0) {
@@ -717,12 +716,10 @@ void AsymRoot::SaveChannelTrees()
       //mi->fChannel.Print();
       fChannelEventTrees[mi->fEventId.fChannelId]->Fill();
    }
-}
+} //}}}
 
 
-/**
- *
- */
+/** */
 void AsymRoot::SaveEventTree()
 { //{{{
    if (!gAnaInfo->fSaveTrees.test(2)) return;
@@ -941,7 +938,6 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
 
 
 // Description : Delete Unnecessary Histograms
-//
 void AsymRoot::DeleteHistogram()
 { //{{{
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
@@ -1001,7 +997,7 @@ void AsymRoot::Finalize()
 
 /** */
 void AsymRoot::SaveAs(string pattern, string dir)
-{
+{ //{{{
    if (!gAnaInfo->HasAlphaBit()) {
       gStyle->SetMarkerStyle(kFullDotLarge);
       gStyle->SetMarkerSize(1);
@@ -1013,18 +1009,19 @@ void AsymRoot::SaveAs(string pattern, string dir)
    fHists->SetSignature(fEventConfig->GetSignature());
 
    fHists->SaveAllAs(c, pattern, dir.c_str());
-}
+} //}}}
 
 
+/** */
 EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
 
 
 /** */
 void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaResult *&ar)
-{
+{ //{{{
    if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }
 
    ri = fEventConfig->GetRunInfo();
    ai = fEventConfig->GetAnaInfo();
    ar = fEventConfig->GetAnaResult();
-}
+} //}}}
