@@ -521,7 +521,7 @@ int main(int argc, char *argv[])
    mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
    mseRunInfoX->measurement_type = UInt_t(gRunInfo->fMeasType);
 
-   if (gAnaInfo->fFlagUpdateDb)
+   if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
       gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
 
    gAsymRoot->fEventConfig->fMseRunInfoX = mseRunInfoX;
