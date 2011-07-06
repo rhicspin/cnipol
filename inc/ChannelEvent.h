@@ -54,6 +54,7 @@ public:
    Float_t  GetEnergyA() const;
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();
+   Float_t  GetKinEnergyAEDependAverage();
    Float_t  GetKinEnergyAEstimate();
    Float_t  GetKinEnergyADLCorrEstimate();
    Float_t  GetKinEnergyAEstimateEDepend();
@@ -75,6 +76,7 @@ public:
    Bool_t PassCutSiliconChannel();
    Bool_t PassCutDepEnergyTime();
    Bool_t PassCutKinEnergyAEDepend();
+   Bool_t PassCutKinEnergyAEDependAverage();
    Bool_t PassCutKinEnergyADLCorrEstimate();
    Bool_t PassCutCarbonMass();
    Bool_t PassCutCarbonMassEstimate();

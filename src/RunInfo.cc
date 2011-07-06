@@ -433,6 +433,13 @@ void RunInfo::Update(MseRunInfoX& run)
       SetDisabledChannel(chId);
    }
 
+   // Check for horizontal targets and disable 90 degree detectors
+   if (fTargetOrient == 'H') {
+      bitset<N_DETECTORS> disabled_horiz_det(string("010010"));
+      DisableChannels(disabled_horiz_det);
+   }
+      
+
    // For compatibility reasons set the Run variable
    // Taken from AsymRunDb
    if (RUNID < 6500) { // Run undefined
@@ -650,7 +657,7 @@ Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
 
 /** */
 void RunInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
-{
+{ //{{{
    for (int i=0; i!=N_DETECTORS; ++i) {
 
       if (disabled_det.test(i) ) {
@@ -659,7 +666,7 @@ void RunInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
             SetDisabledChannel(NSTRIP_PER_DETECTOR*i + j);
       }
    }
-}
+} //}}}
 
 
 /** */

@@ -5,6 +5,8 @@
 
 #include "CnipolHists.h"
 
+#include "THStack.h"
+
 #include "AnaInfo.h"
 #include "RunInfo.h"
 #include "AsymRoot.h"
@@ -145,7 +147,7 @@ void CnipolHists::BookHists(string cutid)
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA%s_st%02d", cutid.c_str(), *iCh);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
       //((TH1*) oc->o[hName])->GetListOfFunctions()->Add(banana_cut_l);
 
@@ -376,7 +378,7 @@ void CnipolHists::PostFill()
 /** */
 void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 { //{{{
-   //Warning("SaveAllAs", "executing...");
+   //Info("SaveAllAs", "executing...");
    DrawObjContainer::SaveAllAs(c, pattern, path);
 
    string cutid = "_cut2";
@@ -386,10 +388,8 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
    set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
    set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
-
-      //if (i+1 != 28) continue;
-
+   for (iCh=iChB; iCh!=iChE; ++iCh)
+	{
       string sSi("  ");
       sprintf(&sSi[0], "%02d", *iCh);
       string dName = "channel" + sSi;
@@ -397,52 +397,18 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       DrawObjContainer* oc = d.find(dName)->second;
 
+      THStack hstack(cName.c_str(), cName.c_str());
+
       TH1* h1 = (TH1*) oc->o["hTimeVsEnergyA"+cutid+"_st"+sSi];
+		hstack.Add(h1);
+
       TH1* h2 = (TH1*) oc->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+sSi];
+		hstack.Add(h2);
 
-      c.cd();
+      string subPath = path + "/" + dName;
 
-      char *l = strstr(h1->GetOption(), "LOGZ");
-      //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-      if (l) { c.SetLogz(kTRUE);
-         //printf("XXX2: set logz \n");
-      } else { c.SetLogz(kFALSE); }
-
-      h1->Draw();
-      h2->Draw("sames");
-
-      c.Modified();
-      c.Update();
-
-      TPaveStats *stats = (TPaveStats*) h2->FindObject("stats");
-
-      if (stats) {
-         stats->SetX1NDC(0.84);
-         stats->SetX2NDC(0.99);
-         stats->SetY1NDC(0.10);
-         stats->SetY2NDC(0.50);
-      } else {
-         printf("could not find stats\n");
-         return;
-      }
-
-      string fName = path + "/" + dName + "/" + cName + ".png";
-      //printf("Saving %s\n", fName.c_str());
-
-      c.SetName(cName.c_str());
-      c.SetTitle(cName.c_str());
-      //c.SaveAs(fName.c_str());
-
-      TText signature;
-      signature.SetTextSize(0.03);
-      signature.DrawTextNDC(0, 0.01, fSignature.c_str());
-
-      if (TPRegexp(pattern).MatchB(fName.c_str())) {
-         c.SaveAs(fName.c_str());
-         gSystem->Chmod(fName.c_str(), 0775);
-      } else {
-         //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
-      }
+		SaveHStackAs(c, hstack, subPath);
+		//DrawObjContainer::SaveHStackAs(c, hstack, subPath);
    }
 } //}}}
 

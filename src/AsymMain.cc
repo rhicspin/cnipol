@@ -397,6 +397,7 @@ int main(int argc, char *argv[])
    // Get basic information about the measurement from the data file
    // and overwrite the data base run info (mseRunInfoX) if needed
    rawData->ReadRecBegin(mseRunInfoX);
+   rawData->ReadRunInfo(*mseRunInfoX);
 
    //cout << endl << "mseRunInfoX 2: " << endl;
    //mseRunInfoX->Print();

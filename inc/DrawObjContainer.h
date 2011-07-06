@@ -15,6 +15,7 @@
 #include "TDirectory.h"
 #include "TH1.h"
 #include "TH2F.h"
+#include "THStack.h"
 #include "TKey.h"
 #include "TObject.h"
 #include "TPaveStats.h"
@@ -69,6 +70,7 @@ public:
    virtual void PreFill(std::string sid="");
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./");
+   virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");
    void         Draw(Option_t* option = "") { ((TObject*)this)->Draw(option); }
    void         Draw(TCanvas &c);
    Int_t        Write(const char* name = 0, Int_t option = 0, Int_t bufsize = 0);

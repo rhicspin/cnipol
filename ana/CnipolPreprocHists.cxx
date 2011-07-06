@@ -44,6 +44,7 @@ void CnipolPreprocHists::BookHists(string sid)
    ((TH1*) o["hTvsA"])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o["hTvsA"])->SetTitle(";Amplitude, ADC;TDC;");
 
+   // Data from all enabled silicon channels
    o["hTimeVsEnergyA"] = new TH2F("hTimeVsEnergyA", "hTimeVsEnergyA", 100, 0, 2500, 60, 0, 120);
    ((TH1*) o["hTimeVsEnergyA"])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o["hTimeVsEnergyA"])->SetTitle(";Deposited Energy, keV;Time, ns;");
@@ -157,5 +158,34 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
       gSystem->Chmod(fName.c_str(), 0775);
    } else {
       //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
+   }
+
+
+   // Draw superimposed for all channels
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh)
+	{
+      string sSi("  ");
+      sprintf(&sSi[0], "%02d", *iCh);
+      string dName = "channel" + sSi;
+      string cName = "c_combo_ch" + sSi;
+
+      //DrawObjContainer* oc = d.find(dName)->second;
+
+      THStack hstack(cName.c_str(), cName.c_str());
+
+      TH1* h1 = (TH1*) o["hTimeVsEnergyA_ch"+sSi];
+		hstack.Add(h1);
+
+      TH1* h2 = (TH1*) o["hFitMeanTimeVsEnergyA_ch"+sSi];
+		hstack.Add(h2);
+
+      string subPath = path;// + "/" + dName;
+
+		SaveHStackAs(c, hstack, subPath);
+		//DrawObjContainer::SaveHStackAs(c, hstack, subPath);
    }
 } //}}}
