@@ -45,7 +45,7 @@ void CnipolRawHists::BookHists(string cutid)
 
    sprintf(hName, "hTvsI");
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
    char htitle[256];
@@ -106,7 +106,7 @@ void CnipolRawHists::BookHists(string cutid)
 
       sprintf(hName, "hTvsI_ch%02d", iChId);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
       // If this is a new directory then we need to add it to the list

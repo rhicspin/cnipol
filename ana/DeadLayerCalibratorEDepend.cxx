@@ -186,12 +186,12 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 	}
 
    if (!h || !hMeanTime) {
-      Error("Calibrate", "Provided histogram for channel %2d does not exist", chId, chId);
+      Error("Calibrate", "Provided histogram for channel %2d does not exist", chId);
       return;
    }
 
    if (h->Integral() < 2000) {
-      Error("Calibrate", "Too few entries (Integral = %d) in histogram %s. Skipping calibration", h->Integral(), h->GetName());
+      Error("Calibrate", "Too few entries (Integral = %f) in histogram %s. Skipping calibration", h->Integral(), h->GetName());
       return;
    }
 
@@ -234,7 +234,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
    }
 
    if (hMeanTime->Integral() < 0) {
-      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", h->GetName());
+      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", hMeanTime->GetName());
       return;
    }
 

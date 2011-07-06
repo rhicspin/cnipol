@@ -148,29 +148,72 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 
 
 /** */
+void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
+{ //{{{
+   Info("ReadRunInfo", "Started reading run info from data file...");
+
+   TStopwatch sw;
+
+   recordHeaderStruct *mHeader;
+
+   char *mSeek = fMem;
+
+   while (true) {
+
+      //int nRecs = fread(&header, sizeof(recordHeaderStruct), 1, fp);
+
+      if (mSeek > fMem + fMemSize - 1) break;
+      //if (nRecs != 1) break;
+
+      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
+
+      mHeader = (recordHeaderStruct*) mSeek;
+
+      //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
+
+      // REC_BEAMADO
+      if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO)
+		{
+         recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
+
+         gRunInfo->SetBeamEnergy(rec->data.beamEnergyM);
+         fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
+         fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
+
+         mSeek = mSeek + mHeader->len;
+			continue;
+		}
+
+      // REC_POLADO
+      if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
+		{
+         recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
+
+			ProcessRecord( (recordPolAdoStruct&) *rec, runInfo);
+
+         mSeek = mSeek + mHeader->len;
+			continue;
+		}
+
+      mSeek = mSeek + mHeader->len;
+   }
+
+   sw.Stop();
+   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+
+   Info("ReadRunInfo", "End of read run info\n");
+} //}}}
+
+
+/** */
 void RawDataProcessor::ReadDataFast()
 { //{{{
    Info("ReadDataFast", "Started reading data file...");
 
    TStopwatch sw;
 
-   //FILE *fp = fopen(gAnaInfo->GetRawDataFileName().c_str(), "r");
-
-   // reading the data till its end ...
-   //if (!fp) {
-   //   printf("ERROR: %s file not found. Force exit.\n", gAnaInfo->GetRawDataFileName().c_str());
-   //   exit(-1);
-   //} else
-   //   printf("\nFound file %s\n", gAnaInfo->GetRawDataFileName().c_str());
-
-   //recordHeaderStruct  header;
    recordHeaderStruct *mHeader;
-   //recordDataStruct   data;
 
-   // else
-   //   printf("ERROR: Cannot read REC_BEGIN record\n");
-
-   //int nEvent       = 0;
    UInt_t nTotalEvents = 0;
    UInt_t nReadEvents  = 0;
 
@@ -191,20 +234,8 @@ void RawDataProcessor::ReadDataFast()
 
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
-      if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO) {
-
-         recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
-
-         gRunInfo->SetBeamEnergy(rec->data.beamEnergyM);
-         fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
-         fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
-
-         mSeek = mSeek + mHeader->len;
-			continue;
-		}
-
-      if ((mHeader->type & REC_TYPEMASK) != REC_READAT) {
-
+      if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
+		{
          //long offset = header.len - sizeof(recordHeaderStruct);
          //fseek(fp, offset, SEEK_CUR);
 
@@ -316,7 +347,7 @@ void readloop(MseRunInfoX &run)
        recordDataStruct        data;
    } rec;
 
-   polDataStruct            poldat;
+   //polDataStruct            poldat;
    beamDataStruct           beamdat;
    targetDataStruct         tgtdat1;
    targetDataStruct         tgtdat2;
@@ -408,10 +439,10 @@ void readloop(MseRunInfoX &run)
          
          break;
 
-      case REC_POLADO:
-         memcpy(&poldat, &rec.polado.data, sizeof(poldat));
-         if (!gAnaInfo->HasAlphaBit()) DecodeTargetID(poldat, run);
-         break;
+      //case REC_POLADO:
+      //   memcpy(&poldat, &rec.polado.data, sizeof(poldat));
+      //   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID(poldat, run);
+      //   break;
 
       case REC_TAGADO:
          memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
@@ -884,7 +915,7 @@ void PrintBunchPattern(int *pattern)
 //             : presently the target ID is assumed to be appear at the last of
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
-void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run)
+void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
 { //{{{
    cout << endl;
    cout << "target ID = " << poldat.targetIdS << endl;
@@ -975,9 +1006,10 @@ void PrepareCollidingBunchPattern()
 
 
 /** */
-void ProcessRecord(recordPolAdoStruct &rec)
-{
-}
+void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo)
+{ //{{{
+   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID((polDataStruct &) rec.data, runInfo);
+} //}}}
 
 
 /** */
@@ -1045,7 +1077,7 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec)
 
 
 /** */
-void ProcessRecord(recordCountRate &rec)
+void ProcessRecord(const recordCountRate &rec)
 { //{{{
    UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    Long_t *pointer = (Long_t *) rec.data;
@@ -1063,9 +1095,9 @@ void ProcessRecord(recordCountRate &rec)
 
 
 /** */
-void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
+void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
 { //{{{
-   long* pointer = rec;
+   const long* pointer = rec;
 
    //--rec;
    //UShort_t i = 0;
@@ -1194,7 +1226,7 @@ void ProcessRecordPCTarget(long* rec, MseRunInfoX &run)
 
 
 /** */
-void ProcessRecord(recordWcmAdoStruct &rec)
+void ProcessRecord(const recordWcmAdoStruct &rec)
 { //{{{
 
    for (int bid=1; bid<=N_BUNCHES; bid++) {

@@ -24,18 +24,22 @@ DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fSignature(""),
 
 
 std::string DrawObjContainer::GetSignature()
-{
+{ //{{{
    return fSignature;
-}
+} //}}}
 
 void DrawObjContainer::SetSignature(std::string signature)
-{
+{ //{{{
    fSignature = signature;
-}
+} //}}}
 
 
 /** */
-void DrawObjContainer::SetDir(TDirectory *dir) { fDir = dir; fDir->cd(); }
+void DrawObjContainer::SetDir(TDirectory *dir)
+{ //{{{
+   fDir = dir;
+   fDir->cd();
+} //}}}
 
 
 /** */
@@ -164,7 +168,7 @@ DrawObjContainer::~DrawObjContainer()
 
 /** */
 void DrawObjContainer::Print(const Option_t* opt) const
-{
+{ //{{{
    //opt = "";
 
    //printf("DrawObjContainer:\n");
@@ -188,12 +192,12 @@ void DrawObjContainer::Print(const Option_t* opt) const
       cout << "Content of " << isubd->first << endl;
       isubd->second->Print();
    }
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
-{
+{ //{{{
    //Bool_t isBatch = gROOT->IsBatch();
 
    //gROOT->SetBatch(kTRUE);
@@ -290,12 +294,73 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
    }
 
    //gROOT->SetBatch(isBatch);
-}
+} //}}}
+
+
+/** */
+void DrawObjContainer::SaveHStackAs(TCanvas &c, THStack &hstack, std::string path)
+{ //{{{
+
+   // Require at least two elements in the hstack
+   if (hstack.GetHists()->GetSize() < 2) {
+      Error("SaveHStackAs", "At least 2 histograms required in the HStack. Skipping saving request for %s", hstack.GetName());
+      return;
+   }
+
+   c.cd();
+
+   TH1 *h1 = (TH1*) hstack.GetHists()->At(0);
+   TH1 *h2 = (TH1*) hstack.GetHists()->At(1);
+
+   char *l = strstr(h1->GetOption(), "LOGZ");
+
+   //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
+
+   if (l) { c.SetLogz(kTRUE);
+      //printf("XXX2: set logz \n");
+   } else { c.SetLogz(kFALSE); }
+
+   h1->Draw();
+   h2->Draw("sames");
+   //hstack.Draw("nostack");
+
+   c.Modified();
+   c.Update();
+
+   TPaveStats *stats = (TPaveStats*) h2->FindObject("stats");
+
+   if (stats) {
+      stats->SetX1NDC(0.84);
+      stats->SetX2NDC(0.99);
+      stats->SetY1NDC(0.10);
+      stats->SetY2NDC(0.50);
+   } else {
+      Error("SaveHStackAs", "Could not find stats in %s", h2->GetName());
+      //return;
+   }
+
+   string fName = path + "/" + hstack.GetName() + ".png";
+   //printf("Saving %s\n", fName.c_str());
+
+   c.SetName(hstack.GetName());
+   c.SetTitle(hstack.GetName());
+
+   TText signature;
+   signature.SetTextSize(0.03);
+   signature.DrawTextNDC(0, 0.01, fSignature.c_str());
+
+   //if (TPRegexp(pattern).MatchB(fName.c_str())) {
+      c.SaveAs(fName.c_str());
+      gSystem->Chmod(fName.c_str(), 0775);
+   //} else {
+      //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
+   //}
+} //}}}
 
 
 /** */
 void DrawObjContainer::Draw(TCanvas &c)
-{
+{ //{{{
    //Bool_t isBatch = gROOT->IsBatch();
 
    //gROOT->SetBatch(kTRUE);
@@ -322,12 +387,12 @@ void DrawObjContainer::Draw(TCanvas &c)
    }
 
    //gROOT->SetBatch(isBatch);
-}
+} //}}}
 
 
 /** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
-{
+{ //{{{
    if (!fDir) {
       Fatal("Write", "Directory fDir not defined");
    }
@@ -350,19 +415,19 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
    }
 
    return 0;//((TObject*)this)->Write(name, option, bufsize);
-}
+} //}}}
 
 
 /** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) const
-{
+{ //{{{
    return ((const DrawObjContainer*) this)->Write(name, option, bufsize);
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
-{
+{ //{{{
    //ObjMapIter io;
 
    //for (io=o.begin(); io!=o.end(); ++io) {
@@ -381,18 +446,18 @@ void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(ch, sid);
    }
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::Fill(EventConfig &rc)
-{
+{ //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc);
    }
-}
+} //}}}
 
 
 /** */
@@ -401,40 +466,40 @@ void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
 
 /** */
 void DrawObjContainer::PreFill(string sid)
-{
+{ //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PreFill(sid);
    }
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::PostFill()
-{
+{ //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PostFill();
    }
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::UpdateLimits()
-{
+{ //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->UpdateLimits();
    }
-}
+} //}}}
 
 
 /** */
 void DrawObjContainer::Delete(Option_t* option)
-{
+{ //{{{
    if (!fDir) {
       Fatal("Delete(Option_t* option)", "fDir not defined\n");
    }
@@ -454,4 +519,4 @@ void DrawObjContainer::Delete(Option_t* option)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Delete(option);
    }
-}
+} //}}}

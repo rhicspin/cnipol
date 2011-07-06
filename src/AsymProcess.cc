@@ -254,26 +254,34 @@ void event_process(processEvent *event)
 
       if (!ch->PassCutSiliconChannel()) return;
 
-      gAsymRoot->fHists->Fill(ch);
+      if (ch->PassCutEnabledChannel()) {
 
-      //if (fabs(gFillPattern[event.bid]) != 1)
+         gAsymRoot->fHists->Fill(ch);
 
-      //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
+         //if (fabs(gFillPattern[event.bid]) != 1)
 
-      //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-      if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutSiliconChannel())
-      {
+         //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
 
-	      gAsymRoot->fHists->Fill(ch, "_cut1");
+         //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+         //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+         //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
+         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() )
+         {
+	         gAsymRoot->fHists->Fill(ch, "_cut1");
 
-         if (ch->PassCutCarbonMass()) {
+            if (ch->PassCutCarbonMass()) {
 
+	            gAsymRoot->fHists->Fill(ch, "_cut2");
+
+               //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
+               //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
+            }
+         }
+      } else {
+         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
+              ch->PassCutCarbonMassEstimate())
+         {
 	         gAsymRoot->fHists->Fill(ch, "_cut2");
-
-            //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
-            //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
          }
       }
    }

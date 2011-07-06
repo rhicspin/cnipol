@@ -43,6 +43,7 @@ public:
    ~RawDataProcessor();
 
    void ReadRecBegin(MseRunInfoX* run=0);
+   void ReadRunInfo(MseRunInfoX &runInfo);
    void ReadDataFast();
 };
 
@@ -50,13 +51,13 @@ void readloop(MseRunInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);
-void DecodeTargetID(polDataStruct poldat, MseRunInfoX &run);
+void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run);
 void PrepareCollidingBunchPattern();
 
-void ProcessRecord(recordPolAdoStruct &rec);
+void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo);
 void ProcessRecord(recordWFDV8ArrayStruct &rec);
-void ProcessRecord(recordCountRate &rec);
-void ProcessRecordPCTarget(long* rec, MseRunInfoX &run);
-void ProcessRecord(recordWcmAdoStruct &rec);
+void ProcessRecord(const recordCountRate &rec);
+void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run);
+void ProcessRecord(const recordWcmAdoStruct &rec);
 
 #endif
