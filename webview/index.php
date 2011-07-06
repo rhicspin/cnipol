@@ -8,10 +8,13 @@ setlocale(LC_TIME, 'en');
 putenv("TZ=America/New_York");
 
 
-if ( isset($_GET['sfx']) && !empty($_GET['sfx']) )
+if ( isset($_GET['sfx']) && !empty($_GET['sfx']) ) {
+   $gSfx    = $_GET['sfx'];
    $gSuffix = "_{$_GET['sfx']}";
-else
+} else {
+   $gSfx    = "";
    $gSuffix = "";
+}
 
 
 // Run details view
@@ -68,7 +71,7 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
-   $dir = "../runs/$gRunId/images/";
+   $dir = "../runs/$gRunId/images$gSuffix/";
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
