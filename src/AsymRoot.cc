@@ -1009,6 +1009,11 @@ void AsymRoot::SaveAs(string pattern, string dir)
    fHists->SetSignature(fEventConfig->GetSignature());
 
    fHists->SaveAllAs(c, pattern, dir.c_str());
+
+   if (gAnaInfo->fFlagCreateThumbs) {
+      TCanvas c("cName", "cName", 200, 100);
+      fHists->SaveAllAs(c, pattern, dir.c_str(), kTRUE);
+	}
 } //}}}
 
 

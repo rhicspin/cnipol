@@ -31,7 +31,8 @@ public:
    enum Flag   {FLAG_COPY              = 0x10000400,
                 FLAG_READ_FROM_DB      = 0x10000100,
                 FLAG_UPDATE_DB         = 0x10000200, FLAG_NO_UPDATE_DB = 0x90000200,
-                FLAG_USE_DB            = 0x10000300};
+                FLAG_USE_DB            = 0x10000300,
+                FLAG_CREATE_THUMBS     = 0x10000800};
 
    // Flag options
    enum Option {OPTION_POL_ID          = 0x20004000,
@@ -54,6 +55,7 @@ public:
                 MODE_ASYM              = 0x00800000,
                 MODE_KINEMAT           = 0x08000000,
                 MODE_PMT               = 0x00000100,
+                MODE_PULSER            = 0x00000200,
                 MODE_FULL              = 0x007f0000,
                 MODE_ONLINE            = 0x04040000};
 
@@ -109,6 +111,7 @@ public:
    Bool_t           fFlagCopyResults;
    Bool_t           fFlagUseDb;
    Bool_t           fFlagUpdateDb;
+   Bool_t           fFlagCreateThumbs;
    UserGroup_t      fUserGroup;
 
 public:
@@ -154,6 +157,7 @@ public:
    Bool_t      HasAsymBit() const;
    Bool_t      HasKinematBit() const;
    Bool_t      HasPmtBit() const;
+   Bool_t      HasPulserBit() const;
 
 private:
    void Init();

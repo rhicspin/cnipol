@@ -106,17 +106,19 @@ void CnipolPreprocHists::FillPreProcess(ChannelEvent *ch)
 
 
 /** */
-void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
+void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool_t thumbs)
 { //{{{
-   DrawObjContainer::SaveAllAs(c, pattern, path);
-
-   string cName = "c_combo";
+   DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
 
    // Draw superimposed histos
+
+   string strThumb = thumbs ? "_thumb" : "" ;
+
+   string cName      = "c_combo";
+
    TH1* h1 = (TH1*) o["hTimeVsEnergyA"];
    TH1* h2 = (TH1*) o["hFitMeanTimeVsEnergyA"];
 
-   c.cd();
    char *l = strstr(h1->GetOption(), "LOGZ");
 
    if (l) {
@@ -125,6 +127,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
       c.SetLogz(kFALSE);
    }
 
+   c.cd();
    h1->Draw();
    h2->Draw("sames");
 
@@ -143,7 +146,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
       return;
    }
 
-   string fName = path + "/c_combo.png";
+   string fName      = path + "/c_combo" + strThumb + ".png";
    printf("path: %s\n", fName.c_str());
 
    c.SetName(cName.c_str());
@@ -160,7 +163,6 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
       //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
    }
 
-
    // Draw superimposed for all channels
    set<UShort_t>::const_iterator iCh;
    set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
@@ -171,7 +173,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path)
       string sSi("  ");
       sprintf(&sSi[0], "%02d", *iCh);
       string dName = "channel" + sSi;
-      string cName = "c_combo_ch" + sSi;
+      string cName = "c_combo_ch" + sSi + strThumb;
 
       //DrawObjContainer* oc = d.find(dName)->second;
 

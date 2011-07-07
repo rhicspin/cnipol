@@ -58,7 +58,7 @@ AnaInfo::AnaInfo() : TObject(),
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
    fUserGroup(*gSystem->GetUserInfo())
 {
    Init();
@@ -111,7 +111,7 @@ AnaInfo::AnaInfo(string runId) :
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
    fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
-   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE),
+   fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
    fUserGroup(*gSystem->GetUserInfo())
 {
    Init();
@@ -202,6 +202,7 @@ Bool_t AnaInfo::HasProfileBit() const { return (fModes & AnaInfo::MODE_PROFILE) 
 Bool_t AnaInfo::HasAsymBit()    const { return (fModes & AnaInfo::MODE_ASYM)    == AnaInfo::MODE_ASYM; }
 Bool_t AnaInfo::HasKinematBit() const { return (fModes & AnaInfo::MODE_KINEMAT) == AnaInfo::MODE_KINEMAT; }
 Bool_t AnaInfo::HasPmtBit()     const { return (fModes & AnaInfo::MODE_PMT)     == AnaInfo::MODE_PMT; }
+Bool_t AnaInfo::HasPulserBit()  const { return (fModes & AnaInfo::MODE_PULSER)  == AnaInfo::MODE_PULSER; }
 
 
 string AnaInfo::GetResultsDir() const
@@ -377,6 +378,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fFlagCopyResults']             = %d;\n", fFlagCopyResults);
    fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
    fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
+   fprintf(f, "$rc['fFlagCreateThumbs']            = %d;\n", fFlagCreateThumbs);
 
    fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup.fUser.Data());
    fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup.fRealName.Data());

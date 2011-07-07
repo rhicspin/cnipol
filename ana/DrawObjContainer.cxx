@@ -196,12 +196,8 @@ void DrawObjContainer::Print(const Option_t* opt) const
 
 
 /** */
-void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
+void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t thumbs)
 { //{{{
-   //Bool_t isBatch = gROOT->IsBatch();
-
-   //gROOT->SetBatch(kTRUE);
-
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
    else {
@@ -221,7 +217,12 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
          continue;
       }
 
-      sprintf(cName, "c_%s", io->first.c_str());
+
+      if (thumbs)
+         sprintf(cName, "c_%s_thumb", io->first.c_str());
+      else 
+         sprintf(cName, "c_%s", io->first.c_str());
+
       c.cd();
       c.SetName(cName);
       c.SetTitle(cName);
@@ -274,8 +275,6 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
       }
    }
 
-   //return;
-
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
@@ -289,11 +288,9 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path)
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second->SaveAllAs(c, pattern, path);
+      isubd->second->SaveAllAs(c, pattern, path, thumbs);
       path = parentPath;
    }
-
-   //gROOT->SetBatch(isBatch);
 } //}}}
 
 

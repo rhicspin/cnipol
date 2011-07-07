@@ -376,10 +376,12 @@ void CnipolHists::PostFill()
 
 
 /** */
-void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
+void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t thumbs)
 { //{{{
    //Info("SaveAllAs", "executing...");
-   DrawObjContainer::SaveAllAs(c, pattern, path);
+   DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
+
+   string strThumb = thumbs ? "_thumb" : "" ;
 
    string cutid = "_cut2";
 
@@ -393,7 +395,7 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
       string sSi("  ");
       sprintf(&sSi[0], "%02d", *iCh);
       string dName = "channel" + sSi;
-      string cName = "c_combo_st" + sSi;
+      string cName = "c_combo_st" + sSi + strThumb;
 
       DrawObjContainer* oc = d.find(dName)->second;
 

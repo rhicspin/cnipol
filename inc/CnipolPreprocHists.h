@@ -27,7 +27,7 @@ public:
    void BookHists(std::string cutid="");
    //void Fill(ChannelEvent *ch, std::string cutid="");
    void FillPreProcess(ChannelEvent *ch);
-   void SaveAllAs(TCanvas &c, std::string pattern, std::string path);
+   void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
 
    ClassDef(CnipolPreprocHists, 1)
 };
