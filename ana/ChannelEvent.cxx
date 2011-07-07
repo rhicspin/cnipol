@@ -465,7 +465,7 @@ Bool_t ChannelEvent::PassCutHamaChannel()
 /** */
 Bool_t ChannelEvent::PassCutPmtNoise()
 { //{{{
-   if ( GetAmpltd() < 50 || GetAmpltd() > 100)
+   if ( GetAmpltd() < 50 || GetAmpltd() > 150)
       return false;
 
    return true;
