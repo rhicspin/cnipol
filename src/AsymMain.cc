@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
       {"update-db",           no_argument,         0,   AnaInfo::FLAG_UPDATE_DB},
       {"no-update-db",        no_argument,         0,   AnaInfo::FLAG_NO_UPDATE_DB},
       {"use-db",              no_argument,         0,   AnaInfo::FLAG_USE_DB},
+      {"thumb",               no_argument,         0,   AnaInfo::FLAG_CREATE_THUMBS},
       {"pol-id",              required_argument,   0,   AnaInfo::OPTION_POL_ID},
       {"log",                 optional_argument,   0,   'l'},
       {"alpha",               no_argument,         0,   AnaInfo::MODE_ALPHA},
@@ -168,6 +169,10 @@ int main(int argc, char *argv[])
       case AnaInfo::FLAG_USE_DB:
          gAnaInfo->fFlagUseDb    = kTRUE;
          gAnaInfo->fFlagUpdateDb = kTRUE;
+         break;
+
+      case AnaInfo::FLAG_CREATE_THUMBS:
+         gAnaInfo->fFlagCreateThumbs = kTRUE;
          break;
 
       case 't': // set timing shift in banana cut
