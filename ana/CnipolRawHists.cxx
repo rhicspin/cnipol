@@ -5,8 +5,6 @@
 
 #include "CnipolRawHists.h"
 
-#include "RunInfo.h"
-
 
 ClassImp(CnipolRawHists)
 
@@ -38,6 +36,16 @@ void CnipolRawHists::BookHists(string cutid)
 
    fDir->cd();
 
+   sprintf(hName, "hAdcAmpltd"); // former adc_raw
+   o[hName] = new TH1F(hName, hName, 255, 0, 255);
+   ((TH1*) o[hName])->SetTitle("Raw ADC (All strips);Amplitude, ADC;Events;");
+   ((TH1*) o[hName])->SetFillColor(kGray);
+
+   sprintf(hName, "hTdc"); // former tdc_raw
+   o[hName] = new TH1F(hName, hName, 80, 10, 90);
+   ((TH1*) o[hName])->SetTitle("Raw TDC (All strips);TDC;Events;");
+   ((TH1*) o[hName])->SetFillColor(kGray);
+
    sprintf(hName, "hTvsA");
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
    ((TH1*) o[hName])->SetOption("colz LOGZ");
@@ -48,37 +56,21 @@ void CnipolRawHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
-   char htitle[256];
-
    sprintf(hName, "bunch_dist_raw");
-   sprintf(htitle, "%.3f: Raw Counts per Bunch ", gRunInfo->RUNID);
-   o[hName] = new TH1F(hName, htitle, NBUNCH, -0.5, NBUNCH-0.5);
-   ((TH2F*) o[hName])->SetTitle(";Bunch Id;Events;");
-   ((TH2F*) o[hName])->SetFillColor(kGray);
+   o[hName] = new TH1F(hName, hName, NBUNCH, 0, NBUNCH);
+   ((TH1*) o[hName])->SetTitle("Raw counts per bunch;Bunch Id;Events;");
+   ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "strip_dist_raw");
-   sprintf(htitle, "%.3f: Raw Counts per Strip ", gRunInfo->RUNID);
-   o[hName] = new TH1F(hName, htitle, NSTRIP, 1, NSTRIP);
-   ((TH2F*) o[hName])->SetTitle(";Strip Id;Events;");
-   ((TH2F*) o[hName])->SetFillColor(kGray);
-
-   sprintf(hName, "tdc_raw");
-   sprintf(htitle, "%.3f: Raw TDC (All Strips)", gRunInfo->RUNID);
-   o[hName] = new TH1F(hName, htitle, 100, 0, 100);
-   ((TH2F*) o[hName])->SetTitle(";TDC;Events;");
-   ((TH2F*) o[hName])->SetFillColor(kGray);
-
-   sprintf(hName, "adc_raw");
-   sprintf(htitle, "%.3f: Raw ADC (All Strips)", gRunInfo->RUNID);
-   o[hName] = new TH1F(hName, htitle, 100, 0, 100);
-   ((TH2F*) o[hName])->SetTitle(";ADC;Events;");
-   ((TH2F*) o[hName])->SetFillColor(kGray);
+   o[hName] = new TH1F(hName, hName, NSTRIP, 1, NSTRIP);
+   ((TH1*) o[hName])->SetTitle("Raw counts per strip;Strip Id;Events;");
+   ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "tdc_vs_adc_false_bunch_raw");
-   sprintf(htitle, "%.3f: Raw TDC vs ADC (All Strips) false bunch", gRunInfo->RUNID);
-   o[hName] = new TH2F(hName, htitle, 255, 0, 255, 100, 0, 100);
-   ((TH2F*) o[hName])->SetTitle(";ADC;TDC;");
-   ((TH2F*) o[hName])->SetFillColor(kRed);
+   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle("Raw TDC vs ADC (All strips) false bunch;ADC;TDC;");
+   ((TH1*) o[hName])->SetFillColor(kRed);
 
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
@@ -98,6 +90,16 @@ void CnipolRawHists::BookHists(string cutid)
       } else {
          oc = isubdir->second;
       }
+
+      sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
+      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      ((TH1*) oc->o[hName])->SetOption("NOIMG");
+      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Events;");
+
+      sprintf(hName, "hTdc_ch%02d", iChId);
+      oc->o[hName] = new TH1F(hName, hName, 80, 10, 90);
+      ((TH1*) oc->o[hName])->SetOption("NOIMG");
+      ((TH1*) oc->o[hName])->SetTitle(";TDC;Events;");
 
       sprintf(hName, "hTvsA_ch%02d", iChId);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
@@ -133,10 +135,8 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
    ((TH1*) sd->o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) sd->o["hTvsI_ch"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
 
-   ((TH1*) o["bunch_dist_raw"])->Fill(ch->GetChannelId());
-   ((TH1*) o["strip_dist_raw"])->Fill(ch->GetBunchId());
-   ((TH1*) o["tdc_raw"])       ->Fill(ch->GetTdc());
-   ((TH1*) o["adc_raw"])       ->Fill(ch->GetAmpltd());
+   ((TH1*) o["bunch_dist_raw"])->Fill(ch->GetBunchId());
+   ((TH1*) o["strip_dist_raw"])->Fill(ch->GetChannelId());
 
    if (cutid == "cut_false_bunch")
       ((TH1*) o["tdc_vs_adc_false_bunch_raw"])->Fill(ch->GetAmpltd(), ch->GetTdc());
@@ -147,6 +147,8 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
 /** */
 void CnipolRawHists::PostFill()
 {
+   TH1* hAdcAmpltd  = (TH1*) o["hAdcAmpltd"];
+   TH1* hTdc  = (TH1*) o["hTdc"];
    TH1* hTvsA = (TH1*) o["hTvsA"];
    TH1* hTvsI = (TH1*) o["hTvsI"];
    
@@ -156,6 +158,12 @@ void CnipolRawHists::PostFill()
       sprintf(&sChId[0], "%02d", iCh);
 
       DrawObjContainer *oc = d.find("channel"+sChId)->second;
+
+      TH1* hAdc_channel  = (TH1*) oc->o["hAdcAmpltd_ch"+sChId];
+      hAdcAmpltd->Add(hAdc_channel);
+
+      TH1* hTdc_channel  = (TH1*) oc->o["hTdc_ch"+sChId];
+      hTdc->Add(hTdc_channel);
 
       TH2* hTVsA_channel = (TH2*) oc->o["hTvsA_ch"+sChId];
       hTvsA->Add(hTVsA_channel);

@@ -39,24 +39,27 @@ CnipolPreprocHists::~CnipolPreprocHists()
 /** */
 void CnipolPreprocHists::BookHists(string sid)
 { //{{{
+   char hName[256];
 
-   o["hTvsA"] = new TH2F("hTvsA", "hTvsA", 255, 0, 255, 80, 10, 90);
-   ((TH1*) o["hTvsA"])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o["hTvsA"])->SetTitle(";Amplitude, ADC;TDC;");
+   sprintf(hName, "hTvsA");
+   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
    // Data from all enabled silicon channels
-   o["hTimeVsEnergyA"] = new TH2F("hTimeVsEnergyA", "hTimeVsEnergyA", 100, 0, 2500, 60, 0, 120);
-   ((TH1*) o["hTimeVsEnergyA"])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o["hTimeVsEnergyA"])->SetTitle(";Deposited Energy, keV;Time, ns;");
+   sprintf(hName, "hTimeVsEnergyA");
+   o[hName] = new TH2F("hTimeVsEnergyA", "hTimeVsEnergyA", 100, 0, 2000, 50, 10, 110);
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
-   o["hFitMeanTimeVsEnergyA"] = new TH1D("hFitMeanTimeVsEnergyA", "hFitMeanTimeVsEnergyA", 100, 0, 2500);
-   ((TH1*) o["hFitMeanTimeVsEnergyA"])->SetOption("E1 NOIMG");
-   ((TH1*) o["hFitMeanTimeVsEnergyA"])->GetYaxis()->SetRangeUser(0, 120);
-   ((TH1*) o["hFitMeanTimeVsEnergyA"])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+   sprintf(hName, "hFitMeanTimeVsEnergyA");
+   o[hName] = new TH1D(hName, hName, 100, 0, 2000);
+   ((TH1*) o[hName])->SetOption("E1 NOIMG");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
+   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
 
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
-      char   hName[256];
       string sChId("  ");
 
       sprintf(&sChId[0], "%02d", iCh);
@@ -68,14 +71,14 @@ void CnipolPreprocHists::BookHists(string sid)
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA_ch%02d", iCh);
-      o[hName] = new TH2F(hName, hName, 100, 0, 2500, 60, 0, 120);
+      o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
       sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", iCh);
-      o[hName] = new TH1D(hName, hName, 100, 0, 2500);
+      o[hName] = new TH1D(hName, hName, 100, 0, 2000);
       ((TH1*) o[hName])->SetOption("E1 NOIMG");
-      ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 120);
+      ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
       ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
    }
 } //}}}
