@@ -7,7 +7,19 @@ class RunSelector {
 
    var $urlQuery;
    var $sqlWhere;
-   static $queryVarNames = array("rn", "pi", "mt", "be", "to", "ti");
+   var $sqlOrderBy = "";
+
+   static $queryVarNames  = array("rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
+
+   static $shortSortNames = array("rn" => "run_name",
+                                  "pi" => "polarimeter_id",
+                                  "po" => "polarization",
+                                  "mt" => "measurement_type",
+                                  "be" => "beam_energy",
+                                  "te" => "nevents_total",
+                                  "pr" => "profile_ratio",
+                                  "at" => "ana_start_time",
+                                  "tgt");
 
    function RunSelector()
    {
@@ -24,8 +36,8 @@ class RunSelector {
       {
          if (isset($urlQuery[$varName]))
             $urlQueryNew[$varName] = $urlQuery[$varName];
-         else
-            $urlQueryNew[$varName] = "";
+         //else
+         //   $urlQueryNew[$varName] = "";
       }
 
       //$this->urlQuery = urlencode($url['query']);
@@ -51,6 +63,37 @@ class RunSelector {
 
       if (isset($_GET['ti']) && array_key_exists($_GET['ti'], $TARGET_ID))
          $this->sqlWhere .= " AND target_id = {$_GET['ti']}";
+
+
+      if (isset($_GET['srtn']) && array_key_exists($_GET['srtn'], self::$shortSortNames))
+      {
+         $this->sqlOrderBy  =  " ".self::$shortSortNames[$_GET['srtn']]." ";
+         $this->sqlOrderBy .= ( isset($_GET['srtd']) && is_numeric($_GET['srtd']) && $_GET['srtd'] < 0 ) ? "DESC" : "ASC";
+         $this->sqlOrderBy .= ", ";
+      }
+   }
+
+
+   function HtmlSortLinks($key=null)
+   {
+      // first check for a page variable in the query
+      $url = parse_url($_SERVER['REQUEST_URI']);
+      parse_str($url['query'], $tmpQuery);
+
+      $page = is_numeric($tmpQuery['page']) ? "page={$tmpQuery['page']}&" : "" ;
+
+      // then remove unwanted sorting variables
+      parse_str($this->urlQuery, $urlVars);
+
+      unset($urlVars['srtn']);
+      unset($urlVars['srtd']);
+
+      $this->urlQuery = http_build_query($urlVars);
+
+      $html = "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=-1\">&#9660;</a> ". 
+              "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=+1\">&#9650;</a>";
+
+      return $html;
    }
 
 
