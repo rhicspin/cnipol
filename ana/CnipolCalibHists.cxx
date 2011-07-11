@@ -57,39 +57,4 @@ void CnipolCalibHists::FillPreProcess(ChannelEvent *ch) { }
 /** */
 void CnipolCalibHists::PostFill()
 { //{{{
-   // Adjust axis ranges
-   Int_t  maxBinA = ((TH1F*) o["hAmpltd_cut1"])->GetMaximumBin();
-   Double_t xminA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmin();
-   Double_t xmaxA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmax();
-
-   xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
-   xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
-
-   ((TH1F*) o["hAmpltd_cut1"])->SetAxisRange(xminA, xmaxA);
-
-   Int_t  maxBinI = ((TH1F*) o["hIntgrl_cut1"])->GetMaximumBin();
-   Double_t xminI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmin();
-   Double_t xmaxI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmax();
-
-   xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
-   xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
-
-   ((TH1F*) o["hIntgrl_cut1"])->SetAxisRange(xminI, xmaxI);
-
-   printf("xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f\n", xminA, xmaxA, xminI, xmaxI);
-
-   string  sSi("  ");
-
-   for (int i=1; i<=NSTRIP; i++) {
-      sprintf(&sSi[0], "%02d", i);
-
-      //maxBin = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetMaximumBin();
-      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
-      //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmax();
-      //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
-      //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
-
-      ((TH1F*) d["channel"+sSi]->o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
-      ((TH1F*) d["channel"+sSi]->o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
-   }
 } //}}}
