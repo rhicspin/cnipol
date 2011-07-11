@@ -190,8 +190,8 @@ void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
    if (sid == "_cut2") { // fill these if only pass the carbon mass cut
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
       //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
-      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
-      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_st"+sSi])->Fill(ttime, gSpinPattern[bId]);
+      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
+      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
       ((TH1*) o["hIntensProfile2"])->Fill(ttime);
    }
 } //}}}
@@ -240,23 +240,23 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 
 /** */
 void CnipolProfileHists::PreFill(string sid)
-{
+{ //{{{
    if (sid == "_cut2") {
       ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
    }
-}
+} //}}}
 
 
 /** */
 void CnipolProfileHists::PostFill()
-{
+{ //{{{
    //((TH1*) o["hIntensProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
    //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
    ((TH1*) o["hPolarProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
 
    //Double_t ymax = ((TH1*) o["hIntensProfile2"])->GetMaximum();
    //((TH1*) o["hIntensProfile2"])->Scale(1./ymax);
-}
+} //}}}
 
 
 /** */
@@ -672,7 +672,7 @@ Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
 
 /** */
 EMeasType CnipolProfileHists::MeasurementType()
-{
+{ //{{{
    TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
    if (!hIntensProfile) {
@@ -702,4 +702,4 @@ EMeasType CnipolProfileHists::MeasurementType()
    }
 
    return kMEASTYPE_SWEEP;
-}
+} //}}}

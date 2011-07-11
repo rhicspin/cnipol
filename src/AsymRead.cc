@@ -299,7 +299,7 @@ void RawDataProcessor::ReadDataFast()
 				}
 
             if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
             if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
@@ -925,61 +925,61 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
    gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
  
    // initiarization
-   gRunInfo->targetID = '-';
+   gRunInfo->fTargetId = '-';
  
    string str(poldat.targetIdS);
  
-   if (str.find("Background") < str.size())   gRunInfo->targetID='B';
-   if (str.find("1")         == str.size()-1) gRunInfo->targetID='1';
-   if (str.find("2")         == str.size()-1) gRunInfo->targetID='2';
-   if (str.find("3")         == str.size()-1) gRunInfo->targetID='3';
-   if (str.find("4")         == str.size()-1) gRunInfo->targetID='4';
-   if (str.find("5")         == str.size()-1) gRunInfo->targetID='5';
-   if (str.find("6")         == str.size()-1) gRunInfo->targetID='6';
-   if (str.find("7")         == str.size()-1) gRunInfo->targetID='7';
-   if (str.find("8")         == str.size()-1) gRunInfo->targetID='-';
+   if (str.find("Background") < str.size())   gRunInfo->fTargetId = 'B';
+   if (str.find("1")         == str.size()-1) gRunInfo->fTargetId = '1';
+   if (str.find("2")         == str.size()-1) gRunInfo->fTargetId = '2';
+   if (str.find("3")         == str.size()-1) gRunInfo->fTargetId = '3';
+   if (str.find("4")         == str.size()-1) gRunInfo->fTargetId = '4';
+   if (str.find("5")         == str.size()-1) gRunInfo->fTargetId = '5';
+   if (str.find("6")         == str.size()-1) gRunInfo->fTargetId = '6';
+   if (str.find("7")         == str.size()-1) gRunInfo->fTargetId = '7';
+   if (str.find("8")         == str.size()-1) gRunInfo->fTargetId = '-';
 
    if (str.find('V') != string::npos) {
       gRunInfo->fTargetOrient = 'V';
-      run.target_orient      = 'V';
+      run.target_orient       = 'V';
    }
 
    if (str.find('H') != string::npos) {
       gRunInfo->fTargetOrient = 'H';
-      run.target_orient      = 'H';
+      run.target_orient       = 'H';
    }
 
    //cout << "target id str: " << str << " " << run.target_orient << endl;
 
    stringstream sstr; 
-   int target_id;
-   sstr << gRunInfo->targetID;
-   sstr >> target_id;
-   //sstr >> (UShort_t) run.target_id;
-   run.target_id = target_id;
+   //int target_id;
+   sstr << gRunInfo->fTargetId;
+   //sstr >> target_id;
+   sstr >> run.target_id;
+   //run.target_id = target_id;
 
    // Restore Vertical or Horizontal target information
    // in case this information isn't decorded correctly
    // within REC_PCTARGET routine. If the target is horizontal,
    // then mask 90 degree detector.
-   if (gRunInfo->fTargetOrient == '-') {
+   //if (gRunInfo->fTargetOrient == '-') {
  
-      if (str.find("Vert") == 0 || str.find("V") == 0) {
-         gRunInfo->fTargetOrient = 'V';
-         run.target_orient      = 'V';
-         tgt.VHtarget           = 0;
-      }
+   //   if (str.find("Vert") == 0 || str.find("V") == 0) {
+   //      gRunInfo->fTargetOrient = 'V';
+   //      run.target_orient       = 'V';
+   //      tgt.VHtarget            = 0;
+   //   }
  
-      if (str.find("Horz") == 0 || str.find("H") == 0) {
-         gRunInfo->fTargetOrient = 'H';
-         run.target_orient      = 'H';
-         tgt.VHtarget           = 1;
-         // This is too late to reconfigure strip mask because this routine is
-         // executed at the end of event loop. Too bad. /* March 5,'09 IN */
-         //      mask.detector = 0x2D;
-         //      gRunInfo->ConfigureActiveStrip(mask.detector);
-      }
-   }
+   //   if (str.find("Horz") == 0 || str.find("H") == 0) {
+   //      gRunInfo->fTargetOrient = 'H';
+   //      run.target_orient       = 'H';
+   //      tgt.VHtarget            = 1;
+   //      // This is too late to reconfigure strip mask because this routine is
+   //      // executed at the end of event loop. Too bad. /* March 5,'09 IN */
+   //      //      mask.detector = 0x2D;
+   //      //      gRunInfo->ConfigureActiveStrip(mask.detector);
+   //   }
+   //}
 } //}}}
 
 
@@ -1105,13 +1105,7 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
    // copy data to a linear array
    Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
-   //for (UInt_t k=0; k<gNDelimeters; k++)
    for (Int_t k=0; k<gNDelimeters; k++) {
-
-      //*(linRec + k + 1      )      = *++rec; // Horizontal target
-      //*(linRec + k + (gNDelimeters+2)  ) = *++rec;
-      //*(linRec + k + (gNDelimeters+2)*2) = *++rec; // Vertical target
-      //*(linRec + k + (gNDelimeters+2)*3) = *++rec;
 
       *(linRec + k + 1                 ) = *rec++; // Horizontal target
       *(linRec + k + (gNDelimeters+2)  ) = *rec++;
@@ -1156,23 +1150,23 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
               (  tgt.Rotary[k][0] &&  tgt.Rotary[k][1] ) )
          {
             cout << "ERROR: no target rotary info. Don't know H/V target" << endl;
-            gRunInfo->fTargetOrient = '-';
+            //gRunInfo->fTargetOrient = '-';
          }
 
          if (tgt_identifyV) {
             tgt.VHtarget           = 0;
-            gRunInfo->fTargetOrient = 'V';
-            run.target_orient      = 'V';
-            cout << "Vertical Target in finite position" << endl;
+            //gRunInfo->fTargetOrient = 'V';
+            //run.target_orient      = 'V';
+            cout << "Vertical Target in finite position - ???" << endl;
 
          } else if (tgt_identifyH) {
             tgt.VHtarget           = 1;
-            gRunInfo->fTargetOrient = 'H';
-            run.target_orient      = 'H';
-            cout << "Horizontal Target in finite position" << endl;
+            //gRunInfo->fTargetOrient = 'H';
+            //run.target_orient      = 'H';
+            cout << "Horizontal Target in finite position - ???" << endl;
 
          } else {
-            cout << "Warning: Target infomation cannot be recognized.." << endl;
+            cout << "Warning: Target infomation cannot be recognized - ???" << endl;
          }
 
          tgt.x       = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo->target_count_mm;
@@ -1209,9 +1203,6 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
       tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo->target_count_mm ;
    }
 
-   if (nTgtIndex > TGT_OPERATION)
-      strcpy(gRunInfo->TgtOperation, " scan");
-
    printf("Number of delimiters: %4d\n", gNDelimeters);
    printf("nTgtIndex: %d\n", nTgtIndex);
 
@@ -1221,7 +1212,7 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
    //tgtHistBook();
 
    // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
-   if (tgt.VHtarget) mask.detector = 0x2D;
+   //if (tgt.VHtarget) mask.detector = 0x2D;
 } //}}}
 
 

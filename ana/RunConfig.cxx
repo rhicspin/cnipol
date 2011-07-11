@@ -5,7 +5,8 @@ using namespace std;
 
 
 /** */
-RunConfig::RunConfig() : fPolarimeters(), fMeasTypes()
+RunConfig::RunConfig() : fPolarimeters(), fMeasTypes(), fTargetOrients(),
+   fBeamEnergies(), fSpinStates()
 {
    fPolarimeters.insert(kB1U);
    fPolarimeters.insert(kY1D);
@@ -25,6 +26,10 @@ RunConfig::RunConfig() : fPolarimeters(), fMeasTypes()
    fBeamEnergies.insert(kINJECTION);
    fBeamEnergies.insert(kBEAM_ENERGY_100);
    fBeamEnergies.insert(kFLATTOP);
+
+   fSpinStates.insert(kSPIN_DOWN);
+   fSpinStates.insert(kSPIN_NULL);
+   fSpinStates.insert(kSPIN_UP);
 }
 
 
@@ -95,6 +100,22 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
 	   return "100";
    case kFLATTOP:
 	   return "250";
+   default:
+      return "UNK";
+   }
+}
+
+
+/** */
+string RunConfig::AsString(ESpinState spinState)
+{
+   switch (spinState) {
+   case kSPIN_DOWN:
+	   return "down";
+   case kSPIN_NULL:
+	   return "null";
+   case kSPIN_UP:
+	   return "up";
    default:
       return "UNK";
    }

@@ -54,8 +54,8 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       sprintf(&strChId[0], "%02d", *iCh);
 
-      htemp     = (TH2F*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_st"+strChId];
-      hMeanTime = (TH1D*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+strChId];
+      htemp     = (TH2F*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_ch"+strChId];
+      hMeanTime = (TH1D*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_ch"+strChId];
 
       Calibrate(htemp, hMeanTime, *iCh);
    }

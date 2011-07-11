@@ -1,7 +1,7 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-#define ASYM_VERSION "v1.6.0"
+#define ASYM_VERSION "v1.6.1"
 
 #define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
 #define RAMPTIME 350                  // duration of the ramp measurement (sec)
@@ -9,10 +9,9 @@
 #define SEC_PER_DELIM 1               // second per deliminter
 #define TARGETINDEX 1000              // maximum target full array size including static motion
 #define NTBIN 14                      // number of -t bin
-#define NUM_SPIN_STATES 3             // +1 - up, -1 - down, 0 - unpolarized
+#define N_SPIN_STATES 3             // +1 - up, -1 - down, 0 - unpolarized
 
 #define NSTRIP 72                     // Number of channels
-#define N_CHANNELS 72                 // Number of channels
 #define N_SILICON_CHANNELS 72         // Number of channels
 #define NSTRIP_PER_DETECTOR 12        // Number of channels per silicon detector
 #define NTGTWFD 4                     // Number of target WFD channels
@@ -57,8 +56,6 @@
 //#define CCONST 0.1000    // regular calibration
 //#define CCONST 0.4000    // attenuation (x2) runs
 
-const int TGT_OPERATION = 6;             // Not really used as of v1.3.12 (if
-                                         // nTgtIndex>TGT_OPERATION, then "scan", otherwise "fixed")
 const int TOT_WFD_CH = NSTRIP + NTGTWFD; //Total WFD channels including target WFD channels.
 
 #endif

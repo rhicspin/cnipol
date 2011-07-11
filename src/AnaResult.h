@@ -2,7 +2,6 @@
 #ifndef AnaResult_h
 #define AnaResult_h
 
-//#include "TBuffer.h"
 #include "TObject.h"
 
 #include "AsymHeader.h"
@@ -41,12 +40,8 @@ public:
    AnaResult();
    ~AnaResult();
    void PrintAsPhp(FILE *f=stdout) const;
-   //void Streamer(TBuffer &buf);
 
    ClassDef(AnaResult, 1)
 };
-
-//TBuffer & operator<<(TBuffer &buf, AnaResult *&rec);
-//TBuffer & operator>>(TBuffer &buf, AnaResult *&rec);
 
 #endif

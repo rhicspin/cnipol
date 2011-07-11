@@ -69,6 +69,8 @@ void end_process(MseRunInfoX &run)
    // Strip-by-Strip Asymmetries
    StripAsymmetry(run);
 
+   //gAsymCalculator.
+
    // ds: these routines are skipped by default
    if (Flag.EXE_ANOMALY_CHECK) {
 
@@ -162,8 +164,8 @@ void CumulativeAsymmetry()
        if (Ncounts[1-1][bid] + Ncounts[3-1][bid] +
            Ncounts[4-1][bid] + Ncounts[6-1][bid] != 0)
        {
-           NR = Ncounts[1-1][bid]+Ncounts[3-1][bid];
-           NL = Ncounts[4-1][bid]+Ncounts[6-1][bid];
+           NR = Ncounts[1-1][bid] + Ncounts[3-1][bid];
+           NL = Ncounts[4-1][bid] + Ncounts[6-1][bid];
            RL45[bid] = (float) (NR-NL)/(NR+NL);
            RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
@@ -455,23 +457,25 @@ void CumulativeAsymmetry()
 
       float SUM=0;
 
-      // X90 (2-5)
-      for (int bid=0; bid<N_BUNCHES; bid++){
+      // X90 (2 vs 5)
+      for (int bid=0; bid<N_BUNCHES; bid++) {
 
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + NTcounts[2-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + NTcounts[5-1][bid][tr]*((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+          RU[bid] = ((bid==0)?0:RU[bid-1]) + NTcounts[2-1][bid][tr] * ( (gSpinPattern[bid] == 1)  ? 1:0) * gbid[bid];
+          RD[bid] = ((bid==0)?0:RD[bid-1]) + NTcounts[2-1][bid][tr] * ( (gSpinPattern[bid] == -1) ? 1:0) * gbid[bid];
+          LU[bid] = ((bid==0)?0:LU[bid-1]) + NTcounts[5-1][bid][tr] * ( (gSpinPattern[bid] == 1)  ? 1:0) * gbid[bid];
+          LD[bid] = ((bid==0)?0:LD[bid-1]) + NTcounts[5-1][bid][tr] * ( (gSpinPattern[bid] == -1) ? 1:0) * gbid[bid];
 
           sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+
           tx90[bid][tr].phys  = tmpasym;
           tx90[bid][tr].physE = tmpasyme;
           txasym90[tr][bid]   = tmpasym;
           txasym90E[tr][bid]  = tmpasyme;
+
           SUM += NTcounts[2-1][bid][tr];
       }
 
-      // X45 (13-46)
+      // X45 (1+3 vs 4+6)
       for (int bid=0; bid<120; bid++) {
           RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
@@ -479,11 +483,12 @@ void CumulativeAsymmetry()
           LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
 
           sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+
           tx45[bid][tr].phys = tmpasym; tx45[bid][tr].physE = tmpasyme;
           txasym45[tr][bid] = tmpasym; txasym45E[tr][bid] = tmpasyme;
       }
 
-      // Y45 (34-16)
+      // Y45 (3+4 vs 1+6)
       for (int bid=0; bid<120; bid++) {
           RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
@@ -494,13 +499,13 @@ void CumulativeAsymmetry()
           tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme;
       }
 
-      // CROSS 45 (14-36)
+      // CROSS 45 (1+4 vs 3+6)
       for (int bid=0; bid<120; bid++) {
           RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
           LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
           LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          sqass(RU[bid],LD[bid],RD[bid],LU[bid], &tmpasym, &tmpasyme);
+          sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
           tcasym45[tr][bid] = tmpasym; tcasym45E[tr][bid] = tmpasyme;
       }
 
@@ -629,13 +634,14 @@ void PrintRunResults()
    printf(" Universal Rate                 = %10.5f\n", gAnaResult->UniversalRate);
    printf(" Event Rate            [MHz]    = %10.4f\n", gRunInfo->EvntRate);
    printf(" Read Rate             [MHz]    = %10.4f\n", gRunInfo->ReadRate);
-   printf(" Target                         = %c%c\n",   gRunInfo->fTargetOrient, gRunInfo->targetID);
-   printf(" Target Operation               = %s\n",     gRunInfo->TgtOperation);
+   printf(" Target                         = %c%c\n",   gRunInfo->fTargetOrient, gRunInfo->fTargetId);
+
    if (gRunInfo->Run >=6 ) {
       printf(" Maximum Revolution #           = %10d\n",   gRunInfo->MaxRevolution);
       printf(" Reconstructed Duration  [s]    = %10.1f\n", gRunInfo->MaxRevolution/RHIC_REVOLUTION_FREQ);
       printf(" Target Motion Counter          = %10ld\n",  cntr.tgtMotion);
    }
+
    printf(" WCM Sum     [10^11 protons]    = %10.1f\n", gRunInfo->fWallCurMonSum/100);
    printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo->fWallCurMonAve);
    printf(" WCM Average w/in range         = %10.1f\n", average.average);
@@ -1066,8 +1072,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      tg  =  AsymmetryGraph(1, N_SILICON_CHANNELS, feedback.strip, feedback.chi2, ex, ex);
      tg->SetName("tg");
      mass_chi2_vs_strip -> GetListOfFunctions()-> Add(tg, "p");
-     mass_chi2_vs_strip -> GetYaxis() -> SetTitle("Chi2 of Gaussian Fit on 12C Mass Peak");
-     mass_chi2_vs_strip -> GetXaxis() -> SetTitle("Strip Number");
+     mass_chi2_vs_strip -> SetTitle(";Strip Number;Chi2 of Gaussian Fit on 12C Mass Peak;");
 
      // Call strip anomaly detector routine
      StripAnomalyDetector();
@@ -1434,7 +1439,7 @@ void StripAsymmetry(MseRunInfoX &run)
 void CalcStripAsymmetry(float aveA_N, int Mode)
 { //{{{
    //ds : Overwrite nstrip array
-   long int nstrip[NUM_SPIN_STATES][N_SILICON_CHANNELS];
+   long int nstrip[N_SPIN_STATES][N_SILICON_CHANNELS];
 
    int ss_code = 0;
 
@@ -1465,7 +1470,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
 
          DrawObjContainer* oc = gAsymRoot->fHists->d["std"]->d.find(dName)->second;
 
-         sprintf(hName, "hSpinVsDelim_cut2_st%02d", i);
+         sprintf(hName, "hSpinVsDelim_cut2_ch%02d", i);
 
          TH1* hSpVsDelim = (TH1*) oc->o[hName];
 
@@ -1572,7 +1577,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
 
    // printing routine
    //if (Flag.VERBOSE)
-   if (1) {
+   if (0) {
       printf("*========== strip by strip =============\n");
 
       for (int i=0; i<N_SILICON_CHANNELS; i++) {

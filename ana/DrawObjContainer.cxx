@@ -232,10 +232,14 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
          char *l = strstr(((TH1*)io->second)->GetOption(), "NOIMG");
          if (l) continue;
 
-         l = strstr(((TH1*)io->second)->GetOption(), "LOGZ");
+         l = strstr( ((TH1*) io->second)->GetOption(), "LOGZ");
          //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
          if (l) c.SetLogz(kTRUE);
          else c.SetLogz(kFALSE);
+
+         l = strstr( ((TH1*) io->second)->GetOption(), "XY");
+         if (l) c.SetLogy(kTRUE);
+         else c.SetLogy(kFALSE);
       }
 
       if (io->second) {

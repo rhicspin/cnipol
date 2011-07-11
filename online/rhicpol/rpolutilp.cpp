@@ -75,9 +75,11 @@ int getTargetMovementInfo(long **res)
     if (NoADO != 0) return 0;
 //	determine the ring
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : AdoInfo - %s get encPosProfileS\n", DeviceName);
-//	getting the data
+
+    //	getting the data
     cdevDevice & pol =  cdevDevice::attachRef(DeviceName);
     irc = 0;
+
     if(!DEVSEND(pol, "get encPosProfileS", NULL, &data, LogFile, irc)) {
 	data.getElems("value", &len);
 	*res = (long *) malloc(len*sizeof(long));
@@ -85,6 +87,7 @@ int getTargetMovementInfo(long **res)
     } else {
 	return 0;
     }
+
     return len;
 }
 
@@ -105,21 +108,26 @@ void getCarbTarg(carbTargStat * targstat)
 
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : GetCarbTarget\n");
 
-//	create devices and get info
+    //	create devices and get info
     irc = 0;
+
     for (i=0; i<8; i++) {
 	cdevDevice & target = cdevDevice::attachRef(targetCDEVName[i]);
 	if(!DEVSEND(target, "get positionS", NULL, &data, LogFile, irc))
 	    data.get("value", targstat->carbtarg[i], sizeof(targstat->carbtarg[i]));
     }
+
     targstat->good = 1;
+
     if (irc != 0) {
 	fprintf(LogFile, "%d errors getting RHIC information.\n", irc);
 	polData.statusS |= (STATUS_ERROR | ERR_NOADO);
 	return;
     }
-//	Check positions (in beam positions are named "Target1" ... "Target6")
+
+    //	Check positions (in beam positions are named "Target1" ... "Target6")
     for (i=0; i<8; i++) if (strlen(targstat->carbtarg[i]) == 7 && strncasecmp(targstat->carbtarg[i], "Target", 6) == 0) break;
+
     if (i<8) targstat->good = 0;
 }
 
@@ -164,7 +172,7 @@ void getWcmInfo(void)
 //	Get most of CDEV data at the beginnig of the run
 void getAdoInfo(void)
 {
-//	gather CDEV information we could need 
+    // gather CDEV information we could need 
     char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
     char bucketsCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
     char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
@@ -176,16 +184,20 @@ void getAdoInfo(void)
     if (NoADO != 0) return;
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : CDEV Info - %s\n", DeviceName);
     irc = 0;
-//	Get polarimeter information if DeviceName != "None"
+
+    // Get polarimeter information if DeviceName != "None"
     if (DeviceName[0] != 'N') {
 	cdevDevice & pol =  cdevDevice::attachRef(DeviceName);
-//  target name in targetIdS - this is our target !
+
+        // target name in targetIdS - this is our target !
 	if(!DEVSEND(pol, "get targetIdS", NULL, &data, LogFile, irc))
 	    data.get("value", polData.targetIdS, sizeof(polData.targetIdS));
-//		translate from polarimeter.blu2 etc to pol2.b-vtarget etc
+
+        // translate from polarimeter.blu2 etc to pol2.b-vtarget etc
 	sprintf(ourTargetCDEVName, "pol%s.%c-%ctarget", (DeviceName[15] == '2') ? "2" : "", 
 	    DeviceName[12], tolower(polData.targetIdS[0]));
-//	Get time of measurement if it was not set in the command line
+
+        // Get time of measurement if it was not set in the command line
 	if (mTime < 0) {
 	    if (iRamp) {
 		if(!DEVSEND(pol, "get rampMeasTimeS", NULL, &data, LogFile, irc)) data.get("value", &mTime);

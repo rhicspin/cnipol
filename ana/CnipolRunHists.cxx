@@ -109,11 +109,6 @@ void CnipolRunHists::BookHists(string sid)
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
    ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^{9} protons;");
    ((TH1*) o[hName])->SetFillColor(13);
-
-   sprintf(hName, "bunch_dist");
-   o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
-   ((TH1*) o[hName])->SetTitle(";Bunch ID;Counts;");
-   ((TH1*) o[hName])->SetFillColor(13);
  
    sprintf(hName, "specific_luminosity");
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
@@ -151,11 +146,6 @@ void CnipolRunHists::BookHists(string sid)
    //d["Kinema2"]   = kinema;
    //d["ErrDet"]    = errdet;
    d["Asymmetry"] = asymmetry;
-
-   //
-   sprintf(hName, "hKinEnergyA_oo");
-   o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
-   ((TH1F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
 
 } //}}}
 
@@ -196,11 +186,11 @@ void CnipolRunHists::Print(const Option_t* opt) const
 
 /** */
 void CnipolRunHists::Fill(RunInfo &ri)
-{
+{ //{{{
    map<UShort_t, Float_t>::iterator ib;
 
    for (ib=ri.fWallCurMon.begin(); ib!=ri.fWallCurMon.end(); ++ib) {
 
       ((TH1*) o["wall_current_monitor"])->SetBinContent(ib->first, ib->second);
    }
-}
+} //}}}

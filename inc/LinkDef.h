@@ -19,6 +19,7 @@
 #pragma link C++ class ChannelEventId;
 #pragma link C++ class DrawObjContainer;
 #pragma link C++ class CnipolHists;
+#pragma link C++ class CnipolAlphaHists;
 #pragma link C++ class CnipolCalibHists;
 #pragma link C++ class CnipolAsymHists;
 #pragma link C++ class CnipolKinematHists;

@@ -62,13 +62,12 @@ public:
    int          PolarimetryID;
    int          MaxRevolution;
    char         fTargetOrient;
-   char         targetID;
-   char         TgtOperation[16];
+   char         fTargetId;
    int          ActiveDetector[N_DETECTORS];
-   int          ActiveStrip[N_CHANNELS];
+   int          ActiveStrip[N_SILICON_CHANNELS];
    int          NActiveStrip;
    int          NDisableStrip;
-   int          fDisabledChannels[N_CHANNELS];
+   int          fDisabledChannels[N_SILICON_CHANNELS];
    std::vector<UShort_t> fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
    std::set<UShort_t>    fSiliconChannels;
    std::set<UShort_t>    fActiveSiliconChannels;
