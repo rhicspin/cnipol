@@ -10,6 +10,7 @@ class SqlDbReader {
    var $urlQuery     = "";
    var $sqlQuery     = "";
    var $sqlWhere     = "";
+   var $sqlOrderBy   = "";
    var $nResults     = 0;
    var $nRunsPerPage = 200;
    var $runSelector  = null;
@@ -22,8 +23,9 @@ class SqlDbReader {
 
       if (!empty($runSelector)) {
          $this->runSelector = $runSelector;
-         $this->sqlWhere = $runSelector->sqlWhere;
-         $this->urlQuery = $runSelector->urlQuery;
+         $this->urlQuery    = $runSelector->urlQuery;
+         $this->sqlWhere    = $runSelector->sqlWhere;
+         $this->sqlOrderBy  = $runSelector->sqlOrderBy;
       }
    }
 
@@ -53,9 +55,10 @@ class SqlDbReader {
    /** */
    function ReadEntries($start=0, $limit=100)
    {
+
       $this->sqlQuery = "SELECT *\n"
                       . "FROM `run_info` WHERE {$this->sqlWhere}\n"
-                      . "ORDER BY `run_info`.`start_time` DESC\n"
+                      . "ORDER BY {$this->sqlOrderBy} `run_info`.`start_time` DESC\n"
                       . "LIMIT $start, $limit\n";
       
       $this->result = mysql_query($this->sqlQuery);

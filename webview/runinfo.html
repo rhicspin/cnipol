@@ -187,36 +187,6 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 -->
 
 
-<!--
-<p>
-
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
-<h2 id="raw_data" class="count">Raw Data</h2>
-<div id="div:raw_data" class="section">
-
-<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
-<tr>
-<td align=center>
-<?=$gP->img('Raw/strip_dist_raw');?>
-
-<td align=center>
-<?=$gP->img('Raw/tdc_raw');?>
-
-<td align=center>
-<?=$gP->img('Raw/adc_raw');?>
-
-<tr>
-<td align=center>
-<?=$gP->img('Raw/tdc_vs_adc_raw');?>
-
-<td align=center>
-<?=$gP->img('Raw/tdc_vs_adc_false_bunch_raw');?>
-
-</table>
-
-</div>
--->
-
 
 <!--
 <p>
@@ -277,9 +247,49 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 
 <p>
-
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="raw" class="count">Raw Histograms</h2>
+<!-- {{{ -->
+<div id="div:raw" class="section">
+
+<p>
+<table border="1" cellpadding="5" cellspacing="2" align="center">
+
+<tr>
+<td align=center>
+<?=$gP->img('raw/hBunchCounts')?>
+<td align=center>
+<?=$gP->img('raw/hStripCounts')?>
+
+</table>
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('raw/hAdcAmpltd')?>
+<td align=center>
+<?=$gP->img('raw/hTdc')?>
+<td align=center>
+<?=$gP->img('raw/hTvsA')?>
+<td align=center>
+<?=$gP->img('raw/hTvsI')?>
+
+</table>
+
+<!-- }}} -->
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
 <h2 id="asymmetry" class="count">Asymmetry</h2>
+<!-- {{{ -->
+
+<p>
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
@@ -322,6 +332,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 </table>
 -->
+<!-- }}} -->
 
 
 <p>
@@ -500,9 +511,11 @@ foreach($rc['ActiveStrip'] as $chanId => $siS) {
       //$row1 = "";// $row2 = "";
    }
 
-   $img = $gP->img("combo_ch$chanId", 150);
+   $img = $gP->img("combo_ch$chanId", false, 200);
+   //$img = $gP->img("combo_ch$chanId");
    //$img = $gP->img("combo_ch$chanId", 150, "./?runid=$gRunId&chanid=$chanId&sfx=$gSfx");
-   print "<td>$img\n";
+   print "<td>$img<br>\n";
+   print "<a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">channel $chanId</a>\n";
    
 }
 ?>

@@ -10,17 +10,21 @@ class PlotHelper {
       $this->ps = $ps;
    }
 
-   function img($pName, $w=300, $href=null)
+   function img($pName, $thumb=false, $w=null, $href=null)
    {
+      $strThumb = $thumb ? "_thumb" : "" ;
+      $strWidth = (empty($w) && !$thumb) ? "width=300" : ( !empty($w) ? "width=$w" : "" ) ;
+
 	   $pi = pathinfo($pName);
 
-	   $imgName = "{$this->dir}/{$pi['dirname']}/c_{$pi['basename']}.png";
+	   $imgSrc  = "{$this->dir}/{$pi['dirname']}/c_{$pi['basename']}$strThumb.png";
+	   $imgHref = "{$this->dir}/{$pi['dirname']}/c_{$pi['basename']}.png";
 
-      if (empty($href)) {
-         $href = $imgName;
+      if (!empty($href)) {
+         $imgHref = $href;
       }
 
-      $html = "<a href=\"$href\"><img width=$w src=\"$imgName\"></a>";
+      $html = "<a href=\"$imgHref\"><img $strWidth src=\"$imgSrc\"></a>";
 		return $html;
    }
 }

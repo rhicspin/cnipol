@@ -101,9 +101,9 @@
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="summary" class="count">Summary</h2>
+<h2 id="raw" class="count">Raw</h2>
 <!-- {{{ -->
-<div id="div:summary_new" class="section">
+<div id="div:raw" class="section">
 
 <p>
 
@@ -115,12 +115,19 @@ $gP->dir = "$origPHDir/raw/channel$gChanId/";
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
+<!--
+<tr>
+<td align=center>
+<?=$gP->img("hAdcAmpltd_ch$gChanId")?>
+<td align=center>
+<?=$gP->img("hTdc_ch$gChanId")?>
+-->
+
 <tr>
 <td align=center>
 <?=$gP->img("hTvsA_ch$gChanId")?>
 <td align=center>
 <?=$gP->img("hTvsI_ch$gChanId")?>
-<td align=center>
 
 <!--
 <tr>
@@ -132,23 +139,32 @@ $gP->dir = "$origPHDir/raw/channel$gChanId/";
 <?=$gP->img("hTimeVsEnergyA_cut1_ch$gChanId")?>
 -->
 
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="other" class="count">Other</h2>
+<!-- {{{ -->
+<div id="div:other" class="section">
+
+<p>
+
 <?
 $gP->dir = "$origPHDir/std/channel$gChanId/";
 ?>
 
-<tr>
-<td align=center>
-<?=$gP->img("hTvsA_cut2_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hTvsI_cut2_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hTimeVsEnergyA_cut2_st$gChanId")?>
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
 
 <tr>
 <td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut2_ch$gChanId")?>
 <td align=center>
-<td align=center>
-<?=$gP->img("combo_st$gChanId")?>
+<?=$gP->img("combo_ch$gChanId")?>
 
 </table>
 
