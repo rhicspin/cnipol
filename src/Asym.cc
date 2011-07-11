@@ -169,7 +169,7 @@ StructHist                Eslope;
 
 StructFeedBack::StructFeedBack()
 {
-   for (int i=0; i<N_CHANNELS; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
       RMS[i]  = CARBON_MASS_PEAK_SIGMA;
       mdev[i] = tedev[i] = err[i] = chi2[i] = strip[i] = 0;
    }
@@ -178,8 +178,8 @@ StructFeedBack::StructFeedBack()
 
 StructStripCounter::StructStripCounter()
 {
-   for (int i=0; i<NUM_SPIN_STATES; i++) {
-      for (int j=0; j<N_CHANNELS; j++) {
+   for (int i=0; i<N_SPIN_STATES; i++) {
+      for (int j=0; j<N_SILICON_CHANNELS; j++) {
          NStrip[i][j] = 0;
       }
    }
@@ -189,8 +189,8 @@ StructStripCounter::StructStripCounter()
 StructStripCounterTgt::StructStripCounterTgt()
 {
    for(int i=0; i<MAXDELIM; i++) {
-      for (int j=0; j<NUM_SPIN_STATES; j++) {
-         for (int k=0; k<N_CHANNELS; k++)
+      for (int j=0; j<N_SPIN_STATES; j++) {
+         for (int k=0; k<N_SILICON_CHANNELS; k++)
             cntr_tgt.reg.NStrip[i][j][k] = 0;
       }
    }
@@ -588,16 +588,16 @@ void binary_zero(int n, int mb)
 // square root formula
 // A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
 // elastic Carbons are scattered off more in Right for Up
-void sqass(float A, float B, float C, float D, float *asym, float *easym)
+void sqass(float A, float B, float C, float D, float *asym, float *asymErr)
 {
    float den = sqrt(A*B) + sqrt(C*D);
 
    if ( (A*B == 0.) && (C*D == 0.) ) {
-      *asym  = 0.;
-      *easym = 0.;
+      *asym    = 0.;
+      *asymErr = 0.;
    } else {
-      *asym  = (sqrt(A*B) - sqrt(C*D))/den;
-      *easym = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
+      *asym    = (sqrt(A*B) - sqrt(C*D))/den;
+      *asymErr = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
    }
 }
 

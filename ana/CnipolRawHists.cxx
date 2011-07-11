@@ -56,14 +56,15 @@ void CnipolRawHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
-   sprintf(hName, "bunch_dist_raw");
-   o[hName] = new TH1F(hName, hName, NBUNCH, 0, NBUNCH);
-   ((TH1*) o[hName])->SetTitle("Raw counts per bunch;Bunch Id;Events;");
+   sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
+   o[hName] = new TH1F(hName, hName, N_BUNCHES, 0, N_BUNCHES);
+   ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
-   sprintf(hName, "strip_dist_raw");
-   o[hName] = new TH1F(hName, hName, NSTRIP, 1, NSTRIP);
-   ((TH1*) o[hName])->SetTitle("Raw counts per strip;Strip Id;Events;");
+   sprintf(hName, "hStripCounts"); // former strip_dist_raw
+   o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   //((TH1*) o[hName])->SetOption("hist");
+   ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "tdc_vs_adc_false_bunch_raw");
@@ -93,13 +94,15 @@ void CnipolRawHists::BookHists(string cutid)
 
       sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1*) oc->o[hName])->SetOption("NOIMG");
+      ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Events;");
+      ((TH1*) oc->o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hTdc_ch%02d", iChId);
       oc->o[hName] = new TH1F(hName, hName, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("NOIMG");
+      ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";TDC;Events;");
+      ((TH1*) oc->o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hTvsA_ch%02d", iChId);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
@@ -132,11 +135,13 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
 
    DrawObjContainer *sd = d["channel"+sChId];
 
-   ((TH1*) sd->o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) sd->o["hTvsI_ch"+sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   ((TH1*) sd->o["hAdcAmpltd_ch"+sChId]) -> Fill(ch->GetAmpltd());
+   ((TH1*) sd->o["hTdc_ch"      +sChId]) -> Fill(ch->GetTdc());
+   ((TH1*) sd->o["hTvsA_ch"     +sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) sd->o["hTvsI_ch"     +sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
 
-   ((TH1*) o["bunch_dist_raw"])->Fill(ch->GetBunchId());
-   ((TH1*) o["strip_dist_raw"])->Fill(ch->GetChannelId());
+   ((TH1*) o["hBunchCounts"])->Fill(ch->GetBunchId());
+   ((TH1*) o["hStripCounts"])->Fill(ch->GetChannelId());
 
    if (cutid == "cut_false_bunch")
       ((TH1*) o["tdc_vs_adc_false_bunch_raw"])->Fill(ch->GetAmpltd(), ch->GetTdc());

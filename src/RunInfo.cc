@@ -39,7 +39,7 @@ RunInfo::RunInfo() : TObject(),
    PolarimetryID (1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
    MaxRevolution (0),      // MaxRevolution;
    fTargetOrient ('-'),
-   targetID      ('-'),
+   fTargetId     ('-'),
    fDisabledChannelsVec(),
    fSiliconChannels(),
    fActiveSiliconChannels(),
@@ -47,8 +47,6 @@ RunInfo::RunInfo() : TObject(),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0)
 {
-   strcpy(TgtOperation, "fixed");
-
    for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
 
@@ -59,7 +57,7 @@ RunInfo::RunInfo() : TObject(),
       fActiveSiliconChannels.insert(i);
    }
 
-   NActiveStrip          = N_CHANNELS; // NAactiveStrip;
+   NActiveStrip          = N_SILICON_CHANNELS; // NAactiveStrip;
    NDisableStrip         = 0;      // NDisableStrip
    NFilledBunch          = 0;      // NFilledBunch;
    NActiveBunch          = 0;      // NActiveBunch;
@@ -108,136 +106,6 @@ string RunInfo::GetDlCalibFileName() const
 
 
 /** */
-/*
-TBuffer & operator<<(TBuffer &buf, RunInfo *&rec)
-{ //{{{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, RunInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-} //}}}
-*/
-
-
-/** */
-/*
-TBuffer & operator>>(TBuffer &buf, RunInfo *&rec)
-{ //{{{
-   //printf("operator>>(TBuffer &buf, RunInfo *rec) : \n");
-
-   //if (!rec) {
-   //   printf("ERROR in operator>>\n");
-   //   exit(-1);
-   //}
-
-   // if object has been created already delete it
-   //free(rec);
-
-   //rec = (RunInfo *) realloc(rec, sizeof(RunInfo) + 11*sizeof(char));
-   //rec = (RunInfo *) realloc(rec, sizeof(RunInfo));
-   //rec->TgtOperation = new char[10];
-
-   rec->Streamer(buf);
-   return buf;
-} //}}}
-*/
-
-
-/** */
-/*
-void RunInfo::Streamer(TBuffer &buf)
-{ //{{{
-   TString tstr;
-   Int_t   tint;
-
-   if (buf.IsReading()) {
-      //printf("reading RunInfo::Streamer(TBuffer &buf) \n");
-      buf >> Run;
-      buf >> RUNID;
-      buf >> tstr; fRunName = tstr.Data();
-      buf >> StartTime;
-      buf >> StopTime;
-      buf >> RunTime;
-      buf >> fDataFormatVersion;
-      buf >> tstr; fAsymVersion = tstr.Data();
-      buf >> tint; fMeasType = (EMeasType) tint;
-      buf >> GoodEventRate;
-      buf >> EvntRate;
-      buf >> ReadRate;
-      //buf >> fWallCurMon;
-      buf >> fWallCurMonAve;
-      buf >> fWallCurMonSum;
-      buf >> fBeamEnergy;
-      buf >> fPolId;
-      buf >> fPolBeam;
-      buf >> fPolStream;
-      buf >> PolarimetryID;
-      buf >> MaxRevolution;
-      buf >> fTargetOrient;
-      buf >> targetID;
-      buf >> TgtOperation;
-      //buf.ReadString(TgtOperation, 32);
-      buf.ReadFastArray(ActiveDetector, N_DETECTORS);
-      buf.ReadFastArray(ActiveStrip, N_CHANNELS);
-      buf >> NActiveStrip;
-      buf >> NDisableStrip;
-      buf.ReadFastArray(fDisabledChannels, N_CHANNELS);
-      buf.ReadFastArray(&fDisabledChannelsVec[0],   fDisabledChannelsVec.size());
-      //ReadStlContainer(buf, fActiveSiliconChannels);
-      buf >> NFilledBunch;
-      buf >> NActiveBunch;
-      buf >> NDisableBunch;
-      buf.ReadFastArray(DisableBunch, N_BUNCHES);
-      buf >> fProtoCutSlope  >> fProtoCutOffset;
-      buf >> fProtoCutAdcMin >> fProtoCutAdcMax >> fProtoCutTdcMin >> fProtoCutTdcMax;
-      buf >> fPulserCutAdcMin >> fPulserCutAdcMax >> fPulserCutTdcMin >> fPulserCutTdcMax;
-
-   } else {
-      //printf("writing RunInfo::Streamer(TBuffer &buf) \n");
-      buf << Run;
-      buf << RUNID;
-      tstr = fRunName; buf << tstr;
-      buf << StartTime;
-      buf << StopTime;
-      buf << RunTime;
-      buf << fDataFormatVersion;
-      tstr = fAsymVersion; buf << tstr;
-      buf << (Int_t) fMeasType;
-      buf << GoodEventRate;
-      buf << EvntRate;
-      buf << ReadRate;
-      //buf << fWallCurMon;
-      buf << fWallCurMonAve;
-      buf << fWallCurMonSum;
-      buf << fBeamEnergy;
-      buf << fPolId;
-      buf << fPolBeam;
-      buf << fPolStream;
-      buf << PolarimetryID;
-      buf << MaxRevolution;
-      buf << fTargetOrient;
-      buf << targetID;
-      buf << TgtOperation;
-      buf.WriteFastArray(ActiveDetector, N_DETECTORS);
-      buf.WriteFastArray(ActiveStrip, N_CHANNELS);
-      buf << NActiveStrip;
-      buf << NDisableStrip;
-      buf.WriteFastArray(fDisabledChannels, N_CHANNELS);
-      buf.WriteFastArray(&fDisabledChannelsVec[0],   fDisabledChannelsVec.size());
-      //WriteStlContainer(buf, fActiveSiliconChannels);
-      buf << NFilledBunch;
-      buf << NActiveBunch;
-      buf << NDisableBunch;
-      buf.WriteFastArray(DisableBunch, N_BUNCHES);
-      buf << fProtoCutSlope << fProtoCutOffset;
-      buf << fProtoCutAdcMin << fProtoCutAdcMax << fProtoCutTdcMin << fProtoCutTdcMax;
-      buf << fPulserCutAdcMin << fPulserCutAdcMax << fPulserCutTdcMin << fPulserCutTdcMax;
-   }
-} //}}}
-*/
-
-
-/** */
 void RunInfo::Print(const Option_t* opt) const
 {
    Info("Print", "Print members:");
@@ -270,8 +138,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['PolarimetryID']                = %d;\n",     PolarimetryID);
    fprintf(f, "$rc['MaxRevolution']                = %d;\n",     MaxRevolution);
    fprintf(f, "$rc['fTargetOrient']                = \"%c\";\n", fTargetOrient);
-   fprintf(f, "$rc['targetID']                     = \"%c\";\n", targetID     );
-   fprintf(f, "$rc['TgtOperation']                 = \"%s\";\n", TgtOperation );
+   fprintf(f, "$rc['fTargetId']                    = \"%c\";\n", fTargetId    );
 
    stringstream ssChs("");
 
@@ -291,9 +158,9 @@ void RunInfo::PrintAsPhp(FILE *f) const
    ssChs.str("");
    ssChs << "array(";
 
-   for (int i=0; i!=N_CHANNELS; i++) {
+   for (int i=0; i!=N_SILICON_CHANNELS; i++) {
       ssChs << i+1 << " => " << (ActiveStrip[i] ? "1" : "0");
-      ssChs << (i<N_CHANNELS-1 ? ", " : "");
+      ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
    }
 
    ssChs << ")";
@@ -407,11 +274,11 @@ void RunInfo::Update(DbEntry &rundb)
 
    } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
       Run = 5;
-      for (int i=0; i<N_CHANNELS; i++) gPhi[i] = phiRun5[i];
+      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
 
    } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
       Run = 6;
-      for (int i=0; i<N_CHANNELS; i++) gPhi[i] = phiRun6[i];
+      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
 
    } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
       Run = 9;
@@ -447,11 +314,11 @@ void RunInfo::Update(MseRunInfoX& run)
 
    } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
       Run = 5;
-      for (int i=0; i<N_CHANNELS; i++) gPhi[i] = phiRun5[i];
+      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
 
    } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
       Run = 6;
-      for (int i=0; i<N_CHANNELS; i++) gPhi[i] = phiRun6[i];
+      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
 
    } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
       Run = 9;
@@ -524,7 +391,7 @@ void RunInfo::ConfigureActiveStrip(int mask)
 
    printf("Reconfigured Active Strip Config =");
 
-   for (int i=0; i<N_CHANNELS; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
      printf("%d", ActiveStrip[i]);
    }
@@ -597,7 +464,7 @@ void RunInfo::PrintConfig()
 
    printf("Active Strip Config =");
 
-   for (int i=0; i<N_CHANNELS; i++) {
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
       if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
       printf("%d", ActiveStrip[i]);
    }
@@ -706,7 +573,7 @@ Bool_t RunInfo::IsHamaChannel(UShort_t chId)
 /** */
 Bool_t RunInfo::IsPmtChannel(UShort_t chId)
 {
-   if ((EPolarimeterId) fPolId == kY2U && chId > N_CHANNELS && chId <= N_CHANNELS+4)
+   if ((EPolarimeterId) fPolId == kY2U && chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4)
       return true;
 
    return false;

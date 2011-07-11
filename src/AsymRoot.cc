@@ -25,6 +25,7 @@
 
 #include "AlphaCalibrator.h"
 #include "CnipolAsymHists.h"
+#include "CnipolAlphaHists.h"
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
 #include "CnipolKinematHists.h"
@@ -153,26 +154,22 @@ void AsymRoot::CreateRootFile(string filename)
    fHists = new DrawObjContainer(fOutRootFile);
 
    if (gAnaInfo->HasAlphaBit()) {
-      //DrawObjContainer *hists = new CnipolCalibHists(fOutRootFile);
-      //fHists->Add(hists);
-      //delete hists;
       TDirectory *dir = new TDirectoryFile("alpha", "alpha", "", fOutRootFile);
-      fHists->d["alpha"] = new CnipolCalibHists(dir);
+      fHists->d["alpha"] = new CnipolAlphaHists(dir);
+   }
+
+   if (gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit()) {
+      TDirectory *dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
+      fHists->d["calib"] = new CnipolCalibHists(dir);
    }
 
    if (gAnaInfo->HasNormalBit()) {
-      //DrawObjContainer *hists = new CnipolHists(fOutRootFile);
-      //fHists->Add(hists);
-      //delete hists;
       TDirectory *dir = new TDirectoryFile("std", "std", "", fOutRootFile);
       fHists->d["std"] = new CnipolHists(dir);
    }
 
    // If requested create scaler histograms and add them to the container
    if (gAnaInfo->HasScalerBit()) {
-      //DrawObjContainer *hists = new CnipolScalerHists(fOutRootFile);
-      //fHists->Add(hists);
-      //delete hists;
       TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }

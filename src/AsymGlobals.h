@@ -61,12 +61,11 @@ extern int   gFillPattern[N_BUNCHES]; // fill pattern 120 bunches
 extern int   ActiveBunch[N_BUNCHES];
 extern int   wcmfillpat[N_BUNCHES];   // fill pattern within the Wall Current Monitor Average Ragne 
 
-extern long int Ncounts[N_DETECTORS][N_BUNCHES];          // counts per detector per bunch
-extern long int NTcounts[N_DETECTORS][N_BUNCHES][NTBIN];  // counts 6detectors 120 bunches 6 tranges
+extern long int Ncounts[N_DETECTORS][N_BUNCHES];             // counts per detector per bunch
+extern long int NTcounts[N_DETECTORS][N_BUNCHES][NTBIN];     // counts 6detectors 120 bunches 6 tranges
 extern long int NDcounts[N_DETECTORS][N_BUNCHES][MAXDELIM];  // counts 6detectors 120 bunches per delimiter
-extern long int NStrip[NUM_SPIN_STATES][N_CHANNELS]; // counts 72 strips 3 spin states
- 
-extern long int NRcounts[N_DETECTORS][N_BUNCHES][RAMPTIME]; // counts 6det 120bunch RAMPTIME sec
+extern long int NStrip[N_SPIN_STATES][N_SILICON_CHANNELS];   // counts 72 strips 3 spin states
+extern long int NRcounts[N_DETECTORS][N_BUNCHES][RAMPTIME];  // counts 6det 120bunch RAMPTIME sec
 
 extern char *confdir;
 extern char *calibdir;
@@ -113,10 +112,10 @@ extern TargetInfo                    tgt;
 extern StructBunchPattern            phx, str;
 extern TRecordConfigRhicStruct      *gConfigInfo;
 
-extern float phiRun5[N_CHANNELS];   // phi-angle for each strips of Run5 (l=18.5cm)
-extern float phiRun6[N_CHANNELS];   // phi-angle for each strips of Run6 (l=18.0cm)
-extern float phit[N_CHANNELS];      // phi-angle for each strips in approximation 45,90,135... 
-extern float gPhi[N_CHANNELS];      // phi-angle
+extern float phiRun5[N_SILICON_CHANNELS];   // phi-angle for each strips of Run5 (l=18.5cm)
+extern float phiRun6[N_SILICON_CHANNELS];   // phi-angle for each strips of Run6 (l=18.0cm)
+extern float phit[N_SILICON_CHANNELS];      // phi-angle for each strips in approximation 45,90,135... 
+extern float gPhi[N_SILICON_CHANNELS];      // phi-angle
 
 // target position infomation 
 extern int gNDelimeters;
@@ -135,7 +134,7 @@ extern TDirectory *Asymmetry;
 
 //  Histogram Definitions 
 //
-//  Number arrays are TOT_WFD_CH, not N_CHANNELS, because there are events with strip>72,73,74,75
+//  Number arrays are TOT_WFD_CH, not N_SILICON_CHANNELS, because there are events with strip>72,73,74,75
 //  in Run06 which are target events. These histograms are deleted before ROOT file closing 
 //  anyway though, need to be declared to aviod crash in histogram filling rouitne in process_event()
 
@@ -145,19 +144,19 @@ extern TH1F *mass_feedback_all;
 extern TH1F *mass_feedback[TOT_WFD_CH];   // invariant mass for feedback 
 
 // Kinema Dir
-extern TH2F  *t_vs_e[TOT_WFD_CH];         // t vs. 12C Kinetic Energy (banana with/o cut)
-extern TH2F  *t_vs_e_yescut[TOT_WFD_CH];  // t vs. 12C Kinetic Energy (banana with cut)
-extern TH2F  *mass_vs_e_ecut[TOT_WFD_CH]; // Mass vs. 12C Kinetic Energy 
-extern TF1   *banana_cut_l[N_CHANNELS][2];    // banana cut low     [0]: regular [1] alternative sigma cut
-extern TF1   *banana_cut_h[N_CHANNELS][2];    // banana cut high    [0]: regular [1] alternative sigma cut
-extern TLine *energy_cut_l[N_CHANNELS];       // energy cut low 
-extern TLine *energy_cut_h[N_CHANNELS];       // energy cut high
-extern TH1F  *energy_spectrum[N_DETECTORS]; // energy spectrum per detector
-extern TH1F  *energy_spectrum_all;        // energy spectrum for all detector sum
+extern TH2F  *t_vs_e[TOT_WFD_CH];                     // t vs. 12C Kinetic Energy (banana with/o cut)
+extern TH2F  *t_vs_e_yescut[TOT_WFD_CH];              // t vs. 12C Kinetic Energy (banana with cut)
+extern TH2F  *mass_vs_e_ecut[TOT_WFD_CH];             // Mass vs. 12C Kinetic Energy 
+extern TF1   *banana_cut_l[N_SILICON_CHANNELS][2];    // banana cut low     [0]: regular [1] alternative sigma cut
+extern TF1   *banana_cut_h[N_SILICON_CHANNELS][2];    // banana cut high    [0]: regular [1] alternative sigma cut
+extern TLine *energy_cut_l[N_SILICON_CHANNELS];       // energy cut low 
+extern TLine *energy_cut_h[N_SILICON_CHANNELS];       // energy cut high
+extern TH1F  *energy_spectrum[N_DETECTORS];           // energy spectrum per detector
+extern TH1F  *energy_spectrum_all;                    // energy spectrum for all detector sum
 extern TH1F  *mass_nocut_all;
-extern TH1F  *mass_nocut[TOT_WFD_CH];     // invariant mass without banana cut
+extern TH1F  *mass_nocut[TOT_WFD_CH];                 // invariant mass without banana cut
 extern TH1F  *mass_yescut_all;
-extern TH1F  *mass_yescut[TOT_WFD_CH];    // invariant mass with banana cut
+extern TH1F  *mass_yescut[TOT_WFD_CH];                // invariant mass with banana cut
 
 // ErrDet dir
 extern TH2F *mass_chi2_vs_strip;          // Mass Gaussian fit chi2 vs. strip 

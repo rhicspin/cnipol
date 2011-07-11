@@ -254,7 +254,7 @@ void event_process(processEvent *event)
 
       if (!ch->PassCutSiliconChannel()) return;
 
-      if (ch->PassCutEnabledChannel()) {
+      //if () {
 
          gAsymRoot->fHists->Fill(ch);
 
@@ -265,7 +265,7 @@ void event_process(processEvent *event)
          //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
          //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
          //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() )
+         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel() )
          {
 	         gAsymRoot->fHists->Fill(ch, "_cut1");
 
@@ -277,13 +277,13 @@ void event_process(processEvent *event)
                //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
             }
          }
-      } else {
-         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
-              ch->PassCutCarbonMassEstimate())
-         {
-	         gAsymRoot->fHists->Fill(ch, "_cut2");
-         }
-      }
+      //} else {
+      //   if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
+      //        ch->PassCutCarbonMassEstimate())
+      //   {
+	   //      gAsymRoot->fHists->Fill(ch, "_cut2");
+      //   }
+      //}
    }
 
    //ds
@@ -545,7 +545,7 @@ void event_process(processEvent *event)
 
          // energy distribution after carbon cut
          //ds HHF1(10050, e, 1.);
-	      ((TH1F*) gAsymRoot->fHists->o["hKinEnergyA_oo"])->Fill(e);
+	      //((TH1F*) gAsymRoot->fHists->o["hKinEnergyA_oo"])->Fill(e);
 
          //ds HHF1(10410+si+1, e, 1.);
          //ds HHF1(10420+si+1, e_int, 1.);   // Integral

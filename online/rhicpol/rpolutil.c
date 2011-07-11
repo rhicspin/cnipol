@@ -1175,8 +1175,9 @@ void writeJetStatus(void)
     polWrite(&header, (long *)&jetPosition);
 }
 
-int testCarbTarg(void)
+
 // returns true on target state change
+int testCarbTarg(void)
 {
     carbTargStat cts;
     static time_t t0;

@@ -47,60 +47,59 @@ void CnipolTargetHists::BookHists(string sid)
    // Older histograms from earlier times
    sprintf(hName, "rate_vs_delim");
    o[hName] = new TH2F(hName, hName, 1, 0, 1, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Position");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Carbon in Banana Rate, MHz");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Target Position;Carbon in Banana Rate, MHz;");
 
    sprintf(hName, "tgtx_vs_time");
    o[hName] = new TH2F(hName, hName, 1, 0, 1, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Position");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Duration from Measurement Start, s");
- 
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Target Position;Duration from Measurement Start, s;");
 
    // Newer histograms
    sprintf(hName, "hTargetSteps");
    o[hName] = new TH1I(hName, hName, 100, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
+   ((TH1*) o[hName])->SetTitle(";Target Steps;;");
    ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetChanVertYel");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("ADC");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";ADC;;");
 
    sprintf(hName, "hTargetChanHorzYel");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("ADC");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";ADC;;");
 
    sprintf(hName, "hTargetChanVertBlu");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("ADC");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";ADC;;");
 
    sprintf(hName, "hTargetChanHorzBlu");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("ADC");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";ADC;;");
 
    sprintf(hName, "hTargetHorzLinear");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   ((TH1*) o[hName])->SetOption("NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Time;Position;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetHorzRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   ((TH1*) o[hName])->SetTitle(";Time;Position;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertLinear");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   ((TH1*) o[hName])->SetTitle(";Time;Position;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
-   //o[hName] = new TH1F(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Time");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Position");
+   ((TH1*) o[hName])->SetTitle(";Time;Position;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 } //}}}
 
@@ -182,7 +181,7 @@ void CnipolTargetHists::Fill(Int_t n, Double_t* hData)
 
 /** */
 void CnipolTargetHists::PostFill()
-{
+{ //{{{
    //char  htitle[100];
    float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
    int   X_index = gRunInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
@@ -242,4 +241,4 @@ void CnipolTargetHists::PostFill()
    tgtx_time->SetMarkerColor(kBlue);
    ((TH1*) o["tgtx_vs_time"])->GetListOfFunctions()->Add(tgtx_time, "P");
 	//delete tgtx_time;
-}
+} //}}}

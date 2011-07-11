@@ -97,7 +97,7 @@ struct StructMask {
 
 struct StructAnomaly {
    int nstrip;
-   int st[N_CHANNELS];
+   int st[N_SILICON_CHANNELS];
    float bad_st_rate;
    int strip_err_code;
    int nbunch;
@@ -146,12 +146,12 @@ struct StructHistStat {
 };
 
 struct StructFeedBack {
-   float RMS[N_CHANNELS];
-   float mdev[N_CHANNELS];
-   float tedev[N_CHANNELS];
-   float err[N_CHANNELS];
-   float chi2[N_CHANNELS];
-   float strip[N_CHANNELS];
+   float RMS[N_SILICON_CHANNELS];
+   float mdev[N_SILICON_CHANNELS];
+   float tedev[N_SILICON_CHANNELS];
+   float err[N_SILICON_CHANNELS];
+   float chi2[N_SILICON_CHANNELS];
+   float strip[N_SILICON_CHANNELS];
 
    StructFeedBack();
 };
@@ -177,14 +177,14 @@ struct StructFlag {
 
 struct StructStripCounter
 {
-   long int NStrip[NUM_SPIN_STATES][N_CHANNELS];   // strip counters for 3 different spin states
+   long int NStrip[N_SPIN_STATES][N_SILICON_CHANNELS];   // strip counters for 3 different spin states
 
    StructStripCounter();
 };
 
 struct StructStripCounterTgt
 {
-   long int NStrip[MAXDELIM][NUM_SPIN_STATES][N_CHANNELS]; // strip counters for 3 different spin states
+   long int NStrip[MAXDELIM][N_SPIN_STATES][N_SILICON_CHANNELS]; // strip counters for 3 different spin states
 
    StructStripCounterTgt();
 };
@@ -269,8 +269,8 @@ struct StructStrip {
 };
 
 struct StructEnergyCorr {
-   float p[3][N_CHANNELS];
-   float perr[3][N_CHANNELS];
+   float p[3][N_SILICON_CHANNELS];
+   float perr[3][N_SILICON_CHANNELS];
 };
 
 struct StructStripCheck {
