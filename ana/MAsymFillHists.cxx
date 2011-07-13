@@ -3,6 +3,7 @@
  *                                                                           *
  *****************************************************************************/
 
+#include "TDirectoryFile.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
 #include "TH2F.h"
@@ -10,8 +11,8 @@
 #include "utils/utils.h"
 
 #include "MAsymFillHists.h"
+#include "MAsymSingleFillHists.h"
 
-//#include "RunInfo.h"
 #include "MseRunInfo.h"
 
 
@@ -118,8 +119,9 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    grPolarVsFillTime->SetMarkerColor(color);
 
    sprintf(hName, "hPolarVsFillTime_%s", strPolId.c_str());
-   o[hName] = new TH2F(hName, hName, 12, 0, 10*3600, 100, 0, 100);
-   ((TH1*) o[hName])->SetTitle(";Time in Fill;Polarization, %;");
+   //o[hName] = new TH2F(hName, hName, 12, 0, 12*3600, 60, 20, 80);
+   o[hName] = new TH2F(hName, hName, 12, 0, 12*3600, 100, 20, 100);
+   ((TH1*) o[hName])->SetTitle(";Time in Fill, hours;Polarization, %;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsFillTime, "p");
    ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(3600*6, "gmt");
    //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "local");
@@ -147,6 +149,21 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->SetMarkerColor(color);
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsEnergy, "p");
+
+   TGraphErrors *grRVsFillTime = new TGraphErrors();
+   grRVsFillTime->SetName("grRVsFillTime");
+   grRVsFillTime->SetMarkerStyle(kFullCircle);
+   grRVsFillTime->SetMarkerSize(1);
+   grRVsFillTime->SetMarkerColor(color);
+
+   sprintf(hName, "hRVsFillTime_%s", strPolId.c_str());
+   o[hName] = new TH2F(hName, hName, 12, 0, 12*3600, 100, -0.1, 1);
+   ((TH1*) o[hName])->SetTitle(";Time in Fill, hours;r;");
+   ((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsFillTime, "p");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "local");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
+   ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H");
 
 /*
    // Rate
@@ -353,6 +370,29 @@ void MAsymFillHists::Fill(EventConfig &rc)
    //Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
    //Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
+   // Set individual fill sub dirs
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir;
+
+   char dName[256];
+
+   sprintf(dName, "%05d", fillId);
+
+   isubdir = d.find(dName);
+
+   if ( isubdir == d.end()) { // if dir not found
+      TDirectoryFile *tdir = new TDirectoryFile(dName, dName, "", fDir);
+      oc = new MAsymSingleFillHists(tdir);
+      d[dName] = oc;
+      oc = d[dName];
+   } else {
+      oc = isubdir->second;
+   }
+
+   oc->Fill(rc);
+
+
+   // Process common histograms
    char hName[256];
 
    string strPolId = RunConfig::AsString((EPolarimeterId) polId);
@@ -387,9 +427,10 @@ void MAsymFillHists::Fill(EventConfig &rc)
    sprintf(grName, "grPolarVsFillTime_%05d_%s", fillId, strPolId.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject(grName);
 
+   // Each histogram of this type contains multiple graphs for each fill
    if (!graphErrs) {
       TGraphErrors *graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsFillTime");
-      TGraphErrors *graphFill = new TGraphErrors(*graph);
+      TGraphErrors *graphFill = new TGraphErrors(*graph); // Copy the default graph and its properties, style, colors, ...
       graphFill->SetName(grName);
       ((TH1*) o[hName])->GetListOfFunctions()->Add(graphFill, "p");
       graphErrs = graphFill;
@@ -407,6 +448,27 @@ void MAsymFillHists::Fill(EventConfig &rc)
    graphNEntries = graphErrs->GetN();
    graphErrs->SetPoint(graphNEntries, beamEnergy, profileRatio);
    graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
+
+
+   // r vs fill time
+   sprintf(hName, "hRVsFillTime_%s", strPolId.c_str());
+   sprintf(grName, "grRVsFillTime_%05d_%s", fillId, strPolId.c_str());
+   graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject(grName);
+
+   // Each histogram of this type contains multiple graphs for each fill
+   if (!graphErrs) {
+      TGraphErrors *graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
+      TGraphErrors *graphFill = new TGraphErrors(*graph); // Copy the default graph and its properties, style, colors, ...
+      graphFill->SetName(grName);
+      ((TH1*) o[hName])->GetListOfFunctions()->Add(graphFill, "p");
+      graphErrs = graphFill;
+   }
+
+   if ((EBeamEnergy) beamEnergy == kFLATTOP) {
+      graphNEntries = graphErrs->GetN();
+      graphErrs->SetPoint(graphNEntries, runStartTime, profileRatio);
+      graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
+   }
 
 /*
    //
@@ -484,20 +546,6 @@ void MAsymFillHists::Fill(EventConfig &rc)
 
 
 /** */
-void MAsymFillHists::Print(const Option_t* opt) const
-{ //{{{
-   opt = ""; //printf("MAsymFillHists:\n");
-   DrawObjContainer::Print();
-} //}}}
-
-
-/** */
-void MAsymFillHists::Fill(ChannelEvent *ch, string sid)
-{ //{{{
-} //}}}
-
-
-/** */
 void MAsymFillHists::PostFill()
 {
    char hName[256];
@@ -543,8 +591,25 @@ void MAsymFillHists::PostFill()
       graph->Fit("funcPolarVsFillTime");
       delete funcPolarVsFillTime;
 
-         //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
+      // r vs fill time
+      sprintf(hName, "hRVsFillTime_%s", strPolId.c_str());
+      graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
+      list = ((TH1*) o[hName])->GetListOfFunctions();
+      graph->Merge(list);
+
+      //TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0] + [1]*x");
+      TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0]");
+      //funcRVsFillTime->SetParameters(0, 0);
+      //funcRVsFillTime->SetParNames("offset", "slope");
+      funcRVsFillTime->SetParNames("const");
+      graph->Fit("funcRVsFillTime");
+      delete funcRVsFillTime;
+
+      //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
    }
+
+
+   DrawObjContainer::PostFill();
 }
 
 
@@ -566,9 +631,15 @@ void MAsymFillHists::UpdateLimits()
 
          while ( TGraphErrors *graphErrs = (TGraphErrors*) next() ) {
             utils::SubtractMinimum(graphErrs);
+         }
 
-            //Double_t xmin, ymin, xmax, ymax;
-            //graphErrs->ComputeRange(xmin, ymin, xmax, ymax);
+         // Profile r
+         sprintf(hName, "hRVsFillTime_%s", strPolId.c_str());
+         list = ((TH1*) o[hName])->GetListOfFunctions();
+         TIter nextRlist(list);
+
+         while ( TGraphErrors *graphErrs = (TGraphErrors*) nextRlist() ) {
+            utils::SubtractMinimum(graphErrs);
          }
 
          //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(xmin, "gmt");
@@ -580,4 +651,6 @@ void MAsymFillHists::UpdateLimits()
          //((TH1*) o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
       //}
    }
+
+   DrawObjContainer::UpdateLimits();
 }

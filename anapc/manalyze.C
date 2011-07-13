@@ -40,27 +40,31 @@ void initialize()
 
    gH = new DrawObjContainer(gMAsymRoot);
 
-   //gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
    //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
    //gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
-   gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
+   //gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
 
    TString filelistPath("/eic/u/dsmirnov/run/");
    Color_t color = kRed;
-   //TString filelist = filelistPath + "runs11_rampupdown.dat";
-   //TString filelist = filelistPath + "runs_all.dat";
-   //TString filelist = filelistPath + "run11_153XX_tmp.dat";
-   //TString filelist = filelistPath + "runs_tmp2.dat";
-   //TString filelist = filelistPath + "run11_15393.dat";
-   //TString filelist = filelistPath + "run11_15397.dat";
-   //TString filelist = filelistPath + "run11_15399.dat";
-   //TString filelist = filelistPath + "run09_all_tmp.dat";
-   //TString filelist = filelistPath + "run09_all_.dat";
-   //TString filelist = filelistPath + "run11_15XXX_2XX_3XX_4XX.dat";
-   //TString filelist = filelistPath + "run11_153XX.dat";
-   //TString filelist = filelistPath + "run11_153XX_Y2U.dat";
-   //TString filelist = filelistPath + "run11_pol_decay.dat";
-   TString filelist = filelistPath + "run11_1547X_4_5.dat";
+   //TString filelistName = "runs11_rampupdown.dat";
+   //TString filelistName = "runs_all.dat";
+   //TString filelistName = "run11_153XX_tmp.dat";
+   //TString filelistName = "runs_tmp2.dat";
+   //TString filelistName = "run11_15393.dat";
+   //TString filelistName = "run11_15397.dat";
+   //TString filelistName = "run11_15399.dat";
+   //TString filelistName = "run09_all_tmp.dat";
+   //TString filelistName = "run09_all_.dat";
+   //TString filelistName = "run11_15XXX_2XX_3XX_4XX.dat";
+   //TString filelistName = "run11_153XX.dat";
+   //TString filelistName = "run11_153XX_Y2U.dat";
+   TString filelistName = "run11_pol_decay.dat";
+   //TString filelistName = "run11_1547X_4_5.dat";
+   //TString filelistName = "run11_154XX_00_23_before_rotators.dat";
+   //TString filelistName = "run11_tmp.dat";
+
+	TString filelist = filelistPath + filelistName;
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -258,7 +262,7 @@ void initialize()
    gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas);
+   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
 
    gH->Write();
    //gH->Delete();

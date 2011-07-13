@@ -37,6 +37,7 @@
 #pragma link C++ class MAsymRunHists;
 #pragma link C++ class MAsymPmtHists;
 #pragma link C++ class MAsymRoot;
+#pragma link C++ class MAsymSingleFillHists;
 //#pragma link C++ class CnipolHistsAssymetry;
 //#pragma link C++ class recordConfigRhicStruct;
 //#pragma link C++ class SiChanStruct;
