@@ -42,7 +42,7 @@ void initialize()
 
    gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
    //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
-   //gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
+   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
    //gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
 
    TString filelistPath("/eic/u/dsmirnov/run/");
@@ -57,9 +57,10 @@ void initialize()
    //TString filelistName = "run09_all_tmp.dat";
    //TString filelistName = "run09_all_.dat";
    //TString filelistName = "run11_15XXX_2XX_3XX_4XX.dat";
+   TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX.dat";
    //TString filelistName = "run11_153XX.dat";
    //TString filelistName = "run11_153XX_Y2U.dat";
-   TString filelistName = "run11_pol_decay.dat";
+   //TString filelistName = "run11_pol_decay.dat";
    //TString filelistName = "run11_1547X_4_5.dat";
    //TString filelistName = "run11_154XX_00_23_before_rotators.dat";
    //TString filelistName = "run11_tmp.dat";
@@ -131,6 +132,11 @@ void initialize()
 
       if (gRC->fRunInfo->StartTime < minTime ) minTime = gRC->fRunInfo->StartTime;
       if (gRC->fRunInfo->StartTime > maxTime ) maxTime = gRC->fRunInfo->StartTime;
+
+      if (gH->d.find("runs") != gH->d.end()) {
+         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
+         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fRunInfo->StartTime);
+	   }
    }
 
    map<UInt_t, UInt_t>::iterator ift;
@@ -138,15 +144,6 @@ void initialize()
    for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
       printf("%d -> %d\n", ift->first, ift->second);
    }
-
-   //
-   if (gH->d.find("runs") != gH->d.end()) {
-      ((MAsymRunHists*) gH->d["runs"])->fMinTime = minTime;
-      ((MAsymRunHists*) gH->d["runs"])->fMaxTime = maxTime;
-      ((MAsymRunHists*) gH->d["runs"])->UpdateLimits();
-   }
-
-   //gH->UpdateLimits();
 
    //return;
    next->Begin();
@@ -220,8 +217,8 @@ void initialize()
       //if (asymVersion != "v1.5.1")
       //   continue;
 
-      //if (polarization <= 1 || polarization_err > 5 || polarization > 99)
-      if (polarization <= 1 || polarization > 99) {
+      if (polarization <= 1 || polarization > 99 || polarization_err > 30) {
+	      Warning("Fill", "Didn't pass basic QA check");
          continue;
       }
 
@@ -255,14 +252,12 @@ void initialize()
    //hRVsTime->Draw();
    //imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
 
-   gH->UpdateLimits();
-
    gH->PostFill();
-
+   gH->UpdateLimits();
    gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
 
    gH->Write();
    //gH->Delete();
