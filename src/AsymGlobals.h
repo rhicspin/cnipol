@@ -103,7 +103,6 @@ extern StructHistStat                gHstat;
 extern StructFeedBack                feedback;
 extern StructCounter                 cntr;
 extern StructCounterTgt              cntr_tgt;
-//extern RunConst                    gRunConst;
 extern std::map<UShort_t, RunConst>  gRunConsts;
 extern StructMask                    mask;
 extern StructFlag                    Flag;

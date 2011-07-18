@@ -20,9 +20,11 @@ enum EFitStatus {
 
 class ChannelCalib;
 
-typedef std::vector<ChannelCalib>               ChannelCalibVec;
-typedef std::map<UShort_t, ChannelCalib>        ChannelCalibMap;
-typedef std::pair<const UShort_t, ChannelCalib> ChannelCalibPair;
+typedef std::vector<ChannelCalib>                        ChannelCalibVec;
+typedef std::map<UShort_t, ChannelCalib>                 ChannelCalibMap;
+typedef std::map<UShort_t, ChannelCalib>::iterator       ChannelCalibMapIter;
+typedef std::map<UShort_t, ChannelCalib>::const_iterator ChannelCalibMapConstIter;
+typedef std::pair<const UShort_t, ChannelCalib>          ChannelCalibPair;
 
 
 /** */
