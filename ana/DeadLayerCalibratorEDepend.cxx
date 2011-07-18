@@ -151,8 +151,13 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
             }
          }
 
-         detT0Coef[iDet]  /= nChDet;
-         detDLWidth[iDet] /= nChDet;
+         if (nChDet) {
+            detT0Coef[iDet]  /= nChDet;
+            detDLWidth[iDet] /= nChDet;
+         } else {
+            detT0Coef[iDet]  = 0;
+            detDLWidth[iDet] = 0;
+         }
 
          //printf("nChDet: %d, %f, %f\n", nChDet, detT0Coef[iDet], detDLWidth[iDet]);
       }

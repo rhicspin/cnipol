@@ -1562,7 +1562,7 @@ void CalcStripAsymmetry(float aveA_N, int Mode)
 
       // ds temp fix: give huge errors to disabled strips
       //if ( gRunInfo->IsDisabledChannel(i+1) )    // || gRunInfo->IsHamaChannel(i+1) ) 
-      if (gAsymRoot->fEventConfig->fCalibrator->GetChannelFitStatus(i+1) != kDLFIT_OK) {
+      if (gAsymRoot->fEventConfig->fCalibrator->GetFitStatus(i+1) != kDLFIT_OK) {
 
          Asym[i]  =  RawP[i] =  P[i] =  Pt[i] = 0;
          AsymPhiCorr[i] = 0;

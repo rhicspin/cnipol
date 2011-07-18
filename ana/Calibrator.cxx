@@ -4,7 +4,6 @@
  *****************************************************************************/
 
 #include "Calibrator.h"
-#include "ChannelCalib.h"
 
 #include "Asym.h"
 #include "AsymGlobals.h"
@@ -110,6 +109,54 @@ void Calibrator::CalibrateFast(DrawObjContainer *c)
 
 
 /** */
+Float_t Calibrator::GetDLWidth(UShort_t chId) const
+{ //{{{
+   return fChannelCalibs.find(chId)->second.fDLWidth;
+} //}}}
+
+
+/** */
+Float_t Calibrator::GetDLWidthErr(UShort_t chId) const
+{ //{{{
+   return fChannelCalibs.find(chId)->second.fDLWidthErr;
+} //}}}
+
+
+/** */
+Float_t Calibrator::GetT0Coef(UShort_t chId) const
+{ //{{{
+   return fChannelCalibs.find(chId)->second.fT0Coef;
+} //}}}
+
+
+/** */
+Float_t Calibrator::GetBananaChi2Ndf(UShort_t chId) const
+{ //{{{
+   return fChannelCalibs.find(chId)->second.fBananaChi2Ndf;
+} //}}}
+
+
+/** */
+UInt_t Calibrator::GetFitStatus(UShort_t chId) const
+{ //{{{
+   ChannelCalibMapConstIter iChCalib = fChannelCalibs.find(chId);
+
+   if (iChCalib != fChannelCalibs.end()) {
+      return iChCalib->second.fFitStatus;
+   }
+
+   return kUNKNOWN;
+} //}}}
+
+
+/** */
+Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
+{ //{{{
+   return fChannelCalibs.find(chId)->second.fT0CoefErr;
+} //}}}
+
+
+/** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 { //{{{
    return fChannelCalibs.find(chId)->second.fACoef * adc;
@@ -151,19 +198,6 @@ TFitResultPtr Calibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, B
 void Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
    return;
-} //}}}
-
-
-/** */
-UInt_t Calibrator::GetChannelFitStatus(UShort_t chId)
-{ //{{{
-   ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
-
-   if (iChCalib != fChannelCalibs.end()) {
-      return iChCalib->second.fFitStatus;
-   }
-
-   return kUNKNOWN;
 } //}}}
 
 

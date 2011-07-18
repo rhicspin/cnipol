@@ -173,7 +173,7 @@ string EventConfig::GetSignature()
       //string strAnaEndTime(25, ' ');
       char strAnaEndTime[25];
       time_t anaEndTime = fAnaInfo->fAnaDateTime + (time_t) fAnaInfo->fAnaTimeReal;
-      printf("***anaEndTime: %u\n", anaEndTime);
+      //printf("***anaEndTime: %lld\n", anaEndTime);
       tm *ltime = localtime(&anaEndTime);
       strftime(strAnaEndTime, 25, "%c", ltime);
 
@@ -194,18 +194,18 @@ string EventConfig::GetSignature()
 
 /** */
 TBuffer & operator<<(TBuffer &buf, EventConfig *&rec)
-{
+{ //{{{
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, EventConfig *rec) : \n");
    rec->Streamer(buf);
    return buf;
-}
+} //}}}
 
 
 /** */
 TBuffer & operator>>(TBuffer &buf, EventConfig *&rec)
-{
+{ //{{{
    //printf("operator>>(TBuffer &buf, EventConfig *rec) : \n");
    rec->Streamer(buf);
    return buf;
-}
+} //}}}

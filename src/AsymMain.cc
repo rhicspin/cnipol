@@ -488,8 +488,6 @@ int main(int argc, char *argv[])
 
       // Main Event Loop
       readloop(*mseRunInfoX);
-
-      gAsymRoot->PostProcess();
    }
 
    // Delete Unnecessary ROOT Histograms
@@ -509,6 +507,8 @@ int main(int argc, char *argv[])
 
       gAsymRoot->Calibrate();
    }
+
+   gAsymRoot->PostProcess();
 
    //gRunDb.Print();
    //gAsymRoot->fEventConfig->Print();
