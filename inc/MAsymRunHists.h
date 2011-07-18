@@ -8,6 +8,7 @@
 #define MAsymRunHists_h
 
 #include "TDirectory.h"
+#include "THStack.h"
 
 #include "AsymGlobals.h"
 #include "ChannelEvent.h"
@@ -31,6 +32,7 @@ private:
 
    std::map<Double_t, UInt_t> fHTargetVsRun;
    std::map<Double_t, UInt_t> fVTargetVsRun;
+   std::map<std::string, THStack*> fHStacks;
 
 public:
 
@@ -47,6 +49,8 @@ public:
    void PostFill();
    void Print(const Option_t* opt="") const;
    void UpdateLimits();
+	void SetMinMaxFill(UInt_t fillId);
+	void SetMinMaxTime(UInt_t time);
 
    ClassDef(MAsymRunHists, 1)
 };

@@ -165,6 +165,20 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
    ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H");
 
+   sprintf(hName, "hRVsFillTimeBinned_%s", strPolId.c_str());
+   o[hName] = new TH1F(hName, hName, 36, 0, 12*3600);
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-0.1, 1);
+   ((TH1*) o[hName])->SetTitle(";Time in Fill, hours;r;");
+   ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[hName])->SetMarkerSize(1);
+   ((TH1*) o[hName])->SetMarkerColor(color);
+   ((TH1*) o[hName])->SetOption("E1");
+   //((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsFillTime, "p");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "local");
+   ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
+   ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H");
+
 /*
    // Rate
    sprintf(hName, "grMaxRateVsMeas");
@@ -349,7 +363,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
 /** */
 void MAsymFillHists::Fill(EventConfig &rc)
-{
+{ //{{{
    Double_t runId            = rc.fRunInfo->RUNID;
    UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
@@ -380,16 +394,16 @@ void MAsymFillHists::Fill(EventConfig &rc)
 
    isubdir = d.find(dName);
 
-   if ( isubdir == d.end()) { // if dir not found
-      TDirectoryFile *tdir = new TDirectoryFile(dName, dName, "", fDir);
-      oc = new MAsymSingleFillHists(tdir);
-      d[dName] = oc;
-      oc = d[dName];
-   } else {
-      oc = isubdir->second;
-   }
+   //if ( isubdir == d.end()) { // if dir not found
+   //   TDirectoryFile *tdir = new TDirectoryFile(dName, dName, "", fDir);
+   //   oc = new MAsymSingleFillHists(tdir);
+   //   d[dName] = oc;
+   //   oc = d[dName];
+   //} else {
+   //   oc = isubdir->second;
+   //}
 
-   oc->Fill(rc);
+   //oc->Fill(rc);
 
 
    // Process common histograms
@@ -542,12 +556,12 @@ void MAsymFillHists::Fill(EventConfig &rc)
    graphErrs->SetPoint(graphNEntries, runId, dl);
    graphErrs->SetPointError(graphNEntries, 0, dlErr);
 */
-}
+} //}}}
 
 
 /** */
 void MAsymFillHists::PostFill()
-{
+{ //{{{
    char hName[256];
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
@@ -595,7 +609,14 @@ void MAsymFillHists::PostFill()
       sprintf(hName, "hRVsFillTime_%s", strPolId.c_str());
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
       list = ((TH1*) o[hName])->GetListOfFunctions();
-      graph->Merge(list);
+      //graph->Merge(list);
+      TGraphErrors *graphMerged = new TGraphErrors(*graph);
+      utils::MergeGraphs(graphMerged, list, kTRUE);
+      ((TH1*) o[hName])->GetListOfFunctions()->Clear();
+      ((TH1*) o[hName])->GetListOfFunctions()->Add(graphMerged, "p");
+      //*graph = *graphMerged;
+
+      graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
 
       //TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0] + [1]*x");
       TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0]");
@@ -605,17 +626,24 @@ void MAsymFillHists::PostFill()
       graph->Fit("funcRVsFillTime");
       delete funcRVsFillTime;
 
-      //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
+
+      sprintf(hName, "hRVsFillTimeBinned_%s", strPolId.c_str());
+
+      utils::BinGraph(graph, (TH1*) o[hName]);
+
+      TF1 *funcRVsFillTimeBinned = new TF1("funcRVsFillTimeBinned", "[0]");
+      funcRVsFillTimeBinned->SetParNames("const");
+      ((TH1*) o[hName])->Fit("funcRVsFillTimeBinned");
+      delete funcRVsFillTimeBinned;
    }
 
-
    DrawObjContainer::PostFill();
-}
+} //}}}
 
 
 /** */
 void MAsymFillHists::UpdateLimits()
-{
+{ //{{{
    char hName[256];
 
    for (IterPolarimeterId iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId)
@@ -653,4 +681,4 @@ void MAsymFillHists::UpdateLimits()
    }
 
    DrawObjContainer::UpdateLimits();
-}
+} //}}}
