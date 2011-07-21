@@ -79,9 +79,15 @@ void CnipolHists::BookHists(string cutid)
 
    // Spin vs Bunch Id
    sprintf(hName, "hSpinVsBunch%s", cutid.c_str());
-   o[hName] = new TH2I(hName, hName, N_BUNCHES, 0, N_BUNCHES, N_SPIN_STATES, -1.5, 1.5);
+   o[hName] = new TH2I(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[hName])->SetOption("colz NOIMG");
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Spin State;");
+
+   // Event count vs channel id
+   sprintf(hName, "hEventsVsChannel%s", cutid.c_str());
+   o[hName] = new TH1I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
 
    // Time vs Energy from amplitude
    //sprintf(hName, "hTimeVsFunnyEnergyA%s", cutid.c_str());
@@ -270,7 +276,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    UChar_t bId = ch->GetBunchId();
 
    ((TH1*) o["hSpinVsChannel"+cutid]) -> Fill(chId, gSpinPattern[bId]);
-   //((TH1*) o["hSpinVsBunch"+cutid]) -> Fill(bId, gSpinPattern[bId]);
+   ((TH1*) o["hSpinVsBunch"+cutid])   -> Fill(bId,  gSpinPattern[bId]);
 
    //ds XXX
    //UShort_t tstep = 0;
@@ -353,6 +359,8 @@ void CnipolHists::PostFill()
 
       TH1* hTimeVsEnergyA   = (TH1*) o["hTimeVsEnergyA"+sCutId];
       TH1* hTofVsKinEnergyA = (TH1*) o["hTofVsKinEnergyA"+sCutId];
+
+      TH1* hEventsVsChannel = (TH1*) o["hEventsVsChannel"+sCutId];
    
       set<UShort_t>::const_iterator iCh;
       set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
@@ -374,6 +382,8 @@ void CnipolHists::PostFill()
          // Fill final kinematic histograms using calib constants
          //TH2* hTofVsKinEnergyA_channel = (TH2*) oc->o["hTofVsKinEnergyA"+sCutId+"_ch"+sChId];
          //ConvertRawToKin(hTVsA_channel, hTofVsKinEnergyA_channel, *iCh);
+
+         hEventsVsChannel->SetBinContent(*iCh, hTofVsKinEnergyA_channel->GetEntries());
       }
    }
 } //}}}

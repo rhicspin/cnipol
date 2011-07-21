@@ -733,35 +733,43 @@ float AsymCalculator::WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (gRunInfo->GetBeamEnergy() > 200) {
-      // XXX scale flattop values 250 GeV by 15% 1.176 = 1./ (1-0.15)
+   if (gRunInfo->GetBeamEnergy() > 200)
+   {
+      // Scale up the flattop (250 GeV) polarization values by 15%: 1.176 = 1./ (1-0.15)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176; v1.2.0 and earlier
-
+      //
       // A new correction introduced in v1.3.1 scales pC polarization down by
       // approx 18% (0.823 +/- 0.012) at 250 GeV
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215;
-
+      //
       // A new correction to the H-jet introduced in v1.3.14 scales pC polarization up by
       // approx 13% at 250 GeV
+      //
+      // Yet another correction in for v1.6.1 that is implemented in v1.6.2
 
       Float_t a_n_scale_v1_3_14 = 1;
+      Float_t a_n_scale_v1_6_1  = 1;
 
       switch (gRunInfo->fPolId) {
       case kB1U:
          a_n_scale_v1_3_14 = 0.8371;
+         a_n_scale_v1_6_1  = 1./0.9519; // overall is: 0.8794
          break;
       case kY1D:
          a_n_scale_v1_3_14 = 0.8773;
+         a_n_scale_v1_6_1  = 1./0.9640; // overall is: 0.9101
          break;
       case kB2D:
          a_n_scale_v1_3_14 = 0.7870;
+         a_n_scale_v1_6_1  = 1./0.9852; // overall is: 0.7988
          break;
       case kY2U:
          a_n_scale_v1_3_14 = 0.8481;
+         a_n_scale_v1_6_1  = 1./0.9615; // overall is: 0.8821
          break;
       }
 
-      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14;
+      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14 * a_n_scale_v1_6_1;
 
    } else if (gRunInfo->GetBeamEnergy() > 50) {
 

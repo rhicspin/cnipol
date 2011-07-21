@@ -819,12 +819,6 @@ void AsymRoot::BookHists()
    // target events strip [73 - 76].
    for (int i=0; i<TOT_WFD_CH; i++) {
  
-      sprintf(hname,"t_vs_e_st%d",i+1);
-      sprintf(htitle,"%.3f : t vs. Kin.Energy Strip-%d ", gRunInfo->RUNID, i+1);
-      t_vs_e[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
-      t_vs_e[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
-      t_vs_e[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
- 
       sprintf(hname,"t_vs_e_yescut_st%d",i+1);
       sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gRunInfo->RUNID, i+1);
       t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
@@ -940,7 +934,7 @@ void AsymRoot::DeleteHistogram()
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
-     t_vs_e[i]->Delete();
+     //t_vs_e[i]->Delete();
      t_vs_e_yescut[i]->Delete();
      mass_vs_e_ecut[i]->Delete();  // Mass vs. 12C Kinetic Energy
      mass_nocut[i]->Delete();

@@ -71,20 +71,20 @@ public:
    std::vector<UShort_t> fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
    std::set<UShort_t>    fSiliconChannels;
    std::set<UShort_t>    fActiveSiliconChannels;
-   int          NFilledBunch;
-   int          NActiveBunch;
-   int          NDisableBunch;
-   int          DisableBunch[N_BUNCHES];
-	float        fProtoCutSlope;
-	float        fProtoCutOffset;
-	float        fProtoCutAdcMin;
-	float        fProtoCutAdcMax;
-	float        fProtoCutTdcMin;
-	float        fProtoCutTdcMax;
-	float        fPulserCutAdcMin;
-	float        fPulserCutAdcMax;
-	float        fPulserCutTdcMin;
-	float        fPulserCutTdcMax;
+   Int_t                 NFilledBunch;
+   Int_t                 NActiveBunch;
+   Int_t                 NDisableBunch;
+   Int_t                 DisableBunch[N_BUNCHES];
+	Float_t               fProtoCutSlope;
+	Float_t               fProtoCutOffset;
+	Float_t               fProtoCutAdcMin;
+	Float_t               fProtoCutAdcMax;
+	Float_t               fProtoCutTdcMin;
+	Float_t               fProtoCutTdcMax;
+	Float_t               fPulserCutAdcMin;
+	Float_t               fPulserCutAdcMax;
+	Float_t               fPulserCutTdcMin;
+	Float_t               fPulserCutTdcMax;
 
 public:
 
