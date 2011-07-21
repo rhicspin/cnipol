@@ -452,8 +452,10 @@ void CnipolProfileHists::Process()
    TH1* hPolarVsIntensProfile = (TH1*) o["hPolarVsIntensProfile"];
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
 
-   gAnaResult->fIntensPolarR    = mfPow->GetParameter(1);
-   gAnaResult->fIntensPolarRErr = mfPow->GetParError(1);
+   gAnaResult->fIntensPolarMax    = mfPow->GetParameter(0);
+   gAnaResult->fIntensPolarMaxErr = mfPow->GetParError(0);
+   gAnaResult->fIntensPolarR      = mfPow->GetParameter(1);
+   gAnaResult->fIntensPolarRErr   = mfPow->GetParError(1);
 
    char sratio[50];
 

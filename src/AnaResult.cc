@@ -22,6 +22,8 @@ AnaResult::AnaResult() : TObject(),
    //basym[100+MAXDELIM],    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    //anomaly(),
    //unrecog()
+   fIntensPolarMax(0),
+   fIntensPolarMaxErr(0),
    fIntensPolarR(0),
    fIntensPolarRErr(0),
    fPmtV1T0(0),
@@ -74,6 +76,8 @@ void AnaResult::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, ");\n");
+   fprintf(f, "$rc['fIntensPolarMax']     = %f;\n",            fIntensPolarMax);
+   fprintf(f, "$rc['fIntensPolarMaxErr']  = %f;\n",            fIntensPolarMaxErr);
    fprintf(f, "$rc['fIntensPolarR']       = %f;\n",            fIntensPolarR);
    fprintf(f, "$rc['fIntensPolarRErr']    = %f;\n",            fIntensPolarRErr);
    fprintf(f, "$rc['fPmtV1T0']            = %f;\n",            fPmtV1T0);
