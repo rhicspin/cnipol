@@ -15,8 +15,6 @@
 #include "CnipolProfileHists.h"
 
 MAsymRoot           *gMAsymRoot = 0;
-//DrawObjContainer    *gH;
-//MAsymRunHists       *gH;
 EventConfig         *gRC;
 map<UInt_t, UInt_t>  flattopTimes;
 
