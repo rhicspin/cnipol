@@ -30,10 +30,10 @@ public:
    StructSinPhi       basym[100+MAXDELIM];    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    StructAnomaly      anomaly;                //!
    StructUnrecognized unrecog;                //!
-   Float_t            fIntensPolarMax;        // The peak polarization from the P vs I fit 
-   Float_t            fIntensPolarMaxErr;
-   Float_t            fIntensPolarR;          // The R profile defines the ratio of intensity and polarization profiles
-   Float_t            fIntensPolarRErr;
+   Float_t            fIntensPolarMax;        //! The peak polarization from the P vs I fit 
+   Float_t            fIntensPolarMaxErr;     //!
+   Float_t            fIntensPolarR;          //! The R profile defines the ratio of intensity and polarization profiles
+   Float_t            fIntensPolarRErr;       //!
    Float_t            fPmtV1T0;
    Float_t            fPmtV1T0Err;
    Float_t            fPmtS1T0;
