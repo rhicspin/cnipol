@@ -32,21 +32,8 @@ void initialize()
    gStyle->SetOptStat(0);
    gStyle->SetPadRightMargin(0.18);
 
-   //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
-   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
-
-   gAnaInfo   = new AnaInfo();
-   gMAsymRoot = new MAsymRoot("masym_out.root");
-
-   gH = new DrawObjContainer(gMAsymRoot);
-
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
-   //gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
-   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
-   //gH->d["pmt"]  = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
-
    TString filelistPath("/eic/u/dsmirnov/run/");
-   Color_t color = kRed;
+
    //TString filelistName = "runs11_rampupdown.dat";
    //TString filelistName = "runs_all.dat";
    //TString filelistName = "run11_153XX_tmp.dat";
@@ -57,41 +44,36 @@ void initialize()
    //TString filelistName = "run09_all_tmp.dat";
    //TString filelistName = "run09_all_.dat";
    //TString filelistName = "run11_15XXX_2XX_3XX_4XX.dat";
-   TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX.dat";
+   //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX.dat";
    //TString filelistName = "run11_153XX.dat";
    //TString filelistName = "run11_153XX_Y2U.dat";
    //TString filelistName = "run11_pol_decay.dat";
    //TString filelistName = "run11_1547X_4_5.dat";
    //TString filelistName = "run11_154XX_00_23_before_rotators.dat";
    //TString filelistName = "run11_tmp.dat";
+   TString filelistName = "run11_15473_74_75_injection";
 
-	TString filelist = filelistPath + filelistName;
+	TString filelist = filelistPath + filelistName + ".dat";
+
+   TString outFileName = "masym_" + filelistName + "_out.root";
+
+   //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
+   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
+
+   gAnaInfo   = new AnaInfo();
+   gMAsymRoot = new MAsymRoot(outFileName.Data());
+
+   gH = new DrawObjContainer(gMAsymRoot);
+
+   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
+   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
+   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
+   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
 
    string  histName = "hPolarVsIntensProfileBin";
 
-   TH1* havrg = new TH1F("havrg", "havrg", 22, 0, 1.1);
-
-   havrg->GetYaxis()->SetRangeUser(0, 1.05);
-   havrg->SetOption("p");
-   havrg->SetMarkerStyle(kFullDotLarge);
-   havrg->SetMarkerSize(1);
-   havrg->SetMarkerColor(kRed);
-   havrg->Sumw2();
-   havrg->SetBit(TH1::kIsAverage);
-
-   TH2* hRVsTime = new TH2F("hRVsTime", "hRVsTime", 1, 20, 100, 1, -0.1, 1);
-   hRVsTime->GetXaxis()->SetTitle("Days");
-   hRVsTime->GetYaxis()->SetTitle("r");
-
-   TGraphErrors *grRVsTime = new TGraphErrors();
-   grRVsTime->SetName("grRVsTime");
-   grRVsTime->SetMarkerStyle(kFullCircle);
-   grRVsTime->SetMarkerSize(1);
-   grRVsTime->SetMarkerColor(color);
-
-   UInt_t i = 0;
-   UInt_t minTime = UINT_MAX;
-   UInt_t maxTime = 0;
+   //UInt_t minTime = UINT_MAX;
+   //UInt_t maxTime = 0;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -130,8 +112,8 @@ void initialize()
          flattopTimes[fillId] = gRC->fRunInfo->StartTime;
       }
 
-      if (gRC->fRunInfo->StartTime < minTime ) minTime = gRC->fRunInfo->StartTime;
-      if (gRC->fRunInfo->StartTime > maxTime ) maxTime = gRC->fRunInfo->StartTime;
+      //if (gRC->fRunInfo->StartTime < minTime ) minTime = gRC->fRunInfo->StartTime;
+      //if (gRC->fRunInfo->StartTime > maxTime ) maxTime = gRC->fRunInfo->StartTime;
 
       if (gH->d.find("runs") != gH->d.end()) {
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
@@ -224,33 +206,11 @@ void initialize()
 
       gRunInfo = gRC->fRunInfo;
       gH->Fill(*gRC);
-
-      grRVsTime->SetPoint(i, gRC->fRunInfo->StartTime, profileRatio);
-      grRVsTime->SetPointError(i, 0, profileRatioErr);
-      
-      //if (i == 0) havrg = h;
-      //else havrg->Add(h);
-      //havrg->Add(h);
-
-      i++;
    }
 
    Double_t xmin, ymin, xmax, ymax;
 
    string imageName;
-
-   //grRVsTime->ComputeRange(xmin, ymin, xmax, ymax);
-   //printf("xmin, xmax: %f, %f\n", xmin, xmax);
-   //TF1 *f2 = new TF1("f2", "[0]", xmin, xmax);
-   //grRVsTime->Fit("f2", "R");
-
-   //hRVsTime->GetListOfFunctions()->Add(grRVsTime, "p");
-   //hRVsTime->GetXaxis()->SetTimeOffset(0, "gmt");
-   //hRVsTime->GetXaxis()->SetLimits(xmin, xmax);
-   //hRVsTime->GetXaxis()->SetTimeDisplay(1);
-   //hRVsTime->GetXaxis()->SetTimeFormat("%b %d");
-   //hRVsTime->Draw();
-   //imageName = "hRVsTime_" + filelist + "_" + sEnergyId + ".png";
 
    gH->PostFill();
    gH->UpdateLimits();
@@ -258,6 +218,7 @@ void initialize()
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
 
    gH->Write();
    //gH->Delete();
