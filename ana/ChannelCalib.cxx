@@ -27,6 +27,13 @@ ChannelCalib::~ChannelCalib()
 
 
 /** */
+EFitStatus ChannelCalib::GetFitStatus() const
+{
+   return (EFitStatus) fFitStatus;
+}
+
+
+/** */
 void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
 {
    fACoef    = chCalib.fACoef   ;

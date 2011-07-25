@@ -276,23 +276,24 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 
    // All channels are combined in the 0-th calib channel
    // Use these values as expected in the fit
-   iChCalib = fChannelCalibs.find(0);
+   //iChCalib = fChannelCalibs.find(0);
 
-   if ( iChCalib != fChannelCalibs.end() ) {
+   //if ( iChCalib != fChannelCalibs.end() )
+   if ( fChannelCalibs[0].GetFitStatus() == kDLFIT_OK ) {
       meanT0  = fChannelCalibs[0].fT0Coef;
       meanDLW = fChannelCalibs[0].fDLWidth;
    }
 
-   float meanT0_low   = meanT0 < 0 ? 1.5*meanT0 : 0.5*meanT0;
-   float meanT0_high  = meanT0 < 0 ? 0.5*meanT0 : 1.5*meanT0;
-   float meanDLW_low  = 0.5*meanDLW;
-   float meanDLW_high = 1.5*meanDLW;
+   //float meanT0_low   = meanT0 < 0 ? 1.5*meanT0 : 0.5*meanT0;
+   //float meanT0_high  = meanT0 < 0 ? 0.5*meanT0 : 1.5*meanT0;
+   //float meanDLW_low  = 0.5*meanDLW;
+   //float meanDLW_high = 1.5*meanDLW;
 
    //if (wideLimits) {
-      meanT0_low   = -30;
-      meanT0_high  = 30;
-      meanDLW_low  = 0;
-      meanDLW_high = 200;
+   Float_t   meanT0_low   = -30;
+   Float_t   meanT0_high  = 30;
+   Float_t   meanDLW_low  = 0;
+   Float_t   meanDLW_high = 200;
    //}
 
    bananaFitFunc->SetParameters(meanT0, meanDLW);
@@ -303,8 +304,8 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 
    printf("\nFitting histogram:\n");
    hMeanTime->Print();
-   //printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
-   //printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
+   printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
+   printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
 
    //TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");
