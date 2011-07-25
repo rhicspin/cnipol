@@ -120,10 +120,16 @@ void MAsymRunHists::BookHists(string sid)
       sName = "hsPolarVsFill_" + strBeamE;
       fHStacks[sName] = new THStack(sName.c_str(), sName.c_str());
 
-      sName = "hsDLVsFill_" + strBeamE;
+      sName = "hsDLVsFill_U_" + strBeamE;
       fHStacks[sName] = new THStack(sName.c_str(), sName.c_str());
 
-      sName = "hsT0VsFill_" + strBeamE;
+      sName = "hsDLVsFill_D_" + strBeamE;
+      fHStacks[sName] = new THStack(sName.c_str(), sName.c_str());
+
+      sName = "hsT0VsFill_U_" + strBeamE;
+      fHStacks[sName] = new THStack(sName.c_str(), sName.c_str());
+
+      sName = "hsT0VsFill_D_" + strBeamE;
       fHStacks[sName] = new THStack(sName.c_str(), sName.c_str());
    }
 
@@ -799,7 +805,11 @@ void MAsymRunHists::PostFill()
          //((TH1*) o[hName])->Fit("funcT0VsFill");
          //delete funcT0VsFill;
 
-         fHStacks["hsT0VsFill_" + strBeamE]->Add( (TH1*) o[hName] );
+         if (strPolId == "B1U" || strPolId == "Y2U" )
+            fHStacks["hsT0VsFill_U_" + strBeamE]->Add( (TH1*) o[hName] );
+         else
+            fHStacks["hsT0VsFill_D_" + strBeamE]->Add( (TH1*) o[hName] );
+
 
          // DL
          sprintf(hName, "hDLVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
@@ -816,7 +826,10 @@ void MAsymRunHists::PostFill()
          ((TH1*) o[hName])->Fit("funcDLVsFill");
          delete funcDLVsFill;
 
-         fHStacks["hsDLVsFill_" + strBeamE]->Add( (TH1*) o[hName] );
+         if (strPolId == "B1U" || strPolId == "Y2U" )
+            fHStacks["hsDLVsFill_U_" + strBeamE]->Add( (TH1*) o[hName] );
+         else
+            fHStacks["hsDLVsFill_D_" + strBeamE]->Add( (TH1*) o[hName] );
 
          sprintf(hName, "hT0VsChannel_%s_%s", strPolId.c_str(), strBeamE.c_str());
          TH1* hT0VsChannel = (TH1*) o[hName];
@@ -1005,8 +1018,15 @@ void MAsymRunHists::UpdateLimits()
 
          sprintf(hName, "hT0VsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
          ((TH1*) o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         min  = utils::GetNonEmptyMinimum(fHStacks["hsT0VsFill_" + strBeamE], "nostack");
-         max  = utils::GetNonEmptyMaximum(fHStacks["hsT0VsFill_" + strBeamE], "nostack");
+
+         if (*iPolId == kB1U || *iPolId == kY2U) {
+            min  = utils::GetNonEmptyMinimum(fHStacks["hsT0VsFill_U_" + strBeamE], "nostack");
+            max  = utils::GetNonEmptyMaximum(fHStacks["hsT0VsFill_U_" + strBeamE], "nostack");
+			} else {
+            min  = utils::GetNonEmptyMinimum(fHStacks["hsT0VsFill_D_" + strBeamE], "nostack");
+            max  = utils::GetNonEmptyMaximum(fHStacks["hsT0VsFill_D_" + strBeamE], "nostack");
+		   }
+
          marg = (max - min) * 0.1;
          ((TH1*) o[hName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
 
@@ -1021,8 +1041,15 @@ void MAsymRunHists::UpdateLimits()
 
          sprintf(hName, "hDLVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
          ((TH1*) o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         min  = utils::GetNonEmptyMinimum(fHStacks["hsDLVsFill_" + strBeamE], "nostack");
-         max  = utils::GetNonEmptyMaximum(fHStacks["hsDLVsFill_" + strBeamE], "nostack");
+
+         if (*iPolId == kB1U || *iPolId == kY2U) {
+            min  = utils::GetNonEmptyMinimum(fHStacks["hsDLVsFill_U_" + strBeamE], "nostack");
+            max  = utils::GetNonEmptyMaximum(fHStacks["hsDLVsFill_U_" + strBeamE], "nostack");
+			} else {
+            min  = utils::GetNonEmptyMinimum(fHStacks["hsDLVsFill_D_" + strBeamE], "nostack");
+            max  = utils::GetNonEmptyMaximum(fHStacks["hsDLVsFill_D_" + strBeamE], "nostack");
+			}
+
          marg = (max - min) * 0.1;
          ((TH1*) o[hName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
 
