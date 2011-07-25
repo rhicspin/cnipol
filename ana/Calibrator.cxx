@@ -142,7 +142,7 @@ UInt_t Calibrator::GetFitStatus(UShort_t chId) const
    ChannelCalibMapConstIter iChCalib = fChannelCalibs.find(chId);
 
    if (iChCalib != fChannelCalibs.end()) {
-      return iChCalib->second.fFitStatus;
+      return iChCalib->second.GetFitStatus();
    }
 
    return kUNKNOWN;
