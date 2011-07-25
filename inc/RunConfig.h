@@ -24,7 +24,7 @@ enum ESpinState {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 
 typedef std::set<EBeamEnergy>::iterator    IterBeamEnergy;
 typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
-typedef std::set<ESpinState>::iterator    IterSpinState;
+typedef std::set<ESpinState>::iterator     IterSpinState;
 
 
 class RunConfig
@@ -36,7 +36,7 @@ public:
    std::set<EMeasType>      fMeasTypes;
    std::set<ETargetOrient>  fTargetOrients;
    std::set<EBeamEnergy>    fBeamEnergies;
-   std::set<ESpinState>    fSpinStates;
+   std::set<ESpinState>     fSpinStates;
 
    RunConfig();
    ~RunConfig();
@@ -47,6 +47,7 @@ public:
    static std::string AsString(EBeamEnergy beamEnergy);
    static std::string AsString(ESpinState spinState);
    static Color_t     AsColor(EPolarimeterId polId);
+   static Color_t     AsColor(ESpinState spin);
 
 };
 

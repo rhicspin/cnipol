@@ -613,6 +613,7 @@ TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, flo
   int Color = Mode == 1 ? kBlue : kRed;
 
   TGraphErrors *asymgraph = new TGraphErrors(N, x, y, ex, ey);
+
   asymgraph->SetMarkerStyle(kFullCircle);
   asymgraph->SetMarkerSize(MSIZE);
   asymgraph->SetMarkerColor(Color);

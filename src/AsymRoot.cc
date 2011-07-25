@@ -420,7 +420,9 @@ void AsymRoot::PreProcess()
 /** */
 void AsymRoot::PostProcess()
 {
-   //gAsymCalculator.CalcBunchAsymmetry();
+   if (gAnaInfo->HasAsymBit()) {
+      //gAsymCalculator.CalcBunchAsymmetry();
+	}
 
    fHists->PostFill();
 }

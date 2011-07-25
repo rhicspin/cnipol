@@ -7,7 +7,7 @@ using namespace std;
 /** */
 RunConfig::RunConfig() : fPolarimeters(), fMeasTypes(), fTargetOrients(),
    fBeamEnergies(), fSpinStates()
-{
+{ //{{{
    fPolarimeters.insert(kB1U);
    fPolarimeters.insert(kY1D);
    fPolarimeters.insert(kB2D);
@@ -30,7 +30,7 @@ RunConfig::RunConfig() : fPolarimeters(), fMeasTypes(), fTargetOrients(),
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
    fSpinStates.insert(kSPIN_UP);
-}
+} //}}}
 
 
 /** */
@@ -41,7 +41,7 @@ RunConfig::~RunConfig()
 
 /** */
 string RunConfig::AsString(EPolarimeterId polId)
-{
+{ //{{{
    switch (polId) {
    case kB1U:
 	   return "B1U";
@@ -54,11 +54,12 @@ string RunConfig::AsString(EPolarimeterId polId)
    default:
       return "UNK";
    }
-}
+} //}}}
 
 
+/** */
 string RunConfig::AsString(EMeasType measType)
-{
+{ //{{{
    switch (measType) {
    case kMEASTYPE_ALPHA:
 	   return "alpha";
@@ -73,12 +74,12 @@ string RunConfig::AsString(EMeasType measType)
    default:
       return "UNK";
    }
-}
+} //}}}
 
 
 /** */
 string RunConfig::AsString(ETargetOrient targetOrient)
-{
+{ //{{{
    switch (targetOrient) {
    case kTARGET_H:
 	   return "H";
@@ -87,12 +88,12 @@ string RunConfig::AsString(ETargetOrient targetOrient)
    default:
       return "UNK";
    }
-}
+} //}}}
 
 
 /** */
 string RunConfig::AsString(EBeamEnergy beamEnergy)
-{
+{ //{{{
    switch (beamEnergy) {
    case kINJECTION:
 	   return "024";
@@ -103,12 +104,12 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
    default:
       return "UNK";
    }
-}
+} //}}}
 
 
 /** */
 string RunConfig::AsString(ESpinState spinState)
-{
+{ //{{{
    switch (spinState) {
    case kSPIN_DOWN:
 	   return "down";
@@ -119,11 +120,12 @@ string RunConfig::AsString(ESpinState spinState)
    default:
       return "UNK";
    }
-}
+} //}}}
 
 
+/** */
 Color_t RunConfig::AsColor(EPolarimeterId polId)
-{
+{ //{{{
    switch (polId) {
    case kB1U:
    case kB2D:
@@ -134,4 +136,20 @@ Color_t RunConfig::AsColor(EPolarimeterId polId)
    default:
       return kBlack;
    }
-}
+} //}}}
+
+
+/** */
+Color_t RunConfig::AsColor(ESpinState spin)
+{ //{{{
+   switch (spin) {
+   case kSPIN_DOWN:
+	   return kGreen;
+   case kSPIN_NULL:
+	   return kBlack;
+   case kSPIN_UP:
+	   return kRed;
+   default:
+      return kBlack;
+   }
+} //}}}

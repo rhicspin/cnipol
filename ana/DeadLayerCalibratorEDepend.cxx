@@ -325,8 +325,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 
       chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-      //if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 100) {
-      if (chCalib->fBananaChi2Ndf <= 0 ) {
+      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 1000) {
          chCalib->fFitStatus = kDLFIT_FAIL;
          return;
       }

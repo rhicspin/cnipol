@@ -1137,6 +1137,9 @@ void AsymCalculator::CalcBunchAsymmetry()
    BunchAsymmetry(1, gBunchAsym.Ax45[0], gBunchAsym.Ax45[1]); // x45
    BunchAsymmetry(2, gBunchAsym.Ay45[0], gBunchAsym.Ay45[1]); // y45
 
+   // XXX ds
+   return;
+
    // Define TH2F histograms first
    Asymmetry->cd();
 
@@ -1172,7 +1175,7 @@ void AsymCalculator::CalcBunchAsymmetry()
    for (int bid=0; bid<N_BUNCHES; bid++) { ex[bid] = 0; bunch[bid] = bid; }
 
    // Superpose Positive/Negative Bunches arrays into TH2F histograms defined above
-   TGraphErrors *asymgraph ;
+   TGraphErrors *asymgraph;
 
    for (int spin=1; spin>=-1; spin-=2 ) {
 
@@ -1218,19 +1221,21 @@ void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
 { //{{{
    // Allocate adequate detector IDs involved in X90,X45,Y45, respectively
    int Rdet[2], Ldet[2];
+   set<UShort_t> RDetectors;
+   set<UShort_t> LDetectors;
 
    switch (Mode) {
    case 0:  // Ax90
-      Rdet[0] = 1;
-      Ldet[0] = 4;
+      Rdet[0] = 1; RDetectors.insert(2);
+      Ldet[0] = 4; LDetectors.insert(5);
       break;
    case 1:  // Ax45
-      Rdet[0] = 0; Rdet[1] = 2;
-      Ldet[0] = 3; Ldet[1] = 5;
+      Rdet[0] = 0; Rdet[1] = 2; RDetectors.insert(1); RDetectors.insert(2);
+      Ldet[0] = 3; Ldet[1] = 5; LDetectors.insert(4); LDetectors.insert(6);
       break;
    case 2:  // Ay45
-      Rdet[0] = 0; Rdet[1] = 5;
-      Ldet[0] = 2; Ldet[1] = 3;
+      Rdet[0] = 0; Rdet[1] = 5; RDetectors.insert(1); RDetectors.insert(6);
+      Ldet[0] = 2; Ldet[1] = 3; LDetectors.insert(3); LDetectors.insert(4);
       break;
    default:
       cerr << "BunchAsymmetry: No matching mode is coded in for " << Mode << endl;
@@ -1243,15 +1248,26 @@ void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
    int LumiL = 0;
 
    // If more than two detectors combine their counts
-   for (int i=0; i<=1; i++) { // run for X45 and Y45
-      for (int bid=0; bid<N_BUNCHES; bid++) {
-         if (gFillPattern[bid]){
-            LumiR += Ncounts[Rdet[i]][bid];
-            LumiL += Ncounts[Ldet[i]][bid];
-         }
-      }
-      if (!Mode) break; // no R/L detector loop for x90
-   }
+   //for (int i=0; i<=1; i++) { // run for X45 and Y45
+   //   for (int bid=0; bid<N_BUNCHES; bid++) {
+   //      if (gFillPattern[bid]){
+   //         LumiR += Ncounts[Rdet[i]][bid];
+   //         LumiL += Ncounts[Ldet[i]][bid];
+   //      }
+   //   }
+   //   if (!Mode) break; // no R/L detector loop for x90
+   //}
+
+   TH2* hDetVsBunchId = (TH2*) gAsymRoot->fHists->d["asym"]->o["hDetVsBunchId"];
+
+   set<UShort_t>::iterator iRDet = RDetectors.begin();
+   set<UShort_t>::iterator iLDet = LDetectors.begin();
+
+   for ( ; iRDet!=RDetectors.end(); ++iRDet)
+      LumiR += hDetVsBunchId->Integral(1, N_BUNCHES, *iRDet, *iRDet);
+
+   for ( ; iLDet!=RDetectors.end(); ++iLDet)
+      LumiL += hDetVsBunchId->Integral(1, N_BUNCHES, *iLDet, *iLDet);
 
    // Main bunch loop to calculate asymmetry bunch by bunch
    for (int bid=0; bid<N_BUNCHES; bid++) {
@@ -1268,6 +1284,10 @@ void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
             L += Ncounts[Ldet[i]][bid];
             if (!Mode) break; // no detector loop for X90
          }
+
+         //set<UShort_t>::iterator iRDet = RDetectors.begin();
+
+         //for ( ; iRDet!=RDetectors.end(); ++iRDet)
 
          AsymCalculator::CalcAsymmetry(R, L, LumiR, LumiL, A[bid], dA[bid]);
       }
