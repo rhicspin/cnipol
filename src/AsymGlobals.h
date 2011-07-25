@@ -30,7 +30,6 @@ struct StructFeedBack;
 struct StructCounter;
 struct StructCounterTgt;
 class  RunConst;
-struct StructRunConst;
 struct StructMask;
 struct StructFlag;
 struct StructReadFlag;

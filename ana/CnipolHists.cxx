@@ -86,7 +86,7 @@ void CnipolHists::BookHists(string cutid)
    // Event count vs channel id
    sprintf(hName, "hEventsVsChannel%s", cutid.c_str());
    o[hName] = new TH1I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetOption("colz NOIMG");
+   //((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
 
    // Time vs Energy from amplitude
