@@ -79,7 +79,8 @@ void CnipolHists::BookHists(string cutid)
 
    // Spin vs Bunch Id
    sprintf(hName, "hSpinVsBunch%s", cutid.c_str());
-   o[hName] = new TH2I(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
+   //o[hName] = new TH2I(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
+   o[hName] = new TH2I(hName, hName, N_BUNCHES, -0.5, N_BUNCHES-0.5, N_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[hName])->SetOption("colz NOIMG");
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Spin State;");
 

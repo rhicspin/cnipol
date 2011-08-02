@@ -284,6 +284,10 @@ void event_process(processEvent *event)
 	   //      gAsymRoot->fHists->Fill(ch, "_cut2");
       //   }
       //}
+
+      //if ( ch->PassCutEmptyBunch() ) {
+      //   gAsymRoot->fHists->Fill(ch, "empty_bunch");
+      //}
    }
 
    //ds
