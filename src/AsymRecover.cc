@@ -11,6 +11,8 @@
 
 #include "AsymRecover.h"
 #include "AsymRecoverUserDefined.h"
+#include "RunConfig.h"
+
 
 using namespace std;
 
@@ -22,7 +24,10 @@ void AsymRecover::OverwriteSpinPattern(int index)
    cerr << "Recovery: Spin pattern is ovewritten by user defined pattern index(" 
         << index << ")" << endl;
  
-   for (int i=0; i<NBUNCH; i++) gSpinPattern[i] = UserDefinedSpinPattern[index][i];
+   for (int bid=1; bid<N_BUNCHES; bid++)
+   {
+      gRunInfo->fBeamBunches[bid].SetBunchSpin( (ESpinState) UserDefinedFillPattern[index][bid-1] );
+   }
 }
 
 
@@ -33,7 +38,10 @@ void AsymRecover::OverwriteFillPattern(int index)
    cout << "Recovery: Fill pattern is ovewritten by user defined pattern index(" 
         << index << ")" << endl;
  
-   for (int i=0; i<NBUNCH; i++)  gFillPattern[i] = UserDefinedFillPattern[index][i];
+   for (int bid=1; bid<=N_BUNCHES; bid++)
+   {
+      gRunInfo->fBeamBunches[bid].SetFilled( UserDefinedFillPattern[index][bid-1] );
+   }
 }
 
 
@@ -42,8 +50,12 @@ void AsymRecover::MaskFillPattern()
 {
    for (int i=0; i<gRunInfo->NDisableBunch; i++) {
 
-      for (int j=0; j<NBUNCH; j++) {
-         gFillPattern[j] = gRunInfo->DisableBunch[i] == j ? 0 : gFillPattern[j];
+      for (int j=0; j<N_BUNCHES; j++) {
+         //gFillPattern[j] = gRunInfo->DisableBunch[i] == j ? 0 : gFillPattern[j];
+
+         if (gRunInfo->DisableBunch[i] == j) {
+            gRunInfo->fBeamBunches.find(i+1)->second.SetFilled(kFALSE);
+         }
       }
    }
 }

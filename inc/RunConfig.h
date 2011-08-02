@@ -27,6 +27,9 @@ typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
 typedef std::set<ESpinState>::iterator     IterSpinState;
 
 
+ostream& operator<<(ostream &os, const ESpinState &ss);
+
+
 class RunConfig
 {
 private:

@@ -4,6 +4,17 @@
 using namespace std;
 
 
+ostream& operator<<(ostream &os, const ESpinState &ss)
+{
+   if      (ss == kSPIN_UP)   os << "+";
+   else if (ss == kSPIN_DOWN) os << "-";
+   else if (ss == kSPIN_NULL) os << ".";
+   else                       os << "*";
+
+   return os;
+}
+
+
 /** */
 RunConfig::RunConfig() : fPolarimeters(), fMeasTypes(), fTargetOrients(),
    fBeamEnergies(), fSpinStates()

@@ -475,7 +475,7 @@ Bool_t ChannelEvent::PassCutPmtNoise()
 /** */
 Bool_t ChannelEvent::PassCutEmptyBunch() const
 { //{{{
-   Int_t bId = GetBunchId();
+   Int_t bId = GetBunchId() + 1;
 
-   return gFillPattern[bId] == 0 ? true : false;
+   return gRunInfo->IsEmptyBunch(bId) ? true : false;
 } //}}}

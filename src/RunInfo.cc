@@ -29,20 +29,21 @@ RunInfo::RunInfo() : TObject(),
    fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION),
    fMeasType(kMEASTYPE_UNKNOWN),
-   GoodEventRate (0),      // GoodEventRate;
-   EvntRate      (0),      // EvntRate;
-   ReadRate      (0),      // ReadRate;
+   GoodEventRate (0),        // GoodEventRate;
+   EvntRate      (0),        // EvntRate;
+   ReadRate      (0),        // ReadRate;
    fWallCurMon(), fWallCurMonAve(0), fWallCurMonSum(0),
-   fPolId        (-1),     // valid values 0 - 3
-   fPolBeam      (0),      // blue = 2 or yellow = 1
-   fPolStream    (0),      // up =1 or down =2 stream
-   PolarimetryID (1),      // PolarimetryID; Polarimetry-1 or Polarimetry-2
-   MaxRevolution (0),      // MaxRevolution;
+   fPolId        (-1),       // valid values 0 - 3
+   fPolBeam      (0),        // blue = 2 or yellow = 1
+   fPolStream    (0),        // up =1 or down =2 stream
+   PolarimetryID (1),        // PolarimetryID; Polarimetry-1 or Polarimetry-2
+   MaxRevolution (0),        // MaxRevolution;
    fTargetOrient ('-'),
    fTargetId     ('-'),
-   fDisabledChannelsVec(),
+   fDisabledChannelsVec(),   // should not be used. will deprecate
    fSiliconChannels(),
-   fActiveSiliconChannels(),
+   fActiveSiliconChannels(), // Only good channels used in the analysis
+   fBeamBunches(),
    fProtoCutSlope(0), fProtoCutOffset(0),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0)
@@ -59,11 +60,14 @@ RunInfo::RunInfo() : TObject(),
 
    NActiveStrip          = N_SILICON_CHANNELS; // NAactiveStrip;
    NDisableStrip         = 0;      // NDisableStrip
-   NFilledBunch          = 0;      // NFilledBunch;
-   NActiveBunch          = 0;      // NActiveBunch;
    NDisableBunch         = 0;      // NDisableBunch,
 
-   for (int i=0; i<N_BUNCHES; i++) { DisableBunch[i] = 0; }
+   for (int i=0; i<N_BUNCHES; i++) {
+      DisableBunch[i] = 0;
+
+      BeamBunch bbunch;
+      fBeamBunches[i+1] = bbunch;
+   }
 }
 
 
@@ -73,12 +77,13 @@ RunInfo::~RunInfo() { }
 
 /** */
 void RunInfo::SetBeamEnergy(Float_t beamEnergy)
-{
+{ //{{{
    fBeamEnergy = beamEnergy;
 
    UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
 
    if (approxBeamEnergy == kFLATTOP)
+      // this number comes from the online config files. May need to add it to the run_info DB table in the future
       fExpectedGlobalTimeOffset = -8;
    else
       fExpectedGlobalTimeOffset = 0;
@@ -86,7 +91,7 @@ void RunInfo::SetBeamEnergy(Float_t beamEnergy)
    fExpectedGlobalTdcOffset = (Short_t) (fExpectedGlobalTimeOffset / WFD_TIME_UNIT_HALF + 0.5);
 
    printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
-}
+} //}}}
 
 Float_t RunInfo::GetBeamEnergy() { return fBeamEnergy; }
 
@@ -107,10 +112,10 @@ string RunInfo::GetDlCalibFileName() const
 
 /** */
 void RunInfo::Print(const Option_t* opt) const
-{
+{ //{{{
    Info("Print", "Print members:");
    PrintAsPhp();
-}
+} //}}}
 
 
 /** */
@@ -186,8 +191,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fDisabledChannelsVec']         = %s;\n", VecAsPhpArray<UShort_t>(fDisabledChannelsVec).c_str());
    fprintf(f, "$rc['fSiliconChannels']             = %s;\n", SetAsPhpArray<UShort_t>(fSiliconChannels).c_str());
    fprintf(f, "$rc['fActiveSiliconChannels']       = %s;\n", SetAsPhpArray<UShort_t>(fActiveSiliconChannels).c_str());
-   fprintf(f, "$rc['NFilledBunch']                 = %d;\n", NFilledBunch );
-   fprintf(f, "$rc['NActiveBunch']                 = %d;\n", NActiveBunch );
+   fprintf(f, "$rc['fBeamBunches']                 = %s;\n", MapAsPhpArray<UShort_t, BeamBunch>(fBeamBunches).c_str() );
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
@@ -204,9 +208,113 @@ void RunInfo::PrintAsPhp(FILE *f) const
 } //}}}
 
 
+// Description : print out spin (Mode=0), fill (Mode=1) pattern
+// Input       : Mode
+void RunInfo::PrintBunchPatterns() const
+{ //{{{
+   std::stringstream ssSpin("");
+   std::stringstream ssFill("");
+
+   BeamBunchIterConst ibb = fBeamBunches.begin();
+
+   for (int i=0; ibb!=fBeamBunches.end(); ++ibb, i++) {
+
+      if (i%10 == 0) { ssSpin << " "; ssFill << " "; }
+
+      ssSpin << ibb->second.fBunchSpin;
+      ssFill << (UShort_t) ibb->second.fIsFilled;
+   }
+
+   // Print Spin Pattern and Recover Spin Pattern by User Defined ones
+   cout << "\nSpin pattern used:" << endl;
+   cout << ssSpin << endl;
+
+   // Print Fill Pattern and Recover Fill Pattern by User Defined ones
+   cout << "\nFill Pattern Used:" << endl;
+   cout << ssFill << endl;
+
+} //}}}
+
+
+// Print Out Configuration information
+void RunInfo::PrintConfig()
+{ //{{{
+   fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
+
+   // Configulation File
+   fprintf(stdout,"         RUN STATUS = %s\n", gRunDb.run_status_s.c_str());
+   fprintf(stdout,"         MEAS. TYPE = %s\n", gRunDb.measurement_type_s.c_str());
+   fprintf(stdout,"             CONFIG = %s\n", reConfFile);
+   fprintf(stdout,"              CALIB = %s\n", CalibFile);
+
+   // banana cut configulation
+
+   int ccutwu;
+   int ccutwl;
+
+   if (gAnaInfo->CBANANA == 0) {
+      ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
+      ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
+   } else if (gAnaInfo->CBANANA == 2) {
+      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo->MassSigma);
+   } else {
+      ccutwl = (int) gAnaInfo->widthl;
+      ccutwu = (int) gAnaInfo->widthu;
+   }
+
+   if (gAnaInfo->CBANANA!=2)
+     fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
+
+   // tshift in [ns]
+   fprintf(stdout,"             TSHIFT = %.1f\n", gAnaInfo->tshift);
+
+   // expected reference rate
+   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAnaInfo->reference_rate);
+
+   // target count/mm
+   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo->target_count_mm);
+
+   // Disabled bunch
+   fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
+   if (NDisableBunch){
+     fprintf(stdout,"       DISABLED_BUNCHES = ");
+     for (int i=0; i<NDisableBunch; i++) printf("%d ", DisableBunch[i]);
+     printf("\n");
+   }
+
+   // Disabled strips
+   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", NDisableStrip);
+   if (NDisableStrip){
+     fprintf(stdout,"       DISABLED_CHANNELS = ");
+     for (int i=0;i<NDisableStrip;i++) printf("%d ", fDisabledChannels[i]+1);
+     printf("\n");
+   }
+
+   // Active Detector and Strip Configulation
+   printf("    Active Detector =");
+   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   printf("\n");
+   //    printf("Active Strip Config =");
+   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
+   //    printf("\n");
+
+   printf("Active Strip Config =");
+
+   for (int i=0; i<N_SILICON_CHANNELS; i++) {
+      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
+      printf("%d", ActiveStrip[i]);
+   }
+   printf("\n");
+
+   // print comment
+   if (strlen(gRunDb.comment_s.c_str())>3)
+     printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
+} //}}}
+
+
 /** */
 short RunInfo::GetPolarimeterId()
-{
+{ //{{{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(fRunName);
 
    if (subStrL->GetEntriesFast() < 1) {
@@ -227,12 +335,12 @@ short RunInfo::GetPolarimeterId()
    }
 
    return fPolId;
-}
+} //}}}
 
 
 /** */
 short RunInfo::GetPolarimeterId(short beamId, short streamId)
-{
+{ //{{{
    if (beamId == 1 && streamId == 1) { fPolId = 3; return 3; }
    if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
    if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
@@ -240,19 +348,19 @@ short RunInfo::GetPolarimeterId(short beamId, short streamId)
 
    printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
    return -1;
-}
+} //}}}
 
 
 /** */
 void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
-{
+{ //{{{
    if (polId == 3) { beamId = 1; streamId = 1; };
    if (polId == 1) { beamId = 1; streamId = 2; };
    if (polId == 0) { beamId = 2; streamId = 1; };
    if (polId == 2) { beamId = 2; streamId = 2; };
 
    beamId = 0; streamId = 0;
-}
+} //}}}
 
 
 /** */
@@ -400,82 +508,6 @@ void RunInfo::ConfigureActiveStrip(int mask)
 } //}}}
 
 
-// Print Out Configuration information
-void RunInfo::PrintConfig()
-{ //{{{
-   fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
-
-   // Configulation File
-   fprintf(stdout,"         RUN STATUS = %s\n", gRunDb.run_status_s.c_str());
-   fprintf(stdout,"         MEAS. TYPE = %s\n", gRunDb.measurement_type_s.c_str());
-   fprintf(stdout,"             CONFIG = %s\n", reConfFile);
-   fprintf(stdout,"              CALIB = %s\n", CalibFile);
-
-   // banana cut configulation
-
-   int ccutwu;
-   int ccutwl;
-
-   if (gAnaInfo->CBANANA == 0) {
-      ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
-      ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
-   } else if (gAnaInfo->CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo->MassSigma);
-   } else {
-      ccutwl = (int) gAnaInfo->widthl;
-      ccutwu = (int) gAnaInfo->widthu;
-   }
-
-   if (gAnaInfo->CBANANA!=2)
-     fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
-
-   // tshift in [ns]
-   fprintf(stdout,"             TSHIFT = %.1f\n", gAnaInfo->tshift);
-
-   // expected reference rate
-   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAnaInfo->reference_rate);
-
-   // target count/mm
-   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo->target_count_mm);
-
-   // Disabled bunch
-   fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
-   if (NDisableBunch){
-     fprintf(stdout,"       DISABLED_BUNCHES = ");
-     for (int i=0; i<NDisableBunch; i++) printf("%d ", DisableBunch[i]);
-     printf("\n");
-   }
-
-   // Disabled strips
-   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", NDisableStrip);
-   if (NDisableStrip){
-     fprintf(stdout,"       DISABLED_CHANNELS = ");
-     for (int i=0;i<NDisableStrip;i++) printf("%d ", fDisabledChannels[i]+1);
-     printf("\n");
-   }
-
-   // Active Detector and Strip Configulation
-   printf("    Active Detector =");
-   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
-   printf("\n");
-   //    printf("Active Strip Config =");
-   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
-   //    printf("\n");
-
-   printf("Active Strip Config =");
-
-   for (int i=0; i<N_SILICON_CHANNELS; i++) {
-      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
-      printf("%d", ActiveStrip[i]);
-   }
-   printf("\n");
-
-   // print comment
-   if (strlen(gRunDb.comment_s.c_str())>3)
-     printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
-} //}}}
-
-
 // Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
 // Input       : char RunID[]
 void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
@@ -517,9 +549,9 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 
 /** */
 Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
-{
+{ //{{{
    return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
-}
+} //}}}
 
 
 /** */
@@ -538,14 +570,14 @@ void RunInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
 
 /** */
 void RunInfo::SetDisabledChannel(UShort_t chId)
-{
+{ //{{{
    fDisabledChannels[chId-1] = 1;
 
    if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
       fDisabledChannelsVec.push_back(chId);
 
    fActiveSiliconChannels.erase(chId);
-}
+} //}}}
 
 
 /** */
@@ -572,9 +604,71 @@ Bool_t RunInfo::IsHamaChannel(UShort_t chId)
 
 /** */
 Bool_t RunInfo::IsPmtChannel(UShort_t chId)
-{
+{ //{{{
    if ((EPolarimeterId) fPolId == kY2U && chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4)
       return true;
 
    return false;
-}
+} //}}}
+
+
+/** */
+BeamBunchMap RunInfo::GetBunches() const
+{ //{{{
+   return fBeamBunches;
+} //}}}
+
+
+/** */
+BeamBunchMap RunInfo::GetFilledBunches() const
+{ //{{{
+   BeamBunchMap bunches;
+
+   BeamBunchIterConst ibb = fBeamBunches.begin();
+
+   for (; ibb!=fBeamBunches.end(); ++ibb) {
+      
+      if (ibb->second.IsFilled())
+         bunches.insert(*ibb);
+   }
+
+   return bunches;
+} //}}}
+
+
+/** */
+BeamBunchMap RunInfo::GetEmptyBunches() const
+{ //{{{
+   BeamBunchMap bunches;
+
+   BeamBunchIterConst ibb = fBeamBunches.begin();
+
+   for (; ibb!=fBeamBunches.end(); ++ibb) {
+      
+      if (!ibb->second.IsFilled())
+         bunches.insert(*ibb);
+   }
+
+   return bunches;
+} //}}}
+
+
+/** */
+UShort_t RunInfo::GetNumFilledBunches() const
+{ //{{{
+   return GetFilledBunches().size();
+} //}}}
+
+
+/** */
+Bool_t RunInfo::IsEmptyBunch(UShort_t bid) const
+{ //{{{
+   return !fBeamBunches.find(bid)->second.IsFilled();
+} //}}}
+
+
+/** */
+ESpinState RunInfo::GetBunchSpin(UShort_t bid) const
+{ //{{{
+   return fBeamBunches.find(bid)->second.GetSpin();
+} //}}}

@@ -11,6 +11,7 @@
 #pragma link C++ class AnaEventId;
 #pragma link C++ class Calibrator;
 #pragma link C++ class AlphaCalibrator;
+#pragma link C++ class BeamBunch;
 #pragma link C++ class DeadLayerCalibrator;
 #pragma link C++ class DeadLayerCalibratorEDepend;
 #pragma link C++ class ChannelCalib;

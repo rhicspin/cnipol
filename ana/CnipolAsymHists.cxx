@@ -138,7 +138,7 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
 
    Float_t kinEnergy = ch->GetKinEnergyAEDepend();
 
-   string sSS = gRunConfig.AsString( (ESpinState) gSpinPattern[bId] );
+   string sSS = gRunConfig.AsString( gRunInfo->GetBunchSpin(bId) );
 
    ((TH1*) o["hChVsKinEnergyA_"  + sSS]) -> Fill(kinEnergy, chId);
    ((TH1*) o["hDetVsKinEnergyA_" + sSS]) -> Fill(kinEnergy, detId);

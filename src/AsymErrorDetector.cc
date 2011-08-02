@@ -319,10 +319,6 @@ void StripAnomalyDetector()
 }
 
 
-//
-// Class name  :
-// Method name : BunchAsymmetryGaussianFit()
-//
 // Description : find suspicious bunch thru Gaussian fit on bunch asymmetry histograms
 //             : the bunches deviates more than sigma from fitted Gaussian width will be
 //             : registered as problematic bunch ID
@@ -332,14 +328,16 @@ void StripAnomalyDetector()
 float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int err_code)
 {
   // define Gaussian function
-  TF1 * g = new TF1("g","gaus");
-  g -> SetLineColor(2);
+  TF1 *g = new TF1("g","gaus");
+
+  g->SetLineColor(2);
 
   // Perform Gaussian Fit
-  h1->Fit("g","Q");
-  //float hight = g -> GetParameter(0);
-  float mean  = g -> GetParameter(1);
-  float sigma = g -> GetParameter(2);
+  h1->Fit("g", "Q");
+
+  //float hight = g->GetParameter(0);
+  float mean  = g->GetParameter(1);
+  float sigma = g->GetParameter(2);
 
   // get sigma from Gaussian fit and calculate allowance limit
   //  bnchchk.asym[0].allowance = mean - errdet.BUNCH_ASYM_SIGMA_ALLOWANCE*sigma;
@@ -355,29 +353,32 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
 
   // local anamaly bunch array and counter
   struct StructBUNCH {
-    float A[NBUNCH];
-    int bunch[NBUNCH];
-    int nbunch;
-    float dev;
-    int active_bunch[2];
-    float chi2[2]; // [0]:plus [1]:minus bunches
+     float A[NBUNCH];
+     int   bunch[NBUNCH];
+     int   nbunch;
+     float dev;
+     int   active_bunch[2];
+     float chi2[2]; // [0]:plus [1]:minus bunches
   } local;
 
   // Anomaly bunch finding
   char text[20];
-  local.nbunch = local.active_bunch[0] = local.active_bunch[1] = 0;
+
+  local.nbunch  = local.active_bunch[0] = local.active_bunch[1] = 0;
   local.chi2[0] = local.chi2[1] = 0;
+
   for (int bid=0;bid<NBUNCH;bid++) {
     local.bunch[bid] = -999; // default not to appear in plots
 
-    if (gFillPattern[bid] && (A[bid] != -ASYM_DEFAULT) ) {
+    if ( !gRunInfo->IsEmptyBunch(bid+1) && A[bid] != -ASYM_DEFAULT ) {
 
-      if (gSpinPattern[bid] == 1) {
+      if (gRunInfo->GetBunchSpin(bid) == 1) {
         local.active_bunch[0]++;
         local.dev =  fabs(double(A[bid] - mean));
         local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
       }
-      if (gSpinPattern[bid] == -1) {
+
+      if (gRunInfo->GetBunchSpin(bid) == -1) {
         local.active_bunch[1]++;
         local.dev =  fabs(double(A[bid] - (-1)*mean));
         local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
@@ -410,23 +411,25 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
   h2 -> GetListOfFunctions()->Add(t2);
 
   if (local.nbunch){
-    // error_code registration
-    gAnaResult->anomaly.bunch_err_code += err_code;
+     // error_code registration
+     gAnaResult->anomaly.bunch_err_code += err_code;
 
-    // global registration
-    RegisterAnomaly(local.bunch, local.nbunch, gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch,
-                    gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch);
+     // global registration
+     RegisterAnomaly(local.bunch, local.nbunch, gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch,
+                     gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch);
 
-    // Superpose h2 histogram
-    float bindex[local.nbunch];
-    for (int i=0;i<local.nbunch;i++) bindex[i]=local.bunch[i];
-    TGraph * gr = new TGraph(local.nbunch, bindex, local.A);
-    gr -> SetMarkerStyle(24);
-    gr -> SetMarkerSize(MSIZE);
-    gr -> SetMarkerColor(3);
+     // Superpose h2 histogram
+     float bindex[local.nbunch];
 
-    // append suspicious bunch in h2 hitogram
-    h2 -> GetListOfFunctions() -> Add(gr,"P");
+     for (int i=0; i<local.nbunch; i++) bindex[i] = local.bunch[i];
+
+     TGraph * gr = new TGraph(local.nbunch, bindex, local.A);
+     gr -> SetMarkerStyle(24);
+     gr -> SetMarkerSize(MSIZE);
+     gr -> SetMarkerColor(3);
+
+     // append suspicious bunch in h2 hitogram
+     h2 -> GetListOfFunctions() -> Add(gr,"P");
   }
 
   return sigma;
@@ -463,7 +466,7 @@ void BunchAsymmetryAnomaly()
 void BunchAnomalyDetector()
 {
    // Initialize anomaly bunch counter and error_code
-   gAnaResult->anomaly.nbunch= gRunInfo->NFilledBunch > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
+   gAnaResult->anomaly.nbunch= gRunInfo->GetNumFilledBunches() > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
    gAnaResult->anomaly.bunch_err_code = 0;
    bnchchk.rate.max_dev = 0;
 
@@ -478,7 +481,7 @@ void BunchAnomalyDetector()
       UnrecognizedAnomaly(gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch, gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
                         gAnaResult->unrecog.anomaly.bunch, gAnaResult->unrecog.anomaly.nbunch);
 
-      gAnaResult->anomaly.bad_bunch_rate = gRunInfo->NFilledBunch ? gAnaResult->anomaly.nbunch/float(gRunInfo->NFilledBunch)*100 : -1 ;
+      gAnaResult->anomaly.bad_bunch_rate = gRunInfo->GetNumFilledBunches() ? gAnaResult->anomaly.nbunch/float(gRunInfo->GetNumFilledBunches())*100 : -1 ;
    }
 }
 

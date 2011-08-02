@@ -49,7 +49,6 @@ public:
 
 void readloop(MseRunInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
-void PrintBunchPattern(int *pattern);
 void calcRunConst(recordConfigRhicStruct *cfginfo);
 void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run);
 void PrepareCollidingBunchPattern();
@@ -59,5 +58,6 @@ void ProcessRecord(recordWFDV8ArrayStruct &rec);
 void ProcessRecord(const recordCountRate &rec);
 void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run);
 void ProcessRecord(const recordWcmAdoStruct &rec);
+void ProcessRecord(const recordBeamAdoStruct &rec);
 
 #endif

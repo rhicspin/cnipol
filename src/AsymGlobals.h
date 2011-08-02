@@ -55,9 +55,6 @@ extern StructBunchCheck bnchchk;
 extern const int ASYM_DEFAULT;
 extern const float MSIZE; // marker size
 
-extern int   gSpinPattern[N_BUNCHES]; // spin pattern 120 bunches
-extern int   gFillPattern[N_BUNCHES]; // fill pattern 120 bunches
-extern int   ActiveBunch[N_BUNCHES];
 extern int   wcmfillpat[N_BUNCHES];   // fill pattern within the Wall Current Monitor Average Ragne 
 
 extern long int Ncounts[N_DETECTORS][N_BUNCHES];             // counts per detector per bunch
@@ -80,7 +77,6 @@ extern UInt_t   Nevtot;         // number of total events (whole data)
 extern UInt_t   Nread;          // actually read number of events
 extern UInt_t   gMaxEventsUser; // number of events to process
 //extern int      Nskip;          // number of events to be skipped in data process 
-extern int      NFilledBunch;   // number of filled bunch
 
 extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut 
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 

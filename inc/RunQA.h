@@ -1,4 +1,3 @@
-
 #ifndef RunQA_h
 #define RunQA_h
 

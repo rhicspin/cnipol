@@ -174,11 +174,15 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
       // REC_BEAMADO
       if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO)
 		{
+         printf("Reading REC_BEAMADO record... size = %ld\n", mHeader->len);
+
          recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
 
          gRunInfo->SetBeamEnergy(rec->data.beamEnergyM);
-         fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
-         fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
+         fprintf(stdout, "Beam energy: %8.2f\n", gRunInfo->GetBeamEnergy());
+         fprintf(stdout, "RHIC beam:   %1d\n", gRunInfo->fPolBeam);
+
+			ProcessRecord( (recordBeamAdoStruct&) *rec);
 
          mSeek = mSeek + mHeader->len;
 			continue;
@@ -187,6 +191,8 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
       // REC_POLADO
       if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
 		{
+         printf("Reading REC_POLADO record... size = %ld\n", mHeader->len);
+
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
 
 			ProcessRecord( (recordPolAdoStruct&) *rec, runInfo);
@@ -342,7 +348,6 @@ void readloop(MseRunInfoX &run)
        recordBeginStruct       begin;
        recordPolAdoStruct      polado;
        recordTagAdoStruct      tagado;
-       recordBeamAdoStruct     beamado;
        recordConfigRhicStruct  cfg;
        recordReadWaveStruct    all;
        recordReadWave120Struct all120;
@@ -357,12 +362,10 @@ void readloop(MseRunInfoX &run)
    } rec;
 
    //polDataStruct            poldat;
-   beamDataStruct           beamdat;
    targetDataStruct         tgtdat1;
    targetDataStruct         tgtdat2;
 
    processEvent             event;
-   AsymRecover              recover;
 
    FILE *fp;
    int   rval;
@@ -506,83 +509,6 @@ void readloop(MseRunInfoX &run)
 
       case REC_BEAMADO:
 
-         if (!gReadFlag.BEAMADO) {
-
-            fprintf(stdout,"Reading Beam Information\n");
-            memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
-
-            gRunInfo->SetBeamEnergy(beamdat.beamEnergyM);
-            fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
-            fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
-
-            // Add inj_tshift for injection measurements
-            if (gRunInfo->GetBeamEnergy() < 30) gAnaInfo->tshift += gAnaInfo->inj_tshift;
-
-            int pat;
-
-            for (int bid=0; bid<120; bid++) {
-
-               pat = beamdat.polarizationFillPatternS[bid*3];
-
-               if (pat > 0) {
-                  gSpinPattern[bid] = 1;
-               } else if (pat < 0) {
-                  gSpinPattern[bid] = -1;
-               } else {
-                  gSpinPattern[bid] = 0;
-               }
-
-               pat = beamdat.measuredFillPatternM[bid*3];
-
-               if (pat > 0) {
-                  gFillPattern[bid] = 1;
-                  gRunInfo->NFilledBunch++;
-               } else if (pat < 0) { // this never happens
-                  gFillPattern[bid] = -1;
-                  gRunInfo->NFilledBunch++;
-               } else {
-                  gFillPattern[bid] = 0;
-               }
-            }
-
-            // Print Spin Pattern and Recover Spin Pattern by User Defined ones
-            cout << "\nSpin Pattern Used:" << endl;
-            PrintBunchPattern(gSpinPattern);
-
-            if (Flag.spin_pattern >= 0) {
-               recover.OverwriteSpinPattern(Flag.spin_pattern);
-               PrintBunchPattern(gSpinPattern);
-            }
-
-            // Print Fill Pattern and Recover Fill Pattern by User Defined ones
-            cout << "\nFill Pattern Used:" << endl;
-            PrintBunchPattern(gFillPattern);
-
-            if (Flag.fill_pattern >= 0) {
-               recover.OverwriteFillPattern(Flag.fill_pattern);
-               PrintBunchPattern(gFillPattern);
-            }
-
-            // Mask bad/disabled bunches
-            if (gRunInfo->NDisableBunch) {
-               recover.MaskFillPattern();
-               cout << "\nMasked Fill Pattern : " << endl;
-               PrintBunchPattern(gFillPattern);
-            }
-
-            // Print active Bunch
-            cout << "\nActive bunches: " << endl;
-
-            for (int i=0; i<NBUNCH; i++) {
-               if (i%10 == 0) cout << " ";
-               ActiveBunch[i] = gFillPattern[i];
-               cout << ActiveBunch[i];
-            }
-
-            cout << endl;
-            gRunInfo->NActiveBunch = gRunInfo->NFilledBunch - gRunInfo->NDisableBunch;
-            gReadFlag.BEAMADO = 1;
-         }
 
          gRunInfo->StopTime = rec.header.timestamp.time;
          break;
@@ -897,26 +823,6 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
    printf("\nAverage RunConst:\n");
    gRunConsts[0].Print();
-} //}}}
-
-
-// Description : print out spin (Mode=0), fill (Mode=1) pattern
-// Input       : Mode
-void PrintBunchPattern(int *pattern)
-{ //{{{
-   char symbol[3][2];
-
-   sprintf(symbol[0], "-"); // -1
-   sprintf(symbol[1], "."); //  0
-   sprintf(symbol[2], "+"); // +1
- 
-   for (int i=0; i<NBUNCH; i++) {
- 
-      if (i%10 == 0) cout << " ";
-      cout << symbol[ pattern[i] + 1];
-   }
- 
-   cout << endl;
 } //}}}
 
 
@@ -1245,4 +1151,71 @@ void ProcessRecord(const recordWcmAdoStruct &rec)
    gRunInfo->fWallCurMonAve = gRunInfo->fWallCurMonSum / gRunInfo->fWallCurMon.size();
 
    gAsymRoot->FillRunHists();
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordBeamAdoStruct &rec)
+{ //{{{
+   //memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
+   //beamDataStruct beamdat;
+
+   //gRunInfo->SetBeamEnergy(beamdat.beamEnergyM);
+   //fprintf(stdout, "Beam Energy: %8.2f\n", gRunInfo->GetBeamEnergy());
+   //fprintf(stdout, "RHIC Beam:   %1d\n", gRunInfo->fPolBeam);
+
+   for (int bid=0; bid<N_BUNCHES; bid++) {
+
+      BeamBunchIter  ibb = gRunInfo->fBeamBunches.find(bid+1);
+		BeamBunch     &bb  = ibb->second;
+
+      int pat = rec.data.polarizationFillPatternS[bid*3];
+
+      if (pat > 0) {
+			bb.SetBunchSpin(kSPIN_UP);
+      } else if (pat < 0) {
+			bb.SetBunchSpin(kSPIN_DOWN);
+      } else {
+			bb.SetBunchSpin(kSPIN_NULL);
+      }
+
+      pat = rec.data.measuredFillPatternM[bid*3];
+
+      if (pat > 0) {
+			bb.SetFilled(kTRUE);
+      } else {
+			bb.SetFilled(kFALSE);
+      }
+   }
+
+   AsymRecover recover;
+
+   if (Flag.spin_pattern >= 0) {
+      cout << "\nSpin pattern has been overwritten" << endl;
+      recover.OverwriteSpinPattern(Flag.spin_pattern);
+   }
+
+   if (Flag.fill_pattern >= 0) {
+      cout << "\nFill pattern has been overwritten" << endl;
+      recover.OverwriteFillPattern(Flag.fill_pattern);
+   }
+
+   // Mask bad/disabled bunches
+   if (gRunInfo->NDisableBunch) {
+      cout << "\nFill pattern has been overwritten again" << endl;
+      recover.MaskFillPattern();
+   }
+
+   // Print active Bunch
+   //cout << "\nActive bunches: " << endl;
+
+   //for (int i=0; i<NBUNCH; i++) {
+   //   if (i%10 == 0) cout << " ";
+   //   ActiveBunch[i] = gFillPattern[i];
+   //   cout << ActiveBunch[i];
+   //}
+
+   //cout << endl;
+
+	gRunInfo->PrintBunchPatterns();
 } //}}}

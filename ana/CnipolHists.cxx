@@ -79,8 +79,7 @@ void CnipolHists::BookHists(string cutid)
 
    // Spin vs Bunch Id
    sprintf(hName, "hSpinVsBunch%s", cutid.c_str());
-   //o[hName] = new TH2I(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
-   o[hName] = new TH2I(hName, hName, N_BUNCHES, -0.5, N_BUNCHES-0.5, N_SPIN_STATES, -1.5, 1.5);
+   o[hName] = new TH2I(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[hName])->SetOption("colz NOIMG");
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Spin State;");
 
@@ -274,10 +273,10 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
 
    //((TH1*)     o["hKinEnergyA_o"+cutid])              -> Fill(kinEnergy);
    
-   UChar_t bId = ch->GetBunchId();
+   UChar_t bId = ch->GetBunchId() + 1;
 
-   ((TH1*) o["hSpinVsChannel"+cutid]) -> Fill(chId, gSpinPattern[bId]);
-   ((TH1*) o["hSpinVsBunch"+cutid])   -> Fill(bId,  gSpinPattern[bId]);
+   ((TH1*) o["hSpinVsChannel"+cutid]) -> Fill(chId, gRunInfo->GetBunchSpin(bId));
+   ((TH1*) o["hSpinVsBunch"+cutid])   -> Fill(bId,  gRunInfo->GetBunchSpin(bId));
 
    //ds XXX
    //UShort_t tstep = 0;
@@ -305,7 +304,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    
    UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
    //((TH2F*) sd->o["hSpinVsDelim"+cutid+"_ch"+sChId])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
-   ((TH2*) sd->o["hSpinVsDelim"+cutid+"_ch"+sChId])->Fill(ttime, gSpinPattern[bId]);
+   ((TH2*) sd->o["hSpinVsDelim"+cutid+"_ch"+sChId])->Fill(ttime, gRunInfo->GetBunchSpin(bId));
 
    //((TH2*)     o["hTimeVsFunnyEnergyA"+cutid])               ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
 

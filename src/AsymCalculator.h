@@ -59,7 +59,7 @@ public:
 };
 
 void CumulativeAsymmetry();
-void FillAsymmetryHistgram(std::string mode, int sign, int N, float A[], float dA[], float bunch[]);
+void FillAsymmetryHistgram(std::string mode, int sign, float *A, float *dA);
 
 // bunch asymmetry average routines
 void  calcBunchAsymmetryAverage();
