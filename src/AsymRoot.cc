@@ -30,6 +30,7 @@
 #include "CnipolHists.h"
 #include "CnipolKinematHists.h"
 #include "CnipolPmtHists.h"
+#include "CnipolPulserHists.h"
 #include "CnipolPreprocHists.h"
 #include "CnipolProfileHists.h"
 #include "CnipolRawHists.h"
@@ -202,6 +203,11 @@ void AsymRoot::CreateRootFile(string filename)
    if (gAnaInfo->HasPmtBit()) {
       TDirectory *dir = new TDirectoryFile("pmt", "pmt", "", fOutRootFile);
       fHists->d["pmt"] = new CnipolPmtHists(dir);
+   }
+
+   if (gAnaInfo->HasPulserBit()) {
+      TDirectory *dir = new TDirectoryFile("pulser", "pulser", "", fOutRootFile);
+      fHists->d["pulser"] = new CnipolPulserHists(dir);
    }
 
    // OLD common global histogram inherited from previous life

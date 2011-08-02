@@ -470,3 +470,12 @@ Bool_t ChannelEvent::PassCutPmtNoise()
 
    return true;
 } //}}}
+
+
+/** */
+Bool_t ChannelEvent::PassCutEmptyBunch() const
+{ //{{{
+   Int_t bId = GetBunchId();
+
+   return gFillPattern[bId] == 0 ? true : false;
+} //}}}

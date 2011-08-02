@@ -151,7 +151,7 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
 
 /** */
 void CnipolRawHists::PostFill()
-{
+{ //{{{
    TH1* hAdcAmpltd  = (TH1*) o["hAdcAmpltd"];
    TH1* hTdc  = (TH1*) o["hTdc"];
    TH1* hTvsA = (TH1*) o["hTvsA"];

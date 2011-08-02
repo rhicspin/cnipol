@@ -42,15 +42,15 @@ public:
    ChannelEvent();
    ~ChannelEvent();
 
-   UChar_t  GetDetectorId()   { return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1; }
-   UInt_t   GetRevolutionId() { return fEventId.fRevolutionId; }
-   UChar_t  GetChannelId() const { return fEventId.fChannelId + 1; }
-   UChar_t  GetBunchId()      { return fEventId.fBunchId; }
-   UShort_t GetDelimiterId()  { return fEventId.fDelimiterId; }
-   UChar_t  GetAmpltd()       { return fChannel.fAmpltd; }
-   UChar_t  GetIntgrl()       { return fChannel.fIntgrl; }
-   UChar_t  GetTdc()          { return fChannel.fTdc; }
-   UChar_t  GetTdcAMax()      { return fChannel.fTdcAMax; }
+   UChar_t  GetDetectorId()   const { return (UShort_t) (fEventId.fChannelId / NSTRIP_PER_DETECTOR) + 1; }
+   UInt_t   GetRevolutionId() const { return fEventId.fRevolutionId; }
+   UChar_t  GetChannelId()    const { return fEventId.fChannelId + 1; }
+   UChar_t  GetBunchId()      const { return fEventId.fBunchId; }
+   UShort_t GetDelimiterId()  const { return fEventId.fDelimiterId; }
+   UChar_t  GetAmpltd()       const { return fChannel.fAmpltd; }
+   UChar_t  GetIntgrl()       const { return fChannel.fIntgrl; }
+   UChar_t  GetTdc()          const { return fChannel.fTdc; }
+   UChar_t  GetTdcAMax()      const { return fChannel.fTdcAMax; }
    Float_t  GetEnergyA() const;
    Float_t  GetKinEnergyA();
    Float_t  GetKinEnergyAEDepend();
@@ -87,6 +87,7 @@ public:
    Bool_t PassCutPmtChannel();
    Bool_t PassCutHamaChannel();
    Bool_t PassCutPmtNoise();
+   Bool_t PassCutEmptyBunch() const;
 
    ClassDef(ChannelEvent, 1)
 };

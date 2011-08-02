@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
       {"asym",                no_argument,         0,   AnaInfo::MODE_ASYM},
       {"kinemat",             no_argument,         0,   AnaInfo::MODE_KINEMAT},
       {"pmt",                 no_argument,         0,   AnaInfo::MODE_PMT},
+      {"pulser",              no_argument,         0,   AnaInfo::MODE_PULSER},
       {"quick",               no_argument,         0,   'q'},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
       {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
@@ -346,6 +347,10 @@ int main(int argc, char *argv[])
 
       case AnaInfo::MODE_PMT:
          gAnaInfo->fModes |= AnaInfo::MODE_PMT;
+         break;
+
+      case AnaInfo::MODE_PULSER:
+         gAnaInfo->fModes |= AnaInfo::MODE_PULSER;
          break;
 
       case AnaInfo::MODE_FULL:

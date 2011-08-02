@@ -132,7 +132,7 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
 
    UChar_t chId  = ch->GetChannelId();
    UChar_t detId = ch->GetDetectorId();
-   UChar_t bId   = ch->GetBunchId();
+   UChar_t bId   = ch->GetBunchId() + 1;
 
    ((TH1*) o["hDetVsBunchId"]) -> Fill(bId, detId);
 

@@ -287,6 +287,15 @@ void RawDataProcessor::ReadDataFast()
             //if (nReadEvents % gAnaInfo->fThinout == 0)
             //if (nReadEvents > 100) break;
 
+				// Use all events to fill pulser histograms
+            if ( gAnaInfo->HasPulserBit() &&
+				     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
+					  gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+				{
+               gAsymRoot->fHists->d["pulser"]->FillPreProcess(gAsymRoot->fChannelEvent);
+				}
+
+            // Use only a fraction of events
             if (gRandom->Rndm() > gAnaInfo->fFastCalibThinout) continue;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[j], delim, chId);
