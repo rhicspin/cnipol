@@ -17,9 +17,6 @@ using namespace std;
 const int   ASYM_DEFAULT = -999;
 const float MSIZE = 1.2;         // Marker size
 
-int     gSpinPattern[120]; // spin pattern 120 bunches (ADO info)
-int     gFillPattern[120]; // spin pattern 120 bunches (ADO info)
-int     ActiveBunch[120]; // spin pattern 120 bunches (ADO info)
 int     wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
 
 long    Ncounts[6][120]; // counts 6detectors 120 bunches
@@ -45,7 +42,6 @@ UInt_t  gMaxEventsUser = 0; // number of events to process
 long    Ngood[120];     // number of events after carbon cut (each bunch)
 long    Ntotal[120];    // number of events before carbon cut (each bunch)
 long    Nback[120];     // number of events below the curbon cut (each bunch)
-int     NFilledBunch   = 0;  // number of Filled Bunch
 
 long   *pointer;
 int     gNDelimeters;
@@ -187,14 +183,14 @@ StructStripCounter::StructStripCounter()
 
 
 StructStripCounterTgt::StructStripCounterTgt()
-{
+{ //{{{
    for(int i=0; i<MAXDELIM; i++) {
       for (int j=0; j<N_SPIN_STATES; j++) {
          for (int k=0; k<N_SILICON_CHANNELS; k++)
             cntr_tgt.reg.NStrip[i][j][k] = 0;
       }
    }
-}
+} //}}}
 
 
 StructCounter::StructCounter() : good_event(0), revolution(0), tgtMotion(0),
@@ -215,18 +211,18 @@ StructCounterTgt::StructCounterTgt() : good_event(0), revolution(0),
 
 /** */
 RunConst::RunConst(float lL, float lCt)
-{
+{ //{{{
    L   = lL;
    Ct  = lCt;
    E2T = M_SQRT1_2/C_CMNS * sqrt(MASS_12C) * L;
    M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);
    T2M = 2*C_CMNS*C_CMNS/L/L;
-}
+} //}}}
 
 
 /** */
 void RunConst::Update(UShort_t ch)
-{
+{ //{{{
   if (!gConfigInfo) return;
 
    Ct = gConfigInfo->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
@@ -243,19 +239,19 @@ void RunConst::Update(UShort_t ch)
   E2T = M_SQRT1_2/C_CMNS * sqrt(MASS_12C) * L;
   M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);
   T2M = 2*C_CMNS*C_CMNS/L/L;
-}
+} //}}}
 
 
 /** */
 void RunConst::Print(const Option_t* opt) const
-{
+{ //{{{
   //printf("\nKinematic Constants:\n");
   printf("\tL   = %10.3f\n", L);
   printf("\tCt  = %10.3f\n", Ct);
   printf("\tE2T = %10.3f\n", E2T);
   printf("\tM2T = %10.3f\n", M2T);
   printf("\tT2M = %10.3f\n", T2M);
-}
+} //}}}
 
 
 /** */
@@ -276,17 +272,17 @@ void RunConst::PrintAll()
 
 /** */
 TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
-{
+{ //{{{
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    rec->Streamer(buf);
    return buf;
-}
+} //}}}
 
 
 /** */
 TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
-{
+{ //{{{
    //printf("operator>>(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    //if (!rec) return buf; // of course it is 0!
    int nChannels;
@@ -301,7 +297,7 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
    rec->Streamer(buf);
 
    return buf;
-}
+} //}}}
 
 
 //TBuffer & operator<<(TBuffer &buf, recordHeaderStruct &rec)
@@ -330,7 +326,7 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 
 /** */
 void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
-{
+{ //{{{
    if (buf.IsReading()) {
       //printf("reading TRecordConfigRhicStruct::Streamer(TBuffer &buf) \n");
       //if (!this) { printf("reading error: this=0 \n"); exit(-1); }
@@ -374,12 +370,12 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
          buf << data.chan[i].dwidth;
       }
    }
-}
+} //}}}
 
 
 /** */
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
-{
+{ //{{{
    //long len = header.len;
    //         gConfigInfo = (recordConfigRhicStruct *)
    //                      malloc(sizeof(recordConfigRhicStruct) +
@@ -396,7 +392,7 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
       printf(" acoef: %f, %f, TOFLength: %f\n", chanconf[i].acoef, chanconf[i].t0, chanconf[i].TOFLength);
    }
-}
+} //}}}
 
 
 //std::string strip(std::string const& str, char const* sepSet)
@@ -408,20 +404,20 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
 // Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMax(int N, float A[])
-{
+{ //{{{
    float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
    for (int i=1; i<N; i++) max = (A[i] && max < A[i] && A[i] != ASYM_DEFAULT) ? A[i] : max;
    return max;
-}
+} //}}}
 
 
 // Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMin(int N, float A[])
-{
+{ //{{{
   float min = A[0] != ASYM_DEFAULT ? A[0] : A[1];
   for (int i=1; i<N; i++) min = (A[i]) && (min>A[i]) && (A[i] != ASYM_DEFAULT) ? A[i] : min;
   return min;
-}
+} //}}}
 
 
 /**
@@ -431,30 +427,30 @@ float GetMin(int N, float A[])
  * decreased by min*margin
  */
 void GetMinMax(int N, float A[], float margin, float &min, float &max)
-{
+{ //{{{
    min  = GetMin(N, A);
    max  = GetMax(N, A);
    min -= fabs(min) * margin;
    max += fabs(max) * margin;
-}
+} //}}}
 
 
 // Return Minimum and Maximum from array A[N]. Same as GetMinMax() function. But
 // GetMinMaxOption takes prefix value which forces min, max to be prefix when the
 // absolute min,max are smaller than prefix.
 void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max)
-{
+{ //{{{
    GetMinMax(N, A, margin, min, max);
    if ( fabs(min) < prefix ) min = -prefix;
    if ( fabs(max) < prefix ) max =  prefix;
-}
+} //}}}
 
 
 // Description : calculate weighted mean
 // Input       : float A[N], float dA[N], int NDAT
 // Return      : weighted mean
 float WeightedMean(float *A, float *dA, int NDAT)
-{
+{ //{{{
    float sum1 = 0;
 	float sum2 = 0;
    float dA2  = 0;
@@ -468,14 +464,14 @@ float WeightedMean(float *A, float *dA, int NDAT)
    }
  
    return dA2 == 0 ? 0 : sum1/sum2;
-}
+} //}}}
 
 
 // Description : calculate weighted mean error. A[i] is skipped if dA[i]=0.
 // Input       : float dA[N], int NDAT
 // Return      : weighted mean error
 float WeightedMeanError(float *dA, int NDAT)
-{
+{ //{{{
    float sum = 0;
    float dA2 = 0;
  
@@ -487,17 +483,17 @@ float WeightedMeanError(float *dA, int NDAT)
    }
  
    return sum == 0 ? 0 : sqrt(1/sum);
-}
+} //}}}
 
 
 // Description : call weighted mean and error
 // Input       : float A[N], float dA[N], float Ave, int NDAT
 // Return      : Ave, dAve
 void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
-{
+{ //{{{
    Ave  = WeightedMean(A, dA, NDAT);
    dAve = WeightedMeanError(dA, NDAT);
-}
+} //}}}
 
 
 // Description : Calculates error propagation of x/y for (x,dx) and (y,dy)
@@ -505,13 +501,13 @@ void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
 // Input       : float x, float y, float dx, float dy
 // Return      : error propagation of x/y
 float CalcDivisionError(float x, float y, float dx, float dy)
-{
+{ //{{{
    if (x*y) {
       return x/y * sqrt( dx*dx/x/x + dy*dy/y/y );
    } else {
       return 0;
    }
-}
+} //}}}
 
 
 // Description : calculate quadratic error of x/y
@@ -528,32 +524,32 @@ float QuadErrorDiv(float x, float y, float dx, float dy)
 // Return      : float quadratic error sum of x+y or x-y
 //
 float QuadErrorSum(float dx, float dy)
-{
+{ //{{{
    return TMath::Sqrt(dx*dx + dy*dy);
-}
+} //}}}
 
 
 // Description : draw text on histogram. Text alignment is (center,top) by default
 void DrawText(TH1 *h, float x, float y, int color, char *text)
-{
+{ //{{{
    TLatex *t = new TLatex(x, y, text);
    t->SetTextColor(color);
    t->SetTextAlign(21);
    h->GetListOfFunctions()->Add(t);
-}
+} //}}}
 
 
 // Description : DrawLines in TH2F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
 void DrawLine(TH1 *h, float x1, float y1, float x2, float y2, int color, int lstyle, int lwidth)
-{
+{ //{{{
    TLine *l = new TLine(x1, y1, x2, y2);
    l->SetLineStyle(lstyle);
    l->SetLineColor(color);
    l->SetLineWidth(lwidth);
    h->GetListOfFunctions()->Add(l);
-}
+} //}}}
 
 
 /** */
@@ -575,21 +571,21 @@ void DrawVertLine(TH1 *h, float x, float y, int color, int lwidth)
 // Input       : int n, int mb(the most significant bit)
 // Return      : writes out n in binary
 void binary_zero(int n, int mb)
-{
+{ //{{{
    int X = int(pow(double(2), double(mb-1)));
  
    for (int i=0; i<mb; i++) {
      int j = n << i & X ? 1 : 0;
      cout << j ;
    }
-}
+} //}}}
 
 
 // square root formula
 // A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
 // elastic Carbons are scattered off more in Right for Up
 void sqass(float A, float B, float C, float D, float *asym, float *asymErr)
-{
+{ //{{{
    float den = sqrt(A*B) + sqrt(C*D);
 
    if ( (A*B == 0.) && (C*D == 0.) ) {
@@ -599,7 +595,7 @@ void sqass(float A, float B, float C, float D, float *asym, float *asymErr)
       *asym    = (sqrt(A*B) - sqrt(C*D))/den;
       *asymErr = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
    }
-}
+} //}}}
 
 
 // Description : Define net TGraphErrors object asymgraph for vectors x,y,ex,ey
@@ -609,7 +605,7 @@ void sqass(float A, float B, float C, float D, float *asym, float *asymErr)
 // Input       : int Mode, int N, float x[], float y[], float ex[], float ey[]
 //
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey)
-{
+{ //{{{
   int Color = Mode == 1 ? kBlue : kRed;
 
   TGraphErrors *asymgraph = new TGraphErrors(N, x, y, ex, ey);
@@ -619,7 +615,7 @@ TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, flo
   asymgraph->SetMarkerColor(Color);
 
   return asymgraph;
-}
+} //}}}
 
 
 // Read the parameter file

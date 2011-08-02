@@ -88,7 +88,6 @@ public:
                                         // <MassSigmaAlt> away from the 12C mass
    float            OneSigma;           // 1-sigma of 12C mass distribution in [keV]
    float            tshift;             // time shift in [ns]
-   float            inj_tshift;         // time shift in [ns] for injection w.r.t. flattop
    float            dx_offset;          // additional deadlayer offset [ug/cm2]
    float            WCMRANGE;           // Wall Current Monitor process Fill range
    float            MassLimit;          // Lower Mass limit for peak position adjustment fit

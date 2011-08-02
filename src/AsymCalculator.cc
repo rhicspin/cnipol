@@ -125,68 +125,70 @@ void CompleteHistogram()
 // Description : Calculate bunch cumulative asymmetries
 void CumulativeAsymmetry()
 { //{{{
-   asymStruct x90[120];  // x90[119] is total
-   asymStruct x45[120];
-   asymStruct y45[120];
-   asymStruct cr45[120];
-   asymStruct tx90[120][6];
-   asymStruct tx45[120][6];
-   asymStruct ty45[120][6];
-   float RL90[120], RL90E[120];
-   float RL45[120], RL45E[120];
-   float BT45[120], BT45E[120];
+   asymStruct x90[N_BUNCHES];  // x90[119] is total
+   asymStruct x45[N_BUNCHES];
+   asymStruct y45[N_BUNCHES];
+   asymStruct cr45[N_BUNCHES];
+   asymStruct tx90[N_BUNCHES][6];
+   asymStruct tx45[N_BUNCHES][6];
+   asymStruct ty45[N_BUNCHES][6];
+
+   float RL90[N_BUNCHES], RL90E[N_BUNCHES];
+   float RL45[N_BUNCHES], RL45E[N_BUNCHES];
+   float BT45[N_BUNCHES], BT45E[N_BUNCHES];
    float NL, NR;
    float tmpasym, tmpasyme;
-   float RU[120], RD[120], LU[120], LD[120];
-   int   gbid[120];    // if 1:good and used 0: be discarded
-   float fspinpat[120];
+   float RU[N_BUNCHES], RD[N_BUNCHES], LU[N_BUNCHES], LD[N_BUNCHES];
+   int   gbid[N_BUNCHES];    // if 1:good and used 0: be discarded
+   float fspinpat[N_BUNCHES];
    long  Nsi[6] = {0,0,0,0,0,0};
 
    // Right-Left asymmetry
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
-       fspinpat[bid] = (float) gSpinPattern[bid];
+       ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+       fspinpat[bid] = (float) bunchSpin;
 
        // R-L X90
        if (Ncounts[2-1][bid] + Ncounts[5-1][bid] != 0)
        {
-           NR = Ncounts[2-1][bid];
-           NL = Ncounts[5-1][bid];
-           RL90[bid]  = (float) (NR - NL)/(NR + NL);
-           RL90E[bid] = (float) 2*NL*NR*sqrt( (1./NR) + (1./NL) ) / (NL+NR) / (NL+NR);
+          NR         = Ncounts[2-1][bid];
+          NL         = Ncounts[5-1][bid];
+          RL90[bid]  = (float) (NR - NL)/(NR + NL);
+          RL90E[bid] = (float) 2*NL*NR*sqrt( (1./NR) + (1./NL) ) / (NL+NR) / (NL+NR);
 
        } else {
-           RL90[bid]  = 0.;
-           RL90E[bid] = 0.;
+          RL90[bid]  = 0.;
+          RL90E[bid] = 0.;
        }
 
        // R-L X45
        if (Ncounts[1-1][bid] + Ncounts[3-1][bid] +
            Ncounts[4-1][bid] + Ncounts[6-1][bid] != 0)
        {
-           NR = Ncounts[1-1][bid] + Ncounts[3-1][bid];
-           NL = Ncounts[4-1][bid] + Ncounts[6-1][bid];
-           RL45[bid] = (float) (NR-NL)/(NR+NL);
-           RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+          NR         = Ncounts[1-1][bid] + Ncounts[3-1][bid];
+          NL         = Ncounts[4-1][bid] + Ncounts[6-1][bid];
+          RL45[bid]  = (float) (NR-NL)/(NR+NL);
+          RL45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
        } else {
-           RL45[bid]  = 0.;
-           RL45E[bid] = 0.;
+          RL45[bid]  = 0.;
+          RL45E[bid] = 0.;
        }
 
        // B-T Y45
        if (Ncounts[3-1][bid] + Ncounts[4-1][bid]+
            Ncounts[1-1][bid] + Ncounts[6-1][bid]!=0)
        {
-           NR = Ncounts[3-1][bid] + Ncounts[4-1][bid];
-           NL = Ncounts[1-1][bid] + Ncounts[6-1][bid];
-
-           BT45[bid]  = (float) (NR-NL)/(NR+NL);
-           BT45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
+          NR         = Ncounts[3-1][bid] + Ncounts[4-1][bid];
+          NL         = Ncounts[1-1][bid] + Ncounts[6-1][bid];
+          BT45[bid]  = (float) (NR-NL)/(NR+NL);
+          BT45E[bid] = (float) 2*NL*NR*sqrt((1./NR)+(1./NL))/(NL+NR)/(NL+NR);
 
        } else {
-           BT45[bid] = 0.;
-           BT45E[bid] = 0.;
+          BT45[bid]  = 0.;
+          BT45E[bid] = 0.;
        }
    }
 
@@ -197,7 +199,7 @@ void CumulativeAsymmetry()
    btmin = 0.0;
    btmax = 1.00;
 
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
       gbid[bid] = 1;
 
@@ -250,18 +252,20 @@ void CumulativeAsymmetry()
    //HHPAK(31050, (float*)Ncounts[4]);
    //HHPAK(31060, (float*)Ncounts[5]);
 
-   float x90phys[2][120], x90acpt[2][120], x90lumi[2][120];
-   float x45phys[2][120], x45acpt[2][120], x45lumi[2][120];
-   float y45phys[2][120], y45acpt[2][120], y45lumi[2][120];
-   float c45phys[2][120], c45acpt[2][120], c45lumi[2][120];
+   float x90phys[2][N_BUNCHES], x90acpt[2][N_BUNCHES], x90lumi[2][N_BUNCHES];
+   float x45phys[2][N_BUNCHES], x45acpt[2][N_BUNCHES], x45lumi[2][N_BUNCHES];
+   float y45phys[2][N_BUNCHES], y45acpt[2][N_BUNCHES], y45lumi[2][N_BUNCHES];
+   float c45phys[2][N_BUNCHES], c45acpt[2][N_BUNCHES], c45lumi[2][N_BUNCHES];
 
    // X90 (2-5) (C:1-4)
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
-      RU[bid] = ( bid == 0 ? 0 : RU[bid-1] ) + Ncounts[2-1][bid] * ((gSpinPattern[bid] ==  1)?1:0);
-      RD[bid] = ( bid == 0 ? 0 : RD[bid-1] ) + Ncounts[2-1][bid] * ((gSpinPattern[bid] == -1)?1:0);
-      LU[bid] = ( bid == 0 ? 0 : LU[bid-1] ) + Ncounts[5-1][bid] * ((gSpinPattern[bid] ==  1)?1:0);
-      LD[bid] = ( bid == 0 ? 0 : LD[bid-1] ) + Ncounts[5-1][bid] * ((gSpinPattern[bid] == -1)?1:0);
+      ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+      RU[bid] = (bid == 0 ? 0 : RU[bid-1]) + Ncounts[2-1][bid] * (bunchSpin ==  1 ? 1 : 0);
+      RD[bid] = (bid == 0 ? 0 : RD[bid-1]) + Ncounts[2-1][bid] * (bunchSpin == -1 ? 1 : 0);
+      LU[bid] = (bid == 0 ? 0 : LU[bid-1]) + Ncounts[5-1][bid] * (bunchSpin ==  1 ? 1 : 0);
+      LD[bid] = (bid == 0 ? 0 : LD[bid-1]) + Ncounts[5-1][bid] * (bunchSpin == -1 ? 1 : 0);
 
       sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
 
@@ -283,7 +287,7 @@ void CumulativeAsymmetry()
       x90[bid].lumiE  = tmpasyme;
       x90lumi[0][bid] = tmpasym;
       x90lumi[1][bid] = tmpasyme;
-      //        printf("%d : %d %f %f %f %f \n",bid,gSpinPattern[bid],
+      //        printf("%d : %d %f %f %f %f \n",bid,bunchSpin,
       //       RU[bid],RD[bid],LU[bid],LD[bid]);
    }
 
@@ -291,39 +295,43 @@ void CumulativeAsymmetry()
    fprintf(stdout, "si5 up :%10.0f down :%10.0f\n", LU[119], LD[119]);
 
    // X45 (13-46) (C:02-35)
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
-       RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
-       RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
-       LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==1)?1:0);
-       LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * ((gSpinPattern[bid]==-1)?1:0);
+      ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
 
-       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-       x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
-       x45phys[0][bid] = tmpasym;
-       x45phys[1][bid] = tmpasyme;
+      RU[bid] = (bid == 0 ? 0 : RU[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * (bunchSpin ==  1 ? 1 : 0);
+      RD[bid] = (bid == 0 ? 0 : RD[bid-1]) + (Ncounts[1-1][bid] + Ncounts[3-1][bid]) * (bunchSpin == -1 ? 1 : 0);
+      LU[bid] = (bid == 0 ? 0 : LU[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * (bunchSpin ==  1 ? 1 : 0);
+      LD[bid] = (bid == 0 ? 0 : LD[bid-1]) + (Ncounts[4-1][bid] + Ncounts[6-1][bid]) * (bunchSpin == -1 ? 1 : 0);
 
-       sqass(RU[bid],RD[bid],LD[bid],LU[bid],&tmpasym,&tmpasyme);
-       x45[bid].acpt = tmpasym; x45[bid].acptE = tmpasyme;
-       x45acpt[0][bid] = tmpasym;
-       x45acpt[1][bid] = tmpasyme;
+      sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+      x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
+      x45phys[0][bid] = tmpasym;
+      x45phys[1][bid] = tmpasyme;
 
-       sqass(RU[bid],LU[bid],RD[bid],LD[bid],&tmpasym,&tmpasyme);
-       x45[bid].lumi = tmpasym; x45[bid].lumiE = tmpasyme;
-       x45lumi[0][bid] = tmpasym;
-       x45lumi[1][bid] = tmpasyme;
+      sqass(RU[bid], RD[bid], LD[bid], LU[bid], &tmpasym, &tmpasyme);
+      x45[bid].acpt = tmpasym; x45[bid].acptE = tmpasyme;
+      x45acpt[0][bid] = tmpasym;
+      x45acpt[1][bid] = tmpasyme;
+
+      sqass(RU[bid], LU[bid], RD[bid], LD[bid], &tmpasym, &tmpasyme);
+      x45[bid].lumi = tmpasym; x45[bid].lumiE = tmpasyme;
+      x45lumi[0][bid] = tmpasym;
+      x45lumi[1][bid] = tmpasyme;
    }
 
    fprintf(stdout, "si1,3 up :%10.0f down :%10.0f\n", RU[119], RD[119]);
    fprintf(stdout, "si4,6 up :%10.0f down :%10.0f\n", LU[119], LD[119]);
 
    // Y45 (34-16) (C:23-05)
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
-      RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==-1)?1:0);
-      LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==-1)?1:0);
+      ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+      RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((bunchSpin==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[3-1][bid]+Ncounts[4-1][bid])*((bunchSpin==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((bunchSpin==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[1-1][bid]+Ncounts[6-1][bid])*((bunchSpin==-1)?1:0);
 
       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
       y45[bid].phys = tmpasym; y45[bid].physE = tmpasyme;
@@ -342,16 +350,14 @@ void CumulativeAsymmetry()
    }
 
    // CR45 (14-36) (C:03-25)
-   for (int bid=0; bid<120; bid++) {
+   for (int bid=0; bid<N_BUNCHES; bid++) {
 
-      RU[bid] = ((bid==0)?0:RU[bid-1])
-          + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      RD[bid] = ((bid==0)?0:RD[bid-1])
-          + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((gSpinPattern[bid]==-1)?1:0);
-      LU[bid] = ((bid==0)?0:LU[bid-1])
-          + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==1)?1:0);
-      LD[bid] = ((bid==0)?0:LD[bid-1])
-          + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((gSpinPattern[bid]==-1)?1:0);
+      ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+      RU[bid] = ((bid==0)?0:RU[bid-1]) + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((bunchSpin==1)?1:0);
+      RD[bid] = ((bid==0)?0:RD[bid-1]) + (Ncounts[1-1][bid]+Ncounts[4-1][bid])*((bunchSpin==-1)?1:0);
+      LU[bid] = ((bid==0)?0:LU[bid-1]) + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((bunchSpin==1)?1:0);
+      LD[bid] = ((bid==0)?0:LD[bid-1]) + (Ncounts[3-1][bid]+Ncounts[6-1][bid])*((bunchSpin==-1)?1:0);
 
       sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
 
@@ -375,83 +381,92 @@ void CumulativeAsymmetry()
       c45lumi[1][bid] = tmpasyme;
    }
 
-   HHPAK(30000, x90phys[0]); HHPAKE(30000, x90phys[1]);
-   HHPAK(30010, x90acpt[0]); HHPAKE(30010, x90acpt[1]);
-   HHPAK(30020, x90lumi[0]); HHPAKE(30020, x90lumi[1]);
+   //HHPAK(30000, x90phys[0]); HHPAKE(30000, x90phys[1]);
+   //HHPAK(30010, x90acpt[0]); HHPAKE(30010, x90acpt[1]);
+   //HHPAK(30020, x90lumi[0]); HHPAKE(30020, x90lumi[1]);
 
-   HHPAK(30100, x45phys[0]); HHPAKE(30100, x45phys[1]);
-   HHPAK(30110, x45acpt[0]); HHPAKE(30110, x45acpt[1]);
-   HHPAK(30120, x45lumi[0]); HHPAKE(30120, x45lumi[1]);
+   //HHPAK(30100, x45phys[0]); HHPAKE(30100, x45phys[1]);
+   //HHPAK(30110, x45acpt[0]); HHPAKE(30110, x45acpt[1]);
+   //HHPAK(30120, x45lumi[0]); HHPAKE(30120, x45lumi[1]);
 
-   HHPAK(30200, y45phys[0]); HHPAKE(30200, y45phys[1]);
-   HHPAK(30210, y45acpt[0]); HHPAKE(30210, y45acpt[1]);
-   HHPAK(30220, y45lumi[0]); HHPAKE(30220, y45lumi[1]);
+   //HHPAK(30200, y45phys[0]); HHPAKE(30200, y45phys[1]);
+   //HHPAK(30210, y45acpt[0]); HHPAKE(30210, y45acpt[1]);
+   //HHPAK(30220, y45lumi[0]); HHPAKE(30220, y45lumi[1]);
 
-   HHPAK(30300, c45phys[0]); HHPAKE(30300, c45phys[1]);
-   HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
-   HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
+   //HHPAK(30300, c45phys[0]); HHPAKE(30300, c45phys[1]);
+   //HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
+   //HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
 
    printf("*************** RESULT *******************\n");
    printf("        physics                luminosity             acceptance\n");
    printf("X90  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-           x90[119].phys,x90[119].physE,
-           x90[119].lumi,x90[119].lumiE,
-           x90[119].acpt,x90[119].acptE);
+           x90[119].phys,  x90[119].physE,
+           x90[119].lumi,  x90[119].lumiE,
+           x90[119].acpt,  x90[119].acptE);
    printf("X45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-           x45[119].phys,x45[119].physE,
-           x45[119].lumi,x45[119].lumiE,
-           x45[119].acpt,x45[119].acptE);
+           x45[119].phys,  x45[119].physE,
+           x45[119].lumi,  x45[119].lumiE,
+           x45[119].acpt,  x45[119].acptE);
    printf("Y45  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-           y45[119].phys,y45[119].physE,
-           y45[119].lumi,y45[119].lumiE,
-           y45[119].acpt,y45[119].acptE);
+           y45[119].phys,  y45[119].physE,
+           y45[119].lumi,  y45[119].lumiE,
+           y45[119].acpt,  y45[119].acptE);
    printf("CR45 :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
-           cr45[119].phys,cr45[119].physE,
-           cr45[119].lumi,cr45[119].lumiE,
-           cr45[119].acpt,cr45[119].acptE);
+           cr45[119].phys, cr45[119].physE,
+           cr45[119].lumi, cr45[119].lumiE,
+           cr45[119].acpt, cr45[119].acptE);
    printf("*************** RESULT *******************\n");
+
 
    // Target Position Loop
    for (int i=0; i<=nTgtIndex; i++) {
 
       // X90 (2-5) (C:1-4)
-      for (int bid=0; bid<120; bid++) {
-         RU[bid] = ((bid==0)?0:RU[bid-1]) + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
-         RD[bid] = ((bid==0)?0:RD[bid-1]) + NDcounts[2-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
-         LU[bid] = ((bid==0)?0:LU[bid-1]) + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==1)?1:0);
-         LD[bid] = ((bid==0)?0:LD[bid-1]) + NDcounts[5-1][bid][i]*((gSpinPattern[bid]==-1)?1:0);
+      for (int bid=0; bid<N_BUNCHES; bid++) {
+
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + NDcounts[2-1][bid][i]*((bunchSpin==1)?1:0);
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + NDcounts[2-1][bid][i]*((bunchSpin==-1)?1:0);
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + NDcounts[5-1][bid][i]*((bunchSpin==1)?1:0);
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + NDcounts[5-1][bid][i]*((bunchSpin==-1)?1:0);
 
          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
 
-         x90[bid].phys = tmpasym;
-         x90[bid].physE = tmpasyme;
+         x90[bid].phys   = tmpasym;
+         x90[bid].physE  = tmpasyme;
          x90phys[0][bid] = tmpasym;
          x90phys[1][bid] = tmpasyme;
       }
 
-      HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
+      //HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
 
       // X45 (13-46) (C:02-35)
-      for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==1)?1:0);
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((gSpinPattern[bid]==-1)?1:0);
+      for (int bid=0; bid<N_BUNCHES; bid++) {
 
-          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-          x45[bid].phys = tmpasym; x45[bid].physE = tmpasyme;
-          x45phys[0][bid] = tmpasym;
-          x45phys[1][bid] = tmpasyme;
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((bunchSpin==1)?1:0);
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + (NDcounts[1-1][bid][i]+NDcounts[3-1][bid][i])*((bunchSpin==-1)?1:0);
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((bunchSpin==1)?1:0);
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + (NDcounts[4-1][bid][i]+NDcounts[6-1][bid][i])*((bunchSpin==-1)?1:0);
+
+         sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+
+         x45[bid].phys   = tmpasym;
+         x45[bid].physE  = tmpasyme;
+         x45phys[0][bid] = tmpasym;
+         x45phys[1][bid] = tmpasyme;
       }
 
-      HHPAK(37500+i, x45phys[0]); HHPAKE(37500+i, x45phys[1]);
+      //HHPAK(37500+i, x45phys[0]); HHPAKE(37500+i, x45phys[1]);
    }
 
    // **** for different t range ****
-   float txasym90[6][120], txasym90E[6][120];
-   float txasym45[6][120], txasym45E[6][120];
-   float tyasym45[6][120], tyasym45E[6][120];
-   float tcasym45[6][120], tcasym45E[6][120];
+   float txasym90[6][N_BUNCHES], txasym90E[6][N_BUNCHES];
+   float txasym45[6][N_BUNCHES], txasym45E[6][N_BUNCHES];
+   float tyasym45[6][N_BUNCHES], tyasym45E[6][N_BUNCHES];
+   float tcasym45[6][N_BUNCHES], tcasym45E[6][N_BUNCHES];
 
    for (int tr=0; tr<NTBIN; tr++) {
 
@@ -460,75 +475,95 @@ void CumulativeAsymmetry()
       // X90 (2 vs 5)
       for (int bid=0; bid<N_BUNCHES; bid++) {
 
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + NTcounts[2-1][bid][tr] * ( (gSpinPattern[bid] == 1)  ? 1:0) * gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + NTcounts[2-1][bid][tr] * ( (gSpinPattern[bid] == -1) ? 1:0) * gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + NTcounts[5-1][bid][tr] * ( (gSpinPattern[bid] == 1)  ? 1:0) * gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + NTcounts[5-1][bid][tr] * ( (gSpinPattern[bid] == -1) ? 1:0) * gbid[bid];
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
 
-          sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+         RU[bid] = (bid == 0 ? 0 : RU[bid-1]) + NTcounts[2-1][bid][tr] * ( (bunchSpin == 1)  ? 1:0) * gbid[bid];
+         RD[bid] = (bid == 0 ? 0 : RD[bid-1]) + NTcounts[2-1][bid][tr] * ( (bunchSpin == -1) ? 1:0) * gbid[bid];
+         LU[bid] = (bid == 0 ? 0 : LU[bid-1]) + NTcounts[5-1][bid][tr] * ( (bunchSpin == 1)  ? 1:0) * gbid[bid];
+         LD[bid] = (bid == 0 ? 0 : LD[bid-1]) + NTcounts[5-1][bid][tr] * ( (bunchSpin == -1) ? 1:0) * gbid[bid];
 
-          tx90[bid][tr].phys  = tmpasym;
-          tx90[bid][tr].physE = tmpasyme;
-          txasym90[tr][bid]   = tmpasym;
-          txasym90E[tr][bid]  = tmpasyme;
+         sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
 
-          SUM += NTcounts[2-1][bid][tr];
+         tx90[bid][tr].phys  = tmpasym;
+         tx90[bid][tr].physE = tmpasyme;
+         txasym90[tr][bid]   = tmpasym;
+         txasym90E[tr][bid]  = tmpasyme;
+
+         SUM += NTcounts[2-1][bid][tr];
       }
 
       // X45 (1+3 vs 4+6)
-      for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
+      for (int bid=0; bid<N_BUNCHES; bid++) {
 
-          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
 
-          tx45[bid][tr].phys = tmpasym; tx45[bid][tr].physE = tmpasyme;
-          txasym45[tr][bid] = tmpasym; txasym45E[tr][bid] = tmpasyme;
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[3-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[4-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+
+         sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+
+         tx45[bid][tr].phys  = tmpasym;
+         tx45[bid][tr].physE = tmpasyme;
+         txasym45[tr][bid]   = tmpasym;
+         txasym45E[tr][bid]  = tmpasyme;
       }
 
       // Y45 (3+4 vs 1+6)
-      for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
-          ty45[bid][tr].phys = tmpasym; ty45[bid][tr].physE = tmpasyme;
-          tyasym45[tr][bid] = tmpasym; tyasym45E[tr][bid] = tmpasyme;
+      for (int bid=0; bid<N_BUNCHES; bid++) {
+
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[4-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+
+         sqass(RU[bid],LD[bid],RD[bid],LU[bid],&tmpasym,&tmpasyme);
+
+         ty45[bid][tr].phys  = tmpasym;
+         ty45[bid][tr].physE = tmpasyme;
+         tyasym45[tr][bid]   = tmpasym;
+         tyasym45E[tr][bid]  = tmpasyme;
       }
 
       // CROSS 45 (1+4 vs 3+6)
-      for (int bid=0; bid<120; bid++) {
-          RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-          sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
-          tcasym45[tr][bid] = tmpasym; tcasym45E[tr][bid] = tmpasyme;
+      for (int bid=0; bid<N_BUNCHES; bid++) {
+
+         ESpinState bunchSpin = gRunInfo->GetBunchSpin(bid+1); 
+
+         RU[bid] = ((bid==0)?0:RU[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         RD[bid] = ((bid==0)?0:RD[bid-1]) + (NTcounts[1-1][bid][tr]+NTcounts[4-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+         LU[bid] = ((bid==0)?0:LU[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==1)?1:0)*gbid[bid];
+         LD[bid] = ((bid==0)?0:LD[bid-1]) + (NTcounts[3-1][bid][tr]+NTcounts[6-1][bid][tr]) *((bunchSpin==-1)?1:0)*gbid[bid];
+
+         sqass(RU[bid], LD[bid], RD[bid], LU[bid], &tmpasym, &tmpasyme);
+
+         tcasym45[tr][bid]  = tmpasym;
+         tcasym45E[tr][bid] = tmpasyme;
       }
 
       // Fill Histograms
-      HHPAK(32000+tr+1, txasym90[tr]);  HHPAKE(32000+tr+1, txasym90E[tr]);
-      HHPAK(32100+tr+1, txasym45[tr]);  HHPAKE(32100+tr+1, txasym45E[tr]);
-      HHPAK(32200+tr+1, tyasym45[tr]);  HHPAKE(32200+tr+1, tyasym45E[tr]);
-      HHPAK(32300+tr+1, tcasym45[tr]);  HHPAKE(32300+tr+1, tcasym45E[tr]);
+      //HHPAK(32000+tr+1, txasym90[tr]);  HHPAKE(32000+tr+1, txasym90E[tr]);
+      //HHPAK(32100+tr+1, txasym45[tr]);  HHPAKE(32100+tr+1, txasym45E[tr]);
+      //HHPAK(32200+tr+1, tyasym45[tr]);  HHPAKE(32200+tr+1, tyasym45E[tr]);
+      //HHPAK(32300+tr+1, tcasym45[tr]);  HHPAKE(32300+tr+1, tcasym45E[tr]);
    }
 
    // Fill Histograms
-   HHPAK(31000, fspinpat);
-   HHPAK(31100, RL90);   HHPAKE(31100, RL90E);
-   HHPAK(31110, RL45);   HHPAKE(31110, RL45E);
-   HHPAK(31120, BT45);   HHPAKE(31120, BT45E);
+   //HHPAK(31000, fspinpat);
+   //HHPAK(31100, RL90);   HHPAKE(31100, RL90E);
+   //HHPAK(31110, RL45);   HHPAKE(31110, RL45E);
+   //HHPAK(31120, BT45);   HHPAKE(31120, BT45E);
 
-   HHPAK(33000, (float*) Ngood);
-   HHPAK(33010, (float*) Nback);
-   HHPAK(33020, (float*) Ntotal);
+   //HHPAK(33000, (float*) Ngood);
+   //HHPAK(33010, (float*) Nback);
+   //HHPAK(33020, (float*) Ntotal);
 
    // Spin Sorted Strip Distribution
-   HHPAK(36000, (float*) cntr.reg.NStrip[0]);
-   HHPAK(36100, (float*) cntr.reg.NStrip[1]);
+   //HHPAK(36000, (float*) cntr.reg.NStrip[0]);
+   //HHPAK(36100, (float*) cntr.reg.NStrip[1]);
 } //}}}
 
 
@@ -646,10 +681,9 @@ void PrintRunResults()
    printf(" WCM Average [10^9  protons]    = %10.1f\n", gRunInfo->fWallCurMonAve);
    printf(" WCM Average w/in range         = %10.1f\n", average.average);
    printf(" Specific Luminosity            = %10.2f%10.2f%10.4f\n", gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
-   printf(" # of Filled Bunch              = %10d\n", gRunInfo->NFilledBunch);
-   printf(" # of Active Bunch              = %10d\n", gRunInfo->NActiveBunch);
+   printf(" # of Filled Bunch              = %10d\n", gRunInfo->GetNumFilledBunches());
    printf(" bunch w/in WCM range           = %10d\n", average.counter);
-   printf(" process rate                   = %10.1f [%%]\n", (float)average.counter/(float)NFilledBunch*100);
+   printf(" process rate                   = %10.1f [%%]\n", (float)average.counter/(float)gRunInfo->GetNumFilledBunches() * 100);
    printf(" Analyzing Power Average        = %10.4f \n",     gAnaResult->A_N[1]);
    if (gAnaInfo->FEEDBACKMODE)
    printf(" feedback average tshift        = %10.1f [ns]\n", gAnaResult->TshiftAve);
@@ -934,7 +968,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
 
       ((TH1*) gAsymRoot->fHists->d["run"]->o["specific_luminosity"])->Fill(bid+1, SpeLumi.Cnts[bid]);
 
-      if (gFillPattern[bid]) {
+      if ( !gRunInfo->IsEmptyBunch(bid+1) ) {
          if (SpeLumi.max < SpeLumi.Cnts[bid]) SpeLumi.max = SpeLumi.Cnts[bid];
          if (SpeLumi.min > SpeLumi.Cnts[bid]) SpeLumi.min = SpeLumi.Cnts[bid];
       }
@@ -959,7 +993,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    sprintf(hcomment, "Specific Luminosity");
    HHBOOK1(10035, hcomment, 100, SpeLumi.ave-SpeLumi.ave/2, SpeLumi.ave + SpeLumi.ave/2.);
 
-   for (int bid=0; bid < 120; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
+   for (int bid=0; bid<N_BUNCHES; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
 
    // Get variables
    char CHOICE[5]="HIST";
@@ -1107,21 +1141,21 @@ float TshiftFinder(int Mode, int FeedBackLevel)
 //             : asym_bunch_x90, asym_bunch_x45, asym_bunch_y45
 //             : These histograms are then applied Gaussian fit to check anomaly bunches
 // Input       : string mode, int sign, int N, float A[], float dA[], float bunch[]
-void FillAsymmetryHistgram(string mode, int sign, int N, float A[], float dA[], float bunch[])
+void FillAsymmetryHistgram(string mode, int sign, int N, float *A, float *dA)
 { //{{{
-   float a[N];
 
-   for (int i=0; i<N; i++) { // loop for bunch number
+   for (int bid=0; bid<N_BUNCHES; bid++) // loop for bunch number
+   {
       // flip the asymmetry sign for spin=-1 to be consistent with spin=+1
-      a[i] = A[i]*sign;
+      float a = A[bid] * sign;
 
-      if ( gFillPattern[i] && dA[i] ) {
-         // process only active bunches
-         if (bunch[i] != -1) {
-            if (mode == "x90") asym_bunch_x90->Fill(a[i], 1/dA[i]); //weighted by error
-            if (mode == "x45") asym_bunch_x45->Fill(a[i], 1/dA[i]);
-            if (mode == "y45") asym_bunch_y45->Fill(a[i], 1/dA[i]);
-         }
+      if ( !gRunInfo->IsEmptyBunch(bid+1) && dA[bid] ) { // process only active bunches
+
+         //if (bunch[bid] != -1) {
+            if (mode == "x90") asym_bunch_x90->Fill(a, 1/dA[bid]); //weighted by error
+            if (mode == "x45") asym_bunch_x45->Fill(a, 1/dA[bid]);
+            if (mode == "y45") asym_bunch_y45->Fill(a, 1/dA[bid]);
+         //}
       }
    }
 } //}}}
@@ -1145,8 +1179,8 @@ void AsymCalculator::CalcBunchAsymmetry()
 
    char  htitle[100];
    float min, max;
-   float margin=0.2;
-   float prefix=0.028;
+   float margin = 0.2;
+   float prefix = 0.028;
 
    sprintf(htitle, "Run%.3f: Raw Asymmetry X90", gRunInfo->RUNID);
    GetMinMaxOption(prefix, N_BUNCHES, gBunchAsym.Ax90[0], margin, min, max);
@@ -1181,32 +1215,33 @@ void AsymCalculator::CalcBunchAsymmetry()
 
       // Selectively disable bunch ID by matching spin pattern
       for (int bid=0; bid<N_BUNCHES; bid++) {
-         bunch[bid] = (gSpinPattern[bid] == spin ? bid : -1);
+         bunch[bid] = (gRunInfo->GetBunchSpin(bid+1) == spin ? bid : -1);
+         //bunch[bid] = (gSpinPattern[bid] == spin ? bid : -1);
       }
 
       // X90
       asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ax90[0], ex, gBunchAsym.Ax90[1]);
       asymgraph->SetName("asymgraph");
-      FillAsymmetryHistgram("x90", spin, N_BUNCHES, gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], bunch);
-      asym_vs_bunch_x90->GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x90->GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_x90->GetYaxis()->SetTitle("Raw Asymmetry ");
+      asym_vs_bunch_x90->GetListOfFunctions()->Add(asymgraph, "p");
+      asym_vs_bunch_x90->GetXaxis()->SetTitle(";Bunch Number;Raw Asymmetry;");
+
+      FillAsymmetryHistgram("x90", spin, gBunchAsym.Ax90[0], gBunchAsym.Ax90[1]);
 
       // X45
       asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ax45[0], ex, gBunchAsym.Ax45[1]);
-      FillAsymmetryHistgram("x45", spin, N_BUNCHES, gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], bunch);
-      asymgraph -> SetName("asymgraph");
-      asym_vs_bunch_x45->GetListOfFunctions() -> Add(asymgraph,"p");
-      asym_vs_bunch_x45->GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_x45->GetYaxis()->SetTitle("Raw Asymmetry ");
+      asymgraph->SetName("asymgraph");
+      asym_vs_bunch_x45->GetListOfFunctions()->Add(asymgraph, "p");
+      asym_vs_bunch_x45->GetXaxis()->SetTitle(";Bunch Number;Raw Asymmetry;");
+
+      FillAsymmetryHistgram("x45", spin, gBunchAsym.Ax45[0], gBunchAsym.Ax45[1]);
 
       // Y45
       asymgraph = AsymmetryGraph(spin, N_BUNCHES, bunch, gBunchAsym.Ay45[0], ex, gBunchAsym.Ay45[1]);
-      FillAsymmetryHistgram("y45", spin, N_BUNCHES, gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], bunch);
       asymgraph->SetName("asymgraph");
       asym_vs_bunch_y45->GetListOfFunctions()->Add(asymgraph, "p");
-      asym_vs_bunch_y45->GetXaxis()->SetTitle("Bunch Number");
-      asym_vs_bunch_y45->GetYaxis()->SetTitle("Raw Asymmetry ");
+      asym_vs_bunch_y45->SetTitle(";Bunch Number;Raw Asymmetry;");
+
+      FillAsymmetryHistgram("y45", spin, gBunchAsym.Ay45[0], gBunchAsym.Ay45[1]);
    }
 
    // bunch asymmetry averages
@@ -1276,7 +1311,7 @@ void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
        A[bid] = ASYM_DEFAULT;
       dA[bid] = 0;
 
-      if (gFillPattern[bid]) {
+      if ( !gRunInfo->IsEmptyBunch(bid+1) ) {
 
          // Take sum of Up/Down for Right and Left detectors
          for (int i=0; i<=1; i++) {
@@ -1300,11 +1335,12 @@ void AsymCalculator::BunchAsymmetry(int Mode, float *A, float *dA)
 void calcBunchAsymmetryAverage()
 { //{{{
    // flip the sign of negative spin bunches
-   for (int i=0; i<N_BUNCHES; i++) {
-      if (gSpinPattern[i] == -1) {
-         gBunchAsym.Ax90[0][i] *= -1;
-         gBunchAsym.Ax45[0][i] *= -1;
-         gBunchAsym.Ay45[0][i] *= -1;
+   for (int bid=0; bid<N_BUNCHES; bid++) {
+
+      if (gRunInfo->GetBunchSpin(bid+1) == -1) {
+         gBunchAsym.Ax90[0][bid] *= -1;
+         gBunchAsym.Ax45[0][bid] *= -1;
+         gBunchAsym.Ay45[0][bid] *= -1;
       }
    }
 
@@ -1959,7 +1995,7 @@ void RAMP::CalcRAMP()
       memset(SIU,0,sizeof(SIU));
       memset(SID,0,sizeof(SID));
 
-      for (bid=0;bid<120;bid++){
+      for (bid=0;bid<N_BUNCHES;bid++){
         for (si=0;si<6;si++){
           SIU[si] += (NRcounts[si][bid][dlm])
             *((gSpinPattern[bid]==1)?1:0)*gbid[bid];

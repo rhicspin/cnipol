@@ -499,9 +499,9 @@ void event_process(processEvent *event)
       // fine -t bins
       int spbit = 2;
 
-      if (gSpinPattern[event->bid] == 1) {
+      if (gRunInfo->GetBunchSpin(event->bid + 1) == 1) {
          spbit = 0;
-      } else if (gSpinPattern[event->bid] == -1) {
+      } else if (gRunInfo->GetBunchSpin(event->bid + 1) == -1) {
          spbit = 1;
       }
 
@@ -675,7 +675,7 @@ void SpinTuneOutput(int bid, double si)
 {
    fprintf(stderr, "%10ld", cntr.revolution);
    fprintf(stderr,   "%5d", bid+1);
-   fprintf(stderr,   "%5d", gSpinPattern[bid]);
+   fprintf(stderr,   "%5d", gRunInfo->GetBunchSpin(bid + 1) );
    fprintf(stderr,   "%5d", int(si)+1);
  
    /*

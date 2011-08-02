@@ -114,11 +114,11 @@ typedef struct{
 } pCTargetStruct ;
 
 typedef struct {
-    double beamEnergyM;
-    long fillNumberM;
+    double    beamEnergyM;
+    long      fillNumberM;
     short int measuredFillPatternM[360];
-    float bunchLengthS;
-    float synchrotronTuneS;
+    float     bunchLengthS;
+    float     synchrotronTuneS;
     short int polarizationFillPatternS[360];
 } beamDataStruct;
 

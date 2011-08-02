@@ -1,11 +1,15 @@
 // Header file for AsymRecover
-// Author   : Itaru Nakagawa
+//
+// Contributors: Itaru Nakagawa
+//               Dmitri Smirnov
+//
 // Creation : 04/12/2006         
+//
 
 #ifndef ASYM_RECOVER_USER_DEFINED_H
 #define ASYM_RECOVER_USER_DEFINED_H
 
-int UserDefinedSpinPattern[13][NBUNCH]=
+int UserDefinedSpinPattern[13][N_BUNCHES]=
 {
    // -----------------------  Run5 Spin Patterns  -------------------//
    // index=0;
@@ -77,7 +81,7 @@ int UserDefinedSpinPattern[13][NBUNCH]=
 };
 
 
-int UserDefinedFillPattern[1][NBUNCH] = { 
+int UserDefinedFillPattern[1][N_BUNCHES] = { 
    // --------------------  All (112 bunches on) True Fill Pattern -------------------//
    // index=0;
    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,

@@ -531,7 +531,8 @@ void readdb(double RUNID)
    gAnaInfo->tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
 
    // TSHIFT for injection with respect to flattop timing
-   gAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
+   // removed in favour of fExpectedGlobalTimeOffset in RunInfo
+   //gAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
 
    // Expected universal rate for given target
    gAnaInfo->reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
@@ -608,7 +609,6 @@ void SetDefault()
    for (int i=0; i<NBUNCH; i++) {
       ProcessBunch[i]          = 0;
       gRunInfo->DisableBunch[i] = 0;
-      gRunInfo->NActiveBunch    = 0;
       gRunInfo->NDisableBunch   = 0;
    }
 }
