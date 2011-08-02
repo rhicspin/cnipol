@@ -34,31 +34,32 @@ void initialize()
 
    TString filelistPath("/eic/u/dsmirnov/run/");
 
-   //TString filelistName = "runs11_rampupdown.dat";
-   //TString filelistName = "runs_all.dat";
-   //TString filelistName = "run11_153XX_tmp.dat";
-   //TString filelistName = "runs_tmp2.dat";
-   //TString filelistName = "run11_15393.dat";
-   //TString filelistName = "run11_15397.dat";
-   //TString filelistName = "run11_15399.dat";
-   //TString filelistName = "run09_all_tmp.dat";
-   //TString filelistName = "run09_all_.dat";
-   //TString filelistName = "run11_15XXX_2XX_3XX_4XX.dat";
+   //TString filelistName = "run09_10XXX_11XXX";
+   //TString filelistName = "runs11_rampupdown";
+   //TString filelistName = "runs_all";
+   //TString filelistName = "run11_153XX_tmp";
+   //TString filelistName = "runs_tmp2";
+   //TString filelistName = "run11_15393";
+   //TString filelistName = "run11_15397";
+   //TString filelistName = "run11_15399";
+   //TString filelistName = "run11_15XXX_2XX_3XX_4XX";
    TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
-   //TString filelistName = "run11_153XX.dat";
-   //TString filelistName = "run11_153XX_Y2U.dat";
-   //TString filelistName = "run11_pol_decay.dat";
-   //TString filelistName = "run11_1547X_4_5.dat";
-   //TString filelistName = "run11_154XX_00_23_before_rotators.dat";
-   //TString filelistName = "run11_tmp.dat";
+   //TString filelistName = "run11_153XX";
+   //TString filelistName = "run11_153XX_Y2U";
+   //TString filelistName = "run11_pol_decay";
+   //TString filelistName = "run11_1547X_4_5";
+   //TString filelistName = "run11_154XX_00_23_before_rotators";
+   //TString filelistName = "run11_tmp";
    //TString filelistName = "run11_15473_74_75_injection";
+   //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
 
-	TString filelist = filelistPath + filelistName + ".dat";
-
+	TString filelist    = filelistPath + filelistName + ".txt";
    TString outFileName = "masym_" + filelistName + "_out.root";
+   TString fileSuffix  = "";
+   //TString fileSuffix  = "_hama";
 
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
-   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
+   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
 
    gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot(outFileName.Data());
@@ -83,7 +84,7 @@ void initialize()
    while (next && (o = (*next)()) )
    {
       string  fName    = string(((TObjString*) o)->GetName());
-      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + ".root";
+      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + fileSuffix + ".root";
 
       TFile *f = new TFile(fileName, "READ");
 
@@ -135,7 +136,7 @@ void initialize()
    while (next && (o = (*next)()) )
    {
       string  fName    = string(((TObjString*) o)->GetName());
-      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + ".root";
+      TString fileName = gAnaInfo->GetResultsDir() + "/" + fName + "/" + fName + fileSuffix + ".root";
 
       TFile *f = new TFile(fileName, "READ");
 
@@ -217,7 +218,7 @@ void initialize()
    gH->SetSignature(gRC->GetSignature());
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
 
    gH->Write();
