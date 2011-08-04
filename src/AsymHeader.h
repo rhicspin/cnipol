@@ -58,4 +58,6 @@
 
 const int TOT_WFD_CH = NSTRIP + NTGTWFD; //Total WFD channels including target WFD channels.
 
+#define MAX_CHANNEL_DIGITS 2
+
 #endif

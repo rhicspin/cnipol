@@ -64,7 +64,8 @@ public:
    void         ProcessEvent() {};
    void         PreProcess();
    void         PostProcess();
-   void         FillPreProcess();
+   void         FillPassOne();
+   void         PostFillPassOne();
    void         FillScallerHists(Long_t *hData, UShort_t chId);
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Long_t *hData);

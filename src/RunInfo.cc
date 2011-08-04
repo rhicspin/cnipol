@@ -227,11 +227,11 @@ void RunInfo::PrintBunchPatterns() const
 
    // Print Spin Pattern and Recover Spin Pattern by User Defined ones
    cout << "\nSpin pattern used:" << endl;
-   cout << ssSpin << endl;
+   cout << ssSpin.str() << endl;
 
    // Print Fill Pattern and Recover Fill Pattern by User Defined ones
    cout << "\nFill Pattern Used:" << endl;
-   cout << ssFill << endl;
+   cout << ssFill.str() << endl;
 
 } //}}}
 
@@ -657,6 +657,13 @@ BeamBunchMap RunInfo::GetEmptyBunches() const
 UShort_t RunInfo::GetNumFilledBunches() const
 { //{{{
    return GetFilledBunches().size();
+} //}}}
+
+
+/** */
+UShort_t RunInfo::GetNumEmptyBunches() const
+{ //{{{
+   return GetEmptyBunches().size();
 } //}}}
 
 

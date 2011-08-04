@@ -36,9 +36,6 @@ void CnipolPmtHists::BookHists(string cutid)
 
    fDir->cd();
 
-   //DrawObjContainer        *oc;
-   DrawObjContainerMapIter  isubdir;
-
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {
 
       string sChId("  ");
@@ -70,7 +67,7 @@ void CnipolPmtHists::BookHists(string cutid)
 
 
 /** */
-void CnipolPmtHists::FillPreProcess(ChannelEvent *ch)
+void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
 { //{{{
    // Fill events with no cuts applied
    //if (cutid != "") return;
@@ -89,13 +86,7 @@ void CnipolPmtHists::FillPreProcess(ChannelEvent *ch)
 
 
 /** */
-void CnipolPmtHists::PostFill()
-{ //{{{
-} //}}}
-
-
-/** */
-void CnipolPmtHists::PostPreProcess()
+void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
 
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {

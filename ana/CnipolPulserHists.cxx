@@ -108,6 +108,12 @@ void CnipolPulserHists::BookHists(string cutid)
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
+      // Time vs Energy from amplitude
+      sprintf(hName, "hTimeVsEnergyA_ch%02d", iChId);
+      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
          d[dName] = oc;
@@ -117,7 +123,7 @@ void CnipolPulserHists::BookHists(string cutid)
 
 
 /** */
-void CnipolPulserHists::FillPreProcess(ChannelEvent *ch)
+void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
 { //{{{
    // Fill events with no cuts applied
    //if (cutid != "empty_bunch") return;
@@ -127,26 +133,28 @@ void CnipolPulserHists::FillPreProcess(ChannelEvent *ch)
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel"+sChId];
+   DrawObjContainer *sd = d["channel" + sChId];
 
-   ((TH1*) sd->o["hAdcAmpltd_ch"+sChId]) -> Fill(ch->GetAmpltd());
-   ((TH1*) sd->o["hTdc_ch"      +sChId]) -> Fill(ch->GetTdc());
-   ((TH1*) sd->o["hTvsA_ch"     +sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) sd->o["hTvsI_ch"     +sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   ((TH1*) sd->o["hAdcAmpltd_ch"     + sChId]) -> Fill(ch->GetAmpltd());
+   ((TH1*) sd->o["hTdc_ch"           + sChId]) -> Fill(ch->GetTdc());
+   ((TH1*) sd->o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) sd->o["hTvsI_ch"          + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   ((TH1*) sd->o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
 
    ((TH1*) o["hBunchCounts"])->Fill(ch->GetBunchId());
    ((TH1*) o["hStripCounts"])->Fill(ch->GetChannelId());
+
 
 } //}}}
 
 
 /** */
-void CnipolPulserHists::PostFill()
+void CnipolPulserHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   TH1* hAdcAmpltd  = (TH1*) o["hAdcAmpltd"];
-   TH1* hTdc  = (TH1*) o["hTdc"];
-   TH1* hTvsA = (TH1*) o["hTvsA"];
-   TH1* hTvsI = (TH1*) o["hTvsI"];
+   TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
+   TH1* hTdc       = (TH1*) o["hTdc"];
+   TH1* hTvsA      = (TH1*) o["hTvsA"];
+   TH1* hTvsI      = (TH1*) o["hTvsI"];
    
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 

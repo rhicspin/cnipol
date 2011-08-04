@@ -425,28 +425,48 @@ void AsymRoot::PreProcess()
 
 /** */
 void AsymRoot::PostProcess()
-{
+{ //{{{
    if (gAnaInfo->HasAsymBit()) {
       //gAsymCalculator.CalcBunchAsymmetry();
 	}
 
    fHists->PostFill();
-}
+} //}}}
 
 
 /** */
-void AsymRoot::FillPreProcess()
-{
-   fHists->d["preproc"]->FillPreProcess(fChannelEvent);
+void AsymRoot::FillPassOne()
+{ //{{{
+   fHists->d["preproc"]->FillPassOne(fChannelEvent);
 
    //// Fill PMT histograms
    //if (gAnaInfo->HasPmtBit()) {
    //      //printf("channel: %d\n", ch->GetChannelId());
    //      gAsymRoot->fHists->d["pmt"]->Fill(ch);
    //      fHists->d["pmt"]->FillPreProcess(fChannelEvent);
-   //   }
    //}
-}
+} //}}}
+
+
+/** */
+void AsymRoot::PostFillPassOne()
+{ //{{{
+
+   //CnipolPulserHists *pulserHists = 0;
+   DrawObjContainer *pulserHists = 0;
+   
+   if (gAnaInfo->HasPulserBit()) {
+      //pulserHists = (CnipolPulserHists*) &fHists->d["pulser"];
+      pulserHists = fHists->d["pulser"];
+   }
+
+   fHists->d["preproc"]->PostFillPassOne(pulserHists);
+
+   //
+   if (gAnaInfo->HasPmtBit()) {
+      ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
+   }
+} //}}}
 
 
 /** */
@@ -693,12 +713,6 @@ void AsymRoot::Calibrate()
 void AsymRoot::CalibrateFast()
 { //{{{
    fEventConfig->fCalibrator->CalibrateFast(fHists);
-
-   // XXX this probably needs to be moved somewhere else
-   if (gAnaInfo->HasPmtBit()) {
-      //printf("channel: %d\n", ch->GetChannelId());
-      ((CnipolPmtHists*) fHists->d["pmt"])->PostPreProcess();
-   }
 } //}}}
 
 
