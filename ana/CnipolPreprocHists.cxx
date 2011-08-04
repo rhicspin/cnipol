@@ -11,6 +11,7 @@
 #include "TPaveStats.h"
 
 #include "AnaInfo.h"
+#include "CnipolPulserHists.h"
 #include "RunInfo.h"
 
 ClassImp(CnipolPreprocHists)
@@ -64,10 +65,10 @@ void CnipolPreprocHists::BookHists(string sid)
 
       sprintf(&sChId[0], "%02d", iCh);
 
-      //sprintf(hName, "hTvsA_ch%02d", iCh);
-      //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      //((TH1*) o[hName])->SetOption("colz LOGZ");
-      //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+      sprintf(hName, "hTvsA_ch%02d", iCh);
+      o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA_ch%02d", iCh);
@@ -91,9 +92,14 @@ void CnipolPreprocHists::BookHists(string sid)
 
 
 /** */
-void CnipolPreprocHists::FillPreProcess(ChannelEvent *ch)
-{ //{{{
+//void CnipolPreprocHists::PreFillPassOne()
+//{
+//}
 
+
+/** */
+void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
+{ //{{{
    ((TH1*) o["hTvsA"])->Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
 
@@ -102,10 +108,45 @@ void CnipolPreprocHists::FillPreProcess(ChannelEvent *ch)
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   //((TH1*) o["hTvsA_ch"+sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) o["hTimeVsEnergyA_ch"+sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
-
+   ((TH1*) o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
 } //}}}
+
+
+/** */
+void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
+{
+   if (!oc) return;
+
+   //CnipolPulserHists *pulserHists = dynamic_cast<CnipolPulserHists*>(oc);
+   //CnipolPulserHists *pulserHists = static_cast<CnipolPulserHists*>(oc);
+
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      string sCh(MAX_CHANNEL_DIGITS, ' ');
+      sprintf(&sCh[0], "%02d", *iCh);
+
+      string dName = "channel" + sCh;
+
+      //DrawObjContainer *sdPreproc = d.find(dName)->second;
+      //DrawObjContainer *sdPulser  = pulserHists->d.find(dName)->second;
+      DrawObjContainer *sdPulser  = oc->d.find(dName)->second;
+
+      string hName = "hTimeVsEnergyA_ch" + sCh;
+      //string hName = "hTvsA_ch" + sCh;
+
+      TH1* hPreproc = (TH1*) o[hName];
+      TH1* hPulser  = (TH1*) sdPulser->o[hName];
+
+      hPulser->Scale(gAnaInfo->fFastCalibThinout);
+      hPulser->Scale(N_BUNCHES / (float) gRunInfo->GetNumEmptyBunches());
+      hPreproc->Add(hPulser, -1);
+   }
+}
 
 
 /** */

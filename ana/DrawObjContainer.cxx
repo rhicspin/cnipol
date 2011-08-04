@@ -466,6 +466,18 @@ void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
 
 
 /** */
+void DrawObjContainer::PreFillPassOne() {}
+
+
+/** */
+void DrawObjContainer::FillPassOne(ChannelEvent *ch) {}
+
+
+/** */
+void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc) {}
+
+
+/** */
 void DrawObjContainer::PreFill(string sid)
 { //{{{
    DrawObjContainerMapIter isubd;

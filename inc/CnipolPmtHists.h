@@ -31,9 +31,8 @@ public:
 
    void  BookHists(std::string cutid="");
    //void  Fill(ChannelEvent *ch, std::string cutid="");
-   void  FillPreProcess(ChannelEvent *ch);
-   void  PostFill();
-   void  PostPreProcess();
+   void  FillPassOne(ChannelEvent *ch);
+   void  PostFillPassOne(DrawObjContainer *oc=0);
 
    ClassDef(CnipolPmtHists, 1)
 };

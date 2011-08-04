@@ -120,6 +120,7 @@ public:
    BeamBunchMap GetFilledBunches() const;
    BeamBunchMap GetEmptyBunches() const;
    UShort_t     GetNumFilledBunches() const;
+   UShort_t     GetNumEmptyBunches() const;
    Bool_t       IsEmptyBunch(UShort_t bid) const;
    ESpinState   GetBunchSpin(UShort_t bid) const;
 

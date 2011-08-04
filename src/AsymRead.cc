@@ -298,7 +298,7 @@ void RawDataProcessor::ReadDataFast()
 				     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
 					  gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
 				{
-               gAsymRoot->fHists->d["pulser"]->FillPreProcess(gAsymRoot->fChannelEvent);
+               gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
 				}
 
             // Use only a fraction of events
@@ -310,22 +310,24 @@ void RawDataProcessor::ReadDataFast()
 					 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
                 gAsymRoot->fChannelEvent->PassCutPmtNoise() )
             {
-               gAsymRoot->fHists->d["pmt"]->FillPreProcess(gAsymRoot->fChannelEvent);
+               gAsymRoot->fHists->d["pmt"]->FillPassOne(gAsymRoot->fChannelEvent);
 				}
 
-            if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
             if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
 
-            gAsymRoot->FillPreProcess();
+            gAsymRoot->FillPassOne();
 				//gAsymRoot->PrintChannelEvent();
 
             nTotalEvents++;
          }
       }
    }
+
+   gAsymRoot->PostFillPassOne();
 
    sw.Stop();
    printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
