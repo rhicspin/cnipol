@@ -51,6 +51,7 @@ $nRuns = $sqlDbReader->CountEntries();
 
 <p>
 Runs selected: <?=$sqlDbReader->nResults?>
+<?//=$sqlDbReader->sqlWhere?>
 
 <p>
 Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a>
@@ -90,7 +91,7 @@ $rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
    <th colspan=3>Analyzed
 <tr>
    <th>Frac
-   <th>Ver
+   <th>Ver<br><?=$runSelector->HtmlSortLinks("av");?>
    <th>Date &amp; Time<br><?=$runSelector->HtmlSortLinks("at");?>
 
 
