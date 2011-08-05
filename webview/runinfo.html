@@ -42,6 +42,23 @@
 
 <?
 
+// Determine whether we have different analyses
+
+if (!isset($gSfx) || empty($gSfx))
+   $suffixes = "default ";
+else 
+   $suffixes = "<a href=\"./?runid=$gRunId\">default</a> ";
+
+foreach ($rc['suffixes'] as $suffix) {
+   if (!empty($suffix)) {
+      if ($gSfx == $suffix) 
+         $suffixes .= "$suffix ";
+      else
+         $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
+   }
+}
+
+// Assign the variables
 $polId = $POLARIMETER_ID[$rc['polarimeter_id']];
 
 $cssPol = "";
@@ -85,6 +102,14 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <p>
 
 <table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
+
+<tr>
+   <td colspan=4>
+   <div class="s150 align_cm"><?=$suffixes?></div>
+
+<tr>
+   <td colspan=4>
+   &nbsp;
 
 <tr>
    <td>
@@ -470,12 +495,22 @@ that the plot is symmetric around X = 0 by construction
 -->
 
 <tr>
-<td align=center>
-<!--<?=$gP->img("std/preproc/hTimeVsEnergyA")?>-->
-<td align=center>
-<!--<?=$gP->img("std/preproc/hFitMeanTimeVsEnergyA")?>-->
-<td align=center>
+<td align=center colspan=4>
 <?=$gP->img("preproc/combo")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("calib/hDLVsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hT0VsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hChi2NdfVsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hFitStatusVsChannel")?>
+
+<tr>
+<td class=align_cm colspan=4>
+<?=$gP->img("std/hEventsVsChannel_cut2")?>
 
 </table>
 

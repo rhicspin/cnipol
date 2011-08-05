@@ -9,7 +9,7 @@ class RunSelector {
    var $sqlWhere;
    var $sqlOrderBy = "";
 
-   static $queryVarNames  = array("rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
+   static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
 
    static $shortSortNames = array("rn" => "run_name",
                                   "pi" => "polarimeter_id",
@@ -19,11 +19,12 @@ class RunSelector {
                                   "te" => "nevents_total",
                                   "pr" => "profile_ratio",
                                   "at" => "ana_start_time",
+                                  "av" => "asym_version",
                                   "tgt");
 
    function RunSelector()
    {
-      global $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
+      global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
 
       $url = parse_url($_SERVER['REQUEST_URI']);
       //$urlQuery = $url['query'];
@@ -45,6 +46,15 @@ class RunSelector {
       $this->urlQuery = http_build_query($urlQueryNew);
 
       $this->sqlWhere = "TRUE";
+
+      if ( isset($_GET['rp']) && array_key_exists($_GET['rp'], $RUN_PERIOD)) {
+         $rp = $_GET['rp'];
+         $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
+      } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
+      } else {
+         $rp = 11; // run 11 beign default
+         $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
+      }
 
       if (!empty($_GET['rn']))
          $this->sqlWhere .= " AND run_name LIKE '{$_GET['rn']}'";
@@ -99,7 +109,7 @@ class RunSelector {
 
    function PrintForm()
    {
-      global $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
+      global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
       // Create a table with the necessary header informations
       //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formRunSelector'>\n";
@@ -107,26 +117,33 @@ class RunSelector {
       echo '<div align=center>
             <table border=0>';
 
-      echo "  <tr>
+      echo "
+
+            <tr>
+              <td colspan=4 class=padding2><b>Run Period:</b>\n";
+
+      $this->HtmlSelectField($RUN_PERIOD, "rp", "11");
+
+      echo "<tr>
               <td colspan=4 class=padding2><b>Run:</b>
               <input type=text name=rn value='{$_GET['rn']}'>
               &nbsp;&nbsp;&nbsp;
               Use \"%\" to match any number of characters, use \"_\" to match any single character in run name
 
               <tr>
-              <td class=\"align_cm padding2\"><b>Polarimeter:</b>\n";
+              <td class=\"padding2\"><b>Polarimeter:</b>\n";
 
       $this->HtmlSelectField($POLARIMETER_ID, "pi");
 
-      echo "  <td class=\"align_cm padding2\"><b>Type:</b>\n";
+      echo "  <td class=\"padding2\"><b>Type:</b>\n";
 
       $this->HtmlSelectField($MEASTYPE, "mt");
 
-      echo "  <td class=\"align_cm padding2\"><b>Beam Energy:</b>\n";
+      echo "  <td class=\"padding2\"><b>Beam Energy:</b>\n";
 
       $this->HtmlSelectField($BEAM_ENERGY, "be");
 
-      echo "  <td class=\"align_cm padding2\"><b>Target:</b>\n";
+      echo "  <td class=\"padding2\"><b>Target:</b>\n";
 
       $this->HtmlSelectField($TARGET_ORIENT, "to");
       $this->HtmlSelectField($TARGET_ID, "ti");
@@ -140,19 +157,27 @@ class RunSelector {
    }
 
 
-   function HtmlSelectField($options, $v="")
+   function HtmlSelectField($options, $v="", $default=null)
    {
-      //$key = key($vpair);
+      $selected      = "";
 
       $html  = "<select name='$v'>\n";
       $html .= "<option value=''></option>\n";
 
       foreach($options as $ovalue => $oname) {
 
-         if (isset($_GET[$v]) && array_key_exists($_GET[$v], $options) && ($_GET[$v] == $ovalue) ) $select = "selected";
-         else $select = "";
+         if ( empty($selected) ) {
 
-         $html .= "<option value='$ovalue' $select>$oname</option>\n";
+            if ( isset($_GET[$v]) && array_key_exists($_GET[$v], $options) && ($_GET[$v] == $ovalue) )
+               $html .= "<option value='$ovalue' selected>$oname</option>\n";
+            else if ( !isset($_GET[$v]) && !empty($default) && $default == $ovalue )
+               $html .= "<option value='$ovalue' selected>$oname</option>\n";
+            else
+               $html .= "<option value='$ovalue'>$oname</option>\n";
+
+         } else {
+            $html .= "<option value='$ovalue'>$oname</option>\n";
+         }
       }
 
       $html .= "</select>\n";

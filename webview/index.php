@@ -18,24 +18,51 @@ if ( isset($_GET['sfx']) && !empty($_GET['sfx']) ) {
 
 
 // Run details view
-if (isset($_GET['runid']) && !isset($_GET['chanid'])) {
-
-   $gRunId = $_GET['runid'];
+if (isset($_GET['runid']) && !isset($_GET['chanid']))
+{
+   $gRunId  = $_GET['runid'];
+   $gRunDir = DATA_DIR."/$gRunId";
 
    // check for correct and existing  runid
-   if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig$gSuffix.php")) {
-      print "No results for ".DATA_DIR."/$gRunId\n";
+   if (!is_dir($gRunDir) || !file_exists("$gRunDir/runconfig$gSuffix.php"))
+   {
+      print "No results for $gRunDir\n";
       exit;
    }
 
-   // Read information about this run
+   // Read information about this run from the config file
    $rc = array();
-   include(DATA_DIR."/$gRunId/runconfig$gSuffix.php");
-   if (count($rc) == 0) exit;
+
+   include("$gRunDir/runconfig$gSuffix.php");
+
+   if (count($rc) == 0) {
+      print "No config file found for $gRunDir\n";
+      exit;
+   }
+
+   // Check for all runconfig files
+   if ($handle = opendir($gRunDir)) {
+       //echo "Directory handle: $handle\n";
+       //echo "Files:\n";
+   
+       /* This is the correct way to loop over the directory. */
+       while (false !== ($file = readdir($handle))) {
+           //echo "$file\n";
+           if (preg_match("/^runconfig(_?)(.*)\.php$/", $file, $matches)) $rc['suffixes'][] = $matches[2];
+       }
+
+       //print_r($rc['suffixes']);
+   
+       closedir($handle);
+   } else {
+      print "Could not find dir $gRunDir\n";
+      exit;
+   }
 
    //include("./config_plots.php");
    include_once("PlotHelper.php");
 
+   // Set default directory for run images
    $dir = "../runs/$gRunId/images$gSuffix/";
    $gP = new PlotHelper($dir);
 
