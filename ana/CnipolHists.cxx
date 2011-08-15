@@ -230,6 +230,27 @@ void CnipolHists::BookHistsExtra(string cutid)
 
 
 /** */
+void CnipolHists::PreFill(string cutid)
+{ //{{{
+   char dName[256];
+   char hName[256];
+
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      sprintf(dName, "channel%02d", *iCh);
+      DrawObjContainer *oc = d.find(dName)->second;
+
+      sprintf(hName, "hSpinVsDelim%s_ch%02d", cutid.c_str(), *iCh);
+      ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, N_SPIN_STATES, -1.5, 1.5);
+   }
+} //}}}
+
+
+/** */
 void CnipolHists::Fill(ChannelEvent *ch, string cutid)
 { //{{{
 
@@ -318,27 +339,6 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    //((TH2*)     o["hTotalEnergyVsEnergyA"+cutid])             ->Fill(ch->GetEnergyA(), kinEnergyEst);
 
    //((TH1*)     o["hTof"+cutid])                              ->Fill(tofEst);
-} //}}}
-
-
-/** */
-void CnipolHists::PreFill(string cutid)
-{ //{{{
-   char dName[256];
-   char hName[256];
-
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
-
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
-
-      sprintf(dName, "channel%02d", *iCh);
-      DrawObjContainer *oc = d.find(dName)->second;
-
-      sprintf(hName, "hSpinVsDelim%s_ch%02d", cutid.c_str(), *iCh);
-      ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, N_SPIN_STATES, -1.5, 1.5);
-   }
 } //}}}
 
 

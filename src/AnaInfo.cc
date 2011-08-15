@@ -48,7 +48,7 @@ AnaInfo::AnaInfo() : TObject(),
    nEventsProcessed  (0),
    nEventsTotal      (0),
    fThinout           (1),
-   fFastCalibThinout (0.10),
+   fFastCalibThinout (0.1),
    reference_rate    (1),
    //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
@@ -67,7 +67,7 @@ AnaInfo::AnaInfo() : TObject(),
 /**
  * Default Values for Run Condition
  */
-AnaInfo::AnaInfo(string runId) :
+AnaInfo::AnaInfo(string runId) : TObject(),
    fRunName          (runId), fSuffix(""),
    enel              (400),
    eneu              (900),
@@ -218,7 +218,7 @@ string AnaInfo::GetOutDir() const
 
 /** */
 string AnaInfo::GetAlphaCalibFile() const
-{
+{ //{{{
    if (fAlphaCalibRun.empty()) {
       cout << "Alpha calibration run not defined" << endl;
       return "";
@@ -227,12 +227,12 @@ string AnaInfo::GetAlphaCalibFile() const
    string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fAlphaCalibRun + "/" + fAlphaCalibRun + ".root";
    return path;
-}
+} //}}}
 
 
 /** */
 string AnaInfo::GetDlCalibFile() const
-{
+{ //{{{
    if (fDlCalibRun.empty()) {
       Warning("GetDlCalibFile", "Dead layer calibration run not defined");
       return "";
@@ -242,17 +242,17 @@ string AnaInfo::GetDlCalibFile() const
    path += "/" + fDlCalibRun + "/" + fDlCalibRun + ".root";
 
    return path;
-}
+} //}}}
 
 
 /** */
 string AnaInfo::GetRootTreeFileName(UShort_t trid) const
-{
+{ //{{{
    string filename;
    filename.reserve(GetOutDir().size() + fRunName.size() + 20);
    sprintf(&filename[0], "%s/%s%s_tree_%02d.root", GetOutDir().c_str(), fRunName.c_str(), GetSuffix().c_str(), trid);
    return filename;
-}
+} //}}}
 
 
 /** */
@@ -333,10 +333,10 @@ void AnaInfo::ProcessOptions()
 
 /** */
 void AnaInfo::Print(const Option_t* opt) const
-{
+{ //{{{
    Info("Print", "Print members:");
    PrintAsPhp();
-}
+} //}}}
 
 
 /** */
@@ -352,7 +352,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['nEventsProcessed']             = %u;\n",     nEventsProcessed);
    fprintf(f, "$rc['nEventsTotal']                 = %u;\n",     nEventsTotal);
-   fprintf(f, "$rc['fThinout']                      = %u;\n",     fThinout);
+   fprintf(f, "$rc['fThinout']                     = %u;\n",     fThinout);
    fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
    fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);
    fprintf(f, "$rc['fAnaTimeCpu']                  = %f;\n",     fAnaTimeCpu);
@@ -439,55 +439,6 @@ void AnaInfo::PrintUsage()
    cout << "Options marked with (?) need more work" << endl;
    cout << endl;
 } //}}}
-
-
-/** */
-/*
-void AnaInfo::Streamer(TBuffer &buf)
-{ //{{{
-   TString tstr;
-
-   if (buf.IsReading()) {
-      //printf("reading AnaInfo::Streamer(TBuffer &buf) \n");
-      buf >> tstr; fRunName = tstr.Data();
-      buf >> tstr; fSuffix  = tstr.Data();
-      buf >> enel;
-      buf >> eneu;
-      buf >> widthl;
-      buf >> widthu;
-      buf >> fModes;
-      buf >> nEventsProcessed;
-      buf >> nEventsTotal;
-      buf >> fThinout;
-      buf >> fFastCalibThinout;
-      buf >> fAnaDateTime >> fAnaTimeReal >> fAnaTimeCpu;
-      buf >> tstr; fAlphaCalibRun  = tstr.Data();
-      buf >> tstr; fDlCalibRun     = tstr.Data();
-      buf >> tstr; fFileStdLogName = tstr.Data();
-      buf >> fFlagCopyResults >> fFlagUseDb >> fFlagUpdateDb;
-      //buf >> fUserGroup;
-   } else {
-      //printf("writing AnaInfo::Streamer(TBuffer &buf) \n");
-      tstr = fRunName; buf << tstr;
-      tstr = fSuffix;  buf << tstr;
-      buf << enel;
-      buf << eneu;
-      buf << widthl;
-      buf << widthu;
-      buf << fModes;
-      buf << nEventsProcessed;
-      buf << nEventsTotal;
-      buf << fThinout;
-      buf << fFastCalibThinout;
-      buf << fAnaDateTime << fAnaTimeReal << fAnaTimeCpu;
-      tstr = fAlphaCalibRun;  buf << tstr;
-      tstr = fDlCalibRun;     buf << tstr;
-      tstr = fFileStdLogName; buf << tstr;
-      buf << fFlagCopyResults << fFlagUseDb << fFlagUpdateDb;
-      //buf << fUserGroup;
-   }
-} //}}}
-*/
 
 
 /** Deprecated. */

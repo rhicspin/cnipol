@@ -11,6 +11,7 @@
 #include "AsymErrorDetector.h"
 
 #include "TText.h"
+#include "TF1.h"
 
 #include "AnaInfo.h"
 #include "AnaResult.h"
@@ -53,8 +54,8 @@ void InvariantMassCorrelation(int st)
    char htitle[100],histname[100];
  
    // Function for Fitting
-   TF1 * g1 = new TF1("g1","gaus",5,16);
-   TF1 * f1 = new TF1("f1","pol1",200,1000);
+   TF1 *g1 = new TF1("g1","gaus",5,16);
+   TF1 *f1 = new TF1("f1","pol1",200,1000);
    f1->SetLineColor(2);
  
    // Mass vs. Energy correlation
@@ -410,7 +411,7 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
   t2->SetTextColor(13);
   h2 -> GetListOfFunctions()->Add(t2);
 
-  if (local.nbunch){
+  if (local.nbunch) {
      // error_code registration
      gAnaResult->anomaly.bunch_err_code += err_code;
 
@@ -424,12 +425,12 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
      for (int i=0; i<local.nbunch; i++) bindex[i] = local.bunch[i];
 
      TGraph * gr = new TGraph(local.nbunch, bindex, local.A);
-     gr -> SetMarkerStyle(24);
-     gr -> SetMarkerSize(MSIZE);
-     gr -> SetMarkerColor(3);
+     gr->SetMarkerStyle(24);
+     gr->SetMarkerSize(MSIZE);
+     gr->SetMarkerColor(3);
 
      // append suspicious bunch in h2 hitogram
-     h2 -> GetListOfFunctions() -> Add(gr,"P");
+     h2->GetListOfFunctions() -> Add(gr,"P");
   }
 
   return sigma;
@@ -611,19 +612,18 @@ void RegisterAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz)
    nz=0; int J=0;
    for(int i=0; i<nx; i++) {
  
-     for (int j=J; j<ny ; j++){
-       if (y[j]<x[i]) {
-         z[nz]=y[j]; nz++; J++;
-       } else if (y[j]==x[i]) {
-         z[nz]=y[j]; nz++; J++;
-         break;
-       } else {
-         z[nz]=x[i]; nz++;
-         break;
-       }
-     } // end-of-for(j)
- 
-   }//end-of-for(i)
+      for (int j=J; j<ny ; j++){
+         if (y[j]<x[i]) {
+            z[nz]=y[j]; nz++; J++;
+         } else if (y[j]==x[i]) {
+            z[nz]=y[j]; nz++; J++;
+            break;
+         } else {
+            z[nz]=x[i]; nz++;
+            break;
+         }
+      }
+   }
  
    // above loop doesn't precess the largest number in x[] or y[] array
    if (x[nx-1]>y[ny-1]) {z[nz]=x[nx-1]; nz++;}

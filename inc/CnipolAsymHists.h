@@ -7,6 +7,8 @@
 #ifndef CnipolAsymHists_h
 #define CnipolAsymHists_h
 
+#include <string>
+
 #include "TDirectoryFile.h"
 
 #include "AsymHeader.h"
@@ -29,8 +31,10 @@ public:
    CnipolAsymHists(TDirectory *dir);
    ~CnipolAsymHists();
 
-   void  BookHists(std::string cutid="");
-   void  Fill(ChannelEvent *ch, std::string cutid="");
+   void BookHists(std::string cutid="");
+   void PreFill(std::string cutid="");
+   void Fill(ChannelEvent *ch, std::string cutid="");
+   void PostFill();
 
    ClassDef(CnipolAsymHists, 1)
 };

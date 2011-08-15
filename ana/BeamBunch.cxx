@@ -1,7 +1,12 @@
 
+#include <ios>
+#include <iostream>
+
 #include "BeamBunch.h"
 
 ClassImp(BeamBunch)
+
+using namespace std;
 
 
 /** */
@@ -41,9 +46,9 @@ void BeamBunch::PrintAsPhp(FILE *f) const
 ostream& operator<<(ostream &os, const BeamBunch &bb)
 { //{{{
    os << "array(";
-   os << "'fIsFilled' = "        << bb.fIsFilled       << ", ";
-   os << "'fIsUserDisabled' = "  << bb.fIsUserDisabled << ", ";
-   os << "'fBunchSpin' = "       << bb.fBunchSpin;
+   os << "'fIsFilled' => "        << bb.fIsFilled  << ", ";
+   os << "'fIsUserDisabled' => "  << bb.fIsUserDisabled << ", ";
+   os << "'fBunchSpin' => '"       << bb.fBunchSpin << "'";
    os << ")";
 
    return os;

@@ -21,15 +21,11 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
-//#include "TMath.h"
-//#include "TMinuit.h"
-//#include "TString.h"
 
-#include "rhicpol.h"
-#include "rpoldata.h"
+//#include "rhicpol.h"
+//#include "rpoldata.h"
 
 #include "AsymGlobals.h"
-//#include "AsymCalc.h"
 
 void DetectorAnomaly();
 
