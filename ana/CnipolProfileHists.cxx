@@ -50,14 +50,14 @@ void CnipolProfileHists::BookHists(string sid)
 
    char hName[256];
 
-   sprintf(hName, "hIntensProfile");
+   sprintf(hName, "hIntensProfile"); // this one is filled from the scaler data
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
    ((TH1*) o[hName])->GetXaxis()->SetTitle("time, s");
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
    ((TH1*) o[hName])->Sumw2();
 
-   sprintf(hName, "hIntensProfile2");
+   sprintf(hName, "hIntensProfile2"); // this one is filled from the event data (kind of more correct than hIntensProfile)
    //o[hName] = new TH1D(hName, hName, 400, 0, 400);
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
    ((TH1*) o[hName])->SetTitle(";time, s;Events");
@@ -421,7 +421,8 @@ void CnipolProfileHists::Process()
    grPolarVsIntensProfile->SetMarkerSize(1);
    grPolarVsIntensProfile->SetMarkerColor(kRed);
 
-   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++) {
+   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++)
+   {
       float intens    = hIntensProfile->GetBinContent(i);
       float intensErr = hIntensProfile->GetBinError(i);
       float polar     = hPolarProfile->GetBinContent(i);
@@ -452,16 +453,12 @@ void CnipolProfileHists::Process()
    TH1* hPolarVsIntensProfile = (TH1*) o["hPolarVsIntensProfile"];
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
 
-   gAnaResult->fIntensPolarMax    = mfPow->GetParameter(0);
-   gAnaResult->fIntensPolarMaxErr = mfPow->GetParError(0);
-   gAnaResult->fIntensPolarR      = mfPow->GetParameter(1);
-   gAnaResult->fIntensPolarRErr   = mfPow->GetParError(1);
+   gAnaResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
+   gAnaResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
 
-   char sratio[50];
-
-   sprintf(sratio, "% 8.3f, % 6.3f", gAnaResult->fIntensPolarR, gAnaResult->fIntensPolarRErr);
-
-   gRunDb.fFields["PROFILE_RATIO"] = sratio;
+   //char sratio[50];
+   //sprintf(sratio, "% 8.3f, % 6.3f", gAnaResult->fProfilePolarR.first, gAnaResult->fProfilePolarMax.second);
+   //gRunDb.fFields["PROFILE_RATIO"] = sratio;
 
    //TPaveStats *stats = (TPaveStats*) hPolarVsIntensProfile->FindObject("stats");
 
@@ -492,7 +489,8 @@ void CnipolProfileHists::Process()
    grIntensUniProfile->SetMarkerSize(1);
    grIntensUniProfile->SetMarkerColor(kRed);
 
-   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++) {
+   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++)
+   {
       float intens    = hIntensProfile->GetBinContent(i);
       float intensErr = hIntensProfile->GetBinError(i);
       float polar     = hPolarProfile->GetBinContent(i);

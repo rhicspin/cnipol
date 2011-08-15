@@ -427,6 +427,8 @@ void AsymRoot::PreProcess()
 void AsymRoot::PostProcess(MseRunInfoX &run)
 { //{{{
 
+	// One should be carefull here as the order of post processing is important.
+   // Some histograms may depend on other histograms in independent containers
    fHists->PostFill();
 
    // Special processing for some of the histogram containers
@@ -435,16 +437,17 @@ void AsymRoot::PostProcess(MseRunInfoX &run)
       ((CnipolProfileHists*) fHists->d["profile"])->Process();
 
       gRunInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
-
-      run.profile_ratio       = gAnaResult->fIntensPolarR;
-      run.profile_ratio_error = gAnaResult->fIntensPolarRErr;
 	}
 
    // Add info to database entry
-   run.polarization       = gAnaResult->sinphi[0].P[0];
-   run.polarization_error = gAnaResult->sinphi[0].P[1],
-   run.phase              = gAnaResult->sinphi[0].dPhi[0];
-   run.phase_error        = gAnaResult->sinphi[0].dPhi[1];
+   run.profile_ratio       = gAnaResult->fProfilePolarR.first;
+   run.profile_ratio_error = gAnaResult->fProfilePolarR.second;
+
+   run.polarization        = gAnaResult->sinphi[0].P[0];
+   run.polarization_error  = gAnaResult->sinphi[0].P[1],
+   run.phase               = gAnaResult->sinphi[0].dPhi[0];
+   run.phase_error         = gAnaResult->sinphi[0].dPhi[1];
+
 } //}}}
 
 

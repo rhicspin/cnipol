@@ -68,6 +68,7 @@ public:
    Float_t  GetCarbonMass();
    Float_t  GetCarbonMassEstimate();
    Float_t  GetMandelstamT();
+   Float_t  GetTdcAdcTimeDiff();
 
    //virtual void Print(const Option_t* opt="") const;
    void Print(const Option_t* opt="") const;

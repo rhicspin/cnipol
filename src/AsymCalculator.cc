@@ -1674,10 +1674,51 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
          Double_t val = fitres->Value(0);
          Double_t err = fitres->FitResult::Error(0);
 
-         printf("val err: %f, %f\n", val, err);
+         //printf("val err: %f, %f\n", val, err);
 
          hAsym->SetBinContent(iKinE, val);
          hAsym->SetBinError(iKinE, err);
+
+      } else {
+         gSystem->Error("   ::CalcKinEnergyAChAsym", "Fit error...");
+      }
+   }
+
+} //}}}
+
+
+/** */
+void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
+{ //{{{
+   TH2 *hChVsTimeDiff_Up   = (TH2*) oc->o["hChVsLongiTimeDiff_up"];
+   TH2 *hChVsTimeDiff_Down = (TH2*) oc->o["hChVsLongiTimeDiff_down"];
+
+   TH1 *hAsym          = (TH1*) oc->o["hLongiChAsym"];
+
+   for (int iTimeDiff=1; iTimeDiff<=hAsym->GetNbinsX(); iTimeDiff++)
+   {
+      printf("binnn: %d\n", iTimeDiff);
+
+      TH1I *hUp   = (TH1I*) hChVsTimeDiff_Up  ->ProjectionY("hUp",   iTimeDiff, iTimeDiff);
+      TH1I *hDown = (TH1I*) hChVsTimeDiff_Down->ProjectionY("hDown", iTimeDiff, iTimeDiff);
+
+      // Check if there are events in the histograms
+      if (!hUp->Integral() && !hDown->Integral()) continue;
+
+      TH1D* hChAsym = CalcChannelAsym(*hUp, *hDown);
+
+      //TFitResultPtr fitres = FitChAsymConst(*hChAsym);
+      TFitResultPtr fitres = FitChAsymSine(*hChAsym);
+
+      if (fitres.Get()) {
+
+         Double_t val = fitres->Value(0);
+         Double_t err = fitres->FitResult::Error(0);
+
+         //printf("val err: %f, %f\n", val, err);
+
+         hAsym->SetBinContent(iTimeDiff, val);
+         hAsym->SetBinError(iTimeDiff, err);
 
       } else {
          gSystem->Error("   ::CalcKinEnergyAChAsym", "Fit error...");
@@ -1854,7 +1895,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    // Caluclate Weighted Average
    CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaResult->P[0], gAnaResult->P[1]);
 
-   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, gAnaResult->fAvrgPMAsym, gAnaResult->fAvrgPMAsymErr);
+   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaResult->fAvrgPMAsym.first, (Float_t&) gAnaResult->fAvrgPMAsym.second);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaResult->P[0], gAnaResult->P[1]);
 

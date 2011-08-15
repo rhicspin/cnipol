@@ -178,6 +178,26 @@ Float_t ChannelEvent::GetMandelstamT()
 
 
 /** */
+Float_t ChannelEvent::GetTdcAdcTimeDiff()
+{ //{{{
+   UChar_t chId  = GetChannelId();
+   Float_t delta = GetTimeOfFlight() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
+
+   return delta;
+
+   //if ( TMath::Abs(delta) < 3) {
+   //   return 0;
+   //} else if (delta >= 3)
+   //   return  +1;
+   //} else if (delta <= -3) {
+   //   return  -1;
+   //} else
+   //   return 2;
+
+} //}}}
+
+
+/** */
 void ChannelEvent::Print(const Option_t* opt) const
 { //{{{
    opt = "";

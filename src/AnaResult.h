@@ -22,8 +22,7 @@ public:
    Float_t              P[2];  
    ValErrPair           fAnaPower;              // Analyzin power A_N
    ValErrPair           fPol;
-   Float_t              fAvrgPMAsym;            // Plus-Minus (+/-) spin state asymmetry
-   Float_t              fAvrgPMAsymErr;  
+   ValErrPair           fAvrgPMAsym;            // deprecated. Plus-Minus (+/-) spin state asymmetry
    TFitResultPtr        fFitResAsymPhi;
    TFitResultPtr        fFitResPolarPhi;
    Spin2FitResMap       fFitResAsymBunchX90;
@@ -41,10 +40,10 @@ public:
    StructSinPhi         basym[100+MAXDELIM];    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    StructAnomaly        anomaly;                //!
    StructUnrecognized   unrecog;                //!
-   Float_t              fIntensPolarMax;        // The peak polarization from the P vs I fit 
-   Float_t              fIntensPolarMaxErr;     //
-   Float_t              fIntensPolarR;          // The R profile defines the ratio of intensity and polarization profiles
-   Float_t              fIntensPolarRErr;       //
+
+   ValErrPair           fProfilePolarMax;        // The peak polarization from the P vs I fit 
+   ValErrPair           fProfilePolarR;          // The R profile defines the ratio of intensity and polarization profiles
+
    Float_t              fPmtV1T0;
    Float_t              fPmtV1T0Err;
    Float_t              fPmtS1T0;

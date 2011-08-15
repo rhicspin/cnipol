@@ -55,6 +55,7 @@ public:
    void  CalcStripAsymmetry(DrawObjContainer *oc);
    void  CalcStripAsymmetryByProfile(DrawObjContainer *oc);
    void  CalcKinEnergyAChAsym(DrawObjContainer *oc);
+   void  CalcLongiChAsym(DrawObjContainer *oc);
    void  CalcStripAsymmetry(int Mode);
    TH1D* CalcChannelAsym(TH1I &hUp, TH1I &hDown, TH1D* hChAsym=0);
    //void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag);
