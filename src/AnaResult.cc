@@ -18,7 +18,7 @@ AnaResult::AnaResult() : TObject(),
    //P[2],
    fAnaPower(),
    fPol(),
-   fAvrgPMAsym(0),        fAvrgPMAsymErr(0),
+   fAvrgPMAsym(),
    fFitResAsymPhi(),      fFitResPolarPhi(),
    fFitResAsymBunchX90(), fFitResAsymBunchX45(), fFitResAsymBunchY45(),
    fAsymX90(), fAsymX45(), fAsymY45(),
@@ -30,10 +30,8 @@ AnaResult::AnaResult() : TObject(),
    //basym[100+MAXDELIM],    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    //anomaly(),
    //unrecog()
-   fIntensPolarMax(0),
-   fIntensPolarMaxErr(0),
-   fIntensPolarR(0),
-   fIntensPolarRErr(0),
+   fProfilePolarMax(),
+   fProfilePolarR(),
    fPmtV1T0(0),
    fPmtV1T0Err(0),
    fPmtS1T0(0),
@@ -70,8 +68,7 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['P']                   = array(%f, %f);\n", P[0], P[1]);
    fprintf(f, "$rc['fAnaPower']           = %s;\n",            PairAsPhpArray(fAnaPower).c_str());
    fprintf(f, "$rc['fPol']                = %s;\n",            PairAsPhpArray(fPol).c_str());
-   fprintf(f, "$rc['fAvrgPMAsym']         = %f;\n",            fAvrgPMAsym);
-   fprintf(f, "$rc['fAvrgPMAsymErr']      = %f;\n",            fAvrgPMAsymErr);
+   fprintf(f, "$rc['fAvrgPMAsym']         = %s;\n",            PairAsPhpArray(fAvrgPMAsym).c_str());
    fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());
    fprintf(f, "$rc['fAsymX45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45).c_str());
    fprintf(f, "$rc['fAsymY45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymY45).c_str());
@@ -89,10 +86,9 @@ void AnaResult::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, ");\n");
-   fprintf(f, "$rc['fIntensPolarMax']     = %f;\n",            fIntensPolarMax);
-   fprintf(f, "$rc['fIntensPolarMaxErr']  = %f;\n",            fIntensPolarMaxErr);
-   fprintf(f, "$rc['fIntensPolarR']       = %f;\n",            fIntensPolarR);
-   fprintf(f, "$rc['fIntensPolarRErr']    = %f;\n",            fIntensPolarRErr);
+   fprintf(f, "$rc['fProfilePolarMax']    = %s;\n",            PairAsPhpArray(fProfilePolarMax).c_str());
+   fprintf(f, "$rc['fProfilePolarR']      = %s;\n",            PairAsPhpArray(fProfilePolarR).c_str());
+
    fprintf(f, "$rc['fPmtV1T0']            = %f;\n",            fPmtV1T0);
    fprintf(f, "$rc['fPmtV1T0Err']         = %f;\n",            fPmtV1T0Err);
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);

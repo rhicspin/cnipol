@@ -45,8 +45,14 @@ void CnipolAsymHists::BookHists(string cutid)
 
    sprintf(hName, "hKinEnergyAChAsym%s", cutid.c_str());
    o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
-   ((TH1*) o[hName])->SetOption("E1 NOIMG");
+   ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;Asymmetry;");
+
+   Float_t xbins[4] = {-20, -2, +2, +20};
+   sprintf(hName, "hLongiChAsym%s", cutid.c_str());
+   o[hName] = new TH1F(hName, hName, 3, xbins);
+   ((TH1*) o[hName])->SetOption("E1");
+   ((TH1*) o[hName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
 
    // Detector Id vs bunch id
    shName = "hDetVsBunchId";
@@ -56,17 +62,17 @@ void CnipolAsymHists::BookHists(string cutid)
 
    shName = "hAsymVsBunchId_X90" + cutid;
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   ((TH1*) o[shName])->SetOption("NOIMG");
+   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X90 Asymmetry;");
 
    shName = "hAsymVsBunchId_X45" + cutid;
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   ((TH1*) o[shName])->SetOption("NOIMG");
+   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X45 Asymmetry;");
 
    shName = "hAsymVsBunchId_Y45" + cutid;
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   ((TH1*) o[shName])->SetOption("NOIMG");
+   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Y45 Asymmetry;");
 
    //
@@ -90,7 +96,7 @@ void CnipolAsymHists::BookHists(string cutid)
 
    shName = "hAsymVsPhi" + cutid;
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -0.03, 0.03);
-   ((TH1*) o[shName])->SetOption("NOIMG");
+   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
    ((TH1*) o[shName])->GetListOfFunctions()->Add(grAsymVsPhi, "p");
 
@@ -103,7 +109,7 @@ void CnipolAsymHists::BookHists(string cutid)
 
    shName = "hPolarVsPhi" + cutid;
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -1.5, 1.5);
-   ((TH1*) o[shName])->SetOption("NOIMG");
+   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
    ((TH1*) o[shName])->GetListOfFunctions()->Add(grPolarVsPhi, "p");
 
@@ -171,6 +177,13 @@ void CnipolAsymHists::BookHists(string cutid)
       ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Channel Id;");
 
       // Channel Id vs energy
+      Double_t xbins[4] = {-20, -2, +2, +20};
+      shName = "hChVsLongiTimeDiff_" + sSS;
+      o[shName] = new TH2I(shName.c_str(), shName.c_str(), 3, xbins, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Time Diff, ns;Channel Id;");
+
+      // Channel Id vs energy
       shName = "hChVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
       ((TH1*) o[shName])->SetOption("colz NOIMG");
@@ -222,13 +235,15 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
    //((TH1*) o["hDetVsBunchId"]) -> Fill(bId, detId);
 
    Float_t kinEnergy = ch->GetKinEnergyAEDepend();
+   Float_t timeDiff  = ch->GetTdcAdcTimeDiff();
    UInt_t  ttime     = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
    string sSS = gRunConfig.AsString( gRunInfo->GetBunchSpin(bId) );
 
-   ((TH1*) o["hChVsBunchId_"    + sSS]) -> Fill(bId, chId);
-   ((TH1*) o["hChVsKinEnergyA_" + sSS]) -> Fill(kinEnergy, chId);
-   ((TH1*) o["hChVsDelim_"      + sSS]) -> Fill(ttime, chId);
+   ((TH1*) o["hChVsBunchId_"       + sSS]) -> Fill(bId, chId);
+   ((TH1*) o["hChVsKinEnergyA_"    + sSS]) -> Fill(kinEnergy, chId);
+   ((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
+   ((TH1*) o["hChVsDelim_"         + sSS]) -> Fill(ttime, chId);
 
    //((TH1*) o["hDetVsKinEnergyA_" + sSS]) -> Fill(kinEnergy, detId);
    //((TH1*) o["hDetVsBunchId_"    + sSS]) -> Fill(bId, detId);
@@ -288,6 +303,7 @@ void CnipolAsymHists::PostFill()
    gAsymCalculator.CalcStripAsymmetry(this);
    gAsymCalculator.CalcStripAsymmetryByProfile(this);
    gAsymCalculator.CalcKinEnergyAChAsym(this);
+   gAsymCalculator.CalcLongiChAsym(this);
 
    //printf("XXX %f\n", run.polarization);
 
