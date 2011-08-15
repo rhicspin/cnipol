@@ -424,13 +424,27 @@ void AsymRoot::PreProcess()
 
 
 /** */
-void AsymRoot::PostProcess()
+void AsymRoot::PostProcess(MseRunInfoX &run)
 { //{{{
-   if (gAnaInfo->HasAsymBit()) {
-      //gAsymCalculator.CalcBunchAsymmetry();
-	}
 
    fHists->PostFill();
+
+   // Special processing for some of the histogram containers
+   if (gAnaInfo->HasProfileBit()) {
+
+      ((CnipolProfileHists*) fHists->d["profile"])->Process();
+
+      gRunInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
+
+      run.profile_ratio       = gAnaResult->fIntensPolarR;
+      run.profile_ratio_error = gAnaResult->fIntensPolarRErr;
+	}
+
+   // Add info to database entry
+   run.polarization       = gAnaResult->sinphi[0].P[0];
+   run.polarization_error = gAnaResult->sinphi[0].P[1],
+   run.phase              = gAnaResult->sinphi[0].dPhi[0];
+   run.phase_error        = gAnaResult->sinphi[0].dPhi[1];
 } //}}}
 
 
@@ -458,6 +472,7 @@ void AsymRoot::PostFillPassOne()
    if (gAnaInfo->HasPulserBit()) {
       //pulserHists = (CnipolPulserHists*) &fHists->d["pulser"];
       pulserHists = fHists->d["pulser"];
+      pulserHists->PostFillPassOne(pulserHists);
    }
 
    fHists->d["preproc"]->PostFillPassOne(pulserHists);
@@ -494,15 +509,6 @@ void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 void AsymRoot::FillRunHists()
 {
    ((CnipolRunHists*) fHists->d["run"])->Fill(*gRunInfo);
-}
-
-
-/** */
-void AsymRoot::ProcessProfileHists()
-{
-   ((CnipolProfileHists*) fHists->d["profile"])->Process();
-
-   gRunInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
 }
 
 

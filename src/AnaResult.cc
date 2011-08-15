@@ -1,7 +1,11 @@
 
+#include <string>
+
 #include "AnaResult.h"
 
 ClassImp(AnaResult)
+
+using namespace std;
 
 
 /** */
@@ -12,8 +16,12 @@ AnaResult::AnaResult() : TObject(),
    UniversalRate(0),
    //A_N[2],
    //P[2],
-   fAvrgPMAsym(0),
-   fAvrgPMAsymErr(0),
+   fAnaPower(),
+   fPol(),
+   fAvrgPMAsym(0),        fAvrgPMAsymErr(0),
+   fFitResAsymPhi(),      fFitResPolarPhi(),
+   fFitResAsymBunchX90(), fFitResAsymBunchX45(), fFitResAsymBunchY45(),
+   fAsymX90(), fAsymX45(), fAsymY45(),
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
    //energy_slope[2],        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
@@ -60,8 +68,13 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['UniversalRate']       = %f;\n",            UniversalRate);
    fprintf(f, "$rc['A_N']                 = array(%f, %f);\n", A_N[0], A_N[1]);
    fprintf(f, "$rc['P']                   = array(%f, %f);\n", P[0], P[1]);
+   fprintf(f, "$rc['fAnaPower']           = %s;\n",            PairAsPhpArray(fAnaPower).c_str());
+   fprintf(f, "$rc['fPol']                = %s;\n",            PairAsPhpArray(fPol).c_str());
    fprintf(f, "$rc['fAvrgPMAsym']         = %f;\n",            fAvrgPMAsym);
    fprintf(f, "$rc['fAvrgPMAsymErr']      = %f;\n",            fAvrgPMAsymErr);
+   fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());
+   fprintf(f, "$rc['fAsymX45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45).c_str());
+   fprintf(f, "$rc['fAsymY45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymY45).c_str());
    fprintf(f, "$rc['P_sigma_ratio']       = array(%f, %f);\n", P_sigma_ratio[0], P_sigma_ratio[1]);
    fprintf(f, "$rc['P_sigma_ratio_norm']  = array(%f, %f);\n", P_sigma_ratio_norm[0], P_sigma_ratio_norm[1]);
    fprintf(f, "$rc['energy_slope']        = array(%f, %f);\n", energy_slope[0], energy_slope[1]);

@@ -513,7 +513,7 @@ int main(int argc, char *argv[])
       gAsymRoot->Calibrate();
    }
 
-   gAsymRoot->PostProcess();
+   gAsymRoot->PostProcess(*mseRunInfoX);
 
    //gRunDb.Print();
    //gAsymRoot->fEventConfig->Print();

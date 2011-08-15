@@ -304,8 +304,8 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 
    printf("\nFitting histogram:\n");
    hMeanTime->Print();
-   printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
-   printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
+   //printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
+   //printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
 
    //TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");

@@ -6,6 +6,8 @@
 #include <string>
 
 #include "TColor.h"
+#include "TObject.h"
+
 
 enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3};
 
@@ -30,7 +32,7 @@ typedef std::set<ESpinState>::iterator     IterSpinState;
 ostream& operator<<(ostream &os, const ESpinState &ss);
 
 
-class RunConfig
+class RunConfig : public TObject
 {
 private:
 
@@ -52,6 +54,7 @@ public:
    static Color_t     AsColor(EPolarimeterId polId);
    static Color_t     AsColor(ESpinState spin);
 
+   static UShort_t    GetDetectorId(UShort_t chId);
 };
 
 #endif

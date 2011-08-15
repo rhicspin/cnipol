@@ -18,16 +18,32 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <utility> // for std::pair definition
 
 #include "TH1.h"
 #include "TGraphErrors.h"
+#include "TFitResultPtr.h"
 
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
+#include "RunConfig.h"
 
 
-typedef std::map<std::string, std::string> Str2StrMap;
+typedef std::map<std::string, std::string>     Str2StrMap;
+typedef std::pair<Double_t, Double_t>          ValErrPair;
+typedef std::set<ValErrPair>                   ValErrSet;
+typedef std::map<std::string, ValErrPair>      ValErrMap;
+typedef std::map<std::string, TFitResultPtr>   Str2FitResMap;
+typedef std::map<ESpinState,  TFitResultPtr>   Spin2FitResMap;
+typedef std::pair<UShort_t, UShort_t>          DetLRPair;
+typedef std::set<DetLRPair>                    DetLRSet;
+//typedef std::map<UShort_t, UShort_t>  DetLRPairs;
+
+
+std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
+TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
+TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
 
 // whole info for one event
 struct processEvent {
@@ -330,7 +346,6 @@ void  DrawHorizLine(TH1 *h, float x1, float x2, float y, int color, int lstyle, 
 void  DrawVertLine (TH1 *h, float x, float y, int color, int lwidth);
 
 void  binary_zero(int n, int mb);
-void  sqass(float A, float B, float C, float D, float *asym, float *easym);
 
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey);
 void  ReadRampTiming(char *filename);
@@ -338,7 +353,7 @@ void  ReadRampTiming(char *filename);
 
 /** */
 template<class T> void ReadStlContainer(TBuffer &buf, std::set<T> &s)
-{
+{ //{{{
    s.clear();
 
    int size = 0;
@@ -350,12 +365,12 @@ template<class T> void ReadStlContainer(TBuffer &buf, std::set<T> &s)
       buf >> value;
       s.insert(value);
    }
-}
+} //}}}
 
 
 /** */
 template<class T> void WriteStlContainer(TBuffer &buf, std::set<T> &s)
-{
+{ //{{{
    buf << s.size();
 
    typename std::set<T>::const_iterator is;
@@ -363,12 +378,12 @@ template<class T> void WriteStlContainer(TBuffer &buf, std::set<T> &s)
    for (is=s.begin(); is!=s.end(); ++is) {
       buf << *is;
    }
-}
+} //}}}
 
 
 /** */
 template<class T> std::string VecAsPhpArray(const std::vector<T>& v)
-{
+{ //{{{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -384,11 +399,12 @@ template<class T> std::string VecAsPhpArray(const std::vector<T>& v)
    ssChs << ")";
 
    return ssChs.str();
-}
+} //}}}
 
 
+/** */
 template<class T> std::string SetAsPhpArray(const std::set<T>& s)
-{
+{ //{{{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -404,11 +420,12 @@ template<class T> std::string SetAsPhpArray(const std::set<T>& s)
    ssChs << ")";
 
    return ssChs.str();
-}
+} //}}}
 
 
+/** */
 template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m)
-{
+{ //{{{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -416,7 +433,8 @@ template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m
    typename std::map<Key, T>::const_iterator im;
 
    for (im=m.begin(); im!=m.end(); ++im) {
-      ssChs << "'" << im->first << "' => '" << im->second << "'";
+      ssChs << std::endl << "\t\t" << "'" << im->first << "' => " << im->second;
+      //PairAsPhpArray< std::pair<Key, T> >(*im);
       ssChs << (++im == m.end() ? "" : ", ");
       --im;
    }
@@ -424,6 +442,21 @@ template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m
    ssChs << ")";
 
    return ssChs.str();
-}
+} //}}}
+
+
+/** */
+//template<class P1, class P2> std::string PairAsPhpArray(const std::pair<P1, P2> &p)
+//{ //{{{
+//   std::stringstream ssChs("");
+//
+//   ssChs << "'" << p.first << "' => " << p.second;
+//
+//   return ssChs.str();
+//} //}}}
+
+std::string PairAsPhpArray(const ValErrPair& p);
+
+//template<class > std::string
 
 #endif

@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "TMath.h"
+#include "TLatex.h"
 
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
@@ -581,23 +582,6 @@ void binary_zero(int n, int mb)
 } //}}}
 
 
-// square root formula
-// A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
-// elastic Carbons are scattered off more in Right for Up
-void sqass(float A, float B, float C, float D, float *asym, float *asymErr)
-{ //{{{
-   float den = sqrt(A*B) + sqrt(C*D);
-
-   if ( (A*B == 0.) && (C*D == 0.) ) {
-      *asym    = 0.;
-      *asymErr = 0.;
-   } else {
-      *asym    = (sqrt(A*B) - sqrt(C*D))/den;
-      *asymErr = sqrt(A*B*(C+D) + C*D*(A+B))/den/den;
-   }
-} //}}}
-
-
 // Description : Define net TGraphErrors object asymgraph for vectors x,y,ex,ey
 //             : specifies marker color based on mode
 //             : positive spin : blue
@@ -643,4 +627,44 @@ void ReadRampTiming(char *filename)
    }
 
    rtiming.close();
+} //}}}
+
+
+/** */
+ostream& operator<<(ostream &os, const ValErrPair &vep)
+{ //{{{
+   os << "array( " << vep.first << ", " << vep.second << " )";
+
+   return os;
+} //}}}
+
+
+/** */
+TBuffer& operator<<(TBuffer &buf, const ValErrPair &vep)
+{
+   buf << (Double_t) vep.first << (Double_t) vep.second;
+
+   return buf;
+}
+
+
+/** */
+TBuffer& operator>>(TBuffer &buf, ValErrPair &vep)
+{
+   Double_t tmp;
+   buf >> tmp; vep.first  = tmp;
+   buf >> tmp; vep.second = tmp;
+
+   return buf;
+}
+
+
+/** */
+string PairAsPhpArray(const ValErrPair& p)
+{ //{{{
+   std::stringstream ssChs("");
+
+   ssChs << "array (" << p.first << ", " << p.second << ")";
+
+   return ssChs.str();
 } //}}}

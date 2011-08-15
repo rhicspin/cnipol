@@ -295,7 +295,8 @@ void RawDataProcessor::ReadDataFast()
 
 				// Use all events to fill pulser histograms
             if ( gAnaInfo->HasPulserBit() &&
-				     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
+				     gAsymRoot->fChannelEvent->PassCutEmptyBunch() && 
+                 gAsymRoot->fChannelEvent->PassCutNoise() &&
 					  gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
 				{
                gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
@@ -313,7 +314,7 @@ void RawDataProcessor::ReadDataFast()
                gAsymRoot->fHists->d["pmt"]->FillPassOne(gAsymRoot->fChannelEvent);
 				}
 
-            //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
+            if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
             if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
@@ -1007,7 +1008,6 @@ void ProcessRecord(const recordCountRate &rec)
    //}
 
    gAsymRoot->FillProfileHists(size, pointer);
-   //gAsymRoot->ProcessProfileHists();
 } //}}}
 
 

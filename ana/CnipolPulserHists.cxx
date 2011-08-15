@@ -56,6 +56,12 @@ void CnipolPulserHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
+   // Time vs Energy from amplitude
+   sprintf(hName, "hTimeVsEnergyA");
+   o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+
    sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
    o[hName] = new TH1F(hName, hName, N_BUNCHES, -0.5, N_BUNCHES-0.5);
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
@@ -151,10 +157,11 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolPulserHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
-   TH1* hTdc       = (TH1*) o["hTdc"];
-   TH1* hTvsA      = (TH1*) o["hTvsA"];
-   TH1* hTvsI      = (TH1*) o["hTvsI"];
+   TH1* hAdcAmpltd     = (TH1*) o["hAdcAmpltd"];
+   TH1* hTdc           = (TH1*) o["hTdc"];
+   TH1* hTvsA          = (TH1*) o["hTvsA"];
+   TH1* hTvsI          = (TH1*) o["hTvsI"];
+   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
    
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
@@ -174,5 +181,8 @@ void CnipolPulserHists::PostFillPassOne(DrawObjContainer *oc)
 
       TH2* hTVsI_channel = (TH2*) oc->o["hTvsI_ch"+sChId];
       hTvsI->Add(hTVsI_channel);
+
+      TH2* hTimeVsEnergyA_channel = (TH2*) oc->o["hTimeVsEnergyA_ch"+sChId];
+      hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
    }
 } //}}}

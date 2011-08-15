@@ -1,23 +1,29 @@
 
+#include <limits.h>
+
 #include "RunConfig.h"
+
+#include "TSystem.h"
+
+#include "AsymHeader.h"
 
 using namespace std;
 
 
 ostream& operator<<(ostream &os, const ESpinState &ss)
-{
+{ //{{{
    if      (ss == kSPIN_UP)   os << "+";
    else if (ss == kSPIN_DOWN) os << "-";
    else if (ss == kSPIN_NULL) os << ".";
    else                       os << "*";
 
    return os;
-}
+} //}}}
 
 
 /** */
-RunConfig::RunConfig() : fPolarimeters(), fMeasTypes(), fTargetOrients(),
-   fBeamEnergies(), fSpinStates()
+RunConfig::RunConfig() : TObject(), fPolarimeters(), fMeasTypes(),
+   fTargetOrients(), fBeamEnergies(), fSpinStates()
 { //{{{
    fPolarimeters.insert(kB1U);
    fPolarimeters.insert(kY1D);
@@ -163,4 +169,15 @@ Color_t RunConfig::AsColor(ESpinState spin)
    default:
       return kBlack;
    }
+} //}}}
+
+
+/** */
+UShort_t RunConfig::GetDetectorId(UShort_t chId)
+{ //{{{
+   if (chId >= 1 && chId <= N_SILICON_CHANNELS) 
+      return UShort_t( (chId - 1) / NSTRIP_PER_DETECTOR) + 1;
+   
+   gSystem->Error("   RunConfig::GetDetectorId", "Channel id is not valid");
+   return USHRT_MAX;
 } //}}}
