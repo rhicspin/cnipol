@@ -474,8 +474,8 @@ void MAsymRunHists::Fill(EventConfig &rc)
    //Float_t  asymmetryErr     = rc.fAnaResult->sinphi[0].P[1] * rc.fAnaResult->A_N[1];
    Float_t  polarization     = rc.fAnaResult->sinphi[0].P[0] * 100.;
    Float_t  polarizationErr  = rc.fAnaResult->sinphi[0].P[1] * 100.;
-   Float_t  profileRatio     = rc.fAnaResult->fIntensPolarR;
-   Float_t  profileRatioErr  = rc.fAnaResult->fIntensPolarRErr;
+   Float_t  profileRatio     = rc.fAnaResult->fProfilePolarR.first;
+   Float_t  profileRatioErr  = rc.fAnaResult->fProfilePolarR.second;
    Float_t  max_rate         = rc.fAnaResult->max_rate;
    Float_t  t0               = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
    Float_t  t0Err            = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
