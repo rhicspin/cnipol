@@ -63,16 +63,18 @@ public:
    void         ReadFromDir(TDirectory *dir);
    void         Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
-   virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void Fill(EventConfig &rc);
    virtual void FillPreProcess(ChannelEvent *ch);
    void         Print(const Option_t* opt="") const;
 
    virtual void PreFillPassOne();                        // should be used
    virtual void FillPassOne(ChannelEvent *ch);           // should be used
-   virtual void PostFillPassOne(DrawObjContainer *oc=0);   // should be used
+   virtual void FillDerivedPassOne();                    // should be used
+   virtual void PostFillPassOne(DrawObjContainer *oc=0); // should be used
 
    virtual void PreFill(std::string sid="");
+   virtual void Fill(ChannelEvent *ch, std::string cutid="");
+   virtual void FillDerived();
    virtual void PostFill();
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
    virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");

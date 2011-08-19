@@ -125,6 +125,7 @@ typedef struct {
     V124Struct v124;
 } recordV124Struct;
 
+
 typedef struct TRecordConfigRhicStruct {
    recordHeaderStruct header;
    configRhicDataStruct data;

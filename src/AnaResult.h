@@ -23,14 +23,16 @@ public:
    ValErrPair           fAnaPower;              // Analyzin power A_N
    ValErrPair           fPol;
    ValErrPair           fAvrgPMAsym;            // deprecated. Plus-Minus (+/-) spin state asymmetry
-   TFitResultPtr        fFitResAsymPhi;
-   TFitResultPtr        fFitResPolarPhi;
-   Spin2FitResMap       fFitResAsymBunchX90;
-   Spin2FitResMap       fFitResAsymBunchX45;
-   Spin2FitResMap       fFitResAsymBunchY45;
-   ValErrMap            fAsymX90;
-   ValErrMap            fAsymX45;
-   ValErrMap            fAsymY45;
+   TFitResultPtr        fFitResAsymPhi;         // Fit result from asymmetry vs phi plot
+   TFitResultPtr        fFitResPolarPhi;        // Fit result from polarization vs phi plot
+   Spin2FitResMap       fFitResAsymBunchX90;    // Fit results from asymmetry vs bunch histograms for different spin states
+   Spin2FitResMap       fFitResAsymBunchX45;    //
+   Spin2FitResMap       fFitResAsymBunchY45;    //
+   ValErrMap            fAsymX90;               // Results from classic square root formula. Different definitions of asymmetry: phys, lumi, geom
+   ValErrMap            fAsymX45;               //
+   ValErrMap            fAsymY45;               //
+   TFitResultPtr        fFitResProfilePvsI;     // Fit result from profile polarization vs intensity plot
+   TFitResultPtr        fFitResEnergySlope;     // Fit result from energy distribution histogram
    //Float_t              fBananaCount;         // The number of events in the final sample
    Float_t              P_sigma_ratio[2];
    Float_t              P_sigma_ratio_norm[2];
@@ -41,8 +43,8 @@ public:
    StructAnomaly        anomaly;                //!
    StructUnrecognized   unrecog;                //!
 
-   ValErrPair           fProfilePolarMax;        // The peak polarization from the P vs I fit 
-   ValErrPair           fProfilePolarR;          // The R profile defines the ratio of intensity and polarization profiles
+   ValErrPair           fProfilePolarMax;       // The peak polarization from the P vs I fit 
+   ValErrPair           fProfilePolarR;         // The R profile defines the ratio of intensity and polarization profiles
 
    Float_t              fPmtV1T0;
    Float_t              fPmtV1T0Err;

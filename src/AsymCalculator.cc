@@ -1020,7 +1020,7 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
    float aveA_N = sum != 0 ? suma/sum : 0;
 
    //ds
-   TH1F* hEnergy = (TH1F*) gAsymRoot->fHists->d["std"]->o["hKinEnergyA_o_cut2"];
+   TH1F* hEnergy = (TH1F*) gAsymRoot->fHists->d["std"]->o["hKinEnergyA_o"];
 
    if (!hEnergy) return 0;
 
@@ -1741,7 +1741,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    // only for Mode < 100
    if (Mode < 100) {
 
-      TH2I* hSpinVsChannel = (TH2I*) gAsymRoot->fHists->d["std"]->o["hSpinVsChannel_cut2"];
+      TH2I* hSpinVsChannel = (TH2I*) gAsymRoot->fHists->d["std"]->o["hSpinVsChannel"];
 
       for (int ix=1; ix<=hSpinVsChannel->GetNbinsX(); ix++) { // channels
 
@@ -1761,7 +1761,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
 
          DrawObjContainer* oc = gAsymRoot->fHists->d["std"]->d.find(dName)->second;
 
-         sprintf(hName, "hSpinVsDelim_cut2_ch%02d", i);
+         sprintf(hName, "hSpinVsDelim_ch%02d", i);
 
          TH1* hSpinVsDelim = (TH1*) oc->o[hName];
 

@@ -43,6 +43,12 @@ void CnipolAsymHists::BookHists(string cutid)
 
    fDir->cd();
 
+   // Spin vs Strip Id
+   sprintf(hName, "hSpinVsChannel%s", cutid.c_str());
+   o[hName] = new TH2I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5, N_SPIN_STATES, -1.5, 1.5);
+   ((TH1*) o[hName])->SetOption("colz NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Channel Id;Spin State;");
+
    sprintf(hName, "hKinEnergyAChAsym%s", cutid.c_str());
    o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
    ((TH1*) o[hName])->SetOption("E1");
@@ -207,7 +213,7 @@ void CnipolAsymHists::BookHists(string cutid)
 /** */
 void CnipolAsymHists::PreFill(string cutid)
 { //{{{
-   if (cutid != "") return;
+   //if (cutid != "") return;
 
    ((TH1*) o["hDelimChAsym"])->SetBins(gNDelimeters, 0, gNDelimeters);
 
@@ -226,8 +232,6 @@ void CnipolAsymHists::PreFill(string cutid)
 /** */
 void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
 { //{{{
-   if (cutid != "_cut2") return;
-
    UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
    UChar_t bId   = ch->GetBunchId() + 1;
@@ -251,10 +255,10 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
 
 
 /** */
-void CnipolAsymHists::PostFill()
+void CnipolAsymHists::FillDerived()
 { //{{{
    // First fill integral and derivative histograms
-   TH2* hDetVsBunchId    = (TH2*) o["hDetVsBunchId"];
+   TH2* hDetVsBunchId = (TH2*) o["hDetVsBunchId"];
 
    IterSpinState iSS = gRunConfig.fSpinStates.begin();
 
@@ -298,6 +302,12 @@ void CnipolAsymHists::PostFill()
 
       hDetVsBunchId->Add(hDetVsBunchId_ss);
    }
+} //}}}
+
+
+/** */
+void CnipolAsymHists::PostFill()
+{ //{{{
 
    // Strip-by-Strip Asymmetries
    gAsymCalculator.CalcStripAsymmetry(this);
@@ -311,7 +321,6 @@ void CnipolAsymHists::PostFill()
    gAsymCalculator.CalcBunchAsym(this);
    gAsymCalculator.CalcBunchAsymSqrtFormula(this);
 
-
    // Assume all required histograms are filled
    // Fit (or do whatever) them at this step
 
@@ -319,7 +328,7 @@ void CnipolAsymHists::PostFill()
    TH2* hAsymVsBunchId_X45 = (TH2*) o["hAsymVsBunchId_X45"];
    TH2* hAsymVsBunchId_Y45 = (TH2*) o["hAsymVsBunchId_Y45"];
 
-   iSS = gRunConfig.fSpinStates.begin();
+   IterSpinState iSS = gRunConfig.fSpinStates.begin();
    
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {

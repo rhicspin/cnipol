@@ -28,6 +28,7 @@ std::string DrawObjContainer::GetSignature()
    return fSignature;
 } //}}}
 
+
 void DrawObjContainer::SetSignature(std::string signature)
 { //{{{
    fSignature = signature;
@@ -427,6 +428,48 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) con
 
 
 /** */
+void DrawObjContainer::Fill(EventConfig &rc)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->Fill(rc);
+   }
+} //}}}
+
+
+/** */
+void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
+
+
+/** */
+void DrawObjContainer::PreFillPassOne() {}
+
+
+/** */
+void DrawObjContainer::FillPassOne(ChannelEvent *ch) {}
+
+
+/** */
+void DrawObjContainer::FillDerivedPassOne() {}
+
+
+/** */
+void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc) {}
+
+
+/** */
+void DrawObjContainer::PreFill(string sid)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->PreFill(sid);
+   }
+} //}}}
+
+
+/** */
 void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
 { //{{{
    //ObjMapIter io;
@@ -451,39 +494,12 @@ void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
 
 
 /** */
-void DrawObjContainer::Fill(EventConfig &rc)
+void DrawObjContainer::FillDerived()
 { //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second->Fill(rc);
-   }
-} //}}}
-
-
-/** */
-void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
-
-
-/** */
-void DrawObjContainer::PreFillPassOne() {}
-
-
-/** */
-void DrawObjContainer::FillPassOne(ChannelEvent *ch) {}
-
-
-/** */
-void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc) {}
-
-
-/** */
-void DrawObjContainer::PreFill(string sid)
-{ //{{{
-   DrawObjContainerMapIter isubd;
-
-   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second->PreFill(sid);
+      isubd->second->FillDerived();
    }
 } //}}}
 

@@ -77,10 +77,10 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   ((TH1*) o["hAdcAmpltd_ch"+sChId])  -> Fill(ch->GetAmpltd());
-   ((TH1*) o["hTdc_ch"+sChId])        -> Fill(ch->GetTime2());
-   ((TH1*) o["hTvsA_ch"+sChId])       -> Fill(ch->GetAmpltd(), ch->GetTime2());
-   ((TH1*) o["hTvsI_ch"+sChId])       -> Fill(ch->GetIntgrl(), ch->GetTime2());
+   ((TH1*) o["hAdcAmpltd_ch" + sChId])  -> Fill(ch->GetAmpltd());
+   ((TH1*) o["hTdc_ch"       + sChId])  -> Fill(ch->GetTime2());
+   ((TH1*) o["hTvsA_ch"      + sChId])  -> Fill(ch->GetAmpltd(), ch->GetTime2());
+   ((TH1*) o["hTvsI_ch"      + sChId])  -> Fill(ch->GetIntgrl(), ch->GetTime2());
 
 } //}}}
 

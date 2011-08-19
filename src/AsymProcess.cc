@@ -66,9 +66,6 @@ void event_process(processEvent *event)
 
       fprintf(stdout,"\n");
 
-      //ds: XXX
-      gAsymRoot->PreProcess();
-
       init = 1;
    }
 
@@ -108,28 +105,23 @@ void event_process(processEvent *event)
    //}
 
    // DeadLayer Mode
-   if (gAnaInfo->DMODE) {
-
-      // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
-      // ds: A prelim cut on tdc? 6 ns?
-      if (event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
-     
-         float edepo, e, t, delt, Mass;
-
-         KinemaReconstruction(1, event, gConfigInfo, st, edepo, e, t, delt, Mass);
-
-         // Get rid of bunch zero due to laser event after Run09
-         if (event->bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-
-         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo->MassSigma/sqrt(e))
-         {
-            HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-            if ( e > Emin && e < Emax) Ngood[event->bid]++;
-         }
-      }
-
-      return;
-   }
+   //if (gAnaInfo->DMODE) {
+   //   // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
+   //   // ds: A prelim cut on tdc? 6 ns?
+   //   if (event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
+   //  
+   //      float edepo, e, t, delt, Mass;
+   //      KinemaReconstruction(1, event, gConfigInfo, st, edepo, e, t, delt, Mass);
+   //      // Get rid of bunch zero due to laser event after Run09
+   //      if (event->bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
+   //      if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo->MassSigma/sqrt(e))
+   //      {
+   //         HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
+   //         if ( e > Emin && e < Emax) Ngood[event->bid]++;
+   //      }
+   //   }
+   //   return;
+   //}
 
    // Calibration hists
    if ( gAnaInfo->HasAlphaBit() ) {
@@ -254,40 +246,51 @@ void event_process(processEvent *event)
 
       if (!ch->PassCutSiliconChannel()) return;
 
-      //if () {
-
-         gAsymRoot->fHists->Fill(ch);
-
-         //if (fabs(gFillPattern[event.bid]) != 1)
-
-         //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
-
-         //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-         //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-         //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-         if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel() )
-         {
-	         gAsymRoot->fHists->Fill(ch, "_cut1");
-
-            if (ch->PassCutCarbonMass()) {
-
-	            gAsymRoot->fHists->Fill(ch, "_cut2");
-
-               //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
-               //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
-            }
-         }
-      //} else {
-      //   if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
-      //        ch->PassCutCarbonMassEstimate())
-      //   {
-	   //      gAsymRoot->fHists->Fill(ch, "_cut2");
-      //   }
-      //}
+      //gAsymRoot->fHists->Fill(ch);
 
       //if ( ch->PassCutEmptyBunch() ) {
-      //   gAsymRoot->fHists->Fill(ch, "empty_bunch");
+      //   gAsymRoot->fHists->d["raw_eb"]->Fill(ch);
+      //} else {
+         //gAsymRoot->fHists->d["raw"]->Fill(ch);
+			gAsymRoot->Fill(kCUT_RAW);
       //}
+
+      //if (fabs(gFillPattern[event.bid]) != 1)
+
+      //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
+
+      //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
+      //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
+      if ( !ch->PassCutNoise() || !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
+
+	   //gAsymRoot->fHists->Fill(ch, "_cut1");
+
+      if (!ch->PassCutCarbonMass()) return;
+
+	   //gAsymRoot->fHists->Fill(ch, "_cut2");
+
+      if ( ch->PassCutEmptyBunch() ) {
+	      //gAsymRoot->fHists->d["asym_eb"]->Fill(ch);
+			gAsymRoot->Fill(kCUT_CARBON_EB);
+      } else {
+	      //gAsymRoot->fHists->d["std"]->Fill(ch);
+	      //gAsymRoot->fHists->d["asym"]->Fill(ch);
+	      //gAsymRoot->fHists->d["profile"]->Fill(ch);
+	      //gAsymRoot->fHists->d["target"]->Fill(ch);
+
+			gAsymRoot->Fill(kCUT_CARBON);
+      }
+
+      //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
+      //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
+
+      //if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
+      //     ch->PassCutCarbonMassEstimate())
+      //{
+	   //   gAsymRoot->fHists->Fill(ch, "_cut2");
+      //}
+
    }
 
    //ds

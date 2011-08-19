@@ -187,13 +187,13 @@ void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    //UChar_t chId  = ch->GetChannelId();
    
-   if (sid == "_cut2") { // fill these if only pass the carbon mass cut
+   //if (sid == "_cut2") { // fill these if only pass the carbon mass cut
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
       //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
       //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
       //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
       ((TH1*) o["hIntensProfile2"])->Fill(ttime);
-   }
+   //}
 } //}}}
 
 
@@ -241,15 +241,10 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 /** */
 void CnipolProfileHists::PreFill(string sid)
 { //{{{
-   if (sid == "_cut2") {
-      ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
-   }
-} //}}}
+   //if (sid == "_cut2") {
+   ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
+   //}
 
-
-/** */
-void CnipolProfileHists::PostFill()
-{ //{{{
    //((TH1*) o["hIntensProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
    //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
    ((TH1*) o["hPolarProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
@@ -260,7 +255,7 @@ void CnipolProfileHists::PostFill()
 
 
 /** */
-void CnipolProfileHists::Process()
+void CnipolProfileHists::PostFill()
 { //{{{
    //TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
    TH1* hIntensProfile = (TH1*) o["hIntensProfile2"];
@@ -448,13 +443,24 @@ void CnipolProfileHists::Process()
    mfPow->SetParameter(1, 0.1);
    mfPow->SetParLimits(1, -2, 2);
 
-   grPolarVsIntensProfile->Fit("mfPow", "M E R");
+   fitres = grPolarVsIntensProfile->Fit("mfPow", "M E R S");
+
+   if (fitres.Get()) {
+      gAnaResult->fFitResProfilePvsI = fitres;
+
+      // the following should retire
+      //gAnaResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
+      //gAnaResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
+
+      gAnaResult->fProfilePolarMax = ValErrPair(fitres->Value(0), fitres->FitResult::Error(0));
+      gAnaResult->fProfilePolarR   = ValErrPair(fitres->Value(1), fitres->FitResult::Error(1));
+
+   } else {
+      Error("PostFill", "Something is wrong with profile fit");
+   }
 
    TH1* hPolarVsIntensProfile = (TH1*) o["hPolarVsIntensProfile"];
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
-
-   gAnaResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
-   gAnaResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
 
    //char sratio[50];
    //sprintf(sratio, "% 8.3f, % 6.3f", gAnaResult->fProfilePolarR.first, gAnaResult->fProfilePolarMax.second);
@@ -651,32 +657,19 @@ void CnipolProfileHists::Process()
    hPolarVsIntensProfileBin->Fit("mfPow", "M E R");
 
    delete mfPow;
+
+   // Set measurement type
+   gRunInfo->fMeasType = GuessMeasurementType();
 } //}}}
 
 
 /** */
-Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
-{ //{{{
-   Double_t x0 = x[0];
-   Double_t sigma = par[0];
-   Double_t mean1 = par[1];
-   Double_t mean2 = par[2];
-   Double_t norm  = par[3];
-
-   Double_t g1 = norm*TMath::Gaus(x0, mean1, sigma);
-   Double_t g2 = norm*TMath::Gaus(x0, mean2, sigma);
-
-   return g1 + g2;
-} //}}}
-
-
-/** */
-EMeasType CnipolProfileHists::MeasurementType()
+EMeasType CnipolProfileHists::GuessMeasurementType()
 { //{{{
    TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
    if (!hIntensProfile) {
-      Error("MeasurementType", "Histogram (hIntensProfile) not defined");
+      Error("GuessMeasurementType", "Histogram (hIntensProfile) not defined");
       return kMEASTYPE_UNKNOWN;
    }
 
@@ -684,7 +677,7 @@ EMeasType CnipolProfileHists::MeasurementType()
 
    if (ymax > 0) hIntensProfile->Scale(1./ymax);
    else
-      Error("MeasurementType", "Empty histogram (hIntensProfile) ?");
+      Error("GuessMeasurementType", "Empty histogram (hIntensProfile) ?");
 
    TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 20, 0, 1);
 
@@ -702,4 +695,20 @@ EMeasType CnipolProfileHists::MeasurementType()
    }
 
    return kMEASTYPE_SWEEP;
+} //}}}
+
+
+/** */
+Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
+{ //{{{
+   Double_t x0 = x[0];
+   Double_t sigma = par[0];
+   Double_t mean1 = par[1];
+   Double_t mean2 = par[2];
+   Double_t norm  = par[3];
+
+   Double_t g1 = norm*TMath::Gaus(x0, mean1, sigma);
+   Double_t g2 = norm*TMath::Gaus(x0, mean2, sigma);
+
+   return g1 + g2;
 } //}}}

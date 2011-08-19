@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <map>
 #include <vector>
 
 #include "TFile.h"
@@ -20,6 +21,12 @@
 
 class AnaInfo;
 
+enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_ALL,
+           kCUT_RAW, kCUT_NOISE, kCUT_CARBON, kCUT_CARBON_EB };
+
+typedef std::map<ECut, std::set<DrawObjContainer*> >             Cut2DrawObjContainerMap;
+typedef std::map<ECut, std::set<DrawObjContainer*> >::iterator   Cut2DrawObjContainerMapIter;
+
 
 class AsymRoot
 {
@@ -28,9 +35,10 @@ private:
 
 protected:
 
-   TFile                *fOutRootFile;
-   TFile                *fOutTreeFile;
-   UInt_t                fTreeFileId;
+   TFile                    *fOutRootFile;
+   TFile                    *fOutTreeFile;
+   UInt_t                    fTreeFileId;
+   Cut2DrawObjContainerMap   fHistCuts;
   
 public:
 
@@ -63,10 +71,13 @@ public:
    void         SetChannelEvent(processEvent &event);
    void         SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void         ProcessEvent() {};
-   void         PreProcess();
-   void         PostProcess(MseRunInfoX &run);
-   void         FillPassOne();
+   void         FillPassOne(ECut cut);
+   void         FillDerivedPassOne();
    void         PostFillPassOne();
+   void         PreFill();
+   void         Fill(ECut cut);
+   void         FillDerived();
+   void         PostFill(MseRunInfoX &run);
    void         FillScallerHists(Long_t *hData, UShort_t chId);
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Long_t *hData);

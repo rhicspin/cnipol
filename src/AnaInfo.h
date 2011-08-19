@@ -75,7 +75,6 @@ public:
    int              ZMODE;              // with/out T0 subtraction 0:with 1:without
    int              CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
    int              UPDATE;             // 1: keep update of the histogram
-   UShort_t         QUICK_MODE;         // 0: default, 1: quick mode
    int              MMODE;              // mass mode
    int              NTMODE;             // if 1 store NTUPLEv
    int              RECONFMODE;         // if 1 reconfigure from file
