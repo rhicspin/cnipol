@@ -31,8 +31,6 @@ public:
    virtual ~CnipolCalibHists();
 
    void BookHists(std::string cutid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
-   void FillPreProcess(ChannelEvent *ch);
    void PostFill();
 
    ClassDef(CnipolCalibHists, 1)

@@ -53,7 +53,6 @@ int     gNDelimeters;
 int     TgtIndex[MAXDELIM];
 int     nTgtIndex = 0;
 
-StructReadFlag gReadFlag;
 
 StructMask mask = {
    0x3F          // detector mask 0x3F={11 1111} All detector active
@@ -660,11 +659,22 @@ TBuffer& operator>>(TBuffer &buf, ValErrPair &vep)
 
 
 /** */
-string PairAsPhpArray(const ValErrPair& p)
+string PairAsPhpArray(const ValErrPair &p)
 { //{{{
    std::stringstream ssChs("");
 
    ssChs << "array (" << p.first << ", " << p.second << ")";
+
+   return ssChs.str();
+} //}}}
+
+
+/** */
+string FitResultAsPhpArray(const TFitResultPtr &fitres)
+{ //{{{
+   std::stringstream ssChs("");
+
+   //ssChs << "array (" << p.first << ", " << p.second << ")";
 
    return ssChs.str();
 } //}}}

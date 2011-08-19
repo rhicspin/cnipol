@@ -57,22 +57,8 @@ void CnipolCalibHists::BookHists(std::string cutid)
 
 
 /** */
-void CnipolCalibHists::Fill(ChannelEvent *ch, string sid)
-{ //{{{
-   //UChar_t      chId = ch->GetChannelId();
-} //}}}
-
-
-/** */
-void CnipolCalibHists::FillPreProcess(ChannelEvent *ch)
-{
-}
-
-
-/** */
 void CnipolCalibHists::PostFill()
 { //{{{
-
    Calibrator *calibrator = gAsymRoot->fEventConfig->GetCalibrator();
 
    //ChannelCalibMapIter iCh  = calibrator->fChannelCalibs.begin();

@@ -41,8 +41,7 @@ public:
    void Fill(UInt_t n, Long_t* hData);
    void PreFill(std::string sid);
    void PostFill();
-   void Process();
-   EMeasType MeasurementType();
+   EMeasType GuessMeasurementType();
 
    static Double_t ProfileFitFunc(Double_t *x, Double_t *par);
 

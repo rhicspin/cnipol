@@ -189,8 +189,8 @@ void CnipolRunHists::Fill(RunInfo &ri)
 { //{{{
    map<UShort_t, Float_t>::iterator ib;
 
-   for (ib=ri.fWallCurMon.begin(); ib!=ri.fWallCurMon.end(); ++ib) {
-
+   for (ib=ri.fWallCurMon.begin(); ib!=ri.fWallCurMon.end(); ++ib)
+   {
       ((TH1*) o["wall_current_monitor"])->SetBinContent(ib->first, ib->second);
    }
 } //}}}

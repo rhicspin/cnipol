@@ -172,16 +172,6 @@ struct StructFeedBack {
    StructFeedBack();
 };
 
-struct StructReadFlag {
-  int RECBEGIN;
-  int PCTARGET;
-  int WCMADO;
-  int BEAMADO;
-  int RHICCONF;
-
-  StructReadFlag() : RECBEGIN(0), PCTARGET(0), WCMADO(0), BEAMADO(0), RHICCONF(0) {}
-};
-
 struct StructFlag {
   int VERBOSE;
   int feedback;
@@ -455,7 +445,8 @@ template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m
 //   return ssChs.str();
 //} //}}}
 
-std::string PairAsPhpArray(const ValErrPair& p);
+std::string PairAsPhpArray(const ValErrPair &p);
+std::string FitResultAsPhpArray(const TFitResultPtr &fitres);
 
 //template<class > std::string
 

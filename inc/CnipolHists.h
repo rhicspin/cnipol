@@ -38,6 +38,7 @@ public:
    void BookHistsExtra(std::string cutid="");
    void PreFill(std::string cutid="");
    void Fill(ChannelEvent *ch, std::string cutid="");
+   void FillDerived();
    void PostFill();
    void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
 

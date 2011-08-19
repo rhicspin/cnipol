@@ -85,19 +85,19 @@ void CnipolKinematHists::Fill(ChannelEvent *ch, string cutid)
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel"+sChId];
+   DrawObjContainer *sd = d.find("channel" + sChId)->second;
 
    //Float_t mass = ch->GetCarbonMassEstimate();
    Float_t mass = ch->GetCarbonMass();
    //cout << "mass: " << mass << endl;
 
-   ((TH1*) sd->o["hPseudoMass"+cutid+"_ch"+sChId]) -> Fill(mass);
+   ((TH1*) sd->o["hPseudoMass" + cutid + "_ch" + sChId]) -> Fill(mass);
 } //}}}
 
 
 /** */
-void CnipolKinematHists::PostFill()
-{
+void CnipolKinematHists::FillDerived()
+{ //{{{
    //char hName[256];
 
    vector<string> cutIds;
@@ -110,7 +110,7 @@ void CnipolKinematHists::PostFill()
 
       string sCutId = *icut;
 
-      TH1* hPseudoMass      = (TH1*) o["hPseudoMass"+sCutId];
+      TH1* hPseudoMass = (TH1*) o["hPseudoMass"+sCutId];
    
       for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
@@ -124,4 +124,4 @@ void CnipolKinematHists::PostFill()
          hPseudoMass->Add(hPseudoMass_channel);
       }
    }
-}
+} //}}}

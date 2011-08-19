@@ -5,6 +5,8 @@
 
 #include "CnipolPulserHists.h"
 
+#include "utils/utils.h"
+
 
 ClassImp(CnipolPulserHists)
 
@@ -56,6 +58,11 @@ void CnipolPulserHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
 
+   sprintf(hName, "hIvsA");
+   o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
+
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA");
    o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
@@ -63,7 +70,7 @@ void CnipolPulserHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
    sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
-   o[hName] = new TH1F(hName, hName, N_BUNCHES, -0.5, N_BUNCHES-0.5);
+   o[hName] = new TH1F(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5);
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
@@ -114,6 +121,11 @@ void CnipolPulserHists::BookHists(string cutid)
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
+      sprintf(hName, "hIvsA_ch%02d", iChId);
+      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Integral, ADC;");
+
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA_ch%02d", iChId);
       oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
@@ -131,50 +143,66 @@ void CnipolPulserHists::BookHists(string cutid)
 /** */
 void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-   // Fill events with no cuts applied
-   //if (cutid != "empty_bunch") return;
-
-   UChar_t chId  = ch->GetChannelId();
+   UChar_t  chId     = ch->GetChannelId();
+   UShort_t adcA_bin = ch->GetAmpltd() + 1;
+   UShort_t adcI_bin = ch->GetIntgrl() + 1;
+   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
    DrawObjContainer *sd = d["channel" + sChId];
 
-   ((TH1*) sd->o["hAdcAmpltd_ch"     + sChId]) -> Fill(ch->GetAmpltd());
-   ((TH1*) sd->o["hTdc_ch"           + sChId]) -> Fill(ch->GetTdc());
-   ((TH1*) sd->o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) sd->o["hTvsI_ch"          + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
+   // Speed up the filling process by getting the global bin number
+   TH2* hTmp_ch;
+   Int_t gbin;
+
+   hTmp_ch = (TH2*) sd->o["hTvsA_ch" + sChId];
+   gbin    = hTmp_ch->GetBin(adcA_bin, tdc_bin);
+   hTmp_ch->AddBinContent(gbin);
+   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+
+   hTmp_ch = (TH2*) sd->o["hTvsI_ch" + sChId];
+   gbin    = hTmp_ch->GetBin(adcI_bin, tdc_bin);
+   hTmp_ch->AddBinContent(gbin);
+   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+
+   hTmp_ch = (TH2*) sd->o["hIvsA_ch" + sChId];
+   gbin    = hTmp_ch->GetBin(adcA_bin, adcI_bin);
+   hTmp_ch->AddBinContent(gbin);
+   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+
    ((TH1*) sd->o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
 
-   ((TH1*) o["hBunchCounts"])->Fill(ch->GetBunchId());
-   ((TH1*) o["hStripCounts"])->Fill(ch->GetChannelId());
+   TH1* h1Tmp_ch;
 
+   h1Tmp_ch = (TH1*) o["hBunchCounts"];
+   h1Tmp_ch->AddBinContent(ch->GetBunchId() + 1);
+   h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries() + 1);
+
+   h1Tmp_ch = (TH1*) o["hStripCounts"];
+   h1Tmp_ch->AddBinContent(chId);
+   h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries() + 1);
 
 } //}}}
 
 
 /** */
-void CnipolPulserHists::PostFillPassOne(DrawObjContainer *oc)
+void CnipolPulserHists::FillDerivedPassOne()
 { //{{{
    TH1* hAdcAmpltd     = (TH1*) o["hAdcAmpltd"];
    TH1* hTdc           = (TH1*) o["hTdc"];
    TH1* hTvsA          = (TH1*) o["hTvsA"];
    TH1* hTvsI          = (TH1*) o["hTvsI"];
+   TH1* hIvsA          = (TH1*) o["hIvsA"];
    TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
    
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
-
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
 
       DrawObjContainer *oc = d.find("channel"+sChId)->second;
-
-      TH1* hAdc_channel  = (TH1*) oc->o["hAdcAmpltd_ch"+sChId];
-      hAdcAmpltd->Add(hAdc_channel);
-
-      TH1* hTdc_channel  = (TH1*) oc->o["hTdc_ch"+sChId];
-      hTdc->Add(hTdc_channel);
 
       TH2* hTVsA_channel = (TH2*) oc->o["hTvsA_ch"+sChId];
       hTvsA->Add(hTVsA_channel);
@@ -182,7 +210,29 @@ void CnipolPulserHists::PostFillPassOne(DrawObjContainer *oc)
       TH2* hTVsI_channel = (TH2*) oc->o["hTvsI_ch"+sChId];
       hTvsI->Add(hTVsI_channel);
 
+      TH2* hIVsA_channel = (TH2*) oc->o["hIvsA_ch" + sChId];
+      hIvsA->Add(hIVsA_channel);
+
       TH2* hTimeVsEnergyA_channel = (TH2*) oc->o["hTimeVsEnergyA_ch"+sChId];
       hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+
+      // Fill one dimensional hists from two dimensional ones
+      TH1D* hProjTmp;
+
+      // AdcAmpltd
+      TH1* hAdcAmpltd_ch = (TH1*) oc->o["hAdcAmpltd_ch" + sChId];
+      hProjTmp = hTVsA_channel->ProjectionX();
+
+      utils::CopyBinContentError(hProjTmp, hAdcAmpltd_ch);
+
+      hAdcAmpltd->Add(hAdcAmpltd_ch);
+
+      // Tdc
+      TH1* hTdc_ch  = (TH1*) oc->o["hTdc_ch"+sChId];
+      hProjTmp = hTVsA_channel->ProjectionX();
+
+      utils::CopyBinContentError(hProjTmp, hTdc_ch);
+
+      hTdc->Add(hTdc_ch);
    }
 } //}}}

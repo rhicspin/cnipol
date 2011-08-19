@@ -37,6 +37,9 @@ public:
    UInt_t         fMemSize;
    std::ifstream  fFileStream;
 
+private:
+   std::set<Int_t> fSeenRecords;
+
 public:
    RawDataProcessor();
    RawDataProcessor(std::string fname);
@@ -49,14 +52,15 @@ public:
 
 void readloop(MseRunInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
-void calcRunConst(recordConfigRhicStruct *cfginfo);
 void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run);
+void ProcessRecordPCTarget(const pCTargetStruct &rec, MseRunInfoX &run);
 void PrepareCollidingBunchPattern();
 
+void ProcessRecord(const recordConfigRhicStruct &rec);
 void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo);
-void ProcessRecord(recordWFDV8ArrayStruct &rec);
+void ProcessRecord(const recordpCTagAdoStruct &rec, MseRunInfoX &run);
+void ProcessRecord(const recordWFDV8ArrayStruct &rec);
 void ProcessRecord(const recordCountRate &rec);
-void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run);
 void ProcessRecord(const recordWcmAdoStruct &rec);
 void ProcessRecord(const recordBeamAdoStruct &rec);
 

@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
       {"kinemat",             no_argument,         0,   AnaInfo::MODE_KINEMAT},
       {"pmt",                 no_argument,         0,   AnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AnaInfo::MODE_PULSER},
-      {"quick",               no_argument,         0,   'q'},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
       {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
       {"mode-alpha",          no_argument,         0,   AnaInfo::MODE_ALPHA},
@@ -126,7 +125,7 @@ int main(int argc, char *argv[])
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hr:f:n:s:o:l::t:e:m:d:baCDTBZF:MNW:UGR:Sqg",
+   while ((c = getopt_long(argc, argv, "?hr:f:n:s:o:l::t:e:m:d:baCDTBZF:MNW:UGR:Sg",
                            long_options, &option_index)) != -1)
    {
       switch (c) {
@@ -290,9 +289,6 @@ int main(int argc, char *argv[])
          gAnaInfo->fSuffix = optarg;
          break;
 
-      case 'q':
-         gAnaInfo->QUICK_MODE = 1; break;
-
       case 'g':
       case AnaInfo::MODE_GRAPH:
          gAnaInfo->fModes |= AnaInfo::MODE_GRAPH;
@@ -363,7 +359,26 @@ int main(int argc, char *argv[])
       }
    }
 
+   // Include all interesting modes for now
+   //if (!gAnaInfo->HasAlphaBit()) {
+   //   gAnaInfo->fModes |= AnaInfo::MODE_NORMAL;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_CALIB;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_PROFILE;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_TARGET;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_PULSER;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_ASYM;
+   //   gAnaInfo->fModes |= AnaInfo::MODE_RAW;
+   //}
+
    gAnaInfo->ProcessOptions();
+
+   // Book HBOOK file (deprecated)
+   char hbk_outfile[256] = "out.hbook";
+   printf("Booking HBOOK file %s\n", hbk_outfile);
+   hist_book(hbk_outfile);
+
+   // Book root file
+   gAsymRoot->CreateRootFile(gAnaInfo->GetRootFileName());
 
    // Extract RunID from input filename
    //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
@@ -441,14 +456,6 @@ int main(int argc, char *argv[])
    gRunInfo->Print();
    mseRunInfoX->Print();
 
-   // Book HBOOK file (deprecated)
-   char hbk_outfile[256] = "out.hbook";
-   printf("Booking HBOOK file %s\n", hbk_outfile);
-   hist_book(hbk_outfile);
-
-   // Book root file
-   gAsymRoot->CreateRootFile(gAnaInfo->GetRootFileName());
-
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
 
@@ -474,26 +481,28 @@ int main(int argc, char *argv[])
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() ) {
+
       rawData->ReadDataFast();
 
-      // XXX : remove
-      RunConst::PrintAll();
+      gAsymRoot->FillDerivedPassOne();
+      gAsymRoot->PostFillPassOne();
 
-      // (Roughly) Process all channel banana
+      // Process all channel banana
       gAsymRoot->CalibrateFast();
    }
 
    // XXX : debug
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
-   if (!gAnaInfo->QUICK_MODE) {
+   //
+   gAsymRoot->PreFill();
 
-      //ds: XXX
-      //gAsymRoot->PreProcess();
+   // Main Event Loop
+   readloop(*mseRunInfoX);
 
-      // Main Event Loop
-      readloop(*mseRunInfoX);
-   }
+   gAsymRoot->FillDerived();
+
+   gAsymRoot->PostFill(*mseRunInfoX);
 
    // Delete Unnecessary ROOT Histograms
    gAsymRoot->DeleteHistogram();
@@ -502,18 +511,14 @@ int main(int argc, char *argv[])
    hist_close(hbk_outfile);
 
    // XXX : debug
-   gAsymRoot->fEventConfig->fCalibrator->Print();
+   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Update calibration constants if requested
-   if (gAnaInfo->HasCalibBit()) {
-
-      // XXX : remove
-      //RunConst::PrintAll();
+   // XXX logic??? I don't want to use it... Calibration can be done only once during the first pass
+   if ( gAnaInfo->HasCalibBit() && gAnaInfo->HasAlphaBit() ) {
 
       gAsymRoot->Calibrate();
    }
-
-   gAsymRoot->PostProcess(*mseRunInfoX);
 
    //gRunDb.Print();
    //gAsymRoot->fEventConfig->Print();

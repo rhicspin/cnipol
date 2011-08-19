@@ -28,7 +28,7 @@ using namespace std;
 
 /** */
 RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
-   fFileStream()
+   fFileStream(), fSeenRecords()
 {
    fclose(fFile);
    delete[] fMem;
@@ -39,7 +39,7 @@ RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
 /** */
 RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    fMem(0),
-   fFileStream(fFileName.c_str(), ios::binary)
+   fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
 { //{{{
    FILE *fFile = fopen(fFileName.c_str(), "r");
 
@@ -53,12 +53,12 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    // Create a BLOB with file content
    printf("Reading into memory...\n");
    TStopwatch sw;
- 
+
    fFileStream.seekg(0, ios::end);
    fMemSize = fFileStream.tellg(); // in bytes
    printf("fileSize: %d\n", fMemSize);
    fFileStream.seekg(0, ios::beg);
-   
+
    fMem = new char[fMemSize];
    fFileStream.read(fMem, fMemSize);
    fFileStream.close();
@@ -77,6 +77,9 @@ RawDataProcessor::~RawDataProcessor()
 /** */
 void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 { //{{{
+   cout << endl;
+   Info("ReadRecBegin", "Start reading begin record from data file...");
+
    recordBeginStruct *recBegin;
 
    //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
@@ -85,72 +88,75 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 
    //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
 
-      cout << "Begin of data stream Ver: " << recBegin->version << endl;
-      cout << "Comment: "                  << recBegin->comment << endl;
-      cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
-      cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
+   cout << "Begin of data stream Ver: " << recBegin->version << endl;
+   cout << "Comment: "                  << recBegin->comment << endl;
+   cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
+   cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
 
-      gRunInfo->StartTime  = recBegin->header.timestamp.time;
-      gRunInfo->fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
-      gRunInfo->fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
+   gRunInfo->StartTime  = recBegin->header.timestamp.time;
+   gRunInfo->fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
+   gRunInfo->fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
 
-      //printf("fPolBeam:   %#x\n", gRunInfo->fPolBeam);
-      //printf("fPolStream: %#x, %#x, %#x\n", gRunInfo->fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
+   //printf("fPolBeam:   %#x\n", gRunInfo->fPolBeam);
+   //printf("fPolStream: %#x, %#x, %#x\n", gRunInfo->fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
 
-      int polId = gRunInfo->GetPolarimeterId(gRunInfo->fPolBeam, gRunInfo->fPolStream);
+   int polId = gRunInfo->GetPolarimeterId(gRunInfo->fPolBeam, gRunInfo->fPolStream);
 
-      if (polId < 0)
-         printf("WARNING: Polarimeter ID will be defined by other means\n");
-      
-      stringstream sstr;
+   if (polId < 0)
+      printf("WARNING: Polarimeter ID will be defined by other means\n");
 
-      // First, try to get polarimeter id from the data
-      if (polId >= 0) {
-         sstr << gRunInfo->fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo->fPolId;
+   stringstream sstr;
 
-      // if failed, get id from the file name
-      } else if (gRunInfo->GetPolarimeterId() >= 0) {
-         sstr.str("");
-         sstr << gRunInfo->fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo->fPolId;
+   // First, try to get polarimeter id from the data
+   if (polId >= 0) {
+      sstr << gRunInfo->fPolId;
+      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+      gRunDb.fPolId = gRunInfo->fPolId;
 
-      // see if the polarimeter id was set by command line argument 
-      } else if (gRunInfo->fPolId >= 0) {
-         sstr.str("");
-         sstr << gRunInfo->fPolId;
-         gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
-         gRunDb.fPolId = gRunInfo->fPolId;
-
-      } else { // cannot proceed
-
-         printf("ERROR: Unknown polarimeter ID\n");
-         exit(-1);
-      }
-
+   // if failed, get id from the file name
+   } else if (gRunInfo->GetPolarimeterId() >= 0) {
       sstr.str("");
-      sstr << gRunInfo->StartTime;
-      gRunDb.fFields["START_TIME"] = sstr.str();
-      gRunDb.timeStamp = gRunInfo->StartTime; // should be always defined in raw data
-      //gRunDb.Print();
+      sstr << gRunInfo->fPolId;
+      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+      gRunDb.fPolId = gRunInfo->fPolId;
 
-		if (run) {
-		   run->polarimeter_id = gRunDb.fPolId;
-         mysqlpp::DateTime dt(gRunDb.timeStamp);
-		   run->start_time     = dt;
-		}
+   // see if the polarimeter id was set by command line argument
+   } else if (gRunInfo->fPolId >= 0) {
+      sstr.str("");
+      sstr << gRunInfo->fPolId;
+      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
+      gRunDb.fPolId = gRunInfo->fPolId;
+
+   } else { // cannot proceed
+
+      printf("ERROR: Unknown polarimeter ID\n");
+      exit(-1);
+   }
+
+   sstr.str("");
+   sstr << gRunInfo->StartTime;
+   gRunDb.fFields["START_TIME"] = sstr.str();
+   gRunDb.timeStamp = gRunInfo->StartTime; // should be always defined in raw data
+   //gRunDb.Print();
+
+   if (run) {
+      run->polarimeter_id = gRunDb.fPolId;
+      mysqlpp::DateTime dt(gRunDb.timeStamp);
+      run->start_time     = dt;
+   }
 
    //} else
       //printf("ERROR: Cannot read REC_BEGIN record\n");
+
+   Info("ReadRecBegin", "Stopped reading begin record from data file");
 } //}}}
 
 
 /** */
 void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
 { //{{{
-   Info("ReadRunInfo", "Started reading run info from data file...");
+   cout << endl;
+   Info("ReadRunInfo", "Start reading run info from data file...");
 
    TStopwatch sw;
 
@@ -173,7 +179,7 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
 
       // REC_BEAMADO
       if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO)
-		{
+      {
          printf("Reading REC_BEAMADO record... size = %ld\n", mHeader->len);
 
          recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
@@ -182,39 +188,103 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
          fprintf(stdout, "Beam energy: %8.2f\n", gRunInfo->GetBeamEnergy());
          fprintf(stdout, "RHIC beam:   %1d\n", gRunInfo->fPolBeam);
 
-			ProcessRecord( (recordBeamAdoStruct&) *rec);
+         ProcessRecord( (recordBeamAdoStruct&) *rec);
 
          mSeek = mSeek + mHeader->len;
-			continue;
-		}
+         continue;
+      }
 
       // REC_POLADO
       if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
-		{
+      {
          printf("Reading REC_POLADO record... size = %ld\n", mHeader->len);
 
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
-
-			ProcessRecord( (recordPolAdoStruct&) *rec, runInfo);
+         ProcessRecord( (recordPolAdoStruct&) *rec, runInfo);
 
          mSeek = mSeek + mHeader->len;
-			continue;
-		}
+         continue;
+      }
+
+      // REC_PCTARGET
+      if ((mHeader->type & REC_TYPEMASK) == REC_PCTARGET)
+      {
+         // Do not process this record for calibration runs. May contain
+         // invalid ndelim info
+         printf("Reading REC_PCTARGET record... size = %ld\n", mHeader->len);
+
+         recordpCTagAdoStruct *rec = (recordpCTagAdoStruct*) mHeader;
+         ProcessRecord( (recordpCTagAdoStruct&) *rec, runInfo);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_WCMADO
+      if ((mHeader->type & REC_TYPEMASK) == REC_WCMADO)
+      {
+         printf("Reading REC_WCMADO record... size = %ld\n", mHeader->len);
+
+         recordWcmAdoStruct *rec = (recordWcmAdoStruct*) mHeader;
+         ProcessRecord( (recordWcmAdoStruct &) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_WFDV8SCAL
+      if ((mHeader->type & REC_TYPEMASK) == REC_WFDV8SCAL &&
+          fSeenRecords.find(REC_WFDV8SCAL) == fSeenRecords.end())
+      {
+         printf("Reading REC_WFDV8SCAL record... size = %ld\n", mHeader->len);
+
+         recordWFDV8ArrayStruct *rec = (recordWFDV8ArrayStruct*) mHeader;
+         ProcessRecord( (recordWFDV8ArrayStruct &) *rec);
+
+         fSeenRecords.insert(REC_WFDV8SCAL);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_COUNTRATE
+      if ((mHeader->type & REC_TYPEMASK) == REC_COUNTRATE)
+      {
+         printf("Reading REC_COUNTRATE record... size = %ld\n", mHeader->len);
+
+         recordCountRate *rec = (recordCountRate*) mHeader;
+         ProcessRecord( (recordCountRate &) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_RHIC_CONF
+      if ((mHeader->type & REC_TYPEMASK) == REC_RHIC_CONF)
+      {
+         printf("Reading REC_RHIC_CONF record... size = %ld\n", mHeader->len);
+
+         recordConfigRhicStruct *rec = (recordConfigRhicStruct*) mHeader;
+         ProcessRecord( (recordConfigRhicStruct &) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
 
       mSeek = mSeek + mHeader->len;
    }
 
    sw.Stop();
-   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 
-   Info("ReadRunInfo", "End of read run info\n");
+   Info("ReadRunInfo", "Stopped reading run info from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 } //}}}
 
 
 /** */
 void RawDataProcessor::ReadDataFast()
 { //{{{
-   Info("ReadDataFast", "Started reading data file...");
+   cout << endl;
+   Info("ReadDataFast", "Start reading events from data file...");
 
    TStopwatch sw;
 
@@ -241,7 +311,7 @@ void RawDataProcessor::ReadDataFast()
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
-		{
+      {
          //long offset = header.len - sizeof(recordHeaderStruct);
          //fseek(fp, offset, SEEK_CUR);
 
@@ -284,59 +354,56 @@ void RawDataProcessor::ReadDataFast()
          i += sizeof(subheadStruct) + Events*sizeof(ATStruct);
 
          for (unsigned j=0; j<Events; j++, nReadEvents++) {
-         
+
             //printf("f: %d %d %d\n", ATPtrF->data[j].a, ATPtrF->data[j].t, ATPtrF->data[j].s);
             //printf("m: %d %d %d\n", ATPtr->data[j].a, ATPtr->data[j].t, ATPtr->data[j].s);
 
             if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
 
-            //if (nReadEvents % gAnaInfo->fThinout == 0)
-            //if (nReadEvents > 100) break;
+            gAsymRoot->SetChannelEvent(ATPtr->data[j], delim, chId);
 
-				// Use all events to fill pulser histograms
+            // Use all events to fill pulser histograms
             if ( gAnaInfo->HasPulserBit() &&
-				     gAsymRoot->fChannelEvent->PassCutEmptyBunch() && 
-                 gAsymRoot->fChannelEvent->PassCutNoise() &&
-					  gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
-				{
-               gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
-				}
+                 gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
+                 //gAsymRoot->fChannelEvent->PassCutNoise() &&
+                 gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+            {
+               //gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
+               gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
+            }
 
             // Use only a fraction of events
             if (gRandom->Rndm() > gAnaInfo->fFastCalibThinout) continue;
 
-            gAsymRoot->SetChannelEvent(ATPtr->data[j], delim, chId);
-
             if (gAnaInfo->HasPmtBit() &&
-					 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
+                gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
                 gAsymRoot->fChannelEvent->PassCutPmtNoise() )
             {
-               gAsymRoot->fHists->d["pmt"]->FillPassOne(gAsymRoot->fChannelEvent);
-				}
+               //gAsymRoot->fHists->d["pmt"]->FillPassOne(gAsymRoot->fChannelEvent);
+               gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
+            }
 
             if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
             if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
+            if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )      continue;
 
-            gAsymRoot->FillPassOne();
-				//gAsymRoot->PrintChannelEvent();
+            gAsymRoot->FillPassOne(kCUT_PASSONE_ALL);
+            //gAsymRoot->PrintChannelEvent();
 
             nTotalEvents++;
          }
       }
    }
 
-   gAsymRoot->PostFillPassOne();
-
    sw.Stop();
-   printf("Stopped reading data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 
    printf("Total events read:     %12d\n", nReadEvents);
    printf("Total events accepted: %12d\n", nTotalEvents);
 
-   Info("ReadDataFast", "End of read data fast\n");
+   Info("ReadDataFast", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 } //}}}
 
 
@@ -349,17 +416,12 @@ void readloop(MseRunInfoX &run)
    static union {
        recordHeaderStruct      header;
        recordBeginStruct       begin;
-       recordPolAdoStruct      polado;
        recordTagAdoStruct      tagado;
-       recordConfigRhicStruct  cfg;
        recordReadWaveStruct    all;
        recordReadWave120Struct all120;
        recordReadATStruct      at;
-       recordWFDV8ArrayStruct  wfd;
        recordEndStruct         end;
        recordScalersStruct     scal;
-       recordWcmAdoStruct      wcmado;
-       recordCountRate         countRate;
        char                    buffer[BSIZE_OFFLINE*sizeof(int)];
        recordDataStruct        data;
    } rec;
@@ -431,8 +493,6 @@ void readloop(MseRunInfoX &run)
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
-         if (gReadFlag.RECBEGIN) break; // ??? should encounter only once in each file
-
          cout << "Data stream version: " << rec.begin.version << endl;
          cout << "Comment: "             << rec.begin.comment << endl;
          cout << "Date & Time: "         << ctime(&rec.begin.header.timestamp.time);
@@ -450,71 +510,12 @@ void readloop(MseRunInfoX &run)
          // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
          PrepareCollidingBunchPattern();
 
-         gReadFlag.RECBEGIN = 1;
-         
          break;
-
-      //case REC_POLADO:
-      //   memcpy(&poldat, &rec.polado.data, sizeof(poldat));
-      //   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID(poldat, run);
-      //   break;
 
       case REC_TAGADO:
          memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
          memcpy(&tgtdat2, &rec.tagado.data[1], sizeof(tgtdat2));
          break; // later
-
-      case REC_PCTARGET:
-			// Do not process this record for calibration runs. May contain
-			// invalid ndelim info
-         if (!gReadFlag.PCTARGET && !gAnaInfo->HasAlphaBit()) {
-
-            printf("Reading REC_PCTARGET record...\n");
-
-            gNDelimeters  = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
-            long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
-
-            if (gAnaInfo->HasTargetBit()) { ProcessRecordPCTarget(pointer, run); }
-
-            gReadFlag.PCTARGET = 1;
-         }
-
-         break;
-
-      case REC_COUNTRATE:
-         printf("Reading REC_COUNTRATE record... size = %d\n", recSize);
-
-         //my_i = (rec.header.len - sizeof(rec.header))/(sizeof(long));
-         ////my_pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
-         //my_pointer = (Long_t *) rec.countRate.data;
-
-         //printf("len, size: %d, %d\n", rec.header.len, my_i);
-
-         //for (long i=0; i<my_i; i++) {                                        
-         //   printf("i: %d, %d\n", i, *(my_pointer+i));
-         //}
-
-         if (gAnaInfo->HasProfileBit()) 
-            ProcessRecord( (recordCountRate &) rec.countRate);
-
-         break;
-
-      case REC_WCMADO:
-         if (gReadFlag.WCMADO) break; // Read record only once
-
-         printf("Reading REC_WCMADO record... size = %d\n", recSize);
-
-         ProcessRecord( (recordWcmAdoStruct &) rec.wcmado);
-
-         gReadFlag.WCMADO = 1;
-
-         break;
-
-      case REC_BEAMADO:
-
-
-         gRunInfo->StopTime = rec.header.timestamp.time;
-         break;
 
       case REC_END:
          gRunInfo->StopTime = rec.end.header.timestamp.time;
@@ -527,18 +528,11 @@ void readloop(MseRunInfoX &run)
       case REC_READALL:
          break;
 
-      case REC_WFDV8SCAL:
-         if (gAnaInfo->HasScalerBit())
-            ProcessRecord(rec.wfd);
-         break;
-
-      case REC_SCALERS:
-         fprintf(stdout, "Scaler readtime \n");
-         fprintf(stdout, "Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
-
-         gRunInfo->StopTime = rec.header.timestamp.time;
-
-         break;
+      //case REC_SCALERS:
+      //   fprintf(stdout, "Scaler readtime \n");
+      //   fprintf(stdout, "Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
+      //   gRunInfo->StopTime = rec.header.timestamp.time;
+      //   break;
 
       case REC_READAT:
 
@@ -690,38 +684,8 @@ void readloop(MseRunInfoX &run)
 
         break;
 
-      case REC_RHIC_CONF:
-
-         if (!gReadFlag.RHICCONF) {
-
-            fprintf(stdout, "Reading REC_RHIC_CONF record from file...\n");
-
-            gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
-                      (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
-
-            //XXX printf("TTT: %d\n", rec.cfg.data.NumChannels);
-
-            memcpy(gConfigInfo, &rec.cfg, sizeof(recordConfigRhicStruct) +
-                   (rec.cfg.data.NumChannels - 1) * sizeof(SiChanStruct));
-
-            // when we mandatory provide cfg info -- derpecated
-            //if (gAnaInfo->RECONFMODE == 1) {
-            //   reConfig(gConfigInfo);
-            //}
-
-            // Recalculate Run constants
-            UpdateRunConst(gConfigInfo);
-
-            gReadFlag.RHICCONF = 1;
-         }
-
-         gRunInfo->StopTime = rec.header.timestamp.time;
-
-         break;
-
       case REC_SUBRUN:
          printf("Processing record: REC_SUBRUN\n");
-         gRunInfo->StopTime = rec.header.timestamp.time;
          break;
 
       default:    // unknown record
@@ -748,7 +712,7 @@ void readloop(MseRunInfoX &run)
    gAnaInfo->nEventsProcessed = Nevtot;
 
    mysqlpp::DateTime dt(gRunInfo->StopTime);
-	run.stop_time = dt;
+   run.stop_time = dt;
 
    // Add info to database entry
    stringstream sstr;
@@ -807,22 +771,22 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
       gRunConsts[i] = RunConst(L, Ct);
    }
 
-	// Set values for 0th channel to the average ones
+   // Set values for 0th channel to the average ones
    Float_t sumL      = 0;
-	UInt_t  nChannels = 0;
+   UInt_t  nChannels = 0;
 
    map<UShort_t, RunConst>::iterator irc = gRunConsts.begin();
 
-	for (; irc!=gRunConsts.end(); ++irc) {
-		if (gRunInfo->IsSiliconChannel(irc->first)) {
-	      sumL += irc->second.L;
-			nChannels++;
-	   }
-	}
+   for (; irc!=gRunConsts.end(); ++irc) {
+      if (gRunInfo->IsSiliconChannel(irc->first)) {
+         sumL += irc->second.L;
+         nChannels++;
+      }
+   }
 
    float avrgL = nChannels > 0 ? sumL / nChannels : CARBON_PATH_DISTANCE;
 
-	gRunConsts[0] = RunConst(avrgL, Ct);
+   gRunConsts[0] = RunConst(avrgL, Ct);
 
    printf("\nAverage RunConst:\n");
    gRunConsts[0].Print();
@@ -839,14 +803,14 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
    cout << "target ID = " << poldat.targetIdS << endl;
    //cout << "startTimeS = " << poldat.startTimeS << endl;
    //cout << "stopTimeS = " << poldat.stopTimeS << endl;
- 
+
    gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
- 
+
    // initiarization
    gRunInfo->fTargetId = '-';
- 
+
    string str(poldat.targetIdS);
- 
+
    if (str.find("Background") < str.size())   gRunInfo->fTargetId = 'B';
    if (str.find("1")         == str.size()-1) gRunInfo->fTargetId = '1';
    if (str.find("2")         == str.size()-1) gRunInfo->fTargetId = '2';
@@ -869,7 +833,7 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
 
    //cout << "target id str: " << str << " " << run.target_orient << endl;
 
-   stringstream sstr; 
+   stringstream sstr;
    //int target_id;
    sstr << gRunInfo->fTargetId;
    //sstr >> target_id;
@@ -881,13 +845,13 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
    // within REC_PCTARGET routine. If the target is horizontal,
    // then mask 90 degree detector.
    //if (gRunInfo->fTargetOrient == '-') {
- 
+
    //   if (str.find("Vert") == 0 || str.find("V") == 0) {
    //      gRunInfo->fTargetOrient = 'V';
    //      run.target_orient       = 'V';
    //      tgt.VHtarget            = 0;
    //   }
- 
+
    //   if (str.find("Horz") == 0 || str.find("H") == 0) {
    //      gRunInfo->fTargetOrient = 'H';
    //      run.target_orient       = 'H';
@@ -901,133 +865,23 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
 } //}}}
 
 
-// Method name : PrepareCollidingBunchPattern(gRunInfo->fPolBeam)
-// Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
-void PrepareCollidingBunchPattern()
-{ //{{{
-   for (int i=0; i<NBUNCH; i++){
-      phx.bunchpat[i] = 1; // PHENIX bunch patterns
-      str.bunchpat[i] = 1; // STAR bunch patterns
-   }
- 
-   if (gRunInfo->fPolBeam == 1) { // Yellow Beam
-      for (int j=31; j<40; j++) str.bunchpat[j] = phx.bunchpat[j+40] = 0;
-   } else if (gRunInfo->fPolBeam == 2){ // Blue Beam
-      for (int j=31; j<40; j++) phx.bunchpat[j] = str.bunchpat[j+40] = 0;
-   }
- 
-   cout << "===== Colliding Bunch pattern =======" << endl;
-   cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
-   cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
-   cout << "=====================================" << endl;
-} //}}}
-
-
 /** */
-void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo)
+void ProcessRecordPCTarget(const pCTargetStruct &rec, MseRunInfoX &run)
 { //{{{
-   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID((polDataStruct &) rec.data, runInfo);
-} //}}}
-
-
-/** */
-void ProcessRecord(recordWFDV8ArrayStruct &rec)
-{ //{{{
-   Int_t s1=0, s2=0, s3=0, s4=0;
-   //float hist[1536];
- 
-   UShort_t chId = rec.siNum + 1;
-
-   // Consider only silicon channels
-   if (chId > NSTRIP) return;
- 
-   //for (int i=0; i<1536; i++) {
-   //   //hist[i] = rec.hist[i];
-   //   //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
-   //}
-
-   for (int i=0; i< 128; i++) s1 += rec.hist[i];        // bunch hist
-   for (int i=0; i< 128; i++) s2 += rec.hist[i+128];    // unpol energy
-   for (int i=0; i< 128; i++) s3 += rec.hist[i+256];    // pol+ energy
-   for (int i=0; i< 128; i++) s4 += rec.hist[i+384];    // pol- energy
-
-   //HPAKAD( 200 + chId, &hist[0]);
-   //HPAKAD( 300 + chId, &hist[128]);
-   //HPAKAD( 400 + chId, &hist[256]);
-   //HPAKAD( 500 + chId, &hist[384]);
-   //HPAKAD(1300 + chId, &hist[128]);
-   //HPAKAD(1400 + chId, &hist[256]);
-   //HPAKAD(1500 + chId, &hist[384]);
- 
-   //if (sipar_.ifine == 0) {
-   //   //HPAKAD(600 + chId, &hist[512]);
-   //   //HPAKAD(1600 + chId, &hist[512]);
-   //} else {
-   //   //HPAKAD(700 + chId, &hist[512]);
-   //   //HPAKAD(1700 + chId, &hist[512]);
-   //}
- 
-   printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12d  %12d  %12d  %12d",
-          rec.siNum + 1, rec.scalers[0], rec.scalers[1],
-          rec.scalers[2], rec.scalers[3], rec.scalers[4],
-          s1, s2, s3, s4);
- 
-   gAsymRoot->FillScallerHists(rec.hist, chId);
- 
-   // Check for hardware counts compatibility. Mark channel as bad if something is wrong
-   if (s2 < rec.scalers[2] || s3 != rec.scalers[0] ||
-       s4 != rec.scalers[1] || s1 < s2 + s3 + s4)
-   {
-      printf(" <- !!!");
-      //sipar_.mark[rec.siNum]++;
-   }
- 
-   printf("\n");
- 
-   Int_t cnt = 0;
-
-   cnt += rec.scalers[0] + rec.scalers[1] + rec.scalers[2];
- 
-   for (int i=0; i<3; i++) {
-      //sscal_[rec.siNum * 3+i] += rec.scalers[i];
-   }
-} //}}}
-
-
-/** */
-void ProcessRecord(const recordCountRate &rec)
-{ //{{{
-   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
-   Long_t *pointer = (Long_t *) rec.data;
-   //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
-
-   printf("len, size: %ld, %d\n", rec.header.len, size);
-
-   //for (UInt_t i=0; i<size; i++) {
-   //   printf("countrate: i: %d, %ld\n", i, *(pointer+i));
-   //}
-
-   gAsymRoot->FillProfileHists(size, pointer);
-} //}}}
-
-
-/** */
-void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
-{ //{{{
-   const long* pointer = rec;
+   const long* pointer = (const long*) &rec;
 
    //--rec;
    //UShort_t i = 0;
-  
+
    // copy data to a linear array
    Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
    for (Int_t k=0; k<gNDelimeters; k++) {
 
-      *(linRec + k + 1                 ) = *rec++; // Horizontal target
-      *(linRec + k + (gNDelimeters+2)  ) = *rec++;
-      *(linRec + k + (gNDelimeters+2)*2) = *rec++; // Vertical target
-      *(linRec + k + (gNDelimeters+2)*3) = *rec++;
+      *(linRec + k + 1                 ) = *pointer++; // Horizontal target
+      *(linRec + k + (gNDelimeters+2)  ) = *pointer++;
+      *(linRec + k + (gNDelimeters+2)*2) = *pointer++; // Vertical target
+      *(linRec + k + (gNDelimeters+2)*3) = *pointer++;
 
       //printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, gNDelimeters, *(linRec + k + 1), *(linRec + k + (gNDelimeters+2)  ), *(linRec + k + (gNDelimeters+2)*2), *(linRec + k + (gNDelimeters+2)*3) );
    }
@@ -1037,13 +891,15 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
 
    delete [] linRec;
 
-   // 
+   //
    tgt.fNDelim = gNDelimeters;
 
    //--pointer;
    UShort_t i = 0;
 
    printf("   index    total        x-pos        y-pos\n");
+
+   pointer = (const long*) &rec;
 
    for (int k=0; k<gNDelimeters; k++) {
 
@@ -1133,15 +989,158 @@ void ProcessRecordPCTarget(const long* rec, MseRunInfoX &run)
 } //}}}
 
 
+// Method name : PrepareCollidingBunchPattern(gRunInfo->fPolBeam)
+// Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
+void PrepareCollidingBunchPattern()
+{ //{{{
+   for (int i=0; i<NBUNCH; i++){
+      phx.bunchpat[i] = 1; // PHENIX bunch patterns
+      str.bunchpat[i] = 1; // STAR bunch patterns
+   }
+
+   if (gRunInfo->fPolBeam == 1) { // Yellow Beam
+      for (int j=31; j<40; j++) str.bunchpat[j] = phx.bunchpat[j+40] = 0;
+   } else if (gRunInfo->fPolBeam == 2){ // Blue Beam
+      for (int j=31; j<40; j++) phx.bunchpat[j] = str.bunchpat[j+40] = 0;
+   }
+
+   cout << "===== Colliding Bunch pattern =======" << endl;
+   cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
+   cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
+   cout << "=====================================" << endl;
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordConfigRhicStruct &rec)
+{ //{{{
+   gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
+             (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
+
+   //XXX printf("TTT: %d\n", rec.data.NumChannels);
+
+   memcpy(gConfigInfo, &rec, sizeof(recordConfigRhicStruct) +
+          (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
+
+   // when we mandatory provide cfg info -- derpecated
+   //if (gAnaInfo->RECONFMODE == 1) {
+   //   reConfig(gConfigInfo);
+   //}
+
+   // Recalculate Run constants
+   UpdateRunConst(gConfigInfo);
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo)
+{ //{{{
+   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, runInfo);
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordpCTagAdoStruct &rec, MseRunInfoX &run)
+{ //{{{
+   if (!gAnaInfo->HasTargetBit() || gAnaInfo->HasAlphaBit()) return;
+
+   gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
+
+   //long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
+   ProcessRecordPCTarget((pCTargetStruct &) rec.data, run);
+
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordWFDV8ArrayStruct &rec)
+{ //{{{
+   Int_t s1=0, s2=0, s3=0, s4=0;
+   //float hist[1536];
+
+   UShort_t chId = rec.siNum + 1;
+
+   // Consider only silicon channels
+   if (chId > NSTRIP) return;
+
+   //for (int i=0; i<1536; i++) {
+   //   //hist[i] = rec.hist[i];
+   //   //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
+   //}
+
+   for (int i=0; i< 128; i++) s1 += rec.hist[i];        // bunch hist
+   for (int i=0; i< 128; i++) s2 += rec.hist[i+128];    // unpol energy
+   for (int i=0; i< 128; i++) s3 += rec.hist[i+256];    // pol+ energy
+   for (int i=0; i< 128; i++) s4 += rec.hist[i+384];    // pol- energy
+
+   //HPAKAD( 200 + chId, &hist[0]);
+   //HPAKAD( 300 + chId, &hist[128]);
+   //HPAKAD( 400 + chId, &hist[256]);
+   //HPAKAD( 500 + chId, &hist[384]);
+   //HPAKAD(1300 + chId, &hist[128]);
+   //HPAKAD(1400 + chId, &hist[256]);
+   //HPAKAD(1500 + chId, &hist[384]);
+
+   //if (sipar_.ifine == 0) {
+   //   //HPAKAD(600 + chId, &hist[512]);
+   //   //HPAKAD(1600 + chId, &hist[512]);
+   //} else {
+   //   //HPAKAD(700 + chId, &hist[512]);
+   //   //HPAKAD(1700 + chId, &hist[512]);
+   //}
+
+   printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12d  %12d  %12d  %12d",
+          rec.siNum + 1, rec.scalers[0], rec.scalers[1],
+          rec.scalers[2], rec.scalers[3], rec.scalers[4],
+          s1, s2, s3, s4);
+
+   gAsymRoot->FillScallerHists((Long_t*) rec.hist, chId);
+
+   // Check for hardware counts compatibility. Mark channel as bad if something is wrong
+   if (s2 < rec.scalers[2] || s3 != rec.scalers[0] ||
+       s4 != rec.scalers[1] || s1 < s2 + s3 + s4)
+   {
+      printf(" <- !!!");
+      //sipar_.mark[rec.siNum]++;
+   }
+
+   printf("\n");
+
+   Int_t cnt = 0;
+
+   cnt += rec.scalers[0] + rec.scalers[1] + rec.scalers[2];
+
+   //for (int i=0; i<3; i++) {
+   //   //sscal_[rec.siNum * 3+i] += rec.scalers[i];
+   //}
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordCountRate &rec)
+{ //{{{
+   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+   Long_t *pointer = (Long_t *) rec.data;
+   //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
+
+   printf("len, size: %ld, %d\n", rec.header.len, size);
+
+   //for (UInt_t i=0; i<size; i++) {
+   //   printf("countrate: i: %d, %ld\n", i, *(pointer+i));
+   //}
+
+   gAsymRoot->FillProfileHists(size, pointer);
+} //}}}
+
+
 /** */
 void ProcessRecord(const recordWcmAdoStruct &rec)
 { //{{{
-
    for (int bid=1; bid<=N_BUNCHES; bid++) {
-	   
-		float data = rec.data.fillDataM[(bid-1)*3];
 
-		// save non-zero bunches only
+      float data = rec.data.fillDataM[(bid-1)*3];
+
+      // save non-zero bunches only
       if (!data) continue;
 
       gRunInfo->fWallCurMon[bid] = data;
@@ -1169,24 +1168,24 @@ void ProcessRecord(const recordBeamAdoStruct &rec)
    for (int bid=0; bid<N_BUNCHES; bid++) {
 
       BeamBunchIter  ibb = gRunInfo->fBeamBunches.find(bid+1);
-		BeamBunch     &bb  = ibb->second;
+      BeamBunch     &bb  = ibb->second;
 
       int pat = rec.data.polarizationFillPatternS[bid*3];
 
       if (pat > 0) {
-			bb.SetBunchSpin(kSPIN_UP);
+         bb.SetBunchSpin(kSPIN_UP);
       } else if (pat < 0) {
-			bb.SetBunchSpin(kSPIN_DOWN);
+         bb.SetBunchSpin(kSPIN_DOWN);
       } else {
-			bb.SetBunchSpin(kSPIN_NULL);
+         bb.SetBunchSpin(kSPIN_NULL);
       }
 
       pat = rec.data.measuredFillPatternM[bid*3];
 
       if (pat > 0) {
-			bb.SetFilled(kTRUE);
+         bb.SetFilled(kTRUE);
       } else {
-			bb.SetFilled(kFALSE);
+         bb.SetFilled(kFALSE);
       }
    }
 
@@ -1219,5 +1218,5 @@ void ProcessRecord(const recordBeamAdoStruct &rec)
 
    //cout << endl;
 
-	gRunInfo->PrintBunchPatterns();
+   gRunInfo->PrintBunchPatterns();
 } //}}}

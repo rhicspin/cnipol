@@ -43,10 +43,10 @@ void CnipolPreprocHists::BookHists(string sid)
 { //{{{
    char hName[256];
 
-   sprintf(hName, "hTvsA");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+   //sprintf(hName, "hTvsA");
+   //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+   //((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
    // Data from all enabled silicon channels
    sprintf(hName, "hTimeVsEnergyA");
@@ -66,10 +66,10 @@ void CnipolPreprocHists::BookHists(string sid)
 
       sprintf(&sChId[0], "%02d", iCh);
 
-      sprintf(hName, "hTvsA_ch%02d", iCh);
-      o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+      //sprintf(hName, "hTvsA_ch%02d", iCh);
+      //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      //((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+      //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA_ch%02d", iCh);
@@ -101,16 +101,35 @@ void CnipolPreprocHists::BookHists(string sid)
 /** */
 void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-   ((TH1*) o["hTvsA"])->Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) o["hTimeVsEnergyA"])->Fill(ch->GetEnergyA(), ch->GetTime());
-
    UChar_t chId  = ch->GetChannelId();
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   ((TH1*) o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   //((TH1*) o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+} //}}}
+
+
+/** */
+void CnipolPreprocHists::FillDerivedPassOne()
+{ //{{{
+
+   // Fill derivative histograms first
+   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
+   
+   set<UShort_t>::const_iterator iCh;
+   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+
+   for (iCh=iChB; iCh!=iChE; ++iCh) {
+
+      string sChId(MAX_CHANNEL_DIGITS, ' ');
+      sprintf(&sChId[0], "%02d", *iCh);
+
+      TH2* hTimeVsEnergyA_channel = (TH2*) o["hTimeVsEnergyA_ch" + sChId];
+      hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+   }
 } //}}}
 
 
@@ -118,45 +137,49 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
    // We need pulser histograms to proceed
-   if (!oc) return;
-
-   //CnipolPulserHists *pulserHists = dynamic_cast<CnipolPulserHists*>(oc);
-   //CnipolPulserHists *pulserHists = static_cast<CnipolPulserHists*>(oc);
-
-
-   // Find proper normalization scale for pulser histograms
-   //TH1* hPulserTdc  = (TH1*) oc->o.find("hTdc")->second;
-   //TH2* hPulserTvsA = (TH2*) oc->o.find("hTvsA")->second;
-
-   TH2* hPulserTvsA = (TH2*) oc->o.find("hTimeVsEnergyA")->second;
-   TH1* hPulserTdc  = hPulserTvsA->ProjectionY("hTimeVsEnergyA_projy");
-
-   Int_t cntTdcBin = hPulserTdc->GetMaximumBin();
-
-   Int_t minTdcBin = cntTdcBin - 1;
-   Int_t maxTdcBin = cntTdcBin + 1;
-
-   // Fit 3 bins with a gaussian func
-   TH1D* hPulserAdcMainPeak = hPulserTvsA->ProjectionX("hPulserAdcMainPeak", minTdcBin, maxTdcBin, "eo");
-
-   //hPulserTvsA->Print("all");
-   //hPulserAdcMainPeak->Print("all");
-
-   TFitResultPtr fitres = hPulserAdcMainPeak->Fit("gaus", "E S", "");
-
-   Double_t pulserAdcMean=0, pulserAdcMeanErr, pulserAdcSigma=0, pulserAdcSigmaErr;
-
-   if (fitres.Get()) {
-      pulserAdcMean     = fitres->Value(1);
-      pulserAdcMeanErr  = fitres->FitResult::Error(1);
-      pulserAdcSigma    = fitres->Value(2);
-      pulserAdcSigmaErr = fitres->FitResult::Error(2);
+   if (oc->d.find("pulser") == oc->d.end()) {
+      Error("PostFillPassOne", "No pulser container found");
+      return;
    }
 
-   Int_t minAdcBin = hPulserAdcMainPeak->FindBin(pulserAdcMean - 2*pulserAdcSigma);
-   Int_t maxAdcBin = hPulserAdcMainPeak->FindBin(pulserAdcMean + 2*pulserAdcSigma);
+   CnipolPulserHists *pulserHists = (CnipolPulserHists *) oc->d.find("pulser")->second;
 
-   delete hPulserAdcMainPeak;
+   //CnipolPulserHists *pulserHists = dynamic_cast<CnipolPulserHists*>(pulserHists);
+   //CnipolPulserHists *pulserHists = static_cast<CnipolPulserHists*>(pulserHists);
+
+   // Find proper normalization scale for pulser histograms
+   //TH1* hPulserTdc  = (TH1*) pulserHists->o.find("hTdc")->second;
+   //TH2* hPulserTvsA = (TH2*) pulserHists->o.find("hTvsA")->second;
+
+   //TH2* hPulserTvsA = (TH2*) pulserHists->o.find("hTimeVsEnergyA")->second;
+   //TH1* hPulserTdc  = hPulserTvsA->ProjectionY("hTimeVsEnergyA_projy");
+
+   //Int_t cntTdcBin = hPulserTdc->GetMaximumBin();
+
+   //Int_t minTdcBin = cntTdcBin - 1;
+   //Int_t maxTdcBin = cntTdcBin + 1;
+
+   //// Fit 3 bins with a gaussian func
+   //TH1D* hPulserAdcMainPeak = hPulserTvsA->ProjectionX("hPulserAdcMainPeak", minTdcBin, maxTdcBin, "eo");
+
+   ////hPulserTvsA->Print("all");
+   ////hPulserAdcMainPeak->Print("all");
+
+   //TFitResultPtr fitres = hPulserAdcMainPeak->Fit("gaus", "E S", "");
+
+   //Double_t pulserAdcMean=0, pulserAdcMeanErr, pulserAdcSigma=0, pulserAdcSigmaErr;
+
+   //if (fitres.Get()) {
+   //   pulserAdcMean     = fitres->Value(1);
+   //   pulserAdcMeanErr  = fitres->FitResult::Error(1);
+   //   pulserAdcSigma    = fitres->Value(2);
+   //   pulserAdcSigmaErr = fitres->FitResult::Error(2);
+   //}
+
+   //Int_t minAdcBin = hPulserAdcMainPeak->FindBin(pulserAdcMean - 2*pulserAdcSigma);
+   //Int_t maxAdcBin = hPulserAdcMainPeak->FindBin(pulserAdcMean + 2*pulserAdcSigma);
+
+   //delete hPulserAdcMainPeak;
 
    //printf("%d, %d, %d, %d, %f, %f\n", minAdcBin, maxAdcBin, minTdcBin, maxTdcBin, pulserAdcMean, pulserAdcSigma);
 
@@ -175,7 +198,7 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 
       string dName = "channel" + sCh;
 
-      DrawObjContainer *sdPulser  = oc->d.find(dName)->second;
+      DrawObjContainer *sdPulser  = pulserHists->d.find(dName)->second;
 
       // subtract pulser from raw data
       //string hName = "hTvsA_ch" + sCh;
@@ -185,23 +208,36 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
       TH2* hPreproc = (TH2*) o[hName];
       TH2* hPulser  = (TH2*) sdPulser->o[hName];
 
-      Double_t sumPreproc = hPreproc->Integral(minAdcBin, maxAdcBin, minTdcBin, maxTdcBin);
-      Double_t sumPulser  = hPulser ->Integral(minAdcBin, maxAdcBin, minTdcBin, maxTdcBin);
+      //Double_t sumPreproc = hPreproc->Integral(minAdcBin, maxAdcBin, minTdcBin, maxTdcBin);
+      //Double_t sumPulser  = hPulser ->Integral(minAdcBin, maxAdcBin, minTdcBin, maxTdcBin);
 
-      Double_t area = (maxAdcBin + 1 - minAdcBin) * (maxTdcBin + 1 - minTdcBin);
+      //Double_t area = (maxAdcBin + 1 - minAdcBin) * (maxTdcBin + 1 - minTdcBin);
 
-      //printf("%d, %d, %d, %d, %d, %f, %f, %f\n", *iCh, minAdcBin, maxAdcBin, minTdcBin, maxTdcBin, area, sumPreproc, sumPulser);
+      ////printf("%d, %d, %d, %d, %d, %f, %f, %f\n", *iCh, minAdcBin, maxAdcBin, minTdcBin, maxTdcBin, area, sumPreproc, sumPulser);
 
-      for (Int_t ibx=minAdcBin; ibx<=maxAdcBin; ibx++) {
-         for (Int_t iby=minTdcBin; iby<=maxTdcBin; iby++) {
-            hPreproc->SetBinContent(ibx, iby, sumPreproc/area);
-            hPulser ->SetBinContent(ibx, iby, sumPulser/area);
-         }
-      }
+      //for (Int_t ibx=minAdcBin; ibx<=maxAdcBin; ibx++) {
+      //   for (Int_t iby=minTdcBin; iby<=maxTdcBin; iby++) {
+      //      hPreproc->SetBinContent(ibx, iby, sumPreproc/area);
+      //      hPulser ->SetBinContent(ibx, iby, sumPulser/area);
+      //   }
+      //}
 
       hPulser->Scale(gAnaInfo->fFastCalibThinout);
-      hPulser->Scale(N_BUNCHES / (float) gRunInfo->GetNumEmptyBunches());
+      hPulser->Scale( (N_BUNCHES - gRunInfo->GetNumEmptyBunches()) / (float) gRunInfo->GetNumEmptyBunches());
       hPreproc->Add(hPulser, -1);
+
+      // Set negative content to 0 including under/overflows
+      for (Int_t ibx=0; ibx<=hPreproc->GetNbinsX()+1; ibx++) {
+         for (Int_t iby=0; iby<=hPreproc->GetNbinsY()+1; iby++) {
+
+            Double_t bc = hPreproc->GetBinContent(ibx, iby);
+
+            if (bc < 0) {
+               hPreproc->SetBinContent(ibx, iby, 0);
+               hPreproc->SetBinError(ibx, iby, 0);
+            }
+         }
+      }
    }
 } //}}}
 
@@ -292,3 +328,23 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 		//DrawObjContainer::SaveHStackAs(c, hstack, subPath);
    }
 } //}}}
+
+
+/** */
+//void CnipolPreprocHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
+//{ //{{{
+//   for (Int_t ibx=0; ibx<=hRaw->GetNbinsX(); ++ibx) {
+//      for (Int_t iby=0; iby<=hRaw->GetNbinsY(); ++iby) {
+//
+//         Double_t bcont  = hRaw->GetBinContent(ibx, iby);
+//         Double_t bAdc   = hRaw->GetXaxis()->GetBinCenter(ibx);
+//         Double_t bTdc   = hRaw->GetYaxis()->GetBinCenter(iby);
+//
+//         Double_t kinE   = gAsymRoot->fEventConfig->fCalibrator->GetEnergyA(bAdc, chId);
+//         Double_t kinToF = gAsymRoot->fEventConfig->fCalibrator->GetTimeOfFlight(bTdc, chId);
+//         
+//         //Int_t bin = hKin->FindBin(kinE, kinToF);
+//         hKin->Fill(kinE, kinToF, bcont);
+//      }
+//   }
+//} //}}}
