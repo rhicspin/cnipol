@@ -269,7 +269,7 @@ void CnipolAsymHists::FillDerived()
       TH1* hChannelCounts   = (TH1*) o["hChannelCounts_"   + sSS];
       TH2* hChVsBunchId     = (TH2*) o["hChVsBunchId_"     + sSS];
       TH2* hChVsKinEnergyA  = (TH2*) o["hChVsKinEnergyA_"  + sSS];
-      TH2* hChVsDelim       = (TH2*) o["hChVsDelim_"       + sSS];
+      //TH2* hChVsDelim       = (TH2*) o["hChVsDelim_"       + sSS];
       TH2* hDetVsBunchId_ss = (TH2*) o["hDetVsBunchId_"    + sSS];
       TH2* hDetVsKinEnergyA = (TH2*) o["hDetVsKinEnergyA_" + sSS];
 

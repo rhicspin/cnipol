@@ -40,11 +40,13 @@ void CnipolPulserHists::BookHists(string cutid)
 
    sprintf(hName, "hAdcAmpltd"); // former adc_raw
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
+   ((TH1*) o[hName])->SetOption("hist NOIMG");
    ((TH1*) o[hName])->SetTitle("Raw ADC (All strips);Amplitude, ADC;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hTdc"); // former tdc_raw
    o[hName] = new TH1F(hName, hName, 80, 10, 90);
+   ((TH1*) o[hName])->SetOption("hist NOIMG");
    ((TH1*) o[hName])->SetTitle("Raw TDC (All strips);TDC;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
@@ -65,9 +67,15 @@ void CnipolPulserHists::BookHists(string cutid)
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA");
-   o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
+   o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
    ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+
+   // Time of flight vs kin energy from amplitude
+   sprintf(hName, "hTofVsKinEnergyA");
+   o[hName] = new TH2F(hName, hName, 80, 0, 1700, 60, 10, 110);
+   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
+   ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
    sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5);
@@ -85,7 +93,7 @@ void CnipolPulserHists::BookHists(string cutid)
 
    for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++) {
 
-      string sChId("  ");
+      string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", iChId);
 
       string dName = "channel" + sChId;
@@ -128,9 +136,15 @@ void CnipolPulserHists::BookHists(string cutid)
 
       // Time vs Energy from amplitude
       sprintf(hName, "hTimeVsEnergyA_ch%02d", iChId);
-      oc->o[hName] = new TH2F(hName, hName, 100, 0, 2000, 50, 10, 110);
+      oc->o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+
+      // Time of flight vs kin energy from amplitude
+      sprintf(hName, "hTofVsKinEnergyA_ch%02d", iChId);
+      oc->o[hName] = new TH2F(hName, hName, 80, 100, 1700, 60, 10, 110);
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
+      ((TH1*) oc->o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -190,38 +204,42 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolPulserHists::FillDerivedPassOne()
 { //{{{
-   TH1* hAdcAmpltd     = (TH1*) o["hAdcAmpltd"];
-   TH1* hTdc           = (TH1*) o["hTdc"];
-   TH1* hTvsA          = (TH1*) o["hTvsA"];
-   TH1* hTvsI          = (TH1*) o["hTvsI"];
-   TH1* hIvsA          = (TH1*) o["hIvsA"];
-   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
+   TH1* hAdcAmpltd       = (TH1*) o["hAdcAmpltd"];
+   TH1* hTdc             = (TH1*) o["hTdc"];
+   TH1* hTvsA            = (TH1*) o["hTvsA"];
+   TH1* hTvsI            = (TH1*) o["hTvsI"];
+   TH1* hIvsA            = (TH1*) o["hIvsA"];
+   TH1* hTimeVsEnergyA   = (TH1*) o["hTimeVsEnergyA"];
+   TH1* hTofVsKinEnergyA = (TH1*) o["hTofVsKinEnergyA"];
    
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
    {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
 
-      DrawObjContainer *oc = d.find("channel"+sChId)->second;
+      DrawObjContainer *oc = d.find("channel" + sChId)->second;
 
-      TH2* hTVsA_channel = (TH2*) oc->o["hTvsA_ch"+sChId];
-      hTvsA->Add(hTVsA_channel);
+      TH2* hTVsA_ch = (TH2*) oc->o["hTvsA_ch" + sChId];
+      hTvsA->Add(hTVsA_ch);
 
-      TH2* hTVsI_channel = (TH2*) oc->o["hTvsI_ch"+sChId];
-      hTvsI->Add(hTVsI_channel);
+      TH2* hTVsI_ch = (TH2*) oc->o["hTvsI_ch" + sChId];
+      hTvsI->Add(hTVsI_ch);
 
-      TH2* hIVsA_channel = (TH2*) oc->o["hIvsA_ch" + sChId];
-      hIvsA->Add(hIVsA_channel);
+      TH2* hIVsA_ch = (TH2*) oc->o["hIvsA_ch" + sChId];
+      hIvsA->Add(hIVsA_ch);
 
-      TH2* hTimeVsEnergyA_channel = (TH2*) oc->o["hTimeVsEnergyA_ch"+sChId];
-      hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+      TH2* hTimeVsEnergyA_ch = (TH2*) oc->o["hTimeVsEnergyA_ch" + sChId];
+      hTimeVsEnergyA->Add(hTimeVsEnergyA_ch);
+
+      TH2* hTofVsKinEnergyA_ch = (TH2*) oc->o["hTofVsKinEnergyA_ch" + sChId];
+      hTofVsKinEnergyA->Add(hTofVsKinEnergyA_ch);
 
       // Fill one dimensional hists from two dimensional ones
       TH1D* hProjTmp;
 
       // AdcAmpltd
       TH1* hAdcAmpltd_ch = (TH1*) oc->o["hAdcAmpltd_ch" + sChId];
-      hProjTmp = hTVsA_channel->ProjectionX();
+      hProjTmp = hTVsA_ch->ProjectionX();
 
       utils::CopyBinContentError(hProjTmp, hAdcAmpltd_ch);
 
@@ -229,10 +247,31 @@ void CnipolPulserHists::FillDerivedPassOne()
 
       // Tdc
       TH1* hTdc_ch  = (TH1*) oc->o["hTdc_ch"+sChId];
-      hProjTmp = hTVsA_channel->ProjectionX();
+      hProjTmp = hTVsA_ch->ProjectionY();
 
       utils::CopyBinContentError(hProjTmp, hTdc_ch);
 
       hTdc->Add(hTdc_ch);
    }
+} //}}}
+
+
+/** */
+void CnipolPulserHists::Fill(ChannelEvent *ch, string cutid)
+{ //{{{
+   UChar_t  chId     = ch->GetChannelId();
+   UShort_t adcA_bin = ch->GetAmpltd() + 1;
+   UShort_t adcI_bin = ch->GetIntgrl() + 1;
+   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
+
+   string sChId("  ");
+   sprintf(&sChId[0], "%02d", chId);
+
+   DrawObjContainer *sd = d["channel" + sChId];
+
+   Float_t kinEnergy = ch->GetKinEnergyAEDepend();
+   Float_t tof       = ch->GetTimeOfFlight();
+
+   ((TH1*) sd->o["hTofVsKinEnergyA_ch" + sChId]) -> Fill(kinEnergy, tof);
+
 } //}}}

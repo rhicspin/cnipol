@@ -31,7 +31,7 @@ public:
 
    void  BookHists(std::string cutid="");
    void  Fill(ChannelEvent *ch, std::string cutid="");
-   void  PostFill();
+   void  FillDerived();
 
    ClassDef(CnipolRawHists, 1)
 };

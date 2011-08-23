@@ -76,6 +76,7 @@ public:
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillDerived();
    virtual void PostFill();
+   virtual void PostFill(DrawObjContainer *oc) {}          // special processing for dependant histograms
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
    virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");
    void         Draw(Option_t* option = "") { ((TObject*)this)->Draw(option); }
