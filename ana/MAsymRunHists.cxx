@@ -495,7 +495,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
       t0 = 0;
    }
 
-   if (profileRatio > 1.0 || profileRatio < 0.0001 || profileRatioErr < 0.001) {
+   if (profileRatio > 1.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001) {
 	   Warning("Fill", "Didn't pass QA check");
       return;
 	}
