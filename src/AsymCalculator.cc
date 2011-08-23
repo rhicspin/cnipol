@@ -63,20 +63,17 @@ void end_process(MseRunInfoX &run)
    //gAsymCalculator.CumulativeAsymmetry();
 
    // Specific Luminosity (ds: this one is not used in asymmetry calculation)
-   SpecificLuminosity(gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
+   //SpecificLuminosity(gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
 
    // ds: these routines are skipped by default
-   if (Flag.EXE_ANOMALY_CHECK) {
-
-      // Check for 12C Invariant Mass and energy dependences
-      TshiftFinder(Flag.feedback, 2);
-
-      // Check for slope of Energy Spectrum
-      DetectorAnomaly();
-
-      // Check for bunch anomaly
-      BunchAnomalyDetector();
-   }
+   //if (Flag.EXE_ANOMALY_CHECK) {
+   //   // Check for 12C Invariant Mass and energy dependences
+   //   TshiftFinder(Flag.feedback, 2);
+   //   // Check for slope of Energy Spectrum
+   //   DetectorAnomaly();
+   //   // Check for bunch anomaly
+   //   BunchAnomalyDetector();
+   //}
 
    // Complete Histograms
    CompleteHistogram();
@@ -1102,8 +1099,8 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
       }
    }
 
-   HHPAK(10033, SpeLumi.Cnts);
-   HHPAKE(11033, SpeLumi.dCnts);
+   //HHPAK(10033, SpeLumi.Cnts);
+   //HHPAKE(11033, SpeLumi.dCnts);
 
    SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,N_BUNCHES);
 
@@ -1114,20 +1111,20 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
       }
    }
 
-   HHPAK(10034, SpeLumi_norm);    HHPAKE(11034, dSpeLumi_norm);
+   //HHPAK(10034, SpeLumi_norm);    HHPAKE(11034, dSpeLumi_norm);
 
    // Book and fill histograms
    char hcomment[256];
    sprintf(hcomment, "Specific Luminosity");
-   HHBOOK1(10035, hcomment, 100, SpeLumi.ave-SpeLumi.ave/2, SpeLumi.ave + SpeLumi.ave/2.);
+   //HHBOOK1(10035, hcomment, 100, SpeLumi.ave-SpeLumi.ave/2, SpeLumi.ave + SpeLumi.ave/2.);
 
-   for (int bid=0; bid<N_BUNCHES; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
+   //for (int bid=0; bid<N_BUNCHES; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
 
    // Get variables
    char CHOICE[5]="HIST";
-   mean = HHSTATI(10035, 1, CHOICE, 0) ;
-   RMS  = HHSTATI(10035, 2, CHOICE, 0) ;
-   RMS_norm = (!mean) ? 0 : RMS/mean ;
+   //mean = HHSTATI(10035, 1, CHOICE, 0) ;
+   //RMS  = HHSTATI(10035, 2, CHOICE, 0) ;
+   //RMS_norm = (!mean) ? 0 : RMS/mean ;
 } //}}}
 
 
@@ -1656,7 +1653,7 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
 
    for (int iKinE=1; iKinE<=hAsym->GetNbinsX(); iKinE++)
    {
-      printf("binnn: %d\n", iKinE);
+      //printf("binnn: %d\n", iKinE);
 
       TH1I *hUp   = (TH1I*) hChVsKinE_Up  ->ProjectionY("hUp",   iKinE, iKinE);
       TH1I *hDown = (TH1I*) hChVsKinE_Down->ProjectionY("hDown", iKinE, iKinE);
@@ -1697,7 +1694,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
 
    for (int iTimeDiff=1; iTimeDiff<=hAsym->GetNbinsX(); iTimeDiff++)
    {
-      printf("binnn: %d\n", iTimeDiff);
+      //printf("binnn: %d\n", iTimeDiff);
 
       TH1I *hUp   = (TH1I*) hChVsTimeDiff_Up  ->ProjectionY("hUp",   iTimeDiff, iTimeDiff);
       TH1I *hDown = (TH1I*) hChVsTimeDiff_Down->ProjectionY("hDown", iTimeDiff, iTimeDiff);

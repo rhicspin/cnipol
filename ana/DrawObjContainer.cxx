@@ -447,15 +447,36 @@ void DrawObjContainer::PreFillPassOne() {}
 
 
 /** */
-void DrawObjContainer::FillPassOne(ChannelEvent *ch) {}
+void DrawObjContainer::FillPassOne(ChannelEvent *ch)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->FillPassOne(ch);
+   }
+} //}}}
 
 
 /** */
-void DrawObjContainer::FillDerivedPassOne() {}
+void DrawObjContainer::FillDerivedPassOne()
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->FillDerivedPassOne();
+   }
+} //}}}
 
 
 /** */
-void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc) {}
+void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->PostFillPassOne(oc);
+   }
+} //}}}
 
 
 /** */

@@ -36,11 +36,11 @@ public:
    CnipolProfileHists(TDirectory *dir);
    ~CnipolProfileHists();
 
-   void BookHists(std::string sid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
-   void Fill(UInt_t n, Long_t* hData);
-   void PreFill(std::string sid);
-   void PostFill();
+   void      BookHists(std::string sid="");
+   void      PreFill(std::string sid);
+   void      Fill(ChannelEvent *ch, std::string cutid="");
+   void      Fill(UInt_t n, Long_t* hData);
+   void      PostFill();
    EMeasType GuessMeasurementType();
 
    static Double_t ProfileFitFunc(Double_t *x, Double_t *par);

@@ -43,13 +43,13 @@ void initialize()
    //TString filelistName = "run11_15397";
    //TString filelistName = "run11_15399";
    //TString filelistName = "run11_15XXX_2XX_3XX_4XX";
-   TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
+   //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
    //TString filelistName = "run11_153XX";
    //TString filelistName = "run11_153XX_Y2U";
    //TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
-   //TString filelistName = "run11_tmp";
+   TString filelistName = "run11_tmp";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
 
@@ -180,8 +180,8 @@ void initialize()
       Float_t  asymmetry_err    = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
       Float_t  polarization     = gRC->fAnaResult->sinphi[0].P[0] * 100.;
       Float_t  polarization_err = gRC->fAnaResult->sinphi[0].P[1] * 100.;
-      Float_t  profileRatio     = gRC->fAnaResult->fIntensPolarR;
-      Float_t  profileRatioErr  = gRC->fAnaResult->fIntensPolarRErr;
+      //Float_t  profileRatio     = gRC->fAnaResult->fIntensPolarR;
+      //Float_t  profileRatioErr  = gRC->fAnaResult->fIntensPolarRErr;
       Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
       Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 

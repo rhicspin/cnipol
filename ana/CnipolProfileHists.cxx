@@ -183,6 +183,22 @@ void CnipolProfileHists::BookHists(string sid)
 
 
 /** */
+void CnipolProfileHists::PreFill(string sid)
+{ //{{{
+   //if (sid == "_cut2") {
+   ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
+   //}
+
+   //((TH1*) o["hIntensProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
+   //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
+   ((TH1*) o["hPolarProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
+
+   //Double_t ymax = ((TH1*) o["hIntensProfile2"])->GetMaximum();
+   //((TH1*) o["hIntensProfile2"])->Scale(1./ymax);
+} //}}}
+
+
+/** */
 void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
    //UChar_t chId  = ch->GetChannelId();
@@ -239,26 +255,15 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 
 
 /** */
-void CnipolProfileHists::PreFill(string sid)
-{ //{{{
-   //if (sid == "_cut2") {
-   ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
-   //}
-
-   //((TH1*) o["hIntensProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
-   //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
-   ((TH1*) o["hPolarProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
-
-   //Double_t ymax = ((TH1*) o["hIntensProfile2"])->GetMaximum();
-   //((TH1*) o["hIntensProfile2"])->Scale(1./ymax);
-} //}}}
-
-
-/** */
 void CnipolProfileHists::PostFill()
 { //{{{
    //TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
    TH1* hIntensProfile = (TH1*) o["hIntensProfile2"];
+
+   if (!hIntensProfile->Integral()) {
+      Error("PostFill", "Intensity profile histogram (hIntensProfile) is empty. Skipping...");
+      return;
+   }
 
    Double_t ymax = hIntensProfile->GetMaximum();
 
@@ -308,6 +313,11 @@ void CnipolProfileHists::PostFill()
    TH1* hPolarProfileFinal = (TH1*) o["hPolarProfileFinal"];
 
    TH1* hPolarProfile = (TH1*) o["hPolarProfile"];
+
+   if (!hPolarProfile->Integral()) {
+      Error("PostFill", "Polarization profile histogram (hPolarProfile) is empty. Skipping...");
+      return;
+   }
 
    Int_t bc  = hIntensProfile->FindBin( mean1 + (mean2 - mean1)*0.5);
 

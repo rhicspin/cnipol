@@ -270,17 +270,13 @@ void event_process(processEvent *event)
 
 	   //gAsymRoot->fHists->Fill(ch, "_cut2");
 
-      if ( ch->PassCutEmptyBunch() ) {
-	      //gAsymRoot->fHists->d["asym_eb"]->Fill(ch);
-			gAsymRoot->Fill(kCUT_CARBON_EB);
-      } else {
-	      //gAsymRoot->fHists->d["std"]->Fill(ch);
-	      //gAsymRoot->fHists->d["asym"]->Fill(ch);
-	      //gAsymRoot->fHists->d["profile"]->Fill(ch);
-	      //gAsymRoot->fHists->d["target"]->Fill(ch);
+		gAsymRoot->Fill(kCUT_CARBON);
 
-			gAsymRoot->Fill(kCUT_CARBON);
-      }
+      if ( ch->PassCutEmptyBunch() ) {
+			gAsymRoot->Fill(kCUT_CARBON_EB);
+      }// else {
+		//   gAsymRoot->Fill(kCUT_CARBON);
+      //}
 
       //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
       //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());

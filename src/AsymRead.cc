@@ -410,6 +410,11 @@ void RawDataProcessor::ReadDataFast()
 // read loop routine
 void readloop(MseRunInfoX &run)
 { //{{{
+   cout << endl;
+   gSystem->Info("readloop", "Start reading events from data file...");
+
+   TStopwatch sw;
+
    static int READ_FLAG = 0;
 
    // Common structure for the data format
@@ -684,9 +689,9 @@ void readloop(MseRunInfoX &run)
 
         break;
 
-      case REC_SUBRUN:
-         printf("Processing record: REC_SUBRUN\n");
-         break;
+      //case REC_SUBRUN:
+      //   printf("Processing record: REC_SUBRUN\n");
+      //   break;
 
       default:    // unknown record
          fprintf(stdout, "Encountered Unknown Record \"%#x\"\n",
@@ -703,7 +708,7 @@ void readloop(MseRunInfoX &run)
 
    fprintf(stdout, "End of data stream \n");
    fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo->StopTime));
-   fprintf(stdout, "%ld Carbons are found in\n", Nevcut);
+   fprintf(stdout, "Carbons found: %ld \n", Nevcut);
    //fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
    fprintf(stdout, "Total events in file %d\n", gAnaInfo->nEventsTotal);
    fprintf(stdout, "First %d events processed\n", Nread);
@@ -745,6 +750,10 @@ void readloop(MseRunInfoX &run)
          exit(-1);
       }
    }
+
+   sw.Stop();
+
+   gSystem->Info("readloop", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 } //}}}
 
 

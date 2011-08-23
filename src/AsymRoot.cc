@@ -173,10 +173,10 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["std"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
 
-      dir = new TDirectoryFile("std_eb", "std_eb", "", fOutRootFile);
-      oc  = new CnipolHists(dir);
-      fHists->d["std_eb"] = oc;
-      fHistCuts[kCUT_CARBON_EB].insert(oc);
+      //dir = new TDirectoryFile("std_eb", "std_eb", "", fOutRootFile);
+      //oc  = new CnipolHists(dir);
+      //fHists->d["std_eb"] = oc;
+      //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    // If requested create scaler histograms and add them to the container
@@ -204,7 +204,9 @@ void AsymRoot::CreateRootFile(string filename)
 
    if (gAnaInfo->HasProfileBit()) {
       dir = new TDirectoryFile("profile", "profile", "", fOutRootFile);
-      fHists->d["profile"] = new CnipolProfileHists(dir);
+      oc = new CnipolProfileHists(dir);
+      fHists->d["profile"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
    }
 
    if (gAnaInfo->HasAsymBit()) {
@@ -213,10 +215,10 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["asym"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
 
-      dir = new TDirectoryFile("asym_eb", "asym_eb", "", fOutRootFile);
-      oc = new CnipolAsymHists(dir);
-      fHists->d["asym_eb"] = oc;
-      fHistCuts[kCUT_CARBON_EB].insert(oc);
+      //dir = new TDirectoryFile("asym_eb", "asym_eb", "", fOutRootFile);
+      //oc = new CnipolAsymHists(dir);
+      //fHists->d["asym_eb"] = oc;
+      //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    if (gAnaInfo->HasKinematBit()) {
@@ -238,6 +240,7 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolPulserHists(dir);
       fHists->d["pulser"] = oc;
       fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
+      fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    dir = new TDirectoryFile("run", "run", "", fOutRootFile);
