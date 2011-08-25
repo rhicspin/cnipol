@@ -4,6 +4,7 @@
 
 #include "manalyze.h"
 
+#include "CnipolAsymHists.h"
 #include "MAsymFillHists.h"
 #include "MAsymRunHists.h"
 #include "MAsymRateHists.h"
@@ -16,6 +17,7 @@
 
 using namespace std;
 
+DrawObjContainer    *gHIn;
 DrawObjContainer    *gH;
 AnaInfo             *gAnaInfo;
 
@@ -69,7 +71,7 @@ void initialize()
    gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", gMAsymRoot));
    gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", gMAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
-   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",  "pmt",  "", gMAsymRoot));
+   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", gMAsymRoot));
 
    string  histName = "hPolarVsIntensProfileBin";
 
@@ -148,14 +150,25 @@ void initialize()
       gSystem->Info("", "file found: %s", fileName.Data());
 
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
-      delete f;
 
       if (!gRC) {
          gSystem->Error("", "RC not found\n");
+         delete f;
+         continue;
+      }
+
+      gHIn = new DrawObjContainer(f);
+      gHIn->d["asym"] = new CnipolAsymHists();
+      gHIn->ReadFromDir();
+
+      if (!gHIn) {
+         gSystem->Error("", "Hists not found\n");
+         delete f;
          continue;
       }
 
       //gRC->Print();
+      //gHIn->Print();
 
       //Double_t energy = gRC->fRunInfo->fBeamEnergy;
       //printf("%f, %d\n", energy, beamEnergy);
@@ -206,7 +219,11 @@ void initialize()
       }
 
       gRunInfo = gRC->fRunInfo;
+
       gH->Fill(*gRC);
+      gH->Fill(*gRC, *gHIn);
+
+      delete f;
    }
 
    Double_t xmin, ymin, xmax, ymax;
@@ -220,6 +237,7 @@ void initialize()
    TCanvas canvas("cName2", "cName2", 1400, 600);
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
 
    gH->Write();
    //gH->Delete();

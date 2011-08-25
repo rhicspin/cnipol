@@ -12,6 +12,8 @@
 #include "AsymCalculator.h"
 #include "RunInfo.h"
 
+#include "CnipolHists.h"
+
 ClassImp(CnipolAsymHists)
 
 using namespace std;
@@ -54,9 +56,11 @@ void CnipolAsymHists::BookHists(string cutid)
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;Asymmetry;");
 
-   Float_t xbins[4] = {-20, -2, +2, +20};
+   Double_t xbins[8] = {-20, -5, -3, -1, +1, +3, +5, +20};
+
    sprintf(hName, "hLongiChAsym%s", cutid.c_str());
-   o[hName] = new TH1F(hName, hName, 3, xbins);
+   o[hName] = new TH1F(hName, hName, 7, xbins);
+   //o[hName] = new TH1F(hName, hName, 40, -20, 20);
    ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
 
@@ -122,7 +126,7 @@ void CnipolAsymHists::BookHists(string cutid)
    //DrawObjContainer        *oc;
    //DrawObjContainerMapIter  isubdir;
 
-   IterSpinState iSS=gRunConfig.fSpinStates.begin();
+   IterSpinState iSS = gRunConfig.fSpinStates.begin();
 
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
 
@@ -183,9 +187,8 @@ void CnipolAsymHists::BookHists(string cutid)
       ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Channel Id;");
 
       // Channel Id vs energy
-      Double_t xbins[4] = {-20, -2, +2, +20};
       shName = "hChVsLongiTimeDiff_" + sSS;
-      o[shName] = new TH2I(shName.c_str(), shName.c_str(), 3, xbins, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+      o[shName] = new TH2I(shName.c_str(), shName.c_str(), 7, xbins, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
       ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Time Diff, ns;Channel Id;");
 
@@ -239,15 +242,15 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
    //((TH1*) o["hDetVsBunchId"]) -> Fill(bId, detId);
 
    Float_t kinEnergy = ch->GetKinEnergyAEDepend();
-   Float_t timeDiff  = ch->GetTdcAdcTimeDiff();
+   //Float_t timeDiff  = ch->GetTdcAdcTimeDiff();
    UInt_t  ttime     = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
    string sSS = gRunConfig.AsString( gRunInfo->GetBunchSpin(bId) );
 
-   ((TH1*) o["hChVsBunchId_"       + sSS]) -> Fill(bId, chId);
-   ((TH1*) o["hChVsKinEnergyA_"    + sSS]) -> Fill(kinEnergy, chId);
-   ((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
-   ((TH1*) o["hChVsDelim_"         + sSS]) -> Fill(ttime, chId);
+   ((TH1*) o.find("hChVsBunchId_"       + sSS)->second) -> Fill(bId, chId);
+   ((TH1*) o.find("hChVsKinEnergyA_"    + sSS)->second) -> Fill(kinEnergy, chId);
+   ((TH1*) o.find("hChVsDelim_"         + sSS)->second) -> Fill(ttime, chId);
+   //((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
 
    //((TH1*) o["hDetVsKinEnergyA_" + sSS]) -> Fill(kinEnergy, detId);
    //((TH1*) o["hDetVsBunchId_"    + sSS]) -> Fill(bId, detId);
@@ -302,6 +305,58 @@ void CnipolAsymHists::FillDerived()
 
       hDetVsBunchId->Add(hDetVsBunchId_ss);
    }
+} //}}}
+
+
+/** */
+void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
+{ //{{{
+
+   CnipolHists *hists_std = (CnipolHists*) oc.d.find("std")->second;
+
+   if (!hists_std) {
+      Error("FillDerived(DrawObjContainer &oc)", "Histogram container \"std\" required");
+      return;
+   }
+
+   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+
+   for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
+
+      string sSS = gRunConfig.AsString(*iSS);
+
+      TH2* hChVsLongiTimeDiff_ss = (TH2*) o["hChVsLongiTimeDiff_" + sSS];
+
+      ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+
+      for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+
+         string sChId("  ");
+         sprintf(&sChId[0], "%02d", *iCh);
+
+         DrawObjContainer *oc_ch = hists_std->d.find("channel" + sChId)->second;
+
+         TH2* hLongiTimeDiffVsEnergyA_ch_ss = (TH2*) oc_ch->o["hLongiTimeDiffVsEnergyA_ch" + sChId + "_" + sSS];
+         
+         Int_t nBinsX = hLongiTimeDiffVsEnergyA_ch_ss->GetNbinsX();
+         Int_t nBinsY = hLongiTimeDiffVsEnergyA_ch_ss->GetNbinsY();
+
+         // Loop over time diff bins
+         for (Int_t iby=1; iby<=nBinsY; iby++) {
+
+            Double_t td = hLongiTimeDiffVsEnergyA_ch_ss->GetYaxis()->GetBinCenter(iby);
+            Double_t nEvents_ch_ss = hLongiTimeDiffVsEnergyA_ch_ss->Integral(1, nBinsX, iby, iby);
+
+            Int_t tdBin = hChVsLongiTimeDiff_ss->GetXaxis()->FindBin(td);
+            
+            Int_t gBin = hChVsLongiTimeDiff_ss->GetBin(tdBin, *iCh);
+            //Int_t gBin = hChVsLongiTimeDiff_ss->GetBin(iby, *iCh);
+            hChVsLongiTimeDiff_ss->AddBinContent(gBin, nEvents_ch_ss);
+            hChVsLongiTimeDiff_ss->SetEntries(hChVsLongiTimeDiff_ss->GetEntries() + nEvents_ch_ss);
+         }
+      }
+   }
+
 } //}}}
 
 

@@ -64,6 +64,7 @@ public:
    void         Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(EventConfig &rc);
+   virtual void Fill(EventConfig &rc, DrawObjContainer &oc);
    virtual void FillPreProcess(ChannelEvent *ch);
    void         Print(const Option_t* opt="") const;
 
@@ -75,6 +76,7 @@ public:
    virtual void PreFill(std::string sid="");
    virtual void Fill(ChannelEvent *ch, std::string cutid="");
    virtual void FillDerived();
+   virtual void FillDerived(DrawObjContainer &oc) {}          // special processing for dependant histograms
    virtual void PostFill();
    virtual void PostFill(DrawObjContainer *oc) {}          // special processing for dependant histograms
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);

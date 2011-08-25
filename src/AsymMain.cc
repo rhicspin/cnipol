@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
       {"target",              no_argument,         0,   AnaInfo::MODE_TARGET},
       {"profile",             no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"asym",                no_argument,         0,   AnaInfo::MODE_ASYM},
-      {"kinemat",             no_argument,         0,   AnaInfo::MODE_KINEMAT},
+      {"kinema",              no_argument,         0,   AnaInfo::MODE_KINEMA},
       {"pmt",                 no_argument,         0,   AnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AnaInfo::MODE_PULSER},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
       {"mode-target",         no_argument,         0,   AnaInfo::MODE_TARGET},
       {"mode-profile",        no_argument,         0,   AnaInfo::MODE_PROFILE},
       {"mode-asym",           no_argument,         0,   AnaInfo::MODE_ASYM},
-      {"mode-kinemat",        no_argument,         0,   AnaInfo::MODE_KINEMAT},
+      {"mode-kinema",         no_argument,         0,   AnaInfo::MODE_KINEMA},
       {"mode-pmt",            no_argument,         0,   AnaInfo::MODE_PMT},
       {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
@@ -337,8 +337,8 @@ int main(int argc, char *argv[])
          gAnaInfo->fModes |= AnaInfo::MODE_ASYM;
          break;
 
-      case AnaInfo::MODE_KINEMAT:
-         gAnaInfo->fModes |= AnaInfo::MODE_KINEMAT;
+      case AnaInfo::MODE_KINEMA:
+         gAnaInfo->fModes |= AnaInfo::MODE_KINEMA;
          break;
 
       case AnaInfo::MODE_PMT:

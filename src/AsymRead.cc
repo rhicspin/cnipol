@@ -672,7 +672,7 @@ void readloop(MseRunInfoX &run)
                     event_process(&event);
                  //}
 
-                 if (Nevtot%10000==0) {
+                 if (Nevtot%50000==0) {
 
                     //ds: Can we simplify this by leaving only one report?
                     //if (Flag.feedback){

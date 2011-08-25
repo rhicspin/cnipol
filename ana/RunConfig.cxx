@@ -139,6 +139,21 @@ string RunConfig::AsString(ESpinState spinState)
    }
 } //}}}
 
+/** */
+UShort_t RunConfig::AsIndex(ESpinState spinState)
+{ //{{{
+   switch (spinState) {
+   case kSPIN_DOWN:
+	   return 1;
+   case kSPIN_NULL:
+	   return 2;
+   case kSPIN_UP:
+	   return 0;
+   default:
+      return 3;
+   }
+} //}}}
+
 
 /** */
 Color_t RunConfig::AsColor(EPolarimeterId polId)

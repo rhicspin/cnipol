@@ -20,8 +20,15 @@
  */
 class CnipolPulserHists : public DrawObjContainer
 {
-public:
+private:
 
+   TH1 *fhBunchCounts;
+   TH1 *fhStripCounts;
+
+   TH2 *fhTvsA_ch[N_SILICON_CHANNELS];
+   TH2 *fhTvsI_ch[N_SILICON_CHANNELS];
+   TH2 *fhIvsA_ch[N_SILICON_CHANNELS];
+   TH2 *fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
 
 public:
 

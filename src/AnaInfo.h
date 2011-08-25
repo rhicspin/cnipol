@@ -53,7 +53,7 @@ public:
                 MODE_TARGET            = 0x00200000,
                 MODE_PROFILE           = 0x00400000,
                 MODE_ASYM              = 0x00800000,
-                MODE_KINEMAT           = 0x08000000,
+                MODE_KINEMA            = 0x08000000,
                 MODE_PMT               = 0x00000100,
                 MODE_PULSER            = 0x00000200,
                 MODE_FULL              = 0x007f0000,

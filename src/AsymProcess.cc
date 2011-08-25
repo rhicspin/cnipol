@@ -265,6 +265,7 @@ void event_process(processEvent *event)
       if ( !ch->PassCutNoise() || !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
 
 	   //gAsymRoot->fHists->Fill(ch, "_cut1");
+		gAsymRoot->Fill(kCUT_NOISE);
 
       if (!ch->PassCutCarbonMass()) return;
 

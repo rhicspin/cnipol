@@ -10,6 +10,7 @@
 
 #include "utils/utils.h"
 
+#include "CnipolAsymHists.h"
 #include "MAsymRunHists.h"
 
 //#include "RunInfo.h"
@@ -456,6 +457,30 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetTitle(";Dead Layer, #mug/cm^{2};Mean t_{0}, ns;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsDLMean, "p");
 
+   // Combined asymmetry histogram
+
+   string shName;
+
+   shName = "hKinEnergyAChAsym_" + strPolId + "_" + strBeamE;
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
+   ((TH1*) o[shName])->SetOption("E1");
+   ((TH1*) o[shName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[shName])->SetMarkerSize(1);
+   ((TH1*) o[shName])->SetMarkerColor(color);
+   ((TH1*) o[shName])->SetBit(TH1::kIsAverage);
+   ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Asymmetry;");
+
+   Float_t xbins[4] = {-20, -2, +2, +20};
+
+   shName = "hLongiChAsym_" + strPolId + "_" + strBeamE;
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 3, xbins);
+   ((TH1*) o[shName])->SetOption("E1");
+   ((TH1*) o[shName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) o[shName])->SetMarkerSize(1);
+   ((TH1*) o[shName])->SetMarkerColor(color);
+   ((TH1*) o[shName])->SetBit(TH1::kIsAverage);
+   ((TH1*) o[shName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
+
 } //}}}
 
 
@@ -650,16 +675,54 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
 
 /** */
-void MAsymRunHists::Print(const Option_t* opt) const
+void MAsymRunHists::Fill(EventConfig &rc, DrawObjContainer &oc)
 { //{{{
-   opt = ""; //printf("MAsymRunHists:\n");
-   DrawObjContainer::Print();
+   //if (!oc) {
+   //   Error("Fill(DrawObjContainer *oc)", "Argument required");
+   //   return;
+   //}
+
+   Short_t  polId            = rc.fRunInfo->fPolId;
+   UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
+
+   string strPolId = RunConfig::AsString((EPolarimeterId) polId);
+   string strBeamE = RunConfig::AsString((EBeamEnergy) beamEnergy);
+
+   CnipolAsymHists *ah = (CnipolAsymHists*) oc.d.find("asym")->second;
+
+   if (!ah) {
+      Error("Fill(DrawObjContainer &oc)", "Asym container required");
+      return;
+   }
+
+   TH1 *hAsym_meas;
+   TH1 *hAsym;
+
+   hAsym_meas = (TH1*) ah->o.find("hKinEnergyAChAsym")->second;
+
+   hAsym = (TH1*) o["hKinEnergyAChAsym_" + strPolId + "_" + strBeamE];
+   hAsym_meas->SetBit(TH1::kIsAverage);
+   hAsym->Add(hAsym_meas);
+
+
+   hAsym_meas = (TH1*) ah->o.find("hLongiChAsym")->second;
+
+   hAsym = (TH1*) o["hLongiChAsym_" + strPolId + "_" + strBeamE];
+   hAsym_meas->SetBit(TH1::kIsAverage);
+   hAsym->Add(hAsym_meas);
+
+   //printf("Found asym hist %s %d\n", hAsym->GetName(), hAsym->GetIntegral());
+   //printf("Found asym hist %f\n", hAsym->Integral());
+   //printf("Found asym hist \n");
+
 } //}}}
 
 
 /** */
-void MAsymRunHists::Fill(ChannelEvent *ch, string sid)
+void MAsymRunHists::Print(const Option_t* opt) const
 { //{{{
+   opt = ""; //printf("MAsymRunHists:\n");
+   DrawObjContainer::Print();
 } //}}}
 
 
@@ -985,7 +1048,6 @@ void MAsymRunHists::UpdateLimits()
          sprintf(hName, "hTargetVsMeas_%s_%s", strPolId.c_str(), strBeamE.c_str());
          ((TH1*) o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
 
-
          sprintf(hName, "hPolarVsFill_%s_%s", strPolId.c_str(), strBeamE.c_str());
 			//utils::UpdateLimitsFromGraphs((TH1*) o[hName], 1);
 			//utils::RebinIntegerAxis((TH1*) o[hName]);
@@ -1074,6 +1136,10 @@ void MAsymRunHists::UpdateLimits()
             sprintf(hName, "hDLVsMeas_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
             ((TH1*) o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
 	      }
+
+         // Asymmetry histograms
+         ((TH1*) o["hKinEnergyAChAsym_" + strPolId + "_" + strBeamE])->GetYaxis()->SetRangeUser(1e-5, 0.015);
+         //((TH1*) o["hLongiChAsym_"      + strPolId + "_" + strBeamE])->GetYaxis()->SetRangeUser(1e-5, 0.015);
       }
    }
 
