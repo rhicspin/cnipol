@@ -204,14 +204,14 @@ void AsymRoot::CreateRootFile(string filename)
 
    if (gAnaInfo->HasProfileBit()) {
       dir = new TDirectoryFile("profile", "profile", "", fOutRootFile);
-      oc = new CnipolProfileHists(dir);
+      oc  = new CnipolProfileHists(dir);
       fHists->d["profile"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
    }
 
    if (gAnaInfo->HasAsymBit()) {
       dir = new TDirectoryFile("asym", "asym", "", fOutRootFile);
-      oc = new CnipolAsymHists(dir);
+      oc  = new CnipolAsymHists(dir);
       fHists->d["asym"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
 
@@ -222,8 +222,15 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    if (gAnaInfo->HasKinematBit()) {
+      // Pre mass cut
+      dir = new TDirectoryFile("kinema_premass", "kinema_premass", "", fOutRootFile);
+      oc  = new CnipolKinematHists(dir);
+      fHists->d["kinema_premass"] = oc;
+      fHistCuts[kCUT_NOISE].insert(oc);
+
+      // data after mass cut 
       dir = new TDirectoryFile("kinema", "kinema", "", fOutRootFile);
-      oc = new CnipolKinematHists(dir);
+      oc  = new CnipolKinematHists(dir);
       fHists->d["kinema"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
    }
@@ -527,6 +534,12 @@ void AsymRoot::Fill(ECut cut)
 void AsymRoot::FillDerived()
 {
    fHists->FillDerived();
+
+   // Process dependencies
+   // asym depends on std
+   if (gAnaInfo->HasAsymBit() && gAnaInfo->HasNormalBit() ) {
+      fHists->d["asym"]->FillDerived( *fHists );
+   }
 }
 
 

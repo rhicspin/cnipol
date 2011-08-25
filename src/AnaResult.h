@@ -33,6 +33,7 @@ public:
    ValErrMap            fAsymY45;               //
    TFitResultPtr        fFitResProfilePvsI;     // Fit result from profile polarization vs intensity plot
    TFitResultPtr        fFitResEnergySlope;     // Fit result from energy distribution histogram
+   TFitResultPtr        fFitResPseudoMass;      // Fit result from mass distribution histogram
    //Float_t              fBananaCount;         // The number of events in the final sample
    Float_t              P_sigma_ratio[2];
    Float_t              P_sigma_ratio_norm[2];

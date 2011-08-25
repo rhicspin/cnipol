@@ -142,6 +142,16 @@ Float_t ChannelEvent::GetTimeOfFlight()
 
 
 /** */
+Float_t ChannelEvent::GetTimeOfFlight2()
+{ //{{{
+   UChar_t chId   = GetChannelId();
+   Float_t t0coef = fEventConfig->fCalibrator->fChannelCalibs[chId].fT0Coef;
+
+   return GetTime2() + t0coef;
+} //}}}
+
+
+/** */
 Float_t ChannelEvent::GetTimeOfFlightEstimate()
 { //{{{
    Float_t t0coef = fEventConfig->fCalibrator->fChannelCalibs[0].fT0Coef;
@@ -181,7 +191,8 @@ Float_t ChannelEvent::GetMandelstamT()
 Float_t ChannelEvent::GetTdcAdcTimeDiff()
 { //{{{
    UChar_t chId  = GetChannelId();
-   Float_t delta = GetTimeOfFlight() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
+   //Float_t delta = GetTimeOfFlight() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
+   Float_t delta = GetTimeOfFlight2() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
 
    return delta;
 

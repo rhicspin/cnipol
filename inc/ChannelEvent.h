@@ -64,6 +64,7 @@ public:
    Float_t  GetTime() const;
    Float_t  GetTime2() const;
    Float_t  GetTimeOfFlight();
+   Float_t  GetTimeOfFlight2();
    Float_t  GetTimeOfFlightEstimate();
    Float_t  GetCarbonMass();
    Float_t  GetCarbonMassEstimate();

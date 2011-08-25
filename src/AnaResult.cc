@@ -22,7 +22,7 @@ AnaResult::AnaResult() : TObject(),
    fFitResAsymPhi(),      fFitResPolarPhi(),
    fFitResAsymBunchX90(), fFitResAsymBunchX45(), fFitResAsymBunchY45(),
    fAsymX90(), fAsymX45(), fAsymY45(),
-   fFitResProfilePvsI(), fFitResEnergySlope(),
+   fFitResProfilePvsI(), fFitResEnergySlope(), fFitResPseudoMass(),
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
    //energy_slope[2],        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error

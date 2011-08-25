@@ -22,8 +22,6 @@
  */
 class CnipolAsymHists : public DrawObjContainer
 {
-public:
-
 
 public:
 
@@ -35,6 +33,7 @@ public:
    void PreFill(std::string cutid="");
    void Fill(ChannelEvent *ch, std::string cutid="");
    void FillDerived();
+   void FillDerived(DrawObjContainer &oc);
    void PostFill();
 
    ClassDef(CnipolAsymHists, 1)

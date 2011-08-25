@@ -65,28 +65,40 @@ void CnipolPreprocHists::BookHists(string sid)
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
    ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
 
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
+      sprintf(&sChId[0], "%02d", *iCh);
 
-      sprintf(&sChId[0], "%02d", iCh);
-
-      //sprintf(hName, "hTvsA_ch%02d", iCh);
+      //sprintf(hName, "hTvsA_ch%02d", *iCh);
       //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
       //((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
       // Time vs Energy from amplitude
-      sprintf(hName, "hTimeVsEnergyA_ch%02d", iCh);
+      sprintf(hName, "hTimeVsEnergyA_ch%02d", *iCh);
       o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
-      sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", iCh);
+      sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", *iCh);
       o[hName] = new TH1D(hName, hName, 80, 100, 1700);
       ((TH1*) o[hName])->SetOption("E1 NOIMG");
       ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
       ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+   }
+
+   // Speed up
+   iCh = gRunInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+
+      string sChId("  ");
+      sprintf(&sChId[0], "%02d", *iCh);
+
+      fhTimeVsEnergyA_ch[*iCh-1] = (TH2*) o.find("hTimeVsEnergyA_ch" + sChId)->second;
    }
 } //}}}
 
@@ -112,7 +124,8 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
    sprintf(&sChId[0], "%02d", chId);
 
    //((TH1*) o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   ((TH1*) o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+   //((TH1*) o.find("hTimeVsEnergyA_ch" + sChId)->second) -> Fill(ch->GetEnergyA(), ch->GetTime());
+   fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime());
 } //}}}
 
 
@@ -123,11 +136,9 @@ void CnipolPreprocHists::FillDerivedPassOne()
    // Fill derivative histograms first
    TH1* hTimeVsEnergyA_noise = (TH1*) o["hTimeVsEnergyA_noise"];
    
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", *iCh);
@@ -312,12 +323,10 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
    }
 
    // Draw superimposed for all channels
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh)
-	{
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+
       string sSi("  ");
       sprintf(&sSi[0], "%02d", *iCh);
       string dName = "channel" + sSi;

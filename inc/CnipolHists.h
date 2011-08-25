@@ -24,6 +24,17 @@
 class CnipolHists : public DrawObjContainer
 {
 
+private:
+
+   TH1* fhKinEnergyA_o;
+   TH2* fhSpinVsChannel;
+   TH2* fhSpinVsBunch;
+   TH2* fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
+   //TH2* fhTofVsKinEnergyA_ch[N_SILICON_CHANNELS];
+   TH2* fhSpinVsDelim_ch[N_SILICON_CHANNELS];
+   TH2* fhTofVsKinEnergyA_ch_ss[N_SILICON_CHANNELS][N_SPIN_STATES];
+   TH2* fhLongiTimeDiffVsEnergyA_ch_ss[N_SILICON_CHANNELS][N_SPIN_STATES];
+
 protected:
 
    void  ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId);

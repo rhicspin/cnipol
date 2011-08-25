@@ -241,6 +241,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
          l = strstr( ((TH1*) io->second)->GetOption(), "XY");
          if (l) c.SetLogy(kTRUE);
          else c.SetLogy(kFALSE);
+
+         l = strstr( ((TH1*) io->second)->GetOption(), "GRIDX");
+         if (l) c.SetGridx(kTRUE);
+         else c.SetGridx(kFALSE);
       }
 
       if (io->second) {
@@ -434,6 +438,17 @@ void DrawObjContainer::Fill(EventConfig &rc)
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc);
+   }
+} //}}}
+
+
+/** */
+void DrawObjContainer::Fill(EventConfig &rc, DrawObjContainer &oc)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->Fill(rc, oc);
    }
 } //}}}
 

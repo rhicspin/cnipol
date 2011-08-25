@@ -187,16 +187,3 @@ void MAsymRateHists::Print(const Option_t* opt) const
    opt = ""; //printf("MAsymRateHists:\n");
    DrawObjContainer::Print();
 } //}}}
-
-
-/** */
-void MAsymRateHists::Fill(ChannelEvent *ch, string sid)
-{ //{{{
-} //}}}
-
-
-/** */
-void MAsymRateHists::PostFill()
-{ //{{{
-
-} //}}}

@@ -73,7 +73,7 @@ void CnipolPulserHists::BookHists(string cutid)
 
    // Time of flight vs kin energy from amplitude
    sprintf(hName, "hTofVsKinEnergyA");
-   o[hName] = new TH2F(hName, hName, 80, 0, 1700, 60, 10, 110);
+   o[hName] = new TH2F(hName, hName, 80, 100, 1700, 60, 10, 110);
    ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
 
@@ -91,10 +91,12 @@ void CnipolPulserHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++) {
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId(MAX_CHANNEL_DIGITS, ' ');
-      sprintf(&sChId[0], "%02d", iChId);
+      sprintf(&sChId[0], "%02d", *iCh);
 
       string dName = "channel" + sChId;
 
@@ -107,41 +109,41 @@ void CnipolPulserHists::BookHists(string cutid)
          oc = isubdir->second;
       }
 
-      sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
+      sprintf(hName, "hAdcAmpltd_ch%02d", *iCh);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Events;");
       ((TH1*) oc->o[hName])->SetFillColor(kGray);
 
-      sprintf(hName, "hTdc_ch%02d", iChId);
+      sprintf(hName, "hTdc_ch%02d", *iCh);
       oc->o[hName] = new TH1F(hName, hName, 80, 10, 90);
       ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";TDC;Events;");
       ((TH1*) oc->o[hName])->SetFillColor(kGray);
 
-      sprintf(hName, "hTvsA_ch%02d", iChId);
+      sprintf(hName, "hTvsA_ch%02d", *iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;TDC;");
 
-      sprintf(hName, "hTvsI_ch%02d", iChId);
+      sprintf(hName, "hTvsI_ch%02d", *iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
 
-      sprintf(hName, "hIvsA_ch%02d", iChId);
+      sprintf(hName, "hIvsA_ch%02d", *iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Integral, ADC;");
 
       // Time vs Energy from amplitude
-      sprintf(hName, "hTimeVsEnergyA_ch%02d", iChId);
+      sprintf(hName, "hTimeVsEnergyA_ch%02d", *iCh);
       oc->o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 
       // Time of flight vs kin energy from amplitude
-      sprintf(hName, "hTofVsKinEnergyA_ch%02d", iChId);
+      sprintf(hName, "hTofVsKinEnergyA_ch%02d", *iCh);
       oc->o[hName] = new TH2F(hName, hName, 80, 100, 1700, 60, 10, 110);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) oc->o[hName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
@@ -151,6 +153,26 @@ void CnipolPulserHists::BookHists(string cutid)
          d[dName] = oc;
       }
    }
+
+   // Speed up
+   fhBunchCounts = (TH1*) o.find("hBunchCounts")->second;
+   fhStripCounts = (TH1*) o.find("hStripCounts")->second;
+
+   iCh = gRunInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+
+      string sChId("  ");
+      sprintf(&sChId[0], "%02d", *iCh);
+
+      DrawObjContainer *oc_ch = d.find("channel" + sChId)->second;
+
+      fhTvsA_ch[*iCh-1]          = (TH2*) oc_ch->o.find("hTvsA_ch"          + sChId)->second;
+      fhTvsI_ch[*iCh-1]          = (TH2*) oc_ch->o.find("hTvsI_ch"          + sChId)->second;
+      fhIvsA_ch[*iCh-1]          = (TH2*) oc_ch->o.find("hIvsA_ch"          + sChId)->second;
+      fhTimeVsEnergyA_ch[*iCh-1] = (TH2*) oc_ch->o.find("hTimeVsEnergyA_ch" + sChId)->second;
+   }
+
 } //}}}
 
 
@@ -165,36 +187,42 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel" + sChId];
+   //DrawObjContainer *sd = d["channel" + sChId];
 
    // Speed up the filling process by getting the global bin number
    TH2* hTmp_ch;
    Int_t gbin;
 
-   hTmp_ch = (TH2*) sd->o["hTvsA_ch" + sChId];
+   //hTmp_ch = (TH2*) sd->o.find("hTvsA_ch" + sChId)->second;
+   hTmp_ch = fhTvsA_ch[chId-1];
    gbin    = hTmp_ch->GetBin(adcA_bin, tdc_bin);
    hTmp_ch->AddBinContent(gbin);
    hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hTvsI_ch" + sChId];
+   //hTmp_ch = (TH2*) sd->o.find("hTvsI_ch" + sChId)->second;
+   hTmp_ch = fhTvsI_ch[chId-1];
    gbin    = hTmp_ch->GetBin(adcI_bin, tdc_bin);
    hTmp_ch->AddBinContent(gbin);
    hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hIvsA_ch" + sChId];
+   //hTmp_ch = (TH2*) sd->o.find("hIvsA_ch" + sChId)->second;
+   hTmp_ch = fhIvsA_ch[chId-1];
    gbin    = hTmp_ch->GetBin(adcA_bin, adcI_bin);
    hTmp_ch->AddBinContent(gbin);
    hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
 
-   ((TH1*) sd->o["hTimeVsEnergyA_ch" + sChId]) -> Fill(ch->GetEnergyA(), ch->GetTime());
+   //((TH1*) sd->o.find("hTimeVsEnergyA_ch" + sChId)->second) -> Fill(ch->GetEnergyA(), ch->GetTime());
+   fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime());
 
    TH1* h1Tmp_ch;
 
-   h1Tmp_ch = (TH1*) o["hBunchCounts"];
+   //h1Tmp_ch = (TH1*) o.find("hBunchCounts")->second;
+   h1Tmp_ch = fhBunchCounts;
    h1Tmp_ch->AddBinContent(ch->GetBunchId() + 1);
    h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries() + 1);
 
-   h1Tmp_ch = (TH1*) o["hStripCounts"];
+   //h1Tmp_ch = (TH1*) o.find("hStripCounts")->second;
+   h1Tmp_ch = fhStripCounts;
    h1Tmp_ch->AddBinContent(chId);
    h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries() + 1);
 

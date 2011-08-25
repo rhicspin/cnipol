@@ -43,9 +43,8 @@ public:
    void BookHists(std::string sid="");
    void BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE);
    //void BookHistsEnergy(EBeamEnergy beamE);
-   void Fill(ChannelEvent *ch, std::string cutid="");
-   //void Fill(Int_t n, Double_t* hData);
    void Fill(EventConfig &rc);
+   void Fill(EventConfig &rc, DrawObjContainer &oc);
    void PostFill();
    void Print(const Option_t* opt="") const;
    void UpdateLimits();

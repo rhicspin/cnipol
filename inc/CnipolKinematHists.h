@@ -20,7 +20,9 @@
  */
 class CnipolKinematHists : public DrawObjContainer
 {
-public:
+private:
+
+   TH1* fhPseudoMass_ch[N_SILICON_CHANNELS];
 
 
 public:
@@ -29,9 +31,10 @@ public:
    CnipolKinematHists(TDirectory *dir);
    ~CnipolKinematHists();
 
-   void  BookHists(std::string cutid="");
-   void  Fill(ChannelEvent *ch, std::string cutid="");
-   void  FillDerived();
+   void BookHists(std::string cutid="");
+   void Fill(ChannelEvent *ch, std::string cutid="");
+   void FillDerived();
+   void PostFill();
 
    ClassDef(CnipolKinematHists, 1)
 };

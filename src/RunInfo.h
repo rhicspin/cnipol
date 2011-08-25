@@ -71,8 +71,8 @@ public:
    int                         NDisableStrip;
    int                         fDisabledChannels[N_SILICON_CHANNELS];
    std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
-   std::set<UShort_t>          fSiliconChannels;
-   std::set<UShort_t>          fActiveSiliconChannels;
+   ChannelSet                  fSiliconChannels;
+   ChannelSet                  fActiveSiliconChannels;
    BeamBunchMap                fBeamBunches;
    Int_t                       NDisableBunch;
    Int_t                       DisableBunch[N_BUNCHES];

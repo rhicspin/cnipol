@@ -29,6 +29,10 @@ typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
 typedef std::set<ESpinState>::iterator     IterSpinState;
 
 
+typedef std::set<UShort_t>    ChannelSet;
+typedef ChannelSet::iterator  ChannelSetIter;
+
+
 ostream& operator<<(ostream &os, const ESpinState &ss);
 
 
@@ -51,6 +55,7 @@ public:
    static std::string AsString(ETargetOrient targetOrient);
    static std::string AsString(EBeamEnergy beamEnergy);
    static std::string AsString(ESpinState spinState);
+   static UShort_t    AsIndex(ESpinState spinState);
    static Color_t     AsColor(EPolarimeterId polId);
    static Color_t     AsColor(ESpinState spin);
 
