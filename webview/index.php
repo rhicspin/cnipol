@@ -33,6 +33,7 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    // Read information about this run from the config file
    $rc = array();
 
+   //include("$gRunDir/runconfig$gSuffix.php") or die;
    include("$gRunDir/runconfig$gSuffix.php");
 
    if (count($rc) == 0) {
