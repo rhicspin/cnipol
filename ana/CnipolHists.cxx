@@ -71,7 +71,7 @@ void CnipolHists::BookHists(string cutid)
    // Energy spectrum. Projection of hTofVsKinEnergyA
    sprintf(hName, "hKinEnergyA%s", cutid.c_str());
    o[hName] = new TH1D(hName, hName, 80, 100, 1700);
-   ((TH1*) o[hName])->SetOption("E1 NOIMG");
+   ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;Events;");
 
    // Kinematic Energy
