@@ -141,6 +141,7 @@ void MAsymRunHists::BookHists(string sid)
 void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE)
 { //{{{
    char    hName[256];
+   string  shName;
    string  strPolId = RunConfig::AsString(polId);
    string  strBeamE = RunConfig::AsString(beamE);
    Color_t color    = RunConfig::AsColor(polId);
@@ -383,8 +384,27 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
    // per channel histograms
 
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
-   {
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir;
+
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+
+      string sChId("  ");
+      sprintf(&sChId[0], "%02d", *iCh);
+
+      string dName = "channel" + sChId;
+
+      isubdir = d.find(dName);
+
+      if ( isubdir == d.end()) { // if dir not found
+         oc = new DrawObjContainer();
+         oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      } else {
+         oc = isubdir->second;
+      }
+
       // t0
       grT0VsMeas = new TGraphErrors();
       grT0VsMeas->SetName("grT0VsMeas");
@@ -392,18 +412,18 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
       grT0VsMeas->SetMarkerSize(1);
       grT0VsMeas->SetMarkerColor(color);
 
-      sprintf(hName, "hT0VsMeas_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
-      o[hName] = new TH2F(hName, hName, 1, 0, 1, t0Hi-t0Lo, t0Lo, t0Hi);
-      ((TH1*) o[hName])->SetOption("NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Measurement;t_{0}, ns;");
-      ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
+      shName = "hT0VsMeas_" + strPolId + "_" + strBeamE + "_" + sChId;
+      o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, t0Hi-t0Lo, t0Lo, t0Hi);
+      ((TH1*) o[shName])->SetOption("NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Measurement;t_{0}, ns;");
+      ((TH1*) o[shName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
 
-      sprintf(hName, "hT0_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
-      o[hName] = new TH1F(hName, hName, t0Hi-t0Lo, t0Lo, t0Hi);
-      //((TH1*) o[hName])->SetOption("hist");
-      ((TH1*) o[hName])->SetOption("hist NOIMG");
-      ((TH1*) o[hName])->SetTitle(";t_{0}, ns;Events;");
-      //((TH1*) o[hName])->Sumw2();
+      shName = "hT0_" + strPolId + "_" + strBeamE + "_" + sChId;
+      o[shName] = new TH1F(shName.c_str(), shName.c_str(), t0Hi-t0Lo, t0Lo, t0Hi);
+      //((TH1*) o[shName])->SetOption("hist");
+      ((TH1*) o[shName])->SetOption("hist NOIMG");
+      ((TH1*) o[shName])->SetTitle(";t_{0}, ns;Events;");
+      //((TH1*) o[shName])->Sumw2();
 
       // DL
       grDLVsMeas = new TGraphErrors();
@@ -412,16 +432,16 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
       grDLVsMeas->SetMarkerSize(1);
       grDLVsMeas->SetMarkerColor(color);
 
-      sprintf(hName, "hDLVsMeas_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
-      o[hName] = new TH2F(hName, hName, 1, 0, 1, dlHi-dlLo, dlLo, dlHi);
-      ((TH1*) o[hName])->SetOption("NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Measurement;Dead Layer, #mug/cm^{2};");
-      ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
+      shName = "hDLVsMeas_" + strPolId + "_" + strBeamE + "_" + sChId;
+      o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, dlHi-dlLo, dlLo, dlHi);
+      ((TH1*) o[shName])->SetOption("NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Measurement;Dead Layer, #mug/cm^{2};");
+      ((TH1*) o[shName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
 
-      sprintf(hName, "hDL_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
-      o[hName] = new TH1F(hName, hName, dlHi-dlLo, dlLo, dlHi);
-      ((TH1*) o[hName])->SetOption("hist NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Dead Layer, #mug/cm^{2};Events;");
+      shName = "hDL_" + strPolId + "_" + strBeamE + "_" + sChId;
+      o[shName] = new TH1F(shName.c_str(), shName.c_str(), dlHi-dlLo, dlLo, dlHi);
+      ((TH1*) o[shName])->SetOption("hist NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Dead Layer, #mug/cm^{2};Events;");
 
       // t0 vs DL
       TGraphErrors* grT0VsDL = new TGraphErrors();
@@ -430,11 +450,11 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
       grT0VsDL->SetMarkerSize(1);
       grT0VsDL->SetMarkerColor(color);
 
-      sprintf(hName, "hT0VsDL_%s_%s_%02d", strPolId.c_str(), strBeamE.c_str(), iCh);
-      o[hName] = new TH2F(hName, hName, dlHi-dlLo, dlLo, dlHi, t0Hi-t0Lo, t0Lo, t0Hi);
-      ((TH1*) o[hName])->SetOption("NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Dead Layer, #mug/cm^{2};t_{0}, ns;");
-      ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsDL, "p");
+      shName = "hT0VsDL_" + strPolId + "_" + strBeamE + "_" + sChId;
+      o[shName] = new TH2F(shName.c_str(), shName.c_str(), dlHi-dlLo, dlLo, dlHi, t0Hi-t0Lo, t0Lo, t0Hi);
+      ((TH1*) o[shName])->SetOption("NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Dead Layer, #mug/cm^{2};t_{0}, ns;");
+      ((TH1*) o[shName])->GetListOfFunctions()->Add(grT0VsDL, "p");
    }
 
    sprintf(hName, "hT0VsChannel_%s_%s", strPolId.c_str(), strBeamE.c_str());
@@ -458,8 +478,6 @@ void MAsymRunHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grT0VsDLMean, "p");
 
    // Combined asymmetry histogram
-
-   string shName;
 
    shName = "hKinEnergyAChAsym_" + strPolId + "_" + strBeamE;
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
