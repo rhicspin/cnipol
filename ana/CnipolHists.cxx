@@ -532,21 +532,25 @@ void CnipolHists::PostFill()
    fitfunc->SetParLimits(1, -1, 1);
 
    TH1* hKinEnergyA = (TH1*) o["hKinEnergyA"];
+      
+   if (hKinEnergyA->Integral() <= 0) {
+      Error("PostFill", "Kin. energy distribution is empty");
+      return;
+   }
 
    TFitResultPtr fitres = hKinEnergyA->Fit("fitfunc", "M E S R");
 
-   if (fitres.Get()) {
+   if ( fitres.Get() && fitres->Ndf()) {
       gAnaResult->fFitResEnergySlope = fitres;
    } else {
       Error("PostFill", "Something is wrong with energy slope fit");
+      hKinEnergyA->GetListOfFunctions()->Clear();
    }
 
    // Fit channel histograms
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
+   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -554,6 +558,11 @@ void CnipolHists::PostFill()
       DrawObjContainer *oc = d.find("channel"+sChId)->second;
 
       TH1* hKinEnergyA_ch = (TH1*) oc->o["hKinEnergyA_ch" + sChId];
+      
+      if (hKinEnergyA_ch->Integral() <= 0) {
+         Error("PostFill", "Kin. energy distribution for channel %s is empty", sChId.c_str());
+         continue;
+      }
 
       TF1 *fitfunc = new TF1("fitfunc", "expo", 400, 900);
 
@@ -564,8 +573,11 @@ void CnipolHists::PostFill()
 
       TFitResultPtr fitres = hKinEnergyA_ch->Fit("fitfunc", "M E S R");
 
-      if ( !fitres.Get() ) {
+      if ( fitres.Get() && fitres->Ndf()) {
+         // do nothing yet
+      } else {
          Error("PostFill", "Something is wrong with energy slope fit for channel %s", sChId.c_str());
+         hKinEnergyA_ch->GetListOfFunctions()->Clear();
       }
    }
 } //}}}
