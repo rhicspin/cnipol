@@ -41,7 +41,7 @@ public:
    ~MAsymRunHists();
 
    void BookHists(std::string sid="");
-   void BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE);
+   void BookHistsPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE);
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(EventConfig &rc);
    void Fill(EventConfig &rc, DrawObjContainer &oc);

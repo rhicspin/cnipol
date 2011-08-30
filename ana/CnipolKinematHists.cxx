@@ -153,13 +153,19 @@ void CnipolKinematHists::PostFill()
    //fitfunc->SetParLimits(1, -1, 1);
 
    TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
+      
+   if (hPseudoMass->Integral() <= 0) {
+      Error("PostFill", "Mass distribution is empty");
+      return;
+   }
 
    TFitResultPtr fitres = hPseudoMass->Fit("fitfunc", "M E S R");
 
-   if (fitres.Get()) {
+   if ( fitres.Get() && fitres->Ndf()) {
       gAnaResult->fFitResPseudoMass = fitres;
    } else {
-      Error("PostFill", "Something is wrong with energy slope fit");
+      Error("PostFill", "Something is wrong with mass fit");
+      hPseudoMass->GetListOfFunctions()->Clear();
    }
 
    TH1* hMassFitChi2ByChannel  = (TH1*) o["hMassFitChi2ByChannel"];
@@ -177,6 +183,11 @@ void CnipolKinematHists::PostFill()
       DrawObjContainer *oc_ch = d.find("channel" + sChId)->second;
 
       TH1* hPseudoMass_ch = (TH1*) oc_ch->o["hPseudoMass_ch" + sChId];
+      
+      if (hPseudoMass_ch->Integral() <= 0) {
+         Error("PostFill", "Mass distribution for channel %s is empty", sChId.c_str());
+         continue;
+      }
 
       TF1 *fitfunc = new TF1("fitfunc", "gaus", 9, 14);
 
@@ -187,7 +198,10 @@ void CnipolKinematHists::PostFill()
 
       TFitResultPtr fitres = hPseudoMass_ch->Fit("fitfunc", "M E S R");
 
-      if ( fitres.Get() ) {
+      if ( fitres.Get() && fitres->Ndf()) {
+         // check ndf
+         //if (fitres->Ndf() <= 0) continue;
+
          hMassFitChi2ByChannel ->SetBinContent(*iCh, fitres->Chi2()/fitres->Ndf() );
          hMassFitMeanByChannel ->SetBinContent(*iCh, fitres->Value(1) );
          hMassFitMeanByChannel ->SetBinError  (*iCh, fitres->FitResult::Error(1) );
@@ -195,6 +209,7 @@ void CnipolKinematHists::PostFill()
          hMassFitSigmaByChannel->SetBinError  (*iCh, fitres->FitResult::Error(2) );
       } else {
          Error("PostFill", "Something is wrong with mass fit for channel %s", sChId.c_str());
+         hPseudoMass_ch->GetListOfFunctions()->Clear();
       }
    }
 } //}}}
