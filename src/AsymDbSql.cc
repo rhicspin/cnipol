@@ -82,7 +82,7 @@ DbEntry* AsymDbSql::Select(std::string runName)
 
 /** */
 MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
-{
+{ //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return 0;
@@ -124,7 +124,38 @@ MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
    //}
 
    return mseri;
-}
+} //}}}
+
+
+/** */
+MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
+{ //{{{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return 0;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `fill_polar` where `fill` = '" << fill << "'";
+
+   Query query = fConnection->query(sstr.str());
+
+   MseFillPolarX* msefp = 0;
+
+   cout << "Query: " << query << endl;
+   //query.execute();
+
+   if (StoreQueryResult result = query.store()) {
+
+      if (!result.empty()) msefp = new MseFillPolarX(result[0]);
+
+   } else {
+      cerr << "Failed to get item list: " << query.error() << endl;
+   }
+
+   return msefp;
+} //}}}
 
 
 /** */
@@ -304,7 +335,7 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 
 /** */
 void AsymDbSql::UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun)
-{
+{ //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return;
@@ -323,7 +354,31 @@ void AsymDbSql::UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun)
       cout << "Query: " << query << endl;
       query.execute();
    }
-}
+} //}}}
+
+
+/** */
+void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
+{ //{{{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return;
+   }
+
+   Query query = fConnection->query();
+
+   // if original run is not defined just insert the new one
+   if (!ofill) {
+      query.insert(*nfill);
+      cout << "Query: " << query << endl;
+      //query.execute();
+
+   } else {
+      query.update(*ofill, *nfill);
+      cout << "Query: " << query << endl;
+      //query.execute();
+   }
+} //}}}
 
 
 /** */

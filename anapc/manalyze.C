@@ -12,6 +12,9 @@
 #include "MAsymRateHists.h"
 #include "MAsymPmtHists.h"
 
+#include "AnaGlobResult.h"
+
+//#include "AsymDbSql.h"
 #include "AsymGlobals.h"
 #include "AnaInfo.h"
 #include "RunInfo.h"
@@ -24,6 +27,7 @@ DrawObjContainer    *gHIn;
 DrawObjContainer    *gH;
 AnaInfo             *gAnaInfo;
 set<string>          gGoodRuns;
+AnaGlobResult        gAnaGlobResult;
 
 
 void manalyze()
@@ -47,20 +51,23 @@ void initialize()
    TString filelistPath("/eic/u/dsmirnov/run/");
 
    //TString filelistName = "run09_10XXX_11XXX";
+   //TString filelistName = "run09_tmp_longi_check_10373";
+   //TString filelistName = "run09_tmp_longi_check_10490";
+   //TString filelistName = "run09_tmp_longi_check_10532";
    //TString filelistName = "runs11_rampupdown";
    //TString filelistName = "runs_all";
    //TString filelistName = "run11_153XX_tmp";
    //TString filelistName = "run11_15393";
    //TString filelistName = "run11_15397";
    //TString filelistName = "run11_15399";
-   //TString filelistName = "run11_15XXX_2XX_3XX_4XX";
-   TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
+   //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
    //TString filelistName = "run11_153XX";
    //TString filelistName = "run11_153XX_Y2U";
    //TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
-   //TString filelistName = "run11_tmp";
+   //TString filelistName = "run11_tmp_goodruns";
+   TString filelistName = "run11_tmp_goodruns_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
 
@@ -154,7 +161,11 @@ void initialize()
          continue;
       }
 
-      if (polarization <= 1 || polarization > 99 || polarization_err > 30) {
+      if (polarization <= 1 || polarization > 99 || polarization_err > 30 ||
+          gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
+          gRC->fRunInfo->fMeasType != kMEASTYPE_SWEEP
+         )
+      {
 	      Warning("Fill", "Didn't pass basic QA check");
          continue;
       }
@@ -196,7 +207,7 @@ void initialize()
       TFile *f = new TFile(fileName, "READ");
 
       //gSystem->Info("", "Processing file: %s", fileName.Data());
-      printf("%s", (*iRunName).c_str());
+      printf("%s\n", (*iRunName).c_str());
 
       gRC = (EventConfig*) f->FindObjectAny("EventConfig");
 
@@ -216,6 +227,12 @@ void initialize()
       gH->Fill(*gRC);
       gH->Fill(*gRC, *gHIn);
 
+      UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->fBeamEnergy + 0.5);
+
+      if ( beamEnergy == 250 ) {
+         gAnaGlobResult.AddRunResult(*gRC);
+      }
+
       delete f;
    }
 
@@ -232,4 +249,13 @@ void initialize()
    //gH->Delete();
 
    gMAsymRoot->Close();
+
+   //
+   gAnaGlobResult.Process();
+   gAnaGlobResult.Print();
+
+   //if (kTRUE) {
+   //   gAsymDb2 = new AsymDbSql();
+   //   gAnaGlobResult.UpdateInsertDb();
+   //}
 }

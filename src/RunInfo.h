@@ -98,8 +98,10 @@ public:
    void         PrintAsPhp(FILE *f=stdout) const;
    void         PrintConfig();
    void         PrintBunchPatterns() const;
-   short        GetPolarimeterId();
-   short        GetPolarimeterId(short beamId, short streamId);
+   std::string  GetRunName() const;
+   Short_t      GetPolarimeterId();
+   Short_t      GetPolarimeterId(short beamId, short streamId);
+   UInt_t       GetFillId();
    void         GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    void         Update(DbEntry &rundb);
    void         Update(MseRunInfoX& run);
@@ -123,6 +125,8 @@ public:
    UShort_t     GetNumEmptyBunches() const;
    Bool_t       IsEmptyBunch(UShort_t bid) const;
    ESpinState   GetBunchSpin(UShort_t bid) const;
+
+   static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
    ClassDef(RunInfo, 1)
 };

@@ -7,7 +7,7 @@
 
 
 #include "AsymPlot.h"
-#include "AsymMain.h"
+//#include "AsymMain.h"
 
 
 Int_t FileNotOK(Char_t file[]){

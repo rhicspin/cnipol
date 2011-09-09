@@ -496,6 +496,29 @@ void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
 } //}}}
 
 
+/** */
+ValErrPair CalcWeightedAvrgErr(ValErrSet &valerrs)
+{ //{{{
+   ValErrPair    avrgResult;
+   ValErrSetIter iValErr = valerrs.begin();
+
+	Int_t n = 0;
+	vector<float> vals;
+	vector<float> errs;
+
+   for ( ; iValErr != valerrs.end(); ++iValErr) {
+	   vals.push_back(iValErr->first);
+	   errs.push_back(iValErr->second);
+	   n++;
+	}
+
+   avrgResult.first  = WeightedMean(&vals[0], &errs[0], n);
+   avrgResult.second = WeightedMeanError(&errs[0], n);
+
+	return avrgResult;
+} //}}}
+
+
 // Description : Calculates error propagation of x/y for (x,dx) and (y,dy)
 //             :
 // Input       : float x, float y, float dx, float dy

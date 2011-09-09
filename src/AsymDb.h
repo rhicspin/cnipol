@@ -8,6 +8,7 @@
 #include "DbEntry.h"
 #include "MseRunInfo.h"
 #include "MseRunPeriod.h"
+#include "MseFillPolar.h"
 
 
 class AsymDb : public TObject {
@@ -19,11 +20,13 @@ public:
 
    virtual DbEntry*       Select(std::string runName="") { return 0; }
    virtual MseRunInfoX*   SelectRun(std::string runName="") { return 0; }
+   virtual MseFillPolarX* SelectFillPolar(UInt_t fill) { return 0; }
    virtual MseRunPeriodX* SelectRunPeriod(MseRunInfoX& run) { return 0; }
 	virtual void           CompleteRunInfo(MseRunInfoX& run) {}
 	virtual MseRunPeriodX* CompleteRunInfoByRunPeriod(MseRunInfoX& run) { return 0; }
    virtual void           Insert(DbEntry *dbrun) {}
    virtual void           UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun) {}
+   virtual void           UpdateInsert(MseFillPolarX* orun, MseFillPolarX* nrun) {}
    virtual void           Dump() {}
 };
 

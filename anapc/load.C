@@ -14,6 +14,9 @@
    gSystem->AddIncludePath("-I$CNIPOL_DIR/src");
    gSystem->AddIncludePath("-I$CNIPOL_DIR/macro");
 
+   //gSystem->AddIncludePath("-I$MYSQL_INCLUDE_DIR");
+   //gSystem->AddIncludePath("-I$MYSQLPP_INCLUDE_DIR");
+
    //gSystem->AddLinkedLibs("$SRT_PUBLIC_CONTEXT/shlib/Linux2.4-GCC_3_4/libd0_util.so");
 
    TString macroPath = "";
@@ -22,12 +25,18 @@
    macroPath += "$CNIPOL_DIR:";
    macroPath += "$CNIPOL_DIR/anapc:";
 
+   //macroPath += "$MYSQL_LIB_DIR:";
+   //macroPath += "$MYSQLPP_LIB_DIR:";
+
    gROOT->SetMacroPath(macroPath);
 
    gSystem->Load("libutils.so");
    gSystem->Load("libcnipol.so");
    gSystem->Load("libcniana.so");
    //gSystem->Load("libcnipol.so");
+
+   //gSystem->Load("libmysqlpp.so");
+   //gSystem->Load("libmysqlclient.so");
 
    //gROOT->LoadMacro("fit_functions.C");
 
