@@ -55,7 +55,6 @@ class SqlDbReader {
    /** */
    function ReadEntries($start=0, $limit=100)
    {
-
       $this->sqlQuery = "SELECT *\n"
                       . "FROM `run_info` WHERE {$this->sqlWhere}\n"
                       . "ORDER BY {$this->sqlOrderBy} `run_info`.`start_time` DESC\n"

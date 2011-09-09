@@ -1,5 +1,18 @@
 <?php
 
+
+/** */
+class pair {
+   var $first;
+   var $second;
+
+   function pair($f=0, $s=0) {
+      $this->first  = $f;
+      $this->second = $s;
+   }
+}
+
+
 /**
  *    Get the ordinal suffix of an int (e.g. th, rd, st, etc.)
  *     @param  int   $n
@@ -158,6 +171,51 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 }
 
 
+/** */
+function polarToString($val, $err)
+{
+   $str = "&nbsp;";
 
+   if ( $val >= 0 && $err >= 0 )
+	   $str = sprintf("%5.2f &plusmn; %5.2f", $val*100, $err*100);
+
+   return $str;
+}
+
+
+/** */
+function pairToString($valerr)
+{
+   return polarToString($valerr->first, $valerr->second);
+}
+
+
+/** */
+function calcWeigtedAvrgErr($valerrs)
+{
+   $result = new pair(-1, -1);
+
+   if (count($valerrs) <= 0) return $result;
+
+   $sum1   = 0;
+   $sum2   = 0;
+
+   foreach($valerrs as $valerr) {
+
+      if ($valerr->second < 0) continue;
+
+      $val = $valerr->first;
+      $err = $valerr->second == 0 ? 1E-50 : $valerr->second;
+
+      $err2  = $err*$err;
+      $sum1 += $val/$err2 ;
+      $sum2 += 1./$err2 ;
+   }
+     
+   $result->first  = $sum1/$sum2;
+   $result->second = ($sum2 == 0 ? -1 : sqrt(1./$sum2));
+
+   return $result;
+}
 
 ?>
