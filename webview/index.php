@@ -115,11 +115,11 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
 
 //Form default output
-$dir = opendir(DATA_DIR);
+//$dir = opendir(DATA_DIR);
 
-if (!$dir) exit("ERROR\n");
+//if (!$dir) exit("ERROR\n");
 
-$rs = array();
+//$rs = array();
 
 //print "<pre>\n";
 
@@ -140,9 +140,9 @@ $rs = array();
 
 //print "</pre>\n";
 
-closedir($dir);
+//closedir($dir);
 
-sort($rs);
+//sort($rs);
 
 //print "<pre>\n";
 //print_r($rs);
