@@ -17,7 +17,7 @@ AnaResult::AnaResult() : TObject(),
    //A_N[2],
    //P[2],
    fAnaPower(),
-   fPol(),
+   fPolar(),
    fAvrgPMAsym(),
    fFitResAsymPhi(),      fFitResPolarPhi(),
    fFitResAsymBunchX90(), fFitResAsymBunchX45(), fFitResAsymBunchY45(),
@@ -68,7 +68,7 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['A_N']                 = array(%f, %f);\n", A_N[0], A_N[1]);
    fprintf(f, "$rc['P']                   = array(%f, %f);\n", P[0], P[1]);
    fprintf(f, "$rc['fAnaPower']           = %s;\n",            PairAsPhpArray(fAnaPower).c_str());
-   fprintf(f, "$rc['fPol']                = %s;\n",            PairAsPhpArray(fPol).c_str());
+   fprintf(f, "$rc['fPolar']              = %s;\n",            PairAsPhpArray(fPolar).c_str());
    fprintf(f, "$rc['fAvrgPMAsym']         = %s;\n",            PairAsPhpArray(fAvrgPMAsym).c_str());
    // Skip fit results as fFitResAsymPhi fFitResPolarPhi ...
    fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());

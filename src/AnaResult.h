@@ -2,11 +2,23 @@
 #ifndef AnaResult_h
 #define AnaResult_h
 
+#include <set>
+#include <string>
+
 #include "TObject.h"
 
 #include "AsymCalculator.h"
 #include "AsymHeader.h"
 #include "AsymGlobals.h"
+
+
+class AnaResult;
+
+//typedef std::set<AnaResult>             AnaMeasResultSet;
+//typedef std::set<AnaResult>::iterator   AnaMeasResultSetIter;
+typedef std::map<std::string, AnaResult>                   AnaRunResultMap;
+typedef std::map<std::string, AnaResult>::iterator         AnaRunResultMapIter;
+typedef std::map<std::string, AnaResult>::const_iterator   AnaRunResultMapConstIter;
 
 
 /** */
@@ -21,7 +33,7 @@ public:
    Float_t              A_N[2];                 // Analyzing power
    Float_t              P[2];  
    ValErrPair           fAnaPower;              // Analyzin power A_N
-   ValErrPair           fPol;
+   ValErrPair           fPolar;
    ValErrPair           fAvrgPMAsym;            // deprecated. Plus-Minus (+/-) spin state asymmetry
    TFitResultPtr        fFitResAsymPhi;         // Fit result from asymmetry vs phi plot
    TFitResultPtr        fFitResPolarPhi;        // Fit result from polarization vs phi plot

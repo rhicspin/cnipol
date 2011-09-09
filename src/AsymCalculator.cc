@@ -2101,6 +2101,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 
    if (fitres.Get()) {
       gAnaResult->fFitResPolarPhi = fitres;
+      // XXX add here an assignment of values to gAnaResult->fPolar
    } else {
       gSystem->Error("   ::SinPhiFit", "Fit error...");
    }

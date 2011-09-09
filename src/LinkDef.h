@@ -6,6 +6,8 @@
 
 #pragma link C++ class AnaInfo;
 #pragma link C++ class AnaResult;
+#pragma link C++ class AnaFillResult;
+#pragma link C++ class AnaGlobResult;
 #pragma link C++ class RunInfo;
 
 #endif

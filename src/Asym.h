@@ -33,6 +33,7 @@
 typedef std::map<std::string, std::string>     Str2StrMap;
 typedef std::pair<Double_t, Double_t>          ValErrPair;
 typedef std::set<ValErrPair>                   ValErrSet;
+typedef ValErrSet::iterator                    ValErrSetIter;
 typedef std::map<std::string, ValErrPair>      ValErrMap;
 typedef std::map<std::string, TFitResultPtr>   Str2FitResMap;
 typedef std::map<ESpinState,  TFitResultPtr>   Spin2FitResMap;
@@ -40,6 +41,11 @@ typedef std::pair<UShort_t, UShort_t>          DetLRPair;
 typedef std::set<DetLRPair>                    DetLRSet;
 //typedef std::map<UShort_t, UShort_t>  DetLRPairs;
 
+typedef std::map<EPolarimeterId, ValErrPair>   PolId2ValErrMap;
+typedef PolId2ValErrMap::iterator              PolId2ValErrMapIter;
+typedef PolId2ValErrMap::const_iterator        PolId2ValErrMapConstIter;
+typedef std::map<EBeamId,        ValErrPair>   BeamId2ValErrMap;
+typedef BeamId2ValErrMap::iterator             BeamId2ValErrMapIter;
 
 std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
 TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
@@ -319,14 +325,15 @@ void  hfithn_(int*, char*, char*, int*, float*, float*, float*, float*, float*, 
 }
 
 // Some utility routines to determin histogram range
-float GetMax(int N, float A[]);
-float GetMin(int N, float A[]);
-void  GetMinMax(int N, float A[], float margin, float &min, float &max);
-void  GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
-float WeightedMean(float *A, float *dA, int NDAT);
-float WeightedMeanError(float *dA, int NDAT);
-void  CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve);
-float CalcDivisionError(float x, float y, float dx, float dy);
+float       GetMax(int N, float A[]);
+float       GetMin(int N, float A[]);
+void        GetMinMax(int N, float A[], float margin, float &min, float &max);
+void        GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max);
+float       WeightedMean(float *A, float *dA, int NDAT);
+float       WeightedMeanError(float *dA, int NDAT);
+void        CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve);
+ValErrPair  CalcWeightedAvrgErr(ValErrSet &valerrs);
+float       CalcDivisionError(float x, float y, float dx, float dy);
 
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);

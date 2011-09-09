@@ -9,7 +9,11 @@
 #include "TObject.h"
 
 
-enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3};
+enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kPOLID_UNKNOWN};
+
+enum EBeamId {kBLUE = 1, kYELLOW = 2};
+
+enum EStreamId {kUPSTREAM = 1, kDOWNSTREAM = 2};
 
 enum EMeasType {kMEASTYPE_UNKNOWN = 0x00,
                 kMEASTYPE_ALPHA   = 0x01,
@@ -27,6 +31,10 @@ enum ESpinState {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 typedef std::set<EBeamEnergy>::iterator    IterBeamEnergy;
 typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
 typedef std::set<ESpinState>::iterator     IterSpinState;
+
+typedef std::set<EBeamEnergy>::iterator    BeamEnergyIter;
+typedef std::set<EPolarimeterId>::iterator PolarimeterIdIter;
+typedef std::set<ESpinState>::iterator     SpinStateIter;
 
 
 typedef std::set<UShort_t>    ChannelSet;
