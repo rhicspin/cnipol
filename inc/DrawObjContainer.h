@@ -23,7 +23,9 @@
 #include "TSystem.h"
 
 //#include "ChannelEvent.h"
+//#include "AnaGlobResult.h"
 
+class AnaGlobResult;
 class ChannelEvent;
 class DrawObjContainer;
 class EventConfig;
@@ -78,6 +80,7 @@ public:
    virtual void FillDerived();
    virtual void FillDerived(DrawObjContainer &oc) {}          // special processing for dependant histograms
    virtual void PostFill();
+   virtual void PostFill(AnaGlobResult &agr);
    virtual void PostFill(DrawObjContainer *oc) {}          // special processing for dependant histograms
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
    virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");

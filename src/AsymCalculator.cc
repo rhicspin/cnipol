@@ -1121,7 +1121,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    //for (int bid=0; bid<N_BUNCHES; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
 
    // Get variables
-   char CHOICE[5]="HIST";
+   //char CHOICE[5]="HIST";
    //mean = HHSTATI(10035, 1, CHOICE, 0) ;
    //RMS  = HHSTATI(10035, 2, CHOICE, 0) ;
    //RMS_norm = (!mean) ? 0 : RMS/mean ;

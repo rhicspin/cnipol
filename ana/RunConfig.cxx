@@ -40,6 +40,9 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fMeasTypes(),
    fTargetOrients.insert(kTARGET_H);
    fTargetOrients.insert(kTARGET_V);
 
+   fBeams.insert(kBLUE_BEAM);
+   fBeams.insert(kYELLOW_BEAM);
+
    fBeamEnergies.insert(kINJECTION);
    fBeamEnergies.insert(kBEAM_ENERGY_100);
    fBeamEnergies.insert(kFLATTOP);
@@ -102,6 +105,20 @@ string RunConfig::AsString(ETargetOrient targetOrient)
 	   return "H";
    case kTARGET_V:
 	   return "V";
+   default:
+      return "UNK";
+   }
+} //}}}
+
+
+/** */
+string RunConfig::AsString(EBeamId beamId)
+{ //{{{
+   switch (beamId) {
+   case kBLUE_BEAM:
+	   return "BLU";
+   case kYELLOW_BEAM:
+	   return "YEL";
    default:
       return "UNK";
    }
@@ -183,6 +200,42 @@ Color_t RunConfig::AsColor(ESpinState spin)
 	   return kRed;
    default:
       return kBlack;
+   }
+} //}}}
+
+
+/** */
+EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
+{ //{{{
+   switch (polId) {
+   case kB1U:
+	   return kBLUE_BEAM;
+   case kY1D:
+	   return kYELLOW_BEAM;
+   case kB2D:
+	   return kBLUE_BEAM;
+   case kY2U:
+	   return kYELLOW_BEAM;
+   default:
+      return kUNKNOWN_BEAM;
+   }
+} //}}}
+
+
+/** */
+EStreamId RunConfig::GetStreamId(EPolarimeterId polId)
+{ //{{{
+   switch (polId) {
+   case kB1U:
+	   return kUPSTREAM;
+   case kY1D:
+	   return kDOWNSTREAM;
+   case kB2D:
+	   return kDOWNSTREAM;
+   case kY2U:
+	   return kUPSTREAM;
+   default:
+      return kUNKNOWN_STREAM;
    }
 } //}}}
 

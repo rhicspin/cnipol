@@ -463,7 +463,7 @@ float WeightedMean(float *A, float *dA, int NDAT)
       }
    }
  
-   return dA2 == 0 ? 0 : sum1/sum2;
+   return dA2 == 0 ? -1 : sum1/sum2;
 } //}}}
 
 
@@ -477,12 +477,12 @@ float WeightedMeanError(float *dA, int NDAT)
  
    for ( int i=0 ; i<NDAT ; i++ ) {
       if (dA[i]){
-         dA2 = dA[i]*dA[i];
+         dA2  = dA[i]*dA[i];
          sum += 1/dA2 ;
       }
    }
  
-   return sum == 0 ? 0 : sqrt(1/sum);
+   return sum == 0 ? -1 : sqrt(1/sum);
 } //}}}
 
 
@@ -497,7 +497,7 @@ void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
 
 
 /** */
-ValErrPair CalcWeightedAvrgErr(ValErrSet &valerrs)
+ValErrPair CalcWeightedAvrgErr(const ValErrSet &valerrs)
 { //{{{
    ValErrPair    avrgResult;
    ValErrSetIter iValErr = valerrs.begin();
@@ -507,6 +507,7 @@ ValErrPair CalcWeightedAvrgErr(ValErrSet &valerrs)
 	vector<float> errs;
 
    for ( ; iValErr != valerrs.end(); ++iValErr) {
+      if (iValErr->second < 0) continue;
 	   vals.push_back(iValErr->first);
 	   errs.push_back(iValErr->second);
 	   n++;
@@ -516,6 +517,25 @@ ValErrPair CalcWeightedAvrgErr(ValErrSet &valerrs)
    avrgResult.second = WeightedMeanError(&errs[0], n);
 
 	return avrgResult;
+} //}}}
+
+
+/** */
+ValErrPair CalcWeightedAvrgErr(const ValErrPair ve1, const ValErrPair ve2)
+{ //{{{
+   ValErrPair result(0, -1);
+
+   if (ve1.second <= 0 && ve2.second <= 0) return result;
+   if (ve1.second <= 0) return ve2;
+   if (ve2.second <= 0) return ve1;
+
+   Double_t w1 = 1./ve1.second/ve1.second;
+   Double_t w2 = 1./ve2.second/ve2.second;
+
+   result.first  = (ve1.first*w1 + ve2.first*w2)/ (w1 + w2);
+   result.second = 1./sqrt(w1 + w2);
+
+	return result;
 } //}}}
 
 
@@ -530,6 +550,21 @@ float CalcDivisionError(float x, float y, float dx, float dy)
    } else {
       return 0;
    }
+} //}}}
+
+
+/** */
+ValErrPair CalcDivision(ValErrPair ve1, ValErrPair ve2)
+{ //{{{
+   ValErrPair result(0, -1);
+
+   if (ve1.first == 0 || ve2.first == 0) return result;
+
+   result.first  = ve1.first / ve2.first;
+   result.second = result.first * sqrt( ve1.second*ve1.second/ve1.first/ve1.first +
+                                        ve2.second*ve2.second/ve2.first/ve2.first);
+
+   return result;
 } //}}}
 
 
@@ -656,6 +691,16 @@ void ReadRampTiming(char *filename)
 ostream& operator<<(ostream &os, const ValErrPair &vep)
 { //{{{
    os << "array( " << vep.first << ", " << vep.second << " )";
+
+   return os;
+} //}}}
+
+
+/** */
+ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
+{ //{{{
+   //os << "array( " << vep.first << ", " << vep.second << " )";
+   os << MapAsPhpArray<ETargetOrient, ValErrPair>(vep);
 
    return os;
 } //}}}
