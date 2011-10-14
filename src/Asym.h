@@ -41,13 +41,34 @@ typedef std::pair<UShort_t, UShort_t>          DetLRPair;
 typedef std::set<DetLRPair>                    DetLRSet;
 //typedef std::map<UShort_t, UShort_t>  DetLRPairs;
 
+typedef std::map<EPolarimeterId, ValErrSet>    PolId2ValErrSet;
+typedef PolId2ValErrSet::iterator              PolId2ValErrSetIter;
+typedef PolId2ValErrSet::const_iterator        PolId2ValErrSetConstIter;
 typedef std::map<EPolarimeterId, ValErrPair>   PolId2ValErrMap;
 typedef PolId2ValErrMap::iterator              PolId2ValErrMapIter;
 typedef PolId2ValErrMap::const_iterator        PolId2ValErrMapConstIter;
+
+typedef std::map<EBeamId,        ValErrSet>    BeamId2ValErrSet;
+typedef BeamId2ValErrSet::iterator             BeamId2ValErrSetIter;
+typedef BeamId2ValErrSet::const_iterator       BeamId2ValErrSetConstIter;
 typedef std::map<EBeamId,        ValErrPair>   BeamId2ValErrMap;
 typedef BeamId2ValErrMap::iterator             BeamId2ValErrMapIter;
+typedef BeamId2ValErrMap::const_iterator       BeamId2ValErrMapConstIter;
+
+typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
+typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
+typedef std::map<EBeamId, TgtOrient2ValErrMap> BeamId2TgtOrient2ValErrMap;
+typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
+
+typedef std::map<std::string, EBeamId>         String2BeamIdMap;
+typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
+
+typedef std::map<std::string, ETargetOrient>   String2TgtOrientMap;
+typedef String2TgtOrientMap::iterator          String2TgtOrientMapIter;
+
 
 std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
+std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
 TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
 TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
 
@@ -332,8 +353,10 @@ void        GetMinMaxOption(float prefix, int N, float A[], float margin, float 
 float       WeightedMean(float *A, float *dA, int NDAT);
 float       WeightedMeanError(float *dA, int NDAT);
 void        CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve);
-ValErrPair  CalcWeightedAvrgErr(ValErrSet &valerrs);
+ValErrPair  CalcWeightedAvrgErr(const ValErrSet &valerrs);
+ValErrPair  CalcWeightedAvrgErr(const ValErrPair ve1, const ValErrPair ve2);
 float       CalcDivisionError(float x, float y, float dx, float dy);
+ValErrPair  CalcDivision(ValErrPair ve1, ValErrPair ve2);
 
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);

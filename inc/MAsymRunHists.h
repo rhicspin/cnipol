@@ -10,6 +10,7 @@
 #include "TDirectory.h"
 #include "THStack.h"
 
+#include "AnaGlobResult.h"
 #include "AsymGlobals.h"
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
@@ -42,13 +43,16 @@ public:
 
    void BookHists(std::string sid="");
    void BookHistsPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE);
+   //void BookHistsPolarimeterGlobRslt(DrawObjContainer &oc, EPolarimeterId polId);
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(EventConfig &rc);
    void Fill(EventConfig &rc, DrawObjContainer &oc);
    void PostFill();
+   void PostFill(AnaGlobResult &agr);
    void Print(const Option_t* opt="") const;
    void UpdateLimits();
 	void SetMinMaxFill(UInt_t fillId);
+	void AdjustMinMaxFill();
 	void SetMinMaxTime(UInt_t time);
 
    ClassDef(MAsymRunHists, 1)

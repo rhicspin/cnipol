@@ -11,24 +11,31 @@ ClassImp(DrawObjContainer)
 
 using namespace std;
 
+
 /** Default constructor. */
-DrawObjContainer::DrawObjContainer() : TObject(), fSignature(""), fDir(), o(), d()
+DrawObjContainer::DrawObjContainer() : TObject(), fSignature(""), fDir(), o(),
+   d()
 {
    fDir = gDirectory;
    fDir->cd();
 }
 
-DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(), fSignature(""), fDir(dir), d()
+
+/** */
+DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(),
+   fSignature(""), fDir(dir), o(), d()
 {
 }
 
 
+/** */
 std::string DrawObjContainer::GetSignature()
 { //{{{
    return fSignature;
 } //}}}
 
 
+/** */
 void DrawObjContainer::SetSignature(std::string signature)
 { //{{{
    fSignature = signature;
@@ -547,6 +554,17 @@ void DrawObjContainer::PostFill()
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PostFill();
+   }
+} //}}}
+
+
+/** */
+void DrawObjContainer::PostFill(AnaGlobResult &agr)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->PostFill(agr);
    }
 } //}}}
 

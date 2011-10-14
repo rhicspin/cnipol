@@ -382,10 +382,10 @@ UInt_t RunInfo::GetFillId()
 /** */
 void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
 { //{{{
-   if (polId == 3) { beamId = 1; streamId = 1; };
-   if (polId == 1) { beamId = 1; streamId = 2; };
    if (polId == 0) { beamId = 2; streamId = 1; };
+   if (polId == 1) { beamId = 1; streamId = 2; };
    if (polId == 2) { beamId = 2; streamId = 2; };
+   if (polId == 3) { beamId = 1; streamId = 1; };
 
    beamId = 0; streamId = 0;
 } //}}}
@@ -710,13 +710,41 @@ ESpinState RunInfo::GetBunchSpin(UShort_t bid) const
 
 
 /** */
+EBeamId RunInfo::GetBeamId() const
+{ //{{{
+   switch (fPolBeam) {
+   case 1:
+	   return kYELLOW_BEAM;
+   case 2:
+	   return kBLUE_BEAM;
+   default:
+      return kUNKNOWN_BEAM;
+   }
+} //}}}
+
+
+/** */
+ETargetOrient RunInfo::GetTargetOrient() const
+{ //{{{
+   switch (fTargetOrient) {
+   case 'H':
+	   return kTARGET_H;
+   case 'V':
+	   return kTARGET_V;
+   default:
+      return kUNKNOWN_ORIENT;
+   }
+} //}}}
+
+
+/** */
 EPolarimeterId RunInfo::ExtractPolarimeterId(std::string runName)
 { //{{{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
 
    if (subStrL->GetEntriesFast() < 1) {
       gSystem->Error("ExtractPolarimeterId", "Cannot extract polarimeter id from run name");
-      return kPOLID_UNKNOWN;
+      return kUNKNOWN_POLID;
    }
 
    TString spolid = ((TObjString *) subStrL->At(1))->GetString();
@@ -724,9 +752,9 @@ EPolarimeterId RunInfo::ExtractPolarimeterId(std::string runName)
 
    EPolarimeterId polId = (EPolarimeterId) spolid.Atoi();
 
-   if ( gRunConfig.fPolarimeters.find(polId) == gRunConfig.fPolarimeters.end() || polId == kPOLID_UNKNOWN ) {
+   if ( gRunConfig.fPolarimeters.find(polId) == gRunConfig.fPolarimeters.end() || polId == kUNKNOWN_POLID ) {
 		gSystem->Error("ExtractPolarimeterId", "Invalid polarimeter ID");
-      return kPOLID_UNKNOWN;
+      return kUNKNOWN_POLID;
 	}
 
    return polId;

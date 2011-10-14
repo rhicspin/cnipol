@@ -30,6 +30,8 @@ AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0
 
    MseRunInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
+   MseFillPolarX::table("fill_polar");
+   MseFillProfileX::table("fill_profile");
 }
 
 
@@ -149,6 +151,37 @@ MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
    if (StoreQueryResult result = query.store()) {
 
       if (!result.empty()) msefp = new MseFillPolarX(result[0]);
+
+   } else {
+      cerr << "Failed to get item list: " << query.error() << endl;
+   }
+
+   return msefp;
+} //}}}
+
+
+/** */
+MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
+{ //{{{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return 0;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `fill_profile` where `fill` = '" << fill << "'";
+
+   Query query = fConnection->query(sstr.str());
+
+   MseFillProfileX* msefp = 0;
+
+   cout << "Query: " << query << endl;
+   //query.execute();
+
+   if (StoreQueryResult result = query.store()) {
+
+      if (!result.empty()) msefp = new MseFillProfileX(result[0]);
 
    } else {
       cerr << "Failed to get item list: " << query.error() << endl;
@@ -371,12 +404,36 @@ void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
    if (!ofill) {
       query.insert(*nfill);
       cout << "Query: " << query << endl;
-      //query.execute();
+      query.execute();
 
    } else {
       query.update(*ofill, *nfill);
       cout << "Query: " << query << endl;
-      //query.execute();
+      query.execute();
+   }
+} //}}}
+
+
+/** */
+void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
+{ //{{{
+   if (!fConnection) {
+      Error("Select", "Connection with MySQL server not established");
+      return;
+   }
+
+   Query query = fConnection->query();
+
+   // if original run is not defined just insert the new one
+   if (!ofill) {
+      query.insert(*nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
+
+   } else {
+      query.update(*ofill, *nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
    }
 } //}}}
 
