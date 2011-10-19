@@ -57,6 +57,7 @@ void MAsymRunHists::BookHists(string sid)
    fDir->cd();
 
    char   hName[256];
+   string shName;   
    string sName;   
 
    IterPolarimeterId iPolId = gRunConfig.fPolarimeters.begin();
@@ -79,8 +80,8 @@ void MAsymRunHists::BookHists(string sid)
 
       IterBeamEnergy iBE = gRunConfig.fBeamEnergies.begin();
 
-      for ( ; iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
-
+      for ( ; iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
+      {
          BookHistsPolarimeter(*oc, *iPolId, *iBE);
       }
 
@@ -105,6 +106,15 @@ void MAsymRunHists::BookHists(string sid)
       oc->o[hName] = new TH2F(hName, hName, 1000, 0, 1, 1000, 0, 1);
       ((TH1*) oc->o[hName])->SetTitle(";Dead Layer Diff, #mug/cm^{2};t_{0} Diff, ns;");
       ((TH1*) oc->o[hName])->GetListOfFunctions()->Add(grT0VsDLDiff, "p");
+
+      shName = "hPolarFirstMeasRatioVsFill_" + strPolId;
+      oc->o[shName] = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+      ((TH1*) oc->o[shName])->GetYaxis()->SetRangeUser(0, 100);
+      ((TH1*) oc->o[shName])->SetTitle(";Fill;Polarization Ratio (Inj/First);");
+      ((TH1*) oc->o[shName])->SetMarkerStyle(kFullCircle);
+      ((TH1*) oc->o[shName])->SetMarkerSize(1);
+      ((TH1*) oc->o[shName])->SetMarkerColor(color);
+      ((TH1*) oc->o[shName])->SetOption("E1");
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -157,14 +167,14 @@ void MAsymRunHists::BookHists(string sid)
       ((TH1*) o[hName])->SetOption("E1");
 
       sprintf(hName, "hPolarBlueDeltaUvsD_%s", strBeamE.c_str());
-      o[hName] = new TH1F(hName, hName, 50, 0, 0.5);
+      o[hName] = new TH1F(hName, hName, 50, 0, 0.2);
       ((TH1*) o[hName])->SetTitle(";#Delta_{U vs. D};;");
       ((TH1*) o[hName])->SetLineWidth(2);
       ((TH1*) o[hName])->SetLineColor(color);
       ((TH1*) o[hName])->SetOption("hist");
 
       sprintf(hName, "hPolarBlueCumulDeltaUvsD_%s", strBeamE.c_str());
-      o[hName] = new TH1F(hName, hName, 50, 0, 0.5);
+      o[hName] = new TH1F(hName, hName, 50, 0, 0.2);
       ((TH1*) o[hName])->SetTitle(";Cumulative #Delta_{U vs. D};;");
       ((TH1*) o[hName])->SetLineWidth(2);
       ((TH1*) o[hName])->SetLineColor(color);
@@ -289,6 +299,16 @@ void MAsymRunHists::BookHistsPolarimeter(DrawObjContainer &oc, EPolarimeterId po
    ((TH1*) oc.o[shName])->SetOption("E1");
    ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grPolarVsMeas, "p");
 
+   shName = "hPolarFirstMeasVsFill_" + strPolId + "_" + strBeamE;
+   oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+   ((TH1*) oc.o[shName])->GetYaxis()->SetRangeUser(0, 100);
+   ((TH1*) oc.o[shName])->SetTitle(";Fill;Polarization, %;");
+   ((TH1*) oc.o[shName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) oc.o[shName])->SetMarkerSize(1);
+   ((TH1*) oc.o[shName])->SetMarkerColor(color);
+   ((TH1*) oc.o[shName])->SetOption("E1");
+   ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grPolarVsMeas, "p");
+
    shName = "hPolar2VsFill_" + strPolId + "_" + strBeamE;
    oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    ((TH1*) oc.o[shName])->GetYaxis()->SetRangeUser(0, 100);
@@ -307,6 +327,41 @@ void MAsymRunHists::BookHistsPolarimeter(DrawObjContainer &oc, EPolarimeterId po
    ((TH1*) oc.o[shName])->SetMarkerSize(1);
    ((TH1*) oc.o[shName])->SetMarkerColor(color);
    ((TH1*) oc.o[shName])->SetOption("E1");
+
+   // polarization from pol profile
+   shName = "hProfPolarDiffVsFill_" + strPolId + "_" + strBeamE;
+   oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+   //((TH1*) oc.o[shName])->GetYaxis()->SetRangeUser(0, 100);
+   ((TH1*) oc.o[shName])->SetTitle(";Fill;Profile Polarization Diff., %;");
+   ((TH1*) oc.o[shName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) oc.o[shName])->SetMarkerSize(1);
+   ((TH1*) oc.o[shName])->SetMarkerColor(color);
+   ((TH1*) oc.o[shName])->SetOption("E1");
+
+   // polarization from pol profile
+   shName = "hProfPolarRelDiffVsFill_" + strPolId + "_" + strBeamE;
+   oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+   ((TH1*) oc.o[shName])->SetTitle(";Fill;Profile Polarization Rel. Diff., %;");
+   ((TH1*) oc.o[shName])->SetMarkerStyle(kFullCircle);
+   ((TH1*) oc.o[shName])->SetMarkerSize(1);
+   ((TH1*) oc.o[shName])->SetMarkerColor(color);
+   ((TH1*) oc.o[shName])->SetOption("E1");
+
+   // polarization from pol profile
+   shName = "hProfPolarRelDiff_" + strPolId + "_" + strBeamE;
+   oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 0.2);
+   ((TH1*) oc.o[shName])->SetTitle(";Profile Polarization Rel. Diff., %;;");
+   ((TH1*) oc.o[shName])->SetLineWidth(2);
+   ((TH1*) oc.o[shName])->SetLineColor(color);
+   ((TH1*) oc.o[shName])->SetOption("hist");
+
+   // polarization from pol profile
+   shName = "hProfPolarRelDiffCumul_" + strPolId + "_" + strBeamE;
+   oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 0.2);
+   ((TH1*) oc.o[shName])->SetTitle(";Cumul. Profile Polarization Rel. Diff., %;;");
+   ((TH1*) oc.o[shName])->SetLineWidth(2);
+   ((TH1*) oc.o[shName])->SetLineColor(color);
+   ((TH1*) oc.o[shName])->SetOption("hist");
 
    // Polarization vs time
    TGraphErrors *grPolarVsTime = new TGraphErrors();
@@ -645,11 +700,6 @@ void MAsymRunHists::Fill(EventConfig &rc)
       t0 = 0;
    }
 
-   if (profileRatio > 1.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001) {
-	   Warning("Fill", "Didn't pass QA check");
-      return;
-	}
-
    //t0Err         = chCalib->fT0CoefErr;
 
    if (gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end())
@@ -927,7 +977,7 @@ void MAsymRunHists::PostFill()
          ((TH1*) oc_pol->o[shName])->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
          graph = (TGraphErrors*) ((TH1*) oc_pol->o[shName])->GetListOfFunctions()->FindObject("grPolarVsMeas");
 
-         utils::RemoveOutliers(graph, 2, 3);
+         //utils::RemoveOutliers(graph, 2, 3);
          utils::BinGraph(graph, (TH1*) oc_pol->o[shName]);
 
          ((TH1*) oc_pol->o[shName])->GetListOfFunctions()->Remove(graph);
@@ -937,6 +987,15 @@ void MAsymRunHists::PostFill()
          delete funcPolarVsFill;
 
          fHStacks["hsPolarVsFill_" + strBeamE]->Add( (TH1*) oc_pol->o[shName] );
+
+         // Polarization: first measurement in fill
+         shName = "hPolarFirstMeasVsFill_" + strPolId + "_" + strBeamE;
+         ((TH1*) oc_pol->o[shName])->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+         graph = (TGraphErrors*) ((TH1*) oc_pol->o[shName])->GetListOfFunctions()->FindObject("grPolarVsMeas");
+
+         utils::BinGraphByFirstOnly(graph, (TH1*) oc_pol->o[shName]);
+
+         ((TH1*) oc_pol->o[shName])->GetListOfFunctions()->Remove(graph);
 
          // Polarization vs time
          //sprintf(hName, "hPolarVsTime_%s_%s", strPolId.c_str(), strBeamE.c_str());
@@ -1143,6 +1202,13 @@ void MAsymRunHists::PostFill()
       ydelta = fabs(ymax - ymin)*0.1;
       hT0VsDLDiff->GetXaxis()->SetLimits(xmin-xdelta, xmax+xdelta);
       hT0VsDLDiff->GetYaxis()->SetLimits(ymin-ydelta, ymax+ydelta);
+
+      // Ratio of inj to first meas
+      TH1F* hPolarInj = (TH1F*) oc_pol->o["hPolarVsFill_" + strPolId + "_024"];
+      TH1F* hPolarFst = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + strPolId + "_250"];
+      shName = "hPolarFirstMeasRatioVsFill_" + strPolId;
+      ((TH1*) oc_pol->o[shName])->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+      ((TH1*) oc_pol->o[shName])->Divide(hPolarInj, hPolarFst);
    }
 
    IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin();
@@ -1206,6 +1272,12 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
       TH1F* hProfPolarVsFill_ = (TH1F*) oc_pol->o["hProfPolarVsFill_" + strPolId + "_" + strBeamE];
       hProfPolarVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
 
+      TH1F* hProfPolarDiffVsFill_ = (TH1F*) oc_pol->o["hProfPolarDiffVsFill_" + strPolId + "_" + strBeamE];
+      hProfPolarDiffVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+
+      TH1F* hProfPolarRelDiffVsFill_ = (TH1F*) oc_pol->o["hProfPolarRelDiffVsFill_" + strPolId + "_" + strBeamE];
+      hProfPolarRelDiffVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+
       AnaFillResultMapIter iFill = agr.fAnaFillResults.begin();
 
       for ( ; iFill != agr.fAnaFillResults.end(); ++iFill)
@@ -1213,37 +1285,65 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          UInt_t         fillId   =  iFill->first;
          AnaFillResult *fillRslt = &iFill->second;
 
-         if (fillRslt->fPolars.find(*iPolId) == fillRslt->fPolars.end()) continue;
-         //if (fillRslt->fPolProfPolars.find(*iPolId) == fillRslt->fPolProfPolars.end()) continue;
-
-         ValErrPair polar = fillRslt->fPolars[*iPolId];
-
          Int_t ib = hPolar2VsFill_->FindBin(fillId);
-
-         hPolar2VsFill_->SetBinContent(ib, polar.first*100);
-         hPolar2VsFill_->SetBinError(  ib, polar.second*100);
-
-         ValErrPair profPolar = fillRslt->fPolProfPolars[*iPolId];
-
-         hProfPolarVsFill_->SetBinContent(ib, profPolar.first*100);
-         hProfPolarVsFill_->SetBinError(  ib, profPolar.second*100);
 
          // Save beam histograms (thus check once per beam, upstream polarimeters)
          if (*iPolId == kB1U) {
       
-            hPolarBlueAvrgVsFill_->SetBinContent(ib, avrgPolarBlue.first);
-            hPolarBlueAvrgVsFill_->SetBinError(  ib, avrgPolarBlue.second);
+            ValErrPair avrgPolarBlue = fillRslt->GetBeamPolar(kBLUE_BEAM);
+
+            if (avrgPolarBlue.second > 0) {
+               hPolarBlueAvrgVsFill_->SetBinContent(ib, avrgPolarBlue.first*100);
+               hPolarBlueAvrgVsFill_->SetBinError(  ib, avrgPolarBlue.second*100);
       
-            Double_t diff1 = TMath::Abs(avrgPolarBlue.first - fillRslt->fPolars[kB1U].first);
-            Double_t diff2 = TMath::Abs(avrgPolarBlue.first - fillRslt->fPolars[kB2D].first);
-            Double_t diff  = TMath::Max(diff1, diff2);
+               //Double_t diff1 = fillRslt->fPolars.find(kB1U) == fillRslt->fPolars.end() ? 0 : TMath::Abs(avrgPolarBlue.first - fillRslt->fPolars[kB1U].first);
+               //Double_t diff2 = fillRslt->fPolars.find(kB2D) == fillRslt->fPolars.end() ? 0 : TMath::Abs(avrgPolarBlue.first - fillRslt->fPolars[kB2D].first);
+               //Double_t diff  = TMath::Max(diff1, diff2);
+               //Double_t diff  = fillRslt->CalcBeamPolarSyst(kBLUE_BEAM, agr.fNormJetCarbon).first;
+               Double_t diff  = fillRslt->GetSystUvsD(kBLUE_BEAM).first;
       
-            hPolarBlueDiffVsFill_->SetBinContent(ib, diff);
-            hPolarBlueDiffVsFill_->SetBinError(  ib, 1e-6);
-            hPolarBlueRelDiffVsFill_->SetBinContent(ib, diff/avrgPolarBlue.first);
-            hPolarBlueRelDiffVsFill_->SetBinError(  ib, 1e-6);
+               if (diff >= 0) { // some reasonable number
+                  hPolarBlueDiffVsFill_->SetBinContent(ib, diff*100);
+                  hPolarBlueDiffVsFill_->SetBinError(  ib, 1e-6);
+                  hPolarBlueRelDiffVsFill_->SetBinContent(ib, diff/avrgPolarBlue.first);
+                  hPolarBlueRelDiffVsFill_->SetBinError(  ib, 1e-6);
+               }
+            }
+         }
+
+         // Consider P and P_prof by polarimeter
+         if (fillRslt->fPolars.find(*iPolId) == fillRslt->fPolars.end()) continue;
+         //if (fillRslt->fProfPolars.find(*iPolId) == fillRslt->fProfPolars.end()) continue;
+
+         ValErrPair polar = fillRslt->fPolars[*iPolId];
+
+         hPolar2VsFill_->SetBinContent(ib, polar.first*100);
+         hPolar2VsFill_->SetBinError(  ib, polar.second*100);
+
+         ValErrPair profPolar = fillRslt->fProfPolars[*iPolId];
+
+         hProfPolarVsFill_->SetBinContent(ib, profPolar.first*100);
+         hProfPolarVsFill_->SetBinError(  ib, profPolar.second*100);
+
+         Double_t diff = fillRslt->GetSystProfPolar(*iPolId).first;
+
+         if (diff >= 0) { // some reasonable number
+            hProfPolarDiffVsFill_->SetBinContent(ib, diff*100);
+            hProfPolarDiffVsFill_->SetBinError(  ib, 1e-6);
+
+            hProfPolarRelDiffVsFill_->SetBinContent(ib, diff/polar.first);
+            hProfPolarRelDiffVsFill_->SetBinError(  ib, 1e-6);
          }
       }
+   
+      TH1F* hProfPolarRelDiff_ = (TH1F*) oc_pol->o["hProfPolarRelDiff_" + strPolId + "_" + strBeamE];
+
+      utils::ConvertToProfile(hProfPolarRelDiffVsFill_, hProfPolarRelDiff_, kFALSE);
+
+      TH1F* hProfPolarRelDiffCumul_ = (TH1F*) oc_pol->o["hProfPolarRelDiffCumul_" + strPolId + "_" + strBeamE];
+
+      utils::ConvertToProfile(hProfPolarRelDiffVsFill_, hProfPolarRelDiffCumul_, kFALSE);
+      utils::ConvertToCumulative(hProfPolarRelDiffCumul_);
 
       //ValErrPair avrgPolarBlue(0, -1);
 
@@ -1359,6 +1459,10 @@ void MAsymRunHists::UpdateLimits()
          min  = utils::GetNonEmptyMinimum(fHStacks["hsPolarVsFill_" + strBeamE], "nostack");
          max  = utils::GetNonEmptyMaximum(fHStacks["hsPolarVsFill_" + strBeamE], "nostack");
          marg = (max - min) * 0.1;
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+
+         shName = "hPolarFirstMeasVsFill_" + strPolId + "_" + strBeamE;
+         ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
 
          shName = "hPolar2VsFill_" + strPolId + "_" + strBeamE;
