@@ -51,6 +51,14 @@ export DATADIR=$POLARIM_DIR/data
 export CONFDIR=$POLARIM_DIR/config
 export CALIBDIR=$POLARIM_DIR/share/config
 
+#UTILS
+export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
+export UTILS_INC_DIR=~dsmirnov/root_macros/
+
+if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
+	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
+fi
+
 # CDEV variables
 export CDEV_DIR=/usr/local/cdev
 export CDEV=$CDEV_DIR
