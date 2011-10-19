@@ -30,6 +30,7 @@ enum ESpinState {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 
 typedef std::set<EBeamId>                  BeamIdSet;
 typedef BeamIdSet::iterator                BeamIdSetIter;
+typedef BeamIdSet::const_iterator          BeamIdConstIter;
 
 typedef std::set<ETargetOrient>            TargetOrientSet;
 typedef TargetOrientSet::iterator          TargetOrientSetIter;
@@ -38,8 +39,11 @@ typedef std::set<EBeamEnergy>::iterator    IterBeamEnergy;
 typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
 typedef std::set<ESpinState>::iterator     IterSpinState;
 
+typedef std::set<EPolarimeterId>           PolarimeterIdSet;
+
 typedef std::set<EBeamEnergy>::iterator    BeamEnergyIter;
-typedef std::set<EPolarimeterId>::iterator PolarimeterIdIter;
+typedef PolarimeterIdSet::iterator         PolarimeterIdIter;
+typedef PolarimeterIdSet::const_iterator   PolarimeterIdConstIter;
 typedef std::set<ESpinState>::iterator     SpinStateIter;
 
 
