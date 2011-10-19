@@ -172,35 +172,103 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 
 
 /** */
-function polarToString($val, $err)
+//function floatToString($val, $err)
+//{
+//   $str = "&nbsp;";
+//
+//   if ( $val >= 0 && $err >= 0 )
+//	   $str = sprintf("%5.2f &plusmn; %5.2f", $val*100, $err*100);
+//
+//   return $str;
+//}
+
+
+/** */
+function pairToString($valerr=null)
 {
    $str = "&nbsp;";
 
-   if ( $val >= 0 && $err >= 0 )
-	   $str = sprintf("%5.2f &plusmn; %5.2f", $val*100, $err*100);
+   if ($valerr == null ) return $str;
+
+   //if ( $val >= 0 && $err >= 0 )
+	$str = sprintf("%3.2f&nbsp;&plusmn;&nbsp;%3.2f", $valerr->first, $valerr->second);
 
    return $str;
 }
 
 
 /** */
-function pairToString($valerr)
+function polarToString($val, $err)
 {
+   $str = "&nbsp;";
+
+   if ( $val >= 0 && $err >= 0 )
+	   $str = sprintf("%5.2f&nbsp;&plusmn;&nbsp;%4.2f", $val*100, $err*100);
+	   //$str = sprintf("%5.7f&nbsp;&plusmn;&nbsp;%4.7f", $val, $err);
+
+   return $str;
+}
+
+
+/** */
+function polarPairToString($valerr=null)
+{
+   if ($valerr == null ) return "&nbsp;";
+
    return polarToString($valerr->first, $valerr->second);
 }
 
 
 /** */
+function calcWeigtedSum($valerrs, $power=0)
+{ //{{{
+
+   if ($power != 0 && $power != 1 && $power != 2) return null;
+   if (count($valerrs) <= 0) return null;
+
+   $sum = 0;
+
+   foreach($valerrs as $valerr) {
+
+      if ($valerr == null) continue;
+      //if ($valerr->second < 0) continue;
+
+      $val = $valerr->first;
+      $err = $valerr->second == 0 ? 1E-50 : $valerr->second;
+
+      $w   = 1./$err/$err;
+      //print($w."<br>");
+
+      if ($power == 0)
+         $sum += $w ;
+
+      if ($power == 1)
+         $sum += $w*$val;
+
+      if ($power == 2)
+         $sum += $w*$val*$val;
+
+      //print($sum."<br>");
+   }
+     
+   return $sum;
+} //}}}
+
+
+/** */
 function calcWeigtedAvrgErr($valerrs)
-{
+{ //{{{
    $result = new pair(-1, -1);
 
-   if (count($valerrs) <= 0) return $result;
+   //if (count($valerrs) <= 0) return $result;
+   if (count($valerrs) <= 0) return null;
 
    $sum1   = 0;
    $sum2   = 0;
 
    foreach($valerrs as $valerr) {
+
+      if ($valerr == null) continue;
 
       if ($valerr->second < 0) continue;
 
@@ -216,6 +284,137 @@ function calcWeigtedAvrgErr($valerrs)
    $result->second = ($sum2 == 0 ? -1 : sqrt(1./$sum2));
 
    return $result;
-}
+} //}}}
+
+
+/** */
+function calcWeigtedStdDev($valerrs)
+{ //{{{
+   //if (count($valerrs) <= 0) return null;
+
+   $result = new pair(-1, -1);
+
+   $s0 = calcWeigtedSum($valerrs, 0);
+   $s1 = calcWeigtedSum($valerrs, 1);
+   $s2 = calcWeigtedSum($valerrs, 2);
+
+   $result->first  = sqrt( ($s0*$s2 - $s1*$s1) / ( $s0*($s0 - 1) ) );
+   //$result->first  = 777;
+   $result->second = 0;
+
+   return $result;
+} //}}}
+
+
+/** */
+function calcMaxDifference($avrg=null, $valerrs=null)
+{ //{{{
+   $maxDiff = -1;
+
+   if ($avrg == null) return -1;
+
+   //if (count($valerrs) <= 0) return $maxDiff;
+   if (count($valerrs) <= 0) return -1;
+
+   foreach($valerrs as $valerr) {
+
+      if ($valerr == null) continue;
+
+      //if ($valerr->second < 0) continue;
+      
+      $diff = abs($avrg->first - $valerr->first);
+
+      //if ($diff > 0 && $diff > $maxDiff) $maxDiff = $diff;
+      if ($diff > $maxDiff) $maxDiff = $diff;
+   }
+
+   $maxDiff = $maxDiff < 0.0000000001 ? -1 : $maxDiff;
+
+   return $maxDiff;
+} //}}}
+
+
+/** */
+function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
+{ //{{{
+   if ($pairR_H == null || $pairR_V == null) return null;
+
+   // protected for division y zero
+   $pairR_V_first = $pairR_V->first == -2 ? 0 : $pairR_V->first;
+   $pairR_H_first = $pairR_H->first == -2 ? 0 : $pairR_H->first;
+
+   $collScale = new pair(-1, -1);
+
+   $collScale->first = sqrt((1+$pairR_H_first)/(1+0.5*$pairR_H_first)) * sqrt((1+$pairR_V_first)/(1+0.5*$pairR_V_first));
+
+   $relDelta2  = $pairR_H->second * $pairR_H->second / (2 + $pairR_H_first) / (2 + $pairR_H_first)/ 4.;
+   $relDelta2 += $pairR_V->second * $pairR_V->second / (2 + $pairR_V_first) / (2 + $pairR_V_first)/ 4.;
+
+   $collScale->second = $collScale->first * sqrt($relDelta2);
+   
+   return $collScale;
+} //}}}
+
+
+/** */
+function calcPolarCollision($polar=null, $scaleColl=null)
+{ //{{{
+   if ($polar == null || $scaleColl == null) return null;
+
+   $polarColl = new pair(-1, -1);
+
+   $polarColl->first = $polar->first * $scaleColl->first;
+
+   $relDelta2 = $polar->second * $polar->second / $polar->first / $polar->first + $scaleColl->second * $scaleColl->second / $scaleColl->first / $scaleColl->first;
+   $polarColl->second = $polarColl->first * sqrt($relDelta2);
+   
+   //$delta2 = $polar->first * $polar->first * $scaleColl->second * $scaleColl->second  +  $scaleColl->first * $scaleColl->first * $polar->second * $polar->second;
+   //$polarColl->second = sqrt($delta2);
+
+   return $polarColl;
+} //}}}
+
+
+/** */
+function calcQuantileValue(&$vals=null, $quantile=null)
+{ //{{{
+
+   if ($quantile == null) return end($vals);
+
+   sort($vals);
+
+   $n = count($vals);
+   $i = 0;
+
+   foreach ($vals as $val) {
+
+      $i++;
+
+      if ( ( (double)  $i/$n) >= $quantile)
+         return $val;
+   }
+
+   return end($vals);
+} //}}}
+
+
+/** */
+function calcProfPolar($profPMax=null, $profR=null)
+{ //{{{
+   if ($profPMax == null || $profR == null) return null;
+
+   $profPolar = new pair(-1, -1);
+
+   $profPolar->first = $profPMax->first / sqrt( 1 + $profR->first);
+
+   //$relDelta2 = $profPMax->second * $profPMax->second / $profPMax->first / $profPMax->first + $profR->second * $profR->second / $profR->first / $profR->first;
+   //$profPolar->second = $profPolar->first * sqrt($relDelta2);
+   
+   $delta2 = $profPMax->first  * $profPMax->first  * $profR->second * $profR->second/4./(1+$profR->first)/(1+$profR->first)/(1+$profR->first) +
+             $profPMax->second * $profPMax->second / (1 + $profR->first);
+   $profPolar->second = sqrt($delta2);
+
+   return $profPolar;
+} //}}}
 
 ?>
