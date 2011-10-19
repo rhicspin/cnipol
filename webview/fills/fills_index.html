@@ -1,0 +1,644 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Fill Database: RHIC polarimeters</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="2%">
+
+<td width="96%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>Cnipol Fill Index</h1>
+
+<?php
+
+include_once("../DbFillPolar.php");
+//include_once("../RunSelector.php");
+
+//$dbReader = new DbReader();
+//$dbReader->ReadEntries();
+//$es = $dbReader->entries;
+//array_sort($es, '!START_TIME');
+
+//$runSelector = new RunSelector();
+
+//$runSelector->PrintForm();
+
+$dbFillPolar = new DbFillPolar();
+
+$nFills = $dbFillPolar->CountEntries();
+
+?>
+
+<p>
+Fills selected: <?=$dbFillPolar->nResults?>
+<?//=$dbFillPolar->sqlWhere?>
+
+<?
+// Create page links
+//$page = 1;
+//$nRunsPerPage = 200;
+//$nPages = ceil($nFills/$nRunsPerPage);
+
+//if ( isset($_GET['page']) ) $page = $_GET['page'];
+//if ($page > $nPages || $page < 1) $page = 1;
+
+//$dbFillPolar->PrintPageIndex($nPages, $page);
+
+// read all entries for this run period
+$entries = $dbFillPolar->ReadEntries(); //($page-1)*$nRunsPerPage, $nRunsPerPage);
+
+//print "<pre>\n";
+//print_r($row);
+//print "</pre>\n";
+
+$es        = array();
+
+$polarBHJs = array();
+$polarYHJs = array();
+
+$polarB1Us    = array();
+$polarY1Ds    = array();
+$polarB2Ds    = array();
+$polarY2Us    = array();
+$polarB1U_HJs = array();
+$polarY1D_HJs = array();
+$polarB2D_HJs = array();
+$polarY2U_HJs = array();
+
+
+// Calculate whatever using all fills
+
+while ($e = mysql_fetch_assoc($entries)):
+
+   $es[] = $e;
+
+   //blue
+   if ( $e['polar_blue_hjet_err'] >= 0 &&
+       ($e['polar_blue_1_err'] >= 0 || $e['polar_blue_2_err'] >= 0) )
+   {
+      $polarBHJs[] = new pair($e['polar_blue_hjet'], $e['polar_blue_hjet_err']);
+
+      if ($e['polar_blue_1_err'] >= 0) {
+         $polarB1Us[]    = new pair($e['polar_blue_1'], $e['polar_blue_1_err']);
+         $polarB1U_HJs[] = new pair($e['polar_blue_hjet'], $e['polar_blue_hjet_err']);
+      }
+
+      if ($e['polar_blue_2_err'] >= 0) {
+         $polarB2Ds[]    = new pair($e['polar_blue_2'], $e['polar_blue_2_err']);
+         $polarB2D_HJs[] = new pair($e['polar_blue_hjet'], $e['polar_blue_hjet_err']);
+      }
+   }
+
+   // yellow
+   if ( $e['polar_yellow_hjet_err'] >= 0 &&
+       ($e['polar_yellow_1_err'] >= 0 || $e['polar_yellow_2_err'] >= 0) )
+   {
+      $polarYHJs[] = new pair($e['polar_yellow_hjet'], $e['polar_yellow_hjet_err']);
+
+      if ($e['polar_yellow_1_err'] >= 0) {
+         $polarY1Ds[]    = new pair($e['polar_yellow_1'], $e['polar_yellow_1_err']);
+         $polarY1D_HJs[] = new pair($e['polar_yellow_hjet'], $e['polar_yellow_hjet_err']);
+      }
+
+      if ($e['polar_yellow_2_err'] >= 0) {
+         $polarY2Us[]    = new pair($e['polar_yellow_2'], $e['polar_yellow_2_err']);
+         $polarY2U_HJs[] = new pair($e['polar_yellow_hjet'], $e['polar_yellow_hjet_err']);
+      }
+   }
+
+endwhile;
+
+$pairBHJAvrg = calcWeigtedAvrgErr($polarBHJs);
+$pairYHJAvrg = calcWeigtedAvrgErr($polarYHJs);
+
+$pairB1UAvrg    = calcWeigtedAvrgErr($polarB1Us);
+$pairY1DAvrg    = calcWeigtedAvrgErr($polarY1Ds);
+$pairB2DAvrg    = calcWeigtedAvrgErr($polarB2Ds);
+$pairY2UAvrg    = calcWeigtedAvrgErr($polarY2Us);
+$pairB1U_HJAvrg = calcWeigtedAvrgErr($polarB1U_HJs);
+$pairY1D_HJAvrg = calcWeigtedAvrgErr($polarY1D_HJs);
+$pairB2D_HJAvrg = calcWeigtedAvrgErr($polarB2D_HJs);
+$pairY2U_HJAvrg = calcWeigtedAvrgErr($polarY2U_HJs);
+
+// Calculate scale factors
+$normB1U = $pairB1U_HJAvrg->first / $pairB1UAvrg->first;
+$normY1D = $pairY1D_HJAvrg->first / $pairY1DAvrg->first;
+$normB2D = $pairB2D_HJAvrg->first / $pairB2DAvrg->first;
+$normY2U = $pairY2U_HJAvrg->first / $pairY2UAvrg->first;
+//$normB1U = $pairBHJAvrg->first / $pairB1UAvrg->first;
+//$normY1D = $pairYHJAvrg->first / $pairY1DAvrg->first;
+//$normB2D = $pairBHJAvrg->first / $pairB2DAvrg->first;
+//$normY2U = $pairYHJAvrg->first / $pairY2UAvrg->first;
+
+
+// Loop over all fills to find (average/best) missing values
+$deltaB_UvsDs = array();
+$deltaY_UvsDs = array();
+$deltaB_profs = array();
+$deltaY_profs = array();
+
+$pairProfileB_Vs = array();
+$pairProfileB_Hs = array();
+$pairProfileY_Vs = array();
+$pairProfileY_Hs = array();
+
+print("<pre>");
+//print_r($deltaB_UvsDs);
+//print_r($deltaY_UvsDs);
+//print_r($pairProfileB_Vs);
+//print_r($pairProfileB_Hs);
+print("</pre>");
+
+foreach ($es as $key => &$e) {
+
+   // blue comb
+   $pairB_UDs = array();
+   $pairY_UDs = array();
+
+   if ($e['polar_blue_1_err'] >= 0) {
+      $pairB_UDs[] = new pair($normB1U * $e['polar_blue_1'],   $normB1U * $e['polar_blue_1_err']);
+   }
+
+   if ($e['polar_blue_2_err'] >= 0) {
+      $pairB_UDs[] = new pair($normB2D * $e['polar_blue_2'],   $normB2D * $e['polar_blue_2_err']);
+   }
+
+   if ($e['polar_yellow_1_err'] >= 0) {
+      $pairY_UDs[] = new pair($normY1D * $e['polar_yellow_1'], $normY1D * $e['polar_yellow_1_err']);
+   }
+
+   if ($e['polar_yellow_2_err'] >= 0) {
+      $pairY_UDs[] = new pair($normY2U * $e['polar_yellow_2'], $normY2U * $e['polar_yellow_2_err']);
+   }
+
+   $pairB_UD_Avrg  = calcWeigtedAvrgErr( $pairB_UDs );
+   $pairY_UD_Avrg  = calcWeigtedAvrgErr( $pairY_UDs );
+
+   $deltaB_UvsD    = calcMaxDifference($pairB_UD_Avrg, $pairB_UDs);
+   $deltaY_UvsD    = calcMaxDifference($pairY_UD_Avrg, $pairY_UDs);
+
+   if ($deltaB_UvsD >= 0)
+      $deltaB_UvsDs[] = $deltaB_UvsD;
+
+   if ($deltaY_UvsD >= 0)
+      $deltaY_UvsDs[] = $deltaY_UvsD;
+
+   // now deal with profiles
+   $pairProfileB_V = null;
+   if ($e['profile_blue_v_err'] >= 0) {
+      $pairProfileB_V = new pair($e['profile_blue_v'], $e['profile_blue_v_err']);
+      $pairProfileB_Vs[] = $pairProfileB_V;
+   }
+
+   $pairProfileB_H = null;
+   if ($e['profile_blue_h_err'] >= 0) {
+      $pairProfileB_H = new pair($e['profile_blue_h'], $e['profile_blue_h_err']);
+      $pairProfileB_Hs[] = $pairProfileB_H;
+   }
+
+   $pairProfileY_V = null;
+   if ($e['profile_yellow_v_err'] >= 0) {
+      $pairProfileY_V = new pair($e['profile_yellow_v'], $e['profile_yellow_v_err']);
+      $pairProfileY_Vs[] = $pairProfileY_V;
+   }
+
+   $pairProfileY_H = null;
+   if ($e['profile_yellow_h_err'] >= 0) {
+      $pairProfileY_H = new pair($e['profile_yellow_h'], $e['profile_yellow_h_err']);
+      $pairProfileY_Hs[] = $pairProfileY_H;
+   }
+
+   // p_max
+   $pairPMaxB_V = null;
+   if ($e['pmax_blue_v_err'] >= 0)   $pairPMaxB_V = new pair($e['pmax_blue_v'], $e['pmax_blue_v_err']);
+
+   $pairPMaxB_H = null;
+   if ($e['pmax_blue_h_err'] >= 0)   $pairPMaxB_H = new pair($e['pmax_blue_h'], $e['pmax_blue_h_err']);
+
+   $pairPMaxY_V = null;
+   if ($e['pmax_yellow_v_err'] >= 0) $pairPMaxY_V = new pair($e['pmax_yellow_v'], $e['pmax_yellow_v_err']);
+
+   $pairPMaxY_H = null;
+   if ($e['pmax_yellow_h_err'] >= 0) $pairPMaxY_H = new pair($e['pmax_yellow_h'], $e['pmax_yellow_h_err']);
+
+
+   $pairProfPolarB_V = calcProfPolar($pairPMaxB_V, $pairProfileB_V);
+   $pairProfPolarB_H = calcProfPolar($pairPMaxB_H, $pairProfileB_H);
+   $pairProfPolarY_V = calcProfPolar($pairPMaxY_V, $pairProfileY_V);
+   $pairProfPolarY_H = calcProfPolar($pairPMaxY_H, $pairProfileY_H);
+
+   $deltaB_prof      = calcMaxDifference($pairB_UD_Avrg, array($pairProfPolarB_V, $pairProfPolarB_H));
+   $deltaY_prof      = calcMaxDifference($pairY_UD_Avrg, array($pairProfPolarY_V, $pairProfPolarY_H));
+
+   if ($deltaB_prof >= 0)
+      $deltaB_profs[] = $deltaB_prof;
+
+   if ($deltaY_prof >= 0)
+      $deltaY_profs[] = $deltaY_prof;
+
+
+   $e['pairB_UD_Avrg']    = $pairB_UD_Avrg;
+   $e['deltaB_UvsD']      = $deltaB_UvsD;
+   $e['pairY_UD_Avrg']    = $pairY_UD_Avrg;
+   $e['deltaY_UvsD']      = $deltaY_UvsD;
+
+   $e['pairProfileB_V']   = $pairProfileB_V;
+   $e['pairProfileB_H']   = $pairProfileB_H;
+   $e['pairProfileY_V']   = $pairProfileY_V;
+   $e['pairProfileY_H']   = $pairProfileY_H;
+
+   $e['pairPMaxB_V']      = $pairPMaxB_V;
+   $e['pairPMaxB_H']      = $pairPMaxB_H;
+   $e['pairPMaxY_V']      = $pairPMaxY_V;
+   $e['pairPMaxY_H']      = $pairPMaxY_H;
+
+   $e['pairProfPolarB_V'] = $pairProfPolarB_V;
+   $e['pairProfPolarB_H'] = $pairProfPolarB_H;
+   $e['pairProfPolarY_V'] = $pairProfPolarY_V;
+   $e['pairProfPolarY_H'] = $pairProfPolarY_H;
+
+   $e['deltaB_prof']      = $deltaB_prof;
+   $e['deltaY_prof']      = $deltaY_prof;
+}
+
+$deltaB_UvsD_Avrg = calcQuantileValue($deltaB_UvsDs, .90);
+$deltaY_UvsD_Avrg = calcQuantileValue($deltaY_UvsDs, .90);
+
+$pairProfileB_V_Avrg = calcWeigtedAvrgErr($pairProfileB_Vs);
+$pairProfileB_V_SDev = calcWeigtedStdDev( $pairProfileB_Vs);
+$pairProfileB_V_misd = new pair($pairProfileB_V_Avrg->first, $pairProfileB_V_SDev->first);
+
+$pairProfileB_H_Avrg = calcWeigtedAvrgErr($pairProfileB_Hs);
+$pairProfileB_H_SDev = calcWeigtedStdDev( $pairProfileB_Hs);
+$pairProfileB_H_misd = new pair($pairProfileB_H_Avrg->first, $pairProfileB_H_SDev->first);
+
+$pairProfileY_V_Avrg = calcWeigtedAvrgErr($pairProfileY_Vs);
+$pairProfileY_V_SDev = calcWeigtedStdDev( $pairProfileY_Vs);
+$pairProfileY_V_misd = new pair($pairProfileY_V_Avrg->first, $pairProfileY_V_SDev->first);
+
+$pairProfileY_H_Avrg = calcWeigtedAvrgErr($pairProfileY_Hs);
+$pairProfileY_H_SDev = calcWeigtedStdDev( $pairProfileY_Hs);
+$pairProfileY_H_misd = new pair($pairProfileY_H_Avrg->first, $pairProfileY_H_SDev->first);
+
+
+print("<pre>");
+//print_r($deltaB_UvsDs);
+//print_r($deltaY_UvsDs);
+//print_r($pairProfileB_Vs);
+//print_r($pairProfileB_Hs);
+print("</pre>");
+
+?>
+
+<p>
+Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in this run:
+
+<p>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr>
+   <th class='bluPol'>B1U
+   <th class='bluPol'>B2D
+   <th class='yelPol'>Y1D
+   <th class='yelPol'>Y2U
+
+<tr>
+   <td><?=sprintf("%8.7f", $normB1U)?>
+   <td><?=sprintf("%8.7f", $normB2D)?>
+   <td><?=sprintf("%8.7f", $normY1D)?>
+   <td><?=sprintf("%8.7f", $normY2U)?>
+</table>
+
+
+<p>
+<table border="1" cellpadding="4" cellspacing="0" align="center" width="100%">
+
+<?php
+
+$header = "
+<tr>
+   <th>Fill
+
+   <th class='bluPol'>Polarization, %<br>In collisions
+   <th class='bluPol'>Polarization, %<br>Beam
+   <th class='bluPol'>k_{coll}
+   <th class='bluPol'>\Delta {U vs. D}, %
+   <th class='bluPol'>\Delta {R}, %
+
+   <th class='yelPol'>Polarization, %<br>In collisions
+   <th class='yelPol'>Polarization, %<br>Beam
+   <th class='yelPol'>k_{coll}
+   <th class='yelPol'>\Delta {U vs. D}, %
+   <th class='yelPol'>\Delta {R}, %
+
+   <th class='bluPol'>Polarization, %<br>H-jet
+   <th class='bluPol'>Polarization, %<br>B1U
+   <th class='bluPol'>Polarization, %<br>B2D
+   <th class='bluPol'>R_H<br>Horiz. profile
+   <th class='bluPol'>R_V<br>Vert. profile
+   <th class='bluPol'>Polarization, %<br>Horiz. profile
+   <th class='bluPol'>Polarization, %<br>Vert. profile
+
+   <th class='yelPol'>Polarization, %<br>H-jet
+   <th class='yelPol'>Polarization, %<br>Y1D
+   <th class='yelPol'>Polarization, %<br>Y2U
+   <th class='yelPol'>R_H<br>Horiz. profile
+   <th class='yelPol'>R_V<br>Vert. profile
+   <th class='yelPol'>Polarization, %<br>Horiz. profile
+   <th class='yelPol'>Polarization, %<br>Vert. profile
+";
+
+$polarBHJs   = array();
+$polarYHJs   = array();
+$polarB1Us   = array();
+$polarY1Ds   = array();
+$polarB2Ds   = array();
+$polarY2Us   = array();
+
+$polarBAvrgs = array();
+$polarYAvrgs = array();
+
+$iRow = 0;
+
+foreach ($es as $e):
+
+   if ($iRow % 20 == 0)
+      print $header;
+
+   $pairPolarBHJ = null;
+   $pairPolarYHJ = null;
+   $pairPolarB1U = null;
+   $pairPolarB2D = null;
+   $pairPolarY1D = null;
+   $pairPolarY2U = null;
+
+
+   if ($e['polar_blue_hjet_err'] >= 0) {
+      $pairPolarBHJ = new pair(           $e['polar_blue_hjet'],              $e['polar_blue_hjet_err']);
+      $polarBHJs[]  = $pairPolarBHJ;
+   }
+
+   if ($e['polar_yellow_hjet_err'] >= 0) {
+      $pairPolarYHJ = new pair(           $e['polar_yellow_hjet'],            $e['polar_yellow_hjet_err']);
+      $polarYHJs[]  = $pairPolarYHJ;
+   }
+
+   if ($e['polar_blue_1_err'] >= 0) {
+      //$pairPolarB1U = new pair($normB1U * $e['polar_blue_1'],      $normB1U * $e['polar_blue_1_err']);
+      $pairPolarB1U = new pair($e['polar_blue_1'],      $e['polar_blue_1_err']);
+      //if ($e['polar_blue_hjet_err'] >= 0) $polarB1Us[]  = $pairPolarB1U;
+      $polarB1Us[] = $pairPolarB1U;
+   }
+
+   if ($e['polar_blue_2_err'] >= 0) {
+      //$pairPolarB2D = new pair($normB2D * $e['polar_blue_2'],      $normB2D * $e['polar_blue_2_err']);
+      $pairPolarB2D = new pair($e['polar_blue_2'],      $e['polar_blue_2_err']);
+      //if ($e['polar_blue_hjet_err'] >= 0) $polarB2Ds[]  = $pairPolarB2D;
+      $polarB2Ds[] = $pairPolarB2D;
+   }
+
+   if ($e['polar_yellow_1_err'] >= 0) {
+      //$pairPolarY1D = new pair($normY1D * $e['polar_yellow_1'],    $normY1D * $e['polar_yellow_1_err']);
+      $pairPolarY1D = new pair($e['polar_yellow_1'],    $e['polar_yellow_1_err']);
+      //if ($e['polar_yellow_hjet_err'] >= 0) $polarY1Ds[]  = $pairPolarY1D;
+      $polarY1Ds[] = $pairPolarY1D;
+   }
+
+   if ($e['polar_yellow_2_err'] >= 0) {
+      //$pairPolarY2U = new pair($normY2U * $e['polar_yellow_2'],    $normY2U * $e['polar_yellow_2_err']);
+      $pairPolarY2U = new pair( $e['polar_yellow_2'],    $e['polar_yellow_2_err']);
+      //if ($e['polar_yellow_hjet_err'] >= 0) $polarY2Us[]  = $pairPolarY2U;
+      $polarY2Us[] = $pairPolarY2U;
+   }
+
+   $pairBUDAvrg   = $e['pairB_UD_Avrg'];
+   $deltaBUvsD    = $e['deltaB_UvsD'];
+   $polarBAvrgs[] = $pairBUDAvrg;
+
+   $pairYUDAvrg   = $e['pairY_UD_Avrg'];
+   $deltaYUvsD    = $e['deltaY_UvsD'];
+   $polarYAvrgs[] = $pairYUDAvrg;
+
+
+   // now deal with profiles
+   $pairProfileB_V = $e['pairProfileB_V'] !== null ? $e['pairProfileB_V'] : $pairProfileB_V_misd;
+   $pairProfileB_H = $e['pairProfileB_H'] !== null ? $e['pairProfileB_H'] : $pairProfileB_H_misd;
+   $pairProfileY_V = $e['pairProfileY_V'] !== null ? $e['pairProfileY_V'] : $pairProfileY_V_misd;
+   $pairProfileY_H = $e['pairProfileY_H'] !== null ? $e['pairProfileY_H'] : $pairProfileY_H_misd;
+
+
+   $pairProfPolarB_V = $e['pairProfPolarB_V']; //calcProfPolar($e['pairPMaxB_V'], $e['pairProfileB_V']);
+   $pairProfPolarB_H = $e['pairProfPolarB_H']; //calcProfPolar($e['pairPMaxB_H'], $e['pairProfileB_H']);
+   $pairProfPolarY_V = $e['pairProfPolarY_V']; //calcProfPolar($e['pairPMaxY_V'], $e['pairProfileY_V']);
+   $pairProfPolarY_H = $e['pairProfPolarY_H']; //calcProfPolar($e['pairPMaxY_H'], $e['pairProfileY_H']);
+
+   $deltaB_prof      = $e['deltaB_prof'];
+   $deltaY_prof      = $e['deltaY_prof'];
+
+   // if both V and H profiles are valid calculate k_coll and its error
+   $pairScalePolarBColl = calcPolarCollisionScale($pairProfileB_H, $pairProfileB_V);
+   $polarBColl          = calcPolarCollision($pairBUDAvrg, $pairScalePolarBColl);
+
+   // if both V and H profiles are valid calculate k_coll and its error
+   $pairScalePolarYColl = calcPolarCollisionScale($pairProfileY_H, $pairProfileY_V);
+   $polarYColl          = calcPolarCollision($pairYUDAvrg, $pairScalePolarYColl);
+
+
+   // convert to strings
+   $strPolarB     = polarPairToString($pairBUDAvrg);
+   $strPolarY     = polarPairToString($pairYUDAvrg);
+   $strPolarBHJ   = polarPairToString($pairPolarBHJ);
+   $strPolarYHJ   = polarPairToString($pairPolarYHJ);
+   $strPolarB1U   = polarPairToString($pairPolarB1U);
+   $strPolarB2D   = polarPairToString($pairPolarB2D);
+   $strPolarY1D   = polarPairToString($pairPolarY1D);
+   $strPolarY2U   = polarPairToString($pairPolarY2U);
+
+   $strDeltaBUvsD = $deltaBUvsD > 0.0000000001 ? sprintf("%5.2f", $deltaBUvsD*100.) : sprintf("<span class='feature'>%5.2f</span>", $deltaB_UvsD_Avrg*100.);
+   $strDeltaYUvsD = $deltaYUvsD > 0.0000000001 ? sprintf("%5.2f", $deltaYUvsD*100.) : sprintf("<span class='feature'>%5.2f</span>", $deltaY_UvsD_Avrg*100.);
+
+   // now profiles
+   $strProfileB_V     = $e['pairProfileB_V'] != null ? pairToString($pairProfileB_V) :
+                        sprintf("<span class='feature'>%5.2f&nbsp;&plusmn;&nbsp;%5.2f</span>", $pairProfileB_V->first, $pairProfileB_V->second);
+   $strProfileB_H     = $e['pairProfileB_H'] != null ? pairToString($pairProfileB_H) :
+                        sprintf("<span class='feature'>%5.2f&nbsp;&plusmn;&nbsp;%5.2f</span>", $pairProfileB_H->first, $pairProfileB_H->second);
+   $strProfileY_V     = $e['pairProfileY_V'] != null ? pairToString($pairProfileY_V) :
+                        sprintf("<span class='feature'>%5.2f&nbsp;&plusmn;&nbsp;%5.2f</span>", $pairProfileY_V->first, $pairProfileY_V->second);
+   $strProfileY_H     = $e['pairProfileY_H'] != null ? pairToString($pairProfileY_H) :
+                        sprintf("<span class='feature'>%5.2f&nbsp;&plusmn;&nbsp;%5.2f</span>", $pairProfileY_H->first, $pairProfileY_H->second);
+
+
+   $strProfPolarB_V    = $pairProfPolarB_V != null ? polarPairToString($pairProfPolarB_V) : "&nbsp;";
+   $strProfPolarB_H    = $pairProfPolarB_H != null ? polarPairToString($pairProfPolarB_H) : "&nbsp;";
+   $strProfPolarY_V    = $pairProfPolarY_V != null ? polarPairToString($pairProfPolarY_V) : "&nbsp;";
+   $strProfPolarY_H    = $pairProfPolarY_H != null ? polarPairToString($pairProfPolarY_H) : "&nbsp;";
+
+   $strDeltaB_prof     = $deltaB_prof > 0.0000000001 ? sprintf("%5.2f", $deltaB_prof*100.) : "&nbsp;";
+   $strDeltaY_prof     = $deltaY_prof > 0.0000000001 ? sprintf("%5.2f", $deltaY_prof*100.) : "&nbsp;";
+
+   $strScalePolarBColl = $pairScalePolarBColl != null ? pairToString($pairScalePolarBColl) : "&nbsp;";
+   $strPolarBColl      = $polarBColl != null          ? polarPairToString($polarBColl) : "&nbsp;";
+   $strScalePolarYColl = $pairScalePolarYColl != null ? pairToString($pairScalePolarYColl) : "&nbsp;";
+   $strPolarYColl      = $polarYColl != null          ? polarPairToString($polarYColl) : "&nbsp;";
+?>
+
+<tr>
+   <td class=align_cm><?=$e['fill']?>
+
+   <td class='align_cm bluPol'><b><?=$strPolarBColl?></b>
+   <td class='align_cm bluPol'><?=$strPolarB?>
+   <td class='align_cm bluPol'><?=$strScalePolarBColl?>
+   <td class='align_cm bluPol'><?=$strDeltaBUvsD?>
+   <td class='align_cm bluPol'><?=$strDeltaB_prof?>
+
+   <td class='align_cm yelPol'><b><?=$strPolarYColl?></b>
+   <td class='align_cm yelPol'><?=$strPolarY?>
+   <td class='align_cm yelPol'><?=$strScalePolarYColl?>
+   <td class='align_cm yelPol'><?=$strDeltaYUvsD?>
+   <td class='align_cm yelPol'><?=$strDeltaY_prof?>
+
+   <td class=align_cm><?=$strPolarBHJ?>
+   <td class=align_cm><?=$strPolarB1U?>
+   <td class=align_cm><?=$strPolarB2D?>
+   <td class=align_cm><?=$strProfileB_V?>
+   <td class=align_cm><?=$strProfileB_H?>
+   <td class=align_cm><?=$strProfPolarB_V?>
+   <td class=align_cm><?=$strProfPolarB_H?>
+
+   <td class=align_cm><?=$strPolarYHJ?>
+   <td class=align_cm><?=$strPolarY1D?>
+   <td class=align_cm><?=$strPolarY2U?>
+   <td class=align_cm><?=$strProfileY_V?>
+   <td class=align_cm><?=$strProfileY_H?>
+   <td class=align_cm><?=$strProfPolarY_V?>
+   <td class=align_cm><?=$strProfPolarY_H?>
+
+<?php
+
+   $iRow++;
+
+endforeach;
+
+$strPolarBHJAvrg     = polarPairToString(calcWeigtedAvrgErr($polarBHJs));
+$strPolarYHJAvrg     = polarPairToString(calcWeigtedAvrgErr($polarYHJs));
+$strPolarB1UNormAvrg = polarPairToString(calcWeigtedAvrgErr($polarB1Us));
+$strPolarB2DNormAvrg = polarPairToString(calcWeigtedAvrgErr($polarB2Ds));
+$strPolarY1DNormAvrg = polarPairToString(calcWeigtedAvrgErr($polarY1Ds));
+$strPolarY2UNormAvrg = polarPairToString(calcWeigtedAvrgErr($polarY2Us));
+$strPolarBAvrg       = polarPairToString(calcWeigtedAvrgErr($polarBAvrgs));
+$strPolarYAvrg       = polarPairToString(calcWeigtedAvrgErr($polarYAvrgs));
+
+?>
+
+<tr>
+   <th colspan=21>&nbsp;<br>&nbsp;
+
+<tr>
+   <th>Avrg.:
+
+   <th class='bluPol'>
+   <th class='bluPol'><?=$strPolarBAvrg?>
+   <th class='bluPol'>
+   <th class='bluPol'>&nbsp;
+   <th class='bluPol'>&nbsp;
+
+   <th class='yelPol'>
+   <th class='yelPol'><?=$strPolarYAvrg?>
+   <th class='yelPol'>
+   <th class='yelPol'>&nbsp;
+   <th class='yelPol'>&nbsp;
+
+   <th><?=$strPolarBHJAvrg?>
+   <th><?=$strPolarB1UNormAvrg?>
+   <th><?=$strPolarB2DNormAvrg?>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+   <th><?=$strPolarYHJAvrg?>
+   <th><?=$strPolarY1DNormAvrg?>
+   <th><?=$strPolarY2UNormAvrg?>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+<!--
+<tr>
+   <th>Avrg.:
+   <th class='bluPol'> <?=$strPolarBAvrg?>
+   <th class='bluPol'> &nbsp;
+   <th class='bluPol'> &nbsp;
+   <th class='yelPol'> <?=$strPolarYAvrg?>
+   <th class='yelPol'> &nbsp;
+   <th class='yelPol'> &nbsp;
+   <th><?=$strPolarBHJAvrg?>
+   <th><?=$strPolarYHJAvrg?>
+   <th><?=$strPolarB1UAvrg?>
+   <th><?=$strPolarB2DAvrg?>
+   <th>&nbsp;
+   <th><?=$strPolarY1DAvrg?>
+   <th><?=$strPolarY2UAvrg?>
+
+<tr>
+   <th>&nbsp;
+   <th class='bluPol'> &nbsp;
+   <th class='bluPol'> &nbsp;
+   <th class='bluPol'> &nbsp;
+   <th class='yelPol'> &nbsp;
+   <th class='yelPol'> &nbsp;
+   <th class='yelPol'> &nbsp;
+   <th> &nbsp;
+   <th> &nbsp;
+   <th><?=$normB1U?>
+   <th><?=$normB2D?>
+   <th>&nbsp;
+   <th><?=$normY1D?>
+   <th><?=$normY2U?>
+-->
+
+</table>
+
+<pre>
+<?php //print_r($rc); ?>
+</pre>
+
+
+<!-- Main text ends here-->
+
+<td width="2%">
+
+<tr>
+<td>
+
+<td>
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>
