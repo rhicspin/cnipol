@@ -481,6 +481,7 @@ void readandfill_(int* subrun)
             }
             break;
         case REC_READAT:
+    	    if (!runpars_.intp) break;		// Don't process if we are not filling N-tuple
             atraw_.id = rec.header.timestamp.delim;
             atdata_.d = atraw_.id;
             for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
