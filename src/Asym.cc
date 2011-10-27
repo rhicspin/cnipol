@@ -554,15 +554,20 @@ float CalcDivisionError(float x, float y, float dx, float dy)
 
 
 /** */
-ValErrPair CalcDivision(ValErrPair ve1, ValErrPair ve2)
+ValErrPair CalcDivision(ValErrPair ve1, ValErrPair ve2, Double_t r12)
 { //{{{
    ValErrPair result(0, -1);
 
    if (ve1.first == 0 || ve2.first == 0) return result;
 
    result.first  = ve1.first / ve2.first;
-   result.second = result.first * sqrt( ve1.second*ve1.second/ve1.first/ve1.first +
-                                        ve2.second*ve2.second/ve2.first/ve2.first);
+   Double_t re1  = ve1.second/ve1.first;
+   Double_t re2  = ve2.second/ve2.first;
+   Double_t re   = sqrt(re1*re1 + re2*re2 - 2*re1*re2*r12);
+   result.second = re * result.first;
+
+   //result.second = result.first * sqrt( ve1.second*ve1.second/ve1.first/ve1.first +
+   //                                     ve2.second*ve2.second/ve2.first/ve2.first);
 
    return result;
 } //}}}

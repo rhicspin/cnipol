@@ -356,7 +356,7 @@ void        CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &d
 ValErrPair  CalcWeightedAvrgErr(const ValErrSet &valerrs);
 ValErrPair  CalcWeightedAvrgErr(const ValErrPair ve1, const ValErrPair ve2);
 float       CalcDivisionError(float x, float y, float dx, float dy);
-ValErrPair  CalcDivision(ValErrPair ve1, ValErrPair ve2);
+ValErrPair  CalcDivision(ValErrPair ve1, ValErrPair ve2, Double_t r12=0);
 
 float QuadErrorDiv(float x, float y, float dx, float dy);
 float QuadErrorSum(float dx, float dy);
