@@ -94,17 +94,18 @@ int polId     = -1;
 int main(int argc, char **argv)
 {
    const char polName[4][20] = {"BLUE-1", "YELLOW-1", "BLUE-2", "YELLOW-2"};
-   float data[1536];
-   int i, j, k, n;
+//   float data[1536];
+   int j, k, n;
+   unsigned int i;
    int St, nRecEvt;
    int measTime = -1;
    int iSend = 0;      // don't send by default
    int nbunch = 0;     // number of filled bunches
    int tlen, recRing=0;
    long delimtr;
-   long orbitNo, firstOrb, lastOrb;
+   unsigned orbitNo, firstOrb, lastOrb;
    int stepCh, tarWfdCh, maxSiCh;
-   int nStepCnt=0;
+   unsigned int nStepCnt=0;
    int fitRing;
 
    long startHLin, startHRot, startVLin, startVRot;
@@ -152,10 +153,10 @@ int main(int argc, char **argv)
 
    //      data structure pointers
    recordReadATStruct * ATPtr;
-   recordReadWaveStruct * wavePtr;
-   recordReadWave120Struct * wave120Ptr;
-   recordALLModeStruct * ALLPtr;
-   recordALLMode120Struct * ALL120Ptr;
+//   recordReadWaveStruct * wavePtr;
+//   recordReadWave120Struct * wave120Ptr;
+//   recordALLModeStruct * ALLPtr;
+//   recordALLMode120Struct * ALL120Ptr;
 
    memset(&poldat, 0, sizeof(poldat));
    memset(&rhic, 0, sizeof(rhic));
@@ -164,12 +165,12 @@ int main(int argc, char **argv)
    memset(&tocdev, 0, sizeof(tocdev));
    memset(&scalers, 0, sizeof(scalers));
 
-   for (i=0; i<sizeof(targID); i++) targID[i] = '\0';
+   memset(targID, 0, sizeof(targID));
    RootFile[0] = '\0';
 
    // get arguments
-   while ((i = getopt(argc, argv, "hd:f:o:p:")) != -1)
-       switch(i) {
+   while ((j = getopt(argc, argv, "hd:f:o:p:")) != -1)
+       switch(j) {
        case 'f':
            strncpy(InFile, optarg, sizeof(InFile));
            break;
@@ -226,9 +227,9 @@ int main(int argc, char **argv)
            poldat.statusS |= (STATUS_ERROR | ERR_INT);
            break;
        }
-       if (rec.header.len > BSIZE*sizeof(int)) {
+       if (rec.header.len - BSIZE*sizeof(int) > 0) {
            poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Very large record (%d).\n", rec.header.len);
+           printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
            i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
            if (feof(fin)) break;
            if (i != 0) {
@@ -260,7 +261,7 @@ int main(int argc, char **argv)
                poldat.statusS |= (STATUS_ERROR | ERR_INT);
                exit(-2);
            }
-           printf("EMIT-INFO : Begin of data set version=%d for ", rec.begin.version);
+           printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
            if (rec.header.type & REC_YELLOW) {
                printf("YELLOW");
                fitRing = 1;
@@ -278,7 +279,8 @@ int main(int argc, char **argv)
            tarWfdCh = rec.cfg.data.NumChannels-4; // first channel for target
            maxSiCh  = rec.cfg.data.NumChannels-4;
            //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-           if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
+//	The next line commented out for 2012 - we have separate blue and yellow, so maxSiCh + 1 - vert, maxSiCh + 2 - hor. 
+//           if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
            //ds
            //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
            //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
@@ -299,7 +301,7 @@ int main(int argc, char **argv)
                i += sizeof(subheadStruct) + nRecEvt*sizeof(ATStruct);
 
                if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                   printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
+                   printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
                    break;
                }
 
@@ -377,7 +379,7 @@ int main(int argc, char **argv)
 
    if (firstOrb < 0 || lastOrb <= 0 || lastOrb < firstOrb) {
        printf("EMIT-ERR : No target motion data were found.\n");
-       printf("firstOrb, lastOrb: %ld, %ld\n", firstOrb, lastOrb);
+       printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
        poldat.statusS |= 0x00000040;  // W-NODATA no data to analyze
        if (iSend) sendemit(devName);
        return 1;
@@ -401,7 +403,6 @@ int main(int argc, char **argv)
    hsrev->GetXaxis()->CenterTitle();
    hsrev->GetYaxis()->CenterTitle();
 
-   float derv;
    int midStepCnt = 0;
    int nderv = 0;
    int maxderv = 0;
@@ -409,7 +410,7 @@ int main(int argc, char **argv)
    // Find the maximum difference in adjacent revolution (orbit) numbers.
    // Reverse direction starts after the maximum after midStepCnt steps.
    // *** Skip the first 10 and last 10 steps to avoid spurious events. ***
-   for (i=9; i<nStepCnt-10; i++) {
+   for (i=9; i+10 < nStepCnt; i++) {
        xstep[i] = i;
        yrev[i] = vStepOrb[i];
        hsrev->SetBinContent(i, vStepOrb[i]);
@@ -420,7 +421,7 @@ int main(int argc, char **argv)
        }
    }
 
-   int nbins = midStepCnt + 1;
+   unsigned nbins = midStepCnt + 1;
    if (nbins > 200) nbins = 200;
    int delta = 3*midStepCnt/nbins;
    int nOrbs = (lastOrb - firstOrb)/2;
@@ -454,9 +455,9 @@ int main(int argc, char **argv)
    stepOrb = (int *)malloc((lastOrb+1)*sizeof(int));
    memset(stepOrb, 0, sizeof(stepOrb));
 
-   for (i=firstOrb; i<vStepOrb[midStepCnt]; i++) {
+   for (i=firstOrb; i < (unsigned) vStepOrb[midStepCnt]; i++) {
       for (j=0; j<=midStepCnt; j++) {
-         if (vStepOrb[j] >= i) {
+         if ((unsigned) vStepOrb[j] >= i) {
             stepOrb[i] = j;
             break;
          }
@@ -465,8 +466,8 @@ int main(int argc, char **argv)
 
    k = 2*(midStepCnt);
    for (i=vStepOrb[midStepCnt+1]; i<lastOrb; i++) {
-       for (j=midStepCnt+1; j<nStepCnt; j++) {
-           if (vStepOrb[j] >= i) {
+       for (j=midStepCnt+1; j<(signed)nStepCnt; j++) {
+           if ((unsigned) vStepOrb[j] >= i) {
                n = k - j;
                if (n >= 0) stepOrb[i] = n;
                break;
@@ -515,9 +516,9 @@ int main(int argc, char **argv)
            poldat.statusS |= (STATUS_ERROR | ERR_INT);
            break;
        }
-       if (rec.header.len > BSIZE*sizeof(int)) {
+       if (rec.header.len - BSIZE*sizeof(int) > 0) {
            poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Very large record (%d).\n", rec.header.len);
+           printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
            i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
            if (feof(fin)) break;
            if (i != 0) {
@@ -546,7 +547,7 @@ int main(int argc, char **argv)
                poldat.statusS |= (STATUS_ERROR | ERR_INT);
                exit(-2);
            }
-           printf("EMIT-INFO : Begin of data set version=%d for ", rec.begin.version);
+           printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
            if (rec.header.type & REC_YELLOW) {
                printf("YELLOW");
                fitRing = 1;
@@ -560,7 +561,7 @@ int main(int argc, char **argv)
            break;
 
        case REC_END:
-           printf("EMIT-INFO : End of data set at record %d : %s\n", rec.header.num, rec.end.comment);
+           printf("EMIT-INFO : End of data set at record %ld : %s\n", rec.header.num, rec.end.comment);
            break;
 
        case REC_POLADO:
@@ -593,7 +594,7 @@ int main(int argc, char **argv)
            sipar.trgmin    = rec.cfg.data.TrigMin;
            sipar.nsperchan = rec.cfg.data.WFDTUnit;
            k = 0;
-           for (i=0; i<rec.cfg.data.NumChannels; i++) {
+           for (i=0; i<(unsigned)rec.cfg.data.NumChannels; i++) {
                if (rec.cfg.data.chan[i].CamacN == 0) continue;
                sipar.t0[i]    = rec.cfg.data.chan[i].t0;
                sipar.ecoef[i] = rec.cfg.data.chan[i].ecoef;
@@ -621,7 +622,7 @@ int main(int argc, char **argv)
                nRecEvt = ATPtr->subhead.Events + 1;
                i += sizeof(subheadStruct) + nRecEvt*sizeof(ATStruct);
                if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                   printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
+                   printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
                    break;
                }
                if (checkSt(targID, St)) {
@@ -632,7 +633,7 @@ int main(int argc, char **argv)
                        atdata.b = ATPtr->data[j].b;
                        atdata.orbit = delimtr*512 + 2*ATPtr->data[j].rev + ATPtr->data[j].rev0;
                        if (St < maxSiCh && rhic.fillpat[atdata.b]) {    // data adc AND filled bunch
-                           if (atdata.orbit < firstOrb || atdata.orbit > lastOrb) { // Outside target moving range
+                           if ((unsigned) atdata.orbit < firstOrb || (unsigned) atdata.orbit > lastOrb) { // Outside target moving range
                                continue;
                            } else {
                                // Crude cuts on the data (for now = 3/3/09)...
@@ -674,7 +675,7 @@ int main(int argc, char **argv)
            break;
 
        default:        // skip any unknown records
-           printf("Unknown record %8.8X encountered in input data file\n", rec.header.type & REC_TYPEMASK);
+           printf("Unknown record %8.8lX encountered in input data file\n", rec.header.type & REC_TYPEMASK);
            break;
        } // switch
    } // for(;;)...
