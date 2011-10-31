@@ -1,12 +1,14 @@
 /********************************************************
  *	RHIC Polarimeter Daemon Program			*
  *	I. Alekseev and D. Svirida			*
- *		2001-2010				*
+ *		2001-2011				*
  * The code runs all the time waiting for the command	*
  * to start measurement. Takes care of two polarimeters *
  * of the same DAQ system. Uses script to run actual    *
  * measurement. The script must take the following      *
  * arguments: polarimeter_name command runId   		*
+ ********************************************************
+ * Changes for run 12 - "blue" and "yellow" again       *
  ********************************************************/
 
 #include <time.h>
@@ -28,10 +30,10 @@
 
 #define EXIT_BADSCRIPT	127
 
-char myName[2][20] = {"Upstream", "Downstream"};
-//char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
+char myName[2][20] = {"Blue", "Yellow"};
+//char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.yel1", "polarimeter.blu2", "polarimeter.yel2"};
 char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
-int  myDev[2][2] = {{0, 3}, {1, 2}};				// polCDEVName for Upstream/Downstream
+int  myDev[2][2] = {{0, 2}, {1, 3}};				// polCDEVName for Blue/Yellow
 
 FILE *LogFile;
 char LogFileName[256] = "/dev/stdout";
@@ -39,7 +41,7 @@ char ScriptName[256] = "rpolMeasure.sh";
 int iVerbose = 0;
 
 pid_t ChildPid = 0;
-int MyPolarimeter = -1;		// Upstream/downstream
+int MyPolarimeter = -1;		// Blue/Yellow
 int CurrentPolarimeter = -1;	// we can run one of two our polarimeters only 
 int Status = 0;			// Our error status
 int iStop  = 0;			// we should Stop
@@ -353,7 +355,7 @@ void child_handle(int sig)
 
 int main(int argc, char** argv)
 {
-    int i, irc;
+    int i;
     time_t itime, tm;
     
     // process comman line options
