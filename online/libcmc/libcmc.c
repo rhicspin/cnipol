@@ -132,7 +132,7 @@ int CMC_Add2Chain(CMC_chain *chain, long cmd)
 }
 
 /*	Print chain contents (for debugging)	*/
-void CMC_DumpChain(CMC_chain *ch, int wc, int rc, FILE *f)
+void CMC_DumpChain(CMC_chain *ch, size_t wc, size_t rc, FILE *f)
 {
     int i, l;
     fprintf(f, "\n\t\t============ CMC100 chain dump ============\n");
@@ -146,7 +146,7 @@ void CMC_DumpChain(CMC_chain *ch, int wc, int rc, FILE *f)
 	fprintf(f, "Write pointer = %d.\n", ch->wptr);
 	l = (ch->wptr > wc) ? wc : ch->wptr;
 	for(i=0; i<l; i++) {
-	    fprintf(f, "%8.8X ", ch->wdata[i]);
+	    fprintf(f, "%8.8lX ", ch->wdata[i]);
 	    if ((i & 7) == 7) fprintf(f, "\n");
 	}
 	if (i & 7) fprintf(f, "\n");
@@ -157,7 +157,7 @@ void CMC_DumpChain(CMC_chain *ch, int wc, int rc, FILE *f)
 	fprintf(f, "Read pointer = %d.\n", ch->rptr);
 	l = (ch->rptr > rc) ? rc : ch->rptr;
 	for(i=0; i<l; i++) {
-	    fprintf(f, "%8.8X ", ch->rdata[i]);
+	    fprintf(f, "%8.8lX ", ch->rdata[i]);
 	    if ((i & 7) == 7) fprintf(f, "\n");
 	}
 	if (i & 7) fprintf(f, "\n");
@@ -175,7 +175,7 @@ int CMC_CommitChain(CMC_chain *chain, int C)
     retval = write(__Crates[C], chain->wdata, sizeof(long)*chain->wptr);
     chain->wptr--;
 //    fflush(Crates[C]);
-    if (retval != sizeof(long)*(chain->wptr+1)) return -errno;     /* remove PKTEND */
+    if (retval != (int) (sizeof(long)*(chain->wptr+1))) return -errno;     /* remove PKTEND */
     /* Read the result (exactly one record) */
     retval = read(__Crates[C], chain->rdata, sizeof(long)*chain->rlen);
     if (retval <= 0) {
@@ -183,7 +183,7 @@ int CMC_CommitChain(CMC_chain *chain, int C)
 	return -errno;
     }
     retval /= sizeof(long);
-    chain->rptr = (retval > chain->rlen) ? chain->rlen : retval;
+    chain->rptr = (retval > (int) chain->rlen) ? chain->rlen : retval;
     return retval;
 }
 

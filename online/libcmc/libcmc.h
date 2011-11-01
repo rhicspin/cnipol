@@ -67,7 +67,7 @@ void CMC_ReleaseChain(CMC_chain *chain);
 void CMC_ResetChain(CMC_chain *chain);
 int CMC_CommitChain(CMC_chain *chain, int C);
 int CMC_Add2Chain(CMC_chain *chain, long cmd);
-void CMC_DumpChain(CMC_chain *ch, int wc, int rc, FILE *f); 
+void CMC_DumpChain(CMC_chain *ch, size_t wc, size_t rc, FILE *f); 
 long CMC_Single(int C, int N, int F, int A, long data);
 int CMC_Open(int C);
 void CMC_Close(int C);
