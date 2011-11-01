@@ -49,7 +49,7 @@ void resetOutInhibit(void);
 void clearVetoFlipFlop(void);
 void getJetStatus(unsigned short * data);
 int testJetVeto(void);
-static char * getJetStatusString(void);
+char * getJetStatusString(void);
 void writeJetStatus(void);
 int getJetBits(void);
 int testCarbTarg(void);

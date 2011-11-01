@@ -63,7 +63,7 @@ extern int iSig;
 extern int iDebug;
 
 long memReadCount[MAXCRATES][MAXSTATIONS][4];
-carbTargStat ctss = { -1, "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef"};
+carbTargStat ctss = { -1, {"Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef"}};
 
 // Send command chain to CMC CAMAC controller
 int RP_CommitChain(CMC_chain *ch, int C)
@@ -103,7 +103,7 @@ void setAlarm(float mTime)
     irc = setitimer(ITIMER_REAL, &t, NULL);
     if (irc != 0) {
 	fprintf(LogFile, "Error setting timer (%d.%d): %s.\n",
-	    t.it_value.tv_sec, t.it_value.tv_usec, 
+	    (int) t.it_value.tv_sec, (int) t.it_value.tv_usec, 
 	    strerror(errno));
 	polData.statusS |= WARN_INT;
     }
@@ -130,12 +130,11 @@ int readConfig (char * cfgname, int update)
 {
     char chanconf[512] = "";
     char pattern[129];
-    char inclfile[512] = "";
 
     struct knw { 
 	char name[40];	// Parameter name as in .ini file
 	char type[10];	// S(string), I(int), F(float), L(logical) or B:st:len(bit fields)
-	int len;	// max string length with type='S'
+	unsigned len;	// max string length with type='S'
 	void * ptr;	// address to be filled
 	char def[256];	// default string value
     } KnownWords[] = {
@@ -191,7 +190,8 @@ int readConfig (char * cfgname, int update)
     size_t ENVLEN, ENVLENC;
     char *buf, *bufc;
     struct stat finfo;
-    int i, j, k, ii, mask;
+    int j, k, ii, mask;
+    unsigned i;
     char * endptr;
     char str[512];
 
@@ -274,7 +274,7 @@ int readConfig (char * cfgname, int update)
 	    break;
 	  default :
 	    fprintf(LogFile,"RHICPOL-WARN : Unknown data type in config name %s: %c\n",
-		KnownWords[i].name, KnownWords[i].type);
+		KnownWords[i].name, (int) KnownWords[i].type);
 	    polData.statusS |= WARN_INT;
 	    break;
 	}
@@ -284,12 +284,12 @@ int readConfig (char * cfgname, int update)
     if (envz_get(ENVZ, ENVLEN, "Pattern")) {
 	memset(&Conf.Pattern, 0, sizeof(Conf.Pattern));
 	j = strlen(pattern);
-	if (j > sizeof(Conf.Pattern)) {
+	if (j > (int) sizeof(Conf.Pattern)) {
 	    fprintf(LogFile, "RHICPOL-WARN : Length of specified pol. pattern >%d\n", sizeof(Conf.Pattern));
 	    polData.statusS |= WARN_INT;
 	    j = sizeof(Conf.Pattern);
 	}
-	for (i=0; i<j; i++) switch (pattern[i]) {
+	for (i=0; i<(unsigned)j; i++) switch (pattern[i]) {
 	case '0' : 
 	    Conf.Pattern[i] = 3; 
 	    break;
@@ -316,44 +316,34 @@ int readConfig (char * cfgname, int update)
 	    SiConf = NULL; 
 	}
 	SiConf = (SiChanStruct *)malloc(Conf.NumChannels*sizeof(SiChanStruct));
-	for (i=0; i<Conf.NumChannels; i++) memcpy(&SiConf[i], &DefSiConf, sizeof(DefSiConf));
+	for (i=0; i<(unsigned)Conf.NumChannels; i++) memcpy(&SiConf[i], &DefSiConf, sizeof(DefSiConf));
     }
     
 //	Update all setttings for particular parameters
-    if (update) for (i=0;i<Conf.NumChannels;i++) {
-	if (buf=envz_get(ENVZ, ENVLEN, "WinBegin"))
-	    SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
-	if (buf=envz_get(ENVZ, ENVLEN, "WinEnd"))
-	    SiConf[i].Window.split.End = strtol(buf, NULL, 0);
-	if (buf=envz_get(ENVZ, ENVLEN, "ETCutW"))
-	    SiConf[i].ETCutW = strtod(buf, NULL);
-	if (buf=envz_get(ENVZ, ENVLEN, "IACutW"))
-	    SiConf[i].IACutW = strtod(buf, NULL);
-	if (buf=envz_get(ENVZ, ENVLEN, "TOFLength"))
-	    SiConf[i].TOFLength = strtod(buf, NULL);
+    if (update) for (i=0; i<(unsigned)Conf.NumChannels; i++) {
+	if ((buf = envz_get(ENVZ, ENVLEN, "WinBegin")))  SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
+	if ((buf = envz_get(ENVZ, ENVLEN, "WinEnd")))	 SiConf[i].Window.split.End = strtol(buf, NULL, 0);
+	if ((buf = envz_get(ENVZ, ENVLEN, "ETCutW")))	 SiConf[i].ETCutW = strtod(buf, NULL);
+	if ((buf = envz_get(ENVZ, ENVLEN, "IACutW")))	 SiConf[i].IACutW = strtod(buf, NULL);
+	if ((buf = envz_get(ENVZ, ENVLEN, "TOFLength"))) SiConf[i].TOFLength = strtod(buf, NULL);
     }
 
 //	Process channels
-    for (i=0; i < Conf.NumChannels; i++) {
+    for (i=0; i < (unsigned)Conf.NumChannels; i++) {
 	char sss[] = {"ChannelXX"};
 	sprintf(&sss[7], "%2.2d", i+1);
-	if (buf=envz_get(ENVZ, ENVLEN, sss)) {
+	if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
 	    SiConf[i].CrateN = strtol(buf, (char**)&buf, 10);
 	    buf++;
 	    SiConf[i].CamacN = strtol(buf, (char**)&buf, 10);
 	    buf++;
 	    SiConf[i].VirtexN = strtol(buf, (char**)&buf, 10);
 	    argz_create_sep(buf,' ', &ENVZC, &ENVLENC);
-	    if (buf=envz_get(ENVZC, ENVLENC, "WinBegin"))
-		SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
-	    if (buf=envz_get(ENVZC, ENVLENC, "WinEnd"))
-		SiConf[i].Window.split.End = strtol(buf, NULL, 0);
-	    if (buf=envz_get(ENVZC, ENVLENC, "ETCutW"))
-		SiConf[i].ETCutW = strtod(buf, NULL);
-	    if (buf=envz_get(ENVZC, ENVLENC, "IACutW"))
-		SiConf[i].IACutW = strtod(buf, NULL);
-	    if (buf=envz_get(ENVZC, ENVLENC, "TOFLength"))
-		SiConf[i].TOFLength = strtod(buf, NULL);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "WinBegin")))	SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "WinEnd")))	SiConf[i].Window.split.End = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "ETCutW")))	SiConf[i].ETCutW = strtod(buf, NULL);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "IACutW")))	SiConf[i].IACutW = strtod(buf, NULL);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "TOFLength")))	SiConf[i].TOFLength = strtod(buf, NULL);
 	    free(ENVZC);
 	} 
     }
@@ -365,24 +355,20 @@ int readConfig (char * cfgname, int update)
     for (i=0; i<8; i++) {
 	char sss[] = {"V124ChanX"};
 	sprintf(&sss[8], "%1.1d", i+1);
-	if (buf = envz_get(ENVZ, ENVLEN, sss)) {
+	if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
 	    V124.flags |= 1 << i;
 	    argz_create_sep(buf,' ', &ENVZC, &ENVLENC);
-	    if (buf = envz_get(ENVZC, ENVLENC, "Delay"))
-		V124.chan[i].fineDelay = strtol(buf, NULL, 0);
-	    if (buf = envz_get(ENVZC, ENVLENC, "Width"))
-		V124.chan[i].pulseWidth = strtol(buf, NULL, 0);
-	    if (buf = envz_get(ENVZC, ENVLENC, "Offset"))
-		V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
-	    if (buf = envz_get(ENVZC, ENVLENC, "Period"))
-		V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "Delay")))	V124.chan[i].fineDelay = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "Width")))	V124.chan[i].pulseWidth = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "Offset")))	V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
+	    if ((buf = envz_get(ENVZC, ENVLENC, "Period")))	V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
 	}
     }
 //	Process includes
     for (i=0; i<16;i++) {
 	char sss[] = {"IncludeXX"};
 	sprintf(&sss[7],"%2.2d",i);
-	if (buf=envz_get(ENVZ, ENVLEN, sss)) {
+	if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
 	    j = strcspn(buf, " \t\n\r");	// remove end scpaces (comments ?)
 	    if (j > 0) {
 		buf[j] = '\0';
@@ -415,11 +401,11 @@ int readConfig (char * cfgname, int update)
 	free(buf);
 	fclose(fconf);
 
-	for (i=0;i<Conf.NumChannels;i++) if (SiConf[i].CamacN != 0) {
+	for (i=0; i<(unsigned)Conf.NumChannels; i++) if (SiConf[i].CamacN != 0) {
 	    char sss[] = {"ChannelXX"};
 	    float *ptr = &SiConf[i].t0;
 	    sprintf(&sss[7],"%2.2d",i+1);
-	    if (bufc=envz_get(ENVZC, ENVLENC, sss)) {
+	    if ((bufc = envz_get(ENVZC, ENVLENC, sss))) {
 		for (j=0, k=0; j < CALIB_CONSTANTS; j++) {
 		    if (bufc == NULL) k++;
 		    ptr[j] = strtod(bufc, (char **)&bufc);
@@ -516,9 +502,9 @@ int CheckConfig() {
 	ETLUTNames[i], IALUTNames[Conf.IALookUp]);
     fprintf(LogFile,"RHICPOL-INFO : Polarization pattern found :\n");
     fprintf(LogFile," Bunches 1-60   : ");
-    for (i=0;i<60;i++) fprintf(LogFile,"%c", Pat[Conf.Pattern[i]]);
+    for (i=0;i<60;i++) fprintf(LogFile,"%c", Pat[(int)Conf.Pattern[i]]);
     fprintf(LogFile,"\n Bunches 61-120 : ");
-    for (;i<120;i++) fprintf(LogFile,"%c", Pat[Conf.Pattern[i]]);
+    for (;i<120;i++) fprintf(LogFile,"%c", Pat[(int)Conf.Pattern[i]]);
     fprintf(LogFile,"\n");
     if (NoADO == 0) {
 	if (V124.flags & 0x8000) fprintf(LogFile, "RHICPOL-INFO : Setting V124 positionDelay = %d\n", V124.positionDelay);
@@ -613,7 +599,7 @@ int CheckConfig() {
 
 void CreateLookup(float tshift)
 {
-    int i, j, k;
+    int i, j;
     int iAmin, iAmax;
     int iTmin, iTmax;
     float tof;
@@ -702,7 +688,7 @@ int polWrite(recordHeaderStruct *header, long *data)
     header->num = dataNum++;
     irc = fwrite(header, sizeof(recordHeaderStruct), 1, OutFile);
     if (irc != 1) {
-	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (header) rec=%8.8X: %s.\n",
+	fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (header) rec=%8.8lX: %s.\n",
 	    header->type, strerror(errno));
 	polData.statusS |= (STATUS_ERROR | ERR_INT);
 	fclose(OutFile);
@@ -713,7 +699,7 @@ int polWrite(recordHeaderStruct *header, long *data)
     if (data != NULL && header->len != sizeof(recordHeaderStruct)) {
        irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
        if (irc != 1) {
-           fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8X: %s.\n",
+           fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8lX: %s.\n",
                header->type, strerror(errno));
            polData.statusS |= (STATUS_ERROR | ERR_INT);
            fclose(OutFile);
@@ -830,7 +816,6 @@ void setInhibit(void)
 
 void resetOutInhibit(void)
 {
-    int k;
     if (Conf.CrOut < 0 || Crate[Conf.CrOut] < 0) return;
     OutRegBits &= ~OUT_INHIBIT;
     CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
@@ -1080,7 +1065,7 @@ int initWFDs(void)
 
 void fastInitWFDs(int clr_hist)
 {
-    int cr, i, j;
+    int cr, i;
     CMC_chain *ch;
     ch = CMC_AllocateChain(0, 0);
     for (cr=0; cr<MAXCRATES; cr++) if (CrateRequired[cr]) {
@@ -1130,7 +1115,6 @@ void initScalers(void)
 
 void getJetStatus(unsigned short * data)
 {
-    int i;    
     CMC_Single(Crate[Conf.CrIn], Conf.NIn, 16, 0, JET_VETO | JET_PLUS | JET_MINUS); 	// Set mask
     CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);			// reset previous state
     data[0] = CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);		// read qand reset
@@ -1145,7 +1129,7 @@ int testJetVeto(void)
     return (data[0] & JET_VETO) ? 1 : 0;
 }
 
-static char *getJetStatusString(void)
+char *getJetStatusString(void)
 {
     unsigned short data[3];
     static char statuses[][10] = {"NONE", "PLUS", "MINUS", "ZERO"};
@@ -1262,14 +1246,15 @@ void writeSubrun(int n)
 
 int checkChainResult(CMC_chain *ch, int cr)
 {
-    int i, err, mask, val;
-    
+    int err, mask, val;
+    unsigned i;
+
     mask = CMC_CMASK + CMC_QMASK + CMC_XMASK;
     val = (cr << 28) + CMC_QMASK + CMC_XMASK;
     err = 0;
     for (i=0; i<ch->rptr; i++) if ((ch->rdata[i] & mask) != val) {
 	err++;
-	if (iDebug > 200) fprintf(LogFile, "RHICPOL-ERROR : No Q/X/wrong crate number (%d) @%d: %8.8X.\n",
+	if (iDebug > 200) fprintf(LogFile, "RHICPOL-ERROR : No Q/X/wrong crate number (%d) @%d: %8.8lX.\n",
 	    cr, i, ch->rdata[i]);
     }
     return err;
@@ -1325,7 +1310,7 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 	    for (kk = 0; kk < 16; kk += 2) {
 		if ((ch->rdata[kk+k+ii] & 0xF0000) != kk*0x10000 || 
 		    (ch->rdata[kk+k+ii+1] & 0xF0000) != (kk+1)*0x10000) {
-		    fprintf(LogFile, "\nRHICPOL-WARN: Wrong dedicated scalers readout at %d.%d.%d@%d: %8.8X %8.8X\n",
+		    fprintf(LogFile, "\nRHICPOL-WARN: Wrong dedicated scalers readout at %d.%d.%d@%d: %8.8lX %8.8lX\n",
 			cr, i, j+1, kk, ch->rdata[kk+k+ii], ch->rdata[kk+k+ii+1]);
 		} else {
 		    array[kk/2] = (ch->rdata[kk+k+ii] & 0xFFFF) + ((ch->rdata[kk+k+ii+1] & 0xFFFF) << 16);
@@ -1349,11 +1334,10 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
 
 int getEvents(int Number)
 {
-    int Cnt, i, j, k, l, lCnt, l10Cnt, l10Val, l10;
+    int Cnt, lCnt, l10Cnt, l10Val, l10;
     double t, t0, tlast;
     recordHeaderStruct header;
     int forseWrite = 0;
-    int sc;
     struct timeval tv;
     long *targetHistory;
     long  targetHistoryLen;
@@ -1529,7 +1513,7 @@ int getEvents(int Number)
 
 void readWFD()
 {
-    int i, j, k, N, cr, ii;
+    int i, j, k, cr, ii;
     recordWFDV8ArrayStruct rec;
     int cnt=0, cnt1=0;
     CMC_chain *ch;
@@ -1617,9 +1601,10 @@ typedef enum {REC_NONE, REC_DATA, REC_DELIM} MEM_REC_TYPE;
 
 void *readThread(void *arg)
 {
-    int i, j, l, rpt;
-    unsigned len;
-    int Vn, tlen, err;
+    int i, j, rpt;
+    unsigned l, len;
+    int Vn, tlen;
+    unsigned err;
     MEM_REC_TYPE type;
     CMC_chain *ch;
     unsigned short *bf[4];
@@ -1746,7 +1731,7 @@ void *readThread(void *arg)
 		case REC_NONE:
 		    if ((w & 0x3F3F) != (Conf.CSR.reg & 0x3F3F)) {
 			if (iDebug > 200) fprintf(LogFile, 
-			    "RHICPOL-ERR : WFD %d.%d CSR %4.4X found @ %X (EXP: %4.4X)\n",
+			    "RHICPOL-ERR : WFD %d.%d CSR %4.4X found @ %X (EXP: %4.4lX)\n",
 			    cr, i, w, 2*j, Conf.CSR.reg);
 			err++;
 			continue;
@@ -1879,7 +1864,7 @@ void readMemory()
 	    GrandTotal, getJetStatusString());
 	fprintf(LogFile, "Events in the last memory buffer:\n");
 	for(i=0; i<Conf.NumChannels; i++) {
-	    fprintf(LogFile, "Si%2d:%7d ", i+1, (SiConf[i].CrateN < 0) ? 0 :
+	    fprintf(LogFile, "Si%2d:%7ld ", i+1, (SiConf[i].CrateN < 0) ? 0 :
 		memReadCount[SiConf[i].CrateN][SiConf[i].CamacN][SiConf[i].VirtexN-1]);
 	    if ((i%6) == 5) fprintf(LogFile, "\n");
 	}

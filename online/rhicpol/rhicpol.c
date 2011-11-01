@@ -93,7 +93,6 @@ int main(int argc, char **argv)
     char comment[512] = "RHIC Polarimeter Run";
     char workdir[512];
     int iHelp = 0;
-    int iNotify = 0;
     int iHistOnly = 0;	
     int i, j, k, ev;
     char * buf;
