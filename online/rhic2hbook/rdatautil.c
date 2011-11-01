@@ -29,7 +29,7 @@ void readandfill_(int* subrun);
 //
 //      fortran commons
 //
-struct {
+struct SIPAR_STRUCT {
     int idiv;           // divider
     float nsperchan;    // ns, WFD time unit, twice LSB of time measurement
     float emin;         // keV
@@ -42,7 +42,7 @@ struct {
 } sipar_;
 
 //      common/runpars/ intp, iraw, iproc, ilsas, trigmin, ichanntp(96)
-struct {
+struct RUNPARS_STRUCT {
     int intp;
     int iraw;
     int iproc;
@@ -53,7 +53,7 @@ struct {
 } runpars_;
 
 //      Common /atdata/ (for n-tuple)
-struct {
+struct ATDATA_STRUCT {
     float a;    // keV
     float t;    // ns
     float tmax; // ns
@@ -65,7 +65,7 @@ struct {
 } atdata_;
 
 //      Common /atraw/ (for n-tuple)
-struct {
+struct ATRAW_STRUCT {
     long ia;
     long it;
     long itmax;
@@ -76,12 +76,12 @@ struct {
     long ijet;  // jet polarization (0-3)
 } atraw_;
 
-struct {
+struct QUEST_STRUCT {
     int iquest[100];
 } quest_;
 
 //      Common /rhic/
-struct {
+struct RHIC_STRUCT {
     int fillpat[120];
     int polpat[120];
 } rhic_;
@@ -155,7 +155,8 @@ void readandfill_(int* subrun)
 
     float data[1536];
     unsigned char waveform[100];
-    int i, j, k, l, m, n, cnt=0, cnt1=0;
+    int j, k, l, m, n, cnt=0, cnt1=0;
+    unsigned i;
     int ntcnt = 0;
     int recRing;
     long s1, s2, s3, s4;
@@ -175,9 +176,9 @@ void readandfill_(int* subrun)
             poldat_.statusS |= (STATUS_ERROR | ERR_INT);
             break;
         }
-        if (rec.header.len > BSIZE*sizeof(int)) {
+        if (rec.header.len - BSIZE*sizeof(int) > 0) {
             poldat_.statusS |= WARN_INT;
-            printf("R2HBOOK-WARN : Very large record (%d).\n", rec.header.len);
+            printf("R2HBOOK-WARN : Very large record (%ld).\n", rec.header.len);
             i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct),
                 SEEK_CUR);
             if (feof(fin)) break;
@@ -188,7 +189,7 @@ void readandfill_(int* subrun)
             }
             continue;
         }
-        if (rec.header.len > sizeof(recordHeaderStruct)) {
+        if (rec.header.len - sizeof(recordHeaderStruct) > 0) {
            i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin);
            if (feof(fin)) {
                poldat_.statusS |= WARN_INT;
@@ -223,7 +224,7 @@ void readandfill_(int* subrun)
                poldat_.statusS |= (STATUS_ERROR | ERR_INT);
                exit(-2);
            }
-           printf("R2HBOOK-INFO : Begin of data set version=%d for ", rec.begin.version);
+           printf("R2HBOOK-INFO : Begin of data set version=%ld for ", rec.begin.version);
            if (rec.header.type & REC_YELLOW) {
                printf("YELLOW");
            } else if (rec.header.type & REC_BLUE) {
@@ -236,7 +237,7 @@ void readandfill_(int* subrun)
         case REC_SUBRUN:
             break;
         case REC_END:
-            printf("R2HBOOK-INFO : End of data set at record %d : %s\n",
+            printf("R2HBOOK-INFO : End of data set at record %ld : %s\n",
                 rec.header.num, rec.end.comment);
             break;
         case REC_POLADO:
@@ -276,7 +277,7 @@ void readandfill_(int* subrun)
             sipar_.trgmin    = rec.cfg.data.TrigMin;
             sipar_.nsperchan = rec.cfg.data.WFDTUnit;
             k = 0;
-            for (i=0; i<rec.cfg.data.NumChannels; i++) {
+            for (i=0; i < (unsigned)rec.cfg.data.NumChannels; i++) {
                 if (rec.cfg.data.chan[i].CamacN == 0) continue;
                 sipar_.ecoef[i] = rec.cfg.data.chan[i].ecoef;
                 sipar_.edead[i] = rec.cfg.data.chan[i].edead;
@@ -317,7 +318,7 @@ void readandfill_(int* subrun)
                     l = ALL120Ptr->subhead.Events + 1;
                     i += sizeof(subheadStruct) + l*sizeof(ALLMode120Struct);
                     if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                        printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n",
+                        printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                             rec.header.num, rec.header.len, k+1, l);
                         break;
                     }
@@ -357,7 +358,7 @@ void readandfill_(int* subrun)
                     l = ALLPtr->subhead.Events + 1;
                     i += sizeof(subheadStruct) + l*sizeof(ALLModeStruct);
                     if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                        printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n",
+                        printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                             rec.header.num, rec.header.len, k+1, l);
                         break;
                     }
@@ -403,7 +404,7 @@ void readandfill_(int* subrun)
                     l = wave120Ptr->subhead.Events + 1;
                     i += sizeof(subheadStruct) + l*sizeof(waveform120Struct);
                     if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                        printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n",
+                        printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                             rec.header.num, rec.header.len, k+1, l);
                         break;
                     }
@@ -444,7 +445,7 @@ void readandfill_(int* subrun)
                     l = wavePtr->subhead.Events + 1;
                     i += sizeof(subheadStruct) + l*sizeof(waveformStruct);
                     if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                        printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n",
+                        printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                             rec.header.num, rec.header.len, k+1, l);
                         break;
                     }
@@ -490,7 +491,7 @@ void readandfill_(int* subrun)
                 l = ATPtr->subhead.Events + 1;
                 i += sizeof(subheadStruct) + l*sizeof(ATStruct);
                 if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                    printf("Broken record %d (%d bytes). Last subhead: siNum=%d  Events=%d\n",
+                    printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                         rec.header.num, rec.header.len, k+1, l);
                     break;
                 }
@@ -545,7 +546,7 @@ void readandfill_(int* subrun)
                 HPAKAD(700 + j, &data[512]);
                 HPAKAD(1700 + j, &data[512]);
             }
-            printf("Si%02d : %12d %12d %12d %12d %12d    %12d  %12d  %12d  %12d",
+            printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12ld  %12ld  %12ld  %12ld",
                 rec.wfd.siNum + 1, rec.wfd.scalers[0], rec.wfd.scalers[1],
                 rec.wfd.scalers[2], rec.wfd.scalers[3], rec.wfd.scalers[4],
                 s1, s2, s3, s4);
@@ -590,7 +591,7 @@ void readandfill_(int* subrun)
         case REC_WCMADO:
             break;
         default:        // skip any unknown records
-            printf("Unknown record %8.8X encountered in input data file\n",
+            printf("Unknown record %8.8lX encountered in input data file\n",
                 rec.header.type & REC_TYPEMASK);
             break;
         }
