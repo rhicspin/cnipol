@@ -4,12 +4,13 @@
  *	D.Svirida & I.Alekseev @itep.ru, 2005-10			*
  *	file: libcmc.c							*
  ************************************************************************/
+#include <ctype.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
-#include <signal.h>
 #include <sys/time.h>
+#include <time.h>
 
 #define min(a,b) ((a) < (b)) ? (a) : (b)
 
@@ -802,10 +803,8 @@ void RunTest(void) {
     double diffw, diffr;
     double s[sizeof(tests)/sizeof(tests[0])][2];
     double s2[sizeof(tests)/sizeof(tests[0])][2];
-    int (*TestWrite[])() = {&LUTWrite, &DirectWrite, &IndirectWrite, 
-	&GCCWrite, &EventWrite};
-    int (*TestRead[])() = {&LUTRead, &DirectRead, &IndirectRead, 
-	&GCCRead, &EventRead};
+    int (*TestWrite[])(void) = {&LUTWrite, &DirectWrite, &IndirectWrite, &GCCWrite, &EventWrite};
+    int (*TestRead[])(int *) = {&LUTRead, &DirectRead, &IndirectRead, &GCCRead, &EventRead};
 
     if (WD != NULL) free(WD);
     if (RD != NULL) free(RD);

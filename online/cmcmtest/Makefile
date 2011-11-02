@@ -1,3 +1,4 @@
+CC=g++
 cmcmtest : cmcmtest.o ../libcmc/libcmc.o
 
 clean:
