@@ -359,11 +359,13 @@ int main(int argc, char** argv)
     time_t itime, tm;
     
     // process comman line options
-    while ((i = getopt(argc, argv, "UDhvl:r:")) != -1) switch(i) {
-    case 'U' :
+    while ((i = getopt(argc, argv, "UDBYhvl:r:")) != -1) switch(i) {
+    case 'U' :	// leaving U just in case...
+    case 'B' :
 	MyPolarimeter = 0;
 	break;
-    case 'D' :
+    case 'D' :	// leaving D just in case...
+    case 'Y' :
 	MyPolarimeter = 1;
 	break;
     case 'v' : 
@@ -372,8 +374,8 @@ int main(int argc, char** argv)
     case 'h' :
     case '?' :
 	printf( "\n\n\t\tPolarimeter daemon\n"
-	        "Usage: rpoldaemon -U|D [-options]. Possible options are:\n"
-                "U/D          - Upstream/Downstream DAQ;\n"
+	        "Usage: rpoldaemon -B|Y [-options]. Possible options are:\n"
+                "B/Y          - Blue/Yellow DAQ;\n"
 		"h,?          - print this message and exit;\n"
 		"r [filename] - script to run for polarization measurement;\n"
 		"l [filename] - log file name;\n"
