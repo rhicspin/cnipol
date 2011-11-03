@@ -8,20 +8,15 @@ HOSTNAME=`hostname -s`
 
 if [ $HOSTNAME = "bluepc" ]; then
 	#echo $HOSTNAME
-	./rpoldaemon.sh -U >>/dev/null &
+	./rpoldaemon.sh -B >>/dev/null &
 	exit $status
 else
-	if [ $HOSTNAME = "insideip12" ]; then
-		#echo $HOSTNAME
-		./rpoldaemon.sh -D >>/dev/null &
-		exit $status
-	else
-		if [ $HOSTNAME = "yellowpc" ]; then
+	if [ $HOSTNAME = "yellowpc" ]; then
 			#echo $HOSTNAME
-			./rpoldaemon.sh -D >>/dev/null &
+			./rpoldaemon.sh -Y >>/dev/null &
 			exit $status
 		else
-			echo "Host not recognized. Start script on either bluepc, insideip12, or yellowpc"
+			echo "Host not recognized. Start script on either bluepc or  yellowpc"
 		fi
 	fi
 fi
