@@ -3,6 +3,7 @@
  *	D.Svirida & I.Alekseev @itep.ru, 2005-10			*
  *	file: burcmc.c							*
  ************************************************************************/
+#include <ctype.h>
 #include <time.h>
 #include <stdio.h>
 #include <signal.h>

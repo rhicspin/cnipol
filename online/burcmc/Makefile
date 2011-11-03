@@ -1,3 +1,4 @@
+CC=g++
 burcmc : burcmc.o ../libcmc/libcmc.o
 
 clean:
