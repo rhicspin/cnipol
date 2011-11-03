@@ -176,7 +176,7 @@ void readandfill_(int* subrun)
             poldat_.statusS |= (STATUS_ERROR | ERR_INT);
             break;
         }
-        if (rec.header.len - BSIZE*sizeof(int) > 0) {
+        if ((unsigned)rec.header.len > BSIZE*sizeof(int)) {
             poldat_.statusS |= WARN_INT;
             printf("R2HBOOK-WARN : Very large record (%ld).\n", rec.header.len);
             i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct),
