@@ -227,7 +227,7 @@ int main(int argc, char **argv)
            poldat.statusS |= (STATUS_ERROR | ERR_INT);
            break;
        }
-       if (rec.header.len - BSIZE*sizeof(int) > 0) {
+       if ((unsigned)rec.header.len > BSIZE*sizeof(int)) {
            poldat.statusS |= WARN_INT;
            printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
            i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
@@ -516,7 +516,7 @@ int main(int argc, char **argv)
            poldat.statusS |= (STATUS_ERROR | ERR_INT);
            break;
        }
-       if (rec.header.len - BSIZE*sizeof(int) > 0) {
+       if ((unsigned)rec.header.len > BSIZE*sizeof(int)) {
            poldat.statusS |= WARN_INT;
            printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
            i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
