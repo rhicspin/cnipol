@@ -1,6 +1,7 @@
 #!/bin/csh 
 
 cd /usr/local/polarim/bin
-./rpolADO.sh -b &
+# this is wrong - we need to start server depending on our IP
+./rpoldaemon.sh -B &
 
 exit $status 
