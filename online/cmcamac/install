@@ -5,7 +5,7 @@
 # to install a driver module from the current directory
 #
 
-TARGET_DIR=/lib/modules/`uname -r`/camac
+TARGET_DIR=/lib/modules/`uname -r`/extra
 
 if [ `id -u` == "0" ] ; then
 #    make INSTALL_MOD_DIR=camac -C /lib/modules/`uname -r`/build M=`pwd` modules_install
