@@ -49,7 +49,9 @@
 #define CMC_CTL_RESET	_IO('Z', 0)
 #define CMC_CTL_R1	_IO('Z', 1)
 
+#ifndef BUS_ID_SIZE
 #define BUS_ID_SIZE	32
+#endif
 
 #ifndef info
 #define info(format, arg...)					\
