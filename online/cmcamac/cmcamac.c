@@ -15,7 +15,6 @@
  * needed anymore.
  *
  */
-//#include <linux/autoconf.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/smp_lock.h>
@@ -28,8 +27,8 @@
 #include <linux/usb.h>
 #include <linux/ioctl.h>
 
-#define CMCSLEEP	(5*HZ)
-#define CMCTMO		(HZ/5)
+#define CMCSLEEP	5000		// 5 sec.
+#define CMCTMO		200		// 0.2 sec
 #define CMCBLMPLY	8
 /*	Our endpoints		*/	
 #define CMC_CHAIN_OUT	0x02
@@ -520,6 +519,10 @@ static int cmcamac_probe(struct usb_interface *interface, const struct usb_devic
 /*		Sleep here, but not at open. Don't know why we need this.	*/
 	msleep(CMCSLEEP);
 	i = cmcamac_getnumber(dev);
+	if (i < 0) {	// Let's try again. Otherwise we always fail at power on.
+	    msleep(10*CMCSLEEP);
+	    i = cmcamac_getnumber(dev);	// Let's try again. Otherwise we always fail at power on.
+	}
 	if (i < 0) {
 		err("Unable to read crate number. May be crate is offline.");
 		retval = i;
