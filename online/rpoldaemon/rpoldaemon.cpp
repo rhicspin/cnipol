@@ -31,7 +31,6 @@
 #define EXIT_BADSCRIPT	127
 
 char myName[2][20] = {"Blue", "Yellow"};
-//char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.yel1", "polarimeter.blu2", "polarimeter.yel2"};
 char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
 int  myDev[2][2] = {{0, 2}, {1, 3}};				// polCDEVName for Blue/Yellow
 
@@ -197,7 +196,7 @@ void StartMeasurement(int polarim, char *cmd)
 
     // first get necessary parameters - we need to create run number
     cdevDevice & pol = cdevDevice::attachRef(polCDEVName[polarim]);	// the source of the old run number
-    cdevDevice & spec = cdevDevice::attachRef(specCDEVName[polarim/2]);	// the source of the fill number
+    cdevDevice & spec = cdevDevice::attachRef(specCDEVName[MyPolarimeter]);// the source of the fill number
     
     DEVSEND(pol, "get runIdS", NULL, &data, LogFile, irc);
     data.get("value", &runId);
