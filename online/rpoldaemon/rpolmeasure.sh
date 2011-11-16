@@ -1,6 +1,6 @@
 #!/bin/bash
 # RHIC pC polarimeters main script
-#	I. Alekseev & D. Svirida 2000-2010
+#	I. Alekseev & D. Svirida 2000-2011
 # This script runs real measurement, not supposed to be run manually.
 # Must be run with 3 argumets:
 # $1 - polarimeter CDEV name: like polarimeter.yel1
@@ -55,6 +55,7 @@ DATA=${DATADIR}/${RUN}.data
 LOG=${LOGDIR}/${RUN}.log
 ALOG=${LOGDIR}/an${RUN}.log
 PSFILE=${LOGDIR}/${RUN}.ps
+PSFILEE=${LOGDIR}/${RUN}_E.ps
 ROOTFILE=${ROOTDIR}/${RUN}.root
 HBOOKFILE=${HBOOKDIR}/${RUN}.hbook
 ERRLOG=${LOGDIR}/${POLARIM}-err.log
@@ -121,6 +122,11 @@ case $MODE in
 	    pawX11 -n -b $MACDIR/onliplot.kumac >> $ALOG 2>&1 
 	    echo "Starting sendpict..." >> $ALOG
 	    mysendpict plotData $PSFILE >> $ALOG 2>&1
+#		We will also leave in the background the process to analyze this measurement for bunch per bunch emittance
+    	    ( 	echo "Starting emitscan..." >> $ALOG; \
+    		$EMITCMD -f $DATA -o $ROOTFILE -p $PSFILEE -d $POLARIM >> $ALOG 2>&1 ; \
+		echo "Starting sendpict 2 ..." >> $ALOG; \
+		mysendpict emitPlot $PSFILEE >> $ALOG 2>&1 ) &
 	fi
 	;;
     Test* )
