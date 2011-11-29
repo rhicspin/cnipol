@@ -48,6 +48,7 @@ typedef std::map<EPolarimeterId, ValErrPair>   PolId2ValErrMap;
 typedef PolId2ValErrMap::iterator              PolId2ValErrMapIter;
 typedef PolId2ValErrMap::const_iterator        PolId2ValErrMapConstIter;
 
+// Beam id
 typedef std::map<EBeamId,        ValErrSet>    BeamId2ValErrSet;
 typedef BeamId2ValErrSet::iterator             BeamId2ValErrSetIter;
 typedef BeamId2ValErrSet::const_iterator       BeamId2ValErrSetConstIter;
@@ -63,6 +64,23 @@ typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
 typedef std::map<std::string, EBeamId>         String2BeamIdMap;
 typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
 
+// Ring id
+typedef std::map<ERingId,        ValErrSet>    RingId2ValErrSet;
+typedef RingId2ValErrSet::iterator             RingId2ValErrSetIter;
+typedef RingId2ValErrSet::const_iterator       RingId2ValErrSetConstIter;
+typedef std::map<ERingId,        ValErrPair>   RingId2ValErrMap;
+typedef RingId2ValErrMap::iterator             RingId2ValErrMapIter;
+typedef RingId2ValErrMap::const_iterator       RingId2ValErrMapConstIter;
+
+typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
+typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
+typedef std::map<ERingId, TgtOrient2ValErrMap> RingId2TgtOrient2ValErrMap;
+typedef RingId2TgtOrient2ValErrMap::iterator   RingId2TgtOrient2ValErrMapIter;
+
+typedef std::map<std::string, ERingId>         String2RingIdMap;
+typedef String2RingIdMap::iterator             String2RingIdMapIter;
+
+//
 typedef std::map<std::string, ETargetOrient>   String2TgtOrientMap;
 typedef String2TgtOrientMap::iterator          String2TgtOrientMapIter;
 

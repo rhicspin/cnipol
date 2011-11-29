@@ -43,6 +43,9 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fMeasTypes(),
    fBeams.insert(kBLUE_BEAM);
    fBeams.insert(kYELLOW_BEAM);
 
+   fRings.insert(kBLUE_RING);
+   fRings.insert(kYELLOW_RING);
+
    fBeamEnergies.insert(kINJECTION);
    fBeamEnergies.insert(kBEAM_ENERGY_100);
    fBeamEnergies.insert(kFLATTOP);
@@ -126,6 +129,20 @@ string RunConfig::AsString(EBeamId beamId)
 
 
 /** */
+string RunConfig::AsString(ERingId ringId)
+{ //{{{
+   switch (ringId) {
+   case kBLUE_RING:
+	   return "BLU";
+   case kYELLOW_RING:
+	   return "YEL";
+   default:
+      return "UNK";
+   }
+} //}}}
+
+
+/** */
 string RunConfig::AsString(EBeamEnergy beamEnergy)
 { //{{{
    switch (beamEnergy) {
@@ -156,6 +173,7 @@ string RunConfig::AsString(ESpinState spinState)
    }
 } //}}}
 
+
 /** */
 UShort_t RunConfig::AsIndex(ESpinState spinState)
 { //{{{
@@ -168,6 +186,34 @@ UShort_t RunConfig::AsIndex(ESpinState spinState)
 	   return 0;
    default:
       return 3;
+   }
+} //}}}
+
+
+/** */
+Color_t RunConfig::AsColor(EBeamId beamId)
+{ //{{{
+   switch (beamId) {
+   case kBLUE_BEAM:
+	   return kBlue-4;
+   case kYELLOW_BEAM:
+	   return kOrange;
+   default:
+      return kBlack;
+   }
+} //}}}
+
+
+/** */
+Color_t RunConfig::AsColor(ERingId ringId)
+{ //{{{
+   switch (ringId) {
+   case kBLUE_RING:
+	   return kBlue-4;
+   case kYELLOW_RING:
+	   return kOrange;
+   default:
+      return kBlack;
    }
 } //}}}
 
@@ -218,6 +264,24 @@ EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
 	   return kYELLOW_BEAM;
    default:
       return kUNKNOWN_BEAM;
+   }
+} //}}}
+
+
+/** */
+ERingId RunConfig::GetRingId(EPolarimeterId polId)
+{ //{{{
+   switch (polId) {
+   case kB1U:
+	   return kBLUE_RING;
+   case kY1D:
+	   return kYELLOW_RING;
+   case kB2D:
+	   return kBLUE_RING;
+   case kY2U:
+	   return kYELLOW_RING;
+   default:
+      return kUNKNOWN_RING;
    }
 } //}}}
 

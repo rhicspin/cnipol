@@ -124,7 +124,7 @@ public:
    UShort_t        GetNumEmptyBunches() const;
    Bool_t          IsEmptyBunch(UShort_t bid) const;
    ESpinState      GetBunchSpin(UShort_t bid) const;
-   EBeamId         GetBeamId() const;
+   ERingId         GetRingId() const;
    ETargetOrient   GetTargetOrient() const;
 
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
