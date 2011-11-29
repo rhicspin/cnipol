@@ -42,13 +42,16 @@ public:
    ~MAsymRunHists();
 
    void BookHists(std::string sid="");
-   void BookHistsPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE);
+   void BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE);
+   void BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamEnergy beamE);
    //void BookHistsPolarimeterGlobRslt(DrawObjContainer &oc, EPolarimeterId polId);
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(EventConfig &rc);
    void Fill(EventConfig &rc, DrawObjContainer &oc);
    void PostFill();
    void PostFill(AnaGlobResult &agr);
+   void PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIter iafr, EPolarimeterId polId, EBeamEnergy beamE);
+   void PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter afr, ERingId ringId, EBeamEnergy beamE);
    void Print(const Option_t* opt="") const;
    void UpdateLimits();
 	void SetMinMaxFill(UInt_t fillId);

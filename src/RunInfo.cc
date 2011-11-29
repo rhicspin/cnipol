@@ -710,15 +710,15 @@ ESpinState RunInfo::GetBunchSpin(UShort_t bid) const
 
 
 /** */
-EBeamId RunInfo::GetBeamId() const
+ERingId RunInfo::GetRingId() const
 { //{{{
    switch (fPolBeam) {
    case 1:
-	   return kYELLOW_BEAM;
+	   return kYELLOW_RING;
    case 2:
-	   return kBLUE_BEAM;
+	   return kBLUE_RING;
    default:
-      return kUNKNOWN_BEAM;
+      return kUNKNOWN_RING;
    }
 } //}}}
 
