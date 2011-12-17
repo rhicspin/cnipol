@@ -52,7 +52,7 @@ class RunSelector {
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
       } else {
-         $rp = 11; // run 11 beign default
+         $rp = 12; // run 11 is default
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       }
 
@@ -122,7 +122,7 @@ class RunSelector {
             <tr>
               <td colspan=4 class=padding2><b>Run Period:</b>\n";
 
-      $this->HtmlSelectField($RUN_PERIOD, "rp", "11");
+      $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
 
       echo "<tr>
               <td colspan=4 class=padding2><b>Run:</b>
