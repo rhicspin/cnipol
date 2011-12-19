@@ -17,7 +17,6 @@ fi
 export MYSQL_INCLUDE_DIR=/usr/include/mysql
 export MYSQL_LIB_DIR=/usr/lib/mysql
 
-#export MYSQLPP_DIR=
 export MYSQLPP_INCLUDE_DIR=/usr/src/redhat/SOURCES/mysql++-3.0.9/lib
 export MYSQLPP_LIB_DIR=/usr/lib
 
