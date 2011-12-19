@@ -47,9 +47,9 @@ export POLARIM_DIR=/data1/run12
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
-export DATADIR=$POLARIM_DIR/data
-export CONFDIR=$POLARIM_DIR/config
-export CALIBDIR=$POLARIM_DIR/share/config
+#export DATADIR=$POLARIM_DIR/data
+#export CONFDIR=$POLARIM_DIR/config
+#export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
 export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
@@ -85,9 +85,9 @@ echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
-echo "\$DATADIR=$DATADIR     <-- deprecated"
-echo "\$CONFDIR=$CONFDIR     <-- deprecated"
-echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
+#echo "\$DATADIR=$DATADIR     <-- deprecated"
+#echo "\$CONFDIR=$CONFDIR     <-- deprecated"
+#echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
 echo "\$LD_LIBRARY_PATH=$LD_LIBRARY_PATH"

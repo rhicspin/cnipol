@@ -21,12 +21,12 @@ export MYSQL_LIB_DIR=/usr/lib/mysql
 export MYSQLPP_INCLUDE_DIR=/usr/src/redhat/SOURCES/mysql++-3.0.9/lib
 export MYSQLPP_LIB_DIR=/usr/lib
 
-if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
-   export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
-fi
-
 if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
    export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
+fi
+
+if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 fi
 
 # CNIPOL variables
@@ -47,9 +47,9 @@ export POLARIM_DIR=/usr/local/polarim
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
-export DATADIR=$POLARIM_DIR/data
-export CONFDIR=$POLARIM_DIR/config
-export CALIBDIR=$POLARIM_DIR/share/config
+#export DATADIR=$POLARIM_DIR/data
+#export CONFDIR=$POLARIM_DIR/config
+#export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
 export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
@@ -96,9 +96,9 @@ echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
-echo "\$DATADIR=$DATADIR     <-- deprecated"
-echo "\$CONFDIR=$CONFDIR     <-- deprecated"
-echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
+#echo "\$DATADIR=$DATADIR     <-- deprecated"
+#echo "\$CONFDIR=$CONFDIR     <-- deprecated"
+#echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
 echo "\$LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
