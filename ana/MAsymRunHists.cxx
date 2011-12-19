@@ -1326,6 +1326,9 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          string sRingId  = RunConfig::AsString(*iRingId);
          DrawObjContainer *oc_ring = d.find(sRingId)->second;
 
+         TH1F* hPolarHJVsFill_        = (TH1F*) oc_ring->o["hPolarHJVsFill_" + sRingId + "_" + sBeamE];
+         hPolarHJVsFill_->Fit("pol0");
+
          TH1F* hPolarRelDiff_         = (TH1F*) oc_ring->o["hPolarRelDiff_" + sRingId + "_" + sBeamE];
          TH1F* hPolarRelDiffCumul_    = (TH1F*) oc_ring->o["hPolarRelDiffCumul_" + sRingId + "_" + sBeamE];
          TH1F* hPolarRatioSystVsFill_ = (TH1F*) oc_ring->o["hPolarRatioSystVsFill_" + sRingId + "_" + sBeamE];
