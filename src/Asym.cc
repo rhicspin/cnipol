@@ -11,6 +11,7 @@
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
 #include "AsymDb.h"
+#include "RunConfig.h"
 #include "TargetInfo.h"
 
 using namespace std;

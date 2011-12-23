@@ -954,7 +954,8 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
          break;
       }
 
-      for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14 * a_n_scale_v1_6_1;
+      //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14 * a_n_scale_v1_6_1;
+      for (int i=0; i<25; i++) anth[i] = anth100[i];
 
    } else if (gMeasInfo->GetBeamEnergy() > 50) {
 

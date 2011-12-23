@@ -3,6 +3,7 @@
 
 #include "AnaFillResult.h"
 #include "AnaGlobResult.h"
+#include "Target.h"
 
 ClassImp(AnaFillResult)
 
@@ -29,12 +30,12 @@ void AnaFillResult::Print(const Option_t* opt) const
    Info("Print", "Print members:");
    //PrintAsPhp();
 
-   AnaMeasResultMapConstIter iMeas = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt = fAnaMeasResults.begin();
 
    printf("Runs: ");
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas) {
-      printf("%s \n", iMeas->first.c_str());
-      //iMeas->second.Print();
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt) {
+      printf("%s \n", iMeasRslt->first.c_str());
+      //iMeasRslt->second.Print();
    }
    printf("\n");
 
@@ -75,6 +76,18 @@ void AnaFillResult::Print(const Option_t* opt) const
       ValErrPair systUvsD = fSystUvsDPolar.find(*iRingId)->second;
       cout << PairAsPhpArray(systUvsD) << endl;
    }
+
+   printf("\n");
+   printf("Print normalization factors by target\n");
+
+   TargetSetIter iTarget = gRunConfig.fTargets.begin();
+
+   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget) {
+      
+      iTarget->Print();
+      //if (fPolarsByTargets.find(targetUId) == fPolarsByTargets.end())
+   }
+
 
    printf("\n");
 
@@ -125,23 +138,24 @@ void AnaFillResult::Process()
    //Info("Process", "check");
 
    // Calc polars by target
-   AnaMeasResultMapConstIter iMeas      = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt  = fAnaMeasResults.begin();
    String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
    String2TargetIdMapIter    iTgtId     = fMeasTgtIds.begin();
 
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iTgtId)
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt, ++iTgtOrient, ++iTgtId)
    {
-      const AnaMeasResult &measResult = iMeas->second;
-      EPolarimeterId   polId      = MeasInfo::ExtractPolarimeterId(iMeas->first);
-      ETargetOrient    tgtOrient  = iTgtOrient->second;
-      UShort_t         tgtId      = iTgtId->second;
+      const AnaMeasResult &measResult = iMeasRslt->second;
+      EPolarimeterId       polId      = MeasInfo::ExtractPolarimeterId(iMeasRslt->first);
+      ETargetOrient        tgtOrient  = iTgtOrient->second;
+      UShort_t             tgtId      = iTgtId->second;
 
       TargetUId targetUId(polId, tgtOrient, tgtId);
 
-      if (fPolarsByTargets.find(targetUId) != fPolarsByTargets.end()) {
-         fPolarsByTargets[targetUId] = CalcWeightedAvrgErr(fPolarsByTargets[targetUId], measResult.GetPolar());
-      } else {
+      if (fPolarsByTargets.find(targetUId) == fPolarsByTargets.end())
+      {
          fPolarsByTargets[targetUId] = measResult.GetPolar();
+      } else {
+         fPolarsByTargets[targetUId] = CalcWeightedAvrgErr(fPolarsByTargets[targetUId], measResult.GetPolar());
       }
    }
 
@@ -495,17 +509,17 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
 { //{{{
    ValErrSet allRunResults;
 
-   AnaMeasResultMapConstIter iMeas      = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt  = fAnaMeasResults.begin();
    String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
    String2TargetIdMapIter    iTgtId     = fMeasTgtIds.begin();
 
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iTgtId) {
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt, ++iTgtOrient, ++iTgtId) {
 
       // Consider only results for polId
-      if ( MeasInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
+      if ( MeasInfo::ExtractPolarimeterId(iMeasRslt->first) != polId) continue;
 
       ValErrPair    val_err(0, -1);
-      TFitResultPtr fitres = iMeas->second.fFitResPolarPhi;
+      TFitResultPtr fitres = iMeasRslt->second.fFitResPolarPhi;
 
       if (fitres.Get()) {
 
@@ -530,15 +544,15 @@ ValErrPair AnaFillResult::CalcAvrgPolProfPolar(EPolarimeterId polId)
 { //{{{
    ValErrSet allRunResults;
 
-   AnaMeasResultMapConstIter iMeas = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt = fAnaMeasResults.begin();
 
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas) {
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt) {
 
       // Consider only results for polId
-      if ( MeasInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
+      if ( MeasInfo::ExtractPolarimeterId(iMeasRslt->first) != polId) continue;
 
       ValErrPair    vePolProfP(0, -1), veR(0, -1), vePMax(0, -1);
-      TFitResultPtr fitres = iMeas->second.fFitResProfilePvsI;
+      TFitResultPtr fitres = iMeasRslt->second.fFitResProfilePvsI;
 
       if (fitres.Get()) {
 
@@ -566,18 +580,18 @@ ValErrPair AnaFillResult::CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrie
 { //{{{
    ValErrSet allRunResults;
 
-   AnaMeasResultMapConstIter iMeas       = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt  = fAnaMeasResults.begin();
    String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
    String2RingIdMapIter      iRingId    = fMeasRingIds.begin();
 
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iRingId) {
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt, ++iTgtOrient, ++iRingId) {
 
       // Consider only results for ringId and tgtOrient
       if ( iRingId->second    != ringId)    continue;
       if ( iTgtOrient->second != tgtOrient) continue;
 
       ValErrPair    val_err(0, -1);
-      TFitResultPtr fitres = iMeas->second.fFitResProfilePvsI;
+      TFitResultPtr fitres = iMeasRslt->second.fFitResProfilePvsI;
 
       if (fitres.Get()) {
 
@@ -603,18 +617,18 @@ ValErrPair AnaFillResult::CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtO
 { //{{{
    ValErrSet allRunResults;
 
-   AnaMeasResultMapConstIter iMeas       = fAnaMeasResults.begin();
+   AnaMeasResultMapConstIter iMeasRslt  = fAnaMeasResults.begin();
    String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
    String2RingIdMapIter      iRingId    = fMeasRingIds.begin();
 
-   for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iRingId)
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt, ++iTgtOrient, ++iRingId)
    {
       // Consider only results for ringId and tgtOrient
       if ( iRingId->second    != ringId)    continue;
       if ( iTgtOrient->second != tgtOrient) continue;
 
       ValErrPair    val_err(0, -1);
-      TFitResultPtr fitres = iMeas->second.fFitResProfilePvsI;
+      TFitResultPtr fitres = iMeasRslt->second.fFitResProfilePvsI;
 
       if (fitres.Get()) {
 
