@@ -21,7 +21,7 @@
 #include "AnaInfo.h"
 #include "RunInfo.h"
 #include "DbEntry.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 //#include "MseRunInfo.h"
 
 #include "Calibrator.h"
@@ -39,7 +39,7 @@ public:
    AnaInfo                 *fAnaInfo;
    //DbEntry                 *fDbEntry; //!
    Calibrator              *fCalibrator;
-   AnaResult               *fAnaResult;
+   AnaMeasResult               *fAnaMeasResult;
    MseRunInfoX             *fMseRunInfoX;
 
 public:
@@ -50,7 +50,7 @@ public:
    RunInfo*     GetRunInfo();
    AnaInfo*     GetAnaInfo();
    Calibrator*  GetCalibrator();
-   AnaResult*   GetAnaResult();
+   AnaMeasResult*   GetAnaMeasResult();
    MseRunInfoX* GetMseRunInfoX();
 
    //virtual void Print(const Option_t* opt="") const;

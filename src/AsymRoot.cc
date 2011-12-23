@@ -558,13 +558,13 @@ void AsymRoot::PostFill(MseRunInfoX &run)
 	//}
 
    // Add info to database entry
-   run.profile_ratio       = gAnaResult->fProfilePolarR.first;
-   run.profile_ratio_error = gAnaResult->fProfilePolarR.second;
+   run.profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
+   run.profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
 
-   run.polarization        = gAnaResult->sinphi[0].P[0];
-   run.polarization_error  = gAnaResult->sinphi[0].P[1],
-   run.phase               = gAnaResult->sinphi[0].dPhi[0];
-   run.phase_error         = gAnaResult->sinphi[0].dPhi[1];
+   run.polarization        = gAnaMeasResult->sinphi[0].P[0];
+   run.polarization_error  = gAnaMeasResult->sinphi[0].P[1],
+   run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
+   run.phase_error         = gAnaMeasResult->sinphi[0].dPhi[1];
 
 } //}}}
 
@@ -1130,11 +1130,11 @@ EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
 
 
 /** */
-void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaResult *&ar)
+void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
 { //{{{
    if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }
 
    ri = fEventConfig->GetRunInfo();
    ai = fEventConfig->GetAnaInfo();
-   ar = fEventConfig->GetAnaResult();
+   ar = fEventConfig->GetAnaMeasResult();
 } //}}}

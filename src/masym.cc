@@ -143,32 +143,32 @@ void initialize()
       }
 
       char strTime[80];
-      strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->StartTime));
+      strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->fStartTime));
 
       Double_t runId            = gRC->fRunInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
       UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->GetBeamEnergy() + 0.5);
       string   asymVersion      = gRC->fRunInfo->fAsymVersion;
-      Float_t  ana_power        = gRC->fAnaResult->A_N[1];
-      Float_t  asymmetry        = gRC->fAnaResult->sinphi[0].P[0] * gRC->fAnaResult->A_N[1];
-      Float_t  asymmetry_err    = gRC->fAnaResult->sinphi[0].P[1] * gRC->fAnaResult->A_N[1];
-      Float_t  polarization     = gRC->fAnaResult->sinphi[0].P[0] * 100.;
-      Float_t  polarization_err = gRC->fAnaResult->sinphi[0].P[1] * 100.;
-      Double_t profileRatio     = gRC->fAnaResult->fProfilePolarR.first;
-      Double_t profileRatioErr  = gRC->fAnaResult->fProfilePolarR.second;
-      //Float_t  profileRatio     = gRC->fAnaResult->fIntensPolarR;
-      //Float_t  profileRatioErr  = gRC->fAnaResult->fIntensPolarRErr;
+      Float_t  ana_power        = gRC->fAnaMeasResult->A_N[1];
+      Float_t  asymmetry        = gRC->fAnaMeasResult->sinphi[0].P[0] * gRC->fAnaMeasResult->A_N[1];
+      Float_t  asymmetry_err    = gRC->fAnaMeasResult->sinphi[0].P[1] * gRC->fAnaMeasResult->A_N[1];
+      Float_t  polarization     = gRC->fAnaMeasResult->sinphi[0].P[0] * 100.;
+      Float_t  polarization_err = gRC->fAnaMeasResult->sinphi[0].P[1] * 100.;
+      Double_t profileRatio     = gRC->fAnaMeasResult->fProfilePolarR.first;
+      Double_t profileRatioErr  = gRC->fAnaMeasResult->fProfilePolarR.second;
+      //Float_t  profileRatio     = gRC->fAnaMeasResult->fIntensPolarR;
+      //Float_t  profileRatioErr  = gRC->fAnaMeasResult->fIntensPolarRErr;
       //Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
       //Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
-      //if ( beamEnergy == 100 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
+      //if ( beamEnergy == 100 && gRC->fRunInfo->fStartTime > flattopTimes[fillId]) {
       //   gRC->fRunInfo->fBeamEnergy = 400;
       //   beamEnergy = 400;
       //}
 
-      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->StartTime, asymmetry);
+      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->fStartTime, asymmetry);
       //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
       //   polarization_err, asymVersion.c_str());
@@ -191,16 +191,16 @@ void initialize()
       if (flattopTimes.find(fillId) == flattopTimes.end()) 
          flattopTimes[fillId] = 0;
 
-      if ( beamEnergy == 250 && gRC->fRunInfo->StartTime > flattopTimes[fillId]) {
-         flattopTimes[fillId] = gRC->fRunInfo->StartTime;
+      if ( beamEnergy == 250 && gRC->fRunInfo->fStartTime > flattopTimes[fillId]) {
+         flattopTimes[fillId] = gRC->fRunInfo->fStartTime;
       }
 
-      //if (gRC->fRunInfo->StartTime < minTime ) minTime = gRC->fRunInfo->StartTime;
-      //if (gRC->fRunInfo->StartTime > maxTime ) maxTime = gRC->fRunInfo->StartTime;
+      //if (gRC->fRunInfo->fStartTime < minTime ) minTime = gRC->fRunInfo->fStartTime;
+      //if (gRC->fRunInfo->fStartTime > maxTime ) maxTime = gRC->fRunInfo->fStartTime;
 
       if (gH->d.find("runs") != gH->d.end()) {
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
-         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fRunInfo->StartTime);
+         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fRunInfo->fStartTime);
 	   }
 
       // To calculate normalization factors for p-Carbon we need to do it in the first pass

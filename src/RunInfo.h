@@ -46,9 +46,9 @@ public:
    int                         Run;
    double                      RUNID;
    std::string                 fRunName;
-   time_t                      StartTime;
-   time_t                      StopTime;
-   float                       RunTime;
+   time_t                      fStartTime;
+   time_t                      fStopTime;
+   float                       fRunTime;
    int                         fDataFormatVersion;
    std::string                 fAsymVersion;
    EMeasType                   fMeasType;
@@ -126,6 +126,7 @@ public:
    ESpinState      GetBunchSpin(UShort_t bid) const;
    ERingId         GetRingId() const;
    ETargetOrient   GetTargetOrient() const;
+   UShort_t        GetTargetId() const;
 
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);

@@ -41,6 +41,7 @@
 #pragma link C++ class MAsymRoot;
 #pragma link C++ class MAsymSingleFillHists;
 #pragma link C++ class RunQA;
+#pragma link C++ class TargetUId;
 //#pragma link C++ class CnipolHistsAssymetry;
 //#pragma link C++ class recordConfigRhicStruct;
 //#pragma link C++ class SiChanStruct;

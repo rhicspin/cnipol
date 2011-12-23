@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
 
-   gAsymRoot->GetRunConfigs(gRunInfo, gAnaInfo, gAnaResult);
+   gAsymRoot->GetRunConfigs(gRunInfo, gAnaInfo, gAnaMeasResult);
 
    //gAsymDb  = new AsymDbFile();
    gAsymDb2 = new AsymDbSql();
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
       case 'f':
          gAnaInfo->fRunName = optarg;
          gRunInfo->fRunName = optarg;
-         gRunDb.fRunName   = optarg;
+         gRunDb.fRunName    = optarg;
          break;
 
       case 'n':
