@@ -402,7 +402,7 @@ void CnipolAsymHists::PostFill()
       funcConst->SetParNames("const");
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
-      gAnaResult->fFitResAsymBunchX90[*iSS] = fitres;
+      gAnaMeasResult->fFitResAsymBunchX90[*iSS] = fitres;
 
       //
       grName = "grAsymVsBunchId_X45_" + sSS;
@@ -412,7 +412,7 @@ void CnipolAsymHists::PostFill()
       funcConst->SetParNames("const");
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
-      gAnaResult->fFitResAsymBunchX45[*iSS] = fitres;
+      gAnaMeasResult->fFitResAsymBunchX45[*iSS] = fitres;
 
       //
       grName = "grAsymVsBunchId_Y45_" + sSS;
@@ -422,6 +422,6 @@ void CnipolAsymHists::PostFill()
       funcConst->SetParNames("const");
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
-      gAnaResult->fFitResAsymBunchY45[*iSS] = fitres;
+      gAnaMeasResult->fFitResAsymBunchY45[*iSS] = fitres;
    }
 } //}}}

@@ -106,7 +106,6 @@ install: $(BINARIES)
 clean: lib.clean
 	rm -f $(BINARIES)
 	rm -f *.o
-	rm -f *~ 
 	rm -f $(CNIANA_DICT)
 
 bin.clean: lib.clean
@@ -116,3 +115,4 @@ lib.clean:
 	rm -f $(CNIPOL_LIB)
 
 cleanall: clean bin.clean lib.clean
+	rm -f *~ 
