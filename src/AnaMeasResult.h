@@ -1,28 +1,30 @@
 
-#ifndef AnaResult_h
-#define AnaResult_h
+#ifndef AnaMeasResult_h
+#define AnaMeasResult_h
 
 #include <set>
 #include <string>
 
 #include "TObject.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
 
 #include "AsymCalculator.h"
 #include "AsymHeader.h"
 #include "AsymGlobals.h"
 
 
-class AnaResult;
+class AnaMeasResult;
 
-//typedef std::set<AnaResult>             AnaMeasResultSet;
-//typedef std::set<AnaResult>::iterator   AnaMeasResultSetIter;
-typedef std::map<std::string, AnaResult>                   AnaRunResultMap;
-typedef std::map<std::string, AnaResult>::iterator         AnaRunResultMapIter;
-typedef std::map<std::string, AnaResult>::const_iterator   AnaRunResultMapConstIter;
+//typedef std::set<AnaMeasResult>             AnaMeasResultSet;
+//typedef std::set<AnaMeasResult>::iterator   AnaMeasResultSetIter;
+typedef std::map<std::string, AnaMeasResult>                   AnaMeasResultMap;
+typedef std::map<std::string, AnaMeasResult>::iterator         AnaMeasResultMapIter;
+typedef std::map<std::string, AnaMeasResult>::const_iterator   AnaMeasResultMapConstIter;
 
 
 /** */
-class AnaResult : public TObject
+class AnaMeasResult : public TObject
 {
 public:
 
@@ -65,11 +67,13 @@ public:
    Float_t              fPmtS1T0Err;
 
 public:
-   AnaResult();
-   ~AnaResult();
+   AnaMeasResult();
+   ~AnaMeasResult();
    void PrintAsPhp(FILE *f=stdout) const;
 
-   ClassDef(AnaResult, 1)
+   ValErrPair GetPolar() const;
+
+   ClassDef(AnaMeasResult, 1)
 };
 
 #endif

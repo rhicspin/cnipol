@@ -1,15 +1,15 @@
 
 #include <string>
 
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 
-ClassImp(AnaResult)
+ClassImp(AnaMeasResult)
 
 using namespace std;
 
 
 /** */
-AnaResult::AnaResult() : TObject(),
+AnaMeasResult::AnaMeasResult() : TObject(),
    max_rate(0),
    TshiftAve(0),
    wcm_norm_event_rate(0), 
@@ -19,10 +19,10 @@ AnaResult::AnaResult() : TObject(),
    fAnaPower(),
    fPolar(),
    fAvrgPMAsym(),
-   fFitResAsymPhi(),      fFitResPolarPhi(),
-   fFitResAsymBunchX90(), fFitResAsymBunchX45(), fFitResAsymBunchY45(),
+   fFitResAsymPhi(),       fFitResPolarPhi(),
+   fFitResAsymBunchX90(),  fFitResAsymBunchX45(), fFitResAsymBunchY45(),
    fAsymX90(), fAsymX45(), fAsymY45(),
-   fFitResProfilePvsI(), fFitResEnergySlope(), fFitResPseudoMass(),
+   fFitResProfilePvsI(),   fFitResEnergySlope(), fFitResPseudoMass(),
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
    //energy_slope[2],        // Slope for energy spectrum (detectors sum) [0]:slope [1]:error
@@ -55,11 +55,11 @@ AnaResult::AnaResult() : TObject(),
 
 
 /** */
-AnaResult::~AnaResult() { }
+AnaMeasResult::~AnaMeasResult() { }
 
 
 /** */
-void AnaResult::PrintAsPhp(FILE *f) const
+void AnaMeasResult::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['max_rate']            = %f;\n",            max_rate);
    fprintf(f, "$rc['TshiftAve']           = %f;\n",            TshiftAve);
@@ -96,4 +96,20 @@ void AnaResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
    fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
 
+} //}}}
+
+
+/** */
+ValErrPair AnaMeasResult::GetPolar() const
+{ //{{{
+   ValErrPair val_err(0, -1);
+
+   if (fFitResPolarPhi.Get()) {
+      val_err.first  = fFitResPolarPhi->Value(0);
+      val_err.second = fFitResPolarPhi->FitResult::Error(0);
+   } else {
+      Error("GetPolar", "No fit result found");
+   }
+
+   return val_err;
 } //}}}
