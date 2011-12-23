@@ -1,0 +1,40 @@
+/*****************************************************************************
+ *                                                                           *
+ *                                                                           *
+ *****************************************************************************/
+
+
+#ifndef TargetUId_h
+#define TargetUId_h
+
+#include <stdio.h>
+#include <vector>
+
+#include "TObject.h"
+
+#include "RunConfig.h"
+
+
+
+/** */
+class TargetUId : public TObject
+{
+public:
+   
+   EPolarimeterId fPolId;
+   ETargetOrient  fTargetOrient;
+   UShort_t       fTargetId;
+
+public:
+
+   TargetUId();
+   TargetUId(EPolarimeterId polId, ETargetOrient tgtOrient, UShort_t tgtId);
+   ~TargetUId();
+
+   void Print(const Option_t* opt="") const {};
+   bool operator<(const TargetUId &tgtuid) const;
+
+   ClassDef(TargetUId, 1)
+};
+
+#endif
