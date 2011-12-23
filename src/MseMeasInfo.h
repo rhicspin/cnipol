@@ -2,8 +2,8 @@
 #   define MYSQLPP_SSQLS_NO_STATICS
 #endif
 
-#ifndef MseRunInfo_h
-#define MseRunInfo_h
+#ifndef MseMeasInfo_h
+#define MseMeasInfo_h
 
 #include <stdio.h>
 
@@ -13,7 +13,7 @@
 #include "TBuffer.h"
 #include "TObject.h"
 
-sql_create_23(MseRunInfo, 1, 5,
+sql_create_23(MseMeasInfo, 1, 5,
    mysqlpp::sql_varchar,           run_name,
    mysqlpp::sql_smallint,          polarimeter_id,
    mysqlpp::sql_datetime,          start_time,
@@ -39,24 +39,24 @@ sql_create_23(MseRunInfo, 1, 5,
    mysqlpp::sql_int_unsigned,      ana_duration)
 
 
-class MseRunInfoX : public MseRunInfo
+class MseMeasInfoX : public MseMeasInfo
 {
 public:
    // default constructor[13]
-   MseRunInfoX();
-   ~MseRunInfoX();
+   MseMeasInfoX();
+   ~MseMeasInfoX();
  
    // for-comparison constructor[14]
-   MseRunInfoX(const mysqlpp::sql_varchar &p1);
+   MseMeasInfoX(const mysqlpp::sql_varchar &p1);
  
    // full creation constructor
-	MseRunInfoX(const mysqlpp::sql_varchar &p1, const mysqlpp::sql_smallint &p2,
+	MseMeasInfoX(const mysqlpp::sql_varchar &p1, const mysqlpp::sql_smallint &p2,
                const mysqlpp::sql_datetime &p3, const mysqlpp::sql_datetime &p4,
-               const mysqlpp::sql_float &p5) : MseRunInfo(p1, p2, p3, p4, p5)
+               const mysqlpp::sql_float &p5) : MseMeasInfo(p1, p2, p3, p4, p5)
    { }
  
    // population constructor[15]
-   MseRunInfoX(const mysqlpp::Row& row) : MseRunInfo(row)
+   MseMeasInfoX(const mysqlpp::Row& row) : MseMeasInfo(row)
    { }
  
    void Init();
@@ -65,7 +65,7 @@ public:
    void Streamer(TBuffer &buf);
 };
 
-TBuffer & operator<<(TBuffer &buf, MseRunInfoX *&rec);
-TBuffer & operator>>(TBuffer &buf, MseRunInfoX *&rec);
+TBuffer & operator<<(TBuffer &buf, MseMeasInfoX *&rec);
+TBuffer & operator>>(TBuffer &buf, MseMeasInfoX *&rec);
 
 #endif

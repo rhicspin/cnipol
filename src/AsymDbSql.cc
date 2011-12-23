@@ -9,7 +9,7 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0, 0, 0, 0)
+AsymDbSql::AsymDbSql() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
 {
    try {
       // Establish the connection to the database server.
@@ -28,7 +28,7 @@ AsymDbSql::AsymDbSql() // : fMstRunInfo() //fMstRunInfo((const sql_varchar)"", 0
       fConnection = 0;
    }
 
-   MseRunInfoX::table("run_info");
+   MseMeasInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
    MseFillPolarX::table("fill_polar");
    MseFillProfileX::table("fill_profile");
@@ -83,7 +83,7 @@ DbEntry* AsymDbSql::Select(std::string runName)
 
 
 /** */
-MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
+MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 { //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
@@ -94,7 +94,7 @@ MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
 
    Query query = fConnection->query(q);
 
-   MseRunInfoX* mseri = 0;
+   MseMeasInfoX* mseri = 0;
 
    cout << "Query: " << query << endl;
    //query.execute();
@@ -105,7 +105,7 @@ MseRunInfoX* AsymDbSql::SelectRun(std::string runName)
       //    cout << '\t' << result[i][0] << endl;
       //}
       if (!result.empty())
-         mseri = new MseRunInfoX(result[0]);
+         mseri = new MseMeasInfoX(result[0]);
 
    } else {
       cerr << "Failed to get item list: " << query.error() << endl;
@@ -192,10 +192,10 @@ MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
 
 
 /** */
-void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
+void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
 {
-   vector<MseRunInfoX> runs = SelectPriorRuns(run);
-   vector<MseRunInfoX>::iterator irun;
+   vector<MseMeasInfoX> runs = SelectPriorRuns(run);
+   vector<MseMeasInfoX>::iterator irun;
 
    for (irun=runs.begin(); irun!=runs.end(); irun++) {
 
@@ -226,14 +226,14 @@ void AsymDbSql::CompleteRunInfo(MseRunInfoX& run)
 
 
 /** */
-MseRunPeriodX* AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
+MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
 {
    MseRunPeriodX *runPeriod = SelectRunPeriod(run);
 
    if (runPeriod)
       runPeriod->Print();
    else {
-      Error("CompleteRunInfoByRunPeriod", "No run period selected");
+      Error("CompleteMeasInfoByRunPeriod", "No run period selected");
       return 0;
    }
 
@@ -247,11 +247,11 @@ MseRunPeriodX* AsymDbSql::CompleteRunInfoByRunPeriod(MseRunInfoX& run)
 
 
 /** */
-vector<MseRunInfoX> AsymDbSql::SelectPriorRuns(MseRunInfoX& run)
+vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
 {
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
-      vector<MseRunInfoX> dummy;
+      vector<MseMeasInfoX> dummy;
       return dummy;
    }
 
@@ -262,7 +262,7 @@ vector<MseRunInfoX> AsymDbSql::SelectPriorRuns(MseRunInfoX& run)
 
    Query query = fConnection->query(sstr.str());
 
-   vector<MseRunInfoX> results;
+   vector<MseMeasInfoX> results;
 
    cout << "Query: " << query << endl;
    //query.execute();
@@ -291,7 +291,7 @@ vector<MseRunInfoX> AsymDbSql::SelectPriorRuns(MseRunInfoX& run)
 
 
 /** */
-MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseRunInfoX& run)
+MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
 {
    MseRunPeriodX* mserp = 0;
 
@@ -326,7 +326,7 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 {
    if (!dbrun) return;
 
-   //MseRunInfoX mseRunInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
+   //MseMeasInfoX MseMeasInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
 
    stringstream sstr;
 
@@ -350,16 +350,16 @@ void AsymDbSql::Insert(DbEntry *dbrun)
    sstr << dbrun->fFields["BEAM_ENERGY"];
    sstr >> beam_energy;
 
-   MseRunInfoX mseRunInfoX(dbrun->fRunName,
+   MseMeasInfoX MseMeasInfoX(dbrun->fRunName,
                          sql_smallint(polarimeter_id),
                          sql_datetime(start_time),
                          sql_datetime(stop_time),
                          sql_float(beam_energy));
 
-   //mseRunInfoX.instance_table("run_info");
+   //MseMeasInfoX.instance_table("run_info");
 
    Query query = fConnection->query();
-   query.insert(mseRunInfoX);
+   query.insert(MseMeasInfoX);
 
    cout << "Query: " << query << endl;
    query.execute();
@@ -367,7 +367,7 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseRunInfoX* orun, MseRunInfoX* nrun)
+void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
 { //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");

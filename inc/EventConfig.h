@@ -19,14 +19,14 @@
 
 #include "AsymGlobals.h"
 #include "AnaInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "DbEntry.h"
 #include "AnaMeasResult.h"
-//#include "MseRunInfo.h"
+//#include "MseMeasInfo.h"
 
 #include "Calibrator.h"
 
-class MseRunInfoX;
+class MseMeasInfoX;
 
 /** */
 class EventConfig : public TObject
@@ -35,23 +35,23 @@ public:
    
    TRandom                 *fRandom;
    //TRecordConfigRhicStruct *fConfigInfo;
-   RunInfo                 *fRunInfo;
+   MeasInfo                 *fMeasInfo;
    AnaInfo                 *fAnaInfo;
    //DbEntry                 *fDbEntry; //!
    Calibrator              *fCalibrator;
    AnaMeasResult               *fAnaMeasResult;
-   MseRunInfoX             *fMseRunInfoX;
+   MseMeasInfoX             *fMseMeasInfoX;
 
 public:
 
    EventConfig();
    ~EventConfig();
 
-   RunInfo*     GetRunInfo();
+   MeasInfo*     GetMeasInfo();
    AnaInfo*     GetAnaInfo();
    Calibrator*  GetCalibrator();
    AnaMeasResult*   GetAnaMeasResult();
-   MseRunInfoX* GetMseRunInfoX();
+   MseMeasInfoX* GetMseMeasInfoX();
 
    //virtual void Print(const Option_t* opt="") const;
    void  Print(const Option_t* opt="") const;

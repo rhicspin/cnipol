@@ -7,7 +7,7 @@
 
 #include "TF1.h"
 
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 ClassImp(CnipolKinematHists)
 

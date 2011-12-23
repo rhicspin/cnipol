@@ -9,9 +9,9 @@
 
 #include "AnaInfo.h"
 #include "DbEntry.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "AnaMeasResult.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 
 ClassImp(EventConfig)
 
@@ -22,13 +22,13 @@ using namespace std;
  * single measurement.
  *
  * Default constructor.
- * We have to allocate memory for fRunInfo, fAnaInfo, and fDbEntry as they can be
+ * We have to allocate memory for fMeasInfo, fAnaInfo, and fDbEntry as they can be
  * read from a file with a streamer. The streamers do not allocate memory by
  * themselves.
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0),
-   fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
-   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseRunInfoX(new MseRunInfoX())
+   fMeasInfo(new MeasInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
+   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseMeasInfoX(new MseMeasInfoX())
 {
 }
 
@@ -41,11 +41,11 @@ EventConfig::~EventConfig()
 }
 
 
-RunInfo*       EventConfig::GetRunInfo()       { return fRunInfo; }
+MeasInfo*       EventConfig::GetMeasInfo()       { return fMeasInfo; }
 AnaInfo*       EventConfig::GetAnaInfo()       { return fAnaInfo; }
 Calibrator*    EventConfig::GetCalibrator()    { return fCalibrator; }
 AnaMeasResult* EventConfig::GetAnaMeasResult() { return fAnaMeasResult; }
-MseRunInfoX*   EventConfig::GetMseRunInfoX()   { return fMseRunInfoX; }
+MseMeasInfoX*   EventConfig::GetMseMeasInfoX()   { return fMseMeasInfoX; }
 
 
 void EventConfig::Print(const Option_t* opt) const
@@ -67,11 +67,11 @@ void EventConfig::PrintAsPhp(FILE *f) const
    //   fprintf(f, "$rc['data']['NumChannels'] = %d;\n", fConfigInfo->data.NumChannels);
    //}
 
-   fprintf(f, "\n// RunInfo data\n");
-   if (!fRunInfo) {
-      Error("PrintAsPhp", "fRunInfo not defined");
+   fprintf(f, "\n// MeasInfo data\n");
+   if (!fMeasInfo) {
+      Error("PrintAsPhp", "fMeasInfo not defined");
    } else {
-      fRunInfo->PrintAsPhp(f);
+      fMeasInfo->PrintAsPhp(f);
    }
 
    fprintf(f, "\n// AnaInfo data\n");
@@ -102,11 +102,11 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fAnaMeasResult->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// MseRunInfoX data\n");
-   if (!fMseRunInfoX) {
-      Error("PrintAsPhp", "fMseRunInfoX not defined");
+   fprintf(f, "\n// MseMeasInfoX data\n");
+   if (!fMseMeasInfoX) {
+      Error("PrintAsPhp", "fMseMeasInfoX not defined");
    } else {
-      fMseRunInfoX->PrintAsPhp(f);
+      fMseMeasInfoX->PrintAsPhp(f);
    }
    
    fprintf(f, "?>\n\n");
@@ -117,7 +117,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
 void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
-	fprintf(f, "* for the dead layer and T0  : %s\n", fRunInfo->fRunName.c_str());
+	fprintf(f, "* for the dead layer and T0  : %s\n", fMeasInfo->fRunName.c_str());
 	//fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
 	fprintf(f, "* for the Am calibration     : %s\n", fAnaInfo->GetAlphaCalibRun().c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
@@ -145,22 +145,22 @@ void EventConfig::Streamer(TBuffer &R__b)
       TObject::Streamer(R__b);
       R__b >> fRandom;
       //R__b >> fConfigInfo;
-      R__b >> fRunInfo;
+      R__b >> fMeasInfo;
       R__b >> fAnaInfo;
       R__b >> fCalibrator;
       R__b >> fAnaMeasResult;
-      R__b >> fMseRunInfoX;
+      R__b >> fMseMeasInfoX;
       R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
    } else {
       R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
       TObject::Streamer(R__b);
       R__b << fRandom;
       //R__b << fConfigInfo;
-      R__b << fRunInfo;
+      R__b << fMeasInfo;
       R__b << fAnaInfo;
       R__b << fCalibrator;
       R__b << fAnaMeasResult;
-      R__b << fMseRunInfoX;
+      R__b << fMseMeasInfoX;
       R__b.SetByteCount(R__c, kTRUE);
    }
 } //}}}
@@ -184,11 +184,11 @@ string EventConfig::GetSignature()
       //strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
    }
 
-   if (fRunInfo) {
+   if (fMeasInfo) {
       if (strSignature.size() != 0) 
          strSignature += ", ";
 
-      strSignature += fRunInfo->fAsymVersion;
+      strSignature += fMeasInfo->fAsymVersion;
    }
 
    return strSignature;

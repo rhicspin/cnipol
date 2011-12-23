@@ -75,7 +75,7 @@ RawDataProcessor::~RawDataProcessor()
 
 
 /** */
-void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
+void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
 { //{{{
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
@@ -154,10 +154,10 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
 
 
 /** */
-void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
+void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
 { //{{{
    cout << endl;
-   Info("ReadRunInfo", "Start reading run info from data file...");
+   Info("ReadMeasInfo", "Start reading run info from data file...");
 
    TStopwatch sw;
 
@@ -201,7 +201,7 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
          printf("Reading REC_POLADO record... size = %ld\n", mHeader->len);
 
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
-         ProcessRecord( (recordPolAdoStruct&) *rec, runInfo);
+         ProcessRecord( (recordPolAdoStruct&) *rec, MeasInfo);
 
          mSeek = mSeek + mHeader->len;
          continue;
@@ -215,7 +215,7 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
          printf("Reading REC_PCTARGET record... size = %ld\n", mHeader->len);
 
          recordpCTagAdoStruct *rec = (recordpCTagAdoStruct*) mHeader;
-         ProcessRecord( (recordpCTagAdoStruct&) *rec, runInfo);
+         ProcessRecord( (recordpCTagAdoStruct&) *rec, MeasInfo);
 
          mSeek = mSeek + mHeader->len;
          continue;
@@ -277,7 +277,7 @@ void RawDataProcessor::ReadRunInfo(MseRunInfoX &runInfo)
 
    sw.Stop();
 
-   Info("ReadRunInfo", "Stopped reading run info from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+   Info("ReadMeasInfo", "Stopped reading run info from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 } //}}}
 
 
@@ -409,7 +409,7 @@ void RawDataProcessor::ReadDataFast()
 
 
 // read loop routine
-void readloop(MseRunInfoX &run)
+void readloop(MseMeasInfoX &run)
 { //{{{
    cout << endl;
    gSystem->Info("readloop", "Start reading events from data file...");
@@ -807,7 +807,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 //             : presently the target ID is assumed to be appear at the last of
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
-void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
+void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
 { //{{{
    cout << endl;
    cout << "target ID = " << poldat.targetIdS << endl;
@@ -876,7 +876,7 @@ void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run)
 
 
 /** */
-void ProcessRecordPCTarget(const pCTargetStruct &rec, MseRunInfoX &run)
+void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
 { //{{{
    const long* pointer = (const long*) &rec;
 
@@ -1043,14 +1043,14 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
 
 
 /** */
-void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo)
+void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo)
 { //{{{
-   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, runInfo);
+   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, MeasInfo);
 } //}}}
 
 
 /** */
-void ProcessRecord(const recordpCTagAdoStruct &rec, MseRunInfoX &run)
+void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run)
 { //{{{
    if (!gAnaInfo->HasTargetBit() || gAnaInfo->HasAlphaBit()) return;
 

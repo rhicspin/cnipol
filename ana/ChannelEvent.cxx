@@ -5,7 +5,7 @@
 
 #include "ChannelEvent.h"
 
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "Kinema.h"
 
 
@@ -347,10 +347,10 @@ Bool_t ChannelEvent::PassCutCarbonMassEstimate()
 /** */
 Bool_t ChannelEvent::PassCutPulser()
 { //{{{
-   if ( GetAmpltd() < fEventConfig->fRunInfo->fPulserCutAdcMax &&
-        GetAmpltd() > fEventConfig->fRunInfo->fPulserCutAdcMin &&
-        GetTdc() < fEventConfig->fRunInfo->fPulserCutTdcMax &&
-        GetTdc() > fEventConfig->fRunInfo->fPulserCutTdcMin
+   if ( GetAmpltd() < fEventConfig->fMeasInfo->fPulserCutAdcMax &&
+        GetAmpltd() > fEventConfig->fMeasInfo->fPulserCutAdcMin &&
+        GetTdc() < fEventConfig->fMeasInfo->fPulserCutTdcMax &&
+        GetTdc() > fEventConfig->fMeasInfo->fPulserCutTdcMin
       )
       return false;
 
@@ -390,14 +390,14 @@ Bool_t ChannelEvent::PassCutNoise()
 { //{{{
    Double_t extraOffset = 0;
 
-   if ( UInt_t(fEventConfig->fRunInfo->GetBeamEnergy() + 0.5) != kINJECTION)
+   if ( UInt_t(fEventConfig->fMeasInfo->GetBeamEnergy() + 0.5) != kINJECTION)
       extraOffset = -6; // 6 TDC units ~= 8 ns
 
-   if ( GetAmpltd() < fEventConfig->fRunInfo->fProtoCutAdcMin ||
-        GetAmpltd() > fEventConfig->fRunInfo->fProtoCutAdcMax ||
-        GetTdc() < fEventConfig->fRunInfo->fProtoCutTdcMin ||
-        GetTdc() > fEventConfig->fRunInfo->fProtoCutTdcMax ||
-        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset + extraOffset) ) > 20
+   if ( GetAmpltd() < fEventConfig->fMeasInfo->fProtoCutAdcMin ||
+        GetAmpltd() > fEventConfig->fMeasInfo->fProtoCutAdcMax ||
+        GetTdc() < fEventConfig->fMeasInfo->fProtoCutTdcMin ||
+        GetTdc() > fEventConfig->fMeasInfo->fProtoCutTdcMax ||
+        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset + extraOffset) ) > 20
       )
       return false;
 
@@ -410,7 +410,7 @@ Bool_t ChannelEvent::PassCutNoise()
    //   //if (fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 35))
    //   //if ( fChannel.fAmpltd < 35 || fChannel.fAmpltd > 215 ||
    //   if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
-   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset) ) > 25 )
    //      return false;
    //   break;
 
@@ -419,7 +419,7 @@ Bool_t ChannelEvent::PassCutNoise()
    //   //if (fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 50)) // prelim values for D outside the tunnel
    //   //if ( fChannel.fAmpltd < 20 || fChannel.fAmpltd > 215 ||
    //   if ( fChannel.fAmpltd < 10 || fChannel.fAmpltd > 250 ||
-   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset) ) > 25 )
    //      return false;
    //   break;
 
@@ -432,7 +432,7 @@ Bool_t ChannelEvent::PassCutNoise()
    //   //    (fChannel.fTdc > -0.28*fChannel.fAmpltd + 90 ) )
    //   //if ( GetAmpltd() < 20 || GetAmpltd() > 130 ||
    //   if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
-   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset) ) > 25 )
    //      return false;
    //   break;
 
@@ -440,7 +440,7 @@ Bool_t ChannelEvent::PassCutNoise()
    //   //if (fChannel.fAmpltd < 30 || fChannel.fAmpltd > 215 || (fChannel.fAmpltd < 50 && fChannel.fTdc < 44) ) // 15039.302
    //   //if ( GetAmpltd() < 30 || GetAmpltd() > 215 ||
    //   if ( GetAmpltd() < 10 || GetAmpltd() > 250 ||
-   //        fabs( GetTdc() - ( fEventConfig->fRunInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fRunInfo->fProtoCutOffset) ) > 25 )
+   //        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset) ) > 25 )
    //      return false;
    //   break;
    //}

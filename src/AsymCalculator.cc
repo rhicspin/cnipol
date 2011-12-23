@@ -29,7 +29,7 @@ using namespace std;
 
 
 // End of data process
-void end_process(MseRunInfoX &run)
+void end_process(MseMeasInfoX &run)
 { //{{{
    gSystem->Info("   ::end_process", "Starting...");
 

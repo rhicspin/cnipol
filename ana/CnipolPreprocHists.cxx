@@ -13,7 +13,7 @@
 
 #include "AnaInfo.h"
 #include "CnipolPulserHists.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 ClassImp(CnipolPreprocHists)
 

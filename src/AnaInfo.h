@@ -19,7 +19,7 @@
 #include "Asym.h"
 
 class DbEntry;
-class MseRunInfoX;
+class MseMeasInfoX;
 
 
 /** */
@@ -102,7 +102,7 @@ public:
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    Str2StrMap       fAsymEnv;
-   FILE            *fFileRunInfo;       //!
+   FILE            *fFileMeasInfo;       //!
    FILE            *fFileRunConf;       //!
    FILE            *fFileStdLog;        //!
    std::string      fFileStdLogName;
@@ -124,11 +124,11 @@ public:
    std::string GetResultsDir() const;
    std::string GetOutDir() const;
    std::string GetImageDir() const;
-   std::string GetRunInfoFileName() const;
+   std::string GetMeasInfoFileName() const;
    std::string GetRunConfFileName() const;
    std::string GetStdLogFileName() const;
    std::string GetRootFileName() const;
-   FILE*       GetRunInfoFile() const;
+   FILE*       GetMeasInfoFile() const;
    FILE*       GetRunConfFile() const;
    std::string GetAlphaCalibFile() const;
    std::string GetDlCalibFile() const;
@@ -138,7 +138,7 @@ public:
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
    //void        Update(DbEntry &rundb); // Deprecated
-   void        Update(MseRunInfoX& run);
+   void        Update(MseMeasInfoX& run);
 	void        CopyResults();
 
    std::string GetAlphaCalibRun() const;

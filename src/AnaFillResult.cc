@@ -132,7 +132,7 @@ void AnaFillResult::Process()
    for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iTgtId)
    {
       const AnaMeasResult &measResult = iMeas->second;
-      EPolarimeterId   polId      = RunInfo::ExtractPolarimeterId(iMeas->first);
+      EPolarimeterId   polId      = MeasInfo::ExtractPolarimeterId(iMeas->first);
       ETargetOrient    tgtOrient  = iTgtOrient->second;
       UShort_t         tgtId      = iTgtId->second;
 
@@ -502,7 +502,7 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
    for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas, ++iTgtOrient, ++iTgtId) {
 
       // Consider only results for polId
-      if ( RunInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
+      if ( MeasInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
 
       ValErrPair    val_err(0, -1);
       TFitResultPtr fitres = iMeas->second.fFitResPolarPhi;
@@ -535,7 +535,7 @@ ValErrPair AnaFillResult::CalcAvrgPolProfPolar(EPolarimeterId polId)
    for ( ; iMeas!=fAnaMeasResults.end(); ++iMeas) {
 
       // Consider only results for polId
-      if ( RunInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
+      if ( MeasInfo::ExtractPolarimeterId(iMeas->first) != polId) continue;
 
       ValErrPair    vePolProfP(0, -1), veR(0, -1), vePMax(0, -1);
       TFitResultPtr fitres = iMeas->second.fFitResProfilePvsI;

@@ -8,7 +8,7 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 ClassImp(DeadLayerCalibratorEDepend)
 

@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef RunInfo_h
-#define RunInfo_h
+#ifndef MeasInfo_h
+#define MeasInfo_h
 
 #include <bitset>
 #include <map>
@@ -28,12 +28,12 @@
 #include "RunConfig.h"
 #include "DbEntry.h"
 
-class MseRunInfoX;
+class MseMeasInfoX;
 class MseRunPeriodX;
 
 
 /** */
-class RunInfo : public TObject
+class MeasInfo : public TObject
 {
 protected:
 
@@ -89,8 +89,8 @@ public:
 
 public:
 
-   RunInfo();
-   ~RunInfo();
+   MeasInfo();
+   ~MeasInfo();
 
    std::string     GetAlphaCalibFileName() const;
    std::string     GetDlCalibFileName() const;
@@ -103,7 +103,7 @@ public:
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();
    void            Update(DbEntry &rundb);
-   void            Update(MseRunInfoX& run);
+   void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
    void            ConfigureActiveStrip(int mask);
    void            SetBeamEnergy(Float_t beamEnergy);
@@ -131,7 +131,7 @@ public:
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
-   ClassDef(RunInfo, 1)
+   ClassDef(MeasInfo, 1)
 };
 
 #endif

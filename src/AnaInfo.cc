@@ -55,7 +55,7 @@ AnaInfo::AnaInfo() : TObject(),
    fAnaTimeReal      (0),
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
-   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
+   fFileMeasInfo(0), fFileRunConf(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
    fUserGroup(*gSystem->GetUserInfo())
 {
@@ -106,7 +106,7 @@ AnaInfo::AnaInfo(string runId) : TObject(),
    fAnaTimeReal      (0),
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""), fAsymEnv(),
-   fFileRunInfo(0), fFileRunConf(0), fFileStdLog(0),
+   fFileMeasInfo(0), fFileRunConf(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
    fUserGroup(*gSystem->GetUserInfo())
 {
@@ -117,7 +117,7 @@ AnaInfo::AnaInfo(string runId) : TObject(),
 /** */
 AnaInfo::~AnaInfo()
 {
-   if (fFileRunInfo) fclose(fFileRunInfo);
+   if (fFileMeasInfo) fclose(fFileMeasInfo);
    if (fFileRunConf) fclose(fFileRunConf);
    if (fFileStdLog)  fclose(fFileStdLog);
 
@@ -173,11 +173,11 @@ string AnaInfo::GetRunName()         const { return fRunName; }
 string AnaInfo::GetSuffix()          const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
 string AnaInfo::GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
 string AnaInfo::GetImageDir()        const { return GetOutDir() + "/images" + GetSuffix(); }
-string AnaInfo::GetRunInfoFileName() const { return GetOutDir() + "/runconfig" + GetSuffix() + ".php"; }
+string AnaInfo::GetMeasInfoFileName() const { return GetOutDir() + "/runconfig" + GetSuffix() + ".php"; }
 string AnaInfo::GetRunConfFileName() const { return GetOutDir() + "/config_calib" + GetSuffix() + ".dat"; }
 string AnaInfo::GetStdLogFileName()  const { return GetOutDir() + "/" + fFileStdLogName + GetSuffix() + ".log"; }
 string AnaInfo::GetRootFileName()    const { return GetOutDir() + "/" + fRunName + GetSuffix() + ".root"; }
-FILE*  AnaInfo::GetRunInfoFile()     const { return fFileRunInfo; }
+FILE*  AnaInfo::GetMeasInfoFile()     const { return fFileMeasInfo; }
 FILE*  AnaInfo::GetRunConfFile()     const { return fFileRunConf; }
 
 string AnaInfo::GetAlphaCalibRun()   const { return fAlphaCalibRun; }
@@ -275,8 +275,8 @@ void AnaInfo::ProcessOptions()
 
    MakeOutDir();
 
-   fFileRunInfo = fopen(GetRunInfoFileName().c_str(), "w");
-   gSystem->Chmod(GetRunInfoFileName().c_str(), 0775);
+   fFileMeasInfo = fopen(GetMeasInfoFileName().c_str(), "w");
+   gSystem->Chmod(GetMeasInfoFileName().c_str(), 0775);
 
    fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
    gSystem->Chmod(GetRunConfFileName().c_str(), 0775);
@@ -454,7 +454,7 @@ void AnaInfo::Update(DbEntry &rundb)
 
 
 /** */
-void AnaInfo::Update(MseRunInfoX& run)
+void AnaInfo::Update(MseMeasInfoX& run)
 { //{{{
 	// A fix for alpha calib runs - Maybe this should go to the process options
    // method

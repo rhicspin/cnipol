@@ -138,7 +138,7 @@ float gPhi[NSTRIP] = {
 };
 
 AnaInfo                  *gAnaInfo;
-RunInfo                  *gMeasInfo;
+MeasInfo                  *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;
 //AsymDb                   *gAsymDb;

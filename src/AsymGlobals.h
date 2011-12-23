@@ -21,7 +21,7 @@ class  AnaInfo;
 struct ErrorDetector;
 struct atdata_struct;
 class  DbEntry;
-class  RunInfo;
+class  MeasInfo;
 class  RunConfig;
 struct StructExtInput;
 struct StructAverage;
@@ -83,7 +83,7 @@ extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut
 extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
 extern AnaInfo                      *gAnaInfo;
-extern RunInfo                      *gMeasInfo;
+extern MeasInfo                      *gMeasInfo;
 extern AnaMeasResult                    *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;
 //extern AsymDb                       *gAsymDb;
