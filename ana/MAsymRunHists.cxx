@@ -743,7 +743,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fRunInfo->fPolId;
-   time_t   runStartTime     = rc.fRunInfo->StartTime;
+   time_t   runStartTime     = rc.fRunInfo->fStartTime;
    Short_t  targetId         = rc.fMseRunInfoX->target_id;
    Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
    //Float_t  ana_power        = rc.fAnaResult->A_N[1];
@@ -1428,9 +1428,9 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
 
    ValErrPair polarHJ         = afr.GetPolarHJ(polId);
    ValErrPair polarPC         = afr.GetPolarPC(polId);
-   //ValErrPair polarPCNorm   = afr.GetPolarPC(polId, &agr.fNormJetCarbon);
+   //ValErrPair polarPCNorm   = afr.GetPolarPC(polId, &agr.fNormJetCarbon);  // ratio of average
    //ValErrPair polarProfNorm = afr.GetPolarPC(polId, &agr.fNormProfPolar);
-   ValErrPair polarPCNorm     = afr.GetPolarPC(polId, &agr.fNormJetCarbon2);
+   ValErrPair polarPCNorm     = afr.GetPolarPC(polId, &agr.fNormJetCarbon2); // average of ratio
    ValErrPair polarProfNorm   = afr.GetPolarPC(polId, &agr.fNormProfPolar2);
 
    if (polarPCNorm.second >= 0) //if (polarPC.second >= 0)

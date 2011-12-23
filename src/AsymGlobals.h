@@ -33,7 +33,7 @@ class  RunConst;
 struct StructMask;
 struct StructFlag;
 struct StructReadFlag;
-class  AnaResult;
+class  AnaMeasResult;
 class  TargetInfo;
 struct StructBunchPattern;
 struct StructHist;
@@ -84,7 +84,7 @@ extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
 extern AnaInfo                      *gAnaInfo;
 extern RunInfo                      *gRunInfo;
-extern AnaResult                    *gAnaResult;
+extern AnaMeasResult                    *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;
 //extern AsymDb                       *gAsymDb;
 extern AsymDb                       *gAsymDb2;

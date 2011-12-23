@@ -4,7 +4,7 @@
 
 #include "TObject.h"
 
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "AnaFillResult.h"
 #include "EventConfig.h"
 
@@ -28,8 +28,8 @@ private:
 public:
 
    AnaFillResultMap             fAnaFillResults;
-   PolId2ValErrMap              fNormJetCarbon;
-   PolId2ValErrMap              fNormJetCarbon2;
+   PolId2ValErrMap              fNormJetCarbon;  // Ratio of the averages
+   PolId2ValErrMap              fNormJetCarbon2; // Average of the fill ratios
    PolId2ValErrMap              fNormProfPolar;
    PolId2ValErrMap              fNormProfPolar2;
    RingId2TgtOrient2ValErrMap   fAvrgPolProfRs;
@@ -46,7 +46,7 @@ public:
    //void PrintAsPhp(FILE *f=stdout) const;
 
    void       AdjustMinMaxFill();
-   void       AddRunResult(AnaResult &result);
+   void       AddRunResult(AnaMeasResult &result);
    void       AddRunResult(EventConfig &rc);
    void       Process();
    ValErrPair GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);

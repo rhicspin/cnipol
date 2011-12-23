@@ -96,7 +96,7 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
 
 /** */
 void MseRunInfoX::Streamer(TBuffer &buf)
-{
+{ //{{{
    TString tstr;
    //short   smallint;
    time_t  tmp_time_t;
@@ -131,7 +131,7 @@ void MseRunInfoX::Streamer(TBuffer &buf)
       //tstr = fAlphaCalibRun; buf << tstr;
       //tstr = fDlCalibRun;    buf << tstr;
    }
-}
+} //}}}
 
 
 /** */

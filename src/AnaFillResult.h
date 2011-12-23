@@ -7,7 +7,7 @@
 #include "TObject.h"
 
 #include "Asym.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "EventConfig.h"
 
 
@@ -28,20 +28,22 @@ private:
 
 public:
 
-   AnaRunResultMap              fAnaRunResults;
+   AnaMeasResultMap             fAnaMeasResults;
    PolId2ValErrMap              fPolars;
-   PolId2ValErrMap              fProfPolars;
+   TargetUId2ValErrMap          fPolarsByTargets;
+   PolId2ValErrMap              fProfPolars;     // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
    RingId2ValErrMap             fHjetPolars;
 
-   RingId2ValErrMap             fBeamPolars; //! not used
+   RingId2ValErrMap             fBeamPolars;     //! not used
    RingId2ValErrMap             fBeamCollPolars; //! not used
    
    PolId2ValErrMap              fSystProfPolar;
    PolId2ValErrMap              fSystJvsCPolar;
    RingId2ValErrMap             fSystUvsDPolar;
 
-   String2TgtOrientMap          fRunTgtOrients; // a stupid temporary fix
-   String2RingIdMap             fRunRingIds;    // a stupid temporary fix
+   String2TgtOrientMap          fMeasTgtOrients; // a stupid temporary fix
+   String2TargetIdMap           fMeasTgtIds;  // a stupid temporary fix
+   String2RingIdMap             fMeasRingIds;    // a stupid temporary fix
    RingId2TgtOrient2ValErrMap   fPolProfRs;
    RingId2TgtOrient2ValErrMap   fPolProfPMaxs;
    RingId2TgtOrient2ValErrMap   fPolProfPs;
@@ -54,7 +56,7 @@ public:
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;
 
-   void              AddRunResult(AnaResult &result);
+   void              AddRunResult(AnaMeasResult &result);
    void              AddRunResult(EventConfig &rc, AnaGlobResult *globRes=0);
    void              Process();
    ValErrPair        GetPolarHJ(EPolarimeterId polId);

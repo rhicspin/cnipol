@@ -28,6 +28,7 @@
 
 #include "AsymHeader.h"
 #include "RunConfig.h"
+#include "TargetUId.h"
 
 
 typedef std::map<std::string, std::string>     Str2StrMap;
@@ -61,6 +62,9 @@ typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
 typedef std::map<EBeamId, TgtOrient2ValErrMap> BeamId2TgtOrient2ValErrMap;
 typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
 
+typedef std::map<TargetUId, ValErrPair>        TargetUId2ValErrMap;
+typedef TargetUId2ValErrMap::iterator          TargetUId2ValErrMapIter;
+
 typedef std::map<std::string, EBeamId>         String2BeamIdMap;
 typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
 
@@ -80,9 +84,11 @@ typedef RingId2TgtOrient2ValErrMap::iterator   RingId2TgtOrient2ValErrMapIter;
 typedef std::map<std::string, ERingId>         String2RingIdMap;
 typedef String2RingIdMap::iterator             String2RingIdMapIter;
 
-//
 typedef std::map<std::string, ETargetOrient>   String2TgtOrientMap;
 typedef String2TgtOrientMap::iterator          String2TgtOrientMapIter;
+
+typedef std::map<std::string, UShort_t>        String2TargetIdMap;
+typedef String2TargetIdMap::iterator           String2TargetIdMapIter;
 
 
 std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);

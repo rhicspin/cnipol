@@ -56,7 +56,7 @@ lib: $(OBJS) $(CNIPOL_LIB)
 #	@echo "SRCS: $(SRCS)"
 #	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
 
-$(CNIANA_DICT_SRC): AnaInfo.h AnaResult.h AnaFillResult.h AnaGlobResult.h RunInfo.h LinkDef.h
+$(CNIANA_DICT_SRC): AnaInfo.h AnaMeasResult.h AnaFillResult.h AnaGlobResult.h RunInfo.h LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
 	@rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
 

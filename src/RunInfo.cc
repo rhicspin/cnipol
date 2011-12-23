@@ -23,9 +23,9 @@ RunInfo::RunInfo() : TObject(),
    Run(-1),
    RUNID(0.0),
    fRunName(100, ' '),
-   StartTime(0),
-   StopTime(0),
-   RunTime(0),
+   fStartTime(0),
+   fStopTime(0),
+   fRunTime(0),
    fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION),
    fMeasType(kMEASTYPE_UNKNOWN),
@@ -124,9 +124,9 @@ void RunInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str() );
-   fprintf(f, "$rc['StartTime']                    = %ld;\n",    StartTime    );
-   fprintf(f, "$rc['StopTime']                     = %ld;\n",    StopTime     );
-   fprintf(f, "$rc['RunTime']                      = %f;\n",     RunTime      );
+   fprintf(f, "$rc['fStartTime']                   = %ld;\n",    fStartTime   );
+   fprintf(f, "$rc['fStopTime']                    = %ld;\n",    fStopTime    );
+   fprintf(f, "$rc['fRunTime']                      = %f;\n",     fRunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
    fprintf(f, "$rc['fMeasType']                    = %#04X;\n",  fMeasType);
@@ -734,6 +734,15 @@ ETargetOrient RunInfo::GetTargetOrient() const
    default:
       return kUNKNOWN_ORIENT;
    }
+} //}}}
+
+
+/** */
+UShort_t RunInfo::GetTargetId() const
+{ //{{{
+   //string sTgtId(fTargetId);
+   //return (UShort_t) atoi(sTgtId.c_str());
+   return (UShort_t) atoi(&fTargetId);
 } //}}}
 
 

@@ -93,7 +93,7 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
    cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
    cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
 
-   gRunInfo->StartTime  = recBegin->header.timestamp.time;
+   gRunInfo->fStartTime = recBegin->header.timestamp.time;
    gRunInfo->fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
    gRunInfo->fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
 
@@ -134,14 +134,15 @@ void RawDataProcessor::ReadRecBegin(MseRunInfoX* run)
    }
 
    sstr.str("");
-   sstr << gRunInfo->StartTime;
+   sstr << gRunInfo->fStartTime;
    gRunDb.fFields["START_TIME"] = sstr.str();
-   gRunDb.timeStamp = gRunInfo->StartTime; // should be always defined in raw data
+   gRunDb.timeStamp = gRunInfo->fStartTime; // should be always defined in raw data
    //gRunDb.Print();
 
    if (run) {
       run->polarimeter_id = gRunDb.fPolId;
-      mysqlpp::DateTime dt(gRunDb.timeStamp);
+      //mysqlpp::DateTime dt(gRunDb.timeStamp);
+      mysqlpp::DateTime dt(gRunInfo->fStartTime);
       run->start_time     = dt;
    }
 
@@ -503,7 +504,7 @@ void readloop(MseRunInfoX &run)
          cout << "Date & Time: "         << ctime(&rec.begin.header.timestamp.time);
          cout << "Timestamp: "           << rec.begin.header.timestamp.time << endl;
 
-         gRunInfo->StartTime = rec.begin.header.timestamp.time;
+         gRunInfo->fStartTime = rec.begin.header.timestamp.time;
          gRunInfo->fDataFormatVersion = rec.begin.version;
 
          gRunInfo->fPolBeam   = (rec.header.type & REC_MASK_BEAM) >> 16;
@@ -523,7 +524,7 @@ void readloop(MseRunInfoX &run)
          break; // later
 
       case REC_END:
-         gRunInfo->StopTime = rec.end.header.timestamp.time;
+         gRunInfo->fStopTime = rec.end.header.timestamp.time;
          break;
 
       case REC_READRAW:
@@ -536,7 +537,7 @@ void readloop(MseRunInfoX &run)
       //case REC_SCALERS:
       //   fprintf(stdout, "Scaler readtime \n");
       //   fprintf(stdout, "Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
-      //   gRunInfo->StopTime = rec.header.timestamp.time;
+      //   gRunInfo->fStopTime = rec.header.timestamp.time;
       //   break;
 
       case REC_READAT:
@@ -707,7 +708,7 @@ void readloop(MseRunInfoX &run)
       end_process(run);
 
    fprintf(stdout, "End of data stream \n");
-   fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo->StopTime));
+   fprintf(stdout, "End Time: %s\n", ctime(&gRunInfo->fStopTime));
    fprintf(stdout, "Carbons found: %ld \n", Nevcut);
    //fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
    fprintf(stdout, "Total events in file %d\n", gAnaInfo->nEventsTotal);
@@ -716,7 +717,7 @@ void readloop(MseRunInfoX &run)
 
    gAnaInfo->nEventsProcessed = Nevtot;
 
-   mysqlpp::DateTime dt(gRunInfo->StopTime);
+   mysqlpp::DateTime dt(gRunInfo->fStopTime);
    run.stop_time = dt;
 
    // Add info to database entry

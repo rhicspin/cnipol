@@ -729,13 +729,13 @@ void CalcStatistics()
    for (int i=0; i<X_index; i++) cntr.good_event += cntr.good[i];
 
    // Run time duration
-   gRunInfo->RunTime = gRunInfo->Run == 5 ? gNDelimeters : cntr.revolution/RHIC_REVOLUTION_FREQ;
+   gRunInfo->fRunTime = gRunInfo->Run == 5 ? gNDelimeters : cntr.revolution/RHIC_REVOLUTION_FREQ;
 
    // Calculate rates
-   if (gRunInfo->RunTime) {
-      gRunInfo->GoodEventRate = float(cntr.good_event) / gRunInfo->RunTime / 1e6;
-      gRunInfo->EvntRate      = float(Nevtot) / gRunInfo->RunTime / 1e6;
-      gRunInfo->ReadRate      = float(Nread) / gRunInfo->RunTime / 1e6;
+   if (gRunInfo->fRunTime) {
+      gRunInfo->GoodEventRate = float(cntr.good_event) / gRunInfo->fRunTime / 1e6;
+      gRunInfo->EvntRate      = float(Nevtot) / gRunInfo->fRunTime / 1e6;
+      gRunInfo->ReadRate      = float(Nread) / gRunInfo->fRunTime / 1e6;
    }
 
    // Misc
@@ -812,7 +812,7 @@ void PrintRunResults()
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------   Analysis Results   --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
-   printf(" RunTime                 [s]    = %10.1f\n", gRunInfo->RunTime);
+   printf(" fRunTime                 [s]    = %10.1f\n", gRunInfo->fRunTime);
    printf(" Total events in banana         = %10ld\n",  cntr.good_event);
    printf(" Good Carbon Max Rate  [MHz]    = %10.4f\n", gAnaResult->max_rate);
    printf(" Good Carbon Rate      [MHz]    = %10.4f\n", gRunInfo->GoodEventRate);

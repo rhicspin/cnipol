@@ -33,6 +33,7 @@ MseFillPolarX::MseFillPolarX(const mysqlpp::sql_int_unsigned &p1) : MseFillPolar
 void MseFillPolarX::Init()
 {
    fill                  =  0; 
+   start_time            = mysqlpp::DateTime("0000-00-00 00:00:00");
    beam_energy           =  0; 
    polar_blue_hjet       = -1; 
    polar_blue_hjet_err   = -1; 

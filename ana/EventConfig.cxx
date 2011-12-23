@@ -10,7 +10,7 @@
 #include "AnaInfo.h"
 #include "DbEntry.h"
 #include "RunInfo.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "MseRunInfo.h"
 
 ClassImp(EventConfig)
@@ -25,7 +25,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0),
    fRunInfo(new RunInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
-   fCalibrator(new Calibrator(fRandom)), fAnaResult(new AnaResult()), fMseRunInfoX(new MseRunInfoX())
+   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseRunInfoX(new MseRunInfoX())
 {
 }
 
@@ -41,7 +41,7 @@ EventConfig::~EventConfig()
 RunInfo*     EventConfig::GetRunInfo()     { return fRunInfo; }
 AnaInfo*     EventConfig::GetAnaInfo()     { return fAnaInfo; }
 Calibrator*  EventConfig::GetCalibrator()  { return fCalibrator; }
-AnaResult*   EventConfig::GetAnaResult()   { return fAnaResult; }
+AnaMeasResult*   EventConfig::GetAnaMeasResult()   { return fAnaMeasResult; }
 MseRunInfoX* EventConfig::GetMseRunInfoX() { return fMseRunInfoX; }
 
 
@@ -92,11 +92,11 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fCalibrator->PrintAsPhp(f);
    }
 
-   fprintf(f, "\n// AnaResult data\n");
-   if (!fAnaResult) {
-      Error("PrintAsPhp", "fAnaResult not defined");
+   fprintf(f, "\n// AnaMeasResult data\n");
+   if (!fAnaMeasResult) {
+      Error("PrintAsPhp", "fAnaMeasResult not defined");
    } else {
-      fAnaResult->PrintAsPhp(f);
+      fAnaMeasResult->PrintAsPhp(f);
    }
 
    fprintf(f, "\n// MseRunInfoX data\n");
@@ -145,7 +145,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b >> fRunInfo;
       R__b >> fAnaInfo;
       R__b >> fCalibrator;
-      R__b >> fAnaResult;
+      R__b >> fAnaMeasResult;
       R__b >> fMseRunInfoX;
       R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
    } else {
@@ -156,7 +156,7 @@ void EventConfig::Streamer(TBuffer &R__b)
       R__b << fRunInfo;
       R__b << fAnaInfo;
       R__b << fCalibrator;
-      R__b << fAnaResult;
+      R__b << fAnaMeasResult;
       R__b << fMseRunInfoX;
       R__b.SetByteCount(R__c, kTRUE);
    }

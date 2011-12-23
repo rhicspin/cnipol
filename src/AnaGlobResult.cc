@@ -54,7 +54,8 @@ void AnaGlobResult::Print(const Option_t* opt) const
    PolId2ValErrMapConstIter iNormJC  = fNormJetCarbon.begin();
    PolId2ValErrMapConstIter iNormJC2 = fNormJetCarbon2.begin();
 
-   for ( ; iNormJC != fNormJetCarbon.end(); ++iNormJC, ++iNormJC2) {
+   for ( ; iNormJC != fNormJetCarbon.end(); ++iNormJC, ++iNormJC2)
+   {
       EPolarimeterId  polId = iNormJC->first;
       string         sPolId = RunConfig::AsString(polId);
 
@@ -118,7 +119,7 @@ void AnaGlobResult::Print(const Option_t* opt) const
 
 
 /** */
-void AnaGlobResult::AddRunResult(AnaResult &result)
+void AnaGlobResult::AddRunResult(AnaMeasResult &result)
 { //{{{
 } //}}}
 
