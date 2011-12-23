@@ -41,7 +41,7 @@
 #include "DeadLayerCalibratorEDepend.h"
 
 #include "AnaInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 using namespace std;
 
@@ -332,8 +332,8 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
       if (fEventConfig) {
 
-         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fRunInfo->fRunName;
-         gRunDb.alpha_calib_run_name = fEventConfig->fRunInfo->fRunName;
+         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fMeasInfo->fRunName;
+         gRunDb.alpha_calib_run_name = fEventConfig->fMeasInfo->fRunName;
          //fEventConfig->fDatproc->CMODE = 0;
 
          delete fChannelEvent->fEventConfig;

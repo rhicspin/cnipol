@@ -1,4 +1,4 @@
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 #include <sstream>
 #include <algorithm>
@@ -7,7 +7,7 @@
 #include "Asym.h"
 
 #include "AnaInfo.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
 ClassImp(RunInfo)

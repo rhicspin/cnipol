@@ -127,7 +127,7 @@ void AnaGlobResult::AddRunResult(AnaMeasResult &result)
 /** */
 void AnaGlobResult::AddRunResult(EventConfig &rc)
 { //{{{
-   UInt_t fillId = rc.fRunInfo->GetFillId();
+   UInt_t fillId = rc.fMeasInfo->GetFillId();
 
    if (fillId > fMaxFill) fMaxFill = fillId;
    if (fillId < fMinFill) fMinFill = fillId;

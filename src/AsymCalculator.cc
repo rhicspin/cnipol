@@ -21,9 +21,9 @@
 #include "AnaInfo.h"
 #include "AnaMeasResult.h"
 #include "ChannelCalib.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "TargetInfo.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 
 using namespace std;
 

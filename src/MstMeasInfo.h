@@ -1,7 +1,7 @@
 #ifndef MstRunInfo_h
 #define MstRunInfo_h
 
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 
 class MstRunInfo {
 

@@ -3,7 +3,7 @@
 
 //#include "mysql++.h"
 //#include "ssqls.h"
-#include "MstRunInfo.h"
+#include "MstMeasInfo.h"
 
 
 /** */

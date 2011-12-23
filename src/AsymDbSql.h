@@ -8,8 +8,8 @@
 #include "AsymDb.h"
 #include "DbEntry.h"
 
-//#include "MstRunInfo.h"
-#include "MseRunInfo.h"
+//#include "MstMeasInfo.h"
+#include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "MseFillPolar.h"
 #include "MseFillProfile.h"

@@ -6,7 +6,7 @@
 #include "TObject.h"
 
 #include "DbEntry.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "MseFillPolar.h"
 #include "MseFillProfile.h"
