@@ -21,7 +21,7 @@
 #include "AnaInfo.h"
 #include "AsymRoot.h"
 #include "Kinema.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 using namespace std;
 

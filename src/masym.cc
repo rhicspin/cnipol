@@ -17,7 +17,7 @@
 #include "AsymDbSql.h"
 #include "AsymGlobals.h"
 #include "AnaInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 #include "utils/utils.h"
 
@@ -143,12 +143,12 @@ void initialize()
       }
 
       char strTime[80];
-      strftime(strTime, 80, "%X", localtime(&gRC->fRunInfo->fStartTime));
+      strftime(strTime, 80, "%X", localtime(&gRC->fMeasInfo->fStartTime));
 
-      Double_t runId            = gRC->fRunInfo->RUNID;
+      Double_t runId            = gRC->fMeasInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
-      UInt_t   beamEnergy       = (UInt_t) (gRC->fRunInfo->GetBeamEnergy() + 0.5);
-      string   asymVersion      = gRC->fRunInfo->fAsymVersion;
+      UInt_t   beamEnergy       = (UInt_t) (gRC->fMeasInfo->GetBeamEnergy() + 0.5);
+      string   asymVersion      = gRC->fMeasInfo->fAsymVersion;
       Float_t  ana_power        = gRC->fAnaMeasResult->A_N[1];
       Float_t  asymmetry        = gRC->fAnaMeasResult->sinphi[0].P[0] * gRC->fAnaMeasResult->A_N[1];
       Float_t  asymmetry_err    = gRC->fAnaMeasResult->sinphi[0].P[1] * gRC->fAnaMeasResult->A_N[1];
@@ -163,12 +163,12 @@ void initialize()
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
-      //if ( beamEnergy == 100 && gRC->fRunInfo->fStartTime > flattopTimes[fillId]) {
-      //   gRC->fRunInfo->fBeamEnergy = 400;
+      //if ( beamEnergy == 100 && gRC->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+      //   gRC->fMeasInfo->fBeamEnergy = 400;
       //   beamEnergy = 400;
       //}
 
-      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fRunInfo->fStartTime, asymmetry);
+      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fMeasInfo->fStartTime, asymmetry);
       //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
       //   polarization_err, asymVersion.c_str());
@@ -180,7 +180,7 @@ void initialize()
 
       if (polarization < 5 || polarization > 99 || polarization_err > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
-          gRC->fRunInfo->fMeasType != kMEASTYPE_SWEEP ||
+          gRC->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           profileRatio > 1.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001
          )
       {
@@ -191,16 +191,16 @@ void initialize()
       if (flattopTimes.find(fillId) == flattopTimes.end()) 
          flattopTimes[fillId] = 0;
 
-      if ( beamEnergy == 250 && gRC->fRunInfo->fStartTime > flattopTimes[fillId]) {
-         flattopTimes[fillId] = gRC->fRunInfo->fStartTime;
+      if ( beamEnergy == 250 && gRC->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+         flattopTimes[fillId] = gRC->fMeasInfo->fStartTime;
       }
 
-      //if (gRC->fRunInfo->fStartTime < minTime ) minTime = gRC->fRunInfo->fStartTime;
-      //if (gRC->fRunInfo->fStartTime > maxTime ) maxTime = gRC->fRunInfo->fStartTime;
+      //if (gRC->fMeasInfo->fStartTime < minTime ) minTime = gRC->fMeasInfo->fStartTime;
+      //if (gRC->fMeasInfo->fStartTime > maxTime ) maxTime = gRC->fMeasInfo->fStartTime;
 
       if (gH->d.find("runs") != gH->d.end()) {
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
-         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fRunInfo->fStartTime);
+         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fMeasInfo->fStartTime);
 	   }
 
       // To calculate normalization factors for p-Carbon we need to do it in the first pass
@@ -251,7 +251,7 @@ void initialize()
       gHIn->ReadFromDir();
 
       // Overwrite the default gMeasInfo with the saved one
-      gMeasInfo = gRC->fRunInfo;
+      gMeasInfo = gRC->fMeasInfo;
 
       gH->Fill(*gRC);
       gH->Fill(*gRC, *gHIn);

@@ -4,7 +4,7 @@
 #include "TString.h"
 #include "TSystem.h"
 
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 
 
 using namespace std;

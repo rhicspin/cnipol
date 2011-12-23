@@ -16,7 +16,7 @@
 #include "TSystem.h"
 
 #include "AnaInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 using namespace std;
 

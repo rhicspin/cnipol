@@ -6,8 +6,8 @@
 
 #include "AsymGlobals.h"
 #include "DbEntry.h"
-#include "MseRunInfo.h"
-#include "RunInfo.h"
+#include "MseMeasInfo.h"
+#include "MeasInfo.h"
 
 ClassImp(AnaInfo)
 

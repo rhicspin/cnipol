@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "AsymDbFile.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 using namespace std;
 

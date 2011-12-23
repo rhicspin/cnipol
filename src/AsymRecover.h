@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "AsymGlobals.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 
 class AsymRecover

@@ -15,7 +15,7 @@
 
 #include "AnaInfo.h"
 #include "AnaMeasResult.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 // Description : Fit the slope of energy spectrum given in (-t) with exponential.
 void DetectorAnomaly()

@@ -106,13 +106,13 @@ void AnaFillResult::AddRunResult(AnaMeasResult &result)
 /** */
 void AnaFillResult::AddRunResult(EventConfig &rc, AnaGlobResult *globRes)
 { //{{{
-   string runName = rc.fRunInfo->GetRunName();
+   string runName = rc.fMeasInfo->GetRunName();
 
    // add or overwrite new AnaFillResult
    fAnaMeasResults[runName] = *rc.fAnaMeasResult;
-   fMeasTgtOrients[runName] = rc.fRunInfo->GetTargetOrient();
-   fMeasTgtIds[runName]     = rc.fRunInfo->GetTargetId();
-   fMeasRingIds[runName]    = rc.fRunInfo->GetRingId();
+   fMeasTgtOrients[runName] = rc.fMeasInfo->GetTargetOrient();
+   fMeasTgtIds[runName]     = rc.fMeasInfo->GetTargetId();
+   fMeasRingIds[runName]    = rc.fMeasInfo->GetRingId();
 
    fAnaGlobResult = globRes;
 

@@ -10,7 +10,7 @@
 #include "TTree.h"
 
 #include "AsymGlobals.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 
 #include "AnaEvent.h"
 #include "ChannelData.h"

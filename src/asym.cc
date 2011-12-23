@@ -32,7 +32,7 @@
 //#include "AsymDbFile.h"
 #include "AsymDbSql.h"
 #include "AsymHbook.h"
-#include "MseRunInfo.h"
+#include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
 using namespace std;

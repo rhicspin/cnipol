@@ -20,7 +20,7 @@
 
 //#include "AsymDb.h"
 #include "AsymDbSql.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 using namespace std;
 
