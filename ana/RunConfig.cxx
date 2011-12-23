@@ -7,6 +7,7 @@
 
 #include "AsymHeader.h"
 
+
 using namespace std;
 
 
@@ -22,7 +23,7 @@ ostream& operator<<(ostream &os, const ESpinState &ss)
 
 
 /** */
-RunConfig::RunConfig() : TObject(), fPolarimeters(), fMeasTypes(),
+RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fTargetOrients(), fBeamEnergies(), fSpinStates()
 { //{{{
    fPolarimeters.insert(kB1U);
@@ -53,6 +54,18 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fMeasTypes(),
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
    fSpinStates.insert(kSPIN_UP);
+
+   // Initialize targets
+   PolarimeterIdConstIter iPolId = fPolarimeters.begin();
+   for ( ; iPolId != fPolarimeters.end(); ++iPolId) {
+      TargetOrientSetIter iTgtOrient = fTargetOrients.begin();
+      for ( ; iTgtOrient != fTargetOrients.end(); ++iTgtOrient) {
+         for ( UShort_t iTgtId=1; iTgtId<=6; iTgtId++) {
+            fTargets.insert(Target(*iPolId, *iTgtOrient, iTgtId));
+         }
+      }
+   }
+
 } //}}}
 
 

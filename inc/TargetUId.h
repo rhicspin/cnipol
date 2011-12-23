@@ -12,8 +12,13 @@
 
 #include "TObject.h"
 
-#include "RunConfig.h"
+#include "Asym.h"
 
+
+class TargetUId;
+
+typedef std::map<TargetUId, ValErrPair>        TargetUId2ValErrMap;
+typedef TargetUId2ValErrMap::iterator          TargetUId2ValErrMapIter;
 
 
 /** */
@@ -31,7 +36,7 @@ public:
    TargetUId(EPolarimeterId polId, ETargetOrient tgtOrient, UShort_t tgtId);
    ~TargetUId();
 
-   void Print(const Option_t* opt="") const {};
+   void Print(const Option_t* opt="") const;
    bool operator<(const TargetUId &tgtuid) const;
 
    ClassDef(TargetUId, 1)

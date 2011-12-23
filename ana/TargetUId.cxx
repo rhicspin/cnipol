@@ -1,4 +1,5 @@
 
+#include "RunConfig.h"
 #include "TargetUId.h"
 
 
@@ -22,8 +23,16 @@ TargetUId::TargetUId(EPolarimeterId polId, ETargetOrient tgtOrient, UShort_t tgt
 
 /** */
 TargetUId::~TargetUId()
-{
-}
+{ //{{{
+} //}}}
+
+
+/** */
+void TargetUId::Print(const Option_t* opt) const
+{ //{{{
+   cout << RunConfig::AsString(fPolId) << "   " << RunConfig::AsString(fTargetOrient) << "   " << fTargetId << endl;
+   //printf();
+} //}}}
 
 
 /** */

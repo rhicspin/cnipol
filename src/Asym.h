@@ -27,8 +27,29 @@
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
-#include "RunConfig.h"
-#include "TargetUId.h"
+//#include "TargetUId.h"
+
+
+enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID};
+
+enum EBeamId {kBLUE_BEAM = 1, kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
+
+enum ERingId {kBLUE_RING = 1, kYELLOW_RING = 2, kUNKNOWN_RING};
+
+enum EStreamId {kUPSTREAM = 1, kDOWNSTREAM = 2, kUNKNOWN_STREAM};
+
+enum EMeasType {kMEASTYPE_UNKNOWN = 0x00,
+                kMEASTYPE_ALPHA   = 0x01,
+                kMEASTYPE_SWEEP   = 0x02,
+                kMEASTYPE_FIXED   = 0x04,
+                kMEASTYPE_RAMP    = 0x08,
+                kMEASTYPE_EMIT    = 0x10};
+
+enum ETargetOrient {kTARGET_H = 0, kTARGET_V = 1, kUNKNOWN_ORIENT};
+
+enum EBeamEnergy {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kFLATTOP = 250};
+
+enum ESpinState {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 
 
 typedef std::map<std::string, std::string>     Str2StrMap;
@@ -62,9 +83,6 @@ typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
 typedef std::map<EBeamId, TgtOrient2ValErrMap> BeamId2TgtOrient2ValErrMap;
 typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
 
-typedef std::map<TargetUId, ValErrPair>        TargetUId2ValErrMap;
-typedef TargetUId2ValErrMap::iterator          TargetUId2ValErrMapIter;
-
 typedef std::map<std::string, EBeamId>         String2BeamIdMap;
 typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
 
@@ -91,10 +109,40 @@ typedef std::map<std::string, UShort_t>        String2TargetIdMap;
 typedef String2TargetIdMap::iterator           String2TargetIdMapIter;
 
 
+
+typedef std::set<EBeamId>                  BeamIdSet;
+typedef BeamIdSet::iterator                BeamIdSetIter;
+typedef BeamIdSet::const_iterator          BeamIdConstIter;
+
+typedef std::set<ERingId>                  RingIdSet;
+typedef RingIdSet::iterator                RingIdSetIter;
+typedef RingIdSet::const_iterator          RingIdConstIter;
+
+typedef std::set<ETargetOrient>            TargetOrientSet;
+typedef TargetOrientSet::iterator          TargetOrientSetIter;
+
+typedef std::set<EBeamEnergy>::iterator    IterBeamEnergy;
+typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
+typedef std::set<ESpinState>::iterator     IterSpinState;
+
+typedef std::set<EPolarimeterId>           PolarimeterIdSet;
+
+typedef std::set<EBeamEnergy>::iterator    BeamEnergyIter;
+typedef PolarimeterIdSet::iterator         PolarimeterIdIter;
+typedef PolarimeterIdSet::const_iterator   PolarimeterIdConstIter;
+typedef std::set<ESpinState>::iterator     SpinStateIter;
+
+
+typedef std::set<UShort_t>    ChannelSet;
+typedef ChannelSet::iterator  ChannelSetIter;
+
+
+std::ostream& operator<<(std::ostream &os, const ESpinState &ss);
 std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
 std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
 TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
 TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
+
 
 // whole info for one event
 struct processEvent {
