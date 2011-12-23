@@ -249,7 +249,7 @@ Bool_t ChannelEvent::PassCutRawAlpha()
 /** Returns true for silicon channels. */
 Bool_t ChannelEvent::PassCutSiliconChannel()
 { //{{{
-   if ( gRunInfo->IsSiliconChannel(GetChannelId()) )
+   if ( gMeasInfo->IsSiliconChannel(GetChannelId()) )
       return true;
 
    return false;
@@ -259,7 +259,7 @@ Bool_t ChannelEvent::PassCutSiliconChannel()
 /** */
 Bool_t ChannelEvent::PassCutDepEnergyTime()
 { //{{{
-   switch (gRunInfo->fPolId) {
+   switch (gMeasInfo->fPolId) {
 
    case 0:   // B1U
       return true;
@@ -267,8 +267,8 @@ Bool_t ChannelEvent::PassCutDepEnergyTime()
 
    case 1:   // Y1D
       if ( GetEnergyA() < 200 || GetEnergyA() > 1000)// || GetTime() < 15 || GetTime() > 75)
-          //(GetTime() + gRunInfo->GetExpectedGlobalTimeOffset()) < 15 ||
-          //(GetTime() + gRunInfo->GetExpectedGlobalTimeOffset()) > 75)
+          //(GetTime() + gMeasInfo->GetExpectedGlobalTimeOffset()) < 15 ||
+          //(GetTime() + gMeasInfo->GetExpectedGlobalTimeOffset()) > 75)
          return false;
       break;
 
@@ -356,7 +356,7 @@ Bool_t ChannelEvent::PassCutPulser()
 
    return true;
 
-   //switch (gRunInfo->fPolId) {
+   //switch (gMeasInfo->fPolId) {
 
    //case 0:   // B1U
    //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
@@ -403,7 +403,7 @@ Bool_t ChannelEvent::PassCutNoise()
 
    return true;
 
-   //switch (gRunInfo->fPolId) {
+   //switch (gMeasInfo->fPolId) {
 
    //case 0:   // B1U
    //   //if ( (fChannel.fAmpltd < 50 && fChannel.fTdc < 35) || fChannel.fAmpltd > 215)
@@ -452,7 +452,7 @@ Bool_t ChannelEvent::PassCutNoise()
 /** */
 Bool_t ChannelEvent::PassCutEnabledChannel()
 { //{{{
-   return !gRunInfo->IsDisabledChannel(GetChannelId());
+   return !gMeasInfo->IsDisabledChannel(GetChannelId());
 } //}}}
 
 
@@ -474,7 +474,7 @@ Bool_t ChannelEvent::PassCutPmtChannel()
 { //{{{
    UShort_t chId = GetChannelId();
 
-   if ( gRunInfo->IsPmtChannel(chId) )
+   if ( gMeasInfo->IsPmtChannel(chId) )
       return true;
 
   return false;
@@ -486,7 +486,7 @@ Bool_t ChannelEvent::PassCutHamaChannel()
 { //{{{
    UShort_t chId = GetChannelId();
 
-   if ( gRunInfo->IsHamaChannel(chId) )
+   if ( gMeasInfo->IsHamaChannel(chId) )
       return true;
 
   return false;
@@ -508,5 +508,5 @@ Bool_t ChannelEvent::PassCutEmptyBunch() const
 { //{{{
    Int_t bId = GetBunchId() + 1;
 
-   return gRunInfo->IsEmptyBunch(bId) ? true : false;
+   return gMeasInfo->IsEmptyBunch(bId) ? true : false;
 } //}}}

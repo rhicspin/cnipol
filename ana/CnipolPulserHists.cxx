@@ -91,9 +91,9 @@ void CnipolPulserHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", *iCh);
@@ -158,9 +158,9 @@ void CnipolPulserHists::BookHists(string cutid)
    fhBunchCounts = (TH1*) o.find("hBunchCounts")->second;
    fhStripCounts = (TH1*) o.find("hStripCounts")->second;
 
-   iCh = gRunInfo->fSiliconChannels.begin();
+   iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);

@@ -44,13 +44,13 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
    // Now calibrate individual active channels
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fActiveSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
       // should be removed in the future
-      //if (gRunInfo->IsDisabledChannel(*iCh)) continue;
+      //if (gMeasInfo->IsDisabledChannel(*iCh)) continue;
 
       sprintf(&strChId[0], "%02d", *iCh);
 
@@ -80,13 +80,13 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
    // Now calibrate individual active channels
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fActiveSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fActiveSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fActiveSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fActiveSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
       // should be removed in the future
-      //if (gRunInfo->IsDisabledChannel(*iCh)) continue;
+      //if (gMeasInfo->IsDisabledChannel(*iCh)) continue;
 
       sprintf(&strChId[0], "%02d", *iCh);
 

@@ -168,7 +168,7 @@ void EventConfig::Streamer(TBuffer &R__b)
 
 /** */
 string EventConfig::GetSignature()
-{
+{ //{{{
    string strSignature = "";
 
    if (fAnaInfo) {
@@ -192,7 +192,7 @@ string EventConfig::GetSignature()
    }
 
    return strSignature;
-}
+} //}}}
 
 
 /** */

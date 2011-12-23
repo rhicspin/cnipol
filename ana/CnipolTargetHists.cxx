@@ -136,10 +136,10 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
 
    UShort_t tstep = 0;
 
-   if (gRunInfo->Run == 5) {
+   if (gMeasInfo->Run == 5) {
       tstep = ch->GetDelimiterId();
       //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   } else if (gRunInfo->Run >= 6) {
+   } else if (gMeasInfo->Run >= 6) {
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
       if (ttime < MAXDELIM) {
@@ -152,7 +152,7 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
       }
 
    } else {
-      Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo->Run);
+      Warning("Fill", "Target tstep size is not defined for Run %d", gMeasInfo->Run);
    }
 
    ((TH1*) o["hTargetSteps"])->Fill(tstep);
@@ -184,7 +184,7 @@ void CnipolTargetHists::PostFill()
 { //{{{
    //char  htitle[100];
    float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-   int   X_index = gRunInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
+   int   X_index = gMeasInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
  
    float xmin, xmax;
    float margin = 0.02;
@@ -213,7 +213,7 @@ void CnipolTargetHists::PostFill()
 
    GetMinMax(X_index, y, margin, ymin, ymax);
 
-   //sprintf(htitle,"%.3f : Rate vs Taret Postion", gRunInfo->RUNID);
+   //sprintf(htitle,"%.3f : Rate vs Taret Postion", gMeasInfo->RUNID);
  
    ((TH1*) o["rate_vs_delim"])->SetBins(100, xmin, xmax, 100, ymin, ymax);
  
@@ -226,11 +226,11 @@ void CnipolTargetHists::PostFill()
 	//delete rate_delim;
  
    // Target Position vs Time
-   //sprintf(htitle,"%.3f : Taret Postion vs. Time", gRunInfo->RUNID);
+   //sprintf(htitle,"%.3f : Taret Postion vs. Time", gMeasInfo->RUNID);
  
-   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, gRunInfo->fRunTime*1.2);
+   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, gMeasInfo->fRunTime*1.2);
 
-   ((TH1*) o["tgtx_vs_time"])->SetBins(10, xmin, xmax, 10, 0.5, gRunInfo->fRunTime*1.2);
+   ((TH1*) o["tgtx_vs_time"])->SetBins(10, xmin, xmax, 10, 0.5, gMeasInfo->fRunTime*1.2);
  
    //delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
    //gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;

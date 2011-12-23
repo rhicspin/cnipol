@@ -58,9 +58,9 @@ void CnipolKinematHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -87,9 +87,9 @@ void CnipolKinematHists::BookHists(string cutid)
    }
 
    // Speed up
-   iCh = gRunInfo->fSiliconChannels.begin();
+   iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -173,9 +173,9 @@ void CnipolKinematHists::PostFill()
    TH1* hMassFitSigmaByChannel = (TH1*) o["hMassFitSigmaByChannel"];
 
    // Fit channel histograms
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);

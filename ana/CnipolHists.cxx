@@ -137,9 +137,9 @@ void CnipolHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -265,9 +265,9 @@ void CnipolHists::BookHists(string cutid)
    fhSpinVsChannel = (TH2*) o.find("hSpinVsChannel")->second;
    fhSpinVsBunch   = (TH2*) o.find("hSpinVsBunch"  )->second;
 
-   iCh = gRunInfo->fSiliconChannels.begin();
+   iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -324,8 +324,8 @@ void CnipolHists::PreFill(string cutid)
    char hName[256];
 
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -362,8 +362,8 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
 
    //DrawObjContainer *sd = d.find("channel" + sChId)->second;
 
-   string   sSS = gRunConfig.AsString( gRunInfo->GetBunchSpin(bId) );
-   UShort_t nSS = gRunConfig.AsIndex(  gRunInfo->GetBunchSpin(bId) );
+   string   sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
+   UShort_t nSS = gRunConfig.AsIndex(  gMeasInfo->GetBunchSpin(bId) );
 
    // Full kinematic carbon kinEnergy
    Float_t depEnergy    = ch->GetEnergyA();
@@ -380,13 +380,13 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    //((TH1*) sd->o.find("hTimeVsEnergyA_ch" + sChId)->second) -> Fill(depEnergy, ch->GetTime());
    //((TH2*) sd->o.find("hTofVsKinEnergyA_ch" + sChId)->second) -> Fill(kinEnergy, tof);
    //((TH2*) sd->o.find("hTofVsKinEnergyA_ch" + sChId + "_" + sSS)->second) -> Fill(kinEnergy, tof);
-   //((TH1*) o.find("hSpinVsChannel" + cutid)->second) -> Fill(chId, gRunInfo->GetBunchSpin(bId));
-   //((TH1*) o.find("hSpinVsBunch"   + cutid)->second) -> Fill(bId,  gRunInfo->GetBunchSpin(bId));
+   //((TH1*) o.find("hSpinVsChannel" + cutid)->second) -> Fill(chId, gMeasInfo->GetBunchSpin(bId));
+   //((TH1*) o.find("hSpinVsBunch"   + cutid)->second) -> Fill(bId,  gMeasInfo->GetBunchSpin(bId));
    //((TH2*) sd->o.find("hLongiTimeDiffVsEnergyA_ch" + sChId + "_" + sSS)->second) -> Fill(depEnergy, timeDiff);
 
    fhKinEnergyA_o  -> Fill(kinEnergy);
-   fhSpinVsChannel -> Fill(chId, gRunInfo->GetBunchSpin(bId));
-   fhSpinVsBunch   -> Fill(bId,  gRunInfo->GetBunchSpin(bId));
+   fhSpinVsChannel -> Fill(chId, gMeasInfo->GetBunchSpin(bId));
+   fhSpinVsBunch   -> Fill(bId,  gMeasInfo->GetBunchSpin(bId));
 
    fhTimeVsEnergyA_ch[chId-1]   -> Fill(depEnergy, ch->GetTime());
    //fhTofVsKinEnergyA_ch[chId-1] -> Fill(kinEnergy, tof);
@@ -397,10 +397,10 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    //ds XXX
    //UShort_t tstep = 0;
 
-   //if (gRunInfo->Run == 5) {
+   //if (gMeasInfo->Run == 5) {
    //   tstep = ch->GetDelimiterId();
    //   //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   //} else if (gRunInfo->Run >= 6) {
+   //} else if (gMeasInfo->Run >= 6) {
    //   UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
    //   if (ttime < MAXDELIM) {
@@ -412,7 +412,7 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
    //            "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
    //   }
    //} else {
-   //   Warning("Fill", "Target tstep size is not defined for Run %d", gRunInfo->Run);
+   //   Warning("Fill", "Target tstep size is not defined for Run %d", gMeasInfo->Run);
    //}
 
    //int ss_code = gSpinPattern[bId] == 1 ? 0 : (gSpinPattern[bId] == -1 ? 1 : 2);
@@ -422,8 +422,8 @@ void CnipolHists::Fill(ChannelEvent *ch, string cutid)
 
    //((TH2F*) sd->o["hSpinVsDelim"+cutid+"_ch"+sChId])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
 
-   //((TH2*) sd->o.find("hSpinVsDelim" + cutid + "_ch" + sChId)->second)->Fill(ttime, gRunInfo->GetBunchSpin(bId));
-   fhSpinVsDelim_ch[chId-1] -> Fill(ttime, gRunInfo->GetBunchSpin(bId));
+   //((TH2*) sd->o.find("hSpinVsDelim" + cutid + "_ch" + sChId)->second)->Fill(ttime, gMeasInfo->GetBunchSpin(bId));
+   fhSpinVsDelim_ch[chId-1] -> Fill(ttime, gMeasInfo->GetBunchSpin(bId));
 
    //((TH2*)     o["hTimeVsFunnyEnergyA"+cutid])               ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
 
@@ -453,8 +453,8 @@ void CnipolHists::FillDerived()
    TH1* hLongiTimeDiff              = (TH1*) o["hLongiTimeDiff"];
    
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -548,9 +548,9 @@ void CnipolHists::PostFill()
    }
 
    // Fit channel histograms
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -599,8 +599,8 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t
 
    // Draw superimposed for all channels
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh)
 	{

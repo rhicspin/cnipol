@@ -296,12 +296,12 @@ void AnaInfo::ProcessOptions()
    if (HasAlphaBit()) {
       fAlphaCalibRun     = fRunName;
       fDlCalibRun        = "";
-      gRunInfo->fMeasType = kMEASTYPE_ALPHA;
+      gMeasInfo->fMeasType = kMEASTYPE_ALPHA;
    }
 
    // Disable channels if requested by user
    if ( fDisabledDetectors.any() ) {
-      gRunInfo->DisableChannels(fDisabledDetectors);
+      gMeasInfo->DisableChannels(fDisabledDetectors);
    }
 } //}}}
 
