@@ -160,11 +160,11 @@ void event_process(processEvent *event)
       average.counter = 0;
 
       for (int j=0; j<NBUNCH; j++) {
-         wall_current_monitor->Fill(j, gRunInfo->fWallCurMon[j+1]);
-         HHF1(10030, (float) j, (float) gRunInfo->fWallCurMon[j+1]);
+         wall_current_monitor->Fill(j, gMeasInfo->fWallCurMon[j+1]);
+         HHF1(10030, (float) j, (float) gMeasInfo->fWallCurMon[j+1]);
 
-         if ( (fabs(gRunInfo->fWallCurMonAve-gRunInfo->fWallCurMon[j+1])/gRunInfo->fWallCurMonAve < gAnaInfo->WCMRANGE) && gFillPattern[j]) {
-            average.total+=gRunInfo->fWallCurMon[j+1];
+         if ( (fabs(gMeasInfo->fWallCurMonAve-gMeasInfo->fWallCurMon[j+1])/gMeasInfo->fWallCurMonAve < gAnaInfo->WCMRANGE) && gFillPattern[j]) {
+            average.total+=gMeasInfo->fWallCurMon[j+1];
             wcmfillpat[j]=1;
             ++average.counter;
          }
@@ -499,9 +499,9 @@ void event_process(processEvent *event)
       // fine -t bins
       int spbit = 2;
 
-      if (gRunInfo->GetBunchSpin(event->bid + 1) == 1) {
+      if (gMeasInfo->GetBunchSpin(event->bid + 1) == 1) {
          spbit = 0;
-      } else if (gRunInfo->GetBunchSpin(event->bid + 1) == -1) {
+      } else if (gMeasInfo->GetBunchSpin(event->bid + 1) == -1) {
          spbit = 1;
       }
 
@@ -570,7 +570,7 @@ void event_process(processEvent *event)
          Ncounts[(int)(st/12)][event->bid]++;
          int time = 0;
 
-         if (gRunInfo->Run == 5) {
+         if (gMeasInfo->Run == 5) {
             time = delim;
             ++cntr.good[delim];
             NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
@@ -675,7 +675,7 @@ void SpinTuneOutput(int bid, double si)
 {
    fprintf(stderr, "%10ld", cntr.revolution);
    fprintf(stderr,   "%5d", bid+1);
-   fprintf(stderr,   "%5d", gRunInfo->GetBunchSpin(bid + 1) );
+   fprintf(stderr,   "%5d", gMeasInfo->GetBunchSpin(bid + 1) );
    fprintf(stderr,   "%5d", int(si)+1);
  
    /*

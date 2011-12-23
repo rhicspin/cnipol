@@ -669,7 +669,7 @@ void CnipolProfileHists::PostFill()
    delete mfPow;
 
    // Set measurement type
-   gRunInfo->fMeasType = GuessMeasurementType();
+   gMeasInfo->fMeasType = GuessMeasurementType();
 } //}}}
 
 

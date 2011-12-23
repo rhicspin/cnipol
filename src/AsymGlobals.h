@@ -83,7 +83,7 @@ extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut
 extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
 extern AnaInfo                      *gAnaInfo;
-extern RunInfo                      *gRunInfo;
+extern RunInfo                      *gMeasInfo;
 extern AnaMeasResult                    *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;
 //extern AsymDb                       *gAsymDb;

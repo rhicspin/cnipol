@@ -546,9 +546,9 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    // per channel histograms
 
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh)
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -882,10 +882,10 @@ void MAsymRunHists::Fill(EventConfig &rc)
    graphErrs->SetPoint(nPoints, runId, bananaChi2Ndf);
 
    // per channel hists
-   //ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   //ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
-   //for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh)
+   //for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
@@ -1124,9 +1124,9 @@ void MAsymRunHists::PostFill()
 
          TGraphErrors* grT0VsDLMean = (TGraphErrors*) hT0VsDLMean_->GetListOfFunctions()->FindObject("grT0VsDLMean");
 
-         //ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+         //ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
       
-         //for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh)
+         //for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
          for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
          {
             string sChId("  ");
@@ -1665,9 +1665,9 @@ void MAsymRunHists::UpdateLimits()
          ((TH1*) oc_pol->o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
 
 
-         ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+         ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
       
-         for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+         for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
       
             string sChId("  ");
             sprintf(&sChId[0], "%02d", *iCh);

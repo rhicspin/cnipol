@@ -33,7 +33,7 @@ AnaGlobResult        gAnaGlobResult;
 int main(int argc, char *argv[])
 {
    // Create a default one
-   gRunInfo = new RunInfo();
+   gMeasInfo = new RunInfo();
 
    // do not attept to recover files
    gEnv->SetValue("TFile.Recover", 0);
@@ -250,8 +250,8 @@ void initialize()
       gHIn->d["asym"] = new CnipolAsymHists();
       gHIn->ReadFromDir();
 
-      // Overwrite the default gRunInfo with the saved one
-      gRunInfo = gRC->fRunInfo;
+      // Overwrite the default gMeasInfo with the saved one
+      gMeasInfo = gRC->fRunInfo;
 
       gH->Fill(*gRC);
       gH->Fill(*gRC, *gHIn);

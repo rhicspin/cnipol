@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
 
-   gAsymRoot->GetRunConfigs(gRunInfo, gAnaInfo, gAnaMeasResult);
+   gAsymRoot->GetRunConfigs(gMeasInfo, gAnaInfo, gAnaMeasResult);
 
    //gAsymDb  = new AsymDbFile();
    gAsymDb2 = new AsymDbSql();
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
       case 'r':
       case 'f':
          gAnaInfo->fRunName = optarg;
-         gRunInfo->fRunName = optarg;
+         gMeasInfo->fRunName = optarg;
          gRunDb.fRunName    = optarg;
          break;
 
@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
          break;
 
       case AnaInfo::OPTION_POL_ID:
-         gRunInfo->fPolId = atoi(optarg); break;
+         gMeasInfo->fPolId = atoi(optarg); break;
 
       case AnaInfo::OPTION_SET_CALIB_ALPHA:
          gAnaInfo->fAlphaCalibRun = optarg;
@@ -387,13 +387,13 @@ int main(int argc, char *argv[])
    //RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
 
    // Set to 0 when "RunID" contains alphabetical chars
-   gRunInfo->RUNID = strtod(gRunInfo->fRunName.c_str(), NULL);
+   gMeasInfo->RUNID = strtod(gMeasInfo->fRunName.c_str(), NULL);
 
    // For normal runs, RUNID != 0. Then read run conditions from run.db.
    // Otherwise, data filename with characters skip readdb and reconfig routines
    // assuming these are energy calibration or test runs.
-   //if (gRunInfo->RUNID)
-   //   readdb(gRunInfo->RUNID);
+   //if (gMeasInfo->RUNID)
+   //   readdb(gMeasInfo->RUNID);
    //else
    //   gAnaInfo->RECONFMODE = 0;
 
@@ -402,15 +402,15 @@ int main(int argc, char *argv[])
 
    // Check whether the run is in database
    if (gAnaInfo->fFlagUseDb) {
-      mseRunInfoX = gAsymDb2->SelectRun(gRunInfo->fRunName);
+      mseRunInfoX = gAsymDb2->SelectRun(gMeasInfo->fRunName);
    }
 
    if (mseRunInfoX) { // if run found in database save its copy
-      mseRunInfoXOrig  = new MseRunInfoX(gRunInfo->fRunName);
+      mseRunInfoXOrig  = new MseRunInfoX(gMeasInfo->fRunName);
       *mseRunInfoXOrig = *mseRunInfoX;
 
    } else { // if run not found in database create it
-      mseRunInfoX = new MseRunInfoX(gRunInfo->fRunName);
+      mseRunInfoX = new MseRunInfoX(gMeasInfo->fRunName);
    }
 
    //cout << endl << "mseRunInfoX 1: " << endl;
@@ -439,21 +439,21 @@ int main(int argc, char *argv[])
    //cout << *mseRunInfoX << endl;
 
    // Overwrite the offline version (if set previously)
-   //gRunDb.SetAsymVersion(gRunInfo->fAsymVersion);
-   mseRunInfoX->asym_version = gRunInfo->fAsymVersion;
+   //gRunDb.SetAsymVersion(gMeasInfo->fAsymVersion);
+   mseRunInfoX->asym_version = gMeasInfo->fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    //gRunDb.Print();
 
    //gAnaInfo->Update(gRunDb);
-   //gRunInfo->Update(gRunDb);
+   //gMeasInfo->Update(gRunDb);
 
    gAnaInfo->Update(*mseRunInfoX);
-   gRunInfo->Update(*mseRunInfoX);
-   gRunInfo->Update(*mseRunPeriodX);
+   gMeasInfo->Update(*mseRunInfoX);
+   gMeasInfo->Update(*mseRunPeriodX);
 
    gAnaInfo->Print();
-   gRunInfo->Print();
+   gMeasInfo->Print();
    mseRunInfoX->Print();
 
    //gAsymDb->PrintCommon();
@@ -535,7 +535,7 @@ int main(int argc, char *argv[])
 
    mseRunInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
    mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
-   mseRunInfoX->measurement_type = UInt_t(gRunInfo->fMeasType);
+   mseRunInfoX->measurement_type = UInt_t(gMeasInfo->fMeasType);
 
    if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
       gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);

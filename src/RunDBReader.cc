@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
    //extern DbEntry rundb;
    //recordConfigRhicStruct  *cfginfo;
-   //extern int gRunInfo->PrintConfig(recordConfigRhicStruct *);
+   //extern int gMeasInfo->PrintConfig(recordConfigRhicStruct *);
 
    char * RunID;
    //char * confdir = getenv("CONFDIR");
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
    // Read Conditions from run.db
    readdb(RUNID);
 
-   gRunInfo->PrintConfig();
+   gMeasInfo->PrintConfig();
 
    return 0;
 }

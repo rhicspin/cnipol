@@ -26,7 +26,7 @@ void AsymRecover::OverwriteSpinPattern(int index)
  
    for (int bid=1; bid<N_BUNCHES; bid++)
    {
-      gRunInfo->fBeamBunches[bid].SetBunchSpin( (ESpinState) UserDefinedFillPattern[index][bid-1] );
+      gMeasInfo->fBeamBunches[bid].SetBunchSpin( (ESpinState) UserDefinedFillPattern[index][bid-1] );
    }
 }
 
@@ -40,7 +40,7 @@ void AsymRecover::OverwriteFillPattern(int index)
  
    for (int bid=1; bid<=N_BUNCHES; bid++)
    {
-      gRunInfo->fBeamBunches[bid].SetFilled( UserDefinedFillPattern[index][bid-1] );
+      gMeasInfo->fBeamBunches[bid].SetFilled( UserDefinedFillPattern[index][bid-1] );
    }
 }
 
@@ -48,13 +48,13 @@ void AsymRecover::OverwriteFillPattern(int index)
 // Description : Mask fill pattern to disable suspicious bunches
 void AsymRecover::MaskFillPattern()
 {
-   for (int i=0; i<gRunInfo->NDisableBunch; i++) {
+   for (int i=0; i<gMeasInfo->NDisableBunch; i++) {
 
       for (int j=0; j<N_BUNCHES; j++) {
-         //gFillPattern[j] = gRunInfo->DisableBunch[i] == j ? 0 : gFillPattern[j];
+         //gFillPattern[j] = gMeasInfo->DisableBunch[i] == j ? 0 : gFillPattern[j];
 
-         if (gRunInfo->DisableBunch[i] == j) {
-            gRunInfo->fBeamBunches.find(i+1)->second.SetFilled(kFALSE);
+         if (gMeasInfo->DisableBunch[i] == j) {
+            gMeasInfo->fBeamBunches.find(i+1)->second.SetFilled(kFALSE);
          }
       }
    }

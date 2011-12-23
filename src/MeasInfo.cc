@@ -570,7 +570,7 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 
   /*
   fprintf(stdout,"RUNINFO: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
-          gRunInfo->RUNID, gRunInfo->fPolBeam, gRunInfo->PolarimetryID);
+          gMeasInfo->RUNID, gMeasInfo->fPolBeam, gMeasInfo->PolarimetryID);
   */
 } //}}}
 

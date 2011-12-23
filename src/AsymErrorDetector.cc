@@ -76,7 +76,7 @@ void InvariantMassCorrelation(int st)
    TH1D *hslice_1 = (TH1D*)gDirectory->Get("hslice_1");
    sprintf(histname,"mass_vs_energy_corr_st%d",st+1);
    hslice_1 -> SetName(histname);
-   sprintf(htitle,"%.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",gRunInfo->RUNID,st+1);
+   sprintf(htitle,"%.3f:Invariant Mass vs. Energy Correlation Fit (Str%d)",gMeasInfo->RUNID,st+1);
    hslice_1 -> SetTitle(htitle);
    hslice_1 -> GetXaxis()->SetTitle("12C Kinetic Energy [keV]");
    hslice_1 -> GetYaxis()->SetTitle("Invariant Mass [GeV]");
@@ -106,7 +106,7 @@ void InvariantMassCorrelation(int st)
       float min,max;
       float margin=0.2;
       GetMinMaxOption(strpchk.p1.allowance*1.5, NBUNCH, strpchk.ecorr.p[1], margin, min, max);
-      sprintf(htitle,"Run%.3f : P[1] distribution for Mass vs. Energy Correlation", gRunInfo->RUNID);
+      sprintf(htitle,"Run%.3f : P[1] distribution for Mass vs. Energy Correlation", gMeasInfo->RUNID);
       mass_e_correlation_strip = new TH2F("mass_e_correlation_strip", htitle, NSTRIP+1, 0, NSTRIP+1, 50, min, max);
       TGraphErrors * mass_e_gr = AsymmetryGraph(1, NSTRIP, strip, strpchk.ecorr.p[1], ex, strpchk.ecorr.perr[1]);
       mass_e_gr -> SetName("mass_e_gr");
@@ -175,7 +175,7 @@ void StripAnomalyDetector()
    DrawHorizLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
  
    // Calculate average carbon events in banana cuts
-   strpchk.evnt.average[0] = good_carbon_events_strip->GetEntries()/float(gRunInfo->NActiveStrip);
+   strpchk.evnt.average[0] = good_carbon_events_strip->GetEntries()/float(gMeasInfo->NActiveStrip);
    DrawHorizLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, strpchk.evnt.average[0], 1, 1, 2);
    printf(" Average # of Events in Banana Cut : %6.2f\n", strpchk.evnt.average[0]);
  
@@ -193,7 +193,7 @@ void StripAnomalyDetector()
       evntdev[i] = 0;
       printf("Anomary Check for strip=%d ...\r", i);
  
-      if (gRunInfo->ActiveStrip[i]) {
+      if (gMeasInfo->ActiveStrip[i]) {
          // t vs. Energy (this routine is incomplete)
          //BananaFit(i);
  
@@ -266,7 +266,7 @@ void StripAnomalyDetector()
       sprintf(text, "%2d", i+1);
       int strip_err_code = 0;
  
-      if (gRunInfo->ActiveStrip[i]){ // process only if the strip is active
+      if (gMeasInfo->ActiveStrip[i]){ // process only if the strip is active
  
          // deviation from average width of 12C mass distribution
          if (fabs(double(feedback.RMS[i]))-strpchk.width.average[0]>strpchk.width.allowance) {
@@ -321,7 +321,7 @@ void StripAnomalyDetector()
  
    // register unrecognized anomaly strips
    UnrecognizedAnomaly(gAnaMeasResult->anomaly.st, gAnaMeasResult->anomaly.nstrip,
-      gRunInfo->fDisabledChannels, gRunInfo->NDisableStrip,
+      gMeasInfo->fDisabledChannels, gMeasInfo->NDisableStrip,
       gAnaMeasResult->unrecog.anomaly.st, gAnaMeasResult->unrecog.anomaly.nstrip);
 }
 
@@ -377,15 +377,15 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
   for (int bid=0;bid<NBUNCH;bid++) {
     local.bunch[bid] = -999; // default not to appear in plots
 
-    if ( !gRunInfo->IsEmptyBunch(bid+1) && A[bid] != -ASYM_DEFAULT ) {
+    if ( !gMeasInfo->IsEmptyBunch(bid+1) && A[bid] != -ASYM_DEFAULT ) {
 
-      if (gRunInfo->GetBunchSpin(bid) == 1) {
+      if (gMeasInfo->GetBunchSpin(bid) == 1) {
         local.active_bunch[0]++;
         local.dev =  fabs(double(A[bid] - mean));
         local.chi2[0] += local.dev*local.dev/dA[bid]/dA[bid];
       }
 
-      if (gRunInfo->GetBunchSpin(bid) == -1) {
+      if (gMeasInfo->GetBunchSpin(bid) == -1) {
         local.active_bunch[1]++;
         local.dev =  fabs(double(A[bid] - (-1)*mean));
         local.chi2[1] += local.dev*local.dev/dA[bid]/dA[bid];
@@ -473,7 +473,7 @@ void BunchAsymmetryAnomaly()
 void BunchAnomalyDetector()
 {
    // Initialize anomaly bunch counter and error_code
-   gAnaMeasResult->anomaly.nbunch= gRunInfo->GetNumFilledBunches() > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
+   gAnaMeasResult->anomaly.nbunch= gMeasInfo->GetNumFilledBunches() > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
    gAnaMeasResult->anomaly.bunch_err_code = 0;
    bnchchk.rate.max_dev = 0;
 
@@ -485,10 +485,10 @@ void BunchAnomalyDetector()
       HotBunchFinder(8);
 
       // check unrecognized anomaly
-      UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch, gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
+      UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch, gMeasInfo->DisableBunch,gMeasInfo->NDisableBunch,
                         gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
 
-      gAnaMeasResult->anomaly.bad_bunch_rate = gRunInfo->GetNumFilledBunches() ? gAnaMeasResult->anomaly.nbunch/float(gRunInfo->GetNumFilledBunches())*100 : -1 ;
+      gAnaMeasResult->anomaly.bad_bunch_rate = gMeasInfo->GetNumFilledBunches() ? gAnaMeasResult->anomaly.nbunch/float(gMeasInfo->GetNumFilledBunches())*100 : -1 ;
    }
 }
 
@@ -517,7 +517,7 @@ void HotBunchFinder(int err_code)
    // define rate distribution and fill the histogram
    ErrDet->cd();
    char hname[100];
-   sprintf(hname,"%.3f : Specific Luminosiry / bunch", gRunInfo->RUNID);
+   sprintf(hname,"%.3f : Specific Luminosiry / bunch", gMeasInfo->RUNID);
    bunch_spelumi = new TH1F("bunch_spelumi",hname, 100, min*0.9, max*1.1);
    bunch_spelumi -> GetXaxis()->SetTitle("Good 12C Events/bunch / WCM");
    bunch_spelumi -> GetYaxis()->SetTitle("# Bunches weighted by 1/sqrt(12C Events)");
@@ -701,7 +701,7 @@ void checkForBadBunches()
       }
    }
  
-   UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch,gAnaMeasResult->anomaly.nbunch,gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
+   UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch,gAnaMeasResult->anomaly.nbunch,gMeasInfo->DisableBunch,gMeasInfo->NDisableBunch,
                        gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
 }
 */

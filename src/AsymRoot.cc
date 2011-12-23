@@ -554,7 +554,7 @@ void AsymRoot::PostFill(MseRunInfoX &run)
    // Special processing for some of the histogram containers
    //if (gAnaInfo->HasProfileBit()) {
       //((CnipolProfileHists*) fHists->d["profile"])->Process();
-      //gRunInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
+      //gMeasInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
 	//}
 
    // Add info to database entry
@@ -599,7 +599,7 @@ void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 /** */
 void AsymRoot::FillRunHists()
 {
-   ((CnipolRunHists*) fHists->d["run"])->Fill(*gRunInfo);
+   ((CnipolRunHists*) fHists->d["run"])->Fill(*gMeasInfo);
 }
 
 
@@ -889,7 +889,7 @@ void AsymRoot::BookHists()
    FeedBack->cd();
  
    sprintf(hname, "mass_feedback_all");
-   sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", gRunInfo->RUNID);
+   sprintf(htitle, "%.3f : Invariant Mass (feedback) for all strips", gMeasInfo->RUNID);
    mass_feedback_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_feedback_all -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
    mass_feedback_all -> SetLineColor(2);
@@ -897,7 +897,7 @@ void AsymRoot::BookHists()
    for (int i=0; i<TOT_WFD_CH; i++) {
  
       sprintf(hname, "mass_feedback_st%d", i+1);
-      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gRunInfo->RUNID, i+1);
+      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gMeasInfo->RUNID, i+1);
       mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_feedback[i] -> SetLineColor(2);
@@ -910,24 +910,24 @@ void AsymRoot::BookHists()
  
    for (int i=0; i<N_DETECTORS; i++) {
       sprintf(hname, "energy_spectrum_det%d", i+1);
-      sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gRunInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gMeasInfo->RUNID, i+1);
       energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
       energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
       //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
    }
  
-   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gMeasInfo->RUNID);
    energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
    energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
    //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
  
    sprintf(hname,"mass_nocut_all");
-   sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gMeasInfo->RUNID);
    mass_nocut_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_nocut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
  
    sprintf(hname,"mass_yescut_all");
-   sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Invariant Mass (w/cut) for all strips", gMeasInfo->RUNID);
    mass_yescut_all = new TH1F(hname, htitle, 100, 0, 20);
    mass_yescut_all->GetXaxis()->SetTitle("Mass [GeV/c^2]");
    mass_yescut_all->SetLineColor(2);
@@ -937,24 +937,24 @@ void AsymRoot::BookHists()
    for (int i=0; i<TOT_WFD_CH; i++) {
  
       sprintf(hname,"t_vs_e_yescut_st%d",i+1);
-      sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gRunInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : t vs. Kin.Energy (with cut) Strip-%d ", gMeasInfo->RUNID, i+1);
       t_vs_e_yescut[i] = new TH2F(hname,htitle, 50, 200, 1500, 100, 20, 90);
       t_vs_e_yescut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
       t_vs_e_yescut[i] -> GetYaxis() -> SetTitle("Time of Flight [ns]");
  
       sprintf(hname,"mass_vs_e_ecut_st%d",i+1);
-      sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", gRunInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Mass vs. Kin.Energy (Energy Cut) Strip-%d ", gMeasInfo->RUNID, i+1);
       mass_vs_e_ecut[i] = new TH2F(hname,htitle, 50, 200, 1000, 200, 6, 18);
       mass_vs_e_ecut[i] -> GetXaxis() -> SetTitle("Kinetic Energy [keV]");
       mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
  
       sprintf(hname, "mass_nocut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gRunInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gMeasInfo->RUNID, i+1);
       mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
  
       sprintf(hname, "mass_yescut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gRunInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gMeasInfo->RUNID, i+1);
       mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_yescut[i] -> SetLineColor(2);
@@ -962,16 +962,16 @@ void AsymRoot::BookHists()
  
    // Error detectors
    ErrDet->cd();
-   sprintf(htitle,"%.3f : Bunch Asymmetry X90", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry X90", gMeasInfo->RUNID);
    asym_bunch_x90 = new TH1F("asym_bunch_x90", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : Bunch Asymmetry X45", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry X45", gMeasInfo->RUNID);
    asym_bunch_x45 = new TH1F("asym_bunch_x45", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : Bunch Asymmetry Y45", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : Bunch Asymmetry Y45", gMeasInfo->RUNID);
    asym_bunch_y45 = new TH1F("asym_bunch_y45", htitle, 100, -0.1, 0.1);
 
-   sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gRunInfo->RUNID);
+   sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gMeasInfo->RUNID);
    good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
    good_carbon_events_strip->SetFillColor(17);
 

@@ -65,9 +65,9 @@ void CnipolPreprocHists::BookHists(string sid)
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
    ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
 
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -91,9 +91,9 @@ void CnipolPreprocHists::BookHists(string sid)
    }
 
    // Speed up
-   iCh = gRunInfo->fSiliconChannels.begin();
+   iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
@@ -136,9 +136,9 @@ void CnipolPreprocHists::FillDerivedPassOne()
    // Fill derivative histograms first
    TH1* hTimeVsEnergyA_noise = (TH1*) o["hTimeVsEnergyA_noise"];
    
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", *iCh);
@@ -205,8 +205,8 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
    TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
 
    set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gRunInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gRunInfo->fSiliconChannels.end();
+   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
+   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
 
    for (iCh=iChB; iCh!=iChE; ++iCh) {
 
@@ -243,7 +243,7 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
       //}
 
       hPulser_ch->Scale(gAnaInfo->fFastCalibThinout);
-      hPulser_ch->Scale( (N_BUNCHES - gRunInfo->GetNumEmptyBunches()) / (float) gRunInfo->GetNumEmptyBunches());
+      hPulser_ch->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
       hPreproc_ch->Add(hPulser_ch, -1);
 
       // Set negative content to 0 including under/overflows
@@ -323,9 +323,9 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
    }
 
    // Draw superimposed for all channels
-   ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
       string sSi("  ");
       sprintf(&sSi[0], "%02d", *iCh);

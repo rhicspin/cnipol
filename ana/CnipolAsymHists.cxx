@@ -245,7 +245,7 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
    //Float_t timeDiff  = ch->GetTdcAdcTimeDiff();
    UInt_t  ttime     = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
-   string sSS = gRunConfig.AsString( gRunInfo->GetBunchSpin(bId) );
+   string sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
 
    ((TH1*) o.find("hChVsBunchId_"       + sSS)->second) -> Fill(bId, chId);
    ((TH1*) o.find("hChVsKinEnergyA_"    + sSS)->second) -> Fill(kinEnergy, chId);
@@ -327,9 +327,9 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
 
       TH2* hChVsLongiTimeDiff_ss = (TH2*) o["hChVsLongiTimeDiff_" + sSS];
 
-      ChannelSetIter iCh = gRunInfo->fSiliconChannels.begin();
+      ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-      for (; iCh!=gRunInfo->fSiliconChannels.end(); ++iCh) {
+      for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
          string sChId("  ");
          sprintf(&sChId[0], "%02d", *iCh);

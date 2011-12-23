@@ -64,14 +64,14 @@ void CnipolRunHists::BookHists(string sid)
 
    // energy spectrum for all detector sum
    //sprintf(hName, "energy_spectrum_all");
-   //sprintf(hTitle, "%.3f : Energy Spectrum (All Detectors)", gRunInfo->runName.c_str());
+   //sprintf(hTitle, "%.3f : Energy Spectrum (All Detectors)", gMeasInfo->runName.c_str());
    //kinema->o[hName] = new TH1F(hName, hTitle, 100, 0, 0.03);
    //((TH1F*) kinema->o[hName])->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
 
    //for (int i=1; i<=TOT_WFD_CH; i++) {
 
    //   sprintf(hName,"mass_feedback_st%d", i);
-   //   //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gRunInfo->RUNID, i+1);
+   //   //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gMeasInfo->RUNID, i+1);
    //   sprintf(hTitle,"Invariant Mass for Strip-%d ", i);
    //   feedback->o[hName] = new TH1F(hName, hTitle, 100, 0, 20);
    //   ( (TH1F*) feedback->o[hName]) -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
@@ -133,7 +133,7 @@ void CnipolRunHists::BookHists(string sid)
 
 
    sprintf(hName,  "asym_vs_bunch_x45");
-   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gRunInfo->RUNID);
+   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gMeasInfo->RUNID);
    o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
    ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
    ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");
