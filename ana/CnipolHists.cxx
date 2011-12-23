@@ -541,7 +541,7 @@ void CnipolHists::PostFill()
    TFitResultPtr fitres = hKinEnergyA->Fit("fitfunc", "M E S R");
 
    if ( fitres.Get() && fitres->Ndf()) {
-      gAnaResult->fFitResEnergySlope = fitres;
+      gAnaMeasResult->fFitResEnergySlope = fitres;
    } else {
       Error("PostFill", "Something is wrong with energy slope fit");
       hKinEnergyA->GetListOfFunctions()->Clear();

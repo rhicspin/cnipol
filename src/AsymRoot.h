@@ -91,7 +91,7 @@ public:
    void         WriteTreeFile();
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
    EventConfig* GetRunConfig();
-   void         GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaResult *&ar);
+   void         GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
 };
 
 #endif

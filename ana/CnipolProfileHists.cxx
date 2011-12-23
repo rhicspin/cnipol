@@ -14,7 +14,7 @@
 #include "utils/utils.h"
 
 #include "AsymGlobals.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "TargetInfo.h"
 
 
@@ -456,14 +456,14 @@ void CnipolProfileHists::PostFill()
    fitres = grPolarVsIntensProfile->Fit("mfPow", "M E R S");
 
    if (fitres.Get()) {
-      gAnaResult->fFitResProfilePvsI = fitres;
+      gAnaMeasResult->fFitResProfilePvsI = fitres;
 
       // the following should retire
-      //gAnaResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
-      //gAnaResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
+      //gAnaMeasResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
+      //gAnaMeasResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
 
-      gAnaResult->fProfilePolarMax = ValErrPair(fitres->Value(0), fitres->FitResult::Error(0));
-      gAnaResult->fProfilePolarR   = ValErrPair(fitres->Value(1), fitres->FitResult::Error(1));
+      gAnaMeasResult->fProfilePolarMax = ValErrPair(fitres->Value(0), fitres->FitResult::Error(0));
+      gAnaMeasResult->fProfilePolarR   = ValErrPair(fitres->Value(1), fitres->FitResult::Error(1));
 
    } else {
       Error("PostFill", "Something is wrong with profile fit");
@@ -473,7 +473,7 @@ void CnipolProfileHists::PostFill()
    hPolarVsIntensProfile->GetListOfFunctions()->Add(grPolarVsIntensProfile, "p");
 
    //char sratio[50];
-   //sprintf(sratio, "% 8.3f, % 6.3f", gAnaResult->fProfilePolarR.first, gAnaResult->fProfilePolarMax.second);
+   //sprintf(sratio, "% 8.3f, % 6.3f", gAnaMeasResult->fProfilePolarR.first, gAnaMeasResult->fProfilePolarMax.second);
    //gRunDb.fFields["PROFILE_RATIO"] = sratio;
 
    //TPaveStats *stats = (TPaveStats*) hPolarVsIntensProfile->FindObject("stats");

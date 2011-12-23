@@ -103,6 +103,7 @@ clean:
 cleanall: clean
 	#@echo "removing executables in bin/..."
 	#rm -fr $(BIN_DIR)/*
+	rm -f *~ 
 
 echoenv:
 	@echo ""

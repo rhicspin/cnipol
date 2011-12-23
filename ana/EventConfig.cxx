@@ -18,6 +18,9 @@ ClassImp(EventConfig)
 using namespace std;
 
 /**
+ * This is a persistent class. It contains virtually all information about a
+ * single measurement.
+ *
  * Default constructor.
  * We have to allocate memory for fRunInfo, fAnaInfo, and fDbEntry as they can be
  * read from a file with a streamer. The streamers do not allocate memory by
@@ -38,11 +41,11 @@ EventConfig::~EventConfig()
 }
 
 
-RunInfo*     EventConfig::GetRunInfo()     { return fRunInfo; }
-AnaInfo*     EventConfig::GetAnaInfo()     { return fAnaInfo; }
-Calibrator*  EventConfig::GetCalibrator()  { return fCalibrator; }
-AnaMeasResult*   EventConfig::GetAnaMeasResult()   { return fAnaMeasResult; }
-MseRunInfoX* EventConfig::GetMseRunInfoX() { return fMseRunInfoX; }
+RunInfo*       EventConfig::GetRunInfo()       { return fRunInfo; }
+AnaInfo*       EventConfig::GetAnaInfo()       { return fAnaInfo; }
+Calibrator*    EventConfig::GetCalibrator()    { return fCalibrator; }
+AnaMeasResult* EventConfig::GetAnaMeasResult() { return fAnaMeasResult; }
+MseRunInfoX*   EventConfig::GetMseRunInfoX()   { return fMseRunInfoX; }
 
 
 void EventConfig::Print(const Option_t* opt) const

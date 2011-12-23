@@ -162,7 +162,7 @@ void CnipolKinematHists::PostFill()
    TFitResultPtr fitres = hPseudoMass->Fit("fitfunc", "M E S R");
 
    if ( fitres.Get() && fitres->Ndf()) {
-      gAnaResult->fFitResPseudoMass = fitres;
+      gAnaMeasResult->fFitResPseudoMass = fitres;
    } else {
       Error("PostFill", "Something is wrong with mass fit");
       hPseudoMass->GetListOfFunctions()->Clear();

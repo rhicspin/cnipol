@@ -19,7 +19,7 @@
 #include "AsymHbook.h"
 #include "AsymRoot.h"
 #include "AnaInfo.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "ChannelCalib.h"
 #include "RunInfo.h"
 #include "TargetInfo.h"
@@ -38,7 +38,7 @@ void end_process(MseRunInfoX &run)
 
       int FeedBackLevel = 2; // 1: no fit just max and mean
                              // 2: gaussian fit
-      gAnaResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
+      gAnaMeasResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
 
       // reset counters
       Nevtot = Nread = 0;
@@ -52,10 +52,10 @@ void end_process(MseRunInfoX &run)
    //if (!gAnaInfo->DMODE) {
 
    // Energy Yeild Weighted Average Analyzing Power
-   //gAnaResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
-   gAnaResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
+   //gAnaMeasResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
+   gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
 
-   if (!gAnaResult->A_N[1]) {
+   if (!gAnaMeasResult->A_N[1]) {
       printf("Zero analyzing power\n");
       return;
    }
@@ -739,9 +739,9 @@ void CalcStatistics()
    }
 
    // Misc
-   if (gRunInfo->fWallCurMonSum) gAnaResult->wcm_norm_event_rate = gRunInfo->GoodEventRate/gRunInfo->fWallCurMonSum*100;
-   if (gAnaInfo->reference_rate) gAnaResult->UniversalRate       = gAnaResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
-   if (gRunInfo->Run == 5)       gAnaResult->profile_error       = gAnaResult->UniversalRate < 1 ? ProfileError(gAnaResult->UniversalRate) : 0;
+   if (gRunInfo->fWallCurMonSum) gAnaMeasResult->wcm_norm_event_rate = gRunInfo->GoodEventRate/gRunInfo->fWallCurMonSum*100;
+   if (gAnaInfo->reference_rate) gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
+   if (gRunInfo->Run == 5)       gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 } //}}}
 
 
@@ -759,14 +759,14 @@ void PrintWarning()
    printf(" Asymmmetry sigma x90, x45, y45      : %8.4f %8.4f %8.4f\n",
           bnchchk.asym[0].sigma, bnchchk.asym[1].sigma, bnchchk.asym[2].sigma);
    if (bnchchk.rate.max_dev) printf(" Max SpeLumi deviation from average  : %6.1f\n",bnchchk.rate.max_dev);
-   printf(" Number of Problemeatic Bunches      : %6d \n",  gAnaResult->anomaly.nbunch);
-   printf(" Problemeatic Bunches Rate [%%]      : %6.1f\n", gAnaResult->anomaly.bad_bunch_rate);
-   printf(" Bunch error code                    :   "); binary_zero(gAnaResult->anomaly.bunch_err_code,4); printf("\n");
+   printf(" Number of Problemeatic Bunches      : %6d \n",  gAnaMeasResult->anomaly.nbunch);
+   printf(" Problemeatic Bunches Rate [%%]      : %6.1f\n", gAnaMeasResult->anomaly.bad_bunch_rate);
+   printf(" Bunch error code                    :   "); binary_zero(gAnaMeasResult->anomaly.bunch_err_code,4); printf("\n");
    printf(" Problemeatic Bunch ID's             : ");
-   for (int i=0; i<gAnaResult->anomaly.nbunch; i++) printf("%d ", gAnaResult->anomaly.bunch[i]) ;
+   for (int i=0; i<gAnaMeasResult->anomaly.nbunch; i++) printf("%d ", gAnaMeasResult->anomaly.bunch[i]) ;
    printf("\n");
    printf(" Unrecognized Problematic Bunches    : ");
-   for (int i=0; i<gAnaResult->unrecog.anomaly.nbunch; i++) printf("%d ", gAnaResult->unrecog.anomaly.bunch[i]) ;
+   for (int i=0; i<gAnaMeasResult->unrecog.anomaly.nbunch; i++) printf("%d ", gAnaMeasResult->unrecog.anomaly.bunch[i]) ;
    printf("\n");
    printf("===> Invariant Mass / strip \n");
    printf(" Maximum Mass Deviation [GeV]        : %6.2f (%d)\n", strpchk.dev.max,  strpchk.dev.st+1);
@@ -779,17 +779,17 @@ void PrintWarning()
    printf(" Good strip Mass Pos. Allowance[GeV] : %6.2f \n",     strpchk.dev.allowance);
    printf(" Good strip Mass Fit chi2 Allowance  : %6.2f \n",     strpchk.chi2.allowance);
    printf(" Good strip #Events Allowance        : %6.2f \n",     strpchk.evnt.allowance);
-   printf(" Strip error code                    : "); binary_zero(gAnaResult->anomaly.strip_err_code,4);printf("\n");
-   printf(" Number of Problematic Strips        : %6d \n", gAnaResult->anomaly.nstrip);
+   printf(" Strip error code                    : "); binary_zero(gAnaMeasResult->anomaly.strip_err_code,4);printf("\n");
+   printf(" Number of Problematic Strips        : %6d \n", gAnaMeasResult->anomaly.nstrip);
    printf(" Problematic Strips                  : ");
-   for (int i=0; i<gAnaResult->anomaly.nstrip; i++) printf("%d ", gAnaResult->anomaly.st[i]+1);
+   for (int i=0; i<gAnaMeasResult->anomaly.nstrip; i++) printf("%d ", gAnaMeasResult->anomaly.st[i]+1);
    printf("\n");
-   printf(" Number of Unrecog. Problematic Strip: %6d \n", gAnaResult->unrecog.anomaly.nstrip);
+   printf(" Number of Unrecog. Problematic Strip: %6d \n", gAnaMeasResult->unrecog.anomaly.nstrip);
    printf(" Unrecognized Problematic Strips     : ");
-   for (int i=0; i<gAnaResult->unrecog.anomaly.nstrip; i++) printf("%d ", gAnaResult->unrecog.anomaly.st[i]+1) ;
+   for (int i=0; i<gAnaMeasResult->unrecog.anomaly.nstrip; i++) printf("%d ", gAnaMeasResult->unrecog.anomaly.st[i]+1) ;
    printf("\n");
    printf("===> Detector \n");
-   printf(" Slope of Energy Spectrum (sum 6 det): %6.1f %6.2f\n", gAnaResult->energy_slope[0], gAnaResult->energy_slope[1]);
+   printf(" Slope of Energy Spectrum (sum 6 det): %6.1f %6.2f\n", gAnaMeasResult->energy_slope[0], gAnaMeasResult->energy_slope[1]);
    printf("-----------------------------------------------------------------------------------------\n");
    printf("\n\n");
 } //}}}
@@ -814,10 +814,10 @@ void PrintRunResults()
    printf("-----------------------------------------------------------------------------------------\n");
    printf(" fRunTime                 [s]    = %10.1f\n", gRunInfo->fRunTime);
    printf(" Total events in banana         = %10ld\n",  cntr.good_event);
-   printf(" Good Carbon Max Rate  [MHz]    = %10.4f\n", gAnaResult->max_rate);
+   printf(" Good Carbon Max Rate  [MHz]    = %10.4f\n", gAnaMeasResult->max_rate);
    printf(" Good Carbon Rate      [MHz]    = %10.4f\n", gRunInfo->GoodEventRate);
-   printf(" Good Carbon Rate/WCM_sum       = %10.5f\n", gAnaResult->wcm_norm_event_rate);
-   printf(" Universal Rate                 = %10.5f\n", gAnaResult->UniversalRate);
+   printf(" Good Carbon Rate/WCM_sum       = %10.5f\n", gAnaMeasResult->wcm_norm_event_rate);
+   printf(" Universal Rate                 = %10.5f\n", gAnaMeasResult->UniversalRate);
    printf(" Event Rate            [MHz]    = %10.4f\n", gRunInfo->EvntRate);
    printf(" Read Rate             [MHz]    = %10.4f\n", gRunInfo->ReadRate);
    printf(" Target                         = %c%c\n",   gRunInfo->fTargetOrient, gRunInfo->fTargetId);
@@ -835,27 +835,27 @@ void PrintRunResults()
    printf(" # of Filled Bunch              = %10d\n", gRunInfo->GetNumFilledBunches());
    printf(" bunch w/in WCM range           = %10d\n", average.counter);
    printf(" process rate                   = %10.1f [%%]\n", (float)average.counter/(float)gRunInfo->GetNumFilledBunches() * 100);
-   printf(" Analyzing Power Average        = %10.4f \n",     gAnaResult->A_N[1]);
+   printf(" Analyzing Power Average        = %10.4f \n",     gAnaMeasResult->A_N[1]);
    if (gAnaInfo->FEEDBACKMODE)
-   printf(" feedback average tshift        = %10.1f [ns]\n", gAnaResult->TshiftAve);
-   printf(" Average Polarization (phi=0)   = %10.4f%9.4f\n", gAnaResult->P[0],                  gAnaResult->P[1]);
-   printf(" Polarization (sinphi)          = %10.4f%9.4f\n", gAnaResult->sinphi[0].P[0],        gAnaResult->sinphi[0].P[1]);
-   printf(" Phase (sinphi)  [deg.]         = %10.4f%9.4f\n", gAnaResult->sinphi[0].dPhi[0]*R2D, gAnaResult->sinphi[0].dPhi[1]*R2D);
-   printf(" chi2/d.o.f (sinphi fit)        = %10.4f\n",      gAnaResult->sinphi[0].chi2);
-   printf(" Polarization (bunch ave)       = %10.4f%9.4f\n", gBunchAsym.ave.Ax[0]/gAnaResult->A_N[1], gBunchAsym.ave.Ax[1]/gAnaResult->A_N[1]);
+   printf(" feedback average tshift        = %10.1f [ns]\n", gAnaMeasResult->TshiftAve);
+   printf(" Average Polarization (phi=0)   = %10.4f%9.4f\n", gAnaMeasResult->P[0],                  gAnaMeasResult->P[1]);
+   printf(" Polarization (sinphi)          = %10.4f%9.4f\n", gAnaMeasResult->sinphi[0].P[0],        gAnaMeasResult->sinphi[0].P[1]);
+   printf(" Phase (sinphi)  [deg.]         = %10.4f%9.4f\n", gAnaMeasResult->sinphi[0].dPhi[0]*R2D, gAnaMeasResult->sinphi[0].dPhi[1]*R2D);
+   printf(" chi2/d.o.f (sinphi fit)        = %10.4f\n",      gAnaMeasResult->sinphi[0].chi2);
+   printf(" Polarization (bunch ave)       = %10.4f%9.4f\n", gBunchAsym.ave.Ax[0]/gAnaMeasResult->A_N[1], gBunchAsym.ave.Ax[1]/gAnaMeasResult->A_N[1]);
    printf(" Phase (bunch ave)              = %10.4f%9.4f\n", gBunchAsym.ave.phase[0]*R2D, gBunchAsym.ave.phase[1]*R2D);
    if (gRunInfo->Run == 5)
-   printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaResult->profile_error * fabs(gAnaResult->P[0]));
+   printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaMeasResult->profile_error * fabs(gAnaMeasResult->P[0]));
    printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAnaInfo->MassSigmaAlt, gAnaInfo->MassSigma);
-   printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaResult->sinphi[1].P[0],        gAnaResult->sinphi[1].P[1]);
-   printf(" Ratio (alt/reg)                = %10.2f%9.2f\n", gAnaResult->P_sigma_ratio[0],      gAnaResult->P_sigma_ratio[1]);
-   printf(" Ratio ((alt-reg)/reg)          = %10.3f%9.3f\n", gAnaResult->P_sigma_ratio_norm[0], gAnaResult->P_sigma_ratio_norm[1]);
-   printf(" Polarization (PHENIX)          = %10.4f%9.4f\n", gAnaResult->sinphi[2].P[0],        gAnaResult->sinphi[2].P[1]);
-   printf(" Polarization (STAR)            = %10.4f%9.4f\n", gAnaResult->sinphi[3].P[0],        gAnaResult->sinphi[3].P[1]);
+   printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaMeasResult->sinphi[1].P[0],        gAnaMeasResult->sinphi[1].P[1]);
+   printf(" Ratio (alt/reg)                = %10.2f%9.2f\n", gAnaMeasResult->P_sigma_ratio[0],      gAnaMeasResult->P_sigma_ratio[1]);
+   printf(" Ratio ((alt-reg)/reg)          = %10.3f%9.3f\n", gAnaMeasResult->P_sigma_ratio_norm[0], gAnaMeasResult->P_sigma_ratio_norm[1]);
+   printf(" Polarization (PHENIX)          = %10.4f%9.4f\n", gAnaMeasResult->sinphi[2].P[0],        gAnaMeasResult->sinphi[2].P[1]);
+   printf(" Polarization (STAR)            = %10.4f%9.4f\n", gAnaMeasResult->sinphi[3].P[0],        gAnaMeasResult->sinphi[3].P[1]);
    printf("-----------------------------------------------------------------------------------------\n");
 
    for(Int_t i=0; i<nTgtIndex+1; i++)
-   printf(" Polarization tgt pos %6.1f     = %10.4f %9.4f\n", tgt.all.x[(int) tgt.Time[i]], gAnaResult->sinphi[100+i].P[0], gAnaResult->sinphi[100+i].P[1]);
+   printf(" Polarization tgt pos %6.1f     = %10.4f %9.4f\n", tgt.all.x[(int) tgt.Time[i]], gAnaMeasResult->sinphi[100+i].P[0], gAnaMeasResult->sinphi[100+i].P[1]);
 
    printf("-----------------------------------------------------------------------------------------\n");
 } //}}}
@@ -867,8 +867,8 @@ void DrawPlotvsTar()
    Double_t polvstar[nTgtIndex+1],epolvstar[nTgtIndex+1],posvstar[nTgtIndex+1];
 
    for(Int_t i=0;i<nTgtIndex+1;i++){
-      polvstar[i]  = gAnaResult->sinphi[100+i].P[0];
-      epolvstar[i] = gAnaResult->sinphi[100+i].P[1];
+      polvstar[i]  = gAnaMeasResult->sinphi[100+i].P[0];
+      epolvstar[i] = gAnaMeasResult->sinphi[100+i].P[1];
       posvstar[i]  = tgt.all.x[(int)tgt.Time[i]];
    }
 
@@ -881,9 +881,9 @@ void DrawPlotvsTar()
    gpolvstar->SetMarkerStyle(20);
    gpolvstar->SetMarkerColor(kGreen+100);
 
-   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaResult->sinphi[0].P[0],                              kRed, 1, 2);
-   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaResult->sinphi[0].P[0] - gAnaResult->sinphi[0].P[1], kRed, 1, 1);
-   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaResult->sinphi[0].P[0] + gAnaResult->sinphi[0].P[1], kRed, 1, 1);
+   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaMeasResult->sinphi[0].P[0],                              kRed, 1, 2);
+   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaMeasResult->sinphi[0].P[0] - gAnaMeasResult->sinphi[0].P[1], kRed, 1, 1);
+   DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaMeasResult->sinphi[0].P[0] + gAnaMeasResult->sinphi[0].P[1], kRed, 1, 1);
 
    h_vstar->GetListOfFunctions()->Add(gpolvstar, "P");
 } //}}}
@@ -1405,9 +1405,9 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
    TH1D* hDetCounts_up   = hDetVsBunchId_up->ProjectionY();
    TH1D* hDetCounts_down = hDetVsBunchId_down->ProjectionY();
 
-   gAnaResult->fAsymX90 = CalcBunchAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaResult->fAsymX45 = CalcBunchAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaResult->fAsymY45 = CalcBunchAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX90 = CalcBunchAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45 = CalcBunchAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymY45 = CalcBunchAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
 
 } //}}}
 
@@ -1510,12 +1510,12 @@ void calcBunchAsymmetryAverage()
    gBunchAsym.ave.phase[1] = atan(gBunchAsym.ave.phase[1]) ? fabs( atan(gBunchAsym.ave.phase[1]) - M_PI_2 ) : 0 ;
 
    // Calculate Polarization
-   if (gAnaResult->A_N[1]) {
-      gAnaResult->basym[0].P[0] = gBunchAsym.ave.Ax[0]/gAnaResult->A_N[1];
-      gAnaResult->basym[0].P[1] = gBunchAsym.ave.Ax[1]/gAnaResult->A_N[1];
+   if (gAnaMeasResult->A_N[1]) {
+      gAnaMeasResult->basym[0].P[0] = gBunchAsym.ave.Ax[0]/gAnaMeasResult->A_N[1];
+      gAnaMeasResult->basym[0].P[1] = gBunchAsym.ave.Ax[1]/gAnaMeasResult->A_N[1];
    } else {
-      gAnaResult->basym[0].P[0] = 0;
-      gAnaResult->basym[0].P[1] = 0;
+      gAnaMeasResult->basym[0].P[0] = 0;
+      gAnaMeasResult->basym[0].P[1] = 0;
    };
 
    cout << "========== bunch asymmetry average ===========" << endl;
@@ -1578,24 +1578,24 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    CalcStripAsymmetry(0);
 
    // Some consistency checks for different sigma cuts
-   if (gAnaResult->sinphi[0].P[0]) {
+   if (gAnaMeasResult->sinphi[0].P[0]) {
 
       float diff[2];
 
       // calculate differences and ratio
-      diff[0] = gAnaResult->sinphi[1].P[0] - gAnaResult->sinphi[0].P[0];
+      diff[0] = gAnaMeasResult->sinphi[1].P[0] - gAnaMeasResult->sinphi[0].P[0];
 
-      gAnaResult->P_sigma_ratio[0]      = gAnaResult->sinphi[1].P[0] / gAnaResult->sinphi[0].P[0];
-      gAnaResult->P_sigma_ratio_norm[0] = diff[0] / gAnaResult->sinphi[0].P[0];
+      gAnaMeasResult->P_sigma_ratio[0]      = gAnaMeasResult->sinphi[1].P[0] / gAnaMeasResult->sinphi[0].P[0];
+      gAnaMeasResult->P_sigma_ratio_norm[0] = diff[0] / gAnaMeasResult->sinphi[0].P[0];
 
       // calculate errors for above, respectively
-      diff[1] = QuadErrorSum(gAnaResult->sinphi[1].P[1], gAnaResult->sinphi[0].P[1]);
+      diff[1] = QuadErrorSum(gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
 
-      gAnaResult->P_sigma_ratio[1] =
-         QuadErrorDiv(gAnaResult->sinphi[1].P[0], gAnaResult->sinphi[0].P[0], gAnaResult->sinphi[1].P[1], gAnaResult->sinphi[0].P[1]);
+      gAnaMeasResult->P_sigma_ratio[1] =
+         QuadErrorDiv(gAnaMeasResult->sinphi[1].P[0], gAnaMeasResult->sinphi[0].P[0], gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
 
-      gAnaResult->P_sigma_ratio_norm[1] =
-         QuadErrorDiv(diff[0], gAnaResult->sinphi[0].P[0], diff[1], gAnaResult->sinphi[0].P[1]);
+      gAnaMeasResult->P_sigma_ratio_norm[1] =
+         QuadErrorDiv(diff[0], gAnaMeasResult->sinphi[0].P[0], diff[1], gAnaMeasResult->sinphi[0].P[1]);
    }
 
    // new approach
@@ -1613,7 +1613,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    TFitResultPtr fitres = FitChAsymSine(*hChAsym, grAsymVsPhi);
 
    if (fitres.Get()) {
-      gAnaResult->fFitResAsymPhi = fitres;
+      gAnaMeasResult->fFitResAsymPhi = fitres;
    } else {
       gSystem->Error("   ::SinPhiFit", "Fit error...");
    }
@@ -1635,10 +1635,10 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
    for(Int_t i=0; i<gNDelimeters; i++) {
 
       CalcStripAsymmetry(100+i);
-      //printf("i, p: %d, %f\n", i, gAnaResult->sinphi[100+i].P[0]);
+      //printf("i, p: %d, %f\n", i, gAnaMeasResult->sinphi[100+i].P[0]);
 
-      hpp->SetBinContent(i+1, gAnaResult->sinphi[100+i].P[0]);
-      hpp->SetBinError(i+1, gAnaResult->sinphi[100+i].P[1]);
+      hpp->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
+      hpp->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
    }
 } //}}}
 
@@ -1727,7 +1727,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
 
 /**
  * Calculates asymmetries strip by strip. This method updates the global object
- * gAnaResult with a calculated polarization value for the give strip.
+ * gAnaMeasResult with a calculated polarization value for the give strip.
  */
 void AsymCalculator::CalcStripAsymmetry(int Mode)
 { //{{{
@@ -1835,10 +1835,10 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       dAsymPhiCorr[i] = fabs( dAsym[i] / sin(-gPhi[i]) );
 
       // Raw polarization without phi angle weighted A_N
-      assert(gAnaResult->A_N[1] != 0);
+      assert(gAnaMeasResult->A_N[1] != 0);
 
-      rawPol[i]    =  Asym[i] / gAnaResult->A_N[1];
-      rawPolErr[i] = dAsym[i] / gAnaResult->A_N[1];
+      rawPol[i]    =  Asym[i] / gAnaMeasResult->A_N[1];
+      rawPolErr[i] = dAsym[i] / gAnaMeasResult->A_N[1];
 
       // Polarization with sin(phi) correction
        P[i] = rawPol[i] / sin(-gPhi[i]);
@@ -1890,11 +1890,11 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // Caluclate Weighted Average
-   CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaResult->P[0], gAnaResult->P[1]);
+   CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 
-   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaResult->fAvrgPMAsym.first, (Float_t&) gAnaResult->fAvrgPMAsym.second);
+   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaMeasResult->fAvrgPMAsym.first, (Float_t&) gAnaMeasResult->fAvrgPMAsym.second);
 
-   //printf("P0, P1: %8.5f %8.5f\n", gAnaResult->P[0], gAnaResult->P[1]);
+   //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 
    //ds:// Histrograming
    //ds:HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]);
@@ -1907,15 +1907,15 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    // Fit polarization vs phi distributions
    if (Mode < 100) { // Fit everything other than scan data
 
-      gAsymCalculator.SinPhiFit(gAnaResult->P[0], rawPol, rawPolErr,
-         gAnaResult->sinphi[Mode].P, gAnaResult->sinphi[Mode].dPhi, gAnaResult->sinphi[Mode].chi2);
+      gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
+         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2);
 
    } else if (Mode >= 100) { // Fit scan data
-      gAsymCalculator.ScanSinPhiFit(gAnaResult->P[0], rawPol, rawPolErr,
-         gAnaResult->sinphi[Mode].P, gAnaResult->sinphi[Mode].dPhi, gAnaResult->sinphi[Mode].chi2);
+      gAsymCalculator.ScanSinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
+         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2);
    }
 
-   //gAsymCalculator.SinPhiFit(gAnaResult->P[0], gAnaResult->sinphi.P, gAnaResult->sinphi.dPhi, gAnaResult->sinphi.chi2);
+   //gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], gAnaMeasResult->sinphi.P, gAnaMeasResult->sinphi.dPhi, gAnaMeasResult->sinphi.chi2);
 } //}}}
 
 
@@ -2100,8 +2100,8 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    TFitResultPtr  fitres = grPolarVsPhi->Fit("sin_phi", "S R");
 
    if (fitres.Get()) {
-      gAnaResult->fFitResPolarPhi = fitres;
-      // XXX add here an assignment of values to gAnaResult->fPolar
+      gAnaMeasResult->fFitResPolarPhi = fitres;
+      // XXX add here an assignment of values to gAnaMeasResult->fPolar
    } else {
       gSystem->Error("   ::SinPhiFit", "Fit error...");
    }
@@ -2139,7 +2139,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 } //}}}
 
 
-// April, 2008; Introduced by Vipuli to keep dphi fixed at gAnaResult->sinphi[0].dPhi[0]
+// April, 2008; Introduced by Vipuli to keep dphi fixed at gAnaMeasResult->sinphi[0].dPhi[0]
 // when doing the fit to data taken at each scaned position
 //
 // Description : Master Routine for sin(phi) root-fit
@@ -2181,13 +2181,13 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    func->SetParameter(1, 0);
    //func->SetParLimits(0, -1, 1);
    func->SetParLimits(0, 0, 1);
-   //func->SetParLimits(1, gAnaResult->sinphi[0].dPhi[0], gAnaResult->sinphi[0].dPhi[0]);
+   //func->SetParLimits(1, gAnaMeasResult->sinphi[0].dPhi[0], gAnaMeasResult->sinphi[0].dPhi[0]);
    //func->SetParLimits(1,-M_PI, M_PI);
    // Keeping phi fixed - changed by Vipuli April 2008
    //printf("************************************ \n");
-   //printf("keeping phi fixed at = %12.3e \n", gAnaResult->sinphi[0].dPhi[0]);
+   //printf("keeping phi fixed at = %12.3e \n", gAnaMeasResult->sinphi[0].dPhi[0]);
    //printf("************************************ \n");
-   func->FixParameter(1, gAnaResult->sinphi[0].dPhi[0]);
+   func->FixParameter(1, gAnaMeasResult->sinphi[0].dPhi[0]);
 
    // define TGraphError obect for fitting
    TGraphErrors *tg = AsymmetryGraph(1, N_SILICON_CHANNELS, gPhi, rawPol, dx, rawPolErr);

@@ -101,13 +101,13 @@ void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
          //chi2Ndf  = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
          //sigma    = fitres->Value(0);
          if (iChId == 73) {
-            gAnaResult->fPmtV1T0    = fitres->Value(1);
-            gAnaResult->fPmtV1T0Err = fitres->FitResult::Error(1);
+            gAnaMeasResult->fPmtV1T0    = fitres->Value(1);
+            gAnaMeasResult->fPmtV1T0Err = fitres->FitResult::Error(1);
          } 
 
          if (iChId == 75) {
-            gAnaResult->fPmtS1T0    = fitres->Value(1);
-            gAnaResult->fPmtS1T0Err = fitres->FitResult::Error(1);
+            gAnaMeasResult->fPmtS1T0    = fitres->Value(1);
+            gAnaMeasResult->fPmtS1T0Err = fitres->FitResult::Error(1);
          } 
          //mean2    = fitres->Value(2);
          //mean2Err = fitres->FitResult::Error(2);

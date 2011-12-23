@@ -14,7 +14,7 @@
 #include "TF1.h"
 
 #include "AnaInfo.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 #include "RunInfo.h"
 
 // Description : Fit the slope of energy spectrum given in (-t) with exponential.
@@ -37,13 +37,13 @@ void DetectorAnomaly()
 
    energy_spectrum_all->Fit("expf", " ", " ", min_t, max_t);
 
-   gAnaResult->energy_slope[0] = expf->GetParameter(1);
-   gAnaResult->energy_slope[1] = expf->GetParError(1);
+   gAnaMeasResult->energy_slope[0] = expf->GetParameter(1);
+   gAnaMeasResult->energy_slope[1] = expf->GetParError(1);
  
    // print fitting results on histogram
    char text[36];
 
-   sprintf(text, "slope=%6.1f +/- %6.2f", gAnaResult->energy_slope[0], gAnaResult->energy_slope[1]);
+   sprintf(text, "slope=%6.1f +/- %6.2f", gAnaMeasResult->energy_slope[0], gAnaMeasResult->energy_slope[1]);
 
    TText *t = new TText(0.01, energy_spectrum_all->GetMaximum()/4, text);
 
@@ -256,8 +256,8 @@ void StripAnomalyDetector()
    DrawHorizLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, evelim, 2, 2, 2);
  
    // register and count suspicious strips
-   gAnaResult->anomaly.nstrip = 0;
-   gAnaResult->anomaly.strip_err_code = 0;
+   gAnaMeasResult->anomaly.nstrip = 0;
+   gAnaMeasResult->anomaly.strip_err_code = 0;
  
    char text[36];
  
@@ -310,19 +310,19 @@ void StripAnomalyDetector()
          }*/
  
          if (strip_err_code) {
-            gAnaResult->anomaly.st[gAnaResult->anomaly.nstrip]=i;
-            ++gAnaResult->anomaly.nstrip;
+            gAnaMeasResult->anomaly.st[gAnaMeasResult->anomaly.nstrip]=i;
+            ++gAnaMeasResult->anomaly.nstrip;
          }
  
          // register global strip error code
-         gAnaResult->anomaly.strip_err_code = gAnaResult->anomaly.strip_err_code | strip_err_code ;
+         gAnaMeasResult->anomaly.strip_err_code = gAnaMeasResult->anomaly.strip_err_code | strip_err_code ;
       }
    }
  
    // register unrecognized anomaly strips
-   UnrecognizedAnomaly(gAnaResult->anomaly.st, gAnaResult->anomaly.nstrip,
+   UnrecognizedAnomaly(gAnaMeasResult->anomaly.st, gAnaMeasResult->anomaly.nstrip,
       gRunInfo->fDisabledChannels, gRunInfo->NDisableStrip,
-      gAnaResult->unrecog.anomaly.st, gAnaResult->unrecog.anomaly.nstrip);
+      gAnaMeasResult->unrecog.anomaly.st, gAnaMeasResult->unrecog.anomaly.nstrip);
 }
 
 
@@ -419,11 +419,11 @@ float BunchAsymmetryGaussianFit(TH1F * h1, TH2F * h2, float A[], float dA[], int
 
   if (local.nbunch) {
      // error_code registration
-     gAnaResult->anomaly.bunch_err_code += err_code;
+     gAnaMeasResult->anomaly.bunch_err_code += err_code;
 
      // global registration
-     RegisterAnomaly(local.bunch, local.nbunch, gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch,
-                     gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch);
+     RegisterAnomaly(local.bunch, local.nbunch, gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch,
+                     gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch);
 
      // Superpose h2 histogram
      float bindex[local.nbunch];
@@ -473,11 +473,11 @@ void BunchAsymmetryAnomaly()
 void BunchAnomalyDetector()
 {
    // Initialize anomaly bunch counter and error_code
-   gAnaResult->anomaly.nbunch= gRunInfo->GetNumFilledBunches() > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
-   gAnaResult->anomaly.bunch_err_code = 0;
+   gAnaMeasResult->anomaly.nbunch= gRunInfo->GetNumFilledBunches() > errdet.NBUNCH_REQUIREMENT ? 0 : -1 ;
+   gAnaMeasResult->anomaly.bunch_err_code = 0;
    bnchchk.rate.max_dev = 0;
 
-   if (gAnaResult->anomaly.nbunch != -1) {
+   if (gAnaMeasResult->anomaly.nbunch != -1) {
       // Find anomaly bunches from unusual deviation from average asymmetry
       BunchAsymmetryAnomaly();
 
@@ -485,10 +485,10 @@ void BunchAnomalyDetector()
       HotBunchFinder(8);
 
       // check unrecognized anomaly
-      UnrecognizedAnomaly(gAnaResult->anomaly.bunch, gAnaResult->anomaly.nbunch, gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
-                        gAnaResult->unrecog.anomaly.bunch, gAnaResult->unrecog.anomaly.nbunch);
+      UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch, gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
+                        gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
 
-      gAnaResult->anomaly.bad_bunch_rate = gRunInfo->GetNumFilledBunches() ? gAnaResult->anomaly.nbunch/float(gRunInfo->GetNumFilledBunches())*100 : -1 ;
+      gAnaMeasResult->anomaly.bad_bunch_rate = gRunInfo->GetNumFilledBunches() ? gAnaMeasResult->anomaly.nbunch/float(gRunInfo->GetNumFilledBunches())*100 : -1 ;
    }
 }
 
@@ -569,8 +569,8 @@ void HotBunchFinder(int err_code)
 
    for (int bnch=0;bnch<NBUNCH;bnch++) {
       if (SpeLumi.Cnts[bnch] > bnchchk.rate.allowance) {
-         gAnaResult->anomaly.bunch[gAnaResult->anomaly.nbunch] = bnch;
-         gAnaResult->anomaly.nbunch++; flag++;
+         gAnaMeasResult->anomaly.bunch[gAnaMeasResult->anomaly.nbunch] = bnch;
+         gAnaMeasResult->anomaly.nbunch++; flag++;
          float dev = (SpeLumi.Cnts[bnch] - ave)/sigma;
          bnchchk.rate.max_dev = bnchchk.rate.max_dev < dev ? dev : bnchchk.rate.max_dev ;
          printf("WARNING: bunch # %d yeild exeeds %6.1f sigma from average. HOT!\n", bnch, dev);
@@ -584,7 +584,7 @@ void HotBunchFinder(int err_code)
  
    // assign error_code
    if (flag)
-      gAnaResult->anomaly.bunch_err_code += err_code;
+      gAnaMeasResult->anomaly.bunch_err_code += err_code;
 }
 
 
@@ -667,7 +667,7 @@ void UnrecognizedAnomaly(int x[], int nx, int y[], int ny, int z[], int &nz)
 void checkForBadBunches()
 {
    // counter initiariztion
-   gAnaResult->anomaly.nbunch=0;
+   gAnaMeasResult->anomaly.nbunch=0;
    bnchchk.rate.allowance=errdet.BUNCH_RATE_SIGMA_ALLOWANCE;
  
    printf("checking for bad bunches\n");
@@ -694,14 +694,14 @@ void checkForBadBunches()
       for(int j=0; j<120; j++) {
          if((Ncounts[i][j]-avg)> bnchchk.rate.allowance*sigma)
          {
-            gAnaResult->anomaly.bunch[gAnaResult->anomaly.nbunch]=j+1;
-            gAnaResult->anomaly.nbunch++;
+            gAnaMeasResult->anomaly.bunch[gAnaMeasResult->anomaly.nbunch]=j+1;
+            gAnaMeasResult->anomaly.nbunch++;
             printf("WARNING: bunch # %d has very many counts in detector # %d\n", j+1, i+1);
          }
       }
    }
  
-   UnrecognizedAnomaly(gAnaResult->anomaly.bunch,gAnaResult->anomaly.nbunch,gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
-                       gAnaResult->unrecog.anomaly.bunch, gAnaResult->unrecog.anomaly.nbunch);
+   UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch,gAnaMeasResult->anomaly.nbunch,gRunInfo->DisableBunch,gRunInfo->NDisableBunch,
+                       gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
 }
 */

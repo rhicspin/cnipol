@@ -94,10 +94,10 @@ void MAsymPmtHists::Fill(EventConfig &rc)
    Short_t  polId            = rc.fRunInfo->fPolId;
    //Short_t  targetId         = rc.fMseRunInfoX->target_id;
    //Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
-   Float_t  pmtV1T0          = rc.fAnaResult->fPmtV1T0    * WFD_TIME_UNIT_HALF;
-   Float_t  pmtV1T0Err       = rc.fAnaResult->fPmtV1T0Err * WFD_TIME_UNIT_HALF;
-   Float_t  pmtS1T0          = rc.fAnaResult->fPmtS1T0    * WFD_TIME_UNIT_HALF;
-   Float_t  pmtS1T0Err       = rc.fAnaResult->fPmtS1T0Err * WFD_TIME_UNIT_HALF;
+   Float_t  pmtV1T0          = rc.fAnaMeasResult->fPmtV1T0    * WFD_TIME_UNIT_HALF;
+   Float_t  pmtV1T0Err       = rc.fAnaMeasResult->fPmtV1T0Err * WFD_TIME_UNIT_HALF;
+   Float_t  pmtS1T0          = rc.fAnaMeasResult->fPmtS1T0    * WFD_TIME_UNIT_HALF;
+   Float_t  pmtS1T0Err       = rc.fAnaMeasResult->fPmtS1T0Err * WFD_TIME_UNIT_HALF;
 
    // XXX
    //if (polId == 3 && dl < 45) cout << "XXX DL: " << dl << endl;

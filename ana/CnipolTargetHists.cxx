@@ -9,7 +9,7 @@
 #include "TargetInfo.h"
 #include "RunInfo.h"
 #include "AnaInfo.h"
-#include "AnaResult.h"
+#include "AnaMeasResult.h"
 
 
 ClassImp(CnipolTargetHists)
@@ -207,7 +207,7 @@ void CnipolTargetHists::PostFill()
      dy[i] = tgt.Interval[i] ? float(sqrt(count)) / tgt.Interval[i] * MHz : 0;
    }
  
-   gAnaResult->max_rate = GetMax(X_index, y);
+   gAnaMeasResult->max_rate = GetMax(X_index, y);
 
    float ymin, ymax;
 
@@ -228,9 +228,9 @@ void CnipolTargetHists::PostFill()
    // Target Position vs Time
    //sprintf(htitle,"%.3f : Taret Postion vs. Time", gRunInfo->RUNID);
  
-   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, gRunInfo->RunTime*1.2);
+   //TH2F *tgtx_vs_time = new TH2F("tgtx_vs_time", htitle, 10, xmin, xmax, 10, 0.5, gRunInfo->fRunTime*1.2);
 
-   ((TH1*) o["tgtx_vs_time"])->SetBins(10, xmin, xmax, 10, 0.5, gRunInfo->RunTime*1.2);
+   ((TH1*) o["tgtx_vs_time"])->SetBins(10, xmin, xmax, 10, 0.5, gRunInfo->fRunTime*1.2);
  
    //delete gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"];
    //gAsymRoot.fHists->d["run"]->d["Run"]->o["tgtx_vs_time"] = tgtx_vs_time;
