@@ -397,50 +397,50 @@ int main(int argc, char *argv[])
    //else
    //   gAnaInfo->RECONFMODE = 0;
 
-   MseRunInfoX   *mseRunInfoX     = 0;
-   MseRunInfoX   *mseRunInfoXOrig = 0;
+   MseMeasInfoX   *mseMeasInfoX     = 0;
+   MseMeasInfoX   *mseMeasInfoXOrig = 0;
 
    // Check whether the run is in database
    if (gAnaInfo->fFlagUseDb) {
-      mseRunInfoX = gAsymDb2->SelectRun(gMeasInfo->fRunName);
+      mseMeasInfoX = gAsymDb2->SelectRun(gMeasInfo->fRunName);
    }
 
-   if (mseRunInfoX) { // if run found in database save its copy
-      mseRunInfoXOrig  = new MseRunInfoX(gMeasInfo->fRunName);
-      *mseRunInfoXOrig = *mseRunInfoX;
+   if (mseMeasInfoX) { // if run found in database save its copy
+      mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->fRunName);
+      *mseMeasInfoXOrig = *mseMeasInfoX;
 
    } else { // if run not found in database create it
-      mseRunInfoX = new MseRunInfoX(gMeasInfo->fRunName);
+      mseMeasInfoX = new MseMeasInfoX(gMeasInfo->fRunName);
    }
 
-   //cout << endl << "mseRunInfoX 1: " << endl;
-   //mseRunInfoX->Print();
+   //cout << endl << "mseMeasInfoX 1: " << endl;
+   //mseMeasInfoX->Print();
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
-   // and overwrite the data base run info (mseRunInfoX) if needed
-   rawData->ReadRecBegin(mseRunInfoX);
-   rawData->ReadRunInfo(*mseRunInfoX);
+   // and overwrite the data base run info (MseMeasInfoX) if needed
+   rawData->ReadRecBegin(mseMeasInfoX);
+   rawData->ReadMeasInfo(*mseMeasInfoX);
 
-   //cout << endl << "mseRunInfoX 2: " << endl;
-   //mseRunInfoX->Print();
+   //cout << endl << "mseMeasInfoX 2: " << endl;
+   //mseMeasInfoX->Print();
 
    // We can do this for any run including alphas alpha
-   MseRunPeriodX *mseRunPeriodX = gAsymDb2->CompleteRunInfoByRunPeriod(*mseRunInfoX);
-   //gAsymDb2->CompleteRunInfo(*mseRunInfoX); // deprecated
+   MseRunPeriodX *mseRunPeriodX = gAsymDb2->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
+   //gAsymDb2->CompleteMeasInfo(*mseMeasInfoX); // deprecated
 
    if (!mseRunPeriodX)
       gSystem->Fatal("   int main()", "Run period not specified");
 
-   //cout << endl << "mseRunInfoX 3: " << endl;
-   //mseRunInfoX->Print();
-   //cout << *mseRunInfoX << endl;
+   //cout << endl << "mseMeasInfoX 3: " << endl;
+   //mseMeasInfoX->Print();
+   //cout << *mseMeasInfoX << endl;
 
    // Overwrite the offline version (if set previously)
    //gRunDb.SetAsymVersion(gMeasInfo->fAsymVersion);
-   mseRunInfoX->asym_version = gMeasInfo->fAsymVersion;
+   mseMeasInfoX->asym_version = gMeasInfo->fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    //gRunDb.Print();
@@ -448,13 +448,13 @@ int main(int argc, char *argv[])
    //gAnaInfo->Update(gRunDb);
    //gMeasInfo->Update(gRunDb);
 
-   gAnaInfo->Update(*mseRunInfoX);
-   gMeasInfo->Update(*mseRunInfoX);
+   gAnaInfo->Update(*mseMeasInfoX);
+   gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
 
    gAnaInfo->Print();
    gMeasInfo->Print();
-   mseRunInfoX->Print();
+   mseMeasInfoX->Print();
 
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
@@ -498,11 +498,11 @@ int main(int argc, char *argv[])
    gAsymRoot->PreFill();
 
    // Main Event Loop
-   readloop(*mseRunInfoX);
+   readloop(*mseMeasInfoX);
 
    gAsymRoot->FillDerived();
 
-   gAsymRoot->PostFill(*mseRunInfoX);
+   gAsymRoot->PostFill(*mseMeasInfoX);
 
    // Delete Unnecessary ROOT Histograms
    gAsymRoot->DeleteHistogram();
@@ -533,18 +533,18 @@ int main(int argc, char *argv[])
    string tmpSqlDateTime(19, ' ');
    strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
 
-   mseRunInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
-   mseRunInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
-   mseRunInfoX->measurement_type = UInt_t(gMeasInfo->fMeasType);
+   mseMeasInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
+   mseMeasInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
+   mseMeasInfoX->measurement_type = UInt_t(gMeasInfo->fMeasType);
 
    if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
-      gAsymDb2->UpdateInsert(mseRunInfoXOrig, mseRunInfoX);
+      gAsymDb2->UpdateInsert(mseMeasInfoXOrig, mseMeasInfoX);
 
-   gAsymRoot->fEventConfig->fMseRunInfoX = mseRunInfoX;
+   gAsymRoot->fEventConfig->fMseMeasInfoX = mseMeasInfoX;
 
-   gAsymRoot->fEventConfig->PrintAsPhp(gAnaInfo->GetRunInfoFile());
+   gAsymRoot->fEventConfig->PrintAsPhp(gAnaInfo->GetMeasInfoFile());
    gAsymRoot->fEventConfig->PrintAsConfig(gAnaInfo->GetRunConfFile());
-   fclose(gAnaInfo->GetRunInfoFile()); gAnaInfo->fFileRunInfo = 0;
+   fclose(gAnaInfo->GetMeasInfoFile()); gAnaInfo->fFileMeasInfo = 0;
    fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())

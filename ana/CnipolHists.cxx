@@ -13,7 +13,7 @@
 #include "TProfile.h"
 
 #include "AnaInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "AsymRoot.h"
 
 ClassImp(CnipolHists)

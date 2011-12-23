@@ -22,10 +22,10 @@
 #include "AsymErrorDetector.h"
 
 
-class MseRunInfoX;
+class MseMeasInfoX;
 
 //  Main End Process Routine
-void end_process(MseRunInfoX &run);
+void end_process(MseMeasInfoX &run);
 void CompleteHistogram();
 
 

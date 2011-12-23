@@ -10,7 +10,7 @@
 #include "TGraphErrors.h"
 
 #include "AsymCalculator.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 #include "CnipolHists.h"
 

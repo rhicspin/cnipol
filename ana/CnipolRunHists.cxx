@@ -6,7 +6,7 @@
 #include "CnipolRunHists.h"
 
 #include "AsymGlobals.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 
 
 ClassImp(CnipolRunHists)
@@ -185,7 +185,7 @@ void CnipolRunHists::Print(const Option_t* opt) const
 
 
 /** */
-void CnipolRunHists::Fill(RunInfo &ri)
+void CnipolRunHists::Fill(MeasInfo &ri)
 { //{{{
    map<UShort_t, Float_t>::iterator ib;
 

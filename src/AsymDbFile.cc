@@ -531,7 +531,7 @@ void readdb(double RUNID)
    gAnaInfo->tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
 
    // TSHIFT for injection with respect to flattop timing
-   // removed in favour of fExpectedGlobalTimeOffset in RunInfo
+   // removed in favour of fExpectedGlobalTimeOffset in MeasInfo
    //gAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
 
    // Expected universal rate for given target

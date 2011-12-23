@@ -1,16 +1,16 @@
-#ifndef MstRunInfo_h
-#define MstRunInfo_h
+#ifndef MstMeasInfo_h
+#define MstMeasInfo_h
 
 #include "MseMeasInfo.h"
 
-class MstRunInfo {
+class MstMeasInfo {
 
 public:
 
-   //MseRunInfo fMseRunInfo; 
+   //MseMeasInfo fMseMeasInfo; 
 
-   MstRunInfo();
-   ~MstRunInfo();
+   MstMeasInfo();
+   ~MstMeasInfo();
 };
 
 #endif

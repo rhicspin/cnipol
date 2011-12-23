@@ -544,7 +544,7 @@ void AsymRoot::FillDerived()
 
 
 /** */
-void AsymRoot::PostFill(MseRunInfoX &run)
+void AsymRoot::PostFill(MseMeasInfoX &run)
 { //{{{
 
 	// One should be carefull here as the order of post processing is important.
@@ -1130,11 +1130,11 @@ EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
 
 
 /** */
-void AsymRoot::GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
+void AsymRoot::GetRunConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
 { //{{{
    if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }
 
-   ri = fEventConfig->GetRunInfo();
+   ri = fEventConfig->GetMeasInfo();
    ai = fEventConfig->GetAnaInfo();
    ar = fEventConfig->GetAnaMeasResult();
 } //}}}

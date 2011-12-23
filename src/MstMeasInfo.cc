@@ -7,9 +7,9 @@
 
 
 /** */
-MstRunInfo::MstRunInfo()
+MstMeasInfo::MstMeasInfo()
 {}
 
 /** */
-MstRunInfo::~MstRunInfo()
+MstMeasInfo::~MstMeasInfo()
 {}

@@ -12,8 +12,8 @@
 
 #include "MAsymSingleFillHists.h"
 
-//#include "RunInfo.h"
-#include "MseRunInfo.h"
+//#include "MeasInfo.h"
+#include "MseMeasInfo.h"
 
 
 ClassImp(MAsymSingleFillHists)
@@ -156,13 +156,13 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 /** */
 void MAsymSingleFillHists::Fill(EventConfig &rc)
 {
-   Double_t runId            = rc.fRunInfo->RUNID;
+   Double_t runId            = rc.fMeasInfo->RUNID;
    UInt_t   fillId           = (UInt_t) runId;
-   UInt_t   beamEnergy       = (UInt_t) (rc.fRunInfo->GetBeamEnergy() + 0.5);
-   Short_t  polId            = rc.fRunInfo->fPolId;
-   time_t   runStartTime     = rc.fRunInfo->fStartTime;
-   //Short_t  targetId         = rc.fMseRunInfoX->target_id;
-   //Char_t   targetOrient     = rc.fMseRunInfoX->target_orient[0];
+   UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
+   Short_t  polId            = rc.fMeasInfo->fPolId;
+   time_t   runStartTime     = rc.fMeasInfo->fStartTime;
+   //Short_t  targetId         = rc.fMseMeasInfoX->target_id;
+   //Char_t   targetOrient     = rc.fMseMeasInfoX->target_orient[0];
    Float_t  anaPower         = rc.fAnaMeasResult->A_N[1];
    Float_t  asymmetry        = rc.fAnaMeasResult->sinphi[0].P[0] * rc.fAnaMeasResult->A_N[1];
    Float_t  asymmetryErr     = rc.fAnaMeasResult->sinphi[0].P[1] * rc.fAnaMeasResult->A_N[1];

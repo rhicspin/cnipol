@@ -45,20 +45,20 @@ public:
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
 
-   void ReadRecBegin(MseRunInfoX* run=0);
-   void ReadRunInfo(MseRunInfoX &runInfo);
+   void ReadRecBegin(MseMeasInfoX* run=0);
+   void ReadMeasInfo(MseMeasInfoX &MeasInfo);
    void ReadDataFast();
 };
 
-void readloop(MseRunInfoX &run);
+void readloop(MseMeasInfoX &run);
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
-void DecodeTargetID(const polDataStruct &poldat, MseRunInfoX &run);
-void ProcessRecordPCTarget(const pCTargetStruct &rec, MseRunInfoX &run);
+void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run);
+void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run);
 void PrepareCollidingBunchPattern();
 
 void ProcessRecord(const recordConfigRhicStruct &rec);
-void ProcessRecord(const recordPolAdoStruct &rec, MseRunInfoX &runInfo);
-void ProcessRecord(const recordpCTagAdoStruct &rec, MseRunInfoX &run);
+void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo);
+void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run);
 void ProcessRecord(const recordWFDV8ArrayStruct &rec);
 void ProcessRecord(const recordCountRate &rec);
 void ProcessRecord(const recordWcmAdoStruct &rec);

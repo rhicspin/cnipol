@@ -15,7 +15,7 @@
 
 #include "AsymHeader.h"
 #include "TargetInfo.h"
-#include "RunInfo.h"
+#include "MeasInfo.h"
 #include "RunConfig.h"
 
 #include "ChannelEvent.h"

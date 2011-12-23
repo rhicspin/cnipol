@@ -11,24 +11,24 @@ using namespace std;
 
 
 /** */
-MseRunInfoX::MseRunInfoX() : MseRunInfo()
+MseMeasInfoX::MseMeasInfoX() : MseMeasInfo()
 {
    Init();
 }
 
 
-MseRunInfoX::~MseRunInfoX()
+MseMeasInfoX::~MseMeasInfoX()
 {
 }
 
 
 /** */
-MseRunInfoX::MseRunInfoX(const mysqlpp::sql_varchar &p1) : MseRunInfo(p1)
+MseMeasInfoX::MseMeasInfoX(const mysqlpp::sql_varchar &p1) : MseMeasInfo(p1)
 {
    Init();
 }
 
-void MseRunInfoX::Init()
+void MseMeasInfoX::Init()
 {
    polarimeter_id       = -1;
    start_time           = mysqlpp::DateTime("0000-00-00 00:00:00");
@@ -56,15 +56,15 @@ void MseRunInfoX::Init()
 
 
 /** */
-void MseRunInfoX::Print(const Option_t* opt) const
+void MseMeasInfoX::Print(const Option_t* opt) const
 {
-   gSystem->Info("MseRunInfoX::Print", "Print members:");
+   gSystem->Info("MseMeasInfoX::Print", "Print members:");
    PrintAsPhp();
 }
 
 
 /** */
-void MseRunInfoX::PrintAsPhp(FILE *f) const
+void MseMeasInfoX::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['run_name']                       = \"%s\";\n", run_name.c_str()          );
    fprintf(f, "$rc['polarimeter_id']                 = %d;\n", (short) polarimeter_id    );
@@ -95,7 +95,7 @@ void MseRunInfoX::PrintAsPhp(FILE *f) const
 
 
 /** */
-void MseRunInfoX::Streamer(TBuffer &buf)
+void MseMeasInfoX::Streamer(TBuffer &buf)
 { //{{{
    TString tstr;
    //short   smallint;
@@ -135,7 +135,7 @@ void MseRunInfoX::Streamer(TBuffer &buf)
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, MseRunInfoX *&rec)
+TBuffer & operator<<(TBuffer &buf, MseMeasInfoX *&rec)
 {
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
@@ -145,7 +145,7 @@ TBuffer & operator<<(TBuffer &buf, MseRunInfoX *&rec)
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, MseRunInfoX *&rec)
+TBuffer & operator>>(TBuffer &buf, MseMeasInfoX *&rec)
 {
    //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
    rec->Streamer(buf);

@@ -33,7 +33,7 @@ AnaGlobResult        gAnaGlobResult;
 int main(int argc, char *argv[])
 {
    // Create a default one
-   gMeasInfo = new RunInfo();
+   gMeasInfo = new MeasInfo();
 
    // do not attept to recover files
    gEnv->SetValue("TFile.Recover", 0);

@@ -10,13 +10,13 @@
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
-ClassImp(RunInfo)
+ClassImp(MeasInfo)
 
 using namespace std;
 
 
 /** */
-RunInfo::RunInfo() : TObject(),
+MeasInfo::MeasInfo() : TObject(),
    fBeamEnergy(0),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
@@ -72,11 +72,11 @@ RunInfo::RunInfo() : TObject(),
 
 
 /** */
-RunInfo::~RunInfo() { }
+MeasInfo::~MeasInfo() { }
 
 
 /** */
-void RunInfo::SetBeamEnergy(Float_t beamEnergy)
+void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 { //{{{
    fBeamEnergy = beamEnergy;
 
@@ -93,25 +93,25 @@ void RunInfo::SetBeamEnergy(Float_t beamEnergy)
    printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
 } //}}}
 
-Float_t RunInfo::GetBeamEnergy() { return fBeamEnergy; }
+Float_t MeasInfo::GetBeamEnergy() { return fBeamEnergy; }
 
-Float_t RunInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffset; }
+Float_t MeasInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffset; }
 
-Short_t RunInfo::GetExpectedGlobalTdcOffset() { return fExpectedGlobalTdcOffset; }
+Short_t MeasInfo::GetExpectedGlobalTdcOffset() { return fExpectedGlobalTdcOffset; }
 
 
 /** */
-string RunInfo::GetAlphaCalibFileName() const
+string MeasInfo::GetAlphaCalibFileName() const
 { return ""; }
 
 
 /** */
-string RunInfo::GetDlCalibFileName() const
+string MeasInfo::GetDlCalibFileName() const
 { return ""; }
 
 
 /** */
-void RunInfo::Print(const Option_t* opt) const
+void MeasInfo::Print(const Option_t* opt) const
 { //{{{
    Info("Print", "Print members:");
    PrintAsPhp();
@@ -119,7 +119,7 @@ void RunInfo::Print(const Option_t* opt) const
 
 
 /** */
-void RunInfo::PrintAsPhp(FILE *f) const
+void MeasInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
@@ -210,7 +210,7 @@ void RunInfo::PrintAsPhp(FILE *f) const
 
 // Description : print out spin (Mode=0), fill (Mode=1) pattern
 // Input       : Mode
-void RunInfo::PrintBunchPatterns() const
+void MeasInfo::PrintBunchPatterns() const
 { //{{{
    std::stringstream ssSpin("");
    std::stringstream ssFill("");
@@ -237,7 +237,7 @@ void RunInfo::PrintBunchPatterns() const
 
 
 // Print Out Configuration information
-void RunInfo::PrintConfig()
+void MeasInfo::PrintConfig()
 { //{{{
    fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
 
@@ -313,11 +313,11 @@ void RunInfo::PrintConfig()
 
 
 /** */
-string RunInfo::GetRunName() const { return fRunName; }
+string MeasInfo::GetRunName() const { return fRunName; }
 
 
 /** */
-Short_t RunInfo::GetPolarimeterId()
+Short_t MeasInfo::GetPolarimeterId()
 { //{{{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(fRunName);
 
@@ -343,20 +343,20 @@ Short_t RunInfo::GetPolarimeterId()
 
 
 /** */
-Short_t RunInfo::GetPolarimeterId(short beamId, short streamId)
+Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
 { //{{{
    if (beamId == 1 && streamId == 1) { fPolId = 3; return 3; }
    if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
    if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
    if (beamId == 2 && streamId == 2) { fPolId = 2; return 2; }
 
-   printf("WARNING: RunInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
+   printf("WARNING: MeasInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
    return -1;
 } //}}}
 
 
 /** */
-UInt_t RunInfo::GetFillId()
+UInt_t MeasInfo::GetFillId()
 { //{{{
    TObjArray *subStrL = TPRegexp("^(\\d+)\\.\\d{3}$").MatchS(fRunName);
 
@@ -380,7 +380,7 @@ UInt_t RunInfo::GetFillId()
 
 
 /** */
-void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
+void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
 { //{{{
    if (polId == 0) { beamId = 2; streamId = 1; };
    if (polId == 1) { beamId = 1; streamId = 2; };
@@ -392,7 +392,7 @@ void RunInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &strea
 
 
 /** */
-void RunInfo::Update(DbEntry &rundb)
+void MeasInfo::Update(DbEntry &rundb)
 { //{{{
    stringstream sstr;
    UShort_t     chId;
@@ -425,7 +425,7 @@ void RunInfo::Update(DbEntry &rundb)
 
 
 /** */
-void RunInfo::Update(MseRunInfoX& run)
+void MeasInfo::Update(MseMeasInfoX& run)
 { //{{{
    stringstream sstr;
    UShort_t     chId;
@@ -465,7 +465,7 @@ void RunInfo::Update(MseRunInfoX& run)
 
 
 /** */
-void RunInfo::Update(MseRunPeriodX& runPeriod)
+void MeasInfo::Update(MseRunPeriodX& runPeriod)
 { //{{{
    fProtoCutSlope   = runPeriod.cut_proto_slope;
    fProtoCutOffset  = runPeriod.cut_proto_offset;
@@ -484,7 +484,7 @@ void RunInfo::Update(MseRunPeriodX& runPeriod)
 //
 // Input       : int mask.detector
 // Return      : ActiveDetector[i] remains masked strip configulation
-void RunInfo::ConfigureActiveStrip(int mask)
+void MeasInfo::ConfigureActiveStrip(int mask)
 { //{{{
    // Disable Detector First
    for (int i=0; i<N_DETECTORS; i++) {
@@ -538,7 +538,7 @@ void RunInfo::ConfigureActiveStrip(int mask)
 
 // Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
 // Input       : char RunID[]
-void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
+void MeasInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 { //{{{
   char ID = *(strrchr(RunID,'.')+1);
 
@@ -569,21 +569,21 @@ void RunInfo::SetPolarimetrIdRhicBeam(const char* RunID)
   }
 
   /*
-  fprintf(stdout,"RUNINFO: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
+  fprintf(stdout,"MeasInfo: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
           gMeasInfo->RUNID, gMeasInfo->fPolBeam, gMeasInfo->PolarimetryID);
   */
 } //}}}
 
 
 /** */
-Bool_t RunInfo::IsDisabledChannel(UShort_t chId)
+Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 { //{{{
    return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
 } //}}}
 
 
 /** */
-void RunInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
+void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
 { //{{{
    for (int i=0; i!=N_DETECTORS; ++i) {
 
@@ -597,7 +597,7 @@ void RunInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
 
 
 /** */
-void RunInfo::SetDisabledChannel(UShort_t chId)
+void MeasInfo::SetDisabledChannel(UShort_t chId)
 { //{{{
    fDisabledChannels[chId-1] = 1;
 
@@ -609,7 +609,7 @@ void RunInfo::SetDisabledChannel(UShort_t chId)
 
 
 /** */
-Bool_t RunInfo::IsSiliconChannel(UShort_t chId)
+Bool_t MeasInfo::IsSiliconChannel(UShort_t chId)
 { //{{{
    if ( chId > 0 && chId <= N_SILICON_CHANNELS)
       return true;
@@ -619,7 +619,7 @@ Bool_t RunInfo::IsSiliconChannel(UShort_t chId)
 
 
 /** */
-Bool_t RunInfo::IsHamaChannel(UShort_t chId)
+Bool_t MeasInfo::IsHamaChannel(UShort_t chId)
 { //{{{
    if ( ( (EPolarimeterId) fPolId == kB2D || (EPolarimeterId) fPolId == kY1D) &&
         ( (chId >= 13 && chId <= 24) || (chId >= 49 && chId <= 60) )
@@ -631,7 +631,7 @@ Bool_t RunInfo::IsHamaChannel(UShort_t chId)
 
 
 /** */
-Bool_t RunInfo::IsPmtChannel(UShort_t chId)
+Bool_t MeasInfo::IsPmtChannel(UShort_t chId)
 { //{{{
    if ((EPolarimeterId) fPolId == kY2U && chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4)
       return true;
@@ -641,14 +641,14 @@ Bool_t RunInfo::IsPmtChannel(UShort_t chId)
 
 
 /** */
-BeamBunchMap RunInfo::GetBunches() const
+BeamBunchMap MeasInfo::GetBunches() const
 { //{{{
    return fBeamBunches;
 } //}}}
 
 
 /** */
-BeamBunchMap RunInfo::GetFilledBunches() const
+BeamBunchMap MeasInfo::GetFilledBunches() const
 { //{{{
    BeamBunchMap bunches;
 
@@ -665,7 +665,7 @@ BeamBunchMap RunInfo::GetFilledBunches() const
 
 
 /** */
-BeamBunchMap RunInfo::GetEmptyBunches() const
+BeamBunchMap MeasInfo::GetEmptyBunches() const
 { //{{{
    BeamBunchMap bunches;
 
@@ -682,35 +682,35 @@ BeamBunchMap RunInfo::GetEmptyBunches() const
 
 
 /** */
-UShort_t RunInfo::GetNumFilledBunches() const
+UShort_t MeasInfo::GetNumFilledBunches() const
 { //{{{
    return GetFilledBunches().size();
 } //}}}
 
 
 /** */
-UShort_t RunInfo::GetNumEmptyBunches() const
+UShort_t MeasInfo::GetNumEmptyBunches() const
 { //{{{
    return GetEmptyBunches().size();
 } //}}}
 
 
 /** */
-Bool_t RunInfo::IsEmptyBunch(UShort_t bid) const
+Bool_t MeasInfo::IsEmptyBunch(UShort_t bid) const
 { //{{{
    return !fBeamBunches.find(bid)->second.IsFilled();
 } //}}}
 
 
 /** */
-ESpinState RunInfo::GetBunchSpin(UShort_t bid) const
+ESpinState MeasInfo::GetBunchSpin(UShort_t bid) const
 { //{{{
    return fBeamBunches.find(bid)->second.GetSpin();
 } //}}}
 
 
 /** */
-ERingId RunInfo::GetRingId() const
+ERingId MeasInfo::GetRingId() const
 { //{{{
    switch (fPolBeam) {
    case 1:
@@ -724,7 +724,7 @@ ERingId RunInfo::GetRingId() const
 
 
 /** */
-ETargetOrient RunInfo::GetTargetOrient() const
+ETargetOrient MeasInfo::GetTargetOrient() const
 { //{{{
    switch (fTargetOrient) {
    case 'H':
@@ -738,7 +738,7 @@ ETargetOrient RunInfo::GetTargetOrient() const
 
 
 /** */
-UShort_t RunInfo::GetTargetId() const
+UShort_t MeasInfo::GetTargetId() const
 { //{{{
    //string sTgtId(fTargetId);
    //return (UShort_t) atoi(sTgtId.c_str());
@@ -747,7 +747,7 @@ UShort_t RunInfo::GetTargetId() const
 
 
 /** */
-EPolarimeterId RunInfo::ExtractPolarimeterId(std::string runName)
+EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
 { //{{{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
 

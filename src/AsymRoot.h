@@ -77,7 +77,7 @@ public:
    void         PreFill();
    void         Fill(ECut cut);
    void         FillDerived();
-   void         PostFill(MseRunInfoX &run);
+   void         PostFill(MseMeasInfoX &run);
    void         FillScallerHists(Long_t *hData, UShort_t chId);
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Long_t *hData);
@@ -91,7 +91,7 @@ public:
    void         WriteTreeFile();
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
    EventConfig* GetRunConfig();
-   void         GetRunConfigs(RunInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
+   void         GetRunConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
 };
 
 #endif
