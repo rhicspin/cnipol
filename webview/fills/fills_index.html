@@ -334,6 +334,7 @@ Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in th
 $header = "
 <tr>
    <th>Fill
+   <th>Selected
 
    <th class='bluPol'>Polarization, %<br>In collisions
    <th class='bluPol'>Polarization, %<br>Beam
@@ -500,6 +501,7 @@ foreach ($es as $e):
 
 <tr>
    <td class=align_cm><?=$e['fill']?>
+   <td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$e['fill']?>'>
 
    <td class='align_cm bluPol'><b><?=$strPolarBColl?></b>
    <td class='align_cm bluPol'><?=$strPolarB?>
@@ -547,10 +549,11 @@ $strPolarYAvrg       = polarPairToString(calcWeigtedAvrgErr($polarYAvrgs));
 ?>
 
 <tr>
-   <th colspan=21>&nbsp;<br>&nbsp;
+   <th colspan=22>&nbsp;<br>&nbsp;
 
 <tr>
    <th>Avrg.:
+   <th>&nbsp;
 
    <th class='bluPol'>
    <th class='bluPol'><?=$strPolarBAvrg?>
@@ -634,6 +637,7 @@ $strPolarYAvrg       = polarPairToString(calcWeigtedAvrgErr($polarYAvrgs));
 
 <div align="left">
 Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
 </div>
 
 <td>
