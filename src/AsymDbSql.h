@@ -25,6 +25,8 @@ public:
    AsymDbSql();
    ~AsymDbSql();
    
+   void                     OpenConnection();
+   void                     CloseConnection();
    DbEntry*                 Select(std::string runName="");
    MseMeasInfoX*             SelectRun(std::string runName="");
    MseFillPolarX*           SelectFillPolar(UInt_t fill);

@@ -11,6 +11,22 @@ using namespace mysqlpp;
 /** */
 AsymDbSql::AsymDbSql() : AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
 {
+   MseMeasInfoX::table("run_info");
+   MseRunPeriodX::table("run_period");
+   MseFillPolarX::table("fill_polar");
+   MseFillProfileX::table("fill_profile");
+}
+
+
+/** */
+AsymDbSql::~AsymDbSql()
+{
+}
+
+
+/** */
+void AsymDbSql::OpenConnection()
+{ //{{{
    try {
       // Establish the connection to the database server.
       fConnection = new Connection("cnipol", "127.0.0.1", "cnipol2", "cnipol");
@@ -27,23 +43,22 @@ AsymDbSql::AsymDbSql() : AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_
       cerr << "Error: " << er.what() << endl;
       fConnection = 0;
    }
-
-   MseMeasInfoX::table("run_info");
-   MseRunPeriodX::table("run_period");
-   MseFillPolarX::table("fill_polar");
-   MseFillProfileX::table("fill_profile");
-}
+} //}}}
 
 
 /** */
-AsymDbSql::~AsymDbSql()
-{
-}
+void AsymDbSql::CloseConnection()
+{ //{{{
+   if (fConnection) {
+      delete fConnection;
+      fConnection = 0;
+   }
+} //}}}
 
 
 /** */
 DbEntry* AsymDbSql::Select(std::string runName)
-{
+{ //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return 0;
@@ -79,12 +94,14 @@ DbEntry* AsymDbSql::Select(std::string runName)
    //}
 
    return 0;
-}
+} //}}}
 
 
 /** */
 MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 { //{{{
+   OpenConnection();
+
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return 0;
@@ -124,6 +141,8 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
    //    }
    //    cout << endl;
    //}
+
+   CloseConnection();
 
    return mseri;
 } //}}}
@@ -193,7 +212,7 @@ MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
 
 /** */
 void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
-{
+{ //{{{
    vector<MseMeasInfoX> runs = SelectPriorRuns(run);
    vector<MseMeasInfoX>::iterator irun;
 
@@ -222,12 +241,12 @@ void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
       if (run.disabled_bunches.empty() && !irun->disabled_bunches.empty())
          run.disabled_bunches = irun->disabled_bunches;
    }
-}
+} //}}}
 
 
 /** */
 MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
-{
+{ //{{{
    MseRunPeriodX *runPeriod = SelectRunPeriod(run);
 
    if (runPeriod)
@@ -243,12 +262,12 @@ MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
    run.disabled_bunches     = runPeriod->disabled_bunches;
 
    return runPeriod; 
-}
+} //}}}
 
 
 /** */
 vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
-{
+{ //{{{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       vector<MseMeasInfoX> dummy;
@@ -287,13 +306,15 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
    //}
 
    return results;
-}
+} //}}}
 
 
 /** */
 MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
-{
+{ //{{{
    MseRunPeriodX* mserp = 0;
+
+   OpenConnection();
 
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
@@ -317,13 +338,15 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
       cerr << "Failed to get item list: " << query.error() << endl;
    }
 
+   CloseConnection();
+
    return mserp;
-}
+} //}}}
 
 
 /** */
 void AsymDbSql::Insert(DbEntry *dbrun)
-{
+{ //{{{
    if (!dbrun) return;
 
    //MseMeasInfoX MseMeasInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
@@ -363,12 +386,14 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 
    cout << "Query: " << query << endl;
    query.execute();
-}
+} //}}}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
 { //{{{
+   OpenConnection();
+
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return;
@@ -387,6 +412,8 @@ void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
       cout << "Query: " << query << endl;
       query.execute();
    }
+
+   CloseConnection();
 } //}}}
 
 
