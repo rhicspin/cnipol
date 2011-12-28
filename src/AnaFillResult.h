@@ -3,6 +3,7 @@
 #define AnaFillResult_h
 
 #include <map>
+#include <time.h>
 
 #include "TObject.h"
 
@@ -26,6 +27,7 @@ class AnaFillResult : public TObject
 private:
 
    AnaGlobResult               *fAnaGlobResult;
+   time_t                       fStartTime;
 
 public:
 
@@ -54,11 +56,13 @@ public:
    AnaFillResult();
    ~AnaFillResult();
 
+   time_t GetStartTime();
+
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;
 
-   void              AddRunResult(AnaMeasResult &result);
-   void              AddRunResult(EventConfig &rc, AnaGlobResult *globRes=0);
+   void              AddMeasResult(AnaMeasResult &result);
+   void              AddMeasResult(EventConfig &mm, AnaGlobResult *globRes=0);
    void              Process();
    ValErrPair        GetPolarHJ(EPolarimeterId polId);
    ValErrPair        GetPolarHJ(ERingId ringId);

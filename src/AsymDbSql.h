@@ -38,7 +38,6 @@ public:
    void                     UpdateInsert(MseFillPolarX*   ofill, MseFillPolarX*   nfill);
    void                     UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill);
    void                     Dump();
-   
 };
 
 #endif

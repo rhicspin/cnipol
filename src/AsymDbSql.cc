@@ -9,7 +9,7 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
+AsymDbSql::AsymDbSql() : AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
 {
    try {
       // Establish the connection to the database server.

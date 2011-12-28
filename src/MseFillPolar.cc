@@ -82,6 +82,7 @@ void MseFillPolarX::PrintAsPhp(FILE *f) const
 /** */
 void MseFillPolarX::SetValues(AnaFillResult &fr)
 { //{{{
+   start_time = mysqlpp::DateTime(fr.GetStartTime());
 
    if (fr.fHjetPolars.find(kBLUE_RING) != fr.fHjetPolars.end() ) {
       polar_blue_hjet     = fr.fHjetPolars[kBLUE_RING].first; 

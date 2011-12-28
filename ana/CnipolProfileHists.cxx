@@ -691,7 +691,7 @@ EMeasType CnipolProfileHists::GuessMeasurementType()
 
    TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 20, 0, 1);
 
-   utils::ConvertToProfile(hIntensProfile, hIntensProj);
+   utils::ConvertToProfile(hIntensProfile, hIntensProj, kFALSE);
 
    Int_t nSteps = hIntensProfile->GetNbinsX();
 

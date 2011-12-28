@@ -1315,7 +1315,7 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
 
          utils::Divide(hProfPolarVsFill_, hPolarPCNormByHJVsFill_, 1, hProfPolarRatioVsFill_);
          hProfPolarRatioVsFill_->Fit("pol0");
-         hProfPolarRatioVsFill_->GetYaxis()->UnZoom();
+         //hProfPolarRatioVsFill_->GetYaxis()->UnZoom();
       }
 
 

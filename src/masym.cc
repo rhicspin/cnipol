@@ -70,8 +70,9 @@ void initialize()
    //TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
-   TString filelistName = "run11_tmp_goodruns";
+   //TString filelistName = "run11_tmp_goodruns";
    //TString filelistName = "run11_tmp_goodruns_small";
+   TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
 
@@ -123,9 +124,9 @@ void initialize()
 
       gSystem->Info("", "file found: %s", fileName.Data());
 
-      gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+      gMM = (EventConfig*) f->FindObjectAny("EventConfig");
 
-      if (!gRC) {
+      if (!gMM) {
          gSystem->Error("masym", "RC not found. Skipping...");
          delete f;
          continue;
@@ -143,44 +144,44 @@ void initialize()
       }
 
       char strTime[80];
-      strftime(strTime, 80, "%X", localtime(&gRC->fMeasInfo->fStartTime));
+      strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
 
-      Double_t runId            = gRC->fMeasInfo->RUNID;
+      Double_t runId            = gMM->fMeasInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
-      UInt_t   beamEnergy       = (UInt_t) (gRC->fMeasInfo->GetBeamEnergy() + 0.5);
-      string   asymVersion      = gRC->fMeasInfo->fAsymVersion;
-      Float_t  ana_power        = gRC->fAnaMeasResult->A_N[1];
-      Float_t  asymmetry        = gRC->fAnaMeasResult->sinphi[0].P[0] * gRC->fAnaMeasResult->A_N[1];
-      Float_t  asymmetry_err    = gRC->fAnaMeasResult->sinphi[0].P[1] * gRC->fAnaMeasResult->A_N[1];
-      Float_t  polarization     = gRC->fAnaMeasResult->sinphi[0].P[0] * 100.;
-      Float_t  polarization_err = gRC->fAnaMeasResult->sinphi[0].P[1] * 100.;
-      Double_t profileRatio     = gRC->fAnaMeasResult->fProfilePolarR.first;
-      Double_t profileRatioErr  = gRC->fAnaMeasResult->fProfilePolarR.second;
-      //Float_t  profileRatio     = gRC->fAnaMeasResult->fIntensPolarR;
-      //Float_t  profileRatioErr  = gRC->fAnaMeasResult->fIntensPolarRErr;
-      //Float_t  tzero            = gRC->fCalibrator->fChannelCalibs[7].fT0Coef;
-      //Float_t  tzeroErr         = gRC->fCalibrator->fChannelCalibs[7].fT0CoefErr;
+      UInt_t   beamEnergy       = (UInt_t) (gMM->fMeasInfo->GetBeamEnergy() + 0.5);
+      string   asymVersion      = gMM->fMeasInfo->fAsymVersion;
+      Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
+      Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
+      Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
+      Float_t  polarization     = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;
+      Float_t  polarization_err = gMM->fAnaMeasResult->sinphi[0].P[1] * 100.;
+      Double_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
+      Double_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
+      //Float_t  profileRatio     = gMM->fAnaMeasResult->fIntensPolarR;
+      //Float_t  profileRatioErr  = gMM->fAnaMeasResult->fIntensPolarRErr;
+      //Float_t  tzero            = gMM->fCalibrator->fChannelCalibs[7].fT0Coef;
+      //Float_t  tzeroErr         = gMM->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
-      //if ( beamEnergy == 100 && gRC->fMeasInfo->fStartTime > flattopTimes[fillId]) {
-      //   gRC->fMeasInfo->fBeamEnergy = 400;
+      //if ( beamEnergy == 100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+      //   gMM->fMeasInfo->fBeamEnergy = 400;
       //   beamEnergy = 400;
       //}
 
-      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gRC->fMeasInfo->fStartTime, asymmetry);
+      //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gMM->fMeasInfo->fStartTime, asymmetry);
       //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
       //   polarization_err, asymVersion.c_str());
 
-      if (asymVersion != "v1.7.0") {
+      if (asymVersion != "v1.7.1") {
 	      Warning("masym", "Wrong version %s", asymVersion.c_str());
          continue;
       }
 
       if (polarization < 5 || polarization > 99 || polarization_err > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
-          gRC->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
+          gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           profileRatio > 1.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001
          )
       {
@@ -191,21 +192,21 @@ void initialize()
       if (flattopTimes.find(fillId) == flattopTimes.end()) 
          flattopTimes[fillId] = 0;
 
-      if ( beamEnergy == 250 && gRC->fMeasInfo->fStartTime > flattopTimes[fillId]) {
-         flattopTimes[fillId] = gRC->fMeasInfo->fStartTime;
+      if ( beamEnergy == 250 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+         flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
       }
 
-      //if (gRC->fMeasInfo->fStartTime < minTime ) minTime = gRC->fMeasInfo->fStartTime;
-      //if (gRC->fMeasInfo->fStartTime > maxTime ) maxTime = gRC->fMeasInfo->fStartTime;
+      //if (gMM->fMeasInfo->fStartTime < minTime ) minTime = gMM->fMeasInfo->fStartTime;
+      //if (gMM->fMeasInfo->fStartTime > maxTime ) maxTime = gMM->fMeasInfo->fStartTime;
 
       if (gH->d.find("runs") != gH->d.end()) {
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
-         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gRC->fMeasInfo->fStartTime);
+         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gMM->fMeasInfo->fStartTime);
 	   }
 
       // To calculate normalization factors for p-Carbon we need to do it in the first pass
       if ( beamEnergy == 250 ) {
-         gAnaGlobResult.AddRunResult(*gRC);
+         gAnaGlobResult.AddMeasResult(*gMM);
       }
 
       delete f;
@@ -243,7 +244,7 @@ void initialize()
       //gSystem->Info("", "Processing file: %s", fileName.Data());
       printf("%s\n", (*iRunName).c_str());
 
-      gRC = (EventConfig*) f->FindObjectAny("EventConfig");
+      gMM = (EventConfig*) f->FindObjectAny("EventConfig");
 
       // Get asym hist container. It must exist
       gHIn = new DrawObjContainer(f);
@@ -251,10 +252,10 @@ void initialize()
       gHIn->ReadFromDir();
 
       // Overwrite the default gMeasInfo with the saved one
-      gMeasInfo = gRC->fMeasInfo;
+      gMeasInfo = gMM->fMeasInfo;
 
-      gH->Fill(*gRC);
-      gH->Fill(*gRC, *gHIn);
+      gH->Fill(*gMM);
+      gH->Fill(*gMM, *gHIn);
 
       delete f;
    }
@@ -262,11 +263,11 @@ void initialize()
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   //gH->SetSignature(gRC->GetSignature());
+   //gH->SetSignature(gMM->GetSignature());
    gH->SetSignature("");
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolar.*VsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
@@ -281,7 +282,7 @@ void initialize()
 
    //if (kTRUE) {
    if (kFALSE) {
-      gAsymDb2 = new AsymDbSql();
+      gAsymDb = new AsymDbSql();
       gAnaGlobResult.UpdateInsertDb();
    }
 }
