@@ -932,27 +932,27 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
       //
       // Yet another correction in for v1.6.1 that is implemented in v1.6.2
 
-      Float_t a_n_scale_v1_3_14 = 1;
-      Float_t a_n_scale_v1_6_1  = 1;
+      //Float_t a_n_scale_v1_3_14 = 1;
+      //Float_t a_n_scale_v1_6_1  = 1;
 
-      switch (gMeasInfo->fPolId) {
-      case kB1U:
-         a_n_scale_v1_3_14 = 0.8371;
-         a_n_scale_v1_6_1  = 1./0.9519; // overall is: 0.8794
-         break;
-      case kY1D:
-         a_n_scale_v1_3_14 = 0.8773;
-         a_n_scale_v1_6_1  = 1./0.9640; // overall is: 0.9101
-         break;
-      case kB2D:
-         a_n_scale_v1_3_14 = 0.7870;
-         a_n_scale_v1_6_1  = 1./0.9852; // overall is: 0.7988
-         break;
-      case kY2U:
-         a_n_scale_v1_3_14 = 0.8481;
-         a_n_scale_v1_6_1  = 1./0.9615; // overall is: 0.8821
-         break;
-      }
+      //switch (gMeasInfo->fPolId) {
+      //case kB1U:
+      //   a_n_scale_v1_3_14 = 0.8371;
+      //   a_n_scale_v1_6_1  = 1./0.9519; // overall is: 0.8794
+      //   break;
+      //case kY1D:
+      //   a_n_scale_v1_3_14 = 0.8773;
+      //   a_n_scale_v1_6_1  = 1./0.9640; // overall is: 0.9101
+      //   break;
+      //case kB2D:
+      //   a_n_scale_v1_3_14 = 0.7870;
+      //   a_n_scale_v1_6_1  = 1./0.9852; // overall is: 0.7988
+      //   break;
+      //case kY2U:
+      //   a_n_scale_v1_3_14 = 0.8481;
+      //   a_n_scale_v1_6_1  = 1./0.9615; // overall is: 0.8821
+      //   break;
+      //}
 
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14 * a_n_scale_v1_6_1;
       for (int i=0; i<25; i++) anth[i] = anth100[i];

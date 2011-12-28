@@ -19,6 +19,7 @@ class TargetUId;
 
 typedef std::map<TargetUId, ValErrPair>        TargetUId2ValErrMap;
 typedef TargetUId2ValErrMap::iterator          TargetUId2ValErrMapIter;
+typedef TargetUId2ValErrMap::const_iterator    TargetUId2ValErrMapConstIter;
 
 
 /** */

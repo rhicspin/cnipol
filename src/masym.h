@@ -16,7 +16,7 @@
 #include "CnipolProfileHists.h"
 
 MAsymRoot           *gMAsymRoot = 0;
-EventConfig         *gRC;
+EventConfig         *gMM;
 std::map<UInt_t, UInt_t>  flattopTimes;
 
 //void manalyze();

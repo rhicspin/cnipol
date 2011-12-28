@@ -20,7 +20,7 @@ public:
    ~AsymDb();
 
    virtual DbEntry*         Select(std::string runName="") { return 0; }
-   virtual MseMeasInfoX*     SelectRun(std::string runName="") { return 0; }
+   virtual MseMeasInfoX*    SelectRun(std::string runName="") { return 0; }
    virtual MseFillPolarX*   SelectFillPolar(UInt_t fill) { return 0; }
    virtual MseFillProfileX* SelectFillProfile(UInt_t fill) { return 0; }
    virtual MseRunPeriodX*   SelectRunPeriod(MseMeasInfoX& run) { return 0; }

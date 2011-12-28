@@ -11,9 +11,10 @@ using namespace std;
 
 
 /** */
-AnaFillResult::AnaFillResult() : TObject(), fAnaMeasResults(), fPolars(),
-   fPolarsByTargets(), fProfPolars(), fHjetPolars(), fBeamPolars(),
-   fBeamCollPolars(), fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(),
+AnaFillResult::AnaFillResult() : TObject(), fAnaGlobResult(0),
+   fStartTime((time_t)-1), fAnaMeasResults(), fPolars(), fPolarsByTargets(),
+   fProfPolars(), fHjetPolars(), fBeamPolars(), fBeamCollPolars(),
+   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(),
    fMeasTgtOrients(), fMeasTgtIds(), fMeasRingIds(), fPolProfRs(),
    fPolProfPMaxs(), fPolProfPs()
 {
@@ -22,6 +23,10 @@ AnaFillResult::AnaFillResult() : TObject(), fAnaMeasResults(), fPolars(),
 
 /** */
 AnaFillResult::~AnaFillResult() { }
+
+
+/** */
+time_t AnaFillResult::GetStartTime() { return fStartTime; }
 
 
 /** */
@@ -82,10 +87,15 @@ void AnaFillResult::Print(const Option_t* opt) const
 
    TargetSetIter iTarget = gRunConfig.fTargets.begin();
 
-   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget) {
-      
+   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget)
+   {
       iTarget->Print();
-      //if (fPolarsByTargets.find(targetUId) == fPolarsByTargets.end())
+      TargetUId targetUId = iTarget->fUId;
+
+      if (fPolarsByTargets.find(targetUId) != fPolarsByTargets.end()) {
+         //fPolarsByTargets[targetUId].Print();
+         cout << PairAsPhpArray(fPolarsByTargets.find(targetUId)->second) << endl;
+      }
    }
 
 
@@ -111,21 +121,23 @@ void AnaFillResult::Print(const Option_t* opt) const
 
 
 /** */
-void AnaFillResult::AddRunResult(AnaMeasResult &result)
+void AnaFillResult::AddMeasResult(AnaMeasResult &result)
 { //{{{
 } //}}}
 
 
 /** */
-void AnaFillResult::AddRunResult(EventConfig &rc, AnaGlobResult *globRes)
+void AnaFillResult::AddMeasResult(EventConfig &mm, AnaGlobResult *globRes)
 { //{{{
-   string runName = rc.fMeasInfo->GetRunName();
+   string runName = mm.fMeasInfo->GetRunName();
+
+   if (mm.fMeasInfo->fStartTime < fStartTime) fStartTime = mm.fMeasInfo->fStartTime;
 
    // add or overwrite new AnaFillResult
-   fAnaMeasResults[runName] = *rc.fAnaMeasResult;
-   fMeasTgtOrients[runName] = rc.fMeasInfo->GetTargetOrient();
-   fMeasTgtIds[runName]     = rc.fMeasInfo->GetTargetId();
-   fMeasRingIds[runName]    = rc.fMeasInfo->GetRingId();
+   fAnaMeasResults[runName] = *mm.fAnaMeasResult;
+   fMeasTgtOrients[runName] = mm.fMeasInfo->GetTargetOrient();
+   fMeasTgtIds[runName]     = mm.fMeasInfo->GetTargetId();
+   fMeasRingIds[runName]    = mm.fMeasInfo->GetRingId();
 
    fAnaGlobResult = globRes;
 

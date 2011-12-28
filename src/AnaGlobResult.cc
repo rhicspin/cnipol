@@ -24,9 +24,9 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    fFileNameYelHjet("hjet_pol_yel.txt"),
    fFileNameBluHjet("hjet_pol_blu.txt"),
    fMinFill(UINT_MAX), fMaxFill(0),
-   fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(), fNormProfPolar(),
-   fNormProfPolar2(), fAvrgPolProfRs(),
-   fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
+   fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
+   fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
+   fAvrgPolProfRs(), fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
 {
 }
 
@@ -119,15 +119,15 @@ void AnaGlobResult::Print(const Option_t* opt) const
 
 
 /** */
-void AnaGlobResult::AddRunResult(AnaMeasResult &result)
+void AnaGlobResult::AddMeasResult(AnaMeasResult &result)
 { //{{{
 } //}}}
 
 
 /** */
-void AnaGlobResult::AddRunResult(EventConfig &rc)
+void AnaGlobResult::AddMeasResult(EventConfig &mm)
 { //{{{
-   UInt_t fillId = rc.fMeasInfo->GetFillId();
+   UInt_t fillId = mm.fMeasInfo->GetFillId();
 
    if (fillId > fMaxFill) fMaxFill = fillId;
    if (fillId < fMinFill) fMinFill = fillId;
@@ -141,14 +141,14 @@ void AnaGlobResult::AddRunResult(EventConfig &rc)
 
       // create new AnaFillResult
       fillRes = new AnaFillResult();
-      fillRes->AddRunResult(rc, this);
+      fillRes->AddMeasResult(mm, this);
       fAnaFillResults[fillId] = *fillRes;
 
    // otherwise, get a pointer to the existing one
    } else {
       // add AnaRunResult to existing AnaFillResult
       AnaFillResult *fillRes = &iFill->second;
-      fillRes->AddRunResult(rc, this);
+      fillRes->AddMeasResult(mm, this);
    }
 
 } //}}}
@@ -307,6 +307,35 @@ void AnaGlobResult::CalcPolarNorm()
          //string sPolId = RunConfig::AsString(polId);
          //printf("%d: %s: %16.7f +/- %16.7f   %16.7f +/- %16.7f\n",
          //   fillId, sPolId.c_str(), polarCrb.first, polarCrb.second, polarJet.first, polarJet.second);
+      }
+
+
+      // Loop over polarization values for different targets
+      TargetUId2ValErrMapConstIter iPolarByTgt = fillRslt->fPolarsByTargets.begin();
+
+      for ( ; iPolarByTgt != fillRslt->fPolarsByTargets.end(); ++iPolarByTgt)
+      {
+         TargetUId      targetUId    = iPolarByTgt->first;
+         ValErrPair     polarCrb     = iPolarByTgt->second;
+
+         EPolarimeterId polId        = targetUId.fPolId;
+         ETargetOrient  targetOrient = targetUId.fTargetOrient;
+         UShort_t       targetId     = targetUId.fTargetId;
+
+         ERingId        ringId       = RunConfig::GetRingId(polId);
+         ValErrPair     polarJet     = fillRslt->fHjetPolars[ringId];
+
+         ValErrPair norm = CalcDivision(polarJet, polarCrb, 0);
+         
+         if (norm.second >=0)
+         {
+            if (fNormJetCarbonByTarget2.find(targetUId) == fNormJetCarbonByTarget2.end())
+            {
+               fNormJetCarbonByTarget2[targetUId] = norm;
+            } else {
+               fNormJetCarbonByTarget2[targetUId] = CalcWeightedAvrgErr(fNormJetCarbonByTarget2[targetUId], norm);
+            }
+         }
       }
    }
 
@@ -472,7 +501,7 @@ void AnaGlobResult::CalcPolarDependants()
 void AnaGlobResult::UpdateInsertDb()
 { //{{{
 
-   if (!gAsymDb2) {
+   if (!gAsymDb) {
       Error("UpdateInsertDb", "Cannot connect to MySQL DB");
       return;
    }
@@ -484,7 +513,7 @@ void AnaGlobResult::UpdateInsertDb()
       cout << endl;
       Info("UpdateInsert", "fill %d", iFill->first);
 
-      MseFillPolarX *ofill = gAsymDb2->SelectFillPolar(iFill->first);
+      MseFillPolarX *ofill = gAsymDb->SelectFillPolar(iFill->first);
       MseFillPolarX *nfill = 0;
 
       if (ofill) { // if fill found in database copy it to new one
@@ -496,11 +525,11 @@ void AnaGlobResult::UpdateInsertDb()
       nfill->SetValues(iFill->second);
       //nfill->Print();
 
-      gAsymDb2->UpdateInsert(ofill, nfill);
+      gAsymDb->UpdateInsert(ofill, nfill);
 
 
       // Update profile table
-      MseFillProfileX *ofillProf = gAsymDb2->SelectFillProfile(iFill->first);
+      MseFillProfileX *ofillProf = gAsymDb->SelectFillProfile(iFill->first);
       MseFillProfileX *nfillProf = 0;
 
       if (ofillProf) { // if fill found in database copy it to new one
@@ -512,6 +541,6 @@ void AnaGlobResult::UpdateInsertDb()
       nfillProf->SetValues(iFill->second);
       //nfillProf->Print();
 
-      gAsymDb2->UpdateInsert(ofillProf, nfillProf);
+      gAsymDb->UpdateInsert(ofillProf, nfillProf);
    }
 } //}}}

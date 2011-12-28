@@ -30,6 +30,7 @@ public:
    AnaFillResultMap             fAnaFillResults;
    PolId2ValErrMap              fNormJetCarbon;  // Ratio of the averages
    PolId2ValErrMap              fNormJetCarbon2; // Average of the fill ratios
+   TargetUId2ValErrMap          fNormJetCarbonByTarget2;
    PolId2ValErrMap              fNormProfPolar;
    PolId2ValErrMap              fNormProfPolar2;
    RingId2TgtOrient2ValErrMap   fAvrgPolProfRs;
@@ -46,8 +47,8 @@ public:
    //void PrintAsPhp(FILE *f=stdout) const;
 
    void       AdjustMinMaxFill();
-   void       AddRunResult(AnaMeasResult &result);
-   void       AddRunResult(EventConfig &rc);
+   void       AddMeasResult(AnaMeasResult &result);
+   void       AddMeasResult(EventConfig &mm);
    void       Process();
    ValErrPair GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    //ValErrPair GetBeamPolarExp(UInt_t fillId, ERingId ringId);

@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
    gAsymRoot->GetRunConfigs(gMeasInfo, gAnaInfo, gAnaMeasResult);
 
    //gAsymDb  = new AsymDbFile();
-   gAsymDb2 = new AsymDbSql();
+   gAsymDb = new AsymDbSql();
 
    // for get option
    extern char *optarg;
@@ -402,7 +402,7 @@ int main(int argc, char *argv[])
 
    // Check whether the run is in database
    if (gAnaInfo->fFlagUseDb) {
-      mseMeasInfoX = gAsymDb2->SelectRun(gMeasInfo->fRunName);
+      mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->fRunName);
    }
 
    if (mseMeasInfoX) { // if run found in database save its copy
@@ -428,8 +428,8 @@ int main(int argc, char *argv[])
    //mseMeasInfoX->Print();
 
    // We can do this for any run including alphas alpha
-   MseRunPeriodX *mseRunPeriodX = gAsymDb2->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
-   //gAsymDb2->CompleteMeasInfo(*mseMeasInfoX); // deprecated
+   MseRunPeriodX *mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
+   //gAsymDb->CompleteMeasInfo(*mseMeasInfoX); // deprecated
 
    if (!mseRunPeriodX)
       gSystem->Fatal("   int main()", "Run period not specified");
@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
    mseMeasInfoX->measurement_type = UInt_t(gMeasInfo->fMeasType);
 
    if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
-      gAsymDb2->UpdateInsert(mseMeasInfoXOrig, mseMeasInfoX);
+      gAsymDb->UpdateInsert(mseMeasInfoXOrig, mseMeasInfoX);
 
    gAsymRoot->fEventConfig->fMseMeasInfoX = mseMeasInfoX;
 
@@ -554,6 +554,7 @@ int main(int argc, char *argv[])
    gAsymRoot->Finalize();
 
    delete gAsymRoot;
+   delete gAsymDb;
 
    gAnaInfo->CopyResults();
 
