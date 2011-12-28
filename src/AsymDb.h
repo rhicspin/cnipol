@@ -19,6 +19,8 @@ public:
    AsymDb();
    ~AsymDb();
 
+   virtual void             OpenConnection() {}
+   virtual void             CloseConnection() {}
    virtual DbEntry*         Select(std::string runName="") { return 0; }
    virtual MseMeasInfoX*    SelectRun(std::string runName="") { return 0; }
    virtual MseFillPolarX*   SelectFillPolar(UInt_t fill) { return 0; }
