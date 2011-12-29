@@ -41,13 +41,14 @@ EventConfig::~EventConfig()
 }
 
 
-MeasInfo*       EventConfig::GetMeasInfo()       { return fMeasInfo; }
+MeasInfo*      EventConfig::GetMeasInfo()      { return fMeasInfo; }
 AnaInfo*       EventConfig::GetAnaInfo()       { return fAnaInfo; }
 Calibrator*    EventConfig::GetCalibrator()    { return fCalibrator; }
 AnaMeasResult* EventConfig::GetAnaMeasResult() { return fAnaMeasResult; }
-MseMeasInfoX*   EventConfig::GetMseMeasInfoX()   { return fMseMeasInfoX; }
+MseMeasInfoX*  EventConfig::GetMseMeasInfoX()  { return fMseMeasInfoX; }
 
 
+/** */
 void EventConfig::Print(const Option_t* opt) const
 {
    printf("EventConfig:\n");

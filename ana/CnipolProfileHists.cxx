@@ -10,6 +10,7 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 #include "TGraphErrors.h"
+#include "TStyle.h"
 
 #include "utils/utils.h"
 
@@ -48,36 +49,46 @@ void CnipolProfileHists::BookHists(string sid)
 
    if (!sid.empty()) sid = "_" + sid;
 
-   char hName[256];
+   char        hName[256];
+   string      shName;
+   TH1        *hist;
+   TAttMarker  styleMarker;
 
-   sprintf(hName, "hIntensProfile"); // this one is filled from the scaler data
+   styleMarker.SetMarkerStyle(kFullCircle);
+   styleMarker.SetMarkerSize(1);
+
+   // this one is filled from the scaler data
+   sprintf(hName, "hIntensProfileScaler");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("time, s");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o[hName])->SetTitle(";time, s;Events;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
    ((TH1*) o[hName])->Sumw2();
 
-   sprintf(hName, "hIntensProfile2"); // this one is filled from the event data (kind of more correct than hIntensProfile)
-   //o[hName] = new TH1D(hName, hName, 400, 0, 400);
+   // this one is filled from the event data (it is a more correct way of doing
+   // this than using hIntensProfileScaler)
+   sprintf(hName, "hIntensProfile");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
    ((TH1*) o[hName])->SetTitle(";time, s;Events");
-   ((TH1*) o[hName])->SetLineColor(kRed);
+   //((TH1*) o[hName])->SetLineColor(kRed);
    ((TH1*) o[hName])->Sumw2();
+
+   shName = "hIntensProfileFineBin";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle(";time, s;Events");
+   styleMarker.Copy(*hist);
+   o[shName] = hist;
 
    sprintf(hName, "hIntensProfileFwd");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
 
    sprintf(hName, "hIntensProfileBck");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
 
    sprintf(hName, "hIntensProfileFold");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
 
    sprintf(hName, "hPolarProfile");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of delimeters is not known beforehand
@@ -185,31 +196,30 @@ void CnipolProfileHists::BookHists(string sid)
 /** */
 void CnipolProfileHists::PreFill(string sid)
 { //{{{
-   //if (sid == "_cut2") {
-   ((TH1*) o["hIntensProfile2"])->SetBins(gNDelimeters, 0, gNDelimeters);
-   //}
+   ((TH1*) o["hIntensProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
+   ((TH1*) o["hIntensProfileFineBin"])->SetBins(gNDelimeters*5, 0, gNDelimeters);
 
-   //((TH1*) o["hIntensProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
+   //((TH1*) o["hIntensProfileScaler"])->SetBins(nTgtIndex, 0, nTgtIndex);
    //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
    ((TH1*) o["hPolarProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
 
-   //Double_t ymax = ((TH1*) o["hIntensProfile2"])->GetMaximum();
-   //((TH1*) o["hIntensProfile2"])->Scale(1./ymax);
+   //Double_t ymax = ((TH1*) o["hIntensProfile"])->GetMaximum();
+   //((TH1*) o["hIntensProfile"])->Scale(1./ymax);
 } //}}}
 
 
 /** */
 void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
-   //UChar_t chId  = ch->GetChannelId();
-   
-   //if (sid == "_cut2") { // fill these if only pass the carbon mass cut
-      UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
-      //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
-      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
-      //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
-      ((TH1*) o["hIntensProfile2"])->Fill(ttime);
-   //}
+   UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
+
+   //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
+   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
+   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
+
+   ((TH1*) o["hIntensProfile"])->Fill(ttime);
+   UInt_t ttimeFineBin = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ/5.;
+   ((TH1*) o["hIntensProfileFineBin"])->Fill(ttimeFineBin);
 } //}}}
 
 
@@ -243,11 +253,11 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
    //   printf("prof check 2 i: %d, %ld, %f, %f\n", i, *(hData+i), *(hd+i), *(hdErr+i));
    //}
 
-   ((TH1*) o["hIntensProfile"])->SetBins(n+1, 0, n+1);
-   ((TH1*) o["hIntensProfile"])->SetContent(hd);
-   ((TH1*) o["hIntensProfile"])->SetError(hdErr);
-   //((TH1*) o["hIntensProfile"])->Sumw2();
-   ((TH1*) o["hIntensProfile"])->SetEntries(nEntries);
+   ((TH1*) o["hIntensProfileScaler"])->SetBins(n+1, 0, n+1);
+   ((TH1*) o["hIntensProfileScaler"])->SetContent(hd);
+   ((TH1*) o["hIntensProfileScaler"])->SetError(hdErr);
+   //((TH1*) o["hIntensProfileScaler"])->Sumw2();
+   ((TH1*) o["hIntensProfileScaler"])->SetEntries(nEntries);
 
    delete [] hd;
    delete [] hdErr;
@@ -257,8 +267,8 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 /** */
 void CnipolProfileHists::PostFill()
 { //{{{
-   //TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
-   TH1* hIntensProfile = (TH1*) o["hIntensProfile2"];
+   //TH1* hIntensProfile = (TH1*) o["hIntensProfileScaler"];
+   TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
    if (!hIntensProfile->Integral()) {
       Error("PostFill", "Intensity profile histogram (hIntensProfile) is empty. Skipping...");
@@ -267,7 +277,6 @@ void CnipolProfileHists::PostFill()
 
    Double_t ymax = hIntensProfile->GetMaximum();
 
-   //hIntensProfile->Scale(1./hIntensProfile->Integral());
    hIntensProfile->Scale(1./ymax);
    Double_t xmin = hIntensProfile->GetXaxis()->GetXmin();
    Double_t xmax = hIntensProfile->GetXaxis()->GetXmax();
@@ -286,7 +295,7 @@ void CnipolProfileHists::PostFill()
 
    TFitResultPtr fitres = hIntensProfile->Fit(fitFunc, "I M S R", "");
 
-   // Now split the hIntensProfile hist into two: forward and backward motionsward motions
+   // Now split the hIntensProfile hist into two: forward and backward motions
 
    double chi2Ndf  = 0;
    double sigma    = 0;

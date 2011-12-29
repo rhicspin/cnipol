@@ -93,21 +93,11 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
    printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
 } //}}}
 
-Float_t MeasInfo::GetBeamEnergy() { return fBeamEnergy; }
-
+Float_t MeasInfo::GetBeamEnergy()               { return fBeamEnergy; }
 Float_t MeasInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffset; }
-
-Short_t MeasInfo::GetExpectedGlobalTdcOffset() { return fExpectedGlobalTdcOffset; }
-
-
-/** */
-string MeasInfo::GetAlphaCalibFileName() const
-{ return ""; }
-
-
-/** */
-string MeasInfo::GetDlCalibFileName() const
-{ return ""; }
+Short_t MeasInfo::GetExpectedGlobalTdcOffset()  { return fExpectedGlobalTdcOffset; }
+string  MeasInfo::GetAlphaCalibFileName() const { return ""; }
+string  MeasInfo::GetDlCalibFileName()    const { return ""; }
 
 
 /** */

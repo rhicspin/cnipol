@@ -287,7 +287,6 @@ void event_process(processEvent *event)
       //{
 	   //   gAsymRoot->fHists->Fill(ch, "_cut2");
       //}
-
    }
 
    //ds

@@ -70,31 +70,42 @@ void CnipolAsymHists::BookHists(string cutid)
    ((TH1*) o[shName])->SetOption("colz NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
 
-   shName = "hAsymVsBunchId_X90" + cutid;
+   // Detector Id vs delim
+   shName = "hDetVsDelim";
+   o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
+   ((TH1*) o[shName])->SetOption("colz NOIMG");
+   ((TH1*) o[shName])->SetTitle(";Target Steps, s;Detector Id;");
+
+   shName = "hAsymVsBunchId_X90";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
    //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X90 Asymmetry;");
 
-   shName = "hAsymVsBunchId_X45" + cutid;
+   shName = "hAsymVsBunchId_X45";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
    //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X45 Asymmetry;");
 
-   shName = "hAsymVsBunchId_Y45" + cutid;
+   shName = "hAsymVsBunchId_Y45";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
    //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Y45 Asymmetry;");
 
    //
-   shName = "hChannelAsym" + cutid;
+   shName = "hChannelAsym";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);//, 100, -0.03, 0.03);
    ((TH1*) o[shName])->SetOption("hist E1 NOIMG");
    ((TH1*) o[shName])->SetTitle(";Channel Id;Asymmetry;");
 
    //
-   shName = "hDelimChAsym" + cutid;
+   shName = "hDelimChAsym";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
    ((TH1*) o[shName])->SetOption("hist NOIMG");
+   ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
+
+   shName = "hDelimDetAsym";
+   o[shName] = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   ((TH1*) o[shName])->SetOption("E1 NOIMG");
    ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
 
    //
@@ -104,7 +115,7 @@ void CnipolAsymHists::BookHists(string cutid)
    grAsymVsPhi->SetMarkerSize(1);
    grAsymVsPhi->SetMarkerColor(kMagenta+2);
 
-   shName = "hAsymVsPhi" + cutid;
+   shName = "hAsymVsPhi";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -0.03, 0.03);
    //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
@@ -117,7 +128,7 @@ void CnipolAsymHists::BookHists(string cutid)
    grPolarVsPhi->SetMarkerSize(1);
    grPolarVsPhi->SetMarkerColor(kMagenta+2);
 
-   shName = "hPolarVsPhi" + cutid;
+   shName = "hPolarVsPhi";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -1.5, 1.5);
    //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
@@ -204,6 +215,12 @@ void CnipolAsymHists::BookHists(string cutid)
       ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
 
+      // Detector Id vs delim
+      shName = "hDetVsDelim_" + sSS;
+      o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
+      ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
+
       // Detector Id vs energy
       shName = "hDetVsKinEnergyA_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2, N_DETECTORS, 0.5, N_DETECTORS+0.5);
@@ -216,9 +233,9 @@ void CnipolAsymHists::BookHists(string cutid)
 /** */
 void CnipolAsymHists::PreFill(string cutid)
 { //{{{
-   //if (cutid != "") return;
-
+   ((TH1*) o["hDetVsDelim"])->SetBins(gNDelimeters, 0, gNDelimeters, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    ((TH1*) o["hDelimChAsym"])->SetBins(gNDelimeters, 0, gNDelimeters);
+   ((TH1*) o["hDelimDetAsym"])->SetBins(gNDelimeters, 0, gNDelimeters);
 
    IterSpinState iSS=gRunConfig.fSpinStates.begin();
 
@@ -226,7 +243,8 @@ void CnipolAsymHists::PreFill(string cutid)
 
       string sSS = gRunConfig.AsString(*iSS);
 
-      ((TH1*) o["hChVsDelim_" + sSS])->SetBins(gNDelimeters, 0, gNDelimeters, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+      ((TH1*) o["hChVsDelim_"  + sSS])->SetBins(gNDelimeters, 0, gNDelimeters, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+      ((TH1*) o["hDetVsDelim_" + sSS])->SetBins(gNDelimeters, 0, gNDelimeters, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    }
 
 } //}}}
@@ -262,6 +280,7 @@ void CnipolAsymHists::FillDerived()
 { //{{{
    // First fill integral and derivative histograms
    TH2* hDetVsBunchId = (TH2*) o["hDetVsBunchId"];
+   TH2* hDetVsDelim   = (TH2*) o["hDetVsDelim"];
 
    IterSpinState iSS = gRunConfig.fSpinStates.begin();
 
@@ -269,41 +288,50 @@ void CnipolAsymHists::FillDerived()
    {
       string sSS = gRunConfig.AsString(*iSS);
 
-      TH1* hChannelCounts   = (TH1*) o["hChannelCounts_"   + sSS];
-      TH2* hChVsBunchId     = (TH2*) o["hChVsBunchId_"     + sSS];
-      TH2* hChVsKinEnergyA  = (TH2*) o["hChVsKinEnergyA_"  + sSS];
-      //TH2* hChVsDelim       = (TH2*) o["hChVsDelim_"       + sSS];
-      TH2* hDetVsBunchId_ss = (TH2*) o["hDetVsBunchId_"    + sSS];
-      TH2* hDetVsKinEnergyA = (TH2*) o["hDetVsKinEnergyA_" + sSS];
+      TH1* hChannelCounts_   = (TH1*) o["hChannelCounts_"   + sSS];
+      TH2* hChVsBunchId_     = (TH2*) o["hChVsBunchId_"     + sSS];
+      TH2* hChVsKinEnergyA_  = (TH2*) o["hChVsKinEnergyA_"  + sSS];
+      TH2* hChVsDelim_       = (TH2*) o["hChVsDelim_"       + sSS];
+      TH2* hDetVsBunchId_    = (TH2*) o["hDetVsBunchId_"    + sSS];
+      TH2* hDetVsKinEnergyA_ = (TH2*) o["hDetVsKinEnergyA_" + sSS];
+      TH2* hDetVsDelim_      = (TH2*) o["hDetVsDelim_"      + sSS];
 
       for (int iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
-         UInt_t counts = hChVsBunchId->Integral(1, N_BUNCHES, iCh, iCh);
+         UInt_t counts = hChVsBunchId_->Integral(1, N_BUNCHES, iCh, iCh);
 
-         hChannelCounts->SetBinContent(iCh, counts);
+         hChannelCounts_->SetBinContent(iCh, counts);
       
          UShort_t iDet = RunConfig::GetDetectorId(iCh);
 
-         for (int iBunch=1; iBunch<=hDetVsBunchId_ss->GetNbinsX(); iBunch++)
+         for (int iBunch=1; iBunch<=hDetVsBunchId_->GetNbinsX(); iBunch++)
          {
-            Double_t bc     = hChVsBunchId->GetBinContent(iBunch, iCh);
-            //Int_t bin    = hDetVsBunchId_ss->GetBin(iBunch, iDet);
-            //hDetVsBunchId_ss->AddBinContent(bin, bc);
-            Double_t bc_det = hDetVsBunchId_ss->GetBinContent(iBunch, iDet);
-            hDetVsBunchId_ss->SetBinContent(iBunch, iDet, bc_det + bc);
+            Double_t bc     = hChVsBunchId_->GetBinContent(iBunch, iCh);
+            //Int_t bin    = hDetVsBunchId_->GetBin(iBunch, iDet);
+            //hDetVsBunchId_->AddBinContent(bin, bc);
+            Double_t bc_det = hDetVsBunchId_->GetBinContent(iBunch, iDet);
+            hDetVsBunchId_->SetBinContent(iBunch, iDet, bc_det + bc);
          }
 
-         for (int iKinE=1; iKinE<=hDetVsKinEnergyA->GetNbinsX(); iKinE++)
+         for (int iDelim=1; iDelim<=hDetVsDelim_->GetNbinsX(); iDelim++)
          {
-            Double_t bc  = hChVsKinEnergyA->GetBinContent(iKinE, iCh);
-            //Int_t bin = hDetVsKinEnergyA->GetBin(iKinE, iDet);
-            //hDetVsKinEnergyA->AddBinContent(bin, bc);
-            Double_t bc_det = hDetVsKinEnergyA->GetBinContent(iKinE, iDet);
-            hDetVsKinEnergyA->SetBinContent(iKinE, iDet, bc_det + bc);
+            Double_t bc     = hChVsDelim_->GetBinContent(iDelim, iCh);
+            Double_t bc_det = hDetVsDelim_->GetBinContent(iDelim, iDet);
+            hDetVsDelim_->SetBinContent(iDelim, iDet, bc_det + bc);
+         }
+
+         for (int iKinE=1; iKinE<=hDetVsKinEnergyA_->GetNbinsX(); iKinE++)
+         {
+            Double_t bc  = hChVsKinEnergyA_->GetBinContent(iKinE, iCh);
+            //Int_t bin = hDetVsKinEnergyA_->GetBin(iKinE, iDet);
+            //hDetVsKinEnergyA_->AddBinContent(bin, bc);
+            Double_t bc_det = hDetVsKinEnergyA_->GetBinContent(iKinE, iDet);
+            hDetVsKinEnergyA_->SetBinContent(iKinE, iDet, bc_det + bc);
          }
       }
 
-      hDetVsBunchId->Add(hDetVsBunchId_ss);
+      hDetVsBunchId->Add(hDetVsBunchId_);
+      hDetVsDelim->Add(hDetVsDelim_);
    }
 } //}}}
 
@@ -356,14 +384,12 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
          }
       }
    }
-
 } //}}}
 
 
 /** */
 void CnipolAsymHists::PostFill()
 { //{{{
-
    // Strip-by-Strip Asymmetries
    gAsymCalculator.CalcStripAsymmetry(this);
    gAsymCalculator.CalcStripAsymmetryByProfile(this);
@@ -376,6 +402,9 @@ void CnipolAsymHists::PostFill()
    gAsymCalculator.CalcBunchAsym(this);
    gAsymCalculator.CalcBunchAsymSqrtFormula(this);
 
+   //gAsymCalculator.CalcDelimAsym(this);
+   gAsymCalculator.CalcDelimAsymSqrtFormula(this);
+
    // Assume all required histograms are filled
    // Fit (or do whatever) them at this step
 
@@ -387,7 +416,7 @@ void CnipolAsymHists::PostFill()
    
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
-      string sSS = gRunConfig.AsString(*iSS);
+      string  sSS   = gRunConfig.AsString(*iSS);
       Color_t color = RunConfig::AsColor(*iSS);
 
       string grName;
@@ -403,6 +432,7 @@ void CnipolAsymHists::PostFill()
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
       gAnaMeasResult->fFitResAsymBunchX90[*iSS] = fitres;
+      delete funcConst;
 
       //
       grName = "grAsymVsBunchId_X45_" + sSS;
@@ -413,6 +443,7 @@ void CnipolAsymHists::PostFill()
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
       gAnaMeasResult->fFitResAsymBunchX45[*iSS] = fitres;
+      delete funcConst;
 
       //
       grName = "grAsymVsBunchId_Y45_" + sSS;
@@ -423,5 +454,6 @@ void CnipolAsymHists::PostFill()
       funcConst->SetLineColor(color);
       fitres = gr->Fit("funcConst", "S");
       gAnaMeasResult->fFitResAsymBunchY45[*iSS] = fitres;
+      delete funcConst;
    }
 } //}}}

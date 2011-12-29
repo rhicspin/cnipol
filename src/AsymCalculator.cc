@@ -112,7 +112,12 @@ void CompleteHistogram()
 } //}}}
 
 
-/** */
+/**
+ * Calculates the left-right asymmetry for a given set of detectors detSet. All
+ * the counts are given by the hDetVsBunchId_ss histogram, and the
+ * normalization is calculated from all the counts in the hDetVsBunchId
+ * histogram.
+ */
 TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, DetLRSet detSet, TGraphErrors *gr)
 { //{{{
    // Calculate detector luminosities by taking sum over R/L detectors and all
@@ -208,7 +213,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
  * Calculates three asymmetries based using the square root formula from two
  * histogram containing counts per detector.
  */
-ValErrMap AsymCalculator::CalcBunchAsymDetSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet)
+ValErrMap AsymCalculator::CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet)
 { //{{{
    Double_t LU = 0,  RU = 0,  LD = 0,  RD = 0;
 
@@ -232,37 +237,37 @@ ValErrMap AsymCalculator::CalcBunchAsymDetSqrtFormula(TH1 &hUp, TH1 &hDown, DetL
 
 
 /** */
-ValErrMap AsymCalculator::CalcBunchAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown)
+ValErrMap AsymCalculator::CalcDetAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown)
 { //{{{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(5, 2) );
 
-   return CalcBunchAsymDetSqrtFormula(hUp, hDown, detSet);
+   return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
 } //}}}
 
 
 /** */
-ValErrMap AsymCalculator::CalcBunchAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown)
+ValErrMap AsymCalculator::CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown)
 { //{{{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(6, 1) );
    detSet.insert( DetLRPair(4, 3) );
 
-   return CalcBunchAsymDetSqrtFormula(hUp, hDown, detSet);
+   return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
 } //}}}
 
 
 /** */
-ValErrMap AsymCalculator::CalcBunchAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown)
+ValErrMap AsymCalculator::CalcDetAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown)
 { //{{{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(1, 3) );
    detSet.insert( DetLRPair(6, 4) );
 
-   return CalcBunchAsymDetSqrtFormula(hUp, hDown, detSet);
+   return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
 } //}}}
 
 
@@ -740,7 +745,7 @@ void CalcStatistics()
 
    // Misc
    if (gMeasInfo->fWallCurMonSum) gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
-   if (gAnaInfo->reference_rate) gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
+   if (gAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
    if (gMeasInfo->Run == 5)       gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 } //}}}
 
@@ -1406,9 +1411,68 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
    TH1D* hDetCounts_up   = hDetVsBunchId_up->ProjectionY();
    TH1D* hDetCounts_down = hDetVsBunchId_down->ProjectionY();
 
-   gAnaMeasResult->fAsymX90 = CalcBunchAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaMeasResult->fAsymX45 = CalcBunchAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaMeasResult->fAsymY45 = CalcBunchAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX90 = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+
+} //}}}
+
+
+/** */
+void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
+{ //{{{
+   // Get hist with all delim for normalization
+   TH2* hDetVsDelim = (TH2*) oc->o["hDetVsDelim"];
+
+   //IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   
+   //for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+   //{
+   //   string sSS = gRunConfig.AsString(*iSS);
+
+   //   TH2* hDetVsDelim_ss = (TH2*) oc->o["hDetVsDelim_" + sSS];
+
+   //   string grName;
+   //   TGraphErrors *gr;
+
+   //   grName = "grAsymVsDelim_X90_" + sSS;
+   //   gr     = (TGraphErrors*) ((TH2*) oc->o["hAsymVsDelim_X90"])->GetListOfFunctions()->FindObject(grName.c_str());
+   //   CalcBunchAsymX90(*hDetVsDelim_ss, *hDetVsDelim, gr);
+
+   //   grName = "grAsymVsDelim_X45_" + sSS;
+   //   gr     = (TGraphErrors*) ((TH2*) oc->o["hAsymVsDelim_X45"])->GetListOfFunctions()->FindObject(grName.c_str());
+   //   CalcBunchAsymX45(*hDetVsDelim_ss, *hDetVsDelim, gr);
+
+   //   grName = "grAsymVsDelim_Y45_" + sSS;
+   //   gr     = (TGraphErrors*) ((TH2*) oc->o["hAsymVsDelim_Y45"])->GetListOfFunctions()->FindObject(grName.c_str());
+   //   CalcBunchAsymY45(*hDetVsDelim_ss, *hDetVsDelim, gr);
+   //}
+} //}}}
+
+
+/** */
+void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
+{ //{{{
+   TH2* hDetVsDelim_up   = (TH2*) oc->o["hDetVsDelim_up"];
+   TH2* hDetVsDelim_down = (TH2*) oc->o["hDetVsDelim_down"];
+
+   TH2* hDelimDetAsym    = (TH2*) oc->o["hDelimDetAsym"];
+
+   for (int iDelim=1; iDelim<=hDelimDetAsym->GetNbinsX(); iDelim++)
+   {
+      TH1I *hDetCounts_up   = (TH1I*) hDetVsDelim_up  ->ProjectionY("hDetCounts_up",   iDelim, iDelim);
+      TH1I *hDetCounts_down = (TH1I*) hDetVsDelim_down->ProjectionY("hDetCounts_down", iDelim, iDelim);
+
+      // Check if there are events in the histograms
+      if (!hDetCounts_up->Integral() && !hDetCounts_down->Integral()) continue;
+
+      //ValErrMap asym = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      ValErrMap asym = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      //ValErrMap asym = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+
+      hDelimDetAsym->SetBinContent(iDelim, asym["phys"].first);
+      hDelimDetAsym->SetBinError(iDelim, asym["phys"].second);
+   }
 
 } //}}}
 
@@ -1719,7 +1783,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
          hAsym->SetBinError(iTimeDiff, err);
 
       } else {
-         gSystem->Error("   ::CalcKinEnergyAChAsym", "Fit error...");
+         gSystem->Error("   ::CalcLongiChAsym", "Fit error...");
       }
    }
 
