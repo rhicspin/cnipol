@@ -38,6 +38,8 @@ public:
    //void          CalcBunchAsym(TH2 &hDetVsBunchId);
    void          CalcBunchAsym(DrawObjContainer *oc);
    void          CalcBunchAsymSqrtFormula(DrawObjContainer *oc);
+   void          CalcDelimAsym(DrawObjContainer *oc);
+   void          CalcDelimAsymSqrtFormula(DrawObjContainer *oc);
 
    // first==="left" and second==="right" detectors
    TGraphErrors* CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, DetLRSet detSet, TGraphErrors *gr=0);
@@ -45,10 +47,10 @@ public:
    TGraphErrors* CalcBunchAsymX45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr=0);
    TGraphErrors* CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr=0);
 
-   ValErrMap     CalcBunchAsymDetSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet);
-   ValErrMap     CalcBunchAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown);
-   ValErrMap     CalcBunchAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown);
-   ValErrMap     CalcBunchAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet);
+   ValErrMap     CalcDetAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown);
 
    void          CumulativeAsymmetry();
    // Strip by Strip

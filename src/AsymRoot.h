@@ -24,8 +24,8 @@ class AnaInfo;
 enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_ALL,
            kCUT_RAW, kCUT_NOISE, kCUT_CARBON, kCUT_CARBON_EB };
 
-typedef std::map<ECut, std::set<DrawObjContainer*> >             Cut2DrawObjContainerMap;
-typedef std::map<ECut, std::set<DrawObjContainer*> >::iterator   Cut2DrawObjContainerMapIter;
+typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;
+typedef Cut2DrawObjContainerMap::iterator              Cut2DrawObjContainerMapIter;
 
 
 class AsymRoot
@@ -38,7 +38,7 @@ protected:
    TFile                    *fOutRootFile;
    TFile                    *fOutTreeFile;
    UInt_t                    fTreeFileId;
-   Cut2DrawObjContainerMap   fHistCuts;
+   Cut2DrawObjContainerMap   fHistCuts;    // Map with histograms containers classified by cut categories
   
 public:
 

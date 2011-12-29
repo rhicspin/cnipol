@@ -153,7 +153,10 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
 } //}}}
 
 
-/** */
+/**
+ * This method is supposed to read all information about the measurement from
+ * raw data. It does not read events.
+ */
 void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
 { //{{{
    cout << endl;

@@ -85,8 +85,8 @@ void CnipolRawHists::BookHists(string cutid)
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++) {
-
+   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iChId);
 
