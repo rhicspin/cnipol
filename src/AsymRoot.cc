@@ -114,17 +114,17 @@ AsymRoot::AsymRoot() : fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
 /** Default destructor. */
 AsymRoot::~AsymRoot()
 {
-   if (!fOutRootFile)  delete fOutRootFile;
-   if (!fOutTreeFile)  delete fOutTreeFile;
-   if (!fRawEventTree) delete fRawEventTree;
-   if (!fAnaEventTree) delete fAnaEventTree;
+   if (!fOutRootFile)  { delete fOutRootFile;  fOutRootFile  = 0; } 
+   if (!fOutTreeFile)  { delete fOutTreeFile;  fOutTreeFile  = 0; }
+   if (!fRawEventTree) { delete fRawEventTree; fRawEventTree = 0; }
+   if (!fAnaEventTree) { delete fAnaEventTree; fAnaEventTree = 0; }
 
-   delete fAnaEvent;
-   delete fChannelEvent;
-   delete fChannelData;
-   delete fEventConfig;
+   delete fAnaEvent;     fAnaEvent     = 0;
+   delete fChannelEvent; fChannelEvent = 0;
+   delete fChannelData;  fChannelData  = 0;
+   delete fEventConfig;  fEventConfig  = 0;
 
-   if (!fHists) delete fHists;
+   if (!fHists) { delete fHists; fHists = 0; }
 }
 
 
@@ -540,6 +540,11 @@ void AsymRoot::FillDerived()
    if (gAnaInfo->HasAsymBit() && gAnaInfo->HasNormalBit() ) {
       fHists->d["asym"]->FillDerived( *fHists );
    }
+
+   // profile depends on asym
+   if (gAnaInfo->HasProfileBit() && gAnaInfo->HasNormalBit() ) {
+      fHists->d["profile"]->FillDerived( *fHists );
+   }
 }
 
 
@@ -549,6 +554,7 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
 
 	// One should be carefull here as the order of post processing is important.
    // Some histograms may depend on other histograms in independent containers
+   // For example, 'profile' depends on 'asym'
    fHists->PostFill();
 
    // Special processing for some of the histogram containers

@@ -524,7 +524,7 @@ void CnipolHists::PostFill()
 { //{{{
 
    // Fit energy slope with an exponential func
-   TF1 *fitfunc = new TF1("fitfunc", "expo", 400, 900);
+   TF1 *fitfunc = new TF1("fitfunc", "expo", 450, 850);
 
    //fitfunc->SetParNames("slope");
    fitfunc->SetParameter(0, 0);
@@ -547,6 +547,8 @@ void CnipolHists::PostFill()
       hKinEnergyA->GetListOfFunctions()->Clear();
    }
 
+   delete fitfunc;
+
    // Fit channel histograms
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -564,7 +566,7 @@ void CnipolHists::PostFill()
          continue;
       }
 
-      TF1 *fitfunc = new TF1("fitfunc", "expo", 400, 900);
+      TF1 *fitfunc = new TF1("fitfunc", "expo", 450, 850);
 
       //fitfunc->SetParNames("slope");
       fitfunc->SetParameter(0, 0);
@@ -579,6 +581,8 @@ void CnipolHists::PostFill()
          Error("PostFill", "Something is wrong with energy slope fit for channel %s", sChId.c_str());
          hKinEnergyA_ch->GetListOfFunctions()->Clear();
       }
+
+      delete fitfunc;
    }
 } //}}}
 

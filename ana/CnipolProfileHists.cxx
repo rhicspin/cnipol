@@ -17,6 +17,7 @@
 #include "AsymGlobals.h"
 #include "AnaMeasResult.h"
 #include "TargetInfo.h"
+#include "CnipolAsymHists.h"
 
 
 ClassImp(CnipolProfileHists)
@@ -56,11 +57,13 @@ void CnipolProfileHists::BookHists(string sid)
 
    styleMarker.SetMarkerStyle(kFullCircle);
    styleMarker.SetMarkerSize(1);
+   styleMarker.SetMarkerColor(kMagenta+2);
 
    // this one is filled from the scaler data
    sprintf(hName, "hIntensProfileScaler");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
    ((TH1*) o[hName])->SetTitle(";time, s;Events;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
    ((TH1*) o[hName])->Sumw2();
 
@@ -75,33 +78,34 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hIntensProfileFineBin";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->SetTitle(";time, s;Events");
-   styleMarker.Copy(*hist);
    o[shName] = hist;
 
    sprintf(hName, "hIntensProfileFwd");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
 
    sprintf(hName, "hIntensProfileBck");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
 
    sprintf(hName, "hIntensProfileFold");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->SetTitle(";Target Steps;Events;");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
 
    sprintf(hName, "hPolarProfile");
    o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of delimeters is not known beforehand
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
    ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
    //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
 
    sprintf(hName, "hPolarProfileFwd");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
@@ -109,8 +113,8 @@ void CnipolProfileHists::BookHists(string sid)
 
    sprintf(hName, "hPolarProfileBck");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
@@ -118,31 +122,39 @@ void CnipolProfileHists::BookHists(string sid)
 
    sprintf(hName, "hPolarProfileFold");
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Target Steps");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
 
    sprintf(hName, "hPolarProfileFinal");
    //o[hName] = new TH1D(hName, hName, 1, -2.5, 2.5);
    o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Distance, mm");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Distance, mm;Polarization;");
+   ((TH1*) o[hName])->SetOption("NOIMG");
    //((TH1*) o[hName])->SetAxisRange(0, 1, "Y");
    //((TH1*) o[hName])->GetYaxis()->SetLimits(0, 1);
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
    ((TH1*) o[hName])->SetMarkerColor(kRed);
 
+   TGraphErrors *grAsymVsIntensProfile = new TGraphErrors();
+   grAsymVsIntensProfile->SetName("grAsymVsIntensProfile");
+   styleMarker.Copy(*grAsymVsIntensProfile);
+
+   shName = "hAsymVsIntensProfile";
+   hist = new TH2I(shName.c_str(), shName.c_str(), 100, 0, 1.1, 100, -0.1, 0.1);
+   hist->SetTitle(";Relative Intensity I/I_{max};Asymmetry;");
+   hist->GetListOfFunctions()->Add(grAsymVsIntensProfile, "p");
+   o[shName] = hist;
+
    sprintf(hName, "hPolarVsIntensProfile");
    o[hName] = new TH1F(hName, hName, 10, 0, 1.1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Relative Intensity I/I_{max}");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Relative Intensity I/I_{max};Polarization;");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
 
    sprintf(hName, "hPolarVsIntensProfileBin");
    o[hName] = new TH1F(hName, hName, 22, 0, 1.1);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Relative Intensity I/I_{max}");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Relative Intensity I/I_{max};Polarization;");
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->SetOption("p");
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
@@ -151,14 +163,12 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->Sumw2();
 
    sprintf(hName, "hIntensUniProfile");
-   o[hName] = new TH1F(hName, hName, 1, -3, 3);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
+   o[hName] = new TH1F(hName, hName, 1, -5, 5);
+   ((TH1*) o[hName])->SetTitle(";Sigma Units;Intensity;");
 
    sprintf(hName, "hIntensUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 20, -3, 3);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Intensity");
+   o[hName] = new TH1F(hName, hName, 20, -5, 5);
+   ((TH1*) o[hName])->SetTitle(";Sigma Units;Intensity;");
    ((TH1*) o[hName])->SetOption("p");
    ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
    ((TH1*) o[hName])->SetMarkerSize(1);
@@ -170,15 +180,13 @@ void CnipolProfileHists::BookHists(string sid)
 
    sprintf(hName, "hPolarUniProfile");
    o[hName] = new TH1F(hName, hName, 1, -5, 5);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   ((TH1*) o[hName])->SetTitle(";Sigma Units;Polarization;");
    //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
 
    sprintf(hName, "hPolarUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 20, -3, 3);
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("X");
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Polarization");
+   o[hName] = new TH1F(hName, hName, 20, -5, 5);
+   ((TH1*) o[hName])->SetTitle(";Sigma Units;Polarization;");
    //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
    ((TH1*) o[hName])->SetOption("p");
@@ -197,7 +205,7 @@ void CnipolProfileHists::BookHists(string sid)
 void CnipolProfileHists::PreFill(string sid)
 { //{{{
    ((TH1*) o["hIntensProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
-   ((TH1*) o["hIntensProfileFineBin"])->SetBins(gNDelimeters*5, 0, gNDelimeters);
+   ((TH1*) o["hIntensProfileFineBin"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
 
    //((TH1*) o["hIntensProfileScaler"])->SetBins(nTgtIndex, 0, nTgtIndex);
    //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
@@ -211,15 +219,14 @@ void CnipolProfileHists::PreFill(string sid)
 /** */
 void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
 { //{{{
-   UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
+   Double_t ttime = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
    //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
    //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
    //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
 
    ((TH1*) o["hIntensProfile"])->Fill(ttime);
-   UInt_t ttimeFineBin = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ/5.;
-   ((TH1*) o["hIntensProfileFineBin"])->Fill(ttimeFineBin);
+   ((TH1*) o["hIntensProfileFineBin"])->Fill(ttime);
 } //}}}
 
 
@@ -261,6 +268,39 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 
    delete [] hd;
    delete [] hdErr;
+} //}}}
+
+
+/** */
+void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
+{ //{{{
+   CnipolAsymHists *hists_asym = (CnipolAsymHists*) oc.d.find("asym")->second;
+
+   if (!hists_asym) {
+      Error("FillDerived(DrawObjContainer &oc)", "Histogram container \"asym\" required");
+      return;
+   }
+
+   TH1 *hAsymVsDelim4Det     = (TH1*) hists_asym->o["hAsymVsDelim4Det"];
+   TH1 *hIntensProfile       = (TH1*) o["hIntensProfileFineBin"];
+
+   TH1 *hAsymVsIntensProfile = (TH1*) o["hAsymVsIntensProfile"];
+   TGraphErrors *gr = (TGraphErrors*) hAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
+
+   Double_t intensMax = hIntensProfile->GetMaximum();
+
+   for (int i=1; i<=hAsymVsDelim4Det->GetNbinsX(); i++)
+   {
+      Double_t asym      = hAsymVsDelim4Det->GetBinContent(i);
+      Double_t asymErr   = hAsymVsDelim4Det->GetBinError(i);
+      Double_t intens    = hIntensProfile->GetBinContent(i)/intensMax;
+      Double_t intensErr = hIntensProfile->GetBinError(i)/intensMax;
+
+      Int_t nPoint = gr->GetN();
+      gr->SetPoint( nPoint, intens, asym);
+      gr->SetPointError( nPoint, intensErr, asymErr);
+   }
+
 } //}}}
 
 
@@ -409,16 +449,7 @@ void CnipolProfileHists::PostFill()
 
    //printf("minmax: %5.2f %5.2f %5.2f\n", maxPol, minDistance, maxDistance);
 
-   TF1 *my_gaus1 = new TF1("my_gaus1", "[0]*TMath::Gaus(x, [1], [2], 0)", minDistance, maxDistance);
-
-   my_gaus1->SetParNames("N_{scale}", "#mu", "#sigma");
-   my_gaus1->SetParameters(0.5, 0, 0.5);
-   my_gaus1->SetParLimits(0, 0, 1);
-   my_gaus1->SetParLimits(1, -2, 2);
-   //my_gaus1->FixParameter(1, 0);
-   my_gaus1->SetParLimits(2, 0.1, 10);
-
-   grPolProfileFinal->Fit("my_gaus1", "M E R");
+   grPolProfileFinal->Fit("gaus", "M E");
 
    hPolarProfileFinal->GetListOfFunctions()->Add(grPolProfileFinal, "p");
    hPolarProfileFinal->GetXaxis()->SetLimits(minDistance*1.1, maxDistance*1.1);
@@ -453,7 +484,6 @@ void CnipolProfileHists::PostFill()
       grPolarVsIntensProfile->SetPointError(i, intensErr, polarErr);
    }
 
-   //TF1 *my_gaus = new TF1("my_gaus", "[0]*TMath::Gaus(x, [1], [2], 0)", -0.8, 0.8);
    TF1 *mfPow = new TF1("mfPow", "[0]*TMath::Power(x, [1])", 0.1, 1);
 
    mfPow->SetParNames("P_{max}", "r");
@@ -537,30 +567,12 @@ void CnipolProfileHists::PostFill()
       grPolarUniProfile->SetPointError( (i-1)*2 + 1, 0, polarErr);
    }
 
-
-   TF1 *my_gaus3 = new TF1("my_gaus3", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
-
-   my_gaus3->SetParNames("N_{scale}", "#sigma");
-   my_gaus3->SetParameters(0, 0.5);
-   my_gaus3->SetParameters(1, 0.3);
-   my_gaus3->SetParLimits(0, 0, 1);
-   my_gaus3->SetParLimits(1, 0.1, 2);
-
-   grIntensUniProfile->Fit("my_gaus3", "M E R");
+   grIntensUniProfile->Fit("gaus", "M E");
 
    TH1* hIntensUniProfile = (TH1*) o["hIntensUniProfile"];
    hIntensUniProfile->GetListOfFunctions()->Add(grIntensUniProfile, "p");
 
-
-   TF1 *my_gaus2 = new TF1("my_gaus2", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
-
-   my_gaus2->SetParNames("N_{scale}", "#sigma");
-   my_gaus2->SetParameter(0, 0.5);
-   my_gaus2->SetParameter(1, 0.3);
-   my_gaus2->SetParLimits(0, 0, 1);
-   my_gaus2->SetParLimits(1, 0.1, 100);
-
-   grPolarUniProfile->Fit("my_gaus2", "M E R");
+   grPolarUniProfile->Fit("gaus", "M E", "", -3, 3);
 
    TH1* hPolarUniProfile = (TH1*) o["hPolarUniProfile"];
    hPolarUniProfile->GetListOfFunctions()->Add(grPolarUniProfile, "p");
@@ -576,8 +588,8 @@ void CnipolProfileHists::PostFill()
 
    //printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
 
-   for (int i=0; i<grIntensUniProfile->GetN(); i++) {
-
+   for (int i=0; i<grIntensUniProfile->GetN(); i++)
+   {
       grIntensUniProfile->GetPoint(i, x, y);
 
       //if (fabs(x) > 3) continue;
@@ -651,29 +663,14 @@ void CnipolProfileHists::PostFill()
       hPolarVsIntensProfileBin->SetBinError(ib, ibe_new);
    }
 
-   TF1 *my_gaus5 = new TF1("my_gaus5", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
-
-   my_gaus5->SetParNames("N_{scale}", "#sigma");
-   my_gaus5->SetParameters(0, 0.5);
-   my_gaus5->SetParameters(1, 1.0);
-   my_gaus5->SetParLimits(0, 0.0, 1.1);
-   my_gaus5->SetParLimits(1, 0.1, 100);
-
-   hIntensUniProfileBin->Fit("my_gaus5", "M E R");
-   delete my_gaus5;
-
-   TF1 *my_gaus4 = new TF1("my_gaus4", "[0]*TMath::Gaus(x, 0, [1], 0)", -3, 3);
-
-   my_gaus4->SetParNames("N_{scale}", "#sigma");
-   my_gaus4->SetParameter(0, 0.5);
-   my_gaus4->SetParameter(1, 1.0);
-   my_gaus4->SetParLimits(0, 0.5, 1.5);
-   my_gaus4->SetParLimits(1, 0.1, 100);
-
-   hPolarUniProfileBin->Fit("my_gaus4", "M E R");
-   delete my_gaus4;
+   hIntensUniProfileBin->Fit("gaus", "M E");
+   hPolarUniProfileBin->Fit("gaus", "M E", "", -3, 3);
 
    hPolarVsIntensProfileBin->Fit("mfPow", "M E R");
+
+   TH1 *hAsymVsIntensProfile = (TH1*) o["hAsymVsIntensProfile"];
+   TGraphErrors *gr = (TGraphErrors*) hAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
+   gr->Fit("mfPow", "M E R");
 
    delete mfPow;
 

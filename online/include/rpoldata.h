@@ -144,13 +144,13 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec);
 // New data structures for the V9 version, but keeping the same names
 
 typedef struct {
-    unsigned char a;    // amplitude
-    unsigned char t;    // time (double resolution)
-    unsigned char s;    // square (integral)
-    unsigned char tmax; // time of the maximum (single resoulution)
-    unsigned char b:7;  // bunch number
+    unsigned char a;      // amplitude
+    unsigned char t;      // time (double resolution)
+    unsigned char s;      // square (integral)
+    unsigned char tmax;   // time of the maximum (single resoulution)
+    unsigned char b:7;    // bunch number
     unsigned char rev0:1; // the LSB of revolution counter
-    unsigned char rev;  // next 8 bits of revolution counter
+    unsigned char rev;    // next 8 bits of revolution counter
 } ATStruct;
 
 typedef struct {

@@ -41,6 +41,7 @@ public:
    void      Fill(ChannelEvent *ch, std::string cutid="");
    void      Fill(UInt_t n, Long_t* hData);
    void      PostFill();
+   void      FillDerived(DrawObjContainer &oc);
    EMeasType GuessMeasurementType();
 
    static Double_t ProfileFitFunc(Double_t *x, Double_t *par);

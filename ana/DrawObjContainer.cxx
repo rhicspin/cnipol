@@ -427,6 +427,8 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
       isubd->second->Write();
    }
 
+   //fDir->Write();
+
    return 0;//((TObject*)this)->Write(name, option, bufsize);
 } //}}}
 
@@ -602,4 +604,6 @@ void DrawObjContainer::Delete(Option_t* option)
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Delete(option);
    }
+
+   //fDir->Close();
 } //}}}
