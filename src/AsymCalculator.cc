@@ -894,7 +894,7 @@ void DrawPlotvsTar()
 } //}}}
 
 
-// Description : Caluclate Energy Yeild weighted Analyzing power
+// Description : Caluclate energy yield weighted analyzing power
 //             : Histogram 34000 is filled only once, which is controled by CallFlag
 // Input       : int HID
 // Return      : A_N
@@ -1453,12 +1453,12 @@ void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
 /** */
 void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
 { //{{{
-   TH2* hDetVsDelim_up   = (TH2*) oc->o["hDetVsDelim_up"];
-   TH2* hDetVsDelim_down = (TH2*) oc->o["hDetVsDelim_down"];
+   TH2* hDetVsDelim_up    = (TH2*) oc->o["hDetVsDelim_up"];
+   TH2* hDetVsDelim_down  = (TH2*) oc->o["hDetVsDelim_down"];
 
-   TH2* hDelimDetAsym    = (TH2*) oc->o["hDelimDetAsym"];
+   TH2* hAsymVsDelim4Det = (TH2*) oc->o["hAsymVsDelim4Det"];
 
-   for (int iDelim=1; iDelim<=hDelimDetAsym->GetNbinsX(); iDelim++)
+   for (int iDelim=1; iDelim<=hAsymVsDelim4Det->GetNbinsX(); iDelim++)
    {
       TH1I *hDetCounts_up   = (TH1I*) hDetVsDelim_up  ->ProjectionY("hDetCounts_up",   iDelim, iDelim);
       TH1I *hDetCounts_down = (TH1I*) hDetVsDelim_down->ProjectionY("hDetCounts_down", iDelim, iDelim);
@@ -1470,8 +1470,8 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       ValErrMap asym = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
       //ValErrMap asym = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
 
-      hDelimDetAsym->SetBinContent(iDelim, asym["phys"].first);
-      hDelimDetAsym->SetBinError(iDelim, asym["phys"].second);
+      hAsymVsDelim4Det->SetBinContent(iDelim, asym["phys"].first);
+      hAsymVsDelim4Det->SetBinError(iDelim, asym["phys"].second);
    }
 
 } //}}}

@@ -31,7 +31,10 @@ Float_t ChannelEvent::GetEnergyA() const
 { //{{{
    UChar_t chId = GetChannelId();
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fAmpltd;
-   return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
+
+   //return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
+   return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef *
+          (fChannel.fAmpltd + (fEventConfig->fRandom->Rndm() - 0.5));
 
    //return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
    //       (fChannel.fAmpltd + fEventConfig->fRandom->Rndm() - 0.5);

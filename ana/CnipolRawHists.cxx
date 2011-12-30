@@ -35,6 +35,9 @@ CnipolRawHists::~CnipolRawHists()
 void CnipolRawHists::BookHists(string cutid)
 { //{{{
    char hName[256];
+   string shName;
+
+   TH1* hist;
 
    fDir->cd();
 
@@ -78,9 +81,15 @@ void CnipolRawHists::BookHists(string cutid)
 
    sprintf(hName, "hStripCounts"); // former strip_dist_raw
    o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   //((TH1*) o[hName])->SetOption("hist");
    ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
+
+   shName = "hRevolutionId";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 1000, 0, 1);
+   hist->SetTitle(";Revolution Id;Events;");
+   hist->SetFillColor(kGray);
+   hist->SetBit(TH1::kCanRebin);
+   o[shName] = hist;
 
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
@@ -183,15 +192,18 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
    //((TH1*) sd->o["hTvsI_ch" + sChId]) -> Fill(adcI, tdc);
    //((TH1*) sd->o["hIvsA_ch" + sChId]) -> Fill(adcA, adcI);
 
-   TH1* h1Tmp_ch;
+   TH1* hist;
 
-   h1Tmp_ch = (TH1*) o["hBunchCounts"];
-   h1Tmp_ch->AddBinContent(ch->GetBunchId() + 1);
-   h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries()+1);
+   hist = (TH1*) o["hBunchCounts"];
+   hist->AddBinContent(ch->GetBunchId() + 1);
+   hist->SetEntries(hist->GetEntries()+1);
 
-   h1Tmp_ch = ((TH1*) o["hStripCounts"]);
-   h1Tmp_ch->AddBinContent(chId);
-   h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries()+1);
+   hist = ((TH1*) o["hStripCounts"]);
+   hist->AddBinContent(chId);
+   hist->SetEntries(hist->GetEntries()+1);
+
+   hist = ((TH1*) o["hRevolutionId"]);
+   hist->Fill(ch->GetRevolutionId());
 
 } //}}}
 
