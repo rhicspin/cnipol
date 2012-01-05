@@ -57,7 +57,7 @@ void CnipolProfileHists::BookHists(string sid)
 
    styleMarker.SetMarkerStyle(kFullCircle);
    styleMarker.SetMarkerSize(1);
-   styleMarker.SetMarkerColor(kMagenta+2);
+   styleMarker.SetMarkerColor(kGreen+2);
 
    // this one is filled from the scaler data
    sprintf(hName, "hIntensProfileScaler");
@@ -137,20 +137,43 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->SetMarkerSize(1);
    ((TH1*) o[hName])->SetMarkerColor(kRed);
 
+   // asymmetry vs intensity
    TGraphErrors *grAsymVsIntensProfile = new TGraphErrors();
    grAsymVsIntensProfile->SetName("grAsymVsIntensProfile");
    styleMarker.Copy(*grAsymVsIntensProfile);
+
+   //TGraphErrors *grAsymVsIntensProfileFineBin = new TGraphErrors();
+   //grAsymVsIntensProfileFineBin->SetName("grAsymVsIntensProfileFineBin");
+   //styleMarker.SetMarkerColor(kRed);
+   //styleMarker.Copy(*grAsymVsIntensProfileFineBin);
 
    shName = "hAsymVsIntensProfile";
    hist = new TH2I(shName.c_str(), shName.c_str(), 100, 0, 1.1, 100, -0.1, 0.1);
    hist->SetTitle(";Relative Intensity I/I_{max};Asymmetry;");
    hist->GetListOfFunctions()->Add(grAsymVsIntensProfile, "p");
+   //hist->GetListOfFunctions()->Add(grAsymVsIntensProfileFineBin, "p");
    o[shName] = hist;
 
-   sprintf(hName, "hPolarVsIntensProfile");
-   o[hName] = new TH1F(hName, hName, 10, 0, 1.1);
-   ((TH1*) o[hName])->SetTitle(";Relative Intensity I/I_{max};Polarization;");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   // this is a copy from the "asym" container
+   shName = "hAsymVsDelim4Det";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetOption("E1 NOIMG");
+   hist->SetTitle(";Target Steps, s;Asymmetry;");
+   o[shName] = hist;
+
+   // polar vs intensity
+   //TGraphErrors *grPolarVsIntensProfileFineBin = new TGraphErrors();
+   //grPolarVsIntensProfileFineBin->SetName("grPolarVsIntensProfileFineBin");
+   //grPolarVsIntensProfileFineBin->SetMarkerStyle(kFullDotLarge);
+   //grPolarVsIntensProfileFineBin->SetMarkerSize(1);
+   //grPolarVsIntensProfileFineBin->SetMarkerColor(kMagenta);
+
+   shName = "hPolarVsIntensProfile";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 10, 0, 1.1);
+   hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   o[shName] = hist;
+   //hist->GetListOfFunctions()->Add(grPolarVsIntensProfileFineBin, "p");
 
    sprintf(hName, "hPolarVsIntensProfileBin");
    o[hName] = new TH1F(hName, hName, 22, 0, 1.1);
@@ -162,9 +185,16 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->SetMarkerColor(kBlue);
    ((TH1*) o[hName])->Sumw2();
 
-   sprintf(hName, "hIntensUniProfile");
-   o[hName] = new TH1F(hName, hName, 1, -5, 5);
-   ((TH1*) o[hName])->SetTitle(";Sigma Units;Intensity;");
+   // Intensity profile
+   TGraphErrors *grIntensUniProfileFineBin = new TGraphErrors();
+   grIntensUniProfileFineBin->SetName("grIntensUniProfileFineBin");
+   styleMarker.Copy(*grIntensUniProfileFineBin);
+
+   shName = "hIntensUniProfile";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
+   hist->SetTitle(";Sigma Units;Intensity;");
+   hist->GetListOfFunctions()->Add(grIntensUniProfileFineBin, "p");
+   o[shName] = hist;
 
    sprintf(hName, "hIntensUniProfileBin");
    o[hName] = new TH1F(hName, hName, 20, -5, 5);
@@ -178,11 +208,19 @@ void CnipolProfileHists::BookHists(string sid)
    //sprintf(hName, "grIntensUniProfile");
    //o[hName] = new TGraphErrors();
 
-   sprintf(hName, "hPolarUniProfile");
-   o[hName] = new TH1F(hName, hName, 1, -5, 5);
-   ((TH1*) o[hName])->SetTitle(";Sigma Units;Polarization;");
-   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   // Polarization profile
+   //TGraphErrors *grPolarUniProfileFineBin = new TGraphErrors();
+   //grPolarUniProfileFineBin->SetName("grPolarUniProfileFineBin");
+   //grPolarUniProfileFineBin->SetMarkerStyle(kFullDotLarge);
+   //grPolarUniProfileFineBin->SetMarkerSize(1);
+   //grPolarUniProfileFineBin->SetMarkerColor(kMagenta);
+
+   shName = "hPolarUniProfile";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
+   hist->SetTitle(";Sigma Units;Polarization;");
+   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   //hist->GetListOfFunctions()->Add(grPolarUniProfileFineBin, "p");
+   o[shName] = hist;
 
    sprintf(hName, "hPolarUniProfileBin");
    o[hName] = new TH1F(hName, hName, 20, -5, 5);
@@ -195,9 +233,25 @@ void CnipolProfileHists::BookHists(string sid)
    ((TH1*) o[hName])->SetMarkerColor(kBlue);
    ((TH1*) o[hName])->Sumw2();
 
-   //sprintf(hName, "grPolarUniProfile");
-   //o[hName] = new TGraphErrors();
+   // Asymmetry profile
+   TGraphErrors *grAsymUniProfileFineBin = new TGraphErrors();
+   grAsymUniProfileFineBin->SetName("grAsymUniProfileFineBin");
+   styleMarker.Copy(*grAsymUniProfileFineBin);
 
+   shName = "hAsymUniProfile";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
+   hist->SetTitle(";Sigma Units;Asymmetry;");
+   hist->SetOption("E1 P NOIMG");
+   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->GetListOfFunctions()->Add(grAsymUniProfileFineBin, "p");
+   o[shName] = hist;
+
+   shName = "hAsymUniProfileBin";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 50, -5, 5);
+   hist->SetTitle(";Sigma Units;Asymmetry;");
+   hist->SetOption("E1 P NOIMG");
+   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   o[shName] = hist;
 } //}}}
 
 
@@ -206,6 +260,7 @@ void CnipolProfileHists::PreFill(string sid)
 { //{{{
    ((TH1*) o["hIntensProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
    ((TH1*) o["hIntensProfileFineBin"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
+   ((TH1*) o["hAsymVsDelim4Det"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
 
    //((TH1*) o["hIntensProfileScaler"])->SetBins(nTgtIndex, 0, nTgtIndex);
    //((TH1*) o["hPolarProfile"])->SetBins(nTgtIndex, 0, nTgtIndex);
@@ -281,20 +336,24 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
       return;
    }
 
-   TH1 *hAsymVsDelim4Det     = (TH1*) hists_asym->o["hAsymVsDelim4Det"];
-   TH1 *hIntensProfile       = (TH1*) o["hIntensProfileFineBin"];
+   TH1 *hAsymVsDelim4Det_asym = (TH1*) hists_asym->o["hAsymVsDelim4Det"];
+   TH1 *hAsymVsDelim4Det      = (TH1*) o["hAsymVsDelim4Det"];
+   TH1 *hIntensProfile        = (TH1*) o["hIntensProfileFineBin"];
+   TH1 *hAsymVsIntensProfile  = (TH1*) o["hAsymVsIntensProfile"];
 
-   TH1 *hAsymVsIntensProfile = (TH1*) o["hAsymVsIntensProfile"];
    TGraphErrors *gr = (TGraphErrors*) hAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
 
    Double_t intensMax = hIntensProfile->GetMaximum();
 
-   for (int i=1; i<=hAsymVsDelim4Det->GetNbinsX(); i++)
+   for (int ib=1; ib<=hAsymVsDelim4Det_asym->GetNbinsX(); ib++)
    {
-      Double_t asym      = hAsymVsDelim4Det->GetBinContent(i);
-      Double_t asymErr   = hAsymVsDelim4Det->GetBinError(i);
-      Double_t intens    = hIntensProfile->GetBinContent(i)/intensMax;
-      Double_t intensErr = hIntensProfile->GetBinError(i)/intensMax;
+      Double_t asym      = hAsymVsDelim4Det_asym->GetBinContent(ib);
+      Double_t asymErr   = hAsymVsDelim4Det_asym->GetBinError(ib);
+      Double_t intens    = hIntensProfile->GetBinContent(ib)/intensMax;
+      Double_t intensErr = hIntensProfile->GetBinError(ib)/intensMax;
+
+      hAsymVsDelim4Det->SetBinContent(ib, asym);
+      hAsymVsDelim4Det->SetBinError(ib, asymErr);
 
       Int_t nPoint = gr->GetN();
       gr->SetPoint( nPoint, intens, asym);
@@ -492,7 +551,7 @@ void CnipolProfileHists::PostFill()
    mfPow->SetParameter(1, 0.1);
    mfPow->SetParLimits(1, -2, 2);
 
-   fitres = grPolarVsIntensProfile->Fit("mfPow", "M E R S");
+   fitres = grPolarVsIntensProfile->Fit(mfPow, "M E R S");
 
    if (fitres.Get()) {
       gAnaMeasResult->fFitResProfilePvsI = fitres;
@@ -547,9 +606,13 @@ void CnipolProfileHists::PostFill()
    for (int i=1; i<=hIntensProfile->GetNbinsX(); i++)
    {
       float intens    = hIntensProfile->GetBinContent(i);
+
+      if (intens <= 0) continue;
+
       float intensErr = hIntensProfile->GetBinError(i);
       float polar     = hPolarProfile->GetBinContent(i);
       float polarErr  = hPolarProfile->GetBinError(i);
+
 
       float xuni_p =    TMath::Sqrt(-2*TMath::Log(intens));
       float xuni_m = -1*TMath::Sqrt(-2*TMath::Log(intens));
@@ -578,90 +641,72 @@ void CnipolProfileHists::PostFill()
    hPolarUniProfile->GetListOfFunctions()->Add(grPolarUniProfile, "p");
 
 
+   // Fine binning profiles
+   TH1 *hIntensProfileFineBin = (TH1*) o["hIntensProfileFineBin"];
+   TH1 *hAsymVsDelim4Det      = (TH1*) o["hAsymVsDelim4Det"];
+   TH1 *hAsymUniProfile       = (TH1*) o["hAsymUniProfile"];
+
+   TGraphErrors *grIntensUniProfileFineBin = (TGraphErrors*) hIntensUniProfile->GetListOfFunctions()->FindObject("grIntensUniProfileFineBin");
+   TGraphErrors *grAsymUniProfileFineBin   = (TGraphErrors*) hAsymUniProfile->GetListOfFunctions()->FindObject("grAsymUniProfileFineBin");
+
+   Double_t intensMax = hIntensProfileFineBin->GetMaximum();
+
+   for (Int_t ib=1; ib<=hIntensProfileFineBin->GetNbinsX(); ib++)
+   {
+      float intens    = hIntensProfileFineBin->GetBinContent(ib)/intensMax;
+
+      if (intens <= 0) continue;
+
+      float intensErr = hIntensProfileFineBin->GetBinError(ib)/intensMax;
+      float asym      = hAsymVsDelim4Det->GetBinContent(ib);
+      float asymErr   = hAsymVsDelim4Det->GetBinError(ib);
+
+      float xuni_p =    TMath::Sqrt(-2*TMath::Log(intens));
+      float xuni_m = -1*TMath::Sqrt(-2*TMath::Log(intens));
+
+      grIntensUniProfileFineBin->SetPoint( (ib-1)*2 + 0, xuni_p, intens);
+      grIntensUniProfileFineBin->SetPoint( (ib-1)*2 + 1, xuni_m, intens);
+      grIntensUniProfileFineBin->SetPointError( (ib-1)*2 + 0, 0, intensErr);
+      grIntensUniProfileFineBin->SetPointError( (ib-1)*2 + 1, 0, intensErr);
+
+      grAsymUniProfileFineBin->SetPoint( (ib-1)*2 + 0, xuni_p, asym);
+      grAsymUniProfileFineBin->SetPoint( (ib-1)*2 + 1, xuni_m, asym);
+      grAsymUniProfileFineBin->SetPointError( (ib-1)*2 + 0, 0, asymErr);
+      grAsymUniProfileFineBin->SetPointError( (ib-1)*2 + 1, 0, asymErr);
+   }
+
+   Info("PostFill", "fitting test");
+
+   TF1 *myGaus = new TF1("myGaus", "[0]*TMath::Gaus(x, [1], [2])", -3, 3);
+   myGaus->SetParNames("Constant", "Mean", "Sigma");
+   myGaus->SetParameters(0.5, 0, 1);
+   myGaus->SetParLimits(0, 0, 100);
+   myGaus->FixParameter(1, 0); // fix mean at 0 by definition
+   myGaus->SetParLimits(2, 0, 100);
+
+   grAsymUniProfileFineBin->Fit(myGaus, "M E R");
+
+   // reset parameters and fit another graph
+   myGaus->SetParameters(0.5, 0, 1);
+   myGaus->SetParLimits(0, 0, 100);
+   myGaus->FixParameter(1, 0); // fix mean at 0 by definition
+   myGaus->SetParLimits(2, 0, 100);
+   //grIntensUniProfileFineBin->Fit("gaus", "M E", "", -3, 3);
+   grIntensUniProfileFineBin->Fit(myGaus, "M E R");
+
+   delete myGaus;
+
+   TH1 *hAsymUniProfileBin = (TH1*) o["hAsymUniProfileBin"];
+   utils::BinGraph(grAsymUniProfileFineBin, hAsymUniProfileBin);
+
    // Fill hist from graph
    TH1* hIntensUniProfileBin     = (TH1*) o["hIntensUniProfileBin"];
    TH1* hPolarUniProfileBin      = (TH1*) o["hPolarUniProfileBin"];
    TH1* hPolarVsIntensProfileBin = (TH1*) o["hPolarVsIntensProfileBin"];
 
-   //Double_t x, xe, y, ye;
-   Double_t x, y, ye;
-
-   //printf("   %8s %8s %8s %8s %8s %8s %8s %8s %8s %8s\n", "ib", "ibc", "ibe", "x", "y", "ye", "w1", "w2", "ibc_new", "ibe_new");
-
-   for (int i=0; i<grIntensUniProfile->GetN(); i++)
-   {
-      grIntensUniProfile->GetPoint(i, x, y);
-
-      //if (fabs(x) > 3) continue;
-
-      //xe = grIntensUniProfile->GetErrorX(i);
-      ye = grIntensUniProfile->GetErrorY(i);
-
-      Int_t    ib  = hIntensUniProfileBin->FindBin(x);
-      Double_t ibc = hIntensUniProfileBin->GetBinContent(ib);
-      Double_t ibe = hIntensUniProfileBin->GetBinError(ib);
-
-      Double_t w1 = 1., w2 = 1.;
-      if (ye  > 0) w1 = 1./(ye*ye);
-      if (ibe > 0) w2 = 1./(ibe*ibe);
-
-      Double_t ibc_new = (w1*y + w2*ibc)/(w1 + w2);
-      Double_t ibe_new = 1./TMath::Sqrt(w1 + w2);
-
-      //printf("i: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
-
-      hIntensUniProfileBin->SetBinContent(ib, ibc_new);
-      hIntensUniProfileBin->SetBinError(ib, ibe_new);
-
-
-      // Polarization part
-      grPolarUniProfile->GetPoint(i, x, y);
-
-      //xe = grPolarUniProfile->GetErrorX(i);
-      ye = grPolarUniProfile->GetErrorY(i);
-
-      ib  = hPolarUniProfileBin->FindBin(x);
-      ibc = hPolarUniProfileBin->GetBinContent(ib);
-      ibe = hPolarUniProfileBin->GetBinError(ib);
-
-      w1 = 1., w2 = 1.;
-      if (ye  > 0) w1 = 1./(ye*ye);
-      if (ibe > 0) w2 = 1./(ibe*ibe);
-
-      ibc_new = (w1*y + w2*ibc)/(w1 + w2);
-      ibe_new = 1./TMath::Sqrt(w1 + w2);
-
-      //printf("p: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
-
-      hPolarUniProfileBin->SetBinContent(ib, ibc_new);
-      hPolarUniProfileBin->SetBinError(ib, ibe_new);
-
-
-      // Polarization Vs Intens part
-      // consider only even data points
-      if (i%2 != 0) continue;
-
-      grPolarVsIntensProfile->GetPoint(i/2, x, y);
-
-      //xe = grPolarVsIntensProfile->GetErrorX(i);
-      ye = grPolarVsIntensProfile->GetErrorY(i/2);
-
-      ib  = hPolarVsIntensProfileBin->FindBin(x);
-      ibc = hPolarVsIntensProfileBin->GetBinContent(ib);
-      ibe = hPolarVsIntensProfileBin->GetBinError(ib);
-
-      w1 = 1., w2 = 1.;
-      if (ye  > 0) w1 = 1./(ye*ye);
-      if (ibe > 0) w2 = 1./(ibe*ibe);
-
-      ibc_new = (w1*y + w2*ibc)/(w1 + w2);
-      ibe_new = 1./TMath::Sqrt(w1 + w2);
-
-      //printf("pvi: %8d %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n", ib, ibc, ibe, x, y, ye, w1, w2, ibc_new, ibe_new);
-
-      hPolarVsIntensProfileBin->SetBinContent(ib, ibc_new);
-      hPolarVsIntensProfileBin->SetBinError(ib, ibe_new);
-   }
+   utils::BinGraph(grIntensUniProfile,     hIntensUniProfileBin);
+   utils::BinGraph(grPolarUniProfile,      hPolarUniProfileBin);
+   utils::BinGraph(grPolarVsIntensProfile, hPolarVsIntensProfileBin);
 
    hIntensUniProfileBin->Fit("gaus", "M E");
    hPolarUniProfileBin->Fit("gaus", "M E", "", -3, 3);

@@ -67,12 +67,12 @@ void initialize()
    //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
    //TString filelistName = "run11_153XX";
    //TString filelistName = "run11_153XX_Y2U";
-   //TString filelistName = "run11_pol_decay";
+   TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
    //TString filelistName = "run11_tmp_goodruns";
    //TString filelistName = "run11_tmp_goodruns_small";
-   TString filelistName = "run11_tmp_test_small";
+   //TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
 
@@ -174,7 +174,7 @@ void initialize()
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
       //   polarization_err, asymVersion.c_str());
 
-      if (asymVersion != "v1.7.1") {
+      if (asymVersion != "v1.7.2") {
 	      Warning("masym", "Wrong version %s", asymVersion.c_str());
          continue;
       }
@@ -263,12 +263,13 @@ void initialize()
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   //gH->SetSignature(gMM->GetSignature());
-   gH->SetSignature("");
+   gH->SetSignature(gMM->GetSignature());
+   //gH->SetSignature("");
 
    TCanvas canvas("cName2", "cName2", 1400, 600);
-   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolar.*VsFill.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*VsMeasId.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*First.*$", filelistName.Data());
