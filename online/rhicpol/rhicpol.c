@@ -321,7 +321,7 @@ int main(int argc, char **argv)
     polData.numberEventsS        = mEvent;
     polData.maxTimeS             = (int) mTime;
 
-/* If tshift in effect move sensitive window boundaries */
+    /* If tshift in effect move sensitive window boundaries */
     if (iRamp) {
 	tshift = Conf.TshiftHigh;	// always like flattop for ramp
     } else if (beamData.beamEnergyM > 50.0) {
@@ -329,7 +329,9 @@ int main(int argc, char **argv)
     } else {
 	tshift = Conf.TshiftLow;	// injection
     }
+
     fprintf(LogFile, "RHICPOL-INFO : TSHIFT = %6.1f\n", tshift);
+
     for (i=0; i<Conf.NumChannels; i++) {
         j = (int) (SiConf[i].Window.split.Beg + tshift/Conf.WFDTUnit);
         if (j<1) j=1; 
@@ -340,6 +342,7 @@ int main(int argc, char **argv)
         if(k>255) k=255;
         SiConf[i].Window.split.End = k;
     }
+
     CreateLookup(tshift); // Must go after window correction with tshift
     
     fprintf(LogFile,"RHICPOL-INFO : %s RunID: %8.3f; E=%6.2f GeV; Target: %s\n",
@@ -349,8 +352,10 @@ int main(int argc, char **argv)
     if (NoADO == 0) ProgV124((recRing & REC_BLUE) ? 1 : 0);	// set V124
     if (IStop != 0) polexit();
     if (openDataFile(fname, comment, NoADO)) polexit();
+
     setInhibit();
     initScalers();
+
     if (initWFDs()) {
         fprintf(LogFile,"RHICPOL-FATAL : Cannot find reqired CAMAC modules\n");
         polData.statusS |= (STATUS_ERROR | ERR_CAMAC | ERR_WFD);
@@ -382,31 +387,42 @@ int main(int argc, char **argv)
 	} else {
 	    signal(SIGINT, SIG_IGN);
 	}
+
 	if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data...");
 	signal(SIGTERM, alarmHandler);
+
 	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
+
 	readScalers();
+
 	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD xilinxes.\n");
+
 	readWFD();
+
 	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD memory.\n");
 	if (!Conf.OnlyHist) readMemory();
+
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGINT, SIG_DFL);
 	t = time(NULL);
+
 	if (nLoop == 1) {
 	    fprintf(LogFile, 	">>> %s Measurement finished with %9d events.\n", cctime(&t), ev);
 	} else {
 	    fprintf(LogFile, 	">>> %s Subrun %d finished with %9d events.\n", cctime(&t), j, ev);
 	}
-// Writing is done, send a message to mcr...
+
+        // Writing is done, send a message to mcr...
 	if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop-1)) UpdateMessage("Reading Data Finished.");
     }
+
     resetInhibit();
     camacClose();
     writeSubrun(-1);
     if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
     closeDataFile("End of RHICpol run.");
     if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateStatus();
-// High 16 bits of status are errors - tell this to calling script to avoid data analysis
+
+    // High 16 bits of status are errors - tell this to calling script to avoid data analysis
     return (((polData.statusS) >> 16) & 0xFFFF) ? 10 : 0;
 }
