@@ -743,7 +743,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fMeasInfo->fPolId;
-   time_t   runStartTime     = rc.fMeasInfo->fStartTime;
+   time_t   measStartTime    = rc.fMeasInfo->fStartTime;
    Short_t  targetId         = rc.fMseMeasInfoX->target_id;
    Char_t   targetOrient     = rc.fMseMeasInfoX->target_orient[0];
    //Float_t  ana_power        = rc.fAnaMeasResult->A_N[1];
@@ -819,7 +819,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    sprintf(hName, "hPolarVsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grPolarVsTime");
    nPoints = graphErrs->GetN();
-   graphErrs->SetPoint(nPoints, runStartTime, polarization);
+   graphErrs->SetPoint(nPoints, measStartTime, polarization);
    graphErrs->SetPointError(nPoints, 0, polarizationErr);
 
    // Profiles r
@@ -854,7 +854,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    sprintf(hName, "hT0VsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grT0VsTime");
    nPoints = graphErrs->GetN();
-   graphErrs->SetPoint(nPoints, runStartTime, t0);
+   graphErrs->SetPoint(nPoints, measStartTime, t0);
    graphErrs->SetPointError(nPoints, 0, t0Err);
 
    // Dead layer
@@ -868,7 +868,7 @@ void MAsymRunHists::Fill(EventConfig &rc)
    sprintf(hName, "hDLVsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grDLVsTime");
    nPoints = graphErrs->GetN();
-   graphErrs->SetPoint(nPoints, runStartTime, dl);
+   graphErrs->SetPoint(nPoints, measStartTime, dl);
    graphErrs->SetPointError(nPoints, 0, dlErr);
 
 

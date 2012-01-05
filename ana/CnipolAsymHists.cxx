@@ -40,8 +40,9 @@ CnipolAsymHists::~CnipolAsymHists()
 /** */
 void CnipolAsymHists::BookHists(string cutid)
 { //{{{
-   char hName[256];
-   string shName;
+   char    hName[256];
+   string  shName;
+   TH1    *hist;
 
    fDir->cd();
 
@@ -116,9 +117,10 @@ void CnipolAsymHists::BookHists(string cutid)
    ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
 
    shName = "hAsymVsDelim4Det";
-   o[shName] = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   ((TH1*) o[shName])->SetOption("E1 NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetOption("E1 NOIMG");
+   hist->SetTitle(";Target Steps, s;Asymmetry;");
+   o[shName] = hist;
 
    //
    TGraphErrors *grAsymVsPhi = new TGraphErrors();
