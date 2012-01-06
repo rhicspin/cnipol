@@ -22,6 +22,7 @@
 #define REC_CONFIG      0x00000111      // obsolete
 //#define REC_RHIC_CONF   0x00000112    // Instead of REC_CONFIG since Apr2003
 #define REC_RHIC_CONF   0x00000113      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_MEASTYPE    0x00000120
 //#define REC_READRAW   0x00000201
 //#define REC_READSUB   0x00000202
 //#define REC_READALL   0x00000203
@@ -50,8 +51,15 @@
 #define REC_120BUNCH    0x00008000 // or'ed with the mask where applicable
 #define REC_FROMMEMORY  0x00040000 // or'ed with the mask where applicable
 
+enum EMeasType {kMEASTYPE_UNKNOWN = 0x0000,
+                kMEASTYPE_ALPHA   = 0x0001,
+                kMEASTYPE_SWEEP   = 0x0002,
+                kMEASTYPE_FIXED   = 0x0004,
+                kMEASTYPE_RAMP    = 0x0008,
+                kMEASTYPE_EMIT    = 0x0010};
+
 typedef struct {
-    long len;           // total length
+    long len;           // total length = header size + data size
     long type;          // record type, see above
     long num;           // record number
     union {
@@ -65,6 +73,11 @@ typedef struct {
     long version;
     char comment[256];
 } recordBeginStruct;
+
+struct {
+    recordHeaderStruct header;
+    unsigned int       type;
+} recordMeasTypeStruct;
 
 typedef struct {
     recordHeaderStruct header;
@@ -131,7 +144,7 @@ typedef struct TRecordConfigRhicStruct {
    configRhicDataStruct data;
    SiChanStruct chanconf[1];   // chanconf[data.NumChannels-1]
                                // Actual length is defined from the record
-                               // length or from NumChannels memeber
+                               // length or from the NumChannels member
 
    void Print(const Option_t* opt="") const;
    void Streamer(TBuffer &buf);

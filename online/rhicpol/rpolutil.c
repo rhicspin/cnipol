@@ -697,12 +697,15 @@ int polWrite(recordHeaderStruct *header, long *data)
 {
    int irc;
    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
    if (OutFile == NULL) return 2;
 
-//	Thread protected portion start:
+   // Thread protected portion start:
    pthread_mutex_lock(&mutex);
    header->num = dataNum++;
+
    irc = fwrite(header, sizeof(recordHeaderStruct), 1, OutFile);
+
    if (irc != 1) {
       fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (header) rec=%8.8lX: %s.\n",
               header->type, strerror(errno));
@@ -712,6 +715,7 @@ int polWrite(recordHeaderStruct *header, long *data)
       pthread_mutex_unlock(&mutex);
       return 1;
    }
+
    if (data != NULL && header->len != sizeof(recordHeaderStruct)) {
       irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
       if (irc != 1) {
@@ -724,6 +728,7 @@ int polWrite(recordHeaderStruct *header, long *data)
          return 1;
       }
    }
+
    fflush(OutFile);
    pthread_mutex_unlock(&mutex);
    return 0;
@@ -1962,11 +1967,13 @@ void closeDataFile(char * comment)
    long *data;
    recordEndStruct rec;
    recordHeaderStruct header;
+
    if (OutFile == NULL) return;
+
    if ((recRing & REC_JET) == 0) {
-//	Target movement record for profiles
-//<<<<<<< rpolutil.c
-//	It looks that we need this record even without other ADO staff
+      // Target movement record for profiles
+      //<<<<<<< rpolutil.c
+      // It looks that we need this record even without other ADO staff
       header.type = REC_TAGMOVEADO | recRing;
       len = getTargetMovementInfo(&data);
       header.len = sizeof(recordHeaderStruct) + len * sizeof(long);
@@ -1975,16 +1982,16 @@ void closeDataFile(char * comment)
 
       if (data) free(data);
 
-//	Polarimeter specific data to be passed to data2hbook
+      // Polarimeter specific data to be passed to data2hbook
       header.type = REC_POLADO | recRing;
       header.len = sizeof(recordPolAdoStruct);
       header.timestamp.time = time(NULL);
       polWrite(&header, (long *)&polData);
    }
-//
+
    strncpy(rec.comment, comment, sizeof(rec.comment));
    rec.header.type = REC_END | recRing;
-   rec.header.len = sizeof(rec);
+   rec.header.len  = sizeof(rec);
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.comment[0]);
    fclose(OutFile);
@@ -2011,7 +2018,7 @@ int openDataFile(char *fname, char *comment, int noAdo)
 
    dataNum = 0;
 
-//	begin record
+   //	begin record
    rec.version = VERSION;
    strncpy(rec.comment, comment, sizeof(rec.comment));
    rec.header.type = REC_BEGIN | recRing | recStream;
@@ -2021,42 +2028,46 @@ int openDataFile(char *fname, char *comment, int noAdo)
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.version);
 
-//	config record
+   //	config record
    buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
    header.type = REC_RHIC_CONF | recRing;
    header.len = sizeof(recordHeaderStruct) + sizeof(configRhicDataStruct) +
                 sizeof(SiChanStruct) * (Conf.NumChannels - 1);
    header.timestamp.time = time(NULL);
+
    // Conf without SiChan
    memcpy(buf, &Conf, sizeof(configRhicDataStruct) - sizeof(SiChanStruct));
+
    // Real SiConf
    memcpy(&(((char*)buf)[sizeof(configRhicDataStruct) - sizeof(SiChanStruct)]),
           SiConf, sizeof(SiChanStruct) * Conf.NumChannels);
    polWrite(&header, (long *)buf);
    free(buf);
 
-//	beam data (have to write it anyway because rhic2hbook uses polpat from here)
+   //	beam data (have to write it anyway because rhic2hbook uses polpat from here)
    header.type = REC_BEAMADO | recRing;
    header.len = sizeof(recordBeamAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&beamData);
 
-//	Store the other beam parameters
+   //	Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
-      if (recRing & REC_BLUE) header.type |= REC_YELLOW;
+      if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
       if (recRing & REC_YELLOW) header.type |= REC_BLUE;
       header.len = sizeof(recordBeamAdoStruct);
       header.timestamp.time = time(NULL);
       polWrite(&header, (long *)&beamOtherData);
    }
-//
+
    if (noAdo) return 0;
+
    //   Wcm data
    header.type = REC_WCMADO | recRing;
    header.len = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&wcmData);
+
    //	Save V124 settings if any... No use when no ADO
    if (V124.flags) {
       header.type = REC_V124 | recRing;
@@ -2064,7 +2075,8 @@ int openDataFile(char *fname, char *comment, int noAdo)
       header.timestamp.time = time(NULL);
       polWrite(&header, (long *)&V124);
    }
-//	Store the other beam parameters
+
+   //	Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE) header.type |= REC_YELLOW;
