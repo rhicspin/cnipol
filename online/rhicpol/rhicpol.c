@@ -12,6 +12,9 @@
  * Dec 22, 2010 - Dmitri Smirnov
  *    - Added stream ID (up or down) in the raw data
  *
+ * Jan 5, 2011 - Dmitri Smirnov
+ *    - Added an option for the measurement type
+ *
  */
 
 #define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
@@ -29,18 +32,18 @@
 #include "rpolutil.h"
 
 //	Global variables
-FILE *LogFile;
-char DeviceName[128] ="None";		// our CDEV name (like polarimeter.yel1 etc)
-char ourTargetCDEVName[20] = "None";	// we will write what is appropriate here in getAdoInfo()
-beamDataStruct beamData;		// beam information from CDEV
-beamDataStruct beamOtherData;		// we need both beams for hjet
-V124Struct V124;			// V124 settings
-polDataStruct polData;			// polarization structure
-configRhicDataStruct Conf;		// CAMAC configuration
-SiChanStruct * SiConf = NULL;		// silicon channels
-wcmDataStruct wcmData;			// Wall current monitor data from CDEV
-wcmDataStruct wcmOtherData;		// we need both beams for hjet
-jetPositionStruct jetPosition;		// Jet position from CDEV
+FILE                 *LogFile;
+char                  DeviceName[128] ="None";		// our CDEV name (like polarimeter.yel1 etc)
+char                  ourTargetCDEVName[20] = "None";	// we will write what is appropriate here in getAdoInfo()
+beamDataStruct        beamData;		                // beam information from CDEV
+beamDataStruct        beamOtherData;		        // we need both beams for hjet
+V124Struct            V124;			        // V124 settings
+polDataStruct         polData;			        // polarization structure
+configRhicDataStruct  Conf;		                // CAMAC configuration
+SiChanStruct         *SiConf = NULL;		        // silicon channels
+wcmDataStruct         wcmData;			        // Wall current monitor data from CDEV
+wcmDataStruct         wcmOtherData;		        // we need both beams for hjet
+jetPositionStruct     jetPosition;		        // Jet position from CDEV
 
 
 //	Run parameters and flags
@@ -56,6 +59,7 @@ int iCicleRun   = 0;			// run ciclely instead of single pass - used for HJET
 int nLoop       = 1;			// Number of subruns
 int iRamp       = 0;			// going to be ramp
 extern int IStop;			// Stop flag
+int gMeasType   = -1;                   // measurement type must be provided
 
 float ANALPOW;				// very approximate analyzing power
 float ANALPOWE;				// its error
@@ -82,18 +86,18 @@ char * cctime(time_t *itime)
     return str;
 }
 
-//	Main
+// Main
 int main(int argc, char **argv)
 {
-    const char ETLUTNames[][10]={"Kine","Rect","Thresh"};
-    const char IALUTNames[][10]={"Line","Open"};
-    char fname[512] = "polout.data";
+    const char ETLUTNames[][10] = {"Kine","Rect","Thresh"};
+    const char IALUTNames[][10] = {"Line","Open"};
+    char fname[512]   = "polout.data";
     char cfgname[512] = "./config/rhicpol.ini";
     char logname[512] = "";
     char comment[512] = "RHIC Polarimeter Run";
     char workdir[512];
-    int iHelp = 0;
-    int iHistOnly = 0;	
+    int iHelp     = 0;
+    int iHistOnly = 0;
     int i, j, k, ev;
     char * buf;
     time_t t;
@@ -102,7 +106,7 @@ int main(int argc, char **argv)
     LogFile = stdout;
     recRing = 0;    
 
-    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:")) != -1)
+    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:m::")) != -1)
     switch(i) {
     case 'c' :	// comment
 	strncpy(comment, optarg, sizeof(comment));
@@ -122,6 +126,9 @@ int main(int argc, char **argv)
 	   }
 	}
 	break;    
+    case 'm':	// keep internal Clock
+	iExtClock = 0;
+        break;
     case 'e' :	// events
 	mEvent = strtol(optarg, NULL, 0);
 	break;
@@ -212,7 +219,8 @@ int main(int argc, char **argv)
     }
     t = time(NULL);
     fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
-/* Reading main configuration file. */
+
+    /* Reading main configuration file. */
     if (readConfig(buf, CFG_INIT)) {
 	fprintf(LogFile,"RHICPOL-FATAL : Cannot open config file %s\n",cfgname);
 	polData.statusS |= (STATUS_ERROR | ERR_INT);

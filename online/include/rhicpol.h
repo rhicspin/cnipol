@@ -232,7 +232,7 @@ typedef struct {
             unsigned RMemLUp:1; // [12] Selection of events to memory: 0-regular
                                 // lookup, 1-rectangular lookup (ampl thresh=FineHistBeg,
                                 // time thresh=Window.Beg)
-            unsigned RevDelim:1;// [13] External (0)/ revolution (1) delimeter
+            unsigned RevDelim:1;// [13] = 0 for external, = 1 for revolution triggered delimeter
             unsigned Hi2MemA:1; // [14] (RO) Histograms to memory procedure in progress
             unsigned Delim:1;   // [15] (RO) Delimeter active
             unsigned OvF:1;     // [16] (RO) FIFO Overflow
@@ -278,5 +278,8 @@ typedef struct {
     int NumChannels;            // number of silicon strips
     SiChanStruct chan[1];       // array of NumChannels size
 } configRhicDataStruct;
+
+rhicpol_print_usage();
+rhicpol_process_options();
 
 #endif
