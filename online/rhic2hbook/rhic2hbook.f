@@ -54,6 +54,8 @@ c
 	integer numberEventsS, maxTimeS
 
 	character*256 fin, fout, str, device
+
+ccommon /
 	
 	fin = '?'
 	fout = '?'
@@ -183,7 +185,7 @@ c
 	    call flush(7)
 	    call readandfill(nsubrun)
 c
-	    if (iproc.ne.0) call process(i90OK)
+	    if (iproc.ne.0) call process(i90OK, device)
 c	
 	    call hrout(0, irc, ' ')
 	    call hrend('data')
@@ -213,7 +215,7 @@ c
 c   	    print *, 'After readandfill (nsubrun<0) isubr = ',isubr
 c
 	    if (iproc.ne.0) then
-		call process(i90OK)
+		call process(i90OK, device)
 c
 		asymX(isubr+1) = avgAsymXS
 		asymX90(isubr+1) = avgAsymX90S
@@ -234,7 +236,7 @@ c
 c	    	    
 99	    if (isend.ne.0) call sendsubresult(device(1:len_trim(device)))
 c
-	end if
+	endif
 c	
 	print *,'The end of RHIC2HBOOK.'
 	stop
@@ -379,6 +381,8 @@ c
 	enddo
 	return
 	end
+
+
 c
 	subroutine histtagmov(IPOS, LEN)
 	integer ipos(2*LEN)
@@ -391,8 +395,11 @@ c
 	enddo
 	return
 	end
+
+
 c
-	subroutine process(i90OK)
+	subroutine process(i90OK, polName)
+	character*256 polName
 	real x(128), y(128), ex(128), ey(128)
 	common /sscal/ ssscal(288)
 	integer ssscal
@@ -582,7 +589,7 @@ C	Counts from energy histograms
 c
 		
 C	call AnaPow
-	if (analyzingPowerErrorS.lt.0.0) call AnaPow
+	if (analyzingPowerErrorS.lt.0.0) call AnaPow(polName)
 
 C	Counts which are sent to the ADO and used for asymmetry
 C	calculations are from bunch # histograms and rely on
@@ -645,7 +652,7 @@ c
 		statusS = IOR(statusS, Z'80000000')
 	    else
 		statusS = IOR(statusS, Z'10')	    		
-	    end if
+	    endif
 	endif
 c
 	print 300, totalCountsS, unpolCountsS, upCountsS, downCountsS
@@ -662,7 +669,7 @@ c
 		statusS = IOR(statusS, Z'80000000')
 	    else
 		statusS = IOR(statusS, Z'10')	    		
-	    end if
+	    endif
 	endif
 
 c		calculate sqare root asymmetries
@@ -1047,8 +1054,12 @@ c
     	icnt = icnt + 1
 c
 	end
-c
-	subroutine AnaPow
+
+
+
+	subroutine AnaPow(polName)
+
+	character*256 polName
 
 	common /poldat/ runIdS, startTimeS, stopTimeS,
      +	    daqVersionS, cutIdS, targetIdS, encoderPositionS,
@@ -1113,7 +1124,7 @@ c
      +    0.0109786, 0.0100245, 0.00913435, 0.00830108, 0.00751878,
      +    0.00678244, 0.00608782, 0.00543127, 0.00480969, 0.00422038/
 
-* A_N @ 100 GeV from Osamu's SPIN 2004 fit
+* A_N @ 100 GeV from Osamu SPIN 2004 fit
 
        real*4 anth100(25)
        data anth100/
@@ -1125,7 +1136,17 @@ c
 
 * scale for 250 GeV A_N = 1/0.823 = 1.215, P = 0.823 * P
 
-	scale250 = 1.215
+	if (polName(13:16).eq.'blu1') then
+	   scale250 = 1.215
+	elseif (polName(13:16).eq.'yel1') then
+	   scale250 = 1.215
+	elseif (polName(13:16).eq.'blu2') then
+	   scale250 = 1.215
+	elseif (polName(13:16).eq.'yel2') then
+	   scale250 = 1.215
+	else
+	   scale250 = 1.
+	endif
 
 	Emin = 22.5
 	Emax = 1172.2
@@ -1141,9 +1162,9 @@ c
 	do i = 1,128
 	    j = INT((X(i) - Emin)/DeltaE)+1
 	    s = s + Y(i)
-            if(beamEnergyS.lt.50.0) then 
+            if (beamEnergyS.lt.50.0) then 
               sa = sa + Y(i)*anth(j)
-            elseif(beamEnergyS.lt.150.0) then 
+            elseif (beamEnergyS.lt.150.0) then 
               sa = sa + Y(i)*anth100(j)
             else
               sa = sa + Y(i)*anth100(j)*scale250
