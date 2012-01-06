@@ -279,7 +279,7 @@ typedef struct {
     SiChanStruct chan[1];       // array of NumChannels size
 } configRhicDataStruct;
 
-rhicpol_print_usage();
-rhicpol_process_options();
+void rhicpol_print_usage();
+void rhicpol_process_options();
 
 #endif

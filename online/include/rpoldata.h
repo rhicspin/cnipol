@@ -74,7 +74,7 @@ typedef struct {
     char comment[256];
 } recordBeginStruct;
 
-struct {
+typedef struct {
     recordHeaderStruct header;
     unsigned int       type;
 } recordMeasTypeStruct;

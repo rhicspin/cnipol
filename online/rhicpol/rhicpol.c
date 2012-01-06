@@ -1,7 +1,7 @@
 /********************************************************
- *	RHIC Polarimeter DAQ Program			*
- *	I. Alekseev and D. Svirida			*
- *		2001-2010				*
+ * RHIC Polarimeter DAQ Program                         *
+ * I. Alekseev and D. Svirida                           *
+ *    2001-2010                                         *
  * This is the main datataking code. Reads the          *
  * configuration, programs CAMAC, takes data, writes    *
  * file.                                                *
@@ -61,6 +61,8 @@ int iRamp       = 0;			// going to be ramp
 extern int IStop;			// Stop flag
 int gMeasType   = -1;                   // measurement type must be provided
 
+std::string gOptMeasType("");                // measurement type must be provided
+
 float ANALPOW;				// very approximate analyzing power
 float ANALPOWE;				// its error
 
@@ -96,7 +98,6 @@ int main(int argc, char **argv)
     char logname[512] = "";
     char comment[512] = "RHIC Polarimeter Run";
     char workdir[512];
-    int iHelp     = 0;
     int iHistOnly = 0;
     int i, j, k, ev;
     char * buf;
@@ -106,7 +107,7 @@ int main(int argc, char **argv)
     LogFile = stdout;
     recRing = 0;    
 
-    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:m::")) != -1)
+    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:mT::")) != -1)
     switch(i) {
     case 'c' :	// comment
 	strncpy(comment, optarg, sizeof(comment));
@@ -166,33 +167,16 @@ int main(int argc, char **argv)
     case 'v':	// debug level
 	iDebug = strtol(optarg, NULL, 0);
         break;
+    case 'T':	// measurement type
+        break;
     default:	// print help and exit
-	iHelp = 1;
+        // Type info and exit on unknown options...
+	rhicpol_print_usage();
+	return 1;
 	break;
     }
 
-//	Type info and exit on unknown options...
-    if (iHelp) {
-	printf("\n\tPolarimeter command line data taking utility\n"
-	    "Usage: rhicpol [options]. Possible options are:\n"
-	    "\t-c comment : comment string;\n"
-	    "\t-C : Stay with internal clocks (for debugging only);\n"
-	    "\t-d device : current polarimeter CDEV name;\n"
-	    "\t-e number : number of events to get;\n"
-	    "\t-f filename : output data file name;\n"
-	    "\t-g : do not communicate to CDEV, stand alone mode;\n"
-	    "\t-h : print this message and exit;\n"
-	    "\t-i filename : basic config file name. All other filenames are relative to its directory;\n"
-	    "\t-I : don't sense ^C while reading out memory;\n"
-	    "\t-J : Jet DAQ run;\n"
-	    "\t-l filename : logfile name, default is stdout;\n"
-	    "\t-M : do not read memory - only histograms;\n"
-	    "\t-P : Pulse PROG pin for all WFDs;\n"
-	    "\t-R : make subruns - ramp measurement;\n"
-	    "\t-t time : maximum time of the measurement, seconds;\n"
-	    "\t-v level : verbose output.\n");
-	return 1;
-    } 
+    rhicpol_process_options();
 
     polData.statusS = 0;
 
@@ -434,3 +418,33 @@ int main(int argc, char **argv)
     // High 16 bits of status are errors - tell this to calling script to avoid data analysis
     return (((polData.statusS) >> 16) & 0xFFFF) ? 10 : 0;
 }
+
+
+/** */
+void rhicpol_print_usage()
+{ //{{{
+   printf("\n\tPolarimeter command line data taking utility\n"
+       "Usage: rhicpol [options]. Possible options are:\n"
+       "\t-c comment : comment string;\n"
+       "\t-C : Stay with internal clocks (for debugging only);\n"
+       "\t-d device : current polarimeter CDEV name;\n"
+       "\t-e number : number of events to get;\n"
+       "\t-f filename : output data file name;\n"
+       "\t-g : do not communicate to CDEV, stand alone mode;\n"
+       "\t-h : print this message and exit;\n"
+       "\t-i filename : basic config file name. All other filenames are relative to its directory;\n"
+       "\t-I : don't sense ^C while reading out memory;\n"
+       "\t-J : Jet DAQ run;\n"
+       "\t-l filename : logfile name, default is stdout;\n"
+       "\t-M : do not read memory - only histograms;\n"
+       "\t-P : Pulse PROG pin for all WFDs;\n"
+       "\t-R : make subruns - ramp measurement;\n"
+       "\t-t time : maximum time of the measurement, seconds;\n"
+       "\t-v level : verbose output.\n");
+} //}}}
+
+
+/** */
+void rhicpol_process_options()
+{ //{{{
+} //}}}
