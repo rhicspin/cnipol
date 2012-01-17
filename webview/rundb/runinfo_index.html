@@ -110,6 +110,8 @@ while ($e = mysql_fetch_assoc($rslt)):
    //print_r($e); 
    //print "</pre>\n";
 
+   $polId = $POLARIMETER_ID[$e['polarimeter_id']];
+
    $polarization = "&nbsp;";
 
    if (isset($e['polarization'])) {
@@ -118,8 +120,16 @@ while ($e = mysql_fetch_assoc($rslt)):
       //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
 		//$polarization = sprintf("%5.1f &plusmn; %5.1f",
       //   $pols[0]*100, $pols[1]*100);
+
+      // Apply normalization factor to polarization value
+		$norm = 1;
+
+		if (isset($normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']]) &&
+          intval($e['beam_energy']+0.5) == 250 )
+		   $norm = $normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']];
+
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
-         $e['polarization']*100, $e['polarization_error']*100);
+         $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
    }
 
    $profileRatio = "&nbsp;";
@@ -145,8 +155,6 @@ while ($e = mysql_fetch_assoc($rslt)):
    } else {
       $targetId = "N/A";
    }
-
-   $polId = $POLARIMETER_ID[$e['polarimeter_id']];
 
 	// Set css class
 	$cssPol = "";

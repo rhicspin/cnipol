@@ -51,8 +51,8 @@ export POLARIM_DIR=/usr/local/polarim
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
-export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
-export UTILS_INC_DIR=~dsmirnov/root_macros/
+export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
+export UTILS_INC_DIR=~dsmirnov/rootmacros/
 
 if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
 	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
