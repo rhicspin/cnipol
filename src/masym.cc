@@ -67,10 +67,10 @@ void initialize()
    //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
    //TString filelistName = "run11_153XX";
    //TString filelistName = "run11_153XX_Y2U";
-   TString filelistName = "run11_pol_decay";
+   //TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
-   //TString filelistName = "run11_tmp_goodruns";
+   TString filelistName = "run11_tmp_goodruns";
    //TString filelistName = "run11_tmp_goodruns_small";
    //TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
