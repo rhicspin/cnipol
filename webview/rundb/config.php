@@ -24,4 +24,69 @@ $BEAM_ENERGY    = array("24" => "24", "100" => "100", "250" => "250");
 $TARGET_ORIENT  = array("H" => "H", "V" => "V");
 $TARGET_ID      = array_combine(range(1, 6), range(1, 6));
 
+// Normalization factors
+$normJetCarbonByTarget[11]["B1U"]["H"][1] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["H"][2] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["H"][3] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["H"][4] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["H"][5] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["H"][6] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][1] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][2] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][3] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][4] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][5] = 0.934;
+$normJetCarbonByTarget[11]["B1U"]["V"][6] = 0.934;
+$normJetCarbonByTarget[11]["Y1D"]["H"][1] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["H"][2] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["H"][3] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["H"][4] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["H"][5] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["H"][6] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][1] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][2] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][3] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][4] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][5] = 0.909;
+$normJetCarbonByTarget[11]["Y1D"]["V"][6] = 0.909;
+$normJetCarbonByTarget[11]["B2D"]["H"][1] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["H"][2] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["H"][3] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["H"][4] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["H"][5] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["H"][6] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][1] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][2] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][3] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][4] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][5] = 1.058;
+$normJetCarbonByTarget[11]["B2D"]["V"][6] = 1.058;
+$normJetCarbonByTarget[11]["Y2U"]["H"][1] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["H"][2] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["H"][3] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["H"][4] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["H"][5] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["H"][6] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][1] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][2] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][3] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][4] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][5] = 0.933;
+$normJetCarbonByTarget[11]["Y2U"]["V"][6] = 0.933;
+
+// sigma = fill-to-fill uncorrelated errors
+// delta = fill-to-fill correlated errors
+$relSystErr["B1U"]["sigma"]["norm"]    = 0.070;
+$relSystErr["B1U"]["delta"]["norm"]    = 0.011;
+$relSystErr["B1U"]["delta"]["jet_bkg"] = 0.020;
+$relSystErr["Y1D"]["sigma"]["norm"]    = 0.063;
+$relSystErr["Y1D"]["delta"]["norm"]    = 0.015;
+$relSystErr["Y1D"]["delta"]["jet_bkg"] = 0.020;
+$relSystErr["B2D"]["sigma"]["norm"]    = 0.101;
+$relSystErr["B2D"]["delta"]["norm"]    = 0.012;
+$relSystErr["B2D"]["delta"]["jet_bkg"] = 0.020;
+$relSystErr["Y2U"]["sigma"]["norm"]    = 0.054;
+$relSystErr["Y2U"]["delta"]["norm"]    = 0.011;
+$relSystErr["Y2U"]["delta"]["jet_bkg"] = 0.020;
+
 ?>

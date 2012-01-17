@@ -60,6 +60,11 @@ span.red {
 	vertical-align: middle;
 }
 
+.align_ct {
+	text-align: center;
+	vertical-align: top;
+}
+
 .left {
 	text-align: left;
 }
