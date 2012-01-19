@@ -97,6 +97,7 @@ int main(int argc, char **argv)
     char cfgname[512] = "./config/rhicpol.ini";
     char logname[512] = "";
     char comment[512] = "RHIC Polarimeter Run";
+    //char execdir[512]; // directory where the program was executed
     char workdir[512];
     int iHistOnly = 0;
     int i, j, k, ev;
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     recRing = 0;    
 
     while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:mT::")) != -1)
-    switch(i) {
+    switch (i) {
     case 'c' :	// comment
 	strncpy(comment, optarg, sizeof(comment));
 	break;
@@ -168,6 +169,10 @@ int main(int argc, char **argv)
 	iDebug = strtol(optarg, NULL, 0);
         break;
     case 'T':	// measurement type
+	gMeasType = kMEASTYPE_UNKNOWN;
+        if (optarg) {
+           gOptMeasType.assign(optarg);
+	}
         break;
     default:	// print help and exit
         // Type info and exit on unknown options...
@@ -178,9 +183,13 @@ int main(int argc, char **argv)
 
     rhicpol_process_options();
 
+    std::string logFileFullName = get_current_dir_name();
+    logFileFullName += "/";
+    logFileFullName += logname;
+
     polData.statusS = 0;
 
-/* We will set configuration file directory as current */
+    // We will set configuration file directory as current
     strncpy(workdir, cfgname, sizeof(workdir));
     buf = strrchr(workdir, '/');
     if (buf != NULL) {
@@ -191,42 +200,51 @@ int main(int argc, char **argv)
         buf = cfgname;
     }
 
-/* Open LogFile */
+    // Open LogFile
     if (strlen(logname) > 0) {
-        LogFile=fopen(logname,"at");
+        //LogFile = fopen(logname, "at");
+        LogFile = fopen(logFileFullName.c_str(), "at");
+        perror("fopen");
         if (LogFile == NULL) {
-    	    printf("Cannot open logfile %s. Logging to stdout.\n",logname);
+    	    printf("Cannot open logfile %s. Logging to stdout.\n", logname);
 	    polData.statusS |= (WARN_INT);
 	    LogFile = stdout;
+	} else {
+    	    printf("Opened logfile %s\n", logFileFullName.c_str());
 	}
 	setvbuf(LogFile, NULL, _IOLBF, BUFSIZ);		// make line buffering of the log file
     }
+
     t = time(NULL);
+
     fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
+
 
     /* Reading main configuration file. */
     if (readConfig(buf, CFG_INIT)) {
-	fprintf(LogFile,"RHICPOL-FATAL : Cannot open config file %s\n",cfgname);
+	fprintf(LogFile, "RHICPOL-FATAL : Cannot open config file %s\n", cfgname);
 	polData.statusS |= (STATUS_ERROR | ERR_INT);
 	polexit();
     }
     
     if (iHistOnly) Conf.OnlyHist = 1;	// command line has priority
     
-//	zero structures first    
+    //	zero structures first    
     memset(&beamData, 0, sizeof(beamData));
     memset(&wcmData, 0, sizeof(wcmData));
     memset(&beamOtherData, 0, sizeof(beamOtherData));
     memset(&wcmOtherData, 0, sizeof(wcmOtherData));
     beamData.beamEnergyM = 100.0;	// defalut for no CDEV
-//	check CDEV
+
+    //	check CDEV
     if (NoADO == 0 && getenv("CDEVDDL") == NULL) {	// we check if CDEV varables (at least one) are defined
 	NoADO = 1;
         fprintf(LogFile,"RHICPOL-WARN : No CDEV environment found.\n");    
         fprintf(LogFile,"               Run may be unusable. Try -g to suppress this message.\n");
 	polData.statusS |= WARN_INT;
     }
-//	make recRing
+
+    //	make recRing
     if (iCicleRun) {	// for HJET
 	recRing = REC_JET | REC_YELLOW;	// jet has always yellow color
     } else {
@@ -240,14 +258,15 @@ int main(int argc, char **argv)
 	    recRing = REC_YELLOW;
 	}
     }
-//	get CDEV information
+
+    //	get CDEV information
     if (NoADO == 0) {
         getAdoInfo();
         //	nonzero Pol/fill pattern in the config has priority over measured (we need this for debugging)
         for (i = 0; i < 120; i++) if (Conf.Pattern[i] != 0) break;
         if (i < 120) {
     	    fprintf(LogFile, "RHICPOL-INFO: Debugging run - not real polarization pattern !\n");
-/* copy pattern from config file to beamdata */
+            /* copy pattern from config file to beamdata */
 	    for (i=0;i<120;i++) {
     		if (Conf.Pattern[i] > 0) beamData.measuredFillPatternM[3*i] = 1;
     		if (Conf.Pattern[i] == 1) beamData.polarizationFillPatternS[3*i] = 1;
@@ -283,22 +302,26 @@ int main(int argc, char **argv)
 	    }
 	}	
     }
-//	Check and print.
+
+    //	Check and print.
     if (CheckConfig()) {
         fprintf(LogFile,"RHICPOL-WARN : Strange things found in configuration.\n");    
         fprintf(LogFile,"               Run may be unusable. Try -v20 for more information...\n");    
 	polData.statusS |= WARN_INT;
     }
-//	Check time and events to go - some defaults
+
+    //	Check time and events to go - some defaults
     if (mTime < 0) mTime = 10;
     if (mEvent < 0) mEvent = 20000000;
-//	Open CAMAC
+
+    //	Open CAMAC
     if (camacOpen() != 0) {
         fprintf(LogFile,"RHICPOL-FATAL : Cannot connect to CAMAC\n");
         polData.statusS |= (STATUS_ERROR | ERR_CAMAC);
         polexit();
     }
-//	Fill some usefull information to pass to data2hbook
+
+    //	Fill some usefull information to pass to data2hbook
     for (j = strlen(cfgname); j >= 0; j--) if (cfgname[j] == '/') break;
     j++;
     sprintf(polData.daqVersionS,"%1d.%1d.%1d %s", DAQVERSION/10000, (DAQVERSION%10000)/100, DAQVERSION%100, &cfgname[j]);
@@ -415,6 +438,9 @@ int main(int argc, char **argv)
     closeDataFile("End of RHICpol run.");
     if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateStatus();
 
+    // close the log file
+    fclose(LogFile);
+
     // High 16 bits of status are errors - tell this to calling script to avoid data analysis
     return (((polData.statusS) >> 16) & 0xFFFF) ? 10 : 0;
 }
@@ -423,7 +449,7 @@ int main(int argc, char **argv)
 /** */
 void rhicpol_print_usage()
 { //{{{
-   printf("\n\tPolarimeter command line data taking utility\n"
+   printf("\n\tPolarimeter command line data taking utility\n\n"
        "Usage: rhicpol [options]. Possible options are:\n"
        "\t-c comment : comment string;\n"
        "\t-C : Stay with internal clocks (for debugging only);\n"
@@ -439,6 +465,7 @@ void rhicpol_print_usage()
        "\t-M : do not read memory - only histograms;\n"
        "\t-P : Pulse PROG pin for all WFDs;\n"
        "\t-R : make subruns - ramp measurement;\n"
+       "\t-T [type] : measurement type. Can be 'test', 'alpha', 'cdev' or empty string\n"
        "\t-t time : maximum time of the measurement, seconds;\n"
        "\t-v level : verbose output.\n");
 } //}}}
@@ -447,4 +474,16 @@ void rhicpol_print_usage()
 /** */
 void rhicpol_process_options()
 { //{{{
+   if (gMeasType < 0) {
+      printf("\nError: Measurement type must be specified with -T option\n");
+      rhicpol_print_usage();
+      exit(0);
+   }
+   else if (gOptMeasType.compare("cdev") == 0 || gOptMeasType.empty()) {
+      gMeasType = kMEASTYPE_UNKNOWN; // will get the measurement type from cdev
+   }
+   else if (gOptMeasType.compare("test") == 0)
+      gMeasType = kMEASTYPE_TEST;
+   else if (gOptMeasType.compare("alpha") == 0)
+      gMeasType = kMEASTYPE_ALPHA;
 } //}}}

@@ -20,7 +20,9 @@ clean:
 	-rm -f *.o
 
 cleanall: clean
-	cd $(CNIPOL_DIR)/bin; rm -f $(PROGS) $(IPROGS); cd $(CNIPOL_DIR)/bin/macro; rm -f $(MPROGS)
+	cd $(CNIPOL_DIR)/bin; rm -f $(PROGS) $(IPROGS); cd $(CNIPOL_DIR)/bin/macro; rm -f $(MPROGS);
+	cd $(CNIPOL_DIR)/bin;
+	-rmdir macro
 
 install:
 	cp $(PROGS) $(IPROGS) $(CNIPOL_DIR)/bin

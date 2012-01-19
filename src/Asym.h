@@ -38,12 +38,12 @@ enum ERingId {kBLUE_RING = 1, kYELLOW_RING = 2, kUNKNOWN_RING};
 
 enum EStreamId {kUPSTREAM = 1, kDOWNSTREAM = 2, kUNKNOWN_STREAM};
 
-enum EMeasType {kMEASTYPE_UNKNOWN = 0x00,
-                kMEASTYPE_ALPHA   = 0x01,
-                kMEASTYPE_SWEEP   = 0x02,
-                kMEASTYPE_FIXED   = 0x04,
-                kMEASTYPE_RAMP    = 0x08,
-                kMEASTYPE_EMIT    = 0x10};
+//enum EMeasType {kMEASTYPE_UNKNOWN = 0x00,
+//                kMEASTYPE_ALPHA   = 0x01,
+//                kMEASTYPE_SWEEP   = 0x02,
+//                kMEASTYPE_FIXED   = 0x04,
+//                kMEASTYPE_RAMP    = 0x08,
+//                kMEASTYPE_EMIT    = 0x10};
 
 enum ETargetOrient {kTARGET_H = 0, kTARGET_V = 1, kUNKNOWN_ORIENT};
 

@@ -51,12 +51,16 @@
 #define REC_120BUNCH    0x00008000 // or'ed with the mask where applicable
 #define REC_FROMMEMORY  0x00040000 // or'ed with the mask where applicable
 
-enum EMeasType {kMEASTYPE_UNKNOWN = 0x0000,
-                kMEASTYPE_ALPHA   = 0x0001,
-                kMEASTYPE_SWEEP   = 0x0002,
-                kMEASTYPE_FIXED   = 0x0004,
-                kMEASTYPE_RAMP    = 0x0008,
-                kMEASTYPE_EMIT    = 0x0010};
+enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
+                kMEASTYPE_TEST        = 0x00010000,
+                kMEASTYPE_ALPHA       = 0x00000001,
+                kMEASTYPE_SWEEP       = 0x00000002,  // profile sweep
+                kMEASTYPE_FIXED       = 0x00000004,
+                kMEASTYPE_RAMP        = 0x00000008,
+                kMEASTYPE_EMIT_SCAN   = 0x00000010,
+                kMEASTYPE_TARGET_SCAN = 0x00000020,
+                kMEASTYPE_PROFILE_T   = 0x00000040,  // profile by time
+                kMEASTYPE_PROFILE_E   = 0x00000080}; // profile events
 
 typedef struct {
     long len;           // total length = header size + data size
