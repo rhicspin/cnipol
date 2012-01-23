@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <string.h>
 
 #include "rcdev.h"
 #include "rpoldata.h"
@@ -131,7 +132,8 @@ void getCarbTarg(carbTargStat * targstat)
     if (i<8) targstat->good = 0;
 }
 
-//	Get wall current monitor data
+
+/** Get wall current monitor data */
 void getWcmInfo(void)
 {
     char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
@@ -140,25 +142,30 @@ void getWcmInfo(void)
 
     if (NoADO != 0) return;
 
-//	determine the ring
+    //	determine the ring
     N = 0;
     if (recRing & REC_BLUE) N = 1; 
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : WcmInfo - %s\n", wcmCDEVName[N]);
+
     cdevDevice & wcm =  cdevDevice::attachRef(wcmCDEVName[N]);
     irc = 0;
-//	wcm
+
+    //	wcm
     if(!DEVSEND(wcm, "get fillDataM", NULL, &data, LogFile, irc))
         data.get("value", wcmData.fillDataM);
+
     if(!DEVSEND(wcm, "get wcmBeamM", NULL, &data, LogFile, irc))
         data.get("value", &wcmData.wcmBeamM);
     
-    if (recRing & REC_JET) {	// Get also info for the other beam in jet mode
+    if (recRing & REC_JET) { // Get also info for the other beam in jet mode
     
 	if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : WcmInfo - %s\n", wcmCDEVName[1-N]);
 	cdevDevice & wcmo =  cdevDevice::attachRef(wcmCDEVName[1-N]);
-//	wcm
+
+        // wcm
 	if(!DEVSEND(wcmo, "get fillDataM", NULL, &data, LogFile, irc))
     	    data.get("value", wcmOtherData.fillDataM);
+
 	if(!DEVSEND(wcmo, "get wcmBeamM", NULL, &data, LogFile, irc))
     	    data.get("value", &wcmOtherData.wcmBeamM);
     }
@@ -169,25 +176,60 @@ void getWcmInfo(void)
     }
 }
 
-//	Get most of CDEV data at the beginnig of the run
+
+/** Get measurement type from CDEV */
+EMeasType getCDEVMeasType()
+{
+    if (NoADO != 0) return kMEASTYPE_UNKNOWN;
+
+    //	determine the ring
+    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : getCDEVMeasType() - %s get dataAcquisitionType\n", DeviceName);
+
+    //	getting the data
+    cdevDevice &pol =  cdevDevice::attachRef(DeviceName);
+
+    int irc = 0;
+    size_t len;
+    cdevData data;
+    std::string sMeasType(64, ' ');
+
+    if (!DEVSEND(pol, "get dataAcquisitionType", NULL, &data, LogFile, irc)) {
+	data.get("value", &sMeasType[0], sMeasType.size());
+    } else {
+        return kMEASTYPE_UNKNOWN;
+    }
+
+    if (sMeasType.find("Profile Sweep")  != std::string::npos) return kMEASTYPE_SWEEP;
+    if (sMeasType.find("Fixed")          != std::string::npos) return kMEASTYPE_FIXED;
+    if (sMeasType.find("Target Scan")    != std::string::npos) return kMEASTYPE_TARGET_SCAN;
+    if (sMeasType.find("Emittance Scan") != std::string::npos) return kMEASTYPE_EMIT_SCAN;
+
+    return kMEASTYPE_UNKNOWN;
+}
+
+
+// Get most of CDEV data at the beginnig of the run
 void getAdoInfo(void)
 {
     // gather CDEV information we could need 
-    char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
+    char specCDEVName[2][20]    = {"ringSpec.yellow", "ringSpec.blue"};
     char bucketsCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
-    char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
+    char wcmCDEVName[2][20]     = {"yi2-wcm3","bo2-wcm3"};
     char defName[128];
     int irc, N;
     cdevData data;
     int ival[6];
 
     if (NoADO != 0) return;
+
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : CDEV Info - %s\n", DeviceName);
+
     irc = 0;
 
     // Get polarimeter information if DeviceName != "None"
-    if (DeviceName[0] != 'N') {
-	cdevDevice & pol =  cdevDevice::attachRef(DeviceName);
+    if (DeviceName[0] != 'N')
+    {
+	cdevDevice &pol = cdevDevice::attachRef(DeviceName);
 
         // target name in targetIdS - this is our target !
 	if(!DEVSEND(pol, "get targetIdS", NULL, &data, LogFile, irc))
@@ -200,12 +242,13 @@ void getAdoInfo(void)
         // Get time of measurement if it was not set in the command line
 	if (mTime < 0) {
 	    if (iRamp) {
-		if(!DEVSEND(pol, "get rampMeasTimeS", NULL, &data, LogFile, irc)) data.get("value", &mTime);
+		if (!DEVSEND(pol, "get rampMeasTimeS", NULL, &data, LogFile, irc)) data.get("value", &mTime);
 	    } else {
-		if(!DEVSEND(pol, "get maxTimeToRunS", NULL, &data, LogFile, irc)) data.get("value", &mTime);
+		if (!DEVSEND(pol, "get maxTimeToRunS", NULL, &data, LogFile, irc)) data.get("value", &mTime);
 	    }
 	}
-//	Get number of events if it was not set in the command line
+
+        //Get number of events if it was not set in the command line
 	if (mEvent < 0) {
 	    if (iRamp) {
 		mEvent = 2000000000;	// nearly max 32 bit signed
@@ -213,6 +256,7 @@ void getAdoInfo(void)
 		if (!DEVSEND(pol, "get numberEventsToDoS", NULL, &data, LogFile, irc)) data.get("value", &mEvent);
 	    }
 	}
+
 	if (iRamp != 0 && nLoop == 1) {
 	    N = polData.targetIdS[strlen(polData.targetIdS) - 1] - '1';	// target number
 	    if (N < 0 || N > 5) {
@@ -228,63 +272,81 @@ void getAdoInfo(void)
 	    nLoop = (int) (mTime / ival[N]);
 	}
     }
-//	determine the ring (my ring <-> other ring...
+
+    //	determine the ring (my ring <-> other ring...
     N = 0;
     if (recRing & REC_BLUE) N = 1; 
-//	create devices
-    cdevDevice & spec =  cdevDevice::attachRef(specCDEVName[N]);
-    cdevDevice & buckets =  cdevDevice::attachRef(bucketsCDEVName[N]);
-    cdevDevice & wcm =  cdevDevice::attachRef(wcmCDEVName[N]);
-//	ringSpec
+
+    //	create devices
+    cdevDevice &spec    = cdevDevice::attachRef(specCDEVName[N]);
+    cdevDevice &buckets = cdevDevice::attachRef(bucketsCDEVName[N]);
+    cdevDevice &wcm     = cdevDevice::attachRef(wcmCDEVName[N]);
+
+    //	ringSpec
     if(!DEVSEND(spec, "get beamEnergyM", NULL, &data, LogFile, irc))
 	data.get("value", &beamData.beamEnergyM);
+
     if(!DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc))
 	data.get("value", &beamData.fillNumberM);
-//	buckets
+
+    //	buckets
     if(!DEVSEND(buckets, "get measuredFillPatternM", NULL, &data, LogFile, irc))
-//    if(!DEVSEND(buckets, "get intendedFillPatternS", NULL, &data, LogFile, irc))	-- uncomment for tests
+    //    if(!DEVSEND(buckets, "get intendedFillPatternS", NULL, &data, LogFile, irc))	-- uncomment for tests
 	data.get("value", beamData.measuredFillPatternM);    
-    if(!DEVSEND(buckets, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
+
+    if (!DEVSEND(buckets, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
 	data.get("value", beamData.polarizationFillPatternS);
-//	It looks that they changed type to char ...
-    for (int i=0; i<360; i++) if (beamData.polarizationFillPatternS[i] > 127)
-	beamData.polarizationFillPatternS[i] -= 256;
+
+        //	It looks that they changed type to char ...
+        for (int i=0; i<360; i++) if (beamData.polarizationFillPatternS[i] > 127)
+    	beamData.polarizationFillPatternS[i] -= 256;
     }
-//	wcm
+
+    //	wcm
     if(!DEVSEND(wcm, "get fillDataM", NULL, &data, LogFile, irc))
         data.get("value", wcmData.fillDataM);
+
     if(!DEVSEND(wcm, "get wcmBeamM", NULL, &data, LogFile, irc))
         data.get("value", &wcmData.wcmBeamM);
-//	the other ring for jet mode
+
+    //	the other ring for jet mode
     if (recRing & REC_JET) {
 	cdevDevice & speco =  cdevDevice::attachRef(specCDEVName[1-N]);
 	cdevDevice & bucketso =  cdevDevice::attachRef(bucketsCDEVName[1-N]);
 	cdevDevice & wcmo =  cdevDevice::attachRef(wcmCDEVName[1-N]);
-//	ringSpecOther
+        //	ringSpecOther
 	if(!DEVSEND(speco, "get beamEnergyM", NULL, &data, LogFile, irc))
 	    data.get("value", &beamOtherData.beamEnergyM);
+
 	if(!DEVSEND(speco, "get fillNumberM", NULL, &data, LogFile, irc))
 	    data.get("value", &beamOtherData.fillNumberM);
-//	bucketsOther
+
+        //	bucketsOther
 	if(!DEVSEND(bucketso, "get measuredFillPatternM", NULL, &data, LogFile, irc))
 	    data.get("value", beamOtherData.measuredFillPatternM);    
+
 	if(!DEVSEND(bucketso, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
 	    data.get("value", beamOtherData.polarizationFillPatternS);
-//	It looks that they had changed type to char ...
+
+        //	It looks that they had changed type to char ...
 	for (int i=0; i<360; i++) if (beamOtherData.polarizationFillPatternS[i] > 127)
 	    beamOtherData.polarizationFillPatternS[i] -= 256;
 	}
-//	wcmOther
+
+        //	wcmOther
 	if(!DEVSEND(wcmo, "get fillDataM", NULL, &data, LogFile, irc))
     	    data.get("value", wcmOtherData.fillDataM);
+
 	if(!DEVSEND(wcmo, "get wcmBeamM", NULL, &data, LogFile, irc))
     	    data.get("value", &wcmOtherData.wcmBeamM);
     }
+
     if (irc != 0) {
 	fprintf(LogFile, "%d errors getting RHIC information.\n", irc);
 	polData.statusS |= (STATUS_ERROR | ERR_NOADO);
     }
 }
+
 
 // We look how our carbon target is moving
 void GetTargetEncodings(long *res)

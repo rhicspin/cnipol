@@ -693,9 +693,11 @@ void CreateLookup(float tshift)
    }
 }
 
+
+/** */
 int polWrite(recordHeaderStruct *header, long *data)
 {
-   int irc;
+   int    irc;
    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
    if (OutFile == NULL) return 2;
@@ -734,6 +736,8 @@ int polWrite(recordHeaderStruct *header, long *data)
    return 0;
 }
 
+
+/** */
 void camacClose(void)
 {
    int i, j;
@@ -1998,12 +2002,10 @@ void closeDataFile(char * comment)
    OutFile = NULL;
 }
 
-int openDataFile(char *fname, char *comment, int noAdo)
-{
-   recordBeginStruct rec;
-   recordHeaderStruct header;
-   void * buf;
 
+/** */
+int openDataFile(char *fname, char *comment, bool useCDEV)
+{
    fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
 
    if (OutFile != NULL) closeDataFile("New file open.");
@@ -2018,7 +2020,9 @@ int openDataFile(char *fname, char *comment, int noAdo)
 
    dataNum = 0;
 
-   //	begin record
+   //	save begin record
+   recordBeginStruct rec;
+
    rec.version = VERSION;
    strncpy(rec.comment, comment, sizeof(rec.comment));
    rec.header.type = REC_BEGIN | recRing | recStream;
@@ -2028,8 +2032,10 @@ int openDataFile(char *fname, char *comment, int noAdo)
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.version);
 
-   //	config record
-   buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
+   //	save config record
+   recordHeaderStruct header;
+
+   void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
    header.type = REC_RHIC_CONF | recRing;
    header.len = sizeof(recordHeaderStruct) + sizeof(configRhicDataStruct) +
                 sizeof(SiChanStruct) * (Conf.NumChannels - 1);
@@ -2060,7 +2066,18 @@ int openDataFile(char *fname, char *comment, int noAdo)
       polWrite(&header, (long *)&beamOtherData);
    }
 
-   if (noAdo) return 0;
+   // Save measurement type
+   recordMeasTypeStruct recMeasType;
+
+   recMeasType.header.type = REC_MEASTYPE;
+   recMeasType.header.len  = sizeof(recMeasType);
+   recMeasType.header.timestamp.time = time(NULL);
+   recMeasType.type        = gMeasType;
+   //printf("record: meas type: %x\n", recMeasType.header.type);
+   polWrite(&recMeasType.header, (long *) &recMeasType.type);
+
+
+   if (!useCDEV) return 0;
 
    //   Wcm data
    header.type = REC_WCMADO | recRing;
@@ -2079,7 +2096,7 @@ int openDataFile(char *fname, char *comment, int noAdo)
    //	Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
-      if (recRing & REC_BLUE) header.type |= REC_YELLOW;
+      if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
       if (recRing & REC_YELLOW) header.type |= REC_BLUE;
       header.len = sizeof(recordWcmAdoStruct);
       header.timestamp.time = time(NULL);
