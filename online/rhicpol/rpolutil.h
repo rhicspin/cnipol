@@ -1,6 +1,7 @@
 #ifndef POLUTIL_H
 #define POLUTIL_H
 
+#include "globals.h"
 #include "rpoldata.h"
 
 #ifdef __cplusplus
@@ -8,14 +9,14 @@
 #endif
 
 //	Config functions (rpolutil.c)
-int readConfig(char *fname, int update);
-int CheckConfig(void);
+int  readConfig(char *fname, int update);
+int  CheckConfig(void);
 void CreateLookup(float tshift);
 
 //	Data file write (rpolutil.c)
-int polWrite(recordHeaderStruct *header, long *data);
+int  polWrite(recordHeaderStruct *header, long *data);
 void closeDataFile(char * comment);
-int openDataFile(char *fname, char *comment, int noAdo);
+int  openDataFile(char *fname, char *comment, bool useCDEV);
 void writeSubrun(int N);
 
 //	Camac & hardware functions (rpolutil.c)
@@ -57,9 +58,10 @@ void writeCarbTarg(void);
 
 //	CDEV functions	(rpolutilp.cpp)
 void getJetPosition(void);
-int getTargetMovementInfo(long **data);
+int  getTargetMovementInfo(long **data);
 void getAdoInfo(void);
 void getWcmInfo(void);
+EMeasType getCDEVMeasType();
 void getCarbTarg(carbTargStat * targstat);
 void GetTargetEncodings(long *res);
 void UpdateProgress(int evDone, int rate, double ts);

@@ -67,7 +67,7 @@ typedef struct {
     long encoderPositionS[2];
     long statusS;
     char statusStringS[80];
-//
+    //
     long totalCountsS;
     long upCountsS;
     long downCountsS;
@@ -90,7 +90,7 @@ typedef struct {
     float bunchAsymYS[360];
     float bunchAsymErrorXS[360];
     float bunchAsymErrorYS[360];
-//
+    //
     float beamEnergyS;
     float analyzingPowerS;
     float analyzingPowerErrorS;
