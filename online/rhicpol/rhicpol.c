@@ -31,7 +31,7 @@
 #include "rhicpol.h"
 #include "rpolutil.h"
 
-//      Global variables
+// Global variables
 FILE                 *LogFile;
 char                  DeviceName[128] = "None";          // our CDEV name (like polarimeter.yel1 etc)
 char                  ourTargetCDEVName[20] = "None";   // we will write what is appropriate here in getAdoInfo()
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
             fprintf(LogFile, "RHICPOL-INFO: Debugging run - not real polarization pattern !\n");
             /* copy pattern from config file to beamdata */
             for (i=0;i<120;i++) {
-                if (Conf.Pattern[i] > 0) beamData.measuredFillPatternM[3*i] = 1;
+                if (Conf.Pattern[i] > 0)  beamData.measuredFillPatternM[3*i] = 1;
                 if (Conf.Pattern[i] == 1) beamData.polarizationFillPatternS[3*i] = 1;
                 if (Conf.Pattern[i] == 2) beamData.polarizationFillPatternS[3*i] = -1;
             }
