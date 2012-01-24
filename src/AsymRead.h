@@ -57,6 +57,7 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run);
 void PrepareCollidingBunchPattern();
 
 void ProcessRecord(const recordConfigRhicStruct &rec);
+void ProcessRecord(const recordMeasTypeStruct &rec);
 void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo);
 void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run);
 void ProcessRecord(const recordWFDV8ArrayStruct &rec);

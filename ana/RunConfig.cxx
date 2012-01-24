@@ -36,7 +36,7 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fMeasTypes.insert(kMEASTYPE_SWEEP  );
    fMeasTypes.insert(kMEASTYPE_FIXED  );
    fMeasTypes.insert(kMEASTYPE_RAMP   );
-   fMeasTypes.insert(kMEASTYPE_EMIT   );
+   fMeasTypes.insert(kMEASTYPE_EMIT_SCAN);
 
    fTargetOrients.insert(kTARGET_H);
    fTargetOrients.insert(kTARGET_V);
@@ -105,7 +105,7 @@ string RunConfig::AsString(EMeasType measType)
 	   return "fixed";
    case kMEASTYPE_RAMP:
 	   return "ramp";
-   case kMEASTYPE_EMIT:
+   case kMEASTYPE_EMIT_SCAN:
       return "emit";
    default:
       return "UNK";

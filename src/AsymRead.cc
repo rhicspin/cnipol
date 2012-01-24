@@ -198,6 +198,18 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          continue;
       }
 
+      // REC_MEASTYPE
+      if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
+      {
+         printf("Reading REC_MEASTYPE record... size = %ld\n", mHeader->len);
+
+         recordMeasTypeStruct *rec = (recordMeasTypeStruct*) mHeader;
+         ProcessRecord( (recordMeasTypeStruct&) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
       // REC_POLADO
       if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
       {
@@ -1042,6 +1054,18 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
 
    // Recalculate Run constants
    UpdateRunConst(gConfigInfo);
+} //}}}
+
+
+/** */
+void ProcessRecord(const recordMeasTypeStruct &rec)
+{ //{{{
+   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+   gMeasInfo->SetMeasType(rec.type);
+
+   //printf("recordMeasTypeStruct\n");
+   //printf("len, size: %ld, %d\n", rec.header.len, size);
+   //printf("type: %d\n", measType);
 } //}}}
 
 

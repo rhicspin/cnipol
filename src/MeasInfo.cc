@@ -74,8 +74,13 @@ MeasInfo::MeasInfo() : TObject(),
 /** */
 MeasInfo::~MeasInfo() { }
 
+Float_t   MeasInfo::GetBeamEnergy()               const { return fBeamEnergy; }
+Float_t   MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
+Short_t   MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlobalTdcOffset; }
+EMeasType MeasInfo::GetMeasType()                 const { return fMeasType; } 
+string    MeasInfo::GetAlphaCalibFileName()       const { return ""; }
+string    MeasInfo::GetDlCalibFileName()          const { return ""; }
 
-/** */
 void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 { //{{{
    fBeamEnergy = beamEnergy;
@@ -93,12 +98,7 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
    printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
 } //}}}
 
-Float_t MeasInfo::GetBeamEnergy()               { return fBeamEnergy; }
-Float_t MeasInfo::GetExpectedGlobalTimeOffset() { return fExpectedGlobalTimeOffset; }
-Short_t MeasInfo::GetExpectedGlobalTdcOffset()  { return fExpectedGlobalTdcOffset; }
-string  MeasInfo::GetAlphaCalibFileName() const { return ""; }
-string  MeasInfo::GetDlCalibFileName()    const { return ""; }
-
+void MeasInfo::SetMeasType(EMeasType measType) { fMeasType = measType; } 
 
 /** */
 void MeasInfo::Print(const Option_t* opt) const
@@ -119,7 +119,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fRunTime']                      = %f;\n",     fRunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
-   fprintf(f, "$rc['fMeasType']                    = %#04X;\n",  fMeasType);
+   fprintf(f, "$rc['fMeasType']                    = %#010X;\n",  fMeasType);
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
