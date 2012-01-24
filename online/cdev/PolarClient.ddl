@@ -239,6 +239,8 @@ class polarimeterBlue {
 		maxTimeToRunS:valueAndTime Polar {server=PolarServer};
 		dataAcquisitionS Polar {server=PolarServer};
 		dataAcquisitionS:valueAndTime Polar {server=PolarServer};
+		dataAcquisitionType Polar {server=PolarServer};
+		dataAcquisitionType:valueAndTime Polar {server=PolarServer};
 		progressS Polar {server=PolarServer};
 		countRateS Polar {server=PolarServer};
 		inBeamVertS Polar {server=PolarServer};

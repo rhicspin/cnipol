@@ -183,10 +183,17 @@ int main(int argc, char **argv)
 
     rhicpol_process_options();
 
-    // Remember current directory. The log file is saved here
-    std::string logFileFullName = get_current_dir_name();
-    logFileFullName += "/";
-    logFileFullName += logname;
+    // logname
+    std::string logFileFullName("");
+
+    if (logname[0] == '/')
+       logFileFullName += logname;
+    else {
+       // Remember current directory. The log file is saved in there
+       logFileFullName = get_current_dir_name();
+       logFileFullName += "/";
+       logFileFullName += logname;
+    }
 
     polData.statusS = 0;
 
@@ -221,7 +228,9 @@ int main(int argc, char **argv)
     fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
 
     if (gMeasType == kMEASTYPE_UNKNOWN)
-       fprintf(LogFile, "WARNING: Measurement type is unknown. Use -T option, don't use -g, or check CDEV settings\n");
+       fprintf(LogFile, "RHICPOL-WARN : Measurement type is unknown. Use -T option, don't use -g, or check CDEV settings\n");
+    else
+       fprintf(LogFile, "RHICPOL-INFO : Measurement type is %#010x\n", gMeasType);
 
 
     /* Reading main configuration file. */
@@ -494,5 +503,7 @@ void rhicpol_process_options()
       gMeasType = kMEASTYPE_TEST;
    else if (gOptMeasType.compare("alpha") == 0)
       gMeasType = kMEASTYPE_ALPHA;
+   else
+      gMeasType = kMEASTYPE_UNKNOWN;
 
 } //}}}
