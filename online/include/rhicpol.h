@@ -55,7 +55,7 @@
 #define CFG_UPDATE      1
 
 
-extern char polCDEVName[4][20];// = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
+//extern char polCDEVName[4][20];// = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
 
 typedef struct {
     double runIdS;

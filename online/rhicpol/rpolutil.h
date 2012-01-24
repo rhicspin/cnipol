@@ -21,16 +21,16 @@ void writeSubrun(int N);
 
 //	Camac & hardware functions (rpolutil.c)
 void camacClose(void);
-int camacOpen(void);
+int  camacOpen(void);
 void setInhibit(void);
 void resetInhibit(void);
-int setOutReg(void);
+int  setOutReg(void);
 void pulseAllProgs(void);
-int initWFDs(void);
+int  initWFDs(void);
 void fastInitWFDs(int clr_hist);
 void initScalers(void);
-int getNumberOfEvents(void);
-int getEvents(int Number);
+int  getNumberOfEvents(void);
+int  getEvents(int Number);
 void readWFD(void);
 void readMemory(void);
 void readScalers(void);
@@ -49,11 +49,11 @@ void setOutInhibit(void);
 void resetOutInhibit(void);
 void clearVetoFlipFlop(void);
 void getJetStatus(unsigned short * data);
-int testJetVeto(void);
-char * getJetStatusString(void);
+int  testJetVeto(void);
+char *getJetStatusString(void);
 void writeJetStatus(void);
-int getJetBits(void);
-int testCarbTarg(void);
+int  getJetBits(void);
+int  testCarbTarg(void);
 void writeCarbTarg(void);
 
 //	CDEV functions	(rpolutilp.cpp)

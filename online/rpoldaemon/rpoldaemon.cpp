@@ -25,6 +25,7 @@
 #include <cdevCallback.h>
 #include <cdevSystem.h>
 
+#include "globals.h"
 #include "rhicpol.h"
 #include "rcdev.h"
 
