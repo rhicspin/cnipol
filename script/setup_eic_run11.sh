@@ -31,8 +31,8 @@ fi
 
 # CNIPOL variables
 export CNIPOL_DIR=/eicdata/eic0005/cnipol
-export CNIPOL_DATA_DIR=/eicdata/eic0005/run09/data
-export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run09/root
+export CNIPOL_DATA_DIR=/eicdata/eic0005/run11/data
+export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run11/root
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
 	export PATH+=:$CNIPOL_DIR/bin
@@ -43,7 +43,7 @@ if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
 fi
 
 # Older variables
-export POLARIM_DIR=/eicdata/eic0005/run09
+export POLARIM_DIR=/eicdata/eic0005/run11
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online

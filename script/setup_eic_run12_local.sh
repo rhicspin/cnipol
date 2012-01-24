@@ -43,7 +43,7 @@ if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
 fi
 
 # Older variables
-export POLARIM_DIR=/data1/run12
+export POLARIM_DIR=/eicdata/eic0005/run12
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
