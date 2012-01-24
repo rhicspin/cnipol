@@ -51,8 +51,8 @@ export POLARIM_DIR=/usr/local/polarim
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
-export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
-export UTILS_INC_DIR=~dsmirnov/root_macros/
+export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
+export UTILS_INC_DIR=~dsmirnov/rootmacros/
 
 if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
 	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
@@ -64,7 +64,6 @@ export CDEV=$CDEV_DIR
 export CDEVSHOBJ=${CDEV}/lib
 export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
 export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-#export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
 
 if [[ $LD_LIBRARY_PATH != *$CDEVSHOBJ* ]]; then
 	export LD_LIBRARY_PATH+=:$CDEVSHOBJ
