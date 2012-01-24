@@ -61,7 +61,7 @@ HBOOKFILE=${HBOOKDIR}/${RUN}.hbook
 ERRLOG=${LOGDIR}/${POLARIM}-err.log
 
 # General options - pulse prog and verbose level
-OPT="-P -v200"
+OPT="-P -v200 -Tcdev"
 
 
 # SIGTERM handler (Cancel)
