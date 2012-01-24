@@ -43,12 +43,12 @@ if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
 fi
 
 # Older variables
-export POLARIM_DIR=/data1/run09
+export POLARIM_DIR=/eicdata/eic0005/run11
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
 #export DATADIR=$POLARIM_DIR/data
-#export CONFDIR=$POLARIM_DIR/config
+export CONFDIR=$POLARIM_DIR/config
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
@@ -86,7 +86,7 @@ echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
 #echo "\$DATADIR=$DATADIR     <-- deprecated"
-#echo "\$CONFDIR=$CONFDIR     <-- deprecated"
+echo "\$CONFDIR=$CONFDIR     <-- deprecated"
 #echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
