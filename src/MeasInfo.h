@@ -21,6 +21,7 @@
 #include "TObject.h"
 #include "TString.h"
 
+#include "globals.h"
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
@@ -92,8 +93,6 @@ public:
    MeasInfo();
    ~MeasInfo();
 
-   std::string     GetAlphaCalibFileName() const;
-   std::string     GetDlCalibFileName() const;
    void            Print(const Option_t* opt="") const;
    void            PrintAsPhp(FILE *f=stdout) const;
    void            PrintConfig();
@@ -106,11 +105,15 @@ public:
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
    void            ConfigureActiveStrip(int mask);
+   Float_t         GetBeamEnergy() const;
+   Float_t         GetExpectedGlobalTimeOffset() const;
+   Short_t         GetExpectedGlobalTdcOffset() const;
+   EMeasType       GetMeasType() const;
+   std::string     GetAlphaCalibFileName() const;
+   std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
-   Float_t         GetBeamEnergy();
+   void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
-   Float_t         GetExpectedGlobalTimeOffset();
-   Short_t         GetExpectedGlobalTdcOffset();
    void            DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
 	Bool_t          IsDisabledChannel(UShort_t chId);
 	void            SetDisabledChannel(UShort_t chId);
