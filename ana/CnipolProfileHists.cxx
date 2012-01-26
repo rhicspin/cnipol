@@ -171,19 +171,21 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hPolarVsIntensProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 10, 0, 1.1);
    hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
+   hist->SetOption("NOIMG");
    hist->GetYaxis()->SetRangeUser(0, 1.05);
    o[shName] = hist;
    //hist->GetListOfFunctions()->Add(grPolarVsIntensProfileFineBin, "p");
 
-   sprintf(hName, "hPolarVsIntensProfileBin");
-   o[hName] = new TH1F(hName, hName, 22, 0, 1.1);
-   ((TH1*) o[hName])->SetTitle(";Relative Intensity I/I_{max};Polarization;");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->SetOption("p");
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kBlue);
-   ((TH1*) o[hName])->Sumw2();
+   shName = "hPolarVsIntensProfileBin";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 22, 0, 1.1);
+   hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
+   hist->SetOption("NOIMG");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kBlue);
+   hist->Sumw2();
+   o[shName] = hist;
 
    // Intensity profile
    TGraphErrors *grIntensUniProfileFineBin = new TGraphErrors();
@@ -218,20 +220,22 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hPolarUniProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
    hist->SetTitle(";Sigma Units;Polarization;");
+   hist->SetOption("p NOIMG");
    hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    //hist->GetListOfFunctions()->Add(grPolarUniProfileFineBin, "p");
    o[shName] = hist;
 
-   sprintf(hName, "hPolarUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 20, -5, 5);
-   ((TH1*) o[hName])->SetTitle(";Sigma Units;Polarization;");
-   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
-   ((TH1*) o[hName])->SetOption("p");
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kBlue);
-   ((TH1*) o[hName])->Sumw2();
+   shName = "hPolarUniProfileBin";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 20, -5, 5);
+   hist->SetTitle(";Sigma Units;Polarization;");
+   //hist->GetYaxis()->SetRangeUser(0, 1.05);
+   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->SetOption("NOIMG");
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kBlue);
+   hist->Sumw2();
+   o[shName] = hist;
 
    // Asymmetry profile
    TGraphErrors *grAsymUniProfileFineBin = new TGraphErrors();
@@ -241,7 +245,7 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hAsymUniProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
    hist->SetTitle(";Sigma Units;Asymmetry;");
-   hist->SetOption("E1 P NOIMG");
+   hist->SetOption("E1 P");
    hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    hist->GetListOfFunctions()->Add(grAsymUniProfileFineBin, "p");
    o[shName] = hist;
@@ -249,7 +253,7 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hAsymUniProfileBin";
    hist = new TH1F(shName.c_str(), shName.c_str(), 50, -5, 5);
    hist->SetTitle(";Sigma Units;Asymmetry;");
-   hist->SetOption("E1 P NOIMG");
+   hist->SetOption("E1 P");
    hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    o[shName] = hist;
 } //}}}
@@ -720,7 +724,8 @@ void CnipolProfileHists::PostFill()
    delete mfPow;
 
    // Set measurement type
-   gMeasInfo->fMeasType = GuessMeasurementType();
+   if (gMeasInfo->GetMeasType() == kMEASTYPE_UNKNOWN)
+      gMeasInfo->SetMeasType( GuessMeasurementType() );
 } //}}}
 
 
