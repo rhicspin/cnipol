@@ -202,7 +202,7 @@ void CnipolAsymHists::BookHists(string cutid)
       // Channel Id vs bunch id
       shName = "hChVsBunchId_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
+      ((TH1*) o[shName])->SetOption("colz");
       ((TH1*) o[shName])->SetTitle(";Bunch Id;Channel Id;");
 
       // Channel Id vs energy
@@ -220,7 +220,7 @@ void CnipolAsymHists::BookHists(string cutid)
       // Channel Id vs energy
       shName = "hChVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
+      ((TH1*) o[shName])->SetOption("colz");
       ((TH1*) o[shName])->SetTitle(";Target Steps, s;Channel Id;");
 
       // Detector Id vs bunch id
@@ -239,7 +239,7 @@ void CnipolAsymHists::BookHists(string cutid)
       shName = "hDetVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
       ((TH1*) o[shName])->SetOption("colz NOIMG");
-      ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
+      ((TH1*) o[shName])->SetTitle(";Target Steps, s;Detector Id;");
    }
 } //}}}
 
