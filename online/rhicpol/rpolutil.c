@@ -1828,7 +1828,7 @@ void *readThread(void *arg)
                   ptr[Vn]++;
                   if (tlen == 1) {
                      evt[Vn]++;
-                      //	correct backward for 120 bunch mode short waveforms
+                     // correct backward for 120 bunch mode short waveforms
                      if (Conf.CSR.split.Mode != MOD_AT && Conf.CSR.split.B120 && Conf.FPGAVersion < 10) {
                         ptr[Vn] -= 24;
                         bf[Vn][ptr[Vn] - 3] = bf[Vn][ptr[Vn] + 21];
