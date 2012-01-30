@@ -89,7 +89,6 @@ void alarmHandler(int sig)
 void setAlarm(float mTime)
 {
    struct itimerval t;
-   int irc;
    IStop = 0;
    signal(SIGALRM, alarmHandler);
    signal(SIGINT,  alarmHandler);
@@ -100,7 +99,9 @@ void setAlarm(float mTime)
    t.it_interval.tv_usec = 0;
    t.it_value.tv_sec = (int) mTime;
    t.it_value.tv_usec = (int) ((mTime - t.it_value.tv_sec) * 1000000);
-   irc = setitimer(ITIMER_REAL, &t, NULL);
+
+   int irc = setitimer(ITIMER_REAL, &t, NULL);
+
    if (irc != 0) {
       fprintf(LogFile, "Error setting timer (%d.%d): %s.\n",
               (int) t.it_value.tv_sec, (int) t.it_value.tv_usec,
@@ -425,20 +426,21 @@ int readConfig (char * cfgname, int update)
    return 0;
 }
 
-//	We also print here a lot of information about the run
+
+/** We also print here a lot of information about the run */
 int CheckConfig()
 {
-   char ModNames[][10] = {"Raw", "SubMean", "AT", "ReadAll"};
-   char Enb[][10] = {"DIS", "ENB"};
-   char YN[][10] = {"NO", "YES"};
-   char H2d[][10] = {"Coarse", "Fine"};
-   char MLU[][10] = {"Regular", "Rect"};
-   char Pat[4] = {'.', '+', '-', '0'};
-   char ETLUTNames[][10] = {"Kine", "Rect", "Thresh"};
-   char IALUTNames[][10] = {"Line", "Open"};
+   char  ModNames[][10] = {"Raw", "SubMean", "AT", "ReadAll"};
+   char  Enb[][10] = {"DIS", "ENB"};
+   char  YN[][10] = {"NO", "YES"};
+   char  H2d[][10] = {"Coarse", "Fine"};
+   char  MLU[][10] = {"Regular", "Rect"};
+   char  Pat[4] = {'.', '+', '-', '0'};
+   char  ETLUTNames[][10] = {"Kine", "Rect", "Thresh"};
+   char  IALUTNames[][10] = {"Line", "Open"};
    char *particleName;
-   char str[20];
-   int iRC = 0, i, nch;
+   char  str[20];
+   int   iRC = 0, i, nch;
 
    switch ((int)Conf.AtomicNumber) {
    case 1:
@@ -454,8 +456,10 @@ int CheckConfig()
       sprintf(str, "A=%5.1f", Conf.AtomicNumber);
       particleName = str;
    }
+
    fprintf(LogFile, "RHICPOL-INFO : Running for %s in %s (%5.1f-%5.1f KeV) in mode:\n",
            particleName, DeviceName, Conf.Emin, Conf.Emax);
+
    fprintf(LogFile, " %s Bunch:%d Mem:%s 2D-Hist:%s OnlyHist:%s Filter:%s MemLUp:%s iDiv=%d\n",
            ModNames[Conf.CSR.split.Mode],
            60 * (1 + Conf.CSR.split.B120),
@@ -564,6 +568,7 @@ int CheckConfig()
       polData.statusS |= WARN_INT;
       iRC++;
    }
+
 //	Check crates configuration
    memset(CrateRequired, 0, sizeof(CrateRequired));
    if (Conf.CrOut >= 0 && Conf.CrOut < MAXCRATES) {
@@ -574,6 +579,7 @@ int CheckConfig()
       polData.statusS |= WARN_INT;
       iRC++;
    }
+
    if (Conf.CrSc >= 0 && Conf.CrSc < MAXCRATES) {
       CrateRequired[Conf.CrSc] = 1;
    }
@@ -582,6 +588,7 @@ int CheckConfig()
       polData.statusS |= WARN_INT;
       iRC++;
    }
+
    for (i = 0; i < Conf.NumChannels; i++) {
       if (SiConf[i].CrateN >= 0 && SiConf[i].CrateN < MAXCRATES) {
          CrateRequired[SiConf[i].CrateN] = 1;
