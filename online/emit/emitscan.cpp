@@ -103,7 +103,8 @@ int main(int argc, char **argv)
    int nbunch = 0;     // number of filled bunches
    int tlen, recRing=0;
    long delimtr;
-   unsigned orbitNo, firstOrb, lastOrb;
+   //unsigned orbitNo, firstOrb, lastOrb;
+   int orbitNo, firstOrb, lastOrb;
    int stepCh, tarWfdCh, maxSiCh;
    unsigned int nStepCnt=0;
    int fitRing;
@@ -192,7 +193,7 @@ int main(int argc, char **argv)
                  recStream = ( iPol==0 || iPol==3 ) ? REC_UPSTREAM : REC_DOWNSTREAM;
                  polId = iPol;
                  // ds:
-                 printf("pol: %s, %d, %x\n", devName, iPol, recStream); break;
+                 //printf("pol: %s, %d, %x\n", devName, iPol, recStream); break;
                  break;
               }
            }
@@ -218,7 +219,10 @@ int main(int argc, char **argv)
 
    // loop over records, find target and orbit #
    firstOrb = -1;
-   lastOrb = -1;
+   lastOrb  = -1;
+
+   //printf("0 firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
+
    for (;;) {
        i = fread(&rec.header, sizeof(recordHeaderStruct), 1, fin);
        if (feof(fin)) break;
@@ -276,12 +280,12 @@ int main(int argc, char **argv)
            break;
 
        case REC_RHIC_CONF:
-           tarWfdCh = rec.cfg.data.NumChannels-4; // first channel for target
-           maxSiCh  = rec.cfg.data.NumChannels-4;
+           tarWfdCh = rec.cfg.data.NumChannels - 4; // first channel for target
+           maxSiCh  = rec.cfg.data.NumChannels - 4;
            //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-//	The next line commented out for 2012 - we have separate blue and yellow, so maxSiCh + 1 - vert, maxSiCh + 2 - hor. 
-//           if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-           //ds
+           // The next line commented out for 2012 - we have separate blue and yellow, so maxSiCh + 1 - vert, maxSiCh + 2 - hor. 
+           //if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
+           // ds
            //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
            //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
            //printf("polId: %d\n", polId);
@@ -309,12 +313,15 @@ int main(int argc, char **argv)
 
                if (St == tarWfdCh || St == tarWfdCh+1) {       // we 'or' here vertical and horizontal...
                   //ds
-                  printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+                  //printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
 
                   for (j=0; j<nRecEvt; j++) {
                       orbitNo = delimtr*512 + 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
+                      //printf("orbitNo: %d\n", orbitNo);
+                      //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
                       if (firstOrb < 0) firstOrb = orbitNo;
                       lastOrb = orbitNo;
+                      //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
                       vStepOrb[nStepCnt] = orbitNo;
                       nStepCnt++;
                   }
@@ -384,6 +391,7 @@ int main(int argc, char **argv)
        if (iSend) sendemit(devName);
        return 1;
    }
+
    cutEMIN = EMIN;
    cutEMAX = EMAX;
    cutTOFMIN = TOFMIN;
@@ -423,9 +431,9 @@ int main(int argc, char **argv)
 
    unsigned nbins = midStepCnt + 1;
    if (nbins > 200) nbins = 200;
-   int delta = 3*midStepCnt/nbins;
-   int nOrbs = (lastOrb - firstOrb)/2;
-   int totOrbs = lastOrb - firstOrb + 1;
+   int delta    = 3*midStepCnt/nbins;
+   int nOrbs    = (lastOrb - firstOrb)/2;
+   int totOrbs  = lastOrb - firstOrb + 1;
    //int outOrb = vStepOrb[midStepCnt];
 
    // The graph below was for testing purposes.
