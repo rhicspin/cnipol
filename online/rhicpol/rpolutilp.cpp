@@ -403,14 +403,14 @@ void UpdateProgress(int evDone, int rate, double ts)
 //	Update status
 void UpdateStatus(void) 
 {
-    int irc;
     cdevData data;
 
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : UpdateStatus - %s\n", DeviceName);
-    cdevDevice & pol = cdevDevice::attachRef(DeviceName);
 
-    irc = 0;
+    cdevDevice &pol  = cdevDevice::attachRef(DeviceName);
     data = polData.statusS;
+    int irc = 0;
+
     DEVSEND(pol, "set statusS", &data, NULL, LogFile, irc);
 
     if (irc != 0) {
