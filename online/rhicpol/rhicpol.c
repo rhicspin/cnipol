@@ -12,7 +12,7 @@
  * Dec 22, 2010 - Dmitri Smirnov
  *    - Added stream ID (up or down) in the raw data
  *
- * Jan 5, 2011 - Dmitri Smirnov
+ * Jan 5, 2012 - Dmitri Smirnov
  *    - Added an option for the measurement type
  *
  */
@@ -319,14 +319,14 @@ int main(int argc, char **argv)
     }
 
     //  Check and print.
-    if (CheckConfig()) {
-        fprintf(LogFile,"RHICPOL-WARN : Strange things found in configuration.\n");
-        fprintf(LogFile,"               Run may be unusable. Try -v20 for more information...\n");
+    if ( CheckConfig() ) {
+        fprintf(LogFile, "RHICPOL-WARN : Strange things found in configuration.\n");
+        fprintf(LogFile, "               Run may be unusable. Try -v20 for more information...\n");
         polData.statusS |= WARN_INT;
     }
 
     //  Check time and events to go - some defaults
-    if (mTime < 0) mTime = 10;
+    if (mTime  < 0) mTime  = 10;
     if (mEvent < 0) mEvent = 20000000;
 
     //  Open CAMAC
