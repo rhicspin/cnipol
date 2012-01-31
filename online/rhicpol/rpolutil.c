@@ -1,4 +1,6 @@
-#define _FILE_OFFSET_BITS 64	    // to handle >2Gb files
+
+#define _FILE_OFFSET_BITS 64        // to handle >2Gb files
+
 #include <ctype.h>
 #include <envz.h>
 #include <errno.h>
@@ -25,7 +27,7 @@ extern polDataStruct polData;
 extern wcmDataStruct wcmData;
 extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
-extern V124Struct V124;			// V124 settings
+extern V124Struct V124;                 // V124 settings
 extern int NoADO;
 extern int iRamp;
 extern float mTime;
@@ -37,13 +39,13 @@ extern int iExtClock;
 extern float ANALPOW;
 extern float ANALPOWE;
 extern int iCicleRun;
-extern char DeviceName[128];		// our CDEV name
-extern char ourTargetCDEVName[20];	// we will write what is appropriate here in getAdoInfo()
+extern char DeviceName[128];            // our CDEV name
+extern char ourTargetCDEVName[20];      // we will write what is appropriate here in getAdoInfo()
 
 char ReadMode[4];
-int OutRegBits = 0;	// we can not read it and it just writes on F16
+int OutRegBits = 0;     // we can not read it and it just writes on F16
 // and does pulse on F17
-int OutRegSet = 0;	// to set output multiplexer correctly
+int OutRegSet = 0;      // to set output multiplexer correctly
 int CrateRequired[MAXCRATES];
 int Crate[MAXCRATES];
 
@@ -77,7 +79,7 @@ int RP_CommitChain(CMC_chain *ch, int C)
    return irc;
 }
 
-//	Handle signals (not only alarm)
+//      Handle signals (not only alarm)
 void alarmHandler(int sig)
 {
    iSig  = sig;
@@ -85,7 +87,7 @@ void alarmHandler(int sig)
    IStop = 1;
 }
 
-//	Hook signals (not only alarm)
+//      Hook signals (not only alarm)
 void setAlarm(float mTime)
 {
    struct itimerval t;
@@ -110,7 +112,7 @@ void setAlarm(float mTime)
    }
 }
 
-//	Set default function of signals
+//      Set default function of signals
 void clearAlarm(void)
 {
    struct itimerval t;
@@ -126,66 +128,67 @@ void clearAlarm(void)
    signal(SIGHUP,  SIG_DFL);
 }
 
-//	Read the config file. If update=0 configuration is initialized
-int readConfig (char * cfgname, int update)
+
+// Read the config file. If update=0 configuration is initialized
+int readConfig(char * cfgname, int update)
 {
    char chanconf[512] = "";
    char pattern[129];
 
    struct knw {
-      char name[40];	// Parameter name as in .ini file
-      char type[10];	// S(string), I(int), F(float), L(logical) or B:st:len(bit fields)
-      unsigned len;	// max string length with type='S'
-      void * ptr;	// address to be filled
-      char def[256];	// default string value
+      char      name[40];  // Parameter name as in .ini file
+      char      type[10];  // S(string), I(int), F(float), L(logical) or B:st:len(bit fields)
+      unsigned  len;       // max string length with type='S'
+      void     *ptr;       // address to be filled
+      char      def[256];  // default string value
    } KnownWords[] = {
       {
          "Pattern",               "S", sizeof(pattern), &pattern,
          "0+-+-+-+-+-+-+-+-+0-+-+-+-+-+-+-+-+-0+-+-+-+-+-+-+-+-+0-+-+-+-+-+-+-+-+-0+-+-+-+-+-+-+-+-+0-+-+-+-+-+-+-+-+-00.........."
       },
-      {"TrigEmin",              "F", 0, &Conf.TrigMin,               "200.0"},
-      {"Emin",                  "F", 0, &Conf.Emin,                  "200.0"},
-      {"Emax",                  "F", 0, &Conf.Emax,                  "900.0"},
-      {"TrigThreshold",         "I", 0, &Conf.TRG.split.TrigThreshold, "220"},
-      {"WinBegin",              "I", 0, &DefSiConf.Window.split.Beg, "16"},
-      {"WinEnd",                "I", 0, &DefSiConf.Window.split.End, "40"},
-      {"WFDMode",               "B:0:2",  0, &Conf.CSR,              "2"},
-      {"IDiv",                  "B:2:2",  0, &Conf.CSR,              "2"},
-      {"UseMemory",             "B:4:1",  0, &Conf.CSR,              "1"},
-      {"2DHistFine",            "B:5:1",  0, &Conf.CSR,              "1"},
-      {"Filter",                "B:8:1",  0, &Conf.CSR,              "1"},
-      {"CFDThreshold",          "B:8:1",  0, &Conf.CSR,              "1"},
-      {"DisableAllDelimeters",  "B:9:1",  0, &Conf.CSR,              "0"},
-      {"120Bunch",              "B:10:1", 0, &Conf.CSR,              "1"},
-      {"EnableTrigWin",         "B:11:1", 0, &Conf.CSR,              "0"},
-      {"MemRectLookUp",         "B:12:1", 0, &Conf.CSR,              "1"},
-      {"RevolutionDelimeter",   "B:13:1", 0, &Conf.CSR,              "0"},
-      {"Calibration",           "S", sizeof(chanconf), &chanconf[0], ""},
-      {"ETLookUp",              "I", 0, &Conf.ETLookUp,              "0"},
-      {"IALookUp",              "I", 0, &Conf.IALookUp,              "0"},
-      {"ETCutW",                "F", 0, &DefSiConf.ETCutW,           "8.0"},
-      {"IACutW",                "F", 0, &DefSiConf.IACutW,           "20.0"},
-      {"AnalyzingPower",        "F", 0, &ANALPOW,                    "0.01212"},
-      {"AnalyzingPowerError",   "F", 0, &ANALPOWE,                   "0.00606"},
-      {"WFDTUnit",              "F", 0, &Conf.WFDTUnit,              "2.369"},
-      {"TOFLength",             "F", 0, &DefSiConf.TOFLength,        "18.0"},
-      {"BZDelay",               "I", 0, &Conf.BZDelay,               "1"},
-      {"DelimPrescaler",        "I", 0, &Conf.DelimPrescaler,        "100"},
-      {"OnlyHistograms",        "I", 0, &Conf.OnlyHist,               "0"},
-      {"NumChannels",           "I", 0, &Conf.NumChannels,           "100"},
-      {"NScaler",               "A", 0, &Conf.CrSc,                  "-1.23"},	// -1 2/06 - rlg
-      {"NOutput",               "A", 0, &Conf.CrOut,                 "-1.22"},	// -1 2/06 - rlg
-      {"NInput",                "A", 0, &Conf.CrIn,                  "-1.1"},	// -1 2/06 - rlg
-      {"SleepFraction",	      "F", 0, &Conf.SleepFraction,	   "0.0"},
-      {"CicleTime",	      "F", 0, &Conf.CicleTime,	   	   "0.1"},
-      {"AtomicNumber",	      "F", 0, &Conf.AtomicNumber,	   "12.0"},
-      {"ReadMode",              "S", sizeof(ReadMode), &ReadMode[0], "D2"},
-      {"OutReg",	      	      "I", 0, &OutRegSet,		   "0"},
-      {"FPGAVersion",           "I", 0, &Conf.FPGAVersion,           "9"},
-      {"JetDelay",              "I", 0, &Conf.JetDelay,              "0x520"},
-      {"TshiftLow",	      "F", 0, &Conf.TshiftLow,		   "7.0"},
-      {"TshiftHigh",	      "F", 0, &Conf.TshiftHigh,		   "0.0"},
-      {"V124Delay",             "i", 0, &V124.positionDelay,         "0"}
+      {"TrigEmin",              "F",      0,                &Conf.TrigMin,                 "200.0"},
+      {"Emin",                  "F",      0,                &Conf.Emin,                    "200.0"},
+      {"Emax",                  "F",      0,                &Conf.Emax,                    "900.0"},
+      {"TrigThreshold",         "I",      0,                &Conf.TRG.split.TrigThreshold, "220"},
+      {"WinBegin",              "I",      0,                &DefSiConf.Window.split.Beg,   "16"},
+      {"WinEnd",                "I",      0,                &DefSiConf.Window.split.End,   "40"},
+      {"WFDMode",               "B:0:2",  0,                &Conf.CSR,                     "2"},
+      {"IDiv",                  "B:2:2",  0,                &Conf.CSR,                     "2"},
+      {"UseMemory",             "B:4:1",  0,                &Conf.CSR,                     "1"},
+      {"2DHistFine",            "B:5:1",  0,                &Conf.CSR,                     "1"},
+      {"Filter",                "B:8:1",  0,                &Conf.CSR,                     "1"},
+      {"CFDThreshold",          "B:8:1",  0,                &Conf.CSR,                     "1"},
+      {"DisableAllDelimeters",  "B:9:1",  0,                &Conf.CSR,                     "0"},
+      {"120Bunch",              "B:10:1", 0,                &Conf.CSR,                     "1"},
+      {"EnableTrigWin",         "B:11:1", 0,                &Conf.CSR,                     "0"},
+      {"MemRectLookUp",         "B:12:1", 0,                &Conf.CSR,                     "1"},
+      {"RevolutionDelimeter",   "B:13:1", 0,                &Conf.CSR,                     "0"},
+      {"Calibration",           "S",      sizeof(chanconf), &chanconf[0],                  ""},
+      {"ETLookUp",              "I",      0,                &Conf.ETLookUp,                "0"},
+      {"IALookUp",              "I",      0,                &Conf.IALookUp,                "0"},
+      {"ETCutW",                "F",      0,                &DefSiConf.ETCutW,             "8.0"},
+      {"IACutW",                "F",      0,                &DefSiConf.IACutW,             "20.0"},
+      {"AnalyzingPower",        "F",      0,                &ANALPOW,                      "0.01212"},
+      {"AnalyzingPowerError",   "F",      0,                &ANALPOWE,                     "0.00606"},
+      {"WFDTUnit",              "F",      0,                &Conf.WFDTUnit,                "2.369"},
+      {"TOFLength",             "F",      0,                &DefSiConf.TOFLength,          "18.0"},
+      {"BZDelay",               "I",      0,                &Conf.BZDelay,                 "1"},
+      {"DelimPrescaler",        "I",      0,                &Conf.DelimPrescaler,          "100"},
+      {"OnlyHistograms",        "I",      0,                &Conf.OnlyHist,                 "0"},
+      {"NumChannels",           "I",      0,                &Conf.NumChannels,             "100"},
+      {"NScaler",               "A",      0,                &Conf.CrSc,                    "-1.23"},  // -1 2/06 - rlg
+      {"NOutput",               "A",      0,                &Conf.CrOut,                   "-1.22"},  // -1 2/06 - rlg
+      {"NInput",                "A",      0,                &Conf.CrIn,                    "-1.1"},   // -1 2/06 - rlg
+      {"SleepFraction",         "F",      0,                &Conf.SleepFraction,           "0.0"},
+      {"CicleTime",             "F",      0,                &Conf.CicleTime,               "0.1"},
+      {"AtomicNumber",          "F",      0,                &Conf.AtomicNumber,            "12.0"},
+      {"ReadMode",              "S",      sizeof(ReadMode), &ReadMode[0],                  "D2"},
+      {"OutReg",                "I",      0,                &OutRegSet,                    "0"},
+      {"FPGAVersion",           "I",      0,                &Conf.FPGAVersion,             "9"},
+      {"JetDelay",              "I",      0,                &Conf.JetDelay,                "0x520"},
+      {"TshiftLow",             "F",      0,                &Conf.TshiftLow,               "7.0"},
+      {"TshiftHigh",            "F",      0,                &Conf.TshiftHigh,              "0.0"},
+      {"V124Delay",             "i",      0,                &V124.positionDelay,           "0"}
    };
 
    FILE * fconf;
@@ -201,11 +204,13 @@ int readConfig (char * cfgname, int update)
    if ((fconf = fopen(cfgname, "rt")) == NULL) return 1;
 
    fprintf(LogFile, "RHICPOL-INFO : Reading configuration from file %s.\n", cfgname);
-// List the contents of each configuration file...
+
+   // List the contents of each configuration file...
    while (!feof(fconf)) {
       fgets(str, 512, fconf);
       if (!feof(fconf)) fprintf(LogFile, "%s", str);
    }
+
    fprintf(LogFile, "\n******************************************************************\n");
    rewind(fconf);
 
@@ -216,6 +221,7 @@ int readConfig (char * cfgname, int update)
       polData.statusS |= (STATUS_ERROR | ERR_CONF);
       polexit();
    }
+
    fread(buf, 1, finfo.st_size, fconf);
    argz_create_sep(buf, '\n', &ENVZ, &ENVLEN);
    free(buf);
@@ -228,14 +234,17 @@ int readConfig (char * cfgname, int update)
       memset(&V124, 0, sizeof(V124));
    }
 
-   /* General decode */
-   for (i = 0; i < sizeof(KnownWords) / sizeof(struct knw); i++) {
-      if (!(buf = envz_get(ENVZ, ENVLEN, KnownWords[i].name))) {
+   // General decode
+   for (i = 0; i < sizeof(KnownWords) / sizeof(struct knw); i++)
+   {
+      if ( !(buf = envz_get(ENVZ, ENVLEN, KnownWords[i].name)) ) {
          if (update) continue;
          buf = KnownWords[i].def;
       }
+
       if (iDebug > 1500) fprintf(LogFile, "RHICPOL-INFO : configuration: %s = %s\n",
                                     KnownWords[i].name, buf);
+
       switch (KnownWords[i].type[0]) {
       case 'S' :
          if (((char *)buf)[0] != '"')
@@ -244,6 +253,7 @@ int readConfig (char * cfgname, int update)
             ((char *)buf)[strlen(buf) - 1] = '\0';
             strncpy((char *)KnownWords[i].ptr, &((char *)buf)[1], KnownWords[i].len);
          }
+
          if (strlen((char *)buf) > KnownWords[i].len) {
             fprintf(LogFile, "RHICPOL-WARN : Parameter %s too long, truncated\n",
                     KnownWords[i].name);
@@ -251,7 +261,7 @@ int readConfig (char * cfgname, int update)
          }
          break;
       case 'I' :
-         ((int *)KnownWords[i].ptr)[0] = strtol(buf, NULL, 0);
+         ((int *)  KnownWords[i].ptr)[0] = strtol(buf, NULL, 0);
          break;
       case 'i' :
          ((short *)KnownWords[i].ptr)[0] = strtol(buf, NULL, 0);
@@ -283,16 +293,19 @@ int readConfig (char * cfgname, int update)
       }
    }
 
-   /* Particular parameters addition */
+   // Particular parameters addition
    if (envz_get(ENVZ, ENVLEN, "Pattern")) {
       memset(&Conf.Pattern, 0, sizeof(Conf.Pattern));
       j = strlen(pattern);
+
       if (j > (int) sizeof(Conf.Pattern)) {
          fprintf(LogFile, "RHICPOL-WARN : Length of specified pol. pattern >%d\n", sizeof(Conf.Pattern));
          polData.statusS |= WARN_INT;
          j = sizeof(Conf.Pattern);
       }
-      for (i = 0; i < (unsigned)j; i++) switch (pattern[i]) {
+
+      for (i = 0; i < (unsigned)j; i++) {
+         switch (pattern[i]) {
          case '0' :
             Conf.Pattern[i] = 3;
             break;
@@ -310,7 +323,9 @@ int readConfig (char * cfgname, int update)
             polData.statusS |= WARN_INT;
             break;
          }
+      }
    }
+
    /* Individual channels */
    /* Another Numchannels directive makes new Si configuration !!! */
    if (!update || envz_get(ENVZ, ENVLEN, "NumChannels")) {
@@ -322,19 +337,22 @@ int readConfig (char * cfgname, int update)
       for (i = 0; i < (unsigned)Conf.NumChannels; i++) memcpy(&SiConf[i], &DefSiConf, sizeof(DefSiConf));
    }
 
-//	Update all setttings for particular parameters
-   if (update) for (i = 0; i < (unsigned)Conf.NumChannels; i++) {
+   // Update all setttings for particular parameters
+   if (update) {
+      for (i = 0; i < (unsigned)Conf.NumChannels; i++) {
          if ((buf = envz_get(ENVZ, ENVLEN, "WinBegin")))  SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZ, ENVLEN, "WinEnd")))	 SiConf[i].Window.split.End = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZ, ENVLEN, "ETCutW")))	 SiConf[i].ETCutW = strtod(buf, NULL);
-         if ((buf = envz_get(ENVZ, ENVLEN, "IACutW")))	 SiConf[i].IACutW = strtod(buf, NULL);
-         if ((buf = envz_get(ENVZ, ENVLEN, "TOFLength"))) SiConf[i].TOFLength = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZ, ENVLEN, "WinEnd")))    SiConf[i].Window.split.End = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZ, ENVLEN, "ETCutW")))    SiConf[i].ETCutW           = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZ, ENVLEN, "IACutW")))    SiConf[i].IACutW           = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZ, ENVLEN, "TOFLength"))) SiConf[i].TOFLength        = strtod(buf, NULL);
       }
+   }
 
-//	Process channels
-   for (i = 0; i < (unsigned)Conf.NumChannels; i++) {
+   // Process channels
+   for (i = 0; i < (unsigned) Conf.NumChannels; i++) {
       char sss[] = {"ChannelXX"};
       sprintf(&sss[7], "%2.2d", i + 1);
+
       if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
          SiConf[i].CrateN = strtol(buf, (char**)&buf, 10);
          buf++;
@@ -342,43 +360,48 @@ int readConfig (char * cfgname, int update)
          buf++;
          SiConf[i].VirtexN = strtol(buf, (char**)&buf, 10);
          argz_create_sep(buf, ' ', &ENVZC, &ENVLENC);
-         if ((buf = envz_get(ENVZC, ENVLENC, "WinBegin")))	SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "WinEnd")))	SiConf[i].Window.split.End = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "ETCutW")))	SiConf[i].ETCutW = strtod(buf, NULL);
-         if ((buf = envz_get(ENVZC, ENVLENC, "IACutW")))	SiConf[i].IACutW = strtod(buf, NULL);
-         if ((buf = envz_get(ENVZC, ENVLENC, "TOFLength")))	SiConf[i].TOFLength = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZC, ENVLENC, "WinBegin")))      SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "WinEnd")))        SiConf[i].Window.split.End = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "ETCutW")))        SiConf[i].ETCutW           = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZC, ENVLENC, "IACutW")))        SiConf[i].IACutW           = strtod(buf, NULL);
+         if ((buf = envz_get(ENVZC, ENVLENC, "TOFLength")))     SiConf[i].TOFLength        = strtod(buf, NULL);
          free(ENVZC);
       }
    }
-//	Process V124
-   if (envz_get(ENVZ, ENVLEN, "V124Delay")) V124.flags |= 0x8000;	// global V124 position delay was set - update flags
-// 	V124 channels:	we expect sintax: V124Chan1=Delay=A Width=B Offset=C Period=D
-//	where A - fine delay in 0.5 ns units, B - pulse width in 28 MHz ticks, C - bucket offset in 28 MHz ticks, D - bucket mask period
-//	Parameters can go in any order and any parameter or even all can be omitted
+
+   // Process V124
+   if (envz_get(ENVZ, ENVLEN, "V124Delay")) V124.flags |= 0x8000;       // global V124 position delay was set - update flags
+
+   // V124 channels:  we expect sintax: V124Chan1=Delay=A Width=B Offset=C Period=D
+   // where A - fine delay in 0.5 ns units, B - pulse width in 28 MHz ticks, C - bucket offset in 28 MHz ticks, D - bucket mask period
+   // Parameters can go in any order and any parameter or even all can be omitted
    for (i = 0; i < 8; i++) {
       char sss[] = {"V124ChanX"};
       sprintf(&sss[8], "%1.1d", i + 1);
       if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
          V124.flags |= 1 << i;
          argz_create_sep(buf, ' ', &ENVZC, &ENVLENC);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Delay")))	V124.chan[i].fineDelay = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Width")))	V124.chan[i].pulseWidth = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Offset")))	V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Period")))	V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Delay"))) V124.chan[i].fineDelay = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Width"))) V124.chan[i].pulseWidth = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Offset")))        V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Period")))        V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
       }
    }
-//	Process includes
+
+   // Process includes
    for (i = 0; i < 16; i++) {
       char sss[] = {"IncludeXX"};
       sprintf(&sss[7], "%2.2d", i);
+
       if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
-         j = strcspn(buf, " \t\n\r");	// remove end scpaces (comments ?)
+         j = strcspn(buf, " \t\n\r");   // remove end scpaces (comments ?)
          if (j > 0) {
             buf[j] = '\0';
             readConfig(buf, CFG_UPDATE);
          }
       }
    }
+
    free(ENVZ);
 
    if (strlen(chanconf) > 0) {
@@ -388,12 +411,15 @@ int readConfig (char * cfgname, int update)
          polData.statusS |= (STATUS_ERROR | ERR_CONF);
          polexit();
       }
+
       fprintf(LogFile, "RHICPOL-INFO : Reading calibration parameters from file %s\n", chanconf);
-// List the contents of the calibration file...
+
+      // List the contents of the calibration file...
       while (!feof(fconf)) {
          fgets(str, 512, fconf);
          if (!feof(fconf)) fprintf(LogFile, "%s", str);
       }
+
       fprintf(LogFile, "\n******************************************************************\n\n");
       rewind(fconf);
 
@@ -404,15 +430,18 @@ int readConfig (char * cfgname, int update)
       free(buf);
       fclose(fconf);
 
-      for (i = 0; i < (unsigned)Conf.NumChannels; i++) if (SiConf[i].CamacN != 0) {
+      for (i = 0; i < (unsigned)Conf.NumChannels; i++) {
+         if (SiConf[i].CamacN != 0) {
             char sss[] = {"ChannelXX"};
             float *ptr = &SiConf[i].t0;
             sprintf(&sss[7], "%2.2d", i + 1);
+
             if ((bufc = envz_get(ENVZC, ENVLENC, sss))) {
                for (j = 0, k = 0; j < CALIB_CONSTANTS; j++) {
                   if (bufc == NULL) k++;
                   ptr[j] = strtod(bufc, (char **)&bufc);
                }
+
                if (k) {
                   fprintf(LogFile, "RHICPOL-ERR : %s : missing %d initializer(s) in calibration data file\n", sss, k);
                   polData.statusS |= (STATUS_ERROR | ERR_CONF);
@@ -421,8 +450,10 @@ int readConfig (char * cfgname, int update)
                }
             }
          }
+      }
       free(ENVZC);
    }
+
    return 0;
 }
 
@@ -470,31 +501,37 @@ int CheckConfig()
            MLU[Conf.CSR.split.RMemLUp],
            Conf.CSR.split.iDiv
           );
+
    fprintf(LogFile, "Trigger threshold for enegry : %5.1f keV\n", Conf.TrigMin);
+
    if (Conf.CSR.split.MemEn == 0) {
       fprintf(LogFile, "RHICPOL-WARN : Modes without memory are not supported. Enabling memory.\n");
       polData.statusS |= WARN_INT;
       Conf.CSR.split.MemEn = 1;
       iRC++;
    }
+
    if (Conf.FPGAVersion == 10 && Conf.CSR.split.Mode == 0) {
       fprintf(LogFile, "RHICPOL-WARN : V10 FPGA does not support RAW mode. Switching to waveform mode.\n");
       polData.statusS |= WARN_INT;
       Conf.CSR.split.Mode = 1;
       iRC++;
    }
+
    if (Conf.BZDelay < 0) {
       fprintf(LogFile, "RHICPOL-WARN : BZDelay must be >=0. Set to 0.\n");
       polData.statusS |= WARN_INT;
       Conf.BZDelay = 0;
       iRC++;
    }
+
    if (Conf.BZDelay > 14) {
       fprintf(LogFile, "RHICPOL-WARN : BZDelay must be <=14. Set to 14.\n");
       polData.statusS |= WARN_INT;
       Conf.BZDelay = 14;
       iRC++;
    }
+
    if (iDebug > 10) {
       fprintf(LogFile, " TrigThreshold:%d BZDelay:%d DelimPrescaler:%d Lc2551L:%d.%d OutReg:%d.%d\n",
               Conf.TRG.split.TrigThreshold,
@@ -503,23 +540,34 @@ int CheckConfig()
               Conf.CrSc, Conf.NSc, Conf.CrOut, Conf.NOut
              );
    }
+
    i = Conf.ETLookUp;
+
    if (i > 2) i = 2;
+
    fprintf(LogFile, "RHICPOL-INFO : Lookups in effect: ET:%s IA:%s\n",
            ETLUTNames[i], IALUTNames[Conf.IALookUp]);
+
    fprintf(LogFile, "RHICPOL-INFO : Polarization pattern found :\n");
    fprintf(LogFile, " Bunches 1-60   : ");
+
    for (i = 0; i < 60; i++) fprintf(LogFile, "%c", Pat[(int)Conf.Pattern[i]]);
+
    fprintf(LogFile, "\n Bunches 61-120 : ");
+
    for (; i < 120; i++) fprintf(LogFile, "%c", Pat[(int)Conf.Pattern[i]]);
+
    fprintf(LogFile, "\n");
+
    if (NoADO == 0) {
       if (V124.flags & 0x8000) fprintf(LogFile, "RHICPOL-INFO : Setting V124 positionDelay = %d\n", V124.positionDelay);
       for (i = 0; i < 8; i++) if (V124.flags & (1 << i))
             fprintf(LogFile, "RHICPOL-INFO : Setting V124.chan%d: Delay=%5.1f ns, Width=%d  Offset=%d  Period=%d\n",
                     i + 1, 0.5 * V124.chan[i].fineDelay, V124.chan[i].pulseWidth, V124.chan[i].bucketOffset, V124.chan[i].bucketPeriod);
    }
+
    fprintf(LogFile, "RHICPOL-INFO : Channel configuration found (max:%d):\n", Conf.NumChannels);
+
    if (iDebug > 10) fprintf(LogFile,
                                " ChN Cr St Vir Beg End Amin Amax ETCut IACut    t0 ecoef edead    A0    A1 acoef\n");
 
@@ -542,11 +590,13 @@ int CheckConfig()
                  SiConf[i].A0, SiConf[i].A1, SiConf[i].acoef
                 );
       }
+
       if ( SiConf[i].VirtexN != 0 &&
-            SiConf[i].ETCutW != 0 && SiConf[i].IACutW != 0  &&		// Test that we really read config.data - all these floats should be nonzero
-            SiConf[i].t0 != 0     && SiConf[i].ecoef != 0   &&
-            SiConf[i].edead != 0  && SiConf[i].A0 != 0      &&
-            SiConf[i].A1 != 0     && SiConf[i].acoef != 0 ) {
+            SiConf[i].ETCutW != 0 && SiConf[i].IACutW != 0 &&          // Test that we really read config.data - all these floats should be nonzero
+            SiConf[i].t0     != 0 && SiConf[i].ecoef  != 0 &&
+            SiConf[i].edead  != 0 && SiConf[i].A0     != 0 &&
+            SiConf[i].A1     != 0 && SiConf[i].acoef  != 0 )
+      {
          if (iDebug <= 10) {
             fprintf(LogFile, "%2.2d.", i + 1);
             if (nch % 20 == 19) fprintf(LogFile, "\n");
@@ -554,12 +604,13 @@ int CheckConfig()
          nch++;
       }
       else {
-         SiConf[i].CrateN = -1;
-         SiConf[i].CamacN = 0;
-         SiConf[i].VirtexN = 0;
+         SiConf[i].CrateN  = -1;
+         SiConf[i].CamacN  =  0;
+         SiConf[i].VirtexN =  0;
          iRC++;
       }
    }
+
    if (nch != 0 ) {
       fprintf(LogFile, "OK\n %d Total.\n", nch);
    }
@@ -569,7 +620,7 @@ int CheckConfig()
       iRC++;
    }
 
-//	Check crates configuration
+   // Check crates configuration
    memset(CrateRequired, 0, sizeof(CrateRequired));
    if (Conf.CrOut >= 0 && Conf.CrOut < MAXCRATES) {
       CrateRequired[Conf.CrOut] = 1;
@@ -638,7 +689,7 @@ void CreateLookup(float tshift)
       if (iAmax > 255) iAmax = 255;
 
       switch (Conf.ETLookUp) {
-      case 0 :	// Carbon Kinematic
+      case 0 :  // Carbon Kinematic
          for (j = 0; j < iAmin; j++) SiConf[i].LookUp[j] = 0x00FF; // Closed
          for (   ; j < iAmax; j++) {
             tof = 22.7 * sqrt(Conf.AtomicNumber) * SiConf[i].TOFLength /
@@ -650,12 +701,12 @@ void CreateLookup(float tshift)
             if (iTmin > 255) iTmin = 255;
             if (iTmax < 0) iTmax = 0;
             if (iTmax > 255) iTmax = 255;
-//		if (iTmax < iTmin) iTmax = iTmin; 			// Negative window - closed
-            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin); 		// Open
+//              if (iTmax < iTmin) iTmax = iTmin;                       // Negative window - closed
+            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin);               // Open
          }
-         for (   ; j < 256;   j++) SiConf[i].LookUp[j] = 0x00FF; 	// Closed
+         for (   ; j < 256;   j++) SiConf[i].LookUp[j] = 0x00FF;        // Closed
          break;
-      case 1 :	// Rectangular
+      case 1 :  // Rectangular
          /* Window limits already contain tshift at lookup creation */
          iTmin = SiConf[i].Window.split.Beg * 2 - 1;
          iTmax = SiConf[i].Window.split.End * 2;
@@ -667,7 +718,7 @@ void CreateLookup(float tshift)
          for (   ; j < iAmax; j++) SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin); // Open
          for (   ; j < 256;   j++) SiConf[i].LookUp[j] = 0x00FF; // Closed
          break;
-      default :	// Threshold
+      default : // Threshold
          iAmin = Conf.ETLookUp;
          if (iAmin < 0) iAmin = 0;
          if (iAmin > 255) iAmin = 255;
@@ -679,7 +730,7 @@ void CreateLookup(float tshift)
       /* IA LookUp */
 
       switch (Conf.IALookUp) {
-      case 0 :	// Linear
+      case 0 :  // Linear
          for (j = 0; j < 256; j++) {
             iAmin = (int)((SiConf[i].A0 + SiConf[i].A1 * j - SiConf[i].IACutW) /
                           (Conf.CSR.split.iDiv + 2));
@@ -692,7 +743,7 @@ void CreateLookup(float tshift)
             SiConf[i].LookUp[j + 256] = ((iAmax << 8) | iAmin); // Open
          }
          break;
-      case 1 :	// Fully open
+      case 1 :  // Fully open
       default :
          for (j = 256; j < 512; j++) SiConf[i].LookUp[j] = 0xFF00; // Fully open
          break;
@@ -755,7 +806,7 @@ void camacClose(void)
    ch = CMC_AllocateChain(0, 0);
    for (j = 0; j < MAXCRATES; j++) if (Crate[j] >= 0) {
          CMC_ResetChain(ch);
-         CMC_Add2Chain(ch, CMC_CMDDATA + 0);		// we will always write 0 - internal clocks
+         CMC_Add2Chain(ch, CMC_CMDDATA + 0);            // we will always write 0 - internal clocks
          for (i = 0; i < MAXSTATIONS; i++) {
             // Switch to internal clocks to be safe in case RF goes out
             // whatever the configuration is
@@ -775,7 +826,7 @@ int camacOpen(void)
    static int first = 1;
 
    if (!first) {
-      camacClose();	// always try to close CAMAC before reopening
+      camacClose();     // always try to close CAMAC before reopening
    }
    else {
       memset(Crate, -1, sizeof(Crate));
@@ -786,7 +837,7 @@ int camacOpen(void)
       fprintf(LogFile, "\n");
    }
    j = 0;
-   for (i = 0; i < MAXCRATES; i++) if (CrateRequired[i]) {	// open only if we need
+   for (i = 0; i < MAXCRATES; i++) if (CrateRequired[i]) {      // open only if we need
          Crate[i] = CMC_Open(i);
          if (Crate[i] < 0) {
             fprintf(LogFile, "RHICPOL-ERR : Can not open camac crate %d because %s.\n",
@@ -894,8 +945,8 @@ void nsleep(double time)
    nanosleep(&t, NULL);
 }
 
-//	We have nothing to do here only copy OutRegSet to the CAMAC output register.
-//	Use OutReg key in the config file to select clock source, amplification etc.
+//      We have nothing to do here only copy OutRegSet to the CAMAC output register.
+//      Use OutReg key in the config file to select clock source, amplification etc.
 int setOutReg(void)
 {
    OutRegBits = OutRegSet;
@@ -910,39 +961,39 @@ void pulseAllProgs(void)
    ch = CMC_AllocateChain(0, 0);
    for (j = 0; j < MAXCRATES; j++) if (CrateRequired[j]) {
          CMC_ResetChain(ch);
-         CMC_Add2Chain(ch, CMC_CMDDATA | 8); 	// Pulse PROG
+         CMC_Add2Chain(ch, CMC_CMDDATA | 8);    // Pulse PROG
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[j][i].yes)
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
          RP_CommitChain(ch, Crate[j]);
       }
    CMC_ReleaseChain(ch);
-   nsleep(4.0); 				// should be enough
+   nsleep(4.0);                                 // should be enough
 }
 
 /************************************************************************
- *	WFD V9_200 CSR bits						*
- *   0,1   - WFD mode : RAW(0), SUB(1), AT(2), ALL(3)			*
- *   2,3   - integral divider (shift right)				*
- *   4     - enable output to SDRAM					*
- *   5     - 2-dim histogram mode 					*
- *   6,7   - channel ID							*
- *   8     - enable 3-point filter, v10 : CFD threshold			*
- *   9     - enable maximum correction, v10 : Disable all delimeters	*
- *   10    - 120/60 bunch mode 						*
- *   11    - 140 MHz output ON (obsolete), v10, jet mode: enable window	*
+ *      WFD V9_200 CSR bits                                             *
+ *   0,1   - WFD mode : RAW(0), SUB(1), AT(2), ALL(3)                   *
+ *   2,3   - integral divider (shift right)                             *
+ *   4     - enable output to SDRAM                                     *
+ *   5     - 2-dim histogram mode                                       *
+ *   6,7   - channel ID                                                 *
+ *   8     - enable 3-point filter, v10 : CFD threshold                 *
+ *   9     - enable maximum correction, v10 : Disable all delimeters    *
+ *   10    - 120/60 bunch mode                                          *
+ *   11    - 140 MHz output ON (obsolete), v10, jet mode: enable window *
  *   12    - rectangular lookup for events going to memory (AT mode only)*
- *   13    - external (0) /revolution (1) delimeter switch		*
- *   14 (RO) - dumping histogramms to emmory is active			*
- *   15 (RO) - delimeter to memory is active				*
+ *   13    - external (0) /revolution (1) delimeter switch              *
+ *   14 (RO) - dumping histogramms to emmory is active                  *
+ *   15 (RO) - delimeter to memory is active                            *
  ************************************************************************/
 int initWFDs(void)
 {
    int cr, i, j, k, ii, jj, iRC = 0, disFlag, nSi;
    CMC_chain *ch;
-//	Pulse Prog if required
+//      Pulse Prog if required
    if (iPulseProg) pulseAllProgs();
    ch = CMC_AllocateChain(0, MAXSTATIONS);
-//	check modules present and Xilinxes are DONE
+//      check modules present and Xilinxes are DONE
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
@@ -962,7 +1013,7 @@ int initWFDs(void)
                }
                else if ((j & 0x8000) == 0) {
                   /* Not done, try to repulse */
-                  CMC_Single(Crate[cr], i, 16, 8, 8);	// pulse prog - now one by one
+                  CMC_Single(Crate[cr], i, 16, 8, 8);   // pulse prog - now one by one
                   for (k = 0; k < 40; k++) {
                      if (CMC_Single(Crate[cr], i, 0, 8, 0) & 0x8000) break;
                      nsleep(0.1);
@@ -988,113 +1039,113 @@ int initWFDs(void)
                }
             }
       }
-//	Select clock source, set BZ delay and reset dlls
+//      Select clock source, set BZ delay and reset dlls
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
                CMC_Add2Chain(ch, CMC_CMDDATA | iExtClock | ((Conf.BZDelay + 1) << 4)); // external clocks & BZdelay
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0x1F);	// select all virtexes
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0x1F);   // select all virtexes
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
-               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 7));	// reset DLL (to be done in WFD)
+               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 7));  // reset DLL (to be done in WFD)
             }
          RP_CommitChain(ch, Crate[cr]);
       }
-   nsleep(0.005);	// 5 ms is quite enough to reset DLLs
+   nsleep(0.005);       // 5 ms is quite enough to reset DLLs
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
-               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 0));	// reset ALL
+               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 0));  // reset ALL
          RP_CommitChain(ch, Crate[cr]);
       }
-   nsleep(0.001);	// 1 ms is quite enough
-   /*	Set registers */
+   nsleep(0.001);       // 1 ms is quite enough
+   /*   Set registers */
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr])
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
                CMC_ResetChain(ch);
                for (j = 0; j < 4; j++) {
-                  CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));		// select virtex
+                  CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));            // select virtex
                   CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
                   if (WFDinCAMAC[cr][i].si[j] >= 0) {
                      nSi = WFDinCAMAC[cr][i].si[j];
-                     Conf.CSR.split.VirtN = j;			// Virtex signature in memory
-                     CMC_Add2Chain(ch, CMC_CMDDATA | Conf.CSR.reg);	// set CSR
+                     Conf.CSR.split.VirtN = j;                  // Virtex signature in memory
+                     CMC_Add2Chain(ch, CMC_CMDDATA | Conf.CSR.reg);     // set CSR
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
                      k = (int)((Conf.TrigMin - SiConf[nSi].edead) / SiConf[nSi].ecoef);
                      if (k < 0) k = 0;
                      if (k > 255) k = 255;
                      Conf.TRG.split.FineHistBeg = k;
-                     CMC_Add2Chain(ch, CMC_CMDDATA | Conf.TRG.reg);	// set trigger
+                     CMC_Add2Chain(ch, CMC_CMDDATA | Conf.TRG.reg);     // set trigger
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 2));
                      CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].Window.reg); // set window
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 3));
                      CMC_Add2Chain(ch, CMC_CMDDATA | (Conf.JetDelay & 0xFFFF));// set long waveform
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 4));
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));		// reset addresses
-                     for (k = 0; k < 512; k++) {				// load lookup table
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));            // reset addresses
+                     for (k = 0; k < 512; k++) {                                // load lookup table
                         CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].LookUp[k]);
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
                      }
-                     for (k = 0; k < 15; k++) {			// load polarization pattern
+                     for (k = 0; k < 15; k++) {                 // load polarization pattern
                         for (ii = 7, jj = 0; ii >= 0; ii--, jj = jj << 1) {
                            jj = jj | (Conf.Pattern[k * 8 + ii] & 1) | ((Conf.Pattern[k * 8 + ii] & 2) << 7);
                         }
                         CMC_Add2Chain(ch, CMC_CMDDATA | (jj >> 1));
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
                      }
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// write last pattern word
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);                // write last pattern word
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));		// reset scalers
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 3));		// reset revolution counter
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 6));		// reset delimiter counter
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));            // reset scalers
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 3));            // reset revolution counter
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 6));            // reset delimiter counter
                   }
-                  else {	// Put unused virtex into the most passive state
-                     CMC_Add2Chain(ch, CMC_CMDDATA | MOD_AT);	// set CSR
+                  else {        // Put unused virtex into the most passive state
+                     CMC_Add2Chain(ch, CMC_CMDDATA | MOD_AT);   // set CSR
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// set trigger
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);                // set trigger
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 2));
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0x0801);	// set window
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0x0801);   // set window
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 3));
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));		// reset addresses
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));            // reset addresses
                      for (k = 0; k < 512; k++) {
-                        CMC_Add2Chain(ch, CMC_CMDDATA | 0x00FF);	// Closed lookup
-                        CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));	// load lookup table
+                        CMC_Add2Chain(ch, CMC_CMDDATA | 0x00FF);        // Closed lookup
+                        CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));        // load lookup table
                      }
                      for (k = 0; k < 16; k++) {
-                        CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// load empty polarization pattern
+                        CMC_Add2Chain(ch, CMC_CMDDATA | 0);             // load empty polarization pattern
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
                      }
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));		// reset scalers
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));            // reset scalers
                   }
                }
                RP_CommitChain(ch, Crate[cr]);
             }
-   /*	Enable memory	*/
+   /*   Enable memory   */
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);	// select memory controller
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);   // select memory controller
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// disable memory functions
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // disable memory functions
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
             }
-         CMC_Add2Chain(ch, CMC_CMDDELAY | 0x40);		// some delay ~ 100 us
+         CMC_Add2Chain(ch, CMC_CMDDELAY | 0x40);                // some delay ~ 100 us
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 1);		// enable accept data
+               CMC_Add2Chain(ch, CMC_CMDDATA | 1);              // enable accept data
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
             }
          RP_CommitChain(ch, Crate[cr]);
       }
    CMC_ReleaseChain(ch);
-//	wait while we reset scalers
+//      wait while we reset scalers
    nsleep(0.001); // 1 ms
    return iRC;
 }
@@ -1109,33 +1160,33 @@ void fastInitWFDs(int clr_hist)
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
                CMC_Add2Chain(ch, CMC_CMDDATA | iExtClock | ((Conf.BZDelay + 1) << 4)); // restore external clocks & BZdelay
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0xF);	// select all but memory
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0xF);    // select all but memory
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
-               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));	// RS_ADR
+               CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));  // RS_ADR
                if (clr_hist != 0) {
-                  CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));	// Clear histograms/scalers
+                  CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));       // Clear histograms/scalers
                }
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);	// select memory controller
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);   // select memory controller
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// disable cache
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // disable cache
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
             }
          RP_CommitChain(ch, Crate[cr]);
       }
-   /*	Enable memory	*/
+   /*   Enable memory   */
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
-         CMC_Add2Chain(ch, CMC_CMDDELAY | 0x40);		// some delay ~ 100 us
+         CMC_Add2Chain(ch, CMC_CMDDELAY | 0x40);                // some delay ~ 100 us
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// reset address
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
-               CMC_Add2Chain(ch, CMC_CMDDATA | 1);		// enable accept data
+               CMC_Add2Chain(ch, CMC_CMDDATA | 1);              // enable accept data
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
             }
          RP_CommitChain(ch, Crate[cr]);
@@ -1151,10 +1202,10 @@ void initScalers(void)
 
 void getJetStatus(unsigned short * data)
 {
-   CMC_Single(Crate[Conf.CrIn], Conf.NIn, 16, 0, JET_VETO | JET_PLUS | JET_MINUS); 	// Set mask
-   CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);			// reset previous state
-   data[0] = CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);		// read qand reset
-   data[1] = getJetBits();						// read CDEV Jet bits
+   CMC_Single(Crate[Conf.CrIn], Conf.NIn, 16, 0, JET_VETO | JET_PLUS | JET_MINUS);      // Set mask
+   CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);                     // reset previous state
+   data[0] = CMC_Single(Crate[Conf.CrIn], Conf.NIn, 2, 0, 0);           // read qand reset
+   data[1] = getJetBits();                                              // read CDEV Jet bits
    data[2] = 0;
 }
 
@@ -1187,7 +1238,7 @@ void writeJetStatus(void)
    rec.Num = num;
    getJetStatus(rec.data);
    polWrite(&rec.header, (long *)&rec.Num);
-   /*	We will also write positions here	*/
+   /*   We will also write positions here       */
    header.type = REC_HJPOSADO | recRing;
    header.len = sizeof(header) + sizeof(jetPosition);
    header.timestamp.time = time(NULL);
@@ -1220,7 +1271,7 @@ int testCarbTarg(void)
    case 0:
       if (cts.good) {
          memcpy(&ctss, &cts, sizeof(cts));
-         t0 = time(NULL);	// start waiting 1 minute for the targets to finish
+         t0 = time(NULL);       // start waiting 1 minute for the targets to finish
          ctss.good = -2;
          return 0;
       }
@@ -1297,7 +1348,7 @@ int checkChainResult(CMC_chain *ch, int cr)
 }
 
 
-int getNumberOfEvents(void)	// Read from WFD dedicated scalers
+int getNumberOfEvents(void)     // Read from WFD dedicated scalers
 {
    int array[8];
    int Cnt;
@@ -1308,12 +1359,12 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
    ch = CMC_AllocateChain(0, MAXSTATIONS * 150);
 
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
-//	send read chain
+//      send read chain
          CMC_ResetChain(ch);
          ii = 0;
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                for (j = 0; j < 4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
-                     CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));	// select virtex
+                     CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j)); // select virtex
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 3));
                      CMC_Add2Chain(ch, CMC_CMDREPEAT | 31); // 21 = 16 + 16 - 1 - must be enough
@@ -1338,7 +1389,7 @@ int getNumberOfEvents(void)	// Read from WFD dedicated scalers
             fprintf(LogFile, "RHICPOL-ERROR : Read dedicated scalers crate #%d - %d bad responses\n", cr, i);
             continue;
          }
-//	process the result
+//      process the result
          ii = 0;
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                for (j = 0; j < 4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
@@ -1456,7 +1507,7 @@ int getEvents(int Number)
          resetInhibit();
       }
       else {
-         nsleep(Conf.CicleTime);	// just wait
+         nsleep(Conf.CicleTime);        // just wait
       }
 
       // increment event counter if indirect readout mode
@@ -1577,19 +1628,19 @@ void readWFD()
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
                ii = 1;
                CMC_ResetChain(ch);
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);	// better go to internal clocks for readout
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);      // better go to internal clocks for readout
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
                for (j = 0; j < 4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
-                     CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));	// select virtex
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));	//			0-1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));		// read CSR		1-1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 2));		// read TRIG		2-1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 3));		// read Window		3-1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));		// reset adr.		4-1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 3));		// read scalers		5-16
-                     CMC_Add2Chain(ch, CMC_CMDREPEAT | 15);		// 15 = 16 - 1
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 1));		// read histograms	21-1536
-                     CMC_Add2Chain(ch, CMC_CMDREPEAT | 1535);	// 1535 = 1536 - 1
+                     CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j)); // select virtex
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));   //                      0-1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));            // read CSR             1-1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 2));            // read TRIG            2-1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 3));            // read Window          3-1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));            // reset adr.           4-1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 3));            // read scalers         5-16
+                     CMC_Add2Chain(ch, CMC_CMDREPEAT | 15);             // 15 = 16 - 1
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 1));            // read histograms      21-1536
+                     CMC_Add2Chain(ch, CMC_CMDREPEAT | 1535);   // 1535 = 1536 - 1
                      ii += 1557;
                   }
                j = RP_CommitChain(ch, Crate[cr]);
@@ -1699,58 +1750,58 @@ void *readThread(void *arg)
    for (i = 0; i < MAXSTATIONS && iSig != SIGTERM; i++) {
       if (WFDinCAMAC[cr][i].yes) {
          err = 0;
-         /*	get the length and prepare for readout		*/
+         /*     get the length and prepare for readout          */
          CMC_ResetChain(ch);
-         CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// better go to internal clocks for readout	0
+         CMC_Add2Chain(ch, CMC_CMDDATA | 0);            // better go to internal clocks for readout     0
          CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
-         CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);		// select memory controller 1
+         CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);         // select memory controller 1
          CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
-         CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// disable memory functions
+         CMC_Add2Chain(ch, CMC_CMDDATA | 0);            // disable memory functions
          CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
-         CMC_Add2Chain(ch, CMC_CMDDELAY | 10);		// delay ~ 25 us
-         CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 0));		// read the address	3
-         CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));		// read the address	4
-         CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// clear the address
+         CMC_Add2Chain(ch, CMC_CMDDELAY | 10);          // delay ~ 25 us
+         CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 0));                // read the address     3
+         CMC_Add2Chain(ch, CMC_STDNFA(i, 1, 1));                // read the address     4
+         CMC_Add2Chain(ch, CMC_CMDDATA | 0);            // clear the address
          CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
-         CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// clear the address
+         CMC_Add2Chain(ch, CMC_CMDDATA | 0);            // clear the address
          CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
          switch (ReadMode[0]) {
          case 'D' :
-            CMC_Add2Chain(ch, CMC_CMDDATA | 6);		// enable cache & both edges
+            CMC_Add2Chain(ch, CMC_CMDDATA | 6);         // enable cache & both edges
             break;
          case 'A' :
-            CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cache
+            CMC_Add2Chain(ch, CMC_CMDDATA | 2);         // enable cache
             break;
          default :
             if (ReadMode[1] < '4') {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 2);		// enable cache
+               CMC_Add2Chain(ch, CMC_CMDDATA | 2);              // enable cache
             }
             else {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0);		// no cache for standard read
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // no cache for standard read
             }
             break;
          }
          CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
-         CMC_Add2Chain(ch, CMC_CMDDELAY | 40);		// delay ~ 100 us
+         CMC_Add2Chain(ch, CMC_CMDDELAY | 40);          // delay ~ 100 us
          RP_CommitChain(ch, Crate[cr]);
-         len  = ((ch->rdata[3] & 0xFFFF) + ((ch->rdata[4] & 0xFFFF) << 16));	// bytes
+         len  = ((ch->rdata[3] & 0xFFFF) + ((ch->rdata[4] & 0xFFFF) << 16));    // bytes
          if (len >= WFDMEMSIZE) {
             fprintf(LogFile, "RHICPOL-WARN : Memory overflow at station %d.%d, the tail of data is lost\n", cr, i);
             polData.statusS |= WARN_WFD;
             len = WFDMEMSIZE;
          }
          if (iDebug > 100) fprintf(LogFile, "RHICPOL-INFO : Found %d bytes in WFD %d.%d\n", len, cr, i);
-         len /= 2;	// we count in 16-bit words from here
+         len /= 2;      // we count in 16-bit words from here
 
-         //	prepare to read
+         //     prepare to read
          memset(evtot, 0, sizeof(evtot));
-         for (j = 0; j < 4; j++) ptr[j] = 2;		// leave space for subhead
+         for (j = 0; j < 4; j++) ptr[j] = 2;            // leave space for subhead
          memset(evt, 0, sizeof(evt));
          memset(delim, 0, sizeof(delim));
          type = REC_NONE;
          tlen = 0;
 
-         //	read cycle
+         //     read cycle
          for (l = 0; l < len && err < MAXERR; l += rpt) {
             // Read
             rpt = (len - l < BSIZE) ? len - l : BSIZE;
@@ -1838,7 +1889,7 @@ void *readThread(void *arg)
                   }
                   break;
                }
-               if (tlen > 0) tlen --;	// record word counter
+               if (tlen > 0) tlen --;   // record word counter
                if (tlen == 0) {
                   // We shall write here if delimeter changed or no space left and tlen = 0
                   if (((type == REC_DELIM && ptr[Vn] > 2) || (type == REC_DATA && ptr[Vn] > BSIZE - 1000))
@@ -2027,7 +2078,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
 
    dataNum = 0;
 
-   //	save begin record
+   //   save begin record
    recordBeginStruct rec;
 
    rec.version = VERSION;
@@ -2039,7 +2090,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.version);
 
-   //	save config record
+   //   save config record
    recordHeaderStruct header;
 
    void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
@@ -2057,13 +2108,13 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    polWrite(&header, (long *)buf);
    free(buf);
 
-   //	beam data (have to write it anyway because rhic2hbook uses polpat from here)
+   //   beam data (have to write it anyway because rhic2hbook uses polpat from here)
    header.type = REC_BEAMADO | recRing;
    header.len = sizeof(recordBeamAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&beamData);
 
-   //	Store the other beam parameters
+   //   Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
@@ -2092,7 +2143,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&wcmData);
 
-   //	Save V124 settings if any... No use when no ADO
+   //   Save V124 settings if any... No use when no ADO
    if (V124.flags) {
       header.type = REC_V124 | recRing;
       header.len = sizeof(recordV124Struct);
@@ -2100,7 +2151,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
       polWrite(&header, (long *)&V124);
    }
 
-   //	Store the other beam parameters
+   //   Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
