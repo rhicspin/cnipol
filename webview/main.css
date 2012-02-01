@@ -213,3 +213,8 @@ div.section {
 .padding2 {
    padding: 0.5em;
 }
+
+table.simple td {
+   border-width: 1px;
+   border-style: solid;
+}

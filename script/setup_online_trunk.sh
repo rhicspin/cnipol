@@ -47,7 +47,7 @@ export POLARIM_DIR=/usr/local/polarim
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
 #export DATADIR=$POLARIM_DIR/data
-#export CONFDIR=$POLARIM_DIR/config
+export CONFDIR=$CNIPOL_DIR/config
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
@@ -96,7 +96,7 @@ echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
 #echo "\$DATADIR=$DATADIR     <-- deprecated"
-#echo "\$CONFDIR=$CONFDIR     <-- deprecated"
+echo "\$CONFDIR=$CONFDIR     <-- deprecated"
 #echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
