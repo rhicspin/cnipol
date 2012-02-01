@@ -104,7 +104,7 @@ int main(int argc, char **argv)
    int tlen, recRing=0;
    long delimtr;
    //unsigned orbitNo, firstOrb, lastOrb;
-   int orbitNo, firstOrb, lastOrb;
+   long orbitNo, firstOrb, lastOrb;
    int stepCh, tarWfdCh, maxSiCh;
    unsigned int nStepCnt=0;
    int fitRing;
@@ -386,7 +386,7 @@ int main(int argc, char **argv)
 
    if (firstOrb < 0 || lastOrb <= 0 || lastOrb < firstOrb) {
        printf("EMIT-ERR : No target motion data were found.\n");
-       printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
+       printf("firstOrb, lastOrb: %ld, %ld\n", firstOrb, lastOrb);
        poldat.statusS |= 0x00000040;  // W-NODATA no data to analyze
        if (iSend) sendemit(devName);
        return 1;
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
            gst->Draw("AL");
            cgraph->Print("graph.ps");
    */
-   printf("First Orbit = %d Last Orbit = %d Number Orbits = %d Orbits at midpoint = %d\n",
+   printf("First Orbit = %ld Last Orbit = %ld Number Orbits = %d Orbits at midpoint = %d\n",
       firstOrb, lastOrb, totOrbs, vStepOrb[midStepCnt]);
 
    printf("Number of steps = %d First step orbit = %d Last step orbit = %d Midpoint steps = %d\n",
@@ -473,7 +473,7 @@ int main(int argc, char **argv)
    }
 
    k = 2*(midStepCnt);
-   for (i=vStepOrb[midStepCnt+1]; i<lastOrb; i++) {
+   for (i=vStepOrb[midStepCnt+1]; i<(unsigned)lastOrb; i++) {
        for (j=midStepCnt+1; j<(signed)nStepCnt; j++) {
            if ((unsigned) vStepOrb[j] >= i) {
                n = k - j;
@@ -641,7 +641,7 @@ int main(int argc, char **argv)
                        atdata.b = ATPtr->data[j].b;
                        atdata.orbit = delimtr*512 + 2*ATPtr->data[j].rev + ATPtr->data[j].rev0;
                        if (St < maxSiCh && rhic.fillpat[atdata.b]) {    // data adc AND filled bunch
-                           if ((unsigned) atdata.orbit < firstOrb || (unsigned) atdata.orbit > lastOrb) { // Outside target moving range
+                           if ( atdata.orbit < firstOrb || atdata.orbit > lastOrb) { // Outside target moving range
                                continue;
                            } else {
                                // Crude cuts on the data (for now = 3/3/09)...
