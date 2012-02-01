@@ -204,6 +204,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
    // Energy dependent fit function fails when E = 0
    //xmin = xmin == 0 ? 1 : xmin;
    Double_t xmax = h->GetXaxis()->GetXmax();
+   //xmax = 600;
 
    Double_t ymin = h->GetYaxis()->GetXmin();
    Double_t ymax = h->GetYaxis()->GetXmax();
