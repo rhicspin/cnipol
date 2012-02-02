@@ -719,17 +719,17 @@ void AsymRoot::UpdateCalibrator()
 
 	   Error("AsymRoot::UpdateCalibrator", "Alpha runs must be (self) calibrated to produce reasonable results");
 		return;
-
-   } else if ( anaInfo->HasAlphaBit() && anaInfo->HasCalibBit() ) {
+   }
+   else if ( anaInfo->HasAlphaBit() && anaInfo->HasCalibBit() ) {
 
       Info("AsymRoot::UpdateCalibrator", "Setting AlphaCalibrator");
 
       // Existing calibrator will be replaced so, delete it first
       delete fEventConfig->fCalibrator;
-      // and finally, assign the new calibrator
+      // and assign a new calibrator
       fEventConfig->fCalibrator = new AlphaCalibrator();
-
-   } else if ( anaInfo->HasNormalBit() ) { // regular data runs
+   }
+   else if ( anaInfo->HasNormalBit() ) { // regular data runs
 
       if ( anaInfo->HasCalibBit() ) { // create new calibrator
 

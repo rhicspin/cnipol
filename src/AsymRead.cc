@@ -88,12 +88,12 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
 
    //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
 
-   cout << "Begin of data stream Ver: " << recBegin->version << endl;
-   cout << "Comment: "                  << recBegin->comment << endl;
-   cout << "Time Stamp: "               << ctime(&recBegin->header.timestamp.time);
-   cout << "Unix Time Stamp: "          << recBegin->header.timestamp.time << endl;
+   cout << "Begin of data stream version: " << recBegin->version << endl;
+   cout << "Comment: "                      << recBegin->comment << endl;
+   cout << "Time Stamp: "                   << ctime(&recBegin->header.timestamp.time);
+   cout << "Unix Time Stamp: "              << recBegin->header.timestamp.time << endl;
 
-   gMeasInfo->fStartTime = recBegin->header.timestamp.time;
+   gMeasInfo->fStartTime =  recBegin->header.timestamp.time;
    gMeasInfo->fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
    gMeasInfo->fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
 
