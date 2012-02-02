@@ -1,5 +1,0 @@
-* online process 
-
-mcr       4788  0.0  0.0  4348  996 ?        S    18:28   0:00 /bin/bash ./rpolADO.sh -b
-mcr       4789  0.0  0.1  5996 2864 ?        S    18:28   0:00 /usr/local/polarim/bin/rpolado -b -d -l /usr/local/polarim/bin/rpolADOdemon-b.log -r /usr/local/polarim/bin/rpolADOmeasure.sh
-e950     12106  0.0  0.0  4860  664 pts/4    S+   18:59   0:00 grep mcr

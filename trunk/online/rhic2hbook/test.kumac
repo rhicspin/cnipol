@@ -1,7 +1,0 @@
-macro main a b=bbbb c=2
-
-    mess a=[a]
-    mess b=[b]
-    mess c=[c]
-
-return
