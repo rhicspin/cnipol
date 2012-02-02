@@ -9,17 +9,20 @@ macro main run='-1' nowait='-1'
    if ([run].eq.'-1') then
      run = $ENV(RUN)
    endif
+
    if ([plot].eq.'nothing') then
      plot = $
    endif
+
    mess 'RUN '//[run]
 
-    file=$ENV(HBOOKFILE)
+   file=$ENV(HBOOKFILE)
 
 * where is the polarization vector
-    pvectfile=$ENV(LOGDIR)//'/pvect.dat'
+   pvectfile=$ENV(LOGDIR)//'/pvect.dat'
 
-    psfile=ps/pvector_run[run].ps
+   psfile=ps/pvector_run[run].ps
+
    if [nowait]<0 then
      dir=$ENV(ONLINEDIR)/hbook/
      file=[dir]//[run]//'.hbook'
@@ -134,7 +137,7 @@ macro main run='-1' nowait='-1'
    rmax = $RSIGMA(fitpar(1)+0.03)
    rmin = $RSIGMA(fitpar(1)-0.03)
    
-   pol = $RSIGMA(xchp(1)/an(1))
+   pol  = $RSIGMA(xchp(1)/an(1))
    pole = $RSIGMA(xchpe(1)/an(1))
    
    mess $EVAL(xchp(1)) $EVAL(an(1))
@@ -232,9 +235,10 @@ macro main run='-1' nowait='-1'
         return
         end
    quit  
-   xfit = $EVAL(xchp(1))
+
+   xfit  = $EVAL(xchp(1))
    xfite = $EVAL(xchpe(1))
-   yfit = $EVAL(ychp(1))
+   yfit  = $EVAL(ychp(1))
    yfite = $EVAL(ychpe(1))
    
 * Draw Circle and BOX

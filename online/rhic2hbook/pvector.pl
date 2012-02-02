@@ -15,10 +15,12 @@ open(OUTFILE,$OUTFILE);
 open(LOGFILE,$LOGFILE);
 
 $SQ2 = 1.4142;
+
 while ($line = <LOGFILE>) {
     chop($line);
     @words = split(/\s+/,$line);
-# X90
+
+    # X90
     if ($words[1] eq "X90") {
         $X90P = $words[3];
         $X90L = $words[4];
@@ -27,12 +29,12 @@ while ($line = <LOGFILE>) {
         ($x90l,$x90le) = split(/\+-+/,$X90L);
         ($x90a,$x90ae) = split(/\+-+/,$X90A);
         if ($x90p eq "nan") {
-            $x90p = 0.;
+            $x90p  = 0.;
             $x90pe = 0.;
         }
     }
 
-# X45
+    # X45
     if ($words[1] eq "X45") {
         $X45P = $words[3];
         $X45L = $words[4];
@@ -109,11 +111,13 @@ while ($line = <LOGFILE>) {
         $XCHP = $words[3];
         ($xchp,$xchpe) = split(/\+-+/,$XCHP);
     }
+
 # Y least fit
     if (($words[1] eq "Y")&&($words[2] eq ":")) {
         $YCHP = $words[3];
         ($ychp,$ychpe) = split(/\+-+/,$YCHP);
     }
+
 # CHISQ OF FIT
     if (($words[1] eq "FCN=")){
         $CHISQ = $words[2];

@@ -268,10 +268,12 @@ void readandfill_(int* subrun)
          }
          printf("\n");
          break;
+
       case REC_TAGADO:
          memcpy(&tgtdat1_, &rec.tag.data[0], sizeof(tgtdat1_));
          memcpy(&tgtdat2_, &rec.tag.data[1], sizeof(tgtdat2_));
          break;
+
       case REC_RHIC_CONF:
          sipar_.idiv      = rec.cfg.data.CSR.split.iDiv;
          sipar_.ifine     = rec.cfg.data.CSR.split.Mod2D;
@@ -279,37 +281,47 @@ void readandfill_(int* subrun)
          sipar_.trgmin    = rec.cfg.data.TrigMin;
          sipar_.nsperchan = rec.cfg.data.WFDTUnit;
          k = 0;
+
          for (i = 0; i < (unsigned)rec.cfg.data.NumChannels; i++) {
             if (rec.cfg.data.chan[i].CamacN == 0) continue;
             sipar_.ecoef[i] = rec.cfg.data.chan[i].ecoef;
             sipar_.edead[i] = rec.cfg.data.chan[i].edead;
             sipar_.tmin[i]  = rec.cfg.data.chan[i].Window.split.Beg * sipar_.nsperchan;
             j = i + 1;
+
             mybook_(&j);
+
             for (m = 0; m < 256; m++) {     // carbon lookups
                data[m] = (rec.cfg.data.chan[i].LookUp[m] & 0xFF) * 0.5 * sipar_.nsperchan;
                data[m + 256] = ((rec.cfg.data.chan[i].LookUp[m] >> 8) & 0xFF) * 0.5 * sipar_.nsperchan;
             }
+
             HPAKAD(800 + j, &data[0]);
             HPAKAD(900 + j, &data[256]);
+
             for (m = 0; m < 256; m++) {     // carbon lookups raw
                data[m] = (rec.cfg.data.chan[i].LookUp[m] & 0xFF);
                data[m + 256] = ((rec.cfg.data.chan[i].LookUp[m] >> 8) & 0xFF);
             }
+
             HPAKAD(1800 + j, &data[0]);
             HPAKAD(1900 + j, &data[256]);
+
             for (m = 0; m < 256; m++) {     // integral lookups raw
                data[m] = (rec.cfg.data.chan[i].LookUp[m + 256] & 0xFF)
                          * (1 << (sipar_.idiv + 2));
                data[m + 256] = ((rec.cfg.data.chan[i].LookUp[m + 256] >> 8) & 0xFF)
                                * (1 << (sipar_.idiv + 2));
             }
+
             HPAKAD(2000 + j, &data[0]);
             HPAKAD(2100 + j, &data[256]);
             k++;
          }
+
          printf("Configuration OK : %d Si found.\n", k);
          break;
+
       case REC_READALL:
          atraw_.id = rec.header.timestamp.delim;
          atdata_.d = atraw_.id;
@@ -326,18 +338,18 @@ void readandfill_(int* subrun)
                }
                for (j = 0; j < l; j++) {
                   memcpy(waveform, ALL120Ptr->data[j].d, sizeof(ALL120Ptr->data[j].d));
-                  atraw_.ia = ALL120Ptr->data[j].a;
-                  atdata_.a = atraw_.ia * sipar_.ecoef[k] + sipar_.edead[k];
-                  atraw_.it = ALL120Ptr->data[j].t;
-                  atdata_.t = atraw_.it * 0.5 * sipar_.nsperchan;
+                  atraw_.ia    = ALL120Ptr->data[j].a;
+                  atdata_.a    = atraw_.ia * sipar_.ecoef[k] + sipar_.edead[k];
+                  atraw_.it    = ALL120Ptr->data[j].t;
+                  atdata_.t    = atraw_.it * 0.5 * sipar_.nsperchan;
                   atraw_.itmax = ALL120Ptr->data[j].tmax;
                   atdata_.tmax = atraw_.it * 0.5 * sipar_.nsperchan;
-                  atraw_.is = ALL120Ptr->data[j].s << (2 + sipar_.idiv);
-                  atdata_.s = (atraw_.is * sipar_.ecoef[k] + sipar_.edead[k]) * sipar_.nsperchan;
-                  atraw_.ib = ALL120Ptr->data[j].b;
-                  atdata_.b = atraw_.ib;
-                  atraw_.irev = 2 * ALL120Ptr->data[j].rev +  ALL120Ptr->data[j].rev0;
-                  atdata_.rev = atraw_.irev;
+                  atraw_.is    = ALL120Ptr->data[j].s << (2 + sipar_.idiv);
+                  atdata_.s    = (atraw_.is * sipar_.ecoef[k] + sipar_.edead[k]) * sipar_.nsperchan;
+                  atraw_.ib    = ALL120Ptr->data[j].b;
+                  atdata_.b    = atraw_.ib;
+                  atraw_.irev  = 2 * ALL120Ptr->data[j].rev +  ALL120Ptr->data[j].rev0;
+                  atdata_.rev  = atraw_.irev;
                   m = sizeof(ALL120Ptr->data[j].d);
                   n = k + 1;
                   if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
@@ -361,11 +373,13 @@ void readandfill_(int* subrun)
                k = ALLPtr->subhead.siNum;
                l = ALLPtr->subhead.Events + 1;
                i += sizeof(subheadStruct) + l * sizeof(ALLModeStruct);
+
                if (i > rec.header.len - sizeof(recordHeaderStruct)) {
                   printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n",
                          rec.header.num, rec.header.len, k + 1, l);
                   break;
                }
+
                for (j = 0; j < l; j++) {
                   memcpy(waveform, ALLPtr->data[j].d, sizeof(ALLPtr->data[j].d));
                   atraw_.ia = ALLPtr->data[j].a;
@@ -458,19 +472,19 @@ void readandfill_(int* subrun)
                }
                for (j = 0; j < l; j++) {
                   memcpy(waveform, wavePtr->data[j].d, sizeof(wavePtr->data[j].d));
-                  atraw_.ia = 0;
-                  atdata_.a = 0;
-                  atraw_.it = 0;
-                  atdata_.t = 0;
+                  atraw_.ia    = 0;
+                  atdata_.a    = 0;
+                  atraw_.it    = 0;
+                  atdata_.t    = 0;
                   atraw_.itmax = 0;
                   atdata_.tmax = 0;
-                  atraw_.is = 0;
-                  atdata_.s = 0;
-                  atraw_.ib = wavePtr->data[j].b;
-                  atdata_.b = atraw_.ib;
-                  atraw_.irev = *((long *)(wavePtr->data[j].rev));
-                  atraw_.irev = 2 * atraw_.irev  + wavePtr->data[j].rev0;
-                  atdata_.rev = atraw_.irev;
+                  atraw_.is    = 0;
+                  atdata_.s    = 0;
+                  atraw_.ib    = wavePtr->data[j].b;
+                  atdata_.b    = atraw_.ib;
+                  atraw_.irev  = *((long *)(wavePtr->data[j].rev));
+                  atraw_.irev  = 2 * atraw_.irev  + wavePtr->data[j].rev0;
+                  atdata_.rev  = atraw_.irev;
                   m = sizeof(wavePtr->data[j].d);
                   n = k + 1;
                   if (runpars_.ichanntp[k]) wfana(waveform, &m, &n);
@@ -504,18 +518,18 @@ void readandfill_(int* subrun)
                break;
             }
             for (j = 0; j < l; j++) {
-               atraw_.ia = ATPtr->data[j].a;
-               atdata_.a = atraw_.ia * sipar_.ecoef[k] + sipar_.edead[k];
-               atraw_.it = ATPtr->data[j].t;
-               atdata_.t = atraw_.it * 0.5 * sipar_.nsperchan;
+               atraw_.ia    = ATPtr->data[j].a;
+               atdata_.a    = atraw_.ia * sipar_.ecoef[k] + sipar_.edead[k];
+               atraw_.it    = ATPtr->data[j].t;
+               atdata_.t    = atraw_.it * 0.5 * sipar_.nsperchan;
                atraw_.itmax = ATPtr->data[j].tmax;
                atdata_.tmax = atraw_.it * 0.5 * sipar_.nsperchan;
-               atraw_.is = ATPtr->data[j].s << (2 + sipar_.idiv);
-               atdata_.s = (atraw_.is * sipar_.ecoef[k] + sipar_.edead[k]) * sipar_.nsperchan;
-               atraw_.ib = ATPtr->data[j].b;
-               atdata_.b = atraw_.ib;
-               atraw_.irev = 2 * ATPtr->data[j].rev +  ATPtr->data[j].rev0;
-               atdata_.rev = atraw_.irev;
+               atraw_.is    = ATPtr->data[j].s << (2 + sipar_.idiv);
+               atdata_.s    = (atraw_.is * sipar_.ecoef[k] + sipar_.edead[k]) * sipar_.nsperchan;
+               atraw_.ib    = ATPtr->data[j].b;
+               atdata_.b    = atraw_.ib;
+               atraw_.irev  = 2 * ATPtr->data[j].rev +  ATPtr->data[j].rev0;
+               atdata_.rev  = atraw_.irev;
                if (runpars_.intp && runpars_.ichanntp[k]) {
                   if (ntcnt < MAXNTEVENTS) {
                      HFNT(k + 1);
@@ -530,6 +544,7 @@ void readandfill_(int* subrun)
             }
          }
          break;
+
       case REC_WFDV8SCAL:
          for (i = 0; i < 1536; i++) data[i] = rec.wfd.hist[i];
          s1 = 0;
@@ -541,13 +556,15 @@ void readandfill_(int* subrun)
          s4 = 0;
          for (i = 0; i < 128; i++) s4 += rec.wfd.hist[i + 384]; // pol- energy
          j = rec.wfd.siNum + 1;
-         HPAKAD(200 + j, &data[0]);
-         HPAKAD(300 + j, &data[128]);
-         HPAKAD(400 + j, &data[256]);
-         HPAKAD(500 + j, &data[384]);
+
+         HPAKAD( 200 + j, &data[0]);
+         HPAKAD( 300 + j, &data[128]);
+         HPAKAD( 400 + j, &data[256]);
+         HPAKAD( 500 + j, &data[384]);
          HPAKAD(1300 + j, &data[128]);
          HPAKAD(1400 + j, &data[256]);
          HPAKAD(1500 + j, &data[384]);
+
          if (sipar_.ifine == 0) {
             HPAKAD(600 + j, &data[512]);
             HPAKAD(1600 + j, &data[512]);
@@ -556,10 +573,12 @@ void readandfill_(int* subrun)
             HPAKAD(700 + j, &data[512]);
             HPAKAD(1700 + j, &data[512]);
          }
+
          printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12ld  %12ld  %12ld  %12ld",
                 rec.wfd.siNum + 1, rec.wfd.scalers[0], rec.wfd.scalers[1],
                 rec.wfd.scalers[2], rec.wfd.scalers[3], rec.wfd.scalers[4],
                 s1, s2, s3, s4);
+
 //      Check for hardware counts compatibility. Mark channel as bad if something is wrong
          if (s2 < rec.wfd.scalers[2] || s3 != rec.wfd.scalers[0] ||
                s4 != rec.wfd.scalers[1] || s1 < s2 + s3 + s4) {
