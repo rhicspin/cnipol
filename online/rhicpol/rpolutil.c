@@ -970,6 +970,7 @@ void pulseAllProgs(void)
    nsleep(4.0);                                 // should be enough
 }
 
+
 /************************************************************************
  *      WFD V9_200 CSR bits                                             *
  *   0,1   - WFD mode : RAW(0), SUB(1), AT(2), ALL(3)                   *
@@ -990,34 +991,46 @@ int initWFDs(void)
 {
    int cr, i, j, k, ii, jj, iRC = 0, disFlag, nSi;
    CMC_chain *ch;
-//      Pulse Prog if required
+
+   // Pulse Prog if required
    if (iPulseProg) pulseAllProgs();
+
    ch = CMC_AllocateChain(0, MAXSTATIONS);
-//      check modules present and Xilinxes are DONE
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
+
+   // Check modules present and Xilinxes are DONE
+   for (cr = 0; cr < MAXCRATES; cr++) {
+      if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
+
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 8));
+
          RP_CommitChain(ch, Crate[cr]);
+
          ii = 0;
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
+
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes) {
                disFlag = 0;
                j = ch->rdata[ii];
                ii++;
+
                if ((j & (CMC_QMASK | CMC_XMASK)) != (CMC_QMASK | CMC_XMASK)) {
-                  /* Module not found */
+                  // Module not found
                   fprintf(LogFile, "RHICPOL-ERR : Cannot find WFD module at station %d.%d\n", cr, i);
                   polData.statusS |= (STATUS_ERROR | ERR_CAMAC | ERR_WFD);
                   disFlag = 1;
                   iRC++;
                }
                else if ((j & 0x8000) == 0) {
-                  /* Not done, try to repulse */
+                  // Not done, try to repulse
                   CMC_Single(Crate[cr], i, 16, 8, 8);   // pulse prog - now one by one
+
                   for (k = 0; k < 40; k++) {
                      if (CMC_Single(Crate[cr], i, 0, 8, 0) & 0x8000) break;
                      nsleep(0.1);
                   }
+
                   if (k == 40) {
                      fprintf(LogFile, "RHICPOL-ERR : Found unloaded WFD module at station %d.%d and failed to reload\n", cr, i);
                      polData.statusS |= ERR_WFD;
@@ -1025,21 +1038,26 @@ int initWFDs(void)
                      iRC++;
                   }
                }
+
                if (disFlag) {
-                  /* Disable module */
+                  // Disable module
                   WFDinCAMAC[cr][i].yes = 0;
-                  for (k = 0; k < 3; k++)
+                  for (k = 0; k < 3; k++) {
                      if (WFDinCAMAC[cr][i].si[k] >= 0) {
                         SiConf[WFDinCAMAC[cr][i].si[k]].CrateN = -1;
                         SiConf[WFDinCAMAC[cr][i].si[k]].CamacN = 0;
                         SiConf[WFDinCAMAC[cr][i].si[k]].VirtexN = 0;
                         WFDinCAMAC[cr][i].si[k] = -1;
                      }
+                  }
                   continue;
                }
             }
+         }
       }
-//      Select clock source, set BZ delay and reset dlls
+   }
+
+   // Select clock source, set BZ delay and reset dlls
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
@@ -1051,30 +1069,47 @@ int initWFDs(void)
             }
          RP_CommitChain(ch, Crate[cr]);
       }
+
    nsleep(0.005);       // 5 ms is quite enough to reset DLLs
+
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 0));  // reset ALL
          RP_CommitChain(ch, Crate[cr]);
       }
+
    nsleep(0.001);       // 1 ms is quite enough
-   /*   Set registers */
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr])
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
+
+   // Set registers
+
+   // Loop over crates
+   for (cr = 0; cr < MAXCRATES; cr++) {
+      if (CrateRequired[cr]) {
+
+         // Loop over WFDs
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes) {
                CMC_ResetChain(ch);
+
+               // Loop over WFD channels
                for (j = 0; j < 4; j++) {
                   CMC_Add2Chain(ch, CMC_CMDDATA | (1 << j));            // select virtex
                   CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
+
                   if (WFDinCAMAC[cr][i].si[j] >= 0) {
                      nSi = WFDinCAMAC[cr][i].si[j];
-                     Conf.CSR.split.VirtN = j;                  // Virtex signature in memory
+                     Conf.CSR.split.VirtN = j;                          // Virtex signature in memory
                      CMC_Add2Chain(ch, CMC_CMDDATA | Conf.CSR.reg);     // set CSR
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
+
+                     // Calculate 
                      k = (int)((Conf.TrigMin - SiConf[nSi].edead) / SiConf[nSi].ecoef);
-                     if (k < 0) k = 0;
+                     if (k < 0)   k = 0;
                      if (k > 255) k = 255;
+
                      Conf.TRG.split.FineHistBeg = k;
+
                      CMC_Add2Chain(ch, CMC_CMDDATA | Conf.TRG.reg);     // set trigger
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 2));
                      CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].Window.reg); // set window
@@ -1082,10 +1117,12 @@ int initWFDs(void)
                      CMC_Add2Chain(ch, CMC_CMDDATA | (Conf.JetDelay & 0xFFFF));// set long waveform
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 4));
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));            // reset addresses
+
                      for (k = 0; k < 512; k++) {                                // load lookup table
                         CMC_Add2Chain(ch, CMC_CMDDATA | SiConf[nSi].LookUp[k]);
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
                      }
+
                      for (k = 0; k < 15; k++) {                 // load polarization pattern
                         for (ii = 7, jj = 0; ii >= 0; ii--, jj = jj << 1) {
                            jj = jj | (Conf.Pattern[k * 8 + ii] & 1) | ((Conf.Pattern[k * 8 + ii] & 2) << 7);
@@ -1093,38 +1130,47 @@ int initWFDs(void)
                         CMC_Add2Chain(ch, CMC_CMDDATA | (jj >> 1));
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
                      }
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);                // write last pattern word
+
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);           // write last pattern word
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));            // reset scalers
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 3));            // reset revolution counter
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 6));            // reset delimiter counter
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));       // reset scalers
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 3));       // reset revolution counter
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 6));       // reset delimiter counter
                   }
-                  else {        // Put unused virtex into the most passive state
-                     CMC_Add2Chain(ch, CMC_CMDDATA | MOD_AT);   // set CSR
+                  else {                                           // Put unused virtex into the most passive state
+                     CMC_Add2Chain(ch, CMC_CMDDATA | MOD_AT);      // set CSR
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);                // set trigger
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0);           // set trigger
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 2));
-                     CMC_Add2Chain(ch, CMC_CMDDATA | 0x0801);   // set window
+                     CMC_Add2Chain(ch, CMC_CMDDATA | 0x0801);      // set window
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 3));
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));            // reset addresses
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 2));       // reset addresses
+
                      for (k = 0; k < 512; k++) {
-                        CMC_Add2Chain(ch, CMC_CMDDATA | 0x00FF);        // Closed lookup
-                        CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));        // load lookup table
+                        CMC_Add2Chain(ch, CMC_CMDDATA | 0x00FF);   // Closed lookup
+                        CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));   // load lookup table
                      }
+
                      for (k = 0; k < 16; k++) {
-                        CMC_Add2Chain(ch, CMC_CMDDATA | 0);             // load empty polarization pattern
+                        CMC_Add2Chain(ch, CMC_CMDDATA | 0);        // load empty polarization pattern
                         CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 5));
                      }
-                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));            // reset scalers
+                     CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 1));       // reset scalers
                   }
                }
                RP_CommitChain(ch, Crate[cr]);
             }
-   /*   Enable memory   */
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
+         }
+      }
+   }
+
+   // Enable memory
+   for (cr = 0; cr < MAXCRATES; cr++) {
+      if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
-               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);   // select memory controller
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes) {
+               CMC_Add2Chain(ch, CMC_CMDDATA | 0x10);           // select memory controller
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
                CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // disable memory functions
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
@@ -1133,8 +1179,12 @@ int initWFDs(void)
                CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
             }
+         }
+
          CMC_Add2Chain(ch, CMC_CMDDELAY | 0x40);                // some delay ~ 100 us
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
+
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes) {
                CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
                CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 0));
                CMC_Add2Chain(ch, CMC_CMDDATA | 0);              // reset address
@@ -1142,10 +1192,14 @@ int initWFDs(void)
                CMC_Add2Chain(ch, CMC_CMDDATA | 1);              // enable accept data
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 1));
             }
+         }
          RP_CommitChain(ch, Crate[cr]);
       }
+   }
+
    CMC_ReleaseChain(ch);
-//      wait while we reset scalers
+
+   // Wait while we reset scalers
    nsleep(0.001); // 1 ms
    return iRC;
 }
