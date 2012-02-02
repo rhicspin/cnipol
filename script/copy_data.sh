@@ -13,4 +13,4 @@ export SSH_AGENT_PID=1288
 
 #env >> ${LOG} 2>&1
 
-rsync --exclude=last.data -av /usr/local/polarim/data/*.data eic0005:/eicdata/eic0005/run12/data/ >> ${LOG} 2>&1
+rsync --exclude=last.data -a /usr/local/polarim/data/*.data eic0005:/eicdata/eic0005/run12/data/ >> ${LOG} 2>&1
