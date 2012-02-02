@@ -161,7 +161,8 @@ macro main
         A_LR   = RC45/LC45;
         A_TB   = BC45/TC45;
 
-        write(*,*) 'ACC90 LR = ', A90_LR, 'ACC45 LR = ', A_LR, ' ACC TB = ', A_TB 
+        write(*,*) 'ACC90 LR = ', A90_LR, 'ACC45 LR = ',
+     ,      A_LR, ' ACC TB = ', A_TB 
 
         Do i=1,120
 	    SR45(i) = S45a(i) + S45b(i) ! Right
@@ -179,11 +180,15 @@ macro main
 		ERR45Y(i)  = 1.
 	    else 
 	  
-		RSLT45X(i) = (SL45(i)*A_LR-SR45(i)) / (SL45(i)*A_LR+SR45(i))
-		ERR45X(i)  = 2*A_LR*sqrt(SL45(i)*SR45(i) * (SL45(i)+SR45(i)))/(SL45(i)*A_LR+SR45(i))**2
+		RSLT45X(i) = (SL45(i)*A_LR-SR45(i))/
+     ,              (SL45(i)*A_LR+SR45(i))
+		ERR45X(i)  = 2*A_LR*sqrt(SL45(i)*SR45(i) *
+     ,              (SL45(i)+SR45(i)))/(SL45(i)*A_LR+SR45(i))**2
 	  
-		RSLT45Y(i) = (ST45(i)*A_TB-SB45(i)) / (ST45(i)*A_TB+SB45(i))
-		ERR45Y(i)  = 2.*A_TB*sqrt(ST45(i)*SB45(i) * (ST45(i)+SB45(i)))/(ST45(i)*A_TB+SB45(i))**2
+		RSLT45Y(i) = (ST45(i)*A_TB-SB45(i)) /
+     ,              (ST45(i)*A_TB+SB45(i))
+		ERR45Y(i)  = 2.*A_TB*sqrt(ST45(i)*SB45(i) *
+     ,              (ST45(i)+SB45(i)))/(ST45(i)*A_TB+SB45(i))**2
 	  
 		if (abs(RSLT45Y(i)).le.0.5) then
 		    val45  = val45  + 1
@@ -197,8 +202,10 @@ macro main
 		RSLT90(i) = -5.
 		ERR90(i)  = 1.
 	    else
-		RSLT90(i) = (SL90(i) * A90_LR - SR90(i)) / (SL90(i) * A90_LR + SR90(i))
-        	ERR90(i)  = 2*A90_LR*sqrt(SL90(i)*SR90(i) * (SL90(i)+SR90(i))) / (SL90(i)*A90_LR+SR90(i))**2
+		RSLT90(i) = (SL90(i) * A90_LR - SR90(i)) /
+     ,              (SL90(i) * A90_LR + SR90(i))
+        	ERR90(i)  = 2*A90_LR*sqrt(SL90(i)*SR90(i) *
+     ,              (SL90(i)+SR90(i))) / (SL90(i)*A90_LR+SR90(i))**2
      
     		if (abs(RSLT90(i)).le.0.5) then
 		    val90 = val90 + 1
