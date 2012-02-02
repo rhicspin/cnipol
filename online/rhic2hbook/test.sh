@@ -1,5 +1,5 @@
 
-source /usr/local/cnipol/script/setup_online.sh
+source /usr/local/cnipol_trunk/setup.sh
 source $CNIPOL_DIR/online/setup_online.sh
 
 #RUN=14890.311
