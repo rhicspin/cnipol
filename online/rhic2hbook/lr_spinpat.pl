@@ -10,6 +10,7 @@ $OUTFILE = ">".$LOGDIR."/spinpat.dat";
 $LOGFILE = $LOGDIR."/an$run.log";
 
 #printf "Processing run $run \n";
+#printf "Output goes to $OUTFILE \n";
 
 open(OUTFILE,$OUTFILE);
 open(LOGFILE,$LOGFILE);
@@ -26,7 +27,7 @@ while ($line = <LOGFILE>) {
 
 }
 
-for ($i=0; $i<120; $i++) {
+for ($i=0;$i<120;$i++) {
     $cspin = substr($spintxt, $i, 1);
 #       SvirLex: to patch our pawX11 ...
     if ($i == 0)  {printf OUTFILE   "vec/cre BIDP1(40) R ";}
@@ -40,7 +41,6 @@ for ($i=0; $i<120; $i++) {
     }
 
 }
-
 printf OUTFILE "\n";
 
 for ($i=0;$i<120;$i++) {
