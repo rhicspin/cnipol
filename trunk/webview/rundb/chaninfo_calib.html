@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Calibration Run <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="10%">
+
+<td width="80%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1 class="count">Calibration Run <?=$gRunId?>, Channel <?=$gChanId?></h1>
+
+<p>
+<a href="./index.php"><span class=s150>Run Index</span></a> &mdash;
+<a href="./index.php?runid=<?=$gRunId?>"><span class=s150>Run Summary</span></a> &mdash;
+
+<span class=s150>Channels:</span>
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<?php
+   $row1 = ""; $row2 = "";
+
+   foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+      $chanId += 1;
+
+      $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+      //$row2 .= "<td>".($siS ? "x" : "o");
+
+      if (($chanId) % 36 == 0) {
+         //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+         print "<tr class=align_cm>$row1\n";
+         $row1 = "";// $row2 = "";
+      }
+   }
+?>
+</table>
+
+
+<?
+$gChanId = sprintf("%02d", $gChanId);
+$gP->dir .= "alpha/channel$gChanId/";
+?>
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary" class="count">Summary</h2>
+<!-- {{{ -->
+<div id="div:summary" class="section">
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img("hAmpltd_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hAmpltd_cut1_st$gChanId")?>
+<td align=center>
+
+<tr>
+<td align=center>
+<?=$gP->img("hIntgrl_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hIntgrl_cut1_st$gChanId")?>
+<td align=center>
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("hTdc_st$gChanId")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hTvsA_zoom_st$gChanId")?>
+<td align=center>
+<?=$gP->img("hTvsI_st$gChanId")?>
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("hIvsA_st$gChanId")?>
+
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<!--
+<p>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="misc" class="count">Misc</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<td align=center>
+
+</table>
+-->
+
+<!-- Main text ends here-->
+
+<td width="10%">
+
+<tr>
+<td width="10%">
+
+<td width="80%">
+
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
+</div>
+
+<td width="10%">
+
+</table>
+
+</body>
+</html>

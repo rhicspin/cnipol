@@ -1,0 +1,662 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Run <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="5%">
+
+<td width="90%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1 class="count">Run <?=$gRunId?></h1>
+
+<p><a name="content"/>
+
+<p>
+<a href="./"><span class=s150>Run Index</span></a>
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary" class="count">Summary</h2>
+<!-- {{{ -->
+<div id="div:summary" class="section">
+
+<?
+
+// Determine whether we have different analyses
+
+if (!isset($gSfx) || empty($gSfx))
+   $suffixes = "default ";
+else 
+   $suffixes = "<a href=\"./?runid=$gRunId\">default</a> ";
+
+foreach ($rc['suffixes'] as $suffix) {
+   if (!empty($suffix)) {
+      if ($gSfx == $suffix) 
+         $suffixes .= "$suffix ";
+      else
+         $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
+   }
+}
+
+// Assign the variables
+$polId = $POLARIMETER_ID[$rc['polarimeter_id']];
+
+$cssPol = "";
+
+if ($polId[0] == 'B') $cssPol = "bluPol";
+if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+if ($polId[2] == 'U') $cssPol .= " bold";
+#if ($polId[2] == 'D') $cssPol .= "";
+
+$polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
+
+$polarization = "&nbsp;";
+
+if (isset($rc['polarization'])) {
+	$polarization = sprintf("<span class=s150>%5.1f &plusmn; %5.1f %%</span>",
+      $rc['polarization']*100, $rc['polarization_error']*100);
+}
+
+$targetId = "&nbsp;";
+
+if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
+   $targetId = "{$rc['target_orient']}{$rc['target_id']}";
+} else {
+   $targetId = "N/A";
+}
+
+$measurementType = "&nbsp;";
+
+if (isset($rc['measurement_type']) && $rc['measurement_type'] >= 0 ) {
+   $measurementType = $MEASTYPE[$rc['measurement_type']];
+}
+
+$profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
+
+// Deal with version now
+$asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
+$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+?>
+
+<p>
+
+<table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
+
+<tr>
+   <td colspan=4>
+   <div class="s150 align_cm"><?=$suffixes?></div>
+
+<tr>
+   <td colspan=4>
+   &nbsp;
+
+<tr>
+   <td>
+   <b>Polarimeter:</b> <?=$polId?>
+   <td>
+   <b>Polarization:</b> <?=$polarization?>
+   <td>
+   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['beam_energy'])?>&nbsp;GeV
+   <td>
+   <b>Target:</b> <?=$targetId?>
+
+<tr>
+   <td>
+   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <td>
+   <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
+   <td>
+   <b>Profile Ratio:</b> r = <?=$profileRatio?>
+   <td>
+   <b>Run Type:</b> <?=$measurementType?>
+   <!--
+   <td>
+   <b>Size:</b> <?//=$s['dirsize']?>
+   -->
+
+<tr>
+   <td>
+   <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
+   <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['ana_start_time'])?>&nbsp;
+   (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
+   <td>
+   <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
+   <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <? endif; ?>
+   <td>
+   <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
+   <td>
+   <b>Asym Version:</b> <?=$asymVersion?>
+
+<tr>
+   <td colspan=4>
+   <b>Disabled Channels:</b> <?=$rc['disabled_channels']?>
+
+<tr>
+   <td colspan=4>
+   <b>Channels:</b><br>
+
+   <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+   <?php
+      $row1 = ""; $row2 = "";
+
+      foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+         $row1 .= "<td><a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">$chanId</a>";
+         //$row2 .= "<td>".($siS ? "x" : "o");
+
+         if (($chanId) % 36 == 0) {
+            //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+            print "<tr class=align_cm>$row1\n";
+            $row1 = "";// $row2 = "";
+         }
+      }
+   ?>
+   </table>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<!--
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="bunch_lumi" class="count">Bunch and Luminosity Info</h2>
+<div id="div:bunch_lumi" class="section">
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('Bunch/wall_current_monitor')?>
+<td align=center>
+<?=$gP->img('Bunch/bunch_dist')?>
+<td align=center>
+<?=$gP->img('Raw/bunch_dist_raw')?>
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/bunch_spelumi')?>
+<td align=center>
+<?=$gP->img('Bunch/specific_luminosity')?>
+<td align=center>
+<?=$gP->img('ErrDet/spelumi_vs_bunch')?>
+
+
+</table>
+</div>
+-->
+
+
+
+<!--
+<p>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="energy" class="count">Energy</h2>
+<div id="div:energy" class="section">
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_all')?>
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det1')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det2')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det3')?>
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det4')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det5')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det6')?>
+
+</table>
+
+</div>
+-->
+
+
+<!--
+<p>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="mass_fit" class="count">Mass Fit</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/mass_pos_dev_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/mass_sigma_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/good_carbon_events_strip')?>
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/mass_chi2_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/mass_e_correlation_strip')?>
+
+</table>
+-->
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="raw" class="count">Raw Histograms</h2>
+<!-- {{{ -->
+<div id="div:raw" class="section">
+
+<p>
+<table border="1" cellpadding="5" cellspacing="2" align="center">
+
+<tr>
+<td align=center>
+<?=$gP->img('raw/hBunchCounts')?>
+<td align=center>
+<?=$gP->img('raw/hStripCounts')?>
+
+</table>
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('raw/hAdcAmpltd')?>
+<td align=center>
+<?=$gP->img('raw/hTdc')?>
+<td align=center>
+<?=$gP->img('raw/hTvsA')?>
+<td align=center>
+<?=$gP->img('raw/hTvsI')?>
+
+</table>
+
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="std" class="count">Std</h2>
+<!-- {{{ -->
+<div id="div:std" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiff")?>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiffVsEnergyA")?>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiffVsEnergyA_pfx")?>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="asymmetry" class="count">Asymmetry</h2>
+<!-- {{{ -->
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<!--
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/asym_bunch_x45')?>
+<td align=center>
+<?=$gP->img('ErrDet/asym_bunch_x90')?>
+<td align=center>
+<?=$gP->img('ErrDet/asym_bunch_y45')?>
+<tr>
+<td align=center>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_x45')?>
+<td align=center>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_x90')?>
+<td align=center>
+<?=$gP->img('run/Asymmetry/asym_vs_bunch_y45')?>
+-->
+
+<tr>
+
+<td align=center>
+   <?=$gP->img('run/Asymmetry/asym_sinphi_fit')?>
+<td align=center>
+   <?=$gP->img('asym/hPolarVsPhi')?>
+<td align=center>
+   <?=$gP->img('asym/hAsymVsPhi')?>
+
+<tr>
+<td align=center>
+   <?=$gP->img('asym/hAsymVsBunchId_X90')?>
+<td align=center>
+   <?=$gP->img('asym/hAsymVsBunchId_X45')?>
+<td align=center>
+   <?=$gP->img('asym/hAsymVsBunchId_Y45')?>
+
+<tr>
+<td align=center>
+   <?=$gP->img('asym/hKinEnergyAChAsym')?>
+<td align=center>
+   <?=$gP->img('asym/hLongiChAsym')?>
+<td align=center>
+   &nbsp;
+
+</table>
+
+
+<!--
+<p>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="misc" class="count">Misc</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('Run/rate_vs_delim')?>
+<td align=center>
+<?=$gP->img('run/Asymmetry/scan_asym_sinphi_fit')?>
+
+</table>
+-->
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="profile_plots" class="count">Profile Plots</h2>
+<!-- {{{ -->
+<div id="div:profile_plots" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td class=align_cm>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<p>Polarization vs intensity as measured every second at each target step. The
+data is fitted with a function P = P_max * I^r
+
+<td class=align_cm>
+<?=$gP->img("profile/hPolarVsIntensProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned
+
+<tr>
+<td align=center width=50%>
+<?=$gP->img("profile/hIntensUniProfile")?>
+<p>If we assume a gaussian beam profile with the unit width the actuall
+position of the target in the beam can be deduced from the intensity measured
+at each step. Note that the plot is symmetric around X = 0 by construction
+
+<td align=center width=50%>
+<?=$gP->img("profile/hIntensUniProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned. Note
+that the plot is symmetric around X = 0 by construction
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hPolarUniProfile")?>
+<p>The beam polarization as a function of beam width in intesity sigma units
+
+<td align=center>
+<?=$gP->img("profile/hPolarUniProfileBin")?>
+<p>The same data as on the left plot but the measurements are binned
+
+</table>
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td align=center colspan=2>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<p>Beam polarization profile
+
+<td align=center>
+<?=$gP->img("profile/hPolarProfileFinal")?>
+<p>Beam polarization profile
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hIntensProfile")?>
+<p>Intensity profile as a function of target steps
+
+<td align=center>
+<?=$gP->img("profile/hIntensProfileFwd")?>
+<p>Intensity profile: Forward target motion
+
+<td align=center>
+<?=$gP->img("profile/hIntensProfileBck")?>
+<p>Intensity profile: Backward target motion
+
+<tr>
+<td align=center>
+<?=$gP->img("profile/hPolarProfile")?>
+<p>Beam polarization profile as a function of target steps
+
+<td align=center>
+<?=$gP->img("profile/hPolarProfileFwd")?>
+<p>Beam polarization profile: Forward target motion
+
+<td align=center>
+<?=$gP->img("profile/hPolarProfileBck")?>
+<p>Beam polarization profile: Backward target motion
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("profile/hPolarProfileFold")?>
+<p>Beam polarization profile: Forward and Backward target motions
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="kinematics" class="count">Kinematics</h2>
+<!-- {{{ -->
+<div id="div:kinematics" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<tr>
+<td align=center colspan=3>
+<?=$gP->img("kinema/hPseudoMass")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("kinema/hMassFitChi2ByChannel")?>
+<td align=center>
+<?=$gP->img("kinema/hMassFitMeanByChannel")?>
+<td align=center>
+<?=$gP->img("kinema/hMassFitSigmaByChannel")?>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary_plots" class="count">Summary Plots</h2>
+<!-- {{{ -->
+<div id="div:summary_plots" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+
+<!--
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA")?>
+<td align=center>
+<?=$gP->img("hTvsI")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_cut1")?>
+<td align=center>
+<?=$gP->img("hTvsI_cut1")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut1")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_cut2")?>
+<td align=center>
+<?=$gP->img("hTvsI_cut2")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut2")?>
+
+-->
+
+<tr>
+<td align=center colspan=4>
+<?=$gP->img("preproc/combo")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("calib/hDLVsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hT0VsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hChi2NdfVsChannel")?>
+<td align=center>
+<?=$gP->img("calib/hFitStatusVsChannel")?>
+
+<tr>
+<td class=align_cm colspan=4>
+<?=$gP->img("std/hEventsVsChannel_cut2")?>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="channels" class="count">Channel Plots</h2>
+<!-- {{{ -->
+<div id="div:channels" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<?php
+
+foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+   $chanId = sprintf("%02d", $chanId);
+   //$gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
+   $gP->dir = "../runs/$gRunId/images$gSuffix/preproc/";
+
+   //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   //$row2 .= "<td>".($siS ? "x" : "o");
+
+   if ( ($chanId-1) % 6 == 0 ) {
+      //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+      print "<tr class=align_cm>\n";
+      //$row1 = "";// $row2 = "";
+   }
+
+   $img = $gP->img("combo_ch$chanId", false, 200);
+   //$img = $gP->img("combo_ch$chanId");
+   //$img = $gP->img("combo_ch$chanId", 150, "./?runid=$gRunId&chanid=$chanId&sfx=$gSfx");
+   print "<td>$img<br>\n";
+   print "<a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">channel $chanId</a>\n";
+   
+}
+?>
+</table>
+
+</div>
+<!-- }}} -->
+
+<!-- Main text ends here-->
+
+<td width="5%">
+
+<tr>
+<td>
+
+<td>
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>

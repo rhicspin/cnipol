@@ -1,0 +1,19 @@
+macro HID17200
+exe defsetting
+igset plci 2
+zone 3 3
+opt fit 
+set fit 100
+opt ntic
+set csiz 0.7
+
+hi/file 20 hbook/7279.005.hbook
+
+do i=1,9
+ HID=[i]+17200
+ hi/plot [HID]
+enddo
+
+
+
+return

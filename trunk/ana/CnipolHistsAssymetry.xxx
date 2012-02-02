@@ -1,0 +1,32 @@
+/*****************************************************************************
+ *                                                                           *
+ *                                                                           *
+ *****************************************************************************/
+
+#include "CnipolHistsAssymetry.h"
+
+ClassImp(CnipolHistsAssymetry)
+
+using namespace std;
+
+/** Default constructor. */
+CnipolHistsAssymetry::CnipolHistsAssymetry() : DrawObjContainer()
+{
+};
+
+
+/** Default destructor. */
+CnipolHistsAssymetry::~CnipolHistsAssymetry()
+{
+};
+
+
+/**
+ *
+ */
+void CnipolHistsAssymetry::Print(const Option_t* opt) const
+{
+   opt = "";
+
+   //printf("CnipolHistsAssymetry:\n");
+}

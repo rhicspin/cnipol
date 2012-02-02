@@ -1,0 +1,1 @@
+BUS=="usb", KERNEL=="cmcamac*", NAME="usb/%k", MODE="666", OPTIONS="last_rule"

@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Run Database: RHIC p-Carbon polarimeters</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="2%">
+
+<td width="96%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>Cnipol Run Index</h1>
+
+<?php
+
+//include("utils.php"); 
+//include("config.php");
+//include("DbReader.php");
+include_once("SqlDbReader.php");
+include_once("RunSelector.php");
+
+//$dbReader = new DbReader();
+//$dbReader->ReadEntries();
+//$es = $dbReader->entries;
+//array_sort($es, '!START_TIME');
+
+$runSelector = new RunSelector();
+
+$runSelector->PrintForm();
+
+$sqlDbReader = new SqlDbReader($runSelector);
+
+$nRuns = $sqlDbReader->CountEntries();
+
+?>
+
+<!--
+<p>
+SQL query: <?//=$sqlDbReader->sqlQuery?>
+-->
+
+<p>
+Runs selected: <?=$sqlDbReader->nResults?>
+<?//=$sqlDbReader->sqlWhere?>
+
+<p>
+Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a>
+ 
+<?
+// Create page links
+$page = 1;
+$nRunsPerPage = 200;
+$nPages = ceil($nRuns/$nRunsPerPage);
+
+if ( isset($_GET['page']) ) $page = $_GET['page'];
+if ($page > $nPages || $page < 1) $page = 1;
+
+$sqlDbReader->PrintPageIndex($nPages, $page);
+
+$rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
+
+//print "<pre>\n";
+//print_r($row); 
+//print "</pre>\n";
+
+?>
+
+<p>
+<table border="1" cellpadding="2" cellspacing="2" align="center" width="100%">
+<tr>
+   <th rowspan=2>Run
+   <th rowspan=2>Date &amp; Time
+   <th rowspan=2>Polarimeter <br><?=$runSelector->HtmlSortLinks("pi");?>
+   <th rowspan=2>Polarization, %<br><?=$runSelector->HtmlSortLinks("po");?>
+   <th rowspan=2>r
+   <th rowspan=2>Type
+   <th rowspan=2>Beam Energy, GeV
+   <th rowspan=2>Target
+   <th rowspan=2>Total Events<br><?=$runSelector->HtmlSortLinks("te");?>
+   <!--<th rowspan=2>Duration-->
+   <th colspan=3>Offline analysis
+<tr>
+   <th>Frac
+   <th>Ver<br><?=$runSelector->HtmlSortLinks("av");?>
+   <th>Date &amp; Time<br><?=$runSelector->HtmlSortLinks("at");?>
+
+
+<?php
+//print count($es);
+//foreach($es as $e):
+while ($e = mysql_fetch_assoc($rslt)):
+   //$e->PrintThis();
+
+   //print "<pre>\n";
+   //print_r($e); 
+   //print "</pre>\n";
+
+   $polId = $POLARIMETER_ID[$e['polarimeter_id']];
+
+   $polarization = "&nbsp;";
+
+   if (isset($e['polarization'])) {
+      //$pols = preg_split("/[\s,]+/", $e['polarization']);
+		//$polarization = sprintf("%5.2f &plusmn; %5.2f<br>%5.2f &plusmn; %5.2f",
+      //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
+		//$polarization = sprintf("%5.1f &plusmn; %5.1f",
+      //   $pols[0]*100, $pols[1]*100);
+
+      // Apply normalization factor to polarization value
+		$norm = 1;
+
+		if (isset($normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']]) &&
+          intval($e['beam_energy']+0.5) == 250 )
+		   $norm = $normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']];
+
+		$polarization = sprintf("%5.1f &plusmn; %5.1f",
+         $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+   }
+
+   $profileRatio = "&nbsp;";
+
+   if (isset($e['profile_ratio'])) {
+      //$values = preg_split("/[\s,]+/", $e['profile_ratio']);
+      //$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+      $profileRatio = sprintf("%5.2f &plusmn; %5.2f", $e['profile_ratio'], $e['profile_ratio_error']);
+   }
+
+   $measurementType = "&nbsp;";
+
+   if (isset($e['measurement_type']) && $e['measurement_type'] >= 0 ) {
+      //$values = preg_split("/[\s,]+/", $e['profile_ratio']);
+      //$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+      $measurementType = $MEASTYPE[$e['measurement_type']];
+   }
+
+   $targetId = "&nbsp;";
+
+   if ( isset($e['target_id']) && $e['target_id'] > 0 ) {
+      $targetId = "{$e['target_orient']}{$e['target_id']}";
+   } else {
+      $targetId = "N/A";
+   }
+
+	// Set css class
+	$cssPol = "";
+
+	if ($polId[0] == 'B') $cssPol = "bluPol";
+	if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+	if ($polId[2] == 'U') $cssPol .= " bold";
+	#if ($polId[2] == 'D') $cssPol .= "";
+
+   // Offline processed fraction
+   $processedFrac = "-";
+
+   if ( isset($e['nevents_total']) && isset($e['nevents_processed']) && $e['nevents_total'] != 0 )
+      $processedFrac = sprintf("%4.2f", $e['nevents_processed']/$e['nevents_total']);
+
+   // Deal with version now
+	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
+	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+?>
+
+<tr>
+   <td><a href="?runid=<?=$e['run_name']?>"><?=$e['run_name']?></a>
+   <td class=align_cm><tt><?=isset($e['start_time']) ? date("M d, Y H:i:s D", strtotime($e['start_time'])) : "&nbsp;";?></tt>
+   <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
+   <td class=align_cm><?=$polarization?>
+   <td class=align_cm><?=$profileRatio?>
+   <td class=align_cm><?=$measurementType?>
+   <td class=align_cm><?=isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : "&nbsp;";?>
+   <td class=align_cm><?=$targetId?>
+   <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
+   <td class=align_cm><?=$processedFrac?>
+   <td class=align_cm><?=$asymVersion?>
+   <td class=align_cm><tt><?=isset($e['ana_start_time']) ? date("M d, Y H:i", strtotime($e['ana_start_time'])) : "&nbsp;";?></tt>
+
+
+<?php
+//endforeach;
+endwhile;
+?>
+
+</table>
+
+<?$sqlDbReader->PrintPageIndex($nPages, $page);?>
+
+<pre>
+<?php //print_r($rc); ?>
+</pre>
+
+
+<!-- Main text ends here-->
+
+<td width="2%">
+
+<tr>
+<td>
+
+<td>
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>

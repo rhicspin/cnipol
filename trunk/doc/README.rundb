@@ -1,0 +1,148 @@
+# 00README.rundb
+# April.15, 2006
+# I. Nakagawa
+# syntax for run.db
+
+o Some brief instructions about run.db:
+
+  	The run.db should contain all necessary parameters 
+	which custumize the analysis run by run basis. For instance, 
+
+		CONFIG=6935.002.config.dat;
+		TSHIFT=7; 
+
+	Also contains some imporant/useful informations	about a run, f.i.: 
+
+		COMMENT="Strip 3 is dead.";
+
+	These entries have to be made followed by run number labeled, f.i.:
+	
+ 	[7605.006]
+
+
+
+o Syntax and rules:
+
+   1)	The program AsymRunDB.cc scan the parameters from the beggining 
+	of run.db and keep overwritting the same parameters defined later 
+	in run.db until the run number of the currently analyzing exceeds
+	the labeled run number. For example if you are analyzing 
+	run=7605.102 and entries in run.db are like:
+
+
+	[7605.101]
+        	INJ_TSHIFT=8;
+
+	[7605.103]
+	        INJ_TSHIFT=7;
+
+
+	Then it will pick up INJ_TSHIFT=8, not 7. 
+	
+	The exception to this is if you include "*" at the end of the parameter name.  In 
+	that case the parameter only applies to the given run.
+	
+	so If you are analyzing run=7605.104 and entries are:
+	
+	[7605.101]
+        	INJ_TSHIFT=8;
+
+	[7605.103]
+	        INJ_TSHIFT*=7;
+	        
+	 [7605.104]
+	
+	then it will pick up INJ_TSHIFT=8, not 7.
+	
+   2)	Thus the program assumes the previously defined parameters unless
+	it is overwritten by further entries before the run you analyze.
+	Some parameters you may want to *initiarize* to defaults, because
+ 	otherwise program assumes as the same status even though you didn't
+	meant to.
+
+	[7620.101]
+		COMMENT="Strip #3 went wrong";
+		DisableStrip=3;
+		RUN_STATUS=Suspicious;
+
+
+	[7620.102]
+		COMMENT="";   <-- initiarization of COMMENT strlen()<3.
+		EnableStrip=3;
+		RUN_STATUS=Good;
+
+	(Any comments with // will be ignored as well.)
+
+
+   3)	Although blue and yellow are combined in run.db, the program reads 
+	only blue setting when analyzing blue data, and thus igores yellow 
+	setting, vice-versa for yellow data. 
+
+   4)   The indent before keywords has to be given by the tab, not 8 spaces, 
+	just like makefile syntax.
+
+		COMMENT="";  <-  valid
+	        COMMENT="";  <-  invalid
+
+   5)   Any entries followed by "@" at the end of line is an entry made by 
+	programs, not manually.
+
+   6)   The syntax is *VERY* tight. Parser is not too smart and therefore
+	you have to follow very strict syntax rules.
+
+	Run number lable has to be started from the first column and have
+	to be surrounded by the square brackets, f.i.:
+
+	[xxxx.xxx]
+
+	The AsymRunDB.cc extracts parameters between charactors "=" and ";"
+	following the key word, f.i.:
+
+		CONFIG=6868.113.config.dat;
+		      ^                   ^
+
+	so *no unnecessary spaces* in between "=" and ";". Don't forget ";"
+	at the end of line not to menstion except for run number label entry.
+
+	
+
+o Defaults:
+	
+	Some parameters has built in defaults. They are
+
+	DEFINE_SPIN_PATTERN=-1;   // reads spin pattern from data stream. Do 
+	                          // not overwrite by user defined ones.
+
+
+o Some tips:
+	
+   1)	In order to avoid breaking syntax by editting new entries in to run.db
+	I stronly recommand copy/paste from previous entries and modify it. This
+	is the efficient way to avoid making typos in keywords for instance.
+
+   2)	When you make 
+	
+	[8000.001]
+		RUN_STATUS=Junk; 
+
+	for the latest run [8000.001], better to redifine
+
+	[8000.002]
+		RUN_STATUS=Good; 
+	
+	right after that even though such a measurement doesn't exist yet. 
+	Just in case to aviod you go home with keeping RUN_STATUS=Junk for
+	future measurements. 
+
+
+   3)   In order not to inherit Disable/Enable strip/bunch setting from previous
+        RHIC RUN to next year, then it is a convenient to insert follows at the 
+        begging of the next year setting in run.db:
+
+ 	RESET_ALL=Default;
+
+	This will set the all strips and bunches status to be default. The current
+        default is all active.
+
+
+

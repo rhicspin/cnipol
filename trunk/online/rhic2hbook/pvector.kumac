@@ -1,0 +1,323 @@
+macro main run='-1' nowait='-1' 
+
+** J.Wood, Feb.21,2006: don't need ps file here, onliplot.kumac makes it too
+**                      add argument to not wait for <CR> from user
+**	 		move chi2 to upper plot, and write A_N
+** I.Alekseev 2010:	environment correction - file & pvectfile
+
+*   pson
+   if ([run].eq.'-1') then
+     run = $ENV(RUN)
+   endif
+
+   if ([plot].eq.'nothing') then
+     plot = $
+   endif
+
+   mess 'RUN '//[run]
+
+   file=$ENV(HBOOKFILE)
+
+* where is the polarization vector
+   pvectfile=$ENV(LOGDIR)//'/pvect.dat'
+
+   psfile=ps/pvector_run[run].ps
+
+   if [nowait]<0 then
+     dir=$ENV(ONLINEDIR)/hbook/
+     file=[dir]//[run]//'.hbook'
+     for/file 60 [psfile]
+     meta 60 -111
+   endif
+
+   set *FON -60
+   set TXFP -60
+   
+   opt NBOX 
+   
+   set GSIZ 0.7   
+   set YGTI 1.0
+   set XMGR 1.0
+   set XMGL 2.6
+   
+   set VSIZ 0.35
+   set ASIZ 0.35
+   set TSIZ 0.4
+   set MSCF 1.0
+   set XLAB 1.8
+   set LWID 4
+   
+   v/cre x90p(1) R
+   v/cre x90pe(1) R
+   v/cre x45p(1) R
+   v/cre x45pe(1) R
+   v/cre y45p(1) R
+   v/cre y45pe(1) R
+   v/cre c45p(1) R
+   v/cre c45pe(1) R
+   v/cre c14p(1) R
+   v/cre c14pe(1) R
+   v/cre c36p(1) R
+   v/cre c36pe(1) R
+   v/cre xchp(1) R
+   v/cre xchpe(1) R
+   v/cre ychp(1) R
+   v/cre ychpe(1) R
+   v/cre PCNT(6) R
+   v/cre MCNT(6) R
+   v/cre an(1) R
+   
+   v/read x90p,x90pe [pvectfile] OPT='O'
+   v/read x45p,x45pe [pvectfile] OPT=' '
+   v/read y45p,y45pe [pvectfile] OPT=' '
+   v/read c45p,c45pe [pvectfile] OPT=' '
+   v/read c14p,c14pe [pvectfile] OPT=' '
+   v/read c36p,c36pe [pvectfile] OPT=' '
+   v/read xchp,xchpe [pvectfile] OPT=' '
+   v/read ychp,ychpe [pvectfile] OPT=' '
+   v/read an [pvectfile] OPT=' '
+   v/read pcnt [pvectfile] OPT=' '
+   v/read mcnt [pvectfile] OPT='C'
+   zone 1 2 
+   v/cre angle(6) R 45. 90. 135. 225. 270. 315.
+   v/cre ratio(6) R
+   v/cre ratioe(6) R
+
+   h/file 1 [file]
+   
+   v/cre lumi(2) R  
+   
+   Do si=1,6
+	 
+     v/input lumi(1) $RSIGMA(lumi(1)+pcnt([si]))
+     v/input lumi(2) $RSIGMA(lumi(2)+mcnt([si]))
+
+   Enddo
+   
+   v/print pcnt
+   v/print mcnt
+   
+   Do i=1,6
+     v/input ratio([i]) $RSIGMA((pcnt([i])/mcnt([i]))*(lumi(2)/lumi(1)))
+     v/input ratioe([i]) _
+       $RSIGMA(ratio([i])*sqrt((1./pcnt([i]))+(1./mcnt([i]))))
+     
+   Enddo 
+   mess lumi ratio $RSIGMA((lumi(2)/lumi(1)))
+   v/print ratio
+   
+* v/input ratio(4) 1.
+* v/input ratioe(4) 10.
+   
+   v/cre fitpar(3) R
+   v/cre fitpare(3) R
+   * ======================================
+   application comis quit
+* 12345
+      real function fitfunc(x)
+      Implicit None
+      COMMON/PAWPAR/fitpar(3)    
+      real x
+      real convf
+      convf = 3.14159/180.
+      fitfunc = fitpar(1) + fitpar(2)*sin(x*convf-fitpar(3)*convf)
+      end 
+* ---------------------------------------
+   quit
+   
+   v/input fitpar(1) 1.0
+   v/input fitpar(2) 0.01
+   v/input fitpar(3) 0.
+   
+   v/fit angle ratio ratioe fitfunc '0E' NP=3 PAR=fitpar ! ! ! ERRPAR=fitpare 
+   
+* rmax = $RSIGMA(fitpar(1)+2.*abs(fitpar(2)))
+* rmin = $RSIGMA(fitpar(1)-2.*abs(fitpar(2)))
+   
+   rmax = $RSIGMA(fitpar(1)+0.03)
+   rmin = $RSIGMA(fitpar(1)-0.03)
+   
+   pol  = $RSIGMA(xchp(1)/an(1))
+   pole = $RSIGMA(xchpe(1)/an(1))
+   
+   mess $EVAL(xchp(1)) $EVAL(an(1))
+   
+   title_gl 'Run '//[run]//'   Pol='//$FORMAT([pol],F5.3)//'+/-'//$FORMAT([pole],F5.3) 
+   
+* ======================================
+* ******* Plot phi asymmetry ***********
+* ======================================
+   null 0. 360. [rmin] [rmax] 
+   set CHHE 0.32
+   atitle 'detector locations (degree)' 'Ratio (i-th U/D)/(total U/D)' 
+   func/pl fitfunc 0. 360. s
+   
+   v/cre ex(6) R 6*0.
+   hp/err angle ratio ex ratioe 6 20 0.20  
+   null 0. 1. 0. 1. ABS
+   
+* === const term ====
+   itx 0.55 0.9 _
+     'Const = '//$FORMAT(fitpar(1),F7.3)//'+/-'//$FORMAT(fitpare(1),F7.3)
+   amp = $RSIGMA(fitpar(2))
+   if ([amp].le.0.) then
+     amp = $RSIGMA(-1.*fitpar(2))
+     v/input fitpar(3) $RSIGMA(fitpar(3)+180.)
+   endif
+   
+* === Amplitude ===
+   itx 0.55 0.8 'Amp = '//$FORMAT([amp],F7.3)//'+/-'//$FORMAT(fitpare(2),F7.3)
+   newangle = $RSIGMA(fitpar(3)-360*int(fitpar(3)/360.))
+   if ([newangle].ge.180.) then
+     newangle = $RSIGMA([newangle]-360.)
+   endif
+   
+* === Phi angle ===
+   itx 0.55 0.70 _
+     'Phi (deg) = '//$FORMAT([newangle],F5.1)//'+/-'//$FORMAT(fitpare(3),F5.1)
+   v/print fitpare
+   
+* ******************* Numbers ***************
+  vec/cre chi2(1) R 
+* ======================================
+   application comis quit
+      SUBROUTINE chiq
+* NPFITS  Number of points used in the fit
+* NFPAR   Number of free parameters
+* FITCHI  Chisquare
+* FITPAR  Values of parameters
+* FITSIG  Errors on parameters
+      COMMON/HCFITS/NCFITS,NPFITS,NFPAR,FITCHI,FITPAR(35),FITSIG(35)
+     +  ,FITDER(35)
+      vector chi2
+      chi2(1)=fitchi
+      END
+   quit   
+* ======================================
+   call chiq
+   mess $RSIGMA(chi2(1))  
+
+   itx 0.55 0.60 'Chi2/NDF ='//$FORMAT(chi2(1),F7.3)   
+
+
+* ======================================
+* ******* plot Polarization vector *****
+* ======================================
+   v/cre amp(2) R 
+   v/cre phi(2) R 
+   application comis quit
+        Subroutine drawpol(AX, EAX, AY, EAY)
+        Vector amp
+	Vector phi
+        parameter(degr=180./3.14159265)
+*
+        A=sqrt(AX**2+AY**2)
+        alfa=atan2(AY, AX)
+*		Protect from division on zero
+        if (A.gt.0) then
+    	    ea=sqrt((ax*eax)**2+(ay*eay)**2)/A
+    	    ealfa=sqrt((ay*eax)**2+(ax*eay)**2)/(A**2)
+    	else
+    	    ea = 1
+    	    ealfa = 6
+    	endif
+*
+        alfa=degr*alfa
+        ealfa=degr*ealfa
+        alfa=-(alfa-90.)
+        if (alfa.ge.180.) alfa=alfa-360.
+*
+        amp(1)=A
+        amp(2)=ea
+        phi(1)=alfa
+        phi(2)=ealfa
+*
+        return
+        end
+   quit  
+
+   xfit  = $EVAL(xchp(1))
+   xfite = $EVAL(xchpe(1))
+   yfit  = $EVAL(ychp(1))
+   yfite = $EVAL(ychpe(1))
+   
+* Draw Circle and BOX
+   call drawpol([xfit],[xfite],[yfit],[yfite])
+   zone 2 2 3 s
+   sc = 0.012
+   null  -[sc] [sc] -[sc] [sc]
+   arc 0. 0. [sc] [sc] 0. 0.
+   line -[sc] 0. [sc] 0.
+   line  0. -[sc] 0. [sc]
+   
+* draw ANGLE LINE
+   line 0. 0.  $RSIGMA([sc]*sin(3.14159/180.*[newangle])) $RSIGMA([sc]*cos(3.14159/180.*[newangle]))
+   rmin=$EVAL(amp(1)-amp(2))
+   
+   if ([rmin]<0) then; rmin=0; endif
+   set FACI 4 
+   set FAIS 1
+   set BORD 1 
+   
+* Draw AREA from Xfit and Yfit
+   arc 0. 0. [rmin] $EVAL(amp(1)+amp(2)) _
+     $EVAL(phi(1)-phi(2)) $EVAL(phi(1)+phi(2))
+* lines
+* Draw X90 with BLUE
+   set PLCI 4 
+   line -[sc] $RSIGMA(x90p(1)+x90pe(1)) [sc] $RSIGMA(x90p(1)+x90pe(1)) 
+   line -[sc] $RSIGMA(x90p(1)-x90pe(1)) [sc] $RSIGMA(x90p(1)-x90pe(1)) 
+* Draw X45 with RED
+   set PLCI 2 
+   line -[sc] $RSIGMA(x45p(1)+x45pe(1)) [sc] $RSIGMA(x45p(1)+x45pe(1)) 
+   line -[sc] $RSIGMA(x45p(1)-x45pe(1)) [sc] $RSIGMA(x45p(1)-x45pe(1)) 
+*  Y comp with Green
+   set PLCI 3 
+   line $RSIGMA(y45p(1)+y45pe(1)) -[sc] $RSIGMA(y45p(1)+y45pe(1)) [sc]
+   line $RSIGMA(y45p(1)-y45pe(1)) -[sc] $RSIGMA(y45p(1)-y45pe(1)) [sc]
+* Cross
+   set HCOL 6
+   set HWID 4
+   f/pl $RSIGMA(c14p(1)+c14pe(1))+1.*x -[sc] [sc] s 
+   f/pl $RSIGMA(c14p(1)-c14pe(1))+1.*x -[sc] [sc] s 
+   set HCOL 1 
+   f/pl $RSIGMA(c36p(1)+c36pe(1))-1.*x -[sc] [sc] s 
+   f/pl $RSIGMA(c36p(1)-c36pe(1))-1.*x -[sc] [sc] s 
+   
+   
+   null 0. 1. 0. 1. AB
+   set CHHE 0.5
+   itx 0. 0.95 'Polarization Vector'
+   set CHHE 0.3
+   
+   itx 0. 0.85 'Ave. A_N = '//$FORMAT(an(1),F6.5)
+   
+   itx 0. 0.73 'BLUE AREA'
+   itx 0.2 0.66 'Xfit = '//$FORMAT(xchp(1),F7.4)//'+/-'//$FORMAT(xchpe(1),F7.4)
+   itx 0.2 0.59 'Yfit = '//$FORMAT(ychp(1),F7.4)//'+/-'//$FORMAT(ychpe(1),F7.4)
+   
+   itx 0. 0.52 'BLUE LINES'
+   set PLCI 4; line 0.2 0.44 0.92 0.44
+   itx 0.2 0.45 'X90 = '//$FORMAT(x90p(1),F7.4)//'+/-'//$FORMAT(x90pe(1),F7.4)
+   
+   itx 0. 0.38 'RED LINES'
+   set PLCI 2; line 0.2 0.30 0.92 0.30
+   itx 0.2 0.31 'X45 = '//$FORMAT(x45p(1),F7.4)//'+/-'//$FORMAT(x45pe(1),F7.4)
+   
+   itx 0. 0.24 'GREENLINES'
+   set PLCI 3; line 0.2 0.16 0.92 0.16
+   itx 0.2 0.17 'Y45 = '//$FORMAT(y45p(1),F7.4)//'+/-'//$FORMAT(y45pe(1),F7.4)
+
+   itx 0. 0.08 'Pink/Black Lines : Cross Asymmetries'
+   
+   
+*   psoff
+
+*   sh 'rm -f pvect.dat'
+   if [nowait]<0 then
+     close 60 
+     mess psfile=[psfile]
+     wait
+   endif
+   
+ return

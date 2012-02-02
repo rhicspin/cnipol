@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Calibration/Test Run <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="5%">
+
+<td width="90%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1 class="count">Calibration/Test Run <?=$gRunId?></h1>
+
+<p>
+<a href="./"><span class=s150>Run Index</span></a>
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary" class="count">Summary</h2>
+<!-- {{{ -->
+<div id="div:summary" class="section">
+
+<?php
+
+$polId = $POLARIMETER_ID[$rc['polarimeter_id']];
+
+$cssPol = "";
+
+if ($polId[0] == 'B') $cssPol = "bluPol";
+if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+if ($polId[2] == 'U') $cssPol .= " bold";
+#if ($polId[2] == 'D') $cssPol .= "";
+
+$polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
+
+$targetId = "&nbsp;";
+
+if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
+   $targetId = "{$rc['target_orient']}{$rc['target_id']}";
+} else {
+   $targetId = "N/A";
+}
+
+// Deal with version now
+$asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
+$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+
+?>
+
+<p>
+
+<table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
+
+<tr>
+   <td>
+   <b>Polarimeter:</b> <?=$polId?>
+   <td>&nbsp;
+   <td>&nbsp;
+   <td>
+   <b>Target:</b> <?=$targetId?>
+
+<tr>
+   <td>
+   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <td>
+   <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
+   <td>
+   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
+   <td>&nbsp;
+   <!--
+   <td>
+   <b>Size:</b> <?//=$s['dirsize']?>
+   -->
+
+<tr>
+   <td>
+   <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
+   <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['ana_start_time'])?>&nbsp;
+   (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
+   <td>
+   <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
+   <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <? endif; ?>
+   <td>&nbsp;
+   <td>
+   <b>Asym Version:</b> <?=$asymVersion?>
+
+<tr>
+   <td colspan=4>
+   <b>Disabled Channels:</b> <?=$rc['disabled_channels']?>
+
+<tr>
+   <td colspan=4>
+   <b>Channels:</b><br>
+
+   <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+   <?php
+      $row1 = ""; $row2 = "";
+
+      foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+         $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+         //$row2 .= "<td>".($siS ? "x" : "o");
+
+         if (($chanId) % 36 == 0) {
+            //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+            print "<tr class=align_cm>$row1\n";
+            $row1 = "";// $row2 = "";
+         }
+      }
+   ?>
+   </table>
+
+</table>
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h3 id="calibconst" class="count">Constants</h3>
+<!-- {{{ -->
+<div id="div:calibconst" class="section">
+
+<p>
+
+<table border="1" cellpadding="2" cellspacing="0" align="center" width="">
+<?php
+
+$nColumns  = 2;
+//$nChannels = $rc['NActiveStrip'];
+$nChannels = count($rc['ActiveStrip']);
+$nRows     = ceil($nChannels/$nColumns); 
+
+for ($ir=0; $ir<$nRows; $ir++) :
+//foreach($rc['data']['chan'] as $chanId => $coefs):
+
+   if ($ir == 0) {
+      print "<tr class=align_cm>\n";
+      for ($ic=0; $ic<$nColumns; $ic++) {
+         print "<th>Ch\n";
+         print "<th>A, keV/ADC\n";
+         print "<th>&Delta;A\n";
+         print "<th>I, keV/ADC\n";
+         print "<th>&Delta;I\n";
+         print "<th>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+      }
+   }
+
+   print "<tr class=align_cm>\n";
+
+   for ($ic=0; $ic<$nColumns; $ic++) :
+
+      $chanId = $ic*$nRows + $ir + 1;
+      $coefs = $rc['calib'][$chanId];
+
+      if ($chanId > $nChannels) continue;
+
+      //$chanId += 1;
+      print "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>\n";
+      print "<td class=align_r>".sprintf("%7.4f", $coefs['ACoef'])."\n";
+      print "<td class=\"align_r ".($coefs['ACoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ACoefErr'])."\n";
+      print "<td class=align_r>".sprintf("%7.4f", $coefs['ICoef'])."\n";
+      print "<td class=\"align_r ".($coefs['ICoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ICoefErr'])."\n";
+      print "<td>&nbsp;&nbsp;\n";
+
+   endfor;
+endfor;
+?>
+</table>
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<tr>
+<td align=center>
+<?=$gP->img('alpha/hACoef')?>
+<td align=center>
+<?=$gP->img('alpha/hICoef')?>
+</table>
+
+</div>
+<!-- }}} -->
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="summary_plots" class="count">Summary Plots</h2>
+<!-- {{{ -->
+<div id="div:summary_plots" class="section">
+
+<p>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('alpha/hAmpltd')?>
+<td align=center>
+<?=$gP->img('alpha/hAmpltd_cut1')?>
+<td align=center>
+<?=$gP->img('alpha/hAmpltdW')?>
+<tr>
+<td align=center>
+<?=$gP->img('alpha/hIntgrl')?>
+<td align=center>
+<?=$gP->img('alpha/hIntgrl_cut1')?>
+<td align=center>
+<?=$gP->img('alpha/hIntgrlW')?>
+<tr>
+<td align=center colspan=3>
+<?=$gP->img('alpha/hTdc')?>
+<tr>
+<td align=center>
+<?=$gP->img('alpha/hTvsA')?>
+<td align=center>
+<?=$gP->img('alpha/hTvsI')?>
+<td align=center>
+<?=$gP->img('alpha/hIvsA')?>
+
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
+<p>
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+
+<h2 id="channels" class="count">Channel Plots</h2>
+<!-- {{{ -->
+<div id="div:channels" class="section">
+
+<p>
+
+<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<?php
+
+foreach($rc['ActiveStrip'] as $chanId => $siS) {
+
+   //$chanId += 1;
+
+   $chanId = sprintf("%02d", $chanId);
+   $gP->dir = "../runs/$gRunId/images/alpha/channel$chanId/";
+
+   //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   //$row2 .= "<td>".($siS ? "x" : "o");
+
+   if ( ($chanId-1) % 6 == 0 ) {
+      //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+      print "<tr class=align_cm>\n";
+      //$row1 = "";// $row2 = "";
+   }
+
+   $img = $gP->img("hAmpltd_cut1_st$chanId", false, 150);
+   print "<td>$img\n";
+   
+}
+?>
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<!--
+<p>
+
+<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<h2 id="misc" class="count">Misc</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<td align=center>
+
+</table>
+-->
+
+<!-- Main text ends here-->
+
+<td width="5%">
+
+<tr>
+<td>
+
+<td>
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>
