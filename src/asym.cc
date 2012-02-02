@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
 
    gAnaInfo->ProcessOptions();
 
-   // Book HBOOK file (deprecated)
+   // Book HBOOK file (deprecated) should be removed from future releases
    char hbk_outfile[256] = "out.hbook";
    printf("Booking HBOOK file %s\n", hbk_outfile);
    hist_book(hbk_outfile);
@@ -397,8 +397,8 @@ int main(int argc, char *argv[])
    //else
    //   gAnaInfo->RECONFMODE = 0;
 
-   MseMeasInfoX   *mseMeasInfoX     = 0;
-   MseMeasInfoX   *mseMeasInfoXOrig = 0;
+   MseMeasInfoX *mseMeasInfoX     = 0;
+   MseMeasInfoX *mseMeasInfoXOrig = 0;
 
    // Check whether the run is in database
    if (gAnaInfo->fFlagUseDb) {
@@ -408,8 +408,8 @@ int main(int argc, char *argv[])
    if (mseMeasInfoX) { // if run found in database save its copy
       mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->fRunName);
       *mseMeasInfoXOrig = *mseMeasInfoX;
-
-   } else { // if run not found in database create it
+   }
+   else { // if run not found in database create it
       mseMeasInfoX = new MseMeasInfoX(gMeasInfo->fRunName);
    }
 
@@ -420,14 +420,14 @@ int main(int argc, char *argv[])
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
-   // and overwrite the data base run info (MseMeasInfoX) if needed
+   // and overwrite the run info from database (MseMeasInfoX) if needed
    rawData->ReadRecBegin(mseMeasInfoX);
    rawData->ReadMeasInfo(*mseMeasInfoX);
 
    //cout << endl << "mseMeasInfoX 2: " << endl;
    //mseMeasInfoX->Print();
 
-   // We can do this for any run including alphas alpha
+   // We can do this for any run type including alpha runs
    MseRunPeriodX *mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
    //gAsymDb->CompleteMeasInfo(*mseMeasInfoX); // deprecated
 
@@ -461,24 +461,17 @@ int main(int argc, char *argv[])
 
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
-   // Find RunConfig object in the calibration files and update
-   //gAsymRoot->UpdateRunConfig();
+   // A Calibrator object holds calibration constants for individual channels
+   // and knows how to updated/calibrate them if requested by the user
    gAsymRoot->UpdateCalibrator();
 
-   //printf("calib= %d\n", gAnaInfo->HasCalibBit());
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
-   //return 0;
-
-   // Create tree if requested
+   // Create trees if requested
    if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
-
-   // XXX : debug
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() ) {
 
@@ -514,7 +507,8 @@ int main(int argc, char *argv[])
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Update calibration constants if requested
-   // XXX logic??? I don't want to use it... Calibration can be done only once during the first pass
+   // XXX logic??? For normal data runs calibration should be done only once
+   // during the first pass
    if ( gAnaInfo->HasCalibBit() && gAnaInfo->HasAlphaBit() ) {
 
       gAsymRoot->Calibrate();
@@ -523,6 +517,8 @@ int main(int argc, char *argv[])
    //gRunDb.Print();
    //gAsymRoot->fEventConfig->Print();
    //gAsymRoot->fEventConfig->fCalibrator->Print();
+
+   // No analysis is done beyond this point only bookkeeping
 
    // Stop stopwatch and save results
    stopwatch.Stop();

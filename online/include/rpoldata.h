@@ -295,7 +295,7 @@ typedef struct {
     long scalers[8];            // 8 internal scalers
     long hist[1536];            // internal histogram memory.
 //  Partitioning according header.type:
-//      REC_WFDSCAL -   [0-119]         bunch C counts
+//      REC_WFDSCAL -   [0-119]         bunch C(arbon?) counts (within look up table?)
 //                      [128-255]       amplitude histogram, unpolarized
 //                      [256-383]       amplitude histogram, positive
 //                      [384-511]       amplitude histogram, negative
