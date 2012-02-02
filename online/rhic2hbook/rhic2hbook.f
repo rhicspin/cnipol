@@ -14,9 +14,12 @@
 	print *, '       -S <number> skip number of events before writing waveforms'
 	print *, '       -B <number> select bunch number for waveforms'
 	print *, '       -v <number> start with revolution number for waveforms'
+	print *, '       -d <number> disable detectors. default is 63 = 111111'
 	
 	return
-	end	
+	end
+
+
 c
 	program rhic2hbook
 	common/pawc/pawc(8000000)
@@ -52,29 +55,32 @@ c
 	real bunchAsymErrorXS(360), bunchAsymErrorYS(360)
 	real beamEnergyS, analyzingPowerS, analyzingPowerErrorS
 	integer numberEventsS, maxTimeS
+        integer detMask
 
 	character*256 fin, fout, str, device
 
 ccommon /
 	
-	fin = '?'
-	fout = '?'
-	isend = 0
-	intp = 0
-	iraw = 0
-	iproc = 1
-	ilsas = 0
-	iskip = 0
-	nsubrun = 0
-	ipar = 0
+	fin       = '?'
+	fout      = '?'
+	isend     = 0
+	intp      = 0
+	iraw      = 0
+	iproc     = 1
+	ilsas     = 0
+	iskip     = 0
+	nsubrun   = 0
+	ipar      = 0
 	irevfirst = 0
-	ibunch = -1
-	NumArgs = IArgC()
+	ibunch    = -1
+	detMask   = 63
+	NumArgs   = IArgC()
 
 	call vzero(ichanntp, 96)
 	
 	do i = 1, NumArgs
 	    call getarg(i, str)
+
 	    if (ipar.eq.1) then
 c	ipar=1 - get device name
 		device = str
@@ -101,6 +107,10 @@ c	ipar=5 - get bunch number for n-tuple
 	    else if (ipar.eq.6) then
 c	ipar=6 - get revolution number before which we skip
 		read (str, *) irevfirst
+		ipar = 0
+	    else if (ipar.eq.7) then
+c	ipar=7 - get mask of disable detectors
+		read (str, *) detMask
 		ipar = 0
 	    else if (str.eq.'-s') then
 c	send result, get <device name>
@@ -134,6 +144,9 @@ c	get <bunch number> for n-tuple
 	    else if (str.eq.'-v') then
 c	get <revolution skip> for n-tuple
 		ipar = 6
+	    else if (str.eq.'-d') then
+c get disabled detectors
+		ipar = 7
 	    else if (fin.eq.'?') then
 c	input filename
 		fin = str
@@ -150,82 +163,99 @@ c	output filename
 	    call Usage
 	    stop
 	endif	
+
 	if (fout.eq.'?') fout = fin//'.hbook'
-c		Make that if no '-c' option given but n-tuple requested than all channels go to n-tuple
+
+c Make that if no '-c' option given but n-tuple requested than all channels go to n-tuple
+
 	j = 0
 	do i=1, 96
 	    j = j + ichanntp(i)
 	enddo
+
 	if (j.eq.0) then
 	    do i=1, 96
 	        ichanntp(i) = 1
 	    enddo
 	endif
-c		Hook for test 90-degree detectors in yel1 and blu2 (run 2010)
-	if ((device(13:16).eq.'yel1').or.(device(13:16).eq.'blu2')) then
-	    i90OK = 0
-	else
-	    i90OK = 1
+
+c Hook for test 90-degree detectors in yel1 and blu2 (run 2010/2011)
+c	if ((device(13:16).eq.'yel1').or.(device(13:16).eq.'blu2')) then
+c	    i90OK = 0
+c	else
+c	    i90OK = 1
+c	endif
+
+c Run 2012: We use a more general detMask to disable detectors
+c blu2 det 1 and 6 are experimental
+	if (device(13:16).eq.'blu2') then
+	   detMask = 30
 	endif
-c		initialize hbook
+
+	i90OK = 1
+
+c Initialize hbook
 	call hlimit(8000000)
 	call mninit(5, 6, 7)
 	iquest(10) = 65000
-c
+
+c Single subrun processing (also normal measurement)
 	if (nsubrun.ge.0) then
-c		Single subrun processing (also normal measurement)
+
 	    if (icopen(fin(1:len_trim(fin))).ne.0) then
 		print *, 'Cannot open input file ', fin(1:len_trim(fin))
 		stop
-    	    endif
-            print *, 'Openning output file ', fout(1:len_trim(fout))
+	    endif
+	    print *, 'Openning output file ', fout(1:len_trim(fout))
 	    call hropen(10, 'data', fout(1:len_trim(fout)), 'NP', 1024, irc)
-c	
+
+c Flush the output buffers
 	    call flush(6)
 	    call flush(7)
 	    call readandfill(nsubrun)
-c
-	    if (iproc.ne.0) call process(i90OK, device)
-c	
+
+	    if (iproc.ne.0) call process(i90OK, device, detMask)
+	
 	    call hrout(0, irc, ' ')
 	    call hrend('data')
 	    call icclose
-c
+
 	    if (isend.ne.0) call sendresult(device(1:len_trim(device)))
-c
+
+c Process ramp measurement - all subruns found
 	else
-c		Process ramp measurement - all subruns found
 	    isubr = 0
 	    call vzero(itimestamp,500)
-c
+
 10	    if (icopen(fin(1:len_trim(fin))).ne.0) then
 		print *, 'Cannot open input file ', fin(1:len_trim(fin))
 		stop
     	    endif
+
     	    write(*,*) 'RHIC2HBOOK-INFO : isubr = ', isubr
     	    iquest(10) = 65000
 	    call hdelet(0)
 	    write(str,'(''_'', I4.4)') isubr+1
             print *, 'Openning output file 2 ', fout(1:len_trim(fout))//str(1:len_trim(str))
 	    call hropen(10, 'data', fout(1:len_trim(fout))//str(1:len_trim(str)), 'NP', 1024, irc)
-c
+
 	    call flush(6)
 	    call flush(7)
 	    call readandfill(isubr)
 c   	    print *, 'After readandfill (nsubrun<0) isubr = ',isubr
-c
+
 	    if (iproc.ne.0) then
-		call process(i90OK, device)
-c
-		asymX(isubr+1) = avgAsymXS
-		asymX90(isubr+1) = avgAsymX90S
-		asymX45(isubr+1) = avgAsymX45S
-		asymErrX(isubr+1) = avgAsymErrorXS
+		call process(i90OK, device, detMask)
+
+		asymX(isubr+1)      = avgAsymXS
+		asymX90(isubr+1)    = avgAsymX90S
+		asymX45(isubr+1)    = avgAsymX45S
+		asymErrX(isubr+1)   = avgAsymErrorXS
 		asymErrX90(isubr+1) = avgAsymErrorX90S
 		asymErrX45(isubr+1) = avgAsymErrorX45S
 		
 	    endif
-c	
+
 	    call hrout(0, irc, ' ')
 	    call hrend('data')
 	    call icclose
@@ -233,25 +263,27 @@ c
 	    if (itimestamp(isubr+1).eq.0.or.isubr.ge.499) goto 99
 	    isubr = isubr + 1
 	    goto 10
-c	    	    
+	    	    
 99	    if (isend.ne.0) call sendsubresult(device(1:len_trim(device)))
-c
+
 	endif
-c	
+	
 	print *,'The end of RHIC2HBOOK.'
 	stop
 	end
-c
+
+
 c book channel histograms. i >= 1
 	subroutine mybook(i)
 	
 	character chname*5
 	common /atdata/ a, t, tmax, s, ib, id, irev, ijet
 	common /atraw/ ia, it, itmax, is, iib, iid, iirev, iijet
-	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
+	common /runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
 	
 	write(chname, '(I4)') i
+
 	if (intp.eq.1.and.ichanntp(i).ne.0) then
 	    if (iraw.eq.1) then
 		call hbnt(i, 'AT events RAW for Si'//chname, ' ')
@@ -262,11 +294,12 @@ c book channel histograms. i >= 1
 	    endif
 	endif
 	
+c Histograms filled from scalers
 	call hbook1(200+i, 'Bunch No for Si'//chname, 120, 0., 120., 0)
-
 	call hbook1(300+i, 'Energy keV, unpol, for Si'//chname, 128, edead(i), 256.*ecoef(i)+edead(i), 0)
 	call hbook1(400+i, 'Energy keV, pol plus, for Si'//chname, 128, edead(i), 256.*ecoef(i)+edead(i), 0)
 	call hbook1(500+i, 'Energy keV, pol minus, for Si'//chname, 128, edead(i), 256.*ecoef(i)+edead(i), 0)
+
 	if (ifine.eq.0) then
 	    call hbook2(600+i, 'ET (keV ns) internal hist (coarse) for Si'//chname, 
      ,	    32, edead(i), 256.*ecoef(i)+edead(i), 32, tmin(i), tmin(i) + 32.*rnsperchan, 0)
@@ -274,12 +307,14 @@ c book channel histograms. i >= 1
 	    call hbook2(700+i, 'ET (keV ns) internal hist (fine) for Si'//chname, 
      ,	    16, etrg, etrg+128*ecoef(i), 64, tmin(i), tmin(i) + 32.*rnsperchan, 0)
 	endif
+
 	call hbook1(800+i, 'Low time cut for Si'//chname, 256, edead(i), 256*ecoef(i)+edead(i), 0)
 	call hbook1(900+i, 'Up  time cut for Si'//chname, 256, edead(i), 256*ecoef(i)+edead(i), 0)
 
 	call hbook1(1300+i, 'Amplitude, unpol, for Si'//chname, 128, 0., 256., 0)
 	call hbook1(1400+i, 'Amplitude, pol plus, for Si'//chname, 128, 0., 256., 0)
 	call hbook1(1500+i, 'Amplitude, pol minus, for Si'//chname, 128, 0., 256., 0)
+
 	if (ifine.eq.0) then
 	    call hbook2(1600+i, 'AT (raw) internal hist (coarse) for Si'//chname, 
      ,	    32, 0., 256., 32, tmin(i)/rnsperchan, tmin(i)/rnsperchan + 32., 0)
@@ -298,7 +333,9 @@ c book channel histograms. i >= 1
 
 	return
 	end
-c		Here we make summary bananas for each subrun
+
+
+c	Here we make summary bananas for each subrun
 c	5000+isubr - 2-dim banana (from 700+N)
 c	6000+isubr - low cut (from 800+N)
 c	7000+isubr - high cut (from 900+N)
@@ -370,12 +407,16 @@ c
 C	print *, i,' histdelim: Filling ',2999+j,'  ',1.*i-0.5,'  ',1.0*IPOS(4*(i-1)+j)
 	    enddo
 	enddo
+
 	return
 	end
+
+
 c
 	subroutine histrate(IPOS, LEN)
 	integer ipos(LEN)
 	call hbook1(3010, 'Count rate', LEN+1, 0., 1.0*LEN+1., 0)
+
 	do i=1,LEN
 	    call hfill(3010, 1.*i+0.5, 0., 1.0*IPOS(i))
 	enddo
@@ -398,8 +439,9 @@ c
 
 
 c
-	subroutine process(i90OK, polName)
+	subroutine process(i90OK, polName, detMask)
 	character*256 polName
+        integer detMask
 	real x(128), y(128), ex(128), ey(128)
 	common /sscal/ ssscal(288)
 	integer ssscal
@@ -444,12 +486,12 @@ c
 	common/runpars/ intp, iraw, iproc, ilsas, trigmin, iskip, ichanntp(96)
 	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
 	
-C	names as from upstream of the beam
+c	names as from upstream of the beam
 c	Si           1-12      23-24	 25-36       37-48	    49-60    61-72
 	data siname/'UpRight', '90Right', 'DownRight', 'DownLeft', '90Left', 'UpLeft'/
-C
-C	Print out some messages about the target...
-C
+
+c Print out some messages about the target...
+
 	if (targetIdS(1) .eq. 'H') then
 	    print *, '>>>' 
 	    print *, '>>>  INFO: horizonal target used --> ignoring 90-degree detectors'
@@ -463,12 +505,14 @@ C
 	    print *, '>>>  INFO: did not understand targetIdS(1) = ', targetIdS(1)
 	    print *, '>>>'
 	endif
-c 		Book histogramms
 
-c   Information histogram...
+c Book histogramms
+
+c Information histogram...
 	call hbook1(10, 'polDat Information', 1, 0., 1., 0)
 	call hfill(10, 0.5, 0., beamEnergyS)
 
+c Counts per bunch for each detector
 	do i=1,6
 	    call hbook1(9290+i, 'Bunch No for '//siname(i), 120, 0., 120., 0)
 	    call hbook1(9390+i, 'Energy keV, unpol, for '//siname(i), 128, 
@@ -478,26 +522,31 @@ c   Information histogram...
 	    call hbook1(9590+i, 'Energy keV, pol minus, for '//siname(i), 128, 
      ,    	0., 1280., 0)
 	enddo
+
 	call hbook1(397, 'Energy keV, unpol, for ALL Si', 128, 0., 1280., 0)
 	call hbook1(497, 'Energy keV, pol plus, for ALL Si', 128, 0., 1280., 0)
 	call hbook1(597, 'Energy keV, pol minus, for ALL Si', 128, 0., 1280., 0)
 	call hbook1(600, 'Energy keV, ALL pol for ALL Si', 128, 0., 1280., 0)
-c		Fill histogramms
+
+c	Fill histogramms
 	do i=1,6
-c		Do not process 90-degree detectors with horizontal targets
+c Do not process 90-degree detectors with horizontal targets
 	    if (.not.((i.eq.2 .or. i.eq.5) .and. (targetIdS(1).eq.'H'))) then 
 		do j=1,12
 		    if (hexist(200+12*(i-1)+j).and.mark(12*(i-1)+j).eq.0) then
 c	Bunch #
 			call hunpak(200+12*(i-1)+j, X, ' ', ' ')
 			call hpakad(9290+i, X)
+
 c	Energy keV, unpol 
 			call hrebin(300+12*(i-1)+j, X, Y, EX, EY, 128, 1, 128)
+
 			do l = 1, 128
 			    call hfill(9390+i, X(l), 0., Y(l))
 			    call hfill(397, X(l), 0., Y(l))
 			    call hfill(600, X(l), 0., Y(l))
 			enddo
+
 c	Energy keV, pol up
 			call hrebin(400+12*(i-1)+j, X, Y, EX, EY, 128, 1, 128)
 			do l = 1, 128
@@ -505,6 +554,7 @@ c	Energy keV, pol up
 			    call hfill(497, X(l), 0., Y(l))
 			    call hfill(600, X(l), 0., Y(l))
 			enddo
+
 c	Energy keV, pol down
 			call hrebin(500+12*(i-1)+j, X, Y, EX, EY, 128, 1, 128)
 			do l = 1, 128
@@ -516,29 +566,31 @@ c	Energy keV, pol down
 		enddo
 	    endif
 	enddo
+
 c		call this for debugging only
 c	call testpol
 
-c		Get various counts
+c Get various counts
 
-C	Counts from WFD special scalers
+c Counts from WFD special scalers
 	call vzero(scnt, 18)
 	totalS = 0
 	upS = 0
 	downS = 0
 	unpolS = 0
+
 	do i=1,6
 	    if (.not.((i.eq.2 .or. i.eq.5) .and. (targetIdS(1).eq.'H' ))) then
 		do j=1, 12
 		    if (mark(12*(i-1)+j).eq.0) then
-			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+3)
-    			unpolS = unpolS + ssscal(3*(12*(i-1)+j-1)+3)
+			totalS    = totalS    + ssscal(3*(12*(i-1)+j-1)+3)
+    			unpolS    = unpolS    + ssscal(3*(12*(i-1)+j-1)+3)
 			scnt(i,1) = scnt(i,1) + ssscal(3*(12*(i-1)+j-1)+3)
-			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+1)
-			upS    =    upS + ssscal(3*(12*(i-1)+j-1)+1)
+			totalS    = totalS    + ssscal(3*(12*(i-1)+j-1)+1)
+			upS       =    upS    + ssscal(3*(12*(i-1)+j-1)+1)
 			scnt(i,2) = scnt(i,2) + ssscal(3*(12*(i-1)+j-1)+1)
-			totalS = totalS + ssscal(3*(12*(i-1)+j-1)+2)
-			downS  =  downS + ssscal(3*(12*(i-1)+j-1)+2)
+			totalS    = totalS    + ssscal(3*(12*(i-1)+j-1)+2)
+			downS     =  downS    + ssscal(3*(12*(i-1)+j-1)+2)
 			scnt(i,3) = scnt(i,3) + ssscal(3*(12*(i-1)+j-1)+2)
 		    endif
 		enddo
@@ -558,7 +610,7 @@ C	Counts from energy histograms
 			if (hexist(300+12*(i-1)+j)) then
 			    hn=0
 			    do k=1,128
-				hn=hn+hi(300+12*(i-1)+j,k)
+				hn= hn + hi(300+12*(i-1)+j,k)
 			    enddo
 			    totalE = totalE + hn
 			    unpolE = unpolE + hn
@@ -586,29 +638,29 @@ C	Counts from energy histograms
 		enddo
 	    endif
 	enddo
-c
+
 		
-C	call AnaPow
+c	call AnaPow
 	if (analyzingPowerErrorS.lt.0.0) call AnaPow(polName)
 
-C	Counts which are sent to the ADO and used for asymmetry
-C	calculations are from bunch # histograms and rely on
-C	polarization and fill pattern got from RHIC ADO
+c	Counts which are sent to the ADO and used for asymmetry
+c	calculations are from bunch # histograms and rely on
+c	polarization and fill pattern got from RHIC ADO
 
 c		fill counts for ADO
 	do i=1, 120
-	    countsUpLeftS(3*i-2) = hi(9296, i)
-	    countsLeftS(3*i-2) = hi(9295, i)
-	    countsDownLeftS(3*i-2) = hi(9294, i)
+	    countsUpLeftS(3*i-2)    = hi(9296, i)
+	    countsLeftS(3*i-2)      = hi(9295, i)
+	    countsDownLeftS(3*i-2)  = hi(9294, i)
 	    countsDownRightS(3*i-2) = hi(9293, i)
-	    countsRightS(3*i-2) = hi(9292, i)
-	    countsUpRightS(3*i-2) = hi(9291, i)	    
+	    countsRightS(3*i-2)     = hi(9292, i)
+	    countsUpRightS(3*i-2)   = hi(9291, i)
 	enddo
 	
 	call vzero(cnt, 18)
 	totalCountsS = 0
-	upCountsS = 0
-	downCountsS = 0
+	upCountsS    = 0
+	downCountsS  = 0
 	unpolCountsS = 0
 		
 	do i=1,6
@@ -672,8 +724,8 @@ c
 	    endif
 	endif
 
-c		calculate sqare root asymmetries
-c		left-right 90 deg det. (2-5)
+c	calculate sqare root asymmetries
+c	left-right 90 deg det. (2-5)
 c	actually right - left, because we are looking at recoiled particle
 	print *, '>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<'
 	print *, '>>>>> Square root asymmetries <<<<<' 
@@ -681,6 +733,7 @@ c	actually right - left, because we are looking at recoiled particle
 	print *, '            TYPE           PHYSICS                LUMINOSITY             ACCEPTANCE'
 100	format(A20, F10.6, '+-', F8.6, 3X, F10.6, '+-', F8.6, 3X, F10.6, '+-', F8.6)
 c		left-right 90 deg det. (2-5)
+
         call sqass(cnt(2,2), cnt(5,3), cnt(2,3), cnt(5,2), assp, eassp)
      	avgAsymX90S = assp
 	avgAsymErrorX90S = eassp
@@ -692,39 +745,50 @@ c		left-right 45 deg det. (13-46)
      ,		   cnt(4,2) + cnt(6,2), cnt(1,3) + cnt(3,3), assp, eassp)
         avgAsymX45S = assp
 	avgAsymErrorX45S = eassp
+
 	call sqass(cnt(1,2) + cnt(3,2), cnt(4,2) + cnt(6,2), 
      ,		   cnt(4,3) + cnt(6,3), cnt(1,3) + cnt(3,3), assl, eassl)
 	call sqass(cnt(1,2) + cnt(3,2), cnt(1,3) + cnt(3,3), 
      ,		   cnt(4,2) + cnt(6,2), cnt(4,3) + cnt(6,3), assa, eassa)	
+
 	print 100, 'X45 :',assp,eassp,assl,eassl,assa,eassa
+
 c		up-down 45 deg det (34-16)
+
 	call sqass(cnt(4,2) + cnt(3,2), cnt(1,3) + cnt(6,3), 
      ,		   cnt(4,3) + cnt(3,3), cnt(1,2) + cnt(6,2), assp, eassp)
 	call sqass(cnt(4,2) + cnt(3,2), cnt(1,2) + cnt(6,2), 
      ,		   cnt(4,3) + cnt(3,3), cnt(1,3) + cnt(6,3), assl, eassl)
 	call sqass(cnt(1,2) + cnt(6,2), cnt(1,3) + cnt(6,3), 
      ,		   cnt(4,3) + cnt(3,3), cnt(4,2) + cnt(3,2), assa, eassa)
+
 	print 100, 'Y45 :',assp,eassp,assl,eassl,assa,eassa
+
 c		cross (forbidden) 45 deg det. (14-36)
+
 	call sqass(cnt(4,2) + cnt(1,2), cnt(3,3) + cnt(6,3), 
      ,		   cnt(4,3) + cnt(1,3), cnt(3,2) + cnt(6,2), assp, eassp)
 	call sqass(cnt(6,2) + cnt(3,2), cnt(1,2) + cnt(4,2), 
      ,		   cnt(4,3) + cnt(1,3), cnt(3,3) + cnt(6,3), assl, eassl)
 	call sqass(cnt(4,2) + cnt(1,2), cnt(4,3) + cnt(1,3), 
      ,		   cnt(6,3) + cnt(3,3), cnt(3,2) + cnt(6,2), assa, eassa)
+
 	print 100, 'CR45 :',assp,eassp,assl,eassl,assa,eassa
 	print *,' '
-c       cross 45 deg (1-4) 
+
+c Cross 45 deg (1-4) 
 	call sqass(cnt(1,2), cnt(4,3),  cnt(1,3), cnt(4,2), assp, eassp)
 	call sqass(cnt(1,2), cnt(4,2),  cnt(1,3), cnt(4,3), assl, eassl)
 	call sqass(cnt(4,2), cnt(4,3),  cnt(1,3), cnt(1,2), assa, eassa)
 	print 100, '1-4 :',assp,eassp,assl,eassl,assa,eassa
-c       cross 45 deg (3-6) 
+
+c Cross 45 deg (3-6) 
 	call sqass(cnt(3,2), cnt(6,3),  cnt(3,3), cnt(6,2), assp, eassp)
 	call sqass(cnt(3,2), cnt(6,2),  cnt(3,3), cnt(6,3), assl, eassl)
 	call sqass(cnt(6,2), cnt(6,3),  cnt(3,3), cnt(3,2), assa, eassa)
 	print 100, '3-6 :',assp,eassp,assl,eassl,assa,eassa
-c		bunch per bunch polarizations - given bunch versus sum of all
+
+c Bunch per bunch polarizations - given bunch versus sum of all
 	print *,'Bunch asymmetries: X90, X45, Y45 physics'
 	do i=1,120
 	    if (fillpat(i).ne.0.and.polpat(i).ne.0) then
@@ -740,13 +804,14 @@ c		bunch per bunch polarizations - given bunch versus sum of all
 		print 100, str, 2*assx90, 2*eassx90, 2*assx45, 2*eassx45, 2*assy45, 2*eassy45
 	    endif
 	enddo	
-c
+
 	if (ilsas.eq.0) return
-c
+
 	print *, '>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<'
 	print *, '>>>>> Least squares asymmetries <<<<<' 
 	print *, '>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<'
-c		we suppress 90-degree test detectors
+
+c We suppress 90-degree test detectors if requested
 	if (i90OK.eq.0) then
 	    cnt(2, 1) = 0
 	    cnt(2, 2) = 0
@@ -755,13 +820,24 @@ c		we suppress 90-degree test detectors
 	    cnt(5, 2) = 0
 	    cnt(5, 3) = 0
 	endif
+
+c Test for disabled detectors, and suppress up/down/unpol counts
+	do i=1,6
+	   if (.NOT.BTEST(detMask, i-1)) then
+	      cnt(i, 1) = 0
+	      cnt(i, 2) = 0
+	      cnt(i, 3) = 0
+	   endif
+	enddo
+
 	call lssqrasym(cnt, avgAsymXS, avgAsymYS, avgAsymErrorXS, avgAsymErrorYS)
+
      	print 100, 'X :', avgAsymXS, avgAsymErrorXS
      	print 100, 'Y :', avgAsymYS, avgAsymErrorYS
 
 	if (analyzingPowerS .ne. 0.) then
 	   	print *, ' '
-		xpol = avgAsymXS/analyzingPowerS
+		xpol  = avgAsymXS/analyzingPowerS
 		expol = avgAsymErrorXS/analyzingPowerS
 	   	print 100, 'Polarization :', xpol, expol
 	   	print *, ' '
@@ -781,9 +857,11 @@ c		we suppress 90-degree test detectors
 		print 100, str, bassY(i), ebassY(i)
 	    enddo
 	endif
-c
+
 	return
 	end
+
+
 c
 	subroutine sqass(A, B, C, D, ASS, ERR)
 c	A - LeftUp, B - RightDown, C - LeftDown, D - RightUp
@@ -796,7 +874,9 @@ c	A - LeftUp, B - RightDown, C - LeftDown, D - RightUp
 	endif
 	return
 	end
-c
+
+
+c Calculate square root asymmetry
 	subroutine lssqrasym(cnt, ax, ay, eax, eay)
 	common/chi2p1/ counts(6, 3)
 	external chi2, chutil
@@ -804,69 +884,79 @@ c
 	dimension cnt(6, 3)
 	dimension cpol(3)
 	character*80 str
-c	
+
 	summ = 0.D0
 	cpol(1) = 0.D0
 	cpol(2) = 0.D0
 	cpol(3) = 0.D0
+
 	do i=1,6
 	    do j=1,3
 		counts(i,j) = cnt(i,j)
-		cpol(j) = cpol(j)+cnt(i,j)
-		summ = summ + cnt(i,j)
+		cpol(j)     = cpol(j) + cnt(i,j)
+		summ        = summ + cnt(i,j)
 	    enddo
 	enddo
-c
+
 	call mncomd(chi2, 'set pri -1', irc, chutil)
 	call mncomd(chi2, 'clear', irc, chutil)
 	call mnseti('Square root avarage asymmetry')
-c
+
 	call mnparm(1, 'AsymX', 0.D0, 0.1D0, 0.D0, 0.D0, irc)
 	call mnparm(2, 'AsymY', 0.D0, 0.1D0, 0.D0, 0.D0, irc)
 	call mnparm(3, 'Lum0', cpol(1)/6, 0.1*summ, 0.D0, 0.D0, irc)
 	call mnparm(4, 'Lum+', cpol(2)/6, 0.1*summ, 0.D0, 0.D0, irc)
 	call mnparm(5, 'Lum-', cpol(3)/6, 0.1*summ, 0.D0, 0.D0, irc)
+
 	do i=1,6
 	    write(str, *) 'AccDt ', i
 	    call mnparm(5+i, str, 1.D0, 0.1D0, 0.D0, 0.D0, irc)
 	enddo
-c		Our normalization
+
+c Our normalization
 	call mncomd(chi2, 'fix 6', irc, chutil)
-c
 	call mncomd(chi2, 'migr', irc, chutil)
+
 	call mnpout(1, str, par, epar, blo, bup, irc)
-	ax = par
+	ax  = par
 	eax = epar
+
 	call mnpout(2, str, par, epar, blo, bup, irc)
-	ay = par
+	ay  = par
 	eay = epar
-c
+
 	call mncomd(chi2, 'show fcnvalue', irc, chutil)
 	return
 	end
-c	
+
+
+c calculates predicted number of counts
 	subroutine chutil(xval, Npos, ipol, result)
-c		calculates predicted number of counts
+
 	double precision xval(11), result, cs(6), sn(6)
 	data sn /0.707106781D0, 1.D0, 0.707106781D0,
      ,		-0.707106781D0, -1.D0, -0.707106781D0/
 	data cs /-0.707106781D0, 0.D0, 0.707106781D0,
      ,		0.707106781D0, 0.D0, -0.707106781D0/
-c		polarization effect
+
+c polarization effect
 	result = xval(1)*sn(Npos) + xval(2)*cs(Npos)
-c		luminosity and acceptence
+
+c luminosity and acceptence
 	if (ipol.eq.1) result = xval(3)*xval(5+Npos)
 	if (ipol.eq.2) result = (1.D0 + result)*xval(4)*xval(5+Npos)
 	if (ipol.eq.3) result = (1.D0 - result)*xval(5)*xval(5+Npos)
-c
+
 	return
 	end
-c	
+
+
+
 	subroutine chi2(npar, grad, fval, xval, iflag, util)
 	common/chi2p1/ counts(6, 3)
 	external util
 	double precision grad(11), fval, xval(11), counts, ccc
-c
+
 	do i=1,11
 	    grad(i) = 0.D0
 	enddo
@@ -875,13 +965,15 @@ c
 	    do j=1,3
 		call util(xval, i, j, ccc)
 		if (counts(i, j).ne.0) then
-     		    fval = fval + ((ccc - counts(i, j))**2)/counts(i, j)
+		    fval = fval + ((ccc - counts(i, j))**2)/counts(i, j)
 		endif
 	    enddo
 	enddo
-c		
+
 	return
 	end
+
+
 c
 	subroutine lssqrbasym(ax, ay, eax, eay)
 	common /RHIC/ fillpat(120), polpat(120)
@@ -1111,7 +1203,7 @@ c
 *      t = e * 22.18 / 1000000.
 *      Emin = (0.0010-0.001/2.)*1e6/22.18 = 22.5
 *      Emax = (0.0255+0.001/2.)*1e6/22.18 = 1172.2
-
+*
 * first point: t = - 0.001
 * last  point: t = - 0.025
 * step size:  Dt =   0.001 (DE = 45.1 keV)
