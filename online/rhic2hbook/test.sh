@@ -15,21 +15,23 @@ RUN=$1
 POLARIM=$2
 
 POLDIR=/usr/local/polarim
-#POLDIR=/home/dsmirnov/cnipol/cnipol/trunk/online
-LOGDIR=${POLDIR}/log
+export LOGDIR=${POLDIR}/log
 PSFILE=${LOGDIR}/${RUN}.ps
 #PSFILE=./${RUN}.ps
 ALOG=${LOGDIR}/an${RUN}.log
-HBOOKDIR=${POLDIR}/hbook
+export HBOOKDIR=${POLDIR}/hbook
 HBOOKFILE=${HBOOKDIR}/${RUN}.hbook
-BINDIR=${POLDIR}/bin
-MACDIR=${BINDIR}/macro
-DATADIR=${POLDIR}/data
+export BINDIR=${CNIPOL_DIR}/bin
+export MACDIR=${BINDIR}/macro
+export DATADIR=${POLDIR}/data
 DATA=${DATADIR}/${RUN}.data
-EMITCMD=/usr/local/polarim/bin/emitscan
+EMITCMD=$BINDIR/emitscan
 ANACMD=$BINDIR/rhic2hbook
 
 echo $RUN $POLARIM
+
+echo "\$MACDIR=$MACDIR"
+echo "\$LOGDIR=$LOGDIR"
 
 mysendpict() {
     if [ -f $2 ] ; then
