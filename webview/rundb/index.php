@@ -23,19 +23,16 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    $gRunId  = $_GET['runid'];
    $gRunDir = DATA_DIR."/$gRunId";
 
-   // check for correct and existing  runid
+   // Check for correct and existing runid
    if (!is_dir($gRunDir) || !file_exists("$gRunDir/runconfig$gSuffix.php"))
    {
-      print "No results for $gRunDir\n";
+      print "No results found for $gRunDir\n";
       exit;
    }
 
    // Read information about this run from the config file
    $rc = array();
-
-   //include("$gRunDir/runconfig$gSuffix.php") or die;
    include("$gRunDir/runconfig$gSuffix.php");
-
    if (count($rc) == 0) {
       print "No config file found for $gRunDir\n";
       exit;
@@ -60,7 +57,6 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
       exit;
    }
 
-   //include("./config_plots.php");
    include_once("PlotHelper.php");
 
    // Set default directory for run images
@@ -68,11 +64,17 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    $gP = new PlotHelper($dir);
 
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
-      include("runinfo.html");
+
+      // Check if raw data display requested      
+      if (isset($_GET['raw'])) {
+         include("runinfo_raw.html");
+      } else
+         include("runinfo.html");
+
    } elseif ($rc['measurement_type'] == 1) {
       include("runinfo_calib.html");
    } else {
-      print "Problem with $gRunId\n";
+      print "Problem displaying info for $gRunId\n";
    }
 
    exit;
@@ -84,8 +86,16 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
    $gRunId  = $_GET['runid'];
    $gChanId = $_GET['chanid'];
+   $gRunDir = DATA_DIR."/$gRunId";
 
-   // check for correct and existing  runid
+   // Check for correct and existing runid
+   if (!is_dir($gRunDir) || !file_exists("$gRunDir/runconfig$gSuffix.php"))
+   {
+      print "No results found for $gRunDir\n";
+      exit;
+   }
+
+   // Check for correct and existing  runid
    if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig.php")) {
       print "No results for $gRunId\n";
       exit;
@@ -93,10 +103,12 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
    // Read information about this run
    $rc = array();
-   include(DATA_DIR."/$gRunId/runconfig.php");
-   if (count($rc) == 0) exit;
+   include("$gRunDir/runconfig$gSuffix.php");
+   if (count($rc) == 0) {
+      print "No config file found for $gRunDir\n";
+      exit;
+   }
 
-   //include("./config_plots.php");
    include_once("PlotHelper.php");
 
    $dir = "../runs/$gRunId/images$gSuffix/";
@@ -112,41 +124,6 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
 
    exit;
 }
-
-
-//Form default output
-//$dir = opendir(DATA_DIR);
-
-//if (!$dir) exit("ERROR\n");
-
-//$rs = array();
-
-//print "<pre>\n";
-
-//while (false !== ($file = readdir($dir))) {
-//	//print "$file\n";
-//
-//   if (is_dir(DATA_DIR."/$file") && file_exists(DATA_DIR."/$file/runconfig.php")) {
-//      //if (ereg("[0-9]{3,}\.[0-9]{3}", $file) && is_dir($file))
-//
-//      //echo "$file ".$rs['dirsize']."<br>\n";
-//      //include("$file/runconfig.php");
-//      $rs[] = $file;
-//	   //print "ok: $file\n";
-//      //$rs[$gRunId]['NumChannels'] = $rc['data']['NumChannels'];
-//      //$rs[$gRunId]['dirsize'] = exec( "du -h -s $file" );
-//   }
-//}
-
-//print "</pre>\n";
-
-//closedir($dir);
-
-//sort($rs);
-
-//print "<pre>\n";
-//print_r($rs);
-//print "</pre>\n";
 
 include("runinfo_index.html");
 

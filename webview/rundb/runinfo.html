@@ -8,7 +8,7 @@
 
 <html>
 <head>
-  <title>Run <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <title>Measurement <?=$gRunId?>: Summary and Fast Offline Results</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
 </head>
 
@@ -24,7 +24,7 @@
 
 <p><a name="content"/>
 
-<h1 class="count">Run <?=$gRunId?></h1>
+<h1 class="count">Measurement <?=$gRunId?></h1>
 
 <p><a name="content"/>
 
@@ -42,7 +42,7 @@
 
 <?
 
-// Determine whether we have different analyses
+// Determine whether we have different analyses identified by a suffix
 
 if (!isset($gSfx) || empty($gSfx))
    $suffixes = "default ";
@@ -92,7 +92,7 @@ if (isset($rc['measurement_type']) && $rc['measurement_type'] >= 0 ) {
    $measurementType = $MEASTYPE[$rc['measurement_type']];
 }
 
-$profileRatio = sprintf("%5.3f &plusmn; %5.3f", $rc['fIntensPolarR'], $rc['fIntensPolarRErr']);
+$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $rc['profile_ratio'], $rc['profile_ratio_error']);
 
 // Deal with version now
 $asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
@@ -123,7 +123,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
    <td>
-   <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
+   <b>Run Start Time:</b> <?=isset($rc['start_time']) ? date("M d, Y H:i:s D", $rc['start_time']) : "&nbsp;";?>
    <td>
    <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
    <td>
@@ -173,6 +173,46 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
          }
       }
    ?>
+   </table>
+
+<tr>
+   <td colspan=4>
+<?php
+   //$row1 = "";
+   $row2 = "";
+   $row3 = "";
+   $iCell = 0;
+   $bkgCellColor = "#fff";
+
+   foreach ($rc['fBeamBunches'] as $bunchId => $bunch)
+   {
+      if ($iCell % 10 == 0) {
+         if ($bkgCellColor == "#fff") $bkgCellColor = "#ddd";
+         else if ($bkgCellColor == "#ddd") $bkgCellColor = "#fff";
+      }
+
+      $bunchSpin = ($bunch['fBunchSpin'] == '-' ? "&#8722;" : $bunch['fBunchSpin']);
+     
+      //$row1 .= "<td>$bunchId";
+      $row2 .= "<td class=align_cm style='background-color: $bkgCellColor;'>{$bunch['fIsFilled']}";
+      $row3 .= "<td class=align_cm style='background-color: $bkgCellColor;'>$bunchSpin";
+      //$row2 .= "<td>".($siS ? "x" : "o");
+
+      //print "<tr class=align_cm>$row1\n";
+      $iCell++;
+   }
+?>
+   <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+   <tr>
+      <td colspan=120>
+      <b>Bunch fill pattern:</b>
+   <tr>
+      <?=$row2;?>
+   <tr>
+      <td colspan=120>
+      <b>Bunch spin pattern:</b>
+   <tr>
+      <?=$row3;?>
    </table>
 
 </table>
@@ -274,24 +314,26 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="raw" class="count">Raw Histograms</h2>
+<h2 id="raw" class="count">Raw data</h2>
 <!-- {{{ -->
 <div id="div:raw" class="section">
 
 <p>
-<table border="1" cellpadding="5" cellspacing="2" align="center">
+<span class="s150"><a href=./?runid=<?=$gRunId?>&raw>All channels at once</a></span>
+
+<p>
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
-<td align=center>
+<td>
 <?=$gP->img('raw/hBunchCounts')?>
-<td align=center>
+<td>
 <?=$gP->img('raw/hStripCounts')?>
 
 </table>
 
 <p>
-
-<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
 <td align=center>
@@ -312,13 +354,13 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="std" class="count">Std</h2>
+<h2 id="std" class="count">TOF vs energy cross check</h2>
 <!-- {{{ -->
 <div id="div:std" class="section">
 
 <p>
 
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
 <td align=center>
@@ -340,27 +382,11 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <h2 id="asymmetry" class="count">Asymmetry</h2>
 <!-- {{{ -->
+<div id="div:asymmetry" class="section">
 
 <p>
 
-<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
-
-<!--
-<tr>
-<td align=center>
-<?=$gP->img('ErrDet/asym_bunch_x45')?>
-<td align=center>
-<?=$gP->img('ErrDet/asym_bunch_x90')?>
-<td align=center>
-<?=$gP->img('ErrDet/asym_bunch_y45')?>
-<tr>
-<td align=center>
-<?=$gP->img('run/Asymmetry/asym_vs_bunch_x45')?>
-<td align=center>
-<?=$gP->img('run/Asymmetry/asym_vs_bunch_x90')?>
-<td align=center>
-<?=$gP->img('run/Asymmetry/asym_vs_bunch_y45')?>
--->
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
 
@@ -406,6 +432,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 </table>
 -->
+</div>
 <!-- }}} -->
 
 
@@ -413,90 +440,55 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="profile_plots" class="count">Profile Plots</h2>
+<h2 id="profile_plots" class="count">Profile</h2>
 <!-- {{{ -->
 <div id="div:profile_plots" class="section">
 
 <p>
 
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<table class="simple" cellspacing=10 align=center>
 
+<tr>
+<td class=align_ct>
+<?=$gP->img("profile/hIntensProfileFineBin")?>
+<p>Intensity profile: Number of events as a function of time
+
+<td class=align_ct>
+<?=$gP->img("profile/hIntensUniProfile")?>
+<p>If we assume a gaussian beam profile with the unit width the actuall
+position of the target in the beam can be deduced from the intensity measured
+at each target step. Note that the plot is symmetric around X = 0 by
+construction
+
+<td class=align_ct>
+<?=$gP->img("profile/hAsymUniProfile")?>
+<p>The beam asymmetry as a function of beam width in intesity sigma units
+
+<tr>
+<td class=align_ct colspan=3>
+<?=$gP->img("profile/hAsymVsIntensProfile")?>
+<p>Physical asymmetry vs intensity as measured every 0.1 second. The
+data is fitted with a function P = P_max * I^r
+
+<!--
 <tr>
 <td class=align_cm>
 <?=$gP->img("profile/hPolarVsIntensProfile")?>
 <p>Polarization vs intensity as measured every second at each target step. The
 data is fitted with a function P = P_max * I^r
+-->
 
+
+<!--
+<tr>
 <td class=align_cm>
-<?=$gP->img("profile/hPolarVsIntensProfileBin")?>
-<p>The same data as on the left plot but the measurements are binned
-
-<tr>
-<td align=center width=50%>
-<?=$gP->img("profile/hIntensUniProfile")?>
-<p>If we assume a gaussian beam profile with the unit width the actuall
-position of the target in the beam can be deduced from the intensity measured
-at each step. Note that the plot is symmetric around X = 0 by construction
-
-<td align=center width=50%>
-<?=$gP->img("profile/hIntensUniProfileBin")?>
-<p>The same data as on the left plot but the measurements are binned. Note
-that the plot is symmetric around X = 0 by construction
-
-<tr>
-<td align=center>
 <?=$gP->img("profile/hPolarUniProfile")?>
 <p>The beam polarization as a function of beam width in intesity sigma units
 
-<td align=center>
+<td class=align_cm>
 <?=$gP->img("profile/hPolarUniProfileBin")?>
 <p>The same data as on the left plot but the measurements are binned
-
-</table>
-
-<p>
-
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
-
-<tr>
-<td align=center colspan=2>
-<?=$gP->img("profile/hPolarVsIntensProfile")?>
-<p>Beam polarization profile
-
-<td align=center>
-<?=$gP->img("profile/hPolarProfileFinal")?>
-<p>Beam polarization profile
-
-<tr>
-<td align=center>
-<?=$gP->img("profile/hIntensProfile")?>
-<p>Intensity profile as a function of target steps
-
-<td align=center>
-<?=$gP->img("profile/hIntensProfileFwd")?>
-<p>Intensity profile: Forward target motion
-
-<td align=center>
-<?=$gP->img("profile/hIntensProfileBck")?>
-<p>Intensity profile: Backward target motion
-
-<tr>
-<td align=center>
-<?=$gP->img("profile/hPolarProfile")?>
-<p>Beam polarization profile as a function of target steps
-
-<td align=center>
-<?=$gP->img("profile/hPolarProfileFwd")?>
-<p>Beam polarization profile: Forward target motion
-
-<td align=center>
-<?=$gP->img("profile/hPolarProfileBck")?>
-<p>Beam polarization profile: Backward target motion
-
-<tr>
-<td align=center colspan=3>
-<?=$gP->img("profile/hPolarProfileFold")?>
-<p>Beam polarization profile: Forward and Backward target motions
+-->
 
 </table>
 
@@ -514,7 +506,7 @@ that the plot is symmetric around X = 0 by construction
 
 <p>
 
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
 <td align=center colspan=3>
@@ -538,13 +530,13 @@ that the plot is symmetric around X = 0 by construction
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="summary_plots" class="count">Summary Plots</h2>
+<h2 id="calib_plots" class="count">Dead layer, t0 calibration</h2>
 <!-- {{{ -->
-<div id="div:summary_plots" class="section">
+<div id="div:calib_plots" class="section">
 
 <p>
 
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<table class="simple" cellspacing=10 align=center>
 
 <!--
 <tr>
@@ -601,7 +593,7 @@ that the plot is symmetric around X = 0 by construction
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="channels" class="count">Channel Plots</h2>
+<h2 id="channels" class="count">Channels</h2>
 <!-- {{{ -->
 <div id="div:channels" class="section">
 
