@@ -214,7 +214,16 @@ div.section {
    padding: 0.5em;
 }
 
+table.simple0 td {
+   margin-left: auto;
+   margin-right: auto;
+   padding: 0;
+   border: 1px solid black;
+}
+
 table.simple td {
-   border-width: 1px;
-   border-style: solid;
+   margin-left: auto;
+   margin-right: auto;
+   padding: 1em;
+   border: 1px solid black;
 }
