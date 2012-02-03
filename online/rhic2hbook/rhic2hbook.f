@@ -685,7 +685,16 @@ c		fill counts for ADO
 		enddo
 	    endif
 	enddo
-c   	   
+
+c Test for disabled detectors, and suppress up/down/unpol counts
+	do i=1,6
+	   if (.NOT.BTEST(detMask, i-1)) then
+	      cnt(i, 1) = 0
+	      cnt(i, 2) = 0
+	      cnt(i, 3) = 0
+	   endif
+	enddo
+   	   
 	print 302, totalS, unpolS, upS, downS
 302	format('WFD scalers: Tot:', I10, ' ( U ', I9, ', + ', I9, ', - ', I9, ')')
 	if ((totalS.NE.totalE).OR.(totalS.NE.totalCountsS)) then
@@ -820,15 +829,6 @@ c We suppress 90-degree test detectors if requested
 	    cnt(5, 2) = 0
 	    cnt(5, 3) = 0
 	endif
-
-c Test for disabled detectors, and suppress up/down/unpol counts
-	do i=1,6
-	   if (.NOT.BTEST(detMask, i-1)) then
-	      cnt(i, 1) = 0
-	      cnt(i, 2) = 0
-	      cnt(i, 3) = 0
-	   endif
-	enddo
 
 	call lssqrasym(cnt, avgAsymXS, avgAsymYS, avgAsymErrorXS, avgAsymErrorYS)
 
