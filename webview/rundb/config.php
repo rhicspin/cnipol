@@ -1,6 +1,7 @@
 <?php
 
 define("DATA_DIR", "/usr/local/polarim/root");
+define("LOG_DIR",  "/usr/local/polarim/log");
 
 // Approximate fill numbers
 $RUN_PERIOD_BY_FILL = array (

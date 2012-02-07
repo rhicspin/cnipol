@@ -417,4 +417,25 @@ function calcProfPolar($profPMax=null, $profR=null)
    return $profPolar;
 } //}}}
 
+
+/** */
+function readOnlinePolar($fileNameFull="")
+{ //{{{
+   $values = array();
+   $handle = fopen($fileNameFull, "r");
+
+   if ($handle === FALSE) return $values;
+
+   //$row = 1;
+
+   while (($data = fgetcsv($handle, 100, ",")) !== FALSE) {
+       $nElements = count($data);
+       if ($nElements == 3)
+          $values[$data[0]] = new pair($data[1], $data[2]);
+   }
+
+   fclose($handle);
+   return $values;
+} //}}}
+
 ?>
