@@ -21,12 +21,12 @@ export MYSQLPP_DIR=/eicdata/eic0005/mysql++
 export MYSQLPP_INCLUDE_DIR=$MYSQLPP_DIR/lib
 export MYSQLPP_LIB_DIR=$MYSQLPP_DIR
 
-if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
-   export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
-fi
-
 if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
    export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
+fi
+
+if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
+   export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 fi
 
 # CNIPOL variables
@@ -47,13 +47,13 @@ export POLARIM_DIR=/eicdata/eic0005/run11
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
-export DATADIR=$POLARIM_DIR/data
+#export DATADIR=$POLARIM_DIR/data
 export CONFDIR=$POLARIM_DIR/config
-export CALIBDIR=$POLARIM_DIR/share/config
+#export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
-export UTILS_LIB_DIR=~dsmirnov/root_macros/utils
-export UTILS_INC_DIR=~dsmirnov/root_macros/
+export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
+export UTILS_INC_DIR=~dsmirnov/rootmacros/
 
 if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
 	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
@@ -85,9 +85,9 @@ echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
-echo "\$DATADIR=$DATADIR     <-- deprecated"
+#echo "\$DATADIR=$DATADIR     <-- deprecated"
 echo "\$CONFDIR=$CONFDIR     <-- deprecated"
-echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
+#echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
 echo "\$LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
