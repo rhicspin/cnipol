@@ -26,7 +26,8 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    // Check for correct and existing runid
    if (!is_dir($gRunDir) || !file_exists("$gRunDir/runconfig$gSuffix.php"))
    {
-      print "No results found for $gRunDir\n";
+      print "No results found for $gRunId<br>\n";
+      //print "Please wait for the data to be analyzed\n";
       exit;
    }
 
@@ -34,7 +35,7 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    $rc = array();
    include("$gRunDir/runconfig$gSuffix.php");
    if (count($rc) == 0) {
-      print "No config file found for $gRunDir\n";
+      print "No config file found for $gRunId\n";
       exit;
    }
 
@@ -74,7 +75,13 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    } elseif ($rc['measurement_type'] == 1) {
       include("runinfo_calib.html");
    } else {
-      print "Problem displaying info for $gRunId\n";
+      //print "Problem displaying info for $gRunId\n";
+      // XXX this is a temporary fix for notgt data files
+      //include("runinfo.html"); 
+      if (isset($_GET['raw'])) {
+         include("runinfo_raw.html");
+      } else
+         include("runinfo.html");
    }
 
    exit;
@@ -91,13 +98,13 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    // Check for correct and existing runid
    if (!is_dir($gRunDir) || !file_exists("$gRunDir/runconfig$gSuffix.php"))
    {
-      print "No results found for $gRunDir\n";
+      print "No results found for $gRunId\n";
       exit;
    }
 
    // Check for correct and existing  runid
    if (!is_dir(DATA_DIR."/$gRunId") || !file_exists(DATA_DIR."/$gRunId/runconfig.php")) {
-      print "No results for $gRunId\n";
+      print "No results found for $gRunId\n";
       exit;
    }
 

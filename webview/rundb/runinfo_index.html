@@ -74,6 +74,9 @@ $sqlDbReader->PrintPageIndex($nPages, $page);
 
 $rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
 
+// Read file with online polarization values and return an array
+$onlinePolars = readOnlinePolar(LOG_DIR."/online_polar.dat");
+
 //print "<pre>\n";
 //print_r($row); 
 //print "</pre>\n";
@@ -87,6 +90,7 @@ $rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
    <th rowspan=2>Date &amp; Time
    <th rowspan=2>Polarimeter <br><?=$runSelector->HtmlSortLinks("pi");?>
    <th rowspan=2>Polarization, %<br><?=$runSelector->HtmlSortLinks("po");?>
+   <th rowspan=2>Polarization (online), %
    <th rowspan=2>r
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
@@ -130,6 +134,12 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
          $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+   }
+
+   $strOnlinePolar = "&nbsp;";
+   if (isset($onlinePolars[$e['run_name']])) {
+	   $onlinePolar = $onlinePolars[$e['run_name']];
+	   $strOnlinePolar = polarPairToString($onlinePolar);
    }
 
    $profileRatio = "&nbsp;";
@@ -181,6 +191,7 @@ while ($e = mysql_fetch_assoc($rslt)):
    <td class=align_cm><tt><?=isset($e['start_time']) ? date("M d, Y H:i:s D", strtotime($e['start_time'])) : "&nbsp;";?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
+   <td class=align_cm><?=$strOnlinePolar?>
    <td class=align_cm><?=$profileRatio?>
    <td class=align_cm><?=$measurementType?>
    <td class=align_cm><?=isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : "&nbsp;";?>
