@@ -37,6 +37,8 @@ mysendpict() {
     if [ -f $2 ] ; then
         convert $2 -trim ${2/.ps/.gif}
         $BINDIR/sndpic $POLARIM $1 ${2/.ps/.gif}
+        convert ${2/.ps/.gif}[0] ${2/.ps/}.a.png
+        convert ${2/.ps/.gif}[1] ${2/.ps/}.b.png
     else
         $BINDIR/sndpic $POLARIM $1 $BINDIR/failed.gif
     fi
