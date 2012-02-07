@@ -1,18 +1,24 @@
 #! /usr/bin/perl
 
+# Jan 6, 2012 - Dmitri Smirnov
+#    - Now can save online polarization values to a file
+#
+
 use Env;
 
 $run = $ARGV[0];
 
 # $ONLINEDIR=$ENV{"ONLINEDIR"};
 
-$OUTFILE = ">".$LOGDIR."/pvect.dat";
-$LOGFILE = $LOGDIR."/an$run.log";
+$LOGFILE       = $LOGDIR."/an$run.log";
+$OUTFILE       = ">".$LOGDIR."/pvect.dat";
+$OUTFILE_POLAR = ">>".$LOGDIR."/online_polar.dat";
 
 #printf "Processing run $run ($LOGFILE)\n";
 
-open(OUTFILE,$OUTFILE);
-open(LOGFILE,$LOGFILE);
+open(LOGFILE,       $LOGFILE);
+open(OUTFILE,       $OUTFILE);
+open(OUTFILE_POLAR, $OUTFILE_POLAR);
 
 $SQ2 = 1.4142;
 
@@ -49,7 +55,7 @@ while ($line = <LOGFILE>) {
         $x45a *= $SQ2; $x45ae *= $SQ2;
     }
 
-# Y45
+    # Y45
     if ($words[1] eq "Y45") {
         $Y45P = $words[3];
         $Y45L = $words[4];
@@ -63,7 +69,7 @@ while ($line = <LOGFILE>) {
         $y45a *= $SQ2; $y45ae *= $SQ2;
     }
 
-# CR45
+    # CR45
     if ($words[1] eq "CR45") {
         $C45P = $words[3];
         $C45L = $words[4];
@@ -78,7 +84,7 @@ while ($line = <LOGFILE>) {
 
     }
 
-# 1-4
+    # 1-4
     if ($words[1] eq "1-4") {
         $C14P = $words[3];
         $C14L = $words[4];
@@ -92,7 +98,7 @@ while ($line = <LOGFILE>) {
         $c14a *= $SQ2; $c14ae *= $SQ2;
     }
 
-# 3-6
+    # 3-6
     if ($words[1] eq "3-6") {
         $C36P = $words[3];
         $C36L = $words[4];
@@ -106,34 +112,37 @@ while ($line = <LOGFILE>) {
         $c36a *= $SQ2; $c36ae *= $SQ2;
     }
 
-# X least fit
-    if (($words[1] eq "X")&&($words[2] eq ":")) {
+    # X least fit
+    if (($words[1] eq "X") && ($words[2] eq ":")) {
         $XCHP = $words[3];
         ($xchp,$xchpe) = split(/\+-+/,$XCHP);
     }
 
-# Y least fit
+    # Y least fit
     if (($words[1] eq "Y")&&($words[2] eq ":")) {
         $YCHP = $words[3];
         ($ychp,$ychpe) = split(/\+-+/,$YCHP);
     }
 
-# CHISQ OF FIT
+    # CHISQ OF FIT
     if (($words[1] eq "FCN=")){
         $CHISQ = $words[2];
     }
-# counts
+
+    # counts
     if (($words[0] eq "Cnt")&&($words[1] eq "+")){
         for ($si=0;$si<6;$si++){
             $PCNT[$si] = $words[$si+2];
         }
     }
+
     if (($words[0] eq "Cnt")&&($words[1] eq "-")){
         for ($si=0;$si<6;$si++){
             $MCNT[$si] = $words[$si+2];
         }
     }
-# Analyzing power
+
+    # Analyzing power
     if (($words[1] eq "Average")&&($words[2] eq "analyzing")){
         $A_N = $words[7];
         if ($A_N eq "NaN") {
@@ -141,6 +150,26 @@ while ($line = <LOGFILE>) {
         }
     }
 
+    # Run 
+    if (($words[1] eq "Run") && ($words[2] eq "Number")){
+        $sRunId = $words[3];
+
+        if ($sPolar eq "") {
+           $sRunId = 0.;
+        }
+    }
+
+    # Polarization as calculated online
+    if (($words[1] eq "Polarization") && ($words[2] eq ":")){
+        $sPolar = $words[3];
+
+        ($polar,$polarErr) = split(/\+-+/,$sPolar);
+
+        if ($sPolar eq "NaN") {
+           $polar    = 0.;
+           $polarErr = 0.;
+        }
+    }
 }
 
 printf OUTFILE "$x90p $x90pe\n";
@@ -156,7 +185,9 @@ printf OUTFILE "$PCNT[0] $PCNT[1] $PCNT[2] $PCNT[3] $PCNT[4] $PCNT[5]\n";
 printf OUTFILE "$MCNT[0] $MCNT[1] $MCNT[2] $MCNT[3] $MCNT[4] $MCNT[5]\n";
 
 
+printf OUTFILE_POLAR "$sRunId, $polar, $polarErr\n";
 
-close(OUTFILE);
 close(LOGFILE);
+close(OUTFILE);
+close(OUTFILE_POLAR);
 
