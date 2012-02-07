@@ -11,7 +11,6 @@
 #include "rpoldata.h"
 
 int  BunchSelect(int bid);
-void reConfig();
 //int DisabledDet(int det);
 
 #endif

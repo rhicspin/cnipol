@@ -17,40 +17,33 @@
 using namespace std;
 
 const int   ASYM_DEFAULT = -999;
-const float MSIZE = 1.2;         // Marker size
+const float MSIZE = 1.2;            // Marker size
 
-int     wcmfillpat[120]; // spin pattern 120 bunches (ADO info)
+int     wcmfillpat[120];            // spin pattern 120 bunches (ADO info)
 
-long    Ncounts[6][120]; // counts 6detectors 120 bunches
-long    NTcounts[6][120][NTBIN];  // counts 6detectors 120 bunches 6 tranges
+long    Ncounts[6][120];            // counts 6detectors 120 bunches
+long    NTcounts[6][120][NTBIN];    // counts 6detectors 120 bunches 6 tranges
 long    NRcounts[6][120][RAMPTIME]; // counts for 6det 120bunch RAMPTIME sec
 long    NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
-long    NStrip[3][NSTRIP]; // counts 72 strips 3 spin states
+long    NStrip[3][NSTRIP];          // counts 72 strips 3 spin states
 
-char   *confdir;
 char   *calibdir;
-//string  gDataFileName;   // data file name
-char    reConfFile[256];    // overwrite configuration for T0 info
-char    conf_file[256];  // overwrite configuration file
-char    CalibFile[256];  // energy calibration file
+char    reConfFile[256];            // overwrite configuration for T0 info
+char    conf_file[256];             // overwrite configuration file
+char    CalibFile[256];             // energy calibration file
 
-float   ramptshift[500];  // ramp timing shift
+float   ramptshift[500];            // ramp timing shift
 
 long    Nevcut         = 0; // number of events after 1st cut (whole data)
 UInt_t  Nevtot         = 0; // number of total events (whole data)
 UInt_t  Nread          = 0; // real total events (completely everything)
 UInt_t  gMaxEventsUser = 0; // number of events to process
-//UInt_t  Nskip          = 1; // number of events to be skipped in data process
 long    Ngood[120];     // number of events after carbon cut (each bunch)
 long    Ntotal[120];    // number of events before carbon cut (each bunch)
 long    Nback[120];     // number of events below the curbon cut (each bunch)
 
 long   *pointer;
 int     gNDelimeters;
-//long    VtgtLinear[MAXDELIM];
-//long    VtgtRotary[MAXDELIM];
-//long    HtgtLinear[MAXDELIM];
-//long    HtgtRotary[MAXDELIM];
 int     TgtIndex[MAXDELIM];
 int     nTgtIndex = 0;
 
@@ -298,30 +291,6 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
 
    return buf;
 } //}}}
-
-
-//TBuffer & operator<<(TBuffer &buf, recordHeaderStruct &rec)
-//{
-//   printf("operator<<(TBuffer &buf, recordHeaderStruct *rec) : \n");
-//   buf << rec.len;
-//   return buf;
-//}
-//
-//
-//TBuffer & operator>>(TBuffer &buf, recordHeaderStruct &rec)
-//{
-//   printf("operator>>(TBuffer &buf, recordHeaderStruct *rec) : \n");
-//   buf >> rec.len;
-//   //buf.WriteInt(rec.len);
-//   return buf;
-//}
-
-
-
-//TBuffer & operator<<(TBuffer &buf, SiChanStruct &si)
-//{
-//   return buf;
-//}
 
 
 /** */

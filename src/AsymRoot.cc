@@ -34,6 +34,7 @@
 #include "CnipolPreprocHists.h"
 #include "CnipolProfileHists.h"
 #include "CnipolRawHists.h"
+#include "CnipolRawExtendedHists.h"
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolTargetHists.h"
@@ -195,6 +196,13 @@ void AsymRoot::CreateRootFile(string filename)
       //oc  = new CnipolRawHists(dir);
       //fHists->d["raw_eb"] = oc;
       //fHistCuts[kCUT_RAW].insert(oc);
+   }
+
+   if (gAnaInfo->HasRawExtendedBit()) {
+      dir = new TDirectoryFile("raw_ext", "raw_ext", "", fOutRootFile);
+      oc  = new CnipolRawExtendedHists(dir);
+      fHists->d["raw_ext"] = oc;
+      fHistCuts[kCUT_RAW].insert(oc);
    }
 
    if (gAnaInfo->HasTargetBit()) {

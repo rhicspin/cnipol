@@ -51,6 +51,7 @@ public:
 };
 
 void readloop(MseMeasInfoX &run);
+void reConfig();
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run);
 void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run);

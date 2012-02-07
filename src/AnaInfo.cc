@@ -23,7 +23,6 @@ AnaInfo::AnaInfo() : TObject(),
    widthu            (3),
    fModes            (MODE_NORMAL),
    FEEDBACKMODE      (0),
-   RAWHISTOGRAM      (0),
    DMODE             (0),
    TMODE             (0),
    BMODE             (1),
@@ -74,7 +73,6 @@ AnaInfo::AnaInfo(string runId) : TObject(),
    widthu            (3),
    fModes            (MODE_NORMAL),
    FEEDBACKMODE      (0),
-   RAWHISTOGRAM      (0),
    DMODE             (0),
    TMODE             (0),
    BMODE             (1),
@@ -187,18 +185,19 @@ Bool_t AnaInfo::HasAlphaBit() const  {
    return (fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB))  == (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB);
  }
 
-Bool_t AnaInfo::HasCalibBit()   const { return (fModes & AnaInfo::MODE_CALIB)   == AnaInfo::MODE_CALIB; }
-Bool_t AnaInfo::HasGraphBit()   const { return (fModes & AnaInfo::MODE_GRAPH)   == AnaInfo::MODE_GRAPH; }
-Bool_t AnaInfo::HasNormalBit()  const { return (fModes & AnaInfo::MODE_NORMAL)  == AnaInfo::MODE_NORMAL; }
-Bool_t AnaInfo::HasScalerBit()  const { return (fModes & AnaInfo::MODE_SCALER)  == AnaInfo::MODE_SCALER; }
-Bool_t AnaInfo::HasRawBit()     const { return (fModes & AnaInfo::MODE_RAW)     == AnaInfo::MODE_RAW; }
-Bool_t AnaInfo::HasRunBit()     const { return (fModes & AnaInfo::MODE_RUN)     == AnaInfo::MODE_RUN; }
-Bool_t AnaInfo::HasTargetBit()  const { return (fModes & AnaInfo::MODE_TARGET)  == AnaInfo::MODE_TARGET; }
-Bool_t AnaInfo::HasProfileBit() const { return (fModes & AnaInfo::MODE_PROFILE) == AnaInfo::MODE_PROFILE; }
-Bool_t AnaInfo::HasAsymBit()    const { return (fModes & AnaInfo::MODE_ASYM)    == AnaInfo::MODE_ASYM; }
-Bool_t AnaInfo::HasKinematBit() const { return (fModes & AnaInfo::MODE_KINEMA)  == AnaInfo::MODE_KINEMA; }
-Bool_t AnaInfo::HasPmtBit()     const { return (fModes & AnaInfo::MODE_PMT)     == AnaInfo::MODE_PMT; }
-Bool_t AnaInfo::HasPulserBit()  const { return (fModes & AnaInfo::MODE_PULSER)  == AnaInfo::MODE_PULSER; }
+Bool_t AnaInfo::HasCalibBit()       const { return (fModes & AnaInfo::MODE_CALIB)        == AnaInfo::MODE_CALIB; }
+Bool_t AnaInfo::HasGraphBit()       const { return (fModes & AnaInfo::MODE_GRAPH)        == AnaInfo::MODE_GRAPH; }
+Bool_t AnaInfo::HasNormalBit()      const { return (fModes & AnaInfo::MODE_NORMAL)       == AnaInfo::MODE_NORMAL; }
+Bool_t AnaInfo::HasScalerBit()      const { return (fModes & AnaInfo::MODE_SCALER)       == AnaInfo::MODE_SCALER; }
+Bool_t AnaInfo::HasRawBit()         const { return (fModes & AnaInfo::MODE_RAW)          == AnaInfo::MODE_RAW; }
+Bool_t AnaInfo::HasRawExtendedBit() const { return (fModes & AnaInfo::MODE_RAW_EXTENDED) == AnaInfo::MODE_RAW_EXTENDED; }
+Bool_t AnaInfo::HasRunBit()         const { return (fModes & AnaInfo::MODE_RUN)          == AnaInfo::MODE_RUN; }
+Bool_t AnaInfo::HasTargetBit()      const { return (fModes & AnaInfo::MODE_TARGET)       == AnaInfo::MODE_TARGET; }
+Bool_t AnaInfo::HasProfileBit()     const { return (fModes & AnaInfo::MODE_PROFILE)      == AnaInfo::MODE_PROFILE; }
+Bool_t AnaInfo::HasAsymBit()        const { return (fModes & AnaInfo::MODE_ASYM)         == AnaInfo::MODE_ASYM; }
+Bool_t AnaInfo::HasKinematBit()     const { return (fModes & AnaInfo::MODE_KINEMA)       == AnaInfo::MODE_KINEMA; }
+Bool_t AnaInfo::HasPmtBit()         const { return (fModes & AnaInfo::MODE_PMT)          == AnaInfo::MODE_PMT; }
+Bool_t AnaInfo::HasPulserBit()      const { return (fModes & AnaInfo::MODE_PULSER)       == AnaInfo::MODE_PULSER; }
 
 
 string AnaInfo::GetResultsDir() const
@@ -418,20 +417,21 @@ void AnaInfo::PrintUsage()
    cout << " -N                              : Store Ntuple events (!)" << endl;
    cout << " -R <bitmask>                    : Save events in Root trees, " <<
            "e.g. \"-R 101\"" << endl;
-   cout << " -q, --quick                     : Skips the main loop. Use for a quick check" << endl;
-   cout << " -C, --mode-alpha, --alpha       : Use when run over alpha run data" << endl;
-   cout << "     --mode-calib, --calib       : Update calibration constants" << endl;
-   cout << "     --mode-normal               : Default set of histograms" << endl;
-   cout << "     --mode-no-normal            : Turn off the default set of histograms" << endl;
-   cout << "     --mode-scaler, --scaler     : Fill and save scaler histograms (from V124 memory)" << endl;
-   cout << "     --mode-raw, --raw           : Fill and save raw histograms" << endl;
-   cout << "     --mode-run                  : Fill and save bunch, lumi and other run related histograms" << endl;
-   cout << "     --mode-target, --target     : Fill and save target histograms" << endl;
-   cout << "     --mode-full                 : Fill and save all histograms" << endl;
-   cout << " -g, --graph                     : Save histograms as images" << endl;
-   cout << "     --copy                      : Copy results to server (?)" << endl;
-   cout << "     --use-db                    : Run info will be retrieved from and saved into database" << endl;
-   cout << "     --update-db                 : Update run info in database" << endl;
+   cout << " -q, --quick                          : Skips the main loop. Use for a quick check" << endl;
+   cout << " -C, --mode-alpha, --alpha            : Use when run over alpha run data" << endl;
+   cout << "     --mode-calib, --calib            : Update calibration constants" << endl;
+   cout << "     --mode-normal                    : Default set of histograms" << endl;
+   cout << "     --mode-no-normal                 : Turn off the default set of histograms" << endl;
+   cout << "     --mode-scaler, --scaler          : Fill and save scaler histograms (from V124 memory)" << endl;
+   cout << "     --mode-raw, --raw                : Fill and save raw histograms" << endl;
+   cout << "     --mode-raw-extended, --raw-ext   : Fill and save more detailed raw histograms" << endl;
+   cout << "     --mode-run                       : Fill and save bunch, lumi and other run related histograms" << endl;
+   cout << "     --mode-target, --target          : Fill and save target histograms" << endl;
+   cout << "     --mode-full                      : Fill and save all histograms" << endl;
+   cout << " -g, --graph                          : Save histograms as images" << endl;
+   cout << "     --copy                           : Copy results to server (?)" << endl;
+   cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
+   cout << "     --update-db                      : Update run info in database" << endl;
    cout << endl;
    cout << "Options marked with (!) are not really supported" << endl;
    cout << "Options marked with (?) need more work" << endl;

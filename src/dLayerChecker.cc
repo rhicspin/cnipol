@@ -39,9 +39,9 @@ int main (int argc, char *argv[])
         char OperationMode[100];
         int Mode=0;
 
-        confdir = getenv("CONFDIR");
+        confdir  = getenv("CONFDIR");
         sharedir = getenv("SHAREDIR");
-        tmpdir = getenv("TMPOUTDIR");
+        tmpdir   = getenv("TMPOUTDIR");
 
         // output file operation
         sprintf(ofile,"%s/rundb.log",tmpdir);
