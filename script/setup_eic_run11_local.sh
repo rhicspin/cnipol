@@ -43,7 +43,7 @@ if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
 fi
 
 # Older variables
-export POLARIM_DIR=/data1/run11
+export POLARIM_DIR=/eicdata/eic0005/run11
 #export CNILIB=/home/dsmirnov/cnipol_install
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
@@ -91,20 +91,3 @@ echo "\$CONFDIR=$CONFDIR     <-- deprecated"
 echo
 echo "\$PATH=$PATH"
 echo "\$LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-
-# working directory
-#export ASYMDIR=$HOME/offline
-#export ASYMDIR=$CNIPOL_DIR/offline
-
-# temporary output directory
-#export TMPOUTDIR=/tmp/`whoami`
-
-# installation destination
-#export INSTALLDIR=$ASYMDIR/bin
-#export MACRODIR=$ASYMDIR/macro
-#    for developers use followings instead of above two lines
-#       export INSTALLDIR=$SHAREDIR/bin
-#       export MACRODIR=$SHAREDIR/macro
-#       export CNI_EXPERT=1;
-
-#export LD_LIBRARY_PATH=/usr/local/cdev/lib/Linux:/usr/local/cern/lib:/usr/lib
