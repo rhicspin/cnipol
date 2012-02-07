@@ -457,7 +457,6 @@ void readloop(MseMeasInfoX &run)
    int   rval;
    int   recSize;
    int   flag = 0;     // exit from while when flag==1
-   //int THINOUT = Flag.feedback ? gAnaInfo->fThinout : Nskip;
 
    // reading the data till its end ...
    if ((fp = fopen(gAnaInfo->GetRawDataFileName().c_str(), "r")) == NULL) {
@@ -770,6 +769,86 @@ void readloop(MseMeasInfoX &run)
    sw.Stop();
 
    gSystem->Info("readloop", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+} //}}}
+
+
+/**
+ * Deprecated
+ */
+void reConfig()
+{ //{{{
+    ifstream configFile;
+    configFile.open(reConfFile);
+
+    if (!configFile) {
+       cout << "Failed to open Config File : " << reConfFile << endl;
+       cout << "Proceed with original configuration from raw data file" << endl;
+       return;
+    }
+
+    printf("**********************************\n");
+    printf("** Configuration is overwritten **\n");
+    printf("**********************************\n");
+
+    cout << "Reading configuration info from : " << reConfFile <<endl;
+
+    char  *tempchar;
+    char   buffer[300];
+    float  t0n, ecn, edeadn, a0n, a1n, ealphn, dwidthn, peden;
+    float  c0n, c1n, c2n, c3n, c4n;
+    int    stripn;
+    int    linen = 0;
+
+    while (!configFile.eof()) {
+
+       configFile.getline(buffer, sizeof(buffer), '\n');
+
+       if (strstr(buffer,"Channel")!=0) {
+
+          tempchar = strtok(buffer,"l");
+          stripn   = atoi(strtok(NULL, "="));
+          t0n      = atof(strtok(NULL, " "));
+          ecn      = atof(strtok(NULL, " "));
+          edeadn   = atof(strtok(NULL, " "));
+          a0n      = atof(strtok(NULL, " "));
+          a1n      = atof(strtok(NULL, " "));
+          ealphn   = atof(strtok(NULL, " "));
+          dwidthn  = atof(strtok(NULL, " ")) + gAnaInfo->dx_offset; // extra thickness
+          peden    = atof(strtok(NULL, " "));
+          c0n      = atof(strtok(NULL, " "));
+          c1n      = atof(strtok(NULL, " "));
+          c2n      = atof(strtok(NULL, " "));
+          c3n      = atof(strtok(NULL, " "));
+          c4n      = atof(strtok(NULL, " "));
+
+          gConfigInfo->data.chan[stripn-1].edead  = edeadn;
+          gConfigInfo->data.chan[stripn-1].ecoef  = ecn;
+          gConfigInfo->data.chan[stripn-1].t0     = t0n;
+          gConfigInfo->data.chan[stripn-1].A0     = a0n;
+          gConfigInfo->data.chan[stripn-1].A1     = a1n;
+          gConfigInfo->data.chan[stripn-1].acoef  = ealphn;
+          gConfigInfo->data.chan[stripn-1].dwidth = dwidthn;
+          gConfigInfo->data.chan[stripn-1].pede   = peden;
+          gConfigInfo->data.chan[stripn-1].C[0]   = c0n;
+          gConfigInfo->data.chan[stripn-1].C[1]   = c1n;
+          gConfigInfo->data.chan[stripn-1].C[2]   = c2n;
+          gConfigInfo->data.chan[stripn-1].C[3]   = c3n;
+          gConfigInfo->data.chan[stripn-1].C[4]   = c4n;
+
+          cout << " Strip "    << stripn;
+          cout << " Ecoef "    << ecn;
+          cout << " T0 "       << t0n;
+          cout << " A0 "       << a0n;
+          cout << " A1 "       << a1n;
+          cout << " Acoef "    << ealphn;
+          cout << " Dwidth "   << dwidthn;
+          cout << " Pedestal " << peden    << endl;
+       }
+
+       linen ++;
+    }
+
+    configFile.close();
 } //}}}
 
 

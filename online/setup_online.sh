@@ -2,7 +2,6 @@ export CDEV=/usr/local/cdev
 export CDEVSHOBJ=${CDEV}/lib
 
 #export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-
 export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
 export CDEVDDL=/usr/local/cnipol/online/cdev/PolarClient.ddl
 

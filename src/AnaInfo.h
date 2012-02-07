@@ -49,6 +49,7 @@ public:
                 MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
                 MODE_SCALER            = 0x00040000,
                 MODE_RAW               = 0x00080000,
+                MODE_RAW_EXTENDED      = 0x40080000,
                 MODE_RUN               = 0x00100000,
                 MODE_TARGET            = 0x00200000,
                 MODE_PROFILE           = 0x00400000,
@@ -68,7 +69,6 @@ public:
    int              widthu;             // upper banana cut (ns)
    ULong_t          fModes;
    int              FEEDBACKMODE;       // fit 12C peak first and feedback tshift and sigma
-   int              RAWHISTOGRAM;       // Fill raw histograms
    int              DMODE;              // dead layer study mode 0:off 1:on
    int              TMODE;              // T0 study mode 0:off 1:on
    int              BMODE;              // create banana curve (E-T) plots 0:off 1:on
@@ -149,6 +149,7 @@ public:
    Bool_t      HasNormalBit() const;
    Bool_t      HasScalerBit() const;
    Bool_t      HasRawBit() const;
+   Bool_t      HasRawExtendedBit() const;
    Bool_t      HasRunBit() const;
    Bool_t      HasTargetBit() const;
    Bool_t      HasProfileBit() const;

@@ -504,8 +504,6 @@ void readdb(double RUNID)
 
    // processing conditions
    if (!extinput.CONFIG){
-     strcat(reConfFile, confdir);
-     strcat(reConfFile,     "/");
      strcat(reConfFile, gRunDb.config_file_s.c_str());
    }
 

@@ -81,6 +81,7 @@ void CnipolRawHists::BookHists(string cutid)
 
    sprintf(hName, "hStripCounts"); // former strip_dist_raw
    o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   ((TH1*) o[hName])->SetOption("LOGY");
    ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 

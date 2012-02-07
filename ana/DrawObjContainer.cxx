@@ -245,7 +245,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
          if (l) c.SetLogz(kTRUE);
          else c.SetLogz(kFALSE);
 
-         l = strstr( ((TH1*) io->second)->GetOption(), "XY");
+         l = strstr( ((TH1*) io->second)->GetOption(), "LOGY");
          if (l) c.SetLogy(kTRUE);
          else c.SetLogy(kFALSE);
 

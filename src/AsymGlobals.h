@@ -63,9 +63,7 @@ extern long int NDcounts[N_DETECTORS][N_BUNCHES][MAXDELIM];  // counts 6detector
 extern long int NStrip[N_SPIN_STATES][N_SILICON_CHANNELS];   // counts 72 strips 3 spin states
 extern long int NRcounts[N_DETECTORS][N_BUNCHES][RAMPTIME];  // counts 6det 120bunch RAMPTIME sec
 
-extern char *confdir;
 extern char *calibdir;
-//extern std::string gDataFileName;   // data file name 
 extern char reConfFile[256];         // update configuration file for T0 info
 extern char conf_file[256];          // update configuration file for T0 info
 extern char CalibFile[256];          // Energy calibration file
@@ -76,7 +74,6 @@ extern long int Nevcut;         // number of events after 1st cut (whole data)
 extern UInt_t   Nevtot;         // number of total events (whole data) 
 extern UInt_t   Nread;          // actually read number of events
 extern UInt_t   gMaxEventsUser; // number of events to process
-//extern int      Nskip;          // number of events to be skipped in data process 
 
 extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut 
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 
