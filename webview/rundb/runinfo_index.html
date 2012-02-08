@@ -138,8 +138,9 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    $strOnlinePolar = "&nbsp;";
    if (isset($onlinePolars[$e['run_name']])) {
-	   $onlinePolar = $onlinePolars[$e['run_name']];
-	   $strOnlinePolar = polarPairToString($onlinePolar);
+	   $onlinePolar    = $onlinePolars[$e['run_name']];
+	   $strOnlinePolar = "&nbsp;<a href='../log/{$e['run_name']}.b.png'>".polarPairToString($onlinePolar)."</a>";
+      //$strOnlinePolar .= "&nbsp;<a href='../log/{$e['run_name']}.a.png'>p1</a>";
    }
 
    $profileRatio = "&nbsp;";
