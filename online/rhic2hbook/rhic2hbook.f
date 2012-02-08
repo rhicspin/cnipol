@@ -741,15 +741,16 @@ c	actually right - left, because we are looking at recoiled particle
 	print *, '>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<'	
 	print *, '            TYPE           PHYSICS                LUMINOSITY             ACCEPTANCE'
 100	format(A20, F10.6, '+-', F8.6, 3X, F10.6, '+-', F8.6, 3X, F10.6, '+-', F8.6)
-c		left-right 90 deg det. (2-5)
 
+c	left-right 90 deg det. (2-5)
         call sqass(cnt(2,2), cnt(5,3), cnt(2,3), cnt(5,2), assp, eassp)
      	avgAsymX90S = assp
 	avgAsymErrorX90S = eassp
 	call sqass(cnt(2,2), cnt(5,2), cnt(2,3), cnt(5,3), assl, eassl)
 	call sqass(cnt(5,2), cnt(5,3), cnt(2,3), cnt(2,2), assa, eassa)
 	print 100, 'X90 :',assp,eassp,assl,eassl,assa,eassa
-c		left-right 45 deg det. (13-46)
+
+c	left-right 45 deg det. (13-46)
 	call sqass(cnt(1,2) + cnt(3,2), cnt(4,3) + cnt(6,3), 
      ,		   cnt(4,2) + cnt(6,2), cnt(1,3) + cnt(3,3), assp, eassp)
         avgAsymX45S = assp
@@ -762,8 +763,7 @@ c		left-right 45 deg det. (13-46)
 
 	print 100, 'X45 :',assp,eassp,assl,eassl,assa,eassa
 
-c		up-down 45 deg det (34-16)
-
+c	up-down 45 deg det (34-16)
 	call sqass(cnt(4,2) + cnt(3,2), cnt(1,3) + cnt(6,3), 
      ,		   cnt(4,3) + cnt(3,3), cnt(1,2) + cnt(6,2), assp, eassp)
 	call sqass(cnt(4,2) + cnt(3,2), cnt(1,2) + cnt(6,2), 
@@ -773,8 +773,7 @@ c		up-down 45 deg det (34-16)
 
 	print 100, 'Y45 :',assp,eassp,assl,eassl,assa,eassa
 
-c		cross (forbidden) 45 deg det. (14-36)
-
+c	cross (forbidden) 45 deg det. (14-36)
 	call sqass(cnt(4,2) + cnt(1,2), cnt(3,3) + cnt(6,3), 
      ,		   cnt(4,3) + cnt(1,3), cnt(3,2) + cnt(6,2), assp, eassp)
 	call sqass(cnt(6,2) + cnt(3,2), cnt(1,2) + cnt(4,2), 
@@ -839,7 +838,7 @@ c We suppress 90-degree test detectors if requested
 	   	print *, ' '
 		xpol  = avgAsymXS/analyzingPowerS
 		expol = avgAsymErrorXS/analyzingPowerS
-	   	print 100, 'Polarization :', xpol, expol
+	   	print 100, 'Polarization : ', xpol, expol
 	   	print *, ' '
 	endif
 
