@@ -6,7 +6,10 @@ include ../include/common.mk
 # override the install target from common.mk
 install:
 	cp -f $(PROGS) $(IPROGS) $(CNIPOL_DIR)/bin
-	ln -s `pwd`/test.sh $(CNIPOL_DIR)/bin/analyze.sh
+	-ln -s `pwd`/test.sh $(CNIPOL_DIR)/bin/analyze.sh
+ifdef MPROGS
+	cp $(MPROGS) $(CNIPOL_DIR)/bin/macro
+endif
 
 CERNLIB_DIR=/usr/local/cern
 INC_PATHS += -I$(CERNLIB_DIR)/include/cfortran
