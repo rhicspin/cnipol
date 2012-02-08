@@ -1,5 +1,5 @@
 PROGS = rhic2hbook
-MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl rampplot.kumac
+MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl online_polar.pl rampplot.kumac
 
 include ../include/common.mk
 
@@ -8,7 +8,7 @@ install:
 	cp -f $(PROGS) $(IPROGS) $(CNIPOL_DIR)/bin
 	-ln -s `pwd`/test.sh $(CNIPOL_DIR)/bin/analyze.sh
 ifdef MPROGS
-	cp $(MPROGS) $(CNIPOL_DIR)/bin/macro
+	cp -f $(MPROGS) $(CNIPOL_DIR)/bin/macro
 endif
 
 CERNLIB_DIR=/usr/local/cern
