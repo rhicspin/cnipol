@@ -16,6 +16,7 @@
 
 
 char *datadir;
+char *confdir;
 char *sharedir;
 char *tmpdir;
 char  ofile[256];
