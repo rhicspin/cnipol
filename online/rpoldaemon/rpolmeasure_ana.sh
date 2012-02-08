@@ -1,14 +1,17 @@
 #!/bin/bash
+#
 # RHIC pC polarimeters main script
-#	I. Alekseev & D. Svirida 2000-2010
+#       I. Alekseev & D. Svirida 2000-2011
+#
 # This script runs real measurement, not supposed to be run manually.
+#
 # Must be run with 3 argumets:
 # $1 - polarimeter CDEV name: like polarimeter.yel1
 # $2 - measurement command: like "Emit Run". Can be of two words and we process the first letter only.
 # $3 - generated run number: like 12345.201. We use 99999.999 for test run.
 #
-# catches SIGINT and exits gracefully	(Stop)
-# catches SIGTERM and exits without reprocessing the data	(Cancel)
+# catches SIGINT and exits gracefully   (Stop)
+# catches SIGTERM and exits without reprocessing the data       (Cancel)
 #
 # Checks return code and sends error mesage(s) and failed.gif
 # to mcr application.
@@ -21,27 +24,23 @@ umask 0002
 # this is return code of rhicpol after wait
 declare -i IRC
 
-#	Set directories etc
+# Set directories etc
 export POLDIR=/usr/local/polarim
 export CONFDIR=$POLDIR/config
 #export BINDIR=$POLDIR/bin
-export BINDIR=/usr/local/cnipol_trunk/bin
-#DATADIR=$CONFDIR/data
-#LOGDIR=$CONFDIR/log
-#HBOOKDIR=$CONFDIR/hbook
+export BINDIR=/usr/local/cnipol/bin
 export DATADIR=$POLDIR/data
 export LOGDIR=$POLDIR/log
 export HBOOKDIR=$POLDIR/hbook
 
 export MACDIR=$BINDIR/macro
-#ROOTDIR=$CONFDIR/root
 export ROOTDIR=$POLDIR/root
 
 POLCMD=$BINDIR/rhicpol
 ANACMD=$BINDIR/rhic2hbook
 EMITCMD=$BINDIR/emitscan
 
-#	set our parameters
+# set our parameters
 POLARIM=$1
 MODE=$2
 RUN=$3
@@ -61,7 +60,7 @@ HBOOKFILE=${HBOOKDIR}/${RUN}.hbook
 ERRLOG=${LOGDIR}/${POLARIM}-err.log
 
 # General options - pulse prog and verbose level
-OPT="-P -v200"
+OPT="-P -v200 -Tcdev"
 
 
 # SIGTERM handler (Cancel)

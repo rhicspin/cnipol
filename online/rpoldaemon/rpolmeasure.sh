@@ -19,6 +19,9 @@
 # Jan 25, 2012 - Dmitri Smirnov
 #    - Added the type of measurement option (-T) to the command
 #
+# Feb 6, 2012 - Dmitri Smirnov
+#    - The summary plots are now save also in png format
+#
 
 # Enable job control
 set -m
@@ -27,26 +30,22 @@ umask 0002
 # this is return code of rhicpol after wait
 declare -i IRC
 
-#       Set directories etc
+# Set directories etc
 export POLDIR=/usr/local/polarim
-export CONFDIR=$POLDIR/config
-export BINDIR=$POLDIR/bin
-#DATADIR=$CONFDIR/data
-#LOGDIR=$CONFDIR/log
-#HBOOKDIR=$CONFDIR/hbook
+export CNIPOL_DIR=/usr/local/cnipol
+export CONFDIR=$CNIPOL_DIR/config
+export BINDIR=$CNIPOL_DIR/bin
 export DATADIR=$POLDIR/data
 export LOGDIR=$POLDIR/log
 export HBOOKDIR=$POLDIR/hbook
-
 export MACDIR=$BINDIR/macro
-#ROOTDIR=$CONFDIR/root
 export ROOTDIR=$POLDIR/root
 
 POLCMD=$BINDIR/rhicpol
 ANACMD=$BINDIR/rhic2hbook
 EMITCMD=$BINDIR/emitscan
 
-#       set our parameters
+# set our parameters
 POLARIM=$1
 MODE=$2
 RUN=$3
@@ -99,8 +98,11 @@ mysendpict() {
     if [ -f $2 ] ; then
         convert $2 -trim ${2/.ps/.gif}
         $BINDIR/sndpic $POLARIM $1 ${2/.ps/.gif}
-        convert ${2/.ps/.gif}[0] ${2/.ps/}.a.png
-        convert ${2/.ps/.gif}[1] ${2/.ps/}.b.png
+        if [ $1 == "plotData" ] ; then
+           echo "Creating png files..."
+           convert ${2/.ps/.gif}[0] ${2/.ps/}.a.png
+           convert ${2/.ps/.gif}[1] ${2/.ps/}.b.png
+        fi
     else
         $BINDIR/sndpic $POLARIM $1 $BINDIR/failed.gif
     fi
@@ -114,7 +116,7 @@ trap myhardexit SIGTERM
 # Run rhicpol and analysis according to the mode
 case $MODE in
     Run* | Data* )
-#               Regular run
+        # Regular run
         $POLCMD $OPT -l $LOG -i $CNF -f $DATA -d $POLARIM -c "$MODE $POLARIM" >> $ERRLOG 2>&1 &
         mywait
         trap myignore SIGINT    # ignore Stop on analysis stage
@@ -128,6 +130,8 @@ case $MODE in
             echo "Starting pawX11..." >> $ALOG
             export RUN LOGDIR PSFILE HBOOKFILE MACDIR   # no other way to pass arguments to kumac...
             pawX11 -n -b $MACDIR/onliplot.kumac >> $ALOG 2>&1
+            echo "Starting online_polar.pl..." >> $ALOG
+            $MACDIR/online_polar.pl $RUN
             echo "Starting sendpict..." >> $ALOG
             mysendpict plotData $PSFILE >> $ALOG 2>&1
             # We will also leave in the background the process to analyze this measurement for bunch per bunch emittance
