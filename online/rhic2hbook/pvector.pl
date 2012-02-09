@@ -1,7 +1,11 @@
 #! /usr/bin/perl
 
+#
 # Jan 6, 2012 - Dmitri Smirnov
 #    - Now can save online polarization values to a file
+#
+# Feb 9, 2012 - Dmitri Smirnov
+#    - Moved saving polarization to a separate script online_polar.pl
 #
 
 use Env;
@@ -12,13 +16,11 @@ $run = $ARGV[0];
 
 $LOGFILE       = $LOGDIR."/an$run.log";
 $OUTFILE       = ">".$LOGDIR."/pvect.dat";
-$OUTFILE_POLAR = ">>".$LOGDIR."/online_polar.dat";
 
 #printf "Processing run $run ($LOGFILE)\n";
 
 open(LOGFILE,       $LOGFILE);
 open(OUTFILE,       $OUTFILE);
-open(OUTFILE_POLAR, $OUTFILE_POLAR);
 
 $SQ2 = 1.4142;
 
@@ -149,27 +151,6 @@ while ($line = <LOGFILE>) {
            $A_N = 0.;
         }
     }
-
-    # Run 
-    if (($words[1] eq "Run") && ($words[2] eq "Number")){
-        $sRunId = $words[3];
-
-        if ($sPolar eq "") {
-           $sRunId = 0.;
-        }
-    }
-
-    # Polarization as calculated online
-    if (($words[1] eq "Polarization") && ($words[2] eq ":")){
-        $sPolar = $words[3];
-
-        ($polar,$polarErr) = split(/\+-+/,$sPolar);
-
-        if ($sPolar eq "NaN") {
-           $polar    = 0.;
-           $polarErr = 0.;
-        }
-    }
 }
 
 printf OUTFILE "$x90p $x90pe\n";
@@ -184,10 +165,6 @@ printf OUTFILE "$A_N\n";
 printf OUTFILE "$PCNT[0] $PCNT[1] $PCNT[2] $PCNT[3] $PCNT[4] $PCNT[5]\n";
 printf OUTFILE "$MCNT[0] $MCNT[1] $MCNT[2] $MCNT[3] $MCNT[4] $MCNT[5]\n";
 
-
-printf OUTFILE_POLAR "$sRunId, $polar, $polarErr\n";
-
 close(LOGFILE);
 close(OUTFILE);
-close(OUTFILE_POLAR);
 

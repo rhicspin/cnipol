@@ -249,7 +249,7 @@ void readandfill_(int* subrun)
          memcpy(&beamdat_, &rec.beam.data, sizeof(beamdat_));
          for (i = 0; i < 120; i++) {
             rhic_.fillpat[i] = beamdat_.measuredFillPatternM[3 * i];
-            rhic_.polpat[i] = beamdat_.polarizationFillPatternS[3 * i];
+            rhic_.polpat[i]  = beamdat_.polarizationFillPatternS[3 * i];
          }
          printf("Fill pattern: ");
          for (i = 0; i < 120; i++) {
