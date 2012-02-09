@@ -48,7 +48,7 @@ void CnipolCalibHists::BookHists(std::string cutid)
    sprintf(hName, "hChi2NdfVsChannel");
    o[hName]      = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[hName])->SetTitle(";Channel Id;#chi^{2}/ndf;");
-   ((TH1*) o[hName])->SetOption("LOGY");
+   ((TH1*) o[hName])->SetOption("hist XY");
 
    sprintf(hName, "hFitStatusVsChannel");
    o[hName]      = new TH1I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
