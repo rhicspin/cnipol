@@ -1,4 +1,4 @@
-source ~/run/bgx_asym.sh
+source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
 
 #bgx_limit 3 sleep 10
 
@@ -25,14 +25,11 @@ echo
 for file_name in ${RUN_LIST[@]}
 do
    run_name=${file_name%.data} 
-   #echo "bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db";
-   #echo "bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy";
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --pmt --copy
-
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy --disable-det=101101 --sfx=hama --raw
-   bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db --raw --pulser --asym -g --copy --pmt --kinema
+   bgx_limit 16 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw --pulser --asym -g --copy --pmt --kinema
 done
 
-# Wait until all others are finished.
+# Wait until all processes are finished
 bgx_wait
