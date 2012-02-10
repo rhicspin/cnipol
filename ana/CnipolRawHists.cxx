@@ -43,45 +43,46 @@ void CnipolRawHists::BookHists(string cutid)
 
    sprintf(hName, "hAdcAmpltd"); // former adc_raw
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
+   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;Events;");
    ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw Amplitude ADC (All strips);Amplitude, ADC;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hAdcIntgrl");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
+   ((TH1*) o[hName])->SetTitle(";Integral, ADC;Events;");
    ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw Integral ADC (All strips);Integral, ADC;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hTdc"); // former tdc_raw
    o[hName] = new TH1F(hName, hName, 80, 10, 90);
    ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw TDC (All strips);TDC;Events;");
+   ((TH1*) o[hName])->SetTitle(";TDC;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hTvsA");
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
 
    sprintf(hName, "hTvsI");
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
 
    sprintf(hName, "hIvsA");
    o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
    ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
+   ((TH1*) o[hName])->SetOption("colz LOGZ");
 
    sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5);
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
+   ((TH1*) o[hName])->SetOption("colz LOGZ GRIDX");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hStripCounts"); // former strip_dist_raw
    o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetOption("hist XY");
+   ((TH1*) o[hName])->SetOption("hist XY GRIDX");
    ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
