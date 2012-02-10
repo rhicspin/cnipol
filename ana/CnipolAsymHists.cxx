@@ -62,64 +62,64 @@ void CnipolAsymHists::BookHists(string cutid)
    sprintf(hName, "hLongiChAsym%s", cutid.c_str());
    o[hName] = new TH1F(hName, hName, 7, xbins);
    //o[hName] = new TH1F(hName, hName, 40, -20, 20);
-   ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
+   ((TH1*) o[hName])->SetOption("E1");
 
    // Channel Id vs bunch id
    shName = "hChVsBunchId";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[shName])->SetOption("colz NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Channel Id;");
+   ((TH1*) o[shName])->SetOption("colz NOIMG GRIDX");
 
    // Channel Id vs delim
    shName = "hChVsDelim";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[shName])->SetOption("colz NOIMG");
    ((TH1*) o[shName])->SetTitle(";Target Steps, s;Channel Id;");
+   ((TH1*) o[shName])->SetOption("colz NOIMG");
 
    // Detector Id vs bunch id
    shName = "hDetVsBunchId";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-   ((TH1*) o[shName])->SetOption("colz NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
+   ((TH1*) o[shName])->SetOption("colz NOIMG GRIDX");
 
    // Detector Id vs delim
    shName = "hDetVsDelim";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-   ((TH1*) o[shName])->SetOption("colz NOIMG");
    ((TH1*) o[shName])->SetTitle(";Target Steps, s;Detector Id;");
+   ((TH1*) o[shName])->SetOption("colz NOIMG GRIDY");
 
    shName = "hAsymVsBunchId_X90";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X90 Asymmetry;");
+   ((TH1*) o[shName])->SetOption("GRIDX");
 
    shName = "hAsymVsBunchId_X45";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;X45 Asymmetry;");
+   ((TH1*) o[shName])->SetOption("GRIDX");
 
    shName = "hAsymVsBunchId_Y45";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, 100, -0.05, 0.05);
-   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";Bunch Id;Y45 Asymmetry;");
+   ((TH1*) o[shName])->SetOption("GRIDX");
 
    //
    shName = "hChannelAsym";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);//, 100, -0.03, 0.03);
-   ((TH1*) o[shName])->SetOption("hist E1 NOIMG");
    ((TH1*) o[shName])->SetTitle(";Channel Id;Asymmetry;");
+   ((TH1*) o[shName])->SetOption("hist E1 NOIMG GRIDX");
 
    //
    shName = "hAsymVsDelim4Ch";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   ((TH1*) o[shName])->SetOption("hist NOIMG");
    ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
+   ((TH1*) o[shName])->SetOption("hist NOIMG");
 
    shName = "hAsymVsDelim4Det";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetOption("E1 NOIMG");
    hist->SetTitle(";Target Steps, s;Asymmetry;");
+   hist->SetOption("E1 NOIMG");
    o[shName] = hist;
 
    //
@@ -131,8 +131,8 @@ void CnipolAsymHists::BookHists(string cutid)
 
    shName = "hAsymVsPhi";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -0.03, 0.03);
-   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
+   ((TH1*) o[shName])->SetOption("GRIDX");
    ((TH1*) o[shName])->GetListOfFunctions()->Add(grAsymVsPhi, "p");
 
    //
@@ -144,8 +144,8 @@ void CnipolAsymHists::BookHists(string cutid)
 
    shName = "hPolarVsPhi";
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 100, 0, 2*M_PI, 100, -1.5, 1.5);
-   //((TH1*) o[shName])->SetOption("NOIMG");
    ((TH1*) o[shName])->SetTitle(";#phi;Asymmetry;");
+   ((TH1*) o[shName])->SetOption("GRIDX");
    ((TH1*) o[shName])->GetListOfFunctions()->Add(grPolarVsPhi, "p");
 
    //DrawObjContainer        *oc;
@@ -196,50 +196,50 @@ void CnipolAsymHists::BookHists(string cutid)
       // Counts per channel
       shName = "hChannelCounts_" + sSS;
       o[shName] = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("hist NOIMG");
       ((TH1*) o[shName])->SetTitle(";Channel Id;;");
+      ((TH1*) o[shName])->SetOption("hist NOIMG");
 
       // Channel Id vs bunch id
       shName = "hChVsBunchId_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz");
       ((TH1*) o[shName])->SetTitle(";Bunch Id;Channel Id;");
+      ((TH1*) o[shName])->SetOption("colz");
 
       // Channel Id vs energy
       shName = "hChVsKinEnergyA_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Channel Id;");
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Channel Id vs energy
       shName = "hChVsLongiTimeDiff_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 7, xbins, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Time Diff, ns;Channel Id;");
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Channel Id vs energy
       shName = "hChVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetOption("colz");
       ((TH1*) o[shName])->SetTitle(";Target Steps, s;Channel Id;");
+      ((TH1*) o[shName])->SetOption("colz");
 
       // Detector Id vs bunch id
       shName = "hDetVsBunchId_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Detector Id vs energy
       shName = "hDetVsKinEnergyA_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Detector Id;");
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Detector Id vs delim
       shName = "hDetVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
       ((TH1*) o[shName])->SetTitle(";Target Steps, s;Detector Id;");
+      ((TH1*) o[shName])->SetOption("colz NOIMG");
    }
 } //}}}
 

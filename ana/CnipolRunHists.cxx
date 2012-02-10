@@ -107,7 +107,7 @@ void CnipolRunHists::BookHists(string sid)
  
    sprintf(hName, "wall_current_monitor");
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
-   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^{9} protons;");
+   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^{11} protons;");
    ((TH1*) o[hName])->SetFillColor(13);
  
    sprintf(hName, "specific_luminosity");
