@@ -78,6 +78,9 @@ void MAsymRunHists::BookHists(string sid)
       shName = "hsPolarVsFill_" + sBeamE;
       fHStacks[shName] = new THStack(shName.c_str(), shName.c_str());
 
+      shName = "hsPolarVsMeas_" + sBeamE;
+      fHStacks[shName] = new THStack(shName.c_str(), shName.c_str());
+
       shName = "hsDLVsFill_U_" + sBeamE;
       fHStacks[shName] = new THStack(shName.c_str(), shName.c_str());
 
@@ -247,9 +250,13 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    styleMarker.Copy(*grPolarVsMeas);
 
    shName = "hPolarVsMeas_" + sPolId + "_" + sBeamE;
-   oc.o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 100);
-   ((TH1*) oc.o[shName])->SetTitle(";Measurement;Polarization, %;");
-   ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grPolarVsMeas, "p");
+   hist = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 100);
+   //hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle(";Measurement;Polarization, %;");
+   hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
+   oc.o[shName] = hist;
+   // Add this pointer to the stack
+   fHStacks["hsPolarVsMeas_" + sBeamE]->Add(hist);
 
    shName = "hPolarVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
@@ -258,8 +265,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist->SetOption("E1");
    hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
-
-   // Add its pointer to the stack
+   // Add this pointer to the stack
    fHStacks["hsPolarVsFill_" + sBeamE]->Add(hist);
 
    shName = "hPolarFirstMeasVsFill_" + sPolId + "_" + sBeamE;
@@ -378,6 +384,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hPolarVsTime_" + sPolId + "_" + sBeamE;
    hist = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 100);
+   //hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->SetTitle(";Date & Time;Polarization, %;");
    hist->GetListOfFunctions()->Add(grPolarVsTime, "p");
    hist->GetXaxis()->SetNdivisions(10, kFALSE);
@@ -683,7 +690,8 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->SetTitle(";Fill;Beam Polarization, %;");
    hist->SetOption("E1");
-   styleMarker.Copy(*hist); oc.o[shName] = hist;
+   styleMarker.Copy(*hist);
+   oc.o[shName] = hist;
 
    shName = "hPolarRatioVsFill_" + sRingId + "_"  + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0.5, 1.5);
@@ -1542,6 +1550,9 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
 /** */
 void MAsymRunHists::UpdateLimits()
 { //{{{
+   Info("UpdateLimits", "fMinFill: %f, fMaxFill: %f", fMinFill, fMaxFill);
+   Info("UpdateLimits", "fMinTime: %d, fMaxTime: %d", fMinTime, fMaxTime);
+
    char    hName[256];
    string  shName;
 
@@ -1550,17 +1561,26 @@ void MAsymRunHists::UpdateLimits()
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       string sPolId = RunConfig::AsString(*iPolId);
+      Info("UpdateLimits", "sPolId = %s", sPolId.c_str());
 
       // Find corresponding sub directory
       DrawObjContainer *oc_pol = d.find(sPolId)->second;
 
-      Double_t min, max, marg;
+      Double_t min, max, margin;
 
       IterBeamEnergy iBE = gRunConfig.fBeamEnergies.begin();
 
       for (; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
       {
          string sBeamE = RunConfig::AsString(*iBE);
+         Info("UpdateLimits", "sBeamE = %s", sBeamE.c_str());
+
+         //min  = utils::GetNonEmptyMinimum(fHStacks["hsPolarVsFill_" + sBeamE], "nostack");
+         //max  = utils::GetNonEmptyMaximum(fHStacks["hsPolarVsFill_" + sBeamE], "nostack");
+         min  = utils::GetNonEmptyMinimum(fHStacks["hsPolarVsMeas_" + sBeamE], "nostack");
+         max  = utils::GetNonEmptyMaximum(fHStacks["hsPolarVsMeas_" + sBeamE], "nostack");
+         //if (fabs(max - min) < 0.01*max) { max = 1.01*max; min = 0.99*min; }
+         margin = (max - min) * 0.1;
 
          shName = "hMaxRateVsMeas_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
@@ -1570,39 +1590,36 @@ void MAsymRunHists::UpdateLimits()
 
          shName = "hPolarVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         min  = utils::GetNonEmptyMinimum(fHStacks["hsPolarVsFill_" + sBeamE], "nostack");
-         max  = utils::GetNonEmptyMaximum(fHStacks["hsPolarVsFill_" + sBeamE], "nostack");
-         marg = (max - min) * 0.1;
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hPolarFirstMeasVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hPolarHJVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hPolarPCNormByHJVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hPolarPCNormByHJVsFill_HJOnly_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hProfPolarVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          shName = "hPolarVsMeas_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
          shName = "hPolarVsTime_" + sPolId + "_" + sBeamE;
 			//utils::UpdateLimitsFromGraphs((TH1*) oc_pol->o[shName], 1);
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
 
          shName = "hRVsMeas_" + sPolId + "_" + sBeamE;
@@ -1626,16 +1643,16 @@ void MAsymRunHists::UpdateLimits()
             max  = utils::GetNonEmptyMaximum(fHStacks["hsT0VsFill_D_" + sBeamE], "nostack");
 		   }
 
-         marg = (max - min) * 0.1;
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         margin = (max - min) * 0.1;
+         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          sprintf(hName, "hT0VsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
          ((TH1*) oc_pol->o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
-         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
          sprintf(hName, "hT0VsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
          ((TH1*) oc_pol->o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
 
          sprintf(hName, "hDLVsFill_%s_%s", sPolId.c_str(), sBeamE.c_str());
@@ -1649,16 +1666,16 @@ void MAsymRunHists::UpdateLimits()
             max  = utils::GetNonEmptyMaximum(fHStacks["hsDLVsFill_D_" + sBeamE], "nostack");
 			}
 
-         marg = (max - min) * 0.1;
-         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetRangeUser(min-marg, max+marg);
+         margin = (max - min) * 0.1;
+         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetRangeUser(min-margin, max+margin);
 
          sprintf(hName, "hDLVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
          ((TH1*) oc_pol->o[hName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
          sprintf(hName, "hDLVsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
          ((TH1*) oc_pol->o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
-         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-marg, max+marg);
+         ((TH1*) oc_pol->o[hName])->GetYaxis()->SetLimits(min-margin, max+margin);
 
 
          sprintf(hName, "hBananaChi2NdfVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());

@@ -224,7 +224,7 @@ void MAsymSingleFillHists::Fill(EventConfig &rc)
    //   graphErrs = graphFill;
    //}
 
-   if ((EBeamEnergy) beamEnergy == kFLATTOP) {
+   if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_250) {
       graphNEntries = graphErrs->GetN();
       graphErrs->SetPoint(graphNEntries, runStartTime, polarization);
       graphErrs->SetPointError(graphNEntries, 0, polarizationErr);

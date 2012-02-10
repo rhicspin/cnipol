@@ -81,13 +81,15 @@ EMeasType MeasInfo::GetMeasType()                 const { return fMeasType; }
 string    MeasInfo::GetAlphaCalibFileName()       const { return ""; }
 string    MeasInfo::GetDlCalibFileName()          const { return ""; }
 
+
+/** */
 void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 { //{{{
    fBeamEnergy = beamEnergy;
 
    UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
 
-   if (approxBeamEnergy == kFLATTOP)
+   if (approxBeamEnergy == kBEAM_ENERGY_100 || approxBeamEnergy == kBEAM_ENERGY_250)
       // this number comes from the online config files. May need to add it to the run_info DB table in the future
       fExpectedGlobalTimeOffset = -8;
    else
@@ -98,7 +100,10 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
    printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
 } //}}}
 
+
+/** */
 void MeasInfo::SetMeasType(EMeasType measType) { fMeasType = measType; } 
+
 
 /** */
 void MeasInfo::Print(const Option_t* opt) const
