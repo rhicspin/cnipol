@@ -49,7 +49,7 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
 
    fBeamEnergies.insert(kINJECTION);
    fBeamEnergies.insert(kBEAM_ENERGY_100);
-   fBeamEnergies.insert(kFLATTOP);
+   fBeamEnergies.insert(kBEAM_ENERGY_250);
 
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
@@ -163,7 +163,7 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
 	   return "024";
    case kBEAM_ENERGY_100:
 	   return "100";
-   case kFLATTOP:
+   case kBEAM_ENERGY_250:
 	   return "250";
    default:
       return "UNK";

@@ -70,11 +70,12 @@ void initialize()
    //TString filelistName = "run11_pol_decay";
    //TString filelistName = "run11_1547X_4_5";
    //TString filelistName = "run11_154XX_00_23_before_rotators";
-   TString filelistName = "run11_tmp_goodruns";
+   //TString filelistName = "run11_tmp_goodruns";
    //TString filelistName = "run11_tmp_goodruns_small";
    //TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
+   TString filelistName = "run12_16386";
 
 	TString filelist    = filelistPath + filelistName + ".txt";
    TString outFileName = "masym_" + filelistName + "_out.root";
@@ -82,7 +83,9 @@ void initialize()
    //TString fileSuffix  = "_hama";
 
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
-   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
+   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
+   //gRunConfig.fBeamEnergies.erase(kINJECTION);
+   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
 
    gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot(outFileName.Data());
@@ -94,10 +97,12 @@ void initialize()
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", gMAsymRoot));
    gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", gMAsymRoot));
 
-   string  histName = "hPolarVsIntensProfileBin";
-
    //UInt_t minTime = UINT_MAX;
    //UInt_t maxTime = 0;
+
+   // Create a default canvas here to get rid of weird root messages while
+   // reading objects from root files
+   TCanvas canvas("cName2", "cName2", 1400, 600);
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -112,22 +117,22 @@ void initialize()
       TFile *f = new TFile(fileName, "READ");
 
       if (!f) {
-         gSystem->Error("masym", "file not found. Skipping...");
+         Error("masym", "file not found. Skipping...");
          continue;
       }
 
       if (f->IsZombie()) {
-         gSystem->Error("masym", "file is zombie %s. Skipping...", fileName.Data());
+         Error("masym", "file is zombie %s. Skipping...", fileName.Data());
          delete f;
          continue;
       }
 
-      gSystem->Info("", "file found: %s", fileName.Data());
+      Info("masym", "Found file: %s", fileName.Data());
 
       gMM = (EventConfig*) f->FindObjectAny("EventConfig");
 
       if (!gMM) {
-         gSystem->Error("masym", "RC not found. Skipping...");
+         Error("masym", "RC not found. Skipping...");
          delete f;
          continue;
       }
@@ -138,7 +143,7 @@ void initialize()
       gHIn->ReadFromDir();
 
       if (!gHIn) {
-         gSystem->Error("masym", "Hists asym not found\n");
+         Error("masym", "Hists asym not found\n");
          delete f;
          continue;
       }
@@ -159,8 +164,6 @@ void initialize()
       Double_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
       //Float_t  profileRatio     = gMM->fAnaMeasResult->fIntensPolarR;
       //Float_t  profileRatioErr  = gMM->fAnaMeasResult->fIntensPolarRErr;
-      //Float_t  tzero            = gMM->fCalibrator->fChannelCalibs[7].fT0Coef;
-      //Float_t  tzeroErr         = gMM->fCalibrator->fChannelCalibs[7].fT0CoefErr;
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
@@ -173,26 +176,25 @@ void initialize()
       //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
       //   polarization_err, asymVersion.c_str());
-
-      if (asymVersion != "v1.7.2") {
-	      Warning("masym", "Wrong version %s", asymVersion.c_str());
-         continue;
-      }
+      //if (asymVersion != "v1.8.5") {
+	   //   Warning("masym", "Wrong version %s", asymVersion.c_str());
+      //   continue;
+      //}
 
       if (polarization < 5 || polarization > 99 || polarization_err > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
-          profileRatio > 1.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001
+          profileRatio > 2.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001
          )
       {
-	      Warning("masym", "Didn't pass basic QA check");
+	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
          continue;
       }
 
       if (flattopTimes.find(fillId) == flattopTimes.end()) 
          flattopTimes[fillId] = 0;
 
-      if ( beamEnergy == 250 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+      if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
          flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
       }
 
@@ -205,7 +207,7 @@ void initialize()
 	   }
 
       // To calculate normalization factors for p-Carbon we need to do it in the first pass
-      if ( beamEnergy == 250 ) {
+      if ( beamEnergy == kBEAM_ENERGY_250 ) {
          gAnaGlobResult.AddMeasResult(*gMM);
       }
 
@@ -241,8 +243,7 @@ void initialize()
 
       TFile *f = new TFile(fileName, "READ");
 
-      //gSystem->Info("", "Processing file: %s", fileName.Data());
-      printf("%s\n", (*iRunName).c_str());
+      Info("masym", "Processing measurement: %s", (*iRunName).c_str());
 
       gMM = (EventConfig*) f->FindObjectAny("EventConfig");
 
@@ -263,12 +264,11 @@ void initialize()
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   gH->SetSignature(gMM->GetSignature());
+   //gH->SetSignature(gMM->GetSignature());
    //gH->SetSignature("");
 
-   TCanvas canvas("cName2", "cName2", 1400, 600);
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
-   //gH->SaveAllAs(canvas, "^.*hPolar.*VsFill.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsMeasId.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
