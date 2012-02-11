@@ -507,6 +507,7 @@ void AnaInfo::CopyResults()
    if (!fFlagCopyResults) return;
 
    string cmd = "rsync -rlpgoDv " + GetOutDir() + " bluepc:/usr/local/polarim/root/";
+   Info("CopyResults", "Copying results...\n%s", cmd.c_str());
    //string cmd = "ls -l";
 
    //system(cmd.c_str());
