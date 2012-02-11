@@ -77,7 +77,7 @@ void CnipolRawHists::BookHists(string cutid)
    sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5);
    ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
-   ((TH1*) o[hName])->SetOption("colz LOGZ GRIDX");
+   ((TH1*) o[hName])->SetOption("colz GRIDX");
    ((TH1*) o[hName])->SetFillColor(kGray);
 
    sprintf(hName, "hStripCounts"); // former strip_dist_raw
