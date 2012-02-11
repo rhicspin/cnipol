@@ -256,6 +256,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
          l = strstr( ((TH1*) io->second)->GetOption(), "GRIDX");
          if (l) c.SetGridx(kTRUE);
          else c.SetGridx(kFALSE);
+
+         l = strstr( ((TH1*) io->second)->GetOption(), "GRIDY");
+         if (l) c.SetGridy(kTRUE);
+         else c.SetGridy(kFALSE);
       }
 
       if (io->second) {

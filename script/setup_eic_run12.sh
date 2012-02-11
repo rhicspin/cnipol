@@ -30,7 +30,7 @@ if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
 fi
 
 # CNIPOL variables
-export CNIPOL_DIR=/eicdata/eic0005/cnipol
+export CNIPOL_DIR=/eicdata/eic0005/cnipol_v1.8.5
 export CNIPOL_DATA_DIR=/eicdata/eic0005/run12/data
 export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run12/root
 

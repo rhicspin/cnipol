@@ -40,7 +40,7 @@ enum EStreamId {kUPSTREAM = 1, kDOWNSTREAM = 2, kUNKNOWN_STREAM};
 
 enum ETargetOrient {kTARGET_H = 0, kTARGET_V = 1, kUNKNOWN_ORIENT};
 
-enum EBeamEnergy {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kFLATTOP = 250};
+enum EBeamEnergy {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kBEAM_ENERGY_250 = 250};
 
 enum ESpinState {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 
