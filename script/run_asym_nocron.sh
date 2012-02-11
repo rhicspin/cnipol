@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG="/eicdata/eic0005/run12/run_asym_nocron.log"
-CHECKINGPERIOD=600 # in sec
+CHECKINGPERIOD=1800 # in sec
 
 source /eicdata/eic0005/cnipol_v1.8.5/setup.sh >> /dev/null 2>&1
 source /eicdata/eic0005/cnipol_v1.8.5/script/run_asym/bgx_asym.sh >> ${LOG} 2>&1
@@ -12,7 +12,7 @@ do
    date >> ${LOG}
    #RESULT=`ps -a | sed -n /${SERVICE}/p`
 
-   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -mmin -20 ! -mmin -10 -printf "%f\n"`)
+   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -mmin -50 ! -mmin -20 -printf "%f\n"`)
 
    echo Found new files: ${array[@]} >> ${LOG}
 
