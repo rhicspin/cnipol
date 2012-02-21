@@ -34,57 +34,63 @@ CnipolRawHists::~CnipolRawHists()
 /** */
 void CnipolRawHists::BookHists(string cutid)
 { //{{{
-   char hName[256];
    string shName;
-
-   TH1* hist;
+   TH1*   hist;
 
    fDir->cd();
 
-   sprintf(hName, "hAdcAmpltd"); // former adc_raw
-   o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;Events;");
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetFillColor(kGray);
+   shName = "hAdcAmpltd"; // former adc_raw
+   hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+   hist->SetTitle(";Amplitude, ADC;Events;");
+   hist->SetOption("hist");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
 
-   sprintf(hName, "hAdcIntgrl");
-   o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->SetTitle(";Integral, ADC;Events;");
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetFillColor(kGray);
+   shName = "hAdcIntgrl";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+   hist->SetTitle(";Integral, ADC;Events;");
+   hist->SetOption("hist");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
 
-   sprintf(hName, "hTdc"); // former tdc_raw
-   o[hName] = new TH1F(hName, hName, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle(";TDC;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
+   shName = "hTdc"; // former tdc_raw
+   hist = new TH1F(shName.c_str(), shName.c_str(), 80, 10, 90);
+   hist->SetOption("hist");
+   hist->SetTitle(";TDC;Events;");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
 
-   sprintf(hName, "hTvsA");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   shName = "hTvsA";
+   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+   hist->SetTitle(";Amplitude, ADC;TDC;");
+   hist->SetOption("colz LOGZ");
+   o[shName] = hist;
 
-   sprintf(hName, "hTvsI");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   shName = "hTvsI";
+   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+   hist->SetTitle(";Integral, ADC;TDC;");
+   hist->SetOption("colz LOGZ");
+   o[shName] = hist;
 
-   sprintf(hName, "hIvsA");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
+   shName = "hIvsA";
+   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
+   hist->SetTitle(";Integral, ADC;TDC;");
+   hist->SetOption("colz LOGZ");
+   o[shName] = hist;
 
-   sprintf(hName, "hBunchCounts"); //former bunch_dist_raw
-   o[hName] = new TH1F(hName, hName, N_BUNCHES, 0.5, N_BUNCHES+0.5);
-   ((TH1*) o[hName])->SetTitle(";Bunch Id;Events;");
-   ((TH1*) o[hName])->SetOption("hist XY GRIDX");
-   ((TH1*) o[hName])->SetFillColor(kGray);
+   shName = "hBunchCounts"; //former bunch_dist_raw
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5);
+   hist->SetTitle(";Bunch Id;Events;");
+   hist->SetOption("hist XY GRIDX");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
 
-   sprintf(hName, "hStripCounts"); // former strip_dist_raw
-   o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetOption("hist XY GRIDX");
-   ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
+   shName = "hStripCounts"; // former strip_dist_raw
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetOption("hist XY GRIDX");
+   hist->SetTitle(";Channel Id;Events;");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
 
    shName = "hRevolutionId";
    hist = new TH1F(shName.c_str(), shName.c_str(), 1000, 0, 1);
@@ -98,7 +104,7 @@ void CnipolRawHists::BookHists(string cutid)
 
    for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
    {
-      string sChId("  ");
+      string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", iChId);
 
       string dName = "channel" + sChId;
@@ -112,38 +118,44 @@ void CnipolRawHists::BookHists(string cutid)
          oc = isubdir->second;
       }
 
-      sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
-      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Events;");
-      ((TH1*) oc->o[hName])->SetFillColor(kGray);
+      shName = "hAdcAmpltd_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+      hist->SetOption("hist NOIMG");
+      hist->SetTitle(";Amplitude, ADC;Events;");
+      hist->SetFillColor(kGray);
+      oc->o[shName] = hist;
 
-      sprintf(hName, "hAdcIntgrl_ch%02d", iChId);
-      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-      ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;Events;");
-      ((TH1*) oc->o[hName])->SetFillColor(kGray);
+      shName = "hAdcIntgrl_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+      hist->SetOption("hist NOIMG");
+      hist->SetTitle(";Integral, ADC;Events;");
+      hist->SetFillColor(kGray);
+      oc->o[shName] = hist;
 
-      sprintf(hName, "hTdc_ch%02d", iChId);
-      oc->o[hName] = new TH1F(hName, hName, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-      ((TH1*) oc->o[hName])->SetTitle(";TDC;Events;");
-      ((TH1*) oc->o[hName])->SetFillColor(kGray);
+      shName = "hTdc_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 80, 10, 90);
+      hist->SetOption("hist NOIMG");
+      hist->SetTitle(";TDC;Events;");
+      hist->SetFillColor(kGray);
+      oc->o[shName] = hist;
 
-      sprintf(hName, "hTvsA_ch%02d", iChId);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+      shName = "hTvsA_ch" + sChId;
+      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+      hist->SetOption("colz LOGZ");
+      hist->SetTitle(";Amplitude, ADC;TDC;");
+      oc->o[shName] = hist;
 
-      sprintf(hName, "hTvsI_ch%02d", iChId);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
+      shName = "hTvsI_ch" + sChId;
+      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+      hist->SetOption("colz LOGZ");
+      hist->SetTitle(";Integral, ADC;TDC;");
+      oc->o[shName] = hist;
 
-      sprintf(hName, "hIvsA_ch%02d", iChId);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Integral, ADC;");
+      shName = "hIvsA_ch" + sChId;
+      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
+      hist->SetOption("colz LOGZ");
+      hist->SetTitle(";Amplitude, ADC;Integral, ADC;");
+      oc->o[shName] = hist;
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -162,7 +174,7 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
    UChar_t  chId     = ch->GetChannelId();
    UShort_t adcA_bin = ch->GetAmpltd() + 1;
    UShort_t adcI_bin = ch->GetIntgrl() + 1;
-   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
+   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);

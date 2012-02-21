@@ -42,17 +42,20 @@ protected:
    Short_t    fExpectedGlobalTdcOffset;
    Float_t    fExpectedGlobalTimeOffset;
 
+   std::string                 fRunName;
+
 public:
 
    int                         Run;
    double                      RUNID;
-   std::string                 fRunName;
    time_t                      fStartTime;
    time_t                      fStopTime;
    float                       fRunTime;
    int                         fDataFormatVersion;
    std::string                 fAsymVersion;
    EMeasType                   fMeasType;
+   UInt_t                      fNEventsProcessed;  // number of events processed from raw data file
+   UInt_t                      fNEventsTotal;      // number of total events in raw data file
    float                       GoodEventRate;
    float                       EvntRate;
    float                       ReadRate;
@@ -97,6 +100,7 @@ public:
    void            PrintAsPhp(FILE *f=stdout) const;
    void            PrintConfig();
    void            PrintBunchPatterns() const;
+   void            SetRunName(std::string runName);
    std::string     GetRunName() const;
    Short_t         GetPolarimeterId();
    Short_t         GetPolarimeterId(short beamId, short streamId);
@@ -134,7 +138,7 @@ public:
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
-   ClassDef(MeasInfo, 1)
+   ClassDef(MeasInfo, 3)
 };
 
 #endif

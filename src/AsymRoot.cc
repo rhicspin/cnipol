@@ -17,11 +17,13 @@
 
 #include "AsymRoot.h"
 
+#include "TClassTable.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLine.h"
 #include "TStyle.h"
+#include "TStreamerInfo.h"
 
 #include "AlphaCalibrator.h"
 #include "CnipolAsymHists.h"
@@ -340,8 +342,8 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
       if (fEventConfig) {
 
-         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fMeasInfo->fRunName;
-         gRunDb.alpha_calib_run_name = fEventConfig->fMeasInfo->fRunName;
+         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fMeasInfo->GetRunName();
+         gRunDb.alpha_calib_run_name = fEventConfig->fMeasInfo->GetRunName();
          //fEventConfig->fDatproc->CMODE = 0;
 
          delete fChannelEvent->fEventConfig;
@@ -375,17 +377,17 @@ void AsymRoot::UpdateRunConfig()
    if ( !anaInfo->HasCalibBit() ) {
 
       string fname = anaInfo->GetDlCalibFile();
-      Info("AsymRoot::UpdateRunConfig", "Reading RunConfig object from file %s", fname.c_str());
+      Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
       fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
       //delete f;
 
       if (!fEventConfig) {
-         Error("AsymRoot::UpdateRunConfig", "No RunConfig object found in file %s", fname.c_str());
+         Error("AsymRoot::UpdateRunConfig", "No MeasConfig object found in file %s", fname.c_str());
          return;
       }
 
-      // Update the pointer to RunConfig object in the event
+      // Update the pointer to MeasConfig object in the event
       delete fChannelEvent->fEventConfig;
       fChannelEvent->fEventConfig = fEventConfig;
 
@@ -395,19 +397,19 @@ void AsymRoot::UpdateRunConfig()
    // else if ( anaInfo->HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
-      // RunConfig
+      // MeasConfig
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
       
       // XXX not implemented. Need to fix it ASAP!
       //if (fnameAlpha != fname) {
-         Info("AsymRoot::UpdateRunConfig", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+         Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
 
          TFile *f = TFile::Open(fnameAlpha.c_str());
          EventConfig *alphaRunConfig = (EventConfig*) f->FindObjectAny("EventConfig");
          //delete f;
 
          if (!alphaRunConfig) {
-            Error("AsymRoot::UpdateRunConfig", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
+            Error("AsymRoot::UpdateRunConfig", "No MeasConfig object found in alpha calib file %s", fnameAlpha.c_str());
             return;
          }
 
@@ -418,7 +420,7 @@ void AsymRoot::UpdateRunConfig()
          // ....
       //}
 
-      // Update the pointer to RunConfig object in the event
+      // Update the pointer to MeasConfig object in the event
       delete fChannelEvent->fEventConfig;
       fChannelEvent->fEventConfig = fEventConfig;
    }
@@ -758,17 +760,17 @@ void AsymRoot::UpdateCalibrator()
 				exit(-1);
 			}
 
-         Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from file %s", fname.c_str());
+         Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from file %s", fname.c_str());
          TFile *f = TFile::Open(fname.c_str());
 
          EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
          if (!eventConfig) {
-            Error("AsymRoot::UpdateCalibrator", "No RunConfig object found in file %s", fname.c_str());
+            Error("AsymRoot::UpdateCalibrator", "No MeasConfig object found in file %s", fname.c_str());
             return;
          }
 
-         // Update the pointer to RunConfig object in the event
+         // Update the pointer to MeasConfig object in the event
          //delete fChannelEvent->fEventConfig;
          //fChannelEvent->fEventConfig = fEventConfig;
 
@@ -781,19 +783,38 @@ void AsymRoot::UpdateCalibrator()
 
 	   // Now overwrite alpha calibration constants from an alpha calib file
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
-      Info("AsymRoot::UpdateCalibrator", "Reading RunConfig object from alpha calib file %s", fnameAlpha.c_str());
+      Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
 
       TFile *f = TFile::Open(fnameAlpha.c_str());
-      EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
-      if (!eventConfig) {
-         Error("UpdateCalibrator", "No RunConfig object found in alpha calib file %s", fnameAlpha.c_str());
-         return;
+      TList *streamerList = f->GetStreamerInfoList();
+
+      if (!streamerList) {
+         Error("UpdateCalibrator", "No MeasConfig object found in alpha calib file %s", fnameAlpha.c_str());
+		   exit(-1);
       }
 
-      // XXX
-      //eventConfig->Print();
-      //exit(0);
+      //streamerList->Print("all");
+      TStreamerInfo *streamerInfo = (TStreamerInfo*) streamerList->FindObject("EventConfig");
+      Int_t mcVer = 0;
+
+      if (!streamerInfo) {
+         Error("UpdateCalibrator", "No TStreamerInfo for MeasConfig found in alpha calib file %s", fnameAlpha.c_str());
+      } else {
+         mcVer = streamerInfo->GetClassVersion();
+      }
+
+      delete streamerList;
+      //if (streamerInfo) delete streamerInfo;
+
+      Version_t    mcLoadedVer = TClassTable::GetID("EventConfig");
+      EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+
+      if (!eventConfig || mcVer != mcLoadedVer) {
+         Error("UpdateCalibrator", "No MeasConfig object of known version %d found in alpha calib file %s", mcLoadedVer, fnameAlpha.c_str());
+         exit(-1);
+      }
+
 
 		fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 

@@ -41,7 +41,6 @@ void end_process(MseMeasInfoX &run)
       gAnaMeasResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
 
       // reset counters
-      Nevtot = Nread = 0;
       for (int i=0; i<N_BUNCHES; i++) Ntotal[i] = 0;
    }
 
@@ -739,8 +738,8 @@ void CalcStatistics()
    // Calculate rates
    if (gMeasInfo->fRunTime) {
       gMeasInfo->GoodEventRate = float(cntr.good_event) / gMeasInfo->fRunTime / 1e6;
-      gMeasInfo->EvntRate      = float(Nevtot) / gMeasInfo->fRunTime / 1e6;
-      gMeasInfo->ReadRate      = float(Nread) / gMeasInfo->fRunTime / 1e6;
+      gMeasInfo->EvntRate      = float(gMeasInfo->fNEventsTotal) / gMeasInfo->fRunTime / 1e6;
+      gMeasInfo->ReadRate      = float(gMeasInfo->fNEventsProcessed) / gMeasInfo->fRunTime / 1e6;
    }
 
    // Misc
@@ -1624,7 +1623,9 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
    }
 } //}}}
 
-
+/**
+ * This method is called from the histogram container.
+ */
 // Description : call calcStripAsymmetry() subroutines for
 //             : regular and alternative sigma banana cuts, respectively.
 //             : Also call for PHENIX and STAR colliding bunches asymmetries
@@ -1639,6 +1640,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    //// alternative sigma cut
    //CalcStripAsymmetry(1);
 
+   // This is the old approach
    // regular sigma cut
    CalcStripAsymmetry(0);
 
@@ -1663,17 +1665,19 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
          QuadErrorDiv(diff[0], gAnaMeasResult->sinphi[0].P[0], diff[1], gAnaMeasResult->sinphi[0].P[1]);
    }
 
-   // new approach
+   // This is the new approach
    TH1I* hUp     = (TH1I*) oc->o["hChannelCounts_up"];
    TH1I* hDown   = (TH1I*) oc->o["hChannelCounts_down"];
    TH1D* hChAsym = (TH1D*) oc->o["hChannelAsym"];
 
+   // Create hChAsym with asymmetries by channel
    CalcChannelAsym(*hUp, *hDown, hChAsym);
 
    // Set graph values from the histogram
    TH2* hAsymVsPhi = (TH2*) oc->o["hAsymVsPhi"];
    TGraphErrors *grAsymVsPhi = (TGraphErrors*) hAsymVsPhi->GetListOfFunctions()->FindObject("grAsymVsPhi");
 
+   // Create and then fit to sine graph grAsymVsPhi given histogram hChAsym
    //TFitResultPtr fitres = FitChAsymConst(*hChAsym, grAsymVsPhi);
    TFitResultPtr fitres = FitChAsymSine(*hChAsym, grAsymVsPhi);
 
@@ -2071,7 +2075,10 @@ TFitResultPtr AsymCalculator::FitChAsymConst(TH1D &hChAsym, TGraphErrors *gr)
 } //}}}
 
 
-/** */
+/**
+ * Matches channels (and their asymmetries) from hChAsym to phi angles  in
+ * TGraphErrors gr. The sine is then fit to the graph.
+ */
 TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
 { //{{{
    if (!gr)
@@ -2114,8 +2121,6 @@ TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
 void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
                         Float_t *P, Float_t *phase, Float_t &chi2dof)
 { //{{{
-
-
    char  htitle[100];
    float dx[N_SILICON_CHANNELS];
 

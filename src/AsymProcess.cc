@@ -252,7 +252,7 @@ void event_process(processEvent *event)
       //   gAsymRoot->fHists->d["raw_eb"]->Fill(ch);
       //} else {
          //gAsymRoot->fHists->d["raw"]->Fill(ch);
-			gAsymRoot->Fill(kCUT_RAW);
+			//gAsymRoot->Fill(kCUT_RAW);
       //}
 
       //if (fabs(gFillPattern[event.bid]) != 1)
@@ -537,7 +537,6 @@ void event_process(processEvent *event)
          //ds HHF1(10200,(float)event->delim,1.);
 
          // Fill event in memory
-         Nevcut++;
          Ngood[event->bid]++;
 
          // bunch distribution (time + -t cut)

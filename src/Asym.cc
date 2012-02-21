@@ -34,9 +34,6 @@ char    CalibFile[256];             // energy calibration file
 
 float   ramptshift[500];            // ramp timing shift
 
-long    Nevcut         = 0; // number of events after 1st cut (whole data)
-UInt_t  Nevtot         = 0; // number of total events (whole data)
-UInt_t  Nread          = 0; // real total events (completely everything)
 UInt_t  gMaxEventsUser = 0; // number of events to process
 long    Ngood[120];     // number of events after carbon cut (each bunch)
 long    Ntotal[120];    // number of events before carbon cut (each bunch)
@@ -207,8 +204,8 @@ RunConst::RunConst(float lL, float lCt)
 { //{{{
    L   = lL;
    Ct  = lCt;
-   E2T = M_SQRT1_2/C_CMNS * sqrt(MASS_12C) * L;
-   M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);
+   E2T = M_SQRT1_2 * sqrt(MASS_12C) * L / C_CMNS;
+   M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);       // ~ 18 [cm] / 2 / 1.4142 / 29.98 [cm/ns] / 3.3447e3 [keV^(1/2)] = 0.00006347 [ns/keV^(1/2)]
    T2M = 2*C_CMNS*C_CMNS/L/L;
 } //}}}
 
@@ -242,7 +239,7 @@ void RunConst::Print(const Option_t* opt) const
   printf("\tL   = %10.3f\n", L);
   printf("\tCt  = %10.3f\n", Ct);
   printf("\tE2T = %10.3f\n", E2T);
-  printf("\tM2T = %10.3f\n", M2T);
+  printf("\tM2T = %10.3g\n", M2T);
   printf("\tT2M = %10.3f\n", T2M);
 } //}}}
 

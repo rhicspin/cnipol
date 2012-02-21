@@ -35,7 +35,7 @@ class MseRunPeriodX : public MseRunPeriod
 {
 public:
    // default constructor[13]
-   MseRunPeriodX() : MseRunPeriod() { }
+   MseRunPeriodX();
  
    // for-comparison constructor[14]
    MseRunPeriodX(const mysqlpp::sql_datetime &p1);

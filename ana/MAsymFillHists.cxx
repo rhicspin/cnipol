@@ -485,7 +485,8 @@ void MAsymFillHists::Fill(EventConfig &rc)
       graphErrs = graphFill;
    }
 
-   if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_250) {
+   //if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_250)
+   if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_100) {
       graphNEntries = graphErrs->GetN();
       graphErrs->SetPoint(graphNEntries, measStartTime, polar);
       graphErrs->SetPointError(graphNEntries, 0, polarErr);
@@ -513,7 +514,8 @@ void MAsymFillHists::Fill(EventConfig &rc)
       graphErrs = graphFill;
    }
 
-   if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_250) {
+   //if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_250)
+   if ((EBeamEnergy) beamEnergy == kBEAM_ENERGY_100) {
       graphNEntries = graphErrs->GetN();
       graphErrs->SetPoint(graphNEntries, measStartTime, profileRatio);
       graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
