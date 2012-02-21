@@ -29,9 +29,11 @@ MeasInfo::MeasInfo() : TObject(),
    fDataFormatVersion(0),
    fAsymVersion(ASYM_VERSION),
    fMeasType(kMEASTYPE_UNKNOWN),
-   GoodEventRate (0),        // GoodEventRate;
-   EvntRate      (0),        // EvntRate;
-   ReadRate      (0),        // ReadRate;
+   fNEventsProcessed (0),
+   fNEventsTotal     (0),
+   GoodEventRate     (0),        // GoodEventRate;
+   EvntRate          (0),        // EvntRate;
+   ReadRate          (0),        // ReadRate;
    fWallCurMon(), fWallCurMonAve(0), fWallCurMonSum(0),
    fPolId        (-1),       // valid values 0 - 3
    fPolBeam      (0),        // blue = 2 or yellow = 1
@@ -121,10 +123,12 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str() );
    fprintf(f, "$rc['fStartTime']                   = %ld;\n",    fStartTime   );
    fprintf(f, "$rc['fStopTime']                    = %ld;\n",    fStopTime    );
-   fprintf(f, "$rc['fRunTime']                      = %f;\n",     fRunTime      );
+   fprintf(f, "$rc['fRunTime']                     = %f;\n",     fRunTime      );
    fprintf(f, "$rc['fDataFormatVersion']           = %d;\n",     fDataFormatVersion);
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
-   fprintf(f, "$rc['fMeasType']                    = %#010X;\n",  fMeasType);
+   fprintf(f, "$rc['fMeasType']                    = %#010X;\n", fMeasType);
+   fprintf(f, "$rc['fNEventsProcessed']            = %u;\n",     fNEventsProcessed);
+   fprintf(f, "$rc['fNEventsTotal']                = %u;\n",     fNEventsTotal);
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );
@@ -309,6 +313,11 @@ void MeasInfo::PrintConfig()
 
 /** */
 string MeasInfo::GetRunName() const { return fRunName; }
+void   MeasInfo::SetRunName(std::string runName) {
+   fRunName = runName;
+   // Set to 0 when "RunID" contains alphabetical chars
+   RUNID = strtod(fRunName.c_str(), NULL);
+}
 
 
 /** */

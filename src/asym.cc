@@ -61,10 +61,10 @@ int main(int argc, char *argv[])
    // for get option
    extern char *optarg;
 
-   char   cfile[32];
-   char   enerange[20], cwidth[20], *ptr;
+   char         cfile[32];
+   char         enerange[20], cwidth[20], *ptr;
    stringstream sstr;
-   int    option_index = 0;
+   int          option_index = 0;
 
    static struct option long_options[] = {
       {"run-name",            required_argument,   0,   'r'},
@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
       {"kinema",              no_argument,         0,   AnaInfo::MODE_KINEMA},
       {"pmt",                 no_argument,         0,   AnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AnaInfo::MODE_PULSER},
+      {"online",              no_argument,         0,   AnaInfo::MODE_ONLINE},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
       {"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
       {"mode-alpha",          no_argument,         0,   AnaInfo::MODE_ALPHA},
@@ -106,8 +107,8 @@ int main(int argc, char *argv[])
       {"mode-asym",           no_argument,         0,   AnaInfo::MODE_ASYM},
       {"mode-kinema",         no_argument,         0,   AnaInfo::MODE_KINEMA},
       {"mode-pmt",            no_argument,         0,   AnaInfo::MODE_PMT},
-      {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"mode-online",         no_argument,         0,   AnaInfo::MODE_ONLINE},
+      {"mode-full",           no_argument,         0,   AnaInfo::MODE_FULL},
       {"set-calib",           required_argument,   0,   AnaInfo::OPTION_SET_CALIB},
       {"set-calib-alpha",     required_argument,   0,   AnaInfo::OPTION_SET_CALIB_ALPHA},
       {"set-calib-dl",        required_argument,   0,   AnaInfo::OPTION_SET_CALIB_DL},
@@ -130,9 +131,8 @@ int main(int argc, char *argv[])
 
       case 'r':
       case 'f':
-         gAnaInfo->fRunName = optarg;
-         gMeasInfo->fRunName = optarg;
-         gRunDb.fRunName    = optarg;
+         gAnaInfo->SetRunName(optarg);
+         gRunDb.fRunName = optarg; // deprecated, should be removed later
          break;
 
       case 'n':
@@ -140,7 +140,9 @@ int main(int argc, char *argv[])
          break;
 
       case 's':
-         gAnaInfo->fThinout = atol(optarg);
+         sstr.str("");
+         sstr << optarg;
+         sstr >> gAnaInfo->fThinout;
          break;
 
       case 'l':
@@ -341,6 +343,10 @@ int main(int argc, char *argv[])
          gAnaInfo->fModes |= AnaInfo::MODE_PULSER;
          break;
 
+      case AnaInfo::MODE_ONLINE:
+         gAnaInfo->fModes |= AnaInfo::MODE_ONLINE;
+         break;
+
       case AnaInfo::MODE_FULL:
          gAnaInfo->fModes |= AnaInfo::MODE_FULL; break;
 
@@ -372,41 +378,21 @@ int main(int argc, char *argv[])
    // Book root file
    gAsymRoot->CreateRootFile(gAnaInfo->GetRootFileName());
 
-   // Extract RunID from input filename
-   //int chrlen = strlen(ifile)-strlen(suffix) ; // f.e. 10100.101.data - .data = 10100.001
-   //char RunID[chrlen];
-   //strncpy(RunID, ifile, chrlen);
-   //RunID[chrlen] = '\0'; // Without RunID[chrlen]='\0', RunID screwed up.
-
-   // Set to 0 when "RunID" contains alphabetical chars
-   gMeasInfo->RUNID = strtod(gMeasInfo->fRunName.c_str(), NULL);
-
-   // For normal runs, RUNID != 0. Then read run conditions from run.db.
-   // Otherwise, data filename with characters skip readdb and reconfig routines
-   // assuming these are energy calibration or test runs.
-   //if (gMeasInfo->RUNID)
-   //   readdb(gMeasInfo->RUNID);
-   //else
-   //   gAnaInfo->RECONFMODE = 0;
-
-   MseMeasInfoX *mseMeasInfoX     = 0;
-   MseMeasInfoX *mseMeasInfoXOrig = 0;
+   MseMeasInfoX  *mseMeasInfoX     = 0;
+   MseMeasInfoX  *mseMeasInfoXOrig = 0;
+   MseRunPeriodX *mseRunPeriodX    = 0;
 
    // Check whether the run is in database
    if (gAnaInfo->fFlagUseDb) {
-      mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->fRunName);
+      mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
    }
 
    if (mseMeasInfoX) { // if run found in database save its copy
-      mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->fRunName);
+      mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->GetRunName());
       *mseMeasInfoXOrig = *mseMeasInfoX;
+   } else { // if run not found in database create it
+      mseMeasInfoX = new MseMeasInfoX(gMeasInfo->GetRunName());
    }
-   else { // if run not found in database create it
-      mseMeasInfoX = new MseMeasInfoX(gMeasInfo->fRunName);
-   }
-
-   //cout << endl << "mseMeasInfoX 1: " << endl;
-   //mseMeasInfoX->Print();
 
    // Read data file into memory
    RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo->GetRawDataFileName());
@@ -416,15 +402,14 @@ int main(int argc, char *argv[])
    rawData->ReadRecBegin(mseMeasInfoX);
    rawData->ReadMeasInfo(*mseMeasInfoX);
 
-   //cout << endl << "mseMeasInfoX 2: " << endl;
-   //mseMeasInfoX->Print();
-
    // We can do this for any run type including alpha runs
-   MseRunPeriodX *mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
-   //gAsymDb->CompleteMeasInfo(*mseMeasInfoX); // deprecated
+   if (gAnaInfo->fFlagUseDb) {
+      mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
+   }
 
-   if (!mseRunPeriodX)
-      gSystem->Fatal("   int main()", "Run period not specified");
+   if (!mseRunPeriodX) {
+      mseRunPeriodX = new MseRunPeriodX();
+   }
 
    //cout << endl << "mseMeasInfoX 3: " << endl;
    //mseMeasInfoX->Print();

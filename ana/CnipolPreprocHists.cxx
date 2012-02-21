@@ -67,8 +67,8 @@ void CnipolPreprocHists::BookHists(string sid)
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
-
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
 
@@ -90,11 +90,11 @@ void CnipolPreprocHists::BookHists(string sid)
       ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
    }
 
-   // Speed up
+   // Speed up things later by creating pointers to individual channels
    iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
-
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
 
@@ -132,7 +132,6 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolPreprocHists::FillDerivedPassOne()
 { //{{{
-
    // Fill derivative histograms first
    TH1* hTimeVsEnergyA_noise = (TH1*) o["hTimeVsEnergyA_noise"];
    
@@ -242,7 +241,6 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
       //   }
       //}
 
-      hPulser_ch->Scale(gAnaInfo->fFastCalibThinout);
       hPulser_ch->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
       hPreproc_ch->Add(hPulser_ch, -1);
 

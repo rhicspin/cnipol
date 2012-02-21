@@ -58,6 +58,7 @@ lib: $(OBJS) $(CNIPOL_LIB)
 
 $(CNIANA_DICT_SRC): AnaInfo.h AnaMeasResult.h AnaFillResult.h AnaGlobResult.h MeasInfo.h LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
+	@echo rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
 	@rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
 
 #@rootcint -f $(CNIANA_DICT_SRC) -c $(INC_PATHS) $^

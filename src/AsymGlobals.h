@@ -70,9 +70,6 @@ extern char CalibFile[256];          // Energy calibration file
 
 extern float ramptshift[500]; // ramp timing shift 
 
-extern long int Nevcut;         // number of events after 1st cut (whole data)
-extern UInt_t   Nevtot;         // number of total events (whole data) 
-extern UInt_t   Nread;          // actually read number of events
 extern UInt_t   gMaxEventsUser; // number of events to process
 
 extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut 

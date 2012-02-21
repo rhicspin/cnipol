@@ -75,7 +75,7 @@ void initialize()
    //TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
-   TString filelistName = "run12_16386";
+   TString filelistName = "run12_16386_164XX";
 
 	TString filelist    = filelistPath + filelistName + ".txt";
    TString outFileName = "masym_" + filelistName + "_out.root";
