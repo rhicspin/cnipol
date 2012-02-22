@@ -78,6 +78,18 @@ if (isset($rc['polarization'])) {
       $rc['polarization']*100, $rc['polarization_error']*100);
 }
 
+$polarization_X90 = isset($rc['fAsymX90']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1],
+	                                   $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45 = isset($rc['fAsymX45']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_Y45 = isset($rc['fAsymY45']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymY45']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
 $targetId = "&nbsp;";
 
 if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
@@ -120,6 +132,19 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['beam_energy'])?>&nbsp;GeV
    <td>
    <b>Target:</b> <?=$targetId?>
+
+<tr>
+   <td colspan=4>
+      <table border="0" cellpadding="2" cellspacing="2" align=center>
+      <tr>
+         <th>X90
+         <th>X45
+         <th>Y45
+      <tr>
+         <td> <?=$polarization_X90?>
+         <td> <?=$polarization_X45?>
+         <td> <?=$polarization_Y45?>
+      </table>
 
 <tr>
    <td>
@@ -324,31 +349,38 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <p>
 <table class="simple" cellspacing=10 align=center>
 
-<tr>
+<tr class=align_ct>
+<td>
+<?=$gP->img('run/wall_current_monitor')?>
+<p class=left>Number of protons per bunch (WCM)
 <td>
 <?=$gP->img('raw/hBunchCounts')?>
-<p>Number of events per bunch
+<p class=left>Number of events per bunch
 <td>
 <?=$gP->img('raw/hStripCounts')?>
-<p>Number of events per silicon detector channel
+<p class=left>Number of events per silicon detector channel
 <td>
 <?=$gP->img('raw/hRevolutionId')?>
-<p>Number of events per beam revolution number
+<p class=left>Number of events per beam revolution number
 
 </table>
 
 <p>
 <table class="simple" cellspacing=10 align=center>
 
-<tr>
-<td align=center>
+<tr class=align_ct>
+<td>
 <?=$gP->img('raw/hAdcAmpltd')?>
-<td align=center>
+<p class=left>Distribution of the maximum signal amplitude (all channels)
+<td>
 <?=$gP->img('raw/hTdc')?>
-<td align=center>
+<p class=left>Distribution of the signal time (all channels)
+<td>
 <?=$gP->img('raw/hTvsA')?>
-<td align=center>
+<p class=left>TDC vs Amplitude (all channels)
+<td>
 <?=$gP->img('raw/hTvsI')?>
+<p class=left>TDC vs Integral (all channels)
 
 </table>
 
@@ -455,9 +487,14 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
 <td class=align_ct>
+<?=$gP->img("targets/hTargetVertRotary")?>
+<p>Nominal target position in motor steps vs time
+
+<td class=align_ct>
 <?=$gP->img("profile/hIntensProfileFineBin")?>
 <p>Intensity profile: Number of events as a function of time
 
+<tr>
 <td class=align_ct>
 <?=$gP->img("profile/hIntensUniProfile")?>
 <p>If we assume a gaussian beam profile with the unit width the actuall
@@ -469,8 +506,7 @@ construction
 <?=$gP->img("profile/hAsymUniProfile")?>
 <p>The beam asymmetry as a function of beam width in intesity sigma units
 
-<tr>
-<td class=align_ct colspan=3>
+<td class=align_ct>
 <?=$gP->img("profile/hAsymVsIntensProfile")?>
 <p>Physical asymmetry vs intensity as measured every 0.1 second. The
 data is fitted with a function P = P_max * I^r

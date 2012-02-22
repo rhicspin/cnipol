@@ -359,7 +359,7 @@ int main(int argc, char **argv)
    polData.numberEventsS        = mEvent;
    polData.maxTimeS             = (int) mTime;
 
-   /* If tshift in effect move sensitive window boundaries */
+   // If tshift in effect move sensitive window boundaries
    if (iRamp) {
       tshift = Conf.TshiftHigh;       // always like flattop for ramp
    }
