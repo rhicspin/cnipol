@@ -75,7 +75,8 @@ void initialize()
    //TString filelistName = "run11_tmp_test_small";
    //TString filelistName = "run11_15473_74_75_injection";
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
-   TString filelistName = "run12_16386_164XX";
+   //TString filelistName = "run12_16386_164XX";
+   TString filelistName = "run12_all";
 
 	TString filelist    = filelistPath + filelistName + ".txt";
    TString outFileName = "masym_" + filelistName + "_out.root";
@@ -269,6 +270,7 @@ void initialize()
 
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsMeasId.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
