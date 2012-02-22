@@ -103,6 +103,66 @@ void CnipolAlphaHists::BookHists(std::string cutid)
    ((TH2F*) o["hIntgrlW"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hIntgrlW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
 
+   o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
+   ((TH1F*) o["Detector1_Events"])->SetOption("E");
+   ((TH2F*) o["Detector1_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector1_Events"])->GetYaxis()->SetTitle("# of Events");
+
+   o["Detector2_Events"]   = new TH1F("Detector2_Events", "Detector2_Events", 12, 13, 24);
+   ((TH1F*) o["Detector2_Events"])->SetOption("E");
+   ((TH2F*) o["Detector2_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector2_Events"])->GetYaxis()->SetTitle("# of Events");
+
+   o["Detector3_Events"]   = new TH1F("Detector3_Events", "Detector3_Events", 12, 25, 36);
+   ((TH1F*) o["Detector3_Events"])->SetOption("E");
+   ((TH2F*) o["Detector3_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector3_Events"])->GetYaxis()->SetTitle("# of Events");
+
+   o["Detector4_Events"]   = new TH1F("Detector4_Events", "Detector4_Events", 12, 37, 48);
+   ((TH1F*) o["Detector4_Events"])->SetOption("E");
+   ((TH2F*) o["Detector4_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector4_Events"])->GetYaxis()->SetTitle("# of Events");
+
+   o["Detector5_Events"]   = new TH1F("Detector5_Events", "Detector5_Events", 12, 49, 60);
+   ((TH1F*) o["Detector5_Events"])->SetOption("E");
+   ((TH2F*) o["Detector5_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector5_Events"])->GetYaxis()->SetTitle("# of Events");
+
+   o["Detector6_Events"]   = new TH1F("Detector6_Events", "Detector6_Events", 12, 61, 72);
+   ((TH1F*) o["Detector6_Events"])->SetOption("E");
+   ((TH2F*) o["Detector6_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["Detector6_Events"])->GetYaxis()->SetTitle("# of Events");
+
+    o["Detector1_Events_Dsp"]   = new TH1F("Detector1_Events_Dsp", "Detector1_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector1_Events"])->SetOption("E");
+   ((TH2F*) o["Detector1_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector1_Events"])->GetYaxis()->SetTitle("#");
+
+   o["Detector2_Events_Dsp"]   = new TH1F("Detector2_Events_Dsp", "Detector2_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector2_Events"])->SetOption("E");
+   ((TH2F*) o["Detector2_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector2_Events"])->GetYaxis()->SetTitle("#");
+
+   o["Detector3_Events_Dsp"]   = new TH1F("Detector3_Events_Dsp", "Detector3_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector3_Events"])->SetOption("E");
+   ((TH2F*) o["Detector3_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector3_Events"])->GetYaxis()->SetTitle("#");
+
+   o["Detector4_Events_Dsp"]   = new TH1F("Detector4_Events_Dsp", "Detector4_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector4_Events"])->SetOption("E");
+   ((TH2F*) o["Detector4_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector4_Events"])->GetYaxis()->SetTitle("#");
+
+   o["Detector5_Events_Dsp"]   = new TH1F("Detector5_Events_Dsp", "Detector5_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector5_Events"])->SetOption("E");
+   ((TH2F*) o["Detector5_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector5_Events"])->GetYaxis()->SetTitle("#");
+
+   o["Detector6_Events_Dsp"]   = new TH1F("Detector6_Events_Dsp", "Detector6_Events_Dsp", 20000, 0, 20000);
+   ((TH1F*) o["Detector6_Events"])->SetOption("E");
+   ((TH2F*) o["Detector6_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH2F*) o["Detector6_Events"])->GetYaxis()->SetTitle("#");
+
    char dName[256];
    //string sSi("  ");
    DrawObjContainer *oc;
@@ -182,6 +242,8 @@ void CnipolAlphaHists::BookHists(std::string cutid)
       ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
       ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Integral, ADC");
 
+     
+
       //sprintf(hName,"t_vs_e_st%d", i);
       //kinema.oc->o[hName] = new TH2F();
 
@@ -248,6 +310,7 @@ void CnipolAlphaHists::PostFill()
    Int_t  maxBinA = ((TH1F*) o["hAmpltd_cut1"])->GetMaximumBin();
    Double_t xminA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmin();
    Double_t xmaxA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmax();
+  
 
    xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
    xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
@@ -257,6 +320,9 @@ void CnipolAlphaHists::PostFill()
    Int_t  maxBinI = ((TH1F*) o["hIntgrl_cut1"])->GetMaximumBin();
    Double_t xminI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmin();
    Double_t xmaxI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmax();
+   Int_t tmaxBinI=0;
+
+   Int_t maxBin=0;
 
    xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
    xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
@@ -269,16 +335,35 @@ void CnipolAlphaHists::PostFill()
 
    for (int i=1; i<=NSTRIP; i++) {
       sprintf(&sSi[0], "%02d", i);
+      
 
-      //maxBin = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetMaximumBin();
-      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
+     
+      maxBinA = ((TH1F*) d["channel"+sSi]->o["hAmpltd_st"+sSi])->GetMaximumBin();
+      maxBinI - ((TH1F*) d["channel"+sSi]->o["hIntgrl_st"+sSi])->GetMaximumBin();
+      if(i==9||i==10){
+       for(int j=0;j<=255;j++){
+	
+	 tmaxBinI=((TH1F*) d["channel"+sSi]->o["hIntgrl_st"+sSi])->GetBinContent(j); 
+	 if(tmaxBinI>=maxBinI)maxBinI=tmaxBinI;
+       }
+      }
+	//xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
       //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmax();
       //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
       //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
-
+      xminA=maxBinA-50;
+      xmaxA=maxBinA+50;
+      xminI=maxBinI-50;
+      xmaxI=maxBinI+50;
+    
+     
       ((TH1F*) d["channel"+sSi]->o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
+      
+
+
       ((TH1F*) d["channel"+sSi]->o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
    }
+ 
 } //}}}
 
 
