@@ -82,7 +82,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <td>
    <b>Run Start Time:</b> <?=date("M j, Y H:i:s", $rc['StartTime'])?>
    <td>
-   <b>Total Events:</b> <?=number_format($rc['nEventsTotal'])?>
+   <b>Total Events:</b> <?=number_format($rc['fNEventsTotal'])?>
    <td>
    <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
    <td>&nbsp;
@@ -97,7 +97,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['ana_start_time'])?>&nbsp;
    (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
    <td>
-   <b>Events Processed:</b> <?=number_format($rc['nEventsProcessed'])?>
+   <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
    <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
    <? endif; ?>
    <td>&nbsp;
