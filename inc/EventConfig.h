@@ -33,25 +33,24 @@ class EventConfig : public TObject
 {
 public:
    
-   TRandom                 *fRandom;
-   //TRecordConfigRhicStruct *fConfigInfo;
-   MeasInfo                 *fMeasInfo;
-   AnaInfo                 *fAnaInfo;
-   //DbEntry                 *fDbEntry; //!
-   Calibrator              *fCalibrator;
-   AnaMeasResult               *fAnaMeasResult;
-   MseMeasInfoX             *fMseMeasInfoX;
+   TRandom       *fRandom;
+   MeasInfo      *fMeasInfo;
+   AnaInfo       *fAnaInfo;
+   //DbEntry       *fDbEntry; //!
+   Calibrator    *fCalibrator;
+   AnaMeasResult *fAnaMeasResult;
+   MseMeasInfoX  *fMseMeasInfoX; //!
 
 public:
 
    EventConfig();
    ~EventConfig();
 
-   MeasInfo*     GetMeasInfo();
-   AnaInfo*     GetAnaInfo();
-   Calibrator*  GetCalibrator();
-   AnaMeasResult*   GetAnaMeasResult();
-   MseMeasInfoX* GetMseMeasInfoX();
+   MeasInfo*      GetMeasInfo();
+   AnaInfo*       GetAnaInfo();
+   Calibrator*    GetCalibrator();
+   AnaMeasResult* GetAnaMeasResult();
+   MseMeasInfoX*  GetMseMeasInfoX();
 
    //virtual void Print(const Option_t* opt="") const;
    void  Print(const Option_t* opt="") const;
@@ -61,10 +60,10 @@ public:
    //void  Streamer(TBuffer &R__b);
    std::string GetSignature();
 
-   ClassDef(EventConfig, 3)
+   ClassDef(EventConfig, 4)
 };
 
-TBuffer & operator<<(TBuffer &buf, EventConfig *&rec);
-TBuffer & operator>>(TBuffer &buf, EventConfig *&rec);
+//TBuffer & operator<<(TBuffer &buf, EventConfig *&rec);
+//TBuffer & operator>>(TBuffer &buf, EventConfig *&rec);
 
 #endif
