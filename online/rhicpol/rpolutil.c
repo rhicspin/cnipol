@@ -664,6 +664,8 @@ int CheckConfig()
    return iRC;
 }
 
+
+/** */
 void CreateLookup(float tshift)
 {
    int i, j;
@@ -683,29 +685,34 @@ void CreateLookup(float tshift)
       /* Amplitude range */
       iAmin = (int)((Conf.Emin - SiConf[i].edead) / SiConf[i].ecoef);
       iAmax = (int)((Conf.Emax - SiConf[i].edead) / SiConf[i].ecoef);
-      if (iAmin < 0) iAmin = 0;
-      if (iAmin > 255) iAmin = 255;
+
+      if (iAmin < 0)     iAmin = 0;
+      if (iAmin > 255)   iAmin = 255;
       if (iAmax < iAmin) iAmax = iAmin;
-      if (iAmax > 255) iAmax = 255;
+      if (iAmax > 255)   iAmax = 255;
 
       switch (Conf.ETLookUp) {
       case 0 :  // Carbon Kinematic
          for (j = 0; j < iAmin; j++) SiConf[i].LookUp[j] = 0x00FF; // Closed
-         for (   ; j < iAmax; j++) {
+
+         for ( ; j < iAmax; j++) {
             tof = 22.7 * sqrt(Conf.AtomicNumber) * SiConf[i].TOFLength /
                   sqrt(j * SiConf[i].ecoef + SiConf[i].edead); // ns
             iTmin = (int)(2 * (tof + SiConf[i].t0 - SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
             iTmax = (int)(2 * (tof + SiConf[i].t0 + SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
+
             if (iTmin < SiConf[i].Window.split.Beg * 2 - 1) iTmin = SiConf[i].Window.split.Beg * 2 - 1;
-            if (iTmin < 0) iTmin = 0;
+            if (iTmin < 0)   iTmin = 0;
             if (iTmin > 255) iTmin = 255;
-            if (iTmax < 0) iTmax = 0;
+            if (iTmax < 0)   iTmax = 0;
             if (iTmax > 255) iTmax = 255;
-//              if (iTmax < iTmin) iTmax = iTmin;                       // Negative window - closed
-            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin);               // Open
+            //if (iTmax < iTmin) iTmax = iTmin;                       // Negative window - closed
+            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin);             // Open
          }
-         for (   ; j < 256;   j++) SiConf[i].LookUp[j] = 0x00FF;        // Closed
+
+         for ( ; j < 256; j++) SiConf[i].LookUp[j] = 0x00FF;        // Closed
          break;
+
       case 1 :  // Rectangular
          /* Window limits already contain tshift at lookup creation */
          iTmin = SiConf[i].Window.split.Beg * 2 - 1;
