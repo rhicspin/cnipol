@@ -1,3 +1,3 @@
 rhicpol -P -v200 -l mytest.log -i /usr/local/cnipol_trunk/config/polarimeter.blu1.alpha.ini -f mytest.data -d polarimeter.blu1 -c  -t 5 -Ttest
 
-rhicpol_bin -P -v200 -i /usr/local/cnipol_trunk/config/polarimeter.blu1.alpha.ini -f mytest.data -d polarimeter.blu1 -t 5 -T test -g
+#rhicpol_bin -P -v200 -i /usr/local/cnipol_trunk/config/polarimeter.blu1.alpha.ini -f mytest.data -d polarimeter.blu1 -t 5 -T test -g
