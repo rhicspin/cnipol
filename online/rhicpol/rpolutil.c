@@ -2123,7 +2123,7 @@ void closeDataFile(char * comment)
 
 
 /** */
-int openDataFile(char *fname, char *comment, bool useCDEV)
+int openDataFile(const char *fname, char *comment, bool useCDEV)
 {
    fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
 
@@ -2139,7 +2139,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
 
    dataNum = 0;
 
-   //   save begin record
+   // Save begin record
    recordBeginStruct rec;
 
    rec.version = VERSION;
@@ -2151,7 +2151,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.version);
 
-   //   save config record
+   // Save config record
    recordHeaderStruct header;
 
    void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
@@ -2169,13 +2169,13 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    polWrite(&header, (long *)buf);
    free(buf);
 
-   //   beam data (have to write it anyway because rhic2hbook uses polpat from here)
+   // Save beam data (have to write it anyway because rhic2hbook uses polpat from here)
    header.type = REC_BEAMADO | recRing;
    header.len = sizeof(recordBeamAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&beamData);
 
-   //   Store the other beam parameters
+   // Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
@@ -2198,13 +2198,13 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
 
    if (!useCDEV) return 0;
 
-   //   Wcm data
+   // Save WCM data
    header.type = REC_WCMADO | recRing;
    header.len = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&wcmData);
 
-   //   Save V124 settings if any... No use when no ADO
+   // Save V124 settings if any... No use when no ADO
    if (V124.flags) {
       header.type = REC_V124 | recRing;
       header.len = sizeof(recordV124Struct);
@@ -2212,7 +2212,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
       polWrite(&header, (long *)&V124);
    }
 
-   //   Store the other beam parameters
+   // Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;

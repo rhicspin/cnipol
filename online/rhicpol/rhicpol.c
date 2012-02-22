@@ -183,16 +183,29 @@ int main(int argc, char **argv)
 
    rhicpol_process_options();
 
-   // logname
+   // The current directory will be changed to the one with the configuration file
+   // Therefore save the log file relative to the current dir
    std::string logFileFullName("");
 
    if (logname[0] == '/')
       logFileFullName += logname;
    else {
       // Remember current directory. The log file is saved in there
-      logFileFullName = get_current_dir_name();
+      logFileFullName  = get_current_dir_name();
       logFileFullName += "/";
       logFileFullName += logname;
+   }
+
+   // Same for the data file: Save the data file relative to the current dir
+   std::string dataFileFullName("");
+
+   if (fname[0] == '/')
+      dataFileFullName += fname;
+   else {
+      // Remember current directory. The log file is saved in there
+      dataFileFullName  = get_current_dir_name();
+      dataFileFullName += "/";
+      dataFileFullName += fname;
    }
 
    polData.statusS = 0;
@@ -211,11 +224,9 @@ int main(int argc, char **argv)
 
    // Open LogFile
    if (strlen(logname) > 0) {
-      //LogFile = fopen(logname, "at");
       LogFile = fopen(logFileFullName.c_str(), "at");
-      perror("fopen");
       if (LogFile == NULL) {
-         printf("Cannot open logfile %s. Logging to stdout.\n", logname);
+         printf("Cannot open logfile %s. Logging to stdout.\n", logFileFullName.c_str());
          polData.statusS |= (WARN_INT);
          LogFile = stdout;
       }
@@ -391,7 +402,7 @@ int main(int argc, char **argv)
    if (setOutReg()) polexit();
    if (NoADO == 0) ProgV124((recRing & REC_BLUE) ? 1 : 0);     // set V124
    if (IStop != 0) polexit();
-   if (openDataFile(fname, comment, !NoADO)) polexit();
+   if (openDataFile(dataFileFullName.c_str(), comment, !NoADO)) polexit();
 
    setInhibit();
    initScalers();

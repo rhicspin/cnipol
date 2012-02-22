@@ -16,7 +16,7 @@ else
 			./rpoldaemon.sh -Y >>/dev/null &
 			exit $status
 		else
-			echo "Host not recognized. Start script on either bluepc or  yellowpc"
+			echo "Host not recognized. Start script on either bluepc or yellowpc"
 		fi
 	fi
 fi
