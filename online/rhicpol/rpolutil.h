@@ -16,7 +16,7 @@ void CreateLookup(float tshift);
 //	Data file write (rpolutil.c)
 int  polWrite(recordHeaderStruct *header, long *data);
 void closeDataFile(char * comment);
-int  openDataFile(char *fname, char *comment, bool useCDEV);
+int  openDataFile(const char *fname, char *comment, bool useCDEV);
 void writeSubrun(int N);
 
 //	Camac & hardware functions (rpolutil.c)
