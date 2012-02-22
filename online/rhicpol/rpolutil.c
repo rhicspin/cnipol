@@ -664,6 +664,8 @@ int CheckConfig()
    return iRC;
 }
 
+
+/** */
 void CreateLookup(float tshift)
 {
    int i, j;
@@ -683,29 +685,34 @@ void CreateLookup(float tshift)
       /* Amplitude range */
       iAmin = (int)((Conf.Emin - SiConf[i].edead) / SiConf[i].ecoef);
       iAmax = (int)((Conf.Emax - SiConf[i].edead) / SiConf[i].ecoef);
-      if (iAmin < 0) iAmin = 0;
-      if (iAmin > 255) iAmin = 255;
+
+      if (iAmin < 0)     iAmin = 0;
+      if (iAmin > 255)   iAmin = 255;
       if (iAmax < iAmin) iAmax = iAmin;
-      if (iAmax > 255) iAmax = 255;
+      if (iAmax > 255)   iAmax = 255;
 
       switch (Conf.ETLookUp) {
       case 0 :  // Carbon Kinematic
          for (j = 0; j < iAmin; j++) SiConf[i].LookUp[j] = 0x00FF; // Closed
-         for (   ; j < iAmax; j++) {
+
+         for ( ; j < iAmax; j++) {
             tof = 22.7 * sqrt(Conf.AtomicNumber) * SiConf[i].TOFLength /
                   sqrt(j * SiConf[i].ecoef + SiConf[i].edead); // ns
             iTmin = (int)(2 * (tof + SiConf[i].t0 - SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
             iTmax = (int)(2 * (tof + SiConf[i].t0 + SiConf[i].ETCutW + tshift) / Conf.WFDTUnit);
+
             if (iTmin < SiConf[i].Window.split.Beg * 2 - 1) iTmin = SiConf[i].Window.split.Beg * 2 - 1;
-            if (iTmin < 0) iTmin = 0;
+            if (iTmin < 0)   iTmin = 0;
             if (iTmin > 255) iTmin = 255;
-            if (iTmax < 0) iTmax = 0;
+            if (iTmax < 0)   iTmax = 0;
             if (iTmax > 255) iTmax = 255;
-//              if (iTmax < iTmin) iTmax = iTmin;                       // Negative window - closed
-            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin);               // Open
+            //if (iTmax < iTmin) iTmax = iTmin;                       // Negative window - closed
+            SiConf[i].LookUp[j] = ((iTmax << 8) | iTmin);             // Open
          }
-         for (   ; j < 256;   j++) SiConf[i].LookUp[j] = 0x00FF;        // Closed
+
+         for ( ; j < 256; j++) SiConf[i].LookUp[j] = 0x00FF;        // Closed
          break;
+
       case 1 :  // Rectangular
          /* Window limits already contain tshift at lookup creation */
          iTmin = SiConf[i].Window.split.Beg * 2 - 1;
@@ -2116,7 +2123,7 @@ void closeDataFile(char * comment)
 
 
 /** */
-int openDataFile(char *fname, char *comment, bool useCDEV)
+int openDataFile(const char *fname, char *comment, bool useCDEV)
 {
    fprintf(LogFile, "RHICPOL-COMMENT : %s\n", comment);
 
@@ -2132,7 +2139,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
 
    dataNum = 0;
 
-   //   save begin record
+   // Save begin record
    recordBeginStruct rec;
 
    rec.version = VERSION;
@@ -2144,7 +2151,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.version);
 
-   //   save config record
+   // Save config record
    recordHeaderStruct header;
 
    void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
@@ -2162,13 +2169,13 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
    polWrite(&header, (long *)buf);
    free(buf);
 
-   //   beam data (have to write it anyway because rhic2hbook uses polpat from here)
+   // Save beam data (have to write it anyway because rhic2hbook uses polpat from here)
    header.type = REC_BEAMADO | recRing;
    header.len = sizeof(recordBeamAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&beamData);
 
-   //   Store the other beam parameters
+   // Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_BEAMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;
@@ -2191,13 +2198,13 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
 
    if (!useCDEV) return 0;
 
-   //   Wcm data
+   // Save WCM data
    header.type = REC_WCMADO | recRing;
    header.len = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long *)&wcmData);
 
-   //   Save V124 settings if any... No use when no ADO
+   // Save V124 settings if any... No use when no ADO
    if (V124.flags) {
       header.type = REC_V124 | recRing;
       header.len = sizeof(recordV124Struct);
@@ -2205,7 +2212,7 @@ int openDataFile(char *fname, char *comment, bool useCDEV)
       polWrite(&header, (long *)&V124);
    }
 
-   //   Store the other beam parameters
+   // Store the other beam parameters
    if (recRing & REC_JET) {
       header.type = (REC_WCMADO | recRing) & (~(REC_BLUE | REC_YELLOW));
       if (recRing & REC_BLUE)   header.type |= REC_YELLOW;

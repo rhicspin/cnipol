@@ -555,6 +555,7 @@ void readandfill_(int* subrun)
          for (i = 0; i < 128; i++) s3 += rec.wfd.hist[i + 256]; // pol+ energy
          s4 = 0;
          for (i = 0; i < 128; i++) s4 += rec.wfd.hist[i + 384]; // pol- energy
+
          j = rec.wfd.siNum + 1;
 
          HPAKAD( 200 + j, &data[0]);

@@ -70,7 +70,7 @@ int getTargetMovementInfo(long **res)
 {
     int irc;
     cdevData data;
-    size_t len;
+    size_t len = 0;
     *res = NULL;
 
     if (NoADO != 0) return 0;
@@ -189,7 +189,6 @@ EMeasType getCDEVMeasType()
     cdevDevice &pol =  cdevDevice::attachRef(DeviceName);
 
     int irc = 0;
-    size_t len;
     cdevData data;
     std::string sMeasType(64, ' ');
 
