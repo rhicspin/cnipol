@@ -537,7 +537,6 @@ void event_process(processEvent *event)
          //ds HHF1(10200,(float)event->delim,1.);
 
          // Fill event in memory
-         Nevcut++;
          Ngood[event->bid]++;
 
          // bunch distribution (time + -t cut)

@@ -7,6 +7,13 @@
 
 using namespace std;
 
+
+MseRunPeriodX::MseRunPeriodX() : MseRunPeriod()
+{
+   Init();
+}
+
+
 MseRunPeriodX::MseRunPeriodX(const mysqlpp::sql_datetime &p1) : MseRunPeriod(p1)
 {
    Init();
@@ -20,8 +27,8 @@ void MseRunPeriodX::Init()
    dl_calib_run_name    = "";
    disabled_channels    = "";
    disabled_bunches     = "";
-   cut_proto_slope      = 0.;
-   cut_proto_offset     = 0.;
+   cut_proto_slope      = -0.25;
+   cut_proto_offset     = 75;
    cut_proto_adc_min    = 0;
    cut_proto_adc_max    = 255;
    cut_proto_tdc_min    = 0;

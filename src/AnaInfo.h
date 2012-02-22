@@ -90,10 +90,7 @@ public:
    float            dx_offset;          // additional deadlayer offset [ug/cm2]
    float            WCMRANGE;           // Wall Current Monitor process Fill range
    float            MassLimit;          // Lower Mass limit for peak position adjustment fit
-   UInt_t           nEventsProcessed;   // number of events processed from raw data file
-   UInt_t           nEventsTotal;       // number of total events in raw data file
-   UInt_t           fThinout;           // Every <fThinout> event to be feed into feedback routine
-   Float_t          fFastCalibThinout;  // Approximate fraction of events to pass
+   Float_t          fThinout;           // Approximate fraction of events to read
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
    time_t           fAnaDateTime;       // Date/time when data analysis started
@@ -102,7 +99,7 @@ public:
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    Str2StrMap       fAsymEnv;
-   FILE            *fFileMeasInfo;       //!
+   FILE            *fFileMeasInfo;      //!
    FILE            *fFileRunConf;       //!
    FILE            *fFileStdLog;        //!
    std::string      fFileStdLogName;
@@ -118,6 +115,7 @@ public:
    AnaInfo(std::string runId);
    ~AnaInfo();
 
+   void        SetRunName(std::string runName);
    std::string GetRunName() const;
    std::string GetSuffix() const;
    std::string GetRawDataFileName() const;
@@ -157,12 +155,13 @@ public:
    Bool_t      HasKinematBit() const;
    Bool_t      HasPmtBit() const;
    Bool_t      HasPulserBit() const;
+   Bool_t      HasOnlineBit() const;
 
 private:
    void Init();
    void MakeOutDir();
 
-   ClassDef(AnaInfo, 2)
+   ClassDef(AnaInfo, 3)
 };
 
 #endif

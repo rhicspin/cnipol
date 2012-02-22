@@ -70,7 +70,7 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fAnaPower']           = %s;\n",            PairAsPhpArray(fAnaPower).c_str());
    fprintf(f, "$rc['fPolar']              = %s;\n",            PairAsPhpArray(fPolar).c_str());
    fprintf(f, "$rc['fAvrgPMAsym']         = %s;\n",            PairAsPhpArray(fAvrgPMAsym).c_str());
-   // Skip fit results as fFitResAsymPhi fFitResPolarPhi ...
+   // Skip fit results fFitResAsymPhi fFitResPolarPhi ...
    fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());
    fprintf(f, "$rc['fAsymX45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45).c_str());
    fprintf(f, "$rc['fAsymY45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymY45).c_str());

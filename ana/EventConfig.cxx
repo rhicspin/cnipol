@@ -26,7 +26,7 @@ using namespace std;
  * read from a file with a streamer. The streamers do not allocate memory by
  * themselves.
  */
-EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0),
+EventConfig::EventConfig() : TObject(), fRandom(new TRandom()),
    fMeasInfo(new MeasInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
    fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseMeasInfoX(new MseMeasInfoX())
 {
@@ -36,8 +36,7 @@ EventConfig::EventConfig() : TObject(), fRandom(new TRandom()), //fConfigInfo(0)
 /** Default destructor. */
 EventConfig::~EventConfig()
 {
-   // there should be more than that...
-   //delete fConfigInfo;
+   // pointers should be deleted properly
 }
 
 
@@ -118,7 +117,7 @@ void EventConfig::PrintAsPhp(FILE *f) const
 void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
-	fprintf(f, "* for the dead layer and T0  : %s\n", fMeasInfo->fRunName.c_str());
+	fprintf(f, "* for the dead layer and T0  : %s\n", fMeasInfo->GetRunName().c_str());
 	//fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
 	fprintf(f, "* for the Am calibration     : %s\n", fAnaInfo->GetAlphaCalibRun().c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
@@ -136,35 +135,35 @@ float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 
 
 /** */
-void EventConfig::Streamer(TBuffer &R__b)
-{ //{{{
-   // Stream an object of class EventConfig.
-
-   UInt_t R__s, R__c;
-   if (R__b.IsReading()) {
-      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-      TObject::Streamer(R__b);
-      R__b >> fRandom;
-      //R__b >> fConfigInfo;
-      R__b >> fMeasInfo;
-      R__b >> fAnaInfo;
-      R__b >> fCalibrator;
-      R__b >> fAnaMeasResult;
-      R__b >> fMseMeasInfoX;
-      R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
-   } else {
-      R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
-      TObject::Streamer(R__b);
-      R__b << fRandom;
-      //R__b << fConfigInfo;
-      R__b << fMeasInfo;
-      R__b << fAnaInfo;
-      R__b << fCalibrator;
-      R__b << fAnaMeasResult;
-      R__b << fMseMeasInfoX;
-      R__b.SetByteCount(R__c, kTRUE);
-   }
-} //}}}
+//void EventConfig::Streamer(TBuffer &R__b)
+//{ //{{{
+//   // Stream an object of class EventConfig.
+//
+//   UInt_t R__s, R__c;
+//   if (R__b.IsReading()) {
+//      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+//      TObject::Streamer(R__b);
+//      R__b >> fRandom;
+//      //R__b >> fConfigInfo;
+//      R__b >> fMeasInfo;
+//      R__b >> fAnaInfo;
+//      R__b >> fCalibrator;
+//      R__b >> fAnaMeasResult;
+//      R__b >> fMseMeasInfoX;
+//      R__b.CheckByteCount(R__s, R__c, EventConfig::IsA());
+//   } else {
+//      R__c = R__b.WriteVersion(EventConfig::IsA(), kTRUE);
+//      TObject::Streamer(R__b);
+//      R__b << fRandom;
+//      //R__b << fConfigInfo;
+//      R__b << fMeasInfo;
+//      R__b << fAnaInfo;
+//      R__b << fCalibrator;
+//      R__b << fAnaMeasResult;
+//      R__b << fMseMeasInfoX;
+//      R__b.SetByteCount(R__c, kTRUE);
+//   }
+//} //}}}
 
 
 /** */
@@ -181,8 +180,8 @@ string EventConfig::GetSignature()
       tm *ltime = localtime(&anaEndTime);
       strftime(strAnaEndTime, 25, "%c", ltime);
 
-      strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup.fUser;
-      //strSignature += fAnaInfo->fRunName + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
+      strSignature += fAnaInfo->GetRunName() + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup.fUser;
+      //strSignature += fAnaInfo->GetRunName() + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
    }
 
    if (fMeasInfo) {
@@ -197,19 +196,19 @@ string EventConfig::GetSignature()
 
 
 /** */
-TBuffer & operator<<(TBuffer &buf, EventConfig *&rec)
-{ //{{{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, EventConfig *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-} //}}}
+//TBuffer & operator<<(TBuffer &buf, EventConfig *&rec)
+//{ //{{{
+//   if (!rec) return buf;
+//   //printf("operator<<(TBuffer &buf, EventConfig *rec) : \n");
+//   rec->Streamer(buf);
+//   return buf;
+//} //}}}
 
 
 /** */
-TBuffer & operator>>(TBuffer &buf, EventConfig *&rec)
-{ //{{{
-   //printf("operator>>(TBuffer &buf, EventConfig *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-} //}}}
+//TBuffer & operator>>(TBuffer &buf, EventConfig *&rec)
+//{ //{{{
+//   //printf("operator>>(TBuffer &buf, EventConfig *rec) : \n");
+//   rec->Streamer(buf);
+//   return buf;
+//} //}}}

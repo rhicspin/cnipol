@@ -189,8 +189,8 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
 
          gMeasInfo->SetBeamEnergy(rec->data.beamEnergyM);
-         fprintf(stdout, "Beam energy: %8.2f\n", gMeasInfo->GetBeamEnergy());
-         fprintf(stdout, "RHIC beam:   %1d\n", gMeasInfo->fPolBeam);
+         printf("Beam energy: %8.2f\n", gMeasInfo->GetBeamEnergy());
+         printf("RHIC beam:   %8d\n",   gMeasInfo->fPolBeam);
 
          ProcessRecord( (recordBeamAdoStruct&) *rec);
 
@@ -306,8 +306,8 @@ void RawDataProcessor::ReadDataFast()
 
    recordHeaderStruct *mHeader;
 
-   UInt_t nTotalEvents = 0;
-   UInt_t nReadEvents  = 0;
+   UInt_t nEventsProcessed = 0;
+   UInt_t nEventsTotal     = 0;
 
    char *mSeek = fMem;
 
@@ -361,24 +361,31 @@ void RawDataProcessor::ReadDataFast()
       for (UInt_t i=0; i<recSize; ) {
 
          //ATPtrF     = (recordReadATStruct*) (buffer + i);
-         ATPtr     = (recordReadATStruct*) (mSeekAT + i);
-         unsigned chId   = ATPtr->subhead.siNum; // si number
-         unsigned Events = ATPtr->subhead.Events + 1;
+                  ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+         unsigned chId    = ATPtr->subhead.siNum; // si number
+         unsigned nEvents = ATPtr->subhead.Events + 1;
+         //unsigned nEvents = ATPtr->subhead.Events;
 
-         //if (Events > 100) printf("events: %d, %d\n", siNum, Events);
+         // count the total number of event records in raw file
+         nEventsTotal += nEvents;
 
-         i += sizeof(subheadStruct) + Events*sizeof(ATStruct);
+         //if (nEvents > 100) printf("nEvents: %d, %d\n", siNum, nEvents);
 
-         for (unsigned j=0; j<Events; j++, nReadEvents++) {
+         i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
-            //printf("f: %d %d %d\n", ATPtrF->data[j].a, ATPtrF->data[j].t, ATPtrF->data[j].s);
-            //printf("m: %d %d %d\n", ATPtr->data[j].a, ATPtr->data[j].t, ATPtr->data[j].s);
+         for (unsigned iEvent=0; iEvent<nEvents; iEvent++) {
 
-            if (gMaxEventsUser > 0 && nTotalEvents >= gMaxEventsUser) break;
+            //printf("f: %d %d %d\n", ATPtrF->data[iEvent].a, ATPtrF->data[iEvent].t, ATPtrF->data[iEvent].s);
+            //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
-            gAsymRoot->SetChannelEvent(ATPtr->data[j], delim, chId);
+            if (gMaxEventsUser > 0 && nEventsProcessed >= gMaxEventsUser) break;
 
-            // Use all events to fill pulser histograms
+            gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
+
+            // Use only a fraction of events
+            if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
+
+            // Use all events to fill pulser histograms - not valid. thiout is applied
             if ( gAnaInfo->HasPulserBit() &&
                  gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
                  //gAsymRoot->fChannelEvent->PassCutNoise() &&
@@ -387,9 +394,6 @@ void RawDataProcessor::ReadDataFast()
                //gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
                gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
             }
-
-            // Use only a fraction of events
-            if (gRandom->Rndm() > gAnaInfo->fFastCalibThinout) continue;
 
             if (gAnaInfo->HasPmtBit() &&
                 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
@@ -409,15 +413,21 @@ void RawDataProcessor::ReadDataFast()
             gAsymRoot->FillPassOne(kCUT_PASSONE_ALL);
             //gAsymRoot->PrintChannelEvent();
 
-            nTotalEvents++;
+            nEventsProcessed++;
+
+            if (nEventsProcessed%50000 == 0)
+            {
+               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), nEventsProcessed);
+               fflush(stdout);
+            }
          }
       }
    }
 
    sw.Stop();
 
-   printf("Total events read:     %12d\n", nReadEvents);
-   printf("Total events accepted: %12d\n", nTotalEvents);
+   printf("Total events read:      %12u\n", nEventsTotal);
+   printf("Total events processed: %12u\n", nEventsProcessed);
 
    Info("ReadDataFast", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 } //}}}
@@ -576,128 +586,93 @@ void readloop(MseMeasInfoX &run)
         //int nreadbyte   = 0;  // number of bite already read
 
         recordReadATStruct *ATPtr;
-        int Nevent;
 
         for (UInt_t i=0; i<rec.header.len - sizeof(recordHeaderStruct);) {
 
-           ATPtr     = (recordReadATStruct*) (&rec.data.rec[i]);
-           event.stN = ATPtr->subhead.siNum; // si number
-           Nevent    = ATPtr->subhead.Events + 1;
+                    ATPtr      = (recordReadATStruct*) (&rec.data.rec[i]);
+                    event.stN  = ATPtr->subhead.siNum; // si number
+           unsigned nEvents    = ATPtr->subhead.Events + 1;
+           //unsigned nEvents    = ATPtr->subhead.Events;
 
            // count the total number of event records in raw file
-           gAnaInfo->nEventsTotal += Nevent;
+           gMeasInfo->fNEventsTotal += nEvents;
 
-           i += sizeof(subheadStruct) + Nevent*sizeof(ATStruct);
+           i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
            if (i > rec.header.len - sizeof(recordHeaderStruct)) {
               cout << "Broken record "<< rec.header.num << "("
                    << rec.header.len << " bytes). Last subhead: siNum= "
-                   << event.stN << " Events= " << Nevent << endl;
+                   << event.stN << " Events= " << nEvents << endl;
               break;
            }
 
            //ds:
-           //printf("Nevent(s): %d, si number: %d, gMaxEventsUser %d, Nread %d\n", Nevent,
-           //       event.stN, gMaxEventsUser, Nread);
+           //printf("nEvents(s): %d, si number: %d, gMaxEventsUser %d\n", nEvents,
+           //       event.stN, gMaxEventsUser);
 
-           for (int j=0; j<Nevent; j++, Nread++) {
+           for (unsigned iEvent=0; iEvent<nEvents; iEvent++) {
 
               //ds: Skip events if already read enough events specified by user
-              if (gMaxEventsUser > 0 && Nevtot >= gMaxEventsUser) break;
+              if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
 
-              if (Nread % gAnaInfo->fThinout == 0) {
+              if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
 
-                 //Nread++;
-                 Nevtot++;
+              gMeasInfo->fNEventsProcessed++;
 
-                 event.amp    = ATPtr->data[j].a;
-                 event.tdc    = ATPtr->data[j].t;
-                 event.intg   = ATPtr->data[j].s;
-                 event.bid    = ATPtr->data[j].b;
-                 event.tdcmax = ATPtr->data[j].tmax;
-                 event.rev0   = ATPtr->data[j].rev0;
-                 event.rev    = ATPtr->data[j].rev;
+              event.amp    = ATPtr->data[iEvent].a;
+              event.tdc    = ATPtr->data[iEvent].t;
+              event.intg   = ATPtr->data[iEvent].s;
+              event.bid    = ATPtr->data[iEvent].b;
+              event.tdcmax = ATPtr->data[iEvent].tmax;
+              event.rev0   = ATPtr->data[iEvent].rev0;
+              event.rev    = ATPtr->data[iEvent].rev;
 
-                 // Finer Target Position Resolution by counting stepping moter
-                 // This feature became available after Run06
-                 if (gMeasInfo->Run >= 6) {
-                    cntr.revolution = event.delim*512 + event.rev*2 + event.rev0;
+              // Finer Target Position Resolution by counting stepping moter
+              // This feature became available after Run06
+              if (gMeasInfo->Run >= 6) {
+                 cntr.revolution = event.delim*512 + event.rev*2 + event.rev0;
 
-                    if (cntr.revolution > gMeasInfo->MaxRevolution)
-                       gMeasInfo->MaxRevolution = cntr.revolution;
+                 if (cntr.revolution > gMeasInfo->MaxRevolution)
+                    gMeasInfo->MaxRevolution = cntr.revolution;
 
-                    if (event.stN == 72 && event.delim != tgt.eventID) {
-                       tgt.x += gAnaInfo->target_count_mm * (float)tgt.vector;
-                       tgt.vector=-1;
-                    }
-
-                    if (event.stN == 72 || event.stN == 73) {
-                        switch (event.stN) {
-                        case 72:
-                            tgt.eventID = event.delim;
-                            ++cntr.tgtMotion;
-                            break;
-                        case 73:
-                            tgt.vector = 1;
-                            break;
-                        }
-                    }
+                 if (event.stN == 72 && event.delim != tgt.eventID) {
+                    tgt.x += gAnaInfo->target_count_mm * (float)tgt.vector;
+                    tgt.vector=-1;
                  }
 
-                 gAsymRoot->SetChannelEvent(event);
-
-                 if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
-
-                 //cout << " i "            << i
-                 //     << " Nevent "       << Nevent
-                 //     << " St "           << event.stN
-                 //     << " amp "          << event.amp
-                 //     << " tdc "          << event.tdc
-                 //     << " bid "          << event.bid
-                 //     << " rev0 "         << event.rev0
-                 //     << " rev  "         << event.rev
-                 //     << " revolution #=" << cntr.revolution << endl;
-
-                 // Raw histograms
-                 //ds: Why don't we save raw histograms in regular passes?
-                 //if (!Flag.feedback && gAnaInfo->RAWHISTOGRAM)
-                 //if (event.stN < 72) {
-                 //   bunch_dist_raw -> Fill(event.bid);
-                 //   strip_dist_raw -> Fill(event.stN);
-                 //   tdc_raw        -> Fill(event.tdc);
-                 //   adc_raw        -> Fill(event.amp);
-                 //   tdc_vs_adc_raw -> Fill(event.amp,event.tdc);
-
-                 //   //ds: Don't we need to compare absolute value of gFillPattern[bid] with 1?
-                 //   if (fabs(gFillPattern[event.bid]) != 1)
-                 //      tdc_vs_adc_false_bunch_raw->Fill(event.amp, event.tdc);
-                 //}
-
-                 // process event for following case:
-                 //    fill pattern     = 1
-                 //    Calibration mode = 1
-                 // also process only if strip is active
-                 //if (event.stN >= NSTRIP)
-                    //printf("channel111: %d, %d\n", event.stN, gMeasInfo->ActiveStrip[event.stN]);
-                    //printf("channel111: %d\n", event.stN);
-
-                 //if ( gFillPattern[event.bid] == 1 || gAnaInfo->HasAlphaBit() == 1) // || event.stN >= 72) ) //&&
-                 //     //gMeasInfo->ActiveStrip[event.stN] )
-                 //{
-                    event_process(&event);
-                 //}
-
-                 if (Nevtot%50000==0) {
-
-                    //ds: Can we simplify this by leaving only one report?
-                    //if (Flag.feedback){
-                    //   printf("Feedback Mode Ncounts = %ld \r", Nread) ;
-                    //} else {
-                       printf("%.3f: Proccesing Ncounts = %u \r", gMeasInfo->RUNID, Nevtot);
-                    //}
-
-                    fflush(stdout);
+                 if (event.stN == 72 || event.stN == 73) {
+                     switch (event.stN) {
+                     case 72:
+                         tgt.eventID = event.delim;
+                         ++cntr.tgtMotion;
+                         break;
+                     case 73:
+                         tgt.vector = 1;
+                         break;
+                     }
                  }
+              }
+
+              gAsymRoot->SetChannelEvent(event);
+
+              if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
+
+              //cout << " i "            << i
+              //     << " nEvents "      << nEvents
+              //     << " St "           << event.stN
+              //     << " amp "          << event.amp
+              //     << " tdc "          << event.tdc
+              //     << " bid "          << event.bid
+              //     << " rev0 "         << event.rev0
+              //     << " rev  "         << event.rev
+              //     << " revolution #=" << cntr.revolution << endl;
+
+              event_process(&event);
+
+              if (gMeasInfo->fNEventsProcessed%50000 == 0)
+              {
+                 printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+                 fflush(stdout);
               }
            }
         }
@@ -721,15 +696,10 @@ void readloop(MseMeasInfoX &run)
    if (gAnaInfo->HasNormalBit())
       end_process(run);
 
-   fprintf(stdout, "End of data stream \n");
-   fprintf(stdout, "End Time: %s\n", ctime(&gMeasInfo->fStopTime));
-   fprintf(stdout, "Carbons found: %ld \n", Nevcut);
-   //fprintf(stdout, "Data Comment: %s\n", rec.end.comment);
-   fprintf(stdout, "Total events in file %d\n", gAnaInfo->nEventsTotal);
-   fprintf(stdout, "First %d events processed\n", Nread);
-   fprintf(stdout, "%d events saved\n", Nevtot);
-
-   gAnaInfo->nEventsProcessed = Nevtot;
+   printf("End of data stream \n");
+   printf("End time: %s\n", ctime(&gMeasInfo->fStopTime));
+   printf("Total events read:      %12u\n", gMeasInfo->fNEventsTotal);
+   printf("Total events processed: %12u\n", gMeasInfo->fNEventsProcessed);
 
    mysqlpp::DateTime dt(gMeasInfo->fStopTime);
    run.stop_time = dt;
@@ -737,13 +707,13 @@ void readloop(MseMeasInfoX &run)
    // Add info to database entry
    stringstream sstr;
 
-   sstr.str(""); sstr << gAnaInfo->nEventsTotal;
+   sstr.str(""); sstr << gMeasInfo->fNEventsTotal;
    gRunDb.fFields["NEVENTS_TOTAL"] = sstr.str();
-   run.nevents_total = gAnaInfo->nEventsTotal;
+   run.nevents_total = gMeasInfo->fNEventsTotal;
 
-   sstr.str(""); sstr << gAnaInfo->nEventsProcessed;
+   sstr.str(""); sstr << gMeasInfo->fNEventsProcessed;
    gRunDb.fFields["NEVENTS_PROCESSED"] = sstr.str();
-   run.nevents_processed = gAnaInfo->nEventsProcessed;
+   run.nevents_processed = gMeasInfo->fNEventsProcessed;
 
    sstr.str("");
    sstr << gMeasInfo->GetBeamEnergy();
@@ -757,7 +727,7 @@ void readloop(MseMeasInfoX &run)
    }
 
    // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
-   if (!Nread && !READ_FLAG) {
+   if (!gMeasInfo->fNEventsProcessed && !READ_FLAG) {
       gMeasInfo->PrintConfig();
 
       if (gRunDb.run_status_s == "Junk") {
