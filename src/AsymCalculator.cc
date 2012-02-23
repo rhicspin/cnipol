@@ -214,7 +214,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
  */
 ValErrMap AsymCalculator::CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet)
 { //{{{
-   Double_t LU = 0,  RU = 0,  LD = 0,  RD = 0;
+   Double_t LU = 0, RU = 0, LD = 0, RD = 0;
 
    DetLRSet::iterator iDetPair = detSet.begin();
 
@@ -252,6 +252,28 @@ ValErrMap AsymCalculator::CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown)
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(6, 1) );
+   detSet.insert( DetLRPair(4, 3) );
+
+   return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
+} //}}}
+
+
+/** */
+ValErrMap AsymCalculator::CalcDetAsymX45TSqrtFormula(TH1 &hUp, TH1 &hDown)
+{ //{{{
+   DetLRSet detSet;
+
+   detSet.insert( DetLRPair(6, 1) );
+
+   return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
+} //}}}
+
+
+/** */
+ValErrMap AsymCalculator::CalcDetAsymX45BSqrtFormula(TH1 &hUp, TH1 &hDown)
+{ //{{{
+   DetLRSet detSet;
+
    detSet.insert( DetLRPair(4, 3) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
@@ -1407,12 +1429,15 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
    TH2* hDetVsBunchId_up   = (TH2*) oc->o["hDetVsBunchId_up"];
    TH2* hDetVsBunchId_down = (TH2*) oc->o["hDetVsBunchId_down"];
 
+   // Combine all bunches by making a projection on the Y axis
    TH1D* hDetCounts_up   = hDetVsBunchId_up->ProjectionY();
    TH1D* hDetCounts_down = hDetVsBunchId_down->ProjectionY();
 
-   gAnaMeasResult->fAsymX90 = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaMeasResult->fAsymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-   gAnaMeasResult->fAsymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX90  = CalcDetAsymX90SqrtFormula (*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45  = CalcDetAsymX45SqrtFormula (*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45T = CalcDetAsymX45TSqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45B = CalcDetAsymX45BSqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymY45  = CalcDetAsymY45SqrtFormula (*hDetCounts_up, *hDetCounts_down);
 
 } //}}}
 
@@ -1622,6 +1647,7 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
       A = dA = 0;
    }
 } //}}}
+
 
 /**
  * This method is called from the histogram container.
@@ -2294,6 +2320,10 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
    delete txt;
 } //}}}
+
+
+
+
 
 
 /*       following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.

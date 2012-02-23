@@ -44,6 +44,8 @@ public:
    Spin2FitResMap       fFitResAsymBunchY45;    //
    ValErrMap            fAsymX90;               // Results from classic square root formula. Different definitions of asymmetry: phys, lumi, geom
    ValErrMap            fAsymX45;               //
+   ValErrMap            fAsymX45T;              //! upper/top 45-deg detectors
+   ValErrMap            fAsymX45B;              //! lower/bottom 45-deg detectors
    ValErrMap            fAsymY45;               //
    TFitResultPtr        fFitResProfilePvsI;     // Fit result from profile polarization vs intensity plot
    TFitResultPtr        fFitResEnergySlope;     // Fit result from energy distribution histogram

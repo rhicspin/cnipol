@@ -50,6 +50,8 @@ public:
    ValErrMap     CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet);
    ValErrMap     CalcDetAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown);
    ValErrMap     CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymX45TSqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymX45BSqrtFormula(TH1 &hUp, TH1 &hDown);
    ValErrMap     CalcDetAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown);
 
    void          CumulativeAsymmetry();
