@@ -47,7 +47,7 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
  * Input       : processEvent *event
  */
 void event_process(processEvent *event)
-{
+{ //{{{
    int   delim = event->delim ;
    int   st    = event->stN;        // 0 - 71
    int   si    = (int) (st/12);     // 0 - 5
@@ -628,7 +628,7 @@ void event_process(processEvent *event)
          //ds }
       }
    }
-}
+} //}}}
 
 
 // Description : calculate kinematics from ADC and TDC
@@ -636,7 +636,7 @@ void event_process(processEvent *event)
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass
 void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *gConfigInfo,
                      int st, float &edepo, float &e, float &t, float &delt, float &Mass)
-{
+{ //{{{
   float rand1, rand2;
 
   // random numbers in order to smear for the integer reading
@@ -655,7 +655,7 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
 
   // Decrepancy between observed ToF and calculated t from energy
   delt = t - gRunConsts[st+1].E2T/sqrt(e);
-}
+} //}}}
 
 
 // Description : output routine for Mei Bai's spin tune measurements
@@ -670,7 +670,7 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
 // Return      : 0
 //
 void SpinTuneOutput(int bid, double si)
-{
+{ //{{{
    fprintf(stderr, "%10ld", cntr.revolution);
    fprintf(stderr,   "%5d", bid+1);
    fprintf(stderr,   "%5d", gMeasInfo->GetBunchSpin(bid + 1) );
@@ -686,4 +686,4 @@ void SpinTuneOutput(int bid, double si)
    */
  
    fprintf(stderr, "\n");
-}
+} //}}}

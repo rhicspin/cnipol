@@ -21,7 +21,7 @@ AnaMeasResult::AnaMeasResult() : TObject(),
    fAvrgPMAsym(),
    fFitResAsymPhi(),       fFitResPolarPhi(),
    fFitResAsymBunchX90(),  fFitResAsymBunchX45(), fFitResAsymBunchY45(),
-   fAsymX90(), fAsymX45(), fAsymY45(),
+   fAsymX90(), fAsymX45(), fAsymX45T(), fAsymX45B(), fAsymY45(),
    fFitResProfilePvsI(),   fFitResEnergySlope(), fFitResPseudoMass(),
    //P_sigma_ratio[2],
    //P_sigma_ratio_norm[2],
@@ -73,6 +73,8 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    // Skip fit results fFitResAsymPhi fFitResPolarPhi ...
    fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());
    fprintf(f, "$rc['fAsymX45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45).c_str());
+   fprintf(f, "$rc['fAsymX45T']           = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45T).c_str());
+   fprintf(f, "$rc['fAsymX45B']           = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45B).c_str());
    fprintf(f, "$rc['fAsymY45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymY45).c_str());
    fprintf(f, "$rc['P_sigma_ratio']       = array(%f, %f);\n", P_sigma_ratio[0], P_sigma_ratio[1]);
    fprintf(f, "$rc['P_sigma_ratio_norm']  = array(%f, %f);\n", P_sigma_ratio_norm[0], P_sigma_ratio_norm[1]);
