@@ -22,7 +22,7 @@
 class AnaInfo;
 
 enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_ALL,
-           kCUT_RAW, kCUT_NOISE, kCUT_CARBON, kCUT_CARBON_EB };
+           kCUT_RAW, kCUT_RAW_EB, kCUT_NOISE, kCUT_CARBON, kCUT_CARBON_EB };
 
 typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;
 typedef Cut2DrawObjContainerMap::iterator              Cut2DrawObjContainerMapIter;

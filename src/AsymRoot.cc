@@ -194,10 +194,10 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["raw"] = oc;
       fHistCuts[kCUT_RAW].insert(oc);
 
-      //dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
-      //oc  = new CnipolRawHists(dir);
-      //fHists->d["raw_eb"] = oc;
-      //fHistCuts[kCUT_RAW].insert(oc);
+      dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
+      oc  = new CnipolRawHists(dir);
+      fHists->d["raw_eb"] = oc;
+      fHistCuts[kCUT_RAW_EB].insert(oc);
    }
 
    if (gAnaInfo->HasRawExtendedBit()) {
