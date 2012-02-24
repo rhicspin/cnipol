@@ -2,6 +2,9 @@ source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
 
 #bgx_limit 3 sleep 10
 
+export SSH_AUTH_SOCK=/tmp/ssh-qhSiH31025/agent.31025
+export SSH_AGENT_PID=31026
+
 RUN_PATTERN=$1
 
 ORIG_WD=`pwd`
