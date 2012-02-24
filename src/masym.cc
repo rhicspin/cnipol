@@ -271,6 +271,7 @@ void initialize()
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsMeasId.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
