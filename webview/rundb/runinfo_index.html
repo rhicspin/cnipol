@@ -116,15 +116,33 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    $polId = $POLARIMETER_ID[$e['polarimeter_id']];
 
+
+   // quick and dirty solution to deal with unphysical values
+	// BAD BAD BAD - must be removed once the QA is in order
+   $rc = array();
+   $gRunDir = DATA_DIR."/".$e['run_name'];
+   include("$gRunDir/runconfig.php");
+
+   $polarToDisplay = null;
+   
+   $polars = array( new pair($e['polarization']*100, $e['polarization_error']*100),
+                    new pair(abs($rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1]), $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]),
+                    new pair(abs($rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]),
+                    new pair(abs($rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1])  );
+   
+   print("<!--\n");
+   print_r($polars);
+   print("-->\n");
+   
+   foreach ($polars as $polar) {
+      if (($polar->first > 90 || $polar->first < 10) && $polar->second < 10) continue;
+   	$polarToDisplay = $polar;
+   	break;
+   }
+
    $polarization = "&nbsp;";
 
-   if (isset($e['polarization'])) {
-      //$pols = preg_split("/[\s,]+/", $e['polarization']);
-		//$polarization = sprintf("%5.2f &plusmn; %5.2f<br>%5.2f &plusmn; %5.2f",
-      //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
-		//$polarization = sprintf("%5.1f &plusmn; %5.1f",
-      //   $pols[0]*100, $pols[1]*100);
-
+   if (isset($e['polarization']) && $polarToDisplay == null) {
       // Apply normalization factor to polarization value
 		$norm = 1;
 
@@ -134,8 +152,11 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
          $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+   } else {
+   	$polarization = sprintf("%5.1f &plusmn; %5.1f", $polarToDisplay->first, $polarToDisplay->second);
    }
 
+   // return to normal flow
    $strOnlinePolar = "&nbsp;";
    if (isset($onlinePolars[$e['run_name']])) {
 	   $onlinePolar    = $onlinePolars[$e['run_name']];
