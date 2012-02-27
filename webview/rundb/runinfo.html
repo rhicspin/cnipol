@@ -8,7 +8,7 @@
 
 <html>
 <head>
-  <title>Measurement <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <title>Measurement <?=$gRunId?>: Summary and Fast Offline Results +++</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
 </head>
 
@@ -71,6 +71,7 @@ if ($polId[2] == 'U') $cssPol .= " bold";
 
 $polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
 
+
 $polarization = "&nbsp;";
 
 if (isset($rc['polarization'])) {
@@ -85,6 +86,14 @@ $polarization_X90 = isset($rc['fAsymX90']['phys']) ?
 $polarization_X45 = isset($rc['fAsymX45']['phys']) ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
 	                                   $rc['fAsymX45']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45T = isset($rc['fAsymX45T']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45B = isset($rc['fAsymX45B']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
 
 $polarization_Y45 = isset($rc['fAsymY45']['phys']) ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
@@ -139,10 +148,14 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
       <tr>
          <th>X90
          <th>X45
+         <th>X45T
+         <th>X45B
          <th>Y45
       <tr>
          <td> <?=$polarization_X90?>
          <td> <?=$polarization_X45?>
+         <td> <?=$polarization_X45T?>
+         <td> <?=$polarization_X45B?>
          <td> <?=$polarization_Y45?>
       </table>
 
