@@ -8,4 +8,7 @@
 // this should be better
 char polCDEVName[4][20] = {"polarimeter.blu1", "polarimeter.yel1", "polarimeter.blu2", "polarimeter.yel2"};
 
+
+int cavVoltage=-9999;
+
 EMeasType gMeasType = kMEASTYPE_UNDEF;   // measurement type must be provided

@@ -18,4 +18,6 @@ extern char polCDEVName[4][20];
 
 extern EMeasType gMeasType;   // measurement type must be provided
 
+extern int cavVoltage;
+
 #endif
