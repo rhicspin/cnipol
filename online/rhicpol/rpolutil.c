@@ -16,7 +16,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-
 #include "../libcmc/libcmc.h"
 #include "rpolutil.h"
 
@@ -2194,6 +2193,17 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    recMeasType.type        = gMeasType;
    //printf("record: meas type: %x\n", recMeasType.header.type);
    polWrite(&recMeasType.header, (long *) &recMeasType.type);
+
+
+   //recordVoltageStruct recVoltage;
+
+   //recVoltage.header.type=REC_VOLTAGE;
+   //recVoltage.header.len = sizeof(recVoltage);
+   //recVoltage.header.timestamp.time= time(NULL);
+   //recVoltage.voltage=cavVoltage;
+   //polWrite(&recVoltage.header,(long *)&recVoltage.voltage);
+
+
 
 
    if (!useCDEV) return 0;
