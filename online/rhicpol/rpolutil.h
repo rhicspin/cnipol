@@ -62,6 +62,7 @@ int  getTargetMovementInfo(long **data);
 void getAdoInfo(void);
 void getWcmInfo(void);
 EMeasType getCDEVMeasType();
+int getVoltage();
 void getCarbTarg(carbTargStat * targstat);
 void GetTargetEncodings(long *res);
 void UpdateProgress(int evDone, int rate, double ts);
