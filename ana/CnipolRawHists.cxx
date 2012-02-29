@@ -99,6 +99,9 @@ void CnipolRawHists::BookHists()
    hist->SetBit(TH1::kCanRebin);
    o[shName] = hist;
 
+   shName = "hsTvsACumul";
+   o[shName] = new THStack(shName.c_str(), shName.c_str());
+
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
@@ -167,6 +170,7 @@ void CnipolRawHists::BookHists()
       hist->GetYaxis()->SetRangeUser(0, 1);
       oc->o[shName]           = hist;
       fhTvsACumul_ch[iChId-1] = hist;
+      ((THStack*) o["hsTvsACumul"])->Add(hist);
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
