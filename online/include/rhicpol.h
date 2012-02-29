@@ -128,10 +128,6 @@ typedef struct {
 } wcmDataStruct;
 
 typedef struct {
-    float voltageData[360];
-} cavVoltageStruct;
-
-typedef struct {
     int jetAbsolutePosition;
     int rbpm[8];
 } jetPositionStruct;
@@ -286,4 +282,5 @@ typedef struct {
 void rhicpol_print_usage();
 void rhicpol_process_options();
 void rhicpol_voltage();
+void rhicpol_voltage2();
 #endif

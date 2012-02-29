@@ -44,7 +44,6 @@ SiChanStruct         *SiConf = NULL;                    // silicon channels
 wcmDataStruct         wcmData;                          // Wall current monitor data from CDEV
 wcmDataStruct         wcmOtherData;                     // we need both beams for hjet
 jetPositionStruct     jetPosition;                      // Jet position from CDEV
-cavVoltageStruct      cavVoltageData;
 
 //      Run parameters and flags
 int   NoADO       = 0;                  // don't take anything from CDEV
@@ -180,9 +179,6 @@ int main(int argc, char **argv)
          return 1;
          break;
       }
-   rhicpol_voltage();
-   rhicpol_process_options();
-   printf("made it to 3\n");
    // The current directory will be changed to the one with the configuration file
    // Therefore save the log file relative to the current dir
    std::string logFileFullName("");
@@ -236,7 +232,8 @@ int main(int argc, char **argv)
    }
 
    t = time(NULL);
-
+   rhicpol_voltage();
+   rhicpol_process_options();
    fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
 
    if (gMeasType == kMEASTYPE_UNKNOWN)
@@ -456,7 +453,7 @@ int main(int argc, char **argv)
       signal(SIGTERM, SIG_DFL);
       signal(SIGINT, SIG_DFL);
       t = time(NULL);
-
+      rhicpol_voltage2();
       if (nLoop == 1) {
          fprintf(LogFile,    ">>> %s Measurement finished with %9d events.\n", cctime(&t), ev);
       }
@@ -474,7 +471,6 @@ int main(int argc, char **argv)
    if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
    closeDataFile("End of RHICpol run.");
    if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateStatus();
-   rhicpol_voltage();
    // close the log file
    fclose(LogFile);
 
@@ -512,41 +508,35 @@ void rhicpol_print_usage()
 /** */
 void rhicpol_process_options()
 {
-   printf("made it to 1\n");
    //{{{
    if (gMeasType == kMEASTYPE_UNDEF) {
-      printf("made it to 1a\n");
       printf("\nError: Measurement type must be specified with -T option\n");
       rhicpol_print_usage();
       exit(0);
    }
    else if (gOptMeasType.compare("cdev") == 0 || gOptMeasType.empty()) {
-      printf("made it to 1b\n");
       if (!NoADO) gMeasType = getCDEVMeasType();
       else        gMeasType = kMEASTYPE_UNKNOWN;
    }
-   else if (gOptMeasType.compare("test") == 0){
-     printf("made it to 1c\n"); 
+   else if (gOptMeasType.compare("test") == 0){ 
      gMeasType = kMEASTYPE_TEST;
    }
    else if (gOptMeasType.compare("alpha") == 0){
-      printf("made it to 1d\n");
       gMeasType = kMEASTYPE_ALPHA;
    }
    else{
-      printf("made it to 1e\n");
       gMeasType = kMEASTYPE_UNKNOWN;}
-  printf("made it to 2\n");
 } 
 
 void rhicpol_voltage()
 {
-   // cavVoltage=getVoltage(); 
-    //printf("197 MHz Cav Voltage = %d",cavVoltage);
-    int theVoltage=getVoltage();
-    printf("Anders was here and the answer is %d\n",theVoltage);
+    theVoltage_beg=getVoltage();
 }
 
+void rhicpol_voltage2()
+{
+    theVoltage_end=getVoltage();
+}
 
 
 
