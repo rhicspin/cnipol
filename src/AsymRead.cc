@@ -385,6 +385,13 @@ void RawDataProcessor::ReadDataFast()
             // Use only a fraction of events
             if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
 
+            // fill hists with raw data
+            if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+            {
+               //gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
+               gAsymRoot->FillPassOne(kCUT_PASSONE_RAW);
+            }
+
             // Use all events to fill pulser histograms - not valid. thiout is applied
             if ( gAnaInfo->HasPulserBit() &&
                  gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&

@@ -32,7 +32,7 @@ CnipolRawHists::~CnipolRawHists()
 
 
 /** */
-void CnipolRawHists::BookHists(string cutid)
+void CnipolRawHists::BookHists()
 { //{{{
    string shName;
    TH1*   hist;
@@ -40,60 +40,60 @@ void CnipolRawHists::BookHists(string cutid)
    fDir->cd();
 
    shName = "hAdcAmpltd"; // former adc_raw
-   hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+   hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
    hist->SetTitle(";Amplitude, ADC;Events;");
    hist->SetOption("hist");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hAdcIntgrl";
-   hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+   hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
    hist->SetTitle(";Integral, ADC;Events;");
    hist->SetOption("hist");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hTdc"; // former tdc_raw
-   hist = new TH1F(shName.c_str(), shName.c_str(), 80, 10, 90);
+   hist = new TH1I(shName.c_str(), shName.c_str(), 80, 10, 90);
    hist->SetOption("hist");
    hist->SetTitle(";TDC;Events;");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hTvsA";
-   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+   hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
    hist->SetTitle(";Amplitude, ADC;TDC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hTvsI";
-   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+   hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
    hist->SetTitle(";Integral, ADC;TDC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hIvsA";
-   hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
+   hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
    hist->SetTitle(";Integral, ADC;TDC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hBunchCounts"; //former bunch_dist_raw
-   hist = new TH1F(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5);
+   hist = new TH1I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5);
    hist->SetTitle(";Bunch Id;Events;");
    hist->SetOption("hist XY GRIDX");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hStripCounts"; // former strip_dist_raw
-   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetOption("hist XY GRIDX");
    hist->SetTitle(";Channel Id;Events;");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hRevolutionId";
-   hist = new TH1F(shName.c_str(), shName.c_str(), 1000, 0, 1);
+   hist = new TH1I(shName.c_str(), shName.c_str(), 1000, 0, 1);
    hist->SetTitle(";Revolution Id;Events;");
    hist->SetFillColor(kGray);
    hist->SetBit(TH1::kCanRebin);
@@ -119,43 +119,54 @@ void CnipolRawHists::BookHists(string cutid)
       }
 
       shName = "hAdcAmpltd_ch" + sChId;
-      hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+      hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
       hist->SetOption("hist NOIMG");
       hist->SetTitle(";Amplitude, ADC;Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hAdcIntgrl_ch" + sChId;
-      hist = new TH1F(shName.c_str(), shName.c_str(), 255, 0, 255);
+      hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
       hist->SetOption("hist NOIMG");
       hist->SetTitle(";Integral, ADC;Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hTdc_ch" + sChId;
-      hist = new TH1F(shName.c_str(), shName.c_str(), 80, 10, 90);
+      hist = new TH1I(shName.c_str(), shName.c_str(), 80, 10, 90);
       hist->SetOption("hist NOIMG");
       hist->SetTitle(";TDC;Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hTvsA_ch" + sChId;
-      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+      hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
       hist->SetOption("colz LOGZ");
       hist->SetTitle(";Amplitude, ADC;TDC;");
-      oc->o[shName] = hist;
+      oc->o[shName]      = hist;
+      fhTvsA_ch[iChId-1] = hist;
 
       shName = "hTvsI_ch" + sChId;
-      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+      hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
       hist->SetOption("colz LOGZ");
       hist->SetTitle(";Integral, ADC;TDC;");
-      oc->o[shName] = hist;
+      oc->o[shName]      = hist;
+      fhTvsI_ch[iChId-1] = hist;
 
       shName = "hIvsA_ch" + sChId;
-      hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
+      hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
       hist->SetOption("colz LOGZ");
       hist->SetTitle(";Amplitude, ADC;Integral, ADC;");
-      oc->o[shName] = hist;
+      oc->o[shName]      = hist;
+      fhIvsA_ch[iChId-1] = hist;
+
+      shName = "hTvsACumul_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
+      hist->SetOption("hist NOIMG");
+      hist->SetTitle("; Digi Channel Frac; Event Frac;");
+      hist->GetYaxis()->SetRangeUser(0, 1);
+      oc->o[shName]           = hist;
+      fhTvsACumul_ch[iChId-1] = hist;
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -166,47 +177,31 @@ void CnipolRawHists::BookHists(string cutid)
 
 
 /** */
-void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
+void CnipolRawHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-   // Fill events with no cuts applied
-   if (cutid != "") return;
-
    UChar_t  chId     = ch->GetChannelId();
    UShort_t adcA_bin = ch->GetAmpltd() + 1;
    UShort_t adcI_bin = ch->GetIntgrl() + 1;
    UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
 
-   string sChId("  ");
-   sprintf(&sChId[0], "%02d", chId);
-
-   DrawObjContainer *sd = d["channel" + sChId];
-
    // Speed up the filling process by getting the global bin number
-   TH2* hTmp_ch;
+   TH1* hist;
    Int_t gbin;
 
-   hTmp_ch = (TH2*) sd->o["hTvsA_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcA_bin, tdc_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+   hist = fhTvsA_ch[chId-1];
+   gbin = hist->GetBin(adcA_bin, tdc_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hTvsI_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcI_bin, tdc_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+   hist = fhTvsI_ch[chId-1];
+   gbin = hist->GetBin(adcI_bin, tdc_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hIvsA_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcA_bin, adcI_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
-
-   //((TH1*) sd->o["hAdcAmpltd_ch" + sChId]) -> Fill(ch->GetAmpltd());
-   //((TH1*) sd->o["hTdc_ch"       + sChId]) -> Fill(ch->GetTdc());
-   //((TH1*) sd->o["hTvsA_ch" + sChId]) -> Fill(adcA, tdc);
-   //((TH1*) sd->o["hTvsI_ch" + sChId]) -> Fill(adcI, tdc);
-   //((TH1*) sd->o["hIvsA_ch" + sChId]) -> Fill(adcA, adcI);
-
-   TH1* hist;
+   hist = fhIvsA_ch[chId-1];
+   gbin = hist->GetBin(adcA_bin, adcI_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
    hist = (TH1*) o["hBunchCounts"];
    hist->AddBinContent(ch->GetBunchId() + 1);
@@ -218,12 +213,11 @@ void CnipolRawHists::Fill(ChannelEvent *ch, string cutid)
 
    hist = ((TH1*) o["hRevolutionId"]);
    hist->Fill(ch->GetRevolutionId());
-
 } //}}}
 
 
 /** */
-void CnipolRawHists::FillDerived()
+void CnipolRawHists::FillDerivedPassOne()
 { //{{{
    TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
    TH1* hAdcIntgrl = (TH1*) o["hAdcIntgrl"];
@@ -239,14 +233,14 @@ void CnipolRawHists::FillDerived()
 
       DrawObjContainer *oc = d.find("channel"+sChId)->second;
 
-      TH2* hTVsA_channel = (TH2*) oc->o["hTvsA_ch" + sChId];
+      TH2* hTVsA_channel = (TH2*) fhTvsA_ch[iCh-1];
       hTVsA_channel->Sumw2();
       hTvsA->Add(hTVsA_channel);
 
-      TH2* hTVsI_channel = (TH2*) oc->o["hTvsI_ch" + sChId];
+      TH2* hTVsI_channel = (TH2*) fhTvsI_ch[iCh-1];
       hTvsI->Add(hTVsI_channel);
 
-      TH2* hIVsA_channel = (TH2*) oc->o["hIvsA_ch" + sChId];
+      TH2* hIVsA_channel = (TH2*) fhIvsA_ch[iCh-1];
       hIvsA->Add(hIVsA_channel);
 
       // Create projections of
@@ -275,5 +269,8 @@ void CnipolRawHists::FillDerived()
       utils::CopyBinContentError(hProjTmp, hTdc_channel);
 
       hTdc->Add(hTdc_channel);
+
+      // Calculate cumulative histograms
+      utils::ConvertToCumulative2(hTVsA_channel, (TH1F*) fhTvsACumul_ch[iCh-1]);
    }
 } //}}}

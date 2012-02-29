@@ -13,13 +13,13 @@ ClassImp(CnipolRawExtendedHists)
 using namespace std;
 
 /** Default constructor. */
-CnipolRawExtendedHists::CnipolRawExtendedHists() : DrawObjContainer()
+CnipolRawExtendedHists::CnipolRawExtendedHists() : CnipolRawHists()
 {
    BookHists();
 }
 
 
-CnipolRawExtendedHists::CnipolRawExtendedHists(TDirectory *dir) : DrawObjContainer(dir)
+CnipolRawExtendedHists::CnipolRawExtendedHists(TDirectory *dir) : CnipolRawHists(dir)
 {
    BookHists();
 }
@@ -34,64 +34,24 @@ CnipolRawExtendedHists::~CnipolRawExtendedHists()
 /** */
 void CnipolRawExtendedHists::BookHists()
 { //{{{
-   char hName[256];
    string shName;
-
-   TH1* hist;
+   TH1*   hist;
 
    fDir->cd();
 
-   sprintf(hName, "hAdcAmpltd"); // former adc_raw
-   o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw Amplitude ADC (All strips);Amplitude, ADC;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
-
-   sprintf(hName, "hAdcIntgrl");
-   o[hName] = new TH1F(hName, hName, 255, 0, 255);
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw Integral ADC (All strips);Integral, ADC;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
-
-   sprintf(hName, "hTdc"); // former tdc_raw
-   o[hName] = new TH1F(hName, hName, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("hist");
-   ((TH1*) o[hName])->SetTitle("Raw TDC (All strips);TDC;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
-
-   sprintf(hName, "hTvsA");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
-   ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
-
-   sprintf(hName, "hTvsI");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
-   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
-
-   sprintf(hName, "hIvsA");
-   o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-   ((TH1*) o[hName])->SetOption("colz LOGZ");
-   ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
-
-   sprintf(hName, "hStripCounts"); // former strip_dist_raw
-   o[hName] = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetTitle(";Channel Id;Events;");
-   ((TH1*) o[hName])->SetFillColor(kGray);
-
-   shName = "hRevolutionId";
-   hist = new TH1F(shName.c_str(), shName.c_str(), 1000, 0, 1);
-   hist->SetTitle(";Revolution Id;Events;");
-   hist->SetFillColor(kGray);
-   hist->SetBit(TH1::kCanRebin);
+   shName = "hChIdVsBunchId";
+   hist = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Bunch Id; Channel Id; ");
+   hist->SetOption("colz LOGZ");
    o[shName] = hist;
+
 
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
    for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
    {
-      string sChId("  ");
+      string sChId(MAX_CHANNEL_DIGITS, ' ');
       sprintf(&sChId[0], "%02d", iChId);
 
       string dName = "channel" + sChId;
@@ -105,161 +65,121 @@ void CnipolRawExtendedHists::BookHists()
          oc = isubdir->second;
       }
 
-      for (int iBunchId=1; iBunchId<=N_BUNCHES; iBunchId++)
+
+      for (UShort_t iBunchId=1; iBunchId<=N_BUNCHES; iBunchId++)
       {
          string sBunchId("   ");
-         sprintf(&sBunchId[0], "%03d", iChId);
+         sprintf(&sBunchId[0], "%03d", iBunchId);
 
-         //sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
-         //oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-         //((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-         //((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Events;");
-         //((TH1*) oc->o[hName])->SetFillColor(kGray);
-
-         //sprintf(hName, "hAdcIntgrl_ch%02d", iChId);
-         //oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-         //((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-         //((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;Events;");
-         //((TH1*) oc->o[hName])->SetFillColor(kGray);
-
-         //sprintf(hName, "hTdc_ch%02d", iChId);
-         //oc->o[hName] = new TH1F(hName, hName, 80, 10, 90);
-         //((TH1*) oc->o[hName])->SetOption("hist NOIMG");
-         //((TH1*) oc->o[hName])->SetTitle(";TDC;Events;");
-         //((TH1*) oc->o[hName])->SetFillColor(kGray);
-
-         shName = "hTvsA_ch" + sChId + "_b" + sBunchId ;
-         hist = new TH2F(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
-         hist->SetOption("colz LOGZ");
+         // bunched histograms start here
+         shName = "hTvsA_ch" + sChId + "_b" + sBunchId;
+         hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
+         hist->SetOption("colz LOGZ NOIMG");
          hist->SetTitle(";Amplitude, ADC;TDC;");
-         oc->o[shName] = hist;
+         oc->o[shName]                    = hist;
+         fhTvsA_ch_b[iChId-1][iBunchId-1] = hist;
 
+         //shName = "hTvsACumul_ch" + sChId + "_b" + sBunchId;
+         //hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
+         //hist->SetOption("hist NOIMG");
+         //hist->SetTitle("; Digi Channel Frac; Event Frac;");
+         //hist->GetYaxis()->SetRangeUser(0, 1);
+         //oc->o[shName]                         = hist;
+         //fhTvsACumul_ch_b[iChId-1][iBunchId-1] = hist;
+      }
 
-         //sprintf(hName, "hTvsI_ch%02d", iChId);
-         //oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-         //((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-         //((TH1*) oc->o[hName])->SetTitle(";Integral, ADC;TDC;");
-
-         //sprintf(hName, "hIvsA_ch%02d", iChId);
-         //oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-         //((TH1*) oc->o[hName])->SetOption("colz LOGZ");
-         //((TH1*) oc->o[hName])->SetTitle(";Amplitude, ADC;Integral, ADC;");
-
-         // If this is a new directory then we need to add it to the list
-         if ( isubdir == d.end()) {
-            d[dName] = oc;
-         }
+      // If this is a new directory then we need to add it to the list
+      if ( isubdir == d.end()) {
+         d[dName] = oc;
       }
    }
 } //}}}
 
 
 /** */
-void CnipolRawExtendedHists::Fill(ChannelEvent *ch)
+void CnipolRawExtendedHists::FillPassOne(ChannelEvent *ch)
 { //{{{
+   // Fill parent histograms
+   //CnipolRawHists::FillPassOne(ch);
+
    UChar_t  chId     = ch->GetChannelId();
    UShort_t adcA_bin = ch->GetAmpltd() + 1;
    UShort_t adcI_bin = ch->GetIntgrl() + 1;
-   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
-
-   string sChId("  ");
-   sprintf(&sChId[0], "%02d", chId);
-
-   DrawObjContainer *sd = d["channel" + sChId];
+   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
+   UChar_t  bId      = ch->GetBunchId() + 1;
 
    // Speed up the filling process by getting the global bin number
-   TH2* hTmp_ch;
+   TH1* hist;
    Int_t gbin;
 
-   hTmp_ch = (TH2*) sd->o["hTvsA_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcA_bin, tdc_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+   //hist = fhTvsA_ch[chId-1];
+   //gbin = hist->GetBin(adcA_bin, tdc_bin);
+   //hist->AddBinContent(gbin);
+   //hist->SetEntries(hist->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hTvsI_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcI_bin, tdc_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+   hist = fhTvsA_ch_b[chId-1][bId-1];
+   gbin = hist->GetBin(adcA_bin, tdc_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
-   hTmp_ch = (TH2*) sd->o["hIvsA_ch" + sChId];
-   gbin    = hTmp_ch->GetBin(adcA_bin, adcI_bin);
-   hTmp_ch->AddBinContent(gbin);
-   hTmp_ch->SetEntries(hTmp_ch->GetEntries()+1);
+   hist = fhTvsI_ch[chId-1];
+   gbin = hist->GetBin(adcI_bin, tdc_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
-   //((TH1*) sd->o["hAdcAmpltd_ch" + sChId]) -> Fill(ch->GetAmpltd());
-   //((TH1*) sd->o["hTdc_ch"       + sChId]) -> Fill(ch->GetTdc());
-   //((TH1*) sd->o["hTvsA_ch" + sChId]) -> Fill(adcA, tdc);
-   //((TH1*) sd->o["hTvsI_ch" + sChId]) -> Fill(adcI, tdc);
-   //((TH1*) sd->o["hIvsA_ch" + sChId]) -> Fill(adcA, adcI);
-
-   TH1* hist;
+   hist = fhIvsA_ch[chId-1];
+   gbin = hist->GetBin(adcA_bin, adcI_bin);
+   hist->AddBinContent(gbin);
+   hist->SetEntries(hist->GetEntries()+1);
 
    //hist = (TH1*) o["hBunchCounts"];
    //hist->AddBinContent(ch->GetBunchId() + 1);
    //hist->SetEntries(hist->GetEntries()+1);
 
-   hist = ((TH1*) o["hStripCounts"]);
-   hist->AddBinContent(chId);
-   hist->SetEntries(hist->GetEntries()+1);
+   //hist = ((TH1*) o["hStripCounts"]);
+   //hist->AddBinContent(chId);
+   //hist->SetEntries(hist->GetEntries()+1);
 
    hist = ((TH1*) o["hRevolutionId"]);
    hist->Fill(ch->GetRevolutionId());
-
 } //}}}
 
 
 /** */
-void CnipolRawExtendedHists::FillDerived()
+void CnipolRawExtendedHists::FillDerivedPassOne()
 { //{{{
-   //TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
-   //TH1* hAdcIntgrl = (TH1*) o["hAdcIntgrl"];
-   //TH1* hTdc       = (TH1*) o["hTdc"];
-   //TH1* hTvsA      = (TH1*) o["hTvsA"];
-   //TH1* hTvsI      = (TH1*) o["hTvsI"];
-   //TH1* hIvsA      = (TH1*) o["hIvsA"];
-   //
-   //for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
 
-   //   string sChId("  ");
-   //   sprintf(&sChId[0], "%02d", iCh);
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   {
+      TH1* hTvsA_ch = (TH1*) fhTvsA_ch[iCh-1];
 
-   //   DrawObjContainer *oc = d.find("channel"+sChId)->second;
+      for (UShort_t iBunchId=1; iBunchId<=N_BUNCHES; iBunchId++)
+      {
+         TH2* hTvsA_ch_b = (TH2*) fhTvsA_ch_b[iCh-1][iBunchId-1];
 
-   //   TH2* hTVsA_channel = (TH2*) oc->o["hTvsA_ch" + sChId];
-   //   hTVsA_channel->Sumw2();
-   //   hTvsA->Add(hTVsA_channel);
+         hTvsA_ch->Add(hTvsA_ch_b);
 
-   //   TH2* hTVsI_channel = (TH2*) oc->o["hTvsI_ch" + sChId];
-   //   hTvsI->Add(hTVsI_channel);
+         Double_t nEntries = hTvsA_ch_b->GetEntries();
+         ((TH2I*) o["hChIdVsBunchId"])->SetBinContent(iBunchId, iCh, nEntries);
+         ((TH2I*) o["hChIdVsBunchId"])->SetEntries(((TH2I*) o["hChIdVsBunchId"])->GetEntries() + nEntries);
 
-   //   TH2* hIVsA_channel = (TH2*) oc->o["hIvsA_ch" + sChId];
-   //   hIvsA->Add(hIVsA_channel);
+         TH1* hist = ((TH1*) o["hBunchCounts"]);
+         hist->AddBinContent(iBunchId, nEntries);
+         hist->SetEntries(hist->GetEntries()+nEntries);
 
-   //   // Create projections of
-   //   TH1D* hProjTmp;
+         //utils::ConvertToCumulative2(hTvsA_ch_b, (TH1F*) fhTvsACumul_ch_b[iCh-1][iBunchId-1]);
+      }
 
-   //   // AdcAmplitude, ...
-   //   TH1* hAdcAmpltd_channel = (TH1*) oc->o["hAdcAmpltd_ch" + sChId];
-   //   hProjTmp = hTVsA_channel->ProjectionX();
+      ((TH1I*) o["hStripCounts"])->SetBinContent(iCh, hTvsA_ch->GetEntries());
+      ((TH1I*) o["hStripCounts"])->SetEntries(((TH1I*) o["hStripCounts"])->GetEntries() + hTvsA_ch->GetEntries());
+   }
 
-   //   utils::CopyBinContentError(hProjTmp, hAdcAmpltd_channel);
-
-   //   hAdcAmpltd->Add(hAdcAmpltd_channel);
-
-   //   //  ... AdcIntegral, ...
-   //   TH1* hAdcIntgrl_channel = (TH1*) oc->o["hAdcIntgrl_ch" + sChId];
-   //   hProjTmp = hTVsI_channel->ProjectionX();
-
-   //   utils::CopyBinContentError(hProjTmp, hAdcIntgrl_channel);
-
-   //   hAdcIntgrl->Add(hAdcIntgrl_channel);
-
-   //   // ... TDC
-   //   TH1* hTdc_channel = (TH1*) oc->o["hTdc_ch" + sChId];
-   //   hProjTmp = hTVsA_channel->ProjectionY();
-
-   //   utils::CopyBinContentError(hProjTmp, hTdc_channel);
-
-   //   hTdc->Add(hTdc_channel);
-   //}
+   // Fill parent class histograms
+   CnipolRawHists::FillDerivedPassOne();
 } //}}}
+
+
+/** */
+//void CnipolRawExtendedHists::PostFillPassOne(DrawObjContainer *oc=0)
+//{ //{{{
+//} //}}}

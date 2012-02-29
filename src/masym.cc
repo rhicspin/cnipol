@@ -77,6 +77,7 @@ void initialize()
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
    //TString filelistName = "run12_16386_164XX";
    TString filelistName = "run12_all";
+   //TString filelistName = "run12_test";
 
 	TString filelist    = filelistPath + filelistName + ".txt";
    TString outFileName = "masym_" + filelistName + "_out.root";
@@ -265,14 +266,14 @@ void initialize()
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   //gH->SetSignature(gMM->GetSignature());
+   gH->SetSignature(gMM->GetSignature());
    //gH->SetSignature("");
 
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
    gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
-   //gH->SaveAllAs(canvas, "^.*VsMeasId.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*VsMeas.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*First.*$", filelistName.Data());

@@ -252,7 +252,7 @@ void event_process(processEvent *event)
       //   gAsymRoot->fHists->d["raw_eb"]->Fill(ch);
       //} else {
          //gAsymRoot->fHists->d["raw"]->Fill(ch);
-			gAsymRoot->Fill(kCUT_RAW);
+			//gAsymRoot->Fill(kCUT_RAW);
       //}
 
       //if (fabs(gFillPattern[event.bid]) != 1)
