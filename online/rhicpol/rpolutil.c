@@ -2194,14 +2194,17 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    //printf("record: meas type: %x\n", recMeasType.header.type);
    polWrite(&recMeasType.header, (long *) &recMeasType.type);
 
+  
+   recordVoltageStruct recordVoltage;
+   recordVoltage.header.type = REC_VOLTAGE;
+   recordVoltage.header.len = sizeof(recordVoltage);
+   recordVoltage.header.timestamp.time = time(NULL);
+   recordVoltage.beginvoltage = theVoltage_beg;;
+   recordVoltage.endvoltage=theVoltage_end;
+   polWrite(&recordVoltage.header, (long *) &recordVoltage.beginvoltage);
+   polWrite(&recordVoltage.header, (long *) &recordVoltage.endvoltage);
 
-   //recordVoltageStruct recVoltage;
 
-   //recVoltage.header.type=REC_VOLTAGE;
-   //recVoltage.header.len = sizeof(recVoltage);
-   //recVoltage.header.timestamp.time= time(NULL);
-   //recVoltage.voltage=cavVoltage;
-   //polWrite(&recVoltage.header,(long *)&recVoltage.voltage);
 
 
 

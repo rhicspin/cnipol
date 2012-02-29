@@ -24,7 +24,7 @@
 //#define REC_RHIC_CONF   0x00000112    // Instead of REC_CONFIG since Apr2003
 #define REC_RHIC_CONF   0x00000113      // New parameters added, but I don't want to change the name. 14/04/04
 #define REC_MEASTYPE    0x00000120
-//#define REC_VOLTAGE     0x00000127
+#define REC_VOLTAGE     0x00000121
 //#define REC_READRAW   0x00000201
 //#define REC_READSUB   0x00000202
 //#define REC_READALL   0x00000203
@@ -77,9 +77,9 @@ typedef struct {
 
 typedef struct {
     recordHeaderStruct header;
-    int voltage;
+    int beginvoltage;
+    int endvoltage;
 } recordVoltageStruct;
-
 
 typedef struct {
     recordHeaderStruct header;

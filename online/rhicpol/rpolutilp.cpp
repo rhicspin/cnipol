@@ -12,7 +12,6 @@ extern polDataStruct polData;
 extern int recRing;
 extern wcmDataStruct wcmData;
 extern wcmDataStruct wcmOtherData;
-extern cavVoltageStruct cavVoltageData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;			// V124 settings
 extern int iDebug;
@@ -211,23 +210,24 @@ EMeasType getCDEVMeasType()
 int getVoltage(){
     int irc=0;
     cdevData data;
-	int retVoltage=0;
-//    int N=0;
-    //char cavCDEVName[2][30] = {"cavTuneLoop.4a-rf-y197-1.3","cavTuneLoop.4a-rf-b197-1.3"};
-    char cavCDEVName[30] = {"cavTuneLoop.4a-rf-b197-1.3"};
+    int retVoltage=0;
+    int voltages[1000];
 
-    //N = 0;
-    //if (recRing & REC_BLUE) N = 1;
+    int N=1;
+    char cavCDEVName[2][30] = {"cavTuneLoop.4a-rf-y197-1.3","cavTuneLoop.4a-rf-b197-1.3"};
+    //char cavCDEVName[30] = {"cavTuneLoop.4a-rf-b197-1.3"};
 
-    //cdevDevice & cav =  cdevDevice::attachRef(cavCDEVName[N]);
-    cdevDevice & cav =  cdevDevice::attachRef(cavCDEVName);
+    if (recRing & REC_BLUE) N = 1;
+
+    cdevDevice & cav =  cdevDevice::attachRef(cavCDEVName[N]);
+    //cdevDevice & cav =  cdevDevice::attachRef(cavCDEVName);
 
     if(!DEVSEND(cav, "get probeMagInVoltsScaledM", NULL, &data, LogFile, irc)){
-	//data.getElems("value",&retVoltage);
-	data.get("value",cavVoltageData.voltageData);
-    }
-    //retVoltage=(int)cavVoltageData.voltageData[1];
-    fprintf(LogFile,"ANDERS-INFO : Cav Voltage - %d\n",retVoltage); 
+	data.get("value",voltages);
+	}
+    retVoltage=voltages[1];
+    fprintf(LogFile,"197MHZ Cavity -INFO : Cav Voltage - %d\n",retVoltage); 
+    
     return retVoltage;
 }
 
