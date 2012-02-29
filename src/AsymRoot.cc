@@ -188,23 +188,26 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
 
-   if (gAnaInfo->HasRawBit()) {
+   if (gAnaInfo->HasRawExtendedBit()) {
+      dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
+      oc  = new CnipolRawExtendedHists(dir);
+      fHists->d["raw"] = oc;
+      //fHistCuts[kCUT_RAW].insert(oc);
+      fHistCuts[kCUT_PASSONE_RAW].insert(oc);
+      Info("CreateRootFile", "Created CnipolRawExtendedHists");
+   }
+   else if (gAnaInfo->HasRawBit()) {
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
-      fHistCuts[kCUT_RAW].insert(oc);
+      //fHistCuts[kCUT_RAW].insert(oc);
+      fHistCuts[kCUT_PASSONE_RAW].insert(oc);
 
-      dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
-      oc  = new CnipolRawHists(dir);
-      fHists->d["raw_eb"] = oc;
-      fHistCuts[kCUT_RAW_EB].insert(oc);
-   }
-
-   if (gAnaInfo->HasRawExtendedBit()) {
-      dir = new TDirectoryFile("raw_ext", "raw_ext", "", fOutRootFile);
-      oc  = new CnipolRawExtendedHists(dir);
-      fHists->d["raw_ext"] = oc;
-      fHistCuts[kCUT_RAW].insert(oc);
+      //dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
+      //oc  = new CnipolRawHists(dir);
+      //fHists->d["raw_eb"] = oc;
+      //fHistCuts[kCUT_RAW_EB].insert(oc);
+      Info("CreateRootFile", "Created CnipolRawHists");
    }
 
    if (gAnaInfo->HasTargetBit()) {

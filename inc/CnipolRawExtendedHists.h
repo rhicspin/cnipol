@@ -12,15 +12,18 @@
 #include "AsymHeader.h"
 
 #include "ChannelEvent.h"
-#include "DrawObjContainer.h"
+#include "CnipolRawHists.h"
 
 
 /**
  *
  */
-class CnipolRawExtendedHists : public DrawObjContainer
+class CnipolRawExtendedHists : public CnipolRawHists
 {
-public:
+protected:
+
+   TH1 *fhTvsA_ch_b[N_SILICON_CHANNELS][N_BUNCHES];
+   TH1 *fhTvsACumul_ch_b[N_SILICON_CHANNELS][N_BUNCHES];
 
 
 public:
@@ -30,8 +33,8 @@ public:
    ~CnipolRawExtendedHists();
 
    void  BookHists();
-   void  Fill(ChannelEvent *ch);
-   void  FillDerived();
+   void  FillPassOne(ChannelEvent *ch);
+   void  FillDerivedPassOne();
 
    ClassDef(CnipolRawExtendedHists, 1)
 };

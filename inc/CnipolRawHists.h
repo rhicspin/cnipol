@@ -20,8 +20,12 @@
  */
 class CnipolRawHists : public DrawObjContainer
 {
-public:
+protected:
 
+   TH1 *fhTvsA_ch[N_SILICON_CHANNELS];
+   TH1 *fhTvsI_ch[N_SILICON_CHANNELS];
+   TH1 *fhIvsA_ch[N_SILICON_CHANNELS];
+   TH1 *fhTvsACumul_ch[N_SILICON_CHANNELS];
 
 public:
 
@@ -29,9 +33,9 @@ public:
    CnipolRawHists(TDirectory *dir);
    ~CnipolRawHists();
 
-   void  BookHists(std::string cutid="");
-   void  Fill(ChannelEvent *ch, std::string cutid="");
-   void  FillDerived();
+   void  BookHists();
+   void  FillPassOne(ChannelEvent *ch);
+   void  FillDerivedPassOne();
 
    ClassDef(CnipolRawHists, 1)
 };
