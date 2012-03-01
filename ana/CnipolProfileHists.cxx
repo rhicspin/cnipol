@@ -171,7 +171,7 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hPolarVsIntensProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 10, 0, 1.1);
    hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
-   hist->SetOption("NOIMG");
+   //hist->SetOption("");
    hist->GetYaxis()->SetRangeUser(0, 1.05);
    o[shName] = hist;
    //hist->GetListOfFunctions()->Add(grPolarVsIntensProfileFineBin, "p");
@@ -179,7 +179,7 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hPolarVsIntensProfileBin";
    hist = new TH1F(shName.c_str(), shName.c_str(), 22, 0, 1.1);
    hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
-   hist->SetOption("NOIMG");
+   //hist->SetOption("");
    hist->GetYaxis()->SetRangeUser(0, 1.05);
    hist->SetMarkerStyle(kFullDotLarge);
    hist->SetMarkerSize(1);
@@ -220,8 +220,8 @@ void CnipolProfileHists::BookHists(string sid)
    shName = "hPolarUniProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
    hist->SetTitle(";Sigma Units;Polarization;");
-   hist->SetOption("p NOIMG");
-   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->SetOption("p");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
    //hist->GetListOfFunctions()->Add(grPolarUniProfileFineBin, "p");
    o[shName] = hist;
 
@@ -229,8 +229,8 @@ void CnipolProfileHists::BookHists(string sid)
    hist = new TH1F(shName.c_str(), shName.c_str(), 20, -5, 5);
    hist->SetTitle(";Sigma Units;Polarization;");
    //hist->GetYaxis()->SetRangeUser(0, 1.05);
-   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
-   hist->SetOption("NOIMG");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   //hist->SetOption("NOIMG");
    hist->SetMarkerStyle(kFullDotLarge);
    hist->SetMarkerSize(1);
    hist->SetMarkerColor(kBlue);
