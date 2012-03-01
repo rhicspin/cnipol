@@ -101,7 +101,6 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 /** */
 void DeadLayerCalibratorEDepend::PostCalibrate()
 { //{{{
-
    // calculate average T0 and DL per detector
    // XXX need to calculate weighted average! although with current stat
    // errors it's ok
@@ -312,6 +311,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");
 
 /* This is an attempt to get a reasonable chi^2 by removing 'bad' points
+//{{{
    if (fitres.Get()) {
       // reject points
       int iter = 0;
@@ -347,7 +347,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
          iter++;
       }
    }
-*/
+*/ //}}}
 
    //fitres->Print("V");
 

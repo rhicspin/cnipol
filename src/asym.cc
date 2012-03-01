@@ -450,15 +450,12 @@ int main(int argc, char *argv[])
    // itself. For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() ) {
-
-      rawData->ReadDataFast();
-
+   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
+   {
+      rawData->ReadDataFast();          // fill histograms
       gAsymRoot->FillDerivedPassOne();
-      gAsymRoot->PostFillPassOne();
-
-      // Process all channel banana
-      gAsymRoot->CalibrateFast();
+      gAsymRoot->PostFillPassOne();     // make decisions based on hist content/data
+      gAsymRoot->CalibrateFast();       // Process all channel banana
    }
 
    // XXX : debug

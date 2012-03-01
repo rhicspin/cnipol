@@ -404,7 +404,7 @@ void MeasInfo::Update(DbEntry &rundb)
    sstr << rundb.fFields["DISABLED_CHANNELS"];
 
    while (sstr >> chId) {
-      SetDisabledChannel(chId);
+      DisableChannel(chId);
    }
 
    // For compatibility reasons set the Run variable
@@ -437,7 +437,7 @@ void MeasInfo::Update(MseMeasInfoX& run)
    sstr << run.disabled_channels;
 
    while (sstr >> chId) {
-      SetDisabledChannel(chId);
+      DisableChannel(chId);
    }
 
    // Check for horizontal targets and disable 90 degree detectors
@@ -587,21 +587,7 @@ Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 
 
 /** */
-void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
-{ //{{{
-   for (int i=0; i!=N_DETECTORS; ++i) {
-
-      if (disabled_det.test(i) ) {
-
-         for (int j=1; j<=NSTRIP_PER_DETECTOR; ++j)
-            SetDisabledChannel(NSTRIP_PER_DETECTOR*i + j);
-      }
-   }
-} //}}}
-
-
-/** */
-void MeasInfo::SetDisabledChannel(UShort_t chId)
+void MeasInfo::DisableChannel(UShort_t chId)
 { //{{{
    fDisabledChannels[chId-1] = 1;
 
@@ -609,6 +595,20 @@ void MeasInfo::SetDisabledChannel(UShort_t chId)
       fDisabledChannelsVec.push_back(chId);
 
    fActiveSiliconChannels.erase(chId);
+} //}}}
+
+
+/** */
+void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
+{ //{{{
+   for (UShort_t iDet=0; iDet!=N_DETECTORS; ++iDet)
+   {
+      if (disabled_det.test(iDet) )
+      {
+         for (UShort_t iCh=1; iCh<=NSTRIP_PER_DETECTOR; ++iCh)
+            DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
+      }
+   }
 } //}}}
 
 

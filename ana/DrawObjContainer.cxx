@@ -264,7 +264,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
 
       if (io->second) {
 
-         (io->second)->Draw();
+         if ( ((TClass*) io->second->IsA())->InheritsFrom("THStack") ) {
+            (io->second)->Draw("nostack");
+         } else
+            (io->second)->Draw();
 
          c.Modified();
          c.Update();

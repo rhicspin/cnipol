@@ -41,12 +41,14 @@ public:
    static Color_t     AsColor(ERingId ringId);
    static Color_t     AsColor(EPolarimeterId polId);
    static Color_t     AsColor(ESpinState spin);
+   static Color_t     AsColor(UShort_t chId);
 
    static EBeamId     GetBeamId(EPolarimeterId polId);
    static ERingId     GetRingId(EPolarimeterId polId);
    static EStreamId   GetStreamId(EPolarimeterId polId);
 
    static UShort_t    GetDetectorId(UShort_t chId);
+   static UShort_t    GetDetectorChannelId(UShort_t chId);
 };
 
 #endif

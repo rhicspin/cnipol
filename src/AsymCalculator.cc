@@ -838,7 +838,7 @@ void PrintRunResults()
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------   Analysis Results   --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
-   printf(" fRunTime                 [s]    = %10.1f\n", gMeasInfo->fRunTime);
+   printf(" fRunTime                 [s]   = %10.1f\n", gMeasInfo->fRunTime);
    printf(" Total events in banana         = %10ld\n",  cntr.good_event);
    printf(" Good Carbon Max Rate  [MHz]    = %10.4f\n", gAnaMeasResult->max_rate);
    printf(" Good Carbon Rate      [MHz]    = %10.4f\n", gMeasInfo->GoodEventRate);
@@ -1835,10 +1835,15 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
 
       TH2I* hSpinVsChannel = (TH2I*) gAsymRoot->fHists->d["std"]->o["hSpinVsChannel"];
 
-      for (int ix=1; ix<=hSpinVsChannel->GetNbinsX(); ix++) { // channels
+      for (UShort_t iChId=1; iChId<=hSpinVsChannel->GetNbinsX(); iChId++) { // channels
 
-         nCountsUp[ix-1]   = hSpinVsChannel->GetBinContent(ix, 3); // y bin # 3
-         nCountsDown[ix-1] = hSpinVsChannel->GetBinContent(ix, 1); // y bin # 1
+         if ( gMeasInfo->IsDisabledChannel(iChId) ) {
+            nCountsUp[iChId-1]   = 0;
+            nCountsDown[iChId-1] = 0;
+         } else {
+            nCountsUp[iChId-1]   = hSpinVsChannel->GetBinContent(iChId, 3); // y bin # 3
+            nCountsDown[iChId-1] = hSpinVsChannel->GetBinContent(iChId, 1); // y bin # 1
+         }
       }
 
    } else if (Mode >= 100) {
@@ -1847,18 +1852,24 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       char dName[256], hName[256];
 
       // loop over strips and update nCounts array content
-      for (int i=1; i<=N_SILICON_CHANNELS; i++) {
+      for (UShort_t iChId=1; iChId<=N_SILICON_CHANNELS; iChId++) {
 
-         sprintf(dName, "channel%02d", i);
+         if ( gMeasInfo->IsDisabledChannel(iChId) ) {
+            nCountsUp[iChId-1]   = 0;
+            nCountsDown[iChId-1] = 0;
+         } else {
 
-         DrawObjContainer* oc = gAsymRoot->fHists->d["std"]->d.find(dName)->second;
+            sprintf(dName, "channel%02d", iChId);
 
-         sprintf(hName, "hSpinVsDelim_ch%02d", i);
+            DrawObjContainer* oc = gAsymRoot->fHists->d["std"]->d.find(dName)->second;
 
-         TH1* hSpinVsDelim = (TH1*) oc->o[hName];
+            sprintf(hName, "hSpinVsDelim_ch%02d", iChId);
 
-         nCountsUp[i-1]   = hSpinVsDelim->GetBinContent(iDelim+1, 3); // y bin # 3
-         nCountsDown[i-1] = hSpinVsDelim->GetBinContent(iDelim+1, 1); // y bin # 1
+            TH1* hSpinVsDelim = (TH1*) oc->o[hName];
+
+            nCountsUp[iChId-1]   = hSpinVsDelim->GetBinContent(iDelim+1, 3); // y bin # 3
+            nCountsDown[iChId-1] = hSpinVsDelim->GetBinContent(iDelim+1, 1); // y bin # 1
+         }
       }
    }
 
@@ -1876,98 +1887,99 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    TH2* hPolarVsPhi = (TH2*) gAsymRoot->fHists->d["asym"]->o["hPolarVsPhi"];
    TGraphErrors *grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
 
-   for (int i=0; i<N_SILICON_CHANNELS; i++) {
-
-      Asym[i]          = dAsym[i]        = 0;
-      AsymPhiCorr[i]   = dAsymPhiCorr[i] = 0;
-      rawPol[i]        = rawPolErr[i]    = 0;
-      //LumiSum_r[0][i] = LumiSum_r[0][i] = LumiRatio[i] = 0;
-      totalUpCounts[i] = totalDownCounts[i] = 0;
+   for (int iCh=0; iCh<N_SILICON_CHANNELS; iCh++)
+   {
+      Asym[iCh]          = dAsym[iCh]        = 0;
+      AsymPhiCorr[iCh]   = dAsymPhiCorr[iCh] = 0;
+      rawPol[iCh]        = rawPolErr[iCh]    = 0;
+      //LumiSum_r[0][iCh] = LumiSum_r[0][iCh] = LumiRatio[iCh] = 0;
+      totalUpCounts[iCh] = totalDownCounts[iCh] = 0;
 
       // Loop to get total counts (luminosity)
       for (int j=0; j<N_SILICON_CHANNELS; j++) {
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(i, j)) {
-            totalUpCounts[i]   += nCountsUp[j];
-            totalDownCounts[i] += nCountsDown[j];
+         if (!AsymCalculator::ExcludeStrip(iCh, j)) {
+            totalUpCounts[iCh]   += nCountsUp[j];
+            totalDownCounts[iCh] += nCountsDown[j];
          }
       }
 
       //printf("XXX: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-      //       i, totalUpCounts[i], totalDownCounts[i], Asym[i], dAsym[i]);
+      //       iCh, totalUpCounts[iCh], totalDownCounts[iCh], Asym[iCh], dAsym[iCh]);
 
       // Luminosity Ratio
-      //LumiRatio[i] = float(totalUpCounts[i]) / float(totalDownCounts[i]);
+      //LumiRatio[iCh] = float(totalUpCounts[iCh]) / float(totalDownCounts[iCh]);
 
-      // Calculate raw asymmetries for the i-th strip
-      if ( totalUpCounts[i] && totalDownCounts[i] && nCountsUp[i] + nCountsDown[i] ) {
+      // Calculate raw asymmetries for the iCh-th strip
+      if ( totalUpCounts[iCh] && totalDownCounts[iCh] && nCountsUp[iCh] + nCountsDown[iCh] ) {
 
          // Calculate Asym and dAsym
-         ValErrPair chAsym = CalcAsym(nCountsUp[i], nCountsDown[i], totalUpCounts[i], totalDownCounts[i]);
+         ValErrPair chAsym = CalcAsym(nCountsUp[iCh], nCountsDown[iCh], totalUpCounts[iCh], totalDownCounts[iCh]);
 
-         Asym[i]  = chAsym.first;
-         dAsym[i] = chAsym.second;
+         Asym[iCh]  = chAsym.first;
+         dAsym[iCh] = chAsym.second;
 
          //printf("YYY: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-         //       i, totalUpCounts[i], totalDownCounts[i],
-         //       Asym[i], dAsym[i]);
+         //       iCh, totalUpCounts[iCh], totalDownCounts[iCh],
+         //       Asym[iCh], dAsym[iCh]);
       } else {
-          Asym[i] = 0;
-         dAsym[i] = 1e6;
+          Asym[iCh] = 0;
+         dAsym[iCh] = 1e6;
       }
 
       // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
       // Cannot accomomdate large entry.
-      //LumiSum_r[0][i] = totalUpCounts[i]/1e3;
-      //LumiSum_r[1][i] = totalDownCounts[i]/1e3;
+      //LumiSum_r[0][iCh] = totalUpCounts[iCh]/1e3;
+      //LumiSum_r[1][iCh] = totalDownCounts[iCh]/1e3;
 
       // Since this is the recoil asymmetries, flip the sign of asymmetry
-      Asym[i] *= -1;
+      Asym[iCh] *= -1;
 
       // Asymmetry with sin(phi) correction
-       AsymPhiCorr[i] = Asym[i] / sin(-gPhi[i]);
-      dAsymPhiCorr[i] = fabs( dAsym[i] / sin(-gPhi[i]) );
+       AsymPhiCorr[iCh] = Asym[iCh] / sin(-gPhi[iCh]);
+      dAsymPhiCorr[iCh] = fabs( dAsym[iCh] / sin(-gPhi[iCh]) );
 
       // Raw polarization without phi angle weighted A_N
       assert(gAnaMeasResult->A_N[1] != 0);
 
-      rawPol[i]    =  Asym[i] / gAnaMeasResult->A_N[1];
-      rawPolErr[i] = dAsym[i] / gAnaMeasResult->A_N[1];
+      rawPol[iCh]    =  Asym[iCh] / gAnaMeasResult->A_N[1];
+      rawPolErr[iCh] = dAsym[iCh] / gAnaMeasResult->A_N[1];
 
       // Polarization with sin(phi) correction
-       P[i] = rawPol[i] / sin(-gPhi[i]);
-      dP[i] = fabs(rawPolErr[i] / sin(-gPhi[i]));
+       P[iCh] = rawPol[iCh] / sin(-gPhi[iCh]);
+      dP[iCh] = fabs(rawPolErr[iCh] / sin(-gPhi[iCh]));
 
       // Polarization with trancated sin(phi) correction
-       Pt[i] = rawPol[i] / sin(-phit[i]);
-      dPt[i] = fabs(rawPolErr[i] / sin(-phit[i]));
+       Pt[iCh] = rawPol[iCh] / sin(-phit[iCh]);
+      dPt[iCh] = fabs(rawPolErr[iCh] / sin(-phit[iCh]));
 
       // ds temp fix: give huge errors to disabled strips
-      //if ( gMeasInfo->IsDisabledChannel(i+1) )    // || gMeasInfo->IsHamaChannel(i+1) ) 
-      if (gAsymRoot->fEventConfig->fCalibrator->GetFitStatus(i+1) != kDLFIT_OK) {
+      //if ( gMeasInfo->IsDisabledChannel(iCh+1) )    // || gMeasInfo->IsHamaChannel(iCh+1) ) 
+      if ( gAsymRoot->fEventConfig->fCalibrator->GetFitStatus(iCh+1) != kDLFIT_OK ||
+           gMeasInfo->IsDisabledChannel(iCh+1) )
+      {
 
-         Asym[i]  =  rawPol[i] =  P[i] =  Pt[i] = 0;
-         AsymPhiCorr[i] = 0;
-         dAsym[i] = rawPolErr[i] = dP[i] = dPt[i] = 1e6;
-         dAsymPhiCorr[i] = 1e6;
+         Asym[iCh]  =  rawPol[iCh] =  P[iCh] =  Pt[iCh] = 0;
+         AsymPhiCorr[iCh] = 0;
+         dAsym[iCh] = rawPolErr[iCh] = dP[iCh] = dPt[iCh] = 1e6;
+         dAsymPhiCorr[iCh] = 1e6;
 
       } else {
          if (Mode < 100) {
             Int_t nPoints = grPolarVsPhi->GetN();
-            grPolarVsPhi->SetPoint(nPoints, gPhi[i], rawPol[i]);
-            grPolarVsPhi->SetPointError(nPoints, 0,  rawPolErr[i]);
+            grPolarVsPhi->SetPoint(nPoints, gPhi[iCh], rawPol[iCh]);
+            grPolarVsPhi->SetPointError(nPoints, 0,  rawPolErr[iCh]);
          }
       }
 
       //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-      //       i, aveA_N, totalUpCounts[i], totalDownCounts[i],
-      //       Asym[i], dAsym[i]);
+      //       iCh, aveA_N, totalUpCounts[iCh], totalDownCounts[iCh],
+      //       Asym[iCh], dAsym[iCh]);
    }
 
    // printing routine
-   //if (Flag.VERBOSE)
-   if (0) {
+   if (Flag.VERBOSE) {
       printf("*========== strip by strip =============\n");
 
       for (int i=0; i<N_SILICON_CHANNELS; i++) {
@@ -1990,14 +2002,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaMeasResult->fAvrgPMAsym.first, (Float_t&) gAnaMeasResult->fAvrgPMAsym.second);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
-
-   //ds:// Histrograming
-   //ds:HHPAK(36010, LumiSum_r[0]);  HHPAK(36110, LumiSum_r[1]);
-   //ds:HHPAK(36200, LumiRatio);
-   //ds:HHPAK(36210, Asym);  HHPAKE(36210, dAsym);
-   //ds:HHPAK(36220, rawPol);  HHPAKE(36220, rawPolErr);
-   //ds:HHPAK(36240, P);     HHPAKE(36240, dP);
-   //ds:HHPAK(36250, gPhi);
 
    // Fit polarization vs phi distributions
    if (Mode < 100) { // Fit everything other than scan data
@@ -2161,7 +2165,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 
    GetMinMaxOption(prefix, N_SILICON_CHANNELS, rawPol, margin, min, max);
 
-   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gMeasInfo->RUNID);
+   sprintf(htitle, "Strip asymmetry fit: %s", gMeasInfo->GetRunName().c_str());
 
    //asym_sinphi_fit = (TH2F*) gAsymRoot->fHists->d["run"]->o["asym_sinphi_fit"];
    asym_sinphi_fit->SetName("asym_sinphi_fit");
@@ -2257,7 +2261,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    GetMinMaxOption(prefix, N_SILICON_CHANNELS, rawPol, margin, min, max);
 
    char htitle[100];
-   sprintf(htitle, "Run%.3f: Strip Asymmetry Fit", gMeasInfo->RUNID);
+   sprintf(htitle, "Strip asymmetry fit: %s", gMeasInfo->GetRunName().c_str());
 
    //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
    scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");

@@ -264,6 +264,30 @@ Color_t RunConfig::AsColor(ESpinState spin)
 
 
 /** */
+Color_t RunConfig::AsColor(UShort_t chId)
+{ //{{{
+   if (chId < 1 || chId > N_SILICON_CHANNELS) return kBlack;
+
+   switch ( GetDetectorId(chId) ) {
+   case 1:
+	   return kMagenta + 2 - GetDetectorChannelId(chId);
+   case 2:
+	   return kBlue + 2 - GetDetectorChannelId(chId);
+   case 3:
+	   return kCyan + 2 - GetDetectorChannelId(chId);
+   case 4:
+	   return kGreen + 2 - GetDetectorChannelId(chId);
+   case 5:
+	   return kYellow + 2 - GetDetectorChannelId(chId);
+   case 6:
+	   return kRed + 2 - GetDetectorChannelId(chId);
+   default:
+      return kBlack;
+   }
+
+} //}}}
+
+/** */
 EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
 { //{{{
    switch (polId) {
@@ -323,6 +347,17 @@ UShort_t RunConfig::GetDetectorId(UShort_t chId)
    if (chId >= 1 && chId <= N_SILICON_CHANNELS) 
       return UShort_t( (chId - 1) / NSTRIP_PER_DETECTOR) + 1;
    
-   gSystem->Error("   RunConfig::GetDetectorId", "Channel id is not valid");
+   gSystem->Error("RunConfig::GetDetectorId", "Channel id is not valid");
+   return USHRT_MAX;
+} //}}}
+
+
+/** */
+UShort_t RunConfig::GetDetectorChannelId(UShort_t chId)
+{ //{{{
+   if (chId >= 1 && chId <= N_SILICON_CHANNELS)
+      return chId - (GetDetectorId(chId) - 1) * NSTRIP_PER_DETECTOR;
+   
+   gSystem->Error("RunConfig::GetDetectorChannelId", "Channel id is not valid");
    return USHRT_MAX;
 } //}}}
