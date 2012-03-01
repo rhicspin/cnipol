@@ -167,6 +167,8 @@ void CnipolRawHists::BookHists()
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
       hist->SetOption("hist NOIMG");
       hist->SetTitle("; Digi Channel Frac; Event Frac;");
+      hist->SetLineWidth(2);
+      hist->SetLineColor(RunConfig::AsColor(iChId));
       hist->GetYaxis()->SetRangeUser(0, 1);
       oc->o[shName]           = hist;
       fhTvsACumul_ch[iChId-1] = hist;
@@ -276,5 +278,19 @@ void CnipolRawHists::FillDerivedPassOne()
 
       // Calculate cumulative histograms
       utils::ConvertToCumulative2(hTVsA_channel, (TH1F*) fhTvsACumul_ch[iCh-1]);
+   }
+} //}}}
+
+
+/** */
+void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
+{ //{{{
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   {
+      TH1F* hist = (TH1F*) fhTvsACumul_ch[iCh-1];
+
+      // 15% of bins contain > 75% of events
+      if (hist->GetBinContent(15) > 0.75)
+         gMeasInfo->DisableChannel(iCh);
    }
 } //}}}

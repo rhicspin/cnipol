@@ -118,9 +118,9 @@ public:
    void            SetBeamEnergy(Float_t beamEnergy);
    void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
-   void            DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
 	Bool_t          IsDisabledChannel(UShort_t chId);
-	void            SetDisabledChannel(UShort_t chId);
+	void            DisableChannel(UShort_t chId);
+   void            DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
 	Bool_t          IsSiliconChannel(UShort_t chId);
 	Bool_t          IsHamaChannel(UShort_t chId);
 	Bool_t          IsPmtChannel(UShort_t chId);

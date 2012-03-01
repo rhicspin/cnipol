@@ -36,6 +36,7 @@ public:
    void  BookHists();
    void  FillPassOne(ChannelEvent *ch);
    void  FillDerivedPassOne();
+   void  PostFillPassOne(DrawObjContainer *oc=0);
 
    ClassDef(CnipolRawHists, 1)
 };
