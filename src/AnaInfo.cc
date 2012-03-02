@@ -294,7 +294,7 @@ void AnaInfo::ProcessOptions()
    if (HasAlphaBit()) {
       fAlphaCalibRun     = fRunName;
       fDlCalibRun        = "";
-      gMeasInfo->fMeasType = kMEASTYPE_ALPHA;
+      gMeasInfo->SetMeasType(kMEASTYPE_ALPHA);
    }
 
    // Disable channels if requested by user
@@ -462,6 +462,10 @@ void AnaInfo::Update(MseMeasInfoX& run)
       fDlCalibRun              = "";
       run.alpha_calib_run_name = "";
       run.dl_calib_run_name    = "";
+
+      // If user set the alpha option override the measurement type extracted
+      // from the data file
+      gMeasInfo->SetMeasType(kMEASTYPE_ALPHA);
    }
 
    if (!fAlphaCalibRun.empty())

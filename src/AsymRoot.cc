@@ -192,22 +192,23 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawExtendedHists(dir);
       fHists->d["raw"] = oc;
-      //fHistCuts[kCUT_RAW].insert(oc);
       fHistCuts[kCUT_PASSONE_RAW].insert(oc);
-      Info("CreateRootFile", "Created CnipolRawExtendedHists");
+
+      dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
+      oc  = new CnipolRawExtendedHists(dir);
+      fHists->d["raw_eb"] = oc;
+      fHistCuts[kCUT_PASSONE_RAW_EB].insert(oc);
    }
    else if (gAnaInfo->HasRawBit()) {
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
-      //fHistCuts[kCUT_RAW].insert(oc);
       fHistCuts[kCUT_PASSONE_RAW].insert(oc);
 
-      //dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
-      //oc  = new CnipolRawHists(dir);
-      //fHists->d["raw_eb"] = oc;
-      //fHistCuts[kCUT_RAW_EB].insert(oc);
-      Info("CreateRootFile", "Created CnipolRawHists");
+      dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
+      oc  = new CnipolRawHists(dir);
+      fHists->d["raw_eb"] = oc;
+      fHistCuts[kCUT_PASSONE_RAW_EB].insert(oc);
    }
 
    if (gAnaInfo->HasTargetBit()) {
@@ -259,8 +260,8 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("pulser", "pulser", "", fOutRootFile);
       oc  = new CnipolPulserHists(dir);
       fHists->d["pulser"] = oc;
-      fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
-      fHistCuts[kCUT_CARBON_EB].insert(oc);
+      //fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
+      //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    dir = new TDirectoryFile("run", "run", "", fOutRootFile);
@@ -269,7 +270,12 @@ void AsymRoot::CreateRootFile(string filename)
    dir = new TDirectoryFile("preproc", "preproc", "", fOutRootFile);
    oc  = new CnipolPreprocHists(dir);
    fHists->d["preproc"] = oc;
-   fHistCuts[kCUT_PASSONE_ALL].insert(oc);
+   fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
+
+   dir = new TDirectoryFile("preproc_eb", "preproc_eb", "", fOutRootFile);
+   oc  = new CnipolPreprocHists(dir);
+   fHists->d["preproc_eb"] = oc;
+   fHistCuts[kCUT_PASSONE_CALIB_EB].insert(oc);
 
    // OLD common global histogram inherited from previous life
    //DrawObjContainer *hists = new CnipolRunHists(fOutRootFile);
@@ -470,15 +476,6 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 { //{{{
-   //fHists->d["preproc"]->FillPassOne(fChannelEvent);
-
-   //// Fill PMT histograms
-   //if (gAnaInfo->HasPmtBit()) {
-   //      //printf("channel: %d\n", ch->GetChannelId());
-   //      gAsymRoot->fHists->d["pmt"]->Fill(ch);
-   //      fHists->d["pmt"]->FillPreProcess(fChannelEvent);
-   //}
-
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
    set<DrawObjContainer*>::iterator hi;
@@ -501,8 +498,11 @@ void AsymRoot::FillDerivedPassOne()
 /** */
 void AsymRoot::PostFillPassOne()
 { //{{{
+   //fHists->PostFillPassOne(fHists);
 
-   fHists->PostFillPassOne(fHists);
+   //fHists->d["raw"]->PostFillPassOne(fHists->d["raw_eb"]);
+   fHists->d["raw"]->PostFillPassOne();
+   fHists->d["preproc"]->PostFillPassOne(fHists->d["preproc_eb"]);
 
    ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
@@ -510,9 +510,6 @@ void AsymRoot::PostFillPassOne()
    //if (gAnaInfo->HasPulserBit()) {
    //   pulserHists = fHists->d["pulser"];
    //}
-
-   //fHists->d["preproc"]->PostFillPassOne(pulserHists);
-
    ////
    //if (gAnaInfo->HasPmtBit()) {
    //   ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
@@ -916,6 +913,7 @@ void AsymRoot::SaveEventTree()
 } //}}}
 
 
+// Deprecated.
 // Description : Book AsymRoot Histograms
 void AsymRoot::BookHists()
 { //{{{
@@ -1083,6 +1081,7 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
 } //}}}
 
 
+// Deprecated
 // Description : Delete Unnecessary Histograms
 void AsymRoot::DeleteHistogram()
 { //{{{

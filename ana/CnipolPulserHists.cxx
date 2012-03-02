@@ -32,7 +32,7 @@ CnipolPulserHists::~CnipolPulserHists()
 
 
 /** */
-void CnipolPulserHists::BookHists(string cutid)
+void CnipolPulserHists::BookHists()
 { //{{{
    char hName[256];
 

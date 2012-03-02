@@ -126,8 +126,9 @@ typedef PolarimeterIdSet::const_iterator   PolarimeterIdConstIter;
 typedef std::set<ESpinState>::iterator     SpinStateIter;
 
 
-typedef std::set<UShort_t>    ChannelSet;
-typedef ChannelSet::iterator  ChannelSetIter;
+typedef std::set<UShort_t>          ChannelSet;
+typedef ChannelSet::iterator        ChannelSetIter;
+typedef ChannelSet::const_iterator  ChannelSetConstIter;
 
 
 std::ostream& operator<<(std::ostream &os, const ESpinState &ss);

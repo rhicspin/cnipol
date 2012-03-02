@@ -32,7 +32,7 @@ do
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --pmt --copy
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy --disable-det=101101 --sfx=hama --raw
    #bgx_limit 16 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw --pulser --asym -g --copy --pmt --kinema
-   bgx_limit 16 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --pulser --asym -g --pmt --kinema
+   bgx_limit 16 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --asym -g --pmt --kinema
    #bgx_limit 16 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw --pulser --asym -g --pmt --kinema
 done
 

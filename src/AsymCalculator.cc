@@ -1694,14 +1694,14 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    // This is the new approach
    TH1I* hUp     = (TH1I*) oc->o["hChannelCounts_up"];
    TH1I* hDown   = (TH1I*) oc->o["hChannelCounts_down"];
-   TH1D* hChAsym = (TH1D*) oc->o["hChannelAsym"];
+   TH1D* hChAsym = (TH1D*) oc->o["hChannelAsym"];        // This is where the result will go
 
    // Create hChAsym with asymmetries by channel
    CalcChannelAsym(*hUp, *hDown, hChAsym);
 
    // Set graph values from the histogram
    TH2* hAsymVsPhi = (TH2*) oc->o["hAsymVsPhi"];
-   TGraphErrors *grAsymVsPhi = (TGraphErrors*) hAsymVsPhi->GetListOfFunctions()->FindObject("grAsymVsPhi");
+   TGraphErrors* grAsymVsPhi = (TGraphErrors*) hAsymVsPhi->GetListOfFunctions()->FindObject("grAsymVsPhi");
 
    // Create and then fit to sine graph grAsymVsPhi given histogram hChAsym
    //TFitResultPtr fitres = FitChAsymConst(*hChAsym, grAsymVsPhi);
@@ -1954,7 +1954,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
        Pt[iCh] = rawPol[iCh] / sin(-phit[iCh]);
       dPt[iCh] = fabs(rawPolErr[iCh] / sin(-phit[iCh]));
 
-      // ds temp fix: give huge errors to disabled strips
+      // ds temp fix: assign huge errors to disabled strips
       //if ( gMeasInfo->IsDisabledChannel(iCh+1) )    // || gMeasInfo->IsHamaChannel(iCh+1) ) 
       if ( gAsymRoot->fEventConfig->fCalibrator->GetFitStatus(iCh+1) != kDLFIT_OK ||
            gMeasInfo->IsDisabledChannel(iCh+1) )
@@ -2117,6 +2117,9 @@ TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
    // Create graph from hist to fit
    for (int iCh=1; iCh<=hChAsym.GetNbinsX(); iCh++)
    {
+      // Skip disabled channels
+      if (gMeasInfo->IsDisabledChannel(iCh)) continue;
+
       Double_t bc = hChAsym.GetBinContent(iCh);
       Double_t be = hChAsym.GetBinError(iCh);
 

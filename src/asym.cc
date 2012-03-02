@@ -425,17 +425,18 @@ int main(int argc, char *argv[])
    //gAnaInfo->Update(gRunDb);
    //gMeasInfo->Update(gRunDb);
 
+   // Update the final running parameters based on what was read from DB and
+   // what was requested by the user
    gAnaInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
 
+   // For debugging
    gAnaInfo->Print();
    gMeasInfo->Print();
    mseMeasInfoX->Print();
-
    //gAsymDb->PrintCommon();
    //gAsymDb->Print();
-
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // A Calibrator object holds calibration constants for individual channels
@@ -446,8 +447,8 @@ int main(int argc, char *argv[])
    if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
-   // quickly do some pre-processing to extract parameters from the data
-   // itself. For example, rough estimates of the dead layer and t0 are needed
+   // quickly do some pre-processing to extract parameters from the data.
+   // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
    if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
@@ -458,7 +459,7 @@ int main(int argc, char *argv[])
       gAsymRoot->CalibrateFast();       // Process all channel banana
    }
 
-   // XXX : debug
+   // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    //
@@ -468,23 +469,21 @@ int main(int argc, char *argv[])
    readloop(*mseMeasInfoX);
 
    gAsymRoot->FillDerived();
-
    gAsymRoot->PostFill(*mseMeasInfoX);
-
-   // Delete Unnecessary ROOT Histograms
-   gAsymRoot->DeleteHistogram();
+   gAsymRoot->DeleteHistogram();        // Deprecated. Delete unnecessary ROOT histograms
 
    // Close histogram file
    hist_close(hbk_outfile);
 
-   // XXX : debug
+   // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Update calibration constants if requested
    // XXX logic??? For normal data runs calibration should be done only once
    // during the first pass
-   if ( gAnaInfo->HasCalibBit() && gAnaInfo->HasAlphaBit() ) {
-
+   // Currently used for alpha runs only
+   if ( gAnaInfo->HasCalibBit() && gAnaInfo->HasAlphaBit() )
+   {
       gAsymRoot->Calibrate();
    }
 
@@ -505,7 +504,7 @@ int main(int argc, char *argv[])
 
    mseMeasInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
    mseMeasInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
-   mseMeasInfoX->measurement_type = UInt_t(gMeasInfo->fMeasType);
+   mseMeasInfoX->measurement_type = UInt_t(gMeasInfo->GetMeasType());
 
    if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
       gAsymDb->UpdateInsert(mseMeasInfoXOrig, mseMeasInfoX);

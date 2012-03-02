@@ -20,7 +20,7 @@ class CnipolPreprocHists : public DrawObjContainer
 {
 private:
 
-   TH2 *fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
+   TH1 *fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
 
 public:
 
