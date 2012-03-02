@@ -232,8 +232,8 @@ void CnipolRawHists::FillDerivedPassOne()
    TH1* hTvsI      = (TH1*) o["hTvsI"];
    TH1* hIvsA      = (TH1*) o["hIvsA"];
    
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
-
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
 
@@ -310,21 +310,21 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
       TH1* fhTvsACumul_ch_this_copy = (TH1*) fhTvsACumul_ch_this->Clone(copyName.c_str());
 
       // Subtract empty bunch data from all bunch data
-      fhTvsACumul_ch_eb->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
-      fhTvsACumul_ch_this_copy->Add(fhTvsACumul_ch_eb, -1);
+      //fhTvsACumul_ch_eb->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
+      //fhTvsACumul_ch_this_copy->Add(fhTvsACumul_ch_eb, -1);
 
-      // After the subtraction set bins with negative content to 0 including under/overflows
-      for (Int_t ibx=0; ibx<=fhTvsACumul_ch_this_copy->GetNbinsX()+1; ibx++) {
-         for (Int_t iby=0; iby<=fhTvsACumul_ch_this_copy->GetNbinsY()+1; iby++) {
+      //// After the subtraction set bins with negative content to 0 including under/overflows
+      //for (Int_t ibx=0; ibx<=fhTvsACumul_ch_this_copy->GetNbinsX()+1; ibx++) {
+      //   for (Int_t iby=0; iby<=fhTvsACumul_ch_this_copy->GetNbinsY()+1; iby++) {
 
-            Double_t bc = fhTvsACumul_ch_this_copy->GetBinContent(ibx, iby);
+      //      Double_t bc = fhTvsACumul_ch_this_copy->GetBinContent(ibx, iby);
 
-            if (bc < 0) {
-               fhTvsACumul_ch_this_copy->SetBinContent(ibx, iby, 0);
-               fhTvsACumul_ch_this_copy->SetBinError(ibx, iby, 0);
-            }
-         }
-      }
+      //      if (bc < 0) {
+      //         fhTvsACumul_ch_this_copy->SetBinContent(ibx, iby, 0);
+      //         fhTvsACumul_ch_this_copy->SetBinError(ibx, iby, 0);
+      //      }
+      //   }
+      //}
 
       // 15% of bins contain > 75% of events
       if (fhTvsACumul_ch_this_copy->GetBinContent(15) > 0.75) {
