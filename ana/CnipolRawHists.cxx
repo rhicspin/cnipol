@@ -287,7 +287,7 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
    // We expect empty bunch histogram container
    if (!oc) {
-      Error("PostFillPassOne", "No empty bunch container found");
+      Error("PostFillPassOne", "No empty bunch container found. No channel will be disabled");
       return;
    }
 

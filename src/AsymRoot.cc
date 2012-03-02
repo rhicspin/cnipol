@@ -500,8 +500,7 @@ void AsymRoot::PostFillPassOne()
 { //{{{
    //fHists->PostFillPassOne(fHists);
 
-   //fHists->d["raw"]->PostFillPassOne(fHists->d["raw_eb"]);
-   fHists->d["raw"]->PostFillPassOne();
+   fHists->d["raw"]->PostFillPassOne(fHists->d["raw_eb"]);
    fHists->d["preproc"]->PostFillPassOne(fHists->d["preproc_eb"]);
 
    ////CnipolPulserHists *pulserHists = 0;
