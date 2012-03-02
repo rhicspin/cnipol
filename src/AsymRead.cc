@@ -339,10 +339,6 @@ void RawDataProcessor::ReadDataFast()
       //long delim = header.timestamp.delim;
       long delim = mHeader->timestamp.delim;
 
-      //nEvent++;
-
-      //if (nEvent > 1000) break;
-
       //size_t recSize = header.len - sizeof(recordHeaderStruct);
       size_t recSize = mHeader->len - sizeof(recordHeaderStruct);
       //unsigned char* buffer = new unsigned char[recSize];
@@ -385,39 +381,48 @@ void RawDataProcessor::ReadDataFast()
             // Use only a fraction of events
             if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
 
-            // fill hists with raw data
             if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
             {
-               //gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
+               // Fill hists with raw data
                gAsymRoot->FillPassOne(kCUT_PASSONE_RAW);
+
+               // The same but empty bunches only
+               if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
+                  gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
+
+               // Apply very basic "proto" cuts
+               if ( gAsymRoot->fChannelEvent->PassCutNoise() ) {
+                  gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB);
+
+                  // The same but empty bunches only
+                  if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
+                     gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB_EB);
+               }
             }
 
-            // Use all events to fill pulser histograms - not valid. thiout is applied
-            if ( gAnaInfo->HasPulserBit() &&
-                 gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
-                 //gAsymRoot->fChannelEvent->PassCutNoise() &&
-                 gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
-            {
-               //gAsymRoot->fHists->d["pulser"]->FillPassOne(gAsymRoot->fChannelEvent);
-               gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
-            }
+            // Use all events to fill pulser histograms - not valid. thinout is applied
+            //if ( gAnaInfo->HasPulserBit() &&
+            //     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
+            //     //gAsymRoot->fChannelEvent->PassCutNoise() &&
+            //     gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+            //{
+            //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
+            //}
 
             if (gAnaInfo->HasPmtBit() &&
                 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
                 gAsymRoot->fChannelEvent->PassCutPmtNoise() )
             {
-               //gAsymRoot->fHists->d["pmt"]->FillPassOne(gAsymRoot->fChannelEvent);
                gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
             }
 
-            if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
-            if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
-            if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )      continue;
+            //if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )      continue;
 
-            gAsymRoot->FillPassOne(kCUT_PASSONE_ALL);
             //gAsymRoot->PrintChannelEvent();
 
             nEventsProcessed++;

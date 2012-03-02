@@ -38,32 +38,31 @@ CnipolAsymHists::~CnipolAsymHists()
 
 
 /** */
-void CnipolAsymHists::BookHists(string cutid)
+void CnipolAsymHists::BookHists()
 { //{{{
-   char    hName[256];
    string  shName;
    TH1    *hist;
 
    fDir->cd();
 
    // Spin vs Strip Id
-   //sprintf(hName, "hSpinVsChannel%s", cutid.c_str());
-   //o[hName] = new TH2I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5, N_SPIN_STATES, -1.5, 1.5);
-   //((TH1*) o[hName])->SetOption("colz NOIMG");
-   //((TH1*) o[hName])->SetTitle(";Channel Id;Spin State;");
+   //shName = "hSpinVsChannel";
+   //o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5, N_SPIN_STATES, -1.5, 1.5);
+   //((TH1*) o[shName])->SetOption("colz NOIMG");
+   //((TH1*) o[shName])->SetTitle(";Channel Id;Spin State;");
 
-   sprintf(hName, "hKinEnergyAChAsym%s", cutid.c_str());
-   o[hName] = new TH1F(hName, hName, 25, 22.5, 1172.2);
-   ((TH1*) o[hName])->SetOption("E1");
-   ((TH1*) o[hName])->SetTitle(";Kinematic Energy, keV;Asymmetry;");
+   shName = "hKinEnergyAChAsym";
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
+   ((TH1*) o[shName])->SetOption("E1");
+   ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Asymmetry;");
 
    Double_t xbins[8] = {-20, -5, -3, -1, +1, +3, +5, +20};
 
-   sprintf(hName, "hLongiChAsym%s", cutid.c_str());
-   o[hName] = new TH1F(hName, hName, 7, xbins);
-   //o[hName] = new TH1F(hName, hName, 40, -20, 20);
-   ((TH1*) o[hName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
-   ((TH1*) o[hName])->SetOption("E1");
+   shName = "hLongiChAsym";
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 7, xbins);
+   //o[shName] = new TH1F(shName.c_str(), shName.c_str(), 40, -20, 20);
+   ((TH1*) o[shName])->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
+   ((TH1*) o[shName])->SetOption("E1");
 
    // Channel Id vs bunch id
    shName = "hChVsBunchId";
@@ -285,8 +284,6 @@ void CnipolAsymHists::Fill(ChannelEvent *ch, string cutid)
    ((TH1*) o.find("hChVsDelim_"         + sSS)->second) -> Fill(ttime, chId);
    //((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
 
-   //((TH1*) o["hDetVsKinEnergyA_" + sSS]) -> Fill(kinEnergy, detId);
-   //((TH1*) o["hDetVsBunchId_"    + sSS]) -> Fill(bId, detId);
 } //}}}
 
 
@@ -313,20 +310,21 @@ void CnipolAsymHists::FillDerived()
       TH2* hDetVsKinEnergyA_ = (TH2*) o["hDetVsKinEnergyA_" + sSS];
       TH2* hDetVsDelim_      = (TH2*) o["hDetVsDelim_"      + sSS];
 
-      for (int iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
-
+      for (int iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+      {
          UInt_t counts = hChVsBunchId_->Integral(1, N_BUNCHES, iCh, iCh);
 
          hChannelCounts_->SetBinContent(iCh, counts);
-      
-         // Fill detector count histograms from channel count ones
+
+         // Fill detector histograms from the channel ones
+         // Skip disabled channels
+         if (gMeasInfo->IsDisabledChannel(iCh)) continue;
+
          UShort_t iDet = RunConfig::GetDetectorId(iCh);
 
          for (int iBunch=1; iBunch<=hDetVsBunchId_->GetNbinsX(); iBunch++)
          {
             Double_t bc     = hChVsBunchId_->GetBinContent(iBunch, iCh);
-            //Int_t bin    = hDetVsBunchId_->GetBin(iBunch, iDet);
-            //hDetVsBunchId_->AddBinContent(bin, bc);
             Double_t bc_det = hDetVsBunchId_->GetBinContent(iBunch, iDet);
             hDetVsBunchId_->SetBinContent(iBunch, iDet, bc_det + bc);
          }
@@ -340,9 +338,7 @@ void CnipolAsymHists::FillDerived()
 
          for (int iKinE=1; iKinE<=hDetVsKinEnergyA_->GetNbinsX(); iKinE++)
          {
-            Double_t bc  = hChVsKinEnergyA_->GetBinContent(iKinE, iCh);
-            //Int_t bin = hDetVsKinEnergyA_->GetBin(iKinE, iDet);
-            //hDetVsKinEnergyA_->AddBinContent(bin, bc);
+            Double_t bc     = hChVsKinEnergyA_->GetBinContent(iKinE, iCh);
             Double_t bc_det = hDetVsKinEnergyA_->GetBinContent(iKinE, iDet);
             hDetVsKinEnergyA_->SetBinContent(iKinE, iDet, bc_det + bc);
          }

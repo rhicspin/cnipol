@@ -285,12 +285,61 @@ void CnipolRawHists::FillDerivedPassOne()
 /** */
 void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   // We expect empty bunch histogram container
+   if (!oc) {
+      Error("PostFillPassOne", "No empty bunch container found");
+      return;
+   }
+
+   CnipolRawHists* ebHists = (CnipolRawHists*) oc;
+
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
+
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
-      TH1F* hist = (TH1F*) fhTvsACumul_ch[iCh-1];
+      TH1* fhTvsACumul_ch_this = (TH1F*) fhTvsACumul_ch[*iCh-1];
+      TH1* fhTvsACumul_ch_eb   = (TH1F*) ebHists->fhTvsACumul_ch[*iCh-1];
+
+      if ( !fhTvsACumul_ch_this || !fhTvsACumul_ch_eb ) {
+         Error("PostFillPassOne", "No pulser histogram found %s", fhTvsACumul_ch_this->GetName());
+         continue;
+      }
+
+      string copyName(fhTvsACumul_ch_this->GetName());
+      copyName += "_copy";
+      TH1* fhTvsACumul_ch_this_copy = (TH1*) fhTvsACumul_ch_this->Clone(copyName.c_str());
+
+      // Subtract empty bunch data from all bunch data
+      fhTvsACumul_ch_eb->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
+      fhTvsACumul_ch_this_copy->Add(fhTvsACumul_ch_eb, -1);
+
+      // After the subtraction set bins with negative content to 0 including under/overflows
+      for (Int_t ibx=0; ibx<=fhTvsACumul_ch_this_copy->GetNbinsX()+1; ibx++) {
+         for (Int_t iby=0; iby<=fhTvsACumul_ch_this_copy->GetNbinsY()+1; iby++) {
+
+            Double_t bc = fhTvsACumul_ch_this_copy->GetBinContent(ibx, iby);
+
+            if (bc < 0) {
+               fhTvsACumul_ch_this_copy->SetBinContent(ibx, iby, 0);
+               fhTvsACumul_ch_this_copy->SetBinError(ibx, iby, 0);
+            }
+         }
+      }
 
       // 15% of bins contain > 75% of events
-      if (hist->GetBinContent(15) > 0.75)
-         gMeasInfo->DisableChannel(iCh);
+      if (fhTvsACumul_ch_this_copy->GetBinContent(15) > 0.75) {
+         gMeasInfo->DisableChannel(*iCh);
+         delete fhTvsACumul_ch_this_copy;
+         continue;
+      }
+
+      // 1% of bins contain > 20% of events - Is this a stronger requirement?
+      if (fhTvsACumul_ch_this_copy->GetBinContent(1) > 0.20) {
+         gMeasInfo->DisableChannel(*iCh);
+         delete fhTvsACumul_ch_this_copy;
+         continue;
+      }
+
+      delete fhTvsACumul_ch_this_copy;
    }
 } //}}}

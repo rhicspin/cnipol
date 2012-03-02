@@ -36,7 +36,7 @@ public:
    CnipolPulserHists(TDirectory *dir);
    ~CnipolPulserHists();
 
-   void BookHists(std::string cutid="");
+   void BookHists();
    void FillPassOne(ChannelEvent *ch);
    void FillDerivedPassOne();
    void Fill(ChannelEvent *ch, std::string cutid="");

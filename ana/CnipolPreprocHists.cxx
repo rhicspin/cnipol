@@ -8,7 +8,7 @@
 #include "TDirectoryFile.h"
 #include "TFitResultPtr.h"
 #include "TH2F.h"
-#include "TH1D.h"
+#include "TH1F.h"
 #include "TPaveStats.h"
 
 #include "AnaInfo.h"
@@ -41,29 +41,28 @@ CnipolPreprocHists::~CnipolPreprocHists()
 /** */
 void CnipolPreprocHists::BookHists(string sid)
 { //{{{
-   char hName[256];
-
-   //sprintf(hName, "hTvsA");
-   //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-   //((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-   //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+   string shName;
+   TH1*   hist;
 
    // Data from all enabled silicon channels
-   sprintf(hName, "hTimeVsEnergyA_noise");
-   o[hName] = new TH2F("hTimeVsEnergyA_noise", "hTimeVsEnergyA_noise", 80, 100, 1700, 80, 20, 100);
-   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+   shName = "hTimeVsEnergyA_noise";
+   hist = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
+   hist->SetTitle(";Deposited Energy, keV;Time, ns;");
+   hist->SetOption("colz LOGZ NOIMG");
+   o[shName] = hist;
 
-   sprintf(hName, "hTimeVsEnergyA");
-   o[hName] = new TH2F("hTimeVsEnergyA", "hTimeVsEnergyA", 80, 100, 1700, 80, 20, 100);
-   ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+   shName = "hTimeVsEnergyA";
+   hist = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
+   hist->SetTitle("; Deposited Energy, keV; Time, ns;");
+   hist->SetOption("colz LOGZ NOIMG");
+   o[shName] = hist;
 
-   sprintf(hName, "hFitMeanTimeVsEnergyA");
-   o[hName] = new TH1D(hName, hName, 80, 100, 1700);
-   ((TH1*) o[hName])->SetOption("E1 NOIMG");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
-   ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
+   shName = "hFitMeanTimeVsEnergyA";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
+   hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
+   hist->SetOption("E1 NOIMG");
+   hist->GetYaxis()->SetRangeUser(10, 110);
+   o[shName] = hist;
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -72,33 +71,20 @@ void CnipolPreprocHists::BookHists(string sid)
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
 
-      //sprintf(hName, "hTvsA_ch%02d", *iCh);
-      //o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
-      //((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-      //((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
-
       // Time vs Energy from amplitude
-      sprintf(hName, "hTimeVsEnergyA_ch%02d", *iCh);
-      o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
-      ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+      shName = "hTimeVsEnergyA_ch" + sChId;
+      hist = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
+      hist->SetTitle("; Deposited Energy, keV; Time, ns;");
+      hist->SetOption("colz LOGZ NOIMG");
+      o[shName] = hist;
+      fhTimeVsEnergyA_ch[*iCh-1] = hist;
 
-      sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", *iCh);
-      o[hName] = new TH1D(hName, hName, 80, 100, 1700);
-      ((TH1*) o[hName])->SetOption("E1 NOIMG");
-      ((TH1*) o[hName])->GetYaxis()->SetRangeUser(10, 110);
-      ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Mean Time, ns;");
-   }
-
-   // Speed up things later by creating pointers to individual channels
-   iCh = gMeasInfo->fSiliconChannels.begin();
-
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
-   {
-      string sChId("  ");
-      sprintf(&sChId[0], "%02d", *iCh);
-
-      fhTimeVsEnergyA_ch[*iCh-1] = (TH2*) o.find("hTimeVsEnergyA_ch" + sChId)->second;
+      shName = "hFitMeanTimeVsEnergyA_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
+      hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
+      hist->SetOption("E1 NOIMG");
+      hist->GetYaxis()->SetRangeUser(10, 110);
+      o[shName] = hist;
    }
 } //}}}
 
@@ -118,13 +104,8 @@ void CnipolPreprocHists::BookHists(string sid)
 /** */
 void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-   UChar_t chId  = ch->GetChannelId();
+   UChar_t chId = ch->GetChannelId();
 
-   string sChId("  ");
-   sprintf(&sChId[0], "%02d", chId);
-
-   //((TH1*) o["hTvsA_ch"          + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
-   //((TH1*) o.find("hTimeVsEnergyA_ch" + sChId)->second) -> Fill(ch->GetEnergyA(), ch->GetTime());
    fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime());
 } //}}}
 
@@ -152,15 +133,16 @@ void CnipolPreprocHists::FillDerivedPassOne()
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
    // We need pulser histograms to proceed
-   if (!oc || oc->d.find("pulser") == oc->d.end()) {
-      Error("PostFillPassOne", "No pulser container found");
+   //if (!oc || oc->d.find("pulser") == oc->d.end())
+   // We expect empty bunch histogram container of the same class
+   if (!oc) {
+      Error("PostFillPassOne", "No empty bunch container found");
       return;
    }
 
-   CnipolPulserHists *pulserHists = (CnipolPulserHists *) oc->d.find("pulser")->second;
+   CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc;
 
-   //CnipolPulserHists *pulserHists = dynamic_cast<CnipolPulserHists*>(pulserHists);
-   //CnipolPulserHists *pulserHists = static_cast<CnipolPulserHists*>(pulserHists);
+   //CnipolPulserHists *pulserHists = (CnipolPulserHists *) oc->d.find("pulser")->second;
 
    // Find proper normalization scale for pulser histograms
    //TH1* hPulserTdc  = (TH1*) pulserHists->o.find("hTdc")->second;
@@ -175,7 +157,7 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
    //Int_t maxTdcBin = cntTdcBin + 1;
 
    //// Fit 3 bins with a gaussian func
-   //TH1D* hPulserAdcMainPeak = hPulserTvsA->ProjectionX("hPulserAdcMainPeak", minTdcBin, maxTdcBin, "eo");
+   //TH1F* hPulserAdcMainPeak = hPulserTvsA->ProjectionX("hPulserAdcMainPeak", minTdcBin, maxTdcBin, "eo");
 
    ////hPulserTvsA->Print("all");
    ////hPulserAdcMainPeak->Print("all");
@@ -201,30 +183,18 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
    // Fit 3 bins with a gaussian func
    //hPulserTdc->FitSlicesX(0, maxValBin-1, maxValBin+1, 0, "QNR G3", fitResHists);
 
-   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
+   TH2* hTimeVsEnergyA = (TH2*) o["hTimeVsEnergyA"];
 
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
 
-      string sChId(MAX_CHANNEL_DIGITS, ' ');
-      sprintf(&sChId[0], "%02d", *iCh);
+      TH2* fhTimeVsEnergyA_ch_this = (TH2*) fhTimeVsEnergyA_ch[*iCh-1];
+      TH2* fhTimeVsEnergyA_ch_eb   = (TH2*) ebHists->fhTimeVsEnergyA_ch[*iCh-1];
 
-      DrawObjContainer *sdPulser  = pulserHists->d.find("channel" + sChId)->second;
-
-      // subtract pulser from raw data
-      //string hName = "hTvsA_ch" + sChId;
-      // subtract pulser from time vs energy data
-      string hName = "hTimeVsEnergyA_ch" + sChId;
-
-      TH2* hPreproc_ch = (TH2*) o[hName];
-      TH2* hPulser_ch  = (TH2*) sdPulser->o[hName];
-
-      if ( !hPulser_ch ) {
-         Error("PostFillPassOne", "No pulser histogram found %s", hName.c_str());
-         //return;
+      if ( !fhTimeVsEnergyA_ch_this || !fhTimeVsEnergyA_ch_eb ) {
+         Error("PostFillPassOne", "No pulser histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
+         continue;
       }
 
       //Double_t sumPreproc = hPreproc_ch->Integral(minAdcBin, maxAdcBin, minTdcBin, maxTdcBin);
@@ -241,23 +211,24 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
       //   }
       //}
 
-      hPulser_ch->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
-      hPreproc_ch->Add(hPulser_ch, -1);
+      // Subtract empty bunch data from all bunch data
+      fhTimeVsEnergyA_ch_eb->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
+      fhTimeVsEnergyA_ch_this->Add(fhTimeVsEnergyA_ch_eb, -1);
 
-      // Set negative content to 0 including under/overflows
-      for (Int_t ibx=0; ibx<=hPreproc_ch->GetNbinsX()+1; ibx++) {
-         for (Int_t iby=0; iby<=hPreproc_ch->GetNbinsY()+1; iby++) {
+      // After the subtraction set bins with negative content to 0 including under/overflows
+      for (Int_t ibx=0; ibx<=fhTimeVsEnergyA_ch_this->GetNbinsX()+1; ibx++) {
+         for (Int_t iby=0; iby<=fhTimeVsEnergyA_ch_this->GetNbinsY()+1; iby++) {
 
-            Double_t bc = hPreproc_ch->GetBinContent(ibx, iby);
+            Double_t bc = fhTimeVsEnergyA_ch_this->GetBinContent(ibx, iby);
 
             if (bc < 0) {
-               hPreproc_ch->SetBinContent(ibx, iby, 0);
-               hPreproc_ch->SetBinError(ibx, iby, 0);
+               fhTimeVsEnergyA_ch_this->SetBinContent(ibx, iby, 0);
+               fhTimeVsEnergyA_ch_this->SetBinError(ibx, iby, 0);
             }
          }
       }
 
-      hTimeVsEnergyA->Add(hPreproc_ch);
+      hTimeVsEnergyA->Add(fhTimeVsEnergyA_ch_this);
    }
 } //}}}
 
@@ -271,7 +242,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
    string strThumb = thumbs ? "_thumb" : "" ;
 
-   string cName      = "c_combo";
+   string cName    = "c_combo";
 
    TH1* h1 = (TH1*) o["hTimeVsEnergyA"];
    TH1* h2 = (TH1*) o["hFitMeanTimeVsEnergyA"];

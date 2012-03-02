@@ -29,7 +29,7 @@ public:
    CnipolAsymHists(TDirectory *dir);
    ~CnipolAsymHists();
 
-   void BookHists(std::string cutid="");
+   void BookHists();
    void PreFill(std::string cutid="");
    void Fill(ChannelEvent *ch, std::string cutid="");
    void FillDerived();

@@ -462,7 +462,6 @@ void MeasInfo::Update(MseMeasInfoX& run)
 
    } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
       Run = 9;
-
    } else
       Run = 11;
 } //}}}
