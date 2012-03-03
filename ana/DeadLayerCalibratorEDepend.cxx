@@ -67,7 +67,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 /** */
 void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 { //{{{
-   TH2F*  hTimeVsE     = 0;
+   TH2F*  hTimeVsE  = 0;
    TH1D*  hMeanTime = 0;
    string strChId("  ");
 
@@ -94,10 +94,20 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
 
       Calibrate(hTimeVsE, hMeanTime, *iCh);
-
-      if (fChannelCalibs[*iCh].fFitStatus != kDLFIT_OK)
-         gMeasInfo->DisableChannel(*iCh);
    }
+
+   // Check for bad fits afterwards to avoid interference with the channel
+   // disabling procedure
+   ChannelCalibMapConstIter iChCalib = fChannelCalibs.begin();
+
+   for ( ; iChCalib != fChannelCalibs.end(); ++iChCalib)
+   {
+      ChannelCalib tmpChCalib = iChCalib->second;
+
+      if (tmpChCalib.fFitStatus != kDLFIT_OK)
+         gMeasInfo->DisableChannel(iChCalib->first);
+   }
+
 } //}}}
 
 
@@ -368,7 +378,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
 
       chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 250) {
+      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 500) {
          chCalib->fFitStatus = kDLFIT_FAIL;
          return;
       }

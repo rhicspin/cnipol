@@ -39,7 +39,7 @@ public:
    void BookHists();
    void FillPassOne(ChannelEvent *ch);
    void FillDerivedPassOne();
-   void Fill(ChannelEvent *ch, std::string cutid="");
+   void Fill(ChannelEvent *ch);
 
    ClassDef(CnipolPulserHists, 1)
 };
