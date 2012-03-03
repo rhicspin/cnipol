@@ -349,8 +349,8 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
          continue;
       }
 
-      // 2% of bins contain > 25% of events - Is this a stronger requirement?
-      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(2) > 0.25) {
+      // 2% of bins contain > 30% of events - Is this a stronger requirement?
+      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(2) > 0.30) {
          gMeasInfo->DisableChannel(*iCh);
          continue;
       }
