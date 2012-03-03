@@ -35,24 +35,32 @@ CnipolCalibHists::~CnipolCalibHists()
 
 void CnipolCalibHists::BookHists(std::string cutid)
 { //{{{
-   char hName[256];
+   string shName;
+   TH1*   hist;
 
-   sprintf(hName, "hDLVsChannel");
-   o[hName]      = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetTitle(";Channel Id;Dead Layer, #mug/cm^{2};");
+   shName = "hDLVsChannel";
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Channel Id; Dead Layer, #mug/cm^{2};");
+   hist->SetOption("hist GRIDX");
+   o[shName] = hist;
 
-   sprintf(hName, "hT0VsChannel");
-   o[hName]      = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetTitle(";Channel Id;T0, ns;");
+   shName = "hT0VsChannel";
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Channel Id; T0, ns;");
+   hist->SetOption("hist GRIDX");
+   o[shName] = hist;
 
-   sprintf(hName, "hChi2NdfVsChannel");
-   o[hName]      = new TH1F(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetTitle(";Channel Id;#chi^{2}/ndf;");
-   ((TH1*) o[hName])->SetOption("hist XY GRIDX");
+   shName = "hChi2NdfVsChannel";
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Channel Id; #chi^{2}/ndf;");
+   hist->SetOption("hist XY GRIDX");
+   o[shName] = hist;
 
-   sprintf(hName, "hFitStatusVsChannel");
-   o[hName]      = new TH1I(hName, hName, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[hName])->SetTitle(";Channel Id;Fit Status;");
+   shName = "hFitStatusVsChannel";
+   hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Channel Id; Fit Status;");
+   hist->SetOption("hist GRIDX");
+   o[shName] = hist;
 
 } //}}}
 

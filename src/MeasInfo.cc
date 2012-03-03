@@ -579,15 +579,10 @@ void MeasInfo::SetPolarimetrIdRhicBeam(const char* RunID)
 
 
 /** */
-Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
-{ //{{{
-   return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
-} //}}}
-
-
-/** */
 void MeasInfo::DisableChannel(UShort_t chId)
 { //{{{
+   Warning("DisableChannel", "Disabled channel %d", chId);
+
    fDisabledChannels[chId-1] = 1;
 
    if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
@@ -608,6 +603,41 @@ void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
             DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
       }
    }
+} //}}}
+
+
+/** */
+void MeasInfo::EnableChannel(UShort_t chId)
+{ //{{{
+   Warning("EnableChannel", "Enabled channel %d", chId);
+
+   //fDisabledChannels[chId-1] = 1;
+
+   //if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
+   //   fDisabledChannelsVec.push_back(chId);
+
+   //fActiveSiliconChannels.erase(chId);
+} //}}}
+
+
+/** */
+void MeasInfo::EnableChannels(std::bitset<N_DETECTORS> &disabled_det)
+{ //{{{
+   //for (UShort_t iDet=0; iDet!=N_DETECTORS; ++iDet)
+   //{
+   //   if (disabled_det.test(iDet) )
+   //   {
+   //      for (UShort_t iCh=1; iCh<=NSTRIP_PER_DETECTOR; ++iCh)
+   //         DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
+   //   }
+   //}
+} //}}}
+
+
+/** */
+Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
+{ //{{{
+   return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
 } //}}}
 
 

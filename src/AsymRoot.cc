@@ -476,6 +476,7 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 { //{{{
+   //Info("FillPassOne", "Executing...");
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
    set<DrawObjContainer*>::iterator hi;
@@ -491,6 +492,7 @@ void AsymRoot::FillPassOne(ECut cut)
 /** */
 void AsymRoot::FillDerivedPassOne()
 { //{{{
+   Info("FillDerivedPassOne", "Executing...");
    fHists->FillDerivedPassOne();
 } //}}}
 
@@ -498,6 +500,8 @@ void AsymRoot::FillDerivedPassOne()
 /** */
 void AsymRoot::PostFillPassOne()
 { //{{{
+   Info("PostFillPassOne", "Executing...");
+
    //fHists->PostFillPassOne(fHists);
 
    fHists->d["raw"]->PostFillPassOne(fHists->d["raw_eb"]);

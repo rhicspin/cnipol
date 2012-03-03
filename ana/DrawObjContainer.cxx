@@ -271,6 +271,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
 
          c.Modified();
          c.Update();
+         c.RedrawAxis("g");
 
          TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
 

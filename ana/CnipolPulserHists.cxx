@@ -285,12 +285,12 @@ void CnipolPulserHists::FillDerivedPassOne()
 
 
 /** */
-void CnipolPulserHists::Fill(ChannelEvent *ch, string cutid)
+void CnipolPulserHists::Fill(ChannelEvent *ch)
 { //{{{
    UChar_t  chId     = ch->GetChannelId();
-   UShort_t adcA_bin = ch->GetAmpltd() + 1;
-   UShort_t adcI_bin = ch->GetIntgrl() + 1;
-   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
+   //UShort_t adcA_bin = ch->GetAmpltd() + 1;
+   //UShort_t adcI_bin = ch->GetIntgrl() + 1;
+   //UShort_t tdc_bin  = ch->GetTdc() - 10 + 1;
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
