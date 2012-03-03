@@ -37,8 +37,8 @@ do
       #echo my item : ${run_name%.data}
       #echo bgx_limit 16 ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw --pulser --asym --kinema
       #bgx_limit 16 ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw --pulser --asym --kinema >> ${LOG} 2>&1
-      echo ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --pulser --asym --kinema >> ${LOG}
-      ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --pulser --asym --kinema >> ${LOG} 2>&1 &
+      echo ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --asym --kinema >> ${LOG}
+      ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --asym --kinema >> ${LOG} 2>&1 &
       sleep 2
    done
 
