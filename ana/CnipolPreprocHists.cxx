@@ -39,7 +39,7 @@ CnipolPreprocHists::~CnipolPreprocHists()
 
 
 /** */
-void CnipolPreprocHists::BookHists(string sid)
+void CnipolPreprocHists::BookHists()
 { //{{{
    string shName;
    TH1*   hist;
@@ -90,18 +90,6 @@ void CnipolPreprocHists::BookHists(string sid)
 
 
 /** */
-//void CnipolPreprocHists::Fill(ChannelEvent *ch, string sid)
-//{ //{{{
-//} //}}}
-
-
-/** */
-//void CnipolPreprocHists::PreFillPassOne()
-//{
-//}
-
-
-/** */
 void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 { //{{{
    UChar_t chId = ch->GetChannelId();
@@ -132,11 +120,11 @@ void CnipolPreprocHists::FillDerivedPassOne()
 /** */
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   // We need pulser histograms to proceed
-   //if (!oc || oc->d.find("pulser") == oc->d.end())
+   Info("PostFillPassOne", "Executing...");
+
    // We expect empty bunch histogram container of the same class
    if (!oc) {
-      Error("PostFillPassOne", "No empty bunch container found");
+      Error("PostFillPassOne", "No empty bunch container found. No channel will be disabled");
       return;
    }
 
