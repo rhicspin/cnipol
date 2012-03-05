@@ -33,10 +33,10 @@ public:
    CnipolRawHists(TDirectory *dir);
    ~CnipolRawHists();
 
-   void  BookHists();
-   void  FillPassOne(ChannelEvent *ch);
-   void  FillDerivedPassOne();
-   void  PostFillPassOne(DrawObjContainer *oc=0);
+   void BookHists();
+   void FillPassOne(ChannelEvent *ch);
+   void FillDerivedPassOne();
+   void PostFillPassOne(DrawObjContainer *oc=0);
 
    ClassDef(CnipolRawHists, 1)
 };

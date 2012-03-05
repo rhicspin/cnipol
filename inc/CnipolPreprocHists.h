@@ -28,9 +28,7 @@ public:
    CnipolPreprocHists(TDirectory *dir);
    ~CnipolPreprocHists();
 
-   void BookHists(std::string cutid="");
-   //void Fill(ChannelEvent *ch, std::string cutid="");
-   //void PreFillPassOne();
+   void BookHists();
    void FillPassOne(ChannelEvent *ch);
    void FillDerivedPassOne();
    void PostFillPassOne(DrawObjContainer *oc=0);

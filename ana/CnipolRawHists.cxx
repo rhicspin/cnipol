@@ -343,8 +343,8 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
       utils::ConvertToCumulative2(fhTvsA_ch_this_copy, (TH1F*) fhTvsACumul_ch[*iCh-1]);
       delete fhTvsA_ch_this_copy;
 
-      // 15% of bins contain > 75% of events
-      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(15) > 0.75) {
+      // 15% of bins contain > 80% of events
+      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(15) > 0.80) {
          gMeasInfo->DisableChannel(*iCh);
          continue;
       }
