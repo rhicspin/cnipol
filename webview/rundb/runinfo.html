@@ -189,25 +189,21 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
    <td colspan=4>
-   <b>Disabled Channels:</b> <?=$rc['disabled_channels']?>
-
-<tr>
-   <td colspan=4>
-   <b>Channels:</b><br>
+   <b>Channels:</b> <span class=feature>Total excluded:</span> <?=count($rc['fDisabledChannelsVec'])?>
+	<br>
 
    <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
    <?php
-      $row1 = ""; $row2 = "";
+      $row1 = "";
 
-      foreach($rc['ActiveStrip'] as $chanId => $siS) {
+      foreach($rc['fSiliconChannels'] as $chanId)
+		{
+		   $tdBkg = in_array($chanId, $rc['fDisabledChannelsVec']) ? "class=feature" : "";
+         $row1 .= "<td $tdBkg><a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">$chanId</a>";
 
-         $row1 .= "<td><a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">$chanId</a>";
-         //$row2 .= "<td>".($siS ? "x" : "o");
-
-         if (($chanId) % 36 == 0) {
-            //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+         if ($chanId % 36 == 0) {
             print "<tr class=align_cm>$row1\n";
-            $row1 = "";// $row2 = "";
+            $row1 = "";
          }
       }
    ?>
@@ -373,13 +369,8 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <?=$gP->img('raw/hStripCounts')?>
 <p class=left>Number of events per silicon detector channel
 <td>
-<?=$gP->img('raw/hRevolutionId')?>
-<p class=left>Number of events per beam revolution number
-
-</table>
-
-<p>
-<table class="simple" cellspacing=10 align=center>
+<?=$gP->img('raw/hChIdVsBunchId')?>
+<p class=left>Number of events per bunch and detector channel
 
 <tr class=align_ct>
 <td>
@@ -394,6 +385,15 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <td>
 <?=$gP->img('raw/hTvsI')?>
 <p class=left>TDC vs Integral (all channels)
+
+<tr class=align_ct>
+<td>
+<?=$gP->img('raw/hRevolutionId')?>
+<p class=left>Number of events per beam revolution number
+<td>
+<td>
+<td>
+<?=$gP->img('raw/hIvsA')?>
 
 </table>
 
@@ -507,6 +507,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <?=$gP->img("profile/hIntensProfileFineBin")?>
 <p>Intensity profile: Number of events as a function of time
 
+
 <tr>
 <td class=align_ct>
 <?=$gP->img("profile/hIntensUniProfile")?>
@@ -523,6 +524,24 @@ construction
 <?=$gP->img("profile/hAsymVsIntensProfile")?>
 <p>Physical asymmetry vs intensity as measured every 0.1 second. The
 data is fitted with a function P = P_max * I^r
+
+<tr>
+<td class=align_ct>
+
+<td class=align_ct>
+<?=$gP->img("profile/hPolarUniProfile")?>
+
+<td class=align_ct>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+
+<tr>
+<td class=align_ct>
+
+<td class=align_ct>
+<?=$gP->img("profile/hPolarUniProfileBin")?>
+
+<td class=align_ct>
+<?=$gP->img("profile/hPolarVsIntensProfileBin")?>
 
 <!--
 <tr>
@@ -633,9 +652,11 @@ data is fitted with a function P = P_max * I^r
 <td align=center>
 <?=$gP->img("calib/hFitStatusVsChannel")?>
 
+<!--
 <tr>
 <td class=align_cm colspan=4>
 <?=$gP->img("std/hEventsVsChannel_cut2")?>
+-->
 
 </table>
 

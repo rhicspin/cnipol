@@ -119,30 +119,38 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    // quick and dirty solution to deal with unphysical values
 	// BAD BAD BAD - must be removed once the QA is in order
-   $rc = array();
-   $gRunDir = DATA_DIR."/".$e['run_name'];
-   include("$gRunDir/runconfig.php");
+   //$rc = array();
+   //$polarToDisplay = null;
 
-   $polarToDisplay = null;
-   
-   $polars = array( new pair($e['polarization']*100, $e['polarization_error']*100),
-                    new pair(abs($rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1]), $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]),
-                    new pair(abs($rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]),
-                    new pair(abs($rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1])  );
-   
-   print("<!--\n");
-   print_r($polars);
-   print("-->\n");
-   
-   foreach ($polars as $polar) {
-      if (($polar->first > 90 || $polar->first < 10) && $polar->second < 10) continue;
-   	$polarToDisplay = $polar;
-   	break;
-   }
+   //$gRunDir = DATA_DIR."/".$e['run_name'];
+
+   //if ( file_exists("$gRunDir/runconfig.php") ) {
+   //   include("$gRunDir/runconfig.php");
+
+   //   
+	//   if (!isset($rc['A_N']) || $rc['A_N'][1] == 0)
+   //      $rc['A_N'][1] = 1e10;
+
+   //   $polars = array( new pair($e['polarization']*100, $e['polarization_error']*100),
+   //                    new pair(abs($rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1]), $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]),
+   //                    new pair(abs($rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]),
+   //                    new pair(abs($rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1])  );
+   //   
+   //   //print("<!--\n");
+   //   //print_r($polars);
+   //   //print("-->\n");
+   //   
+   //   foreach ($polars as $polar) {
+   //      if (($polar->first > 90 || $polar->first < 10) && $polar->second < 10) continue;
+   //   	$polarToDisplay = $polar;
+   //   	break;
+   //   }
+	//}
 
    $polarization = "&nbsp;";
 
-   if (isset($e['polarization']) && $polarToDisplay == null) {
+   //if (isset($e['polarization']) && $polarToDisplay == null) 
+   if (isset($e['polarization'])) {
       // Apply normalization factor to polarization value
 		$norm = 1;
 
@@ -152,9 +160,10 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
          $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
-   } else {
-   	$polarization = sprintf("%5.1f &plusmn; %5.1f", $polarToDisplay->first, $polarToDisplay->second);
-   }
+	}
+   //} else {
+   //	$polarization = sprintf("%5.1f &plusmn; %5.1f", $polarToDisplay->first, $polarToDisplay->second);
+   //}
 
    // return to normal flow
    $strOnlinePolar = "&nbsp;";
