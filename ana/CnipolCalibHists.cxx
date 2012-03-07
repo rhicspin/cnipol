@@ -60,6 +60,7 @@ void CnipolCalibHists::BookHists(std::string cutid)
    hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Fit Status;");
    hist->SetOption("hist GRIDX");
+   hist->GetYaxis()->SetRangeUser(0, 2.2);
    o[shName] = hist;
 
 } //}}}

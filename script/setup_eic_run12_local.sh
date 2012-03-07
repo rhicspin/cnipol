@@ -31,10 +31,10 @@ fi
 
 # CNIPOL variables
 export CNIPOL_DIR=~/cnipol
-#export CNIPOL_DATA_DIR=/eicdata/eic0005/run12/data
-#export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run12/root
-export CNIPOL_DATA_DIR=~/cnipol_data
-export CNIPOL_RESULTS_DIR=~/cnipol_root
+export CNIPOL_DATA_DIR=/eicdata/eic0005/run12/data
+export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run12/root
+#export CNIPOL_DATA_DIR=~/cnipol_data
+#export CNIPOL_RESULTS_DIR=~/cnipol_root
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
 	export PATH+=:$CNIPOL_DIR/bin

@@ -393,17 +393,25 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       TH1*     hTimeVsEnergyA_raw_ch        = (TH1*) fhTimeVsEnergyA_raw_ch[chId-1];
       TH1*     hFitMeanTimeVsEnergyA_raw_ch = (TH1*) fhFitMeanTimeVsEnergyA_raw_ch[chId-1];
 
-      Int_t nXBins = gMeasInfo->GetProtoCutAdcMax() - gMeasInfo->GetProtoCutAdcMin();
-      Int_t nYBins = gMeasInfo->GetProtoCutTdcMax() - gMeasInfo->GetProtoCutTdcMin();
+      UShort_t adcMin = TMath::Max(gMeasInfo->GetProtoCutAdcMin(), (UShort_t) hTvsA_ch->GetXaxis()->GetXmin());
+      UShort_t adcMax = TMath::Min(gMeasInfo->GetProtoCutAdcMax(), (UShort_t) hTvsA_ch->GetXaxis()->GetXmax());
+      UShort_t tdcMin = TMath::Max(gMeasInfo->GetProtoCutTdcMin(), (UShort_t) hTvsA_ch->GetYaxis()->GetXmin());
+      UShort_t tdcMax = TMath::Min(gMeasInfo->GetProtoCutTdcMax(), (UShort_t) hTvsA_ch->GetYaxis()->GetXmax());
+
+      Int_t nXBins = adcMax - adcMin;
+      Int_t nYBins = tdcMax - tdcMin;
+      //Int_t nXBins = gMeasInfo->GetProtoCutAdcMax() - gMeasInfo->GetProtoCutAdcMin();
+      //Int_t nYBins = gMeasInfo->GetProtoCutTdcMax() - gMeasInfo->GetProtoCutTdcMin();
       //Int_t nXBins = hTvsA_ch->GetNbinsX();
       //Int_t nYBins = hTvsA_ch->GetNbinsY();
 
       Calibrator *calibrator = gAsymRoot->GetCalibrator();
 
-      Float_t xMin = calibrator->GetEnergyA(gMeasInfo->GetProtoCutAdcMin(), chId);
-      Float_t xMax = calibrator->GetEnergyA(gMeasInfo->GetProtoCutAdcMax(), chId);
-      Float_t yMin = calibrator->GetTime(gMeasInfo->GetProtoCutTdcMin());
-      Float_t yMax = calibrator->GetTime(gMeasInfo->GetProtoCutTdcMax());
+      Float_t xMin = calibrator->GetEnergyA(adcMin, chId);
+      Float_t xMax = calibrator->GetEnergyA(adcMax, chId);
+      Float_t yMin = calibrator->GetTime(tdcMin);
+      Float_t yMax = calibrator->GetTime(tdcMax);
+
       //Float_t xMin = calibrator->GetEnergyA(0, chId);
       //Float_t xMax = calibrator->GetEnergyA(255, chId);
       //Float_t yMin = calibrator->GetTime(10);
@@ -444,8 +452,8 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       // Calculate cumulative histograms
       utils::ConvertToCumulative2(hTimeVsEnergyA_raw_ch, (TH1F*) fhTimeVsEnergyACumul_ch[chId-1]);
 
-      // 15% of bins contain > 80% of events
-      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(15) > 0.80) {
+      // 15% of bins contain > 75% of events
+      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(15) > 0.75) {
          gMeasInfo->DisableChannel(chId);
          continue;
       }
