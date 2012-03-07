@@ -13,6 +13,7 @@
 #include "MseMeasInfo.h"
 
 #include "AnaEvent.h"
+#include "Calibrator.h"
 #include "ChannelData.h"
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
@@ -88,12 +89,13 @@ public:
    void         PrintEventMap();
    void         PrintChannelEvent();
    void         UpdateCalibrator();
+   Calibrator*  GetCalibrator();
    void         SaveChannelTrees();
    void         SaveEventTree();
    void         WriteTreeFile();
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
-   EventConfig* GetRunConfig();
-   void         GetRunConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
+   EventConfig* GetMeasConfig();
+   void         GetMeasConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
 };
 
 #endif

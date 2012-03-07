@@ -163,16 +163,16 @@ void AnaInfo::MakeOutDir()
 
 void   AnaInfo::SetRunName(std::string runName) { fRunName = runName; }
 
-string AnaInfo::GetRunName()         const { return fRunName; }
-string AnaInfo::GetSuffix()          const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
-string AnaInfo::GetRawDataFileName() const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
-string AnaInfo::GetImageDir()        const { return GetOutDir() + "/images" + GetSuffix(); }
+string AnaInfo::GetRunName()          const { return fRunName; }
+string AnaInfo::GetSuffix()           const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
+string AnaInfo::GetRawDataFileName()  const { return fAsymEnv.find("CNIPOL_DATA_DIR")->second + "/" + fRunName + ".data"; }
+string AnaInfo::GetImageDir()         const { return GetOutDir() + "/images" + GetSuffix(); }
 string AnaInfo::GetMeasInfoFileName() const { return GetOutDir() + "/runconfig" + GetSuffix() + ".php"; }
-string AnaInfo::GetRunConfFileName() const { return GetOutDir() + "/config_calib" + GetSuffix() + ".dat"; }
-string AnaInfo::GetStdLogFileName()  const { return GetOutDir() + "/" + fFileStdLogName + GetSuffix() + ".log"; }
-string AnaInfo::GetRootFileName()    const { return GetOutDir() + "/" + fRunName + GetSuffix() + ".root"; }
+string AnaInfo::GetRunConfFileName()  const { return GetOutDir() + "/config_calib" + GetSuffix() + ".dat"; }
+string AnaInfo::GetStdLogFileName()   const { return GetOutDir() + "/" + fFileStdLogName + GetSuffix() + ".log"; }
+string AnaInfo::GetRootFileName()     const { return GetOutDir() + "/" + fRunName + GetSuffix() + ".root"; }
 FILE*  AnaInfo::GetMeasInfoFile()     const { return fFileMeasInfo; }
-FILE*  AnaInfo::GetRunConfFile()     const { return fFileRunConf; }
+FILE*  AnaInfo::GetRunConfFile()      const { return fFileRunConf; }
 
 string AnaInfo::GetAlphaCalibRun()   const { return fAlphaCalibRun; }
 string AnaInfo::GetDlCalibRun()      const { return fDlCalibRun; }

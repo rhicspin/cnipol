@@ -38,11 +38,20 @@ class MeasInfo : public TObject
 {
 protected:
 
-   Double_t   fBeamEnergy;
-   Short_t    fExpectedGlobalTdcOffset;
-   Float_t    fExpectedGlobalTimeOffset;
-
-   std::string                 fRunName;
+   Double_t      fBeamEnergy;
+   Short_t       fExpectedGlobalTdcOffset;
+   Float_t       fExpectedGlobalTimeOffset;
+   std::string   fRunName;
+	Float_t       fProtoCutSlope;
+	Float_t       fProtoCutOffset;
+	UShort_t      fProtoCutAdcMin;
+	UShort_t      fProtoCutAdcMax;
+	UShort_t      fProtoCutTdcMin;
+	UShort_t      fProtoCutTdcMax;
+	UShort_t      fPulserCutAdcMin;
+	UShort_t      fPulserCutAdcMax;
+	UShort_t      fPulserCutTdcMin;
+	UShort_t      fPulserCutTdcMax;
 
 public:
 
@@ -80,16 +89,6 @@ public:
    BeamBunchMap                fBeamBunches;
    Int_t                       NDisableBunch;
    Int_t                       DisableBunch[N_BUNCHES];
-	Float_t                     fProtoCutSlope;
-	Float_t                     fProtoCutOffset;
-	Float_t                     fProtoCutAdcMin;
-	Float_t                     fProtoCutAdcMax;
-	Float_t                     fProtoCutTdcMin;
-	Float_t                     fProtoCutTdcMax;
-	Float_t                     fPulserCutAdcMin;
-	Float_t                     fPulserCutAdcMax;
-	Float_t                     fPulserCutTdcMin;
-	Float_t                     fPulserCutTdcMax;
 
 public:
 
@@ -102,6 +101,29 @@ public:
    void            PrintBunchPatterns() const;
    void            SetRunName(std::string runName);
    std::string     GetRunName() const;
+
+	Float_t         GetProtoCutSlope  () const { return fProtoCutSlope;   }
+	Float_t         GetProtoCutOffset () const { return fProtoCutOffset;  }
+	UShort_t        GetProtoCutAdcMin () const { return fProtoCutAdcMin;  }
+	UShort_t        GetProtoCutAdcMax () const { return fProtoCutAdcMax;  }
+	UShort_t        GetProtoCutTdcMin () const { return fProtoCutTdcMin;  }
+	UShort_t        GetProtoCutTdcMax () const { return fProtoCutTdcMax;  }
+	UShort_t        GetPulserCutAdcMin() const { return fPulserCutAdcMin; }
+	UShort_t        GetPulserCutAdcMax() const { return fPulserCutAdcMax; }
+	UShort_t        GetPulserCutTdcMin() const { return fPulserCutTdcMin; }
+	UShort_t        GetPulserCutTdcMax() const { return fPulserCutTdcMax; }
+
+	void            SetProtoCutSlope  (Float_t  protoCutSlope )  { fProtoCutSlope   = protoCutSlope;   }
+	void            SetProtoCutOffset (Float_t  protoCutOffset)  { fProtoCutOffset  = protoCutOffset;  }
+	void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)  { fProtoCutAdcMin  = protoCutAdcMin;  }
+	void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)  { fProtoCutAdcMax  = protoCutAdcMax;  }
+	void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)  { fProtoCutTdcMin  = protoCutTdcMin;  }
+	void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)  { fProtoCutTdcMax  = protoCutTdcMax;  }
+	void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin) { fPulserCutAdcMin = pulserCutAdcMin; }
+	void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax) { fPulserCutAdcMax = pulserCutAdcMax; }
+	void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin) { fPulserCutTdcMin = pulserCutTdcMin; }
+	void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax) { fPulserCutTdcMax = pulserCutTdcMax; }
+
    Short_t         GetPolarimeterId();
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();

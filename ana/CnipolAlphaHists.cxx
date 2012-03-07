@@ -32,7 +32,8 @@ CnipolAlphaHists::~CnipolAlphaHists()
 
 
 void CnipolAlphaHists::BookHists(std::string cutid)
-{ //{{{
+{
+   //{{{
    char hName[256];
 
    o["hAmpltd"]      = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
@@ -133,7 +134,7 @@ void CnipolAlphaHists::BookHists(std::string cutid)
    ((TH2F*) o["Detector6_Events"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["Detector6_Events"])->GetYaxis()->SetTitle("# of Events");
 
-    o["Detector1_Events_Dsp"]   = new TH1F("Detector1_Events_Dsp", "Detector1_Events_Dsp", 20000, 0, 20000);
+   o["Detector1_Events_Dsp"]   = new TH1F("Detector1_Events_Dsp", "Detector1_Events_Dsp", 20000, 0, 20000);
    ((TH1F*) o["Detector1_Events"])->SetOption("E");
    ((TH2F*) o["Detector1_Events"])->GetXaxis()->SetTitle("Events");
    ((TH2F*) o["Detector1_Events"])->GetYaxis()->SetTitle("#");
@@ -168,7 +169,7 @@ void CnipolAlphaHists::BookHists(std::string cutid)
    DrawObjContainer *oc;
    DrawObjContainerMapIter isubdir;
 
-   for (int i=0; i<TOT_WFD_CH; i++) {
+   for (int i = 0; i < TOT_WFD_CH; i++) {
 
       //sprintf(&sSi[0], "%02d", i+1);
 
@@ -181,11 +182,12 @@ void CnipolAlphaHists::BookHists(std::string cutid)
          // Delete existing directory in memory
          //TKey *key = fDir->GetKey(dName);
          //if (key) key->Delete("v");
-            //if (((TClass*) io->second->IsA())->InheritsFrom("TH1"))
+         //if (((TClass*) io->second->IsA())->InheritsFrom("TH1"))
 
          oc = new DrawObjContainer();
          oc->fDir = new TDirectoryFile(dName, dName, "", fDir);
-      } else {
+      }
+      else {
          oc = isubdir->second;
       }
 
@@ -242,7 +244,7 @@ void CnipolAlphaHists::BookHists(std::string cutid)
       ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
       ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Integral, ADC");
 
-     
+
 
       //sprintf(hName,"t_vs_e_st%d", i);
       //kinema.oc->o[hName] = new TH2F();
@@ -257,29 +259,31 @@ void CnipolAlphaHists::BookHists(std::string cutid)
 
 /** */
 void CnipolAlphaHists::Fill(ChannelEvent *ch, string sid)
-{ //{{{
+{
+   //{{{
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
 
    string sSi("  ");
    sprintf(&sSi[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel"+sSi];
+   DrawObjContainer *sd = d["channel" + sSi];
 
    if (sid == "cut1") {
-   //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
-   //if (data.fTdc >=15 && data.fTdc <= 50) {
+      //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
+      //if (data.fTdc >=15 && data.fTdc <= 50) {
       ((TH1F*) o["hAmpltd_cut1"])->Fill(data.fAmpltd);
-      ((TH1F*) sd->o["hAmpltd_cut1_st"+sSi])->Fill(data.fAmpltd);
-   //}
+      ((TH1F*) sd->o["hAmpltd_cut1_st" + sSi])->Fill(data.fAmpltd);
+      //}
 
-   //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
-   //if (data.fTdc >=12 && data.fTdc <= 16) 
-   //if (data.fTdc >=12 && data.fTdc <= 30) {
+      //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
+      //if (data.fTdc >=12 && data.fTdc <= 16)
+      //if (data.fTdc >=12 && data.fTdc <= 30) {
       ((TH1F*) o["hIntgrl_cut1"])->Fill(data.fIntgrl);
-      ((TH1F*) sd->o["hIntgrl_cut1_st"+sSi])->Fill(data.fIntgrl);
-   //}
-   } else {
+      ((TH1F*) sd->o["hIntgrl_cut1_st" + sSi])->Fill(data.fIntgrl);
+      //}
+   }
+   else {
 
       ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
       ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
@@ -288,13 +292,13 @@ void CnipolAlphaHists::Fill(ChannelEvent *ch, string sid)
       ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
       ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
 
-      ((TH1F*) sd->o["hAmpltd_st"+sSi])   ->Fill(data.fAmpltd);
-      ((TH1F*) sd->o["hIntgrl_st"+sSi])   ->Fill(data.fIntgrl);
-      ((TH1F*) sd->o["hTdc_st"+sSi])      ->Fill(data.fTdc);
-      ((TH2F*) sd->o["hTvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fTdc);
-      ((TH2F*) sd->o["hTvsA_zoom_st"+sSi])->Fill(data.fAmpltd, data.fTdc);
-      ((TH2F*) sd->o["hTvsI_st"+sSi])     ->Fill(data.fIntgrl, data.fTdc);
-      ((TH2F*) sd->o["hIvsA_st"+sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
+      ((TH1F*) sd->o["hAmpltd_st" + sSi])   ->Fill(data.fAmpltd);
+      ((TH1F*) sd->o["hIntgrl_st" + sSi])   ->Fill(data.fIntgrl);
+      ((TH1F*) sd->o["hTdc_st" + sSi])      ->Fill(data.fTdc);
+      ((TH2F*) sd->o["hTvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fTdc);
+      ((TH2F*) sd->o["hTvsA_zoom_st" + sSi])->Fill(data.fAmpltd, data.fTdc);
+      ((TH2F*) sd->o["hTvsI_st" + sSi])     ->Fill(data.fIntgrl, data.fTdc);
+      ((TH2F*) sd->o["hIvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
    }
 } //}}}
 
@@ -310,7 +314,6 @@ void CnipolAlphaHists::PostFill()
    Int_t  maxBinA = ((TH1F*) o["hAmpltd_cut1"])->GetMaximumBin();
    Double_t xminA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmin();
    Double_t xmaxA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmax();
-  
 
    xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
    xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
@@ -320,9 +323,9 @@ void CnipolAlphaHists::PostFill()
    Int_t  maxBinI = ((TH1F*) o["hIntgrl_cut1"])->GetMaximumBin();
    Double_t xminI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmin();
    Double_t xmaxI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmax();
-   Int_t tmaxBinI=0;
+   Int_t tmaxBinI = 0;
 
-   Int_t maxBin=0;
+   //Int_t maxBin = 0;
 
    xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
    xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
@@ -333,37 +336,33 @@ void CnipolAlphaHists::PostFill()
 
    string  sSi("  ");
 
-   for (int i=1; i<=NSTRIP; i++) {
+   for (int i = 1; i <= NSTRIP; i++) {
       sprintf(&sSi[0], "%02d", i);
-      
 
-     
-      maxBinA = ((TH1F*) d["channel"+sSi]->o["hAmpltd_st"+sSi])->GetMaximumBin();
-      maxBinI - ((TH1F*) d["channel"+sSi]->o["hIntgrl_st"+sSi])->GetMaximumBin();
-      if(i==9||i==10){
-       for(int j=0;j<=255;j++){
-	
-	 tmaxBinI=((TH1F*) d["channel"+sSi]->o["hIntgrl_st"+sSi])->GetBinContent(j); 
-	 if(tmaxBinI>=maxBinI)maxBinI=tmaxBinI;
-       }
+      maxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_st" + sSi])->GetMaximumBin();
+      maxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_st" + sSi])->GetMaximumBin();
+
+      if (i == 9 || i == 10) {
+         for (int j = 0; j <= 255; j++) {
+
+            tmaxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_st" + sSi])->GetBinContent(j);
+            if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
+         }
       }
-	//xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
+
+      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
       //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmax();
       //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
       //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
-      xminA=maxBinA-50;
-      xmaxA=maxBinA+50;
-      xminI=maxBinI-50;
-      xmaxI=maxBinI+50;
-    
-     
-      ((TH1F*) d["channel"+sSi]->o["hAmpltd_cut1_st"+sSi])->SetAxisRange(xminA, xmaxA);
-      
+      xminA = maxBinA - 50;
+      xmaxA = maxBinA + 50;
+      xminI = maxBinI - 50;
+      xmaxI = maxBinI + 50;
 
+      ((TH1F*) d["channel" + sSi]->o["hAmpltd_cut1_st" + sSi])->SetAxisRange(xminA, xmaxA);
 
-      ((TH1F*) d["channel"+sSi]->o["hIntgrl_cut1_st"+sSi])->SetAxisRange(xminI, xmaxI);
+      ((TH1F*) d["channel" + sSi]->o["hIntgrl_cut1_st" + sSi])->SetAxisRange(xminI, xmaxI);
    }
- 
 } //}}}
 
 
@@ -373,7 +372,7 @@ void CnipolAlphaHists::PostFill()
 //   DrawObjContainer::SaveAllAs(c, pattern, path);
 //
 //   return;
-//   
+//
 //   if (gSystem->mkdir(path.c_str()) < 0)
 //      printf("WARNING: Perhaps dir already exists: %s\n", path.c_str());
 //   else

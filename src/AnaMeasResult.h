@@ -34,7 +34,7 @@ public:
    Float_t              UniversalRate;
    Float_t              A_N[2];                 // Analyzing power
    Float_t              P[2];  
-   ValErrPair           fAnaPower;              // Analyzin power A_N
+   ValErrPair           fAnaPower;              // Analyzing power
    ValErrPair           fPolar;
    ValErrPair           fAvrgPMAsym;            // deprecated. Plus-Minus (+/-) spin state asymmetry
    TFitResultPtr        fFitResAsymPhi;         // Fit result from asymmetry vs phi plot

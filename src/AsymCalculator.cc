@@ -31,7 +31,7 @@ using namespace std;
 // End of data process
 void end_process(MseMeasInfoX &run)
 { //{{{
-   gSystem->Info("   ::end_process", "Starting...");
+   gSystem->Info("end_process", "Starting...");
 
    // Feedback Mode
    if (Flag.feedback) {
@@ -53,11 +53,6 @@ void end_process(MseMeasInfoX &run)
    // Energy Yeild Weighted Average Analyzing Power
    //gAnaMeasResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
    gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
-
-   if (!gAnaMeasResult->A_N[1]) {
-      printf("Zero analyzing power\n");
-      return;
-   }
 
    //gAsymCalculator.CumulativeAsymmetry();
 
@@ -85,7 +80,7 @@ void end_process(MseMeasInfoX &run)
    PrintWarning();
    PrintRunResults();
 
-   gSystem->Info("   ::end_process", "End");
+   gSystem->Info("end_process", "End");
 } //}}}
 
 
@@ -129,8 +124,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetV
    for ( ; iDetPair!=detSet.end(); ++iDetPair) {
       totalL += hDetVsBunchId.Integral(1, N_BUNCHES, iDetPair->first,  iDetPair->first);
       totalR += hDetVsBunchId.Integral(1, N_BUNCHES, iDetPair->second, iDetPair->second);
-
-      printf("totals: %d, %d\n", totalL, totalR);
+      //printf("totals: %d, %d\n", totalL, totalR);
    }
 
    if (!gr)
@@ -1063,7 +1057,7 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
       //suma += bcont * anth[j];
    }
 
-   float aveA_N_2 = sum != 0 ? suma/sum : 0;
+   float aveA_N_2 = sum != 0 ? suma/sum : FLT_MIN;
 
    printf("Average analyzing power: %10.8f (old: %10.8f)\n", aveA_N_2, aveA_N);
 
@@ -1941,7 +1935,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       dAsymPhiCorr[iCh] = fabs( dAsym[iCh] / sin(-gPhi[iCh]) );
 
       // Raw polarization without phi angle weighted A_N
-      assert(gAnaMeasResult->A_N[1] != 0);
+      //assert(gAnaMeasResult->A_N[1] != 0);
 
       rawPol[iCh]    =  Asym[iCh] / gAnaMeasResult->A_N[1];
       rawPolErr[iCh] = dAsym[iCh] / gAnaMeasResult->A_N[1];

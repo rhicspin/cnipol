@@ -90,8 +90,9 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
       sprintf(&strChId[0], "%02d", *iCh);
 
-      hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
+      //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
+      hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_raw_ch"+strChId];
+      hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_raw_ch"+strChId];
 
       Calibrate(hTimeVsE, hMeanTime, *iCh);
    }
@@ -218,8 +219,8 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
    Double_t xmax = h->GetXaxis()->GetXmax();
    //xmax = 600;
 
-   Double_t ymin = h->GetYaxis()->GetXmin();
-   Double_t ymax = h->GetYaxis()->GetXmax();
+   //Double_t ymin = h->GetYaxis()->GetXmin();
+   //Double_t ymax = h->GetYaxis()->GetXmax();
 
    TObjArray *fitResHists = new TObjArray();
 

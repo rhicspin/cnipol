@@ -62,25 +62,25 @@ void CnipolRawHists::BookHists()
 
    shName = "hTvsA";
    hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
-   hist->SetTitle(";Amplitude, ADC;TDC;");
+   hist->SetTitle("; Amplitude, ADC; TDC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hTvsI";
    hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
-   hist->SetTitle(";Integral, ADC;TDC;");
+   hist->SetTitle("; Integral, ADC; TDC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hIvsA";
    hist = new TH2I(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
-   hist->SetTitle(";Integral, ADC;TDC;");
+   hist->SetTitle("; Amplitude, ADC; Integral, ADC;");
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
    shName = "hBunchCounts"; //former bunch_dist_raw
    hist = new TH1I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5);
-   hist->SetTitle(";Bunch Id;Events;");
+   hist->SetTitle("; Bunch Id; Events;");
    hist->SetOption("hist XY GRIDX");
    hist->SetFillColor(kGray);
    o[shName] = hist;
@@ -88,13 +88,13 @@ void CnipolRawHists::BookHists()
    shName = "hStripCounts"; // former strip_dist_raw
    hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetOption("hist XY GRIDX");
-   hist->SetTitle(";Channel Id;Events;");
+   hist->SetTitle("; Channel Id; Events;");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hRevolutionId";
    hist = new TH1I(shName.c_str(), shName.c_str(), 1000, 0, 1);
-   hist->SetTitle(";Revolution Id;Events;");
+   hist->SetTitle("; Revolution Id; Events;");
    hist->SetFillColor(kGray);
    hist->SetBit(TH1::kCanRebin);
    o[shName] = hist;
@@ -124,42 +124,42 @@ void CnipolRawHists::BookHists()
       shName = "hAdcAmpltd_ch" + sChId;
       hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
       hist->SetOption("hist NOIMG");
-      hist->SetTitle(";Amplitude, ADC;Events;");
+      hist->SetTitle("; Amplitude, ADC; Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hAdcIntgrl_ch" + sChId;
       hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
       hist->SetOption("hist NOIMG");
-      hist->SetTitle(";Integral, ADC;Events;");
+      hist->SetTitle("; Integral, ADC; Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hTdc_ch" + sChId;
       hist = new TH1I(shName.c_str(), shName.c_str(), 80, 10, 90);
       hist->SetOption("hist NOIMG");
-      hist->SetTitle(";TDC;Events;");
+      hist->SetTitle("; TDC; Events;");
       hist->SetFillColor(kGray);
       oc->o[shName] = hist;
 
       shName = "hTvsA_ch" + sChId;
       hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
       hist->SetOption("colz LOGZ");
-      hist->SetTitle(";Amplitude, ADC;TDC;");
+      hist->SetTitle("; Amplitude, ADC; TDC;");
       oc->o[shName]      = hist;
       fhTvsA_ch[iChId-1] = hist;
 
       shName = "hTvsI_ch" + sChId;
       hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
       hist->SetOption("colz LOGZ");
-      hist->SetTitle(";Integral, ADC;TDC;");
+      hist->SetTitle("; Integral, ADC; TDC;");
       oc->o[shName]      = hist;
       fhTvsI_ch[iChId-1] = hist;
 
       shName = "hIvsA_ch" + sChId;
       hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 255, 0, 255);
       hist->SetOption("colz LOGZ");
-      hist->SetTitle(";Amplitude, ADC;Integral, ADC;");
+      hist->SetTitle("; Amplitude, ADC; Integral, ADC;");
       oc->o[shName]      = hist;
       fhIvsA_ch[iChId-1] = hist;
 
@@ -285,15 +285,15 @@ void CnipolRawHists::FillDerivedPassOne()
 /** */
 void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   Info("PostFillPassOne", "Executing...");
+   Info("PostFillPassOne", "Starting...");
 
    // We expect empty bunch histogram container
-   if (!oc) {
+   if (!oc || oc->d.find("raw_eb") == oc->d.end() ) {
       Error("PostFillPassOne", "No empty bunch container found. No channel will be disabled");
       return;
    }
 
-   CnipolRawHists* ebHists = (CnipolRawHists*) oc;
+   CnipolRawHists* ebHists = (CnipolRawHists*) oc->d.find("raw_eb")->second;
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -320,7 +320,6 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
       //fhTvsA_ch_this_copy->Print();
 
       // Subtract empty bunch data from all bunch data
-      //fhTvsA_ch_eb->Scale( (N_BUNCHES - gMeasInfo->GetNumEmptyBunches()) / (float) gMeasInfo->GetNumEmptyBunches());
       fhTvsA_ch_eb->Scale( N_BUNCHES / (float) gMeasInfo->GetNumEmptyBunches());
       fhTvsA_ch_this_copy->Add(fhTvsA_ch_eb, -1);
 
@@ -355,4 +354,11 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
          continue;
       }
    }
+} //}}}
+
+
+/** */
+TH1* CnipolRawHists::GetHTvsA_ch(UShort_t chId)
+{ //{{{
+   return fhTvsA_ch[chId-1];
 } //}}}
