@@ -504,8 +504,8 @@ void AsymRoot::PostFillPassOne()
 
    //fHists->PostFillPassOne(fHists);
 
-   fHists->d["raw"]->PostFillPassOne(fHists->d["raw_eb"]);
-   fHists->d["preproc"]->PostFillPassOne(fHists->d["preproc_eb"]);
+   //fHists->d["raw"]->PostFillPassOne(fHists);
+   fHists->d["preproc"]->PostFillPassOne(fHists);
 
    ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
@@ -828,6 +828,13 @@ void AsymRoot::UpdateCalibrator()
       Error("UpdateCalibrator", "Cannot select calibrator for this kind of run");
    }
 
+} //}}}
+
+
+/** */
+Calibrator* AsymRoot::GetCalibrator()
+{ //{{{
+   return fEventConfig->GetCalibrator();
 } //}}}
 
 
@@ -1166,13 +1173,17 @@ void AsymRoot::SaveAs(string pattern, string dir)
 
 
 /** */
-EventConfig* AsymRoot::GetRunConfig() { return fEventConfig; }
+EventConfig* AsymRoot::GetMeasConfig() { return fEventConfig; }
 
 
 /** */
-void AsymRoot::GetRunConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
+void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
 { //{{{
-   if (!fEventConfig) { printf("blah\n"); ri = 0; ai = 0; ar = 0; return; }
+   if (!fEventConfig) {
+      Error("GetMeasConfigs", "fEventConfig is not defined");
+      ri = 0; ai = 0; ar = 0;
+      return;
+   }
 
    ri = fEventConfig->GetMeasInfo();
    ai = fEventConfig->GetAnaInfo();

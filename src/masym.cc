@@ -157,7 +157,7 @@ void initialize()
       UInt_t   fillId           = (UInt_t) runId;
       UInt_t   beamEnergy       = (UInt_t) (gMM->fMeasInfo->GetBeamEnergy() + 0.5);
       string   asymVersion      = gMM->fMeasInfo->fAsymVersion;
-      Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
+      //Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
       Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
       Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
       Float_t  polarization     = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;

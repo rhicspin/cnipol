@@ -10,6 +10,7 @@
 #include "AsymHeader.h"
 
 #include "ChannelEvent.h"
+#include "CnipolRawHists.h"
 #include "DrawObjContainer.h"
 
 
@@ -21,6 +22,12 @@ class CnipolPreprocHists : public DrawObjContainer
 private:
 
    TH1 *fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
+   TH1 *fhTimeVsEnergyA_raw_ch[N_SILICON_CHANNELS];
+   TH1 *fhFitMeanTimeVsEnergyA_raw_ch[N_SILICON_CHANNELS];
+   TH1 *fhTimeVsEnergyACumul_ch[N_SILICON_CHANNELS];
+
+   void PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *preprocHists=0);
+   void PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists=0);
 
 public:
 

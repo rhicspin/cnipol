@@ -20,9 +20,13 @@ MeasInfo::MeasInfo() : TObject(),
    fBeamEnergy(0),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
+   fRunName(100, ' '),
+   fProtoCutSlope(0), fProtoCutOffset(0),
+   fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
+   fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
+
    Run(-1),
    RUNID(0.0),
-   fRunName(100, ' '),
    fStartTime(0),
    fStopTime(0),
    fRunTime(0),
@@ -45,10 +49,7 @@ MeasInfo::MeasInfo() : TObject(),
    fDisabledChannelsVec(),   // should not be used. will deprecate
    fSiliconChannels(),
    fActiveSiliconChannels(), // Only good channels used in the analysis
-   fBeamBunches(),
-   fProtoCutSlope(0), fProtoCutOffset(0),
-   fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
-   fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0)
+   fBeamBunches()
 {
    for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
@@ -194,14 +195,14 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
-   fprintf(f, "$rc['fProtoCutAdcMin']              = %f;\n", fProtoCutAdcMin);
-   fprintf(f, "$rc['fProtoCutAdcMax']              = %f;\n", fProtoCutAdcMax);
-   fprintf(f, "$rc['fProtoCutTdcMin']              = %f;\n", fProtoCutTdcMin);
-   fprintf(f, "$rc['fProtoCutTdcMax']              = %f;\n", fProtoCutTdcMax);
-   fprintf(f, "$rc['fPulserCutAdcMin']             = %f;\n", fPulserCutAdcMin);
-   fprintf(f, "$rc['fPulserCutAdcMax']             = %f;\n", fPulserCutAdcMax);
-   fprintf(f, "$rc['fPulserCutTdcMin']             = %f;\n", fPulserCutTdcMin);
-   fprintf(f, "$rc['fPulserCutTdcMax']             = %f;\n", fPulserCutTdcMax);
+   fprintf(f, "$rc['fProtoCutAdcMin']              = %d;\n", fProtoCutAdcMin);
+   fprintf(f, "$rc['fProtoCutAdcMax']              = %d;\n", fProtoCutAdcMax);
+   fprintf(f, "$rc['fProtoCutTdcMin']              = %d;\n", fProtoCutTdcMin);
+   fprintf(f, "$rc['fProtoCutTdcMax']              = %d;\n", fProtoCutTdcMax);
+   fprintf(f, "$rc['fPulserCutAdcMin']             = %d;\n", fPulserCutAdcMin);
+   fprintf(f, "$rc['fPulserCutAdcMax']             = %d;\n", fPulserCutAdcMax);
+   fprintf(f, "$rc['fPulserCutTdcMin']             = %d;\n", fPulserCutTdcMin);
+   fprintf(f, "$rc['fPulserCutTdcMax']             = %d;\n", fPulserCutTdcMax);
 
    fprintf(f, "\n");
 } //}}}

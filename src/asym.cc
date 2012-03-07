@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
 
-   gAsymRoot->GetRunConfigs(gMeasInfo, gAnaInfo, gAnaMeasResult);
+   gAsymRoot->GetMeasConfigs(gMeasInfo, gAnaInfo, gAnaMeasResult);
 
    //gAsymDb  = new AsymDbFile();
    gAsymDb = new AsymDbSql();
@@ -513,8 +513,10 @@ int main(int argc, char *argv[])
 
    gAsymRoot->fEventConfig->PrintAsPhp(gAnaInfo->GetMeasInfoFile());
    gAsymRoot->fEventConfig->PrintAsConfig(gAnaInfo->GetRunConfFile());
-   fclose(gAnaInfo->GetMeasInfoFile()); gAnaInfo->fFileMeasInfo = 0;
-   fclose(gAnaInfo->GetRunConfFile()); gAnaInfo->fFileRunConf = 0;
+   fclose(gAnaInfo->GetMeasInfoFile());
+   fclose(gAnaInfo->GetRunConfFile());
+   gAnaInfo->fFileMeasInfo = 0;
+   gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())
       gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());

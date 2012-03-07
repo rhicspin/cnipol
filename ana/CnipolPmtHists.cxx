@@ -88,6 +88,7 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
+   Info("PostFillPassOne", "Starting...");
 
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {
 

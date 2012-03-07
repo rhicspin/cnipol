@@ -390,14 +390,15 @@ void RawDataProcessor::ReadDataFast()
                if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
                   gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
 
-               // Apply very basic "proto" cuts
-               if ( gAsymRoot->fChannelEvent->PassCutNoise() ) {
-                  gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB);
+               //ds: XXX commented for a test
+               //// Apply very basic "proto" cuts
+               //if ( gAsymRoot->fChannelEvent->PassCutNoise() ) {
+               //   gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB);
 
-                  // The same but empty bunches only
-                  if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
-                     gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB_EB);
-               }
+               //   // The same but empty bunches only
+               //   if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
+               //      gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB_EB);
+               //}
             }
 
             // Use all events to fill pulser histograms - not valid. thinout is applied
@@ -427,6 +428,8 @@ void RawDataProcessor::ReadDataFast()
 
             nEventsProcessed++;
 
+            // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
+            //if (nEventsProcessed%50000 == 0 && fFileStdLogName.empty() ) 
             if (nEventsProcessed%50000 == 0)
             {
                printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), nEventsProcessed);
@@ -681,7 +684,9 @@ void readloop(MseMeasInfoX &run)
 
               event_process(&event);
 
-              if (gMeasInfo->fNEventsProcessed%50000 == 0)
+              // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
+              //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
+              if ( gMeasInfo->fNEventsProcessed%50000 == 0 )
               {
                  printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
                  fflush(stdout);

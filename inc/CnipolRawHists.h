@@ -38,6 +38,8 @@ public:
    void FillDerivedPassOne();
    void PostFillPassOne(DrawObjContainer *oc=0);
 
+   TH1* GetHTvsA_ch(UShort_t chId);
+
    ClassDef(CnipolRawHists, 1)
 };
 

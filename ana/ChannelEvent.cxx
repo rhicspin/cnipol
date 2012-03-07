@@ -32,9 +32,9 @@ Float_t ChannelEvent::GetEnergyA() const
    UChar_t chId = GetChannelId();
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fAmpltd;
 
-   //return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
-   return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef *
-          (fChannel.fAmpltd + (fEventConfig->fRandom->Rndm() - 0.5));
+   return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
+   //return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef *
+   //       (fChannel.fAmpltd + (fEventConfig->fRandom->Rndm() - 0.5));
 
    //return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
    //       (fChannel.fAmpltd + fEventConfig->fRandom->Rndm() - 0.5);
@@ -350,40 +350,34 @@ Bool_t ChannelEvent::PassCutCarbonMassEstimate()
 /** */
 Bool_t ChannelEvent::PassCutPulser()
 { //{{{
-   if ( GetAmpltd() < fEventConfig->fMeasInfo->fPulserCutAdcMax &&
-        GetAmpltd() > fEventConfig->fMeasInfo->fPulserCutAdcMin &&
-        GetTdc() < fEventConfig->fMeasInfo->fPulserCutTdcMax &&
-        GetTdc() > fEventConfig->fMeasInfo->fPulserCutTdcMin
+   if ( GetAmpltd() < gMeasInfo->GetPulserCutAdcMax() &&
+        GetAmpltd() > gMeasInfo->GetPulserCutAdcMin() &&
+        GetTdc() < gMeasInfo->GetPulserCutTdcMax() &&
+        GetTdc() > gMeasInfo->GetPulserCutTdcMin()
       )
       return false;
 
    return true;
 
    //switch (gMeasInfo->fPolId) {
-
    //case 0:   // B1U
    //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
    //      return false;
    //   break;
-
    //case 1:   // Y1D
    //   if (fChannel.fAmpltd > 120 && fChannel.fAmpltd < 170 && fChannel.fTdc > 54)
    //      return false;
    //   break;
-
    //case 2:   // B2D
    //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && fChannel.fTdc > 50)
    //      return false;
-
    //   break;
    //case 3:   // Y2U
    //   //if (fChannel.fAmpltd > 155 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50)
    //   if (fChannel.fAmpltd > 140 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50) // 15039.302
    //      return false;
-
    //   break;
    //}
-
    //return true;
 } //}}}
 
@@ -393,14 +387,14 @@ Bool_t ChannelEvent::PassCutNoise()
 { //{{{
    Double_t extraOffset = 0;
 
-   if ( UInt_t(fEventConfig->fMeasInfo->GetBeamEnergy() + 0.5) != kINJECTION)
+   if ( UInt_t(gMeasInfo->GetBeamEnergy() + 0.5) != kINJECTION)
       extraOffset = -6; // 6 TDC units ~= 8 ns
 
-   if ( GetAmpltd() < fEventConfig->fMeasInfo->fProtoCutAdcMin ||
-        GetAmpltd() > fEventConfig->fMeasInfo->fProtoCutAdcMax ||
-        GetTdc() < fEventConfig->fMeasInfo->fProtoCutTdcMin ||
-        GetTdc() > fEventConfig->fMeasInfo->fProtoCutTdcMax ||
-        fabs( GetTdc() - ( fEventConfig->fMeasInfo->fProtoCutSlope * GetAmpltd() + fEventConfig->fMeasInfo->fProtoCutOffset + extraOffset) ) > 20
+   if ( GetAmpltd() < gMeasInfo->GetProtoCutAdcMin() ||
+        GetAmpltd() > gMeasInfo->GetProtoCutAdcMax() ||
+        GetTdc() < gMeasInfo->GetProtoCutTdcMin() ||
+        GetTdc() > gMeasInfo->GetProtoCutTdcMax() ||
+        fabs( GetTdc() - ( gMeasInfo->GetProtoCutSlope() * GetAmpltd() + gMeasInfo->GetProtoCutOffset() + extraOffset) ) > 20
       )
       return false;
 
