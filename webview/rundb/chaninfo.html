@@ -113,7 +113,8 @@ $origPHDir = $gP->dir;
 $gP->dir = "$origPHDir/raw/channel$gChanId/";
 ?>
 
-<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<p>
+<table class="simple" cellspacing=10 align=center>
 
 <!--
 <tr>
@@ -128,6 +129,8 @@ $gP->dir = "$origPHDir/raw/channel$gChanId/";
 <?=$gP->img("hTvsA_ch$gChanId")?>
 <td align=center>
 <?=$gP->img("hTvsI_ch$gChanId")?>
+<td align=center>
+<?=$gP->img("hIvsA_ch$gChanId")?>
 
 <!--
 <tr>
@@ -144,12 +147,14 @@ $gP->dir = "$origPHDir/raw/channel$gChanId/";
 </div>
 <!-- }}} -->
 
+<!--
 
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
 <h2 id="other" class="count">Other</h2>
-<!-- {{{ -->
+-->
+<!-- {{{ 
 <div id="div:other" class="section">
 
 <p>
@@ -169,7 +174,8 @@ $gP->dir = "$origPHDir/std/channel$gChanId/";
 </table>
 
 </div>
-<!-- }}} -->
+}}} -->
+
 
 
 <!-- Main text ends here-->
