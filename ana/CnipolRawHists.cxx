@@ -288,70 +288,62 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
    Info("PostFillPassOne", "Starting...");
 
    // We expect empty bunch histogram container
-   if (!oc || oc->d.find("raw_eb") == oc->d.end() ) {
-      Error("PostFillPassOne", "No empty bunch container found. No channel will be disabled");
+   string thisDirName(fDir->GetName()); 
+
+   if (!oc || thisDirName.compare("raw_neb") != 0 ||
+        oc->d.find("raw") == oc->d.end() || oc->d.find("raw_eb") == oc->d.end() )
+   {
+      Error("PostFillPassOne", "Cannot proceed: No appropriate empty bunch container found");
+      exit(-1);
       return;
    }
 
-   CnipolRawHists* ebHists = (CnipolRawHists*) oc->d.find("raw_eb")->second;
+   CnipolRawHists* rawHists    = (CnipolRawHists*) oc->d.find("raw")->second;
+   CnipolRawHists* rawHists_eb = (CnipolRawHists*) oc->d.find("raw_eb")->second;
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
    for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
-      TH1* fhTvsA_ch_this = (TH1F*) fhTvsA_ch[*iCh-1];
-      TH1* fhTvsA_ch_eb   = (TH1F*) ebHists->fhTvsA_ch[*iCh-1];
+      UShort_t chId     = *iCh;
+      TH1* hTvsA_ch     = (TH1F*) rawHists->GetHTvsA_ch(chId);
+      TH1* hTvsA_ch_eb  = (TH1F*) rawHists_eb->GetHTvsA_ch(chId);
+      TH1* hTvsA_ch_neb = (TH1F*) GetHTvsA_ch(chId);
 
-      if ( !fhTvsA_ch_this || !fhTvsA_ch_eb ) {
-         Error("PostFillPassOne", "No pulser histogram found %s", fhTvsA_ch_this->GetName());
+      if ( !hTvsA_ch || !hTvsA_ch_eb ) {
+         Error("PostFillPassOne", "Histogram %s not found", hTvsA_ch->GetName());
          continue;
       }
 
-      // First check if the "area" (i.e. the number of bins) filled with events
-      // is ridicuolosly small
-
-      // Create a copy of the TvsA histogram
-      string copyName(fhTvsA_ch_this->GetName());
-      copyName += "_copy";
-      TH1* fhTvsA_ch_this_copy = (TH1*) fhTvsA_ch_this->Clone(copyName.c_str());
-      //TH1* fhTvsA_ch_this_copy = fhTvsA_ch_this;
-
-      //fhTvsA_ch_this->Print();
+      //fhTvsA_ch->Print();
       //fhTvsA_ch_this_copy->Print();
 
       // Subtract empty bunch data from all bunch data
-      fhTvsA_ch_eb->Scale( N_BUNCHES / (float) gMeasInfo->GetNumEmptyBunches());
-      fhTvsA_ch_this_copy->Add(fhTvsA_ch_eb, -1);
-
+      //fhTvsA_ch_eb->Scale( );
+      //fhTvsA_ch_this_copy->Add(fhTvsA_ch_eb, -1);
       //fhTvsA_ch_this_copy->Print();
 
+      Float_t scale = N_BUNCHES / (Float_t) gMeasInfo->GetNumEmptyBunches();
+
+      hTvsA_ch_neb->Sumw2();
+      hTvsA_ch_neb->Add(hTvsA_ch, hTvsA_ch_eb, 1, -1*scale);
+
       // After the subtraction set bins with negative content to 0 including under/overflows
-      for (Int_t ibx=0; ibx<=fhTvsA_ch_this_copy->GetNbinsX()+1; ibx++) {
-         for (Int_t iby=0; iby<=fhTvsA_ch_this_copy->GetNbinsY()+1; iby++) {
+      for (Int_t ibx=0; ibx<=hTvsA_ch_neb->GetNbinsX()+1; ibx++) {
+         for (Int_t iby=0; iby<=hTvsA_ch_neb->GetNbinsY()+1; iby++) {
 
-            Double_t bc = fhTvsA_ch_this_copy->GetBinContent(ibx, iby);
+            //Double_t bc    = hTvsA_ch->GetBinContent(ibx, iby);
+            //Double_t bc_eb = hTvsA_ch_eb->GetBinContent(ibx, iby);
+            Double_t bc_neb = hTvsA_ch_neb->GetBinContent(ibx, iby);
+            //Double_t bc_neb = bc - bc_eb*scale;
 
-            if (bc < 0) {
-               fhTvsA_ch_this_copy->SetBinContent(ibx, iby, 0);
-               fhTvsA_ch_this_copy->SetBinError(ibx, iby, 0);
+            //bc_neb = bc_neb < 0 ? 0 : bc_neb;
+
+            if (bc_neb < 0) {
+               hTvsA_ch_neb->SetBinContent(ibx, iby, 0);
+               hTvsA_ch_neb->SetBinError(ibx, iby, 0);
             }
          }
-      }
-
-      // Calculate cumulative histograms
-      utils::ConvertToCumulative2(fhTvsA_ch_this_copy, (TH1F*) fhTvsACumul_ch[*iCh-1]);
-      delete fhTvsA_ch_this_copy;
-
-      // 15% of bins contain > 80% of events
-      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(15) > 0.80) {
-         gMeasInfo->DisableChannel(*iCh);
-         continue;
-      }
-
-      // 2% of bins contain > 30% of events - Is this a stronger requirement?
-      if (fhTvsACumul_ch[*iCh-1]->GetBinContent(2) > 0.30) {
-         gMeasInfo->DisableChannel(*iCh);
-         continue;
       }
    }
 } //}}}

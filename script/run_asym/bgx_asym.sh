@@ -26,7 +26,8 @@ bgx_limit() {
         bgx_update
     done
     if [[ "$1" != "-" ]] ; then
-        nice -n 5 $* &
+        #nice -n 5 $* &
+        $* &
         bgxgrp="${bgxgrp} $!"
         # to avoid clashing while updating run database
         sleep 2

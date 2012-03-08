@@ -30,8 +30,8 @@ DeadLayerCalibratorEDepend::~DeadLayerCalibratorEDepend()
 /** */
 void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 { //{{{
-   TH2F*  htemp     = 0;
-   TH1D*  hMeanTime = 0;
+   TH1*  htemp     = 0;
+   TH1F*  hMeanTime = 0;
    string strChId("  ");
    string cutid     = "_cut2";
 
@@ -54,8 +54,8 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       sprintf(&strChId[0], "%02d", *iCh);
 
-      htemp     = (TH2F*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_ch"+strChId];
-      hMeanTime = (TH1D*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_ch"+strChId];
+      htemp     = (TH1*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_ch"+strChId];
+      hMeanTime = (TH1F*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_ch"+strChId];
 
       Calibrate(htemp, hMeanTime, *iCh);
    }
@@ -67,14 +67,14 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 /** */
 void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 { //{{{
-   TH2F*  hTimeVsE  = 0;
-   TH1D*  hMeanTime = 0;
+   TH1*  hTimeVsE  = 0;
+   TH1*  hMeanTime = 0;
    string strChId("  ");
 
    // iCh=0 is the sum of all channels
    // Special treatment for combined histogram
-   hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
-   hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+   hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA"];
+   hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
    Calibrate(hTimeVsE, hMeanTime);
 
@@ -91,8 +91,8 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       sprintf(&strChId[0], "%02d", *iCh);
 
       //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_raw_ch"+strChId];
-      hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_raw_ch"+strChId];
+      hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_raw_ch"+strChId];
+      hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_raw_ch"+strChId];
 
       Calibrate(hTimeVsE, hMeanTime, *iCh);
    }
@@ -104,6 +104,9 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
    for ( ; iChCalib != fChannelCalibs.end(); ++iChCalib)
    {
       ChannelCalib tmpChCalib = iChCalib->second;
+
+      // skip the first "channel" 0 with the sum
+      if (iChCalib->first == 0) continue;
 
       if (tmpChCalib.fFitStatus != kDLFIT_OK)
          gMeasInfo->DisableChannel(iChCalib->first);
@@ -189,7 +192,7 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
 
 
 /** */
-void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
+void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId, Bool_t wideLimits)
 { //{{{
    ChannelCalib *chCalib;
 
@@ -232,7 +235,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chI
    //   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
    //} else { // In case of the regular channel calibration
       //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
-      ((TH2F*) h)->FitSlicesY(0, 0, -1, 0, "QNR", fitResHists);
+      ((TH2S*) h)->FitSlicesY(0, 0, -1, 0, "QNR", fitResHists);
    //}
 
    //delete gausFitFunc;
