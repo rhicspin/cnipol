@@ -159,18 +159,18 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 
    // We expect empty bunch histogram container of the same class
    if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
-      Error("PostFillPassOne", "No empty bunch container found");
+      Error("PostFillPassOne", "No empty bunch container 'preproc_eb' found");
    } else {
       CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc->d.find("preproc_eb")->second;
       PostFillPassOne_SubtractEmptyBunch(ebHists);
    }
 
    // A raw histogram container is required to fill TvsE histograms
-   if (!oc || oc->d.find("raw") == oc->d.end() )
+   if ( !oc || oc->d.find("raw_neb") == oc->d.end() )
    {
-      Error("PostFillPassOne", "No raw histogram container found");
+      Error("PostFillPassOne", "No 'raw_neb' histogram container found");
    } else {
-      CnipolRawHists *rawHists = (CnipolRawHists*) oc->d.find("raw")->second;
+      CnipolRawHists *rawHists   = (CnipolRawHists*) oc->d.find("raw_neb")->second;
       PostFillPassOne_FillFromRawHists(rawHists);
    }
 
@@ -389,7 +389,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
    for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
       UShort_t chId                         = *iCh;
-      TH1*     hTvsA_ch                     = (TH1*) rawHists->GetHTvsA_ch(chId);
+      TH1*     hTvsA_ch                     = (TH1*) rawHists->GetHTvsA_ch(chId);   // raw hist all - empty bunches
       TH1*     hTimeVsEnergyA_raw_ch        = (TH1*) fhTimeVsEnergyA_raw_ch[chId-1];
       TH1*     hFitMeanTimeVsEnergyA_raw_ch = (TH1*) fhFitMeanTimeVsEnergyA_raw_ch[chId-1];
 
@@ -400,10 +400,6 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
 
       Int_t nXBins = adcMax - adcMin;
       Int_t nYBins = tdcMax - tdcMin;
-      //Int_t nXBins = gMeasInfo->GetProtoCutAdcMax() - gMeasInfo->GetProtoCutAdcMin();
-      //Int_t nYBins = gMeasInfo->GetProtoCutTdcMax() - gMeasInfo->GetProtoCutTdcMin();
-      //Int_t nXBins = hTvsA_ch->GetNbinsX();
-      //Int_t nYBins = hTvsA_ch->GetNbinsY();
 
       Calibrator *calibrator = gAsymRoot->GetCalibrator();
 
@@ -411,11 +407,6 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       Float_t xMax = calibrator->GetEnergyA(adcMax, chId);
       Float_t yMin = calibrator->GetTime(tdcMin);
       Float_t yMax = calibrator->GetTime(tdcMax);
-
-      //Float_t xMin = calibrator->GetEnergyA(0, chId);
-      //Float_t xMax = calibrator->GetEnergyA(255, chId);
-      //Float_t yMin = calibrator->GetTime(10);
-      //Float_t yMax = calibrator->GetTime(90);
 
       hTimeVsEnergyA_raw_ch->SetBins(nXBins, xMin, xMax, nYBins, yMin, yMax);
       hFitMeanTimeVsEnergyA_raw_ch->SetBins(nXBins, xMin, xMax);
@@ -440,14 +431,25 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
             //if ( fabs( (Float_t) biny - ( gMeasInfo->GetProtoCutSlope() * (Float_t) binx + gMeasInfo->GetProtoCutOffset() + extraOffset) ) > 20 )
             //   continue;
 
-            Double_t bc  = hTvsA_ch->GetBinContent(binAdc, binTdc);
-            Double_t be  = hTvsA_ch->GetBinError(binAdc, binTdc);
+            Double_t bc = hTvsA_ch->GetBinContent(binAdc, binTdc);
+            Double_t be = hTvsA_ch->GetBinError(binAdc, binTdc);
 
             hTimeVsEnergyA_raw_ch->SetBinContent(binx, biny, bc);
             hTimeVsEnergyA_raw_ch->SetBinError(binx, biny, be);
          }
       }
 
+      // First check if the "area" (i.e. the number of bins) filled with events
+      // is ridicuolosly small
+      //hTvsA_ch->Print("all");
+      //hTimeVsEnergyA_raw_ch->Print("all");
+      Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_raw_ch);
+      printf("Non empty bin fraction: %f\n", frac);
+
+      if ( frac < 0.20 ) {
+         gMeasInfo->DisableChannel(chId);
+         continue;
+      }
 
       // Calculate cumulative histograms
       utils::ConvertToCumulative2(hTimeVsEnergyA_raw_ch, (TH1F*) fhTimeVsEnergyACumul_ch[chId-1]);

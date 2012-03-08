@@ -53,7 +53,7 @@ void CnipolHists::BookHists(string cutid)
 
    // Time vs Energy from amplitude
    sprintf(hName, "hTimeVsEnergyA%s", cutid.c_str());
-   o[hName] = new TH2F(hName, hName, 80, 100, 1700, 80, 20, 100);
+   o[hName] = new TH2S(hName, hName, 80, 100, 1700, 80, 20, 100);
    ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
    ((TH1*) o[hName])->SetTitle(";Deposited Energy, keV;Time, ns;");
 

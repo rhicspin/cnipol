@@ -390,7 +390,7 @@ void RawDataProcessor::ReadDataFast()
                if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
                   gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
 
-               //ds: XXX commented for a test
+               //ds: XXX commented for test
                //// Apply very basic "proto" cuts
                //if ( gAsymRoot->fChannelEvent->PassCutNoise() ) {
                //   gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB);
