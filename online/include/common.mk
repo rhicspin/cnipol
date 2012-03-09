@@ -6,8 +6,8 @@ INC_PATHS = -I$(CDEV)/store/X86/include/cdev -I../include -I/usr/include
 LIBS = -lcdev -lm -ldl -lstdc++ -lpthread
 
 FFLAGS = -ffixed-line-length-none
-CFLAGS = $(INC_PATHS) -pthread -Wall
-CXXFLAGS = $(INC_PATHS) -pthread -Wall
+CFLAGS = $(INC_PATHS) -pthread -Wall -g
+CXXFLAGS = $(INC_PATHS) -pthread -Wall -g
 LOADLIBES = $(LIB_PATHS) $(LIBS)
 FC = f95
 CXX = g++

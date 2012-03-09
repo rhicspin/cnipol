@@ -232,6 +232,23 @@ int getVoltage(){
 }
 
 
+/** */
+void getCDEVInfo(beamDataStruct *bds)
+{
+   int irc = 0;
+   int N   = 0;
+
+   // Determine the ring (my ring <-> other ring...
+   if (recRing & REC_BLUE) N = 1; 
+
+   char specCDEVName[2][20] = {"ringSpec.yellow", "ringSpec.blue"};
+
+   cdevData    data;
+   cdevDevice &spec = cdevDevice::attachRef(specCDEVName[N]);
+
+   if(!DEVSEND(spec, "get beamEnergyM", NULL, &data, LogFile, irc))
+      data.get("value", &(bds->beamEnergyM));
+}
 
 
 // Get most of CDEV data at the beginnig of the run
@@ -299,7 +316,7 @@ void getAdoInfo(void)
 	}
     }
 
-    //	determine the ring (my ring <-> other ring...
+    // Determine the ring (my ring <-> other ring...
     N = 0;
     if (recRing & REC_BLUE) N = 1; 
 

@@ -134,7 +134,8 @@ case $MODE in
             $MACDIR/online_polar.pl $RUN
             echo "Starting sendpict..." >> $ALOG
             mysendpict plotData $PSFILE >> $ALOG 2>&1
-            # We will also leave in the background the process to analyze this measurement for bunch per bunch emittance
+            # We will also leave in the background the process to analyze this
+            # measurement for bunch per bunch emittance
             (   echo "Starting emitscan..." >> $ALOG; \
                 $EMITCMD -f $DATA -o $ROOTFILE -p $PSFILEE -d $POLARIM >> $ALOG 2>&1 ; \
                 echo "Starting sendpict 2 ..." >> $ALOG; \
