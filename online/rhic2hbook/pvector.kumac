@@ -142,8 +142,20 @@ macro main run='-1' nowait='-1'
    pole = $RSIGMA(xchpe(1)/an(1))
    
    mess $EVAL(xchp(1)) $EVAL(an(1))
-   
-   title_gl 'Run '//[run]//'   Pol='//$FORMAT([pol],F5.3)//'+/-'//$FORMAT([pole],F5.3) 
+
+* ======================================
+* ******* Re-evaluate polarziation after channel cleaning ***********
+* ======================================
+
+*   title_gl 'Run '//[run]//'   Pol='//$FORMAT([pol],F5.3)//'+/-'//$FORMAT([pole],F5.3)
+exec $ENV(MACDIR)/repol [run]
+ierr = [@]; mess repol code: [ierr]
+if [ierr].eq.0 then
+  pol = repolv(1); pole=repolv(2);
+  title_gl 'Run '//[run]//'   Pol.='//$FORMAT([pol],F5.3)//'+/-'//$FORMAT([pole],F5.3)
+else
+  title_gl 'Run '//[run]//'   Pol. measurement failed'
+endif
    
 * ======================================
 * ******* Plot phi asymmetry ***********

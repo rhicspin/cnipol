@@ -57,18 +57,20 @@ int  testCarbTarg(void);
 void writeCarbTarg(void);
 
 //	CDEV functions	(rpolutilp.cpp)
-void getJetPosition(void);
-int  getTargetMovementInfo(long **data);
-void getAdoInfo(void);
-void getWcmInfo(void);
+void      getJetPosition(void);
+int       getTargetMovementInfo(long **data);
+void      getCDEVInfo(beamDataStruct *bds);
+void      getAdoInfo(void);
+void      getWcmInfo(void);
 EMeasType getCDEVMeasType();
-int getVoltage();
-void getCarbTarg(carbTargStat * targstat);
-void GetTargetEncodings(long *res);
-void UpdateProgress(int evDone, int rate, double ts);
-void UpdateStatus(void);
-void UpdateMessage(char *message);
-void ProgV124(int ring);
+int       getVoltage();
+void      getCarbTarg(carbTargStat * targstat);
+void      GetTargetEncodings(long *res);
+void      UpdateProgress(int evDone, int rate, double ts);
+void      UpdateStatus(void);
+void      UpdateMessage(char *message);
+void      ProgV124(int ring);
+
 #ifdef __cplusplus
     }
 #endif

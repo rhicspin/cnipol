@@ -333,12 +333,12 @@ int readConfig(char * cfgname, int update)
          SiConf = NULL;
       }
       SiConf = (SiChanStruct *)malloc(Conf.NumChannels * sizeof(SiChanStruct));
-      for (i = 0; i < (unsigned)Conf.NumChannels; i++) memcpy(&SiConf[i], &DefSiConf, sizeof(DefSiConf));
+      for (i = 0; i < (unsigned) Conf.NumChannels; i++) memcpy(&SiConf[i], &DefSiConf, sizeof(DefSiConf));
    }
 
    // Update all setttings for particular parameters
    if (update) {
-      for (i = 0; i < (unsigned)Conf.NumChannels; i++) {
+      for (i = 0; i < (unsigned) Conf.NumChannels; i++) {
          if ((buf = envz_get(ENVZ, ENVLEN, "WinBegin")))  SiConf[i].Window.split.Beg = strtol(buf, NULL, 0);
          if ((buf = envz_get(ENVZ, ENVLEN, "WinEnd")))    SiConf[i].Window.split.End = strtol(buf, NULL, 0);
          if ((buf = envz_get(ENVZ, ENVLEN, "ETCutW")))    SiConf[i].ETCutW           = strtod(buf, NULL);
@@ -862,10 +862,13 @@ int camacOpen(void)
 
    /* Fill in CAMAC table */
    memset(&WFDinCAMAC, -1, sizeof(WFDinCAMAC));
+
    for (j = 0; j < MAXCRATES; j++) for (i = 0; i < MAXSTATIONS; i++) WFDinCAMAC[j][i].yes = 0;
+
    for (i = 0; i < Conf.NumChannels; i++) {
       // Camac station always goes as is, starting from 1
-      if (SiConf[i].CamacN >= 0) WFDinCAMAC[SiConf[i].CrateN][SiConf[i].CamacN].yes = 1;
+      if (SiConf[i].CamacN >= 0)
+         WFDinCAMAC[SiConf[i].CrateN][SiConf[i].CamacN].yes = 1;
       if (SiConf[i].VirtexN != 0)
          WFDinCAMAC[SiConf[i].CrateN][SiConf[i].CamacN].si[SiConf[i].VirtexN - 1] = i;
    }
@@ -901,7 +904,10 @@ void setInhibit(void)
 {
    int k;
    setOutInhibit();
-   for (k = 0; k < MAXCRATES; k++) if (CrateRequired[k]) CMC_Single(Crate[k], 30, 26, 9, 0);
+   for (k = 0; k < MAXCRATES; k++) {
+      if (CrateRequired[k])
+         CMC_Single(Crate[k], 30, 26, 9, 0);
+   }
 }
 
 void resetOutInhibit(void)
@@ -1008,8 +1014,10 @@ int initWFDs(void)
       if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
 
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes)
                CMC_Add2Chain(ch, CMC_STDNFA(i, 0, 8));
+         }
 
          RP_CommitChain(ch, Crate[cr]);
 
@@ -1050,8 +1058,8 @@ int initWFDs(void)
                   WFDinCAMAC[cr][i].yes = 0;
                   for (k = 0; k < 3; k++) {
                      if (WFDinCAMAC[cr][i].si[k] >= 0) {
-                        SiConf[WFDinCAMAC[cr][i].si[k]].CrateN = -1;
-                        SiConf[WFDinCAMAC[cr][i].si[k]].CamacN = 0;
+                        SiConf[WFDinCAMAC[cr][i].si[k]].CrateN  = -1;
+                        SiConf[WFDinCAMAC[cr][i].si[k]].CamacN  = 0;
                         SiConf[WFDinCAMAC[cr][i].si[k]].VirtexN = 0;
                         WFDinCAMAC[cr][i].si[k] = -1;
                      }
@@ -1064,26 +1072,32 @@ int initWFDs(void)
    }
 
    // Select clock source, set BZ delay and reset dlls
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
+   for (cr = 0; cr < MAXCRATES; cr++) {
+      if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
-         for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes) {
+         for (i = 0; i < MAXSTATIONS; i++) {
+            if (WFDinCAMAC[cr][i].yes) {
                CMC_Add2Chain(ch, CMC_CMDDATA | iExtClock | ((Conf.BZDelay + 1) << 4)); // external clocks & BZdelay
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 8));
                CMC_Add2Chain(ch, CMC_CMDDATA | 0x1F);   // select all virtexes
                CMC_Add2Chain(ch, CMC_STDNFA(i, 16, 9));
                CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 7));  // reset DLL (to be done in WFD)
             }
+         }
          RP_CommitChain(ch, Crate[cr]);
       }
+   }
 
    nsleep(0.005);       // 5 ms is quite enough to reset DLLs
 
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
+   for (cr = 0; cr < MAXCRATES; cr++) {
+      if (CrateRequired[cr]) {
          CMC_ResetChain(ch);
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                CMC_Add2Chain(ch, CMC_STDNFA(i, 9, 0));  // reset ALL
          RP_CommitChain(ch, Crate[cr]);
       }
+   }
 
    nsleep(0.001);       // 1 ms is quite enough
 
@@ -1110,7 +1124,7 @@ int initWFDs(void)
                      CMC_Add2Chain(ch, CMC_STDNFA(i, 17, 1));
 
                      // Calculate 
-                     k = (int)((Conf.TrigMin - SiConf[nSi].edead) / SiConf[nSi].ecoef);
+                     k = (int) ( (Conf.TrigMin - SiConf[nSi].edead) / SiConf[nSi].ecoef);
                      if (k < 0)   k = 0;
                      if (k > 255) k = 255;
 
@@ -1577,11 +1591,13 @@ int getEvents(int Number)
       if (t >= tlast + 1.0 || IStop != 0 || (Number > 0 && Cnt >= Number)) { // at least 1 second passed
          Cnt = getNumberOfEvents();
          l10++;
+
          if (l10 == 10) {
             l10 = 0;
             l10Val = Cnt - l10Cnt;
             l10Cnt = Cnt;
          }
+
          if (LogFile == stdout) {
             printf("Sec: %4.4d  Total: %9d  Last: %6d   Rate:  %6d  Last10: %8d  ",
                    (int)(t - t0), Cnt, Cnt - lCnt, (int)((Cnt - lCnt) / (t - tlast)), l10Val);

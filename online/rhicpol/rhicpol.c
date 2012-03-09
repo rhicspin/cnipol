@@ -108,6 +108,7 @@ int main(int argc, char **argv)
    recRing = 0;
 
    while ((i = getopt(argc, argv, "c:Cd:e:f:ghi:IJl:MPR::t:v:mT::")) != -1)
+   {
       switch (i) {
       case 'c' :  // comment
          strncpy(comment, optarg, sizeof(comment));
@@ -179,6 +180,8 @@ int main(int argc, char **argv)
          return 1;
          break;
       }
+   }
+
    // The current directory will be changed to the one with the configuration file
    // Therefore save the log file relative to the current dir
    std::string logFileFullName("");
@@ -191,6 +194,7 @@ int main(int argc, char **argv)
       logFileFullName += "/";
       logFileFullName += logname;
    }
+
    // Same for the data file: Save the data file relative to the current dir
    std::string dataFileFullName("");
 
@@ -208,6 +212,7 @@ int main(int argc, char **argv)
    // We will set configuration file directory as current
    strncpy(workdir, cfgname, sizeof(workdir));
    buf = strrchr(workdir, '/');
+
    if (buf != NULL) {
       buf[0] = '\0';
       chdir(workdir);
@@ -232,8 +237,10 @@ int main(int argc, char **argv)
    }
 
    t = time(NULL);
-   rhicpol_voltage();
+
+   //rhicpol_voltage();
    rhicpol_process_options();
+
    fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
 
    if (gMeasType == kMEASTYPE_UNKNOWN)
@@ -241,21 +248,14 @@ int main(int argc, char **argv)
    else
       fprintf(LogFile, "RHICPOL-INFO : Measurement type is %#010x\n", gMeasType);
 
-
-   /* Reading main configuration file. */
-   if (readConfig(buf, CFG_INIT)) {
-      fprintf(LogFile, "RHICPOL-FATAL : Cannot open config file %s\n", cfgname);
-      polData.statusS |= (STATUS_ERROR | ERR_INT);
-      polexit();
-   }
-
    if (iHistOnly) Conf.OnlyHist = 1;   // command line has priority
 
-   //  zero structures first
-   memset(&beamData, 0, sizeof(beamData));
-   memset(&wcmData, 0, sizeof(wcmData));
+   // Zero structures first
+   memset(&beamData,      0, sizeof(beamData));
+   memset(&wcmData,       0, sizeof(wcmData));
    memset(&beamOtherData, 0, sizeof(beamOtherData));
-   memset(&wcmOtherData, 0, sizeof(wcmOtherData));
+   memset(&wcmOtherData,  0, sizeof(wcmOtherData));
+
    beamData.beamEnergyM = 100.0;       // defalut for no CDEV
 
    //  check CDEV
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
       polData.statusS |= WARN_INT;
    }
 
-   //  make recRing
+   // Make recRing
    if (iCicleRun) {    // for HJET
       recRing = REC_JET | REC_YELLOW; // jet has always yellow color
    }
@@ -284,14 +284,30 @@ int main(int argc, char **argv)
       }
    }
 
+   // Get beam energy from CDEV
+   if (NoADO == 0) {
+      getCDEVInfo(&beamData);
+      fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
+   }
+
+   // Read main configuration file
+   if (readConfig(buf, CFG_INIT)) {
+      fprintf(LogFile, "RHICPOL-FATAL : Cannot open config file %s\n", cfgname);
+      polData.statusS |= (STATUS_ERROR | ERR_INT);
+      polexit();
+   }
+
    //  get CDEV information
    if (NoADO == 0) {
+
       getAdoInfo();
 
-      //      nonzero Pol/fill pattern in the config has priority over measured (we need this for debugging)
+      // nonzero Pol/fill pattern in the config has priority over measured (we need this for debugging)
       for (i = 0; i < 120; i++) if (Conf.Pattern[i] != 0) break;
+
       if (i < 120) {
          fprintf(LogFile, "RHICPOL-INFO: Debugging run - not real polarization pattern !\n");
+
          /* copy pattern from config file to beamdata */
          for (i = 0; i < 120; i++) {
             if (Conf.Pattern[i] > 0)  beamData.measuredFillPatternM[3 * i] = 1;
@@ -453,7 +469,7 @@ int main(int argc, char **argv)
       signal(SIGTERM, SIG_DFL);
       signal(SIGINT, SIG_DFL);
       t = time(NULL);
-      rhicpol_voltage2();
+      //rhicpol_voltage2();
       if (nLoop == 1) {
          fprintf(LogFile,    ">>> %s Measurement finished with %9d events.\n", cctime(&t), ev);
       }
@@ -507,8 +523,7 @@ void rhicpol_print_usage()
 
 /** */
 void rhicpol_process_options()
-{
-   //{{{
+{ //{{{
    if (gMeasType == kMEASTYPE_UNDEF) {
       printf("\nError: Measurement type must be specified with -T option\n");
       rhicpol_print_usage();
@@ -526,12 +541,14 @@ void rhicpol_process_options()
    }
    else{
       gMeasType = kMEASTYPE_UNKNOWN;}
-} 
+} //}}}
+
 
 void rhicpol_voltage()
 {
     theVoltage_beg=getVoltage();
 }
+
 
 void rhicpol_voltage2()
 {
@@ -541,4 +558,3 @@ void rhicpol_voltage2()
 
 
 
-//}}}
