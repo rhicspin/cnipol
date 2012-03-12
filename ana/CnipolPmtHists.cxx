@@ -30,8 +30,10 @@ CnipolPmtHists::~CnipolPmtHists()
 
 
 /** */
-void CnipolPmtHists::BookHists(string cutid)
+void CnipolPmtHists::BookHists()
 { //{{{
+   string shName;
+   TH1*   hist;
    char hName[256];
 
    fDir->cd();
@@ -69,8 +71,6 @@ void CnipolPmtHists::BookHists(string cutid)
 /** */
 void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-   // Fill events with no cuts applied
-   //if (cutid != "") return;
 
    UChar_t chId  = ch->GetChannelId();
 

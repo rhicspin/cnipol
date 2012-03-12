@@ -654,9 +654,9 @@ void MAsymFillHists::PostFill()
 
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsFillTime");
 
-      TF1 *funcPolarVsFillTime = new TF1("funcPolarVsFillTime", "[0] + [1]*x");
+      TF1 *funcPolarVsFillTime = new TF1("funcPolarVsFillTime", "[0] + [1]*x", 3600, 11*3600);
       funcPolarVsFillTime->SetParNames("offset", "slope");
-      graph->Fit("funcPolarVsFillTime");
+      graph->Fit("funcPolarVsFillTime", "R");
       delete funcPolarVsFillTime;
 
       // r vs fill time

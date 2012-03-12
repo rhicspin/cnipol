@@ -17,6 +17,7 @@
 #include "AsymDbSql.h"
 #include "AsymGlobals.h"
 #include "AnaInfo.h"
+#include "MAsymAnaInfo.h"
 #include "MeasInfo.h"
 
 #include "utils/utils.h"
@@ -26,6 +27,7 @@ using namespace std;
 DrawObjContainer    *gHIn;
 DrawObjContainer    *gH;
 AnaInfo             *gAnaInfo;
+MAsymAnaInfo         gMAsymAnaInfo;
 set<string>          gGoodRuns;
 AnaGlobResult        gAnaGlobResult;
 
@@ -37,6 +39,9 @@ int main(int argc, char *argv[])
 
    // do not attept to recover files
    gEnv->SetValue("TFile.Recover", 0);
+   
+   gMAsymAnaInfo.ProcessOptions(argc, argv);
+   gMAsymAnaInfo.VerifyOptions();
 
    initialize();
 
@@ -52,7 +57,7 @@ void initialize()
    gStyle->SetOptFit(1111);
    gStyle->SetPadRightMargin(0.18);
 
-   TString filelistPath("/eic/u/dsmirnov/run/");
+   //TString filelistPath("/eic/u/dsmirnov/run/");
 
    //TString filelistName = "run09_10XXX_11XXX";
    //TString filelistName = "run09_tmp_longi_check_10373";
@@ -77,9 +82,13 @@ void initialize()
    //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
    //TString filelistName = "run12_16386_164XX";
    //TString filelistName = "run12_all";
-   TString filelistName = "run12_decay";
+   //TString filelistName = "run12_decay";
 
-	TString filelist    = filelistPath + filelistName + ".txt";
+   TString filelistName = gMAsymAnaInfo.GetMListFileName();
+
+
+	//TString filelist    = filelistPath + filelistName + ".txt";
+	TString filelist    = gMAsymAnaInfo.GetMListFullPath();
    TString outFileName = "masym_" + filelistName + "_out.root";
    TString fileSuffix  = "";
    //TString fileSuffix  = "_hama";
@@ -101,6 +110,8 @@ void initialize()
 
    //UInt_t minTime = UINT_MAX;
    //UInt_t maxTime = 0;
+
+   Info("masym", "Starting first pass...");
 
    // Create a default canvas here to get rid of weird root messages while
    // reading objects from root files
@@ -218,6 +229,9 @@ void initialize()
       gGoodRuns.insert(fName);
    }
 
+   // Print out flatop start and end times
+   Info("masym", "Flattop times:");
+
    map<UInt_t, UInt_t>::iterator ift;
 
    for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
@@ -232,9 +246,13 @@ void initialize()
 
 
    // Process run/fill results, i.e. calculate fill average, ...
+   Info("masym", "Analyzing measurements...");
+
    gAnaGlobResult.Process();
    //gAnaGlobResult.Print();
    //return;
+
+   Info("masym", "Starting second pass...");
 
    // Now process only good runs
    set<string>::iterator iRunName = gGoodRuns.begin();
@@ -271,9 +289,9 @@ void initialize()
 
    //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
-   gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
-   gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
-   gH->SaveAllAs(canvas, "^.*VsMeas.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*VsMeas.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*First.*$", filelistName.Data());

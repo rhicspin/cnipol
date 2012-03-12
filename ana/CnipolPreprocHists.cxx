@@ -85,7 +85,7 @@ void CnipolPreprocHists::BookHists()
       hist->SetTitle("; Deposited Energy, keV; Time, ns;");
       hist->SetOption("colz LOGZ NOIMG");
       o[shName] = hist;
-      fhTimeVsEnergyA_ch[*iCh-1] = hist;
+      fhTimeVsEnergyA_ch[chId-1] = hist;
 
       // Time vs energy from amplitude special binning
       shName = "hTimeVsEnergyA_raw_ch" + sChId;
@@ -93,7 +93,7 @@ void CnipolPreprocHists::BookHists()
       hist->SetTitle("; Deposited Energy, keV; Time, ns;");
       hist->SetOption("colz LOGZ NOIMG");
       o[shName] = hist;
-      fhTimeVsEnergyA_raw_ch[*iCh-1] = hist;
+      fhTimeVsEnergyA_raw_ch[chId-1] = hist;
 
       shName = "hFitMeanTimeVsEnergyA_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
@@ -108,7 +108,7 @@ void CnipolPreprocHists::BookHists()
       hist->SetOption("E1 NOIMG");
       hist->GetYaxis()->SetRangeUser(10, 110);
       o[shName] = hist;
-      fhFitMeanTimeVsEnergyA_raw_ch[*iCh-1] = hist;
+      fhFitMeanTimeVsEnergyA_raw_ch[chId-1] = hist;
 
       shName = "hTimeVsEnergyACumul_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
@@ -141,12 +141,14 @@ void CnipolPreprocHists::FillDerivedPassOne()
    
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   {
+      UShort_t chId = *iCh;
 
       string sChId(MAX_CHANNEL_DIGITS, ' ');
-      sprintf(&sChId[0], "%02d", *iCh);
+      sprintf(&sChId[0], "%02d", chId);
 
-      TH2* hTimeVsEnergyA_channel = (TH2*) o["hTimeVsEnergyA_ch" + sChId];
+      TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
       hTimeVsEnergyA_noise->Add(hTimeVsEnergyA_channel);
    }
 } //}}}
@@ -284,7 +286,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
       UShort_t chId = *iCh;
 
       string sSi("  ");
-      sprintf(&sSi[0], "%02d", *iCh);
+      sprintf(&sSi[0], "%02d", chId);
       string dName = "channel" + sSi;
       string cName = "c_combo_ch" + sSi + strThumb;
 
@@ -292,7 +294,6 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
       THStack hstack(cName.c_str(), cName.c_str());
 
-      //TH1* h1 = (TH1*) o["hTimeVsEnergyA_ch"+sSi];
       TH1* h1 = (TH1*) fhTimeVsEnergyA_raw_ch[chId-1];
 		hstack.Add(h1);
 
@@ -335,10 +336,12 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   {
+      UShort_t chId = *iCh;
 
-      TH2* fhTimeVsEnergyA_ch_this = (TH2*) fhTimeVsEnergyA_ch[*iCh-1];
-      TH2* fhTimeVsEnergyA_ch_eb   = (TH2*) ebHists->fhTimeVsEnergyA_ch[*iCh-1];
+      TH2* fhTimeVsEnergyA_ch_this = (TH2*) fhTimeVsEnergyA_ch[chId-1];
+      TH2* fhTimeVsEnergyA_ch_eb   = (TH2*) ebHists->fhTimeVsEnergyA_ch[chId-1];
 
       if ( !fhTimeVsEnergyA_ch_this || !fhTimeVsEnergyA_ch_eb ) {
          Error("PostFillPassOne", "No empty bunch histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
@@ -350,7 +353,7 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 
       //Double_t area = (maxAdcBin + 1 - minAdcBin) * (maxTdcBin + 1 - minTdcBin);
 
-      ////printf("%d, %d, %d, %d, %d, %f, %f, %f\n", *iCh, minAdcBin, maxAdcBin, minTdcBin, maxTdcBin, area, sumPreproc, sumPulser);
+      ////printf("%d, %d, %d, %d, %d, %f, %f, %f\n", chId, minAdcBin, maxAdcBin, minTdcBin, maxTdcBin, area, sumPreproc, sumPulser);
 
       //for (Int_t ibx=minAdcBin; ibx<=maxAdcBin; ibx++) {
       //   for (Int_t iby=minTdcBin; iby<=maxTdcBin; iby++) {
@@ -439,18 +442,6 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
          }
       }
 
-      // First check if the "area" (i.e. the number of bins) filled with events
-      // is ridicuolosly small
-      //hTvsA_ch->Print("all");
-      //hTimeVsEnergyA_raw_ch->Print("all");
-      Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_raw_ch);
-      printf("Non empty bin fraction: %f\n", frac);
-
-      if ( frac < 0.20 ) {
-         gMeasInfo->DisableChannel(chId);
-         continue;
-      }
-
       // Calculate cumulative histograms
       utils::ConvertToCumulative2(hTimeVsEnergyA_raw_ch, (TH1F*) fhTimeVsEnergyACumul_ch[chId-1]);
 
@@ -462,6 +453,18 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
 
       // 2% of bins contain > 30% of events - Is this a stronger requirement?
       if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(2) > 0.30) {
+         gMeasInfo->DisableChannel(chId);
+         continue;
+      }
+
+      // now check if the "area" (i.e. the number of bins) filled with events
+      // is ridicuolosly small
+      //hTvsA_ch->Print("all");
+      //hTimeVsEnergyA_raw_ch->Print("all");
+      Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_raw_ch);
+      printf("Non empty bin fraction: %f\n", frac);
+
+      if ( frac < 0.10 ) {
          gMeasInfo->DisableChannel(chId);
          continue;
       }
