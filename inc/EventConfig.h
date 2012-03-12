@@ -39,7 +39,7 @@ public:
    //DbEntry       *fDbEntry; //!
    Calibrator    *fCalibrator;
    AnaMeasResult *fAnaMeasResult;
-   MseMeasInfoX  *fMseMeasInfoX; //!
+   MseMeasInfoX  *fMseMeasInfoX;
 
 public:
 
@@ -60,7 +60,7 @@ public:
    //void  Streamer(TBuffer &R__b);
    std::string GetSignature();
 
-   ClassDef(EventConfig, 4)
+   ClassDef(EventConfig, 5)
 };
 
 //TBuffer & operator<<(TBuffer &buf, EventConfig *&rec);
