@@ -262,20 +262,18 @@ void event_process(processEvent *event)
       //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
       //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-      if ( !ch->PassCutNoise() || !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
+      //if ( !ch->PassCutNoise() || !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
+      if ( !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
 
-	   //gAsymRoot->fHists->Fill(ch, "_cut1");
 		gAsymRoot->Fill(kCUT_NOISE);
 
       if (!ch->PassCutCarbonMass()) return;
 
-	   //gAsymRoot->fHists->Fill(ch, "_cut2");
-
 		gAsymRoot->Fill(kCUT_CARBON);
 
-      if ( ch->PassCutEmptyBunch() ) {
-			gAsymRoot->Fill(kCUT_CARBON_EB);
-      }// else {
+      //if ( ch->PassCutEmptyBunch() ) {
+		//	gAsymRoot->Fill(kCUT_CARBON_EB);
+      //} else {
 		//   gAsymRoot->Fill(kCUT_CARBON);
       //}
 

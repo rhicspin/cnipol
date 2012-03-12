@@ -8,6 +8,8 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 
+#include "utils/utils.h"
+
 #include "MeasInfo.h"
 
 ClassImp(DeadLayerCalibratorEDepend)
@@ -73,10 +75,9 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
    // iCh=0 is the sum of all channels
    // Special treatment for combined histogram
-   hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA"];
-   hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-
-   Calibrate(hTimeVsE, hMeanTime);
+   //hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA"];
+   //hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
+   //Calibrate(hTimeVsE, hMeanTime);
 
    // Now calibrate individual active channels
    ChannelSetConstIter iCh;
@@ -240,19 +241,44 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
 
    //delete gausFitFunc;
 
+   // Reject points based on chi2
+   TH1* hchi2       = (TH1D*) fitResHists->At(3);
+   TH1* hchi2_profy = new TH1F("p", "p", 1000, hchi2->GetMinimum(), hchi2->GetMaximum());
+
+   utils::ConvertToProfile(hchi2, hchi2_profy, kFALSE);
+
+   Double_t hchi2_profy_mean = hchi2_profy->GetMean();
+   Double_t hchi2_profy_rms  = hchi2_profy->GetRMS();
+
+   delete hchi2_profy;
+
    //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
    //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX(), ((TH1D*) fitResHists[1])->GetArray());
-   // Copy
+
    TH1* hmeans  = (TH1D*) fitResHists->At(1);
    //TH1* hsigmas = (TH1D*) fitResHists[2];
 
-   for (Int_t ib=1; ib<=hmeans->GetNbinsX(); ++ib) {
+   for (Int_t ib=1; ib<=hmeans->GetNbinsX(); ++ib)
+   {
+      Double_t chi2  = hchi2->GetBinContent(ib);
+
+      // skip points with bad chi2
+      if ( hchi2_profy_mean >= 0.5 && (chi2 - hchi2_profy_mean) > 3*hchi2_profy_rms ) continue;
+
       Double_t bcntr = hmeans->GetBinCenter(ib);
       Double_t bcont = hmeans->GetBinContent(ib);
       Double_t berr  = hmeans->GetBinError(ib);
       //Double_t berr  = hsigmas->GetBinContent(ib);
       hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
       hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
+   }
+
+   Double_t frac = utils::GetNonEmptyFraction(hMeanTime);
+   printf("Non empty bin fraction 2: %f\n", frac);
+   
+   if (frac < 0.50) {
+      gMeasInfo->DisableChannel(chId);
+      return;
    }
 
    if (hMeanTime->Integral() < 0) {

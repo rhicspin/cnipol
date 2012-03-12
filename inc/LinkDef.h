@@ -39,6 +39,7 @@
 #pragma link C++ class CnipolTargetHists+;
 #pragma link C++ class HistContainer+;
 #pragma link C++ class HistManager+;
+#pragma link C++ class MAsymAnaInfo+;
 #pragma link C++ class MAsymFillHists+;
 #pragma link C++ class MAsymRateHists+;
 #pragma link C++ class MAsymRunHists+;

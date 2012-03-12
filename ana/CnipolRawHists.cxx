@@ -325,24 +325,27 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 
       Float_t scale = N_BUNCHES / (Float_t) gMeasInfo->GetNumEmptyBunches();
 
-      hTvsA_ch_neb->Sumw2();
-      hTvsA_ch_neb->Add(hTvsA_ch, hTvsA_ch_eb, 1, -1*scale);
+      //hTvsA_ch_neb->Sumw2();
+      //hTvsA_ch_neb->Add(hTvsA_ch, hTvsA_ch_eb, 1, -1*scale);
 
       // After the subtraction set bins with negative content to 0 including under/overflows
       for (Int_t ibx=0; ibx<=hTvsA_ch_neb->GetNbinsX()+1; ibx++) {
          for (Int_t iby=0; iby<=hTvsA_ch_neb->GetNbinsY()+1; iby++) {
 
-            //Double_t bc    = hTvsA_ch->GetBinContent(ibx, iby);
-            //Double_t bc_eb = hTvsA_ch_eb->GetBinContent(ibx, iby);
-            Double_t bc_neb = hTvsA_ch_neb->GetBinContent(ibx, iby);
-            //Double_t bc_neb = bc - bc_eb*scale;
+            Double_t bc     = hTvsA_ch->GetBinContent(ibx, iby);
+            Double_t bc_eb  = hTvsA_ch_eb->GetBinContent(ibx, iby);
+            //Double_t bc_neb = hTvsA_ch_neb->GetBinContent(ibx, iby);
+            Int_t    bc_neb = bc - gRandom->Poisson(bc_eb*scale);
 
-            //bc_neb = bc_neb < 0 ? 0 : bc_neb;
+            bc_neb = bc_neb < 0 ? 0 : bc_neb;
 
-            if (bc_neb < 0) {
-               hTvsA_ch_neb->SetBinContent(ibx, iby, 0);
-               hTvsA_ch_neb->SetBinError(ibx, iby, 0);
-            }
+            hTvsA_ch_neb->SetBinContent(ibx, iby, bc_neb);
+            hTvsA_ch_neb->SetBinError(ibx, iby, TMath::Sqrt(bc_neb));
+
+            //if (bc_neb < 0) {
+            //   hTvsA_ch_neb->SetBinContent(ibx, iby, 0);
+            //   hTvsA_ch_neb->SetBinError(ibx, iby, 0);
+            //}
          }
       }
    }

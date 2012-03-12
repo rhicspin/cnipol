@@ -240,7 +240,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hTargetVsMeas_" + sPolId + "_" + sBeamE;
    oc.o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 7);
-   ((TH1*) oc.o[shName])->SetTitle(";Measurement;Target Id;");
+   ((TH1*) oc.o[shName])->SetTitle("; Measurement; Target Id;");
    ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grHTargetVsMeas, "p");
    ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grVTargetVsMeas, "p");
 
@@ -752,8 +752,6 @@ void MAsymRunHists::Fill(EventConfig &rc)
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fMeasInfo->fPolId;
    time_t   measStartTime    = rc.fMeasInfo->fStartTime;
-   Short_t  targetId         = rc.fMseMeasInfoX->target_id;
-   Char_t   targetOrient     = rc.fMseMeasInfoX->target_orient[0];
    //Float_t  ana_power        = rc.fAnaMeasResult->A_N[1];
    //Float_t  asymmetry        = rc.fAnaMeasResult->sinphi[0].P[0] * rc.fAnaMeasResult->A_N[1];
    //Float_t  asymmetryErr     = rc.fAnaMeasResult->sinphi[0].P[1] * rc.fAnaMeasResult->A_N[1];
@@ -804,15 +802,15 @@ void MAsymRunHists::Fill(EventConfig &rc)
    // Targets
    sprintf(hName, "hTargetVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
 
-   if (targetOrient == 'H') {
+   if (rc.fMeasInfo->GetTargetOrient() == kTARGET_H) {
       graph = (TGraph*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grHTargetVsMeas");
    }
 
-   if (targetOrient == 'V') {
+   if (rc.fMeasInfo->GetTargetOrient() == kTARGET_V) {
       graph = (TGraph*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grVTargetVsMeas");
    }
 
-   graph->SetPoint(graph->GetN(), runId, targetId);
+   graph->SetPoint(graph->GetN(), runId, rc.fMeasInfo->GetTargetId());
 
    UInt_t nPoints = 0;
 
@@ -839,11 +837,11 @@ void MAsymRunHists::Fill(EventConfig &rc)
 
    sprintf(hName, "hRVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
 
-   if (targetOrient == 'H') {
+   if (rc.fMeasInfo->GetTargetOrient() == kTARGET_H) {
       graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grRVsMeasH");
    }
 
-   if (targetOrient == 'V') {
+   if (rc.fMeasInfo->GetTargetOrient() == kTARGET_V) {
       graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grRVsMeasV");
    }
 

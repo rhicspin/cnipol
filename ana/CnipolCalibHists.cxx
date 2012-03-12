@@ -63,6 +63,43 @@ void CnipolCalibHists::BookHists(std::string cutid)
    hist->GetYaxis()->SetRangeUser(0, 2.2);
    o[shName] = hist;
 
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir;
+
+   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
+   {
+      string sChId(MAX_CHANNEL_DIGITS, ' ');
+      sprintf(&sChId[0], "%02d", iChId);
+
+      string dName = "channel" + sChId;
+
+      isubdir = d.find(dName);
+
+      if ( isubdir == d.end()) { // if dir not found
+         oc = new DrawObjContainer();
+         oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      } else {
+         oc = isubdir->second;
+      }
+
+      shName = "hAdcAmpltd_ch" + sChId;
+      hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
+      hist->SetOption("hist NOIMG");
+      hist->SetTitle("; Amplitude, ADC; Events;");
+      hist->SetFillColor(kGray);
+
+      shName = "hMeanTimeVsEnergy" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+      hist->SetTitle(";Deposited Energy, keV; Mean Time, ns;");
+      hist->SetOption("E1 GRIDX");
+      oc->o[shName] = hist;
+
+      // If this is a new directory then we need to add it to the list
+      if ( isubdir == d.end()) {
+         d[dName] = oc;
+      }
+   }
+
 } //}}}
 
 

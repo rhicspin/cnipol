@@ -44,15 +44,15 @@ void CnipolKinematHists::BookHists(string cutid)
    ((TH1*) o[shName])->SetOption("E1");
 
    shName = "hMassFitChi2ByChannel";
-   o[shName] = new TH1D(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetOption("hist GRIDX");
 
    shName = "hMassFitMeanByChannel";
-   o[shName] = new TH1D(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
 
    shName = "hMassFitSigmaByChannel";
-   o[shName] = new TH1D(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
 
    DrawObjContainer        *oc;
@@ -78,7 +78,7 @@ void CnipolKinematHists::BookHists(string cutid)
 
       shName = "hPseudoMass_ch" + sChId;
       oc->o[shName] = new TH1D(shName.c_str(), shName.c_str(), 50, 0, 20);
-      ((TH1*) oc->o[shName])->SetOption("E1 NOIMG");
+      ((TH1*) oc->o[shName])->SetOption("E1");
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
@@ -189,7 +189,7 @@ void CnipolKinematHists::PostFill()
          continue;
       }
 
-      TF1 *fitfunc = new TF1("fitfunc", "gaus", 9, 14);
+      TF1 *fitfunc = new TF1("fitfunc", "gaus", 8, 14);
 
       //fitfunc->SetParNames("slope");
       //fitfunc->SetParameter(0, 0);
