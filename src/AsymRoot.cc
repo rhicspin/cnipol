@@ -774,6 +774,12 @@ void AsymRoot::UpdateCalibrator()
          Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from file %s", fname.c_str());
          TFile *f = TFile::Open(fname.c_str());
 
+         if (!f) {
+            Error("UpdateCalibrator", "File not found: %s", fname.c_str());
+		   	delete f;
+		      exit(-1);
+         }
+
          EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
 
          if (!eventConfig) {
@@ -797,6 +803,12 @@ void AsymRoot::UpdateCalibrator()
       Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
 
       TFile *f = TFile::Open(fnameAlpha.c_str());
+
+      if (!f) {
+         Error("UpdateCalibrator", "File not found: %s", fnameAlpha.c_str());
+			delete f;
+		   exit(-1);
+      }
 
       TList *streamerList = f->GetStreamerInfoList();
 
