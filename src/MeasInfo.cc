@@ -17,6 +17,8 @@ using namespace std;
 
 /** */
 MeasInfo::MeasInfo() : TObject(),
+   fStartVoltage(0),
+   fEndVoltage(0),
    fBeamEnergy(0),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
@@ -77,12 +79,23 @@ MeasInfo::MeasInfo() : TObject(),
 /** */
 MeasInfo::~MeasInfo() { }
 
+Float_t   MeasInfo::GetEndVoltage()               const { return fEndVoltage;}
+Float_t   MeasInfo::GetStartVoltage()             const { return fStartVoltage;}
 Float_t   MeasInfo::GetBeamEnergy()               const { return fBeamEnergy; }
 Float_t   MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
 Short_t   MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlobalTdcOffset; }
 EMeasType MeasInfo::GetMeasType()                 const { return fMeasType; } 
 string    MeasInfo::GetAlphaCalibFileName()       const { return ""; }
 string    MeasInfo::GetDlCalibFileName()          const { return ""; }
+
+
+void MeasInfo::SetVoltages(int begin, int end)
+{
+ fStartVoltage=(float)begin;
+ fEndVoltage=(float)end;
+}
+
+
 
 
 /** */
@@ -137,6 +150,8 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
    fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
+   fprintf(f, "$rc['fStartVoltage']		   = %f;\n",     fStartVoltage);
+   fprintf(f, "$rc['fEndVoltage']                  = %f;\n",     fEndVoltage);
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );

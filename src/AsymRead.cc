@@ -25,7 +25,6 @@
 
 using namespace std;
 
-
 /** */
 RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
    fFileStream(), fSeenRecords()
@@ -197,6 +196,19 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          mSeek = mSeek + mHeader->len;
          continue;
       }
+      // REC_VOLTAGE
+      if ((mHeader->type & REC_TYPEMASK) == REC_VOLTAGE)
+      {
+         printf("Reading REC_VOLTAGE record... size= %ld\n", mHeader->len);
+	 
+     	 //we have to extract the begin and end voltages	 
+	 recordVoltageStruct *rec = (recordVoltageStruct*) mHeader;
+	 ProcessRecord( (recordVoltageStruct&) *rec);
+
+	 mSeek = mSeek + mHeader->len;
+	 continue;
+      }       
+
 
       // REC_MEASTYPE
       if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
@@ -1235,6 +1247,15 @@ void ProcessRecord(const recordCountRate &rec)
    gAsymRoot->FillProfileHists(size, pointer);
 } //}}}
 
+void ProcessRecord(const recordVoltageStruct &rec)
+{
+    int beginvoltage=0;
+    int endvoltage=0;
+    beginvoltage=rec.beginvoltage;
+    endvoltage=rec.endvoltage;
+    printf("beginvoltage=%d  endvoltage=%d\n",beginvoltage,endvoltage);
+    gMeasInfo->SetVoltages(beginvoltage,endvoltage);    
+}
 
 /** */
 void ProcessRecord(const recordWcmAdoStruct &rec)
