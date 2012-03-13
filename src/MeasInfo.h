@@ -38,6 +38,8 @@ class MeasInfo : public TObject
 {
 protected:
 
+   Double_t   fStartVoltage;
+   Double_t   fEndVoltage;
    Double_t      fBeamEnergy;
    Short_t       fExpectedGlobalTdcOffset;
    Float_t       fExpectedGlobalTimeOffset;
@@ -52,6 +54,7 @@ protected:
 	UShort_t      fPulserCutAdcMax;
 	UShort_t      fPulserCutTdcMin;
 	UShort_t      fPulserCutTdcMax;
+
 
 public:
 
@@ -132,12 +135,15 @@ public:
    void            Update(MseRunPeriodX& runPeriod);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergy() const;
+   Float_t	   GetStartVoltage() const;
+   Float_t         GetEndVoltage() const;
    Float_t         GetExpectedGlobalTimeOffset() const;
    Short_t         GetExpectedGlobalTdcOffset() const;
    EMeasType       GetMeasType() const;
    std::string     GetAlphaCalibFileName() const;
    std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
+   void 	   SetVoltages(int begin, int end);
    void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
 	void            DisableChannel(UShort_t chId);
