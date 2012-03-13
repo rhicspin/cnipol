@@ -683,11 +683,11 @@ void MAsymFillHists::PostFill()
 
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
 
-      //TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0] + [1]*x");
-      TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0]");
+      TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0] + [1]*x");
+      //TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0]");
       //funcRVsFillTime->SetParameters(0, 0);
-      //funcRVsFillTime->SetParNames("offset", "slope");
-      funcRVsFillTime->SetParNames("const");
+      funcRVsFillTime->SetParNames("offset", "slope");
+      //funcRVsFillTime->SetParNames("const");
       graph->Fit("funcRVsFillTime");
       delete funcRVsFillTime;
 
