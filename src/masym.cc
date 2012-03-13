@@ -287,7 +287,7 @@ void initialize()
    gH->SetSignature(gMM->GetSignature());
    //gH->SetSignature("");
 
-   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
