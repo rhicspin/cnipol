@@ -36,10 +36,12 @@ public:
    TRandom       *fRandom;
    MeasInfo      *fMeasInfo;
    AnaInfo       *fAnaInfo;
-   //DbEntry       *fDbEntry; //!
    Calibrator    *fCalibrator;
    AnaMeasResult *fAnaMeasResult;
-   MseMeasInfoX  *fMseMeasInfoX;
+   MseMeasInfoX  *fMseMeasInfoX; //  it is better to leave this one out as
+                                 // cint cannot properly generate a streamer
+                                 // for it due to a conflict with mysql++
+                                 // class definitions
 
 public:
 
@@ -58,7 +60,9 @@ public:
    void  PrintAsConfig(FILE *f=stdout) const;
    float ConvertToEnergy(UShort_t adc, UShort_t chId);
    //void  Streamer(TBuffer &R__b);
-   std::string GetSignature();
+   std::string GetSignature() const;
+
+   bool operator<(const EventConfig &mc) const;
 
    ClassDef(EventConfig, 5)
 };

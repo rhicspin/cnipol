@@ -36,7 +36,7 @@ public:
 
    void BookHists(std::string sid="");
    void BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE);
-   void Fill(EventConfig &rc);
+   void Fill(const EventConfig &rc);
    void PostFill();
    void UpdateLimits();
 

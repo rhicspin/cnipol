@@ -53,6 +53,8 @@ public:
    ValErrPair GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    //ValErrPair GetBeamPolarExp(UInt_t fillId, ERingId ringId);
    void       UpdateInsertDb();
+   ValErrPair GetNormJetCarbon(EPolarimeterId polId);
+   ValErrPair GetNormProfPolar(EPolarimeterId polId);
 
    ClassDef(AnaGlobResult, 1)
 };

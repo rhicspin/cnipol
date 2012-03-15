@@ -46,7 +46,7 @@ public:
    void BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamEnergy beamE);
    //void BookHistsPolarimeterGlobRslt(DrawObjContainer &oc, EPolarimeterId polId);
    //void BookHistsEnergy(EBeamEnergy beamE);
-   void Fill(EventConfig &rc);
+   void Fill(const EventConfig &rc);
    void Fill(EventConfig &rc, DrawObjContainer &oc);
    void PostFill();
    void PostFill(AnaGlobResult &agr);

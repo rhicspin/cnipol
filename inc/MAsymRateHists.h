@@ -36,8 +36,7 @@ public:
 
    void BookHists(std::string sid="");
    void BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE);
-   //void BookHistsEnergy(EBeamEnergy beamE);
-   void Fill(EventConfig &rc);
+   void Fill(const EventConfig &rc);
    void Print(const Option_t* opt="") const;
 
    ClassDef(MAsymRateHists, 1)
