@@ -29,7 +29,7 @@ DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(),
 
 
 /** */
-std::string DrawObjContainer::GetSignature()
+std::string DrawObjContainer::GetSignature() const
 { //{{{
    return fSignature;
 } //}}}
@@ -454,6 +454,17 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) con
 
 /** */
 void DrawObjContainer::Fill(EventConfig &rc)
+{ //{{{
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      isubd->second->Fill(rc);
+   }
+} //}}}
+
+
+/** */
+void DrawObjContainer::Fill(const EventConfig &rc)
 { //{{{
    DrawObjContainerMapIter isubd;
 

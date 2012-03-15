@@ -86,7 +86,7 @@ void MAsymPmtHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
 
 
 /** */
-void MAsymPmtHists::Fill(EventConfig &rc)
+void MAsymPmtHists::Fill(const EventConfig &rc)
 { //{{{
    Double_t runId            = rc.fMeasInfo->RUNID;
    //UInt_t   fillId           = (UInt_t) runId;

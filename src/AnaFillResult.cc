@@ -47,21 +47,23 @@ void AnaFillResult::Print(const Option_t* opt) const
 
    PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
-   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId) {
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
       string sPolId = RunConfig::AsString(*iPolId);
 
       ValErrPair polar = fPolars.find(*iPolId)->second;
 
       cout << sPolId << ": " << PairAsPhpArray(polar) << "      ";
-      polar.first  *= fAnaGlobResult->fNormJetCarbon[*iPolId].first;
-      polar.second *= fAnaGlobResult->fNormJetCarbon[*iPolId].first;
+
+      polar.first  *= fAnaGlobResult->GetNormJetCarbon(*iPolId).first;
+      polar.second *= fAnaGlobResult->GetNormJetCarbon(*iPolId).first;
       cout << PairAsPhpArray(polar) << endl;
 
       ValErrPair profPolar = fProfPolars.find(*iPolId)->second;
 
       cout << "     " << PairAsPhpArray(profPolar) << "      ";
-      profPolar.first  *= fAnaGlobResult->fNormProfPolar[*iPolId].first;
-      profPolar.second *= fAnaGlobResult->fNormProfPolar[*iPolId].first;
+      profPolar.first  *= fAnaGlobResult->GetNormProfPolar(*iPolId).first;
+      profPolar.second *= fAnaGlobResult->GetNormProfPolar(*iPolId).first;
       cout << PairAsPhpArray(profPolar) << endl;
 
       ValErrPair systPP = fSystProfPolar.find(*iPolId)->second;
@@ -172,15 +174,16 @@ void AnaFillResult::Process()
    }
 
 
+   // Calculate average polarization and profiles disregarding the target
    PolarimeterIdIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
-      // calc average polarizations
+      // Calculate average polarizations
       fPolars[*iPolId]     = CalcAvrgPolar(*iPolId);
       fProfPolars[*iPolId] = CalcAvrgPolProfPolar(*iPolId);
 
-      // Now calc average profiles: R and P_max
+      // Now calculate average profiles: R and P_max
       ERingId ringId = RunConfig::GetRingId(*iPolId);
 
       // Get values only once for each beam (note we loop over polarimeters)

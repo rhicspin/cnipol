@@ -29,6 +29,7 @@ DrawObjContainer    *gH;
 AnaInfo             *gAnaInfo;
 MAsymAnaInfo         gMAsymAnaInfo;
 set<string>          gGoodRuns;
+set<EventConfig>     gGoodMeass;
 AnaGlobResult        gAnaGlobResult;
 
 
@@ -89,7 +90,7 @@ void initialize()
 
 	//TString filelist    = filelistPath + filelistName + ".txt";
 	TString filelist    = gMAsymAnaInfo.GetMListFullPath();
-   TString outFileName = "masym_" + filelistName + "_out.root";
+   TString outFileName = "masym_" + filelistName + ".root";
    TString fileSuffix  = "";
    //TString fileSuffix  = "_hama";
 
@@ -151,15 +152,15 @@ void initialize()
       }
 
       // Check that asym hist container exists in this file
-      gHIn = new DrawObjContainer(f);
-      gHIn->d["asym"] = new CnipolAsymHists();
-      gHIn->ReadFromDir();
+      //gHIn = new DrawObjContainer(f);
+      //gHIn->d["asym"] = new CnipolAsymHists();
+      //gHIn->ReadFromDir();
 
-      if (!gHIn) {
-         Error("masym", "Hists asym not found\n");
-         delete f;
-         continue;
-      }
+      //if (!gHIn) {
+      //   Error("masym", "Hists asym not found\n");
+      //   delete f;
+      //   continue;
+      //}
 
       char strTime[80];
       strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
@@ -167,10 +168,10 @@ void initialize()
       Double_t runId            = gMM->fMeasInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
       UInt_t   beamEnergy       = (UInt_t) (gMM->fMeasInfo->GetBeamEnergy() + 0.5);
-      string   asymVersion      = gMM->fMeasInfo->fAsymVersion;
+      //string   asymVersion      = gMM->fMeasInfo->fAsymVersion;
       //Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
-      Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
-      Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
+      //Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
+      //Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
       Float_t  polarization     = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;
       Float_t  polarization_err = gMM->fAnaMeasResult->sinphi[0].P[1] * 100.;
       Double_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
@@ -220,13 +221,16 @@ void initialize()
 	   }
 
       // To calculate normalization factors for p-Carbon we need to do it in the first pass
-      if ( beamEnergy == kBEAM_ENERGY_250 ) {
+      //if ( beamEnergy == kBEAM_ENERGY_250 )
+      if ( beamEnergy == kBEAM_ENERGY_100 )
+      {
          gAnaGlobResult.AddMeasResult(*gMM);
       }
 
       delete f;
      
-      gGoodRuns.insert(fName);
+      //gGoodRuns.insert(fName);
+      gGoodMeass.insert(*gMM);
    }
 
    // Print out flatop start and end times
@@ -241,6 +245,7 @@ void initialize()
    // Adjust min/max fill for histogram limits
    if (gH->d.find("runs") != gH->d.end()) {
       ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
+      //((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
       gAnaGlobResult.AdjustMinMaxFill();
    }
 
@@ -255,36 +260,38 @@ void initialize()
    Info("masym", "Starting second pass...");
 
    // Now process only good runs
-   set<string>::iterator iRunName = gGoodRuns.begin();
+   //set<string>::iterator iRunName = gGoodRuns.begin();
+   set<EventConfig>::const_iterator iMeas = gGoodMeass.begin();
 
-   for ( ; iRunName!=gGoodRuns.end(); ++iRunName) {
+   //for ( ; iRunName!=gGoodRuns.end(); ++iRunName)
+   for ( ; iMeas!=gGoodMeass.end(); ++iMeas)
+   {
 
-      TString fileName = gAnaInfo->GetResultsDir() + "/" + (*iRunName) + "/" + (*iRunName) + fileSuffix + ".root";
-
-      TFile *f = new TFile(fileName, "READ");
-
-      Info("masym", "Processing measurement: %s", (*iRunName).c_str());
-
-      gMM = (EventConfig*) f->FindObjectAny("EventConfig");
-
-      // Get asym hist container. It must exist
-      gHIn = new DrawObjContainer(f);
-      gHIn->d["asym"] = new CnipolAsymHists();
-      gHIn->ReadFromDir();
+      //TString fileName = gAnaInfo->GetResultsDir() + "/" + (*iRunName) + "/" + (*iRunName) + fileSuffix + ".root";
+      //TFile *f = new TFile(fileName, "READ");
+      //Info("masym", "Processing measurement: %s", (*iRunName).c_str());
+      //gMM = (EventConfig*) f->FindObjectAny("EventConfig");
 
       // Overwrite the default gMeasInfo with the saved one
-      gMeasInfo = gMM->fMeasInfo;
+      gMeasInfo = iMeas->fMeasInfo;
 
-      gH->Fill(*gMM);
-      gH->Fill(*gMM, *gHIn);
+      Info("masym", "Processing measurement: %.3f", iMeas->fMeasInfo->RUNID);
 
-      delete f;
+      // Get asym hist container. It must exist
+      //gHIn = new DrawObjContainer(f);
+      //gHIn->d["asym"] = new CnipolAsymHists();
+      //gHIn->ReadFromDir();
+
+      gH->Fill(*iMeas);
+      //gH->Fill(*iMeas, *gHIn);
+
+      //delete f;
    }
 
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   gH->SetSignature(gMM->GetSignature());
+   gH->SetSignature((--iMeas)->GetSignature()); // get signature of the last measurement
    //gH->SetSignature("");
 
    gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
@@ -301,10 +308,12 @@ void initialize()
 
    gMAsymRoot->Close();
 
+   //gAnaGlobResult.Print("all");
    gAnaGlobResult.Print();
 
-   //if (kTRUE) {
-   if (kFALSE) {
+   //if (kTRUE)
+   if (kFALSE)
+   {
       gAsymDb = new AsymDbSql();
       gAnaGlobResult.UpdateInsertDb();
    }

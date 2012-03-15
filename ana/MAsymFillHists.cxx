@@ -394,7 +394,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
 
 /** */
-void MAsymFillHists::Fill(EventConfig &rc)
+void MAsymFillHists::Fill(const EventConfig &rc)
 { //{{{
    Double_t runId              = rc.fMeasInfo->RUNID;
    UInt_t   fillId             = (UInt_t) runId;

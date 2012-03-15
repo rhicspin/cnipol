@@ -22,12 +22,12 @@ using namespace std;
  * single measurement.
  *
  * Default constructor.
- * We have to allocate memory for fMeasInfo, fAnaInfo, and fDbEntry as they can be
+ * We have to allocate memory for fMeasInfo and fAnaInfo as they can be
  * read from a file with a streamer. The streamers do not allocate memory by
  * themselves.
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()),
-   fMeasInfo(new MeasInfo()), fAnaInfo(new AnaInfo()), // fDbEntry(new DbEntry()), // replace fDbEntry with Mse... objects?
+   fMeasInfo(new MeasInfo()), fAnaInfo(new AnaInfo()),
    fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseMeasInfoX(new MseMeasInfoX())
 {
 }
@@ -81,13 +81,6 @@ void EventConfig::PrintAsPhp(FILE *f) const
       fAnaInfo->PrintAsPhp(f);
    }
 
-   //fprintf(f, "\n// DbEntry data\n");
-   //if (!fDbEntry) {
-   //   Error("PrintAsPhp", "fDbEntry not defined");
-   //} else {
-   //   fDbEntry->PrintAsPhp(f);
-   //}
-
    fprintf(f, "\n// Calibrator data\n");
    if (!fCalibrator) {
       Error("PrintAsPhp", "fCalibrator not defined");
@@ -118,7 +111,6 @@ void EventConfig::PrintAsConfig(FILE *f) const
 { //{{{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
 	fprintf(f, "* for the dead layer and T0  : %s\n", fMeasInfo->GetRunName().c_str());
-	//fprintf(f, "* for the Am calibration     : %s\n", fDbEntry->alpha_calib_run_name.c_str());
 	fprintf(f, "* for the Am calibration     : %s\n", fAnaInfo->GetAlphaCalibRun().c_str());
 	fprintf(f, "* for the Integral/Amplitude : default\n");
 	fprintf(f, "* \n");
@@ -167,7 +159,7 @@ float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 
 
 /** */
-string EventConfig::GetSignature()
+string EventConfig::GetSignature() const
 { //{{{
    string strSignature = "";
 
@@ -192,6 +184,14 @@ string EventConfig::GetSignature()
    }
 
    return strSignature;
+} //}}}
+
+
+/** */
+bool EventConfig::operator<(const EventConfig &mc) const
+{ //{{{
+   if (fMeasInfo->RUNID < mc.fMeasInfo->RUNID) return true;
+   return false;
 } //}}}
 
 

@@ -58,14 +58,15 @@ public:
    DrawObjContainer(TDirectory *dir);
    virtual ~DrawObjContainer();
 
-   std::string  GetSignature();
-   void         SetSignature(std::string signature);
+   std::string  GetSignature() const;
+   void         SetSignature(const std::string signature);
    void         SetDir(TDirectory *dir);
    void         ReadFromDir();
    void         ReadFromDir(TDirectory *dir);
    void         Add(DrawObjContainer* oc);
    //virtual void Print(const Option_t* opt="") const;
    virtual void Fill(EventConfig &rc);
+   virtual void Fill(const EventConfig &rc);
    virtual void Fill(EventConfig &rc, DrawObjContainer &oc);
    virtual void FillPreProcess(ChannelEvent *ch);
    void         Print(const Option_t* opt="") const;

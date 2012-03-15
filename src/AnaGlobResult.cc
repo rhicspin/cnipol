@@ -20,7 +20,7 @@ using namespace std;
 
 /** */
 AnaGlobResult::AnaGlobResult() : TObject(),
-   fPathHjetResults("/eic/u/dsmirnov/eic0005/cnipol/macro/hjet/"),
+   fPathHjetResults("./"),
    fFileNameYelHjet("hjet_pol_yel.txt"),
    fFileNameBluHjet("hjet_pol_blu.txt"),
    fMinFill(UINT_MAX), fMaxFill(0),
@@ -41,13 +41,19 @@ void AnaGlobResult::Print(const Option_t* opt) const
    Info("Print", "Print members:");
    //PrintAsPhp();
 
-   AnaFillResultMapConstIter iFill = fAnaFillResults.begin();
+   char *l = strstr( opt, "all");
 
-   for ( ; iFill!=fAnaFillResults.end(); ++iFill) {
+   if (l) {
 
-      printf("\nFill %d:\n", iFill->first);
-      iFill->second.Print();
+      AnaFillResultMapConstIter iFill = fAnaFillResults.begin();
+
+      for ( ; iFill!=fAnaFillResults.end(); ++iFill) {
+
+         printf("\nFill %d:\n", iFill->first);
+         iFill->second.Print();
+      }
    }
+
    printf("\n");
    printf("Norm jet/carbon:\n");
 
@@ -59,8 +65,9 @@ void AnaGlobResult::Print(const Option_t* opt) const
       EPolarimeterId  polId = iNormJC->first;
       string         sPolId = RunConfig::AsString(polId);
 
-      printf("%s: %16.14f +/- %16.14f", sPolId.c_str(), iNormJC->second.first, iNormJC->second.second);
-      printf("      %16.14f +/- %16.14f\n", iNormJC2->second.first, iNormJC2->second.second);
+      printf("%s: ", sPolId.c_str());
+      printf("%16.14f +/- %16.14f  ", iNormJC->second.first,  iNormJC->second.second);
+      printf("%16.14f +/- %16.14f\n", iNormJC2->second.first, iNormJC2->second.second);
 
       printf("%s syst J vs C: %16.14f +/- %16.14f\n", sPolId.c_str(), fSystJvsCPolar.find(polId)->second.first, fSystJvsCPolar.find(polId)->second.second);
    }
@@ -168,6 +175,7 @@ void AnaGlobResult::Process()
       UInt_t         fillId  =  iFill->first;
       AnaFillResult *fillRes = &iFill->second;
 
+      // Process each fill
       fillRes->Process();
 
       // set hjet values
@@ -216,29 +224,6 @@ ValErrPair AnaGlobResult::GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t nor
    AnaFillResult *fillRslt = &iFill->second;
 
    return fillRslt->GetPolarBeam(ringId);
-
-   //// Create set of measurements for requested ringId
-   //ValErrSet polars;
-
-   //PolId2ValErrMapConstIter iPolar = fillRslt->fPolars.begin();
-
-   //for ( ; iPolar != fillRslt->fPolars.end(); ++iPolar)
-   //{
-   //   EPolarimeterId polId    = iPolar->first;
-   //   ValErrPair     polarCrb = iPolar->second;
-   //   ERingId        ringId   = RunConfig::GetRingId(polId);
-
-   //   if (ringId != ringId) continue;
-
-   //   if (norm) {
-   //      polarCrb.first  *= fNormJetCarbon[polId].first;
-   //      polarCrb.second *= fNormJetCarbon[polId].first;
-   //   }
-
-   //   polars.insert(polarCrb);
-   //}
-
-   //return CalcWeightedAvrgErr(polars);
 } //}}}
 
 
@@ -270,7 +255,7 @@ void AnaGlobResult::CalcPolarNorm()
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill)
    {
-      //UInt_t         fillId   =  iFill->first;
+      UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
       PolId2ValErrMapConstIter iPolar     = fillRslt->fPolars.begin();
@@ -292,7 +277,10 @@ void AnaGlobResult::CalcPolarNorm()
          }
 
          // For HJet normalization: Skip if there is no corresponding hjet result for this fill
-         if (fillRslt->fHjetPolars.find(ringId) == fillRslt->fHjetPolars.end()) continue;
+         if (fillRslt->fHjetPolars.find(ringId) == fillRslt->fHjetPolars.end()) {
+            Warning("CalcPolarNorm", "Fill %d, pol. %d: H-jet polarization not available", fillId, polId);
+            continue;
+         }
 
          ValErrPair polarJet = fillRslt->fHjetPolars[ringId];
 
@@ -543,4 +531,28 @@ void AnaGlobResult::UpdateInsertDb()
 
       gAsymDb->UpdateInsert(ofillProf, nfillProf);
    }
+} //}}}
+
+
+/** */
+ValErrPair AnaGlobResult::GetNormJetCarbon(EPolarimeterId polId)
+{ //{{{
+   ValErrPair norm(1, -1); // default values
+   
+   if ( fNormJetCarbon2.find(polId) != fNormJetCarbon2.end() )
+      norm = fNormJetCarbon2[polId];
+
+   return norm;
+} //}}}
+
+
+/** */
+ValErrPair AnaGlobResult::GetNormProfPolar(EPolarimeterId polId)
+{ //{{{
+   ValErrPair norm(1, -1); // default values
+   
+   if ( fNormProfPolar2.find(polId) != fNormProfPolar2.end() )
+      norm = fNormProfPolar2[polId];
+
+   return norm;
 } //}}}
