@@ -97,10 +97,8 @@ int main(int argc, char **argv)
    char logname[512] = "";
    char comment[512] = "RHIC Polarimeter Run";
    //char execdir[512]; // directory where the program was executed
-   char workdir[512];
    int iHistOnly = 0;
    int i, j, k, ev;
-   char * buf;
    time_t t;
    float tshift = 0;                   // Global time shift
 
@@ -210,8 +208,9 @@ int main(int argc, char **argv)
    polData.statusS = 0;
 
    // We will set configuration file directory as current
+   char workdir[512];
    strncpy(workdir, cfgname, sizeof(workdir));
-   buf = strrchr(workdir, '/');
+   char* buf = strrchr(workdir, '/');
 
    if (buf != NULL) {
       buf[0] = '\0';
@@ -221,6 +220,8 @@ int main(int argc, char **argv)
    else {
       buf = cfgname;
    }
+
+   std::string confFileName(buf);
 
    // Open LogFile
    if (strlen(logname) > 0) {
@@ -259,7 +260,9 @@ int main(int argc, char **argv)
    beamData.beamEnergyM = 100.0;       // defalut for no CDEV
 
    //  check CDEV
-   if (NoADO == 0 && getenv("CDEVDDL") == NULL) {      // we check if CDEV varables (at least one) are defined
+   if ( (NoADO == 0 && getenv("CDEVDDL") == NULL) || 
+        (gMeasType != kMEASTYPE_TEST || gMeasType != kMEASTYPE_ALPHA) )
+   {      // we check if CDEV varables (at least one) are defined
       NoADO = 1;
       fprintf(LogFile, "RHICPOL-WARN : No CDEV environment found.\n");
       fprintf(LogFile, "               Run may be unusable. Try -g to suppress this message.\n");
@@ -288,11 +291,17 @@ int main(int argc, char **argv)
    if (NoADO == 0) {
       getCDEVInfo(&beamData);
       fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
+
+      // Change the configuration file name for injection energies
+      if (beamData.beamEnergyM < 24)
+         confFileName += "_inj";
    }
 
+   fprintf(LogFile, "RHICPOL-INFO : Configuration file = %s\n", confFileName.c_str());
+
    // Read main configuration file
-   if (readConfig(buf, CFG_INIT)) {
-      fprintf(LogFile, "RHICPOL-FATAL : Cannot open config file %s\n", cfgname);
+   if (readConfig(&confFileName[0], CFG_INIT)) {
+      fprintf(LogFile, "RHICPOL-FATAL : Cannot open config file %s in %s\n", confFileName.c_str(), workdir);
       polData.statusS |= (STATUS_ERROR | ERR_INT);
       polexit();
    }

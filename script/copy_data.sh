@@ -2,7 +2,8 @@
 
 LOG="/usr/local/polarim/log/copy_data.log"
 
-date >> ${LOG} 2>&1
+echo "---" >> ${LOG}
+date >> ${LOG}
 
 #eval `ssh-agent -s` >> ${LOG} 2>&1
 #export 
@@ -13,4 +14,4 @@ export SSH_AGENT_PID=1288
 
 #env >> ${LOG} 2>&1
 
-ionice -c2 -n7 rsync --bwlimit=1000 -a /usr/local/polarim/data/*.data eic0005:/eicdata/eic0005/run12/data/ >> ${LOG} 2>&1
+ionice -c2 -n7 rsync --bwlimit=1000 -av /usr/local/polarim/data/*.data eic0005:/eicdata/eic0005/run12/data/ >> ${LOG} 2>&1
