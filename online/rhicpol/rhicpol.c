@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 
    // Open LogFile
    if (strlen(logname) > 0) {
-      LogFile = fopen(logFileFullName.c_str(), "at");
+      LogFile = fopen(logFileFullName.c_str(), "a");
       if (LogFile == NULL) {
          printf("Cannot open logfile %s. Logging to stdout.\n", logFileFullName.c_str());
          polData.statusS |= (WARN_INT);
