@@ -1,5 +1,5 @@
 PROGS = rhic2hbook
-MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl online_polar.pl rampplot.kumac
+MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl online_polar.pl rampplot.kumac repol.sh repol.kumac
 
 include ../include/common.mk
 
