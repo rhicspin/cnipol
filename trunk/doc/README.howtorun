@@ -1,0 +1,9 @@
+
+1. Install the package by following instructions in README.install
+
+2. Make sure the data file is in $DATADIR
+   Make sure the config file is in $CONFDIR
+
+3. Now you can execute the command:
+
+Asym -f <FillId> -b --raw

@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Run Summary and Fast Offline Results (Index)</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="5%">
+
+<td width="90%">
+
+<!-- Main text starts here-->
+
+<h1>Cnipol Run Index</h1>
+
+<p><a name="content"/>
+
+<?php
+
+//include("utils.php"); 
+//include("config.php");
+include("DbReader.php");
+
+$dbReader = new DbReader();
+$dbReader->ReadEntries();
+$es = $dbReader->entries;
+array_sort($es, '!START_TIME');
+
+?>
+
+<table border="1" cellpadding="2" cellspacing="2" align="center" width="100%">
+<tr>
+   <th rowspan=2>Run
+   <th rowspan=2>Date &amp; Time
+   <th rowspan=2>Polarimeter
+   <th rowspan=2>Polarization, %
+   <th rowspan=2>r
+   <th rowspan=2>Type
+   <th rowspan=2>Beam Energy, GeV
+   <th rowspan=2>Target
+   <th colspan=2>Num. of Events
+   <!--<th rowspan=2>Duration-->
+   <th rowspan=2>Analyzed <br> (version)
+<tr>
+   <th>Total
+   <th>Processed
+
+
+<?php
+//print count($es);
+foreach($es as $e):
+   //$e->PrintThis();
+
+   $polarization = "&nbsp;";
+
+   if (isset($e->f['POLARIZATION'])) {
+      $pols = preg_split("/[\s,]+/", $e->f['POLARIZATION']);
+		//$polarization = sprintf("%5.2f &plusmn; %5.2f<br>%5.2f &plusmn; %5.2f",
+      //   $pols[0]*100, $pols[1]*100, $pols[2], $pols[3]);
+		$polarization = sprintf("%5.1f &plusmn; %5.1f",
+         $pols[0]*100, $pols[1]*100);
+   }
+
+   $profileRatio = "&nbsp;";
+
+   if (isset($e->f['PROFILE_RATIO'])) {
+      $values = preg_split("/[\s,]+/", $e->f['PROFILE_RATIO']);
+      $profileRatio = sprintf("%5.2f &plusmn; %5.2f", $values[0], $values[1]);
+   }
+
+   $targetId = "&nbsp;";
+
+   if (isset($e->f['TARGET_ID'])) {
+      $targetId = $e->f['TARGET_ID'];
+   }
+
+   $polId = $POLARIMETER_ID[$e->f['POLARIMETER_ID']];
+
+	// Set css class
+	$cssPol = "";
+
+	if ($polId[0] == 'B') $cssPol = "bluPol";
+	if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+	if ($polId[2] == 'U') $cssPol .= " bold";
+	#if ($polId[2] == 'D') $cssPol .= "";
+
+   // Deal with version now
+	$asymVersion = isset($e->f['ASYM_VERSION']) ? $e->f['ASYM_VERSION'] : "v0.0.0";
+	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+?>
+
+<tr>
+   <td><a href=index.php?runid=<?=$e->runId?> ><?=$e->runId?></a>
+   <td class=align_cm><tt><?=isset($e->f['START_TIME']) ? date("M d, Y H:i:s D", $e->f['START_TIME']) : "&nbsp;";?></tt>
+   <td class="<?=$cssPol?> align_cm"><?=isset($e->f['POLARIMETER_ID']) ? $POLARIMETER_ID[$e->f['POLARIMETER_ID']] : "&nbsp;";?>
+   <td class=align_cm><?=$polarization?>
+   <td class=align_cm><?=$profileRatio?>
+   <td>&nbsp;
+   <td class=align_cm><?=isset($e->f['BEAM_ENERGY']) ? sprintf("%6.2f", $e->f['BEAM_ENERGY']) : "&nbsp;";?>
+   <td class=align_cm><?=$targetId?>
+   <td align=right><?=isset($e->f['NEVENTS_TOTAL']) ? number_format($e->f['NEVENTS_TOTAL']) : "&nbsp;";?>
+   <td align=right><?=isset($e->f['NEVENTS_PROCESSED']) ? number_format($e->f['NEVENTS_PROCESSED']) : "&nbsp;";?>
+   <td class=align_cm><?=$asymVersion?>
+
+
+<?php
+endforeach;
+?>
+
+</table>
+
+
+<pre>
+<?php //print_r($rc); ?>
+</pre>
+
+
+<!-- Main text ends here-->
+
+<td width="5%">
+
+<tr>
+<td>
+<td>
+
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>

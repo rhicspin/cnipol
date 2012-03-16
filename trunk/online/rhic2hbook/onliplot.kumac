@@ -1,0 +1,503 @@
+*
+*	This is a very important script generating on-line pictures
+*		written by Sandro Bravar
+*	Macro is called as: 
+*	    pawX11 -b -n onliplot.kumac 
+*	Arguments are passed as environment variables. We need:
+*	RUN - run number
+*	LOGDIR - directory with log files
+*	PSFILE - postscript file to write (output)
+*	HBOOKFILE - HBOOK file (input)
+*	MACDIR - directory with pvector.kumac
+*	2010 corrections by I.Alekseev & D.Svirida 
+*	- change for different polarimeter multiplexing
+*	- put more comments, indent
+*
+macro main
+
+    glo/cre run $ENV(RUN)
+    mess 'Run Number '//[run]
+    spinfile=$ENV(LOGDIR)//'/spinpat.dat'
+
+** open ps output file 
+    psfile=$ENV(PSFILE)
+    for/file 61 [psfile]
+    meta -61 -111
+
+** open .hbook file
+    file=$ENV(HBOOKFILE)
+
+    if ($FEXIST([file]).EQ.1) then
+        hi/file 21 [file] 0 X
+    else
+        mess File [file] 'doesn''t exist'
+        exitm
+    endif
+    hrin 0
+
+    opt nbox
+    opt nsta
+    hi/del *
+    vec/del *
+
+    v/cre BID(120) R
+    v/cre BIDP(120) R
+    v/cre BIDM(120) R
+
+*	Created in spinpat.dat...
+*    v/cre BIDP1(40) R
+*    v/cre BIDM1(40) R
+*    v/cre BIDP2(40) R
+*    v/cre BIDM2(40) R
+*    v/cre BIDP3(40) R
+*    v/cre BIDM3(40) R
+   
+    v/cre mean(3) R
+   
+* X90
+    v/cre SR90(120) R
+    v/cre SL90(120) R
+    v/cre RSLT90(120) R
+    v/cre ERR90(120) R
+   
+* X45
+    v/cre SR45(120) R
+    v/cre SL45(120) R
+    v/cre RSLT45X(120) R
+    v/cre ERR45X(120) R
+   
+* Ave X asym
+    v/cre AVEX(120) R
+    v/cre ERRX(120) R
+
+* Y45
+    v/cre ST45(120) R
+    v/cre SB45(120) R
+    v/cre RSLT45Y(120) R
+    v/cre ERR45Y(120) R
+   
+    v/cre S45a(120) R		| Right Top
+    v/cre S45b(120) R		| Right Bottom
+    v/cre S45c(120) R		| Left Bottom
+    v/cre S45d(120) R		| Left Top
+   
+    get_vec/cont ID=9292 VNAME=SR90
+    get_vec/cont ID=9295 VNAME=SL90
+   
+    get_vec/cont ID=9291 VNAME=S45a
+    get_vec/cont ID=9293 VNAME=S45b
+    get_vec/cont ID=9294 VNAME=S45c
+    get_vec/cont ID=9296 VNAME=S45d
+*
+*	Dima and me can't make this work:
+*    v/read BIDP1 [spinfile] OPT='O'
+*    v/read BIDP2 [spinfile] OPT=' '
+*    v/read BIDP3 [spinfile] OPT=' '
+*  
+*    v/read BIDM1 [spinfile] OPT=' '
+*    v/read BIDM2 [spinfile] OPT=' '
+*    v/read BIDM3 [spinfile] OPT=' '   
+*	Let's try this:
+    exec [spinfile]
+
+* sh 'rm -f spinpat.dat'
+
+    Do i=1,40
+        v/input BIDP([i]) $EVAL(BIDP1([i]))
+        bid1 = $EVAL([i]+40)
+        v/input BIDP([bid1]) $EVAL(BIDP2([i]))
+        bid2 = $EVAL([i]+80)
+        v/input BIDP([bid2]) $EVAL(BIDP3([i]))
+     
+        v/input BIDM([i]) $EVAL(BIDM1([i]))
+        bid1 = $EVAL([i]+40)
+        v/input BIDM([bid1]) $EVAL(BIDM2([i]))
+        bid2 = $EVAL([i]+80)
+        v/input BIDM([bid2]) $EVAL(BIDM3([i])) 
+    Enddo
+   
+* ---------------------------------------------------
+*	Calculate left-right per bunch asymmetries
+* ---------------------------------------------------
+    application comis quit
+        subroutine lrasym()
+        implicit None
+        vector  SR90,SL90,RSLT90,BID,mean
+        vector  S45a,S45b,S45c,S45d
+        vector  RSLT45X,RSLT45Y
+        vector  SR45,SL45
+        vector  ST45,SB45
+        vector  ERR45X,ERR45Y,ERR90
+        vector  AVEX,ERRX
+        integer i
+        integer val90,val45
+        real    sum90,sum45X,sum45Y
+        real    RC45,LC45,TC45,BC45,A_LR,A_TB
+        real    RC90,LC90,A90_LR
+        real    N45,N90
+      
+        val90  = 0
+        val45  = 0
+        sum45X = 0
+        sum45Y = 0
+        sum90  = 0
+      
+        RC45=0; LC45=0; TC45=0; BC45=0
+        RC90=0; LC90=0 
+
+* ACCEPTANCE RATIO
+        Do i=1,120
+	    RC45 = RC45 + S45a(i) + S45b(i) ! Right
+	    LC45 = LC45 + S45c(i) + S45d(i) ! Left
+	    TC45 = TC45 + S45a(i) + S45d(i) ! Top
+	    BC45 = BC45 + S45b(i) + S45c(i) ! Bottom
+	
+	    RC90 = RC90 + SR90(i)
+	    LC90 = LC90 + SL90(i)
+        Enddo
+
+* Calculate luminosity normalization factors from the totals over all bunches
+        A90_LR = RC90/LC90;
+        A_LR   = RC45/LC45;
+        A_TB   = BC45/TC45;
+
+        write(*,*) 'ACC90 LR = ', A90_LR, 'ACC45 LR = ',
+     ,      A_LR, ' ACC TB = ', A_TB 
+
+        Do i=1,120
+	    SR45(i) = S45a(i) + S45b(i) ! Right
+	    SL45(i) = S45c(i) + S45d(i) ! Left
+	
+	    ST45(i) = S45a(i) + S45d(i) ! Top
+	    SB45(i) = S45b(i) + S45c(i) ! Bottom
+	
+* 45-detectors
+	    if (SL45(i).le.1000) then
+	  
+		RSLT45X(i) = -5.
+		RSLT45Y(i) = -5.
+		ERR45X(i)  = 1.
+		ERR45Y(i)  = 1.
+	    else 
+	  
+		RSLT45X(i) = (SL45(i)*A_LR-SR45(i))/
+     ,              (SL45(i)*A_LR+SR45(i))
+		ERR45X(i)  = 2*A_LR*sqrt(SL45(i)*SR45(i) *
+     ,              (SL45(i)+SR45(i)))/(SL45(i)*A_LR+SR45(i))**2
+	  
+		RSLT45Y(i) = (ST45(i)*A_TB-SB45(i)) /
+     ,              (ST45(i)*A_TB+SB45(i))
+		ERR45Y(i)  = 2.*A_TB*sqrt(ST45(i)*SB45(i) *
+     ,              (ST45(i)+SB45(i)))/(ST45(i)*A_TB+SB45(i))**2
+	  
+		if (abs(RSLT45Y(i)).le.0.5) then
+		    val45  = val45  + 1
+		    sum45X = sum45X + RSLT45X(i)
+		    sum45Y = sum45Y + RSLT45Y(i)
+		endif
+	    endif
+	
+* 90-detectors
+	    if (SL90(i).le.1000) then
+		RSLT90(i) = -5.
+		ERR90(i)  = 1.
+	    else
+		RSLT90(i) = (SL90(i) * A90_LR - SR90(i)) /
+     ,              (SL90(i) * A90_LR + SR90(i))
+        	ERR90(i)  = 2*A90_LR*sqrt(SL90(i)*SR90(i) *
+     ,              (SL90(i)+SR90(i))) / (SL90(i)*A90_LR+SR90(i))**2
+     
+    		if (abs(RSLT90(i)).le.0.5) then
+		    val90 = val90 + 1
+		    sum90 = sum90 + RSLT90(i)
+		endif
+	    endif
+	
+	    BID(i) = i
+
+* Calculate weigted average X cross asym for 90 and 45
+	    N45 = 1/(1.414*ERR45X(i))**2
+	    N90 = 1/ERR90(i)**2
+
+	    AVEX(i) = (N90*RSLT90(i) + N45*(1.414*RSLT45X(i)))/(N90+N45)
+	    ERRX(i) = 1/sqrt(N90 + N45)
+
+        Enddo
+
+*	Protect from division by zero
+        if (val90.gt.0) then 
+    	    mean(1) = sum90/float(val90)
+    	else
+    	    mean(1) = 0
+    	endif
+
+    	if (val45.gt.0) then
+    	    mean(2) = sum45X/float(val45)
+    	    mean(3) = sum45Y/float(val45)
+    	else
+    	    mean(2) = 0
+    	    mean(3) = 0
+    	endif
+
+        write(*,*) 'VAL90',val90,sum90
+        write(*,*) sum45Y,val45,mean(3)*1.414
+      
+        write(*,*) 'MEAN 1 ',mean(1)
+        write(*,*) 'MEAN 2 ',mean(2)
+        write(*,*) 'MEAN 3 ',mean(3)
+        stop
+        end
+    quit
+* ---------------------------------------------------
+   
+    call lrasym(1.)
+
+* -----------------------------------------
+** make plots: L-R asym, bunch, banana ...   
+* -----------------------------------------
+    v/cre ex(120) R
+   
+    set MTYP 20
+   
+    set *FON -60
+    set TXFP -60
+
+    set GSIZ 0.7
+    set YGTI 1.0
+    set xsiz 21.0
+    set XMGR 2.0
+    set XMGL 2.6
+   
+    set VSIZ 0.35
+    set ASIZ 0.35
+    set TSIZ 0.4
+    set MSCF 1.0
+    set XLAB 1.8
+    set LWID 4
+
+* Get the beam energy (GeV) from histogram 10
+    v/cre beamEnergyS R
+    get_vec/cont ID=10 VNAME=beamEnergyS
+    beamE = $EVAL($format(beamEnergyS,F5.1))
+
+    COLOR_TABLE 9 1.0000 0.5409 0.0078 | goldenrod1
+    COLOR_TABLE 10 0.6875 0.7656 0.8672 | light steel blue
+    fill = $RSIGMA(int([run]))
+    glo/cre prun $RSIGMA(int(10*([run]-int([run]))))
+
+* 2010: prun=0 - blue-1, 1 - blue-2; 2 - yellow-1, 3 - yellow-2
+
+* ********************************
+* asymmetry plots
+* *********************************
+
+    set HCOL 1
+*
+*   if ([prun].eq.2 .or. [prun].eq.3) then
+*       set PMCI 6
+*    	title_gl 'RUN '//[run]//' (YELLOW-'//[mux]//')'//' E='//[beamE]//' GeV'
+*   else
+*	set PMCI 4
+*	title_gl 'RUN '//[run]//' (BLUE-'//[mux]//')'//' E='//[beamE]//' GeV'
+*   endif
+*
+    case [prun] in
+    (0, 2)
+        set PMCI 6
+	title_gl 'RUN '//[run]//' (BLUE-'//$EVAL(int([prun]/2)+1)//')'//' E ='//[beamE]//' GeV'
+    (1, 3)
+        set PMCI 6
+	title_gl 'RUN '//[run]//' (YELLOW-'//$EVAL(int(([prun]-1)/2)+1)//')'//' E ='//[beamE]//' GeV'
+    endcase
+
+    zone 1 3
+    opt utit
+   
+    set PLCI 10
+   
+    title_gl 'Ave X asym left - right' U
+    l90=$RSIGMA(-0.025)
+    u90=$RSIGMA(+0.025)
+    null   0.  120. [l90] [u90]
+    line   0.    0.  120.    0.
+    line  20. [l90]   20. [u90]
+    line  40. [l90]   40. [u90]
+    line  60. [l90]   60. [u90]
+    line  80. [l90]   80. [u90]
+    line 100. [l90]  100. [u90]
+    set PMCI 4
+    hp/err BIDM AVEX ex ERRX 120 20 0.15 ' '
+    set PMCI 2 
+    hp/err BIDP AVEX ex ERRX 120 20 0.15 ' '
+    atitle 'bunch crossing' 'Left-Right asym'
+
+* ****************************
+* bunch structure
+* ****************************
+    h/ope/add 9291 9292 1000
+    h/ope/add 1000 9293 1000
+    h/ope/add 1000 9294 1000
+    h/ope/add 1000 9295 1000
+    h/ope/add 1000 9296 1000
+   
+    zone 2 3 3 s
+    opt utit
+    opt logy
+    title_gl 'Bunch Distribution ' U
+    if ([prun].eq.1 .or. [prun].eq.3) then
+*	yellow
+        set HCOL 9909
+    else
+*	blue
+        set HCOL 4404
+    endif
+    h/pl 1000
+    atitle 'Bunch ID' 'total counts'
+    opt liny
+
+* ****************************
+* banana - sum all strips
+* ****************************
+    set XLAB 1.4
+
+    h/op/add 701 702 701
+    h/op/add 801 802 801 0.5 0.5
+    h/op/add 901 902 901 0.5 0.5
+    do i=2,72
+        h/op/add $eval(700+[i]-1) $eval(700+[i]) $eval(700+[i]-1) 
+        h/op/add $eval(800+[i]-1) $eval(800+[i]) $eval(800+[i]-1) 0.5 0.5
+        h/op/add $eval(900+[i]-1) $eval(900+[i]) $eval(900+[i]-1) 0.5 0.5
+    enddo
+    h/op/add 801 901 100 0.5 0.5
+   
+    title_gl 'Summed Strips ' U
+    set hcol 1
+    h/pl 701 box
+*   h/pl 701 scont
+    set hcol 2
+    h/pl 801 s
+    h/pl 901 s
+    set hcol 4
+    h/pl 100 s
+    atitle 'E (keV)' 'tof (ns)'
+
+    set XLAB 1.8
+
+* ****************************
+* distribution of detector events
+* ****************************
+
+    opt nsta
+    if ([prun].eq.1 .or. [prun].eq.3) then
+        set HCOL 9909
+* set HCOL 6606
+    else
+        set HCOL 4404
+    endif
+    set NDVX 10112
+   
+    v/cre tcounts(6) R 6*0.
+    Do si=1,6
+        Do i=1,12
+    	    hid = $RSIGMA(200+([si]-1)*12+[i])
+    	    h/pro [hid]
+    	    if ($HEXIST([hid])) then
+		entry = $HINFO([hid],'ENTRIES')
+	 	mess $HINFO([hid],'ENTRIES')
+	 	totcnt = $RSIGMA(tcounts([si]))
+	 	mess [totcnt]
+	 	v/input tcounts([si]) $RSIGMA([totcnt]+[entry])
+    	    endif
+        Enddo
+    Enddo
+   
+    title_gl 'Detector Events' U
+    1d 100 '' 6 0.5 6.5
+    put_vec/cont id=100 vname=tcounts
+    h/pl 100 B
+    atitle 'Det. no.' 'total counts'
+
+*************************
+** target position
+*************************
+
+    set xlab 1.7
+    set xval 0.2
+    title_gl ' ' U
+    h/pl 3010
+    xmin = $hinfo(3010,'xmin')
+    xmax = $hinfo(3010,'xmax')
+
+    h/proj 3001
+    v/cre hcont($hinfo(3001,'xbins')) r
+    get_vect/contents 3001 hcont
+    hchk = $eval(hcont(1)) 
+    h/proj 3003
+    v/cre vcont($hinfo(3003,'xbins')) r
+    get_vect/contents 3003 vcont
+    vchk = $eval(vcont(1)) 
+
+** is vertical or horizontal histo filled?
+    if ([hchk]>0) then
+	hid = 3001
+	v/copy hcont tcont
+    elseif ([vchk]>0) then
+	hid = 3003
+	v/copy vcont tcont
+    else  
+	hid = 3001
+	v/copy hcont tcont
+    endif
+    mess 'Using target motion histogram '//[hid]
+   
+** find peak target position
+    v/cre peakpar(3) r
+    h/fit 3010 g 0 ! peakpar
+    rem = $eval(peakpar(2) - $format(peakpar(2),I3.3))
+    if ([rem].lt.0.5) then
+        peakbin = $eval($format(peakpar(2),I3.3) - [xmin] + 1)
+    else
+        peakbin = $eval($format(peakpar(2),I3.3) - [xmin] + 2)
+    endif
+
+    peak = $eval(tcont([peakbin]))
+    mess '** Target peak: '//[peak]//' '//[peakbin]//' '//$eval(peakpar(2))
+    if ([hid]=3001) then
+        title_gl 'H Target Position' U
+    else
+	title_gl 'V Target Position' U
+    endif
+
+** rescale target position to superimpose on count rate
+    tmin = $hinfo(3003,'min')
+    tmin = $eval([tmin]-100)   
+*   tmin = 800
+    tmax = $hinfo(3003,'max') 
+    tmax = $eval([tmax]+50)  
+*   tmin = 1300
+    null [xmin] [xmax] [tmin] [tmax] as
+    tick xr [xmax]
+    set hcol 2
+    h/pl 3003 s
+    atitle ' ' 'target position' ! 330 R
+    atitle 'time (sec)' 'rate'
+
+*************************
+** make Pol vector page
+*************************
+    set xlab 1.8
+    set xval 0.4
+    set HCOL 1
+    title_gl ' ' U
+*    macdir=$ENV(MACDIR)
+*    default [macdir]//',macro,.'
+
+    exec $ENV(MACDIR)/pvector [run] 10
+
+** close ps output file
+    close 61
+    close 21
+
+    mess [run]
+
+return

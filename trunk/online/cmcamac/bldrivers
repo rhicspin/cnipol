@@ -1,0 +1,3 @@
+#!/bin/bash
+# to build a driver modules in a current directory
+make -C /lib/modules/`uname -r`/build M=`pwd` modules

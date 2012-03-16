@@ -1,0 +1,96 @@
+macro onl-offl
+
+****************
+** some defaults
+**************** 
+offldir = $ENV(ASYMDIR)
+alias/cre bfile [offldir]//'/summary/fixed-scan_ratio_blu.dat'
+alias/cre yfile [offldir]//'/summary/fixed-scan_ratio_yel.dat'
+alias/cre psfile $ENV(RATIOPLOT)
+
+************
+** read data
+************
+v/del *
+v/read fillb,ratonb,eratonb,ratoffb,eratoffb,eneb,nscnb,sonlb,sonleb,sofflb,soffleb,frunb,fonlb,fonleb,fofflb,foffleb,rateb bfile ! ! -/#/
+v/read filly,ratony,eratony,ratoffy,eratoffy,eney,nscny,sonly,sonley,soffly,soffley,fruny,fonly,fonley,foffly,foffley,ratey yfile ! ! -/#/
+
+nptb = $vdim(fillb,1)
+v/cre xerrb([nptb]) r [nptb]*0
+npty = $vdim(filly,1)
+v/cre xerry([npty]) r [npty]*0
+
+lofill = 7550
+hiblu = $eval(fillb([nptb]) + 20)
+hiyel = $eval(filly([npty]) + 20)
+
+*********************************
+** calculate ratio online/offline
+*********************************
+vdivide sonlb sofflb scanb
+vdivide fonlb fofflb fixb
+vdivide sonly soffly scany
+vdivide fonly foffly fixy
+
+**************
+** set options
+**************
+opt *; set *
+opt nbox
+opt pto
+opt grid
+set mtyp 20
+set xmgr 1.3
+set xmgl 2.7
+set xlab 2.1
+*set ylab 1.2
+set csiz 0.55
+set gsiz 0.6
+set ygti 0.7
+set tsiz 0.5
+set vsiz 0.45
+set asiz 0.5
+set *fon -62
+set txfp -62
+set chhe 0.5
+
+***************
+** plot results
+***************
+
+for/file 66 psfile
+meta -66 -114
+
+zone 1 2
+
+title_global 'Target Scans - average P for each fill'
+
+null [lofill] [hiblu] 0.9 1.1
+set pmci 4
+hplot/symbols fillb scanb [nptb] 20
+atitle 'fill' 'P?onl!/P?offl!'
+
+null [lofill] [hiyel] 0.9 1.1
+set pmci 5
+hplot/symbols filly scany [npty] 20
+set pmci 1
+hplot/symbols filly scany [npty] 24
+atitle 'fill' 'P?onl!/P?offl!'
+
+title_global 'Fixed Target'
+
+null [lofill] [hiblu] 0.9 1.1
+set pmci 4
+hplot/symbols fillb fixb [nptb] 20
+atitle 'fill' 'P?onl!/P?offl!'
+
+null [lofill] [hiyel] 0.9 1.1
+set pmci 5
+hplot/symbols filly fixy [npty] 20
+set pmci 1
+hplot/symbols filly fixy [npty] 24
+atitle 'fill' 'P?onl!/P?offl!'
+
+close 66
+
+return

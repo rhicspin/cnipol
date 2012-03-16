@@ -1,0 +1,136 @@
+ macro main run='-5' emin='-5'
+ close 21 
+ opt file 
+ opt nsta
+ opt utit
+ opt nfil
+ 
+ hi/del *
+ vec/del *
+ for/file 60 paw.ps
+ meta 60 -111
+
+ set *FON -60
+ set TXFP -60
+ 
+ set GSIZ 0.7
+ set YGTI 1.0
+ set XMGR 1.0
+ set XMGL 2.6
+ 
+ set VSIZ 0.35
+ set ASIZ 0.35
+ set TSIZ 0.4
+ set MSCF 1.0
+ set XLAB 1.8
+ set LWID 4
+ 
+ if ([run].eq.'-5') then
+   run = $ENV(RUN)
+ endif
+ 
+ if ([emin].eq.'-5') then
+   emin = $ENV(EMIN)
+ endif
+
+hbookdir=$ENV(ONLINEDIR)/hbook/
+
+ mess 'Trigger threshold was '//[emin]//' keV'
+ 
+ 
+* if ([1].EQ.' ') then
+* mess Usage cutq <runid> [r]
+* exitm
+* endif
+ 
+ file=[hbookdir]//[run]//'.hbook'
+
+ if ($FEXIST([file]).EQ.1) then
+   hi/file 21 [file] 0 X
+ else
+   mess File [file] 'doesn''t exist'
+   exitm
+ endif
+ 
+ fst=1
+
+* *****if ([2].EQ.'r'.OR.[2].EQ.'R') then; mode=1000; else; mode=0; endif
+ mode=0
+* opt pto
+ 
+ title_gl 'RUN '//[run]
+ zone 3 4 
+ 
+ hrin 0
+ lnum=0
+ do i=[fst],72
+   si = $SIGMA(int(([i]-1)/12)+1)
+   
+   title_gl 'Strip '//[i]//'(si='//[si]//')' U
+* if ($HEXIST(200+[i])) then
+   if (1) then
+     lnum = $EVAL([lnum]+1)
+     if ([mode].EQ.1000) then
+       hi/op/add $EVAL(1800+[i]) $EVAL(1800+[i]) 100 0.5 0.0
+       hi/op/add $EVAL(1900+[i]) $EVAL(1900+[i]) 101 0.5 0.0
+       hi/op/add $EVAL(1800+[i]) $EVAL(1900+[i]) 102 0.25 0.25
+     else
+       hi/copy $EVAL(800+[i]) 100
+       hi/copy $EVAL(900+[i]) 101
+       hi/op/add $EVAL(800+[i]) $EVAL(900+[i]) 102 0.5 0.5
+     endif
+     set dmod 1
+     set hcol 1
+     set HCOL 1101
+     hid = $EVAL(700+[i])
+*     origmin = $HINFO([hid],'XMIN')
+*     origmax = $HINFO([hid],'XMAX')
+*     origymin = $HINFO([hid],'YMIN')
+*     origymax = $HINFO([hid],'YMAX')
+*     ymax = $HINFO([hid],'YMAX')
+*     ymax = $RSIGMA(100.)
+* origymax = 90.
+* FOR TRIGGER ENERGY RANGE
+*     null $RSIGMA(240.) $RSIGMA(240.+[origmax]-[origmin]) _
+*       $RSIGMA([origymin]) $RSIGMA([origymax]) 
+     hi/plot $EVAL([hid]) box
+     set HCOL 1 
+     hi/plot $EVAL([hid]) scont
+     set hcol 2
+* FOR LUT ENERGY RANGE
+     hi/plot 100 s
+     hi/plot 101 s
+     set hcol 4
+     hi/plot 102 s
+     hi/del 100
+     hi/del 101
+     hi/del 102
+     if (([lnum].eq.12)_
+     .or.([lnum].eq.24)_
+     .or.([lnum].eq.36)_
+     .or.([lnum].eq.48)_
+     .or.([lnum].eq.60)) then
+       wait
+     endif
+     
+   endif
+ enddo
+ 
+ close 60
+ close 21
+ hi/del *
+ vec/del *
+ 
+ wait
+ return
+ 
+
+
+
+
+
+
+
+
+
+

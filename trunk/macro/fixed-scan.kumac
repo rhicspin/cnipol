@@ -1,0 +1,138 @@
+macro fixed-scan
+
+****************
+** some defaults
+**************** 
+offldir = $ENV(ASYMDIR)
+alias/cre bfile [offldir]//'/summary/fixed-scan_ratio_blu.dat'
+alias/cre yfile [offldir]//'/summary/fixed-scan_ratio_yel.dat'
+alias/cre psfile $ENV(FIXEDPLOT)
+*alias/cre psfile 'fixed-scan_ratio.ps'
+
+************
+** read data
+************
+v/del *
+v/read fillb,ratonb,eratonb,ratoffb,eratoffb,eneb,nscnb,sonlb,sonleb,sofflb,soffleb,frunb,fonlb,fonleb,fofflb,foffleb,rateb bfile ! ! -/#/
+v/read filly,ratony,eratony,ratoffy,eratoffy,eney,nscny,sonly,sonley,soffly,soffley,fruny,fonly,fonley,foffly,foffley,ratey yfile ! ! -/#/
+
+nptb = $vdim(fillb,1)
+v/cre xerrb([nptb]) r [nptb]*0
+npty = $vdim(filly,1)
+v/cre xerry([npty]) r [npty]*0
+
+lofill = 7550
+hiblu = $eval(fillb([nptb]) + 20)
+hiyel = $eval(filly([npty]) + 20)
+
+************************
+** function to get Chi^2
+************************
+v/cre chi2(1) r
+Application COMIS Quit
+       SUBROUTINE chiq
+       COMMON/HCFITS/NCFITS,NPFITS,NFPAR,FITCHI,FITPAR(35),FITSIG(35)
+     +             ,FITDER(35)
+       vector chi2
+       chi2(1)=fitchi
+       END
+Quit
+
+*************
+** fit ratios
+*************
+v/cre bonlfit(1) r 1.; v/cre bonlfite(1) r 0.
+v/fit fillb ratonb eratonb p0 0 1 bonlfit ! ! ! bonlfite
+Call chiq
+chionlb = $eval(chi2(1))
+v/cre bofflfit(1) r 1.; v/cre bofflfite(1) r 0.
+v/fit fillb ratoffb eratoffb p0 0 1 bofflfit ! ! ! bofflfite
+Call chiq
+chiofflb = $eval(chi2(1))
+v/cre yonlfit(1) r 1.; v/cre yonlfite(1) r 0.
+v/fit fillb ratony eratony p0 0 1 yonlfit ! ! ! yonlfite
+Call chiq
+chionly = $eval(chi2(1))
+v/cre yofflfit(1) r 1.; v/cre yofflfite(1) r 0.
+v/fit fillb ratoffy eratoffy p0 0 1 yofflfit ! ! ! yofflfite
+Call chiq
+chioffly = $eval(chi2(1))
+
+**************
+** set options
+**************
+opt *; set *
+opt nbox
+opt pto
+opt grid
+set mtyp 20
+set xmgr 1.5
+set xmgl 2.5
+set xlab 1.7
+*set ylab 1.2
+set csiz 0.55
+set gsiz 0.6
+set ygti 0.7
+set tsiz 0.5
+set vsiz 0.5
+set asiz 0.5
+set *fon -62
+set txfp -62
+set chhe 0.5
+
+***************
+** plot results
+***************
+
+for/file 66 psfile
+meta -66 -114
+
+zone 1 2
+
+title_global 'Online Results'
+
+null [lofill] [hiblu] 0.7 1.3
+do i=1,4
+f/pl $eval(bonlfit(1)) [lofill] [hiblu] s
+enddo
+set pmci 4
+hplot/errors fillb ratonb xerrb eratonb [nptb] 20
+atitle 'fill' 'P?fixed!/P?scan!'
+itx $eval([lofill]+50) 0.75 'fit P?fixed!/P?scan! = '//$format(bonlfit(1),F3.2)//'+/-'//$format(bonlfite(1),F3.2)//',  [\143]^2! = '//$format([chionlb],F3.2)
+
+null [lofill] [hiyel] 0.7 1.3
+do i=1,4
+f/pl $eval(yonlfit(1)) [lofill] [hiyel] s
+enddo
+set pmci 5
+hplot/errors filly ratony xerry eratony [npty] 20
+set pmci 1
+hplot/errors filly ratony xerry eratony [npty] 24
+atitle 'fill' 'P?fixed!/P?scan!'
+itx $eval([lofill]+50) 0.75 'fit P?fixed!/P?scan! = '//$format(yonlfit(1),F3.2)//'+/-'//$format(yonlfite(1),F3.2)//',  [\143]^2! = '//$format([chionly],F3.2)
+
+title_global 'Offline Results'
+
+null [lofill] [hiblu] 0.7 1.3
+do i=1,4
+f/pl $eval(bofflfit(1)) [lofill] [hiblu] s
+enddo
+set pmci 4
+hplot/errors fillb ratoffb xerrb eratoffb [nptb] 20
+atitle 'fill' 'P?fixed!/P?scan!'
+itx $eval([lofill]+50) 0.75 'fit P?fixed!/P?scan! = '//$format(bofflfit(1),F3.2)//'+/-'//$format(bofflfite(1),F3.2)//',  [\143]^2! = '//$format([chiofflb],F3.2)
+
+null [lofill] [hiyel] 0.7 1.3
+do i=1,4
+f/pl $eval(yofflfit(1)) [lofill] [hiyel] s
+enddo
+set pmci 5
+hplot/errors filly ratoffy xerry eratoffy [npty] 20
+set pmci 1
+hplot/errors filly ratoffy xerry eratoffy [npty] 24
+atitle 'fill' 'P?fixed!/P?scan!'
+itx $eval([lofill]+50) 0.75 'fit P?fixed!/P?scan! = '//$format(yofflfit(1),F3.2)//'+/-'//$format(yofflfite(1),F3.2)//',  [\143]^2! = '//$format([chioffly],F3.2)
+
+close 66
+
+return

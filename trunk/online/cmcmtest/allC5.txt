@@ -1,0 +1,146 @@
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 2  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 3147.08 R: 3160.78 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2142.69 R:  288.18 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2149.87 R:  244.07 ns/op
+Pass 1 with seed 8299410 (first RAND 2AAFEC48)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 3063.23 R: 2953.31 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2149.98 R:  287.40 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2147.90 R:  243.65 ns/op
+Pass 2 with seed 91DB890 (first RAND 4BFAA3ED)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2941.26 R: 2938.90 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2148.89 R:  287.51 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2152.82 R:  243.71 ns/op
+ <Speed>:   LUT           Dir           Ind           GCC           Evt        
+  Write:  3050.5(7140.8)  2147.2(10.3)  2150.2( 4.1)     0.0( 0.0)     0.0( 0.0)
+  Read:   3017.7(10276.0)   287.7( 0.1)   243.8( 0.0)     0.0( 0.0)     0.0( 0.0)
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 4  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2992.14 R: 2927.93 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2132.02 R:  287.13 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2131.36 R:  243.59 ns/op
+Pass 1 with seed 7F3CFE0 (first RAND 4EF15452)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2926.48 R: 2929.22 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2132.11 R:  287.73 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2131.37 R:  243.60 ns/op
+Pass 2 with seed 7ADB5E0 (first RAND 13105716)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2958.31 R: 2935.25 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2131.74 R:  287.16 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2130.96 R:  243.43 ns/op
+ <Speed>:   LUT           Dir           Ind           GCC           Evt        
+  Write:  2959.0(718.8)  2132.0( 0.0)  2131.2( 0.0)     0.0( 0.0)     0.0( 0.0)
+  Read:   2930.8(10.2)   287.3( 0.1)   243.5( 0.0)     0.0( 0.0)     0.0( 0.0)
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 6  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2940.58 R: 2929.20 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2131.95 R:  287.20 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2130.92 R:  243.50 ns/op
+Pass 1 with seed 987E190 (first RAND 479C469C)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2953.44 R: 2927.93 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2132.74 R:  287.43 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2132.26 R:  252.54 ns/op
+Pass 2 with seed 8AA5510 (first RAND 9F941F6)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 3057.74 R: 3056.19 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2131.04 R:  287.38 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2140.48 R:  251.84 ns/op
+ <Speed>:   LUT           Dir           Ind           GCC           Evt        
+  Write:  2983.9(2752.2)  2131.9( 0.5)  2134.6(17.9)     0.0( 0.0)     0.0( 0.0)
+  Read:   2971.1(3619.9)   287.3( 0.0)   249.3(16.9)     0.0( 0.0)     0.0( 0.0)
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 8  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2937.68 R: 2951.07 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2130.28 R:  291.52 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2149.24 R:  246.51 ns/op
+Pass 1 with seed F2E74F0 (first RAND 38D5311C)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 3074.77 R: 3034.29 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2129.76 R:  295.98 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2133.69 R:  245.54 ns/op
+Pass 2 with seed 2F7EF40 (first RAND 736072A)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2953.66 R: 2935.16 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2130.70 R:  295.95 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2146.51 R:  243.62 ns/op
+ <Speed>:   LUT           Dir           Ind           GCC           Evt        
+  Write:  2988.7(3746.0)  2130.2( 0.1)  2143.1(45.9)     0.0( 0.0)     0.0( 0.0)
+  Read:   2973.5(1889.7)   294.5( 4.4)   245.2( 1.5)     0.0( 0.0)     0.0( 0.0)
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 10  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2999.42 R: 2947.42 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2132.97 R:  293.31 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2128.69 R:  243.61 ns/op
+Pass 1 with seed D0BD0B0 (first RAND 6DEDB595)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2958.21 R: 2927.32 ns/op
+	Dir	Wr... Rd... Errs: 0. Speed: W: 2131.75 R:  287.55 ns/op
+	Ind	Wr... Rd... Errs: 0. Speed: W: 2128.60 R:  243.27 ns/op
+Pass 2 with seed EAA5570 (first RAND 7AF8A281)
+	LUT	Wr... Rd... Errs: 0. Speed: W: 2938.81 R: 2938.87 ns/op
+	Dir	Wr... Rd...
+Final pointer error: read=0000 != expected=4000000
+ Errs: 0. Speed: W:  831.32 R:     inf ns/op
+ <Speed>:   LUT           Dir           Ind           GCC           Evt        
+  Write:  2965.5(638.5)  1698.7(376159.0)  1419.1(1006914.4)     0.0( 0.0)     0.0( 0.0)
+  Read:   2937.9(67.8)     inf( nan)   162.3(13169.3)     0.0( 0.0)     0.0( 0.0)
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 12  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W:    8.72 R:     inf ns/op
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 14  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W:    8.68 R:     inf ns/op
+
+SvL-2004 -- Universal test for WFD modules (LUTs, SDRAM...)
+
+Cannot open crate 7, Reason: No such file or directory
+CN: 5 16  VirtMask: F  Loops: 3  Analyse TIME for: LUT Dir Ind
+V9 Ranges: RAM: 0x0-0x4000000 LUT: 0x0-0x400  FCAMACopt: D2  FRAMopt: BothEdges
+BLSiz: 0x40000  WrRetry: 1  Same: 11  Mask: 0xFFFF  Clk: INT  Mult: 100  CSR: 0012
+
+Pass 0 with seed 0 (first RAND 6B8B4567)
+	LUT	Wr... Rd... Errs: 0. Speed: W:    8.79 R:     inf ns/op

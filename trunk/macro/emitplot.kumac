@@ -1,0 +1,125 @@
+macro emitplot run='-5'
+
+if ([run].eq.'-5') then
+  glo/cre run $ENV(RUN)
+endif
+glo/cre run [run]
+fill = $RSIGMA(int([run]))
+glo/cre prun $RSIGMA([run]-int([run]))
+
+glo/cre hbkfile $ENV(HBOOKFILE)
+glo/cre psfile $ENV(PSFILE)
+
+close 0
+h/del *
+
+** file=[hbkdir]//'/e'//[run]//'.hbook'
+file=[hbkfile]
+
+** alias/cre psfile [logdir]//'/e'//[run]//'.ps'
+alias/cre psfile [psfile]
+
+mess [run]
+mess [hbkfile]
+mess [psfile]
+
+if ($FEXIST([file]).EQ.1) then
+  h/file 1 [file]
+else
+  mess File [file] 'doesn''t exist'
+  exitm
+endif
+for/file 66 psfile
+meta -66 -114
+
+opt *; set *
+opt nbox
+opt pto
+opt htit
+set mtyp 20
+set xlab 2.1
+set ylab 1.2
+set csiz 0.55
+set gsiz 0.6
+set ygti 0.7
+set tsiz 0.5
+set vsiz 0.5
+set asiz 0.5
+set *fon -62
+set txfp -62
+
+set HCOL 1
+if ([prun].ge.0.5) then
+  set hcol 5505
+  title_gl 'Emittance Scan - Yellow '//[run]
+else
+  set hcol 4404
+  title_gl 'Emittance Scan - Blue '//[run]
+endif     
+
+set ymgu 1.7
+
+opt nsta
+set xmgl 2.5
+set xmgr 2.5
+zone 3 3
+
+h/pl 4001
+
+opt nsta
+set xwin 0.2
+zone 2 3 2 s
+opt utit; title_gl ' ' u
+h/pl 4000
+if ([prun].ge.0.5) then
+  set hcol 1; set mtyp 24
+  h/pl 4000 s
+  set hcol 5505; set mtyp 20
+endif
+hplot/atitle 'Bunch \043' 'Peak'
+
+opt htit
+set xwin 2.
+set xmgl 2.5
+set xmgr 2.5
+zone 3 3 4 s
+h/pl 5001
+
+set xwin 0.2
+zone 2 3 4 s
+opt utit; title_gl ' ' u
+h/pl 5000
+if ([prun].ge.0.5) then
+  set hcol 1; set mtyp 24
+  h/pl 5000 s
+  set hcol 5505; set mtyp 20
+endif
+hplot/atitle 'Bunch \043' 'Width (mm)'
+
+opt stat
+set stat 1110
+set smgr -0.85
+opt fit
+set xwin 2.
+set ymgl 1.7
+zone 2 3 5 s
+set hcol 1
+opt utit
+title_global 'Profile - All Bunches' u
+** plot Moving Out peak
+h/pl 710
+*h/pl 110
+
+** Chi-squared dist.
+*opt htit
+*h/pl 1000
+
+
+close 66
+close 1
+
+opt *; set *
+eof:
+return
+
+

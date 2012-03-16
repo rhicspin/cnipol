@@ -1,0 +1,51 @@
+macro ErrorChecker 
+exe defsetting
+opt fit 
+set fit 1111
+
+mess '------------'
+mess 'runID '
+mess '------------'
+read RunID
+
+hi/file 20 hbook/[RunID].hbook
+
+comment=[RunID]: Invariant Mass Peak Fit
+title [comment]
+
+*exe all
+
+exe individual
+
+close 0
+
+return
+
+
+macro individual
+
+zone 1 
+do i=1,6
+  do j=1,12
+    hid=17200+[i]*[j]
+    hi/plot [hid] 
+    wait
+  enddo
+  wait
+enddo
+
+return
+
+
+macro all
+
+zone 3 4
+do i=1,6
+  do j=1,12
+    hid=17200+[i]*[j]
+    hi/plot [hid] 
+  enddo
+  wait
+enddo
+
+return
