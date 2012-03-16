@@ -32,7 +32,7 @@ declare -i IRC
 
 # Set directories etc
 export POLDIR=/usr/local/polarim
-export CNIPOL_DIR=/usr/local/cnipol
+export CNIPOL_DIR=/usr/local/cnipol_trunk
 export CONFDIR=$CNIPOL_DIR/config
 export BINDIR=$CNIPOL_DIR/bin
 export DATADIR=$POLDIR/data
@@ -97,14 +97,18 @@ mywait() {
 mysendpict() {
     if [ -f $2 ] ; then
         convert $2 -trim ${2/.ps/.gif}
-        $BINDIR/sndpic $POLARIM $1 ${2/.ps/.gif}
+        #$BINDIR/sndpic $POLARIM $1 ${2/.ps/.gif}
         if [ $1 == "plotData" ] ; then
            echo "Creating png files..."
            convert ${2/.ps/.gif}[0] ${2/.ps/}.a.png
            convert ${2/.ps/.gif}[1] ${2/.ps/}.b.png
+        else
+           echo "Creating png files..."
+           convert ${2/.ps/.gif} ${2/.ps/}.e.png
         fi
     else
-        $BINDIR/sndpic $POLARIM $1 $BINDIR/failed.gif
+        echo
+        #$BINDIR/sndpic $POLARIM $1 $BINDIR/failed.gif
     fi
 }
 
@@ -133,14 +137,13 @@ case $MODE in
             echo "Starting online_polar.pl..." >> $ALOG
             $MACDIR/online_polar.pl $RUN
             echo "Starting sendpict..." >> $ALOG
-            #mysendpict plotData $PSFILE >> $ALOG 2>&1
+            mysendpict plotData $PSFILE >> $ALOG 2>&1
             # We will also leave in the background the process to analyze this
             # measurement for bunch per bunch emittance
             (   echo "Starting emitscan..." >> $ALOG; \
                 $EMITCMD -f $DATA -o $ROOTFILE -p $PSFILEE -d $POLARIM >> $ALOG 2>&1 ; \
                 echo "Starting sendpict 2 ..." >> $ALOG; \
-                                                            ) &
-                #mysendpict emitPlot $PSFILEE >> $ALOG 2>&1 ) &
+                mysendpict emitPlot $PSFILEE >> $ALOG 2>&1 ) &
         fi
         ;;
     Test* )
@@ -148,15 +151,10 @@ case $MODE in
         # this is histOnly mode (-M) and we put data and log files to /dev/null
         $POLCMD $OPT -M -l /dev/null -i $CNF -f /dev/null -d $POLARIM >> $ERRLOG 2>&1 &
         mywait
-        ;;
-    Emit* )
-        # Emmitance measurement
-        $POLCMD $OPT -l $LOG -i $CNF -f $DATA -d $POLARIM -c "$MODE $POLARIM" >> $ERRLOG 2>&1 &
-        mywait
         trap myignore SIGINT    # ignore Stop on analysis stage
         if [ $IRC -eq 0 ]; then # analyze data if the measurement was OK
             $EMITCMD -f $DATA -o $ROOTFILE -p $PSFILE -d $POLARIM >> $ALOG 2>&1
-            #mysendpict emitPlot $PSFILE >> $ALOG 2>&1
+            mysendpict emitPlot $PSFILE >> $ALOG 2>&1
         fi
         ;;
     Pol* )
@@ -169,7 +167,7 @@ case $MODE in
             export RUN PSFILE HBOOKFILE POLARIM # no other way to pass arguments to kumac...
             pawX11 -n -b $MACDIR/rampplot.kumac >> $ALOG 2>&1
             echo "Starting sendpict..." >> $ALOG
-            #mysendpict plotData $PSFILE >> $ALOG 2>&1
+            mysendpict plotData $PSFILE >> $ALOG 2>&1
         fi
         ;;
     * )
