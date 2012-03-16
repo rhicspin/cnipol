@@ -20,8 +20,6 @@ wcm : bo2-wcm3
       yi2-wcm3;
 
 
-
-
 /*****************************************/
 /********cav197Voltage********************/
 /*****************************************/
@@ -33,15 +31,8 @@ class cav {
                 probeMagInVoltsScaledM:valueAndTime Polar {server=PolarServer};
                 }
         }
-cav : cavTuneLoop.4a-rf-b197-1.3;
-            //  cavTuneLoop.4a-rf-y197-1.3;
-
-
-
-
-
-
-
+cav : cavTuneLoop.4a-rf-b197-1.3
+      cavTuneLoop.4a-rf-y197-1.3;
 
 
 /******************************************/

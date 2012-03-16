@@ -20,6 +20,7 @@
 #define _FILE_OFFSET_BITS 64        // to handle >2Gb files
 #include <stdio.h>
 #include <fcntl.h>
+#include <fstream>
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
@@ -44,6 +45,7 @@ SiChanStruct         *SiConf = NULL;                    // silicon channels
 wcmDataStruct         wcmData;                          // Wall current monitor data from CDEV
 wcmDataStruct         wcmOtherData;                     // we need both beams for hjet
 jetPositionStruct     jetPosition;                      // Jet position from CDEV
+
 
 //      Run parameters and flags
 int   NoADO       = 0;                  // don't take anything from CDEV
@@ -260,9 +262,7 @@ int main(int argc, char **argv)
    beamData.beamEnergyM = 100.0;       // defalut for no CDEV
 
    //  check CDEV
-   if ( (NoADO == 0 && getenv("CDEVDDL") == NULL) || 
-        (gMeasType != kMEASTYPE_TEST || gMeasType != kMEASTYPE_ALPHA) )
-   {      // we check if CDEV varables (at least one) are defined
+   if (NoADO == 0 && getenv("CDEVDDL") == NULL) {      // we check if CDEV varables (at least one) are defined
       NoADO = 1;
       fprintf(LogFile, "RHICPOL-WARN : No CDEV environment found.\n");
       fprintf(LogFile, "               Run may be unusable. Try -g to suppress this message.\n");
@@ -292,8 +292,11 @@ int main(int argc, char **argv)
       getCDEVInfo(&beamData);
       fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
 
+      // Check if an injection version of the config file exists
+      ifstream injConfFile( (confFileName + "_inj").c_str() );
+
       // Change the configuration file name for injection energies
-      if (beamData.beamEnergyM < 24)
+      if (beamData.beamEnergyM < 24 && injConfFile.good())
          confFileName += "_inj";
    }
 
