@@ -202,7 +202,7 @@ int readConfig(char * cfgname, int update)
 
    if ((fconf = fopen(cfgname, "rt")) == NULL) return 1;
 
-   fprintf(LogFile, "RHICPOL-INFO : Reading configuration from file %s.\n", cfgname);
+   fprintf(LogFile, "RHICPOL-INFO : Reading configuration from file %s\n", cfgname);
 
    // List the contents of each configuration file...
    while (!feof(fconf)) {

@@ -71,6 +71,7 @@ if ($polId[2] == 'U') $cssPol .= " bold";
 
 $polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
 
+if ( isset($rc['A_N'][1]) && $rc['A_N'][1] == 0) $rc['A_N'][1] = 1e-10;
 
 $polarization = "&nbsp;";
 
@@ -126,7 +127,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
    <td colspan=4>
-   <div class="s150 align_cm"><?=$suffixes?></div>
+   <div class="s120">Analysis tags: <?=$suffixes?></div>
 
 <tr>
    <td colspan=4>
@@ -582,8 +583,12 @@ data is fitted with a function P = P_max * I^r
 <table class="simple" cellspacing=10 align=center>
 
 <tr>
-<td align=center colspan=3>
+<td align=center>
+<?=$gP->img("kinema_premass/hPseudoMass")?>
+<td align=center>
 <?=$gP->img("kinema/hPseudoMass")?>
+<td align=center>
+&nbsp;
 
 <tr>
 <td align=center>
@@ -638,9 +643,11 @@ data is fitted with a function P = P_max * I^r
 
 -->
 
+<!--
 <tr>
 <td align=center colspan=4>
 <?=$gP->img("preproc/combo")?>
+-->
 
 <tr>
 <td align=center>
@@ -651,6 +658,13 @@ data is fitted with a function P = P_max * I^r
 <?=$gP->img("calib/hChi2NdfVsChannel")?>
 <td align=center>
 <?=$gP->img("calib/hFitStatusVsChannel")?>
+
+<tr>
+<td>
+<?=$gP->img("preproc/hsTimeVsEnergyACumul")?>
+<td>
+<td>
+<td>
 
 <!--
 <tr>

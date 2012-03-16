@@ -1,1 +1,1 @@
-*/10 * * * * /usr/local/cnipol_trunk/script/copy_data.sh
+*/20 * * * * /usr/local/cnipol_trunk/script/copy_data.sh
