@@ -112,7 +112,7 @@ void CnipolPreprocHists::BookHists()
 
       shName = "hTimeVsEnergyACumul_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
-      hist->SetOption("hist NOIMG");
+      hist->SetOption("hist FFF");
       hist->SetTitle("; Digi Channel Frac; Event Frac;");
       hist->SetLineWidth(2);
       hist->SetLineColor(RunConfig::AsColor(chId));
@@ -445,14 +445,54 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       // Calculate cumulative histograms
       utils::ConvertToCumulative2(hTimeVsEnergyA_raw_ch, (TH1F*) fhTimeVsEnergyACumul_ch[chId-1]);
 
-      // 15% of bins contain > 75% of events
-      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(15) > 0.75) {
+      // Set energy-dependent noise rejection
+      Float_t areaFrac1, evntFrac1, areaFrac2, evntFrac2;
+
+      if (gMeasInfo->GetBeamEnergy() > 200) {
+         // 10% of bins contain > 90% of events
+         // 2%  of bins contain > 40% of events
+         areaFrac1 = 0.12; evntFrac1 = 0.85; areaFrac2 = 0.02; evntFrac2 = 0.40;
+      } else {
+         // 15% of bins contain > 75% of events
+         // 2%  of bins contain > 30% of events
+         areaFrac1 = 0.15; evntFrac1 = 0.75; areaFrac2 = 0.02; evntFrac2 = 0.30;
+      }
+
+      // Add graphical representation of the above requirements to the
+      // histogram stack
+
+      TAttLine lineStyle(kViolet, 3, 4);
+
+      TLine *line1_horz = new TLine(0, evntFrac1, areaFrac1, evntFrac1);
+      TLine *line1_vert = new TLine(areaFrac1, 0, areaFrac1, evntFrac1);
+      TLine *line2_horz = new TLine(0, evntFrac2, areaFrac2, evntFrac2);
+      TLine *line2_vert = new TLine(areaFrac2, 0, areaFrac2, evntFrac2);
+
+      lineStyle.Copy(*line1_horz);
+      lineStyle.Copy(*line1_vert);
+      lineStyle.Copy(*line2_horz);
+      lineStyle.Copy(*line2_vert);
+
+      ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line1_horz);
+      ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line1_vert);
+      ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line2_horz);
+      ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line2_vert);
+
+      TH1 *hist = new TH2C("noise_reject", "noise_reject", 1, 0, 1, 1, 0, 1);
+      hist->GetListOfFunctions()->Add(line1_horz);
+      hist->GetListOfFunctions()->Add(line1_vert);
+      hist->GetListOfFunctions()->Add(line2_horz);
+      hist->GetListOfFunctions()->Add(line2_vert);
+      ((THStack*) o["hsTimeVsEnergyACumul"])->Add(hist);
+
+      // Point 1
+      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(areaFrac1*100) > evntFrac1) {
          gMeasInfo->DisableChannel(chId);
          continue;
       }
 
-      // 2% of bins contain > 30% of events - Is this a stronger requirement?
-      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(2) > 0.30) {
+      // Point 2
+      if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(areaFrac2*100) > evntFrac2) {
          gMeasInfo->DisableChannel(chId);
          continue;
       }

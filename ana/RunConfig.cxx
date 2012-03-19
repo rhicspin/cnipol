@@ -50,6 +50,7 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fBeamEnergies.insert(kINJECTION);
    fBeamEnergies.insert(kBEAM_ENERGY_100);
    fBeamEnergies.insert(kBEAM_ENERGY_250);
+   fBeamEnergies.insert(kBEAM_ENERGY_255);
 
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
