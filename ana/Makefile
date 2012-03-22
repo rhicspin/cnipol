@@ -35,7 +35,8 @@ CXXFLAGS      = -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -O -Wall -fPIC -I. \
 
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
-LDFLAGS       = -g
+#LDFLAGS       = -g
+LDFLAGS       = 
 SOFLAGS       = -shared -m32
 
 CXXFLAGS     += $(ROOTCFLAGS)
