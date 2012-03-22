@@ -17,7 +17,7 @@ do
    date >> ${LOG}
    #RESULT=`ps -a | sed -n /${SERVICE}/p`
 
-   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -mmin -60 ! -mmin -30 -printf "%f\n"`)
+   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -mmin -70 ! -mmin -30 -printf "%f\n"`)
 
    echo Found new files: ${array[@]} >> ${LOG}
 	#echo $SSH_AUTH_SOCK, $SSH_AGENT_PID >> ${LOG}

@@ -15,7 +15,9 @@ do
    date >> ${LOG}
 
    #rsync --stats --bwlimit=1000 -rlpgoDv /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
-   rsync --stats --bwlimit=10000 -a /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
+   #rsync --stats --bwlimit=5000 -a /eicdata/eic0005/run11/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
+   #sleep $CHECKINGPERIOD
+   rsync --stats --bwlimit=5000 -a /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
 
    sleep $CHECKINGPERIOD
 done

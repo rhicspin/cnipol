@@ -12,7 +12,7 @@ do
    #echo "bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy";
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db --copy
-   bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy --pmt --raw --pulser --asym --kinema
+   bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db --pmt --raw-ext --asym --kinema -g --copy 
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy --raw --asym --disable-det=101101 --sfx=hama
 done
 
