@@ -27,7 +27,8 @@ CXX           = g++
 CC            = gcc
 
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
-#CXXFLAGS      = -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -O -Wall -fPIC -I. \
+#CXXFLAGS      = -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -O -Wall -fPIC -I. 
+
 CXXFLAGS      = -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -O -Wall -fPIC -I. \
 	-I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include \
    -I$(UTILS_INC_DIR) -I$(MYSQL_INCLUDE_DIR) -I$(MYSQLPP_INCLUDE_DIR)
