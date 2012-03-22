@@ -19,6 +19,9 @@ LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
 
+SVN_ASYM_VERSION = "ASYM_VERSION=\""`svnversion -n $(CNIPOL_DIR)`"\""
+
+
 CC = g++
 C_FLAG = -Wall -m32 #ds: -O2 -ggdb -w -g
 SOFLAGS = -shared -m32
@@ -69,6 +72,7 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 
 asym: $(CNIPOL_LIB) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) asym.o -o $@
+	echo "SVN_ASYM_VERSION = $(SVN_ASYM_VERSION)"
 
 masym: $(CNIPOL_LIB) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) masym.o -o $@
