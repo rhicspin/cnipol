@@ -119,7 +119,7 @@ void CnipolPreprocHists::BookHists()
       hist->GetYaxis()->SetRangeUser(0, 1);
       o[shName]                       = hist;
       fhTimeVsEnergyACumul_ch[chId-1] = hist;
-      ((THStack*) o["hsTimeVsEnergyACumul"])->Add(hist);
+      ((THStack*) o["hsTimeVsEnergyACumul"])->Add(fhTimeVsEnergyACumul_ch[chId-1]);
    }
 } //}}}
 
@@ -478,7 +478,10 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line2_horz);
       ((TH1*) fhTimeVsEnergyACumul_ch[chId-1])->GetListOfFunctions()->Add(line2_vert);
 
-      TH1 *hist = new TH2C("noise_reject", "noise_reject", 1, 0, 1, 1, 0, 1);
+      string   sChId("  ");
+      sprintf(&sChId[0], "%02d", chId);
+      string shName = "noise_reject" + sChId;
+      TH1 *hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
       hist->GetListOfFunctions()->Add(line1_horz);
       hist->GetListOfFunctions()->Add(line1_vert);
       hist->GetListOfFunctions()->Add(line2_horz);
