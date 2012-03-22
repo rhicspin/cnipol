@@ -220,9 +220,10 @@ void initialize()
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gMM->fMeasInfo->fStartTime);
 	   }
 
-      // To calculate normalization factors for p-Carbon we need to do it in the first pass
-      //if ( beamEnergy == kBEAM_ENERGY_250 )
-      if ( beamEnergy == kBEAM_ENERGY_100 )
+      // To calculate normalization factors for p-Carbon we need to save all
+      // p-Carbon measurements in the first pass
+      if ( beamEnergy == kBEAM_ENERGY_255 )
+      //if ( beamEnergy == kBEAM_ENERGY_100 )
       {
          gAnaGlobResult.AddMeasResult(*gMM);
       }
@@ -293,6 +294,9 @@ void initialize()
    gH->UpdateLimits();
    gH->SetSignature((--iMeas)->GetSignature()); // get signature of the last measurement
    //gH->SetSignature("");
+
+   //if (gAnaInfo->HasGraphBit())
+   //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
    gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());

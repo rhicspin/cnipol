@@ -411,7 +411,7 @@ void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &stre
 } //}}}
 
 
-/** */
+/** Deprecated. */
 void MeasInfo::Update(DbEntry &rundb)
 { //{{{
    stringstream sstr;
@@ -468,18 +468,21 @@ void MeasInfo::Update(MseMeasInfoX& run)
    if (RUNID < 6500) { // Run undefined
       Run = 0;
 
-   } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
+   } else if (RUNID >= 6500 && RUNID < 7400) { // Run 5
       Run = 5;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
 
-   } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
+   } else if (RUNID >= 7400 && RUNID < 10018) { // Run 6
       Run = 6;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
 
-   } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
+   } else if (RUNID >= 10018 && RUNID < 14000) { // Run 9
       Run = 9;
-   } else
+   } else if (RUNID >= 14700 && RUNID < 15480) { // Run 11
       Run = 11;
+   } else {
+      Run = 12;
+   }
 } //}}}
 
 

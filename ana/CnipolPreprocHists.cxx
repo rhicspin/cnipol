@@ -451,7 +451,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       if (gMeasInfo->GetBeamEnergy() > 200) {
          // 10% of bins contain > 90% of events
          // 2%  of bins contain > 40% of events
-         areaFrac1 = 0.12; evntFrac1 = 0.85; areaFrac2 = 0.02; evntFrac2 = 0.40;
+         areaFrac1 = 0.12; evntFrac1 = 0.80; areaFrac2 = 0.02; evntFrac2 = 0.40;
       } else {
          // 15% of bins contain > 75% of events
          // 2%  of bins contain > 30% of events
