@@ -387,6 +387,9 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 /** */
 void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists)
 { //{{{
+
+   TH1 *hNoiseReject;
+   
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
    for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
@@ -486,7 +489,8 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       hist->GetListOfFunctions()->Add(line1_vert);
       hist->GetListOfFunctions()->Add(line2_horz);
       hist->GetListOfFunctions()->Add(line2_vert);
-      ((THStack*) o["hsTimeVsEnergyACumul"])->Add(hist);
+
+      hNoiseReject = hist;
 
       // Point 1
       if (fhTimeVsEnergyACumul_ch[chId-1]->GetBinContent(areaFrac1*100) > evntFrac1) {
@@ -512,4 +516,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
          continue;
       }
    }
+
+   // use the last noise reject histo
+   ((THStack*) o["hsTimeVsEnergyACumul"])->Add((TH1*) hNoiseReject->Clone("noise_reject_hs"));
 } //}}}
