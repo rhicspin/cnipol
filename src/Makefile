@@ -19,10 +19,10 @@ LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -
 ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
 ROOTLIBS  = `root-config --libs`
 
-SVN_ASYM_VERSION = "ASYM_VERSION=\""`svnversion -n $(CNIPOL_DIR)`"\""
+SVN_ASYM_VERSION = 'ASYM_VERSION=\"`svnversion -n $(CNIPOL_DIR)`\"'
 
 CC = g++
-C_FLAG = -Wall -m32 -D'$(SVN_ASYM_VERSION)'        #ds: -O2 -ggdb -w -g
+C_FLAG = -Wall -m32 -D$(SVN_ASYM_VERSION)        #ds: -O2 -ggdb -w -g
 SOFLAGS = -shared -m32
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
@@ -71,10 +71,15 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 
 asym: $(CNIPOL_LIB) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) asym.o -o $@
-	echo "SVN_ASYM_VERSION = $(SVN_ASYM_VERSION)"
+	@echo 
+	@echo "$(SVN_ASYM_VERSION)"
+	@echo 
 
 masym: $(CNIPOL_LIB) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) masym.o -o $@
+	@echo 
+	@echo "$(SVN_ASYM_VERSION)"
+	@echo 
 
 RunDBReader: $(CNIPOL_LIB) $(CNIANA_LIB)
 	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) RunDBReader.o -o $@
