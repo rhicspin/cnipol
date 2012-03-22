@@ -9,6 +9,8 @@ BIN_DIR       = $(CNIPOL_DIR)/bin
 
 ARCH         := $(shell root-config --arch)
 
+SVN_ASYM_VERSION = 'ASYM_VERSION="`svnversion -n $(CNIPOL_DIR)`"'
+
 ObjSuf        = o
 SrcSuf        = cxx
 ExeSuf        =
@@ -25,7 +27,7 @@ CC            = gcc
 # if you plan to do a whole lot of debugging, remove '-O' switch(es)
 CXXFLAGS      = -g -O -Wall -fPIC -I. -I$(INC_DIR) -I$(CNIPOL_DIR)/src \
    -I$(CNIPOL_DIR)/online/include -I$(UTILS_INC_DIR) -I$(MYSQL_INCLUDE_DIR) \
-   -I$(MYSQLPP_INCLUDE_DIR)
+   -I$(MYSQLPP_INCLUDE_DIR) -D$(SVN_ASYM_VERSION)
 
 CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
