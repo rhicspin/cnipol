@@ -786,15 +786,10 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    dlErr = chCalib->fDLWidthErr;
 
    // Some QA checks... should be removed in the future...
-   if (isnan(t0) || isinf(t0)) {
-      printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-      t0 = 0;
-   }
-
-   //t0Err         = chCalib->fT0CoefErr;
-
-   if (gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end())
-      return;
+   //if (isnan(t0) || isinf(t0)) {
+   //   printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+   //   t0 = 0;
+   //}
 
    char hName[256];
 
@@ -1146,7 +1141,7 @@ void MAsymRunHists::PostFill()
          //utils::RemoveOutliers(graph, 2, 3);
          utils::BinGraph(graph, hist);
          hist->GetListOfFunctions()->Remove(graph);
-         hist->Fit("pol1");
+         hist->Fit("pol0");
 
          // DL
          hist  = (TH1*) oc_pol->o["hDLVsFill_" + sPolId + "_" + sBeamE];
@@ -1465,7 +1460,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    // Consider P and P_prof by polarimeter
 
    ValErrPair polarHJ         = afr.GetPolarHJ(polId);
-   ValErrPair polarPC         = afr.GetPolarPC(polId);
+   ValErrPair polarPC         = afr.GetPolarPC(polId);                       // unnormalized values
    //ValErrPair polarPCNorm   = afr.GetPolarPC(polId, &agr.fNormJetCarbon);  // ratio of average
    //ValErrPair polarProfNorm = afr.GetPolarPC(polId, &agr.fNormProfPolar);
    ValErrPair polarPCNorm     = afr.GetPolarPC(polId, &agr.fNormJetCarbon2); // average of ratio
@@ -1478,14 +1473,16 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
          hPolarHJVsFill_->SetBinContent(ib, polarHJ.first*100);
          hPolarHJVsFill_->SetBinError(  ib, polarHJ.second*100);
 
-         hPolarPCNormByHJVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first*100);
-         hPolarPCNormByHJVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second*100);
+         //hPolarPCNormByHJVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first*100);
+         //hPolarPCNormByHJVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second*100);
+         hPolarPCNormByHJVsFill_HJOnly_->SetBinContent(ib, polarPC.first*100);
+         hPolarPCNormByHJVsFill_HJOnly_->SetBinError(  ib, polarPC.second*100);
       }
 
-      //hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPC.first*100);
-      //hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPC.second*100);
-      hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPCNorm.first*100);
-      hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPCNorm.second*100);
+      hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPC.first*100);
+      hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPC.second*100);
+      //hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPCNorm.first*100);
+      //hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPCNorm.second*100);
    }
 
    ValErrPair profPolar = afr.fProfPolars[polId];

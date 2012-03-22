@@ -614,8 +614,8 @@ void readloop(MseMeasInfoX &run)
 
         recordReadATStruct *ATPtr;
 
-        for (UInt_t i=0; i<rec.header.len - sizeof(recordHeaderStruct);) {
-
+        for (UInt_t i=0; i<rec.header.len - sizeof(recordHeaderStruct);)
+        {
                     ATPtr      = (recordReadATStruct*) (&rec.data.rec[i]);
                     event.stN  = ATPtr->subhead.siNum; // si number
            unsigned nEvents    = ATPtr->subhead.Events + 1;
@@ -684,15 +684,17 @@ void readloop(MseMeasInfoX &run)
 
               if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
 
-              //cout << " i "            << i
-              //     << " nEvents "      << nEvents
-              //     << " St "           << event.stN
-              //     << " amp "          << event.amp
-              //     << " tdc "          << event.tdc
-              //     << " bid "          << event.bid
-              //     << " rev0 "         << event.rev0
-              //     << " rev  "         << event.rev
-              //     << " revolution #=" << cntr.revolution << endl;
+              //if (event.stN >= 72) {
+              //   cout << " i "            << i
+              //        << " nEvents "      << nEvents
+              //        << " St "           << event.stN
+              //        << " amp "          << event.amp
+              //        << " tdc "          << event.tdc
+              //        << " bid "          << event.bid
+              //        << " rev0 "         << event.rev0
+              //        << " rev  "         << event.rev
+              //        << " revolution #=" << cntr.revolution << endl;
+              //}
 
               event_process(&event);
 

@@ -137,9 +137,9 @@ void AnaFillResult::AddMeasResult(EventConfig &mm, AnaGlobResult *globRes)
 
    // add or overwrite new AnaFillResult
    fAnaMeasResults[runName] = *mm.fAnaMeasResult;
-   fMeasTgtOrients[runName] = mm.fMeasInfo->GetTargetOrient();
-   fMeasTgtIds[runName]     = mm.fMeasInfo->GetTargetId();
-   fMeasRingIds[runName]    = mm.fMeasInfo->GetRingId();
+   fMeasTgtOrients[runName] =  mm.fMeasInfo->GetTargetOrient();
+   fMeasTgtIds[runName]     =  mm.fMeasInfo->GetTargetId();
+   fMeasRingIds[runName]    =  mm.fMeasInfo->GetRingId();
 
    fAnaGlobResult = globRes;
 
