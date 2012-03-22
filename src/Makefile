@@ -21,9 +21,8 @@ ROOTLIBS  = `root-config --libs`
 
 SVN_ASYM_VERSION = "ASYM_VERSION=\""`svnversion -n $(CNIPOL_DIR)`"\""
 
-
 CC = g++
-C_FLAG = -Wall -m32 #ds: -O2 -ggdb -w -g
+C_FLAG = -Wall -m32 -D'$(SVN_ASYM_VERSION)'        #ds: -O2 -ggdb -w -g
 SOFLAGS = -shared -m32
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
