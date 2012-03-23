@@ -2001,11 +2001,11 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    if (Mode < 100) { // Fit everything other than scan data
 
       gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
-         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2);
+         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
 
    } else if (Mode >= 100) { // Fit scan data
       gAsymCalculator.ScanSinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
-         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2);
+         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
    }
 
    //gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], gAnaMeasResult->sinphi.P, gAnaMeasResult->sinphi.dPhi, gAnaMeasResult->sinphi.chi2);
@@ -2191,16 +2191,15 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    tg->Fit("sin_phi", "R");
    tg->SetName("tg");
 
-   //ds
-   TH2* hPolarVsPhi = (TH2*) gAsymRoot->fHists->d["asym"]->o["hPolarVsPhi"];
+   TH2           *hPolarVsPhi  = (TH2*) gAsymRoot->fHists->d["asym"]->o["hPolarVsPhi"];
    TGraphErrors  *grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
-   TFitResultPtr  fitres = grPolarVsPhi->Fit("sin_phi", "S R");
+   TFitResultPtr  fitres       = grPolarVsPhi->Fit("sin_phi", "S R");
 
    if (fitres.Get()) {
       gAnaMeasResult->fFitResPolarPhi = fitres;
       // XXX add here an assignment of values to gAnaMeasResult->fPolar
    } else {
-      gSystem->Error("   ::SinPhiFit", "Fit error...");
+      gSystem->Error("AsymCalculator::SinPhiFit", "Fit error...");
    }
 
 

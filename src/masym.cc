@@ -97,7 +97,7 @@ void initialize()
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kINJECTION);
-   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
+   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
 
    gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot(outFileName.Data());
@@ -267,7 +267,6 @@ void initialize()
    //for ( ; iRunName!=gGoodRuns.end(); ++iRunName)
    for ( ; iMeas!=gGoodMeass.end(); ++iMeas)
    {
-
       //TString fileName = gAnaInfo->GetResultsDir() + "/" + (*iRunName) + "/" + (*iRunName) + fileSuffix + ".root";
       //TFile *f = new TFile(fileName, "READ");
       //Info("masym", "Processing measurement: %s", (*iRunName).c_str());

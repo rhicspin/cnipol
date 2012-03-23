@@ -150,7 +150,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
    fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
-   fprintf(f, "$rc['fStartVoltage']		   = %f;\n",     fStartVoltage);
+   fprintf(f, "$rc['fStartVoltage']		            = %f;\n",     fStartVoltage);
    fprintf(f, "$rc['fEndVoltage']                  = %f;\n",     fEndVoltage);
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
