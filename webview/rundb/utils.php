@@ -60,22 +60,25 @@ function dateTimeDiff($startStamp, $endStamp)
 
 
 /** Sort object arrays */
-function hod(&$base, $path){
-    $keys = explode("->", $path);
-    $keys[0] = str_replace('$', '', $keys[0]);
-    $expression = '$ret = ';
-    $expression.= '$';
-    foreach ($keys as $key){
-        if (++$licz == 1){
-            $expression.= 'base->';           
-        } else {
-            $expression.= $key.'->';
-        }
-    }
-    $expression = substr($expression, 0, -2);
-    $expression.= ';';
-    eval($expression);
-    return $ret;
+function hod(&$base, $path)
+{
+   $keys = explode("->", $path);
+   $keys[0] = str_replace('$', '', $keys[0]);
+   $expression = '$ret = ';
+   $expression.= '$';
+
+   foreach ($keys as $key){
+      if (++$licz == 1){
+         $expression.= 'base->';           
+      } else {
+         $expression.= $key.'->';
+      }
+   }
+
+   $expression = substr($expression, 0, -2);
+   $expression.= ';';
+   eval($expression);
+   return $ret;
 }
 
 
@@ -436,6 +439,60 @@ function readOnlinePolar($fileNameFull="")
 
    fclose($handle);
    return $values;
+} //}}}
+
+
+/** */
+function getJetCarbonNormalization($normSpecs=null)
+{ //{{{
+	global $normJetCarbonByTarget;
+
+   //print "<!--\n";
+   //print_r($normJetCarbonByTarget); 
+   //print "-->\n";
+
+	//$specs = array("runPeriod", "energy", "polId", "tgtOrient", "tgtId");
+
+	$currSpec = $normJetCarbonByTarget;
+   if ( !is_array($currSpec) && is_numeric($currSpec) ) return $currSpec;
+
+	foreach ($normSpecs as $specKey => $specVal)
+	{
+		if ( !array_key_exists($specVal, $currSpec) ) {
+		   //print("key not found {$specVal}\n");
+		   return 1; // key not found: may also want to issue a warning
+	   }
+
+      // select curr spec go deeper
+	   $currSpec = $currSpec[$specVal];
+
+	   //print("$specKey = $specVal\n");
+		//print_r($currSpec);
+
+      if ( !is_array($currSpec) && is_numeric($currSpec) ) return $currSpec;
+	}
+
+   return 1;
+} //}}}
+
+
+/** */
+function getRunPeriod($timestamp=null)
+{ //{{{
+   global $RUN_PERIOD_BY_DATE;
+
+	foreach ($RUN_PERIOD_BY_DATE as $runPeriod => $runTimes) {
+
+//print "<!-- runperiod\n";
+// $start = strtotime($runTimes["start"]);
+// $end   = strtotime($runTimes["end"]) ; 
+//print("hhh: $timestamp $start $end "); 
+//print "-->\n";
+
+	   if ( $timestamp >= strtotime($runTimes["start"]) && $timestamp <= strtotime($runTimes["end"]) )
+		   return $runPeriod;
+	}
+
 } //}}}
 
 ?>

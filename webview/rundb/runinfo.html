@@ -8,7 +8,7 @@
 
 <html>
 <head>
-  <title>Measurement <?=$gRunId?>: Summary and Fast Offline Results +++</title>
+  <title>p-Carbon Measurement <?=$gRunId?>: Offline Analysis Results</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
 </head>
 
@@ -59,7 +59,8 @@ foreach ($rc['suffixes'] as $suffix) {
 }
 
 // Assign the variables
-$polId = $POLARIMETER_ID[$rc['polarimeter_id']];
+$polId     = $POLARIMETER_ID[$rc['polarimeter_id']];
+$runPeriod = getRunPeriod($rc['start_time']);
 
 $cssPol = "";
 
@@ -69,36 +70,48 @@ if ($polId[0] == 'Y') $cssPol = "yelPol";
 if ($polId[2] == 'U') $cssPol .= " bold";
 #if ($polId[2] == 'D') $cssPol .= "";
 
-$polId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
+$strPolId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
 
 if ( isset($rc['A_N'][1]) && $rc['A_N'][1] == 0) $rc['A_N'][1] = 1e-10;
 
 $polarization = "&nbsp;";
 
+
+$normSpecs = array(
+   "runPeriod" => $runPeriod,
+	"energy"    => intval($rc['beam_energy']+0.5),
+	"polId"     => $polId,
+	"tgtOrient" => $rc['target_orient'],
+	"tgtId"     => $rc['target_id']
+);
+
+$norm = getJetCarbonNormalization($normSpecs);
+
+
 if (isset($rc['polarization'])) {
 	$polarization = sprintf("<span class=s150>%5.1f &plusmn; %5.1f %%</span>",
-      $rc['polarization']*100, $rc['polarization_error']*100);
+      $rc['polarization']*100*$norm, $rc['polarization_error']*100*$norm);
 }
 
 $polarization_X90 = isset($rc['fAsymX90']['phys']) ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1],
-	                                   $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]) : "&nbsp;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100*$norm/$rc['A_N'][1],
+	                                   $rc['fAsymX90']['phys'][1]*100*$norm/$rc['A_N'][1]) : "&nbsp;";
 
 $polarization_X45 = isset($rc['fAsymX45']['phys']) ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
 
 $polarization_X45T = isset($rc['fAsymX45T']['phys']) ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45T']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
 
 $polarization_X45B = isset($rc['fAsymX45B']['phys']) ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45B']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
 
 $polarization_Y45 = isset($rc['fAsymY45']['phys']) ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymY45']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymY45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
 
 $targetId = "&nbsp;";
 
@@ -135,7 +148,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
    <td>
-   <b>Polarimeter:</b> <?=$polId?>
+   <b>Polarimeter:</b> <?=$strPolId?>
    <td>
    <b>Polarization:</b> <?=$polarization?>
    <td>
@@ -159,6 +172,14 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
          <td> <?=$polarization_X45B?>
          <td> <?=$polarization_Y45?>
       </table>
+
+<tr>
+   <td>
+   <b>Run Period:</b> <?=$runPeriod?>
+   <td>
+   <b>H-Jet norm (A_N Scale):</b> <?=$norm?>
+   <td>&nbsp;
+   <td>&nbsp;
 
 <tr>
    <td>

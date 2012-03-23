@@ -20,7 +20,27 @@ var aEls = document.getElementsByTagName('a');
 
 <a href="hhh.tml">hhh</a>
 
-kk
+
+<?
+//print("ttt");
+
+include("config.php");
+include("utils.php"); 
+
+//print_r($normJetCarbonByTarget); 
+
+$normSpecs = array(
+   "runPeriod" => 11,
+	"energy"    => 250,
+	"polId"     => "Y1D",
+	"tgtOrient" => "H",
+	"tgtId"     => 3
+);
+
+$normNew = getJetCarbonNormalization($normSpecs);
+
+print("norm = $normNew\n");
+?>
 
 </body>
 </html>

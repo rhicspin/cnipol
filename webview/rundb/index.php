@@ -1,7 +1,7 @@
 <?php
 
-include("utils.php"); 
 include("config.php");
+include("utils.php"); 
 
 //date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'en');

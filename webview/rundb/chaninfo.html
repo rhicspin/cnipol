@@ -98,19 +98,19 @@
 
 
 
+<!--
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+-->
 
 <h2 id="raw" class="count">Raw</h2>
 <!-- {{{ -->
 <div id="div:raw" class="section">
 
-<p>
-
 <?
 $gChanId = sprintf("%02d", $gChanId);
-$origPHDir = $gP->dir;
-$gP->dir = "$origPHDir/raw/channel$gChanId/";
+//$origPHDir = $gP->dir;
+//$gP->dir = "$origPHDir/raw/channel$gChanId/";
 ?>
 
 <p>
@@ -119,62 +119,52 @@ $gP->dir = "$origPHDir/raw/channel$gChanId/";
 <!--
 <tr>
 <td align=center>
-<?=$gP->img("hAdcAmpltd_ch$gChanId")?>
+<?=$gP->img("/raw/channel$gChanId/hAdcAmpltd_ch$gChanId")?>
 <td align=center>
-<?=$gP->img("hTdc_ch$gChanId")?>
+<?=$gP->img("/raw/channel$gChanId/hTdc_ch$gChanId")?>
 -->
 
 <tr>
-<td align=center>
-<?=$gP->img("hTvsA_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hTvsI_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hIvsA_ch$gChanId")?>
-
-<!--
-<tr>
-<td align=center>
-<?=$gP->img("hTvsA_cut1_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hTvsI_cut1_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("hTimeVsEnergyA_cut1_ch$gChanId")?>
--->
+<td class=align_ct>
+<?=$gP->img("/raw/channel$gChanId/hTvsA_ch$gChanId")?>
+<td class=align_ct>
+<?=$gP->img("/raw/channel$gChanId/hTvsI_ch$gChanId")?>
+<td class=align_ct>
+<?=$gP->img("/raw/channel$gChanId/hIvsA_ch$gChanId")?>
 
 </table>
 
 </div>
 <!-- }}} -->
 
-<!--
 
+<!--
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+-->
 
 <h2 id="other" class="count">Other</h2>
--->
-<!-- {{{ 
+<!-- {{{ -->
 <div id="div:other" class="section">
 
-<p>
-
 <?
-$gP->dir = "$origPHDir/std/channel$gChanId/";
+//$gP->dir = "$origPHDir/std/channel$gChanId/";
+//$gChanId = sprintf("%02d", $gChanId);
+//$origPHDir = $gP->dir;
+//$gP->dir = "$origPHDir/preproc/channel$gChanId/";
 ?>
 
-<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<p>
+<table class="simple" cellspacing=10 align=center>
 
 <tr>
-<td align=center>
-<?=$gP->img("hTimeVsEnergyA_cut2_ch$gChanId")?>
-<td align=center>
-<?=$gP->img("combo_ch$gChanId")?>
+<td class=align_ct>
+<?=$gP->img("preproc/hTimeVsEnergyACumul_ch$gChanId")?>
 
 </table>
 
 </div>
-}}} -->
+<!-- }}} -->
 
 
 

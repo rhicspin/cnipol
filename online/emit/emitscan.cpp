@@ -280,6 +280,8 @@ int main(int argc, char **argv)
            break;
 
        case REC_RHIC_CONF:
+           printf("Reading REC_RHIC_CONF...\n");
+
            tarWfdCh = rec.cfg.data.NumChannels - 4; // first channel for target
            maxSiCh  = rec.cfg.data.NumChannels - 4;
            //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
@@ -294,7 +296,7 @@ int main(int argc, char **argv)
            break;
 
        case REC_READAT:
-           //printf("Found REC_READAT record\n");
+           //printf("Reading REC_READAT...\n");
            for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
 
                ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
@@ -313,7 +315,7 @@ int main(int argc, char **argv)
 
                if (St == tarWfdCh || St == tarWfdCh+1) {       // we 'or' here vertical and horizontal...
                   //ds
-                  //printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+                  printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
 
                   for (j=0; j<nRecEvt; j++) {
                       orbitNo = delimtr*512 + 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
@@ -340,7 +342,7 @@ int main(int argc, char **argv)
            break;
 
        case REC_POLADO:
-           printf("Reading REC_POLADO\n");
+           printf("Reading REC_POLADO...\n");
 
            memcpy(&poldat, &rec.pol.data, sizeof(poldat));
            tlen = strlen(rec.pol.data.targetIdS);

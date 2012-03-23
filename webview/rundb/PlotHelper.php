@@ -7,7 +7,7 @@ class PlotHelper {
 
    function PlotHelper($dir, $ps=null) {
       $this->dir = $dir;
-      $this->ps = $ps;
+      $this->ps  = $ps;
    }
 
    function img($pName, $thumb=false, $w=null, $href=null)
