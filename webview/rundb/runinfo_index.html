@@ -151,12 +151,22 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    //if (isset($e['polarization']) && $polarToDisplay == null) 
    if (isset($e['polarization'])) {
-      // Apply normalization factor to polarization value
-		$norm = 1;
 
-		if (isset($normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']]) &&
-          intval($e['beam_energy']+0.5) == 250 )
-		   $norm = $normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']];
+      // Apply normalization factor to polarization value
+
+		$normSpecs = array(
+		   "runPeriod" => $_GET['rp'],
+			"energy"    => intval($e['beam_energy']+0.5),
+			"polId"     => $polId,
+			"tgtOrient" => $e['target_orient'],
+			"tgtId"     => $e['target_id']
+		);
+
+		$norm = getJetCarbonNormalization($normSpecs);
+
+		//if (isset($normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']]) &&
+      //    intval($e['beam_energy']+0.5) == 250 )
+		//   $norm = $normJetCarbonByTarget[$_GET['rp']] [$polId] [$e['target_orient']] [$e['target_id']];
 
 		$polarization = sprintf("%5.1f &plusmn; %5.1f",
          $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);

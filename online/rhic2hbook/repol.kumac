@@ -3,47 +3,43 @@ macro repol run='16447.301'
 *  re-evaluate polarization after noisy channel cleaning,
 *  and do simple L/R asymmetry instead of fit
 *
+*  reads from HBOOK file w/ histos, left open by some calling .kumac (?)
 *
-infile = /usr/local/polarim/hbook/[run].hbook
-if ($fexist([infile]).eq.0) then
-  if $vexist(repolv) then; vec/del repolv; endif;
-  vec/cre repolv(2) R -9999. -9999.
-  mess FILE NOT FOUND [infile]
-  exitm 1
-endif
-close 39
-hi/fil 39 /usr/local/polarim/hbook/[run].hbook
+*  uses vectors from calling macro pvector.kumac:
+*  - PCNT(6), MCNT(6) +/- spin counts for 6 det.; zero for horiz. tgt. det. 2,5
+*  - an(1) analyzing power
 *
 *  get Nevt per chan., pol. +/-/tot
 *
 if $vexist(nevchp) then; vec/del nevchp; vec/del nevchm; endif;
 vec/cre nevchp(72) R 72*0.; vec/cre nevchm(72) R 72*0.;
 do i=1,72
-  id = 400+[i]; if $hexist([id]) then; hi/del [id]; endif;
-  hrin [id]; vec/inp nevchp([i]) $hinfo([id],'SUM');
-  id = 500+[i]; if $hexist([id]) then; hi/del [id]; endif;
-  hrin [id]; vec/inp nevchm([i]) $hinfo([id],'SUM');
+  id = 400+[i]
+  if $hexist([id]) then; hi/del [id]; endif; hrin [id];
+  if $hexist([id]) then; vec/inp nevchp([i]) $hinfo([id],'SUM');
+  else; vec/inp nevchp([i]) 0.; endif;
+  id = 500+[i]
+  if $hexist([id]) then; hi/del [id]; endif; hrin [id];
+  if $hexist([id]) then; vec/inp nevchm([i]) $hinfo([id],'SUM');
+  else; vec/inp nevchp([i]) 0.; endif;
 enddo
-close 39
 * 
 *  set polar. # from run #
 *
 polar = $sigma(int(10*([run]-int([run]))))
 *
-*  params from an[run].log file:
+*  kluge to get params from pvector.kumac vectors:
 *  logpar(1) = target orientation: 0=vertical, 1=horizontal, -1=N.A.
 *  logpar(2) = analyzing power
 *
-sh $ENV(MACDIR)/repol.sh [run]
+
 if $vexist(logpar) then; vec/del logpar; endif; vec/cre logpar(2) R;
-vec/read logpar $ENV(LOGDIR)/repol.dat
-p1 = logpar(1); p2 = logpar(2);
-if ((.not.(([p1].eq.0).or.([p1].eq.1))) .or.(.not.([p2].gt.0))) then
-  if $vexist(repolv) then; vec/del repolv; endif;
-  vec/cre repolv(2) R -9999. -9999.
-  mess LOG PARAMS NOT VALID [p1] [p2]
-  exitm 2
+if ((pcnt(2).eq.0.).and.(pcnt(5).eq.0.).and.(mcnt(2).eq.0.).and.(mcnt(5).eq.0.)) then
+  vec/inp logpar(1) 1.
+else
+  vec/inp logpar(1) 0.
 endif
+vec/copy an(1:1) logpar(2:2)
 *
 *  code for 12-chan. cleaning
 *
@@ -233,8 +229,8 @@ else
   asym = asymv(1); easym = easymv(1);
 *
   an = logpar(2)
-  pol = $EVAL(100.*[asym]/[an])
-  epol = $EVAL(100.*[easym]/[an])
+  pol = $EVAL([asym]/[an])
+  epol = $EVAL([easym]/[an])
 *
   if $vexist(repolv) then; vec/del repolv; endif;
   vec/cre repolv(2) R [pol] [epol]
