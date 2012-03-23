@@ -38,22 +38,22 @@ class MeasInfo : public TObject
 {
 protected:
 
-   Double_t   fStartVoltage;
-   Double_t   fEndVoltage;
+   Double_t      fStartVoltage;
+   Double_t      fEndVoltage;
    Double_t      fBeamEnergy;
    Short_t       fExpectedGlobalTdcOffset;
    Float_t       fExpectedGlobalTimeOffset;
    std::string   fRunName;
-	Float_t       fProtoCutSlope;
-	Float_t       fProtoCutOffset;
-	UShort_t      fProtoCutAdcMin;
-	UShort_t      fProtoCutAdcMax;
-	UShort_t      fProtoCutTdcMin;
-	UShort_t      fProtoCutTdcMax;
-	UShort_t      fPulserCutAdcMin;
-	UShort_t      fPulserCutAdcMax;
-	UShort_t      fPulserCutTdcMin;
-	UShort_t      fPulserCutTdcMax;
+   Float_t       fProtoCutSlope;
+   Float_t       fProtoCutOffset;
+   UShort_t      fProtoCutAdcMin;
+   UShort_t      fProtoCutAdcMax;
+   UShort_t      fProtoCutTdcMin;
+   UShort_t      fProtoCutTdcMax;
+   UShort_t      fPulserCutAdcMin;
+   UShort_t      fPulserCutAdcMax;
+   UShort_t      fPulserCutTdcMin;
+   UShort_t      fPulserCutTdcMax;
 
 
 public:
@@ -71,7 +71,7 @@ public:
    float                       GoodEventRate;
    float                       EvntRate;
    float                       ReadRate;
-	std::map<UShort_t, Float_t> fWallCurMon;
+   std::map<UShort_t, Float_t> fWallCurMon;
    Float_t                     fWallCurMonAve;
    Float_t                     fWallCurMonSum;
    Short_t                     fPolId;
@@ -105,27 +105,27 @@ public:
    void            SetRunName(std::string runName);
    std::string     GetRunName() const;
 
-	Float_t         GetProtoCutSlope  () const { return fProtoCutSlope;   }
-	Float_t         GetProtoCutOffset () const { return fProtoCutOffset;  }
-	UShort_t        GetProtoCutAdcMin () const { return fProtoCutAdcMin;  }
-	UShort_t        GetProtoCutAdcMax () const { return fProtoCutAdcMax;  }
-	UShort_t        GetProtoCutTdcMin () const { return fProtoCutTdcMin;  }
-	UShort_t        GetProtoCutTdcMax () const { return fProtoCutTdcMax;  }
-	UShort_t        GetPulserCutAdcMin() const { return fPulserCutAdcMin; }
-	UShort_t        GetPulserCutAdcMax() const { return fPulserCutAdcMax; }
-	UShort_t        GetPulserCutTdcMin() const { return fPulserCutTdcMin; }
-	UShort_t        GetPulserCutTdcMax() const { return fPulserCutTdcMax; }
+   Float_t         GetProtoCutSlope  () const { return fProtoCutSlope;   }
+   Float_t         GetProtoCutOffset () const { return fProtoCutOffset;  }
+   UShort_t        GetProtoCutAdcMin () const { return fProtoCutAdcMin;  }
+   UShort_t        GetProtoCutAdcMax () const { return fProtoCutAdcMax;  }
+   UShort_t        GetProtoCutTdcMin () const { return fProtoCutTdcMin;  }
+   UShort_t        GetProtoCutTdcMax () const { return fProtoCutTdcMax;  }
+   UShort_t        GetPulserCutAdcMin() const { return fPulserCutAdcMin; }
+   UShort_t        GetPulserCutAdcMax() const { return fPulserCutAdcMax; }
+   UShort_t        GetPulserCutTdcMin() const { return fPulserCutTdcMin; }
+   UShort_t        GetPulserCutTdcMax() const { return fPulserCutTdcMax; }
 
-	void            SetProtoCutSlope  (Float_t  protoCutSlope )  { fProtoCutSlope   = protoCutSlope;   }
-	void            SetProtoCutOffset (Float_t  protoCutOffset)  { fProtoCutOffset  = protoCutOffset;  }
-	void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)  { fProtoCutAdcMin  = protoCutAdcMin;  }
-	void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)  { fProtoCutAdcMax  = protoCutAdcMax;  }
-	void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)  { fProtoCutTdcMin  = protoCutTdcMin;  }
-	void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)  { fProtoCutTdcMax  = protoCutTdcMax;  }
-	void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin) { fPulserCutAdcMin = pulserCutAdcMin; }
-	void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax) { fPulserCutAdcMax = pulserCutAdcMax; }
-	void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin) { fPulserCutTdcMin = pulserCutTdcMin; }
-	void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax) { fPulserCutTdcMax = pulserCutTdcMax; }
+   void            SetProtoCutSlope  (Float_t  protoCutSlope )  { fProtoCutSlope   = protoCutSlope;   }
+   void            SetProtoCutOffset (Float_t  protoCutOffset)  { fProtoCutOffset  = protoCutOffset;  }
+   void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)  { fProtoCutAdcMin  = protoCutAdcMin;  }
+   void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)  { fProtoCutAdcMax  = protoCutAdcMax;  }
+   void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)  { fProtoCutTdcMin  = protoCutTdcMin;  }
+   void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)  { fProtoCutTdcMax  = protoCutTdcMax;  }
+   void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin) { fPulserCutAdcMin = pulserCutAdcMin; }
+   void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax) { fPulserCutAdcMax = pulserCutAdcMax; }
+   void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin) { fPulserCutTdcMin = pulserCutTdcMin; }
+   void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax) { fPulserCutTdcMax = pulserCutTdcMax; }
 
    Short_t         GetPolarimeterId();
    Short_t         GetPolarimeterId(short beamId, short streamId);
@@ -135,7 +135,7 @@ public:
    void            Update(MseRunPeriodX& runPeriod);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergy() const;
-   Float_t	   GetStartVoltage() const;
+   Float_t         GetStartVoltage() const;
    Float_t         GetEndVoltage() const;
    Float_t         GetExpectedGlobalTimeOffset() const;
    Short_t         GetExpectedGlobalTdcOffset() const;
@@ -143,17 +143,17 @@ public:
    std::string     GetAlphaCalibFileName() const;
    std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
-   void 	   SetVoltages(int begin, int end);
+   void            SetVoltages(int begin, int end);
    void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
-	void            DisableChannel(UShort_t chId);
+   void            DisableChannel(UShort_t chId);
    void            DisableChannels(std::bitset<N_DETECTORS> &disabled_det);
-	void            EnableChannel(UShort_t chId);
+   void            EnableChannel(UShort_t chId);
    void            EnableChannels(std::bitset<N_DETECTORS> &disabled_det);
-	Bool_t          IsDisabledChannel(UShort_t chId);
-	Bool_t          IsSiliconChannel(UShort_t chId);
-	Bool_t          IsHamaChannel(UShort_t chId);
-	Bool_t          IsPmtChannel(UShort_t chId);
+   Bool_t          IsDisabledChannel(UShort_t chId);
+   Bool_t          IsSiliconChannel(UShort_t chId);
+   Bool_t          IsHamaChannel(UShort_t chId);
+   Bool_t          IsPmtChannel(UShort_t chId);
    BeamBunchMap    GetBunches() const;
    BeamBunchMap    GetFilledBunches() const;
    BeamBunchMap    GetEmptyBunches() const;

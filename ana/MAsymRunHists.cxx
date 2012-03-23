@@ -244,6 +244,19 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grHTargetVsMeas, "p");
    ((TH1*) oc.o[shName])->GetListOfFunctions()->Add(grVTargetVsMeas, "p");
 
+   // Spin Angle
+   TGraphErrors *grSpinAngleVsMeas = new TGraphErrors();
+   grSpinAngleVsMeas->SetName("grSpinAngleVsMeas");
+   styleMarker.Copy(*grSpinAngleVsMeas);
+
+   shName = "hSpinAngleVsMeas_" + sPolId + "_" + sBeamE;
+   hist = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -20, 20);
+   hist->SetTitle("; Measurement; Spin Angle (Radial Comp.), degrees; ");
+   hist->GetListOfFunctions()->Add(grSpinAngleVsMeas, "p");
+   oc.o[shName] = hist;
+   // Add this pointer to the stack
+   //fHStacks["hsSpinAngleVsMeas_" + sBeamE]->Add(hist);
+
    // Polarization
    TGraphErrors *grPolarVsMeas = new TGraphErrors();
    grPolarVsMeas->SetName("grPolarVsMeas");
@@ -768,8 +781,6 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    //Float_t  ana_power        = rc.fAnaMeasResult->A_N[1];
    //Float_t  asymmetry        = rc.fAnaMeasResult->sinphi[0].P[0] * rc.fAnaMeasResult->A_N[1];
    //Float_t  asymmetryErr     = rc.fAnaMeasResult->sinphi[0].P[1] * rc.fAnaMeasResult->A_N[1];
-   Float_t  polarization     = rc.fAnaMeasResult->sinphi[0].P[0] * 100.;
-   Float_t  polarizationErr  = rc.fAnaMeasResult->sinphi[0].P[1] * 100.;
    Float_t  profileRatio     = rc.fAnaMeasResult->fProfilePolarR.first;
    Float_t  profileRatioErr  = rc.fAnaMeasResult->fProfilePolarR.second;
    Float_t  max_rate         = rc.fAnaMeasResult->max_rate;
@@ -820,7 +831,31 @@ void MAsymRunHists::Fill(const EventConfig &rc)
 
    graph->SetPoint(graph->GetN(), runId, rc.fMeasInfo->GetTargetId());
 
+   // Get sine modulation fit results
+   TFitResultPtr fitResAsymPhi  = rc.fAnaMeasResult->fFitResAsymPhi;
+   TFitResultPtr fitResPolarPhi = rc.fAnaMeasResult->fFitResPolarPhi;
+
+   // Expect valid results
+   assert(fitResAsymPhi.Get());
+   assert(fitResPolarPhi.Get());
+
+   Float_t asym         = fitResAsymPhi->Value(0);
+   Float_t asymErr      = fitResAsymPhi->FitResult::Error(0);
+   Float_t spinAngle    = fitResAsymPhi->Value(1) / TMath::Pi() * 180;
+   Float_t spinAngleErr = fitResAsymPhi->FitResult::Error(1) / TMath::Pi() * 180;
+
+   Float_t polarization    = fitResPolarPhi->Value(0) * 100.;
+   Float_t polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100.;
+
+
    UInt_t nPoints = 0;
+
+   // Spin Angle
+   shName = "hSpinAngleVsMeas_" + sPolId + "_" + sBeamE;
+   graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[shName])->GetListOfFunctions()->FindObject("grSpinAngleVsMeas");
+   nPoints = graphErrs->GetN();
+   graphErrs->SetPoint(nPoints, runId,  spinAngle);
+   graphErrs->SetPointError(nPoints, 0, spinAngleErr);
 
    // Polarization
    sprintf(hName, "hPolarVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
@@ -1080,6 +1115,11 @@ void MAsymRunHists::PostFill()
          hist->GetYaxis()->SetLimits(ymean - 20, ymean + 20);
 
          TGraphErrors *graph;
+
+         // Spin Angle
+         hist  = (TH1*) oc_pol->o["hSpinAngleVsMeas_" + sPolId + "_" + sBeamE];
+         graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grSpinAngleVsMeas");
+         graph->Fit("pol0");
 
          // Polarization
          hist  = (TH1*) oc_pol->o["hPolarVsFill_" + sPolId + "_" + sBeamE];
@@ -1648,6 +1688,10 @@ void MAsymRunHists::UpdateLimits()
          shName = "hProfPolarVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+
+         shName = "hSpinAngleVsMeas_" + sPolId + "_" + sBeamE;
+         ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
+         //((TH1*) oc_pol->o[shName])->GetYaxis()->SetLimits(minMeas-marginMeas, maxMeas+marginMeas);
 
          shName = "hPolarVsMeas_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
