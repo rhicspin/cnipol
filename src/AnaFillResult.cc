@@ -385,45 +385,31 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
 } //}}}
 
 
-/** Return relative systematic error. */
+/**
+ * Calculates and returns the ratio of the HJ to PC polarization. The latter is
+ * expected to be normalized.
+ */
 PolId2ValErrMap AnaFillResult::CalcSystJvsCPolar(PolId2ValErrMap &normJC)
 { //{{{
-   // Find the maximum difference between the average beam polarization and
-   // different polarimeters
    PolId2ValErrMapConstIter iPolar = fPolars.begin();
 
    for ( ; iPolar != fPolars.end(); ++iPolar)
    {
       EPolarimeterId polId   = iPolar->first;
-      ValErrPair     polarPC = iPolar->second;
       ERingId        ringId  = RunConfig::GetRingId(polId);
+      ValErrPair     polarPC = GetPolarPC(polId, &normJC);  // Get normalized p-Carbon polarization
       ValErrPair     polarHJ = GetPolarHJ(ringId);
 
+      // Skip invalid measurements
       if (polarPC.second < 0 || polarHJ.second < 0) {
-         fSystJvsCPolar[polId] = ValErrPair(-1, -1);
-         continue; // skip invalid result
+         fSystJvsCPolar[polId] = ValErrPair(0, -1);
+         continue;
       }
 
-      Double_t norm = normJC.find(polId) == normJC.end() ? 1 : normJC[polId].first;
-
-      polarPC.first  *= norm;
-      polarPC.second *= norm;
-
+      // Uncorrelated ratio: Assume 0% correlation
       ValErrPair ratio = CalcDivision(polarHJ, polarPC, 0);
 
       fSystJvsCPolar[polId] = ratio;
-
-      //Double_t re_polarPC = polarPC.second/polarPC.first;
-      //Double_t re_polarHJ = polarHJ.second/polarHJ.first;
-
-      //Double_t re_polar_syst = (ratio.first - 1)*(ratio.first - 1)/ratio.first/ratio.first -
-      //                         re_polarPC*re_polarPC - re_polarHJ*re_polarHJ; // assume 0% correlation
-
-      //Double_t syst = 0;
-
-      //if (re_polar_syst >= 0) syst = sqrt(re_polar_syst);// * polarPC.first * norm;
-
-      //fSystJvsCPolar[polId] = ValErrPair(syst, syst); // error does not really mean anything
    }
 
    return fSystJvsCPolar;

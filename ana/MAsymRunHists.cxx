@@ -294,7 +294,16 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist->GetYaxis()->SetRangeUser(0, 100);
    hist->SetTitle(";Fill;Polarization (H-jet), %;");
    hist->SetOption("E1");
-   styleMarker.Copy(*hist); oc.o[shName] = hist;
+   styleMarker.Copy(*hist);
+   oc.o[shName] = hist;
+
+   shName = "hPolarPCVsFill_" + sPolId + "_" + sBeamE;
+   hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->GetYaxis()->SetRangeUser(0, 100);
+   hist->SetTitle(";Fill;Polarization (p-Carbon), %;");
+   hist->SetOption("E1");
+   styleMarker.Copy(*hist);
+   oc.o[shName] = hist;
 
    shName = "hPolarHJPCRatioVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
@@ -329,17 +338,17 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    //oc.o[shName] = hist;
 
 
-   shName = "hPolarPCNormByHJVsFill_" + sPolId + "_" + sBeamE;
+   shName = "hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
-   hist->SetTitle(";Fill;Polarization, %;");
+   hist->SetTitle("; Fill; Polarization (p-Carbon, scaled), %;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
-   shName = "hPolarPCNormByHJVsFill_HJOnly_" + sPolId + "_" + sBeamE;
+   shName = "hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
-   hist->SetTitle(";Fill;Polarization, %;");
+   hist->SetTitle("; Fill; Polarization (p-Carbon, scaled), %;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
@@ -386,7 +395,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    // Ratio Hjet to pC
    shName = "hNormJCVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle(";Fill;H-jet/p-Carbon;");
+   hist->SetTitle("; Fill; (P H-jet)/(P p-Carbon);");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
@@ -1350,21 +1359,19 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          string sPolId = RunConfig::AsString(*iPolId);
          DrawObjContainer *oc_pol = d.find(sPolId)->second;
 
-         TH1F* hPolarHJVsFill_                = (TH1F*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hPolarHJPCRatioVsFill_         = (TH1F*) oc_pol->o["hPolarHJPCRatioVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hPolarPCNormByHJVsFill_        = (TH1F*) oc_pol->o["hPolarPCNormByHJVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hPolarPCNormByHJVsFill_HJOnly_ = (TH1F*) oc_pol->o["hPolarPCNormByHJVsFill_HJOnly_" + sPolId + "_" + sBeamE];
-         TH1F* hProfPolarVsFill_              = (TH1F*) oc_pol->o["hProfPolarVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hProfPolarRatioVsFill_         = (TH1F*) oc_pol->o["hProfPolarRatioVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hPolarHJPCRatioSystVsFill_     = (TH1F*) oc_pol->o["hPolarHJPCRatioSystVsFill_" + sPolId + "_" + sBeamE];
-         TH1F* hProfPolarRatioSystVsFill_     = (TH1F*) oc_pol->o["hProfPolarRatioSystVsFill_" + sPolId + "_" + sBeamE];
+         TH1F* hPolarHJVsFill_  = (TH1F*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
+         hPolarHJVsFill_->Fit("pol0");
+
+         TH1F* hPolarPCVsFill_ = (TH1F*) oc_pol->o["hPolarPCVsFill_" + sPolId + "_" + sBeamE];
+         hPolarPCVsFill_->Fit("pol0");
+
+         TH1F* hPolarPCScaledVsFill_HJOnly_ = (TH1F*) oc_pol->o["hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE];
+         hPolarPCScaledVsFill_HJOnly_->Fit("pol0");
 
          // Ratio of Hjet over pC
-         TH1F* hNormJCVsFill_          = (TH1F*) oc_pol->o["hNormJCVsFill_" + sPolId + "_" + sBeamE];
-         //TH1F* hPolarHJVsFill_         = RunConfig::GetRingId(*iPolId) == kBLUE_BEAM ? hPolarHJVsFill_ : hPolarHJVsFill_;
-
+         TH1F* hNormJCVsFill_ = (TH1F*) oc_pol->o["hNormJCVsFill_" + sPolId + "_" + sBeamE];
          hNormJCVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-         hNormJCVsFill_->Divide(hPolarHJVsFill_, hPolarPCNormByHJVsFill_);
+         hNormJCVsFill_->Divide(hPolarHJVsFill_, hPolarPCVsFill_);
          hNormJCVsFill_->Fit("pol0");
    
          //TH1F* hPolarHJPCRelDiff_      = (TH1F*) oc_pol->o["hPolarHJPCRelDiff_" + sPolId + "_" + sBeamE];
@@ -1378,17 +1385,25 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          //utils::ConvertToProfile(hProfPolarRatioSystVsFill_, hProfPolarRelDiffCumul_, kFALSE);
          //utils::ConvertToCumulative(hProfPolarRelDiffCumul_);
 
-         hPolarHJPCRatioVsFill_->Divide(hPolarHJVsFill_, hPolarPCNormByHJVsFill_);
-
+         TH1F* hPolarHJPCRatioVsFill_ = (TH1F*) oc_pol->o["hPolarHJPCRatioVsFill_" + sPolId + "_" + sBeamE];
+         hPolarHJPCRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+         hPolarHJPCRatioVsFill_->Divide(hPolarHJVsFill_, hPolarPCScaledVsFill_HJOnly_); // same as hPolarHJPCRatioSystVsFill_
          hPolarHJPCRatioVsFill_->Fit("pol0");
-         hPolarHJVsFill_->Fit("pol0");
+
+         TH1F* hPolarHJPCRatioSystVsFill_ = (TH1F*) oc_pol->o["hPolarHJPCRatioSystVsFill_" + sPolId + "_" + sBeamE];
          hPolarHJPCRatioSystVsFill_->Fit("pol0");
-         hPolarPCNormByHJVsFill_->Fit("pol0");
-         hPolarPCNormByHJVsFill_HJOnly_->Fit("pol0");
+
+         TH1F* hPolarPCScaledVsFill_ = (TH1F*) oc_pol->o["hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE];
+         hPolarPCScaledVsFill_->Fit("pol0");
+
+         TH1F* hProfPolarVsFill_ = (TH1F*) oc_pol->o["hProfPolarVsFill_" + sPolId + "_" + sBeamE];
          hProfPolarVsFill_->Fit("pol0");
+
+         TH1F* hProfPolarRatioSystVsFill_ = (TH1F*) oc_pol->o["hProfPolarRatioSystVsFill_" + sPolId + "_" + sBeamE];
          hProfPolarRatioSystVsFill_->Fit("pol0");
 
-         utils::Divide(hProfPolarVsFill_, hPolarPCNormByHJVsFill_, 1, hProfPolarRatioVsFill_);
+         TH1F* hProfPolarRatioVsFill_ = (TH1F*) oc_pol->o["hProfPolarRatioVsFill_" + sPolId + "_" + sBeamE];
+         utils::Divide(hProfPolarVsFill_, hPolarPCScaledVsFill_, 1, hProfPolarRatioVsFill_);
          hProfPolarRatioVsFill_->Fit("pol0");
          //hProfPolarRatioVsFill_->GetYaxis()->UnZoom();
       }
@@ -1420,15 +1435,15 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          TH1F* hPolarD, *hPolarD_HJOnly;
 
          if (*iRingId == kBLUE_RING) {
-            hPolarU        = (TH1F*) d["B1U"]->o["hPolarPCNormByHJVsFill_B1U_" + sBeamE];
-            hPolarD        = (TH1F*) d["B2D"]->o["hPolarPCNormByHJVsFill_B2D_" + sBeamE];
-            hPolarU_HJOnly = (TH1F*) d["B1U"]->o["hPolarPCNormByHJVsFill_HJOnly_B1U_" + sBeamE];
-            hPolarD_HJOnly = (TH1F*) d["B2D"]->o["hPolarPCNormByHJVsFill_HJOnly_B2D_" + sBeamE];
+            hPolarU        = (TH1F*) d["B1U"]->o["hPolarPCScaledVsFill_B1U_" + sBeamE];
+            hPolarD        = (TH1F*) d["B2D"]->o["hPolarPCScaledVsFill_B2D_" + sBeamE];
+            hPolarU_HJOnly = (TH1F*) d["B1U"]->o["hPolarPCScaledVsFill_HJOnly_B1U_" + sBeamE];
+            hPolarD_HJOnly = (TH1F*) d["B2D"]->o["hPolarPCScaledVsFill_HJOnly_B2D_" + sBeamE];
          } else if (*iRingId == kYELLOW_RING) {
-            hPolarU        = (TH1F*) d["Y2U"]->o["hPolarPCNormByHJVsFill_Y2U_" + sBeamE];
-            hPolarD        = (TH1F*) d["Y1D"]->o["hPolarPCNormByHJVsFill_Y1D_" + sBeamE];
-            hPolarU_HJOnly = (TH1F*) d["Y2U"]->o["hPolarPCNormByHJVsFill_HJOnly_Y2U_" + sBeamE];
-            hPolarD_HJOnly = (TH1F*) d["Y1D"]->o["hPolarPCNormByHJVsFill_HJOnly_Y1D_" + sBeamE];
+            hPolarU        = (TH1F*) d["Y2U"]->o["hPolarPCScaledVsFill_Y2U_" + sBeamE];
+            hPolarD        = (TH1F*) d["Y1D"]->o["hPolarPCScaledVsFill_Y1D_" + sBeamE];
+            hPolarU_HJOnly = (TH1F*) d["Y2U"]->o["hPolarPCScaledVsFill_HJOnly_Y2U_" + sBeamE];
+            hPolarD_HJOnly = (TH1F*) d["Y1D"]->o["hPolarPCScaledVsFill_HJOnly_Y1D_" + sBeamE];
          }
 
          TH1F* hPolarRatioVsFill_ = (TH1F*) oc_ring->o["hPolarRatioVsFill_" + sRingId + "_"  + sBeamE];
@@ -1474,20 +1489,17 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    TH1F* hPolarHJVsFill_ = (TH1F*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
    hPolarHJVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
    
-   TH1F* hPolarHJPCRatioVsFill_ = (TH1F*) oc_pol->o["hPolarHJPCRatioVsFill_" + sPolId + "_" + sBeamE];
-   hPolarHJPCRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+   TH1F* hPolarPCVsFill_ = (TH1F*) oc_pol->o["hPolarPCVsFill_" + sPolId + "_" + sBeamE];
+   hPolarPCVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
    
-   TH1F* hPolarPCNormByHJVsFill_ = (TH1F*) oc_pol->o["hPolarPCNormByHJVsFill_" + sPolId + "_" + sBeamE];
-   hPolarPCNormByHJVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+   TH1F* hPolarPCScaledVsFill_ = (TH1F*) oc_pol->o["hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE];
+   hPolarPCScaledVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
    
-   TH1F* hPolarPCNormByHJVsFill_HJOnly_ = (TH1F*) oc_pol->o["hPolarPCNormByHJVsFill_HJOnly_" + sPolId + "_" + sBeamE];
-   hPolarPCNormByHJVsFill_HJOnly_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+   TH1F* hPolarPCScaledVsFill_HJOnly_ = (TH1F*) oc_pol->o["hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE];
+   hPolarPCScaledVsFill_HJOnly_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
    
    TH1F* hProfPolarVsFill_ = (TH1F*) oc_pol->o["hProfPolarVsFill_" + sPolId + "_" + sBeamE];
    hProfPolarVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-   
-   TH1F* hProfPolarRatioVsFill_ = (TH1F*) oc_pol->o["hProfPolarRatioVsFill_" + sPolId + "_" + sBeamE];
-   hProfPolarRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
    
    TH1F* hPolarHJPCRatioSystVsFill_ = (TH1F*) oc_pol->o["hPolarHJPCRatioSystVsFill_" + sPolId + "_" + sBeamE];
    hPolarHJPCRatioSystVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
@@ -1495,7 +1507,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    TH1F* hProfPolarRatioSystVsFill_ = (TH1F*) oc_pol->o["hProfPolarRatioSystVsFill_" + sPolId + "_" + sBeamE];
    hProfPolarRatioSystVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
 
-   Int_t ib = hPolarPCNormByHJVsFill_->FindBin(fillId);
+   Int_t ib = hPolarPCScaledVsFill_->FindBin(fillId);
 
    // Consider P and P_prof by polarimeter
 
@@ -1504,7 +1516,15 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    //ValErrPair polarPCNorm   = afr.GetPolarPC(polId, &agr.fNormJetCarbon);  // ratio of average
    //ValErrPair polarProfNorm = afr.GetPolarPC(polId, &agr.fNormProfPolar);
    ValErrPair polarPCNorm     = afr.GetPolarPC(polId, &agr.fNormJetCarbon2); // average of ratio
-   ValErrPair polarProfNorm   = afr.GetPolarPC(polId, &agr.fNormProfPolar2);
+   //ValErrPair polarProfNorm   = afr.GetPolarPC(polId, &agr.fNormProfPolar2);
+
+   //ValErrPair normJC2 = agr.GetNormJetCarbon(polId);
+   //cout << endl;
+   //cout << MapAsPhpArray<ERingId, ValErrPair>(afr.fHjetPolars) << endl;
+   //printf("%s, %s: %f, %f\n", sPolId.c_str(), sBeamE.c_str(), normJC2.first, normJC2.second);
+   //printf("%s, %s: %f, %f, %f, %f, %f, %f\n", sPolId.c_str(), sBeamE.c_str(),
+   //       polarHJ.first, polarHJ.second, polarPC.first, polarPC.second,
+   //       polarPCNorm.first, polarPCNorm.second);
 
    if (polarPCNorm.second >= 0) //if (polarPC.second >= 0)
    {
@@ -1513,16 +1533,15 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
          hPolarHJVsFill_->SetBinContent(ib, polarHJ.first*100);
          hPolarHJVsFill_->SetBinError(  ib, polarHJ.second*100);
 
-         //hPolarPCNormByHJVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first*100);
-         //hPolarPCNormByHJVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second*100);
-         hPolarPCNormByHJVsFill_HJOnly_->SetBinContent(ib, polarPC.first*100);
-         hPolarPCNormByHJVsFill_HJOnly_->SetBinError(  ib, polarPC.second*100);
+         hPolarPCScaledVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first*100);
+         hPolarPCScaledVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second*100);
       }
 
-      hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPC.first*100);
-      hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPC.second*100);
-      //hPolarPCNormByHJVsFill_->SetBinContent(ib, polarPCNorm.first*100);
-      //hPolarPCNormByHJVsFill_->SetBinError(  ib, polarPCNorm.second*100);
+      hPolarPCVsFill_->SetBinContent(ib, polarPC.first*100);
+      hPolarPCVsFill_->SetBinError(  ib, polarPC.second*100);
+
+      hPolarPCScaledVsFill_->SetBinContent(ib, polarPCNorm.first*100);
+      hPolarPCScaledVsFill_->SetBinError(  ib, polarPCNorm.second*100);
    }
 
    ValErrPair profPolar = afr.fProfPolars[polId];
@@ -1623,6 +1642,7 @@ void MAsymRunHists::UpdateLimits()
 
    char    hName[256];
    string  shName;
+   TH1    *hist;
 
    IterPolarimeterId iPolId = gRunConfig.fPolarimeters.begin();
 
@@ -1673,15 +1693,19 @@ void MAsymRunHists::UpdateLimits()
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
 
-         shName = "hPolarHJVsFill_" + sPolId + "_" + sBeamE;
+         hist = (TH1*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
+         //hist->GetXaxis()->SetLimits(fMinFill, fMaxFill);
+         hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+
+         hist = (TH1*) oc_pol->o["hPolarPCVsFill_" + sPolId + "_" + sBeamE];
+         //hist->GetXaxis()->SetLimits(fMinFill, fMaxFill);
+         hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+
+         shName = "hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
 
-         shName = "hPolarPCNormByHJVsFill_" + sPolId + "_" + sBeamE;
-         ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
-
-         shName = "hPolarPCNormByHJVsFill_HJOnly_" + sPolId + "_" + sBeamE;
+         shName = "hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
 
