@@ -60,33 +60,7 @@ void initialize()
 
    //TString filelistPath("/eic/u/dsmirnov/run/");
 
-   //TString filelistName = "run09_10XXX_11XXX";
-   //TString filelistName = "run09_tmp_longi_check_10373";
-   //TString filelistName = "run09_tmp_longi_check_10490";
-   //TString filelistName = "run09_tmp_longi_check_10532";
-   //TString filelistName = "runs11_rampupdown";
-   //TString filelistName = "runs_all";
-   //TString filelistName = "run11_153XX_tmp";
-   //TString filelistName = "run11_15393";
-   //TString filelistName = "run11_15397";
-   //TString filelistName = "run11_15399";
-   //TString filelistName = "run11_15XXX_1XX_2XX_3XX_4XX";
-   //TString filelistName = "run11_153XX";
-   //TString filelistName = "run11_153XX_Y2U";
-   //TString filelistName = "run11_pol_decay";
-   //TString filelistName = "run11_1547X_4_5";
-   //TString filelistName = "run11_154XX_00_23_before_rotators";
-   //TString filelistName = "run11_tmp_goodruns";
-   //TString filelistName = "run11_tmp_goodruns_small";
-   //TString filelistName = "run11_tmp_test_small";
-   //TString filelistName = "run11_15473_74_75_injection";
-   //TString filelistName = "run11_15XXX_Y1D_B2D_V_hama";
-   //TString filelistName = "run12_16386_164XX";
-   //TString filelistName = "run12_all";
-   //TString filelistName = "run12_decay";
-
    TString filelistName = gMAsymAnaInfo.GetMListFileName();
-
 
 	//TString filelist    = filelistPath + filelistName + ".txt";
 	TString filelist    = gMAsymAnaInfo.GetMListFullPath();
@@ -256,22 +230,14 @@ void initialize()
 
    gAnaGlobResult.Process();
    //gAnaGlobResult.Print();
-   //return;
 
    Info("masym", "Starting second pass...");
 
    // Now process only good runs
-   //set<string>::iterator iRunName = gGoodRuns.begin();
    set<EventConfig>::const_iterator iMeas = gGoodMeass.begin();
 
-   //for ( ; iRunName!=gGoodRuns.end(); ++iRunName)
    for ( ; iMeas!=gGoodMeass.end(); ++iMeas)
    {
-      //TString fileName = gAnaInfo->GetResultsDir() + "/" + (*iRunName) + "/" + (*iRunName) + fileSuffix + ".root";
-      //TFile *f = new TFile(fileName, "READ");
-      //Info("masym", "Processing measurement: %s", (*iRunName).c_str());
-      //gMM = (EventConfig*) f->FindObjectAny("EventConfig");
-
       // Overwrite the default gMeasInfo with the saved one
       gMeasInfo = iMeas->fMeasInfo;
 

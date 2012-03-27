@@ -55,38 +55,64 @@ void AnaGlobResult::Print(const Option_t* opt) const
    }
 
    printf("\n");
-   printf("Norm jet/carbon:\n");
+   printf("Norm. jet/carbon:\n");
+   printf("    | avrg. of ratio                      |||||| ratio of avrg.                        |\n");
 
    PolId2ValErrMapConstIter iNormJC  = fNormJetCarbon.begin();
    PolId2ValErrMapConstIter iNormJC2 = fNormJetCarbon2.begin();
 
    for ( ; iNormJC != fNormJetCarbon.end(); ++iNormJC, ++iNormJC2)
    {
-      EPolarimeterId  polId = iNormJC->first;
+      EPolarimeterId polId  = iNormJC->first;
       string         sPolId = RunConfig::AsString(polId);
 
       printf("%s: ", sPolId.c_str());
-      printf("%16.14f +/- %16.14f  ", iNormJC->second.first,  iNormJC->second.second);
-      printf("%16.14f +/- %16.14f\n", iNormJC2->second.first, iNormJC2->second.second);
-
-      printf("%s syst J vs C: %16.14f +/- %16.14f\n", sPolId.c_str(), fSystJvsCPolar.find(polId)->second.first, fSystJvsCPolar.find(polId)->second.second);
+      printf("%16.14f +/- %16.14f      ", iNormJC2->second.first, iNormJC2->second.second);
+      printf("(%16.14f +/- %16.14f)\n",   iNormJC->second.first,  iNormJC->second.second);
    }
 
    printf("\n");
-   printf("Norm prof polar carbon:\n");
+   printf("Syst. jet/carbon:\n");
+
+   iNormJC = fNormJetCarbon.begin();
+
+   for ( ; iNormJC != fNormJetCarbon.end(); ++iNormJC)
+   {
+      EPolarimeterId polId  = iNormJC->first;
+      string         sPolId = RunConfig::AsString(polId);
+
+      printf("%s: ", sPolId.c_str());
+      printf("syst J vs C: %16.14f +/- %16.14f\n", fSystJvsCPolar.find(polId)->second.first, fSystJvsCPolar.find(polId)->second.second);
+   }
+
+   printf("\n");
+   printf("Norm. prof polar carbon:\n");
 
    // Print polar vs prof polar normalization factors
    PolId2ValErrMapConstIter iNormPP  = fNormProfPolar.begin();
    PolId2ValErrMapConstIter iNormPP2 = fNormProfPolar2.begin();
 
    for ( ; iNormPP != fNormProfPolar.end(); ++iNormPP, ++iNormPP2) {
-      EPolarimeterId  polId = iNormPP->first;
+      EPolarimeterId polId  = iNormPP->first;
       string         sPolId = RunConfig::AsString(polId);
 
-      printf("%s: %16.14f +/- %16.14f", sPolId.c_str(), iNormPP->second.first, iNormPP->second.second);
-      printf("      %16.14f +/- %16.14f\n", iNormPP2->second.first, iNormPP2->second.second);
+      printf("%s: ", sPolId.c_str());
+      printf("%16.14f +/- %16.14f      ", iNormPP->second.first,  iNormPP->second.second);
+      printf("%16.14f +/- %16.14f\n",     iNormPP2->second.first, iNormPP2->second.second);
+   }
 
-      printf("%s syst prof: %16.14f +/- %16.14f\n", sPolId.c_str(), fSystProfPolar.find(polId)->second.first, fSystProfPolar.find(polId)->second.second);
+   printf("\n");
+   printf("Syst. norm. prof polar carbon:\n");
+
+   // Print polar vs prof polar normalization factors
+   iNormPP  = fNormProfPolar.begin();
+
+   for ( ; iNormPP != fNormProfPolar.end(); ++iNormPP) {
+      EPolarimeterId polId  = iNormPP->first;
+      string         sPolId = RunConfig::AsString(polId);
+
+      printf("%s: ", sPolId.c_str());
+      printf("syst prof: %16.14f +/- %16.14f\n", fSystProfPolar.find(polId)->second.first, fSystProfPolar.find(polId)->second.second);
    }
 
    printf("\n");
@@ -110,7 +136,7 @@ void AnaGlobResult::Print(const Option_t* opt) const
       }
 
 
-      printf("%s syst U vs D: %16.14f +/- %16.14f\n", sRingId.c_str(), fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
+      printf("%s syst. U vs D: %16.14f +/- %16.14f\n", sRingId.c_str(), fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
       printf("\n");
    }
 
@@ -263,38 +289,43 @@ void AnaGlobResult::CalcPolarNorm()
 
       for ( ; iPolar != fillRslt->fPolars.end(); ++iPolar, ++iProfPolar)
       {
-         EPolarimeterId polId        = iPolar->first;
-         ValErrPair     polarCrb     = iPolar->second;
-         ValErrPair     polarCrbProf = iProfPolar->second;
-         ERingId        ringId       = RunConfig::GetRingId(polId);
+         EPolarimeterId polId       = iPolar->first;
+         ValErrPair     polarPC     = iPolar->second;
+         ValErrPair     polarPCProf = iProfPolar->second;
+         ERingId        ringId      = RunConfig::GetRingId(polId);
+         string         sPolId      = RunConfig::AsString(polId);
 
          // Polarization profile scale factor
-         if (polarCrb.second >= 0 && polarCrbProf.second >= 0) {
-            polarCrbAllSet    [polId].insert(polarCrb);
-            polarCrbProfAllSet[polId].insert(polarCrbProf);
+         if (polarPC.second >= 0 && polarPCProf.second >= 0) {
+            polarCrbAllSet    [polId].insert(polarPC);
+            polarCrbProfAllSet[polId].insert(polarPCProf);
 
-            polarNormAllSet[polId].insert(CalcDivision(polarCrbProf, polarCrb, 1));
+            polarNormAllSet[polId].insert(CalcDivision(polarPCProf, polarPC, 1));
          }
 
+         ValErrPair polarHJ = fillRslt->GetPolarHJ(ringId);
+
          // For HJet normalization: Skip if there is no corresponding hjet result for this fill
-         if (fillRslt->fHjetPolars.find(ringId) == fillRslt->fHjetPolars.end()) {
-            Warning("CalcPolarNorm", "Fill %d, pol. %d: H-jet polarization not available", fillId, polId);
+         if (polarHJ.second < 0) {
+            Warning("CalcPolarNorm", "Fill %d, %s: H-jet polarization not available", fillId, sPolId.c_str());
             continue;
          }
 
-         ValErrPair polarJet = fillRslt->fHjetPolars[ringId];
+         // skip if not a valid result
+         if (polarPC.second < 0) {
+            Warning("CalcPolarNorm", "Fill %d, %s: p-Carbon polarization not available", fillId, sPolId.c_str());
+            continue;
+         }
 
-         if (polarCrb.second < 0 || polarJet.second < 0) continue; // skip if not a valid result
+         polarCrbSet[polId].insert(polarPC);
+         polarJetSet[polId].insert(polarHJ);
 
-         polarCrbSet[polId].insert(polarCrb);
-         polarJetSet[polId].insert(polarJet);
-
-         polarNormSet[polId].insert(CalcDivision(polarJet, polarCrb));
+         polarNormSet[polId].insert(CalcDivision(polarHJ, polarPC));
 
          // for debugging
          //string sPolId = RunConfig::AsString(polId);
          //printf("%d: %s: %16.7f +/- %16.7f   %16.7f +/- %16.7f\n",
-         //   fillId, sPolId.c_str(), polarCrb.first, polarCrb.second, polarJet.first, polarJet.second);
+         //   fillId, sPolId.c_str(), polarPC.first, polarPC.second, polarHJ.first, polarHJ.second);
       }
 
 
@@ -311,9 +342,9 @@ void AnaGlobResult::CalcPolarNorm()
          UShort_t       targetId     = targetUId.fTargetId;
 
          ERingId        ringId       = RunConfig::GetRingId(polId);
-         ValErrPair     polarJet     = fillRslt->fHjetPolars[ringId];
+         ValErrPair     polarHJ      = fillRslt->GetPolarHJ(ringId);
 
-         ValErrPair norm = CalcDivision(polarJet, polarCrb, 0);
+         ValErrPair norm = CalcDivision(polarHJ, polarCrb, 0);
          
          if (norm.second >=0)
          {
@@ -397,7 +428,7 @@ void AnaGlobResult::CalcPolarDependants()
 { //{{{
    // Create sets with valid syst ratio
    RingId2ValErrSet systUvsDSet;
-   PolId2ValErrSet  systJvsCSet;
+   PolId2ValErrSet  ratioHJ2PCSet;
    PolId2ValErrSet  systProfSet;
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
@@ -410,12 +441,9 @@ void AnaGlobResult::CalcPolarDependants()
       //fillRslt->CalcBeamPolar(fNormJetCarbon);
       fillRslt->CalcBeamPolar(fNormJetCarbon2);
 
-      //RingId2ValErrMap systUvsD = fillRslt->CalcSystUvsDPolar(fNormJetCarbon);
-      //PolId2ValErrMap  systJvsC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon);
-      //PolId2ValErrMap  systProf = fillRslt->CalcSystProfPolar(fNormProfPolar);
-      RingId2ValErrMap systUvsD = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
-      PolId2ValErrMap  systJvsC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon2);
-      PolId2ValErrMap  systProf = fillRslt->CalcSystProfPolar(fNormProfPolar2);
+      RingId2ValErrMap systUvsD   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
+      PolId2ValErrMap  ratioHJ2PC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon2);
+      PolId2ValErrMap  systProf   = fillRslt->CalcSystProfPolar(fNormProfPolar2);
 
       //
       PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -428,12 +456,12 @@ void AnaGlobResult::CalcPolarDependants()
          if (polId == kB1U && systUvsD[ringId].second >= 0) systUvsDSet[ringId].insert(systUvsD[ringId]);
          if (polId == kY2U && systUvsD[ringId].second >= 0) systUvsDSet[ringId].insert(systUvsD[ringId]);
 
-         if (systJvsC[polId].second >= 0) systJvsCSet[polId].insert(systJvsC[polId]);
-         if (systProf[polId].second >= 0) systProfSet[polId].insert(systProf[polId]);
+         if (ratioHJ2PC[polId].second >= 0) ratioHJ2PCSet[polId].insert(ratioHJ2PC[polId]);
+         if (systProf[polId].second   >= 0) systProfSet[polId].insert(systProf[polId]);
       }
    }
 
-   //
+   // Calculate the contribution of the systematic error to the total one
    utils::SystRatioFitFunctor srff;
 
    //srff.SetSet(systUvsDSet[kBLUE_BEAM]);
@@ -456,6 +484,7 @@ void AnaGlobResult::CalcPolarDependants()
       EPolarimeterId polId  = *iPolId;
       ERingId        ringId = RunConfig::GetRingId(polId);
 
+      // Syst contribution for U vs D
       if (polId == kB1U || polId == kY2U) {
          srff.SetSet(systUvsDSet[ringId]);
          TF1 systRatioFitFunc("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
@@ -466,7 +495,8 @@ void AnaGlobResult::CalcPolarDependants()
          fSystUvsDPolar[ringId].first = brf.Root();
       }
 
-      srff.SetSet(systJvsCSet[polId]);
+      // Syst contribution for H-Jet vs p-Carbon
+      srff.SetSet(ratioHJ2PCSet[polId]);
       TF1 systRatioFitFunc_JvsC("systRatioFitFunc_JvsC", srff, -10, 10, 0, "SystRatioFitFunctor");
       ROOT::Math::WrappedTF1 wf1_JvsC(systRatioFitFunc_JvsC);
       ROOT::Math::BrentRootFinder brf_JvsC;
@@ -474,6 +504,7 @@ void AnaGlobResult::CalcPolarDependants()
       brf_JvsC.Solve();
       fSystJvsCPolar[polId].first = brf_JvsC.Root();
 
+      // Syst contribution in p-Carbon polar vs p-Carbon prof polar
       srff.SetSet(systProfSet[polId]);
       TF1 systRatioFitFunc_Prof("systRatioFitFunc_Prof", srff, -10, 10, 0, "SystRatioFitFunctor");
       ROOT::Math::WrappedTF1 wf1_Prof(systRatioFitFunc_Prof);
