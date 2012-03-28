@@ -235,62 +235,98 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
       c.SetName(cName);
       c.SetTitle(cName);
 
-      if ( ((TClass*) io->second->IsA())->InheritsFrom("TH1") ) {
-
-         char *l = strstr(((TH1*)io->second)->GetOption(), "NOIMG");
-         if (l) continue;
-
-         l = strstr( ((TH1*) io->second)->GetOption(), "LOGZ");
-         //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-         if (l) c.SetLogz(kTRUE);
-         else c.SetLogz(kFALSE);
-
-         l = strstr( ((TH1*) io->second)->GetOption(), "XX");
-         if (l) c.SetLogx(kTRUE);
-         else c.SetLogx(kFALSE);
-
-         l = strstr( ((TH1*) io->second)->GetOption(), "XY");
-         if (l) c.SetLogy(kTRUE);
-         else c.SetLogy(kFALSE);
-
-         l = strstr( ((TH1*) io->second)->GetOption(), "GRIDX");
-         if (l) c.SetGridx(kTRUE);
-         else c.SetGridx(kFALSE);
-
-         l = strstr( ((TH1*) io->second)->GetOption(), "GRIDY");
-         if (l) c.SetGridy(kTRUE);
-         else c.SetGridy(kFALSE);
-      }
 
       if (io->second) {
 
-         if ( ((TClass*) io->second->IsA())->InheritsFrom("THStack") ) {
+         if ( ((TClass*) io->second->IsA())->InheritsFrom("THStack") )
+         {
             (io->second)->Draw("nostack");
-         } else {
+         }
+         else if ( ((TClass*) io->second->IsA())->InheritsFrom("TH1") )
+         {
+            char *l = strstr(((TH1*)io->second)->GetOption(), "NOIMG");
+            if (l) continue;
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "LOGZ");
+            //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
+            if (l) c.SetLogz(kTRUE);
+            else c.SetLogz(kFALSE);
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "XX");
+            if (l) c.SetLogx(kTRUE);
+            else c.SetLogx(kFALSE);
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "XY");
+            if (l) c.SetLogy(kTRUE);
+            else c.SetLogy(kFALSE);
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "GRIDX");
+            if (l) c.SetGridx(kTRUE);
+            else c.SetGridx(kFALSE);
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "GRIDY");
+            if (l) c.SetGridy(kTRUE);
+            else c.SetGridy(kFALSE);
+
+            l = strstr( ((TH1*) io->second)->GetOption(), "NST");
+            if (l) ((TH1*) io->second)->SetStats(kFALSE);
+
+
             (io->second)->Draw();
 
-            char *l = strstr( ((TH1*) io->second)->GetOption(), "FFF");
+            l = strstr( ((TH1*) io->second)->GetOption(), "FFF");
             if (l) (io->second)->Draw("func same");
+
          }
 
-         c.Modified();
+         //c.Modified();
          c.Update();
-         c.RedrawAxis("g");
 
          TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
 
          if (stats) {
+
+            stats->SetOptStat(0);
+            stats->SetOptFit(1111);
+
             stats->SetX1NDC(0.84);
             stats->SetX2NDC(0.99);
             stats->SetY1NDC(0.10);
             stats->SetY2NDC(0.50);
          } else {
             //printf("could not find stats\n");
+
+            TList* list = ((TH1*) io->second)->GetListOfFunctions();
+            TIter  next(list);
+
+            while ( TObject *graph = (TObject*) next() ) {
+               if ( ! ( (TClass*) graph->IsA() )->InheritsFrom("TGraph") ) continue;
+               if ( ((TGraph*) graph)->GetN() <= 0) continue;
+
+               TPaveStats *stats = (TPaveStats*) ((TGraph*) graph)->FindObject("stats");
+
+               if (stats) {
+                  stats->SetOptStat(0);
+                  stats->SetOptFit(1111);
+
+                  stats->SetX1NDC(0.84);
+                  stats->SetX2NDC(0.99);
+                  stats->SetY1NDC(0.10);
+                  stats->SetY2NDC(0.50);
+               }
+            }
          }
 
-         TText signature;
-         signature.SetTextSize(0.03);
-         signature.DrawTextNDC(0, 0.01, fSignature.c_str());
+         //delete stats;
+
+         TText signature(0, 0, fSignature.c_str());
+         signature.SetTextSize(0.04);
+         UInt_t w, h;
+         signature.GetTextExtent(w, h, signature.GetTitle());
+         //cout << "extent: " << (w/(Float_t) c.GetWw() )<< ", " << (h/(Float_t) c.GetWh() ) << endl;
+         signature.DrawTextNDC(0.98-(w/(Float_t) c.GetWw()), 1-(h/(Float_t) c.GetWh()), signature.GetTitle());
+
+         c.RedrawAxis("g");
       }
 
       //if (io->second) io->second->Print();
