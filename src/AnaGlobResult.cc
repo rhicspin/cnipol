@@ -136,7 +136,8 @@ void AnaGlobResult::Print(const Option_t* opt) const
       }
 
 
-      printf("%s syst. U vs D: %16.14f +/- %16.14f\n", sRingId.c_str(), fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
+      printf("%s syst. U vs D: %16.14f +/- %16.14f\n", sRingId.c_str(),
+         fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
       printf("\n");
    }
 
@@ -427,9 +428,9 @@ void AnaGlobResult::CalcAvrgPolProfR()
 void AnaGlobResult::CalcPolarDependants()
 { //{{{
    // Create sets with valid syst ratio
-   RingId2ValErrSet systUvsDSet;
+   RingId2ValErrSet ratioU2DSet;
    PolId2ValErrSet  ratioHJ2PCSet;
-   PolId2ValErrSet  systProfSet;
+   PolId2ValErrSet  ratioP2PPSet;
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
 
@@ -441,9 +442,9 @@ void AnaGlobResult::CalcPolarDependants()
       //fillRslt->CalcBeamPolar(fNormJetCarbon);
       fillRslt->CalcBeamPolar(fNormJetCarbon2);
 
-      RingId2ValErrMap systUvsD   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
+      RingId2ValErrMap ratioU2D   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
       PolId2ValErrMap  ratioHJ2PC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon2);
-      PolId2ValErrMap  systProf   = fillRslt->CalcSystProfPolar(fNormProfPolar2);
+      PolId2ValErrMap  ratioP2PP  = fillRslt->CalcSystProfPolar(fNormProfPolar2);
 
       //
       PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -453,28 +454,24 @@ void AnaGlobResult::CalcPolarDependants()
          EPolarimeterId polId  = *iPolId;
          ERingId        ringId = RunConfig::GetRingId(polId);
 
-         if (polId == kB1U && systUvsD[ringId].second >= 0) systUvsDSet[ringId].insert(systUvsD[ringId]);
-         if (polId == kY2U && systUvsD[ringId].second >= 0) systUvsDSet[ringId].insert(systUvsD[ringId]);
+         if (polId == kB1U && ratioU2D[ringId].second >= 0) ratioU2DSet[ringId].insert(ratioU2D[ringId]);
+         if (polId == kY2U && ratioU2D[ringId].second >= 0) ratioU2DSet[ringId].insert(ratioU2D[ringId]);
 
          if (ratioHJ2PC[polId].second >= 0) ratioHJ2PCSet[polId].insert(ratioHJ2PC[polId]);
-         if (systProf[polId].second   >= 0) systProfSet[polId].insert(systProf[polId]);
+         if (ratioP2PP[polId].second  >= 0) ratioP2PPSet[polId].insert(ratioP2PP[polId]);
       }
    }
 
    // Calculate the contribution of the systematic error to the total one
    utils::SystRatioFitFunctor srff;
 
-   //srff.SetSet(systUvsDSet[kBLUE_BEAM]);
-
+   //srff.SetSet(ratioU2DSet[kBLUE_BEAM]);
    //TF1 systRatioFitFunc("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
-
    //ROOT::Math::WrappedTF1 wf1(systRatioFitFunc);
    //ROOT::Math::BrentRootFinder brf;
-
    //brf.SetFunction(wf1, 0, 1);
    //brf.Solve();
    //fSystUvsDPolar[kBLUE_BEAM].first = brf.Root();
-
    //return;
 
    PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -486,7 +483,7 @@ void AnaGlobResult::CalcPolarDependants()
 
       // Syst contribution for U vs D
       if (polId == kB1U || polId == kY2U) {
-         srff.SetSet(systUvsDSet[ringId]);
+         srff.SetSet(ratioU2DSet[ringId]);
          TF1 systRatioFitFunc("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
          ROOT::Math::WrappedTF1 wf1(systRatioFitFunc);
          ROOT::Math::BrentRootFinder brf;
@@ -505,7 +502,7 @@ void AnaGlobResult::CalcPolarDependants()
       fSystJvsCPolar[polId].first = brf_JvsC.Root();
 
       // Syst contribution in p-Carbon polar vs p-Carbon prof polar
-      srff.SetSet(systProfSet[polId]);
+      srff.SetSet(ratioP2PPSet[polId]);
       TF1 systRatioFitFunc_Prof("systRatioFitFunc_Prof", srff, -10, 10, 0, "SystRatioFitFunctor");
       ROOT::Math::WrappedTF1 wf1_Prof(systRatioFitFunc_Prof);
       ROOT::Math::BrentRootFinder brf_Prof;

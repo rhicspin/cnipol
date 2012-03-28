@@ -54,7 +54,8 @@ void initialize()
 {
    gStyle->SetOptTitle(0);
    //gStyle->SetOptStat("emroui");
-   gStyle->SetOptStat("e");
+   //gStyle->SetOptStat("e");
+   gStyle->SetOptStat(1111);
    gStyle->SetOptFit(1111);
    gStyle->SetPadRightMargin(0.18);
 
@@ -172,7 +173,8 @@ void initialize()
       if (polarization < 5 || polarization > 99 || polarization_err > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
-          profileRatio > 2.0 || TMath::Abs(profileRatio) < 0.0001 || profileRatioErr < 0.001
+          (TMath::Abs(profileRatio) > 0.600 && profileRatioErr < 0.05) ||
+          (TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
          )
       {
 	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
@@ -264,6 +266,7 @@ void initialize()
    //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
    gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());

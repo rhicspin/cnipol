@@ -337,48 +337,12 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
          continue; // skip invalid result
       }
 
-      //ValErrPair ratio = CalcDivision(polarU, polarD, 0);
-      ValErrPair ratio = CalcDivision(polarU, polarD, 1);
+      // 100% correlation between U and D is a more conservative assumption
+      ValErrPair ratio = CalcDivision(polarU, polarD, 0);
+      //ValErrPair ratio = CalcDivision(polarU, polarD, 1);
+
       fSystUvsDPolar[ringId] = ratio;
 
-      //Double_t re_polarU = polarU.second/polarU.first;
-      //Double_t re_polarD = polarD.second/polarD.first;
-
-      //Double_t re_polar_syst = (ratio.first - 1)*(ratio.first - 1)/ratio.first/ratio.first -
-      //                         re_polarU*re_polarU - re_polarD*re_polarD; // assume 0% correlation
-
-      //Double_t syst = 0;
-
-      //if (re_polar_syst >= 0) syst = sqrt(re_polar_syst);// * polarU.first * norm;
-
-      //fSystUvsDPolar[ringId] = ValErrPair(syst, syst); // error does not really mean anything
-
-
-      //Double_t maxAbsDiff = -1;
-
-      //// Find the maximum difference between the average beam polarization and
-      //// different polarimeters
-      //UShort_t nValidPolarResults = 0;
-      //PolId2ValErrMapConstIter iPolar = fPolars.begin();
-
-      //for ( ; iPolar != fPolars.end(); ++iPolar)
-      //{
-      //   EPolarimeterId polId = iPolar->first;
-      //   ValErrPair     polar = iPolar->second;
-      //   ERingId        bmId  = RunConfig::GetRingId(polId);
-      //
-      //   if (bmId != ringId)   continue;
-      //   if (polar.second < 0) continue; // not a valid result
-      //
-      //   Double_t norm = normJC.find(polId) == normJC.end() ? 1 : normJC[polId].first;
-      //
-      //   Double_t diff = TMath::Abs(beamPolar.first - norm*polar.first);
-      //
-      //   if ( diff > maxAbsDiff)   maxAbsDiff = diff;
-      //   nValidPolarResults++;
-      //}
-
-      //fSystUvsDPolar[ringId] = nValidPolarResults <= 1 ? ValErrPair(-1, -1) : ValErrPair(maxAbsDiff, maxAbsDiff); // error does not really mean anything
    }
 
    return fSystUvsDPolar;
