@@ -83,10 +83,12 @@ span.feature {
 
 .bluPol {
 	background-color: #8bf;
+   padding: 0.2em;
 }
 
 .yelPol {
 	background-color: #eea;
+   padding: 0.2em;
 }
 
 .bkg1 {
@@ -214,7 +216,7 @@ div.section {
    padding: 0.5em;
 }
 
-table.simple0 td {
+table.simple0 td, th {
    margin-left: auto;
    margin-right: auto;
    padding: 0;
