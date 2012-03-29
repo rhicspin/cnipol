@@ -52,7 +52,7 @@ class RunSelector {
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
       } else {
-         $rp = 12; // run 11 is default
+         $rp = 12; // run 12 is default
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       }
 

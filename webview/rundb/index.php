@@ -121,7 +121,9 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    $dir = "../runs/$gRunId/images$gSuffix/";
    $gP = new PlotHelper($dir);
 
-   if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
+   //if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1)
+   if ($rc['measurement_type'] != 1)
+   {
       include("chaninfo.html");
    } elseif ($rc['measurement_type'] == 1) {
       include("chaninfo_calib.html");

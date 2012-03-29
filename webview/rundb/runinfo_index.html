@@ -147,6 +147,10 @@ while ($e = mysql_fetch_assoc($rslt)):
    //   }
 	//}
 
+   $start_time = isset($e['start_time']) ? strtotime($e['start_time']) : 0;
+
+   $runPeriod = getRunPeriod($start_time);
+
    $polarization = "&nbsp;";
 
    //if (isset($e['polarization']) && $polarToDisplay == null) 
@@ -155,7 +159,7 @@ while ($e = mysql_fetch_assoc($rslt)):
       // Apply normalization factor to polarization value
 
 		$normSpecs = array(
-		   "runPeriod" => $_GET['rp'],
+		   "runPeriod" => $runPeriod,
 			"energy"    => intval($e['beam_energy']+0.5),
 			"polId"     => $polId,
 			"tgtOrient" => $e['target_orient'],
@@ -229,7 +233,7 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 <tr>
    <td><a href="?runid=<?=$e['run_name']?>"><?=$e['run_name']?></a>
-   <td class=align_cm><tt><?=isset($e['start_time']) ? date("M d, Y H:i:s D", strtotime($e['start_time'])) : "&nbsp;";?></tt>
+   <td class=align_cm><tt><?=date("M d, Y H:i:s D", $start_time)?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
    <td class=align_cm><?=$strOnlinePolar?>
