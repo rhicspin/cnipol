@@ -39,24 +39,24 @@ void CnipolRawHists::BookHists()
 
    fDir->cd();
 
-   shName = "hAdcAmpltd"; // former adc_raw
+   shName = "hAdcAmpltd";
    hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
-   hist->SetTitle(";Amplitude, ADC;Events;");
+   hist->SetTitle("; Amplitude, ADC; Events;");
    hist->SetOption("hist");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
    shName = "hAdcIntgrl";
    hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
-   hist->SetTitle(";Integral, ADC;Events;");
+   hist->SetTitle("; Integral, ADC; Events;");
    hist->SetOption("hist");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
-   shName = "hTdc"; // former tdc_raw
+   shName = "hTdc";
    hist = new TH1I(shName.c_str(), shName.c_str(), 80, 10, 90);
    hist->SetOption("hist");
-   hist->SetTitle(";TDC;Events;");
+   hist->SetTitle("; TDC; Events;");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
@@ -87,8 +87,8 @@ void CnipolRawHists::BookHists()
 
    shName = "hStripCounts"; // former strip_dist_raw
    hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   hist->SetOption("hist XY GRIDX");
    hist->SetTitle("; Channel Id; Events;");
+   hist->SetOption("hist XY GRIDX");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 

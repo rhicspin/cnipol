@@ -31,11 +31,10 @@ public:
    CnipolAlphaHists(TDirectory *dir);
    virtual ~CnipolAlphaHists();
 
-   void BookHists(std::string cutid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
+   void BookHists();
+   void Fill(ChannelEvent *ch);
    void FillPreProcess(ChannelEvent *ch);
    void PostFill();
-   //void SaveAllAs(TCanvas &c, std::string pattern="*", std::string path="./");
 
    ClassDef(CnipolAlphaHists, 1)
 };

@@ -277,44 +277,48 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
             l = strstr( ((TH1*) io->second)->GetOption(), "FFF");
             if (l) (io->second)->Draw("func same");
 
-         }
 
-         //c.Modified();
-         c.Update();
+            //c.Modified();
+            c.Update();
 
-         TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
+            TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
 
-         if (stats) {
+            if (stats) {
 
-            stats->SetOptStat(0);
-            stats->SetOptFit(1111);
+               stats->SetOptStat(0);
+               stats->SetOptFit(1111);
 
-            stats->SetX1NDC(0.84);
-            stats->SetX2NDC(0.99);
-            stats->SetY1NDC(0.10);
-            stats->SetY2NDC(0.50);
-         } else {
-            //printf("could not find stats\n");
+               stats->SetX1NDC(0.84);
+               stats->SetX2NDC(0.99);
+               stats->SetY1NDC(0.10);
+               stats->SetY2NDC(0.50);
+            } else {
+               printf("could not find stats in %s\n", io->first.c_str());
 
-            TList* list = ((TH1*) io->second)->GetListOfFunctions();
-            TIter  next(list);
+               TList* list = ((TH1*) io->second)->GetListOfFunctions();
+               if (list) {
+               TIter  next(list);
 
-            while ( TObject *graph = (TObject*) next() ) {
-               if ( ! ( (TClass*) graph->IsA() )->InheritsFrom("TGraph") ) continue;
-               if ( ((TGraph*) graph)->GetN() <= 0) continue;
+               while ( TObject *graph = (TObject*) next() ) {
+                  if ( !graph ) continue;
+                  if ( ! (( (TClass*) graph->IsA() )->InheritsFrom("TGraph")) ) continue;
+                  if ( ((TGraph*) graph)->GetN() <= 0) continue;
 
-               TPaveStats *stats = (TPaveStats*) ((TGraph*) graph)->FindObject("stats");
+                  TPaveStats *stats = (TPaveStats*) ((TGraph*) graph)->FindObject("stats");
 
-               if (stats) {
-                  stats->SetOptStat(0);
-                  stats->SetOptFit(1111);
+                  if (stats) {
+                     stats->SetOptStat(0);
+                     stats->SetOptFit(1111);
 
-                  stats->SetX1NDC(0.84);
-                  stats->SetX2NDC(0.99);
-                  stats->SetY1NDC(0.10);
-                  stats->SetY2NDC(0.50);
+                     stats->SetX1NDC(0.84);
+                     stats->SetX2NDC(0.99);
+                     stats->SetY1NDC(0.10);
+                     stats->SetY2NDC(0.50);
+                  }
+               }
                }
             }
+
          }
 
          //delete stats;
@@ -567,36 +571,23 @@ void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc)
 
 
 /** */
-void DrawObjContainer::PreFill(string sid)
+void DrawObjContainer::PreFill()
 { //{{{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second->PreFill(sid);
+      isubd->second->PreFill();
    }
 } //}}}
 
 
 /** */
-void DrawObjContainer::Fill(ChannelEvent *ch, string sid)
+void DrawObjContainer::Fill(ChannelEvent *ch)
 { //{{{
-   //ObjMapIter io;
-
-   //for (io=o.begin(); io!=o.end(); ++io) {
-
-   //   //TObject* tmpObj = io->second ? io->second : 0;
-
-   //   // overwrite options
-   //   if (io->second && ((TClass*) io->second->IsA())->InheritsFrom("TH1") ) {
-   //      //sprintf(cName, "c_%s", io->first.c_str());
-   //      ((TH1*) io->second)->Fill(ch, sid);
-   //   }
-   //}
-
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-      isubd->second->Fill(ch, sid);
+      isubd->second->Fill(ch);
    }
 } //}}}
 

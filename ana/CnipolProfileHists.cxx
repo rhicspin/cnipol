@@ -44,11 +44,9 @@ CnipolProfileHists::~CnipolProfileHists()
 
 
 /** */
-void CnipolProfileHists::BookHists(string sid)
+void CnipolProfileHists::BookHists()
 { //{{{
    fDir->cd();
-
-   if (!sid.empty()) sid = "_" + sid;
 
    char        hName[256];
    string      shName;
@@ -260,7 +258,7 @@ void CnipolProfileHists::BookHists(string sid)
 
 
 /** */
-void CnipolProfileHists::PreFill(string sid)
+void CnipolProfileHists::PreFill()
 { //{{{
    ((TH1*) o["hIntensProfile"])->SetBins(gNDelimeters, 0, gNDelimeters);
    ((TH1*) o["hIntensProfileFineBin"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
@@ -276,16 +274,16 @@ void CnipolProfileHists::PreFill(string sid)
 
 
 /** */
-void CnipolProfileHists::Fill(ChannelEvent *ch, string sid)
+void CnipolProfileHists::Fill(ChannelEvent *ch)
 { //{{{
-   Double_t ttime = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
+   Double_t time = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
-   //printf("ttime: %d, %d\n", ttime, ch->GetRevolutionId());
-   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
-   //((TH2F*) sd->o["hSpinVsDelim"+sid+"_ch"+sSi])->Fill(ttime, gSpinPattern[bId]);
+   //printf("time: %d, %d\n", time, ch->GetRevolutionId());
+   //((TH2F*) sd->o["hSpinVsDelim_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
+   //((TH2F*) sd->o["hSpinVsDelim_ch"+sSi])->Fill(time, gSpinPattern[bId]);
 
-   ((TH1*) o["hIntensProfile"])->Fill(ttime);
-   ((TH1*) o["hIntensProfileFineBin"])->Fill(ttime);
+   ((TH1*) o["hIntensProfile"])->Fill(time);
+   ((TH1*) o["hIntensProfileFineBin"])->Fill(time);
 } //}}}
 
 
