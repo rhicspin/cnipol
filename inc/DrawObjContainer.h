@@ -76,8 +76,8 @@ public:
    virtual void FillDerivedPassOne();                    // should be used
    virtual void PostFillPassOne(DrawObjContainer *oc=0); // should be used
 
-   virtual void PreFill(std::string sid="");
-   virtual void Fill(ChannelEvent *ch, std::string cutid="");
+   virtual void PreFill();
+   virtual void Fill(ChannelEvent *ch);
    virtual void FillDerived();
    virtual void FillDerived(DrawObjContainer &oc) {}          // special processing for dependant histograms
    virtual void PostFill();

@@ -49,24 +49,18 @@ void CnipolPreprocHists::BookHists()
    TH1*   hist;
 
    // Data from all enabled silicon channels
-   shName = "hTimeVsEnergyA_noise";
-   hist = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
-   hist->SetTitle(";Deposited Energy, keV;Time, ns;");
-   hist->SetOption("colz LOGZ NOIMG");
-   o[shName] = hist;
-
    shName = "hTimeVsEnergyA";
    hist = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
    hist->SetTitle("; Deposited Energy, keV; Time, ns;");
    hist->SetOption("colz LOGZ NOIMG");
    o[shName] = hist;
 
-   shName = "hFitMeanTimeVsEnergyA";
-   hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
-   hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
-   hist->SetOption("E1 NOIMG");
-   hist->GetYaxis()->SetRangeUser(10, 110);
-   o[shName] = hist;
+   //shName = "hFitMeanTimeVsEnergyA";
+   //hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
+   //hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
+   //hist->SetOption("E1 NOIMG");
+   //hist->GetYaxis()->SetRangeUser(10, 110);
+   //o[shName] = hist;
 
    shName = "hsTimeVsEnergyACumul";
    o[shName] = new THStack(shName.c_str(), shName.c_str());
@@ -95,12 +89,12 @@ void CnipolPreprocHists::BookHists()
       o[shName] = hist;
       fhTimeVsEnergyA_raw_ch[chId-1] = hist;
 
-      shName = "hFitMeanTimeVsEnergyA_ch" + sChId;
-      hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
-      hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
-      hist->SetOption("E1 NOIMG");
-      hist->GetYaxis()->SetRangeUser(10, 110);
-      o[shName] = hist;
+      //shName = "hFitMeanTimeVsEnergyA_ch" + sChId;
+      //hist = new TH1F(shName.c_str(), shName.c_str(), 80, 100, 1700);
+      //hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
+      //hist->SetOption("E1 NOIMG");
+      //hist->GetYaxis()->SetRangeUser(10, 110);
+      //o[shName] = hist;
 
       shName = "hFitMeanTimeVsEnergyA_raw_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
@@ -137,7 +131,7 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 void CnipolPreprocHists::FillDerivedPassOne()
 { //{{{
    // Fill derivative histograms first
-   TH1* hTimeVsEnergyA_noise = (TH1*) o["hTimeVsEnergyA_noise"];
+   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
    
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -149,7 +143,7 @@ void CnipolPreprocHists::FillDerivedPassOne()
       sprintf(&sChId[0], "%02d", chId);
 
       TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
-      hTimeVsEnergyA_noise->Add(hTimeVsEnergyA_channel);
+      hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
    }
 } //}}}
 
@@ -231,6 +225,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
    string cName    = "c_combo";
 
+/*
    TH1* h1 = (TH1*) o["hTimeVsEnergyA"];
    TH1* h2 = (TH1*) o["hFitMeanTimeVsEnergyA"];
 
@@ -277,6 +272,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
    } else {
       //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
    }
+   */
 
    // Draw superimposed for all channels
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
@@ -287,24 +283,19 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
       string sSi("  ");
       sprintf(&sSi[0], "%02d", chId);
-      string dName = "channel" + sSi;
       string cName = "c_combo_ch" + sSi + strThumb;
-
-      //DrawObjContainer* oc = d.find(dName)->second;
 
       THStack hstack(cName.c_str(), cName.c_str());
 
       TH1* h1 = (TH1*) fhTimeVsEnergyA_raw_ch[chId-1];
 		hstack.Add(h1);
 
-      //TH1* h2 = (TH1*) o["hFitMeanTimeVsEnergyA_ch"+sSi];
       TH1* h2 = (TH1*) fhFitMeanTimeVsEnergyA_raw_ch[chId-1];
 		hstack.Add(h2);
 
-      string subPath = path;// + "/" + dName;
+      string subPath = path;
 
-		SaveHStackAs(c, hstack, subPath);
-		//DrawObjContainer::SaveHStackAs(c, hstack, subPath);
+		//SaveHStackAs(c, hstack, subPath);
    }
 } //}}}
 

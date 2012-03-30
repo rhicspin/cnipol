@@ -31,29 +31,28 @@ CnipolAlphaHists::~CnipolAlphaHists()
 }
 
 
-void CnipolAlphaHists::BookHists(std::string cutid)
-{
-   //{{{
+void CnipolAlphaHists::BookHists()
+{ //{{{
    char hName[256];
 
    o["hAmpltd"]      = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
    ((TH2F*) o["hAmpltd"])->GetXaxis()->SetTitle("Amplitude, ADC");
    ((TH2F*) o["hAmpltd"])->GetYaxis()->SetTitle("Events");
    // Amplitude with a cut applied on TDC and then loose cut on amplitude itself
-   //o["hAmpltd_cut1"] = new TH1F("hAmpltd_cut1", "hAmpltd_cut1", 35, 165, 200);
+   //o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 35, 165, 200);
 
    // The axis range will be/can be adjusted later based on the peak position
-   o["hAmpltd_cut1"] = new TH1F("hAmpltd_cut1", "hAmpltd_cut1", 255, 0, 255);
-   ((TH2F*) o["hAmpltd_cut1"])->GetXaxis()->SetTitle("Amplitude, ADC");
-   ((TH2F*) o["hAmpltd_cut1"])->GetYaxis()->SetTitle("Events");
+   o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
+   ((TH2F*) o["hAmpltd"])->GetXaxis()->SetTitle("Amplitude, ADC");
+   ((TH2F*) o["hAmpltd"])->GetYaxis()->SetTitle("Events");
 
    o["hIntgrl"]      = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
    ((TH2F*) o["hIntgrl"])->GetXaxis()->SetTitle("Integral, ADC");
    ((TH2F*) o["hIntgrl"])->GetYaxis()->SetTitle("Events");
 
-   o["hIntgrl_cut1"] = new TH1F("hIntgrl_cut1", "hIntgrl_cut1", 255, 0, 255);
-   ((TH2F*) o["hIntgrl_cut1"])->GetXaxis()->SetTitle("Integral, ADC");
-   ((TH2F*) o["hIntgrl_cut1"])->GetYaxis()->SetTitle("Events");
+   o["hIntgrl"] = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
+   ((TH2F*) o["hIntgrl"])->GetXaxis()->SetTitle("Integral, ADC");
+   ((TH2F*) o["hIntgrl"])->GetYaxis()->SetTitle("Events");
 
    o["hTdc"]         = new TH1F("hTdc",    "hTdc",  80, 0, 80);
    ((TH2F*) o["hTdc"])->GetXaxis()->SetTitle("TDC");
@@ -202,7 +201,7 @@ void CnipolAlphaHists::BookHists(std::string cutid)
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
 
-      sprintf(hName, "hAmpltd_cut1_st%02d", i);
+      sprintf(hName, "hAmpltd_st%02d", i);
       //oc->o[hName] = new TH1F(hName, hName, 35, 165, 200);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
@@ -211,7 +210,7 @@ void CnipolAlphaHists::BookHists(std::string cutid)
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
 
-      sprintf(hName, "hIntgrl_cut1_st%02d", i);
+      sprintf(hName, "hIntgrl_st%02d", i);
       //oc->o[hName] = new TH1F(hName, hName, 40, 115, 155);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
@@ -258,9 +257,8 @@ void CnipolAlphaHists::BookHists(std::string cutid)
 
 
 /** */
-void CnipolAlphaHists::Fill(ChannelEvent *ch, string sid)
-{
-   //{{{
+void CnipolAlphaHists::Fill(ChannelEvent *ch)
+{ //{{{
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
 
@@ -269,37 +267,37 @@ void CnipolAlphaHists::Fill(ChannelEvent *ch, string sid)
 
    DrawObjContainer *sd = d["channel" + sSi];
 
-   if (sid == "cut1") {
+   //if (sid == "cut1") {
       //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
       //if (data.fTdc >=15 && data.fTdc <= 50) {
-      ((TH1F*) o["hAmpltd_cut1"])->Fill(data.fAmpltd);
-      ((TH1F*) sd->o["hAmpltd_cut1_st" + sSi])->Fill(data.fAmpltd);
+      ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
+      ((TH1F*) sd->o["hAmpltd_st" + sSi])->Fill(data.fAmpltd);
       //}
 
       //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
       //if (data.fTdc >=12 && data.fTdc <= 16)
       //if (data.fTdc >=12 && data.fTdc <= 30) {
-      ((TH1F*) o["hIntgrl_cut1"])->Fill(data.fIntgrl);
-      ((TH1F*) sd->o["hIntgrl_cut1_st" + sSi])->Fill(data.fIntgrl);
-      //}
-   }
-   else {
-
-      ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
       ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
-      ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
-      ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
-      ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
-      ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
+      ((TH1F*) sd->o["hIntgrl_st" + sSi])->Fill(data.fIntgrl);
+      //}
+   //}
+   //else {
 
-      ((TH1F*) sd->o["hAmpltd_st" + sSi])   ->Fill(data.fAmpltd);
-      ((TH1F*) sd->o["hIntgrl_st" + sSi])   ->Fill(data.fIntgrl);
-      ((TH1F*) sd->o["hTdc_st" + sSi])      ->Fill(data.fTdc);
-      ((TH2F*) sd->o["hTvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fTdc);
-      ((TH2F*) sd->o["hTvsA_zoom_st" + sSi])->Fill(data.fAmpltd, data.fTdc);
-      ((TH2F*) sd->o["hTvsI_st" + sSi])     ->Fill(data.fIntgrl, data.fTdc);
-      ((TH2F*) sd->o["hIvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
-   }
+   //   ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
+   //   ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
+   //   ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
+   //   ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
+   //   ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
+   //   ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
+
+   //   ((TH1F*) sd->o["hAmpltd_st" + sSi])   ->Fill(data.fAmpltd);
+   //   ((TH1F*) sd->o["hIntgrl_st" + sSi])   ->Fill(data.fIntgrl);
+   //   ((TH1F*) sd->o["hTdc_st" + sSi])      ->Fill(data.fTdc);
+   //   ((TH2F*) sd->o["hTvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fTdc);
+   //   ((TH2F*) sd->o["hTvsA_zoom_st" + sSi])->Fill(data.fAmpltd, data.fTdc);
+   //   ((TH2F*) sd->o["hTvsI_st" + sSi])     ->Fill(data.fIntgrl, data.fTdc);
+   //   ((TH2F*) sd->o["hIvsA_st" + sSi])     ->Fill(data.fAmpltd, data.fIntgrl);
+   //}
 } //}}}
 
 
@@ -311,18 +309,18 @@ void CnipolAlphaHists::FillPreProcess(ChannelEvent *ch) { }
 void CnipolAlphaHists::PostFill()
 { //{{{
    // Adjust axis ranges
-   Int_t  maxBinA = ((TH1F*) o["hAmpltd_cut1"])->GetMaximumBin();
-   Double_t xminA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmin();
-   Double_t xmaxA = ((TH1F*) o["hAmpltd_cut1"])->GetXaxis()->GetXmax();
+   Int_t  maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();
+   Double_t xminA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmin();
+   Double_t xmaxA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmax();
 
    xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
    xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
 
-   ((TH1F*) o["hAmpltd_cut1"])->SetAxisRange(xminA, xmaxA);
+   ((TH1F*) o["hAmpltd"])->SetAxisRange(xminA, xmaxA);
 
-   Int_t  maxBinI = ((TH1F*) o["hIntgrl_cut1"])->GetMaximumBin();
-   Double_t xminI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmin();
-   Double_t xmaxI = ((TH1F*) o["hIntgrl_cut1"])->GetXaxis()->GetXmax();
+   Int_t  maxBinI = ((TH1F*) o["hIntgrl"])->GetMaximumBin();
+   Double_t xminI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
+   Double_t xmaxI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
    Int_t tmaxBinI = 0;
 
    //Int_t maxBin = 0;
@@ -330,7 +328,7 @@ void CnipolAlphaHists::PostFill()
    xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
    xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
 
-   ((TH1F*) o["hIntgrl_cut1"])->SetAxisRange(xminI, xmaxI);
+   ((TH1F*) o["hIntgrl"])->SetAxisRange(xminI, xmaxI);
 
    printf("xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f\n", xminA, xmaxA, xminI, xmaxI);
 
@@ -350,8 +348,8 @@ void CnipolAlphaHists::PostFill()
          }
       }
 
-      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmin();
-      //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_cut1_st"+sSi])->GetXaxis()->GetXmax();
+      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_st"+sSi])->GetXaxis()->GetXmin();
+      //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_st"+sSi])->GetXaxis()->GetXmax();
       //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
       //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
       xminA = maxBinA - 50;
@@ -359,80 +357,8 @@ void CnipolAlphaHists::PostFill()
       xminI = maxBinI - 50;
       xmaxI = maxBinI + 50;
 
-      ((TH1F*) d["channel" + sSi]->o["hAmpltd_cut1_st" + sSi])->SetAxisRange(xminA, xmaxA);
+      ((TH1F*) d["channel" + sSi]->o["hAmpltd_st" + sSi])->SetAxisRange(xminA, xmaxA);
 
-      ((TH1F*) d["channel" + sSi]->o["hIntgrl_cut1_st" + sSi])->SetAxisRange(xminI, xmaxI);
+      ((TH1F*) d["channel" + sSi]->o["hIntgrl_st" + sSi])->SetAxisRange(xminI, xmaxI);
    }
 } //}}}
-
-
-/** */
-//void CnipolAlphaHists::SaveAllAs(TCanvas &c, std::string pattern, string path)
-//{ //{{{
-//   DrawObjContainer::SaveAllAs(c, pattern, path);
-//
-//   return;
-//
-//   if (gSystem->mkdir(path.c_str()) < 0)
-//      printf("WARNING: Perhaps dir already exists: %s\n", path.c_str());
-//   else
-//      printf("created dir: %s\n", path.c_str());
-//
-//   ObjMapIter io;
-//
-//   char cName[256];
-//   char fName[256];
-//   string option("");
-//
-//   for (io=o.begin(); io!=o.end(); ++io) {
-//
-//      if (!io->second) {
-//         printf("Object not found\n");
-//         continue;
-//      }
-//
-//      string sname(io->second->GetName());
-//      //if (sname != "hAmpltdW" && sname != "hIntgrlW") continue;
-//      //if (sname.find("hTvsA_st") == string::npos) continue;
-//      //if (sname.find("hIntgrl_cut1_st") == string::npos &&
-//      //    sname.find("hIntgrlW") == string::npos ) continue;
-//
-//      sprintf(cName, "c_%s", io->first.c_str());
-//      c.cd();
-//      c.SetName(cName);
-//      c.SetTitle(cName);
-//
-//      if (((TClass*) io->second->IsA())->InheritsFrom("TH2")) {
-//         c.SetLogz(kTRUE);
-//         option = "colz";
-//         //if (sname.find("hTvsA_st") != string::npos) c.SetLogz(kFALSE);
-//      } else {
-//         c.SetLogz(kFALSE);
-//         option = "";
-//      }
-//
-//      io->second->Draw(option.c_str());
-//      //io->second->Print();
-//
-//      sprintf(fName, "%s/%s.png", path.c_str(), cName);
-//      c.SaveAs(fName);
-//   }
-//
-//   DrawObjContainerMapIter isubd;
-//
-//   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
-//      string parentPath = path;
-//      path += "/" + isubd->first;
-//      //printf("cd to path: %s\n", path.c_str());
-//      isubd->second->SaveAllAs(c, pattern, path);
-//      path = parentPath;
-//   }
-//
-//   // Special cases
-//   //sprintf(cName, "c_%s", io->first.c_str());
-//   //c.cd(); c.SetName(cName); c.SetTitle(cName);
-//
-//   //io->second->Draw(option.c_str());
-//   //sprintf(fName, "%s/%s.png", path.c_str(), cName);
-//   //c.SaveAs(fName);
-//} //}}}
