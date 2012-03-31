@@ -28,27 +28,26 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
    TH2F*  htemp = 0;
    TH1D*  hMeanTime = 0;
    string sSt("  ");
-   string cutid = "_cut2";
 
    for (UShort_t i=1; i<=NSTRIP; i++) {
       //if (i != 28) continue;
 
       sprintf(&sSt[0], "%02d", i);
 
-      htemp     = (TH2F*) c->d["channel"+sSt]->o["hTimeVsEnergyA"+cutid+"_st"+sSt];
-      hMeanTime = (TH1D*) c->d["channel"+sSt]->o["hFitMeanTimeVsEnergyA"+cutid+"_st"+sSt];
+      htemp     = (TH2F*) c->d["channel"+sSt]->o["hTimeVsEnergyA_st"+sSt];
+      hMeanTime = (TH1D*) c->d["channel"+sSt]->o["hFitMeanTimeVsEnergyA_st"+sSt];
 
       if (!htemp || !hMeanTime) {
-         Error("Calibrate", "Histogram channel%02d/hTimeVsEnergyA%s_st%02d does not exist",
-               i, cutid.c_str(), i);
-         Error("Calibrate", "Histogram channel%02d/hFitMeanTimeVsEnergyA%s_st%02d does not exist",
-               i, cutid.c_str(), i);
+         Error("Calibrate", "Histogram channel%02d/hTimeVsEnergyA_st%02d does not exist",
+               i, i);
+         Error("Calibrate", "Histogram channel%02d/hFitMeanTimeVsEnergyA_st%02d does not exist",
+               i, i);
          continue;
       }
 
       if (htemp->Integral() < 1000) {
-         Error("Calibrate", "Too few entries in histogram channel%02d/hTimeVsEnergyA%s_st%02d. Skipped",
-               i, cutid.c_str(), i);
+         Error("Calibrate", "Too few entries in histogram channel%02d/hTimeVsEnergyA_st%02d. Skipped",
+               i, i);
          continue;
       }
 

@@ -204,7 +204,7 @@ void DrawObjContainer::Print(const Option_t* opt) const
 
 
 /** */
-void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t thumbs)
+void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string path, Bool_t thumbs)
 { //{{{
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
@@ -215,135 +215,162 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
 
    ObjMapIter io;
 
-   char cName[256];
-   char fName[256];
+   for (io=o.begin(); io!=o.end(); ++io)
+   {
+      // For shorthand
+      string   sObjName = io->first;
+      TObject *obj      = io->second;
 
-   for (io=o.begin(); io!=o.end(); ++io) {
-
-      if (!io->second) {
-         printf("Object not found\n");
+      if (!obj) {
+         Error("SaveAllAs", "No object found for key %s. Skipping...", io->first.c_str());
          continue;
       }
 
+      string sCanvasName = "c_" + sObjName;
 
-      if (thumbs)
-         sprintf(cName, "c_%s_thumb", io->first.c_str());
-      else 
-         sprintf(cName, "c_%s", io->first.c_str());
+      if (thumbs) sCanvasName += "_thumb";
 
-      c.cd();
-      c.SetName(cName);
-      c.SetTitle(cName);
+      canvas.cd();
+      canvas.SetName(sCanvasName.c_str());
+      canvas.SetTitle(sCanvasName.c_str());
 
+      if ( ((TClass*) obj->IsA())->InheritsFrom("THStack") )
+      {
+         obj->Draw("nostack");
+      }
+      else if ( ((TClass*) obj->IsA())->InheritsFrom("TH1") )
+      {
+         TH1* hobj = (TH1*) obj;
 
-      if (io->second) {
+         char *l = strstr( hobj->GetOption(), "NOIMG");
+         if (l) continue;
 
-         if ( ((TClass*) io->second->IsA())->InheritsFrom("THStack") )
-         {
-            (io->second)->Draw("nostack");
+         l = strstr( hobj->GetOption(), "LOGZ");
+         //printf("XXX1: set logz %s\n", hobj->GetOption());
+         if (l) {
+            memset(l, ' ', 4);
+            canvas.SetLogz(kTRUE);
+         } else canvas.SetLogz(kFALSE);
+
+         l = strstr( hobj->GetOption(), "XX");
+         if (l) {
+            memset(l, ' ', 2);
+            canvas.SetLogx(kTRUE);
+         } else canvas.SetLogx(kFALSE);
+
+         l = strstr( hobj->GetOption(), "XY");
+         if (l) {
+            memset(l, ' ', 2);
+            canvas.SetLogy(kTRUE);
+         } else canvas.SetLogy(kFALSE);
+
+         l = strstr( hobj->GetOption(), "GRIDX");
+         if (l) {
+            memset(l, ' ', 5);
+            canvas.SetGridx(kTRUE);
+         } else canvas.SetGridx(kFALSE);
+
+         l = strstr( hobj->GetOption(), "GRIDY");
+         if (l) {
+            memset(l, ' ', 5);
+            canvas.SetGridy(kTRUE);
+         } else canvas.SetGridy(kFALSE);
+
+         l = strstr( hobj->GetOption(), "DUMMY");
+         if (l) {
+            memset(l, ' ', 5);
+            hobj->SetStats(kFALSE);
          }
-         else if ( ((TClass*) io->second->IsA())->InheritsFrom("TH1") )
+
+         obj->Draw( hobj->GetOption() );
+
+         canvas.Update();
+
+         // Position stat box of the main histogram object
+         TPaveStats *stats = (TPaveStats*) (hobj)->FindObject("stats");
+
+         // There is no way to set these parameters in gStyle so, do it here
+         if (stats) {
+            //stats->SetShadowColor(0);
+            stats->SetLineWidth(1);
+
+            stats->SetX1NDC(0.80);
+            stats->SetX2NDC(0.99);
+            stats->SetY1NDC(0.60);
+            stats->SetY2NDC(0.90);
+         }
+
+         //printf("could not find stats in %s\n", io->first.c_str());
+
+         // Now check if there are other associated objects like functions and graphs
+         TList* list = hobj->GetListOfFunctions();
+
+         //cout << "XXX print" << endl;
+         //if (list) list->Print();
+
+         TIter  next(list);
+         UShort_t iStat = 0;
+
+         while ( TObject *iObj = (TObject*) next() )
          {
-            char *l = strstr(((TH1*)io->second)->GetOption(), "NOIMG");
-            if (l) continue;
+            if ( !iObj ) continue;
 
-            l = strstr( ((TH1*) io->second)->GetOption(), "LOGZ");
-            //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
-            if (l) c.SetLogz(kTRUE);
-            else c.SetLogz(kFALSE);
+            // Consider only TGraph objects
+            if ( ! (( (TClass*) iObj->IsA() )->InheritsFrom("TGraph")) ) continue;
 
-            l = strstr( ((TH1*) io->second)->GetOption(), "XX");
-            if (l) c.SetLogx(kTRUE);
-            else c.SetLogx(kFALSE);
+            TGraph *grObj = (TGraph*) iObj;
 
-            l = strstr( ((TH1*) io->second)->GetOption(), "XY");
-            if (l) c.SetLogy(kTRUE);
-            else c.SetLogy(kFALSE);
+            if ( ((TGraph*) grObj)->GetN() <= 0) continue;
 
-            l = strstr( ((TH1*) io->second)->GetOption(), "GRIDX");
-            if (l) c.SetGridx(kTRUE);
-            else c.SetGridx(kFALSE);
+            //grObj->Print();
 
-            l = strstr( ((TH1*) io->second)->GetOption(), "GRIDY");
-            if (l) c.SetGridy(kTRUE);
-            else c.SetGridy(kFALSE);
-
-            l = strstr( ((TH1*) io->second)->GetOption(), "NST");
-            if (l) ((TH1*) io->second)->SetStats(kFALSE);
-
-
-            (io->second)->Draw();
-
-            l = strstr( ((TH1*) io->second)->GetOption(), "FFF");
-            if (l) (io->second)->Draw("func same");
-
-
-            //c.Modified();
-            c.Update();
-
-            TPaveStats *stats = (TPaveStats*) (io->second)->FindObject("stats");
+            TPaveStats *stats = (TPaveStats*) ((TGraph*) grObj)->FindObject("stats");
 
             if (stats) {
+               //cout << "stats found:" << endl;
+               //stats->Print();
+               //stats->SetOptStat(0);
+               //stats->SetOptFit(1111);
 
-               stats->SetOptStat(0);
-               stats->SetOptFit(1111);
+               stats->SetLineColor(grObj->GetMarkerColor());
+               //stats->SetShadowColor(0);
+               stats->SetLineWidth(2);
 
-               stats->SetX1NDC(0.84);
+               stats->SetX1NDC(0.80);
                stats->SetX2NDC(0.99);
-               stats->SetY1NDC(0.10);
-               stats->SetY2NDC(0.50);
+               stats->SetY1NDC(0.45 - iStat*0.15);
+               stats->SetY2NDC(0.60 - iStat*0.15);
+
+               iStat++;
             } else {
-               printf("could not find stats in %s\n", io->first.c_str());
-
-               TList* list = ((TH1*) io->second)->GetListOfFunctions();
-               if (list) {
-               TIter  next(list);
-
-               while ( TObject *graph = (TObject*) next() ) {
-                  if ( !graph ) continue;
-                  if ( ! (( (TClass*) graph->IsA() )->InheritsFrom("TGraph")) ) continue;
-                  if ( ((TGraph*) graph)->GetN() <= 0) continue;
-
-                  TPaveStats *stats = (TPaveStats*) ((TGraph*) graph)->FindObject("stats");
-
-                  if (stats) {
-                     stats->SetOptStat(0);
-                     stats->SetOptFit(1111);
-
-                     stats->SetX1NDC(0.84);
-                     stats->SetX2NDC(0.99);
-                     stats->SetY1NDC(0.10);
-                     stats->SetY2NDC(0.50);
-                  }
-               }
-               }
+               //cout << "stats not found" << endl;
             }
-
          }
-
-         //delete stats;
-
-         TText signature(0, 0, fSignature.c_str());
-         signature.SetTextSize(0.04);
-         UInt_t w, h;
-         signature.GetTextExtent(w, h, signature.GetTitle());
-         //cout << "extent: " << (w/(Float_t) c.GetWw() )<< ", " << (h/(Float_t) c.GetWh() ) << endl;
-         signature.DrawTextNDC(0.98-(w/(Float_t) c.GetWw()), 1-(h/(Float_t) c.GetWh()), signature.GetTitle());
-
-         c.RedrawAxis("g");
       }
 
-      //if (io->second) io->second->Print();
+      TText signature(0, 0, fSignature.c_str());
+      signature.SetTextSize(0.035);
+      UInt_t w, h;
+      signature.GetTextExtent(w, h, signature.GetTitle());
+      //cout << "extent: " << (w/(Float_t) canvas.GetWw() )<< ", " << (h/(Float_t) canvas.GetWh() ) << endl;
+      signature.DrawTextNDC(0.99-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
-      //sprintf(fName, "%s/%s.eps", path.c_str(), cName);
-      //c.SaveAs(fName);
-      sprintf(fName, "%s/%s.png", path.c_str(), cName);
+      canvas.RedrawAxis("g");
 
-      if (TPRegexp(pattern).MatchB(fName)) {
-         c.SaveAs(fName);
-         gSystem->Chmod(fName, 0775);
+      //if (obj) obj->Print();
+
+      string sFileName = path + "/" + sCanvasName + ".png";
+
+      if (TPRegexp(pattern).MatchB(sFileName.c_str())) {
+
+         // XXX Print out for debugging
+         //obj->Print("all");
+         //hobj->GetListOfFunctions()->Print("all");
+
+         canvas.SaveAs(sFileName.c_str());
+         gSystem->Chmod(sFileName.c_str(), 0775);
       } else {
-         //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName);
+         //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", sFileName.c_str());
       }
    }
 
@@ -351,7 +378,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
 
-      //XXX Temporary cond for test only
+      //XXX Temporary conditions for test only
       //if (isubd->first.find("channel28") == string::npos) continue;
       //if (isubd->first.find("preproc") == string::npos) continue;
 
@@ -360,69 +387,94 @@ void DrawObjContainer::SaveAllAs(TCanvas &c, std::string pattern, string path, B
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second->SaveAllAs(c, pattern, path, thumbs);
+      isubd->second->SaveAllAs(canvas, pattern, path, thumbs);
       path = parentPath;
    }
 } //}}}
 
 
 /** */
-void DrawObjContainer::SaveHStackAs(TCanvas &c, THStack &hstack, std::string path)
+void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::string path)
 { //{{{
-
    // Require at least two elements in the hstack
    if (hstack.GetHists()->GetSize() < 2) {
       Error("SaveHStackAs", "At least 2 histograms required in the HStack. Skipping saving request for %s", hstack.GetName());
       return;
    }
 
-   c.cd();
+   canvas.cd();
 
-   TH1 *h1 = (TH1*) hstack.GetHists()->At(0);
-   TH1 *h2 = (TH1*) hstack.GetHists()->At(1);
 
-   char *l = strstr(h1->GetOption(), "LOGZ");
+   TList    *hists  = hstack.GetHists();
+   TIter     next(hists);
+   UShort_t  iNHist = 0;
+   UShort_t  iStat  = 0;
 
-   //printf("XXX1: set logz %s\n", ((TH1*)io->second)->GetOption());
+   while ( TH1* iHist = (TH1*) next() )
+   {
+      if ( !iHist ) continue;
 
-   if (l) { c.SetLogz(kTRUE);
-      //printf("XXX2: set logz \n");
-   } else { c.SetLogz(kFALSE); }
+      if (iNHist == 0)
+      {
+         char *l = strstr(iHist->GetOption(), "LOGZ");
 
-   h1->Draw();
-   h2->Draw("sames");
-   //hstack.Draw("nostack");
+         if (l) {
+            memset(l, ' ', 4);
+            canvas.SetLogz(kTRUE);
+         } else { canvas.SetLogz(kFALSE); }
 
-   c.Modified();
-   c.Update();
+         iHist->Draw();
+      } else {
+         iHist->Draw("sames");
+      }
 
-   TPaveStats *stats = (TPaveStats*) h2->FindObject("stats");
+      canvas.Update();
 
-   if (stats) {
-      stats->SetX1NDC(0.84);
-      stats->SetX2NDC(0.99);
-      stats->SetY1NDC(0.10);
-      stats->SetY2NDC(0.50);
-   } else {
-      Error("SaveHStackAs", "Could not find stats in %s", h2->GetName());
-      //return;
+      // Position stat boxes
+      TPaveStats *stats = (TPaveStats*) iHist->FindObject("stats");
+
+      if (stats) {
+         cout << "stats found:" << endl;
+         //stats->Print();
+         //stats->SetOptStat(0);
+         //stats->SetOptFit(1111);
+
+         //stats->SetLineColor(grObj->GetMarkerColor());
+         //stats->SetShadowColor(0);
+         stats->SetLineWidth(1);
+
+         stats->SetX1NDC(0.80);
+         stats->SetX2NDC(0.99);
+         stats->SetY1NDC(0.60 - iStat*0.30);
+         stats->SetY2NDC(0.90 - iStat*0.30);
+
+         iStat++;
+      } else {
+         cout << "stats not found" << endl;
+      }
+
+      iNHist++;
    }
 
-   string fName = path + "/" + hstack.GetName() + ".png";
-   //printf("Saving %s\n", fName.c_str());
+   //hstack.Draw("nostack");
 
-   c.SetName(hstack.GetName());
-   c.SetTitle(hstack.GetName());
+   canvas.SetName(hstack.GetName());
+   canvas.SetTitle(hstack.GetName());
 
-   TText signature;
-   signature.SetTextSize(0.03);
-   signature.DrawTextNDC(0, 0.01, fSignature.c_str());
+   TText signature(0, 0, fSignature.c_str());
+   signature.SetTextSize(0.04);
+   UInt_t w, h;
+   signature.GetTextExtent(w, h, signature.GetTitle());
+   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
-   //if (TPRegexp(pattern).MatchB(fName.c_str())) {
-      c.SaveAs(fName.c_str());
-      gSystem->Chmod(fName.c_str(), 0775);
+   string sFileName = path + "/" + canvas.GetName() + ".png";
+
+   //if (TPRegexp(pattern).MatchB(sFileName.c_str()))
+   //{
+      canvas.SaveAs(sFileName.c_str());
+      gSystem->Chmod(sFileName.c_str(), 0775);
    //} else {
-      //Warning("SaveAllAs", "Histogram %s name does not match pattern. Skipped", fName.c_str());
+   //   //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", sFileName.c_str());
    //}
 } //}}}
 

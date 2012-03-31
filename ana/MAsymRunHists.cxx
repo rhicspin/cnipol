@@ -244,7 +244,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hTargetVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 7);
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->SetTitle("; Measurement; Target Id;");
    hist->GetListOfFunctions()->Add(grHTargetVsMeas, "p");
    hist->GetListOfFunctions()->Add(grVTargetVsMeas, "p");
@@ -258,7 +258,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hSpinAngleVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -20, 20);
    hist->SetTitle("; Measurement; Spin Angle (Radial Comp.), degrees; ");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grSpinAngleVsMeas, "p");
    oc.o[shName] = hist;
    // Add this pointer to the stack
@@ -272,7 +272,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 100);
    hist->SetTitle("; Measurement; Polarization, %;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
    oc.o[shName] = hist;
    // Add this pointer to the stack
@@ -414,7 +414,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarVsTime_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 100);
    hist->SetTitle("; Date & Time; Polarization, %;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grPolarVsTime, "p");
    hist->GetXaxis()->SetNdivisions(10, kFALSE);
    hist->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -445,7 +445,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hRVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -0.3, 1);
    hist->SetTitle(";Measurement;r;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grRVsMeasH, "p");
    hist->GetListOfFunctions()->Add(grRVsMeasV, "p");
    oc.o[shName] = hist;
@@ -494,7 +494,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hT0VsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, t0Lo, t0Hi);
    hist->SetTitle(";Measurement;t_{0}, ns;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grT0VsMeas, "p");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
@@ -524,7 +524,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hT0VsTime_" + sPolId + "_" + sBeamE;
    hist = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, 100, 0, 100);
    hist->SetTitle("; Date & Time; t_{0}, ns;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grT0VsTime, "p");
    hist->GetXaxis()->SetNdivisions(10, kFALSE);
    hist->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -541,7 +541,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hDLVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, dlHi-dlLo, dlLo, dlHi);
    hist->SetTitle("; Measurement; Dead Layer, #mug/cm^{2};");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grDLVsMeas, "p");
    oc.o[shName] = hist;
 
@@ -568,7 +568,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hDLVsTime_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 100, 0, 100);
    hist->SetTitle("; Date & Time; Dead Layer, #mug/cm^{2};");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grDLVsTime, "p");
    hist->GetXaxis()->SetNdivisions(10, kFALSE);
    hist->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -677,7 +677,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hT0VsDLMean_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), dlHi-dlLo, dlLo, dlHi, t0Hi-t0Lo, t0Lo, t0Hi);
    hist->SetTitle("; Dead Layer, #mug/cm^{2}; Mean t_{0}, ns;");
-   hist->SetOption("NST");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grT0VsDLMean, "p");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
@@ -687,7 +687,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hDisabledChVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Fill; Channel; ");
-   hist->SetOption("col NST");
+   hist->SetOption("col DUMMY");
    oc.o[shName] = hist;
 
 

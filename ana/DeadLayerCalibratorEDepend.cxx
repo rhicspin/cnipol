@@ -35,12 +35,11 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    TH1*  htemp     = 0;
    TH1F*  hMeanTime = 0;
    string strChId("  ");
-   string cutid     = "_cut2";
 
    // iCh=0 is the sum of all channels
    // Special treatment for combined histogram
-   //htemp     = (TH2F*) c->d["std"]->o["hTimeVsEnergyA"+cutid];
-   //hMeanTime = (TH1D*) c->d["std"]->o["hFitMeanTimeVsEnergyA"+cutid];
+   //htemp     = (TH2F*) c->d["std"]->o["hTimeVsEnergyA"];
+   //hMeanTime = (TH1D*) c->d["std"]->o["hFitMeanTimeVsEnergyA"];
 
    //Calibrate(htemp, hMeanTime);
 
@@ -56,8 +55,8 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       sprintf(&strChId[0], "%02d", *iCh);
 
-      htemp     = (TH1*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA"+cutid+"_ch"+strChId];
-      hMeanTime = (TH1F*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA"+cutid+"_ch"+strChId];
+      htemp     = (TH1*) c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA_ch"+strChId];
+      hMeanTime = (TH1F*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
 
       Calibrate(htemp, hMeanTime, *iCh);
    }

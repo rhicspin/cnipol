@@ -31,8 +31,8 @@ public:
    CnipolKinematHists(TDirectory *dir);
    ~CnipolKinematHists();
 
-   void BookHists(std::string cutid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
+   void BookHists();
+   void Fill(ChannelEvent *ch);
    void FillDerived();
    void PostFill();
 

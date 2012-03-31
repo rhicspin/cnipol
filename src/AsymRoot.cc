@@ -105,10 +105,12 @@ AsymRoot::AsymRoot() : fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
    gStyle->SetOptFit(1111);
    gStyle->SetOptStat("emroui");
    gStyle->SetStatX(0.99);
-   gStyle->SetStatY(0.99);
-   gStyle->SetStatW(0.15);
+   gStyle->SetStatY(0.90);
+   gStyle->SetStatW(0.18);
    gStyle->SetStatH(0.15);
    gStyle->SetPadRightMargin(0.30);
+
+   gStyle->SetStatBorderSize(1); // removes shadow
 
    fChannelEvent->fEventConfig = fEventConfig;
 }

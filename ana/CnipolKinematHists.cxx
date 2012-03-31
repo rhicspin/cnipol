@@ -33,26 +33,30 @@ CnipolKinematHists::~CnipolKinematHists()
 
 
 /** */
-void CnipolKinematHists::BookHists(string cutid)
+void CnipolKinematHists::BookHists()
 { //{{{
    string shName;
 
    fDir->cd();
 
    shName = "hPseudoMass";
-   o[shName] = new TH1D(shName.c_str(), shName.c_str(), 50, 0, 20);
+   o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
+   ((TH1*) o[shName])->SetTitle("; Mass; Events;");
    ((TH1*) o[shName])->SetOption("E1");
 
    shName = "hMassFitChi2ByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   ((TH1*) o[shName])->SetTitle("; Channel Id; #chi^{2};");
    ((TH1*) o[shName])->SetOption("hist GRIDX");
 
    shName = "hMassFitMeanByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   ((TH1*) o[shName])->SetTitle("; Channel Id; Mean Mass;");
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
 
    shName = "hMassFitSigmaByChannel";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   ((TH1*) o[shName])->SetTitle("; Channel Id; Mass Width;");
    ((TH1*) o[shName])->SetOption("E1 GRIDX");
 
    DrawObjContainer        *oc;
@@ -77,7 +81,8 @@ void CnipolKinematHists::BookHists(string cutid)
       }
 
       shName = "hPseudoMass_ch" + sChId;
-      oc->o[shName] = new TH1D(shName.c_str(), shName.c_str(), 50, 0, 20);
+      oc->o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
+      ((TH1*) oc->o[shName])->SetTitle("; Mass; Events;");
       ((TH1*) oc->o[shName])->SetOption("E1");
 
       // If this is a new directory then we need to add it to the list
@@ -102,7 +107,7 @@ void CnipolKinematHists::BookHists(string cutid)
 
 
 /** */
-void CnipolKinematHists::Fill(ChannelEvent *ch, string cutid)
+void CnipolKinematHists::Fill(ChannelEvent *ch)
 { //{{{
    UChar_t chId  = ch->GetChannelId();
 

@@ -1694,7 +1694,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    CalcChannelAsym(*hUp, *hDown, hChAsym);
 
    // Set graph values from the histogram
-   TH2* hAsymVsPhi = (TH2*) oc->o["hAsymVsPhi"];
+   TH1*          hAsymVsPhi  = (TH1*) oc->o["hAsymVsPhi"];
    TGraphErrors* grAsymVsPhi = (TGraphErrors*) hAsymVsPhi->GetListOfFunctions()->FindObject("grAsymVsPhi");
 
    // Create and then fit to sine graph grAsymVsPhi given histogram hChAsym
@@ -1704,7 +1704,46 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    if (fitres.Get()) {
       gAnaMeasResult->fFitResAsymPhi = fitres;
    } else {
-      gSystem->Error("   ::SinPhiFit", "Fit error...");
+      Error("CalcStripAsymmetry", "Fit error...");
+   }
+
+   // Create polarization graph directly from the asymmetry one
+   TH1*          hPolarVsPhi  = (TH1*) oc->o["hPolarVsPhi"];
+   TGraphErrors* grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
+
+   TGraphErrors* newGraph = (TGraphErrors*) grAsymVsPhi->Clone();
+   newGraph->GetListOfFunctions()->Delete();
+
+   grPolarVsPhi->TAttMarker::Copy(*newGraph);
+   grPolarVsPhi->TAttFill::Copy(*newGraph);
+   grPolarVsPhi->TAttLine::Copy(*newGraph);
+   grPolarVsPhi->TNamed::Copy(*newGraph);
+
+   hPolarVsPhi->GetListOfFunctions()->Remove(grPolarVsPhi);
+   hPolarVsPhi->GetListOfFunctions()->Add(newGraph, "p");
+
+   grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
+
+   TF2 *asymToPolar = new TF2("asymToPolar", "100*y/[0]");
+   asymToPolar->SetParameter(0, gAnaMeasResult->A_N[1]);
+   grPolarVsPhi->Apply(asymToPolar);
+
+
+   TF1 *fitFunc = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
+
+   fitFunc->SetParNames("Polarization", "#phi");
+   fitFunc->SetParameter(0, 0);
+   fitFunc->SetParameter(1, 0);
+   fitFunc->SetParLimits(0, -200, 200);
+   fitFunc->SetParLimits(1, -M_PI, M_PI);
+
+   fitres = grPolarVsPhi->Fit(fitFunc, "S R");
+
+   if (fitres.Get()) {
+      gAnaMeasResult->fFitResPolarPhi = fitres;
+      // XXX add here an assignment of values to gAnaMeasResult->fPolar
+   } else {
+      Error("CalcStripAsymmetry", "Fit error...");
    }
 
 } //}}}
@@ -1878,8 +1917,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    UInt_t totalUpCounts[N_SILICON_CHANNELS];
    UInt_t totalDownCounts[N_SILICON_CHANNELS];
 
-   TH2* hPolarVsPhi = (TH2*) gAsymRoot->fHists->d["asym"]->o["hPolarVsPhi"];
-   TGraphErrors *grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
 
    for (int iCh=0; iCh<N_SILICON_CHANNELS; iCh++)
    {
@@ -1959,12 +1996,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
          dAsym[iCh] = rawPolErr[iCh] = dP[iCh] = dPt[iCh] = 1e6;
          dAsymPhiCorr[iCh] = 1e6;
 
-      } else {
-         if (Mode < 100) {
-            Int_t nPoints = grPolarVsPhi->GetN();
-            grPolarVsPhi->SetPoint(nPoints, gPhi[iCh], rawPol[iCh]);
-            grPolarVsPhi->SetPointError(nPoints, 0,  rawPolErr[iCh]);
-         }
       }
 
       //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
@@ -2109,7 +2140,7 @@ TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
       gr = new TGraphErrors();
 
    // Create graph from hist to fit
-   for (int iCh=1; iCh<=hChAsym.GetNbinsX(); iCh++)
+   for (UShort_t iCh=1; iCh<=hChAsym.GetNbinsX(); iCh++)
    {
       // Skip disabled channels
       if (gMeasInfo->IsDisabledChannel(iCh)) continue;
@@ -2177,7 +2208,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    TF1 *func = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
 
    func->SetLineColor(kRed);
-   func->SetParNames("P", "#Delta#phi");
+   func->SetParNames("P", "#phi");
    func->SetParameter(0, p0);
    func->SetParameter(1, 0);
    //func->SetParLimits(0, -1, 1);
@@ -2190,17 +2221,6 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    // Perform sin(phi) fit
    tg->Fit("sin_phi", "R");
    tg->SetName("tg");
-
-   TH2           *hPolarVsPhi  = (TH2*) gAsymRoot->fHists->d["asym"]->o["hPolarVsPhi"];
-   TGraphErrors  *grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
-   TFitResultPtr  fitres       = grPolarVsPhi->Fit("sin_phi", "S R");
-
-   if (fitres.Get()) {
-      gAnaMeasResult->fFitResPolarPhi = fitres;
-      // XXX add here an assignment of values to gAnaMeasResult->fPolar
-   } else {
-      gSystem->Error("AsymCalculator::SinPhiFit", "Fit error...");
-   }
 
 
    // Dump TGraphError obect to TH2D histogram
@@ -2216,22 +2236,6 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    chi2dof  = func->GetChisquare()/func->GetNDF();
 
    delete func;
-
-   // Write out fitting results on plot
-   char text[80];
-   TLatex *txt;
-
-   sprintf(text, "(%3.2f #pm %3.2f) * sin#left(#phi + (%+5.2f #pm %3.2f)#right)", P[0], P[1], phase[0], phase[1]);
-   txt = new TLatex(0.3, max*0.85, text);
-   asym_sinphi_fit->GetListOfFunctions()->Add(txt);
-   hPolarVsPhi->GetListOfFunctions()->Add(txt);
-   //delete txt;
-
-   sprintf(text, "#chi^{2} / ndf = %5.2f", chi2dof);
-   txt = new TLatex(0.3, max*0.7, text);
-   asym_sinphi_fit->GetListOfFunctions()->Add(txt);
-   hPolarVsPhi->GetListOfFunctions()->Add(txt);
-   //delete txt;
 } //}}}
 
 
@@ -2272,7 +2276,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    TF1 *func = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
 
    func->SetLineColor(kRed);
-   func->SetParNames("P", "#Delta#phi");
+   func->SetParNames("P", "#phi");
    func->SetParameter(0, p0);
    func->SetParameter(1, 0);
    //func->SetParLimits(0, -1, 1);
