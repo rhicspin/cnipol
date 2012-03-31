@@ -53,7 +53,7 @@ void CnipolHists::BookHists()
    shName = "hTimeVsEnergyA";
    o[shName] = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
    ((TH1*) o[shName])->SetOption("colz LOGZ NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+   ((TH1*) o[shName])->SetTitle("; Deposited Energy, keV; Time, ns;");
 
    //sprintf(fname, "banana_nominal");
    //TF1 *banana_cut_l = new TF1(fname, formula, 0, 1500);
@@ -63,38 +63,38 @@ void CnipolHists::BookHists()
    shName = "hTofVsKinEnergyA";
    //o[shName] = new TH2F(shName, shName, 255, 0, 1785, 100, 20, 120);
    o[shName] = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 60, 10, 110);
-   ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
+   ((TH1*) o[shName])->SetTitle("; Kinematic Energy, keV; ToF, ns;");
    ((TH1*) o[shName])->SetOption("colz LOGZ NOIMG");
 
    // Energy spectrum. Projection of hTofVsKinEnergyA
    shName = "hKinEnergyA";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), 80, 100, 1700);
    ((TH1*) o[shName])->SetOption("E1");
-   ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Events;");
+   ((TH1*) o[shName])->SetTitle("; Kinematic Energy, keV; Events;");
 
    // Kinematic Energy
    shName = "hKinEnergyA_o";
    o[shName] = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
    ((TH1*) o[shName])->SetOption("E1 NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;;");
+   ((TH1*) o[shName])->SetTitle("; Kinematic Energy, keV; Events;");
 
    // Spin vs Strip Id
    shName = "hSpinVsChannel";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5, N_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[shName])->SetOption("colz NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Channel Id;Spin State;");
+   ((TH1*) o[shName])->SetTitle("; Channel Id; Spin State;");
 
    // Spin vs Bunch Id
    shName = "hSpinVsBunch";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SPIN_STATES, -1.5, 1.5);
    ((TH1*) o[shName])->SetOption("colz NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Bunch Id;Spin State;");
+   ((TH1*) o[shName])->SetTitle("; Bunch Id; Spin State;");
 
    // Event count vs channel id
    shName = "hEventsVsChannel";
    o[shName] = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    //((TH1*) o[shName])->SetOption("NOIMG");
-   ((TH1*) o[shName])->SetTitle(";Channel Id;Events;");
+   ((TH1*) o[shName])->SetTitle("; Channel Id; Events;");
 
    // Time vs Energy from amplitude
    //shName = "hTimeVsFunnyEnergyA";
@@ -160,19 +160,19 @@ void CnipolHists::BookHists()
       shName = "hTimeVsEnergyA_ch" + sChId;
       oc->o[shName] = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
 		((TH1*) oc->o[shName])->SetOption("colz LOGZ");
-      ((TH1*) oc->o[shName])->SetTitle(";Deposited Energy, keV;Time, ns;");
+      ((TH1*) oc->o[shName])->SetTitle("; Deposited Energy, keV; Time, ns;");
       //((TH1*) oc->o[shName])->GetListOfFunctions()->Add(banana_cut_l);
 
       // TOF vs Kinematic Energy
       shName = "hTofVsKinEnergyA_ch" + sChId;
       oc->o[shName] = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 60, 10, 110);
       ((TH1*) oc->o[shName])->SetOption("colz LOGZ NOIMG");
-      ((TH1*) oc->o[shName])->SetTitle(";Kinematic Energy, keV;ToF, ns;");
+      ((TH1*) oc->o[shName])->SetTitle("; Kinematic Energy, keV; ToF, ns;");
 
       shName = "hKinEnergyA_ch" + sChId;
       oc->o[shName] = new TH1D(shName.c_str(), shName.c_str(), 80, 100, 1700);
       ((TH1*) oc->o[shName])->SetOption("E1 NOIMG");
-      ((TH1*) oc->o[shName])->SetTitle(";Kinematic Energy, keV;;");
+      ((TH1*) oc->o[shName])->SetTitle("; Kinematic Energy, keV; ;");
 
       //sprintf(hName, "hFitMeanTimeVsEnergyA_ch%02d", *iCh);
       //oc->o[hName] = new TH1D(hName, hName, 80, 100, 1700);

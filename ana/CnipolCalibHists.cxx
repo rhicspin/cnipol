@@ -41,13 +41,13 @@ void CnipolCalibHists::BookHists(std::string cutid)
    shName = "hDLVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Dead Layer, #mug/cm^{2};");
-   hist->SetOption("hist GRIDX");
+   hist->SetOption("E1 GRIDX");
    o[shName] = hist;
 
    shName = "hT0VsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; T0, ns;");
-   hist->SetOption("hist GRIDX");
+   hist->SetOption("E1 GRIDX");
    o[shName] = hist;
 
    shName = "hChi2NdfVsChannel";

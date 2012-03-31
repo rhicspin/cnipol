@@ -48,7 +48,6 @@ void CnipolProfileHists::BookHists()
 { //{{{
    fDir->cd();
 
-   char        hName[256];
    string      shName;
    TH1        *hist;
    TAttMarker  styleMarker;
@@ -58,82 +57,89 @@ void CnipolProfileHists::BookHists()
    styleMarker.SetMarkerColor(kGreen+2);
 
    // this one is filled from the scaler data
-   sprintf(hName, "hIntensProfileScaler");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->SetTitle(";time, s;Events;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
-   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
-   ((TH1*) o[hName])->Sumw2();
+   shName = "hIntensProfileScaler";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1); // The number of steps will be taken from data
+   hist->SetTitle("; Time, s; Events");
+   hist->SetOption("NOIMG");
+   //hist->SetBit(TH1::kCanRebin);
+   hist->Sumw2();
+   o[shName] = hist;
 
    // this one is filled from the event data (it is a more correct way of doing
    // this than using hIntensProfileScaler)
-   sprintf(hName, "hIntensProfile");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";time, s;Events");
-   //((TH1*) o[hName])->SetLineColor(kRed);
-   ((TH1*) o[hName])->Sumw2();
+   shName = "hIntensProfile";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Time, s; Events");
+   hist->Sumw2();
+   o[shName] = hist;
 
    shName = "hIntensProfileFineBin";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle(";time, s;Events");
+   hist->SetTitle("; Time, s; Events");
    o[shName] = hist;
 
-   sprintf(hName, "hIntensProfileFwd");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
+   shName = "hIntensProfileFwd";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Target Steps, s; Events;");
+   hist->SetOption("NOIMG");
+   o[shName] = hist;
 
-   sprintf(hName, "hIntensProfileBck");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
+   shName = "hIntensProfileBck";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Target Steps, s; Events;");
+   hist->SetOption("NOIMG");
+   o[shName] = hist;
 
-   sprintf(hName, "hIntensProfileFold");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of steps will be taken from data
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Events;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
+   shName = "hIntensProfileFold";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1); // The number of steps will be taken from data
+   hist->SetTitle("; Target Steps, s; Events;");
+   hist->SetOption("NOIMG");
+   o[shName] = hist;
 
-   sprintf(hName, "hPolarProfile");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1); // The number of delimeters is not known beforehand
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
-   ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
-   //((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   shName = "hPolarProfile";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1); // The number of delimeters is not known beforehand
+   hist->SetTitle("; Target Steps, s; Polarization;");
+   hist->SetBit(TH1::kCanRebin);
+   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   o[shName] = hist;
 
-   sprintf(hName, "hPolarProfileFwd");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   shName = "hPolarProfileFwd";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Target Steps, s; Polarization;");
+   hist->SetOption("NOIMG");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kRed);
+   o[shName] = hist;
 
-   sprintf(hName, "hPolarProfileBck");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   shName = "hPolarProfileBck";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Target Steps, s; Polarization;");
+   hist->SetOption("NOIMG");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kRed);
+   o[shName] = hist;
 
-   sprintf(hName, "hPolarProfileFold");
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Target Steps, s;Polarization;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0, 1.05);
+   shName = "hPolarProfileFold";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Target Steps, s; Polarization;");
+   hist->SetOption("NOIMG");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   o[shName] = hist;
 
-   sprintf(hName, "hPolarProfileFinal");
-   //o[hName] = new TH1D(hName, hName, 1, -2.5, 2.5);
-   o[hName] = new TH1D(hName, hName, 1, 0, 1);
-   ((TH1*) o[hName])->SetTitle(";Distance, mm;Polarization;");
-   ((TH1*) o[hName])->SetOption("NOIMG");
-   //((TH1*) o[hName])->SetAxisRange(0, 1, "Y");
-   //((TH1*) o[hName])->GetYaxis()->SetLimits(0, 1);
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kRed);
+   shName = "hPolarProfileFinal";
+   hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
+   hist->SetTitle("; Distance, mm; Polarization;");
+   hist->SetOption("NOIMG");
+   //hist->SetAxisRange(0, 1, "Y");
+   //hist->GetYaxis()->SetLimits(0, 1);
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kRed);
+   o[shName] = hist;
 
    // asymmetry vs intensity
    TGraphErrors *grAsymVsIntensProfile = new TGraphErrors();
@@ -146,8 +152,9 @@ void CnipolProfileHists::BookHists()
    //styleMarker.Copy(*grAsymVsIntensProfileFineBin);
 
    shName = "hAsymVsIntensProfile";
-   hist = new TH2I(shName.c_str(), shName.c_str(), 100, 0, 1.1, 100, -0.1, 0.1);
-   hist->SetTitle(";Relative Intensity I/I_{max};Asymmetry;");
+   hist = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1.1, 1, -0.05, 0.05);
+   hist->SetTitle("; Relative Intensity I/I_{max}; Asymmetry;");
+   hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grAsymVsIntensProfile, "p");
    //hist->GetListOfFunctions()->Add(grAsymVsIntensProfileFineBin, "p");
    o[shName] = hist;
@@ -168,8 +175,8 @@ void CnipolProfileHists::BookHists()
 
    shName = "hPolarVsIntensProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 10, 0, 1.1);
-   hist->SetTitle(";Relative Intensity I/I_{max};Polarization;");
-   //hist->SetOption("");
+   hist->SetTitle("; Relative Intensity I/I_{max}; Polarization;");
+   hist->SetOption("DUMMY");
    hist->GetYaxis()->SetRangeUser(0, 1.05);
    o[shName] = hist;
    //hist->GetListOfFunctions()->Add(grPolarVsIntensProfileFineBin, "p");
@@ -192,21 +199,22 @@ void CnipolProfileHists::BookHists()
 
    shName = "hIntensUniProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
-   hist->SetTitle(";Sigma Units;Intensity;");
+   hist->SetTitle("; Sigma Units; Intensity;");
    hist->GetListOfFunctions()->Add(grIntensUniProfileFineBin, "p");
    o[shName] = hist;
 
-   sprintf(hName, "hIntensUniProfileBin");
-   o[hName] = new TH1F(hName, hName, 20, -5, 5);
-   ((TH1*) o[hName])->SetTitle(";Sigma Units;Intensity;");
-   ((TH1*) o[hName])->SetOption("p");
-   ((TH1*) o[hName])->SetMarkerStyle(kFullDotLarge);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(kBlue);
-   ((TH1*) o[hName])->Sumw2();
+   shName = "hIntensUniProfileBin";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 20, -5, 5);
+   hist->SetTitle("; Sigma Units; Intensity;");
+   hist->SetOption("p");
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kBlue);
+   hist->Sumw2();
+   o[shName] = hist;
 
-   //sprintf(hName, "grIntensUniProfile");
-   //o[hName] = new TGraphErrors();
+   //sprintf(shName, "grIntensUniProfile");
+   //o[shName] = new TGraphErrors();
 
    // Polarization profile
    //TGraphErrors *grPolarUniProfileFineBin = new TGraphErrors();
@@ -216,9 +224,9 @@ void CnipolProfileHists::BookHists()
    //grPolarUniProfileFineBin->SetMarkerColor(kMagenta);
 
    shName = "hPolarUniProfile";
-   hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
-   hist->SetTitle(";Sigma Units;Polarization;");
-   hist->SetOption("p");
+   hist = new TH1C(shName.c_str(), shName.c_str(), 1, -5, 5);
+   hist->SetTitle("; Sigma Units; Polarization;");
+   hist->SetOption("DUMMY");
    hist->GetYaxis()->SetRangeUser(0, 1.05);
    //hist->GetListOfFunctions()->Add(grPolarUniProfileFineBin, "p");
    o[shName] = hist;
@@ -242,17 +250,19 @@ void CnipolProfileHists::BookHists()
 
    shName = "hAsymUniProfile";
    hist = new TH1F(shName.c_str(), shName.c_str(), 100, -5, 5);
-   hist->SetTitle(";Sigma Units;Asymmetry;");
-   hist->SetOption("E1 P");
-   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->SetTitle("; Sigma Units; Asymmetry;");
+   hist->SetOption("DUMMY");
+   //hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->GetYaxis()->SetRangeUser(-0.01, 0.01);
    hist->GetListOfFunctions()->Add(grAsymUniProfileFineBin, "p");
    o[shName] = hist;
 
    shName = "hAsymUniProfileBin";
    hist = new TH1F(shName.c_str(), shName.c_str(), 50, -5, 5);
-   hist->SetTitle(";Sigma Units;Asymmetry;");
+   hist->SetTitle("; Sigma Units; Asymmetry;");
    hist->SetOption("E1 P");
-   hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   //hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
+   hist->GetYaxis()->SetRangeUser(-0.01, 0.01);
    o[shName] = hist;
 } //}}}
 

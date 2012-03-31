@@ -33,7 +33,7 @@ CnipolRunHists::~CnipolRunHists()
 
 
 /** */
-void CnipolRunHists::BookHists(string sid)
+void CnipolRunHists::BookHists()
 { //{{{
    //TDirectory *dir;
    //dir = new TDirectoryFile("feedback", "feedback", "", fDir);
@@ -107,13 +107,13 @@ void CnipolRunHists::BookHists(string sid)
  
    sprintf(hName, "wall_current_monitor");
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
-   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^{9} protons;");
-   ((TH1*) o[hName])->SetFillColor(13);
+   ((TH1*) o[hName])->SetTitle("; Bunch Id; Number of Protons, x10^{9};");
+   ((TH1*) o[hName])->SetFillColor(kGray);
  
    sprintf(hName, "specific_luminosity");
    o[hName] = new TH1F(hName, hName, N_BUNCHES, 1, N_BUNCHES+1);
-   ((TH1*) o[hName])->SetTitle(";Bunch ID;x10^9 protons;");
-   ((TH1*) o[hName])->SetFillColor(13);
+   ((TH1*) o[hName])->SetTitle("; Bunch Id; Number of Protons, x10^{9};");
+   ((TH1*) o[hName])->SetFillColor(kGray);
 
    //errdet->o["mass_chi2_vs_strip"]       = new TH2F();    // Chi2 of Gaussian Fit on Mass peak
    //errdet->o["mass_sigma_vs_strip"]      = new TH2F();    // Mass sigma width vs. strip
@@ -133,10 +133,8 @@ void CnipolRunHists::BookHists(string sid)
 
 
    sprintf(hName,  "asym_vs_bunch_x45");
-   sprintf(hTitle, "Run%.3f : Raw Asymmetry X45", gMeasInfo->RUNID);
    o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
-   ((TH1*) o[hName])->GetYaxis()->SetTitle("Counts weighted by error");
-   ((TH1*) o[hName])->GetXaxis()->SetTitle("Raw Asymmetry");
+   ((TH1*) o[hName])->SetTitle("; Raw Asymmetry X45; Counts weighted by error;");
 
    //sprintf(hName,  "asym_sinphi_fit");
    //sprintf(hTitle, "asym_sinphi_fit");
@@ -151,7 +149,7 @@ void CnipolRunHists::BookHists(string sid)
 
 
 /** */
-void CnipolRunHists::Fill(ChannelEvent *ch, string sid)
+void CnipolRunHists::Fill(ChannelEvent *ch)
 { //{{{
    //UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
@@ -171,16 +169,6 @@ void CnipolRunHists::PostFill()
    GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax45[0], margin, min, max);
    ((TH1*) o["asym_vs_bunch_x45"])->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
    DrawHorizLine( (TH1*) o["asym_vs_bunch_x45"], -0.5, NBUNCH-0.5, 0, 1, 1, 1);
-} //}}}
-
-
-/** */
-void CnipolRunHists::Print(const Option_t* opt) const
-{ //{{{
-   opt = "";
-
-   //printf("CnipolHists:\n");
-   DrawObjContainer::Print();
 } //}}}
 
 

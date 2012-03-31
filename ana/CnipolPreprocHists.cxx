@@ -106,7 +106,7 @@ void CnipolPreprocHists::BookHists()
 
       shName = "hTimeVsEnergyACumul_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
-      hist->SetOption("hist FFF");
+      hist->SetOption("hist");
       hist->SetTitle("; Digi Channel Frac; Event Frac;");
       hist->SetLineWidth(2);
       hist->SetLineColor(RunConfig::AsColor(chId));
@@ -293,9 +293,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
       TH1* h2 = (TH1*) fhFitMeanTimeVsEnergyA_raw_ch[chId-1];
 		hstack.Add(h2);
 
-      string subPath = path;
-
-		//SaveHStackAs(c, hstack, subPath);
+		SaveHStackAs(c, hstack, path);
    }
 } //}}}
 

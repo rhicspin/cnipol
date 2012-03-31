@@ -30,8 +30,8 @@ public:
    ~CnipolAsymHists();
 
    void BookHists();
-   void PreFill(std::string cutid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
+   void PreFill();
+   void Fill(ChannelEvent *ch);
    void FillDerived();
    void FillDerived(DrawObjContainer &oc);
    void PostFill();

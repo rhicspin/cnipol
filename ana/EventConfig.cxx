@@ -161,26 +161,29 @@ float EventConfig::ConvertToEnergy(UShort_t adc, UShort_t chId)
 /** */
 string EventConfig::GetSignature() const
 { //{{{
-   string strSignature = "";
+   string strSignature = "signature not defined";
 
-   if (fAnaInfo) {
+   if (fAnaInfo && fMeasInfo) {
 
-      //string strAnaEndTime(25, ' ');
+      char strMeasStartTime[25];
+      time_t measStartTime = fMeasInfo->fStartTime;
+      tm *ltime = localtime(&measStartTime);
+      strftime(strMeasStartTime, 25, "%c", ltime);
+
       char strAnaEndTime[25];
       time_t anaEndTime = fAnaInfo->fAnaDateTime + (time_t) fAnaInfo->fAnaTimeReal;
       //printf("***anaEndTime: %lld\n", anaEndTime);
-      tm *ltime = localtime(&anaEndTime);
+      ltime = localtime(&anaEndTime);
       strftime(strAnaEndTime, 25, "%c", ltime);
 
-      strSignature += fAnaInfo->GetRunName() + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup.fUser;
-      //strSignature += fAnaInfo->GetRunName() + " @ " + strAnaEndTime + " by " + fAnaInfo->fUserGroup->fRealName;
-   }
+      strSignature = fAnaInfo->GetRunName() + ": Taken " + strMeasStartTime + ", "
+                     + " analyzed " + strAnaEndTime;
+                     //+ fAnaInfo->fUserGroup.fRealName + " @ " + strAnaEndTime;
 
-   if (fMeasInfo) {
-      if (strSignature.size() != 0) 
-         strSignature += ", ";
+      //if (strSignature.size() != 0) 
+      //   strSignature += ", ";
 
-      strSignature += fMeasInfo->fAsymVersion;
+      strSignature += ", version " + fMeasInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
    }
 
    return strSignature;

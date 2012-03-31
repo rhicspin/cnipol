@@ -519,6 +519,7 @@ int main(int argc, char *argv[])
    gAnaInfo->fFileRunConf = 0;
 
    if (gAnaInfo->HasGraphBit())
+      //gAsymRoot->SaveAs("^.*AsymVs.*$", gAnaInfo->GetImageDir());
       gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
    // Close ROOT File
