@@ -315,6 +315,11 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
          {
             if ( !iObj ) continue;
 
+            if ( ( (TClass*) iObj->IsA() )->InheritsFrom("TLine") ) {
+               iObj->Draw();
+               continue;
+            }
+
             // Consider only TGraph objects
             if ( ! (( (TClass*) iObj->IsA() )->InheritsFrom("TGraph")) ) continue;
 
@@ -338,8 +343,8 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
 
                stats->SetX1NDC(0.80);
                stats->SetX2NDC(0.99);
-               stats->SetY1NDC(0.45 - iStat*0.15);
-               stats->SetY2NDC(0.60 - iStat*0.15);
+               stats->SetY1NDC(0.42 - iStat*0.18);
+               stats->SetY2NDC(0.60 - iStat*0.18);
 
                iStat++;
             } else {
