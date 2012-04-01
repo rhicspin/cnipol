@@ -177,13 +177,13 @@ string EventConfig::GetSignature() const
       strftime(strAnaEndTime, 25, "%c", ltime);
 
       strSignature = fAnaInfo->GetRunName() + ": Taken " + strMeasStartTime + ", "
-                     + " analyzed " + strAnaEndTime;
+                     + " Analyzed " + strAnaEndTime;
                      //+ fAnaInfo->fUserGroup.fRealName + " @ " + strAnaEndTime;
 
       //if (strSignature.size() != 0) 
       //   strSignature += ", ";
 
-      strSignature += ", version " + fMeasInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
+      strSignature += ", Version " + fMeasInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
    }
 
    return strSignature;
