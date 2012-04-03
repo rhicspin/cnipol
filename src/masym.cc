@@ -57,7 +57,7 @@ void initialize()
    //gStyle->SetOptStat("e");
    gStyle->SetOptStat(1111);
    gStyle->SetOptFit(1111);
-   gStyle->SetPadRightMargin(0.18);
+   gStyle->SetPadRightMargin(0.25);
 
    //TString filelistPath("/eic/u/dsmirnov/run/");
 
@@ -147,10 +147,21 @@ void initialize()
       //Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
       //Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
       //Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
-      Float_t  polarization     = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;
-      Float_t  polarization_err = gMM->fAnaMeasResult->sinphi[0].P[1] * 100.;
-      Double_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
-      Double_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
+
+      //Float_t  polarization    = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;
+      //Float_t  polarizationErr = gMM->fAnaMeasResult->sinphi[0].P[1] * 100.;
+      Float_t  polarization    =  0;
+      Float_t  polarizationErr = -1;
+
+      TFitResultPtr fitResPolarPhi = gMM->fAnaMeasResult->fFitResPolarPhi;
+
+      if (fitResPolarPhi.Get()) {
+         polarization    = fitResPolarPhi->Value(0) * 100;
+         polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100;
+      }
+
+      Float_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
+      Float_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
       //Float_t  profileRatio     = gMM->fAnaMeasResult->fIntensPolarR;
       //Float_t  profileRatioErr  = gMM->fAnaMeasResult->fIntensPolarRErr;
 
@@ -164,13 +175,13 @@ void initialize()
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gMM->fMeasInfo->fStartTime, asymmetry);
       //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
       //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
-      //   polarization_err, asymVersion.c_str());
+      //   polarizationErr, asymVersion.c_str());
       //if (asymVersion != "v1.8.5") {
 	   //   Warning("masym", "Wrong version %s", asymVersion.c_str());
       //   continue;
       //}
 
-      if (polarization < 5 || polarization > 99 || polarization_err > 30 ||
+      if (polarization < 5 || polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           (TMath::Abs(profileRatio) > 0.600 && profileRatioErr < 0.05) ||
@@ -265,7 +276,7 @@ void initialize()
    //if (gAnaInfo->HasGraphBit())
    //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
