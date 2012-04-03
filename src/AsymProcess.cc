@@ -143,9 +143,9 @@ void event_process(processEvent *event)
 
       gAsymRoot->fHists->Fill(ch);
 
-      if (ch->PassCutRawAlpha()) {
-	      gAsymRoot->fHists->Fill(ch);
-      }
+      //if (ch->PassCutRawAlpha()) {
+	   //   gAsymRoot->fHists->Fill(ch);
+      //}
       
       return;
    }

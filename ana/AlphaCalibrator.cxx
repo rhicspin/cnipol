@@ -25,13 +25,10 @@ AlphaCalibrator::~AlphaCalibrator()
 
 /** */
 void AlphaCalibrator::Calibrate(DrawObjContainer *c)
-{
-   //{{{
+{ //{{{
    Info("Calibrate", "Executing Calibrate()");
 
    string    sCh("  ");
-   //float     chi2_max  = 0;
-   //Double_t  stat_max  = 0;
    TH1F     *htemp     = 0;
    TF1      *fitfunc   = new TF1("fitfunc", "gaus");
    TFitResultPtr fitres;
@@ -57,10 +54,10 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       }
 
       // Amplitude
-      htemp = (TH1F*) c->d["alpha"]->d["channel" + sCh]->o["hAmpltd_cut1_st" + sCh];
+      htemp = (TH1F*) c->d["alpha"]->d["channel" + sCh]->o["hAmpltd_ch" + sCh];
 
       if (!htemp) {
-         Error("Calibrate", "Histogram channel%02d/hAmpltd_cut1_st%02d does not exist", i, i);
+         Error("Calibrate", "Histogram channel%02d/hAmpltd_ch%02d does not exist", i, i);
          continue;
       }
 
@@ -87,16 +84,13 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          ((TH1F*) c->d["alpha"]->o["hACoef"])->SetBinError(i, chCalib->fACoefErr);
 
          ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->Fill(chCalib->fACoef);
-
-
-
       }
 
       // Integral
-      htemp = (TH1F*) c->d["alpha"]->d["channel" + sCh]->o["hIntgrl_cut1_st" + sCh];
+      htemp = (TH1F*) c->d["alpha"]->d["channel" + sCh]->o["hIntgrl_ch" + sCh];
 
       if (!htemp) {
-         Error("Calibrate", "Histogram channel%02d/hIntgrl_cut1_st%02d does not exist", i, i);
+         Error("Calibrate", "Histogram channel%02d/hIntgrl_ch%02d does not exist", i, i);
          continue;
       }
 
@@ -126,10 +120,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       //        cal, ecal, amp, eamp, chi2/ndf, ndf);
       //fprintf(pf0,"%2d %6.4f %6.4f %6.2f %6.2f %4.1f %3d SUCCESSFUL\n",
       //        i,cal[i],ecal[i],amp[i],eamp[i],chi2[i]/ndf,ndf);
-
-      //Double_t stat = hAmp->GetEntries();
-      //if (stat > stat_max) stat_max = stat;
-      //if (chi2 > chi2_max) chi2_max = chi2;
    }
 
    CalibrateBadChannels(c);
@@ -137,16 +127,8 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
-//void AlphaCalibrator::CalibrateFast(DrawObjContainer *c)
-//{
-//	Info("CalibrateFast", "Executing CalibrateFast()");
-//}
-
-
-/** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
-{
-   //{{{
+{ //{{{
    TFitResultPtr fitres = 0;
 
    h->Print();
@@ -193,20 +175,21 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
 
 /** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
-{
-   //{{{
+{ //{{{
    Double_t aMean = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetMean();
    Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetRMS();
    //Double_t iMean = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetMean();
    //Double_t iRMS  = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetRMS();
+
    Double_t aEntries = 0;
    //Double_t iEntries = 0;
-   Double_t Det1eRMS = 0;
-   Double_t Det2eRMS = 0;
-   Double_t Det3eRMS = 0;
-   Double_t Det4eRMS = 0;
-   Double_t Det5eRMS = 0;
-   Double_t Det6eRMS = 0;
+
+   Double_t Det1eRMS  = 0;
+   Double_t Det2eRMS  = 0;
+   Double_t Det3eRMS  = 0;
+   Double_t Det4eRMS  = 0;
+   Double_t Det5eRMS  = 0;
+   Double_t Det6eRMS  = 0;
    Double_t Det1eMean = 0;
    Double_t Det2eMean = 0;
    Double_t Det3eMean = 0;
@@ -224,7 +207,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 
    for (i = 1; i <= NSTRIP; i++) {
       sprintf(&sSi[0], "%02d", i);
-      aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_st" + sSi])->GetEntries();
+      aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetEntries();
 
       if (i > 0 && i < 13) {
          ((TH1F*) c->d["alpha"]->o["Detector1_Events"])->SetBinContent(i, aEntries);
@@ -258,29 +241,25 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
       }
    }
 
-   Det1eMean = ((TH1F*)c->d["alpha"]->o["Detector1_Events_Dsp"])->GetMean();
-   Det1eRMS = ((TH1F*)c->d["alpha"]->o["Detector1_Events_Dsp"])->GetRMS();
-   Det2eMean = ((TH1F*)c->d["alpha"]->o["Detector2_Events_Dsp"])->GetMean();
-   Det2eRMS = ((TH1F*)c->d["alpha"]->o["Detector2_Events_Dsp"])->GetRMS();
-   Det3eMean = ((TH1F*)c->d["alpha"]->o["Detector3_Events_Dsp"])->GetMean();
-   Det3eRMS = ((TH1F*)c->d["alpha"]->o["Detector3_Events_Dsp"])->GetRMS();
-   Det4eMean = ((TH1F*)c->d["alpha"]->o["Detector4_Events_Dsp"])->GetMean();
-   Det4eRMS = ((TH1F*)c->d["alpha"]->o["Detector4_Events_Dsp"])->GetRMS();
-   Det5eMean = ((TH1F*)c->d["alpha"]->o["Detector5_Events_Dsp"])->GetMean();
-   Det5eRMS = ((TH1F*)c->d["alpha"]->o["Detector5_Events_Dsp"])->GetRMS();
-   Det6eMean = ((TH1F*)c->d["alpha"]->o["Detector6_Events_Dsp"])->GetMean();
-   Det6eRMS = ((TH1F*)c->d["alpha"]->o["Detector6_Events_Dsp"])->GetRMS();
-
-
+   Det1eMean = ((TH1F*) c->d["alpha"]->o["Detector1_Events_Dsp"])->GetMean();
+   Det1eRMS  = ((TH1F*) c->d["alpha"]->o["Detector1_Events_Dsp"])->GetRMS();
+   Det2eMean = ((TH1F*) c->d["alpha"]->o["Detector2_Events_Dsp"])->GetMean();
+   Det2eRMS  = ((TH1F*) c->d["alpha"]->o["Detector2_Events_Dsp"])->GetRMS();
+   Det3eMean = ((TH1F*) c->d["alpha"]->o["Detector3_Events_Dsp"])->GetMean();
+   Det3eRMS  = ((TH1F*) c->d["alpha"]->o["Detector3_Events_Dsp"])->GetRMS();
+   Det4eMean = ((TH1F*) c->d["alpha"]->o["Detector4_Events_Dsp"])->GetMean();
+   Det4eRMS  = ((TH1F*) c->d["alpha"]->o["Detector4_Events_Dsp"])->GetRMS();
+   Det5eMean = ((TH1F*) c->d["alpha"]->o["Detector5_Events_Dsp"])->GetMean();
+   Det5eRMS  = ((TH1F*) c->d["alpha"]->o["Detector5_Events_Dsp"])->GetRMS();
+   Det6eMean = ((TH1F*) c->d["alpha"]->o["Detector6_Events_Dsp"])->GetMean();
+   Det6eRMS  = ((TH1F*) c->d["alpha"]->o["Detector6_Events_Dsp"])->GetRMS();
 
    i = 1;
 
    for (mi = mb; mi != me; mi++) {
 
       sprintf(&sSi[0], "%02d", i);
-      aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_st" + sSi])->GetEntries();
-
-
+      aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetEntries();
 
       ChannelCalib &ch = mi->second;
 
@@ -377,10 +356,8 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
          }
       }
 
-      detAve /= nChDet;
-
-      ch.fACoef = detAve;
-
+      detAve    /= nChDet;
+      ch.fACoef  = detAve;
    }
 
    // Now assign detector average
@@ -406,9 +383,8 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
          }
       }
 
-      detAve /= nChDet;
-
-      ch.fICoef = detAve;
+      detAve    /= nChDet;
+      ch.fICoef  = detAve;
    }
 } //}}}
 

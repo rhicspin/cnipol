@@ -143,7 +143,7 @@ void MAsymRunHists::BookHists(string sid)
 
       shName = "hT0VsDLDiff_" + sPolId;
       hist = new TH2F(shName.c_str(), shName.c_str(), 1000, 0, 1, 1000, 0, 1);
-      hist->SetTitle(";Dead Layer Diff, #mug/cm^{2};t_{0} Diff, ns;");
+      hist->SetTitle("; Dead Layer Diff, #mug/cm^{2}; t_{0} Diff, ns;");
       hist->GetListOfFunctions()->Add(grT0VsDLDiff, "p");
       styleMarker.Copy(*hist);
       oc->o[shName] = hist;
@@ -151,7 +151,7 @@ void MAsymRunHists::BookHists(string sid)
       shName = "hPolarFirstMeasRatioVsFill_" + sPolId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
       hist->GetYaxis()->SetRangeUser(0, 100);
-      hist->SetTitle(";Fill;Polarization Ratio (Inj/First);");
+      hist->SetTitle("; Fill; Polarization Ratio (Inj/First);");
       hist->SetOption("E1");
       styleMarker.Copy(*hist);
       oc->o[shName] = hist;
@@ -795,7 +795,7 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    string   shName;
    TH1     *hist;
 
-   Double_t runId            = rc.fMeasInfo->RUNID;
+   Double_t runId            =  rc.fMeasInfo->RUNID;
    //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fMeasInfo->fPolId;
@@ -858,16 +858,25 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    TFitResultPtr fitResPolarPhi = rc.fAnaMeasResult->fFitResPolarPhi;
 
    // Expect valid results
-   assert(fitResAsymPhi.Get());
-   assert(fitResPolarPhi.Get());
+   //assert(fitResAsymPhi.Get());
+   //assert(fitResPolarPhi.Get());
 
-   Float_t asym         = fitResAsymPhi->Value(0);
-   Float_t asymErr      = fitResAsymPhi->FitResult::Error(0);
-   Float_t spinAngle    = fitResAsymPhi->Value(1) / TMath::Pi() * 180;
-   Float_t spinAngleErr = fitResAsymPhi->FitResult::Error(1) / TMath::Pi() * 180;
+   Float_t asym            = 0;
+   Float_t asymErr         = 0;
+   Float_t spinAngle       = 0;
+   Float_t spinAngleErr    = 0;
+   Float_t polarization    = 0;
+   Float_t polarizationErr = 0;
 
-   Float_t polarization    = fitResPolarPhi->Value(0) * 100.;
-   Float_t polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100.;
+   if ( fitResAsymPhi.Get() && fitResPolarPhi.Get() ) {
+      asym         = fitResAsymPhi->Value(0);
+      asymErr      = fitResAsymPhi->FitResult::Error(0);
+      spinAngle    = fitResAsymPhi->Value(1) / TMath::Pi() * 180;
+      spinAngleErr = fitResAsymPhi->FitResult::Error(1) / TMath::Pi() * 180;
+
+      polarization    = fitResPolarPhi->Value(0) * 100.;
+      polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100.;
+   }
 
 
    UInt_t nPoints = 0;
@@ -1717,15 +1726,18 @@ void MAsymRunHists::UpdateLimits()
 
          hist = (TH1*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
          //hist->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         //hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         utils::UpdateLimits((TH1*) hist);
 
          hist = (TH1*) oc_pol->o["hPolarPCVsFill_" + sPolId + "_" + sBeamE];
          //hist->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         //hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         utils::UpdateLimits((TH1*) hist);
 
-         shName = "hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE;
-         ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         ((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         hist = (TH1*) oc_pol->o["hPolarPCScaledVsFill_" + sPolId + "_" + sBeamE];
+         //hist->GetXaxis()->SetLimits(fMinFill, fMaxFill);
+         //hist->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
+         utils::UpdateLimits((TH1*) hist);
 
          shName = "hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
