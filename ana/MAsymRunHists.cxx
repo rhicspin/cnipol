@@ -363,7 +363,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hProfPolarVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
-   hist->SetTitle(";Fill;Prof. Polarization, %;");
+   hist->SetTitle("; Fill; Prof. Polarization, %;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
@@ -371,21 +371,21 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hProfPolarRatioVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
-   hist->SetTitle(";Fill;Polar/Prof. Polar;");
+   hist->SetTitle("; Fill; Polar/Prof. Polar;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    // polarization from pol profile
    shName = "hProfPolarRatioSystVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle(";Fill;Profile Polarization Rel. Diff., %;");
+   hist->SetTitle("; Fill; Profile Polarization Rel. Diff., %;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    // polarization from pol profile
    shName = "hProfPolarRelDiff_" + sPolId + "_" + sBeamE;
    oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 50);
-   ((TH1*) oc.o[shName])->SetTitle(";Profile Polarization Rel. Diff., %;;");
+   ((TH1*) oc.o[shName])->SetTitle("; Profile Polarization Rel. Diff., %; ;");
    ((TH1*) oc.o[shName])->SetLineWidth(2);
    ((TH1*) oc.o[shName])->SetLineColor(color);
    ((TH1*) oc.o[shName])->SetOption("hist");
@@ -394,7 +394,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hProfPolarRelDiffCumul_" + sPolId + "_" + sBeamE;
    oc.o[shName] = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 50);
    ((TH1*) oc.o[shName])->GetYaxis()->SetRangeUser(0, 1);
-   ((TH1*) oc.o[shName])->SetTitle(";Cumul. Profile Polarization Rel. Diff., %;;");
+   ((TH1*) oc.o[shName])->SetTitle("; Cumul. Profile Polarization Rel. Diff., %; ;");
    ((TH1*) oc.o[shName])->SetLineWidth(2);
    ((TH1*) oc.o[shName])->SetLineColor(color);
    ((TH1*) oc.o[shName])->SetOption("hist");
@@ -444,7 +444,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hRVsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -0.3, 1);
-   hist->SetTitle(";Measurement;r;");
+   hist->SetTitle("; Measurement; R;");
    hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grRVsMeasH, "p");
    hist->GetListOfFunctions()->Add(grRVsMeasV, "p");
@@ -453,7 +453,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hRVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(-0.3, 1);
-   hist->SetTitle(";Fill;r;");
+   hist->SetTitle("; Fill; R;");
    hist->SetOption("E1");
    hist->GetListOfFunctions()->Add(grRVsMeas, "p");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
@@ -461,7 +461,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hRVsFill_H_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(-0.3, 1);
-   hist->SetTitle(";Fill;r;");
+   hist->SetTitle("; Fill; R;");
    hist->SetMarkerStyle(kFullTriangleUp);
    hist->SetMarkerSize(2);
    hist->SetMarkerColor(color-3);
@@ -493,7 +493,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hT0VsMeas_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, t0Lo, t0Hi);
-   hist->SetTitle(";Measurement;t_{0}, ns;");
+   hist->SetTitle("; Measurement; t_{0}, ns;");
    hist->SetOption("DUMMY");
    hist->GetListOfFunctions()->Add(grT0VsMeas, "p");
    styleMarker.Copy(*hist);
@@ -502,7 +502,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hT0VsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    //hist->GetYaxis()->SetRangeUser(t0Lo, t0Hi);
-   hist->SetTitle(";Fill;t_{0}, ns;");
+   hist->SetTitle("; Fill; t_{0}, ns;");
    hist->SetMarkerStyle(kFullCircle);
    hist->SetMarkerSize(1);
    hist->SetMarkerColor(color);
@@ -615,13 +615,13 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
       shName = "hT0VsMeas_" + sPolId + "_" + sBeamE + "_" + sChId;
       oc_ch->o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, t0Hi-t0Lo, t0Lo, t0Hi);
-      ((TH1*) oc_ch->o[shName])->SetTitle(";Measurement;t_{0}, ns;");
+      ((TH1*) oc_ch->o[shName])->SetTitle("; Measurement; t_{0}, ns;");
       ((TH1*) oc_ch->o[shName])->SetOption("NOIMG");
       ((TH1*) oc_ch->o[shName])->GetListOfFunctions()->Add(grT0VsMeas, "p");
 
       shName = "hT0_" + sPolId + "_" + sBeamE + "_" + sChId;
       oc_ch->o[shName] = new TH1F(shName.c_str(), shName.c_str(), t0Hi-t0Lo, t0Lo, t0Hi);
-      ((TH1*) oc_ch->o[shName])->SetTitle(";t_{0}, ns;Events;");
+      ((TH1*) oc_ch->o[shName])->SetTitle("; t_{0}, ns; Events;");
       ((TH1*) oc_ch->o[shName])->SetOption("hist NOIMG");
 
       // DL
@@ -632,13 +632,13 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
       shName = "hDLVsMeas_" + sPolId + "_" + sBeamE + "_" + sChId;
       oc_ch->o[shName] = new TH2F(shName.c_str(), shName.c_str(), 1, 0, 1, dlHi-dlLo, dlLo, dlHi);
       ((TH1*) oc_ch->o[shName])->SetOption("NOIMG");
-      ((TH1*) oc_ch->o[shName])->SetTitle(";Measurement;Dead Layer, #mug/cm^{2};");
+      ((TH1*) oc_ch->o[shName])->SetTitle("; Measurement; Dead Layer, #mug/cm^{2};");
       ((TH1*) oc_ch->o[shName])->GetListOfFunctions()->Add(grDLVsMeas, "p");
 
       shName = "hDL_" + sPolId + "_" + sBeamE + "_" + sChId;
       oc_ch->o[shName] = new TH1F(shName.c_str(), shName.c_str(), dlHi-dlLo, dlLo, dlHi);
       ((TH1*) oc_ch->o[shName])->SetOption("hist NOIMG");
-      ((TH1*) oc_ch->o[shName])->SetTitle(";Dead Layer, #mug/cm^{2};Events;");
+      ((TH1*) oc_ch->o[shName])->SetTitle("; Dead Layer, #mug/cm^{2}; Events;");
 
       // t0 vs DL
       TGraphErrors* grT0VsDL = new TGraphErrors();
@@ -648,7 +648,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
       shName = "hT0VsDL_" + sPolId + "_" + sBeamE + "_" + sChId;
       oc_ch->o[shName] = new TH2F(shName.c_str(), shName.c_str(), dlHi-dlLo, dlLo, dlHi, t0Hi-t0Lo, t0Lo, t0Hi);
       ((TH1*) oc_ch->o[shName])->SetOption("NOIMG");
-      ((TH1*) oc_ch->o[shName])->SetTitle(";Dead Layer, #mug/cm^{2};t_{0}, ns;");
+      ((TH1*) oc_ch->o[shName])->SetTitle("; Dead Layer, #mug/cm^{2}; t_{0}, ns;");
       ((TH1*) oc_ch->o[shName])->GetListOfFunctions()->Add(grT0VsDL, "p");
 
       // If this is a new directory then we need to add it to the list
@@ -660,13 +660,13 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hT0VsChannel_" + sPolId + "_" + sBeamE;
    hist= new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetOption("gridx");
-   hist->SetTitle(";Channel;Mean t_{0}, ns;");
+   hist->SetTitle("; Channel; Mean t_{0}, ns;");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    shName = "hDLVsChannel_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetOption("gridx");
-   hist->SetTitle(";Channel;Mean Dead Layer, #mug/cm^{2};");
+   hist->SetTitle("; Channel; Mean Dead Layer, #mug/cm^{2};");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    // t0 vs DL
@@ -697,7 +697,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
    hist->SetOption("E1");
    hist->SetBit(TH1::kIsAverage);
-   hist->SetTitle(";Kinematic Energy, keV;Asymmetry;");
+   hist->SetTitle("; Kinematic Energy, keV; Asymmetry;");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    Double_t xbins[8] = {-20, -5, -3, -1, +1, +3, +5, +20};
@@ -706,7 +706,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist = new TH1F(shName.c_str(), shName.c_str(), 7, xbins);
    hist->SetOption("E1");
    hist->SetBit(TH1::kIsAverage);
-   hist->SetTitle(";Longi. Time Diff, ns;Asymmetry;");
+   hist->SetTitle("; Longi. Time Diff, ns; Asymmetry;");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
 } //}}}

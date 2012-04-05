@@ -5,7 +5,7 @@
 
 #include "CnipolAlphaHists.h"
 #include "ChannelEventId.h"
-
+#include <fstream>
 ClassImp(CnipolAlphaHists)
 
 using namespace std;
@@ -306,6 +306,11 @@ void CnipolAlphaHists::PostFill()
    Double_t xminI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
    Double_t xmaxI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
    Int_t tmaxBinI = 0;
+   Int_t tmaxBinA = 0;
+   Double_t valueA = 0;
+   Int_t maxBinAa = 0;
+   ofstream andersout;
+   andersout.open("anders2.txt");
 
    //Int_t maxBin = 0;
 
@@ -324,13 +329,24 @@ void CnipolAlphaHists::PostFill()
       maxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetMaximumBin();
       maxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetMaximumBin();
 
-      if (i == 9 || i == 10) {
-         for (int j = 0; j <= 255; j++) {
+	valueA=((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(maxBinA);
 
-            tmaxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetBinContent(j);
-            if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
-         }
-      }
+	for(int j=0;j<=255;j++){
+	 tmaxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(j);
+//	 andersout<<"i="<<i<<" j="<<j<<" value="<<tmaxBinA<<endl;
+	 if(tmaxBinA>=(valueA*.95))maxBinAa=j;
+	}
+	
+	andersout<<"i="<<i<<" maxBinA="<<maxBinA<<" maxBinAa="<<maxBinAa<<endl;
+	maxBinA=maxBinAa;
+
+     // if (i == 9 || i == 10) {
+    //     for (int j = 0; j <= 255; j++) {
+
+      //      tmaxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetBinContent(j);
+        //    if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
+        // }
+      
 
       //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmin();
       //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmax();
