@@ -1331,8 +1331,8 @@ void MAsymRunHists::PostFill()
       // Ratio of inj to first meas
       TH1F* hPolarFirstMeasRatioVsFill_ = (TH1F*) oc_pol->o["hPolarFirstMeasRatioVsFill_" + sPolId];
       TH1F* hPolarInj                   = (TH1F*) oc_pol->o["hPolarVsFill_" + sPolId + "_024"];
-      TH1F* hPolarFst                   = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + sPolId + "_255"];
-      //TH1F* hPolarFst                   = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + sPolId + "_100"];
+      //TH1F* hPolarFst                   = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + sPolId + "_255"];
+      TH1F* hPolarFst                   = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + sPolId + "_100"];
 
       hPolarFirstMeasRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
       //hPolarFirstMeasRatioVsFill_->Divide(hPolarInj, hPolarFst);

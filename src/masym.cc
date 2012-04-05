@@ -209,8 +209,8 @@ void initialize()
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
-      if ( beamEnergy == kBEAM_ENERGY_255 )
-      //if ( beamEnergy == kBEAM_ENERGY_100 )
+      //if ( beamEnergy == kBEAM_ENERGY_255 )
+      if ( beamEnergy == kBEAM_ENERGY_100 )
       {
          gAnaGlobResult.AddMeasResult(*gMM);
       }
@@ -276,7 +276,7 @@ void initialize()
    //if (gAnaInfo->HasGraphBit())
    //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
-   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
