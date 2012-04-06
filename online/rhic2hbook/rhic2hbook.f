@@ -164,7 +164,7 @@ c	output filename
 	    stop
 	endif	
 
-	if (fout.eq.'?') fout = fin//'.hbook'
+	if (fout.eq.'?') fout = fin(1:len_trim(fin)) // '.hbook'
 
 c Make that if no '-c' option given but n-tuple requested than all channels go to n-tuple
 
@@ -528,6 +528,8 @@ c Counts per bunch for each detector
 	call hbook1(597, 'Energy keV, pol minus, for ALL Si', 128, 0., 1280., 0)
 	call hbook1(600, 'Energy keV, ALL pol for ALL Si', 128, 0., 1280., 0)
 
+c	Flag out bad channels (run 2012 addition) 05.04.2012 Igor
+	call FlagOut(polName)
 c	Fill histogramms
 	do i=1,6
 c Do not process 90-degree detectors with horizontal targets
@@ -1268,4 +1270,73 @@ C	20% error
 	
 	print *, 'Average analyzing power from L.Trueman''s fit=', analyzingPowerS
 	
+	end
+c
+c
+c
+	subroutine FlagOut(polName)
+	character*256 polName
+c		maximum relative sigma
+	parameter (sigmax = 0.05)
+c		minimum number of channels untill killing the whole detector
+	parameter (nmin = 6)
+c		Flag out too offset channels following logic of W. Schmidke's repol.f
+	common /sipar/ idiv, rnsperchan, emin, etrg, ifine, ecoef(96), edead(96), tmin(96), mark(96)
+	double precision sumplus, sumplus2, summinus, summinus2, sigplus, sigminus
+c		Cicle over detectors 
+	do i = 1, 6
+c		Run 12: blu2 det 1 and 6 have vertical orientation, so must have enequal distribution
+	    if (.not.((polName(13:16).eq.'blu2').and.((i.eq.1).or.(i.eq.6)))) then
+100		continue
+c		count events
+		n = 0
+		sumplus = 0
+		summinus = 0
+		sumplus2 = 0
+		summinus2 = 0
+		do j = 1, 12
+		    id = 12*(i-1) + j
+		    if (mark(id).eq.0) then
+			n = n + 1
+			sumplus  = sumplus + hsum(400 + id)
+			summinus = summinus + hsum(500 + id)
+			sumplus2  = sumplus2 + hsum(400 + id)**2
+			summinus2 = summinus2 + hsum(500 + id)**2
+		    endif
+		enddo
+c	Kill the detector if there is no events or number of good channels below minimum
+		if (n.lt.nmin.or.sumplus.lt.1.or.summinus.lt.1) then
+		    do j = 1, 12
+			mark(12*(i-1) + j) = 1
+		    enddo
+		    print *, '****** >>> Whole detector ', i, ' flagged out'
+		    goto 200
+		endif
+c		calculate relative sigma
+		sumplus  = sumplus / n
+		sumplus2 = sumplus2 / n
+		sigplus = sqrt(sumplus2 - sumplus**2) / sumplus
+		summinus  = summinus / n
+		summinus2 = summinus2 / n
+		sigminus = sqrt(summinus2 - summinus**2) / summinus
+		if (sigplus.le.sigmax.and.sigminus.le.sigmax) goto 200
+c	Kill the most outstanding channel
+		delta = 0
+		n = 12*i - 11
+		do j = 1, 12
+		    id = 12*(i-1) + j
+		    d = max(abs(sumplus - hsum(400 + id)), abs(summinus - hsum(500 + id)))
+		    if ((mark(id).eq.0).and.(d.gt.delta)) then
+			delta = d
+			n = id
+		    endif
+		enddo
+		mark(n) = 1
+		print *, '*** >>> Flag out strip : ', n
+		goto 100
+200		continue
+	    endif
+	enddo
+c
+	return
 	end
