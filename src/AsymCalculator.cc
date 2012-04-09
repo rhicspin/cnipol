@@ -1727,6 +1727,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    TF2 *asymToPolar = new TF2("asymToPolar", "1.*y/[0]");
    asymToPolar->SetParameter(0, gAnaMeasResult->A_N[1]);
    grPolarVsPhi->Apply(asymToPolar);
+   delete asymToPolar;
 
 
    TF1 *fitFunc = new TF1("sin_phi", "[0]*TMath::Sin([1]-x)", 0, 2*M_PI);
@@ -1734,7 +1735,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    fitFunc->SetParNames("Polarization", "#phi");
    fitFunc->SetParameter(0, 0);
    fitFunc->SetParameter(1, 0);
-   fitFunc->SetParLimits(0, -200, 200);
+   fitFunc->SetParLimits(0, -500, 500);
    fitFunc->SetParLimits(1, -M_PI, M_PI);
 
    fitres = grPolarVsPhi->Fit(fitFunc, "S R");
@@ -1745,6 +1746,12 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    } else {
       Error("CalcStripAsymmetry", "Fit error...");
    }
+
+   // Multiply by 100% for esthetic reasons
+   TF2 *dummyScale = new TF2("dummyScale", "100.*y");
+   grPolarVsPhi->Apply(dummyScale);
+   grPolarVsPhi->Fit(fitFunc, "R");
+   delete dummyScale;
 
 } //}}}
 
