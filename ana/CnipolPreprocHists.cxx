@@ -333,7 +333,7 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
       TH2* fhTimeVsEnergyA_ch_eb   = (TH2*) ebHists->fhTimeVsEnergyA_ch[chId-1];
 
       if ( !fhTimeVsEnergyA_ch_this || !fhTimeVsEnergyA_ch_eb ) {
-         Error("PostFillPassOne", "No empty bunch histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
+         Error("PostFillPassOne_SubtractEmptyBunch", "No empty bunch histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
          continue;
       }
 
