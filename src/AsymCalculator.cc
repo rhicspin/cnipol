@@ -1724,7 +1724,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
 
    grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
 
-   TF2 *asymToPolar = new TF2("asymToPolar", "100*y/[0]");
+   TF2 *asymToPolar = new TF2("asymToPolar", "1.*y/[0]");
    asymToPolar->SetParameter(0, gAnaMeasResult->A_N[1]);
    grPolarVsPhi->Apply(asymToPolar);
 

@@ -619,7 +619,7 @@ ValErrPair AnaFillResult::CalcPolProfP(ValErrPair R, ValErrPair Pmax)
 { //{{{
    ValErrPair polProfP(0, -1);
 
-   if (Pmax.second < 0 || R.second < 0 || Pmax.first <= -1) return polProfP;
+   if (Pmax.second < 0 || R.second < 0 || R.first <= -1) return polProfP;
 
    polProfP.first = Pmax.first / sqrt(1 + R.first);
 

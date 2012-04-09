@@ -35,6 +35,8 @@ AnaGlobResult        gAnaGlobResult;
 
 int main(int argc, char *argv[])
 {
+   setbuf(stdout, NULL);
+
    // Create a default one
    gMeasInfo = new MeasInfo();
 
@@ -70,9 +72,10 @@ void initialize()
    //TString fileSuffix  = "_hama";
 
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
-   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kINJECTION);
+   gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
    gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
+   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_255);
 
    gAnaInfo   = new AnaInfo();
    gMAsymRoot = new MAsymRoot(outFileName.Data());
@@ -107,11 +110,13 @@ void initialize()
 
       if (!f) {
          Error("masym", "file not found. Skipping...");
+         delete f;
          continue;
       }
 
       if (f->IsZombie()) {
          Error("masym", "file is zombie %s. Skipping...", fileName.Data());
+         f->Close();
          delete f;
          continue;
       }
@@ -122,6 +127,7 @@ void initialize()
 
       if (!gMM) {
          Error("masym", "RC not found. Skipping...");
+         f->Close();
          delete f;
          continue;
       }
@@ -143,8 +149,6 @@ void initialize()
       Double_t runId            = gMM->fMeasInfo->RUNID;
       UInt_t   fillId           = (UInt_t) runId;
       UInt_t   beamEnergy       = (UInt_t) (gMM->fMeasInfo->GetBeamEnergy() + 0.5);
-      //string   asymVersion      = gMM->fMeasInfo->fAsymVersion;
-      //Float_t  ana_power        = gMM->fAnaMeasResult->A_N[1];
       //Float_t  asymmetry        = gMM->fAnaMeasResult->sinphi[0].P[0] * gMM->fAnaMeasResult->A_N[1];
       //Float_t  asymmetry_err    = gMM->fAnaMeasResult->sinphi[0].P[1] * gMM->fAnaMeasResult->A_N[1];
 
@@ -156,6 +160,8 @@ void initialize()
       TFitResultPtr fitResPolarPhi = gMM->fAnaMeasResult->fFitResPolarPhi;
 
       if (fitResPolarPhi.Get()) {
+         //polarization    = fitResPolarPhi->Value(0);
+         //polarizationErr = fitResPolarPhi->FitResult::Error(0);
          polarization    = fitResPolarPhi->Value(0) * 100;
          polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100;
       }
@@ -173,15 +179,8 @@ void initialize()
       //}
 
       //printf("tzero: %f %f %f %d %f \n", tzero, tzeroErr, runId, gMM->fMeasInfo->fStartTime, asymmetry);
-      //printf("%8.3f, %s, %3d, %f, %f, %f, %f, %f, %s\n", runId, strTime,
-      //   beamEnergy, asymmetry, asymmetry_err, ana_power, polarization,
-      //   polarizationErr, asymVersion.c_str());
-      //if (asymVersion != "v1.8.5") {
-	   //   Warning("masym", "Wrong version %s", asymVersion.c_str());
-      //   continue;
-      //}
 
-      if (polarization < 5 || polarization > 99 || polarizationErr > 30 ||
+      if (polarization < 15 || polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find((EBeamEnergy) beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           (TMath::Abs(profileRatio) > 0.600 && profileRatioErr < 0.05) ||
@@ -189,6 +188,11 @@ void initialize()
          )
       {
 	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
+         printf("%8.3f, %s, %3d, %f, %f, %s, %f, %f\n", runId, strTime,
+            beamEnergy, polarization, polarizationErr, RunConfig::AsString(gMM->fMeasInfo->fMeasType).c_str(), profileRatio, profileRatioErr );
+
+         f->Close();
+         delete f;
          continue;
       }
 
@@ -209,12 +213,14 @@ void initialize()
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
-      //if ( beamEnergy == kBEAM_ENERGY_255 )
-      if ( beamEnergy == kBEAM_ENERGY_100 )
+      //if ( beamEnergy == kBEAM_ENERGY_100 )
+      //if ( beamEnergy == kBEAM_ENERGY_250 )
+      if ( beamEnergy == kBEAM_ENERGY_255 )
       {
          gAnaGlobResult.AddMeasResult(*gMM);
       }
 
+      f->Close();
       delete f;
      
       //gGoodRuns.insert(fName);
@@ -276,7 +282,7 @@ void initialize()
    //if (gAnaInfo->HasGraphBit())
    //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
-   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
