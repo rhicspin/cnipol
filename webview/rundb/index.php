@@ -69,6 +69,8 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
       // Check if raw data display requested      
       if (isset($_GET['raw'])) {
          include("runinfo_raw.html");
+      } else if (isset($_GET['ach'])) {
+         include("runinfo_allch.html");
       } else
          include("runinfo.html");
 

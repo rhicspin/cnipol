@@ -25,7 +25,7 @@
 
 <p><a name="content"/>
 
-<h1 class="count">Run <?=$gRunId?>, Channel <?=$gChanId?></h1>
+<h1>Measurement <?=$gRunId?>, channel <?=$gChanId?></h1>
 
 <p>
 <a href="./"><span class=s150>Run Index</span></a> &mdash;
@@ -64,7 +64,7 @@
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 
-<h2 id="summary" class="count">Summary</h2>
+<h1 id="summary" class="count">Summary</h1>
 -->
 <!-- {{{ -->
 <div id="div:summary" class="section">
@@ -103,7 +103,7 @@
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 -->
 
-<h2 id="raw" class="count">Raw</h2>
+<h1 id="raw" class="count">Raw</h1>
 <!-- {{{ -->
 <div id="div:raw" class="section">
 
@@ -138,12 +138,40 @@ $gChanId = sprintf("%02d", $gChanId);
 <!-- }}} -->
 
 
+
+<h1 id="kinematics" class="count">Kinematics</h1>
+<!-- {{{ -->
+<div id="div:kinematics" class="section">
+
+<?
+$gChanId = sprintf("%02d", $gChanId);
+//$origPHDir = $gP->dir;
+//$gP->dir = "$origPHDir/raw/channel$gChanId/";
+?>
+
+<p>
+<table class="simple" cellspacing=10 align=center>
+
+<tr>
+<td class=align_ct>
+<?=$gP->img("/kinema_premass/channel$gChanId/hPseudoMass_ch$gChanId")?>
+
+<td class=align_ct>
+<?=$gP->img("/kinema/channel$gChanId/hPseudoMass_ch$gChanId")?>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+
 <!--
 <p>
 <div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 -->
 
-<h2 id="other" class="count">Other</h2>
+<h1 id="other" class="count">Other</h1>
 <!-- {{{ -->
 <div id="div:other" class="section">
 

@@ -130,34 +130,33 @@ BODY {
 }
 
 H1.count:before {
-	/*content: counter(counterH1) " ";*/
+	content: counter(counterH1) " ";
 	counter-increment: counterH1;  /* Add 1 to chapter */
 }
 
 H1.count {
 	counter-reset: counterH2;      /* Set section to 0 */
-	/*background-color: #bbbbff;*/
+	background-color: #ddddff;
 }
 
 H2.count:before {
-	/*content: counter(counterH1) "." counter(counterH2) " ";*/
-	content: counter(counterH2) " ";
+	content: counter(counterH1) "." counter(counterH2) " ";
 	counter-increment: counterH2;
 }
 
 H2.count {
 	counter-reset: counterH3;      /* Set section to 0 */
-	/*background-color: #ccccff;*/
+	background-color: #dfdfff;
 }
 
 H3.count:before {
-	content: counter(counterH2) "." counter(counterH3) " ";
+	content: counter(counterH1) "." counter(counterH2) "." counter(counterH3) " ";
 	counter-increment: counterH3;
 }
 
 H3.count {
 	counter-reset: counterH4;      /* Set section to 0 */
-	/*background-color: #ddddff;*/
+	background-color: #ededff;
 }
 
 H4.count:before {
@@ -167,7 +166,7 @@ H4.count:before {
 
 H4.count {
 	counter-reset: counterH5;      /* Set section to 0 */
-	background-color: #eeeeff;
+	background-color: #efefff;
 }
 
 H5.count:before {
