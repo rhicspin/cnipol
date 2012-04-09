@@ -1,0 +1,46 @@
+/**
+* wikitable class for skinning normal tables
+* keep in sync with commonPrint.css
+*/
+table.wikitable {
+   margin: 1em 1em 1em 1em;
+   background-color: #f9f9f9;
+   border: 1px #aaa solid;
+   border-collapse: collapse; 
+   color: black;
+}
+
+table.wikitable > tr > th,
+table.wikitable > tr > td,
+table.wikitable > * > tr > th,
+table.wikitable > * > tr > td {
+   border: 1px #aaa solid;
+   padding: 0.5em;
+}
+
+table.wikitable > tr > th,
+table.wikitable > * > tr > th {
+   background-color: #f0f0f0;
+   text-align: center;
+   /*font-family: Arial;*/
+}
+
+table.wikitable > caption {
+   font-weight: bold;
+}
+
+table.cellpadded td {
+   padding: 0.5em;
+   text-align: center;
+   vertical-align: top;
+}
+
+.cellpadded_top td {
+   padding: 1.0em;
+   vertical-align: top;
+}
+
+table.cntr {
+   margin: 1em auto 1em auto;
+}
+

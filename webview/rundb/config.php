@@ -16,19 +16,27 @@ $RUN_PERIOD_BY_DATE = array (
    12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" )
 );
 
-$RUN_PERIOD     = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12");
-$POLARIMETER_ID = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
-$RHIC_BEAM      = array("1" => "Yellow", "2" => "Blue");
-$RHIC_STREAM    = array("1" => "Upstream", "2" => "Downstream");
-$MEASTYPE       = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");
-$BEAM_ENERGY    = array("24" => "24", "100" => "100", "250" => "250", "255" => "255");
-$TARGET_ORIENT  = array("H" => "H", "V" => "V");
-$TARGET_ID      = array_combine(range(1, 6), range(1, 6));
+$RUN_PERIOD      = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12");
+$POLARIMETER_ID  = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
+$RHIC_BEAM       = array("1" => "Yellow", "2" => "Blue");
+$RHIC_STREAM     = array("1" => "Upstream", "2" => "Downstream");
+$MEASTYPE        = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");
+$BEAM_ENERGY     = array("24" => "24", "100" => "100", "250" => "250", "255" => "255");
+$BEAM_ENERGY_INJ = 24;
+$TARGET_ORIENT   = array("H" => "H", "V" => "V");
+$TARGET_ID       = array_combine(range(1, 6), range(1, 6));
 
 
 // Normalization factors
-$normJetCarbonByTarget[12][255] = 0.9585;       // the average of all polarimeters in run 11 
-$normJetCarbonByTarget[12][100] = 1;
+//$normJetCarbonByTarget[12][255] = 0.9585;       // the average of all polarimeters in run 11 
+//$normJetCarbonByTarget[12][100] = 1;
+//$normJetCarbonByTarget[12][255] = 0.9585;       // the average of all polarimeters in run 11 
+//$normJetCarbonByTarget[12][100] = 1;
+
+$normJetCarbonByTarget[12][255]["B1U"] = 1.016;
+$normJetCarbonByTarget[12][255]["Y1D"] = 1.073;
+$normJetCarbonByTarget[12][255]["B2D"] = 1.197;
+$normJetCarbonByTarget[12][255]["Y2U"] = 0.994;
 
 $normJetCarbonByTarget[11][250]["B1U"] = 0.934;
 $normJetCarbonByTarget[11][250]["Y1D"] = 0.909;
