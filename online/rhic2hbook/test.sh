@@ -44,7 +44,7 @@ mysendpict() {
     fi
 }
 
-
+echo "Starting rhic2hbook..." >> $ALOG
 $ANACMD -l -s $POLARIM $DATA $HBOOKFILE >> $ALOG 2>&1
 echo "Starting lr_spinpat.pl..." >> $ALOG
 $MACDIR/lr_spinpat.pl $RUN
@@ -53,5 +53,7 @@ $MACDIR/pvector.pl $RUN
 echo "Starting pawX11..." >> $ALOG
 export RUN LOGDIR PSFILE HBOOKFILE MACDIR       # no other way to pass arguments to kumac...
 pawX11 -n -b $MACDIR/onliplot.kumac >> $ALOG 2>&1
+echo "Starting online_polar.pl..." >> $ALOG
+$MACDIR/online_polar.pl $RUN
 echo "Starting sendpict..." >> $ALOG
 mysendpict plotData $PSFILE >> $ALOG 2>&1
