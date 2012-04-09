@@ -292,28 +292,6 @@ void CnipolHists::BookHists()
 
 
 /** */
-void CnipolHists::BookHistsExtra()
-{ //{{{
-   //TH1* hTimeVsEnergyA = (TH2F*) o["hTimeVsEnergyA"];
-
-   //char  formula[100], fname[100];
-   //float sigma = RunConst::M2T * ]*gAnaInfo->MassSigmaAlt :
-
-   //sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", RunConst::E2T, sigma);
-   //sprintf(formula, "%f/sqrt(x)", RunConst::E2T);
-   //sprintf(fname, "banana_cut_l_ch%d_mode%d", i, j);
-   //sprintf(fname, "banana_cut_l");
-
-   //TF1 *banana_cut_l = new TF1(fname, formula, 0, 1500);
-
-   //if (hTimeVsEnergyA) {
-      //hTimeVsEnergyA->GetListOfFunctions()->Add(banana_cut_l);
-      //hTimeVsEnergyA->GetListOfFunctions()->Add(banana_cut_h);
-   //}
-} //}}}
-
-
-/** */
 void CnipolHists::PreFill()
 { //{{{
    char dName[256];

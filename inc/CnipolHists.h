@@ -46,7 +46,6 @@ public:
    ~CnipolHists();
 
    void BookHists();
-   void BookHistsExtra();
    void PreFill();
    void Fill(ChannelEvent *ch);
    void FillDerived();
