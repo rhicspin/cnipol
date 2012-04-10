@@ -31,8 +31,8 @@ do
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --pmt --copy
    #bgx_limit 16 ./bin/asym -r $run_name --calib --profile --use-db -g --copy --disable-det=101101 --sfx=hama --raw
-   bgx_limit 10 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --asym --pmt --kinema -g
-   #bgx_limit 10 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --asym --pmt --kinema 
+   #bgx_limit 10 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --asym --pmt --kinema -g
+   bgx_limit 10 $CNIPOL_DIR/bin/asym -r $run_name --calib --profile --use-db --raw-ext --asym --pmt --kinema 
 done
 
 # Wait until all processes are finished
