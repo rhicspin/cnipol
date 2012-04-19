@@ -874,8 +874,8 @@ void MAsymRunHists::Fill(const EventConfig &rc)
       spinAngle    = fitResAsymPhi->Value(1) / TMath::Pi() * 180;
       spinAngleErr = fitResAsymPhi->FitResult::Error(1) / TMath::Pi() * 180;
 
-      polarization    = fitResPolarPhi->Value(0);
-      polarizationErr = fitResPolarPhi->FitResult::Error(0);
+      polarization    = fitResPolarPhi->Value(0)*100;
+      polarizationErr = fitResPolarPhi->FitResult::Error(0)*100;
    }
 
 
@@ -1580,15 +1580,15 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
          hPolarHJVsFill_->SetBinContent(ib, polarHJ.first*100);
          hPolarHJVsFill_->SetBinError(  ib, polarHJ.second*100);
 
-         hPolarPCScaledVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first);
-         hPolarPCScaledVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second);
+         hPolarPCScaledVsFill_HJOnly_->SetBinContent(ib, polarPCNorm.first*100);
+         hPolarPCScaledVsFill_HJOnly_->SetBinError(  ib, polarPCNorm.second*100);
       }
 
-      hPolarPCVsFill_->SetBinContent(ib, polarPC.first);
-      hPolarPCVsFill_->SetBinError(  ib, polarPC.second);
+      hPolarPCVsFill_->SetBinContent(ib, polarPC.first*100);
+      hPolarPCVsFill_->SetBinError(  ib, polarPC.second*100);
 
-      hPolarPCScaledVsFill_->SetBinContent(ib, polarPCNorm.first);
-      hPolarPCScaledVsFill_->SetBinError(  ib, polarPCNorm.second);
+      hPolarPCScaledVsFill_->SetBinContent(ib, polarPCNorm.first*100);
+      hPolarPCScaledVsFill_->SetBinError(  ib, polarPCNorm.second*100);
    }
 
    ValErrPair profPolar = afr.fProfPolars[polId];
