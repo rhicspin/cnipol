@@ -282,7 +282,7 @@ void initialize()
    //if (gAnaInfo->HasGraphBit())
    //   gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
 
-   //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
+   gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
    //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
