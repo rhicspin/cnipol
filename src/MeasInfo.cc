@@ -6,7 +6,7 @@
 #include "AsymGlobals.h"
 #include "Asym.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
@@ -79,14 +79,15 @@ MeasInfo::MeasInfo() : TObject(),
 /** */
 MeasInfo::~MeasInfo() { }
 
-Float_t   MeasInfo::GetEndVoltage()               const { return fEndVoltage;}
-Float_t   MeasInfo::GetStartVoltage()             const { return fStartVoltage;}
-Float_t   MeasInfo::GetBeamEnergy()               const { return fBeamEnergy; }
-Float_t   MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
-Short_t   MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlobalTdcOffset; }
-EMeasType MeasInfo::GetMeasType()                 const { return fMeasType; } 
-string    MeasInfo::GetAlphaCalibFileName()       const { return ""; }
-string    MeasInfo::GetDlCalibFileName()          const { return ""; }
+Float_t     MeasInfo::GetEndVoltage()               const { return fEndVoltage;}
+Float_t     MeasInfo::GetStartVoltage()             const { return fStartVoltage;}
+Float_t     MeasInfo::GetBeamEnergyReal()           const { return fBeamEnergy; }
+EBeamEnergy MeasInfo::GetBeamEnergy()               const { return (EBeamEnergy) Int_t(fBeamEnergy + 0.5); }
+Float_t     MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
+Short_t     MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlobalTdcOffset; }
+EMeasType   MeasInfo::GetMeasType()                 const { return fMeasType; } 
+string      MeasInfo::GetAlphaCalibFileName()       const { return ""; }
+string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 
 
 void MeasInfo::SetVoltages(int begin, int end)
@@ -105,7 +106,7 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 
    UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
 
-   if (approxBeamEnergy == kBEAM_ENERGY_100 || approxBeamEnergy == kBEAM_ENERGY_250)
+   if (approxBeamEnergy >= 100)
       // this number comes from the online config files. May need to add it to the run_info DB table in the future
       fExpectedGlobalTimeOffset = -8;
    else
@@ -113,7 +114,7 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 
    fExpectedGlobalTdcOffset = (Short_t) (fExpectedGlobalTimeOffset / WFD_TIME_UNIT_HALF + 0.5);
 
-   printf("expected offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
+   Info("SetBeamEnergy", "Expected time offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
 } //}}}
 
 

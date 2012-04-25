@@ -57,7 +57,8 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fSpinStates.insert(kSPIN_UP);
 
    // Initialize targets
-   PolarimeterIdConstIter iPolId = fPolarimeters.begin();
+   PolarimeterIdSetConstIter iPolId = fPolarimeters.begin();
+
    for ( ; iPolId != fPolarimeters.end(); ++iPolId) {
       TargetOrientSetIter iTgtOrient = fTargetOrients.begin();
       for ( ; iTgtOrient != fTargetOrients.end(); ++iTgtOrient) {

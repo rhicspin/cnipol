@@ -10,6 +10,7 @@
 #include "TDirectory.h"
 
 #include "AsymGlobals.h"
+#include "AnaFillResult.h"
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
 #include "RunConfig.h"
@@ -29,11 +30,12 @@ public:
    MAsymSingleFillHists(TDirectory *dir);
    ~MAsymSingleFillHists();
 
-   void BookHists(std::string sid="");
+   void BookHists();
    void BookHistsPolarimeter(EPolarimeterId polId);
    void Fill(EventConfig &rc);
    void PostFill();
-   void UpdateLimits();
+   void PostFill(AnaFillResult &afr);
+   //void UpdateLimits();
 
    ClassDef(MAsymSingleFillHists, 1)
 };

@@ -388,7 +388,7 @@ Bool_t ChannelEvent::PassCutNoise()
 { //{{{
    Double_t extraOffset = 0;
 
-   if ( UInt_t(gMeasInfo->GetBeamEnergy() + 0.5) != kINJECTION)
+   if ( gMeasInfo->GetBeamEnergy() != kINJECTION)
       extraOffset = -8; // 8 TDC units ~= ? ns, 6 TDC units ~= 8 ns
 
    if ( GetAmpltd() < gMeasInfo->GetProtoCutAdcMin() ||

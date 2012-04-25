@@ -20,3 +20,17 @@ MAsymRoot::MAsymRoot(string fileName) : TFile(fileName.c_str(), "RECREATE", "MAs
 MAsymRoot::~MAsymRoot()
 {
 }
+
+void MAsymRoot::SetHists(DrawObjContainer &hists)
+{ //{{{
+   fHists = &hists;
+} //}}}
+
+
+/** */
+void MAsymRoot::SaveAs(string pattern, string dir)
+{ //{{{
+   TCanvas canvas("canvas", "canvas", 1400, 600);
+
+   fHists->SaveAllAs(canvas, pattern, dir);
+} //}}}

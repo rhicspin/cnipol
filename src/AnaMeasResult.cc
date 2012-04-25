@@ -10,6 +10,7 @@ using namespace std;
 
 /** */
 AnaMeasResult::AnaMeasResult() : TObject(),
+   fStartTime(0),
    max_rate(0),
    TshiftAve(0),
    wcm_norm_event_rate(0), 
@@ -102,7 +103,7 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
 
 
 /** */
-ValErrPair AnaMeasResult::GetPolar() const
+ValErrPair AnaMeasResult::GetPCPolar() const
 { //{{{
    ValErrPair val_err(0, -1);
 
@@ -110,7 +111,7 @@ ValErrPair AnaMeasResult::GetPolar() const
       val_err.first  = fFitResPolarPhi->Value(0);
       val_err.second = fFitResPolarPhi->FitResult::Error(0);
    } else {
-      Error("GetPolar", "No fit result found");
+      Error("GetPCPolar", "No valid fit result found");
    }
 
    return val_err;

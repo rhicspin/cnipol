@@ -32,6 +32,12 @@
 class MseMeasInfoX;
 class MseRunPeriodX;
 
+class MeasInfo;
+
+typedef std::map<std::string, MeasInfo>                   MeasInfoMap;
+typedef std::map<std::string, MeasInfo>::iterator         MeasInfoMapIter;
+typedef std::map<std::string, MeasInfo>::const_iterator   MeasInfoMapConstIter;
+
 
 /** */
 class MeasInfo : public TObject
@@ -62,15 +68,15 @@ public:
    double                      RUNID;
    time_t                      fStartTime;
    time_t                      fStopTime;
-   float                       fRunTime;
+   Float_t                     fRunTime;
    int                         fDataFormatVersion;
    std::string                 fAsymVersion;
    EMeasType                   fMeasType;
    UInt_t                      fNEventsProcessed;  // number of events processed from raw data file
    UInt_t                      fNEventsTotal;      // number of total events in raw data file
-   float                       GoodEventRate;
-   float                       EvntRate;
-   float                       ReadRate;
+   Float_t                     GoodEventRate;
+   Float_t                     EvntRate;
+   Float_t                     ReadRate;
    std::map<UShort_t, Float_t> fWallCurMon;
    Float_t                     fWallCurMonAve;
    Float_t                     fWallCurMonSum;
@@ -134,7 +140,8 @@ public:
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
    void            ConfigureActiveStrip(int mask);
-   Float_t         GetBeamEnergy() const;
+   Float_t         GetBeamEnergyReal() const;
+   EBeamEnergy     GetBeamEnergy() const;
    Float_t         GetStartVoltage() const;
    Float_t         GetEndVoltage() const;
    Float_t         GetExpectedGlobalTimeOffset() const;

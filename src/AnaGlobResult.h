@@ -6,6 +6,7 @@
 
 #include "AnaMeasResult.h"
 #include "AnaFillResult.h"
+#include "MAsymAnaInfo.h"
 #include "EventConfig.h"
 
 
@@ -15,11 +16,14 @@ class AnaGlobResult : public TObject
 {
 private:
 
-   std::string       fPathHjetResults;
+   std::string       fPathExternResults;
    std::string       fFileNameYelHjet;
    std::string       fFileNameBluHjet;
    UInt_t            fMinFill;
    UInt_t            fMaxFill;
+
+   FILE             *fFilePhp;      //!
+   BeamEnergySet     fBeamEnergies;
 
    void       CalcPolarNorm();
    void       CalcAvrgPolProfR();
@@ -44,8 +48,9 @@ public:
    ~AnaGlobResult();
 
    void Print(const Option_t* opt="") const;
-   //void PrintAsPhp(FILE *f=stdout) const;
+   void PrintAsPhp(FILE *f=stdout) const;
 
+   void       Configure(MAsymAnaInfo &mainfo);
    void       AdjustMinMaxFill();
    void       AddMeasResult(AnaMeasResult &result);
    void       AddMeasResult(EventConfig &mm);
@@ -55,6 +60,11 @@ public:
    void       UpdateInsertDb();
    ValErrPair GetNormJetCarbon(EPolarimeterId polId);
    ValErrPair GetNormProfPolar(EPolarimeterId polId);
+   void       SetFilePhp(FILE *f=stdout);
+
+protected:
+
+   void ReadHJInfo(std::ifstream &file);
 
    ClassDef(AnaGlobResult, 1)
 };

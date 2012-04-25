@@ -84,35 +84,35 @@ void MseFillPolarX::SetValues(AnaFillResult &fr)
 { //{{{
    start_time = mysqlpp::DateTime(fr.GetStartTime());
 
-   if (fr.fHjetPolars.find(kBLUE_RING) != fr.fHjetPolars.end() ) {
-      polar_blue_hjet     = fr.fHjetPolars[kBLUE_RING].first; 
-      polar_blue_hjet_err = fr.fHjetPolars[kBLUE_RING].second; 
+   if (fr.fHJPolars.find(kBLUE_RING) != fr.fHJPolars.end() ) {
+      polar_blue_hjet     = fr.fHJPolars[kBLUE_RING].first; 
+      polar_blue_hjet_err = fr.fHJPolars[kBLUE_RING].second; 
    }
 
-   if (fr.fHjetPolars.find(kYELLOW_RING) != fr.fHjetPolars.end() ) {
-      polar_yellow_hjet     = fr.fHjetPolars[kYELLOW_RING].first; 
-      polar_yellow_hjet_err = fr.fHjetPolars[kYELLOW_RING].second; 
+   if (fr.fHJPolars.find(kYELLOW_RING) != fr.fHJPolars.end() ) {
+      polar_yellow_hjet     = fr.fHJPolars[kYELLOW_RING].first; 
+      polar_yellow_hjet_err = fr.fHJPolars[kYELLOW_RING].second; 
    }
 
 
-   if (fr.fPolars.find(kB1U) != fr.fPolars.end() ) {
-      polar_blue_1       = fr.fPolars[kB1U].first; 
-      polar_blue_1_err   = fr.fPolars[kB1U].second; 
+   if (fr.fPCPolars.find(kB1U) != fr.fPCPolars.end() ) {
+      polar_blue_1       = fr.fPCPolars[kB1U].first; 
+      polar_blue_1_err   = fr.fPCPolars[kB1U].second; 
    }
 
-   if (fr.fPolars.find(kY1D) != fr.fPolars.end() ) {
-      polar_yellow_1     = fr.fPolars[kY1D].first; 
-      polar_yellow_1_err = fr.fPolars[kY1D].second; 
+   if (fr.fPCPolars.find(kY1D) != fr.fPCPolars.end() ) {
+      polar_yellow_1     = fr.fPCPolars[kY1D].first; 
+      polar_yellow_1_err = fr.fPCPolars[kY1D].second; 
    }
 
-   if (fr.fPolars.find(kB2D) != fr.fPolars.end() ) {
-      polar_blue_2       = fr.fPolars[kB2D].first; 
-      polar_blue_2_err   = fr.fPolars[kB2D].second; 
+   if (fr.fPCPolars.find(kB2D) != fr.fPCPolars.end() ) {
+      polar_blue_2       = fr.fPCPolars[kB2D].first; 
+      polar_blue_2_err   = fr.fPCPolars[kB2D].second; 
    }
 
-   if (fr.fPolars.find(kY2U) != fr.fPolars.end() ) {
-      polar_yellow_2     = fr.fPolars[kY2U].first; 
-      polar_yellow_2_err = fr.fPolars[kY2U].second; 
+   if (fr.fPCPolars.find(kY2U) != fr.fPCPolars.end() ) {
+      polar_yellow_2     = fr.fPCPolars[kY2U].first; 
+      polar_yellow_2_err = fr.fPCPolars[kY2U].second; 
    }
 
 } //}}}

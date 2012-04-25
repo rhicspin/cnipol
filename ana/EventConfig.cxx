@@ -7,7 +7,7 @@
 
 #include "EventConfig.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "DbEntry.h"
 #include "MeasInfo.h"
 #include "AnaMeasResult.h"
@@ -27,8 +27,9 @@ using namespace std;
  * themselves.
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()),
-   fMeasInfo(new MeasInfo()), fAnaInfo(new AnaInfo()),
-   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()), fMseMeasInfoX(new MseMeasInfoX())
+   fMeasInfo(new MeasInfo()), fAnaInfo(new AsymAnaInfo()),
+   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()),
+   fMseMeasInfoX(new MseMeasInfoX())
 {
 }
 
@@ -41,7 +42,7 @@ EventConfig::~EventConfig()
 
 
 MeasInfo*      EventConfig::GetMeasInfo()      { return fMeasInfo; }
-AnaInfo*       EventConfig::GetAnaInfo()       { return fAnaInfo; }
+AsymAnaInfo*   EventConfig::GetAnaInfo()       { return fAnaInfo; }
 Calibrator*    EventConfig::GetCalibrator()    { return fCalibrator; }
 AnaMeasResult* EventConfig::GetAnaMeasResult() { return fAnaMeasResult; }
 MseMeasInfoX*  EventConfig::GetMseMeasInfoX()  { return fMseMeasInfoX; }

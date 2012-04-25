@@ -17,7 +17,7 @@
 class  AsymDb;
 class  AsymRoot;
 class  AsymDbFile;
-class  AnaInfo;
+class  AsymAnaInfo;
 struct ErrorDetector;
 struct atdata_struct;
 class  DbEntry;
@@ -42,8 +42,6 @@ struct AsymCalculator;
 struct BunchAsym;
 struct StructStripCheck;
 struct StructBunchCheck;
-
-extern std::map<std::string, std::string> gAsymEnv;
 
 extern BunchAsym        gBunchAsym;
 extern StructSpeLumi    SpeLumi;
@@ -76,7 +74,7 @@ extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 
 extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
-extern AnaInfo                      *gAnaInfo;
+extern AsymAnaInfo                  *gAnaInfo;
 extern MeasInfo                     *gMeasInfo;
 extern AnaMeasResult                *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;

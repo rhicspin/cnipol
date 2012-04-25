@@ -17,14 +17,14 @@ class RunConfig : public TObject
 private:
 
 public:
-   std::set<EPolarimeterId> fPolarimeters;
+   PolarimeterIdSet         fPolarimeters;
    TargetSet                fTargets;
    std::set<EMeasType>      fMeasTypes;
    std::set<ETargetOrient>  fTargetOrients;
    std::set<EBeamId>        fBeams;
    std::set<ERingId>        fRings;
-   std::set<EBeamEnergy>    fBeamEnergies;
-   std::set<ESpinState>     fSpinStates;
+   BeamEnergySet            fBeamEnergies;
+   SpinStateSet             fSpinStates;
 
    RunConfig();
    ~RunConfig();

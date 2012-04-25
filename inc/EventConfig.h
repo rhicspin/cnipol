@@ -18,7 +18,7 @@
 #include "rhicpol.h"
 
 #include "AsymGlobals.h"
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "MeasInfo.h"
 #include "DbEntry.h"
 #include "AnaMeasResult.h"
@@ -35,7 +35,7 @@ public:
    
    TRandom       *fRandom;
    MeasInfo      *fMeasInfo;
-   AnaInfo       *fAnaInfo;
+   AsymAnaInfo   *fAnaInfo;
    Calibrator    *fCalibrator;
    AnaMeasResult *fAnaMeasResult;
    MseMeasInfoX  *fMseMeasInfoX; //  it is better to leave this one out as
@@ -49,7 +49,7 @@ public:
    ~EventConfig();
 
    MeasInfo*      GetMeasInfo();
-   AnaInfo*       GetAnaInfo();
+   AsymAnaInfo*   GetAnaInfo();
    Calibrator*    GetCalibrator();
    AnaMeasResult* GetAnaMeasResult();
    MseMeasInfoX*  GetMseMeasInfoX();
