@@ -166,7 +166,7 @@ void CnipolAlphaHists::BookHists()
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
-   for (UShort_t iCh=1; iCh<=TOT_WFD_CH; iCh++) {
+   for (UShort_t iCh = 1; iCh <= TOT_WFD_CH; iCh++) {
 
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
@@ -178,7 +178,8 @@ void CnipolAlphaHists::BookHists()
       if ( isubdir == d.end()) { // if dir not found
          oc = new DrawObjContainer();
          oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
-      } else {
+      }
+      else {
          oc = isubdir->second;
       }
 
@@ -302,15 +303,16 @@ void CnipolAlphaHists::PostFill()
 
    ((TH1F*) o["hAmpltd"])->SetAxisRange(xminA, xmaxA);
 
-   Int_t  maxBinI = ((TH1F*) o["hIntgrl"])->GetMaximumBin();
-   Double_t xminI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
-   Double_t xmaxI = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
-   Int_t tmaxBinI = 0;
-   Int_t tmaxBinA = 0;
+   Int_t  maxBinI  = ((TH1F*) o["hIntgrl"])->GetMaximumBin();
+   Double_t xminI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
+   Double_t xmaxI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
+   Int_t tmaxBinI  = 0;
+   Int_t tmaxBinA  = 0;
    Double_t valueA = 0;
-   Int_t maxBinAa = 0;
-   ofstream andersout;
-   andersout.open("anders2.txt");
+   Int_t maxBinAa  = 0;
+
+   //ofstream andersout;
+   //andersout.open("anders2.txt");
 
    //Int_t maxBin = 0;
 
@@ -329,24 +331,22 @@ void CnipolAlphaHists::PostFill()
       maxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetMaximumBin();
       maxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetMaximumBin();
 
-	valueA=((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(maxBinA);
+      valueA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(maxBinA);
 
-	for(int j=0;j<=255;j++){
-	 tmaxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(j);
-//	 andersout<<"i="<<i<<" j="<<j<<" value="<<tmaxBinA<<endl;
-	 if(tmaxBinA>=(valueA*.95))maxBinAa=j;
-	}
-	
-	andersout<<"i="<<i<<" maxBinA="<<maxBinA<<" maxBinAa="<<maxBinAa<<endl;
-	maxBinA=maxBinAa;
+      for (int j = 0; j <= 255; j++) {
+         tmaxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(j);
+         //andersout<<"i="<<i<<" j="<<j<<" value="<<tmaxBinA<<endl;
+         if (tmaxBinA >= (valueA * .95)) maxBinAa = j;
+      }
 
-     // if (i == 9 || i == 10) {
-    //     for (int j = 0; j <= 255; j++) {
+      //andersout << "i=" << i << " maxBinA=" << maxBinA << " maxBinAa=" << maxBinAa << endl;
+      maxBinA = maxBinAa;
 
+      // if (i == 9 || i == 10) {
+      //     for (int j = 0; j <= 255; j++) {
       //      tmaxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetBinContent(j);
-        //    if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
-        // }
-      
+      //    if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
+      // }
 
       //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmin();
       //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmax();
@@ -358,7 +358,6 @@ void CnipolAlphaHists::PostFill()
       xmaxI = maxBinI + 50;
 
       ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->SetAxisRange(xminA, xmaxA);
-
       ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->SetAxisRange(xminI, xmaxI);
    }
 } //}}}
