@@ -34,15 +34,13 @@ void end_process(MseMeasInfoX &run)
    gSystem->Info("end_process", "Starting...");
 
    // Feedback Mode
-   if (Flag.feedback) {
-
-      int FeedBackLevel = 2; // 1: no fit just max and mean
-                             // 2: gaussian fit
-      gAnaMeasResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
-
-      // reset counters
-      for (int i=0; i<N_BUNCHES; i++) Ntotal[i] = 0;
-   }
+   //if (Flag.feedback) {
+   //   int FeedBackLevel = 2; // 1: no fit just max and mean
+   //                          // 2: gaussian fit
+   //   gAnaMeasResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
+   //   // reset counters
+   //   for (int i=0; i<N_BUNCHES; i++) Ntotal[i] = 0;
+   //}
 
    // Calculate Statistics
    CalcStatistics();
@@ -823,10 +821,6 @@ void PrintRunResults()
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------  Operation Messages  --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
-   if (Flag.feedback)        printf(" Feedback mode     : On \n");
-   if (Flag.spin_pattern>=0) printf(" RHIC Spin Pattern : Recovered.\n");
-   if (Flag.mask_bunch)      printf(" Applied a mask to the fill pattern in the data stream.\n");
-   printf("-----------------------------------------------------------------------------------------\n");
    printf("\n\n");
 
    printf("-----------------------------------------------------------------------------------------\n");
@@ -856,7 +850,6 @@ void PrintRunResults()
    printf(" bunch w/in WCM range           = %10d\n", average.counter);
    printf(" process rate                   = %10.1f [%%]\n", (float)average.counter/(float)gMeasInfo->GetNumFilledBunches() * 100);
    printf(" Analyzing Power Average        = %10.4f \n",     gAnaMeasResult->A_N[1]);
-   if (gAnaInfo->FEEDBACKMODE)
    printf(" feedback average tshift        = %10.1f [ns]\n", gAnaMeasResult->TshiftAve);
    printf(" Average Polarization (phi=0)   = %10.4f%9.4f\n", gAnaMeasResult->P[0],                  gAnaMeasResult->P[1]);
    printf(" Polarization (sinphi)          = %10.4f%9.4f\n", gAnaMeasResult->sinphi[0].P[0],        gAnaMeasResult->sinphi[0].P[1]);
@@ -938,7 +931,7 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
        0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
        0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642};
 
-   if (gMeasInfo->GetBeamEnergy() > 200)
+   if (gMeasInfo->GetBeamEnergyReal() > 200)
    {
       // Scale up the flattop (250 GeV) polarization values by 15%: 1.176 = 1./ (1-0.15)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.176; v1.2.0 and earlier
@@ -977,11 +970,11 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
       //for (int i=0; i<25; i++) anth[i] = anth100[i] * 1.215 * a_n_scale_v1_3_14 * a_n_scale_v1_6_1;
       for (int i=0; i<25; i++) anth[i] = anth100[i];
 
-   } else if (gMeasInfo->GetBeamEnergy() > 50) {
+   } else if (gMeasInfo->GetBeamEnergyReal() > 50) {
 
       for (int i=0; i<25; i++) anth[i] = anth100[i];
 
-   } else if (gMeasInfo->GetBeamEnergy() > 20) {
+   } else if (gMeasInfo->GetBeamEnergyReal() > 20) {
       // A new correction to the H-jet polarization is introduced in v1.5.0 scales pC polarization up
 
       //Float_t a_n_scale_v1_5_0 = 1;
@@ -1315,7 +1308,7 @@ void AsymCalculator::CalcBunchAsym(DrawObjContainer *oc)
    // Get hist with all bunches for normalization
    TH2* hDetVsBunchId = (TH2*) oc->o["hDetVsBunchId"];
 
-   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
@@ -1442,7 +1435,7 @@ void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
    // Get hist with all delim for normalization
    TH2* hDetVsDelim = (TH2*) oc->o["hDetVsDelim"];
 
-   //IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   //SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
    //for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    //{
@@ -1707,7 +1700,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
       Error("CalcStripAsymmetry", "Fit error...");
    }
 
-   // Create polarization graph directly from the asymmetry one
+   // Create polarization graph grPolarVsPhi directly from the asymmetry one grAsymVsPhi
    TH1*          hPolarVsPhi  = (TH1*) oc->o["hPolarVsPhi"];
    TGraphErrors* grPolarVsPhi = (TGraphErrors*) hPolarVsPhi->GetListOfFunctions()->FindObject("grPolarVsPhi");
 
@@ -2011,7 +2004,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // printing routine
-   if (Flag.VERBOSE) {
+   if (true) {
       printf("*========== strip by strip =============\n");
 
       for (int i=0; i<N_SILICON_CHANNELS; i++) {

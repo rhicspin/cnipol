@@ -1,9 +1,15 @@
 
 #include <string>
+#include <climits>
+
+#include "TF1.h"
+#include "TF2.h"
 
 #include "AnaFillResult.h"
 #include "AnaGlobResult.h"
 #include "Target.h"
+
+#include "utils/utils.h"
 
 ClassImp(AnaFillResult)
 
@@ -11,12 +17,13 @@ using namespace std;
 
 
 /** */
-AnaFillResult::AnaFillResult() : TObject(), fAnaGlobResult(0),
-   fStartTime((time_t)-1), fAnaMeasResults(), fPolars(), fPolarsByTargets(),
-   fProfPolars(), fHjetPolars(), fBeamPolars(), fBeamCollPolars(),
-   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(),
-   fMeasTgtOrients(), fMeasTgtIds(), fMeasRingIds(), fPolProfRs(),
-   fPolProfPMaxs(), fPolProfPs()
+AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
+   fAnaGlobResult(0), fStartTime(LONG_MAX), fAnaFillExternResult(0),
+   fPCPolarGraphs(), fPCPolarFitRes(), fPolProfRGraphs(), fPolProfRFitRes(),
+   fAnaMeasResults(), fMeasInfos(), fPCPolars(), fPCPolarsByTargets(),
+   fPCProfPolars(), fHJPolars(), fBeamPolars(), fBeamCollPolars(),
+   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fMeasTgtOrients(),
+   fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
 {
 }
 
@@ -35,6 +42,12 @@ void AnaFillResult::Print(const Option_t* opt) const
    Info("Print", "Print members:");
    //PrintAsPhp();
 
+   // debugging
+   if (fAnaFillExternResult)
+      Info("Print", "extern result is available");
+   else
+      Error("Print", "extern result is NOT available");
+
    AnaMeasResultMapConstIter iMeasRslt = fAnaMeasResults.begin();
 
    printf("Runs: ");
@@ -45,13 +58,13 @@ void AnaFillResult::Print(const Option_t* opt) const
    printf("\n");
 
 
-   PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
+   PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       string sPolId = RunConfig::AsString(*iPolId);
 
-      ValErrPair polar = fPolars.find(*iPolId)->second;
+      ValErrPair polar = fPCPolars.find(*iPolId)->second;
 
       cout << sPolId << ": " << PairAsPhpArray(polar) << "      ";
 
@@ -59,7 +72,7 @@ void AnaFillResult::Print(const Option_t* opt) const
       polar.second *= fAnaGlobResult->GetNormJetCarbon(*iPolId).first;
       cout << PairAsPhpArray(polar) << endl;
 
-      ValErrPair profPolar = fProfPolars.find(*iPolId)->second;
+      ValErrPair profPolar = fPCProfPolars.find(*iPolId)->second;
 
       cout << "     " << PairAsPhpArray(profPolar) << "      ";
       profPolar.first  *= fAnaGlobResult->GetNormProfPolar(*iPolId).first;
@@ -94,9 +107,9 @@ void AnaFillResult::Print(const Option_t* opt) const
       iTarget->Print();
       TargetUId targetUId = iTarget->fUId;
 
-      if (fPolarsByTargets.find(targetUId) != fPolarsByTargets.end()) {
-         //fPolarsByTargets[targetUId].Print();
-         cout << PairAsPhpArray(fPolarsByTargets.find(targetUId)->second) << endl;
+      if (fPCPolarsByTargets.find(targetUId) != fPCPolarsByTargets.end()) {
+         //fPCPolarsByTargets[targetUId].Print();
+         cout << PairAsPhpArray(fPCPolarsByTargets.find(targetUId)->second) << endl;
       }
    }
 
@@ -104,16 +117,35 @@ void AnaFillResult::Print(const Option_t* opt) const
    printf("\n");
 
    //cout << "Polarimeter polar:" << endl;
-   //cout << MapAsPhpArray<EPolarimeterId, ValErrPair>(fPolars) << endl;
+   //cout << MapAsPhpArray<EPolarimeterId, ValErrPair>(fPCPolars) << endl;
    //cout << "Beam polar:" << endl;
    //cout << MapAsPhpArray<ERingId, ValErrPair>(fBeamPolars) << endl;
    //cout << "Syst U vs D:" << endl;
    //cout << MapAsPhpArray<ERingId, ValErrPair>(fSystUvsDPolar) << endl;
    //cout << "Profile polar:" << endl;
-   //cout << MapAsPhpArray<EPolarimeterId, ValErrPair>(fProfPolars) << endl;
-   //cout << MapAsPhpArray<ERingId, ValErrPair>(fHjetPolars) << endl;
+   //cout << MapAsPhpArray<EPolarimeterId, ValErrPair>(fPCProfPolars) << endl;
+   //cout << MapAsPhpArray<ERingId, ValErrPair>(fHJPolars) << endl;
    //cout << MapAsPhpArray<ERingId, TgtOrient2ValErrMap>(fPolProfPs) << endl;
 } //}}}
+
+
+TGraphErrors* AnaFillResult::GetGrBluIntens() const { return fAnaFillExternResult ? fAnaFillExternResult->GetGrBluIntens() : 0; }
+TGraphErrors* AnaFillResult::GetGrYelIntens() const { return fAnaFillExternResult ? fAnaFillExternResult->GetGrYelIntens() : 0; }
+
+
+/** */
+TGraphErrors* AnaFillResult::GetIntensGraph(ERingId ringId) const
+{ //{{{
+   TGraphErrors *gr;
+
+   if (ringId == kBLUE_RING)        gr = GetGrBluIntens();
+   else if (ringId == kYELLOW_RING) gr = GetGrYelIntens();
+
+   return gr;
+} //}}}
+
+
+AnaFillExternResult* AnaFillResult::GetAnaFillExternResult() const { return fAnaFillExternResult; }
 
 
 ///** */
@@ -131,18 +163,55 @@ void AnaFillResult::AddMeasResult(AnaMeasResult &result)
 /** */
 void AnaFillResult::AddMeasResult(EventConfig &mm, AnaGlobResult *globRes)
 { //{{{
+   // this should go away when fanameasresult and measinfo are merged
+   mm.fAnaMeasResult->fStartTime = mm.fMeasInfo->fStartTime;
+
    string runName = mm.fMeasInfo->GetRunName();
 
    if (mm.fMeasInfo->fStartTime < fStartTime) fStartTime = mm.fMeasInfo->fStartTime;
 
+   //Info("AddMeasResult", "fStartTime %d (meas)", mm.fMeasInfo->fStartTime);
+   //Info("AddMeasResult", "fStartTime %d", fStartTime);
+
    // add or overwrite new AnaFillResult
    fAnaMeasResults[runName] = *mm.fAnaMeasResult;
+   fMeasInfos[runName]      = *mm.fMeasInfo;
+
    fMeasTgtOrients[runName] =  mm.fMeasInfo->GetTargetOrient();
    fMeasTgtIds[runName]     =  mm.fMeasInfo->GetTargetId();
    fMeasRingIds[runName]    =  mm.fMeasInfo->GetRingId();
 
    fAnaGlobResult = globRes;
 
+} //}}}
+
+
+/** */
+void AnaFillResult::AddExternInfo(std::ifstream &file)
+{ //{{{
+   if (file.good()) {
+   
+      long begin = file.tellg();
+      file.seekg(0, ios::end);
+      long end = file.tellg();
+
+      if (end - begin <= 0) {
+         Error("AddExternInfo", "Invalid/Empty file provided with external info");
+         file.close();
+         return;
+      }
+
+      file.seekg(0, ios::beg);
+
+      Info("AddExternInfo", "Found external info");
+      fAnaFillExternResult = new AnaFillExternResult(file);
+      //fAnaFillExternResult->GetGrBluIntens()->Print();
+      //fAnaFillExternResult->GetGrYelIntens()->Print();
+   } else {
+      Error("AddExternInfo", "Invalid file provided with external info");
+   }
+
+   file.close();
 } //}}}
 
 
@@ -163,25 +232,49 @@ void AnaFillResult::Process()
       ETargetOrient        tgtOrient  = iTgtOrient->second;
       UShort_t             tgtId      = iTgtId->second;
 
+      // Get polar meas result
+      ValErrPair polarValErr = measResult.GetPCPolar();
+      // Skip invalid results
+      if (polarValErr.second < 0) continue;
+
+      // Put result in the right container
       TargetUId targetUId(polId, tgtOrient, tgtId);
 
-      if (fPolarsByTargets.find(targetUId) == fPolarsByTargets.end())
+      if (fPCPolarsByTargets.find(targetUId) == fPCPolarsByTargets.end())
       {
-         fPolarsByTargets[targetUId] = measResult.GetPolar();
+         fPCPolarsByTargets[targetUId] = polarValErr;
       } else {
-         fPolarsByTargets[targetUId] = CalcWeightedAvrgErr(fPolarsByTargets[targetUId], measResult.GetPolar());
+         // Update the average for existing targets
+         fPCPolarsByTargets[targetUId] = CalcWeightedAvrgErr(fPCPolarsByTargets[targetUId], polarValErr);
       }
+
+      // Pick the graph for this measurement and corresponding polarimeter
+      TGraphErrors *grPolarPC;
+
+      if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
+      { // create a new graph
+         grPolarPC = new TGraphErrors(0);
+         fPCPolarGraphs[polId] = grPolarPC;
+      } else
+         grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+
+      UInt_t iPoint = grPolarPC->GetN();
+      grPolarPC->SetPoint(iPoint, measResult.fStartTime - fStartTime, polarValErr.first);
+      grPolarPC->SetPointError(iPoint, 0, polarValErr.second);
    }
+
+   // do whatever with the combined fill results
+   FitGraphs();
 
 
    // Calculate average polarization and profiles disregarding the target
-   PolarimeterIdIter iPolId = gRunConfig.fPolarimeters.begin();
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       // Calculate average polarizations
-      fPolars[*iPolId]     = CalcAvrgPolar(*iPolId);
-      fProfPolars[*iPolId] = CalcAvrgPolProfPolar(*iPolId);
+      fPCPolars[*iPolId]   = CalcAvrgPolar(*iPolId);
+      fPCProfPolars[*iPolId] = CalcAvrgPolProfPolar(*iPolId);
 
       // Now calculate average profiles: R and P_max
       ERingId ringId = RunConfig::GetRingId(*iPolId);
@@ -211,6 +304,57 @@ void AnaFillResult::Process()
          fPolProfPs[ringId]    = tgtPolProfPs;
       }
    }
+
+} //}}}
+
+
+/** Function can return empty graph. */
+TGraphErrors* AnaFillResult::GetPCPolarGraph(EPolarimeterId polId)
+{ //{{{
+   TGraphErrors *grPolarPC;
+
+   if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
+      grPolarPC = new TGraphErrors(0);
+   else 
+      grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+
+   return grPolarPC;
+} //}}}
+
+
+/** */
+ValErrPair AnaFillResult::GetPCPolarDecay(EPolarimeterId polId)
+{ //{{{
+   ValErrPair decay(0, -1);
+
+   TGraphErrors *gr = GetPCPolarGraph(polId);
+   if (!gr) return decay;
+
+   TF1* func = gr->GetFunction("pol1"); 
+   if (!func) return decay;
+
+   decay.first  = func->GetParameter(1);
+   decay.second = func->GetParError(1);
+
+   return decay;
+} //}}}
+
+
+/** */
+ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId)
+{ //{{{
+   ValErrPair decay(0, -1);
+
+   TGraphErrors *gr = GetIntensGraph(ringId);
+   if (!gr) return decay;
+
+   TF1* func = gr->GetFunction("expo"); 
+   if (!func) return decay;
+
+   decay.first  = func->GetParameter(1);
+   decay.second = func->GetParError(1);
+
+   return decay;
 } //}}}
 
 
@@ -225,7 +369,7 @@ ValErrPair AnaFillResult::GetPolarHJ(EPolarimeterId polId)
 /** */
 ValErrPair AnaFillResult::GetPolarHJ(ERingId ringId)
 { //{{{
-   return fHjetPolars.find(ringId) == fHjetPolars.end() ? ValErrPair(0, -1) : fHjetPolars[ringId];
+   return fHJPolars.find(ringId) == fHJPolars.end() ? ValErrPair(0, -1) : fHJPolars[ringId];
 } //}}}
 
 
@@ -239,10 +383,10 @@ ValErrPair AnaFillResult::GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *norm
 
    ValErrPair result(0, -1);
 
-   if (fPolars.find(polId) != fPolars.end() )
+   if (fPCPolars.find(polId) != fPCPolars.end() )
    {
-      result.first  = norm * fPolars[polId].first;
-      result.second = norm * fPolars[polId].second;
+      result.first  = norm * fPCPolars[polId].first;
+      result.second = norm * fPCPolars[polId].second;
    }
 
    return result;
@@ -285,9 +429,9 @@ void AnaFillResult::CalcBeamPolar(PolId2ValErrMap &normJC)
    // Create set of measurements for requested ringId
    ValErrSet polars;
 
-   PolId2ValErrMapConstIter iPolar = fPolars.begin();
+   PolId2ValErrMapConstIter iPolar = fPCPolars.begin();
 
-   for ( ; iPolar != fPolars.end(); ++iPolar)
+   for ( ; iPolar != fPCPolars.end(); ++iPolar)
    {
       EPolarimeterId polId    = iPolar->first;
       ValErrPair     polarCrb = iPolar->second;
@@ -355,9 +499,9 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
  */
 PolId2ValErrMap AnaFillResult::CalcSystJvsCPolar(PolId2ValErrMap &normJC)
 { //{{{
-   PolId2ValErrMapConstIter iPolar = fPolars.begin();
+   PolId2ValErrMapConstIter iPolar = fPCPolars.begin();
 
-   for ( ; iPolar != fPolars.end(); ++iPolar)
+   for ( ; iPolar != fPCPolars.end(); ++iPolar)
    {
       EPolarimeterId polId   = iPolar->first;
       ERingId        ringId  = RunConfig::GetRingId(polId);
@@ -385,10 +529,10 @@ PolId2ValErrMap AnaFillResult::CalcSystProfPolar(PolId2ValErrMap &normPP)
 { //{{{
    // Find the maximum difference between the average beam polarization and
    // different polarimeters
-   PolId2ValErrMapConstIter iPolar     = fPolars.begin();
-   PolId2ValErrMapConstIter iProfPolar = fProfPolars.begin();
+   PolId2ValErrMapConstIter iPolar     = fPCPolars.begin();
+   PolId2ValErrMapConstIter iProfPolar = fPCProfPolars.begin();
 
-   for ( ; iPolar != fPolars.end(); ++iPolar, ++iProfPolar)
+   for ( ; iPolar != fPCPolars.end(); ++iPolar, ++iProfPolar)
    {
       EPolarimeterId polId   = iPolar->first;
       ValErrPair     polarPC = iPolar->second;
@@ -472,13 +616,14 @@ ValErrPair AnaFillResult::GetPolProfP(ERingId ringId, ETargetOrient tgtOrient)
 /** */
 ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
 { //{{{
+   // Create a container to keep all measurements for polarimeter polId
    ValErrSet allRunResults;
 
    AnaMeasResultMapConstIter iMeasRslt  = fAnaMeasResults.begin();
-   String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
-   String2TargetIdMapIter    iTgtId     = fMeasTgtIds.begin();
+   //String2TgtOrientMapIter   iTgtOrient = fMeasTgtOrients.begin();
+   //String2TargetIdMapIter    iTgtId     = fMeasTgtIds.begin();
 
-   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt, ++iTgtOrient, ++iTgtId) {
+   for ( ; iMeasRslt!=fAnaMeasResults.end(); ++iMeasRslt ) { //, ++iTgtOrient, ++iTgtId)
 
       // Consider only results for polId
       if ( MeasInfo::ExtractPolarimeterId(iMeasRslt->first) != polId) continue;
@@ -637,11 +782,75 @@ ValErrPair AnaFillResult::CalcPolProfP(ValErrPair R, ValErrPair Pmax)
 
 
 /** */
+void AnaFillResult::FitGraphs()
+{ //{{{
+   // Fit the intensity graphs
+   // Loop over rings
+   RingIdSetIter iRingId = gRunConfig.fRings.begin();
+
+   for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
+   {
+      ERingId ringId = *iRingId;
+
+      TGraphErrors *grIntens = GetIntensGraph(ringId);
+
+      if (!grIntens) continue;
+      if (!fAnaFillExternResult) continue;
+
+      // First update the X range of the graph
+      Double_t x, y;
+      for (Int_t i=0; i<grIntens->GetN(); ++i) { grIntens->GetPoint(i, x, y); grIntens->SetPoint(i, x - fStartTime, y); }
+
+      //Info("FitGraphs", "Duration %d", fAnaFillExternResult->fTimeEventLumiOff - fAnaFillExternResult->fTimeEventLumiOn);
+
+      if ( fabs(fAnaFillExternResult->fTimeEventLumiOff - fAnaFillExternResult->fTimeEventLumiOn) < 3600 )
+         continue;
+
+      grIntens->Fit("expo");
+   }
+
+
+   // Fit the polarization decay graphs
+   // Create a function to multiply graphs by 100% for esthetic reasons
+   TF2 *dummyScale = new TF2("dummyScale", "100.*y");
+
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      if (!fAnaFillExternResult) continue;
+
+      time_t lumion  = fAnaFillExternResult->fTimeEventLumiOn - fStartTime;
+      time_t lumioff = fAnaFillExternResult->fTimeEventLumiOff - fStartTime;
+
+      if (lumion >= lumioff) continue;
+
+      EPolarimeterId polId = *iPolId;
+      TGraphErrors *grPolarPC;
+
+      if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
+         continue;
+      else
+         grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+
+      grPolarPC->Apply(dummyScale);
+
+      if (utils::SubGraph(grPolarPC, lumion, lumioff)->GetN() < 2) continue;
+
+      Info("FitGraphs", "Using range %d - %d", lumion, lumioff);
+      grPolarPC->Fit("pol1", "", "", lumion, lumioff);
+   }
+
+   delete dummyScale;
+} //}}}
+
+
+/** */
 void AnaFillResult::AddHjetPolar(ERingId ringId, ValErrPair ve)
 { //{{{
-   //RingId2ValErrMapIter iBeamRes = fHjetPolars.find(ringId);
-   //if (iBeamRes == fHjetPolars.end())
+   //RingId2ValErrMapIter iBeamRes = fHJPolars.find(ringId);
+   //if (iBeamRes == fHJPolars.end())
    //else
 
-   fHjetPolars[ringId] = ve;
+   fHJPolars[ringId] = ve;
 } //}}}

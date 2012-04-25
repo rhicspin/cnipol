@@ -43,7 +43,7 @@ void MAsymPmtHists::BookHists(string sid)
    fDir->cd();
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
-      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
+      for (BeamEnergySetIter iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
          BookHistsPolarimeter((EPolarimeterId) i, *iBE);
       }
    }
@@ -144,9 +144,9 @@ void MAsymPmtHists::PostFill()
 void MAsymPmtHists::UpdateLimits()
 {
 
-   for (IterPolarimeterId iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId)
+   for (PolarimeterIdSetIter iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId)
    {
-      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
+      for (BeamEnergySetIter iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
       {
          string strPolId = RunConfig::AsString(*iPolId);
          string strBeamE = RunConfig::AsString(*iBE);

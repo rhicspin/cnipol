@@ -10,6 +10,7 @@
 #include "TDirectory.h"
 
 #include "AsymGlobals.h"
+#include "AnaGlobResult.h"
 #include "ChannelEvent.h"
 #include "DrawObjContainer.h"
 #include "RunConfig.h"
@@ -34,11 +35,12 @@ public:
    MAsymFillHists(TDirectory *dir);
    ~MAsymFillHists();
 
-   void BookHists(std::string sid="");
+   void BookHists();
    void BookHistsPolarimeter(EPolarimeterId polId);
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(const EventConfig &rc);
    void PostFill();
+   void PostFill(AnaGlobResult &agr);
    void UpdateLimits();
 
    ClassDef(MAsymFillHists, 1)

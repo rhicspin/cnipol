@@ -2,6 +2,8 @@
 #include "AnaGlobResult.h"
 
 #include <limits.h>
+#include <sstream>
+#include <fstream>
 
 #include "Math/WrappedTF1.h"
 #include "Math/BrentRootFinder.h"
@@ -20,10 +22,11 @@ using namespace std;
 
 /** */
 AnaGlobResult::AnaGlobResult() : TObject(),
-   fPathHjetResults("./"),
+   fPathExternResults("./"),
    fFileNameYelHjet("hjet_pol_yel.txt"),
    fFileNameBluHjet("hjet_pol_blu.txt"),
-   fMinFill(UINT_MAX), fMaxFill(0),
+   fMinFill(UINT_MAX), fMaxFill(0), fFilePhp(0),
+   fBeamEnergies(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
    fAvrgPolProfRs(), fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
@@ -39,7 +42,6 @@ AnaGlobResult::~AnaGlobResult() { }
 void AnaGlobResult::Print(const Option_t* opt) const
 { //{{{
    Info("Print", "Print members:");
-   //PrintAsPhp();
 
    char *l = strstr( opt, "all");
 
@@ -67,8 +69,8 @@ void AnaGlobResult::Print(const Option_t* opt) const
       string         sPolId = RunConfig::AsString(polId);
 
       printf("%s: ", sPolId.c_str());
-      printf("%16.14f +/- %16.14f      ", iNormJC2->second.first, iNormJC2->second.second);
-      printf("(%16.14f +/- %16.14f)\n",   iNormJC->second.first,  iNormJC->second.second);
+      printf(" %16.14f +/- %16.14f      ", iNormJC2->second.first, iNormJC2->second.second);
+      printf("(%16.14f +/- %16.14f)\n   ", iNormJC->second.first,  iNormJC->second.second);
    }
 
    printf("\n");
@@ -143,13 +145,19 @@ void AnaGlobResult::Print(const Option_t* opt) const
 
    printf("\n");
 
+   PrintAsPhp(fFilePhp);
 } //}}}
 
 
-///** */
-//void AnaGlobResult::PrintAsPhp(FILE *f) const
-//{ //{{{
-//} //}}}
+/** */
+void AnaGlobResult::PrintAsPhp(FILE *f) const
+{ //{{{
+   fprintf(f, "$rc['fMinFill']      = %d;\n", fMinFill);
+   fprintf(f, "$rc['fMaxFill']      = %d;\n", fMaxFill);
+   fprintf(f, "$rc['fBeamEnergies'] = %s;\n", SetAsPhpArray<EBeamEnergy>(fBeamEnergies).c_str());
+
+   fprintf(f, "\n");
+} //}}}
 
 
 /** */
@@ -166,22 +174,38 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm)
    if (fillId > fMaxFill) fMaxFill = fillId;
    if (fillId < fMinFill) fMinFill = fillId;
 
-   AnaFillResultMapIter iFill = fAnaFillResults.find(fillId);
+   // Save the energies of all measurements
+   BeamEnergySetIter iBEnergy = fBeamEnergies.find(mm.fMeasInfo->GetBeamEnergy());
+
+   if (iBEnergy == fBeamEnergies.end()) {
+      fBeamEnergies.insert(mm.fMeasInfo->GetBeamEnergy());
+   }
+
+   // Now consider individual fills
+   AnaFillResultMapIter iFillRes = fAnaFillResults.find(fillId);
 
    AnaFillResult *fillRes = 0;
 
    // if not found result for this fill create and add a new one
-   if (iFill == fAnaFillResults.end()) {
+   if (iFillRes == fAnaFillResults.end()) {
 
       // create new AnaFillResult
-      fillRes = new AnaFillResult();
+      fillRes = new AnaFillResult(fillId);
       fillRes->AddMeasResult(mm, this);
+
+      // Check whether file with external info exists. Create corresponding
+      // object if yes
+      std::stringstream fullPath("");
+      fullPath << fPathExternResults << "/cdev_info/cdev_" << fillId;
+      ifstream file(fullPath.str().c_str());
+      fillRes->AddExternInfo(file);
+
       fAnaFillResults[fillId] = *fillRes;
 
    // otherwise, get a pointer to the existing one
    } else {
       // add AnaRunResult to existing AnaFillResult
-      AnaFillResult *fillRes = &iFill->second;
+      AnaFillResult *fillRes = &iFillRes->second;
       fillRes->AddMeasResult(mm, this);
    }
 
@@ -192,30 +216,30 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm)
 void AnaGlobResult::Process()
 { //{{{
    // Read jet results from text files and save them to fill result containers
-   TGraphErrors* grYel = new TGraphErrors((fPathHjetResults + fFileNameYelHjet).c_str());
-   TGraphErrors* grBlu = new TGraphErrors((fPathHjetResults + fFileNameBluHjet).c_str());
+   TGraphErrors* grYel = new TGraphErrors((fPathExternResults + fFileNameYelHjet).c_str());
+   TGraphErrors* grBlu = new TGraphErrors((fPathExternResults + fFileNameBluHjet).c_str());
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill) {
 
-      UInt_t         fillId  =  iFill->first;
-      AnaFillResult *fillRes = &iFill->second;
+      UInt_t         fillId  = iFill->first;
+      AnaFillResult &fillRes = iFill->second;
 
       // Process each fill
-      fillRes->Process();
+      fillRes.Process();
 
       // set hjet values
       ValErrPair *hjetYel = utils::FindValErrY(grYel, fillId);
       ValErrPair *hjetBlu = utils::FindValErrY(grBlu, fillId);
 
       if (hjetYel) {
-         fillRes->AddHjetPolar(kYELLOW_RING, *hjetYel);
+         fillRes.AddHjetPolar(kYELLOW_RING, *hjetYel);
          delete hjetYel;
       }
 
       if (hjetBlu) {
-         fillRes->AddHjetPolar(kBLUE_RING,   *hjetBlu);
+         fillRes.AddHjetPolar(kBLUE_RING,   *hjetBlu);
          delete hjetBlu;
       }
    }
@@ -227,12 +251,9 @@ void AnaGlobResult::Process()
    // Using calculated normalization and pol. profiles calculate average beam
    // polarization and the same in collisions
    //iFill = fAnaFillResults.begin();
-
    //for ( ; iFill != fAnaFillResults.end(); ++iFill) {
-
    //   UInt_t         fillId  =  iFill->first;
    //   AnaFillResult *fillRes = &iFill->second;
-
    //   //fillRes
    //}
 
@@ -251,6 +272,14 @@ ValErrPair AnaGlobResult::GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t nor
    AnaFillResult *fillRslt = &iFill->second;
 
    return fillRslt->GetPolarBeam(ringId);
+} //}}}
+
+
+/** */
+void AnaGlobResult::Configure(MAsymAnaInfo &mainfo)
+{ //{{{
+   SetFilePhp(mainfo.GetAnaInfoFile());
+   fPathExternResults = mainfo.GetExternInfoPath();
 } //}}}
 
 
@@ -285,10 +314,10 @@ void AnaGlobResult::CalcPolarNorm()
       UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
-      PolId2ValErrMapConstIter iPolar     = fillRslt->fPolars.begin();
-      PolId2ValErrMapConstIter iProfPolar = fillRslt->fProfPolars.begin();
+      PolId2ValErrMapConstIter iPolar     = fillRslt->fPCPolars.begin();
+      PolId2ValErrMapConstIter iProfPolar = fillRslt->fPCProfPolars.begin();
 
-      for ( ; iPolar != fillRslt->fPolars.end(); ++iPolar, ++iProfPolar)
+      for ( ; iPolar != fillRslt->fPCPolars.end(); ++iPolar, ++iProfPolar)
       {
          EPolarimeterId polId       = iPolar->first;
          ValErrPair     polarPC     = iPolar->second;
@@ -331,16 +360,16 @@ void AnaGlobResult::CalcPolarNorm()
 
 
       // Loop over polarization values for different targets
-      TargetUId2ValErrMapConstIter iPolarByTgt = fillRslt->fPolarsByTargets.begin();
+      TargetUId2ValErrMapConstIter iPolarByTgt = fillRslt->fPCPolarsByTargets.begin();
 
-      for ( ; iPolarByTgt != fillRslt->fPolarsByTargets.end(); ++iPolarByTgt)
+      for ( ; iPolarByTgt != fillRslt->fPCPolarsByTargets.end(); ++iPolarByTgt)
       {
          TargetUId      targetUId    = iPolarByTgt->first;
          ValErrPair     polarCrb     = iPolarByTgt->second;
 
          EPolarimeterId polId        = targetUId.fPolId;
-         ETargetOrient  targetOrient = targetUId.fTargetOrient;
-         UShort_t       targetId     = targetUId.fTargetId;
+         //ETargetOrient  targetOrient = targetUId.fTargetOrient;
+         //UShort_t       targetId     = targetUId.fTargetId;
 
          ERingId        ringId       = RunConfig::GetRingId(polId);
          ValErrPair     polarHJ      = fillRslt->GetPolarHJ(ringId);
@@ -360,7 +389,7 @@ void AnaGlobResult::CalcPolarNorm()
    }
 
    // Now calculate the weighted average for each polarimeter
-   PolarimeterIdIter iPolId = gRunConfig.fPolarimeters.begin();
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
@@ -447,7 +476,7 @@ void AnaGlobResult::CalcPolarDependants()
       PolId2ValErrMap  ratioP2PP  = fillRslt->CalcSystProfPolar(fNormProfPolar2);
 
       //
-      PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
+      PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
       for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
       {
@@ -474,7 +503,7 @@ void AnaGlobResult::CalcPolarDependants()
    //fSystUvsDPolar[kBLUE_BEAM].first = brf.Root();
    //return;
 
-   PolarimeterIdConstIter iPolId = gRunConfig.fPolarimeters.begin();
+   PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
@@ -516,45 +545,46 @@ void AnaGlobResult::CalcPolarDependants()
 /** */
 void AnaGlobResult::UpdateInsertDb()
 { //{{{
-
    if (!gAsymDb) {
       Error("UpdateInsertDb", "Cannot connect to MySQL DB");
       return;
    }
 
-   AnaFillResultMapIter iFill = fAnaFillResults.begin();
+   AnaFillResultMapIter iFillRes = fAnaFillResults.begin();
 
-   for ( ; iFill != fAnaFillResults.end(); ++iFill) {
+   for ( ; iFillRes != fAnaFillResults.end(); ++iFillRes)
+   {
+      UInt_t         fillId  = iFillRes->first;
+      AnaFillResult &fillRes = iFillRes->second;
 
       cout << endl;
-      Info("UpdateInsert", "fill %d", iFill->first);
+      Info("UpdateInsert", "fill %d", fillId);
 
-      MseFillPolarX *ofill = gAsymDb->SelectFillPolar(iFill->first);
+      MseFillPolarX *ofill = gAsymDb->SelectFillPolar(fillId);
       MseFillPolarX *nfill = 0;
 
       if (ofill) { // if fill found in database copy it to new one
          nfill = new MseFillPolarX(*ofill);
       } else { // if fill not found in database create it
-         nfill = new MseFillPolarX(iFill->first);
+         nfill = new MseFillPolarX(fillId);
       }
 
-      nfill->SetValues(iFill->second);
+      nfill->SetValues(fillRes);
       //nfill->Print();
 
       gAsymDb->UpdateInsert(ofill, nfill);
 
-
       // Update profile table
-      MseFillProfileX *ofillProf = gAsymDb->SelectFillProfile(iFill->first);
+      MseFillProfileX *ofillProf = gAsymDb->SelectFillProfile(fillId);
       MseFillProfileX *nfillProf = 0;
 
       if (ofillProf) { // if fill found in database copy it to new one
          nfillProf = new MseFillProfileX(*ofillProf);
       } else { // if fill not found in database create it
-         nfillProf = new MseFillProfileX(iFill->first);
+         nfillProf = new MseFillProfileX(fillId);
       }
 
-      nfillProf->SetValues(iFill->second);
+      nfillProf->SetValues(fillRes);
       //nfillProf->Print();
 
       gAsymDb->UpdateInsert(ofillProf, nfillProf);
@@ -583,4 +613,48 @@ ValErrPair AnaGlobResult::GetNormProfPolar(EPolarimeterId polId)
       norm = fNormProfPolar2[polId];
 
    return norm;
+} //}}}
+
+
+/** */
+void AnaGlobResult::SetFilePhp(FILE *f)
+{
+   fFilePhp = f;
+}
+
+
+/** */
+void AnaGlobResult::ReadHJInfo(std::ifstream &file)
+{ //{{{
+   if (!file.good()) {
+      Error("ReadHJInfo", "Invalid file provided with external info");
+      return;
+   }
+
+   //string   dummy;
+   string   time;
+   //UInt_t   fillId;
+   Double_t bluIntens, bluRotatorStar, bluRotatorPhenix, bluSnakeCurrent;
+   Double_t yelIntens, yelRotatorStar, yelRotatorPhenix, yelSnakeCurrent;
+
+   vector<Double_t> vTimes;
+   vector<Double_t> vBluIntens;
+   vector<Double_t> vYelIntens;
+   vector<Double_t> vBluIntensErr;
+   vector<Double_t> vYelIntensErr;
+
+   // loop over the entries
+   while ( file.good() ) {
+      file >> time >> bluIntens >> bluRotatorStar >> bluRotatorPhenix >> bluSnakeCurrent >>
+                      yelIntens >> yelRotatorStar >> yelRotatorPhenix >> yelSnakeCurrent;
+      //printf("file: %s\n", fileId.c_str());
+      cout << time << " " << bluIntens << " " << bluRotatorStar << " " << bluRotatorPhenix << " " << bluSnakeCurrent
+                   << " " << yelIntens << " " << yelRotatorStar << " " << yelRotatorPhenix << " " << yelSnakeCurrent << endl;
+
+      //vTimes.push_back(time);
+      vBluIntens.push_back(bluIntens);
+      vYelIntens.push_back(yelIntens);
+      vBluIntensErr.push_back(bluIntens*0.001);
+      vYelIntensErr.push_back(yelIntens*0.001);
+   }
 } //}}}

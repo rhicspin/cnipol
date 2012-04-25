@@ -21,6 +21,7 @@
 #include <utility> // for std::pair definition
 
 #include "TH1.h"
+#include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TFitResultPtr.h"
 
@@ -63,6 +64,10 @@ typedef std::map<EPolarimeterId, ValErrPair>   PolId2ValErrMap;
 typedef PolId2ValErrMap::iterator              PolId2ValErrMapIter;
 typedef PolId2ValErrMap::const_iterator        PolId2ValErrMapConstIter;
 
+typedef std::map<EPolarimeterId, TGraph*>      PolId2TGraphMap;
+typedef PolId2TGraphMap::iterator              PolId2TGraphMapIter;
+typedef PolId2TGraphMap::const_iterator        PolId2TGraphMapConstIter;
+
 // Beam id
 typedef std::map<EBeamId,        ValErrSet>    BeamId2ValErrSet;
 typedef BeamId2ValErrSet::iterator             BeamId2ValErrSetIter;
@@ -92,6 +97,7 @@ typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
 typedef std::map<ERingId, TgtOrient2ValErrMap> RingId2TgtOrient2ValErrMap;
 typedef RingId2TgtOrient2ValErrMap::iterator   RingId2TgtOrient2ValErrMapIter;
 
+
 typedef std::map<std::string, ERingId>         String2RingIdMap;
 typedef String2RingIdMap::iterator             String2RingIdMapIter;
 
@@ -114,16 +120,16 @@ typedef RingIdSet::const_iterator          RingIdConstIter;
 typedef std::set<ETargetOrient>            TargetOrientSet;
 typedef TargetOrientSet::iterator          TargetOrientSetIter;
 
-typedef std::set<EBeamEnergy>::iterator    IterBeamEnergy;
-typedef std::set<EPolarimeterId>::iterator IterPolarimeterId;
-typedef std::set<ESpinState>::iterator     IterSpinState;
+typedef std::set<EBeamEnergy>              BeamEnergySet;
+typedef BeamEnergySet::iterator            BeamEnergySetIter;
+
+typedef std::set<ESpinState>               SpinStateSet;
+typedef SpinStateSet::iterator             SpinStateSetIter;
 
 typedef std::set<EPolarimeterId>           PolarimeterIdSet;
+typedef PolarimeterIdSet::iterator         PolarimeterIdSetIter;
+typedef PolarimeterIdSet::const_iterator   PolarimeterIdSetConstIter;
 
-typedef std::set<EBeamEnergy>::iterator    BeamEnergyIter;
-typedef PolarimeterIdSet::iterator         PolarimeterIdIter;
-typedef PolarimeterIdSet::const_iterator   PolarimeterIdConstIter;
-typedef std::set<ESpinState>::iterator     SpinStateIter;
 
 
 typedef std::set<UShort_t>          ChannelSet;

@@ -43,7 +43,7 @@ void MAsymRateHists::BookHists(string sid)
    fDir->cd();
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
-      for (IterBeamEnergy iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
+      for (BeamEnergySetIter iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE) {
          BookHistsPolarimeter((EPolarimeterId) i, *iBE);
       }
    }

@@ -188,7 +188,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
 
          gMeasInfo->SetBeamEnergy(rec->data.beamEnergyM);
-         printf("Beam energy: %8.2f\n", gMeasInfo->GetBeamEnergy());
+         printf("Beam energy: %8.2f\n", gMeasInfo->GetBeamEnergyReal());
          printf("RHIC beam:   %8d\n",   gMeasInfo->fPolBeam);
 
          ProcessRecord( (recordBeamAdoStruct&) *rec);
@@ -747,14 +747,14 @@ void readloop(MseMeasInfoX &run)
    run.nevents_processed = gMeasInfo->fNEventsProcessed;
 
    sstr.str("");
-   sstr << gMeasInfo->GetBeamEnergy();
+   sstr << gMeasInfo->GetBeamEnergyReal();
 
    if (gAnaInfo->HasAlphaBit()) {
       gRunDb.fFields["BEAM_ENERGY"] = "0";
       run.beam_energy = 0;
    } else {
       gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
-      run.beam_energy = gMeasInfo->GetBeamEnergy();
+      run.beam_energy = gMeasInfo->GetBeamEnergyReal();
    }
 
    // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
@@ -1288,7 +1288,7 @@ void ProcessRecord(const recordBeamAdoStruct &rec)
    //beamDataStruct beamdat;
 
    //gMeasInfo->SetBeamEnergy(beamdat.beamEnergyM);
-   //fprintf(stdout, "Beam Energy: %8.2f\n", gMeasInfo->GetBeamEnergy());
+   //fprintf(stdout, "Beam Energy: %8.2f\n", gMeasInfo->GetBeamEnergyReal());
    //fprintf(stdout, "RHIC Beam:   %1d\n", gMeasInfo->fPolBeam);
 
    for (int bid=0; bid<N_BUNCHES; bid++) {

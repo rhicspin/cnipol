@@ -13,7 +13,7 @@
 #include "TText.h"
 #include "TF1.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "AnaMeasResult.h"
 #include "MeasInfo.h"
 

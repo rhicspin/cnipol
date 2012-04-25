@@ -4,10 +4,12 @@
 
 #include <map>
 #include <time.h>
+#include <fstream>
 
 #include "TObject.h"
 
 #include "Asym.h"
+#include "AnaFillExternResult.h"
 #include "AnaMeasResult.h"
 #include "EventConfig.h"
 #include "TargetUId.h"
@@ -24,18 +26,28 @@ typedef std::map<UInt_t, AnaFillResult>::const_iterator   AnaFillResultMapConstI
 /** */
 class AnaFillResult : public TObject
 {
-private:
+protected:
 
+   UInt_t                       fFillId;
    AnaGlobResult               *fAnaGlobResult;
    time_t                       fStartTime;
+   AnaFillExternResult         *fAnaFillExternResult;
+
+   PolId2TGraphMap              fPCPolarGraphs;
+   TFitResultPtr                fPCPolarFitRes;
+
+   PolId2TGraphMap              fPolProfRGraphs;
+   TFitResultPtr                fPolProfRFitRes;
 
 public:
 
    AnaMeasResultMap             fAnaMeasResults;
-   PolId2ValErrMap              fPolars;
-   TargetUId2ValErrMap          fPolarsByTargets;
-   PolId2ValErrMap              fProfPolars;     // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
-   RingId2ValErrMap             fHjetPolars;
+   MeasInfoMap                  fMeasInfos;
+
+   PolId2ValErrMap              fPCPolars;       // Nominal polarization measurement results
+   TargetUId2ValErrMap          fPCPolarsByTargets;
+   PolId2ValErrMap              fPCProfPolars;     // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
+   RingId2ValErrMap             fHJPolars;
 
    RingId2ValErrMap             fBeamPolars;     //! not used
    RingId2ValErrMap             fBeamCollPolars; //! not used
@@ -44,16 +56,18 @@ public:
    PolId2ValErrMap              fSystJvsCPolar;
    RingId2ValErrMap             fSystUvsDPolar;
 
-   String2TgtOrientMap          fMeasTgtOrients; // a stupid temporary fix
-   String2TargetIdMap           fMeasTgtIds;  // a stupid temporary fix
-   String2RingIdMap             fMeasRingIds;    // a stupid temporary fix
+   //String2TgtOrientMap          fMeasTgtOrients;   // a stupid temporary fix
+   String2TgtOrientMap          fMeasTgtOrients;   // a stupid temporary fix
+   String2TargetIdMap           fMeasTgtIds;       // a stupid temporary fix
+   String2RingIdMap             fMeasRingIds;      // a stupid temporary fix
+
    RingId2TgtOrient2ValErrMap   fPolProfRs;
    RingId2TgtOrient2ValErrMap   fPolProfPMaxs;
    RingId2TgtOrient2ValErrMap   fPolProfPs;
 
 public:
 
-   AnaFillResult();
+   AnaFillResult(UInt_t fillId = 0);
    ~AnaFillResult();
 
    time_t GetStartTime();
@@ -61,9 +75,18 @@ public:
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;
 
+   TGraphErrors* GetGrBluIntens() const;
+   TGraphErrors* GetGrYelIntens() const;
+   TGraphErrors* GetIntensGraph(ERingId ringId) const;
+   AnaFillExternResult* GetAnaFillExternResult() const;
+
    void              AddMeasResult(AnaMeasResult &result);
    void              AddMeasResult(EventConfig &mm, AnaGlobResult *globRes=0);
+   void              AddExternInfo(std::ifstream &file);
    void              Process();
+   TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
+   ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
+   ValErrPair        GetIntensDecay(ERingId ringId);
    ValErrPair        GetPolarHJ(EPolarimeterId polId);
    ValErrPair        GetPolarHJ(ERingId ringId);
    ValErrPair        GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
@@ -85,6 +108,7 @@ public:
    ValErrPair        CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcPolProfP(ValErrPair R, ValErrPair Pmax);
+   void              FitGraphs();
    void              AddHjetPolar(ERingId ringId, ValErrPair ve);
 
    ClassDef(AnaFillResult, 1)

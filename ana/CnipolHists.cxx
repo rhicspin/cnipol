@@ -202,7 +202,7 @@ void CnipolHists::BookHists()
       oc->o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SPIN_STATES, -1.5, 1.5);
       ((TH1*) oc->o[shName])->SetOption("NOIMG");
 
-      IterSpinState iSS = gRunConfig.fSpinStates.begin();
+      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
       for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
    
@@ -276,7 +276,7 @@ void CnipolHists::BookHists()
       //fhTofVsKinEnergyA_ch[*iCh-1] = (TH2*) oc_ch->o.find("hTofVsKinEnergyA_ch" + sChId)->second;
       fhSpinVsDelim_ch[*iCh-1]     = (TH2*) oc_ch->o.find("hSpinVsDelim_ch"     + sChId)->second;
 
-      IterSpinState iSS = gRunConfig.fSpinStates.begin();
+      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
       for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
 
@@ -439,7 +439,7 @@ void CnipolHists::FillDerived()
       //TH2* hTofVsKinEnergyA_test_ch   = (TH2*) oc->o["hTofVsKinEnergyA_test_ch" + sChId];
       TH2* hLongiTimeDiffVsEnergyA_ch = (TH2*) oc->o["hLongiTimeDiffVsEnergyA_ch" + sChId];
 
-      IterSpinState iSS = gRunConfig.fSpinStates.begin();
+      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
       for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
    
@@ -493,7 +493,6 @@ void CnipolHists::FillDerived()
 /** */
 void CnipolHists::PostFill()
 { //{{{
-
    // Fit energy slope with an exponential func
    TF1 *fitfunc = new TF1("fitfunc", "expo", 450, 850);
 

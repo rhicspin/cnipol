@@ -11,7 +11,7 @@
 
 #include "AsymHbook.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "TargetInfo.h"
 
 using namespace std;

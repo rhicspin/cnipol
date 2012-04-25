@@ -20,7 +20,7 @@
 #include "EventConfig.h"
 
 
-class AnaInfo;
+class AsymAnaInfo;
 
 enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE_RAW, kCUT_PASSONE_RAW_EB,
            kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_CALIB,
@@ -95,7 +95,7 @@ public:
    void         WriteTreeFile();
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
    EventConfig* GetMeasConfig();
-   void         GetMeasConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar);
+   void         GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar);
 };
 
 #endif

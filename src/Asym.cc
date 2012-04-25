@@ -128,7 +128,7 @@ float gPhi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
-AnaInfo                  *gAnaInfo;
+AsymAnaInfo              *gAnaInfo;
 MeasInfo                 *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;
@@ -143,7 +143,6 @@ map<UShort_t, RunConst>   gRunConsts;
 StructBunchPattern        phx, str;
 TRecordConfigRhicStruct  *gConfigInfo;
 TargetInfo                tgt;
-map<string, string>       gAsymEnv; // at some point this map should become a part of the AnaInfo class
 BunchAsym                 gBunchAsym;
 StructSpeLumi             SpeLumi;
 AsymCalculator            gAsymCalculator;

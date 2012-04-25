@@ -151,7 +151,7 @@ void CnipolAsymHists::BookHists()
    //DrawObjContainer        *oc;
    //DrawObjContainerMapIter  isubdir;
 
-   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
 
@@ -252,7 +252,7 @@ void CnipolAsymHists::PreFill()
    ((TH1*) o["hAsymVsDelim4Ch"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
    ((TH1*) o["hAsymVsDelim4Det"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
 
-   IterSpinState iSS=gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS=gRunConfig.fSpinStates.begin();
 
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
@@ -297,7 +297,7 @@ void CnipolAsymHists::FillDerived()
    TH2* hDetVsBunchId = (TH2*) o["hDetVsBunchId"];
    TH2* hDetVsDelim   = (TH2*) o["hDetVsDelim"];
 
-   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
@@ -363,7 +363,7 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
       return;
    }
 
-   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
 
@@ -429,7 +429,7 @@ void CnipolAsymHists::PostFill()
    TH2* hAsymVsBunchId_X45 = (TH2*) o["hAsymVsBunchId_X45"];
    TH2* hAsymVsBunchId_Y45 = (TH2*) o["hAsymVsBunchId_Y45"];
 
-   IterSpinState iSS = gRunConfig.fSpinStates.begin();
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {

@@ -41,7 +41,7 @@ public:
    MAsymRunHists(TDirectory *dir);
    ~MAsymRunHists();
 
-   void BookHists(std::string sid="");
+   void BookHists();
    void BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE);
    void BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamEnergy beamE);
    //void BookHistsPolarimeterGlobRslt(DrawObjContainer &oc, EPolarimeterId polId);

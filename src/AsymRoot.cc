@@ -31,6 +31,7 @@
 #include "CnipolCalibHists.h"
 #include "CnipolHists.h"
 #include "CnipolKinematHists.h"
+#include "CnipolKinemaCleanHists.h"
 #include "CnipolPmtHists.h"
 #include "CnipolPulserHists.h"
 #include "CnipolPreprocHists.h"
@@ -43,7 +44,7 @@
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "MeasInfo.h"
 
 using namespace std;
@@ -254,7 +255,7 @@ void AsymRoot::CreateRootFile(string filename)
 
       // data after mass cut 
       dir = new TDirectoryFile("kinema", "kinema", "", fOutRootFile);
-      oc  = new CnipolKinematHists(dir);
+      oc  = new CnipolKinemaCleanHists(dir);
       fHists->d["kinema"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
    }
@@ -390,7 +391,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
  */
 void AsymRoot::UpdateRunConfig()
 { //{{{
-   AnaInfo *anaInfo = fEventConfig->GetAnaInfo();
+   AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    // if not calib
    if ( !anaInfo->HasCalibBit() ) {
@@ -736,7 +737,7 @@ void AsymRoot::PrintChannelEvent()
 /** */
 void AsymRoot::UpdateCalibrator()
 { //{{{
-   AnaInfo *anaInfo = fEventConfig->GetAnaInfo();
+   AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    if ( anaInfo->HasAlphaBit() && !anaInfo->HasCalibBit() ) {
 
@@ -1199,7 +1200,7 @@ EventConfig* AsymRoot::GetMeasConfig() { return fEventConfig; }
 
 
 /** */
-void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AnaInfo *&ai, AnaMeasResult *&ar)
+void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar)
 { //{{{
    if (!fEventConfig) {
       Error("GetMeasConfigs", "fEventConfig is not defined");
