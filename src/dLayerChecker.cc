@@ -322,8 +322,8 @@ int readDLayer(char *infile)
 
 bool isStripAlive(unsigned short strp)
 {
-   for(int jj=0;jj<gMeasInfo->NDisableStrip;jj++) {
-      if((int)strp==gMeasInfo->fDisabledChannels[jj]) {
+   for (int jj=0; jj<gMeasInfo->GetNumDisabledChannels(); jj++) {
+      if ( (int) strp == gMeasInfo->IsDisabledChannel(jj+1)) {
          return false;
       }
    }

@@ -501,8 +501,8 @@ void CnipolProfileHists::PostFill()
 
    for (int i=bbegin, j=0; i<=bend; i++, j++) {
 
-      Double_t pol = hPolarProfileFold->GetBinContent(j+1);
-      Double_t polErr = hPolarProfileFold->GetBinError(j+1);
+      Double_t pol     = hPolarProfileFold->GetBinContent(j+1);
+      Double_t polErr  = hPolarProfileFold->GetBinError(j+1);
       Float_t distance = (tgt.all.x[i] - tgt.all.x[bmean1]) / 730.;
 
       if (distance > maxDistance) maxDistance = distance;

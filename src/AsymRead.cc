@@ -196,19 +196,19 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          mSeek = mSeek + mHeader->len;
          continue;
       }
+
       // REC_VOLTAGE
       if ((mHeader->type & REC_TYPEMASK) == REC_VOLTAGE)
       {
          printf("Reading REC_VOLTAGE record... size= %ld\n", mHeader->len);
-	 
-     	 //we have to extract the begin and end voltages	 
-	 recordVoltageStruct *rec = (recordVoltageStruct*) mHeader;
-	 ProcessRecord( (recordVoltageStruct&) *rec);
 
-	 mSeek = mSeek + mHeader->len;
-	 continue;
-      }       
+         //we have to extract the begin and end voltages
+         recordVoltageStruct *rec = (recordVoltageStruct*) mHeader;
+         ProcessRecord( (recordVoltageStruct&) *rec);
 
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
 
       // REC_MEASTYPE
       if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
@@ -441,7 +441,7 @@ void RawDataProcessor::ReadDataFast()
             nEventsProcessed++;
 
             // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
-            //if (nEventsProcessed%50000 == 0 && fFileStdLogName.empty() ) 
+            //if (nEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
             if (nEventsProcessed%50000 == 0)
             {
                printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), nEventsProcessed);
@@ -597,8 +597,8 @@ void readloop(MseMeasInfoX &run)
         if (!READ_FLAG) {
 
            // Configure Active Strip Map
-           gMeasInfo->ConfigureActiveStrip(mask.detector);
-           gMeasInfo->PrintConfig();
+           //gMeasInfo->ConfigureActiveStrip(mask.detector);
+           //gMeasInfo->PrintConfig();
 
            READ_FLAG = 1;
 
@@ -1256,7 +1256,7 @@ void ProcessRecord(const recordVoltageStruct &rec)
     beginvoltage=rec.beginvoltage;
     endvoltage=rec.endvoltage;
     printf("beginvoltage=%d  endvoltage=%d\n",beginvoltage,endvoltage);
-    gMeasInfo->SetVoltages(beginvoltage,endvoltage);    
+    gMeasInfo->SetVoltages(beginvoltage,endvoltage);
 }
 
 /** */
@@ -1328,10 +1328,10 @@ void ProcessRecord(const recordBeamAdoStruct &rec)
    }
 
    // Mask bad/disabled bunches
-   if (gMeasInfo->NDisableBunch) {
-      cout << "\nFill pattern has been overwritten again" << endl;
-      recover.MaskFillPattern();
-   }
+   //if (gMeasInfo->NDisableBunch) {
+   //   cout << "\nFill pattern has been overwritten again" << endl;
+   //   recover.MaskFillPattern();
+   //}
 
    // Print active Bunch
    //cout << "\nActive bunches: " << endl;

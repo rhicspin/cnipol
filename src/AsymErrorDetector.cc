@@ -175,7 +175,7 @@ void StripAnomalyDetector()
    DrawHorizLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
  
    // Calculate average carbon events in banana cuts
-   strpchk.evnt.average[0] = good_carbon_events_strip->GetEntries()/float(gMeasInfo->NActiveStrip);
+   strpchk.evnt.average[0] = good_carbon_events_strip->GetEntries()/float(gMeasInfo->GetNumActiveSiChannels());
    DrawHorizLine(good_carbon_events_strip, 0.5, NSTRIP+0.5, strpchk.evnt.average[0], 1, 1, 2);
    printf(" Average # of Events in Banana Cut : %6.2f\n", strpchk.evnt.average[0]);
  
@@ -193,7 +193,7 @@ void StripAnomalyDetector()
       evntdev[i] = 0;
       printf("Anomary Check for strip=%d ...\r", i);
  
-      if (gMeasInfo->ActiveStrip[i]) {
+      if (!gMeasInfo->IsDisabledChannel(i+1)) {
          // t vs. Energy (this routine is incomplete)
          //BananaFit(i);
  
@@ -266,7 +266,7 @@ void StripAnomalyDetector()
       sprintf(text, "%2d", i+1);
       int strip_err_code = 0;
  
-      if (gMeasInfo->ActiveStrip[i]){ // process only if the strip is active
+      if (!gMeasInfo->IsDisabledChannel(i+1)) { // process only if the strip is active
  
          // deviation from average width of 12C mass distribution
          if (fabs(double(feedback.RMS[i]))-strpchk.width.average[0]>strpchk.width.allowance) {
@@ -320,9 +320,9 @@ void StripAnomalyDetector()
    }
  
    // register unrecognized anomaly strips
-   UnrecognizedAnomaly(gAnaMeasResult->anomaly.st, gAnaMeasResult->anomaly.nstrip,
-      gMeasInfo->fDisabledChannels, gMeasInfo->NDisableStrip,
-      gAnaMeasResult->unrecog.anomaly.st, gAnaMeasResult->unrecog.anomaly.nstrip);
+   //UnrecognizedAnomaly(gAnaMeasResult->anomaly.st, gAnaMeasResult->anomaly.nstrip,
+   //   &gMeasInfo->fDisabledChannels[0], gMeasInfo->GetNumDisabledChannels(),
+   //   gAnaMeasResult->unrecog.anomaly.st, gAnaMeasResult->unrecog.anomaly.nstrip);
 }
 
 
@@ -485,8 +485,8 @@ void BunchAnomalyDetector()
       HotBunchFinder(8);
 
       // check unrecognized anomaly
-      UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch, gMeasInfo->DisableBunch,gMeasInfo->NDisableBunch,
-                        gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
+      //UnrecognizedAnomaly(gAnaMeasResult->anomaly.bunch, gAnaMeasResult->anomaly.nbunch, gMeasInfo->DisableBunch,gMeasInfo->NDisableBunch,
+      //                  gAnaMeasResult->unrecog.anomaly.bunch, gAnaMeasResult->unrecog.anomaly.nbunch);
 
       gAnaMeasResult->anomaly.bad_bunch_rate = gMeasInfo->GetNumFilledBunches() ? gAnaMeasResult->anomaly.nbunch/float(gMeasInfo->GetNumFilledBunches())*100 : -1 ;
    }

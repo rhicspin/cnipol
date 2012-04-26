@@ -48,27 +48,28 @@ MeasInfo::MeasInfo() : TObject(),
    MaxRevolution (0),        // MaxRevolution;
    fTargetOrient ('-'),
    fTargetId     ('-'),
-   fDisabledChannelsVec(),   // should not be used. will deprecate
+   //fDisabledChannelsVec(),   // should not be used. will deprecate
    fSiliconChannels(),
-   fActiveSiliconChannels(), // Only good channels used in the analysis
+   fDisabledChannels(),
+   //fActiveChannels(), // Only good channels used in the analysis
    fBeamBunches()
 {
-   for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
+   //for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
 
    for (int i=1; i<=N_SILICON_CHANNELS; i++) {
-      ActiveStrip[i-1]       = 1;
-      fDisabledChannels[i-1] = 0;
+      //ActiveStrip[i-1]       = 1;
+      //fDisabledChannels[i-1] = 0;
       fSiliconChannels.insert(i);
-      fActiveSiliconChannels.insert(i);
+      //fActiveChannels.insert(i);
    }
 
-   NActiveStrip          = N_SILICON_CHANNELS; // NAactiveStrip;
-   NDisableStrip         = 0;      // NDisableStrip
-   NDisableBunch         = 0;      // NDisableBunch,
+   //NActiveStrip  = N_SILICON_CHANNELS; // NAactiveStrip;
+   //NDisableStrip = 0;      // NDisableStrip
+   //NDisableBunch = 0;      // NDisableBunch,
 
    for (int i=0; i<N_BUNCHES; i++) {
-      DisableBunch[i] = 0;
+      //DisableBunch[i] = 0;
 
       BeamBunch bbunch;
       fBeamBunches[i+1] = bbunch;
@@ -163,52 +164,45 @@ void MeasInfo::PrintAsPhp(FILE *f) const
 
    stringstream ssChs("");
 
-   ssChs << "array(";
+   //ssChs << "array(";
+   //for (int i=0; i!=N_DETECTORS; i++) {
+   //   ssChs << noshowbase << dec << i+1 << " => " << showbase << hex << ActiveDetector[i];
+   //   ssChs << (i<N_DETECTORS-1 ? ", " : "");
+   //}
+   //ssChs << ")";
+   //fprintf(f, "$rc['ActiveDetector']               = %s;\n", ssChs.str().c_str());
 
-   for (int i=0; i!=N_DETECTORS; i++) {
-      ssChs << noshowbase << dec << i+1 << " => " << showbase << hex << ActiveDetector[i];
-      ssChs << (i<N_DETECTORS-1 ? ", " : "");
-   }
+   //ssChs << dec << noshowbase;
 
-   ssChs << ")";
-
-   fprintf(f, "$rc['ActiveDetector']               = %s;\n", ssChs.str().c_str());
-
-   ssChs << dec << noshowbase;
-
-   ssChs.str("");
-   ssChs << "array(";
-
-   for (int i=0; i!=N_SILICON_CHANNELS; i++) {
-      ssChs << i+1 << " => " << (ActiveStrip[i] ? "1" : "0");
-      ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
-   }
-
-   ssChs << ")";
-
-   fprintf(f, "$rc['ActiveStrip']                  = %s;\n", ssChs.str().c_str());
+   //ssChs.str("");
+   //ssChs << "array(";
+   //for (int i=0; i!=N_SILICON_CHANNELS; i++) {
+   //   ssChs << i+1 << " => " << (ActiveStrip[i] ? "1" : "0");
+   //   ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
+   //}
+   //ssChs << ")";
+   //fprintf(f, "$rc['ActiveStrip']                  = %s;\n", ssChs.str().c_str());
    //fprintf(f, "$rc['ActiveStrip'][%d]              = %d;\n", i, ActiveStrip[i]);
 
-   fprintf(f, "$rc['NActiveStrip']                 = %d;\n", NActiveStrip );
-   fprintf(f, "$rc['NDisableStrip']                = %d;\n", NDisableStrip);
+   //fprintf(f, "$rc['NActiveStrip']                 = %d;\n", NActiveStrip );
+   //fprintf(f, "$rc['NDisableStrip']                = %d;\n", NDisableStrip);
 
    // Unpack fDisabledChannels
-   ssChs.str("");
-   ssChs << "array(";
+   //ssChs.str("");
+   //ssChs << "array(";
+   //for (int i=0; i!=N_SILICON_CHANNELS; i++) {
+   //   ssChs << i+1 << " => " << (fDisabledChannels[i] ? "1" : "0");
+   //   ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
+   //}
+   //ssChs << ")";
 
-   for (int i=0; i!=N_SILICON_CHANNELS; i++) {
-      ssChs << i+1 << " => " << (fDisabledChannels[i] ? "1" : "0");
-      ssChs << (i<N_SILICON_CHANNELS-1 ? ", " : "");
-   }
-
-   ssChs << ")";
-
-   fprintf(f, "$rc['fDisabledChannels']            = %s;\n", ssChs.str().c_str());
-   fprintf(f, "$rc['fDisabledChannelsVec']         = %s;\n", VecAsPhpArray<UShort_t>(fDisabledChannelsVec).c_str());
+   //fprintf(f, "$rc['fDisabledChannels']            = %s;\n", ssChs.str().c_str());
+   //fprintf(f, "$rc['fDisabledChannelsVec']         = %s;\n", VecAsPhpArray<UShort_t>(fDisabledChannelsVec).c_str());
    fprintf(f, "$rc['fSiliconChannels']             = %s;\n", SetAsPhpArray<UShort_t>(fSiliconChannels).c_str());
-   fprintf(f, "$rc['fActiveSiliconChannels']       = %s;\n", SetAsPhpArray<UShort_t>(fActiveSiliconChannels).c_str());
+   fprintf(f, "$rc['fDisabledChannels']            = %s;\n", SetAsPhpArray<UShort_t>(fDisabledChannels).c_str());
+   //fprintf(f, "$rc['fActiveChannels']              = %s;\n", SetAsPhpArray<UShort_t>(fActiveChannels).c_str());
    fprintf(f, "$rc['fBeamBunches']                 = %s;\n", MapAsPhpArray<UShort_t, BeamBunch>(fBeamBunches).c_str() );
-   fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
+   //fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
    fprintf(f, "$rc['fProtoCutAdcMin']              = %d;\n", fProtoCutAdcMin);
@@ -291,36 +285,36 @@ void MeasInfo::PrintConfig()
    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo->target_count_mm);
 
    // Disabled bunch
-   fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
-   if (NDisableBunch){
-     fprintf(stdout,"       DISABLED_BUNCHES = ");
-     for (int i=0; i<NDisableBunch; i++) printf("%d ", DisableBunch[i]);
-     printf("\n");
-   }
+   //fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);
+   //if (NDisableBunch){
+   //   fprintf(stdout,"       DISABLED_BUNCHES = ");
+   //   for (int i=0; i<NDisableBunch; i++) printf("%d ", DisableBunch[i]);
+   //   printf("\n");
+   //}
 
    // Disabled strips
-   fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", NDisableStrip);
-   if (NDisableStrip){
-     fprintf(stdout,"       DISABLED_CHANNELS = ");
-     for (int i=0;i<NDisableStrip;i++) printf("%d ", fDisabledChannels[i]+1);
-     printf("\n");
-   }
+   //fprintf(stdout,"      #DISABLED_CHANNELS = %d\n", NDisableStrip);
+   //if (NDisableStrip){
+   //  fprintf(stdout,"       DISABLED_CHANNELS = ");
+   //  for (int i=0;i<NDisableStrip;i++) printf("%d ", fDisabledChannels[i]+1);
+   //  printf("\n");
+   //}
 
    // Active Detector and Strip Configulation
-   printf("    Active Detector =");
-   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
-   printf("\n");
-   //    printf("Active Strip Config =");
-   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
-   //    printf("\n");
+   //printf("    Active Detector =");
+   //for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   //printf("\n");
 
-   printf("Active Strip Config =");
+   //printf("Active Strip Config =");
+   //for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
+   //printf("\n");
 
-   for (int i=0; i<N_SILICON_CHANNELS; i++) {
-      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
-      printf("%d", ActiveStrip[i]);
-   }
-   printf("\n");
+   //printf("Active Strip Config =");
+   //for (int i=0; i<N_SILICON_CHANNELS; i++) {
+   //   if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
+   //   printf("%d", ActiveStrip[i]);
+   //}
+   //printf("\n");
 
    // print comment
    if (strlen(gRunDb.comment_s.c_str())>3)
@@ -503,6 +497,9 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
 } //}}}
 
 
+//
+// Deprecated.
+//
 // Description : Disable detector and configure active strips
 //
 // Input       : int mask.detector
@@ -514,11 +511,11 @@ void MeasInfo::ConfigureActiveStrip(int mask)
 
       if ( (~mask>>i) & 1) {
 
-         ActiveDetector[i] = 0x000;
+         //ActiveDetector[i] = 0x000;
 
          for (int j=0; j<NSTRIP_PER_DETECTOR; j++) {
-            NActiveStrip--;
-            ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
+            //NActiveStrip--;
+            //ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
          }
       }
    }
@@ -526,23 +523,21 @@ void MeasInfo::ConfigureActiveStrip(int mask)
    // Configure Active Strips
    int det, strip=0;
 
-   for (int i=0; i<NDisableStrip; i++) {
-
-      det = fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
-
-      // skip if the detector is already disabled
-      if ( (mask >> det) & 1) {
-         strip = fDisabledChannels[i] - det * NSTRIP_PER_DETECTOR;
-         ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
-         ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
-         NActiveStrip--;
-      }
-   }
+   //for (int i=0; i<NDisableStrip; i++) {
+   //   det = fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
+   //   // skip if the detector is already disabled
+   //   if ( (mask >> det) & 1) {
+   //      strip = fDisabledChannels[i] - det * NSTRIP_PER_DETECTOR;
+   //      ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
+   //      //ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
+   //      //NActiveStrip--;
+   //   }
+   //}
 
    // Active Detector and Strip Configulation
    printf("ReConfigured Active Detector =");
 
-   for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
+   //for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
    printf("\n");
    //    printf("Active Strip Config =");
    //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
@@ -552,7 +547,7 @@ void MeasInfo::ConfigureActiveStrip(int mask)
 
    for (int i=0; i<N_SILICON_CHANNELS; i++) {
      if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
-     printf("%d", ActiveStrip[i]);
+     //printf("%d", ActiveStrip[i]);
    }
 
    printf("\n");
@@ -603,12 +598,12 @@ void MeasInfo::DisableChannel(UShort_t chId)
 { //{{{
    Warning("DisableChannel", "Disabled channel %d", chId);
 
-   fDisabledChannels[chId-1] = 1;
+   //fDisabledChannels[chId-1] = 1;
 
-   if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
-      fDisabledChannelsVec.push_back(chId);
+   if ( fDisabledChannels.find(chId) == fDisabledChannels.end() )
+      fDisabledChannels.insert(chId);
 
-   fActiveSiliconChannels.erase(chId);
+   //fActiveChannels.erase(chId);
 } //}}}
 
 
@@ -636,7 +631,7 @@ void MeasInfo::EnableChannel(UShort_t chId)
    //if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
    //   fDisabledChannelsVec.push_back(chId);
 
-   //fActiveSiliconChannels.erase(chId);
+   //fActiveChannels.erase(chId);
 } //}}}
 
 
@@ -657,7 +652,7 @@ void MeasInfo::EnableChannels(std::bitset<N_DETECTORS> &disabled_det)
 /** */
 Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 { //{{{
-   return find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) != fDisabledChannelsVec.end() ? kTRUE : kFALSE;
+   return fDisabledChannels.find(chId) != fDisabledChannels.end() ? kTRUE : kFALSE;
 } //}}}
 
 
@@ -668,6 +663,27 @@ Bool_t MeasInfo::IsSiliconChannel(UShort_t chId)
       return true;
 
    return false;
+} //}}}
+
+
+/** */
+UShort_t MeasInfo::GetNumDisabledChannels() const
+{ //{{{
+   return fDisabledChannels.size();
+} //}}}
+
+
+/** */
+UShort_t MeasInfo::GetNumActiveSiChannels() const
+{ //{{{
+   UShort_t nCh = 0;
+   ChannelSetConstIter iCh = fSiliconChannels.begin();
+
+   for ( ; iCh != fSiliconChannels.end(); ++iCh) {
+      if ( fDisabledChannels.find(*iCh) == fDisabledChannels.end() ) nCh++;
+   }
+
+   return nCh;
 } //}}}
 
 

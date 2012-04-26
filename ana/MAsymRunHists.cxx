@@ -1039,8 +1039,8 @@ void MAsymRunHists::Fill(const EventConfig &rc)
 
    UInt_t fillId = (UInt_t) runId;
 
-   vector<UShort_t> disabledChs = rc.fMeasInfo->fDisabledChannelsVec;
-   vector<UShort_t>::const_iterator iDisCh = disabledChs.begin();
+   ChannelSet &disabledChs = rc.fMeasInfo->fDisabledChannels;
+   ChannelSetConstIter iDisCh = disabledChs.begin();
 
    for ( ; iDisCh != disabledChs.end(); ++iDisCh)
    {
@@ -1050,8 +1050,6 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    //cout << "Disabled channels: ";
    //std::copy(disabledChs.begin(), disabledChs.end(), std::ostream_iterator<int>(cout, ", "));
    //cout << endl;
-
-
 } //}}}
 
 
