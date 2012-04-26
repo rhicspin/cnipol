@@ -49,7 +49,7 @@ ChannelCalib* Calibrator::GetAverage()
 
    for (mi=mb; mi!=me; ++mi) {
       if (gMeasInfo->IsSiliconChannel(mi->first) && !isnan(mi->second.fT0Coef) && !isinf(mi->second.fT0Coef) &&
-          !gMeasInfo->fDisabledChannels[mi->first-1] && mi->second.fBananaChi2Ndf < 1e3)
+          !gMeasInfo->IsDisabledChannel(mi->first) && mi->second.fBananaChi2Ndf < 1e3)
       {
          ch->fT0Coef        += mi->second.fT0Coef;
          ch->fT0CoefErr     += mi->second.fT0CoefErr;

@@ -87,17 +87,18 @@ public:
    int                         MaxRevolution;
    char                        fTargetOrient;
    char                        fTargetId;
-   int                         ActiveDetector[N_DETECTORS];
-   int                         ActiveStrip[N_SILICON_CHANNELS];
-   int                         NActiveStrip;
-   int                         NDisableStrip;
-   int                         fDisabledChannels[N_SILICON_CHANNELS];
-   std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
-   ChannelSet                  fSiliconChannels;
-   ChannelSet                  fActiveSiliconChannels;
+   //int                         ActiveDetector[N_DETECTORS];
+   //int                         ActiveStrip[N_SILICON_CHANNELS];
+   //int                         NActiveStrip;
+   //int                         NDisableStrip;
+   //int                         fDisabledChannels[N_SILICON_CHANNELS];
+   //std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
+   ChannelSet                  fSiliconChannels;     // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
+   ChannelSet                  fDisabledChannels;    // a list of disabled channels. not just silicon channels
+   //ChannelSet                  fActiveChannels;
    BeamBunchMap                fBeamBunches;
-   Int_t                       NDisableBunch;
-   Int_t                       DisableBunch[N_BUNCHES];
+   //Int_t                       NDisableBunch;
+   //Int_t                       DisableBunch[N_BUNCHES];
 
 public:
 
@@ -159,6 +160,8 @@ public:
    void            EnableChannels(std::bitset<N_DETECTORS> &disabled_det);
    Bool_t          IsDisabledChannel(UShort_t chId);
    Bool_t          IsSiliconChannel(UShort_t chId);
+   UShort_t        GetNumActiveSiChannels() const;
+   UShort_t        GetNumDisabledChannels() const;
    Bool_t          IsHamaChannel(UShort_t chId);
    Bool_t          IsPmtChannel(UShort_t chId);
    BeamBunchMap    GetBunches() const;

@@ -496,11 +496,11 @@ void readdb(double RUNID)
    }
 
    // Find Disable Strip List
-   gMeasInfo->NDisableStrip = FindDisableStrip();
+   //gMeasInfo->NDisableStrip = FindDisableStrip();
 
    // Find Disable Bunch List
-   gMeasInfo->NDisableBunch = FindDisableBunch();
-   if (gMeasInfo->NDisableBunch) Flag.mask_bunch = 1;
+   //gMeasInfo->NDisableBunch = FindDisableBunch();
+   //if (gMeasInfo->NDisableBunch) Flag.mask_bunch = 1;
 
    // processing conditions
    if (!extinput.CONFIG){
@@ -597,17 +597,17 @@ void SetDefault()
    // initialize strip arrays
    for (int i=0; i<NSTRIP; i++) {
       ProcessStrip[i]          = 0;
-      gMeasInfo->ActiveStrip[i]  = 1;
-      gMeasInfo->fDisabledChannels[i] = 0;
-      gMeasInfo->NActiveStrip    = NSTRIP;
-      gMeasInfo->NDisableStrip   = 0;
+      //gMeasInfo->ActiveStrip[i]  = 1;
+      //gMeasInfo->fDisabledChannels[i] = 0;
+      //gMeasInfo->NActiveStrip    = NSTRIP;
+      //gMeasInfo->NDisableStrip   = 0;
    }
  
    // initialize bunch arrays
    for (int i=0; i<NBUNCH; i++) {
       ProcessBunch[i]          = 0;
-      gMeasInfo->DisableBunch[i] = 0;
-      gMeasInfo->NDisableBunch   = 0;
+      //gMeasInfo->DisableBunch[i] = 0;
+      //gMeasInfo->NDisableBunch   = 0;
    }
 }
 
@@ -621,7 +621,7 @@ int FindDisableStrip()
    int NDisableStrip=0;
    for (int i=0;i<NSTRIP; i++) {
       if (ProcessStrip[i]>0) {
-         gMeasInfo->fDisabledChannels[NDisableStrip] = i;
+         //gMeasInfo->fDisabledChannels[NDisableStrip] = i;
          NDisableStrip++;
       }
    }
@@ -651,7 +651,7 @@ int FindDisableBunch()
   int NDisableBunch=0;
   for (int i=0;i<NBUNCH; i++) {
     if (ProcessBunch[i]>0) {
-      gMeasInfo->DisableBunch[NDisableBunch] = i;
+      //gMeasInfo->DisableBunch[NDisableBunch] = i;
       NDisableBunch++;
     }
   }
