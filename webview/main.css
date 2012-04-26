@@ -127,6 +127,7 @@ dt.feature {
 
 BODY {
 	counter-reset: counterH1 counterFig counterTable;      /* Create a chapter counter scope */
+   margin: 1ex 5%;
 }
 
 H1.count:before {
@@ -202,6 +203,10 @@ div.tablecount:before {
 .hidden { display: none; }
 .unhidden { display: block; }
 
+div.divcenter {
+   width: 50%;
+   margin: 0px auto;
+}
 
 div.section {
    display: block;
@@ -214,6 +219,42 @@ div.section {
 .padding2 {
    padding: 0.5em;
 }
+
+table.generic {
+   border-collapse:collapse;
+}
+
+table.generic th {
+   vertical-align:text-top;
+   text-align: left;
+   border: 1px solid black;
+   padding: 0.5em;
+}
+
+table.generic td {
+   vertical-align:text-top;
+   border: 1px solid black;
+   padding: 0.5em;
+}
+
+table.generic_dl_0 {
+   border-collapse:collapse;
+   border-style: none;
+}
+
+table.generic_dl_0 th {
+   vertical-align:text-top;
+   text-align: left;
+   border-style: none;
+   padding: 0.5em;
+}
+
+table.generic_dl_0 td {
+   vertical-align:text-top;
+   border-style: none;
+   padding: 0.5em;
+}
+
 
 table.simple0 td, th {
    margin-left: auto;
@@ -228,3 +269,4 @@ table.simple td {
    padding: 1em;
    border: 1px solid black;
 }
+

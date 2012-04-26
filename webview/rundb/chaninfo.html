@@ -15,23 +15,20 @@
 
 <body bgcolor="#ffffff">
 
-<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
-<tr>
-<td width="5%">
-
-<td width="90%">
+<?php
+include("../head.html");
+?>
 
 <!-- Main text starts here-->
 
 <p><a name="content"/>
 
-<h1>Measurement <?=$gRunId?>, channel <?=$gChanId?></h1>
+<h1>pC Measurement <?=$gRunId?>, channel <?=$gChanId?></h1>
 
 <p>
-<a href="./"><span class=s150>Run Index</span></a> &mdash;
-<a href="<?="./?runid=$gRunId&sfx=$gSfx"?>"><span class=s150>Run Summary</span></a> &mdash;
+<a href="<?="./?runid=$gRunId&sfx=$gSfx"?>"><span class=s120>Run Summary</span></a> &mdash;
 
-<span class=s150>Channels:</span>
+<span class=s120>Channels:</span>
 
 <p>
 
@@ -198,24 +195,9 @@ $gChanId = sprintf("%02d", $gChanId);
 
 <!-- Main text ends here-->
 
-<td width="5%">
-
-<tr>
-<td>&nbsp;
-
-<td>&nbsp;
-
-<p>&nbsp;<br>
-<hr width="100%" size="2">
-
-<div align="left">
-Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
-(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
-</div>
-
-<td>&nbsp;
-
-</table>
+<?php
+include("../bottom.html");
+?>
 
 </body>
 </html>
