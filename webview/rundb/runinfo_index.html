@@ -8,23 +8,21 @@
 
 <html>
 <head>
-  <title>Run Database: RHIC p-Carbon polarimeters</title>
+  <title>RHIC Polarimetry Results: p-Carbon Measurement Database</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
 </head>
 
 <body bgcolor="#ffffff">
 
-<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
-<tr>
-<td width="2%">
-
-<td width="96%">
+<?php
+include("../head.html");
+?>
 
 <!-- Main text starts here-->
 
 <p><a name="content"/>
 
-<h1>Cnipol Run Index</h1>
+<h1>p-Carbon Measurements</h1>
 
 <?php
 
@@ -228,7 +226,7 @@ while ($e = mysql_fetch_assoc($rslt)):
 
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
-	$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+	$asymVersion = "<a href=https://svn.bnl.gov/viewvc/cnipol?view=revision&revision=$asymVersion>$asymVersion</a>";
 ?>
 
 <tr>
@@ -263,23 +261,11 @@ endwhile;
 
 <!-- Main text ends here-->
 
-<td width="2%">
 
-<tr>
-<td>
+<?php
+include("../bottom.html");
+?>
 
-<td>
-<p>&nbsp;<br>
-<hr width="100%" size="2">
-
-<div align="left">
-Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
-(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
-</div>
-
-<td>
-
-</table>
 
 </body>
 </html>

@@ -14,21 +14,15 @@
 
 <body bgcolor="#ffffff">
 
-<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
-<tr>
-<td width="5%">
-
-<td width="90%">
+<?php
+include("../head.html");
+?>
 
 <!-- Main text starts here-->
 
 <p><a name="content"/>
 
-<h1>Calibration/Test Run <?=$gRunId?></h1>
-
-<p>
-<a href="./"><span class=s150>Run Index</span></a>
-
+<h1>pC Calibration/Special Run <?=$gRunId?></h1>
 
 
 <p>
@@ -306,23 +300,9 @@ foreach($rc['ActiveStrip'] as $chanId => $siS) {
 
 <!-- Main text ends here-->
 
-<td width="5%">
-
-<tr>
-<td>
-
-<td>
-<p>&nbsp;<br>
-<hr width="100%" size="2">
-
-<div align="left">
-Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
-(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
-</div>
-
-<td>
-
-</table>
+<?php
+include("../body.html");
+?>
 
 </body>
 </html>
