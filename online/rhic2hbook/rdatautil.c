@@ -23,7 +23,6 @@ extern "C" {
    int  icopen_(char *fname, int len);
    void icclose_(void);
    void readandfill_(int* subrun);
-
 }
 
 //
@@ -85,6 +84,7 @@ struct RHIC_STRUCT {
    int fillpat[120];
    int polpat[120];
 } rhic_;
+
 //      Commons /poldat/ /beamdat/ /tgtdat1/ /tgtdat2/
 polDataStruct poldat_;
 beamDataStruct beamdat_;
