@@ -8,19 +8,22 @@
 #include "AnaFillResult.h"
 #include "MAsymAnaInfo.h"
 #include "EventConfig.h"
+#include "DrawObjContainer.h"
 
 
 
 /** */
 class AnaGlobResult : public TObject
 {
-private:
+protected:
 
    std::string       fPathExternResults;
    std::string       fFileNameYelHjet;
    std::string       fFileNameBluHjet;
    UInt_t            fMinFill;
    UInt_t            fMaxFill;
+   Bool_t            fDoCalcPolarNorm;
+   
 
    FILE             *fFilePhp;      //!
    BeamEnergySet     fBeamEnergies;
@@ -53,8 +56,8 @@ public:
    void       Configure(MAsymAnaInfo &mainfo);
    void       AdjustMinMaxFill();
    void       AddMeasResult(AnaMeasResult &result);
-   void       AddMeasResult(EventConfig &mm);
-   void       Process();
+   void       AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
+   void       Process(DrawObjContainer *ocOut=0);
    ValErrPair GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    //ValErrPair GetBeamPolarExp(UInt_t fillId, ERingId ringId);
    void       UpdateInsertDb();

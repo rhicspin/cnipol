@@ -43,6 +43,9 @@ public:
    Spin2FitResMap       fFitResAsymBunchX90;    // Fit results from asymmetry vs bunch histograms for different spin states
    Spin2FitResMap       fFitResAsymBunchX45;    //
    Spin2FitResMap       fFitResAsymBunchY45;    //
+   TH1                 *fhAsymVsBunchId_X90;    //!
+   TH1                 *fhAsymVsBunchId_X45;    //!
+   TH1                 *fhAsymVsBunchId_Y45;    //!
    ValErrMap            fAsymX90;               // Results from classic square root formula. Different definitions of asymmetry: phys, lumi, geom
    ValErrMap            fAsymX45;               //
    ValErrMap            fAsymX45T;              //! upper/top 45-deg detectors

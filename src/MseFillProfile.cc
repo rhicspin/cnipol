@@ -73,48 +73,48 @@ void MseFillProfileX::PrintAsPhp(FILE *f) const
 
 
 /** */
-void MseFillProfileX::SetValues(AnaFillResult &fr)
+void MseFillProfileX::SetValues(AnaFillResult &afr)
 { //{{{
 
-   if (fr.fPolProfRs.find(kBLUE_RING) != fr.fPolProfRs.end() ) {
+   if (afr.fPolProfRs.find(kBLUE_RING) != afr.fPolProfRs.end() ) {
 
-      TgtOrient2ValErrMap mapByTgt = fr.fPolProfRs[kBLUE_RING];
+      TgtOrient2ValErrMap mapByTgt = afr.fPolProfRs[kBLUE_RING];
 
       if (mapByTgt.find(kTARGET_H) != mapByTgt.end() ) {
 
-         profile_blue_h     = fr.fPolProfRs[kBLUE_RING][kTARGET_H].first;     //iTgtRes->second.first; 
-         profile_blue_h_err = fr.fPolProfRs[kBLUE_RING][kTARGET_H].second;    //iTgtRes->second.second; 
-         pmax_blue_h        = fr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].first;
-         pmax_blue_h_err    = fr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].second;
+         profile_blue_h     = afr.fPolProfRs[kBLUE_RING][kTARGET_H].first;     //iTgtRes->second.first; 
+         profile_blue_h_err = afr.fPolProfRs[kBLUE_RING][kTARGET_H].second;    //iTgtRes->second.second; 
+         pmax_blue_h        = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].first;
+         pmax_blue_h_err    = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].second;
       }
 
       if (mapByTgt.find(kTARGET_V) != mapByTgt.end() ) {
 
-         profile_blue_v     = fr.fPolProfRs[kBLUE_RING][kTARGET_V].first;     //iTgtRes->second.first; 
-         profile_blue_v_err = fr.fPolProfRs[kBLUE_RING][kTARGET_V].second;    //iTgtRes->second.second; 
-         pmax_blue_v        = fr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].first;
-         pmax_blue_v_err    = fr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].second;
+         profile_blue_v     = afr.fPolProfRs[kBLUE_RING][kTARGET_V].first;     //iTgtRes->second.first; 
+         profile_blue_v_err = afr.fPolProfRs[kBLUE_RING][kTARGET_V].second;    //iTgtRes->second.second; 
+         pmax_blue_v        = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].first;
+         pmax_blue_v_err    = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].second;
       }
    }
 
-   if (fr.fPolProfRs.find(kYELLOW_RING) != fr.fPolProfRs.end() ) {
+   if (afr.fPolProfRs.find(kYELLOW_RING) != afr.fPolProfRs.end() ) {
 
-      TgtOrient2ValErrMap mapByTgt = fr.fPolProfRs[kYELLOW_RING];
+      TgtOrient2ValErrMap mapByTgt = afr.fPolProfRs[kYELLOW_RING];
 
       if (mapByTgt.find(kTARGET_H) != mapByTgt.end() ) {
 
-         profile_yellow_h     = fr.fPolProfRs[kYELLOW_RING][kTARGET_H].first;     //iTgtRes->second.first; 
-         profile_yellow_h_err = fr.fPolProfRs[kYELLOW_RING][kTARGET_H].second;    //iTgtRes->second.second; 
-         pmax_yellow_h        = fr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].first;
-         pmax_yellow_h_err    = fr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].second;
+         profile_yellow_h     = afr.fPolProfRs[kYELLOW_RING][kTARGET_H].first;     //iTgtRes->second.first; 
+         profile_yellow_h_err = afr.fPolProfRs[kYELLOW_RING][kTARGET_H].second;    //iTgtRes->second.second; 
+         pmax_yellow_h        = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].first;
+         pmax_yellow_h_err    = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].second;
       }
 
       if (mapByTgt.find(kTARGET_V) != mapByTgt.end() ) {
 
-         profile_yellow_v     = fr.fPolProfRs[kYELLOW_RING][kTARGET_V].first;     //iTgtRes->second.first; 
-         profile_yellow_v_err = fr.fPolProfRs[kYELLOW_RING][kTARGET_V].second;    //iTgtRes->second.second; 
-         pmax_yellow_v        = fr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].first;
-         pmax_yellow_v_err    = fr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].second;
+         profile_yellow_v     = afr.fPolProfRs[kYELLOW_RING][kTARGET_V].first;     //iTgtRes->second.first; 
+         profile_yellow_v_err = afr.fPolProfRs[kYELLOW_RING][kTARGET_V].second;    //iTgtRes->second.second; 
+         pmax_yellow_v        = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].first;
+         pmax_yellow_v_err    = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].second;
       }
    }
 } //}}}

@@ -370,7 +370,7 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 // Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMax(int N, float A[])
 { //{{{
-   float max = A[0] != ASYM_DEFAULT ? A[0] : A[1];
+   float max = A[0];// != ASYM_DEFAULT ? A[0] : A[1];
    for (int i=1; i<N; i++) max = (A[i] && max < A[i] && A[i] != ASYM_DEFAULT) ? A[i] : max;
    return max;
 } //}}}
@@ -379,7 +379,7 @@ float GetMax(int N, float A[])
 // Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMin(int N, float A[])
 { //{{{
-  float min = A[0] != ASYM_DEFAULT ? A[0] : A[1];
+  float min = A[0];// != ASYM_DEFAULT ? A[0] : A[1];
   for (int i=1; i<N; i++) min = (A[i]) && (min>A[i]) && (A[i] != ASYM_DEFAULT) ? A[i] : min;
   return min;
 } //}}}
@@ -409,153 +409,6 @@ void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, f
    if ( fabs(min) < prefix ) min = -prefix;
    if ( fabs(max) < prefix ) max =  prefix;
 } //}}}
-
-
-// Description : calculate weighted mean
-// Input       : float A[N], float dA[N], int NDAT
-// Return      : weighted mean
-float WeightedMean(float *A, float *dA, int NDAT)
-{ //{{{
-   float sum1 = 0;
-	float sum2 = 0;
-   float dA2  = 0;
- 
-   for (int i=0; i<NDAT; i++) {
-      if (dA[i]) {  // skip dA=0 data
-         dA2 = dA[i]*dA[i];
-         sum1 += A[i]/dA2 ;
-         sum2 += 1/dA2 ;
-      }
-   }
- 
-   return dA2 == 0 ? -1 : sum1/sum2;
-} //}}}
-
-
-// Description : calculate weighted mean error. A[i] is skipped if dA[i]=0.
-// Input       : float dA[N], int NDAT
-// Return      : weighted mean error
-float WeightedMeanError(float *dA, int NDAT)
-{ //{{{
-   float sum = 0;
-   float dA2 = 0;
- 
-   for ( int i=0 ; i<NDAT ; i++ ) {
-      if (dA[i]){
-         dA2  = dA[i]*dA[i];
-         sum += 1/dA2 ;
-      }
-   }
- 
-   return sum == 0 ? -1 : sqrt(1/sum);
-} //}}}
-
-
-// Description : call weighted mean and error
-// Input       : float A[N], float dA[N], float Ave, int NDAT
-// Return      : Ave, dAve
-void CalcWeightedMean(float *A, float *dA, int NDAT, float &Ave, float &dAve)
-{ //{{{
-   Ave  = WeightedMean(A, dA, NDAT);
-   dAve = WeightedMeanError(dA, NDAT);
-} //}}}
-
-
-/** */
-ValErrPair CalcWeightedAvrgErr(const ValErrSet &valerrs)
-{ //{{{
-   ValErrPair    avrgResult;
-   ValErrSetIter iValErr = valerrs.begin();
-
-	Int_t n = 0;
-	vector<float> vals;
-	vector<float> errs;
-
-   for ( ; iValErr != valerrs.end(); ++iValErr) {
-      if (iValErr->second < 0) continue;
-	   vals.push_back(iValErr->first);
-	   errs.push_back(iValErr->second);
-	   n++;
-	}
-
-   avrgResult.first  = WeightedMean(&vals[0], &errs[0], n);
-   avrgResult.second = WeightedMeanError(&errs[0], n);
-
-	return avrgResult;
-} //}}}
-
-
-/** */
-ValErrPair CalcWeightedAvrgErr(const ValErrPair ve1, const ValErrPair ve2)
-{ //{{{
-   ValErrPair result(0, -1);
-
-   if (ve1.second <= 0 && ve2.second <= 0) return result;
-   if (ve1.second <= 0) return ve2;
-   if (ve2.second <= 0) return ve1;
-
-   Double_t w1 = 1./ve1.second/ve1.second;
-   Double_t w2 = 1./ve2.second/ve2.second;
-
-   result.first  = (ve1.first*w1 + ve2.first*w2)/ (w1 + w2);
-   result.second = 1./sqrt(w1 + w2);
-
-	return result;
-} //}}}
-
-
-// Description : Calculates error propagation of x/y for (x,dx) and (y,dy)
-//             :
-// Input       : float x, float y, float dx, float dy
-// Return      : error propagation of x/y
-float CalcDivisionError(float x, float y, float dx, float dy)
-{ //{{{
-   if (x*y) {
-      return x/y * sqrt( dx*dx/x/x + dy*dy/y/y );
-   } else {
-      return 0;
-   }
-} //}}}
-
-
-/** */
-ValErrPair CalcDivision(ValErrPair ve1, ValErrPair ve2, Double_t r12)
-{ //{{{
-   ValErrPair result(0, -1);
-
-   if (ve1.first == 0 || ve2.first == 0) return result;
-
-   result.first  = ve1.first / ve2.first;
-   Double_t re1  = ve1.second/ve1.first;
-   Double_t re2  = ve2.second/ve2.first;
-   Double_t re   = sqrt(re1*re1 + re2*re2 - 2*re1*re2*r12);
-   result.second = re * result.first;
-
-   //result.second = result.first * sqrt( ve1.second*ve1.second/ve1.first/ve1.first +
-   //                                     ve2.second*ve2.second/ve2.first/ve2.first);
-
-   return result;
-} //}}}
-
-
-// Description : calculate quadratic error of x/y
-// Input       : float x, float y, float dx, float dy
-// Return      : float quadratic error of x/y
-float QuadErrorDiv(float x, float y, float dx, float dy)
-{
-  return y*x ? x/y * TMath::Sqrt(dx*dx/x/x + dy*dy/y/y) : 0;
-}
-
-
-// Description : calculate quadratic sum
-// Input       : float dx, float dy
-// Return      : float quadratic error sum of x+y or x-y
-//
-float QuadErrorSum(float dx, float dy)
-{ //{{{
-   return TMath::Sqrt(dx*dx + dy*dy);
-} //}}}
-
 
 // Description : draw text on histogram. Text alignment is (center,top) by default
 void DrawText(TH1 *h, float x, float y, int color, char *text)

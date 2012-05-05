@@ -14,7 +14,6 @@
 #include "CnipolAsymHists.h"
 #include "MAsymRunHists.h"
 
-//#include "MeasInfo.h"
 #include "MseMeasInfo.h"
 #include "ChannelCalib.h"
 
@@ -803,8 +802,8 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    // decay
    shName = "hIntensDecayVsFill_" + sRingId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->GetYaxis()->SetRangeUser(-10, 5);
-   hist->SetTitle("; Fill; Average Intens. Decay, #times 10^{-2} 10^{9}/hour;");
+   hist->GetYaxis()->SetRangeUser(0, 100);
+   hist->SetTitle("; Fill; Lifetime, hour;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
@@ -1532,6 +1531,10 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          //hPolarRatioVsFill_HJOnly_->Fit("pol0", "+");
          hPolarRatioVsFill_HJOnly_->Print();
          hPolarRatioVsFill_HJOnly_->Fit("pol0");
+
+			//
+         TH1* hIntensDecayVsFill_ = (TH1*) oc_ring->o["hIntensDecayVsFill_" + sRingId + "_" + sBeamE];
+         hIntensDecayVsFill_->Fit("pol0");
       }
    }
 
@@ -1583,7 +1586,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    // Consider P and P_prof by polarimeter
 
    ValErrPair polarHJ         = afr.GetPolarHJ(polId);
-   ValErrPair polarPC         = afr.GetPolarPC(polId);                       // unnormalized values
+   ValErrPair polarPC         = afr.GetPolarPC(polId);                       // unnormalized value
    //ValErrPair polarPCNorm   = afr.GetPolarPC(polId, &agr.fNormJetCarbon);  // ratio of average
    //ValErrPair polarProfNorm = afr.GetPolarPC(polId, &agr.fNormProfPolar);
    ValErrPair polarPCNorm     = afr.GetPolarPC(polId, &agr.fNormJetCarbon2); // average of ratio
@@ -1641,8 +1644,8 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
 
    if (pcPolarDecay.second >= 0) { // some reasonable number
       TH1* hPolarDecayVsFill_ = (TH1F*) oc_pol->o["hPolarDecayVsFill_" + sPolId + "_" + sBeamE];
-      hPolarDecayVsFill_->SetBinContent(ib, pcPolarDecay.first*3600);
-      hPolarDecayVsFill_->SetBinError(ib, pcPolarDecay.second*3600);
+      hPolarDecayVsFill_->SetBinContent(ib, pcPolarDecay.first);
+      hPolarDecayVsFill_->SetBinError(ib, pcPolarDecay.second);
    }
 
 } //}}}
@@ -1719,8 +1722,8 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
 
    if (intensDecay.second >= 0) {
       TH1* hIntensDecayVsFill_ = (TH1F*) oc_ring->o["hIntensDecayVsFill_" + sRingId + "_" + sBeamE];
-      hIntensDecayVsFill_->SetBinContent(ib, intensDecay.first*3600*1e2);
-      hIntensDecayVsFill_->SetBinError(ib, intensDecay.second*3600*1e2);
+      hIntensDecayVsFill_->SetBinContent(ib, intensDecay.first);
+      hIntensDecayVsFill_->SetBinError(ib, intensDecay.second);
    }
 } //}}}
 

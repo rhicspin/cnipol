@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
    // Overwrite the offline version (if set previously)
    //gRunDb.SetAsymVersion(gMeasInfo->fAsymVersion);
-   mseMeasInfoX->asym_version = gMeasInfo->fAsymVersion;
+   mseMeasInfoX->asym_version = gAnaInfo->fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    //gRunDb.Print();

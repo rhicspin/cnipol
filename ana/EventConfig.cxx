@@ -184,7 +184,7 @@ string EventConfig::GetSignature() const
       //if (strSignature.size() != 0) 
       //   strSignature += ", ";
 
-      strSignature += ", Version " + fMeasInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
+      strSignature += ", Version " + fAnaInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
    }
 
    return strSignature;

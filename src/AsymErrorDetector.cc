@@ -17,6 +17,9 @@
 #include "AnaMeasResult.h"
 #include "MeasInfo.h"
 
+#include "utils/utils.h"
+
+
 // Description : Fit the slope of energy spectrum given in (-t) with exponential.
 void DetectorAnomaly()
 {
@@ -171,7 +174,7 @@ void StripAnomalyDetector()
    strpchk.evnt.allowance  = errdet.GOOD_CARBON_EVENTS_ALLOWANCE;
  
    // Get weighted average for width of 12C invariant mass distributions
-   strpchk.width.average[0] = WeightedMean(feedback.RMS,feedback.err,NSTRIP);
+   strpchk.width.average[0] = utils::WeightedMean(feedback.RMS,feedback.err,NSTRIP);
    DrawHorizLine(mass_sigma_vs_strip, 0, NSTRIP+1, strpchk.width.average[0], 1, 1, 2);
  
    // Calculate average carbon events in banana cuts

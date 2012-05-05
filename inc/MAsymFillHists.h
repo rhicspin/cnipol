@@ -42,6 +42,7 @@ public:
    void PostFill();
    void PostFill(AnaGlobResult &agr);
    void UpdateLimits();
+	DrawObjContainer *GetSingleFillHists(UInt_t fillId);
 
    ClassDef(MAsymFillHists, 1)
 };

@@ -21,7 +21,8 @@ AnaMeasResult::AnaMeasResult() : TObject(),
    fPolar(),
    fAvrgPMAsym(),
    fFitResAsymPhi(),       fFitResPolarPhi(),
-   fFitResAsymBunchX90(),  fFitResAsymBunchX45(), fFitResAsymBunchY45(),
+   fFitResAsymBunchX90(),  fFitResAsymBunchX45(),  fFitResAsymBunchY45(),
+	fhAsymVsBunchId_X90(0), fhAsymVsBunchId_X45(0), fhAsymVsBunchId_Y45(0),
    fAsymX90(), fAsymX45(), fAsymX45T(), fAsymX45B(), fAsymY45(),
    fFitResProfilePvsI(),   fFitResEnergySlope(), fFitResPseudoMass(),
    //P_sigma_ratio[2],
@@ -98,7 +99,6 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPmtV1T0Err']         = %f;\n",            fPmtV1T0Err);
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
    fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
-
 } //}}}
 
 
