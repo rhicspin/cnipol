@@ -2,4 +2,7 @@ Options +FollowSymLinks
 RewriteEngine On
 RewriteBase /
 
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
+
 DirectorySlash Off

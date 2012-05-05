@@ -7,6 +7,30 @@ include("../rundb/config.php");
 setlocale(LC_TIME, 'en');
 putenv("TZ=America/New_York");
 
+
+// Run details view
+if ( isset($_GET['fillid']) && isset($_GET['ana']) )
+{
+   $gFillId    = $_GET['fillid'];
+   $gAnaName   = $_GET['ana'];
+   $gAnaResDir = DATA_DIR."/$gAnaName/";
+
+   // Check for correct and existing fillid
+   if (!is_dir($gAnaResDir) || !file_exists("$gAnaResDir/anainfo.php"))
+   {
+      print "No results found for $gAnaName\n";
+      exit;
+   }
+
+   if ( ereg("[0-9]{3,}", $gFillId) ) {
+      include("fillinfo.html");
+   } else {
+      print "No results found for $gFillId\n";
+   }
+
+   exit;
+}
+
 include("fills_index.html");
 
 ?>
