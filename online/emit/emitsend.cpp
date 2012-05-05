@@ -50,5 +50,6 @@ void sendemit(char *devName) {
     DEVSEND(pol, "set emitPeaktoEvtBunchS", &data, NULL, stdout, irc);
 
     printf("Emittance scan results sent to CDEV %s\n", devName);
+
     if (irc != 0) printf("%d errors sending emittance data\n", irc);
 }
