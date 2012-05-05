@@ -26,23 +26,13 @@ include("../head.html");
 
 <?php
 
-//include("utils.php"); 
-//include("config.php");
-//include("DbReader.php");
 include_once("SqlDbReader.php");
 include_once("RunSelector.php");
 
-//$dbReader = new DbReader();
-//$dbReader->ReadEntries();
-//$es = $dbReader->entries;
-//array_sort($es, '!START_TIME');
-
 $runSelector = new RunSelector();
-
 $runSelector->PrintForm();
 
 $sqlDbReader = new SqlDbReader($runSelector);
-
 $nRuns = $sqlDbReader->CountEntries();
 
 ?>
@@ -89,7 +79,7 @@ $onlinePolars = readOnlinePolar(LOG_DIR."/online_polar.dat");
    <th rowspan=2>Polarimeter <br><?=$runSelector->HtmlSortLinks("pi");?>
    <th rowspan=2>Polarization, %<br><?=$runSelector->HtmlSortLinks("po");?>
    <th rowspan=2>Polarization (online), %
-   <th rowspan=2>r
+   <th rowspan=2>Prof. Ratio R
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Target
@@ -104,7 +94,6 @@ $onlinePolars = readOnlinePolar(LOG_DIR."/online_polar.dat");
 
 <?php
 //print count($es);
-//foreach($es as $e):
 while ($e = mysql_fetch_assoc($rslt)):
    //$e->PrintThis();
 
@@ -112,43 +101,9 @@ while ($e = mysql_fetch_assoc($rslt)):
    //print_r($e); 
    //print "</pre>\n";
 
-   $polId = $POLARIMETER_ID[$e['polarimeter_id']];
-
-
-   // quick and dirty solution to deal with unphysical values
-	// BAD BAD BAD - must be removed once the QA is in order
-   //$rc = array();
-   //$polarToDisplay = null;
-
-   //$gRunDir = DATA_DIR."/".$e['run_name'];
-
-   //if ( file_exists("$gRunDir/runconfig.php") ) {
-   //   include("$gRunDir/runconfig.php");
-
-   //   
-	//   if (!isset($rc['A_N']) || $rc['A_N'][1] == 0)
-   //      $rc['A_N'][1] = 1e10;
-
-   //   $polars = array( new pair($e['polarization']*100, $e['polarization_error']*100),
-   //                    new pair(abs($rc['fAsymX90']['phys'][0]*100/$rc['A_N'][1]), $rc['fAsymX90']['phys'][1]*100/$rc['A_N'][1]),
-   //                    new pair(abs($rc['fAsymX45T']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45T']['phys'][1]*100*M_SQRT2/$rc['A_N'][1]),
-   //                    new pair(abs($rc['fAsymX45B']['phys'][0]*100*M_SQRT2/$rc['A_N'][1]), $rc['fAsymX45B']['phys'][1]*100*M_SQRT2/$rc['A_N'][1])  );
-   //   
-   //   //print("<!--\n");
-   //   //print_r($polars);
-   //   //print("-->\n");
-   //   
-   //   foreach ($polars as $polar) {
-   //      if (($polar->first > 90 || $polar->first < 10) && $polar->second < 10) continue;
-   //   	$polarToDisplay = $polar;
-   //   	break;
-   //   }
-	//}
-
-   $start_time = isset($e['start_time']) ? strtotime($e['start_time']) : 0;
-
-   $runPeriod = getRunPeriod($start_time);
-
+   $polId        = $POLARIMETER_ID[$e['polarimeter_id']];
+   $start_time   = isset($e['start_time']) ? strtotime($e['start_time']) : 0;
+   $runPeriod    = getRunPeriod($start_time);
    $polarization = "&nbsp;";
 
    //if (isset($e['polarization']) && $polarToDisplay == null) 

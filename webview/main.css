@@ -127,7 +127,7 @@ dt.feature {
 
 BODY {
 	counter-reset: counterH1 counterFig counterTable;      /* Create a chapter counter scope */
-   margin: 1ex 5%;
+   margin: 1ex 3%;
 }
 
 H1.count:before {

@@ -23,7 +23,7 @@ class RunSelector {
                                   "tgt");
 
    function RunSelector()
-   {
+   { //{{{
       global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
 
       $url = parse_url($_SERVER['REQUEST_URI']);
@@ -81,11 +81,11 @@ class RunSelector {
          $this->sqlOrderBy .= ( isset($_GET['srtd']) && is_numeric($_GET['srtd']) && $_GET['srtd'] < 0 ) ? "DESC" : "ASC";
          $this->sqlOrderBy .= ", ";
       }
-   }
+   } //}}}
 
 
    function HtmlSortLinks($key=null)
-   {
+   { //{{{
       // first check for a page variable in the query
       $url = parse_url($_SERVER['REQUEST_URI']);
       parse_str($url['query'], $tmpQuery);
@@ -104,11 +104,11 @@ class RunSelector {
               "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=+1\">&#9650;</a>";
 
       return $html;
-   }
+   } //}}}
 
 
    function PrintForm()
-   {
+   { //{{{
       global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
       // Create a table with the necessary header informations
@@ -128,7 +128,7 @@ class RunSelector {
               <td colspan=4 class=padding2><b>Run:</b>
               <input type=text name=rn value='{$_GET['rn']}'>
               &nbsp;&nbsp;&nbsp;
-              Use \"%\" to match any number of characters, use \"_\" to match any single character in run name
+              Use \"%\" to match any number of characters, use \"_\" to match any single character in run id
 
               <tr>
               <td class=\"padding2\"><b>Polarimeter:</b>\n";
@@ -154,11 +154,11 @@ class RunSelector {
       echo "</table>\n";
       echo "</div>\n";
       echo "</form>\n";
-   }
+   } //}}}
 
 
    function HtmlSelectField($options, $v="", $default=null)
-   {
+   { //{{{
       $selected      = "";
 
       $html  = "<select name='$v'>\n";
@@ -183,5 +183,5 @@ class RunSelector {
       $html .= "</select>\n";
 
       print $html;
-   }
+   } //}}}
 }

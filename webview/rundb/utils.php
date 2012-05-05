@@ -295,11 +295,13 @@ function calcWeigtedStdDev($valerrs)
 { //{{{
    //if (count($valerrs) <= 0) return null;
 
-   $result = new pair(-1, -1);
+   $result = new pair(0, -1);
 
    $s0 = calcWeigtedSum($valerrs, 0);
    $s1 = calcWeigtedSum($valerrs, 1);
    $s2 = calcWeigtedSum($valerrs, 2);
+
+   if (!$s0) return $result;
 
    $result->first  = sqrt( ($s0*$s2 - $s1*$s1) / ( $s0*($s0 - 1) ) );
    //$result->first  = 777;

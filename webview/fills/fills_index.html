@@ -8,8 +8,8 @@
 
 <html>
 <head>
-  <title>RHIC Polarimetry Results: Fill Database</title>
-  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+   <title>RHIC Polarimetry Results: Fill Database</title>
+   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
 </head>
 
 <body bgcolor="#ffffff">
@@ -28,18 +28,13 @@ include("../head.html");
 <?php
 
 include_once("../rundb/DbFillPolar.php");
-//include_once("../RunSelector.php");
+include_once("../rundb/FillSelector.php");
 
-//$dbReader = new DbReader();
-//$dbReader->ReadEntries();
-//$es = $dbReader->entries;
-//array_sort($es, '!START_TIME');
+$fillSelector = new FillSelector();
+$fillSelector->PrintForm();
 
-//$runSelector = new RunSelector();
-
-//$runSelector->PrintForm();
-
-$dbFillPolar = new DbFillPolar();
+$dbFillPolar = new DbFillPolar($fillSelector);
+//$dbFillPolar = new DbFillPolar();
 
 $nFills = $dbFillPolar->CountEntries();
 
@@ -47,6 +42,7 @@ $nFills = $dbFillPolar->CountEntries();
 
 <p>
 Fills selected: <?=$dbFillPolar->nResults?>
+
 <?//=$dbFillPolar->sqlWhere?>
 
 <?
@@ -78,10 +74,10 @@ $polarB1Us     = array();
 $polarY1Ds     = array();
 $polarB2Ds     = array();
 $polarY2Us     = array();
-$polarB1U_BHJs  = array();
-$polarY1D_YHJs  = array();
-$polarB2D_BHJs  = array();
-$polarY2U_YHJs  = array();
+$polarB1U_BHJs = array();
+$polarY1D_YHJs = array();
+$polarB2D_BHJs = array();
+$polarY2U_YHJs = array();
 
 
 // First loop over all fills
@@ -158,10 +154,10 @@ $pairB2D_BHJ_Avrg = calcWeigtedAvrgErr($polarB2D_BHJs);
 $pairY2U_YHJ_Avrg = calcWeigtedAvrgErr($polarY2U_YHJs);
 
 // Calculate scale factors
-$normB1U = $pairBHJ_B1U_Avrg->first / $pairB1U_BHJ_Avrg->first;
-$normY1D = $pairYHJ_Y1D_Avrg->first / $pairY1D_YHJ_Avrg->first;
-$normB2D = $pairBHJ_B2D_Avrg->first / $pairB2D_BHJ_Avrg->first;
-$normY2U = $pairYHJ_Y2U_Avrg->first / $pairY2U_YHJ_Avrg->first;
+$normB1U = $pairB1U_BHJ_Avrg->first ? $pairBHJ_B1U_Avrg->first / $pairB1U_BHJ_Avrg->first : 1;
+$normY1D = $pairY1D_YHJ_Avrg->first ? $pairYHJ_Y1D_Avrg->first / $pairY1D_YHJ_Avrg->first : 1;
+$normB2D = $pairB2D_BHJ_Avrg->first ? $pairBHJ_B2D_Avrg->first / $pairB2D_BHJ_Avrg->first : 1;
+$normY2U = $pairY2U_YHJ_Avrg->first ? $pairYHJ_Y2U_Avrg->first / $pairY2U_YHJ_Avrg->first : 1;
 
 
 // Loop over all fills to find (average/best) missing values
@@ -525,7 +521,7 @@ foreach ($es as $e):
 ?>
 
 <tr>
-   <td class=align_cm><?=$e['fill']?>
+   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$e['fill']?>&ana=run12_e255_testall"><?=$e['fill']?></a>
    <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$e['fill']?>'>-->
 
    <td class='align_cm bluPol'><b><?=$strPolarBColl?></b>
@@ -573,8 +569,11 @@ $strPolarBAvrg       = polarPairToString($polarBAvrg);
 $strPolarYAvrg       = polarPairToString(calcWeigtedAvrgErr($polarYAvrgs));
 
 // calc relative uncertainty
-$strPolarB_Coll_RelErr = sprintf("%5.2f", $polarB_Coll_Avrg->second/$polarB_Coll_Avrg->first*100.);
-$strPolarBAvrg_RelErr  = sprintf("%5.2f", $polarBAvrg->second/$polarBAvrg->first*100.);
+$polarB_Coll_RelErr    = $polarB_Coll_Avrg->first ? $polarB_Coll_Avrg->second/$polarB_Coll_Avrg->first*100. : 0;
+$strPolarB_Coll_RelErr = sprintf("%5.2f", $polarB_Coll_RelErr);
+
+$polarBAvrg_RelErr     = $polarBAvrg->first ? $polarBAvrg->second/$polarBAvrg->first*100. : 0;
+$strPolarBAvrg_RelErr  = sprintf("%5.2f", $polarBAvrg_RelErr);
 
 ?>
 
