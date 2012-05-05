@@ -12,7 +12,9 @@
 #include "AnaFillExternResult.h"
 #include "AnaMeasResult.h"
 #include "EventConfig.h"
+#include "DrawObjContainer.h"
 #include "TargetUId.h"
+#include "MeasInfo.h"
 
 
 class AnaFillResult;
@@ -28,16 +30,19 @@ class AnaFillResult : public TObject
 {
 protected:
 
-   UInt_t                       fFillId;
-   AnaGlobResult               *fAnaGlobResult;
-   time_t                       fStartTime;
-   AnaFillExternResult         *fAnaFillExternResult;
+   UInt_t               fFillId;
+   AnaGlobResult       *fAnaGlobResult;
+   time_t               fStartTime;
+   AnaFillExternResult *fAnaFillExternResult;
 
-   PolId2TGraphMap              fPCPolarGraphs;
-   TFitResultPtr                fPCPolarFitRes;
+   PolId2TGraphMap      fPCPolarGraphs;
+   TFitResultPtr        fPCPolarFitRes;
 
-   PolId2TGraphMap              fPolProfRGraphs;
-   TFitResultPtr                fPolProfRFitRes;
+   PolId2TGraphMap      fPolProfRGraphs;
+   TFitResultPtr        fPolProfRFitRes;
+
+   //TH1F                *fAsymVsBunchId_X;
+   Double_t             fFlattopEnergy;
 
 public:
 
@@ -45,6 +50,7 @@ public:
    MeasInfoMap                  fMeasInfos;
 
    PolId2ValErrMap              fPCPolars;       // Nominal polarization measurement results
+   PolId2ValErrMap              fPCPolarUnWs;       // Nominal polarization measurement results
    TargetUId2ValErrMap          fPCPolarsByTargets;
    PolId2ValErrMap              fPCProfPolars;     // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
    RingId2ValErrMap             fHJPolars;
@@ -75,21 +81,28 @@ public:
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;
 
+   Double_t      GetFlattopEnergy() const { return fFlattopEnergy; }
    TGraphErrors* GetGrBluIntens() const;
    TGraphErrors* GetGrYelIntens() const;
    TGraphErrors* GetIntensGraph(ERingId ringId) const;
+   TGraphErrors* GetRotCurStarGraph(ERingId ringId) const;
+   TGraphErrors* GetRotCurPhenixGraph(ERingId ringId) const;
+   TGraphErrors* GetSnakeCurGraph(ERingId ringId) const;
    AnaFillExternResult* GetAnaFillExternResult() const;
 
    void              AddMeasResult(AnaMeasResult &result);
    void              AddMeasResult(EventConfig &mm, AnaGlobResult *globRes=0);
+   void              AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);
    void              AddExternInfo(std::ifstream &file);
-   void              Process();
+   void              Process(DrawObjContainer *ocOut=0);
+   Bool_t            IsValidFlattopMeas(const MeasInfo &measInfo);
    TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
    ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
    ValErrPair        GetIntensDecay(ERingId ringId);
    ValErrPair        GetPolarHJ(EPolarimeterId polId);
    ValErrPair        GetPolarHJ(ERingId ringId);
    ValErrPair        GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
+   ValErrPair        GetPolarPCUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
    //ValErrPair        GetPolarBeam(EBeamId beamId);
    ValErrPair        GetPolarBeam(ERingId ringId);
    ValErrPair        GetSystUvsDPolar(ERingId ringId);
@@ -104,11 +117,15 @@ public:
    PolId2ValErrMap   CalcSystJvsCPolar(PolId2ValErrMap &normJC);
    PolId2ValErrMap   CalcSystProfPolar(PolId2ValErrMap &normPP);
    ValErrPair        CalcAvrgPolar(EPolarimeterId polId);
+   ValErrPair        CalcAvrgPolarUnweighted(EPolarimeterId polId);
    ValErrPair        CalcAvrgPolProfPolar(EPolarimeterId polId);
    ValErrPair        CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcPolProfP(ValErrPair R, ValErrPair Pmax);
-   void              FitGraphs();
+   void              CalcAvrgPolarByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
+   void              UpdateExternGraphRange();
+   void              FitExternGraphs();
+   void              FitPolarGraphs();
    void              AddHjetPolar(ERingId ringId, ValErrPair ve);
 
    ClassDef(AnaFillResult, 1)

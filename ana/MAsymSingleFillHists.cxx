@@ -13,7 +13,6 @@
 
 #include "MAsymSingleFillHists.h"
 
-//#include "MeasInfo.h"
 #include "MseMeasInfo.h"
 
 
@@ -70,7 +69,7 @@ void MAsymSingleFillHists::BookHists()
       styleMarker.SetMarkerColor(color);
 
       shName = "hIntensVsFillTime_" + strDirName + "_" + sRingId;
-      hist = new TH2C(shName.c_str(), shName.c_str(), 48, 0, 12*3600, 100, 0, 200);
+      hist = new TH2C(shName.c_str(), shName.c_str(), 48, 0, 12*3600, 100, -10, 300);
       hist->SetOption("DUMMY");
       hist->SetTitle("; Time in Fill, hours; Beam Intensity, x10^{9} Protons;");
       hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
@@ -79,8 +78,46 @@ void MAsymSingleFillHists::BookHists()
       hist->GetXaxis()->SetTimeFormat("%H");
       styleMarker.Copy(*hist);
       o[shName] = hist;
+
+      shName = "hAsymVsBunchId_X_" + strDirName + "_" + sRingId;
+      hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0.5, N_BUNCHES+0.5, 1, -0.02, 0.02);
+      hist->SetTitle("; Bunch Id; X Asymmetry;");
+      hist->SetOption("DUMMY GRIDX");
+      hist->GetYaxis()->SetRangeUser(-0.05, 0.05);
+      styleMarker.Copy(*hist);
+      o[shName] = hist;
+
+      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
+
+      for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+      {
+         string  sSS   = gRunConfig.AsString(*iSS);
+         Color_t color = RunConfig::AsColor(*iSS);
+
+         // Create graphs for different spin states
+         // X45
+         shName = "grAsymVsBunchId_X_" + sSS;
+
+         TGraphErrors *grAsymVsBunchId_X = new TGraphErrors();
+         grAsymVsBunchId_X->SetName(shName.c_str());
+         grAsymVsBunchId_X->SetMarkerStyle(kFullCircle);
+         grAsymVsBunchId_X->SetMarkerSize(1);
+         grAsymVsBunchId_X->SetMarkerColor(color);
+
+         // Add graphs to histos
+         ((TH1*) o["hAsymVsBunchId_X_" + strDirName + "_" + sRingId])->GetListOfFunctions()->Add(grAsymVsBunchId_X, "p");
+      }
    }
 
+
+   shName = "hExternInfoVsFillTime_" + strDirName;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 48, 0, 12*3600, 100, -10, 300);
+   hist->SetOption("DUMMY");
+   hist->SetTitle("; Time in Fill, hours; ;");
+   hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   hist->GetXaxis()->SetTimeDisplay(1);
+   hist->GetXaxis()->SetTimeFormat("%H");
+   o[shName] = hist;
 } //}}}
 
 
@@ -348,15 +385,34 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       string sPolId = RunConfig::AsString(*iPolId);
 
       // Get graph of p-Carbon polar values
-      TGraphErrors *graphErrs = afr.GetPCPolarGraph(*iPolId);
+      TGraphErrors *graphErrs      = afr.GetPCPolarGraph(*iPolId);
+      ValErrPair    avrgPCPolar    = afr.GetPolarPC(*iPolId); // unnormalized value
+      ValErrPair    avrgPCPolarUnW = afr.GetPolarPCUnW(*iPolId); // unnormalized value
 
       if (graphErrs && graphErrs->GetN() > 0) {
          TH1* hPolarVsFillTime_ = (TH1*) o["hPolarVsFillTime_" + strDirName + "_" + sPolId];
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*graphErrs);
          hPolarVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
+         utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
+
+         if (avrgPCPolar.second >= 0) {
+            TLine* avrgLine = new TLine(0, avrgPCPolar.first*100, 12*3600, avrgPCPolar.first*100);
+            avrgLine->SetLineWidth(3);
+            avrgLine->SetLineColor(hPolarVsFillTime_->GetMarkerColor());
+            hPolarVsFillTime_->GetListOfFunctions()->Add(avrgLine);
+
+            //TLine* avrgLineUnW = new TLine(0, avrgPCPolarUnW.first, 12*3600, avrgPCPolarUnW.first);
+            //avrgLineUnW->SetLineWidth(1);
+            ////avrgLineUnW->SetLineColor(hPolarVsFillTime_->GetMarkerColor());
+            //hPolarVsFillTime_->GetListOfFunctions()->Add(avrgLineUnW);
+         }
       } else
-         Error("PostFill", "hPolarVsFillTime_ graph is not properly defined");
+         Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
+
    }
+
+
+   TH1* hExternInfoVsFillTime_ = (TH1*) o["hExternInfoVsFillTime_" + strDirName];
 
    // Loop over rings
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
@@ -365,6 +421,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
    {
       ERingId ringId = *iRingId;
       string sRingId = RunConfig::AsString(ringId);
+      Color_t  color = RunConfig::AsColor(ringId);
 
       TGraphErrors *graphErrs = afr.GetIntensGraph(ringId);
 
@@ -372,9 +429,57 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
       if (graphErrs && graphErrs->GetN() > 0) {
          ((TAttMarker*) hIntensVsFillTime_)->Copy(*graphErrs);
+         graphErrs->SetMarkerSize(0.8);
          hIntensVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
+         utils::UpdateLimitsFromGraphs(hIntensVsFillTime_, 2);
       } else
-         Error("PostFill", "hIntensVsFillTime_ graph is not properly defined");
+         Error("PostFill", "hIntensVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
+
+
+      // add external info graphs
+      graphErrs = afr.GetRotCurStarGraph(ringId);
+      if (graphErrs) {
+         graphErrs->SetMarkerSize(1);
+         graphErrs->SetMarkerStyle(34);
+         graphErrs->SetMarkerColor(color+2);
+         hExternInfoVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
+      }
+
+      graphErrs = afr.GetRotCurPhenixGraph(ringId);
+      if (graphErrs) {
+         graphErrs->SetMarkerSize(1);
+         graphErrs->SetMarkerStyle(34);
+         graphErrs->SetMarkerColor(color-2);
+         hExternInfoVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
+      }
+
+      graphErrs = afr.GetSnakeCurGraph(ringId);
+      if (graphErrs) {
+         graphErrs->SetMarkerSize(1);
+         graphErrs->SetMarkerStyle(34);
+         graphErrs->SetMarkerColor(color);
+         hExternInfoVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
+      }
+
+      // Fit the graphs
+      TH1* hAsymVsBunchId_X_ = (TH1*) o["hAsymVsBunchId_X_" + strDirName + "_" + sRingId];
+
+      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
+
+      for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+      {
+         string sSS = gRunConfig.AsString(*iSS);
+         Color_t color = RunConfig::AsColor(*iSS);
+
+         string grName = "grAsymVsBunchId_X_" + sSS;
+         TGraphErrors* grAsymVsBunchId_X = (TGraphErrors*) hAsymVsBunchId_X_->GetListOfFunctions()->FindObject(grName.c_str());
+
+         TF1 *funcConst= new TF1("funcConst", "[0]");
+         funcConst->SetParNames("const");
+         funcConst->SetLineColor(color);
+         grAsymVsBunchId_X->Fit("funcConst");
+         delete funcConst;
+      }
    }
 } //}}}
 

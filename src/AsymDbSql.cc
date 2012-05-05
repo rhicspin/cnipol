@@ -151,6 +151,8 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 /** */
 MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
 { //{{{
+   OpenConnection();
+
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return 0;

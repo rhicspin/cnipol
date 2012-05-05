@@ -25,6 +25,8 @@
 #include "TargetInfo.h"
 #include "MseMeasInfo.h"
 
+#include "utils/utils.h"
+
 using namespace std;
 
 
@@ -1116,7 +1118,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    //HHPAK(10033, SpeLumi.Cnts);
    //HHPAKE(11033, SpeLumi.dCnts);
 
-   SpeLumi.ave = WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,N_BUNCHES);
+   SpeLumi.ave = utils::WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,N_BUNCHES);
 
    if (SpeLumi.ave) {
       for (int bid=0; bid<N_BUNCHES; bid++) {
@@ -1259,7 +1261,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      StripAnomalyDetector();
    //}
 
-   mdev = WeightedMean(feedback.mdev, feedback.err, N_SILICON_CHANNELS);
+   mdev = utils::WeightedMean(feedback.mdev, feedback.err, N_SILICON_CHANNELS);
    printf("Average Mass Deviation  = %10.2f [GeV/c]\n", mdev);
 
    adev = mdev * G2k * gRunConsts[0].M2T/sqrt(400.);
@@ -1563,9 +1565,9 @@ void calcBunchAsymmetryAverage()
    }
 
    // Calculate weighgted beam for Ax90, Ax45, Ay45 combinations
-   CalcWeightedMean(gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], N_BUNCHES, gBunchAsym.ave.Ax90[0], gBunchAsym.ave.Ax90[1]);
-   CalcWeightedMean(gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], N_BUNCHES, gBunchAsym.ave.Ax45[0], gBunchAsym.ave.Ax45[1]);
-   CalcWeightedMean(gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], N_BUNCHES, gBunchAsym.ave.Ay45[0], gBunchAsym.ave.Ay45[1]);
+   utils::CalcWeightedMean(gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], N_BUNCHES, gBunchAsym.ave.Ax90[0], gBunchAsym.ave.Ax90[1]);
+   utils::CalcWeightedMean(gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], N_BUNCHES, gBunchAsym.ave.Ax45[0], gBunchAsym.ave.Ax45[1]);
+   utils::CalcWeightedMean(gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], N_BUNCHES, gBunchAsym.ave.Ay45[0], gBunchAsym.ave.Ay45[1]);
 
    // Calculate Left-Right asymmetry using Ax90 and Ax45
    calcLRAsymmetry(gBunchAsym.ave.Ax90, gBunchAsym.ave.Ax45, gBunchAsym.ave.Ax[0], gBunchAsym.ave.Ax[1]);
@@ -1582,7 +1584,7 @@ void calcBunchAsymmetryAverage()
       gBunchAsym.ave.phase[0] = 0;
    }
 
-   gBunchAsym.ave.phase[1] = CalcDivisionError(gBunchAsym.ave.Ax[0], gBunchAsym.ave.Ay[0], gBunchAsym.ave.Ax[1], gBunchAsym.ave.Ay[1]);
+   gBunchAsym.ave.phase[1] = utils::CalcDivisionError(gBunchAsym.ave.Ax[0], gBunchAsym.ave.Ay[0], gBunchAsym.ave.Ax[1], gBunchAsym.ave.Ay[1]);
    gBunchAsym.ave.phase[1] = atan(gBunchAsym.ave.phase[1]) ? fabs( atan(gBunchAsym.ave.phase[1]) - M_PI_2 ) : 0 ;
 
    // Calculate Polarization
@@ -1669,13 +1671,13 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
       gAnaMeasResult->P_sigma_ratio_norm[0] = diff[0] / gAnaMeasResult->sinphi[0].P[0];
 
       // calculate errors for above, respectively
-      diff[1] = QuadErrorSum(gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
+      diff[1] = utils::QuadErrorSum(gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
 
       gAnaMeasResult->P_sigma_ratio[1] =
-         QuadErrorDiv(gAnaMeasResult->sinphi[1].P[0], gAnaMeasResult->sinphi[0].P[0], gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
+         utils::QuadErrorDiv(gAnaMeasResult->sinphi[1].P[0], gAnaMeasResult->sinphi[0].P[0], gAnaMeasResult->sinphi[1].P[1], gAnaMeasResult->sinphi[0].P[1]);
 
       gAnaMeasResult->P_sigma_ratio_norm[1] =
-         QuadErrorDiv(diff[0], gAnaMeasResult->sinphi[0].P[0], diff[1], gAnaMeasResult->sinphi[0].P[1]);
+         utils::QuadErrorDiv(diff[0], gAnaMeasResult->sinphi[0].P[0], diff[1], gAnaMeasResult->sinphi[0].P[1]);
    }
 
    // This is the new approach
@@ -2022,9 +2024,9 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // Caluclate Weighted Average
-   CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
+   utils::CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 
-   CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaMeasResult->fAvrgPMAsym.first, (Float_t&) gAnaMeasResult->fAvrgPMAsym.second);
+   utils::CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaMeasResult->fAvrgPMAsym.first, (Float_t&) gAnaMeasResult->fAvrgPMAsym.second);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 

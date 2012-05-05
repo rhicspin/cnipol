@@ -376,7 +376,7 @@ void MAsymFillHists::PostFill()
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grPolarVsFillTime");
       //graph->Merge(list);
       TGraphErrors *graphMerged = new TGraphErrors(*graph);
-      utils::MergeGraphs(graphMerged, list, kTRUE);
+      utils::MergeGraphs(graphMerged, list);
       ((TH1*) o[hName])->GetListOfFunctions()->Clear();
       ((TH1*) o[hName])->GetListOfFunctions()->Add(graphMerged, "p");
       //delete graphMerged;
@@ -404,7 +404,7 @@ void MAsymFillHists::PostFill()
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
       //graph->Merge(list);
       graphMerged = new TGraphErrors(*graph);
-      utils::MergeGraphs(graphMerged, list, kTRUE);
+      utils::MergeGraphs(graphMerged, list);
       ((TH1*) o[hName])->GetListOfFunctions()->Clear();
       ((TH1*) o[hName])->GetListOfFunctions()->Add(graphMerged, "p");
       //*graph = *graphMerged;
@@ -419,7 +419,7 @@ void MAsymFillHists::PostFill()
       //funcRVsFillTime->SetParNames("const");
       graph->Fit("funcRVsFillTime");
       delete funcRVsFillTime;
-
+//
 
       sprintf(hName, "hRVsFillTimeBinned_%s", strPolId.c_str());
 
@@ -446,20 +446,21 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       AnaFillResult &afr = iafr->second;
 
       // Set individual fill sub dirs
-      string sFillId(5, ' ');
-      sprintf(&sFillId[0], "%05d", fillId);
-      string dName = sFillId;
+      //string sFillId(5, ' ');
+      //sprintf(&sFillId[0], "%05d", fillId);
+      //string dName = sFillId;
 
-      DrawObjContainer        *oc;
-      DrawObjContainerMapIter  isubdir = d.find(dName);
+      //DrawObjContainer        *oc;
+      //DrawObjContainerMapIter  isubdir = d.find(dName);
 
-      if ( isubdir == d.end()) { // if dir not found
-         TDirectoryFile *tdir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
-         oc = new MAsymSingleFillHists(tdir);
-         d[dName] = oc;
-      } else {
-         oc = isubdir->second;
-      }
+      //if ( isubdir == d.end()) { // if dir not found
+      //   TDirectoryFile *tdir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      //   oc = new MAsymSingleFillHists(tdir);
+      //   d[dName] = oc;
+      //} else {
+      //   oc = isubdir->second;
+      //}
+		DrawObjContainer *oc = GetSingleFillHists(fillId);
 
       ((MAsymSingleFillHists*) oc)->PostFill(afr);
    }
@@ -506,4 +507,27 @@ void MAsymFillHists::UpdateLimits()
    }
 
    DrawObjContainer::UpdateLimits();
+} //}}}
+
+
+/** */
+DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
+{ //{{{
+   // Set individual fill sub dirs
+   string sFillId(5, ' ');
+   sprintf(&sFillId[0], "%05d", fillId);
+   string dName = sFillId;
+
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir = d.find(dName);
+
+   if ( isubdir == d.end()) { // if dir not found
+      TDirectoryFile *tdir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      oc = new MAsymSingleFillHists(tdir);
+      d[dName] = oc;
+   } else {
+      oc = isubdir->second;
+   }
+
+	return oc;
 } //}}}

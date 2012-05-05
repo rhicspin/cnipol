@@ -24,6 +24,12 @@ protected:
 
    TGraphErrors *fBluIntensGraph;
    TGraphErrors *fYelIntensGraph;
+   TGraphErrors *fBluRotCurStarGraph;
+   TGraphErrors *fYelRotCurStarGraph;
+   TGraphErrors *fBluRotCurPhenixGraph;
+   TGraphErrors *fYelRotCurPhenixGraph;
+   TGraphErrors *fBluSnakeCurGraph;
+   TGraphErrors *fYelSnakeCurGraph;
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 

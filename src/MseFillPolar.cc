@@ -80,39 +80,41 @@ void MseFillPolarX::PrintAsPhp(FILE *f) const
 
 
 /** */
-void MseFillPolarX::SetValues(AnaFillResult &fr)
+void MseFillPolarX::SetValues(AnaFillResult &afr)
 { //{{{
-   start_time = mysqlpp::DateTime(fr.GetStartTime());
+   start_time = mysqlpp::DateTime(afr.GetStartTime());
 
-   if (fr.fHJPolars.find(kBLUE_RING) != fr.fHJPolars.end() ) {
-      polar_blue_hjet     = fr.fHJPolars[kBLUE_RING].first; 
-      polar_blue_hjet_err = fr.fHJPolars[kBLUE_RING].second; 
+   beam_energy = afr.GetFlattopEnergy();
+
+   if (afr.fHJPolars.find(kBLUE_RING) != afr.fHJPolars.end() ) {
+      polar_blue_hjet     = afr.fHJPolars[kBLUE_RING].first; 
+      polar_blue_hjet_err = afr.fHJPolars[kBLUE_RING].second; 
    }
 
-   if (fr.fHJPolars.find(kYELLOW_RING) != fr.fHJPolars.end() ) {
-      polar_yellow_hjet     = fr.fHJPolars[kYELLOW_RING].first; 
-      polar_yellow_hjet_err = fr.fHJPolars[kYELLOW_RING].second; 
+   if (afr.fHJPolars.find(kYELLOW_RING) != afr.fHJPolars.end() ) {
+      polar_yellow_hjet     = afr.fHJPolars[kYELLOW_RING].first; 
+      polar_yellow_hjet_err = afr.fHJPolars[kYELLOW_RING].second; 
    }
 
 
-   if (fr.fPCPolars.find(kB1U) != fr.fPCPolars.end() ) {
-      polar_blue_1       = fr.fPCPolars[kB1U].first; 
-      polar_blue_1_err   = fr.fPCPolars[kB1U].second; 
+   if (afr.fPCPolars.find(kB1U) != afr.fPCPolars.end() ) {
+      polar_blue_1       = afr.fPCPolars[kB1U].first; 
+      polar_blue_1_err   = afr.fPCPolars[kB1U].second; 
    }
 
-   if (fr.fPCPolars.find(kY1D) != fr.fPCPolars.end() ) {
-      polar_yellow_1     = fr.fPCPolars[kY1D].first; 
-      polar_yellow_1_err = fr.fPCPolars[kY1D].second; 
+   if (afr.fPCPolars.find(kY1D) != afr.fPCPolars.end() ) {
+      polar_yellow_1     = afr.fPCPolars[kY1D].first; 
+      polar_yellow_1_err = afr.fPCPolars[kY1D].second; 
    }
 
-   if (fr.fPCPolars.find(kB2D) != fr.fPCPolars.end() ) {
-      polar_blue_2       = fr.fPCPolars[kB2D].first; 
-      polar_blue_2_err   = fr.fPCPolars[kB2D].second; 
+   if (afr.fPCPolars.find(kB2D) != afr.fPCPolars.end() ) {
+      polar_blue_2       = afr.fPCPolars[kB2D].first; 
+      polar_blue_2_err   = afr.fPCPolars[kB2D].second; 
    }
 
-   if (fr.fPCPolars.find(kY2U) != fr.fPCPolars.end() ) {
-      polar_yellow_2     = fr.fPCPolars[kY2U].first; 
-      polar_yellow_2_err = fr.fPCPolars[kY2U].second; 
+   if (afr.fPCPolars.find(kY2U) != afr.fPCPolars.end() ) {
+      polar_yellow_2     = afr.fPCPolars[kY2U].first; 
+      polar_yellow_2_err = afr.fPCPolars[kY2U].second; 
    }
 
 } //}}}

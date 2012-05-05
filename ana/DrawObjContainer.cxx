@@ -5,6 +5,9 @@
 
 #include "DrawObjContainer.h"
 
+#include "TStyle.h"
+#include "TLatex.h"
+
 #include "EventConfig.h"
 
 ClassImp(DrawObjContainer)
@@ -78,15 +81,19 @@ void DrawObjContainer::ReadFromDir()
 
       if (io->second) {
          //delete io->second;
-         tmpObj = io->second;
+         tmpObj = io->second; // save pointer to the original histogram/object
       }
 
+      // Assign a new pointer to the object read from dir
       io->second = key->ReadObj();
 
       // overwrite options
       if (((TClass*) io->second->IsA())->InheritsFrom("TH1") && tmpObj) {
          ((TH1*) io->second)->SetOption( ((TH1*) tmpObj)->GetOption() );
       }
+
+      // delete the original object
+      delete tmpObj;
    }
 
    // loop over sub containers and call this function recursively
@@ -171,6 +178,32 @@ void DrawObjContainer::Add(DrawObjContainer *oc)
 /** Default destructor. */
 DrawObjContainer::~DrawObjContainer()
 {
+   //if (!fDir) {
+   //   Fatal("Delete(Option_t* option)", "fDir not defined\n");
+   //}
+   //fDir->cd();
+
+   DrawObjContainerMapIter isubd;
+
+   for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
+      //isubd->second->Delete(option);
+      delete isubd->second;
+   }
+
+   ObjMapIter io;
+
+   for (io=o.begin(); io!=o.end(); ++io) {
+      //sprintf(cName, "c_%s", io->first.c_str());
+      //cout << "YYY: " << io->first << endl;
+      if (io->second) {
+         io->second->Delete();
+         //delete io->second;
+      }
+   }
+
+   //fDir->Close();
+   fDir->Delete();
+   //delete fDir;
 }
 
 
@@ -353,12 +386,12 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
          }
       }
 
-      TText signature(0, 0, fSignature.c_str());
+      TLatex signature(0, 0, fSignature.c_str());
       signature.SetTextSize(0.035);
       UInt_t w, h;
       signature.GetTextExtent(w, h, signature.GetTitle());
       //cout << "extent: " << (w/(Float_t) canvas.GetWw() )<< ", " << (h/(Float_t) canvas.GetWh() ) << endl;
-      signature.DrawTextNDC(0.99-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+      signature.DrawTextNDC(0.99-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
       canvas.RedrawAxis("g");
 
@@ -466,11 +499,11 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
    canvas.SetName(hstack.GetName());
    canvas.SetTitle(hstack.GetName());
 
-   TText signature(0, 0, fSignature.c_str());
+   TLatex signature(0, 0, fSignature.c_str());
    signature.SetTextSize(0.04);
    UInt_t w, h;
    signature.GetTextExtent(w, h, signature.GetTitle());
-   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
    string sFileName = path + "/" + canvas.GetName() + ".png";
 
@@ -707,14 +740,19 @@ void DrawObjContainer::Delete(Option_t* option)
    for (io=o.begin(); io!=o.end(); ++io) {
       //sprintf(cName, "c_%s", io->first.c_str());
       //cout << "YYY: " << io->first << endl;
-      if (io->second) io->second->Delete(option);
+      if (io->second) {
+         io->second->Delete(option);
+         //delete io->second;
+      }
    }
 
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Delete(option);
+      //delete isubd->second;
    }
 
    //fDir->Close();
+   fDir->Delete();
 } //}}}

@@ -70,7 +70,7 @@ public:
    time_t                      fStopTime;
    Float_t                     fRunTime;
    int                         fDataFormatVersion;
-   std::string                 fAsymVersion;
+   std::string                 fAsymVersion;       // should go... moved to AnaInfo
    EMeasType                   fMeasType;
    UInt_t                      fNEventsProcessed;  // number of events processed from raw data file
    UInt_t                      fNEventsTotal;      // number of total events in raw data file

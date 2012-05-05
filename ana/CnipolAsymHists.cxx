@@ -153,8 +153,8 @@ void CnipolAsymHists::BookHists()
 
    SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
-   for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
-
+   for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+   {
       string sSS = gRunConfig.AsString(*iSS);
 
       Color_t color = RunConfig::AsColor(*iSS);

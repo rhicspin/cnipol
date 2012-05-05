@@ -53,6 +53,7 @@ protected:
 
 public:
 
+   std::string      fAsymVersion;       //!
    std::string      fSuffix;            // Additional unique identifier for analysis job
    ULong_t          fModes;
    time_t           fAnaDateTime;       // Date/time when data analysis started

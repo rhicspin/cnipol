@@ -19,6 +19,7 @@ using namespace std;
 /** */
 AnaInfo::AnaInfo() : TObject(),
    fOutputName(""),
+   fAsymVersion(ASYM_VERSION),
    fSuffix(""),
    fModes(MODE_NORMAL),
    fAnaDateTime(0),
@@ -201,6 +202,7 @@ void AnaInfo::Print(const Option_t* opt) const
 void AnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fOutputName']                  = \"%s\";\n", fOutputName.c_str());
+   fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
    fprintf(f, "$rc['fSuffix']                      = \"%s\";\n", fSuffix.c_str());
    fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
    fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);

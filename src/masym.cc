@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
 {
    setbuf(stdout, NULL);
 
-   DrawObjContainer    *gHIn;
 
    // Create a default one
    gMeasInfo = new MeasInfo();
@@ -37,12 +36,12 @@ int main(int argc, char *argv[])
    // Do not attempt to recover files
    gEnv->SetValue("TFile.Recover", 0);
    
-   MAsymAnaInfo gMAsymAnaInfo;
-   gMAsymAnaInfo.ProcessOptions(argc, argv);
-   gMAsymAnaInfo.VerifyOptions();
+   MAsymAnaInfo mAsymAnaInfo;
+   mAsymAnaInfo.ProcessOptions(argc, argv);
+   mAsymAnaInfo.VerifyOptions();
 
    AnaGlobResult gAnaGlobResult;
-   gAnaGlobResult.Configure(gMAsymAnaInfo);
+   gAnaGlobResult.Configure(mAsymAnaInfo);
 
    gStyle->SetOptTitle(0);
    //gStyle->SetOptStat("emroui");
@@ -57,17 +56,17 @@ int main(int argc, char *argv[])
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_255);
 
-   //string filelistName = gMAsymAnaInfo.GetMListFileName();
-	string filelist     = gMAsymAnaInfo.GetMListFullPath();
+   //string filelistName = mAsymAnaInfo.GetMListFileName();
+	string filelist     = mAsymAnaInfo.GetMListFullPath();
 
-   MAsymRoot gMAsymRoot(gMAsymAnaInfo.GetRootFileName());
+   MAsymRoot mAsymRoot(mAsymAnaInfo);
 
-   DrawObjContainer *gH = new DrawObjContainer(&gMAsymRoot);
+   DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
 
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", &gMAsymRoot));
-   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &gMAsymRoot));
-   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &gMAsymRoot));
-   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &gMAsymRoot));
+   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", &mAsymRoot));
+   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
+   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
+   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
 
    //UInt_t minTime = UINT_MAX;
    //UInt_t maxTime = 0;
@@ -82,7 +81,7 @@ int main(int argc, char *argv[])
    // input files in the second pass
    set<EventConfig> gGoodMeass;
 
-   std::map<UInt_t, UInt_t>  flattopTimes;
+   //std::map<UInt_t, UInt_t>  flattopTimes;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -92,7 +91,7 @@ int main(int argc, char *argv[])
    while (next && (o = (*next)()) )
    {
       string fName    = string(((TObjString*) o)->GetName());
-      string fileName = gMAsymAnaInfo.GetResultsDir() + "/" + fName + "/" + fName + gMAsymAnaInfo.GetSuffix() + ".root";
+      string fileName = mAsymAnaInfo.GetResultsDir() + "/" + fName + "/" + fName + mAsymAnaInfo.GetSuffix() + ".root";
 
       TFile *f = new TFile(fileName.c_str(), "READ");
 
@@ -119,17 +118,6 @@ int main(int argc, char *argv[])
          delete f;
          continue;
       }
-
-      // Check that asym hist container exists in this file
-      //gHIn = new DrawObjContainer(f);
-      //gHIn->d["asym"] = new CnipolAsymHists();
-      //gHIn->ReadFromDir();
-
-      //if (!gHIn) {
-      //   Error("masym", "Hists asym not found\n");
-      //   delete f;
-      //   continue;
-      //}
 
       char strTime[80];
       strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
@@ -183,12 +171,11 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      if (flattopTimes.find(fillId) == flattopTimes.end()) 
-         flattopTimes[fillId] = 0;
-
-      if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
-         flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
-      }
+      //if (flattopTimes.find(fillId) == flattopTimes.end()) 
+      //   flattopTimes[fillId] = 0;
+      //if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
+      //   flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
+      //}
 
       //if (gMM->fMeasInfo->fStartTime < minTime ) minTime = gMM->fMeasInfo->fStartTime;
       //if (gMM->fMeasInfo->fStartTime > maxTime ) maxTime = gMM->fMeasInfo->fStartTime;
@@ -198,14 +185,25 @@ int main(int argc, char *argv[])
          ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gMM->fMeasInfo->fStartTime);
 	   }
 
+		mAsymRoot.SetMinMax(*gMM);
+
+      // Check that asym hist container exists in this file
+      DrawObjContainer *gHIn = new DrawObjContainer(f);
+      gHIn->d["asym"] = new CnipolAsymHists();
+      gHIn->ReadFromDir();
+
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
       //if ( beamEnergy == kBEAM_ENERGY_100 )
       //if ( beamEnergy == kBEAM_ENERGY_250 )
       //if ( beamEnergy == kBEAM_ENERGY_255 )
       //{
-         gAnaGlobResult.AddMeasResult(*gMM);
+         gAnaGlobResult.AddMeasResult(*gMM, gHIn);
       //}
+      //gHIn->Print();
+
+		//gHIn->Delete();
+      delete gHIn;
 
       f->Close();
       delete f;
@@ -218,14 +216,13 @@ int main(int argc, char *argv[])
 
    map<UInt_t, UInt_t>::iterator ift;
 
-   for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
-      printf("%d -> %d\n", ift->first, ift->second);
-   }
+   //for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
+   //   printf("%d -> %d\n", ift->first, ift->second);
+   //}
 
    // Adjust min/max fill for histogram limits
    if (gH->d.find("runs") != gH->d.end()) {
       ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
-      //((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
       gAnaGlobResult.AdjustMinMaxFill();
    }
 
@@ -233,7 +230,7 @@ int main(int argc, char *argv[])
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
 
-   gAnaGlobResult.Process();
+   gAnaGlobResult.Process(gH);
    //gAnaGlobResult.Print("all");
    //gAnaGlobResult.Print();
 
@@ -250,11 +247,6 @@ int main(int argc, char *argv[])
 
       Info("masym", "Processing measurement: %.3f", iMeas->fMeasInfo->RUNID);
 
-      // Get asym hist container. It must exist
-      //gHIn = new DrawObjContainer(f);
-      //gHIn->d["asym"] = new CnipolAsymHists();
-      //gHIn->ReadFromDir();
-
       gH->Fill(*iMeas);
       //gH->Fill(*iMeas, *gHIn);
    }
@@ -262,32 +254,20 @@ int main(int argc, char *argv[])
    gH->PostFill(gAnaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
-   gH->SetSignature((--iMeas)->GetSignature()); // get signature of the last measurement
-   //gH->SetSignature("");
 
-   gMAsymRoot.SetHists(*gH);
+   mAsymRoot.SetHists(*gH);
 
-   if (gMAsymAnaInfo.HasGraphBit())
-      gMAsymRoot.SaveAs("^.*$", gMAsymAnaInfo.GetImageDir());
-      //gH->SaveAllAs(canvas, "^.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*SpinAngle.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*hPolarVs.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*VsFillTime.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*RVsFill.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*VsMeas.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*SystVsFill.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*ChAsym.*$", filelistName.Data());
-      //gH->SaveAllAs(canvas, "^.*First.*$", filelistName.Data());
+   if (mAsymAnaInfo.HasGraphBit())
+      mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
 
    gH->Write();
 
-   gMAsymRoot.Close();
+   mAsymRoot.Close();
 
    //gAnaGlobResult.Print("all");
    gAnaGlobResult.Print();
 
-   //if (kTRUE)
-   if (kFALSE)
+	if (mAsymAnaInfo.fFlagUpdateDb)
    {
       gAsymDb = new AsymDbSql();
       gAnaGlobResult.UpdateInsertDb();

@@ -111,16 +111,9 @@ void CnipolKinematHists::Fill(ChannelEvent *ch)
 { //{{{
    UChar_t chId  = ch->GetChannelId();
 
-   //string sChId("  ");
-   //sprintf(&sChId[0], "%02d", chId);
-
-   //DrawObjContainer *sd = d.find("channel" + sChId)->second;
-
    //Float_t mass = ch->GetCarbonMassEstimate();
    Float_t mass = ch->GetCarbonMass();
-   //cout << "mass: " << mass << endl;
 
-   //((TH1*) sd->o["hPseudoMass_ch" + sChId]) -> Fill(mass);
    fhPseudoMass_ch[chId-1] -> Fill(mass);
 } //}}}
 
@@ -148,7 +141,6 @@ void CnipolKinematHists::FillDerived()
 /** */
 void CnipolKinematHists::PostFill()
 { //{{{
-
    // Fit energy slope with an exponential func
    TF1 *fitfunc = new TF1("fitfunc", "gaus", 9, 14);
 

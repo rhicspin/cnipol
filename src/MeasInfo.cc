@@ -91,13 +91,12 @@ string      MeasInfo::GetAlphaCalibFileName()       const { return ""; }
 string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 
 
+/** */
 void MeasInfo::SetVoltages(int begin, int end)
 {
- fStartVoltage=(float)begin;
- fEndVoltage=(float)end;
+   fStartVoltage = (float) begin;
+   fEndVoltage   = (float) end;
 }
-
-
 
 
 /** */
