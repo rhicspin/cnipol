@@ -6,25 +6,25 @@ bgx_limit 10 ./bin/asym -r 190112.yel1.alpha0 --alpha --use-db -g --copy
 bgx_limit 10 ./bin/asym -r 190112.blu2.alpha0 --alpha --use-db -g --copy
 bgx_limit 10 ./bin/asym -r 190112.yel2.alpha0 --alpha --use-db -g --copy
 
-bgx_limit 10 ./bin/asym -r 290212.blu1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 290212.yel1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 290212.blu2.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 290212.yel2.alpha0 --alpha --use-db -g --copy
-
-bgx_limit 10 ./bin/asym -r 150212.blu1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 150212.yel1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 150212.blu2.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 150212.yel2.alpha0 --alpha --use-db -g --copy
-
-bgx_limit 10 ./bin/asym -r 140312.blu1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 140312.yel1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 140312.blu2.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 140312.yel2.alpha0 --alpha --use-db -g --copy
-
-bgx_limit 10 ./bin/asym -r 280312.blu1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 280312.yel1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 280312.blu2.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 280312.yel2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.yel2.alpha0 --alpha --use-db -g --copy
+#
+#bgx_limit 10 ./bin/asym -r 150212.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 150212.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 150212.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 150212.yel2.alpha0 --alpha --use-db -g --copy
+#
+#bgx_limit 10 ./bin/asym -r 140312.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 140312.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 140312.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 140312.yel2.alpha0 --alpha --use-db -g --copy
+#
+#bgx_limit 10 ./bin/asym -r 280312.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 280312.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 280312.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 280312.yel2.alpha0 --alpha --use-db -g --copy
 
 
 # Run 11 alpha calibration files
