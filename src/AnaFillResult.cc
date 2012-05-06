@@ -363,7 +363,9 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       //Info("Process", "zzz %p", (void*) iAnaMeasResult->second.fhAsymVsBunchId_X45);
       //iAnaMeasResult->second.fhAsymVsBunchId_X45->Print();
-      fFlattopEnergy = measInfo.GetBeamEnergy();
+      if (fAnaFillExternResult && fAnaFillExternResult->GetGrBluIntens()) {
+         fFlattopEnergy = measInfo.GetBeamEnergy();
+      }
 
       if (ocOut)
          CalcAvrgPolarByBunch(anaMeasResult, measInfo, *ocOut);
