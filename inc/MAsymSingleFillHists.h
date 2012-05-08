@@ -21,8 +21,9 @@
  */
 class MAsymSingleFillHists : public DrawObjContainer
 {
-public:
+private:
 
+   UInt_t fFillId;
 
 public:
 
@@ -32,6 +33,7 @@ public:
 
    void BookHists();
    void BookHistsPolarimeter(EPolarimeterId polId);
+   void SetSignature(const std::string signature);
    void Fill(EventConfig &rc);
    void PostFill();
    void PostFill(AnaFillResult &afr);

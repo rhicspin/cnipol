@@ -91,12 +91,13 @@ void AnaFillExternResult::ReadInfo(std::ifstream &file)
       if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
 
       if (iline % 5 != 0) continue; // every 5 minutes
+      if (!bluIntens && !yelIntens) continue;
 
       vTimes.push_back(time);
       vBluIntens.push_back(bluIntens);
       vYelIntens.push_back(yelIntens);
-      vBluIntensErr.push_back(bluIntens*0.001); // 0.001 error according to Wolfram
-      vYelIntensErr.push_back(yelIntens*0.001);
+      vBluIntensErr.push_back(bluIntens < 10 ? 0.1 : bluIntens*0.001); // 0.001 error according to Wolfram
+      vYelIntensErr.push_back(yelIntens < 10 ? 0.1 : yelIntens*0.001);
 
       vBluRotCurStar.push_back(bluRotatorStar);
       vYelRotCurStar.push_back(yelRotatorStar);

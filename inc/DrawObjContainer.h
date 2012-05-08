@@ -59,7 +59,7 @@ public:
    virtual ~DrawObjContainer();
 
    std::string  GetSignature() const;
-   void         SetSignature(const std::string signature);
+   virtual void SetSignature(const std::string signature);
    void         SetDir(TDirectory *dir);
    void         ReadFromDir();
    void         ReadFromDir(TDirectory *dir);

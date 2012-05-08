@@ -598,6 +598,8 @@ void AnaGlobResult::UpdateInsertDb()
 
       gAsymDb->UpdateInsert(ofillProf, nfillProf);
    }
+
+   gAsymDb->CloseConnection();
 } //}}}
 
 

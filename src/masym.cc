@@ -153,7 +153,9 @@ int main(int argc, char *argv[])
       //}
 
 
-      if (polarization < 15 || polarization > 99 || polarizationErr > 30 ||
+      // the cut on polarization value should be removed
+      //if (polarization < 15 || polarization > 99 || polarizationErr > 30 ||
+      if (polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           (TMath::Abs(profileRatio) > 0.600 && profileRatioErr < 0.05) ||
