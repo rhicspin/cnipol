@@ -1,30 +1,46 @@
 source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
 
 # Run 12 alpha calibration files
-bgx_limit 10 ./bin/asym -r 190112.blu1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 190112.yel1.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 190112.blu2.alpha0 --alpha --use-db -g --copy
-bgx_limit 10 ./bin/asym -r 190112.yel2.alpha0 --alpha --use-db -g --copy
-
-#bgx_limit 10 ./bin/asym -r 290212.blu1.alpha0 --alpha --use-db -g --copy
-#bgx_limit 10 ./bin/asym -r 290212.yel1.alpha0 --alpha --use-db -g --copy
-#bgx_limit 10 ./bin/asym -r 290212.blu2.alpha0 --alpha --use-db -g --copy
-#bgx_limit 10 ./bin/asym -r 290212.yel2.alpha0 --alpha --use-db -g --copy
-#
+bgx_limit 10 ./bin/asym -r 170112.blu1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 170112.yel1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 170112.blu2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 170112.yel2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 180112.blu1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 180112.yel1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 180112.blu2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 180112.yel2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190112.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190112.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190112.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190112.yel2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 200112.blu1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 200112.yel1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 200112.blu2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 200112.yel2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 090212.blu1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 090212.yel1.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 090212.blu2.alpha0 --alpha --use-db -g --copy
+bgx_limit 10 ./bin/asym -r 090212.yel2.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 150212.blu1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 150212.yel1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 150212.blu2.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 150212.yel2.alpha0 --alpha --use-db -g --copy
-#
+#bgx_limit 10 ./bin/asym -r 290212.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 290212.yel2.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 140312.blu1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 140312.yel1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 140312.blu2.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 140312.yel2.alpha0 --alpha --use-db -g --copy
-#
 #bgx_limit 10 ./bin/asym -r 280312.blu1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 280312.yel1.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 280312.blu2.alpha0 --alpha --use-db -g --copy
 #bgx_limit 10 ./bin/asym -r 280312.yel2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190412.blu1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190412.yel1.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190412.blu2.alpha0 --alpha --use-db -g --copy
+#bgx_limit 10 ./bin/asym -r 190412.yel2.alpha0 --alpha --use-db -g --copy
 
 
 # Run 11 alpha calibration files
