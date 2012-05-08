@@ -27,6 +27,10 @@ AsymDbSql::~AsymDbSql()
 /** */
 void AsymDbSql::OpenConnection()
 { //{{{
+
+   // connection already established
+   if (fConnection) return;
+
    try {
       // Establish the connection to the database server.
       fConnection = new Connection("cnipol", "127.0.0.1", "cnipol2", "cnipol");

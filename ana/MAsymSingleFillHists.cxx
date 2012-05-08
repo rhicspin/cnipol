@@ -21,13 +21,13 @@ ClassImp(MAsymSingleFillHists)
 using namespace std;
 
 /** Default constructor. */
-MAsymSingleFillHists::MAsymSingleFillHists() : DrawObjContainer()
+MAsymSingleFillHists::MAsymSingleFillHists() : DrawObjContainer(), fFillId(0)
 {
    BookHists();
 }
 
 
-MAsymSingleFillHists::MAsymSingleFillHists(TDirectory *dir) : DrawObjContainer(dir)
+MAsymSingleFillHists::MAsymSingleFillHists(TDirectory *dir) : DrawObjContainer(dir), fFillId(0)
 {
    BookHists();
 }
@@ -233,10 +233,27 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
 
 /** */
+void MAsymSingleFillHists::SetSignature(std::string signature)
+{ //{{{
+   stringstream ssSignature("signature not defined");
+
+   char strAnaTime[25];
+   time_t currentTime = time(0);
+   tm *ltime = localtime( &currentTime );
+   strftime(strAnaTime, 25, "%c", ltime);
+
+   ssSignature << "Fill " << fDir->GetName() << ", Analyzed " << strAnaTime;
+   //ssSignature << ", Version " << fAnaInfo->fAsymVersion << ", " << fAnaInfo->fUserGroup.fUser;
+
+   fSignature = ssSignature.str();
+} //}}}
+
+
+/** */
 void MAsymSingleFillHists::Fill(EventConfig &rc)
 { //{{{
    Double_t runId            = rc.fMeasInfo->RUNID;
-   UInt_t   fillId           = (UInt_t) runId;
+   UInt_t   fFillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId            = rc.fMeasInfo->fPolId;
    time_t   runStartTime     = rc.fMeasInfo->fStartTime;

@@ -77,6 +77,8 @@ public:
    ~AnaFillResult();
 
    time_t GetStartTime();
+   time_t GetLumiOnTime();
+   time_t GetLumiOffTime();
 
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;

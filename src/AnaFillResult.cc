@@ -39,7 +39,9 @@ AnaFillResult::~AnaFillResult() { }
 
 
 /** */
-time_t AnaFillResult::GetStartTime() { return fStartTime; }
+time_t AnaFillResult::GetStartTime()   { return fStartTime; }
+time_t AnaFillResult::GetLumiOnTime()  { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : 0; }
+time_t AnaFillResult::GetLumiOffTime() { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : 0; }
 
 
 /** */
@@ -299,6 +301,9 @@ void AnaFillResult::AddExternInfo(std::ifstream &file)
       fAnaFillExternResult = new AnaFillExternResult(file);
       //fAnaFillExternResult->GetGrBluIntens()->Print();
       //fAnaFillExternResult->GetGrYelIntens()->Print();
+      // adjust the starttime if neccessary
+      fStartTime = fAnaFillExternResult->fTimeEventLumiOff < fStartTime ? fAnaFillExternResult->fTimeEventLumiOff : fStartTime;
+      fStartTime = fAnaFillExternResult->fTimeEventLumiOn  < fStartTime ? fAnaFillExternResult->fTimeEventLumiOn  : fStartTime;
    } else {
       Error("AddExternInfo", "Invalid file provided with external info");
    }
@@ -778,8 +783,12 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
    TGraphErrors *grIntens = GetIntensGraph(ringId);
    if (!grIntens) return avrgPol;
 
-   Double_t time, intens, polar;
-   Double_t numer=0, denom=0;
+   Double_t time, intens, polar, polarErr;
+   Double_t numer = 0, denom = 0;
+   Double_t numerErr = 0, denomErr = 0;
+
+   Double_t polarNormErr  = funcPCPolar->GetParError(0);
+   Double_t polarSlopeErr = funcPCPolar->GetParError(1);
 
    for (UInt_t iPoint=0; iPoint<grIntens->GetN(); iPoint++) {
       grIntens->GetPoint(iPoint, time, intens);
@@ -787,11 +796,16 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
 
       numer += polar*intens;
       denom += intens;
+
+      // assume no correlation between the polarization slope (par1) and norm (par0)
+      polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnTime())*(time - GetLumiOnTime())/3600/3600 + polarNormErr*polarNormErr);
+      numerErr += polarErr*intens;
+      denomErr += intens;
    }
 
    // All polarization values are between 0 and 1 internaly except graphs
    avrgPol.first  = numer/denom/100.;
-   avrgPol.second = funcPCPolar->GetParError(1)/100.; // error on the slope
+   avrgPol.second = numerErr/denomErr/100.; // weighted error
 
    return avrgPol;
 } //}}}
@@ -812,16 +826,13 @@ ValErrPair AnaFillResult::CalcAvrgPolarUnweighted(EPolarimeterId polId)
       return avrgPol;
    }
 
-   time_t lumion  = fAnaFillExternResult->fTimeEventLumiOn  - fStartTime;
-   time_t lumioff = fAnaFillExternResult->fTimeEventLumiOff - fStartTime;
-
    //grPCPolar = (TGraphErrors*) utils::SubGraph(grPCPolar, lumion, lumioff);
 
    Double_t time, polar, polarErr;
 
    for (UInt_t iPoint=0; iPoint<grPCPolar->GetN(); iPoint++) {
       grPCPolar->GetPoint(iPoint, time, polar);
-      if ( time < lumion || time > lumioff ) continue;
+      if ( time < GetLumiOnTime() || time > GetLumiOffTime() ) continue;
       polarErr = grPCPolar->GetErrorY(iPoint);
 
       ValErrPair val_err(polar, polarErr);
@@ -1090,7 +1101,7 @@ void AnaFillResult::FitExternGraphs()
 
       //Info("FitExternGraphs", "Duration %d", fAnaFillExternResult->fTimeEventLumiOff - fAnaFillExternResult->fTimeEventLumiOn);
 
-      if ( fabs(lumioff - lumion) < 3600 ) continue;
+      //if ( fabs(lumioff - lumion) < 3600 ) continue;
 
       stringstream ssFormula("");
       //ssFormula << "[0] * 1./exp((x - " << lumion << ")/3600./[1])";
@@ -1098,6 +1109,7 @@ void AnaFillResult::FitExternGraphs()
 
       fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
       fitFunc->SetParNames("I_{0}", "Lifetime, h");
+      fitFunc->SetParameters(100, 50);
       fitFunc->SetParLimits(0, 1, 200);
       fitFunc->SetParLimits(1, 1, 200);
       //fitFunc->SetParLimits(1, 1e-5, 10);
@@ -1136,30 +1148,33 @@ void AnaFillResult::FitPolarGraphs()
          continue;
       }
 
-      time_t lumion  = fAnaFillExternResult->fTimeEventLumiOn  - fStartTime;
-      time_t lumioff = fAnaFillExternResult->fTimeEventLumiOff - fStartTime;
-
-      if (lumion >= lumioff) {
+      if (GetLumiOnTime() >= GetLumiOffTime()) {
          Error("FitPolarGraphs", "Lumi-on and lumi-off markers are invalid");
          continue;
       }
 
-      Info("FitPolarGraphs", "Using range %d - %d", lumion, lumioff);
+      Info("FitPolarGraphs", "Using range %d - %d", GetLumiOnTime(), GetLumiOffTime());
 
-      if (utils::SubGraph(grPolarPC, lumion, lumioff)->GetN() <= 0) continue;
+      if (utils::SubGraph(grPolarPC, GetLumiOnTime(), GetLumiOffTime())->GetN() <= 0) continue;
 
       stringstream ssFormula("");
-      ssFormula << "[0] + [1]*(x - " << lumion << ")/3600.";
+      ssFormula << "[0] + [1]*(x - " << GetLumiOnTime() << ")/3600.";
 
       TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
       fitFunc->SetParNames("P_{0}, %", "Decay, %/h");
 
-      if (utils::SubGraph(grPolarPC, lumion, lumioff)->GetN() == 1) {
+
+      Double_t xmin, ymin, xmax, ymax;
+      grPolarPC->ComputeRange(xmin, ymin, xmax, ymax);
+
+      if (utils::SubGraph(grPolarPC, GetLumiOnTime(), GetLumiOffTime())->GetN() == 1 ||
+          fabs(xmax - xmin) < 3600)
+      {
          //fitFunc->SetParameter(1, 0);
          fitFunc->FixParameter(1, 0);
       }
 
-      grPolarPC->Fit(fitFunc, "", "", lumion, lumioff);
+      grPolarPC->Fit(fitFunc, "", "", GetLumiOnTime(), GetLumiOffTime());
 
       delete fitFunc;
    }
