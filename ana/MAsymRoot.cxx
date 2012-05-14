@@ -1,4 +1,6 @@
 
+#include "TROOT.h"
+
 #include "MAsymRoot.h"
 
 #include <climits>
@@ -13,6 +15,8 @@ MAsymRoot::MAsymRoot() : TFile(),
    fMinFill(UINT_MAX), fMaxFill(0),
    fMinTime(UINT_MAX), fMaxTime(0)
 {
+   gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("styles/style_asym.C");
 }
 
 
@@ -22,6 +26,9 @@ MAsymRoot::MAsymRoot(MAsymAnaInfo &anaInfo) : TFile(anaInfo.GetRootFileName().c_
    fMinTime(UINT_MAX), fMaxTime(0)
 {
    printf("Created ROOT file: %s\n", GetName());
+
+   gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("styles/style_asym.C");
 }
 
 
@@ -38,10 +45,9 @@ void MAsymRoot::SetHists(DrawObjContainer &hists)
 /** */
 void MAsymRoot::SaveAs(string pattern, string dir)
 { //{{{
-   gROOT->SetMacroPath("./:~/rootmacros/:");
-   gROOT->Macro("styles/style_rtlegend.C");
 
    TCanvas canvas("canvas", "canvas", 1400, 600);
+   canvas.UseCurrentStyle();
 
    stringstream ssSignature("signature not defined");
 

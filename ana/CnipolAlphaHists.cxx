@@ -43,27 +43,22 @@ void CnipolAlphaHists::BookHists()
 
    // The axis range will be/can be adjusted later based on the peak position
    o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
-   ((TH2F*) o["hAmpltd"])->GetXaxis()->SetTitle("Amplitude, ADC");
-   ((TH2F*) o["hAmpltd"])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o["hAmpltd"])->SetTitle("; Amplitude, ADC; Events; ");
 
    o["hIntgrl"] = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
-   ((TH2F*) o["hIntgrl"])->GetXaxis()->SetTitle("Integral, ADC");
-   ((TH2F*) o["hIntgrl"])->GetYaxis()->SetTitle("Events");
+   ((TH1*) o["hIntgrl"])->SetTitle("; Integral, ADC; Events; ");
 
-   o["hIntgrl"] = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
-   ((TH2F*) o["hIntgrl"])->GetXaxis()->SetTitle("Integral, ADC");
-   ((TH2F*) o["hIntgrl"])->GetYaxis()->SetTitle("Events");
+   //o["hIntgrl"] = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
+   //((TH2F*) o["hIntgrl"])->SetTitle("; Integral, ADC; Events; ");
 
-   o["hTdc"]    = new TH1F("hTdc",    "hTdc",  80, 0, 80);
-   ((TH2F*) o["hTdc"])->GetXaxis()->SetTitle("TDC");
-   ((TH2F*) o["hTdc"])->GetYaxis()->SetTitle("Events");
+   o["hTdc"]    = new TH1F("hTdc", "hTdc",  80, 0, 80);
+   ((TH1*) o["hTdc"])->SetTitle("; TDC; Events; ");
 
-   o["hTvsA"]        = new TH2F("hTvsA",   "hTvsA", 255, 0, 255, 80, 0, 80);
-   ((TH2F*) o["hTvsA"])->SetOption("colz LOGZ");
-   ((TH2F*) o["hTvsA"])->GetXaxis()->SetTitle("Amplitude, ADC");
-   ((TH2F*) o["hTvsA"])->GetYaxis()->SetTitle("TDC");
+   o["hTvsA"] = new TH2F("hTvsA",   "hTvsA", 255, 0, 255, 80, 0, 80);
+   ((TH1*) o["hTvsA"])->SetOption("colz LOGZ");
+   ((TH1*) o["hTvsA"])->SetTitle("; Amplitude, ADC; TDC;");
 
-   o["hTvsI"]        = new TH2F("hTvsI",   "hTvsI", 255, 0, 255, 80, 0, 80);
+   o["hTvsI"] = new TH2F("hTvsI",   "hTvsI", 255, 0, 255, 80, 0, 80);
    ((TH2F*) o["hTvsI"])->SetOption("colz LOGZ");
    ((TH2F*) o["hTvsI"])->GetXaxis()->SetTitle("Integral, ADC");
    ((TH2F*) o["hTvsI"])->GetYaxis()->SetTitle("TDC");
@@ -94,74 +89,74 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hICoefDisp"])->GetXaxis()->SetTitle("Integral Calib, keV/ADC");
 
    o["hAmpltdW"]   = new TH1F("hAmpltdW", "hAmpltdW", 72, 1, 73);
-   ((TH1F*) o["hAmpltdW"])->SetOption("E");
-   ((TH2F*) o["hAmpltdW"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmpltdW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (A)");
+   ((TH1*) o["hAmpltdW"])->SetOption("E");
+   ((TH1*) o["hAmpltdW"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hAmpltdW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (A)");
 
    o["hIntgrlW"]   = new TH1F("hIntgrlW", "hIntgrlW", 72, 1, 73);
-   ((TH1F*) o["hIntgrlW"])->SetOption("E");
-   ((TH2F*) o["hIntgrlW"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hIntgrlW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
+   ((TH1*) o["hIntgrlW"])->SetOption("E");
+   ((TH1*) o["hIntgrlW"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hIntgrlW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
 
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
-   ((TH1F*) o["Detector1_Events"])->SetOption("E");
-   ((TH2F*) o["Detector1_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector1_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector1_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector1_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector2_Events"]   = new TH1F("Detector2_Events", "Detector2_Events", 12, 13, 24);
-   ((TH1F*) o["Detector2_Events"])->SetOption("E");
-   ((TH2F*) o["Detector2_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector2_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector2_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector2_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector2_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector3_Events"]   = new TH1F("Detector3_Events", "Detector3_Events", 12, 25, 36);
-   ((TH1F*) o["Detector3_Events"])->SetOption("E");
-   ((TH2F*) o["Detector3_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector3_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector3_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector3_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector3_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector4_Events"]   = new TH1F("Detector4_Events", "Detector4_Events", 12, 37, 48);
-   ((TH1F*) o["Detector4_Events"])->SetOption("E");
-   ((TH2F*) o["Detector4_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector4_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector4_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector4_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector4_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector5_Events"]   = new TH1F("Detector5_Events", "Detector5_Events", 12, 49, 60);
-   ((TH1F*) o["Detector5_Events"])->SetOption("E");
-   ((TH2F*) o["Detector5_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector5_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector5_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector5_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector5_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector6_Events"]   = new TH1F("Detector6_Events", "Detector6_Events", 12, 61, 72);
-   ((TH1F*) o["Detector6_Events"])->SetOption("E");
-   ((TH2F*) o["Detector6_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["Detector6_Events"])->GetYaxis()->SetTitle("# of Events");
+   ((TH1*) o["Detector6_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector6_Events"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["Detector6_Events"])->GetYaxis()->SetTitle("# of Events");
 
    o["Detector1_Events_Dsp"]   = new TH1F("Detector1_Events_Dsp", "Detector1_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector1_Events"])->SetOption("E");
-   ((TH2F*) o["Detector1_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector1_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector1_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector1_Events"])->GetYaxis()->SetTitle("#");
 
    o["Detector2_Events_Dsp"]   = new TH1F("Detector2_Events_Dsp", "Detector2_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector2_Events"])->SetOption("E");
-   ((TH2F*) o["Detector2_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector2_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector2_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector2_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector2_Events"])->GetYaxis()->SetTitle("#");
 
    o["Detector3_Events_Dsp"]   = new TH1F("Detector3_Events_Dsp", "Detector3_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector3_Events"])->SetOption("E");
-   ((TH2F*) o["Detector3_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector3_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector3_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector3_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector3_Events"])->GetYaxis()->SetTitle("#");
 
    o["Detector4_Events_Dsp"]   = new TH1F("Detector4_Events_Dsp", "Detector4_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector4_Events"])->SetOption("E");
-   ((TH2F*) o["Detector4_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector4_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector4_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector4_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector4_Events"])->GetYaxis()->SetTitle("#");
 
    o["Detector5_Events_Dsp"]   = new TH1F("Detector5_Events_Dsp", "Detector5_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector5_Events"])->SetOption("E");
-   ((TH2F*) o["Detector5_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector5_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector5_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector5_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector5_Events"])->GetYaxis()->SetTitle("#");
 
    o["Detector6_Events_Dsp"]   = new TH1F("Detector6_Events_Dsp", "Detector6_Events_Dsp", 20000, 0, 20000);
-   ((TH1F*) o["Detector6_Events"])->SetOption("E");
-   ((TH2F*) o["Detector6_Events"])->GetXaxis()->SetTitle("Events");
-   ((TH2F*) o["Detector6_Events"])->GetYaxis()->SetTitle("#");
+   ((TH1*) o["Detector6_Events"])->SetOption("E1 NOIMG");
+   ((TH1*) o["Detector6_Events"])->GetXaxis()->SetTitle("Events");
+   ((TH1*) o["Detector6_Events"])->GetYaxis()->SetTitle("#");
 
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
@@ -183,7 +178,6 @@ void CnipolAlphaHists::BookHists()
          oc = isubdir->second;
       }
 
-
       //sprintf(hName,"mass_feedback_st%d", iCh+1);
       //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gMeasInfo->RUNID, iCh+1);
       //sprintf(hTitle,"Invariant Mass for Strip-%d ", iCh+1);
@@ -191,53 +185,37 @@ void CnipolAlphaHists::BookHists()
       //( (TH1F*) feedback.o[hName]) -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       //( (TH1F*) feedback.o[hName]) -> SetLineColor(2);
 
-      //sprintf(hName, "hAmpltd_ch%02d", iCh);
-      //oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      //((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-
       sprintf(hName, "hAmpltd_ch%02d", iCh);
-      //oc->o[hName] = new TH1F(hName, hName, 35, 165, 200);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-
-      //sprintf(hName, "hIntgrl_ch%02d", iCh);
-      //oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      //((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
+      ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; Events; ");
 
       sprintf(hName, "hIntgrl_ch%02d", iCh);
-      //oc->o[hName] = new TH1F(hName, hName, 40, 115, 155);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
-      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
+      ((TH1*) oc->o[hName])->SetTitle("; Integral, ADC; Events; ");
 
       sprintf(hName, "hTdc_ch%02d", iCh);
       oc->o[hName] = new TH1F(hName, hName, 80, 0, 80);
-      ((TH1F*) oc->o[hName])->GetXaxis()->SetTitle("TDC");
+      ((TH1*) oc->o[hName])->SetTitle("; TDC; Events; ");
 
       sprintf(hName, "hTvsA_ch%02d", iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; TDC;");
 
       sprintf(hName, "hTvsA_zoom_ch%02d", iCh);
       oc->o[hName] = new TH2F(hName, hName, 70, 130, 200, 30, 20, 50);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; TDC; ");
 
       sprintf(hName, "hTvsI_ch%02d", iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Integral, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("TDC");
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle("; Integral, ADC; TDC; ");
 
       sprintf(hName, "hIvsA_ch%02d", iCh);
       oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
-      ((TH2F*) oc->o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) oc->o[hName])->GetXaxis()->SetTitle("Amplitude, ADC");
-      ((TH2F*) oc->o[hName])->GetYaxis()->SetTitle("Integral, ADC");
-
-
+      ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
+      ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; Integral, ADC; ");
 
       //sprintf(hName,"t_vs_e_ch%d", iCh);
       //kinema.oc->o[hName] = new TH2F();

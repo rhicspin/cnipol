@@ -22,6 +22,7 @@
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLine.h"
+#include "TROOT.h"
 #include "TStyle.h"
 #include "TStreamerInfo.h"
 
@@ -138,6 +139,10 @@ AsymRoot::~AsymRoot()
 void AsymRoot::CreateRootFile(string filename)
 { //{{{
    printf("Creating ROOT file: %s\n", filename.c_str());
+
+   gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("styles/style_asym.C");
+   //gROOT->ForceStyle(kTRUE);
 
    fOutRootFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
@@ -275,13 +280,16 @@ void AsymRoot::CreateRootFile(string filename)
       //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
-   dir = new TDirectoryFile("run", "run", "", fOutRootFile);
-   fHists->d["run"] = new CnipolRunHists(dir);
+   // should be reconsidered once preproc is used to fill raw hists for alpha runs
+   if (!gAnaInfo->HasAlphaBit()) {
+      dir = new TDirectoryFile("run", "run", "", fOutRootFile);
+      fHists->d["run"] = new CnipolRunHists(dir);
 
-   dir = new TDirectoryFile("preproc", "preproc", "", fOutRootFile);
-   oc  = new CnipolPreprocHists(dir);
-   fHists->d["preproc"] = oc;
-   fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
+      dir = new TDirectoryFile("preproc", "preproc", "", fOutRootFile);
+      oc  = new CnipolPreprocHists(dir);
+      fHists->d["preproc"] = oc;
+      fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
+   }
 
    //dir = new TDirectoryFile("preproc_eb", "preproc_eb", "", fOutRootFile);
    //oc  = new CnipolPreprocHists(dir);
@@ -1182,17 +1190,16 @@ void AsymRoot::SaveAs(string pattern, string dir)
       gStyle->SetMarkerColor(kRed);
    }
 
-   gStyle->SetOptTitle(0);
-
-   TCanvas c("cName", "cName", 1200, 600);
+   TCanvas canvas("canvas", "canvas", 1200, 600);
+   canvas.UseCurrentStyle();
 
    fHists->SetSignature(fEventConfig->GetSignature());
 
-   fHists->SaveAllAs(c, pattern, dir.c_str());
+   fHists->SaveAllAs(canvas, pattern, dir.c_str());
 
    if (gAnaInfo->fFlagCreateThumbs) {
-      TCanvas c("cName", "cName", 200, 100);
-      fHists->SaveAllAs(c, pattern, dir.c_str(), kTRUE);
+      TCanvas canvas("canvas", "canvas", 200, 100);
+      fHists->SaveAllAs(canvas, pattern, dir.c_str(), kTRUE);
 	}
 } //}}}
 
