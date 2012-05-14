@@ -22,6 +22,7 @@
 #include <sstream>
 #include <ctime>
 
+#include "TROOT.h"
 #include "TStopwatch.h"
 #include "TTimeStamp.h"
 

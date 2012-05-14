@@ -235,11 +235,11 @@ void MeasInfo::PrintBunchPatterns() const
    }
 
    // Print Spin Pattern and Recover Spin Pattern by User Defined ones
-   cout << "\nSpin pattern used:" << endl;
+   cout << "\nSpin pattern:" << endl;
    cout << ssSpin.str() << endl;
 
    // Print Fill Pattern and Recover Fill Pattern by User Defined ones
-   cout << "\nFill Pattern Used:" << endl;
+   cout << "\nFill pattern:" << endl;
    cout << ssFill.str() << endl;
 
 } //}}}
