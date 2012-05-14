@@ -116,3 +116,19 @@ ValErrPair AnaMeasResult::GetPCPolar() const
 
    return val_err;
 } //}}}
+
+
+/** */
+ValErrPair AnaMeasResult::GetPolProfR() const
+{ //{{{
+   ValErrPair val_err(0, -1);
+
+   if (fFitResProfilePvsI.Get()) {
+      val_err.first  = fFitResProfilePvsI->Value(1);
+      val_err.second = fFitResProfilePvsI->FitResult::Error(1);
+   } else {
+      Error("GetPolProfR", "No valid fit result found");
+   }
+
+   return val_err;
+} //}}}

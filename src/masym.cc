@@ -154,8 +154,8 @@ int main(int argc, char *argv[])
 
 
       // the cut on polarization value should be removed
-      //if (polarization < 15 || polarization > 99 || polarizationErr > 30 ||
-      if (polarization > 99 || polarizationErr > 30 ||
+      //if (polarization > 99 || polarizationErr > 30 ||
+      if ( polarization < 10 || polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           (TMath::Abs(profileRatio) > 0.600 && profileRatioErr < 0.05) ||
@@ -193,6 +193,8 @@ int main(int argc, char *argv[])
       DrawObjContainer *gHIn = new DrawObjContainer(f);
       gHIn->d["asym"] = new CnipolAsymHists();
       gHIn->ReadFromDir();
+
+      //DrawObjContainer *gHIn = 0;
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass

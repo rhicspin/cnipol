@@ -569,9 +569,6 @@ void CnipolProfileHists::PostFill()
       gAnaMeasResult->fFitResProfilePvsI = fitres;
 
       // the following should retire
-      //gAnaMeasResult->fProfilePolarMax = ValErrPair(mfPow->GetParameter(0), mfPow->GetParError(0));
-      //gAnaMeasResult->fProfilePolarR   = ValErrPair(mfPow->GetParameter(1), mfPow->GetParError(1));
-
       gAnaMeasResult->fProfilePolarMax = ValErrPair(fitres->Value(0), fitres->FitResult::Error(0));
       gAnaMeasResult->fProfilePolarR   = ValErrPair(fitres->Value(1), fitres->FitResult::Error(1));
 
@@ -727,7 +724,13 @@ void CnipolProfileHists::PostFill()
 
    TH1 *hAsymVsIntensProfile = (TH1*) o["hAsymVsIntensProfile"];
    TGraphErrors *gr = (TGraphErrors*) hAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
-   gr->Fit("mfPow", "M E R");
+   fitres = gr->Fit("mfPow", "M E R S");
+
+   //if (fitres.Get()) {
+   //   gAnaMeasResult->fFitResProfileAsymVsI = fitres;
+   //} else {
+   //   Error("PostFill", "Something is wrong with asym profile fit");
+   //}
 
    delete mfPow;
 

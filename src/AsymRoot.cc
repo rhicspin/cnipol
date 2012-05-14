@@ -1182,6 +1182,8 @@ void AsymRoot::SaveAs(string pattern, string dir)
       gStyle->SetMarkerColor(kRed);
    }
 
+   gStyle->SetOptTitle(0);
+
    TCanvas c("cName", "cName", 1200, 600);
 
    fHists->SetSignature(fEventConfig->GetSignature());

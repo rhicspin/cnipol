@@ -38,6 +38,9 @@ void MAsymRoot::SetHists(DrawObjContainer &hists)
 /** */
 void MAsymRoot::SaveAs(string pattern, string dir)
 { //{{{
+   gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("styles/style_rtlegend.C");
+
    TCanvas canvas("canvas", "canvas", 1400, 600);
 
    stringstream ssSignature("signature not defined");
