@@ -193,13 +193,6 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
       fillRes = new AnaFillResult(fillId);
       fillRes->AddMeasResult(mm, this);
 
-      // Check whether file with external info exists. Create corresponding
-      // object if yes
-      std::stringstream fullPath("");
-      fullPath << fPathExternResults << "/cdev_info/cdev_" << fillId;
-      ifstream file(fullPath.str().c_str());
-      fillRes->AddExternInfo(file);
-
       fAnaFillResults[fillId] = *fillRes;
 		delete fillRes;
 		fillRes = &fAnaFillResults[fillId];
@@ -231,22 +224,33 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
    for ( ; iFill != fAnaFillResults.end(); ++iFill) {
 
       UInt_t         fillId  = iFill->first;
-      AnaFillResult &fillRes = iFill->second;
+      AnaFillResult &anaFillResult = iFill->second;
+
+      // First read the extern info if available...
+      // Check whether a file with external info exists. Create corresponding
+      // object if yes
+      std::stringstream fullPath("");
+      fullPath << fPathExternResults << "/cdev_info/cdev_" << fillId;
+      ifstream file(fullPath.str().c_str());
+      anaFillResult.AddExternInfo(file);
+
+      // anaFillResult.fStartTime is properly determined at this stage
+      // ... then do the rest
 
       // Process each fill
-      fillRes.Process(ocOut);
+      anaFillResult.Process(ocOut);
 
       // set hjet values
       ValErrPair *hjetYel = utils::FindValErrY(grYel, fillId);
       ValErrPair *hjetBlu = utils::FindValErrY(grBlu, fillId);
 
       if (hjetYel) {
-         fillRes.AddHjetPolar(kYELLOW_RING, *hjetYel);
+         anaFillResult.AddHjetPolar(kYELLOW_RING, *hjetYel);
          delete hjetYel;
       }
 
       if (hjetBlu) {
-         fillRes.AddHjetPolar(kBLUE_RING,   *hjetBlu);
+         anaFillResult.AddHjetPolar(kBLUE_RING,   *hjetBlu);
          delete hjetBlu;
       }
    }
@@ -261,10 +265,9 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
    //iFill = fAnaFillResults.begin();
    //for ( ; iFill != fAnaFillResults.end(); ++iFill) {
    //   UInt_t         fillId  =  iFill->first;
-   //   AnaFillResult *fillRes = &iFill->second;
-   //   //fillRes
+   //   AnaFillResult *anaFillResult = &iFill->second;
+   //   //anaFillResult
    //}
-
 } //}}}
 
 

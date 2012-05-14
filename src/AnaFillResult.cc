@@ -23,9 +23,11 @@ using namespace std;
 /** */
 AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fAnaGlobResult(0), fStartTime(LONG_MAX), fAnaFillExternResult(0),
-   fPCPolarGraphs(), fPCPolarFitRes(), fPolProfRGraphs(), fPolProfRFitRes(),
+   fPCPolarGraphs(), fPCPolarInjGraphs(), fPolProfRGraphs(),
+   fPCPolarFitRes(), fPolProfRFitRes(),
    //fAsymVsBunchId_X(0),
    fFlattopEnergy(0),
+   fFillType(kFILLTYPE_UNKNOWN),
    fAnaMeasResults(), fMeasInfos(), fPCPolars(), fPCPolarUnWs(), fPCPolarsByTargets(),
    fPCProfPolars(), fHJPolars(), fBeamPolars(), fBeamCollPolars(),
    fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fMeasTgtOrients(),
@@ -40,8 +42,8 @@ AnaFillResult::~AnaFillResult() { }
 
 /** */
 time_t AnaFillResult::GetStartTime()   { return fStartTime; }
-time_t AnaFillResult::GetLumiOnTime()  { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : 0; }
-time_t AnaFillResult::GetLumiOffTime() { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : 0; }
+time_t AnaFillResult::GetLumiOnTime()  { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : -1; }
+time_t AnaFillResult::GetLumiOffTime() { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : -1; }
 
 
 /** */
@@ -315,8 +317,6 @@ void AnaFillResult::AddExternInfo(std::ifstream &file)
 /** */
 void AnaFillResult::Process(DrawObjContainer *ocOut)
 { //{{{
-   //Info("Process", "check");
-
    // Calc polars by target
    AnaMeasResultMapConstIter iAnaMeasResult = fAnaMeasResults.begin();
    MeasInfoMapConstIter      iMeasInfo      = fMeasInfos.begin();
@@ -333,6 +333,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       // Get polar meas result
       ValErrPair polarValErr = anaMeasResult.GetPCPolar();
+
       // Skip invalid results
       if (polarValErr.second < 0) continue;
 
@@ -349,18 +350,18 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       // Pick the graph for this measurement and corresponding polarimeter
       // Create the graph with polarization measurements as a func of time
-      TGraphErrors *grPolarPC;
 
-      if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
-      { // create a new graph
-         grPolarPC = new TGraphErrors(0);
-         fPCPolarGraphs[polId] = grPolarPC;
-      } else
-         grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+      if (measInfo.GetBeamEnergy() == kINJECTION) 
+         AppendToPCPolarInjGraph(polId, anaMeasResult.fStartTime - fStartTime, polarValErr.first, 0, polarValErr.second);
+      else 
+         AppendToPCPolarGraph(polId, anaMeasResult.fStartTime - fStartTime, polarValErr.first, 0, polarValErr.second);
 
-      UInt_t iPoint = grPolarPC->GetN();
-      grPolarPC->SetPoint(iPoint, anaMeasResult.fStartTime - fStartTime, polarValErr.first);
-      grPolarPC->SetPointError(iPoint, 0, polarValErr.second);
+      ValErrPair polProfRValErr = anaMeasResult.GetPolProfR();
+
+      AppendToPolProfRGraph(polId, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
+
+      // The energy of the last measurement
+      fFlattopEnergy = measInfo.GetBeamEnergy();
 
       //Info("Process", "xxx1");
       // Proceed only with flattop measurements
@@ -369,7 +370,8 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
       //Info("Process", "zzz %p", (void*) iAnaMeasResult->second.fhAsymVsBunchId_X45);
       //iAnaMeasResult->second.fhAsymVsBunchId_X45->Print();
       if (fAnaFillExternResult && fAnaFillExternResult->GetGrBluIntens()) {
-         fFlattopEnergy = measInfo.GetBeamEnergy();
+         //fFlattopEnergy = measInfo.GetBeamEnergy();
+         fFillType = kFILLTYPE_PHYSICS;
       }
 
       if (ocOut)
@@ -440,17 +442,36 @@ Bool_t AnaFillResult::IsValidFlattopMeas(const MeasInfo &measInfo)
 } //}}}
 
 
-/** Function can return empty graph. */
+/** Function cannot return empty graph. */
 TGraphErrors* AnaFillResult::GetPCPolarGraph(EPolarimeterId polId)
 { //{{{
-   TGraphErrors *grPolarPC;
+   if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end()) {
+      fPCPolarGraphs[polId] = new TGraphErrors(0);
+   }
 
-   if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
-      grPolarPC = new TGraphErrors(0);
-   else
-      grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+   return (TGraphErrors*) fPCPolarGraphs[polId];
+} //}}}
 
-   return grPolarPC;
+
+/** Function cannot return empty graph. */
+TGraphErrors* AnaFillResult::GetPCPolarInjGraph(EPolarimeterId polId)
+{ //{{{
+   if (fPCPolarInjGraphs.find(polId) == fPCPolarInjGraphs.end()) {
+      fPCPolarInjGraphs[polId] = new TGraphErrors(0);
+   }
+
+   return (TGraphErrors*) fPCPolarInjGraphs[polId];
+} //}}}
+
+
+/** Function cannot return empty graph. */
+TGraphErrors* AnaFillResult::GetPolProfRGraph(EPolarimeterId polId)
+{ //{{{
+   if (fPolProfRGraphs.find(polId) == fPolProfRGraphs.end()) {
+      fPolProfRGraphs[polId] = new TGraphErrors(0);
+   }
+
+   return (TGraphErrors*) fPolProfRGraphs[polId];
 } //}}}
 
 
@@ -460,7 +481,6 @@ ValErrPair AnaFillResult::GetPCPolarDecay(EPolarimeterId polId)
    ValErrPair decay(0, -1);
 
    TGraphErrors *gr = GetPCPolarGraph(polId);
-   if (!gr) return decay;
 
    TF1* func = gr->GetFunction("fitFunc");
    if (!func) return decay;
@@ -790,7 +810,7 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
    Double_t polarNormErr  = funcPCPolar->GetParError(0);
    Double_t polarSlopeErr = funcPCPolar->GetParError(1);
 
-   for (UInt_t iPoint=0; iPoint<grIntens->GetN(); iPoint++) {
+   for (UInt_t iPoint=0; iPoint< (UInt_t) grIntens->GetN(); iPoint++) {
       grIntens->GetPoint(iPoint, time, intens);
       polar = funcPCPolar->Eval(time);
 
@@ -830,7 +850,7 @@ ValErrPair AnaFillResult::CalcAvrgPolarUnweighted(EPolarimeterId polId)
 
    Double_t time, polar, polarErr;
 
-   for (UInt_t iPoint=0; iPoint<grPCPolar->GetN(); iPoint++) {
+   for (UInt_t iPoint=0; iPoint<(UInt_t) grPCPolar->GetN(); iPoint++) {
       grPCPolar->GetPoint(iPoint, time, polar);
       if ( time < GetLumiOnTime() || time > GetLumiOffTime() ) continue;
       polarErr = grPCPolar->GetErrorY(iPoint);
@@ -1011,13 +1031,13 @@ void AnaFillResult::CalcAvrgPolarByBunch(const AnaMeasResult &amr, const MeasInf
 
 
       grName = "grAsymVsBunchId_X45_" + sSS;
-      TGraphErrors* grAsymVsBunchId_X45      = (TGraphErrors*) hAsymVsBunchId_X45->GetListOfFunctions()->FindObject(grName.c_str());
+      TGraphErrors* grAsymVsBunchId_X45 = hAsymVsBunchId_X45 ? (TGraphErrors*) hAsymVsBunchId_X45->GetListOfFunctions()->FindObject(grName.c_str()) : 0;
 
       utils::MergeGraphs(grAsymVsBunchId_X_fill, grAsymVsBunchId_X45);
 
 
       grName = "grAsymVsBunchId_X90_" + sSS;
-      TGraphErrors* grAsymVsBunchId_X90      = (TGraphErrors*) hAsymVsBunchId_X90->GetListOfFunctions()->FindObject(grName.c_str());
+      TGraphErrors* grAsymVsBunchId_X90 = hAsymVsBunchId_X90 ? (TGraphErrors*) hAsymVsBunchId_X90->GetListOfFunctions()->FindObject(grName.c_str()) : 0;
 
       utils::MergeGraphs(grAsymVsBunchId_X_fill, grAsymVsBunchId_X90);
    }
@@ -1132,30 +1152,38 @@ void AnaFillResult::FitPolarGraphs()
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
-
       EPolarimeterId polId = *iPolId;
-      TGraphErrors *grPolarPC;
 
-      if (fPCPolarGraphs.find(polId) == fPCPolarGraphs.end())
-         continue;
-      else
-         grPolarPC = (TGraphErrors*) fPCPolarGraphs[polId];
+      // Fit injection measurements if ...
+      // these 3 lines should not be here but...
+      TGraphErrors *grPCPolarInj = GetPCPolarInjGraph(polId);
 
-      grPolarPC->Apply(dummyScale);
+      grPCPolarInj->Apply(dummyScale);
 
-      if (!fAnaFillExternResult) {
-         Error("FitPolarGraphs", "External results not available");
-         continue;
+      if (grPCPolarInj->GetN() >= 2) {
+
+         Double_t xmin, ymin, xmax, ymax;
+         grPCPolarInj->ComputeRange(xmin, ymin, xmax, ymax);
+
+         if (fabs(xmax - xmin) > 3600*3) { // fit only if injection run > 3 hours
+
+            TF1 *fitFunc = new TF1("fitFunc", "pol0");
+            fitFunc->SetParNames("P_{0}, %");
+            grPCPolarInj->Fit(fitFunc, "", "", xmin, xmax);
+
+            delete fitFunc;
+         }
       }
 
-      if (GetLumiOnTime() >= GetLumiOffTime()) {
-         Error("FitPolarGraphs", "Lumi-on and lumi-off markers are invalid");
-         continue;
-      }
 
-      Info("FitPolarGraphs", "Using range %d - %d", GetLumiOnTime(), GetLumiOffTime());
 
-      if (utils::SubGraph(grPolarPC, GetLumiOnTime(), GetLumiOffTime())->GetN() <= 0) continue;
+      TGraphErrors *grPCPolar = GetPCPolarGraph(polId);
+
+      if (grPCPolar->GetN() <= 0) continue; // reuire a valid graph
+
+      grPCPolar->Apply(dummyScale);
+
+      //Info("FitPolarGraphs", "Using range %d - %d", GetLumiOnTime(), GetLumiOffTime());
 
       stringstream ssFormula("");
       ssFormula << "[0] + [1]*(x - " << GetLumiOnTime() << ")/3600.";
@@ -1163,18 +1191,36 @@ void AnaFillResult::FitPolarGraphs()
       TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
       fitFunc->SetParNames("P_{0}, %", "Decay, %/h");
 
-
       Double_t xmin, ymin, xmax, ymax;
-      grPolarPC->ComputeRange(xmin, ymin, xmax, ymax);
+      grPCPolar->ComputeRange(xmin, ymin, xmax, ymax);
 
-      if (utils::SubGraph(grPolarPC, GetLumiOnTime(), GetLumiOffTime())->GetN() == 1 ||
-          fabs(xmax - xmin) < 3600)
+      if ( GetLumiOffTime() > GetLumiOnTime() )
       {
-         //fitFunc->SetParameter(1, 0);
-         fitFunc->FixParameter(1, 0);
+         TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnTime(), GetLumiOffTime());
+
+         if (tmpGraph->GetN() >= 1) {
+            tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
+
+            if (fabs(xmax - xmin) < 3600)
+               fitFunc->FixParameter(1, 0);
+
+            xmin = GetLumiOnTime();
+            xmax = GetLumiOffTime();
+         } else { // go back to original limits
+            if (fabs(xmax - xmin) < 3600)
+               fitFunc->FixParameter(1, 0);
+         }
+
+         delete tmpGraph;
+      } else {
+
+         if (fabs(xmax - xmin) < 3600)
+            fitFunc->FixParameter(1, 0);
       }
 
-      grPolarPC->Fit(fitFunc, "", "", GetLumiOnTime(), GetLumiOffTime());
+      // fit with a const if only one data point is available
+
+      grPCPolar->Fit(fitFunc, "", "", xmin, xmax);
 
       delete fitFunc;
    }
@@ -1191,4 +1237,28 @@ void AnaFillResult::AddHjetPolar(ERingId ringId, ValErrPair ve)
    //else
 
    fHJPolars[ringId] = ve;
+} //}}}
+
+
+/** */
+void AnaFillResult::AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+{ //{{{
+   TGraphErrors *graph = GetPCPolarGraph(polId);
+   utils::AppendToGraph(graph, x, y, xe, ye);
+} //}}}
+
+
+/** */
+void AnaFillResult::AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+{ //{{{
+   TGraphErrors *graph = GetPCPolarInjGraph(polId);
+   utils::AppendToGraph(graph, x, y, xe, ye);
+} //}}}
+
+
+/** */
+void AnaFillResult::AppendToPolProfRGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+{ //{{{
+   TGraphErrors *graph = GetPolProfRGraph(polId);
+   utils::AppendToGraph(graph, x, y, xe, ye);
 } //}}}

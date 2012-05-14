@@ -36,13 +36,15 @@ protected:
    AnaFillExternResult *fAnaFillExternResult;
 
    PolId2TGraphMap      fPCPolarGraphs;
-   TFitResultPtr        fPCPolarFitRes;
-
+   PolId2TGraphMap      fPCPolarInjGraphs;
    PolId2TGraphMap      fPolProfRGraphs;
+
+   TFitResultPtr        fPCPolarFitRes;
    TFitResultPtr        fPolProfRFitRes;
 
    //TH1F                *fAsymVsBunchId_X;
    Double_t             fFlattopEnergy;
+   EFillType            fFillType;
 
 public:
 
@@ -84,6 +86,7 @@ public:
    //void PrintAsPhp(FILE *f=stdout) const;
 
    Double_t      GetFlattopEnergy() const { return fFlattopEnergy; }
+   EFillType     GetFillType() const { return fFillType; }
    TGraphErrors* GetGrBluIntens() const;
    TGraphErrors* GetGrYelIntens() const;
    TGraphErrors* GetIntensGraph(ERingId ringId) const;
@@ -99,6 +102,8 @@ public:
    void              Process(DrawObjContainer *ocOut=0);
    Bool_t            IsValidFlattopMeas(const MeasInfo &measInfo);
    TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
+   TGraphErrors*     GetPCPolarInjGraph(EPolarimeterId polId);
+   TGraphErrors*     GetPolProfRGraph(EPolarimeterId polId);
    ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
    ValErrPair        GetIntensDecay(ERingId ringId);
    ValErrPair        GetPolarHJ(EPolarimeterId polId);
@@ -129,6 +134,9 @@ public:
    void              FitExternGraphs();
    void              FitPolarGraphs();
    void              AddHjetPolar(ERingId ringId, ValErrPair ve);
+   void              AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void              AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void              AppendToPolProfRGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
 
    ClassDef(AnaFillResult, 1)
 };

@@ -390,8 +390,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
       signature.SetTextSize(0.035);
       UInt_t w, h;
       signature.GetTextExtent(w, h, signature.GetTitle());
-      //cout << "extent: " << (w/(Float_t) canvas.GetWw() )<< ", " << (h/(Float_t) canvas.GetWh() ) << endl;
-      signature.DrawTextNDC(0.99-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+      signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
       canvas.RedrawAxis("g");
 
@@ -500,10 +499,10 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
    canvas.SetTitle(hstack.GetName());
 
    TLatex signature(0, 0, fSignature.c_str());
-   signature.SetTextSize(0.04);
+   signature.SetTextSize(0.035);
    UInt_t w, h;
    signature.GetTextExtent(w, h, signature.GetTitle());
-   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()/2) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
    string sFileName = path + "/" + canvas.GetName() + ".png";
 

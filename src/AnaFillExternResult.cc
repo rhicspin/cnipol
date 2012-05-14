@@ -91,7 +91,7 @@ void AnaFillExternResult::ReadInfo(std::ifstream &file)
       if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
 
       if (iline % 5 != 0) continue; // every 5 minutes
-      if (!bluIntens && !yelIntens) continue;
+      if (bluIntens < 1 || yelIntens < 1) continue;
 
       vTimes.push_back(time);
       vBluIntens.push_back(bluIntens);

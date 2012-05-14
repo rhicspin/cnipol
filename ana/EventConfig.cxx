@@ -177,7 +177,7 @@ string EventConfig::GetSignature() const
       ltime = localtime(&anaEndTime);
       strftime(strAnaEndTime, 25, "%c", ltime);
 
-      strSignature = fAnaInfo->GetRunName() + ": Taken " + strMeasStartTime + ", "
+      strSignature = fAnaInfo->GetRunName() + ": Recorded " + strMeasStartTime + ", "
                      + " Analyzed " + strAnaEndTime;
                      //+ fAnaInfo->fUserGroup.fRealName + " @ " + strAnaEndTime;
 

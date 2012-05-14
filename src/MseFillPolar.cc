@@ -34,6 +34,7 @@ void MseFillPolarX::Init()
 {
    fill                  =  0; 
    start_time            = mysqlpp::DateTime("0000-00-00 00:00:00");
+   type                  =  0;
    beam_energy           =  0; 
    polar_blue_hjet       = -1; 
    polar_blue_hjet_err   = -1; 
@@ -62,6 +63,7 @@ void MseFillPolarX::Print(const Option_t* opt) const
 void MseFillPolarX::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fill']                    = %d;\n", fill              );
+   fprintf(f, "$rc['type']                    = %d;\n", type              );
    fprintf(f, "$rc['beam_energy']             = %d;\n", beam_energy       );
    fprintf(f, "$rc['polar_blue_hjet']         = %f;\n", polar_blue_hjet        );
    fprintf(f, "$rc['polar_blue_hjet_err']     = %f;\n", polar_blue_hjet_err    );
@@ -82,8 +84,8 @@ void MseFillPolarX::PrintAsPhp(FILE *f) const
 /** */
 void MseFillPolarX::SetValues(AnaFillResult &afr)
 { //{{{
-   start_time = mysqlpp::DateTime(afr.GetStartTime());
-
+   start_time  = mysqlpp::DateTime(afr.GetStartTime());
+   type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
 
    if (afr.fHJPolars.find(kBLUE_RING) != afr.fHJPolars.end() ) {

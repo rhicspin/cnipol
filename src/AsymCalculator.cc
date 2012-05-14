@@ -2073,7 +2073,7 @@ TH1D* AsymCalculator::CalcChannelAsym(TH1I &hUp, TH1I &hDown, TH1D *hChAsym)
             continue;
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(iCh, iCh2)) {
+         if (!AsymCalculator::ExcludeStrip(iCh-1, iCh2-1)) {
             totalCountsUp   += hUp.GetBinContent(iCh2);
             totalCountsDown += hDown.GetBinContent(iCh2);
          }

@@ -65,7 +65,7 @@ void MAsymSingleFillHists::BookHists()
 
       TAttMarker styleMarker;
       styleMarker.SetMarkerStyle(kFullCircle);
-      styleMarker.SetMarkerSize(1);
+      styleMarker.SetMarkerSize(2);
       styleMarker.SetMarkerColor(color);
 
       shName = "hIntensVsFillTime_" + strDirName + "_" + sRingId;
@@ -133,7 +133,7 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
    TAttMarker styleMarker;
    styleMarker.SetMarkerStyle(kFullCircle);
-   styleMarker.SetMarkerSize(1);
+   styleMarker.SetMarkerSize(3);
    styleMarker.SetMarkerColor(color);
 
    // Get a unique dir name which should be also the same as the fill number
@@ -402,15 +402,15 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       string sPolId = RunConfig::AsString(*iPolId);
 
       // Get graph of p-Carbon polar values
-      TGraphErrors *graphErrs      = afr.GetPCPolarGraph(*iPolId);
+      TGraphErrors *grPCPolar      = afr.GetPCPolarGraph(*iPolId);
       ValErrPair    avrgPCPolar    = afr.GetPolarPC(*iPolId); // unnormalized value
-      ValErrPair    avrgPCPolarUnW = afr.GetPolarPCUnW(*iPolId); // unnormalized value
+      //ValErrPair    avrgPCPolarUnW = afr.GetPolarPCUnW(*iPolId); // unnormalized value
 
-      if (graphErrs && graphErrs->GetN() > 0) {
-         TH1* hPolarVsFillTime_ = (TH1*) o["hPolarVsFillTime_" + strDirName + "_" + sPolId];
-         ((TAttMarker*) hPolarVsFillTime_)->Copy(*graphErrs);
-         hPolarVsFillTime_->GetListOfFunctions()->Add(graphErrs, "p");
-         utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
+      TH1* hPolarVsFillTime_ = (TH1*) o["hPolarVsFillTime_" + strDirName + "_" + sPolId];
+
+      if (grPCPolar->GetN() > 0) {
+         ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolar);
+         hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolar, "p");
 
          if (avrgPCPolar.second >= 0) {
             TLine* avrgLine = new TLine(0, avrgPCPolar.first*100, 12*3600, avrgPCPolar.first*100);
@@ -425,6 +425,16 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          }
       } else
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
+
+      TGraphErrors *grPCPolarInj  = afr.GetPCPolarInjGraph(*iPolId);
+      if (grPCPolarInj->GetN() > 0) {
+         ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolarInj);
+         grPCPolarInj->SetMarkerStyle(34); // full cross marker for injection measurements
+         hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolarInj, "p");
+      } else
+         Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
+
+      utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
 
    }
 
