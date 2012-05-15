@@ -64,6 +64,9 @@ void AnaInfo::Init()
 
    if (tmpEnv) fAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
+
+
+   fUserGroup = *gSystem->GetUserInfo();
 } //}}}
 
 

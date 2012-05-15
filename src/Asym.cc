@@ -131,7 +131,7 @@ float gPhi[NSTRIP] = {
 };
 
 AsymAnaInfo              *gAsymAnaInfo;
-//MAsymAnaInfo             *gMAsymAnaInfo;
+MAsymAnaInfo             *gMAsymAnaInfo;
 MeasInfo                 *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;

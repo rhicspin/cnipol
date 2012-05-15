@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
    mAsymAnaInfo.ProcessOptions(argc, argv);
    mAsymAnaInfo.VerifyOptions();
 
-	//gMAsymAnaInfo = &mAsymAnaInfo;
+	gMAsymAnaInfo = &mAsymAnaInfo;
 
    AnaGlobResult gAnaGlobResult;
    gAnaGlobResult.Configure(mAsymAnaInfo);
