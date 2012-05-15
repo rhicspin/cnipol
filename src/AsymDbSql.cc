@@ -113,6 +113,8 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 
    string q = "select * from run_info where run_name=\"" + runName + "\"";
 
+   cout << "Query: " << q << endl;
+
    Query query = fConnection->query(q);
 
    MseMeasInfoX* mseri = 0;
