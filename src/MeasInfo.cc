@@ -48,7 +48,6 @@ MeasInfo::MeasInfo() : TObject(),
    MaxRevolution (0),        // MaxRevolution;
    fTargetOrient ('-'),
    fTargetId     ('-'),
-   //fDisabledChannelsVec(),   // should not be used. will deprecate
    fSiliconChannels(),
    fDisabledChannels(),
    //fActiveChannels(), // Only good channels used in the analysis
@@ -58,8 +57,6 @@ MeasInfo::MeasInfo() : TObject(),
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
 
    for (int i=1; i<=N_SILICON_CHANNELS; i++) {
-      //ActiveStrip[i-1]       = 1;
-      //fDisabledChannels[i-1] = 0;
       fSiliconChannels.insert(i);
       //fActiveChannels.insert(i);
    }
@@ -195,8 +192,6 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    //}
    //ssChs << ")";
 
-   //fprintf(f, "$rc['fDisabledChannels']            = %s;\n", ssChs.str().c_str());
-   //fprintf(f, "$rc['fDisabledChannelsVec']         = %s;\n", VecAsPhpArray<UShort_t>(fDisabledChannelsVec).c_str());
    fprintf(f, "$rc['fSiliconChannels']             = %s;\n", SetAsPhpArray<UShort_t>(fSiliconChannels).c_str());
    fprintf(f, "$rc['fDisabledChannels']            = %s;\n", SetAsPhpArray<UShort_t>(fDisabledChannels).c_str());
    //fprintf(f, "$rc['fActiveChannels']              = %s;\n", SetAsPhpArray<UShort_t>(fActiveChannels).c_str());
@@ -597,8 +592,6 @@ void MeasInfo::DisableChannel(UShort_t chId)
 { //{{{
    Warning("DisableChannel", "Disabled channel %d", chId);
 
-   //fDisabledChannels[chId-1] = 1;
-
    if ( fDisabledChannels.find(chId) == fDisabledChannels.end() )
       fDisabledChannels.insert(chId);
 
@@ -624,11 +617,6 @@ void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
 void MeasInfo::EnableChannel(UShort_t chId)
 { //{{{
    Warning("EnableChannel", "Enabled channel %d", chId);
-
-   //fDisabledChannels[chId-1] = 1;
-
-   //if (find(fDisabledChannelsVec.begin(), fDisabledChannelsVec.end(), chId) == fDisabledChannelsVec.end() )
-   //   fDisabledChannelsVec.push_back(chId);
 
    //fActiveChannels.erase(chId);
 } //}}}
