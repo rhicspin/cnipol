@@ -85,7 +85,6 @@ public:
    Bool_t           fFlagUseDb;
    Bool_t           fFlagUpdateDb;
    Bool_t           fFlagCreateThumbs;
-   UserGroup_t      fUserGroup;
 
 public:
 
