@@ -89,9 +89,7 @@ public:
    char                        fTargetId;
    //int                         ActiveDetector[N_DETECTORS];
    //int                         ActiveStrip[N_SILICON_CHANNELS];
-   //int                         NActiveStrip;
    //int                         NDisableStrip;
-   //int                         fDisabledChannels[N_SILICON_CHANNELS];
    //std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
    ChannelSet                  fSiliconChannels;     // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
    ChannelSet                  fDisabledChannels;    // a list of disabled channels. not just silicon channels
