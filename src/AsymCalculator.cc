@@ -48,7 +48,7 @@ void end_process(MseMeasInfoX &run)
    CalcStatistics();
 
    // Skip end-of-run analysis routines for deadlayer and calibration modes.
-   //if (!gAnaInfo->DMODE) {
+   //if (!gAsymAnaInfo->DMODE) {
 
    // Energy Yeild Weighted Average Analyzing Power
    //gAnaMeasResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
@@ -96,12 +96,12 @@ void CompleteHistogram()
       float max = mass_nocut[i]->GetMaximum();
 
       DrawVertLine(mass_nocut[i], MASS_12C_k2G,                                              max*1.05, 14, 2);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAnaInfo->MassSigma,    max*0.3,   4, 2);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAnaInfo->MassSigma,    max*0.3,   4, 2);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAnaInfo->MassSigma,    max*0.3,   4, 2);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAnaInfo->MassSigma,    max*0.3,   4, 2);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
    }
 } //}}}
 
@@ -760,7 +760,7 @@ void CalcStatistics()
 
    // Misc
    if (gMeasInfo->fWallCurMonSum) gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
-   if (gAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAnaInfo->reference_rate;
+   if (gAsymAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAsymAnaInfo->reference_rate;
    if (gMeasInfo->Run == 5)       gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 } //}}}
 
@@ -861,7 +861,7 @@ void PrintRunResults()
    printf(" Phase (bunch ave)              = %10.4f%9.4f\n", gBunchAsym.ave.phase[0]*R2D, gBunchAsym.ave.phase[1]*R2D);
    if (gMeasInfo->Run == 5)
    printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaMeasResult->profile_error * fabs(gAnaMeasResult->P[0]));
-   printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAnaInfo->MassSigmaAlt, gAnaInfo->MassSigma);
+   printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAsymAnaInfo->MassSigmaAlt, gAsymAnaInfo->MassSigma);
    printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaMeasResult->sinphi[1].P[0],        gAnaMeasResult->sinphi[1].P[1]);
    printf(" Ratio (alt/reg)                = %10.2f%9.2f\n", gAnaMeasResult->P_sigma_ratio[0],      gAnaMeasResult->P_sigma_ratio[1]);
    printf(" Ratio ((alt-reg)/reg)          = %10.3f%9.3f\n", gAnaMeasResult->P_sigma_ratio_norm[0], gAnaMeasResult->P_sigma_ratio_norm[1]);
@@ -1182,7 +1182,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
          // parameter initialization
          par[0] = Mode ? mass_feedback[st]->GetMaximum() : mass_yescut[st]->GetMaximum(); // amplitude
          par[1] = MASS_12C * k2G;       // mean [GeV]
-         par[2] = gAnaInfo->OneSigma * k2G; // sigma [GeV]
+         par[2] = gAsymAnaInfo->OneSigma * k2G; // sigma [GeV]
 
          if (par[0]) { // Gaussian Fit unless histogram isn't empty
             Mode ? mass_feedback[st]->Fit(f1, "Q") : mass_yescut[st]->Fit(f1, "Q");
@@ -2464,7 +2464,7 @@ Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
 /*
 void RAMP::CalcRAMP()
 { //{{{
-  if (gAnaInfo->RAMPMODE==1) {
+  if (gAsymAnaInfo->RAMPMODE==1) {
 
     for (int dlm=0;dlm<RAMPTIME;dlm++){
       // not need for initialization for RUN,RD,LU,LD

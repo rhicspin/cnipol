@@ -168,17 +168,17 @@ void AsymRoot::CreateRootFile(string filename)
    // Create default empty hist container
    fHists = new DrawObjContainer(fOutRootFile);
 
-   if (gAnaInfo->HasAlphaBit()) {
+   if (gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("alpha", "alpha", "", fOutRootFile);
       fHists->d["alpha"] = new CnipolAlphaHists(dir);
    }
 
-   if (gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit()) {
+   if (gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
       fHists->d["calib"] = new CnipolCalibHists(dir);
    }
 
-   if (gAnaInfo->HasNormalBit()) {
+   if (gAsymAnaInfo->HasNormalBit()) {
       dir = new TDirectoryFile("std", "std", "", fOutRootFile);
       oc  = new CnipolHists(dir);
       fHists->d["std"] = oc;
@@ -191,12 +191,12 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // If requested create scaler histograms and add them to the container
-   if (gAnaInfo->HasScalerBit()) {
+   if (gAsymAnaInfo->HasScalerBit()) {
       dir = new TDirectoryFile("scalers", "scalers", "", fOutRootFile);
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
 
-   if (gAnaInfo->HasRawExtendedBit()) {
+   if (gAsymAnaInfo->HasRawExtendedBit()) {
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawExtendedHists(dir);
       fHists->d["raw"] = oc;
@@ -211,7 +211,7 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolRawExtendedHists(dir);
       fHists->d["raw_neb"] = oc;
    }
-   else if (gAnaInfo->HasRawBit()) {
+   else if (gAsymAnaInfo->HasRawBit()) {
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
@@ -227,19 +227,19 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["raw_neb"] = oc;
    }
 
-   if (gAnaInfo->HasTargetBit()) {
+   if (gAsymAnaInfo->HasTargetBit()) {
       dir = new TDirectoryFile("targets", "targets", "", fOutRootFile);
       fHists->d["targets"] = new CnipolTargetHists(dir);
    }
 
-   if (gAnaInfo->HasProfileBit()) {
+   if (gAsymAnaInfo->HasProfileBit()) {
       dir = new TDirectoryFile("profile", "profile", "", fOutRootFile);
       oc  = new CnipolProfileHists(dir);
       fHists->d["profile"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
    }
 
-   if (gAnaInfo->HasAsymBit()) {
+   if (gAsymAnaInfo->HasAsymBit()) {
       dir = new TDirectoryFile("asym", "asym", "", fOutRootFile);
       oc  = new CnipolAsymHists(dir);
       fHists->d["asym"] = oc;
@@ -251,7 +251,7 @@ void AsymRoot::CreateRootFile(string filename)
       //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
-   if (gAnaInfo->HasKinematBit()) {
+   if (gAsymAnaInfo->HasKinematBit()) {
       // Pre mass cut
       dir = new TDirectoryFile("kinema_premass", "kinema_premass", "", fOutRootFile);
       oc  = new CnipolKinematHists(dir);
@@ -265,14 +265,14 @@ void AsymRoot::CreateRootFile(string filename)
       fHistCuts[kCUT_CARBON].insert(oc);
    }
 
-   if (gAnaInfo->HasPmtBit()) {
+   if (gAsymAnaInfo->HasPmtBit()) {
       dir = new TDirectoryFile("pmt", "pmt", "", fOutRootFile);
       oc  = new CnipolPmtHists(dir);
       fHists->d["pmt"] = oc;
       fHistCuts[kCUT_PASSONE_PMT].insert(oc);
    }
 
-   if (gAnaInfo->HasPulserBit()) {
+   if (gAsymAnaInfo->HasPulserBit()) {
       dir = new TDirectoryFile("pulser", "pulser", "", fOutRootFile);
       oc  = new CnipolPulserHists(dir);
       fHists->d["pulser"] = oc;
@@ -281,7 +281,7 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // should be reconsidered once preproc is used to fill raw hists for alpha runs
-   if (!gAnaInfo->HasAlphaBit()) {
+   if (!gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
 
@@ -314,19 +314,19 @@ void AsymRoot::CreateTrees()
       exit(-1);
    }
 
-   string filename = gAnaInfo->GetRootTreeFileName(fTreeFileId);
+   string filename = gAsymAnaInfo->GetRootTreeFileName(fTreeFileId);
 
    fOutTreeFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
 
    // Create trees with raw data
-   if (gAnaInfo->fSaveTrees.test(0) ) {
+   if (gAsymAnaInfo->fSaveTrees.test(0) ) {
 
       fRawEventTree = new TTree("RawEventTree", "Raw Event Tree");
       fRawEventTree->Branch("ChannelEvent", "ChannelEvent", &fChannelEvent);
    }
 
    // Create trees with channel events
-   if (gAnaInfo->fSaveTrees.test(1) ) {
+   if (gAsymAnaInfo->fSaveTrees.test(1) ) {
 
       char tmpCharStr[19];
 
@@ -340,7 +340,7 @@ void AsymRoot::CreateTrees()
    }
 
    // Create tree with time ordered events
-   if (gAnaInfo->fSaveTrees.test(2) ) {
+   if (gAsymAnaInfo->fSaveTrees.test(2) ) {
 
       fAnaEventTree = new TTree("AnaEventTree", "Ana Event Tree");
       fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
@@ -354,7 +354,7 @@ void AsymRoot::CreateTrees()
 /*
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
 { //{{{
-   if (cfname == "" && gAnaInfo->CMODE) {
+   if (cfname == "" && gAsymAnaInfo->CMODE) {
 
       UpdateCalibrator();
       return true; // check if config is already set
@@ -529,11 +529,11 @@ void AsymRoot::PostFillPassOne()
    ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
    //
-   //if (gAnaInfo->HasPulserBit()) {
+   //if (gAsymAnaInfo->HasPulserBit()) {
    //   pulserHists = fHists->d["pulser"];
    //}
    ////
-   //if (gAnaInfo->HasPmtBit()) {
+   //if (gAsymAnaInfo->HasPmtBit()) {
    //   ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
    //}
 } //}}}
@@ -569,12 +569,12 @@ void AsymRoot::FillDerived()
 
    // Process dependencies
    // asym depends on std
-   if (gAnaInfo->HasAsymBit() && gAnaInfo->HasNormalBit() ) {
+   if (gAsymAnaInfo->HasAsymBit() && gAsymAnaInfo->HasNormalBit() ) {
       fHists->d["asym"]->FillDerived( *fHists );
    }
 
    // profile depends on asym
-   if (gAnaInfo->HasProfileBit() && gAnaInfo->HasNormalBit() ) {
+   if (gAsymAnaInfo->HasProfileBit() && gAsymAnaInfo->HasNormalBit() ) {
       fHists->d["profile"]->FillDerived( *fHists );
    }
 }
@@ -590,7 +590,7 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
    fHists->PostFill();
 
    // Special processing for some of the histogram containers
-   //if (gAnaInfo->HasProfileBit()) {
+   //if (gAsymAnaInfo->HasProfileBit()) {
       //((CnipolProfileHists*) fHists->d["profile"])->Process();
       //gMeasInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
    //}
@@ -610,7 +610,7 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
 /** */
 void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
 {
-   if ( !gAnaInfo->HasScalerBit() ) return;
+   if ( !gAsymAnaInfo->HasScalerBit() ) return;
 
    ((CnipolScalerHists*) fHists->d["scalers"])->Fill(hData, chId);
 }
@@ -619,7 +619,7 @@ void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
 /** */
 void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
 {
-   if (!gAnaInfo->HasTargetBit()) return;
+   if (!gAsymAnaInfo->HasTargetBit()) return;
 
    ((CnipolTargetHists*) fHists->d["targets"])->Fill(n, hData);
 }
@@ -628,7 +628,7 @@ void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
 /** */
 void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 {
-   if (!gAnaInfo->HasProfileBit()) return;
+   if (!gAsymAnaInfo->HasProfileBit()) return;
 
    ((CnipolProfileHists*) fHists->d["profile"])->Fill(n, hData);
 }
@@ -646,10 +646,10 @@ void AsymRoot::FillRunHists()
  */
 void AsymRoot::AddChannelEvent()
 { //{{{
-   if (gAnaInfo->fSaveTrees.test(0))
+   if (gAsymAnaInfo->fSaveTrees.test(0))
       fRawEventTree->Fill();
 
-   if (gAnaInfo->fSaveTrees.test(1) || gAnaInfo->fSaveTrees.test(2)) {
+   if (gAsymAnaInfo->fSaveTrees.test(1) || gAsymAnaInfo->fSaveTrees.test(2)) {
       //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
 
       fChannelEvents.insert(*fChannelEvent);
@@ -890,7 +890,7 @@ void AsymRoot::CalibrateFast()
 /** */
 void AsymRoot::SaveChannelTrees()
 { //{{{
-   if (!gAnaInfo->fSaveTrees.test(1)) return;
+   if (!gAsymAnaInfo->fSaveTrees.test(1)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in ChannelTree\n");
@@ -912,7 +912,7 @@ void AsymRoot::SaveChannelTrees()
 /** */
 void AsymRoot::SaveEventTree()
 { //{{{
-   if (!gAnaInfo->fSaveTrees.test(2)) return;
+   if (!gAsymAnaInfo->fSaveTrees.test(2)) return;
 
    if (fChannelEvents.size() <= 0) {
       printf("No channels to save in EventTree\n");
@@ -1077,15 +1077,15 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
 
       for (int j=0; j<2; j++) {
 
-         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo->MassSigmaAlt :
-                     gRunConsts[i+1].M2T*feedback.RMS[i]*gAnaInfo->MassSigma;
+         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*gAsymAnaInfo->MassSigmaAlt :
+                     gRunConsts[i+1].M2T*feedback.RMS[i]*gAsymAnaInfo->MassSigma;
 
          int Style = j + 1 ;
 
          // lower limit
          sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
          sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
-         banana_cut_l[i][j] = new TF1(fname, formula, gAnaInfo->enel, gAnaInfo->eneu);
+         banana_cut_l[i][j] = new TF1(fname, formula, gAsymAnaInfo->enel, gAsymAnaInfo->eneu);
          banana_cut_l[i][j] -> SetLineColor(Color);
          banana_cut_l[i][j] -> SetLineWidth(Width);
          banana_cut_l[i][j] -> SetLineStyle(Style);
@@ -1093,29 +1093,29 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
          // upper limit
          sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
          sprintf(fname, "banana_cut_h_st%d", i);
-         banana_cut_h[i][j] = new TF1(fname, formula, gAnaInfo->enel, gAnaInfo->eneu);
+         banana_cut_h[i][j] = new TF1(fname, formula, gAsymAnaInfo->enel, gAsymAnaInfo->eneu);
          banana_cut_h[i][j] -> SetLineColor(Color);
          banana_cut_h[i][j] -> SetLineWidth(Width);
          banana_cut_h[i][j] -> SetLineStyle(Style);
       }
 
       // energy cut low
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->enel)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->enel));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->enel)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->enel));
+      low  = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->enel)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->enel));
+      high = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->enel)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->enel));
 
-      energy_cut_l[i] = new TLine(gAnaInfo->enel, low, gAnaInfo->enel, high);
+      energy_cut_l[i] = new TLine(gAsymAnaInfo->enel, low, gAsymAnaInfo->enel, high);
       energy_cut_l[i] ->SetLineColor(Color);
       energy_cut_l[i] ->SetLineWidth(Width);
 
       // energy cut high
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->eneu)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->eneu));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAnaInfo->eneu)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAnaInfo->MassSigma / sqrt(double(gAnaInfo->eneu));
+      low  = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->eneu)) -
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->eneu));
+      high = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->eneu)) +
+                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->eneu));
 
-      energy_cut_h[i] = new TLine(gAnaInfo->eneu, low, gAnaInfo->eneu, high);
+      energy_cut_h[i] = new TLine(gAsymAnaInfo->eneu, low, gAsymAnaInfo->eneu, high);
       energy_cut_h[i] ->SetLineColor(Color);
       energy_cut_h[i] ->SetLineWidth(Width);
    }
@@ -1171,7 +1171,7 @@ void AsymRoot::Finalize()
    // close fOutRootFile
    fOutRootFile->Close();
 
-   if (gAnaInfo->fSaveTrees.any()) {
+   if (gAsymAnaInfo->fSaveTrees.any()) {
       SaveChannelTrees();
       SaveEventTree();
       WriteTreeFile();
@@ -1184,7 +1184,7 @@ void AsymRoot::Finalize()
 /** */
 void AsymRoot::SaveAs(string pattern, string dir)
 { //{{{
-   if (!gAnaInfo->HasAlphaBit()) {
+   if (!gAsymAnaInfo->HasAlphaBit()) {
       gStyle->SetMarkerStyle(kFullDotLarge);
       gStyle->SetMarkerSize(1);
       gStyle->SetMarkerColor(kRed);
@@ -1197,7 +1197,7 @@ void AsymRoot::SaveAs(string pattern, string dir)
 
    fHists->SaveAllAs(canvas, pattern, dir.c_str());
 
-   if (gAnaInfo->fFlagCreateThumbs) {
+   if (gAsymAnaInfo->fFlagCreateThumbs) {
       TCanvas canvas("canvas", "canvas", 200, 100);
       fHists->SaveAllAs(canvas, pattern, dir.c_str(), kTRUE);
    }

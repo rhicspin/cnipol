@@ -5,10 +5,9 @@
  *
  */
 
-#ifndef ASYM_MAIN_H
-#define ASYM_MAIN_H
+#ifndef asym_h
+#define asym_h
 
-#include "rpoldata.h"
 
 int  BunchSelect(int bid);
 //int DisabledDet(int det);

@@ -47,12 +47,9 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    reference_rate    (1),
    //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
-   fAnaDateTime      (0),
-   fAnaTimeReal      (0),
-   fAnaTimeCpu       (0),
-   fAlphaCalibRun(""), fDlCalibRun(""),
-   fFileRunConf(0),
-   fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE)
+   fAlphaCalibRun(""),
+   fDlCalibRun(""),
+   fFileRunConf(0)
 {
    Init();
 }
@@ -507,13 +504,8 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['fThinout']                     = %f;\n",     fThinout);
-   fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
-   fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);
-   fprintf(f, "$rc['fAnaTimeCpu']                  = %f;\n",     fAnaTimeCpu);
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
-   fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
-   fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
    fprintf(f, "\n");
 } //}}}
 

@@ -40,12 +40,7 @@ public:
                 OPTION_SUFFIX          = 0x20000002};
 
    // Various histogramming and running modes
-   enum Mode   {MODE_ALPHA             = 0x01010000,
-                MODE_CALIB             = 0x01000000,
-                MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000,
-                MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
-                MODE_FULL              = 0x007f0000,
-                MODE_ONLINE            = 0x04040000};
+   enum Mode   {MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000};
 
 protected:
 
@@ -53,7 +48,7 @@ protected:
 
 public:
 
-   std::string      fAsymVersion;       //!
+   std::string      fAsymVersion;
    std::string      fSuffix;            // Additional unique identifier for analysis job
    ULong_t          fModes;
    time_t           fAnaDateTime;       // Date/time when data analysis started
@@ -82,7 +77,7 @@ public:
    std::string  GetStdLogFileName() const;
    std::string  GetRootFileName() const;
    FILE*        GetAnaInfoFile() const;
-   void         ProcessOptions(int argc, char **argv);
+   virtual void ProcessOptions(int argc, char **argv);
    virtual void VerifyOptions();
    void         Print(const Option_t* opt="") const;
    void         PrintAsPhp(FILE *f=stdout) const;

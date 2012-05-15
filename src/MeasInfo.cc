@@ -256,27 +256,27 @@ void MeasInfo::PrintConfig()
    int ccutwu;
    int ccutwl;
 
-   if (gAnaInfo->CBANANA == 0) {
+   if (gAsymAnaInfo->CBANANA == 0) {
       ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
       ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
-   } else if (gAnaInfo->CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n", gAnaInfo->MassSigma);
+   } else if (gAsymAnaInfo->CBANANA == 2) {
+      fprintf(stdout,"            MASSCUT = %.1f\n", gAsymAnaInfo->MassSigma);
    } else {
-      ccutwl = (int) gAnaInfo->widthl;
-      ccutwu = (int) gAnaInfo->widthu;
+      ccutwl = (int) gAsymAnaInfo->widthl;
+      ccutwu = (int) gAsymAnaInfo->widthu;
    }
 
-   if (gAnaInfo->CBANANA!=2)
+   if (gAsymAnaInfo->CBANANA!=2)
      fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
 
    // tshift in [ns]
-   fprintf(stdout,"             TSHIFT = %.1f\n", gAnaInfo->tshift);
+   fprintf(stdout,"             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);
 
    // expected reference rate
-   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAnaInfo->reference_rate);
+   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAsymAnaInfo->reference_rate);
 
    // target count/mm
-   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAnaInfo->target_count_mm);
+   fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAsymAnaInfo->target_count_mm);
 
    // Disabled bunch
    //fprintf(stdout,"      #DISABLED_BUNCHES = %d\n", NDisableBunch);

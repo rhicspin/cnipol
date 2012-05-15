@@ -28,9 +28,10 @@
 
 #include "EventConfig.h"
 
+#include "AsymGlobals.h"
 #include "AsymRoot.h"
 #include "AsymRead.h"
-//#include "AsymDbFile.h"
+#include "AsymAnaInfo.h"
 #include "AsymDbSql.h"
 #include "AsymHbook.h"
 #include "MseMeasInfo.h"
@@ -54,13 +55,13 @@ int main(int argc, char *argv[])
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
 
-   gAsymRoot->GetMeasConfigs(gMeasInfo, gAnaInfo, gAnaMeasResult);
+   gAsymRoot->GetMeasConfigs(gMeasInfo, gAsymAnaInfo, gAnaMeasResult);
 
    //gAsymDb  = new AsymDbFile();
    gAsymDb = new AsymDbSql();
 
-   gAnaInfo->ProcessOptions(argc, argv);
-   gAnaInfo->VerifyOptions();
+   gAsymAnaInfo->ProcessOptions(argc, argv);
+   gAsymAnaInfo->VerifyOptions();
 
    //return 1;
 
@@ -70,14 +71,14 @@ int main(int argc, char *argv[])
    hist_book(hbk_outfile);
 
    // Book root file
-   gAsymRoot->CreateRootFile(gAnaInfo->GetRootFileName());
+   gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
 
    MseMeasInfoX  *mseMeasInfoX     = 0;
    MseMeasInfoX  *mseMeasInfoXOrig = 0;
    MseRunPeriodX *mseRunPeriodX    = 0;
 
    // Check whether the run is in database
-   if (gAnaInfo->fFlagUseDb) {
+   if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
    }
 
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
    }
 
    // Read data file into memory
-   RawDataProcessor *rawData = new RawDataProcessor(gAnaInfo->GetRawDataFileName());
+   RawDataProcessor *rawData = new RawDataProcessor(gAsymAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
    // and overwrite the run info from database (MseMeasInfoX) if needed
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
    rawData->ReadMeasInfo(*mseMeasInfoX);
 
    // We can do this for any run type including alpha runs
-   if (gAnaInfo->fFlagUseDb) {
+   if (gAsymAnaInfo->fFlagUseDb) {
       mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
    }
 
@@ -111,22 +112,22 @@ int main(int argc, char *argv[])
 
    // Overwrite the offline version (if set previously)
    //gRunDb.SetAsymVersion(gMeasInfo->fAsymVersion);
-   mseMeasInfoX->asym_version = gAnaInfo->fAsymVersion;
+   mseMeasInfoX->asym_version = gAsymAnaInfo->fAsymVersion;
 
    // We should be done reading all common/default parameters from DB by now
    //gRunDb.Print();
 
-   //gAnaInfo->Update(gRunDb);
+   //gAsymAnaInfo->Update(gRunDb);
    //gMeasInfo->Update(gRunDb);
 
    // Update the final running parameters based on what was read from DB and
    // what was requested by the user
-   gAnaInfo->Update(*mseMeasInfoX);
+   gAsymAnaInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
 
    // For debugging
-   gAnaInfo->Print();
+   gAsymAnaInfo->Print();
    gMeasInfo->Print();
    mseMeasInfoX->Print();
    //gAsymDb->PrintCommon();
@@ -138,14 +139,14 @@ int main(int argc, char *argv[])
    gAsymRoot->UpdateCalibrator();
 
    // Create trees if requested
-   if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
+   if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data.
    // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAnaInfo->HasCalibBit() && !gAnaInfo->HasAlphaBit() )
+   if ( gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit() )
    {
       rawData->ReadDataFast();          // fill histograms
       gAsymRoot->FillDerivedPassOne();
@@ -176,7 +177,7 @@ int main(int argc, char *argv[])
    // XXX logic??? For normal data runs calibration should be done only once
    // during the first pass
    // Currently used for alpha runs only
-   if ( gAnaInfo->HasCalibBit() && gAnaInfo->HasAlphaBit() )
+   if ( gAsymAnaInfo->HasCalibBit() && gAsymAnaInfo->HasAlphaBit() )
    {
       gAsymRoot->Calibrate();
    }
@@ -189,32 +190,32 @@ int main(int argc, char *argv[])
 
    // Stop stopwatch and save results
    stopwatch.Stop();
-   gAnaInfo->fAnaDateTime = timestamp.GetSec();
-   gAnaInfo->fAnaTimeReal = stopwatch.RealTime();
-   gAnaInfo->fAnaTimeCpu  = stopwatch.CpuTime();
+   gAsymAnaInfo->fAnaDateTime = timestamp.GetSec();
+   gAsymAnaInfo->fAnaTimeReal = stopwatch.RealTime();
+   gAsymAnaInfo->fAnaTimeCpu  = stopwatch.CpuTime();
 
    string tmpSqlDateTime(19, ' ');
    strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
 
    mseMeasInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
-   mseMeasInfoX->ana_duration     = UInt_t(gAnaInfo->fAnaTimeReal);
+   mseMeasInfoX->ana_duration     = UInt_t(gAsymAnaInfo->fAnaTimeReal);
    mseMeasInfoX->measurement_type = UInt_t(gMeasInfo->GetMeasType());
 
-   if (gAnaInfo->fFlagUpdateDb && gAnaInfo->fSuffix.empty())
+   if (gAsymAnaInfo->fFlagUpdateDb && gAsymAnaInfo->fSuffix.empty())
       gAsymDb->UpdateInsert(mseMeasInfoXOrig, mseMeasInfoX);
 
    gAsymRoot->fEventConfig->fMseMeasInfoX = mseMeasInfoX;
 
-   gAsymRoot->fEventConfig->PrintAsPhp(gAnaInfo->GetAnaInfoFile());
-   gAsymRoot->fEventConfig->PrintAsConfig(gAnaInfo->GetRunConfFile());
-   fclose(gAnaInfo->GetAnaInfoFile());
-   fclose(gAnaInfo->GetRunConfFile());
-   gAnaInfo->fFileMeasInfo = 0;
-   gAnaInfo->fFileRunConf = 0;
+   gAsymRoot->fEventConfig->PrintAsPhp(gAsymAnaInfo->GetAnaInfoFile());
+   gAsymRoot->fEventConfig->PrintAsConfig(gAsymAnaInfo->GetRunConfFile());
+   fclose(gAsymAnaInfo->GetAnaInfoFile());
+   fclose(gAsymAnaInfo->GetRunConfFile());
+   gAsymAnaInfo->fFileMeasInfo = 0;
+   gAsymAnaInfo->fFileRunConf = 0;
 
-   if (gAnaInfo->HasGraphBit())
-      //gAsymRoot->SaveAs("^.*AsymVs.*$", gAnaInfo->GetImageDir());
-      gAsymRoot->SaveAs("^.*$", gAnaInfo->GetImageDir());
+   if (gAsymAnaInfo->HasGraphBit())
+      //gAsymRoot->SaveAs("^.*AsymVs.*$", gAsymAnaInfo->GetImageDir());
+      gAsymRoot->SaveAs("^.*$", gAsymAnaInfo->GetImageDir());
 
    // Close ROOT File
    gAsymRoot->Finalize();
@@ -222,10 +223,10 @@ int main(int argc, char *argv[])
    delete gAsymRoot;
    delete gAsymDb;
 
-   gAnaInfo->CopyResults();
+   gAsymAnaInfo->CopyResults();
 
    printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
-   printf("Processing time: %f seconds\n", gAnaInfo->fAnaTimeReal);
+   printf("Processing time: %f seconds\n", gAsymAnaInfo->fAnaTimeReal);
 
    return 1;
 } //}}}

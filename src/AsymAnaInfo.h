@@ -31,7 +31,6 @@ public:
    // Various histogramming and running modes
    enum Mode   {MODE_ALPHA             = 0x01010000,
                 MODE_CALIB             = 0x01000000,
-                MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000,
                 MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
                 MODE_SCALER            = 0x00040000,
                 MODE_RAW               = 0x00080000,
@@ -76,15 +75,9 @@ public:
    Float_t          fThinout;           // Approximate fraction of events to read
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
-   time_t           fAnaDateTime;       // Date/time when data analysis started
-   Double_t         fAnaTimeReal;       // Time in seconds to process input raw file
-   Double_t         fAnaTimeCpu;        // Time in seconds to process input raw file
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    FILE            *fFileRunConf;       //!
-   Bool_t           fFlagUseDb;
-   Bool_t           fFlagUpdateDb;
-   Bool_t           fFlagCreateThumbs;
 
 public:
 
