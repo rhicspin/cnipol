@@ -17,8 +17,9 @@
 class  AsymDb;
 class  AsymRoot;
 class  AsymDbFile;
-class  AsymAnaInfo;
 class  AnaInfo;
+class  AsymAnaInfo;
+class  MAsymAnaInfo;
 struct ErrorDetector;
 struct atdata_struct;
 class  DbEntry;
@@ -75,8 +76,8 @@ extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 
 extern long int Nback[N_BUNCHES];   // number of evts below the curbon cut
 
-extern AsymAnaInfo                  *gAnaInfo;
-extern AnaInfo                      *gAnaInfo2;
+extern AsymAnaInfo                  *gAsymAnaInfo;
+//extern MAsymAnaInfo                 *gMAsymAnaInfo;
 extern MeasInfo                     *gMeasInfo;
 extern AnaMeasResult                *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;

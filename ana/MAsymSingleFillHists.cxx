@@ -15,6 +15,7 @@
 
 #include "MseMeasInfo.h"
 #include "AsymGlobals.h"
+#include "MAsymAnaInfo.h"
 
 
 ClassImp(MAsymSingleFillHists)
@@ -244,7 +245,7 @@ void MAsymSingleFillHists::SetSignature(std::string signature)
    strftime(strAnaTime, 25, "%c", ltime);
 
    ssSignature << "Fill " << fDir->GetName() << ", Analyzed " << strAnaTime;
-   ssSignature << ", Version " << gAnaInfo2->fAsymVersion << ", " << gAnaInfo2->fUserGroup.fUser;
+   //ssSignature << ", Version " << gMAsymAnaInfo->fAsymVersion << ", " << gMAsymAnaInfo->fUserGroup.fUser;
 
    fSignature = ssSignature.str();
 } //}}}

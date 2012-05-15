@@ -40,8 +40,8 @@ const char* AsymDbFile::sFieldNames[] = {
 /** */
 AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
 {
-   if ( !gAnaInfo->fAsymEnv["CNIPOL_DIR"].empty() )
-      fDbFileName = gAnaInfo->fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
+   if ( !gAsymAnaInfo->fAsymEnv["CNIPOL_DIR"].empty() )
+      fDbFileName = gAsymAnaInfo->fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
 
    //fDbFile = fopen(fDbFileName.c_str(), "r");
 
@@ -523,20 +523,20 @@ void readdb(double RUNID)
 
    // Mass Cut sigma
    if (!extinput.MASSCUT)
-     gAnaInfo->MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
+     gAsymAnaInfo->MassSigma = strtof(gRunDb.masscut_s.c_str(),NULL);
 
    // TSHIFT will be cumulated TSHIFT from run.db and -t option
-   gAnaInfo->tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
+   gAsymAnaInfo->tshift  += strtof(gRunDb.tshift_s.c_str(),NULL);
 
    // TSHIFT for injection with respect to flattop timing
    // removed in favour of fExpectedGlobalTimeOffset in MeasInfo
-   //gAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
+   //gAsymAnaInfo->inj_tshift = strtof(gRunDb.inj_tshift_s.c_str(),NULL);
 
    // Expected universal rate for given target
-   gAnaInfo->reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
+   gAsymAnaInfo->reference_rate = strtof(gRunDb.reference_rate_s.c_str(),NULL);
 
    // Target count/mm conversion
-   gAnaInfo->target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
+   gAsymAnaInfo->target_count_mm = strtof(gRunDb.target_count_mm_s.c_str(),NULL);
 
    // Optimize setting for Run
    if ((RUNID>=6500)&&(RUNID<7400)) { // Run05

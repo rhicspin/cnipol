@@ -21,7 +21,7 @@ AnaInfo::AnaInfo() : TObject(),
    fOutputName(""),
    fAsymVersion(ASYM_VERSION),
    fSuffix(""),
-   fModes(MODE_NORMAL),
+   fModes(0),
    fAnaDateTime(0),
    fAnaTimeReal(0),
    fAnaTimeCpu (0),
@@ -90,7 +90,7 @@ string AnaInfo::GetStdLogFileName()   const { return GetOutDir() + "/" + fFileSt
 string AnaInfo::GetRootFileName()     const { return GetOutDir() + "/" + fOutputName + GetSuffix() + ".root"; }
 FILE*  AnaInfo::GetAnaInfoFile()      const { return fFileMeasInfo; }
 
-Bool_t AnaInfo::HasGraphBit()         const { return (fModes & AnaInfo::MODE_GRAPH)        == AnaInfo::MODE_GRAPH; }
+Bool_t AnaInfo::HasGraphBit()         const { return (fModes & AnaInfo::MODE_GRAPH) == AnaInfo::MODE_GRAPH; }
 
 
 string AnaInfo::GetResultsDir() const
@@ -109,55 +109,6 @@ string AnaInfo::GetOutDir() const
 /** */
 void AnaInfo::ProcessOptions(int argc, char **argv)
 { //{{{
-   //stringstream sstr;
-   int option_index = 0;
-
-   static struct option long_options[] = {
-      {"sfx",                 required_argument,   0,   AnaInfo::OPTION_SUFFIX},
-      {"log",                 optional_argument,   0,   'l'},
-      {0, 0, 0, 0}
-   };
-
-   int c;
-
-   while ((c = getopt_long(argc, argv, "?hl::", long_options, &option_index)) != -1)
-   {
-      switch (c) {
-
-      case '?':
-      case 'h':
-         PrintUsage();
-         exit(0);
-
-      case 'l':
-         fFileStdLogName = (optarg != 0 ? optarg : "");
-         break;
-
-      case 'g':
-      case AnaInfo::MODE_GRAPH:
-         fModes |= AnaInfo::MODE_GRAPH;
-         break;
-
-      case AnaInfo::OPTION_SUFFIX:
-         fSuffix = optarg;
-         break;
-
-      case AnaInfo::FLAG_USE_DB:
-         fFlagUseDb    = kTRUE;
-         fFlagUpdateDb = kTRUE;
-         break;
-
-      case AnaInfo::FLAG_CREATE_THUMBS:
-         fFlagCreateThumbs = kTRUE;
-         break;
-
-      default:
-         Error("ProcessOptions", "Unknown option provided");
-         //PrintUsage();
-         //exit(0);
-         break;
-      }
-   }
 } //}}}
 
 

@@ -391,7 +391,7 @@ void RawDataProcessor::ReadDataFast()
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 
             // Use only a fraction of events
-            if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
+            if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
 
             if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
             {
@@ -414,7 +414,7 @@ void RawDataProcessor::ReadDataFast()
             }
 
             // Use all events to fill pulser histograms - not valid. thinout is applied
-            //if ( gAnaInfo->HasPulserBit() &&
+            //if ( gAsymAnaInfo->HasPulserBit() &&
             //     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
             //     //gAsymRoot->fChannelEvent->PassCutNoise() &&
             //     gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
@@ -422,7 +422,7 @@ void RawDataProcessor::ReadDataFast()
             //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
             //}
 
-            if (gAnaInfo->HasPmtBit() &&
+            if (gAsymAnaInfo->HasPmtBit() &&
                 gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
                 gAsymRoot->fChannelEvent->PassCutPmtNoise() )
             {
@@ -496,11 +496,11 @@ void readloop(MseMeasInfoX &run)
    int   flag = 0;     // exit from while when flag==1
 
    // reading the data till its end ...
-   if ((fp = fopen(gAnaInfo->GetRawDataFileName().c_str(), "r")) == NULL) {
-      printf("ERROR: %s file not found. Force exit.\n", gAnaInfo->GetRawDataFileName().c_str());
+   if ((fp = fopen(gAsymAnaInfo->GetRawDataFileName().c_str(), "r")) == NULL) {
+      printf("ERROR: %s file not found. Force exit.\n", gAsymAnaInfo->GetRawDataFileName().c_str());
       exit(-1);
    } else
-      printf("\nFound file %s\n", gAnaInfo->GetRawDataFileName().c_str());
+      printf("\nFound file %s\n", gAsymAnaInfo->GetRawDataFileName().c_str());
 
 
    while (flag == 0) {
@@ -642,7 +642,7 @@ void readloop(MseMeasInfoX &run)
               //ds: Skip events if already read enough events specified by user
               if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
 
-              if (gRandom->Rndm() > gAnaInfo->fThinout) continue;
+              if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
 
               gMeasInfo->fNEventsProcessed++;
 
@@ -663,7 +663,7 @@ void readloop(MseMeasInfoX &run)
                     gMeasInfo->MaxRevolution = cntr.revolution;
 
                  if (event.stN == 72 && event.delim != tgt.eventID) {
-                    tgt.x += gAnaInfo->target_count_mm * (float)tgt.vector;
+                    tgt.x += gAsymAnaInfo->target_count_mm * (float)tgt.vector;
                     tgt.vector=-1;
                  }
 
@@ -682,7 +682,7 @@ void readloop(MseMeasInfoX &run)
 
               gAsymRoot->SetChannelEvent(event);
 
-              if (gAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
+              if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
 
               //if (event.stN >= 72) {
               //   cout << " i "            << i
@@ -724,7 +724,7 @@ void readloop(MseMeasInfoX &run)
    fclose(fp);
 
    // Post processing
-   if (gAnaInfo->HasNormalBit())
+   if (gAsymAnaInfo->HasNormalBit())
       end_process(run);
 
    printf("End of data stream \n");
@@ -749,7 +749,7 @@ void readloop(MseMeasInfoX &run)
    sstr.str("");
    sstr << gMeasInfo->GetBeamEnergyReal();
 
-   if (gAnaInfo->HasAlphaBit()) {
+   if (gAsymAnaInfo->HasAlphaBit()) {
       gRunDb.fFields["BEAM_ENERGY"] = "0";
       run.beam_energy = 0;
    } else {
@@ -814,7 +814,7 @@ void reConfig()
           a0n      = atof(strtok(NULL, " "));
           a1n      = atof(strtok(NULL, " "));
           ealphn   = atof(strtok(NULL, " "));
-          dwidthn  = atof(strtok(NULL, " ")) + gAnaInfo->dx_offset; // extra thickness
+          dwidthn  = atof(strtok(NULL, " ")) + gAsymAnaInfo->dx_offset; // extra thickness
           peden    = atof(strtok(NULL, " "));
           c0n      = atof(strtok(NULL, " "));
           c1n      = atof(strtok(NULL, " "));
@@ -1047,14 +1047,14 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
             cout << "Warning: Target infomation cannot be recognized - ???" << endl;
          }
 
-         tgt.x       = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo->target_count_mm;
+         tgt.x       = tgt.Rotary[k][tgt.VHtarget] * gAsymAnaInfo->target_count_mm;
          tgt.Time[i] = k;
          tgt.X[i]    = tgt.x;
 
          printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
                  TgtIndex[k], tgt.X[TgtIndex[k]],
-                 tgt.Rotary[k][0]*gAnaInfo->target_count_mm,
-                 tgt.Rotary[k][1]*gAnaInfo->target_count_mm);
+                 tgt.Rotary[k][0]*gAsymAnaInfo->target_count_mm,
+                 tgt.Rotary[k][1]*gAsymAnaInfo->target_count_mm);
       } else {
 
          TgtIndex[k] = i;
@@ -1063,22 +1063,22 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
              tgt.Rotary[k][0] != tgt.Rotary[k-1][0] )
          {
             TgtIndex[k]                 = ++i;
-            tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo->target_count_mm;
+            tgt.X[TgtIndex[k]]          = tgt.Rotary[k][tgt.VHtarget] * gAsymAnaInfo->target_count_mm;
             tgt.Time[TgtIndex[k]]       = float(k);
             tgt.Interval[TgtIndex[k-1]] = tgt.Time[TgtIndex[k]] - tgt.Time[TgtIndex[k-1]];
             ++nTgtIndex;
 
             printf("%8d %8d %8d %8d %12.3f %12.3f %12.3f\n", i, k, nTgtIndex,
                TgtIndex[k], tgt.X[TgtIndex[k]],
-               tgt.Rotary[k][0]*gAnaInfo->target_count_mm,
-               tgt.Rotary[k][1]*gAnaInfo->target_count_mm);
+               tgt.Rotary[k][0]*gAsymAnaInfo->target_count_mm,
+               tgt.Rotary[k][1]*gAsymAnaInfo->target_count_mm);
 
             //++i;
          }
       }
 
       // target position array including static target motion
-      tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * gAnaInfo->target_count_mm ;
+      tgt.all.x[k] = tgt.Rotary[k][tgt.VHtarget] * gAsymAnaInfo->target_count_mm ;
    }
 
    printf("Number of delimiters: %4d\n", gNDelimeters);
@@ -1128,7 +1128,7 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
           (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
    // when we mandatory provide cfg info -- derpecated
-   //if (gAnaInfo->RECONFMODE == 1) {
+   //if (gAsymAnaInfo->RECONFMODE == 1) {
    //   reConfig(gConfigInfo);
    //}
 
@@ -1152,14 +1152,14 @@ void ProcessRecord(const recordMeasTypeStruct &rec)
 /** */
 void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo)
 { //{{{
-   if (!gAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, MeasInfo);
+   if (!gAsymAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, MeasInfo);
 } //}}}
 
 
 /** */
 void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run)
 { //{{{
-   if (!gAnaInfo->HasTargetBit() || gAnaInfo->HasAlphaBit()) return;
+   if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit()) return;
 
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
 

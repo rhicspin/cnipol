@@ -146,7 +146,7 @@ void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
          tstep = TgtIndex[ttime];
          //++cntr.good[TgtIndex[ttime]];
          //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
-      } else if (!gAnaInfo->HasAlphaBit()) {
+      } else if (!gAsymAnaInfo->HasAlphaBit()) {
          Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
                "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
       }

@@ -8,6 +8,8 @@
 #include "TMath.h"
 #include "TLatex.h"
 
+#include "AsymAnaInfo.h"
+#include "MAsymAnaInfo.h"
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
 #include "AsymDb.h"
@@ -128,8 +130,8 @@ float gPhi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
-AsymAnaInfo              *gAnaInfo;
-AnaInfo                  *gAnaInfo2;
+AsymAnaInfo              *gAsymAnaInfo;
+//MAsymAnaInfo             *gMAsymAnaInfo;
 MeasInfo                 *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;

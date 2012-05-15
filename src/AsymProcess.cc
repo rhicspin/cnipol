@@ -51,8 +51,8 @@ void event_process(processEvent *event)
    int   delim = event->delim ;
    int   st    = event->stN;        // 0 - 71
    int   si    = (int) (st/12);     // 0 - 5
-   float Emin  = (float) gAnaInfo->enel;
-   float Emax  = (float) gAnaInfo->eneu;
+   float Emin  = (float) gAsymAnaInfo->enel;
+   float Emax  = (float) gAsymAnaInfo->eneu;
 
    Ntotal[event->bid]++;
 
@@ -88,13 +88,13 @@ void event_process(processEvent *event)
       //e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
       //  (event->amp + rand2 - 0.5);
 
-      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAnaInfo->tshift;
+      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAsymAnaInfo->tshift;
 
       float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
       //float delt = t - gRunConsts[st+1].E2T/sqrt(e);
 
-      if (e > Emin && e < Emax && Mass > gAnaInfo->MassLimit && Mass < 20.) {
+      if (e > Emin && e < Emax && Mass > gAsymAnaInfo->MassLimit && Mass < 20.) {
          mass_feedback[st]->Fill(Mass);
          mass_feedback_all->Fill(Mass);
       }
@@ -105,7 +105,7 @@ void event_process(processEvent *event)
    //}
 
    // DeadLayer Mode
-   //if (gAnaInfo->DMODE) {
+   //if (gAsymAnaInfo->DMODE) {
    //   // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
    //   // ds: A prelim cut on tdc? 6 ns?
    //   if (event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
@@ -114,7 +114,7 @@ void event_process(processEvent *event)
    //      KinemaReconstruction(1, event, gConfigInfo, st, edepo, e, t, delt, Mass);
    //      // Get rid of bunch zero due to laser event after Run09
    //      if (event->bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-   //      if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo->MassSigma/sqrt(e))
+   //      if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigma/sqrt(e))
    //      {
    //         HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
    //         if ( e > Emin && e < Emax) Ngood[event->bid]++;
@@ -124,7 +124,7 @@ void event_process(processEvent *event)
    //}
 
    // Calibration hists
-   if ( gAnaInfo->HasAlphaBit() ) {
+   if ( gAsymAnaInfo->HasAlphaBit() ) {
       //int vlen = 1;
       //float rand1, rand2;
       //hhrammar_(&rand1, &vlen);
@@ -163,7 +163,7 @@ void event_process(processEvent *event)
          wall_current_monitor->Fill(j, gMeasInfo->fWallCurMon[j+1]);
          HHF1(10030, (float) j, (float) gMeasInfo->fWallCurMon[j+1]);
 
-         if ( (fabs(gMeasInfo->fWallCurMonAve-gMeasInfo->fWallCurMon[j+1])/gMeasInfo->fWallCurMonAve < gAnaInfo->WCMRANGE) && gFillPattern[j]) {
+         if ( (fabs(gMeasInfo->fWallCurMonAve-gMeasInfo->fWallCurMon[j+1])/gMeasInfo->fWallCurMonAve < gAsymAnaInfo->WCMRANGE) && gFillPattern[j]) {
             average.total+=gMeasInfo->fWallCurMon[j+1];
             wcmfillpat[j]=1;
             ++average.counter;
@@ -193,21 +193,21 @@ void event_process(processEvent *event)
                 HHF1(13600+strip+1, e, 0.);
             } else {
 
-               if (gAnaInfo->CBANANA == 0){
+               if (gAsymAnaInfo->CBANANA == 0){
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         -gConfigInfo->data.chan[strip].ETCutW);
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
                         +gConfigInfo->data.chan[strip].ETCutW);
-               } else if (gAnaInfo->CBANANA == 1) {
+               } else if (gAsymAnaInfo->CBANANA == 1) {
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(gAnaInfo->widthl));
+                        +(float)(gAsymAnaInfo->widthl));
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(gAnaInfo->widthu));
-               } else if (gAnaInfo->CBANANA == 2) {
+                        +(float)(gAsymAnaInfo->widthu));
+               } else if (gAsymAnaInfo->CBANANA == 2) {
                    HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*gAnaInfo->MassSigma/sqrt(e)) ;
+                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*gAsymAnaInfo->MassSigma/sqrt(e)) ;
                    HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*gAnaInfo->MassSigma/sqrt(e)) ;
+                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*gAsymAnaInfo->MassSigma/sqrt(e)) ;
                }
             }
          }
@@ -231,7 +231,7 @@ void event_process(processEvent *event)
    ChannelEvent *ch = gAsymRoot->fChannelEvent;
 
    // Fill target histograms
-   if (gAnaInfo->HasTargetBit()) {
+   if (gAsymAnaInfo->HasTargetBit()) {
 
       //if (ch->GetChannelId() > NSTRIP)
       //   printf("channel1: %d, %d\n", ch->GetChannelId(), gConfigInfo->data.NumChannels);
@@ -242,7 +242,7 @@ void event_process(processEvent *event)
       }
    }
 
-   if (gAnaInfo->HasNormalBit()) {
+   if (gAsymAnaInfo->HasNormalBit()) {
 
       if (!ch->PassCutSiliconChannel()) return;
 
@@ -352,23 +352,23 @@ void event_process(processEvent *event)
    // Time Of Flight
    float t;
 
-   if (gAnaInfo->RAMPMODE == 1) {
+   if (gAsymAnaInfo->RAMPMODE == 1) {
 
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5)
           - gConfigInfo->data.chan[st].t0
-          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - gAnaInfo->tshift;
+          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - gAsymAnaInfo->tshift;
 
-   } else if (gAnaInfo->ZMODE == 0) {   // normal runs
+   } else if (gAsymAnaInfo->ZMODE == 0) {   // normal runs
 
       t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0
-           - gAnaInfo->tshift - feedback.tedev[st]/sqrt_e;
+           - gAsymAnaInfo->tshift - feedback.tedev[st]/sqrt_e;
    } else  {
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gAnaInfo->tshift ;
+      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gAsymAnaInfo->tshift ;
    }
 
    //ds
-   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, gAnaInfo->tshift, gRunConsts[st+1].Ct);
+   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, gAsymAnaInfo->tshift, gRunConsts[st+1].Ct);
 
    float delt = t - gRunConsts[st+1].E2T/sqrt_e;
 
@@ -379,23 +379,23 @@ void event_process(processEvent *event)
    mass_nocut_all->Fill(Mass);
 
    // Mass mode
-   //if (gAnaInfo->MMODE == 1) {
+   //if (gAsymAnaInfo->MMODE == 1) {
    //   if (e > Emin && e < Emax) {
 
    //      HHF1(16000+st+1, Mass, 1.);
 
-   //      if (Mass > gAnaInfo->MassLimit && Mass < 14.)
+   //      if (Mass > gAsymAnaInfo->MassLimit && Mass < 14.)
    //         HHF1(17200+st+1, Mass, 1.);
    //   }
    //}
 
    // for T0 (cable length dependence)
-   //if (gAnaInfo->TMODE == 1 && edepo!=0.){
+   //if (gAsymAnaInfo->TMODE == 1 && edepo!=0.){
    //   HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
    //}
 
    //// Banana Plots (E-T)
-   //if (gAnaInfo->BMODE == 1) {
+   //if (gAsymAnaInfo->BMODE == 1) {
 
    //   HHF2(13000+st+1, e, t, 1.);
 
@@ -408,7 +408,7 @@ void event_process(processEvent *event)
    //}
 
    /*
-   if (gAnaInfo->RAMPMODE==1) {0
+   if (gAsymAnaInfo->RAMPMODE==1) {0
        // total RAMPTIME sec
        // 1sec for each bin, delimiters are 20Hz rate
        int rbin = (int)(event->delim/20);
@@ -419,7 +419,7 @@ void event_process(processEvent *event)
    */
 
    //// integral vs. amplitede
-   //if (gAnaInfo->AMODE == 1) {
+   //if (gAsymAnaInfo->AMODE == 1) {
    //   HHF2(12200+st+1, event->amp, Integ, 1.);
    //   HHF2(12300+st+1, Integ, t, 1.);
    //}
@@ -437,7 +437,7 @@ void event_process(processEvent *event)
 
    // Fill ntuple
    /*
-   if ((Nevtot<NTLIMIT)&&(gAnaInfo->NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
+   if ((Nevtot<NTLIMIT)&&(gAsymAnaInfo->NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
        atdata.ia = (long)event->amp;
        atdata.is = (long)event->intg;
        atdata.it = (long)event->tdc;
@@ -469,14 +469,14 @@ void event_process(processEvent *event)
    //------------------------------------------------------
    //if ( ((delt> -1. * gConfigInfo->data.chan[st].ETCutW ) &&
    //      (delt<  1. * gConfigInfo->data.chan[st].ETCutW ) &&
-   //      (gAnaInfo->CBANANA == 0))
+   //      (gAsymAnaInfo->CBANANA == 0))
    //     ||
-   //     ((delt > (float)(gAnaInfo->widthl) ) &&
-   //      (delt < (float)(gAnaInfo->widthu) ) &&
-   //      (gAnaInfo->CBANANA == 1))
+   //     ((delt > (float)(gAsymAnaInfo->widthl) ) &&
+   //      (delt < (float)(gAsymAnaInfo->widthu) ) &&
+   //      (gAsymAnaInfo->CBANANA == 1))
    //     ||
-   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo->MassSigma/sqrt_e)
-   //       && (gAnaInfo->CBANANA == 2)) // default 
+   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigma/sqrt_e)
+   //       && (gAsymAnaInfo->CBANANA == 2)) // default 
    //     )
 
    if (ch->PassCutCarbonMass())
@@ -576,7 +576,7 @@ void event_process(processEvent *event)
             if (time < MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
                NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
-            } else if (!gAnaInfo->HasAlphaBit()) {
+            } else if (!gAsymAnaInfo->HasAlphaBit()) {
                cerr << "ERROR: time constructed from revolution # " << time
                     << "exeeds MAXDELIM=" << MAXDELIM << " defined" << endl;
                cerr << "Perhaps calibration data? Try running with -C option" << endl;
@@ -601,7 +601,7 @@ void event_process(processEvent *event)
          //ds: printf("t, sp, st: %d, %d, %d, %d\n", TgtIndex[time], spbit, st);
          cntr_tgt.reg.NStrip[(int) TgtIndex[time] ][spbit][st]++;
 
-         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAnaInfo->MassSigmaAlt/sqrt_e)
+         if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigmaAlt/sqrt_e)
             cntr.alt.NStrip[spbit][st]++;
 
          if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
@@ -610,7 +610,7 @@ void event_process(processEvent *event)
          // Ramp measurements binning
          // 20 Hz delimiters
          /*
-         if (gAnaInfo->RAMPMODE==1) {
+         if (gAsymAnaInfo->RAMPMODE==1) {
             int rbin = (int)((event->delim)/20.);
             //NRcounts[(int)(st/12)][event->bid][rbin]++;
 
@@ -621,7 +621,7 @@ void event_process(processEvent *event)
          */
 
          // Spin Tune
-         //ds if (gAnaInfo->STUDYMODE == 1) {
+         //ds if (gAsymAnaInfo->STUDYMODE == 1) {
          //ds    HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
          //ds }
       }
@@ -646,7 +646,7 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
   edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
 
   // ToF in [ns]
-  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAnaInfo->tshift;
+  t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAsymAnaInfo->tshift;
 
   // Kinetic energy assuming Carbon
   e = ekin(edepo, gConfigInfo->data.chan[st].dwidth);
