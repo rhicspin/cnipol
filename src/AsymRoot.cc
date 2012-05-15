@@ -22,7 +22,7 @@
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLine.h"
-//#include "TROOT.h"
+#include "TROOT.h"
 #include "TStyle.h"
 #include "TStreamerInfo.h"
 
@@ -149,9 +149,9 @@ void AsymRoot::CreateRootFile(string filename)
 
    gSystem->Chmod(filename.c_str(), 0775);
 
-   //gROOT->SetMacroPath("./:~/rootmacros/:");
-   //gROOT->Macro("styles/style_asym.C");
-   //gROOT->ForceStyle(kTRUE);
+   gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("styles/style_asym.C");
+   gROOT->ForceStyle(kTRUE);
 
    // directory structure
    FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
