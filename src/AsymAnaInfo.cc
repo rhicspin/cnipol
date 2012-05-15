@@ -52,8 +52,7 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fAnaTimeCpu       (0),
    fAlphaCalibRun(""), fDlCalibRun(""),
    fFileRunConf(0),
-   fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
-   fUserGroup(*gSystem->GetUserInfo())
+   fFlagUseDb(kFALSE), fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE)
 {
    Init();
 }
