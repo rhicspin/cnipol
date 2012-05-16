@@ -281,7 +281,7 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // should be reconsidered once preproc is used to fill raw hists for alpha runs
-   if (!gAsymAnaInfo->HasAlphaBit()) {
+   //if (!gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
 
@@ -289,7 +289,7 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolPreprocHists(dir);
       fHists->d["preproc"] = oc;
       fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
-   }
+   //}
 
    //dir = new TDirectoryFile("preproc_eb", "preproc_eb", "", fOutRootFile);
    //oc  = new CnipolPreprocHists(dir);

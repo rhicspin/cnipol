@@ -38,7 +38,7 @@ public:
    AsymAnaInfo   *fAnaInfo;
    Calibrator    *fCalibrator;
    AnaMeasResult *fAnaMeasResult;
-   MseMeasInfoX  *fMseMeasInfoX; //  it is better to leave this one out as
+   MseMeasInfoX  *fMseMeasInfoX; //!  it is better to leave this one out as
                                  // cint cannot properly generate a streamer
                                  // for it due to a conflict with mysql++
                                  // class definitions
