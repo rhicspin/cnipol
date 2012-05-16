@@ -109,6 +109,8 @@ void CnipolPulserHists::BookHists()
          oc = isubdir->second;
       }
 
+      oc->fDir->cd();
+
       sprintf(hName, "hAdcAmpltd_ch%02d", *iCh);
       oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
       ((TH1*) oc->o[hName])->SetOption("hist NOIMG");

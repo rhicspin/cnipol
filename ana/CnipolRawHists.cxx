@@ -99,8 +99,8 @@ void CnipolRawHists::BookHists()
    hist->SetBit(TH1::kCanRebin);
    o[shName] = hist;
 
-   shName = "hsTvsACumul";
-   o[shName] = new THStack(shName.c_str(), shName.c_str());
+   //shName = "hsTvsACumul";
+   //o[shName] = new THStack(shName.c_str(), shName.c_str());
 
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
@@ -120,6 +120,8 @@ void CnipolRawHists::BookHists()
       } else {
          oc = isubdir->second;
       }
+
+      oc->fDir->cd();
 
       shName = "hAdcAmpltd_ch" + sChId;
       hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);
@@ -163,16 +165,16 @@ void CnipolRawHists::BookHists()
       oc->o[shName]      = hist;
       fhIvsA_ch[iChId-1] = hist;
 
-      shName = "hTvsACumul_ch" + sChId;
-      hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
-      hist->SetOption("hist NOIMG");
-      hist->SetTitle("; Digi Channel Frac; Event Frac;");
-      hist->SetLineWidth(2);
-      hist->SetLineColor(RunConfig::AsColor(iChId));
-      hist->GetYaxis()->SetRangeUser(0, 1);
-      oc->o[shName]           = hist;
-      fhTvsACumul_ch[iChId-1] = hist;
-      ((THStack*) o["hsTvsACumul"])->Add(hist);
+      //shName = "hTvsACumul_ch" + sChId;
+      //hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
+      //hist->SetOption("hist NOIMG");
+      //hist->SetTitle("; Digi Channel Frac; Event Frac;");
+      //hist->SetLineWidth(2);
+      //hist->SetLineColor(RunConfig::AsColor(iChId));
+      //hist->GetYaxis()->SetRangeUser(0, 1);
+      //oc->o[shName]           = hist;
+      //fhTvsACumul_ch[iChId-1] = hist;
+      //((THStack*) o["hsTvsACumul"])->Add(hist);
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {

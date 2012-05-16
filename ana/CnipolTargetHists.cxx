@@ -36,11 +36,9 @@ CnipolTargetHists::~CnipolTargetHists()
 
 
 /** */
-void CnipolTargetHists::BookHists(string sid)
+void CnipolTargetHists::BookHists()
 { //{{{
    fDir->cd();
-
-   if (!sid.empty()) sid = "_" + sid;
 
    char hName[256];
 
@@ -105,7 +103,7 @@ void CnipolTargetHists::BookHists(string sid)
 
 
 /** */
-void CnipolTargetHists::Fill(ChannelEvent *ch, string sid)
+void CnipolTargetHists::Fill(ChannelEvent *ch)
 { //{{{
    UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();

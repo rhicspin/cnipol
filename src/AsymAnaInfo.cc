@@ -19,6 +19,7 @@ using namespace std;
 /** */
 AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fRunName          (""),
+   fAsymModes        (MODE_NORMAL),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -74,22 +75,22 @@ string AsymAnaInfo::GetAlphaCalibRun()    const { return fAlphaCalibRun; }
 string AsymAnaInfo::GetDlCalibRun()       const { return fDlCalibRun; }
 
 Bool_t AsymAnaInfo::HasAlphaBit() const  {
-   return (fModes & (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB))  == (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB);
+   return (fAsymModes & (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB))  == (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB);
  }
 
-Bool_t AsymAnaInfo::HasCalibBit()       const { return (fModes & AsymAnaInfo::MODE_CALIB)        == AsymAnaInfo::MODE_CALIB; }
-Bool_t AsymAnaInfo::HasNormalBit()      const { return (fModes & AsymAnaInfo::MODE_NORMAL)       == AsymAnaInfo::MODE_NORMAL; }
-Bool_t AsymAnaInfo::HasScalerBit()      const { return (fModes & AsymAnaInfo::MODE_SCALER)       == AsymAnaInfo::MODE_SCALER; }
-Bool_t AsymAnaInfo::HasRawBit()         const { return (fModes & AsymAnaInfo::MODE_RAW)          == AsymAnaInfo::MODE_RAW; }
-Bool_t AsymAnaInfo::HasRawExtendedBit() const { return (fModes & AsymAnaInfo::MODE_RAW_EXTENDED) == AsymAnaInfo::MODE_RAW_EXTENDED; }
-Bool_t AsymAnaInfo::HasRunBit()         const { return (fModes & AsymAnaInfo::MODE_RUN)          == AsymAnaInfo::MODE_RUN; }
-Bool_t AsymAnaInfo::HasTargetBit()      const { return (fModes & AsymAnaInfo::MODE_TARGET)       == AsymAnaInfo::MODE_TARGET; }
-Bool_t AsymAnaInfo::HasProfileBit()     const { return (fModes & AsymAnaInfo::MODE_PROFILE)      == AsymAnaInfo::MODE_PROFILE; }
-Bool_t AsymAnaInfo::HasAsymBit()        const { return (fModes & AsymAnaInfo::MODE_ASYM)         == AsymAnaInfo::MODE_ASYM; }
-Bool_t AsymAnaInfo::HasKinematBit()     const { return (fModes & AsymAnaInfo::MODE_KINEMA)       == AsymAnaInfo::MODE_KINEMA; }
-Bool_t AsymAnaInfo::HasPmtBit()         const { return (fModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
-Bool_t AsymAnaInfo::HasPulserBit()      const { return (fModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
-Bool_t AsymAnaInfo::HasOnlineBit()      const { return (fModes & AsymAnaInfo::MODE_ONLINE)       == AsymAnaInfo::MODE_ONLINE; }
+Bool_t AsymAnaInfo::HasCalibBit()       const { return (fAsymModes & AsymAnaInfo::MODE_CALIB)        == AsymAnaInfo::MODE_CALIB; }
+Bool_t AsymAnaInfo::HasNormalBit()      const { return (fAsymModes & AsymAnaInfo::MODE_NORMAL)       == AsymAnaInfo::MODE_NORMAL; }
+Bool_t AsymAnaInfo::HasScalerBit()      const { return (fAsymModes & AsymAnaInfo::MODE_SCALER)       == AsymAnaInfo::MODE_SCALER; }
+Bool_t AsymAnaInfo::HasRawBit()         const { return (fAsymModes & AsymAnaInfo::MODE_RAW)          == AsymAnaInfo::MODE_RAW; }
+Bool_t AsymAnaInfo::HasRawExtendedBit() const { return (fAsymModes & AsymAnaInfo::MODE_RAW_EXTENDED) == AsymAnaInfo::MODE_RAW_EXTENDED; }
+Bool_t AsymAnaInfo::HasRunBit()         const { return (fAsymModes & AsymAnaInfo::MODE_RUN)          == AsymAnaInfo::MODE_RUN; }
+Bool_t AsymAnaInfo::HasTargetBit()      const { return (fAsymModes & AsymAnaInfo::MODE_TARGET)       == AsymAnaInfo::MODE_TARGET; }
+Bool_t AsymAnaInfo::HasProfileBit()     const { return (fAsymModes & AsymAnaInfo::MODE_PROFILE)      == AsymAnaInfo::MODE_PROFILE; }
+Bool_t AsymAnaInfo::HasAsymBit()        const { return (fAsymModes & AsymAnaInfo::MODE_ASYM)         == AsymAnaInfo::MODE_ASYM; }
+Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo::MODE_KINEMA)       == AsymAnaInfo::MODE_KINEMA; }
+Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
+Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
+Bool_t AsymAnaInfo::HasOnlineBit()      const { return (fAsymModes & AsymAnaInfo::MODE_ONLINE)       == AsymAnaInfo::MODE_ONLINE; }
 
 
 /** */
@@ -359,66 +360,66 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case 'C':
       case AsymAnaInfo::MODE_ALPHA:
-         fModes |= AsymAnaInfo::MODE_ALPHA;
+         fAsymModes |= AsymAnaInfo::MODE_ALPHA;
          RECONFMODE = 0;
-         fModes &= ~AsymAnaInfo::MODE_NORMAL; // turn off normal mode
+         fAsymModes &= ~AsymAnaInfo::MODE_NORMAL; // turn off normal mode
          break;
 
       case AsymAnaInfo::MODE_CALIB:
-         fModes |= AsymAnaInfo::MODE_CALIB;
+         fAsymModes |= AsymAnaInfo::MODE_CALIB;
          break;
 
       case AsymAnaInfo::MODE_NO_NORMAL:
-         fModes &= ~AsymAnaInfo::MODE_NORMAL;
+         fAsymModes &= ~AsymAnaInfo::MODE_NORMAL;
          break;
 
       case AsymAnaInfo::MODE_SCALER:
-         fModes |= AsymAnaInfo::MODE_SCALER;
+         fAsymModes |= AsymAnaInfo::MODE_SCALER;
          break;
 
       case AsymAnaInfo::MODE_RAW:
-         fModes |= AsymAnaInfo::MODE_RAW;
+         fAsymModes |= AsymAnaInfo::MODE_RAW;
          break;
 
       case AsymAnaInfo::MODE_RAW_EXTENDED:
-         fModes |= AsymAnaInfo::MODE_RAW_EXTENDED;
+         fAsymModes |= AsymAnaInfo::MODE_RAW_EXTENDED;
          break;
 
       case AsymAnaInfo::MODE_RUN:
-         fModes |= AsymAnaInfo::MODE_RUN;
+         fAsymModes |= AsymAnaInfo::MODE_RUN;
          break;
 
       case AsymAnaInfo::MODE_TARGET:
-         fModes |= AsymAnaInfo::MODE_TARGET;
+         fAsymModes |= AsymAnaInfo::MODE_TARGET;
          break;
 
       case AsymAnaInfo::MODE_PROFILE:
-         fModes |= AsymAnaInfo::MODE_PROFILE;
-         fModes |= AsymAnaInfo::MODE_TARGET; // profile hists depend on target ones
+         fAsymModes |= AsymAnaInfo::MODE_PROFILE;
+         fAsymModes |= AsymAnaInfo::MODE_TARGET; // profile hists depend on target ones
          break;
 
       case AsymAnaInfo::MODE_ASYM:
-         fModes |= AsymAnaInfo::MODE_ASYM;
+         fAsymModes |= AsymAnaInfo::MODE_ASYM;
          break;
 
       case AsymAnaInfo::MODE_KINEMA:
-         fModes |= AsymAnaInfo::MODE_KINEMA;
+         fAsymModes |= AsymAnaInfo::MODE_KINEMA;
          break;
 
       case AsymAnaInfo::MODE_PMT:
-         fModes |= AsymAnaInfo::MODE_PMT;
+         fAsymModes |= AsymAnaInfo::MODE_PMT;
          break;
 
       case AsymAnaInfo::MODE_PULSER:
-         fModes |= AsymAnaInfo::MODE_PULSER;
+         fAsymModes |= AsymAnaInfo::MODE_PULSER;
          break;
 
       case AsymAnaInfo::MODE_ONLINE:
-         fModes |= AsymAnaInfo::MODE_ONLINE;
+         fAsymModes |= AsymAnaInfo::MODE_ONLINE;
          break;
 
       case AsymAnaInfo::MODE_FULL:
-         fModes |= AsymAnaInfo::MODE_FULL;
+         fAsymModes |= AsymAnaInfo::MODE_FULL;
          break;
 
       default:
@@ -431,13 +432,13 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    // Include all interesting modes for now
    //if (!HasAlphaBit()) {
-   //   fModes |= AsymAnaInfo::MODE_NORMAL;
-   //   fModes |= AsymAnaInfo::MODE_CALIB;
-   //   fModes |= AsymAnaInfo::MODE_PROFILE;
-   //   fModes |= AsymAnaInfo::MODE_TARGET;
-   //   fModes |= AsymAnaInfo::MODE_PULSER;
-   //   fModes |= AsymAnaInfo::MODE_ASYM;
-   //   fModes |= AsymAnaInfo::MODE_RAW;
+   //   fAsymModes |= AsymAnaInfo::MODE_NORMAL;
+   //   fAsymModes |= AsymAnaInfo::MODE_CALIB;
+   //   fAsymModes |= AsymAnaInfo::MODE_PROFILE;
+   //   fAsymModes |= AsymAnaInfo::MODE_TARGET;
+   //   fAsymModes |= AsymAnaInfo::MODE_PULSER;
+   //   fAsymModes |= AsymAnaInfo::MODE_ASYM;
+   //   fAsymModes |= AsymAnaInfo::MODE_RAW;
    //}
 } //}}}
 
@@ -497,6 +498,7 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
 { //{{{
    AnaInfo::PrintAsPhp(f);
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
+   fprintf(f, "$rc['fAsymModes']                   = %#010x;\n",  fAsymModes);
    fprintf(f, "$rc['enel']                         = %d;\n",     enel);
    fprintf(f, "$rc['eneu']                         = %d;\n",     eneu);
    fprintf(f, "$rc['widthl']                       = %d;\n",     widthl);

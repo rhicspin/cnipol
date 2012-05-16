@@ -31,8 +31,8 @@ public:
    CnipolTargetHists(TDirectory *dir);
    ~CnipolTargetHists();
 
-   void BookHists(std::string sid="");
-   void Fill(ChannelEvent *ch, std::string cutid="");
+   void BookHists();
+   void Fill(ChannelEvent *ch);
    void Fill(Int_t n, Double_t* hData);
    void PostFill();
 

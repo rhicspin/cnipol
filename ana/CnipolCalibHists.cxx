@@ -38,6 +38,8 @@ void CnipolCalibHists::BookHists(std::string cutid)
    string shName;
    TH1*   hist;
 
+   fDir->cd();
+
    shName = "hDLVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Dead Layer, #mug/cm^{2};");
@@ -81,6 +83,8 @@ void CnipolCalibHists::BookHists(std::string cutid)
       } else {
          oc = isubdir->second;
       }
+
+      oc->fDir->cd();
 
       shName = "hAdcAmpltd_ch" + sChId;
       hist = new TH1I(shName.c_str(), shName.c_str(), 255, 0, 255);

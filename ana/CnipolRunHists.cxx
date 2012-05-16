@@ -5,6 +5,8 @@
 
 #include "CnipolRunHists.h"
 
+#include "TMath.h"
+
 #include "AsymGlobals.h"
 #include "MeasInfo.h"
 
@@ -35,6 +37,10 @@ CnipolRunHists::~CnipolRunHists()
 /** */
 void CnipolRunHists::BookHists()
 { //{{{
+   TH1* hist;
+
+   fDir->cd();
+
    //TDirectory *dir;
    //dir = new TDirectoryFile("feedback", "feedback", "", fDir);
    //dir = Feedback;
@@ -44,9 +50,9 @@ void CnipolRunHists::BookHists()
    //DrawObjContainer *errdet;
 
    //Asymmetry->SetMother(fDir);
-   TDirectory *dir = new TDirectoryFile("Asymmetry", "Asymmetry", "", fDir);
+   //TDirectory *dir = new TDirectoryFile("Asymmetry", "Asymmetry", "", fDir);
    //DrawObjContainer *asymmetry = new DrawObjContainer((TDirectory*) Asymmetry);
-   DrawObjContainer *asymmetry = new DrawObjContainer(dir);
+   //DrawObjContainer *asymmetry = new DrawObjContainer(dir);
 
    //feedback->fDir  = fDir;
    ////kinema->fDir    = fDir;
@@ -60,7 +66,7 @@ void CnipolRunHists::BookHists()
    //kinema->o["energy_spectrum_all"] = new TH1F();
 
    char hName[256];
-   char hTitle[256];
+   //char hTitle[256];
 
    // energy spectrum for all detector sum
    //sprintf(hName, "energy_spectrum_all");
@@ -128,12 +134,18 @@ void CnipolRunHists::BookHists()
 
    //asymmetry->o["asym_vs_bunch_x90"]    = asym_vs_bunch_x90;
    //asymmetry->o["asym_vs_bunch_y45"]    = asym_vs_bunch_y45;
-   asymmetry->o["asym_sinphi_fit"]      = asym_sinphi_fit;
-   //asymmetry->o["scan_asym_sinphi_fit"] = scan_asym_sinphi_fit;
+   //o["asym_sinphi_fit"]      = new 
 
+   hist = new TH2F("asym_sinphi_fit", "asym_sinphi_fit", 1, 0, 2*M_PI, 1, -1, 1);
+   o["asym_sinphi_fit"] = hist;
+   asym_sinphi_fit = (TH2F*) hist;
+
+   hist = new TH2F("scan_asym_sinphi_fit", "scan_asym_sinphi_fit", 1, 0, 2*M_PI, 1, -1, 1);
+   o["scan_asym_sinphi_fit"] = hist;
+   scan_asym_sinphi_fit = (TH2F*) hist;
 
    sprintf(hName,  "asym_vs_bunch_x45");
-   o[hName] = new TH2F(hName, hTitle, NBUNCH, 0, NBUNCH, 1, 0, 1);
+   o[hName] = new TH2F(hName, hName, NBUNCH, 0, NBUNCH, 1, 0, 1);
    ((TH1*) o[hName])->SetTitle("; Raw Asymmetry X45; Counts weighted by error;");
 
    //sprintf(hName,  "asym_sinphi_fit");
@@ -143,7 +155,7 @@ void CnipolRunHists::BookHists()
    //d["FeedBack"]  = feedback;
    //d["Kinema2"]   = kinema;
    //d["ErrDet"]    = errdet;
-   d["Asymmetry"] = asymmetry;
+   //d["Asymmetry"] = asymmetry;
 
 } //}}}
 
@@ -164,7 +176,7 @@ void CnipolRunHists::PostFill()
    float margin=0.2;
    float prefix=0.028;
 
-   DrawHorizLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
+   //DrawHorizLine(asym_vs_bunch_x90, -0.5, NBUNCH-0.5, 0, 1, 1, 1);
 
    GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax45[0], margin, min, max);
    ((TH1*) o["asym_vs_bunch_x45"])->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);

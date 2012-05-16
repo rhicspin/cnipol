@@ -48,6 +48,8 @@ void CnipolPreprocHists::BookHists()
    string shName;
    TH1*   hist;
 
+   fDir->cd();
+
    // Data from all enabled silicon channels
    shName = "hTimeVsEnergyA";
    hist = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
@@ -153,13 +155,13 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
    Info("PostFillPassOne", "Starting...");
 
-   // We expect empty bunch histogram container of the same class
-   if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
-      Error("PostFillPassOne", "No empty bunch container 'preproc_eb' found");
-   } else {
-      CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc->d.find("preproc_eb")->second;
-      PostFillPassOne_SubtractEmptyBunch(ebHists);
-   }
+   //// We expect empty bunch histogram container of the same class
+   //if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
+   //   Error("PostFillPassOne", "No empty bunch container 'preproc_eb' found");
+   //} else {
+   //   CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc->d.find("preproc_eb")->second;
+   //   PostFillPassOne_SubtractEmptyBunch(ebHists);
+   //}
 
    // A raw histogram container is required to fill TvsE histograms
    if ( !oc || oc->d.find("raw_neb") == oc->d.end() )
@@ -376,7 +378,6 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 /** */
 void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists)
 { //{{{
-
    TH1 *hNoiseReject;
    
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();

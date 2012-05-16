@@ -47,6 +47,7 @@ public:
 
    // Constraint parameter for data processing 
    std::string      fRunName;           // Run name
+   ULong_t          fAsymModes;
    int              enel;               // lower kinetic energy threshold (keV)
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)

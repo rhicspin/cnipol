@@ -35,6 +35,8 @@ void CnipolAlphaHists::BookHists()
 { //{{{
    char hName[256];
 
+   fDir->cd();
+
    //o["hAmpltd"]      = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
    //((TH2F*) o["hAmpltd"])->GetXaxis()->SetTitle("Amplitude, ADC");
    //((TH2F*) o["hAmpltd"])->GetYaxis()->SetTitle("Events");
@@ -177,6 +179,8 @@ void CnipolAlphaHists::BookHists()
       else {
          oc = isubdir->second;
       }
+
+      oc->fDir->cd();
 
       //sprintf(hName,"mass_feedback_st%d", iCh+1);
       //sprintf(hTitle,"%.3f : Invariant Mass for Strip-%d ", gMeasInfo->RUNID, iCh+1);

@@ -154,13 +154,13 @@ void AsymRoot::CreateRootFile(string filename)
    gROOT->ForceStyle(kTRUE);
 
    // directory structure
-   FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
-   Kinema    = new TDirectoryFile("Kinema", "Kinema", "", fOutRootFile);   //fOutRootFile->mkdir("Kinema");
-   //Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
-   ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", fOutRootFile);   //fOutRootFile->mkdir("ErrDet");
-   Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", fOutRootFile);   //fOutRootFile->mkdir("Asymmetry");
+   //FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
+   //Kinema    = new TDirectoryFile("Kinema", "Kinema", "", fOutRootFile);   //fOutRootFile->mkdir("Kinema");
+   ////Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
+   //ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", fOutRootFile);   //fOutRootFile->mkdir("ErrDet");
+   //Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", fOutRootFile);   //fOutRootFile->mkdir("Asymmetry");
 
-   BookHists();
+   //BookHists();
 
    TDirectory       *dir;
    DrawObjContainer *oc;
@@ -281,15 +281,15 @@ void AsymRoot::CreateRootFile(string filename)
    }
 
    // should be reconsidered once preproc is used to fill raw hists for alpha runs
-   //if (!gAsymAnaInfo->HasAlphaBit()) {
+   if (!gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);
 
       dir = new TDirectoryFile("preproc", "preproc", "", fOutRootFile);
       oc  = new CnipolPreprocHists(dir);
       fHists->d["preproc"] = oc;
-      fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
-   //}
+      //fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
+   }
 
    //dir = new TDirectoryFile("preproc_eb", "preproc_eb", "", fOutRootFile);
    //oc  = new CnipolPreprocHists(dir);
@@ -464,7 +464,7 @@ void AsymRoot::UpdateRunConfig()
  * Sets current event with data from raw file.
  */
 void AsymRoot::SetChannelEvent(processEvent &event)
-{
+{ //{{{
    fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
    fChannelEvent->fEventId.fBunchId      = event.bid;
    fChannelEvent->fEventId.fChannelId    = event.stN;
@@ -473,14 +473,14 @@ void AsymRoot::SetChannelEvent(processEvent &event)
    fChannelEvent->fChannel.fIntgrl       = event.intg;
    fChannelEvent->fChannel.fTdc          = event.tdc;
    fChannelEvent->fChannel.fTdcAMax      = event.tdcmax;
-}
+} //}}}
 
 
 /**
  * Sets current event with data from raw file.
  */
 void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
-{
+{ //{{{
    fChannelEvent->fEventId.fRevolutionId = delim*512 + at.rev*2 + at.rev0;
    fChannelEvent->fEventId.fBunchId      = at.b;
    fChannelEvent->fEventId.fChannelId    = chId;
@@ -489,7 +489,7 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
    fChannelEvent->fChannel.fIntgrl       = at.s;
    fChannelEvent->fChannel.fTdc          = at.t;
    fChannelEvent->fChannel.fTdcAMax      = at.tmax;
-}
+} //}}}
 
 
 /** */
@@ -756,7 +756,7 @@ void AsymRoot::UpdateCalibrator()
 
       Info("AsymRoot::UpdateCalibrator", "Setting AlphaCalibrator");
 
-      // Existing calibrator will be replaced so, delete it first
+      // Existing calibrator will be replaced so, delete the existing one first
       delete fEventConfig->fCalibrator;
       // and assign a new calibrator
       fEventConfig->fCalibrator = new AlphaCalibrator();
@@ -857,6 +857,7 @@ void AsymRoot::UpdateCalibrator()
 
    } else {
       Error("UpdateCalibrator", "Cannot select calibrator for this kind of run");
+      exit(-1);
    }
 
 } //}}}
@@ -1052,12 +1053,12 @@ void AsymRoot::BookHists()
    good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
    good_carbon_events_strip->SetFillColor(17);
 
-   Asymmetry->cd();
-   asym_vs_bunch_x45    = new TH2F();
-   asym_vs_bunch_x90    = new TH2F();
-   asym_vs_bunch_y45    = new TH2F();
-   asym_sinphi_fit      = new TH2F();
-   scan_asym_sinphi_fit = new TH2F();
+   //Asymmetry->cd();
+   //asym_vs_bunch_x45    = new TH2F();
+   //asym_vs_bunch_x90    = new TH2F();
+   //asym_vs_bunch_y45    = new TH2F();
+   //asym_sinphi_fit      = new TH2F();
+   //scan_asym_sinphi_fit = new TH2F();
 } //}}}
 
 
@@ -1141,25 +1142,25 @@ void AsymRoot::DeleteHistogram()
 // Description : Write out objects in memory and dump in fOutRootFile before closing it
 void AsymRoot::Finalize()
 { //{{{
-   fOutRootFile->cd();
-   Kinema->cd();
+   //fOutRootFile->cd();
+   //Kinema->cd();
 
-   for (int i=0; i<NSTRIP; i++) {
-      if (t_vs_e[i]) {
+   //for (int i=0; i<NSTRIP; i++) {
+   //   if (t_vs_e[i]) {
 
-         for (int j=0; j<2; j++){
-            if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
-            if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
-         }
+   //      for (int j=0; j<2; j++){
+   //         if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
+   //         if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
+   //      }
 
-         if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
-         if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
-      }
-   }
+   //      if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
+   //      if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
+   //   }
+   //}
 
-   fOutRootFile->cd();
+   //fOutRootFile->cd();
 
-   fHists->Write();
+   fHists->Write(); // this is NOT equivalent to fOutRootFile->Write();
    //fHists->Delete();
 
    //fOutRootFile->Write();
