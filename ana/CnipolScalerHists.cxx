@@ -29,69 +29,55 @@ CnipolScalerHists::~CnipolScalerHists()
 
 
 /** */
-void CnipolScalerHists::BookHists(string sid)
+void CnipolScalerHists::BookHists()
 { //{{{
    fDir->cd();
 
-   if (!sid.empty()) sid = "_" + sid;
-
    char hName[256];
+   TH1* hist;
 
    //TDirectory *dir = new TDirectoryFile("scalers", "scalers", "", fDir);
    //DrawObjContainer *scalers = new DrawObjContainer(dir);
 
-   sprintf(hName, "hBunches%s", sid.c_str());
-   o[hName] = new TH1F(hName, hName, 120, 0, 120);
-   ((TH1F*) o[hName])->GetXaxis()->SetTitle("Bunch Id");
+   sprintf(hName, "hBunches");
+   hist = new TH1F(hName, hName, 120, 0, 120);
+   hist->SetTitle("; Bunch Id; Events;");
+   o[hName] = hist;
 
-   sprintf(hName, "hKinEnergy%s", sid.c_str());
-   o[hName] = new TH2F(hName, hName, 16, 200, 1000, 64, 0, 128);
-   ((TH2F*) o[hName])->SetOption("colz LOGZ");
-   ((TH2F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-   ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
+   sprintf(hName, "hKinEnergy");
+   hist = new TH2F(hName, hName, 16, 200, 1000, 64, 0, 128);
+   hist->SetOption("colz LOGZ");
+   hist->SetTitle("; Kinematic Energy, keV; Time, ns;");
+   o[hName] = hist;
 
-   string sCh("  ");
+   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (int iCh=1; iCh<=TOT_WFD_CH; iCh++) {
-
+   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   {
+      string sCh("  ");
       sprintf(&sCh[0], "%02d", iCh);
 
       // Corresponds to 200 histograms in rhic2hbook.f
-      sprintf(hName, "hBunches_ch%s%s", sCh.c_str(), sid.c_str());
-      o[hName] = new TH1F(hName, hName, 120, 0, 120);
-      ((TH1F*) o[hName])->GetXaxis()->SetTitle("Bunch Id");
+      sprintf(hName, "hBunches_ch%s", sCh.c_str());
+      hist = new TH1I(hName, hName, 120, 0, 120);
+      hist->SetTitle("; Bunch Id; Events;");
+      o[hName] = hist;
 
       // Corresponds to 300 histograms in rhic2hbook.f
-      sprintf(hName, "hKinEnergy_ch%s%s", sCh.c_str(), sid.c_str());
-      o[hName] = new TH2F(hName, hName, 16, 200, 1000, 64, 0, 128);
-      ((TH2F*) o[hName])->SetOption("colz LOGZ");
-      ((TH2F*) o[hName])->GetXaxis()->SetTitle("Kinematic Energy, keV");
-      ((TH2F*) o[hName])->GetYaxis()->SetTitle("Time, ns");
+      sprintf(hName, "hKinEnergy_ch%s", sCh.c_str());
+      hist = new TH2I(hName, hName, 16, 200, 1000, 64, 0, 128);
+      hist->SetOption("colz LOGZ");
+      hist->SetTitle("; Kinematic Energy, keV; Time, ns;");
+      o[hName] = hist;
    }
-
-   //d["scalers"] = scalers;
-} //}}}
-
-
-/** */
-void CnipolScalerHists::Print(const Option_t* opt) const
-{ //{{{
-   opt = "";
-
-   //printf("CnipolHists:\n");
-   DrawObjContainer::Print();
 } //}}}
 
 
 /**
  * We assume 1536 entries in the hData arrays.
  */
-void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId, std::string sid)
+void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId)
 { //{{{
-   if (!sid.empty()) sid = "_" + sid;
-
-   //DrawObjContainer *oc = d["scalers"];
-
    string sCh("  ");
    char   hName[256];
 
@@ -103,15 +89,15 @@ void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId, std::string sid)
    for (int i=0,   j=1; i<128;  i++, j++) hData1[j] = hData[i];
    //for (int i=512, j=1; i<1536; i++, j++) hData5[j] = hData[i];
 
-   sprintf(hName, "hBunches_ch%s%s", sCh.c_str(), sid.c_str());
+   sprintf(hName, "hBunches_ch%s", sCh.c_str());
    TH1* hBunchesChannel = (TH1*) o[hName];
    hBunchesChannel->SetContent(hData1); // -1 because there is an underflow bin
 
-   sprintf(hName, "hBunches%s", sid.c_str());
+   sprintf(hName, "hBunches");
    TH1* hBunchesAllChannels = (TH1*) o[hName];
    hBunchesAllChannels->Add(hBunchesChannel);
 
-   sprintf(hName, "hKinEnergy_ch%s%s", sCh.c_str(), sid.c_str());
+   sprintf(hName, "hKinEnergy_ch%s", sCh.c_str());
    TH1* hTmpPtr = (TH1*) o[hName];
    //((TH1*) o[hName])->SetContent(hData5);
 
@@ -125,7 +111,7 @@ void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId, std::string sid)
       }
    }
 
-   sprintf(hName, "hKinEnergy%s", sid.c_str());
+   sprintf(hName, "hKinEnergy");
    TH1* hKinEnergyAllChannels = (TH1*) o[hName];
    hKinEnergyAllChannels->Add(hTmpPtr);
 

@@ -70,7 +70,7 @@ void end_process(MseMeasInfoX &run)
    //}
 
    // Complete Histograms
-   CompleteHistogram();
+   //CompleteHistogram();
 
    // Draw polarization vs target position
    DrawPlotvsTar();
@@ -879,15 +879,15 @@ void PrintRunResults()
 /** */
 void DrawPlotvsTar()
 { //{{{
-   Double_t polvstar[nTgtIndex+1],epolvstar[nTgtIndex+1],posvstar[nTgtIndex+1];
+   Double_t polvstar[nTgtIndex+1], epolvstar[nTgtIndex+1], posvstar[nTgtIndex+1];
 
-   for(Int_t i=0;i<nTgtIndex+1;i++){
+   for(Int_t i=0;i<nTgtIndex+1;i++) {
       polvstar[i]  = gAnaMeasResult->sinphi[100+i].P[0];
       epolvstar[i] = gAnaMeasResult->sinphi[100+i].P[1];
       posvstar[i]  = tgt.all.x[(int)tgt.Time[i]];
    }
 
-   Asymmetry->cd();
+   //Asymmetry->cd();
    TH2F *h_vstar = new TH2F("Pol_vs_tarpos","Polarization vs target position",100,posvstar[0]-1,posvstar[nTgtIndex]+1,100,0,1);
 
    TGraphErrors *gpolvstar = new TGraphErrors(nTgtIndex+1,posvstar,polvstar,0,epolvstar);
@@ -1338,7 +1338,7 @@ void AsymCalculator::CalcBunchAsym(DrawObjContainer *oc)
    return;
 
    // Define TH2F histograms first
-   Asymmetry->cd();
+   //Asymmetry->cd();
 
    char  htitle[100];
    float min, max;
@@ -2037,8 +2037,8 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
          gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
 
    } else if (Mode >= 100) { // Fit scan data
-      gAsymCalculator.ScanSinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
-         gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
+      //gAsymCalculator.ScanSinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
+      //   gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
    }
 
    //gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], gAnaMeasResult->sinphi.P, gAnaMeasResult->sinphi.dPhi, gAnaMeasResult->sinphi.chi2);
@@ -2187,7 +2187,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    for (int i=0; i<N_SILICON_CHANNELS; i++) dx[i] = 0;
 
    // define TH2D sin(phi) histogram
-   Asymmetry->cd();
+   //Asymmetry->cd();
 
    float min, max;
    float prefix = 0.3;
@@ -2197,7 +2197,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 
    sprintf(htitle, "Strip asymmetry fit: %s", gMeasInfo->GetRunName().c_str());
 
-   //asym_sinphi_fit = (TH2F*) gAsymRoot->fHists->d["run"]->o["asym_sinphi_fit"];
+   asym_sinphi_fit = (TH2F*) gAsymRoot->fHists->d["run"]->o["asym_sinphi_fit"];
    asym_sinphi_fit->SetName("asym_sinphi_fit");
    asym_sinphi_fit->SetTitle(htitle);
    asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);
@@ -2266,6 +2266,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    sprintf(htitle, "Strip asymmetry fit: %s", gMeasInfo->GetRunName().c_str());
 
    //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
+   scan_asym_sinphi_fit = (TH2F*) gAsymRoot->fHists->d["run"]->o["scan_asym_sinphi_fit"];
    scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");
    scan_asym_sinphi_fit->SetTitle(htitle);
    scan_asym_sinphi_fit->SetBins(100, 0, 2*M_PI, 100, min, max);

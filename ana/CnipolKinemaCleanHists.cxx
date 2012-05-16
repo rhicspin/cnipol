@@ -37,6 +37,7 @@ CnipolKinemaCleanHists::~CnipolKinemaCleanHists()
 void CnipolKinemaCleanHists::BookHists()
 { //{{{
    string shName;
+   TH1*   hist;
 
    fDir->cd();
 
@@ -81,28 +82,19 @@ void CnipolKinemaCleanHists::BookHists()
          oc = isubdir->second;
       }
 
+      oc->fDir->cd();
+
       shName = "hPseudoMass_ch" + sChId;
-      oc->o[shName] = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
-      ((TH1*) oc->o[shName])->SetTitle("; Mass; Events;");
-      ((TH1*) oc->o[shName])->SetOption("E1");
+      hist = new TH1F(shName.c_str(), shName.c_str(), 50, 0, 20);
+      hist->SetTitle("; Mass; Events;");
+      hist->SetOption("E1");
+      oc->o[shName] = hist;
+      fhPseudoMass_ch[*iCh-1] = hist;
 
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end()) {
          d[dName] = oc;
       }
-   }
-
-   // Speed up
-   iCh = gMeasInfo->fSiliconChannels.begin();
-
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh) {
-
-      string sChId("  ");
-      sprintf(&sChId[0], "%02d", *iCh);
-
-      DrawObjContainer *oc_ch = d.find("channel" + sChId)->second;
-
-      fhPseudoMass_ch[*iCh-1] = (TH1*) oc_ch->o.find("hPseudoMass_ch" + sChId)->second;
    }
 } //}}}
 

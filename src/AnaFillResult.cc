@@ -360,8 +360,9 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       AppendToPolProfRGraph(polId, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
 
-      // The energy of the last measurement
-      fFlattopEnergy = measInfo.GetBeamEnergy();
+      // The maximum energy achieved in this fill
+      if (measInfo.GetBeamEnergy() > fFlattopEnergy)
+         fFlattopEnergy = measInfo.GetBeamEnergy();
 
       //Info("Process", "xxx1");
       // Proceed only with flattop measurements

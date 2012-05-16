@@ -32,38 +32,38 @@ CnipolPmtHists::~CnipolPmtHists()
 /** */
 void CnipolPmtHists::BookHists()
 { //{{{
-   string shName;
-   TH1*   hist;
-   char hName[256];
+   //string shName;
+   //TH1*   hist;
+   char   hName[256];
 
    fDir->cd();
 
-   for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {
-
+   for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iChId);
 
       sprintf(hName, "hTdc_ch%02d", iChId);
-      o[hName] = new TH1F(hName, hName, 100, 0, 100);
+      o[hName] = new TH1I(hName, hName, 100, 0, 100);
       ((TH1*) o[hName])->SetOption("NOIMG");
-      ((TH1*) o[hName])->SetTitle(";TDC;Events;");
+      ((TH1*) o[hName])->SetTitle("; TDC; Events;");
       ((TH1*) o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
-      o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      o[hName] = new TH1I(hName, hName, 255, 0, 255);
       ((TH1*) o[hName])->SetOption("NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;Events;");
+      ((TH1*) o[hName])->SetTitle("; Amplitude, ADC; Events;");
       ((TH1*) o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hTvsA_ch%02d", iChId);
-      o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      o[hName] = new TH2I(hName, hName, 255, 0, 255, 80, 10, 90);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Amplitude, ADC;TDC;");
+      ((TH1*) o[hName])->SetTitle("; Amplitude, ADC; TDC;");
 
       sprintf(hName, "hTvsI_ch%02d", iChId);
-      o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 10, 90);
+      o[hName] = new TH2I(hName, hName, 255, 0, 255, 80, 10, 90);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
-      ((TH1*) o[hName])->SetTitle(";Integral, ADC;TDC;");
+      ((TH1*) o[hName])->SetTitle("; Integral, ADC; TDC;");
    }
 } //}}}
 
@@ -71,16 +71,15 @@ void CnipolPmtHists::BookHists()
 /** */
 void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
 { //{{{
-
-   UChar_t chId  = ch->GetChannelId();
+   UChar_t chId = ch->GetChannelId();
 
    string sChId("  ");
    sprintf(&sChId[0], "%02d", chId);
 
-   ((TH1*) o["hAdcAmpltd_ch" + sChId])  -> Fill(ch->GetAmpltd());
-   ((TH1*) o["hTdc_ch"       + sChId])  -> Fill(ch->GetTime2());
-   ((TH1*) o["hTvsA_ch"      + sChId])  -> Fill(ch->GetAmpltd(), ch->GetTime2());
-   ((TH1*) o["hTvsI_ch"      + sChId])  -> Fill(ch->GetIntgrl(), ch->GetTime2());
+   ((TH1*) o["hAdcAmpltd_ch" + sChId]) -> Fill(ch->GetAmpltd());
+   ((TH1*) o["hTdc_ch"       + sChId]) -> Fill(ch->GetTime2());
+   ((TH1*) o["hTvsA_ch"      + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
+   ((TH1*) o["hTvsI_ch"      + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
 
 } //}}}
 
@@ -90,8 +89,8 @@ void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
    Info("PostFillPassOne", "Starting...");
 
-   for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++) {
-
+   for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iChId);
 
@@ -114,5 +113,4 @@ void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
          //mean2Err = fitres->FitResult::Error(2);
       }
    }
-
 } //}}}

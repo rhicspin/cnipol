@@ -344,7 +344,9 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
    bananaFitFunc->SetParLimits(0, meanT0_low,  meanT0_high);
    bananaFitFunc->SetParLimits(1, meanDLW_low, meanDLW_high);
 
-   printf("\nFitting histogram:\n");
+   printf("\n");
+   Info("Calibrate", "Fitting histogram...");
+
    hMeanTime->Print();
    //printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
    //printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);

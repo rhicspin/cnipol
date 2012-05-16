@@ -472,7 +472,7 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
       TPaveStats *stats = (TPaveStats*) iHist->FindObject("stats");
 
       if (stats) {
-         cout << "stats found:" << endl;
+         //cout << "stats found:" << endl;
          //stats->Print();
          //stats->SetOptStat(0);
          //stats->SetOptFit(1111);
@@ -488,7 +488,7 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
 
          iStat++;
       } else {
-         cout << "stats not found" << endl;
+         //cout << "stats not found" << endl;
       }
 
       iNHist++;

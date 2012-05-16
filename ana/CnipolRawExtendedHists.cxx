@@ -65,6 +65,8 @@ void CnipolRawExtendedHists::BookHists()
          oc = isubdir->second;
       }
 
+      oc->fDir->cd();
+
 
       for (UShort_t iBunchId=1; iBunchId<=N_BUNCHES; iBunchId++)
       {
@@ -76,7 +78,7 @@ void CnipolRawExtendedHists::BookHists()
          hist = new TH2S(shName.c_str(), shName.c_str(), 255, 0, 255, 80, 10, 90);
          hist->SetOption("colz LOGZ NOIMG");
          hist->SetTitle(";Amplitude, ADC;TDC;");
-         oc->o[shName]                    = hist;
+         oc->o[shName] = hist;
          fhTvsA_ch_b[iChId-1][iBunchId-1] = hist;
 
          //shName = "hTvsACumul_ch" + sChId + "_b" + sBunchId;
@@ -84,7 +86,7 @@ void CnipolRawExtendedHists::BookHists()
          //hist->SetOption("hist NOIMG");
          //hist->SetTitle("; Digi Channel Frac; Event Frac;");
          //hist->GetYaxis()->SetRangeUser(0, 1);
-         //oc->o[shName]                         = hist;
+         //oc->o[shName] = hist;
          //fhTvsACumul_ch_b[iChId-1][iBunchId-1] = hist;
       }
 

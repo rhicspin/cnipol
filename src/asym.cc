@@ -57,7 +57,6 @@ int main(int argc, char *argv[])
 
    gAsymRoot->GetMeasConfigs(gMeasInfo, gAsymAnaInfo, gAnaMeasResult);
 
-   //gAsymDb  = new AsymDbFile();
    gAsymDb = new AsymDbSql();
 
    gAsymAnaInfo->ProcessOptions(argc, argv);
@@ -165,7 +164,7 @@ int main(int argc, char *argv[])
 
    gAsymRoot->FillDerived();
    gAsymRoot->PostFill(*mseMeasInfoX);
-   gAsymRoot->DeleteHistogram();        // Deprecated. Delete unnecessary ROOT histograms
+   //gAsymRoot->DeleteHistogram();        // Deprecated. Delete unnecessary ROOT histograms
 
    // Close histogram file
    hist_close(hbk_outfile);

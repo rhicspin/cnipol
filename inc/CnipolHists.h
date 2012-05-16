@@ -27,11 +27,11 @@ class CnipolHists : public DrawObjContainer
 private:
 
    TH1* fhKinEnergyA_o;
-   TH2* fhSpinVsChannel;
-   TH2* fhSpinVsBunch;
-   TH2* fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
+   TH1* fhSpinVsChannel;
+   TH1* fhSpinVsBunch;
+   TH1* fhTimeVsEnergyA_ch[N_SILICON_CHANNELS];
    //TH2* fhTofVsKinEnergyA_ch[N_SILICON_CHANNELS];
-   TH2* fhSpinVsDelim_ch[N_SILICON_CHANNELS];
+   TH1* fhSpinVsDelim_ch[N_SILICON_CHANNELS];
    TH2* fhTofVsKinEnergyA_ch_ss[N_SILICON_CHANNELS][N_SPIN_STATES];
    TH2* fhLongiTimeDiffVsEnergyA_ch_ss[N_SILICON_CHANNELS][N_SPIN_STATES];
 
