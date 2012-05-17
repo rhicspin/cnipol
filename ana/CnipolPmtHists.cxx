@@ -47,13 +47,11 @@ void CnipolPmtHists::BookHists()
       o[hName] = new TH1I(hName, hName, 100, 0, 100);
       ((TH1*) o[hName])->SetOption("hist NOIMG");
       ((TH1*) o[hName])->SetTitle("; TDC; Events;");
-      ((TH1*) o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hAdcAmpltd_ch%02d", iChId);
       o[hName] = new TH1I(hName, hName, 255, 0, 255);
       ((TH1*) o[hName])->SetOption("hist NOIMG");
       ((TH1*) o[hName])->SetTitle("; Amplitude, ADC; Events;");
-      ((TH1*) o[hName])->SetFillColor(kGray);
 
       sprintf(hName, "hTvsA_ch%02d", iChId);
       o[hName] = new TH2I(hName, hName, 255, 0, 255, 80, 10, 90);
@@ -77,7 +75,7 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
    sprintf(&sChId[0], "%02d", chId);
 
    ((TH1*) o["hAdcAmpltd_ch" + sChId]) -> Fill(ch->GetAmpltd());
-   ((TH1*) o["hTdc_ch"       + sChId]) -> Fill(ch->GetTime2());
+   ((TH1*) o["hTdc_ch"       + sChId]) -> Fill(ch->GetTdc());
    ((TH1*) o["hTvsA_ch"      + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTvsI_ch"      + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
 
