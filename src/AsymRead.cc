@@ -423,8 +423,8 @@ void RawDataProcessor::ReadDataFast()
             //}
 
             if (gAsymAnaInfo->HasPmtBit() &&
-                gAsymRoot->fChannelEvent->PassCutPmtChannel() &&
-                gAsymRoot->fChannelEvent->PassCutPmtNoise() )
+                gAsymRoot->fChannelEvent->PassCutPmtChannel() )
+                //gAsymRoot->fChannelEvent->PassCutPmtNoise()
             {
                gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
             }

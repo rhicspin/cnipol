@@ -504,7 +504,7 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
    UInt_t w, h;
    signature.GetTextExtent(w, h, signature.GetTitle());
    //signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()/2) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
-   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()/2), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+   signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
 
    string sFileName = path + "/" + canvas.GetName() + ".png";
 

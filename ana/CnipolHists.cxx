@@ -185,10 +185,12 @@ void CnipolHists::BookHists()
 
       // Time vs Energy from amplitude
       shName = "hTimeVsEnergyA_ch" + sChId;
-      oc->o[shName] = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
-		((TH1*) oc->o[shName])->SetOption("colz LOGZ");
-      ((TH1*) oc->o[shName])->SetTitle("; Deposited Energy, keV; Time, ns;");
+      hist = new TH2F(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
+		hist->SetOption("colz LOGZ");
+      hist->SetTitle("; Deposited Energy, keV; Time, ns;");
       //((TH1*) oc->o[shName])->GetListOfFunctions()->Add(banana_cut_l);
+      oc->o[shName] = hist;
+      fhTimeVsEnergyA_ch[*iCh-1] = hist;
 
       // TOF vs Kinematic Energy
       shName = "hTofVsKinEnergyA_ch" + sChId;
@@ -280,7 +282,6 @@ void CnipolHists::BookHists()
 
       DrawObjContainer *oc_ch = d.find("channel" + sChId)->second;
 
-      fhTimeVsEnergyA_ch[*iCh-1]   = (TH1*) oc_ch->o.find("hTimeVsEnergyA_ch"   + sChId)->second;
       //fhTofVsKinEnergyA_ch[*iCh-1] = (TH2*) oc_ch->o.find("hTofVsKinEnergyA_ch" + sChId)->second;
       fhSpinVsDelim_ch[*iCh-1]     = (TH1*) oc_ch->o.find("hSpinVsDelim_ch"     + sChId)->second;
 
@@ -365,7 +366,7 @@ void CnipolHists::Fill(ChannelEvent *ch)
    fhSpinVsChannel -> Fill(chId, gMeasInfo->GetBunchSpin(bId));
    fhSpinVsBunch   -> Fill(bId,  gMeasInfo->GetBunchSpin(bId));
 
-   fhTimeVsEnergyA_ch[chId-1]   -> Fill(depEnergy, ch->GetTime());
+   fhTimeVsEnergyA_ch[chId-1] -> Fill(depEnergy, ch->GetTime());
    //fhTofVsKinEnergyA_ch[chId-1] -> Fill(kinEnergy, tof);
 
    fhTofVsKinEnergyA_ch_ss[chId-1][nSS]        -> Fill(kinEnergy, tof);
