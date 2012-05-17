@@ -421,6 +421,8 @@ void CnipolHists::Fill(ChannelEvent *ch)
 /** */
 void CnipolHists::FillDerived()
 { //{{{
+   Info("FillDerived", "Starting...");
+
    // Fill derivative histograms
    TH1* hKinEnergyA      = (TH1*) o["hKinEnergyA"];
    TH2* hTimeVsEnergyA   = (TH2*) o["hTimeVsEnergyA"];
@@ -500,6 +502,8 @@ void CnipolHists::FillDerived()
 /** */
 void CnipolHists::PostFill()
 { //{{{
+   Info("PostFill", "Starting...");
+
    // Fit energy slope with an exponential func
    TF1 *fitfunc = new TF1("fitfunc", "expo", 450, 850);
 

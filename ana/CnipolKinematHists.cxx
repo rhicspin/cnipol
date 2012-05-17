@@ -113,6 +113,7 @@ void CnipolKinematHists::Fill(ChannelEvent *ch)
 /** */
 void CnipolKinematHists::FillDerived()
 { //{{{
+   Info("FillDerived()", "Called");
 
    TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
    
@@ -133,6 +134,8 @@ void CnipolKinematHists::FillDerived()
 /** */
 void CnipolKinematHists::PostFill()
 { //{{{
+   Info("PostFill", "Called");
+
    // Fit energy slope with an exponential func
    TF1 *fitfunc = new TF1("fitfunc", "gaus", 9, 14);
 
