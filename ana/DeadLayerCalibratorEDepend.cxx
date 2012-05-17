@@ -91,8 +91,8 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       sprintf(&strChId[0], "%02d", *iCh);
 
       //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_raw_ch"+strChId];
-      hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_raw_ch"+strChId];
+      hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
+      hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
 
       Calibrate(hTimeVsE, hMeanTime, *iCh);
    }
