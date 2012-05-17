@@ -73,7 +73,7 @@ void CnipolAsymHists::BookHists()
    // Channel Id vs delim
    shName = "hChVsDelim";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-   ((TH1*) o[shName])->SetTitle("; Target Steps, s; Channel Id;");
+   ((TH1*) o[shName])->SetTitle("; Time, s; Channel Id;");
    ((TH1*) o[shName])->SetOption("colz NOIMG");
 
    // Detector Id vs bunch id
@@ -85,7 +85,7 @@ void CnipolAsymHists::BookHists()
    // Detector Id vs delim
    shName = "hDetVsDelim";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-   ((TH1*) o[shName])->SetTitle("; Target Steps, s; Detector Id;");
+   ((TH1*) o[shName])->SetTitle("; Time, s; Detector Id;");
    ((TH1*) o[shName])->SetOption("colz NOIMG GRIDY");
 
    shName = "hAsymVsBunchId_X90";
@@ -112,12 +112,12 @@ void CnipolAsymHists::BookHists()
    //
    shName = "hAsymVsDelim4Ch";
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   ((TH1*) o[shName])->SetTitle(";Target Steps, s;Asymmetry;");
-   ((TH1*) o[shName])->SetOption("hist NOIMG");
+   ((TH1*) o[shName])->SetTitle("; Time, s; Asymmetry;");
+   ((TH1*) o[shName])->SetOption("E1 NOIMG");
 
    shName = "hAsymVsDelim4Det";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle("; Target Steps, s; Asymmetry;");
+   hist->SetTitle("; Time, s; Asymmetry;");
    hist->SetOption("E1 NOIMG");
    o[shName] = hist;
 
@@ -220,25 +220,25 @@ void CnipolAsymHists::BookHists()
       // Channel Id vs energy
       shName = "hChVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      ((TH1*) o[shName])->SetTitle(";Target Steps, s;Channel Id;");
+      ((TH1*) o[shName])->SetTitle("; Time, s; Channel Id;");
       ((TH1*) o[shName])->SetOption("colz");
 
       // Detector Id vs bunch id
       shName = "hDetVsBunchId_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetTitle(";Bunch Id;Detector Id;");
+      ((TH1*) o[shName])->SetTitle("; Bunch Id; Detector Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Detector Id vs energy
       shName = "hDetVsKinEnergyA_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetTitle(";Kinematic Energy, keV;Detector Id;");
+      ((TH1*) o[shName])->SetTitle("; Kinematic Energy, keV; Detector Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
 
       // Detector Id vs delim
       shName = "hDetVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      ((TH1*) o[shName])->SetTitle(";Target Steps, s;Detector Id;");
+      ((TH1*) o[shName])->SetTitle("; Time, s; Detector Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
    }
 } //}}}
@@ -261,7 +261,6 @@ void CnipolAsymHists::PreFill()
       ((TH1*) o["hChVsDelim_"  + sSS])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
       ((TH1*) o["hDetVsDelim_" + sSS])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    }
-
 } //}}}
 
 
@@ -291,6 +290,8 @@ void CnipolAsymHists::Fill(ChannelEvent *ch)
 /** */
 void CnipolAsymHists::FillDerived()
 { //{{{
+   Info("FillDerived()", "Called");
+
    // First fill integral and derivative histograms
    TH2* hChVsDelim    = (TH2*) o["hChVsDelim"];
    TH2* hChVsBunchId  = (TH2*) o["hChVsBunchId"];
@@ -356,6 +357,8 @@ void CnipolAsymHists::FillDerived()
 /** */
 void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
 { //{{{
+   Info("FillDerived(DrawObjContainer &oc)", "Called");
+
    CnipolHists *hists_std = (CnipolHists*) oc.d.find("std")->second;
 
    if (!hists_std) {
@@ -369,7 +372,7 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
 
       string sSS = gRunConfig.AsString(*iSS);
 
-      TH2* hChVsLongiTimeDiff_ss = (TH2*) o["hChVsLongiTimeDiff_" + sSS];
+      TH2* hChVsLongiTimeDiff_ = (TH2*) o["hChVsLongiTimeDiff_" + sSS];
 
       ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -391,12 +394,12 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
             Double_t td = hLongiTimeDiffVsEnergyA_ch_ss->GetYaxis()->GetBinCenter(iby);
             Double_t nEvents_ch_ss = hLongiTimeDiffVsEnergyA_ch_ss->Integral(1, nBinsX, iby, iby);
 
-            Int_t tdBin = hChVsLongiTimeDiff_ss->GetXaxis()->FindBin(td);
+            Int_t tdBin = hChVsLongiTimeDiff_->GetXaxis()->FindBin(td);
             
-            Int_t gBin = hChVsLongiTimeDiff_ss->GetBin(tdBin, *iCh);
-            //Int_t gBin = hChVsLongiTimeDiff_ss->GetBin(iby, *iCh);
-            hChVsLongiTimeDiff_ss->AddBinContent(gBin, nEvents_ch_ss);
-            hChVsLongiTimeDiff_ss->SetEntries(hChVsLongiTimeDiff_ss->GetEntries() + nEvents_ch_ss);
+            Int_t gBin = hChVsLongiTimeDiff_->GetBin(tdBin, *iCh);
+            //Int_t gBin = hChVsLongiTimeDiff_->GetBin(iby, *iCh);
+            hChVsLongiTimeDiff_->AddBinContent(gBin, nEvents_ch_ss);
+            hChVsLongiTimeDiff_->SetEntries(hChVsLongiTimeDiff_->GetEntries() + nEvents_ch_ss);
          }
       }
    }

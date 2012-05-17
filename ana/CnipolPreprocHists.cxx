@@ -51,11 +51,11 @@ void CnipolPreprocHists::BookHists()
    fDir->cd();
 
    // Data from all enabled silicon channels
-   shName = "hTimeVsEnergyA";
-   hist = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
-   hist->SetTitle("; Deposited Energy, keV; Time, ns;");
-   hist->SetOption("colz LOGZ NOIMG");
-   o[shName] = hist;
+   //shName = "hTimeVsEnergyA";
+   //hist = new TH2S(shName.c_str(), shName.c_str(), 80, 100, 1700, 80, 20, 100);
+   //hist->SetTitle("; Deposited Energy, keV; Time, ns;");
+   //hist->SetOption("colz LOGZ NOIMG");
+   //o[shName] = hist;
 
    shName = "hsTimeVsEnergyACumul";
    o[shName] = new THStack(shName.c_str(), shName.c_str());
@@ -112,27 +112,27 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 void CnipolPreprocHists::FillDerivedPassOne()
 { //{{{
    // Fill derivative histograms first
-   TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
-   
-   ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
+   //TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
+   //
+   //ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
-   for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
-   {
-      UShort_t chId = *iCh;
+   //for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
+   //{
+   //   UShort_t chId = *iCh;
 
-      string sChId(MAX_CHANNEL_DIGITS, ' ');
-      sprintf(&sChId[0], "%02d", chId);
+   //   string sChId(MAX_CHANNEL_DIGITS, ' ');
+   //   sprintf(&sChId[0], "%02d", chId);
 
-      TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
-      hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
-   }
+   //   TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
+   //   hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+   //}
 } //}}}
 
 
 /** */
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   Info("PostFillPassOne", "Starting...");
+   Info("PostFillPassOne", "Called");
 
    //// We expect empty bunch histogram container of the same class
    //if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
@@ -252,6 +252,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 /** This method is not used for now. */
 void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *ebHists)
 { //{{{
+/*
    TH2* hTimeVsEnergyA = (TH2*) o["hTimeVsEnergyA"];
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
@@ -301,6 +302,7 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 
       hTimeVsEnergyA->Add(fhTimeVsEnergyA_ch_this);
    }
+*/
 } //}}}
 
 
@@ -428,7 +430,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       //hTvsA_ch->Print("all");
       //hTimeVsEnergyA_ch->Print("all");
       Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_ch);
-      Info("PostFillPassOne_FillFromRawHists", "Non empty bin fraction: %f (disable at < 0.10)\n", frac);
+      Info("PostFillPassOne_FillFromRawHists", "Non empty bin fraction %f. Channel %d (disable at < 0.10)", frac, chId);
 
       if ( frac < 0.10 ) {
          gMeasInfo->DisableChannel(chId);

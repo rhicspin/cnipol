@@ -33,7 +33,7 @@ using namespace std;
 // End of data process
 void end_process(MseMeasInfoX &run)
 { //{{{
-   gSystem->Info("end_process", "Starting...");
+   gSystem->Info("end_process", "Called");
 
    // Feedback Mode
    //if (Flag.feedback) {
@@ -1435,7 +1435,7 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
 void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
 { //{{{
    // Get hist with all delim for normalization
-   TH2* hDetVsDelim = (TH2*) oc->o["hDetVsDelim"];
+   //TH2* hDetVsDelim = (TH2*) oc->o["hDetVsDelim"];
 
    //SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
@@ -1468,8 +1468,7 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
 { //{{{
    TH2* hDetVsDelim_up    = (TH2*) oc->o["hDetVsDelim_up"];
    TH2* hDetVsDelim_down  = (TH2*) oc->o["hDetVsDelim_down"];
-
-   TH2* hAsymVsDelim4Det = (TH2*) oc->o["hAsymVsDelim4Det"];
+   TH2* hAsymVsDelim4Det  = (TH2*) oc->o["hAsymVsDelim4Det"];
 
    for (int iDelim=1; iDelim<=hAsymVsDelim4Det->GetNbinsX(); iDelim++)
    {
@@ -1640,6 +1639,7 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 
 /**
  * This method is called from the histogram container.
+ * This is the main method to calculate the asymmetry 
  */
 // Description : call calcStripAsymmetry() subroutines for
 //             : regular and alternative sigma banana cuts, respectively.
@@ -1742,7 +1742,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
       Error("CalcStripAsymmetry", "Fit error...");
    }
 
-   // Multiply by 100% for esthetic reasons
+   // Multiply by 100% for aesthetic reasons
    TF2 *dummyScale = new TF2("dummyScale", "100.*y");
    grPolarVsPhi->Apply(dummyScale);
    grPolarVsPhi->Fit(fitFunc, "R");
@@ -1755,36 +1755,68 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
 void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
 { //{{{
    // Calculate asymmetries for each target position
-   TH1 *hpp = (TH1*) gAsymRoot->fHists->d["profile"]->o["hPolarProfile"];
+   TH2* hChVsDelim_up   = (TH2*) oc->o["hChVsDelim_up"];
+   TH2* hChVsDelim_down = (TH2*) oc->o["hChVsDelim_down"];
+   TH2* hAsymVsDelim4Ch = (TH2*) oc->o["hAsymVsDelim4Ch"];
 
-   if (!hpp) {
-      gSystem->Error("   AsymCalculator::CalcStripAsymmetryByProfile", "No hPolarPorfile histogram available. Cannot proceed...");
+   // this is where the output will go
+   //TH1 *hPolarProfile = (TH1*) gAsymRoot->fHists->d["profile"]->o["hPolarProfile"];
+
+   if (!hChVsDelim_up || !hChVsDelim_down || !hAsymVsDelim4Ch) {
+      Error("AsymCalculator::CalcStripAsymmetryByProfile", "No proper histograms available to calculate asymmetry. Skipping...");
       return;
    }
 
-   for(Int_t i=0; i<gNDelimeters; i++) {
 
-      CalcStripAsymmetry(100+i);
-      //printf("i, p: %d, %f\n", i, gAnaMeasResult->sinphi[100+i].P[0]);
+   for (Int_t iDelim=1; iDelim<=hAsymVsDelim4Ch->GetNbinsX(); iDelim++)
+   {
+      TH1I *hUp   = (TH1I*) hChVsDelim_up  ->ProjectionY("hUp",   iDelim, iDelim);
+      TH1I *hDown = (TH1I*) hChVsDelim_down->ProjectionY("hDown", iDelim, iDelim);
 
-      hpp->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
-      hpp->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
+      // Check if there are events in the histograms
+      if (!hUp->Integral() && !hDown->Integral()) continue;
+
+      TH1D* hChAsym = CalcChannelAsym(*hUp, *hDown);
+
+      TFitResultPtr fitres = FitChAsymSine(*hChAsym);
+
+      if (fitres.Get()) {
+         Double_t val = fitres->Value(0);
+         Double_t err = fitres->FitResult::Error(0);
+         //printf("val err: %f, %f\n", val, err);
+
+         hAsymVsDelim4Ch->SetBinContent(iDelim, val);
+         hAsymVsDelim4Ch->SetBinError(iDelim, err);
+
+         //hPolarProfile->SetBinContent(iDelim, val/gAnaMeasResult->A_N[1]);
+         //hPolarProfile->SetBinError(iDelim, err/gAnaMeasResult->A_N[1]);
+      } else {
+         Error("AsymCalculator::CalcStripAsymmetryByProfile", "Fit error in time bin (delim) %d", iDelim);
+      }
+
+      delete hChAsym;
    }
+
+   //for(Int_t i=0; i<gNDelimeters; i++) {
+
+   //   CalcStripAsymmetry(100+i);
+   //   //printf("i, p: %d, %f\n", i, gAnaMeasResult->sinphi[100+i].P[0]);
+
+   //   hPolarProfile->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
+   //   hPolarProfile->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
+   //}
 } //}}}
 
 
 /** */
 void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
 { //{{{
-   TH2 *hChVsKinE_Up   = (TH2*) oc->o["hChVsKinEnergyA_up"];
-   TH2 *hChVsKinE_Down = (TH2*) oc->o["hChVsKinEnergyA_down"];
+   TH2 *hChVsKinE_Up      = (TH2*) oc->o["hChVsKinEnergyA_up"];
+   TH2 *hChVsKinE_Down    = (TH2*) oc->o["hChVsKinEnergyA_down"];
+   TH1 *hKinEnergyAChAsym = (TH1*) oc->o["hKinEnergyAChAsym"];
 
-   TH1 *hAsym          = (TH1*) oc->o["hKinEnergyAChAsym"];
-
-   for (int iKinE=1; iKinE<=hAsym->GetNbinsX(); iKinE++)
+   for (Int_t iKinE=1; iKinE<=hKinEnergyAChAsym->GetNbinsX(); iKinE++)
    {
-      //printf("binnn: %d\n", iKinE);
-
       TH1I *hUp   = (TH1I*) hChVsKinE_Up  ->ProjectionY("hUp",   iKinE, iKinE);
       TH1I *hDown = (TH1I*) hChVsKinE_Down->ProjectionY("hDown", iKinE, iKinE);
 
@@ -1793,24 +1825,19 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
 
       TH1D* hChAsym = CalcChannelAsym(*hUp, *hDown);
 
-      //TFitResultPtr fitres = FitChAsymConst(*hChAsym);
       TFitResultPtr fitres = FitChAsymSine(*hChAsym);
 
       if (fitres.Get()) {
-
          Double_t val = fitres->Value(0);
          Double_t err = fitres->FitResult::Error(0);
-
          //printf("val err: %f, %f\n", val, err);
 
-         hAsym->SetBinContent(iKinE, val);
-         hAsym->SetBinError(iKinE, err);
-
+         hKinEnergyAChAsym->SetBinContent(iKinE, val);
+         hKinEnergyAChAsym->SetBinError(iKinE, err);
       } else {
-         gSystem->Error("   ::CalcKinEnergyAChAsym", "Fit error...");
+         Error("AsymCalculator::CalcKinEnergyAChAsym", "Fit error in energy bin %d", iKinE);
       }
    }
-
 } //}}}
 
 
@@ -1848,7 +1875,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
          hAsym->SetBinError(iTimeDiff, err);
 
       } else {
-         gSystem->Error("   ::CalcLongiChAsym", "Fit error...");
+         Error("AsymCalculator::CalcLongiChAsym", "Fit error...");
       }
    }
 
@@ -2006,7 +2033,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // printing routine
-   if (true) {
+   if (false) {
       printf("*========== strip by strip =============\n");
 
       for (int i=0; i<N_SILICON_CHANNELS; i++) {
@@ -2138,6 +2165,8 @@ TFitResultPtr AsymCalculator::FitChAsymConst(TH1D &hChAsym, TGraphErrors *gr)
  */
 TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
 { //{{{
+   Info("FitChAsymSine", "Called");
+
    if (!gr)
       gr = new TGraphErrors();
 

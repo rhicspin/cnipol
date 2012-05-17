@@ -227,6 +227,8 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolRawHists::FillDerivedPassOne()
 { //{{{
+   Info("FillDerivedPassOne", "Called");
+
    TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
    TH1* hAdcIntgrl = (TH1*) o["hAdcIntgrl"];
    TH1* hTdc       = (TH1*) o["hTdc"];
@@ -287,7 +289,7 @@ void CnipolRawHists::FillDerivedPassOne()
 /** */
 void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 { //{{{
-   Info("PostFillPassOne", "Starting...");
+   Info("PostFillPassOne", "Called");
 
    // We expect empty bunch histogram container
    string thisDirName(fDir->GetName()); 

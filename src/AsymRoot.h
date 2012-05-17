@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "TFile.h"
+//#include "TObject.h"
 #include "TTree.h"
 
 #include "AsymGlobals.h"
@@ -31,30 +32,30 @@ typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;
 typedef Cut2DrawObjContainerMap::iterator              Cut2DrawObjContainerMapIter;
 
 
-class AsymRoot
+class AsymRoot // : public TObject
 {
 
 private:
 
 protected:
 
-   TFile                    *fOutRootFile;
-   TFile                    *fOutTreeFile;
-   UInt_t                    fTreeFileId;
-   Cut2DrawObjContainerMap   fHistCuts;    // Map with histograms containers classified by cut categories
+   TFile                    *fOutRootFile; //!
+   TFile                    *fOutTreeFile; //!
+   UInt_t                    fTreeFileId; //!
+   Cut2DrawObjContainerMap   fHistCuts; //!    // Map with histograms containers classified by cut categories
   
 public:
 
-   TTree                *fRawEventTree;
-   TTree                *fAnaEventTree;
-   std::vector<TTree*>   fChannelEventTrees;
-   AnaEvent             *fAnaEvent;
-   ChannelEvent         *fChannelEvent;
-   ChannelData          *fChannelData;
+   TTree                *fRawEventTree; //!
+   TTree                *fAnaEventTree; //!
+   std::vector<TTree*>   fChannelEventTrees; //!
+   AnaEvent             *fAnaEvent; //!
+   ChannelEvent         *fChannelEvent; //!
+   ChannelData          *fChannelData; //!
    //ChannelEventMap      fChannelEvents;
-   ChannelEventSet       fChannelEvents;
-   EventConfig          *fEventConfig;
-   DrawObjContainer     *fHists;
+   ChannelEventSet       fChannelEvents; //!
+   EventConfig          *fEventConfig; //!
+   DrawObjContainer     *fHists; //!
 
 public:
 
@@ -96,6 +97,8 @@ public:
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
    EventConfig* GetMeasConfig();
    void         GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar);
+
+   //ClassDef(AsymRoot, 1)
 };
 
 #endif

@@ -150,6 +150,7 @@ void CnipolRawExtendedHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolRawExtendedHists::FillDerivedPassOne()
 { //{{{
+   Info("FillDerivedPassOne", "Called");
 
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
    {

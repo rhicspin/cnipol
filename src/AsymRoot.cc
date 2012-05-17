@@ -48,7 +48,6 @@
 #include "AsymAnaInfo.h"
 #include "MeasInfo.h"
 
-using namespace std;
 
 // ROOT Histograms
 TDirectory *FeedBack;
@@ -96,8 +95,14 @@ TH2F  *asym_sinphi_fit;        // strip asymmetry and sin(phi) fit
 TH2F  *scan_asym_sinphi_fit;   // scan asymmetry and sin(phi) fit
 
 
+//ClassImp(AsymRoot)
+
+using namespace std;
+
+
 /** */
-AsymRoot::AsymRoot() : fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
+AsymRoot::AsymRoot() : // TObject(),
+   fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
    fChannelEvent(new ChannelEvent()), fChannelData(new ChannelData()),
@@ -495,7 +500,7 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 { //{{{
-   //Info("FillPassOne", "Executing...");
+   //Info("FillPassOne", "Called");
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
    set<DrawObjContainer*>::iterator hi;
@@ -511,7 +516,7 @@ void AsymRoot::FillPassOne(ECut cut)
 /** */
 void AsymRoot::FillDerivedPassOne()
 { //{{{
-   Info("FillDerivedPassOne", "Executing...");
+   Info("FillDerivedPassOne", "Called");
    fHists->FillDerivedPassOne();
 } //}}}
 
@@ -519,7 +524,7 @@ void AsymRoot::FillDerivedPassOne()
 /** */
 void AsymRoot::PostFillPassOne()
 { //{{{
-   Info("PostFillPassOne", "Executing...");
+   Info("PostFillPassOne", "Called");
 
    //fHists->PostFillPassOne(fHists);
 
@@ -565,6 +570,8 @@ void AsymRoot::Fill(ECut cut)
 /** */
 void AsymRoot::FillDerived()
 {
+   Info("FillDerived", "Called");
+
    fHists->FillDerived();
 
    // Process dependencies
@@ -583,6 +590,7 @@ void AsymRoot::FillDerived()
 /** */
 void AsymRoot::PostFill(MseMeasInfoX &run)
 { //{{{
+   Info("PostFill", "Called");
 
    // One should be carefull here as the order of post processing is important.
    // Some histograms may depend on other histograms in independent containers
