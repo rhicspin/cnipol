@@ -63,16 +63,27 @@ typedef std::map<EPolarimeterId, TGraph*>      PolId2TGraphMap;
 typedef PolId2TGraphMap::iterator              PolId2TGraphMapIter;
 typedef PolId2TGraphMap::const_iterator        PolId2TGraphMapConstIter;
 
+typedef std::map<ETargetOrient, TGraph*>       TgtOrient2TGraphMap;
+typedef TgtOrient2TGraphMap::iterator          TgtOrient2TGraphMapIter;
+typedef TgtOrient2TGraphMap::const_iterator    TgtOrient2TGraphMapConstIter;
+
 // Beam id
-typedef std::map<EBeamId,        ValErrSet>    BeamId2ValErrSet;
+typedef std::map<EBeamId, ValErrSet>           BeamId2ValErrSet;
 typedef BeamId2ValErrSet::iterator             BeamId2ValErrSetIter;
 typedef BeamId2ValErrSet::const_iterator       BeamId2ValErrSetConstIter;
-typedef std::map<EBeamId,        ValErrPair>   BeamId2ValErrMap;
+typedef std::map<EBeamId, ValErrPair>          BeamId2ValErrMap;
 typedef BeamId2ValErrMap::iterator             BeamId2ValErrMapIter;
 typedef BeamId2ValErrMap::const_iterator       BeamId2ValErrMapConstIter;
 
 typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
 typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
+
+typedef std::map<EPolarimeterId, TgtOrient2ValErrMap> PolId2TgtOrient2ValErrMap;
+typedef PolId2TgtOrient2ValErrMap::iterator           PolId2TgtOrient2ValErrMapIter;
+
+typedef std::map<EPolarimeterId, TgtOrient2TGraphMap> PolId2TgtOrient2TGraphMap;
+typedef PolId2TgtOrient2TGraphMap::iterator           PolId2TgtOrient2TGraphMapIter;
+
 typedef std::map<EBeamId, TgtOrient2ValErrMap> BeamId2TgtOrient2ValErrMap;
 typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
 
@@ -89,6 +100,7 @@ typedef RingId2ValErrMap::const_iterator       RingId2ValErrMapConstIter;
 
 typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
 typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
+
 typedef std::map<ERingId, TgtOrient2ValErrMap> RingId2TgtOrient2ValErrMap;
 typedef RingId2TgtOrient2ValErrMap::iterator   RingId2TgtOrient2ValErrMapIter;
 
@@ -124,7 +136,6 @@ typedef SpinStateSet::iterator             SpinStateSetIter;
 typedef std::set<EPolarimeterId>           PolarimeterIdSet;
 typedef PolarimeterIdSet::iterator         PolarimeterIdSetIter;
 typedef PolarimeterIdSet::const_iterator   PolarimeterIdSetConstIter;
-
 
 
 typedef std::set<UShort_t>          ChannelSet;

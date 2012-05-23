@@ -75,13 +75,16 @@ void AnaFillExternResult::ReadInfo(std::ifstream &file)
    Int_t iline = 0;
 
    // loop over the entries
-   while ( file.good() && !file.eof() )
+   while ( file.good() )
    {
       iline++;
 
       file >> time >> bluIntens >> yelIntens >> bluRotatorStar >>
               yelRotatorStar >> bluRotatorPhenix >> yelRotatorPhenix >>
               bluSnakeCurrent >> yelSnakeCurrent;
+
+      if (file.eof()) break;
+
       //printf("file: %s\n", fileId.c_str());
       //cout << time << " " << bluIntens << " " << bluRotatorStar << " " << bluRotatorPhenix << " " << bluSnakeCurrent
       //             << " " << yelIntens << " " << yelRotatorStar << " " << yelRotatorPhenix << " " << yelSnakeCurrent << endl;

@@ -23,9 +23,7 @@ protected:
    UInt_t            fMinFill;
    UInt_t            fMaxFill;
    Bool_t            fDoCalcPolarNorm;
-   
 
-   FILE             *fFilePhp;      //!
    BeamEnergySet     fBeamEnergies;
 
    void       CalcPolarNorm();
@@ -53,21 +51,20 @@ public:
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
 
-   void       Configure(MAsymAnaInfo &mainfo);
-   void       AdjustMinMaxFill();
-   void       AddMeasResult(AnaMeasResult &result);
-   void       AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
-   void       Process(DrawObjContainer *ocOut=0);
-   ValErrPair GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
-   //ValErrPair GetBeamPolarExp(UInt_t fillId, ERingId ringId);
-   void       UpdateInsertDb();
-   ValErrPair GetNormJetCarbon(EPolarimeterId polId);
-   ValErrPair GetNormProfPolar(EPolarimeterId polId);
-   void       SetFilePhp(FILE *f=stdout);
-
-protected:
-
-   void ReadHJInfo(std::ifstream &file);
+   void           Configure(MAsymAnaInfo &mainfo);
+   void           AdjustMinMaxFill();
+   UInt_t         GetMinFill() const { return fMinFill; }
+   UInt_t         GetMaxFill() const { return fMaxFill; }
+   void           AddMeasResult(AnaMeasResult &result);
+   void           AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
+   void           AddHJMeasResult();
+   void           Process(DrawObjContainer *ocOut=0);
+   ValErrPair     GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
+   AnaFillResult* GetAnaFillResult(UInt_t fillId);
+   //ValErrPair     GetBeamPolarExp(UInt_t fillId, ERingId ringId);
+   void           UpdateInsertDb();
+   ValErrPair     GetNormJetCarbon(EPolarimeterId polId);
+   ValErrPair     GetNormProfPolar(EPolarimeterId polId);
 
    ClassDef(AnaGlobResult, 1)
 };

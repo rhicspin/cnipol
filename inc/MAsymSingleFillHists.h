@@ -21,9 +21,14 @@
  */
 class MAsymSingleFillHists : public DrawObjContainer
 {
-private:
+protected:
 
    UInt_t fFillId;
+
+public: 
+
+   TH1* fhAsymVsBunchId_X_BLU;
+   TH1* fhAsymVsBunchId_X_YEL;
 
 public:
 
