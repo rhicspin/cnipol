@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
 {
    setbuf(stdout, NULL);
 
-
    // Create a default one
    gMeasInfo = new MeasInfo();
 
@@ -62,6 +61,7 @@ int main(int argc, char *argv[])
 	string filelist     = mAsymAnaInfo.GetMListFullPath();
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
+	mAsymRoot.SetAnaGlobResult(&gAnaGlobResult);
 
    DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
 
@@ -236,6 +236,7 @@ int main(int argc, char *argv[])
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
 
+   gAnaGlobResult.AddHJMeasResult();
    gAnaGlobResult.Process(gH);
    //gAnaGlobResult.Print("all");
    //gAnaGlobResult.Print();
@@ -268,6 +269,7 @@ int main(int argc, char *argv[])
 
    gH->Write();
 
+   mAsymRoot.Print();
    mAsymRoot.Close();
 
    //gAnaGlobResult.Print("all");

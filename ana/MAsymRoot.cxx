@@ -1,9 +1,12 @@
 
-#include "TROOT.h"
-
 #include "MAsymRoot.h"
 
 #include <climits>
+
+#include "TROOT.h"
+
+#include "AnaGlobResult.h"
+
 
 ClassImp(MAsymRoot)
 
@@ -11,9 +14,10 @@ using namespace std;
 
 
 MAsymRoot::MAsymRoot() : TFile(),
-   fAnaInfo(0), fHists(0), 
+   fAnaInfo(0), fHists(0), fAnaGlobResult(0), 
    fMinFill(UINT_MAX), fMaxFill(0),
-   fMinTime(UINT_MAX), fMaxTime(0)
+   fMinTime(UINT_MAX), fMaxTime(0),
+   fFilePhp(0)
 {
    gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("styles/style_asym.C");
@@ -23,7 +27,8 @@ MAsymRoot::MAsymRoot() : TFile(),
 MAsymRoot::MAsymRoot(MAsymAnaInfo &anaInfo) : TFile(anaInfo.GetRootFileName().c_str(), "RECREATE", "MAsymRoot output file"),
    fAnaInfo(&anaInfo), fHists(0),
    fMinFill(UINT_MAX), fMaxFill(0),
-   fMinTime(UINT_MAX), fMaxTime(0)
+   fMinTime(UINT_MAX), fMaxTime(0),
+   fFilePhp(anaInfo.GetAnaInfoFile())
 {
    printf("Created ROOT file: %s\n", GetName());
 
@@ -39,6 +44,13 @@ MAsymRoot::~MAsymRoot()
 void MAsymRoot::SetHists(DrawObjContainer &hists)
 { //{{{
    fHists = &hists;
+} //}}}
+
+
+/** */
+void MAsymRoot::SetAnaGlobResult(AnaGlobResult *agr)
+{ //{{{
+   fAnaGlobResult = agr;
 } //}}}
 
 
@@ -85,4 +97,28 @@ void MAsymRoot::SetMinMaxTime(UInt_t time)
 { //{{{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;
+} //}}}
+
+
+/** */
+void MAsymRoot::Print(const Option_t* opt) const
+{ //{{{
+   Info("Print", "Called");
+   PrintAsPhp(fFilePhp);
+} //}}}
+
+
+/** */
+void MAsymRoot::PrintAsPhp(FILE *f) const
+{ //{{{
+   fprintf(f, "<?php\n");
+
+   fprintf(f, "\n// AnaGlobResult data\n");
+   if (!fAnaGlobResult) {
+      Error("PrintAsPhp", "fAnaGlobResult not defined");
+   } else {
+      fAnaGlobResult->PrintAsPhp(f);
+   }
+
+   fprintf(f, "?>\n");
 } //}}}

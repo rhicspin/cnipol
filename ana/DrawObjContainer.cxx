@@ -194,7 +194,7 @@ DrawObjContainer::~DrawObjContainer()
 
    for (io=o.begin(); io!=o.end(); ++io) {
       //sprintf(cName, "c_%s", io->first.c_str());
-      cout << "Deleting: " << io->first << endl;
+      //cout << "Deleting: " << io->first << endl;
       if (io->second) {
          io->second->Delete();
          //delete io->second;

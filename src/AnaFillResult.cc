@@ -23,13 +23,13 @@ using namespace std;
 /** */
 AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fAnaGlobResult(0), fStartTime(LONG_MAX), fAnaFillExternResult(0),
-   fPCPolarGraphs(), fPCPolarInjGraphs(), fPolProfRGraphs(),
+   fPCPolarGraphs(), fPCPolarInjGraphs(), fPCPolarRGraphs(),
    fPCPolarFitRes(), fPolProfRFitRes(),
    //fAsymVsBunchId_X(0),
    fFlattopEnergy(0),
    fFillType(kFILLTYPE_UNKNOWN),
    fAnaMeasResults(), fMeasInfos(), fPCPolars(), fPCPolarUnWs(), fPCPolarsByTargets(),
-   fPCProfPolars(), fHJPolars(), fBeamPolars(), fBeamCollPolars(),
+   fPCProfPolars(), fHJPolars(), fHJAsyms(), fBeamPolars(), fBeamCollPolars(),
    fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fMeasTgtOrients(),
    fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
 {
@@ -358,7 +358,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       ValErrPair polProfRValErr = anaMeasResult.GetPolProfR();
 
-      AppendToPolProfRGraph(polId, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
+      AppendToPolProfRGraph(polId, tgtOrient, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
 
       // The maximum energy achieved in this fill
       if (measInfo.GetBeamEnergy() > fFlattopEnergy)
@@ -376,7 +376,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
       }
 
       if (ocOut)
-         CalcAvrgPolarByBunch(anaMeasResult, measInfo, *ocOut);
+         CalcAvrgAsymByBunch(anaMeasResult, measInfo, *ocOut);
    }
 
    // do whatever with the combined fill results
@@ -466,13 +466,18 @@ TGraphErrors* AnaFillResult::GetPCPolarInjGraph(EPolarimeterId polId)
 
 
 /** Function cannot return empty graph. */
-TGraphErrors* AnaFillResult::GetPolProfRGraph(EPolarimeterId polId)
+TGraphErrors* AnaFillResult::GetPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient)
 { //{{{
-   if (fPolProfRGraphs.find(polId) == fPolProfRGraphs.end()) {
-      fPolProfRGraphs[polId] = new TGraphErrors(0);
+   if (fPCPolarRGraphs.find(polId) == fPCPolarRGraphs.end()) {
+      fPCPolarRGraphs[polId][tgtOrient] = new TGraphErrors(0);
+   } else {
+
+      if (fPCPolarRGraphs[polId].find(tgtOrient) == fPCPolarRGraphs[polId].end()) {
+         fPCPolarRGraphs[polId][tgtOrient] = new TGraphErrors(0);
+      } 
    }
 
-   return (TGraphErrors*) fPolProfRGraphs[polId];
+   return (TGraphErrors*) fPCPolarRGraphs[polId][tgtOrient];
 } //}}}
 
 
@@ -512,22 +517,37 @@ ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId)
 
 
 /** */
-ValErrPair AnaFillResult::GetPolarHJ(EPolarimeterId polId)
+ValErrPair AnaFillResult::GetHJPolar(EPolarimeterId polId)
 { //{{{
    ERingId ringId = RunConfig::GetRingId(polId);
-   return GetPolarHJ(ringId);
+   return GetHJPolar(ringId);
 } //}}}
 
 
 /** */
-ValErrPair AnaFillResult::GetPolarHJ(ERingId ringId)
+ValErrPair AnaFillResult::GetHJPolar(ERingId ringId)
 { //{{{
    return fHJPolars.find(ringId) == fHJPolars.end() ? ValErrPair(0, -1) : fHJPolars[ringId];
 } //}}}
 
 
 /** */
-ValErrPair AnaFillResult::GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *normJC)
+ValErrPair AnaFillResult::GetHJAsym(EPolarimeterId polId)
+{ //{{{
+   ERingId ringId = RunConfig::GetRingId(polId);
+   return GetHJAsym(ringId);
+} //}}}
+
+
+/** */
+ValErrPair AnaFillResult::GetHJAsym(ERingId ringId)
+{ //{{{
+   return fHJAsyms.find(ringId) == fHJAsyms.end() ? ValErrPair(0, -1) : fHJAsyms[ringId];
+} //}}}
+
+
+/** */
+ValErrPair AnaFillResult::GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC)
 { //{{{
    Double_t norm = 1;
 
@@ -547,7 +567,7 @@ ValErrPair AnaFillResult::GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *norm
 
 
 /** */
-ValErrPair AnaFillResult::GetPolarPCUnW(EPolarimeterId polId, PolId2ValErrMap *normJC)
+ValErrPair AnaFillResult::GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *normJC)
 { //{{{
    Double_t norm = 1;
 
@@ -640,13 +660,13 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
       ValErrPair polarD(-1, -1);
 
       if (ringId == kBLUE_RING) {
-         polarU = GetPolarPC(kB1U, &normJC);
-         polarD = GetPolarPC(kB2D, &normJC);
+         polarU = GetPCPolar(kB1U, &normJC);
+         polarD = GetPCPolar(kB2D, &normJC);
       }
 
       if (ringId == kYELLOW_RING) {
-         polarU = GetPolarPC(kY2U, &normJC);
-         polarD = GetPolarPC(kY1D, &normJC);
+         polarU = GetPCPolar(kY2U, &normJC);
+         polarD = GetPCPolar(kY1D, &normJC);
       }
 
       if (polarU.second < 0 || polarD.second < 0) {
@@ -678,8 +698,8 @@ PolId2ValErrMap AnaFillResult::CalcSystJvsCPolar(PolId2ValErrMap &normJC)
    {
       EPolarimeterId polId   = iPolar->first;
       ERingId        ringId  = RunConfig::GetRingId(polId);
-      ValErrPair     polarPC = GetPolarPC(polId, &normJC);  // Get normalized p-Carbon polarization
-      ValErrPair     polarHJ = GetPolarHJ(ringId);
+      ValErrPair     polarPC = GetPCPolar(polId, &normJC);  // Get normalized p-Carbon polarization
+      ValErrPair     polarHJ = GetHJPolar(ringId);
 
       // Skip invalid measurements
       if (polarPC.second < 0 || polarHJ.second < 0) {
@@ -998,12 +1018,12 @@ ValErrPair AnaFillResult::CalcPolProfP(ValErrPair R, ValErrPair Pmax)
 
 
 /** */
-void AnaFillResult::CalcAvrgPolarByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const
+void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const
 { //{{{
    MAsymFillHists *fillHists;
 
    if (ocOut.d.find("fills") == ocOut.d.end() ) {
-      Error("CalcAvrgPolarByBunch", "No output container 'fills' found");
+      Error("CalcAvrgAsymByBunch", "No output container 'fills' found");
       return;
    } else {
       fillHists = (MAsymFillHists*) ocOut.d.find("fills")->second;
@@ -1231,13 +1251,16 @@ void AnaFillResult::FitPolarGraphs()
 
 
 /** */
-void AnaFillResult::AddHjetPolar(ERingId ringId, ValErrPair ve)
+void AnaFillResult::SetHJPolar(ERingId ringId, ValErrPair ve)
 { //{{{
-   //RingId2ValErrMapIter iBeamRes = fHJPolars.find(ringId);
-   //if (iBeamRes == fHJPolars.end())
-   //else
-
    fHJPolars[ringId] = ve;
+} //}}}
+
+
+/** */
+void AnaFillResult::SetHJAsym(ERingId ringId, ValErrPair ve)
+{ //{{{
+   fHJAsyms[ringId] = ve;
 } //}}}
 
 
@@ -1258,8 +1281,8 @@ void AnaFillResult::AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Do
 
 
 /** */
-void AnaFillResult::AppendToPolProfRGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
+void AnaFillResult::AppendToPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye)
 { //{{{
-   TGraphErrors *graph = GetPolProfRGraph(polId);
+   TGraphErrors *graph = GetPolProfRGraph(polId, tgtOrient);
    utils::AppendToGraph(graph, x, y, xe, ye);
 } //}}}

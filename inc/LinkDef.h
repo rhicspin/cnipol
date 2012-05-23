@@ -11,6 +11,7 @@
 #pragma link C++ class AnaEvent+;
 #pragma link C++ class AnaEventId+;
 #pragma link C++ class AnaInfo+;
+#pragma link C++ class AsymAnaInfo+;
 #pragma link C++ class AnaMeasResult+;
 #pragma link C++ class Calibrator+;
 #pragma link C++ class AlphaCalibrator+;

@@ -18,9 +18,9 @@ class AnaMeasResult;
 
 //typedef std::set<AnaMeasResult>             AnaMeasResultSet;
 //typedef std::set<AnaMeasResult>::iterator   AnaMeasResultSetIter;
-typedef std::map<std::string, AnaMeasResult>                   AnaMeasResultMap;
-typedef std::map<std::string, AnaMeasResult>::iterator         AnaMeasResultMapIter;
-typedef std::map<std::string, AnaMeasResult>::const_iterator   AnaMeasResultMapConstIter;
+typedef std::map<std::string, AnaMeasResult> AnaMeasResultMap;
+typedef AnaMeasResultMap::iterator           AnaMeasResultMapIter;
+typedef AnaMeasResultMap::const_iterator     AnaMeasResultMapConstIter;
 
 
 /** */

@@ -35,9 +35,9 @@ protected:
    time_t               fStartTime;
    AnaFillExternResult *fAnaFillExternResult;
 
-   PolId2TGraphMap      fPCPolarGraphs;
-   PolId2TGraphMap      fPCPolarInjGraphs;
-   PolId2TGraphMap      fPolProfRGraphs;
+   PolId2TGraphMap            fPCPolarGraphs;
+   PolId2TGraphMap            fPCPolarInjGraphs;
+   PolId2TgtOrient2TGraphMap  fPCPolarRGraphs;
 
    TFitResultPtr        fPCPolarFitRes;
    TFitResultPtr        fPolProfRFitRes;
@@ -51,11 +51,12 @@ public:
    AnaMeasResultMap             fAnaMeasResults;
    MeasInfoMap                  fMeasInfos;
 
-   PolId2ValErrMap              fPCPolars;       // Nominal polarization measurement results
-   PolId2ValErrMap              fPCPolarUnWs;       // Nominal polarization measurement results
+   PolId2ValErrMap              fPCPolars;          // (Nominal) intensity weighted polarization measurement results
+   PolId2ValErrMap              fPCPolarUnWs;       // 
    TargetUId2ValErrMap          fPCPolarsByTargets;
    PolId2ValErrMap              fPCProfPolars;     // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
    RingId2ValErrMap             fHJPolars;
+   RingId2ValErrMap             fHJAsyms;
 
    RingId2ValErrMap             fBeamPolars;     //! not used
    RingId2ValErrMap             fBeamCollPolars; //! not used
@@ -103,13 +104,15 @@ public:
    Bool_t            IsValidFlattopMeas(const MeasInfo &measInfo);
    TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
    TGraphErrors*     GetPCPolarInjGraph(EPolarimeterId polId);
-   TGraphErrors*     GetPolProfRGraph(EPolarimeterId polId);
+   TGraphErrors*     GetPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient);
    ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
    ValErrPair        GetIntensDecay(ERingId ringId);
-   ValErrPair        GetPolarHJ(EPolarimeterId polId);
-   ValErrPair        GetPolarHJ(ERingId ringId);
-   ValErrPair        GetPolarPC(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
-   ValErrPair        GetPolarPCUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
+   ValErrPair        GetHJPolar(EPolarimeterId polId);
+   ValErrPair        GetHJPolar(ERingId ringId);
+   ValErrPair        GetHJAsym(EPolarimeterId polId);
+   ValErrPair        GetHJAsym(ERingId ringId);
+   ValErrPair        GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
+   ValErrPair        GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
    //ValErrPair        GetPolarBeam(EBeamId beamId);
    ValErrPair        GetPolarBeam(ERingId ringId);
    ValErrPair        GetSystUvsDPolar(ERingId ringId);
@@ -129,14 +132,15 @@ public:
    ValErrPair        CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair        CalcPolProfP(ValErrPair R, ValErrPair Pmax);
-   void              CalcAvrgPolarByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
+   void              CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
    void              UpdateExternGraphRange();
    void              FitExternGraphs();
    void              FitPolarGraphs();
-   void              AddHjetPolar(ERingId ringId, ValErrPair ve);
+   void              SetHJPolar(ERingId ringId, ValErrPair ve);
+   void              SetHJAsym(ERingId ringId, ValErrPair ve);
    void              AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
    void              AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
-   void              AppendToPolProfRGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void              AppendToPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
 
    ClassDef(AnaFillResult, 1)
 };
