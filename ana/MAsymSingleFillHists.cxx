@@ -214,7 +214,7 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    styleMarker.Copy(*hist);
    o[shName] = hist;
 
-   // Profile r
+   // Profile R
    TGraphErrors *grRVsEnergy = new TGraphErrors();
    grRVsEnergy->SetName("grRVsEnergy");
    grRVsEnergy->SetMarkerStyle(kFullCircle);
@@ -223,14 +223,14 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
    sprintf(hName, "hRVsEnergy_%s_%s", strDirName.c_str(), sPolId.c_str());
    o[hName] = new TH2F(hName, hName, 1, 0, 450, 1, -0.1, 1);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;r;");
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; R;");
    ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsEnergy, "p");
 
    sprintf(hName, "hRVsEnergyBinned_%s_%s", strDirName.c_str(), sPolId.c_str());
    o[hName] = new TH1F(hName, hName, 50, 0, 450);
    ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-0.1, 1);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;r;");
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; R;");
    ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
    ((TH1*) o[hName])->SetMarkerSize(1);
    ((TH1*) o[hName])->SetMarkerColor(color);
@@ -332,7 +332,7 @@ void MAsymSingleFillHists::Fill(EventConfig &rc)
    //   graphErrs->SetPointError(graphNEntries, 0, polarizationErr);
    //}
 
-   // Profiles r
+   // Profiles R
    sprintf(hName, "hRVsEnergy_%s_%s", strDirName.c_str(), sPolId.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsEnergy");
    graphNEntries = graphErrs->GetN();
@@ -363,7 +363,7 @@ void MAsymSingleFillHists::PostFill()
 
       ((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
 
-      // Profiles r
+      // Profiles R
       sprintf(hName, "hRVsEnergyBinned_%s_%s", strDirName.c_str(), sPolId.c_str());
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsEnergy");
 
@@ -442,7 +442,6 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
 
       utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
-
    }
 
 
