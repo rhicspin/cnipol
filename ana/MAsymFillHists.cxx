@@ -169,7 +169,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 
    sprintf(hName, "hPolarVsEnergy_%s", sPolId.c_str());
    o[hName] = new TH2F(hName, hName, 1, 0, 450, 1, 0, 100);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;Polarization, %;");
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; Polarization, %;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsEnergy, "p");
 
    TGraphErrors *grPolarVsFillTime = new TGraphErrors();
@@ -181,7 +181,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    sprintf(hName, "hPolarVsFillTime_%s", sPolId.c_str());
    //o[hName] = new TH2F(hName, hName, 12, 0, 12*3600, 60, 20, 80);
    o[hName] = new TH2F(hName, hName, 12, 0, 12*3600, 100, 20, 100);
-   ((TH1*) o[hName])->SetTitle(";Time in Fill, hours;Polarization, %;");
+   ((TH1*) o[hName])->SetTitle("; Time in Fill, hours; Polarization, %;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsFillTime, "p");
    ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(3600*6, "gmt");
    //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "local");
@@ -192,7 +192,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    shName = "hPolarVsMeasId_" + sPolId;
    hist = new TH1D(shName.c_str(), shName.c_str(), 10, 0.5, 10.5);
    hist->GetYaxis()->SetRangeUser(0.7, 1.3);
-   hist->SetTitle(";Meas. Id;P/P_{first meas.};");
+   hist->SetTitle("; Measurement Id; P/P_{first meas.};");
    hist->SetOption("E1");
    styleMarker.Copy(*hist); o[shName] = hist;
 
@@ -200,7 +200,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    shName = "hProfilePolarMaxVsMeasId_" + sPolId;
    o[shName] = new TH1D(shName.c_str(), shName.c_str(), 10, 0.5, 10.5);
    ((TH1*) o[shName])->GetYaxis()->SetRangeUser(0.7, 1.3);
-   ((TH1*) o[shName])->SetTitle(";Meas. Id;P_{0}/P_{0, first meas.};");
+   ((TH1*) o[shName])->SetTitle("; Measurement Id; P_{0}/P_{0, first meas.};");
    ((TH1*) o[hName])->SetOption("NOIMG");
 
    // Profile r
@@ -258,7 +258,7 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    // Profile R
    shName = "hProfileRVsMeasId_" + sPolId;
    hist = new TH1D(shName.c_str(), shName.c_str(), 10, 0.5, 10.5);
-   hist->SetTitle(";Meas. Id;R;");
+   hist->SetTitle("; Measurement Id; R;");
    hist->SetOption("E1 NOIMG");
    hist->GetYaxis()->SetRangeUser(-0.5, 0.5);
    styleMarker.Copy(*hist);
