@@ -27,7 +27,7 @@ bgx_limit() {
     done
     if [[ "$1" != "-" ]] ; then
         #nice -n 5 $* &
-        ionice -c2 -n3 $* &
+        ionice -c2 -n7 $* &
         #$* &
         bgxgrp="${bgxgrp} $!"
         # to avoid clashing while updating run database
