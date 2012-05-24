@@ -4,13 +4,13 @@ echo "Setting environmet variables:"
 
 # ROOT variables
 if [ -z "$ROOTSYS" ]; then
-   source /afs/rhic.bnl.gov/opt/phenix/root-5.27.04/bin/thisroot.sh
+   source /afs/rhic.bnl.gov/opt/phenix/root-5.30.03/bin/thisroot.sh
 fi
 
 # CERNLIB variables
 if [ -z "$CERNLIB_DIR" ]; then
-	export CERNLIB_DIR=/cern/2006b
-	export PATH+=:$CERNLIB_DIR/bin
+   export CERNLIB_DIR=/cern/2006b
+   export PATH+=:$CERNLIB_DIR/bin
 fi
 
 # MySQL
@@ -35,11 +35,11 @@ export CNIPOL_DATA_DIR=/eicdata/eic0005/run11/data
 export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run11/root
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
-	export PATH+=:$CNIPOL_DIR/bin
+   export PATH+=:$CNIPOL_DIR/bin
 fi
 
 if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
-	export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
+   export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
 fi
 
 # Older variables
@@ -51,7 +51,7 @@ export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
 export UTILS_INC_DIR=~dsmirnov/rootmacros/
 
 if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
-	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
+   export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
 fi
 
 # CDEV variables

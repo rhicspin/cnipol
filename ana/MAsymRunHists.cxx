@@ -971,16 +971,18 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    // Dead layer
    sprintf(hName, "hDLVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grDLVsMeas");
-   nPoints = graphErrs->GetN();
-   graphErrs->SetPoint(nPoints, runId, dl);
-   graphErrs->SetPointError(nPoints, 0, dlErr);
+   //nPoints = graphErrs->GetN();
+   //graphErrs->SetPoint(nPoints, runId, dl);
+   //graphErrs->SetPointError(nPoints, 0, dlErr);
+	utils::AppendToGraph(graphErrs, runId, dl, 0, dlErr);
 
    // DL vs time
    sprintf(hName, "hDLVsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grDLVsTime");
-   nPoints = graphErrs->GetN();
-   graphErrs->SetPoint(nPoints, measStartTime, dl);
-   graphErrs->SetPointError(nPoints, 0, dlErr);
+   //nPoints = graphErrs->GetN();
+   //graphErrs->SetPoint(nPoints, measStartTime, dl);
+   //graphErrs->SetPointError(nPoints, 0, dlErr);
+	utils::AppendToGraph(graphErrs, measStartTime, dl, 0, dlErr);
 
 
    // Banana fit params
@@ -1166,13 +1168,14 @@ void MAsymRunHists::PostFill()
 
          hist  = (TH1*) oc_pol->o["hDLVsTime_" + sPolId + "_" + sBeamE];
          graphErrs = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grDLVsTime");
-         graphErrs->ComputeRange(xmin, ymin, xmax, ymax);
-         ymean = graphErrs->GetMean(2);
-         //xdelta = fabs(xmax - xmin)*0.1;
-         ydelta = (ymax - ymin) <= 0 ? 0.1 : (ymax - ymin)*0.1;
-         //hist->GetXaxis()->SetLimits(xmin, xmax);
-         //hist->GetYaxis()->SetLimits(ymin - ydelta, ymax + ydelta);
-         hist->GetYaxis()->SetLimits(ymean - 20, ymean + 20);
+			utils::UpdateLimitsFromGraphs(hist, 2);
+         //graphErrs->ComputeRange(xmin, ymin, xmax, ymax);
+         //ymean = graphErrs->GetMean(2);
+         ////xdelta = fabs(xmax - xmin)*0.1;
+         //ydelta = (ymax - ymin) <= 0 ? 0.1 : (ymax - ymin)*0.1;
+         ////hist->GetXaxis()->SetLimits(xmin, xmax);
+         ////hist->GetYaxis()->SetLimits(ymin - ydelta, ymax + ydelta);
+         //hist->GetYaxis()->SetLimits(ymean - 20, ymean + 20);
 
          TGraphErrors *graph;
 
