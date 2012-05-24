@@ -160,8 +160,9 @@ int main(int argc, char *argv[])
       if ( polarization < 10 || polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
-          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.01) || // exclude large values with small errors
+          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) || // exclude large values with small errors
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) || // exclude large values with large errors
+          (profileRatioErr/TMath::Abs(profileRatio) > 2.000) ||
           (TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
          )
       {
