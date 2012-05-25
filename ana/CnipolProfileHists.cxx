@@ -366,9 +366,13 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
       hAsymVsDelim4Det->SetBinContent(ib, asym);
       hAsymVsDelim4Det->SetBinError(ib, asymErr);
 
-      Int_t nPoint = grAsymVsIntensProfile->GetN();
-      grAsymVsIntensProfile->SetPoint( nPoint, intens, asym);
-      grAsymVsIntensProfile->SetPointError( nPoint, intensErr, asymErr);
+      //asym    = hAsymVsDelim4Ch_asym->GetBinContent(ib);
+      //asymErr = hAsymVsDelim4Ch_asym->GetBinError(ib);
+
+      //Int_t nPoint = grAsymVsIntensProfile->GetN();
+      //grAsymVsIntensProfile->SetPoint( nPoint, intens, asym);
+      //grAsymVsIntensProfile->SetPointError( nPoint, intensErr, asymErr);
+      utils::AppendToGraph(grAsymVsIntensProfile, intens, asym, intensErr, asymErr);
 
       hPolarProfile->SetBinContent(ib, asym/gAnaMeasResult->A_N[1]);
       hPolarProfile->SetBinError(ib, asymErr/gAnaMeasResult->A_N[1]);
@@ -565,7 +569,7 @@ void CnipolProfileHists::PostFill()
    mfPow->SetParameter(0, 0.5);
    mfPow->SetParLimits(0, 0, 1);
    mfPow->SetParameter(1, 0.1);
-   mfPow->SetParLimits(1, -2, 2);
+   mfPow->SetParLimits(1, -2, 20);
 
    fitres = grPolarVsIntensProfile->Fit(mfPow, "M E R S");
 

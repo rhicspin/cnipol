@@ -5,7 +5,7 @@ using namespace std;
 
 
 /** */
-AsymDb::AsymDb()
+AsymDb::AsymDb() : TObject()
 {
 }
 

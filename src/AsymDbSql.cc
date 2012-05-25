@@ -9,7 +9,7 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() : fConnection(0) //: AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
+AsymDbSql::AsymDbSql() : AsymDb(), fConnection(0)
 {
    MseMeasInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
@@ -21,6 +21,7 @@ AsymDbSql::AsymDbSql() : fConnection(0) //: AsymDb() // : fMstMeasInfo() //fMstM
 /** */
 AsymDbSql::~AsymDbSql()
 {
+   CloseConnection();
 }
 
 
@@ -117,26 +118,17 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 
    //Query query;
 
-   //try {
    Query query = fConnection->query(sstr.str());
-   //} catch (const Exception& er) {
-   //   // Catch-all for any other MySQL++ exceptions
-   //   cerr << "Error: " << er.what() << endl;
-   //   return 0;
-   //}
 
    MseMeasInfoX* mseri = 0;
 
    cout << "Query: " << query << endl;
-   //query.execute();
 
+   //query.execute();
    //vector<MseMeasInfoX> res;
    //query.storein(res);
 
-   cout << "Query: " << query << endl;
-
    StoreQueryResult result;
-
 
    try {
       result = query.store();
