@@ -12,7 +12,7 @@
 #include "MAsymAnaInfo.h"
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
-#include "AsymDb.h"
+//#include "AsymDb.h"
 #include "RunConfig.h"
 #include "TargetInfo.h"
 
@@ -135,7 +135,7 @@ MAsymAnaInfo             *gMAsymAnaInfo;
 MeasInfo                 *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;
-AsymDb                   *gAsymDb;
+//AsymDb                   *gAsymDb;
 DbEntry                   gRunDb;
 RunConfig                 gRunConfig;
 atdata_struct             atdata;

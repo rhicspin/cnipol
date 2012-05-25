@@ -14,9 +14,9 @@
 #include "AsymHeader.h"
 #include "AsymCalculator.h"
 
-class  AsymDb;
+//class  AsymDb;
 class  AsymRoot;
-class  AsymDbFile;
+//class  AsymDbFile;
 class  AsymAnaInfo;
 class  MAsymAnaInfo;
 struct ErrorDetector;
@@ -80,7 +80,7 @@ extern MAsymAnaInfo                 *gMAsymAnaInfo;
 extern MeasInfo                     *gMeasInfo;
 extern AnaMeasResult                *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;
-extern AsymDb                       *gAsymDb;
+//extern AsymDb                       *gAsymDb;
 extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;
 extern DbEntry                       gRunDb;

@@ -5,7 +5,7 @@
 
 #include "mysql++.h"
 
-#include "AsymDb.h"
+//#include "AsymDb.h"
 #include "DbEntry.h"
 
 //#include "MstMeasInfo.h"
@@ -15,7 +15,7 @@
 #include "MseFillProfile.h"
 
 
-class AsymDbSql : public AsymDb {
+class AsymDbSql {//: public AsymDb {
 
 public:
 
@@ -28,7 +28,7 @@ public:
    void                     OpenConnection();
    void                     CloseConnection();
    DbEntry*                 Select(std::string runName="");
-   MseMeasInfoX*             SelectRun(std::string runName="");
+   MseMeasInfoX*            SelectRun(std::string runName="");
    MseFillPolarX*           SelectFillPolar(UInt_t fill);
    MseFillProfileX*         SelectFillProfile(UInt_t fill);
    std::vector<MseMeasInfoX> SelectPriorRuns(MseMeasInfoX& run);

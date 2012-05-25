@@ -4,7 +4,7 @@ echo "Setting environmet variables:"
 
 # ROOT variables
 if [ -z "$ROOTSYS" ]; then
-   source /afs/rhic.bnl.gov/opt/phenix/root-5.30.03/bin/thisroot.sh
+   source /eic/u/dsmirnov/eic0005/root_v5.34.00/bin/thisroot.sh
 fi
 
 # CERNLIB variables

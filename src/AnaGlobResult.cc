@@ -630,9 +630,9 @@ void AnaGlobResult::CalcPolarDependants()
 
 
 /** */
-void AnaGlobResult::UpdateInsertDb()
+void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
 { //{{{
-   if (!gAsymDb) {
+   if (!asymDbSql) {
       Error("UpdateInsertDb", "Cannot connect to MySQL DB");
       return;
    }
@@ -647,7 +647,7 @@ void AnaGlobResult::UpdateInsertDb()
       cout << endl;
       Info("UpdateInsert", "fill %d", fillId);
 
-      MseFillPolarX *ofill = gAsymDb->SelectFillPolar(fillId);
+      MseFillPolarX *ofill = asymDbSql->SelectFillPolar(fillId);
       MseFillPolarX *nfill = 0;
 
       if (ofill) { // if fill found in database copy it to new one
@@ -659,11 +659,11 @@ void AnaGlobResult::UpdateInsertDb()
       nfill->SetValues(fillRes);
       //nfill->Print();
 
-      gAsymDb->UpdateInsert(ofill, nfill);
+      asymDbSql->UpdateInsert(ofill, nfill);
 
 
       // Update profile table
-      MseFillProfileX *ofillProf = gAsymDb->SelectFillProfile(fillId);
+      MseFillProfileX *ofillProf = asymDbSql->SelectFillProfile(fillId);
       MseFillProfileX *nfillProf = 0;
 
       if (ofillProf) { // if fill found in database copy it to new one
@@ -675,10 +675,10 @@ void AnaGlobResult::UpdateInsertDb()
       nfillProf->SetValues(fillRes);
       //nfillProf->Print();
 
-      gAsymDb->UpdateInsert(ofillProf, nfillProf);
+      asymDbSql->UpdateInsert(ofillProf, nfillProf);
    }
 
-   gAsymDb->CloseConnection();
+   asymDbSql->CloseConnection();
 } //}}}
 
 

@@ -10,6 +10,7 @@
 #include "EventConfig.h"
 #include "DrawObjContainer.h"
 
+class AsymDbSql;
 
 
 /** */
@@ -62,7 +63,7 @@ public:
    ValErrPair     GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    AnaFillResult* GetAnaFillResult(UInt_t fillId);
    //ValErrPair     GetBeamPolarExp(UInt_t fillId, ERingId ringId);
-   void           UpdateInsertDb();
+   void           UpdateInsertDb(AsymDbSql *asymDbSql);
    ValErrPair     GetNormJetCarbon(EPolarimeterId polId);
    ValErrPair     GetNormProfPolar(EPolarimeterId polId);
 

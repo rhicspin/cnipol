@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
    gAsymRoot->GetMeasConfigs(gMeasInfo, gAsymAnaInfo, gAnaMeasResult);
 
-   gAsymDb = new AsymDbSql();
+   AsymDbSql *gAsymDb = new AsymDbSql();
 
    gAsymAnaInfo->ProcessOptions(argc, argv);
    gAsymAnaInfo->VerifyOptions();

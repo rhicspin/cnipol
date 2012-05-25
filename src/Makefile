@@ -24,7 +24,7 @@ SVN_ASYM_VERSION := $(shell svnversion -n $(CNIPOL_DIR))
 
 CC = g++
 #C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -O2 -w
-C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -g
+C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -g -fno-inline
 SOFLAGS = -shared -m32
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
