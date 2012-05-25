@@ -3,7 +3,7 @@
 
 #include <string>
 
-//#include "TObject.h"
+#include "TObject.h"
 
 #include "DbEntry.h"
 #include "MseMeasInfo.h"
@@ -12,8 +12,7 @@
 #include "MseFillProfile.h"
 
 
-//class AsymDb : public TObject {
-class AsymDb {
+class AsymDb : public TObject {
 
 public:
 

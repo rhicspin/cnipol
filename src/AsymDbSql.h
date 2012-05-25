@@ -5,21 +5,19 @@
 
 #include "mysql++.h"
 
-//#include "AsymDb.h"
+#include "AsymDb.h"
 #include "DbEntry.h"
 
-//#include "MstMeasInfo.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "MseFillPolar.h"
 #include "MseFillProfile.h"
 
 
-class AsymDbSql {//: public AsymDb {
+class AsymDbSql : public AsymDb {
 
 public:
 
-   //MseMeasInfo fMstMeasInfo; 
 	mysqlpp::Connection *fConnection;
 
    AsymDbSql();
