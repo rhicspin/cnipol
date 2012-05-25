@@ -55,12 +55,12 @@ int main(int argc, char *argv[])
 
    dbEntry->Print();
 
-   AsymDb *asymDb = new AsymDbSql();
+   //AsymDb *asymDb = new AsymDbSql();
 
-   asymDb->Select();
+   //asymDb->Select();
 
 
-   asymDb->Insert(dbEntry);
+   //asymDb->Insert(dbEntry);
 
    return 0;
 

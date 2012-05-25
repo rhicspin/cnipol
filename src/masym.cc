@@ -279,8 +279,8 @@ int main(int argc, char *argv[])
 
 	if (mAsymAnaInfo.fFlagUpdateDb)
    {
-      gAsymDb = new AsymDbSql();
-      gAnaGlobResult.UpdateInsertDb();
+      AsymDbSql *asymDbSql = new AsymDbSql();
+      gAnaGlobResult.UpdateInsertDb(asymDbSql);
    }
 
    return 1;

@@ -9,7 +9,7 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() : AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
+AsymDbSql::AsymDbSql() : fConnection(0) //: AsymDb() // : fMstMeasInfo() //fMstMeasInfo((const sql_varchar)"", 0, 0, 0, 0)
 {
    MseMeasInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
@@ -107,20 +107,46 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
    OpenConnection();
 
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("SelectRun", "Connection with MySQL server not established");
       return 0;
    }
 
-   string q = "select * from run_info where run_name=\"" + runName + "\"";
+   stringstream sstr;
 
-   Query query = fConnection->query(q);
+   sstr << "select * from `run_info` where `run_name` = '" << runName << "'";
+
+   //Query query;
+
+   //try {
+   Query query = fConnection->query(sstr.str());
+   //} catch (const Exception& er) {
+   //   // Catch-all for any other MySQL++ exceptions
+   //   cerr << "Error: " << er.what() << endl;
+   //   return 0;
+   //}
 
    MseMeasInfoX* mseri = 0;
 
    cout << "Query: " << query << endl;
    //query.execute();
 
-   if (StoreQueryResult result = query.store()) {
+   //vector<MseMeasInfoX> res;
+   //query.storein(res);
+
+   cout << "Query: " << query << endl;
+
+   StoreQueryResult result;
+
+
+   try {
+      result = query.store();
+   } catch (const Exception& er) {
+      // Catch-all for any other MySQL++ exceptions
+      cerr << "Error: " << er.what() << endl;
+      return 0;
+   }
+
+   if (result) {
       //cout << "We have:" << endl;
       //for (size_t i = 0; i < result.num_rows(); ++i) {
       //    cout << '\t' << result[i][0] << endl;
@@ -158,7 +184,7 @@ MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
    OpenConnection();
 
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("SelectFillPolar", "Connection with MySQL server not established");
       return 0;
    }
 
@@ -189,7 +215,7 @@ MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
 MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
 { //{{{
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("SelectFillProfile", "Connection with MySQL server not established");
       return 0;
    }
 
@@ -275,7 +301,7 @@ MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
 vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
 { //{{{
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("SelectPriorRuns", "Connection with MySQL server not established");
       vector<MseMeasInfoX> dummy;
       return dummy;
    }
@@ -323,7 +349,7 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
    OpenConnection();
 
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("SelectRunPeriod", "Connection with MySQL server not established");
       return mserp;
    }
 
@@ -401,7 +427,7 @@ void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
    OpenConnection();
 
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("UpdateInsert", "Connection with MySQL server not established");
       return;
    }
 
@@ -427,7 +453,7 @@ void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
 void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
 { //{{{
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("UpdateInsert", "Connection with MySQL server not established");
       return;
    }
 
@@ -451,7 +477,7 @@ void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
 void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
 { //{{{
    if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
+      Error("UpdateInsert", "Connection with MySQL server not established");
       return;
    }
 
