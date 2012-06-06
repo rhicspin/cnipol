@@ -24,7 +24,7 @@ class PlotHelper {
          $imgHref = $href;
       }
 
-      $html = "<a href=\"$imgHref\"><img $strWidth src=\"$imgSrc\"></a>";
+      $html = "<a href=\"$imgHref\"><img $strWidth src=\"$imgSrc\" class='thumbimage'></a>";
 		return $html;
    }
 }

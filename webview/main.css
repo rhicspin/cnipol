@@ -43,7 +43,7 @@ span.red {
 }
 
 .align_l {
-	text-align: left;
+	text-align: left !important;
 }
 
 .align_r {
@@ -56,8 +56,8 @@ span.red {
 }
 
 .align_cm {
-	text-align: center;
-	vertical-align: middle;
+	text-align: center !important;
+	vertical-align: middle !important;
 }
 
 .align_ct {
@@ -74,7 +74,7 @@ span.red {
 }
 
 .feature {
-	background-color: pink;
+	background-color: pink !important;
 }
 
 span.feature {
@@ -82,13 +82,31 @@ span.feature {
 }
 
 .bluPol {
-	background-color: #8bf;
+	background-color: #8bf !important;
    padding: 0.2em;
 }
 
 .yelPol {
-	background-color: #eea;
+	background-color: #eea !important;
    padding: 0.2em;
+}
+
+.bkgGreen {
+	background-color: #0f0 !important;
+   padding: 0.2em;
+}
+
+.bkgRed {
+	background-color: #f00 !important;
+   padding: 0.2em;
+}
+
+.frgGreen {
+	color: #0f0 !important;
+}
+
+.frgRed {
+	color: #f00 !important;
 }
 
 .bkg1 {
@@ -212,6 +230,10 @@ div.section {
    display: block;
 }
 
+.padding0 td {
+   padding: 0em !important;
+}
+
 .padding1 {
    padding: 0.2em;
 }
@@ -261,12 +283,62 @@ table.simple0 td, th {
    margin-right: auto;
    padding: 0;
    border: 1px solid black;
+   border-collapse:collapse;
 }
 
-table.simple td {
+table.simple00 {
    margin-left: auto;
    margin-right: auto;
-   padding: 1em;
-   border: 1px solid black;
+   padding: 0;
+   border: 0px none white;
+   table-layout: auto;
+   width: 1%;
 }
 
+table.simple00 td, th {
+	text-align: center;
+	vertical-align: top;
+}
+
+table.w80 {
+   width: 80% !important;
+}
+
+table.w100 {
+   width: 100% !important;
+}
+
+
+table.simple {
+   margin-left: auto;
+   margin-right: auto;
+   padding: 0.3em;
+   border-spacing: 0px;
+   background-color: #ffffff;
+}
+
+table.simple td, th {
+   border: 1px solid #aaa;
+   padding: 0.3em;
+   background-color: #fff;
+}
+
+tr.toprow2 td {
+   width: 50%;
+}
+
+tr.toprow3 td {
+   width: 33%;
+}
+
+tr.toprow4 td {
+   width: 25%;
+}
+
+tr.toprow5 td {
+   width: 20%;
+}
+
+tr.toprow6 td {
+   width: 20%;
+}

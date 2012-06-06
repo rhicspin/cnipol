@@ -348,7 +348,7 @@ print("</pre>");
 
 
 <p>
-<table border="1" cellpadding="4" cellspacing="0" align="center" width="100%">
+<table class="simple cntr" cellspacing=0 align=center>
 
 <?php
 
@@ -357,31 +357,34 @@ $header = "
    <th>Fill
 <!--   <th>Selected -->
 
-   <th class='bluPol'>Polarization, %<br>In collisions
-   <th class='bluPol'>Polarization, %<br>Beam
-   <th class='bluPol'>k_{coll}
+   <th>Type
+   <th>Flattop, GeV
+
+   <th class='bluPol'>Polarization,&nbsp;%<br>In collisions
+   <th class='bluPol'>Polarization,&nbsp;%<br>&nbsp;
    <!--<th class='bluPol'>\Delta {U vs. D}, %-->
    <!--<th class='bluPol'>\Delta {R}, %-->
 
-   <th class='yelPol'>Polarization, %<br>In collisions
-   <th class='yelPol'>Polarization, %<br>Beam
-   <th class='yelPol'>k_{coll}
+   <th class='yelPol'>Polarization,&nbsp;%<br>In collisions
+   <th class='yelPol'>Polarization,&nbsp;%<br>&nbsp;
    <!--<th class='yelPol'>\Delta {U vs. D}, %-->
    <!--<th class='yelPol'>\Delta {R}, %-->
 
-   <th class='bluPol'>Polarization, %<br>H-jet
-   <th class='bluPol'>Polarization, %<br>B1U
-   <th class='bluPol'>Polarization, %<br>B2D
+   <th class='bluPol'>Polarization,&nbsp;%<br>H-jet
+   <th class='bluPol'>Polarization,&nbsp;%<br>B1U
+   <th class='bluPol'>Polarization,&nbsp;%<br>B2D
    <th class='bluPol'>R_H<br>Horiz. profile
    <th class='bluPol'>R_V<br>Vert. profile
+   <th class='bluPol'><var>k</var><sub>coll</sub>
 <!--   <th class='bluPol'>Polarization, %<br>Horiz. profile-->
 <!--   <th class='bluPol'>Polarization, %<br>Vert. profile -->
 
-   <th class='yelPol'>Polarization, %<br>H-jet
-   <th class='yelPol'>Polarization, %<br>Y1D
-   <th class='yelPol'>Polarization, %<br>Y2U
+   <th class='yelPol'>Polarization,&nbsp;%<br>H-jet
+   <th class='yelPol'>Polarization,&nbsp;%<br>Y1D
+   <th class='yelPol'>Polarization,&nbsp;%<br>Y2U
    <th class='yelPol'>R_H<br>Horiz. profile
    <th class='yelPol'>R_V<br>Vert. profile
+   <th class='yelPol'><var>k</var><sub>coll</sub>
 <!--   <th class='yelPol'>Polarization, %<br>Horiz. profile-->
 <!--   <th class='yelPol'>Polarization, %<br>Vert. profile -->
 ";
@@ -411,6 +414,12 @@ foreach ($es as $e):
 
    if ($iRow % 50 == 0)
       print $header;
+
+   $strFillType = "&nbsp;";
+
+   if (isset($e['type']) && $e['type'] >= 0 ) $strFillType = $FILLTYPE[$e['type']];
+
+   $strBeamEnergy = isset($e['beam_energy']) ? sprintf("%6.0f", $e['beam_energy']) : "&nbsp;";
 
    $pairPolarBHJ = null;
    $pairPolarYHJ = null;
@@ -521,18 +530,19 @@ foreach ($es as $e):
 ?>
 
 <tr>
-   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$e['fill']?>&ana=run12_e255_testall"><?=$e['fill']?></a>
+   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$e['fill']?>&ana=run<?=$_GET['rp']?>"><?=$e['fill']?></a>
    <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$e['fill']?>'>-->
+
+   <td class='align_cm'><?=$strFillType?>
+   <td class='align_cm'><?=$strBeamEnergy?>
 
    <td class='align_cm bluPol'><b><?=$strPolarBColl?></b>
    <td class='align_cm bluPol'><?=polarPairToString($pairB_UD_Avrg)?>
-   <td class='align_cm bluPol'><?=$strScalePolarBColl?>
    <!--<td class='align_cm bluPol'><?=$strDeltaBUvsD?>-->
    <!--<td class='align_cm bluPol'><?=$strDeltaB_prof?>-->
 
    <td class='align_cm yelPol'><b><?=$strPolarYColl?></b>
    <td class='align_cm yelPol'><?=polarPairToString($pairYUDAvrg)?>
-   <td class='align_cm yelPol'><?=$strScalePolarYColl?>
    <!--<td class='align_cm yelPol'><?=$strDeltaYUvsD?>-->
    <!--<td class='align_cm yelPol'><?=$strDeltaY_prof?>-->
 
@@ -541,6 +551,7 @@ foreach ($es as $e):
    <td class=align_cm><?=polarPairToString($pairPolarB2D)?>
    <td class=align_cm><?=$strProfileB_V?>
    <td class=align_cm><?=$strProfileB_H?>
+   <td class=align_cm><?=$strScalePolarBColl?>
 <!--<td class=align_cm><?=$strProfPolarB_V?>-->
 <!--<td class=align_cm><?=$strProfPolarB_H?>-->
 
@@ -549,6 +560,7 @@ foreach ($es as $e):
    <td class=align_cm><?=polarPairToString($pairPolarY2U)?>
    <td class=align_cm><?=$strProfileY_V?>
    <td class=align_cm><?=$strProfileY_H?>
+   <td class=align_cm><?=$strScalePolarYColl?>
 <!--   <td class=align_cm><?=$strProfPolarY_V?>-->
 <!--   <td class=align_cm><?=$strProfPolarY_H?>-->
 
@@ -560,36 +572,46 @@ endforeach;
 
 
 $polarB_Coll_Avrg    = calcWeigtedAvrgErr($polarB_Colls);
+$polarY_Coll_Avrg    = calcWeigtedAvrgErr($polarY_Colls);
+
 $polarBAvrg          = calcWeigtedAvrgErr($polarBAvrgs);
+$polarYAvrg          = calcWeigtedAvrgErr($polarYAvrgs);
 
 $strPolarB_Coll_Avrg = polarPairToString($polarB_Coll_Avrg);
-$strPolarY_Coll_Avrg = polarPairToString(calcWeigtedAvrgErr($polarY_Colls));
+$strPolarY_Coll_Avrg = polarPairToString($polarY_Coll_Avrg);
 
 $strPolarBAvrg       = polarPairToString($polarBAvrg);
-$strPolarYAvrg       = polarPairToString(calcWeigtedAvrgErr($polarYAvrgs));
+$strPolarYAvrg       = polarPairToString($polarYAvrg);
 
 // calc relative uncertainty
 $polarB_Coll_RelErr    = $polarB_Coll_Avrg->first ? $polarB_Coll_Avrg->second/$polarB_Coll_Avrg->first*100. : 0;
 $strPolarB_Coll_RelErr = sprintf("%5.2f", $polarB_Coll_RelErr);
 
+$polarY_Coll_RelErr    = $polarY_Coll_Avrg->first ? $polarY_Coll_Avrg->second/$polarY_Coll_Avrg->first*100. : 0;
+$strPolarY_Coll_RelErr = sprintf("%5.2f", $polarY_Coll_RelErr);
+
 $polarBAvrg_RelErr     = $polarBAvrg->first ? $polarBAvrg->second/$polarBAvrg->first*100. : 0;
 $strPolarBAvrg_RelErr  = sprintf("%5.2f", $polarBAvrg_RelErr);
+
+$polarYAvrg_RelErr     = $polarYAvrg->first ? $polarYAvrg->second/$polarYAvrg->first*100. : 0;
+$strPolarYAvrg_RelErr  = sprintf("%5.2f", $polarYAvrg_RelErr);
 
 ?>
 
 <tr>
-   <th colspan=22>&nbsp;<br>&nbsp;
+   <th colspan=24>&nbsp;<br>&nbsp;
 
 <tr>
-   <th>Avrg.:
+   <th><img src=https://wiki.bnl.gov/rhicspin/upload/math/8/a/0/8a08c843dc36a67b7c8b92f42f9c1ae4.png>
 
-   <th class='bluPol align_ct'><?=$strPolarB_Coll_Avrg?><br><br>\Delta P/P = <?=$strPolarB_Coll_RelErr?> %
-   <th class='bluPol align_ct'><?=$strPolarBAvrg?><br><br>\Delta P/P = <?=$strPolarBAvrg_RelErr?> %
-   <th class='bluPol'>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+   <th class='bluPol align_ct'><?=$strPolarB_Coll_Avrg?>
+   <th class='bluPol align_ct'><?=$strPolarBAvrg?>
 
    <th class='yelPol align_ct'><?=$strPolarY_Coll_Avrg?>
    <th class='yelPol align_ct'><?=$strPolarYAvrg?>
-   <th class='yelPol'>&nbsp;
 
    <th class=align_ct><?=polarPairToString($pairBHJ_Avrg)?>
    <th class=align_ct><?=polarPairToString($pairB1U_Avrg)?><br><hr>
@@ -598,6 +620,7 @@ $strPolarBAvrg_RelErr  = sprintf("%5.2f", $polarBAvrg_RelErr);
    <th class=align_ct><?=polarPairToString($pairB2D_Avrg)?><br><hr>
        <?=polarPairToString($pairBHJ_B2D_Avrg)?>&nbsp;(H-jet|B2D)<br>
        <?=polarPairToString($pairB2D_BHJ_Avrg)?>&nbsp;(B2D|H-jet)<br>
+   <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;
 
@@ -610,9 +633,36 @@ $strPolarBAvrg_RelErr  = sprintf("%5.2f", $polarBAvrg_RelErr);
        <?=polarPairToString($pairY2U_YHJ_Avrg)?>&nbsp;(Y2U|H-jet)<br>
    <th>&nbsp;
    <th>&nbsp;
+   <th>&nbsp;
+
+<tr>
+   <th>
+   <img src=https://wiki.bnl.gov/rhicspin/upload/math/d/6/c/d6cfca0bac999e6cc65487d1a8f8dad7.png>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th class='bluPol align_cm'><?=$strPolarB_Coll_RelErr?>
+   <th class='bluPol align_cm'><?=$strPolarBAvrg_RelErr?>
+   <th class='yelPol align_cm'><?=$strPolarY_Coll_RelErr?>
+   <th class='yelPol align_cm'><?=$strPolarYAvrg_RelErr?>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
 
 </table>
 
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
+<p>&nbsp;
 <p>
 Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in this run:
 
