@@ -10,6 +10,14 @@ table.wikitable {
    color: black;
 }
 
+table.wikitable0 {
+   margin: 1em 1em 1em 1em;
+   background-color: #f9f9f9;
+   border: 0px #aaa solid;
+   border-collapse: collapse; 
+   color: black;
+}
+
 table.wikitable > tr > th,
 table.wikitable > tr > td,
 table.wikitable > * > tr > th,
@@ -38,6 +46,10 @@ table.cellpadded td {
 .cellpadded_top td {
    padding: 1.0em;
    vertical-align: top;
+}
+
+table.cntr0 {
+   margin: auto;
 }
 
 table.cntr {

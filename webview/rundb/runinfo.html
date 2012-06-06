@@ -9,7 +9,10 @@
 <html>
 <head>
   <title>p-Carbon Measurement <?=$gRunId?>: Offline Analysis Results</title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
 </head>
 
 <body bgcolor="#ffffff">
@@ -209,28 +212,26 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr>
    <td colspan=4>
-   <b>Channels:</b> <span class=feature>Total excluded:</span> <?=count($rc['fDisabledChannelsVec'])?>
+   <b>Channels:</b> <span class=feature>Total excluded:</span> <?=count($rc['fDisabledChannels'])?>
 	<br>
 
-   <table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+   <table class="simple w100 align_cm padding0" cellspacing=0 align=center>
    <?php
       $row1 = "";
 
       foreach($rc['fSiliconChannels'] as $chanId)
 		{
-		   $tdBkg = in_array($chanId, $rc['fDisabledChannelsVec']) ? "class=feature" : "";
+		   $tdBkg = in_array($chanId, $rc['fDisabledChannels']) ? "class='feature'" : "";
          $row1 .= "<td $tdBkg><a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">$chanId</a>";
 
          if ($chanId % 36 == 0) {
-            print "<tr class=align_cm>$row1\n";
+            print "<tr>$row1\n";
             $row1 = "";
          }
       }
    ?>
    </table>
 
-<tr>
-   <td colspan=4>
 <?php
    //$row1 = "";
    $row2 = "";
@@ -240,7 +241,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
    foreach ($rc['fBeamBunches'] as $bunchId => $bunch)
    {
-      if ($iCell % 10 == 0) {
+      if ($iCell % 8 == 0) {
          if ($bkgCellColor == "#fff") $bkgCellColor = "#ddd";
          else if ($bkgCellColor == "#ddd") $bkgCellColor = "#fff";
       }
@@ -250,20 +251,21 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
       //$row1 .= "<td>$bunchId";
       $row2 .= "<td class=align_cm style='background-color: $bkgCellColor;'>{$bunch['fIsFilled']}";
       $row3 .= "<td class=align_cm style='background-color: $bkgCellColor;'>$bunchSpin";
-      //$row2 .= "<td>".($siS ? "x" : "o");
 
       //print "<tr class=align_cm>$row1\n";
       $iCell++;
    }
 ?>
-   <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+   <td colspan=4>
+   <table class="simple00 w100 cntr0" cellspacing=0 align=center>
    <tr>
-      <td colspan=120>
+      <td colspan=120 class=align_l>
       <b>Bunch fill pattern:</b>
    <tr>
       <?=$row2;?>
    <tr>
-      <td colspan=120>
+      <td colspan=120 class=align_l>
       <b>Bunch spin pattern:</b>
    <tr>
       <?=$row3;?>
@@ -376,21 +378,36 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 <span class="s150"><a href=./?runid=<?=$gRunId?>&raw>All channels at once</a></span>
 
 <p>
-<table class="simple" cellspacing=10 align=center>
+<table class="simple00 cntr" cellspacing=10 align=center>
 
-<tr class=align_ct>
+<tr class="toprow4">
 <td>
-<?=$gP->img('run/wall_current_monitor')?>
-<p class=left>Number of protons per bunch (WCM)
+<div class="thumbinner">
+   <?=$gP->img('run/wall_current_monitor')?>
+<div class="thumbcaption">
+Number of protons per bunch (WCM)
+</div> </div>
+
 <td>
+<div class="thumbinner">
 <?=$gP->img('raw/hBunchCounts')?>
-<p class=left>Number of events per bunch
+<div class="thumbcaption">
+Number of events per bunch
+</div> </div>
+
 <td>
+<div class="thumbinner">
 <?=$gP->img('raw/hStripCounts')?>
-<p class=left>Number of events per silicon detector channel
+<div class="thumbcaption">
+Number of events per silicon detector channel
+</div> </div>
+
 <td>
+<div class="thumbinner">
 <?=$gP->img('raw/hChIdVsBunchId')?>
-<p class=left>Number of events per bunch and detector channel
+<div class="thumbcaption">
+Number of events per bunch and detector channel
+</div> </div>
 
 <tr class=align_ct>
 <td>
@@ -516,71 +533,78 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <p>
 
-<table class="simple" cellspacing=10 align=center>
+<table class="simple00 cntr" cellspacing=15 align=center>
 
-<tr>
-<td class=align_ct>
+<tr class="toprow3">
+<td>
 <?=$gP->img("targets/hTargetVertRotary")?>
-<p>Nominal target position in motor steps vs time
+<div class="thumbcaption">
+Nominal target position in motor steps vs time
+</div>
 
-<td class=align_ct>
-<?=$gP->img("profile/hIntensProfileFineBin")?>
-<p>Intensity profile: Number of events as a function of time
+<td>
+<?=$gP->img("profile/hIntensProfile")?>
+<div class="thumbcaption">
+Intensity profile: Number of events as a function of time
+</div>
 
 
 <tr>
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hIntensUniProfile")?>
-<p>If we assume a gaussian beam profile with the unit width the actuall
+<div class="thumbcaption">
+If we assume a gaussian beam profile with the unit width the actuall
 position of the target in the beam can be deduced from the intensity measured
 at each target step. Note that the plot is symmetric around X = 0 by
 construction
+</div>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hAsymUniProfile")?>
-<p>The beam asymmetry as a function of beam width in intesity sigma units
+<div class="thumbcaption">
+The beam asymmetry as a function of beam width in intesity sigma units
+</div>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hAsymVsIntensProfile")?>
-<p>Physical asymmetry vs intensity as measured every 0.1 second. The
+<div class="thumbcaption">
+Physical asymmetry vs intensity as measured every 0.1 second. The
 data is fitted with a function P = P_max * I^r
+</div>
+
 
 <tr>
-<td class=align_ct>
+<td>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hPolarUniProfile")?>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hPolarVsIntensProfile")?>
 
 <tr>
-<td class=align_ct>
+<td>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hPolarUniProfileBin")?>
 
-<td class=align_ct>
+<td>
 <?=$gP->img("profile/hPolarVsIntensProfileBin")?>
 
 <!--
 <tr>
-<td class=align_cm>
+<td>
 <?=$gP->img("profile/hPolarVsIntensProfile")?>
 <p>Polarization vs intensity as measured every second at each target step. The
 data is fitted with a function P = P_max * I^r
--->
 
-
-<!--
-<tr>
-<td class=align_cm>
+<td>
 <?=$gP->img("profile/hPolarUniProfile")?>
-<p>The beam polarization as a function of beam width in intesity sigma units
+The beam polarization as a function of beam width in intesity sigma units
 
-<td class=align_cm>
+<td>
 <?=$gP->img("profile/hPolarUniProfileBin")?>
-<p>The same data as on the left plot but the measurements are binned
+The same data as on the left plot but the measurements are binned
 -->
 
 </table>
@@ -707,17 +731,16 @@ data is fitted with a function P = P_max * I^r
 
 <p>
 
-<table border="1" cellpadding="0" cellspacing="0" align="center" width="100%">
+<table class="simple00 cntr" cellspacing=15 align=center>
 <?php
 
-foreach($rc['ActiveStrip'] as $chanId => $siS) {
+foreach($rc['fSiliconChannels'] as $chanId) {
 
    $chanId = sprintf("%02d", $chanId);
    //$gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
    $gP->dir = "../runs/$gRunId/images$gSuffix/preproc/";
 
    //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
-   //$row2 .= "<td>".($siS ? "x" : "o");
 
    if ( ($chanId-1) % 6 == 0 ) {
       //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
@@ -725,7 +748,7 @@ foreach($rc['ActiveStrip'] as $chanId => $siS) {
       //$row1 = "";// $row2 = "";
    }
 
-   $img = $gP->img("combo_ch$chanId", false, 200);
+   $img = $gP->img("combo_ch$chanId", false, 250);
    //$img = $gP->img("combo_ch$chanId");
    //$img = $gP->img("combo_ch$chanId", 150, "./?runid=$gRunId&chanid=$chanId&sfx=$gSfx");
    print "<td>$img<br>\n";
