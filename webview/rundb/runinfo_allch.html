@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>Measurement <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%">
+<tr>
+<td width="5%">
+
+<td width="90%">
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>Measurement <?=$gRunId?></h1>
+
+<p><a name="content"/>
+
+<p>
+<a href="./"><span class=s150>Run Index</span></a>
+
+<?
+
+// the name is give in the path/name form
+$plotName = $_GET['ach'];
+
+$pi = pathinfo($plotName);
+
+?>
+
+
+
+<h1 id="channels" class="count">Channels</h1>
+<!-- {{{ -->
+<div id="div:channels" class="section">
+
+
+<p>
+
+<table class="simple0" cellspacing=2 align=center>
+<?php
+
+//$origPHDir = $gP->dir;
+
+foreach($rc['ActiveStrip'] as $chanId => $siS)
+{
+   $chanId = sprintf("%02d", $chanId);
+   //$gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
+
+   //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   //$row2 .= "<td>".($siS ? "x" : "o");
+
+   if ( ($chanId-1) % 6 == 0 ) {
+      print "<tr class=align_cm>\n";
+   }
+
+   $plotFullName = "";
+
+   if ( preg_match("/preproc/i", $pi['dirname']) )
+      $plotFullName = "{$pi['dirname']}/{$pi['basename']}_ch$chanId";
+   else
+      $plotFullName = "{$pi['dirname']}/channel$chanId/{$pi['basename']}_ch$chanId";
+
+   $img = $gP->img($plotFullName, false, 300);
+
+   print "<td>$img<br>\n";
+   print "<a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">channel $chanId</a>\n";
+   
+}
+?>
+</table>
+
+</div>
+<!-- }}} -->
+
+<!-- Main text ends here-->
+
+<td width="5%">
+
+<tr>
+<td>
+
+<td>
+<p>&nbsp;<br>
+<hr width="100%" size="2">
+
+<div align="left">
+Developed and maintained by <a href=https://wiki.bnl.gov/rhicspin/User:Dmitri_Smirnov>Dmitri Smirnov</a>
+(<a href="https://wiki.bnl.gov/rhicspin/Polarimetry">RHIC Spin Group</a>)
+</div>
+
+<td>
+
+</table>
+
+</body>
+</html>

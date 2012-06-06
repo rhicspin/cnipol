@@ -1,0 +1,682 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>RHIC Polarimetry Results: Summary Plots</title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+  <script language="javascript" src="../main.js"></script>
+  <script language="javascript" src="../toc.js"></script>
+</head>
+
+<body bgcolor="#ffffff">
+
+
+<?php
+include("../head.html");
+?>
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>Summary Plots</h1>
+
+<?php
+
+include_once("../rundb/PlotHelper.php");
+
+//include_once("../rundb/DbFillPolar.php");
+//
+//$dbFillPolar = new DbFillPolar();
+//
+//$nFills = $dbFillPolar->CountEntries();
+
+
+$dir = "../runs/{$_GET['ana']}/images/";
+$gP = new PlotHelper($dir);
+
+//$flattopEnergy = sprintf("%03d", 24);
+//$flattopEnergy = sprintf("%03d", 100);
+//$ai['fBeamEnergies'] = $_GET['es'];
+$flattopEnergy = sprintf("%03d", 255);
+
+?>
+
+
+<div class="count" id="generated-toc"></div>
+
+<hr>
+
+
+<div id="main_text_body">
+<!-- {{{ -->
+
+
+
+
+<h1 id="hjet" class="count">H-Jet Polarimeter</h1>
+<!-- {{{ -->
+<div id="div:hjet" class="section">
+
+
+
+<h2 id="hjet_polar" class="count">Beam Polarization</h2>
+<!-- {{{ -->
+<div id="div:hjet_polar" class="section">
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="hjet_polar_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+<tr>
+   <td>
+   <?=$gP->img("runs/BLU/hPolarHJVsFill_BLU_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+   <td><?=$gP->img("runs/YEL/hPolarHJVsFill_YEL_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>Beam polarization as measured by the H-Jet polarimeter</div>
+
+</table>
+
+<? endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="hjet_an" class="count">Analyzing power A_N</h2>
+<!-- {{{ -->
+<div id="div:hjet_an" class="section">
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="hjet_asym_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+<tr>
+<td><?=$gP->img("runs/BLU/hAsymHJVsFill_BLU_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+<td><?=$gP->img("runs/YEL/hAsymHJVsFill_YEL_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>Analyzing power A_N as measured by the H-Jet polarimeter</div>
+</table>
+
+<? endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+</div>
+<!-- }}} -->
+
+
+
+
+<h1 id="pcarbon" class="count">p-Carbon Polarimeters</h1>
+<!-- {{{ -->
+<div id="div:pcarbon" class="section">
+
+
+
+<h2 id="pcarbon_unscaled" class=count>Unscaled Polarization</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_unscaled" class="section">
+
+<p>We use 2004 A_N at 100 GeV
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   //if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_unscaled_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hPolarVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hPolarVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>: Unscaled p-Carbon polarization
+   <th><span class='yelPol'>Y2U</span>: Unscaled p-Carbon polarization
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hPolarVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hPolarVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>: Unscaled p-Carbon polarization
+   <th><span class='yelPol'>Y1D</span>: Unscaled p-Carbon polarization
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_hjet_ratio" class=count>H-Jet/p-Carbon Polarization Ratio</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_hjet_ratio" class="section">
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_hjet_ratio_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hNormJCVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hNormJCVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>: Ratio of H-Jet/p-Carbon polarization
+   <th><span class='yelPol'>Y2U</span>: Ratio of H-Jet/p-Carbon polarization
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hNormJCVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hNormJCVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>: Ratio of H-Jet/p-Carbon polarization
+   <th><span class='yelPol'>Y1D</span>: Ratio of H-Jet/p-Carbon polarization
+
+</table>
+
+<? endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_scaled" class=count>Scaled Polarization</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_scaled" class="section">
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_scaled_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hPolarPCScaledVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hPolarPCScaledVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>: Scaled p-Carbon polarization
+   <th><span class='yelPol'>Y2U</span>: Scaled p-Carbon polarization
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hPolarPCScaledVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hPolarPCScaledVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>: Scaled p-Carbon polarization
+   <th><span class='yelPol'>Y1D</span>: Scaled p-Carbon polarization
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_hjet_ratio_scaled" class=count>H-Jet/p-Carbon Scaled Polarization Ratio</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_hjet_ratio_scaled" class="section">
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_hjet_ratio_scaled_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hPolarHJPCRatioVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hPolarHJPCRatioVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>: Ratio of H-Jet/scaled p-Carbon polarization
+   <th><span class='yelPol'>Y2U</span>: Ratio of H-Jet/scaled p-Carbon polarization
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hPolarHJPCRatioVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hPolarHJPCRatioVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>: Ratio of H-Jet/scaled p-Carbon polarization
+   <th><span class='yelPol'>Y1D</span>: Ratio of H-Jet/scaled p-Carbon polarization
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_utod_ratio" class=count>Upstream/Downstream Scaled Polarization Ratio</h2>
+<!-- {{{ -->
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<div id="div:pcarbon_utod_ratio<?=$strEnergy?>" class="section">
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/BLU/hPolarRatioSystVsFill_BLU_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/YEL/hPolarRatioSystVsFill_YEL_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>Blue</span>: U/D
+   <th><span class='yelPol'>Yellow</span>: U/D
+
+</table>
+
+<? endforeach; ?>
+
+
+<!-- }}} -->
+
+
+
+
+<h2 id="pcarbon_profile" class=count>Polarization Profile R</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_profile" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_profile_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00">
+
+<tr>
+   <td colspan=2><?=$gP->img("runs/B1U/hRVsFill_B1U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'>Horizontal and vertical profiles</div>
+   <td colspan=2><?=$gP->img("runs/Y2U/hRVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'>Horizontal and vertical profiles</div>
+<tr>
+   <td><?=$gP->img("runs/B1U/hRVsFill_V_B1U_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Horizontal profile (Vertical targets)</div>
+   <td><?=$gP->img("runs/B1U/hRVsFill_H_B1U_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Vertical profile (Horizontal targets)</div>
+   <td><?=$gP->img("runs/Y2U/hRVsFill_V_Y2U_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Horizontal profile (Vertical targets)</div>
+   <td><?=$gP->img("runs/Y2U/hRVsFill_H_Y2U_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Vertical profile (Horizontal targets)</div>
+
+<tr>
+   <td colspan=2>
+   <div class='thumbcaption_cm'><span class='bluPol'>B1U</span></div>
+   <td colspan=2>
+   <div class='thumbcaption_cm'><span class='yelPol'>Y2U</span></div>
+
+<tr>
+   <td colspan=2><?=$gP->img("runs/B2D/hRVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'>Horizontal and vertical profiles</div>
+   <td colspan=2><?=$gP->img("runs/Y1D/hRVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'>Horizontal and vertical profiles</div>
+<tr>
+   <td><?=$gP->img("runs/B2D/hRVsFill_V_B2D_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Horizontal profile (Vertical targets)</div>
+   <td><?=$gP->img("runs/B2D/hRVsFill_H_B2D_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Vertical profile (Horizontal targets)</div>
+   <td><?=$gP->img("runs/Y1D/hRVsFill_V_Y1D_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Horizontal profile (Vertical targets)</div>
+   <td><?=$gP->img("runs/Y1D/hRVsFill_H_Y1D_$strEnergy", false, 300)?>
+   <div class='thumbcaption_cm'>Vertical profile (Horizontal targets)</div>
+
+<tr>
+   <td colspan=2>
+   <div class='thumbcaption_cm'><span class='bluPol'>B2D</span></div>
+   <td colspan=2>
+   <div class='thumbcaption_cm'><span class='yelPol'>Y1D</span></div>
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+
+<h2 id="pcarbon_decay" class=count>Polarization Decay</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_decay" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_decay_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hPolarDecayVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hPolarDecayVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>
+   <th><span class='yelPol'>Y2U</span>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hPolarDecayVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hPolarDecayVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>
+   <th><span class='yelPol'>Y1D</span>
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_angle" class=count>Spin Angle (Radial Component) by p-Carbon</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_angle" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_angle_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hSpinAngleVsMeas_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hSpinAngleVsMeas_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>
+   <th><span class='yelPol'>Y2U</span>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hSpinAngleVsMeas_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hSpinAngleVsMeas_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>
+   <th><span class='yelPol'>Y1D</span>
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+
+<h2 id="pcarbon_t0" class=count>p-Carbon Calibration: t0 Time Offset</h2>
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_dl_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hT0VsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hT0VsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>
+   <th><span class='yelPol'>Y2U</span>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hT0VsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hT0VsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>
+   <th><span class='yelPol'>Y1D</span>
+
+</table>
+
+<? endforeach; ?>
+
+
+
+
+<h2 id="pcarbon_dl" class=count>p-Carbon Calibration: Effective Dead Layer</h2>
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_dl_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hDLVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hDLVsFill_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>
+   <th><span class='yelPol'>Y2U</span>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hDLVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hDLVsFill_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>
+   <th><span class='yelPol'>Y1D</span>
+
+</table>
+
+<? endforeach; ?>
+
+
+
+
+<h2 id="pcarbon_target_use" class=count>Target Usage</h2>
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_target_use_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hTargetVsMeas_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hTargetVsMeas_Y2U_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B1U</span>
+   <th><span class='yelPol'>Y2U</span>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hTargetVsMeas_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hTargetVsMeas_Y1D_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>B2D</span>
+   <th><span class='yelPol'>Y1D</span>
+
+</table>
+
+<? endforeach; ?>
+
+
+
+
+<h2 id="pcarbon_bunch_asym" class=count>Bunch Asymmetry</h2>
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_bunch_asym_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("fills/hBunchAsymChi2_BLU", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+   <td><?=$gP->img("fills/hBunchAsymChi2_YEL", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+<img src=https://wiki.bnl.gov/rhicspin/upload/math/6/b/e/6bedd6ed827e2e984490a76bb3d5703b.png> from the fits of the individual bunch asymmetries. <span
+class=frgRed>Red</span> points correspond to fits of bunch asymmetries with
+only "up" spin polarization, <span class=frgGreen>green</span> points
+correspond to fits of bunch asymmetries with only "down" spin polarization.
+
+</table>
+
+<? endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+
+
+
+<h1 id="intens" class="count">Beam Intensity</h1>
+<!-- {{{ -->
+<div id="div:intens" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h2 id="intens_<?=$strEnergy?>" class=count><?=$energy?> GeV</h2>
+
+<p>
+<table class="wikitable cellpadded cntr">
+
+<tr>
+   <td><?=$gP->img("runs/BLU/hIntensDecayVsFill_BLU_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/YEL/hIntensDecayVsFill_YEL_$strEnergy", false, 700)?>
+
+<tr>
+   <th><span class='bluPol'>Blue</span>: Intensity decay
+   <th><span class='yelPol'>Yellow</span>: Intensity decay
+
+</table>
+
+<? endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+
+
+
+<!-- Main text ends here-->
+</div>
+<!-- }}} -->
+
+
+<?php
+include("../bottom.html");
+?>
+
+</body>
+</html>
