@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>RHIC Polarimetry Results: Fill <?=$gFillId?></title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+</head>
+
+<body bgcolor="#ffffff">
+
+<?php
+include("../head.html");
+
+include_once("../rundb/PlotHelper.php");
+
+// Set default directory for run images
+$dir = "../runs/$gAnaName/images/fills/$gFillId/";
+$gP = new PlotHelper($dir);
+
+?>
+
+<!-- Main text starts here-->
+
+<p><a name="content"/>
+
+<h1>RHIC Fill <?=$gFillId?></h1>
+
+<p><a name="content"/>
+
+
+<p>
+<a href="http://www.phy.bnl.gov/cnipol/rundb/?rn=<?=$gFillId?>%">List of measurements</a>
+
+
+
+<p>
+
+<h1 id="polar" class="count">Results</h1>
+<!-- {{{ -->
+<div id="div:polar" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+
+<tr class="toprow3">
+<td>
+
+<td>
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hAsymVsBunchId_X_{$gFillId}_BLU", false, 400)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+<td>
+   <?=$gP->img("hAsymVsBunchId_X_{$gFillId}_YEL", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Yellow</span> </div>
+</table>
+<div class="thumbcaption">
+Asymmetry per bunch averaged over all p-Carbon measurements taken between the lumi-on and lumi-off markers
+</div>
+
+
+<tr>
+<td>
+   <?=$gP->img("hExternInfoVsFillTime_{$gFillId}", false, 400)?>
+<div class="thumbcaption">
+Snake and rotator currents for STAR and PHENIX
+</div>
+
+<td>
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hIntensVsFillTime_{$gFillId}_BLU", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>Blue</span> </div>
+<td>
+   <?=$gP->img("hIntensVsFillTime_{$gFillId}_YEL", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Yellow</span> </div>
+</table>
+<div class="thumbcaption"> Beam intensity between the lumi-on and lumi-off events </div>
+
+
+<tr>
+<td>
+
+<td>
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hPolarVsFillTime_{$gFillId}_B1U", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>B1U</span> </div>
+<td>
+   <?=$gP->img("hPolarVsFillTime_{$gFillId}_Y2U", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Y2U</span> </div>
+
+<tr>
+<td>
+   <?=$gP->img("hPolarVsFillTime_{$gFillId}_B2D", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>B2D</span> </div>
+<td>
+   <?=$gP->img("hPolarVsFillTime_{$gFillId}_Y1D", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Y1D</span> </div>
+
+</table>
+<div class="thumbcaption">Polarization measurements</div>
+
+
+<tr>
+<td>
+
+<td>
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hRVsFillTime_{$gFillId}_B1U", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>B1U</span> </div>
+<td>
+   <?=$gP->img("hRVsFillTime_{$gFillId}_Y2U", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Y2U</span> </div>
+
+<tr>
+<td>
+   <?=$gP->img("hRVsFillTime_{$gFillId}_B2D", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>B2D</span> </div>
+<td>
+   <?=$gP->img("hRVsFillTime_{$gFillId}_Y1D", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Y1D</span> </div>
+
+</table>
+<div class="thumbcaption">Polarization profile R</div>
+
+</table>
+
+
+</div>
+<!-- }}} -->
+
+
+<!-- Main text ends here-->
+
+<?php
+include("../bottom.html");
+?>
+
+</body>
+</html>
