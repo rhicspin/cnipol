@@ -228,7 +228,6 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "grHTargetVsMeas";
    TGraphErrors *grHTargetVsMeas = new TGraphErrors();
    grHTargetVsMeas->SetName(shName.c_str());
-   //grHTargetVsMeas->SetMarkerStyle(kPlus);
    grHTargetVsMeas->SetMarkerStyle(kFullTriangleUp);
    grHTargetVsMeas->SetMarkerSize(2);
    grHTargetVsMeas->SetMarkerColor(color-3);
@@ -236,7 +235,6 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "grVTargetVsMeas";
    TGraphErrors *grVTargetVsMeas = new TGraphErrors();
    grVTargetVsMeas->SetName(shName.c_str());
-   //grVTargetVsMeas->SetMarkerStyle(kMultiply);
    grVTargetVsMeas->SetMarkerStyle(kFullTriangleDown);
    grVTargetVsMeas->SetMarkerSize(2);
    grVTargetVsMeas->SetMarkerColor(color+2);
@@ -480,6 +478,23 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist->SetOption("DUMMY GRIDX");
    hist->GetListOfFunctions()->Add(grRVsMeasV, "p");
    oc.o[shName] = hist;
+
+   // Polarization profile slope
+   TGraphErrors *grRSlopeVsFill_H_ = new TGraphErrors();
+   grRSlopeVsFill_H_->SetName("grRSlopeVsFill_H_");
+   RunConfig::AsMarker(kTARGET_H, polId).Copy(*grRSlopeVsFill_H_);
+
+   TGraphErrors *grRSlopeVsFill_V_ = new TGraphErrors();
+   grRSlopeVsFill_V_->SetName("grRSlopeVsFill_V_");
+   RunConfig::AsMarker(kTARGET_V, polId).Copy(*grRSlopeVsFill_V_);
+
+   shName = "hRSlopeVsFill_" + sPolId + "_" + sBeamE;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; R Slope;");
+   hist->SetOption("DUMMY GRIDX");
+   hist->GetListOfFunctions()->Add(grRSlopeVsFill_H_, "p");
+   hist->GetListOfFunctions()->Add(grRSlopeVsFill_V_, "p");
+	oc.o[shName] = hist;
 
    // t0
    TGraphErrors *grT0VsMeas = new TGraphErrors();
@@ -1484,6 +1499,15 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
 
          TH1* hPolarDecayVsFill_ = (TH1F*) oc_pol->o["hPolarDecayVsFill_" + sPolId + "_" + sBeamE];
          hPolarDecayVsFill_->Fit("pol0");
+
+         TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
+         //hRSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
+         hRSlopeVsFill_->GetXaxis()->SetLimits(fMinFill, fMaxFill);
+			utils::UpdateLimitsFromGraphs(hRSlopeVsFill_, 2);
+		   TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
+         grRSlopeVsFill_H_->Fit("pol0");
+		   TGraph* grRSlopeVsFill_V_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_V_");
+         grRSlopeVsFill_V_->Fit("pol0");
       }
 
 
@@ -1516,8 +1540,8 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          hPolarRatioSystVsFill_->Fit("pol0");
          //hPolarRatioSystVsFill_->GetYaxis()->UnZoom();
 
-         TH1F* hPolarU, *hPolarU_HJOnly;
-         TH1F* hPolarD, *hPolarD_HJOnly;
+         TH1F* hPolarU = 0, *hPolarU_HJOnly = 0;
+         TH1F* hPolarD = 0, *hPolarD_HJOnly = 0;
 
          if (*iRingId == kBLUE_RING) {
             hPolarU        = (TH1F*) d["B1U"]->o["hPolarPCScaledVsFill_B1U_" + sBeamE];
@@ -1671,6 +1695,23 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
       TH1* hPolarDecayVsFill_ = (TH1F*) oc_pol->o["hPolarDecayVsFill_" + sPolId + "_" + sBeamE];
       hPolarDecayVsFill_->SetBinContent(ib, pcPolarDecay.first);
       hPolarDecayVsFill_->SetBinError(ib, pcPolarDecay.second);
+   }
+
+   // Pol. profile R slope
+   TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
+
+   ValErrPair pcPolarRSlope = afr.GetPCPolarRSlope(polId, kTARGET_H);
+
+   if (pcPolarRSlope.second >= 0 && fabs(pcPolarRSlope.first) < 1) { // some reasonable number
+		TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
+		utils::AppendToGraph(grRSlopeVsFill_H_, fillId, pcPolarRSlope.first, 0, pcPolarRSlope.second);
+   }
+
+   pcPolarRSlope = afr.GetPCPolarRSlope(polId, kTARGET_V);
+
+   if (pcPolarRSlope.second >= 0 && fabs(pcPolarRSlope.first) < 1) { // some reasonable number
+		TGraph* grRSlopeVsFill_V_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_V_");
+		utils::AppendToGraph(grRSlopeVsFill_V_, fillId, pcPolarRSlope.first, 0, pcPolarRSlope.second);
    }
 
 } //}}}
@@ -1966,7 +2007,7 @@ void MAsymRunHists::UpdateLimits()
 
 
 /** */
-void MAsymRunHists::SetMinMaxFill(UInt_t fillId)
+void MAsymRunHists::UpdMinMaxFill(UInt_t fillId)
 { //{{{
    if (fillId < fMinFill ) fMinFill = fillId;
    if (fillId > fMaxFill ) fMaxFill = fillId;
@@ -1974,12 +2015,19 @@ void MAsymRunHists::SetMinMaxFill(UInt_t fillId)
 
 
 /** */
+void MAsymRunHists::SetMinMaxFill(UInt_t minFillId, UInt_t maxFillId)
+{ //{{{
+   fMinFill = minFillId;
+   fMaxFill = maxFillId;
+} //}}}
+
+/** */
 void MAsymRunHists::AdjustMinMaxFill()
 { //{{{
    fMinFill -= 0.5;
    fMaxFill += 0.5;
 
-   // Set bins
+   // Set bin
    BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
 
    for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
@@ -2020,8 +2068,16 @@ void MAsymRunHists::AdjustMinMaxFill()
 
 
 /** */
-void MAsymRunHists::SetMinMaxTime(UInt_t time)
+void MAsymRunHists::UpdMinMaxTime(time_t time)
 { //{{{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;
+} //}}}
+
+
+/** */
+void MAsymRunHists::SetMinMaxTime(time_t minTime, time_t maxTime)
+{ //{{{
+   fMinTime = minTime;
+   fMaxTime = maxTime;
 } //}}}

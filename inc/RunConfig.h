@@ -7,6 +7,7 @@
 
 #include "TColor.h"
 #include "TObject.h"
+#include "TAttMarker.h"
 
 #include "Asym.h"
 #include "Target.h"
@@ -42,6 +43,7 @@ public:
    static Color_t     AsColor(EPolarimeterId polId);
    static Color_t     AsColor(ESpinState spin);
    static Color_t     AsColor(UShort_t chId);
+   static TAttMarker  AsMarker(ETargetOrient targetOrient, EPolarimeterId polId);
 
    static EBeamId     GetBeamId(EPolarimeterId polId);
    static ERingId     GetRingId(EPolarimeterId polId);
@@ -49,6 +51,8 @@ public:
 
    static UShort_t    GetDetectorId(UShort_t chId);
    static UShort_t    GetDetectorChannelId(UShort_t chId);
+
+   void SetBeamEnergies(BeamEnergySet beamEnergies);
 };
 
 #endif

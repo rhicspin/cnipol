@@ -198,9 +198,9 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPolarVsEnergy, "p");
 
-   TGraphErrors *grPolarVsFillTime = new TGraphErrors();
-   grPolarVsFillTime->SetName("grPolarVsFillTime");
-   styleMarker.Copy(*grPolarVsFillTime);
+   //TGraphErrors *grPolarVsFillTime = new TGraphErrors();
+   //grPolarVsFillTime->SetName("grPolarVsFillTime");
+   //styleMarker.Copy(*grPolarVsFillTime);
 
    shName = "hPolarVsFillTime_" + strDirName + "_" + sPolId;
    hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 100);
@@ -210,7 +210,18 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    //hist->GetXaxis()->SetTimeOffset(0, "local");
    hist->GetXaxis()->SetTimeDisplay(1);
    hist->GetXaxis()->SetTimeFormat("%H");
-   //hist->GetListOfFunctions()->Add(grPolarVsFillTime, "p");
+   styleMarker.Copy(*hist);
+   o[shName] = hist;
+
+   // 
+   shName = "hRVsFillTime_" + strDirName + "_" + sPolId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 1);
+   hist->SetOption("DUMMY GRIDX");
+   hist->SetTitle("; Time in Fill, hours; Pol. Profile R;");
+   hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   //hist->GetXaxis()->SetTimeOffset(0, "local");
+   hist->GetXaxis()->SetTimeDisplay(1);
+   hist->GetXaxis()->SetTimeFormat("%H");
    styleMarker.Copy(*hist);
    o[shName] = hist;
 
@@ -416,6 +427,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       TH1* hPolarVsFillTime_ = (TH1*) o["hPolarVsFillTime_" + strDirName + "_" + sPolId];
 
       if (grPCPolar->GetN() > 0) {
+
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolar);
          hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolar, "p");
 
@@ -433,6 +445,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       } else
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
 
+      // Add injection graph to the histogram
       TGraphErrors *grPCPolarInj  = afr.GetPCPolarInjGraph(*iPolId);
       if (grPCPolarInj->GetN() > 0) {
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolarInj);
@@ -442,6 +455,26 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
 
       utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
+
+
+      // Now deal with pol. profiles
+      TH1* hRVsFillTime_ = (TH1*) o["hRVsFillTime_" + strDirName + "_" + sPolId];
+
+      TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
+
+      for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
+      {
+         TGraphErrors *grPCPolarR = afr.GetPCPolarRGraph(*iPolId, *iTgtOrient);
+
+         if (grPCPolarR->GetN() > 0) {
+            TAttMarker marker = RunConfig::AsMarker(*iTgtOrient, *iPolId);
+            marker.SetMarkerSize(3);
+            marker.Copy(*grPCPolarR);
+            hRVsFillTime_->GetListOfFunctions()->Add(grPCPolarR, "p");
+         }
+      }
+
+      utils::UpdateLimitsFromGraphs(hRVsFillTime_, 2);
    }
 
 

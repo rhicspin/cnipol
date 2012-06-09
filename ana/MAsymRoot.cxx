@@ -77,15 +77,15 @@ void MAsymRoot::SaveAs(string pattern, string dir)
 
 
 /** */
-void MAsymRoot::SetMinMax(EventConfig &mm)
+void MAsymRoot::UpdMinMax(EventConfig &mm)
 { //{{{
-   SetMinMaxFill((UInt_t) mm.fMeasInfo->RUNID);
-   SetMinMaxTime(mm.fMeasInfo->fStartTime);
+   UpdMinMaxFill((UInt_t) mm.fMeasInfo->RUNID);
+   UpdMinMaxTime(mm.fMeasInfo->fStartTime);
 } //}}}
 
 
 /** */
-void MAsymRoot::SetMinMaxFill(UInt_t fillId)
+void MAsymRoot::UpdMinMaxFill(UInt_t fillId)
 { //{{{
    if (fillId < fMinFill ) fMinFill = fillId;
    if (fillId > fMaxFill ) fMaxFill = fillId;
@@ -93,7 +93,7 @@ void MAsymRoot::SetMinMaxFill(UInt_t fillId)
 
 
 /** */
-void MAsymRoot::SetMinMaxTime(UInt_t time)
+void MAsymRoot::UpdMinMaxTime(time_t time)
 { //{{{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;

@@ -291,6 +291,32 @@ Color_t RunConfig::AsColor(UShort_t chId)
 
 } //}}}
 
+
+/** */
+TAttMarker RunConfig::AsMarker(ETargetOrient targetOrient, EPolarimeterId polId)
+{ //{{{
+   Color_t color = RunConfig::AsColor(polId);
+
+   TAttMarker marker;
+   marker.SetMarkerSize(2);
+
+   switch (targetOrient) {
+   case kTARGET_H:
+      marker.SetMarkerStyle(kFullTriangleUp);
+      marker.SetMarkerColor(color-3);
+      break;
+   case kTARGET_V:
+      marker.SetMarkerStyle(kFullTriangleDown);
+      marker.SetMarkerColor(color+2);
+      break;
+   default:
+      break;
+   }
+
+   return marker;
+} //}}}
+
+
 /** */
 EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
 { //{{{
@@ -364,4 +390,17 @@ UShort_t RunConfig::GetDetectorChannelId(UShort_t chId)
    
    gSystem->Error("RunConfig::GetDetectorChannelId", "Channel id is not valid");
    return USHRT_MAX;
+} //}}}
+
+
+/** */
+void RunConfig::SetBeamEnergies(BeamEnergySet beamEnergies)
+{ //{{{
+   fBeamEnergies.clear();
+
+   BeamEnergySetIter iBE = beamEnergies.begin();
+   for ( ; iBE != beamEnergies.end(); ++iBE)
+   {
+      fBeamEnergies.insert(*iBE);
+   }
 } //}}}
