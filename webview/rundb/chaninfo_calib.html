@@ -38,12 +38,11 @@
 <?php
    $row1 = ""; $row2 = "";
 
-   foreach($rc['ActiveStrip'] as $chanId => $siS) {
-
+   foreach($rc['fSiliconChannels'] as $chanId)
+	{
       $chanId += 1;
 
       $row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
-      //$row2 .= "<td>".($siS ? "x" : "o");
 
       if (($chanId) % 36 == 0) {
          //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";

@@ -45,6 +45,8 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
        //echo "Files:\n";
    
        /* This is the correct way to loop over the directory. */
+       $rc['suffixes'][] = array();
+
        while (false !== ($file = readdir($handle))) {
            //echo "$file\n";
            if (preg_match("/^runconfig(_?)(.*)\.php$/", $file, $matches)) $rc['suffixes'][] = $matches[2];
