@@ -63,13 +63,6 @@ int main(int argc, char *argv[])
    MAsymRoot mAsymRoot(mAsymAnaInfo);
 	mAsymRoot.SetAnaGlobResult(&gAnaGlobResult);
 
-   DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
-
-   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", &mAsymRoot));
-   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
-   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
-   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
-
    //UInt_t minTime = UINT_MAX;
    //UInt_t maxTime = 0;
 
@@ -186,12 +179,12 @@ int main(int argc, char *argv[])
       //if (gMM->fMeasInfo->fStartTime < minTime ) minTime = gMM->fMeasInfo->fStartTime;
       //if (gMM->fMeasInfo->fStartTime > maxTime ) maxTime = gMM->fMeasInfo->fStartTime;
 
-      if (gH->d.find("runs") != gH->d.end()) {
-         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(fillId);
-         ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gMM->fMeasInfo->fStartTime);
-	   }
+      //if (gH->d.find("runs") != gH->d.end()) {
+      //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxFill(fillId);
+      //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxTime(gMM->fMeasInfo->fStartTime);
+	   //}
 
-		mAsymRoot.SetMinMax(*gMM);
+		mAsymRoot.UpdMinMax(*gMM);
 
       // Check that asym hist container exists in this file
       DrawObjContainer *gHIn = new DrawObjContainer(f);
@@ -202,12 +195,7 @@ int main(int argc, char *argv[])
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
-      //if ( beamEnergy == kBEAM_ENERGY_100 )
-      //if ( beamEnergy == kBEAM_ENERGY_250 )
-      //if ( beamEnergy == kBEAM_ENERGY_255 )
-      //{
-         gAnaGlobResult.AddMeasResult(*gMM, gHIn);
-      //}
+      gAnaGlobResult.AddMeasResult(*gMM, gHIn);
       //gHIn->Print();
 
 		//gHIn->Delete();
@@ -219,20 +207,22 @@ int main(int argc, char *argv[])
       gGoodMeass.insert(*gMM);
    }
 
-   // Print out flatop start and end times
-   Info("masym", "Flattop times:");
+	// Update global run parameters before anything else
+	gRunConfig.SetBeamEnergies(gAnaGlobResult.GetBeamEnergies());
 
-   map<UInt_t, UInt_t>::iterator ift;
+   // Create graphic containers
+   DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
 
-   //for (ift=flattopTimes.begin(); ift!=flattopTimes.end(); ++ift) {
-   //   printf("%d -> %d\n", ift->first, ift->second);
-   //}
+   gH->d["fills"] = new MAsymFillHists(new TDirectoryFile("fills", "fills", "", &mAsymRoot));
+   gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
+   gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
+   gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
 
    // Adjust min/max fill for histogram limits
-   if (gH->d.find("runs") != gH->d.end()) {
-      ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
-      gAnaGlobResult.AdjustMinMaxFill();
-   }
+   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(gAnaGlobResult.GetMinFill(), gAnaGlobResult.GetMaxFill());
+   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gAnaGlobResult.GetMinTime(), gAnaGlobResult.GetMaxTime());
+   ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
+   gAnaGlobResult.AdjustMinMaxFill();
 
 
    // Process run/fill results, i.e. calculate fill average, ...

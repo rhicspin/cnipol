@@ -54,9 +54,11 @@ public:
    void PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter afr, ERingId ringId, EBeamEnergy beamE);
    void Print(const Option_t* opt="") const;
    void UpdateLimits();
-	void SetMinMaxFill(UInt_t fillId);
+	void UpdMinMaxFill(UInt_t fillId);
+	void SetMinMaxFill(UInt_t minFillId, UInt_t maxFillId);
 	void AdjustMinMaxFill();
-	void SetMinMaxTime(UInt_t time);
+	void UpdMinMaxTime(time_t time);
+	void SetMinMaxTime(time_t minTime, time_t maxTime);
 
    ClassDef(MAsymRunHists, 1)
 };

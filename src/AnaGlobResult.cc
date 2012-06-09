@@ -25,7 +25,9 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    fPathExternResults("./"),
    fFileNameYelHjet("hjet_pol_yel.txt"),
    fFileNameBluHjet("hjet_pol_blu.txt"),
-   fMinFill(UINT_MAX), fMaxFill(0), fDoCalcPolarNorm(kTRUE),
+   fMinFill(UINT_MAX), fMaxFill(0),
+   fMinTime(UINT_MAX), fMaxTime(0),
+   fDoCalcPolarNorm(kTRUE),
    fBeamEnergies(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
@@ -152,6 +154,8 @@ void AnaGlobResult::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fMinFill']      = %d;\n", fMinFill);
    fprintf(f, "$rc['fMaxFill']      = %d;\n", fMaxFill);
+   fprintf(f, "$rc['fMinTime']      = %d;\n", fMinTime);
+   fprintf(f, "$rc['fMaxTime']      = %d;\n", fMaxTime);
    fprintf(f, "$rc['fBeamEnergies'] = %s;\n", SetAsPhpArray<EBeamEnergy>(fBeamEnergies).c_str());
 
    fprintf(f, "\n");
@@ -169,8 +173,8 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
 { //{{{
    UInt_t fillId = mm.fMeasInfo->GetFillId();
 
-   if (fillId > fMaxFill) fMaxFill = fillId;
-   if (fillId < fMinFill) fMinFill = fillId;
+   UpdMinMaxFill(fillId);
+   UpdMinMaxTime(mm.fMeasInfo->fStartTime);
 
    // Save the energies of all measurements
    BeamEnergySetIter iBEnergy = fBeamEnergies.find(mm.fMeasInfo->GetBeamEnergy());
@@ -244,12 +248,12 @@ void AnaGlobResult::AddHJMeasResult()
 
          if (fillId < fMinFill || fillId > fMaxFill) continue;
 
-         cout << iline << " " << fillId << " " << fMinFill << " " << fMaxFill
+         cout << iline << " " << fillId   << " " << fMinFill << " " << fMaxFill
                        << " " << yelAsym  << " " << yelAsymErr
                        << " " << yelPolar << " " << yelPolarErr
                        << " " << bluAsym  << " " << bluAsymErr
                        << " " << bluPolar << " " << bluPolarErr
-                       << " " << energy << endl;
+                       << " " << energy   << endl;
 
          AnaFillResult *anaFillResult = GetAnaFillResult(fillId);
 
@@ -362,6 +366,22 @@ AnaFillResult* AnaGlobResult::GetAnaFillResult(UInt_t fillId)
 void AnaGlobResult::Configure(MAsymAnaInfo &mainfo)
 { //{{{
    fPathExternResults = mainfo.GetExternInfoPath();
+} //}}}
+
+
+/** */
+void AnaGlobResult::UpdMinMaxFill(UInt_t fillId)
+{ //{{{
+   if (fillId < fMinFill ) fMinFill = fillId;
+   if (fillId > fMaxFill ) fMaxFill = fillId;
+} //}}}
+
+
+/** */
+void AnaGlobResult::UpdMinMaxTime(time_t time)
+{ //{{{
+   if (time < fMinTime ) fMinTime = time;
+   if (time > fMaxTime ) fMaxTime = time;
 } //}}}
 
 

@@ -23,6 +23,8 @@ protected:
    std::string       fFileNameBluHjet;
    UInt_t            fMinFill;
    UInt_t            fMaxFill;
+   time_t            fMinTime;
+   time_t            fMaxTime;
    Bool_t            fDoCalcPolarNorm;
 
    BeamEnergySet     fBeamEnergies;
@@ -53,9 +55,14 @@ public:
    void PrintAsPhp(FILE *f=stdout) const;
 
    void           Configure(MAsymAnaInfo &mainfo);
+	void           UpdMinMaxFill(UInt_t fillId);
+	void           UpdMinMaxTime(time_t time);
    void           AdjustMinMaxFill();
    UInt_t         GetMinFill() const { return fMinFill; }
    UInt_t         GetMaxFill() const { return fMaxFill; }
+   time_t         GetMinTime() const { return fMinTime; }
+   time_t         GetMaxTime() const { return fMaxTime; }
+   BeamEnergySet  GetBeamEnergies() const { return fBeamEnergies; }
    void           AddMeasResult(AnaMeasResult &result);
    void           AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
    void           AddHJMeasResult();

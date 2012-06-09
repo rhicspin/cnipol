@@ -357,8 +357,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
          AppendToPCPolarGraph(polId, anaMeasResult.fStartTime - fStartTime, polarValErr.first, 0, polarValErr.second);
 
       ValErrPair polProfRValErr = anaMeasResult.GetPolProfR();
-
-      AppendToPolProfRGraph(polId, tgtOrient, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
+      AppendToPCPolarRGraph(polId, tgtOrient, anaMeasResult.fStartTime - fStartTime, polProfRValErr.first, 0, polProfRValErr.second);
 
       // The maximum energy achieved in this fill
       if (measInfo.GetBeamEnergy() > fFlattopEnergy)
@@ -466,7 +465,7 @@ TGraphErrors* AnaFillResult::GetPCPolarInjGraph(EPolarimeterId polId)
 
 
 /** Function cannot return empty graph. */
-TGraphErrors* AnaFillResult::GetPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient)
+TGraphErrors* AnaFillResult::GetPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient)
 { //{{{
    if (fPCPolarRGraphs.find(polId) == fPCPolarRGraphs.end()) {
       fPCPolarRGraphs[polId][tgtOrient] = new TGraphErrors(0);
@@ -513,6 +512,23 @@ ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId)
    decay.second = func->GetParError(1);
 
    return decay;
+} //}}}
+
+
+/** */
+ValErrPair AnaFillResult::GetPCPolarRSlope(EPolarimeterId polId, ETargetOrient tgtOrient)
+{ //{{{
+   ValErrPair slope(0, -1);
+
+   TGraphErrors *gr = GetPCPolarRGraph(polId, tgtOrient);
+
+   TF1* func = gr->GetFunction("fitFunc");
+   if (!func) return slope;
+
+   slope.first  = func->GetParameter(1);
+   slope.second = func->GetParError(1);
+
+   return slope;
 } //}}}
 
 
@@ -1166,7 +1182,7 @@ void AnaFillResult::FitExternGraphs()
 void AnaFillResult::FitPolarGraphs()
 { //{{{
    // Fit the polarization decay graphs
-   // Create a function to multiply graphs by 100% for esthetic reasons
+   // Create a function to multiply graphs by 100% for aesthetic reasons
    TF2 *dummyScale = new TF2("dummyScale", "100.*y");
 
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -1196,11 +1212,10 @@ void AnaFillResult::FitPolarGraphs()
          }
       }
 
+      // Fit flattop measurements...
+      TGraphErrors *grPCPolar  = GetPCPolarGraph(polId);
 
-
-      TGraphErrors *grPCPolar = GetPCPolarGraph(polId);
-
-      if (grPCPolar->GetN() <= 0) continue; // reuire a valid graph
+      if (grPCPolar->GetN() <= 0) continue; // require a valid graph
 
       grPCPolar->Apply(dummyScale);
 
@@ -1240,10 +1255,36 @@ void AnaFillResult::FitPolarGraphs()
       }
 
       // fit with a const if only one data point is available
-
       grPCPolar->Fit(fitFunc, "", "", xmin, xmax);
 
       delete fitFunc;
+
+
+      // Now fit pol. profiles
+      TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
+
+      for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
+      {
+         TGraphErrors *grPCPolarR = GetPCPolarRGraph(*iPolId, *iTgtOrient);
+         
+         TGraph *tmpGraph = utils::SubGraph(grPCPolarR, GetLumiOnTime(), GetLumiOffTime());
+
+         if (tmpGraph->GetN() <= 0) continue; // skip if empty graph
+
+         stringstream ssFormula("");
+         ssFormula << "[0] + [1]*(x - " << GetLumiOnTime() << ")/3600.";
+
+         TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
+         fitFunc->SetParNames("R_{0}, %", "Slope/h");
+
+         if (tmpGraph->GetN() == 1 || fabs(xmax - xmin) < 3600)
+            fitFunc->FixParameter(1, 0);
+
+         grPCPolarR->Fit(fitFunc, "", "", xmin, xmax);
+
+         delete tmpGraph;
+         delete fitFunc;
+      }
    }
 
    delete dummyScale;
@@ -1281,8 +1322,8 @@ void AnaFillResult::AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Do
 
 
 /** */
-void AnaFillResult::AppendToPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye)
+void AnaFillResult::AppendToPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye)
 { //{{{
-   TGraphErrors *graph = GetPolProfRGraph(polId, tgtOrient);
+   TGraphErrors *graph = GetPCPolarRGraph(polId, tgtOrient);
    utils::AppendToGraph(graph, x, y, xe, ye);
 } //}}}

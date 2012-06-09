@@ -104,9 +104,10 @@ public:
    Bool_t            IsValidFlattopMeas(const MeasInfo &measInfo);
    TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
    TGraphErrors*     GetPCPolarInjGraph(EPolarimeterId polId);
-   TGraphErrors*     GetPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient);
+   TGraphErrors*     GetPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient);
    ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
    ValErrPair        GetIntensDecay(ERingId ringId);
+   ValErrPair        GetPCPolarRSlope(EPolarimeterId polId, ETargetOrient tgtOrient);
    ValErrPair        GetHJPolar(EPolarimeterId polId);
    ValErrPair        GetHJPolar(ERingId ringId);
    ValErrPair        GetHJAsym(EPolarimeterId polId);
@@ -140,7 +141,7 @@ public:
    void              SetHJAsym(ERingId ringId, ValErrPair ve);
    void              AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
    void              AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
-   void              AppendToPolProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void              AppendToPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
 
    ClassDef(AnaFillResult, 1)
 };
