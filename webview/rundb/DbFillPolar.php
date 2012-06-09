@@ -14,7 +14,7 @@ class DbFillPolar extends SqlDbReader
    /** */
    function DbFillPolar($fillSelector=null)
    {
-      mysql_connect("localhost", "cnipol2", "cnipol") or die(mysql_error());
+      mysql_connect("localhost", "cnipol", "(n!P0l") or die(mysql_error());
       mysql_select_db("cnipol") or die(mysql_error());
 
       if (!empty($fillSelector)) {

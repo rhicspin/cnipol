@@ -28,7 +28,9 @@ class RunSelector {
 
       $url = parse_url($_SERVER['REQUEST_URI']);
       //$urlQuery = $url['query'];
-      parse_str($url['query'], $urlQuery);
+
+		if (isset($url['query']))
+         parse_str($url['query'], $urlQuery);
 
       // Copy only valid variables
       $urlQueryNew = array();
@@ -88,9 +90,13 @@ class RunSelector {
    { //{{{
       // first check for a page variable in the query
       $url = parse_url($_SERVER['REQUEST_URI']);
-      parse_str($url['query'], $tmpQuery);
 
-      $page = is_numeric($tmpQuery['page']) ? "page={$tmpQuery['page']}&" : "" ;
+		$tmpQuery = null;
+
+		if (isset($url['query']))
+         parse_str($url['query'], $tmpQuery);
+
+      $page = (isset($tmpQuery['page']) && is_numeric($tmpQuery['page'])) ? "page={$tmpQuery['page']}&" : "" ;
 
       // then remove unwanted sorting variables
       parse_str($this->urlQuery, $urlVars);
@@ -124,9 +130,11 @@ class RunSelector {
 
       $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
 
+      $runName = isset($_GET['rn']) ? $_GET['rn'] : "";
+
       echo "<tr>
               <td colspan=4 class=padding2><b>Run:</b>
-              <input type=text name=rn value='{$_GET['rn']}'>
+              <input type=text name=rn value='{$runName}'>
               &nbsp;&nbsp;&nbsp;
               Use \"%\" to match any number of characters, use \"_\" to match any single character in run id
 

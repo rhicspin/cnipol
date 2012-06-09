@@ -50,13 +50,14 @@ if (!isset($gSfx) || empty($gSfx))
 else 
    $suffixes = "<a href=\"./?runid=$gRunId\">default</a> ";
 
-foreach ($rc['suffixes'] as $suffix) {
-   if (!empty($suffix)) {
-      if ($gSfx == $suffix) 
-         $suffixes .= "$suffix ";
-      else
-         $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
-   }
+foreach ($rc['suffixes'] as $suffix)
+{
+   if (empty($suffix)) continue;
+
+   if ($gSfx == $suffix) 
+      $suffixes .= "$suffix ";
+   else
+      $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
 }
 
 // Assign the variables
@@ -203,7 +204,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
    <td>
    <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
-   <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <? if ($rc['fThinout'] > 1): ?>(every <?=ordinal_suffix($rc['fThinout'])?> event)
    <? endif; ?>
    <td>
    <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
