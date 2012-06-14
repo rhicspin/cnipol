@@ -5,8 +5,8 @@ CHECKINGPERIOD=600 # in sec
 
 #eval `ssh-agent -s` >> ${LOG} 2>&1
 #export 
-export SSH_AUTH_SOCK=/tmp/ssh-qhSiH31025/agent.31025
-export SSH_AGENT_PID=31026
+export SSH_AUTH_SOCK=/tmp/ssh-lxuXX32554/agent.32554
+export SSH_AGENT_PID=32555
 
 
 while [ 1 ];
@@ -17,7 +17,7 @@ do
    #rsync --stats --bwlimit=1000 -rlpgoDv /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
    #rsync --stats --bwlimit=5000 -a /eicdata/eic0005/run11/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
    #sleep $CHECKINGPERIOD
-   rsync --stats --bwlimit=5000 -a /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
+   rsync --stats --bwlimit=10000 -a /eicdata/eic0005/run12/root/* bluepc:/usr/local/polarim/root/ >> ${LOG} 2>&1
 
    sleep $CHECKINGPERIOD
 done
