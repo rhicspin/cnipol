@@ -34,8 +34,8 @@ void AsymDbSql::OpenConnection()
 
    try {
       // Establish the connection to the database server.
-      fConnection = new Connection("cnipol", "127.0.0.1", "cnipol", "(n!P0l", 3306);
-      //fConnection = new Connection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306);
+      //fConnection = new Connection("cnipol", "127.0.0.1", "cnipol", "(n!P0l", 3306);
+      fConnection = new Connection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306);
    } catch (const BadQuery& er) {
       // Handle any query errors
       cerr << "Query error: " << er.what() << endl;
