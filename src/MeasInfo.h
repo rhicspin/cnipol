@@ -52,6 +52,7 @@ protected:
    std::string   fRunName;
    Float_t       fProtoCutSlope;
    Float_t       fProtoCutOffset;
+   UShort_t      fProtoCutWidth;
    UShort_t      fProtoCutAdcMin;
    UShort_t      fProtoCutAdcMax;
    UShort_t      fProtoCutTdcMin;
@@ -110,12 +111,13 @@ public:
    void            SetRunName(std::string runName);
    std::string     GetRunName() const;
 
-   Float_t         GetProtoCutSlope  () const { return fProtoCutSlope;   }
-   Float_t         GetProtoCutOffset () const { return fProtoCutOffset;  }
-   UShort_t        GetProtoCutAdcMin () const { return fProtoCutAdcMin;  }
-   UShort_t        GetProtoCutAdcMax () const { return fProtoCutAdcMax;  }
-   UShort_t        GetProtoCutTdcMin () const { return fProtoCutTdcMin;  }
-   UShort_t        GetProtoCutTdcMax () const { return fProtoCutTdcMax;  }
+   Float_t         GetProtoCutSlope()   const { return fProtoCutSlope;   }
+   Float_t         GetProtoCutOffset()  const { return fProtoCutOffset;  }
+   UShort_t        GetProtoCutWidth()   const { return fProtoCutWidth;  }
+   UShort_t        GetProtoCutAdcMin()  const { return fProtoCutAdcMin;  }
+   UShort_t        GetProtoCutAdcMax()  const { return fProtoCutAdcMax;  }
+   UShort_t        GetProtoCutTdcMin()  const { return fProtoCutTdcMin;  }
+   UShort_t        GetProtoCutTdcMax()  const { return fProtoCutTdcMax;  }
    UShort_t        GetPulserCutAdcMin() const { return fPulserCutAdcMin; }
    UShort_t        GetPulserCutAdcMax() const { return fPulserCutAdcMax; }
    UShort_t        GetPulserCutTdcMin() const { return fPulserCutTdcMin; }

@@ -7,6 +7,8 @@
 #include "CnipolCalibHists.h"
 #include "ChannelEventId.h"
 
+#include "utils/utils.h"
+
 
 ClassImp(CnipolCalibHists)
 
@@ -55,7 +57,10 @@ void CnipolCalibHists::BookHists(std::string cutid)
    shName = "hChi2NdfVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; #chi^{2}/ndf;");
-   hist->SetOption("hist XY GRIDX");
+   hist->SetOption("P XY GRIDX");
+   hist->SetMarkerStyle(kFullCircle);
+   hist->SetMarkerSize(0.8);
+   hist->SetMarkerColor(kGreen);
    o[shName] = hist;
 
    shName = "hFitStatusVsChannel";
@@ -133,5 +138,21 @@ void CnipolCalibHists::PostFill()
       hChi2NdfVsChannel->SetBinContent(i, calibrator->GetBananaChi2Ndf(i));
       hFitStatusVsChannel->SetBinContent(i, calibrator->GetFitStatus(i));
    }
+
+   // Visualize the channel selection decision based on chi2
+   Double_t chi2_mean = calibrator->GetMeanChannel().GetBananaChi2Ndf();
+   Double_t chi2_rms  = calibrator->GetRMSBananaChi2Ndf();
+
+   TLine* lineMean = new TLine(1, chi2_mean, hDLVsChannel->GetNbinsX(), chi2_mean);
+   lineMean->SetLineWidth(2);
+   lineMean->SetLineColor(kGreen);
+
+   TLine* lineRMS  = new TLine(1, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+chi2_rms);
+   lineRMS->SetLineWidth(2);
+   lineRMS->SetLineColor(kMagenta);
+
+   hChi2NdfVsChannel->GetListOfFunctions()->Add(lineMean);
+   hChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
+   hChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
 
 } //}}}

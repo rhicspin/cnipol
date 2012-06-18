@@ -857,12 +857,12 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
    Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
-   ChannelCalib *chCalib     = rc.fCalibrator->GetAverage();
+   ChannelCalib chCalib      = rc.fCalibrator->GetMeanChannel();
 
-   t0    = chCalib->fT0Coef;
-   t0Err = chCalib->fT0CoefErr;
-   dl    = chCalib->fDLWidth;
-   dlErr = chCalib->fDLWidthErr;
+   t0    = chCalib.fT0Coef;
+   t0Err = chCalib.fT0CoefErr;
+   dl    = chCalib.fDLWidth;
+   dlErr = chCalib.fDLWidthErr;
 
    // Some QA checks... should be removed in the future...
    //if (isnan(t0) || isinf(t0)) {
@@ -1002,7 +1002,7 @@ void MAsymRunHists::Fill(const EventConfig &rc)
 
    // Banana fit params
    //Float_t bananaChi2Ndf = rc.fCalibrator->fChannelCalibs[0].fBananaChi2Ndf;
-   Float_t bananaChi2Ndf = chCalib->fBananaChi2Ndf;
+   Float_t bananaChi2Ndf = chCalib.fBananaChi2Ndf;
 
    sprintf(hName, "hBananaChi2NdfVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grBananaChi2Ndf");

@@ -29,6 +29,7 @@ void MseRunPeriodX::Init()
    disabled_bunches     = "";
    cut_proto_slope      = -0.25;
    cut_proto_offset     = 75;
+   cut_proto_width      = 20;
    cut_proto_adc_min    = 0;
    cut_proto_adc_max    = 255;
    cut_proto_tdc_min    = 0;
@@ -59,6 +60,7 @@ void MseRunPeriodX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['disabled_bunches']               = \"%s\";\n", disabled_bunches.c_str());
    fprintf(f, "$rc['cut_proto_slope']                = %f;\n", cut_proto_slope);
    fprintf(f, "$rc['cut_proto_offset']               = %f;\n", cut_proto_offset);
+   fprintf(f, "$rc['cut_proto_width']                = %d;\n", (unsigned char) cut_proto_width);
    fprintf(f, "$rc['cut_proto_adc_min']              = %f;\n", cut_proto_adc_min);
    fprintf(f, "$rc['cut_proto_adc_max']              = %f;\n", cut_proto_adc_max);
    fprintf(f, "$rc['cut_proto_tdc_min']              = %f;\n", cut_proto_tdc_min);
