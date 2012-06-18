@@ -85,6 +85,16 @@ void CnipolPreprocHists::BookHists()
       o[shName] = hist;
       fhFitMeanTimeVsEnergyA_ch[chId-1] = hist;
 
+      shName = "hFitChi2NdfVsEnergyA_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+      hist->SetTitle("; Deposited Energy, keV; #chi^2/ndf;");
+      hist->SetOption("P NOIMG");
+      hist->SetMarkerStyle(kFullCircle);
+      hist->SetMarkerSize(0.8);
+      hist->SetMarkerColor(kGreen);
+      o[shName] = hist;
+      fhFitChi2NdfVsEnergyA_ch[chId-1] = hist;
+
       shName = "hTimeVsEnergyACumul_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
       hist->SetOption("hist");
@@ -319,6 +329,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       TH1*     hTvsA_ch                 = (TH1*) rawHists->GetHTvsA_ch(chId);   // raw hist all - empty bunches
       TH1*     hTimeVsEnergyA_ch        = (TH1*) fhTimeVsEnergyA_ch[chId-1];
       TH1*     hFitMeanTimeVsEnergyA_ch = (TH1*) fhFitMeanTimeVsEnergyA_ch[chId-1];
+      TH1*     hFitChi2NdfVsEnergyA_ch  = (TH1*) fhFitChi2NdfVsEnergyA_ch[chId-1];
 
       UShort_t adcMin = TMath::Max(gMeasInfo->GetProtoCutAdcMin(), (UShort_t) hTvsA_ch->GetXaxis()->GetXmin());
       UShort_t adcMax = TMath::Min(gMeasInfo->GetProtoCutAdcMax(), (UShort_t) hTvsA_ch->GetXaxis()->GetXmax());
@@ -337,6 +348,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
 
       hTimeVsEnergyA_ch->SetBins(nXBins, xMin, xMax, nYBins, yMin, yMax);
       hFitMeanTimeVsEnergyA_ch->SetBins(nXBins, xMin, xMax);
+      hFitChi2NdfVsEnergyA_ch->SetBins(nXBins, xMin, xMax);
 
       Short_t extraOffset = 0;
 

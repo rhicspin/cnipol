@@ -27,19 +27,23 @@ class Calibrator : public TObject
 {
 public:
 
-   TRandom         *fRandom;
+   TRandom*         fRandom;
    ChannelCalibMap  fChannelCalibs;
+   ChannelCalib     fMeanChannel;
+   Float_t          fRMSBananaChi2Ndf;
 
 public:
 
    Calibrator();
-   Calibrator(TRandom *random);
+   Calibrator(TRandom* random);
    ~Calibrator();
 
-   virtual ChannelCalib*  GetAverage();
-   virtual void           CopyAlphaCoefs(Calibrator &calibrator);
-   virtual void           Calibrate(DrawObjContainer *c);
-   virtual void           CalibrateFast(DrawObjContainer *c);
+   virtual void           UpdateMeanChannel();
+   ChannelCalib const&    GetMeanChannel() const { return fMeanChannel; }
+   Float_t                GetRMSBananaChi2Ndf() const { return fRMSBananaChi2Ndf; }
+   virtual void           CopyAlphaCoefs(Calibrator& calibrator);
+   virtual void           Calibrate(DrawObjContainer* c);
+   virtual void           CalibrateFast(DrawObjContainer* c);
    virtual Float_t        GetDLWidth(UShort_t chId) const;
    virtual Float_t        GetDLWidthErr(UShort_t chId) const;
    virtual Float_t        GetT0Coef(UShort_t chId) const;

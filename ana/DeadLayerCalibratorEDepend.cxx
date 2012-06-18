@@ -29,7 +29,9 @@ DeadLayerCalibratorEDepend::~DeadLayerCalibratorEDepend()
 }
 
 
-/** */
+/**
+ * This method is not used at the moment. Probably, it will not work as is.
+ */
 void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 { //{{{
    TH1*  htemp     = 0;
@@ -65,11 +67,13 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 } //}}}
 
 
-/** */
+/**
+ * This method is mainly used for data calibration
+ */
 void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 { //{{{
-   TH1*  hTimeVsE  = 0;
-   TH1*  hMeanTime = 0;
+   //TH1*  hTimeVsE  = 0;
+   //TH1*  hMeanTime = 0;
    string strChId("  ");
 
    // iCh=0 is the sum of all channels
@@ -91,25 +95,53 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       sprintf(&strChId[0], "%02d", *iCh);
 
       //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
+      TH1* hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
+      TH1* hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
+      TH1* hChi2Ndf  = (TH1*) c->d["preproc"]->o["hFitChi2NdfVsEnergyA_ch"+strChId];
 
-      Calibrate(hTimeVsE, hMeanTime, *iCh);
+      //TObjArray *fitResultHists = new TObjArray();
+      TObjArray fitResultHists;
+
+      Calibrate(hTimeVsE, hMeanTime, *iCh, &fitResultHists); // extract also fitResultHists
+
+      TH1* hChi2Ndf_tmp = (TH1*) fitResultHists.At(3);
+
+      for (Int_t ib=1; ib<=hChi2Ndf_tmp->GetNbinsX(); ++ib)
+      {
+         Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
+
+         hChi2Ndf->SetBinContent(ib, chi2);
+      }
+
+      hChi2Ndf->GetListOfFunctions()->AddAll((TList*) hChi2Ndf_tmp->GetListOfFunctions()->Clone());
+      hChi2Ndf->GetListOfFunctions()->SetOwner(kTRUE);
+
+      //delete fitResultHists;
    }
 
-   // Check for bad fits afterwards to avoid interference with the channel
-   // disabling procedure
+   // The fitting of all channels is over. Calculate the Mean values
+   Calibrator::UpdateMeanChannel();
+
+   ChannelCalib const& chCalibMean = GetMeanChannel();
+
+   // Check for bad fits to avoid interference with the channel disabling
+   // procedure. Also exclude channels which are not in line with the Mean
+   // chi2
    ChannelCalibMapConstIter iChCalib = fChannelCalibs.begin();
 
    for ( ; iChCalib != fChannelCalibs.end(); ++iChCalib)
    {
-      ChannelCalib tmpChCalib = iChCalib->second;
+      UShort_t chId = iChCalib->first;   
+      const ChannelCalib &chCalib = iChCalib->second;
 
-      // skip the first "channel" 0 with the sum
-      if (iChCalib->first == 0) continue;
+      // skip the first "channel" chId=0 with the sum
+      if (chId == 0) continue;
 
-      if (tmpChCalib.fFitStatus != kDLFIT_OK)
-         gMeasInfo->DisableChannel(iChCalib->first);
+      if (chCalib.GetFitStatus() != kDLFIT_OK ||
+          chCalib.GetBananaChi2Ndf() > chCalibMean.GetBananaChi2Ndf()+GetRMSBananaChi2Ndf() )
+      {
+         gMeasInfo->DisableChannel(chId);
+      }
    }
 
 } //}}}
@@ -185,14 +217,14 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
       chCalib.fEMeasDLCorr = 1.0098 + 0.0036 * detDLWidth[iDet];
 
       // Assign average to channels with failed fits
-      if (chCalib.fFitStatus != kDLFIT_OK)
+      if (chCalib.GetFitStatus() != kDLFIT_OK)
          chCalib.fT0Coef = detT0Coef[iDet];
    }
 } //}}}
 
 
 /** */
-void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId, Bool_t wideLimits)
+void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort_t chId, TObjArray* fitResultHists, Bool_t wideLimits)
 { //{{{
    ChannelCalib *chCalib;
 
@@ -206,43 +238,44 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
       chCalib = &fChannelCalibs[chId];
    }
 
-   if (!h || !hMeanTime) {
+   if (!hTimeVsE || !hMeanTime) {
       Error("Calibrate", "Histogram (i.e. Time vs Energy) for channel %2d does not exist", chId);
       return;
    }
 
-   if (h->Integral() < 2000) {
-      Error("Calibrate", "Too few entries (Integral = %f) in histogram %s. Skipping calibration", h->Integral(), h->GetName());
+   if (hTimeVsE->Integral() < 2000) {
+      Error("Calibrate", "Too few entries (Integral = %f) in histogram %s. Skipping calibration", hTimeVsE->Integral(), hTimeVsE->GetName());
       return;
    }
 
-   Double_t xmin = h->GetXaxis()->GetXmin();
+   Double_t xmin = hTimeVsE->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
    //xmin = xmin == 0 ? 1 : xmin;
-   Double_t xmax = h->GetXaxis()->GetXmax();
+   Double_t xmax = hTimeVsE->GetXaxis()->GetXmax();
    //xmax = 600;
 
-   //Double_t ymin = h->GetYaxis()->GetXmin();
-   //Double_t ymax = h->GetYaxis()->GetXmax();
+   //Double_t ymin = hTimeVsE->GetYaxis()->GetXmin();
+   //Double_t ymax = hTimeVsE->GetYaxis()->GetXmax();
 
-   TObjArray *fitResHists = new TObjArray();
+   //TObjArray *fitResultHists = new TObjArray();
 
    //TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
 
    //if (wideLimits) { // This is for the fast calibration
-   //   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResHists);
-   //   ((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResHists);
-   //   //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResHists);
+   //   //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResultHists);
+   //   ((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResultHists);
+   //   //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResultHists);
    //} else { // In case of the regular channel calibration
-      //((TH2F*) h)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResHists);
-      ((TH2S*) h)->FitSlicesY(0, 0, -1, 0, "QNR", fitResHists);
+      //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResultHists);
+      ((TH2S*) hTimeVsE)->FitSlicesY(0, 0, -1, 0, "QNR", fitResultHists);
    //}
 
    //delete gausFitFunc;
+   //fitResultHists.SetOwner(kTRUE);
 
    // Reject points based on chi2
-   TH1* hchi2       = (TH1D*) fitResHists->At(3);
-   TH1* hchi2_profy = new TH1F("p", "p", 1000, hchi2->GetMinimum(), hchi2->GetMaximum());
+   TH1* hchi2       = (TH1*) fitResultHists->At(3);
+   TH1* hchi2_profy = new TH1F("p", "p", 20, hchi2->GetMinimum(), hchi2->GetMaximum());
 
    utils::ConvertToProfile(hchi2, hchi2_profy, kFALSE);
 
@@ -251,56 +284,61 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
 
    delete hchi2_profy;
 
-   //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
-   //hMeanTime->Set( ((TH1D*) fitResHists[1])->GetNbinsX(), ((TH1D*) fitResHists[1])->GetArray());
+   TLine* lineMean = new TLine(xmin, hchi2_profy_mean, xmax, hchi2_profy_mean);
+   lineMean->SetLineWidth(2);
+   lineMean->SetLineColor(kGreen);
 
-   TH1* hmeans  = (TH1D*) fitResHists->At(1);
-   //TH1* hsigmas = (TH1D*) fitResHists[2];
+   hchi2->GetListOfFunctions()->Add(lineMean);
+
+   TLine* lineRMS  = new TLine(xmin, hchi2_profy_mean+hchi2_profy_rms,  xmax, hchi2_profy_mean+hchi2_profy_rms);
+   lineRMS->SetLineWidth(2);
+   lineRMS->SetLineColor(kMagenta);
+
+   hchi2->GetListOfFunctions()->Add(lineRMS);
+   hchi2->GetListOfFunctions()->SetOwner(kTRUE);
+
+   //hMeanTime->Set( ((TH1D*) fitResultHists[1])->GetNbinsX()+2, ((TH1D*) fitResultHists[1])->GetArray());
+   //hMeanTime->Set( ((TH1D*) fitResultHists[1])->GetNbinsX(), ((TH1D*) fitResultHists[1])->GetArray());
+
+   TH1* hmeans  = (TH1D*) fitResultHists->At(1);
 
    for (Int_t ib=1; ib<=hmeans->GetNbinsX(); ++ib)
    {
       Double_t chi2  = hchi2->GetBinContent(ib);
 
       // skip points with bad chi2
-      if ( hchi2_profy_mean >= 0.5 && (chi2 - hchi2_profy_mean) > 3*hchi2_profy_rms ) continue;
+      if ( hchi2_profy_mean >= 1 && chi2 > hchi2_profy_mean + hchi2_profy_rms ) continue;
 
       Double_t bcntr = hmeans->GetBinCenter(ib);
       Double_t bcont = hmeans->GetBinContent(ib);
       Double_t berr  = hmeans->GetBinError(ib);
-      //Double_t berr  = hsigmas->GetBinContent(ib);
-      hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
-      hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
+
+      //hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
+      //hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
+      hMeanTime->SetBinContent(ib, bcont);
+      hMeanTime->SetBinError(ib, berr);
    }
 
    Double_t frac = utils::GetNonEmptyFraction(hMeanTime);
    printf("Non empty bin fraction 2: %f\n", frac);
    
    if (frac < 0.50) {
+      Error("Calibrate", "Too many bad slice fits in histogram %s. Skipping DL-T0 calibration", hMeanTime->GetName());
       gMeasInfo->DisableChannel(chId);
       return;
    }
 
-   if (hMeanTime->Integral() < 0) {
-      Error("Calibrate", "Too few entries in histogram %s. Skipping calibration", hMeanTime->GetName());
+   if (hMeanTime->Integral() <= 0) {
+      Error("Calibrate", "Zero entries in histogram %s. Skipping DL-T0 calibration", hMeanTime->GetName());
       return;
    }
 
-   delete fitResHists;
-
-   //Double_t *errors = ((TH1D*) fitResHists[1])->GetSumw2()->GetArray();
+   //Double_t *errors = ((TH1D*) fitResultHists[1])->GetSumw2()->GetArray();
 
    //if (errors)
    //   hMeanTime->SetError(errors);
 
-   //hMeanTime->SetError(((TH1D*) fitResHists[2])->GetArray());
-
-   // Set reasonable errors...
-   //for (int i=1; i<=hMeanTime->GetNbinsX(); i++) {
-
-   //   if (hMeanTime->GetBinContent(i) > 0 && hMeanTime->GetBinError(i) < 0.3)
-   //      //hMeanTime->SetBinError(i, 0.3);
-   //      //hMeanTime->SetBinError(i, 1);
-   //}
+   //hMeanTime->SetError(((TH1D*) fitResultHists[2])->GetArray());
 
    // Remember that for this fit the second parameter is the DL width
    //TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibratorEDepend::BananaFitFunc, xmin, xmax, 2);
@@ -332,10 +370,10 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
    //float meanDLW_high = 1.5*meanDLW;
 
    //if (wideLimits) {
-   Float_t   meanT0_low   = -30;
-   Float_t   meanT0_high  = 30;
-   Float_t   meanDLW_low  = 0;
-   Float_t   meanDLW_high = 200;
+   Float_t meanT0_low   = -30;
+   Float_t meanT0_high  =  30;
+   Float_t meanDLW_low  = 0;
+   Float_t meanDLW_high = 200;
    //}
 
    bananaFitFunc->SetParameters(meanT0, meanDLW);
@@ -409,10 +447,10 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
 
       chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
 
-      if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 50) {
-         chCalib->fFitStatus = kDLFIT_FAIL;
-         return;
-      }
+      //if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 50) {
+      //   chCalib->fFitStatus = kDLFIT_FAIL;
+      //   return;
+      //}
 
       chCalib->fFitStatus     = kDLFIT_OK;
       chCalib->fT0Coef        = fitres->Value(0);
@@ -436,7 +474,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId
 /** */
 void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
 { //{{{
-   Info("Print", "");
+   Info("Print", " ");
    Calibrator::Print(opt);
 } //}}}
 

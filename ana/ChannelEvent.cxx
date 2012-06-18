@@ -395,7 +395,8 @@ Bool_t ChannelEvent::PassCutNoise()
         GetAmpltd() > gMeasInfo->GetProtoCutAdcMax() ||
         GetTdc() < gMeasInfo->GetProtoCutTdcMin() ||
         GetTdc() > gMeasInfo->GetProtoCutTdcMax() ||
-        fabs( GetTdc() - ( gMeasInfo->GetProtoCutSlope() * GetAmpltd() + gMeasInfo->GetProtoCutOffset() + extraOffset) ) > 20
+        fabs( GetTdc() - ( gMeasInfo->GetProtoCutSlope() * GetAmpltd() + gMeasInfo->GetProtoCutOffset() + extraOffset) ) >
+           gMeasInfo->GetProtoCutWidth()
       )
       return false;
 

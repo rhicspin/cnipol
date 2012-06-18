@@ -23,7 +23,7 @@ MeasInfo::MeasInfo() : TObject(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
    fRunName(100, ' '),
-   fProtoCutSlope(0), fProtoCutOffset(0),
+   fProtoCutSlope(0), fProtoCutOffset(0), fProtoCutWidth(20),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
 
@@ -199,6 +199,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    //fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
+   fprintf(f, "$rc['fProtoCutWidth']               = %d;\n", fProtoCutWidth);
    fprintf(f, "$rc['fProtoCutAdcMin']              = %d;\n", fProtoCutAdcMin);
    fprintf(f, "$rc['fProtoCutAdcMax']              = %d;\n", fProtoCutAdcMax);
    fprintf(f, "$rc['fProtoCutTdcMin']              = %d;\n", fProtoCutTdcMin);
@@ -480,6 +481,7 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
 { //{{{
    fProtoCutSlope   = runPeriod.cut_proto_slope;
    fProtoCutOffset  = runPeriod.cut_proto_offset;
+   fProtoCutWidth   = (unsigned char) runPeriod.cut_proto_width;
    fProtoCutAdcMin  = runPeriod.cut_proto_adc_min;
    fProtoCutAdcMax  = runPeriod.cut_proto_adc_max;
    fProtoCutTdcMin  = runPeriod.cut_proto_tdc_min;

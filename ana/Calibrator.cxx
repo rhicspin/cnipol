@@ -5,6 +5,8 @@
 
 #include "Calibrator.h"
 
+#include "TMath.h"
+
 #include "Asym.h"
 #include "AsymGlobals.h"
 #include "MeasInfo.h"
@@ -16,13 +18,15 @@ using namespace std;
 
 
 /** Default constructor. */
-Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs()
+Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs(),
+   fMeanChannel(), fRMSBananaChi2Ndf()
 {
 }
 
 
 /** */
-Calibrator::Calibrator(TRandom *random) : TObject(), fRandom(random), fChannelCalibs()
+Calibrator::Calibrator(TRandom *random) : TObject(), fRandom(random),
+   fChannelCalibs(), fMeanChannel(), fRMSBananaChi2Ndf()
 {
 }
 
@@ -34,61 +38,67 @@ Calibrator::~Calibrator()
 
 
 /** */
-ChannelCalib* Calibrator::GetAverage()
+void Calibrator::UpdateMeanChannel()
 { //{{{
-	//Info("GetAverage", "Executing GetAverage()");
+	//Info("UpdateMeanChannel", "Called");
 
-   ChannelCalib *ch = new ChannelCalib();
-   ch->ResetToZero();
+   fMeanChannel.ResetToZero();
 
-   ChannelCalibMap::const_iterator mi;
+	vector<Float_t> vT0Coef;
+	//vector<Float_t> vT0CoefErr;
+   vector<Float_t> vDLWidth;
+   //vector<Float_t> vDLWidthErr;
+   vector<Float_t> vBananaChi2Ndf;
+
+   ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
 
    UInt_t nChannels = 0;
 
-   for (mi=mb; mi!=me; ++mi) {
-      if (gMeasInfo->IsSiliconChannel(mi->first) && !isnan(mi->second.fT0Coef) && !isinf(mi->second.fT0Coef) &&
-          !gMeasInfo->IsDisabledChannel(mi->first) && mi->second.fBananaChi2Ndf < 1e3)
+   for (iCh=mb; iCh!=me; ++iCh)
+   {
+      if (gMeasInfo->IsSiliconChannel(iCh->first) && !isnan(iCh->second.fT0Coef) && !isinf(iCh->second.fT0Coef) &&
+          !gMeasInfo->IsDisabledChannel(iCh->first) && iCh->second.GetFitStatus() == kDLFIT_OK )
       {
-         ch->fT0Coef        += mi->second.fT0Coef;
-         ch->fT0CoefErr     += mi->second.fT0CoefErr;
-         ch->fDLWidth       += mi->second.fDLWidth;
-         ch->fDLWidthErr    += mi->second.fDLWidthErr;
-         ch->fBananaChi2Ndf += mi->second.fBananaChi2Ndf;
+         vT0Coef.push_back(iCh->second.fT0Coef);
+         //vT0CoefErr.push_back(iCh->second.fT0CoefErr);
+         vDLWidth.push_back(iCh->second.fDLWidth);
+         //vDLWidthErr.push_back(iCh->second.fDLWidthErr);
+         vBananaChi2Ndf.push_back(iCh->second.fBananaChi2Ndf);
+
          nChannels++;
       }
    }
 
    if (nChannels) {
-      ch->fT0Coef        /= nChannels;
-      ch->fT0CoefErr     /= nChannels;
-      ch->fDLWidth       /= nChannels;
-      ch->fDLWidthErr    /= nChannels;
-      ch->fBananaChi2Ndf /= nChannels;
+      fMeanChannel.fT0Coef        = TMath::Mean(nChannels, &vT0Coef[0]);
+      fMeanChannel.fT0CoefErr     = TMath::RMS (nChannels, &vT0Coef[0]);
+      fMeanChannel.fDLWidth       = TMath::Mean(nChannels, &vDLWidth[0]);
+      fMeanChannel.fDLWidthErr    = TMath::RMS (nChannels, &vDLWidth[0]);
+      fMeanChannel.fBananaChi2Ndf = TMath::Mean(nChannels, &vBananaChi2Ndf[0]);
+      fRMSBananaChi2Ndf           = TMath::RMS (nChannels, &vBananaChi2Ndf[0]);
    }
-
-   return ch;
 } //}}}
 
 
 /** */
 void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
 { //{{{
-   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = calibrator.fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = calibrator.fChannelCalibs.end();
 
-   for (mi=mb; mi!=me; ++mi) {
+   for (iCh=mb; iCh!=me; ++iCh) {
 
-      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(mi->first);
+      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(iCh->first);
 
       if (iChCalib != fChannelCalibs.end()) {
-         iChCalib->second.CopyAlphaCoefs(mi->second);
+         iChCalib->second.CopyAlphaCoefs(iCh->second);
       } else {
          ChannelCalib newChCalib;
-         newChCalib.CopyAlphaCoefs(mi->second);
-         fChannelCalibs[mi->first] = newChCalib;
+         newChCalib.CopyAlphaCoefs(iCh->second);
+         fChannelCalibs[iCh->first] = newChCalib;
       }
    }
 } //}}}
@@ -211,13 +221,13 @@ void Calibrator::Print(const Option_t* opt) const
           "fDLWidthErr fT0Coef fT0CoefErr fAvrgEMiss fAvrgEMissErr " \
           "fBananaChi2Ndf fFitStatus\n");
 
-   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
 
-   for (mi=mb; mi!=me; mi++) {
-	   printf("Channel %2d: ", mi->first);
-		mi->second.Print();
+   for (iCh=mb; iCh!=me; iCh++) {
+	   printf("Channel %2d: ", iCh->first);
+		iCh->second.Print();
       //printf("\n");
    }
 } //}}}
@@ -226,16 +236,16 @@ void Calibrator::Print(const Option_t* opt) const
 /** */
 void Calibrator::PrintAsPhp(FILE *f) const
 { //{{{
-   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
 
-   for (mi=mb; mi!=me; mi++) {
+   for (iCh=mb; iCh!=me; iCh++) {
   
-      UShort_t chId = mi->first;
+      UShort_t chId = iCh->first;
 
       fprintf(f, "$rc['calib'][%d] = ", chId);
-      mi->second.PrintAsPhp(f);
+      iCh->second.PrintAsPhp(f);
       fprintf(f, ";\n");
    }
 } //}}}
@@ -244,17 +254,17 @@ void Calibrator::PrintAsPhp(FILE *f) const
 /** */
 void Calibrator::PrintAsConfig(FILE *f) const
 { //{{{
-   ChannelCalibMap::const_iterator mi;
+   ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
 
    UShort_t chId;
    const ChannelCalib *ch;
 
-   for (mi=mb; mi!=me; mi++) {
+   for (iCh=mb; iCh!=me; iCh++) {
   
-      chId =  mi->first;
-      ch   = &mi->second;
+      chId =  iCh->first;
+      ch   = &iCh->second;
 
       fprintf(f, "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
          chId, -1*ch->fT0Coef, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,

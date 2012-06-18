@@ -32,21 +32,21 @@ class ChannelCalib : public TObject
 {
 public:
 
-   Float_t  fACoef;
-   Float_t  fACoefErr;
-   Float_t  fAChi2Ndf;
-   Float_t  fICoef;
-   Float_t  fICoefErr;
-   Float_t  fIChi2Ndf;
-   Float_t  fDLWidth;       // Dead layer
-   Float_t  fDLWidthErr;
-   Float_t  fT0Coef;        // T0
-   Float_t  fT0CoefErr;
-   Float_t  fAvrgEMiss;
-   Float_t  fAvrgEMissErr;
-   Float_t  fEMeasDLCorr;   // a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
-   Float_t  fBananaChi2Ndf;
-   UInt_t   fFitStatus;
+   Float_t    fACoef;
+   Float_t    fACoefErr;
+   Float_t    fAChi2Ndf;
+   Float_t    fICoef;
+   Float_t    fICoefErr;
+   Float_t    fIChi2Ndf;
+   Float_t    fDLWidth;       // Dead layer
+   Float_t    fDLWidthErr;
+   Float_t    fT0Coef;        // T0
+   Float_t    fT0CoefErr;
+   Float_t    fAvrgEMiss;
+   Float_t    fAvrgEMissErr;
+   Float_t    fEMeasDLCorr;   // a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
+   Float_t    fBananaChi2Ndf;
+   EFitStatus fFitStatus;
 
 public:
 
@@ -54,6 +54,7 @@ public:
    ~ChannelCalib();
 
    EFitStatus GetFitStatus() const;   
+   Float_t    GetBananaChi2Ndf() const { return fBananaChi2Ndf; }
    void CopyAlphaCoefs(const ChannelCalib &chCalib);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;

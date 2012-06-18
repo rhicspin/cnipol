@@ -12,23 +12,24 @@
 
 #include "TObject.h"
 
-sql_create_16(MseRunPeriod, 1, 2,
-   mysqlpp::sql_datetime, start_time,
-   mysqlpp::sql_smallint, polarimeter_id,
-   mysqlpp::sql_varchar,  alpha_calib_run_name,
-   mysqlpp::sql_varchar,  dl_calib_run_name,
-   mysqlpp::sql_varchar,  disabled_channels,
-   mysqlpp::sql_varchar,  disabled_bunches,
-   mysqlpp::sql_float,    cut_proto_slope,
-   mysqlpp::sql_float,    cut_proto_offset,
-   mysqlpp::sql_float,    cut_proto_adc_min,
-   mysqlpp::sql_float,    cut_proto_adc_max,
-   mysqlpp::sql_float,    cut_proto_tdc_min,
-   mysqlpp::sql_float,    cut_proto_tdc_max,
-   mysqlpp::sql_float,    cut_pulser_adc_min,
-   mysqlpp::sql_float,    cut_pulser_adc_max,
-   mysqlpp::sql_float,    cut_pulser_tdc_min,
-   mysqlpp::sql_float,    cut_pulser_tdc_max)
+sql_create_17(MseRunPeriod, 1, 2,
+   mysqlpp::sql_datetime,          start_time,
+   mysqlpp::sql_smallint,          polarimeter_id,
+   mysqlpp::sql_varchar,           alpha_calib_run_name,
+   mysqlpp::sql_varchar,           dl_calib_run_name,
+   mysqlpp::sql_varchar,           disabled_channels,
+   mysqlpp::sql_varchar,           disabled_bunches,
+   mysqlpp::sql_float,             cut_proto_slope,
+   mysqlpp::sql_float,             cut_proto_offset,
+   mysqlpp::sql_tinyint_unsigned,  cut_proto_width,
+   mysqlpp::sql_float,             cut_proto_adc_min,
+   mysqlpp::sql_float,             cut_proto_adc_max,
+   mysqlpp::sql_float,             cut_proto_tdc_min,
+   mysqlpp::sql_float,             cut_proto_tdc_max,
+   mysqlpp::sql_float,             cut_pulser_adc_min,
+   mysqlpp::sql_float,             cut_pulser_adc_max,
+   mysqlpp::sql_float,             cut_pulser_tdc_min,
+   mysqlpp::sql_float,             cut_pulser_tdc_max)
 
 
 class MseRunPeriodX : public MseRunPeriod
