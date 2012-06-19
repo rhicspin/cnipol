@@ -143,11 +143,11 @@ void CnipolCalibHists::PostFill()
    Double_t chi2_mean = calibrator->GetMeanChannel().GetBananaChi2Ndf();
    Double_t chi2_rms  = calibrator->GetRMSBananaChi2Ndf();
 
-   TLine* lineMean = new TLine(1, chi2_mean, hDLVsChannel->GetNbinsX(), chi2_mean);
+   TLine* lineMean = new TLine(0, chi2_mean, hDLVsChannel->GetNbinsX()+1, chi2_mean);
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMS  = new TLine(1, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+chi2_rms);
+   TLine* lineRMS  = new TLine(0, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX()+1, chi2_mean+chi2_rms);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
