@@ -130,6 +130,16 @@ void MAsymAnaInfo::VerifyOptions()
       exit(0);
    }
 
+   TString tmpFileName(fMListFileName.c_str());
+
+   // file exist?
+   if ( !gSystem->FindFile( (GetResultsDir() + "/runXX/lists/").c_str(), tmpFileName ) )
+	{
+      Error("VerifyOptions",
+		   "File list \"%s\" not found\n", GetMListFullPath().c_str());
+      exit(0);
+	}
+
    fOutputName = fMListFileName;
 
    // The output dir is created here
@@ -163,6 +173,6 @@ void MAsymAnaInfo::PrintUsage()
 
    cout << "Options:" << endl;
    cout << " -h, -?                               : Print this help" << endl;
-   cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_DATA_DIR directory" << endl;
+   cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
    cout << endl;
 } //}}}

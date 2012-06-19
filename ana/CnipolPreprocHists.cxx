@@ -80,7 +80,7 @@ void CnipolPreprocHists::BookHists()
       shName = "hFitMeanTimeVsEnergyA_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
       hist->SetTitle("; Deposited Energy, keV; Mean Time, ns;");
-      hist->SetOption("E1 NOIMG");
+      hist->SetOption("E1 GRIDX NOIMG");
       hist->GetYaxis()->SetRangeUser(10, 110);
       o[shName] = hist;
       fhFitMeanTimeVsEnergyA_ch[chId-1] = hist;
@@ -88,7 +88,7 @@ void CnipolPreprocHists::BookHists()
       shName = "hFitChi2NdfVsEnergyA_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
       hist->SetTitle("; Deposited Energy, keV; #chi^2/ndf;");
-      hist->SetOption("P NOIMG");
+      hist->SetOption("P XY GRIDX NOIMG");
       hist->SetMarkerStyle(kFullCircle);
       hist->SetMarkerSize(0.8);
       hist->SetMarkerColor(kGreen);
