@@ -81,6 +81,10 @@ span.feature {
 	background-color: pink;
 }
 
+.nowrap {
+	white-space: nowrap;
+}
+
 .bluPol {
 	background-color: #8bf !important;
    padding: 0.2em;

@@ -530,7 +530,7 @@ foreach ($es as $e):
 ?>
 
 <tr>
-   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$e['fill']?>&ana=run<?=$_GET['rp']?>"><?=$e['fill']?></a>
+   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$e['fill']?>&ana=run<?=sprintf("%02d", $_GET['rp'])?>"><?=$e['fill']?></a>
    <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$e['fill']?>'>-->
 
    <td class='align_cm'><?=$strFillType?>
@@ -549,18 +549,18 @@ foreach ($es as $e):
    <td class=align_cm><?=polarPairToString($pairPolarBHJ)?>
    <td class=align_cm><?=polarPairToString($pairPolarB1U)?>
    <td class=align_cm><?=polarPairToString($pairPolarB2D)?>
-   <td class=align_cm><?=$strProfileB_V?>
-   <td class=align_cm><?=$strProfileB_H?>
-   <td class=align_cm><?=$strScalePolarBColl?>
+   <td class='align_cm nowrap'><?=$strProfileB_V?>
+   <td class='align_cm nowrap'><?=$strProfileB_H?>
+   <td class='align_cm nowrap'><?=$strScalePolarBColl?>
 <!--<td class=align_cm><?=$strProfPolarB_V?>-->
 <!--<td class=align_cm><?=$strProfPolarB_H?>-->
 
    <td class=align_cm><?=polarPairToString($pairPolarYHJ)?>
    <td class=align_cm><?=polarPairToString($pairPolarY1D)?>
    <td class=align_cm><?=polarPairToString($pairPolarY2U)?>
-   <td class=align_cm><?=$strProfileY_V?>
-   <td class=align_cm><?=$strProfileY_H?>
-   <td class=align_cm><?=$strScalePolarYColl?>
+   <td class='align_cm nowrap'><?=$strProfileY_V?>
+   <td class='align_cm nowrap'><?=$strProfileY_H?>
+   <td class='align_cm nowrap'><?=$strScalePolarYColl?>
 <!--   <td class=align_cm><?=$strProfPolarY_V?>-->
 <!--   <td class=align_cm><?=$strProfPolarY_H?>-->
 

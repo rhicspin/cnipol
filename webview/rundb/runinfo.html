@@ -383,32 +383,28 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 
 <tr class="toprow4">
 <td>
-<div class="thumbinner">
-   <?=$gP->img('run/wall_current_monitor')?>
+<?=$gP->img('run/wall_current_monitor')?>
 <div class="thumbcaption">
 Number of protons per bunch (WCM)
-</div> </div>
+</div>
 
 <td>
-<div class="thumbinner">
 <?=$gP->img('raw/hBunchCounts')?>
 <div class="thumbcaption">
 Number of events per bunch
-</div> </div>
+</div>
 
 <td>
-<div class="thumbinner">
 <?=$gP->img('raw/hStripCounts')?>
 <div class="thumbcaption">
 Number of events per silicon detector channel
-</div> </div>
+</div>
 
 <td>
-<div class="thumbinner">
 <?=$gP->img('raw/hChIdVsBunchId')?>
 <div class="thumbcaption">
 Number of events per bunch and detector channel
-</div> </div>
+</div>
 
 <tr class=align_ct>
 <td>
@@ -474,16 +470,23 @@ Number of events per bunch and detector channel
 
 <p>
 
-<table class="simple" cellspacing=10 align=center>
+<table class="simple00 cntr" cellspacing=10>
 
 <tr>
 
 <td align=center>
-   <?=$gP->img('run/Asymmetry/asym_sinphi_fit')?>
+
 <td align=center>
    <?=$gP->img('asym/hPolarVsPhi')?>
+<div class="thumbcaption">
+Polarization per channel as a function of the channel angle
+</div>
+
 <td align=center>
    <?=$gP->img('asym/hAsymVsPhi')?>
+<div class="thumbcaption">
+Asymmetry per channel as a function of the channel angle
+</div>
 
 <tr>
 <td align=center>
