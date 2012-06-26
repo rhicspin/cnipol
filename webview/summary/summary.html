@@ -87,6 +87,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
    <td>
    <?=$gP->img("runs/BLU/hPolarHJVsFill_BLU_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+
    <td><?=$gP->img("runs/YEL/hPolarHJVsFill_YEL_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
 
@@ -119,13 +120,16 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <p>
 <table class="simple00 cntr">
 <tr>
-<td><?=$gP->img("runs/BLU/hAsymHJVsFill_BLU_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/BLU/hAsymHJVsFill_BLU_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
-<td><?=$gP->img("runs/YEL/hAsymHJVsFill_YEL_$strEnergy", false, 700)?>
+
+   <td><?=$gP->img("runs/YEL/hAsymHJVsFill_YEL_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+
 <tr>
 <td colspan=2>
 <div class='thumbcaption'>Analyzing power A_N as measured by the H-Jet polarimeter</div>
+
 </table>
 
 <? endforeach; ?>
@@ -161,23 +165,25 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_unscaled_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hPolarVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hPolarVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>: Unscaled p-Carbon polarization
-   <th><span class='yelPol'>Y2U</span>: Unscaled p-Carbon polarization
+   <td><?=$gP->img("runs/Y2U/hPolarVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hPolarVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hPolarVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>: Unscaled p-Carbon polarization
-   <th><span class='yelPol'>Y1D</span>: Unscaled p-Carbon polarization
+<td colspan=2>
+<div class='thumbcaption'>Unscaled p-Carbon polarization
 
 </table>
 
@@ -201,23 +207,25 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_hjet_ratio_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hNormJCVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hNormJCVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>: Ratio of H-Jet/p-Carbon polarization
-   <th><span class='yelPol'>Y2U</span>: Ratio of H-Jet/p-Carbon polarization
+   <td><?=$gP->img("runs/Y2U/hNormJCVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hNormJCVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hNormJCVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>: Ratio of H-Jet/p-Carbon polarization
-   <th><span class='yelPol'>Y1D</span>: Ratio of H-Jet/p-Carbon polarization
+<td colspan=2>
+<div class='thumbcaption'>Ratio of H-Jet/p-Carbon polarization</div>
 
 </table>
 
@@ -242,23 +250,26 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_scaled_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hPolarPCScaledVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hPolarPCScaledVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>: Scaled p-Carbon polarization
-   <th><span class='yelPol'>Y2U</span>: Scaled p-Carbon polarization
+   <td><?=$gP->img("runs/Y2U/hPolarPCScaledVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hPolarPCScaledVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hPolarPCScaledVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>: Scaled p-Carbon polarization
-   <th><span class='yelPol'>Y1D</span>: Scaled p-Carbon polarization
+<td colspan=2>
+<div class='thumbcaption'>Fill polarization as measured by p-Carbon
+polarimeters. The normalization to the H-jet results is applied</div>
 
 </table>
 
@@ -283,23 +294,27 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hPolarHJPCRatioVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hPolarHJPCRatioVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>: Ratio of H-Jet/scaled p-Carbon polarization
-   <th><span class='yelPol'>Y2U</span>: Ratio of H-Jet/scaled p-Carbon polarization
+   <td><?=$gP->img("runs/Y2U/hPolarHJPCRatioVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hPolarHJPCRatioVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hPolarHJPCRatioVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>: Ratio of H-Jet/scaled p-Carbon polarization
-   <th><span class='yelPol'>Y1D</span>: Ratio of H-Jet/scaled p-Carbon polarization
+<td colspan=2>
+<div class='thumbcaption'>
+Ratio of H-Jet/scaled p-Carbon polarization
+</div>
 
 </table>
 
@@ -322,15 +337,20 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <div id="div:pcarbon_utod_ratio<?=$strEnergy?>" class="section">
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/BLU/hPolarRatioSystVsFill_BLU_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+
    <td><?=$gP->img("runs/YEL/hPolarRatioSystVsFill_YEL_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Yellow</span></div>
 
 <tr>
-   <th><span class='bluPol'>Blue</span>: U/D
-   <th><span class='yelPol'>Yellow</span>: U/D
+<td colspan=2>
+<div class='thumbcaption'>
+Ratio of upstream/downstream p-Carbon polarization
+</div>
 
 </table>
 
@@ -399,6 +419,12 @@ foreach ($ai['fBeamEnergies'] as $energy):
    <td colspan=2>
    <div class='thumbcaption_cm'><span class='yelPol'>Y1D</span></div>
 
+<tr>
+<td colspan=4>
+<div class='thumbcaption'>
+Fill average polarization profile values
+</div>
+
 </table>
 
 <? endforeach; ?>
@@ -423,23 +449,27 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_decay_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hPolarDecayVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hPolarDecayVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>
-   <th><span class='yelPol'>Y2U</span>
+   <td><?=$gP->img("runs/Y2U/hPolarDecayVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hPolarDecayVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hPolarDecayVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>
-   <th><span class='yelPol'>Y1D</span>
+<td colspan=2>
+<div class='thumbcaption'>
+Polarization decay in absolute % per hour
+</div>
 
 </table>
 
@@ -463,23 +493,27 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_angle_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hSpinAngleVsMeas_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hSpinAngleVsMeas_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>
-   <th><span class='yelPol'>Y2U</span>
+   <td><?=$gP->img("runs/Y2U/hSpinAngleVsMeas_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hSpinAngleVsMeas_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hSpinAngleVsMeas_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>
-   <th><span class='yelPol'>Y1D</span>
+<td colspan=2>
+<div class='thumbcaption'>
+Average spin angle (i.e. radial component)
+</div>
 
 </table>
 
@@ -499,26 +533,30 @@ foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
 
-<h3 id="pcarbon_dl_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+<h3 id="pcarbon_t0_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hT0VsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hT0VsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>
-   <th><span class='yelPol'>Y2U</span>
+   <td><?=$gP->img("runs/Y2U/hT0VsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hT0VsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hT0VsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>
-   <th><span class='yelPol'>Y1D</span>
+<td colspan=2>
+<div class='thumbcaption'>
+t0 calibration parameter averaged over all channels and all measurements in a fill
+</div>
 
 </table>
 
@@ -537,23 +575,28 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_dl_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hDLVsFill_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hDLVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>
-   <th><span class='yelPol'>Y2U</span>
+   <td><?=$gP->img("runs/Y2U/hDLVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hDLVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hDLVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
-   <th><span class='bluPol'>B2D</span>
-   <th><span class='yelPol'>Y1D</span>
+<td colspan=2>
+<div class='thumbcaption'>
+Effective dead layer calibration parameter averaged over all channels and all
+measurements in a fill
+</div>
 
 </table>
 
@@ -572,23 +615,28 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h3 id="pcarbon_target_use_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/B1U/hTargetVsMeas_B1U_$strEnergy", false, 700)?>
-   <td><?=$gP->img("runs/Y2U/hTargetVsMeas_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-<tr>
-   <th><span class='bluPol'>B1U</span>
-   <th><span class='yelPol'>Y2U</span>
+   <td><?=$gP->img("runs/Y2U/hTargetVsMeas_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
    <td><?=$gP->img("runs/B2D/hTargetVsMeas_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
    <td><?=$gP->img("runs/Y1D/hTargetVsMeas_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
 
 <tr>
-   <th><span class='bluPol'>B2D</span>
-   <th><span class='yelPol'>Y1D</span>
+<td colspan=2>
+<div class='thumbcaption'>
+Target used in the fill
+</div>
 
 </table>
 
@@ -613,8 +661,10 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <tr>
    <td><?=$gP->img("fills/hBunchAsymChi2_BLU", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+
    <td><?=$gP->img("fills/hBunchAsymChi2_YEL", false, 700)?>
    <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+
 <tr>
 <td colspan=2>
 <div class='thumbcaption'>
@@ -648,15 +698,20 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <h2 id="intens_<?=$strEnergy?>" class=count><?=$energy?> GeV</h2>
 
 <p>
-<table class="wikitable cellpadded cntr">
+<table class="simple00 cntr">
 
 <tr>
    <td><?=$gP->img("runs/BLU/hIntensDecayVsFill_BLU_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+
    <td><?=$gP->img("runs/YEL/hIntensDecayVsFill_YEL_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
 
 <tr>
-   <th><span class='bluPol'>Blue</span>: Intensity decay
-   <th><span class='yelPol'>Yellow</span>: Intensity decay
+<td colspan=2>
+<div class='thumbcaption'>
+Beam intensity lifetime
+</div>
 
 </table>
 
