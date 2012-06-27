@@ -1765,7 +1765,7 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
       hAsymHJVsFill_->SetBinError(  ib, hjAsym.second);
    }
 
-   ValErrPair avrgPolar = afr.GetPolarBeam(ringId);
+   ValErrPair avrgPolar = afr.GetBeamPolar(ringId);
 
    if (avrgPolar.second >= 0) {
       hPolarVsFill_->SetBinContent(ib, avrgPolar.first);

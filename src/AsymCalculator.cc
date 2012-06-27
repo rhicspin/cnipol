@@ -1118,7 +1118,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    //HHPAK(10033, SpeLumi.Cnts);
    //HHPAKE(11033, SpeLumi.dCnts);
 
-   SpeLumi.ave = utils::WeightedMean(SpeLumi.Cnts,SpeLumi.dCnts,N_BUNCHES);
+   SpeLumi.ave = utils::WeightedMean((Double_t*) SpeLumi.Cnts, (Double_t*) SpeLumi.dCnts, N_BUNCHES);
 
    if (SpeLumi.ave) {
       for (int bid=0; bid<N_BUNCHES; bid++) {
@@ -1261,7 +1261,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
      StripAnomalyDetector();
    //}
 
-   mdev = utils::WeightedMean(feedback.mdev, feedback.err, N_SILICON_CHANNELS);
+   mdev = utils::WeightedMean((Double_t*) feedback.mdev, (Double_t*) feedback.err, N_SILICON_CHANNELS);
    printf("Average Mass Deviation  = %10.2f [GeV/c]\n", mdev);
 
    adev = mdev * G2k * gRunConsts[0].M2T/sqrt(400.);
@@ -1564,9 +1564,9 @@ void calcBunchAsymmetryAverage()
    }
 
    // Calculate weighgted beam for Ax90, Ax45, Ay45 combinations
-   utils::CalcWeightedMean(gBunchAsym.Ax90[0], gBunchAsym.Ax90[1], N_BUNCHES, gBunchAsym.ave.Ax90[0], gBunchAsym.ave.Ax90[1]);
-   utils::CalcWeightedMean(gBunchAsym.Ax45[0], gBunchAsym.Ax45[1], N_BUNCHES, gBunchAsym.ave.Ax45[0], gBunchAsym.ave.Ax45[1]);
-   utils::CalcWeightedMean(gBunchAsym.Ay45[0], gBunchAsym.Ay45[1], N_BUNCHES, gBunchAsym.ave.Ay45[0], gBunchAsym.ave.Ay45[1]);
+   utils::CalcWeightedMean((Double_t*) gBunchAsym.Ax90[0], (Double_t*) gBunchAsym.Ax90[1], N_BUNCHES, (Double_t&) gBunchAsym.ave.Ax90[0], (Double_t&) gBunchAsym.ave.Ax90[1]);
+   utils::CalcWeightedMean((Double_t*) gBunchAsym.Ax45[0], (Double_t*) gBunchAsym.Ax45[1], N_BUNCHES, (Double_t&) gBunchAsym.ave.Ax45[0], (Double_t&) gBunchAsym.ave.Ax45[1]);
+   utils::CalcWeightedMean((Double_t*) gBunchAsym.Ay45[0], (Double_t*) gBunchAsym.Ay45[1], N_BUNCHES, (Double_t&) gBunchAsym.ave.Ay45[0], (Double_t&) gBunchAsym.ave.Ay45[1]);
 
    // Calculate Left-Right asymmetry using Ax90 and Ax45
    calcLRAsymmetry(gBunchAsym.ave.Ax90, gBunchAsym.ave.Ax45, gBunchAsym.ave.Ax[0], gBunchAsym.ave.Ax[1]);
@@ -2051,9 +2051,9 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // Caluclate Weighted Average
-   utils::CalcWeightedMean(P, dP, N_SILICON_CHANNELS, gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
+   utils::CalcWeightedMean((Double_t*) P, (Double_t*) dP, N_SILICON_CHANNELS, (Double_t&) gAnaMeasResult->P[0], (Double_t&) gAnaMeasResult->P[1]);
 
-   utils::CalcWeightedMean(AsymPhiCorr, dAsymPhiCorr, N_SILICON_CHANNELS, (Float_t&) gAnaMeasResult->fAvrgPMAsym.first, (Float_t&) gAnaMeasResult->fAvrgPMAsym.second);
+   utils::CalcWeightedMean((Double_t*) AsymPhiCorr, (Double_t*) dAsymPhiCorr, N_SILICON_CHANNELS, gAnaMeasResult->fAvrgPMAsym.first, gAnaMeasResult->fAvrgPMAsym.second);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 

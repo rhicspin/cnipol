@@ -67,7 +67,7 @@ public:
    void           AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
    void           AddHJMeasResult();
    void           Process(DrawObjContainer *ocOut=0);
-   ValErrPair     GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
+   ValErrPair     GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    AnaFillResult* GetAnaFillResult(UInt_t fillId);
    //ValErrPair     GetBeamPolarExp(UInt_t fillId, ERingId ringId);
    void           UpdateInsertDb(AsymDbSql *asymDbSql);
