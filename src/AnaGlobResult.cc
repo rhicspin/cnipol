@@ -327,7 +327,7 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
 
 
 /** */
-ValErrPair AnaGlobResult::GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t norm)
+ValErrPair AnaGlobResult::GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t norm)
 { //{{{
    ValErrPair result(0, -1);
 
@@ -337,7 +337,7 @@ ValErrPair AnaGlobResult::GetPolarBeam(ERingId ringId, UInt_t fillId, Bool_t nor
 
    AnaFillResult *fillRslt = &iFill->second;
 
-   return fillRslt->GetPolarBeam(ringId);
+   return fillRslt->GetBeamPolar(ringId);
 } //}}}
 
 
@@ -575,8 +575,7 @@ void AnaGlobResult::CalcPolarDependants()
       UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
-      //fillRslt->CalcBeamPolar(fNormJetCarbon);
-      fillRslt->CalcBeamPolar(fNormJetCarbon2);
+      fillRslt->CalcBeamPolar(kTRUE);
 
       RingId2ValErrMap ratioU2D   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
       PolId2ValErrMap  ratioHJ2PC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon2);

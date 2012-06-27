@@ -17,11 +17,19 @@
 #include "AnaFillResult.h"
 
 
-sql_create_16(MseFillPolar, 1, 2,
+sql_create_24(MseFillPolar, 1, 2,
    mysqlpp::sql_int_unsigned,      fill,
    mysqlpp::sql_datetime,          start_time,
    mysqlpp::sql_smallint,          type,
    mysqlpp::sql_float,             beam_energy,
+   mysqlpp::sql_float,             polar_blue_p0,
+   mysqlpp::sql_float,             polar_blue_p0_err,
+   mysqlpp::sql_float,             polar_blue_decay,
+   mysqlpp::sql_float,             polar_blue_decay_err,
+   mysqlpp::sql_float,             polar_yellow_p0,
+   mysqlpp::sql_float,             polar_yellow_p0_err,
+   mysqlpp::sql_float,             polar_yellow_decay,
+   mysqlpp::sql_float,             polar_yellow_decay_err,
    mysqlpp::sql_float,             polar_blue_hjet,
    mysqlpp::sql_float,             polar_blue_hjet_err,
    mysqlpp::sql_float,             polar_yellow_hjet,

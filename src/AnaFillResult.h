@@ -58,8 +58,10 @@ public:
    RingId2ValErrMap             fHJPolars;
    RingId2ValErrMap             fHJAsyms;
 
-   RingId2ValErrMap             fBeamPolars;     //! not used
-   RingId2ValErrMap             fBeamCollPolars; //! not used
+   RingId2ValErrMap             fBeamPolars;       //!
+   RingId2ValErrMap             fBeamPolarP0s;     //!
+   RingId2ValErrMap             fBeamPolarDecays;  //!
+   RingId2ValErrMap             fBeamCollPolars;   //! not used
    
    PolId2ValErrMap              fSystProfPolar;
    PolId2ValErrMap              fSystJvsCPolar;
@@ -86,62 +88,63 @@ public:
    void Print(const Option_t* opt="") const;
    //void PrintAsPhp(FILE *f=stdout) const;
 
-   Double_t      GetFlattopEnergy() const { return fFlattopEnergy; }
-   EFillType     GetFillType() const { return fFillType; }
-   TGraphErrors* GetGrBluIntens() const;
-   TGraphErrors* GetGrYelIntens() const;
-   TGraphErrors* GetIntensGraph(ERingId ringId) const;
-   TGraphErrors* GetRotCurStarGraph(ERingId ringId) const;
-   TGraphErrors* GetRotCurPhenixGraph(ERingId ringId) const;
-   TGraphErrors* GetSnakeCurGraph(ERingId ringId) const;
+   Double_t             GetFlattopEnergy() const { return fFlattopEnergy; }
+   EFillType            GetFillType() const { return fFillType; }
+   TGraphErrors*        GetGrBluIntens() const;
+   TGraphErrors*        GetGrYelIntens() const;
+   TGraphErrors*        GetIntensGraph(ERingId ringId) const;
+   ValErrPair           GetIntensDecay(ERingId ringId) const;
+   TGraphErrors*        GetRotCurStarGraph(ERingId ringId) const;
+   TGraphErrors*        GetRotCurPhenixGraph(ERingId ringId) const;
+   TGraphErrors*        GetSnakeCurGraph(ERingId ringId) const;
    AnaFillExternResult* GetAnaFillExternResult() const;
-
-   void              AddMeasResult(AnaMeasResult &result);
-   void              AddMeasResult(EventConfig &mm, AnaGlobResult *globRes=0);
-   void              AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);
-   void              AddExternInfo(std::ifstream &file);
-   void              Process(DrawObjContainer *ocOut=0);
-   Bool_t            IsValidFlattopMeas(const MeasInfo &measInfo);
-   TGraphErrors*     GetPCPolarGraph(EPolarimeterId polId);
-   TGraphErrors*     GetPCPolarInjGraph(EPolarimeterId polId);
-   TGraphErrors*     GetPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient);
-   ValErrPair        GetPCPolarDecay(EPolarimeterId polId);
-   ValErrPair        GetIntensDecay(ERingId ringId);
-   ValErrPair        GetPCPolarRSlope(EPolarimeterId polId, ETargetOrient tgtOrient);
-   ValErrPair        GetHJPolar(EPolarimeterId polId);
-   ValErrPair        GetHJPolar(ERingId ringId);
-   ValErrPair        GetHJAsym(EPolarimeterId polId);
-   ValErrPair        GetHJAsym(ERingId ringId);
-   ValErrPair        GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
-   ValErrPair        GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
-   //ValErrPair        GetPolarBeam(EBeamId beamId);
-   ValErrPair        GetPolarBeam(ERingId ringId);
-   ValErrPair        GetSystUvsDPolar(ERingId ringId);
-   ValErrPair        GetSystJvsCPolar(EPolarimeterId polId);
-   ValErrPair        GetSystProfPolar(EPolarimeterId polId);
-   ValErrPair        GetPolProfR(ERingId ringId, ETargetOrient tgtOrient);
-   ValErrPair        GetPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
-   ValErrPair        GetPolProfP(ERingId ringId, ETargetOrient tgtOrient);
-   //ValErrPair   GetProfPolarSyst(EPolarimeterId polId);
-   void              CalcBeamPolar(PolId2ValErrMap &normJC);
-   RingId2ValErrMap  CalcSystUvsDPolar(PolId2ValErrMap &normJC);
-   PolId2ValErrMap   CalcSystJvsCPolar(PolId2ValErrMap &normJC);
-   PolId2ValErrMap   CalcSystProfPolar(PolId2ValErrMap &normPP);
-   ValErrPair        CalcAvrgPolar(EPolarimeterId polId);
-   ValErrPair        CalcAvrgPolarUnweighted(EPolarimeterId polId);
-   ValErrPair        CalcAvrgPolProfPolar(EPolarimeterId polId);
-   ValErrPair        CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
-   ValErrPair        CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
-   ValErrPair        CalcPolProfP(ValErrPair R, ValErrPair Pmax);
-   void              CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
-   void              UpdateExternGraphRange();
-   void              FitExternGraphs();
-   void              FitPolarGraphs();
-   void              SetHJPolar(ERingId ringId, ValErrPair ve);
-   void              SetHJAsym(ERingId ringId, ValErrPair ve);
-   void              AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
-   void              AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
-   void              AppendToPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void                 AddMeasResult(AnaMeasResult &result);
+   void                 AddMeasResult(EventConfig &mm, AnaGlobResult *globRes=0);
+   void                 AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);
+   void                 AddExternInfo(std::ifstream &file);
+   void                 Process(DrawObjContainer *ocOut=0);
+   Bool_t               IsValidFlattopMeas(const MeasInfo &measInfo);
+   ValErrPair           GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC=0) const;
+   ValErrPair           GetPCPolarUnW(EPolarimeterId polId, PolId2ValErrMap *normJC=0);
+   TGraphErrors*        GetPCPolarGraph(EPolarimeterId polId);
+   TGraphErrors*        GetPCPolarInjGraph(EPolarimeterId polId);
+   TGraphErrors*        GetPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient);
+   ValErrPair           GetPCPolarP0(EPolarimeterId polId);
+   ValErrPair           GetPCPolarDecay(EPolarimeterId polId);
+   ValErrPair           GetPCPolarRSlope(EPolarimeterId polId, ETargetOrient tgtOrient);
+   ValErrPair           GetHJPolar(EPolarimeterId polId);
+   ValErrPair           GetHJPolar(ERingId ringId);
+   ValErrPair           GetHJAsym(EPolarimeterId polId);
+   ValErrPair           GetHJAsym(ERingId ringId);
+   ValErrPair           GetBeamPolar(ERingId ringId) const;
+   ValErrPair           GetBeamPolarP0(ERingId ringId) const;
+   ValErrPair           GetBeamPolarDecay(ERingId ringId) const;
+   ValErrPair           GetSystUvsDPolar(ERingId ringId);
+   ValErrPair           GetSystJvsCPolar(EPolarimeterId polId);
+   ValErrPair           GetSystProfPolar(EPolarimeterId polId);
+   ValErrPair           GetPolProfR(ERingId ringId, ETargetOrient tgtOrient);
+   ValErrPair           GetPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
+   ValErrPair           GetPolProfP(ERingId ringId, ETargetOrient tgtOrient);
+   //ValErrPair           GetProfPolarSyst(EPolarimeterId polId);
+   void                 CalcBeamPolar(Bool_t doNorm=kFALSE);
+   RingId2ValErrMap     CalcSystUvsDPolar(PolId2ValErrMap &normJC);
+   PolId2ValErrMap      CalcSystJvsCPolar(PolId2ValErrMap &normJC);
+   PolId2ValErrMap      CalcSystProfPolar(PolId2ValErrMap &normPP);
+   ValErrPair           CalcAvrgPolar(EPolarimeterId polId);
+   ValErrPair           CalcAvrgPolarUnweighted(EPolarimeterId polId);
+   ValErrPair           CalcAvrgPolProfPolar(EPolarimeterId polId);
+   ValErrPair           CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
+   ValErrPair           CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
+   ValErrPair           CalcPolProfP(ValErrPair R, ValErrPair Pmax);
+   void                 CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
+   void                 UpdateExternGraphRange();
+   void                 FitExternGraphs();
+   void                 FitPolarGraphs();
+   void                 SetHJPolar(ERingId ringId, ValErrPair ve);
+   void                 SetHJAsym(ERingId ringId, ValErrPair ve);
+   void                 AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void                 AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
+   void                 AppendToPCPolarRGraph(EPolarimeterId polId, ETargetOrient tgtOrient, Double_t x, Double_t y, Double_t xe, Double_t ye);
 
    ClassDef(AnaFillResult, 1)
 };
