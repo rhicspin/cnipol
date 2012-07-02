@@ -24,7 +24,7 @@ class RunSelector {
 
    function RunSelector()
    { //{{{
-      global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
+      global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
 
       $url = parse_url($_SERVER['REQUEST_URI']);
       //$urlQuery = $url['query'];
@@ -115,7 +115,7 @@ class RunSelector {
 
    function PrintForm()
    { //{{{
-      global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
+      global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
       // Create a table with the necessary header informations
       //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formRunSelector'>\n";
@@ -126,7 +126,7 @@ class RunSelector {
       echo "
 
             <tr>
-              <td colspan=4 class=padding2><b>Run Period:</b>\n";
+              <td colspan=4 class=padding2><b>Run period:</b>\n";
 
       $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
 
@@ -147,7 +147,7 @@ class RunSelector {
 
       $this->HtmlSelectField($MEASTYPE, "mt");
 
-      echo "  <td class=\"padding2\"><b>Beam Energy:</b>\n";
+      echo "  <td class=\"padding2\"><b>Beam energy:</b>\n";
 
       $this->HtmlSelectField($BEAM_ENERGY, "be");
 
