@@ -15,7 +15,7 @@ class Selector {
 
    function Selector()
    { //{{{
-      global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_BEAM, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
+      global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
 
       $url = parse_url($_SERVER['REQUEST_URI']);
       //$urlQuery = $url['query'];

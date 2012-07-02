@@ -104,7 +104,7 @@ class FillSelector {
       echo "
 
             <tr>
-              <td colspan=2 class=padding2><b>Run Period:</b>\n";
+              <td colspan=2 class=padding2><b>Run period:</b>\n";
 
       $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
 
@@ -120,7 +120,7 @@ class FillSelector {
 
       $this->HtmlSelectField($FILLTYPE, "ft", 1); // default type is "phys"
 
-      echo "  <td class=\"padding2\"><b>Flattop Energy:</b>\n";
+      echo "  <td class=\"padding2\"><b>Beam energy:</b>\n";
 
       $this->HtmlSelectField($BEAM_ENERGY, "be");
 

@@ -56,7 +56,7 @@ function dateTimeDiff($startStamp, $endStamp)
    $diff .= $fullSecs ? "{$fullSecs}s" : "";
 
    return $diff;
-} 
+}
 
 
 /** Sort object arrays */
@@ -69,7 +69,7 @@ function hod(&$base, $path)
 
    foreach ($keys as $key){
       if (++$licz == 1){
-         $expression.= 'base->';           
+         $expression.= 'base->';
       } else {
          $expression.= $key.'->';
       }
@@ -105,7 +105,7 @@ function array_sort(&$array) {
    $keys=func_get_args();
    array_shift($keys);
    array_sort_func($keys);
-   usort($array,"array_sort_func");      
+   usort($array,"array_sort_func");
 }
 
 
@@ -146,7 +146,7 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
                if ($csv_enclosed == '') {
                    $schema_insert .= $row[$j];
                } else {
-                   $schema_insert .= $csv_enclosed . 
+                   $schema_insert .= $csv_enclosed .
                       str_replace($csv_enclosed, $csv_escaped . $csv_enclosed, $row[$j]) . $csv_enclosed;
                }
            } else {
@@ -180,7 +180,7 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 //   $str = "&nbsp;";
 //
 //   if ( $val >= 0 && $err >= 0 )
-//	   $str = sprintf("%5.2f &plusmn; %5.2f", $val*100, $err*100);
+//    $str = sprintf("%5.2f &plusmn; %5.2f", $val*100, $err*100);
 //
 //   return $str;
 //}
@@ -194,7 +194,7 @@ function pairToString($valerr=null)
    if ($valerr == null ) return $str;
 
    //if ( $val >= 0 && $err >= 0 )
-	$str = sprintf("%3.2f&nbsp;&plusmn;&nbsp;%3.2f", $valerr->first, $valerr->second);
+   $str = sprintf("%3.2f&nbsp;&plusmn;&nbsp;%3.2f", $valerr->first, $valerr->second);
 
    return $str;
 }
@@ -206,8 +206,8 @@ function polarToString($val, $err)
    $str = "&nbsp;";
 
    if ( $val >= 0 && $err >= 0 )
-	   $str = sprintf("%5.2f&nbsp;&plusmn;&nbsp;%4.2f", $val*100, $err*100);
-	   //$str = sprintf("%5.7f&nbsp;&plusmn;&nbsp;%4.7f", $val, $err);
+      $str = sprintf("%5.2f&nbsp;&plusmn;&nbsp;%4.2f", $val*100, $err*100);
+      //$str = sprintf("%5.7f&nbsp;&plusmn;&nbsp;%4.7f", $val, $err);
 
    return $str;
 }
@@ -253,7 +253,7 @@ function calcWeigtedSum($valerrs, $power=0)
 
       //print($sum."<br>");
    }
-     
+
    return $sum;
 } //}}}
 
@@ -282,9 +282,28 @@ function calcWeigtedAvrgErr($valerrs)
       $sum1 += $val/$err2 ;
       $sum2 += 1./$err2 ;
    }
-     
+
    $result->first  = $sum1/$sum2;
    $result->second = ($sum2 == 0 ? -1 : sqrt(1./$sum2));
+
+   return $result;
+} //}}}
+
+
+/** */
+function calcWeigtedAvrgErrPairs($ve1, $ve2)
+{ //{{{
+   $result = new pair(0, -1);
+
+   if ($ve1->second < 0 && $ve2->second < 0 ) return $result;
+   if ($ve1->second < 0 ) return $ve2;
+   if ($ve2->second < 0 ) return $ve1;
+
+   $w1 = 1./$ve1->second/$ve1->second;
+   $w2 = 1./$ve2->second/$ve2->second;
+
+   $result->first = ($ve1->first*$w1 + $ve2->first*$w2) / ($w1 + $w2);
+   $result->second = 1./sqrt($w1 + $w2);
 
    return $result;
 } //}}}
@@ -326,7 +345,7 @@ function calcMaxDifference($avrg=null, $valerrs=null)
       if ($valerr == null) continue;
 
       //if ($valerr->second < 0) continue;
-      
+
       $diff = abs($avrg->first - $valerr->first);
 
       //if ($diff > 0 && $diff > $maxDiff) $maxDiff = $diff;
@@ -356,7 +375,7 @@ function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
    $relDelta2 += $pairR_V->second * $pairR_V->second / (2 + $pairR_V_first) / (2 + $pairR_V_first)/ 4.;
 
    $collScale->second = $collScale->first * sqrt($relDelta2);
-   
+
    return $collScale;
 } //}}}
 
@@ -372,7 +391,7 @@ function calcPolarCollision($polar=null, $scaleColl=null)
 
    $relDelta2 = $polar->second * $polar->second / $polar->first / $polar->first + $scaleColl->second * $scaleColl->second / $scaleColl->first / $scaleColl->first;
    $polarColl->second = $polarColl->first * sqrt($relDelta2);
-   
+
    //$delta2 = $polar->first * $polar->first * $scaleColl->second * $scaleColl->second  +  $scaleColl->first * $scaleColl->first * $polar->second * $polar->second;
    //$polarColl->second = sqrt($delta2);
 
@@ -414,7 +433,7 @@ function calcProfPolar($profPMax=null, $profR=null)
 
    //$relDelta2 = $profPMax->second * $profPMax->second / $profPMax->first / $profPMax->first + $profR->second * $profR->second / $profR->first / $profR->first;
    //$profPolar->second = $profPolar->first * sqrt($relDelta2);
-   
+
    $delta2 = $profPMax->first  * $profPMax->first  * $profR->second * $profR->second/4./(1+$profR->first)/(1+$profR->first)/(1+$profR->first) +
              $profPMax->second * $profPMax->second / (1 + $profR->first);
    $profPolar->second = sqrt($delta2);
@@ -447,32 +466,32 @@ function readOnlinePolar($fileNameFull="")
 /** */
 function getJetCarbonNormalization($normSpecs=null)
 { //{{{
-	global $normJetCarbonByTarget;
+   global $normJetCarbonByTarget;
 
    //print "<!--\n";
-   //print_r($normJetCarbonByTarget); 
+   //print_r($normJetCarbonByTarget);
    //print "-->\n";
 
-	//$specs = array("runPeriod", "energy", "polId", "tgtOrient", "tgtId");
+   //$specs = array("runPeriod", "energy", "polId", "tgtOrient", "tgtId");
 
-	$currSpec = $normJetCarbonByTarget;
+   $currSpec = $normJetCarbonByTarget;
    if ( !is_array($currSpec) && is_numeric($currSpec) ) return $currSpec;
 
-	foreach ($normSpecs as $specKey => $specVal)
-	{
-		if ( !array_key_exists($specVal, $currSpec) ) {
-		   //print("key not found {$specVal}\n");
-		   return 1; // key not found: may also want to issue a warning
-	   }
+   foreach ($normSpecs as $specKey => $specVal)
+   {
+      if ( !array_key_exists($specVal, $currSpec) ) {
+         //print("key not found {$specVal}\n");
+         return 1; // key not found: may also want to issue a warning
+      }
 
       // select curr spec go deeper
-	   $currSpec = $currSpec[$specVal];
+      $currSpec = $currSpec[$specVal];
 
-	   //print("$specKey = $specVal\n");
-		//print_r($currSpec);
+      //print("$specKey = $specVal\n");
+      //print_r($currSpec);
 
       if ( !is_array($currSpec) && is_numeric($currSpec) ) return $currSpec;
-	}
+   }
 
    return 1;
 } //}}}
@@ -483,18 +502,36 @@ function getRunPeriod($timestamp=null)
 { //{{{
    global $RUN_PERIOD_BY_DATE;
 
-	foreach ($RUN_PERIOD_BY_DATE as $runPeriod => $runTimes) {
+   foreach ($RUN_PERIOD_BY_DATE as $runPeriod => $runTimes) {
 
 //print "<!-- runperiod\n";
 // $start = strtotime($runTimes["start"]);
-// $end   = strtotime($runTimes["end"]) ; 
-//print("hhh: $timestamp $start $end "); 
+// $end   = strtotime($runTimes["end"]) ;
+//print("hhh: $timestamp $start $end ");
 //print "-->\n";
 
-	   if ( $timestamp >= strtotime($runTimes["start"]) && $timestamp <= strtotime($runTimes["end"]) )
-		   return $runPeriod;
-	}
+      if ( $timestamp >= strtotime($runTimes["start"]) && $timestamp <= strtotime($runTimes["end"]) )
+         return $runPeriod;
+   }
 
+} //}}}
+
+
+/** */
+function GetRingId($polId)
+{ //{{{
+   switch ($polId) {
+   case 0:
+      return 1;
+   case 1:
+      return 2;
+   case 2:
+      return 1;
+   case 3:
+      return 2;
+   default:
+      return -1;
+   }
 } //}}}
 
 ?>

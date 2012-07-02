@@ -12,21 +12,22 @@ $RUN_PERIOD_BY_FILL = array (
 
 // Approximate dates
 $RUN_PERIOD_BY_DATE = array (
-   9  => array( "start" => "2009-03-01 00:00:00", "end" => "2009-07-10 00:00:00" ),
+   9  => array( "start" => "2009-01-01 00:00:00", "end" => "2009-07-10 00:00:00" ),
    11 => array( "start" => "2010-12-01 00:00:00", "end" => "2011-04-20 00:00:00" ),
    12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" )
 );
 
-$RUN_PERIOD      = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12");
-$POLARIMETER_ID  = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
-$RHIC_BEAM       = array("1" => "Yellow", "2" => "Blue");
-$RHIC_STREAM     = array("1" => "Upstream", "2" => "Downstream");
-$MEASTYPE        = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");
-$FILLTYPE        = array(0x00 => "undef", 0x01 => "phys");
-$BEAM_ENERGY     = array("24" => "24", "100" => "100", "250" => "250", "255" => "255");
-$BEAM_ENERGY_INJ = 24;
-$TARGET_ORIENT   = array("H" => "H", "V" => "V");
-$TARGET_ID       = array_combine(range(1, 6), range(1, 6));
+$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12");
+$POLARIMETER_ID    = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
+$HJ_POLARIMETER_ID = 10;
+$RHIC_RING         = array("1" => "Blue", "2" => "Yellow");
+$RHIC_STREAM       = array("1" => "Upstream", "2" => "Downstream");
+$MEASTYPE          = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");
+$FILLTYPE          = array(0x00 => "undef", 0x01 => "phys");
+$BEAM_ENERGY       = array("24" => "24", "100" => "100", "250" => "250", "255" => "255");
+$BEAM_ENERGY_INJ   = 24;
+$TARGET_ORIENT     = array("H" => "H", "V" => "V");
+$TARGET_ID         = array_combine(range(1, 6), range(1, 6));
 
 
 // Normalization factors

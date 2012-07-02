@@ -31,6 +31,11 @@ if ( isset($_GET['fillid']) && isset($_GET['ana']) )
    exit;
 }
 
+if ( isset($_GET['test']) )
+{
+include("fills_index_test.html");
+} else {
 include("fills_index.html");
+}
 
 ?>
