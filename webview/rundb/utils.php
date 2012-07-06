@@ -187,16 +187,11 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 
 
 /** */
-function pairToString($valerr=null)
+function pairToString($valerr=null, $format="%3.2f")
 {
-   $str = "&nbsp;";
+   if ($valerr == null || $valerr->second < 0) return "&nbsp;";
 
-   if ($valerr == null ) return $str;
-
-   //if ( $val >= 0 && $err >= 0 )
-   $str = sprintf("%3.2f&nbsp;&plusmn;&nbsp;%3.2f", $valerr->first, $valerr->second);
-
-   return $str;
+   return sprintf("$format&nbsp;&plusmn;&nbsp;$format", $valerr->first, $valerr->second);
 }
 
 
@@ -216,7 +211,7 @@ function polarToString($val, $err)
 /** */
 function polarPairToString($valerr=null)
 {
-   if ($valerr == null ) return "&nbsp;";
+   if ($valerr == null || $valerr->second < 0) return "&nbsp;";
 
    return polarToString($valerr->first, $valerr->second);
 }
@@ -385,15 +380,12 @@ function calcPolarCollision($polar=null, $scaleColl=null)
 { //{{{
    if ($polar == null || $scaleColl == null) return null;
 
-   $polarColl = new pair(-1, -1);
+   $polarColl = new pair(0, -1);
 
    $polarColl->first = $polar->first * $scaleColl->first;
 
    $relDelta2 = $polar->second * $polar->second / $polar->first / $polar->first + $scaleColl->second * $scaleColl->second / $scaleColl->first / $scaleColl->first;
    $polarColl->second = $polarColl->first * sqrt($relDelta2);
-
-   //$delta2 = $polar->first * $polar->first * $scaleColl->second * $scaleColl->second  +  $scaleColl->first * $scaleColl->first * $polar->second * $polar->second;
-   //$polarColl->second = sqrt($delta2);
 
    return $polarColl;
 } //}}}
@@ -439,6 +431,23 @@ function calcProfPolar($profPMax=null, $profR=null)
    $profPolar->second = sqrt($delta2);
 
    return $profPolar;
+} //}}}
+
+
+/** */
+function calcDivision($ve1, $ve2, $r12=0)
+{ //{{{
+   $result = new pair(0, -1);
+
+   if ($ve1->first == 0 || $ve2->first == 0) return $result;
+
+   $result->first  = $ve1->first  / $ve2->first;
+   $re1            = $ve1->second / $ve1->first;
+   $re2            = $ve2->second / $ve2->first;
+   $re             = sqrt($re1*$re1 + $re2*$re2 - 2*$re1*$re2*$r12);
+   $result->second = $re * $result->first;
+
+   return $result;
 } //}}}
 
 
