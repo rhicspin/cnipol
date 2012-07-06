@@ -31,7 +31,7 @@ protected:
 
    void       CalcPolarNorm();
    void       CalcAvrgPolProfR();
-   void       CalcPolarDependants();
+   void       CalcDependencies();
 
 public:
 

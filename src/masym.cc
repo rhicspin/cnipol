@@ -261,6 +261,12 @@ int main(int argc, char *argv[])
    if (mAsymAnaInfo.HasGraphBit())
       mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
 
+	if (mAsymAnaInfo.fFlagUpdateDb)
+   {
+      AsymDbSql *asymDbSql = new AsymDbSql();
+      gAnaGlobResult.UpdateInsertDb(asymDbSql);
+   }
+
    gH->Write();
 
    mAsymRoot.Print();
@@ -268,12 +274,6 @@ int main(int argc, char *argv[])
 
    //gAnaGlobResult.Print("all");
    gAnaGlobResult.Print();
-
-	if (mAsymAnaInfo.fFlagUpdateDb)
-   {
-      AsymDbSql *asymDbSql = new AsymDbSql();
-      gAnaGlobResult.UpdateInsertDb(asymDbSql);
-   }
 
    return 1;
 }

@@ -154,8 +154,8 @@ void AnaGlobResult::PrintAsPhp(FILE *f) const
 { //{{{
    fprintf(f, "$rc['fMinFill']      = %d;\n", fMinFill);
    fprintf(f, "$rc['fMaxFill']      = %d;\n", fMaxFill);
-   fprintf(f, "$rc['fMinTime']      = %d;\n", fMinTime);
-   fprintf(f, "$rc['fMaxTime']      = %d;\n", fMaxTime);
+   fprintf(f, "$rc['fMinTime']      = %ld;\n", fMinTime);
+   fprintf(f, "$rc['fMaxTime']      = %ld;\n", fMaxTime);
    fprintf(f, "$rc['fBeamEnergies'] = %s;\n", SetAsPhpArray<EBeamEnergy>(fBeamEnergies).c_str());
 
    fprintf(f, "\n");
@@ -313,16 +313,7 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
    if (fDoCalcPolarNorm) CalcPolarNorm();
 
    CalcAvrgPolProfR();
-   CalcPolarDependants();
-
-   // Using calculated normalization and pol. profiles calculate average beam
-   // polarization and the same in collisions
-   //iFill = fAnaFillResults.begin();
-   //for ( ; iFill != fAnaFillResults.end(); ++iFill) {
-   //   UInt_t         fillId  =  iFill->first;
-   //   AnaFillResult *anaFillResult = &iFill->second;
-   //   //anaFillResult
-   //}
+   CalcDependencies();
 } //}}}
 
 
@@ -541,7 +532,7 @@ void AnaGlobResult::CalcAvrgPolProfR()
 
          for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
          {
-            ValErrPair fillPolProfR = fillRslt->GetPolProfR(*iRingId, *iTgtOrient);
+            ValErrPair fillPolProfR = fillRslt->GetPCProfR(*iRingId, *iTgtOrient);
 
             ValErrPair& currAvrg = fAvrgPolProfRs[*iRingId][*iTgtOrient];
             currAvrg = utils::CalcWeightedAvrgErr(currAvrg, fillPolProfR);
@@ -559,9 +550,9 @@ void AnaGlobResult::CalcAvrgPolProfR()
 
 
 /** */
-void AnaGlobResult::CalcPolarDependants()
+void AnaGlobResult::CalcDependencies()
 { //{{{
-   Info("CalcPolarDependants()", "Called");
+   Info("CalcDependencies()", "Called");
 
    // Create sets with valid syst ratio
    RingId2ValErrSet ratioU2DSet;
@@ -575,6 +566,8 @@ void AnaGlobResult::CalcPolarDependants()
       UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
+      // Using calculated normalization and pol. profiles calculate average beam
+      // polarization and the same in collisions
       fillRslt->CalcBeamPolar(kTRUE);
 
       RingId2ValErrMap ratioU2D   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
@@ -656,15 +649,89 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
       return;
    }
 
-   AnaFillResultMapIter iFillRes = fAnaFillResults.begin();
+   asymDbSql->OpenConnection();
+
+   AnaFillResultMapConstIter iFillRes = fAnaFillResults.begin();
 
    for ( ; iFillRes != fAnaFillResults.end(); ++iFillRes)
    {
-      UInt_t         fillId  = iFillRes->first;
-      AnaFillResult &fillRes = iFillRes->second;
+      const AnaFillResult &fillRes = iFillRes->second;
+      UInt_t fillId = fillRes.GetFillId();
 
       cout << endl;
       Info("UpdateInsert", "fill %d", fillId);
+
+
+      // test
+      Info("UpdateInsert", "Test Test");
+
+      // Save results from the p-Carbon polarimeters
+      PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+      for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+      {
+         EPolarimeterId polId = *iPolId;
+         ERingId ringId = RunConfig::GetRingId(polId);
+
+         // Polarization
+         MseFillPolarNewX* ofillP = asymDbSql->SelectFillPolar(fillId, polId, ringId);
+         MseFillPolarNewX* nfillP = 0;
+
+         if (ofillP) { // if fill found in database copy it to new one
+            nfillP = new MseFillPolarNewX(*ofillP);
+         } else { // if fill not found in database create it
+            nfillP = new MseFillPolarNewX(fillId, polId, ringId);
+         }
+
+         nfillP->SetValuesPC(fillRes, polId);
+         asymDbSql->UpdateInsert(ofillP, nfillP);
+
+         // Profile
+         TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
+
+         for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
+         {
+            ETargetOrient tgtOrient = *iTgtOrient;
+
+            MseFillProfileNewX* ofillProf = asymDbSql->SelectFillProfile(fillId, polId, tgtOrient);
+            MseFillProfileNewX* nfillProf = 0;
+
+            if (ofillProf) { // if fill found in database copy it to new one
+               nfillProf = new MseFillProfileNewX(*ofillProf);
+            } else { // if fill not found in database create it
+               nfillProf = new MseFillProfileNewX(fillId, polId, tgtOrient);
+            }
+
+            nfillProf->SetValues(fillRes, polId, tgtOrient);
+            asymDbSql->UpdateInsert(ofillProf, nfillProf);
+         }
+      }
+
+      // Save results from the H-jet polarimeter
+      RingIdSetIter iRingId = gRunConfig.fRings.begin();
+
+      for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
+      {
+         EPolarimeterId polId = kHJET;
+         ERingId ringId = *iRingId;
+
+         MseFillPolarNewX* ofillP = asymDbSql->SelectFillPolar(fillId, polId, ringId);
+         MseFillPolarNewX* nfillP = 0;
+
+         if (ofillP) { // if fill found in database copy it to new one
+            nfillP = new MseFillPolarNewX(*ofillP);
+         } else { // if fill not found in database create it
+            nfillP = new MseFillPolarNewX(fillId, polId, ringId);
+         }
+
+         nfillP->SetValuesHJ(fillRes, ringId);
+         asymDbSql->UpdateInsert(ofillP, nfillP);
+      }
+      // test end
+      // test end
+      // test end
+      // test end
+
 
       MseFillPolarX *ofill = asymDbSql->SelectFillPolar(fillId);
       MseFillPolarX *nfill = 0;

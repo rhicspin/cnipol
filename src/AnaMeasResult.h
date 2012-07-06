@@ -78,7 +78,7 @@ public:
    void PrintAsPhp(FILE *f=stdout) const;
 
    ValErrPair GetPCPolar() const;
-   ValErrPair GetPolProfR() const;
+   ValErrPair GetPCPolarR() const;
 
    ClassDef(AnaMeasResult, 1)
 };

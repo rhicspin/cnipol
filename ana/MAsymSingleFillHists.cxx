@@ -271,10 +271,9 @@ void MAsymSingleFillHists::SetSignature(std::string signature)
 void MAsymSingleFillHists::Fill(EventConfig &rc)
 { //{{{
    Double_t runId            = rc.fMeasInfo->RUNID;
-   UInt_t   fFillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId            = rc.fMeasInfo->fPolId;
-   time_t   runStartTime     = rc.fMeasInfo->fStartTime;
+   //time_t   runStartTime     = rc.fMeasInfo->fStartTime;
    //Short_t  targetId         = rc.fMseMeasInfoX->target_id;
    //Char_t   targetOrient     = rc.fMseMeasInfoX->target_orient[0];
    Float_t  anaPower         = rc.fAnaMeasResult->A_N[1];
@@ -426,7 +425,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
       TH1* hPolarVsFillTime_ = (TH1*) o["hPolarVsFillTime_" + strDirName + "_" + sPolId];
 
-      if (grPCPolar->GetN() > 0) {
+      if (grPCPolar && grPCPolar->GetN() > 0) {
 
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolar);
          hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolar, "p");
@@ -464,9 +463,9 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
       for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
       {
-         TGraphErrors *grPCPolarR = afr.GetPCPolarRGraph(*iPolId, *iTgtOrient);
+         TGraphErrors *grPCPolarR = afr.GetPCProfRGraph(*iPolId, *iTgtOrient);
 
-         if (grPCPolarR->GetN() > 0) {
+         if (grPCPolarR && grPCPolarR->GetN() > 0) {
             TAttMarker marker = RunConfig::AsMarker(*iTgtOrient, *iPolId);
             marker.SetMarkerSize(3);
             marker.Copy(*grPCPolarR);

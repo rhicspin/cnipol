@@ -54,11 +54,7 @@ public:
    void Init();
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
-   void SetValues(AnaFillResult &fr);
-   void Streamer(TBuffer &buf);
+   void SetValues(const AnaFillResult &fr);
 };
-
-TBuffer & operator<<(TBuffer &buf, MseFillProfileX *&rec);
-TBuffer & operator>>(TBuffer &buf, MseFillProfileX *&rec);
 
 #endif

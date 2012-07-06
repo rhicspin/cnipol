@@ -6,6 +6,7 @@
 
 #include "MseFillPolar.h"
 
+#include "utils/utils.h"
 
 using namespace std;
 
@@ -37,9 +38,7 @@ void MseFillPolarX::Init()
    type                   =  0;
    beam_energy            =  0; 
    polar_blue_p0          =  0;
-   polar_blue_p0_err      =  0;
    polar_blue_decay       =  0;
-   polar_blue_decay_err   =  0;
    polar_yellow_p0        =  0;
    polar_yellow_p0_err    =  0;
    polar_yellow_decay     =  0;
@@ -90,31 +89,31 @@ void MseFillPolarX::PrintAsPhp(FILE *f) const
 
 
 /** */
-void MseFillPolarX::SetValues(AnaFillResult &afr)
+void MseFillPolarX::SetValues(const AnaFillResult &afr)
 { //{{{
    start_time  = mysqlpp::DateTime(afr.GetStartTime());
    type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
 
    if (afr.fHJPolars.find(kBLUE_RING) != afr.fHJPolars.end() ) {
-      polar_blue_hjet     = afr.fHJPolars[kBLUE_RING].first; 
-      polar_blue_hjet_err = afr.fHJPolars[kBLUE_RING].second; 
+      polar_blue_hjet     = afr.GetHJPolar(kBLUE_RING).first; 
+      polar_blue_hjet_err = afr.GetHJPolar(kBLUE_RING).second; 
    }
 
    if (afr.fHJPolars.find(kYELLOW_RING) != afr.fHJPolars.end() ) {
-      polar_yellow_hjet     = afr.fHJPolars[kYELLOW_RING].first; 
-      polar_yellow_hjet_err = afr.fHJPolars[kYELLOW_RING].second; 
+      polar_yellow_hjet     = afr.GetHJPolar(kYELLOW_RING).first; 
+      polar_yellow_hjet_err = afr.GetHJPolar(kYELLOW_RING).second; 
    }
 
    ValErrPair ve;
 
    ve = afr.GetBeamPolarP0(kBLUE_RING);
-   polar_blue_p0     = ve.first;
-   polar_blue_p0_err = ve.second;
+   polar_blue_p0     = utils::PackDecimal(ve);
+   //polar_blue_p0_err = ve.second;
 
    ve = afr.GetBeamPolarDecay(kBLUE_RING);
    polar_blue_decay     = ve.first;
-   polar_blue_decay_err = ve.second;
+   //polar_blue_decay_err = ve.second;
 
    ve = afr.GetBeamPolarP0(kYELLOW_RING);
    polar_yellow_p0     = ve.first;
@@ -125,55 +124,23 @@ void MseFillPolarX::SetValues(AnaFillResult &afr)
    polar_yellow_decay_err = ve.second;
 
    if (afr.fPCPolars.find(kB1U) != afr.fPCPolars.end() ) {
-      polar_blue_1       = afr.fPCPolars[kB1U].first; 
-      polar_blue_1_err   = afr.fPCPolars[kB1U].second; 
+      polar_blue_1       = afr.GetPCPolar(kB1U).first; 
+      polar_blue_1_err   = afr.GetPCPolar(kB1U).second; 
    }
 
    if (afr.fPCPolars.find(kY1D) != afr.fPCPolars.end() ) {
-      polar_yellow_1     = afr.fPCPolars[kY1D].first; 
-      polar_yellow_1_err = afr.fPCPolars[kY1D].second; 
+      polar_yellow_1     = afr.GetPCPolar(kY1D).first; 
+      polar_yellow_1_err = afr.GetPCPolar(kY1D).second; 
    }
 
    if (afr.fPCPolars.find(kB2D) != afr.fPCPolars.end() ) {
-      polar_blue_2       = afr.fPCPolars[kB2D].first; 
-      polar_blue_2_err   = afr.fPCPolars[kB2D].second; 
+      polar_blue_2       = afr.GetPCPolar(kB2D).first; 
+      polar_blue_2_err   = afr.GetPCPolar(kB2D).second; 
    }
 
    if (afr.fPCPolars.find(kY2U) != afr.fPCPolars.end() ) {
-      polar_yellow_2     = afr.fPCPolars[kY2U].first; 
-      polar_yellow_2_err = afr.fPCPolars[kY2U].second; 
+      polar_yellow_2     = afr.GetPCPolar(kY2U).first; 
+      polar_yellow_2_err = afr.GetPCPolar(kY2U).second; 
    }
 
 } //}}}
-
-
-/** */
-void MseFillPolarX::Streamer(TBuffer &buf)
-{
-   //TString tstr;
-   //short   smallint;
-   //time_t  tmp_time_t;
-
-   if (buf.IsReading()) {
-   } else {
-   }
-}
-
-
-/** */
-TBuffer & operator<<(TBuffer &buf, MseFillPolarX *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, MseFillPolarX *&rec)
-{
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
