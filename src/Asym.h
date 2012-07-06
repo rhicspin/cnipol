@@ -31,7 +31,7 @@
 //#include "TargetUId.h"
 
 
-enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID};
+enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10};
 enum EBeamId        {kBLUE_BEAM = 1, kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
 enum ERingId        {kBLUE_RING = 1, kYELLOW_RING = 2, kUNKNOWN_RING};
 enum EStreamId      {kUPSTREAM = 1, kDOWNSTREAM = 2, kUNKNOWN_STREAM};
@@ -77,18 +77,23 @@ typedef BeamId2ValErrMap::const_iterator       BeamId2ValErrMapConstIter;
 
 typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
 typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
+typedef TgtOrient2ValErrMap::const_iterator    TgtOrient2ValErrMapConstIter;
 
 typedef std::map<EPolarimeterId, TgtOrient2ValErrMap> PolId2TgtOrient2ValErrMap;
 typedef PolId2TgtOrient2ValErrMap::iterator           PolId2TgtOrient2ValErrMapIter;
+typedef PolId2TgtOrient2ValErrMap::const_iterator     PolId2TgtOrient2ValErrMapConstIter;
 
 typedef std::map<EPolarimeterId, TgtOrient2TGraphMap> PolId2TgtOrient2TGraphMap;
 typedef PolId2TgtOrient2TGraphMap::iterator           PolId2TgtOrient2TGraphMapIter;
+typedef PolId2TgtOrient2TGraphMap::const_iterator     PolId2TgtOrient2TGraphMapConstIter;
 
-typedef std::map<EBeamId, TgtOrient2ValErrMap> BeamId2TgtOrient2ValErrMap;
-typedef BeamId2TgtOrient2ValErrMap::iterator   BeamId2TgtOrient2ValErrMapIter;
+typedef std::map<EBeamId, TgtOrient2ValErrMap>        BeamId2TgtOrient2ValErrMap;
+typedef BeamId2TgtOrient2ValErrMap::iterator          BeamId2TgtOrient2ValErrMapIter;
+typedef BeamId2TgtOrient2ValErrMap::const_iterator    BeamId2TgtOrient2ValErrMapConstIter;
 
 typedef std::map<std::string, EBeamId>         String2BeamIdMap;
 typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
+typedef String2BeamIdMap::const_iterator       String2BeamIdMapConstIter;
 
 // Ring id
 typedef std::map<ERingId,        ValErrSet>    RingId2ValErrSet;
@@ -101,8 +106,9 @@ typedef RingId2ValErrMap::const_iterator       RingId2ValErrMapConstIter;
 typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
 typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
 
-typedef std::map<ERingId, TgtOrient2ValErrMap> RingId2TgtOrient2ValErrMap;
-typedef RingId2TgtOrient2ValErrMap::iterator   RingId2TgtOrient2ValErrMapIter;
+typedef std::map<ERingId, TgtOrient2ValErrMap>      RingId2TgtOrient2ValErrMap;
+typedef RingId2TgtOrient2ValErrMap::iterator        RingId2TgtOrient2ValErrMapIter;
+typedef RingId2TgtOrient2ValErrMap::const_iterator  RingId2TgtOrient2ValErrMapConstIter;
 
 
 typedef std::map<std::string, ERingId>         String2RingIdMap;

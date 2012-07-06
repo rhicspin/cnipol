@@ -14,7 +14,9 @@ AsymDbSql::AsymDbSql() : AsymDb(), fConnection(0)
    MseMeasInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
    MseFillPolarX::table("fill_polar");
+   MseFillPolarNewX::table("fill_polar_new");
    MseFillProfileX::table("fill_profile");
+   MseFillProfileNewX::table("fill_profile_new");
 }
 
 
@@ -28,7 +30,6 @@ AsymDbSql::~AsymDbSql()
 /** */
 void AsymDbSql::OpenConnection()
 { //{{{
-
    // connection already established
    if (fConnection) return;
 
@@ -174,8 +175,6 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 /** */
 MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
 { //{{{
-   OpenConnection();
-
    if (!fConnection) {
       Error("SelectFillPolar", "Connection with MySQL server not established");
       return 0;
@@ -201,6 +200,58 @@ MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
    }
 
    return msefp;
+} //}}}
+
+
+/** */
+MseFillPolarNewX* AsymDbSql::SelectFillPolar(UInt_t fill, EPolarimeterId polId, ERingId ringId)
+{ //{{{
+   if (!fConnection) {
+      Error("SelectFillPolar", "Connection with MySQL server not established");
+      return 0;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `fill_polar_new` where `fill` = '"
+        << fill << "' and `polarimeter_id` = '" << polId << "' and `ring_id` = '" << ringId << "'";
+
+   Query query = fConnection->query(sstr.str());
+
+   MseFillPolarNewX* msefpn = 0;
+
+   cout << "Query: " << query << endl;
+
+   if (StoreQueryResult result = query.store())
+   {
+      if (!result.empty()) msefpn = new MseFillPolarNewX(result[0]);
+   } else {
+      cerr << "Failed to get item: " << query.error() << endl;
+   }
+
+   return msefpn;
+} //}}}
+
+
+/** */
+MseFillPolarNewXSet AsymDbSql::SelectFillPolars(UInt_t fill)
+{ //{{{
+   MseFillPolarNewXSet polars;
+
+   if (!fConnection) {
+      Error("SelectFillPolars", "Connection with MySQL server not established");
+      return polars;
+   }
+
+   stringstream sstr;
+   sstr << "select * from `fill_polar_new` where `fill` = '" << fill << "'";
+
+   Query query = fConnection->query(sstr.str());
+   cout << "Query: " << query << endl;
+
+   query.storein(polars);
+
+   return polars;
 } //}}}
 
 
@@ -232,6 +283,36 @@ MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
    }
 
    return msefp;
+} //}}}
+
+
+/** */
+MseFillProfileNewX* AsymDbSql::SelectFillProfile(UInt_t fill, EPolarimeterId polId, ETargetOrient tgtOrient)
+{ //{{{
+   if (!fConnection) {
+      Error("SelectFillPolar", "Connection with MySQL server not established");
+      return 0;
+   }
+
+   stringstream sstr;
+
+   sstr << "select * from `fill_profile_new` where `fill` = '"
+        << fill << "' and `polarimeter_id` = '" << polId << "' and `target_orient` = '" << tgtOrient << "'";
+
+   Query query = fConnection->query(sstr.str());
+
+   MseFillProfileNewX* msefpn = 0;
+
+   cout << "Query: " << query << endl;
+
+   if (StoreQueryResult result = query.store())
+   {
+      if (!result.empty()) msefpn = new MseFillProfileNewX(result[0]);
+   } else {
+      cerr << "Failed to get item: " << query.error() << endl;
+   }
+
+   return msefpn;
 } //}}}
 
 
@@ -467,7 +548,55 @@ void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
 
 
 /** */
+void AsymDbSql::UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill)
+{ //{{{
+   if (!fConnection) {
+      Error("UpdateInsert", "Connection with MySQL server not established");
+      return;
+   }
+
+   Query query = fConnection->query();
+
+   // if original run is not defined just insert the new one
+   if (!ofill) {
+      query.insert(*nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
+
+   } else {
+      query.update(*ofill, *nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
+   }
+} //}}}
+
+
+/** */
 void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
+{ //{{{
+   if (!fConnection) {
+      Error("UpdateInsert", "Connection with MySQL server not established");
+      return;
+   }
+
+   Query query = fConnection->query();
+
+   // if original run is not defined just insert the new one
+   if (!ofill) {
+      query.insert(*nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
+
+   } else {
+      query.update(*ofill, *nfill);
+      cout << "Query: " << query << endl;
+      query.execute();
+   }
+} //}}}
+
+
+/** */
+void AsymDbSql::UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfill)
 { //{{{
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");

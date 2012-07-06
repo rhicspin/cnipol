@@ -73,80 +73,25 @@ void MseFillProfileX::PrintAsPhp(FILE *f) const
 
 
 /** */
-void MseFillProfileX::SetValues(AnaFillResult &afr)
+void MseFillProfileX::SetValues(const AnaFillResult &afr)
 { //{{{
+   profile_blue_h       = afr.GetPCProfR(kBLUE_RING, kTARGET_H).first;     //iTgtRes->second.first; 
+   profile_blue_h_err   = afr.GetPCProfR(kBLUE_RING, kTARGET_H).second;    //iTgtRes->second.second; 
+   pmax_blue_h          = afr.GetPCProfPMax(kBLUE_RING, kTARGET_H).first;
+   pmax_blue_h_err      = afr.GetPCProfPMax(kBLUE_RING, kTARGET_H).second;
 
-   if (afr.fPolProfRs.find(kBLUE_RING) != afr.fPolProfRs.end() ) {
+   profile_blue_v       = afr.GetPCProfR(kBLUE_RING, kTARGET_V).first;     //iTgtRes->second.first; 
+   profile_blue_v_err   = afr.GetPCProfR(kBLUE_RING, kTARGET_V).second;    //iTgtRes->second.second; 
+   pmax_blue_v          = afr.GetPCProfPMax(kBLUE_RING, kTARGET_V).first;
+   pmax_blue_v_err      = afr.GetPCProfPMax(kBLUE_RING, kTARGET_V).second;
 
-      TgtOrient2ValErrMap mapByTgt = afr.fPolProfRs[kBLUE_RING];
+   profile_yellow_h     = afr.GetPCProfR(kYELLOW_RING, kTARGET_H).first;     //iTgtRes->second.first; 
+   profile_yellow_h_err = afr.GetPCProfR(kYELLOW_RING, kTARGET_H).second;    //iTgtRes->second.second; 
+   pmax_yellow_h        = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_H).first;
+   pmax_yellow_h_err    = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_H).second;
 
-      if (mapByTgt.find(kTARGET_H) != mapByTgt.end() ) {
-
-         profile_blue_h     = afr.fPolProfRs[kBLUE_RING][kTARGET_H].first;     //iTgtRes->second.first; 
-         profile_blue_h_err = afr.fPolProfRs[kBLUE_RING][kTARGET_H].second;    //iTgtRes->second.second; 
-         pmax_blue_h        = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].first;
-         pmax_blue_h_err    = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_H].second;
-      }
-
-      if (mapByTgt.find(kTARGET_V) != mapByTgt.end() ) {
-
-         profile_blue_v     = afr.fPolProfRs[kBLUE_RING][kTARGET_V].first;     //iTgtRes->second.first; 
-         profile_blue_v_err = afr.fPolProfRs[kBLUE_RING][kTARGET_V].second;    //iTgtRes->second.second; 
-         pmax_blue_v        = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].first;
-         pmax_blue_v_err    = afr.fPolProfPMaxs[kBLUE_RING][kTARGET_V].second;
-      }
-   }
-
-   if (afr.fPolProfRs.find(kYELLOW_RING) != afr.fPolProfRs.end() ) {
-
-      TgtOrient2ValErrMap mapByTgt = afr.fPolProfRs[kYELLOW_RING];
-
-      if (mapByTgt.find(kTARGET_H) != mapByTgt.end() ) {
-
-         profile_yellow_h     = afr.fPolProfRs[kYELLOW_RING][kTARGET_H].first;     //iTgtRes->second.first; 
-         profile_yellow_h_err = afr.fPolProfRs[kYELLOW_RING][kTARGET_H].second;    //iTgtRes->second.second; 
-         pmax_yellow_h        = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].first;
-         pmax_yellow_h_err    = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_H].second;
-      }
-
-      if (mapByTgt.find(kTARGET_V) != mapByTgt.end() ) {
-
-         profile_yellow_v     = afr.fPolProfRs[kYELLOW_RING][kTARGET_V].first;     //iTgtRes->second.first; 
-         profile_yellow_v_err = afr.fPolProfRs[kYELLOW_RING][kTARGET_V].second;    //iTgtRes->second.second; 
-         pmax_yellow_v        = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].first;
-         pmax_yellow_v_err    = afr.fPolProfPMaxs[kYELLOW_RING][kTARGET_V].second;
-      }
-   }
+   profile_yellow_v     = afr.GetPCProfR(kYELLOW_RING, kTARGET_V).first;     //iTgtRes->second.first; 
+   profile_yellow_v_err = afr.GetPCProfR(kYELLOW_RING, kTARGET_V).second;    //iTgtRes->second.second; 
+   pmax_yellow_v        = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_V).first;
+   pmax_yellow_v_err    = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_V).second;
 } //}}}
-
-
-/** */
-void MseFillProfileX::Streamer(TBuffer &buf)
-{
-   //TString tstr;
-   //short   smallint;
-   //time_t  tmp_time_t;
-
-   if (buf.IsReading()) {
-   } else {
-   }
-}
-
-
-/** */
-TBuffer & operator<<(TBuffer &buf, MseFillProfileX *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, MseFillProfileX *&rec)
-{
-   //printf("operator<<(TBuffer &buf, AnaInfo *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
