@@ -468,7 +468,7 @@ void MAsymFillHists::PostFill()
       //funcRVsFillTime->SetParNames("const");
       graph->Fit("funcRVsFillTime");
       delete funcRVsFillTime;
-//
+      //
 
       sprintf(hName, "hRVsFillTimeBinned_%s", sPolId.c_str());
 
@@ -487,7 +487,6 @@ void MAsymFillHists::PostFill()
 /** */
 void MAsymFillHists::PostFill(AnaGlobResult &agr)
 { //{{{
-
    // should be moved to separate function
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
 

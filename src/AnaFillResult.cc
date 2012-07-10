@@ -639,8 +639,8 @@ ValErrPair AnaFillResult::GetPCProfRSlope(EPolarimeterId polId, ETargetOrient tg
    TF1* func = gr->GetFunction("fitFunc");
    if (!func) return result;
 
-   result.first  = func->GetParameter(0);
-   result.second = func->GetParError(0);
+   result.first  = func->GetParameter(1);
+   result.second = func->GetParError(1);
 
    return result;
 } //}}}
