@@ -280,7 +280,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
    utils::ConvertToProfile(hchi2, hchi2_profy, kFALSE);
 
    Double_t hchi2_profy_mean = hchi2_profy->GetMean();
-   Double_t hchi2_profy_rms  = hchi2_profy->GetRMS();
+   Double_t hchi2_profy_rms  = 0.2*hchi2_profy->GetRMS(); // use only fifth of the RMS
 
    delete hchi2_profy;
 
