@@ -496,6 +496,24 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist->GetListOfFunctions()->Add(grRSlopeVsFill_V_, "p");
 	oc.o[shName] = hist;
 
+
+   TGraphErrors *grRSlopeVsPolarSlope_H_ = new TGraphErrors();
+   grRSlopeVsPolarSlope_H_->SetName("grRSlopeVsPolarSlope_H_");
+   RunConfig::AsMarker(kTARGET_H, polId).Copy(*grRSlopeVsPolarSlope_H_);
+
+   TGraphErrors *grRSlopeVsPolarSlope_V_ = new TGraphErrors();
+   grRSlopeVsPolarSlope_V_->SetName("grRSlopeVsPolarSlope_V_");
+   RunConfig::AsMarker(kTARGET_V, polId).Copy(*grRSlopeVsPolarSlope_V_);
+
+   shName = "hRSlopeVsPolarSlope_" + sPolId + "_" + sBeamE;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 100, 0, 1, 100, 0, 1);
+   hist->SetTitle("; dP/dt; dR/dt;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRSlopeVsPolarSlope_H_, "p");
+   hist->GetListOfFunctions()->Add(grRSlopeVsPolarSlope_V_, "p");
+	oc.o[shName] = hist;
+
+
    // t0
    TGraphErrors *grT0VsMeas = new TGraphErrors();
    grT0VsMeas->SetName("grT0VsMeas");
@@ -1503,10 +1521,20 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          //hRSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
          hRSlopeVsFill_->GetXaxis()->SetLimits(fMinFill, fMaxFill);
 			utils::UpdateLimitsFromGraphs(hRSlopeVsFill_, 2);
+
 		   TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
          grRSlopeVsFill_H_->Fit("pol0");
 		   TGraph* grRSlopeVsFill_V_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_V_");
          grRSlopeVsFill_V_->Fit("pol0");
+
+         TH1* hRSlopeVsPolarSlope_ = (TH1F*) oc_pol->o["hRSlopeVsPolarSlope_" + sPolId + "_" + sBeamE];
+			utils::UpdateLimitsFromGraphs(hRSlopeVsPolarSlope_, 1);
+			utils::UpdateLimitsFromGraphs(hRSlopeVsPolarSlope_, 2);
+
+		   TGraphErrors* grRSlopeVsPolarSlope_H_ = (TGraphErrors*) hRSlopeVsPolarSlope_->GetListOfFunctions()->FindObject("grRSlopeVsPolarSlope_H_");
+         grRSlopeVsPolarSlope_H_->Fit("pol1", "EX0");
+		   TGraphErrors* grRSlopeVsPolarSlope_V_ = (TGraphErrors*) hRSlopeVsPolarSlope_->GetListOfFunctions()->FindObject("grRSlopeVsPolarSlope_V_");
+         grRSlopeVsPolarSlope_V_->Fit("pol1", "EX0");
       }
 
 
@@ -1692,25 +1720,36 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
 
    if (pcPolarSlope.second >= 0) { // some reasonable number
       TH1* hPolarSlopeVsFill_ = (TH1F*) oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE];
-      hPolarSlopeVsFill_->SetBinContent(ib, pcPolarSlope.first);
-      hPolarSlopeVsFill_->SetBinError(ib, pcPolarSlope.second);
+      hPolarSlopeVsFill_->SetBinContent(ib, pcPolarSlope.first*100.);
+      hPolarSlopeVsFill_->SetBinError(ib, pcPolarSlope.second*100.);
    }
 
    // Pol. profile R slope
-   TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
+   TH1* hRSlopeVsFill_       = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
+   TH1* hRSlopeVsPolarSlope_ = (TH1F*) oc_pol->o["hRSlopeVsPolarSlope_" + sPolId + "_" + sBeamE];
 
-   ValErrPair pcPolarRSlope = afr.GetPCProfRSlope(polId, kTARGET_H);
+   ValErrPair pcProfRSlope = afr.GetPCProfRSlope(polId, kTARGET_H);
 
-   if (pcPolarRSlope.second >= 0 && fabs(pcPolarRSlope.first) < 1) { // some reasonable number
+   if (pcProfRSlope.second >= 0 && fabs(pcProfRSlope.first) < 1) { // some reasonable number
 		TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
-		utils::AppendToGraph(grRSlopeVsFill_H_, fillId, pcPolarRSlope.first, 0, pcPolarRSlope.second);
+		utils::AppendToGraph(grRSlopeVsFill_H_, fillId, pcProfRSlope.first, 0, pcProfRSlope.second);
+
+      if (pcPolarSlope.second > 0) { // some reasonable number
+		   TGraph* grRSlopeVsPolarSlope_H_ = (TGraph*) hRSlopeVsPolarSlope_->GetListOfFunctions()->FindObject("grRSlopeVsPolarSlope_H_");
+		   utils::AppendToGraph(grRSlopeVsPolarSlope_H_, pcPolarSlope.first*100., pcProfRSlope.first, pcPolarSlope.second*100., pcProfRSlope.second);
+      }
    }
 
-   pcPolarRSlope = afr.GetPCProfRSlope(polId, kTARGET_V);
+   pcProfRSlope = afr.GetPCProfRSlope(polId, kTARGET_V);
 
-   if (pcPolarRSlope.second >= 0 && fabs(pcPolarRSlope.first) < 1) { // some reasonable number
+   if (pcProfRSlope.second >= 0 && fabs(pcProfRSlope.first) < 1) { // some reasonable number
 		TGraph* grRSlopeVsFill_V_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_V_");
-		utils::AppendToGraph(grRSlopeVsFill_V_, fillId, pcPolarRSlope.first, 0, pcPolarRSlope.second);
+		utils::AppendToGraph(grRSlopeVsFill_V_, fillId, pcProfRSlope.first, 0, pcProfRSlope.second);
+
+      if (pcPolarSlope.second > 0) { // some reasonable number
+		   TGraph* grRSlopeVsPolarSlope_V_ = (TGraph*) hRSlopeVsPolarSlope_->GetListOfFunctions()->FindObject("grRSlopeVsPolarSlope_V_");
+		   utils::AppendToGraph(grRSlopeVsPolarSlope_V_, pcPolarSlope.first*100., pcProfRSlope.first, pcPolarSlope.second*100., pcProfRSlope.second);
+		}
    }
 
 } //}}}
