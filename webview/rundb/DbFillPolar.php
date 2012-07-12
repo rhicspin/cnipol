@@ -31,8 +31,10 @@ class DbFillPolar extends SqlDbReader
    /** */
    function CountEntries()
    {
-      //$this->sqlQuery = "SELECT COUNT(fill) FROM `fill_polar` ";
-      $this->sqlQuery = "SELECT COUNT(fill) FROM `fill_polar` WHERE {$this->sqlWhere}";
+      //$this->sqlQuery = "SELECT COUNT(fill) FROM `fill_polar_new` WHERE {$this->sqlWhere}";
+      $this->sqlQuery = "SELECT COUNT(distinct fill) FROM `fill_polar_new` WHERE TRUE AND fill > '10000' AND fill < '11100'";
+
+      //print $this->sqlQuery;
       
       $result = mysql_query($this->sqlQuery);
       $nrows  = mysql_fetch_array($result);
@@ -44,15 +46,29 @@ class DbFillPolar extends SqlDbReader
    function ReadEntries($start=0, $limit=100)
    {
       //$this->sqlQuery = "SELECT *\n"
-      $this->sqlQuery = "SELECT fill_polar.*, fill_profile.*\n"
-                      . "FROM `fill_polar` LEFT JOIN `fill_profile` ON fill_polar.fill = fill_profile.fill \n"
+      //                . "FROM `fill_polar_new` LEFT JOIN `fill_profile` ON fill_polar_new.fill = fill_profile.fill \n"
+      //                . "WHERE {$this->sqlWhere} \n"
+      //                . "ORDER BY `fill_polar_new`.`fill` ASC\n";
+
+      //$this->sqlQuery = "SELECT *\n"
+      //                . "FROM `fill_polar_new` \n"
+		//					 . "WHERE {$this->sqlWhere}\n"
+      //                . "ORDER BY `fill_polar_new`.`fill` ASC\n";
+
+      //$this->sqlQuery = "SELECT *\n"
+      //                . "FROM `fill_polar_new` \n"
+		//					 . "WHERE TRUE AND fill > '10000' AND fill < '11100'\n"
+      //                . "ORDER BY `fill_polar_new`.`fill` ASC\n";
+
+      $this->sqlQuery = "SELECT fill_polar.*, target_orient, prof_r, prof_r_err "
+		                . "FROM `fill_polar_new` AS fill_polar LEFT JOIN `fill_profile_new` ON "
+                      . "fill_polar.fill = fill_profile_new.fill AND fill_polar.polarimeter_id = fill_profile_new.polarimeter_id "
+                      //. "WHERE TRUE AND fill_polar.fill > '10000' AND fill_polar.fill < '11100' "
                       . "WHERE {$this->sqlWhere} \n"
                       . "ORDER BY `fill_polar`.`fill` ASC\n";
-      //$this->sqlQuery = "SELECT *\n"
-      //                . "FROM `run_info` WHERE {$this->sqlWhere}\n"
-      //                . "ORDER BY {$this->sqlOrderBy} `run_info`.`start_time` DESC\n"
-      //                . "LIMIT $start, $limit\n";
       
+      //print $this->sqlQuery;
+
       $this->result = mysql_query($this->sqlQuery);
       return $this->result;
    }
