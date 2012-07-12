@@ -386,7 +386,6 @@ AsymPlot::PlotErrorDetector(TFile * rootfile, TCanvas *CurC, TPostScript * ps){
   if (IsOK("asym_sinphi_fit")) asym_sinphi_fit->Draw(); CurC->Update();
 
   return 0;
-
 }
 
 
@@ -448,9 +447,8 @@ AsymPlot::GetHistograms(TFile * rootfile){
 // Input       : 
 // Return      : 
 //
-void 
-FindRootFile(){
-
+void FindRootFile()
+{
   // rootfile operation
   Char_t filename[50], text[100];
 
@@ -475,10 +473,7 @@ FindRootFile(){
   // make symbolic link from root/RUNID.root to ./AsymPlot.root
   sprintf(text,"ln -s %s %s",filename,lnkfile);
   gSystem->Exec(text);
-
-  return;
-
- }
+}
 
 
 //#ifndef __CINT__
@@ -553,11 +548,9 @@ int main(int argc, char **argv) {
   sprintf(HEADER,"%s/AsymHeader.h",gSystem->Getenv("MACRODIR"));
   gROOT->LoadMacro(HEADER);
 
-
   // open rootfile 
   FindRootFile();
   TFile * rootfile = TFile::Open(lnkfile);
-
 
   // Log file handling
   ofstream logfile;
@@ -573,7 +566,7 @@ int main(int argc, char **argv) {
 
   // postscript file
   Char_t psfile[100];
-  sprintf(psfile,"ps/AsymPlot_%s.ps",RUNID);
+  sprintf(psfile, "ps/AsymPlot_%s.ps",RUNID);
   TPostScript *ps = new TPostScript(psfile,112);
 
   AsymPlot asymplot;
@@ -582,7 +575,7 @@ int main(int argc, char **argv) {
   if (stID) PlotStrip(rootfile, CurC, ps, stID);
   if (FEEDBACK)     asymplot.PlotFeedback(rootfile, CurC, ps);  // Plot Feedback 
   if (PLOT_BANANA)  PlotStrip(rootfile, CurC, ps);   // Plot Individual Strip
-  if (SUMMARY) asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
+  if (SUMMARY)      asymplot.PlotErrorDetectorSummary(rootfile, CurC, ps);   // Plot Error Detector Summary
   if (ERROR_DETECTOR)  asymplot.PlotErrorDetector(rootfile, CurC, ps);   // Plot Error Detector
   if (PLOT_RAW) asymplot.PlotRaw(rootfile, CurC, ps);
 

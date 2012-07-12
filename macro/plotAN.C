@@ -20,36 +20,22 @@ TF1 *fitTheoAn3;
 /** */
 void plotAN()
 { //{{{
-   //FILE *ifile;
-
-   double mp = 0.93827;
-   double Ptarget = 0.924;
+   double mp         = 0.93827;
+   double Ptarget    = 0.924;
    //double dPtarget = 0.018;
-   double Data_t[6];
+
    double DataAN[6], DataErr[6];//, DataErrStat[6]; //final
    double DataSysErr[6];
 
    // TargetPhys, BeamPhys, Err
    double BeamPhysBlue[6], TargetPhysBlue[6], BlueErr[6];
 
-   TargetPhysBlue[0] = -0.039243;
-   BeamPhysBlue[0]   =  0.020341;
-   BlueErr[0]        =  0.000914;
-   TargetPhysBlue[1] = -0.040520;
-   BeamPhysBlue[1]   =  0.020076;
-   BlueErr[1]        =  0.000939;
-   TargetPhysBlue[2] = -0.040819;
-   BeamPhysBlue[2]   =  0.018495;
-   BlueErr[2]        =  0.000967;
-   TargetPhysBlue[3] = -0.040041;
-   BeamPhysBlue[3]   =  0.020347;
-   BlueErr[3]        =  0.000992;
-   TargetPhysBlue[4] = -0.038616;
-   BeamPhysBlue[4]   =  0.018231;
-   BlueErr[4]        =  0.001038;
-   TargetPhysBlue[5] = -0.037101;
-   BeamPhysBlue[5]   =  0.016961;
-   BlueErr[5]        =  0.001047;
+   TargetPhysBlue[0] = -0.039243; BeamPhysBlue[0]   =  0.020341; BlueErr[0]        =  0.000914;
+   TargetPhysBlue[1] = -0.040520; BeamPhysBlue[1]   =  0.020076; BlueErr[1]        =  0.000939;
+   TargetPhysBlue[2] = -0.040819; BeamPhysBlue[2]   =  0.018495; BlueErr[2]        =  0.000967;
+   TargetPhysBlue[3] = -0.040041; BeamPhysBlue[3]   =  0.020347; BlueErr[3]        =  0.000992;
+   TargetPhysBlue[4] = -0.038616; BeamPhysBlue[4]   =  0.018231; BlueErr[4]        =  0.001038;
+   TargetPhysBlue[5] = -0.037101; BeamPhysBlue[5]   =  0.016961; BlueErr[5]        =  0.001047;
 
    for (int i = 0; i < 6; ++i) {
       DataAN[i]     = -1 * TargetPhysBlue[i];
@@ -76,16 +62,19 @@ void plotAN()
    Err_t[4] = 0.5;
    Err_t[5] = 0.5;
 
+   double Data_t[6];
+
    for (int i = 0; i < 6; ++i) {
       Data_t[i] = Data_tB[i] * 1E-3 * 2 * mp;
       Err_t[i] = 0;
    }
 
-   TGraphErrors *gr_AN = new TGraphErrors(6, Data_t, DataAN, Err_t, DataErr);
+   //TGraphErrors *grAN = new TGraphErrors(6, Data_t, DataAN, Err_t, DataErr);
+   TGraphErrors *grAN = new TGraphErrors("/eic/u/dsmirnov/cnipol_results/hjet_24_AN_vs_t", "%lg %lg %lg");
 
    ///////////////////////Fit
    //|t|=((1E-2)-(2E-4))/(double)64;
-   TF1 *fitTheoAn = new TF1("fitTheoAn", fitfunc3, 1E-6, 4E-1, 5); //rho = -0.09
+   TF1 *funcModelAN = new TF1("funcModelAN", modelAN, 1E-6, 4E-1, 5); //rho = -0.09
 
    //////////////////////Graph
    gROOT->Reset();
@@ -139,11 +128,11 @@ void plotAN()
    double Rer5_err = 0;
 
    ///Data
-   gr_AN->SetMarkerStyle(20);
-   gr_AN->SetMarkerSize(1);
-   gr_AN->SetMarkerColor(1);
-   gr_AN->SetLineColor(1);
-   gr_AN->Draw("P");
+   grAN->SetMarkerStyle(20);
+   grAN->SetMarkerSize(1);
+   grAN->SetMarkerColor(1);
+   grAN->SetLineColor(1);
+   grAN->Draw("P");
 
    TLine l1;
    l1.SetLineWidth(1);
@@ -153,31 +142,32 @@ void plotAN()
 
    leg2->SetTextSize(0.04);
    //leg2->SetHeader("title");
-   leg2->AddEntry(gr_AN, "RUN8 BLUE", "p");
-   leg2->AddEntry(fitTheoAn, "fit", "l");
+   leg2->AddEntry(grAN, "Data", "p");
+   leg2->AddEntry(funcModelAN, "fit", "l");
    leg2->Draw("");
    leg2->SetFillColor(0);//white filled box
 
-   fitTheoAn->SetRange(1E-3, 5E-2);
-   fitTheoAn->FixParameter(0, 1);
-   fitTheoAn->SetParameter(1, 0); //Imr5
-   fitTheoAn->SetParameter(2, 0); //Rer5
-   fitTheoAn->FixParameter(3, 0); //Imr2
-   fitTheoAn->FixParameter(4, 0); //Rer2
-   fitTheoAn->SetLineColor(3);
-   fitTheoAn->SetLineWidth(1);
-   fitTheoAn->SetLineStyle(1);
+   funcModelAN->SetRange(1E-3, 5E-2);
+   funcModelAN->FixParameter(0, 1);
+   funcModelAN->SetParameter(1, 0); // Imr5
+   funcModelAN->SetParameter(2, 0); // Rer5
+   funcModelAN->FixParameter(3, 0); // Imr2
+   funcModelAN->FixParameter(4, 0); // Rer2
+   funcModelAN->SetLineColor(3);
+   funcModelAN->SetLineWidth(1);
+   funcModelAN->SetLineStyle(1);
 
-   gr_AN->Fit(fitTheoAn, "R");
+   grAN->Fit(funcModelAN, "R");
 
-   Imr5 = fitTheoAn->GetParameter(1);
-   Rer5 = fitTheoAn->GetParameter(2);
-   Imr5_err = fitTheoAn->GetParError(1);
-   Rer5_err = fitTheoAn->GetParError(2);
+   Imr5     = funcModelAN->GetParameter(1);
+   Imr5_err = funcModelAN->GetParError(1);
+
+   Rer5     = funcModelAN->GetParameter(2);
+   Rer5_err = funcModelAN->GetParError(2);
 
    //
-   printf("Imr5 = %lf Rer5= %lf\n", Imr5, Rer5);
-   printf("Imr5_err = %lf Rer5_err = %lf\n", Imr5_err, Rer5_err);
+   printf("Im(r5)     = %lf;   Re(r5)     = %lf\n", Imr5, Rer5);
+   printf("Im(r5_err) = %lf;   Re(r5_err) = %lf\n", Imr5_err, Rer5_err);
 
    double cal_AN[256];
    double cal_t[256];
@@ -205,8 +195,8 @@ void plotAN()
    double cRer5[1], cImr5[1];
    double cRer5_err[1], cImr5_err[1];
 
-   cRer5[0] = fitTheoAn->GetParameter(2);
-   cImr5[0] = fitTheoAn->GetParameter(1);
+   cRer5[0] = funcModelAN->GetParameter(2);
+   cImr5[0] = funcModelAN->GetParameter(1);
    cRer5_err[0] = 0; //fitTheoAn2->GetParError(2);
    cImr5_err[0] = 0; //fitTheoAn2->GetParError(1);
 
@@ -387,53 +377,50 @@ void f_AN(double cal_t[], double cal_AN[], double rho, double sigma, double Imr5
       //ans=xx*((myuP-1)*(1-delta*rho+Imr2-delta*Rer2)-2*(Imr5-delta*Rer5))-2*(1+Imr2)*Rer5+2*(rho+Rer2)*Imr5;
       //ans=xx*(myuP-1)*(1-delta*rho);
       cal_AN[i] = fac * ans * sqrt(cal_t[i]) / (double)(ttt * mp);
-      //printf("cal_t=%lf cal_AN=%lf\n",cal_t[i],cal_AN[i]);
+      //printf("cal_t = %lf; cal_AN = %lf\n", cal_t[i], cal_AN[i]);
       //if(i%10==0 && i>0)getchar();
    }
 } //}}}
 
 
 /** */
-Double_t fitfunc3(Double_t *x, Double_t *par)
+Double_t modelAN(Double_t *x, Double_t *par)
 { //{{{
-   double pi = 3.14159;
-   double mp = 0.93827;
-   double alpha = 1 / (double)137;
-   double mb2GeV_inv2 = 0.389; // 1GeV-2=0.389mb
-   double myuP = 2.7938;
-   double sigma_totP;
-   double xx;
-   double ttt;
-   double tc;
-   double rho = 0;
-   double beta = 0;
-   double delta = 0;
-   //double lamda2 = 0.71;      //GeV^2
-   //double B = 11;             //13;//(GeV/c)^2
-   //double ganma = 0.5772156;  //Euler's constant
-   //double light_c = 3E8;      //m/s
+   double pi          = 3.14159;
+   double mp          = 0.93827;
+   double alpha       = 1 / (double)137;
+   double mb2GeV_inv2 = 0.389; // 1GeV-2                 = 0.389mb
+   double myuP        = 2.7938;
+   double rho         = -0.0286; // pp
+   double beta        = 0;
+   double delta       = 0.02;
+   //double lamda2      = 0.71;      //GeV^2
+   //double B           = 11;             //13;//(GeV/c)^2
+   //double ganma       = 0.5772156;  //Euler's constant
+   //double light_c     = 3E8;      //m/s
+
    double Imr2, Imr5, Rer2, Rer5;
 
+   //   = par[0];  // = 1 not used. some scale?
    Imr5 = par[1];
    Rer5 = par[2];
    Imr2 = par[3];
    Rer2 = par[4];
 
-   rho   = -0.0286;//pp
-   beta  = 0;
-   delta = 0.02;
+   double sigma_totP = 38.4; //mb
+   sigma_totP /= mb2GeV_inv2;
 
-   sigma_totP = 38.4; //mb
-   sigma_totP = sigma_totP / (double)mb2GeV_inv2;
+   double tc = -8 * pi * alpha / (double)(sigma_totP * sqrt(1 + rho * rho));
+   double xx = -1 * tc / x[0];
 
-   tc = -8 * pi * alpha / (double)(sigma_totP * sqrt(1 + rho * rho));
-   xx = -1 * tc / (double)x[0];
-   ttt = pow(xx, 2) - 2 * (rho + delta) * xx + (1 + rho * rho) * (1 + beta * beta);
+   double ttt = pow(xx, 2) - 2 * (rho + delta) * xx + (1 + rho * rho) * (1 + beta * beta);
 
    Double_t ans = xx * ((myuP - 1) * (1 - delta * rho + Imr2 - delta * Rer2) - 2 * (Imr5 - delta * Rer5)) - 2 * (1 + Imr2) * Rer5 + 2 * (rho + Rer2) * Imr5;
+
    //ans=xx*((myuP-1)*(1-delta*rho)-2*(Imr5-delta*Rer5))-2*(Rer5-rho*Imr5);
+
    ans = ans * sqrt(x[0]) / (double)(ttt * mp);
-   ans = ans * par[0];
+   //ans = ans * par[0];
 
    return ans;
 } //}}}

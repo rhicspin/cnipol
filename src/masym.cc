@@ -1,4 +1,5 @@
 
+#include <fstream>
 #include <time.h>
 #include <map>
 
@@ -59,6 +60,9 @@ int main(int argc, char *argv[])
 
    //string filelistName = mAsymAnaInfo.GetMListFileName();
 	string filelist     = mAsymAnaInfo.GetMListFullPath();
+
+   ofstream filelistGood((filelist + "_good").c_str());
+   filelistGood << fixed << setprecision(3);
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
 	mAsymRoot.SetAnaGlobResult(&gAnaGlobResult);
@@ -156,8 +160,8 @@ int main(int argc, char *argv[])
           (TMath::Abs(profileRatio) > 5.000) ||                           // exclude very large values
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) || // exclude large values with small errors
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) || // exclude large values with large errors
-          (profileRatioErr/TMath::Abs(profileRatio) > 2.000 && TMath::Abs(profileRatio) > 1.0) ||
-          (profileRatioErr < 0.01)
+          //(profileRatioErr/TMath::Abs(profileRatio) > 2.000 && TMath::Abs(profileRatio) > 1.0) ||
+          (profileRatioErr < 0.01) // exclude too small errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
          )
       {
@@ -207,7 +211,10 @@ int main(int argc, char *argv[])
       delete f;
      
       gGoodMeass.insert(*gMM);
+      filelistGood << runId << endl;
    }
+
+   filelistGood.close();
 
 	// Update global run parameters before anything else
 	gRunConfig.SetBeamEnergies(gAnaGlobResult.GetBeamEnergies());

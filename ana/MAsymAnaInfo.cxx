@@ -38,8 +38,6 @@ string MAsymAnaInfo::GetExternInfoPath() { return GetResultsDir() + "/runXX/"; }
 /** */
 void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
 { //{{{
-
-   //stringstream sstr;
    int option_index = 0;
 
    static struct option long_options[] = {
