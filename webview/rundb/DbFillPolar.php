@@ -43,7 +43,8 @@ class DbFillPolar extends SqlDbReader
    /** */
    function ReadEntries($start=0, $limit=100)
    {
-      $this->sqlQuery = "SELECT *\n"
+      //$this->sqlQuery = "SELECT *\n"
+      $this->sqlQuery = "SELECT fill_polar.*, fill_profile.*\n"
                       . "FROM `fill_polar` LEFT JOIN `fill_profile` ON fill_polar.fill = fill_profile.fill \n"
                       . "WHERE {$this->sqlWhere} \n"
                       . "ORDER BY `fill_polar`.`fill` ASC\n";

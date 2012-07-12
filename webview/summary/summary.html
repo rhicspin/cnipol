@@ -361,7 +361,6 @@ Ratio of upstream/downstream p-Carbon polarization
 
 
 
-
 <h2 id="pcarbon_profile" class=count>Polarization Profile R</h2>
 <!-- {{{ -->
 <div id="div:pcarbon_profile" class="section">
@@ -434,6 +433,50 @@ Fill average polarization profile values
 
 
 
+<h2 id="pcarbon_profile_decay" class=count>Polarization Profile R Decay</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_profile_decay" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_profile_decay_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hRSlopeVsFill_B1U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td><?=$gP->img("runs/Y2U/hRSlopeVsFill_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hRSlopeVsFill_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+   <td><?=$gP->img("runs/Y1D/hRSlopeVsFill_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+Polarization profile "decay" per hour
+</div>
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
 
 <h2 id="pcarbon_decay" class=count>Polarization Decay</h2>
 <!-- {{{ -->
@@ -452,23 +495,68 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <table class="simple00 cntr">
 
 <tr>
-   <td><?=$gP->img("runs/B1U/hPolarDecayVsFill_B1U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/B1U/hPolarSlopeVsFill_B1U_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
 
-   <td><?=$gP->img("runs/Y2U/hPolarDecayVsFill_Y2U_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y2U/hPolarSlopeVsFill_Y2U_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
 
 <tr>
-   <td><?=$gP->img("runs/B2D/hPolarDecayVsFill_B2D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/B2D/hPolarSlopeVsFill_B2D_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
 
-   <td><?=$gP->img("runs/Y1D/hPolarDecayVsFill_Y1D_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/Y1D/hPolarSlopeVsFill_Y1D_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
 
 <tr>
 <td colspan=2>
 <div class='thumbcaption'>
 Polarization decay in absolute % per hour
+</div>
+
+</table>
+
+<? endforeach; ?>
+
+</div>
+<!-- }}} -->
+
+
+
+<h2 id="pcarbon_polar_profile_decay" class=count>Polarization Decay (dP/dt) vs Profile R Slope (dR/dt)</h2>
+<!-- {{{ -->
+<div id="div:pcarbon_polar_profile_decay" class="section">
+
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_polar_profile_decay_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hRSlopeVsPolarSlope_B1U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td><?=$gP->img("runs/Y2U/hRSlopeVsPolarSlope_Y2U_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hRSlopeVsPolarSlope_B2D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+   <td><?=$gP->img("runs/Y1D/hRSlopeVsPolarSlope_Y1D_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+dR/dt vs dP/dt
 </div>
 
 </table>
@@ -521,7 +609,6 @@ Average spin angle (i.e. radial component)
 
 </div>
 <!-- }}} -->
-
 
 
 

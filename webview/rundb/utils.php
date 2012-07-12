@@ -187,33 +187,36 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 
 
 /** */
-function pairToString($valerr=null, $format="%3.2f")
+function pairToString($valerr=null, $classes="", $format="%3.2f")
 {
    if ($valerr == null || $valerr->second < 0) return "&nbsp;";
 
-   return sprintf("$format&nbsp;&plusmn;&nbsp;$format", $valerr->first, $valerr->second);
-}
-
-
-/** */
-function polarToString($val, $err)
-{
-   $str = "&nbsp;";
-
-   if ( $val >= 0 && $err >= 0 )
-      $str = sprintf("%5.2f&nbsp;&plusmn;&nbsp;%4.2f", $val*100, $err*100);
-      //$str = sprintf("%5.7f&nbsp;&plusmn;&nbsp;%4.7f", $val, $err);
-
+   $str = sprintf("$format&nbsp;&plusmn;&nbsp;$format", $valerr->first, $valerr->second);
+  
+   if (!empty($classes))
+     $str = "<span class='$classes'>$str</span>";
+   
    return $str;
 }
 
 
 /** */
+//function polarToString($val, $err)
+//{
+//}
+
+
+/** */
 function polarPairToString($valerr=null)
 {
-   if ($valerr == null || $valerr->second < 0) return "&nbsp;";
+   //if ($valerr == null || $valerr->second < 0) return "&nbsp;";
 
-   return polarToString($valerr->first, $valerr->second);
+   $ve_scaled = clone $valerr;
+
+   $ve_scaled->first  *= 100.;
+   $ve_scaled->second *= 100.;
+
+   return pairToString($ve_scaled);
 }
 
 
@@ -378,16 +381,17 @@ function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
 /** */
 function calcPolarCollision($polar=null, $scaleColl=null)
 { //{{{
-   if ($polar == null || $scaleColl == null) return null;
+   $result = new pair(0, -1);
 
-   $polarColl = new pair(0, -1);
+   if ($polar == null || $scaleColl == null) return clone $polar;
+   if ($polar->second < 0 || $scaleColl->second < 0) return clone $polar;
 
-   $polarColl->first = $polar->first * $scaleColl->first;
+   $result->first = $polar->first * $scaleColl->first;
 
    $relDelta2 = $polar->second * $polar->second / $polar->first / $polar->first + $scaleColl->second * $scaleColl->second / $scaleColl->first / $scaleColl->first;
-   $polarColl->second = $polarColl->first * sqrt($relDelta2);
+   $result->second = abs($result->first) * sqrt($relDelta2);
 
-   return $polarColl;
+   return $result;
 } //}}}
 
 

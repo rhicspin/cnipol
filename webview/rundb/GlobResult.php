@@ -5,6 +5,7 @@ include_once("FillResult.php");
 class GlobResult
 {
    var $fFillResults     = array();
+   var $fBeamEnergies    = array();
    var $fAvrgPCPolars    = array();
    var $fAvrgPCnHJPolars = array();
    var $fAvrgHJPolars    = array();
@@ -32,8 +33,8 @@ class GlobResult
 
          foreach (range(0, 1) as $tgtOrient)
          {
-            $this->fAvrgBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
-            $this->fMissedBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
+            $this->fAvrgBeamProfRs[$ringId][$tgtOrient]   = new pair(0, -1);
+            //$this->fMissedBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
          }
       }
    } //}}}
@@ -89,10 +90,11 @@ class GlobResult
 
             foreach (range(0, 1) as $tgtOrient)
             {
-               $beamProfR = $fillResult->fBeamProfRs[$ringId][$tgtOrient];
+               $beamProfR  = $fillResult->fBeamProfRs[$ringId][$tgtOrient];
+               $beamEnergy = $fillResult->fBeamEnergy;
 
                if ($beamProfR->second >= 0) 
-                  $beamProfRSet[$ringId][$tgtOrient][] = $beamProfR;
+                  $beamProfRSet[$ringId][$tgtOrient][$beamEnergy][] = $beamProfR;
   
                $this->fAvrgBeamProfRs[$ringId][$tgtOrient] = calcWeigtedAvrgErrPairs($this->fAvrgBeamProfRs[$ringId][$tgtOrient], $beamProfR);
             }
@@ -110,12 +112,18 @@ class GlobResult
          {
             //$ve = new pair(calcWeigtedAvrgErr($beamProfRSet[$ringId][$tgtOrient]), calcWeigtedStdDev( $beamProfRSet[$ringId][$tgtOrient]));
             //$this->fMissedBeamProfRs[$ringId][$tgtOrient] = $ve;
-            $this->fMissedBeamProfRs[$ringId][$tgtOrient]->first  = calcWeigtedAvrgErr($beamProfRSet[$ringId][$tgtOrient])->first;
-            $this->fMissedBeamProfRs[$ringId][$tgtOrient]->second = calcWeigtedStdDev( $beamProfRSet[$ringId][$tgtOrient])->first;
 
-            //print "<pre>\n";
-            //print_r($this->fMissedBeamProfRs[$ringId][$tgtOrient]);
-            //print "</pre>\n";
+            $beamProfRSetByRingByTgt = $beamProfRSet[$ringId][$tgtOrient];
+
+            foreach ($beamProfRSetByRingByTgt as $beamEnergy => $beamProfRSetByBeamEnergy)
+            {
+               $this->fMissedBeamProfRs[$ringId][$tgtOrient][$beamEnergy]->first  = calcWeigtedAvrgErr($beamProfRSetByBeamEnergy)->first;
+               $this->fMissedBeamProfRs[$ringId][$tgtOrient][$beamEnergy]->second = calcWeigtedStdDev( $beamProfRSetByBeamEnergy)->first;
+
+               //print "<pre>\n";
+               //print_r($this->fMissedBeamProfRs[$ringId][$tgtOrient]);
+               //print "</pre>\n";
+            }
          }
       }
    } //}}}
@@ -126,7 +134,8 @@ class GlobResult
    { //{{{
       foreach ( $this->fFillResults as $fillResult)
       {
-         $fillResult->CalcBeamPolar(false);
+         $fillResult->CalcBeamPolar(true);
+         //$fillResult->CalcBeamPolar(false);
          $fillResult->CalcPolarCollScale();
       }
    } //}}}
