@@ -199,38 +199,10 @@ foreach ($es as &$e)
 
    $pairPMaxY_H = null;
    if ($e['pmax_yellow_h_err'] >= 0) $pairPMaxY_H = new pair($e['pmax_yellow_h'], $e['pmax_yellow_h_err']);
-
-   //$e['pairProfileB_V']   = $pairProfileB_V;
-   //$e['pairProfileB_H']   = $pairProfileB_H;
-   //$e['pairProfileY_V']   = $pairProfileY_V;
-   //$e['pairProfileY_H']   = $pairProfileY_H;
-
-   //$e['pairPMaxB_V']      = $pairPMaxB_V;
-   //$e['pairPMaxB_H']      = $pairPMaxB_H;
-   //$e['pairPMaxY_V']      = $pairPMaxY_V;
-   //$e['pairPMaxY_H']      = $pairPMaxY_H;
 }
 
 // this is required due to a php bug
 unset($e);
-
-//$deltaY_UvsD_Avrg    = calcQuantileValue($deltaY_UvsDs, .90);
-
-$pairProfileB_V_Avrg = calcWeigtedAvrgErr($pairProfileB_Vs);
-$pairProfileB_V_SDev = calcWeigtedStdDev( $pairProfileB_Vs);
-$pairProfileB_V_misd = new pair($pairProfileB_V_Avrg->first, $pairProfileB_V_SDev->first);
-
-$pairProfileB_H_Avrg = calcWeigtedAvrgErr($pairProfileB_Hs);
-$pairProfileB_H_SDev = calcWeigtedStdDev( $pairProfileB_Hs);
-$pairProfileB_H_misd = new pair($pairProfileB_H_Avrg->first, $pairProfileB_H_SDev->first);
-
-$pairProfileY_V_Avrg = calcWeigtedAvrgErr($pairProfileY_Vs);
-$pairProfileY_V_SDev = calcWeigtedStdDev( $pairProfileY_Vs);
-$pairProfileY_V_misd = new pair($pairProfileY_V_Avrg->first, $pairProfileY_V_SDev->first);
-
-$pairProfileY_H_Avrg = calcWeigtedAvrgErr($pairProfileY_Hs);
-$pairProfileY_H_SDev = calcWeigtedStdDev( $pairProfileY_Hs);
-$pairProfileY_H_misd = new pair($pairProfileY_H_Avrg->first, $pairProfileY_H_SDev->first);
 
 ?>
 
@@ -338,10 +310,12 @@ foreach ($globResult->fFillResults as $fill):
    $beamPolarP0Yels[]        = $fill->fBeamPolarP0s[2];
    $beamPolarSlopeYels[]     = $fill->fBeamPolarSlopes[2];
 
+   $collPolarScaleBlus[]     = $fill->fCollPolarScale[1];
+   $collPolarScaleYels[]     = $fill->fCollPolarScale[2];
+
    $collBeamPolarBlus[]      = $fill->fCollBeamPolars[1];
    $collBeamPolarP0Blus[]    = $fill->fCollBeamPolarP0s[1];
    $collBeamPolarSlopeBlus[] = $fill->fCollBeamPolarSlopes[1];
-
    $collBeamPolarYels[]      = $fill->fCollBeamPolars[2];
    $collBeamPolarP0Yels[]    = $fill->fCollBeamPolarP0s[2];
    $collBeamPolarSlopeYels[] = $fill->fCollBeamPolarSlopes[2];
@@ -411,6 +385,9 @@ $avrgCollBeamPolarYel      = calcWeigtedAvrgErr($collBeamPolarYels);
 $avrgCollBeamPolarP0Yel    = calcWeigtedAvrgErr($collBeamPolarP0Yels);
 $avrgCollBeamPolarSlopeYel = calcWeigtedAvrgErr($collBeamPolarSlopeYels);
 
+$avrgCollPolarScaleBlu     = calcWeigtedAvrgErr($collPolarScaleBlus);
+$avrgCollPolarScaleYel     = calcWeigtedAvrgErr($collPolarScaleYels);
+
 $avrgBeamPolarBlu          = calcWeigtedAvrgErr($beamPolarBlus);
 $avrgBeamPolarP0Blu        = calcWeigtedAvrgErr($beamPolarP0Blus);
 $avrgBeamPolarSlopeBlu     = calcWeigtedAvrgErr($beamPolarSlopeBlus);
@@ -441,6 +418,7 @@ $polarYAvrg_RelErr    = $avrgBeamPolarYel->first ? $avrgBeamPolarYel->second/$av
    <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarBlu)?>
    <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarP0Blu)?>
    <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarSlopeBlu)?>
+
    <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarYel)?>
    <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarP0Yel)?>
    <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarSlopeYel)?>
@@ -448,12 +426,12 @@ $polarYAvrg_RelErr    = $avrgBeamPolarYel->first ? $avrgBeamPolarYel->second/$av
    <th class='bluPol align_ct'><?=polarPairToString($avrgBeamPolarBlu)?>
    <th class='bluPol align_ct'><?=polarPairToString($avrgBeamPolarP0Blu)?>
    <th class='bluPol align_ct'><?=polarPairToString($avrgBeamPolarSlopeBlu)?>
-   <th class='bluPol align_ct'>&nbsp;
+   <th class='bluPol align_ct'><?=pairToString($avrgCollPolarScaleBlu, "", "%5.3f")?>
 
    <th class='yelPol align_ct'><?=polarPairToString($avrgBeamPolarYel)?>
    <th class='yelPol align_ct'><?=polarPairToString($avrgBeamPolarP0Yel)?>
    <th class='yelPol align_ct'><?=polarPairToString($avrgBeamPolarSlopeYel)?>
-   <th class='yelPol align_ct'>&nbsp;
+   <th class='yelPol align_ct'><?=pairToString($avrgCollPolarScaleYel, "", "%5.3f")?>
 
    <th class='bluPol align_ct'><?=polarPairToString($globResult->fAvrgHJPolars[1])?>
    <th class='bluPol align_ct'><?=polarPairToString($globResult->fAvrgPCPolars[0])?><br><hr>
