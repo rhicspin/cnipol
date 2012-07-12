@@ -9,10 +9,10 @@ putenv("TZ=America/New_York");
 
 
 // Run details view
-if ( isset($_GET['fillid']) && isset($_GET['ana']) )
+if ( isset($_GET['fillid']) && isset($_GET['rp']) )
 {
    $gFillId    = $_GET['fillid'];
-   $gAnaName   = $_GET['ana'];
+   $gAnaName   = "run".sprintf("%02d", $_GET['rp']);
    $gAnaResDir = DATA_DIR."/$gAnaName/";
 
    // Check for correct and existing fillid
