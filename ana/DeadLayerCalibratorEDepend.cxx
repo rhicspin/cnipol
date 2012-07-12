@@ -106,6 +106,8 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
 
       TH1* hChi2Ndf_tmp = (TH1*) fitResultHists.At(3);
 
+      if (!hChi2Ndf_tmp) continue;
+
       for (Int_t ib=1; ib<=hChi2Ndf_tmp->GetNbinsX(); ++ib)
       {
          Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
