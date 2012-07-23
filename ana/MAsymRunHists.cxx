@@ -870,17 +870,17 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    Float_t  profileRatio     = rc.fAnaMeasResult->fProfilePolarR.first;
    Float_t  profileRatioErr  = rc.fAnaMeasResult->fProfilePolarR.second;
    Float_t  max_rate         = rc.fAnaMeasResult->max_rate;
-   Float_t  t0               = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
-   Float_t  t0Err            = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
-   Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
-   Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
+   //Float_t  t0               = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
+   //Float_t  t0Err            = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
+   //Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
+   //Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    ChannelCalib chCalib      = rc.fCalibrator->GetMeanChannel();
 
-   t0    = chCalib.fT0Coef;
-   t0Err = chCalib.fT0CoefErr;
-   dl    = chCalib.fDLWidth;
-   dlErr = chCalib.fDLWidthErr;
+   Float_t t0    = chCalib.fT0Coef;
+   Float_t t0Err = chCalib.fT0CoefErr;
+   Float_t dl    = chCalib.fDLWidth;
+   Float_t dlErr = chCalib.fDLWidthErr;
 
    // Some QA checks... should be removed in the future...
    //if (isnan(t0) || isinf(t0)) {
