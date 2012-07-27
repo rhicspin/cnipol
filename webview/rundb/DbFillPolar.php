@@ -31,8 +31,8 @@ class DbFillPolar extends SqlDbReader
    /** */
    function CountEntries()
    {
-      //$this->sqlQuery = "SELECT COUNT(fill) FROM `fill_polar_new` WHERE {$this->sqlWhere}";
-      $this->sqlQuery = "SELECT COUNT(distinct fill) FROM `fill_polar_new` WHERE TRUE AND fill > '10000' AND fill < '11100'";
+      $this->sqlQuery = "SELECT COUNT(distinct fill_polar.fill) FROM `fill_polar_new` AS fill_polar  WHERE {$this->sqlWhere}";
+      //$this->sqlQuery = "SELECT COUNT(distinct fill) FROM `fill_polar_new` WHERE TRUE AND fill > '10000' AND fill < '11100'";
 
       //print $this->sqlQuery;
       

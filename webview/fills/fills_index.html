@@ -42,7 +42,7 @@ $nFills = $dbFillPolar->CountEntries();
 ?>
 
 <p>
-Fills selected: <?=$dbFillPolar->nResults?>
+Fills selected: <?=$nFills?>
 
 <?//=$dbFillPolar->sqlWhere?>
 
@@ -406,6 +406,10 @@ $polarYAvrg_RelErr    = $avrgBeamPolarYel->first ? $avrgBeamPolarYel->second/$av
 
 <?//print $header;?>
 
+<?php
+if ($nFills):
+?>
+
 <tr>
    <th colspan=27>&nbsp;<br>&nbsp;
 
@@ -489,6 +493,7 @@ $polarYAvrg_RelErr    = $avrgBeamPolarYel->first ? $avrgBeamPolarYel->second/$av
 
 </table>
 
+
 <p>&nbsp;
 <p>&nbsp;
 <p>&nbsp;
@@ -511,6 +516,9 @@ Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in th
    <td><?=pairToString($normY2U, "", "%8.7f")?>
 </table>
 
+<?php
+endif;
+?>
 
 <!-- Main text ends here-->
 
