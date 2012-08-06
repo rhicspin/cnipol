@@ -21,10 +21,12 @@
 
 #include "plotAN.h"
 
-#include "utils.h"
+#include "utils/utils.h"
 
 
 using namespace std;
+
+
 
 
 /** */
@@ -34,8 +36,6 @@ void plotAN()
    //gROOT->SetStyle("Plain");
    //gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("styles/style_anapow.C");
-
-   //gSystem->Load("libutils.so"); 
 
    double targetPol    = 0.924;
    //double targetPolErr = 0.018;
@@ -77,14 +77,21 @@ void plotAN()
       Err_t[i] = 0;
    }
 
-   //string dataFileName = "pp_ANvst_s019.4_E704";
    //string dataFileName = "pp_ANvst_s006.8_Hjet_2004_24GeV";
+   //string dataFileName = "pp_ANvst_s006.8_Hjet_2004_24GeV_toterr";
    //string dataFileName = "pp_ANvst_s006.8_Hjet_2012_24GeV";
-   string dataFileName = "pp_ANvst_s013.7_Hjet_2004_100GeV";
+   //string dataFileName = "pp_ANvst_s013.7_Hjet_2004_100GeV";
+   //string dataFileName = "pp_ANvst_s013.7_Hjet_2004_100GeV_toterr";
+   //string dataFileName = "pp_ANvst_s013.7_Hjet_2009_100GeV_blu";
+   string dataFileName = "pp_ANvst_s013.7_Hjet_2009_100GeV_yel";
    //string dataFileName = "pp_ANvst_s013.7_Hjet_2012_100GeV";
-   //string dataFileName = "pp_ANvst_s021.X_Hjet_2012_255GeV";
+   //string dataFileName = "pp_ANvst_s019.4_E704";
+   //string dataFileName = "pp_ANvst_s021.7_Hjet_2011_250GeV";
+   //string dataFileName = "pp_ANvst_s021.9_Hjet_2012_255GeV";
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2003";
+   //string dataFileName = "pp_ANvst_s200.0_pp2pp_2003_toterr";
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2009";
+   //string dataFileName = "pp_ANvst_s200.0_pp2pp_2009_toterr";
 
 
    //TGraphErrors *grAN = new TGraphErrors(6, Data_t, DataAN, Err_t, DataErr);
@@ -109,9 +116,10 @@ void plotAN()
    frame1->Draw();
 
    funcModelAN->SetRange(1E-3, 5E-2);
+   funcModelAN->SetParNames("Re r_{5}", "Im r_{5}");
    //funcModelAN->FixParameter(0, 1);
-   funcModelAN->SetParameter(0, 0); // Imr5
-   funcModelAN->SetParameter(1, 0); // Rer5
+   funcModelAN->SetParameter(0, 0); // Rer5
+   funcModelAN->SetParameter(1, 0); // Imr5
    //funcModelAN->FixParameter(3, 0); // Imr2
    //funcModelAN->FixParameter(4, 0); // Rer2
    funcModelAN->SetLineColor(3);
@@ -127,10 +135,10 @@ void plotAN()
 		corrMatrix.Print();
    }
 
-   double Imr5     = funcModelAN->GetParameter(0);
-   double Imr5_err = funcModelAN->GetParError(0);
-   double Rer5     = funcModelAN->GetParameter(1);
-   double Rer5_err = funcModelAN->GetParError(1);
+   double Rer5     = funcModelAN->GetParameter(0);
+   double Rer5_err = funcModelAN->GetParError(0);
+   double Imr5     = funcModelAN->GetParameter(1);
+   double Imr5_err = funcModelAN->GetParError(1);
 
    TVector2 xy1(Rer5_err, 0);
    TVector2 xy2(0, Imr5_err);
@@ -205,8 +213,8 @@ void plotAN()
    double cRer5[1], cImr5[1];
    double cRer5_err[1], cImr5_err[1];
 
-   cRer5[0]     = funcModelAN->GetParameter(1);
-   cImr5[0]     = funcModelAN->GetParameter(0);
+   cRer5[0]     = funcModelAN->GetParameter(0);
+   cImr5[0]     = funcModelAN->GetParameter(1);
    cRer5_err[0] = 0; //fitTheoAn2->GetParError(2);
    cImr5_err[0] = 0; //fitTheoAn2->GetParError(1);
 
@@ -234,16 +242,19 @@ void plotAN()
    //int InsetMax = 0.02;
 
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.2, 100, -0.4, 0.4); //E704
-   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15); // H-jet, 24 GeV
-   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.05, 0.05, 100, -0.07, 0.07); // H-jet: 100 GeV, 255 GeV, pp2pp: 2009
-   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.15, 0.15, 100, -2, 2); //pp2pp 2003 
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.4, 100, -0.4, 0.2);       // H-jet, 24 GeV  like in paper
+   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15);   // H-jet, 24 GeV
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.05, 0.05, 100, -0.07, 0.07);   // H-jet: 100 GeV, 255 GeV, pp2pp: 2009
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.04, 0.04, 100, -0.12, 0.08);   // H-jet: 100 GeV
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.15, 100, -3, 2);         //pp2pp 2003 
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.009, 0.009, 100, -0.07, 0.07); //pp2pp 2009  like in paper
 
    //frame2->GetXaxis()->SetLabelSize(0.06);
    //frame2->GetXaxis()->SetTitleSize(0.06);
    //frame2->GetYaxis()->SetLabelSize(0.06);
    //frame2->GetYaxis()->SetTitleSize(0.06);
-   frame2->GetXaxis()->SetTitle("Re r5");
-   frame2->GetYaxis()->SetTitle("Im r5");
+   frame2->GetXaxis()->SetTitle("Re r_{5}");
+   frame2->GetYaxis()->SetTitle("Im r_{5}");
    //frame2->GetYaxis()->SetTitleOffset(1.5);
    //frame2->GetXaxis()->SetTitleOffset(1.2);
    //frame2->GetYaxis()->SetLabelOffset(0.02);
@@ -260,7 +271,7 @@ void plotAN()
    gMinuit->SetErrorDef(1);// 1sigma
 
    //get first contour for Re_r5(par2) versus Im_r5(par1)
-   TGraph *gr12_1 = (TGraph*) gMinuit->Contour(300, 1, 0); //fineness, param1(Rer5), param2(Imr5)
+   TGraph *gr12_1 = (TGraph*) gMinuit->Contour(300, 0, 1); //fineness, param1(Rer5), param2(Imr5)
 
    gr12_1->SetLineColor(4);
    gr12_1->SetFillColor(7);
@@ -330,25 +341,25 @@ void plotAN()
 
    //Get contour for ERRDEF=2
    gMinuit->SetErrorDef(4); //2sigma
-   TGraph *gr12_2 = (TGraph*) gMinuit->Contour(300, 1, 0);
+   TGraph *gr12_2 = (TGraph*) gMinuit->Contour(300, 0, 1);
    gr12_2->Draw("l");
 
    //Get contour for ERRDEF=3
    gMinuit->SetErrorDef(9); //3sigma
-   TGraph *gr12_3 = (TGraph*) gMinuit->Contour(300, 1, 0);
+   TGraph *gr12_3 = (TGraph*) gMinuit->Contour(300, 0, 1);
    gr12_3->SetLineColor(1);
    gr12_3->Draw("l");
 
    gr_r5->Draw("P");
 
    //TLine *lx = new TLine(-0.04, 0.0, 0.04, 0.);//JET-sigma1
-   TLine *lx = new TLine(-0.2, 0, 0.2, 0.);
+   TLine *lx = new TLine(frame2->GetXaxis()->GetXmin(), 0, frame2->GetXaxis()->GetXmax(), 0.);
    lx->SetLineColor(14);
    lx->SetLineStyle(1);
    lx->Draw("same");
 
    //TLine *ly = new TLine(0., -0.06, 0.0, 0.02);//JET-sigma1
-   TLine *ly = new TLine(0., -0.4, 0.0, 0.2);
+   TLine *ly = new TLine(0, frame2->GetYaxis()->GetXmin(), 0, frame2->GetYaxis()->GetXmax());
    ly->SetLineColor(14);
    ly->SetLineStyle(1);
    ly->Draw("same");
@@ -401,8 +412,8 @@ Double_t modelAN(Double_t *x, Double_t *par)
 { //{{{
    double minus_t = x[0];
 
-   double Imr5 = par[0];
-   double Rer5 = par[1];
+   double Rer5 = par[0];
+   double Imr5 = par[1];
    //double Imr2 = par[3];
    //double Rer2 = par[4];
 
@@ -411,16 +422,20 @@ Double_t modelAN(Double_t *x, Double_t *par)
    // sqrt(s) = 6.8 GeV, 24 GeV beam
    //double B          = 11;
    //double rho        = -0.245;             // at sqrt(s) = 6.8 GeV, 24 GeV beam
+   ////double rho        = -0.25;             // at sqrt(s) = 6.8 GeV, 24 GeV beam - older
    //double sigma_totP = 38.73;              // mb
+   ////double sigma_totP = 38.4;              // mb - older
 
    // sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target
    double B          = 12;
    double rho        = -0.0835;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target
+   //double rho        = -0.08;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target - older
    double sigma_totP = 38.477;              // mb
+   //double sigma_totP = 38.4;              // mb - older
 
    // sqrt(s) = 19.418 GeV, 200 GeV beam, E704 FNAL
    // These data have to be checked!!!
-   //double B          = 12; ????
+   //double B          = 12; //????
    //double rho        = -0.0286;
    //double sigma_totP = 38.977;
 
@@ -449,13 +464,12 @@ Double_t modelAN(Double_t *x, Double_t *par)
 
    //double tc    = -8 * TMath::Pi() * ALPHA / (sigma_totP * sqrt(1 + rho * rho));
    double delta = ALPHA*TMath::Log( 2./ minus_t / (B + 8./Lambda2) ) - ALPHA*gamma ;
+   //double delta = 0.02;
    double tc    = -8 * TMath::Pi() * ALPHA / sigma_totP ;
    double tt    = -1 * tc / minus_t;
    double denom = tt * tt - 2 * (rho + delta) * tt + (1 + rho * rho);     // * (1 + beta * beta);
    //double nom = tt * (kappa * (1 - delta * rho + Imr2 - delta * Rer2) - 2 * (Imr5 - delta * Rer5)) - 2 * (1 + Imr2) * Rer5 + 2 * (rho + Rer2) * Imr5;
    double nom   = tt * (kappa * (1 - delta * rho) + 2 * (delta * Rer5 - Imr5)) - 2 * (Rer5 - rho * Imr5);
 
-   double AN = TMath::Sqrt(minus_t) * nom / MASS_PROTON / denom;
-
-   return AN;
+   return TMath::Sqrt(minus_t) * nom / MASS_PROTON / denom;
 } //}}}

@@ -17,5 +17,6 @@
    gSystem->Load("libcnipol.so");
    gSystem->Load("libcniana.so");
 
-   gROOT->LoadMacro("plotPolarFromFile.C+");
+   //gROOT->LoadMacro("plotPolarFromFile.C+");
+   gROOT->LoadMacro("plotAN.C+");
 }

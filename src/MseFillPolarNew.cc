@@ -84,7 +84,7 @@ void MseFillPolarNewX::PrintAsPhp(FILE *f) const
 void MseFillPolarNewX::SetValues(const AnaFillResult &afr)
 { //{{{
    fill        = afr.GetFillId();
-   start_time  = mysqlpp::DateTime(afr.GetStartTime());
+   start_time  = mysqlpp::DateTime(afr.GetLumiOnTime());
    type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
 } //}}}

@@ -44,9 +44,11 @@ AnaFillResult::~AnaFillResult() { }
 
 
 /** */
-time_t AnaFillResult::GetStartTime() const   { return fStartTime; }
-time_t AnaFillResult::GetLumiOnTime()  { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : -1; }
-time_t AnaFillResult::GetLumiOffTime() { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : -1; }
+time_t AnaFillResult::GetStartTime() const { return fStartTime; }
+time_t AnaFillResult::GetLumiOnRelTime() const   { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : -1; }
+time_t AnaFillResult::GetLumiOffRelTime() const  { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : -1; }
+time_t AnaFillResult::GetLumiOnTime() const      { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  : 0; }
+time_t AnaFillResult::GetLumiOffTime() const     { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff : 0; }
 
 
 /** */
@@ -999,7 +1001,7 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
       denom += intens;
 
       // assume no correlation between the polarization slope (par1) and norm (par0)
-      polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnTime())*(time - GetLumiOnTime())/3600/3600 + polarNormErr*polarNormErr);
+      polarErr = sqrt( polarSlopeErr*polarSlopeErr*(time - GetLumiOnRelTime())*(time - GetLumiOnRelTime())/3600/3600 + polarNormErr*polarNormErr);
       numerErr += polarErr*intens;
       denomErr += intens;
    }
@@ -1034,8 +1036,8 @@ ValErrPair AnaFillResult::CalcAvrgPolarUnweighted(EPolarimeterId polId)
 
       // Exclude points only if the lumi/phys period is defined && > 600 sec
       // Otherwise include all available measurements in the average
-      if ( abs(GetLumiOffTime() - GetLumiOnTime()) > 600 &&
-           (time < GetLumiOnTime() || time > GetLumiOffTime()) ) continue;
+      if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
+           (time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
 
       polarErr = grPCPolar->GetErrorY(iPoint);
 
@@ -1108,8 +1110,8 @@ ValErrPair AnaFillResult::CalcAvrgProfRUnweighted(EPolarimeterId polId, ETargetO
 
       // Exclude points only if the lumi/phys period is defined && > 600 sec
       // Otherwise include all available measurements in the average
-      if ( abs(GetLumiOffTime() - GetLumiOnTime()) > 600 &&
-           (time < GetLumiOnTime() || time > GetLumiOffTime()) ) continue;
+      if ( abs(GetLumiOffRelTime() - GetLumiOnRelTime()) > 600 &&
+           (time < GetLumiOnRelTime() || time > GetLumiOffRelTime()) ) continue;
 
       Double_t profRErr = grPCProfR->GetErrorY(iPoint);
 
@@ -1403,10 +1405,10 @@ void AnaFillResult::FitPolarGraphs()
 
       grPCPolar->Apply(dummyScale);
 
-      //Info("FitPolarGraphs", "Using range %d - %d", GetLumiOnTime(), GetLumiOffTime());
+      //Info("FitPolarGraphs", "Using range %d - %d", GetLumiOnRelTime(), GetLumiOffRelTime());
 
       stringstream ssFormula("");
-      ssFormula << "[0] + [1]*(x - (" << GetLumiOnTime() << ") )/3600.";
+      ssFormula << "[0] + [1]*(x - (" << GetLumiOnRelTime() << ") )/3600.";
 
       TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
       fitFunc->SetParNames("P_{0}, %", "Decay, %/h");
@@ -1414,9 +1416,9 @@ void AnaFillResult::FitPolarGraphs()
       Double_t xmin, ymin, xmax, ymax;
       grPCPolar->ComputeRange(xmin, ymin, xmax, ymax);
 
-      if ( GetLumiOffTime() > GetLumiOnTime() )
+      if ( GetLumiOffRelTime() > GetLumiOnRelTime() )
       {
-         TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnTime(), GetLumiOffTime());
+         TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnRelTime(), GetLumiOffRelTime());
 
          if (tmpGraph->GetN() >= 1) {
             tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
@@ -1424,8 +1426,8 @@ void AnaFillResult::FitPolarGraphs()
             if (fabs(xmax - xmin) < 3600)
                fitFunc->FixParameter(1, 0);
 
-            xmin = GetLumiOnTime();
-            xmax = GetLumiOffTime();
+            xmin = GetLumiOnRelTime();
+            xmax = GetLumiOffRelTime();
          } else { // go back to original limits
             if (fabs(xmax - xmin) < 3600)
                fitFunc->FixParameter(1, 0);
@@ -1457,12 +1459,12 @@ void AnaFillResult::FitPolarGraphs()
 
          if (!grPCPolarR) continue;
          
-         TGraph *tmpGraph = utils::SubGraph(grPCPolarR, GetLumiOnTime(), GetLumiOffTime());
+         TGraph *tmpGraph = utils::SubGraph(grPCPolarR, GetLumiOnRelTime(), GetLumiOffRelTime());
 
          if (tmpGraph->GetN() <= 0) continue; // skip if empty graph
 
          stringstream ssFormula("");
-         ssFormula << "[0] + [1]*(x - (" << GetLumiOnTime() << ") )/3600.";
+         ssFormula << "[0] + [1]*(x - (" << GetLumiOnRelTime() << ") )/3600.";
 
          TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
          fitFunc->SetParNames("R_{0}, %", "Slope/h");
