@@ -1585,9 +1585,9 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          TH1F* hPolarRatioVsFill_ = (TH1F*) oc_ring->o["hPolarRatioVsFill_" + sRingId + "_"  + sBeamE];
          hPolarRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
 
-         // 100% correlation between U and D is a more conservative assumption
-         utils::Divide(hPolarU, hPolarD, 1, hPolarRatioVsFill_);
-         //utils::Divide(hPolarU, hPolarD, 0, hPolarRatioVsFill_);
+         // 100% correlation between U and D is a more conservative assumption ...ah, not really a good idea
+         //utils::Divide(hPolarU, hPolarD, 1, hPolarRatioVsFill_);
+         utils::Divide(hPolarU, hPolarD, 0, hPolarRatioVsFill_);
 
          //hPolarRatioVsFill_->Fit("pol0", "W");
          //hPolarRatioVsFill_->Fit("pol0", "+");

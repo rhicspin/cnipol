@@ -197,6 +197,10 @@ int main(int argc, char *argv[])
       gHIn->d["asym"] = new CnipolAsymHists();
       gHIn->ReadFromDir();
 
+      // Save plots
+      //TCanvas canvas("canvas", "canvas", 1200, 600);
+      //gHIn->SaveAllAs(canvas, "^.*$", ("./tmp_images/" + gMM->fMeasInfo->GetRunName()).c_str());
+
       //DrawObjContainer *gHIn = 0;
 
       // To calculate normalization factors for p-Carbon we need to save all

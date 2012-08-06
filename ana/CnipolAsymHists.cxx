@@ -80,7 +80,8 @@ void CnipolAsymHists::BookHists()
    shName = "hDetVsBunchId";
    o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    ((TH1*) o[shName])->SetTitle("; Bunch Id; Detector Id;");
-   ((TH1*) o[shName])->SetOption("colz NOIMG GRIDX");
+   //((TH1*) o[shName])->SetOption("colz NOIMG GRIDX");
+   ((TH1*) o[shName])->SetOption("colz GRIDX");
 
    // Detector Id vs delim
    shName = "hDetVsDelim";
@@ -227,7 +228,7 @@ void CnipolAsymHists::BookHists()
       shName = "hDetVsBunchId_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_DETECTORS, 0.5, N_DETECTORS+0.5);
       ((TH1*) o[shName])->SetTitle("; Bunch Id; Detector Id;");
-      ((TH1*) o[shName])->SetOption("colz NOIMG");
+      ((TH1*) o[shName])->SetOption("colz");
 
       // Detector Id vs energy
       shName = "hDetVsKinEnergyA_" + sSS;
