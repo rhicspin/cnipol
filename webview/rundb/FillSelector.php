@@ -9,7 +9,7 @@ class FillSelector {
    var $sqlWhere;
    var $sqlOrderBy = "";
 
-   static $queryVarNames  = array("rp", "fn", "ft", "be",   "srtn", "srtd");
+   static $queryVarNames  = array("rp", "fn", "ft", "be", "mode",   "srtn", "srtd");
 
 
    function FillSelector()
@@ -93,7 +93,7 @@ class FillSelector {
 
    function PrintForm()
    { //{{{
-      global $RUN_PERIOD, $FILLTYPE, $BEAM_ENERGY;
+      global $RUN_PERIOD, $FILLTYPE, $BEAM_ENERGY, $MODE;
 
       // Create a table with the necessary header informations
       //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formFillSelector'>\n";
@@ -104,12 +104,12 @@ class FillSelector {
       echo "
 
             <tr>
-              <td colspan=2 class=padding2><b>Run period:</b>\n";
+              <td colspan=3 class=padding2><b>Run period:</b>\n";
 
       $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
 
       echo "<tr>
-              <td colspan=2 class=padding2><b>Fill:</b>
+              <td colspan=3 class=padding2><b>Fill:</b>
               <input type=text name=fn value='{$_GET['fn']}'>
               &nbsp;&nbsp;&nbsp;
               Use \"%\" to match any number of characters, use \"_\" to match any single character in fill id
@@ -124,8 +124,12 @@ class FillSelector {
 
       $this->HtmlSelectField($BEAM_ENERGY, "be");
 
+      echo "  <td class=\"padding2\"><b>Table format:</b>\n";
+
+      $this->HtmlSelectField($MODE, "mode", 1);
+
       echo "<tr>\n";
-      echo "   <td colspan=2 class=\"align_cm padding2\">\n";
+      echo "   <td colspan=3 class=\"align_cm padding2\">\n";
       echo "   <p><input type='submit' name=sb value='Select'>\n";
       echo "</table>\n";
       echo "</div>\n";

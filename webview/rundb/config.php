@@ -28,6 +28,7 @@ $BEAM_ENERGY       = array("24" => "24", "100" => "100", "250" => "250", "255" =
 $BEAM_ENERGY_INJ   = 24;
 $TARGET_ORIENT     = array("H" => "H", "V" => "V");
 $TARGET_ID         = array_combine(range(1, 6), range(1, 6));
+$MODE              = array("1" => "user", "11" => "user (csv)", "2" => "expert");
 
 
 // Normalization factors

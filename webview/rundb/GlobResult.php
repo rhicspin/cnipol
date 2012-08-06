@@ -7,13 +7,14 @@ class GlobResult
    var $fFillResults     = array();
    var $fBeamEnergies    = array();
    var $fAvrgPCPolars    = array();
-   var $fAvrgPCnHJPolars = array();
+   var $fAvrgPCnHJPolars = array(); // average of PC measurements given HJ measurement is available
    var $fAvrgHJPolars    = array();
    var $fAvrgHJnPCPolars = array();
    var $fNormHJ2PCPolars = array();
    var $fAvrgBeamProfRs  = array();
 
-   var $fMissedBeamProfRs = array();
+   var $fMissingBeamProfRs      = array();
+   var $fMissingBeamPolarSlopes = array();
 
 
    /** */
@@ -34,7 +35,7 @@ class GlobResult
          foreach (range(0, 1) as $tgtOrient)
          {
             $this->fAvrgBeamProfRs[$ringId][$tgtOrient]   = new pair(0, -1);
-            //$this->fMissedBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
+            //$this->fMissingBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
          }
       }
    } //}}}
@@ -111,17 +112,19 @@ class GlobResult
          foreach (range(0, 1) as $tgtOrient)
          {
             //$ve = new pair(calcWeigtedAvrgErr($beamProfRSet[$ringId][$tgtOrient]), calcWeigtedStdDev( $beamProfRSet[$ringId][$tgtOrient]));
-            //$this->fMissedBeamProfRs[$ringId][$tgtOrient] = $ve;
+            //$this->fMissingBeamProfRs[$ringId][$tgtOrient] = $ve;
 
             $beamProfRSetByRingByTgt = $beamProfRSet[$ringId][$tgtOrient];
 
             foreach ($beamProfRSetByRingByTgt as $beamEnergy => $beamProfRSetByBeamEnergy)
             {
-               $this->fMissedBeamProfRs[$ringId][$tgtOrient][$beamEnergy]->first  = calcWeigtedAvrgErr($beamProfRSetByBeamEnergy)->first;
-               $this->fMissedBeamProfRs[$ringId][$tgtOrient][$beamEnergy]->second = calcWeigtedStdDev( $beamProfRSetByBeamEnergy)->first;
+               $v = calcWeigtedAvrgErr($beamProfRSetByBeamEnergy)->first;
+               $e = calcWeigtedStdDev( $beamProfRSetByBeamEnergy)->first;
+
+               $this->fMissingBeamProfRs[$ringId][$tgtOrient][$beamEnergy] = new pair($v, $e);
 
                //print "<pre>\n";
-               //print_r($this->fMissedBeamProfRs[$ringId][$tgtOrient]);
+               //print_r($this->fMissingBeamProfRs[$ringId][$tgtOrient]);
                //print "</pre>\n";
             }
          }
@@ -129,14 +132,48 @@ class GlobResult
    } //}}}
 
 
-   /** */
+   /**
+    * Another loop over the fills. This time the normalization is available and
+    * we can use it.
+    */
    function CalcDependencies()
    { //{{{
+
+      $beamPolarSlopeSet = array(); //[ringId][beamEnergy]
+
       foreach ( $this->fFillResults as $fillResult)
       {
-         $fillResult->CalcBeamPolar(true);
+         $fillResult->CalcBeamPolar(true);      // normalize Pavrg, P0, Pslope and calculate the averate Pavrg, P0, Pslope per beam
          //$fillResult->CalcBeamPolar(false);
          $fillResult->CalcPolarCollScale();
+
+         $beamEnergy = $fillResult->fBeamEnergy;
+
+         // Save all available measurements of Polar slope to a set
+         foreach (range(1, 2) as $ringId)
+         {
+            if ($fillResult->fCollBeamPolarSlopes[$ringId]->second > 0) 
+               $beamPolarSlopeSet[$ringId][$beamEnergy][] = $fillResult->fCollBeamPolarSlopes[$ringId];
+         }
+      }
+
+      //print "<pre>\n";
+      //print_r($beamPolarSlopeSet);
+      //print "</pre>\n";
+
+      // Calculate the mean and the standard deviation from the available polar slopes
+      // Assign and same the missing polar slopes
+      foreach (range(1, 2) as $ringId)
+      {
+         $beamPolarSlopeSetByRing = $beamPolarSlopeSet[$ringId];
+
+         foreach ($beamPolarSlopeSetByRing as $beamEnergy => $beamPolarSlopeSetByBeamEnergy)
+         {
+            $v = calcWeigtedAvrgErr($beamPolarSlopeSetByBeamEnergy)->first;
+            $e = calcWeigtedStdDev( $beamPolarSlopeSetByBeamEnergy)->first;
+
+            $this->fMissingBeamPolarSlopes[$ringId][$beamEnergy] = new pair($v, $e);
+         }
       }
    } //}}}
 
