@@ -42,23 +42,25 @@ CNIANA_DICT_HDR = $(CNIANA_DICT_SRC:.cxx=.h)
 CNIANA_DICT_OBJ = $(CNIANA_DICT_SRC:.cxx=.o)
 CNIANA_DICT     = $(CNIANA_DICT_SRC) $(CNIANA_DICT_HDR) $(CNIANA_DICT_OBJ)
 
-BINARIES = asym masym RunDBReader dLayerChecker KinFunc AsymPlot
+BINARIES = asym masym RunDBReader dLayerChecker KinFunc AsymPlot plotAN
 BINARY_OBJS = $(BINARIES:=.o)
+
+#BINARIES2 = plotAN 
+#BINARY_OBJS2 = $(BINARIES2:=.o)
 
 HDRS = $(filter-out LinkDef%, $(wildcard *.h))
 SRCS = $(wildcard *.cc)
 OBJS = $(SRCS:.cc=.o) $(CNIANA_DICT_OBJ)
 
-#CNIPOL_LIB_OBJS = $(filter-out AsymHbook.o $(BINARY_OBJS), $(OBJS)) Asym.o
 CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) hb_lib.o
-#CNIPOL_LIB_OBJS = $(OBJS) hb_lib.o
+
+.PHONY: all lib bin install
 
 all: lib install
 
-lib: $(OBJS) $(CNIPOL_LIB)
-#	echo $(OBJS)
-#	@echo "SRCS: $(SRCS)"
-#	@echo "CNIPOL_LIB_OBJS: $(CNIPOL_LIB_OBJS)"
+lib: $(BINARY_OBJS) $(CNIPOL_LIB)
+
+bin: $(BINARIES)
 
 $(CNIANA_DICT_SRC): AnaMeasResult.h AnaFillResult.h AnaGlobResult.h MeasInfo.h LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
@@ -71,29 +73,12 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 	$(CC) $(SOFLAGS) $(CNIPOL_LIB_OBJS) $(ROOTLIBS) $(LIB_PATHS) $(LIBS) $(FLIB) -o $(CNIPOL_LIB)
 	@echo "$@ done"
 
-asym: $(CNIPOL_LIB) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) asym.o -o $@
+.SECONDEXPANSION:
+$(BINARIES): $$@.o
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) $@.o -o $@
 	@echo 
 	@echo "$(SVN_ASYM_VERSION)"
 	@echo 
-
-masym: $(CNIPOL_LIB) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) masym.o -o $@
-	@echo 
-	@echo "$(SVN_ASYM_VERSION)"
-	@echo 
-
-RunDBReader: $(CNIPOL_LIB) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIB) RunDBReader.o -o $@
-
-AsymPlot: $(CNIPOL_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) AsymPlot.o -o $@
-
-dLayerChecker: $(CNIPOL_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) dLayerChecker.o -o $@
-
-KinFunc: $(CNIPOL_LIB) $(CNIANA_LIB)
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(ROOTLIB) KinFunc.o -o $@
 
 $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/*.h)
 	make -C $(CNIPOL_DIR)/ana
@@ -120,6 +105,7 @@ clean: lib.clean
 	rm -f $(CNIANA_DICT)
 
 bin.clean: lib.clean
+	rm -f $(BINARIES)
 	cd $(CNIPOL_DIR)/bin/; rm -f $(BINARIES)
 
 lib.clean: 
