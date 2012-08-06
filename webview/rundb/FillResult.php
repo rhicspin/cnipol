@@ -1,11 +1,13 @@
 <?php
 
 include_once("config.php");
+include_once("utils.php"); 
 
 class FillResult
 {
    var $fGlobResult;
    var $fFillId;
+   var $fStartTime;
    var $fType;
    var $fBeamEnergy;
 
@@ -63,6 +65,7 @@ class FillResult
    /** */
    function AddMeas($row)
    { //{{{
+      $this->fStartTime  = strtotime($row['start_time']);
       $this->fType       = $row['type'];
       $this->fBeamEnergy = $row['beam_energy'];
 
@@ -116,7 +119,7 @@ class FillResult
 
          $norm = $doNorm ? $this->fGlobResult->fNormHJ2PCPolars[$polId]->first : 1.;
 
-         $pcPolar = clone $this->fPCPolars[$polId];
+         $pcPolar = $this->fPCPolars[$polId]->ClonePair();
 
          if ($pcPolar->second >= 0) {
             $pcPolar->first  *= $norm;
@@ -125,7 +128,7 @@ class FillResult
             $this->fBeamPolars[$ringId] = calcWeigtedAvrgErrPairs($this->fBeamPolars[$ringId], $pcPolar);
          }
 
-         $pcPolarP0 = clone $this->fPCPolarP0s[$polId];
+         $pcPolarP0 = $this->fPCPolarP0s[$polId]->ClonePair();
 
          if ($pcPolarP0->second >= 0) {
             $pcPolarP0->first  *= $norm;
@@ -134,7 +137,7 @@ class FillResult
             $this->fBeamPolarP0s[$ringId] = calcWeigtedAvrgErrPairs($this->fBeamPolarP0s[$ringId], $pcPolarP0);
          }
 
-         $pcPolarSlope = clone $this->fPCPolarSlopes[$polId];
+         $pcPolarSlope = $this->fPCPolarSlopes[$polId]->ClonePair();
 
          if ($pcPolarSlope->second >= 0)
          {
@@ -169,7 +172,7 @@ class FillResult
             $beamProfR[$tgtOrient] = $this->fBeamProfRs[$ringId][$tgtOrient];
 
             if ($beamProfR[$tgtOrient]->second < 0)
-               $beamProfR[$tgtOrient] = $this->fGlobResult->fMissedBeamProfRs[$ringId][$tgtOrient][$this->fBeamEnergy];
+               $beamProfR[$tgtOrient] = $this->fGlobResult->fMissingBeamProfRs[$ringId][$tgtOrient][$this->fBeamEnergy];
 
             //$avrgProfRs[$tgtOrient] = calcWeigtedAvrgErrPairs($avrgProfRs[$tgtOrient], $beamProfR);
          }
@@ -203,6 +206,15 @@ class FillResult
       }
    } //}}}
 
+
+   /** */
+   function FormatAsCSV()
+   { //{{{
+      return sprintf("%10d %10d %12d %16s %16s %16s %16s %16s %16s\n", 
+             $this->fFillId, $this->fBeamEnergy, $this->fStartTime,
+             polarPairToString($this->fCollBeamPolars[1], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarP0s[1], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarSlopes[1], "", "%5.2f", false),
+             polarPairToString($this->fCollBeamPolars[2], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarP0s[2], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarSlopes[2], "", "%5.2f", false) );
+   } //}}}
 }
 
 ?>

@@ -31,11 +31,8 @@ if ( isset($_GET['fillid']) && isset($_GET['rp']) )
    exit;
 }
 
-if ( isset($_GET['test']) )
-{
-include("fills_index_test.html");
-} else {
+$gMode = isset($_GET['mode']) ? $_GET['mode'] : 1;
+
 include("fills_index.html");
-}
 
 ?>

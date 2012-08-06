@@ -5,10 +5,22 @@
 class pair {
    var $first;
    var $second;
+   var $val;
+   var $err;
 
-   function pair($f=0, $s=0) {
+   function __construct($f=0, $s=0) {
       $this->first  = $f;
       $this->second = $s;
+
+      $this->val =& $this->first;
+      $this->err =& $this->second;
+   }
+
+   function ClonePair()
+   {
+      return unserialize(serialize($this));
+      //$this->val =& unserialize(serialize($this))->first;
+      //$this->err =& unserialize(serialize($this))->second;
    }
 }
 
@@ -111,7 +123,7 @@ function array_sort(&$array) {
 
 /** */
 function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
-{
+{ //{{{
    $csv_terminated = "\n";
    $csv_separator = ",";
    $csv_enclosed = '"';
@@ -171,7 +183,72 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
    header("Content-Disposition: attachment; filename=$filename");
    echo $out;
    exit;
-}
+} //}}}
+
+
+/** */
+function exportMysqlToCsv2($table, $sqlWhere="", $filename='rundb.csv')
+{ //{{{
+   $csv_terminated = "\n";
+   $csv_separator = ",";
+   $csv_enclosed = '"';
+   $csv_escaped = "\\";
+   $sql_query = "SELECT * FROM $table WHERE $sqlWhere";
+
+   // Gets the data from the database
+   $result = mysql_query($sql_query);
+   $fields_cnt = mysql_num_fields($result);
+
+   $schema_insert = '';
+
+   for ($i = 0; $i < $fields_cnt; $i++)
+   {
+      $l = $csv_enclosed . str_replace($csv_enclosed, $csv_escaped . $csv_enclosed,
+          stripslashes(mysql_field_name($result, $i))) . $csv_enclosed;
+      $schema_insert .= $l;
+      $schema_insert .= $csv_separator;
+   }
+
+   $out = trim(substr($schema_insert, 0, -1));
+   //$out .= "\n".$sql_query."\nttt\n";
+   $out .= $csv_terminated;
+
+   // Format the data
+   while ($row = mysql_fetch_array($result))
+   {
+       $schema_insert = '';
+       for ($j = 0; $j < $fields_cnt; $j++) {
+           if ($row[$j] == '0' || $row[$j] != '') {
+
+               if ($csv_enclosed == '') {
+                   $schema_insert .= $row[$j];
+               } else {
+                   $schema_insert .= $csv_enclosed .
+                      str_replace($csv_enclosed, $csv_escaped . $csv_enclosed, $row[$j]) . $csv_enclosed;
+               }
+           } else {
+               $schema_insert .= '';
+           }
+
+           if ($j < $fields_cnt - 1) {
+               $schema_insert .= $csv_separator;
+           }
+       }
+
+       $out .= $schema_insert;
+       $out .= $csv_terminated;
+   }
+
+   header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+   header("Content-Length: " . strlen($out));
+   // Output to browser with appropriate mime type, you choose ;)
+   header("Content-type: text/x-csv");
+   //header("Content-type: text/csv");
+   //header("Content-type: application/csv");
+   header("Content-Disposition: attachment; filename=$filename");
+   echo $out;
+   exit;
+} //}}}
 
 
 /** */
@@ -187,13 +264,18 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
 
 
 /** */
-function pairToString($valerr=null, $classes="", $format="%3.2f")
+function pairToString($valerr=null, $classes="", $format="%3.2f", $isHtml=true)
 {
-   if ($valerr == null || $valerr->second < 0) return "&nbsp;";
+   if ($valerr == null || $valerr->second < 0) return $isHtml ? "&nbsp;" : "";
 
-   $str = sprintf("$format&nbsp;&plusmn;&nbsp;$format", $valerr->first, $valerr->second);
+   $str = "";
+
+   if ($isHtml)
+      $str = sprintf("$format&nbsp;&plusmn;&nbsp;$format", $valerr->first, $valerr->second);
+   else
+      $str = sprintf("$format +- $format", $valerr->first, $valerr->second);
   
-   if (!empty($classes))
+   if (!empty($classes) && $isHtml)
      $str = "<span class='$classes'>$str</span>";
    
    return $str;
@@ -207,16 +289,14 @@ function pairToString($valerr=null, $classes="", $format="%3.2f")
 
 
 /** */
-function polarPairToString($valerr=null)
+function polarPairToString($valerr=null, $classes="", $format="%3.2f", $isHtml=true)
 {
-   //if ($valerr == null || $valerr->second < 0) return "&nbsp;";
+   $ve_scaled = $valerr->ClonePair();
 
-   $ve_scaled = clone $valerr;
+   $ve_scaled->val *= 100.;
+   $ve_scaled->err *= 100.;
 
-   $ve_scaled->first  *= 100.;
-   $ve_scaled->second *= 100.;
-
-   return pairToString($ve_scaled);
+   return pairToString($ve_scaled, $classes, $format, $isHtml);
 }
 
 
@@ -383,8 +463,8 @@ function calcPolarCollision($polar=null, $scaleColl=null)
 { //{{{
    $result = new pair(0, -1);
 
-   if ($polar == null || $scaleColl == null) return clone $polar;
-   if ($polar->second < 0 || $scaleColl->second < 0) return clone $polar;
+   if ($polar == null || $scaleColl == null) return $polar->ClonePair();
+   if ($polar->second < 0 || $scaleColl->second < 0) return $polar->ClonePair();
 
    $result->first = $polar->first * $scaleColl->first;
 

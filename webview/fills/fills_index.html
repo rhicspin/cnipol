@@ -212,13 +212,21 @@ unset($e);
 
 <?php
 
-$header = "
+$header = "";
+
+if ($gMode == 11)
+   $header = "<pre>".sprintf("%10s %10s %12s %16s %16s %16s %16s %16s %16s\n", "", "", "", "Blue", "Blue", "Blue", "Yellow", "Yellow", "Yellow")
+                    .sprintf("%10s %10s %12s %16s %16s %16s %16s %16s %16s\n", "Fill", "Beam E", "Start T", "P Avrg.", "P_0", "dP/dT", "P Avrg.", "P_0", "dP/dT");
+else if ($gMode == 2)
+{
+   $header = "
 <tr>
    <th rowspan=2>Fill
 <!--   <th>Selected -->
 
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
+   <th rowspan=2>Start Time
 
    <th class='bluPol' colspan=3>Polarization,&nbsp;%<br>In collisions
    <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>In collisions
@@ -258,6 +266,31 @@ $header = "
    <th class='yelPol'>P_0
    <th class='yelPol'>Slope, %/h
 ";
+} else {
+   $header = "
+<tr>
+   <th rowspan=2>Fill
+<!--   <th>Selected -->
+
+   <th rowspan=2>Type
+   <th rowspan=2>Beam Energy, GeV
+   <th rowspan=2>Start Time
+
+   <th class='bluPol' colspan=3>Polarization,&nbsp;%<br>In collisions
+   <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>In collisions
+
+<tr>
+
+   <th class='bluPol'>Avrg.
+   <th class='bluPol'>P_0
+   <th class='bluPol'>Slope, %/h
+
+   <th class='yelPol'>Avrg.
+   <th class='yelPol'>P_0
+   <th class='yelPol'>Slope, %/h
+";
+}
+
 
 $beamPolarBlus          = array();
 $beamPolarP0Blus        = array();
@@ -288,20 +321,23 @@ $iRow = 0;
 // Final loop over all entries to create table rows
 foreach ($globResult->fFillResults as $fill):
 
-   if ($iRow % 50 == 0)
+   if ($iRow % 50 == 0 && $gMode != 11)
+      print $header;
+   else if ($iRow == 0)
       print $header;
 
-   $strFillId     = $fill->fFillId >= 0 ? $fill->fFillId : "&nbsp;";
-   $strFillType   = $fill->fType >= 0 ? $FILLTYPE[$fill->fType] : "&nbsp;";
-   $strBeamEnergy = $fill->fBeamEnergy >= 0 ? sprintf("%6.0f", $fill->fBeamEnergy) : "&nbsp;";
+   $strFillId                = $fill->fFillId >= 0 ? $fill->fFillId : "&nbsp;";
+   $strStartTime             = $fill->fStartTime > 0 ? date("M d, Y H:i:s D", $fill->fStartTime) : "&nbsp;";
+   $strFillType              = $fill->fType >= 0 ? $FILLTYPE[$fill->fType] : "&nbsp;";
+   $strBeamEnergy            = $fill->fBeamEnergy >= 0 ? sprintf("%6.0f", $fill->fBeamEnergy) : "&nbsp;";
 
-   $hjPolarBlu = $fill->fHJPolars[1];
-   $hjPolarYel = $fill->fHJPolars[2];
+   $hjPolarBlu               = $fill->fHJPolars[1];
+   $hjPolarYel               = $fill->fHJPolars[2];
 
-   $beamProfRHorzBlu = $fill->fBeamProfRs[1][0];
-   $beamProfRVertBlu = $fill->fBeamProfRs[1][1];
-   $beamProfRHorzYel = $fill->fBeamProfRs[2][0];
-   $beamProfRVertYel = $fill->fBeamProfRs[2][1];
+   $beamProfRHorzBlu         = $fill->fBeamProfRs[1][0];
+   $beamProfRVertBlu         = $fill->fBeamProfRs[1][1];
+   $beamProfRHorzYel         = $fill->fBeamProfRs[2][0];
+   $beamProfRVertYel         = $fill->fBeamProfRs[2][1];
 
    $beamPolarBlus[]          = $fill->fBeamPolars[1];
    $beamPolarP0Blus[]        = $fill->fBeamPolarP0s[1];
@@ -323,16 +359,26 @@ foreach ($globResult->fFillResults as $fill):
    // convert to strings
    // now profiles
    $strProfileB_H = $beamProfRHorzBlu->second >= 0 ?
-                    pairToString($beamProfRHorzBlu) : pairToString($globResult->fMissedBeamProfRs[1][0][$fill->fBeamEnergy], "feature");
+                    pairToString($beamProfRHorzBlu) : pairToString($globResult->fMissingBeamProfRs[1][0][$fill->fBeamEnergy], "feature");
 
    $strProfileB_V = $beamProfRVertBlu->second >= 0 ? 
-	                 pairToString($beamProfRVertBlu) : pairToString($globResult->fMissedBeamProfRs[1][1][$fill->fBeamEnergy], "feature");
+	                 pairToString($beamProfRVertBlu) : pairToString($globResult->fMissingBeamProfRs[1][1][$fill->fBeamEnergy], "feature");
 
    $strProfileY_H = $beamProfRHorzYel->second >= 0 ?
-	                 pairToString($beamProfRHorzYel) : pairToString($globResult->fMissedBeamProfRs[2][0][$fill->fBeamEnergy], "feature");
+	                 pairToString($beamProfRHorzYel) : pairToString($globResult->fMissingBeamProfRs[2][0][$fill->fBeamEnergy], "feature");
 
    $strProfileY_V = $beamProfRVertYel->second >= 0 ?
-	                 pairToString($beamProfRVertYel) : pairToString($globResult->fMissedBeamProfRs[2][1][$fill->fBeamEnergy], "feature");
+	                 pairToString($beamProfRVertYel) : pairToString($globResult->fMissingBeamProfRs[2][1][$fill->fBeamEnergy], "feature");
+
+
+   $strCollBeamPolarSlopeBlu = $fill->fCollBeamPolarSlopes[1]->second >= 0 ?
+                               polarPairToString($fill->fCollBeamPolarSlopes[1]) :
+                               polarPairToString($globResult->fMissingBeamPolarSlopes[1][$fill->fBeamEnergy], "feature");
+
+
+if ($gMode == 11):
+   print $fill->FormatAsCSV();
+elseif ($gMode == 2):
 ?>
 
 <tr>
@@ -341,13 +387,14 @@ foreach ($globResult->fFillResults as $fill):
 
    <td class='align_cm'><?=$strFillType?>
    <td class='align_cm'><?=$strBeamEnergy?>
+   <td class='align_cm'><?=$strStartTime?>
 
-   <td class='align_cm bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
-   <td class='align_cm bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>
-   <td class='align_cm bluPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[1])?></b>
-   <td class='align_cm yelPol'><b><?=polarPairToString($fill->fCollBeamPolars[2])?></b>
-   <td class='align_cm yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>
-   <td class='align_cm yelPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[2])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=$strCollBeamPolarSlopeBlu?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolars[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[2])?></b>
 
    <td class='align_cm nowrap'><?=polarPairToString($fill->fBeamPolars[1])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fBeamPolarP0s[1])?>
@@ -372,10 +419,35 @@ foreach ($globResult->fFillResults as $fill):
    <td class='align_cm nowrap'><?=$strProfileY_H?>
 
 <?php
+else:
+?>
+
+<tr>
+   <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$strFillId?>&rp=<?=$_GET['rp']?>"><?=$strFillId?></a>
+   <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$strFillId?>'>-->
+
+   <td class='align_cm'><?=$strFillType?>
+   <td class='align_cm'><?=$strBeamEnergy?>
+   <td class='align_cm'><?=$strStartTime?>
+
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[1])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolars[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[2])?></b>
+
+<?php
+
+endif;
 
    $iRow++;
 
 endforeach;
+
+if ($gMode == 11):
+   print "</pre>\n";
+elseif ($nFills):
 
 // Take care of the averages
 $avrgCollBeamPolarBlu      = calcWeigtedAvrgErr($collBeamPolarBlus);
@@ -402,20 +474,18 @@ $polarY_Coll_RelErr   = $avrgCollBeamPolarYel->first ? $avrgCollBeamPolarYel->se
 $polarBAvrg_RelErr    = $avrgBeamPolarBlu->first ? $avrgBeamPolarBlu->second/$avrgBeamPolarBlu->first*100. : 0;
 $polarYAvrg_RelErr    = $avrgBeamPolarYel->first ? $avrgBeamPolarYel->second/$avrgBeamPolarYel->first*100. : 0;
 
-?>
 
-<?//print $header;?>
+if ($gMode == 2):
 
-<?php
-if ($nFills):
 ?>
 
 <tr>
-   <th colspan=27>&nbsp;<br>&nbsp;
+   <th colspan=28>&nbsp;<br>&nbsp;
 
 <tr>
    <th>Mean
 
+   <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;
 
@@ -462,6 +532,7 @@ if ($nFills):
    <img src=https://wiki.bnl.gov/rhicspin/upload/math/d/6/c/d6cfca0bac999e6cc65487d1a8f8dad7.png>
    <th>&nbsp;
    <th>&nbsp;
+   <th>&nbsp;
 
    <th class='bluPol align_cm'><?=sprintf("%5.2f", $polarB_Coll_RelErr)?>
    <th class='bluPol align_ct'>&nbsp;
@@ -490,6 +561,46 @@ if ($nFills):
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
+
+<?php
+else:
+?>
+
+<tr>
+   <th colspan=10>&nbsp;<br>&nbsp;
+
+<tr>
+   <th>Mean
+
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+   <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarBlu)?>
+   <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarP0Blu)?>
+   <th class='bluPol align_ct'><?=polarPairToString($avrgCollBeamPolarSlopeBlu)?>
+
+   <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarYel)?>
+   <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarP0Yel)?>
+   <th class='yelPol align_ct'><?=polarPairToString($avrgCollBeamPolarSlopeYel)?>
+
+<tr>
+   <th>
+   <img src=https://wiki.bnl.gov/rhicspin/upload/math/d/6/c/d6cfca0bac999e6cc65487d1a8f8dad7.png>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+
+   <th class='bluPol align_cm'><?=sprintf("%5.2f", $polarB_Coll_RelErr)?>
+   <th class='bluPol align_ct'>&nbsp;
+   <th class='bluPol align_ct'>&nbsp;
+   <th class='yelPol align_cm'><?=sprintf("%5.2f", $polarY_Coll_RelErr)?>
+   <th class='yelPol align_ct'>&nbsp;
+   <th class='yelPol align_ct'>&nbsp;
+
+<?php
+endif;
+?>
 
 </table>
 
