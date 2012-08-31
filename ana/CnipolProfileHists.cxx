@@ -369,9 +369,6 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
       //asym    = hAsymVsDelim4Ch_asym->GetBinContent(ib);
       //asymErr = hAsymVsDelim4Ch_asym->GetBinError(ib);
 
-      //Int_t nPoint = grAsymVsIntensProfile->GetN();
-      //grAsymVsIntensProfile->SetPoint( nPoint, intens, asym);
-      //grAsymVsIntensProfile->SetPointError( nPoint, intensErr, asymErr);
       utils::AppendToGraph(grAsymVsIntensProfile, intens, asym, intensErr, asymErr);
 
       hPolarProfile->SetBinContent(ib, asym/gAnaMeasResult->A_N[1]);

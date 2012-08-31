@@ -80,8 +80,8 @@ snns2root: $(SRC_DIR)/snns2root.o
 
 $(CNIANA_DICT_SRC): $(HDRS) $(INC_DIR)/LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
-	@echo rootcint -f $(CNIANA_DICT_SRC) -c -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include $^
-	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include $^
+	@echo rootcint -f $(CNIANA_DICT_SRC) -c -I$(UTILS_INC_DIR) -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include $^
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I$(UTILS_INC_DIR) -I$(INC_DIR) -I$(CNIPOL_DIR)/src -I$(CNIPOL_DIR)/online/include $^
 
 main-%: main-%.$(ObjSuf) $(OBJS)
 	$(LD) $(LDFLAGS) $< $(OBJS) $(LIBS) -o $(BIN_DIR)/$*$(ExeSuf)

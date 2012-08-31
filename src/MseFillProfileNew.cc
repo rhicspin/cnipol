@@ -41,6 +41,7 @@ void MseFillProfileNewX::Init()
    fill            = 0;
    polarimeter_id  = -1;
    target_orient   = -1;
+   target_id       = -1;
    prof_r          = -1;
    prof_r_err      = -1;
    prof_pmax       = -1;
@@ -74,6 +75,7 @@ void MseFillProfileNewX::SetValues(const AnaFillResult &afr, EPolarimeterId polI
    fill           = afr.GetFillId();
    polarimeter_id = polId;
    target_orient  = tgtOrient;
+   target_id      = afr.GetPCTarget(polId).fTargetId;
 
    prof_r     = afr.GetPCProfR(polId, tgtOrient).first;
    prof_r_err = afr.GetPCProfR(polId, tgtOrient).second;

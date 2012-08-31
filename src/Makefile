@@ -64,8 +64,8 @@ bin: $(BINARIES)
 
 $(CNIANA_DICT_SRC): AnaMeasResult.h AnaFillResult.h AnaGlobResult.h MeasInfo.h LinkDef.h
 	@echo "Generating dictionary $(CNIANA_DICT_SRC)..."
-	@echo rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
-	@rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
+	@echo rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(UTILS_INC_DIR) -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
+	@rootcint -f $(CNIANA_DICT_SRC) -c -I. -I$(UTILS_INC_DIR) -I$(CNIPOL_DIR)/online/include -I$(CNIPOL_DIR)/inc $^
 
 #@rootcint -f $(CNIANA_DICT_SRC) -c $(INC_PATHS) $^
 

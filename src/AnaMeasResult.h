@@ -26,9 +26,11 @@ typedef AnaMeasResultMap::const_iterator     AnaMeasResultMapConstIter;
 /** */
 class AnaMeasResult : public TObject
 {
+protected:
+   time_t               fStartTime;             //!
+
 public:
 
-   time_t               fStartTime;             //!
    Float_t              max_rate;
    Float_t              TshiftAve;
    Float_t              wcm_norm_event_rate; 
@@ -77,8 +79,11 @@ public:
    ~AnaMeasResult();
    void PrintAsPhp(FILE *f=stdout) const;
 
+   time_t GetStartTime() const { return fStartTime; }
+   void   SetStartTime(time_t time) { fStartTime = time; }
+
    ValErrPair GetPCPolar() const;
-   ValErrPair GetPCPolarR() const;
+   ValErrPair GetPCProfR() const;
 
    ClassDef(AnaMeasResult, 1)
 };

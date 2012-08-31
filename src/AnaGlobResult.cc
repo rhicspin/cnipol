@@ -31,9 +31,36 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    fBeamEnergies(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
-   fAvrgPolProfRs(), fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
-{
-}
+   fAvrgPCProfRUnWs(), fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
+{ //{{{
+   // Initialize averages with invalid values
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      EPolarimeterId polId  = *iPolId;
+
+      ValErrPair valErrPair(0, -1);
+      fNormJetCarbon2[polId] = valErrPair;
+      fNormProfPolar2[polId] = valErrPair;
+   }
+
+   // ...same thing by target id
+   TargetSetIter iTarget = gRunConfig.fTargets.begin();
+
+   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget)
+   {
+      TargetUId      targetUId = iTarget->fUId;
+      EPolarimeterId polId     = targetUId.fPolId;
+      ETargetOrient  tgtOrient = targetUId.fTargetOrient;
+      //UShort_t       tgtId     = targetUId.fTargetId;
+
+      ValErrPair valErrPair(0, -1);
+
+      fNormJetCarbonByTarget2[targetUId] = valErrPair;
+      fAvrgPCProfRUnWs[polId][tgtOrient] = valErrPair;
+   }
+} //}}}
 
 
 /** */
@@ -48,18 +75,12 @@ void AnaGlobResult::Print(const Option_t* opt) const
    char *l = strstr( opt, "all");
 
    if (l) {
-
       AnaFillResultMapConstIter iFill = fAnaFillResults.begin();
-
-      for ( ; iFill!=fAnaFillResults.end(); ++iFill) {
-
-         printf("\nFill %d:\n", iFill->first);
+      for ( ; iFill!=fAnaFillResults.end(); ++iFill)
          iFill->second.Print();
-      }
    }
 
-   printf("\n");
-   printf("Norm. jet/carbon:\n");
+   printf("\nNorm. jet/carbon:\n");
    printf("    | avrg. of ratio                       |||||| ratio of avrg.                        |\n");
 
    PolId2ValErrMapConstIter iNormJC  = fNormJetCarbon.begin();
@@ -75,8 +96,20 @@ void AnaGlobResult::Print(const Option_t* opt) const
       printf("(%16.14f +/- %16.14f)   \n", iNormJC->second.first,  iNormJC->second.second);
    }
 
-   printf("\n");
-   printf("Syst. jet/carbon:\n");
+   printf("\nNorm. jet/carbon by target:\n");
+
+   TargetSetIter iTarget = gRunConfig.fTargets.begin();
+
+   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget)
+   {
+      TargetUId  targetUId  = iTarget->fUId;
+      ValErrPair valErrPair = fNormJetCarbonByTarget2.find(targetUId)->second;
+
+      iTarget->Print();
+      printf(": %16.14f +/- %16.14f\n", valErrPair.first, valErrPair.second);
+   }
+
+   printf("\nSyst. jet/carbon:\n");
 
    iNormJC2 = fNormJetCarbon2.begin();
 
@@ -119,29 +152,27 @@ void AnaGlobResult::Print(const Option_t* opt) const
       printf("syst prof: %16.14f +/- %16.14f\n", fSystProfPolar.find(polId)->second.first, fSystProfPolar.find(polId)->second.second);
    }
 
-   printf("\n");
+   printf("\nAvrg. polar. profile:\n");
 
-   RingIdSetIter iRingId = gRunConfig.fRings.begin();
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
-   for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
-      string sRingId = RunConfig::AsString(*iRingId);
+      EPolarimeterId polId  = *iPolId;
+      string         sPolId = RunConfig::AsString(polId);
 
       TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
 
       for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
       {
-         string sTgtOrient        = RunConfig::AsString(*iTgtOrient);
-         //const ValErrPair& avrgPolProfR = fAvrgPolProfRs[*iRingId][*iTgtOrient];
-         const ValErrPair &avrgPolProfR = fAvrgPolProfRs.find(*iRingId)->second.find(*iTgtOrient)->second;
+         ETargetOrient tgtOrient    = *iTgtOrient;
+         string        sTgtOrient   = RunConfig::AsString(tgtOrient);
+         ValErrPair    avrgPolProfR = GetAvrgPCProfRUnW(polId, tgtOrient);
 
-         printf("%s %s: %16.14f +/- %16.14f\n", sRingId.c_str(),
-            sTgtOrient.c_str(), avrgPolProfR.first, avrgPolProfR.second);
+         printf("%s %s: %16.14f +/- %16.14f\n", sPolId.c_str(), sTgtOrient.c_str(), avrgPolProfR.first, avrgPolProfR.second);
       }
 
-
-      printf("%s syst. U vs D: %16.14f +/- %16.14f\n", sRingId.c_str(),
-         fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
+      //printf("%s syst. U vs D: %16.14f +/- %16.14f\n", sPolId.c_str(), fSystUvsDPolar.find(*iRingId)->second.first, fSystUvsDPolar.find(*iRingId)->second.second);
       printf("\n");
    }
 
@@ -156,7 +187,31 @@ void AnaGlobResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fMaxFill']      = %d;\n", fMaxFill);
    fprintf(f, "$rc['fMinTime']      = %ld;\n", fMinTime);
    fprintf(f, "$rc['fMaxTime']      = %ld;\n", fMaxTime);
-   fprintf(f, "$rc['fBeamEnergies'] = %s;\n", SetAsPhpArray<EBeamEnergy>(fBeamEnergies).c_str());
+   fprintf(f, "$rc['fBeamEnergies'] = %s;\n\n", SetAsPhpArray<EBeamEnergy>(fBeamEnergies).c_str());
+
+   PolId2ValErrMapConstIter iNormJC2 = fNormJetCarbon2.begin();
+
+   for ( ; iNormJC2 != fNormJetCarbon2.end(); ++iNormJC2)
+   {
+      EPolarimeterId polId = iNormJC2->first;
+
+      fprintf(f, "$rc['normHJPC']['%s']['nomi'] = new pair(%10.5f, %10.5f);\n",
+              RunConfig::AsString(polId).c_str(), iNormJC2->second.first, iNormJC2->second.second);
+   }
+
+   TargetSetIter iTarget = gRunConfig.fTargets.begin();
+
+   for ( ; iTarget != gRunConfig.fTargets.end(); ++iTarget)
+   {
+      TargetUId  targetUId  = iTarget->fUId;
+      ValErrPair valErrPair = fNormJetCarbonByTarget2.find(targetUId)->second;
+
+      if (valErrPair.second < 0) continue;
+
+      fprintf(f, "$rc['normHJPC']['%s']['%s'][%d] = new pair(%10.5f, %10.5f);\n",
+              RunConfig::AsString(targetUId.fPolId).c_str(), RunConfig::AsString(targetUId.fTargetOrient).c_str(),
+              targetUId.fTargetId, valErrPair.first, valErrPair.second);
+   }
 
    fprintf(f, "\n");
 } //}}}
@@ -184,32 +239,14 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
    }
 
    // Now consider individual fills
-   AnaFillResultMapIter iFillRes = fAnaFillResults.find(fillId);
+   AnaFillResult *anaFillResult = GetAnaFillResult(fillId);
 
-   AnaFillResult *fillRes = 0;
-
-   // if not found result for this fill create and add a new one
-   if (iFillRes == fAnaFillResults.end()) {
-
-      // create new AnaFillResult
-      fillRes = new AnaFillResult(fillId);
-      fillRes->AddMeasResult(mm, this);
-
-      fAnaFillResults[fillId] = *fillRes;
-      delete fillRes;
-      fillRes = &fAnaFillResults[fillId];
-
-   // otherwise, get a pointer to the existing one
-   } else {
-      // add AnaRunResult to existing AnaFillResult
-      fillRes = &iFillRes->second;
-      fillRes->AddMeasResult(mm, this);
-   }
+   anaFillResult->AddMeasResult(mm);
 
    // Do something about the read draw obj container
    if (ocIn) {
       //oc->Print();
-      fillRes->AddGraphMeasResult(mm, *ocIn);
+      anaFillResult->AddGraphMeasResult(mm, *ocIn);
    }
 } //}}}
 
@@ -226,7 +263,7 @@ void AnaGlobResult::AddHJMeasResult()
    ifstream file(fullPath.str().c_str());
 
    if (file.good()) {
-      Int_t    fillId;
+      UInt_t   fillId;
       Double_t bluPolar, bluPolarErr, bluAsym, bluAsymErr;
       Double_t yelPolar, yelPolarErr, yelAsym, yelAsymErr;
       Double_t energy;
@@ -310,6 +347,8 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
       anaFillResult.Process(ocOut);
    }
 
+   //CalcMissingSlopes();
+
    if (fDoCalcPolarNorm) CalcPolarNorm();
 
    CalcAvrgPolProfR();
@@ -339,9 +378,10 @@ AnaFillResult* AnaGlobResult::GetAnaFillResult(UInt_t fillId)
 
    if ( iFillRes == fAnaFillResults.end() ) {
 
-      AnaFillResult *fillRes = new AnaFillResult(fillId);
-      fAnaFillResults[fillId] = *fillRes;
-      delete fillRes;
+      AnaFillResult *anaFillResult = new AnaFillResult(fillId);
+      anaFillResult->SetAnaGlobResult(this);
+      fAnaFillResults[fillId] = *anaFillResult;
+      delete anaFillResult;
 
       return &fAnaFillResults[fillId];
 
@@ -392,13 +432,10 @@ void AnaGlobResult::CalcPolarNorm()
    // Create containers for polarization where both hjet and pcarbon results exist
    PolId2ValErrSet polarCrbSet;
    PolId2ValErrSet polarJetSet;
-   PolId2ValErrSet polarNormSet; // H-jet/p-Carbon polar ratio
 
    // Containers for polar vs prof polar normalization
    PolId2ValErrSet polarCrbAllSet;
    PolId2ValErrSet polarCrbProfAllSet;
-
-   PolId2ValErrSet polarNormAllSet;
 
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
@@ -424,59 +461,42 @@ void AnaGlobResult::CalcPolarNorm()
             polarCrbAllSet    [polId].insert(polarPC);
             polarCrbProfAllSet[polId].insert(polarPCProf);
 
-            polarNormAllSet[polId].insert(utils::CalcDivision(polarPCProf, polarPC, 1));
+            fNormProfPolar2[polId] = utils::CalcWeightedAvrgErr(fNormProfPolar2[polId], utils::CalcDivision(polarPCProf, polarPC, 1));
          }
 
          ValErrPair polarHJ = fillRslt->GetHJPolar(ringId);
 
          // For HJet normalization: Skip if there is no corresponding hjet result for this fill
-         if (polarHJ.second < 0) {
-            Warning("CalcPolarNorm", "Fill %d, %s: H-jet polarization not available", fillId, sPolId.c_str());
+         if (polarPC.second < 0 || polarHJ.second < 0) {
+            Warning("CalcPolarNorm", "Fill %d, %s: p-Carbon or H-jet polarization not available", fillId, sPolId.c_str());
             continue;
          }
 
-         // skip if not a valid result
-         if (polarPC.second < 0) {
-            Warning("CalcPolarNorm", "Fill %d, %s: p-Carbon polarization not available", fillId, sPolId.c_str());
-            continue;
-         }
+         TargetUId targetUId = fillRslt->GetPCTarget(polId);
+
+         // The fills in which the carbon target is not well defined (multiple
+         // targets used in a fill) are not used in the normalization
+         // The idea behind this is to be consistent with scale factors by target
+         if (!targetUId.IsValid()) continue;
 
          polarCrbSet[polId].insert(polarPC);
          polarJetSet[polId].insert(polarHJ);
-         polarNormSet[polId].insert(utils::CalcDivision(polarHJ, polarPC));
+
+         ValErrPair norm = utils::CalcDivision(polarHJ, polarPC);
+         fNormJetCarbon2[polId] = utils::CalcWeightedAvrgErr(fNormJetCarbon2[polId], norm);
 
          // for debugging
+         //cout << "jjjj " << fillId << " ";
+         //cout << ": " << PairAsPhpArray(norm) << "      " << PairAsPhpArray(fNormJetCarbon2[polId]) << endl;
          //printf("%d: %s: %16.7f +/- %16.7f   %16.7f +/- %16.7f\n",
          //   fillId, sPolId.c_str(), polarPC.first, polarPC.second, polarHJ.first, polarHJ.second);
-      }
 
+         fNormJetCarbonByTarget2[targetUId] = utils::CalcWeightedAvrgErr(fNormJetCarbonByTarget2[targetUId], norm);
 
-      // Loop over polarization values for different targets
-      TargetUId2ValErrMapConstIter iPolarByTgt = fillRslt->fPCPolarsByTargets.begin();
-
-      for ( ; iPolarByTgt != fillRslt->fPCPolarsByTargets.end(); ++iPolarByTgt)
-      {
-         TargetUId      targetUId    = iPolarByTgt->first;
-         ValErrPair     polarCrb     = iPolarByTgt->second;
-
-         EPolarimeterId polId        = targetUId.fPolId;
-         //ETargetOrient  targetOrient = targetUId.fTargetOrient;
-         //UShort_t       targetId     = targetUId.fTargetId;
-
-         ERingId        ringId       = RunConfig::GetRingId(polId);
-         ValErrPair     polarHJ      = fillRslt->GetHJPolar(ringId);
-
-         ValErrPair norm = utils::CalcDivision(polarHJ, polarCrb, 0);
-
-         if (norm.second >=0)
-         {
-            if (fNormJetCarbonByTarget2.find(targetUId) == fNormJetCarbonByTarget2.end())
-            {
-               fNormJetCarbonByTarget2[targetUId] = norm;
-            } else {
-               fNormJetCarbonByTarget2[targetUId] = utils::CalcWeightedAvrgErr(fNormJetCarbonByTarget2[targetUId], norm);
-            }
-         }
+         // for debugging
+         //cout << "kkkk " << fillId << " ";
+         //targetUId.Print();
+         //cout << ": " << PairAsPhpArray(norm) << "      " << PairAsPhpArray(fNormJetCarbonByTarget2[targetUId]) << endl;
       }
    }
 
@@ -494,19 +514,11 @@ void AnaGlobResult::CalcPolarNorm()
          fNormJetCarbon[*iPolId] = utils::CalcDivision(avrgJet, avrgCrb);
       }
 
-      if ( polarNormSet.find(*iPolId) != polarNormSet.end() ) {
-         fNormJetCarbon2[*iPolId] = utils::CalcWeightedAvrgErr(polarNormSet[*iPolId]);
-      }
-
       if ( polarCrbAllSet.find(*iPolId) != polarCrbAllSet.end() ) {
          ValErrPair avrgPolar     = utils::CalcWeightedAvrgErr(polarCrbAllSet[*iPolId]);
          ValErrPair avrgProfPolar = utils::CalcWeightedAvrgErr(polarCrbProfAllSet[*iPolId]);
 
          fNormProfPolar[*iPolId]  = utils::CalcDivision(avrgProfPolar, avrgPolar);
-      }
-
-      if ( polarNormAllSet.find(*iPolId) != polarNormAllSet.end() ) {
-         fNormProfPolar2[*iPolId] = utils::CalcWeightedAvrgErr(polarNormAllSet[*iPolId]);
       }
    }
 } //}}}
@@ -518,24 +530,25 @@ void AnaGlobResult::CalcAvrgPolProfR()
    Info("CalcAvrgPolProfR()", "Called");
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
-
-   for ( ; iFill != fAnaFillResults.end(); ++iFill) {
-
-      UInt_t         fillId   =  iFill->first;
+   for ( ; iFill != fAnaFillResults.end(); ++iFill)
+   {
+      //UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
-      RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
-      for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
+      PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+      for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
       {
+         EPolarimeterId polId  = *iPolId;
+
          TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
 
          for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
          {
-            ValErrPair fillPolProfR = fillRslt->GetPCProfR(*iRingId, *iTgtOrient);
+            ETargetOrient tgtOrient   = *iTgtOrient;
+            ValErrPair    fillPCProfR = fillRslt->GetPCProfR(polId, tgtOrient);
+            ValErrPair    currAvrg    = GetAvrgPCProfRUnW(polId, tgtOrient);
 
-            ValErrPair& currAvrg = fAvrgPolProfRs[*iRingId][*iTgtOrient];
-            currAvrg = utils::CalcWeightedAvrgErr(currAvrg, fillPolProfR);
+            fAvrgPCProfRUnWs[polId][tgtOrient] = utils::CalcWeightedAvrgErr(currAvrg, fillPCProfR);
          }
       }
 
@@ -563,7 +576,7 @@ void AnaGlobResult::CalcDependencies()
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill)
    {
-      UInt_t         fillId   =  iFill->first;
+      //UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
       // Using calculated normalization and pol. profiles calculate average beam
@@ -655,23 +668,23 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
 
    for ( ; iFillRes != fAnaFillResults.end(); ++iFillRes)
    {
-      const AnaFillResult &fillRes = iFillRes->second;
-      UInt_t fillId = fillRes.GetFillId();
+      const AnaFillResult &fillResult = iFillRes->second;
+      UInt_t fillId = fillResult.GetFillId();
 
       cout << endl;
       Info("UpdateInsert", "fill %d", fillId);
 
 
       // test
-      Info("UpdateInsert", "Test Test");
+      //Info("UpdateInsert", "Test Test");
 
       // Save results from the p-Carbon polarimeters
       PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
       for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
       {
-         EPolarimeterId polId = *iPolId;
-         ERingId ringId = RunConfig::GetRingId(polId);
+         EPolarimeterId polId  = *iPolId;
+         ERingId        ringId = RunConfig::GetRingId(polId);
 
          // Polarization
          MseFillPolarNewX* ofillP = asymDbSql->SelectFillPolar(fillId, polId, ringId);
@@ -683,8 +696,11 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
             nfillP = new MseFillPolarNewX(fillId, polId, ringId);
          }
 
-         nfillP->SetValuesPC(fillRes, polId);
+         nfillP->SetValuesPC(fillResult, polId);
          asymDbSql->UpdateInsert(ofillP, nfillP);
+
+         //TargetUId targetUId = fillRslt->GetPCTarget(polId);
+         //if (!targetUId.IsValid()) continue;
 
          // Profile
          TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
@@ -692,6 +708,14 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
          for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
          {
             ETargetOrient tgtOrient = *iTgtOrient;
+
+            // Skip measurements whit invalid profile values
+            ValErrPair fillPCProfR = fillResult.GetPCProfR(polId, tgtOrient);
+            if (fillPCProfR.second < 0) {
+               Info("UpdateInsert", "Skip invalid profile measurement in polId %d, tgtOrient %d", polId, tgtOrient);
+               continue;
+            }
+
 
             MseFillProfileNewX* ofillProf = asymDbSql->SelectFillProfile(fillId, polId, tgtOrient);
             MseFillProfileNewX* nfillProf = 0;
@@ -702,7 +726,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
                nfillProf = new MseFillProfileNewX(fillId, polId, tgtOrient);
             }
 
-            nfillProf->SetValues(fillRes, polId, tgtOrient);
+            nfillProf->SetValues(fillResult, polId, tgtOrient);
             asymDbSql->UpdateInsert(ofillProf, nfillProf);
          }
       }
@@ -724,7 +748,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
             nfillP = new MseFillPolarNewX(fillId, polId, ringId);
          }
 
-         nfillP->SetValuesHJ(fillRes, ringId);
+         nfillP->SetValuesHJ(fillResult, ringId);
          asymDbSql->UpdateInsert(ofillP, nfillP);
       }
       // test end
@@ -733,6 +757,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
       // test end
 
 
+      /*
       MseFillPolarX *ofill = asymDbSql->SelectFillPolar(fillId);
       MseFillPolarX *nfill = 0;
 
@@ -742,7 +767,7 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
          nfill = new MseFillPolarX(fillId);
       }
 
-      nfill->SetValues(fillRes);
+      nfill->SetValues(fillResult);
       //nfill->Print();
 
       asymDbSql->UpdateInsert(ofill, nfill);
@@ -758,10 +783,11 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
          nfillProf = new MseFillProfileX(fillId);
       }
 
-      nfillProf->SetValues(fillRes);
+      nfillProf->SetValues(fillResult);
       //nfillProf->Print();
 
       asymDbSql->UpdateInsert(ofillProf, nfillProf);
+      */
    }
 
    asymDbSql->CloseConnection();
