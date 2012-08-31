@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) || // exclude large values with small errors
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) || // exclude large values with large errors
           //(profileRatioErr/TMath::Abs(profileRatio) > 2.000 && TMath::Abs(profileRatio) > 1.0) ||
-          (profileRatioErr < 0.01) // exclude too small errors. probably from failed fits?
+          profileRatioErr < 0.01 || profileRatioErr > 10 // exclude too small and too big errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
          )
       {

@@ -17,10 +17,11 @@
 #include "AnaFillResult.h"
 
 
-sql_create_7(MseFillProfileNew, 3, 0,
+sql_create_8(MseFillProfileNew, 3, 0,
    mysqlpp::sql_int_unsigned, fill,
    mysqlpp::sql_tinyint,      polarimeter_id,
    mysqlpp::sql_tinyint,      target_orient,
+   mysqlpp::sql_tinyint,      target_id,
    mysqlpp::sql_float,        prof_r,
    mysqlpp::sql_float,        prof_r_err,
    mysqlpp::sql_float,        prof_pmax,

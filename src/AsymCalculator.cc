@@ -1478,12 +1478,14 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       // Check if there are events in the histograms
       if (!hDetCounts_up->Integral() && !hDetCounts_down->Integral()) continue;
 
-      //ValErrMap asym = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-      ValErrMap asym = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-      //ValErrMap asym = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      ValErrMap asymX90 = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      ValErrMap asymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      //ValErrMap asymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
 
-      hAsymVsDelim4Det->SetBinContent(iDelim, asym["phys"].first);
-      hAsymVsDelim4Det->SetBinError(iDelim, asym["phys"].second);
+      ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
+
+      hAsymVsDelim4Det->SetBinContent(iDelim, asymPhys.first);
+      hAsymVsDelim4Det->SetBinError(iDelim, asymPhys.second);
    }
 
 } //}}}
@@ -1525,10 +1527,10 @@ ValErrPair AsymCalculator::CalcAsymSqrtFormula(Double_t A, Double_t B, Double_t 
 
    if ( denom ) {
       asym    = (sqrt(A*B) - sqrt(C*D))/denom;
-      asymErr = sqrt(A*B*(C+D) + C*D*(A+B))/denom/denom;
+      asymErr =  sqrt(A*B*(C+D) + C*D*(A+B))/denom/denom;
    } else {
-      asym    = 0.;
-      asymErr = 0.;
+      asym    =  0;
+      asymErr = -1; // set to -1 to indicate invalid result
    }
 
    ValErrPair result(asym, asymErr);

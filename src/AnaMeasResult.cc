@@ -119,7 +119,7 @@ ValErrPair AnaMeasResult::GetPCPolar() const
 
 
 /** */
-ValErrPair AnaMeasResult::GetPCPolarR() const
+ValErrPair AnaMeasResult::GetPCProfR() const
 { //{{{
    ValErrPair val_err(0, -1);
 
@@ -127,7 +127,7 @@ ValErrPair AnaMeasResult::GetPCPolarR() const
       val_err.first  = fFitResProfilePvsI->Value(1);
       val_err.second = fFitResProfilePvsI->FitResult::Error(1);
    } else {
-      Error("GetPCPolarR", "No valid fit result found");
+      Error("GetPCProfR", "No valid fit result found");
    }
 
    return val_err;

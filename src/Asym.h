@@ -29,6 +29,9 @@
 
 #include "AsymHeader.h"
 //#include "TargetUId.h"
+#include "utils/ValErrPair.h"
+
+class TargetUId;
 
 
 enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10};
@@ -41,9 +44,9 @@ enum ESpinState     {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 enum EFillType      {kFILLTYPE_UNKNOWN = 0, kFILLTYPE_PHYSICS};
 
 typedef std::map<std::string, std::string>     Str2StrMap;
-typedef std::pair<Double_t, Double_t>          ValErrPair;
-typedef std::set<ValErrPair>                   ValErrSet;
-typedef ValErrSet::iterator                    ValErrSetIter;
+//typedef std::pair<Double_t, Double_t>          ValErrPair;
+//typedef std::set<ValErrPair>                   ValErrSet;
+//typedef ValErrSet::iterator                    ValErrSetIter;
 typedef std::map<std::string, ValErrPair>      ValErrMap;
 typedef std::map<std::string, TFitResultPtr>   Str2FitResMap;
 typedef std::map<ESpinState,  TFitResultPtr>   Spin2FitResMap;
@@ -62,6 +65,10 @@ typedef PolId2ValErrMap::const_iterator        PolId2ValErrMapConstIter;
 typedef std::map<EPolarimeterId, TGraph*>      PolId2TGraphMap;
 typedef PolId2TGraphMap::iterator              PolId2TGraphMapIter;
 typedef PolId2TGraphMap::const_iterator        PolId2TGraphMapConstIter;
+
+typedef std::map<EPolarimeterId, TargetUId>    PolId2TargetUIdMap;
+typedef PolId2TargetUIdMap::iterator           PolId2TargetUIdMapIter;
+typedef PolId2TargetUIdMap::const_iterator     PolId2TargetUIdMapConstIter;
 
 typedef std::map<ETargetOrient, TGraph*>       TgtOrient2TGraphMap;
 typedef TgtOrient2TGraphMap::iterator          TgtOrient2TGraphMapIter;
