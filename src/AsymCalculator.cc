@@ -1482,7 +1482,9 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       ValErrMap asymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
       //ValErrMap asymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
 
+      //cout << "test: " << asymX90["phys"] << ", " << asymX45["phys"] << endl;
       ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
+      //cout << asymPhys << endl;
 
       hAsymVsDelim4Det->SetBinContent(iDelim, asymPhys.first);
       hAsymVsDelim4Det->SetBinError(iDelim, asymPhys.second);
