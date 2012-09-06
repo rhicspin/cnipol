@@ -10,7 +10,7 @@
 #include "mysql++.h"
 #include "ssqls.h"
 
-#include "TBuffer.h"
+//#include "TBuffer.h"
 #include "TObject.h"
 
 sql_create_23(MseMeasInfo, 1, 5,
@@ -62,10 +62,10 @@ public:
    void Init();
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
-   void Streamer(TBuffer &buf);
+   //void Streamer(TBuffer &buf);
 };
 
-TBuffer & operator<<(TBuffer &buf, MseMeasInfoX *&rec);
-TBuffer & operator>>(TBuffer &buf, MseMeasInfoX *&rec);
+//TBuffer & operator<<(TBuffer &buf, MseMeasInfoX *&rec);
+//TBuffer & operator>>(TBuffer &buf, MseMeasInfoX *&rec);
 
 #endif

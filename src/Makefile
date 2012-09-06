@@ -75,7 +75,7 @@ $(CNIPOL_LIB): $(CNIPOL_LIB_OBJS)
 
 .SECONDEXPANSION:
 $(BINARIES): $$@.o
-	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(LIBS) $(FLIB) $(ROOTLIBS) $@.o -o $@
+	$(CC) $(C_FLAG) $(CNIPOL_LIB) $(LIB_PATHS) $(FLIB) $(LIBS) $(ROOTLIBS) $@.o -o $@
 	@echo 
 	@echo "$(SVN_ASYM_VERSION)"
 	@echo 

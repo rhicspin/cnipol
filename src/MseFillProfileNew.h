@@ -10,7 +10,6 @@
 #include "mysql++.h"
 #include "ssqls.h"
 
-#include "TBuffer.h"
 #include "TObject.h"
 
 #include "RunConfig.h"

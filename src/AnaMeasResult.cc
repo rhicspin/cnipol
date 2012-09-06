@@ -20,6 +20,8 @@ AnaMeasResult::AnaMeasResult() : TObject(),
    fAnaPower(),
    fPolar(),
    fAvrgPMAsym(),
+   fProfilePolarMax(),
+   fProfilePolarR(),
    fFitResAsymPhi(),       fFitResPolarPhi(),
    fFitResAsymBunchX90(),  fFitResAsymBunchX45(),  fFitResAsymBunchY45(),
 	fhAsymVsBunchId_X90(0), fhAsymVsBunchId_X45(0), fhAsymVsBunchId_Y45(0),
@@ -33,8 +35,6 @@ AnaMeasResult::AnaMeasResult() : TObject(),
    //basym[100+MAXDELIM],    // [0]: regular,  [1]: alternative sigma cut [3]: PHENIX bunch [4]:STAR bunch; 100... target pos
    //anomaly(),
    //unrecog()
-   fProfilePolarMax(),
-   fProfilePolarR(),
    fPmtV1T0(0),
    fPmtV1T0Err(0),
    fPmtS1T0(0),
@@ -72,6 +72,8 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fAnaPower']           = %s;\n",            PairAsPhpArray(fAnaPower).c_str());
    fprintf(f, "$rc['fPolar']              = %s;\n",            PairAsPhpArray(fPolar).c_str());
    fprintf(f, "$rc['fAvrgPMAsym']         = %s;\n",            PairAsPhpArray(fAvrgPMAsym).c_str());
+   fprintf(f, "$rc['fProfilePolarMax']    = %s;\n",            PairAsPhpArray(fProfilePolarMax).c_str());
+   fprintf(f, "$rc['fProfilePolarR']      = %s;\n",            PairAsPhpArray(fProfilePolarR).c_str());
    // Skip fit results fFitResAsymPhi fFitResPolarPhi ...
    fprintf(f, "$rc['fAsymX90']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX90).c_str());
    fprintf(f, "$rc['fAsymX45']            = %s;\n",            MapAsPhpArray<string, ValErrPair>(fAsymX45).c_str());
@@ -92,8 +94,6 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, ");\n");
-   fprintf(f, "$rc['fProfilePolarMax']    = %s;\n",            PairAsPhpArray(fProfilePolarMax).c_str());
-   fprintf(f, "$rc['fProfilePolarR']      = %s;\n",            PairAsPhpArray(fProfilePolarR).c_str());
 
    fprintf(f, "$rc['fPmtV1T0']            = %f;\n",            fPmtV1T0);
    fprintf(f, "$rc['fPmtV1T0Err']         = %f;\n",            fPmtV1T0Err);

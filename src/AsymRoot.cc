@@ -371,7 +371,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
 
       TFile *f = TFile::Open(cfname.c_str());
 
-      fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+      fEventConfig = (EventConfig*) f->FindObjectAny("measConfig");
 
       if (fEventConfig) {
 
@@ -412,7 +412,7 @@ void AsymRoot::UpdateRunConfig()
       string fname = anaInfo->GetDlCalibFile();
       Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from file %s", fname.c_str());
       TFile *f = TFile::Open(fname.c_str());
-      fEventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+      fEventConfig = (EventConfig*) f->FindObjectAny("measConfig");
       //delete f;
 
       if (!fEventConfig) {
@@ -675,7 +675,7 @@ void AsymRoot::AddChannelEvent()
          //PrintEventMap();
 
          //fEventConfig->PrintAsPhp();
-         //fEventConfig->Write("EventConfig");
+         //fEventConfig->Write("measConfig");
          SaveChannelTrees();
          SaveEventTree();
 
@@ -705,7 +705,7 @@ void AsymRoot::WriteTreeFile()
 
    // Write run configuration object
    //fEventConfig->PrintAsPhp();
-   fEventConfig->Write("EventConfig");
+   fEventConfig->Write("measConfig");
 
    if (fRawEventTree) {
       fRawEventTree->Write();
@@ -799,7 +799,7 @@ void AsymRoot::UpdateCalibrator()
             exit(-1);
          }
 
-         EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+         EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
 
          if (!eventConfig) {
             Error("AsymRoot::UpdateCalibrator", "No MeasConfig object found in file %s", fname.c_str());
@@ -837,7 +837,7 @@ void AsymRoot::UpdateCalibrator()
       }
 
       //streamerList->Print("all");
-      TStreamerInfo *streamerInfo = (TStreamerInfo*) streamerList->FindObject("EventConfig");
+      TStreamerInfo *streamerInfo = (TStreamerInfo*) streamerList->FindObject("EventConfig"); // this is actually class name
       Int_t mcVer = 0;
 
       if (!streamerInfo) {
@@ -850,7 +850,7 @@ void AsymRoot::UpdateCalibrator()
       //if (streamerInfo) delete streamerInfo;
 
       Version_t    mcLoadedVer = TClassTable::GetID("EventConfig");
-      EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("EventConfig");
+      EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
 
       if (!eventConfig || mcVer != mcLoadedVer) {
          Error("UpdateCalibrator", "No MeasConfig object of known version %d found in alpha calib file %s", mcLoadedVer, fnameAlpha.c_str());
@@ -1175,7 +1175,7 @@ void AsymRoot::Finalize()
 
    fOutRootFile->cd();
    //fEventConfig->PrintAsPhp();
-   fEventConfig->Write("EventConfig");
+   fEventConfig->Write("measConfig");
 
    // close fOutRootFile
    fOutRootFile->Close();
