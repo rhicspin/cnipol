@@ -35,11 +35,11 @@ int main(int argc, char *argv[])
    //gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("styles/style_anapow.C");
 
-   double targetPol    = 0.924;
+   //double targetPol    = 0.924;
    //double targetPolErr = 0.018;
 
-   double DataAN[6], DataErr[6];//, DataErrStat[6]; //final
-   double DataSysErr[6];
+   //double DataAN[6], DataErr[6];//, DataErrStat[6]; //final
+   //double DataSysErr[6];
 
    // TargetPhys, BeamPhys, Err
    double BeamPhysBlue[6], TargetPhysBlue[6], BlueErr[6];
@@ -51,29 +51,28 @@ int main(int argc, char *argv[])
    TargetPhysBlue[4] = -0.038616;   BeamPhysBlue[4] = 0.018231;   BlueErr[4] = 0.001038;
    TargetPhysBlue[5] = -0.037101;   BeamPhysBlue[5] = 0.016961;   BlueErr[5] = 0.001047;
 
-   for (int i = 0; i < 6; ++i)
-   {
-      DataAN[i]     = -1 * TargetPhysBlue[i];
-      DataErr[i]    = BlueErr[i];
-      DataSysErr[i] = 0;
+   //for (int i = 0; i < 6; ++i)
+   //{
+   //   DataAN[i]     = -1 * TargetPhysBlue[i];
+   //   DataErr[i]    = BlueErr[i];
+   //   DataSysErr[i] = 0;
+   //   DataAN[i]  = DataAN[i]  / targetPol;
+   //   DataErr[i] = DataErr[i] / targetPol;
+   //}
 
-      DataAN[i]  = DataAN[i]  / targetPol;
-      DataErr[i] = DataErr[i] / targetPol;
-   }
+   //double Data_tB[6], Err_t[6], Data_t[6];
 
-   double Data_tB[6], Err_t[6], Data_t[6];
+   //Data_tB[0] = 1.24;   Err_t[0] = 0.5;
+   //Data_tB[1] = 1.74;   Err_t[1] = 0.5;
+   //Data_tB[2] = 2.25;   Err_t[2] = 0.5;
+   //Data_tB[3] = 2.74;   Err_t[3] = 0.5;
+   //Data_tB[4] = 3.25;   Err_t[4] = 0.5;
+   //Data_tB[5] = 3.75;   Err_t[5] = 0.5;
 
-   Data_tB[0] = 1.24;   Err_t[0] = 0.5;
-   Data_tB[1] = 1.74;   Err_t[1] = 0.5;
-   Data_tB[2] = 2.25;   Err_t[2] = 0.5;
-   Data_tB[3] = 2.74;   Err_t[3] = 0.5;
-   Data_tB[4] = 3.25;   Err_t[4] = 0.5;
-   Data_tB[5] = 3.75;   Err_t[5] = 0.5;
-
-   for (int i = 0; i < 6; ++i) {
-      Data_t[i] = Data_tB[i] * 1E-3 * 2 * MASS_PROTON;
-      Err_t[i] = 0;
-   }
+   //for (int i = 0; i < 6; ++i) {
+   //   Data_t[i] = Data_tB[i] * 1E-3 * 2 * MASS_PROTON;
+   //   Err_t[i] = 0;
+   //}
 
    //string dataFileName = "pp_ANvst_s006.8_Hjet_2004_24GeV";
    //string dataFileName = "pp_ANvst_s006.8_Hjet_2004_24GeV_toterr";
@@ -81,11 +80,11 @@ int main(int argc, char *argv[])
    //string dataFileName = "pp_ANvst_s013.7_Hjet_2004_100GeV";
    //string dataFileName = "pp_ANvst_s013.7_Hjet_2004_100GeV_toterr";
    //string dataFileName = "pp_ANvst_s013.7_Hjet_2009_100GeV_blu";
-   string dataFileName = "pp_ANvst_s013.7_Hjet_2009_100GeV_yel";
+   //string dataFileName = "pp_ANvst_s013.7_Hjet_2009_100GeV_yel";
    //string dataFileName = "pp_ANvst_s013.7_Hjet_2012_100GeV";
    //string dataFileName = "pp_ANvst_s019.4_E704";
    //string dataFileName = "pp_ANvst_s021.7_Hjet_2011_250GeV";
-   //string dataFileName = "pp_ANvst_s021.9_Hjet_2012_255GeV";
+   string dataFileName = "pp_ANvst_s021.9_Hjet_2012_255GeV";
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2003";
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2003_toterr";
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2009";
@@ -241,7 +240,7 @@ int main(int argc, char *argv[])
 
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.2, 100, -0.4, 0.4); //E704
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.4, 100, -0.4, 0.2);       // H-jet, 24 GeV  like in paper
-   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15);   // H-jet, 24 GeV
+   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15);   // H-jet, 2012: 24 GeV, 255 GeV
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.05, 0.05, 100, -0.07, 0.07);   // H-jet: 100 GeV, 255 GeV, pp2pp: 2009
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.04, 0.04, 100, -0.12, 0.08);   // H-jet: 100 GeV
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.15, 100, -3, 2);         //pp2pp 2003 
@@ -425,11 +424,11 @@ Double_t modelAN(Double_t *x, Double_t *par)
    ////double sigma_totP = 38.4;              // mb - older
 
    // sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target
-   double B          = 12;
-   double rho        = -0.0835;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target
-   //double rho        = -0.08;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target - older
-   double sigma_totP = 38.477;              // mb
-   //double sigma_totP = 38.4;              // mb - older
+   //double B          = 12;
+   //double rho        = -0.0835;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target
+   ////double rho        = -0.08;             // at sqrt(s) = 13.7 GeV, 100 GeV beam on H-jet target - older
+   //double sigma_totP = 38.477;              // mb
+   ////double sigma_totP = 38.4;              // mb - older
 
    // sqrt(s) = 19.418 GeV, 200 GeV beam, E704 FNAL
    // These data have to be checked!!!
@@ -444,9 +443,9 @@ Double_t modelAN(Double_t *x, Double_t *par)
    //double sigma_totP = 39.221;
 
    // sqrt(s) = 21.9 GeV, 255 GeV beam on H-jet target
-   //double B          = 12;
-   //double rho        = -0.0123;
-   //double sigma_totP = 39.245;
+   double B          = 12;
+   double rho        = -0.0123;
+   double sigma_totP = 39.245;
 
    // sqrt(s) = 200 GeV, pp2pp
    //double B          = 16.3;

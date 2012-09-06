@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
       Info("masym", "Found file: %s", fileName.c_str());
 
-      EventConfig *gMM = (EventConfig*) f->FindObjectAny("EventConfig");
+      EventConfig *gMM = (EventConfig*) f->FindObjectAny("measConfig");
 
       if (!gMM) {
          Error("masym", "MM not found. Skipping...");
