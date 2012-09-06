@@ -12,7 +12,6 @@
 #include "MAsymAnaInfo.h"
 #include "AsymCalculator.h"
 #include "AsymRoot.h"
-//#include "AsymDb.h"
 #include "RunConfig.h"
 #include "TargetInfo.h"
 
@@ -413,6 +412,7 @@ void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, f
    if ( fabs(max) < prefix ) max =  prefix;
 } //}}}
 
+
 // Description : draw text on histogram. Text alignment is (center,top) by default
 void DrawText(TH1 *h, float x, float y, int color, char *text)
 { //{{{
@@ -514,15 +514,6 @@ void ReadRampTiming(char *filename)
 
 
 /** */
-ostream& operator<<(ostream &os, const ValErrPair &vep)
-{ //{{{
-   os << "array( " << vep.first << ", " << vep.second << " )";
-
-   return os;
-} //}}}
-
-
-/** */
 ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
 { //{{{
    //os << "array( " << vep.first << ", " << vep.second << " )";
@@ -532,34 +523,35 @@ ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
 } //}}}
 
 
-/** */
-TBuffer& operator<<(TBuffer &buf, const ValErrPair &vep)
-{
-   buf << (Double_t) vep.first << (Double_t) vep.second;
-
-   return buf;
-}
-
-
-/** */
-TBuffer& operator>>(TBuffer &buf, ValErrPair &vep)
-{
-   Double_t tmp;
-   buf >> tmp; vep.first  = tmp;
-   buf >> tmp; vep.second = tmp;
-
-   return buf;
-}
+///** */
+//TBuffer& operator<<(TBuffer &buf, const ValErrPair &vep)
+//{
+//   buf << (Double_t) vep.first << (Double_t) vep.second;
+//
+//   return buf;
+//}
+//
+//
+///** */
+//TBuffer& operator>>(TBuffer &buf, ValErrPair &vep)
+//{
+//   Double_t tmp;
+//   buf >> tmp; vep.first  = tmp;
+//   buf >> tmp; vep.second = tmp;
+//
+//   return buf;
+//}
 
 
 /** */
 string PairAsPhpArray(const ValErrPair &p)
 { //{{{
-   std::stringstream ssChs("");
+   std::stringstream sstr("");
 
-   ssChs << "array (" << p.first << ", " << p.second << ")";
+   sstr << p;
+   //sstr << "array (" << p.first << ", " << p.second << ")";
 
-   return ssChs.str();
+   return sstr.str();
 } //}}}
 
 

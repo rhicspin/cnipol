@@ -26,6 +26,8 @@
 #include "MseMeasInfo.h"
 
 #include "utils/utils.h"
+#include "utils/ValErrPair.h"
+
 
 using namespace std;
 
@@ -759,9 +761,9 @@ void CalcStatistics()
    }
 
    // Misc
-   if (gMeasInfo->fWallCurMonSum) gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
+   if (gMeasInfo->fWallCurMonSum)     gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
    if (gAsymAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAsymAnaInfo->reference_rate;
-   if (gMeasInfo->Run == 5)       gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
+   if (gMeasInfo->Run == 5)           gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 } //}}}
 
 
@@ -2055,9 +2057,13 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // Caluclate Weighted Average
-   utils::CalcWeightedMean((Double_t*) P, (Double_t*) dP, N_SILICON_CHANNELS, (Double_t&) gAnaMeasResult->P[0], (Double_t&) gAnaMeasResult->P[1]);
+   Double_t polar, polarErr;
+   utils::CalcWeightedMean((Double_t*) P, (Double_t*) dP, N_SILICON_CHANNELS, polar, polarErr);
+   gAnaMeasResult->P[0] = polar;
+   gAnaMeasResult->P[1] = polarErr;
 
-   utils::CalcWeightedMean((Double_t*) AsymPhiCorr, (Double_t*) dAsymPhiCorr, N_SILICON_CHANNELS, gAnaMeasResult->fAvrgPMAsym.first, gAnaMeasResult->fAvrgPMAsym.second);
+   //deprecated:
+   //utils::CalcWeightedMean((Double_t*) AsymPhiCorr, (Double_t*) dAsymPhiCorr, N_SILICON_CHANNELS, gAnaMeasResult->fAvrgPMAsym.first, gAnaMeasResult->fAvrgPMAsym.second);
 
    //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
 

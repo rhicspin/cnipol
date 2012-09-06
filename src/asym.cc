@@ -62,8 +62,6 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->ProcessOptions(argc, argv);
    gAsymAnaInfo->VerifyOptions();
 
-   //return 1;
-
    // Book HBOOK file (deprecated) should be removed from future releases
    char hbk_outfile[256] = "out.hbook";
    printf("Booking HBOOK file %s\n", hbk_outfile);

@@ -47,7 +47,7 @@ typedef std::map<std::string, std::string>     Str2StrMap;
 //typedef std::pair<Double_t, Double_t>          ValErrPair;
 //typedef std::set<ValErrPair>                   ValErrSet;
 //typedef ValErrSet::iterator                    ValErrSetIter;
-typedef std::map<std::string, ValErrPair>      ValErrMap;
+//typedef std::map<std::string, ValErrPair>      ValErrMap;
 typedef std::map<std::string, TFitResultPtr>   Str2FitResMap;
 typedef std::map<ESpinState,  TFitResultPtr>   Spin2FitResMap;
 typedef std::pair<UShort_t, UShort_t>          DetLRPair;
@@ -82,7 +82,7 @@ typedef std::map<EBeamId, ValErrPair>          BeamId2ValErrMap;
 typedef BeamId2ValErrMap::iterator             BeamId2ValErrMapIter;
 typedef BeamId2ValErrMap::const_iterator       BeamId2ValErrMapConstIter;
 
-typedef std::map<ETargetOrient,  ValErrPair>   TgtOrient2ValErrMap;
+typedef std::map<ETargetOrient, ValErrPair>    TgtOrient2ValErrMap;
 typedef TgtOrient2ValErrMap::iterator          TgtOrient2ValErrMapIter;
 typedef TgtOrient2ValErrMap::const_iterator    TgtOrient2ValErrMapConstIter;
 
@@ -103,10 +103,10 @@ typedef String2BeamIdMap::iterator             String2BeamIdMapIter;
 typedef String2BeamIdMap::const_iterator       String2BeamIdMapConstIter;
 
 // Ring id
-typedef std::map<ERingId,        ValErrSet>    RingId2ValErrSet;
+typedef std::map<ERingId, ValErrSet>           RingId2ValErrSet;
 typedef RingId2ValErrSet::iterator             RingId2ValErrSetIter;
 typedef RingId2ValErrSet::const_iterator       RingId2ValErrSetConstIter;
-typedef std::map<ERingId,        ValErrPair>   RingId2ValErrMap;
+typedef std::map<ERingId, ValErrPair>          RingId2ValErrMap;
 typedef RingId2ValErrMap::iterator             RingId2ValErrMapIter;
 typedef RingId2ValErrMap::const_iterator       RingId2ValErrMapConstIter;
 
@@ -156,11 +156,11 @@ typedef ChannelSet::iterator        ChannelSetIter;
 typedef ChannelSet::const_iterator  ChannelSetConstIter;
 
 
-std::ostream& operator<<(std::ostream &os, const ESpinState &ss);
-std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
+//std::ostream& operator<<(std::ostream &os, const ESpinState &ss);
+//std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
 std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
-TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
-TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
+//TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
+//TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
 
 
 // whole info for one event
@@ -452,36 +452,6 @@ void  binary_zero(int n, int mb);
 
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey);
 void  ReadRampTiming(char *filename);
-
-
-/** */
-template<class T> void ReadStlContainer(TBuffer &buf, std::set<T> &s)
-{ //{{{
-   s.clear();
-
-   int size = 0;
-   buf >> size;
-
-   T value;
-
-   for (int i=0; i<size; i++) {
-      buf >> value;
-      s.insert(value);
-   }
-} //}}}
-
-
-/** */
-template<class T> void WriteStlContainer(TBuffer &buf, std::set<T> &s)
-{ //{{{
-   buf << s.size();
-
-   typename std::set<T>::const_iterator is;
-
-   for (is=s.begin(); is!=s.end(); ++is) {
-      buf << *is;
-   }
-} //}}}
 
 
 /** */

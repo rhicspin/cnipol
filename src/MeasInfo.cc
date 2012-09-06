@@ -91,8 +91,8 @@ string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 /** */
 void MeasInfo::SetVoltages(int begin, int end)
 {
-   fStartVoltage = (float) begin;
-   fEndVoltage   = (float) end;
+   fStartVoltage = (Float_t) begin;
+   fEndVoltage   = (Float_t) end;
 }
 
 

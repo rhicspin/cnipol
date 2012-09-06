@@ -15,12 +15,12 @@ do
    #echo ${arr[0]} --- ${arr[1]} ---
    if [ -z "${arr[1]}" ]; then
       #echo "polid NOT defined"
-      bgx_limit 10 $CNIPOL_DIR/bin/asym -r $meas_name --alpha --use-db -g --copy
-      #bgx_limit 10 $CNIPOL_DIR/bin/asym -r $meas_name --alpha --use-db
+      #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --copy -r $meas_name
+      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -r $meas_name
    else
       #echo "polid defined" ${arr[1]}
-      bgx_limit 10 $CNIPOL_DIR/bin/asym -r ${arr[0]} --alpha --use-db --pol-id=${arr[1]} -g --copy
-      #bgx_limit 10 $CNIPOL_DIR/bin/asym -r ${arr[0]} --alpha --use-db --pol-id=${arr[1]}
+      #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --copy --pol-id=${arr[1]} -r ${arr[0]}
+      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db --pol-id=${arr[1]} -r ${arr[0]}
    fi
 done
 

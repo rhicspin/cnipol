@@ -34,9 +34,9 @@ class MseRunPeriodX;
 
 class MeasInfo;
 
-typedef std::map<std::string, MeasInfo>                   MeasInfoMap;
-typedef std::map<std::string, MeasInfo>::iterator         MeasInfoMapIter;
-typedef std::map<std::string, MeasInfo>::const_iterator   MeasInfoMapConstIter;
+typedef std::map<std::string, MeasInfo>  MeasInfoMap;
+typedef MeasInfoMap::iterator            MeasInfoMapIter;
+typedef MeasInfoMap::const_iterator      MeasInfoMapConstIter;
 
 
 /** */
@@ -44,9 +44,9 @@ class MeasInfo : public TObject
 {
 protected:
 
-   Double_t      fStartVoltage;
-   Double_t      fEndVoltage;
-   Double_t      fBeamEnergy;
+   Float_t       fStartVoltage;
+   Float_t       fEndVoltage;
+   Float_t       fBeamEnergy;
    Short_t       fExpectedGlobalTdcOffset;
    Float_t       fExpectedGlobalTimeOffset;
    std::string   fRunName;
