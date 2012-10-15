@@ -135,8 +135,8 @@ public:
    ValErrPair           GetPCProfR(ERingId ringId, ETargetOrient tgtOrient) const; // deprecated
    ValErrPair           GetPCProfR(EPolarimeterId polId, ETargetOrient tgtOrient) const;
    ValErrPair           GetPCProfRInj(EPolarimeterId polId, ETargetOrient tgtOrient) const;
-   ValErrPair           GetPCProfR0(EPolarimeterId polId, ETargetOrient tgtOrient);
-   ValErrPair           GetPCProfRSlope(EPolarimeterId polId, ETargetOrient tgtOrient);
+   ValErrPair           GetPCProfR0(EPolarimeterId polId, ETargetOrient tgtOrient) const;
+   ValErrPair           GetPCProfRSlope(EPolarimeterId polId, ETargetOrient tgtOrient) const;
    ValErrPair           GetPCProfPMax(ERingId ringId, ETargetOrient tgtOrient) const;
    ValErrPair           GetPCProfP(ERingId ringId, ETargetOrient tgtOrient) const;
    //ValErrPair           GetProfPolarSyst(EPolarimeterId polId);

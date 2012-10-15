@@ -6,6 +6,7 @@
 #include "masym.h"
 
 #include "TEnv.h"
+#include "TROOT.h"
 
 #include "CnipolAsymHists.h"
 #include "MAsymFillHists.h"
@@ -45,12 +46,14 @@ int main(int argc, char *argv[])
    AnaGlobResult gAnaGlobResult;
    gAnaGlobResult.Configure(mAsymAnaInfo);
 
-   gStyle->SetOptTitle(0);
+   gROOT->Macro("styles/style_masym.C");
+
+   //gStyle->SetOptTitle(0);
    //gStyle->SetOptStat("emroui");
    //gStyle->SetOptStat("e");
-   gStyle->SetOptStat(1111);
-   gStyle->SetOptFit(1111);
-   gStyle->SetPadRightMargin(0.25);
+   //gStyle->SetOptStat(1111);
+   //gStyle->SetOptFit(1111);
+   //gStyle->SetPadRightMargin(0.25);
 
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kINJECTION);
@@ -271,6 +274,7 @@ int main(int argc, char *argv[])
 
    if (mAsymAnaInfo.HasGraphBit())
       mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
+      //mAsymRoot.SaveAs("^.*hRSlopeVsFill.*$", mAsymAnaInfo.GetImageDir());
 
 	if (mAsymAnaInfo.fFlagUpdateDb)
    {

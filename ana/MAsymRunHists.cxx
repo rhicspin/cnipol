@@ -484,7 +484,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    RunConfig::AsMarker(kTARGET_V, polId).Copy(*grRSlopeVsFill_V_);
 
    shName = "hRSlopeVsFill_" + sPolId + "_" + sBeamE;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, -0.2, 0.2);
    hist->SetTitle("; Fill Id; R Slope;");
    hist->SetOption("DUMMY GRIDX");
    hist->GetListOfFunctions()->Add(grRSlopeVsFill_H_, "p");
@@ -1226,7 +1226,7 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
          //hRSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
          hRSlopeVsFill_->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         utils::UpdateLimitsFromGraphs(hRSlopeVsFill_, 2);
+         //utils::UpdateLimitsFromGraphs(hRSlopeVsFill_, 2);
 
          TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
          grRSlopeVsFill_H_->Fit("pol0");

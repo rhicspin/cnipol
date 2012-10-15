@@ -44,6 +44,10 @@ void MseFillProfileNewX::Init()
    target_id       = -1;
    prof_r          = -1;
    prof_r_err      = -1;
+   prof_r0         = -1;
+   prof_r0_err     = -1;
+   prof_rslope     = -1;
+   prof_rslope_err = -1;
    prof_pmax       = -1;
    prof_pmax_err   = -1;
 }
@@ -77,6 +81,10 @@ void MseFillProfileNewX::SetValues(const AnaFillResult &afr, EPolarimeterId polI
    target_orient  = tgtOrient;
    target_id      = afr.GetPCTarget(polId).fTargetId;
 
-   prof_r     = afr.GetPCProfR(polId, tgtOrient).first;
-   prof_r_err = afr.GetPCProfR(polId, tgtOrient).second;
+   prof_r          = afr.GetPCProfR(polId, tgtOrient).first;
+   prof_r_err      = afr.GetPCProfR(polId, tgtOrient).second;
+   prof_r0         = afr.GetPCProfR0(polId, tgtOrient).first;
+   prof_r0_err     = afr.GetPCProfR0(polId, tgtOrient).second;
+   prof_rslope     = afr.GetPCProfRSlope(polId, tgtOrient).first;
+   prof_rslope_err = afr.GetPCProfRSlope(polId, tgtOrient).second;
 } //}}}
