@@ -2,9 +2,7 @@
 #include <string>
 
 #include "TCanvas.h"
-#include "TEllipse.h"
 #include "TF1.h"
-#include "TFitResult.h"
 #include "TGraphErrors.h"
 #include "TH2F.h"
 #include "TLegend.h"
@@ -34,6 +32,7 @@ int main(int argc, char *argv[])
    //gROOT->SetStyle("Plain");
    //gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("styles/style_anapow.C");
+	gStyle->SetLineWidth(2);
 
    //double targetPol    = 0.924;
    //double targetPolErr = 0.018;
@@ -91,17 +90,47 @@ int main(int argc, char *argv[])
    //string dataFileName = "pp_ANvst_s200.0_pp2pp_2009_toterr";
 
 
-   //TGraphErrors *grAN = new TGraphErrors(6, Data_t, DataAN, Err_t, DataErr);
-   TGraphErrors *grAN = new TGraphErrors(("/eic/u/dsmirnov/cnipol_results/" + dataFileName).c_str(), "%lg %lg %lg");
+   //TGraphErrors *grANStat = new TGraphErrors(6, Data_t, DataAN, Err_t, DataErr);
+   TGraphErrors *grANStat  = new TGraphErrors(("/eic/u/dsmirnov/cnipol_results/" + dataFileName).c_str(), "%lg %lg %lg");
+   TGraphErrors *grANSyst  = new TGraphErrors(("/eic/u/dsmirnov/cnipol_results/" + dataFileName).c_str(), "%lg %lg %lg");
+   TGraphErrors *grANSystP = new TGraphErrors(("/eic/u/dsmirnov/cnipol_results/" + dataFileName).c_str(), "%lg %lg %lg");
+   TGraphErrors *grANSystM = new TGraphErrors(("/eic/u/dsmirnov/cnipol_results/" + dataFileName).c_str(), "%lg %lg %lg");
+
+   // Add systematic errors
+   Double_t x, y, y_systM, y_systP;
+   Double_t xe, ye, ye_syst;
+	Double_t xmin, xmax, ymin, ymax;
+
+   for (UInt_t i=0; i!=grANStat->GetN(); i++)
+   {
+	   grANStat->ComputeRange(xmin, ymin, xmax, ymax);
+      grANStat->GetPoint(i, x, y);
+      xe = grANStat->GetErrorX(i);
+      ye = grANStat->GetErrorY(i);
+
+		//xe = TMath::Sqrt( xe*xe + );
+		ye_syst = y*0.03;
+		ye_syst = TMath::Sqrt( ye*ye + ye_syst*ye_syst);        // uncorrelated across -t syst. error
+		y_systM = y - y*0.04 - 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
+		y_systP = y + y*0.04 + 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
+
+      //grANStat->SetPointError(i, xe, ye);
+      grANSyst->SetPointError(i, xe, ye_syst);
+      //grANSyst->SetPoint(i, x, y);
+      grANSystM->SetPoint(i, x, y_systM);
+      //grANSystM->SetPointError(i, xe, ye);
+      grANSystP->SetPoint(i, x, y_systP);
+      //grANSystP->SetPointError(i, xe, ye);
+	}
 
 
-   //|t| = ((1E-2)-(2E-4))/ (double)64;
+   //|t| = ((1E-2)-(2E-4))/ (Double_t) 64;
    TF1 *funcModelAN = new TF1("funcModelAN", modelAN, 1E-6, 4E-1, 2);
 
    TCanvas *canvas1 = new TCanvas("canvas1", "canvas1", 100, 100, 800, 480);
 
-   canvas1->SetBottomMargin(0.11);
-   canvas1->SetLeftMargin(0.13);
+   //canvas1->SetBottomMargin(0.11);
+   //canvas1->SetLeftMargin(0.13);
    canvas1->SetLogx();
 
    //TH2C* frame1 = new TH2C("frame1", "frame1", 50, 0, 0.05, 100, 0, 0.08);
@@ -117,60 +146,85 @@ int main(int argc, char *argv[])
    //funcModelAN->FixParameter(0, 1);
    funcModelAN->SetParameter(0, 0); // Rer5
    funcModelAN->SetParameter(1, 0); // Imr5
+   //funcModelAN->SetParameter(2, 1); // Norm
    //funcModelAN->FixParameter(3, 0); // Imr2
    //funcModelAN->FixParameter(4, 0); // Rer2
-   funcModelAN->SetLineColor(3);
-   funcModelAN->SetLineWidth(1);
+   //funcModelAN->SetParLimits(2, 0.99, 1.01); // Norm
+
+   funcModelAN->SetLineColor(kBlue);
+   //funcModelAN->SetLineWidth(2);
    funcModelAN->SetLineStyle(1);
 
-   TFitResultPtr fitRes = grAN->Fit(funcModelAN, "R S");
 
-   if (fitRes.Get()) {
-	   TMatrixDSym covMatrix = fitRes->GetCovarianceMatrix();
-		covMatrix.Print();
-	   TMatrixDSym corrMatrix = fitRes->GetCorrelationMatrix();
-		corrMatrix.Print();
-   }
+   TEllipse* errEllipseStat  = new TEllipse();
+   TEllipse* errEllipseSyst  = new TEllipse();
+   TEllipse* errEllipseSystP = new TEllipse();
+   TEllipse* errEllipseSystM = new TEllipse();
 
-   double Rer5     = funcModelAN->GetParameter(0);
-   double Rer5_err = funcModelAN->GetParError(0);
-   double Imr5     = funcModelAN->GetParameter(1);
-   double Imr5_err = funcModelAN->GetParError(1);
+   TFitResultPtr fitResStat  = FitGraph(grANStat,  funcModelAN, errEllipseStat);
+   TFitResultPtr fitResSyst  = FitGraph(grANSyst,  funcModelAN, errEllipseSyst);
+   TFitResultPtr fitResSystP = FitGraph(grANSystP, funcModelAN, errEllipseSystP);
+   TFitResultPtr fitResSystM = FitGraph(grANSystM, funcModelAN, errEllipseSystM);
 
-   TVector2 xy1(Rer5_err, 0);
-   TVector2 xy2(0, Imr5_err);
-   TEllipse* errEllipse = utils::GetEllipse(xy1, xy2, Rer5, Imr5, 0);
+   errEllipseStat->Print();     
+   errEllipseSyst->Print();     
+   errEllipseSystP->Print();
+   errEllipseSystM->Print();
 
-   if (errEllipse)
-      errEllipse->Print();
-   else
-      Error("plotAN", "Invalid ellipse");
+   Double_t reR5Syst    = TMath::Max(fabs(errEllipseStat->GetX1() - errEllipseSystP->GetX1()), fabs(errEllipseStat->GetX1() - errEllipseSystM->GetX1()));
+   Double_t imR5Syst    = TMath::Max(fabs(errEllipseStat->GetY1() - errEllipseSystP->GetY1()), fabs(errEllipseStat->GetY1() - errEllipseSystM->GetY1()));
+
+	Double_t corr        = fitResStat->GetCorrelationMatrix()[0][1];
+	Double_t reR5        = fitResStat->Value(0);
+	Double_t reR5ErrStat = fitResStat->ParError(0);
+	Double_t imR5        = fitResStat->Value(1);
+	Double_t imR5ErrStat = fitResStat->ParError(1);
+
+   Double_t reR5ErrTot  = sqrt(fitResSyst->ParError(0)*fitResSyst->ParError(0) + reR5Syst*reR5Syst);
+   Double_t imR5ErrTot  = sqrt(fitResSyst->ParError(1)*fitResSyst->ParError(1) + imR5Syst*imR5Syst);
+
+   Double_t r5          = sqrt(reR5*reR5 + imR5*imR5);
+   Double_t r5ErrStat   = sqrt(reR5ErrStat*reR5ErrStat + imR5ErrStat*imR5ErrStat + 2*corr * reR5ErrStat * imR5ErrStat);
+   Double_t r5ErrTot    = sqrt(reR5ErrTot*reR5ErrTot   + imR5ErrTot*imR5ErrTot   + 2*corr * reR5ErrTot * imR5ErrTot);
+
+   printf("\nResult:\n********************************************************************************\n");
 
    printf("\n");
-   printf("Re(r5) = % 10.8lf +/- % 10.8lf\n", Rer5, Rer5_err);
-   printf("Im(r5) = % 10.8lf +/- % 10.8lf\n", Imr5, Imr5_err);
+   printf("corr   = % 10.8lf\n", corr);
+   printf("Re(r5) = % 10.8lf +/- % 10.8lf\n", reR5, reR5ErrStat);
+   printf("Im(r5) = % 10.8lf +/- % 10.8lf\n", imR5, imR5ErrStat);
+   printf("   r5  = % 10.8lf +/- % 10.8lf\n",   r5,   r5ErrStat);
    printf("\n");
 
-   //double cal_AN[256];
-   //double cal_t[256];
-   //double rho   = -0.08;
-   //double scale =  1;
-   //double B     =  12;
-   //double sigma =  38.4;
-   //f_AN(cal_t, cal_AN, rho, B, sigma, 0, 0, scale); // write 256 points
-   //f_AN(cal_t, cal_AN, rho, sigma, 0, 0, scale); // write 256 points
-   //TGraph *gr = new TGraph(256, cal_t, cal_AN); //r5=0 N=1, rho=-0.08
+   printf("Stat. + Syst:\n");
+   printf("Re(r5) = % 10.8lf +/- % 10.8lf\n", reR5, reR5ErrTot);
+   printf("Im(r5) = % 10.8lf +/- % 10.8lf\n", imR5, imR5ErrTot);
+   printf("   r5  = % 10.8lf +/- % 10.8lf\n",   r5,   r5ErrTot);
+   printf("\n");
 
+   ValErrPair par1(reR5, reR5ErrTot);
+   ValErrPair par2(imR5, imR5ErrTot);
 
-   grAN->SetMarkerStyle(20);
-   grAN->SetMarkerSize(1);
-   grAN->SetMarkerColor(1);
-   grAN->SetLineColor(1);
-   grAN->Draw("P");
+   TEllipse* errEllipseSystTot = utils::GetErrorEllipse(par1, par2, corr);
+
+   grANStat->SetMarkerStyle(kFullDotLarge);
+   grANStat->SetMarkerSize(1);
+   grANStat->SetMarkerColor(kBlack);
+   grANStat->Draw("P");
+
+	TF1* funcANSystP = grANSystP->GetFunction("funcModelAN");
+   funcANSystP->SetLineStyle(2);
+   funcANSystP->SetLineColor(kMagenta);
+   funcANSystP->Draw("same");
+
+	TF1* funcANSystM = grANSystM->GetFunction("funcModelAN");
+   funcANSystM->SetLineStyle(2);
+   funcANSystM->SetLineColor(kMagenta);
+   funcANSystM->Draw("same");
 
    canvas1->Update();
 
-   TPaveStats *stats = (TPaveStats*) grAN->FindObject("stats");
+   TPaveStats *stats = (TPaveStats*) grANStat->FindObject("stats");
 
    if (stats) {
       stats->SetX1NDC(0.72);
@@ -179,13 +233,13 @@ int main(int argc, char *argv[])
       stats->SetY2NDC(0.65);
    }
 
-   TLine l1;
-   l1.SetLineWidth(1);
-   l1.DrawLine(0, 0, 0.05, 0); //iimax,maxh/4,iimax,0
+   //TLine l1;
+   //l1.SetLineWidth(1);
+   //l1.DrawLine(0, 0, 0.05, 0); //iimax,maxh/4,iimax,0
 
    //TLegend* legend = new TLegend(0.82, 0.3, 0.99, 0.5);
    ////legend->SetTextSize(0.04);
-   //legend->AddEntry(grAN, "Data", "p");
+   //legend->AddEntry(grANStat, "Data", "p");
    //legend->AddEntry(funcModelAN, "fit", "l");
    //legend->SetFillColor(0);//white filled box
    //legend->Draw("");
@@ -194,13 +248,13 @@ int main(int argc, char *argv[])
    funcModelAN->Copy(*funcModelAN_noflip);
    funcModelAN_noflip->SetParameter(0, 0); // Imr5
    funcModelAN_noflip->SetParameter(1, 0); // Rer5
-   funcModelAN_noflip->SetLineColor(1);
+   //funcModelAN_noflip->SetParameter(2, 1); // norm
+   funcModelAN_noflip->SetLineColor(kBlack);
    funcModelAN_noflip->SetLineWidth(2);
    funcModelAN_noflip->SetLineStyle(1);
    funcModelAN_noflip->Draw("same");
 
    canvas1->SaveAs((dataFileName + "_AN.png").c_str());
-
 
    // contour plot Im_r5 vs. Re_r5
    TCanvas *canvas2 = new TCanvas("canvas2", "canvas2", 120, 120, 640, 480);
@@ -210,15 +264,16 @@ int main(int argc, char *argv[])
    double cRer5[1], cImr5[1];
    double cRer5_err[1], cImr5_err[1];
 
-   cRer5[0]     = funcModelAN->GetParameter(0);
-   cImr5[0]     = funcModelAN->GetParameter(1);
-   cRer5_err[0] = 0; //fitTheoAn2->GetParError(2);
-   cImr5_err[0] = 0; //fitTheoAn2->GetParError(1);
+   cRer5[0]     = fitResStat->Value(0);    //funcModelAN->GetParameter(0);
+   cImr5[0]     = fitResStat->Value(1);    //funcModelAN->GetParameter(1);
+   cRer5_err[0] = fitResStat->ParError(0); //0; //fitTheoAn2->GetParError(2);
+   cImr5_err[0] = fitResStat->ParError(1); //0; //fitTheoAn2->GetParError(1);
 
    TGraphErrors *gr_r5 = new TGraphErrors(1, cRer5, cImr5, cRer5_err, cImr5_err);
-   gr_r5->SetMarkerStyle(5);
-   gr_r5->SetMarkerSize(2);
-   gr_r5->SetMarkerColor(4);
+   gr_r5->SetMarkerStyle(kFullDotLarge);
+   gr_r5->SetMarkerSize(0.2);
+   //gr_r5->SetLineWidth(2);
+   gr_r5->SetMarkerColor(kBlue);
 
    //// inset ///////////////////////////////////////////////////////////////
    //TPad *npad = new TPad("npad", "", 0.631, 0.539, 0.931, 0.939);		//
@@ -240,16 +295,13 @@ int main(int argc, char *argv[])
 
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.2, 100, -0.4, 0.4); //E704
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.4, 100, -0.4, 0.2);       // H-jet, 24 GeV  like in paper
-   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15);   // H-jet, 2012: 24 GeV, 255 GeV
+   //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.10, 0.10, 100, -0.15, 0.15);   // H-jet, 2012: 24 GeV, 255 GeV
+   TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.05, 0.05, 100, -0.15, 0.15);   // H-jet, 2012: 24 GeV, 255 GeV
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.05, 0.05, 100, -0.07, 0.07);   // H-jet: 100 GeV, 255 GeV, pp2pp: 2009
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.04, 0.04, 100, -0.12, 0.08);   // H-jet: 100 GeV
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.2, 0.15, 100, -3, 2);         //pp2pp 2003 
    //TH2C* frame2 = new TH2C("frame2", "frame2", 100, -0.009, 0.009, 100, -0.07, 0.07); //pp2pp 2009  like in paper
 
-   //frame2->GetXaxis()->SetLabelSize(0.06);
-   //frame2->GetXaxis()->SetTitleSize(0.06);
-   //frame2->GetYaxis()->SetLabelSize(0.06);
-   //frame2->GetYaxis()->SetTitleSize(0.06);
    frame2->GetXaxis()->SetTitle("Re r_{5}");
    frame2->GetYaxis()->SetTitle("Im r_{5}");
    //frame2->GetYaxis()->SetTitleOffset(1.5);
@@ -268,26 +320,11 @@ int main(int argc, char *argv[])
    gMinuit->SetErrorDef(1);// 1sigma
 
    //get first contour for Re_r5(par2) versus Im_r5(par1)
-   TGraph *gr12_1 = (TGraph*) gMinuit->Contour(300, 0, 1); //fineness, param1(Rer5), param2(Imr5)
-
-   gr12_1->SetLineColor(4);
-   gr12_1->SetFillColor(7);
-   gr12_1->SetLineWidth(1);
-   gr12_1->Draw("+l");
-
-   double matrix[2][2];
-   gMinuit->mnemat(&matrix[0][0], 2);
-
-   printf("Covariance matrix: \n");//getchar();
-
-   for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 2; ++j) {
-         printf("%10lf   ", matrix[i][j]);
-      }
-      printf("\n");
-   }
-
-   printf("\n");
+   //TGraph *gr12_1 = (TGraph*) gMinuit->Contour(300, 0, 1); //fineness, param1(Rer5), param2(Imr5)
+   //gr12_1->SetLineColor(kBlue);
+   //gr12_1->SetFillColor(7);
+   //gr12_1->SetLineWidth(2);
+   //gr12_1->Draw("+l");
 
 
    // Print results
@@ -334,32 +371,46 @@ int main(int argc, char *argv[])
    //
    // WARNING!!! This test works only with TMinuit
 
-   gMinuit->mnmatu(1);
+   //gMinuit->mnmatu(1);
 
    //Get contour for ERRDEF=2
-   gMinuit->SetErrorDef(4); //2sigma
-   TGraph *gr12_2 = (TGraph*) gMinuit->Contour(300, 0, 1);
-   gr12_2->Draw("l");
+   //gMinuit->SetErrorDef(4); //2sigma
+   //TGraph *gr12_2 = (TGraph*) gMinuit->Contour(300, 0, 1);
+   //gr12_2->SetLineColor(kBlack);
+   //gr12_2->SetLineWidth(2);
+   //gr12_2->Draw("l");
 
    //Get contour for ERRDEF=3
-   gMinuit->SetErrorDef(9); //3sigma
-   TGraph *gr12_3 = (TGraph*) gMinuit->Contour(300, 0, 1);
-   gr12_3->SetLineColor(1);
-   gr12_3->Draw("l");
+   //gMinuit->SetErrorDef(9); //3sigma
+   //TGraph *gr12_3 = (TGraph*) gMinuit->Contour(300, 0, 1);
+   //gr12_3->SetLineColor(kBlack);
+   //gr12_3->SetLineWidth(2);
+   //gr12_3->Draw("l");
 
    gr_r5->Draw("P");
 
    //TLine *lx = new TLine(-0.04, 0.0, 0.04, 0.);//JET-sigma1
    TLine *lx = new TLine(frame2->GetXaxis()->GetXmin(), 0, frame2->GetXaxis()->GetXmax(), 0.);
-   lx->SetLineColor(14);
-   lx->SetLineStyle(1);
+   //lx->SetLineColor(kBlack);
+   //lx->SetLineStyle(1);
    lx->Draw("same");
 
    //TLine *ly = new TLine(0., -0.06, 0.0, 0.02);//JET-sigma1
    TLine *ly = new TLine(0, frame2->GetYaxis()->GetXmin(), 0, frame2->GetYaxis()->GetXmax());
-   ly->SetLineColor(14);
-   ly->SetLineStyle(1);
+   //ly->SetLineColor(kBla);
+   //ly->SetLineStyle(1);
    ly->Draw("same");
+
+	errEllipseStat->SetFillStyle(0);
+	errEllipseStat->SetLineColor(kBlue);
+	errEllipseStat->SetLineWidth(2);
+	errEllipseStat->Draw();
+
+	errEllipseSystTot->SetFillStyle(0);
+   errEllipseSystTot->SetLineStyle(2);
+	errEllipseSystTot->SetLineColor(kMagenta);
+	errEllipseSystTot->SetLineWidth(2);
+	errEllipseSystTot->Draw();
 
    canvas2->SaveAs((dataFileName + "_ell.png").c_str());
 } //}}}
@@ -411,6 +462,7 @@ Double_t modelAN(Double_t *x, Double_t *par)
 
    double Rer5 = par[0];
    double Imr5 = par[1];
+   //double norm = par[2];
    //double Imr2 = par[3];
    //double Rer2 = par[4];
 
@@ -437,7 +489,7 @@ Double_t modelAN(Double_t *x, Double_t *par)
    //double sigma_totP = 38.977;
 
    // sqrt(s) = 21.7 GeV, 250 GeV beam on H-jet target
-   // These data have to be checked!!!
+   // These values have to be checked!!!
    //double B          = 12;
    //double rho        = -0.0136;
    //double sigma_totP = 39.221;
@@ -469,4 +521,72 @@ Double_t modelAN(Double_t *x, Double_t *par)
    double nom   = tt * (kappa * (1 - delta * rho) + 2 * (delta * Rer5 - Imr5)) - 2 * (Rer5 - rho * Imr5);
 
    return TMath::Sqrt(minus_t) * nom / MASS_PROTON / denom;
+} //}}}
+
+
+/** */
+TFitResultPtr FitGraph(TGraph *gr, TF1 *func, TEllipse *ell)
+{ //{{{
+   Info("FitGraph", "\n********************************************************************************\n");
+
+   TFitResultPtr fitRes = gr->Fit(func, "R S B");
+
+   double Rer5     = func->GetParameter(0);
+   double Rer5_err = func->GetParError(0);
+   double Imr5     = func->GetParameter(1);
+   double Imr5_err = func->GetParError(1);
+   //double norm     = func->GetParameter(2);
+   //double normErr  = func->GetParError(2);
+	Double_t corr   = 0;
+
+   if (fitRes.Get()) {
+	   TMatrixDSym covMatrix  = fitRes->GetCovarianceMatrix();
+		covMatrix.Print();
+	   TMatrixDSym corrMatrix = fitRes->GetCorrelationMatrix();
+		corrMatrix.Print();
+
+      Rer5     = fitRes->Value(0);
+      Rer5_err = fitRes->ParError(0);
+      Imr5     = fitRes->Value(1);
+      Imr5_err = fitRes->ParError(1);
+
+		corr = corrMatrix[0][1];
+   }
+
+   ValErrPair par1(Rer5, Rer5_err);
+   ValErrPair par2(Imr5, Imr5_err);
+
+	//par1.e *= 3;
+	//par2.e *= 3;
+   TEllipse* ellTmp = utils::GetErrorEllipse(par1, par2, corr);
+
+	ellTmp->Copy(*ell);
+	delete ellTmp;
+
+   if (ell)
+      ell->Print();
+   else
+      Error("plotAN", "Invalid ellipse");
+
+   Double_t r5     = sqrt(Rer5*Rer5 + Imr5*Imr5);
+   Double_t r5_err = sqrt(  Rer5_err*Rer5_err + Imr5_err*Imr5_err + 2*corr * Rer5_err * Imr5_err);
+
+   printf("\n");
+   printf("corr   = % 10.8lf\n", corr);
+   printf("Re(r5) = % 10.8lf +/- % 10.8lf\n", Rer5, Rer5_err);
+   printf("Im(r5) = % 10.8lf +/- % 10.8lf\n", Imr5, Imr5_err);
+   printf("   r5  = % 10.8lf +/- % 10.8lf\n",   r5,   r5_err);
+   //printf("Norm   = % 10.8lf +/- % 10.8lf\n", norm, normErr);
+   printf("\n");
+
+   //double cal_AN[256];
+   //double cal_t[256];
+   //double rho   = -0.08;
+   //double scale =  1;
+   //double B     =  12;
+   //double sigma =  38.4;
+   //f_AN(cal_t, cal_AN, rho, B, sigma, 0, 0, scale); // write 256 points
+   //f_AN(cal_t, cal_AN, rho, sigma, 0, 0, scale); // write 256 points
+   //TGraph *gr = new TGraph(256, cal_t, cal_AN); //r5=0 N=1, rho=-0.08
+	return fitRes;
 } //}}}

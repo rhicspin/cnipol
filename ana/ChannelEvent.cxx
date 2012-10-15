@@ -186,7 +186,7 @@ Float_t ChannelEvent::GetCarbonMassEstimate()
 /** */
 Float_t ChannelEvent::GetMandelstamT()
 { //{{{
-   return -2 * MASS_12C * k2G * k2G * GetKinEnergyAEstimate(); // should be t = -2ME +2M^2 ?
+   return -2 * MASS_12C * k2G * GetKinEnergyAEstimate() * k2G; // t = -2ME
 } //}}}
 
 

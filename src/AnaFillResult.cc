@@ -664,7 +664,7 @@ ValErrPair AnaFillResult::GetPCPolarSlope(EPolarimeterId polId) const
 
 
 /** */
-ValErrPair AnaFillResult::GetPCProfR0(EPolarimeterId polId, ETargetOrient tgtOrient)
+ValErrPair AnaFillResult::GetPCProfR0(EPolarimeterId polId, ETargetOrient tgtOrient) const
 { //{{{
    ValErrPair result(0, -1);
 
@@ -674,15 +674,15 @@ ValErrPair AnaFillResult::GetPCProfR0(EPolarimeterId polId, ETargetOrient tgtOri
    TF1* func = gr->GetFunction("fitFunc");
    if (!func) return result;
 
-   result.first  = func->GetParameter(1);
-   result.second = func->GetParError(1);
+   result.first  = func->GetParameter(0);
+   result.second = func->GetParError(0);
 
    return result;
 } //}}}
 
 
 /** */
-ValErrPair AnaFillResult::GetPCProfRSlope(EPolarimeterId polId, ETargetOrient tgtOrient)
+ValErrPair AnaFillResult::GetPCProfRSlope(EPolarimeterId polId, ETargetOrient tgtOrient) const
 { //{{{
    ValErrPair result(0, -1);
 
