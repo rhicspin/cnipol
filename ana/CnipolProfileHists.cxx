@@ -159,7 +159,7 @@ void CnipolProfileHists::BookHists()
    // this is a copy from the "asym" container
    shName = "hAsymVsDelim4Det";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetOption("E1 NOIMG");
+   hist->SetOption("E1");
    hist->SetTitle("; Time, s; Asymmetry;");
    o[shName] = hist;
 
@@ -474,7 +474,8 @@ void CnipolProfileHists::PostFill()
    hPolarProfileFold->Sumw2();
    //hPolarProfileFinal->Sumw2();
 
-   for (int i=bbegin, j=1; i<=bend; i++, j++) {
+   for (int i=bbegin, j=1; i<=bend; i++, j++)
+   {
       hIntensProfileFwd->SetBinContent(j, hIntensProfile->GetBinContent(i));
       hIntensProfileBck->SetBinContent(j, hIntensProfile->GetBinContent(i + bmean2 - bmean1));
       //hIntensProfileFold->SetBinContent(j, hIntensProfile->GetBinContent(i) + hIntensProfile->GetBinContent(i + bmean2 - bmean1));
