@@ -15,7 +15,7 @@ fi
 
 # MySQL
 export MYSQL_INCLUDE_DIR=/usr/include/mysql
-export MYSQL_LIB_DIR=/usr/lib64/mysql
+export MYSQL_LIB_DIR=/usr/lib/mysql
 
 export MYSQLPP_INCLUDE_DIR=/usr/local/mysql++/lib
 export MYSQLPP_LIB_DIR=/usr/local/mysql++
