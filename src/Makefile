@@ -1,8 +1,9 @@
 #
-# Authors      : Itaru Nakagawa
-#                Dmitri Smirnov
+# Authors :
 #
-# Creation data: Feb.6,2006
+#    Dmitri Smirnov
+#
+# Creation data: Feb 6, 2006
 #
 
 CNIPOL_LIB_DIR  = $(CNIPOL_DIR)/lib
@@ -15,17 +16,21 @@ INC_PATHS = -I. -I/usr/include -I$(ROOT_INC_PATH) -I$(CNIPOL_DIR)/inc \
    -I$(CNIPOL_DIR)/online/include -I$(MYSQL_INCLUDE_DIR) \
    -I$(MYSQLPP_INCLUDE_DIR) -I$(UTILS_INC_DIR)
 
-LIBS      = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana -lmysqlpp -lmysqlclient -lutils
-ROOTLIB   = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
-ROOTLIBS  = `root-config --libs`
+#LIBS         = -lpacklib -lkernlib -lmathlib -lpawlib -lgraflib -lgrafX11 -lm -lc -lcniana -lmysqlpp -lmysqlclient -lutils
+LIBS         = -lm -lc -lcniana -lmysqlpp -lmysqlclient -lutils
+ROOTLIB      = `root-config --cflags` `root-config --libs` -lMinuit -lXMLIO -Wl,-rpath,$(ROOTSYS)
+ROOTLIBS     = `root-config --libs`
+ROOTLDFLAGS := $(shell root-config --nonew --ldflags)
 
 SVN_ASYM_VERSION := $(shell svnversion -n $(CNIPOL_DIR))
 #SVN_ASYM_VERSION = 'ASYM_VERSION="555"'
 
 CC = g++
 #C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -O2 -w
-C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -g -fno-inline
-SOFLAGS = -shared -m32
+#C_FLAG = -Wall -m32 -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -g -fno-inline
+C_FLAG = -Wall -fPIC $(ROOTLDFLAGS) -D'ASYM_VERSION="$(SVN_ASYM_VERSION)"' -ggdb -g -fno-inline
+#SOFLAGS = -shared -m32
+SOFLAGS = -shared $(ROOTLDFLAGS)
 
 CXXFLAGS  = $(C_FLAG) $(INC_PATHS)
 LOADLIBES = $(LIB_PATHS) $(LIBS)
@@ -52,7 +57,8 @@ HDRS = $(filter-out LinkDef%, $(wildcard *.h))
 SRCS = $(wildcard *.cc)
 OBJS = $(SRCS:.cc=.o) $(CNIANA_DICT_OBJ)
 
-CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) hb_lib.o
+#CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS)) hb_lib.o
+CNIPOL_LIB_OBJS = $(filter-out $(BINARY_OBJS), $(OBJS))
 
 .PHONY: all lib bin install
 
@@ -84,7 +90,7 @@ $(CNIANA_LIB): $(wildcard $(CNIPOL_DIR)/ana/*.cxx) $(wildcard $(CNIPOL_DIR)/inc/
 	make -C $(CNIPOL_DIR)/ana
 
 .f.o:
-	$(FC) -m32 -O -c $<
+	$(FC) -fPIC $(ROOTLDFLAGS) -O -c $<
 
 %.o: %.cc %.h Asym.h AsymHeader.h
 	#echo $* $@

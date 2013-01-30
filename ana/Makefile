@@ -21,6 +21,7 @@ DllSuf        = so
 ROOTCFLAGS   := $(shell root-config --cflags)
 ROOTLIBS     := $(shell root-config --libs)
 ROOTGLIBS    := $(shell root-config --glibs)
+ROOTLDFLAGS  := $(shell root-config --nonew --ldflags)
 
 # Linux with egcs, gcc 2.9x, gcc 3.x (>= RedHat 5.2)
 CXX           = g++
@@ -38,7 +39,7 @@ CFLAGS        = -g -O -I$(INC_DIR)
 LD            = g++
 #LDFLAGS       = -g
 LDFLAGS       = 
-SOFLAGS       = -shared -m32
+SOFLAGS       = -shared $(ROOTLDFLAGS)
 
 CXXFLAGS     += $(ROOTCFLAGS)
 

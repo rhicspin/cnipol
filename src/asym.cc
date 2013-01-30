@@ -33,7 +33,7 @@
 #include "AsymRead.h"
 #include "AsymAnaInfo.h"
 #include "AsymDbSql.h"
-#include "AsymHbook.h"
+//#include "AsymHbook.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
@@ -63,9 +63,9 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->VerifyOptions();
 
    // Book HBOOK file (deprecated) should be removed from future releases
-   char hbk_outfile[256] = "out.hbook";
-   printf("Booking HBOOK file %s\n", hbk_outfile);
-   hist_book(hbk_outfile);
+   //char hbk_outfile[256] = "out.hbook";
+   //printf("Booking HBOOK file %s\n", hbk_outfile);
+   //hist_book(hbk_outfile);
 
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
    //gAsymRoot->DeleteHistogram();        // Deprecated. Delete unnecessary ROOT histograms
 
    // Close histogram file
-   hist_close(hbk_outfile);
+   //hist_close(hbk_outfile);
 
    // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();

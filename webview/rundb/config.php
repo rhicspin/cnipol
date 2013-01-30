@@ -1,5 +1,8 @@
 <?php
 
+include_once("Pair.php");
+
+
 define("DATA_DIR", "/usr/local/polarim/root");
 define("LOG_DIR",  "/usr/local/polarim/log");
 
@@ -32,71 +35,45 @@ $MODE              = array("1" => "user", "11" => "user (csv)", "2" => "expert")
 
 
 // Normalization factors
-//$normJetCarbonByTarget[12][255] = 0.9585;       // the average of all polarimeters in run 11 
-//$normJetCarbonByTarget[12][100] = 1;
-//$normJetCarbonByTarget[12][255] = 0.9585;       // the average of all polarimeters in run 11 
-//$normJetCarbonByTarget[12][100] = 1;
-
-$normJetCarbonByTarget[12][255]["B1U"] = 1.016;
-$normJetCarbonByTarget[12][255]["Y1D"] = 1.073;
-$normJetCarbonByTarget[12][255]["B2D"] = 1.197;
-$normJetCarbonByTarget[12][255]["Y2U"] = 0.994;
 
 $normJetCarbonByTarget[11][250]["B1U"] = 0.934;
 $normJetCarbonByTarget[11][250]["Y1D"] = 0.909;
 $normJetCarbonByTarget[11][250]["B2D"] = 1.058;
 $normJetCarbonByTarget[11][250]["Y2U"] = 0.933;
 
-//$normJetCarbonByTarget[11][250]2U"] = 0.933;
+$normJetCarbonByTarget[12][255]["B1U"] = 1.016;
+$normJetCarbonByTarget[12][255]["Y1D"] = 1.073;
+$normJetCarbonByTarget[12][255]["B2D"] = 1.197;
+$normJetCarbonByTarget[12][255]["Y2U"] = 0.994;
 
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][1] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][2] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][3] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][4] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][5] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["H"][6] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][1] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][2] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][3] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][4] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][5] = 0.934;
-//$normJetCarbonByTarget[11][250]["B1U"]["V"][6] = 0.934;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][1] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][2] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][3] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][4] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][5] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["H"][6] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][1] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][2] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][3] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][4] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][5] = 0.909;
-//$normJetCarbonByTarget[11][250]["Y1D"]["V"][6] = 0.909;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][1] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][2] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][3] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][4] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][5] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["H"][6] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][1] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][2] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][3] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][4] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][5] = 1.058;
-//$normJetCarbonByTarget[11][250]["B2D"]["V"][6] = 1.058;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][1] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][2] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][3] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][4] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][5] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["H"][6] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][1] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][2] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][3] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][4] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][5] = 0.933;
-//$normJetCarbonByTarget[11][250]["Y2U"]["V"][6] = 0.933;
+$normHJPC[9][100]['B1U']['nomi'] = new pair(   1.00350,    0.01672);
+$normHJPC[9][100]['Y1D']['nomi'] = new pair(   1.00494,    0.01126);
+$normHJPC[9][100]['B2D']['nomi'] = new pair(   0.97621,    0.01097);
+$normHJPC[9][100]['Y2U']['nomi'] = new pair(   1.01649,    0.01183);
+
+$normHJPC[9][250]['B1U']['nomi'] = new pair(   0.89197,    0.02712);
+$normHJPC[9][250]['Y1D']['nomi'] = new pair(   0.91179,    0.02892);
+$normHJPC[9][250]['B2D']['nomi'] = new pair(   0.88177,    0.02703);
+$normHJPC[9][250]['Y2U']['nomi'] = new pair(   0.86630,    0.02722);
+
+//$normJetCarbonByTarget[11][250]2U"] = 0.933;
+$normHJPC[11][250]['B1U']['nomi'] = new pair(   0.95675,    0.01368);
+$normHJPC[11][250]['Y1D']['nomi'] = new pair(   0.96189,    0.01753);
+$normHJPC[11][250]['B2D']['nomi'] = new pair(   1.05085,    0.02548);
+$normHJPC[11][250]['B2D']['V'][4] = new pair(   1.11481,    0.04070);
+$normHJPC[11][250]['B2D']['V'][6] = new pair(   1.20940,    0.03638);
+$normHJPC[11][250]['Y2U']['nomi'] = new pair(   0.95513,    0.01278);
+
+$normHJPC[12][100]['B1U']['nomi'] = new pair(   1.04706,    0.01295);
+$normHJPC[12][100]['Y1D']['nomi'] = new pair(   1.02821,    0.01557);
+$normHJPC[12][100]['B2D']['nomi'] = new pair(   1.12185,    0.02087);
+$normHJPC[12][100]['Y2U']['nomi'] = new pair(   0.97165,    0.01640);
+
+$normHJPC[12][255]['B1U']['nomi'] = new pair(   0.99292,    0.01359);
+$normHJPC[12][255]['Y1D']['nomi'] = new pair(   1.08502,    0.01481);
+$normHJPC[12][255]['B2D']['nomi'] = new pair(   1.12329,    0.02078);
+$normHJPC[12][255]['Y2U']['nomi'] = new pair(   0.99830,    0.01658);
+
 
 // sigma = fill-to-fill uncorrelated errors
 // delta = fill-to-fill correlated errors

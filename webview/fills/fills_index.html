@@ -66,7 +66,7 @@ $entries = $dbFillPolar->ReadEntries(); //($page-1)*$nRunsPerPage, $nRunsPerPage
 
 $es = array();
 
-$globResult = new GlobResult();
+$globResult = new GlobResult($_GET['rp']);
 
 
 // First loop over all fills
@@ -237,14 +237,14 @@ else if ($gMode == 2)
    <th class='yelPol' rowspan=2><var>k</var><sub>coll</sub>
 
    <th class='bluPol' rowspan=2>Polarization,&nbsp;%<br>H-jet
-   <th class='bluPol' rowspan=2>Polarization,&nbsp;%<br>B1U
-   <th class='bluPol' rowspan=2>Polarization,&nbsp;%<br>B2D
+   <th class='bluPol' colspan=3>Polarization,&nbsp;%<br>B1U
+   <th class='bluPol' colspan=3>Polarization,&nbsp;%<br>B2D
    <th class='bluPol' rowspan=2>R_H<br>Horiz. profile
    <th class='bluPol' rowspan=2>R_V<br>Vert. profile
 
    <th class='yelPol' rowspan=2>Polarization,&nbsp;%<br>H-jet
-   <th class='yelPol' rowspan=2>Polarization,&nbsp;%<br>Y1D
-   <th class='yelPol' rowspan=2>Polarization,&nbsp;%<br>Y2U
+   <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>Y1D
+   <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>Y2U
    <th class='yelPol' rowspan=2>R_H<br>Horiz. profile
    <th class='yelPol' rowspan=2>R_V<br>Vert. profile
 
@@ -261,6 +261,22 @@ else if ($gMode == 2)
    <th class='bluPol'>Avrg.
    <th class='bluPol'>P_0
    <th class='bluPol'>Slope, %/h
+
+   <th class='yelPol'>Avrg.
+   <th class='yelPol'>P_0
+   <th class='yelPol'>Slope, %/h
+
+   <th class='bluPol'>Avrg.
+   <th class='bluPol'>P_0
+   <th class='bluPol'>Slope, %/h
+
+   <th class='bluPol'>Avrg.
+   <th class='bluPol'>P_0
+   <th class='bluPol'>Slope, %/h
+
+   <th class='yelPol'>Avrg.
+   <th class='yelPol'>P_0
+   <th class='yelPol'>Slope, %/h
 
    <th class='yelPol'>Avrg.
    <th class='yelPol'>P_0
@@ -375,6 +391,18 @@ foreach ($globResult->fFillResults as $fill):
                                polarPairToString($fill->fCollBeamPolarSlopes[1]) :
                                polarPairToString($globResult->fMissingBeamPolarSlopes[1][$fill->fBeamEnergy], "feature");
 
+   $strCollBeamPolarSlopeBlu_patched = $fill->fCollBeamPolarSlopes[1]->second >= 0 ?
+                               polarPairToString($fill->fCollBeamPolarSlopes_patched[1]) :
+                               polarPairToString($globResult->fMissingBeamPolarSlopes[1][$fill->fBeamEnergy], "feature");
+
+   $strCollBeamPolarSlopeYel = $fill->fCollBeamPolarSlopes[2]->second >= 0 ?
+                               polarPairToString($fill->fCollBeamPolarSlopes[2]) :
+                               polarPairToString($globResult->fMissingBeamPolarSlopes[2][$fill->fBeamEnergy], "feature");
+
+   $strCollBeamPolarSlopeYel_patched = $fill->fCollBeamPolarSlopes[2]->second >= 0 ?
+                               polarPairToString($fill->fCollBeamPolarSlopes_patched[2]) :
+                               polarPairToString($globResult->fMissingBeamPolarSlopes[2][$fill->fBeamEnergy], "feature");
+
 
 if ($gMode == 11):
    print $fill->FormatAsCSV();
@@ -383,18 +411,18 @@ elseif ($gMode == 2):
 
 <tr>
    <td class=align_cm><a href="http://www.phy.bnl.gov/cnipol/fills/?fillid=<?=$strFillId?>&rp=<?=$_GET['rp']?>"><?=$strFillId?></a>
-   <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$e['fill']?>'>-->
+   <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$strFillId?>'>-->
 
    <td class='align_cm'><?=$strFillType?>
    <td class='align_cm'><?=$strBeamEnergy?>
-   <td class='align_cm'><?=$strStartTime?>
+   <td class='align_cm nowrap'><?=$strStartTime?>
 
    <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
-   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>
-   <td class='align_cm nowrap bluPol'><b><?=$strCollBeamPolarSlopeBlu?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>&nbsp;<?=polarPairToString($fill->fCollBeamPolarP0s_patched[1])?>
+   <td class='align_cm nowrap bluPol'><b><?=$strCollBeamPolarSlopeBlu?></b>&nbsp;<?=$strCollBeamPolarSlopeBlu_patched?>
    <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolars[2])?></b>
-   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>
-   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>&nbsp;<?=polarPairToString($fill->fCollBeamPolarP0s_patched[2])?>
+   <td class='align_cm nowrap yelPol'><b><?=$strCollBeamPolarSlopeYel?></b>&nbsp;<?=$strCollBeamPolarSlopeYel_patched?>
 
    <td class='align_cm nowrap'><?=polarPairToString($fill->fBeamPolars[1])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fBeamPolarP0s[1])?>
@@ -407,14 +435,22 @@ elseif ($gMode == 2):
    <td class='align_cm nowrap'><?=pairToString($fill->fCollPolarScale[2])?>
 
    <td class='align_cm nowrap'><?=polarPairToString($hjPolarBlu)?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[0])?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[2])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[0])?> <?//=pairToString($fill->fNorm[0], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[0])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[0])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[2])?> <?//=pairToString($fill->fNorm[2], "", "%6.4f")?> <?//=$fill->fTargetOrients[2]?> <?//=$fill->fTargetIds[2]?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[2])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[2])?>
    <td class='align_cm nowrap'><?=$strProfileB_V?>
    <td class='align_cm nowrap'><?=$strProfileB_H?>
 
    <td class='align_cm nowrap'><?=polarPairToString($hjPolarYel)?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[1])?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[3])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[1])?> <?//=pairToString($fill->fNorm[1], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[1])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[1])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[3])?> <?//=pairToString($fill->fNorm[3], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[3])?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[3])?>
    <td class='align_cm nowrap'><?=$strProfileY_V?>
    <td class='align_cm nowrap'><?=$strProfileY_H?>
 
@@ -431,11 +467,11 @@ else:
    <td class='align_cm'><?=$strStartTime?>
 
    <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
-   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[1])?></b>
-   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s_patched[1])?></b>
+   <td class='align_cm nowrap bluPol'><b><?=$strCollBeamPolarSlopeBlu_patched?></b>
    <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolars[2])?></b>
-   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s[2])?></b>
-   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarSlopes[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s_patched[2])?></b>
+   <td class='align_cm nowrap yelPol'><b><?=$strCollBeamPolarSlopeYel_patched?></b>
 
 <?php
 
@@ -480,7 +516,7 @@ if ($gMode == 2):
 ?>
 
 <tr>
-   <th colspan=28>&nbsp;<br>&nbsp;
+   <th colspan=36>&nbsp;<br>&nbsp;
 
 <tr>
    <th>Mean
@@ -508,12 +544,18 @@ if ($gMode == 2):
    <th class='yelPol align_ct'><?=pairToString($avrgCollPolarScaleYel, "", "%5.3f")?>
 
    <th class='bluPol align_ct'><?=polarPairToString($globResult->fAvrgHJPolars[1])?>
+
    <th class='bluPol align_ct'><?=polarPairToString($globResult->fAvrgPCPolars[0])?><br><hr>
        <?=polarPairToString($pairBHJ_B1U_Avrg)?>&nbsp;(H-jet|B1U)<br>
        <?=polarPairToString($globResult->fAvrgPCnHJPolars[0])?>&nbsp;(B1U|H-jet)<br>
+   <th>&nbsp;
+   <th>&nbsp;
+
    <th class='bluPol align_ct'><?=polarPairToString($globResult->fAvrgPCPolars[2])?><br><hr>
        <?=polarPairToString($pairBHJ_B2D_Avrg)?>&nbsp;(H-jet|B2D)<br>
        <?=polarPairToString($globResult->fAvrgPCnHJPolars[2])?>&nbsp;(B2D|H-jet)<br>
+   <th>&nbsp;
+   <th>&nbsp;
    <th class='bluPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[1][1])?>
    <th class='bluPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[1][0])?>
 
@@ -521,9 +563,13 @@ if ($gMode == 2):
    <th class='yelPol align_ct'><?=polarPairToString($globResult->fAvrgPCPolars[1])?><br><hr>
        <?=polarPairToString($pairYHJ_Y1D_Avrg)?>&nbsp;(H-jet|Y1D)<br>
        <?=polarPairToString($globResult->fAvrgPCnHJPolars[1])?>&nbsp;(Y1D|H-jet)<br>
+   <th>&nbsp;
+   <th>&nbsp;
    <th class='yelPol align_ct'><?=polarPairToString($globResult->fAvrgPCPolars[3])?><br><hr>
        <?=polarPairToString($pairYHJ_Y2U_Avrg)?>&nbsp;(H-jet|Y2U)<br>
        <?=polarPairToString($globResult->fAvrgPCnHJPolars[3])?>&nbsp;(Y2U|H-jet)<br>
+   <th>&nbsp;
+   <th>&nbsp;
    <th class='yelPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[2][1])?>
    <th class='yelPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[2][0])?>
 
@@ -556,6 +602,14 @@ if ($gMode == 2):
    <th class='bluPol align_cm'>&nbsp;
    <th class='bluPol align_cm'>&nbsp;
    <th class='bluPol align_cm'>&nbsp;
+   <th class='bluPol align_cm'>&nbsp;
+   <th class='bluPol align_cm'>&nbsp;
+   <th class='bluPol align_cm'>&nbsp;
+   <th class='bluPol align_cm'>&nbsp;
+   <th class='yelPol align_cm'>&nbsp;
+   <th class='yelPol align_cm'>&nbsp;
+   <th class='yelPol align_cm'>&nbsp;
+   <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
@@ -610,7 +664,7 @@ endif;
 <p>&nbsp;
 <p>&nbsp;
 <p>
-Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in this run:
+Normalization for p-Carbon polarization k<sub>jet/crb</sub> from all selected fills:
 
 <p>
 <table border="1" cellpadding="4" cellspacing="0">
@@ -627,7 +681,18 @@ Normalization factors for p-Carbon polarization k_{jet/crb} from all fills in th
    <td><?=pairToString($normY2U, "", "%8.7f")?>
 </table>
 
+<p>
+Nominal normalization for p-Carbon polarization k<sub>jet/crb</sub> from all good fills in this run:
+
+<p>
+<table border="1" cellpadding="4" cellspacing="0">
 <?php
+show_array($normHJPC[$_GET['rp']], 1, 0);
+?>
+</table>
+
+<?php
+
 endif;
 ?>
 
