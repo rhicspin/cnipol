@@ -72,7 +72,7 @@ void AnaGlobResult::Print(const Option_t* opt) const
 { //{{{
    Info("Print", "Print members:");
 
-   char *l = strstr( opt, "all");
+   const char *l = strstr( opt, "all");
 
    if (l) {
       AnaFillResultMapConstIter iFill = fAnaFillResults.begin();

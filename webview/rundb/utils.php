@@ -1,28 +1,6 @@
 <?php
 
-
-/** */
-class pair {
-   var $first;
-   var $second;
-   var $val;
-   var $err;
-
-   function __construct($f=0, $s=0) {
-      $this->first  = $f;
-      $this->second = $s;
-
-      $this->val =& $this->first;
-      $this->err =& $this->second;
-   }
-
-   function ClonePair()
-   {
-      return unserialize(serialize($this));
-      //$this->val =& unserialize(serialize($this))->first;
-      //$this->err =& unserialize(serialize($this))->second;
-   }
-}
+include_once("Pair.php");
 
 
 /**
@@ -459,6 +437,32 @@ function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
 
 
 /** */
+function calcDSAPolarCollScale($profRsHorz=array(), $profRsVert=array())
+{ //{{{
+   $result = new pair(0, -1);
+
+   //foreach ($profR) {
+   //}
+
+   if ($profRsHorz == null || $profRsVert == null) return null;
+
+   // protected for division y zero
+   $pairR_V_first = $profRsVert->first == -2 ? 0 : $profRsVert->first;
+   $pairR_H_first = $profRsHorz->first == -2 ? 0 : $profRsHorz->first;
+
+
+   $result->first = sqrt((1+$pairR_H_first)/(1+0.5*$pairR_H_first)) * sqrt((1+$pairR_V_first)/(1+0.5*$pairR_V_first));
+
+   $relDelta2  = $profRsHorz->second * $profRsHorz->second / (2 + $pairR_H_first) / (2 + $pairR_H_first)/ 4.;
+   $relDelta2 += $profRsVert->second * $profRsVert->second / (2 + $pairR_V_first) / (2 + $pairR_V_first)/ 4.;
+
+   $result->second = $result->first * sqrt($relDelta2);
+
+   return $result;
+} //}}}
+
+
+/** */
 function calcPolarCollision($polar=null, $scaleColl=null)
 { //{{{
    $result = new pair(0, -1);
@@ -470,6 +474,49 @@ function calcPolarCollision($polar=null, $scaleColl=null)
 
    $relDelta2 = $polar->second * $polar->second / $polar->first / $polar->first + $scaleColl->second * $scaleColl->second / $scaleColl->first / $scaleColl->first;
    $result->second = abs($result->first) * sqrt($relDelta2);
+
+   return $result;
+} //}}}
+
+
+/** */
+function calcPolarP0Collision($polarP0=null, $profR0Horz=null, $profR0Vert=null)
+{ //{{{
+   $result = new pair(0, -1);
+
+   //if ($polarP0 == null || $profR0Horz == null || $profR0Vert == null)             return $polarP0->ClonePair();
+   //if ($polarP0->second < 0 || $profR0Horz->second < 0 || $profR0Vert->second < 0) return $polarP0->ClonePair();
+
+   $P0  = $polarP0->first;
+   $R_H = $profR0Horz->first; 
+   $R_V = $profR0Vert->first;
+
+   $result->first = 2 * $P0 * sqrt( (1+$R_H)/(2+$R_H) ) * sqrt( (1+$R_V)/(2+$R_V) );
+ 
+   return $result;
+} //}}}
+
+
+/** */
+function calcPolarSlopeCollision($polarP0=null, $polarSlope=null, $profR0=null, $profRSlope=null)
+{ //{{{
+   $result = new pair(0, -1);
+
+   //if ($polarP0 == null || $polarSlope == null || $profR0 == null || $profRSlope == null)  return $polarP0->ClonePair();
+   //if ($polarP0->second < 0 || $profR0Horz->second < 0 || $profR0Vert->second < 0) return $polarP0->ClonePair();
+
+   $P0       = $polarP0->first;
+   $PSlope   = $polarSlope->first;
+   $R0_H     = $profR0[0]->first;
+   $R0_V     = $profR0[1]->first;
+   $RSlope_H = $profRSlope[0]->first;
+   $RSlope_V = $profRSlope[1]->first;
+
+   $result->first  = 2 * $PSlope * sqrt( (1+$R_H)/(2+$R_H) ) * sqrt( (1+$R_V)/(2+$R_V) );
+   $numer = RSlope_H*(2 + 3*R0_V + R0_V*R0_V) + RSlope_V*(2 + 3*R0_H + R0_H*R0_H);
+   $denom = sqrt(1 + R0_H) * sqrt( (2 + R0_H)*(2 + R0_H)*(2 + R0_H) )
+          * sqrt(1 + R0_V) * sqrt( (2 + R0_V)*(2 + R0_V)*(2 + R0_V) );
+   $result->first += P0*$numer/$denom;
 
    return $result;
 } //}}}
@@ -591,6 +638,37 @@ function getJetCarbonNormalization($normSpecs=null)
 
 
 /** */
+function getHJPCNorm($run, $benergy, $polId, $tgtOrient=null, $tgtId=null)
+{ //{{{
+   global $normHJPC;
+
+   //print "<!--\n";
+   //print "$run, $benergy, $polId, $tgtOrient, $tgtId\n";
+   //print_r($normHJPC);
+   //print "-->\n";
+
+   if (is_numeric($tgtOrient) && $tgtOrient == 0)
+      $tgtOrient = "H";
+   else if (is_numeric($tgtOrient) && $tgtOrient == 1)
+      $tgtOrient = "V";
+   else 
+      $tgtOrient = null;
+
+   //$tgtOrient = $tgtOrient == 0 ? "H" : ($tgtOrient == 1 ? "V" : null);
+
+   $norm = $normHJPC[$run][$benergy][$polId][$tgtOrient][$tgtId];
+
+   if ( isset($norm) && get_class($norm) == "pair" ) return $norm;
+
+   $norm = $normHJPC[$run][$benergy][$polId]['nomi'];
+
+   if ( isset($norm) && get_class($norm) == "pair" ) return $norm;
+
+   return new pair(1, -1);
+} //}}}
+
+
+/** */
 function getRunPeriod($timestamp=null)
 { //{{{
    global $RUN_PERIOD_BY_DATE;
@@ -626,5 +704,40 @@ function GetRingId($polId)
       return -1;
    }
 } //}}}
+
+function do_offset($level){
+    $offset = "";             // offset for subarry 
+    for ($i=1; $i<$level;$i++){
+    $offset = $offset . "<td></td>";
+    }
+    return $offset;
+}
+
+function show_array($array, $level, $sub){
+    if (is_array($array) == 1){          // check if input is an array
+       foreach($array as $key_val => $value) {
+           $offset = "";
+           if (is_array($value) == 1){   // array is multidimensional
+           echo "<tr>";
+           $offset = do_offset($level);
+           echo $offset . "<td>" . $key_val . "</td>";
+           show_array($value, $level+1, 1);
+           }
+           else{                        // (sub)array is not multidim
+           if ($sub != 1){          // first entry for subarray
+               echo "<tr nosub>";
+               $offset = do_offset($level);
+           }
+           $sub = 0;
+           echo $offset . "<td main ".$sub." width=\"120\">" . $key_val . 
+               "</td><td width=\"120\">" . pairToString($value, "", "%8.7f") . "</td>"; 
+           echo "</tr>\n";
+           }
+       } //foreach $array
+    }  
+    else{ // argument $array is not an array
+        return;
+    }
+}
 
 ?>

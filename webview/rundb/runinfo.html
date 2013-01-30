@@ -247,7 +247,10 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
          else if ($bkgCellColor == "#ddd") $bkgCellColor = "#fff";
       }
 
-      $bunchSpin = ($bunch['fBunchSpin'] == '-' ? "&#8722;" : $bunch['fBunchSpin']);
+      if ($bunch['fBunchSpin'] == -1)      $bunchSpin = "&#8722;";
+      else if ($bunch['fBunchSpin'] == +1) $bunchSpin = "+";
+      else                                 $bunchSpin = "0";
+      //$bunchSpin = ($bunch['fBunchSpin'] == -1 ? "&#8722;" : "+");
      
       //$row1 .= "<td>$bunchId";
       $row2 .= "<td class=align_cm style='background-color: $bkgCellColor;'>{$bunch['fIsFilled']}";

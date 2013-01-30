@@ -79,9 +79,9 @@ void ColorSkime()
 Int_t IsOK(const Char_t histname[])
 {
   ofstream logfile;
-  Int_t OK = Int_t(gDirectory->Get(histname));
+  TObject* OK = gDirectory->Get(histname);
   if (!OK) logfile << "The histogram : " << histname << " doesn't exist in root file. Ignored." << endl;
-  return OK;
+  return OK ? 1 : 0;
 }
 
 

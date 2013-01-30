@@ -299,8 +299,8 @@ void event_process(processEvent *event)
    // random numbers in order to smear for the integer reading
    int   vlen = 1;
    float rand1, rand2;
-   hhrammar_(&rand1, &vlen);
-   hhrammar_(&rand2, &vlen);
+   //hhrammar_(&rand1, &vlen);
+   //hhrammar_(&rand2, &vlen);
 
    // Strip distribution
    //HHF1(10300+si+1, (float)(st-si*12)+1, 1.);
@@ -639,8 +639,8 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
 
   // random numbers in order to smear for the integer reading
   int vlen = 1;
-  hhrammar_(&rand1, &vlen);
-  hhrammar_(&rand2, &vlen);
+  //hhrammar_(&rand1, &vlen);
+  //hhrammar_(&rand2, &vlen);
 
   // Energy deposit
   edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);

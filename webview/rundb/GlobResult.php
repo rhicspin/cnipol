@@ -4,6 +4,7 @@ include_once("FillResult.php");
 
 class GlobResult
 {
+   public $fRunPeriod;
    var $fFillResults     = array();
    var $fBeamEnergies    = array();
    var $fAvrgPCPolars    = array();
@@ -14,18 +15,22 @@ class GlobResult
    var $fAvrgBeamProfRs  = array();
 
    var $fMissingBeamProfRs      = array();
+   var $fMissingBeamProfR0s      = array();
+   var $fMissingBeamProfRSlopes      = array();
    var $fMissingBeamPolarSlopes = array();
 
 
    /** */
-   function GlobResult()
+   function GlobResult($rp)
    { //{{{
+      $this->fRunPeriod = $rp;
+
       foreach (range(0, 3) as $polId)
       {
          $this->fAvrgPCPolars[$polId]    = new pair(0, -1);
          $this->fAvrgPCnHJPolars[$polId] = new pair(0, -1);
          $this->fAvrgHJnPCPolars[$polId] = new pair(0, -1);
-         $this->fNormHJ2PCPolars[$polId] = new pair(0, -1);
+         $this->fNormHJ2PCPolars[$polId] = new pair(1, -1);
       }
 
       foreach (range(1, 2) as $ringId)
@@ -60,6 +65,8 @@ class GlobResult
    function Process()
    { //{{{
       $beamProfRSet = array();
+      $beamProfR0Set = array();
+      $beamProfRSlopeSet = array();
 
       foreach ( $this->fFillResults as $fillResult)
       {
@@ -94,8 +101,11 @@ class GlobResult
                $beamProfR  = $fillResult->fBeamProfRs[$ringId][$tgtOrient];
                $beamEnergy = $fillResult->fBeamEnergy;
 
-               if ($beamProfR->second >= 0) 
+               if ($beamProfR->second >= 0) {
                   $beamProfRSet[$ringId][$tgtOrient][$beamEnergy][] = $beamProfR;
+                  $beamProfR0Set[$ringId][$tgtOrient][$beamEnergy][] = $fillResult->fBeamProfR0s[$ringId][$tgtOrient];
+                  $beamProfRSlopeSet[$ringId][$tgtOrient][$beamEnergy][] = $fillResult->fBeamProfRSlopes[$ringId][$tgtOrient];
+               }
   
                $this->fAvrgBeamProfRs[$ringId][$tgtOrient] = calcWeigtedAvrgErrPairs($this->fAvrgBeamProfRs[$ringId][$tgtOrient], $beamProfR);
             }
@@ -106,7 +116,7 @@ class GlobResult
       //print_r($beamProfRSet);
       //print "</pre>\n";
 
-      // calculate profile R value for missed measurements
+      // calculate profile R value for missing measurements
       foreach (range(1, 2) as $ringId)
       {
          foreach (range(0, 1) as $tgtOrient)
@@ -122,6 +132,16 @@ class GlobResult
                $e = calcWeigtedStdDev( $beamProfRSetByBeamEnergy)->first;
 
                $this->fMissingBeamProfRs[$ringId][$tgtOrient][$beamEnergy] = new pair($v, $e);
+
+               $v = calcWeigtedAvrgErr($beamProfR0Set[$ringId][$tgtOrient][$beamEnergy])->first;
+               $e = calcWeigtedStdDev( $beamProfR0Set[$ringId][$tgtOrient][$beamEnergy])->first;
+
+               $this->fMissingBeamProfR0s[$ringId][$tgtOrient][$beamEnergy] = new pair($v, $e);
+
+               $v = calcWeigtedAvrgErr($beamProfRSlopeSet[$ringId][$tgtOrient][$beamEnergy])->first;
+               $e = calcWeigtedStdDev( $beamProfRSlopeSet[$ringId][$tgtOrient][$beamEnergy])->first;
+
+               $this->fMissingBeamProfRSlopes[$ringId][$tgtOrient][$beamEnergy] = new pair($v, $e);
 
                //print "<pre>\n";
                //print_r($this->fMissingBeamProfRs[$ringId][$tgtOrient]);

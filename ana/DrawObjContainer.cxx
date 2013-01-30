@@ -273,49 +273,50 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
       }
       else if ( ((TClass*) obj->IsA())->InheritsFrom("TH1") )
       {
-         TH1* hobj = (TH1*) obj;
+         TH1  *hobj     = (TH1*) obj;
+			char *hoptions = (char*) hobj->GetOption();
 
-         char *l = strstr( hobj->GetOption(), "NOIMG");
+         char *l = strstr( hoptions, "NOIMG");
          if (l) continue;
 
-         l = strstr( hobj->GetOption(), "LOGZ");
+         l = strstr( hoptions, "LOGZ");
          //printf("XXX1: set logz %s\n", hobj->GetOption());
          if (l) {
             memset(l, ' ', 4);
             canvas.SetLogz(kTRUE);
          } else canvas.SetLogz(kFALSE);
 
-         l = strstr( hobj->GetOption(), "XX");
+         l = strstr( hoptions, "XX");
          if (l) {
             memset(l, ' ', 2);
             canvas.SetLogx(kTRUE);
          } else canvas.SetLogx(kFALSE);
 
-         l = strstr( hobj->GetOption(), "XY");
+         l = strstr( hoptions, "XY");
          if (l) {
             memset(l, ' ', 2);
             canvas.SetLogy(kTRUE);
          } else canvas.SetLogy(kFALSE);
 
-         l = strstr( hobj->GetOption(), "GRIDX");
+         l = strstr( hoptions, "GRIDX");
          if (l) {
             memset(l, ' ', 5);
             canvas.SetGridx(kTRUE);
          } else canvas.SetGridx(kFALSE);
 
-         l = strstr( hobj->GetOption(), "GRIDY");
+         l = strstr( hoptions, "GRIDY");
          if (l) {
             memset(l, ' ', 5);
             canvas.SetGridy(kTRUE);
          } else canvas.SetGridy(kFALSE);
 
-         l = strstr( hobj->GetOption(), "DUMMY");
+         l = strstr( hoptions, "DUMMY");
          if (l) {
             memset(l, ' ', 5);
             hobj->SetStats(kFALSE);
          }
 
-         obj->Draw( hobj->GetOption() );
+         obj->Draw( hoptions );
 
          canvas.Update();
 
@@ -454,7 +455,8 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
 
       if (iNHist == 0)
       {
-         char *l = strstr(iHist->GetOption(), "LOGZ");
+			char *hoptions = (char*) iHist->GetOption();
+         char *l = strstr(hoptions, "LOGZ");
 
          if (l) {
             memset(l, ' ', 4);
