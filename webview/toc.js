@@ -119,6 +119,7 @@ generated_toc = {
           continue;
         }
 
+        //nodes[i].innerHTML += " <span style='float:right; font-size: 80%; font-weight: bold;'><a href=#top>&uarr; top &uarr;</a></span>";
         headings.push(nodes[i]);
       }
     }
@@ -140,7 +141,6 @@ generated_toc = {
        this.createCookie2(value, 30);
        gCookieValue = this.readCookie2();
     }
-
 
     // loop over all valid headings and display corresponding div sections
     for (var i=0; i<headings.length; i++) {
@@ -286,6 +286,7 @@ generated_toc = {
       //ddss: headings[i].appendChild(a2);
       //headings[i].appendChild(a);
 
+      headings[i].innerHTML += " <span style='float:right; font-size: 80%; font-weight: bold;'><a href=#top>&uarr; top &uarr;</a></span>";
     }
 
     //alert(innerText(tocparent));

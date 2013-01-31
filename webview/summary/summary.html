@@ -22,24 +22,12 @@
 
 <?php
 include("../head.html");
-?>
-
-<!-- Main text starts here-->
-
-<p><a name="content"/>
-
-<h1>Summary Plots</h1>
-
-<?php
 
 include_once("../rundb/PlotHelper.php");
 
 //include_once("../rundb/DbFillPolar.php");
-//
 //$dbFillPolar = new DbFillPolar();
-//
 //$nFills = $dbFillPolar->CountEntries();
-
 
 $dir = "../runs/{$_GET['ana']}/images/";
 $gP = new PlotHelper($dir);
@@ -51,15 +39,16 @@ $flattopEnergy = sprintf("%03d", 255);
 
 ?>
 
+<!-- Main text starts here-->
+
+<h1>Summary Plots</h1>
 
 <div class="count" id="generated-toc"></div>
 
 <hr>
 
-
 <div id="main_text_body">
 <!-- {{{ -->
-
 
 
 
@@ -755,10 +744,13 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <tr>
 <td colspan=2>
 <div class='thumbcaption'>
-<img src=https://wiki.bnl.gov/rhicspin/upload/math/6/b/e/6bedd6ed827e2e984490a76bb3d5703b.png> from the fits of the individual bunch asymmetries. <span
-class=frgRed>Red</span> points correspond to fits of bunch asymmetries with
-only "up" spin polarization, <span class=frgGreen>green</span> points
-correspond to fits of bunch asymmetries with only "down" spin polarization.
+<img
+src=https://wiki.bnl.gov/rhicspin/upload/math/6/b/e/6bedd6ed827e2e984490a76bb3d5703b.png>
+from the fits of the individual bunch asymmetries. <span class=frgRed>Red</span>
+points correspond to fits of bunch asymmetries with only "up" spin polarization,
+<span class=frgGreen>green</span> points correspond to fits of bunch asymmetries
+with only "down" spin polarization
+</div>
 
 </table>
 

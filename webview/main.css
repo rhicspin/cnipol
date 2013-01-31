@@ -157,6 +157,10 @@ H1.count:before {
 	counter-increment: counterH1;  /* Add 1 to chapter */
 }
 
+H1.count:after {
+	content: "";
+}
+
 H1.count {
 	counter-reset: counterH2;      /* Set section to 0 */
 	background-color: #ddddff;

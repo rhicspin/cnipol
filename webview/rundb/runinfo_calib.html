@@ -8,10 +8,12 @@
 
 <html>
 <head>
-  <title>Calibration/Test Run <?=$gRunId?>: Summary and Fast Offline Results</title>
+  <title>Calibration or Special Test Run <?=$gRunId?>: Summary and Analysis Results</title>
   <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
   <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
   <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+  <script language="javascript" src="../main.js"></script>
+  <script language="javascript" src="../toc.js"></script>
 </head>
 
 <body bgcolor="#ffffff">
@@ -22,13 +24,16 @@ include("../head.html");
 
 <!-- Main text starts here-->
 
-<p><a name="content"/>
 
-<h1>pC Calibration/Special Run <?=$gRunId?></h1>
+<h1>pC Calibration or Special Test Run <?=$gRunId?></h1>
 
+<div class="count" id="generated-toc"></div>
 
-<p>
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
+<hr>
+
+<div id="main_text_body">
+<!-- {{{ -->
+
 
 <h1 id="summary" class="count">Summary</h1>
 <!-- {{{ -->
@@ -128,10 +133,6 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
 </table>
 
 
-
-<p>
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
-
 <h2 id="calibconst" class="count">Constants</h2>
 <!-- {{{ -->
 <div id="div:calibconst" class="section">
@@ -209,11 +210,7 @@ Calibration constants calculated using the <b>integral</b> (I) of the signal sha
 <!-- }}} -->
 
 
-
-<p>
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
-
-<h1 id="summary_plots" class="count">Summary Plots</h1>
+<h1 id="summary_plots" class="count">All Channels Combined</h1>
 <!-- {{{ -->
 <div id="div:summary_plots" class="section">
 
@@ -256,17 +253,13 @@ Calibration constants calculated using the <b>integral</b> (I) of the signal sha
 <!-- }}} -->
 
 
-
-<p>
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
-
-<h1 id="channels" class="count">Channel Plots</h1>
+<h1 id="channels" class="count">Channels</h1>
 <!-- {{{ -->
 <div id="div:channels" class="section">
 
 <p>
 
-<table class="simple cntr" cellspacing=15 align=center>
+<table class="simple00 cntr" cellspacing=15 align=center>
 <?php
 
 foreach($rc['fSiliconChannels'] as $chanId) {
@@ -286,6 +279,7 @@ foreach($rc['fSiliconChannels'] as $chanId) {
 
    $img = $gP->img("hAmpltd_ch$chanId", false, 250);
    print "<td>$img\n";
+   print "channel $chanId\n";
    
 }
 ?>
@@ -296,9 +290,6 @@ foreach($rc['fSiliconChannels'] as $chanId) {
 
 
 <!--
-<p>
-
-<div style="text-align: right;"><a href="#content">Table Of Contents</a></div>
 <h1 id="misc" class="count">Misc</h1>
 
 <table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
@@ -311,6 +302,8 @@ foreach($rc['fSiliconChannels'] as $chanId) {
 -->
 
 <!-- Main text ends here-->
+</div>
+<!-- }}} -->
 
 <?php
 include("../bottom.html");
