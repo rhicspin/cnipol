@@ -274,11 +274,11 @@ void CnipolAlphaHists::FillPreProcess(ChannelEvent *ch) { }
 
 /** */
 void CnipolAlphaHists::PostFill()
-{ //{{{
+{
    // Adjust axis ranges
-   Int_t  maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();
-   Double_t xminA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmin();
-   Double_t xmaxA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmax();
+   Int_t    maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();
+   Double_t   xminA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmin();
+   Double_t   xmaxA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmax();
 
    xminA = maxBinA - 50 < xminA ? xminA : maxBinA - 50;
    xmaxA = maxBinA + 50 > xmaxA ? xmaxA : maxBinA + 50;
@@ -342,4 +342,4 @@ void CnipolAlphaHists::PostFill()
       ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->SetAxisRange(xminA, xmaxA);
       ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->SetAxisRange(xminI, xmaxI);
    }
-} //}}}
+}

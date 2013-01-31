@@ -25,15 +25,15 @@ AlphaCalibrator::~AlphaCalibrator()
 
 /** */
 void AlphaCalibrator::Calibrate(DrawObjContainer *c)
-{ //{{{
-   Info("Calibrate", "Executing Calibrate()");
+{
+   Info("Calibrate", "Called...");
 
    string    sCh("  ");
    TH1F     *htemp     = 0;
    TF1      *fitfunc   = new TF1("fitfunc", "gaus");
    TFitResultPtr fitres;
 
-   fitfunc->SetLineColor(2);
+   fitfunc->SetLineColor(kRed);
    fitfunc->SetLineWidth(3);
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
@@ -44,7 +44,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       ChannelCalib *chCalib;
       ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(i);
 
-      if (iChCalib != fChannelCalibs.end())  {
+      if (iChCalib != fChannelCalibs.end()) {
          chCalib = &iChCalib->second;
       }
       else {
@@ -123,12 +123,12 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    }
 
    CalibrateBadChannels(c);
-} //}}}
+}
 
 
 /** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
-{ //{{{
+{
    TFitResultPtr fitres = 0;
 
    h->Print();
@@ -164,7 +164,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
    //fitres->Print("V");
 
    return fitres;
-} //}}}
+}
 
 
 /** */
@@ -175,7 +175,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, Bool_t wideLimits)
 
 /** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
-{ //{{{
+{
    Double_t aMean = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetMean();
    Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetRMS();
    //Double_t iMean = ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->GetMean();
@@ -392,7 +392,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
       detAve    /= nChDet;
       ch.fICoef  = detAve;
    }
-} //}}}
+}
 
 
 /** */
