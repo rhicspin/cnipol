@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
    //gAsymDb->Print();
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
-   // A Calibrator object holds calibration constants for individual channels
-   // and knows how to updated/calibrate them if requested by the user
+   // A Calibrator object holds calibration constants for individual channels.
+   // It knows how to updated/calibrate them if requested by the user
    gAsymRoot->UpdateCalibrator();
 
    // Create trees if requested
@@ -157,17 +157,16 @@ int main(int argc, char *argv[])
    //
    gAsymRoot->PreFill();
 
-   // Main Event Loop
+   // Main event Loop
    readloop(*mseMeasInfoX);
 
    gAsymRoot->FillDerived();
    gAsymRoot->PostFill(*mseMeasInfoX);
-   //gAsymRoot->DeleteHistogram();        // Deprecated. Delete unnecessary ROOT histograms
 
    // Close histogram file
    //hist_close(hbk_outfile);
 
-   // For debugging
+   // For debugging only
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Update calibration constants if requested

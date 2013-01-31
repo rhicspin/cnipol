@@ -462,7 +462,7 @@ void RawDataProcessor::ReadDataFast()
 
 // read loop routine
 void readloop(MseMeasInfoX &run)
-{ //{{{
+{
    cout << endl;
    gSystem->Info("readloop", "Start reading events from data file...");
 
@@ -770,7 +770,7 @@ void readloop(MseMeasInfoX &run)
    sw.Stop();
 
    gSystem->Info("readloop", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-} //}}}
+}
 
 
 /**
