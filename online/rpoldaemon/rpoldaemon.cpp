@@ -273,7 +273,7 @@ void StartMeasurement(int polarim, char *cmd)
 
       execl(SHELL, SHELL, ScriptName, polCDEVName[polarim], cmd, str, NULL);
 
-      // We shell never be here if script can be executed
+      // We shall never be here if script can be executed
       fprintf(LogFile, "RHICDAEMON-ERROR : Unable to run the measurement script %s\n", ScriptName);
       fflush(LogFile);
       _exit(EXIT_BADSCRIPT);
