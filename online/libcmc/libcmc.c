@@ -123,9 +123,9 @@ void CMC_ResetChain(CMC_chain *chain)
 int CMC_Add2Chain(CMC_chain *chain, long cmd)
 {
    if (chain == NULL) return -ENOMEM;
-   /* Reallocate if necessary */
+   // Reallocate if necessary
    if (chain->wptr >= chain->wlen) {
-       long *wd = (long *)realloc(chain->wdata, 2*chain->wlen*sizeof(long));
+       long *wd = (long*) realloc(chain->wdata, 2*chain->wlen*sizeof(long));
        if (wd == NULL) {
            CMC_ReleaseChain(chain);
            return -ENOMEM;
@@ -178,19 +178,25 @@ int CMC_CommitChain(CMC_chain *chain, int C)
 {
     int retval;
     if (__Crates[C] < 0) return -ENODEV;
-    /* Add PKTEND */
+
+    // Add PKTEND
     if ((retval = CMC_Add2Chain(chain, CMC_CMDFLUSH)) < 0) return retval;
-    /* Write the chain itself */
+
+    // Write the chain itself
     retval = write(__Crates[C], chain->wdata, sizeof(long)*chain->wptr);
     chain->wptr--;
+
     //fflush(Crates[C]);
     if (retval != (int) (sizeof(long)*(chain->wptr+1))) return -errno;     /* remove PKTEND */
-    /* Read the result (exactly one record) */
+
+    // Read the result (exactly one record)
     retval = read(__Crates[C], chain->rdata, sizeof(long)*chain->rlen);
+
     if (retval <= 0) {
         chain->rptr = 0;
         return -errno;
     }
+
     retval /= sizeof(long);
     chain->rptr = (retval > (int) chain->rlen) ? chain->rlen : retval;
     return retval;

@@ -70,7 +70,7 @@ float ANALPOWE;                         // its error
 int recRing = 0;                        // data mask with ring information etc.
 int recStream = 0;
 
-//      Code to exit - this is error only exit
+// Code to exit - this is error only exit
 void polexit(void)
 {
    if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
@@ -447,6 +447,8 @@ int main(int argc, char **argv)
       resetInhibit();
       writeJetStatus();       // hopefully fast (we can not get jet state with crate inhibit)
 
+      // Monitor the number of events sent to the WFDs and the movement of
+      // the target if applicable
       ev = getEvents(mEvent);
 
       setInhibit();
@@ -454,25 +456,18 @@ int main(int argc, char **argv)
       clearAlarm();
 
       if (iSig == SIGTERM) break;     // we are supposed to quit fast
+      if (iSig == SIGINT)  j = nLoop - 1;
 
-      if (iSig == SIGINT) j = nLoop - 1;
-
-      if (iCntrlC) {
-         signal(SIGINT, alarmHandler);
-      }
-      else {
-         signal(SIGINT, SIG_IGN);
-      }
+      if (iCntrlC) signal(SIGINT, alarmHandler);
+      else         signal(SIGINT, SIG_IGN);
 
       if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop - 1)) UpdateMessage("Reading Data...");
       signal(SIGTERM, alarmHandler);
 
       if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
-
       readScalers();
 
       if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD xilinxes.\n");
-
       readWFD();
 
       if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading WFD memory.\n");
@@ -481,6 +476,7 @@ int main(int argc, char **argv)
       signal(SIGTERM, SIG_DFL);
       signal(SIGINT, SIG_DFL);
       t = time(NULL);
+
       //rhicpol_voltage2();
       if (nLoop == 1) {
          fprintf(LogFile,    ">>> %s Measurement finished with %9d events.\n", cctime(&t), ev);
@@ -490,7 +486,8 @@ int main(int argc, char **argv)
       }
 
       // Writing is done, send a message to mcr...
-      if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop - 1)) UpdateMessage("Reading Data Finished.");
+      if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop - 1))
+         UpdateMessage("Reading Data Finished.");
    }
 
    resetInhibit();

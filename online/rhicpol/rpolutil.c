@@ -66,6 +66,7 @@ extern int iDebug;
 long memReadCount[MAXCRATES][MAXSTATIONS][4];
 carbTargStat ctss = { -1, {"Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef", "Undef"}};
 
+
 // Send command chain to CMC CAMAC controller
 int RP_CommitChain(CMC_chain *ch, int C)
 {
@@ -78,7 +79,8 @@ int RP_CommitChain(CMC_chain *ch, int C)
    return irc;
 }
 
-//      Handle signals (not only alarm)
+
+// Handle signals (not only alarm)
 void alarmHandler(int sig)
 {
    iSig  = sig;
@@ -86,20 +88,22 @@ void alarmHandler(int sig)
    IStop = 1;
 }
 
-//      Hook signals (not only alarm)
+// Hook signals (not only alarm)
 void setAlarm(float mTime)
 {
    struct itimerval t;
    IStop = 0;
+
    signal(SIGALRM, alarmHandler);
    signal(SIGINT,  alarmHandler);
    signal(SIGTERM, alarmHandler);
    signal(SIGQUIT, alarmHandler);
    signal(SIGHUP,  alarmHandler);
-   t.it_interval.tv_sec = 0;
+
+   t.it_interval.tv_sec  = 0;
    t.it_interval.tv_usec = 0;
-   t.it_value.tv_sec = (int) mTime;
-   t.it_value.tv_usec = (int) ((mTime - t.it_value.tv_sec) * 1000000);
+   t.it_value.tv_sec     = (int) mTime;
+   t.it_value.tv_usec    = (int) ((mTime - t.it_value.tv_sec) * 1000000);
 
    int irc = setitimer(ITIMER_REAL, &t, NULL);
 
@@ -807,10 +811,15 @@ void camacClose(void)
    int i, j;
    CMC_chain *ch;
    OutRegBits = 0;
+
    if (Crate[Conf.CrOut] >= 0)
       CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
+
    ch = CMC_AllocateChain(0, 0);
-   for (j = 0; j < MAXCRATES; j++) if (Crate[j] >= 0) {
+
+   for (j = 0; j < MAXCRATES; j++)
+   {
+      if (Crate[j] >= 0) {
          CMC_ResetChain(ch);
          CMC_Add2Chain(ch, CMC_CMDDATA + 0);            // we will always write 0 - internal clocks
          for (i = 0; i < MAXSTATIONS; i++) {
@@ -823,8 +832,10 @@ void camacClose(void)
          CMC_Close(Crate[j]);
          Crate[j] = -1;
       }
+   }
    CMC_ReleaseChain(ch);
 }
+
 
 int camacOpen(void)
 {
@@ -837,12 +848,15 @@ int camacOpen(void)
    else {
       memset(Crate, -1, sizeof(Crate));
    }
+
    if (iDebug > 700) {
       fprintf(LogFile, "Crates requested :");
       for (i = 0; i < MAXCRATES; i++) if (CrateRequired[i]) fprintf(LogFile, " %d", i);
       fprintf(LogFile, "\n");
    }
+
    j = 0;
+
    for (i = 0; i < MAXCRATES; i++) if (CrateRequired[i]) {      // open only if we need
          Crate[i] = CMC_Open(i);
          if (Crate[i] < 0) {
@@ -893,12 +907,14 @@ int camacOpen(void)
    return 0;
 }
 
+
 void setOutInhibit(void)
 {
    if (Conf.CrOut < 0 || Crate[Conf.CrOut] < 0) return;
    OutRegBits |= OUT_INHIBIT;
    CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
 }
+
 
 void setInhibit(void)
 {
@@ -909,6 +925,7 @@ void setInhibit(void)
          CMC_Single(Crate[k], 30, 26, 9, 0);
    }
 }
+
 
 void resetOutInhibit(void)
 {
@@ -936,6 +953,7 @@ void clearVetoFlipFlop(void)
    CMC_ReleaseChain(ch);
 }
 
+
 void pulseDelimiter(void)
 {
    CMC_chain *ch;
@@ -947,6 +965,7 @@ void pulseDelimiter(void)
    RP_CommitChain(ch, Crate[Conf.CrOut]);
    CMC_ReleaseChain(ch);
 }
+
 
 // Sleep this number in seconds
 void nsleep(double time)
@@ -1224,6 +1243,7 @@ int initWFDs(void)
    return iRC;
 }
 
+
 void fastInitWFDs(int clr_hist)
 {
    int cr, i;
@@ -1268,11 +1288,13 @@ void fastInitWFDs(int clr_hist)
    CMC_ReleaseChain(ch);
 }
 
+
 void initScalers(void)
 {
    if (Conf.NSc < 1 || Conf.CrSc < 0) return;
    CMC_Single(Crate[Conf.CrSc], Conf.NSc, 9, 0, 0);
 }
+
 
 void getJetStatus(unsigned short * data)
 {
@@ -1283,12 +1305,14 @@ void getJetStatus(unsigned short * data)
    data[2] = 0;
 }
 
+
 int testJetVeto(void)
 {
    unsigned short data[3];
    getJetStatus(data);
    return (data[0] & JET_VETO) ? 1 : 0;
 }
+
 
 char *getJetStatusString(void)
 {
@@ -1297,6 +1321,7 @@ char *getJetStatusString(void)
    getJetStatus(data);
    return statuses[(data[0] / JET_PLUS) & 3];
 }
+
 
 void writeJetStatus(void)
 {
@@ -1433,7 +1458,7 @@ int getNumberOfEvents(void)     // Read from WFD dedicated scalers
    ch = CMC_AllocateChain(0, MAXSTATIONS * 150);
 
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
-//      send read chain
+         // send read chain
          CMC_ResetChain(ch);
          ii = 0;
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
@@ -1463,7 +1488,7 @@ int getNumberOfEvents(void)     // Read from WFD dedicated scalers
             fprintf(LogFile, "RHICPOL-ERROR : Read dedicated scalers crate #%d - %d bad responses\n", cr, i);
             continue;
          }
-//      process the result
+         // process the result
          ii = 0;
          for (i = 0; i < MAXSTATIONS; i++) if (WFDinCAMAC[cr][i].yes)
                for (j = 0; j < 4; j++ ) if (WFDinCAMAC[cr][i].si[j] >= 0) {
@@ -1494,19 +1519,20 @@ int getNumberOfEvents(void)     // Read from WFD dedicated scalers
    return Cnt;
 }
 
+
 int getEvents(int Number)
 {
    int Cnt, lCnt, l10Cnt, l10Val, l10;
    double t, t0, tlast;
    recordHeaderStruct header;
-   int forseWrite = 0;
+   int    forseWrite = 0;
    struct timeval tv;
-   long *targetHistory;
-   long  targetHistoryLen;
-   long  targetHistoryPtr;
-   long *countHistory;
-   long  countHistoryLen;
-   long  countHistoryPtr;
+   long*  targetHistory;
+   long   targetHistoryLen;
+   long   targetHistoryPtr;
+   long*  countHistory;
+   long   countHistoryLen;
+   long   countHistoryPtr;
 
    Cnt    = 0;
    lCnt   = 0;
@@ -1588,7 +1614,9 @@ int getEvents(int Number)
       gettimeofday(&tv, NULL);
       t = tv.tv_sec + tv.tv_usec * 1.0E-6;
 
-      if (t >= tlast + 1.0 || IStop != 0 || (Number > 0 && Cnt >= Number)) { // at least 1 second passed
+      // at least 1 second passed
+      if (t >= tlast + 1.0 || IStop != 0 || (Number > 0 && Cnt >= Number))
+      {
          Cnt = getNumberOfEvents();
          l10++;
 
@@ -1648,8 +1676,11 @@ int getEvents(int Number)
          lCnt  = Cnt;
       }
 
-      if (iCicleRun) forseWrite = (testJetVeto() || testCarbTarg());
-      if (iDebug > 140 && forseWrite) fprintf(LogFile, "Debug: Jet state changed. Writing.\n");
+      if (iCicleRun)
+         forseWrite = (testJetVeto() || testCarbTarg());
+
+      if (iDebug > 140 && forseWrite)
+         fprintf(LogFile, "Debug: Jet state changed. Writing.\n");
 
       if (forseWrite && !Conf.OnlyHist) {
          setOutInhibit();
@@ -1664,7 +1695,7 @@ int getEvents(int Number)
    }
 
    if (targetHistoryPtr != 0) {
-      header.len = sizeof(header) + targetHistoryPtr;
+      header.len  = sizeof(header) + targetHistoryPtr;
       header.type = REC_PCTARGET;
       header.timestamp.time = time(NULL);
       polWrite(&header, targetHistory);
@@ -1773,11 +1804,12 @@ long long totalSum(long *data, int len)
    return summa;
 }
 
+
 typedef enum {REC_NONE, REC_DATA, REC_DELIM} MEM_REC_TYPE;
 
 
 /** Reads memory content of a single WFD crate. */
-void *readThread(void *arg)
+void* readThread(void *arg)
 {
    int i, j, rpt;
    unsigned l, len;
@@ -2053,10 +2085,13 @@ void readMemory()
    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Creating memory readout threads\n");
    gettimeofday(&tv, NULL);
    t0 = tv.tv_sec + tv.tv_usec * 1.0E-6;
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) pthread_create(&th[cr], NULL, readThread, (void *)cr);
+
+   for (cr = 0; cr < MAXCRATES; cr++)
+      if (CrateRequired[cr]) pthread_create(&th[cr], NULL, readThread, (void *)cr);
 
    // wait them to finish
-   for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr] && th[cr] != 0) pthread_join(th[cr], NULL);
+   for (cr = 0; cr < MAXCRATES; cr++)
+      if (CrateRequired[cr] && th[cr] != 0) pthread_join(th[cr], NULL);
 
    // some printout
    gettimeofday(&tv, NULL);
@@ -2071,15 +2106,18 @@ void readMemory()
       fprintf(LogFile, "\nReadMem INFO:   %15qd events in last memory buffer. New HJet state: %s\n",
               GrandTotal, getJetStatusString());
       fprintf(LogFile, "Events in the last memory buffer:\n");
+
       for (i = 0; i < Conf.NumChannels; i++) {
          fprintf(LogFile, "Si%2d:%7ld ", i + 1, (SiConf[i].CrateN < 0) ? 0 :
                  memReadCount[SiConf[i].CrateN][SiConf[i].CamacN][SiConf[i].VirtexN - 1]);
          if ((i % 6) == 5) fprintf(LogFile, "\n");
       }
+
       if (i % 6) fprintf(LogFile, "\n");
       // fflush(LogFile);
    }
 }
+
 
 void readScalers()
 {
@@ -2088,16 +2126,21 @@ void readScalers()
    CMC_chain *ch;
 
    if (Conf.NSc < 1 || Conf.CrSc < 0) return;
+
    ch = CMC_AllocateChain(0, 12);
+
    for (i = 0; i < 12; i++) CMC_Add2Chain(ch, CMC_STDNFA(Conf.NSc, 0, i));
+
    RP_CommitChain(ch, Conf.CrSc);
-   for (i = 0; i < 6; i++) rec.data[i] = ((long long) (ch->rdata[2 * i] & CMC_DMASK)) +
-                                            (((long long) (ch->rdata[2 * i + 1] & CMC_DMASK)) << 24);
+
+   for (i = 0; i < 6; i++) rec.data[i] =  ((long long) (ch->rdata[2 * i] & CMC_DMASK)) +
+                                         (((long long) (ch->rdata[2 * i + 1] & CMC_DMASK)) << 24);
    rec.header.type = REC_SCALERS | recRing;
    rec.header.len = sizeof(rec);
    rec.header.timestamp.time = time(NULL);
    polWrite(&rec.header, (long *)&rec.data[0]);
 }
+
 
 void closeDataFile(char * comment)
 {
