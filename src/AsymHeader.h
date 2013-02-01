@@ -1,8 +1,6 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-//#define ASYM_VERSION "v100"
-
 #define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
 #define RAMPTIME 350                  // duration of the ramp measurement (sec)
 #define MAXDELIM 410                  // maximum number of delimiter (dynamic motion only)
@@ -51,10 +49,10 @@
 
 #define AMPEAK    5486.0
 #define ALPHA_KEV 5486.0
-#define ATTEN     0.2000              // regular calibration
-#define CCONST    0.2000              // regular calibration
-//#define CCONST 0.1000    // regular calibration
-//#define CCONST 0.4000    // attenuation (x2) runs
+#define ATTEN     0.2000   // =1/5 regular calibration
+#define CCONST    0.2000   // =1/5 regular calibration
+//#define CCONST 0.1000      //
+//#define CCONST 0.4000      // attenuation (x2) runs
 
 const int TOT_WFD_CH = NSTRIP + NTGTWFD; //Total WFD channels including target WFD channels.
 
