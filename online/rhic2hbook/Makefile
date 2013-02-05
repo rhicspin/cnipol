@@ -3,13 +3,8 @@ MPROGS = onliplot.kumac pvector.kumac pvector.pl lr_spinpat.pl online_polar.pl r
 
 include ../include/common.mk
 
-# override the install target from common.mk
-install:
-	cp -f $(PROGS) $(IPROGS) $(CNIPOL_DIR)/bin
-	-ln -s `pwd`/test.sh $(CNIPOL_DIR)/bin/analyze.sh
-ifdef MPROGS
-	cp -f $(MPROGS) $(CNIPOL_DIR)/bin/macro
-endif
+install::
+	@if [ ! -f $(CNIPOL_DIR)/bin/analyze.sh ]; then ln -s `pwd`/test.sh $(CNIPOL_DIR)/bin/analyze.sh; fi
 
 CERNLIB_DIR=/usr/local/cern
 INC_PATHS += -I$(CERNLIB_DIR)/include/cfortran

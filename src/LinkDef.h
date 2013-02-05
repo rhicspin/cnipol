@@ -12,6 +12,7 @@
 #pragma link C++ class AnaFillExternResult;
 #pragma link C++ class AnaGlobResult;
 #pragma link C++ class MeasInfo;
+#pragma link C++ class MachineParams;
 //#pragma link C++ class AsymRoot;
 
 #endif

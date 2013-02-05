@@ -44,23 +44,22 @@ class MeasInfo : public TObject
 {
 protected:
 
-   Float_t       fStartVoltage;
-   Float_t       fEndVoltage;
-   Float_t       fBeamEnergy;
-   Short_t       fExpectedGlobalTdcOffset;
-   Float_t       fExpectedGlobalTimeOffset;
-   std::string   fRunName;
-   Float_t       fProtoCutSlope;
-   Float_t       fProtoCutOffset;
-   UShort_t      fProtoCutWidth;
-   UShort_t      fProtoCutAdcMin;
-   UShort_t      fProtoCutAdcMax;
-   UShort_t      fProtoCutTdcMin;
-   UShort_t      fProtoCutTdcMax;
-   UShort_t      fPulserCutAdcMin;
-   UShort_t      fPulserCutAdcMax;
-   UShort_t      fPulserCutTdcMin;
-   UShort_t      fPulserCutTdcMax;
+   Float_t             fBeamEnergy;
+   MachineParams       fMachineParams;
+   Short_t             fExpectedGlobalTdcOffset;
+   Float_t             fExpectedGlobalTimeOffset;
+   std::string         fRunName;
+   Float_t             fProtoCutSlope;
+   Float_t             fProtoCutOffset;
+   UShort_t            fProtoCutWidth;
+   UShort_t            fProtoCutAdcMin;
+   UShort_t            fProtoCutAdcMax;
+   UShort_t            fProtoCutTdcMin;
+   UShort_t            fProtoCutTdcMax;
+   UShort_t            fPulserCutAdcMin;
+   UShort_t            fPulserCutAdcMax;
+   UShort_t            fPulserCutTdcMin;
+   UShort_t            fPulserCutTdcMax;
 
 
 public:
@@ -143,15 +142,13 @@ public:
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;
    EBeamEnergy     GetBeamEnergy() const;
-   Float_t         GetStartVoltage() const;
-   Float_t         GetEndVoltage() const;
    Float_t         GetExpectedGlobalTimeOffset() const;
    Short_t         GetExpectedGlobalTdcOffset() const;
    EMeasType       GetMeasType() const;
    std::string     GetAlphaCalibFileName() const;
    std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
-   void            SetVoltages(int begin, int end);
+   void            SetMachineParams(const RecordMachineParams &rec);
    void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
    void            DisableChannel(UShort_t chId);

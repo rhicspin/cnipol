@@ -23,7 +23,6 @@ extern FILE *LogFile;
 extern beamDataStruct beamData;
 extern beamDataStruct beamOtherData;
 extern polDataStruct polData;
-extern wcmDataStruct wcmData;
 extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;                 // V124 settings
@@ -1393,6 +1392,7 @@ int testCarbTarg(void)
    return 0;
 }
 
+
 void writeCarbTarg(void)
 {
    recordHJetCarbTargStruct rec;
@@ -1406,16 +1406,18 @@ void writeCarbTarg(void)
    polWrite(&rec.header, (long *)&rec.targstat);
 }
 
+
 void writeWcmInfo(void)
 {
    recordHeaderStruct header;
    getWcmInfo();
-   //   Wcm data
-   header.type = REC_WCMADO | recRing;
-   header.len = sizeof(recordWcmAdoStruct);
+   // Wcm data
+   header.type           = REC_WCMADO | recRing;
+   header.len            = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
-   polWrite(&header, (long *)&wcmData);
+   polWrite(&header, (long*) &wcmData);
 }
+
 
 void writeSubrun(int n)
 {
@@ -2214,8 +2216,8 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
 
    void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
    header.type = REC_RHIC_CONF | recRing;
-   header.len = sizeof(recordHeaderStruct) + sizeof(configRhicDataStruct) +
-                sizeof(SiChanStruct) * (Conf.NumChannels - 1);
+   header.len  = sizeof(recordHeaderStruct) + sizeof(configRhicDataStruct) +
+                 sizeof(SiChanStruct) * (Conf.NumChannels - 1);
    header.timestamp.time = time(NULL);
 
    // Conf without SiChan
@@ -2224,14 +2226,14 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    // Real SiConf
    memcpy(&(((char*)buf)[sizeof(configRhicDataStruct) - sizeof(SiChanStruct)]),
           SiConf, sizeof(SiChanStruct) * Conf.NumChannels);
-   polWrite(&header, (long *)buf);
+   polWrite(&header, (long*) buf);
    free(buf);
 
    // Save beam data (have to write it anyway because rhic2hbook uses polpat from here)
    header.type = REC_BEAMADO | recRing;
    header.len = sizeof(recordBeamAdoStruct);
    header.timestamp.time = time(NULL);
-   polWrite(&header, (long *)&beamData);
+   polWrite(&header, (long*) &beamData);
 
    // Store the other beam parameters
    if (recRing & REC_JET) {
@@ -2240,48 +2242,37 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
       if (recRing & REC_YELLOW) header.type |= REC_BLUE;
       header.len = sizeof(recordBeamAdoStruct);
       header.timestamp.time = time(NULL);
-      polWrite(&header, (long *)&beamOtherData);
+      polWrite(&header, (long*) &beamOtherData);
    }
 
    // Save measurement type
    recordMeasTypeStruct recMeasType;
-
-   recMeasType.header.type = REC_MEASTYPE;
-   recMeasType.header.len  = sizeof(recMeasType);
+   recMeasType.header.type           = REC_MEASTYPE;
+   recMeasType.header.len            = sizeof(recMeasType);
    recMeasType.header.timestamp.time = time(NULL);
-   recMeasType.type        = gMeasType;
+   recMeasType.type                  = gMeasType;
    //printf("record: meas type: %x\n", recMeasType.header.type);
-   polWrite(&recMeasType.header, (long *) &recMeasType.type);
+   polWrite(&recMeasType.header, (long*) &recMeasType.type);
 
-  
-   recordVoltageStruct recordVoltage;
-   recordVoltage.header.type = REC_VOLTAGE;
-   recordVoltage.header.len = sizeof(recordVoltage);
-   recordVoltage.header.timestamp.time = time(NULL);
-   recordVoltage.beginvoltage = theVoltage_beg;;
-   recordVoltage.endvoltage=theVoltage_end;
-   polWrite(&recordVoltage.header, (long *) &recordVoltage.beginvoltage);
-   polWrite(&recordVoltage.header, (long *) &recordVoltage.endvoltage);
-
-
-
-
-
+   gRecordMachineParams.header.type            = REC_MACHINEPARAMS;
+   gRecordMachineParams.header.len             = sizeof(RecordMachineParams);
+   gRecordMachineParams.header.timestamp.time  = time(NULL);
+   polWrite(&gRecordMachineParams.header, (long *) &gRecordMachineParams.fCavity200MHzVoltage);
 
    if (!useCDEV) return 0;
 
    // Save WCM data
-   header.type = REC_WCMADO | recRing;
-   header.len = sizeof(recordWcmAdoStruct);
+   header.type           = REC_WCMADO | recRing;
+   header.len            = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
-   polWrite(&header, (long *)&wcmData);
+   polWrite(&header, (long*) &wcmData);
 
    // Save V124 settings if any... No use when no ADO
    if (V124.flags) {
-      header.type = REC_V124 | recRing;
-      header.len = sizeof(recordV124Struct);
+      header.type           = REC_V124 | recRing;
+      header.len            = sizeof(recordV124Struct);
       header.timestamp.time = time(NULL);
-      polWrite(&header, (long *)&V124);
+      polWrite(&header, (long*) &V124);
    }
 
    // Store the other beam parameters
@@ -2296,4 +2287,3 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
 
    return 0;
 }
-

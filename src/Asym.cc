@@ -263,17 +263,17 @@ void RunConst::PrintAll()
 
 /** */
 TBuffer & operator<<(TBuffer &buf, TRecordConfigRhicStruct *&rec)
-{ //{{{
+{
    if (!rec) return buf;
    //printf("operator<<(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    rec->Streamer(buf);
    return buf;
-} //}}}
+}
 
 
 /** */
 TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
-{ //{{{
+{
    //printf("operator>>(TBuffer &buf, TRecordConfigRhicStruct *rec) : \n");
    //if (!rec) return buf; // of course it is 0!
    int nChannels;
@@ -288,12 +288,12 @@ TBuffer & operator>>(TBuffer &buf, TRecordConfigRhicStruct *&rec)
    rec->Streamer(buf);
 
    return buf;
-} //}}}
+}
 
 
 /** */
 void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
-{ //{{{
+{
    if (buf.IsReading()) {
       //printf("reading TRecordConfigRhicStruct::Streamer(TBuffer &buf) \n");
       //if (!this) { printf("reading error: this=0 \n"); exit(-1); }
@@ -337,12 +337,12 @@ void TRecordConfigRhicStruct::Streamer(TBuffer &buf)
          buf << data.chan[i].dwidth;
       }
    }
-} //}}}
+}
 
 
 /** */
 void TRecordConfigRhicStruct::Print(const Option_t* opt) const
-{ //{{{
+{
    //long len = header.len;
    //         gConfigInfo = (recordConfigRhicStruct *)
    //                      malloc(sizeof(recordConfigRhicStruct) +
@@ -359,7 +359,7 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
       printf(" acoef: %f, %f, TOFLength: %f\n", chanconf[i].acoef, chanconf[i].t0, chanconf[i].TOFLength);
    }
-} //}}}
+}
 
 
 //std::string strip(std::string const& str, char const* sepSet)
@@ -523,44 +523,50 @@ ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
 } //}}}
 
 
-///** */
-//TBuffer& operator<<(TBuffer &buf, const ValErrPair &vep)
-//{
-//   buf << (Double_t) vep.first << (Double_t) vep.second;
-//
-//   return buf;
-//}
-//
-//
-///** */
-//TBuffer& operator>>(TBuffer &buf, ValErrPair &vep)
-//{
-//   Double_t tmp;
-//   buf >> tmp; vep.first  = tmp;
-//   buf >> tmp; vep.second = tmp;
-//
-//   return buf;
-//}
+ClassImp(MachineParams)
+
+MachineParams::MachineParams() : TObject(), RecordMachineParams()
+{
+}
+
+
+MachineParams & MachineParams::operator=(const RecordMachineParams &rec)
+{
+   this->header.len                = rec.header.len;
+   this->header.type               = rec.header.type;
+   this->header.num                = rec.header.num;
+   this->header.timestamp          = rec.header.timestamp;
+
+   this->fCavity200MHzVoltage      = rec.fCavity200MHzVoltage;
+   this->fSnakeCurrents[0]         = rec.fSnakeCurrents[0];
+   this->fSnakeCurrents[1]         = rec.fSnakeCurrents[1];
+   this->fStarRotatorCurrents[0]   = rec.fStarRotatorCurrents[0];
+   this->fStarRotatorCurrents[1]   = rec.fStarRotatorCurrents[1];
+   this->fPhenixRotatorCurrents[0] = rec.fPhenixRotatorCurrents[0];
+   this->fPhenixRotatorCurrents[1] = rec.fPhenixRotatorCurrents[1];
+
+   return *this;
+}
 
 
 /** */
 string PairAsPhpArray(const ValErrPair &p)
-{ //{{{
+{
    std::stringstream sstr("");
 
    sstr << p;
    //sstr << "array (" << p.first << ", " << p.second << ")";
 
    return sstr.str();
-} //}}}
+}
 
 
 /** */
 string FitResultAsPhpArray(const TFitResultPtr &fitres)
-{ //{{{
+{
    std::stringstream ssChs("");
 
    //ssChs << "array (" << p.first << ", " << p.second << ")";
 
    return ssChs.str();
-} //}}}
+}

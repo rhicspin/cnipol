@@ -34,11 +34,11 @@
 class TargetUId;
 
 
-enum EPolarimeterId {kB1U = 0, kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10};
-enum EBeamId        {kBLUE_BEAM = 1, kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
-enum ERingId        {kBLUE_RING = 1, kYELLOW_RING = 2, kUNKNOWN_RING};
-enum EStreamId      {kUPSTREAM = 1, kDOWNSTREAM = 2, kUNKNOWN_STREAM};
-enum ETargetOrient  {kTARGET_H = 0, kTARGET_V = 1, kUNKNOWN_ORIENT};
+enum EPolarimeterId {kB1U = 0,        kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10};
+enum EBeamId        {kBLUE_BEAM = 1,  kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
+enum ERingId        {kBLUE_RING = 1,  kYELLOW_RING = 2, kUNKNOWN_RING};
+enum EStreamId      {kUPSTREAM = 1,   kDOWNSTREAM = 2, kUNKNOWN_STREAM};
+enum ETargetOrient  {kTARGET_H = 0,   kTARGET_V = 1, kUNKNOWN_ORIENT};
 enum EBeamEnergy    {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kBEAM_ENERGY_250 = 250, kBEAM_ENERGY_255 = 255};
 enum ESpinState     {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 enum EFillType      {kFILLTYPE_UNKNOWN = 0, kFILLTYPE_PHYSICS};
@@ -161,6 +161,18 @@ typedef ChannelSet::const_iterator  ChannelSetConstIter;
 std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
 //TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
 //TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
+
+
+class MachineParams : public TObject, public RecordMachineParams
+{
+public:
+
+   MachineParams();
+
+   MachineParams & operator=(const RecordMachineParams &rec);
+
+   ClassDef(MachineParams, 1)
+};
 
 
 // whole info for one event

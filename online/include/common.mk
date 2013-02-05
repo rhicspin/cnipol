@@ -24,7 +24,7 @@ cleanall: clean
 	cd $(CNIPOL_DIR)/bin;
 	-rmdir macro
 
-install:
+install::
 	cp -f $(PROGS) $(IPROGS) $(CNIPOL_DIR)/bin
 
 #cp $(PROGS) $(IPROGS) /usr/local/cnipol/bin

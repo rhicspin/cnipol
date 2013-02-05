@@ -65,6 +65,6 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec);
 void ProcessRecord(const recordCountRate &rec);
 void ProcessRecord(const recordWcmAdoStruct &rec);
 void ProcessRecord(const recordBeamAdoStruct &rec);
-void ProcessRecord(const recordVoltageStruct &rec);
+void ProcessRecord(const RecordMachineParams &rec);
 
 #endif

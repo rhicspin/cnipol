@@ -37,7 +37,6 @@
 #define EXIT_BADSCRIPT  127
 
 char myName[2][20] = {"Blue", "Yellow"};
-char specCDEVName[2][20] = {"ringSpec.blue", "ringSpec.yellow"};
 int  myDev[2][2] = {{0, 2}, {1, 3}};                            // polCDEVName for Blue/Yellow
 
 FILE *LogFile;

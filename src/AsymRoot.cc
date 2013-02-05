@@ -645,6 +645,8 @@ void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
 /** */
 void AsymRoot::FillRunHists()
 {
+   if (gAsymAnaInfo->HasAlphaBit()) return;
+
    ((CnipolRunHists*) fHists->d["run"])->Fill(*gMeasInfo);
 }
 
