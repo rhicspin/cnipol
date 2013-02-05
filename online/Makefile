@@ -1,4 +1,3 @@
-#SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit
 SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit rhic2hbook
 
 .PHONY: clean install subdirs createdir $(SUBDIRS)
@@ -20,4 +19,4 @@ install: subdirs
 	@echo "install is done"
 
 createdir:
-	-mkdir $(CNIPOL_DIR)/bin/macro
+	mkdir -p $(CNIPOL_DIR)/bin/macro

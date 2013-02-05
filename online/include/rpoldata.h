@@ -5,54 +5,67 @@
 
 #include "TBuffer.h"
 
-#include "globals.h"
+//#include "globals.h"
 #include "rhicpol.h"
 
 #define BSIZE 0x40000                   // 256 k
 
-#define REC_BEGIN       0x00000001      // Begin of the file
-#define REC_SUBRUN      0x00000002      // Begin of subrun
-#define REC_POLADO      0x00000101      // Polarimeter ADO record
-#define REC_TAGADO      0x00000102      // Target ADO record
-#define REC_BEAMADO     0x00000103      // Beam ADO record
-#define REC_WCMADO      0x00000104      // Wall current monitor ADO record
-#define REC_HJPOSADO    0x00000105      // Beam position and HJET position ADO record
-#define REC_TAGMOVEADO  0x00000106      // Target movement history ADO record
-#define REC_HJCARBT     0x00000107      // Carbon polarimeter target status in JET data runs
-#define REC_V124        0x00000108      // V124 parameters
-#define REC_CONFIG      0x00000111      // obsolete
-//#define REC_RHIC_CONF   0x00000112    // Instead of REC_CONFIG since Apr2003
-#define REC_RHIC_CONF   0x00000113      // New parameters added, but I don't want to change the name. 14/04/04
-#define REC_MEASTYPE    0x00000120
-#define REC_VOLTAGE     0x00000121
-//#define REC_READRAW   0x00000201
-//#define REC_READSUB   0x00000202
-//#define REC_READALL   0x00000203
-//#define REC_READAT    0x00000211
-#define REC_READRAW     0x00000221      // New parameters added, but I don't want to change the name. 14/04/04
-#define REC_READSUB     0x00000222      // New parameters added, but I don't want to change the name. 14/04/04
-#define REC_READALL     0x00000223      // New parameters added, but I don't want to change the name. 14/04/04
-#define REC_READAT      0x00000231      // New parameters added, but I don't want to change the name. 14/04/04
-#define REC_READLONG    0x00000241      // Long waveform
-#define REC_WFDSCAL     0x00000301      // obsolete
-#define REC_HISTAT      0x00000302      // obsolete
-#define REC_WFDV8SCAL   0x00000303
-#define REC_SCALERS     0x00000401
-#define REC_HJETSWITCH  0x00000501      // jet switch record
-#define REC_PCTARGET    0x00000502      // target history record
-#define REC_COUNTRATE   0x00000503      // count rate history record
-#define REC_END         0x00000999
-#define REC_TYPEMASK    0x00007FFF
-#define REC_MASK_BEAM   0x00030000
-#define REC_YELLOW      0x00010000 // or'ed with the type
-#define REC_BLUE        0x00020000 // or'ed with the type
-#define REC_MASK_STREAM 0x00300000
-#define REC_UPSTREAM    0x00100000 // or'ed with the type
-#define REC_DOWNSTREAM  0x00200000 // or'ed with the type
-#define REC_JET         0x00080000 // or'ed with the type and ring
-#define REC_120BUNCH    0x00008000 // or'ed with the mask where applicable
-#define REC_FROMMEMORY  0x00040000 // or'ed with the mask where applicable
+#define REC_BEGIN           0x00000001      // Begin of the file
+#define REC_SUBRUN          0x00000002      // Begin of subrun
+#define REC_POLADO          0x00000101      // Polarimeter ADO record
+#define REC_TAGADO          0x00000102      // Target ADO record
+#define REC_BEAMADO         0x00000103      // Beam ADO record
+#define REC_WCMADO          0x00000104      // Wall current monitor ADO record
+#define REC_HJPOSADO        0x00000105      // Beam position and HJET position ADO record
+#define REC_TAGMOVEADO      0x00000106      // Target movement history ADO record
+#define REC_HJCARBT         0x00000107      // Carbon polarimeter target status in JET data runs
+#define REC_V124            0x00000108      // V124 parameters
+#define REC_CONFIG          0x00000111      // obsolete
+//#define REC_RHIC_CONF       0x00000112    // Instead of REC_CONFIG since Apr2003
+#define REC_RHIC_CONF       0x00000113      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_MEASTYPE        0x00000120
+#define REC_VOLTAGE         0x00000121
+#define REC_MACHINEPARAMS   0x00000121      // 197MHz cavity voltage, snake and rotator currents
+//#define REC_READRAW         0x00000201
+//#define REC_READSUB         0x00000202
+//#define REC_READALL         0x00000203
+//#define REC_READAT          0x00000211
+#define REC_READRAW         0x00000221      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_READSUB         0x00000222      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_READALL         0x00000223      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_READAT          0x00000231      // New parameters added, but I don't want to change the name. 14/04/04
+#define REC_READLONG        0x00000241      // Long waveform
+#define REC_WFDSCAL         0x00000301      // obsolete
+#define REC_HISTAT          0x00000302      // obsolete
+#define REC_WFDV8SCAL       0x00000303
+#define REC_SCALERS         0x00000401
+#define REC_HJETSWITCH      0x00000501      // jet switch record
+#define REC_PCTARGET        0x00000502      // target history record
+#define REC_COUNTRATE       0x00000503      // count rate history record
+#define REC_END             0x00000999
+#define REC_TYPEMASK        0x00007FFF
+#define REC_MASK_BEAM       0x00030000
+#define REC_YELLOW          0x00010000 // or'ed with the type
+#define REC_BLUE            0x00020000 // or'ed with the type
+#define REC_MASK_STREAM     0x00300000
+#define REC_UPSTREAM        0x00100000 // or'ed with the type
+#define REC_DOWNSTREAM      0x00200000 // or'ed with the type
+#define REC_JET             0x00080000 // or'ed with the type and ring
+#define REC_120BUNCH        0x00008000 // or'ed with the mask where applicable
+#define REC_FROMMEMORY      0x00040000 // or'ed with the mask where applicable
 
+
+enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
+                kMEASTYPE_UNDEF       = 0x11111111,
+                kMEASTYPE_TEST        = 0x00010000,
+                kMEASTYPE_ALPHA       = 0x00000001,
+                kMEASTYPE_SWEEP       = 0x00000002,  // profile sweep
+                kMEASTYPE_FIXED       = 0x00000004,
+                kMEASTYPE_RAMP        = 0x00000008,
+                kMEASTYPE_EMIT_SCAN   = 0x00000010,
+                kMEASTYPE_TARGET_SCAN = 0x00000020,
+                kMEASTYPE_PROFILE_T   = 0x00000040,  // profile by time
+                kMEASTYPE_PROFILE_E   = 0x00000080}; // profile events
 
 typedef struct {
     long len;           // total length = header size + data size
@@ -77,9 +90,11 @@ typedef struct {
 
 typedef struct {
     recordHeaderStruct header;
-    int beginvoltage;
-    int endvoltage;
-} recordVoltageStruct;
+    Int_t   fCavity200MHzVoltage;
+    Float_t fSnakeCurrents[N_BEAMS];
+    Float_t fStarRotatorCurrents[N_BEAMS];
+    Float_t fPhenixRotatorCurrents[N_BEAMS];
+} RecordMachineParams;
 
 typedef struct {
     recordHeaderStruct header;

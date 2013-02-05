@@ -197,14 +197,14 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          continue;
       }
 
-      // REC_VOLTAGE
-      if ((mHeader->type & REC_TYPEMASK) == REC_VOLTAGE)
+      // REC_MACHINEPARAMS
+      if ((mHeader->type & REC_TYPEMASK) == REC_MACHINEPARAMS)
       {
-         printf("Reading REC_VOLTAGE record... size= %ld\n", mHeader->len);
+         printf("Reading REC_MACHINEPARAMS record... size= %ld\n", mHeader->len);
 
-         //we have to extract the begin and end voltages
-         recordVoltageStruct *rec = (recordVoltageStruct*) mHeader;
-         ProcessRecord( (recordVoltageStruct&) *rec);
+         // Extract voltages, currents, etc
+         RecordMachineParams *rec = (RecordMachineParams*) mHeader;
+         ProcessRecord( (RecordMachineParams&) *rec);
 
          mSeek = mSeek + mHeader->len;
          continue;
@@ -1140,7 +1140,7 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
 /** */
 void ProcessRecord(const recordMeasTypeStruct &rec)
 { //{{{
-   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
+   //UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    gMeasInfo->SetMeasType(rec.type);
 
    //printf("recordMeasTypeStruct\n");
@@ -1249,15 +1249,12 @@ void ProcessRecord(const recordCountRate &rec)
    gAsymRoot->FillProfileHists(size, pointer);
 } //}}}
 
-void ProcessRecord(const recordVoltageStruct &rec)
+
+void ProcessRecord(const RecordMachineParams &rec)
 {
-    int beginvoltage=0;
-    int endvoltage=0;
-    beginvoltage=rec.beginvoltage;
-    endvoltage=rec.endvoltage;
-    printf("beginvoltage=%d  endvoltage=%d\n",beginvoltage,endvoltage);
-    gMeasInfo->SetVoltages(beginvoltage,endvoltage);
+    gMeasInfo->SetMachineParams(rec);
 }
+
 
 /** */
 void ProcessRecord(const recordWcmAdoStruct &rec)

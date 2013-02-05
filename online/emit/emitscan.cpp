@@ -35,8 +35,7 @@
 #include <TText.h>
 #include <TPavesText.h>
 
-#include "rhicpol.h"
-#include "rpoldata.h"
+#include "globals.h"
 #include "emitdefn.h"
 
 bool checkSt(char *wchtarg, int strip);
@@ -74,7 +73,7 @@ struct EVCNTSTRUCT {
     float totEvt;
 } evtcnt;
 
-//      Common /rhic/
+// Common /rhic/
 struct RHICSTRUCT {
     int fillpat[MAXBUNCH];
     int polpat[MAXBUNCH];

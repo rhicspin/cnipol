@@ -32,9 +32,10 @@
 #include "rhicpol.h"
 #include "rpolutil.h"
 
+
 // Global variables
 FILE                 *LogFile;
-char                  DeviceName[128] = "None";          // our CDEV name (like polarimeter.yel1 etc)
+char                  DeviceName[128] = "None";         // our CDEV name (like polarimeter.yel1 etc)
 char                  ourTargetCDEVName[20] = "None";   // we will write what is appropriate here in getAdoInfo()
 beamDataStruct        beamData;                         // beam information from CDEV
 beamDataStruct        beamOtherData;                    // we need both beams for hjet
@@ -42,7 +43,6 @@ V124Struct            V124;                             // V124 settings
 polDataStruct         polData;                          // polarization structure
 configRhicDataStruct  Conf;                             // CAMAC configuration
 SiChanStruct         *SiConf = NULL;                    // silicon channels
-wcmDataStruct         wcmData;                          // Wall current monitor data from CDEV
 wcmDataStruct         wcmOtherData;                     // we need both beams for hjet
 jetPositionStruct     jetPosition;                      // Jet position from CDEV
 
@@ -62,13 +62,14 @@ int   iRamp       = 0;                  // going to be ramp
 
 extern int IStop;                       // Stop flag
 
-std::string gOptMeasType("");                // measurement type must be provided
+std::string gOptMeasType("");           // measurement type must be provided
 
 float ANALPOW;                          // very approximate analyzing power
 float ANALPOWE;                         // its error
 
 int recRing = 0;                        // data mask with ring information etc.
 int recStream = 0;
+
 
 // Code to exit - this is error only exit
 void polexit(void)
@@ -80,6 +81,7 @@ void polexit(void)
    exit(10);
 }
 
+
 //      remove \n from string time
 char * cctime(time_t *itime)
 {
@@ -88,6 +90,7 @@ char * cctime(time_t *itime)
    str[strlen(str) - 1] = '\0';
    return str;
 }
+
 
 // Main
 int main(int argc, char **argv)
@@ -241,7 +244,6 @@ int main(int argc, char **argv)
 
    t = time(NULL);
 
-   //rhicpol_voltage();
    rhicpol_process_options();
 
    fprintf(LogFile, ">>>>> %s Starting measurement for device=%s\n", cctime(&t), DeviceName);
@@ -289,7 +291,7 @@ int main(int argc, char **argv)
 
    // Get beam energy from CDEV
    if (NoADO == 0) {
-      getCDEVInfo(&beamData);
+      getCdevInfo(&beamData);
       fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
 
       // Check if an injection version of the config file exists
@@ -309,9 +311,9 @@ int main(int argc, char **argv)
       polexit();
    }
 
-   //  get CDEV information
-   if (NoADO == 0) {
-
+   // Get CDEV information
+   if (NoADO == 0)
+   {
       getAdoInfo();
 
       // nonzero Pol/fill pattern in the config has priority over measured (we need this for debugging)
@@ -477,7 +479,6 @@ int main(int argc, char **argv)
       signal(SIGINT, SIG_DFL);
       t = time(NULL);
 
-      //rhicpol_voltage2();
       if (nLoop == 1) {
          fprintf(LogFile,    ">>> %s Measurement finished with %9d events.\n", cctime(&t), ev);
       }
@@ -551,19 +552,3 @@ void rhicpol_process_options()
    else{
       gMeasType = kMEASTYPE_UNKNOWN;}
 } //}}}
-
-
-void rhicpol_voltage()
-{
-    theVoltage_beg=getVoltage();
-}
-
-
-void rhicpol_voltage2()
-{
-    theVoltage_end=getVoltage();
-}
-
-
-
-

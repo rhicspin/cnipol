@@ -16,8 +16,8 @@ class wcm {
 		wcmBeamM:valueAndTime Polar {server=PolarServer};
 		}
 	}
-wcm : bo2-wcm3
-      yi2-wcm3;
+wcm : wcm.blue
+      wcm.yellow;
 
 
 /*****************************************/
@@ -33,6 +33,38 @@ class cav {
         }
 cav : cavTuneLoop.4a-rf-b197-1.3
       cavTuneLoop.4a-rf-y197-1.3;
+
+
+/******************************************/
+/****************** Snakes ****************/
+/******************************************/
+class snake {
+    verbs {get, getMetaData, monitorOn, monitorOff}
+    attributes
+            {
+            dataBarM Polar {server=PolarServer};
+            dataBarM:valueAndTime Polar {server=PolarServer};
+            }
+    }
+snake : bo3-snk7-1.4-ps.current
+        yi3-snk7-1.4-ps.current;
+
+
+/******************************************/
+/*************** Rotators *****************/
+/******************************************/
+class rotator {
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
+                dataBarM Polar {server=PolarServer};
+                dataBarM:valueAndTime Polar {server=PolarServer};
+                }
+        }
+rotator : bi5-rot3-1.4-ps.current
+          yo5-rot3-1.4-ps.current
+          bo7-rot3-1.4-ps.current
+          yi7-rot3-1.4-ps.current;
 
 
 /******************************************/

@@ -17,9 +17,8 @@ using namespace std;
 
 /** */
 MeasInfo::MeasInfo() : TObject(),
-   fStartVoltage(0),
-   fEndVoltage(0),
    fBeamEnergy(0),
+   fMachineParams(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
    fRunName(100, ' '),
@@ -77,8 +76,6 @@ MeasInfo::MeasInfo() : TObject(),
 /** */
 MeasInfo::~MeasInfo() { }
 
-Float_t     MeasInfo::GetEndVoltage()               const { return fEndVoltage;}
-Float_t     MeasInfo::GetStartVoltage()             const { return fStartVoltage;}
 Float_t     MeasInfo::GetBeamEnergyReal()           const { return fBeamEnergy; }
 EBeamEnergy MeasInfo::GetBeamEnergy()               const { return (EBeamEnergy) Int_t(fBeamEnergy + 0.5); }
 Float_t     MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
@@ -89,16 +86,15 @@ string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 
 
 /** */
-void MeasInfo::SetVoltages(int begin, int end)
+void MeasInfo::SetMachineParams(const RecordMachineParams &rec)
 {
-   fStartVoltage = (Float_t) begin;
-   fEndVoltage   = (Float_t) end;
+   fMachineParams = rec;
 }
 
 
 /** */
 void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
-{ //{{{
+{
    fBeamEnergy = beamEnergy;
 
    UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
@@ -112,7 +108,7 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
    fExpectedGlobalTdcOffset = (Short_t) (fExpectedGlobalTimeOffset / WFD_TIME_UNIT_HALF + 0.5);
 
    Info("SetBeamEnergy", "Expected time offset: %f %d\n", fExpectedGlobalTimeOffset, fExpectedGlobalTdcOffset);
-} //}}}
+}
 
 
 /** */
@@ -148,8 +144,13 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
    fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
-   fprintf(f, "$rc['fStartVoltage']		            = %f;\n",     fStartVoltage);
-   fprintf(f, "$rc['fEndVoltage']                  = %f;\n",     fEndVoltage);
+   fprintf(f, "$rc['fMachineParams']['fCavity200MHzVoltage']          = %d;\n",     fMachineParams.fCavity200MHzVoltage  );
+   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][0]             = %f;\n",     fMachineParams.fSnakeCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][1]             = %f;\n",     fMachineParams.fSnakeCurrents[1]  );
+   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][0]       = %f;\n",     fMachineParams.fStarRotatorCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][1]       = %f;\n",     fMachineParams.fStarRotatorCurrents[1]  );
+   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][0]     = %f;\n",     fMachineParams.fPhenixRotatorCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][1]     = %f;\n",     fMachineParams.fPhenixRotatorCurrents[1]  );
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );

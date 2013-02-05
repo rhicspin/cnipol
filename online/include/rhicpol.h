@@ -12,6 +12,8 @@
 
 #define SHELL           "/bin/bash"
 
+#define N_BEAMS         2           // Number of beams/rings
+
 #define STATUS_ERROR    0x80000000  // this bit indicates that data is not
                                     // valid. It should be explained by other
                                     // bit(s) if not some unknown program
@@ -281,6 +283,5 @@ typedef struct {
 
 void rhicpol_print_usage();
 void rhicpol_process_options();
-void rhicpol_voltage();
-void rhicpol_voltage2();
+
 #endif
