@@ -248,7 +248,7 @@ bool DbEntry::operator==(const DbEntry &rhs) const
 
 /** */
 void DbEntry::Print(const Option_t* opt) const
-{ //{{{
+{
    //printf("RunID:             %f\n", RunID);
    //printf("isCalibRun:        %d\n", isCalibRun);
    //printf("calib_file_s:      %s\n", calib_file_s.c_str());
@@ -260,7 +260,7 @@ void DbEntry::Print(const Option_t* opt) const
 
    PrintAsDbEntry(cout);
 
-} //}}}
+}
 
 
 /**
@@ -317,7 +317,7 @@ void DbEntry::SetAsymVersion(std::string version)
 
 /** */
 void DbEntry::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    //fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
    //fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());
    //fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
@@ -333,4 +333,4 @@ void DbEntry::PrintAsPhp(FILE *f) const
       string &field_value = (string &) ifld->second;
       fprintf(f, "$rc['%s']                = \"%s\";\n", field_name.c_str(), field_value.c_str());
    }
-} //}}}
+}

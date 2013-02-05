@@ -39,7 +39,7 @@ CnipolAsymHists::~CnipolAsymHists()
 
 /** */
 void CnipolAsymHists::BookHists()
-{ //{{{
+{
    string  shName;
    TH1    *hist;
 
@@ -242,12 +242,12 @@ void CnipolAsymHists::BookHists()
       ((TH1*) o[shName])->SetTitle("; Time, s; Detector Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
    }
-} //}}}
+}
 
 
 /** */
 void CnipolAsymHists::PreFill()
-{ //{{{
+{
    ((TH1*) o["hChVsDelim"])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    ((TH1*) o["hDetVsDelim"])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    ((TH1*) o["hAsymVsDelim4Ch"])->SetBins(gNDelimeters*10, 0, gNDelimeters);
@@ -262,12 +262,12 @@ void CnipolAsymHists::PreFill()
       ((TH1*) o["hChVsDelim_"  + sSS])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
       ((TH1*) o["hDetVsDelim_" + sSS])->SetBins(gNDelimeters*10, 0, gNDelimeters, N_DETECTORS, 0.5, N_DETECTORS+0.5);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolAsymHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
    UChar_t bId   = ch->GetBunchId() + 1;
@@ -285,12 +285,12 @@ void CnipolAsymHists::Fill(ChannelEvent *ch)
    ((TH1*) o.find("hChVsDelim_"      + sSS)->second) -> Fill(ttime, chId);
    //((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
 
-} //}}}
+}
 
 
 /** */
 void CnipolAsymHists::FillDerived()
-{ //{{{
+{
    Info("FillDerived()", "Called");
 
    // First fill integral and derivative histograms
@@ -352,12 +352,12 @@ void CnipolAsymHists::FillDerived()
       hDetVsBunchId->Add(hDetVsBunchId_);
       hDetVsDelim->Add(hDetVsDelim_);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
-{ //{{{
+{
    Info("FillDerived(DrawObjContainer &oc)", "Called");
 
    CnipolHists *hists_std = (CnipolHists*) oc.d.find("std")->second;
@@ -420,12 +420,12 @@ void CnipolAsymHists::FillDerived(DrawObjContainer &oc)
 
    //gAsymCalculator.CalcDelimAsym(this);
    gAsymCalculator.CalcDelimAsymSqrtFormula(this);
-} //}}}
+}
 
 
 /** */
 void CnipolAsymHists::PostFill()
-{ //{{{
+{
    // Assume all required histograms are filled
    // Fit (or do whatever) them at this step
 
@@ -477,4 +477,4 @@ void CnipolAsymHists::PostFill()
       gAnaMeasResult->fFitResAsymBunchY45[*iSS] = fitres;
       delete funcConst;
    }
-} //}}}
+}

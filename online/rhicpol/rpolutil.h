@@ -36,32 +36,33 @@ void readMemory(void);
 void readScalers(void);
 
 //	General functions (rpolutil.c)
-void nsleep(double time);
+void  nsleep(double time);
 long long totalSum(long *data, int len);
-void setAlarm(float mTime);
-void clearAlarm(void);
-void alarmHandler(int sig);
-void polexit(void);
-char * stat2str(int stat);
+void  setAlarm(float mTime);
+void  clearAlarm(void);
+void  alarmHandler(int sig);
+void  polexit(void);
+char* stat2str(int stat);
 
 //	Jet functions	(rpolutil.c)
-void setOutInhibit(void);
-void resetOutInhibit(void);
-void clearVetoFlipFlop(void);
-void getJetStatus(unsigned short * data);
-int  testJetVeto(void);
-char *getJetStatusString(void);
-void writeJetStatus(void);
-int  getJetBits(void);
-int  testCarbTarg(void);
-void writeCarbTarg(void);
+void  setOutInhibit(void);
+void  resetOutInhibit(void);
+void  clearVetoFlipFlop(void);
+void  getJetStatus(unsigned short * data);
+int   testJetVeto(void);
+char* getJetStatusString(void);
+void  writeJetStatus(void);
+int   getJetBits(void);
+int   testCarbTarg(void);
+void  writeCarbTarg(void);
 
 //	CDEV functions	(rpolutilp.cpp)
 void      getJetPosition(void);
 int       getTargetMovementInfo(long **data);
 void      getCdevInfo(beamDataStruct *bds);
-void      getAdoInfo(void);
-void      getWcmInfo(void);
+void      getCdevInfoMachineParams();
+void      getAdoInfo();
+void      getWcmInfo();
 EMeasType getCDEVMeasType();
 int       getVoltage();
 void      getCarbTarg(carbTargStat * targstat);

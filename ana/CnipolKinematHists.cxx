@@ -34,7 +34,7 @@ CnipolKinematHists::~CnipolKinematHists()
 
 /** */
 void CnipolKinematHists::BookHists()
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -95,24 +95,24 @@ void CnipolKinematHists::BookHists()
          d[dName] = oc;
       }
    }
-} //}}}
+}
 
 
 /** */
 void CnipolKinematHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t chId  = ch->GetChannelId();
 
    //Float_t mass = ch->GetCarbonMassEstimate();
    Float_t mass = ch->GetCarbonMass();
 
    fhPseudoMass_ch[chId-1]->Fill(mass);
-} //}}}
+}
 
 
 /** */
 void CnipolKinematHists::FillDerived()
-{ //{{{
+{
    Info("FillDerived()", "Called");
 
    TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
@@ -128,12 +128,12 @@ void CnipolKinematHists::FillDerived()
       hPseudoMass->Add(hPseudoMass_ch);
    }
 
-} //}}}
+}
 
 
 /** */
 void CnipolKinematHists::PostFill()
-{ //{{{
+{
    Info("PostFill", "Called");
 
    // Fit energy slope with an exponential func
@@ -204,4 +204,4 @@ void CnipolKinematHists::PostFill()
          hPseudoMass_ch->GetListOfFunctions()->Clear();
       }
    }
-} //}}}
+}

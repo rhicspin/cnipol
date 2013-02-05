@@ -24,7 +24,7 @@ DeadLayerCalibrator::~DeadLayerCalibrator()
 
 /** */
 void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
-{ //{{{
+{
    TH2F*  htemp = 0;
    TH1D*  hMeanTime = 0;
    string sSt("  ");
@@ -74,12 +74,12 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
          Error("Calibrate", "Empty TFitResultPtr");
       }
    }
-} //}}}
+}
 
 
 /** */
 void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
-{ //{{{
+{
    TH2F *htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
    TH1D *hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
@@ -118,12 +118,12 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
    } else {
       Error("CalibrateFast", "Empty TFitResultPtr");
    }
-} //}}}
+}
 
 
 /** */
 TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{ //{{{
+{
    Double_t xmin = h->GetXaxis()->GetXmin();
    // Energy dependent fit function fails when E = 0
    xmin = xmin == 0 ? 1 : xmin;
@@ -218,15 +218,15 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
    //delete bananaFitFunc2;
 
    return fitres;
-} //}}}
+}
 
 
 /** */
 //ChannelCalib& DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-//{ //{{{
+//{
 //   ChannelCalib *chCalib = new ChannelCalib();
 //   return *chCalib;
-//} //}}}
+//}
 
 
 /** */
@@ -244,7 +244,7 @@ void DeadLayerCalibrator::Print(const Option_t* opt) const
  *
  */
 Double_t DeadLayerCalibrator::BananaFitFunc(Double_t *x, Double_t *par)
-{ //{{{
+{
    Double_t e_meas      = x[0];
    Double_t t0          = par[0];
    Double_t avrgELoss = par[1];
@@ -268,12 +268,12 @@ Double_t DeadLayerCalibrator::BananaFitFunc(Double_t *x, Double_t *par)
       t_meas = DBL_MAX;
 
    return t_meas;
-} //}}}
+}
 
 
 
 Double_t DeadLayerCalibrator::BananaFitFunc2(Double_t *x, Double_t *par)
-{ //{{{
+{
    Double_t t_meas = x[0];
    Double_t e_meas = x[1];
    Double_t t0     = par[0];
@@ -282,4 +282,4 @@ Double_t DeadLayerCalibrator::BananaFitFunc2(Double_t *x, Double_t *par)
       MASS_12C*CARBON_PATH_DISTANCE*CARBON_PATH_DISTANCE/ 2. / (t_meas + t0)/(t_meas + t0));
 
    return e_miss;
-} //}}}
+}

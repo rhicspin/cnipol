@@ -33,7 +33,7 @@ CnipolRawHists::~CnipolRawHists()
 
 /** */
 void CnipolRawHists::BookHists()
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -181,12 +181,12 @@ void CnipolRawHists::BookHists()
          d[dName] = oc;
       }
    }
-} //}}}
+}
 
 
 /** */
 void CnipolRawHists::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t  chId     = ch->GetChannelId();
    UShort_t adcA_bin = ch->GetAmpltd() + 1;
    UShort_t adcI_bin = ch->GetIntgrl() + 1;
@@ -221,12 +221,12 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
 
    hist = ((TH1*) o["hRevolutionId"]);
    hist->Fill(ch->GetRevolutionId());
-} //}}}
+}
 
 
 /** */
 void CnipolRawHists::FillDerivedPassOne()
-{ //{{{
+{
    Info("FillDerivedPassOne", "Called");
 
    TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
@@ -283,12 +283,12 @@ void CnipolRawHists::FillDerivedPassOne()
       // Calculate cumulative histograms
       //utils::ConvertToCumulative2(hTVsA_channel, (TH1F*) fhTvsACumul_ch[iCh-1]);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
-{ //{{{
+{
    Info("PostFillPassOne", "Called");
 
    // We expect empty bunch histogram container
@@ -353,11 +353,11 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
          }
       }
    }
-} //}}}
+}
 
 
 /** */
 TH1* CnipolRawHists::GetHTvsA_ch(UShort_t chId)
-{ //{{{
+{
    return fhTvsA_ch[chId-1];
-} //}}}
+}

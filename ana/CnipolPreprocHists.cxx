@@ -44,7 +44,7 @@ CnipolPreprocHists::~CnipolPreprocHists()
 
 /** */
 void CnipolPreprocHists::BookHists()
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -106,21 +106,21 @@ void CnipolPreprocHists::BookHists()
       fhTimeVsEnergyACumul_ch[chId-1] = hist;
       ((THStack*) o["hsTimeVsEnergyACumul"])->Add(fhTimeVsEnergyACumul_ch[chId-1]);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    //UChar_t chId = ch->GetChannelId();
 
    //fhTimeVsEnergyA_ch[chId-1] -> Fill(ch->GetEnergyA(), ch->GetTime());
-} //}}}
+}
 
 
 /** */
 void CnipolPreprocHists::FillDerivedPassOne()
-{ //{{{
+{
    // Fill derivative histograms first
    //TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
    //
@@ -136,12 +136,12 @@ void CnipolPreprocHists::FillDerivedPassOne()
    //   TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
    //   hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
    //}
-} //}}}
+}
 
 
 /** */
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
-{ //{{{
+{
    Info("PostFillPassOne", "Called");
 
    //// We expect empty bunch histogram container of the same class
@@ -202,12 +202,12 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
    // Fit 3 bins with a gaussian func
    //hPulserTdc->FitSlicesX(0, maxValBin-1, maxValBin+1, 0, "QNR G3", fitResHists);
 
-} //}}}
+}
 
 
 /** */
 void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool_t thumbs)
-{ //{{{
+{
    DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
 
    // Draw superimposed histos
@@ -236,12 +236,12 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
 		SaveHStackAs(c, hstack, path);
    }
-} //}}}
+}
 
 
 /** */
 //void CnipolPreprocHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
-//{ //{{{
+//{
 //   for (Int_t ibx=0; ibx<=hRaw->GetNbinsX(); ++ibx) {
 //      for (Int_t iby=0; iby<=hRaw->GetNbinsY(); ++iby) {
 //
@@ -256,12 +256,12 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 //         hKin->Fill(kinE, kinToF, bcont);
 //      }
 //   }
-//} //}}}
+//}
 
 
 /** This method is not used for now. */
 void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *ebHists)
-{ //{{{
+{
 /*
    TH2* hTimeVsEnergyA = (TH2*) o["hTimeVsEnergyA"];
 
@@ -313,12 +313,12 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
       hTimeVsEnergyA->Add(fhTimeVsEnergyA_ch_this);
    }
 */
-} //}}}
+}
 
 
 /** */
 void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists)
-{ //{{{
+{
    TH1 *hNoiseReject;
    
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
@@ -452,4 +452,4 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
 
    // use the last noise reject histo
    ((THStack*) o["hsTimeVsEnergyACumul"])->Add((TH1*) hNoiseReject->Clone("noise_reject_hs"));
-} //}}}
+}

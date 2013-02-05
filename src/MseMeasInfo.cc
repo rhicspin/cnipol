@@ -65,7 +65,7 @@ void MseMeasInfoX::Print(const Option_t* opt) const
 
 /** */
 void MseMeasInfoX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['run_name']                       = \"%s\";\n", run_name.c_str()          );
    fprintf(f, "$rc['polarimeter_id']                 = %d;\n", (short) polarimeter_id    );
    fprintf(f, "$rc['start_time']                     = %d;\n", (int) time_t(start_time)        );
@@ -91,12 +91,12 @@ void MseMeasInfoX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['ana_start_time']                 = %d;\n", (int) time_t(ana_start_time)    );
    fprintf(f, "$rc['ana_duration']                   = %d;\n", ana_duration      );
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 //void MseMeasInfoX::Streamer(TBuffer &buf)
-//{ //{{{
+//{
 //   TString tstr;
 //   //short   smallint;
 //   time_t  tmp_time_t;
@@ -131,7 +131,7 @@ void MseMeasInfoX::PrintAsPhp(FILE *f) const
 //      //tstr = fAlphaCalibRun; buf << tstr;
 //      //tstr = fDlCalibRun;    buf << tstr;
 //   }
-//} //}}}
+//}
 
 
 /** */

@@ -34,6 +34,7 @@ extern polDataStruct poldat_;
 //} subrun_;
 extern SubRun subrun_;
 
+
 void sendresult_(char *device, int len)
 {
    int irc;
@@ -148,6 +149,7 @@ void sendresult_(char *device, int len)
    if (irc != 0) printf("RHIC2HBOOK : %d errors sending polarimeter data\n", irc);
 }
 
+
 void sendsubresult_(char *device, int len)
 {
    int i;
@@ -206,4 +208,3 @@ void sendsubresult_(char *device, int len)
 
    if (irc != 0) printf("%d errors sending polarimeter data\n", irc);
 }
-

@@ -69,7 +69,7 @@ void ChannelCalib::Print(const Option_t* opt) const
 
 /** */
 void ChannelCalib::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "array(");
    fprintf(f, "'ACoef' => %7.4f, ",         fACoef);
    fprintf(f, "'ACoefErr' => %7.4f, ",      fACoefErr);
@@ -85,7 +85,7 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
    fprintf(f, "'fBananaChi2Ndf' => %7.4f, ",  fBananaChi2Ndf);
    fprintf(f, "'fFitStatus' => %7d",        fFitStatus);
    fprintf(f, ")");
-} //}}}
+}
 
 
 /** */

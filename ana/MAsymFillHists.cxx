@@ -44,7 +44,7 @@ MAsymFillHists::~MAsymFillHists()
 
 /** */
 void MAsymFillHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    // By polarimeter
@@ -99,12 +99,12 @@ void MAsymFillHists::BookHists()
       }
    }
 
-} //}}}
+}
 
 
 /** */
 void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
-{ //{{{
+{
    char    hName[256];
    string  shName;
    TH1    *hist;
@@ -263,12 +263,12 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    hist->GetYaxis()->SetRangeUser(-0.5, 0.5);
    styleMarker.Copy(*hist);
    o[shName] = hist;
-} //}}}
+}
 
 
 /** */
 void MAsymFillHists::Fill(const EventConfig &rc)
-{ //{{{
+{
    Double_t runId              = rc.fMeasInfo->RUNID;
    UInt_t   fillId             = (UInt_t) runId;
    UInt_t   beamEnergy         = rc.fMeasInfo->GetBeamEnergy();
@@ -371,12 +371,12 @@ void MAsymFillHists::Fill(const EventConfig &rc)
       graphErrs->SetPoint(graphNEntries, measStartTime, profileRatio);
       graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
    }
-} //}}}
+}
 
 
 /** */
 void MAsymFillHists::PostFill()
-{ //{{{
+{
    char hName[256];
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
@@ -481,12 +481,12 @@ void MAsymFillHists::PostFill()
    }
 
    //DrawObjContainer::PostFill();
-} //}}}
+}
 
 
 /** */
 void MAsymFillHists::PostFill(AnaGlobResult &agr)
-{ //{{{
+{
    // should be moved to separate function
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
 
@@ -567,12 +567,12 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
          }
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymFillHists::UpdateLimits()
-{ //{{{
+{
    char hName[256];
 
    for (PolarimeterIdSetIter iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId)
@@ -610,12 +610,12 @@ void MAsymFillHists::UpdateLimits()
    }
 
    DrawObjContainer::UpdateLimits();
-} //}}}
+}
 
 
 /** */
 DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
-{ //{{{
+{
    // Set individual fill sub dirs
    string sFillId(5, ' ');
    sprintf(&sFillId[0], "%05d", fillId);
@@ -633,4 +633,4 @@ DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
    }
 
    return oc;
-} //}}}
+}

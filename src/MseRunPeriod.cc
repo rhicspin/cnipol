@@ -51,7 +51,7 @@ void MseRunPeriodX::Print(const Option_t* opt) const
 
 /** */
 void MseRunPeriodX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['start_time']                     = %d;\n", (int) time_t(start_time));
    fprintf(f, "$rc['polarimeter_id']                 = %d;\n", (short) polarimeter_id);
    fprintf(f, "$rc['alpha_calib_run_name']           = \"%s\";\n", string(alpha_calib_run_name).c_str());
@@ -70,4 +70,4 @@ void MseRunPeriodX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['cut_pulser_tdc_min']             = %f;\n", cut_pulser_tdc_min);
    fprintf(f, "$rc['cut_pulser_tdc_max']             = %f;\n", cut_pulser_tdc_max);
    fprintf(f, "\n");
-} //}}}
+}

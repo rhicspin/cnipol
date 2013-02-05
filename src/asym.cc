@@ -44,7 +44,7 @@ using namespace std;
  * Main program
  */
 int main(int argc, char *argv[])
-{ //{{{
+{
    // Create a stopwatch and start it
    TStopwatch stopwatch;
    TTimeStamp timestamp;
@@ -108,14 +108,7 @@ int main(int argc, char *argv[])
    //cout << *mseMeasInfoX << endl;
 
    // Overwrite the offline version (if set previously)
-   //gRunDb.SetAsymVersion(gMeasInfo->fAsymVersion);
    mseMeasInfoX->asym_version = gAsymAnaInfo->fAsymVersion;
-
-   // We should be done reading all common/default parameters from DB by now
-   //gRunDb.Print();
-
-   //gAsymAnaInfo->Update(gRunDb);
-   //gMeasInfo->Update(gRunDb);
 
    // Update the final running parameters based on what was read from DB and
    // what was requested by the user
@@ -178,7 +171,6 @@ int main(int argc, char *argv[])
       gAsymRoot->Calibrate();
    }
 
-   //gRunDb.Print();
    //gAsymRoot->fEventConfig->Print();
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
@@ -225,12 +217,12 @@ int main(int argc, char *argv[])
    printf("Processing time: %f seconds\n", gAsymAnaInfo->fAnaTimeReal);
 
    return 1;
-} //}}}
+}
 
 
 // for Bunch by Bunch base analysis
 int BunchSelect(int bid)
-{ //{{{
+{
   int go = 0;
   //  int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,
@@ -245,7 +237,7 @@ int BunchSelect(int bid)
   }
 
   return go;
-} //}}}
+}
 
 
 // Description : Check Disabled detector
@@ -254,7 +246,7 @@ int BunchSelect(int bid)
 //
 /*
 int DisabledDet(int det)
-{ //{{{
+{
   // det(0,1,2,3,4,5} => {0, 1, 0, 0, 1, 0} => 18
   int DeadDet = tgt.VHtarget ? 18 : 0 ;
   //                            ^   ^
@@ -262,5 +254,5 @@ int DisabledDet(int det)
 
   return DeadDet>>det & 1 ;
 
-} //}}}
+}
 */

@@ -33,7 +33,7 @@ CnipolPulserHists::~CnipolPulserHists()
 
 /** */
 void CnipolPulserHists::BookHists()
-{ //{{{
+{
    char hName[256];
 
    fDir->cd();
@@ -175,12 +175,12 @@ void CnipolPulserHists::BookHists()
       fhTimeVsEnergyA_ch[*iCh-1] = (TH2*) oc_ch->o.find("hTimeVsEnergyA_ch" + sChId)->second;
    }
 
-} //}}}
+}
 
 
 /** */
 void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t  chId     = ch->GetChannelId();
    UShort_t adcA_bin = ch->GetAmpltd() + 1;
    UShort_t adcI_bin = ch->GetIntgrl() + 1;
@@ -228,12 +228,12 @@ void CnipolPulserHists::FillPassOne(ChannelEvent *ch)
    h1Tmp_ch->AddBinContent(chId);
    h1Tmp_ch->SetEntries(h1Tmp_ch->GetEntries() + 1);
 
-} //}}}
+}
 
 
 /** */
 void CnipolPulserHists::FillDerivedPassOne()
-{ //{{{
+{
    TH1* hAdcAmpltd       = (TH1*) o["hAdcAmpltd"];
    TH1* hTdc             = (TH1*) o["hTdc"];
    TH1* hTvsA            = (TH1*) o["hTvsA"];
@@ -283,12 +283,12 @@ void CnipolPulserHists::FillDerivedPassOne()
 
       hTdc->Add(hTdc_ch);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolPulserHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t  chId     = ch->GetChannelId();
    //UShort_t adcA_bin = ch->GetAmpltd() + 1;
    //UShort_t adcI_bin = ch->GetIntgrl() + 1;
@@ -304,4 +304,4 @@ void CnipolPulserHists::Fill(ChannelEvent *ch)
 
    ((TH1*) sd->o["hTofVsKinEnergyA_ch" + sChId]) -> Fill(kinEnergy, tof);
 
-} //}}}
+}

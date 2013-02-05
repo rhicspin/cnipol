@@ -35,16 +35,16 @@ void       BeamBunch::SetBunchSpin(ESpinState ss)   { fBunchSpin = ss; }
 
 /** */
 void BeamBunch::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fIsFilled']            = %d;\n", fIsFilled);
    fprintf(f, "$rc['fIsUserDisabled']      = %d;\n", fIsUserDisabled);
    fprintf(f, "$rc['fBunchSpin']           = %d;\n", fBunchSpin);
-} //}}}
+}
 
 
 /** */
 ostream& operator<<(ostream &os, const BeamBunch &bb)
-{ //{{{
+{
    os << "array(";
    os << "'fIsFilled' => "        << bb.fIsFilled  << ", ";
    os << "'fIsUserDisabled' => "  << bb.fIsUserDisabled << ", ";
@@ -52,4 +52,4 @@ ostream& operator<<(ostream &os, const BeamBunch &bb)
    os << ")";
 
    return os;
-} //}}}
+}

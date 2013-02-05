@@ -30,7 +30,7 @@ RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
    fFileStream(), fSeenRecords()
 {
    fclose(fFile);
-   delete[] fMem;
+   delete[] fMem; // why is it here?
    fFileStream.close();
 }
 
@@ -39,7 +39,7 @@ RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
 RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    fMem(0),
    fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
-{ //{{{
+{
    FILE *fFile = fopen(fFileName.c_str(), "r");
 
    // reading the data till its end ...
@@ -63,19 +63,20 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
    fFileStream.close();
 
    sw.Stop();
-   printf("Stopped reading into memory: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-} //}}}
+   printf("Stopped reading into memory: Real: %f s and CPU: %f s time\n", sw.RealTime(), sw.CpuTime());
+}
 
 
 /** */
 RawDataProcessor::~RawDataProcessor()
 {
+   delete[] fMem;
 }
 
 
 /** */
 void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
-{ //{{{
+{
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
 
@@ -102,7 +103,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
    int polId = gMeasInfo->GetPolarimeterId(gMeasInfo->fPolBeam, gMeasInfo->fPolStream);
 
    if (polId < 0)
-      printf("WARNING: Polarimeter ID will be defined by other means\n");
+      Warning("ReadRecBegin(MseMeasInfoX* run)", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
 
    stringstream sstr;
 
@@ -127,8 +128,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    } else { // cannot proceed
-
-      printf("ERROR: Unknown polarimeter ID\n");
+      Error("ReadRecBegin(MseMeasInfoX* run)", "Unknown polarimeter ID");
       exit(-1);
    }
 
@@ -149,7 +149,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
       //printf("ERROR: Cannot read REC_BEGIN record\n");
 
    Info("ReadRecBegin", "Stopped reading begin record from data file");
-} //}}}
+}
 
 
 /**
@@ -157,7 +157,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
  * raw data. It does not read events.
  */
 void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
-{ //{{{
+{
    cout << endl;
    Info("ReadMeasInfo", "Start reading run info from data file...");
 
@@ -305,12 +305,12 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
    sw.Stop();
 
    Info("ReadMeasInfo", "Stopped reading run info from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-} //}}}
+}
 
 
 /** */
 void RawDataProcessor::ReadDataFast()
-{ //{{{
+{
    cout << endl;
    Info("ReadDataFast", "Start reading events from data file...");
 
@@ -381,8 +381,8 @@ void RawDataProcessor::ReadDataFast()
 
          i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
-         for (unsigned iEvent=0; iEvent<nEvents; iEvent++) {
-
+         for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
+         {
             //printf("f: %d %d %d\n", ATPtrF->data[iEvent].a, ATPtrF->data[iEvent].t, ATPtrF->data[iEvent].s);
             //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
@@ -457,7 +457,7 @@ void RawDataProcessor::ReadDataFast()
    printf("Total events processed: %12u\n", nEventsProcessed);
 
    Info("ReadDataFast", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
-} //}}}
+}
 
 
 // read loop routine
@@ -777,7 +777,7 @@ void readloop(MseMeasInfoX &run)
  * Deprecated
  */
 void reConfig()
-{ //{{{
+{
     ifstream configFile;
     configFile.open(reConfFile);
 
@@ -850,12 +850,12 @@ void reConfig()
     }
 
     configFile.close();
-} //}}}
+}
 
 
 /** */
 void UpdateRunConst(TRecordConfigRhicStruct *ci)
-{ //{{{
+{
    if (!ci) return;
 
    //ci->Print();
@@ -895,7 +895,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
    printf("\nAverage RunConst:\n");
    gRunConsts[0].Print();
-} //}}}
+}
 
 
 // Description : Decorde target infomation.
@@ -903,7 +903,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
 void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
-{ //{{{
+{
    cout << endl;
    cout << "target ID = " << poldat.targetIdS << endl;
    //cout << "startTimeS = " << poldat.startTimeS << endl;
@@ -967,12 +967,12 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
    //      //      gMeasInfo->ConfigureActiveStrip(mask.detector);
    //   }
    //}
-} //}}}
+}
 
 
 /** */
 void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
-{ //{{{
+{
    const long* pointer = (const long*) &rec;
 
    //--rec;
@@ -1091,13 +1091,13 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
 
    // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
    //if (tgt.VHtarget) mask.detector = 0x2D;
-} //}}}
+}
 
 
 // Method name : PrepareCollidingBunchPattern(gMeasInfo->fPolBeam)
 // Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
 void PrepareCollidingBunchPattern()
-{ //{{{
+{
    for (int i=0; i<NBUNCH; i++){
       phx.bunchpat[i] = 1; // PHENIX bunch patterns
       str.bunchpat[i] = 1; // STAR bunch patterns
@@ -1113,12 +1113,12 @@ void PrepareCollidingBunchPattern()
    cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
    cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
    cout << "=====================================" << endl;
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordConfigRhicStruct &rec)
-{ //{{{
+{
    gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
              (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
@@ -1134,31 +1134,31 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
 
    // Recalculate Run constants
    UpdateRunConst(gConfigInfo);
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordMeasTypeStruct &rec)
-{ //{{{
+{
    //UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    gMeasInfo->SetMeasType(rec.type);
 
    //printf("recordMeasTypeStruct\n");
    //printf("len, size: %ld, %d\n", rec.header.len, size);
    //printf("type: %d\n", measType);
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo)
-{ //{{{
+{
    if (!gAsymAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, MeasInfo);
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run)
-{ //{{{
+{
    if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit()) return;
 
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
@@ -1166,12 +1166,12 @@ void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run)
    //long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
    ProcessRecordPCTarget((pCTargetStruct &) rec.data, run);
 
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordWFDV8ArrayStruct &rec)
-{ //{{{
+{
    Int_t s1=0, s2=0, s3=0, s4=0;
    //float hist[1536];
 
@@ -1230,12 +1230,12 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
    //for (int i=0; i<3; i++) {
    //   //sscal_[rec.siNum * 3+i] += rec.scalers[i];
    //}
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordCountRate &rec)
-{ //{{{
+{
    UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    Long_t *pointer = (Long_t *) rec.data;
    //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
@@ -1247,9 +1247,10 @@ void ProcessRecord(const recordCountRate &rec)
    //}
 
    gAsymRoot->FillProfileHists(size, pointer);
-} //}}}
+}
 
 
+/** */
 void ProcessRecord(const RecordMachineParams &rec)
 {
     gMeasInfo->SetMachineParams(rec);
@@ -1258,7 +1259,7 @@ void ProcessRecord(const RecordMachineParams &rec)
 
 /** */
 void ProcessRecord(const recordWcmAdoStruct &rec)
-{ //{{{
+{
    for (int bid=1; bid<=N_BUNCHES; bid++) {
 
       float data = rec.data.fillDataM[(bid-1)*3];
@@ -1275,12 +1276,12 @@ void ProcessRecord(const recordWcmAdoStruct &rec)
    gMeasInfo->fWallCurMonAve = gMeasInfo->fWallCurMonSum / gMeasInfo->fWallCurMon.size();
 
    gAsymRoot->FillRunHists();
-} //}}}
+}
 
 
 /** */
 void ProcessRecord(const recordBeamAdoStruct &rec)
-{ //{{{
+{
    //memcpy(&beamdat, &rec.beamado.data, sizeof(beamdat));
    //beamDataStruct beamdat;
 
@@ -1342,4 +1343,4 @@ void ProcessRecord(const recordBeamAdoStruct &rec)
    //cout << endl;
 
    gMeasInfo->PrintBunchPatterns();
-} //}}}
+}

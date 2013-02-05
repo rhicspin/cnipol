@@ -9,16 +9,13 @@ extern FILE *LogFile;
 extern beamDataStruct beamData;
 extern beamDataStruct beamOtherData;
 extern polDataStruct polData;
-extern int recRing;
 extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;                 // V124 settings
 extern int iDebug;
-extern int NoADO;
 extern float mTime;
 extern int mEvent;
 extern char DeviceName[128];    // our CDEV name
-extern char ourTargetCDEVName[20];      // we will write what is appropriate here in getAdoInfo()
 extern int nLoop;       // Number of subruns
 extern int iRamp;       // going to be ramp
 
@@ -26,22 +23,22 @@ extern int iRamp;       // going to be ramp
 // Get HJET valves status
 int getJetBits(void)
 {
-    cdevData data;
-    char msg[20];
-    int irc, i, j;
-    char jetBitsName[2][40] = {"iobitText.12a-hjet.11", "iobitText.12a-hjet.15"};
-//*********************************************
- if (NoADO != 0) return 0;
-    j = 0;
-    irc  = 0;
-    for (i=0; i<2; i++) {
-        cdevDevice & dev = cdevDevice::attachRef(jetBitsName[i]);
-        if(!DEVSEND(dev, "get outBitsText", NULL, &data, LogFile, irc))
-            data.get("value", msg, sizeof(msg));        // msg = "on"/"off"
-        if (tolower(msg[1]) == 'n') j |= 1;
-        j <<= 1;
-    }
-    return j;
+   cdevData data;
+   char msg[20];
+   int irc, i, j;
+   char jetBitsName[2][40] = {"iobitText.12a-hjet.11", "iobitText.12a-hjet.15"};
+
+   if (!gUseCdev) return 0;
+   j = 0;
+   irc  = 0;
+   for (i=0; i<2; i++) {
+       cdevDevice & dev = cdevDevice::attachRef(jetBitsName[i]);
+       if(!DEVSEND(dev, "get outBitsText", NULL, &data, LogFile, irc))
+           data.get("value", msg, sizeof(msg));        // msg = "on"/"off"
+       if (tolower(msg[1]) == 'n') j |= 1;
+       j <<= 1;
+   }
+   return j;
 }
 
 
@@ -53,12 +50,13 @@ void getJetPosition(void)
 
     char rbpmName[8][20] = {"rbpm.b-g11-bhx", "rbpm.b-g12-bhx", "rbpm.b-g12-bvx",
         "rbpm.b-g11-bvx", "rbpm.y-g11-bhx", "rbpm.y-g12-bhx", "rbpm.y-g11-bvx", "rbpm.y-g12-bvx"};
-//**********************************************************
- if (NoADO != 0) return;
+
+    if (!gUseCdev) return;
     irc = 0;
     cdevDevice & dev = cdevDevice::attachRef("stepper.12a-hjet.A.U");
-    if(!DEVSEND(dev, "get absolutePosition", NULL, &data, LogFile, irc))
-        data.get("value", &jetPosition.jetAbsolutePosition);
+
+    if(!DEVSEND(dev, "get absolutePosition", NULL, &data, LogFile, irc)) data.get("value", &jetPosition.jetAbsolutePosition);
+
     for (i=0; i<8; i++) {
         cdevDevice & rbpm = cdevDevice::attachRef(rbpmName[i]);
         if(!DEVSEND(rbpm, "get avgOrbPositionM", NULL, &data, LogFile, irc))
@@ -75,8 +73,8 @@ int getTargetMovementInfo(long **res)
     size_t len = 0;
     *res = NULL;
 
-    if (NoADO != 0) return 0;
-//      determine the ring
+    if (!gUseCdev) return 0;
+    // determine the ring
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : AdoInfo - %s get encPosProfileS\n", DeviceName);
 
     //  getting the data
@@ -104,7 +102,7 @@ void getCarbTarg(carbTargStat * targstat)
     int irc;
     int i;
 
-    if (NoADO != 0) {
+    if (!gUseCdev) {
         targstat->good = 1;
         for (i=0; i<8; i++) strcpy(targstat->carbtarg[i],"Park");
         return ;
@@ -141,7 +139,7 @@ void getWcmInfo(void)
 {
     cdevData data;
 
-    if (NoADO != 0) return;
+    if (!gUseCdev) return;
 
     //  determine the ring
     int N = 1;
@@ -181,7 +179,7 @@ void getWcmInfo(void)
 /** Get measurement type from CDEV */
 EMeasType getCDEVMeasType()
 {
-   if (NoADO != 0) return kMEASTYPE_UNKNOWN;
+   if (!gUseCdev) return kMEASTYPE_UNKNOWN;
 
    // determine the ring
    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : getCDEVMeasType() - %s get dataAcquisitionType\n", DeviceName);
@@ -225,6 +223,59 @@ void getCdevInfo(beamDataStruct *bds)
 }
 
 
+/** */
+void getCdevInfoMachineParams()
+{
+   int irc = 0;
+   cdevData data;
+
+   int voltages[1000];
+
+   for (UShort_t iRing=0; iRing<N_BEAMS; iRing++) 
+   {
+      if (iRing == 0)      fprintf(LogFile,"RHICPOL-INFO : Blue ring\n");
+      else if (iRing == 1) fprintf(LogFile,"RHICPOL-INFO : Yellow ring\n");
+      else                 fprintf(LogFile,"RHICPOL-ERR  : Unknown ring\n");
+
+      // 197MHz cavity voltage
+      cdevDevice &cavityDevice = cdevDevice::attachRef(gCavityCdevNames[iRing]);
+
+      if ( !DEVSEND(cavityDevice, "get probeMagInVoltsScaledM", NULL, &data, LogFile, irc))
+      {
+         data.get("value", voltages);
+      }
+
+      gRecordMachineParams.fCavity200MHzVoltage = voltages[0]; // was [1]. why?
+      fprintf(LogFile,"RHICPOL-INFO : 197MHZ Cavity: gRecordMachineParams.fCavity200MHzVoltage         = %6d\n",
+         gRecordMachineParams.fCavity200MHzVoltage);
+
+      // Snakes
+      cdevDevice &snakeDevice = cdevDevice::attachRef(gSnakeCdevNames[iRing]);
+      if ( !DEVSEND(snakeDevice, "get dataBarM", NULL, &data, LogFile, irc))
+         data.get("value", &gRecordMachineParams.fSnakeCurrents[iRing]);
+
+      fprintf(LogFile,"RHICPOL-INFO : Snake: gRecordMachineParams.fSnakeCurrents[%d]                   = %10.4f\n",
+         iRing, gRecordMachineParams.fSnakeCurrents[iRing]);
+
+      // Rotators: STAR
+      cdevDevice &starRotDevice = cdevDevice::attachRef(gStarRotatorCdevNames[iRing]);
+      if ( !DEVSEND(starRotDevice, "get dataBarM", NULL, &data, LogFile, irc))
+         data.get("value", &gRecordMachineParams.fStarRotatorCurrents[iRing]);
+
+      fprintf(LogFile,"RHICPOL-INFO : STAR Rotators:   gRecordMachineParams.fStarRotatorCurrents[%d]   = %10.4f\n",
+         iRing, gRecordMachineParams.fStarRotatorCurrents[iRing]);
+
+      // Rotators: Phenix
+      cdevDevice &phenixRotDevice = cdevDevice::attachRef(gPhenixRotatorCdevNames[iRing]);
+      if ( !DEVSEND(phenixRotDevice, "get dataBarM", NULL, &data, LogFile, irc))
+         data.get("value", &gRecordMachineParams.fPhenixRotatorCurrents[iRing]);
+
+      fprintf(LogFile,"RHICPOL-INFO : Phenix Rotators: gRecordMachineParams.fPhenixRotatorCurrents[%d] = %10.4f\n",
+         iRing, gRecordMachineParams.fPhenixRotatorCurrents[iRing]);
+   }
+}
+
+
 // Get most of CDEV data at the beginnig of the run
 void getAdoInfo()
 {
@@ -233,7 +284,7 @@ void getAdoInfo()
    cdevData data;
    int ival[6];
 
-   if (NoADO != 0) return;
+   if (!gUseCdev) return;
 
    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : CDEV Info - %s\n", DeviceName);
 
@@ -288,6 +339,7 @@ void getAdoInfo()
    }
 
    // Get info from other devices
+   getCdevInfoMachineParams();
 
    // Determine the ring (my ring <-> other ring...
    int ringId = 1;                      // yellow
@@ -326,43 +378,6 @@ void getAdoInfo()
 
    if (!DEVSEND(wcm, "get wcmBeamM", NULL, &data, LogFile, irc))
       data.get("value", &wcmData.wcmBeamM);
-
-   // 197MHz cavity voltage
-   cdevDevice &dev = cdevDevice::attachRef(gCavityCdevNames[ringId]);
-
-   int voltages[1000];
-   if ( !DEVSEND(dev, "get probeMagInVoltsScaledM", NULL, &data, LogFile, irc))
-   {
-      data.get("value", voltages);
-   }
-
-   gRecordMachineParams.fCavity200MHzVoltage = voltages[0]; // was [1]. why?
-   fprintf(LogFile,"RHICPOL-INFO : 197MHZ Cavity: gRecordMachineParams.fCavity200MHzVoltage - %6d\n",
-      gRecordMachineParams.fCavity200MHzVoltage);
-
-   // Snakes
-   cdevDevice &snakeDevice = cdevDevice::attachRef(gSnakeCdevNames[ringId]);
-   if ( !DEVSEND(snakeDevice, "get dataBarM", NULL, &data, LogFile, irc))
-      data.get("value", &gRecordMachineParams.fSnakeCurrents[ringId]);
-
-   fprintf(LogFile,"RHICPOL-INFO : Snake: gRecordMachineParams.fSnakeCurrents[%d] - %10.4f\n",
-      ringId, gRecordMachineParams.fSnakeCurrents[ringId]);
-
-   // Rotators: STAR
-   cdevDevice &starRotDevice = cdevDevice::attachRef(gStarRotatorCdevNames[ringId]);
-   if ( !DEVSEND(starRotDevice, "get dataBarM", NULL, &data, LogFile, irc))
-      data.get("value", &gRecordMachineParams.fStarRotatorCurrents[ringId]);
-
-   fprintf(LogFile,"RHICPOL-INFO : STAR Rotators: gRecordMachineParams.fStarRotatorCurrents[%d] - %10.4f\n",
-      ringId, gRecordMachineParams.fStarRotatorCurrents[ringId]);
-
-   // Rotators: Phenix
-   cdevDevice &phenixRotDevice = cdevDevice::attachRef(gPhenixRotatorCdevNames[ringId]);
-   if ( !DEVSEND(phenixRotDevice, "get dataBarM", NULL, &data, LogFile, irc))
-      data.get("value", &gRecordMachineParams.fPhenixRotatorCurrents[ringId]);
-
-   fprintf(LogFile,"RHICPOL-INFO : Phenix Rotators: gRecordMachineParams.fPhenixRotatorCurrents[%d] - %10.4f\n",
-      ringId, gRecordMachineParams.fPhenixRotatorCurrents[ringId]);
 
    // the other ring for jet mode
    if (recRing & REC_JET)
@@ -411,7 +426,7 @@ void GetTargetEncodings(long *res)
     int irc;
     cdevData data;
 
-    if (NoADO != 0) return;
+    if (!gUseCdev) return;
 
     cdevDevice & target = cdevDevice::attachRef(ourTargetCDEVName);
     irc = 0;
@@ -436,7 +451,7 @@ void UpdateProgress(int evDone, int rate, double ts)
     int irc;
     cdevData data;
 
-    if (NoADO != 0) return;
+    if (!gUseCdev) return;
     if (StopUpdate) return;
 
     if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : UpdateProgress - %s\n", DeviceName);

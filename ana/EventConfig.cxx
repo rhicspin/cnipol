@@ -58,7 +58,7 @@ void EventConfig::Print(const Option_t* opt) const
 
 /** */
 void EventConfig::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "<?php\n");
 
    //fprintf(f, "\n// TRecordConfigRhicStruct data\n");
@@ -104,12 +104,12 @@ void EventConfig::PrintAsPhp(FILE *f) const
    }
    
    fprintf(f, "?>\n\n");
-} //}}}
+}
 
 
 /** */
 void EventConfig::PrintAsConfig(FILE *f) const
-{ //{{{
+{
 	fprintf(f, "* Strip t0 ec edead A0 A1 ealph dwidth pede C0 C1 C2 C3 C4\n");
 	fprintf(f, "* for the dead layer and T0  : %s\n", fMeasInfo->GetRunName().c_str());
 	fprintf(f, "* for the Am calibration     : %s\n", fAnaInfo->GetAlphaCalibRun().c_str());
@@ -117,12 +117,12 @@ void EventConfig::PrintAsConfig(FILE *f) const
 	fprintf(f, "* \n");
 
    fCalibrator->PrintAsConfig(f);
-} //}}}
+}
 
 
 /** */
 string EventConfig::GetSignature() const
-{ //{{{
+{
    string strSignature = "signature not defined";
 
    if (fAnaInfo && fMeasInfo) {
@@ -149,12 +149,12 @@ string EventConfig::GetSignature() const
    }
 
    return strSignature;
-} //}}}
+}
 
 
 /** */
 bool EventConfig::operator<(const EventConfig &mc) const
-{ //{{{
+{
    if (fMeasInfo->RUNID < mc.fMeasInfo->RUNID) return true;
    return false;
-} //}}}
+}

@@ -117,15 +117,15 @@ void MeasInfo::SetMeasType(EMeasType measType) { fMeasType = measType; }
 
 /** */
 void MeasInfo::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Print members:");
    PrintAsPhp();
-} //}}}
+}
 
 
 /** */
 void MeasInfo::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str() );
@@ -211,13 +211,13 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPulserCutTdcMax']             = %d;\n", fPulserCutTdcMax);
 
    fprintf(f, "\n");
-} //}}}
+}
 
 
 // Description : print out spin (Mode=0), fill (Mode=1) pattern
 // Input       : Mode
 void MeasInfo::PrintBunchPatterns() const
-{ //{{{
+{
    std::stringstream ssSpin("");
    std::stringstream ssFill("");
 
@@ -239,12 +239,12 @@ void MeasInfo::PrintBunchPatterns() const
    cout << "\nFill pattern:" << endl;
    cout << ssFill.str() << endl;
 
-} //}}}
+}
 
 
 // Print Out Configuration information
 void MeasInfo::PrintConfig()
-{ //{{{
+{
    fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
 
    // Configulation File
@@ -315,7 +315,7 @@ void MeasInfo::PrintConfig()
    // print comment
    if (strlen(gRunDb.comment_s.c_str())>3)
      printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
-} //}}}
+}
 
 
 /** */
@@ -329,7 +329,7 @@ void   MeasInfo::SetRunName(std::string runName) {
 
 /** */
 Short_t MeasInfo::GetPolarimeterId()
-{ //{{{
+{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(fRunName);
 
    if (subStrL->GetEntriesFast() < 1) {
@@ -350,12 +350,12 @@ Short_t MeasInfo::GetPolarimeterId()
    }
 
    return fPolId;
-} //}}}
+}
 
 
 /** */
 Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
-{ //{{{
+{
    if (beamId == 1 && streamId == 1) { fPolId = 3; return 3; }
    if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
    if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
@@ -363,12 +363,12 @@ Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
 
    printf("WARNING: MeasInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
    return -1;
-} //}}}
+}
 
 
 /** */
 UInt_t MeasInfo::GetFillId()
-{ //{{{
+{
    TObjArray *subStrL = TPRegexp("^(\\d+)\\.\\d{3}$").MatchS(fRunName);
 
    if (subStrL->GetEntriesFast() < 1) {
@@ -387,24 +387,24 @@ UInt_t MeasInfo::GetFillId()
    }
 
    return fFillId;
-} //}}}
+}
 
 
 /** */
 void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
-{ //{{{
+{
    if (polId == 0) { beamId = 2; streamId = 1; };
    if (polId == 1) { beamId = 1; streamId = 2; };
    if (polId == 2) { beamId = 2; streamId = 2; };
    if (polId == 3) { beamId = 1; streamId = 1; };
 
    beamId = 0; streamId = 0;
-} //}}}
+}
 
 
 /** Deprecated. */
 void MeasInfo::Update(DbEntry &rundb)
-{ //{{{
+{
    stringstream sstr;
    UShort_t     chId;
 
@@ -432,12 +432,12 @@ void MeasInfo::Update(DbEntry &rundb)
 
    } else
       Run = 11;
-} //}}}
+}
 
 
 /** */
 void MeasInfo::Update(MseMeasInfoX& run)
-{ //{{{
+{
    stringstream sstr;
    UShort_t     chId;
 
@@ -474,12 +474,12 @@ void MeasInfo::Update(MseMeasInfoX& run)
    } else {
       Run = 12;
    }
-} //}}}
+}
 
 
 /** */
 void MeasInfo::Update(MseRunPeriodX& runPeriod)
-{ //{{{
+{
    fProtoCutSlope   = runPeriod.cut_proto_slope;
    fProtoCutOffset  = runPeriod.cut_proto_offset;
    fProtoCutWidth   = (unsigned char) runPeriod.cut_proto_width;
@@ -491,7 +491,7 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
    fPulserCutAdcMax = runPeriod.cut_pulser_adc_max;
    fPulserCutTdcMin = runPeriod.cut_pulser_tdc_min;
    fPulserCutTdcMax = runPeriod.cut_pulser_tdc_max;
-} //}}}
+}
 
 
 //
@@ -502,7 +502,7 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
 // Input       : int mask.detector
 // Return      : ActiveDetector[i] remains masked strip configulation
 void MeasInfo::ConfigureActiveStrip(int mask)
-{ //{{{
+{
    // Disable Detector First
    for (int i=0; i<N_DETECTORS; i++) {
 
@@ -548,13 +548,13 @@ void MeasInfo::ConfigureActiveStrip(int mask)
    }
 
    printf("\n");
-} //}}}
+}
 
 
 // Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
 // Input       : char RunID[]
 void MeasInfo::SetPolarimetrIdRhicBeam(const char* RunID)
-{ //{{{
+{
   char ID = *(strrchr(RunID,'.')+1);
 
   switch (ID) {
@@ -587,24 +587,24 @@ void MeasInfo::SetPolarimetrIdRhicBeam(const char* RunID)
   fprintf(stdout,"MeasInfo: RunID=%.3f fPolBeam=%d PolarimetryID=%d\n",
           gMeasInfo->RUNID, gMeasInfo->fPolBeam, gMeasInfo->PolarimetryID);
   */
-} //}}}
+}
 
 
 /** */
 void MeasInfo::DisableChannel(UShort_t chId)
-{ //{{{
+{
    Warning("DisableChannel", "Disabled channel %d", chId);
 
    if ( fDisabledChannels.find(chId) == fDisabledChannels.end() )
       fDisabledChannels.insert(chId);
 
    //fActiveChannels.erase(chId);
-} //}}}
+}
 
 
 /** */
 void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
-{ //{{{
+{
    for (UShort_t iDet=0; iDet!=N_DETECTORS; ++iDet)
    {
       if (disabled_det.test(iDet) )
@@ -613,21 +613,21 @@ void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
             DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
       }
    }
-} //}}}
+}
 
 
 /** */
 void MeasInfo::EnableChannel(UShort_t chId)
-{ //{{{
+{
    Warning("EnableChannel", "Enabled channel %d", chId);
 
    //fActiveChannels.erase(chId);
-} //}}}
+}
 
 
 /** */
 void MeasInfo::EnableChannels(std::bitset<N_DETECTORS> &disabled_det)
-{ //{{{
+{
    //for (UShort_t iDet=0; iDet!=N_DETECTORS; ++iDet)
    //{
    //   if (disabled_det.test(iDet) )
@@ -636,36 +636,36 @@ void MeasInfo::EnableChannels(std::bitset<N_DETECTORS> &disabled_det)
    //         DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
    //   }
    //}
-} //}}}
+}
 
 
 /** */
 Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
-{ //{{{
+{
    return fDisabledChannels.find(chId) != fDisabledChannels.end() ? kTRUE : kFALSE;
-} //}}}
+}
 
 
 /** */
 Bool_t MeasInfo::IsSiliconChannel(UShort_t chId)
-{ //{{{
+{
    if ( chId > 0 && chId <= N_SILICON_CHANNELS)
       return true;
 
    return false;
-} //}}}
+}
 
 
 /** */
 UShort_t MeasInfo::GetNumDisabledChannels() const
-{ //{{{
+{
    return fDisabledChannels.size();
-} //}}}
+}
 
 
 /** */
 UShort_t MeasInfo::GetNumActiveSiChannels() const
-{ //{{{
+{
    UShort_t nCh = 0;
    ChannelSetConstIter iCh = fSiliconChannels.begin();
 
@@ -674,41 +674,41 @@ UShort_t MeasInfo::GetNumActiveSiChannels() const
    }
 
    return nCh;
-} //}}}
+}
 
 
 /** */
 Bool_t MeasInfo::IsHamaChannel(UShort_t chId)
-{ //{{{
+{
    if ( ( (EPolarimeterId) fPolId == kB2D || (EPolarimeterId) fPolId == kY1D) &&
         ( (chId >= 13 && chId <= 24) || (chId >= 49 && chId <= 60) )
       )
       return true;
 
    return false;
-} //}}}
+}
 
 
 /** */
 Bool_t MeasInfo::IsPmtChannel(UShort_t chId)
-{ //{{{
+{
    if ((EPolarimeterId) fPolId == kY2U && chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4)
       return true;
 
    return false;
-} //}}}
+}
 
 
 /** */
 BeamBunchMap MeasInfo::GetBunches() const
-{ //{{{
+{
    return fBeamBunches;
-} //}}}
+}
 
 
 /** */
 BeamBunchMap MeasInfo::GetFilledBunches() const
-{ //{{{
+{
    BeamBunchMap bunches;
 
    BeamBunchIterConst ibb = fBeamBunches.begin();
@@ -720,12 +720,12 @@ BeamBunchMap MeasInfo::GetFilledBunches() const
    }
 
    return bunches;
-} //}}}
+}
 
 
 /** */
 BeamBunchMap MeasInfo::GetEmptyBunches() const
-{ //{{{
+{
    BeamBunchMap bunches;
 
    BeamBunchIterConst ibb = fBeamBunches.begin();
@@ -737,40 +737,40 @@ BeamBunchMap MeasInfo::GetEmptyBunches() const
    }
 
    return bunches;
-} //}}}
+}
 
 
 /** */
 UShort_t MeasInfo::GetNumFilledBunches() const
-{ //{{{
+{
    return GetFilledBunches().size();
-} //}}}
+}
 
 
 /** */
 UShort_t MeasInfo::GetNumEmptyBunches() const
-{ //{{{
+{
    return GetEmptyBunches().size();
-} //}}}
+}
 
 
 /** */
 Bool_t MeasInfo::IsEmptyBunch(UShort_t bid) const
-{ //{{{
+{
    return !fBeamBunches.find(bid)->second.IsFilled();
-} //}}}
+}
 
 
 /** */
 ESpinState MeasInfo::GetBunchSpin(UShort_t bid) const
-{ //{{{
+{
    return fBeamBunches.find(bid)->second.GetSpin();
-} //}}}
+}
 
 
 /** */
 ERingId MeasInfo::GetRingId() const
-{ //{{{
+{
    switch (fPolBeam) {
    case 1:
 	   return kYELLOW_RING;
@@ -779,12 +779,12 @@ ERingId MeasInfo::GetRingId() const
    default:
       return kUNKNOWN_RING;
    }
-} //}}}
+}
 
 
 /** */
 ETargetOrient MeasInfo::GetTargetOrient() const
-{ //{{{
+{
    switch (fTargetOrient) {
    case 'H':
 	   return kTARGET_H;
@@ -793,21 +793,21 @@ ETargetOrient MeasInfo::GetTargetOrient() const
    default:
       return kUNKNOWN_ORIENT;
    }
-} //}}}
+}
 
 
 /** */
 UShort_t MeasInfo::GetTargetId() const
-{ //{{{
+{
    //string sTgtId(fTargetId);
    //return (UShort_t) atoi(sTgtId.c_str());
    return (UShort_t) atoi(&fTargetId);
-} //}}}
+}
 
 
 /** */
 EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
-{ //{{{
+{
    TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(runName);
 
    if (subStrL->GetEntriesFast() < 1) {
@@ -826,4 +826,4 @@ EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
 	}
 
    return polId;
-} //}}}
+}

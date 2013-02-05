@@ -42,13 +42,13 @@ TGraphErrors* AnaFillExternResult::GetGrYelIntens() const { return fYelIntensGra
 
 /** */
 void AnaFillExternResult::Print(const Option_t* opt) const
-{ //{{{
-} //}}}
+{
+}
 
 
 /** */
 void AnaFillExternResult::ReadInfo(std::ifstream &file)
-{ //{{{
+{
    if (!file.good()) {
       Error("ReadInfo", "Invalid file provided with external info");
       file.close();
@@ -141,11 +141,11 @@ void AnaFillExternResult::ReadInfo(std::ifstream &file)
    
    file.close();
 
-} //}}}
+}
 
 
 /** */
 void AnaFillExternResult::Process()
-{ //{{{
+{
    //Info("Process", "Executing...");
-} //}}}
+}

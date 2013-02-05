@@ -31,7 +31,7 @@ CnipolPmtHists::~CnipolPmtHists()
 
 /** */
 void CnipolPmtHists::BookHists()
-{ //{{{
+{
    //string shName;
    //TH1*   hist;
    char   hName[256];
@@ -63,12 +63,12 @@ void CnipolPmtHists::BookHists()
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) o[hName])->SetTitle("; Integral, ADC; TDC;");
    }
-} //}}}
+}
 
 
 /** */
 void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t chId = ch->GetChannelId();
 
    string sChId("  ");
@@ -79,12 +79,12 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
    ((TH1*) o["hTvsA_ch"      + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTvsI_ch"      + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
 
-} //}}}
+}
 
 
 /** */
 void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
-{ //{{{
+{
    Info("PostFillPassOne", "Starting...");
 
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++)
@@ -111,4 +111,4 @@ void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
          //mean2Err = fitres->FitResult::Error(2);
       }
    }
-} //}}}
+}

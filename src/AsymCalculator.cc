@@ -34,7 +34,7 @@ using namespace std;
 
 // End of data process
 void end_process(MseMeasInfoX &run)
-{ //{{{
+{
    gSystem->Info("end_process", "Called");
 
    // Feedback Mode
@@ -83,13 +83,13 @@ void end_process(MseMeasInfoX &run)
    PrintRunResults();
 
    gSystem->Info("end_process", "End");
-} //}}}
+}
 
 
 // Method name : CompleteHistograms()
 // Description : Complete dressing histograms
 void CompleteHistogram()
-{ //{{{
+{
    // Draw reg./alt. event selection borders in Invariant Mass plots
    float MASS_12C_k2G = MASS_12C*k2G;
 
@@ -105,7 +105,7 @@ void CompleteHistogram()
       DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
       DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigmaAlt, max*0.3,   4, 1);
    }
-} //}}}
+}
 
 
 /**
@@ -115,7 +115,7 @@ void CompleteHistogram()
  * histogram.
  */
 TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, DetLRSet detSet, TGraphErrors *gr)
-{ //{{{
+{
    // Calculate detector luminosities by taking sum over R/L detectors and all
    // bunches
    int totalL = 1;
@@ -156,23 +156,23 @@ TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetV
    }
 
    return gr;
-} //}}}
+}
 
 
 /** */
 TGraphErrors* AsymCalculator::CalcBunchAsymX90(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(5, 2) );
 
    return CalcBunchAsymDet(hDetVsBunchId_ss, hDetVsBunchId, detSet, gr);
-} //}}}
+}
 
 
 /** */
 TGraphErrors* AsymCalculator::CalcBunchAsymX45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(6, 1) );
@@ -184,12 +184,12 @@ TGraphErrors* AsymCalculator::CalcBunchAsymX45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
    gr->Apply(scale);
 
    return gr;
-} //}}}
+}
 
 
 /** */
 TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(1, 3) );
@@ -201,7 +201,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
    gr->Apply(scale);
 
    return gr;
-} //}}}
+}
 
 
 /**
@@ -209,7 +209,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
  * histogram containing counts per detector.
  */
 ValErrMap AsymCalculator::CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet)
-{ //{{{
+{
    Double_t LU = 0, RU = 0, LD = 0, RD = 0;
 
    DetLRSet::iterator iDetPair = detSet.begin();
@@ -228,70 +228,70 @@ ValErrMap AsymCalculator::CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet 
    results["phys"] = CalcAsymSqrtFormula(RU, LD, RD, LU);
 
    return results;
-} //}}}
+}
 
 
 /** */
 ValErrMap AsymCalculator::CalcDetAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(5, 2) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
-} //}}}
+}
 
 
 /** */
 ValErrMap AsymCalculator::CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(6, 1) );
    detSet.insert( DetLRPair(4, 3) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
-} //}}}
+}
 
 
 /** */
 ValErrMap AsymCalculator::CalcDetAsymX45TSqrtFormula(TH1 &hUp, TH1 &hDown)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(6, 1) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
-} //}}}
+}
 
 
 /** */
 ValErrMap AsymCalculator::CalcDetAsymX45BSqrtFormula(TH1 &hUp, TH1 &hDown)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(4, 3) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
-} //}}}
+}
 
 
 /** */
 ValErrMap AsymCalculator::CalcDetAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown)
-{ //{{{
+{
    DetLRSet detSet;
 
    detSet.insert( DetLRPair(1, 3) );
    detSet.insert( DetLRPair(6, 4) );
 
    return CalcDetAsymSqrtFormula(hUp, hDown, detSet);
-} //}}}
+}
 
 
 // Method name : CumulativeAsymmetry(){
 // Description : Calculate bunch cumulative asymmetries
 void AsymCalculator::CumulativeAsymmetry()
-{ //{{{
+{
    asymStruct x90[N_BUNCHES];  // x90[119] is total
    asymStruct x45[N_BUNCHES];
    asymStruct y45[N_BUNCHES];
@@ -737,12 +737,12 @@ void AsymCalculator::CumulativeAsymmetry()
    // Spin Sorted Strip Distribution
    //HHPAK(36000, (float*) cntr.reg.NStrip[0]);
    //HHPAK(36100, (float*) cntr.reg.NStrip[1]);
-} //}}}
+}
 
 
 // Description : Calculate Statistics
 void CalcStatistics()
-{ //{{{
+{
    // Integrate good carbon events in banana
    cntr.good_event = 0;
 
@@ -764,12 +764,12 @@ void CalcStatistics()
    if (gMeasInfo->fWallCurMonSum)     gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
    if (gAsymAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAsymAnaInfo->reference_rate;
    if (gMeasInfo->Run == 5)           gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
-} //}}}
+}
 
 
 // Description : print warnings
 void PrintWarning()
-{ //{{{
+{
    printf("-----------------------------------------------------------------------------------------\n");
    printf("------------------------------  Error Detector Results ----------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
@@ -814,14 +814,14 @@ void PrintWarning()
    printf(" Slope of Energy Spectrum (sum 6 det): %6.1f %6.2f\n", gAnaMeasResult->energy_slope[0], gAnaMeasResult->energy_slope[1]);
    printf("-----------------------------------------------------------------------------------------\n");
    printf("\n\n");
-} //}}}
+}
 
 
 // Method name : PrintRunResults()
 //
 // Description : print analysis results and run infomation
 void PrintRunResults()
-{ //{{{
+{
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------  Operation Messages  --------------------------------------\n");
    printf("-----------------------------------------------------------------------------------------\n");
@@ -875,12 +875,12 @@ void PrintRunResults()
    printf(" Polarization tgt pos %6.1f     = %10.4f %9.4f\n", tgt.all.x[(int) tgt.Time[i]], gAnaMeasResult->sinphi[100+i].P[0], gAnaMeasResult->sinphi[100+i].P[1]);
 
    printf("-----------------------------------------------------------------------------------------\n");
-} //}}}
+}
 
 
 /** */
 void DrawPlotvsTar()
-{ //{{{
+{
    Double_t polvstar[nTgtIndex+1], epolvstar[nTgtIndex+1], posvstar[nTgtIndex+1];
 
    for(Int_t i=0;i<nTgtIndex+1;i++) {
@@ -903,7 +903,7 @@ void DrawPlotvsTar()
    DrawHorizLine(h_vstar, posvstar[0]-1, posvstar[nTgtIndex]+1, gAnaMeasResult->sinphi[0].P[0] + gAnaMeasResult->sinphi[0].P[1], kRed, 1, 1);
 
    h_vstar->GetListOfFunctions()->Add(gpolvstar, "P");
-} //}}}
+}
 
 
 // Description : Caluclate energy yield weighted analyzing power
@@ -911,7 +911,7 @@ void DrawPlotvsTar()
 // Input       : int HID
 // Return      : A_N
 Float_t AsymCalculator::WeightAnalyzingPower(int HID)
-{ //{{{
+{
    //static int CallFlag = 0;
 
    // analyzing power
@@ -1064,21 +1064,21 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
    //ds CallFlag=1;
 
    return aveA_N_2;
-} //}}}
+}
 
 
 // Description : returns true if strip #j is in exclusion candidate
 // Input       : int i, int j
 // Return      : true/false
 Bool_t AsymCalculator::ExcludeStrip(int k, int j)
-{ //{{{
+{
    int i = (k >= 36) ? k-36 : k;
 
    if (j == i || j == 35-i || j == 36+i || j == 71-i )
       return kTRUE;
 
    return kFALSE;
-} //}}}
+}
 
 
 // Description : calculates profile error for given universal rate x
@@ -1094,7 +1094,7 @@ float ProfileError(float x)
 // Input       : Histograms 10033, 11033, 10034, 11034
 // Return      : float &mean, float &RMS, float &RMS_norm
 void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
-{ //{{{
+{
    float SpeLumi_norm[N_BUNCHES], dSpeLumi_norm[N_BUNCHES];
 
    // initialization
@@ -1143,7 +1143,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
    //mean = HHSTATI(10035, 1, CHOICE, 0) ;
    //RMS  = HHSTATI(10035, 2, CHOICE, 0) ;
    //RMS_norm = (!mean) ? 0 : RMS/mean ;
-} //}}}
+}
 
 
 // Description : Find Time shift from 12C mass peak fit. Units are all in [GeV]
@@ -1154,7 +1154,7 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
 // Return      : average tshift [ns] @ 500keV
 //
 float TshiftFinder(int Mode, int FeedBackLevel)
-{ //{{{
+{
    int   np = 3;
    float par[np], sigpar[np];
    float chi2;
@@ -1277,7 +1277,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
    }
 
    return adev;
-} //}}}
+}
 
 
 // Description : Fill out bunch by bunch Asymmetry Histograms
@@ -1285,7 +1285,7 @@ float TshiftFinder(int Mode, int FeedBackLevel)
 //             : These histograms are then applied Gaussian fit to check anomaly bunches
 // Input       : string mode, int sign, int N, float A[], float dA[], float bunch[]
 void FillAsymmetryHistgram(string mode, int sign, int N, float *A, float *dA)
-{ //{{{
+{
 
    for (int bid=0; bid<N_BUNCHES; bid++) // loop for bunch number
    {
@@ -1301,14 +1301,14 @@ void FillAsymmetryHistgram(string mode, int sign, int N, float *A, float *dA)
          //}
       }
    }
-} //}}}
+}
 
 
 // Description : call CalcBunchAsymXXX to calculate asymmetries bunch by bunch and
 // Calculate bunch asymmetries and corresponding errors for x45, x90, y45
 //             : Fill out asym_vs_bunch_x90, x45, y45 histograms
 void AsymCalculator::CalcBunchAsym(DrawObjContainer *oc)
-{ //{{{
+{
    // Get hist with all bunches for normalization
    TH2* hDetVsBunchId = (TH2*) oc->o["hDetVsBunchId"];
 
@@ -1411,12 +1411,12 @@ void AsymCalculator::CalcBunchAsym(DrawObjContainer *oc)
 
    // bunch asymmetry averages
    calcBunchAsymmetryAverage();
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
-{ //{{{
+{
    TH2* hDetVsBunchId_up   = (TH2*) oc->o["hDetVsBunchId_up"];
    TH2* hDetVsBunchId_down = (TH2*) oc->o["hDetVsBunchId_down"];
 
@@ -1430,12 +1430,12 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
    gAnaMeasResult->fAsymX45B = CalcDetAsymX45BSqrtFormula(*hDetCounts_up, *hDetCounts_down);
    gAnaMeasResult->fAsymY45  = CalcDetAsymY45SqrtFormula (*hDetCounts_up, *hDetCounts_down);
 
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
-{ //{{{
+{
    // Get hist with all delim for normalization
    //TH2* hDetVsDelim = (TH2*) oc->o["hDetVsDelim"];
 
@@ -1462,12 +1462,12 @@ void AsymCalculator::CalcDelimAsym(DrawObjContainer *oc)
    //   gr     = (TGraphErrors*) ((TH2*) oc->o["hAsymVsDelim_Y45"])->GetListOfFunctions()->FindObject(grName.c_str());
    //   CalcBunchAsymY45(*hDetVsDelim_ss, *hDetVsDelim, gr);
    //}
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
-{ //{{{
+{
    TH2* hDetVsDelim_up    = (TH2*) oc->o["hDetVsDelim_up"];
    TH2* hDetVsDelim_down  = (TH2*) oc->o["hDetVsDelim_down"];
    TH2* hAsymVsDelim4Det  = (TH2*) oc->o["hAsymVsDelim4Det"];
@@ -1492,7 +1492,7 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       hAsymVsDelim4Det->SetBinError(iDelim, asymPhys.second);
    }
 
-} //}}}
+}
 
 
 // Description : calculate Asymmetry
@@ -1502,7 +1502,7 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
 // Asym = (A - R * B) / (A + R * B), where R = totalA/totalB
 //
 ValErrPair AsymCalculator::CalcAsym(Double_t A, Double_t B, Double_t totalA, Double_t totalB)
-{ //{{{
+{
    Double_t R = 0;
 
    if (totalB) R = totalA/totalB;
@@ -1520,12 +1520,12 @@ ValErrPair AsymCalculator::CalcAsym(Double_t A, Double_t B, Double_t totalA, Dou
    ValErrPair result(asym, asymErr);
 
    return result;
-} //}}}
+}
 
 
 /** */
 ValErrPair AsymCalculator::CalcAsymSqrtFormula(Double_t A, Double_t B, Double_t C, Double_t D)
-{ //{{{
+{
    Double_t asym, asymErr;
    Double_t denom = sqrt(A*B) + sqrt(C*D);
 
@@ -1540,25 +1540,25 @@ ValErrPair AsymCalculator::CalcAsymSqrtFormula(Double_t A, Double_t B, Double_t 
    ValErrPair result(asym, asymErr);
 
    return result;
-} //}}}
+}
 
 
 // square root formula
 // A-RightUp  B-LeftDown  C-RightDown  D-LeftUp
 // elastic Carbons are scattered off more in Right for Up
 void AsymCalculator::sqass(Double_t A, Double_t B, Double_t C, Double_t D, Double_t &asym, Double_t &asymErr)
-{ //{{{
+{
    ValErrPair result = AsymCalculator::CalcAsymSqrtFormula(A, B, C, D);
 
    asym    = result.first;
    asymErr = result.second;
-} //}}}
+}
 
 
 // Description : calculate average left-right and top-bottom asymmetry from bunch by bunch asymmetris.
 //             : also calculate phase from LR and Top-Bottom asymmetry
 void calcBunchAsymmetryAverage()
-{ //{{{
+{
    // flip the sign of negative spin bunches
    for (int bid=0; bid<N_BUNCHES; bid++) {
 
@@ -1606,7 +1606,7 @@ void calcBunchAsymmetryAverage()
         << gBunchAsym.ave.Ax45[0] << " " << gBunchAsym.ave.Ax45[1] << " "
         << gBunchAsym.ave.Ay45[0] << " " << gBunchAsym.ave.Ay45[1] << " "  << endl;
    cout << gBunchAsym.ave.Ax[0]   << " " << gBunchAsym.ave.Ax[1]   << endl << endl;
-} //}}}
+}
 
 
 // Description : Calculate Left-Right asymmetry from X90 and X45 asymmetry combination
@@ -1614,7 +1614,7 @@ void calcBunchAsymmetryAverage()
 // Input       : float X90[2], float X45[2]
 // Return      : LR asymmetry and error : float &A, float &dA
 void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
-{ //{{{
+{
    float X45[2] = {0, 0};
 
    // give sqrt(2) weight to X45 asymmetry
@@ -1640,7 +1640,7 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
       printf("WARNING: Denominator is zero in calcLRAsymmetry(). Assign zero LR asymmetry\n");
       A = dA = 0;
    }
-} //}}}
+}
 
 
 /**
@@ -1651,7 +1651,7 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 //             : regular and alternative sigma banana cuts, respectively.
 //             : Also call for PHENIX and STAR colliding bunches asymmetries
 void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
-{ //{{{
+{
    //// Calculate Asymmetries for colliding bunches at PHENIX
    //CalcStripAsymmetry(2);
 
@@ -1754,12 +1754,12 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    grPolarVsPhi->Fit(fitFunc, "R");
    delete dummyScale;
 
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
-{ //{{{
+{
    // Calculate asymmetries for each target position
    TH2* hChVsDelim_up   = (TH2*) oc->o["hChVsDelim_up"];
    TH2* hChVsDelim_down = (TH2*) oc->o["hChVsDelim_down"];
@@ -1811,12 +1811,12 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
    //   hPolarProfile->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
    //   hPolarProfile->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
    //}
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
-{ //{{{
+{
    TH2 *hChVsKinE_Up      = (TH2*) oc->o["hChVsKinEnergyA_up"];
    TH2 *hChVsKinE_Down    = (TH2*) oc->o["hChVsKinEnergyA_down"];
    TH1 *hKinEnergyAChAsym = (TH1*) oc->o["hKinEnergyAChAsym"];
@@ -1844,12 +1844,12 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
          Error("AsymCalculator::CalcKinEnergyAChAsym", "Fit error in energy bin %d", iKinE);
       }
    }
-} //}}}
+}
 
 
 /** */
 void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
-{ //{{{
+{
    TH2 *hChVsTimeDiff_Up   = (TH2*) oc->o["hChVsLongiTimeDiff_up"];
    TH2 *hChVsTimeDiff_Down = (TH2*) oc->o["hChVsLongiTimeDiff_down"];
 
@@ -1885,7 +1885,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
       }
    }
 
-} //}}}
+}
 
 
 /**
@@ -1893,7 +1893,7 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
  * gAnaMeasResult with a calculated polarization value for the give strip.
  */
 void AsymCalculator::CalcStripAsymmetry(int Mode)
-{ //{{{
+{
    //ds : Overwrite nCounts array
    long nCountsUp[N_SILICON_CHANNELS];
    long nCountsDown[N_SILICON_CHANNELS];
@@ -2079,7 +2079,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    //gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], gAnaMeasResult->sinphi.P, gAnaMeasResult->sinphi.dPhi, gAnaMeasResult->sinphi.chi2);
-} //}}}
+}
 
 
 /**
@@ -2087,7 +2087,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
  * filled with asym values for each valid channel.
  */
 TH1D* AsymCalculator::CalcChannelAsym(TH1I &hUp, TH1I &hDown, TH1D *hChAsym)
-{ //{{{
+{
    if (!hChAsym) {
       hChAsym = new TH1D("hChAsym", "hChAsym", hUp.GetNbinsX(), hUp.GetXaxis()->GetXmin(), hUp.GetXaxis()->GetXmax());
    }
@@ -2131,12 +2131,12 @@ TH1D* AsymCalculator::CalcChannelAsym(TH1I &hUp, TH1I &hDown, TH1D *hChAsym)
    }
 
    return hChAsym;
-} //}}}
+}
 
 
 /** */
 TFitResultPtr AsymCalculator::FitChAsymConst(TH1D &hChAsym, TGraphErrors *gr)
-{ //{{{
+{
    if (!gr)
       gr = new TGraphErrors();
 
@@ -2166,7 +2166,7 @@ TFitResultPtr AsymCalculator::FitChAsymConst(TH1D &hChAsym, TGraphErrors *gr)
    fitFunc->SetParLimits(0, -1, 1);
 
    return gr->Fit("constFunc", "S R");
-} //}}}
+}
 
 
 /**
@@ -2174,7 +2174,7 @@ TFitResultPtr AsymCalculator::FitChAsymConst(TH1D &hChAsym, TGraphErrors *gr)
  * TGraphErrors gr. The sine is then fit to the graph.
  */
 TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
-{ //{{{
+{
    Info("FitChAsymSine", "Called");
 
    if (!gr)
@@ -2210,7 +2210,7 @@ TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
    return gr->Fit("sin_phi", "S R");
 
    //delete fitFunc;
-} //}}}
+}
 
 
 // Description : Master Routine for sin(phi) root-fit
@@ -2219,7 +2219,7 @@ TFitResultPtr AsymCalculator::FitChAsymSine(TH1D &hChAsym, TGraphErrors *gr)
 // Return      : Float_t *P, Float_t *dphi, Float_t &chi2dof
 void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
                         Float_t *P, Float_t *phase, Float_t &chi2dof)
-{ //{{{
+{
    char  htitle[100];
    float dx[N_SILICON_CHANNELS];
 
@@ -2277,7 +2277,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    chi2dof  = func->GetChisquare()/func->GetNDF();
 
    delete func;
-} //}}}
+}
 
 
 // April, 2008; Introduced by Vipuli to keep dphi fixed at gAnaMeasResult->sinphi[0].dPhi[0]
@@ -2290,7 +2290,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 //
 void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
                             Float_t *P, Float_t *phase, Float_t &chi2dof)
-{ //{{{
+{
    float dx[N_SILICON_CHANNELS];
 
    for (int i=0; i<N_SILICON_CHANNELS; i++) dx[i] = 0;
@@ -2365,7 +2365,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    txt = new TLatex(0.3, max*0.7, text);
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
    delete txt;
-} //}}}
+}
 
 
 
@@ -2383,7 +2383,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
 // Return      : chi2
 //
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
-{ //{{{
+{
    AsymCalculator asymfit;
    //calculate chisquare
    Float_t chisq = 0;
@@ -2395,7 +2395,7 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 
    FitChi2 = chisq;
    f = chisq;
-} //}}}
+}
 
 
 // Description : sin(x) fit. Amplitude and phase as parameters
@@ -2403,10 +2403,10 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 // Return      : par[0]*sin(x+par[1])
 //
 Float_t AsymCalculator::sinx(Float_t x, Double_t *par)
-{ //{{{
+{
    Float_t value=par[0]*sin(-x+par[1]);
    return value;
-} //}}}
+}
 
 
 // Description : Master Routine for MINUIT call.
@@ -2414,7 +2414,7 @@ Float_t AsymCalculator::sinx(Float_t x, Double_t *par)
 // Return      : Float_t *P, Float_t *phi, Float_t &chi2dof
 //
 void AsymCalculator::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
-{ //{{{
+{
   const Int_t NPAR=2;
   TMinuit *gMinuit = new TMinuit(NPAR);
   gMinuit->SetFCN(fcn);
@@ -2467,7 +2467,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &ch
    chi2dof = FitChi2/Float_t(NDATA-NPAR);
 
    return;
-} //}}}
+}
 
 
 // Description : Retrun parameter errors for parameter NUM
@@ -2475,7 +2475,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &ch
 // Return      : error
 //
 Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
-{ //{{{
+{
   Double_t error;
   Double_t eplus, eminus, eparab, globcc;
   gMinuit->mnerrs(NUM,eplus,eminus,eparab,globcc);
@@ -2490,7 +2490,7 @@ Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
   cout << eplus << " " << eminus << " " << eparab << " " << globcc << " " << error << endl;
 
   return error;
-} //}}}
+}
 */
 
 
@@ -2503,7 +2503,7 @@ Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
 // Return      :
 /*
 void RAMP::CalcRAMP()
-{ //{{{
+{
   if (gAsymAnaInfo->RAMPMODE==1) {
 
     for (int dlm=0;dlm<RAMPTIME;dlm++){
@@ -2531,5 +2531,5 @@ void RAMP::CalcRAMP()
   }
 
   return;
-} //}}}
+}
 */

@@ -39,7 +39,7 @@ Calibrator::~Calibrator()
 
 /** */
 void Calibrator::UpdateMeanChannel()
-{ //{{{
+{
 	//Info("UpdateMeanChannel", "Called");
 
    fMeanChannel.ResetToZero();
@@ -79,12 +79,12 @@ void Calibrator::UpdateMeanChannel()
       fMeanChannel.fBananaChi2Ndf = TMath::Mean(nChannels, &vBananaChi2Ndf[0]);
       fRMSBananaChi2Ndf           = TMath::RMS (nChannels, &vBananaChi2Ndf[0]);
    }
-} //}}}
+}
 
 
 /** */
 void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
-{ //{{{
+{
    ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = calibrator.fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = calibrator.fChannelCalibs.end();
@@ -101,54 +101,54 @@ void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
          fChannelCalibs[iCh->first] = newChCalib;
       }
    }
-} //}}}
+}
 
 
 /** */
 void Calibrator::Calibrate(DrawObjContainer *c)
-{ //{{{
+{
 	Info("Calibrate", "Executing Calibrate()");
-} //}}}
+}
 
 
 /** */
 void Calibrator::CalibrateFast(DrawObjContainer *c)
-{ //{{{
+{
 	Info("CalibrateFast", "Executing CalibrateFast()");
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetDLWidth(UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fDLWidth;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetDLWidthErr(UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fDLWidthErr;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetT0Coef(UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fT0Coef;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetBananaChi2Ndf(UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fBananaChi2Ndf;
-} //}}}
+}
 
 
 /** */
 UInt_t Calibrator::GetFitStatus(UShort_t chId) const
-{ //{{{
+{
    ChannelCalibMapConstIter iChCalib = fChannelCalibs.find(chId);
 
    if (iChCalib != fChannelCalibs.end()) {
@@ -156,65 +156,65 @@ UInt_t Calibrator::GetFitStatus(UShort_t chId) const
    }
 
    return kUNKNOWN;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fT0CoefErr;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
-{ //{{{
+{
    return fChannelCalibs.find(chId)->second.fACoef * adc;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetKinEnergyA(UShort_t adc, UShort_t chId) const
-{ //{{{
+{
    Float_t emeas = GetEnergyA(adc, chId);
    Float_t eloss = fChannelCalibs.find(chId)->second.fAvrgEMiss;
    return  emeas + eloss;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetTime(UShort_t tdc) const
-{ //{{{
+{
    //return WFD_TIME_UNIT_HALF * (tdc + fRandom->Rndm() - 0.5);
    return WFD_TIME_UNIT_HALF * tdc;
-} //}}}
+}
 
 
 /** */
 Float_t Calibrator::GetTimeOfFlight(UShort_t tdc, UShort_t chId) const
-{ //{{{
+{
    Float_t t0coef = fChannelCalibs.find(chId)->second.fT0Coef;
    return GetTime(tdc) + t0coef;
-} //}}}
+}
 
 
 /** */
 TFitResultPtr Calibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{ //{{{
+{
    return 0;
-} //}}}
+}
 
 
 /** */
 void Calibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-{ //{{{
+{
    return;
-} //}}}
+}
 
 
 /** */
 void Calibrator::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Calibrator members:");
 
    printf("              fACoef fACoefErr fAChi2Ndf    fICoef fICoefErr fIChi2Ndf fDLWidth " \
@@ -230,12 +230,12 @@ void Calibrator::Print(const Option_t* opt) const
 		iCh->second.Print();
       //printf("\n");
    }
-} //}}}
+}
 
 
 /** */
 void Calibrator::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
@@ -248,12 +248,12 @@ void Calibrator::PrintAsPhp(FILE *f) const
       iCh->second.PrintAsPhp(f);
       fprintf(f, ";\n");
    }
-} //}}}
+}
 
 
 /** */
 void Calibrator::PrintAsConfig(FILE *f) const
-{ //{{{
+{
    ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
    ChannelCalibMap::const_iterator me = fChannelCalibs.end();
@@ -273,4 +273,4 @@ void Calibrator::PrintAsConfig(FILE *f) const
 
 	// XXX need to add 8 more default channels here
 
-} //}}}
+}

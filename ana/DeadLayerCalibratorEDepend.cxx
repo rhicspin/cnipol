@@ -33,7 +33,7 @@ DeadLayerCalibratorEDepend::~DeadLayerCalibratorEDepend()
  * This method is not used at the moment. Probably, it will not work as is.
  */
 void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
-{ //{{{
+{
    TH1*  htemp     = 0;
    TH1F*  hMeanTime = 0;
    string strChId("  ");
@@ -64,14 +64,14 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    }
 
    PostCalibrate();
-} //}}}
+}
 
 
 /**
  * This method is mainly used for data calibration
  */
 void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
-{ //{{{
+{
    //TH1*  hTimeVsE  = 0;
    //TH1*  hMeanTime = 0;
    string strChId("  ");
@@ -146,12 +146,12 @@ void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
       }
    }
 
-} //}}}
+}
 
 
 /** */
 void DeadLayerCalibratorEDepend::PostCalibrate()
-{ //{{{
+{
    // calculate average T0 and DL per detector
    // XXX need to calculate weighted average! although with current stat
    // errors it's ok
@@ -222,12 +222,12 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
       if (chCalib.GetFitStatus() != kDLFIT_OK)
          chCalib.fT0Coef = detT0Coef[iDet];
    }
-} //}}}
+}
 
 
 /** */
 void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort_t chId, TObjArray* fitResultHists, Bool_t wideLimits)
-{ //{{{
+{
    ChannelCalib *chCalib;
 
    ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(chId);
@@ -431,7 +431,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
          iter++;
       }
    }
-*/ //}}}
+*/
 
    //fitres->Print("V");
 
@@ -470,15 +470,15 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
       Error("Calibrate", "Empty TFitResultPtr");
       chCalib->fFitStatus = kDLFIT_FAIL;
    }
-} //}}}
+}
 
 
 /** */
 void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", " ");
    Calibrator::Print(opt);
-} //}}}
+}
 
 
 RunConst DeadLayerCalibratorEDepend::sRunConst  = RunConst();
@@ -493,7 +493,7 @@ const Double_t DeadLayerCalibratorEDepend::cp4[4] = { 0.3652E-11 , -0.8652E-12 ,
 
 /** */
 Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
-{ //{{{
+{
    Double_t pp[5];
    Double_t x0 = x[0];
    Double_t x2 = x0*x0;
@@ -520,11 +520,11 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
    Double_t t_meas = (Ekin != 0.0) ?  sRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
 
    return t_meas;
-} //}}}
+}
 
 
 BananaFitFunctor::BananaFitFunctor(UShort_t chId)
-{ //{{{
+{
    for (int i=0; i<=4; i++) {
       fCp0[i] = DeadLayerCalibratorEDepend::cp0[i];
       fCp1[i] = DeadLayerCalibratorEDepend::cp1[i];
@@ -534,7 +534,7 @@ BananaFitFunctor::BananaFitFunctor(UShort_t chId)
    }
 
    fRunConst = gRunConsts[chId];
-} //}}}
+}
 
 
 /** */
@@ -544,7 +544,7 @@ BananaFitFunctor::~BananaFitFunctor()
 
 /** */
 Double_t BananaFitFunctor::operator()(double *x, double *p)
-{ //{{{
+{
    Double_t pp[5];
    Double_t x0 = x[0];
    Double_t x2 = x0*x0;
@@ -571,4 +571,4 @@ Double_t BananaFitFunctor::operator()(double *x, double *p)
    Double_t t_meas = (Ekin != 0.0) ?  fRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
 
    return t_meas;
-} //}}}
+}

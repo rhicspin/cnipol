@@ -62,7 +62,7 @@ AnaMeasResult::~AnaMeasResult() { }
 
 /** */
 void AnaMeasResult::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['max_rate']            = %f;\n",            max_rate);
    fprintf(f, "$rc['TshiftAve']           = %f;\n",            TshiftAve);
    fprintf(f, "$rc['wcm_norm_event_rate'] = %f;\n",            wcm_norm_event_rate);
@@ -99,12 +99,12 @@ void AnaMeasResult::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPmtV1T0Err']         = %f;\n",            fPmtV1T0Err);
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
    fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
-} //}}}
+}
 
 
 /** */
 ValErrPair AnaMeasResult::GetPCPolar() const
-{ //{{{
+{
    ValErrPair val_err(0, -1);
 
    if (fFitResPolarPhi.Get()) {
@@ -115,12 +115,12 @@ ValErrPair AnaMeasResult::GetPCPolar() const
    }
 
    return val_err;
-} //}}}
+}
 
 
 /** */
 ValErrPair AnaMeasResult::GetPCProfR() const
-{ //{{{
+{
    ValErrPair val_err(0, -1);
 
    if (fFitResProfilePvsI.Get()) {
@@ -131,4 +131,4 @@ ValErrPair AnaMeasResult::GetPCProfR() const
    }
 
    return val_err;
-} //}}}
+}

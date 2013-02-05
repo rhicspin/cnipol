@@ -45,7 +45,7 @@ MAsymSingleFillHists::~MAsymSingleFillHists()
 
 /** */
 void MAsymSingleFillHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
@@ -125,12 +125,12 @@ void MAsymSingleFillHists::BookHists()
    hist->GetXaxis()->SetTimeDisplay(1);
    hist->GetXaxis()->SetTimeFormat("%H");
    o[shName] = hist;
-} //}}}
+}
 
 
 /** */
 void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
-{ //{{{
+{
    char hName[256];
    string   shName;
    TH1     *hist;
@@ -247,12 +247,12 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->SetMarkerColor(color);
    ((TH1*) o[hName])->SetOption("E1 NOIMG");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsEnergy, "p");
-} //}}}
+}
 
 
 /** */
 void MAsymSingleFillHists::SetSignature(std::string signature)
-{ //{{{
+{
    stringstream ssSignature("signature not defined");
 
    char strAnaTime[25];
@@ -264,12 +264,12 @@ void MAsymSingleFillHists::SetSignature(std::string signature)
    ssSignature << ", Version " << gMAsymAnaInfo->fAsymVersion << ", " << gMAsymAnaInfo->fUserGroup.fUser;
 
    fSignature = ssSignature.str();
-} //}}}
+}
 
 
 /** */
 void MAsymSingleFillHists::Fill(EventConfig &rc)
-{ //{{{
+{
    Double_t runId            = rc.fMeasInfo->RUNID;
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId            = rc.fMeasInfo->fPolId;
@@ -348,12 +348,12 @@ void MAsymSingleFillHists::Fill(EventConfig &rc)
    graphNEntries = graphErrs->GetN();
    graphErrs->SetPoint(graphNEntries, beamEnergy, profileRatio);
    graphErrs->SetPointError(graphNEntries, 0, profileRatioErr);
-} //}}}
+}
 
 
 /** */
 void MAsymSingleFillHists::PostFill()
-{ //{{{
+{
 /*
    string strDirName = fDir->GetName();
 
@@ -403,12 +403,12 @@ void MAsymSingleFillHists::PostFill()
       //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
    }
 */
-} //}}}
+}
 
 
 /** */
 void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
-{ //{{{
+{
    string strDirName = fDir->GetName();
 
    // Loop over polarimeters
@@ -546,13 +546,13 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          delete funcConst;
       }
    }
-} //}}}
+}
 
 
 /** */
 /*
 void MAsymSingleFillHists::UpdateLimits()
-{ //{{{
+{
    string strDirName = fDir->GetName();
 
    char hName[256];
@@ -584,5 +584,5 @@ void MAsymSingleFillHists::UpdateLimits()
          //((TH1*) o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
       //}
    }
-} //}}}
+}
 */
