@@ -62,19 +62,19 @@ void MseFillProfileX::Print(const Option_t* opt) const
 
 /** */
 void MseFillProfileX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fill']                    = %d;\n", fill              );
    fprintf(f, "$rc['profile_blue_h']          = %f;\n", profile_blue_h    );
    fprintf(f, "$rc['profile_blue_v']          = %f;\n", profile_blue_v    );
    fprintf(f, "$rc['profile_yellow_h']        = %f;\n", profile_yellow_h  );
    fprintf(f, "$rc['profile_yellow_v']        = %f;\n", profile_yellow_v  );
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void MseFillProfileX::SetValues(const AnaFillResult &afr)
-{ //{{{
+{
    profile_blue_h       = afr.GetPCProfR(kBLUE_RING, kTARGET_H).first;     //iTgtRes->second.first; 
    profile_blue_h_err   = afr.GetPCProfR(kBLUE_RING, kTARGET_H).second;    //iTgtRes->second.second; 
    pmax_blue_h          = afr.GetPCProfPMax(kBLUE_RING, kTARGET_H).first;
@@ -94,4 +94,4 @@ void MseFillProfileX::SetValues(const AnaFillResult &afr)
    profile_yellow_v_err = afr.GetPCProfR(kYELLOW_RING, kTARGET_V).second;    //iTgtRes->second.second; 
    pmax_yellow_v        = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_V).first;
    pmax_yellow_v_err    = afr.GetPCProfPMax(kYELLOW_RING, kTARGET_V).second;
-} //}}}
+}

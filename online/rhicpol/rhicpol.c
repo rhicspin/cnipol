@@ -36,7 +36,6 @@
 // Global variables
 FILE                 *LogFile;
 char                  DeviceName[128] = "None";         // our CDEV name (like polarimeter.yel1 etc)
-char                  ourTargetCDEVName[20] = "None";   // we will write what is appropriate here in getAdoInfo()
 beamDataStruct        beamData;                         // beam information from CDEV
 beamDataStruct        beamOtherData;                    // we need both beams for hjet
 V124Struct            V124;                             // V124 settings
@@ -48,7 +47,6 @@ jetPositionStruct     jetPosition;                      // Jet position from CDE
 
 
 //      Run parameters and flags
-int   NoADO       = 0;                  // don't take anything from CDEV
 float mTime       = -1.0;               // time to run (negative means not set in command line)
 int   mEvent      = -1;                 // number of events to take (negative means not set in the command line)
 int   iSig        = 0;                  // signal received
@@ -67,7 +65,7 @@ std::string gOptMeasType("");           // measurement type must be provided
 float ANALPOW;                          // very approximate analyzing power
 float ANALPOWE;                         // its error
 
-int recRing = 0;                        // data mask with ring information etc.
+//int recRing = 0;                        // data mask with ring information etc.
 int recStream = 0;
 
 
@@ -75,7 +73,7 @@ int recStream = 0;
 void polexit(void)
 {
    if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
-   if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateStatus();
+   if (gUseCdev && (recRing & REC_JET) == 0) UpdateStatus();
    closeDataFile("Abnormal rhicpol termination.");
    if (((polData.statusS) >> 16 ) & 0xFF) fprintf(LogFile, "RHICPOL-FATAL : Exiting due to severe error...\n");
    exit(10);
@@ -140,8 +138,8 @@ int main(int argc, char **argv)
       case 'f' :  // output data file
          strncpy(fname, optarg, sizeof(fname));
          break;
-      case 'g' :  // no CDEV
-         NoADO = 1;
+      case 'g' :  // do not use CDEV
+         gUseCdev = false;
          break;
       case 'i' :  // config file
          strncpy(cfgname, optarg, sizeof(cfgname));
@@ -263,9 +261,9 @@ int main(int argc, char **argv)
 
    beamData.beamEnergyM = 100.0;       // defalut for no CDEV
 
-   //  check CDEV
-   if (NoADO == 0 && getenv("CDEVDDL") == NULL) {      // we check if CDEV varables (at least one) are defined
-      NoADO = 1;
+   // check CDEV
+   if (gUseCdev && getenv("CDEVDDL") == NULL) {      // we check if CDEV varables (at least one) are defined
+      gUseCdev = false;
       fprintf(LogFile, "RHICPOL-WARN : No CDEV environment found.\n");
       fprintf(LogFile, "               Run may be unusable. Try -g to suppress this message.\n");
       polData.statusS |= WARN_INT;
@@ -276,10 +274,10 @@ int main(int argc, char **argv)
       recRing = REC_JET | REC_YELLOW; // jet has always yellow color
    }
    else {
-      if (NoADO == 0 && DeviceName[0] == 'N') {       // we MUST have device name for CDEV when not in jet mode
+      if (gUseCdev && DeviceName[0] == 'N') {       // we MUST have device name for CDEV when not in jet mode
          fprintf(LogFile, "RHICPOL-INFO : no device name for CDEV. Disabling CDEV\n");
          polData.statusS |= (WARN_INT);
-         NoADO = 1;
+         gUseCdev = false;
       }
       else if (strcasestr(DeviceName, "blu")) {
          recRing = REC_BLUE;
@@ -290,7 +288,7 @@ int main(int argc, char **argv)
    }
 
    // Get beam energy from CDEV
-   if (NoADO == 0) {
+   if (gUseCdev) {
       getCdevInfo(&beamData);
       fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
 
@@ -312,7 +310,7 @@ int main(int argc, char **argv)
    }
 
    // Get CDEV information
-   if (NoADO == 0)
+   if (gUseCdev)
    {
       getAdoInfo();
 
@@ -426,9 +424,9 @@ int main(int argc, char **argv)
            DeviceName, polData.runIdS, beamData.beamEnergyM, polData.targetIdS);
 
    if (setOutReg()) polexit();
-   if (NoADO == 0) ProgV124((recRing & REC_BLUE) ? 1 : 0);     // set V124
+   if (gUseCdev) ProgV124((recRing & REC_BLUE) ? 1 : 0);     // set V124
    if (IStop != 0) polexit();
-   if (openDataFile(dataFileFullName.c_str(), comment, !NoADO)) polexit();
+   if (openDataFile(dataFileFullName.c_str(), comment, gUseCdev)) polexit();
 
    setInhibit();
    initScalers();
@@ -442,7 +440,7 @@ int main(int argc, char **argv)
    for (j = 0; j < nLoop; j++) {
       fastInitWFDs(1);
       writeSubrun(j);
-      if (NoADO == 0 && (recRing & REC_JET) == 0 && j == 0) UpdateMessage("Running...");
+      if (gUseCdev && (recRing & REC_JET) == 0 && j == 0) UpdateMessage("Running...");
       setAlarm(mTime / nLoop);
       polData.startTimeS = time(NULL);
       clearVetoFlipFlop();
@@ -463,7 +461,7 @@ int main(int argc, char **argv)
       if (iCntrlC) signal(SIGINT, alarmHandler);
       else         signal(SIGINT, SIG_IGN);
 
-      if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop - 1)) UpdateMessage("Reading Data...");
+      if (gUseCdev && (recRing & REC_JET) == 0 && j == (nLoop - 1)) UpdateMessage("Reading Data...");
       signal(SIGTERM, alarmHandler);
 
       if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Reading scalers.\n");
@@ -487,7 +485,7 @@ int main(int argc, char **argv)
       }
 
       // Writing is done, send a message to mcr...
-      if (NoADO == 0 && (recRing & REC_JET) == 0 && j == (nLoop - 1))
+      if (gUseCdev && (recRing & REC_JET) == 0 && j == (nLoop - 1))
          UpdateMessage("Reading Data Finished.");
    }
 
@@ -496,7 +494,7 @@ int main(int argc, char **argv)
    writeSubrun(-1);
    if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
    closeDataFile("End of RHICpol run.");
-   if (NoADO == 0 && (recRing & REC_JET) == 0) UpdateStatus();
+   if (gUseCdev && (recRing & REC_JET) == 0) UpdateStatus();
    // close the log file
    fclose(LogFile);
 
@@ -508,7 +506,6 @@ int main(int argc, char **argv)
 /** */
 void rhicpol_print_usage()
 {
-   //{{{
    printf("\n\tPolarimeter command line data taking utility\n\n"
           "Usage: rhicpol [options]. Possible options are:\n"
           "\t-c comment : comment string;\n"
@@ -528,20 +525,20 @@ void rhicpol_print_usage()
           "\t-T [type] : measurement type. Can be 'test', 'alpha', 'cdev' or empty string\n"
           "\t-t time : maximum time of the measurement, seconds;\n"
           "\t-v level : verbose output.\n");
-} //}}}
+}
 
 
 /** */
 void rhicpol_process_options()
-{ //{{{
+{
    if (gMeasType == kMEASTYPE_UNDEF) {
       printf("\nError: Measurement type must be specified with -T option\n");
       rhicpol_print_usage();
       exit(0);
    }
    else if (gOptMeasType.compare("cdev") == 0 || gOptMeasType.empty()) {
-      if (!NoADO) gMeasType = getCDEVMeasType();
-      else        gMeasType = kMEASTYPE_UNKNOWN;
+      if (gUseCdev) gMeasType = getCDEVMeasType();
+      else          gMeasType = kMEASTYPE_UNKNOWN;
    }
    else if (gOptMeasType.compare("test") == 0){ 
      gMeasType = kMEASTYPE_TEST;
@@ -551,4 +548,4 @@ void rhicpol_process_options()
    }
    else{
       gMeasType = kMEASTYPE_UNKNOWN;}
-} //}}}
+}

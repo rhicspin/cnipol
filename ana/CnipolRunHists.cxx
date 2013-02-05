@@ -36,7 +36,7 @@ CnipolRunHists::~CnipolRunHists()
 
 /** */
 void CnipolRunHists::BookHists()
-{ //{{{
+{
    TH1* hist;
 
    fDir->cd();
@@ -157,21 +157,21 @@ void CnipolRunHists::BookHists()
    //d["ErrDet"]    = errdet;
    //d["Asymmetry"] = asymmetry;
 
-} //}}}
+}
 
 
 /** */
 void CnipolRunHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    //UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
    //UShort_t delim = ch->GetDelimiterId();
-} //}}}
+}
 
 
 /** */
 void CnipolRunHists::PostFill()
-{ //{{{
+{
    float min, max;
    float margin=0.2;
    float prefix=0.028;
@@ -181,16 +181,16 @@ void CnipolRunHists::PostFill()
    GetMinMaxOption(prefix, NBUNCH, gBunchAsym.Ax45[0], margin, min, max);
    ((TH1*) o["asym_vs_bunch_x45"])->SetBins(NBUNCH, -0.5, NBUNCH-0.5, 100, min, max);
    DrawHorizLine( (TH1*) o["asym_vs_bunch_x45"], -0.5, NBUNCH-0.5, 0, 1, 1, 1);
-} //}}}
+}
 
 
 /** */
 void CnipolRunHists::Fill(MeasInfo &ri)
-{ //{{{
+{
    map<UShort_t, Float_t>::iterator ib;
 
    for (ib=ri.fWallCurMon.begin(); ib!=ri.fWallCurMon.end(); ++ib)
    {
       ((TH1*) o["wall_current_monitor"])->SetBinContent(ib->first, ib->second);
    }
-} //}}}
+}

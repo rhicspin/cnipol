@@ -32,7 +32,7 @@ CnipolAlphaHists::~CnipolAlphaHists()
 
 
 void CnipolAlphaHists::BookHists()
-{ //{{{
+{
    char hName[256];
 
    fDir->cd();
@@ -229,12 +229,12 @@ void CnipolAlphaHists::BookHists()
          d[dName] = oc;
       }
    }
-} //}}}
+}
 
 
 /** */
 void CnipolAlphaHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
 
@@ -265,7 +265,7 @@ void CnipolAlphaHists::Fill(ChannelEvent *ch)
    ((TH2F*) sd->o["hTvsA_zoom_ch" + sSi])->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) sd->o["hTvsI_ch"      + sSi])->Fill(data.fIntgrl, data.fTdc);
    ((TH2F*) sd->o["hIvsA_ch"      + sSi])->Fill(data.fAmpltd, data.fIntgrl);
-} //}}}
+}
 
 
 /** */

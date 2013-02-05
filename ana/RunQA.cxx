@@ -53,7 +53,7 @@ RunQA::~RunQA() { }
 
 /** */
 void RunQA::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['max_rate']            = %f;\n",            max_rate);
    fprintf(f, "$rc['TshiftAve']           = %f;\n",            TshiftAve);
    fprintf(f, "$rc['wcm_norm_event_rate'] = %f;\n",            wcm_norm_event_rate);
@@ -85,4 +85,4 @@ void RunQA::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPmtS1T0']            = %f;\n",            fPmtS1T0);
    fprintf(f, "$rc['fPmtS1T0Err']         = %f;\n",            fPmtS1T0Err);
 
-} //}}}
+}

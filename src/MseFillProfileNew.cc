@@ -63,19 +63,19 @@ void MseFillProfileNewX::Print(const Option_t* opt) const
 
 /** */
 void MseFillProfileNewX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fill']           = %d;\n", fill         );
    fprintf(f, "$rc['prof_r']         = %f;\n", prof_r       );
    fprintf(f, "$rc['prof_r_err       = %f;\n", prof_r_err   );
    fprintf(f, "$rc['prof_pmax']      = %f;\n", prof_pmax    );
    fprintf(f, "$rc['prof_pmax_err']  = %f;\n", prof_pmax_err);
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void MseFillProfileNewX::SetValues(const AnaFillResult &afr, EPolarimeterId polId, ETargetOrient tgtOrient)
-{ //{{{
+{
    fill           = afr.GetFillId();
    polarimeter_id = polId;
    target_orient  = tgtOrient;
@@ -87,4 +87,4 @@ void MseFillProfileNewX::SetValues(const AnaFillResult &afr, EPolarimeterId polI
    prof_r0_err     = afr.GetPCProfR0(polId, tgtOrient).second;
    prof_rslope     = afr.GetPCProfRSlope(polId, tgtOrient).first;
    prof_rslope_err = afr.GetPCProfRSlope(polId, tgtOrient).second;
-} //}}}
+}

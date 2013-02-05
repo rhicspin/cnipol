@@ -37,7 +37,7 @@ CnipolTargetHists::~CnipolTargetHists()
 
 /** */
 void CnipolTargetHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    char hName[256];
@@ -99,12 +99,12 @@ void CnipolTargetHists::BookHists()
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetTitle(";Time;Position;");
    //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
-} //}}}
+}
 
 
 /** */
 void CnipolTargetHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
 
@@ -155,14 +155,14 @@ void CnipolTargetHists::Fill(ChannelEvent *ch)
 
    ((TH1*) o["hTargetSteps"])->Fill(tstep);
 
-} //}}}
+}
 
 
 /**
  * The size of hData is 4*n+4
  */
 void CnipolTargetHists::Fill(Int_t n, Double_t* hData)
-{ //{{{
+{
    ((TH1*) o["hTargetHorzLinear"])->SetBins(n, 0, n);
    ((TH1*) o["hTargetHorzLinear"])->SetContent(hData);
 
@@ -174,12 +174,12 @@ void CnipolTargetHists::Fill(Int_t n, Double_t* hData)
 
    ((TH1*) o["hTargetVertRotary"])->SetBins(n, 0, n);
    ((TH1*) o["hTargetVertRotary"])->SetContent(hData + 3*(n+2) - 1);
-} //}}}
+}
 
 
 /** */
 void CnipolTargetHists::PostFill()
-{ //{{{
+{
    //char  htitle[100];
    float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
    int   X_index = gMeasInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
@@ -239,4 +239,4 @@ void CnipolTargetHists::PostFill()
    tgtx_time->SetMarkerColor(kBlue);
    ((TH1*) o["tgtx_vs_time"])->GetListOfFunctions()->Add(tgtx_time, "P");
 	//delete tgtx_time;
-} //}}}
+}

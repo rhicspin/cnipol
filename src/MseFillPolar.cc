@@ -68,7 +68,7 @@ void MseFillPolarX::Print(const Option_t* opt) const
 
 /** */
 void MseFillPolarX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fill']                    = %d;\n", fill              );
    fprintf(f, "$rc['type']                    = %d;\n", type              );
    fprintf(f, "$rc['beam_energy']             = %f;\n", beam_energy       );
@@ -85,12 +85,12 @@ void MseFillPolarX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['polar_yellow_2']          = %f;\n", polar_yellow_2    );
    fprintf(f, "$rc['polar_yellow_2_err']      = %f;\n", polar_yellow_2_err);
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void MseFillPolarX::SetValues(const AnaFillResult &afr)
-{ //{{{
+{
    start_time  = mysqlpp::DateTime(afr.GetStartTime());
    type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
@@ -143,4 +143,4 @@ void MseFillPolarX::SetValues(const AnaFillResult &afr)
       polar_yellow_2_err = afr.GetPCPolar(kY2U).second; 
    }
 
-} //}}}
+}

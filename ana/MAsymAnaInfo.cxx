@@ -37,7 +37,7 @@ string MAsymAnaInfo::GetExternInfoPath() { return GetResultsDir() + "/runXX/"; }
 
 /** */
 void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
-{ //{{{
+{
    int option_index = 0;
 
    static struct option long_options[] = {
@@ -115,12 +115,12 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
          exit(0);
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymAnaInfo::VerifyOptions()
-{ //{{{
+{
    // The run name must be specified
    if (fMListFileName.empty()) {
       Error("VerifyOptions", "File name has to be specified");
@@ -142,29 +142,29 @@ void MAsymAnaInfo::VerifyOptions()
 
    // The output dir is created here
    AnaInfo::VerifyOptions();
-} //}}}
+}
 
 
 /** */
 void MAsymAnaInfo::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Print members:");
    PrintAsPhp();
-} //}}}
+}
 
 
 /** */
 void MAsymAnaInfo::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    AnaInfo::PrintAsPhp(f);
    fprintf(f, "$rc['fMListFileName']               = \"%s\";\n", fMListFileName.c_str());
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void MAsymAnaInfo::PrintUsage()
-{ //{{{
+{
    cout << endl;
 
    AnaInfo::PrintUsage();
@@ -173,4 +173,4 @@ void MAsymAnaInfo::PrintUsage()
    cout << " -h, -?                               : Print this help" << endl;
    cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
    cout << endl;
-} //}}}
+}

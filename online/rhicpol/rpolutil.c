@@ -26,19 +26,16 @@ extern polDataStruct polData;
 extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;                 // V124 settings
-extern int NoADO;
 extern int iRamp;
 extern float mTime;
 extern int mEvent;
 extern int iPulseProg;
-extern int recRing;
 extern int recStream;
 extern int iExtClock;
 extern float ANALPOW;
 extern float ANALPOWE;
 extern int iCicleRun;
 extern char DeviceName[128];            // our CDEV name
-extern char ourTargetCDEVName[20];      // we will write what is appropriate here in getAdoInfo()
 
 char ReadMode[4];
 int OutRegBits = 0;     // we can not read it and it just writes on F16
@@ -561,7 +558,7 @@ int CheckConfig()
 
    fprintf(LogFile, "\n");
 
-   if (NoADO == 0) {
+   if (gUseCdev) {
       if (V124.flags & 0x8000) fprintf(LogFile, "RHICPOL-INFO : Setting V124 positionDelay = %d\n", V124.positionDelay);
       for (i = 0; i < 8; i++) if (V124.flags & (1 << i))
             fprintf(LogFile, "RHICPOL-INFO : Setting V124.chan%d: Delay=%5.1f ns, Width=%d  Offset=%d  Period=%d\n",
@@ -1542,7 +1539,7 @@ int getEvents(int Number)
    l10Val = 0;
    l10    = 0;
 
-   if (NoADO == 0 && (recRing & REC_JET) == 0) {
+   if (gUseCdev && (recRing & REC_JET) == 0) {
 
       targetHistoryLen = 8192;
       targetHistory = (long *) malloc(targetHistoryLen);
@@ -1637,7 +1634,7 @@ int getEvents(int Number)
          }
 
          // indicate progress
-         if (NoADO == 0 && (recRing & REC_JET) == 0) {
+         if (gUseCdev && (recRing & REC_JET) == 0) {
             UpdateProgress(Cnt, (int)((Cnt - lCnt) / (t - tlast)), t);
             // get target information
             if (targetHistoryPtr >= targetHistoryLen) {
@@ -2155,7 +2152,6 @@ void closeDataFile(char * comment)
 
    if ((recRing & REC_JET) == 0) {
       // Target movement record for profiles
-      //<<<<<<< rpolutil.c
       // It looks that we need this record even without other ADO staff
       header.type = REC_TAGMOVEADO | recRing;
       len = getTargetMovementInfo(&data);

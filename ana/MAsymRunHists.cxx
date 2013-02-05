@@ -53,7 +53,7 @@ MAsymRunHists::~MAsymRunHists()
 
 /** */
 void MAsymRunHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    string  shName;
@@ -193,12 +193,12 @@ void MAsymRunHists::BookHists()
          d[sDirName] = oc;
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId polId, EBeamEnergy beamE)
-{ //{{{
+{
    string   shName;
    string   sPolId = RunConfig::AsString(polId);
    string   sBeamE = RunConfig::AsString(beamE);
@@ -751,12 +751,12 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamEnergy beamE)
-{ //{{{
+{
    string   shName;
    string   sRingId = RunConfig::AsString(ringId);
    string   sBeamE  = RunConfig::AsString(beamE);
@@ -845,12 +845,12 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    hist->SetOption("E1");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::Fill(const EventConfig &rc)
-{ //{{{
+{
    string   shName;
    TH1     *hist;
 
@@ -1068,12 +1068,12 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    //cout << "Disabled channels: ";
    //std::copy(disabledChs.begin(), disabledChs.end(), std::ostream_iterator<int>(cout, ", "));
    //cout << endl;
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::Fill(EventConfig &rc, DrawObjContainer &oc)
-{ //{{{
+{
    //if (!oc) {
    //   Error("Fill(DrawObjContainer *oc)", "Argument required");
    //   return;
@@ -1115,20 +1115,20 @@ void MAsymRunHists::Fill(EventConfig &rc, DrawObjContainer &oc)
    //printf("Found asym hist %f\n", hAsym->Integral());
    //printf("Found asym hist \n");
 
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::Print(const Option_t* opt) const
-{ //{{{
+{
    opt = ""; //printf("MAsymRunHists:\n");
    DrawObjContainer::Print();
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::PostFill(AnaGlobResult &agr)
-{ //{{{
+{
 
    AnaFillResultMapIter iFill = agr.fAnaFillResults.begin();
    for ( ; iFill != agr.fAnaFillResults.end(); ++iFill)
@@ -1324,12 +1324,12 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
    //TF1 *systRatioFitFunc = new TF1("systRatioFitFunc", new SystRatioFitFunctor(), fMinFill, fMaxFill, 1, "SystRatioFitFunctor");
    //utils::SystRatioFitFunctor *srff = new utils::SystRatioFitFunctor(*hRatio);
    //TF1 *systRatioFitFunc = new TF1("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::PostFill()
-{ //{{{
+{
    string  shName;
    TH1    *hist;
 
@@ -1567,12 +1567,12 @@ void MAsymRunHists::PostFill()
       hPolarFirstMeasRatioVsFill_->Divide(hPolarFst, hPolarInj);
       hPolarFirstMeasRatioVsFill_->Fit("pol0");
    }
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIter iafr, EPolarimeterId polId, EBeamEnergy beamE)
-{ //{{{
+{
    UInt_t fillId     = iafr->first;
    AnaFillResult afr = iafr->second;
 
@@ -1712,12 +1712,12 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
          }
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr, ERingId ringId, EBeamEnergy beamE)
-{ //{{{
+{
    UInt_t fillId     = iafr->first;
    AnaFillResult afr = iafr->second;
 
@@ -1800,12 +1800,12 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
       hIntensDecayVsFill_->SetBinContent(ib, intensDecay.first);
       hIntensDecayVsFill_->SetBinError(ib, intensDecay.second);
    }
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::UpdateLimits()
-{ //{{{
+{
    Info("UpdateLimits", "fMinFill: %f, fMaxFill: %f", fMinFill, fMaxFill);
    Info("UpdateLimits", "fMinTime: %ld, fMaxTime: %ld", fMinTime, fMaxTime);
 
@@ -2007,27 +2007,27 @@ void MAsymRunHists::UpdateLimits()
    //   ((TH1*) o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
    //}
 
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::UpdMinMaxFill(UInt_t fillId)
-{ //{{{
+{
    if (fillId < fMinFill ) fMinFill = fillId;
    if (fillId > fMaxFill ) fMaxFill = fillId;
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::SetMinMaxFill(UInt_t minFillId, UInt_t maxFillId)
-{ //{{{
+{
    fMinFill = minFillId;
    fMaxFill = maxFillId;
-} //}}}
+}
 
 /** */
 void MAsymRunHists::AdjustMinMaxFill()
-{ //{{{
+{
    fMinFill -= 0.5;
    fMaxFill += 0.5;
 
@@ -2068,20 +2068,20 @@ void MAsymRunHists::AdjustMinMaxFill()
       }
    }
 
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::UpdMinMaxTime(time_t time)
-{ //{{{
+{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;
-} //}}}
+}
 
 
 /** */
 void MAsymRunHists::SetMinMaxTime(time_t minTime, time_t maxTime)
-{ //{{{
+{
    fMinTime = minTime;
    fMaxTime = maxTime;
-} //}}}
+}

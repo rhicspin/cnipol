@@ -29,7 +29,7 @@ AsymDbSql::~AsymDbSql()
 
 /** */
 void AsymDbSql::OpenConnection()
-{ //{{{
+{
    // connection already established
    if (fConnection) return;
 
@@ -50,22 +50,22 @@ void AsymDbSql::OpenConnection()
       cerr << "Error: " << er.what() << endl;
       fConnection = 0;
    }
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::CloseConnection()
-{ //{{{
+{
    if (fConnection) {
       delete fConnection;
       fConnection = 0;
    }
-} //}}}
+}
 
 
 /** */
 DbEntry* AsymDbSql::Select(std::string runName)
-{ //{{{
+{
    if (!fConnection) {
       Error("Select", "Connection with MySQL server not established");
       return 0;
@@ -101,12 +101,12 @@ DbEntry* AsymDbSql::Select(std::string runName)
    //}
 
    return 0;
-} //}}}
+}
 
 
 /** */
 MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
-{ //{{{
+{
    OpenConnection();
 
    if (!fConnection) {
@@ -169,12 +169,12 @@ MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
    CloseConnection();
 
    return mseri;
-} //}}}
+}
 
 
 /** */
 MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
-{ //{{{
+{
    if (!fConnection) {
       Error("SelectFillPolar", "Connection with MySQL server not established");
       return 0;
@@ -200,12 +200,12 @@ MseFillPolarX* AsymDbSql::SelectFillPolar(UInt_t fill)
    }
 
    return msefp;
-} //}}}
+}
 
 
 /** */
 MseFillPolarNewX* AsymDbSql::SelectFillPolar(UInt_t fill, EPolarimeterId polId, ERingId ringId)
-{ //{{{
+{
    if (!fConnection) {
       Error("SelectFillPolar", "Connection with MySQL server not established");
       return 0;
@@ -230,12 +230,12 @@ MseFillPolarNewX* AsymDbSql::SelectFillPolar(UInt_t fill, EPolarimeterId polId, 
    }
 
    return msefpn;
-} //}}}
+}
 
 
 /** */
 MseFillPolarNewXSet AsymDbSql::SelectFillPolars(UInt_t fill)
-{ //{{{
+{
    MseFillPolarNewXSet polars;
 
    if (!fConnection) {
@@ -252,12 +252,12 @@ MseFillPolarNewXSet AsymDbSql::SelectFillPolars(UInt_t fill)
    query.storein(polars);
 
    return polars;
-} //}}}
+}
 
 
 /** */
 MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
-{ //{{{
+{
    if (!fConnection) {
       Error("SelectFillProfile", "Connection with MySQL server not established");
       return 0;
@@ -283,12 +283,12 @@ MseFillProfileX* AsymDbSql::SelectFillProfile(UInt_t fill)
    }
 
    return msefp;
-} //}}}
+}
 
 
 /** */
 MseFillProfileNewX* AsymDbSql::SelectFillProfile(UInt_t fill, EPolarimeterId polId, ETargetOrient tgtOrient)
-{ //{{{
+{
    if (!fConnection) {
       Error("SelectFillPolar", "Connection with MySQL server not established");
       return 0;
@@ -313,12 +313,12 @@ MseFillProfileNewX* AsymDbSql::SelectFillProfile(UInt_t fill, EPolarimeterId pol
    }
 
    return msefpn;
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
-{ //{{{
+{
    vector<MseMeasInfoX> runs = SelectPriorRuns(run);
    vector<MseMeasInfoX>::iterator irun;
 
@@ -347,12 +347,12 @@ void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
       if (run.disabled_bunches.empty() && !irun->disabled_bunches.empty())
          run.disabled_bunches = irun->disabled_bunches;
    }
-} //}}}
+}
 
 
 /** */
 MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
-{ //{{{
+{
    MseRunPeriodX *runPeriod = SelectRunPeriod(run);
 
    if (runPeriod)
@@ -368,12 +368,12 @@ MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
    run.disabled_bunches     = runPeriod->disabled_bunches;
 
    return runPeriod; 
-} //}}}
+}
 
 
 /** */
 vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
-{ //{{{
+{
    if (!fConnection) {
       Error("SelectPriorRuns", "Connection with MySQL server not established");
       vector<MseMeasInfoX> dummy;
@@ -412,12 +412,12 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
    //}
 
    return results;
-} //}}}
+}
 
 
 /** */
 MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
-{ //{{{
+{
    MseRunPeriodX* mserp = 0;
 
    OpenConnection();
@@ -447,12 +447,12 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
    CloseConnection();
 
    return mserp;
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::Insert(DbEntry *dbrun)
-{ //{{{
+{
    if (!dbrun) return;
 
    //MseMeasInfoX MseMeasInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
@@ -492,12 +492,12 @@ void AsymDbSql::Insert(DbEntry *dbrun)
 
    cout << "Query: " << query << endl;
    query.execute();
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
-{ //{{{
+{
    OpenConnection();
 
    if (!fConnection) {
@@ -520,12 +520,12 @@ void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
    }
 
    CloseConnection();
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
-{ //{{{
+{
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
       return;
@@ -544,12 +544,12 @@ void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
       cout << "Query: " << query << endl;
       query.execute();
    }
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill)
-{ //{{{
+{
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
       return;
@@ -568,12 +568,12 @@ void AsymDbSql::UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill)
       cout << "Query: " << query << endl;
       query.execute();
    }
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
-{ //{{{
+{
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
       return;
@@ -592,12 +592,12 @@ void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
       cout << "Query: " << query << endl;
       query.execute();
    }
-} //}}}
+}
 
 
 /** */
 void AsymDbSql::UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfill)
-{ //{{{
+{
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
       return;
@@ -616,7 +616,7 @@ void AsymDbSql::UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfil
       cout << "Query: " << query << endl;
       query.execute();
    }
-} //}}}
+}
 
 
 /** */

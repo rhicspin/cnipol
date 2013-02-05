@@ -18,7 +18,12 @@ char gSnakeCdevNames[2][30]         = {"bo3-snk7-1.4-ps.current", "yi3-snk7-1.4-
 char gStarRotatorCdevNames[2][30]   = {"bi5-rot3-1.4-ps.current", "yo5-rot3-1.4-ps.current"};
 char gPhenixRotatorCdevNames[2][30] = {"bo7-rot3-1.4-ps.current", "yi7-rot3-1.4-ps.current"};
 
+char ourTargetCDEVName[20]          = "None";   // we will write what is appropriate here in getAdoInfo()
+
+bool gUseCdev       = true;                  // don't take anything from CDEV
+
 EMeasType gMeasType = kMEASTYPE_UNDEF;   // measurement type must be provided
 
 wcmDataStruct         wcmData;               // Wall current monitor data from CDEV
 RecordMachineParams   gRecordMachineParams;
+int                   recRing = 0;           // data mask with ring information etc.

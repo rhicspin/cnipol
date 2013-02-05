@@ -106,6 +106,7 @@ void wfana(unsigned char *data, int *len, int *chan)
    wfana_(fdata, len, chan);
 }
 
+
 int icopen_(char *fname, int len)
 {
    char *name;
@@ -123,10 +124,12 @@ int icopen_(char *fname, int len)
    return 0;
 }
 
+
 void icclose_(void)
 {
    fclose(fin);
 }
+
 
 void readandfill_(int* subrun)
 {

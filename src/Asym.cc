@@ -174,14 +174,14 @@ StructStripCounter::StructStripCounter()
 
 
 StructStripCounterTgt::StructStripCounterTgt()
-{ //{{{
+{
    for(int i=0; i<MAXDELIM; i++) {
       for (int j=0; j<N_SPIN_STATES; j++) {
          for (int k=0; k<N_SILICON_CHANNELS; k++)
             cntr_tgt.reg.NStrip[i][j][k] = 0;
       }
    }
-} //}}}
+}
 
 
 StructCounter::StructCounter() : good_event(0), revolution(0), tgtMotion(0),
@@ -202,18 +202,18 @@ StructCounterTgt::StructCounterTgt() : good_event(0), revolution(0),
 
 /** */
 RunConst::RunConst(float lL, float lCt)
-{ //{{{
+{
    L   = lL;
    Ct  = lCt;
    E2T = M_SQRT1_2 * sqrt(MASS_12C) * L / C_CMNS;
    M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);       // ~ 18 [cm] / 2 / 1.4142 / 29.98 [cm/ns] / 3.3447e3 [keV^(1/2)] = 0.00006347 [ns/keV^(1/2)]
    T2M = 2*C_CMNS*C_CMNS/L/L;
-} //}}}
+}
 
 
 /** */
 void RunConst::Update(UShort_t ch)
-{ //{{{
+{
   if (!gConfigInfo) return;
 
    Ct = gConfigInfo->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
@@ -230,24 +230,24 @@ void RunConst::Update(UShort_t ch)
   E2T = M_SQRT1_2/C_CMNS * sqrt(MASS_12C) * L;
   M2T = L/2/M_SQRT2/C_CMNS/sqrt(MASS_12C);
   T2M = 2*C_CMNS*C_CMNS/L/L;
-} //}}}
+}
 
 
 /** */
 void RunConst::Print(const Option_t* opt) const
-{ //{{{
+{
   //printf("\nKinematic Constants:\n");
   printf("\tL   = %10.3f\n", L);
   printf("\tCt  = %10.3f\n", Ct);
   printf("\tE2T = %10.3f\n", E2T);
   printf("\tM2T = %10.3g\n", M2T);
   printf("\tT2M = %10.3f\n", T2M);
-} //}}}
+}
 
 
 /** */
 void RunConst::PrintAll()
-{ //{{{
+{
    printf("Print gRunConsts:\n");
 
    map<UShort_t, RunConst>::iterator irc = gRunConsts.begin();
@@ -258,7 +258,7 @@ void RunConst::PrintAll()
    }
 
    printf("\n");
-} //}}}
+}
 
 
 /** */
@@ -371,20 +371,20 @@ void TRecordConfigRhicStruct::Print(const Option_t* opt) const
 
 // Return Maximum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMax(int N, float A[])
-{ //{{{
+{
    float max = A[0];// != ASYM_DEFAULT ? A[0] : A[1];
    for (int i=1; i<N; i++) max = (A[i] && max < A[i] && A[i] != ASYM_DEFAULT) ? A[i] : max;
    return max;
-} //}}}
+}
 
 
 // Return Miminum from array A[N]. Ignores ASYM_DEFAULT as an exception
 float GetMin(int N, float A[])
-{ //{{{
+{
   float min = A[0];// != ASYM_DEFAULT ? A[0] : A[1];
   for (int i=1; i<N; i++) min = (A[i]) && (min>A[i]) && (A[i] != ASYM_DEFAULT) ? A[i] : min;
   return min;
-} //}}}
+}
 
 
 /**
@@ -394,46 +394,46 @@ float GetMin(int N, float A[])
  * decreased by min*margin
  */
 void GetMinMax(int N, float A[], float margin, float &min, float &max)
-{ //{{{
+{
    min  = GetMin(N, A);
    max  = GetMax(N, A);
    min -= fabs(min) * margin;
    max += fabs(max) * margin;
-} //}}}
+}
 
 
 // Return Minimum and Maximum from array A[N]. Same as GetMinMax() function. But
 // GetMinMaxOption takes prefix value which forces min, max to be prefix when the
 // absolute min,max are smaller than prefix.
 void GetMinMaxOption(float prefix, int N, float A[], float margin, float &min, float &max)
-{ //{{{
+{
    GetMinMax(N, A, margin, min, max);
    if ( fabs(min) < prefix ) min = -prefix;
    if ( fabs(max) < prefix ) max =  prefix;
-} //}}}
+}
 
 
 // Description : draw text on histogram. Text alignment is (center,top) by default
 void DrawText(TH1 *h, float x, float y, int color, char *text)
-{ //{{{
+{
    TLatex *t = new TLatex(x, y, text);
    t->SetTextColor(color);
    t->SetTextAlign(21);
    h->GetListOfFunctions()->Add(t);
-} //}}}
+}
 
 
 // Description : DrawLines in TH2F histogram
 //             : Assumes  (x1,x2) y=y0=y1
 // Input       : TH2F * h, float x0, float x1, float y, int color, int lstyle
 void DrawLine(TH1 *h, float x1, float y1, float x2, float y2, int color, int lstyle, int lwidth)
-{ //{{{
+{
    TLine *l = new TLine(x1, y1, x2, y2);
    l->SetLineStyle(lstyle);
    l->SetLineColor(color);
    l->SetLineWidth(lwidth);
    h->GetListOfFunctions()->Add(l);
-} //}}}
+}
 
 
 /** */
@@ -455,14 +455,14 @@ void DrawVertLine(TH1 *h, float x, float y, int color, int lwidth)
 // Input       : int n, int mb(the most significant bit)
 // Return      : writes out n in binary
 void binary_zero(int n, int mb)
-{ //{{{
+{
    int X = int(pow(double(2), double(mb-1)));
  
    for (int i=0; i<mb; i++) {
      int j = n << i & X ? 1 : 0;
      cout << j ;
    }
-} //}}}
+}
 
 
 // Description : Define net TGraphErrors object asymgraph for vectors x,y,ex,ey
@@ -472,7 +472,7 @@ void binary_zero(int n, int mb)
 // Input       : int Mode, int N, float x[], float y[], float ex[], float ey[]
 //
 TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, float* ey)
-{ //{{{
+{
   int Color = Mode == 1 ? kBlue : kRed;
 
   TGraphErrors *asymgraph = new TGraphErrors(N, x, y, ex, ey);
@@ -482,13 +482,13 @@ TGraphErrors* AsymmetryGraph(int Mode, int N, float* x, float* y, float* ex, flo
   asymgraph->SetMarkerColor(Color);
 
   return asymgraph;
-} //}}}
+}
 
 
 // Read the parameter file
 // Ramp timing file
 void ReadRampTiming(char *filename)
-{ //{{{
+{
    printf("\nReading ramp timing file : %s \n", filename);
 
    ifstream rtiming;
@@ -510,17 +510,17 @@ void ReadRampTiming(char *filename)
    }
 
    rtiming.close();
-} //}}}
+}
 
 
 /** */
 ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
-{ //{{{
+{
    //os << "array( " << vep.first << ", " << vep.second << " )";
    os << MapAsPhpArray<ETargetOrient, ValErrPair>(vep);
 
    return os;
-} //}}}
+}
 
 
 ClassImp(MachineParams)

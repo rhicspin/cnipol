@@ -42,21 +42,21 @@ MAsymRoot::~MAsymRoot()
 }
 
 void MAsymRoot::SetHists(DrawObjContainer &hists)
-{ //{{{
+{
    fHists = &hists;
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::SetAnaGlobResult(AnaGlobResult *agr)
-{ //{{{
+{
    fAnaGlobResult = agr;
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::SaveAs(string pattern, string dir)
-{ //{{{
+{
 
    TCanvas canvas("canvas", "canvas", 1400, 600);
    canvas.UseCurrentStyle();
@@ -73,44 +73,44 @@ void MAsymRoot::SaveAs(string pattern, string dir)
 
    fHists->SetSignature(ssSignature.str());
    fHists->SaveAllAs(canvas, pattern, dir);
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::UpdMinMax(EventConfig &mm)
-{ //{{{
+{
    UpdMinMaxFill((UInt_t) mm.fMeasInfo->RUNID);
    UpdMinMaxTime(mm.fMeasInfo->fStartTime);
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::UpdMinMaxFill(UInt_t fillId)
-{ //{{{
+{
    if (fillId < fMinFill ) fMinFill = fillId;
    if (fillId > fMaxFill ) fMaxFill = fillId;
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::UpdMinMaxTime(time_t time)
-{ //{{{
+{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Called");
    PrintAsPhp(fFilePhp);
-} //}}}
+}
 
 
 /** */
 void MAsymRoot::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "<?php\n");
 
    fprintf(f, "\n// AnaGlobResult data\n");
@@ -121,4 +121,4 @@ void MAsymRoot::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, "?>\n");
-} //}}}
+}

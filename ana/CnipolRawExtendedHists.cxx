@@ -33,7 +33,7 @@ CnipolRawExtendedHists::~CnipolRawExtendedHists()
 
 /** */
 void CnipolRawExtendedHists::BookHists()
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -95,12 +95,12 @@ void CnipolRawExtendedHists::BookHists()
          d[dName] = oc;
       }
    }
-} //}}}
+}
 
 
 /** */
 void CnipolRawExtendedHists::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    // Fill parent histograms
    //CnipolRawHists::FillPassOne(ch);
 
@@ -144,12 +144,12 @@ void CnipolRawExtendedHists::FillPassOne(ChannelEvent *ch)
 
    hist = ((TH1*) o["hRevolutionId"]);
    hist->Fill(ch->GetRevolutionId());
-} //}}}
+}
 
 
 /** */
 void CnipolRawExtendedHists::FillDerivedPassOne()
-{ //{{{
+{
    Info("FillDerivedPassOne", "Called");
 
    for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
@@ -179,10 +179,10 @@ void CnipolRawExtendedHists::FillDerivedPassOne()
 
    // Fill parent class histograms
    CnipolRawHists::FillDerivedPassOne();
-} //}}}
+}
 
 
 /** */
 //void CnipolRawExtendedHists::PostFillPassOne(DrawObjContainer *oc=0)
-//{ //{{{
-//} //}}}
+//{
+//}

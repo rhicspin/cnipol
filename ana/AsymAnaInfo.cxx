@@ -95,7 +95,7 @@ Bool_t AsymAnaInfo::HasOnlineBit()      const { return (fAsymModes & AsymAnaInfo
 
 /** */
 string AsymAnaInfo::GetAlphaCalibFile() const
-{ //{{{
+{
    if (fAlphaCalibRun.empty()) {
       cout << "Alpha calibration run not defined" << endl;
       return "";
@@ -104,12 +104,12 @@ string AsymAnaInfo::GetAlphaCalibFile() const
    string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fAlphaCalibRun + "/" + fAlphaCalibRun + ".root";
    return path;
-} //}}}
+}
 
 
 /** */
 string AsymAnaInfo::GetDlCalibFile() const
-{ //{{{
+{
    if (fDlCalibRun.empty()) {
       Warning("GetDlCalibFile", "Dead layer calibration run not defined");
       return "";
@@ -119,22 +119,22 @@ string AsymAnaInfo::GetDlCalibFile() const
    path += "/" + fDlCalibRun + "/" + fDlCalibRun + ".root";
 
    return path;
-} //}}}
+}
 
 
 /** */
 string AsymAnaInfo::GetRootTreeFileName(UShort_t trid) const
-{ //{{{
+{
    string filename;
    filename.reserve(GetOutDir().size() + fRunName.size() + 20);
    sprintf(&filename[0], "%s/%s%s_tree_%02d.root", GetOutDir().c_str(), fRunName.c_str(), GetSuffix().c_str(), trid);
    return filename;
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::ProcessOptions(int argc, char **argv)
-{ //{{{
+{
    //extern char *optarg;
 
    int          option_index = 0;
@@ -440,12 +440,12 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
    //   fAsymModes |= AsymAnaInfo::MODE_ASYM;
    //   fAsymModes |= AsymAnaInfo::MODE_RAW;
    //}
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::VerifyOptions()
-{ //{{{
+{
    // The run name must be specified
    if (fRunName.empty()) {
       Error("VerifyOptions", "Run name has to be specified");
@@ -482,20 +482,20 @@ void AsymAnaInfo::VerifyOptions()
 
    fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
    gSystem->Chmod(GetRunConfFileName().c_str(), 0775);
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Print members:");
    PrintAsPhp();
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    AnaInfo::PrintAsPhp(f);
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
    fprintf(f, "$rc['fAsymModes']                   = %#010x;\n",  fAsymModes);
@@ -509,12 +509,12 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::PrintUsage()
-{ //{{{
+{
    cout << endl;
 
    AnaInfo::PrintUsage();
@@ -564,12 +564,12 @@ void AsymAnaInfo::PrintUsage()
    cout << "Options marked with (!) are not supported" << endl;
    cout << "Options marked with (?) need more work" << endl;
    cout << endl;
-} //}}}
+}
 
 
 /** */
 void AsymAnaInfo::Update(MseMeasInfoX& run)
-{ //{{{
+{
 	// A fix for alpha calib runs - Maybe this should go to the process options
    // method
    if (HasAlphaBit()) {
@@ -616,4 +616,4 @@ void AsymAnaInfo::Update(MseMeasInfoX& run)
    } else {
       Info("Update", "Using calibration run %s", run.dl_calib_run_name.c_str());
    }
-} //}}}
+}

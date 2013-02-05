@@ -33,29 +33,29 @@ DrawObjContainer::DrawObjContainer(TDirectory *dir) : TObject(),
 
 /** */
 std::string DrawObjContainer::GetSignature() const
-{ //{{{
+{
    return fSignature;
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::SetSignature(std::string signature)
-{ //{{{
+{
    fSignature = signature;
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::SetDir(TDirectory *dir)
-{ //{{{
+{
    fDir = dir;
    fDir->cd();
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::ReadFromDir()
-{ //{{{
+{
    ObjMapIter io;
    
    for (io=o.begin(); io!=o.end(); ++io) {
@@ -132,16 +132,16 @@ void DrawObjContainer::ReadFromDir()
       //isub->second.fDir = gDirectory;
       isub->second->ReadFromDir();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::ReadFromDir(TDirectory *dir)
-{ //{{{
+{
    fDir = dir;
    fDir->cd();
    ReadFromDir();
-} //}}}
+}
 
 
 /**
@@ -149,7 +149,7 @@ void DrawObjContainer::ReadFromDir(TDirectory *dir)
  * one.
  */
 void DrawObjContainer::Add(DrawObjContainer *oc)
-{ //{{{
+{
    o.insert(oc->o.begin(), oc->o.end());
 
    DrawObjContainerMapIter isubd;
@@ -172,7 +172,7 @@ void DrawObjContainer::Add(DrawObjContainer *oc)
       DrawObjContainer *existingOc = (result.first)->second;
       existingOc->Add(isubd->second);
    }
-} //}}}
+}
 
 
 /** Default destructor. */
@@ -209,7 +209,7 @@ DrawObjContainer::~DrawObjContainer()
 
 /** */
 void DrawObjContainer::Print(const Option_t* opt) const
-{ //{{{
+{
    //opt = "";
 
    //printf("DrawObjContainer:\n");
@@ -233,12 +233,12 @@ void DrawObjContainer::Print(const Option_t* opt) const
       cout << "Content of " << isubd->first << endl;
       isubd->second->Print();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string path, Bool_t thumbs)
-{ //{{{
+{
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
    else {
@@ -429,12 +429,12 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
       isubd->second->SaveAllAs(canvas, pattern, path, thumbs);
       path = parentPath;
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::string path)
-{ //{{{
+{
    // Require at least two elements in the hstack
    if (hstack.GetHists()->GetSize() < 2) {
       Error("SaveHStackAs", "At least 2 histograms required in the HStack. Skipping saving request for %s", hstack.GetName());
@@ -517,12 +517,12 @@ void DrawObjContainer::SaveHStackAs(TCanvas &canvas, THStack &hstack, std::strin
    //} else {
    //   //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", sFileName.c_str());
    //}
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Draw(TCanvas &c)
-{ //{{{
+{
    //Bool_t isBatch = gROOT->IsBatch();
 
    //gROOT->SetBatch(kTRUE);
@@ -549,12 +549,12 @@ void DrawObjContainer::Draw(TCanvas &c)
    }
 
    //gROOT->SetBatch(isBatch);
-} //}}}
+}
 
 
 /** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
-{ //{{{
+{
    if (!fDir) {
       Fatal("Write", "Directory fDir not defined");
    }
@@ -579,47 +579,47 @@ Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize)
    //fDir->Write();
 
    return 0;//((TObject*)this)->Write(name, option, bufsize);
-} //}}}
+}
 
 
 /** */
 Int_t DrawObjContainer::Write(const char* name, Int_t option, Int_t bufsize) const
-{ //{{{
+{
    return ((const DrawObjContainer*) this)->Write(name, option, bufsize);
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Fill(EventConfig &rc)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Fill(const EventConfig &rc)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Fill(EventConfig &rc, DrawObjContainer &oc)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(rc, oc);
    }
-} //}}}
+}
 
 
 /** */
@@ -632,106 +632,106 @@ void DrawObjContainer::PreFillPassOne() {}
 
 /** */
 void DrawObjContainer::FillPassOne(ChannelEvent *ch)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->FillPassOne(ch);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::FillDerivedPassOne()
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->FillDerivedPassOne();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::PostFillPassOne(DrawObjContainer *oc)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PostFillPassOne(oc);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::PreFill()
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PreFill();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Fill(ChannelEvent *ch)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->Fill(ch);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::FillDerived()
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->FillDerived();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::PostFill()
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PostFill();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::PostFill(AnaGlobResult &agr)
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->PostFill(agr);
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::UpdateLimits()
-{ //{{{
+{
    DrawObjContainerMapIter isubd;
 
    for (isubd=d.begin(); isubd!=d.end(); ++isubd) {
       isubd->second->UpdateLimits();
    }
-} //}}}
+}
 
 
 /** */
 void DrawObjContainer::Delete(Option_t* option)
-{ //{{{
+{
    if (!fDir) {
       Fatal("Delete(Option_t* option)", "fDir not defined\n");
    }
@@ -758,4 +758,4 @@ void DrawObjContainer::Delete(Option_t* option)
 
    //fDir->Close();
    fDir->Delete();
-} //}}}
+}

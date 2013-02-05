@@ -39,7 +39,7 @@ MAsymRateHists::~MAsymRateHists()
 
 /** */
 void MAsymRateHists::BookHists(string sid)
-{ //{{{
+{
    fDir->cd();
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
@@ -47,12 +47,12 @@ void MAsymRateHists::BookHists(string sid)
          BookHistsPolarimeter((EPolarimeterId) i, *iBE);
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymRateHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE)
-{ //{{{
+{
    char hName[256];
    //char hTitle[256];
    string  strPolId = RunConfig::AsString(polId);
@@ -118,12 +118,12 @@ void MAsymRateHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beam
    ((TH1*) o[hName])->SetTitle(";Max Rate, MHz;Dead Layer #mug/cm^{2};");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grDLVsMaxRate, "p");
 
-} //}}}
+}
 
 
 /** */
 void MAsymRateHists::Fill(const EventConfig &rc)
-{ //{{{
+{
    Double_t runId            = rc.fMeasInfo->RUNID;
    UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
@@ -178,12 +178,12 @@ void MAsymRateHists::Fill(const EventConfig &rc)
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grDLVsMaxRate");
    graphErrs->SetPoint(graphErrs->GetN(), max_rate, dl);
    graphErrs->SetPointError(graphErrs->GetN(), 0, dlErr);
-} //}}}
+}
 
 
 /** */
 void MAsymRateHists::Print(const Option_t* opt) const
-{ //{{{
+{
    opt = ""; //printf("MAsymRateHists:\n");
    DrawObjContainer::Print();
-} //}}}
+}

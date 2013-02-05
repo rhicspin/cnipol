@@ -12,20 +12,20 @@ using namespace std;
 
 
 ostream& operator<<(ostream &os, const ESpinState &ss)
-{ //{{{
+{
    if      (ss == kSPIN_UP)   os << "+";
    else if (ss == kSPIN_DOWN) os << "-";
    else if (ss == kSPIN_NULL) os << ".";
    else                       os << "*";
 
    return os;
-} //}}}
+}
 
 
 /** */
 RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fTargetOrients(), fBeamEnergies(), fSpinStates()
-{ //{{{
+{
    fPolarimeters.insert(kB1U);
    fPolarimeters.insert(kY1D);
    fPolarimeters.insert(kB2D);
@@ -68,7 +68,7 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
       }
    }
 
-} //}}}
+}
 
 
 /** */
@@ -79,7 +79,7 @@ RunConfig::~RunConfig()
 
 /** */
 string RunConfig::AsString(EPolarimeterId polId)
-{ //{{{
+{
    switch (polId) {
    case kB1U:
 	   return "B1U";
@@ -92,12 +92,12 @@ string RunConfig::AsString(EPolarimeterId polId)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(EMeasType measType)
-{ //{{{
+{
    switch (measType) {
    case kMEASTYPE_ALPHA:
 	   return "alpha";
@@ -112,12 +112,12 @@ string RunConfig::AsString(EMeasType measType)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(ETargetOrient targetOrient)
-{ //{{{
+{
    switch (targetOrient) {
    case kTARGET_H:
 	   return "H";
@@ -126,12 +126,12 @@ string RunConfig::AsString(ETargetOrient targetOrient)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(EBeamId beamId)
-{ //{{{
+{
    switch (beamId) {
    case kBLUE_BEAM:
 	   return "BLU";
@@ -140,12 +140,12 @@ string RunConfig::AsString(EBeamId beamId)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(ERingId ringId)
-{ //{{{
+{
    switch (ringId) {
    case kBLUE_RING:
 	   return "BLU";
@@ -154,12 +154,12 @@ string RunConfig::AsString(ERingId ringId)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(EBeamEnergy beamEnergy)
-{ //{{{
+{
    switch (beamEnergy) {
    case kINJECTION:
 	   return "024";
@@ -172,12 +172,12 @@ string RunConfig::AsString(EBeamEnergy beamEnergy)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 string RunConfig::AsString(ESpinState spinState)
-{ //{{{
+{
    switch (spinState) {
    case kSPIN_DOWN:
 	   return "down";
@@ -188,12 +188,12 @@ string RunConfig::AsString(ESpinState spinState)
    default:
       return "UNK";
    }
-} //}}}
+}
 
 
 /** */
 UShort_t RunConfig::AsIndex(ESpinState spinState)
-{ //{{{
+{
    switch (spinState) {
    case kSPIN_DOWN:
 	   return 1;
@@ -204,12 +204,12 @@ UShort_t RunConfig::AsIndex(ESpinState spinState)
    default:
       return 3;
    }
-} //}}}
+}
 
 
 /** */
 Color_t RunConfig::AsColor(EBeamId beamId)
-{ //{{{
+{
    switch (beamId) {
    case kBLUE_BEAM:
 	   return kBlue-4;
@@ -218,12 +218,12 @@ Color_t RunConfig::AsColor(EBeamId beamId)
    default:
       return kBlack;
    }
-} //}}}
+}
 
 
 /** */
 Color_t RunConfig::AsColor(ERingId ringId)
-{ //{{{
+{
    switch (ringId) {
    case kBLUE_RING:
 	   return kBlue-4;
@@ -232,12 +232,12 @@ Color_t RunConfig::AsColor(ERingId ringId)
    default:
       return kBlack;
    }
-} //}}}
+}
 
 
 /** */
 Color_t RunConfig::AsColor(EPolarimeterId polId)
-{ //{{{
+{
    switch (polId) {
    case kB1U:
    case kB2D:
@@ -248,12 +248,12 @@ Color_t RunConfig::AsColor(EPolarimeterId polId)
    default:
       return kBlack;
    }
-} //}}}
+}
 
 
 /** */
 Color_t RunConfig::AsColor(ESpinState spin)
-{ //{{{
+{
    switch (spin) {
    case kSPIN_DOWN:
 	   return kGreen;
@@ -264,12 +264,12 @@ Color_t RunConfig::AsColor(ESpinState spin)
    default:
       return kBlack;
    }
-} //}}}
+}
 
 
 /** */
 Color_t RunConfig::AsColor(UShort_t chId)
-{ //{{{
+{
    if (chId < 1 || chId > N_SILICON_CHANNELS) return kBlack;
 
    switch ( GetDetectorId(chId) ) {
@@ -289,12 +289,12 @@ Color_t RunConfig::AsColor(UShort_t chId)
       return kBlack;
    }
 
-} //}}}
+}
 
 
 /** */
 TAttMarker RunConfig::AsMarker(ETargetOrient targetOrient, EPolarimeterId polId)
-{ //{{{
+{
    Color_t color = RunConfig::AsColor(polId);
 
    TAttMarker marker;
@@ -314,12 +314,12 @@ TAttMarker RunConfig::AsMarker(ETargetOrient targetOrient, EPolarimeterId polId)
    }
 
    return marker;
-} //}}}
+}
 
 
 /** */
 EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
-{ //{{{
+{
    switch (polId) {
    case kB1U:
 	   return kBLUE_BEAM;
@@ -332,12 +332,12 @@ EBeamId RunConfig::GetBeamId(EPolarimeterId polId)
    default:
       return kUNKNOWN_BEAM;
    }
-} //}}}
+}
 
 
 /** */
 ERingId RunConfig::GetRingId(EPolarimeterId polId)
-{ //{{{
+{
    switch (polId) {
    case kB1U:
 	   return kBLUE_RING;
@@ -350,12 +350,12 @@ ERingId RunConfig::GetRingId(EPolarimeterId polId)
    default:
       return kUNKNOWN_RING;
    }
-} //}}}
+}
 
 
 /** */
 EStreamId RunConfig::GetStreamId(EPolarimeterId polId)
-{ //{{{
+{
    switch (polId) {
    case kB1U:
 	   return kUPSTREAM;
@@ -368,34 +368,34 @@ EStreamId RunConfig::GetStreamId(EPolarimeterId polId)
    default:
       return kUNKNOWN_STREAM;
    }
-} //}}}
+}
 
 
 /** */
 UShort_t RunConfig::GetDetectorId(UShort_t chId)
-{ //{{{
+{
    if (chId >= 1 && chId <= N_SILICON_CHANNELS) 
       return UShort_t( (chId - 1) / NSTRIP_PER_DETECTOR) + 1;
    
    gSystem->Error("RunConfig::GetDetectorId", "Channel id is not valid");
    return USHRT_MAX;
-} //}}}
+}
 
 
 /** */
 UShort_t RunConfig::GetDetectorChannelId(UShort_t chId)
-{ //{{{
+{
    if (chId >= 1 && chId <= N_SILICON_CHANNELS)
       return chId - (GetDetectorId(chId) - 1) * NSTRIP_PER_DETECTOR;
    
    gSystem->Error("RunConfig::GetDetectorChannelId", "Channel id is not valid");
    return USHRT_MAX;
-} //}}}
+}
 
 
 /** */
 void RunConfig::SetBeamEnergies(BeamEnergySet beamEnergies)
-{ //{{{
+{
    fBeamEnergies.clear();
 
    BeamEnergySetIter iBE = beamEnergies.begin();
@@ -403,4 +403,4 @@ void RunConfig::SetBeamEnergies(BeamEnergySet beamEnergies)
    {
       fBeamEnergies.insert(*iBE);
    }
-} //}}}
+}

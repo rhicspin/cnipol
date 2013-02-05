@@ -36,7 +36,7 @@ CnipolCalibHists::~CnipolCalibHists()
 
 
 void CnipolCalibHists::BookHists(std::string cutid)
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -109,12 +109,12 @@ void CnipolCalibHists::BookHists(std::string cutid)
       }
    }
 
-} //}}}
+}
 
 
 /** */
 void CnipolCalibHists::PostFill()
-{ //{{{
+{
    Calibrator *calibrator = gAsymRoot->GetCalibrator();
 
    //ChannelCalibMapIter iCh  = calibrator->fChannelCalibs.begin();
@@ -155,4 +155,4 @@ void CnipolCalibHists::PostFill()
    hChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
    hChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
 
-} //}}}
+}

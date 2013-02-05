@@ -47,7 +47,7 @@ AnaInfo::~AnaInfo()
 
 /** */
 void AnaInfo::Init()
-{ //{{{
+{
    const char* tmpEnv;
 
    tmpEnv = getenv("CNIPOL_DIR");
@@ -67,12 +67,12 @@ void AnaInfo::Init()
 
 
    fUserGroup = *gSystem->GetUserInfo();
-} //}}}
+}
 
 
 /** */
 void AnaInfo::MakeOutDir()
-{ //{{{
+{
    if (GetOutDir().size() > 200) {
       Error("MakeOutDir", "Output directory name is too long");
    }
@@ -83,7 +83,7 @@ void AnaInfo::MakeOutDir()
       Info("MakeOutDir", "Created directory %s", GetOutDir().c_str());
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
-} //}}}
+}
 
 
 string AnaInfo::GetSuffix()           const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
@@ -111,13 +111,13 @@ string AnaInfo::GetOutDir() const
 
 /** */
 void AnaInfo::ProcessOptions(int argc, char **argv)
-{ //{{{
-} //}}}
+{
+}
 
 
 /** */
 void AnaInfo::VerifyOptions()
-{ //{{{
+{
    // The run name must be specified
    if (fOutputName.empty()) {
       Error("VerifyOptions", "Output name must be specified");
@@ -141,20 +141,20 @@ void AnaInfo::VerifyOptions()
    //freopen(GetStdLogFileName().c_str(), "w", stderr);
    //setbuf(stdout, NULL);
    //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
-} //}}}
+}
 
 
 /** */
 void AnaInfo::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Print members:");
    PrintAsPhp();
-} //}}}
+}
 
 
 /** */
 void AnaInfo::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fOutputName']                  = \"%s\";\n", fOutputName.c_str());
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
    fprintf(f, "$rc['fSuffix']                      = \"%s\";\n", fSuffix.c_str());
@@ -188,12 +188,12 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    // Various printouts. Should be combined with Print()?
    //cout << "Max events to process:         " << gMaxEventsUser << endl;
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void AnaInfo::CopyResults()
-{ //{{{
+{
    if (!fFlagCopyResults) return;
 
    string cmd = "rsync -rlpgoDv " + GetOutDir() + " pc2pc-phy:/usr/local/polarim/root/";
@@ -208,12 +208,12 @@ void AnaInfo::CopyResults()
    //printf("%s", result);
 
    pclose(fp);
-} //}}}
+}
 
 
 /** */
 void AnaInfo::PrintUsage()
-{ //{{{
+{
    cout << endl;
    cout << "Options:" << endl;
    cout << " -h, -?                               : Print this help" << endl;
@@ -223,4 +223,4 @@ void AnaInfo::PrintUsage()
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
    cout << "     --update-db                      : Update run info in database" << endl;
    cout << endl;
-} //}}}
+}

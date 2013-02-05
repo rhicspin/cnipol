@@ -39,7 +39,7 @@ MAsymPmtHists::~MAsymPmtHists()
 
 /** */
 void MAsymPmtHists::BookHists(string sid)
-{ //{{{
+{
    fDir->cd();
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
@@ -47,12 +47,12 @@ void MAsymPmtHists::BookHists(string sid)
          BookHistsPolarimeter((EPolarimeterId) i, *iBE);
       }
    }
-} //}}}
+}
 
 
 /** */
 void MAsymPmtHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE)
-{ //{{{
+{
    char hName[256];
    //char hTitle[256];
    string  strPolId = RunConfig::AsString(polId);
@@ -82,12 +82,12 @@ void MAsymPmtHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beamE
    ((TH1*) o[hName])->SetTitle(";Measurement;S1 t_{0}, ns;");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grPmtS1T0VsMeas, "p");
 
-} //}}}
+}
 
 
 /** */
 void MAsymPmtHists::Fill(const EventConfig &rc)
-{ //{{{
+{
    Double_t runId            = rc.fMeasInfo->RUNID;
    //UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
@@ -131,14 +131,14 @@ void MAsymPmtHists::Fill(const EventConfig &rc)
    graphErrs->SetPoint(nPoints, runId, pmtS1T0);
    graphErrs->SetPointError(nPoints, 0, pmtS1T0Err);
 
-} //}}}
+}
 
 
 /** */
 void MAsymPmtHists::PostFill()
-{ //{{{
+{
 
-} //}}}
+}
 
 
 void MAsymPmtHists::UpdateLimits()

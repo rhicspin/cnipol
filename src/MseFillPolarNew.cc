@@ -37,7 +37,7 @@ MseFillPolarNewX::~MseFillPolarNewX()
 
 /** */
 void MseFillPolarNewX::Init()
-{ //{{{
+{
    fill            = 0;
    polarimeter_id  = -1;
    ring_id         = -1;
@@ -50,20 +50,20 @@ void MseFillPolarNewX::Init()
    polar_p0_err    = -1;
    polar_slope     = -1;
    polar_slope_err = -1;
-} //}}}
+}
 
 
 /** */
 void MseFillPolarNewX::Print(const Option_t* opt) const
-{ //{{{
+{
    gSystem->Info("MseFillPolarNewX::Print", "Print members:");
    PrintAsPhp();
-} //}}}
+}
 
 
 /** */
 void MseFillPolarNewX::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fill']                    = %d;\n", fill           );
    fprintf(f, "$rc['polarimeter_id']          = %d;\n", (int) polarimeter_id );
    fprintf(f, "$rc['ring_id']                 = %d;\n", (int) ring_id        );
@@ -77,22 +77,22 @@ void MseFillPolarNewX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['polar_slope']             = %f;\n", polar_slope    );
    fprintf(f, "$rc['polar_slope_err']         = %f;\n", polar_slope_err);
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void MseFillPolarNewX::SetValues(const AnaFillResult &afr)
-{ //{{{
+{
    fill        = afr.GetFillId();
    start_time  = mysqlpp::DateTime(afr.GetLumiOnTime());
    type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
-} //}}}
+}
 
 
 /** */
 void MseFillPolarNewX::SetValuesPC(const AnaFillResult &afr, EPolarimeterId polId)
-{ //{{{
+{
    SetValues(afr);
 
    polarimeter_id = polId;
@@ -111,12 +111,12 @@ void MseFillPolarNewX::SetValuesPC(const AnaFillResult &afr, EPolarimeterId polI
    ve = afr.GetPCPolarSlope(polId);
    polar_slope     = ve.first;
    polar_slope_err = ve.second;
-} //}}}
+}
 
 
 /** */
 void MseFillPolarNewX::SetValuesHJ(const AnaFillResult &afr, ERingId ringId)
-{ //{{{
+{
    SetValues(afr);
 
    polarimeter_id = kHJET;
@@ -125,4 +125,4 @@ void MseFillPolarNewX::SetValuesHJ(const AnaFillResult &afr, ERingId ringId)
    ValErrPair ve = afr.GetHJPolar(ringId);
    polar     = ve.first;
    polar_err = ve.second;
-} //}}}
+}

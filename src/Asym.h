@@ -468,7 +468,7 @@ void  ReadRampTiming(char *filename);
 
 /** */
 template<class T> std::string VecAsPhpArray(const std::vector<T>& v)
-{ //{{{
+{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -484,12 +484,12 @@ template<class T> std::string VecAsPhpArray(const std::vector<T>& v)
    ssChs << ")";
 
    return ssChs.str();
-} //}}}
+}
 
 
 /** */
 template<class T> std::string SetAsPhpArray(const std::set<T>& s)
-{ //{{{
+{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -505,12 +505,12 @@ template<class T> std::string SetAsPhpArray(const std::set<T>& s)
    ssChs << ")";
 
    return ssChs.str();
-} //}}}
+}
 
 
 /** */
 template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m)
-{ //{{{
+{
    std::stringstream ssChs("");
 
    ssChs << "array(";
@@ -527,18 +527,18 @@ template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m
    ssChs << ")";
 
    return ssChs.str();
-} //}}}
+}
 
 
 /** */
 //template<class P1, class P2> std::string PairAsPhpArray(const std::pair<P1, P2> &p)
-//{ //{{{
+//{
 //   std::stringstream ssChs("");
 //
 //   ssChs << "'" << p.first << "' => " << p.second;
 //
 //   return ssChs.str();
-//} //}}}
+//}
 
 std::string PairAsPhpArray(const ValErrPair &p);
 std::string FitResultAsPhpArray(const TFitResultPtr &fitres);

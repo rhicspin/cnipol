@@ -41,7 +41,7 @@ CnipolHists::~CnipolHists()
 
 /** */
 void CnipolHists::BookHists()
-{ //{{{
+{
    string shName;
    TH1*   hist;
 
@@ -297,12 +297,12 @@ void CnipolHists::BookHists()
       }
    }
 
-} //}}}
+}
 
 
 /** */
 void CnipolHists::PreFill()
-{ //{{{
+{
    char dName[256];
    char hName[256];
 
@@ -318,12 +318,12 @@ void CnipolHists::PreFill()
       sprintf(hName, "hSpinVsDelim_ch%02d", *iCh);
       ((TH1*) oc->o[hName])->SetBins(gNDelimeters, 0, gNDelimeters, N_SPIN_STATES, -1.5, 1.5);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    UChar_t chId  = ch->GetChannelId();
    //UChar_t detId = ch->GetDetectorId();
    UChar_t bId = ch->GetBunchId() + 1;
@@ -415,12 +415,12 @@ void CnipolHists::Fill(ChannelEvent *ch)
    //((TH2*)     o["hTotalEnergyVsEnergyA"])          ->Fill(ch->GetEnergyA(), kinEnergyEst);
 
    //((TH1*)     o["hTof"])                              ->Fill(tofEst);
-} //}}}
+}
 
 
 /** */
 void CnipolHists::FillDerived()
-{ //{{{
+{
    Info("FillDerived", "Starting...");
 
    // Fill derivative histograms
@@ -496,12 +496,12 @@ void CnipolHists::FillDerived()
 
    TProfile *hProfTmp = hLongiTimeDiffVsEnergyA->ProfileX();
    hLongiTimeDiffVsEnergyA_pfx->Add(hProfTmp);
-} //}}}
+}
 
 
 /** */
 void CnipolHists::PostFill()
-{ //{{{
+{
    Info("PostFill", "Starting...");
 
    // Fit energy slope with an exponential func
@@ -565,12 +565,12 @@ void CnipolHists::PostFill()
 
       delete fitfunc;
    }
-} //}}}
+}
 
 
 /** */
 void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t thumbs)
-{ //{{{
+{
    //Info("SaveAllAs", "executing...");
    DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
 
@@ -606,12 +606,12 @@ void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t
 		SaveHStackAs(c, hstack, subPath);
 		//DrawObjContainer::SaveHStackAs(c, hstack, subPath);
    }
-} //}}}
+}
 
 
 /** */
 void CnipolHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
-{ //{{{
+{
    for (Int_t ibx=0; ibx<=hRaw->GetNbinsX(); ++ibx) {
       for (Int_t iby=0; iby<=hRaw->GetNbinsY(); ++iby) {
 
@@ -626,4 +626,4 @@ void CnipolHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
          hKin->Fill(kinE, kinToF, bcont);
       }
    }
-} //}}}
+}

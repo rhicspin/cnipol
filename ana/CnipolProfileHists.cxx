@@ -45,7 +45,7 @@ CnipolProfileHists::~CnipolProfileHists()
 
 /** */
 void CnipolProfileHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    string      shName;
@@ -261,12 +261,12 @@ void CnipolProfileHists::BookHists()
    //hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    hist->GetYaxis()->SetRangeUser(-0.01, 0.01);
    o[shName] = hist;
-} //}}}
+}
 
 
 /** */
 void CnipolProfileHists::PreFill()
-{ //{{{
+{
    ((TH1*) o["hIntensProfile"])->SetBins(10*gNDelimeters, 0, gNDelimeters);
    ((TH1*) o["hAsymVsDelim4Det"])->SetBins(10*gNDelimeters, 0, gNDelimeters);
 
@@ -276,12 +276,12 @@ void CnipolProfileHists::PreFill()
 
    //Double_t ymax = ((TH1*) o["hIntensProfile"])->GetMaximum();
    //((TH1*) o["hIntensProfile"])->Scale(1./ymax);
-} //}}}
+}
 
 
 /** */
 void CnipolProfileHists::Fill(ChannelEvent *ch)
-{ //{{{
+{
    Double_t time = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
    //printf("time: %d, %d\n", time, ch->GetRevolutionId());
@@ -289,12 +289,12 @@ void CnipolProfileHists::Fill(ChannelEvent *ch)
    //((TH2F*) sd->o["hSpinVsDelim_ch"+sSi])->Fill(time, gSpinPattern[bId]);
 
    ((TH1*) o["hIntensProfile"])->Fill(time);
-} //}}}
+}
 
 
 /** */
 void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
-{ //{{{
+{
    Double_t *hd    = new Double_t[n+3](); // 2+1 seems one bin is lost compared to PC_TARGET histograms
    Double_t *hdErr = new Double_t[n+3](); // 2+1 seems one bin is lost compared to PC_TARGET histograms
 
@@ -330,12 +330,12 @@ void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
 
    delete [] hd;
    delete [] hdErr;
-} //}}}
+}
 
 
 /** */
 void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
-{ //{{{
+{
    Info("FillDerived(DrawObjContainer &oc)", "Called");
 
    CnipolAsymHists *hists_asym = (CnipolAsymHists*) oc.d.find("asym")->second;
@@ -375,12 +375,12 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
       hPolarProfile->SetBinError(ib, asymErr/gAnaMeasResult->A_N[1]);
    }
 
-} //}}}
+}
 
 
 /** */
 void CnipolProfileHists::PostFill()
-{ //{{{
+{
    Info("PostFill", "Called");
 
    //TH1* hIntensProfile = (TH1*) o["hIntensProfileScaler"];
@@ -743,12 +743,12 @@ void CnipolProfileHists::PostFill()
    // Set measurement type
    if (gMeasInfo->GetMeasType() == kMEASTYPE_UNKNOWN)
       gMeasInfo->SetMeasType( GuessMeasurementType() );
-} //}}}
+}
 
 
 /** */
 EMeasType CnipolProfileHists::GuessMeasurementType()
-{ //{{{
+{
    TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
    if (!hIntensProfile) {
@@ -778,12 +778,12 @@ EMeasType CnipolProfileHists::GuessMeasurementType()
    }
 
    return kMEASTYPE_SWEEP;
-} //}}}
+}
 
 
 /** */
 Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
-{ //{{{
+{
    Double_t x0 = x[0];
    Double_t sigma = par[0];
    Double_t mean1 = par[1];
@@ -794,4 +794,4 @@ Double_t CnipolProfileHists::ProfileFitFunc(Double_t *x, Double_t *par)
    Double_t g2 = norm*TMath::Gaus(x0, mean2, sigma);
 
    return g1 + g2;
-} //}}}
+}

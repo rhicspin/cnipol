@@ -13,9 +13,15 @@ extern char gSnakeCdevNames[2][30];
 extern char gStarRotatorCdevNames[2][30];
 extern char gPhenixRotatorCdevNames[2][30];
 
+extern char ourTargetCDEVName[20];
+
+extern bool gUseCdev;
+
 extern EMeasType gMeasType;   // measurement type must be provided
 
 extern wcmDataStruct         wcmData;
 extern RecordMachineParams   gRecordMachineParams;
+extern int recRing;
+
 
 #endif

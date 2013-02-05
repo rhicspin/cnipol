@@ -142,7 +142,7 @@ AsymRoot::~AsymRoot()
 
 // Description : Open Root File and define directory structure of histograms
 void AsymRoot::CreateRootFile(string filename)
-{ //{{{
+{
    printf("Creating ROOT file: %s\n", filename.c_str());
 
    fOutRootFile = new TFile(filename.c_str(), "RECREATE", "AsymRoot Histogram file");
@@ -308,12 +308,12 @@ void AsymRoot::CreateRootFile(string filename)
 
    // a temporary fix...
    //Kinema    = fHists->d["Kinema"].fDir;
-} //}}}
+}
 
 
 /** */
 void AsymRoot::CreateTrees()
-{ //{{{
+{
    if (fTreeFileId > 99) {
       Fatal("CreateTrees", "fTreeFileId is too big");
       exit(-1);
@@ -352,13 +352,13 @@ void AsymRoot::CreateTrees()
    }
 
    //fOutTreeFile->ls();
-} //}}}
+}
 
 
 /** Deprecated. */
 /*
 Bool_t AsymRoot::UseCalibFile(std::string cfname)
-{ //{{{
+{
    if (cfname == "" && gAsymAnaInfo->CMODE) {
 
       UpdateCalibrator();
@@ -392,7 +392,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
       } else return false;
 
    } else return false;
-} //}}}
+}
 */
 
 
@@ -403,7 +403,7 @@ Bool_t AsymRoot::UseCalibFile(std::string cfname)
  * constants from that file.
  */
 void AsymRoot::UpdateRunConfig()
-{ //{{{
+{
    AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    // if not calib
@@ -462,14 +462,14 @@ void AsymRoot::UpdateRunConfig()
    // normal data
    UpdateCalibrator();
 
-} //}}}
+}
 
 
 /**
  * Sets current event with data from raw file.
  */
 void AsymRoot::SetChannelEvent(processEvent &event)
-{ //{{{
+{
    fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
    fChannelEvent->fEventId.fBunchId      = event.bid;
    fChannelEvent->fEventId.fChannelId    = event.stN;
@@ -478,14 +478,14 @@ void AsymRoot::SetChannelEvent(processEvent &event)
    fChannelEvent->fChannel.fIntgrl       = event.intg;
    fChannelEvent->fChannel.fTdc          = event.tdc;
    fChannelEvent->fChannel.fTdcAMax      = event.tdcmax;
-} //}}}
+}
 
 
 /**
  * Sets current event with data from raw file.
  */
 void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
-{ //{{{
+{
    fChannelEvent->fEventId.fRevolutionId = delim*512 + at.rev*2 + at.rev0;
    fChannelEvent->fEventId.fBunchId      = at.b;
    fChannelEvent->fEventId.fChannelId    = chId;
@@ -494,12 +494,12 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
    fChannelEvent->fChannel.fIntgrl       = at.s;
    fChannelEvent->fChannel.fTdc          = at.t;
    fChannelEvent->fChannel.fTdcAMax      = at.tmax;
-} //}}}
+}
 
 
 /** */
 void AsymRoot::FillPassOne(ECut cut)
-{ //{{{
+{
    //Info("FillPassOne", "Called");
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
@@ -510,20 +510,20 @@ void AsymRoot::FillPassOne(ECut cut)
    for (hi=hb; hi!=he; hi++) {
       (*hi)->FillPassOne(fChannelEvent);
    }
-} //}}}
+}
 
 
 /** */
 void AsymRoot::FillDerivedPassOne()
-{ //{{{
+{
    Info("FillDerivedPassOne", "Called");
    fHists->FillDerivedPassOne();
-} //}}}
+}
 
 
 /** */
 void AsymRoot::PostFillPassOne()
-{ //{{{
+{
    Info("PostFillPassOne", "Called");
 
    //fHists->PostFillPassOne(fHists);
@@ -541,7 +541,7 @@ void AsymRoot::PostFillPassOne()
    //if (gAsymAnaInfo->HasPmtBit()) {
    //   ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
    //}
-} //}}}
+}
 
 
 /** */
@@ -553,7 +553,7 @@ void AsymRoot::PreFill()
 
 /** */
 void AsymRoot::Fill(ECut cut)
-{ //{{{
+{
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
    set<DrawObjContainer*>::iterator hi;
@@ -564,7 +564,7 @@ void AsymRoot::Fill(ECut cut)
       (*hi)->Fill(fChannelEvent);
    }
 
-} //}}}
+}
 
 
 /** */
@@ -589,7 +589,7 @@ void AsymRoot::FillDerived()
 
 /** */
 void AsymRoot::PostFill(MseMeasInfoX &run)
-{ //{{{
+{
    Info("PostFill", "Called");
 
    // One should be carefull here as the order of post processing is important.
@@ -612,7 +612,7 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
    run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
    run.phase_error         = gAnaMeasResult->sinphi[0].dPhi[1];
 
-} //}}}
+}
 
 
 /** */
@@ -655,7 +655,7 @@ void AsymRoot::FillRunHists()
  *
  */
 void AsymRoot::AddChannelEvent()
-{ //{{{
+{
    if (gAsymAnaInfo->fSaveTrees.test(0))
       fRawEventTree->Fill();
 
@@ -695,14 +695,14 @@ void AsymRoot::AddChannelEvent()
          CreateTrees();
       }
    }
-} //}}}
+}
 
 
 /**
  *
  */
 void AsymRoot::WriteTreeFile()
-{ //{{{
+{
    fOutTreeFile->cd();
 
    // Write run configuration object
@@ -728,12 +728,12 @@ void AsymRoot::WriteTreeFile()
       fAnaEventTree->Delete();
       //delete fAnaEventTree;
    }
-} //}}}
+}
 
 
 /** */
 void AsymRoot::PrintEventMap()
-{ //{{{
+{
    ChannelEventSet::const_iterator mi;
    ChannelEventSet::const_iterator mb = fChannelEvents.begin();
    ChannelEventSet::const_iterator me = fChannelEvents.end();
@@ -742,7 +742,7 @@ void AsymRoot::PrintEventMap()
       //mi->first.Print();
       mi->Print();
    }
-} //}}}
+}
 
 
 /** */
@@ -754,7 +754,7 @@ void AsymRoot::PrintChannelEvent()
 
 /** */
 void AsymRoot::UpdateCalibrator()
-{ //{{{
+{
    AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    if ( anaInfo->HasAlphaBit() && !anaInfo->HasCalibBit() ) {
@@ -870,37 +870,37 @@ void AsymRoot::UpdateCalibrator()
       exit(-1);
    }
 
-} //}}}
+}
 
 
 /** */
 Calibrator* AsymRoot::GetCalibrator()
-{ //{{{
+{
    return fEventConfig->GetCalibrator();
-} //}}}
+}
 
 
 /** */
 void AsymRoot::Calibrate()
-{ //{{{
+{
    //fEventConfig->Print();
    //fEventConfig->fCalibrator->Print();
    //exit(0);
 
    fEventConfig->fCalibrator->Calibrate(fHists);
-} //}}}
+}
 
 
 /** */
 void AsymRoot::CalibrateFast()
-{ //{{{
+{
    fEventConfig->fCalibrator->CalibrateFast(fHists);
-} //}}}
+}
 
 
 /** */
 void AsymRoot::SaveChannelTrees()
-{ //{{{
+{
    if (!gAsymAnaInfo->fSaveTrees.test(1)) return;
 
    if (fChannelEvents.size() <= 0) {
@@ -917,12 +917,12 @@ void AsymRoot::SaveChannelTrees()
       //mi->fChannel.Print();
       fChannelEventTrees[mi->fEventId.fChannelId]->Fill();
    }
-} //}}}
+}
 
 
 /** */
 void AsymRoot::SaveEventTree()
-{ //{{{
+{
    if (!gAsymAnaInfo->fSaveTrees.test(2)) return;
 
    if (fChannelEvents.size() <= 0) {
@@ -962,13 +962,13 @@ void AsymRoot::SaveEventTree()
          fAnaEvent->fChannels.clear();
       }
    }
-} //}}}
+}
 
 
 // Deprecated.
 // Description : Book AsymRoot Histograms
 void AsymRoot::BookHists()
-{ //{{{
+{
    Char_t hname[100], htitle[100];
 
    fOutRootFile->cd();
@@ -1069,13 +1069,13 @@ void AsymRoot::BookHists()
    //asym_vs_bunch_y45    = new TH2F();
    //asym_sinphi_fit      = new TH2F();
    //scan_asym_sinphi_fit = new TH2F();
-} //}}}
+}
 
 
 // Description : Book ROOT Functions and Histograms using Feedback infomations
 //             : This routine shuould be called after Feedback operation
 void AsymRoot::BookHists2(StructFeedBack &feedback)
-{ //{{{
+{
    fOutRootFile->cd();
    Kinema->cd();
 
@@ -1130,13 +1130,13 @@ void AsymRoot::BookHists2(StructFeedBack &feedback)
       energy_cut_h[i] ->SetLineColor(Color);
       energy_cut_h[i] ->SetLineWidth(Width);
    }
-} //}}}
+}
 
 
 // Deprecated
 // Description : Delete Unnecessary Histograms
 void AsymRoot::DeleteHistogram()
-{ //{{{
+{
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
@@ -1146,12 +1146,12 @@ void AsymRoot::DeleteHistogram()
      mass_nocut[i]->Delete();
      mass_yescut[i]->Delete();
   }
-} //}}}
+}
 
 
 // Description : Write out objects in memory and dump in fOutRootFile before closing it
 void AsymRoot::Finalize()
-{ //{{{
+{
    //fOutRootFile->cd();
    //Kinema->cd();
 
@@ -1189,12 +1189,12 @@ void AsymRoot::Finalize()
       fOutTreeFile->Close();
       fOutTreeFile->Delete();
    }
-} //}}}
+}
 
 
 /** */
 void AsymRoot::SaveAs(string pattern, string dir)
-{ //{{{
+{
    if (!gAsymAnaInfo->HasAlphaBit()) {
       gStyle->SetMarkerStyle(kFullDotLarge);
       gStyle->SetMarkerSize(1);
@@ -1212,7 +1212,7 @@ void AsymRoot::SaveAs(string pattern, string dir)
       TCanvas canvas("canvas", "canvas", 200, 100);
       fHists->SaveAllAs(canvas, pattern, dir.c_str(), kTRUE);
    }
-} //}}}
+}
 
 
 /** */
@@ -1221,7 +1221,7 @@ EventConfig* AsymRoot::GetMeasConfig() { return fEventConfig; }
 
 /** */
 void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar)
-{ //{{{
+{
    if (!fEventConfig) {
       Error("GetMeasConfigs", "fEventConfig is not defined");
       ri = 0; ai = 0; ar = 0;
@@ -1231,4 +1231,4 @@ void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&a
    ri = fEventConfig->GetMeasInfo();
    ai = fEventConfig->GetAnaInfo();
    ar = fEventConfig->GetAnaMeasResult();
-} //}}}
+}

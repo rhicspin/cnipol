@@ -32,7 +32,7 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
    fAvrgPCProfRUnWs(), fSystUvsDPolar(), fSystJvsCPolar(), fSystProfPolar()
-{ //{{{
+{
    // Initialize averages with invalid values
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
@@ -60,7 +60,7 @@ AnaGlobResult::AnaGlobResult() : TObject(),
       fNormJetCarbonByTarget2[targetUId] = valErrPair;
       fAvrgPCProfRUnWs[polId][tgtOrient] = valErrPair;
    }
-} //}}}
+}
 
 
 /** */
@@ -69,7 +69,7 @@ AnaGlobResult::~AnaGlobResult() { }
 
 /** */
 void AnaGlobResult::Print(const Option_t* opt) const
-{ //{{{
+{
    Info("Print", "Print members:");
 
    const char *l = strstr( opt, "all");
@@ -177,12 +177,12 @@ void AnaGlobResult::Print(const Option_t* opt) const
    }
 
    printf("\n");
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::PrintAsPhp(FILE *f) const
-{ //{{{
+{
    fprintf(f, "$rc['fMinFill']      = %d;\n", fMinFill);
    fprintf(f, "$rc['fMaxFill']      = %d;\n", fMaxFill);
    fprintf(f, "$rc['fMinTime']      = %ld;\n", fMinTime);
@@ -214,18 +214,18 @@ void AnaGlobResult::PrintAsPhp(FILE *f) const
    }
 
    fprintf(f, "\n");
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::AddMeasResult(AnaMeasResult &result)
-{ //{{{
-} //}}}
+{
+}
 
 
 /** */
 void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
-{ //{{{
+{
    UInt_t fillId = mm.fMeasInfo->GetFillId();
 
    UpdMinMaxFill(fillId);
@@ -248,12 +248,12 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
       //oc->Print();
       anaFillResult->AddGraphMeasResult(mm, *ocIn);
    }
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::AddHJMeasResult()
-{ //{{{
+{
    // Read jet results from text files and save them to fill result containers
    //TGraphErrors* grYel = new TGraphErrors((fPathExternResults + fFileNameYelHjet).c_str());
    //TGraphErrors* grBlu = new TGraphErrors((fPathExternResults + fFileNameBluHjet).c_str());
@@ -319,12 +319,12 @@ void AnaGlobResult::AddHJMeasResult()
    }
 
    file.close();
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::Process(DrawObjContainer *ocOut)
-{ //{{{
+{
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill)
@@ -353,12 +353,12 @@ void AnaGlobResult::Process(DrawObjContainer *ocOut)
 
    CalcAvrgPolProfR();
    CalcDependencies();
-} //}}}
+}
 
 
 /** */
 ValErrPair AnaGlobResult::GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t norm)
-{ //{{{
+{
    ValErrPair result(0, -1);
 
    AnaFillResultMapIter iFill = fAnaFillResults.find(fillId);
@@ -368,12 +368,12 @@ ValErrPair AnaGlobResult::GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t nor
    AnaFillResult *fillRslt = &iFill->second;
 
    return fillRslt->GetBeamPolar(ringId);
-} //}}}
+}
 
 
 /** */
 AnaFillResult* AnaGlobResult::GetAnaFillResult(UInt_t fillId)
-{ //{{{
+{
    AnaFillResultMapIter iFillRes = fAnaFillResults.find(fillId);
 
    if ( iFillRes == fAnaFillResults.end() ) {
@@ -390,43 +390,43 @@ AnaFillResult* AnaGlobResult::GetAnaFillResult(UInt_t fillId)
       // add AnaRunResult to existing AnaFillResult
       return &iFillRes->second;
    }
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::Configure(MAsymAnaInfo &mainfo)
-{ //{{{
+{
    fPathExternResults = mainfo.GetExternInfoPath();
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::UpdMinMaxFill(UInt_t fillId)
-{ //{{{
+{
    if (fillId < fMinFill ) fMinFill = fillId;
    if (fillId > fMaxFill ) fMaxFill = fillId;
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::UpdMinMaxTime(time_t time)
-{ //{{{
+{
    if (time < fMinTime ) fMinTime = time;
    if (time > fMaxTime ) fMaxTime = time;
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::AdjustMinMaxFill()
-{ //{{{
+{
    fMinFill -= 0.5;
    fMaxFill += 0.5;
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::CalcPolarNorm()
-{ //{{{
+{
    Info("CalcPolarNorm()", "Called");
 
    // Create containers for polarization where both hjet and pcarbon results exist
@@ -521,12 +521,12 @@ void AnaGlobResult::CalcPolarNorm()
          fNormProfPolar[*iPolId]  = utils::CalcDivision(avrgProfPolar, avrgPolar);
       }
    }
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::CalcAvrgPolProfR()
-{ //{{{
+{
    Info("CalcAvrgPolProfR()", "Called");
 
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
@@ -559,12 +559,12 @@ void AnaGlobResult::CalcAvrgPolProfR()
       //printf("%d: %s: %16.7f +/- %16.7f   %16.7f +/- %16.7f\n",
       //   fillId, sPolId.c_str(), polarCrb.first, polarCrb.second, polarJet.first, polarJet.second);
    }
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::CalcDependencies()
-{ //{{{
+{
    Info("CalcDependencies()", "Called");
 
    // Create sets with valid syst ratio
@@ -651,12 +651,12 @@ void AnaGlobResult::CalcDependencies()
       brf_Prof.Solve();
       fSystProfPolar[polId].first = brf_Prof.Root();
    }
-} //}}}
+}
 
 
 /** */
 void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
-{ //{{{
+{
    if (!asymDbSql) {
       Error("UpdateInsertDb", "Cannot connect to MySQL DB");
       return;
@@ -791,28 +791,28 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
    }
 
    asymDbSql->CloseConnection();
-} //}}}
+}
 
 
 /** */
 ValErrPair AnaGlobResult::GetNormJetCarbon(EPolarimeterId polId)
-{ //{{{
+{
    ValErrPair norm(1, -1); // default values
 
    if ( fNormJetCarbon2.find(polId) != fNormJetCarbon2.end() )
       norm = fNormJetCarbon2[polId];
 
    return norm;
-} //}}}
+}
 
 
 /** */
 ValErrPair AnaGlobResult::GetNormProfPolar(EPolarimeterId polId)
-{ //{{{
+{
    ValErrPair norm(1, -1); // default values
 
    if ( fNormProfPolar2.find(polId) != fNormProfPolar2.end() )
       norm = fNormProfPolar2[polId];
 
    return norm;
-} //}}}
+}

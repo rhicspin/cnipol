@@ -30,7 +30,7 @@ CnipolScalerHists::~CnipolScalerHists()
 
 /** */
 void CnipolScalerHists::BookHists()
-{ //{{{
+{
    fDir->cd();
 
    char hName[256];
@@ -70,14 +70,14 @@ void CnipolScalerHists::BookHists()
       hist->SetTitle("; Kinematic Energy, keV; Time, ns;");
       o[hName] = hist;
    }
-} //}}}
+}
 
 
 /**
  * We assume 1536 entries in the hData arrays.
  */
 void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId)
-{ //{{{
+{
    string sCh("  ");
    char   hName[256];
 
@@ -115,4 +115,4 @@ void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId)
    TH1* hKinEnergyAllChannels = (TH1*) o[hName];
    hKinEnergyAllChannels->Add(hTmpPtr);
 
-} //}}}
+}
