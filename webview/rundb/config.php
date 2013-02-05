@@ -10,17 +10,19 @@ define("LOG_DIR",  "/usr/local/polarim/log");
 $RUN_PERIOD_BY_FILL = array (
    9  => array( "start" => 10000, "end" => 11100 ),
    11 => array( "start" => 14000, "end" => 15500 ),
-   12 => array( "start" => 16000, "end" => 16800 )
+   12 => array( "start" => 16000, "end" => 16800 ),
+   13 => array( "start" => 18000, "end" => 19000 )
 );
 
 // Approximate dates
 $RUN_PERIOD_BY_DATE = array (
    9  => array( "start" => "2009-01-01 00:00:00", "end" => "2009-07-10 00:00:00" ),
    11 => array( "start" => "2010-12-01 00:00:00", "end" => "2011-04-20 00:00:00" ),
-   12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" )
+   12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" ),
+   13 => array( "start" => "2013-01-01 00:00:00", "end" => "2012-08-01 00:00:00" )
 );
 
-$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12");
+$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13");
 $POLARIMETER_ID    = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
 $HJ_POLARIMETER_ID = 10;
 $RHIC_RING         = array("1" => "Blue", "2" => "Yellow");

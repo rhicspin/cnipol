@@ -8,6 +8,7 @@ class RunSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
+	var $defaultRun = 12;
 
    static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
 
@@ -54,7 +55,7 @@ class RunSelector {
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
       } else {
-         $rp = 12; // run 12 is default
+         $rp = $this->defaultRun; // run 12 is default
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       }
 
@@ -114,7 +115,7 @@ class RunSelector {
 
 
    function PrintForm()
-   { //{{{
+   {
       global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
 
       // Create a table with the necessary header informations
@@ -128,7 +129,7 @@ class RunSelector {
             <tr>
               <td colspan=4 class=padding2><b>Run period:</b>\n";
 
-      $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
+      $this->HtmlSelectField($RUN_PERIOD, "rp", $this->defaultRun);
 
       $runName = isset($_GET['rn']) ? $_GET['rn'] : "";
 
@@ -162,11 +163,11 @@ class RunSelector {
       echo "</table>\n";
       echo "</div>\n";
       echo "</form>\n";
-   } //}}}
+   }
 
 
    function HtmlSelectField($options, $v="", $default=null)
-   { //{{{
+   {
       $selected      = "";
 
       $html  = "<select name='$v'>\n";
@@ -191,5 +192,5 @@ class RunSelector {
       $html .= "</select>\n";
 
       print $html;
-   } //}}}
+   }
 }
