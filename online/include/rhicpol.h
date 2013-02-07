@@ -119,7 +119,7 @@ typedef struct {
     double    beamEnergyM;
     long      fillNumberM;
     short int measuredFillPatternM[360];
-    float     bunchLengthS;
+    float     bunchLengthS;                  // half bunch length?
     float     synchrotronTuneS;
     short int polarizationFillPatternS[360];
 } beamDataStruct;
