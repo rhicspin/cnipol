@@ -87,6 +87,9 @@ public:
    int                         MaxRevolution;
    char                        fTargetOrient;
    char                        fTargetId;
+   UInt_t                      fTargetVelocity;         // from CDEV
+   UInt_t                      fProfileStartPosition;   // from CDEV
+   UInt_t                      fProfileEndPosition;     // from CDEV
    //int                         ActiveDetector[N_DETECTORS];
    //int                         ActiveStrip[N_SILICON_CHANNELS];
    //int                         NDisableStrip;

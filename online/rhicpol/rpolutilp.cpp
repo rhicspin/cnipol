@@ -354,21 +354,26 @@ void getAdoInfo()
    if (!DEVSEND(spec, "get fillNumberM", NULL, &data, LogFile, irc))
        data.get("value", &beamData.fillNumberM);
 
-   // buckets
-   cdevDevice &buckets = cdevDevice::attachRef(bucketsCDEVName[ringId]);
+   // buckets Cdev
+   cdevDevice &bucketsCdev = cdevDevice::attachRef(bucketsCDEVName[ringId]);
 
-   if (!DEVSEND(buckets, "get measuredFillPatternM", NULL, &data, LogFile, irc))
-   //    if(!DEVSEND(buckets, "get intendedFillPatternS", NULL, &data, LogFile, irc))   -- uncomment for tests
-       data.get("value", beamData.measuredFillPatternM);
+   //if(!DEVSEND(bucketsCdev, "get intendedFillPatternS", NULL, &data, LogFile, irc))   -- uncomment for tests
+   if (!DEVSEND(bucketsCdev, "get measuredFillPatternM", NULL, &data, LogFile, irc))
+      data.get("value", beamData.measuredFillPatternM);
 
-   if (!DEVSEND(buckets, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
-       data.get("value", beamData.polarizationFillPatternS);
+   if (!DEVSEND(bucketsCdev, "get polarizationFillPatternS", NULL, &data, LogFile, irc)) {
+      data.get("value", beamData.polarizationFillPatternS);
 
-       // It looks they changed type to char ...
-       for (int i=0; i<360; i++) {
-          if (beamData.polarizationFillPatternS[i] > 127) beamData.polarizationFillPatternS[i] -= 256;
-       }
+      // It looks they changed type to char ...
+      for (int i=0; i<360; i++) {
+         if (beamData.polarizationFillPatternS[i] > 127) beamData.polarizationFillPatternS[i] -= 256;
+      }
    }
+
+   if (!DEVSEND(bucketsCdev, "get bunchLengthS", NULL, &data, LogFile, irc))
+      data.get("value", &beamData.bunchLengthS);
+
+   fprintf(LogFile, "RHICPOL-INFO : beamData.bunchLengthS = %10.4f\n", beamData.bunchLengthS);
 
    // wcm
    cdevDevice &wcm = cdevDevice::attachRef(wcmCDEVName[ringId]);

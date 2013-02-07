@@ -761,7 +761,6 @@ void CreateLookup(float tshift)
 /** */
 int polWrite(recordHeaderStruct *header, long *data)
 {
-   int    irc;
    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
    if (OutFile == NULL) return 2;
@@ -770,7 +769,7 @@ int polWrite(recordHeaderStruct *header, long *data)
    pthread_mutex_lock(&mutex);
    header->num = dataNum++;
 
-   irc = fwrite(header, sizeof(recordHeaderStruct), 1, OutFile);
+   int irc = fwrite(header, sizeof(recordHeaderStruct), 1, OutFile);
 
    if (irc != 1) {
       fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (header) rec=%8.8lX: %s.\n",
@@ -782,7 +781,8 @@ int polWrite(recordHeaderStruct *header, long *data)
       return 1;
    }
 
-   if (data != NULL && header->len != sizeof(recordHeaderStruct)) {
+   if (data != NULL && header->len != sizeof(recordHeaderStruct))
+   {
       irc = fwrite(data, header->len - sizeof(recordHeaderStruct), 1, OutFile);
       if (irc != 1) {
          fprintf(LogFile, "RHICPOL-FATAL : Writing output file error (body) rec=%8.8lX: %s.\n",
@@ -2278,7 +2278,7 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
       if (recRing & REC_YELLOW) header.type |= REC_BLUE;
       header.len = sizeof(recordWcmAdoStruct);
       header.timestamp.time = time(NULL);
-      polWrite(&header, (long *)&wcmOtherData);
+      polWrite(&header, (long*) &wcmOtherData);
    }
 
    return 0;
