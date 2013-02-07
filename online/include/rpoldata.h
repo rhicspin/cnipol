@@ -16,6 +16,7 @@
 #define REC_TAGADO          0x00000102      // Target ADO record
 #define REC_BEAMADO         0x00000103      // Beam ADO record
 #define REC_WCMADO          0x00000104      // Wall current monitor ADO record
+#define REC_WCM_NEW         0x00000109      // Wall current monitor ADO record
 #define REC_HJPOSADO        0x00000105      // Beam position and HJET position ADO record
 #define REC_TAGMOVEADO      0x00000106      // Target movement history ADO record
 #define REC_HJCARBT         0x00000107      // Carbon polarimeter target status in JET data runs
@@ -88,13 +89,13 @@ typedef struct {
     EMeasType          type;
 } recordMeasTypeStruct;
 
-typedef struct {
+struct RecordMachineParams {
     recordHeaderStruct header;
     Int_t   fCavity200MHzVoltage;
     Float_t fSnakeCurrents[N_BEAMS];
     Float_t fStarRotatorCurrents[N_BEAMS];
     Float_t fPhenixRotatorCurrents[N_BEAMS];
-} RecordMachineParams;
+};
 
 typedef struct {
     recordHeaderStruct header;
@@ -149,6 +150,31 @@ typedef struct {
     recordHeaderStruct header;
     wcmDataStruct data;
 } recordWcmAdoStruct;
+
+struct RecordWcm
+{
+   recordHeaderStruct header;
+   Float_t  fFillDataM[360];      // like in wcmDataStruct
+   Float_t  fWcmBeamM;            // like in wcmDataStruct
+   Double_t fBunchDataM[360];
+   Double_t fBunchLengthM;
+   Double_t fProfileHeaderM[32];
+   //UChar_t* fProfileDataM;
+
+	RecordWcm() : fFillDataM(), fWcmBeamM(0), fBunchDataM(), fBunchLengthM(0),
+      fProfileHeaderM()//, fProfileDataM(0)
+   {
+      memset(fFillDataM,      0, 360*sizeof(Float_t));
+      memset(fBunchDataM,     0, 360*sizeof(Double_t));
+      memset(fProfileHeaderM, 0, 32 *sizeof(Double_t));
+   }
+
+   void Print()
+   {
+      for (short i=0; i<360; i++) printf("fBunchDataM[%02d]: %8.5f\n", i, fBunchDataM[i]);
+      for (short i=0; i<32;  i++) printf("fProfileHeaderM[%02d]: %8.5f\n", i, fProfileHeaderM[i]);
+   }
+};
 
 typedef struct {
     recordHeaderStruct header;

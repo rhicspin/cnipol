@@ -9,7 +9,6 @@ extern FILE *LogFile;
 extern beamDataStruct beamData;
 extern beamDataStruct beamOtherData;
 extern polDataStruct polData;
-extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;                 // V124 settings
 extern int iDebug;
@@ -378,11 +377,15 @@ void getAdoInfo()
    // wcm
    cdevDevice &wcm = cdevDevice::attachRef(wcmCDEVName[ringId]);
 
-   if (!DEVSEND(wcm, "get fillDataM", NULL, &data, LogFile, irc))
-      data.get("value", wcmData.fillDataM);
+   if (!DEVSEND(wcm, "get fillDataM", NULL, &data, LogFile, irc)) data.get("value", wcmData.fillDataM);
+   if (!DEVSEND(wcm, "get wcmBeamM",  NULL, &data, LogFile, irc)) data.get("value", &wcmData.wcmBeamM);
 
-   if (!DEVSEND(wcm, "get wcmBeamM", NULL, &data, LogFile, irc))
-      data.get("value", &wcmData.wcmBeamM);
+   if (!DEVSEND(wcm, "get fillDataM",      NULL, &data, LogFile, irc)) data.get("value",  gRecordWcm.fFillDataM);
+   if (!DEVSEND(wcm, "get wcmBeamM",       NULL, &data, LogFile, irc)) data.get("value", &gRecordWcm.fWcmBeamM);
+   if (!DEVSEND(wcm, "get bunchDataM",     NULL, &data, LogFile, irc)) data.get("value",  gRecordWcm.fBunchDataM);
+   if (!DEVSEND(wcm, "get bunchLengthM",   NULL, &data, LogFile, irc)) data.get("value", &gRecordWcm.fBunchLengthM);
+   if (!DEVSEND(wcm, "get profileHeaderM", NULL, &data, LogFile, irc)) data.get("value",  gRecordWcm.fProfileHeaderM);
+
 
    // the other ring for jet mode
    if (recRing & REC_JET)

@@ -12,15 +12,15 @@ class wcm {
                 {
                 fillDataM Polar {server=PolarServer};
                 fillDataM:valueAndTime Polar {server=PolarServer};
-                bunchDataM Polar {server=PolarServer};
-                bunchDataM:valueAndTime Polar {server=PolarServer};
-                bunchLengthM Polar {server=PolarServer};
-                bunchLengthM:valueAndTime Polar {server=PolarServer};
-                wcmBeamM Polar {server=PolarServer};            /* Bunched beam intencity */
+                wcmBeamM Polar {server=PolarServer};                /* Bunched beam intencity */
                 wcmBeamM:valueAndTime Polar {server=PolarServer};
-                profileHeaderM Polar {server=PolarServer};
+                bunchDataM Polar {server=PolarServer};              /* bunch length in ns */
+                bunchDataM:valueAndTime Polar {server=PolarServer};
+                bunchLengthM Polar {server=PolarServer};            /* average bunch length in ns */
+                bunchLengthM:valueAndTime Polar {server=PolarServer};
+                profileHeaderM Polar {server=PolarServer};          /* longitudinal bunch profile data description */
                 profileHeaderM:valueAndTime Polar {server=PolarServer};
-                profileDataM Polar {server=PolarServer};
+                profileDataM Polar {server=PolarServer};            /* longitudinal bunch profile data */
                 profileDataM:valueAndTime Polar {server=PolarServer};
                 }
         }

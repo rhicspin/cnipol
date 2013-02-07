@@ -20,6 +20,8 @@ extern bool gUseCdev;
 extern EMeasType gMeasType;   // measurement type must be provided
 
 extern wcmDataStruct         wcmData;
+extern wcmDataStruct         wcmOtherData;
+extern RecordWcm             gRecordWcm;
 extern RecordMachineParams   gRecordMachineParams;
 extern int recRing;
 
