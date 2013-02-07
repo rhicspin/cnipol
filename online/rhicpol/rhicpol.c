@@ -42,7 +42,6 @@ V124Struct            V124;                             // V124 settings
 polDataStruct         polData;                          // polarization structure
 configRhicDataStruct  Conf;                             // CAMAC configuration
 SiChanStruct         *SiConf = NULL;                    // silicon channels
-wcmDataStruct         wcmOtherData;                     // we need both beams for hjet
 jetPositionStruct     jetPosition;                      // Jet position from CDEV
 
 

@@ -135,19 +135,19 @@ void readandfill_(int* subrun)
 {
 //      buffer to read the next record - static due to its size
    static union {
-      recordHeaderStruct   header;
-      recordBeginStruct    begin;
-      recordSubrunStruct   subrun;
-      recordDataStruct     data;
+      recordHeaderStruct     header;
+      recordBeginStruct      begin;
+      recordSubrunStruct     subrun;
+      recordDataStruct       data;
       recordWFDV8ArrayStruct wfd;
-      recordEndStruct      end;
+      recordEndStruct        end;
       recordConfigRhicStruct cfg;
-      recordPolAdoStruct   pol;
-      recordBeamAdoStruct  beam;
-      recordTagAdoStruct   tag;
-      recordScalersStruct  scal;
+      recordPolAdoStruct     pol;
+      recordBeamAdoStruct    beam;
+      recordTagAdoStruct     tag;
+      recordScalersStruct    scal;
       recordHJetSwitchStruct jet;
-      char                 buffer[BSIZE*sizeof(int)];
+      char                   buffer[BSIZE*sizeof(int)];
    } rec;
 //      data structure pointers
    recordReadATStruct * ATPtr;

@@ -25,5 +25,7 @@ bool gUseCdev       = true;                  // don't take anything from CDEV
 EMeasType gMeasType = kMEASTYPE_UNDEF;   // measurement type must be provided
 
 wcmDataStruct         wcmData;               // Wall current monitor data from CDEV
+wcmDataStruct         wcmOtherData;          // we need both beams for hjet
+RecordWcm             gRecordWcm;
 RecordMachineParams   gRecordMachineParams;
 int                   recRing = 0;           // data mask with ring information etc.

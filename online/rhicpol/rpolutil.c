@@ -23,7 +23,6 @@ extern FILE *LogFile;
 extern beamDataStruct beamData;
 extern beamDataStruct beamOtherData;
 extern polDataStruct polData;
-extern wcmDataStruct wcmOtherData;
 extern jetPositionStruct jetPosition;
 extern V124Struct V124;                 // V124 settings
 extern int iRamp;
@@ -2210,7 +2209,7 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    // Save config record
    recordHeaderStruct header;
 
-   void *buf = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
+   void *buf   = malloc(sizeof(configRhicDataStruct) + sizeof(SiChanStruct) * (Conf.NumChannels - 1));
    header.type = REC_RHIC_CONF | recRing;
    header.len  = sizeof(recordHeaderStruct) + sizeof(configRhicDataStruct) +
                  sizeof(SiChanStruct) * (Conf.NumChannels - 1);
@@ -2262,6 +2261,13 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    header.len            = sizeof(recordWcmAdoStruct);
    header.timestamp.time = time(NULL);
    polWrite(&header, (long*) &wcmData);
+
+   // Save new WCM data
+   gRecordWcm.header.type = REC_WCM_NEW | recRing;
+   gRecordWcm.header.len  = sizeof(RecordWcm);
+   gRecordWcm.header.timestamp.time = time(NULL);
+   gRecordWcm.Print();
+   polWrite(&gRecordWcm.header, (long*) gRecordWcm.fFillDataM);
 
    // Save V124 settings if any... No use when no ADO
    if (V124.flags) {
