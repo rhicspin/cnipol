@@ -23,6 +23,7 @@ public:
    Bool_t     fIsFilled;
    Bool_t     fIsUserDisabled;
    ESpinState fBunchSpin;
+   Float_t    fLength;         // in ns
 
 public:
 
@@ -34,9 +35,11 @@ public:
    Bool_t     GetUserDisabled() const;
    ESpinState GetBunchSpin() const;
    ESpinState GetSpin() const;
+   Float_t    GetLength() const;
    void       SetFilled(Bool_t yesno);
    void       SetUserDisabled(Bool_t yesno);
    void       SetBunchSpin(ESpinState ss);
+   void       SetLength(Float_t len);
    void       PrintAsPhp(FILE *f=stdout) const;
 
    friend ostream& operator<<(ostream &os, const BeamBunch &bb);

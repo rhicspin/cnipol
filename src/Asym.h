@@ -163,17 +163,6 @@ std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
 //TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
 
 
-class MachineParams : public TObject, public RecordMachineParams
-{
-public:
-
-   MachineParams();
-
-   MachineParams & operator=(const RecordMachineParams &rec);
-
-   ClassDef(MachineParams, 1)
-};
-
 
 // whole info for one event
 struct processEvent {

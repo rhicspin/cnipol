@@ -260,6 +260,18 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          continue;
       }
 
+      // REC_WCM_NEW
+      if ((mHeader->type & REC_TYPEMASK) == REC_WCM_NEW)
+      {
+         printf("Reading REC_WCM_NEW record... size = %ld\n", mHeader->len);
+
+         RecordWcm *rec = (RecordWcm*) mHeader;
+         ProcessRecord( (RecordWcm &) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
       // REC_WFDV8SCAL
       if ((mHeader->type & REC_TYPEMASK) == REC_WFDV8SCAL &&
           fSeenRecords.find(REC_WFDV8SCAL) == fSeenRecords.end())
@@ -1276,6 +1288,19 @@ void ProcessRecord(const recordWcmAdoStruct &rec)
    gMeasInfo->fWallCurMonAve = gMeasInfo->fWallCurMonSum / gMeasInfo->fWallCurMon.size();
 
    gAsymRoot->FillRunHists();
+}
+
+
+/** */
+void ProcessRecord(const RecordWcm &rec)
+{
+   for (int bid=1; bid<=N_BUNCHES; bid++)
+   {
+      BeamBunchIter  ibb = gMeasInfo->fBeamBunches.find(bid);
+      BeamBunch     &bb  = ibb->second;
+
+      bb.SetLength((Float_t) rec.fBunchDataM[(bid-1)*3]);
+   }
 }
 
 
