@@ -25,6 +25,7 @@
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
+#include "AsymOnline.h"
 #include "BeamBunch.h"
 #include "RunConfig.h"
 #include "DbEntry.h"
@@ -45,7 +46,7 @@ class MeasInfo : public TObject
 protected:
 
    Float_t             fBeamEnergy;
-   MachineParams       fMachineParams;
+   OnlineMachineParams fMachineParams;
    Short_t             fExpectedGlobalTdcOffset;
    Float_t             fExpectedGlobalTimeOffset;
    std::string         fRunName;

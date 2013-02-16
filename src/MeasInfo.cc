@@ -21,7 +21,7 @@ MeasInfo::MeasInfo() : TObject(),
    fMachineParams(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
-   fRunName(100, ' '),
+   fRunName(),
    fProtoCutSlope(0), fProtoCutOffset(0), fProtoCutWidth(20),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
@@ -320,7 +320,8 @@ void MeasInfo::PrintConfig()
 
 /** */
 string MeasInfo::GetRunName() const { return fRunName; }
-void   MeasInfo::SetRunName(std::string runName) {
+
+void   MeasInfo::SetRunName(string runName) {
    fRunName = runName;
    // Set to 0 when "RunID" contains alphabetical chars
    RUNID = strtod(fRunName.c_str(), NULL);

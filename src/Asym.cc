@@ -523,32 +523,6 @@ ostream& operator<<(ostream &os, const TgtOrient2ValErrMap &vep)
 }
 
 
-ClassImp(MachineParams)
-
-MachineParams::MachineParams() : TObject(), RecordMachineParams()
-{
-}
-
-
-MachineParams & MachineParams::operator=(const RecordMachineParams &rec)
-{
-   this->header.len                = rec.header.len;
-   this->header.type               = rec.header.type;
-   this->header.num                = rec.header.num;
-   this->header.timestamp          = rec.header.timestamp;
-
-   this->fCavity200MHzVoltage      = rec.fCavity200MHzVoltage;
-   this->fSnakeCurrents[0]         = rec.fSnakeCurrents[0];
-   this->fSnakeCurrents[1]         = rec.fSnakeCurrents[1];
-   this->fStarRotatorCurrents[0]   = rec.fStarRotatorCurrents[0];
-   this->fStarRotatorCurrents[1]   = rec.fStarRotatorCurrents[1];
-   this->fPhenixRotatorCurrents[0] = rec.fPhenixRotatorCurrents[0];
-   this->fPhenixRotatorCurrents[1] = rec.fPhenixRotatorCurrents[1];
-
-   return *this;
-}
-
-
 /** */
 string PairAsPhpArray(const ValErrPair &p)
 {
