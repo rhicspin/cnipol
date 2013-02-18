@@ -63,7 +63,7 @@ export CDEV_DIR=/usr/local/cdev
 export CDEV=$CDEV_DIR
 export CDEVSHOBJ=${CDEV}/lib
 export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
 
 if [[ $LD_LIBRARY_PATH != *$CDEVSHOBJ* ]]; then
 	export LD_LIBRARY_PATH+=:$CDEVSHOBJ
@@ -73,7 +73,7 @@ fi
 if [ -z "$CDEV_DIR" ]; then
 	export CDEV_DIR=/usr/local/cdev
 	export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-	export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+	export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
 	export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
 fi
 

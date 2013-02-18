@@ -136,7 +136,8 @@ void getCarbTarg(carbTargStat * targstat)
 /** Get wall current monitor data */
 void getWcmInfo(void)
 {
-    char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
+    //char wcmCDEVName[2][20] = {"yi2-wcm3","bo2-wcm3"};
+    char wcmCDEVName[2][20] = {"wcm.yellow","wcm.blue"};
     int irc, N;
     cdevData data;
 
@@ -257,7 +258,8 @@ void getAdoInfo(void)
     // gather CDEV information we could need 
     char specCDEVName[2][20]    = {"ringSpec.yellow", "ringSpec.blue"};
     char bucketsCDEVName[2][20] = {"buckets.yellow", "buckets.blue"};
-    char wcmCDEVName[2][20]     = {"yi2-wcm3","bo2-wcm3"};
+    //char wcmCDEVName[2][20]     = {"yi2-wcm3","bo2-wcm3"};
+    char wcmCDEVName[2][20] = {"wcm.yellow","wcm.blue"};
     char defName[128];
     int irc, N;
     cdevData data;

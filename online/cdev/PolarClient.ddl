@@ -1,23 +1,31 @@
 service Polar
-	{
-	tags { }
-	}
+        {
+        tags { }
+        }
 
 /******************************************/
 /*************** WCM **********************/
 /******************************************/
 class wcm {
-	verbs {get, getMetaData, monitorOn, monitorOff}	
-	attributes
-		{
-		fillDataM Polar {server=PolarServer};
-		fillDataM:valueAndTime Polar {server=PolarServer};
-		wcmBeamM Polar {server=PolarServer};		/* Bunched beam intencity */
-		wcmBeamM:valueAndTime Polar {server=PolarServer};
-		}
-	}
-wcm : bo2-wcm3
-      yi2-wcm3;
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
+                fillDataM Polar {server=PolarServer};
+                fillDataM:valueAndTime Polar {server=PolarServer};
+                wcmBeamM Polar {server=PolarServer};                /* Bunched beam intencity */
+                wcmBeamM:valueAndTime Polar {server=PolarServer};
+                bunchDataM Polar {server=PolarServer};              /* bunch length in ns */
+                bunchDataM:valueAndTime Polar {server=PolarServer};
+                bunchLengthM Polar {server=PolarServer};            /* average bunch length in ns */
+                bunchLengthM:valueAndTime Polar {server=PolarServer};
+                profileHeaderM Polar {server=PolarServer};          /* longitudinal bunch profile data description */
+                profileHeaderM:valueAndTime Polar {server=PolarServer};
+                profileDataM Polar {server=PolarServer};            /* longitudinal bunch profile data */
+                profileDataM:valueAndTime Polar {server=PolarServer};
+                }
+        }
+wcm : wcm.blue
+      wcm.yellow;
 
 
 /*****************************************/
@@ -36,26 +44,58 @@ cav : cavTuneLoop.4a-rf-b197-1.3
 
 
 /******************************************/
+/****************** Snakes ****************/
+/******************************************/
+class snake {
+    verbs {get, getMetaData, monitorOn, monitorOff}
+    attributes
+            {
+            dataBarM Polar {server=PolarServer};
+            dataBarM:valueAndTime Polar {server=PolarServer};
+            }
+    }
+snake : bo3-snk7-1.4-ps.current
+        yi3-snk7-1.4-ps.current;
+
+
+/******************************************/
+/*************** Rotators *****************/
+/******************************************/
+class rotator {
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
+                dataBarM Polar {server=PolarServer};
+                dataBarM:valueAndTime Polar {server=PolarServer};
+                }
+        }
+rotator : bi5-rot3-1.4-ps.current
+          yo5-rot3-1.4-ps.current
+          bo7-rot3-1.4-ps.current
+          yi7-rot3-1.4-ps.current;
+
+
+/******************************************/
 /*************** specMan ******************/
 /******************************************/
 class specMan {
-	verbs {get, getMetaData, monitorOn, monitorOff}	
-	attributes
-		{	
-		beamEnergyM Polar {server=PolarServer};
-		beamEnergyM:valueAndTime Polar {server=PolarServer};
-      		fillNumberM Polar {server=PolarServer};
-		fillNumberM:valueAndTime Polar {server=PolarServer};
-		ringStateS Polar {server=PolarServer};
-		ringStateS:valueAndTime Polar {server=PolarServer};
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
+                beamEnergyM Polar {server=PolarServer};
+                beamEnergyM:valueAndTime Polar {server=PolarServer};
+                fillNumberM Polar {server=PolarServer};
+                fillNumberM:valueAndTime Polar {server=PolarServer};
+                ringStateS Polar {server=PolarServer};
+                ringStateS:valueAndTime Polar {server=PolarServer};
                 ionSpeciesS Polar {server=PolarServer};
                 ionSpeciesS:valueAndTime Polar {server=PolarServer};
                 gammaM Polar {server=PolarServer};
                 gammaM:valueAndTime Polar {server=PolarServer};
-                stoneTypeS Polar {server=PolarServer};				/* n/i */
-                stoneTypeS:valueAndTime Polar {server=PolarServer};		
-                momentumSpreadS Polar {server=PolarServer};			/* n/i */
-                momentumSpreadS:valueAndTime Polar {server=PolarServer};	
+                stoneTypeS Polar {server=PolarServer};                          /* n/i */
+                stoneTypeS:valueAndTime Polar {server=PolarServer};
+                momentumSpreadS Polar {server=PolarServer};                     /* n/i */
+                momentumSpreadS:valueAndTime Polar {server=PolarServer};
                 chromaticityVerticalS Polar {server=PolarServer};
                 chromaticityVerticalS:valueAndTime Polar {server=PolarServer};
                 chromaticityHorizontalS Polar {server=PolarServer};
@@ -64,18 +104,18 @@ class specMan {
                 timeOfFillStartS:valueAndTime Polar {server=PolarServer};
                 timeOfLuminosityStartS Polar {server=PolarServer};
                 timeOfLuminosityStartS:valueAndTime Polar {server=PolarServer};
-		}	
-	}
+                }
+        }
 specMan : ringSpec.blue
-       	  ringSpec.yellow;
+          ringSpec.yellow;
 
 /******************************************/
 /*************** PatternMan****************/
 /******************************************/
 class buckets {
-	verbs {get, getMetaData, monitorOn, monitorOff}	
-	attributes
-		{	
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
                 bunchLengthS Polar {server=PolarServer};
                 intendedFillPatternS Polar {server=PolarServer};
                 measuredFillPatternM Polar {server=PolarServer};
@@ -106,41 +146,41 @@ class buckets {
                 totalIntendedM:valueAndTime Polar {server=PolarServer};
                 filledBucketsS:valueAndTime Polar {server=PolarServer};
                 patternRotationM:valueAndTime Polar {server=PolarServer};
-		}	
-	}
+                }
+        }
 buckets : buckets.blue
-       	  buckets.yellow;
+          buckets.yellow;
 
 /******************************************/
 /*************** polhtarget ***************/
 /******************************************/
 class polhtarget {
-	verbs {get, getMetaData, set, monitorOn, monitorOff}	
-	attributes
-		{
-		movingM Polar {server=PolarServer};
-		movingM:valueAndTime Polar {server=PolarServer};
-		positionEncM Polar {server=PolarServer};
-		positionEncM:valueAndTime Polar {server=PolarServer};
-      		statusM Polar {server=PolarServer};
-		statusM:valueAndTime Polar {server=PolarServer};
-      		positionS Polar {server=PolarServer};
-		positionS:valueAndTime Polar {server=PolarServer};
-		initLinS Polar {server=PolarServer};
-		initLinS:valueAndTime Polar {server=PolarServer};
-		initRotS Polar {server=PolarServer};
-		initRotS:valueAndTime Polar {server=PolarServer};
-		limitLinM Polar {server=PolarServer};
-		limitLinM:valueAndTime Polar {server=PolarServer};
-		limitRotM Polar {server=PolarServer};
-		limitRotM:valueAndTime Polar {server=PolarServer};
-		}
-	}
+        verbs {get, getMetaData, set, monitorOn, monitorOff}
+        attributes
+                {
+                movingM Polar {server=PolarServer};
+                movingM:valueAndTime Polar {server=PolarServer};
+                positionEncM Polar {server=PolarServer};
+                positionEncM:valueAndTime Polar {server=PolarServer};
+                statusM Polar {server=PolarServer};
+                statusM:valueAndTime Polar {server=PolarServer};
+                positionS Polar {server=PolarServer};
+                positionS:valueAndTime Polar {server=PolarServer};
+                initLinS Polar {server=PolarServer};
+                initLinS:valueAndTime Polar {server=PolarServer};
+                initRotS Polar {server=PolarServer};
+                initRotS:valueAndTime Polar {server=PolarServer};
+                limitLinM Polar {server=PolarServer};
+                limitLinM:valueAndTime Polar {server=PolarServer};
+                limitRotM Polar {server=PolarServer};
+                limitRotM:valueAndTime Polar {server=PolarServer};
+                }
+        }
 polhtarget : pol.b-htarget
-	     pol.y-htarget;
-	     
+             pol.y-htarget;
+
 polhtarget : pol2.b-htarget
-	     pol2.y-htarget;
+             pol2.y-htarget;
 
 /******************************************/
 /*************** polvtarget ***************/
@@ -148,10 +188,10 @@ polhtarget : pol2.b-htarget
 class polvtarget : polhtarget {
 }
 polvtarget : pol.b-vtarget
-	     pol.y-vtarget;
-	     
+             pol.y-vtarget;
+
 polvtarget : pol2.b-vtarget
-	     pol2.y-vtarget;
+             pol2.y-vtarget;
 
 /******************************************/
 /*************** polarMux ***************/
@@ -174,97 +214,97 @@ polarMux : polarMux.RHIC.blu
 /************* polarimeterBlue ************/
 /******************************************/
 class polarimeterBlue {
-	verbs {get, getMetaData, set, monitorOn, monitorOff}
-	attributes
-		{
-		runIdS Polar {server=PolarServer};
-		runIdS:valueAndTime Polar {server=PolarServer};
-		startTimeS Polar {server=PolarServer};
-		startTimeS:valueAndTime Polar {server=PolarServer};
-		stopTimeS Polar {server=PolarServer};
-		stopTimeS:valueAndTime Polar {server=PolarServer};
-      		daqVersionS Polar {server=PolarServer};
-      		daqVersionS:valueAndTime Polar {server=PolarServer};
-      		cutIdS Polar {server=PolarServer};
-      		cutIdS:valueAndTime Polar {server=PolarServer};
-      		targetIdS Polar {server=PolarServer};
-      		targetIdS:valueAndTime Polar {server=PolarServer};
-      		encoderPositionS Polar {server=PolarServer};
-      		encoderPositionS:valueAndTime Polar {server=PolarServer};
-      		statusS Polar {server=PolarServer};
-      		statusS:valueAndTime Polar {server=PolarServer};
-      		statusStringS Polar {server=PolarServer};
-      		statusStringS:valueAndTime Polar {server=PolarServer};
-      		totalCountsS Polar {server=PolarServer};
-      		totalCountsS:valueAndTime Polar {server=PolarServer};
-      		upCountsS Polar {server=PolarServer};
-      		upCountsS:valueAndTime Polar {server=PolarServer};
-      		downCountsS Polar {server=PolarServer};
-      		downCountsS:valueAndTime Polar {server=PolarServer};
-      		unpolCountsS Polar {server=PolarServer};
-      		unpolCountsS:valueAndTime Polar {server=PolarServer};
-      		countsUpLeftS Polar {server=PolarServer};
-      		countsUpLeftS:valueAndTime Polar {server=PolarServer};
-      		countsLeftS Polar {server=PolarServer};
-      		countsLeftS:valueAndTime Polar {server=PolarServer};
-      		countsDownLeftS Polar {server=PolarServer};
-      		countsDownLeftS:valueAndTime Polar {server=PolarServer};
-      		countsDownRightS Polar {server=PolarServer};
-      		countsDownRightS:valueAndTime Polar {server=PolarServer};
-      		countsRightS Polar {server=PolarServer};
-      		countsRightS:valueAndTime Polar {server=PolarServer};
-      		countsUpRightS Polar {server=PolarServer};
-      		countsUpRightS:valueAndTime Polar {server=PolarServer};
-      		avgAsymXS Polar {server=PolarServer};
-      		avgAsymXS:valueAndTime Polar {server=PolarServer};
-      		avgAsymX45S Polar {server=PolarServer};
-      		avgAsymX45S:valueAndTime Polar {server=PolarServer};
-      		avgAsymX90S Polar {server=PolarServer};
-      		avgAsymX90S:valueAndTime Polar {server=PolarServer};
-      		avgAsymYS Polar {server=PolarServer};
-      		avgAsymYS:valueAndTime Polar {server=PolarServer};
-      		avgAsymErrorXS Polar {server=PolarServer};
-      		avgAsymErrorXS:valueAndTime Polar {server=PolarServer};
-      		avgAsymErrorX45S Polar {server=PolarServer};
-      		avgAsymErrorX45S:valueAndTime Polar {server=PolarServer};
-      		avgAsymErrorX90S Polar {server=PolarServer};
-      		avgAsymErrorX90S:valueAndTime Polar {server=PolarServer};
-      		avgAsymErrorYS Polar {server=PolarServer};
-      		avgAsymErrorYS:valueAndTime Polar {server=PolarServer};
-      		bunchAsymXS Polar {server=PolarServer};
-      		bunchAsymXS:valueAndTime Polar {server=PolarServer};
-     		bunchAsymYS Polar {server=PolarServer};
-     		bunchAsymYS:valueAndTime Polar {server=PolarServer};
-      		bunchAsymErrorXS Polar {server=PolarServer};
-      		bunchAsymErrorXS:valueAndTime Polar {server=PolarServer};
-      		bunchAsymErrorYS Polar {server=PolarServer};
-      		bunchAsymErrorYS:valueAndTime Polar {server=PolarServer};
-      		analyzingPowerS Polar {server=PolarServer};
-      		analyzingPowerS:valueAndTime Polar {server=PolarServer};
-      		analyzingPowerErrorS Polar {server=PolarServer};
-      		analyzingPowerErrorS:valueAndTime Polar {server=PolarServer};
-		beamEnergyS Polar {server=PolarServer};
-		beamEnergyS:valueAndTime Polar {server=PolarServer};
-		numberEventsS Polar {server=PolarServer};
-		numberEventsS:valueAndTime Polar {server=PolarServer};
-		maxTimeS Polar {server=PolarServer};
-		maxTimeS:valueAndTime Polar {server=PolarServer};
-		numberEventsToDoS Polar {server=PolarServer};
-		numberEventsToDoS:valueAndTime Polar {server=PolarServer};
-		maxTimeToRunS Polar {server=PolarServer};
-		maxTimeToRunS:valueAndTime Polar {server=PolarServer};
-		dataAcquisitionS Polar {server=PolarServer};
-		dataAcquisitionS:valueAndTime Polar {server=PolarServer};
-		dataAcquisitionType Polar {server=PolarServer};
-		dataAcquisitionType:valueAndTime Polar {server=PolarServer};
-		progressS Polar {server=PolarServer};
-		countRateS Polar {server=PolarServer};
-		inBeamVertS Polar {server=PolarServer};
-		inBeamHorzS Polar {server=PolarServer};
-		outBeamVertS Polar {server=PolarServer};
-		outBeamHorzS Polar {server=PolarServer};
-		encPosProfileS Polar {server=PolarServer};
-		encPosProfileS:valueAndTime Polar {server=PolarServer};
+        verbs {get, getMetaData, set, monitorOn, monitorOff}
+        attributes
+                {
+                runIdS Polar {server=PolarServer};
+                runIdS:valueAndTime Polar {server=PolarServer};
+                startTimeS Polar {server=PolarServer};
+                startTimeS:valueAndTime Polar {server=PolarServer};
+                stopTimeS Polar {server=PolarServer};
+                stopTimeS:valueAndTime Polar {server=PolarServer};
+                daqVersionS Polar {server=PolarServer};
+                daqVersionS:valueAndTime Polar {server=PolarServer};
+                cutIdS Polar {server=PolarServer};
+                cutIdS:valueAndTime Polar {server=PolarServer};
+                targetIdS Polar {server=PolarServer};
+                targetIdS:valueAndTime Polar {server=PolarServer};
+                encoderPositionS Polar {server=PolarServer};
+                encoderPositionS:valueAndTime Polar {server=PolarServer};
+                statusS Polar {server=PolarServer};
+                statusS:valueAndTime Polar {server=PolarServer};
+                statusStringS Polar {server=PolarServer};
+                statusStringS:valueAndTime Polar {server=PolarServer};
+                totalCountsS Polar {server=PolarServer};
+                totalCountsS:valueAndTime Polar {server=PolarServer};
+                upCountsS Polar {server=PolarServer};
+                upCountsS:valueAndTime Polar {server=PolarServer};
+                downCountsS Polar {server=PolarServer};
+                downCountsS:valueAndTime Polar {server=PolarServer};
+                unpolCountsS Polar {server=PolarServer};
+                unpolCountsS:valueAndTime Polar {server=PolarServer};
+                countsUpLeftS Polar {server=PolarServer};
+                countsUpLeftS:valueAndTime Polar {server=PolarServer};
+                countsLeftS Polar {server=PolarServer};
+                countsLeftS:valueAndTime Polar {server=PolarServer};
+                countsDownLeftS Polar {server=PolarServer};
+                countsDownLeftS:valueAndTime Polar {server=PolarServer};
+                countsDownRightS Polar {server=PolarServer};
+                countsDownRightS:valueAndTime Polar {server=PolarServer};
+                countsRightS Polar {server=PolarServer};
+                countsRightS:valueAndTime Polar {server=PolarServer};
+                countsUpRightS Polar {server=PolarServer};
+                countsUpRightS:valueAndTime Polar {server=PolarServer};
+                avgAsymXS Polar {server=PolarServer};
+                avgAsymXS:valueAndTime Polar {server=PolarServer};
+                avgAsymX45S Polar {server=PolarServer};
+                avgAsymX45S:valueAndTime Polar {server=PolarServer};
+                avgAsymX90S Polar {server=PolarServer};
+                avgAsymX90S:valueAndTime Polar {server=PolarServer};
+                avgAsymYS Polar {server=PolarServer};
+                avgAsymYS:valueAndTime Polar {server=PolarServer};
+                avgAsymErrorXS Polar {server=PolarServer};
+                avgAsymErrorXS:valueAndTime Polar {server=PolarServer};
+                avgAsymErrorX45S Polar {server=PolarServer};
+                avgAsymErrorX45S:valueAndTime Polar {server=PolarServer};
+                avgAsymErrorX90S Polar {server=PolarServer};
+                avgAsymErrorX90S:valueAndTime Polar {server=PolarServer};
+                avgAsymErrorYS Polar {server=PolarServer};
+                avgAsymErrorYS:valueAndTime Polar {server=PolarServer};
+                bunchAsymXS Polar {server=PolarServer};
+                bunchAsymXS:valueAndTime Polar {server=PolarServer};
+                bunchAsymYS Polar {server=PolarServer};
+                bunchAsymYS:valueAndTime Polar {server=PolarServer};
+                bunchAsymErrorXS Polar {server=PolarServer};
+                bunchAsymErrorXS:valueAndTime Polar {server=PolarServer};
+                bunchAsymErrorYS Polar {server=PolarServer};
+                bunchAsymErrorYS:valueAndTime Polar {server=PolarServer};
+                analyzingPowerS Polar {server=PolarServer};
+                analyzingPowerS:valueAndTime Polar {server=PolarServer};
+                analyzingPowerErrorS Polar {server=PolarServer};
+                analyzingPowerErrorS:valueAndTime Polar {server=PolarServer};
+                beamEnergyS Polar {server=PolarServer};
+                beamEnergyS:valueAndTime Polar {server=PolarServer};
+                numberEventsS Polar {server=PolarServer};
+                numberEventsS:valueAndTime Polar {server=PolarServer};
+                maxTimeS Polar {server=PolarServer};
+                maxTimeS:valueAndTime Polar {server=PolarServer};
+                numberEventsToDoS Polar {server=PolarServer};
+                numberEventsToDoS:valueAndTime Polar {server=PolarServer};
+                maxTimeToRunS Polar {server=PolarServer};
+                maxTimeToRunS:valueAndTime Polar {server=PolarServer};
+                dataAcquisitionS Polar {server=PolarServer};
+                dataAcquisitionS:valueAndTime Polar {server=PolarServer};
+                dataAcquisitionType Polar {server=PolarServer};
+                dataAcquisitionType:valueAndTime Polar {server=PolarServer};
+                progressS Polar {server=PolarServer};
+                countRateS Polar {server=PolarServer};
+                inBeamVertS Polar {server=PolarServer};
+                inBeamHorzS Polar {server=PolarServer};
+                outBeamVertS Polar {server=PolarServer};
+                outBeamHorzS Polar {server=PolarServer};
+                encPosProfileS Polar {server=PolarServer};
+                encPosProfileS:valueAndTime Polar {server=PolarServer};
                 plotData Polar {server=PolarServer};
                 plotData:valueAndTime Polar {server=PolarServer};
                 emitRunIdS Polar {server=PolarServer};
@@ -274,7 +314,7 @@ class polarimeterBlue {
                 emitWidthS Polar {server=PolarServer};
                 emitWidthS:valueAndTime Polar {server=PolarServer};
                 emitRelWidthS Polar {server=PolarServer};
-                emitRelWidthS:valueAndTime Polar {server=PolarServer};	
+                emitRelWidthS:valueAndTime Polar {server=PolarServer};
                 emitPeaktoEvtS Polar {server=PolarServer};
                 emitPeaktoEvtS:valueAndTime Polar {server=PolarServer};
                 emitPeakBunchS Polar {server=PolarServer};
@@ -305,26 +345,26 @@ class polarimeterBlue {
                 asymXTsS:valueAndTime Polar {server=PolarServer};
                 polarizationM Polar {server=PolarServer};
                 polarizationM:valueAndTime Polar {server=PolarServer};
-		}
-	}
+                }
+        }
 polarimeterBlue : polarimeter.blu
-		  polarimeter.blu1
-		  polarimeter.blu2;
+                  polarimeter.blu1
+                  polarimeter.blu2;
 
 /******************************************/
 /************ polarimeterYellow ***********/
 /******************************************/
-class polarimeterYellow : polarimeterBlue 
+class polarimeterYellow : polarimeterBlue
 {
 }
 polarimeterYellow : polarimeter.yel
-		    polarimeter.yel1
-		    polarimeter.yel2;
+                    polarimeter.yel1
+                    polarimeter.yel2;
 
 /******************************************/
 /************* fecPolSystem ***************/
 /******************************************/
-class fecPolarSystem 
+class fecPolarSystem
         {
         verbs {get, getMetaData, monitorOn, monitorOff}
         attributes
@@ -338,40 +378,40 @@ fecPolarSystem : fecSystem.12a-polar1;
 /******** AgsPolarimeterSystem ************/
 /******************************************/
 class AgsPolarimeter
-	{
-	verbs {get, set, monitorOn, monitorOff, getMetaData}
-	attributes
-		{
-		runIdS Polar {server=PolarServer};
-		startTimeS Polar {server=PolarServer};
-		stopTimeS Polar {server=PolarServer};
-		daqVersionS Polar {server=PolarServer};
-		targetIdS Polar {server=PolarServer};
-		encoderPositionS Polar {server=PolarServer};
-		statusS Polar {server=PolarServer};
-		statusStringS Polar {server=PolarServer};
-		numberOfBunchS Polar {server=PolarServer};
-		numberOfBucketS Polar {server=PolarServer};
-		bunchPatternS Polar {server=PolarServer};
-		startSpillS Polar {server=PolarServer};
-		totalSpillS Polar {server=PolarServer};
-		totalNeventS Polar {server=PolarServer};
-		beamEnergyAtFlattopS Polar {server=PolarServer};
-		momentumBinS Polar {server=PolarServer};
-		leftMostBinEdgeS Polar {server=PolarServer};
-		binWidthS Polar {server=PolarServer};
-		asymAtRampS Polar {server=PolarServer}; 
-		asymAtRampErrorS Polar {server=PolarServer};
-		analyzingPowerS Polar {server=PolarServer};
-		analyzingPowerErrorS Polar {server=PolarServer};
-		epsilonPhysicsS Polar {server=PolarServer};
-		epsilonAcceptanceS Polar {server=PolarServer};
-		epsilonLuminosityS Polar {server=PolarServer};
-		ratioLuminosityS Polar {server=PolarServer};
-		epsilonError Polar {server=PolarServer};
+        {
+        verbs {get, set, monitorOn, monitorOff, getMetaData}
+        attributes
+                {
+                runIdS Polar {server=PolarServer};
+                startTimeS Polar {server=PolarServer};
+                stopTimeS Polar {server=PolarServer};
+                daqVersionS Polar {server=PolarServer};
+                targetIdS Polar {server=PolarServer};
+                encoderPositionS Polar {server=PolarServer};
+                statusS Polar {server=PolarServer};
+                statusStringS Polar {server=PolarServer};
+                numberOfBunchS Polar {server=PolarServer};
+                numberOfBucketS Polar {server=PolarServer};
+                bunchPatternS Polar {server=PolarServer};
+                startSpillS Polar {server=PolarServer};
+                totalSpillS Polar {server=PolarServer};
+                totalNeventS Polar {server=PolarServer};
+                beamEnergyAtFlattopS Polar {server=PolarServer};
+                momentumBinS Polar {server=PolarServer};
+                leftMostBinEdgeS Polar {server=PolarServer};
+                binWidthS Polar {server=PolarServer};
+                asymAtRampS Polar {server=PolarServer};
+                asymAtRampErrorS Polar {server=PolarServer};
+                analyzingPowerS Polar {server=PolarServer};
+                analyzingPowerErrorS Polar {server=PolarServer};
+                epsilonPhysicsS Polar {server=PolarServer};
+                epsilonAcceptanceS Polar {server=PolarServer};
+                epsilonLuminosityS Polar {server=PolarServer};
+                ratioLuminosityS Polar {server=PolarServer};
+                epsilonError Polar {server=PolarServer};
                 plotData Polar {server=PolarServer};
-		}
-	}
+                }
+        }
 
 AgsPolarimeter : agsPolarimeter;
 
@@ -381,12 +421,12 @@ AgsPolarimeter : agsPolarimeter;
 /******************************************/
 class stepper
         {
-	verbs {get, getMetaData, monitorOn, monitorOff}
-	attributes
-	            {
-	            absolutePosition Polar {server=PolarServer};
-	            }
-	}
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                    {
+                    absolutePosition Polar {server=PolarServer};
+                    }
+        }
 stepper : stepper.12a-hjet.A.U;
 
 /******************************************/
@@ -394,20 +434,20 @@ stepper : stepper.12a-hjet.A.U;
 /******************************************/
 class rbpm
         {
-	verbs {get, getMetaData, monitorOn, monitorOff}
-	attributes
-	        {
-	        avgOrbPositionM Polar {server=PolarServer};
-	        }
-	}
+        verbs {get, getMetaData, monitorOn, monitorOff}
+        attributes
+                {
+                avgOrbPositionM Polar {server=PolarServer};
+                }
+        }
 rbpm :  rbpm.b-g11-bhx
         rbpm.b-g12-bhx
-	rbpm.b-g12-bvx
-	rbpm.b-g11-bvx
-	rbpm.y-g11-bhx
-	rbpm.y-g12-bhx
-	rbpm.y-g11-bvx
-	rbpm.y-g12-bvx;
+        rbpm.b-g12-bvx
+        rbpm.b-g11-bvx
+        rbpm.y-g11-bhx
+        rbpm.y-g12-bhx
+        rbpm.y-g11-bvx
+        rbpm.y-g12-bvx;
 
 /*************************************/
 /************* hjet.test *************/
@@ -415,11 +455,11 @@ rbpm :  rbpm.b-g11-bhx
 class iobitText
     {
     verbs {get, getMetaData, monitorOn, monitorOff}
-	attributes
-	        {
-	        outBitsText Polar {server=PolarServer};
-	        }
-	}
+        attributes
+                {
+                outBitsText Polar {server=PolarServer};
+                }
+        }
 iobitText : iobitText.12a-hjet.11
             iobitText.12a-hjet.15;
 
@@ -429,18 +469,18 @@ iobitText : iobitText.12a-hjet.11
 class polarControlDefaults {
     verbs {get, getMetaData, monitorOn, monitorOff}
     attributes {
-	rampInterval Polar {server=PolarServer};
+        rampInterval Polar {server=PolarServer};
     }
 }
 
 polarControlDefaults :  polarControlDefaults.blu1
-			polarControlDefaults.blu2
-			polarControlDefaults.yel1
-			polarControlDefaults.yel2;
+                        polarControlDefaults.blu2
+                        polarControlDefaults.yel1
+                        polarControlDefaults.yel2;
 
 
 class BsTrigChanYellow
-    {    
+    {
     verbs {get, set, getMetaData, monitorOn, monitorOff}
     attributes
             {
@@ -470,7 +510,7 @@ BsTrigChanYellow : bsTrigChan.12a-polar1.C.1
                    bsTrigMod.12a-polar1.C;
 
 class BsTrigChanBlue
-    {    
+    {
     verbs {get, set, getMetaData, monitorOn, monitorOff}
     attributes
             {

@@ -1225,16 +1225,16 @@ c
      +   0.00893914, 0.00806877, 0.00725722, 0.00649782, 0.00578491,
      +   0.00511384, 0.00448062, 0.00388186, 0.00331461, 0.00277642/
 
-* scale for 250 GeV A_N = 1/0.823 = 1.215, P = 0.823 * P
+* scale for 250 GeV A_N = 1/0.959 = 1.043, P = 0.959 * P
 
 	if (polName(13:16).eq.'blu1') then
-	   scale250 = 1.215
+	   scale250 = 1.043
 	elseif (polName(13:16).eq.'yel1') then
-	   scale250 = 1.215
+	   scale250 = 1.043
 	elseif (polName(13:16).eq.'blu2') then
-	   scale250 = 1.215
+	   scale250 = 1.043
 	elseif (polName(13:16).eq.'yel2') then
-	   scale250 = 1.215
+	   scale250 = 1.043
 	else
 	   scale250 = 1.
 	endif
