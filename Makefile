@@ -52,3 +52,7 @@ bin: cnipol.bin
 anapc:
 	make -C anapc
 
+ldfit: ldfit.all
+
+ldfit.all:
+	make -C ldfit all
