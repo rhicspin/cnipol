@@ -14,7 +14,8 @@ export CDEVSHOBJ=${CDEV}/lib
 export LD_LIBRARY_PATH=${CDEVSHOBJ}:${LD_LIBRARY_PATH}
 export PATH=${CERNLIB}/bin:${PATH}
 
-BINDIR=/usr/local/polarim/bin
+POLDIR=/usr/local/polarim
+BINDIR=$POLDIR/bin
 LOGDIR=$POLDIR/log
 
 ${BINDIR}/rpoldaemon $1 -l ${LOGDIR}/rpoldaemon${1}.log -r ${BINDIR}/rpolmeasure.sh 
