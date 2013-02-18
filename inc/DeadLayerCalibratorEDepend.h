@@ -39,7 +39,7 @@ public:
    ~DeadLayerCalibratorEDepend();
 
    virtual void Calibrate(DrawObjContainer *c);
-   virtual void CalibrateFast(DrawObjContainer *c);
+   //virtual void CalibrateFast(DrawObjContainer *c);
    virtual void Calibrate(TH1 *h, TH1 *hMeanTime, UShort_t chId=0, TObjArray* fitResultHists=0, Bool_t wideLimits=false);
    void         PostCalibrate();
    void         Print(const Option_t* opt="") const;

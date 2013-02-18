@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# >run_alpha.sh <runlist>
+#
+# <runlist> is a file with a list of alpha runs. No .data suffix
 
 source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
 
@@ -15,11 +19,11 @@ do
    #echo ${arr[0]} --- ${arr[1]} ---
    if [ -z "${arr[1]}" ]; then
       #echo "polid NOT defined"
-      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --copy -r $meas_name
+      bgx_limit 8 $CNIPOL_DIR/bin/asym --alpha --use-db -g -r $meas_name
       #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -r $meas_name
    else
       #echo "polid defined" ${arr[1]}
-      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --copy --pol-id=${arr[1]} -r ${arr[0]}
+      bgx_limit 8 $CNIPOL_DIR/bin/asym --alpha --use-db -g --pol-id=${arr[1]} -r ${arr[0]}
       #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db --pol-id=${arr[1]} -r ${arr[0]}
    fi
 done

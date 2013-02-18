@@ -41,7 +41,7 @@ public:
    ~DeadLayerCalibrator();
 
    virtual void          Calibrate(DrawObjContainer *c);
-   virtual void          CalibrateFast(DrawObjContainer *c);
+   //virtual void          CalibrateFast(DrawObjContainer *c);
    virtual TFitResultPtr CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
    //virtual void          Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
 

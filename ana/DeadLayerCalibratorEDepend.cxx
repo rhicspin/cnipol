@@ -32,6 +32,7 @@ DeadLayerCalibratorEDepend::~DeadLayerCalibratorEDepend()
 /**
  * This method is not used at the moment. Probably, it will not work as is.
  */
+/*
 void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 {
    TH1*  htemp     = 0;
@@ -65,12 +66,13 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
    PostCalibrate();
 }
+*/
 
 
 /**
  * This method is mainly used for data calibration
  */
-void DeadLayerCalibratorEDepend::CalibrateFast(DrawObjContainer *c)
+void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 {
    //TH1*  hTimeVsE  = 0;
    //TH1*  hMeanTime = 0;

@@ -23,6 +23,7 @@ DeadLayerCalibrator::~DeadLayerCalibrator()
 
 
 /** */
+/*
 void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 {
    TH2F*  htemp = 0;
@@ -75,22 +76,24 @@ void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
       }
    }
 }
+*/
 
 
 /** */
-void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
+//void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
+void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 {
    TH2F *htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
    TH1D *hMeanTime = (TH1D*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
 
    if (!htemp || !hMeanTime) {
-      Error("CalibrateFast", "Histogram preproc/hTimeVsEnergyA does not exist");
-      Error("CalibrateFast", "Histogram preproc/hFitMeanTimeVsEnergyA does not exist");
+      Error("Calibrate", "Histogram preproc/hTimeVsEnergyA does not exist");
+      Error("Calibrate", "Histogram preproc/hFitMeanTimeVsEnergyA does not exist");
       return;
    }
 
    if (htemp->Integral() < 1000) {
-      Error("CalibrateFast", "Too few entries in histogram preproc/hTimeVsEnergyA. Skipped");
+      Error("Calibrate", "Too few entries in histogram preproc/hTimeVsEnergyA. Skipped");
       return;
    }
 
@@ -116,7 +119,7 @@ void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
       chCalib->fAvrgEMiss     = fitres->Value(1);
       chCalib->fAvrgEMissErr  = fitres->FitResult::Error(1);
    } else {
-      Error("CalibrateFast", "Empty TFitResultPtr");
+      Error("Calibrate", "Empty TFitResultPtr");
    }
 }
 

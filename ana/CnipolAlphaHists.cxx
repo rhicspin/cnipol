@@ -235,6 +235,12 @@ void CnipolAlphaHists::BookHists()
 /** */
 void CnipolAlphaHists::Fill(ChannelEvent *ch)
 {
+}
+
+
+/** */
+void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
+{
    UChar_t      chId = ch->GetChannelId();
    ChannelData &data = ch->fChannel;
 
@@ -274,6 +280,12 @@ void CnipolAlphaHists::FillPreProcess(ChannelEvent *ch) { }
 
 /** */
 void CnipolAlphaHists::PostFill()
+{
+}
+
+
+/** */
+void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 {
    // Adjust axis ranges
    Int_t    maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();

@@ -265,80 +265,55 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 
       ChannelCalib &ch = mi->second;
 
-      // // Invalidate channels even if the fitter returned some results
+      // Invalidate channels even if the fitter returned some results
       if (i > 0 && i <= 12) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det1eMean - aEntries)<<" Cutoff="<<1 * Det1eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det1eMean - aEntries) > 1 * Det1eRMS && (aEntries - Det1eMean < 0)) {
-               //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det1eMean - aEntries) > 2 * Det1eRMS && (aEntries - Det1eMean < 0)) {
                ch.fACoefErr = -1;
             }
-         }  // else
+         }
       }
       if (i > 12 && i <= 24) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det2eMean - aEntries)<<" Cutoff="<<1 * Det2eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det2eMean - aEntries) > 1 * Det2eRMS && (aEntries - Det2eMean < 0)) {
-                //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det2eMean - aEntries) > 2 * Det2eRMS && (aEntries - Det2eMean < 0)) {
                ch.fACoefErr = -1;
-            }// else
+            }
          }
       }
       if (i > 24 && i <= 36) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det3eMean - aEntries)<<" Cutoff="<<1 * Det3eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det3eMean - aEntries) > 1 * Det3eRMS && (aEntries - Det3eMean < 0)) {
-                //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det3eMean - aEntries) > 2 * Det3eRMS && (aEntries - Det3eMean < 0)) {
                ch.fACoefErr = -1;
-            }// else
+            }
          }
       }
       if (i > 36 && i <= 48) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det4eMean - aEntries)<<" Cutoff="<<1 * Det4eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det4eMean - aEntries) > 1 * Det4eRMS && (aEntries - Det4eMean < 0)) {
-                //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det4eMean - aEntries) > 2 * Det4eRMS && (aEntries - Det4eMean < 0)) {
                ch.fACoefErr = -1;
-            }// else
+            }
          }
       }
       if (i > 48 && i <= 60) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det5eMean - aEntries)<<" Cutoff="<<1 * Det5eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det5eMean - aEntries) > 1 * Det5eRMS && (aEntries - Det5eMean < 0)) {
-                //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det5eMean - aEntries) > 2 * Det5eRMS && (aEntries - Det5eMean < 0)) {
                ch.fACoefErr = -1;
-            }// else
+            }
          }
       }
       if (i > 60 && i <= 72) {
-         //andersout<<"i="<<i<<" aEntries="<<aEntries<<" DetMean-AEntries="<<fabs(Det6eMean - aEntries)<<" Cutoff="<<1 * Det6eRMS<<" coefcmop="<<fabs(aMean-ch.fACoef)<<" cutoff="<<1*aRMS<<endl;
-
-         if (fabs(aMean - ch.fACoef) > 1 * aRMS ) {
-
-            if (aEntries<1000 && aEntries >= 0 && fabs(Det6eMean - aEntries) > 1 * Det6eRMS && (aEntries - Det6eMean < 0)) {
-                //andersout<<"hit"<<endl;
+         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+            if (aEntries<1000 && aEntries >= 0 && fabs(Det6eMean - aEntries) > 2 * Det6eRMS && (aEntries - Det6eMean < 0)) {
                ch.fACoefErr = -1;
-            }// else
+            }
          }
       }
-      //  ch.fACoefErr = -1;
 
       i++;
    }
-   //andersout.close();
+
    // Now assign detector average
    // Ampltitude
-
    for (mi = mb; mi != me; mi++) {
 
       ChannelCalib &ch = mi->second;

@@ -175,7 +175,9 @@ void AsymRoot::CreateRootFile(string filename)
 
    if (gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("alpha", "alpha", "", fOutRootFile);
-      fHists->d["alpha"] = new CnipolAlphaHists(dir);
+      oc  = new CnipolAlphaHists(dir);
+      fHists->d["alpha"] = oc;
+      fHistCuts[kCUT_PASSONE].insert(oc);
    }
 
    if (gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit()) {
@@ -205,7 +207,7 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawExtendedHists(dir);
       fHists->d["raw"] = oc;
-      fHistCuts[kCUT_PASSONE_RAW].insert(oc);
+      fHistCuts[kCUT_PASSONE].insert(oc);
 
       dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
       oc  = new CnipolRawExtendedHists(dir);
@@ -220,7 +222,7 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
-      fHistCuts[kCUT_PASSONE_RAW].insert(oc);
+      fHistCuts[kCUT_PASSONE].insert(oc);
 
       dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
@@ -528,8 +530,11 @@ void AsymRoot::PostFillPassOne()
 
    //fHists->PostFillPassOne(fHists);
 
-   fHists->d["raw_neb"]->PostFillPassOne(fHists);
-   fHists->d["preproc"]->PostFillPassOne(fHists);
+   if ( fHists->d.find("raw_neb") != fHists->d.end() ) 
+      fHists->d["raw_neb"]->PostFillPassOne(fHists);
+
+   if ( fHists->d.find("preproc") != fHists->d.end() ) 
+      fHists->d["preproc"]->PostFillPassOne(fHists);
 
    ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
@@ -892,10 +897,10 @@ void AsymRoot::Calibrate()
 
 
 /** */
-void AsymRoot::CalibrateFast()
-{
-   fEventConfig->fCalibrator->CalibrateFast(fHists);
-}
+//void AsymRoot::CalibrateFast()
+//{
+//   fEventConfig->fCalibrator->CalibrateFast(fHists);
+//}
 
 
 /** */
