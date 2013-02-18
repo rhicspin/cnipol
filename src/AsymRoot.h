@@ -23,7 +23,7 @@
 
 class AsymAnaInfo;
 
-enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE_RAW, kCUT_PASSONE_RAW_EB,
+enum ECut {kCUT_UNKNOWN, kCUT_NOCUT, kCUT_PASSONE, kCUT_PASSONE_RAW, kCUT_PASSONE_RAW_EB,
            kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_CALIB,
            kCUT_PASSONE_CALIB_EB, kCUT_RAW, kCUT_RAW_EB, kCUT_NOISE, kCUT_CARBON,
            kCUT_CARBON_EB };
@@ -67,7 +67,7 @@ public:
 	void         BookHists2(StructFeedBack &feedback);
    void         DeleteHistogram();
    void         Calibrate();
-   void         CalibrateFast();
+   //void         CalibrateFast();
    void         Finalize();
    void         CreateTrees();
    //Bool_t       UseCalibFile(std::string cfname=""); // Deprecated

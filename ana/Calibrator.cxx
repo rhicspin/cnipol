@@ -107,15 +107,15 @@ void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
 /** */
 void Calibrator::Calibrate(DrawObjContainer *c)
 {
-	Info("Calibrate", "Executing Calibrate()");
+	Info("Calibrate(DrawObjContainer *c)", "Called...");
 }
 
 
 /** */
-void Calibrator::CalibrateFast(DrawObjContainer *c)
-{
-	Info("CalibrateFast", "Executing CalibrateFast()");
-}
+//void Calibrator::CalibrateFast(DrawObjContainer *c)
+//{
+//	Info("CalibrateFast", "Executing CalibrateFast()");
+//}
 
 
 /** */

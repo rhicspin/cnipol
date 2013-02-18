@@ -408,7 +408,8 @@ void RawDataProcessor::ReadDataFast()
             if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
             {
                // Fill hists with raw data
-               gAsymRoot->FillPassOne(kCUT_PASSONE_RAW);
+               //gAsymRoot->FillPassOne(kCUT_PASSONE_RAW);
+               gAsymRoot->FillPassOne(kCUT_PASSONE);
 
                // The same but empty bunches only
                if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )

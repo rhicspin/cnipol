@@ -136,25 +136,30 @@ int main(int argc, char *argv[])
    // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit() )
+   //if ( gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit() )
+   if ( gAsymAnaInfo->HasCalibBit() )
    {
       rawData->ReadDataFast();          // fill histograms
       gAsymRoot->FillDerivedPassOne();
       gAsymRoot->PostFillPassOne();     // make decisions based on hist content/data
-      gAsymRoot->CalibrateFast();       // Process all channel banana
+      //gAsymRoot->CalibrateFast();       // Process all channel banana
+      gAsymRoot->Calibrate();       // Process all channel banana
    }
 
    // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
-   //
-   gAsymRoot->PreFill();
+   // PassTwo
+   if ( !gAsymAnaInfo->HasAlphaBit() )
+   {
+      gAsymRoot->PreFill();
 
-   // Main event Loop
-   readloop(*mseMeasInfoX);
+      // Main event Loop
+      readloop(*mseMeasInfoX);
 
-   gAsymRoot->FillDerived();
-   gAsymRoot->PostFill(*mseMeasInfoX);
+      gAsymRoot->FillDerived();
+      gAsymRoot->PostFill(*mseMeasInfoX);
+	}
 
    // Close histogram file
    //hist_close(hbk_outfile);
@@ -166,10 +171,10 @@ int main(int argc, char *argv[])
    // XXX logic??? For normal data runs calibration should be done only once
    // during the first pass
    // Currently used for alpha runs only
-   if ( gAsymAnaInfo->HasCalibBit() && gAsymAnaInfo->HasAlphaBit() )
-   {
-      gAsymRoot->Calibrate();
-   }
+   //if ( gAsymAnaInfo->HasCalibBit() && gAsymAnaInfo->HasAlphaBit() )
+   //{
+   //   gAsymRoot->Calibrate();
+   //}
 
    //gAsymRoot->fEventConfig->Print();
    //gAsymRoot->fEventConfig->fCalibrator->Print();

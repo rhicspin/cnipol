@@ -8,7 +8,7 @@ class RunSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
-	var $defaultRun = 12;
+	var $defaultRun = 13;
 
    static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
 
