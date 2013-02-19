@@ -15,7 +15,10 @@
 enum EFitStatus {
    kUNKNOWN,
    kDLFIT_OK,
-   kDLFIT_FAIL
+   kDLFIT_FAIL,
+   kDL_OUTLIER,
+   kT0_OUTLIER,
+   kCHI2_OUTLIER
 };
 
 class ChannelCalib;
