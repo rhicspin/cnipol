@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
    TTimeStamp timestamp;
 
    time_t  gtime = time(0);
-   tm     *ltime = localtime(&gtime);
+   //tm     *ltime = localtime(&gtime);
+	tm      start_time = *localtime(&gtime);
 
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->fAnaTimeCpu  = stopwatch.CpuTime();
 
    string tmpSqlDateTime(19, ' ');
-   strftime(&tmpSqlDateTime[0], 19, "%Y-%m-%d %H:%M:%S", ltime);
+   strftime(&tmpSqlDateTime[0], 20, "%Y-%m-%d %H:%M:%S", &start_time);
 
    mseMeasInfoX->ana_start_time   = mysqlpp::DateTime(tmpSqlDateTime);
    mseMeasInfoX->ana_duration     = UInt_t(gAsymAnaInfo->fAnaTimeReal);

@@ -1,47 +1,49 @@
 #!/bin/bash
 
-LOG="/eicdata/eic0005/run12/run_asym_nocron.log"
-CHECKINGPERIOD=1800 # in sec
+#LOG="/eicdata/eic0005/run12/run_asym_nocron.log"
+LOG="/usr/local/polarim/log/run_asym_nocron.log"
+CHECKINGPERIOD=30 # in sec
 
 #source /eicdata/eic0005/cnipol/setup.sh >> /dev/null 2>&1
-source /eicdata/eic0005/cnipol/setup12.sh >> ${LOG} 2>&1
-#source /eicdata/eic0005/cnipol/script/run_asym/bgx_asym.sh >> ${LOG} 2>&1
+#source /eicdata/eic0005/cnipol/setup12.sh >> ${LOG} 2>&1
+source /usr/local/cnipol/setup.sh >> ${LOG} 2>&1
+#source /usr/local/cnipol/setup.sh
 
-export SSH_AUTH_SOCK=/tmp/ssh-qhSiH31025/agent.31025
-export SSH_AGENT_PID=31026
+# overwrite the data location
+export CNIPOL_DATA_DIR=/usr/local/polarim/data_buffer
+echo "overwrite the data location" >> ${LOG}
+echo "\$CNIPOL_DATA_DIR=$CNIPOL_DATA_DIR" >> ${LOG}
 
-
-while [ 1 ];
+while true;
 do
+   #echo "Checking for files..."
+   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -printf "%f\n"`)
+   #array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -printf "%f\n" | awk '{ sub(/.data/, "", $0); printf("%s\n", $0); }'`)
+
+   if [ -z "${array}" ]
+   then
+      #echo "list empty. sleep for $CHECKINGPERIOD. copy new files from online"
+      sleep $CHECKINGPERIOD
+      rsync -q --remove-source-files -av bluepc:${CNIPOL_DATA_DIR}/ ${CNIPOL_DATA_DIR}/
+      continue
+   fi
+
    echo "---" >> ${LOG}
    date >> ${LOG}
-   #RESULT=`ps -a | sed -n /${SERVICE}/p`
-
-   array=(`find ${CNIPOL_DATA_DIR}/ -regex "${CNIPOL_DATA_DIR}/\([0-9]+.[0-9]+\).data$" -mmin -70 ! -mmin -30 -printf "%f\n"`)
-
    echo Found new files: ${array[@]} >> ${LOG}
-	#echo $SSH_AUTH_SOCK, $SSH_AGENT_PID >> ${LOG}
-
-   #if [ "${RESULT:-null}" = null ]; then
-   #  echo "rsync not running. Executing"
-   #    #echo "rsync -a /eicdata/eic0005/run11/root/* bluepc:/usr/local/polarim/root/"
-   #    #echo "rsync -a /eicdata/eic0005/run09/root/* bluepc:/usr/local/polarim/root/"
-   #    nohup rsync -av eic0005:/eicdata/eic0005/run09/root/* /usr/local/polarim/root/ &
-   #    nohup rsync -av eic0005:/eicdata/eic0005/run11/root/* /usr/local/polarim/root/ &
-   #else
-   #   echo "running"
-   #fi
+   #echo "---"
+   #date
+   #echo Found new files: ${array[@]}
 
    for run_name in "${array[@]}"
    do
-      #echo my item : ${run_name%.data}
-      #echo bgx_limit 16 ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw --pulser --asym --kinema
-      #bgx_limit 16 ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw --pulser --asym --kinema >> ${LOG} 2>&1
-      echo ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --asym --kinema >> ${LOG}
-      ${CNIPOL_DIR}/bin/asym -r ${run_name%.data} --calib --profile --use-db -g --copy --pmt --raw-ext --asym --kinema >> ${LOG} 2>&1 &
+      #echo processed item : ${run_name%.data} and removed
+      #echo $CNIPOL_DIR/bin/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -g -r ${run_name%.data}
+      echo $CNIPOL_DIR/bin/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -g -r ${run_name%.data} >> ${LOG}
+      $CNIPOL_DIR/bin/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -g -r ${run_name%.data} >> ${LOG} 2>&1
+      sleep 2
+      rm ${CNIPOL_DATA_DIR}/${run_name}
       sleep 2
    done
-
-   sleep $CHECKINGPERIOD
 
 done
