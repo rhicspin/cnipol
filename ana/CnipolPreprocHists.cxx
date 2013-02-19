@@ -95,6 +95,16 @@ void CnipolPreprocHists::BookHists()
       o[shName] = hist;
       fhFitChi2NdfVsEnergyA_ch[chId-1] = hist;
 
+      shName = "hFitChi2NdfLogVsEnergyA_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+      hist->SetTitle("; Deposited Energy, keV; #chi^2/ndf;");
+      hist->SetOption("P GRIDX");
+      hist->SetMarkerStyle(kFullCircle);
+      hist->SetMarkerSize(0.8);
+      hist->SetMarkerColor(kGreen);
+      o[shName] = hist;
+      //fhFitChi2NdfLogVsEnergyA_ch[chId-1] = hist;
+
       shName = "hTimeVsEnergyACumul_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
       hist->SetOption("hist");
@@ -442,7 +452,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       //hTvsA_ch->Print("all");
       //hTimeVsEnergyA_ch->Print("all");
       Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_ch);
-      Info("PostFillPassOne_FillFromRawHists", "Non empty bin fraction %f. Channel %d (disable at < 0.10)", frac, chId);
+      Info("PostFillPassOne_FillFromRawHists", "Non empty bin fraction %f. Channel %d (disable if < 0.10)", frac, chId);
 
       if ( frac < 0.10 ) {
          gMeasInfo->DisableChannel(chId);

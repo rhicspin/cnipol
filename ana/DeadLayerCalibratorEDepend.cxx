@@ -97,13 +97,15 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       sprintf(&strChId[0], "%02d", *iCh);
 
       //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      TH1* hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
-      TH1* hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
-      TH1* hChi2Ndf  = (TH1*) c->d["preproc"]->o["hFitChi2NdfVsEnergyA_ch"+strChId];
+      TH1* hTimeVsE    = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
+      TH1* hMeanTime   = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
+      TH1* hChi2Ndf    = (TH1*) c->d["preproc"]->o["hFitChi2NdfVsEnergyA_ch"+strChId];
+      TH1* hChi2NdfLog = (TH1*) c->d["preproc"]->o["hFitChi2NdfLogVsEnergyA_ch"+strChId];
 
       //TObjArray *fitResultHists = new TObjArray();
       TObjArray fitResultHists;
 
+      // Single histogram calibration is done here
       Calibrate(hTimeVsE, hMeanTime, *iCh, &fitResultHists); // extract also fitResultHists
 
       TH1* hChi2Ndf_tmp = (TH1*) fitResultHists.At(3);
@@ -115,6 +117,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
          Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
 
          hChi2Ndf->SetBinContent(ib, chi2);
+         hChi2NdfLog->SetBinContent(ib, TMath::Log(chi2) );
       }
 
       hChi2Ndf->GetListOfFunctions()->AddAll((TList*) hChi2Ndf_tmp->GetListOfFunctions()->Clone());
@@ -127,24 +130,48 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    Calibrator::UpdateMeanChannel();
 
    ChannelCalib const& chCalibMean = GetMeanChannel();
+   ChannelCalib const& chCalibMeanOfLogs = GetMeanOfLogsChannel();
 
    // Check for bad fits to avoid interference with the channel disabling
    // procedure. Also exclude channels which are not in line with the Mean
    // chi2
-   ChannelCalibMapConstIter iChCalib = fChannelCalibs.begin();
+   ChannelCalibMapIter iChCalib = fChannelCalibs.begin();
 
    for ( ; iChCalib != fChannelCalibs.end(); ++iChCalib)
    {
       UShort_t chId = iChCalib->first;   
-      const ChannelCalib &chCalib = iChCalib->second;
+      ChannelCalib &chCalib = iChCalib->second;
+      Double_t chChi2NdfLog = TMath::Log(chCalib.GetBananaChi2Ndf());
 
       // skip the first "channel" chId=0 with the sum
       if (chId == 0) continue;
 
-      if (chCalib.GetFitStatus() != kDLFIT_OK ||
-          chCalib.GetBananaChi2Ndf() > chCalibMean.GetBananaChi2Ndf()+GetRMSBananaChi2Ndf() )
+      if ( chCalib.GetFitStatus() != kDLFIT_OK ) {
+         gMeasInfo->DisableChannel(chId);
+         continue;
+      }
+
+      // if this t0 is 2*RMS far from mean t0
+      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 2*chCalibMean.fT0CoefErr)
       {
          gMeasInfo->DisableChannel(chId);
+         chCalib.fFitStatus = kT0_OUTLIER;
+         continue;
+      }
+
+      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 2*chCalibMean.fDLWidthErr)
+      {
+         gMeasInfo->DisableChannel(chId);
+         chCalib.fFitStatus = kDL_OUTLIER;
+         continue;
+      }
+
+      if ( chChi2NdfLog > 0 && 
+           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + GetRMSOfLogsBananaChi2Ndf() )
+      {
+         gMeasInfo->DisableChannel(chId);
+         chCalib.fFitStatus = kCHI2_OUTLIER;
+         continue;
       }
    }
 
@@ -283,8 +310,8 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
 
    utils::ConvertToProfile(hchi2, hchi2_profy, kFALSE);
 
-   Double_t hchi2_profy_mean = hchi2_profy->GetMean();
-   Double_t hchi2_profy_rms  = 0.2*hchi2_profy->GetRMS(); // use only fifth of the RMS
+   Double_t hchi2_profy_mean = hchi2_profy->GetMean() < 1 ? 1 : hchi2_profy->GetMean();
+   Double_t hchi2_profy_rms  = 0.5*hchi2_profy->GetRMS(); // use only half of the RMS
 
    delete hchi2_profy;
 
@@ -324,7 +351,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
    }
 
    Double_t frac = utils::GetNonEmptyFraction(hMeanTime);
-   printf("Non empty bin fraction 2: %f\n", frac);
+   printf("Non empty bin fraction: %f\n", frac);
    
    if (frac < 0.50) {
       Error("Calibrate", "Too many bad slice fits in histogram %s. Skipping DL-T0 calibration", hMeanTime->GetName());

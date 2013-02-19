@@ -63,11 +63,20 @@ void CnipolCalibHists::BookHists(std::string cutid)
    hist->SetMarkerColor(kGreen);
    o[shName] = hist;
 
+   shName = "hLogChi2NdfVsChannel";
+   hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
+   hist->SetTitle("; Channel Id; log(#chi^{2}/ndf);");
+   hist->SetOption("P GRIDX");
+   hist->SetMarkerStyle(kFullCircle);
+   hist->SetMarkerSize(0.8);
+   hist->SetMarkerColor(kGreen);
+   o[shName] = hist;
+
    shName = "hFitStatusVsChannel";
    hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Fit Status;");
    hist->SetOption("hist GRIDX");
-   hist->GetYaxis()->SetRangeUser(0, 2.2);
+   //hist->GetYaxis()->SetRangeUser(0, 2.2);
    o[shName] = hist;
 
    DrawObjContainer        *oc;
@@ -122,10 +131,11 @@ void CnipolCalibHists::PostFill()
    //for (; iCh!=iCh; ++iCh) {
    //}
 
-   TH1* hDLVsChannel        = (TH1*) o["hDLVsChannel"];
-   TH1* hT0VsChannel        = (TH1*) o["hT0VsChannel"];
-   TH1* hChi2NdfVsChannel   = (TH1*) o["hChi2NdfVsChannel"];
-   TH1* hFitStatusVsChannel = (TH1*) o["hFitStatusVsChannel"];
+   TH1* hDLVsChannel            = (TH1*) o["hDLVsChannel"];
+   TH1* hT0VsChannel            = (TH1*) o["hT0VsChannel"];
+   TH1* hChi2NdfVsChannel       = (TH1*) o["hChi2NdfVsChannel"];
+   TH1* hLogChi2NdfVsChannel    = (TH1*) o["hLogChi2NdfVsChannel"];
+   TH1* hFitStatusVsChannel     = (TH1*) o["hFitStatusVsChannel"];
 
    for (Int_t i=1; i<=hDLVsChannel->GetNbinsX(); ++i) {
 
@@ -136,11 +146,14 @@ void CnipolCalibHists::PostFill()
       hT0VsChannel->SetBinError(i, calibrator->GetT0CoefErr(i));
 
       hChi2NdfVsChannel->SetBinContent(i, calibrator->GetBananaChi2Ndf(i));
+      hLogChi2NdfVsChannel->SetBinContent(i, TMath::Log( calibrator->GetBananaChi2Ndf(i)) );
+
       hFitStatusVsChannel->SetBinContent(i, calibrator->GetFitStatus(i));
    }
 
    // Visualize the channel selection decision based on chi2
    Double_t chi2_mean = calibrator->GetMeanChannel().GetBananaChi2Ndf();
+   chi2_mean = chi2_mean < 1 ? 1 : chi2_mean;
    Double_t chi2_rms  = calibrator->GetRMSBananaChi2Ndf();
 
    TLine* lineMean = new TLine(0, chi2_mean, hDLVsChannel->GetNbinsX()+1, chi2_mean);
@@ -155,4 +168,20 @@ void CnipolCalibHists::PostFill()
    hChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
    hChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
 
+   // Visualize the channel selection decision based on chi2
+   chi2_mean = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
+   chi2_mean = chi2_mean < 0 ? 0 : chi2_mean;
+   chi2_rms  = calibrator->GetRMSOfLogsBananaChi2Ndf();
+
+   lineMean = new TLine(0, chi2_mean, hDLVsChannel->GetNbinsX()+1, chi2_mean);
+   lineMean->SetLineWidth(2);
+   lineMean->SetLineColor(kGreen);
+
+   lineRMS  = new TLine(0, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX()+1, chi2_mean+chi2_rms);
+   lineRMS->SetLineWidth(2);
+   lineRMS->SetLineColor(kMagenta);
+
+   hLogChi2NdfVsChannel->GetListOfFunctions()->Add(lineMean);
+   hLogChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
+   hLogChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
 }

@@ -19,14 +19,14 @@ using namespace std;
 
 /** Default constructor. */
 Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs(),
-   fMeanChannel(), fRMSBananaChi2Ndf()
+   fMeanChannel(), fMeanOfLogsChannel(), fRMSBananaChi2Ndf(), fRMSOfLogsBananaChi2Ndf()
 {
 }
 
 
 /** */
 Calibrator::Calibrator(TRandom *random) : TObject(), fRandom(random),
-   fChannelCalibs(), fMeanChannel(), fRMSBananaChi2Ndf()
+   fChannelCalibs(), fMeanChannel(), fMeanOfLogsChannel(), fRMSBananaChi2Ndf(), fRMSOfLogsBananaChi2Ndf()
 {
 }
 
@@ -43,12 +43,14 @@ void Calibrator::UpdateMeanChannel()
 	//Info("UpdateMeanChannel", "Called");
 
    fMeanChannel.ResetToZero();
+   fMeanOfLogsChannel.ResetToZero();
 
 	vector<Float_t> vT0Coef;
 	//vector<Float_t> vT0CoefErr;
    vector<Float_t> vDLWidth;
    //vector<Float_t> vDLWidthErr;
    vector<Float_t> vBananaChi2Ndf;
+   vector<Float_t> vBananaChi2NdfLog;
 
    ChannelCalibMap::const_iterator iCh;
    ChannelCalibMap::const_iterator mb = fChannelCalibs.begin();
@@ -66,6 +68,7 @@ void Calibrator::UpdateMeanChannel()
          vDLWidth.push_back(iCh->second.fDLWidth);
          //vDLWidthErr.push_back(iCh->second.fDLWidthErr);
          vBananaChi2Ndf.push_back(iCh->second.fBananaChi2Ndf);
+         vBananaChi2NdfLog.push_back( TMath::Log(iCh->second.fBananaChi2Ndf) );
 
          nChannels++;
       }
@@ -78,6 +81,9 @@ void Calibrator::UpdateMeanChannel()
       fMeanChannel.fDLWidthErr    = TMath::RMS (nChannels, &vDLWidth[0]);
       fMeanChannel.fBananaChi2Ndf = TMath::Mean(nChannels, &vBananaChi2Ndf[0]);
       fRMSBananaChi2Ndf           = TMath::RMS (nChannels, &vBananaChi2Ndf[0]);
+
+      fMeanOfLogsChannel.fBananaChi2Ndf = TMath::Mean(nChannels, &vBananaChi2NdfLog[0]);
+      fRMSOfLogsBananaChi2Ndf           = TMath::RMS (nChannels, &vBananaChi2NdfLog[0]);
    }
 }
 
