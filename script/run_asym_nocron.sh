@@ -1,8 +1,21 @@
 #!/bin/bash
 
+# To run this script in background do
+#
+# >eval `ssh-agent -s`
+# >ssh-add
+#
+# Then modify the SSH_... variables in this script accordingly
+#
+# >nohup ./copy_results_pc2pc.sh run12
+#
+
 #LOG="/eicdata/eic0005/run12/run_asym_nocron.log"
 LOG="/usr/local/polarim/log/run_asym_nocron.log"
 CHECKINGPERIOD=30 # in sec
+
+export SSH_AUTH_SOCK=/tmp/ssh-nDlvjz4445/agent.4445
+export SSH_AGENT_PID=4446
 
 #source /eicdata/eic0005/cnipol/setup.sh >> /dev/null 2>&1
 #source /eicdata/eic0005/cnipol/setup12.sh >> ${LOG} 2>&1

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To run this script do
+# To run this script in background do
 #
 # >eval `ssh-agent -s`
 # >ssh-add
