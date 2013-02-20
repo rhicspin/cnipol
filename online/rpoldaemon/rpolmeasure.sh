@@ -140,6 +140,9 @@ case $MODE in
                 $EMITCMD -f $DATA -o $ROOTFILE -p $PSFILEE -d $POLARIM >> $ALOG 2>&1 ; \
                 echo "Starting sendpict 2 ..." >> $ALOG; \
                 mysendpict emitPlot $PSFILEE >> $ALOG 2>&1 ) &
+            echo "Copying... \">cp $DATA $POLDIR/data_new_tmp/\"" >> $ALOG
+            cp $DATA $POLDIR/data_buffer_buffer/
+            mv $POLDIR/data_buffer_buffer/${RUN}.data $POLDIR/data_buffer/
         fi
         ;;
     Test* )
@@ -156,6 +159,9 @@ case $MODE in
         if [ $IRC -eq 0 ]; then # analyze data if the measurement was OK
             $EMITCMD -f $DATA -o $ROOTFILE -p $PSFILE -d $POLARIM >> $ALOG 2>&1
             mysendpict emitPlot $PSFILE >> $ALOG 2>&1
+            echo "Copying... \">cp $DATA $POLDIR/data_new_tmp/\"" >> $ALOG
+            cp $DATA $POLDIR/data_buffer_buffer/
+            mv $POLDIR/data_buffer_buffer/${RUN}.data $POLDIR/data_buffer/
         fi
         ;;
     Pol* )
@@ -169,6 +175,9 @@ case $MODE in
             pawX11 -n -b $MACDIR/rampplot.kumac >> $ALOG 2>&1
             echo "Starting sendpict..." >> $ALOG
             mysendpict plotData $PSFILE >> $ALOG 2>&1
+            echo "Copying... \">cp $DATA $POLDIR/data_new_tmp/\"" >> $ALOG
+            cp $DATA $POLDIR/data_buffer_buffer/
+            mv $POLDIR/data_buffer_buffer/${RUN}.data $POLDIR/data_buffer/
         fi
         ;;
     * )
