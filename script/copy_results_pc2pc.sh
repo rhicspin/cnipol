@@ -18,12 +18,12 @@ CHECKINGPERIOD=3600 # in sec
 #eval `ssh-agent -s` >> ${LOG} 2>&1
 #export 
 
-#eic0008
-#export SSH_AUTH_SOCK=/tmp/ssh-Slbbvtp782/agent.782
-#export SSH_AGENT_PID=783
+#eic0005
+export SSH_AUTH_SOCK=/tmp/ssh-lKLHL25172/agent.25172
+export SSH_AGENT_PID=25173
 #eic0009
-export SSH_AUTH_SOCK=/tmp/ssh-QnbKyj9381/agent.9381
-export SSH_AGENT_PID=9382
+#export SSH_AUTH_SOCK=/tmp/ssh-QnbKyj9381/agent.9381
+#export SSH_AGENT_PID=9382
 #eic0010
 #export SSH_AUTH_SOCK=/tmp/ssh-TPtHZa4668/agent.4668
 #export SSH_AGENT_PID=4669
