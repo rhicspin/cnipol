@@ -605,7 +605,7 @@ function readOnlinePolar($fileNameFull="")
 
 /** */
 function getJetCarbonNormalization($normSpecs=null)
-{ //{{{
+{
    global $normJetCarbonByTarget;
 
    //print "<!--\n";
@@ -634,12 +634,12 @@ function getJetCarbonNormalization($normSpecs=null)
    }
 
    return 1;
-} //}}}
+}
 
 
 /** */
 function getHJPCNorm($run, $benergy, $polId, $tgtOrient=null, $tgtId=null)
-{ //{{{
+{
    global $normHJPC;
 
    //print "<!--\n";
@@ -665,7 +665,7 @@ function getHJPCNorm($run, $benergy, $polId, $tgtOrient=null, $tgtId=null)
    if ( isset($norm) && get_class($norm) == "pair" ) return $norm;
 
    return new pair(1, -1);
-} //}}}
+}
 
 
 /** */

@@ -48,6 +48,7 @@ $normJetCarbonByTarget[12][255]["Y1D"] = 1.073;
 $normJetCarbonByTarget[12][255]["B2D"] = 1.197;
 $normJetCarbonByTarget[12][255]["Y2U"] = 0.994;
 
+// Run 9
 $normHJPC[9][100]['B1U']['nomi'] = new pair(   1.00350,    0.01672);
 $normHJPC[9][100]['Y1D']['nomi'] = new pair(   1.00494,    0.01126);
 $normHJPC[9][100]['B2D']['nomi'] = new pair(   0.97621,    0.01097);
@@ -58,7 +59,7 @@ $normHJPC[9][250]['Y1D']['nomi'] = new pair(   0.91179,    0.02892);
 $normHJPC[9][250]['B2D']['nomi'] = new pair(   0.88177,    0.02703);
 $normHJPC[9][250]['Y2U']['nomi'] = new pair(   0.86630,    0.02722);
 
-//$normJetCarbonByTarget[11][250]2U"] = 0.933;
+// Run 11
 $normHJPC[11][250]['B1U']['nomi'] = new pair(   0.95675,    0.01368);
 $normHJPC[11][250]['Y1D']['nomi'] = new pair(   0.96189,    0.01753);
 $normHJPC[11][250]['B2D']['nomi'] = new pair(   1.05085,    0.02548);
@@ -66,6 +67,7 @@ $normHJPC[11][250]['B2D']['V'][4] = new pair(   1.11481,    0.04070);
 $normHJPC[11][250]['B2D']['V'][6] = new pair(   1.20940,    0.03638);
 $normHJPC[11][250]['Y2U']['nomi'] = new pair(   0.95513,    0.01278);
 
+// Run 12
 $normHJPC[12][100]['B1U']['nomi'] = new pair(   1.04706,    0.01295);
 $normHJPC[12][100]['Y1D']['nomi'] = new pair(   1.02821,    0.01557);
 $normHJPC[12][100]['B2D']['nomi'] = new pair(   1.12185,    0.02087);
@@ -75,6 +77,12 @@ $normHJPC[12][255]['B1U']['nomi'] = new pair(   0.99292,    0.01359);
 $normHJPC[12][255]['Y1D']['nomi'] = new pair(   1.08502,    0.01481);
 $normHJPC[12][255]['B2D']['nomi'] = new pair(   1.12329,    0.02078);
 $normHJPC[12][255]['Y2U']['nomi'] = new pair(   0.99830,    0.01658);
+
+// Run 13
+$normHJPC[13][255]['B1U']['nomi'] = new pair(   1.00000,    0.00000);
+$normHJPC[13][255]['Y1D']['nomi'] = new pair(   1.00000,    0.00000);
+$normHJPC[13][255]['B2D']['nomi'] = new pair(   1.00000,    0.00000);
+$normHJPC[13][255]['Y2U']['nomi'] = new pair(   1.00000,    0.00000);
 
 
 // sigma = fill-to-fill uncorrelated errors
