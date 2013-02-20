@@ -359,7 +359,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
       return;
    }
 
-   if (hMeanTime->Integral() <= 0) {
+   if (hMeanTime->Entries() <= 0) {
       Error("Calibrate", "Zero entries in histogram %s. Skipping DL-T0 calibration", hMeanTime->GetName());
       return;
    }
