@@ -23,7 +23,6 @@ extern "C" {
    int  icopen_(char *fname, int len);
    void icclose_(void);
    void readandfill_(int* subrun);
-
 }
 
 //
@@ -85,6 +84,7 @@ struct RHIC_STRUCT {
    int fillpat[120];
    int polpat[120];
 } rhic_;
+
 //      Commons /poldat/ /beamdat/ /tgtdat1/ /tgtdat2/
 polDataStruct poldat_;
 beamDataStruct beamdat_;
@@ -106,6 +106,7 @@ void wfana(unsigned char *data, int *len, int *chan)
    wfana_(fdata, len, chan);
 }
 
+
 int icopen_(char *fname, int len)
 {
    char *name;
@@ -123,28 +124,30 @@ int icopen_(char *fname, int len)
    return 0;
 }
 
+
 void icclose_(void)
 {
    fclose(fin);
 }
 
+
 void readandfill_(int* subrun)
 {
 //      buffer to read the next record - static due to its size
    static union {
-      recordHeaderStruct   header;
-      recordBeginStruct    begin;
-      recordSubrunStruct   subrun;
-      recordDataStruct     data;
+      recordHeaderStruct     header;
+      recordBeginStruct      begin;
+      recordSubrunStruct     subrun;
+      recordDataStruct       data;
       recordWFDV8ArrayStruct wfd;
-      recordEndStruct      end;
+      recordEndStruct        end;
       recordConfigRhicStruct cfg;
-      recordPolAdoStruct   pol;
-      recordBeamAdoStruct  beam;
-      recordTagAdoStruct   tag;
-      recordScalersStruct  scal;
+      recordPolAdoStruct     pol;
+      recordBeamAdoStruct    beam;
+      recordTagAdoStruct     tag;
+      recordScalersStruct    scal;
       recordHJetSwitchStruct jet;
-      char                 buffer[BSIZE*sizeof(int)];
+      char                   buffer[BSIZE*sizeof(int)];
    } rec;
 //      data structure pointers
    recordReadATStruct * ATPtr;

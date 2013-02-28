@@ -16,6 +16,7 @@
 #define REC_TAGADO      0x00000102      // Target ADO record
 #define REC_BEAMADO     0x00000103      // Beam ADO record
 #define REC_WCMADO      0x00000104      // Wall current monitor ADO record
+#define REC_WCM_NEW         0x00000109      // Wall current monitor ADO record
 #define REC_HJPOSADO    0x00000105      // Beam position and HJET position ADO record
 #define REC_TAGMOVEADO  0x00000106      // Target movement history ADO record
 #define REC_HJCARBT     0x00000107      // Carbon polarimeter target status in JET data runs
