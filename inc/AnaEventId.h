@@ -30,10 +30,10 @@ public:
 
    virtual void Print(const Option_t* opt="") const;
    AnaEventId & operator=(const AnaEventId &evId);
-   //bool operator<(const AnaEventId &anaEvId, const ChannelEventId &chEvId);
-   bool operator<(const ChannelEventId &chEvId);
+   //bool         operator<(const AnaEventId &anaEvId, const ChannelEventId &chEvId);
+   bool         operator<(const ChannelEventId &chEvId);
    AnaEventId & operator=(const ChannelEventId &evId);
-   void Assign(const ChannelEventId &evId);
+   void         Assign(const ChannelEventId &evId);
 
    ClassDef(AnaEventId, 1)
 };

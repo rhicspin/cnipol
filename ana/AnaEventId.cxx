@@ -29,7 +29,7 @@ void AnaEventId::Print(const Option_t* opt) const
    opt = "";
 
    printf("AnaEventId:\n");
-   printf("RevId, BuId: %12d, %12d", fRevolutionId, fBunchId);
+   printf("RevId, BunchId: %12d, %12d", fRevolutionId, fBunchId);
 }
 
 
@@ -42,7 +42,6 @@ AnaEventId & AnaEventId::operator=(const AnaEventId &evId)
 }
 
 
-//bool AnaEventId::operator<(const AnaEventId &anaEvId, const ChannelEventId &chEvId)
 bool AnaEventId::operator<(const ChannelEventId &chEvId)
 {
    if (this->fRevolutionId < chEvId.fRevolutionId) return true;

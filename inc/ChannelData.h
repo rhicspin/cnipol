@@ -17,8 +17,8 @@
 
 class ChannelData;
 
-typedef std::vector<ChannelData> ChannelDataVec;
-typedef std::map<UShort_t, ChannelData> ChannelDataMap;
+typedef std::vector<ChannelData>               ChannelDataVec;
+typedef std::map<UShort_t, ChannelData>        ChannelDataMap;
 typedef std::pair<const UShort_t, ChannelData> ChannelDataPair;
 
 

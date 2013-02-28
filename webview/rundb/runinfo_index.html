@@ -54,9 +54,9 @@ Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a
  
 <?
 // Create page links
-$page = 1;
+$page         = 1;
 $nRunsPerPage = 200;
-$nPages = ceil($nRuns/$nRunsPerPage);
+$nPages       = ceil($nRuns/$nRunsPerPage);
 
 if ( isset($_GET['page']) ) $page = $_GET['page'];
 if ($page > $nPages || $page < 1) $page = 1;

@@ -24,6 +24,7 @@ typedef std::vector<AnaEvent> AnaEventVec;
 typedef std::map<AnaEventId, AnaEvent> AnaEventMap;
 typedef std::set<AnaEvent, AnaEvent> AnaEventSet;
 
+
 /**
  *
  */
@@ -32,7 +33,6 @@ class AnaEvent : public TObject
 public:
 
 	AnaEventId     fEventId;
-   //GntChannelVec fChannels;
    ChannelDataMap fChannels;
 
 public:
