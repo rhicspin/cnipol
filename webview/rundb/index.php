@@ -138,6 +138,15 @@ if (isset($_GET['runid']) && isset($_GET['chanid'])) {
    exit;
 }
 
+
+if ( isset($_GET['himg']) && !empty($_GET['himg']) )
+{
+   $gHistImg = $_GET['himg'];
+   include("runinfo_index_image.html");
+
+   exit;
+}
+
 include("runinfo_index.html");
 
 ?>

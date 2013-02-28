@@ -58,10 +58,10 @@ public:
 
    EFitStatus GetFitStatus() const;   
    Float_t    GetBananaChi2Ndf() const { return fBananaChi2Ndf; }
-   void CopyAlphaCoefs(const ChannelCalib &chCalib);
-   void Print(const Option_t* opt="") const;
-   void PrintAsPhp(FILE *f=stdout) const;
-   void ResetToZero();
+   void       CopyAlphaCoefs(const ChannelCalib &chCalib);
+   void       Print(const Option_t* opt="") const;
+   void       PrintAsPhp(FILE *f=stdout) const;
+   void       ResetToZero();
 
    ClassDef(ChannelCalib, 1)
 };

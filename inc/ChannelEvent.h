@@ -72,8 +72,8 @@ public:
    Float_t  GetTdcAdcTimeDiff();
 
    //virtual void Print(const Option_t* opt="") const;
-   void Print(const Option_t* opt="") const;
-   bool operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
+   void   Print(const Option_t* opt="") const;
+   bool   operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
    Bool_t PassCutRawAlpha();
    Bool_t PassCutSiliconChannel();
    Bool_t PassCutDepEnergyTime();
