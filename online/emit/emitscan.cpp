@@ -42,42 +42,42 @@ bool checkSt(char *wchtarg, int strip);
 void sendemit(char *devName);
 
 struct SIPARSTRUCT {
-    int idiv;           // divider
-    float nsperchan;    // ns, WFD time unit, twice LSB of time measurement
-    float emin;         // keV
-    float trgmin;       // keV
-    int ifine;
-    float t0[96];       // t0
-    float ecoef[96];    // keV/channel
-    float edead[96];    // kev
-    float tmin[96];     // ns
-    int   mark[96];
+   int idiv;           // divider
+   float nsperchan;    // ns, WFD time unit, twice LSB of time measurement
+   float emin;         // keV
+   float trgmin;       // keV
+   int ifine;
+   float t0[96];       // t0
+   float ecoef[96];    // keV/channel
+   float edead[96];    // kev
+   float tmin[96];     // ns
+   int   mark[96];
 } sipar;
 
 //      Common /atdata/ (for n-tuple)
 struct ATDATASTRUCT {
-    int st;     // strip number
-    float e;    // keV
-    float tof;  // ns, t0 subtracted
-    long b;     // bunch number: 0-59
-    long orbit; // orbit (revolution) number
-    float stp;  // target step
-    float pos;  // target position
+   int st;     // strip number
+   float e;    // keV
+   float tof;  // ns, t0 subtracted
+   long b;     // bunch number: 0-59
+   long orbit; // orbit (revolution) number
+   float stp;  // target step
+   float pos;  // target position
 } atdata;
 
 //      Common /evtcnt/ (for emittance)
 struct EVCNTSTRUCT {
-    float step;
-    float position;
-    float normEvt;
-    float totEvt;
+   float step;
+   float position;
+   float normEvt;
+   float totEvt;
 } evtcnt;
 
 // Common /rhic/
 struct RHICSTRUCT {
-    int fillpat[MAXBUNCH];
-    int polpat[MAXBUNCH];
-    int nbfill[MAXBUNCH];
+   int fillpat[MAXBUNCH];
+   int polpat[MAXBUNCH];
+   int nbfill[MAXBUNCH];
 } rhic;
 
 // Commons /poldat/ /beamdat/ /tgtdat1/ /tgtdat2/
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
    //unsigned orbitNo, firstOrb, lastOrb;
    long orbitNo, firstOrb, lastOrb;
    int stepCh, tarWfdCh, maxSiCh;
-   unsigned int nStepCnt=0;
+   unsigned int nStepCnt = 0;
    int fitRing;
 
    long startHLin, startHRot, startVLin, startVRot;
@@ -136,26 +136,26 @@ int main(int argc, char **argv)
    FILE *fin;
 
    // set memory for orbit arrays
-   vStepOrb = (int *) malloc(MAXSTEPS*sizeof(int));
+   vStepOrb = (int *) malloc(MAXSTEPS * sizeof(int));
 
    //      buffer to read the next record - static due to its size
    static union {
-       recordHeaderStruct   header;
-       recordBeginStruct    begin;
-       recordDataStruct     data;
-       recordWFDV8ArrayStruct wfd;
-       recordEndStruct      end;
-       recordConfigRhicStruct cfg;
-       recordPolAdoStruct   pol;
-       recordBeamAdoStruct  beam;
-       recordTagAdoStruct   tag;
-       recordScalersStruct  scal;
-       recordHJetSwitchStruct jet;
-       char buffer[BSIZE*sizeof(int)];
+      recordHeaderStruct   header;
+      recordBeginStruct    begin;
+      recordDataStruct     data;
+      recordWFDV8ArrayStruct wfd;
+      recordEndStruct      end;
+      recordConfigRhicStruct cfg;
+      recordPolAdoStruct   pol;
+      recordBeamAdoStruct  beam;
+      recordTagAdoStruct   tag;
+      recordScalersStruct  scal;
+      recordHJetSwitchStruct jet;
+      char buffer[BSIZE *sizeof(int)];
    } rec;
 
    //      data structure pointers
-   recordReadATStruct * ATPtr;
+   recordReadATStruct *ATPtr;
    //recordReadWaveStruct * wavePtr;
    //recordReadWave120Struct * wave120Ptr;
    //recordALLModeStruct * ALLPtr;
@@ -173,50 +173,50 @@ int main(int argc, char **argv)
 
    // get arguments
    while ((j = getopt(argc, argv, "hd:f:o:p:")) != -1)
-       switch(j) {
-       case 'f':
-           strncpy(InFile, optarg, sizeof(InFile));
-           break;
-       case 'o':
-           // Put ROOT file stuff here.
-           strncpy(RootFile, optarg, sizeof(RootFile));
-           break;
-       case 'p':
-           strncpy(psFile, optarg, sizeof(psFile));
-           break;
-       case 'd':
-           strncpy(devName, optarg, sizeof(devName));
-           iSend = 1;
+      switch (j) {
+      case 'f':
+         strncpy(InFile, optarg, sizeof(InFile));
+         break;
+      case 'o':
+         // Put ROOT file stuff here.
+         strncpy(RootFile, optarg, sizeof(RootFile));
+         break;
+      case 'p':
+         strncpy(psFile, optarg, sizeof(psFile));
+         break;
+      case 'd':
+         strncpy(devName, optarg, sizeof(devName));
+         iSend = 1;
 
-           //
-           int iPol;
-           for (iPol=0; iPol<4; iPol++) {
-              if (strcmp(polCDEVName[iPol], devName) == 0) {
-                 recStream = ( iPol==0 || iPol==3 ) ? REC_UPSTREAM : REC_DOWNSTREAM;
-                 polId = iPol;
-                 // ds:
-                 //printf("pol: %s, %d, %x\n", devName, iPol, recStream); break;
-                 break;
-              }
-           }
-           break;
-       case 'h':
-       default:
-           printf("Analyze emittance measurement data\n");
-           printf("Usage: ./emit [-h] [-d <devicename>] [-p <psfile>] -f <data file> -o <root output> \n");
-           return 1;
-   }
+         //
+         int iPol;
+         for (iPol = 0; iPol < 4; iPol++) {
+            if (strcmp(polCDEVName[iPol], devName) == 0) {
+               recStream = ( iPol == 0 || iPol == 3 ) ? REC_UPSTREAM : REC_DOWNSTREAM;
+               polId = iPol;
+               // ds:
+               //printf("pol: %s, %d, %x\n", devName, iPol, recStream); break;
+               break;
+            }
+         }
+         break;
+      case 'h':
+      default:
+         printf("Analyze emittance measurement data\n");
+         printf("Usage: ./emit [-h] [-d <devicename>] [-p <psfile>] -f <data file> -o <root output> \n");
+         return 1;
+      }
 
    // open data file
    fin = fopen(InFile, "rb");
 
    if (fin == NULL) {
-        printf("EMIT-ERR : Must specify input file %s\n", InFile);
-        return -1;
+      printf("EMIT-ERR : Must specify input file %s\n", InFile);
+      return -1;
    }
 
    if (strlen(RootFile) <= 0) {
-      sprintf(RootFile,"%s.root",InFile);
+      sprintf(RootFile, "%s.root", InFile);
    }
 
    TFile *rootOut = new TFile(RootFile, "RECREATE");
@@ -228,168 +228,170 @@ int main(int argc, char **argv)
    //printf("0 firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
 
    for (;;) {
-       i = fread(&rec.header, sizeof(recordHeaderStruct), 1, fin);
+      i = fread(&rec.header, sizeof(recordHeaderStruct), 1, fin);
 
-       if (feof(fin)) break;
+      if (feof(fin)) break;
 
-       if (i != 1) {
-           printf("EMIT-ERR : IO error on input file (head) %s.\n", strerror(errno));
-           poldat.statusS |= (STATUS_ERROR | ERR_INT);
-           break;
-       }
+      if (i != 1) {
+         printf("EMIT-ERR : IO error on input file (head) %s.\n", strerror(errno));
+         poldat.statusS |= (STATUS_ERROR | ERR_INT);
+         break;
+      }
 
-       if ((unsigned)rec.header.len > BSIZE*sizeof(int)) {
-           poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
-           i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
-           if (feof(fin)) break;
-           if (i != 0) {
-               printf("EMIT-ERR : IO error on input file (seek) %s.\n", strerror(errno));
-               poldat.statusS |= (STATUS_ERROR | ERR_INT);
+      if ((unsigned)rec.header.len > BSIZE * sizeof(int)) {
+         poldat.statusS |= WARN_INT;
+         printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
+         i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
+         if (feof(fin)) break;
+         if (i != 0) {
+            printf("EMIT-ERR : IO error on input file (seek) %s.\n", strerror(errno));
+            poldat.statusS |= (STATUS_ERROR | ERR_INT);
+            break;
+         }
+         continue;
+      }
+
+      i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin);
+
+      if (feof(fin)) {
+         poldat.statusS |= WARN_INT;
+         printf("EMIT-WARN : Unexpected end of file.\n");
+         break;
+      }
+
+      if (i != 1) {
+         printf("EMIT-ERR : IO error on input file (data) %s.\n", strerror(errno));
+         poldat.statusS |= (STATUS_ERROR | ERR_INT);
+         break;
+      }
+
+      recRing |= rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
+
+      switch (rec.header.type & REC_TYPEMASK) {
+
+      case REC_BEGIN:
+         if (rec.begin.version < 20000) {
+            printf("EMIT-ERR : DAQ versions < 2.0.0 are not supported\n");
+            poldat.statusS |= (STATUS_ERROR | ERR_INT);
+            exit(-2);
+         }
+         printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
+         if (rec.header.type & REC_YELLOW) {
+            printf("YELLOW");
+            fitRing = 1;
+         }
+         else if (rec.header.type & REC_BLUE) {
+            printf("BLUE");
+            fitRing = 0;
+         }
+         else {
+            printf("unknown");
+         }
+         printf(" ring.\n%s : %s", rec.begin.comment, ctime(&rec.header.timestamp.time));
+         break;
+
+      case REC_RHIC_CONF:
+         printf("Reading REC_RHIC_CONF...\n");
+
+         tarWfdCh = rec.cfg.data.NumChannels - 4; // first channel for target
+         maxSiCh  = rec.cfg.data.NumChannels - 4;
+         //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
+         // The next line commented out for 2012 - we have separate blue and yellow, so maxSiCh + 1 - vert, maxSiCh + 2 - hor.
+         //if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
+         // ds
+         //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
+         //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
+         //printf("polId: %d\n", polId);
+         //printf("tarWfdCh, recRing: %d, %x\n", tarWfdCh, recRing&REC_BLUE);
+
+         break;
+
+      case REC_READAT:
+         //printf("Reading REC_READAT...\n");
+         for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
+
+            ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
+            St      = ATPtr->subhead.siNum;
+            delimtr = rec.header.timestamp.delim;
+            nRecEvt = ATPtr->subhead.Events + 1;
+
+            i += sizeof(subheadStruct) + nRecEvt * sizeof(ATStruct);
+
+            if (i > rec.header.len - sizeof(recordHeaderStruct)) {
+               printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St + 1, nRecEvt);
                break;
-           }
-           continue;
-       }
+            }
 
-       i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin);
+            //printf("tarWfdCh, St: %d, %d\n", tarWfdCh, St);
 
-       if (feof(fin)) {
-           poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Unexpected end of file.\n");
-           break;
-       }
+            if (St == tarWfdCh || St == tarWfdCh + 1) {     // we 'or' here vertical and horizontal...
+               //ds
+               //printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
 
-       if (i != 1) {
-           printf("EMIT-ERR : IO error on input file (data) %s.\n", strerror(errno));
-           poldat.statusS |= (STATUS_ERROR | ERR_INT);
-           break;
-       }
+               for (j = 0; j < nRecEvt; j++) {
+                  orbitNo = delimtr * 512 + 2 * ATPtr->data[j].rev +  ATPtr->data[j].rev0;
+                  //printf("orbitNo: %d\n", orbitNo);
+                  //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
 
-       recRing |= rec.header.type & (~(REC_TYPEMASK | REC_FROMMEMORY | REC_120BUNCH));
+                  if (firstOrb < 0) firstOrb = orbitNo;
+                  lastOrb = orbitNo;
 
-       switch (rec.header.type & REC_TYPEMASK) {
-
-       case REC_BEGIN:
-           if (rec.begin.version < 20000) {
-               printf("EMIT-ERR : DAQ versions < 2.0.0 are not supported\n");
-               poldat.statusS |= (STATUS_ERROR | ERR_INT);
-               exit(-2);
-           }
-           printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
-           if (rec.header.type & REC_YELLOW) {
-               printf("YELLOW");
-               fitRing = 1;
-           }
-           else if (rec.header.type & REC_BLUE) {
-               printf("BLUE");
-               fitRing = 0;
-           } else {
-               printf("unknown");
-           }
-           printf(" ring.\n%s : %s", rec.begin.comment, ctime(&rec.header.timestamp.time));
-           break;
-
-       case REC_RHIC_CONF:
-           printf("Reading REC_RHIC_CONF...\n");
-
-           tarWfdCh = rec.cfg.data.NumChannels - 4; // first channel for target
-           maxSiCh  = rec.cfg.data.NumChannels - 4;
-           //if (recRing && REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-           // The next line commented out for 2012 - we have separate blue and yellow, so maxSiCh + 1 - vert, maxSiCh + 2 - hor. 
-           //if (recRing & REC_BLUE) tarWfdCh += 2;     // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-           // ds
-           //printf("numChannels: %d\n", rec.cfg.data.NumChannels);
-           //printf("polId: %d\n", ((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3);
-           //printf("polId: %d\n", polId);
-           //printf("tarWfdCh, recRing: %d, %x\n", tarWfdCh, recRing&REC_BLUE);
-
-           break;
-
-       case REC_READAT:
-           //printf("Reading REC_READAT...\n");
-           for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
-
-               ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
-               St      = ATPtr->subhead.siNum;
-               delimtr = rec.header.timestamp.delim;
-               nRecEvt = ATPtr->subhead.Events + 1;
-
-               i += sizeof(subheadStruct) + nRecEvt*sizeof(ATStruct);
-
-               if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                   printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
-                   break;
+                  //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
+                  vStepOrb[nStepCnt] = orbitNo;
+                  nStepCnt++;
                }
+            }
+         }
+         break;
 
-               //printf("tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+      case REC_PCTARGET:
+         i = (rec.header.len - sizeof(rec.header)) / (4 * sizeof(long));
+         targPtr = (long *)&rec.buffer[sizeof(rec.header)];
+         --targPtr;
+         startHLin = *++targPtr;
+         startHRot = *++targPtr;
+         startVLin = *++targPtr;
+         startVRot = *++targPtr;
+         break;
 
-               if (St == tarWfdCh || St == tarWfdCh+1) {       // we 'or' here vertical and horizontal...
-                  //ds
-                  //printf("found! tarWfdCh, St: %d, %d\n", tarWfdCh, St);
+      case REC_POLADO:
+         printf("Reading REC_POLADO...\n");
 
-                  for (j=0; j<nRecEvt; j++) {
-                      orbitNo = delimtr*512 + 2*ATPtr->data[j].rev +  ATPtr->data[j].rev0;
-                      //printf("orbitNo: %d\n", orbitNo);
-                      //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
+         memcpy(&poldat, &rec.pol.data, sizeof(poldat));
+         tlen = strlen(rec.pol.data.targetIdS);
 
-                      if (firstOrb < 0) firstOrb = orbitNo;
-                      lastOrb = orbitNo;
+         memcpy(targID, rec.pol.data.targetIdS, tlen * sizeof(char));
 
-                      //printf("firstOrb, lastOrb: %d, %d\n", firstOrb, lastOrb);
-                      vStepOrb[nStepCnt] = orbitNo;
-                      nStepCnt++;
-                  }
-               }
-           }
-           break;
+         if (targID == NULL) {
+            printf("EMIT-WARN : Target id not found in data file. Using vertical target information.\n");
+            sprintf(targID, "Vert");        // assume vertical target
+         }
 
-       case REC_PCTARGET:
-           i = (rec.header.len - sizeof(rec.header))/(4*sizeof(long));
-           targPtr = (long *)&rec.buffer[sizeof(rec.header)];
-           --targPtr;
-           startHLin = *++targPtr;
-           startHRot = *++targPtr;
-           startVLin = *++targPtr;
-           startVRot = *++targPtr;
-           break;
+         stepCh = tarWfdCh;
 
-       case REC_POLADO:
-           printf("Reading REC_POLADO...\n");
+         if (strncmp(targID, "H", 1) == 0) stepCh++; // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
 
-           memcpy(&poldat, &rec.pol.data, sizeof(poldat));
-           tlen = strlen(rec.pol.data.targetIdS);
+         printf("Target is %s  Step Ch is %d\n", targID, stepCh);
+         printf("Beam Energy = %f\n", poldat.beamEnergyS);
+         //ds
+         //printf("runIdS: %d\n", poldat.runIdS);
+         //printf("polId: %d\n", polId);
 
-           memcpy(targID, rec.pol.data.targetIdS, tlen*sizeof(char));
+         // find measurement duration to determine max orbit number
+         measTime = rec.pol.data.stopTimeS - rec.pol.data.startTimeS;
+         if (measTime <= 0 || measTime > MAXMTIME) {
+            measTime = MAXMTIME;
+            printf("EMIT-WARN : Measurement time not found or too large. Default value is %d sec.\n", measTime);
+         }
+         else {
+            printf("Measurement time: %d sec.\n", measTime);
+         }
+         fseek(fin, 0, SEEK_END);  // finished w/ first loop, goto eof
+         break;
 
-           if (targID == NULL) {
-               printf("EMIT-WARN : Target id not found in data file. Using vertical target information.\n");
-               sprintf(targID,"Vert");         // assume vertical target
-           }
-
-           stepCh = tarWfdCh;
-
-           if (strncmp(targID,"H",1) == 0) stepCh++;   // 2010 - Motor channels are yellow-vert, yellow-hor, blue-vert, blue-hor
-
-           printf("Target is %s  Step Ch is %d\n",targID, stepCh);
-           printf("Beam Energy = %f\n",poldat.beamEnergyS);
-           //ds
-           //printf("runIdS: %d\n", poldat.runIdS);
-           //printf("polId: %d\n", polId);
-
-           // find measurement duration to determine max orbit number
-           measTime = rec.pol.data.stopTimeS-rec.pol.data.startTimeS;
-           if (measTime<=0 || measTime>MAXMTIME) {
-               measTime = MAXMTIME;
-               printf("EMIT-WARN : Measurement time not found or too large. Default value is %d sec.\n", measTime);
-           } else {
-               printf("Measurement time: %d sec.\n",measTime);
-           }
-           fseek(fin, 0, SEEK_END);  // finished w/ first loop, goto eof
-           break;
-
-       default:        // skip other records
-           break;
-       }
+      default:        // skip other records
+         break;
+      }
    }
 
    rewind(fin);  // go back to beginning of file
@@ -399,11 +401,11 @@ int main(int argc, char **argv)
    printf("Emittance Scan - %s E=%7.2f GeV\n", devName, poldat.beamEnergyS);
 
    if (firstOrb < 0 || lastOrb <= 0 || lastOrb < firstOrb) {
-       printf("EMIT-ERR : No target motion data were found.\n");
-       printf("firstOrb, lastOrb: %ld, %ld\n", firstOrb, lastOrb);
-       poldat.statusS |= 0x00000040;  // W-NODATA no data to analyze
-       if (iSend) sendemit(devName);
-       return 1;
+      printf("EMIT-ERR : No target motion data were found.\n");
+      printf("firstOrb, lastOrb: %ld, %ld\n", firstOrb, lastOrb);
+      poldat.statusS |= 0x00000040;  // W-NODATA no data to analyze
+      if (iSend) sendemit(devName);
+      return 1;
    }
 
    cutEMIN   = EMIN;
@@ -415,11 +417,11 @@ int main(int argc, char **argv)
    // First half of data - target moving out
 
    // Make a histogram of of steps vs. revolution...
-   float *xstep = (float*) malloc(nStepCnt*sizeof(float));
-   float *yrev  = (float*) malloc(nStepCnt*sizeof(float));
+   float *xstep = (float *) malloc(nStepCnt * sizeof(float));
+   float *yrev  = (float *) malloc(nStepCnt * sizeof(float));
 
    TH1F *hsrev;
-   hsrev = new TH1F("hsrev", "Revolution vs. Steps", nStepCnt-1, 0, nStepCnt-1);
+   hsrev = new TH1F("hsrev", "Revolution vs. Steps", nStepCnt - 1, 0, nStepCnt - 1);
    hsrev->GetXaxis()->SetTitle("Step No.");
    hsrev->GetYaxis()->SetTitle("Revolution No.");
    hsrev->GetXaxis()->CenterTitle();
@@ -432,11 +434,10 @@ int main(int argc, char **argv)
    // Find the maximum difference in adjacent revolution (orbit) numbers.
    // Reverse direction starts after the maximum after midStepCnt steps.
    // *** Skip the first 10 and last 10 steps to avoid spurious events. ***
-   for (i=9; i+10<nStepCnt; i++)
-   {
+   for (i = 9; i + 10 < nStepCnt; i++) {
       xstep[i] = i;
       yrev[i]  = vStepOrb[i];
-      nderv    = vStepOrb[i+1] - vStepOrb[i];
+      nderv    = vStepOrb[i + 1] - vStepOrb[i];
 
       hsrev->SetBinContent(i, vStepOrb[i]);
 
@@ -450,8 +451,8 @@ int main(int argc, char **argv)
 
    if (nbins > 200) nbins = 200;
 
-   int delta    = 3*midStepCnt/nbins;
-   int nOrbs    = (lastOrb - firstOrb)/2;
+   int delta    = 3 * midStepCnt / nbins;
+   int nOrbs    = (lastOrb - firstOrb) / 2;
    int totOrbs  =  lastOrb - firstOrb + 1;
    //int outOrb = vStepOrb[midStepCnt];
 
@@ -459,31 +460,31 @@ int main(int argc, char **argv)
    /*
            TGraph *gst;
            TCanvas *cgraph;
-   
+
            cgraph = new TCanvas();
            cgraph->SetFillColor(10);
-   
+
            gst = new TGraph(nStepCnt-1, xstep, yrev);
            gst->GetXaxis()->SetTitle("Steps");
            gst->GetXaxis()->CenterTitle();
            gst->GetYaxis()->SetTitle("Revolution No.");
            gst->GetYaxis()->CenterTitle();
-   
+
            gst->Draw("AL");
            cgraph->Print("graph.ps");
    */
 
    printf("First Orbit = %ld Last Orbit = %ld Number Orbits = %d Orbits at midpoint = %d\n",
-      firstOrb, lastOrb, totOrbs, vStepOrb[midStepCnt]);
+          firstOrb, lastOrb, totOrbs, vStepOrb[midStepCnt]);
 
    printf("Number of steps = %d First step orbit = %d Last step orbit = %d Midpoint steps = %d\n",
-      nStepCnt, vStepOrb[0], vStepOrb[nStepCnt-1], midStepCnt);
+          nStepCnt, vStepOrb[0], vStepOrb[nStepCnt - 1], midStepCnt);
 
-   int *stepOrb = (int *) malloc( (lastOrb+1)*sizeof(int) );
+   int *stepOrb = (int *) malloc( (lastOrb + 1) * sizeof(int) );
    memset(stepOrb, 0, sizeof(stepOrb));
 
-   for (i=firstOrb; i < (unsigned) vStepOrb[midStepCnt]; i++) {
-      for (j=0; j<=midStepCnt; j++) {
+   for (i = firstOrb; i < (unsigned) vStepOrb[midStepCnt]; i++) {
+      for (j = 0; j <= midStepCnt; j++) {
          if ((unsigned) vStepOrb[j] >= i) {
             stepOrb[i] = j;
             break;
@@ -491,9 +492,9 @@ int main(int argc, char **argv)
       }
    }
 
-   k = 2*(midStepCnt);
-   for (i=vStepOrb[midStepCnt+1]; i<(unsigned)lastOrb; i++) {
-      for (j=midStepCnt+1; j<(signed)nStepCnt; j++) {
+   k = 2 * (midStepCnt);
+   for (i = vStepOrb[midStepCnt + 1]; i < (unsigned)lastOrb; i++) {
+      for (j = midStepCnt + 1; j < (signed)nStepCnt; j++) {
          if ((unsigned) vStepOrb[j] >= i) {
             n = k - j;
             if (n >= 0) stepOrb[i] = n;
@@ -524,10 +525,10 @@ int main(int argc, char **argv)
 
    TH1D *hbunch[MAXBUNCH];
 
-   for (i=0; i<MAXBUNCH; i++) {
-       sprintf(str1, "hbunch%03d", i+1);
-       sprintf(str2, "Each Bunch %d", i+1);
-       hbunch[i] = new TH1D(str1, str2, nbins, 1, midStepCnt - delta);
+   for (i = 0; i < MAXBUNCH; i++) {
+      sprintf(str1, "hbunch%03d", i + 1);
+      sprintf(str2, "Each Bunch %d", i + 1);
+      hbunch[i] = new TH1D(str1, str2, nbins, 1, midStepCnt - delta);
    }
 
    // initialize counters
@@ -537,198 +538,202 @@ int main(int argc, char **argv)
    printf("Starting second pass on data file...\n");
 
    // read records for second time to get events
-   for(;;) {
-       i = fread(&rec.header, sizeof(recordHeaderStruct), 1, fin);
-       if (feof(fin)) break;
-       if (i != 1) {
-           printf("EMIT-ERR : IO error on second loop of file (head) %s.\n", strerror(errno));
-           poldat.statusS |= (STATUS_ERROR | ERR_INT);
-           break;
-       }
+   for (;;) {
+      i = fread(&rec.header, sizeof(recordHeaderStruct), 1, fin);
+      if (feof(fin)) break;
+      if (i != 1) {
+         printf("EMIT-ERR : IO error on second loop of file (head) %s.\n", strerror(errno));
+         poldat.statusS |= (STATUS_ERROR | ERR_INT);
+         break;
+      }
 
-       if ((unsigned)rec.header.len > BSIZE*sizeof(int)) {
-           poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
-           i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
-           if (feof(fin)) break;
-           if (i != 0) {
-               printf("EMIT-ERR : IO error on input file (seek) %s.\n", strerror(errno));
-               poldat.statusS |= (STATUS_ERROR | ERR_INT);
+      if ((unsigned)rec.header.len > BSIZE * sizeof(int)) {
+         poldat.statusS |= WARN_INT;
+         printf("EMIT-WARN : Very large record (%ld).\n", rec.header.len);
+         i = fseek(fin, rec.header.len - sizeof(recordHeaderStruct), SEEK_CUR);
+         if (feof(fin)) break;
+         if (i != 0) {
+            printf("EMIT-ERR : IO error on input file (seek) %s.\n", strerror(errno));
+            poldat.statusS |= (STATUS_ERROR | ERR_INT);
+            break;
+         }
+         continue;
+      }
+
+      i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin);
+
+      if (feof(fin)) {
+         poldat.statusS |= WARN_INT;
+         printf("EMIT-WARN : Unexpected end of file.\n");
+         break;
+      }
+
+      if (i != 1) {
+         printf("EMIT-ERR : IO error on input file (data) %s.\n", strerror(errno));
+         poldat.statusS |= (STATUS_ERROR | ERR_INT);
+         break;
+      }
+
+      switch (rec.header.type & REC_TYPEMASK) {
+      case REC_BEGIN:
+         if (rec.begin.version < 20000) {
+            printf("EMIT-ERR : DAQ versions < 2.0.0 are not supported\n");
+            poldat.statusS |= (STATUS_ERROR | ERR_INT);
+            exit(-2);
+         }
+         printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
+         if (rec.header.type & REC_YELLOW) {
+            printf("YELLOW");
+            fitRing = 1;
+         }
+         else if (rec.header.type & REC_BLUE) {
+            printf("BLUE");
+            fitRing = 0;
+         }
+         else {
+            printf("unknown");
+         }
+         printf(" ring.\n%s : %s", rec.begin.comment, ctime(&rec.header.timestamp.time));
+         break;
+
+      case REC_END:
+         printf("EMIT-INFO : End of data set at record %ld : %s\n", rec.header.num, rec.end.comment);
+         break;
+
+      case REC_POLADO:
+         memcpy(&poldat, &rec.pol.data, sizeof(poldat));
+         break;
+
+      case REC_BEAMADO:
+         memcpy(&beamdat, &rec.beam.data, sizeof(beamdat));
+         for (i = 0; i < MAXBUNCH; i++) {
+            rhic.fillpat[i] = beamdat.measuredFillPatternM[3 * i];
+            rhic.polpat[i] = beamdat.polarizationFillPatternS[3 * i];
+         }
+         printf("Fill pattern: ");
+         for (i = 0; i < MAXBUNCH; i++) {
+            printf("%c", (rhic.fillpat[i] != 0) ? '|' : '_');
+            if (rhic.fillpat[i] != 0) nbunch++;
+         }
+         printf("\n");
+         break;
+
+      case REC_TAGADO:
+         memcpy(&tgtdat1, &rec.tag.data[0], sizeof(tgtdat1));
+         memcpy(&tgtdat2, &rec.tag.data[1], sizeof(tgtdat2));
+         break;
+
+      case REC_RHIC_CONF:
+         sipar.idiv      = rec.cfg.data.CSR.split.iDiv;
+         sipar.ifine     = rec.cfg.data.CSR.split.Mod2D;
+         sipar.emin      = rec.cfg.data.Emin;
+         sipar.trgmin    = rec.cfg.data.TrigMin;
+         sipar.nsperchan = rec.cfg.data.WFDTUnit;
+
+         k = 0;
+
+         for (i = 0; i < (unsigned)rec.cfg.data.NumChannels; i++) {
+            if (rec.cfg.data.chan[i].CamacN == 0) continue;
+            sipar.t0[i]    = rec.cfg.data.chan[i].t0;
+            sipar.ecoef[i] = rec.cfg.data.chan[i].ecoef;
+            sipar.edead[i] = rec.cfg.data.chan[i].edead;
+            sipar.tmin[i]  = rec.cfg.data.chan[i].Window.split.Beg * sipar.nsperchan;
+            k++;
+         }
+
+         printf("Configuration OK : %d Si found.\n", k);
+         break;
+
+      case REC_READALL:
+         break;   // not currently used for emittance
+
+      case REC_READRAW:
+         break;
+
+      case REC_READSUB:
+         break; // not currently used for emittance
+
+      case REC_READAT:
+
+         for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);) {
+            ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
+            St      = ATPtr->subhead.siNum;
+            delimtr = rec.header.timestamp.delim;
+            nRecEvt = ATPtr->subhead.Events + 1;
+            i += sizeof(subheadStruct) + nRecEvt * sizeof(ATStruct);
+
+            if (i > rec.header.len - sizeof(recordHeaderStruct)) {
+               printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St + 1, nRecEvt);
                break;
-           }
-           continue;
-       }
+            }
 
-       i = fread(&rec.begin.version, rec.header.len - sizeof(recordHeaderStruct), 1, fin);
+            if (!checkSt(targID, St)) continue;
 
-       if (feof(fin)) {
-           poldat.statusS |= WARN_INT;
-           printf("EMIT-WARN : Unexpected end of file.\n");
-           break;
-       }
+            for (j = 0; j < nRecEvt; j++) {
+               atdata.st    = St + 1;
+               atdata.e     = ATPtr->data[j].a * sipar.ecoef[St] + sipar.edead[St];
+               atdata.tof   = ATPtr->data[j].t * 0.5 * sipar.nsperchan - sipar.t0[St];
+               atdata.b     = ATPtr->data[j].b;
+               atdata.orbit = delimtr * 512 + 2 * ATPtr->data[j].rev + ATPtr->data[j].rev0;
 
-       if (i != 1) {
-           printf("EMIT-ERR : IO error on input file (data) %s.\n", strerror(errno));
-           poldat.statusS |= (STATUS_ERROR | ERR_INT);
-           break;
-       }
+               if (St < maxSiCh && rhic.fillpat[atdata.b]) {    // data adc AND filled bunch
+                  if ( atdata.orbit < firstOrb || atdata.orbit > lastOrb) { // Outside target moving range
+                     continue;
+                  }
+                  else {
+                     // Crude cuts on the data (for now = 3/3/09)...
+                     if (atdata.e >= cutEMIN && atdata.e <= cutEMAX && atdata.tof >= cutTOFMIN && atdata.tof <= cutTOFMAX) {
+                        k = atdata.orbit;
 
-       switch(rec.header.type & REC_TYPEMASK) {
-       case REC_BEGIN:
-           if (rec.begin.version < 20000) {
-               printf("EMIT-ERR : DAQ versions < 2.0.0 are not supported\n");
-               poldat.statusS |= (STATUS_ERROR | ERR_INT);
-               exit(-2);
-           }
-           printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
-           if (rec.header.type & REC_YELLOW) {
-               printf("YELLOW");
-               fitRing = 1;
-           } else if (rec.header.type & REC_BLUE) {
-               printf("BLUE");
-               fitRing = 0;
-           } else {
-               printf("unknown");
-           }
-           printf(" ring.\n%s : %s", rec.begin.comment, ctime(&rec.header.timestamp.time));
-           break;
+                        if (stepOrb[k] > 0) {
+                           hsum->Fill(stepOrb[k]);
+                           if (k < vStepOrb[midStepCnt]) {
+                              hout->Fill(stepOrb[k]);
+                              hbunch[atdata.b]->Fill(stepOrb[k]);
+                           }
+                           else if (k >= vStepOrb[midStepCnt + 1]) {
+                              hret->Fill(stepOrb[k]);
+                           }
+                        }
+                     }
+                  }
 
-       case REC_END:
-           printf("EMIT-INFO : End of data set at record %ld : %s\n", rec.header.num, rec.end.comment);
-           break;
+                  evtcnt.totEvt++;
 
-       case REC_POLADO:
-           memcpy(&poldat, &rec.pol.data, sizeof(poldat));
-           break;
+                  if (evtcnt.totEvt == chkEvt) {
+                     printf("Finished %dM events \n", (int)(evtcnt.totEvt / 1E6));
+                     chkEvt += 1E6;
+                  }
+               } // if (St < maxSiCh)...
+            } // for (j = 0; j < nRecEvt...
+         } // for (i = 0; i < rec.header.len...
 
-       case REC_BEAMADO:
-           memcpy(&beamdat, &rec.beam.data, sizeof(beamdat));
-           for (i=0;i<MAXBUNCH;i++) {
-               rhic.fillpat[i] = beamdat.measuredFillPatternM[3*i];
-               rhic.polpat[i] = beamdat.polarizationFillPatternS[3*i];
-           }
-           printf("Fill pattern: ");
-           for (i=0;i<MAXBUNCH;i++) {
-               printf("%c", (rhic.fillpat[i] != 0) ? '|' : '_');
-               if (rhic.fillpat[i]!=0) nbunch++;
-           }
-           printf("\n");
-           break;
+         break;
 
-       case REC_TAGADO:
-           memcpy(&tgtdat1, &rec.tag.data[0], sizeof(tgtdat1));
-           memcpy(&tgtdat2, &rec.tag.data[1], sizeof(tgtdat2));
-           break;
+      case REC_WFDV8SCAL:
+         break; // don't use scaler histos for emittance
 
-       case REC_RHIC_CONF:
-           sipar.idiv      = rec.cfg.data.CSR.split.iDiv;
-           sipar.ifine     = rec.cfg.data.CSR.split.Mod2D;
-           sipar.emin      = rec.cfg.data.Emin;
-           sipar.trgmin    = rec.cfg.data.TrigMin;
-           sipar.nsperchan = rec.cfg.data.WFDTUnit;
+      case REC_SCALERS:
+         memcpy(&scalers, &rec.scal.data[0], sizeof(scalers));
+         break;
 
-           k = 0;
+      case REC_PCTARGET:
+         break;
 
-           for (i=0; i<(unsigned)rec.cfg.data.NumChannels; i++) {
-               if (rec.cfg.data.chan[i].CamacN == 0) continue;
-               sipar.t0[i]    = rec.cfg.data.chan[i].t0;
-               sipar.ecoef[i] = rec.cfg.data.chan[i].ecoef;
-               sipar.edead[i] = rec.cfg.data.chan[i].edead;
-               sipar.tmin[i]  = rec.cfg.data.chan[i].Window.split.Beg * sipar.nsperchan;
-               k++;
-           }
+      case REC_WCMADO:
+         break;
 
-           printf("Configuration OK : %d Si found.\n", k);
-           break;
-
-       case REC_READALL:
-           break;   // not currently used for emittance
-
-       case REC_READRAW:
-           break;
-
-       case REC_READSUB:
-           break; // not currently used for emittance
-
-       case REC_READAT:
-
-           for (i = 0; i < rec.header.len - sizeof(recordHeaderStruct);)
-           {
-              ATPtr   = (recordReadATStruct *) (&rec.data.rec[i]);
-              St      = ATPtr->subhead.siNum;
-              delimtr = rec.header.timestamp.delim;
-              nRecEvt = ATPtr->subhead.Events + 1;
-              i += sizeof(subheadStruct) + nRecEvt*sizeof(ATStruct);
-
-              if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-                 printf("Broken record %ld (%ld bytes). Last subhead: siNum=%d  Events=%d\n", rec.header.num, rec.header.len, St+1, nRecEvt);
-                 break;
-              }
-
-              if (!checkSt(targID, St)) continue;
-
-              for (j = 0; j < nRecEvt; j++) {
-                 atdata.st    = St+1;
-                 atdata.e     = ATPtr->data[j].a * sipar.ecoef[St] + sipar.edead[St];
-                 atdata.tof   = ATPtr->data[j].t * 0.5 * sipar.nsperchan - sipar.t0[St];
-                 atdata.b     = ATPtr->data[j].b;
-                 atdata.orbit = delimtr*512 + 2*ATPtr->data[j].rev + ATPtr->data[j].rev0;
-
-                 if (St < maxSiCh && rhic.fillpat[atdata.b]) {    // data adc AND filled bunch
-                    if ( atdata.orbit < firstOrb || atdata.orbit > lastOrb) { // Outside target moving range
-                        continue;
-                    } else {
-                       // Crude cuts on the data (for now = 3/3/09)...
-                       if (atdata.e >= cutEMIN && atdata.e <= cutEMAX && atdata.tof >= cutTOFMIN && atdata.tof <= cutTOFMAX) {
-                          k = atdata.orbit;
-
-                          if (stepOrb[k] > 0) {
-                             hsum->Fill(stepOrb[k]);
-                             if (k < vStepOrb[midStepCnt]) {
-                                hout->Fill(stepOrb[k]);
-                                hbunch[atdata.b]->Fill(stepOrb[k]);
-                             } else if (k >= vStepOrb[midStepCnt+1]) {
-                                hret->Fill(stepOrb[k]);
-                             }
-                          }
-                       }
-                    }
-
-                    evtcnt.totEvt++;
-
-                    if (evtcnt.totEvt == chkEvt) {
-                        printf("Finished %dM events \n", (int)(evtcnt.totEvt/1E6));
-                        chkEvt += 1E6;
-                    }
-                 } // if (St < maxSiCh)...
-              } // for (j = 0; j < nRecEvt...
-           } // for (i = 0; i < rec.header.len...
-
-           break;
-
-       case REC_WFDV8SCAL:
-           break; // don't use scaler histos for emittance
-
-       case REC_SCALERS:
-           memcpy(&scalers, &rec.scal.data[0], sizeof(scalers));
-           break;
-
-       case REC_PCTARGET:
-           break;
-
-       case REC_WCMADO:
-           break;
-
-       default:        // skip any unknown records
-           printf("Unknown record %8.8lX encountered in input data file\n", rec.header.type & REC_TYPEMASK);
-           break;
-       } // switch
+      default:        // skip any unknown records
+         printf("Unknown record %8.8lX encountered in input data file\n", rec.header.type & REC_TYPEMASK);
+         break;
+      } // switch
    } // for(;;)...
 
    if (fitRing == 0) {
-       printf("Emittance scan fits for BLUE ring\n");
-   } else {
-       printf("Emittance scan fits for YELLOW ring\n");
+      printf("Emittance scan fits for BLUE ring\n");
+   }
+   else {
+      printf("Emittance scan fits for YELLOW ring\n");
    }
 
    printf("\nBeam energy = %7.2f GeV\n", poldat.beamEnergyS);
@@ -737,12 +742,12 @@ int main(int argc, char **argv)
 
    // Fit histograms if events found
    if (nbunch <= 0 || evtcnt.totEvt < MINFITEVT) {
-       printf("EMIT-ERR : No bunches or less than %d events found - No fits performed\n",MINFITEVT);
-       poldat.statusS |= 0x00000020;  // W-NODATA no data to analyze
-       if (iSend) sendemit(devName);
+      printf("EMIT-ERR : No bunches or less than %d events found - No fits performed\n", MINFITEVT);
+      poldat.statusS |= 0x00000020;  // W-NODATA no data to analyze
+      if (iSend) sendemit(devName);
 
-       // exit here
-       return 0;
+      // exit here
+      return 0;
    }
 
    // Fit created histograms
@@ -750,7 +755,7 @@ int main(int argc, char **argv)
    gStyle->SetEndErrorSize(0);
    gStyle->SetFrameBorderMode(0);
 
-   float hpeak[nbunch],ehpeak[nbunch];
+   float hpeak[nbunch], ehpeak[nbunch];
    float hwidth[nbunch], ehwidth[nbunch];
    float xbun[nbunch];
    float gstep[200], gcnts[200], gerr[200];
@@ -768,16 +773,16 @@ int main(int argc, char **argv)
    gfit->SetLineWidth(2);
 
    // Set the errors for the histogram (hout, hret or hsum) that we are using...
-   for (i=1; i<nbins; i++) {       // Bin 0 has underflows - ignore it
+   for (i = 1; i < nbins; i++) {   // Bin 0 has underflows - ignore it
       double bincont = hout->GetBinContent(i);
       double binerr  = sqrt(bincont);
-      gcnts[i-1]     = bincont;
-      gstep[i-1]     = hout->GetBinCenter(i);
-      gerr[i-1]      = binerr;
+      gcnts[i - 1]   = bincont;
+      gstep[i - 1]   = hout->GetBinCenter(i);
+      gerr[i - 1]    = binerr;
       hout->SetBinError(i, binerr);
    }
 
-   TGraphErrors *gout = new TGraphErrors(nbins-1, gstep, gcnts, 0, gerr);
+   TGraphErrors *gout = new TGraphErrors(nbins - 1, gstep, gcnts, 0, gerr);
    gout->SetTitle("Profile - Moving Out");
    gout->GetXaxis()->SetTitle("Profile - Moving Out");
    gout->GetXaxis()->CenterTitle();
@@ -798,7 +803,7 @@ int main(int argc, char **argv)
    rms     = hout->GetRMS();
    entries = (int)hout->GetEntries();
 
-   tlo = sumPeak-twidth;
+   tlo = sumPeak - twidth;
    if (tlo < 0) tlo = 0;
 
    TH1D *hphisto;
@@ -822,21 +827,21 @@ int main(int argc, char **argv)
    // Save values to be sent to cdev...
    tocdev.peak      = sumPeak;
    tocdev.width     = sumWidth;
-   tocdev.relwidth  = twidth/sumPeak;
-   tocdev.peaktoEvt = sumPeak/(float)entries;
+   tocdev.relwidth  = twidth / sumPeak;
+   tocdev.peaktoEvt = sumPeak / (float)entries;
 
-   for (i=0; i<MAXBUNCH; i++) {
+   for (i = 0; i < MAXBUNCH; i++) {
       if (rhic.fillpat[i] != 0) {
          hbunch[i]->Fit(gfit);
          p1 = gfit->GetParameter(1);
          p2 = gfit->GetParameter(2);
 
          // Save values to be sent to cdev...
-         k = 3*(i+1) - 2;
+         k = 3 * (i + 1) - 2;
          tocdev.peakb[k] = p1;
          tocdev.widthb[k] = MMPERSTEP * p2;
-         tocdev.relwidthb[k] = p2/p1;
-         tocdev.peaktoEvtb[k] = p1/(float)hbunch[i]->GetEntries();
+         tocdev.relwidthb[k] = p2 / p1;
+         tocdev.peaktoEvtb[k] = p1 / (float)hbunch[i]->GetEntries();
 
          p2 *= MMPERSTEP;
          xbun[nbun] = i;
@@ -854,12 +859,12 @@ int main(int argc, char **argv)
    // Set minimum amd maximum of plot at mean +/- 10 rms...
    hpmean = hphisto->GetMean();
    hprms  = hphisto->GetRMS();
-   hpmin  = (float)100*floor((hpmean - 15.0*hprms)/100+1);
-   hpmax  = (float)100*floor((hpmean + 15.0*hprms)/100);
+   hpmin  = (float)100 * floor((hpmean - 15.0 * hprms) / 100 + 1);
+   hpmax  = (float)100 * floor((hpmean + 15.0 * hprms) / 100);
 
    if (hpmax - hpmin < 200) {
-       hpmin = hpmean - 100;
-       hpmax = hpmean + 100;
+      hpmin = hpmean - 100;
+      hpmax = hpmean + 100;
    }
 
    hphisto->GetXaxis()->SetRangeUser(hpmin, hpmax);
@@ -868,12 +873,12 @@ int main(int argc, char **argv)
    hwrms = hwhisto->GetRMS();
 
    // Adjust range (1000.*) since numbers are small. Otherwise always get zero...
-   hwmin = (float)0.001*floor(1000.*(hwmean - 10.0*hwrms));
-   hwmax = (float)0.001*floor(1000.*(hwmean + 10.0*hwrms));
+   hwmin = (float)0.001 * floor(1000.*(hwmean - 10.0 * hwrms));
+   hwmax = (float)0.001 * floor(1000.*(hwmean + 10.0 * hwrms));
 
    if (hwmax - hwmin < 0.5) {
-       hwmin = hwmean - 0.25;
-       hwmax = hwmean + 0.25;
+      hwmin = hwmean - 0.25;
+      hwmax = hwmean + 0.25;
    }
 
    hwhisto->GetXaxis()->SetRangeUser(hwmin, hwmax);
@@ -902,12 +907,12 @@ int main(int argc, char **argv)
    gwidth->GetXaxis()->SetLabelSize(0.05);
    gwidth->GetYaxis()->SetLabelSize(0.05);
 
-   TCanvas *c1 = new TCanvas("emitscan","Emittance Plots",425,550);
+   TCanvas *c1 = new TCanvas("emitscan", "Emittance Plots", 425, 550);
    c1->SetFillColor(kWhite);
 
-   sprintf(str1,"Emittance Scan - %s %8.3f E =%7.2f GeV",
-       //polName[((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3], poldat.runIdS, poldat.beamEnergyS);
-       polName[polId], poldat.runIdS, poldat.beamEnergyS);
+   sprintf(str1, "Emittance Scan - %s %8.3f E =%7.2f GeV",
+           //polName[((int)(poldat.runIdS*10 - 10*((int) poldat.runIdS) + 0.01)) & 3], poldat.runIdS, poldat.beamEnergyS);
+           polName[polId], poldat.runIdS, poldat.beamEnergyS);
 
    TPaveLabel *lbl = new TPaveLabel(0.00, 0.96, 1.00, 1.00, str1);
    lbl->SetFillColor(kWhite);
@@ -917,7 +922,7 @@ int main(int argc, char **argv)
    TPad *canv = new TPad("canv", " ", 0.00, 0.959, 1.00, 0.00);
    canv->SetFillColor(kWhite);
    canv->SetBorderSize(0);
-   canv->Divide(2,3);
+   canv->Divide(2, 3);
    canv->Draw();
 
    canv->cd(1);
@@ -936,7 +941,7 @@ int main(int argc, char **argv)
    gout->Draw("AP");
    canv->Update();
 
-   TPaveStats *st = (TPaveStats*)(gout->GetListOfFunctions()->FindObject("stats"));
+   TPaveStats *st = (TPaveStats *)(gout->GetListOfFunctions()->FindObject("stats"));
 
    if (st) {
       st->SetX1NDC(0);
@@ -946,21 +951,21 @@ int main(int argc, char **argv)
    }
 
    canv->cd(6);
-   TPavesText *ttext = new TPavesText(0.00,0.80, 0.80,0.30);
+   TPavesText *ttext = new TPavesText(0.00, 0.80, 0.80, 0.30);
    ttext->SetFillColor(kWhite);
    ttext->SetBorderSize(0);
    ttext->AddText(poldat.targetIdS);
-   sprintf(str1,"Entries = %d", entries);
+   sprintf(str1, "Entries = %d", entries);
    ttext->AddText(str1);
-   sprintf(str1,"Mean = %8.0f", mean);
+   sprintf(str1, "Mean = %8.0f", mean);
    ttext->AddText(str1);
-   sprintf(str1,"RMS = %8.2f", rms);
+   sprintf(str1, "RMS = %8.2f", rms);
    ttext->AddText(str1);
-   sprintf(str1,"#chi^{2} / NDF = %12.4e / %d", chisq, ndf);
+   sprintf(str1, "#chi^{2} / NDF = %12.4e / %d", chisq, ndf);
    ttext->AddText(str1);
-   sprintf(str1,"Peak = %8.1f #pm %8.1f (steps)", sumPeak, ePeak);
+   sprintf(str1, "Peak = %8.1f #pm %8.1f (steps)", sumPeak, ePeak);
    ttext->AddText(str1);
-   sprintf(str1,"Width = %8.4f #pm %8.4f (mm)", sumWidth, eWidth);
+   sprintf(str1, "Width = %8.4f #pm %8.4f (mm)", sumWidth, eWidth);
    ttext->AddText(str1);
    ttext->SetTextSize(0.06);
    ttext->SetTextAlign(12);
@@ -984,13 +989,15 @@ int main(int argc, char **argv)
 /** */
 bool checkSt(char *wchtarg, int strip)
 {
-   if(*wchtarg == 'H') {  // Horizontal
+   if (*wchtarg == 'H') { // Horizontal
       if ((strip >= 12 && strip < 24) || (strip >= 48 && strip < 60)) {
          return false;  // skip 90 deg detectors
-      } else {
+      }
+      else {
          return true;
       }
-   } else {           // Vertical - default
+   }
+   else {             // Vertical - default
       return true;    // allow all strips
    }
 }
