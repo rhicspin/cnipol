@@ -93,35 +93,33 @@ if (isset($rc['polarization'])) {
       $rc['polarization']*100*$norm, $rc['polarization_error']*100*$norm);
 }
 
-$polarization_X90 = isset($rc['fAsymX90']['phys']) ?
+$polarization_X90 = isset($rc['fAsymX90']['phys']) && $rc['A_N'][1] > 1e-10 ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100*$norm/$rc['A_N'][1],
-	                                   $rc['fAsymX90']['phys'][1]*100*$norm/$rc['A_N'][1]) : "&nbsp;";
+	                                   $rc['fAsymX90']['phys'][1]*100*$norm/$rc['A_N'][1]) : "&mdash;";
 
-$polarization_X45 = isset($rc['fAsymX45']['phys']) ?
+$polarization_X45 = isset($rc['fAsymX45']['phys']) && $rc['A_N'][1] > 1e-10 ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+	                                   $rc['fAsymX45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
-$polarization_X45T = isset($rc['fAsymX45T']['phys']) ?
+$polarization_X45T = isset($rc['fAsymX45T']['phys']) && $rc['A_N'][1] > 1e-10 ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45T']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+	                                   $rc['fAsymX45T']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
-$polarization_X45B = isset($rc['fAsymX45B']['phys']) ?
+$polarization_X45B = isset($rc['fAsymX45B']['phys']) && $rc['A_N'][1] > 1e-10 ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45B']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+	                                   $rc['fAsymX45B']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
-$polarization_Y45 = isset($rc['fAsymY45']['phys']) ?
+$polarization_Y45 = isset($rc['fAsymY45']['phys']) && $rc['A_N'][1] > 1e-10 ?
    sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymY45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+	                                   $rc['fAsymY45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
-$targetId = "&nbsp;";
+$targetId = "&mdash;";
 
 if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
    $targetId = "{$rc['target_orient']}{$rc['target_id']}";
-} else {
-   $targetId = "N/A";
 }
 
-$measurementType = "&nbsp;";
+$measurementType = "&mdash;";
 
 if (isset($rc['measurement_type']) && $rc['measurement_type'] >= 0 ) {
    $measurementType = $MEASTYPE[$rc['measurement_type']];
@@ -157,11 +155,11 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
          <th>X45B
          <th>Y45
       <tr>
-         <td> <?=$polarization_X90?>
-         <td> <?=$polarization_X45?>
-         <td> <?=$polarization_X45T?>
-         <td> <?=$polarization_X45B?>
-         <td> <?=$polarization_Y45?>
+         <td class=center> <?=$polarization_X90?>
+         <td class=center> <?=$polarization_X45?>
+         <td class=center> <?=$polarization_X45T?>
+         <td class=center> <?=$polarization_X45B?>
+         <td class=center> <?=$polarization_Y45?>
       </table>
 
 <tr>
@@ -652,7 +650,7 @@ fraction (losses) of the initial carbon energy
 </div>
 
 <td align=center>
-<?=$gP->img("calib/hChi2NdfVsChannel")?>
+<?=$gP->img("calib/hLogChi2NdfVsChannel")?>
 
 <td align=center>
 <?=$gP->img("calib/hFitStatusVsChannel")?>

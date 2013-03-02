@@ -102,7 +102,6 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       TH1* hChi2Ndf    = (TH1*) c->d["preproc"]->o["hFitChi2NdfVsEnergyA_ch"+strChId];
       TH1* hChi2NdfLog = (TH1*) c->d["preproc"]->o["hFitChi2NdfLogVsEnergyA_ch"+strChId];
 
-      //TObjArray *fitResultHists = new TObjArray();
       TObjArray fitResultHists;
 
       // Single histogram calibration is done here
@@ -122,14 +121,12 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       hChi2Ndf->GetListOfFunctions()->AddAll((TList*) hChi2Ndf_tmp->GetListOfFunctions()->Clone());
       hChi2Ndf->GetListOfFunctions()->SetOwner(kTRUE);
-
-      //delete fitResultHists;
    }
 
    // The fitting of all channels is over. Calculate the Mean values
    Calibrator::UpdateMeanChannel();
 
-   ChannelCalib const& chCalibMean = GetMeanChannel();
+   ChannelCalib const& chCalibMean       = GetMeanChannel();
    ChannelCalib const& chCalibMeanOfLogs = GetMeanOfLogsChannel();
 
    // Check for bad fits to avoid interference with the channel disabling
@@ -152,14 +149,14 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       // if this t0 is 2*RMS far from mean t0
-      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 2*chCalibMean.fT0CoefErr)
+      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 3*chCalibMean.fT0CoefErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kT0_OUTLIER;
          continue;
       }
 
-      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 2*chCalibMean.fDLWidthErr)
+      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 3*chCalibMean.fDLWidthErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kDL_OUTLIER;
@@ -167,7 +164,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       if ( chChi2NdfLog > 0 && 
-           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + GetRMSOfLogsBananaChi2Ndf() )
+           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 2*GetRMSOfLogsBananaChi2Ndf() )
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kCHI2_OUTLIER;
