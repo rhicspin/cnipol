@@ -146,7 +146,8 @@ void CnipolCalibHists::PostFill()
       hT0VsChannel->SetBinError(i, calibrator->GetT0CoefErr(i));
 
       hChi2NdfVsChannel->SetBinContent(i, calibrator->GetBananaChi2Ndf(i));
-      hLogChi2NdfVsChannel->SetBinContent(i, TMath::Log( calibrator->GetBananaChi2Ndf(i)) );
+      Double_t logChi2 = calibrator->GetBananaChi2Ndf(i) <= 0 ? 0 : TMath::Log( calibrator->GetBananaChi2Ndf(i)) ;
+      hLogChi2NdfVsChannel->SetBinContent(i, logChi2 );
 
       hFitStatusVsChannel->SetBinContent(i, calibrator->GetFitStatus(i));
    }
@@ -173,8 +174,8 @@ void CnipolCalibHists::PostFill()
    hDLVsChannel->GetListOfFunctions()->SetOwner();
 
 	// T0
-   Double_t meanT0 = calibrator->GetMeanChannel().fDLWidth;
-   Double_t rmsT0  = calibrator->GetMeanChannel().fDLWidthErr;
+   Double_t meanT0 = calibrator->GetMeanChannel().fT0Coef;
+   Double_t rmsT0  = calibrator->GetMeanChannel().fT0CoefErr;
 
    lineMean = new TLine(1, meanT0, hDLVsChannel->GetNbinsX(), meanT0);
    lineMean->SetLineWidth(2);

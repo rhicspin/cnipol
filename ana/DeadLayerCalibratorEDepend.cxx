@@ -116,7 +116,8 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
          Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
 
          hChi2Ndf->SetBinContent(ib, chi2);
-         hChi2NdfLog->SetBinContent(ib, TMath::Log(chi2) );
+			Double_t logChi2 = chi2 < 0 ? 0 : TMath::Log(chi2);
+         hChi2NdfLog->SetBinContent(ib, logChi2 );
       }
 
       hChi2Ndf->GetListOfFunctions()->AddAll((TList*) hChi2Ndf_tmp->GetListOfFunctions()->Clone());
@@ -318,7 +319,7 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
 
    hchi2->GetListOfFunctions()->Add(lineMean);
 
-   TLine* lineRMS  = new TLine(xmin, hchi2_profy_mean+hchi2_profy_rms,  xmax, hchi2_profy_mean+hchi2_profy_rms);
+   TLine* lineRMS  = new TLine(xmin, hchi2_profy_mean+hchi2_profy_rms, xmax, hchi2_profy_mean+hchi2_profy_rms);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
