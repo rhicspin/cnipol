@@ -152,32 +152,57 @@ void CnipolCalibHists::PostFill()
    }
 
    // Visualize the channel selection decision based on chi2
-   Double_t chi2_mean = calibrator->GetMeanChannel().GetBananaChi2Ndf();
-   chi2_mean = chi2_mean < 1 ? 1 : chi2_mean;
-   Double_t chi2_rms  = calibrator->GetRMSBananaChi2Ndf();
+   Double_t meanDL = calibrator->GetMeanChannel().fDLWidth;
+   Double_t rmsDL  = calibrator->GetMeanChannel().fDLWidthErr;
 
-   TLine* lineMean = new TLine(0, chi2_mean, hDLVsChannel->GetNbinsX()+1, chi2_mean);
+   TLine* lineMean = new TLine(1, meanDL, hDLVsChannel->GetNbinsX(), meanDL);
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMS  = new TLine(0, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX()+1, chi2_mean+chi2_rms);
-   lineRMS->SetLineWidth(2);
-   lineRMS->SetLineColor(kMagenta);
+   TLine* lineRMSup = new TLine(1, meanDL+3*rmsDL, hDLVsChannel->GetNbinsX(), meanDL+3*rmsDL);
+   lineRMSup->SetLineWidth(2);
+   lineRMSup->SetLineColor(kMagenta);
 
-   hChi2NdfVsChannel->GetListOfFunctions()->Add(lineMean);
-   hChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
-   hChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
+   TLine* lineRMSdown  = new TLine(1, meanDL-3*rmsDL, hDLVsChannel->GetNbinsX(), meanDL-3*rmsDL);
+   lineRMSdown->SetLineWidth(2);
+   lineRMSdown->SetLineColor(kMagenta);
+
+   hDLVsChannel->GetListOfFunctions()->Add(lineMean);
+   hDLVsChannel->GetListOfFunctions()->Add(lineRMSup);
+   hDLVsChannel->GetListOfFunctions()->Add(lineRMSdown);
+   hDLVsChannel->GetListOfFunctions()->SetOwner();
+
+	// T0
+   Double_t meanT0 = calibrator->GetMeanChannel().fDLWidth;
+   Double_t rmsT0  = calibrator->GetMeanChannel().fDLWidthErr;
+
+   lineMean = new TLine(1, meanT0, hDLVsChannel->GetNbinsX(), meanT0);
+   lineMean->SetLineWidth(2);
+   lineMean->SetLineColor(kGreen);
+
+   lineRMSup = new TLine(1, meanT0+3*rmsT0, hDLVsChannel->GetNbinsX(), meanT0+3*rmsT0);
+   lineRMSup->SetLineWidth(2);
+   lineRMSup->SetLineColor(kMagenta);
+
+   lineRMSdown  = new TLine(1, meanT0-3*rmsT0, hDLVsChannel->GetNbinsX(), meanT0-3*rmsT0);
+   lineRMSdown->SetLineWidth(2);
+   lineRMSdown->SetLineColor(kMagenta);
+
+   hDLVsChannel->GetListOfFunctions()->Add(lineMean);
+   hDLVsChannel->GetListOfFunctions()->Add(lineRMSup);
+   hDLVsChannel->GetListOfFunctions()->Add(lineRMSdown);
+   hDLVsChannel->GetListOfFunctions()->SetOwner();
 
    // Visualize the channel selection decision based on chi2
-   chi2_mean = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
+   Double_t chi2_mean = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
    chi2_mean = chi2_mean < 0 ? 0 : chi2_mean;
-   chi2_rms  = calibrator->GetRMSOfLogsBananaChi2Ndf();
+   Double_t chi2_rms  = calibrator->GetRMSOfLogsBananaChi2Ndf();
 
-   lineMean = new TLine(0, chi2_mean, hDLVsChannel->GetNbinsX()+1, chi2_mean);
+   lineMean = new TLine(1, chi2_mean, hDLVsChannel->GetNbinsX(), chi2_mean);
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   lineRMS  = new TLine(0, chi2_mean+chi2_rms, hDLVsChannel->GetNbinsX()+1, chi2_mean+chi2_rms);
+   TLine* lineRMS  = new TLine(1, chi2_mean+2*chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+2*chi2_rms);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
