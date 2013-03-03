@@ -134,10 +134,10 @@ void CnipolTargetHists::Fill(ChannelEvent *ch)
 
    UShort_t tstep = 0;
 
-   if (gMeasInfo->Run == 5) {
+   if (gMeasInfo->fRunId == 5) {
       tstep = ch->GetDelimiterId();
       //NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
-   } else if (gMeasInfo->Run >= 6) {
+   } else if (gMeasInfo->fRunId >= 6) {
       UInt_t ttime = ch->GetRevolutionId()/RHIC_REVOLUTION_FREQ;
 
       if (ttime < MAXDELIM) {
@@ -150,7 +150,7 @@ void CnipolTargetHists::Fill(ChannelEvent *ch)
       }
 
    } else {
-      Warning("Fill", "Target tstep size is not defined for Run %d", gMeasInfo->Run);
+      Warning("Fill", "Target tstep size is not defined for Run %d", gMeasInfo->fRunId);
    }
 
    ((TH1*) o["hTargetSteps"])->Fill(tstep);
@@ -182,7 +182,7 @@ void CnipolTargetHists::PostFill()
 {
    //char  htitle[100];
    float dx[MAXDELIM], y[MAXDELIM], dy[MAXDELIM];
-   int   X_index = gMeasInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
+   int   X_index = gMeasInfo->fRunId >= 6 ? nTgtIndex : gNDelimeters;
  
    float xmin, xmax;
    float margin = 0.02;
