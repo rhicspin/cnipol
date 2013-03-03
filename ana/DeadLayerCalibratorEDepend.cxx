@@ -155,14 +155,14 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       // if this t0 is 2*RMS far from mean t0
-      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 2.5*chCalibMean.fT0CoefErr)
+      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 3.0*chCalibMean.fT0CoefErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kT0_OUTLIER;
          continue;
       }
 
-      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 2.5*chCalibMean.fDLWidthErr)
+      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 3.0*chCalibMean.fDLWidthErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kDL_OUTLIER;
@@ -170,7 +170,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       if ( chChi2NdfLog > 0 && 
-           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 2.5*GetRMSOfLogsBananaChi2Ndf() )
+           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 3.0*GetRMSOfLogsBananaChi2Ndf() )
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kCHI2_OUTLIER;

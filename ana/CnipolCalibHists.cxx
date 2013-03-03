@@ -163,11 +163,11 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMSup = new TLine(1, meanDL+2.5*rmsDL, hDLVsChannel->GetNbinsX(), meanDL+2.5*rmsDL);
+   TLine* lineRMSup = new TLine(1, meanDL+3.0*rmsDL, hDLVsChannel->GetNbinsX(), meanDL+3.0*rmsDL);
    lineRMSup->SetLineWidth(2);
    lineRMSup->SetLineColor(kMagenta);
 
-   TLine* lineRMSdown  = new TLine(1, meanDL-2.5*rmsDL, hDLVsChannel->GetNbinsX(), meanDL-2.5*rmsDL);
+   TLine* lineRMSdown  = new TLine(1, meanDL-3.0*rmsDL, hDLVsChannel->GetNbinsX(), meanDL-3.0*rmsDL);
    lineRMSdown->SetLineWidth(2);
    lineRMSdown->SetLineColor(kMagenta);
 
@@ -176,8 +176,11 @@ void CnipolCalibHists::PostFill()
    hDLVsChannel->GetListOfFunctions()->Add(lineRMSdown);
    hDLVsChannel->GetListOfFunctions()->SetOwner();
 
-   if (hDLVsChannel->GetYaxis()->GetXmax() < meanDL+2.5*rmsDL)
-      hDLVsChannel->SetMaximum(1.1*(meanDL+2.5*rmsDL));
+   if (hDLVsChannel->GetYaxis()->GetXmax() < meanDL+3.0*rmsDL)
+      hDLVsChannel->SetMaximum(1.1*(meanDL+3.0*rmsDL));
+
+   if (hDLVsChannel->GetYaxis()->GetXmin() < meanDL-3.0*rmsDL)
+      hDLVsChannel->SetMinimum((meanDL-3.0*rmsDL));
 
    // T0
    Double_t meanT0 = calibrator->GetMeanChannel().fT0Coef;
@@ -187,11 +190,11 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   lineRMSup = new TLine(1, meanT0+2.5*rmsT0, hDLVsChannel->GetNbinsX(), meanT0+2.5*rmsT0);
+   lineRMSup = new TLine(1, meanT0+3.0*rmsT0, hDLVsChannel->GetNbinsX(), meanT0+3.0*rmsT0);
    lineRMSup->SetLineWidth(2);
    lineRMSup->SetLineColor(kMagenta);
 
-   lineRMSdown  = new TLine(1, meanT0-2.5*rmsT0, hDLVsChannel->GetNbinsX(), meanT0-2.5*rmsT0);
+   lineRMSdown  = new TLine(1, meanT0-3.0*rmsT0, hDLVsChannel->GetNbinsX(), meanT0-3.0*rmsT0);
    lineRMSdown->SetLineWidth(2);
    lineRMSdown->SetLineColor(kMagenta);
 
@@ -200,23 +203,29 @@ void CnipolCalibHists::PostFill()
    hT0VsChannel->GetListOfFunctions()->Add(lineRMSdown);
    hT0VsChannel->GetListOfFunctions()->SetOwner();
 
-   if (hT0VsChannel->GetYaxis()->GetXmax() < meanT0+2.5*rmsT0)
-      hT0VsChannel->SetMaximum(1.1*(meanT0+2.5*rmsT0));
+   if (hT0VsChannel->GetYaxis()->GetXmax() < meanT0+3.0*rmsT0)
+      hT0VsChannel->SetMaximum(1.1*(meanT0+3.0*rmsT0));
+
+   if (hT0VsChannel->GetYaxis()->GetXmin() > meanT0-3.0*rmsT0)
+      hT0VsChannel->SetMinimum((meanT0-3.0*rmsT0));
 
    // Visualize the channel selection decision based on chi2
-   Double_t chi2_mean = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
-   chi2_mean = chi2_mean < 0 ? 0 : chi2_mean;
-   Double_t chi2_rms  = calibrator->GetRMSOfLogsBananaChi2Ndf();
+   Double_t meanChi2 = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
+   meanChi2 = meanChi2 < 0 ? 0 : meanChi2;
+   Double_t rmsChi2  = calibrator->GetRMSOfLogsBananaChi2Ndf();
 
-   lineMean = new TLine(1, chi2_mean, hDLVsChannel->GetNbinsX(), chi2_mean);
+   lineMean = new TLine(1, meanChi2, hDLVsChannel->GetNbinsX(), meanChi2);
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMS  = new TLine(1, chi2_mean+2.5*chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+2.5*chi2_rms);
+   TLine* lineRMS  = new TLine(1, meanChi2+3.0*rmsChi2, hDLVsChannel->GetNbinsX(), meanChi2+3.0*rmsChi2);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
    hLogChi2NdfVsChannel->GetListOfFunctions()->Add(lineMean);
    hLogChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
    hLogChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
+
+   if (hLogChi2NdfVsChannel->GetYaxis()->GetXmax() < meanChi2+3.0*rmsChi2)
+      hLogChi2NdfVsChannel->SetMaximum(1.1*(meanChi2+3.0*rmsChi2));
 }
