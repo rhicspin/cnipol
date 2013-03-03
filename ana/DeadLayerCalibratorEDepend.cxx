@@ -107,21 +107,26 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       // Single histogram calibration is done here
       Calibrate(hTimeVsE, hMeanTime, *iCh, &fitResultHists); // extract also fitResultHists
 
-      TH1* hChi2Ndf_tmp = (TH1*) fitResultHists.At(3);
+      TH1* hChi2Ndf_tmp    = (TH1*) fitResultHists.At(3);
+      TH1* hChi2NdfLog_tmp = (TH1*) fitResultHists.At(4);
 
       if (!hChi2Ndf_tmp) continue;
 
       for (Int_t ib=1; ib<=hChi2Ndf_tmp->GetNbinsX(); ++ib)
       {
          Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
-
          hChi2Ndf->SetBinContent(ib, chi2);
-			Double_t logChi2 = chi2 < 0 ? 0 : TMath::Log(chi2);
+
+			//Double_t logChi2 = chi2 <= 0 ? 0 : TMath::Log(chi2);
+         Float_t logChi2 = hChi2NdfLog_tmp->GetBinContent(ib);
          hChi2NdfLog->SetBinContent(ib, logChi2 );
       }
 
       hChi2Ndf->GetListOfFunctions()->AddAll((TList*) hChi2Ndf_tmp->GetListOfFunctions()->Clone());
       hChi2Ndf->GetListOfFunctions()->SetOwner(kTRUE);
+
+      hChi2NdfLog->GetListOfFunctions()->AddAll((TList*) hChi2NdfLog_tmp->GetListOfFunctions()->Clone());
+      hChi2NdfLog->GetListOfFunctions()->SetOwner(kTRUE);
    }
 
    // The fitting of all channels is over. Calculate the Mean values
@@ -150,14 +155,14 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       // if this t0 is 2*RMS far from mean t0
-      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 3*chCalibMean.fT0CoefErr)
+      if ( TMath::Abs(chCalib.fT0Coef - chCalibMean.fT0Coef) > 2.5*chCalibMean.fT0CoefErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kT0_OUTLIER;
          continue;
       }
 
-      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 3*chCalibMean.fDLWidthErr)
+      if ( TMath::Abs(chCalib.fDLWidth - chCalibMean.fDLWidth) > 2.5*chCalibMean.fDLWidthErr)
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kDL_OUTLIER;
@@ -165,7 +170,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       if ( chChi2NdfLog > 0 && 
-           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 2*GetRMSOfLogsBananaChi2Ndf() )
+           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 2.5*GetRMSOfLogsBananaChi2Ndf() )
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kCHI2_OUTLIER;
@@ -304,46 +309,46 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
 
    // Reject points based on chi2
    TH1* hchi2       = (TH1*) fitResultHists->At(3);
-   TH1* hchi2_profy = new TH1F("p", "p", 20, hchi2->GetMinimum(), hchi2->GetMaximum());
+   TH1* hchi2Log    = (TH1*) hchi2->Clone("hchi2Log");
+   TH1* hchi2_profy = new TH1F("p", "p", 20, hchi2Log->GetMinimum(), hchi2Log->GetMaximum());
 
-   utils::ConvertToProfile(hchi2, hchi2_profy, kFALSE);
+   fitResultHists->Add(hchi2Log);   
 
-   Double_t hchi2_profy_mean = hchi2_profy->GetMean() < 1 ? 1 : hchi2_profy->GetMean();
-   Double_t hchi2_profy_rms  = 0.5*hchi2_profy->GetRMS(); // use only half of the RMS
+   TF1* logFunc = new TF1("logFunc", "TMath::Log(x)", 0, 1e10);
+   utils::Apply(hchi2Log, logFunc);
+   utils::ConvertToProfile(hchi2Log, hchi2_profy, kFALSE);
 
+   Double_t hchi2_profy_mean = hchi2_profy->GetMean() <= 0 ? 0 : hchi2_profy->GetMean();
+   Double_t hchi2_profy_rms  = hchi2_profy->GetRMS(); // was: use only half of the RMS
+
+   delete logFunc;
    delete hchi2_profy;
 
    TLine* lineMean = new TLine(xmin, hchi2_profy_mean, xmax, hchi2_profy_mean);
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   hchi2->GetListOfFunctions()->Add(lineMean);
-
    TLine* lineRMS  = new TLine(xmin, hchi2_profy_mean+hchi2_profy_rms, xmax, hchi2_profy_mean+hchi2_profy_rms);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
-   hchi2->GetListOfFunctions()->Add(lineRMS);
-   hchi2->GetListOfFunctions()->SetOwner(kTRUE);
-
-   //hMeanTime->Set( ((TH1D*) fitResultHists[1])->GetNbinsX()+2, ((TH1D*) fitResultHists[1])->GetArray());
-   //hMeanTime->Set( ((TH1D*) fitResultHists[1])->GetNbinsX(), ((TH1D*) fitResultHists[1])->GetArray());
+   hchi2Log->GetListOfFunctions()->Add(lineMean);
+   hchi2Log->GetListOfFunctions()->Add(lineRMS);
+   hchi2Log->GetListOfFunctions()->SetOwner(kTRUE);
 
    TH1* hmeans  = (TH1D*) fitResultHists->At(1);
 
    for (Int_t ib=1; ib<=hmeans->GetNbinsX(); ++ib)
    {
-      Double_t chi2  = hchi2->GetBinContent(ib);
+      Double_t chi2  = hchi2Log->GetBinContent(ib);
 
       // skip points with bad chi2
-      if ( hchi2_profy_mean >= 1 && chi2 > hchi2_profy_mean + hchi2_profy_rms ) continue;
+      if ( chi2 > hchi2_profy_mean + hchi2_profy_rms ) continue;
 
       Double_t bcntr = hmeans->GetBinCenter(ib);
       Double_t bcont = hmeans->GetBinContent(ib);
       Double_t berr  = hmeans->GetBinError(ib);
 
-      //hMeanTime->SetBinContent(hMeanTime->FindBin(bcntr), bcont);
-      //hMeanTime->SetBinError(hMeanTime->FindBin(bcntr), berr);
       hMeanTime->SetBinContent(ib, bcont);
       hMeanTime->SetBinError(ib, berr);
    }
@@ -363,11 +368,6 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
    }
 
    //Double_t *errors = ((TH1D*) fitResultHists[1])->GetSumw2()->GetArray();
-
-   //if (errors)
-   //   hMeanTime->SetError(errors);
-
-   //hMeanTime->SetError(((TH1D*) fitResultHists[2])->GetArray());
 
    // Remember that for this fit the second parameter is the DL width
    //TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibratorEDepend::BananaFitFunc, xmin, xmax, 2);

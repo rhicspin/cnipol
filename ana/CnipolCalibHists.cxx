@@ -42,34 +42,37 @@ void CnipolCalibHists::BookHists(std::string cutid)
 
    fDir->cd();
 
+   TAttMarker styleMarker;
+   styleMarker.SetMarkerStyle(kFullCircle);
+   styleMarker.SetMarkerSize(0.8);
+   styleMarker.SetMarkerColor(kGreen+3);
+
    shName = "hDLVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Dead Layer, #mug/cm^{2};");
-   hist->SetOption("E1 GRIDX");
+   hist->SetOption("P E1 GRIDX");
+   styleMarker.Copy(*hist);
    o[shName] = hist;
 
    shName = "hT0VsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; T0, ns;");
-   hist->SetOption("E1 GRIDX");
+   hist->SetOption("P E1 GRIDX");
+   styleMarker.Copy(*hist);
    o[shName] = hist;
 
    shName = "hChi2NdfVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; #chi^{2}/ndf;");
    hist->SetOption("P XY GRIDX");
-   hist->SetMarkerStyle(kFullCircle);
-   hist->SetMarkerSize(0.8);
-   hist->SetMarkerColor(kGreen);
+   styleMarker.Copy(*hist);
    o[shName] = hist;
 
    shName = "hLogChi2NdfVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; log(#chi^{2}/ndf);");
    hist->SetOption("P GRIDX");
-   hist->SetMarkerStyle(kFullCircle);
-   hist->SetMarkerSize(0.8);
-   hist->SetMarkerColor(kGreen);
+   styleMarker.Copy(*hist);
    o[shName] = hist;
 
    shName = "hFitStatusVsChannel";
@@ -160,11 +163,11 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMSup = new TLine(1, meanDL+3*rmsDL, hDLVsChannel->GetNbinsX(), meanDL+3*rmsDL);
+   TLine* lineRMSup = new TLine(1, meanDL+2.5*rmsDL, hDLVsChannel->GetNbinsX(), meanDL+2.5*rmsDL);
    lineRMSup->SetLineWidth(2);
    lineRMSup->SetLineColor(kMagenta);
 
-   TLine* lineRMSdown  = new TLine(1, meanDL-3*rmsDL, hDLVsChannel->GetNbinsX(), meanDL-3*rmsDL);
+   TLine* lineRMSdown  = new TLine(1, meanDL-2.5*rmsDL, hDLVsChannel->GetNbinsX(), meanDL-2.5*rmsDL);
    lineRMSdown->SetLineWidth(2);
    lineRMSdown->SetLineColor(kMagenta);
 
@@ -173,7 +176,10 @@ void CnipolCalibHists::PostFill()
    hDLVsChannel->GetListOfFunctions()->Add(lineRMSdown);
    hDLVsChannel->GetListOfFunctions()->SetOwner();
 
-	// T0
+   if (hDLVsChannel->GetYaxis()->GetXmax() < meanDL+2.5*rmsDL)
+      hDLVsChannel->SetMaximum(1.1*(meanDL+2.5*rmsDL));
+
+   // T0
    Double_t meanT0 = calibrator->GetMeanChannel().fT0Coef;
    Double_t rmsT0  = calibrator->GetMeanChannel().fT0CoefErr;
 
@@ -181,18 +187,21 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   lineRMSup = new TLine(1, meanT0+3*rmsT0, hDLVsChannel->GetNbinsX(), meanT0+3*rmsT0);
+   lineRMSup = new TLine(1, meanT0+2.5*rmsT0, hDLVsChannel->GetNbinsX(), meanT0+2.5*rmsT0);
    lineRMSup->SetLineWidth(2);
    lineRMSup->SetLineColor(kMagenta);
 
-   lineRMSdown  = new TLine(1, meanT0-3*rmsT0, hDLVsChannel->GetNbinsX(), meanT0-3*rmsT0);
+   lineRMSdown  = new TLine(1, meanT0-2.5*rmsT0, hDLVsChannel->GetNbinsX(), meanT0-2.5*rmsT0);
    lineRMSdown->SetLineWidth(2);
    lineRMSdown->SetLineColor(kMagenta);
 
-   hDLVsChannel->GetListOfFunctions()->Add(lineMean);
-   hDLVsChannel->GetListOfFunctions()->Add(lineRMSup);
-   hDLVsChannel->GetListOfFunctions()->Add(lineRMSdown);
-   hDLVsChannel->GetListOfFunctions()->SetOwner();
+   hT0VsChannel->GetListOfFunctions()->Add(lineMean);
+   hT0VsChannel->GetListOfFunctions()->Add(lineRMSup);
+   hT0VsChannel->GetListOfFunctions()->Add(lineRMSdown);
+   hT0VsChannel->GetListOfFunctions()->SetOwner();
+
+   if (hT0VsChannel->GetYaxis()->GetXmax() < meanT0+2.5*rmsT0)
+      hT0VsChannel->SetMaximum(1.1*(meanT0+2.5*rmsT0));
 
    // Visualize the channel selection decision based on chi2
    Double_t chi2_mean = calibrator->GetMeanOfLogsChannel().GetBananaChi2Ndf();
@@ -203,7 +212,7 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMS  = new TLine(1, chi2_mean+2*chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+2*chi2_rms);
+   TLine* lineRMS  = new TLine(1, chi2_mean+2.5*chi2_rms, hDLVsChannel->GetNbinsX(), chi2_mean+2.5*chi2_rms);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
