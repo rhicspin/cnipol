@@ -88,7 +88,7 @@ void CnipolPreprocHists::BookHists()
       shName = "hFitChi2NdfVsEnergyA_ch" + sChId;
       hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
       hist->SetTitle("; Deposited Energy, keV; #chi^2/ndf;");
-      hist->SetOption("P XY GRIDX");
+      hist->SetOption("P GRIDX");
       hist->SetMarkerStyle(kFullCircle);
       hist->SetMarkerSize(0.8);
       hist->SetMarkerColor(kGreen);
