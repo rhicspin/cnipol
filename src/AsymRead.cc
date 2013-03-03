@@ -669,7 +669,7 @@ void readloop(MseMeasInfoX &run)
 
               // Finer Target Position Resolution by counting stepping moter
               // This feature became available after Run06
-              if (gMeasInfo->Run >= 6) {
+              if (gMeasInfo->fRunId >= 6) {
                  cntr.revolution = event.delim*512 + event.rev*2 + event.rev0;
 
                  if (cntr.revolution > gMeasInfo->MaxRevolution)

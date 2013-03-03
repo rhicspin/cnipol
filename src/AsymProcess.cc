@@ -566,7 +566,7 @@ void event_process(processEvent *event)
          Ncounts[(int)(st/12)][event->bid]++;
          int time = 0;
 
-         if (gMeasInfo->Run == 5) {
+         if (gMeasInfo->fRunId == 5) {
             time = delim;
             ++cntr.good[delim];
             NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
