@@ -8,10 +8,10 @@ define("LOG_DIR",  "/usr/local/polarim/log");
 
 // Approximate fill numbers
 $RUN_PERIOD_BY_FILL = array (
-   9  => array( "start" => 10000, "end" => 11100 ),
+   9  => array( "start" => 10018, "end" => 11100 ),
    11 => array( "start" => 14000, "end" => 15500 ),
    12 => array( "start" => 16000, "end" => 16800 ),
-   13 => array( "start" => 18000, "end" => 19000 )
+   13 => array( "start" => 17000, "end" => 19000 )
 );
 
 // Approximate dates

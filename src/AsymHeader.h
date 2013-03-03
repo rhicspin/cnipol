@@ -11,6 +11,7 @@
 
 #define NSTRIP 72                     // Number of channels
 #define N_SILICON_CHANNELS 72         // Number of channels
+#define N_WFDS 20                     // Number of wfd's
 #define NSTRIP_PER_DETECTOR 12        // Number of channels per silicon detector
 #define NTGTWFD 4                     // Number of target WFD channels
 #define N_DETECTORS 6                 // Number of detectors

@@ -92,6 +92,13 @@ void CnipolRawHists::BookHists()
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
+   shName = "hWfdCounts";
+   hist = new TH1I(shName.c_str(), shName.c_str(), N_WFDS, 0.5, N_WFDS+0.5);
+   hist->SetTitle("; WFD Id; Events;");
+   hist->SetOption("hist GRIDX");
+   hist->SetFillColor(kGray);
+   o[shName] = hist;
+
    shName = "hRevolutionId";
    hist = new TH1I(shName.c_str(), shName.c_str(), 1000, 0, 1);
    hist->SetTitle("; Revolution Id; Events;");
@@ -193,7 +200,7 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
    UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
 
    // Speed up the filling process by getting the global bin number
-   TH1* hist;
+   TH1*  hist;
    Int_t gbin;
 
    hist = fhTvsA_ch[chId-1];

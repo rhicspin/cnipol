@@ -746,12 +746,12 @@ void CalcStatistics()
    // Integrate good carbon events in banana
    cntr.good_event = 0;
 
-   int X_index = gMeasInfo->Run >= 6 ? nTgtIndex : gNDelimeters;
+   int X_index = gMeasInfo->fRunId >= 6 ? nTgtIndex : gNDelimeters;
 
    for (int i=0; i<X_index; i++) cntr.good_event += cntr.good[i];
 
    // Run time duration
-   gMeasInfo->fRunTime = gMeasInfo->Run == 5 ? gNDelimeters : cntr.revolution/RHIC_REVOLUTION_FREQ;
+   gMeasInfo->fRunTime = gMeasInfo->fRunId == 5 ? gNDelimeters : cntr.revolution/RHIC_REVOLUTION_FREQ;
 
    // Calculate rates
    if (gMeasInfo->fRunTime) {
@@ -763,7 +763,7 @@ void CalcStatistics()
    // Misc
    if (gMeasInfo->fWallCurMonSum)     gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
    if (gAsymAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAsymAnaInfo->reference_rate;
-   if (gMeasInfo->Run == 5)           gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
+   if (gMeasInfo->fRunId == 5)           gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 }
 
 
@@ -840,7 +840,7 @@ void PrintRunResults()
    printf(" Read Rate             [MHz]    = %10.4f\n", gMeasInfo->ReadRate);
    printf(" Target                         = %c%c\n",   gMeasInfo->fTargetOrient, gMeasInfo->fTargetId);
 
-   if (gMeasInfo->Run >=6 ) {
+   if (gMeasInfo->fRunId >=6 ) {
       printf(" Maximum Revolution #           = %10d\n",   gMeasInfo->MaxRevolution);
       printf(" Reconstructed Duration  [s]    = %10.1f\n", gMeasInfo->MaxRevolution/RHIC_REVOLUTION_FREQ);
       printf(" Target Motion Counter          = %10ld\n",  cntr.tgtMotion);
@@ -861,7 +861,7 @@ void PrintRunResults()
    printf(" chi2/d.o.f (sinphi fit)        = %10.4f\n",      gAnaMeasResult->sinphi[0].chi2);
    printf(" Polarization (bunch ave)       = %10.4f%9.4f\n", gBunchAsym.ave.Ax[0]/gAnaMeasResult->A_N[1], gBunchAsym.ave.Ax[1]/gAnaMeasResult->A_N[1]);
    printf(" Phase (bunch ave)              = %10.4f%9.4f\n", gBunchAsym.ave.phase[0]*R2D, gBunchAsym.ave.phase[1]*R2D);
-   if (gMeasInfo->Run == 5)
+   if (gMeasInfo->fRunId == 5)
    printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaMeasResult->profile_error * fabs(gAnaMeasResult->P[0]));
    printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAsymAnaInfo->MassSigmaAlt, gAsymAnaInfo->MassSigma);
    printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaMeasResult->sinphi[1].P[0],        gAnaMeasResult->sinphi[1].P[1]);

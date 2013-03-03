@@ -65,7 +65,7 @@ protected:
 
 public:
 
-   int                         Run;
+   int                         fRunId;
    double                      RUNID;
    time_t                      fStartTime;
    time_t                      fStopTime;

@@ -540,13 +540,13 @@ void readdb(double RUNID)
 
    // Optimize setting for Run
    if ((RUNID>=6500)&&(RUNID<7400)) { // Run05
-      gMeasInfo->Run=5;
+      gMeasInfo->fRunId =5;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun5[i];
    } else if (RUNID>=7400) { // Run06
-      gMeasInfo->Run=6;
+      gMeasInfo->fRunId =6;
       for (int i=0; i<NSTRIP; i++) gPhi[i] = phiRun6[i];
    } else if (RUNID>=10018) { // Run09
-      gMeasInfo->Run=9;
+      gMeasInfo->fRunId =9;
    }
 
    // Spin Pattern Recoverly

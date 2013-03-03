@@ -64,7 +64,7 @@ void CnipolCalibHists::BookHists(std::string cutid)
    shName = "hChi2NdfVsChannel";
    hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; #chi^{2}/ndf;");
-   hist->SetOption("P XY GRIDX");
+   hist->SetOption("P GRIDX");
    styleMarker.Copy(*hist);
    o[shName] = hist;
 

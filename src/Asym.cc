@@ -26,7 +26,7 @@ long    Ncounts[6][120];            // counts 6detectors 120 bunches
 long    NTcounts[6][120][NTBIN];    // counts 6detectors 120 bunches 6 tranges
 long    NRcounts[6][120][RAMPTIME]; // counts for 6det 120bunch RAMPTIME sec
 long    NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
-long    NStrip[3][NSTRIP];          // counts 72 strips 3 spin states
+long    NStrip[3][N_SILICON_CHANNELS];          // counts 72 strips 3 spin states
 
 char   *calibdir;
 char    reConfFile[256];            // overwrite configuration for T0 info
@@ -90,7 +90,7 @@ StructCounterTgt cntr_tgt;
 // subject to change depends on TOFLength from target to detectors.
 // To get phi values for given TOFLength, use calcPhi.cc program. Copy and paste outputs.
 // phi angle of each strips for Run05 (l=18.5cm)
-float phiRun5[NSTRIP] = {
+float phiRun5[N_SILICON_CHANNELS] = {
    0.72601,0.73679,0.74758,0.75838,0.76918,0.77999,0.79080,0.80161,0.81242,0.82322,0.83401,0.84479,
    1.51141,1.52219,1.53298,1.54378,1.55458,1.56539,1.57620,1.58701,1.59782,1.60862,1.61941,1.63019,
    2.29680,2.30758,2.31837,2.32917,2.33998,2.35079,2.36160,2.37241,2.38321,2.39401,2.40480,2.41558,
@@ -100,7 +100,7 @@ float phiRun5[NSTRIP] = {
 };
 
 // phi angle of each strips for Run06 (l=18.0cm)
-float phiRun6[NSTRIP] = {
+float phiRun6[N_SILICON_CHANNELS] = {
    0.72436,0.73544,0.74653,0.75763,0.76873,0.77984,0.79095,0.80206,0.81317,0.82427,0.83536,0.84643,
    1.50976,1.52084,1.53193,1.54303,1.55413,1.56524,1.57635,1.58746,1.59857,1.60967,1.62075,1.63183,
    2.29516,2.30624,2.31733,2.32842,2.33953,2.35064,2.36175,2.37286,2.38397,2.39506,2.40615,2.41723,
@@ -110,7 +110,7 @@ float phiRun6[NSTRIP] = {
 } ;
 
 // phi angle of each strips in trancated angles {45,90,135,225,270,315} deg.
-float phit[NSTRIP] = {
+float phit[N_SILICON_CHANNELS] = {
    0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,
    1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,
    2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,
@@ -120,7 +120,7 @@ float phit[NSTRIP] = {
 };
 
 // default phi is trancated angles phi[st]=phit[st]
-float gPhi[NSTRIP] = {
+float gPhi[N_SILICON_CHANNELS] = {
    0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,0.78540,
    1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,1.57080,
    2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,2.35619,
@@ -129,11 +129,22 @@ float gPhi[NSTRIP] = {
    5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779,5.49779
 };
 
+UShort_t ch2WfdMap_run13[80] = { 1,  2,  3,  1,  2,  3,  1,  2,  3,  1,  2,  3,
+                                 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+                                 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+                                 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+                                 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+                                16, 17, 18, 16, 17, 18, 16, 17, 18, 16, 17, 18,
+                                19, 19, 19, 19,
+                                20, 20, 20, 20 };
+
+
 AsymAnaInfo              *gAsymAnaInfo;
 MAsymAnaInfo             *gMAsymAnaInfo;
 MeasInfo                 *gMeasInfo;
 AnaMeasResult            *gAnaMeasResult;
 AsymRoot                 *gAsymRoot;
+UShort_t                 *gCh2WfdMap = 0;
 //AsymDb                   *gAsymDb;
 DbEntry                   gRunDb;
 RunConfig                 gRunConfig;

@@ -26,7 +26,7 @@ MeasInfo::MeasInfo() : TObject(),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
 
-   Run(-1),
+   fRunId(-1),
    RUNID(0.0),
    fStartTime(0),
    fStopTime(0),
@@ -126,7 +126,7 @@ void MeasInfo::Print(const Option_t* opt) const
 /** */
 void MeasInfo::PrintAsPhp(FILE *f) const
 {
-   fprintf(f, "$rc['Run']                          = %d;\n",     Run          );
+   fprintf(f, "$rc['fRunId']                          = %d;\n",     fRunId          );
    fprintf(f, "$rc['RUNID']                        = %.3f;\n",   RUNID        );
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str() );
    fprintf(f, "$rc['fStartTime']                   = %ld;\n",    fStartTime   );
@@ -275,7 +275,7 @@ void MeasInfo::PrintConfig()
    fprintf(stdout,"             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);
 
    // expected reference rate
-   if (Run==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAsymAnaInfo->reference_rate);
+   if (fRunId==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAsymAnaInfo->reference_rate);
 
    // target count/mm
    fprintf(stdout,"    TARGET_COUNT_MM = %.5f\n", gAsymAnaInfo->target_count_mm);
@@ -418,21 +418,21 @@ void MeasInfo::Update(DbEntry &rundb)
    // For compatibility reasons set the Run variable
    // Taken from AsymRunDb
    if (RUNID < 6500) { // Run undefined
-      Run = 0;
+      fRunId = 0;
 
    } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
-      Run = 5;
+      fRunId = 5;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
 
    } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
-      Run = 6;
+      fRunId = 6;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
 
    } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
-      Run = 9;
+      fRunId = 9;
 
    } else
-      Run = 11;
+      fRunId = 11;
 }
 
 
@@ -454,26 +454,29 @@ void MeasInfo::Update(MseMeasInfoX& run)
       DisableChannels(disabled_horiz_det);
    }
       
-
-   // For compatibility reasons set the Run variable
-   // Taken from AsymRunDb
+   // by fill id
    if (RUNID < 6500) { // Run undefined
-      Run = 0;
+      fRunId = 0;
 
    } else if (RUNID >= 6500 && RUNID < 7400) { // Run 5
-      Run = 5;
+      fRunId = 5;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
 
    } else if (RUNID >= 7400 && RUNID < 10018) { // Run 6
-      Run = 6;
+      fRunId = 6;
       for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
 
-   } else if (RUNID >= 10018 && RUNID < 14000) { // Run 9
-      Run = 9;
-   } else if (RUNID >= 14700 && RUNID < 15480) { // Run 11
-      Run = 11;
+   } else if (RUNID >= 10018 && RUNID < 11100) { // Run 9
+      fRunId = 9;
+   } else if (RUNID >= 14000 && RUNID < 15500) { // Run 11
+      fRunId = 11;
+   } else if (RUNID >= 16000 && RUNID < 16800) { // Run 12
+      fRunId = 12;
+   } else if (RUNID >= 17000 ) { // Run 13
+      fRunId = 13;
+      gCh2WfdMap = ch2WfdMap_run13;
    } else {
-      Run = 12;
+      // default Run value
    }
 }
 
