@@ -32,8 +32,6 @@ fi
 export CNIPOL_DIR=/usr/local/cnipol_trunk
 export CNIPOL_DATA_DIR=/usr/local/polarim/data
 export CNIPOL_RESULTS_DIR=/usr/local/polarim/root
-#export CNIPOL_DATA_DIR=$CNIPOL_DIR
-#export CNIPOL_RESULTS_DIR=$CNIPOL_DIR
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
 	export PATH+=:$CNIPOL_DIR/bin
@@ -49,7 +47,7 @@ export POLARIM_DIR=/usr/local/polarim
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
 #export DATADIR=$POLARIM_DIR/data
-export CONFDIR=$CNIPOL_DIR/config
+#export CONFDIR=$CNIPOL_DIR/config
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
@@ -65,7 +63,7 @@ export CDEV_DIR=/usr/local/cdev
 export CDEV=$CDEV_DIR
 export CDEVSHOBJ=${CDEV}/lib
 export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
 
 if [[ $LD_LIBRARY_PATH != *$CDEVSHOBJ* ]]; then
 	export LD_LIBRARY_PATH+=:$CDEVSHOBJ
@@ -75,7 +73,7 @@ fi
 if [ -z "$CDEV_DIR" ]; then
 	export CDEV_DIR=/usr/local/cdev
 	export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-	export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+	export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
 	export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
 fi
 
@@ -98,7 +96,7 @@ echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
 #echo "\$DATADIR=$DATADIR     <-- deprecated"
-echo "\$CONFDIR=$CONFDIR     <-- deprecated"
+#echo "\$CONFDIR=$CONFDIR     <-- deprecated"
 #echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
 echo
 echo "\$PATH=$PATH"
