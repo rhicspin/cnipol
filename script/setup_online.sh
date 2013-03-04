@@ -3,9 +3,9 @@
 echo "Setting environmet variables:"
 
 # ROOT variables
-if [ -z "$ROOTSYS" ]; then
-	source /usr/local/cern/root/bin/thisroot.sh
-fi
+#if [ -z "$ROOTSYS" ]; then
+	source /usr/local/root/bin/thisroot.sh
+#fi
 
 # CERNLIB variables
 if [ -z "$CERNLIB_DIR" ]; then
@@ -29,7 +29,7 @@ if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
 fi
 
 # CNIPOL variables
-export CNIPOL_DIR=/usr/local/cnipol_v1835
+export CNIPOL_DIR=/usr/local/cnipol_trunk
 export CNIPOL_DATA_DIR=/usr/local/polarim/data
 export CNIPOL_RESULTS_DIR=/usr/local/polarim/root
 
@@ -47,7 +47,7 @@ export POLARIM_DIR=/usr/local/polarim
 #export CNIPOL_LIB_DIR=$CNIPOL_DIR/lib
 #export CNIPOL_ONLINE_DIR=$CNIPOL_DIR/online
 #export DATADIR=$POLARIM_DIR/data
-#export CONFDIR=$POLARIM_DIR/config
+#export CONFDIR=$CNIPOL_DIR/config
 #export CALIBDIR=$POLARIM_DIR/share/config
 
 #UTILS
