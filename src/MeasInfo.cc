@@ -99,7 +99,7 @@ void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 
    UInt_t approxBeamEnergy = (UInt_t) (fBeamEnergy + 0.5);
 
-   if (approxBeamEnergy >= 100)
+   if (approxBeamEnergy >= 2*kINJECTION)
       // this number comes from the online config files. May need to add it to the run_info DB table in the future
       fExpectedGlobalTimeOffset = -8;
    else

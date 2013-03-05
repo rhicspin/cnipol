@@ -272,8 +272,10 @@ void Calibrator::PrintAsConfig(FILE *f) const
       chId =  iCh->first;
       ch   = &iCh->second;
 
+      Float_t onlineT0 = gMeasInfo->GetBeamEnergy() > kINJECTION ? -1*(ch->fT0Coef + gMeasInfo->GetExpectedGlobalTimeOffset()) : -1*ch->fT0Coef;
+
       fprintf(f, "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
-         chId, -1*ch->fT0Coef, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
+         chId, onlineT0, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
          10., 100., ch->fACoef, 0., 0., 0., 0., 0., 0., 0.);
    }
 
