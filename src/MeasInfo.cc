@@ -227,7 +227,9 @@ void MeasInfo::PrintBunchPatterns() const
 
       if (i%10 == 0) { ssSpin << " "; ssFill << " "; }
 
-      ssSpin << ibb->second.fBunchSpin;
+      if (ibb->second.fBunchSpin > 0)      ssSpin << "+";
+      else if (ibb->second.fBunchSpin < 0) ssSpin << "-";
+      else                                 ssSpin << ".";
       ssFill << (UShort_t) ibb->second.fIsFilled;
    }
 

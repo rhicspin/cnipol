@@ -138,7 +138,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
    //extern char *optarg;
 
    int          option_index = 0;
-   stringstream sstr;
    char         cfile[32];
    char         enerange[20], cwidth[20], *ptr;
 
@@ -195,9 +194,10 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::gr:f:n:s:o:t:e:m:d:baCDTBZF:MNW:UGR:S",
+   while ((c = getopt_long(argc, argv, "?hl::gr:f:n:s:o:t:e:m:d:baCDTBZF:MNW:UGR:",
                            long_options, &option_index)) != -1)
    {
+      stringstream sstr;
       switch (c) {
 
       case '?':
@@ -257,6 +257,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          sstr.str("");
          sstr << optarg;
          sstr >> fThinout;
+         //cout << "TTTTTTTTTTTTTTTTTTTTTTTT: " << optarg << " lllllllllll " << sstr2.str() << " ooo " << fThinout << endl;
          break;
 
       case 't': // set timing shift in banana cut
@@ -592,6 +593,7 @@ void AsymAnaInfo::Update(MseMeasInfoX& run)
    if (fAlphaCalibRun.empty()) {
       if (!HasAlphaBit()) {
          Error("Update", "Alpha calibration run must be specified");
+         Error("Update", "Specify it on command line or use --use-db option");
          exit(0);
       }
    } else
