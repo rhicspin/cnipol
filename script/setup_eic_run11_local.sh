@@ -4,7 +4,7 @@ echo "Setting environmet variables:"
 
 # ROOT variables
 if [ -z "$ROOTSYS" ]; then
-   source /eicdata/eic0005/root_v5.34.00/bin/thisroot.sh
+   source /eicdata/eic0005/root/bin/thisroot.sh
 fi
 
 # CERNLIB variables
@@ -58,7 +58,7 @@ fi
 if [ -z "$CDEV_DIR" ]; then
    export CDEV_DIR=/usr/local/cdev
    export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-   export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
+   export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
    export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
 fi
 
