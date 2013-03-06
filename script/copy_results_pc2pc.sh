@@ -35,7 +35,7 @@ do
 
    #sleep $CHECKINGPERIOD
    #rsync --stats --bwlimit=100000 -a /eicdata/eic0005/run09/root/* /eicdata/eic0005/run11/root/* /eicdata/eic0005/run12/root/* pc2pc-phy:/usr/local/polarim/root/ >> ${LOG} 2>&1
-   rsync --stats --bwlimit=100000 --exclude=*.root -a /eicdata/eic0005/${RUN_PERIOD}/root/* cnipol@pc2pc-phy:/usr/local/polarim/root/ >> ${LOG} 2>&1
+   rsync --stats --bwlimit=100000 --exclude=*.root -a /eicdata/eic0005/${RUN_PERIOD}/root/* pc2pc-phy:/usr/local/polarim/root/ >> ${LOG} 2>&1
 	#tar -c /eicdata/eic0005/run12/root/16* | ssh pc2pc-phy 'tar -xvf - -C /usr/local/polarim/root/' >> ${LOG} 2>&1
 
    sleep $CHECKINGPERIOD
