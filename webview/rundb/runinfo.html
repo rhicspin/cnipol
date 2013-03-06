@@ -646,8 +646,9 @@ The same data as on the left plot but the measurements are binned
 <td align=center>
 <?=$gP->img("calib/hDLVsChannel")?>
 <div class="thumbcaption">
-Effective dead layer for all channels. The dead layer estimates the undetectable
-fraction (losses) of the initial carbon energy
+Effective dead layer for individual channels as extracted from the "banana"
+fit. The dead layer is estimated from the undetected fraction of the initial
+carbon energy
 </div>
 
 <td align=center>
@@ -661,6 +662,16 @@ fraction (losses) of the initial carbon energy
 
 <td align=center>
 <?=$gP->img("calib/hFitStatusVsChannel")?>
+<div class="thumbcaption">
+The channel is disabled if the channel status is not equal 1. The status codes
+are:<br>
+0: Not used in the fit, e.g. due to low statistics<br>
+1: The channel is OK<br>
+2: Fit did not converge<br>
+3: Dead layer is too far from the average<br>
+4: t0 is too far from the average<br>
+5: chi^2/NDF is too high
+</div>
 
 <tr>
 <td>
