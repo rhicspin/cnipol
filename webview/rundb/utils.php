@@ -269,6 +269,9 @@ function pairToString($valerr=null, $classes="", $format="%3.2f", $isHtml=true)
 /** */
 function polarPairToString($valerr=null, $classes="", $format="%3.2f", $isHtml=true)
 {
+   if (empty($valerr))
+      return "";
+
    $ve_scaled = $valerr->ClonePair();
 
    $ve_scaled->val *= 100.;
