@@ -1737,7 +1737,8 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    fitFunc->SetParNames("Polarization", "#phi");
    fitFunc->SetParameter(0, 0);
    fitFunc->SetParameter(1, 0);
-   fitFunc->SetParLimits(0, -500, 500);
+   //fitFunc->SetParLimits(0, -500, 500);
+   fitFunc->SetParLimits(0, 0, 1);
    fitFunc->SetParLimits(1, -M_PI, M_PI);
 
    fitres = grPolarVsPhi->Fit(fitFunc, "S R");
