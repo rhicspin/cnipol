@@ -169,8 +169,8 @@ int main(int argc, char *argv[])
          )
       {
 	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
-         printf("%8.3f, %s, %3d, %f, %f, %s, %f, %f\n", runId, strTime,
-            beamEnergy, polarization, polarizationErr,
+         printf("%8.3f, %s, %3d, %f, %f, %s, %f, %f\n",
+            runId, strTime, beamEnergy, polarization, polarizationErr,
             RunConfig::AsString(gMM->fMeasInfo->fMeasType).c_str(), profileRatio,
             profileRatioErr );
 
