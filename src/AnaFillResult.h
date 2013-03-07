@@ -36,7 +36,7 @@ protected:
    AnaFillExternResult *fAnaFillExternResult;
 
    PolId2TGraphMap            fPCPolarGraphs;
-   PolId2TGraphMap            fPCPolarInjGraphs;
+   PolId2TGraphMap            fPCPolarInjGraphs; // polarization measurements at 24 GeV by polarimeter
    PolId2TgtOrient2TGraphMap  fPCProfRGraphs;
    PolId2TgtOrient2TGraphMap  fPCProfRInjGraphs; //!
    PolId2TargetUIdMap         fPCTargets;

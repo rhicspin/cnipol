@@ -27,7 +27,7 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    fFileNameBluHjet("hjet_pol_blu.txt"),
    fMinFill(UINT_MAX), fMaxFill(0),
    fMinTime(UINT_MAX), fMaxTime(0),
-   fDoCalcPolarNorm(kTRUE),
+   fDoCalcPolarNorm(kFALSE),
    fBeamEnergies(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
@@ -81,7 +81,7 @@ void AnaGlobResult::Print(const Option_t* opt) const
    }
 
    printf("\nNorm. jet/carbon:\n");
-   printf("    | avrg. of ratio                       |||||| ratio of avrg.                        |\n");
+   printf("    | avrg. of ratio                        |||||| ratio of avrg.                        |\n");
 
    PolId2ValErrMapConstIter iNormJC  = fNormJetCarbon.begin();
    PolId2ValErrMapConstIter iNormJC2 = fNormJetCarbon2.begin();
@@ -262,6 +262,8 @@ void AnaGlobResult::AddHJMeasResult()
    fullPath << fPathExternResults << "/hjet_pol";
    ifstream file(fullPath.str().c_str());
 
+   Info("AddHJMeasResult", "Adding HJet polarization from file: %s", fullPath.str().c_str());
+
    if (file.good()) {
       UInt_t   fillId;
       Double_t bluPolar, bluPolarErr, bluAsym, bluAsymErr;
@@ -325,6 +327,8 @@ void AnaGlobResult::AddHJMeasResult()
 /** */
 void AnaGlobResult::Process(DrawObjContainer *ocOut)
 {
+   Info("Process", "Processing fills...");
+
    AnaFillResultMapIter iFill = fAnaFillResults.begin();
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill)

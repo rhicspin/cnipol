@@ -43,10 +43,11 @@ int main(int argc, char *argv[])
 
 	gMAsymAnaInfo = &mAsymAnaInfo;
 
-   AnaGlobResult gAnaGlobResult;
-   gAnaGlobResult.Configure(mAsymAnaInfo);
+   AnaGlobResult anaGlobResult;
+   anaGlobResult.Configure(mAsymAnaInfo);
 
-   gROOT->Macro("styles/style_masym.C");
+   //gROOT->SetMacroPath("./:~/rootmacros/:");
+   gROOT->Macro("~/rootmacros/styles/style_masym.C");
 
    //gStyle->SetOptTitle(0);
    //gStyle->SetOptStat("emroui");
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
    filelistGood << fixed << setprecision(3);
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
-	mAsymRoot.SetAnaGlobResult(&gAnaGlobResult);
+	mAsymRoot.SetAnaGlobResult(&anaGlobResult);
 
    //UInt_t minTime = UINT_MAX;
    //UInt_t maxTime = 0;
@@ -208,7 +209,7 @@ int main(int argc, char *argv[])
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
-      gAnaGlobResult.AddMeasResult(*gMM, gHIn);
+      anaGlobResult.AddMeasResult(*gMM, gHIn);
       //gHIn->Print();
 
 		//gHIn->Delete();
@@ -224,7 +225,7 @@ int main(int argc, char *argv[])
    filelistGood.close();
 
 	// Update global run parameters before anything else
-	gRunConfig.SetBeamEnergies(gAnaGlobResult.GetBeamEnergies());
+	gRunConfig.SetBeamEnergies(anaGlobResult.GetBeamEnergies());
 
    // Create graphic containers
    DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
@@ -235,19 +236,19 @@ int main(int argc, char *argv[])
    gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
 
    // Adjust min/max fill for histogram limits
-   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(gAnaGlobResult.GetMinFill(), gAnaGlobResult.GetMaxFill());
-   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(gAnaGlobResult.GetMinTime(), gAnaGlobResult.GetMaxTime());
+   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());
+   ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(anaGlobResult.GetMinTime(), anaGlobResult.GetMaxTime());
    ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
-   gAnaGlobResult.AdjustMinMaxFill();
+   anaGlobResult.AdjustMinMaxFill();
 
 
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
 
-   gAnaGlobResult.AddHJMeasResult();
-   gAnaGlobResult.Process(gH);
-   //gAnaGlobResult.Print("all");
-   //gAnaGlobResult.Print();
+   anaGlobResult.AddHJMeasResult();
+   anaGlobResult.Process(gH);
+   //anaGlobResult.Print("all");
+   //anaGlobResult.Print();
 
 
    Info("masym", "Starting second pass...");
@@ -266,7 +267,7 @@ int main(int argc, char *argv[])
       //gH->Fill(*iMeas, *gHIn);
    }
 
-   gH->PostFill(gAnaGlobResult);
+   gH->PostFill(anaGlobResult);
    gH->PostFill();
    gH->UpdateLimits();
 
@@ -279,7 +280,7 @@ int main(int argc, char *argv[])
 	if (mAsymAnaInfo.fFlagUpdateDb)
    {
       AsymDbSql *asymDbSql = new AsymDbSql();
-      gAnaGlobResult.UpdateInsertDb(asymDbSql);
+      anaGlobResult.UpdateInsertDb(asymDbSql);
    }
 
    gH->Write();
@@ -287,8 +288,8 @@ int main(int argc, char *argv[])
    mAsymRoot.Print();
    mAsymRoot.Close();
 
-   //gAnaGlobResult.Print("all");
-   gAnaGlobResult.Print();
+   //anaGlobResult.Print("all");
+   //anaGlobResult.Print();
 
    return 1;
 }
