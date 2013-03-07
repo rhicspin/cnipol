@@ -29,7 +29,7 @@ if [[ $LD_LIBRARY_PATH != *$MYSQLPP_LIB_DIR* ]]; then
 fi
 
 # CNIPOL variables
-export CNIPOL_DIR=/usr/local/cnipol_trunk
+export CNIPOL_DIR=/usr/local/cnipol
 export CNIPOL_DATA_DIR=/usr/local/polarim/data
 export CNIPOL_RESULTS_DIR=/usr/local/polarim/root
 
