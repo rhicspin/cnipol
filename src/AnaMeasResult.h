@@ -84,6 +84,7 @@ public:
    void   SetStartTime(time_t time) { fStartTime = time; }
 
    ValErrPair GetPCPolar() const;
+   ValErrPair GetPCPolarPhase() const;
    ValErrPair GetPCProfR() const;
 
    ClassDef(AnaMeasResult, 1)

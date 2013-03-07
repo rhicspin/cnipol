@@ -612,11 +612,15 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
    run.profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
    run.profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
 
-   run.polarization        = gAnaMeasResult->sinphi[0].P[0];
-   run.polarization_error  = gAnaMeasResult->sinphi[0].P[1],
-   run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
-   run.phase_error         = gAnaMeasResult->sinphi[0].dPhi[1];
+   //run.polarization        = gAnaMeasResult->sinphi[0].P[0];
+   //run.polarization_error  = gAnaMeasResult->sinphi[0].P[1],
+   //run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
+   //run.phase_error         = gAnaMeasResult->sinphi[0].dPhi[1];
 
+   run.polarization        = gAnaMeasResult->GetPCPolar().first;
+   run.polarization_error  = gAnaMeasResult->GetPCPolar().second;
+   run.phase               = gAnaMeasResult->GetPCPolarPhase().first;
+   run.phase_error         = gAnaMeasResult->GetPCPolarPhase().second;
 }
 
 

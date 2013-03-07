@@ -170,7 +170,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       }
 
       if ( chChi2NdfLog > 0 && 
-           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 3.0*GetRMSOfLogsBananaChi2Ndf() )
+           chChi2NdfLog > chCalibMeanOfLogs.GetBananaChi2Ndf() + 5.0*GetRMSOfLogsBananaChi2Ndf() )
       {
          gMeasInfo->DisableChannel(chId);
          chCalib.fFitStatus = kCHI2_OUTLIER;

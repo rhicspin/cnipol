@@ -218,7 +218,7 @@ void CnipolCalibHists::PostFill()
    lineMean->SetLineWidth(2);
    lineMean->SetLineColor(kGreen);
 
-   TLine* lineRMS  = new TLine(1, meanChi2+3.0*rmsChi2, hDLVsChannel->GetNbinsX(), meanChi2+3.0*rmsChi2);
+   TLine* lineRMS  = new TLine(1, meanChi2+5.0*rmsChi2, hDLVsChannel->GetNbinsX(), meanChi2+5.0*rmsChi2);
    lineRMS->SetLineWidth(2);
    lineRMS->SetLineColor(kMagenta);
 
@@ -226,6 +226,6 @@ void CnipolCalibHists::PostFill()
    hLogChi2NdfVsChannel->GetListOfFunctions()->Add(lineRMS);
    hLogChi2NdfVsChannel->GetListOfFunctions()->SetOwner();
 
-   if (hLogChi2NdfVsChannel->GetYaxis()->GetXmax() < meanChi2+3.0*rmsChi2)
-      hLogChi2NdfVsChannel->SetMaximum(1.1*(meanChi2+3.0*rmsChi2));
+   if (hLogChi2NdfVsChannel->GetYaxis()->GetXmax() < meanChi2+5.0*rmsChi2)
+      hLogChi2NdfVsChannel->SetMaximum(1.1*(meanChi2+5.0*rmsChi2));
 }
