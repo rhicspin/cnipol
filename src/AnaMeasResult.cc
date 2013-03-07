@@ -111,7 +111,23 @@ ValErrPair AnaMeasResult::GetPCPolar() const
       val_err.first  = fFitResPolarPhi->Value(0);
       val_err.second = fFitResPolarPhi->FitResult::Error(0);
    } else {
-      Error("GetPCPolar", "No valid fit result found");
+      Error("GetPCPolar", "No valid polar vs phi fit result found");
+   }
+
+   return val_err;
+}
+
+
+/** */
+ValErrPair AnaMeasResult::GetPCPolarPhase() const
+{
+   ValErrPair val_err(0, -1);
+
+   if (fFitResPolarPhi.Get()) {
+      val_err.first  = fFitResPolarPhi->Value(1);
+      val_err.second = fFitResPolarPhi->FitResult::Error(1);
+   } else {
+      Error("GetPCPolarPhase", "No valid polar vs phi fit result found");
    }
 
    return val_err;

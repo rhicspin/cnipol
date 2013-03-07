@@ -763,7 +763,7 @@ void CalcStatistics()
    // Misc
    if (gMeasInfo->fWallCurMonSum)     gAnaMeasResult->wcm_norm_event_rate = gMeasInfo->GoodEventRate/gMeasInfo->fWallCurMonSum*100;
    if (gAsymAnaInfo->reference_rate)  gAnaMeasResult->UniversalRate       = gAnaMeasResult->wcm_norm_event_rate/gAsymAnaInfo->reference_rate;
-   if (gMeasInfo->fRunId == 5)           gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
+   if (gMeasInfo->fRunId == 5)        gAnaMeasResult->profile_error       = gAnaMeasResult->UniversalRate < 1 ? ProfileError(gAnaMeasResult->UniversalRate) : 0;
 }
 
 
@@ -1034,18 +1034,17 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
 
    float aveA_N = sum != 0 ? suma/sum : 0;
 
-   //ds
-   TH1F* hEnergy = (TH1F*) gAsymRoot->fHists->d["std"]->o["hKinEnergyA_o"];
+   TH1F* hKinEnergyA_o = (TH1F*) gAsymRoot->fHists->d["std"]->o["hKinEnergyA_o"];
 
-   if (!hEnergy) return 0;
+   if (!hKinEnergyA_o) return 0;
 
    j = 0;
    sum = suma = 0;
 
-   for (int i=1; i<=hEnergy->GetNbinsX(); i++) {
-      double bcont  = hEnergy->GetBinContent(i);
-      //double bcentr = hEnergy->GetBinCenter(i);
-      //double bwidth = hEnergy->GetBinWidth(i);
+   for (int i=1; i<=hKinEnergyA_o->GetNbinsX(); i++) {
+      double bcont  = hKinEnergyA_o->GetBinContent(i);
+      //double bcentr = hKinEnergyA_o->GetBinCenter(i);
+      //double bwidth = hKinEnergyA_o->GetBinWidth(i);
 
       //j = (int) ((bcentr - Emin)/bwidth);
 
@@ -1484,8 +1483,10 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       ValErrMap asymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
       //ValErrMap asymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
 
+      asymX45["phys"].first  = TMath::Sqrt(2)*asymX45["phys"].first;
+      asymX45["phys"].second = TMath::Sqrt(2)*asymX45["phys"].second;
       //cout << "test: " << asymX90["phys"] << ", " << asymX45["phys"] << endl;
-      ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
+      ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], TMath::Sqrt(2)*asymX45["phys"]);
       //cout << asymPhys << endl;
 
       hAsymVsDelim4Det->SetBinContent(iDelim, asymPhys.first);
@@ -1705,7 +1706,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    if (fitres.Get()) {
       gAnaMeasResult->fFitResAsymPhi = fitres;
    } else {
-      Error("CalcStripAsymmetry", "Fit error...");
+      Error("CalcStripAsymmetry", "Asym vs phi fit error...");
    }
 
    // Create polarization graph grPolarVsPhi directly from the asymmetry one grAsymVsPhi
@@ -1745,7 +1746,7 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
       gAnaMeasResult->fFitResPolarPhi = fitres;
       // XXX add here an assignment of values to gAnaMeasResult->fPolar
    } else {
-      Error("CalcStripAsymmetry", "Fit error...");
+      Error("CalcStripAsymmetry", "Polar vs phi fit error...");
    }
 
    // Multiply by 100% for aesthetic reasons
@@ -1753,7 +1754,6 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    grPolarVsPhi->Apply(dummyScale);
    grPolarVsPhi->Fit(fitFunc, "R");
    delete dummyScale;
-
 }
 
 
@@ -2252,8 +2252,7 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    func->SetParNames("P", "#phi");
    func->SetParameter(0, p0);
    func->SetParameter(1, 0);
-   //func->SetParLimits(0, -1, 1);
-   func->SetParLimits(0, 0, 1);
+   func->SetParLimits(0, -1, 1); // was from 0 to 1
    func->SetParLimits(1, -M_PI, M_PI);
 
    // define TGraphError obect for fitting
