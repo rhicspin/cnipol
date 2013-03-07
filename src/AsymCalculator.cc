@@ -1753,6 +1753,8 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    // Multiply by 100% for aesthetic reasons
    TF2 *dummyScale = new TF2("dummyScale", "100.*y");
    grPolarVsPhi->Apply(dummyScale);
+   // Just re-fit the scaled graph
+   fitFunc->SetParLimits(0, 0, 100);
    grPolarVsPhi->Fit(fitFunc, "R");
    delete dummyScale;
 }
