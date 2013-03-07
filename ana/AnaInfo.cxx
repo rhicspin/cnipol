@@ -196,7 +196,7 @@ void AnaInfo::CopyResults()
 {
    if (!fFlagCopyResults) return;
 
-   string cmd = "rsync -rlpgoDv " + GetOutDir() + " pc2pc-phy:/usr/local/polarim/root/";
+   string cmd = "rsync --stats --exclude=*.root -rlpgoDv " + GetOutDir() + " pc2pc.phy.bnl.gov:/usr/local/polarim/root/";
    Info("CopyResults", "Copying results...\n%s", cmd.c_str());
    //string cmd = "ls -l";
 
