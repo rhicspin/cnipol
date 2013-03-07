@@ -8,6 +8,7 @@ class FillSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
+	var $defaultRun = 13;
 
    static $queryVarNames  = array("rp", "fn", "ft", "be", "mode",   "srtn", "srtd");
 
@@ -44,7 +45,7 @@ class FillSelector {
       } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
 
       } else {
-         $rp = 12; // run 12 is default
+         $rp = $this->defaultRun;
          $_GET['rp'] = $rp;
          $this->sqlWhere .= " AND fill_polar.fill > '{$RUN_PERIOD_BY_FILL[$rp]['start']}' AND fill_polar.fill < '{$RUN_PERIOD_BY_FILL[$rp]['end']}'";
       }
@@ -57,7 +58,8 @@ class FillSelector {
       } else if ( isset($_GET['ft']) && empty($_GET['ft'])) {
 
       } else {
-         $ft = 0x01; // phys type is default
+         //$ft = 0x01; // phys type is default
+         $ft = 0x00; // phys type is default
          $this->sqlWhere .= " AND type = $ft";
       }
 
@@ -106,7 +108,7 @@ class FillSelector {
             <tr>
               <td colspan=3 class=padding2><b>Run period:</b>\n";
 
-      $this->HtmlSelectField($RUN_PERIOD, "rp", "12");
+      $this->HtmlSelectField($RUN_PERIOD, "rp", $this->defaultRun);
 
       echo "<tr>
               <td colspan=3 class=padding2><b>Fill:</b>
@@ -118,7 +120,8 @@ class FillSelector {
 
       echo "  <td class=\"padding2\"><b>Type:</b>\n";
 
-      $this->HtmlSelectField($FILLTYPE, "ft", 1); // default type is "phys"
+      //$this->HtmlSelectField($FILLTYPE, "ft", 1); // default type is "phys"
+      $this->HtmlSelectField($FILLTYPE, "ft", 0); // default type is "undef"
 
       echo "  <td class=\"padding2\"><b>Beam energy:</b>\n";
 
