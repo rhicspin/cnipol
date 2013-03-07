@@ -29,6 +29,7 @@ include("../head.html");
 
 <?php
 
+include_once("utils.php");
 include_once("SqlDbReader.php");
 include_once("RunSelector.php");
 
@@ -71,6 +72,12 @@ $rslt = $sqlDbReader->ReadEntries(($page-1)*$nRunsPerPage, $nRunsPerPage);
 //print "<pre>\n";
 //print_r($row); 
 //print "</pre>\n";
+
+// Arrays for average values
+
+$polarizations = array();
+$profileRatios = array();
+
 
 ?>
 
@@ -124,10 +131,10 @@ while ($e = mysql_fetch_assoc($rslt)):
       $measurementType = $MEASTYPE[$e['measurement_type']];
    }
 
-   $polarization = "&mdash;";
-   $profileRatio = "&mdash;";
-   $beamEnergy   = "&mdash;";
-   $targetId     = "&mdash;";
+   $polarization     = "&mdash;";
+   $profileRatio     = "&mdash;";
+   $beamEnergy       = "&mdash;";
+   $targetId         = "&mdash;";
 
    if ($measurementType != "undef" && $measurementType != "alpha")
    {
@@ -142,11 +149,15 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 		$norm = getJetCarbonNormalization($normSpecs);
 
-		$polarization = isset($e['polarization']) ?
-         sprintf("%5.1f &plusmn; %5.1f", $e['polarization']*100*$norm, $e['polarization_error']*100*$norm) : $polarization;
+		if ( isset($e['polarization']) ) {
+		   $polarization = sprintf("%5.1f &plusmn; %5.1f", $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+         $polarizations[] = new pair($e['polarization']*100*$norm, $e['polarization_error']*100*$norm);
+      }
 
-      $profileRatio = isset($e['profile_ratio']) ?
-		   sprintf("%5.2f &plusmn; %5.2f", $e['profile_ratio'], $e['profile_ratio_error']) : $profileRatio;
+      if ( isset($e['profile_ratio']) ) {
+         $profileRatio    = sprintf("%5.2f &plusmn; %5.2f", $e['profile_ratio'], $e['profile_ratio_error']);
+         $profileRatios[] = new pair($e['profile_ratio'], $e['profile_ratio_error']);
+      }
 
       $beamEnergy = isset($e['beam_energy']) ? sprintf("%6.2f", $e['beam_energy']) : $beamEnergy;
 
@@ -192,13 +203,37 @@ while ($e = mysql_fetch_assoc($rslt)):
 
 <?php
 endwhile;
+
+// Now take care of the averages
+$meanPolarization = calcWeigtedAvrgErr($polarizations);
+$meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
+//print $meanProfileRatio->ToString();
 ?>
+
+<tr>
+   <th colspan=12>&nbsp;<br>&nbsp;
+
+<tr>
+   <th>Mean
+
+   <th>&nbsp;
+   <th>&nbsp;
+   <th><?=$meanPolarization->ToString("", "%5.2f");?>
+   <th><?=$meanProfileRatio->ToString("", "%5.3f");?>
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
+   <th>&nbsp;
 
 </table>
 
 <?$sqlDbReader->PrintPageIndex($nPages, $page);?>
 
 <pre>
+
 <?php //print_r($rc); ?>
 </pre>
 

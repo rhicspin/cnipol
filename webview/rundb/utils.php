@@ -101,7 +101,7 @@ function array_sort(&$array) {
 
 /** */
 function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
-{ //{{{
+{
    $csv_terminated = "\n";
    $csv_separator = ",";
    $csv_enclosed = '"';
@@ -161,12 +161,12 @@ function exportMysqlToCsv($table, $sqlWhere="", $filename='rundb.csv')
    header("Content-Disposition: attachment; filename=$filename");
    echo $out;
    exit;
-} //}}}
+}
 
 
 /** */
 function exportMysqlToCsv2($table, $sqlWhere="", $filename='rundb.csv')
-{ //{{{
+{
    $csv_terminated = "\n";
    $csv_separator = ",";
    $csv_enclosed = '"';
@@ -226,7 +226,7 @@ function exportMysqlToCsv2($table, $sqlWhere="", $filename='rundb.csv')
    header("Content-Disposition: attachment; filename=$filename");
    echo $out;
    exit;
-} //}}}
+}
 
 
 /** */
@@ -280,7 +280,7 @@ function polarPairToString($valerr=null, $classes="", $format="%3.2f", $isHtml=t
 
 /** */
 function calcWeigtedSum($valerrs, $power=0)
-{ //{{{
+{
 
    if ($power != 0 && $power != 1 && $power != 2) return null;
    if (count($valerrs) <= 0) return null;
@@ -311,12 +311,12 @@ function calcWeigtedSum($valerrs, $power=0)
    }
 
    return $sum;
-} //}}}
+}
 
 
 /** */
 function calcWeigtedAvrgErr($valerrs)
-{ //{{{
+{
    $result = new pair(-1, -1);
 
    //if (count($valerrs) <= 0) return $result;
@@ -343,12 +343,12 @@ function calcWeigtedAvrgErr($valerrs)
    $result->second = ($sum2 == 0 ? -1 : sqrt(1./$sum2));
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcWeigtedAvrgErrPairs($ve1, $ve2)
-{ //{{{
+{
    $result = new pair(0, -1);
 
    if ($ve1->second < 0 && $ve2->second < 0 ) return $result;
@@ -362,12 +362,12 @@ function calcWeigtedAvrgErrPairs($ve1, $ve2)
    $result->second = 1./sqrt($w1 + $w2);
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcWeigtedStdDev($valerrs)
-{ //{{{
+{
    //if (count($valerrs) <= 0) return null;
 
    $result = new pair(0, -1);
@@ -383,12 +383,12 @@ function calcWeigtedStdDev($valerrs)
    $result->second = 0;
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcMaxDifference($avrg=null, $valerrs=null)
-{ //{{{
+{
    $maxDiff = -1;
 
    if ($avrg == null) return -1;
@@ -411,12 +411,12 @@ function calcMaxDifference($avrg=null, $valerrs=null)
    $maxDiff = $maxDiff < 0.0000000001 ? -1 : $maxDiff;
 
    return $maxDiff;
-} //}}}
+}
 
 
 /** */
 function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
-{ //{{{
+{
    if ($pairR_H == null || $pairR_V == null) return null;
 
    // protected for division y zero
@@ -433,12 +433,12 @@ function calcPolarCollisionScale($pairR_H=null, $pairR_V=null)
    $collScale->second = $collScale->first * sqrt($relDelta2);
 
    return $collScale;
-} //}}}
+}
 
 
 /** */
 function calcDSAPolarCollScale($profRsHorz=array(), $profRsVert=array())
-{ //{{{
+{
    $result = new pair(0, -1);
 
    //foreach ($profR) {
@@ -459,12 +459,12 @@ function calcDSAPolarCollScale($profRsHorz=array(), $profRsVert=array())
    $result->second = $result->first * sqrt($relDelta2);
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcPolarCollision($polar=null, $scaleColl=null)
-{ //{{{
+{
    $result = new pair(0, -1);
 
    if ($polar == null || $scaleColl == null) return $polar->ClonePair();
@@ -476,12 +476,12 @@ function calcPolarCollision($polar=null, $scaleColl=null)
    $result->second = abs($result->first) * sqrt($relDelta2);
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcPolarP0Collision($polarP0=null, $profR0Horz=null, $profR0Vert=null)
-{ //{{{
+{
    $result = new pair(0, -1);
 
    //if ($polarP0 == null || $profR0Horz == null || $profR0Vert == null)             return $polarP0->ClonePair();
@@ -494,12 +494,12 @@ function calcPolarP0Collision($polarP0=null, $profR0Horz=null, $profR0Vert=null)
    $result->first = 2 * $P0 * sqrt( (1+$R_H)/(2+$R_H) ) * sqrt( (1+$R_V)/(2+$R_V) );
  
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcPolarSlopeCollision($polarP0=null, $polarSlope=null, $profR0=null, $profRSlope=null)
-{ //{{{
+{
    $result = new pair(0, -1);
 
    //if ($polarP0 == null || $polarSlope == null || $profR0 == null || $profRSlope == null)  return $polarP0->ClonePair();
@@ -519,12 +519,12 @@ function calcPolarSlopeCollision($polarP0=null, $polarSlope=null, $profR0=null, 
    $result->first += P0*$numer/$denom;
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function calcQuantileValue(&$vals=null, $quantile=null)
-{ //{{{
+{
 
    if ($quantile == null) return end($vals);
 
@@ -542,12 +542,12 @@ function calcQuantileValue(&$vals=null, $quantile=null)
    }
 
    return end($vals);
-} //}}}
+}
 
 
 /** */
 function calcProfPolar($profPMax=null, $profR=null)
-{ //{{{
+{
    if ($profPMax == null || $profR == null) return null;
 
    $profPolar = new pair(-1, -1);
@@ -562,12 +562,12 @@ function calcProfPolar($profPMax=null, $profR=null)
    $profPolar->second = sqrt($delta2);
 
    return $profPolar;
-} //}}}
+}
 
 
 /** */
 function calcDivision($ve1, $ve2, $r12=0)
-{ //{{{
+{
    $result = new pair(0, -1);
 
    if ($ve1->first == 0 || $ve2->first == 0) return $result;
@@ -579,12 +579,12 @@ function calcDivision($ve1, $ve2, $r12=0)
    $result->second = $re * $result->first;
 
    return $result;
-} //}}}
+}
 
 
 /** */
 function readOnlinePolar($fileNameFull="")
-{ //{{{
+{
    $values = array();
    $handle = fopen($fileNameFull, "r");
 
@@ -600,7 +600,7 @@ function readOnlinePolar($fileNameFull="")
 
    fclose($handle);
    return $values;
-} //}}}
+}
 
 
 /** */
@@ -670,7 +670,7 @@ function getHJPCNorm($run, $benergy, $polId, $tgtOrient=null, $tgtId=null)
 
 /** */
 function getRunPeriod($timestamp=null)
-{ //{{{
+{
    global $RUN_PERIOD_BY_DATE;
 
    foreach ($RUN_PERIOD_BY_DATE as $runPeriod => $runTimes) {
@@ -685,12 +685,12 @@ function getRunPeriod($timestamp=null)
          return $runPeriod;
    }
 
-} //}}}
+}
 
 
 /** */
 function GetRingId($polId)
-{ //{{{
+{
    switch ($polId) {
    case 0:
       return 1;
@@ -703,7 +703,7 @@ function GetRingId($polId)
    default:
       return -1;
    }
-} //}}}
+}
 
 function do_offset($level){
     $offset = "";             // offset for subarry 
