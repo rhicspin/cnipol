@@ -520,20 +520,21 @@ ValErrPair AnaFillResult::GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *norm
 {
    Double_t norm = 1;
 
-   if (normJC)
-      norm = normJC->find(polId) == normJC->end() ? 1 : normJC->find(polId)->second.first;
+   // norm for polId must exist and the error (...->second.second) must be >= 0
+   if ( normJC && normJC->find(polId) != normJC->end() && normJC->find(polId)->second.second >= 0)
+      norm = normJC->find(polId)->second.first;
 
-   ValErrPair result(0, -1);
+   ValErrPair pcPolar(0, -1);
 
    PolId2ValErrMapConstIter iPolar = fPCPolars.find(polId);
 
    if (iPolar != fPCPolars.end() )
    {
-      result.first  = norm * iPolar->second.first;
-      result.second = norm * iPolar->second.second;
+      pcPolar.first  = norm * iPolar->second.first;
+      pcPolar.second = norm * iPolar->second.second;
    }
 
-   return result;
+   return pcPolar;
 }
 
 
@@ -853,12 +854,10 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
          continue; // skip invalid result
       }
 
-      // 100% correlation between U and D is a more conservative assumption
-      ValErrPair ratio = utils::CalcDivision(polarU, polarD, 0);
-      //ValErrPair ratio = utils::CalcDivision(polarU, polarD, 1);
-
-      fSystUvsDPolar[ringId] = ratio;
-
+      // 1 = 100% correlation between U and D is a more conservative assumption
+      // 0 =   0% correlation between U and D is more realistic?
+      //fSystUvsDPolar[ringId] = utils::CalcDivision(polarU, polarD, 1);
+      fSystUvsDPolar[ringId] = utils::CalcDivision(polarU, polarD, 0);
    }
 
    return fSystUvsDPolar;

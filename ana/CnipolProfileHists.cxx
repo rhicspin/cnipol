@@ -73,6 +73,7 @@ void CnipolProfileHists::BookHists()
    hist->SetOption("E1");
    hist->Sumw2();
    o[shName] = hist;
+   fhIntensProfile = hist;
 
    shName = "hIntensProfileFwd";
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1);
@@ -261,6 +262,42 @@ void CnipolProfileHists::BookHists()
    //hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    hist->GetYaxis()->SetRangeUser(-0.01, 0.01);
    o[shName] = hist;
+
+
+   DrawObjContainer        *oc;
+   DrawObjContainerMapIter  isubdir;
+
+   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
+   {
+      string sChId("  ");
+      sprintf(&sChId[0], "%02d", iChId);
+
+      string dName = "channel" + sChId;
+
+      isubdir = d.find(dName);
+
+      if ( isubdir == d.end()) { // if dir not found
+         oc = new DrawObjContainer();
+         oc->fDir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
+      } else {
+         oc = isubdir->second;
+      }
+
+      oc->fDir->cd();
+
+      shName = "hIntensProfile_ch" + sChId;
+      hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
+      hist->SetTitle("; Time, s; Events");
+      hist->Sumw2();
+      hist->SetOption("E1");
+      oc->o[shName] = hist;
+      fhIntensProfile_ch[iChId-1] = hist;
+
+      // If this is a new directory then we need to add it to the list
+      if ( isubdir == d.end()) {
+         d[dName] = oc;
+      }
+   }
 }
 
 
@@ -276,6 +313,11 @@ void CnipolProfileHists::PreFill()
 
    //Double_t ymax = ((TH1*) o["hIntensProfile"])->GetMaximum();
    //((TH1*) o["hIntensProfile"])->Scale(1./ymax);
+
+   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
+   {
+      fhIntensProfile_ch[iChId-1]->SetBins(10*gNDelimeters, 0, gNDelimeters);
+   }
 }
 
 
@@ -283,12 +325,14 @@ void CnipolProfileHists::PreFill()
 void CnipolProfileHists::Fill(ChannelEvent *ch)
 {
    Double_t time = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
+   UChar_t  chId = ch->GetChannelId();
 
    //printf("time: %d, %d\n", time, ch->GetRevolutionId());
    //((TH2F*) sd->o["hSpinVsDelim_ch"+sSi])->Fill(ch->GetDelimiterId(), gSpinPattern[bId]);
    //((TH2F*) sd->o["hSpinVsDelim_ch"+sSi])->Fill(time, gSpinPattern[bId]);
 
-   ((TH1*) o["hIntensProfile"])->Fill(time);
+   //fhIntensProfile->Fill(time);
+   fhIntensProfile_ch[chId-1]->Fill(time);
 }
 
 
@@ -338,6 +382,13 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
 {
    Info("FillDerived(DrawObjContainer &oc)", "Called");
 
+   // Combine individual channel histograms
+   for (int iChId=1; iChId<=N_SILICON_CHANNELS; iChId++)
+   {
+      fhIntensProfile->Add(fhIntensProfile_ch[iChId-1]);
+   }
+
+   // Fill/transfer asym and polar vs time/delim histograms
    CnipolAsymHists *hists_asym = (CnipolAsymHists*) oc.d.find("asym")->second;
 
    if (!hists_asym) {
@@ -348,20 +399,19 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
    TH1 *hAsymVsDelim4Det_asym = (TH1*) hists_asym->o["hAsymVsDelim4Det"];
    TH1 *hAsymVsDelim4Ch_asym  = (TH1*) hists_asym->o["hAsymVsDelim4Ch"];
    TH1 *hAsymVsDelim4Det      = (TH1*) o["hAsymVsDelim4Det"];
-   TH1 *hIntensProfile        = (TH1*) o["hIntensProfile"];
    TH1 *hAsymVsIntensProfile  = (TH1*) o["hAsymVsIntensProfile"];
    TH1 *hPolarProfile         = (TH1*) o["hPolarProfile"];
 
    TGraphErrors *grAsymVsIntensProfile = (TGraphErrors*) hAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
 
-   Double_t intensMax = hIntensProfile->GetMaximum();
+   Double_t intensMax = fhIntensProfile->GetMaximum();
 
    for (int ib=1; ib<=hAsymVsDelim4Det_asym->GetNbinsX(); ib++)
    {
       Double_t asym      = hAsymVsDelim4Det_asym->GetBinContent(ib);
       Double_t asymErr   = hAsymVsDelim4Det_asym->GetBinError(ib);
-      Double_t intens    = hIntensProfile->GetBinContent(ib)/intensMax;
-      Double_t intensErr = hIntensProfile->GetBinError(ib)/intensMax;
+      Double_t intens    = fhIntensProfile->GetBinContent(ib)/intensMax;
+      Double_t intensErr = fhIntensProfile->GetBinError(ib)/intensMax;
 
       hAsymVsDelim4Det->SetBinContent(ib, asym);
       hAsymVsDelim4Det->SetBinError(ib, asymErr);
@@ -374,7 +424,6 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
       hPolarProfile->SetBinContent(ib, asym/gAnaMeasResult->A_N[1]);
       hPolarProfile->SetBinError(ib, asymErr/gAnaMeasResult->A_N[1]);
    }
-
 }
 
 
@@ -384,21 +433,21 @@ void CnipolProfileHists::PostFill()
    Info("PostFill", "Called");
 
    //TH1* hIntensProfile = (TH1*) o["hIntensProfileScaler"];
-   TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
+   //TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
 
-   if (!hIntensProfile->Integral()) {
+   if (!fhIntensProfile->Integral()) {
       Error("PostFill", "Intensity profile histogram (hIntensProfile) is empty. Skipping...");
       return;
    }
 
-   Double_t ymax = hIntensProfile->GetMaximum();
+   Double_t ymax = fhIntensProfile->GetMaximum();
 
-   hIntensProfile->Scale(1./ymax);
-   Double_t xmin = hIntensProfile->GetXaxis()->GetXmin();
-   Double_t xmax = hIntensProfile->GetXaxis()->GetXmax();
-   //Double_t ymin = hIntensProfile->GetYaxis()->GetXmin();
-   //Double_t ymax = hIntensProfile->GetYaxis()->GetXmax();
-   ymax = hIntensProfile->GetMaximum();
+   fhIntensProfile->Scale(1./ymax);
+   Double_t xmin = fhIntensProfile->GetXaxis()->GetXmin();
+   Double_t xmax = fhIntensProfile->GetXaxis()->GetXmax();
+   //Double_t ymin = fhIntensProfile->GetYaxis()->GetXmin();
+   //Double_t ymax = fhIntensProfile->GetYaxis()->GetXmax();
+   ymax = fhIntensProfile->GetMaximum();
 
    TF1 *fitFunc = new TF1("ProfileFitFunc", CnipolProfileHists::ProfileFitFunc, xmin, xmax, 4);
 
@@ -409,9 +458,9 @@ void CnipolProfileHists::PostFill()
    fitFunc->SetParLimits(2, (xmax-xmin)*0.6, xmax*0.9);
    fitFunc->SetParLimits(3, ymax*0.5, ymax*1.5);
 
-   TFitResultPtr fitres = hIntensProfile->Fit(fitFunc, "I M S R", "");
+   TFitResultPtr fitres = fhIntensProfile->Fit(fitFunc, "I M S R", "");
 
-   // Now split the hIntensProfile hist into two: forward and backward motions
+   // Now split the fhIntensProfile hist into two: forward and backward motions
 
    double chi2Ndf  = 0;
    double sigma    = 0;
@@ -444,12 +493,12 @@ void CnipolProfileHists::PostFill()
       return;
    }
 
-   Int_t bc  = hIntensProfile->FindBin( mean1 + (mean2 - mean1)*0.5);
+   Int_t bc  = fhIntensProfile->FindBin( mean1 + (mean2 - mean1)*0.5);
 
-   Int_t bmean1 = hIntensProfile->FindBin(mean1);
-   Int_t bmean2 = hIntensProfile->FindBin(mean2);
-   Int_t bbegin = hIntensProfile->FindBin(mean1-3*sigma);
-   Int_t bend   = hIntensProfile->FindBin(mean1+3*sigma);
+   Int_t bmean1 = fhIntensProfile->FindBin(mean1);
+   Int_t bmean2 = fhIntensProfile->FindBin(mean2);
+   Int_t bbegin = fhIntensProfile->FindBin(mean1-3*sigma);
+   Int_t bend   = fhIntensProfile->FindBin(mean1+3*sigma);
 
    bbegin = bbegin >= 1 ? bbegin : 1;
    bend   = bend <= bc  ? bend : bc;
@@ -476,9 +525,9 @@ void CnipolProfileHists::PostFill()
 
    for (int i=bbegin, j=1; i<=bend; i++, j++)
    {
-      hIntensProfileFwd->SetBinContent(j, hIntensProfile->GetBinContent(i));
-      hIntensProfileBck->SetBinContent(j, hIntensProfile->GetBinContent(i + bmean2 - bmean1));
-      //hIntensProfileFold->SetBinContent(j, hIntensProfile->GetBinContent(i) + hIntensProfile->GetBinContent(i + bmean2 - bmean1));
+      hIntensProfileFwd->SetBinContent(j, fhIntensProfile->GetBinContent(i));
+      hIntensProfileBck->SetBinContent(j, fhIntensProfile->GetBinContent(i + bmean2 - bmean1));
+      //hIntensProfileFold->SetBinContent(j, fhIntensProfile->GetBinContent(i) + fhIntensProfile->GetBinContent(i + bmean2 - bmean1));
 
       hPolarProfileFwd->SetBinContent(j, hPolarProfile->GetBinContent(i));
       hPolarProfileFwd->SetBinError  (j, hPolarProfile->GetBinError(i));
@@ -543,10 +592,10 @@ void CnipolProfileHists::PostFill()
    grPolarVsIntensProfile->SetMarkerSize(1);
    grPolarVsIntensProfile->SetMarkerColor(kRed);
 
-   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++)
+   for (int i=1; i<=fhIntensProfile->GetNbinsX(); i++)
    {
-      float intens    = hIntensProfile->GetBinContent(i);
-      float intensErr = hIntensProfile->GetBinError(i);
+      float intens    = fhIntensProfile->GetBinContent(i);
+      float intensErr = fhIntensProfile->GetBinError(i);
       float polar     = hPolarProfile->GetBinContent(i);
       float polarErr  = hPolarProfile->GetBinError(i);
 
@@ -618,13 +667,13 @@ void CnipolProfileHists::PostFill()
    grIntensUniProfile->SetMarkerSize(1);
    grIntensUniProfile->SetMarkerColor(kRed);
 
-   for (int i=1; i<=hIntensProfile->GetNbinsX(); i++)
+   for (int i=1; i<=fhIntensProfile->GetNbinsX(); i++)
    {
-      float intens    = hIntensProfile->GetBinContent(i);
+      float intens    = fhIntensProfile->GetBinContent(i);
 
       if (intens <= 0) continue;
 
-      float intensErr = hIntensProfile->GetBinError(i);
+      float intensErr = fhIntensProfile->GetBinError(i);
       float polar     = hPolarProfile->GetBinContent(i);
       float polarErr  = hPolarProfile->GetBinError(i);
 
@@ -664,15 +713,15 @@ void CnipolProfileHists::PostFill()
    TGraphErrors *grIntensUniProfileFineBin = (TGraphErrors*) hIntensUniProfile->GetListOfFunctions()->FindObject("grIntensUniProfileFineBin");
    TGraphErrors *grAsymUniProfileFineBin   = (TGraphErrors*) hAsymUniProfile->GetListOfFunctions()->FindObject("grAsymUniProfileFineBin");
 
-   Double_t intensMax = hIntensProfile->GetMaximum();
+   Double_t intensMax = fhIntensProfile->GetMaximum();
 
-   for (Int_t ib=1; ib<=hIntensProfile->GetNbinsX(); ib++)
+   for (Int_t ib=1; ib<=fhIntensProfile->GetNbinsX(); ib++)
    {
-      float intens    = hIntensProfile->GetBinContent(ib)/intensMax;
+      float intens    = fhIntensProfile->GetBinContent(ib)/intensMax;
 
       if (intens <= 0) continue;
 
-      float intensErr = hIntensProfile->GetBinError(ib)/intensMax;
+      float intensErr = fhIntensProfile->GetBinError(ib)/intensMax;
       float asym      = hAsymVsDelim4Det->GetBinContent(ib);
       float asymErr   = hAsymVsDelim4Det->GetBinError(ib);
 
@@ -749,24 +798,22 @@ void CnipolProfileHists::PostFill()
 /** */
 EMeasType CnipolProfileHists::GuessMeasurementType()
 {
-   TH1* hIntensProfile = (TH1*) o["hIntensProfile"];
-
-   if (!hIntensProfile) {
+   if (!fhIntensProfile) {
       Error("GuessMeasurementType", "Histogram (hIntensProfile) not defined");
       return kMEASTYPE_UNKNOWN;
    }
 
-   Double_t ymax = hIntensProfile->GetMaximum();
+   Double_t ymax = fhIntensProfile->GetMaximum();
 
-   if (ymax > 0) hIntensProfile->Scale(1./ymax);
+   if (ymax > 0) fhIntensProfile->Scale(1./ymax);
    else
       Error("GuessMeasurementType", "Empty histogram (hIntensProfile) ?");
 
    TH1F *hIntensProj = new TH1F("hIntensProj", "hIntensProj", 20, 0, 1);
 
-   utils::ConvertToProfile(hIntensProfile, hIntensProj, kFALSE);
+   utils::ConvertToProfile(fhIntensProfile, hIntensProj, kFALSE);
 
-   Int_t nSteps = hIntensProfile->GetNbinsX();
+   Int_t nSteps = fhIntensProfile->GetNbinsX();
 
    // start from the second bin (0.05 - 0.10 intensity) since we don't care
    // about small intensity steps
