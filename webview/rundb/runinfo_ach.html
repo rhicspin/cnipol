@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>p-Carbon Measurement <?=$gRunId?>: Analysis Results</title>
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+  <script language="javascript" src="../main.js"></script>
+  <script language="javascript" src="../toc.js"></script>
+</head>
+
+<body bgcolor="#ffffff">
+
+<?php
+include("../head.html");
+?>
+
+<!-- Main text starts here-->
+
+
+<h1>pC Measurement <?=$gRunId?></h1>
+
+<div class="count" id="generated-toc"></div>
+
+<hr>
+
+<div id="main_text_body">
+<!-- {{{ -->
+
+
+<h1 id="channels" class="count">Channels</h1>
+<!-- {{{ -->
+<div id="div:channels" class="section">
+
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+<?php
+
+// the name is give in the path/name form
+$plotName = $_GET['ach'];
+
+$pi = pathinfo($plotName);
+
+//print_r($pi);
+
+//$origPHDir = $gP->dir;
+
+foreach($rc['fSiliconChannels'] as $chanId)
+{
+   $chanId = sprintf("%02d", $chanId);
+   //$gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
+   //$gP->dir = "../runs/$gRunId/images$gSuffix/raw/";
+   //$gP->dir = "$origPHDir/raw/channel$chanId/";
+
+   //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+   //$row2 .= "<td>".($siS ? "x" : "o");
+
+   if ( ($chanId-1) % 6 == 0 ) {
+      //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+      print "<tr class=align_cm>\n";
+      //$row1 = "";// $row2 = "";
+   }
+
+   $plotFullName = "";
+
+   if ( preg_match("/preproc/i", $pi['dirname']) )
+      $plotFullName = "{$pi['dirname']}/{$pi['basename']}_ch$chanId";
+   else
+      $plotFullName = "{$pi['dirname']}/channel$chanId/{$pi['basename']}_ch$chanId";
+
+   $img = $gP->img($plotFullName, false, 300);
+
+   print "<td>$img<br>\n";
+   print "<a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">channel $chanId</a>\n";
+   
+}
+?>
+</table>
+
+</div>
+<!-- }}} -->
+
+<!-- Main text ends here-->
+</div>
+<!-- }}} -->
+
+<?php
+include("../bottom.html");
+?>
+
+</body>
+</html>
