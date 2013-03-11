@@ -143,8 +143,6 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <!-- {{{ -->
 <div id="div:pcarbon_unscaled" class="section">
 
-<p>We use 2004 A_N at 100 GeV
-
 <?
 foreach ($ai['fBeamEnergies'] as $energy):
    //if ($energy == $BEAM_ENERGY_INJ) continue;
@@ -172,7 +170,9 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 <tr>
 <td colspan=2>
-<div class='thumbcaption'>Unscaled p-Carbon polarization
+<div class='thumbcaption'>Average polarization as measured by p-Carbon
+polarimeters. <b>The values are unscaled</b>. The analyzing power (P =
+&epsilon;/<b>A_N</b>) from 2004 is used.
 
 </table>
 
@@ -214,7 +214,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 <tr>
 <td colspan=2>
-<div class='thumbcaption'>Ratio of H-Jet/p-Carbon polarization</div>
+<div class='thumbcaption'>Ratio of H-Jet/p-Carbon polarizations</div>
 
 </table>
 
@@ -329,16 +329,16 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <table class="simple00 cntr">
 
 <tr>
-   <td><?=$gP->img("runs/BLU/hPolarRatioSystVsFill_BLU_$strEnergy", false, 700)?>
+   <td><?=$gP->img("runs/BLU/hPolarUDRatioVsFill_BLU_$strEnergy", false, 700)?>
    <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
 
-   <td><?=$gP->img("runs/YEL/hPolarRatioSystVsFill_YEL_$strEnergy", false, 700)?>
-   <div class='thumbcaption_cm'><span class=bluPol>Yellow</span></div>
+   <td><?=$gP->img("runs/YEL/hPolarUDRatioVsFill_YEL_$strEnergy", false, 700)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
 
 <tr>
 <td colspan=2>
 <div class='thumbcaption'>
-Ratio of upstream/downstream p-Carbon polarization
+Ratio of upstream to downstream p-Carbon polarization values <b>at flattop energy only</b>
 </div>
 
 </table>
