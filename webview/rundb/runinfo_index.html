@@ -97,7 +97,7 @@ $profileRatios = array();
    <!--<th rowspan=2>Duration-->
    <th colspan=3>Offline analysis
 <tr>
-   <th>Frac
+   <th>&#1044; <!--cyrillic D for download-->
    <th>Ver<br><?=$runSelector->HtmlSortLinks("av");?>
    <th>Date &amp; Time<br><?=$runSelector->HtmlSortLinks("at");?>
 
@@ -116,12 +116,12 @@ while ($e = mysql_fetch_assoc($rslt)):
    $runPeriod  = getRunPeriod($start_time);
 
    // return to normal flow
-   $strOnlinePolar = "&nbsp;";
-   if (isset($onlinePolars[$e['run_name']])) {
-	   $onlinePolar    = $onlinePolars[$e['run_name']];
-	   $strOnlinePolar = "&nbsp;<a href='online.php?runid={$e['run_name']}'>".polarPairToString($onlinePolar)."</a>";
-      //$strOnlinePolar .= "&nbsp;<a href='../log/{$e['run_name']}.a.png'>p1</a>";
-   }
+   //$strOnlinePolar = "&nbsp;";
+   //if (isset($onlinePolars[$e['run_name']])) {
+	//   $onlinePolar    = $onlinePolars[$e['run_name']];
+	//   $strOnlinePolar = "&nbsp;<a href='online.php?runid={$e['run_name']}'>".polarPairToString($onlinePolar)."</a>";
+   //   //$strOnlinePolar .= "&nbsp;<a href='../log/{$e['run_name']}.a.png'>p1</a>";
+   //}
 
    $measurementType = "&nbsp;";
 
@@ -175,10 +175,14 @@ while ($e = mysql_fetch_assoc($rslt)):
 	#if ($polId[2] == 'D') $cssPol .= "";
 
    // Offline processed fraction
-   $processedFrac = "-";
+   $processedFrac = "&mdash;";
 
    if ( isset($e['nevents_total']) && isset($e['nevents_processed']) && $e['nevents_total'] != 0 )
-      $processedFrac = sprintf("%4.2f", $e['nevents_processed']/$e['nevents_total']);
+   {
+      $processedFrac = $e['nevents_processed'] == $e['nevents_total'] ? "&#1092;" : sprintf("%4.2f", $e['nevents_processed']/$e['nevents_total']);
+
+      $processedFrac = "<a href='../runs/{$e['run_name']}/{$e['run_name']}.root'>$processedFrac</a>";
+   }
 
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";

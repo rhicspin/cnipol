@@ -99,17 +99,17 @@ class FillResult
       {
          //if ($row['polar_err'] >= 0) //!isset($this->fPCPolars[$polId]) ) // assign values once (ignore two target orientations)
          //{
-            $this->fPCPolars[$polId]      = new pair($row['polar'], $row['polar_err']);
-            $this->fPCPolarP0s[$polId]    = new pair($row['polar_p0'], $row['polar_p0_err']);
+         $this->fPCPolars[$polId]   = new pair($row['polar'], $row['polar_err']);
+         $this->fPCPolarP0s[$polId] = new pair($row['polar_p0'], $row['polar_p0_err']);
 
-            // invalidate polar slope if it does not exist
-            if ($row['polar_slope'] == 0 && $row['polar_slope_err'] == 0)
-               $this->fPCPolarSlopes[$polId] = new pair(0, -1);
-            else
-               $this->fPCPolarSlopes[$polId] = new pair($row['polar_slope'], $row['polar_slope_err']);
+         // invalidate polar slope if it does not exist
+         if ($row['polar_slope'] == 0 && $row['polar_slope_err'] == 0)
+            $this->fPCPolarSlopes[$polId] = new pair(0, -1);
+         else
+            $this->fPCPolarSlopes[$polId] = new pair($row['polar_slope'], $row['polar_slope_err']);
 
-            //$this->fPCProfRs[$polId]      = new pair($row['prof_r'], $row['prof_r_err']);
-            //print "<br>{$this->fFillId}<br>$polId: ".print_r($this->fPCPolars[$polId]);
+         //$this->fPCProfRs[$polId]      = new pair($row['prof_r'], $row['prof_r_err']);
+         //print "<br>{$this->fFillId}<br>$polId: ".print_r($this->fPCPolars[$polId]);
          //}
 
          $tgtOrient = $this->fTargetOrients[$polId];
