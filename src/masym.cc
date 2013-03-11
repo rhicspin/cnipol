@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
    //string filelistName = mAsymAnaInfo.GetMListFileName();
 	string filelist     = mAsymAnaInfo.GetMListFullPath();
 
-   ofstream filelistGood((filelist + "_good").c_str());
-   filelistGood << fixed << setprecision(3);
+   //ofstream filelistGood((filelist + "_good").c_str());
+   //filelistGood << fixed << setprecision(3);
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
 	mAsymRoot.SetAnaGlobResult(&anaGlobResult);
@@ -219,10 +219,10 @@ int main(int argc, char *argv[])
       delete f;
      
       gGoodMeass.insert(*gMM);
-      filelistGood << runId << endl;
+      //filelistGood << runId << endl;
    }
 
-   filelistGood.close();
+   //filelistGood.close();
 
 	// Update global run parameters before anything else
 	gRunConfig.SetBeamEnergies(anaGlobResult.GetBeamEnergies());

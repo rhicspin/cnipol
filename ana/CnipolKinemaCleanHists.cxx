@@ -128,7 +128,6 @@ void CnipolKinemaCleanHists::FillDerived()
       TH1* hPseudoMass_ch = (TH1*) oc->o["hPseudoMass_ch" + sChId];
       hPseudoMass->Add(hPseudoMass_ch);
    }
-
 }
 
 

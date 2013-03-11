@@ -27,8 +27,10 @@
  */
 class CnipolProfileHists : public DrawObjContainer
 {
-public:
+private:
 
+   TH1* fhIntensProfile;
+   TH1* fhIntensProfile_ch[N_SILICON_CHANNELS];
 
 public:
 

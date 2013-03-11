@@ -40,7 +40,7 @@ AnaGlobResult::AnaGlobResult() : TObject(),
    {
       EPolarimeterId polId  = *iPolId;
 
-      ValErrPair valErrPair(0, -1);
+      ValErrPair valErrPair(1, -1);
       fNormJetCarbon2[polId] = valErrPair;
       fNormProfPolar2[polId] = valErrPair;
    }
