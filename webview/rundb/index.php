@@ -69,10 +69,12 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
    if (ereg("[0-9]{3,}\.[0-9]{3}", $gRunId) && $rc['measurement_type'] != 1) {
 
       // Check if raw data display requested      
-      if (isset($_GET['raw'])) {
+      if (isset($_GET['raw']))
+      {
          include("runinfo_raw.html");
-      } else if (isset($_GET['ach'])) {
-         include("runinfo_allch.html");
+      } else if ( isset($_GET['ach']) && !empty($_GET['ach']) ) // all channel histogram
+      {
+         include("runinfo_ach.html");
       } else
          include("runinfo.html");
 
@@ -82,7 +84,7 @@ if (isset($_GET['runid']) && !isset($_GET['chanid']))
       //print "Problem displaying info for $gRunId\n";
       // XXX this is a temporary fix for notgt data files
       //include("runinfo.html"); 
-      if (isset($_GET['raw'])) {
+      if ( isset($_GET['raw']) ) {
          include("runinfo_raw.html");
       } else
          include("runinfo.html");

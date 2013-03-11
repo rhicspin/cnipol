@@ -15,14 +15,14 @@ class GlobResult
    var $fAvrgBeamProfRs  = array();
 
    var $fMissingBeamProfRs      = array();
-   var $fMissingBeamProfR0s      = array();
-   var $fMissingBeamProfRSlopes      = array();
+   var $fMissingBeamProfR0s     = array();
+   var $fMissingBeamProfRSlopes = array();
    var $fMissingBeamPolarSlopes = array();
 
 
    /** */
    function GlobResult($rp)
-   { //{{{
+   {
       $this->fRunPeriod = $rp;
 
       foreach (range(0, 3) as $polId)
@@ -43,12 +43,12 @@ class GlobResult
             //$this->fMissingBeamProfRs[$ringId][$tgtOrient] = new pair(0, -1);
          }
       }
-   } //}}}
+   }
 
 
    /** */
    function AddMeas($row)
-   { //{{{
+   {
       $fillId = $row['fill'];
 
       if ( array_key_exists($fillId, $this->fFillResults) )
@@ -58,14 +58,14 @@ class GlobResult
          $this->fFillResults[$fillId] = new FillResult($fillId, $this);
          $this->fFillResults[$fillId]->AddMeas($row);
       }
-   } //}}}
+   }
 
 
    /** */
    function Process()
-   { //{{{
-      $beamProfRSet = array();
-      $beamProfR0Set = array();
+   {
+      $beamProfRSet      = array();
+      $beamProfR0Set     = array();
       $beamProfRSlopeSet = array();
 
       foreach ( $this->fFillResults as $fillResult)
@@ -149,7 +149,7 @@ class GlobResult
             }
          }
       }
-   } //}}}
+   }
 
 
    /**
@@ -157,8 +157,7 @@ class GlobResult
     * we can use it.
     */
    function CalcDependencies()
-   { //{{{
-
+   {
       $beamPolarSlopeSet = array(); //[ringId][beamEnergy]
 
       foreach ( $this->fFillResults as $fillResult)
@@ -195,7 +194,7 @@ class GlobResult
             $this->fMissingBeamPolarSlopes[$ringId][$beamEnergy] = new pair($v, $e);
          }
       }
-   } //}}}
+   }
 
 }
 
