@@ -529,7 +529,7 @@ c Counts per bunch for each detector
 	call hbook1(600, 'Energy keV, ALL pol for ALL Si', 128, 0., 1280., 0)
 
 c	Flag out bad channels (run 2012 addition) 05.04.2012 Igor
-	call FlagOut(polName)
+c	call FlagOut(polName)
 c	Fill histogramms
 	do i=1,6
 c Do not process 90-degree detectors with horizontal targets

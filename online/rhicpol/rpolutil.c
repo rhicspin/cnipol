@@ -2266,7 +2266,7 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    gRecordWcm.header.type = REC_WCM_NEW | recRing;
    gRecordWcm.header.len  = sizeof(RecordWcm);
    gRecordWcm.header.timestamp.time = time(NULL);
-   gRecordWcm.Print();
+   //gRecordWcm.Print();
    polWrite(&gRecordWcm.header, (long*) gRecordWcm.fFillDataM);
 
    // Save V124 settings if any... No use when no ADO
