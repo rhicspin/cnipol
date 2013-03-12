@@ -289,6 +289,11 @@ void CnipolRawHists::FillDerivedPassOne()
 
       // Calculate cumulative histograms
       //utils::ConvertToCumulative2(hTVsA_channel, (TH1F*) fhTvsACumul_ch[iCh-1]);
+
+      if (!gCh2WfdMap) continue;
+
+      ((TH1I*) o["hWfdCounts"])->AddBinContent(gCh2WfdMap[iCh-1], hTvsA_ch->GetEntries());
+      ((TH1I*) o["hWfdCounts"])->SetEntries(((TH1I*) o["hWfdCounts"])->GetEntries() + hTvsA_ch->GetEntries());
    }
 }
 
