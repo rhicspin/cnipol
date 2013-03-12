@@ -144,7 +144,8 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
    fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
-   fprintf(f, "$rc['fMachineParams']['fCavity200MHzVoltage']          = %d;\n",     fMachineParams.fCavity200MHzVoltage  );
+   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][0]       = %d;\n",     fMachineParams.fCavity197MHzVoltage[0]  );
+   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][1]       = %d;\n",     fMachineParams.fCavity197MHzVoltage[1]  );
    fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][0]             = %f;\n",     fMachineParams.fSnakeCurrents[0]  );
    fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][1]             = %f;\n",     fMachineParams.fSnakeCurrents[1]  );
    fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][0]       = %f;\n",     fMachineParams.fStarRotatorCurrents[0]  );
