@@ -30,6 +30,30 @@ OnlineMachineParams & OnlineMachineParams::operator=(const RecordMachineParams &
 }
 
 
+ClassImp(OnlineTargetParams)
+
+
+OnlineTargetParams::OnlineTargetParams() : TObject(), RecordTargetParams()
+{
+}
+
+
+OnlineTargetParams & OnlineTargetParams::operator=(const RecordTargetParams &rec)
+{
+   this->header.len            = rec.header.len;
+   this->header.type           = rec.header.type;
+   this->header.num            = rec.header.num;
+   this->header.timestamp      = rec.header.timestamp;
+
+   this->fVelocity             = rec.fVelocity;
+   this->fProfileStartPosition = rec.fProfileStartPosition;
+   this->fProfileEndPosition   = rec.fProfileEndPosition;
+   this->fProfilePeakPosition  = rec.fProfilePeakPosition;
+
+   return *this;
+}
+
+
 ClassImp(OnlineWcm)
 
 

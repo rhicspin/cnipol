@@ -18,6 +18,18 @@ public:
 };
 
 
+class OnlineTargetParams : public TObject, public RecordTargetParams
+{
+public:
+
+   OnlineTargetParams();
+
+   OnlineTargetParams & operator=(const RecordTargetParams &rec);
+
+   ClassDef(OnlineTargetParams, 1)
+};
+
+
 class OnlineWcm : public TObject, public RecordWcm
 {
 public:

@@ -19,6 +19,7 @@ using namespace std;
 MeasInfo::MeasInfo() : TObject(),
    fBeamEnergy(0),
    fMachineParams(),
+   fTargetParams(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
    fRunName(),
@@ -93,6 +94,13 @@ void MeasInfo::SetMachineParams(const RecordMachineParams &rec)
 
 
 /** */
+void MeasInfo::SetTargetParams(const RecordTargetParams &rec)
+{
+   fTargetParams = rec;
+}
+
+
+/** */
 void MeasInfo::SetBeamEnergy(Float_t beamEnergy)
 {
    fBeamEnergy = beamEnergy;
@@ -144,14 +152,18 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fWallCurMonAve']               = %f;\n",     fWallCurMonAve );
    fprintf(f, "$rc['fWallCurMonSum']               = %f;\n",     fWallCurMonSum );
    fprintf(f, "$rc['fBeamEnergy']                  = %f;\n",     fBeamEnergy  );
-   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][0]       = %d;\n",     fMachineParams.fCavity197MHzVoltage[0]  );
-   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][1]       = %d;\n",     fMachineParams.fCavity197MHzVoltage[1]  );
-   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][0]             = %f;\n",     fMachineParams.fSnakeCurrents[0]  );
-   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][1]             = %f;\n",     fMachineParams.fSnakeCurrents[1]  );
-   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][0]       = %f;\n",     fMachineParams.fStarRotatorCurrents[0]  );
-   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][1]       = %f;\n",     fMachineParams.fStarRotatorCurrents[1]  );
-   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][0]     = %f;\n",     fMachineParams.fPhenixRotatorCurrents[0]  );
-   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][1]     = %f;\n",     fMachineParams.fPhenixRotatorCurrents[1]  );
+   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][0]   = %d;\n",     fMachineParams.fCavity197MHzVoltage[0]  );
+   fprintf(f, "$rc['fMachineParams']['fCavity197MHzVoltage'][1]   = %d;\n",     fMachineParams.fCavity197MHzVoltage[1]  );
+   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][0]         = %f;\n",     fMachineParams.fSnakeCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fSnakeCurrents'][1]         = %f;\n",     fMachineParams.fSnakeCurrents[1]  );
+   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][0]   = %f;\n",     fMachineParams.fStarRotatorCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fStarRotatorCurrents'][1]   = %f;\n",     fMachineParams.fStarRotatorCurrents[1]  );
+   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][0] = %f;\n",     fMachineParams.fPhenixRotatorCurrents[0]  );
+   fprintf(f, "$rc['fMachineParams']['fPhenixRotatorCurrents'][1] = %f;\n",     fMachineParams.fPhenixRotatorCurrents[1]  );
+   fprintf(f, "$rc['fTargetParams']['fVelocity']                  = %d;\n",     fTargetParams.fVelocity );
+   fprintf(f, "$rc['fTargetParams']['fProfileStartPosition']      = %d;\n",     fTargetParams.fProfileStartPosition );
+   fprintf(f, "$rc['fTargetParams']['fProfileEndPosition']        = %d;\n",     fTargetParams.fProfileEndPosition );
+   fprintf(f, "$rc['fTargetParams']['fProfilePeakPosition']       = %d;\n",     fTargetParams.fProfilePeakPosition );
    fprintf(f, "$rc['fPolId']                       = %d;\n",     fPolId       );
    fprintf(f, "$rc['fPolBeam']                     = %d;\n",     fPolBeam     );
    fprintf(f, "$rc['fPolStream']                   = %d;\n",     fPolStream   );

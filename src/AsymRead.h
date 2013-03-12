@@ -67,5 +67,6 @@ void ProcessRecord(const recordWcmAdoStruct &rec);
 void ProcessRecord(const RecordWcm &rec);
 void ProcessRecord(const recordBeamAdoStruct &rec);
 void ProcessRecord(const RecordMachineParams &rec);
+void ProcessRecord(const RecordTargetParams &rec);
 
 #endif
