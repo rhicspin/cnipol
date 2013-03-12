@@ -232,9 +232,9 @@ void getCdevInfoMachineParams()
 
    for (UShort_t iRing=0; iRing<N_BEAMS; iRing++) 
    {
-      if (iRing == 0)      fprintf(LogFile,"RHICPOL-INFO : Blue ring\n");
-      else if (iRing == 1) fprintf(LogFile,"RHICPOL-INFO : Yellow ring\n");
-      else                 fprintf(LogFile,"RHICPOL-ERR  : Unknown ring\n");
+      if (iRing == 0)      fprintf(LogFile, "RHICPOL-INFO : Blue ring\n");
+      else if (iRing == 1) fprintf(LogFile, "RHICPOL-INFO : Yellow ring\n");
+      else                 fprintf(LogFile, "RHICPOL-ERR  : Unknown ring\n");
 
       // 197MHz cavity voltage
       cdevDevice &cavityDevice = cdevDevice::attachRef(gCavityCdevNames[iRing]);
