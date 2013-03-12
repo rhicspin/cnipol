@@ -47,6 +47,7 @@ protected:
 
    Float_t             fBeamEnergy;
    OnlineMachineParams fMachineParams;
+   OnlineTargetParams  fTargetParams;
    Short_t             fExpectedGlobalTdcOffset;
    Float_t             fExpectedGlobalTimeOffset;
    std::string         fRunName;
@@ -153,6 +154,7 @@ public:
    std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
    void            SetMachineParams(const RecordMachineParams &rec);
+   void            SetTargetParams(const RecordTargetParams &rec);
    void            SetMeasType(EMeasType measType);
    void            SetPolarimetrIdRhicBeam(const char* RunID);
    void            DisableChannel(UShort_t chId);

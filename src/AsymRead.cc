@@ -210,6 +210,19 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          continue;
       }
 
+      // REC_TARGETPARAMS
+      if ((mHeader->type & REC_TYPEMASK) == REC_TARGETPARAMS)
+      {
+         printf("Reading REC_TARGETPARAMS record... size= %ld\n", mHeader->len);
+
+         // Extract voltages, currents, etc
+         RecordTargetParams *rec = (RecordTargetParams*) mHeader;
+         ProcessRecord( (RecordTargetParams&) *rec);
+
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
       // REC_MEASTYPE
       if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
       {
@@ -1267,6 +1280,13 @@ void ProcessRecord(const recordCountRate &rec)
 void ProcessRecord(const RecordMachineParams &rec)
 {
     gMeasInfo->SetMachineParams(rec);
+}
+
+
+/** */
+void ProcessRecord(const RecordTargetParams &rec)
+{
+    gMeasInfo->SetTargetParams(rec);
 }
 
 
