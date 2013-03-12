@@ -59,9 +59,9 @@ void  writeCarbTarg(void);
 //	CDEV functions	(rpolutilp.cpp)
 void      getJetPosition(void);
 int       getTargetMovementInfo(long **data);
-void      getCdevInfo(beamDataStruct *bds);
+void      getCdevInfo();
 void      getCdevInfoMachineParams();
-void      getAdoInfo();
+void      getCdevInfoBeamData(beamDataStruct *bds);
 void      getWcmInfo();
 EMeasType getCDEVMeasType();
 int       getVoltage();

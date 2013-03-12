@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 
    // Get beam energy from CDEV
    if (gUseCdev) {
-      getCdevInfo(&beamData);
+      getCdevInfoBeamData(&beamData);
       fprintf(LogFile, "RHICPOL-INFO : Beam energy updated from CDEV beamData::beamEnergyM = %f\n", beamData.beamEnergyM);
 
       // Check if an injection version of the config file exists
@@ -311,7 +311,7 @@ int main(int argc, char **argv)
    // Get CDEV information
    if (gUseCdev)
    {
-      getAdoInfo();
+      getCdevInfo();
 
       // nonzero Pol/fill pattern in the config has priority over measured (we need this for debugging)
       for (i = 0; i < 120; i++) if (Conf.Pattern[i] != 0) break;

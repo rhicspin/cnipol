@@ -345,6 +345,14 @@ class polarimeterBlue {
                 asymXTsS:valueAndTime Polar {server=PolarServer};
                 polarizationM Polar {server=PolarServer};
                 polarizationM:valueAndTime Polar {server=PolarServer};
+                velocityM Polar {server=PolarServer};
+                velocityM:valueAndTime Polar {server=PolarServer};
+                profileStartPositionM Polar {server=PolarServer};
+                profileStartPositionM:valueAndTime Polar {server=PolarServer};
+                profileEndPositionM Polar {server=PolarServer};
+                profileEndPositionM:valueAndTime Polar {server=PolarServer};
+                profilePeakPositionM Polar {server=PolarServer};
+                profilePeakPositionM:valueAndTime Polar {server=PolarServer};
                 }
         }
 polarimeterBlue : polarimeter.blu
