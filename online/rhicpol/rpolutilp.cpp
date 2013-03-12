@@ -221,6 +221,40 @@ void getCdevInfoBeamData(beamDataStruct *bds)
       data.get("value", &(bds->beamEnergyM));
 }
 
+/* */
+void getCdevInfoTargetParams(cdevDevice &polDev)
+{
+   cdevData data;
+   int irc = 0;
+
+   // target name in targetIdS - this is our target !
+   if (!DEVSEND(polDev, "get targetIdS", NULL, &data, LogFile, irc))
+      data.get("value", polData.targetIdS, sizeof(polData.targetIdS));
+
+   // translate from polarimeter.blu2 etc to pol2.b-vtarget etc
+   sprintf(ourTargetCDEVName, "pol%s.%c-%ctarget", (DeviceName[15] == '2') ? "2" : "", DeviceName[12], tolower(polData.targetIdS[0]));
+
+   if ( !DEVSEND(polDev, "get velocityM", NULL, &data, LogFile, irc))
+      data.get("value", &gRecordTargetParams.fVelocity);
+
+   fprintf(LogFile, "RHICPOL-INFO : gRecordTargetParams.fVelocity             : %10d\n", gRecordTargetParams.fVelocity);
+
+   if ( !DEVSEND(polDev, "get profileStartPositionM", NULL, &data, LogFile, irc))
+      data.get("value", &gRecordTargetParams.fProfileStartPosition);
+
+   fprintf(LogFile, "RHICPOL-INFO : gRecordTargetParams.fProfileStartPosition : %10d\n", gRecordTargetParams.fProfileStartPosition);
+
+   if ( !DEVSEND(polDev, "get profileEndPositionM", NULL, &data, LogFile, irc))
+      data.get("value", &gRecordTargetParams.fProfileEndPosition);
+
+   fprintf(LogFile, "RHICPOL-INFO : gRecordTargetParams.fProfileEndPosition   : %10d\n", gRecordTargetParams.fProfileEndPosition);
+
+   if ( !DEVSEND(polDev, "get profilePeakPositionM", NULL, &data, LogFile, irc))
+      data.get("value", &gRecordTargetParams.fProfilePeakPosition);
+
+   fprintf(LogFile, "RHICPOL-INFO : gRecordTargetParams.fProfilePeakPosition  : %10d\n", gRecordTargetParams.fProfilePeakPosition);
+}
+
 
 /** */
 void getCdevInfoMachineParams()
@@ -294,12 +328,7 @@ void getCdevInfo()
    {
       cdevDevice &pol = cdevDevice::attachRef(DeviceName);
 
-      // target name in targetIdS - this is our target !
-      if (!DEVSEND(pol, "get targetIdS", NULL, &data, LogFile, irc))
-         data.get("value", polData.targetIdS, sizeof(polData.targetIdS));
-
-      // translate from polarimeter.blu2 etc to pol2.b-vtarget etc
-      sprintf(ourTargetCDEVName, "pol%s.%c-%ctarget", (DeviceName[15] == '2') ? "2" : "", DeviceName[12], tolower(polData.targetIdS[0]));
+      getCdevInfoTargetParams(pol);
 
       // Get time of measurement if it was not set in the command line
       if (mTime < 0) {

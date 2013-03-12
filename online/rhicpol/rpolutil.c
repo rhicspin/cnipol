@@ -2249,10 +2249,15 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    //printf("record: meas type: %x\n", recMeasType.header.type);
    polWrite(&recMeasType.header, (long*) &recMeasType.type);
 
-   gRecordMachineParams.header.type            = REC_MACHINEPARAMS;
-   gRecordMachineParams.header.len             = sizeof(RecordMachineParams);
-   gRecordMachineParams.header.timestamp.time  = time(NULL);
+   gRecordMachineParams.header.type           = REC_MACHINEPARAMS;
+   gRecordMachineParams.header.len            = sizeof(RecordMachineParams);
+   gRecordMachineParams.header.timestamp.time = time(NULL);
    polWrite(&gRecordMachineParams.header, (long *) gRecordMachineParams.fCavity197MHzVoltage);
+
+   gRecordTargetParams.header.type            = REC_TARGETPARAMS;
+   gRecordTargetParams.header.len             = sizeof(RecordTargetParams);
+   gRecordTargetParams.header.timestamp.time  = time(NULL);
+   polWrite(&gRecordTargetParams.header, (long *) &gRecordTargetParams.fVelocity);
 
    if (!useCDEV) return 0;
 

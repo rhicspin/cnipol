@@ -1,6 +1,7 @@
 #ifndef POLUTIL_H
 #define POLUTIL_H
 
+#include "rcdev.h"
 #include "globals.h"
 #include "rpoldata.h"
 
@@ -61,6 +62,7 @@ void      getJetPosition(void);
 int       getTargetMovementInfo(long **data);
 void      getCdevInfo();
 void      getCdevInfoMachineParams();
+void      getCdevInfoTargetParams(cdevDevice &polDev);
 void      getCdevInfoBeamData(beamDataStruct *bds);
 void      getWcmInfo();
 EMeasType getCDEVMeasType();

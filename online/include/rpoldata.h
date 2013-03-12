@@ -25,8 +25,9 @@
 //#define REC_RHIC_CONF       0x00000112    // Instead of REC_CONFIG since Apr2003
 #define REC_RHIC_CONF       0x00000113      // New parameters added, but I don't want to change the name. 14/04/04
 #define REC_MEASTYPE        0x00000120
-#define REC_VOLTAGE         0x00000121
+#define REC_MACHINEPARAMS_X 0x00000121      // old version. there was a problem with how the cavity voltage was saved
 #define REC_MACHINEPARAMS   0x00000122      // 197MHz cavity voltage, snake and rotator currents
+#define REC_TARGETPARAMS    0x00000130      // target start, end positions, velocity
 //#define REC_READRAW         0x00000201
 //#define REC_READSUB         0x00000202
 //#define REC_READALL         0x00000203
@@ -108,12 +109,12 @@ typedef struct {
     polDataStruct data;
 } recordPolAdoStruct;
 
-struct RecordTargetMove {
+struct RecordTargetParams {
     recordHeaderStruct header;
-    Int_t   fCavity197MHzVoltage[N_BEAMS];
-    Float_t fSnakeCurrents[N_BEAMS];
-    Float_t fStarRotatorCurrents[N_BEAMS];
-    Float_t fPhenixRotatorCurrents[N_BEAMS];
+    Int_t fVelocity;
+    Int_t fProfileStartPosition;
+    Int_t fProfileEndPosition;
+    Int_t fProfilePeakPosition;
 };
 
 typedef struct {
