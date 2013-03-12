@@ -17,7 +17,8 @@ OnlineMachineParams & OnlineMachineParams::operator=(const RecordMachineParams &
    this->header.num                = rec.header.num;
    this->header.timestamp          = rec.header.timestamp;
 
-   this->fCavity200MHzVoltage      = rec.fCavity200MHzVoltage;
+   this->fCavity197MHzVoltage[0]   = rec.fCavity197MHzVoltage[0];
+   this->fCavity197MHzVoltage[1]   = rec.fCavity197MHzVoltage[1];
    this->fSnakeCurrents[0]         = rec.fSnakeCurrents[0];
    this->fSnakeCurrents[1]         = rec.fSnakeCurrents[1];
    this->fStarRotatorCurrents[0]   = rec.fStarRotatorCurrents[0];

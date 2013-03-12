@@ -250,9 +250,9 @@ void CnipolRawHists::FillDerivedPassOne()
 
       DrawObjContainer *oc = d.find("channel"+sChId)->second;
 
-      TH2* hTVsA_channel = (TH2*) fhTvsA_ch[iCh-1];
-      hTVsA_channel->Sumw2();
-      hTvsA->Add(hTVsA_channel);
+      TH2* hTvsA_ch = (TH2*) fhTvsA_ch[iCh-1];
+      hTvsA_ch->Sumw2();
+      hTvsA->Add(hTvsA_ch);
 
       TH2* hTVsI_channel = (TH2*) fhTvsI_ch[iCh-1];
       hTvsI->Add(hTVsI_channel);
@@ -265,7 +265,7 @@ void CnipolRawHists::FillDerivedPassOne()
 
       // AdcAmplitude, ...
       TH1* hAdcAmpltd_channel = (TH1*) oc->o["hAdcAmpltd_ch" + sChId];
-      hProjTmp = hTVsA_channel->ProjectionX();
+      hProjTmp = hTvsA_ch->ProjectionX();
 
       utils::CopyBinContentError(hProjTmp, hAdcAmpltd_channel);
 
@@ -281,14 +281,14 @@ void CnipolRawHists::FillDerivedPassOne()
 
       // ... TDC
       TH1* hTdc_channel = (TH1*) oc->o["hTdc_ch" + sChId];
-      hProjTmp = hTVsA_channel->ProjectionY();
+      hProjTmp = hTvsA_ch->ProjectionY();
 
       utils::CopyBinContentError(hProjTmp, hTdc_channel);
 
       hTdc->Add(hTdc_channel);
 
       // Calculate cumulative histograms
-      //utils::ConvertToCumulative2(hTVsA_channel, (TH1F*) fhTvsACumul_ch[iCh-1]);
+      //utils::ConvertToCumulative2(hTvsA_ch, (TH1F*) fhTvsACumul_ch[iCh-1]);
 
       if (!gCh2WfdMap) continue;
 
