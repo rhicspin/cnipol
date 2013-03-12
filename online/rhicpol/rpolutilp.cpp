@@ -206,7 +206,7 @@ EMeasType getCDEVMeasType()
 
 
 /** */
-void getCdevInfo(beamDataStruct *bds)
+void getCdevInfoBeamData(beamDataStruct *bds)
 {
    int irc = 0;
    int N   = 1;
@@ -276,7 +276,7 @@ void getCdevInfoMachineParams()
 
 
 // Get most of CDEV data at the beginnig of the run
-void getAdoInfo()
+void getCdevInfo()
 {
    // gather CDEV information we could need
    char defName[128];
@@ -446,8 +446,8 @@ void GetTargetEncodings(long *res)
     res[3] = res[1];
 
     if (irc != 0) {
-        fprintf(LogFile, "%d errors getting target information.\n", irc);
-        polData.statusS |= (STATUS_ERROR | ERR_NOADO);
+       fprintf(LogFile, "%d errors getting target information.\n", irc);
+       polData.statusS |= (STATUS_ERROR | ERR_NOADO);
     }
 }
 
