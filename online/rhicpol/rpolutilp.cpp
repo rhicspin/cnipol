@@ -244,9 +244,9 @@ void getCdevInfoMachineParams()
          data.get("value", voltages);
       }
 
-      gRecordMachineParams.fCavity200MHzVoltage = voltages[0]; // was [1]. why?
-      fprintf(LogFile,"RHICPOL-INFO : 197MHZ Cavity: gRecordMachineParams.fCavity200MHzVoltage         = %6d\n",
-         gRecordMachineParams.fCavity200MHzVoltage);
+      gRecordMachineParams.fCavity197MHzVoltage[iRing] = voltages[0]; // was [1]. why?
+      fprintf(LogFile,"RHICPOL-INFO : 197MHZ Cavity: gRecordMachineParams.fCavity197MHzVoltage[%d]      = %6d\n",
+         iRing, gRecordMachineParams.fCavity197MHzVoltage);
 
       // Snakes
       cdevDevice &snakeDevice = cdevDevice::attachRef(gSnakeCdevNames[iRing]);

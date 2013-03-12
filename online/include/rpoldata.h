@@ -91,7 +91,7 @@ typedef struct {
 
 struct RecordMachineParams {
     recordHeaderStruct header;
-    Int_t   fCavity200MHzVoltage;
+    Int_t   fCavity197MHzVoltage[N_BEAMS];
     Float_t fSnakeCurrents[N_BEAMS];
     Float_t fStarRotatorCurrents[N_BEAMS];
     Float_t fPhenixRotatorCurrents[N_BEAMS];
