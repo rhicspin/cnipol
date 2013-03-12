@@ -2252,7 +2252,7 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    gRecordMachineParams.header.type            = REC_MACHINEPARAMS;
    gRecordMachineParams.header.len             = sizeof(RecordMachineParams);
    gRecordMachineParams.header.timestamp.time  = time(NULL);
-   polWrite(&gRecordMachineParams.header, (long *) &gRecordMachineParams.fCavity197MHzVoltage);
+   polWrite(&gRecordMachineParams.header, (long *) gRecordMachineParams.fCavity197MHzVoltage);
 
    if (!useCDEV) return 0;
 
