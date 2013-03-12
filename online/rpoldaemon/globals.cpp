@@ -28,4 +28,5 @@ wcmDataStruct         wcmData;               // Wall current monitor data from C
 wcmDataStruct         wcmOtherData;          // we need both beams for hjet
 RecordWcm             gRecordWcm;
 RecordMachineParams   gRecordMachineParams;
+RecordTargetParams    gRecordTargetParams;
 int                   recRing = 0;           // data mask with ring information etc.

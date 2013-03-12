@@ -23,6 +23,7 @@ extern wcmDataStruct         wcmData;
 extern wcmDataStruct         wcmOtherData;
 extern RecordWcm             gRecordWcm;
 extern RecordMachineParams   gRecordMachineParams;
+extern RecordTargetParams    gRecordTargetParams;
 extern int recRing;
 
 
