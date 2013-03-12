@@ -386,19 +386,34 @@ Number of events per detector channel
 Number of events per WFD
 </div>
 
+
 <tr class=align_ct>
 <td>
 <?=$gP->img('raw/hAdcAmpltd')?>
 <p class=left>Distribution of the maximum signal amplitude (all channels combined)
+
 <td>
 <?=$gP->img('raw/hTdc')?>
 <p class=left>Distribution of the signal time (all channels combined)
+
+<!--
+<td>
+<?//=$gP->img('raw_neb/hTvsA')?>
+<p class=left>TDC vs Amplitude: <b>filled bunches</b> (all channels combined)
+-->
+
 <td>
 <?=$gP->img('raw/hTvsA')?>
 <p class=left>TDC vs Amplitude (all channels combined)
+
 <td>
-<?=$gP->img('raw/hTvsI')?>
+<?=$gP->img('raw_eb/hTvsA')?>
+<p class=left>TDC vs Amplitude: <b>empty bunches only</b> (all channels combined)
+
+<!--
+<?//=$gP->img('raw/hTvsI')?>
 <p class=left>TDC vs Integral (all channels combined)
+-->
 
 <tr class=align_ct>
 <td>
