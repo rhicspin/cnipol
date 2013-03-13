@@ -19,8 +19,6 @@ class AnaGlobResult : public TObject
 protected:
 
    std::string       fPathExternResults;
-   std::string       fFileNameYelHjet;
-   std::string       fFileNameBluHjet;
    UInt_t            fMinFill;
    UInt_t            fMaxFill;
    time_t            fMinTime;
