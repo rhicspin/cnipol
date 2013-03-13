@@ -350,3 +350,7 @@ tr.toprow5 td {
 tr.toprow6 td {
    width: 20%;
 }
+
+tr.my_tr_highlight:hover td {
+  background-color: #E9E9E9; color: #000;
+}

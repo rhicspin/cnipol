@@ -3,22 +3,23 @@
 echo "Setting environmet variables:"
 
 # ROOT variables
-if [ -z "$ROOTSYS" ]; then
-	source /usr/local/root/bin/thisroot.sh
-fi
+#if [ -z "$ROOTSYS" ]; then
+   source /usr/local/root/bin/thisroot.sh
+#fi
 
 # CERNLIB variables
 if [ -z "$CERNLIB_DIR" ]; then
-	export CERNLIB_DIR=/usr/local/cern/2006
-	export PATH+=:$CERNLIB_DIR/bin
+   export CERNLIB_DIR=/usr/local/cern/2006
+   export PATH+=:$CERNLIB_DIR/bin
 fi
 
 # MySQL
 export MYSQL_INCLUDE_DIR=/usr/include/mysql
 export MYSQL_LIB_DIR=/usr/lib/mysql
 
-export MYSQLPP_INCLUDE_DIR=/usr/local/mysql++/lib
-export MYSQLPP_LIB_DIR=/usr/local/mysql++
+export MYSQLPP_DIR=/usr/local/mysql++
+export MYSQLPP_INCLUDE_DIR=$MYSQLPP_DIR/lib
+export MYSQLPP_LIB_DIR=$MYSQLPP_DIR
 
 if [[ $LD_LIBRARY_PATH != *$MYSQL_LIB_DIR* ]]; then
    export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
@@ -34,11 +35,11 @@ export CNIPOL_DATA_DIR=/usr/local/polarim/data
 export CNIPOL_RESULTS_DIR=/usr/local/polarim/root
 
 if [[ $PATH != *$CNIPOL_DIR/bin* ]]; then
-	export PATH+=:$CNIPOL_DIR/bin
+   export PATH+=:$CNIPOL_DIR/bin
 fi
 
 if [[ $LD_LIBRARY_PATH != *$CNIPOL_DIR/lib* ]]; then
-	export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
+   export LD_LIBRARY_PATH+=:$CNIPOL_DIR/lib
 fi
 
 # Older variables
@@ -55,27 +56,16 @@ export UTILS_LIB_DIR=~dsmirnov/rootmacros/utils
 export UTILS_INC_DIR=~dsmirnov/rootmacros/
 
 if [[ $LD_LIBRARY_PATH != *$UTILS_LIB_DIR* ]]; then
-	export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
+   export LD_LIBRARY_PATH+=:$UTILS_LIB_DIR
 fi
 
 # CDEV variables
-export CDEV_DIR=/usr/local/cdev
-export CDEV=$CDEV_DIR
-export CDEVSHOBJ=${CDEV}/lib
-export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-
-if [[ $LD_LIBRARY_PATH != *$CDEVSHOBJ* ]]; then
-	export LD_LIBRARY_PATH+=:$CDEVSHOBJ
-fi
-
-# CDEV variables
-if [ -z "$CDEV_DIR" ]; then
-	export CDEV_DIR=/usr/local/cdev
-	export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
-	export CDEV_NAME_SERVER=acnlin07.pbn.bnl.gov
-	export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
-fi
+#if [ -z "$CDEV_DIR" ]; then
+   export CDEV_DIR=/usr/local/cdev
+   export CDEVDDL=${CNIPOL_DIR}/online/cdev/PolarClient.ddl
+   export CDEV_NAME_SERVER=acnserver01.pbn.bnl.gov
+   export LD_LIBRARY_PATH+=:${CDEV_DIR}/lib
+#fi
 
 echo "\$ROOTSYS=$ROOTSYS"
 echo "\$CERNLIB_DIR=$CERNLIB_DIR"
@@ -95,26 +85,5 @@ echo "\$CDEV_DIR=$CDEV_DIR"
 echo "\$CDEVDDL=$CDEVDDL"
 echo "\$CDEV_NAME_SERVER=$CDEV_NAME_SERVER"
 echo
-#echo "\$DATADIR=$DATADIR     <-- deprecated"
-echo "\$CONFDIR=$CONFDIR     <-- deprecated"
-#echo "\$CALIBDIR=$CALIBDIR   <-- deprecated"
-echo
 echo "\$PATH=$PATH"
 echo "\$LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-
-# working directory
-#export ASYMDIR=$HOME/offline
-#export ASYMDIR=$CNIPOL_DIR/offline
-
-# temporary output directory
-#export TMPOUTDIR=/tmp/`whoami`
-
-# installation destination
-#export INSTALLDIR=$ASYMDIR/bin
-#export MACRODIR=$ASYMDIR/macro
-#    for developers use followings instead of above two lines
-#       export INSTALLDIR=$SHAREDIR/bin
-#       export MACRODIR=$SHAREDIR/macro
-#       export CNI_EXPERT=1;
-
-#export LD_LIBRARY_PATH=/usr/local/cdev/lib/Linux:/usr/local/cern/lib:/usr/lib
