@@ -131,10 +131,11 @@ while ($e = mysql_fetch_assoc($rslt)):
       $measurementType = $MEASTYPE[$e['measurement_type']];
    }
 
-   $polarization     = "&mdash;";
-   $profileRatio     = "&mdash;";
-   $beamEnergy       = "&mdash;";
-   $targetId         = "&mdash;";
+   $polarization = "&mdash;";
+   $profileRatio = "&mdash;";
+   $beamEnergy   = "&mdash;";
+   $targetId     = "&mdash;";
+   $trTooltip    = "Measurement {$e['run_name']}";
 
    if ($measurementType != "undef" && $measurementType != "alpha")
    {
@@ -163,6 +164,28 @@ while ($e = mysql_fetch_assoc($rslt)):
 
       $targetId   = ( isset($e['target_id']) && $e['target_id'] > 0 ) ?
          "{$e['target_orient']}{$e['target_id']}" : $targetId;
+
+
+      // Get info from the file
+      $measConfigFile = DATA_DIR."/{$e['run_name']}/runconfig.php";
+
+      if ( file_exists($measConfigFile) )
+      {
+         include($measConfigFile);
+         $trTooltip .= " ";
+
+         $rce = $rc['fMachineParams']['fCavity197MHzVoltage'][0];
+         $trTooltip .= isset($rce) ? "| 197Mhz V: $rce " : "";
+
+         $rce = $rc['fMachineParams']['fStarRotatorCurrents'][0];
+         $trTooltip .= isset($rce) ? "| Rotator: ".sprintf("%.0f", $rce)." " : "";
+         //$trTooltip .= isset($rce) && $rce>10 ? " Rotator: ON" : "";
+
+         $rce = $rc['fTargetParams']['fVelocity'];
+         $trTooltip .= isset($rce) ? "| Target speed: $rce " : "";
+
+         unset($rc);
+      }
 	}
 
 	// Set css class
@@ -189,7 +212,7 @@ while ($e = mysql_fetch_assoc($rslt)):
 	$asymVersion = "<a href=https://svn.bnl.gov/viewvc/cnipol?view=revision&revision=$asymVersion>$asymVersion</a>";
 ?>
 
-<tr>
+<tr class=my_tr_highlight title="<?=$trTooltip?>">
    <td><a href="?runid=<?=$e['run_name']?>"><?=$e['run_name']?></a>
    <td class=align_cm><tt><?=date("M d, Y H:i:s D", $start_time)?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
