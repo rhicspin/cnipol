@@ -23,11 +23,9 @@ using namespace std;
 /** */
 AnaGlobResult::AnaGlobResult() : TObject(),
    fPathExternResults("./"),
-   fFileNameYelHjet("hjet_pol_yel.txt"),
-   fFileNameBluHjet("hjet_pol_blu.txt"),
    fMinFill(UINT_MAX), fMaxFill(0),
    fMinTime(UINT_MAX), fMaxTime(0),
-   fDoCalcPolarNorm(kFALSE),
+   fDoCalcPolarNorm(kTRUE),
    fBeamEnergies(),
    fAnaFillResults(), fNormJetCarbon(), fNormJetCarbon2(),
    fNormJetCarbonByTarget2(), fNormProfPolar(), fNormProfPolar2(),
@@ -254,10 +252,6 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
 /** */
 void AnaGlobResult::AddHJMeasResult()
 {
-   // Read jet results from text files and save them to fill result containers
-   //TGraphErrors* grYel = new TGraphErrors((fPathExternResults + fFileNameYelHjet).c_str());
-   //TGraphErrors* grBlu = new TGraphErrors((fPathExternResults + fFileNameBluHjet).c_str());
-
    std::stringstream fullPath("");
    fullPath << fPathExternResults << "/hjet_pol";
    ifstream file(fullPath.str().c_str());

@@ -176,10 +176,10 @@ void CnipolRawExtendedHists::FillDerivedPassOne()
       ((TH1I*) o["hStripCounts"])->SetBinContent(iCh, hTvsA_ch->GetEntries());
       ((TH1I*) o["hStripCounts"])->SetEntries(((TH1I*) o["hStripCounts"])->GetEntries() + hTvsA_ch->GetEntries());
 
-      if (!gCh2WfdMap) continue;
+      //if (!gCh2WfdMap) continue;
 
-      ((TH1I*) o["hWfdCounts"])->AddBinContent(gCh2WfdMap[iCh-1], hTvsA_ch->GetEntries());
-      ((TH1I*) o["hWfdCounts"])->SetEntries(((TH1I*) o["hWfdCounts"])->GetEntries() + hTvsA_ch->GetEntries());
+      //((TH1I*) o["hWfdCounts"])->AddBinContent(gCh2WfdMap[iCh-1], hTvsA_ch->GetEntries());
+      //((TH1I*) o["hWfdCounts"])->SetEntries(((TH1I*) o["hWfdCounts"])->GetEntries() + hTvsA_ch->GetEntries());
    }
 
    // Fill parent class histograms

@@ -215,7 +215,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
       {
          printf("Reading REC_TARGETPARAMS record... size= %ld\n", mHeader->len);
 
-         // Extract voltages, currents, etc
+         // Extract target info
          RecordTargetParams *rec = (RecordTargetParams*) mHeader;
          ProcessRecord( (RecordTargetParams&) *rec);
 
