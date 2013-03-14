@@ -23,13 +23,16 @@ ClassImp(MAsymSingleFillHists)
 using namespace std;
 
 /** Default constructor. */
-MAsymSingleFillHists::MAsymSingleFillHists() : DrawObjContainer(), fFillId(0)
+MAsymSingleFillHists::MAsymSingleFillHists() : DrawObjContainer(), fFillId(0), fAnaFillResult(0),
+   fMinTime(UINT_MAX), fMaxTime(0)
 {
    BookHists();
 }
 
 
-MAsymSingleFillHists::MAsymSingleFillHists(TDirectory *dir) : DrawObjContainer(dir), fFillId(0)
+MAsymSingleFillHists::MAsymSingleFillHists(TDirectory *dir, const AnaFillResult* afr) :
+   DrawObjContainer(dir), fFillId(0), fAnaFillResult(afr),
+   fMinTime(UINT_MAX), fMaxTime(0)
 {
    BookHists();
 }
@@ -47,6 +50,14 @@ MAsymSingleFillHists::~MAsymSingleFillHists()
 void MAsymSingleFillHists::BookHists()
 {
    fDir->cd();
+
+   // Find the 
+   if (fAnaFillResult) {
+      time_t duration = fabs( fAnaFillResult->GetEndTime() - fAnaFillResult->GetStartTime() );
+      duration = duration < 3*3600 ? 3*3600 : duration;
+      fMinTime = -0.10*duration;
+      fMaxTime =  1.10*duration;
+   }
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
       BookHistsPolarimeter((EPolarimeterId) i);
@@ -71,13 +82,15 @@ void MAsymSingleFillHists::BookHists()
       styleMarker.SetMarkerColor(color);
 
       shName = "hIntensVsFillTime_" + strDirName + "_" + sRingId;
-      hist = new TH2C(shName.c_str(), shName.c_str(), 48, 0, 12*3600, 100, -10, 300);
+      hist = new TH2C(shName.c_str(), shName.c_str(), 48, fMinTime, fMaxTime, 100, -10, 300);
       hist->SetTitle("; Time in Fill, hours; Beam Intensity, x10^{9} Protons;");
       hist->SetOption("DUMMY GRIDX");
-      hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
       //hist->GetXaxis()->SetTimeOffset(0, "local");
+      //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+      hist->GetXaxis()->SetTimeOffset(0, "gmt");
       hist->GetXaxis()->SetTimeDisplay(1);
       hist->GetXaxis()->SetTimeFormat("%H");
+      hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
       styleMarker.Copy(*hist);
       o[shName] = hist;
 
@@ -118,12 +131,14 @@ void MAsymSingleFillHists::BookHists()
 
 
    shName = "hExternInfoVsFillTime_" + strDirName;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 48, 0, 12*3600, 100, -10, 300);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 48, fMinTime, fMaxTime, 100, -10, 300);
    hist->SetOption("DUMMY GRIDX");
    hist->SetTitle("; Time in Fill, hours; ;");
-   hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   hist->GetXaxis()->SetTimeOffset(0, "gmt");
    hist->GetXaxis()->SetTimeDisplay(1);
    hist->GetXaxis()->SetTimeFormat("%H");
+   hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
    o[shName] = hist;
 }
 
@@ -131,12 +146,12 @@ void MAsymSingleFillHists::BookHists()
 /** */
 void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
 {
-   char hName[256];
+   char     hName[256];
    string   shName;
    TH1     *hist;
    string   sPolId = RunConfig::AsString(polId);
    //string  strBeamE = RunConfig::AsString(beamE);
-   Color_t  color    = RunConfig::AsColor(polId);
+   Color_t  color  = RunConfig::AsColor(polId);
 
    TAttMarker styleMarker;
    styleMarker.SetMarkerStyle(kFullCircle);
@@ -203,25 +218,30 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    //styleMarker.Copy(*grPolarVsFillTime);
 
    shName = "hPolarVsFillTime_" + strDirName + "_" + sPolId;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 100);
+   //hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 100);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 12, fMinTime, fMaxTime, 100, 0, 100);
    hist->SetOption("DUMMY GRIDX");
    hist->SetTitle("; Time in Fill, hours; Polarization, %;");
-   hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
+   //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   hist->GetXaxis()->SetTimeOffset(0, "gmt");
    hist->GetXaxis()->SetTimeDisplay(1);
    hist->GetXaxis()->SetTimeFormat("%H");
+   hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
    styleMarker.Copy(*hist);
    o[shName] = hist;
 
    // 
    shName = "hRVsFillTime_" + strDirName + "_" + sPolId;
-   hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 1);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 12, fMinTime, fMaxTime, 100, 0, 1);
    hist->SetOption("DUMMY GRIDX");
    hist->SetTitle("; Time in Fill, hours; Pol. Profile R;");
-   hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
+   //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   hist->GetXaxis()->SetTimeOffset(0, "gmt");
    hist->GetXaxis()->SetTimeDisplay(1);
    hist->GetXaxis()->SetTimeFormat("%H");
+   hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
    styleMarker.Copy(*hist);
    o[shName] = hist;
 
@@ -431,12 +451,12 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolar, "p");
 
          if (avrgPCPolar.second >= 0) {
-            TLine* avrgLine = new TLine(0, avrgPCPolar.first*100, 12*3600, avrgPCPolar.first*100);
+            TLine* avrgLine = new TLine(fMinTime, avrgPCPolar.first*100, fMaxTime, avrgPCPolar.first*100);
             avrgLine->SetLineWidth(3);
             avrgLine->SetLineColor(hPolarVsFillTime_->GetMarkerColor());
             hPolarVsFillTime_->GetListOfFunctions()->Add(avrgLine);
 
-            //TLine* avrgLineUnW = new TLine(0, avrgPCPolarUnW.first, 12*3600, avrgPCPolarUnW.first);
+            //TLine* avrgLineUnW = new TLine(fMinTime, avrgPCPolarUnW.first, fMaxTime, avrgPCPolarUnW.first);
             //avrgLineUnW->SetLineWidth(1);
             ////avrgLineUnW->SetLineColor(hPolarVsFillTime_->GetMarkerColor());
             //hPolarVsFillTime_->GetListOfFunctions()->Add(avrgLineUnW);
@@ -454,6 +474,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
 
       utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
+      //utils::UpdateLimitsFromGraphs(hPolarVsFillTime_);
 
 
       // Now deal with pol. profiles

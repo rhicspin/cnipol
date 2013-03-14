@@ -522,7 +522,8 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       //} else {
       //   oc = isubdir->second;
       //}
-      DrawObjContainer *oc = GetSingleFillHists(fillId);
+      //DrawObjContainer *oc = GetSingleFillHists(fillId);
+      DrawObjContainer *oc = GetSingleFillHists(afr);
 
       ((MAsymSingleFillHists*) oc)->PostFill(afr);
 
@@ -614,8 +615,11 @@ void MAsymFillHists::UpdateLimits()
 
 
 /** */
-DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
+//DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
+DrawObjContainer *MAsymFillHists::GetSingleFillHists(const AnaFillResult &afr)
 {
+   UInt_t fillId = afr.GetFillId();
+
    // Set individual fill sub dirs
    string sFillId(5, ' ');
    sprintf(&sFillId[0], "%05d", fillId);
@@ -626,7 +630,7 @@ DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
 
    if ( isubdir == d.end()) { // if dir not found
       TDirectoryFile *tdir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
-      oc = new MAsymSingleFillHists(tdir);
+      oc = new MAsymSingleFillHists(tdir, &afr);
       d[dName] = oc;
    } else {
       oc = isubdir->second;

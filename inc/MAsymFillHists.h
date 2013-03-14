@@ -21,9 +21,6 @@
  */
 class MAsymFillHists : public DrawObjContainer
 {
-public:
-
-
 private:
 
    std::map<Double_t, UInt_t> fHTargetVsRun;
@@ -42,7 +39,8 @@ public:
    void PostFill();
    void PostFill(AnaGlobResult &agr);
    void UpdateLimits();
-	DrawObjContainer *GetSingleFillHists(UInt_t fillId);
+	//DrawObjContainer *GetSingleFillHists(UInt_t fillId);
+	DrawObjContainer *GetSingleFillHists(const AnaFillResult &afr);
 
    ClassDef(MAsymFillHists, 1)
 };

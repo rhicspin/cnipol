@@ -23,7 +23,10 @@ class MAsymSingleFillHists : public DrawObjContainer
 {
 protected:
 
-   UInt_t fFillId;
+   UInt_t               fFillId;
+   const AnaFillResult* fAnaFillResult;
+   time_t               fMinTime;
+   time_t               fMaxTime;
 
 public: 
 
@@ -33,7 +36,7 @@ public:
 public:
 
    MAsymSingleFillHists();
-   MAsymSingleFillHists(TDirectory *dir);
+   MAsymSingleFillHists(TDirectory *dir, const AnaFillResult *afr=0);
    ~MAsymSingleFillHists();
 
    void BookHists();
