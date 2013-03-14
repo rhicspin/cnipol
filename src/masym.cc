@@ -61,6 +61,9 @@ int main(int argc, char *argv[])
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_255);
+   gRunConfig.fBeamEnergies.clear();
+   gRunConfig.fBeamEnergies.insert(kINJECTION);
+   gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
 
    //string filelistName = mAsymAnaInfo.GetMListFileName();
 	string filelist     = mAsymAnaInfo.GetMListFullPath();

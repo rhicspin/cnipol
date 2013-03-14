@@ -22,7 +22,7 @@ using namespace std;
 
 /** */
 AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
-   fAnaGlobResult(0), fStartTime(LONG_MAX), fAnaFillExternResult(0),
+   fAnaGlobResult(0), fStartTime(LONG_MAX), fEndTime(0), fAnaFillExternResult(0),
    fPCPolarGraphs(), fPCPolarInjGraphs(), fPCProfRGraphs(), fPCProfRInjGraphs(),
    fPCTargets(),
    fPCPolarFitRes(), fPolProfRFitRes(),
@@ -67,6 +67,7 @@ AnaFillResult::~AnaFillResult() { }
 
 /** */
 time_t AnaFillResult::GetStartTime()      const { return fStartTime; }
+time_t AnaFillResult::GetEndTime()        const { return fEndTime; }
 time_t AnaFillResult::GetLumiOnRelTime()  const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : -1; }
 time_t AnaFillResult::GetLumiOffRelTime() const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : -1; }
 time_t AnaFillResult::GetLumiOnTime()     const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  : 0; }
@@ -282,6 +283,7 @@ void AnaFillResult::AddMeasResult(EventConfig &mm)
    string runName = mm.fMeasInfo->GetRunName();
 
    if (mm.fMeasInfo->fStartTime < fStartTime) fStartTime = mm.fMeasInfo->fStartTime;
+   if (mm.fMeasInfo->fStartTime > fEndTime)   fEndTime   = mm.fMeasInfo->fStartTime;
 
    //Info("AddMeasResult", "fStartTime %d (meas)", mm.fMeasInfo->fStartTime);
    //Info("AddMeasResult", "fStartTime %d", GetStartTime());
@@ -293,7 +295,6 @@ void AnaFillResult::AddMeasResult(EventConfig &mm)
    fMeasTgtOrients[runName] =  mm.fMeasInfo->GetTargetOrient();
    fMeasTgtIds[runName]     =  mm.fMeasInfo->GetTargetId();
    fMeasRingIds[runName]    =  mm.fMeasInfo->GetRingId();
-
 }
 
 
@@ -359,6 +360,9 @@ void AnaFillResult::AddExternInfo(std::ifstream &file)
       // adjust the starttime if neccessary
       fStartTime = fAnaFillExternResult->fTimeEventLumiOff < fStartTime ? fAnaFillExternResult->fTimeEventLumiOff : fStartTime;
       fStartTime = fAnaFillExternResult->fTimeEventLumiOn  < fStartTime ? fAnaFillExternResult->fTimeEventLumiOn  : fStartTime;
+
+      fEndTime   = fAnaFillExternResult->fTimeEventLumiOn  > fEndTime ? fAnaFillExternResult->fTimeEventLumiOn  : fEndTime;
+      fEndTime   = fAnaFillExternResult->fTimeEventLumiOff > fEndTime ? fAnaFillExternResult->fTimeEventLumiOff : fEndTime;
    } else {
       Error("AddExternInfo", "Invalid file provided with external info");
    }
@@ -1306,7 +1310,9 @@ void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo
    ssFillId << fFillId;
    string sFillId = ssFillId.str();
 
-   MAsymSingleFillHists *singleFillHists = (MAsymSingleFillHists*) fillHists->GetSingleFillHists(fFillId);
+   //MAsymSingleFillHists *singleFillHists = (MAsymSingleFillHists*) fillHists->GetSingleFillHists(fFillId);
+   MAsymSingleFillHists *singleFillHists = (MAsymSingleFillHists*) fillHists->GetSingleFillHists(*this);
+
    TH1* hAsymVsBunchId_X_       = (TH1*) singleFillHists->o["hAsymVsBunchId_X_" + sFillId + "_" + sRingId];
    TH1* hAsymVsBunchId_X90      = amr.fhAsymVsBunchId_X90;
    TH1* hAsymVsBunchId_X45      = amr.fhAsymVsBunchId_X45;

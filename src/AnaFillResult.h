@@ -33,6 +33,7 @@ protected:
    UInt_t               fFillId;
    AnaGlobResult       *fAnaGlobResult;
    time_t               fStartTime;
+   time_t               fEndTime;                // the time of the last measurement in the fill
    AnaFillExternResult *fAnaFillExternResult;
 
    PolId2TGraphMap            fPCPolarGraphs;
@@ -85,6 +86,7 @@ public:
    ~AnaFillResult();
 
    time_t GetStartTime() const;
+   time_t GetEndTime() const;
    time_t GetLumiOnRelTime() const;
    time_t GetLumiOffRelTime() const;
    time_t GetLumiOnTime() const;
