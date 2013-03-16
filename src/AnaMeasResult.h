@@ -16,15 +16,6 @@
 #include "utils/ValErrPair.h"
 
 
-class AnaMeasResult;
-
-
-//typedef std::set<AnaMeasResult>             AnaMeasResultSet;
-//typedef std::set<AnaMeasResult>::iterator   AnaMeasResultSetIter;
-typedef std::map<std::string, AnaMeasResult> AnaMeasResultMap;
-typedef AnaMeasResultMap::iterator           AnaMeasResultMapIter;
-typedef AnaMeasResultMap::const_iterator     AnaMeasResultMapConstIter;
-
 
 /** */
 class AnaMeasResult : public TObject
@@ -76,12 +67,13 @@ public:
    Float_t              fPmtS1T0Err;
 
 public:
+
    AnaMeasResult();
    ~AnaMeasResult();
-   void PrintAsPhp(FILE *f=stdout) const;
 
-   time_t GetStartTime() const { return fStartTime; }
-   void   SetStartTime(time_t time) { fStartTime = time; }
+   void       PrintAsPhp(FILE *f=stdout) const;
+   time_t     GetStartTime() const { return fStartTime; }
+   void       SetStartTime(time_t time) { fStartTime = time; }
 
    ValErrPair GetPCPolar() const;
    ValErrPair GetPCPolarPhase() const;
@@ -89,5 +81,37 @@ public:
 
    ClassDef(AnaMeasResult, 1)
 };
+
+
+inline bool operator==(const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return lhs.GetStartTime() == rhs.GetStartTime(); }
+inline bool operator!=(const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return !operator==(lhs,rhs); }
+inline bool operator< (const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return lhs.GetStartTime() < rhs.GetStartTime(); }
+inline bool operator> (const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return  operator< (rhs,lhs); }
+inline bool operator<=(const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return !operator> (lhs,rhs); }
+inline bool operator>=(const AnaMeasResult& lhs, const AnaMeasResult& rhs) { return !operator< (lhs,rhs); }
+
+
+struct CompareAnaMeasResult
+{
+   bool operator()(const AnaMeasResult& lhs, const AnaMeasResult& rhs) const { return lhs < rhs; }
+};
+
+struct CompareAnaMeasResultPtr
+{
+   bool operator()(const AnaMeasResult* lhs, const AnaMeasResult* rhs) const { return (*lhs) < (*rhs); }
+};
+
+
+typedef std::set<AnaMeasResult, CompareAnaMeasResult>  AnaMeasResultSet;
+typedef AnaMeasResultSet::iterator           AnaMeasResultSetIter;
+typedef AnaMeasResultSet::const_iterator     AnaMeasResultSetConstIter;
+
+typedef std::set<AnaMeasResult*, CompareAnaMeasResultPtr>  AnaMeasResultPtrSet;
+typedef AnaMeasResultPtrSet::iterator           AnaMeasResultPtrSetIter;
+typedef AnaMeasResultPtrSet::const_iterator     AnaMeasResultPtrSetConstIter;
+
+typedef std::map<std::string, AnaMeasResult> AnaMeasResultMap;
+typedef AnaMeasResultMap::iterator           AnaMeasResultMapIter;
+typedef AnaMeasResultMap::const_iterator     AnaMeasResultMapConstIter;
 
 #endif

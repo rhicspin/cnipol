@@ -138,6 +138,8 @@ public:
    void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin) { fPulserCutTdcMin = pulserCutTdcMin; }
    void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax) { fPulserCutTdcMax = pulserCutTdcMax; }
 
+   time_t          GetStartTime() const { return fStartTime; }
+   void            SetStartTime(time_t time) { fStartTime = time; }
    Short_t         GetPolarimeterId();
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();
@@ -149,6 +151,7 @@ public:
    EBeamEnergy     GetBeamEnergy() const;
    Float_t         GetExpectedGlobalTimeOffset() const;
    Short_t         GetExpectedGlobalTdcOffset() const;
+   Bool_t          IsStarRotatorOn() const;
    EMeasType       GetMeasType() const;
    std::string     GetAlphaCalibFileName() const;
    std::string     GetDlCalibFileName() const;
@@ -183,5 +186,41 @@ public:
 
    ClassDef(MeasInfo, 3)
 };
+
+
+inline bool operator==(const MeasInfo& lhs, const MeasInfo& rhs) { return lhs.GetStartTime() == rhs.GetStartTime(); }
+inline bool operator!=(const MeasInfo& lhs, const MeasInfo& rhs) { return !operator==(lhs,rhs); }
+inline bool operator< (const MeasInfo& lhs, const MeasInfo& rhs) { return lhs.GetStartTime() < rhs.GetStartTime(); }
+inline bool operator> (const MeasInfo& lhs, const MeasInfo& rhs) { return  operator< (rhs,lhs); }
+inline bool operator<=(const MeasInfo& lhs, const MeasInfo& rhs) { return !operator> (lhs,rhs); }
+inline bool operator>=(const MeasInfo& lhs, const MeasInfo& rhs) { return !operator< (lhs,rhs); }
+
+
+struct CompareMeasInfo
+{
+   bool operator()(const MeasInfo& lhs, const MeasInfo& rhs) const { return lhs < rhs; }
+};
+
+struct CompareMeasInfoPtr
+{
+   bool operator()(const MeasInfo* lhs, const MeasInfo* rhs) const { return (*lhs) < (*rhs); }
+};
+
+
+typedef std::set<MeasInfo, CompareMeasInfo>       MeasInfoSet;
+typedef MeasInfoSet::iterator                     MeasInfoSetIter;
+typedef MeasInfoSet::const_iterator               MeasInfoSetConstIter;
+
+typedef std::set<MeasInfo*, CompareMeasInfoPtr>   MeasInfoPtrSet;
+typedef MeasInfoPtrSet::iterator                  MeasInfoPtrSetIter;
+typedef MeasInfoPtrSet::const_iterator            MeasInfoPtrSetConstIter;
+
+typedef std::map<std::string, MeasInfo>           MeasInfoMap;
+typedef MeasInfoMap::iterator                     MeasInfoMapIter;
+typedef MeasInfoMap::const_iterator               MeasInfoMapConstIter;
+
+typedef std::map<EPolarimeterId, MeasInfoPtrSet>  PolId2MeasInfoPtrSetMap;
+typedef PolId2MeasInfoPtrSetMap::iterator         PolId2MeasInfoPtrSetMapIter;
+typedef PolId2MeasInfoPtrSetMap::const_iterator   PolId2MeasInfoPtrSetMapConstIter;
 
 #endif

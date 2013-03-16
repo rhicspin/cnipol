@@ -29,12 +29,13 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    //fAsymVsBunchId_X(0),
    fFlattopEnergy(0),
    fFillType(kFILLTYPE_UNKNOWN),
-   fAnaMeasResults(), fMeasInfos(), fPCPolars(), fPCPolarUnWs(),
+   fAnaMeasResults(), fMeasInfos(), fMeasInfosByPolId(),
+   fPCPolars(), fPCPolarUnWs(),
    fPCProfRs(),
    fPCPolarsByTargets(),
    fPCProfPolars(), fHJPolars(), fHJAsyms(),
    fBeamPolars(), fBeamPolarP0s(), fBeamPolarSlopes(), fBeamCollPolars(),
-   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fMeasTgtOrients(),
+   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fRotatorPCPolarRatio(), fMeasTgtOrients(),
    fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
 {
    // Initialize averages with invalid values
@@ -292,6 +293,11 @@ void AnaFillResult::AddMeasResult(EventConfig &mm)
    fAnaMeasResults[runName] = *mm.fAnaMeasResult;
    fMeasInfos[runName]      = *mm.fMeasInfo;
 
+   EPolarimeterId polId     = MeasInfo::ExtractPolarimeterId(runName);
+   // These sets are guaranteed to be ordered by measurement time. See
+   // MeasInfo.h for details
+   fMeasInfosByPolId[polId].insert( &fMeasInfos[runName] );
+
    fMeasTgtOrients[runName] =  mm.fMeasInfo->GetTargetOrient();
    fMeasTgtIds[runName]     =  mm.fMeasInfo->GetTargetId();
    fMeasRingIds[runName]    =  mm.fMeasInfo->GetRingId();
@@ -443,6 +449,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
    FitPCPolarGraphs();
    FitPCProfRGraphs();
 
+   //CalcRotatorPCPolarRatio();
 
    // Calculate average polarization and profiles
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -1292,6 +1299,60 @@ ValErrPair AnaFillResult::CalcPolProfP(ValErrPair R, ValErrPair PMax)
 
 
 /** */
+void AnaFillResult::CalcRotatorPCPolarRatio()
+{
+   Info("CalcRotatorPCPolarRatio", "Called");
+
+   PolId2MeasInfoPtrSetMapConstIter iPolId2MeasInfoPtrSet = fMeasInfosByPolId.begin();
+
+   for ( ; iPolId2MeasInfoPtrSet != fMeasInfosByPolId.end(); ++iPolId2MeasInfoPtrSet)
+   {
+      EPolarimeterId  polId           = iPolId2MeasInfoPtrSet->first;
+      cout << "polId: " << RunConfig::AsString(polId) << endl;
+      const MeasInfoPtrSet &measInfos = iPolId2MeasInfoPtrSet->second;
+
+      // Now loop over all measInfos for this polarimeter and select the first
+      // one with small rotator current
+      ValErrPair polarBeforeRot(0, -1);
+      ValErrPair polarAfterRot(0, -1);
+      time_t     timeBeforeRot = 0;
+
+      MeasInfoPtrSetConstIter iMeasInfoPtr = measInfos.begin();
+
+      for ( ; iMeasInfoPtr != measInfos.end(); ++iMeasInfoPtr)
+      {
+         const MeasInfo &measInfo = **iMeasInfoPtr;
+         cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
+         cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
+
+         if (measInfo.GetBeamEnergy() <= kINJECTION) continue;
+
+         if ( !measInfo.IsStarRotatorOn() )
+         {
+            polarBeforeRot = fAnaMeasResults[measInfo.GetRunName()].GetPCPolar();
+            timeBeforeRot  = measInfo.GetStartTime();
+            cout << "polarBeforeRot: " << PairAsPhpArray(polarBeforeRot) << endl;
+            continue;
+         }
+
+         // if found meas with rotators off
+         if (measInfo.IsStarRotatorOn() && polarBeforeRot.second > 0 && fabs(measInfo.GetStartTime() - timeBeforeRot) < 3600)
+         {
+            polarAfterRot = fAnaMeasResults[measInfo.GetRunName()].GetPCPolar();
+            cout << "polarAfterRot : " << PairAsPhpArray(polarAfterRot) << endl;
+         }
+      }
+
+      fRotatorPCPolarRatio[polId] = utils::CalcDivision(polarBeforeRot, polarAfterRot, 0);
+
+      //cout << "polarBeforeRot: " << PairAsPhpArray(polarBeforeRot) << endl;
+      //cout << "polarAfterRot : " << PairAsPhpArray(polarAfterRot) << endl;
+      cout << "fRotatorPCPolarRatio : " << PairAsPhpArray(fRotatorPCPolarRatio[polId]) << endl;
+   }
+}
+
+
+/** */
 void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const
 {
    MAsymFillHists *fillHists;
@@ -1446,7 +1507,6 @@ void AnaFillResult::FitPCPolarGraphs()
    TF2 *dummyScale = new TF2("dummyScale", "100.*y");
 
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
-
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       EPolarimeterId polId = *iPolId;

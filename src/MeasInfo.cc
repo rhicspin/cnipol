@@ -81,6 +81,7 @@ Float_t     MeasInfo::GetBeamEnergyReal()           const { return fBeamEnergy; 
 EBeamEnergy MeasInfo::GetBeamEnergy()               const { return (EBeamEnergy) Int_t(fBeamEnergy + 0.5); }
 Float_t     MeasInfo::GetExpectedGlobalTimeOffset() const { return fExpectedGlobalTimeOffset; }
 Short_t     MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlobalTdcOffset; }
+Bool_t      MeasInfo::IsStarRotatorOn()             const { cout << "fStarRotatorCurrents: " << fMachineParams.fStarRotatorCurrents[1] << endl; return fMachineParams.fStarRotatorCurrents[GetRingId()-1] > 10 ? kTRUE : kFALSE; }
 EMeasType   MeasInfo::GetMeasType()                 const { return fMeasType; } 
 string      MeasInfo::GetAlphaCalibFileName()       const { return ""; }
 string      MeasInfo::GetDlCalibFileName()          const { return ""; }

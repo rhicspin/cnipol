@@ -30,55 +30,58 @@ class AnaFillResult : public TObject
 {
 protected:
 
-   UInt_t               fFillId;
-   AnaGlobResult       *fAnaGlobResult;
-   time_t               fStartTime;
-   time_t               fEndTime;                // the time of the last measurement in the fill
-   AnaFillExternResult *fAnaFillExternResult;
+   UInt_t                     fFillId;
+   AnaGlobResult             *fAnaGlobResult;
+   time_t                     fStartTime;
+   time_t                     fEndTime;                // the time of the last measurement in the fill
+   AnaFillExternResult       *fAnaFillExternResult;
 
-   PolId2TGraphMap            fPCPolarGraphs;
+   PolId2TGraphMap            fPCPolarGraphs;    // polarization at flattop
    PolId2TGraphMap            fPCPolarInjGraphs; // polarization measurements at 24 GeV by polarimeter
    PolId2TgtOrient2TGraphMap  fPCProfRGraphs;
    PolId2TgtOrient2TGraphMap  fPCProfRInjGraphs; //!
    PolId2TargetUIdMap         fPCTargets;
 
-   TFitResultPtr        fPCPolarFitRes;
-   TFitResultPtr        fPolProfRFitRes;
+   TFitResultPtr              fPCPolarFitRes;
+   TFitResultPtr              fPolProfRFitRes;
 
-   //TH1F                *fAsymVsBunchId_X;
-   Double_t             fFlattopEnergy;
-   EFillType            fFillType;
+   //TH1F                      *fAsymVsBunchId_X;
+   Double_t                   fFlattopEnergy;
+   EFillType                  fFillType;
 
 public:
 
-   AnaMeasResultMap             fAnaMeasResults;
-   MeasInfoMap                  fMeasInfos;
+   AnaMeasResultMap              fAnaMeasResults;
+   MeasInfoMap                   fMeasInfos;
+   PolId2MeasInfoPtrSetMap       fMeasInfosByPolId;
 
-   PolId2ValErrMap              fPCPolars;          // (Nominal) intensity weighted polarization measurement results
-   PolId2ValErrMap              fPCPolarUnWs;       // 
-   PolId2TgtOrient2ValErrMap    fPCProfRs;          //!
-   //PolId2TgtOrient2ValErrMap    fPCProfRInjs;       //!
-   TargetUId2ValErrMap          fPCPolarsByTargets;
-   PolId2ValErrMap              fPCProfPolars;      // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
-   RingId2ValErrMap             fHJPolars;
-   RingId2ValErrMap             fHJAsyms;
+   PolId2ValErrMap               fPCPolars;          // (Nominal) intensity weighted polarization measurement results
+   PolId2ValErrMap               fPCPolarUnWs;       // The same as fPCPolars but not weighted with intensity
+   PolId2TgtOrient2ValErrMap     fPCProfRs;          //!
+   //PolId2TgtOrient2ValErrMap     fPCProfRInjs;       //!
+   TargetUId2ValErrMap           fPCPolarsByTargets;
+   PolId2ValErrMap               fPCProfPolars;      // Polarization as measured from the sweep measurements P = P_0/sqrt(1 + R)
+   RingId2ValErrMap              fHJPolars;
+   RingId2ValErrMap              fHJAsyms;
 
-   RingId2ValErrMap             fBeamPolars;        //!
-   RingId2ValErrMap             fBeamPolarP0s;      //!
-   RingId2ValErrMap             fBeamPolarSlopes;   //!
-   RingId2ValErrMap             fBeamCollPolars;    //! not used
+   RingId2ValErrMap              fBeamPolars;        //!
+   RingId2ValErrMap              fBeamPolarP0s;      //!
+   RingId2ValErrMap              fBeamPolarSlopes;   //!
+   RingId2ValErrMap              fBeamCollPolars;    //! not used
    
-   PolId2ValErrMap              fSystProfPolar;
-   PolId2ValErrMap              fSystJvsCPolar;
-   RingId2ValErrMap             fSystUvsDPolar;
+   PolId2ValErrMap               fSystProfPolar;
+   PolId2ValErrMap               fSystJvsCPolar;
+   RingId2ValErrMap              fSystUvsDPolar;
 
-   String2TgtOrientMap          fMeasTgtOrients;    // a stupid temporary fix
-   String2TargetIdMap           fMeasTgtIds;        // a stupid temporary fix
-   String2RingIdMap             fMeasRingIds;       // a stupid temporary fix
+   PolId2ValErrMap               fRotatorPCPolarRatio; // before/after rotator ratio at flattop
 
-   RingId2TgtOrient2ValErrMap   fPolProfRs;
-   RingId2TgtOrient2ValErrMap   fPolProfPMaxs;
-   RingId2TgtOrient2ValErrMap   fPolProfPs;
+   String2TgtOrientMap           fMeasTgtOrients;    // a stupid temporary fix
+   String2TargetIdMap            fMeasTgtIds;        // a stupid temporary fix
+   String2RingIdMap              fMeasRingIds;       // a stupid temporary fix
+
+   RingId2TgtOrient2ValErrMap    fPolProfRs;
+   RingId2TgtOrient2ValErrMap    fPolProfPMaxs;
+   RingId2TgtOrient2ValErrMap    fPolProfPs;
 
 public:
 
@@ -154,6 +157,7 @@ public:
    ValErrPair           CalcAvrgPolProfR(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair           CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair           CalcPolProfP(ValErrPair R, ValErrPair PMax);
+   void                 CalcRotatorPCPolarRatio();
    void                 CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
    void                 UpdateExternGraphRange();
    void                 FitExternGraphs();
