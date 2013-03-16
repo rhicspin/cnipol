@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
 
       //DrawObjContainer *gHIn = 0;
 
-      gMM->fMeasInfo->PrintAsPhp();
+      //gMM->fMeasInfo->PrintAsPhp();
 
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
