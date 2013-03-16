@@ -57,7 +57,6 @@ void MAsymRoot::SetAnaGlobResult(AnaGlobResult *agr)
 /** */
 void MAsymRoot::SaveAs(string pattern, string dir)
 {
-
    TCanvas canvas("canvas", "canvas", 1400, 600);
    canvas.UseCurrentStyle();
 
