@@ -3,6 +3,8 @@
 # 
 #
 
+source ~/.login
+
 set FILL_ID=$1
 
 exportLoggerData -logger RHIC/BeamIons,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps \
