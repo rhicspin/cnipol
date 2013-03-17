@@ -3,9 +3,13 @@
 # 
 #
 
-source ~/.login
+#source ~/.login
 
-set FILL_ID=$1
+export PATH=/usr/bin:/bin:/sbin:/usr/sbin:/usr/dt/bin:/usr/proc/bin:/usr/local/bin:/usr/controls/bin:/usr/controls/scripts:/usr/X11R6/bin:/usr/local/share/sybase150/OCS-15_0/bin:/usr/local/src/Frame2html/bin:/usr/local/src/Frame2html/src:.
+
+export LD_LIBRARY_PATH=/usr/X11R6/lib:/lib:/usr/lib:/usr/local/lib:/usr/local/share:/usr/local/share/lib:/usr/local/ActiveTcl/lib:/usr/local/share/sybase150/OCS-15_0/lib:/usr/local/share/sybase/OCS-12_5/lib:/ride/release/X86/lib
+
+FILL_ID=$1
 
 exportLoggerData -logger RHIC/BeamIons,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps \
 -cells "bluDCCTtotal,yelDCCTtotal,bi5-rot3-outer,yo5-rot3-outer,yi7-rot3-outer,bo7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer" \
