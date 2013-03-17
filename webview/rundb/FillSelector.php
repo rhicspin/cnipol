@@ -58,8 +58,8 @@ class FillSelector {
       } else if ( isset($_GET['ft']) && empty($_GET['ft'])) {
 
       } else {
-         //$ft = 0x01; // phys type is default
-         $ft = 0x00; // phys type is default
+         $ft = 0x01; // phys type is default
+         //$ft = 0x00;
          $this->sqlWhere .= " AND type = $ft";
       }
 
@@ -120,8 +120,8 @@ class FillSelector {
 
       echo "  <td class=\"padding2\"><b>Type:</b>\n";
 
-      //$this->HtmlSelectField($FILLTYPE, "ft", 1); // default type is "phys"
-      $this->HtmlSelectField($FILLTYPE, "ft", 0); // default type is "undef"
+      $this->HtmlSelectField($FILLTYPE, "ft", 1); // default type is "phys"
+      //$this->HtmlSelectField($FILLTYPE, "ft", 0); // default type is "undef"
 
       echo "  <td class=\"padding2\"><b>Beam energy:</b>\n";
 
