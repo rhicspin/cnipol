@@ -148,7 +148,9 @@ while ($e = mysql_fetch_assoc($rslt)):
 			"tgtId"     => $e['target_id']
 		);
 
-		$norm = getJetCarbonNormalization($normSpecs);
+		//$norm = getJetCarbonNormalization($normSpecs);
+      $norm2 = getHJPCNorm($runPeriod, intval($e['beam_energy']+0.5), $polId, $e['target_orient'], $e['target_id']);
+      $norm = $norm2->val;
 
 		if ( isset($e['polarization']) ) {
 		   $polarization = sprintf("%5.1f &plusmn; %5.1f", $e['polarization']*100*$norm, $e['polarization_error']*100*$norm);

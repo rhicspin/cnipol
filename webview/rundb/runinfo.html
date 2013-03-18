@@ -76,42 +76,33 @@ if ( isset($rc['A_N'][1]) && $rc['A_N'][1] == 0) $rc['A_N'][1] = 1e-10;
 
 $polarization = "&nbsp;";
 
-
-$normSpecs = array(
-   "runPeriod" => $runPeriod,
-	"energy"    => intval($rc['beam_energy']+0.5),
-	"polId"     => $polId,
-	"tgtOrient" => $rc['target_orient'],
-	"tgtId"     => $rc['target_id']
-);
-
-$norm = getJetCarbonNormalization($normSpecs);
-
+$norm    = getHJPCNorm($runPeriod, intval($rc['beam_energy']+0.5), $polId, $rc['target_orient'], $rc['target_id']);
+$normVal = $norm->val;
 
 if (isset($rc['polarization'])) {
 	$polarization = sprintf("<span class=s150>%5.1f &plusmn; %5.1f %%</span>",
-      $rc['polarization']*100*$norm, $rc['polarization_error']*100*$norm);
+      $rc['polarization']*100*$normVal, $rc['polarization_error']*100*$normVal);
 }
 
 $polarization_X90 = isset($rc['fAsymX90']['phys']) && $rc['A_N'][1] > 1e-10 ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100*$norm/$rc['A_N'][1],
-	                                   $rc['fAsymX90']['phys'][1]*100*$norm/$rc['A_N'][1]) : "&mdash;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100*$normVal/$rc['A_N'][1],
+	                                   $rc['fAsymX90']['phys'][1]*100*$normVal/$rc['A_N'][1]) : "&mdash;";
 
 $polarization_X45 = isset($rc['fAsymX45']['phys']) && $rc['A_N'][1] > 1e-10 ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*$normVal*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45']['phys'][1]*100*$normVal*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
 $polarization_X45T = isset($rc['fAsymX45T']['phys']) && $rc['A_N'][1] > 1e-10 ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45T']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*$normVal*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45T']['phys'][1]*100*$normVal*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
 $polarization_X45B = isset($rc['fAsymX45B']['phys']) && $rc['A_N'][1] > 1e-10 ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymX45B']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*$normVal*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45B']['phys'][1]*100*$normVal*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
 $polarization_Y45 = isset($rc['fAsymY45']['phys']) && $rc['A_N'][1] > 1e-10 ?
-   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
-	                                   $rc['fAsymY45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*$normVal*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymY45']['phys'][1]*100*$normVal*M_SQRT2/$rc['A_N'][1]) : "&mdash;";
 
 $targetId = "&mdash;";
 
@@ -166,7 +157,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <td>
    <b>Run Period:</b> <?=$runPeriod?>
    <td>
-   <b>H-Jet norm (A_N Scale):</b> <?=$norm?>
+   <b>H-Jet norm (A_N Scale):</b> <?=$norm->err > 0 ? $norm->ToString("", "%5.3f") : sprintf("%5.3f", $norm->val);?>
    <td>&nbsp;
    <td>&nbsp;
 
