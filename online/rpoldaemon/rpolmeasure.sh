@@ -112,7 +112,7 @@ mysendpict() {
 trap mysoftexit SIGINT
 trap myhardexit SIGTERM
 
-mail -s "Pol: $MODE $RUN" 6316275050@txt.att.net dsmirnov@bnl.gov
+echo "Pol: $MODE $RUN" | mail -s "Pol: $MODE $RUN" 6316275050@txt.att.net dsmirnov@bnl.gov
 
 # Run rhicpol and analysis according to the mode
 case $MODE in
