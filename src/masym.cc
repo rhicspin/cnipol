@@ -74,9 +74,6 @@ int main(int argc, char *argv[])
    MAsymRoot mAsymRoot(mAsymAnaInfo);
 	mAsymRoot.SetAnaGlobResult(&anaGlobResult);
 
-   //UInt_t minTime = UINT_MAX;
-   //UInt_t maxTime = 0;
-
    Info("masym", "Starting first pass...");
 
    // Create a default canvas here to get rid of weird root messages while
@@ -96,8 +93,18 @@ int main(int argc, char *argv[])
    // Loop over the runs and record the time of the last flattop measurement in the fill
    while (next && (o = (*next)()) )
    {
-      string fName    = string(((TObjString*) o)->GetName());
-      string fileName = mAsymAnaInfo.GetResultsDir() + "/" + fName + "/" + fName + mAsymAnaInfo.GetSuffix() + ".root";
+      string measId   = string(((TObjString*) o)->GetName());
+      string fileName = mAsymAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAsymAnaInfo.GetSuffix() + ".root";
+
+      // Check for fills of no interest
+      stringstream ssMeasId(measId);
+      Int_t        nFillId;
+      ssMeasId >> nFillId;
+
+      if ( nFillId >= 17064 && nFillId <= 17084 ) {
+         Error("masym", "Encountered vetoed fillId: %d. Skipping...", nFillId);
+         continue;
+      }
 
       TFile *f = new TFile(fileName.c_str(), "READ");
 
@@ -128,28 +135,9 @@ int main(int argc, char *argv[])
       char strTime[80];
       strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
 
-      Double_t    runId      = gMM->fMeasInfo->RUNID;
-      UInt_t      fillId     = (UInt_t) runId;
-      EBeamEnergy beamEnergy = gMM->fMeasInfo->GetBeamEnergy();
-
-      //Float_t  polarization    = gMM->fAnaMeasResult->sinphi[0].P[0] * 100.;
-      //Float_t  polarizationErr = gMM->fAnaMeasResult->sinphi[0].P[1] * 100.;
-      Float_t  polarization    =  0;
-      Float_t  polarizationErr = -1;
-
-      TFitResultPtr fitResPolarPhi = gMM->fAnaMeasResult->fFitResPolarPhi;
-
-      if (fitResPolarPhi.Get()) {
-         //polarization    = fitResPolarPhi->Value(0);
-         //polarizationErr = fitResPolarPhi->FitResult::Error(0);
-         polarization    = fitResPolarPhi->Value(0) * 100;
-         polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100;
-      }
-
-      Float_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
-      Float_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
-      //Float_t  profileRatio     = gMM->fAnaMeasResult->fIntensPolarR;
-      //Float_t  profileRatioErr  = gMM->fAnaMeasResult->fIntensPolarRErr;
+      Double_t    runId           = gMM->fMeasInfo->RUNID;
+      UInt_t      fillId          = (UInt_t) runId;
+      EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
       // Substitute the beam energy for special ramp fills.
       // XXX Comment this for normal summary reports
@@ -158,18 +146,31 @@ int main(int argc, char *argv[])
       //   beamEnergy = 400;
       //}
 
+      Float_t polarization    = 0;
+      Float_t polarizationErr = -1;
+
+      TFitResultPtr fitResPolarPhi = gMM->fAnaMeasResult->fFitResPolarPhi;
+
+      if (fitResPolarPhi.Get()) {
+         polarization    = fitResPolarPhi->Value(0) * 100;
+         polarizationErr = fitResPolarPhi->FitResult::Error(0) * 100;
+      }
+
+      Float_t profileRatio     = gMM->fAnaMeasResult->fProfilePolarR.first;
+      Float_t profileRatioErr  = gMM->fAnaMeasResult->fProfilePolarR.second;
 
       // the cut on polarization value should be removed
       //if (polarization > 99 || polarizationErr > 30 ||
-      if ( polarization < 10 || polarization > 99 || polarizationErr > 30 ||
+      if (polarization < 10 || polarization > 99 || polarizationErr > 30 ||
           gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() ||
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
-          (TMath::Abs(profileRatio) > 5.000) ||                           // exclude very large values
-          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) || // exclude large values with small errors
-          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) || // exclude large values with large errors
+          (TMath::Abs(profileRatio) > 5.000) ||                             // exclude very large values
+          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) ||   // exclude large values with small errors
+          (TMath::Abs(profileRatio) > 1.000 && profileRatioErr > 0.50) ||   // exclude large values with large errors
           //(profileRatioErr/TMath::Abs(profileRatio) > 2.000 && TMath::Abs(profileRatio) > 1.0) ||
-          profileRatioErr < 0.01 || profileRatioErr > 10 // exclude too small and too big errors. probably from failed fits?
+          profileRatioErr < 0.01 || profileRatioErr > 10 ||                 // exclude too small and too big errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
+          ( fillId >= 17064 && fillId <= 17084 )
          )
       {
 	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
@@ -188,9 +189,6 @@ int main(int argc, char *argv[])
       //if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
       //   flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
       //}
-
-      //if (gMM->fMeasInfo->fStartTime < minTime ) minTime = gMM->fMeasInfo->fStartTime;
-      //if (gMM->fMeasInfo->fStartTime > maxTime ) maxTime = gMM->fMeasInfo->fStartTime;
 
       //if (gH->d.find("runs") != gH->d.end()) {
       //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxFill(fillId);
