@@ -297,7 +297,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
    hist->SetTitle("; Fill Id; Polarization (H-jet), %;");
-   hist->SetOption("E1");
+   hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
@@ -772,22 +772,22 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
 
    shName = "hPolarHJVsFill_" + sRingId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle("; Fill Id; Polarization P_{H-jet}, %;");
-   hist->SetOption("E1");
+   hist->SetTitle("; Fill Id; Polarization (H-jet), %;");
+   hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
    shName = "hAsymHJVsFill_" + sRingId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->SetTitle("; Fill Id; Asymmetry (H-jet);");
-   hist->SetOption("E1");
+   hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
    shName = "hPolarVsFill_" + sRingId + "_"  + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->SetTitle("; Fill Id; Beam Polarization, %;");
-   hist->SetOption("E1");
+   hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
@@ -1735,7 +1735,6 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
 
    TH1F* hPolarVsFill_ = (TH1F*) oc_ring->o["hPolarVsFill_" + sRingId + "_" + sBeamE];
    hPolarVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-   //hPolarVsFill_->GetXaxis()->SetLimits(fMinFill, fMaxFill);
 
    TH1F* hPolarUDRatioVsFill_ = (TH1F*) oc_ring->o["hPolarUDRatioVsFill_" + sRingId + "_" + sBeamE];
    hPolarUDRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
