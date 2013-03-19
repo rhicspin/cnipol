@@ -551,20 +551,13 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
             TH1*    hAsymVsBunchId_X_  = (TH1*) ((MAsymSingleFillHists*) oc)->o["hAsymVsBunchId_X_" + sFillId + "_" + sRingId];
             grName = "grAsymVsBunchId_X_" + sSS;
             TGraph* grAsymVsBunchId_X_ = (TGraph*) hAsymVsBunchId_X_->GetListOfFunctions()->FindObject(grName.c_str());
-            //printf("rrrrr\n");
 
             if (grAsymVsBunchId_X_->GetN() <= 0) continue;
 
-            //grAsymVsBunchId_X_->Print();
-            TF1*    funcConst          = (TF1*) grAsymVsBunchId_X_->GetListOfFunctions()->FindObject("funcConst");
-            //funcConst->Print();
+            TF1* funcConst   = (TF1*) grAsymVsBunchId_X_->GetListOfFunctions()->FindObject("funcConst");
             Double_t chi2ndf = funcConst->GetNDF() > 0 ? funcConst->GetChisquare()/funcConst->GetNDF() : -1;
 
-            //if (grBunchAsymChi2_) {
-               utils::AppendToGraph(grBunchAsymChi2_, fillId, chi2ndf);
-            //} else {
-            //   printf("zero graph\n");
-            //}
+            utils::AppendToGraph(grBunchAsymChi2_, fillId, chi2ndf);
          }
       }
    }

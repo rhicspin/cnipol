@@ -84,7 +84,7 @@ void MAsymSingleFillHists::BookHists()
       shName = "hIntensVsFillTime_" + strDirName + "_" + sRingId;
       hist = new TH2C(shName.c_str(), shName.c_str(), 48, fMinTime, fMaxTime, 100, -10, 300);
       hist->SetTitle("; Time in Fill, hours; Beam Intensity, x10^{9} Protons;");
-      hist->SetOption("DUMMY GRIDX");
+      hist->SetOption("DUMMY GRIDX GRIDY");
       //hist->GetXaxis()->SetTimeOffset(0, "local");
       //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
       hist->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -97,8 +97,7 @@ void MAsymSingleFillHists::BookHists()
       shName = "hAsymVsBunchId_X_" + strDirName + "_" + sRingId;
       hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0.5, N_BUNCHES+0.5, 1, -0.02, 0.02);
       hist->SetTitle("; Bunch Id; X Asymmetry;");
-      hist->SetOption("DUMMY GRIDX");
-      hist->GetYaxis()->SetRangeUser(-0.05, 0.05);
+      hist->SetOption("DUMMY GRIDX GRIDY");
       styleMarker.Copy(*hist);
 
       o[shName] = hist;
@@ -125,14 +124,14 @@ void MAsymSingleFillHists::BookHists()
       }
    }
 
-   // for quicker reference
+   // for a quicker reference
    //fhAsymVsBunchId_X_BLU = (TH1*) o["hAsymVsBunchId_X_" + strDirName + "_BLU"];
    //fhAsymVsBunchId_X_YEL = (TH1*) o["hAsymVsBunchId_X_" + strDirName + "_YEL"];
 
 
    shName = "hExternInfoVsFillTime_" + strDirName;
    hist = new TH2C(shName.c_str(), shName.c_str(), 48, fMinTime, fMaxTime, 100, -10, 300);
-   hist->SetOption("DUMMY GRIDX");
+   hist->SetOption("DUMMY GRIDX GRIDY");
    hist->SetTitle("; Time in Fill, hours; ;");
    //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
    hist->GetXaxis()->SetTimeOffset(0, "gmt");
@@ -220,7 +219,7 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    shName = "hPolarVsFillTime_" + strDirName + "_" + sPolId;
    //hist = new TH2C(shName.c_str(), shName.c_str(), 12, 0, 12*3600, 100, 0, 100);
    hist = new TH2C(shName.c_str(), shName.c_str(), 12, fMinTime, fMaxTime, 100, 0, 100);
-   hist->SetOption("DUMMY GRIDX");
+   hist->SetOption("DUMMY GRIDX GRIDY");
    hist->SetTitle("; Time in Fill, hours; Polarization, %;");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
    //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
@@ -234,7 +233,7 @@ void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    // 
    shName = "hRVsFillTime_" + strDirName + "_" + sPolId;
    hist = new TH2C(shName.c_str(), shName.c_str(), 12, fMinTime, fMaxTime, 100, 0, 1);
-   hist->SetOption("DUMMY GRIDX");
+   hist->SetOption("DUMMY GRIDX GRIDY");
    hist->SetTitle("; Time in Fill, hours; Pol. Profile R;");
    //hist->GetXaxis()->SetTimeOffset(0, "local");
    //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
@@ -474,8 +473,6 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          Error("PostFill", "hPolarVsFillTime_ graph is not properly defined in %s", strDirName.c_str());
 
       utils::UpdateLimitsFromGraphs(hPolarVsFillTime_, 2);
-      //utils::UpdateLimitsFromGraphs(hPolarVsFillTime_);
-
 
       // Now deal with pol. profiles
       TH1* hRVsFillTime_ = (TH1*) o["hRVsFillTime_" + strDirName + "_" + sPolId];
@@ -560,12 +557,20 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          string grName = "grAsymVsBunchId_X_" + sSS;
          TGraphErrors* grAsymVsBunchId_X = (TGraphErrors*) hAsymVsBunchId_X_->GetListOfFunctions()->FindObject(grName.c_str());
 
+         // remove graph for empty bunches. A separate histogram with all spin type graphs can be helpful
+         if (*iSS == kSPIN_NULL) {
+            hAsymVsBunchId_X_->GetListOfFunctions()->Remove(grAsymVsBunchId_X);
+            continue;
+         }
+
          TF1 *funcConst= new TF1("funcConst", "[0]");
          funcConst->SetParNames("const");
          funcConst->SetLineColor(color);
          grAsymVsBunchId_X->Fit("funcConst");
          delete funcConst;
       }
+
+      utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_, 2);
    }
 }
 

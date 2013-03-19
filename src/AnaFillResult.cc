@@ -1374,9 +1374,9 @@ void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo
    //MAsymSingleFillHists *singleFillHists = (MAsymSingleFillHists*) fillHists->GetSingleFillHists(fFillId);
    MAsymSingleFillHists *singleFillHists = (MAsymSingleFillHists*) fillHists->GetSingleFillHists(*this);
 
-   TH1* hAsymVsBunchId_X_       = (TH1*) singleFillHists->o["hAsymVsBunchId_X_" + sFillId + "_" + sRingId];
-   TH1* hAsymVsBunchId_X90      = amr.fhAsymVsBunchId_X90;
-   TH1* hAsymVsBunchId_X45      = amr.fhAsymVsBunchId_X45;
+   TH1* hAsymVsBunchId_X_  = (TH1*) singleFillHists->o["hAsymVsBunchId_X_" + sFillId + "_" + sRingId];
+   TH1* hAsymVsBunchId_X90 = amr.fhAsymVsBunchId_X90;
+   TH1* hAsymVsBunchId_X45 = amr.fhAsymVsBunchId_X45;
 
    SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
