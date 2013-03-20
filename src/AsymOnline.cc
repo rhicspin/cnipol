@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+ClassImp(RecordMachineParams)
+
 ClassImp(OnlineMachineParams)
 
 

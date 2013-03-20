@@ -16,5 +16,6 @@
 #pragma link C++ class OnlineTargetParams;
 #pragma link C++ class OnlineWcm;
 //#pragma link C++ class AsymRoot;
+#pragma link C++ class RecordMachineParams;
 
 #endif
