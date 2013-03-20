@@ -32,6 +32,7 @@ include("../head.html");
 include_once("utils.php");
 include_once("SqlDbReader.php");
 include_once("RunSelector.php");
+include_once("MeasResult.php");
 
 $runSelector = new RunSelector();
 $runSelector->PrintForm();
@@ -93,6 +94,7 @@ $profileRatios = array();
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Target
+   <th rowspan=2>Bunches<br>&minus;/0/+
    <th rowspan=2>Total Events<br><?=$runSelector->HtmlSortLinks("te");?>
    <!--<th rowspan=2>Duration-->
    <th colspan=3>Offline analysis
@@ -136,6 +138,7 @@ while ($e = mysql_fetch_assoc($rslt)):
    $beamEnergy   = "&mdash;";
    $targetId     = "&mdash;";
    $trTooltip    = "Measurement {$e['run_name']}";
+   $udCounts     = array('-' => "&mdash;", '0' => "&mdash;", '+' => "&mdash;");
 
    if ($measurementType != "undef" && $measurementType != "alpha")
    {
@@ -186,6 +189,11 @@ while ($e = mysql_fetch_assoc($rslt)):
          $rce = $rc['fTargetParams']['fVelocity'];
          $trTooltip .= isset($rce) ? "| Target speed: $rce " : "";
 
+         // Look at bunch counts
+         $measResult = new MeasResult();
+         
+         $udCounts = $measResult->GetBunchUpDownCounts($rc['fBeamBunches']);
+
          unset($rc);
       }
 	}
@@ -224,6 +232,7 @@ while ($e = mysql_fetch_assoc($rslt)):
    <td class=align_cm><?=$measurementType?>
    <td class=align_cm><?=$beamEnergy?>
    <td class=align_cm><?=$targetId?>
+   <td class=align_cm><?=$udCounts['-']."/".$udCounts['0']."/".$udCounts['+']?>
    <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
    <td class=align_cm><?=$processedFrac?>
    <td class=align_cm><?=$asymVersion?>

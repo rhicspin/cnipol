@@ -80,10 +80,10 @@ $normHJPC[12][255]['B2D']['nomi'] = new pair(   1.12329,    0.02078);
 $normHJPC[12][255]['Y2U']['nomi'] = new pair(   0.99830,    0.01658);
 
 // Run 13
-//$normHJPC[13][255]['B1U']['nomi'] = new pair(   1.00000,    0.00000);
-//$normHJPC[13][255]['Y1D']['nomi'] = new pair(   1.00000,    0.00000);
-//$normHJPC[13][255]['B2D']['nomi'] = new pair(   1.00000,    0.00000);
-//$normHJPC[13][255]['Y2U']['nomi'] = new pair(   1.00000,    0.00000);
+$normHJPC[13][24]['B1U']['nomi'] = new pair(   1.07559,    0.02920);
+$normHJPC[13][24]['Y1D']['nomi'] = new pair(   0.98324,    0.03519);
+$normHJPC[13][24]['B2D']['nomi'] = new pair(   1.01772,    0.09418);
+$normHJPC[13][24]['Y2U']['nomi'] = new pair(   1.03182,    0.04138);
 $normHJPC[13][255]['B1U']['nomi'] = new pair(   1.07559,    0.02920);
 $normHJPC[13][255]['Y1D']['nomi'] = new pair(   0.98324,    0.03519);
 $normHJPC[13][255]['B2D']['nomi'] = new pair(   1.01772,    0.09418);
