@@ -168,12 +168,6 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
 
 
 /** */
-//TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
-//{
-//}
-
-
-/** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 {
    Double_t aMean = ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->GetMean();
