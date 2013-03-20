@@ -42,6 +42,8 @@ include("../head.html");
 
 <?php
 
+include_once("MeasResult.php");
+
 // Determine whether we have different analyses identified by a suffix
 if (!isset($gSfx) || empty($gSfx))
    $suffixes = "default ";
@@ -212,6 +214,11 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    </table>
 
 <?php
+
+   $measResult = new MeasResult();
+   
+   $udCounts = $measResult->GetBunchUpDownCounts($rc['fBeamBunches']);
+
    //$row1 = "";
    $row2 = "";
    $row3 = "";
@@ -248,7 +255,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
       <?=$row2;?>
    <tr>
       <td colspan=120 class=align_l>
-      <b>Bunch spin pattern:</b>
+      <b>Bunch spin pattern:</b> Total &minus;/0/&plus;: <?=$udCounts['-']."/".$udCounts['0']."/".$udCounts['+']?>
    <tr>
       <?=$row3;?>
    </table>

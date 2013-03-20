@@ -56,6 +56,22 @@ $gP = new PlotHelper($dir);
 <td>
 
 <td>
+
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hAsymVsBunchId_X_neb_{$gFillId}_BLU", false, 400)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+<td>
+   <?=$gP->img("hAsymVsBunchId_X_neb_{$gFillId}_YEL", false, 400)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Yellow</span> </div>
+</table>
+<div class="thumbcaption">
+Asymmetry per bunch averaged over all p-Carbon measurements taken between the lumi-on and lumi-off markers
+</div>
+
+<?if (isset($_GET['expert'])) : ?>
+
 <table class="simple00">
 <tr>
 <td>
@@ -68,6 +84,8 @@ $gP = new PlotHelper($dir);
 <div class="thumbcaption">
 Asymmetry per bunch averaged over all p-Carbon measurements taken between the lumi-on and lumi-off markers
 </div>
+
+<?endif;  ?>
 
 
 <tr>
