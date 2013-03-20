@@ -37,8 +37,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    fitfunc->SetLineWidth(3);
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
-      //if (i != 28) continue;
-
       sprintf(&sCh[0], "%02d", i);
 
       ChannelCalib *chCalib;
@@ -64,16 +62,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres) {
-         //fitres->Print();
-         //aCoef    = (ALPHA_KEV/fitfunc->GetParameter(1)) * ATTEN;
-         //aCoefErr = aCoef * fitfunc->GetParameter(2)/fitfunc->GetParameter(1);
-         //aChi2    = fitfunc->GetChisquare();
-
-         //chCalib.fACoef    = fitres->Value(1);
-         //chCalib.fACoefErr = fitres->FitResult::Error(1);
-
          chCalib->fACoef    = (ALPHA_KEV / fitres->Value(1)) * ATTEN;
-         //chCalib.fACoefErr = aCoef * fitres->Value(2)/fitres->Value(1);
          chCalib->fACoefErr = chCalib->fACoef * fitres->FitResult::Error(1) / fitres->Value(1);
          chCalib->fAChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
@@ -97,10 +86,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         //fitres->Print();
-
          chCalib->fICoef    = (ALPHA_KEV / fitres->Value(1)) * ATTEN;
-         //chCalib->fACoefErr = aCoef * fitres->Value(2)/fitres->Value(1);
          chCalib->fICoefErr = chCalib->fICoef * fitres->FitResult::Error(1) / fitres->Value(1);
          chCalib->fIChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
@@ -115,11 +101,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       else {
          Error("Calibrate", "Empty TFitResultPtr");
       }
-
-      //printf("%6.4f %6.4f %6.2f %6.2f %4.1f %3d  SUCCESSFUL\n",
-      //        cal, ecal, amp, eamp, chi2/ndf, ndf);
-      //fprintf(pf0,"%2d %6.4f %6.4f %6.2f %6.2f %4.1f %3d SUCCESSFUL\n",
-      //        i,cal[i],ecal[i],amp[i],eamp[i],chi2[i]/ndf,ndf);
    }
 
    CalibrateBadChannels(c);
@@ -135,8 +116,6 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
 
    if (h->Integral() < 10) {
       Error("Calibrate", "Too few entries in histogram %s. Skipped", h->GetName());
-      //f->SetParameters(0, 1, 0);
-      //f->SetParError(2, 0);
       return 0;
    }
 
@@ -145,23 +124,14 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    float mean = h->GetBinCenter(mbin);
    float xmin = h->GetXaxis()->GetXmin();
    float xmax = h->GetXaxis()->GetXmax();
-   //float ymin = h->GetYaxis()->GetXmin();
-   //float ymax = h->GetYaxis()->GetXmax();
-   //float intg = h->Integral();
    float expectedSigma = 0.7;
 
-   //h->SetAxisRange(apeak-awidth,apeak+awidth);
    f->SetParameters(norm, mean, expectedSigma);
    f->SetParLimits(0, 0.8 * norm, 1.2 * norm); // norm
-   //f->SetParLimits(0, ymin, ymax); // norm
-   //f->SetParLimits(1, mean-5*expectedSigma, mean+5*expectedSigma); // mean
    f->SetParLimits(1, xmin, xmax); // mean
    f->SetParLimits(2, 0.1, 3 * expectedSigma); // sigma
 
-   //h->Fit(f, "", "", apeak-awidth, apeak+awidth);
-   //h->Print();
    fitres = h->Fit(f, "BMS"); // B: use limits, M: improve fit, S: return fitres
-   //fitres->Print("V");
 
    return fitres;
 }
