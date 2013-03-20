@@ -99,8 +99,15 @@ void MAsymSingleFillHists::BookHists()
       hist->SetTitle("; Bunch Id; X Asymmetry;");
       hist->SetOption("DUMMY GRIDX GRIDY");
       styleMarker.Copy(*hist);
-
       o[shName] = hist;
+
+      shName = "hAsymVsBunchId_X_neb_" + strDirName + "_" + sRingId;
+      hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0.5, N_BUNCHES+0.5, 1, -0.02, 0.02);
+      hist->SetTitle("; Bunch Id; X Asymmetry;");
+      hist->SetOption("DUMMY GRIDX GRIDY");
+      styleMarker.Copy(*hist);
+      o[shName] = hist;
+
 
       SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
 
@@ -109,18 +116,22 @@ void MAsymSingleFillHists::BookHists()
          string  sSS   = gRunConfig.AsString(*iSS);
          Color_t color = RunConfig::AsColor(*iSS);
 
-         // Create graphs for different spin states
-         // X45
-         shName = "grAsymVsBunchId_X_" + sSS;
+         styleMarker.SetMarkerSize(1);
+         styleMarker.SetMarkerColor(color);
 
+         // Create graphs for different spin states. X = X45 + X90
          TGraphErrors *grAsymVsBunchId_X = new TGraphErrors();
-         grAsymVsBunchId_X->SetName(shName.c_str());
-         grAsymVsBunchId_X->SetMarkerStyle(kFullCircle);
-         grAsymVsBunchId_X->SetMarkerSize(1);
-         grAsymVsBunchId_X->SetMarkerColor(color);
+         grAsymVsBunchId_X->SetName(string("grAsymVsBunchId_X_" + sSS).c_str());
+         styleMarker.Copy(*grAsymVsBunchId_X);
+
+         // same for non-empty bunches
+         //TGraphErrors *grAsymVsBunchId_X_neb_ = new TGraphErrors();
+         //grAsymVsBunchId_X_neb_->SetName(string("grAsymVsBunchId_X_neb_" + sSS).c_str());
+         //styleMarker.Copy(*grAsymVsBunchId_X_neb_);
 
          // Add graphs to histos
-         ((TH1*) o["hAsymVsBunchId_X_" + strDirName + "_" + sRingId])->GetListOfFunctions()->Add(grAsymVsBunchId_X, "p");
+         ((TH1*) o["hAsymVsBunchId_X_"     + strDirName + "_" + sRingId])->GetListOfFunctions()->Add(grAsymVsBunchId_X, "p");
+         //((TH1*) o["hAsymVsBunchId_X_neb_" + strDirName + "_" + sRingId])->GetListOfFunctions()->Add(grAsymVsBunchId_X_neb_, "p");
       }
    }
 
@@ -545,32 +556,47 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       }
 
       // Fit the graphs
-      TH1* hAsymVsBunchId_X_ = (TH1*) o["hAsymVsBunchId_X_" + strDirName + "_" + sRingId];
+      TH1* hAsymVsBunchId_X_     = (TH1*) o["hAsymVsBunchId_X_" + strDirName + "_" + sRingId];
+      TH1* hAsymVsBunchId_X_neb_ = (TH1*) o["hAsymVsBunchId_X_neb_" + strDirName + "_" + sRingId];
 
       SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
-
       for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
       {
-         string sSS = gRunConfig.AsString(*iSS);
+         string  sSS   = gRunConfig.AsString(*iSS);
          Color_t color = RunConfig::AsColor(*iSS);
 
          string grName = "grAsymVsBunchId_X_" + sSS;
-         TGraphErrors* grAsymVsBunchId_X = (TGraphErrors*) hAsymVsBunchId_X_->GetListOfFunctions()->FindObject(grName.c_str());
+         TGraphErrors* grAsymVsBunchId_X_ = (TGraphErrors*) hAsymVsBunchId_X_->GetListOfFunctions()->FindObject(grName.c_str());
 
-         // remove graph for empty bunches. A separate histogram with all spin type graphs can be helpful
-         if (*iSS == kSPIN_NULL) {
-            hAsymVsBunchId_X_->GetListOfFunctions()->Remove(grAsymVsBunchId_X);
-            continue;
-         }
+         //grName = "grAsymVsBunchId_X_neb_" + sSS;
+         //TGraphErrors* grAsymVsBunchId_X_neb_ = (TGraphErrors*) hAsymVsBunchId_X_neb_->GetListOfFunctions()->FindObject(grName.c_str());
 
          TF1 *funcConst= new TF1("funcConst", "[0]");
          funcConst->SetParNames("const");
          funcConst->SetLineColor(color);
-         grAsymVsBunchId_X->Fit("funcConst");
+         grAsymVsBunchId_X_->Fit("funcConst");
+
+      TAttMarker styleMarker;
+      styleMarker.SetMarkerStyle(kFullCircle);
+      styleMarker.SetMarkerSize(1);
+      styleMarker.SetMarkerColor(color);
+
+         // remove graph for empty bunches. A separate histogram with all spin type graphs can be helpful
+         if (*iSS != kSPIN_NULL) {
+            //hAsymVsBunchId_X_->GetListOfFunctions()->Remove(grAsymVsBunchId_X_);
+            //TGraphErrors *grAsymVsBunchId_X_neb_ = new TGraphErrors(*grAsymVsBunchId_X_);
+            TGraphErrors *grAsymVsBunchId_X_neb_ = (TGraphErrors*) grAsymVsBunchId_X_->Clone();
+            styleMarker.Copy(*grAsymVsBunchId_X_neb_);
+            //utils::MergeGraphs(grAsymVsBunchId_X_neb_, grAsymVsBunchId_X_);
+            //grAsymVsBunchId_X_neb_->GetListOfFunctions()->Add(funcConst->Clone());
+            hAsymVsBunchId_X_neb_->GetListOfFunctions()->Add(grAsymVsBunchId_X_neb_, "p");
+         }
+
          delete funcConst;
       }
 
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_, 2);
+      utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_neb_, 2);
    }
 }
 
