@@ -35,6 +35,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
    fitfunc->SetLineColor(kRed);
    fitfunc->SetLineWidth(3);
+   fitfunc->SetNpx(500);
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
       sprintf(&sCh[0], "%02d", i);
