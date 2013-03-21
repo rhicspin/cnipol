@@ -70,35 +70,35 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hIvsA"])->GetXaxis()->SetTitle("Amplitude, ADC");
    ((TH2F*) o["hIvsA"])->GetYaxis()->SetTitle("Integral, ADC");
 
-   o["hACoef"]   = new TH1F("hACoef", "hACoef", 72, 1, 73);
-   ((TH1F*) o["hACoef"])->SetOption("E");
-   //((TH1F*) o["hACoef"])->GetYaxis()->SetRangeUser(5, 8);
-   ((TH2F*) o["hACoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hACoef"])->GetYaxis()->SetTitle("Amplitude Calib, keV/ADC");
+   o["hAmAmpCoef"]   = new TH1F("hAmAmpCoef", "hAmAmpCoef", 72, 1, 73);
+   ((TH1F*) o["hAmAmpCoef"])->SetOption("E");
+   //((TH1F*) o["hAmAmpCoef"])->GetYaxis()->SetRangeUser(5, 8);
+   ((TH2F*) o["hAmAmpCoef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmAmpCoef"])->GetYaxis()->SetTitle("Amplitude Calib, keV/ADC");
 
-   o["hACoefDisp"] = new TH1F("hACoefDisp", "hACoefDisp", 100, 0, 1);
-   ((TH2F*) o["hACoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hACoefDisp"])->GetXaxis()->SetTitle("Amplitude Calib, keV/ADC");
+   o["hAmAmpCoefDisp"] = new TH1F("hAmAmpCoefDisp", "hAmAmpCoefDisp", 100, 0, 1);
+   ((TH2F*) o["hAmAmpCoefDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hAmAmpCoefDisp"])->GetXaxis()->SetTitle("Amplitude Calib, keV/ADC");
 
-   o["hICoef"]   = new TH1F("hICoef", "hICoef", 72, 1, 73);
-   ((TH1F*) o["hICoef"])->SetOption("E");
-   ((TH2F*) o["hICoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hICoef"])->GetYaxis()->SetTitle("Integral Calib, keV/ADC");
+   o["hAmIntCoef"]   = new TH1F("hAmIntCoef", "hAmIntCoef", 72, 1, 73);
+   ((TH1F*) o["hAmIntCoef"])->SetOption("E");
+   ((TH2F*) o["hAmIntCoef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmIntCoef"])->GetYaxis()->SetTitle("Integral Calib, keV/ADC");
 
-   //o["hICoefDisp"] = new TH1F("hICoefDisp", "hICoefDisp", 40, 6, 9);
-   o["hICoefDisp"] = new TH1F("hICoefDisp", "hICoefDisp", 100, 0, 1);
-   ((TH2F*) o["hICoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hICoefDisp"])->GetXaxis()->SetTitle("Integral Calib, keV/ADC");
+   //o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 40, 6, 9);
+   o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 100, 0, 1);
+   ((TH2F*) o["hAmIntCoefDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hAmIntCoefDisp"])->GetXaxis()->SetTitle("Integral Calib, keV/ADC");
 
-   o["hAmpltdW"]   = new TH1F("hAmpltdW", "hAmpltdW", 72, 1, 73);
-   ((TH1*) o["hAmpltdW"])->SetOption("E");
-   ((TH1*) o["hAmpltdW"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hAmpltdW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (A)");
+   o["hAmAmpWidth"]   = new TH1F("hAmAmpWidth", "hAmAmpWidth", 72, 1, 73);
+   ((TH1*) o["hAmAmpWidth"])->SetOption("E");
+   ((TH1*) o["hAmAmpWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hAmAmpWidth"])->GetYaxis()->SetTitle("Alpha Peak Width, % (A)");
 
-   o["hIntgrlW"]   = new TH1F("hIntgrlW", "hIntgrlW", 72, 1, 73);
-   ((TH1*) o["hIntgrlW"])->SetOption("E");
-   ((TH1*) o["hIntgrlW"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hIntgrlW"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
+   o["hAmIntWidth"]   = new TH1F("hAmIntWidth", "hAmIntWidth", 72, 1, 73);
+   ((TH1*) o["hAmIntWidth"])->SetOption("E");
+   ((TH1*) o["hAmIntWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hAmIntWidth"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
 
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
    ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");

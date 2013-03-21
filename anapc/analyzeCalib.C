@@ -236,14 +236,14 @@ void analyzeCalib_fit_histograms()
       }
 
       //if (frp)
-         //((TH1F*) gH->o["hAmpltdW"])->SetBinContent(i, frp->Value(2));
-      ((TH1F*) gH->o["hAmpltdW"])->SetBinContent(i, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
-      ((TH1F*) gH->o["hAmpltdW"])->SetBinError(i, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
+         //((TH1F*) gH->o["hAmAmpWidth"])->SetBinContent(i, frp->Value(2));
+      ((TH1F*) gH->o["hAmAmpWidth"])->SetBinContent(i, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
+      ((TH1F*) gH->o["hAmAmpWidth"])->SetBinError(i, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
 
-      ((TH1F*) gH->o["hACoef"])->SetBinContent(i, aCoef);
-      ((TH1F*) gH->o["hACoef"])->SetBinError(i, aCoefErr);
+      ((TH1F*) gH->o["hAmAmpCoef"])->SetBinContent(i, aCoef);
+      ((TH1F*) gH->o["hAmAmpCoef"])->SetBinError(i, aCoefErr);
 
-      ((TH1F*) gH->o["hACoefDisp"])->Fill(aCoef);
+      ((TH1F*) gH->o["hAmAmpCoefDisp"])->Fill(aCoef);
 
       // Integral
       hInt = (TH1F*) gH->d["channel"+sSi].o["hIntgrl_cut1_st"+sSi];
@@ -263,14 +263,14 @@ void analyzeCalib_fit_histograms()
       }
 
       //if (frp)
-         //((TH1F*) gH->o["hIntgrlW"])->SetBinContent(i, frp->Value(2));
-      ((TH1F*) gH->o["hIntgrlW"])->SetBinContent(i, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
-      ((TH1F*) gH->o["hIntgrlW"])->SetBinError(i, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
+         //((TH1F*) gH->o["hAmIntWidth"])->SetBinContent(i, frp->Value(2));
+      ((TH1F*) gH->o["hAmIntWidth"])->SetBinContent(i, 100*fitfunc->GetParameter(2)/fitfunc->GetParameter(1));
+      ((TH1F*) gH->o["hAmIntWidth"])->SetBinError(i, 100*fitfunc->GetParError(2)/(fitfunc->GetParameter(1)));
 
-      ((TH1F*) gH->o["hICoef"])->SetBinContent(i, iCoef);
-      ((TH1F*) gH->o["hICoef"])->SetBinError(i, iCoefErr);
+      ((TH1F*) gH->o["hAmIntCoef"])->SetBinContent(i, iCoef);
+      ((TH1F*) gH->o["hAmIntCoef"])->SetBinError(i, iCoefErr);
 
-      ((TH1F*) gH->o["hICoefDisp"])->Fill(iCoef);
+      ((TH1F*) gH->o["hAmIntCoefDisp"])->Fill(iCoef);
 
       ChannelCalib tmpChCalib;
       tmpChCalib.fACoef    = aCoef;
@@ -337,10 +337,10 @@ TFitResultPtr analyzeCalib_fit_histograms(TH1 *h, TF1 *f)
 /*
 void analyzeCalib_restore_channels()
 {
-   Double_t aMean = ((TH1F*) gH->o["hACoefDisp"])->GetMean();
-   Double_t aRMS  = ((TH1F*) gH->o["hACoefDisp"])->GetRMS();
-   Double_t iMean = ((TH1F*) gH->o["hICoefDisp"])->GetMean();
-   Double_t iRMS  = ((TH1F*) gH->o["hICoefDisp"])->GetRMS();
+   Double_t aMean = ((TH1F*) gH->o["hAmAmpCoefDisp"])->GetMean();
+   Double_t aRMS  = ((TH1F*) gH->o["hAmAmpCoefDisp"])->GetRMS();
+   Double_t iMean = ((TH1F*) gH->o["hAmIntCoefDisp"])->GetMean();
+   Double_t iRMS  = ((TH1F*) gH->o["hAmIntCoefDisp"])->GetRMS();
 
    ChannelCalibMap &chans = ec->fCalibrator->fChannelCalibs;
 
