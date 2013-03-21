@@ -131,6 +131,11 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
+   if (norm_amer < 3) {
+      Error("Calibrate", "Peaks are too small in histogram %s. Skipped", h->GetName());
+      return 0;
+   }
+
    f_amer.SetParameters(norm_amer, mean_amer, expectedSigma);
    f_amer.SetParLimits(0, 0.8 * norm_amer, 1.2 * norm_amer); // norm
    f_amer.SetParLimits(1, xmin, xmax); // mean
