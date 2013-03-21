@@ -30,7 +30,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
    string    sCh("  ");
    TH1F     *htemp     = 0;
-   TF1      *fitfunc   = new TF1("fitfunc", "gaus");
+   TF1      *fitfunc   = new TF1("fitfunc", "gaus(0) + gaus(3)");
    TFitResultPtr fitres;
 
    fitfunc->SetLineColor(kRed);
@@ -110,6 +110,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 /** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
 {
+   TF1      f_amer("f_amer", "gaus");
    TFitResultPtr fitres = 0;
 
    h->Print();
@@ -121,15 +122,47 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
       return 0;
    }
 
-   int   mbin = h->GetMaximumBin();
-   float norm = h->GetBinContent(mbin);
-   float mean = h->GetBinCenter(mbin);
+   // First fit is to find americium peak
+   // Will start from guessing initial params
+   int   mbin_amer = h->GetMaximumBin();
+   float norm_amer = h->GetBinContent(mbin_amer);
+   float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
-   f->SetParameters(norm, mean, expectedSigma);
-   f->SetParLimits(0, 0.8 * norm, 1.2 * norm); // norm
-   f->SetParLimits(1, xmin, xmax); // mean
-   f->SetParLimits(2, 0.1, 3 * expectedSigma); // sigma
+   f_amer.SetParameters(norm_amer, mean_amer, expectedSigma);
+   f_amer.SetParLimits(0, 0.8 * norm_amer, 1.2 * norm_amer); // norm
+   f_amer.SetParLimits(1, xmin, xmax); // mean
+   f_amer.SetParLimits(2, 0.1, 3 * expectedSigma); // sigma
+
+   h->Fit(&f_amer, "BM"); // B: use limits, M: improve fit
+
+   Double_t par[6]; // params for more general fit
+   f_amer.GetParameters(&par[0]); // copy found params there
+
+   mean_amer = par[1];
+   float sigma_amer = par[2];
+
+   // Now let's find initial params for gadolinium peak
+   float xmax_gad = mean_amer - 3 * sigma_amer;
+   h->GetXaxis()->SetRangeUser(xmin, xmax_gad);
+   int   mbin_gad = h->GetMaximumBin();
+   h->GetXaxis()->SetRange(); // reset range
+   float norm_gad = h->GetBinContent(mbin_gad);
+   float mean_gad = h->GetBinCenter(mbin_gad);
+
+   par[3] = norm_gad;
+   par[4] = mean_gad;
+   par[5] = expectedSigma;
+   f->SetParameters(par);
+
+   f->SetParLimits(3, 0.8 * norm_gad, 1.2 * norm_gad); // norm
+   f->SetParLimits(4, xmin, xmax_gad); // mean
+   f->SetParLimits(5, 0.1, 3 * expectedSigma); // sigma
+
+   // And make sure that our existing peak won't too far
+   f->SetParLimits(0, 0.8 * norm_amer, 1.2 * norm_amer); // norm
+   f->SetParLimits(1, mean_amer - sigma_amer, mean_amer + sigma_amer); // mean
+   f->SetParLimits(2, 0.8 * sigma_amer, 1.2 * sigma_amer); // sigma
 
    fitres = h->Fit(f, "BMS"); // B: use limits, M: improve fit, S: return fitres
 
