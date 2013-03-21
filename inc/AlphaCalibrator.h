@@ -9,6 +9,7 @@
 
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "TF1.h"
@@ -31,6 +32,11 @@ class AlphaCalibrator : public Calibrator
 {
 private:
 
+   void CoefExtract (
+      const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
+      std::string long_name, std::string short_name,
+      float *coef, float *coefErr, float *chi2Ndf
+   );
    TFitResultPtr Calibrate(TH1 *h, TF1 *f);
 
 public:

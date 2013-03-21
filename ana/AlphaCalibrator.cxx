@@ -64,17 +64,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres) {
-         chCalib->fACoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
-         chCalib->fACoefErr = chCalib->fACoef * fitres->FitResult::Error(1) / fitres->Value(1);
-         chCalib->fAChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
-
-         ((TH1F*) c->d["alpha"]->o["hAmpltdW"])->SetBinContent(i, 100 * fitres->Value(2) / fitres->Value(1));
-         ((TH1F*) c->d["alpha"]->o["hAmpltdW"])->SetBinError(i, 100 * fitres->FitResult::Error(2) / (fitres->Value(1)));
-
-         ((TH1F*) c->d["alpha"]->o["hACoef"])->SetBinContent(i, chCalib->fACoef);
-         ((TH1F*) c->d["alpha"]->o["hACoef"])->SetBinError(i, chCalib->fACoefErr);
-
-         ((TH1F*) c->d["alpha"]->o["hACoefDisp"])->Fill(chCalib->fACoef);
+         CoefExtract(fitres, c, i, "Ampltd", "A", &chCalib->fACoef, &chCalib->fACoefErr, &chCalib->fAChi2Ndf);
       }
 
       // Integral
@@ -88,17 +78,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         chCalib->fICoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
-         chCalib->fICoefErr = chCalib->fICoef * fitres->FitResult::Error(1) / fitres->Value(1);
-         chCalib->fIChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
-
-         ((TH1F*) c->d["alpha"]->o["hIntgrlW"])->SetBinContent(i, 100 * fitres->Value(2) / fitres->Value(1));
-         ((TH1F*) c->d["alpha"]->o["hIntgrlW"])->SetBinError(i, 100 * fitres->FitResult::Error(2) / (fitres->Value(1)));
-
-         ((TH1F*) c->d["alpha"]->o["hICoef"])->SetBinContent(i, chCalib->fICoef);
-         ((TH1F*) c->d["alpha"]->o["hICoef"])->SetBinError(i, chCalib->fICoefErr);
-
-         ((TH1F*) c->d["alpha"]->o["hICoefDisp"])->Fill(chCalib->fICoef);
+         CoefExtract(fitres, c, i, "Intgrl", "I", &chCalib->fACoef, &chCalib->fACoefErr, &chCalib->fAChi2Ndf);
       }
       else {
          Error("Calibrate", "Empty TFitResultPtr");
@@ -106,6 +86,29 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    }
 
    CalibrateBadChannels(c);
+}
+
+
+/** */
+void AlphaCalibrator::CoefExtract (
+   const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
+   std::string long_name, std::string short_name,
+   float *coef, float *coefErr, float *chi2Ndf
+)
+{
+   // Typical value for long_name is "Intgrl", for short_name it is "I"
+
+   *coef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
+   *coefErr = (*coef) * fitres->FitResult::Error(1) / fitres->Value(1);
+   *chi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
+
+   ((TH1F*) c->d["alpha"]->o["h" + long_name + "W"])->SetBinContent(i, 100 * fitres->Value(2) / fitres->Value(1));
+   ((TH1F*) c->d["alpha"]->o["h" + long_name + "W"])->SetBinError(i, 100 * fitres->FitResult::Error(2) / (fitres->Value(1)));
+
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinContent(i, (*coef));
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinError(i, (*coefErr));
+
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "CoefDisp"])->Fill((*coef));
 }
 
 
