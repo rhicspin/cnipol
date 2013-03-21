@@ -43,17 +43,18 @@
 // 241 Am peak 5.486MeV (85%)
 //
 //  21db = 0.0891251
-//  5db = 0.562341
+//  5db  = 0.562341
 //  16db = 0.158489
 //  14db = 0.19953
 //  14.?db = 0.2000  setting of attenuator board
 
-#define AMPEAK    5486.0
-#define ALPHA_KEV 5486.0
-#define ATTEN     0.2000   // =1/5 regular calibration
-#define CCONST    0.2000   // =1/5 regular calibration
-//#define CCONST 0.1000      //
-//#define CCONST 0.4000      // attenuation (x2) runs
+#define ALPHA_KEV    5486.0
+#define AM_ALPHA_E   5486.0   // keV, Am alpha energy
+#define GD_ALPHA_E   3271.21  // keV, Gd alpha energy
+#define ATTEN        0.2000   // =1/5 regular calibration
+#define CCONST       0.2000   // =1/5 regular calibration
+//#define CCONST       0.1000   //
+//#define CCONST       0.4000   // attenuation (x2) runs
 
 const int TOT_WFD_CH = NSTRIP + NTGTWFD; //Total WFD channels including target WFD channels.
 
