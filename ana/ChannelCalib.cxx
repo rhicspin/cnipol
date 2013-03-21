@@ -5,14 +5,13 @@
 
 #include "ChannelCalib.h"
 
+ClassImp(CalibCoefSet)
 ClassImp(ChannelCalib)
 
 using namespace std;
 
 /** Default constructor. */
 ChannelCalib::ChannelCalib() : TObject(),
-   // Alpha calibration related params
-   fACoef(-1), fACoefErr(-1), fAChi2Ndf(0), fICoef(-1), fICoefErr(-1), fIChi2Ndf(0),
    // DL calibration related params
    fDLWidth(0), fDLWidthErr(0), fT0Coef(0), fT0CoefErr(0), fAvrgEMiss(0), fAvrgEMissErr(0), fEMeasDLCorr(0), fBananaChi2Ndf(0),
    fFitStatus(kUNKNOWN)
@@ -36,12 +35,8 @@ EFitStatus ChannelCalib::GetFitStatus() const
 /** */
 void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
 {
-   fACoef    = chCalib.fACoef   ;
-   fACoefErr = chCalib.fACoefErr;
-   fAChi2Ndf = chCalib.fAChi2Ndf;
-   fICoef    = chCalib.fICoef   ;
-   fICoefErr = chCalib.fICoefErr;
-   fIChi2Ndf = chCalib.fIChi2Ndf;
+   fAmAmp = chCalib.fAmAmp;
+   fAmInt = chCalib.fAmInt;
 }
 
 
@@ -59,8 +54,8 @@ void ChannelCalib::Print(const Option_t* opt) const
    //       "fBananaChi2Ndf " \
    //       "fFitStatus\n");
    printf("%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  " \
-          "%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8d\n", fACoef,
-          fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth,
+          "%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8d\n", fAmAmp.fCoef,
+          fAmAmp.fCoefErr, fAmAmp.fChi2Ndf, fAmInt.fCoef, fAmInt.fCoefErr, fAmInt.fChi2Ndf, fDLWidth,
           fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr,
           fBananaChi2Ndf, fFitStatus);
 
@@ -71,10 +66,10 @@ void ChannelCalib::Print(const Option_t* opt) const
 void ChannelCalib::PrintAsPhp(FILE *f) const
 {
    fprintf(f, "array(");
-   fprintf(f, "'ACoef' => %7.4f, ",         fACoef);
-   fprintf(f, "'ACoefErr' => %7.4f, ",      fACoefErr);
-   fprintf(f, "'ICoef' => %7.4f, ",         fICoef);
-   fprintf(f, "'ICoefErr' => %7.4f, ",      fICoefErr);
+   fprintf(f, "'ACoef' => %7.4f, ",         fAmAmp.fCoef);
+   fprintf(f, "'ACoefErr' => %7.4f, ",      fAmAmp.fCoefErr);
+   fprintf(f, "'ICoef' => %7.4f, ",         fAmInt.fCoef);
+   fprintf(f, "'ICoefErr' => %7.4f, ",      fAmInt.fCoefErr);
    fprintf(f, "'DLWidth' => %7.4f, ",       fDLWidth);
    fprintf(f, "'DLWidthErr' => %7.4f, ",    fDLWidthErr);
    fprintf(f, "'T0Coef' => %7.4f, ",        fT0Coef);
@@ -91,12 +86,12 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
 /** */
 void ChannelCalib::ResetToZero()
 {
-   fACoef         = 0;
-   fACoefErr      = 0;
-   fAChi2Ndf      = 0;
-   fICoef         = 0;
-   fICoefErr      = 0;
-   fIChi2Ndf      = 0;
+   fAmAmp.fCoef         = 0;
+   fAmAmp.fCoefErr      = 0;
+   fAmAmp.fChi2Ndf      = 0;
+   fAmInt.fCoef         = 0;
+   fAmInt.fCoefErr      = 0;
+   fAmInt.fChi2Ndf      = 0;
    fDLWidth       = 0;
    fDLWidthErr    = 0;
    fT0Coef        = 0;

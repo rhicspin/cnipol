@@ -64,7 +64,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres) {
-         CoefExtract(fitres, c, i, "Ampltd", "A", &chCalib->fACoef, &chCalib->fACoefErr, &chCalib->fAChi2Ndf);
+         chCalib->fAmAmp = CoefExtract(fitres, c, i, "Ampltd", "A");
       }
 
       // Integral
@@ -78,7 +78,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         CoefExtract(fitres, c, i, "Intgrl", "I", &chCalib->fACoef, &chCalib->fACoefErr, &chCalib->fAChi2Ndf);
+         chCalib->fAmAmp = CoefExtract(fitres, c, i, "Intgrl", "I");
       }
       else {
          Error("Calibrate", "Empty TFitResultPtr");
@@ -90,25 +90,27 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
-void AlphaCalibrator::CoefExtract (
+CalibCoefSet AlphaCalibrator::CoefExtract (
    const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
-   std::string long_name, std::string short_name,
-   float *coef, float *coefErr, float *chi2Ndf
+   std::string long_name, std::string short_name
 )
 {
    // Typical value for long_name is "Intgrl", for short_name it is "I"
 
-   *coef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
-   *coefErr = (*coef) * fitres->FitResult::Error(1) / fitres->Value(1);
-   *chi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
+   CalibCoefSet result;
+   result.fCoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
+   result.fCoefErr = result.fCoef * fitres->FitResult::Error(1) / fitres->Value(1);
+   result.fChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
    ((TH1F*) c->d["alpha"]->o["h" + long_name + "W"])->SetBinContent(i, 100 * fitres->Value(2) / fitres->Value(1));
    ((TH1F*) c->d["alpha"]->o["h" + long_name + "W"])->SetBinError(i, 100 * fitres->FitResult::Error(2) / (fitres->Value(1)));
 
-   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinContent(i, (*coef));
-   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinError(i, (*coefErr));
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinContent(i, result.fCoef);
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "Coef"])->SetBinError(i, result.fCoefErr);
 
-   ((TH1F*) c->d["alpha"]->o["h" + short_name + "CoefDisp"])->Fill((*coef));
+   ((TH1F*) c->d["alpha"]->o["h" + short_name + "CoefDisp"])->Fill(result.fCoef);
+
+   return result;
 }
 
 
@@ -277,44 +279,44 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 
       // Invalidate channels even if the fitter returned some results
       if (i > 0 && i <= 12) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det1eMean - aEntries) > 2 * Det1eRMS && (aEntries - Det1eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
       if (i > 12 && i <= 24) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det2eMean - aEntries) > 2 * Det2eRMS && (aEntries - Det2eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
       if (i > 24 && i <= 36) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det3eMean - aEntries) > 2 * Det3eRMS && (aEntries - Det3eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
       if (i > 36 && i <= 48) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det4eMean - aEntries) > 2 * Det4eRMS && (aEntries - Det4eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
       if (i > 48 && i <= 60) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det5eMean - aEntries) > 2 * Det5eRMS && (aEntries - Det5eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
       if (i > 60 && i <= 72) {
-         if (fabs(aMean - ch.fACoef) > 2*aRMS ) {
+         if (fabs(aMean - ch.fAmAmp.fCoef) > 2*aRMS ) {
             if (aEntries<1000 && aEntries >= 0 && fabs(Det6eMean - aEntries) > 2 * Det6eRMS && (aEntries - Det6eMean < 0)) {
-               ch.fACoefErr = -1;
+               ch.fAmAmp.fCoefErr = -1;
             }
          }
       }
@@ -327,7 +329,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
    for (mi = mb; mi != me; mi++) {
 
       ChannelCalib &ch = mi->second;
-      if (ch.fACoefErr >= 0) continue;
+      if (ch.fAmAmp.fCoefErr >= 0) continue;
 
       short iDet = (short) floor((mi->first - 1) / 12);
       //printf("iDet: %d\n", iDet);
@@ -339,16 +341,16 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 
          ChannelCalib &ch2 = mi2->second;
          short iDet2 = (short) floor((mi2->first - 1) / 12);
-         if (iDet == iDet2 && ch2.fACoefErr >= 0) {
+         if (iDet == iDet2 && ch2.fAmAmp.fCoefErr >= 0) {
 
             //printf("iDet2: %d\n", iDet2);
-            detAve += ch2.fACoef;
+            detAve += ch2.fAmAmp.fCoef;
             nChDet++;
          }
       }
 
       detAve    /= nChDet;
-      ch.fACoef  = detAve;
+      ch.fAmAmp.fCoef  = detAve;
    }
 
    // Now assign detector average
@@ -356,7 +358,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
    for (mi = mb; mi != me; mi++) {
 
       ChannelCalib &ch = mi->second;
-      if (ch.fICoefErr >= 0) continue;
+      if (ch.fAmInt.fCoefErr >= 0) continue;
 
       short iDet = (short) floor((mi->first - 1) / 12);
       //printf("iDet: %d\n", iDet);
@@ -367,15 +369,15 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
       for (mi2 = mb; mi2 != me; mi2++) {
          ChannelCalib &ch2 = mi2->second;
          short iDet2 = (short) floor((mi2->first - 1) / 12);
-         if (iDet == iDet2 && ch2.fICoefErr >= 0) {
+         if (iDet == iDet2 && ch2.fAmInt.fCoefErr >= 0) {
             //printf("iDet2: %d\n", iDet2);
-            detAve += ch2.fICoef;
+            detAve += ch2.fAmInt.fCoef;
             nChDet++;
          }
       }
 
       detAve    /= nChDet;
-      ch.fICoef  = detAve;
+      ch.fAmInt.fCoef  = detAve;
    }
 }
 

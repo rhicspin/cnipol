@@ -28,7 +28,7 @@ AnaEvent::~AnaEvent()
 float AnaEvent::GetEnergy(EventConfig *ec, ChannelDataPair &ch)
 {
    UChar_t chId = ch.first;
-   return ec->fCalibrator->fChannelCalibs[chId].fACoef * fChannels[chId].fAmpltd;
+   return ec->fCalibrator->fChannelCalibs[chId].fAmAmp.fCoef * fChannels[chId].fAmpltd;
 }
 
 
@@ -41,7 +41,7 @@ float AnaEvent::GetEnergyIntegral(EventConfig *ec, ChannelDataPair &ch)
    //return ec->fConfigInfo->data.chan[ch.first].ecoef * amp_int;
    //return ec->fConfigInfo->data.chan[ch.first].ecoef * Integ;
    UChar_t chId = ch.first;
-   return ec->fCalibrator->fChannelCalibs[chId].fICoef * fChannels[chId].fIntgrl;
+   return ec->fCalibrator->fChannelCalibs[chId].fAmInt.fCoef * fChannels[chId].fIntgrl;
 }
 
 

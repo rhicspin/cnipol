@@ -30,17 +30,29 @@ typedef std::map<UShort_t, ChannelCalib>::const_iterator ChannelCalibMapConstIte
 typedef std::pair<const UShort_t, ChannelCalib>          ChannelCalibPair;
 
 
+class CalibCoefSet : public TObject
+{
+public:
+
+   Float_t fCoef;
+   Float_t fCoefErr;
+   Float_t fChi2Ndf;
+
+public:
+
+   CalibCoefSet() : fCoef(-1), fCoefErr(-1), fChi2Ndf(0) { };
+
+   ClassDef(CalibCoefSet, 1)
+};
+
+
 /** */
 class ChannelCalib : public TObject
 {
 public:
 
-   Float_t    fACoef;
-   Float_t    fACoefErr;
-   Float_t    fAChi2Ndf;
-   Float_t    fICoef;
-   Float_t    fICoefErr;
-   Float_t    fIChi2Ndf;
+   CalibCoefSet fAmAmp;
+   CalibCoefSet fAmInt;
    Float_t    fDLWidth;       // Dead layer
    Float_t    fDLWidthErr;
    Float_t    fT0Coef;        // T0

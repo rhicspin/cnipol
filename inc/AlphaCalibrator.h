@@ -32,10 +32,9 @@ class AlphaCalibrator : public Calibrator
 {
 private:
 
-   void CoefExtract (
+   CalibCoefSet CoefExtract (
       const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
-      std::string long_name, std::string short_name,
-      float *coef, float *coefErr, float *chi2Ndf
+      std::string long_name, std::string short_name
    );
    TFitResultPtr Calibrate(TH1 *h, TF1 *f);
 

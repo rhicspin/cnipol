@@ -175,7 +175,7 @@ Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
 /** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 {
-   return fChannelCalibs.find(chId)->second.fACoef * adc;
+   return fChannelCalibs.find(chId)->second.fAmAmp.fCoef * adc;
 }
 
 
@@ -222,7 +222,7 @@ void Calibrator::Print(const Option_t* opt) const
 {
    Info("Print", "Calibrator members:");
 
-   printf("              fACoef fACoefErr fAChi2Ndf    fICoef fICoefErr fIChi2Ndf fDLWidth " \
+   printf("              fAmAmp.fCoef fAmAmp.fCoefErr fAmAmp.fChi2Ndf    fAmInt.fCoef fAmInt.fCoefErr fAmInt.fChi2Ndf fDLWidth " \
           "fDLWidthErr fT0Coef fT0CoefErr fAvrgEMiss fAvrgEMissErr " \
           "fBananaChi2Ndf fFitStatus\n");
 
@@ -274,8 +274,8 @@ void Calibrator::PrintAsConfig(FILE *f) const
       Float_t onlineT0 = gMeasInfo->GetBeamEnergy() > kINJECTION ? -1*(ch->fT0Coef + gMeasInfo->GetExpectedGlobalTimeOffset()) : -1*ch->fT0Coef;
 
       fprintf(f, "Channel%02d=%5.3f %5.3f %7.1f %4.1f %5.2f %5.3f %4.1f %4.1f %4.3G %4.3G %4.3G %4.3G %4.3G\n",
-         chId, onlineT0, ch->fACoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
-         10., 100., ch->fACoef, 0., 0., 0., 0., 0., 0., 0.);
+         chId, onlineT0, ch->fAmAmp.fCoef*ch->fEMeasDLCorr, ch->fAvrgEMiss,
+         10., 100., ch->fAmAmp.fCoef, 0., 0., 0., 0., 0., 0., 0.);
    }
 
 	// XXX need to add 8 more default channels here
