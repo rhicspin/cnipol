@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 #include "AlphaCalibrator.h"
+#include "AsymHeader.h"
 #include <fstream>
 
 ClassImp(AlphaCalibrator)
@@ -145,7 +146,10 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
 
    // Now let's find initial params for gadolinium peak
    float xmax_gad = mean_amer - 3 * sigma_amer;
-   h->GetXaxis()->SetRangeUser(xmin, xmax_gad);
+   // Use predicted gad peak position to track the right peak
+   float predicted_gad = mean_amer / AM_ALPHA_E * GD_ALPHA_E;
+   float xmin_gad = predicted_gad - 4 * sigma_amer;
+   h->GetXaxis()->SetRangeUser(xmin_gad, xmax_gad);
    int   mbin_gad = h->GetMaximumBin();
    h->GetXaxis()->SetRange(); // reset range
    float norm_gad = h->GetBinContent(mbin_gad);
@@ -157,7 +161,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    f->SetParameters(par);
 
    f->SetParLimits(3, 0.8 * norm_gad, 1.2 * norm_gad); // norm
-   f->SetParLimits(4, xmin, xmax_gad); // mean
+   f->SetParLimits(4, xmin_gad, xmax_gad); // mean
    f->SetParLimits(5, 0.1, 3 * expectedSigma); // sigma
 
    // And make sure that our existing peak won't too far
