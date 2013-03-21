@@ -113,6 +113,8 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    TFitResultPtr fitres = 0;
 
    h->Print();
+   float xmin = h->GetXaxis()->GetXmin();
+   float xmax = h->GetXaxis()->GetXmax();
 
    if (h->Integral() < 10) {
       Error("Calibrate", "Too few entries in histogram %s. Skipped", h->GetName());
@@ -122,8 +124,6 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f)
    int   mbin = h->GetMaximumBin();
    float norm = h->GetBinContent(mbin);
    float mean = h->GetBinCenter(mbin);
-   float xmin = h->GetXaxis()->GetXmin();
-   float xmax = h->GetXaxis()->GetXmax();
    float expectedSigma = 0.7;
 
    f->SetParameters(norm, mean, expectedSigma);
