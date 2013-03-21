@@ -18,6 +18,7 @@
 #pragma link C++ class BeamBunch+;
 #pragma link C++ class DeadLayerCalibrator+;
 #pragma link C++ class DeadLayerCalibratorEDepend+;
+#pragma link C++ class CalibCoefSet+;
 #pragma link C++ class ChannelCalib+;
 #pragma link C++ class ChannelData+;
 #pragma link C++ class ChannelEvent+;

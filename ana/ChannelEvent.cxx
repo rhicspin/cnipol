@@ -32,8 +32,8 @@ Float_t ChannelEvent::GetEnergyA() const
    UChar_t chId = GetChannelId();
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fAmpltd;
 
-   return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef * fChannel.fAmpltd;
-   //return fEventConfig->fCalibrator->fChannelCalibs[chId].fACoef *
+   return fEventConfig->fCalibrator->fChannelCalibs[chId].fAmAmp.fCoef * fChannel.fAmpltd;
+   //return fEventConfig->fCalibrator->fChannelCalibs[chId].fAmAmp.fCoef *
    //       (fChannel.fAmpltd + (fEventConfig->fRandom->Rndm() - 0.5));
 
    //return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
@@ -115,7 +115,7 @@ Float_t ChannelEvent::GetEnergyI()
    UChar_t chId = fEventId.fChannelId + 1;
    // XXX acoef has to be changed to ... icoef
    //return fEventConfig->fConfigInfo->data.chan[chId].acoef * fChannel.fIntgrl;
-   return fEventConfig->fCalibrator->fChannelCalibs[chId].fICoef * fChannel.fIntgrl;
+   return fEventConfig->fCalibrator->fChannelCalibs[chId].fAmInt.fCoef * fChannel.fIntgrl;
 }
 
 
