@@ -64,7 +64,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres) {
-         chCalib->fACoef    = (ALPHA_KEV / fitres->Value(1)) * ATTEN;
+         chCalib->fACoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
          chCalib->fACoefErr = chCalib->fACoef * fitres->FitResult::Error(1) / fitres->Value(1);
          chCalib->fAChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
@@ -88,7 +88,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         chCalib->fICoef    = (ALPHA_KEV / fitres->Value(1)) * ATTEN;
+         chCalib->fICoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
          chCalib->fICoefErr = chCalib->fICoef * fitres->FitResult::Error(1) / fitres->Value(1);
          chCalib->fIChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
