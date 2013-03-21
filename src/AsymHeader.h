@@ -48,7 +48,6 @@
 //  14db = 0.19953
 //  14.?db = 0.2000  setting of attenuator board
 
-#define ALPHA_KEV    5486.0
 #define AM_ALPHA_E   5486.0   // keV, Am alpha energy
 #define GD_ALPHA_E   3271.21  // keV, Gd alpha energy
 #define ATTEN        0.2000   // =1/5 regular calibration
