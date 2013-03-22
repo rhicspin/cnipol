@@ -44,17 +44,15 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
 
 /**
  * Main process event routine. This routine is called event by event basis
- * Input       : processEvent *event
  */
-void event_process(processEvent *event)
+void event_process(ChannelEvent &chEvent)
 {
-   int   delim = event->delim ;
-   int   st    = event->stN;        // 0 - 71
-   int   si    = (int) (st/12);     // 0 - 5
-   float Emin  = (float) gAsymAnaInfo->enel;
-   float Emax  = (float) gAsymAnaInfo->eneu;
+   int   st    = chEvent.GetChannelId() - 1;        // 0 - 71
+   //int   si    = (int) (st/12);     // 0 - 5
+   //float Emin  = (float) gAsymAnaInfo->enel;
+   //float Emax  = (float) gAsymAnaInfo->eneu;
 
-   Ntotal[event->bid]++;
+   Ntotal[chEvent.GetBunchId()-1]++;
 
    // write out t-dependence energy bin into log file (only once)
    if (!init) {
@@ -69,12 +67,9 @@ void event_process(processEvent *event)
       init = 1;
    }
 
-   // Feedback Mode
-   //if (Flag.feedback){
-
-   // tdc > 6 ns, effectively...
    /*
-   if ((event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg)) {
+   // tdc > 6 ns, effectively...
+   if ((chEvent.tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg)) {
 
       // random numbers in order to smear for the integer reading
       int vlen = 1;
@@ -83,12 +78,12 @@ void event_process(processEvent *event)
       hhrammar_(&rand1, &vlen);
       hhrammar_(&rand2, &vlen);
 
-      float edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+      float edepo = gConfigInfo->data.chan[st].acoef * (chEvent.amp+rand2-0.5);
       float e = ekin(edepo, gConfigInfo->data.chan[st].dwidth);
       //e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
-      //  (event->amp + rand2 - 0.5);
+      //  (chEvent.amp + rand2 - 0.5);
 
-      float t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAsymAnaInfo->tshift;
+      float t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0 - gAsymAnaInfo->tshift;
 
       float Mass = t*t*e* gRunConsts[st+1].T2M * k2G;
 
@@ -101,54 +96,24 @@ void event_process(processEvent *event)
    }
    */
 
-   //return;
-   //}
-
    // DeadLayer Mode
    //if (gAsymAnaInfo->DMODE) {
    //   // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
    //   // ds: A prelim cut on tdc? 6 ns?
-   //   if (event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
+   //   if (chEvent.tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
    //  
    //      float edepo, e, t, delt, Mass;
-   //      KinemaReconstruction(1, event, gConfigInfo, st, edepo, e, t, delt, Mass);
-   //      // Get rid of bunch zero due to laser event after Run09
-   //      if (event->bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
+   //      KinemaReconstruction(1, chEvent, gConfigInfo, st, edepo, e, t, delt, Mass);
+   //      // Get rid of bunch zero due to laser chEvent after Run09
+   //      if (chEvent.bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
    //      if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigma/sqrt(e))
    //      {
    //         HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-   //         if ( e > Emin && e < Emax) Ngood[event->bid]++;
+   //         if ( e > Emin && e < Emax) Ngood[chEvent.bid]++;
    //      }
    //   }
    //   return;
    //}
-
-   // Calibration hists
-   if ( gAsymAnaInfo->HasAlphaBit() ) {
-      //int vlen = 1;
-      //float rand1, rand2;
-      //hhrammar_(&rand1, &vlen);
-      //hhrammar_(&rand2, &vlen);
-
-      // reducing the background
-      //if ((event->tdc>50) && (event->tdc <200) && (event->amp<215))
-         //ds: HHF1(12000+st+1, event->amp+rand2-0.5, 1.);
-         //ds: HHF1(12000+st+1, event->amp, 1.);
-      //}
-
-      // Get address of the histogram container
-      ChannelEvent *ch = gAsymRoot->fChannelEvent;
-
-      if (!ch->PassCutSiliconChannel()) return;
-
-      gAsymRoot->fHists->Fill(ch);
-
-      //if (ch->PassCutRawAlpha()) {
-	   //   gAsymRoot->fHists->Fill(ch);
-      //}
-      
-      return;
-   }
 
    // Nomal Process Mode
    // fill profile histograms at the 1st visit
@@ -220,80 +185,68 @@ void event_process(processEvent *event)
    // Main Process Routine event by event starts here
 
    // TDC Dists without Cut
-   //HHF1(11200+st+1, (float)event->tdc, 1.);
+   //HHF1(11200+st+1, (float)chEvent.tdc, 1.);
 
    // Target Histogram
    //if (st >= 72 && st <= 75) {
    //   HHF2(25060, cntr.revolution/RHIC_REVOLUTION_FREQ, tgt.x, 1);
    //}
 
-   // Get address of the histogram container
-   ChannelEvent *ch = gAsymRoot->fChannelEvent;
-
    // Fill target histograms
    if (gAsymAnaInfo->HasTargetBit()) {
 
-      //if (ch->GetChannelId() > NSTRIP)
-      //   printf("channel1: %d, %d\n", ch->GetChannelId(), gConfigInfo->data.NumChannels);
+      //if (chEvent.GetChannelId() > NSTRIP)
+      //   printf("channel1: %d, %d\n", chEvent.GetChannelId(), gConfigInfo->data.NumChannels);
 
-      if (ch->PassCutTargetChannel()) {
-         //printf("channel: %d\n", ch->GetChannelId());
-         gAsymRoot->fHists->d["targets"]->Fill(ch);
+      if (chEvent.PassCutTargetChannel()) {
+         //printf("channel: %d\n", chEvent.GetChannelId());
+         gAsymRoot->fHists->d["targets"]->Fill(&chEvent);
       }
    }
 
-   if (gAsymAnaInfo->HasNormalBit()) {
+   if (gAsymAnaInfo->HasNormalBit())
+   {
+      if (!chEvent.PassCutSiliconChannel()) return;
 
-      if (!ch->PassCutSiliconChannel()) return;
+      //if (fabs(gFillPattern[chEvent.bid]) != 1)
 
-      //gAsymRoot->fHists->Fill(ch);
+      //printf("channel %d, %d, %d, %d\n", chEvent.GetChannelId(), chEvent.PassCutNoise(), chEvent.PassCutKinEnergyAEDepend(), chEvent.PassCutEnabledChannel());
 
-      //if ( ch->PassCutEmptyBunch() ) {
-      //   gAsymRoot->fHists->d["raw_eb"]->Fill(ch);
-      //} else {
-         //gAsymRoot->fHists->d["raw"]->Fill(ch);
-			//gAsymRoot->Fill(kCUT_RAW);
-      //}
-
-      //if (fabs(gFillPattern[event.bid]) != 1)
-
-      //printf("channel %d, %d, %d, %d\n", ch->GetChannelId(), ch->PassCutNoise(), ch->PassCutKinEnergyAEDepend(), ch->PassCutEnabledChannel());
-
-      //if (ch->PassCutPulser() && ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      //if (ch->PassCutNoise() && ch->PassCutKinEnergyADLCorrEstimate())
-      //if (ch->PassCutNoise() && ch->PassCutKinEnergyAEDepend() && ch->PassCutEnabledChannel())
-      //if ( !ch->PassCutNoise() || !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
-      if ( !ch->PassCutKinEnergyAEDepend() || !ch->PassCutEnabledChannel() ) return;
+      //if (chEvent.PassCutPulser() && chEvent.PassCutNoise() && chEvent.PassCutKinEnergyADLCorrEstimate())
+      //if (chEvent.PassCutNoise() && chEvent.PassCutKinEnergyADLCorrEstimate())
+      //if (chEvent.PassCutNoise() && chEvent.PassCutKinEnergyAEDepend() && chEvent.PassCutEnabledChannel())
+      //if ( !chEvent.PassCutNoise() || !chEvent.PassCutKinEnergyAEDepend() || !chEvent.PassCutEnabledChannel() ) return;
+      if ( !chEvent.PassCutKinEnergyAEDepend() || !chEvent.PassCutEnabledChannel() ) return;
 
 		gAsymRoot->Fill(kCUT_NOISE);
 
-      if (!ch->PassCutCarbonMass()) return;
+      if (!chEvent.PassCutCarbonMass()) return;
 
 		gAsymRoot->Fill(kCUT_CARBON);
 
-      //if ( ch->PassCutEmptyBunch() ) {
+      //if ( chEvent.PassCutEmptyBunch() ) {
 		//	gAsymRoot->Fill(kCUT_CARBON_EB);
       //} else {
 		//   gAsymRoot->Fill(kCUT_CARBON);
       //}
 
-      //((CnipolRunHists*) gAsymRoot->fHists)->Fill(ch);
-      //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(ch->GetDelimiterId());
+      //((CnipolRunHists*) gAsymRoot->fHists)->Fill(chEvent);
+      //((TH1*) gAsymRoot->fHists->o["hTargetSteps"])->Fill(chEvent->GetDelimiterId());
 
-      //if ( ch->PassCutNoise() && ch->PassCutKinEnergyAEDependAverage() &&
-      //     ch->PassCutCarbonMassEstimate())
+      //if ( chEvent.PassCutNoise() && chEvent.PassCutKinEnergyAEDependAverage() &&
+      //     chEvent.PassCutCarbonMassEstimate())
       //{
-	   //   gAsymRoot->fHists->Fill(ch, "_cut2");
+	   //   gAsymRoot->fHists->Fill(chEvent, "_cut2");
       //}
    }
+}
 
-   //ds
-   return;
 
+/*
    // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
-   //if ((event->tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg))
+   //if ((chEvent.tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg))
    //ds: Proceed only if the time value is greater than...
-   if ((event->tdc <= 2*gConfigInfo->data.chan[st].Window.split.Beg))
+   if ((chEvent.tdc <= 2*gConfigInfo->data.chan[st].Window.split.Beg))
       return;
 
    // random numbers in order to smear for the integer reading
@@ -306,11 +259,11 @@ void event_process(processEvent *event)
    //HHF1(10300+si+1, (float)(st-si*12)+1, 1.);
 
    // bunch distribution
-   //HHF1(10000, (float)event->bid, 1.);
-   //gAsymRoot->bunch_dist->Fill(event->bid);
+   //HHF1(10000, (float)chEvent.bid, 1.);
+   //gAsymRoot->bunch_dist->Fill(chEvent.bid);
 
    // Integral
-   float Integ = (event->intg) << (2+gConfigInfo->data.CSR.split.iDiv);
+   float Integ = (chEvent.intg) << (2+gConfigInfo->data.CSR.split.iDiv);
 
    //ds: Some manipulations with ADC counts...
    float amp_int = (Integ - gConfigInfo->data.chan[st].A0) / gConfigInfo->data.chan[st].A1;
@@ -319,7 +272,7 @@ void event_process(processEvent *event)
 
    // energy deposit in Si strip
    //ds: Are we using the same acoef??? for amp and int?
-   float edepo = gConfigInfo->data.chan[st].acoef * (event->amp+rand2-0.5);
+   float edepo = gConfigInfo->data.chan[st].acoef * (chEvent.amp+rand2-0.5);
    //ds: edepo_int = deposited energy in keV?
    //float edepo_int = gConfigInfo->data.chan[st].acoef * (amp_int+rand2-0.5);
    float edepo_int = gConfigInfo->data.chan[st].ecoef * (amp_int+rand2-0.5);
@@ -329,12 +282,10 @@ void event_process(processEvent *event)
    float e_int  = ekin(edepo_int, gConfigInfo->data.chan[st].dwidth);
    float sqrt_e = sqrt(e);
 
-   /*
-   e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
-     (event->amp + rand2 - 0.5);
-   e_int = gConfigInfo->data.chan[st].edead +
-           gConfigInfo->data.chan[st].ecoef * (amp_int + rand2 - 0.5);
-   */
+   //e = gConfigInfo->data.chan[st].edead + gConfigInfo->data.chan[st].ecoef *
+   //  (chEvent.amp + rand2 - 0.5);
+   //e_int = gConfigInfo->data.chan[st].edead +
+   //        gConfigInfo->data.chan[st].ecoef * (amp_int + rand2 - 0.5);
 
    // For A_N Calculation (Cross section)
    //if (e > Emin && e < Emax) {
@@ -343,7 +294,7 @@ void event_process(processEvent *event)
 
    //HHF1(10400+si+1, e, 1.);
 
-   //if (gSpinPattern[event->bid] > 0) {
+   //if (gSpinPattern[chEvent.bid] > 0) {
    //    HHF1(10500+st+1, e, 1.);
    //} else {
    //    HHF1(10600+st+1, e, 1.);
@@ -354,21 +305,21 @@ void event_process(processEvent *event)
 
    if (gAsymAnaInfo->RAMPMODE == 1) {
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5)
+      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5)
           - gConfigInfo->data.chan[st].t0
-          - (ramptshift[(int)event->delim/20]-ramptshift[0]) - gAsymAnaInfo->tshift;
+          - (ramptshift[(int) chEvent.GetDelimiterId()/20]-ramptshift[0]) - gAsymAnaInfo->tshift;
 
    } else if (gAsymAnaInfo->ZMODE == 0) {   // normal runs
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0
+      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0
            - gAsymAnaInfo->tshift - feedback.tedev[st]/sqrt_e;
    } else  {
 
-      t = gRunConsts[st+1].Ct * (event->tdc + rand1 - 0.5) - gAsymAnaInfo->tshift ;
+      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5) - gAsymAnaInfo->tshift ;
    }
 
    //ds
-   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", ch->GetTime(), ch->fChannel.fTdc, event->tdc, t, gAsymAnaInfo->tshift, gRunConsts[st+1].Ct);
+   //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", chEvent.GetTime(), chEvent.fChannel.fTdc, chEvent.tdc, t, gAsymAnaInfo->tshift, gRunConsts[st+1].Ct);
 
    float delt = t - gRunConsts[st+1].E2T/sqrt_e;
 
@@ -402,25 +353,23 @@ void event_process(processEvent *event)
    //   if (fabs(Mass - 3.726) < 2.5)  HHF2(13700+st+1, e, t, 1.);
    //   if (fabs(Mass - 3.726) > 2.5)  HHF2(13800+st+1, e, t, 1.);
 
-   //   HHF2(13100+st+1, event->amp, event->tdc, 1.);
-   //   HHF2(13200+st+1, event->amp, event->tdcmax, 1.);
-   //   HHF1(14000+st+1, event->bid, 1.);
+   //   HHF2(13100+st+1, chEvent.amp, chEvent.tdc, 1.);
+   //   HHF2(13200+st+1, chEvent.amp, chEvent.tdcmax, 1.);
+   //   HHF1(14000+st+1, chEvent.bid, 1.);
    //}
 
-   /*
-   if (gAsymAnaInfo->RAMPMODE==1) {0
-       // total RAMPTIME sec
-       // 1sec for each bin, delimiters are 20Hz rate
-       int rbin = (int)(event->delim/20);
-       if (e>600 && e<650) {
-           HHF1(20000+rbin,t,1.);
-       }
-   }
-   */
+   //if (gAsymAnaInfo->RAMPMODE==1) {0
+   //    // total RAMPTIME sec
+   //    // 1sec for each bin, delimiters are 20Hz rate
+   //    int rbin = (int)(chEvent.GetDelimiterId()/20);
+   //    if (e>600 && e<650) {
+   //        HHF1(20000+rbin,t,1.);
+   //    }
+   //}
 
    //// integral vs. amplitede
    //if (gAsymAnaInfo->AMODE == 1) {
-   //   HHF2(12200+st+1, event->amp, Integ, 1.);
+   //   HHF2(12200+st+1, chEvent.amp, Integ, 1.);
    //   HHF2(12300+st+1, Integ, t, 1.);
    //}
 
@@ -436,32 +385,30 @@ void event_process(processEvent *event)
    //t_vs_e[st]->Fill(e_int, t);
 
    // Fill ntuple
-   /*
-   if ((Nevtot<NTLIMIT)&&(gAsymAnaInfo->NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
-       atdata.ia = (long)event->amp;
-       atdata.is = (long)event->intg;
-       atdata.it = (long)event->tdc;
-       atdata.ib = (long)event->bid;
-       atdata.id = (long)event->delim;
-       atdata.strip = (int)st+1;
-       atdata.e = (float)e;
-       atdata.tof = (float)t;
+   //if ((Nevtot<NTLIMIT)&&(gAsymAnaInfo->NTMODE==1)&&(fmod(float(Nevtot),10)==0)) {
+   //    atdata.ia = (long)chEvent.amp;
+   //    atdata.is = (long)chEvent.intg;
+   //    atdata.it = (long)chEvent.tdc;
+   //    atdata.ib = (long)chEvent.bid;
+   //    atdata.id = (long)chEvent.GetDelimiterId();
+   //    atdata.strip = (int)st+1;
+   //    atdata.e = (float)e;
+   //    atdata.tof = (float)t;
 
-       atdata.spin = gSpinPattern[event->bid];
+   //    atdata.spin = gSpinPattern[chEvent.bid];
 
-       //HHFNT(1);
-   }
-   */
+   //    //HHFNT(1);
+   //}
 
    // background estimation
-   if ( (delt <= -2*gConfigInfo->data.chan[st].ETCutW) && e>Emin && e<Emax)
-   {
-      Nback[event->bid]++;
-   }
+   //if ( (delt <= -2*gConfigInfo->data.chan[st].ETCutW) && e>Emin && e<Emax)
+   //{
+   //   Nback[chEvent.bid]++;
+   //}
 
    // Bunch distribution (only -t cut)
    //if (e > Emin && e < Emax) {
-   //    HHF1(10020,(float)event->bid,1.);
+   //    HHF1(10020,(float)chEvent.bid,1.);
    //}
 
    //------------------------------------------------------
@@ -479,7 +426,7 @@ void event_process(processEvent *event)
    //       && (gAsymAnaInfo->CBANANA == 2)) // default 
    //     )
 
-   if (ch->PassCutCarbonMass())
+   if (chEvent.PassCutCarbonMass())
    {
       // -t dependence
       float minus_t = 2 * e * MASS_12C * k2G * k2G;
@@ -488,7 +435,7 @@ void event_process(processEvent *event)
       if (e > EnergyBin[0]) {
          for (int k=0; k<NTBIN; k++) {
             if (e >= EnergyBin[k] && e < EnergyBin[k+1]) {
-               NTcounts[(int) (st/12)][event->bid][k]++;
+               NTcounts[(int) (st/12)][chEvent.bid][k]++;
             }
          }
       }
@@ -496,9 +443,9 @@ void event_process(processEvent *event)
       // fine -t bins
       int spbit = 2;
 
-      if (gMeasInfo->GetBunchSpin(event->bid + 1) == 1) {
+      if (gMeasInfo->GetBunchSpin(chEvent.bid + 1) == 1) {
          spbit = 0;
-      } else if (gMeasInfo->GetBunchSpin(event->bid + 1) == -1) {
+      } else if (gMeasInfo->GetBunchSpin(chEvent.bid + 1) == -1) {
          spbit = 1;
       }
 
@@ -528,19 +475,19 @@ void event_process(processEvent *event)
 
          // Timing info for Each bunch
          //if (e > 600. && e < 650.) {
-         //   HHF1(11000+(int)event->bid, t, 1.);
+         //   HHF1(11000+(int)chEvent.bid, t, 1.);
          //}
 
          // delimiter distribution
-         //ds HHF1(10200,(float)event->delim,1.);
+         //ds HHF1(10200,(float)chEvent.GetDelimiterId(),1.);
 
-         // Fill event in memory
-         Ngood[event->bid]++;
+         // Fill chEvent in memory
+         Ngood[chEvent.bid]++;
 
          // bunch distribution (time + -t cut)
-         //ds HHF1(10010,(float)event->bid,1.);
-         //ds if (fmod((float)event->bid,2)==0) {
-         //ds    HHF1(10100+(si+1)*10,(float)event->bid,1.);
+         //ds HHF1(10010,(float)chEvent.bid,1.);
+         //ds if (fmod((float)chEvent.bid,2)==0) {
+         //ds    HHF1(10100+(si+1)*10,(float)chEvent.bid,1.);
          //ds }
 
          // energy distribution after carbon cut
@@ -563,19 +510,19 @@ void event_process(processEvent *event)
          // Mass vs. Energy plots
          mass_vs_e_ecut[st]->Fill(e, Mass);
 
-         Ncounts[(int)(st/12)][event->bid]++;
+         Ncounts[(int)(st/12)][chEvent.bid]++;
          int time = 0;
 
          if (gMeasInfo->fRunId == 5) {
-            time = delim;
-            ++cntr.good[delim];
-            NDcounts[(int)(st/12)][event->bid][TgtIndex[delim]]++;
+            time = chEvent.GetDelimiterId();
+            ++cntr.good[chEvent.GetDelimiterId()];
+            NDcounts[(int)(st/12)][chEvent.bid][TgtIndex[chEvent.GetDelimiterId()]]++;
          } else {
             time = (int) (cntr.revolution/RHIC_REVOLUTION_FREQ);
 
             if (time < MAXDELIM) {
                ++cntr.good[TgtIndex[time]];
-               NDcounts[(int)(st/12)][event->bid][TgtIndex[time]]++;
+               NDcounts[(int)(st/12)][chEvent.bid][TgtIndex[time]]++;
             } else if (!gAsymAnaInfo->HasAlphaBit()) {
                cerr << "ERROR: time constructed from revolution # " << time
                     << "exeeds MAXDELIM=" << MAXDELIM << " defined" << endl;
@@ -585,12 +532,12 @@ void event_process(processEvent *event)
 
          // Following function call is for special text output routine of spin tune measurements
          // This routine is commented out by default. Activate this upon necessity.
-         //              SpinTuneOutput(event->bid,si);
+         //              SpinTuneOutput(chEvent.bid,si);
 
-         //ds if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], gSpinPattern[event->bid] ==  1 ? 1 : 0);
-         //ds if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], gSpinPattern[event->bid] == -1 ? 1 : 0);
-         //ds if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], gSpinPattern[event->bid] ==  1 ? 1 : 0);
-         //ds if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], gSpinPattern[event->bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38010, TgtIndex[time], gSpinPattern[chEvent.bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==1) HHF1(38020, TgtIndex[time], gSpinPattern[chEvent.bid] == -1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38030, TgtIndex[time], gSpinPattern[chEvent.bid] ==  1 ? 1 : 0);
+         //ds if ((int)(st/12)==4) HHF1(38040, TgtIndex[time], gSpinPattern[chEvent.bid] == -1 ? 1 : 0);
 
          //ds HHF1(38050, TgtIndex[time], 1);
          //ds HHF1(38060, time, 1);
@@ -604,29 +551,27 @@ void event_process(processEvent *event)
          if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigmaAlt/sqrt_e)
             cntr.alt.NStrip[spbit][st]++;
 
-         if (phx.bunchpat[event->bid]) cntr.phx.NStrip[spbit][st]++;
-         if (str.bunchpat[event->bid]) cntr.str.NStrip[spbit][st]++;
+         if (phx.bunchpat[chEvent.bid]) cntr.phx.NStrip[spbit][st]++;
+         if (str.bunchpat[chEvent.bid]) cntr.str.NStrip[spbit][st]++;
 
          // Ramp measurements binning
          // 20 Hz delimiters
-         /*
-         if (gAsymAnaInfo->RAMPMODE==1) {
-            int rbin = (int)((event->delim)/20.);
-            //NRcounts[(int)(st/12)][event->bid][rbin]++;
+         //if (gAsymAnaInfo->RAMPMODE==1) {
+         //   int rbin = (int)((chEvent.GetDelimiterId())/20.);
+         //   //NRcounts[(int)(st/12)][chEvent.bid][rbin]++;
 
-            // Plus Spin 21000+Si
-            // Minus Spin 21100+Si
-            HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
-         }
-         */
+         //   // Plus Spin 21000+Si
+         //   // Minus Spin 21100+Si
+         //   HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
+         //}
 
          // Spin Tune
          //ds if (gAsymAnaInfo->STUDYMODE == 1) {
-         //ds    HHF1(40000+(int)(st/12), (float)event->bid/2. + (float)event->rev0 * 60., 1.);
+         //ds    HHF1(40000+(int)(st/12), (float)chEvent.bid/2. + (float)chEvent.rev0 * 60., 1.);
          //ds }
       }
    }
-}
+*/
 
 
 // Description : calculate kinematics from ADC and TDC

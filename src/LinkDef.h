@@ -17,5 +17,6 @@
 #pragma link C++ class OnlineWcm;
 //#pragma link C++ class AsymRoot;
 #pragma link C++ class RecordMachineParams;
+#pragma link C++ class RecordHeaderStruct;
 
 #endif

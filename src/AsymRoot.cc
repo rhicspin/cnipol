@@ -901,13 +901,6 @@ void AsymRoot::Calibrate()
 
 
 /** */
-//void AsymRoot::CalibrateFast()
-//{
-//   fEventConfig->fCalibrator->CalibrateFast(fHists);
-//}
-
-
-/** */
 void AsymRoot::SaveChannelTrees()
 {
    if (!gAsymAnaInfo->fSaveTrees.test(1)) return;

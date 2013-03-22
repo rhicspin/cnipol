@@ -278,6 +278,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
+   //hist->GetXaxis()->SetNdivisions(1005);
    hist->SetTitle("; Fill Id; Polarization, %;");
    hist->SetOption("E1 GRIDX");
    hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
@@ -288,6 +289,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarFirstMeasVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
+   //hist->GetXaxis()->SetNdivisions(1005);
    hist->SetTitle("; Fill Id; Polarization, %;");
    hist->SetOption("E1 GRIDX");
    hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
@@ -296,6 +298,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarHJVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
+   //hist->GetXaxis()->SetNdivisions(1005);
    hist->SetTitle("; Fill Id; Polarization (H-jet), %;");
    hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist);
@@ -304,6 +307,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarPCVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
+   //hist->GetXaxis()->SetNdivisions(1005);
    hist->SetTitle("; Fill Id; Polarization (p-Carbon), %;");
    hist->SetOption("E1");
    styleMarker.Copy(*hist);

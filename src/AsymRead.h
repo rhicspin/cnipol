@@ -26,7 +26,8 @@
 #include "MeasInfo.h"
 #include "MseMeasInfo.h"
 
-#define BSIZE_OFFLINE 0x1000000                 // 16 MByte
+#define BSIZE_OFFLINE 0x1000000 // 16 MByte
+
 
 class RawDataProcessor
 {
@@ -45,12 +46,12 @@ public:
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
 
-   void ReadRecBegin(MseMeasInfoX* run=0);
-   void ReadMeasInfo(MseMeasInfoX &MeasInfo);
-   void ReadDataFast();
+   void ReadRecBegin(MseMeasInfoX &mseMeasInfo);
+   void ReadMeasInfo(MseMeasInfoX &mseMeasInfo);
+   void ReadDataPassOne(MseMeasInfoX &mseMeasInfo);
+   void ReadDataPassTwo(MseMeasInfoX &mseMeasInfo);
 };
 
-void readloop(MseMeasInfoX &run);
 void reConfig();
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run);

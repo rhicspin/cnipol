@@ -405,14 +405,14 @@ void CnipolHists::Fill(ChannelEvent *ch)
 
    //((TH2*)     o["hTimeVsFunnyEnergyA"])            ->Fill(ch->GetFunnyEnergyA(), ch->GetTime());
 
-   //((TH2*) sd->o["hDLVsEnergyA_ch"+sChId])          ->Fill(ch->GetEnergyA(), kinEnergy - ch->GetEnergyA());
-   //((TH2*)     o["hDLVsEnergyA"])                   ->Fill(ch->GetEnergyA(), kinEnergyEst - ch->GetEnergyA());
-   //((TH2*) sd->o["hDLVsTotalEnergy_ch"+sChId])      ->Fill(kinEnergy, kinEnergy - ch->GetEnergyA());
-   //((TH2*)     o["hDLVsTotalEnergy"])               ->Fill(kinEnergyEst, kinEnergyEst - ch->GetEnergyA());
-   //((TH2*) sd->o["hDLVsTime_ch"+sChId])             ->Fill(ch->GetTime(), kinEnergy - ch->GetEnergyA());
-   //((TH2*)     o["hDLVsTime"])                      ->Fill(ch->GetTime(), kinEnergyEst - ch->GetEnergyA());
-   //((TH2*) sd->o["hTotalEnergyVsEnergyA_ch"+sChId]) ->Fill(ch->GetEnergyA(), kinEnergy);
-   //((TH2*)     o["hTotalEnergyVsEnergyA"])          ->Fill(ch->GetEnergyA(), kinEnergyEst);
+   //((TH2*) sd->o["hDLVsEnergyA_ch"+sChId])          ->Fill(depEnergy,     kinEnergy    - depEnergy);
+   //((TH2*)     o["hDLVsEnergyA"])                   ->Fill(depEnergy,     kinEnergyEst - depEnergy);
+   //((TH2*) sd->o["hDLVsTotalEnergy_ch"+sChId])      ->Fill(kinEnergy,     kinEnergy    - depEnergy);
+   //((TH2*)     o["hDLVsTotalEnergy"])               ->Fill(kinEnergyEst,  kinEnergyEst - depEnergy);
+   //((TH2*) sd->o["hDLVsTime_ch"+sChId])             ->Fill(ch->GetTime(), kinEnergy    - depEnergy);
+   //((TH2*)     o["hDLVsTime"])                      ->Fill(ch->GetTime(), kinEnergyEst - depEnergy);
+   //((TH2*) sd->o["hTotalEnergyVsEnergyA_ch"+sChId]) ->Fill(depEnergy,     kinEnergy);
+   //((TH2*)     o["hTotalEnergyVsEnergyA"])          ->Fill(depEnergy,     kinEnergyEst);
 
    //((TH1*)     o["hTof"])                              ->Fill(tofEst);
 }

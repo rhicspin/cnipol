@@ -73,27 +73,28 @@ int main(int argc, char *argv[])
 
    MseMeasInfoX  *mseMeasInfoX     = 0;
    MseMeasInfoX  *mseMeasInfoXOrig = 0;
-   MseRunPeriodX *mseRunPeriodX    = 0;
 
    // Check whether the run is in database
    if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
    }
 
-   if (mseMeasInfoX) { // if run found in database save its copy
+   if (mseMeasInfoX) { // If run found in database get a copy of it for later sql update
       mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->GetRunName());
       *mseMeasInfoXOrig = *mseMeasInfoX;
-   } else { // if run not found in database create it
+   } else {            // If run not found in database create a new object
       mseMeasInfoX = new MseMeasInfoX(gMeasInfo->GetRunName());
    }
 
    // Read data file into memory
-   RawDataProcessor *rawData = new RawDataProcessor(gAsymAnaInfo->GetRawDataFileName());
+   RawDataProcessor rawData(gAsymAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
    // and overwrite the run info from database (MseMeasInfoX) if needed
-   rawData->ReadRecBegin(mseMeasInfoX);
-   rawData->ReadMeasInfo(*mseMeasInfoX);
+   rawData.ReadRecBegin(*mseMeasInfoX);
+   rawData.ReadMeasInfo(*mseMeasInfoX);
+
+   MseRunPeriodX *mseRunPeriodX    = 0;
 
    // We can do this for any run type including alpha runs
    if (gAsymAnaInfo->fFlagUseDb) {
@@ -129,7 +130,7 @@ int main(int argc, char *argv[])
    // It knows how to updated/calibrate them if requested by the user
    gAsymRoot->UpdateCalibrator();
 
-   // Create trees if requested
+   // Create trees if requested by user
    if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
 
    // If requested update for data (not alpha) calibration constants we need to
@@ -137,14 +138,12 @@ int main(int argc, char *argv[])
    // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   //if ( gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit() )
    if ( gAsymAnaInfo->HasCalibBit() )
    {
-      rawData->ReadDataFast();          // fill histograms
-      gAsymRoot->FillDerivedPassOne();
-      gAsymRoot->PostFillPassOne();     // make decisions based on hist content/data
-      //gAsymRoot->CalibrateFast();       // Process all channel banana
-      gAsymRoot->Calibrate();       // Process all channel banana
+      rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
+      gAsymRoot->FillDerivedPassOne();          // Fill other histograms from the primary ones
+      gAsymRoot->PostFillPassOne();             // Make decisions based on hist content/data
+      gAsymRoot->Calibrate();                   // Process all channel banana
    }
 
    // For debugging
@@ -156,7 +155,7 @@ int main(int argc, char *argv[])
       gAsymRoot->PreFill();
 
       // Main event Loop
-      readloop(*mseMeasInfoX);
+      rawData.ReadDataPassTwo(*mseMeasInfoX);
 
       gAsymRoot->FillDerived();
       gAsymRoot->PostFill(*mseMeasInfoX);
@@ -205,13 +204,12 @@ int main(int argc, char *argv[])
    fclose(gAsymAnaInfo->GetAnaInfoFile());
    fclose(gAsymAnaInfo->GetRunConfFile());
    gAsymAnaInfo->fFileMeasInfo = 0;
-   gAsymAnaInfo->fFileRunConf = 0;
+   gAsymAnaInfo->fFileRunConf  = 0;
 
    if (gAsymAnaInfo->HasGraphBit())
-      //gAsymRoot->SaveAs("^.*AsymVs.*$", gAsymAnaInfo->GetImageDir());
       gAsymRoot->SaveAs("^.*$", gAsymAnaInfo->GetImageDir());
 
-   // Close ROOT File
+   // Close ROOT file
    gAsymRoot->Finalize();
 
    delete gAsymRoot;
@@ -229,36 +227,17 @@ int main(int argc, char *argv[])
 // for Bunch by Bunch base analysis
 int BunchSelect(int bid)
 {
-  int go = 0;
-  //  int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
-  int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,
-                     73,76,83,86,93,96,103,106};
+   int go = 0;
+   //int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
+   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,73,76,83,86,93,96,103,106};
 
-  for (int i=0; i<14; i++) {
-    //    BunchList[i]++;
-    if (bid == BunchList[i]) {
-      go=1;
-      break;
-    }
-  }
+   for (int i=0; i<14; i++) {
+     //BunchList[i]++;
+     if (bid == BunchList[i]) {
+       go=1;
+       break;
+     }
+   }
 
-  return go;
+   return go;
 }
-
-
-// Description : Check Disabled detector
-// Input       : int strip nuumber
-// Return      : 1 if disabled. otherwise 0
-//
-/*
-int DisabledDet(int det)
-{
-  // det(0,1,2,3,4,5} => {0, 1, 0, 0, 1, 0} => 18
-  int DeadDet = tgt.VHtarget ? 18 : 0 ;
-  //                            ^   ^
-  //                       H-target V-target
-
-  return DeadDet>>det & 1 ;
-
-}
-*/
