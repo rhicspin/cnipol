@@ -1,5 +1,5 @@
 /**
- * Asymmetry Analysis for RHIC p-Carbon Polarimeter
+ * Asymmetry analysis for p-Carbon RHIC polarimeters
  *
  * Author(s):   Dmitri Smirnov
  *
@@ -8,8 +8,6 @@
 #ifndef asym_h
 #define asym_h
 
-
 int  BunchSelect(int bid);
-//int DisabledDet(int det);
 
 #endif

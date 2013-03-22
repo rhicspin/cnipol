@@ -35,27 +35,25 @@ typedef Cut2DrawObjContainerMap::iterator              Cut2DrawObjContainerMapIt
 class AsymRoot // : public TObject
 {
 
-private:
-
 protected:
 
-   TFile                    *fOutRootFile; //!
-   TFile                    *fOutTreeFile; //!
-   UInt_t                    fTreeFileId; //!
-   Cut2DrawObjContainerMap   fHistCuts; //!    // Map with histograms containers classified by cut categories
+   TFile                    *fOutRootFile;   //!
+   TFile                    *fOutTreeFile;   //!
+   UInt_t                    fTreeFileId;    //!
+   Cut2DrawObjContainerMap   fHistCuts;      //! Map with histograms containers classified by cut categories
   
 public:
 
-   TTree                *fRawEventTree; //!
-   TTree                *fAnaEventTree; //!
+   TTree                *fRawEventTree;      //!
+   TTree                *fAnaEventTree;      //!
    std::vector<TTree*>   fChannelEventTrees; //!
-   AnaEvent             *fAnaEvent; //!
-   ChannelEvent         *fChannelEvent; //!
-   ChannelData          *fChannelData; //!
+   AnaEvent             *fAnaEvent;          //!
+   ChannelEvent         *fChannelEvent;      //!
+   ChannelData          *fChannelData;       //!
    //ChannelEventMap      fChannelEvents;
-   ChannelEventSet       fChannelEvents; //!
-   EventConfig          *fEventConfig; //!
-   DrawObjContainer     *fHists; //!
+   ChannelEventSet       fChannelEvents;     //!
+   EventConfig          *fEventConfig;       //!
+   DrawObjContainer     *fHists;             //!
 
 public:
 
@@ -67,7 +65,6 @@ public:
 	void         BookHists2(StructFeedBack &feedback);
    void         DeleteHistogram();
    void         Calibrate();
-   //void         CalibrateFast();
    void         Finalize();
    void         CreateTrees();
    //Bool_t       UseCalibFile(std::string cfname=""); // Deprecated

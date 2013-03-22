@@ -69,23 +69,31 @@ enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
                 kMEASTYPE_PROFILE_T   = 0x00000040,  // profile by time
                 kMEASTYPE_PROFILE_E   = 0x00000080}; // profile events
 
-typedef struct {
+
+typedef struct RecordHeaderStruct
+{
     long len;           // total length = header size + data size
     long type;          // record type, see above
     long num;           // record number
-    union {
+    union myUnion {
         time_t time;    // local UNIX time in most cases
         long delim;     // when read from memory
     } timestamp;
+
+   ClassDef(RecordHeaderStruct, 1)
 } recordHeaderStruct;
 
-typedef struct {
+
+typedef struct
+{
     recordHeaderStruct header;
     long version;
     char comment[256];
 } recordBeginStruct;
 
-typedef struct {
+
+typedef struct
+{
     recordHeaderStruct header;
     EMeasType          type;
 } recordMeasTypeStruct;

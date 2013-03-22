@@ -70,12 +70,14 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
 /** */
 RawDataProcessor::~RawDataProcessor()
 {
+   if (fFile) fclose(fFile);
    delete[] fMem;
+   //fFileStream.close();
 }
 
 
 /** */
-void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
+void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
@@ -84,8 +86,10 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
 
    //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
 
+   // Take the very first record from the raw data file
    recBegin = (recordBeginStruct*) fMem;
 
+   // We'd better check the record type...
    //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
 
    cout << "Begin of data stream version: " << recBegin->version << endl;
@@ -93,9 +97,10 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
    cout << "Time Stamp: "                   << ctime(&recBegin->header.timestamp.time);
    cout << "Unix Time Stamp: "              << recBegin->header.timestamp.time << endl;
 
-   gMeasInfo->fStartTime =  recBegin->header.timestamp.time;
-   gMeasInfo->fPolBeam   = (recBegin->header.type & REC_MASK_BEAM) >> 16;
-   gMeasInfo->fPolStream = (recBegin->header.type & REC_MASK_STREAM) >> 20;
+   gMeasInfo->fStartTime         = recBegin->header.timestamp.time;
+   gMeasInfo->fDataFormatVersion = recBegin->version;
+   gMeasInfo->fPolBeam           = (recBegin->header.type & REC_MASK_BEAM)   >> 16;
+   gMeasInfo->fPolStream         = (recBegin->header.type & REC_MASK_STREAM) >> 20;
 
    //printf("fPolBeam:   %#x\n", gMeasInfo->fPolBeam);
    //printf("fPolStream: %#x, %#x, %#x\n", gMeasInfo->fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
@@ -103,52 +108,49 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
    int polId = gMeasInfo->GetPolarimeterId(gMeasInfo->fPolBeam, gMeasInfo->fPolStream);
 
    if (polId < 0)
-      Warning("ReadRecBegin(MseMeasInfoX* run)", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
+      Warning("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
 
    stringstream sstr;
 
    // First, try to get polarimeter id from the data
    if (polId >= 0) {
       sstr << gMeasInfo->fPolId;
-      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    // if failed, get id from the file name
    } else if (gMeasInfo->GetPolarimeterId() >= 0) {
       sstr.str("");
       sstr << gMeasInfo->fPolId;
-      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    // see if the polarimeter id was set by command line argument
    } else if (gMeasInfo->fPolId >= 0) {
       sstr.str("");
       sstr << gMeasInfo->fPolId;
-      gRunDb.fFields["POLARIMETER_ID"] = sstr.str();
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    } else { // cannot proceed
-      Error("ReadRecBegin(MseMeasInfoX* run)", "Unknown polarimeter ID");
+      Error("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Unknown polarimeter ID");
       exit(-1);
    }
 
    sstr.str("");
    sstr << gMeasInfo->fStartTime;
-   gRunDb.fFields["START_TIME"] = sstr.str();
    gRunDb.timeStamp = gMeasInfo->fStartTime; // should be always defined in raw data
    //gRunDb.Print();
 
-   if (run) {
-      run->polarimeter_id = gRunDb.fPolId;
-      //mysqlpp::DateTime dt(gRunDb.timeStamp);
-      mysqlpp::DateTime dt(gMeasInfo->fStartTime);
-      run->start_time     = dt;
-   }
+   mseMeasInfo.polarimeter_id = gRunDb.fPolId;
+   mysqlpp::DateTime dt(gMeasInfo->fStartTime);
+   mseMeasInfo.start_time     = dt;
 
    //} else
       //printf("ERROR: Cannot read REC_BEGIN record\n");
 
-   Info("ReadRecBegin", "Stopped reading begin record from data file");
+   Info("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Finished reading begin record from data file");
+
+   // Not really used now
+   // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
+   PrepareCollidingBunchPattern();
 }
 
 
@@ -156,7 +158,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX* run)
  * This method is supposed to read all information about the measurement from
  * raw data. It does not read events.
  */
-void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
+void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadMeasInfo", "Start reading run info from data file...");
@@ -167,17 +169,13 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
 
    char *mSeek = fMem;
 
-   while (true) {
-
-      //int nRecs = fread(&header, sizeof(recordHeaderStruct), 1, fp);
-
+   while (true)
+   {
       if (mSeek > fMem + fMemSize - 1) break;
       //if (nRecs != 1) break;
-
       //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
       mHeader = (recordHeaderStruct*) mSeek;
-
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       // REC_BEAMADO
@@ -241,7 +239,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          printf("Reading REC_POLADO record... size = %ld\n", mHeader->len);
 
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
-         ProcessRecord( (recordPolAdoStruct&) *rec, MeasInfo);
+         ProcessRecord( (recordPolAdoStruct&) *rec, mseMeasInfo);
 
          mSeek = mSeek + mHeader->len;
          continue;
@@ -255,7 +253,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          printf("Reading REC_PCTARGET record... size = %ld\n", mHeader->len);
 
          recordpCTagAdoStruct *rec = (recordpCTagAdoStruct*) mHeader;
-         ProcessRecord( (recordpCTagAdoStruct&) *rec, MeasInfo);
+         ProcessRecord( (recordpCTagAdoStruct&) *rec, mseMeasInfo);
 
          mSeek = mSeek + mHeader->len;
          continue;
@@ -324,6 +322,49 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
          continue;
       }
 
+      // REC_TAGADO:
+      if ((mHeader->type & REC_TYPEMASK) == REC_TAGADO)
+      {
+         printf("Reading REC_TAGADO record... size = %ld\n", mHeader->len);
+         //targetDataStruct *rec = (targetDataStruct*) mHeader;
+         //targetDataStruct  tgtdat1;
+         //targetDataStruct  tgtdat2;
+         //memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
+         //memcpy(&tgtdat2, &rec.tagado.data[1], sizeof(tgtdat2));
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_SCALERS
+      if ((mHeader->type & REC_TYPEMASK) == REC_SCALERS)
+      {
+         printf("Reading REC_SCALERS record... size = %ld\n", mHeader->len);
+         //recordScalersStruct *rec = (recordScalersStruct*) mHeader;
+         //ProcessRecord( (recordScalersStruct &) *rec);
+         Info("ReadMeasInfo", "Not implemented yet");
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_READRAW, REC_READSUB, REC_READALL
+      if ((mHeader->type & REC_TYPEMASK) == REC_READRAW)
+      {
+         printf("Reading REC_READRAW record... size = %ld\n", mHeader->len);
+         Info("ReadMeasInfo", "Not implemented yet");
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
+      // REC_END:
+      if ((mHeader->type & REC_TYPEMASK) == REC_END)
+      {
+         printf("Reading REC_END record... size = %ld\n", mHeader->len);
+         recordEndStruct *rec = (recordEndStruct*) mHeader;
+         gMeasInfo->fStopTime = rec->header.timestamp.time;
+         mSeek = mSeek + mHeader->len;
+         continue;
+      }
+
       mSeek = mSeek + mHeader->len;
    }
 
@@ -334,73 +375,52 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &MeasInfo)
 
 
 /** */
-void RawDataProcessor::ReadDataFast()
+void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
-   Info("ReadDataFast", "Start reading events from data file...");
+   Info("ReadDataPassOne", "Start reading events from data file...");
 
    TStopwatch sw;
 
+   gMeasInfo->fNEventsProcessed = 0;
+   gMeasInfo->fNEventsTotal     = 0;
+
    recordHeaderStruct *mHeader;
-
-   UInt_t nEventsProcessed = 0;
-   UInt_t nEventsTotal     = 0;
-
    char *mSeek = fMem;
 
    while (true) {
 
-      //int nRecs = fread(&header, sizeof(recordHeaderStruct), 1, fp);
-
       if (mSeek > fMem + fMemSize - 1) break;
       //if (nRecs != 1) break;
-
       //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
       mHeader = (recordHeaderStruct*) mSeek;
-
-      //mSeek = mSeek + mHeader->len;
-
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
       {
-         //long offset = header.len - sizeof(recordHeaderStruct);
-         //fseek(fp, offset, SEEK_CUR);
-
          mSeek = mSeek + mHeader->len;
          continue;
       }
 
       // We are here if rec type is REC_READAT
-      //long delim = header.timestamp.delim;
-      long delim = mHeader->timestamp.delim;
-
-      //size_t recSize = header.len - sizeof(recordHeaderStruct);
-      size_t recSize = mHeader->len - sizeof(recordHeaderStruct);
-      //unsigned char* buffer = new unsigned char[recSize];
-
-      //nRecs = fread(buffer, recSize, 1, fp);
-
-      char *mSeekAT = mSeek;
+      long    delim   = mHeader->timestamp.delim;
+      size_t  recSize = mHeader->len - sizeof(recordHeaderStruct);
+      char   *mSeekAT = mSeek;
 
       mSeekAT += sizeof(recordHeaderStruct);
+      mSeek    = mSeek + mHeader->len;
 
-      mSeek = mSeek + mHeader->len;
-
-      //recordReadATStruct *ATPtrF;
       recordReadATStruct *ATPtr;
 
-      for (UInt_t i=0; i<recSize; ) {
-
-         //ATPtrF     = (recordReadATStruct*) (buffer + i);
+      for (UInt_t i=0; i<recSize; )
+      {
                   ATPtr   = (recordReadATStruct*) (mSeekAT + i);
          unsigned chId    = ATPtr->subhead.siNum; // si number
          unsigned nEvents = ATPtr->subhead.Events + 1;
-         //unsigned nEvents = ATPtr->subhead.Events;
 
          // count the total number of event records in raw file
-         nEventsTotal += nEvents;
+         gMeasInfo->fNEventsTotal += nEvents;
 
          //if (nEvents > 100) printf("nEvents: %d, %d\n", siNum, nEvents);
 
@@ -408,10 +428,9 @@ void RawDataProcessor::ReadDataFast()
 
          for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
          {
-            //printf("f: %d %d %d\n", ATPtrF->data[iEvent].a, ATPtrF->data[iEvent].t, ATPtrF->data[iEvent].s);
             //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
-            if (gMaxEventsUser > 0 && nEventsProcessed >= gMaxEventsUser) break;
+            if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 
@@ -448,9 +467,8 @@ void RawDataProcessor::ReadDataFast()
             //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
             //}
 
-            if (gAsymAnaInfo->HasPmtBit() &&
-                gAsymRoot->fChannelEvent->PassCutPmtChannel() )
-                //gAsymRoot->fChannelEvent->PassCutPmtNoise()
+            if ( gAsymAnaInfo->HasPmtBit() && gAsymRoot->fChannelEvent->PassCutPmtChannel() )
+                 //gAsymRoot->fChannelEvent->PassCutPmtNoise()
             {
                gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
             }
@@ -459,343 +477,167 @@ void RawDataProcessor::ReadDataFast()
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
-            //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() ) continue;
-            //if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )      continue;
+            //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() )  continue;
+            //if (  gAsymRoot->fChannelEvent->PassCutEmptyBunch() )     continue;
 
             //gAsymRoot->PrintChannelEvent();
 
-            nEventsProcessed++;
+            gMeasInfo->fNEventsProcessed++;
 
             // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
-            //if (nEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
-            if (nEventsProcessed%50000 == 0)
+            //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
+            if (gMeasInfo->fNEventsProcessed%50000 == 0)
             {
-               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), nEventsProcessed);
+               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
                fflush(stdout);
             }
          }
       }
    }
 
+   printf("Total events read:      %12u\n", gMeasInfo->fNEventsTotal);
+   printf("Total events processed: %12u\n", gMeasInfo->fNEventsProcessed);
+
+   // Save info into database global object
+   mseMeasInfo.stop_time         = mysqlpp::DateTime(gMeasInfo->fStopTime);
+   mseMeasInfo.nevents_total     = gMeasInfo->fNEventsTotal;
+   mseMeasInfo.nevents_processed = gMeasInfo->fNEventsProcessed;
+
    sw.Stop();
 
-   printf("Total events read:      %12u\n", nEventsTotal);
-   printf("Total events processed: %12u\n", nEventsProcessed);
-
-   Info("ReadDataFast", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+   Info("ReadDataPassOne", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
-// read loop routine
-void readloop(MseMeasInfoX &run)
+/** Read loop routine */
+void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
-   gSystem->Info("readloop", "Start reading events from data file...");
+   Info("ReadDataPassTwo", "Start reading events from data file...");
 
    TStopwatch sw;
 
-   static int READ_FLAG = 0;
+   gMeasInfo->fNEventsProcessed = 0;
+   gMeasInfo->fNEventsTotal     = 0;
 
-   // Common structure for the data format
-   static union {
-       recordHeaderStruct      header;
-       recordBeginStruct       begin;
-       recordTagAdoStruct      tagado;
-       recordReadWaveStruct    all;
-       recordReadWave120Struct all120;
-       recordReadATStruct      at;
-       recordEndStruct         end;
-       recordScalersStruct     scal;
-       char                    buffer[BSIZE_OFFLINE*sizeof(int)];
-       recordDataStruct        data;
-   } rec;
+   recordHeaderStruct *mHeader;
+   char *mSeek = fMem;
 
-   //polDataStruct            poldat;
-   targetDataStruct         tgtdat1;
-   targetDataStruct         tgtdat2;
+   while (true) {
 
-   processEvent             event;
+      if (mSeek > fMem + fMemSize - 1) break;
+      //if (nRecs != 1) break;
+      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
-   FILE *fp;
-   int   rval;
-   int   recSize;
-   int   flag = 0;     // exit from while when flag==1
+      mHeader = (recordHeaderStruct*) mSeek;
+      //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
-   // reading the data till its end ...
-   if ((fp = fopen(gAsymAnaInfo->GetRawDataFileName().c_str(), "r")) == NULL) {
-      printf("ERROR: %s file not found. Force exit.\n", gAsymAnaInfo->GetRawDataFileName().c_str());
-      exit(-1);
-   } else
-      printf("\nFound file %s\n", gAsymAnaInfo->GetRawDataFileName().c_str());
-
-
-   while (flag == 0) {
-
-      if (fread(&rec.header, sizeof(recordHeaderStruct), 1, fp) != 1)
-         break;
-
-      //printf("Currently consider record:   %0#10x, len: %ld\n", (UInt_t) rec.header.type, rec.header.len);
-
-      if (feof(fp)) {
-         fprintf(stdout, "Expected end of file\n");
-         break;
-      }
-
-      if ( (UInt_t) rec.header.len > BSIZE_OFFLINE*sizeof(int)) {
-         fprintf(stdout, "Not enough buffer d: %ld byte b: %u byte\n",
-                 rec.header.len, sizeof(rec));
-         break;
-      }
-
-      recSize = rec.header.len - sizeof(recordHeaderStruct);
-
-      // Skip empty data records
-      if (!recSize) continue;
-
-      // Read rest of the structure
-      rval = fread(&rec.begin.version, recSize, 1, fp);
-
-      if (feof(fp)) {
-         perror("Unexpected end of file");
-         exit(1);
-         break;
-      }
-
-      if (rval != 1) {
-         fprintf(stdout, "IO error in stream (header) %s\n", strerror(errno));
-         fprintf(stdout, "IO error in stream (header) %s\n", strerror(ferror(fp)));
+      if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
+      {
+         mSeek = mSeek + mHeader->len;
          continue;
       }
 
-      //printf("type: %#X\n", (rec.header.type & REC_TYPEMASK));
+      // We are here if rec type is REC_READAT
+      long    delim   = mHeader->timestamp.delim;
+      size_t  recSize = mHeader->len - sizeof(recordHeaderStruct);
+      char   *mSeekAT = mSeek;
 
-      //Long_t my_i;
-      //Long_t *my_pointer;
+      mSeekAT += sizeof(recordHeaderStruct);
+      mSeek    = mSeek + mHeader->len;
 
-      // Main Switch
-      switch (rec.header.type & REC_TYPEMASK) {
+      recordReadATStruct *ATPtr;
 
-      case REC_BEGIN:
-         cout << "Data stream version: " << rec.begin.version << endl;
-         cout << "Comment: "             << rec.begin.comment << endl;
-         cout << "Date & Time: "         << ctime(&rec.begin.header.timestamp.time);
-         cout << "Timestamp: "           << rec.begin.header.timestamp.time << endl;
+      for (UInt_t i=0; i<recSize; )
+      {
+                  ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+         unsigned chId    = ATPtr->subhead.siNum; // si number
+         unsigned nEvents = ATPtr->subhead.Events + 1;
 
-         gMeasInfo->fStartTime = rec.begin.header.timestamp.time;
-         gMeasInfo->fDataFormatVersion = rec.begin.version;
+         // count the total number of event records in raw file
+         gMeasInfo->fNEventsTotal += nEvents;
 
-         gMeasInfo->fPolBeam   = (rec.header.type & REC_MASK_BEAM) >> 16;
-         gMeasInfo->fPolStream = (rec.header.type & REC_MASK_STREAM) >> 20;
+         //if (nEvents > 100) printf("nEvents: %d, %d\n", siNum, nEvents);
 
-         //printf("fPolBeam:   %#x\n", gMeasInfo->fPolBeam);
-         //printf("fPolStream: %#x, %#x, %#x\n", gMeasInfo->fPolStream, rec.header.type, REC_MASK_STREAM);
+         i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
-         // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
-         PrepareCollidingBunchPattern();
+         for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
+         {
+            //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
-         break;
+            if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
 
-      case REC_TAGADO:
-         memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
-         memcpy(&tgtdat2, &rec.tagado.data[1], sizeof(tgtdat2));
-         break; // later
+            gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 
-      case REC_END:
-         gMeasInfo->fStopTime = rec.end.header.timestamp.time;
-         break;
+            // Use only a fraction of events
+            if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
 
-      case REC_READRAW:
-      case REC_READSUB:
-         break;
+            //gAsymRoot->PrintChannelEvent();
 
-      case REC_READALL:
-         break;
+            gMeasInfo->fNEventsProcessed++;
 
-      //case REC_SCALERS:
-      //   fprintf(stdout, "Scaler readtime \n");
-      //   fprintf(stdout, "Scaler End Time: %s\n", ctime(&rec.scal.header.timestamp.time));
-      //   gMeasInfo->fStopTime = rec.header.timestamp.time;
-      //   break;
+            // Finer Target Position Resolution by counting stepping moter
+            // This feature became available after Run06
+            if (gMeasInfo->fRunId >= 6) {
+               cntr.revolution = gAsymRoot->fChannelEvent->GetRevolutionId();
 
-      case REC_READAT:
+               if (cntr.revolution > gMeasInfo->MaxRevolution)
+                  gMeasInfo->MaxRevolution = cntr.revolution;
 
-        // Display configuration and configure active strips just once
-        if (!READ_FLAG) {
+               if (gAsymRoot->fChannelEvent->GetChannelId() == 73 && delim != tgt.eventID) {
+                  tgt.x += gAsymAnaInfo->target_count_mm * (float) tgt.vector;
+                  tgt.vector=-1;
+               }
 
-           // Configure Active Strip Map
-           //gMeasInfo->ConfigureActiveStrip(mask.detector);
-           //gMeasInfo->PrintConfig();
+               if (gAsymRoot->fChannelEvent->GetChannelId() == 73 || gAsymRoot->fChannelEvent->GetChannelId() == 74) {
+                   switch (gAsymRoot->fChannelEvent->GetChannelId()) {
+                   case 73:
+                       tgt.eventID = delim;
+                       ++cntr.tgtMotion;
+                       break;
+                   case 74:
+                       tgt.vector = 1;
+                       break;
+                   }
+               }
+            }
 
-           READ_FLAG = 1;
+            if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
 
-           if (gRunDb.run_status_s == "Junk") {
-              cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n";
-              exit(-1);
-           }
-        }
+            event_process(*gAsymRoot->fChannelEvent);
 
-        event.delim = rec.header.timestamp.delim;
-        //int nreadsi     = 0;  // number of Si already read
-        //int nreadbyte   = 0;  // number of bite already read
-
-        recordReadATStruct *ATPtr;
-
-        for (UInt_t i=0; i<rec.header.len - sizeof(recordHeaderStruct);)
-        {
-                    ATPtr      = (recordReadATStruct*) (&rec.data.rec[i]);
-                    event.stN  = ATPtr->subhead.siNum; // si number
-           unsigned nEvents    = ATPtr->subhead.Events + 1;
-           //unsigned nEvents    = ATPtr->subhead.Events;
-
-           // count the total number of event records in raw file
-           gMeasInfo->fNEventsTotal += nEvents;
-
-           i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
-
-           if (i > rec.header.len - sizeof(recordHeaderStruct)) {
-              cout << "Broken record "<< rec.header.num << "("
-                   << rec.header.len << " bytes). Last subhead: siNum= "
-                   << event.stN << " Events= " << nEvents << endl;
-              break;
-           }
-
-           //ds:
-           //printf("nEvents(s): %d, si number: %d, gMaxEventsUser %d\n", nEvents,
-           //       event.stN, gMaxEventsUser);
-
-           for (unsigned iEvent=0; iEvent<nEvents; iEvent++) {
-
-              //ds: Skip events if already read enough events specified by user
-              if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
-
-              if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
-
-              gMeasInfo->fNEventsProcessed++;
-
-              event.amp    = ATPtr->data[iEvent].a;
-              event.tdc    = ATPtr->data[iEvent].t;
-              event.intg   = ATPtr->data[iEvent].s;
-              event.bid    = ATPtr->data[iEvent].b;
-              event.tdcmax = ATPtr->data[iEvent].tmax;
-              event.rev0   = ATPtr->data[iEvent].rev0;
-              event.rev    = ATPtr->data[iEvent].rev;
-
-              // Finer Target Position Resolution by counting stepping moter
-              // This feature became available after Run06
-              if (gMeasInfo->fRunId >= 6) {
-                 cntr.revolution = event.delim*512 + event.rev*2 + event.rev0;
-
-                 if (cntr.revolution > gMeasInfo->MaxRevolution)
-                    gMeasInfo->MaxRevolution = cntr.revolution;
-
-                 if (event.stN == 72 && event.delim != tgt.eventID) {
-                    tgt.x += gAsymAnaInfo->target_count_mm * (float)tgt.vector;
-                    tgt.vector=-1;
-                 }
-
-                 if (event.stN == 72 || event.stN == 73) {
-                     switch (event.stN) {
-                     case 72:
-                         tgt.eventID = event.delim;
-                         ++cntr.tgtMotion;
-                         break;
-                     case 73:
-                         tgt.vector = 1;
-                         break;
-                     }
-                 }
-              }
-
-              gAsymRoot->SetChannelEvent(event);
-
-              if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
-
-              //if (event.stN >= 72) {
-              //   cout << " i "            << i
-              //        << " nEvents "      << nEvents
-              //        << " St "           << event.stN
-              //        << " amp "          << event.amp
-              //        << " tdc "          << event.tdc
-              //        << " bid "          << event.bid
-              //        << " rev0 "         << event.rev0
-              //        << " rev  "         << event.rev
-              //        << " revolution #=" << cntr.revolution << endl;
-              //}
-
-              event_process(&event);
-
-              // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
-              //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
-              if ( gMeasInfo->fNEventsProcessed%50000 == 0 )
-              {
-                 printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
-                 fflush(stdout);
-              }
-           }
-        }
-
-        break;
-
-      //case REC_SUBRUN:
-      //   printf("Processing record: REC_SUBRUN\n");
-      //   break;
-
-      default:    // unknown record
-         fprintf(stdout, "Encountered Unknown Record \"%#x\"\n",
-            (UInt_t) rec.header.type & REC_TYPEMASK);
-         break;
+            // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
+            //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
+            if (gMeasInfo->fNEventsProcessed%50000 == 0)
+            {
+               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+               fflush(stdout);
+            }
+         }
       }
    }
 
-   fclose(fp);
-
    // Post processing
-   if (gAsymAnaInfo->HasNormalBit())
-      end_process(run);
+   if ( gAsymAnaInfo->HasNormalBit() ) end_process(mseMeasInfo);
 
    printf("End of data stream \n");
    printf("End time: %s\n", ctime(&gMeasInfo->fStopTime));
    printf("Total events read:      %12u\n", gMeasInfo->fNEventsTotal);
    printf("Total events processed: %12u\n", gMeasInfo->fNEventsProcessed);
 
-   mysqlpp::DateTime dt(gMeasInfo->fStopTime);
-   run.stop_time = dt;
+   // Save info into database global object
+   mseMeasInfo.stop_time         = mysqlpp::DateTime(gMeasInfo->fStopTime);
+   mseMeasInfo.nevents_total     = gMeasInfo->fNEventsTotal;
+   mseMeasInfo.nevents_processed = gMeasInfo->fNEventsProcessed;
 
-   // Add info to database entry
-   stringstream sstr;
-
-   sstr.str(""); sstr << gMeasInfo->fNEventsTotal;
-   gRunDb.fFields["NEVENTS_TOTAL"] = sstr.str();
-   run.nevents_total = gMeasInfo->fNEventsTotal;
-
-   sstr.str(""); sstr << gMeasInfo->fNEventsProcessed;
-   gRunDb.fFields["NEVENTS_PROCESSED"] = sstr.str();
-   run.nevents_processed = gMeasInfo->fNEventsProcessed;
-
-   sstr.str("");
-   sstr << gMeasInfo->GetBeamEnergyReal();
-
-   if (gAsymAnaInfo->HasAlphaBit()) {
-      gRunDb.fFields["BEAM_ENERGY"] = "0";
-      run.beam_energy = 0;
-   } else {
-      gRunDb.fFields["BEAM_ENERGY"] = sstr.str();
-      run.beam_energy = gMeasInfo->GetBeamEnergyReal();
-   }
-
-   // Some incompleted run don't even have REC_READAT flag. Force PrintConfig.
-   if (!gMeasInfo->fNEventsProcessed && !READ_FLAG) {
-      gMeasInfo->PrintConfig();
-
-      if (gRunDb.run_status_s == "Junk") {
-         cout << "\n This is a JUNK run. Force quit. Remove RUN_STATUS=Junk from run.db to process.\n\n";
-         exit(-1);
-      }
-   }
+   if (gAsymAnaInfo->HasAlphaBit())
+      mseMeasInfo.beam_energy = 0;
+   else
+      mseMeasInfo.beam_energy = gMeasInfo->GetBeamEnergyReal();
 
    sw.Stop();
 
-   gSystem->Info("readloop", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
+   Info("ReadDataPassTwo", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
@@ -928,7 +770,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 //             : presently the target ID is assumed to be appear at the last of
 //             : character string poldat.targetIdS.
 // Input       : polDataStruct poldat
-void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
+void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    cout << "target ID = " << poldat.targetIdS << endl;
@@ -954,22 +796,22 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
 
    if (str.find('V') != string::npos) {
       gMeasInfo->fTargetOrient = 'V';
-      run.target_orient       = 'V';
+      mseMeasInfo.target_orient       = 'V';
    }
 
    if (str.find('H') != string::npos) {
       gMeasInfo->fTargetOrient = 'H';
-      run.target_orient       = 'H';
+      mseMeasInfo.target_orient       = 'H';
    }
 
-   //cout << "target id str: " << str << " " << run.target_orient << endl;
+   //cout << "target id str: " << str << " " << mseMeasInfo.target_orient << endl;
 
    stringstream sstr;
    //int target_id;
    sstr << gMeasInfo->fTargetId;
    //sstr >> target_id;
-   sstr >> run.target_id;
-   //run.target_id = target_id;
+   sstr >> mseMeasInfo.target_id;
+   //mseMeasInfo.target_id = target_id;
 
    // Restore Vertical or Horizontal target information
    // in case this information isn't decorded correctly
@@ -979,13 +821,13 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
 
    //   if (str.find("Vert") == 0 || str.find("V") == 0) {
    //      gMeasInfo->fTargetOrient = 'V';
-   //      run.target_orient       = 'V';
+   //      mseMeasInfo.target_orient       = 'V';
    //      tgt.VHtarget            = 0;
    //   }
 
    //   if (str.find("Horz") == 0 || str.find("H") == 0) {
    //      gMeasInfo->fTargetOrient = 'H';
-   //      run.target_orient       = 'H';
+   //      mseMeasInfo.target_orient       = 'H';
    //      tgt.VHtarget            = 1;
    //      // This is too late to reconfigure strip mask because this routine is
    //      // executed at the end of event loop. Too bad. /* March 5,'09 IN */
@@ -997,7 +839,7 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run)
 
 
 /** */
-void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
+void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &mseMeasInfo)
 {
    const long* pointer = (const long*) &rec;
 
@@ -1060,13 +902,13 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
          if (tgt_identifyV) {
             tgt.VHtarget           = 0;
             //gMeasInfo->fTargetOrient = 'V';
-            //run.target_orient      = 'V';
+            //mseMeasInfo.target_orient      = 'V';
             cout << "Vertical Target in finite position - ???" << endl;
 
          } else if (tgt_identifyH) {
             tgt.VHtarget           = 1;
             //gMeasInfo->fTargetOrient = 'H';
-            //run.target_orient      = 'H';
+            //mseMeasInfo.target_orient      = 'H';
             cout << "Horizontal Target in finite position - ???" << endl;
 
          } else {
@@ -1124,7 +966,7 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run)
 // Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
 void PrepareCollidingBunchPattern()
 {
-   for (int i=0; i<NBUNCH; i++){
+   for (int i=0; i<NBUNCH; i++) {
       phx.bunchpat[i] = 1; // PHENIX bunch patterns
       str.bunchpat[i] = 1; // STAR bunch patterns
    }
@@ -1136,8 +978,8 @@ void PrepareCollidingBunchPattern()
    }
 
    cout << "===== Colliding Bunch pattern =======" << endl;
-   cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i] ; cout << endl;
-   cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i] ; cout << endl;
+   cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i]; cout << endl;
+   cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i]; cout << endl;
    cout << "=====================================" << endl;
 }
 
@@ -1176,21 +1018,21 @@ void ProcessRecord(const recordMeasTypeStruct &rec)
 
 
 /** */
-void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &MeasInfo)
+void ProcessRecord(const recordPolAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 {
-   if (!gAsymAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, MeasInfo);
+   if (!gAsymAnaInfo->HasAlphaBit()) DecodeTargetID( (polDataStruct &) rec.data, mseMeasInfo);
 }
 
 
 /** */
-void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &run)
+void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 {
    if (!gAsymAnaInfo->HasTargetBit() || gAsymAnaInfo->HasAlphaBit()) return;
 
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
 
    //long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
-   ProcessRecordPCTarget((pCTargetStruct &) rec.data, run);
+   ProcessRecordPCTarget((pCTargetStruct &) rec.data, mseMeasInfo);
 
 }
 

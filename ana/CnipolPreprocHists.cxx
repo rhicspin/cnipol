@@ -249,26 +249,6 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 }
 
 
-/** */
-//void CnipolPreprocHists::ConvertRawToKin(TH2* hRaw, TH2* hKin, UShort_t chId)
-//{
-//   for (Int_t ibx=0; ibx<=hRaw->GetNbinsX(); ++ibx) {
-//      for (Int_t iby=0; iby<=hRaw->GetNbinsY(); ++iby) {
-//
-//         Double_t bcont  = hRaw->GetBinContent(ibx, iby);
-//         Double_t bAdc   = hRaw->GetXaxis()->GetBinCenter(ibx);
-//         Double_t bTdc   = hRaw->GetYaxis()->GetBinCenter(iby);
-//
-//         Double_t kinE   = gAsymRoot->fEventConfig->fCalibrator->GetEnergyA(bAdc, chId);
-//         Double_t kinToF = gAsymRoot->fEventConfig->fCalibrator->GetTimeOfFlight(bTdc, chId);
-//         
-//         //Int_t bin = hKin->FindBin(kinE, kinToF);
-//         hKin->Fill(kinE, kinToF, bcont);
-//      }
-//   }
-//}
-
-
 /** This method is not used for now. */
 void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *ebHists)
 {

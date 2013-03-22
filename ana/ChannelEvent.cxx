@@ -103,8 +103,8 @@ Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
 /** */
 Float_t ChannelEvent::GetFunnyEnergyA()
 {
-   float   depoE  = GetEnergyA();
-   float   funnyE = ekin(depoE, 60);
+   float   emeas  = GetEnergyA();
+   float   funnyE = ekin(emeas, 60);
    return  funnyE;
 }
 
