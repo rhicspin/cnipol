@@ -46,8 +46,8 @@ class MeasInfo : public TObject
 protected:
 
    Float_t             fBeamEnergy;
-   OnlineMachineParams fMachineParams;
-   OnlineTargetParams  fTargetParams;
+   RecordMachineParams fMachineParams;
+   RecordTargetParams  fTargetParams;
    Short_t             fExpectedGlobalTdcOffset;
    Float_t             fExpectedGlobalTimeOffset;
    std::string         fRunName;
