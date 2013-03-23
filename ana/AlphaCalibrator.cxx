@@ -78,7 +78,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         chCalib->fAmAmp = CoefExtract(fitres, c, i, "AmInt");
+         chCalib->fAmInt = CoefExtract(fitres, c, i, "AmInt");
       }
       else {
          Error("Calibrate", "Empty TFitResultPtr");
