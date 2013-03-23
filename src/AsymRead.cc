@@ -50,17 +50,24 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
       printf("\nFound file %s\n", fFileName.c_str());
 
    // Create a BLOB with file content
-   printf("Reading into memory...\n");
+   Info("RawDataProcessor", "Reading into memory...");
    TStopwatch sw;
 
    fFileStream.seekg(0, ios::end);
    fMemSize = fFileStream.tellg(); // in bytes
-   printf("fileSize: %d\n", fMemSize);
+   Info("RawDataProcessor", "Input file size: %d bytes", fMemSize);
    fFileStream.seekg(0, ios::beg);
 
    fMem = new char[fMemSize];
    fFileStream.read(fMem, fMemSize);
    fFileStream.close();
+
+///
+   RecordHeaderStruct *mHeader = (RecordHeaderStruct*) fMem;
+   printf("Currently consider record: fMem: %0#10x, type: %0#10x, len: %ld \n", fMem, (UInt_t) mHeader->type, mHeader->len);
+   printf("size RecordHeaderStruct: %ld \n", sizeof(RecordHeaderStruct));
+   printf("size recordHeaderStruct: %ld \n", sizeof(recordHeaderStruct));
+///
 
    sw.Stop();
    printf("Stopped reading into memory: Real: %f s and CPU: %f s time\n", sw.RealTime(), sw.CpuTime());
@@ -82,15 +89,24 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
 
-   recordBeginStruct *recBegin;
-
    //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
 
+   char *mSeek = fMem;
+
+   RecordHeaderStruct *mHeader = (RecordHeaderStruct*) mSeek;
+
+   printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
+
    // Take the very first record from the raw data file
-   recBegin = (recordBeginStruct*) fMem;
+   recordBeginStruct *recBegin = (recordBeginStruct*) fMem;
 
    // We'd better check the record type...
-   //if (nRecs == 1 && (recBegin.header.type & REC_TYPEMASK) == REC_BEGIN) {
+   if ( (recBegin->header.type & REC_TYPEMASK) == REC_BEGIN) {
+      Info("ReadRecBegin", "Found REC_BEGIN record... size: %ld", recBegin->header.len);
+   } else {
+      Error("ReadRecBegin", "Could not find REC_BEGIN record");
+      exit(-1);
+   }
 
    cout << "Begin of data stream version: " << recBegin->version << endl;
    cout << "Comment: "                      << recBegin->comment << endl;
@@ -108,7 +124,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    int polId = gMeasInfo->GetPolarimeterId(gMeasInfo->fPolBeam, gMeasInfo->fPolStream);
 
    if (polId < 0)
-      Warning("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
+      Warning("ReadRecBegin", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
 
    stringstream sstr;
 
@@ -130,7 +146,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    } else { // cannot proceed
-      Error("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Unknown polarimeter ID");
+      Error("ReadRecBegin", "Unknown polarimeter ID");
       exit(-1);
    }
 
@@ -143,10 +159,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    mysqlpp::DateTime dt(gMeasInfo->fStartTime);
    mseMeasInfo.start_time     = dt;
 
-   //} else
-      //printf("ERROR: Cannot read REC_BEGIN record\n");
-
-   Info("ReadRecBegin(MseMeasInfoX &mseMeasInfo)", "Finished reading begin record from data file");
+   Info("ReadRecBegin", "Finished reading begin record from data file");
 
    // Not really used now
    // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
@@ -165,7 +178,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 
    TStopwatch sw;
 
-   recordHeaderStruct *mHeader;
+   RecordHeaderStruct *mHeader;
 
    char *mSeek = fMem;
 
@@ -175,7 +188,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       //if (nRecs != 1) break;
       //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
-      mHeader = (recordHeaderStruct*) mSeek;
+      mHeader = (RecordHeaderStruct*) mSeek;
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       // REC_BEAMADO
@@ -385,7 +398,7 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
    gMeasInfo->fNEventsProcessed = 0;
    gMeasInfo->fNEventsTotal     = 0;
 
-   recordHeaderStruct *mHeader;
+   RecordHeaderStruct *mHeader;
    char *mSeek = fMem;
 
    while (true) {
@@ -394,7 +407,7 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
       //if (nRecs != 1) break;
       //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
-      mHeader = (recordHeaderStruct*) mSeek;
+      mHeader = (RecordHeaderStruct*) mSeek;
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
@@ -405,10 +418,10 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
       // We are here if rec type is REC_READAT
       long    delim   = mHeader->timestamp.delim;
-      size_t  recSize = mHeader->len - sizeof(recordHeaderStruct);
+      size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
       char   *mSeekAT = mSeek;
 
-      mSeekAT += sizeof(recordHeaderStruct);
+      mSeekAT += sizeof(RecordHeaderStruct);
       mSeek    = mSeek + mHeader->len;
 
       recordReadATStruct *ATPtr;
@@ -520,7 +533,7 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
    gMeasInfo->fNEventsProcessed = 0;
    gMeasInfo->fNEventsTotal     = 0;
 
-   recordHeaderStruct *mHeader;
+   RecordHeaderStruct *mHeader;
    char *mSeek = fMem;
 
    while (true) {
@@ -529,7 +542,7 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
       //if (nRecs != 1) break;
       //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
-      mHeader = (recordHeaderStruct*) mSeek;
+      mHeader = (RecordHeaderStruct*) mSeek;
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
@@ -540,10 +553,10 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 
       // We are here if rec type is REC_READAT
       long    delim   = mHeader->timestamp.delim;
-      size_t  recSize = mHeader->len - sizeof(recordHeaderStruct);
+      size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
       char   *mSeekAT = mSeek;
 
-      mSeekAT += sizeof(recordHeaderStruct);
+      mSeekAT += sizeof(RecordHeaderStruct);
       mSeek    = mSeek + mHeader->len;
 
       recordReadATStruct *ATPtr;
