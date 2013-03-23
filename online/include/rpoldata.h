@@ -72,21 +72,23 @@ enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
 
 typedef struct RecordHeaderStruct
 {
-    long len;           // total length = header size + data size
-    long type;          // record type, see above
-    long num;           // record number
-    union myUnion {
-        time_t time;    // local UNIX time in most cases
-        long delim;     // when read from memory
-    } timestamp;
+   long len;           // total length = header size + data size
+   long type;          // record type, see above
+   long num;           // record number
+   union {
+       time_t time;    // local UNIX time in most cases
+       long delim;     // when read from memory
+   } timestamp;
 
-   ClassDef(RecordHeaderStruct, 1)
+   RecordHeaderStruct & operator=(const RecordHeaderStruct &rec);
+   void Streamer(TBuffer &buf);
+
 } recordHeaderStruct;
 
 
 typedef struct
 {
-    recordHeaderStruct header;
+    RecordHeaderStruct header;
     long version;
     char comment[256];
 } recordBeginStruct;
@@ -101,13 +103,14 @@ typedef struct
 
 struct RecordMachineParams
 {
-   recordHeaderStruct header;
+   RecordHeaderStruct header;
    Int_t   fCavity197MHzVoltage[N_BEAMS];
    Float_t fSnakeCurrents[N_BEAMS];
    Float_t fStarRotatorCurrents[N_BEAMS];
    Float_t fPhenixRotatorCurrents[N_BEAMS];
 
-   ClassDef(RecordMachineParams, 1)
+   RecordMachineParams & operator=(const RecordMachineParams &rec);
+   void Streamer(TBuffer &buf);
 };
 
 
@@ -122,12 +125,16 @@ typedef struct {
     polDataStruct data;
 } recordPolAdoStruct;
 
-struct RecordTargetParams {
-    recordHeaderStruct header;
-    Int_t fVelocity;
-    Int_t fProfileStartPosition;
-    Int_t fProfileEndPosition;
-    Int_t fProfilePeakPosition;
+struct RecordTargetParams
+{
+   RecordHeaderStruct header;
+   Int_t fVelocity;
+   Int_t fProfileStartPosition;
+   Int_t fProfileEndPosition;
+   Int_t fProfilePeakPosition;
+
+   RecordTargetParams& operator=(const RecordTargetParams &rec);
+   void Streamer(TBuffer &buf);
 };
 
 typedef struct {
@@ -173,9 +180,10 @@ typedef struct {
     wcmDataStruct data;
 } recordWcmAdoStruct;
 
+
 struct RecordWcm
 {
-   recordHeaderStruct header;
+   RecordHeaderStruct header;
    Float_t  fFillDataM[360];      // like in wcmDataStruct
    Float_t  fWcmBeamM;            // like in wcmDataStruct
    Double_t fBunchDataM[360];
@@ -183,20 +191,11 @@ struct RecordWcm
    Double_t fProfileHeaderM[32];
    //UChar_t* fProfileDataM;
 
-	RecordWcm() : fFillDataM(), fWcmBeamM(0), fBunchDataM(), fBunchLengthM(0),
-      fProfileHeaderM()//, fProfileDataM(0)
-   {
-      memset(fFillDataM,      0, 360*sizeof(Float_t));
-      memset(fBunchDataM,     0, 360*sizeof(Double_t));
-      memset(fProfileHeaderM, 0, 32 *sizeof(Double_t));
-   }
-
-   void Print()
-   {
-      for (short i=0; i<360; i++) printf("fBunchDataM[%02d]: %8.5f\n", i, fBunchDataM[i]);
-      for (short i=0; i<32;  i++) printf("fProfileHeaderM[%02d]: %8.5f\n", i, fProfileHeaderM[i]);
-   }
+   RecordWcm();
+   RecordWcm& operator=(const RecordWcm &rec);
+   void Print();
 };
+
 
 typedef struct {
     recordHeaderStruct header;
