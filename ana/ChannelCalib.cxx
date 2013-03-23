@@ -66,7 +66,7 @@ void ChannelCalib::Print(const Option_t* opt) const
 void ChannelCalib::PrintAsPhp(FILE *f) const
 {
    fprintf(f, "array(");
-   fprintf(f, "'Amerecium' => array(");
+   fprintf(f, "'Americium' => array(");
    fprintf(f, "'ACoef' => %7.4f, ",         fAmAmp.fCoef);
    fprintf(f, "'ACoefErr' => %7.4f, ",      fAmAmp.fCoefErr);
    fprintf(f, "'ICoef' => %7.4f, ",         fAmInt.fCoef);
