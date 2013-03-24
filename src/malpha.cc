@@ -1,5 +1,7 @@
 #include <cstdlib>
 #include <string>
+#include <map>
+#include <vector>
 
 #include "malpha.h"
 
@@ -7,12 +9,28 @@
 #include "TROOT.h"
 
 #include "MAlphaAnaInfo.h"
+#include "AsymHeader.h"
 #include "MeasInfo.h"
 
 #include "utils/utils.h"
 
 using namespace std;
 
+
+/** */
+void FillFromHist(TH1F *h, double runId, map< double, vector<double> > &result)
+{
+   Int_t xfirst  =  h->GetXaxis()->GetFirst();
+   Int_t xlast   =  h->GetXaxis()->GetLast();
+
+   assert(h->GetNbinsX() == N_SILICON_CHANNELS);
+   if (result.count(runId) == 0) {
+      result[runId].resize(N_SILICON_CHANNELS);
+      for (int i = xfirst; i <= xlast; i++) {
+         result[runId][i - xfirst] = h->GetBinContent(i);
+      }
+   }
+}
 
 /** */
 int main(int argc, char *argv[])
@@ -42,6 +60,11 @@ int main(int argc, char *argv[])
    // Create a default canvas here to get rid of weird root messages while
    // reading objects from root files
    TCanvas canvas("canvas", "canvas", 1400, 600);
+
+   map< double, vector<double> > result_am;
+   map< double, vector<double> > result_gd;
+   double max_runId = -1;
+   double min_runId = -1;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -82,11 +105,44 @@ int main(int argc, char *argv[])
       UInt_t      fillId          = (UInt_t) runId;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
+      if ((gMM->fMeasInfo->fPolBeam != 1) || (gMM->fMeasInfo->fPolStream != 1)) {
+         continue;
+      }
+
+      if ((max_runId == -1) || (max_runId < runId)) {
+         max_runId = runId;
+      }
+      if ((min_runId == -1) || (min_runId > runId)) {
+         min_runId = runId;
+      }
+
+      TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
+      TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
+
+      FillFromHist(hAmAmpCoef, runId, result_am);
+      FillFromHist(hGdAmpCoef, runId, result_gd);
+
       f->Close();
       delete f;
    }
 
-   Info("malpha", "Analyzing alpha measurements...");
+   TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "NEW");
+
+   for (int channel_id = 0; channel_id < N_SILICON_CHANNELS; channel_id++) {
+      TString obj_name("AmGain_over_GdGain_");
+      obj_name += channel_id;
+      const char *obj_name_cstr = obj_name.Data();
+
+      TH1F  h(obj_name_cstr, obj_name_cstr, 10 * result_am.size(), min_runId * 0.9, max_runId * 1.1);
+      for (map< double, vector<double> >::iterator it = result_am.begin(); it != result_am.end(); it++) {
+         double runId = it->first;
+
+         h.SetBinContent(h.FindBin(runId), result_am[runId][channel_id] / result_gd[runId][channel_id]);
+      }
+      h.Draw();
+
+      h.Write(obj_name_cstr);
+   }
 
    return EXIT_SUCCESS;
 }
