@@ -100,7 +100,18 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
    // Typical value for long_name is "Intgrl", for short_name it is "I"
 
    CalibCoefSet result;
-   result.fCoef    = (AM_ALPHA_E / fitres->Value(source_offset + 1)) * ATTEN;
+
+   float        peak_energy;
+   if (source_offset == kAmericium)
+   {
+      peak_energy = AM_ALPHA_E;
+   } else if (source_offset == kGadolinium) {
+      peak_energy = GD_ALPHA_E;
+   } else {
+      Error("CoefExtract", "Bad source type");
+   }
+
+   result.fCoef    = (peak_energy / fitres->Value(source_offset + 1)) * ATTEN;
    result.fCoefErr = result.fCoef * fitres->FitResult::Error(source_offset + 1) / fitres->Value(source_offset + 1);
    result.fChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
