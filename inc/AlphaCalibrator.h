@@ -32,9 +32,14 @@ class AlphaCalibrator : public Calibrator
 {
 private:
 
+   enum ESource
+   {
+      kAmericium = 0
+   };
+
    CalibCoefSet CoefExtract (
-      const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
-      std::string name
+      const TFitResultPtr &fitres, ESource source_offset,
+      DrawObjContainer *c, UShort_t i, std::string name
    );
    TFitResultPtr Calibrate(TH1 *h, TF1 *f);
 
