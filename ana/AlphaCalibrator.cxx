@@ -64,7 +64,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres) {
-         chCalib->fAmAmp = CoefExtract(fitres, c, i, "AmAmp");
+         chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
       }
 
       // Integral
@@ -78,7 +78,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fitfunc);
 
       if (fitres.Get()) {
-         chCalib->fAmInt = CoefExtract(fitres, c, i, "AmInt");
+         chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "AmInt");
       }
       else {
          Error("Calibrate", "Empty TFitResultPtr");
@@ -91,19 +91,21 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
 /** */
 CalibCoefSet AlphaCalibrator::CoefExtract (
-   const TFitResultPtr &fitres, DrawObjContainer *c, UShort_t i,
-   std::string name
+   const TFitResultPtr &fitres, ESource source_offset,
+   DrawObjContainer *c, UShort_t i, std::string name
 )
 {
    // Typical value for long_name is "Intgrl", for short_name it is "I"
 
    CalibCoefSet result;
-   result.fCoef    = (AM_ALPHA_E / fitres->Value(1)) * ATTEN;
-   result.fCoefErr = result.fCoef * fitres->FitResult::Error(1) / fitres->Value(1);
+   result.fCoef    = (AM_ALPHA_E / fitres->Value(source_offset + 1)) * ATTEN;
+   result.fCoefErr = result.fCoef * fitres->FitResult::Error(source_offset + 1) / fitres->Value(source_offset + 1);
    result.fChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinContent(i, 100 * fitres->Value(2) / fitres->Value(1));
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinError(i, 100 * fitres->FitResult::Error(2) / (fitres->Value(1)));
+   float width_value = 100 * fitres->Value(source_offset + 2) / fitres->Value(source_offset + 1);
+   float width_error = 100 * fitres->FitResult::Error(source_offset + 2) / fitres->Value(source_offset + 1);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinContent(i, width_value);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinError(i, width_error);
 
    ((TH1F*) c->d["alpha"]->o["h" + name + "Coef"])->SetBinContent(i, result.fCoef);
    ((TH1F*) c->d["alpha"]->o["h" + name + "Coef"])->SetBinError(i, result.fCoefErr);
