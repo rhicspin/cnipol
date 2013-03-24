@@ -70,35 +70,70 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hIvsA"])->GetXaxis()->SetTitle("Amplitude, ADC");
    ((TH2F*) o["hIvsA"])->GetYaxis()->SetTitle("Integral, ADC");
 
+   // Americium
+
    o["hAmAmpCoef"]   = new TH1F("hAmAmpCoef", "hAmAmpCoef", 72, 1, 73);
    ((TH1F*) o["hAmAmpCoef"])->SetOption("E");
    //((TH1F*) o["hAmAmpCoef"])->GetYaxis()->SetRangeUser(5, 8);
    ((TH2F*) o["hAmAmpCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmAmpCoef"])->GetYaxis()->SetTitle("Amplitude Calib, keV/ADC");
+   ((TH2F*) o["hAmAmpCoef"])->GetYaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
 
    o["hAmAmpCoefDisp"] = new TH1F("hAmAmpCoefDisp", "hAmAmpCoefDisp", 100, 0, 1);
    ((TH2F*) o["hAmAmpCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmAmpCoefDisp"])->GetXaxis()->SetTitle("Amplitude Calib, keV/ADC");
+   ((TH2F*) o["hAmAmpCoefDisp"])->GetXaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
 
    o["hAmIntCoef"]   = new TH1F("hAmIntCoef", "hAmIntCoef", 72, 1, 73);
    ((TH1F*) o["hAmIntCoef"])->SetOption("E");
    ((TH2F*) o["hAmIntCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmIntCoef"])->GetYaxis()->SetTitle("Integral Calib, keV/ADC");
+   ((TH2F*) o["hAmIntCoef"])->GetYaxis()->SetTitle("Americium Integral Calib, keV/ADC");
 
    //o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 40, 6, 9);
    o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 100, 0, 1);
    ((TH2F*) o["hAmIntCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmIntCoefDisp"])->GetXaxis()->SetTitle("Integral Calib, keV/ADC");
+   ((TH2F*) o["hAmIntCoefDisp"])->GetXaxis()->SetTitle("Americium Integral Calib, keV/ADC");
 
    o["hAmAmpWidth"]   = new TH1F("hAmAmpWidth", "hAmAmpWidth", 72, 1, 73);
    ((TH1*) o["hAmAmpWidth"])->SetOption("E");
    ((TH1*) o["hAmAmpWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hAmAmpWidth"])->GetYaxis()->SetTitle("Alpha Peak Width, % (A)");
+   ((TH1*) o["hAmAmpWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (A)");
 
    o["hAmIntWidth"]   = new TH1F("hAmIntWidth", "hAmIntWidth", 72, 1, 73);
    ((TH1*) o["hAmIntWidth"])->SetOption("E");
    ((TH1*) o["hAmIntWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hAmIntWidth"])->GetYaxis()->SetTitle("Alpha Peak Width, % (I)");
+   ((TH1*) o["hAmIntWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (I)");
+
+   // Gadolinium
+
+   o["hGdAmpCoef"]   = new TH1F("hGdAmpCoef", "hGdAmpCoef", 72, 1, 73);
+   ((TH1F*) o["hGdAmpCoef"])->SetOption("E");
+   //((TH1F*) o["hGdAmpCoef"])->GetYaxis()->SetRangeUser(5, 8);
+   ((TH2F*) o["hGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hGdAmpCoef"])->GetYaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
+
+   o["hGdAmpCoefDisp"] = new TH1F("hGdAmpCoefDisp", "hGdAmpCoefDisp", 100, 0, 1);
+   ((TH2F*) o["hGdAmpCoefDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hGdAmpCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
+
+   o["hGdIntCoef"]   = new TH1F("hGdIntCoef", "hGdIntCoef", 72, 1, 73);
+   ((TH1F*) o["hGdIntCoef"])->SetOption("E");
+   ((TH2F*) o["hGdIntCoef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hGdIntCoef"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
+
+   //o["hGdIntCoefDisp"] = new TH1F("hGdIntCoefDisp", "hGdIntCoefDisp", 40, 6, 9);
+   o["hGdIntCoefDisp"] = new TH1F("hGdIntCoefDisp", "hGdIntCoefDisp", 100, 0, 1);
+   ((TH2F*) o["hGdIntCoefDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hGdIntCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
+
+   o["hGdAmpWidth"]   = new TH1F("hGdAmpWidth", "hGdAmpWidth", 72, 1, 73);
+   ((TH1*) o["hGdAmpWidth"])->SetOption("E");
+   ((TH1*) o["hGdAmpWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hGdAmpWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (A)");
+
+   o["hGdIntWidth"]   = new TH1F("hGdIntWidth", "hGdIntWidth", 72, 1, 73);
+   ((TH1*) o["hGdIntWidth"])->SetOption("E");
+   ((TH1*) o["hGdIntWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hGdIntWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (I)");
+
 
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
    ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");

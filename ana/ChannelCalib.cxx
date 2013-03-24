@@ -37,6 +37,8 @@ void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
 {
    fAmAmp = chCalib.fAmAmp;
    fAmInt = chCalib.fAmInt;
+   fGdAmp = chCalib.fGdAmp;
+   fGdInt = chCalib.fGdInt;
 }
 
 
@@ -72,6 +74,12 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
    fprintf(f, "'ICoef' => %7.4f, ",         fAmInt.fCoef);
    fprintf(f, "'ICoefErr' => %7.4f, ",      fAmInt.fCoefErr);
    fprintf(f, "),");
+   fprintf(f, "'Gadolinium' => array(");
+   fprintf(f, "'ACoef' => %7.4f, ",         fGdAmp.fCoef);
+   fprintf(f, "'ACoefErr' => %7.4f, ",      fGdAmp.fCoefErr);
+   fprintf(f, "'ICoef' => %7.4f, ",         fGdInt.fCoef);
+   fprintf(f, "'ICoefErr' => %7.4f, ",      fGdInt.fCoefErr);
+   fprintf(f, "),");
    fprintf(f, "'DLWidth' => %7.4f, ",       fDLWidth);
    fprintf(f, "'DLWidthErr' => %7.4f, ",    fDLWidthErr);
    fprintf(f, "'T0Coef' => %7.4f, ",        fT0Coef);
@@ -94,6 +102,12 @@ void ChannelCalib::ResetToZero()
    fAmInt.fCoef         = 0;
    fAmInt.fCoefErr      = 0;
    fAmInt.fChi2Ndf      = 0;
+   fGdAmp.fCoef         = 0;
+   fGdAmp.fCoefErr      = 0;
+   fGdAmp.fChi2Ndf      = 0;
+   fGdInt.fCoef         = 0;
+   fGdInt.fCoefErr      = 0;
+   fGdInt.fChi2Ndf      = 0;
    fDLWidth       = 0;
    fDLWidthErr    = 0;
    fT0Coef        = 0;

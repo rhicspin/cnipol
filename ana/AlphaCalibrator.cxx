@@ -65,6 +65,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
       if (fitres) {
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
+         chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
       }
 
       // Integral
@@ -79,6 +80,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
       if (fitres.Get()) {
          chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "AmInt");
+         chCalib->fGdInt = CoefExtract(fitres, kGadolinium, c, i, "GdInt");
       }
       else {
          Error("Calibrate", "Empty TFitResultPtr");
