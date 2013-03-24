@@ -36,12 +36,12 @@ int main(int argc, char *argv[])
 
    // Do not attempt to recover files
    gEnv->SetValue("TFile.Recover", 0);
-   
+
    MAsymAnaInfo mAsymAnaInfo;
    mAsymAnaInfo.ProcessOptions(argc, argv);
    mAsymAnaInfo.VerifyOptions();
 
-	gMAsymAnaInfo = &mAsymAnaInfo;
+   gMAsymAnaInfo = &mAsymAnaInfo;
 
    AnaGlobResult anaGlobResult;
    anaGlobResult.Configure(mAsymAnaInfo);
@@ -66,13 +66,13 @@ int main(int argc, char *argv[])
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
 
    //string filelistName = mAsymAnaInfo.GetMListFileName();
-	string filelist     = mAsymAnaInfo.GetMListFullPath();
+   string filelist     = mAsymAnaInfo.GetMListFullPath();
 
    //ofstream filelistGood((filelist + "_good").c_str());
    //filelistGood << fixed << setprecision(3);
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
-	mAsymRoot.SetAnaGlobResult(&anaGlobResult);
+   mAsymRoot.SetAnaGlobResult(&anaGlobResult);
 
    Info("masym", "Starting first pass...");
 
@@ -91,8 +91,7 @@ int main(int argc, char *argv[])
    TIter   *next = new TIter(utils::getFileList(filelist));
 
    // Loop over the runs and record the time of the last flattop measurement in the fill
-   while (next && (o = (*next)()) )
-   {
+   while (next && (o = (*next)()) ) {
       string measId   = string(((TObjString*) o)->GetName());
       string fileName = mAsymAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAsymAnaInfo.GetSuffix() + ".root";
 
@@ -171,20 +170,19 @@ int main(int argc, char *argv[])
           profileRatioErr < 0.01 || profileRatioErr > 10 ||                 // exclude too small and too big errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
           ( fillId >= 17064 && fillId <= 17084 )
-         )
-      {
-	      Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
+         ) {
+         Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
          printf("%8.3f, %s, %3d, %f, %f, %s, %f, %f\n",
-            runId, strTime, beamEnergy, polarization, polarizationErr,
-            RunConfig::AsString(gMM->fMeasInfo->fMeasType).c_str(), profileRatio,
-            profileRatioErr );
+                runId, strTime, beamEnergy, polarization, polarizationErr,
+                RunConfig::AsString(gMM->fMeasInfo->fMeasType).c_str(), profileRatio,
+                profileRatioErr );
 
          f->Close();
          delete f;
          continue;
       }
 
-      //if (flattopTimes.find(fillId) == flattopTimes.end()) 
+      //if (flattopTimes.find(fillId) == flattopTimes.end())
       //   flattopTimes[fillId] = 0;
       //if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
       //   flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
@@ -193,9 +191,9 @@ int main(int argc, char *argv[])
       //if (gH->d.find("runs") != gH->d.end()) {
       //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxFill(fillId);
       //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxTime(gMM->fMeasInfo->fStartTime);
-	   //}
+      //}
 
-		mAsymRoot.UpdMinMax(*gMM);
+      mAsymRoot.UpdMinMax(*gMM);
 
       // Check that asym hist container exists in this file
       DrawObjContainer *gHIn = new DrawObjContainer(f);
@@ -215,20 +213,20 @@ int main(int argc, char *argv[])
       anaGlobResult.AddMeasResult(*gMM, gHIn);
       //gHIn->Print();
 
-		//gHIn->Delete();
+      //gHIn->Delete();
       delete gHIn;
 
       f->Close();
       delete f;
-     
+
       gGoodMeass.insert(*gMM);
       //filelistGood << runId << endl;
    }
 
    //filelistGood.close();
 
-	// Update global run parameters before anything else
-	gRunConfig.SetBeamEnergies(anaGlobResult.GetBeamEnergies());
+   // Update global run parameters before anything else
+   gRunConfig.SetBeamEnergies(anaGlobResult.GetBeamEnergies());
 
    // Create graphic containers
    DrawObjContainer *gH = new DrawObjContainer(&mAsymRoot);
@@ -259,8 +257,7 @@ int main(int argc, char *argv[])
    // Now process only good runs
    set<EventConfig>::const_iterator iMeas = gGoodMeass.begin();
 
-   for ( ; iMeas!=gGoodMeass.end(); ++iMeas)
-   {
+   for ( ; iMeas!=gGoodMeass.end(); ++iMeas) {
       // Overwrite the default gMeasInfo with the saved one
       gMeasInfo = iMeas->fMeasInfo;
 
@@ -278,10 +275,9 @@ int main(int argc, char *argv[])
 
    if (mAsymAnaInfo.HasGraphBit())
       mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
-      //mAsymRoot.SaveAs("^.*hRSlopeVsFill.*$", mAsymAnaInfo.GetImageDir());
+   //mAsymRoot.SaveAs("^.*hRSlopeVsFill.*$", mAsymAnaInfo.GetImageDir());
 
-	if (mAsymAnaInfo.fFlagUpdateDb)
-   {
+   if (mAsymAnaInfo.fFlagUpdateDb) {
       AsymDbSql *asymDbSql = new AsymDbSql();
       anaGlobResult.UpdateInsertDb(asymDbSql);
    }
