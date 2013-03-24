@@ -96,7 +96,7 @@ void MAlphaAnaInfo::VerifyOptions()
 {
    // The run name must be specified
    if (fMListFileName.empty()) {
-      Error("VerifyOptions", "File name has to be specified");
+      Error("VerifyOptions", "List file name has to be specified");
       PrintUsage();
       exit(0);
    }
