@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
    time_t  gtime = time(0);
    //tm     *ltime = localtime(&gtime);
-	tm      start_time = *localtime(&gtime);
+   tm      start_time = *localtime(&gtime);
 
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
@@ -131,15 +131,16 @@ int main(int argc, char *argv[])
    gAsymRoot->UpdateCalibrator();
 
    // Create trees if requested by user
-   if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->CreateTrees(); }
+   if (gAsymAnaInfo->fSaveTrees.any()) {
+      gAsymRoot->CreateTrees();
+   }
 
    // If requested update for data (not alpha) calibration constants we need to
    // quickly do some pre-processing to extract parameters from the data.
    // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAsymAnaInfo->HasCalibBit() )
-   {
+   if ( gAsymAnaInfo->HasCalibBit() ) {
       rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
       gAsymRoot->FillDerivedPassOne();          // Fill other histograms from the primary ones
       gAsymRoot->PostFillPassOne();             // Make decisions based on hist content/data
@@ -150,8 +151,7 @@ int main(int argc, char *argv[])
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // PassTwo
-   if ( !gAsymAnaInfo->HasAlphaBit() )
-   {
+   if ( !gAsymAnaInfo->HasAlphaBit() ) {
       gAsymRoot->PreFill();
 
       // Main event Loop
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 
       gAsymRoot->FillDerived();
       gAsymRoot->PostFill(*mseMeasInfoX);
-	}
+   }
 
    // Close histogram file
    //hist_close(hbk_outfile);
