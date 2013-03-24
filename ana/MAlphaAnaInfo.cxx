@@ -15,6 +15,7 @@ using namespace std;
 /** */
 MAlphaAnaInfo::MAlphaAnaInfo() : AnaInfo(),
       fMListFileName("")
+     ,fOutputFileName("")
 {
    Init();
 }
@@ -53,12 +54,13 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
       {"log",                 optional_argument,   0,   'l'},
 
       {"meas-list",           required_argument,   0,   MAlphaAnaInfo::OPTION_MLIST},
+      {"output-file",         required_argument,   0,   MAlphaAnaInfo::OPTION_OFILE},
       {0, 0, 0, 0}
    };
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::m:", long_options, &option_index)) != -1) {
+   while ((c = getopt_long(argc, argv, "?hl::m:o:", long_options, &option_index)) != -1) {
       switch (c) {
 
          case '?':
@@ -73,6 +75,11 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
          case 'm':
          case MAlphaAnaInfo::OPTION_MLIST:
             SetMListFileName(optarg);
+            break;
+
+         case 'o':
+         case MAlphaAnaInfo::OPTION_OFILE:
+            fOutputFileName = optarg;
             break;
 
          default:
@@ -90,6 +97,12 @@ void MAlphaAnaInfo::VerifyOptions()
    // The run name must be specified
    if (fMListFileName.empty()) {
       Error("VerifyOptions", "File name has to be specified");
+      PrintUsage();
+      exit(0);
+   }
+
+   if (fOutputFileName.empty()) {
+      Error("VerifyOptions", "Output file name has to be specified");
       PrintUsage();
       exit(0);
    }
@@ -131,5 +144,6 @@ void MAlphaAnaInfo::PrintUsage()
    cout << "Options:" << endl;
    cout << " -h, -?                               : Print this help" << endl;
    cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
+   cout << " -o, --output-file <file_name>        : Output file name" << endl;
    cout << endl;
 }

@@ -10,17 +10,21 @@
 
 
 /** */
-class MAlphaAnaInfo : public AnaInfo
-{
+class MAlphaAnaInfo : public AnaInfo {
 public:
 
    // Flag options
-   enum Option {OPTION_MLIST           = 0x20000001};
+   enum Option {
+      OPTION_MLIST           = 0x20000001,
+      OPTION_OFILE           = 0x20000002
+   };
 
    // Constraint parameter for data processing 
    std::string fMListFileName;     // File name
 
 public:
+
+   std::string fOutputFileName;
 
    MAlphaAnaInfo();
    ~MAlphaAnaInfo();
