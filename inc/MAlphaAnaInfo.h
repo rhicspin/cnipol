@@ -1,0 +1,41 @@
+#ifndef MAlphaAnaInfo_h
+#define MAlphaAnaInfo_h
+
+#include <string>
+
+#include "TObject.h"
+#include "TSystem.h"
+
+#include "AnaInfo.h"
+
+
+/** */
+class MAlphaAnaInfo : public AnaInfo
+{
+public:
+
+   // Flag options
+   enum Option {OPTION_MLIST           = 0x20000001};
+
+   // Constraint parameter for data processing 
+   std::string fMListFileName;     // File name
+
+public:
+
+   MAlphaAnaInfo();
+   ~MAlphaAnaInfo();
+
+   void        SetMListFileName(std::string listName);
+   std::string GetMListFileName();
+   std::string GetMListFullPath();
+   std::string GetExternInfoPath();
+   void        ProcessOptions(int argc, char **argv);
+   void        VerifyOptions();
+   void        Print(const Option_t* opt="") const;
+   void        PrintAsPhp(FILE *f=stdout) const;
+   void        PrintUsage();
+
+   ClassDef(MAlphaAnaInfo, 1)
+};
+
+#endif
