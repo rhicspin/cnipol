@@ -53,6 +53,8 @@ public:
 
    CalibCoefSet fAmAmp;
    CalibCoefSet fAmInt;
+   CalibCoefSet fGdAmp;
+   CalibCoefSet fGdInt;
    Float_t    fDLWidth;       // Dead layer
    Float_t    fDLWidthErr;
    Float_t    fT0Coef;        // T0

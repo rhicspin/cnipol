@@ -34,7 +34,7 @@ private:
 
    enum ESource
    {
-      kAmericium = 0
+      kAmericium = 0, kGadolinium = 3
    };
 
    CalibCoefSet CoefExtract (
