@@ -315,11 +315,11 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
 
    for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
-      UShort_t chId                     = *iCh;
-      TH1*     hTvsA_ch                 = (TH1*) rawHists->GetHTvsA_ch(chId);   // raw hist all - empty bunches
-      TH1*     hTimeVsEnergyA_ch        = (TH1*) fhTimeVsEnergyA_ch[chId-1];
-      TH1*     hFitMeanTimeVsEnergyA_ch = (TH1*) fhFitMeanTimeVsEnergyA_ch[chId-1];
-      TH1*     hFitChi2NdfVsEnergyA_ch  = (TH1*) fhFitChi2NdfVsEnergyA_ch[chId-1];
+      UShort_t chId                       = *iCh;
+      TH1*     hTvsA_ch                   = (TH1*) rawHists->GetHTvsA_ch(chId);   // raw hist all - empty bunches
+      TH1*     hTimeVsEnergyA_ch          = (TH1*) fhTimeVsEnergyA_ch[chId-1];
+      TH1*     hFitMeanTimeVsEnergyA_ch   = (TH1*) fhFitMeanTimeVsEnergyA_ch[chId-1];
+      TH1*     hFitChi2NdfVsEnergyA_ch    = (TH1*) fhFitChi2NdfVsEnergyA_ch[chId-1];
       TH1*     hFitChi2NdfLogVsEnergyA_ch = (TH1*) fhFitChi2NdfLogVsEnergyA_ch[chId-1];
 
       UShort_t adcMin = TMath::Max(gMeasInfo->GetProtoCutAdcMin(), (UShort_t) hTvsA_ch->GetXaxis()->GetXmin());
