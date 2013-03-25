@@ -42,7 +42,7 @@ private:
       DrawObjContainer *c, UShort_t i, std::string name
    );
    void AmGdPlot(
-      const ChannelCalib *chCalib, DrawObjContainer *c, const std::string &sCh
+      const ChannelCalib *chCalib, DrawObjContainer *c, int iCh, const std::string &sCh
    );
    TFitResultPtr Calibrate(TH1 *h, bool fit_gadolinium);
 
