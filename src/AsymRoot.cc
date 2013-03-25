@@ -536,6 +536,9 @@ void AsymRoot::PostFillPassOne()
    if ( fHists->d.find("preproc") != fHists->d.end() ) 
       fHists->d["preproc"]->PostFillPassOne(fHists);
 
+   if ( fHists->d.find("alpha") != fHists->d.end() ) 
+      fHists->d["alpha"]->PostFillPassOne(fHists);
+
    ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
    //
