@@ -65,6 +65,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
          if (fit_gadolinium) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
+            AmGdPlot(chCalib, c, sCh);
          }
       }
 
@@ -130,6 +131,27 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
    ((TH1F*) c->d["alpha"]->o["h" + name + "CoefDisp"])->Fill(result.fCoef);
 
    return result;
+}
+
+
+void AlphaCalibrator::AmGdPlot(
+   const ChannelCalib *chCalib, DrawObjContainer *c, const string &sCh
+)
+{
+   TH2F         *hAmGd = (TH2F*) c->d["alpha"]->d["channel" + sCh]->o["hAmGd_ch" + sCh];
+   TGraphErrors *gAmGd = new TGraphErrors(2);
+   gAmGd->SetName(string("gAmGd_ch" + sCh).c_str());
+   gAmGd->SetPoint(0, AM_ALPHA_E / 1000, chCalib->fAmAmp.fPeakPos);
+   gAmGd->SetPointError(0, 0, chCalib->fAmAmp.fPeakPosErr);
+   gAmGd->SetPoint(1, GD_ALPHA_E / 1000, chCalib->fGdAmp.fPeakPos);
+   gAmGd->SetPointError(1, 0, chCalib->fGdAmp.fPeakPosErr);
+   hAmGd->GetListOfFunctions()->Add(gAmGd, "p");
+   hAmGd->SetOption("DUMMY GRIDX GRIDY");
+   hAmGd->SetTitle("; Energy, MeV; Peak, ADC Counts;");
+   hAmGd->GetXaxis()->Set(1, 0, AM_ALPHA_E / 1000 * 1.1);
+   hAmGd->GetYaxis()->Set(1, 0, chCalib->fAmAmp.fPeakPos * 1.3);
+
+   gAmGd->Fit("pol1", "", "", 0, AM_ALPHA_E / 1000);
 }
 
 
