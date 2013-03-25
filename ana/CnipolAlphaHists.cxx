@@ -119,7 +119,6 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hGdIntCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hGdIntCoef"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
 
-   //o["hGdIntCoefDisp"] = new TH1F("hGdIntCoefDisp", "hGdIntCoefDisp", 40, 6, 9);
    o["hGdIntCoefDisp"] = new TH1F("hGdIntCoefDisp", "hGdIntCoefDisp", 100, 0, 1);
    ((TH2F*) o["hGdIntCoefDisp"])->SetBit(TH1::kCanRebin);
    ((TH2F*) o["hGdIntCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
