@@ -521,6 +521,7 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fThinout']                     = %f;\n",     fThinout);
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
+   fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",     fAlphaSourceCount);
    fprintf(f, "\n");
 }
 
