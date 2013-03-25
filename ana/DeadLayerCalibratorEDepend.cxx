@@ -89,9 +89,9 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
    ChannelSetConstIter iChB = gMeasInfo->fSiliconChannels.begin();
    ChannelSetConstIter iChE = gMeasInfo->fSiliconChannels.end();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
-
-      // Skip if disabled
+   for (iCh=iChB; iCh!=iChE; ++iCh)
+   {
+      // Skip if channel is disabled
       if (gMeasInfo->IsDisabledChannel(*iCh)) continue;
 
       sprintf(&strChId[0], "%02d", *iCh);
