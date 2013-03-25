@@ -34,6 +34,8 @@ class CalibCoefSet : public TObject
 {
 public:
 
+   Float_t fPeakPos;
+   Float_t fPeakPosErr;
    Float_t fCoef;
    Float_t fCoefErr;
    Float_t fChi2Ndf;

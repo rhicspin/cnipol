@@ -113,12 +113,14 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
       Error("CoefExtract", "Bad source type");
    }
 
-   result.fCoef    = (peak_energy / fitres->Value(source_offset + 1)) * ATTEN;
-   result.fCoefErr = result.fCoef * fitres->FitResult::Error(source_offset + 1) / fitres->Value(source_offset + 1);
-   result.fChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
+   result.fPeakPos    = fitres->Value(source_offset + 1);
+   result.fPeakPosErr = fitres->FitResult::Error(source_offset + 1);
+   result.fCoef       = (peak_energy / result.fPeakPos) * ATTEN;
+   result.fCoefErr    = result.fCoef * result.fPeakPosErr / result.fPeakPos;
+   result.fChi2Ndf    = fitres->Ndf() > 0 ? fitres->Chi2() / fitres->Ndf() : -1;
 
-   float width_value = 100 * fitres->Value(source_offset + 2) / fitres->Value(source_offset + 1);
-   float width_error = 100 * fitres->FitResult::Error(source_offset + 2) / fitres->Value(source_offset + 1);
+   float width_value = 100 * fitres->Value(source_offset + 2) / result.fPeakPos;
+   float width_error = 100 * fitres->FitResult::Error(source_offset + 2) / result.fPeakPos;
    ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinContent(i, width_value);
    ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinError(i, width_error);
 
