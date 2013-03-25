@@ -189,6 +189,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"set-calib-alpha",     required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_ALPHA},
       {"set-calib-dl",        required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_DL},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
+      {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
       {0, 0, 0, 0}
    };
 
@@ -357,6 +358,17 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          sstr.str("");
          sstr << optarg;
          sstr >> fDisabledDetectors;
+         break;
+
+      case AsymAnaInfo::OPTION_ALPHA_SOURCES:
+         sstr.str("");
+         sstr << optarg;
+         sstr >> fAlphaSourceCount;
+         if ((fAlphaSourceCount > 2) || (fAlphaSourceCount < 1))
+         {
+            cerr << "Invalid alpha source count setting!" << endl;
+            exit(EXIT_FAILURE);
+         }
          break;
 
       case 'C':
@@ -545,6 +557,7 @@ void AsymAnaInfo::PrintUsage()
    cout << " -N                                   : Store Ntuple events (!)" << endl;
    cout << " -R <bitmask>                         : Save events in Root trees, " <<
            "e.g. \"-R 101\"" << endl;
+   cout << "     --alpha-sources <count>          : 1 for Am, 2 for Am+Gd" << endl;
    cout << " -q, --quick                          : Skips the main loop. Use for a quick check" << endl;
    cout << " -C, --mode-alpha, --alpha            : Use when run over alpha run data" << endl;
    cout << "     --mode-calib, --calib            : Update calibration constants" << endl;

@@ -41,7 +41,7 @@ private:
       const TFitResultPtr &fitres, ESource source_offset,
       DrawObjContainer *c, UShort_t i, std::string name
    );
-   TFitResultPtr Calibrate(TH1 *h, TF1 *f);
+   TFitResultPtr Calibrate(TH1 *h, TF1 *f, bool fit_gadolinium);
 
 public:
 
