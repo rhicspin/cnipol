@@ -101,7 +101,8 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
 
    CalibCoefSet result;
 
-   float        peak_energy;
+   float peak_energy = AM_ALPHA_E;
+
    if (source_offset == kAmericium)
    {
       peak_energy = AM_ALPHA_E;
@@ -208,8 +209,7 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
    //Double_t iMean = ((TH1F*) c->d["alpha"]->o["hAmIntCoefDisp"])->GetMean();
    //Double_t iRMS  = ((TH1F*) c->d["alpha"]->o["hAmIntCoefDisp"])->GetRMS();
 
-   Double_t aEntries = 0;
-   //Double_t iEntries = 0;
+   Double_t aEntries  = 0;
 
    Double_t Det1eRMS  = 0;
    Double_t Det2eRMS  = 0;
@@ -224,15 +224,10 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
    Double_t Det5eMean = 0;
    Double_t Det6eMean = 0;
 
-   int i = 1;
-
-   ChannelCalibMap::iterator mi, mi2;
-   ChannelCalibMap::iterator mb  = fChannelCalibs.begin();
-   ChannelCalibMap::iterator me  = fChannelCalibs.end();
-
    string sSi("  ");
 
-   for (i = 1; i <= NSTRIP; i++) {
+   for (int i = 1; i <= NSTRIP; i++)
+   {
       sprintf(&sSi[0], "%02d", i);
       aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetEntries();
 
@@ -281,12 +276,13 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
    Det6eMean = ((TH1F*) c->d["alpha"]->o["Detector6_Events_Dsp"])->GetMean();
    Det6eRMS  = ((TH1F*) c->d["alpha"]->o["Detector6_Events_Dsp"])->GetRMS();
 
-   i = 1;
+   ChannelCalibMap::iterator mi, mi2;
+   ChannelCalibMap::iterator mb  = fChannelCalibs.begin();
+   ChannelCalibMap::iterator me  = fChannelCalibs.end();
+   int i;
 
-   //ofstream andersout;
-   //andersout.open("andersout.txt");
-   for (mi = mb; mi != me; mi++) {
-
+   for (i = 1, mi = mb; mi != me; mi++, i++)
+   {
       sprintf(&sSi[0], "%02d", i);
       aEntries = ((TH1F*) c->d["alpha"]->d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetEntries();
 
@@ -335,8 +331,6 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
             }
          }
       }
-
-      i++;
    }
 
    // Now assign detector average
@@ -400,6 +394,6 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 /** */
 void AlphaCalibrator::Print(const Option_t* opt) const
 {
-   Info("Print", "");
+   Info("Print", " ");
    Calibrator::Print(opt);
 }
