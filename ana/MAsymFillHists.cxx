@@ -559,6 +559,8 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
 
             utils::AppendToGraph(grBunchAsymChi2_, fillId, chi2ndf);
          }
+
+         utils::UpdateLimitsFromGraphs((TH1*) o["hBunchAsymChi2_" + sRingId], 2);
       }
    }
 }
