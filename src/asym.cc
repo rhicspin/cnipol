@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
    rawData.ReadRecBegin(*mseMeasInfoX);
    rawData.ReadMeasInfo(*mseMeasInfoX);
 
-   MseRunPeriodX *mseRunPeriodX    = 0;
+   MseRunPeriodX *mseRunPeriodX = 0;
 
    // We can do this for any run type including alpha runs
    if (gAsymAnaInfo->fFlagUseDb) {
@@ -142,9 +142,9 @@ int main(int argc, char *argv[])
 
    if ( gAsymAnaInfo->HasCalibBit() ) {
       rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-      gAsymRoot->FillDerivedPassOne();          // Fill other histograms from the primary ones
-      gAsymRoot->PostFillPassOne();             // Make decisions based on hist content/data
-      gAsymRoot->Calibrate();                   // Process all channel banana
+      gAsymRoot->Calibrate();                  // Process all channel banana
+      gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
+      gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
    }
 
    // For debugging
