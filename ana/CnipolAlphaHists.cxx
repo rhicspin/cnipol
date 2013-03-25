@@ -134,6 +134,17 @@ void CnipolAlphaHists::BookHists()
    ((TH1*) o["hGdIntWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (I)");
 
 
+   o["hAmGdAmpCoef"] = new TH1F("hAmGdAmpCoef", "hAmGdAmpCoef", 72, 1, 73);
+   ((TH1*)  o["hAmGdAmpCoef"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hAmGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmGdAmpCoef"])->GetYaxis()->SetTitle("Americium+Gadolinium Amplitude Calib, keV/ADC");
+
+   o["hAmGdFit0Coef"] = new TH1F("hAmGdFit0Coef", "hAmGdFit0Coef", 72, 1, 73);
+   ((TH1*)  o["hAmGdFit0Coef"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hAmGdFit0Coef"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmGdFit0Coef"])->GetYaxis()->SetTitle("[0], ADC");
+
+
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
    ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");
    ((TH1*) o["Detector1_Events"])->GetXaxis()->SetTitle("Channel");

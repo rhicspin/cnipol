@@ -65,7 +65,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
          if (fit_gadolinium) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
-            AmGdPlot(chCalib, c, sCh);
+            AmGdPlot(chCalib, c, i, sCh);
          }
       }
 
@@ -135,7 +135,7 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
 
 
 void AlphaCalibrator::AmGdPlot(
-   const ChannelCalib *chCalib, DrawObjContainer *c, const string &sCh
+   const ChannelCalib *chCalib, DrawObjContainer *c, int iCh, const string &sCh
 )
 {
    TH2F         *hAmGd = (TH2F*) c->d["alpha"]->d["channel" + sCh]->o["hAmGd_ch" + sCh];
@@ -151,7 +151,10 @@ void AlphaCalibrator::AmGdPlot(
    hAmGd->GetXaxis()->Set(1, 0, AM_ALPHA_E / 1000 * 1.1);
    hAmGd->GetYaxis()->Set(1, 0, chCalib->fAmAmp.fPeakPos * 1.3);
 
-   gAmGd->Fit("pol1", "", "", 0, AM_ALPHA_E / 1000);
+   TFitResultPtr fitres;
+   fitres = gAmGd->Fit("pol1", "S", "", 0, AM_ALPHA_E / 1000); // S: return fitres
+   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->Fill(iCh, ATTEN / fitres->Value(1) * 1000);
+   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->Fill(iCh, fitres->Value(0));
 }
 
 
