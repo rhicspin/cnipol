@@ -33,13 +33,8 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
    string    sCh("  ");
    TH1F     *htemp     = 0;
-   TF1      *fitfunc   = new TF1("fitfunc", "gaus(0) + gaus(3)");
    TFitResultPtr fitres;
    bool     fit_gadolinium = gAsymAnaInfo->fAlphaSourceCount == 2;
-
-   fitfunc->SetLineColor(kRed);
-   fitfunc->SetLineWidth(3);
-   fitfunc->SetNpx(500);
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
       sprintf(&sCh[0], "%02d", i);
@@ -64,7 +59,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          continue;
       }
 
-      fitres = Calibrate(htemp, fitfunc, fit_gadolinium);
+      fitres = Calibrate(htemp, fit_gadolinium);
 
       if (fitres) {
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
@@ -81,7 +76,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          continue;
       }
 
-      fitres = Calibrate(htemp, fitfunc, fit_gadolinium);
+      fitres = Calibrate(htemp, fit_gadolinium);
 
       if (fitres.Get()) {
          chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "AmInt");
@@ -137,10 +132,15 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
 
 
 /** */
-TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, bool fit_gadolinium)
+TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, bool fit_gadolinium)
 {
    TF1      f_amer("f_amer", "gaus");
+   TF1      f_two_peak("fitfunc", "gaus(0) + gaus(3)");
    TFitResultPtr fitres = 0;
+
+   f_two_peak.SetLineColor(kRed);
+   f_two_peak.SetLineWidth(3);
+   f_two_peak.SetNpx(500);
 
    h->Print();
    float xmin = h->GetXaxis()->GetXmin();
@@ -191,18 +191,18 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, TF1 *f, bool fit_gadolinium)
       par[3] = norm_gad;
       par[4] = mean_gad;
       par[5] = expectedSigma;
-      f->SetParameters(par);
+      f_two_peak.SetParameters(par);
 
-      f->SetParLimits(3, 0.8 * norm_gad, 1.2 * norm_gad); // norm
-      f->SetParLimits(4, xmin_gad, xmax_gad); // mean
-      f->SetParLimits(5, 0.1, 3 * expectedSigma); // sigma
+      f_two_peak.SetParLimits(3, 0.8 * norm_gad, 1.2 * norm_gad); // norm
+      f_two_peak.SetParLimits(4, xmin_gad, xmax_gad); // mean
+      f_two_peak.SetParLimits(5, 0.1, 3 * expectedSigma); // sigma
 
       // And make sure that our existing peak won't too far
-      f->SetParLimits(0, 0.8 * norm_amer, 1.2 * norm_amer); // norm
-      f->SetParLimits(1, mean_amer - sigma_amer, mean_amer + sigma_amer); // mean
-      f->SetParLimits(2, 0.8 * sigma_amer, 1.2 * sigma_amer); // sigma
+      f_two_peak.SetParLimits(0, 0.8 * norm_amer, 1.2 * norm_amer); // norm
+      f_two_peak.SetParLimits(1, mean_amer - sigma_amer, mean_amer + sigma_amer); // mean
+      f_two_peak.SetParLimits(2, 0.8 * sigma_amer, 1.2 * sigma_amer); // sigma
 
-      fitres = h->Fit(f, "BMS"); // B: use limits, M: improve fit, S: return fitres
+      fitres = h->Fit(&f_two_peak, "BMS"); // B: use limits, M: improve fit, S: return fitres
    }
 
    return fitres;
