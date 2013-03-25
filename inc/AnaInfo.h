@@ -37,7 +37,8 @@ public:
                 OPTION_SET_CALIB_ALPHA = 0x20001000,
                 OPTION_SET_CALIB_DL    = 0x20002000,
                 OPTION_DET_DISABLE     = 0x20000001,
-                OPTION_SUFFIX          = 0x20000002};
+                OPTION_SUFFIX          = 0x20000002,
+                OPTION_ALPHA_SOURCES   = 0x20000003};
 
    // Various histogramming and running modes
    enum Mode   {MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000};
@@ -63,6 +64,7 @@ public:
    Bool_t           fFlagUpdateDb;
    Bool_t           fFlagCreateThumbs;
    UserGroup_t      fUserGroup;
+   Int_t            fAlphaSourceCount;
 
 public:
 
