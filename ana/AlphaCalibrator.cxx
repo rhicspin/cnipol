@@ -138,6 +138,9 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, bool fit_gadolinium)
    TF1      f_two_peak("fitfunc", "gaus(0) + gaus(3)");
    TFitResultPtr fitres = 0;
 
+   f_amer.SetLineColor(kRed);
+   f_amer.SetLineWidth(3);
+   f_amer.SetNpx(500);
    f_two_peak.SetLineColor(kRed);
    f_two_peak.SetLineWidth(3);
    f_two_peak.SetNpx(500);
