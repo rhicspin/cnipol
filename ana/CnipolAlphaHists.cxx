@@ -255,6 +255,9 @@ void CnipolAlphaHists::BookHists()
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; Integral, ADC; ");
 
+      sprintf(hName, "hAmGd_ch%02d", iCh);
+      oc->o[hName] = new TH2F(hName, hName, 0, 0, 0, 0, 0, 0);
+
       //sprintf(hName,"t_vs_e_ch%d", iCh);
       //kinema.oc->o[hName] = new TH2F();
 
