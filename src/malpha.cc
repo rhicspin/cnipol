@@ -109,6 +109,8 @@ int main(int argc, char *argv[])
          continue;
       }
 
+      Info("malpha", "Using file: %s", fileName.c_str());
+
       if ((max_runId == -1) || (max_runId < runId)) {
          max_runId = runId;
       }
