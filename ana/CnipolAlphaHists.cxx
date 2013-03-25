@@ -6,6 +6,9 @@
 #include "CnipolAlphaHists.h"
 #include "ChannelEventId.h"
 #include <fstream>
+
+#include "utils/utils.h"
+
 ClassImp(CnipolAlphaHists)
 
 using namespace std;
@@ -73,8 +76,7 @@ void CnipolAlphaHists::BookHists()
    // Americium
 
    o["hAmAmpCoef"]   = new TH1F("hAmAmpCoef", "hAmAmpCoef", 72, 1, 73);
-   ((TH1F*) o["hAmAmpCoef"])->SetOption("E");
-   //((TH1F*) o["hAmAmpCoef"])->GetYaxis()->SetRangeUser(5, 8);
+   ((TH1*)  o["hAmAmpCoef"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hAmAmpCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hAmAmpCoef"])->GetYaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
 
@@ -83,30 +85,28 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hAmAmpCoefDisp"])->GetXaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
 
    o["hAmIntCoef"]   = new TH1F("hAmIntCoef", "hAmIntCoef", 72, 1, 73);
-   ((TH1F*) o["hAmIntCoef"])->SetOption("E");
+   ((TH1*)  o["hAmIntCoef"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hAmIntCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hAmIntCoef"])->GetYaxis()->SetTitle("Americium Integral Calib, keV/ADC");
 
-   //o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 40, 6, 9);
    o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 100, 0, 1);
    ((TH2F*) o["hAmIntCoefDisp"])->SetBit(TH1::kCanRebin);
    ((TH2F*) o["hAmIntCoefDisp"])->GetXaxis()->SetTitle("Americium Integral Calib, keV/ADC");
 
    o["hAmAmpWidth"]   = new TH1F("hAmAmpWidth", "hAmAmpWidth", 72, 1, 73);
-   ((TH1*) o["hAmAmpWidth"])->SetOption("E");
+   ((TH1*) o["hAmAmpWidth"])->SetOption("E1 GRIDX GRIDY");
    ((TH1*) o["hAmAmpWidth"])->GetXaxis()->SetTitle("Channel");
    ((TH1*) o["hAmAmpWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (A)");
 
    o["hAmIntWidth"]   = new TH1F("hAmIntWidth", "hAmIntWidth", 72, 1, 73);
-   ((TH1*) o["hAmIntWidth"])->SetOption("E");
+   ((TH1*) o["hAmIntWidth"])->SetOption("E1 GRIDX GRIDY");
    ((TH1*) o["hAmIntWidth"])->GetXaxis()->SetTitle("Channel");
    ((TH1*) o["hAmIntWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (I)");
 
    // Gadolinium
 
    o["hGdAmpCoef"]   = new TH1F("hGdAmpCoef", "hGdAmpCoef", 72, 1, 73);
-   ((TH1F*) o["hGdAmpCoef"])->SetOption("E");
-   //((TH1F*) o["hGdAmpCoef"])->GetYaxis()->SetRangeUser(5, 8);
+   ((TH1*)  o["hGdAmpCoef"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hGdAmpCoef"])->GetYaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
 
@@ -115,7 +115,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hGdAmpCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
 
    o["hGdIntCoef"]   = new TH1F("hGdIntCoef", "hGdIntCoef", 72, 1, 73);
-   ((TH1F*) o["hGdIntCoef"])->SetOption("E");
+   ((TH1*)  o["hGdIntCoef"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hGdIntCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hGdIntCoef"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
 
@@ -125,12 +125,12 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hGdIntCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
 
    o["hGdAmpWidth"]   = new TH1F("hGdAmpWidth", "hGdAmpWidth", 72, 1, 73);
-   ((TH1*) o["hGdAmpWidth"])->SetOption("E");
+   ((TH1*) o["hGdAmpWidth"])->SetOption("E1 GRIDX GRIDY");
    ((TH1*) o["hGdAmpWidth"])->GetXaxis()->SetTitle("Channel");
    ((TH1*) o["hGdAmpWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (A)");
 
    o["hGdIntWidth"]   = new TH1F("hGdIntWidth", "hGdIntWidth", 72, 1, 73);
-   ((TH1*) o["hGdIntWidth"])->SetOption("E");
+   ((TH1*) o["hGdIntWidth"])->SetOption("E1 GRIDX GRIDY");
    ((TH1*) o["hGdIntWidth"])->GetXaxis()->SetTitle("Channel");
    ((TH1*) o["hGdIntWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (I)");
 
@@ -322,6 +322,8 @@ void CnipolAlphaHists::PostFill()
 /** */
 void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 {
+   Info("PostFillPassOne", "Called");
+
    // Adjust axis ranges
    Int_t    maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();
    Double_t   xminA = ((TH1F*) o["hAmpltd"])->GetXaxis()->GetXmin();
@@ -335,13 +337,10 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    Int_t  maxBinI  = ((TH1F*) o["hIntgrl"])->GetMaximumBin();
    Double_t xminI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
    Double_t xmaxI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
-   Int_t tmaxBinI  = 0;
+   //Int_t tmaxBinI  = 0;
    Int_t tmaxBinA  = 0;
    Double_t valueA = 0;
    Int_t maxBinAa  = 0;
-
-   //ofstream andersout;
-   //andersout.open("anders2.txt");
 
    //Int_t maxBin = 0;
 
@@ -350,43 +349,53 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 
    ((TH1F*) o["hIntgrl"])->SetAxisRange(xminI, xmaxI);
 
-   printf("xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f\n", xminA, xmaxA, xminI, xmaxI);
+   Info("PostFillPassOne", "xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f", xminA, xmaxA, xminI, xmaxI);
 
-   string  sSi("  ");
+   string sChId("  ");
 
-   for (int i = 1; i <= NSTRIP; i++) {
-      sprintf(&sSi[0], "%02d", i);
+   for (int i = 1; i <= NSTRIP; i++)
+   {
+      sprintf(&sChId[0], "%02d", i);
 
-      maxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetMaximumBin();
-      maxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetMaximumBin();
+      maxBinA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetMaximumBin();
+      maxBinI = ((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->GetMaximumBin();
 
-      valueA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(maxBinA);
+      valueA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetBinContent(maxBinA);
 
       for (int j = 0; j <= 255; j++) {
-         tmaxBinA = ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->GetBinContent(j);
-         //andersout<<"i="<<i<<" j="<<j<<" value="<<tmaxBinA<<endl;
+         tmaxBinA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetBinContent(j);
          if (tmaxBinA >= (valueA * .95)) maxBinAa = j;
       }
 
-      //andersout << "i=" << i << " maxBinA=" << maxBinA << " maxBinAa=" << maxBinAa << endl;
       maxBinA = maxBinAa;
 
       // if (i == 9 || i == 10) {
-      //     for (int j = 0; j <= 255; j++) {
-      //      tmaxBinI = ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->GetBinContent(j);
+      //     for (int j = 0; j <= 255; j++) 
+      //      tmaxBinI = ((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->GetBinContent(j);
       //    if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
       // }
 
-      //xmin   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmin();
-      //xmax   = ((TH1F*) d["channel"+sSi].o["hAmpltd_ch"+sSi])->GetXaxis()->GetXmax();
+      //xmin   = ((TH1F*) d["channel"+sChId].o["hAmpltd_ch"+sChId])->GetXaxis()->GetXmin();
+      //xmax   = ((TH1F*) d["channel"+sChId].o["hAmpltd_ch"+sChId])->GetXaxis()->GetXmax();
       //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
       //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
-      xminA = maxBinA - 50;
-      xmaxA = maxBinA + 50;
-      xminI = maxBinI - 50;
-      xmaxI = maxBinI + 50;
 
-      ((TH1F*) d["channel" + sSi]->o["hAmpltd_ch" + sSi])->SetAxisRange(xminA, xmaxA);
-      ((TH1F*) d["channel" + sSi]->o["hIntgrl_ch" + sSi])->SetAxisRange(xminI, xmaxI);
+      //xminA = maxBinA - 50;
+      //xmaxA = maxBinA + 50;
+      //xminI = maxBinI - 50;
+      //xmaxI = maxBinI + 50;
+
+      //((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->SetAxisRange(xminA, xmaxA);
+      //((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->SetAxisRange(xminI, xmaxI);
    }
+
+   // Update axis range
+   utils::UpdateLimits((TH1*) o["hAmAmpCoef"]);
+   utils::UpdateLimits((TH1*) o["hAmAmpWidth"]);
+   utils::UpdateLimits((TH1*) o["hAmIntCoef"]);
+   utils::UpdateLimits((TH1*) o["hAmIntWidth"]);
+   utils::UpdateLimits((TH1*) o["hGdAmpCoef"]);
+   utils::UpdateLimits((TH1*) o["hGdAmpWidth"]);
+   utils::UpdateLimits((TH1*) o["hGdIntCoef"]);
+   utils::UpdateLimits((TH1*) o["hGdIntWidth"]);
 }
