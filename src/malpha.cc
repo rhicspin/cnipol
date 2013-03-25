@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
       delete f;
    }
 
-   TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "NEW");
+   TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
 
    for (int channel_id = 0; channel_id < N_SILICON_CHANNELS; channel_id++) {
       TString obj_name("AmGain_over_GdGain_");
