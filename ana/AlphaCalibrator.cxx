@@ -9,6 +9,8 @@
 #include "AsymGlobals.h"
 #include <fstream>
 
+#include "TMath.h"
+
 ClassImp(AlphaCalibrator)
 
 using namespace std;
@@ -174,8 +176,28 @@ void AlphaCalibrator::AmGdPlot(
 }
 
 
+/** Gets maximum bin in blurred hist */
+Int_t AlphaCalibrator::GetMaximumBinEx(TH1F *h, int blur_radius)
+{
+   TH1F *blurred = (TH1F*)h->Clone("blurred");
+   blurred->Reset();
+   Int_t xfirst  = blurred->GetXaxis()->GetFirst();
+   Int_t xlast   = blurred->GetXaxis()->GetLast();
+   for (Int_t bin = xfirst; bin <= xlast; bin++) {
+      Int_t start = TMath::Max(bin - blur_radius, xfirst);
+      Int_t end   = TMath::Min(bin + blur_radius, xlast);
+      Double_t value = 0;
+      for (int i = start; i <= end; i++) {
+         value += h->GetBinContent(i);
+      }
+      blurred->SetBinContent(bin, value);
+   }
+   return blurred->GetMaximumBin();
+}
+
+
 /** */
-TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, bool fit_gadolinium)
+TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
 {
    TF1 f_amer("f_amer", "gaus");
    TF1 f_two_peak("fitfunc", "gaus(0) + gaus(3)");
@@ -199,7 +221,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, bool fit_gadolinium)
 
    // First fit is to find americium peak
    // Will start from guessing initial params
-   int   mbin_amer = h->GetMaximumBin();
+   int   mbin_amer = GetMaximumBinEx(h, 1);
    float norm_amer = h->GetBinContent(mbin_amer);
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;

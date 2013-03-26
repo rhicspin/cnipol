@@ -44,7 +44,8 @@ private:
    void AmGdPlot(
       const ChannelCalib *chCalib, DrawObjContainer *c, int iCh, const std::string &sCh
    );
-   TFitResultPtr Calibrate(TH1 *h, bool fit_gadolinium);
+   Int_t         GetMaximumBinEx(TH1F *h, int blur_radius);
+   TFitResultPtr Calibrate(TH1F *h, bool fit_gadolinium);
 
 public:
 
