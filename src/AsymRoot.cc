@@ -297,19 +297,6 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["preproc"] = oc;
       //fHistCuts[kCUT_PASSONE_CALIB].insert(oc);
    }
-
-   //dir = new TDirectoryFile("preproc_eb", "preproc_eb", "", fOutRootFile);
-   //oc  = new CnipolPreprocHists(dir);
-   //fHists->d["preproc_eb"] = oc;
-   //fHistCuts[kCUT_PASSONE_CALIB_EB].insert(oc);
-
-   // OLD common global histogram inherited from previous life
-   //DrawObjContainer *hists = new CnipolRunHists(fOutRootFile);
-   //fHists->Add(hists);
-   //delete hists;
-
-   // a temporary fix...
-   //Kinema    = fHists->d["Kinema"].fDir;
 }
 
 
@@ -520,6 +507,13 @@ void AsymRoot::FillDerivedPassOne()
 {
    Info("FillDerivedPassOne", "Called");
    fHists->FillDerivedPassOne();
+
+   // The order is important!
+   if ( fHists->d.find("raw_neb") != fHists->d.end() ) 
+      fHists->d["raw_neb"]->FillDerivedPassOne(*fHists);
+
+   if ( fHists->d.find("preproc") != fHists->d.end() ) 
+      fHists->d["preproc"]->FillDerivedPassOne(*fHists);
 }
 
 
@@ -527,25 +521,18 @@ void AsymRoot::FillDerivedPassOne()
 void AsymRoot::PostFillPassOne()
 {
    Info("PostFillPassOne", "Called");
-
    //fHists->PostFillPassOne(fHists);
 
-   if ( fHists->d.find("raw_neb") != fHists->d.end() ) 
-      fHists->d["raw_neb"]->PostFillPassOne(fHists);
-
-   if ( fHists->d.find("preproc") != fHists->d.end() ) 
-      fHists->d["preproc"]->PostFillPassOne(fHists);
-
+   // The order is important!
    if ( fHists->d.find("alpha") != fHists->d.end() ) 
       fHists->d["alpha"]->PostFillPassOne(fHists);
 
-   ////CnipolPulserHists *pulserHists = 0;
    //DrawObjContainer *pulserHists = 0;
    //
    //if (gAsymAnaInfo->HasPulserBit()) {
    //   pulserHists = fHists->d["pulser"];
    //}
-   ////
+   //
    //if (gAsymAnaInfo->HasPmtBit()) {
    //   ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
    //}

@@ -177,8 +177,8 @@ void AlphaCalibrator::AmGdPlot(
 /** */
 TFitResultPtr AlphaCalibrator::Calibrate(TH1 *h, bool fit_gadolinium)
 {
-   TF1      f_amer("f_amer", "gaus");
-   TF1      f_two_peak("fitfunc", "gaus(0) + gaus(3)");
+   TF1 f_amer("f_amer", "gaus");
+   TF1 f_two_peak("fitfunc", "gaus(0) + gaus(3)");
    TFitResultPtr fitres = 0;
 
    f_amer.SetLineColor(kRed);

@@ -623,14 +623,6 @@ void DrawObjContainer::Fill(EventConfig &rc, DrawObjContainer &oc)
 
 
 /** */
-void DrawObjContainer::FillPreProcess(ChannelEvent *ch) { }
-
-
-/** */
-void DrawObjContainer::PreFillPassOne() {}
-
-
-/** */
 void DrawObjContainer::FillPassOne(ChannelEvent *ch)
 {
    DrawObjContainerMapIter isubd;

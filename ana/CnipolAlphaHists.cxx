@@ -281,12 +281,6 @@ void CnipolAlphaHists::BookHists()
 
 
 /** */
-void CnipolAlphaHists::Fill(ChannelEvent *ch)
-{
-}
-
-
-/** */
 void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
 {
    UChar_t      chId = ch->GetChannelId();
@@ -295,14 +289,6 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
    string sSi("  ");
    sprintf(&sSi[0], "%02d", chId);
 
-   DrawObjContainer *sd = d["channel" + sSi];
-
-   //if (data.fTdc >=15 && data.fTdc <= 50 && data.fAmpltd >= 130 && data.fAmpltd <= 210)
-   //if (data.fTdc >=15 && data.fTdc <= 50) {
-   //if (data.fTdc >=12 && data.fTdc <= 16 && data.fIntgrl >= 100)
-   //if (data.fTdc >=12 && data.fTdc <= 16)
-   //if (data.fTdc >=12 && data.fTdc <= 30) {
-
    ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
    ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
    ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
@@ -310,8 +296,8 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
    ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
    ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
 
-   //((TH1F*) sd->o["hAmpltd_ch"    + sSi])->Fill(data.fAmpltd);
-   //((TH1F*) sd->o["hIntgrl_ch"    + sSi])->Fill(data.fIntgrl);
+   DrawObjContainer *sd = d["channel" + sSi];
+
    ((TH1F*) sd->o["hAmpltd_ch"    + sSi])->Fill(data.fAmpltd);
    ((TH1F*) sd->o["hIntgrl_ch"    + sSi])->Fill(data.fIntgrl);
    ((TH1F*) sd->o["hTdc_ch"       + sSi])->Fill(data.fTdc);
@@ -320,10 +306,6 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
    ((TH2F*) sd->o["hTvsI_ch"      + sSi])->Fill(data.fIntgrl, data.fTdc);
    ((TH2F*) sd->o["hIvsA_ch"      + sSi])->Fill(data.fAmpltd, data.fIntgrl);
 }
-
-
-/** */
-void CnipolAlphaHists::FillPreProcess(ChannelEvent *ch) { }
 
 
 /** */
@@ -362,7 +344,7 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 
    ((TH1F*) o["hIntgrl"])->SetAxisRange(xminI, xmaxI);
 
-   Info("PostFillPassOne", "xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f", xminA, xmaxA, xminI, xmaxI);
+   //Info("PostFillPassOne", "xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f", xminA, xmaxA, xminI, xmaxI);
 
    string sChId("  ");
 
