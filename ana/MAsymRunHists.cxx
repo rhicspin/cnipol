@@ -351,7 +351,7 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
    hist->SetTitle("; Fill Id; Polarization (p-Carbon, scaled), %;");
-   hist->SetOption("E1 GRIDX");
+   hist->SetOption("E1 GRIDX GRIDY");
    styleMarker.Copy(*hist); oc.o[shName] = hist;
 
    shName = "hPolarPCScaledVsFill_HJOnly_" + sPolId + "_" + sBeamE;

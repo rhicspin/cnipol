@@ -142,8 +142,9 @@ int main(int argc, char *argv[])
 
    if ( gAsymAnaInfo->HasCalibBit() ) {
       rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-      gAsymRoot->Calibrate();                  // Process all channel banana
+      //if ( gAsymAnaInfo->HasAlphaBit() )
       gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
+      gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX Fix order!
       gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
    }
 

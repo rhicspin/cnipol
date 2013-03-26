@@ -68,21 +68,20 @@ public:
    virtual void Fill(EventConfig &rc);
    virtual void Fill(const EventConfig &rc);
    virtual void Fill(EventConfig &rc, DrawObjContainer &oc);
-   virtual void FillPreProcess(ChannelEvent *ch);
    void         Print(const Option_t* opt="") const;
 
-   virtual void PreFillPassOne();                        // should be used
-   virtual void FillPassOne(ChannelEvent *ch);           // should be used
-   virtual void FillDerivedPassOne();                    // should be used
-   virtual void PostFillPassOne(DrawObjContainer *oc=0); // should be used
+   virtual void FillPassOne(ChannelEvent *ch);
+   virtual void FillDerivedPassOne();
+   virtual void FillDerivedPassOne(DrawObjContainer &oc) {}
+   virtual void PostFillPassOne(DrawObjContainer *oc=0);
 
    virtual void PreFill();
    virtual void Fill(ChannelEvent *ch);
    virtual void FillDerived();
-   virtual void FillDerived(DrawObjContainer &oc) {}          // special processing for dependant histograms
+   virtual void FillDerived(DrawObjContainer &oc) {}     // special processing for dependant histograms
    virtual void PostFill();
    virtual void PostFill(AnaGlobResult &agr);
-   virtual void PostFill(DrawObjContainer *oc) {}          // special processing for dependant histograms
+   virtual void PostFill(DrawObjContainer *oc) {}        // special processing for dependant histograms
    virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
    virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");
    void         Draw(Option_t* option = "") { ((TObject*)this)->Draw(option); }

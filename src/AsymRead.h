@@ -26,8 +26,6 @@
 #include "MeasInfo.h"
 #include "MseMeasInfo.h"
 
-#define BSIZE_OFFLINE 0x1000000 // 16 MByte
-
 
 class RawDataProcessor
 {

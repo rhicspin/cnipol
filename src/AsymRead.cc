@@ -453,22 +453,11 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
             if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
             {
                // Fill hists with raw data
-               //gAsymRoot->FillPassOne(kCUT_PASSONE_RAW);
                gAsymRoot->FillPassOne(kCUT_PASSONE);
 
                // The same but empty bunches only
                if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
                   gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
-
-               //ds: XXX commented for test
-               //// Apply very basic "proto" cuts
-               //if ( gAsymRoot->fChannelEvent->PassCutNoise() ) {
-               //   gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB);
-
-               //   // The same but empty bunches only
-               //   if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
-               //      gAsymRoot->FillPassOne(kCUT_PASSONE_CALIB_EB);
-               //}
             }
 
             // Use all events to fill pulser histograms - not valid. thinout is applied
@@ -497,8 +486,6 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
             gMeasInfo->fNEventsProcessed++;
 
-            // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
-            //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
             if (gMeasInfo->fNEventsProcessed%50000 == 0)
             {
                printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
@@ -619,8 +606,6 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 
             event_process(*gAsymRoot->fChannelEvent);
 
-            // fFileStdLogName is empty if the stdout/stderr was not redirected to a file
-            //if (gMeasInfo->fNEventsProcessed%50000 == 0 && fFileStdLogName.empty() )
             if (gMeasInfo->fNEventsProcessed%50000 == 0)
             {
                printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
@@ -744,14 +729,15 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
    float Ct = ci->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
    float L  = ci->data.TOFLength;
 
-   //gRunConsts[0] = RunConst();
-
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
-      if (gMeasInfo->fDataFormatVersion == 40200 ) // Run 11 version
-      {
-         L = ci->data.chan[i-1].TOFLength;
-      } else
+      // XXX  It is wrong to comment the next 4 lines but it is better to be stable
+      // We are covering mistake made at the begining of the run 13 by using the default distance of 18 cm
+      // Change back for final analysis of run 13 data !!!
+      //if (gMeasInfo->fDataFormatVersion == 40200 ) // >= Run 11 version
+      //{
+      //   L = ci->data.chan[i-1].TOFLength;
+      //} else
          L = CARBON_PATH_DISTANCE;
 
       gRunConsts[i] = RunConst(L, Ct);
@@ -1001,12 +987,11 @@ void PrepareCollidingBunchPattern()
 void ProcessRecord(const recordConfigRhicStruct &rec)
 {
    gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
-             (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
+                 (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
    //XXX printf("TTT: %d\n", rec.data.NumChannels);
 
-   memcpy(gConfigInfo, &rec, sizeof(recordConfigRhicStruct) +
-          (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
+   memcpy(gConfigInfo, &rec, sizeof(recordConfigRhicStruct) + (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
    // when we mandatory provide cfg info -- derpecated
    //if (gAsymAnaInfo->RECONFMODE == 1) {

@@ -234,7 +234,7 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
 /** */
 void CnipolRawHists::FillDerivedPassOne()
 {
-   Info("FillDerivedPassOne", "Called");
+   Info("FillDerivedPassOne()", "Called");
 
    TH1* hAdcAmpltd = (TH1*) o["hAdcAmpltd"];
    TH1* hAdcIntgrl = (TH1*) o["hAdcIntgrl"];
@@ -299,23 +299,23 @@ void CnipolRawHists::FillDerivedPassOne()
 
 
 /** */
-void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
+void CnipolRawHists::FillDerivedPassOne(DrawObjContainer &oc)
 {
-   Info("PostFillPassOne", "Called");
+   Info("FillDerivedPassOne(DrawObjContainer &oc)", "Called");
 
    // We expect empty bunch histogram container
    string thisDirName(fDir->GetName()); 
 
-   if (!oc || thisDirName.compare("raw_neb") != 0 ||
-        oc->d.find("raw") == oc->d.end() || oc->d.find("raw_eb") == oc->d.end() )
+   if (thisDirName.compare("raw_neb") != 0 ||
+        oc.d.find("raw") == oc.d.end() || oc.d.find("raw_eb") == oc.d.end() )
    {
-      Error("PostFillPassOne", "Cannot proceed: No appropriate empty bunch container found");
+      Error("FillDerivedPassOne(DrawObjContainer &oc)", "Cannot proceed: No appropriate empty bunch container found");
       exit(-1);
       return;
    }
 
-   CnipolRawHists* rawHists    = (CnipolRawHists*) oc->d.find("raw")->second;
-   CnipolRawHists* rawHists_eb = (CnipolRawHists*) oc->d.find("raw_eb")->second;
+   CnipolRawHists* rawHists    = (CnipolRawHists*) oc.d.find("raw")->second;
+   CnipolRawHists* rawHists_eb = (CnipolRawHists*) oc.d.find("raw_eb")->second;
 
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 
@@ -327,17 +327,9 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
       TH1* hTvsA_ch_neb = (TH1F*) GetHTvsA_ch(chId);
 
       if ( !hTvsA_ch || !hTvsA_ch_eb ) {
-         Error("PostFillPassOne", "Histogram %s not found", hTvsA_ch->GetName());
+         Error("FillDerivedPassOne(DrawObjContainer &oc)", "Histogram %s not found", hTvsA_ch->GetName());
          continue;
       }
-
-      //fhTvsA_ch->Print();
-      //fhTvsA_ch_this_copy->Print();
-
-      // Subtract empty bunch data from all bunch data
-      //fhTvsA_ch_eb->Scale( );
-      //fhTvsA_ch_this_copy->Add(fhTvsA_ch_eb, -1);
-      //fhTvsA_ch_this_copy->Print();
 
       Float_t scale = N_BUNCHES / (Float_t) gMeasInfo->GetNumEmptyBunches();
 
@@ -345,9 +337,10 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
       //hTvsA_ch_neb->Add(hTvsA_ch, hTvsA_ch_eb, 1, -1*scale);
 
       // After the subtraction set bins with negative content to 0 including under/overflows
-      for (Int_t ibx=0; ibx<=hTvsA_ch_neb->GetNbinsX()+1; ibx++) {
-         for (Int_t iby=0; iby<=hTvsA_ch_neb->GetNbinsY()+1; iby++) {
-
+      for (Int_t ibx=0; ibx<=hTvsA_ch_neb->GetNbinsX()+1; ibx++)
+      {
+         for (Int_t iby=0; iby<=hTvsA_ch_neb->GetNbinsY()+1; iby++)
+         {
             Double_t bc     = hTvsA_ch->GetBinContent(ibx, iby);
             Double_t bc_eb  = hTvsA_ch_eb->GetBinContent(ibx, iby);
             //Double_t bc_neb = hTvsA_ch_neb->GetBinContent(ibx, iby);
@@ -357,11 +350,6 @@ void CnipolRawHists::PostFillPassOne(DrawObjContainer *oc)
 
             hTvsA_ch_neb->SetBinContent(ibx, iby, bc_neb);
             hTvsA_ch_neb->SetBinError(ibx, iby, TMath::Sqrt(bc_neb));
-
-            //if (bc_neb < 0) {
-            //   hTvsA_ch_neb->SetBinContent(ibx, iby, 0);
-            //   hTvsA_ch_neb->SetBinError(ibx, iby, 0);
-            //}
          }
       }
    }

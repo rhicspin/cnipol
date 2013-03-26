@@ -52,7 +52,6 @@ public:
    ~AlphaCalibrator();
 
    virtual void  Calibrate(DrawObjContainer *c);
-   //virtual void CalibrateFast(DrawObjContainer *c);
    void CalibrateBadChannels(DrawObjContainer *c);
    void Print(const Option_t* opt="") const;
 

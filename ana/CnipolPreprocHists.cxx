@@ -129,47 +129,31 @@ void CnipolPreprocHists::FillPassOne(ChannelEvent *ch)
 
 
 /** */
-void CnipolPreprocHists::FillDerivedPassOne()
+void CnipolPreprocHists::FillDerivedPassOne(DrawObjContainer &oc)
 {
-   // Fill derivative histograms first
-   //TH1* hTimeVsEnergyA = (TH1*) o["hTimeVsEnergyA"];
-   //
-   //ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
-
-   //for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
-   //{
-   //   UShort_t chId = *iCh;
-
-   //   string sChId(MAX_CHANNEL_DIGITS, ' ');
-   //   sprintf(&sChId[0], "%02d", chId);
-
-   //   TH2* hTimeVsEnergyA_channel = (TH2*) fhTimeVsEnergyA_ch[chId-1];
-   //   hTimeVsEnergyA->Add(hTimeVsEnergyA_channel);
+   //// We expect empty bunch histogram container of the same class
+   //if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
+   //   Error("FillDerivedPassOne(DrawObjContainer &oc)", "No empty bunch container 'preproc_eb' found");
+   //} else {
+   //   CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc->d.find("preproc_eb")->second;
+   //   FillDerivedPassOne_SubtractEmptyBunch(ebHists);
    //}
+
+   // A raw histogram container is required to fill TvsE histograms
+   if ( oc.d.find("raw_neb") == oc.d.end() )
+   {
+      Error("FillDerivedPassOne(DrawObjContainer &oc)", "No 'raw_neb' histogram container found");
+   } else {
+      CnipolRawHists *rawHists = (CnipolRawHists*) oc.d.find("raw_neb")->second;
+      FillDerivedPassOne_FillFromRawHists(rawHists);
+   }
 }
 
 
 /** */
 void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 {
-   Info("PostFillPassOne", "Called");
-
-   //// We expect empty bunch histogram container of the same class
-   //if (!oc || oc->d.find("preproc_eb") == oc->d.end() ) {
-   //   Error("PostFillPassOne", "No empty bunch container 'preproc_eb' found");
-   //} else {
-   //   CnipolPreprocHists* ebHists = (CnipolPreprocHists*) oc->d.find("preproc_eb")->second;
-   //   PostFillPassOne_SubtractEmptyBunch(ebHists);
-   //}
-
-   // A raw histogram container is required to fill TvsE histograms
-   if ( !oc || oc->d.find("raw_neb") == oc->d.end() )
-   {
-      Error("PostFillPassOne", "No 'raw_neb' histogram container found");
-   } else {
-      CnipolRawHists *rawHists   = (CnipolRawHists*) oc->d.find("raw_neb")->second;
-      PostFillPassOne_FillFromRawHists(rawHists);
-   }
+   Info("PostFillPassOne(DrawObjContainer *oc)", "Called");
 
    //CnipolPulserHists *pulserHists = (CnipolPulserHists *) oc->d.find("pulser")->second;
 
@@ -211,7 +195,6 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 
    // Fit 3 bins with a gaussian func
    //hPulserTdc->FitSlicesX(0, maxValBin-1, maxValBin+1, 0, "QNR G3", fitResHists);
-
 }
 
 
@@ -250,7 +233,7 @@ void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool
 
 
 /** This method is not used for now. */
-void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *ebHists)
+void CnipolPreprocHists::FillDerivedPassOne_SubtractEmptyBunch(CnipolPreprocHists *ebHists)
 {
 /*
    TH2* hTimeVsEnergyA = (TH2*) o["hTimeVsEnergyA"];
@@ -265,7 +248,7 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
       TH2* fhTimeVsEnergyA_ch_eb   = (TH2*) ebHists->fhTimeVsEnergyA_ch[chId-1];
 
       if ( !fhTimeVsEnergyA_ch_this || !fhTimeVsEnergyA_ch_eb ) {
-         Error("PostFillPassOne_SubtractEmptyBunch", "No empty bunch histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
+         Error("FillDerivedPassOne_SubtractEmptyBunch", "No empty bunch histogram found %s", fhTimeVsEnergyA_ch_this->GetName());
          continue;
       }
 
@@ -307,7 +290,7 @@ void CnipolPreprocHists::PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *
 
 
 /** */
-void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists)
+void CnipolPreprocHists::FillDerivedPassOne_FillFromRawHists(CnipolRawHists *rawHists)
 {
    TH1 *hNoiseReject;
    
@@ -434,7 +417,7 @@ void CnipolPreprocHists::PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHis
       //hTvsA_ch->Print("all");
       //hTimeVsEnergyA_ch->Print("all");
       Double_t frac = utils::GetNonEmptyFraction(hTimeVsEnergyA_ch);
-      Info("PostFillPassOne_FillFromRawHists", "Non empty bin fraction %f. Channel %d (disable if < 0.10)", frac, chId);
+      Info("FillDerivedPassOne_FillFromRawHists", "Non empty bin fraction %f. Channel %d (disable if < 0.10)", frac, chId);
 
       if ( frac < 0.10 ) {
          gMeasInfo->DisableChannel(chId);

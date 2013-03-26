@@ -27,8 +27,8 @@ private:
    TH1 *fhFitChi2NdfLogVsEnergyA_ch[N_SILICON_CHANNELS];
    TH1 *fhTimeVsEnergyACumul_ch[N_SILICON_CHANNELS];
 
-   void PostFillPassOne_SubtractEmptyBunch(CnipolPreprocHists *preprocHists=0);
-   void PostFillPassOne_FillFromRawHists(CnipolRawHists *rawHists=0);
+   void FillDerivedPassOne_SubtractEmptyBunch(CnipolPreprocHists *preprocHists=0);
+   void FillDerivedPassOne_FillFromRawHists(CnipolRawHists *rawHists=0);
 
 public:
 
@@ -38,7 +38,7 @@ public:
 
    void BookHists();
    void FillPassOne(ChannelEvent *ch);
-   void FillDerivedPassOne();
+   void FillDerivedPassOne(DrawObjContainer &oc);
    void PostFillPassOne(DrawObjContainer *oc=0);
    void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
 

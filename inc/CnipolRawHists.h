@@ -36,7 +36,7 @@ public:
    void BookHists();
    void FillPassOne(ChannelEvent *ch);
    void FillDerivedPassOne();
-   void PostFillPassOne(DrawObjContainer *oc=0);
+   void FillDerivedPassOne(DrawObjContainer &oc);
 
    TH1* GetHTvsA_ch(UShort_t chId);
 
