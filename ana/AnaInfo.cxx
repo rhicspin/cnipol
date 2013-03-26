@@ -159,7 +159,7 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fOutputName']                  = \"%s\";\n", fOutputName.c_str());
    fprintf(f, "$rc['fAsymVersion']                 = \"%s\";\n", fAsymVersion.c_str());
    fprintf(f, "$rc['fSuffix']                      = \"%s\";\n", fSuffix.c_str());
-   fprintf(f, "$rc['fModes']                       = %#010x;\n",  fModes);
+   fprintf(f, "$rc['fModes']                       = %#010x;\n", fModes);
    fprintf(f, "$rc['fAnaDateTime']                 = %u;\n",     (UInt_t) fAnaDateTime);
    fprintf(f, "$rc['fAnaTimeReal']                 = %f;\n",     fAnaTimeReal);
    fprintf(f, "$rc['fAnaTimeCpu']                  = %f;\n",     fAnaTimeCpu);
