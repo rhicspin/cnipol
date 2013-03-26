@@ -103,7 +103,13 @@ int main(int argc, char *argv[])
 
       Double_t    runId           = gMM->fMeasInfo->RUNID;
       UInt_t      fillId          = (UInt_t) runId;
+      int         alphaSources    = gMM->fAnaInfo->fAlphaSourceCount;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
+
+      if (alphaSources != 2)
+      {
+          Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
+      }
 
       if ((gMM->fMeasInfo->fPolBeam != 1) || (gMM->fMeasInfo->fPolStream != 1)) {
          continue;
