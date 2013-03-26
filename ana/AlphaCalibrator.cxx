@@ -159,8 +159,18 @@ void AlphaCalibrator::AmGdPlot(
 
    TFitResultPtr fitres;
    fitres = gAmGd->Fit("pol1", "S", "", 0, AM_ALPHA_E / 1000); // S: return fitres
-   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->Fill(iCh, ATTEN / fitres->Value(1) * 1000);
-   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->Fill(iCh, fitres->Value(0));
+
+   float fit1, fit1_err, coef, coefErr;
+   fit1 = fitres->Value(1);
+   fit1_err = fitres->FitResult::Error(1);
+   coef = ATTEN / fit1 * 1000;
+   coefErr = coef * fit1_err / fit1;
+
+   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinContent(iCh, coef);
+   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinError(iCh, coefErr);
+
+   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->SetBinContent(iCh, fitres->Value(0));
+   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->SetBinError(iCh, fitres->FitResult::Error(0));
 }
 
 
