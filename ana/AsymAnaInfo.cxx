@@ -71,7 +71,7 @@ string AsymAnaInfo::GetAnaInfoFileName()  const { return GetOutDir() + "/runconf
 string AsymAnaInfo::GetRunConfFileName()  const { return GetOutDir() + "/config_calib" + GetSuffix() + ".dat"; }
 FILE*  AsymAnaInfo::GetRunConfFile()      const { return fFileRunConf; }
 
-string AsymAnaInfo::GetAlphaCalibRun()    const { return fAlphaCalibRun; }
+string AsymAnaInfo::GetAlphaCalibRun()    const { return fAlphaCalibRun + GetSuffix(); }
 string AsymAnaInfo::GetDlCalibRun()       const { return fDlCalibRun; }
 
 Bool_t AsymAnaInfo::HasAlphaBit() const  {
@@ -102,7 +102,7 @@ string AsymAnaInfo::GetAlphaCalibFile() const
    }
 
    string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
-   path += "/" + fAlphaCalibRun + "/" + fAlphaCalibRun + ".root";
+   path += "/" + fAlphaCalibRun + "/" + GetAlphaCalibRun() + ".root";
    return path;
 }
 
@@ -519,7 +519,7 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['fThinout']                     = %f;\n",     fThinout);
-   fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", fAlphaCalibRun.c_str());
+   fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", GetAlphaCalibRun().c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
    fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",     fAlphaSourceCount);
    fprintf(f, "\n");
