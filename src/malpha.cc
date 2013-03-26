@@ -18,16 +18,16 @@ using namespace std;
 
 
 /** */
-void FillFromHist(TH1F *h, double runId, map< double, vector<double> > &result)
+void FillFromHist(TH1F *h, double startTime, map< double, vector<double> > &result)
 {
    Int_t xfirst  =  h->GetXaxis()->GetFirst();
    Int_t xlast   =  h->GetXaxis()->GetLast();
 
    assert(h->GetNbinsX() == N_SILICON_CHANNELS);
-   if (result.count(runId) == 0) {
-      result[runId].resize(N_SILICON_CHANNELS);
+   if (result.count(startTime) == 0) {
+      result[startTime].resize(N_SILICON_CHANNELS);
       for (int i = xfirst; i <= xlast; i++) {
-         result[runId][i - xfirst] = h->GetBinContent(i);
+         result[startTime][i - xfirst] = h->GetBinContent(i);
       }
    }
 }
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
 
    map< double, vector<double> > result_am;
    map< double, vector<double> > result_gd;
-   double max_runId = -1;
-   double min_runId = -1;
+   double max_startTime = -1;
+   double min_startTime = -1;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -101,9 +101,8 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      Double_t    runId           = gMM->fMeasInfo->RUNID;
-      UInt_t      fillId          = (UInt_t) runId;
       int         alphaSources    = gMM->fAnaInfo->fAlphaSourceCount;
+      Double_t    startTime       = gMM->fMeasInfo->fStartTime;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
       if (alphaSources != 2)
@@ -117,18 +116,18 @@ int main(int argc, char *argv[])
 
       Info("malpha", "Using file: %s", fileName.c_str());
 
-      if ((max_runId == -1) || (max_runId < runId)) {
-         max_runId = runId;
+      if ((max_startTime == -1) || (max_startTime < startTime)) {
+         max_startTime = startTime;
       }
-      if ((min_runId == -1) || (min_runId > runId)) {
-         min_runId = runId;
+      if ((min_startTime == -1) || (min_startTime > startTime)) {
+         min_startTime = startTime;
       }
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
 
-      FillFromHist(hAmAmpCoef, runId, result_am);
-      FillFromHist(hGdAmpCoef, runId, result_gd);
+      FillFromHist(hAmAmpCoef, startTime, result_am);
+      FillFromHist(hGdAmpCoef, startTime, result_gd);
 
       f->Close();
       delete f;
@@ -141,12 +140,18 @@ int main(int argc, char *argv[])
       obj_name += channel_id;
       const char *obj_name_cstr = obj_name.Data();
 
-      TH1F  h(obj_name_cstr, obj_name_cstr, 10 * result_am.size(), min_runId * 0.9, max_runId * 1.1);
+      TH1F  h(obj_name_cstr, obj_name_cstr, 10 * result_am.size(), -86400, max_startTime - min_startTime + 86400);
       for (map< double, vector<double> >::iterator it = result_am.begin(); it != result_am.end(); it++) {
-         double runId = it->first;
+         double startTime = it->first;
 
-         h.SetBinContent(h.FindBin(runId), result_am[runId][channel_id] / result_gd[runId][channel_id]);
+         h.SetBinContent(
+            h.FindBin(startTime - min_startTime),
+            result_am[startTime][channel_id] / result_gd[startTime][channel_id]
+         );
       }
+      h.GetXaxis()->SetTimeDisplay(1);
+      h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
+      h.GetXaxis()->SetTimeOffset(min_startTime);
       h.Draw();
 
       h.Write(obj_name_cstr);
