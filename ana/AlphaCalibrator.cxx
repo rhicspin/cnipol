@@ -71,6 +71,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
                (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) / (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"])
             );
             ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef_over_AmAmpCoef"])->SetName("hAmGdAmpCoef_over_AmAmpCoef");
+            ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef_over_AmAmpCoef"])->SetTitle("hAmGdAmpCoef_over_AmAmpCoef");
          }
       }
 
