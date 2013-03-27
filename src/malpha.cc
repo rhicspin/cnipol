@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
    TCanvas canvas("canvas", "canvas", 1400, 600);
 
    map< double, vector<double> > result_am;
-   map< double, vector<double> > result_gd;
+   map< double, vector<double> > result_amgd;
    map< double, vector<double> > result_fit0;
    map< double, double > result_fit0mean;
    map< double, double > result_fit0mean_err;
@@ -127,11 +127,11 @@ int main(int argc, char *argv[])
       }
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
-      TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
+      TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
 
       FillFromHist(hAmAmpCoef, startTime, result_am);
-      FillFromHist(hGdAmpCoef, startTime, result_gd);
+      FillFromHist(hAmGdAmpCoef, startTime, result_amgd);
       FillFromHist(hAmGdFit0Coef, startTime, result_fit0);
 
       TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
    TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
 
    for (int channel_id = 0; channel_id < N_SILICON_CHANNELS; channel_id++) {
-      TString obj_name("AmGain_over_GdGain_");
+      TString obj_name("AmGain_over_AmGdGain_");
       obj_name += channel_id;
       const char *obj_name_cstr = obj_name.Data();
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
          h.SetBinContent(
             h.FindBin(startTime - min_startTime),
-            result_am[startTime][channel_id] / result_gd[startTime][channel_id]
+            result_am[startTime][channel_id] / result_amgd[startTime][channel_id]
          );
       }
       h.GetXaxis()->SetTimeDisplay(1);
