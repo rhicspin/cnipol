@@ -63,6 +63,9 @@ int main(int argc, char *argv[])
 
    map< double, vector<double> > result_am;
    map< double, vector<double> > result_gd;
+   map< double, vector<double> > result_fit0;
+   map< double, double > result_fit0mean;
+   map< double, double > result_fit0mean_err;
    double max_startTime = -1;
    double min_startTime = -1;
 
@@ -125,9 +128,15 @@ int main(int argc, char *argv[])
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
+      TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
 
       FillFromHist(hAmAmpCoef, startTime, result_am);
       FillFromHist(hGdAmpCoef, startTime, result_gd);
+      FillFromHist(hAmGdFit0Coef, startTime, result_fit0);
+
+      TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
+      result_fit0mean[startTime] = fitres->Value(0);
+      result_fit0mean_err[startTime] = fitres->FitResult::Error(0);
 
       f->Close();
       delete f;
@@ -156,6 +165,25 @@ int main(int argc, char *argv[])
 
       h.Write(obj_name_cstr);
    }
+
+   TH1F  h("hAmGdFit0Coef", "hAmGdFit0Coef", 10 * result_am.size(), -86400, max_startTime - min_startTime + 86400);
+   for (map< double, vector<double> >::iterator it = result_am.begin(); it != result_am.end(); it++) {
+      double startTime = it->first;
+
+      h.SetBinContent(
+         h.FindBin(startTime - min_startTime),
+         result_fit0mean[startTime]
+      );
+      h.SetBinError(
+         h.FindBin(startTime - min_startTime),
+         result_fit0mean_err[startTime]
+      );
+   }
+   h.GetXaxis()->SetTimeDisplay(1);
+   h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   h.GetXaxis()->SetTimeOffset(min_startTime);
+
+   h.Write("hAmGdFit0Coef");
 
    return EXIT_SUCCESS;
 }
