@@ -145,6 +145,12 @@ int main(int argc, char *argv[])
           Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
       }
 
+      if (gMM->fMeasInfo->RUNID == 70213)
+      {
+          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
+          continue;
+      }
+
       if ((gMM->fMeasInfo->fPolBeam != 1) || (gMM->fMeasInfo->fPolStream != 1)) {
          continue;
       }
