@@ -143,6 +143,7 @@ int main(int argc, char *argv[])
       if (alphaSources != 2)
       {
           Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
+          continue;
       }
 
       if (gMM->fMeasInfo->RUNID == 70213)
