@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
    map< double, vector<double> > result_am_err;
    map< double, vector<double> > result_amgd_err;
    map< double, vector<double> > result_fit0_err;
+   map< double, double > result_am_amgd_mean;
+   map< double, double > result_am_amgd_mean_err;
    map< double, double > result_fit0mean;
    map< double, double > result_fit0mean_err;
    double max_startTime = -1;
@@ -158,15 +160,24 @@ int main(int argc, char *argv[])
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
+      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
 
       FillFromHist(hAmAmpCoef, startTime, result_am, result_am_err);
       FillFromHist(hAmGdAmpCoef, startTime, result_amgd, result_amgd_err);
       FillFromHist(hAmGdFit0Coef, startTime, result_fit0, result_fit0_err);
 
-      TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
-      result_fit0mean[startTime] = fitres->Value(0);
-      result_fit0mean_err[startTime] = fitres->FitResult::Error(0);
+      {
+         TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
+         result_fit0mean[startTime] = fitres->Value(0);
+         result_fit0mean_err[startTime] = fitres->FitResult::Error(0);
+      }
+
+      {
+         TFitResultPtr fitres = hAmGdAmpCoef_over_AmAmpCoef->Fit("pol0", "S"); // S: return fitres
+         result_am_amgd_mean[startTime] = fitres->Value(0);
+         result_am_amgd_mean_err[startTime] = fitres->FitResult::Error(0);
+      }
 
       f->Close();
       delete f;
@@ -204,6 +215,7 @@ int main(int argc, char *argv[])
    }
 
    PlotMean("hAmGdFit0Coef", result_fit0mean, result_fit0mean_err, min_startTime, max_startTime);
+   PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean, result_am_amgd_mean_err, min_startTime, max_startTime);
 
    return EXIT_SUCCESS;
 }
