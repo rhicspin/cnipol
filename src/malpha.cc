@@ -34,6 +34,31 @@ void FillFromHist(TH1F *h, double startTime, map< double, vector<double> > &resu
    }
 }
 
+
+/** */
+void PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
+{
+   TH1F  h(name, name, 10 * result.size(), -86400, max_startTime - min_startTime + 86400);
+   for (map< double, double >::iterator it = result.begin(); it != result.end(); it++) {
+      double startTime = it->first;
+
+      h.SetBinContent(
+         h.FindBin(startTime - min_startTime),
+         result[startTime]
+      );
+      h.SetBinError(
+         h.FindBin(startTime - min_startTime),
+         result_err[startTime]
+      );
+   }
+   h.GetXaxis()->SetTimeDisplay(1);
+   h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   h.GetXaxis()->SetTimeOffset(min_startTime);
+
+   h.Write(name);
+}
+
+
 /** */
 int main(int argc, char *argv[])
 {
@@ -178,24 +203,7 @@ int main(int argc, char *argv[])
       h.Write(obj_name_cstr);
    }
 
-   TH1F  h("hAmGdFit0Coef", "hAmGdFit0Coef", 10 * result_am.size(), -86400, max_startTime - min_startTime + 86400);
-   for (map< double, vector<double> >::iterator it = result_am.begin(); it != result_am.end(); it++) {
-      double startTime = it->first;
-
-      h.SetBinContent(
-         h.FindBin(startTime - min_startTime),
-         result_fit0mean[startTime]
-      );
-      h.SetBinError(
-         h.FindBin(startTime - min_startTime),
-         result_fit0mean_err[startTime]
-      );
-   }
-   h.GetXaxis()->SetTimeDisplay(1);
-   h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
-   h.GetXaxis()->SetTimeOffset(min_startTime);
-
-   h.Write("hAmGdFit0Coef");
+   PlotMean("hAmGdFit0Coef", result_fit0mean, result_fit0mean_err, min_startTime, max_startTime);
 
    return EXIT_SUCCESS;
 }
