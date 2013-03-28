@@ -38,9 +38,20 @@ void FillFromHist(TH1F *h, double startTime, map< double, vector<double> > &resu
 /** */
 void PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
 {
+   double min_value = FLT_MAX, max_value = -FLT_MAX;
+
    TH1F  h(name, name, 10 * result.size(), -86400, max_startTime - min_startTime + 86400);
    for (map< double, double >::iterator it = result.begin(); it != result.end(); it++) {
       double startTime = it->first;
+
+      if (min_value > result[startTime])
+      {
+         min_value = result[startTime];
+      }
+      if (max_value < result[startTime])
+      {
+         max_value = result[startTime];
+      }
 
       h.SetBinContent(
          h.FindBin(startTime - min_startTime),
@@ -54,6 +65,9 @@ void PlotMean(const char *name, map< double, double > &result, map< double, doub
    h.GetXaxis()->SetTimeDisplay(1);
    h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
    h.GetXaxis()->SetTimeOffset(min_startTime);
+
+   double vpadding = (max_value - min_value) * 0.4;
+   h.GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 
    h.Write(name);
 }
