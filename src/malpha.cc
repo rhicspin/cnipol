@@ -18,7 +18,7 @@ using namespace std;
 
 
 /** */
-TH1F* PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
+void PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
 {
    double min_value = FLT_MAX, max_value = -FLT_MAX;
 
@@ -48,8 +48,6 @@ TH1F* PlotMean(const char *name, map< double, double > &result, map< double, dou
 
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
-
-   return h;
 }
 
 
