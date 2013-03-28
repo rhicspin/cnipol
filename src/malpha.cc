@@ -7,7 +7,6 @@
 
 #include "TEnv.h"
 #include "TROOT.h"
-#include "TMultiGraph.h"
 
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
@@ -58,13 +57,6 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
       double startTime = it->first;
       double value = it->second;
 
-      if (min_value > value) {
-         min_value = value;
-      }
-      if (max_value < value) {
-         max_value = value;
-      }
-
       h->SetBinContent(
          h->FindBin(startTime - min_startTime),
          value
@@ -78,12 +70,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
    h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
    h->GetXaxis()->SetTimeOffset(min_startTime);
 
-   double vpadding = (max_value - min_value) * 0.4;
-   h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
-
    string hostNameStr = string(name) + "_Per_Detector";
    const char *hostName = hostNameStr.c_str();
-   TMultiGraph *mg = new TMultiGraph(hostName, hostName);
+   TH1F  *host = new TH1F(hostName, hostName, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
 
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = new TGraphErrors(result.second.size());
@@ -97,20 +86,29 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
          double startTime = it->first;
          vector<double> &values = it->second;
 
+         if (min_value > values[det]) {
+            min_value = values[det];
+         }
+         if (max_value < values[det]) {
+            max_value = values[det];
+         }
+
          g->SetPoint(i, startTime - min_startTime, values[det]);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
 
-      mg->Add(g, "L");
+      host->GetListOfFunctions()->Add(g, "p");
    }
 
-   mg->Draw("A");
-   mg->GetXaxis()->SetTimeDisplay(1);
-   mg->GetXaxis()->SetTimeFormat("%d.%m.%Y");
-   mg->GetXaxis()->SetTimeOffset(min_startTime);
+   host->SetOption("DUMMY GRIDX GRIDY");
+   host->GetXaxis()->SetTimeDisplay(1);
+   host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   host->GetXaxis()->SetTimeOffset(min_startTime);
 
-   mg->Write();
+   double vpadding = (max_value - min_value) * 0.4;
+   h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+   host->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 }
 
 
