@@ -16,38 +16,98 @@
 
 using namespace std;
 
+typedef double Time;
+typedef int    DetectorId;
+typedef pair<
+   map<Time, double>,
+   map< Time, vector<double> >
+> ResultMean;
+
 
 /** */
-void PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
+void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &result_err)
+{
+   TFitResultPtr fitres = h->Fit("pol0", "S"); // S: return fitres
+
+   result.first[startTime] = fitres->Value(0);
+   result_err.first[startTime] = fitres->FitResult::Error(0);
+
+   result.second[startTime].resize(N_DETECTORS);
+   result_err.second[startTime].resize(N_DETECTORS);
+
+   for(int det = 0; det < N_DETECTORS; det++) {
+      int xmin = 0.5 + det * NSTRIP_PER_DETECTOR;
+      int xmax = xmin + NSTRIP_PER_DETECTOR;
+
+      TFitResultPtr fitres = h->Fit("pol0", "S", "", xmin, xmax); // S: return fitres
+
+      result.second[startTime][det] = fitres->Value(0);
+      result_err.second[startTime][det] = fitres->FitResult::Error(0);
+   }
+}
+
+
+/** */
+void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, double min_startTime, double max_startTime)
 {
    double min_value = FLT_MAX, max_value = -FLT_MAX;
 
-   TH1F  *h = new TH1F(name, name, 100 * result.size(), -86400, max_startTime - min_startTime + 86400);
-   for (map< double, double >::iterator it = result.begin(); it != result.end(); it++) {
+   TH1F  *h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   for (map< Time, double >::iterator it = result.first.begin(); it != result.first.end(); it++) {
       double startTime = it->first;
-
-      if (min_value > result[startTime]) {
-         min_value = result[startTime];
-      }
-      if (max_value < result[startTime]) {
-         max_value = result[startTime];
-      }
+      double value = it->second;
 
       h->SetBinContent(
          h->FindBin(startTime - min_startTime),
-         result[startTime]
+         value
       );
       h->SetBinError(
          h->FindBin(startTime - min_startTime),
-         result_err[startTime]
+         result_err.first[startTime]
       );
    }
    h->GetXaxis()->SetTimeDisplay(1);
    h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
    h->GetXaxis()->SetTimeOffset(min_startTime);
 
+   string hostNameStr = string(name) + "_Per_Detector";
+   const char *hostName = hostNameStr.c_str();
+   TH1F  *host = new TH1F(hostName, hostName, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+
+   for(int det = 0; det < N_DETECTORS; det++) {
+      TGraphErrors *g = new TGraphErrors(result.second.size());
+      int i = 0;
+      TString sDet(hostNameStr);
+      sDet += det;
+      g->SetName(sDet);
+
+      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+         double startTime = it->first;
+         vector<double> &values = it->second;
+
+         if (min_value > values[det]) {
+            min_value = values[det];
+         }
+         if (max_value < values[det]) {
+            max_value = values[det];
+         }
+
+         g->SetPoint(i, startTime - min_startTime, values[det]);
+         g->SetPointError(i, 0, result_err.second[startTime][det]);
+         i++;
+      }
+
+      host->GetListOfFunctions()->Add(g, "p");
+   }
+
+   host->SetOption("DUMMY GRIDX GRIDY");
+   host->GetXaxis()->SetTimeDisplay(1);
+   host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   host->GetXaxis()->SetTimeOffset(min_startTime);
+
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+   host->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 }
 
 
@@ -76,10 +136,10 @@ int main(int argc, char *argv[])
 
    Info("malpha", "Starting first pass...");
 
-   map< Short_t, map< double, double > > result_am_amgd_mean;
-   map< Short_t, map< double, double > > result_am_amgd_mean_err;
-   map< Short_t, map< double, double > > result_fit0mean;
-   map< Short_t, map< double, double > > result_fit0mean_err;
+   map< Short_t, ResultMean > result_am_amgd_mean;
+   map< Short_t, ResultMean > result_am_amgd_mean_err;
+   map< Short_t, ResultMean > result_fit0mean;
+   map< Short_t, ResultMean > result_fit0mean_err;
    double max_startTime = -1;
    double min_startTime = -1;
 
@@ -140,20 +200,11 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
+      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
 
-      {
-         TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
-         result_fit0mean[polId][startTime] = fitres->Value(0);
-         result_fit0mean_err[polId][startTime] = fitres->FitResult::Error(0);
-      }
-
-      {
-         TFitResultPtr fitres = hAmGdAmpCoef_over_AmAmpCoef->Fit("pol0", "S"); // S: return fitres
-         result_am_amgd_mean[polId][startTime] = fitres->Value(0);
-         result_am_amgd_mean_err[polId][startTime] = fitres->FitResult::Error(0);
-      }
+      FillFromHist(hAmGdFit0Coef, startTime, result_fit0mean[polId], result_fit0mean_err[polId]);
+      FillFromHist(hAmGdAmpCoef_over_AmAmpCoef, startTime, result_am_amgd_mean[polId], result_am_amgd_mean_err[polId]);
 
       f->Close();
       delete f;
