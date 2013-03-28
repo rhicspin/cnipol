@@ -36,40 +36,38 @@ void FillFromHist(TH1F *h, double startTime, map< double, vector<double> > &resu
 
 
 /** */
-void PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
+TH1F* PlotMean(const char *name, map< double, double > &result, map< double, double > &result_err, double min_startTime, double max_startTime)
 {
    double min_value = FLT_MAX, max_value = -FLT_MAX;
 
-   TH1F  h(name, name, 100 * result.size(), -86400, max_startTime - min_startTime + 86400);
+   TH1F  *h = new TH1F(name, name, 100 * result.size(), -86400, max_startTime - min_startTime + 86400);
    for (map< double, double >::iterator it = result.begin(); it != result.end(); it++) {
       double startTime = it->first;
 
-      if (min_value > result[startTime])
-      {
+      if (min_value > result[startTime]) {
          min_value = result[startTime];
       }
-      if (max_value < result[startTime])
-      {
+      if (max_value < result[startTime]) {
          max_value = result[startTime];
       }
 
-      h.SetBinContent(
-         h.FindBin(startTime - min_startTime),
+      h->SetBinContent(
+         h->FindBin(startTime - min_startTime),
          result[startTime]
       );
-      h.SetBinError(
-         h.FindBin(startTime - min_startTime),
+      h->SetBinError(
+         h->FindBin(startTime - min_startTime),
          result_err[startTime]
       );
    }
-   h.GetXaxis()->SetTimeDisplay(1);
-   h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
-   h.GetXaxis()->SetTimeOffset(min_startTime);
+   h->GetXaxis()->SetTimeDisplay(1);
+   h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   h->GetXaxis()->SetTimeOffset(min_startTime);
 
    double vpadding = (max_value - min_value) * 0.4;
-   h.GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+   h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 
-   h.Write(name);
+   return h;
 }
 
 
@@ -98,16 +96,16 @@ int main(int argc, char *argv[])
 
    Info("malpha", "Starting first pass...");
 
-   map< double, vector<double> > result_am;
-   map< double, vector<double> > result_amgd;
-   map< double, vector<double> > result_fit0;
-   map< double, vector<double> > result_am_err;
-   map< double, vector<double> > result_amgd_err;
-   map< double, vector<double> > result_fit0_err;
-   map< double, double > result_am_amgd_mean;
-   map< double, double > result_am_amgd_mean_err;
-   map< double, double > result_fit0mean;
-   map< double, double > result_fit0mean_err;
+   map< Short_t, map< double, vector<double> > > result_am;
+   map< Short_t, map< double, vector<double> > > result_amgd;
+   map< Short_t, map< double, vector<double> > > result_fit0;
+   map< Short_t, map< double, vector<double> > > result_am_err;
+   map< Short_t, map< double, vector<double> > > result_amgd_err;
+   map< Short_t, map< double, vector<double> > > result_fit0_err;
+   map< Short_t, map< double, double > > result_am_amgd_mean;
+   map< Short_t, map< double, double > > result_am_amgd_mean_err;
+   map< Short_t, map< double, double > > result_fit0mean;
+   map< Short_t, map< double, double > > result_fit0mean_err;
    double max_startTime = -1;
    double min_startTime = -1;
 
@@ -147,26 +145,19 @@ int main(int argc, char *argv[])
       }
 
       int         alphaSources    = gMM->fAnaInfo->fAlphaSourceCount;
+      Short_t     polId           = gMM->fMeasInfo->fPolId;
       Double_t    startTime       = gMM->fMeasInfo->fStartTime;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
-      if (alphaSources != 2)
-      {
-          Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
-          continue;
-      }
-
-      if (gMM->fMeasInfo->RUNID == 70213)
-      {
-          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
-          continue;
-      }
-
-      if ((gMM->fMeasInfo->fPolBeam != 1) || (gMM->fMeasInfo->fPolStream != 1)) {
+      if (alphaSources != 2) {
+         Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
          continue;
       }
 
-      Info("malpha", "Using file: %s", fileName.c_str());
+      if (gMM->fMeasInfo->RUNID == 70213) {
+         Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
+         continue;
+      }
 
       if ((max_startTime == -1) || (max_startTime < startTime)) {
          max_startTime = startTime;
@@ -180,20 +171,20 @@ int main(int argc, char *argv[])
       TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
 
-      FillFromHist(hAmAmpCoef, startTime, result_am, result_am_err);
-      FillFromHist(hAmGdAmpCoef, startTime, result_amgd, result_amgd_err);
-      FillFromHist(hAmGdFit0Coef, startTime, result_fit0, result_fit0_err);
+      FillFromHist(hAmAmpCoef, startTime, result_am[polId], result_am_err[polId]);
+      FillFromHist(hAmGdAmpCoef, startTime, result_amgd[polId], result_amgd_err[polId]);
+      FillFromHist(hAmGdFit0Coef, startTime, result_fit0[polId], result_fit0_err[polId]);
 
       {
          TFitResultPtr fitres = hAmGdFit0Coef->Fit("pol0", "S"); // S: return fitres
-         result_fit0mean[startTime] = fitres->Value(0);
-         result_fit0mean_err[startTime] = fitres->FitResult::Error(0);
+         result_fit0mean[polId][startTime] = fitres->Value(0);
+         result_fit0mean_err[polId][startTime] = fitres->FitResult::Error(0);
       }
 
       {
          TFitResultPtr fitres = hAmGdAmpCoef_over_AmAmpCoef->Fit("pol0", "S"); // S: return fitres
-         result_am_amgd_mean[startTime] = fitres->Value(0);
-         result_am_amgd_mean_err[startTime] = fitres->FitResult::Error(0);
+         result_am_amgd_mean[polId][startTime] = fitres->Value(0);
+         result_am_amgd_mean_err[polId][startTime] = fitres->FitResult::Error(0);
       }
 
       f->Close();
@@ -202,36 +193,46 @@ int main(int argc, char *argv[])
 
    TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
 
-   for (int channel_id = 0; channel_id < N_SILICON_CHANNELS; channel_id++) {
-      TString obj_name("AmGain_over_AmGdGain_");
-      obj_name += channel_id;
-      const char *obj_name_cstr = obj_name.Data();
+   PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
-      TH1F  h(obj_name_cstr, obj_name_cstr, 10 * result_am.size(), -86400, max_startTime - min_startTime + 86400);
-      for (map< double, vector<double> >::iterator it = result_am.begin(); it != result_am.end(); it++) {
-         double startTime = it->first;
-         double value = result_am[startTime][channel_id] / result_amgd[startTime][channel_id];
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId) {
+      Short_t polId = *iPolId;
+      string  polIdName = RunConfig::AsString(*iPolId);
 
-         h.SetBinContent(
-            h.FindBin(startTime - min_startTime),
-            value
-         );
-         h.SetBinError(
-            h.FindBin(startTime - min_startTime),
-            value *
-            (result_am_err[startTime][channel_id] / result_am[startTime][channel_id]
-            + result_amgd_err[startTime][channel_id] / result_amgd[startTime][channel_id])
-         );
+      TDirectory *fDir = f1.mkdir(polIdName.c_str());
+      fDir->cd();
+
+      for (int channel_id = 0; channel_id < N_SILICON_CHANNELS; channel_id++) {
+         TString obj_name("AmGain_over_AmGdGain_");
+         obj_name += channel_id;
+         const char *obj_name_cstr = obj_name.Data();
+
+         TH1F *h = new TH1F(obj_name_cstr, obj_name_cstr, 10 * result_am.size(), -86400, max_startTime - min_startTime + 86400);
+         for (map< double, vector<double> >::iterator it = result_am[polId].begin(); it != result_am[polId].end(); it++) {
+            double startTime = it->first;
+            double value = result_am[polId][startTime][channel_id] / result_amgd[polId][startTime][channel_id];
+
+            h->SetBinContent(
+               h->FindBin(startTime - min_startTime),
+               value
+            );
+            h->SetBinError(
+               h->FindBin(startTime - min_startTime),
+               value *
+               (result_am_err[polId][startTime][channel_id] / result_am[polId][startTime][channel_id]
+                + result_amgd_err[polId][startTime][channel_id] / result_amgd[polId][startTime][channel_id])
+            );
+         }
+         h->GetXaxis()->SetTimeDisplay(1);
+         h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+         h->GetXaxis()->SetTimeOffset(min_startTime);
       }
-      h.GetXaxis()->SetTimeDisplay(1);
-      h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
-      h.GetXaxis()->SetTimeOffset(min_startTime);
 
-      h.Write(obj_name_cstr);
+      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], min_startTime, max_startTime);
+      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], min_startTime, max_startTime);
    }
 
-   PlotMean("hAmGdFit0Coef", result_fit0mean, result_fit0mean_err, min_startTime, max_startTime);
-   PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean, result_am_amgd_mean_err, min_startTime, max_startTime);
+   f1.Write();
 
    return EXIT_SUCCESS;
 }
