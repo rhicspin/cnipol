@@ -98,7 +98,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
          i++;
       }
 
-      host->GetListOfFunctions()->Add(g, "p");
+      host->GetListOfFunctions()->Add(g, "pl");
    }
 
    host->SetOption("DUMMY GRIDX GRIDY");
