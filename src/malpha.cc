@@ -40,7 +40,7 @@ void PlotMean(const char *name, map< double, double > &result, map< double, doub
 {
    double min_value = FLT_MAX, max_value = -FLT_MAX;
 
-   TH1F  h(name, name, 10 * result.size(), -86400, max_startTime - min_startTime + 86400);
+   TH1F  h(name, name, 100 * result.size(), -86400, max_startTime - min_startTime + 86400);
    for (map< double, double >::iterator it = result.begin(); it != result.end(); it++) {
       double startTime = it->first;
 
