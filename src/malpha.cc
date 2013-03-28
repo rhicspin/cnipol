@@ -98,10 +98,6 @@ int main(int argc, char *argv[])
 
    Info("malpha", "Starting first pass...");
 
-   // Create a default canvas here to get rid of weird root messages while
-   // reading objects from root files
-   TCanvas canvas("canvas", "canvas", 1400, 600);
-
    map< double, vector<double> > result_am;
    map< double, vector<double> > result_amgd;
    map< double, vector<double> > result_fit0;
@@ -230,7 +226,6 @@ int main(int argc, char *argv[])
       h.GetXaxis()->SetTimeDisplay(1);
       h.GetXaxis()->SetTimeFormat("%d.%m.%Y");
       h.GetXaxis()->SetTimeOffset(min_startTime);
-      h.Draw();
 
       h.Write(obj_name_cstr);
    }
