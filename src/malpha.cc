@@ -17,6 +17,7 @@
 using namespace std;
 
 typedef double Time;
+typedef string RunName;
 typedef int    DetectorId;
 typedef pair<
    map<Time, double>,
@@ -48,31 +49,51 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
 
 
 /** */
-void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, double min_startTime, double max_startTime)
+void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
    double min_value = FLT_MAX, max_value = -FLT_MAX;
 
-   TH1F  *h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   TH1F  *h;
+
+   if (max_startTime) {
+       h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   } else {
+       h = new TH1F(name, name, result.first.size(), 0.0, 1.0);
+   }
+
+   int bin = 1;
    for (map< Time, double >::iterator it = result.first.begin(); it != result.first.end(); it++) {
       double startTime = it->first;
+      const RunName &runName = runNameD[startTime];
       double value = it->second;
 
-      h->SetBinContent(
-         h->FindBin(startTime - min_startTime),
-         value
-      );
-      h->SetBinError(
-         h->FindBin(startTime - min_startTime),
-         result_err.first[startTime]
-      );
+      if (max_startTime) {
+         bin = h->FindBin(startTime - min_startTime);
+      }
+
+      h->SetBinContent(bin, value);
+      h->SetBinError(bin, result_err.first[startTime]);
+
+      if (!max_startTime) {
+         h->GetXaxis()->SetBinLabel(bin, runName.c_str());
+         bin++;
+      }
    }
-   h->GetXaxis()->SetTimeDisplay(1);
-   h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
-   h->GetXaxis()->SetTimeOffset(min_startTime);
+
+   if (max_startTime) {
+      h->GetXaxis()->SetTimeDisplay(1);
+      h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+      h->GetXaxis()->SetTimeOffset(min_startTime);
+   }
 
    string hostNameStr = string(name) + "_Per_Detector";
    const char *hostName = hostNameStr.c_str();
-   TH1F  *host = new TH1F(hostName, hostName, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   TH1F  *host;
+   if (max_startTime) {
+       host = new TH1F(hostName, hostName, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   } else {
+       host = new TH1F(hostName, hostName, result.first.size(), 0.0, result.first.size());
+   }
 
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = new TGraphErrors(result.second.size());
@@ -84,7 +105,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
 
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
          double startTime = it->first;
+         const RunName &runName = runNameD[startTime];
          vector<double> &values = it->second;
+         double xval;
 
          if (min_value > values[det]) {
             min_value = values[det];
@@ -93,7 +116,14 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, doub
             max_value = values[det];
          }
 
-         g->SetPoint(i, startTime - min_startTime, values[det]);
+         if (max_startTime) {
+            xval = startTime - min_startTime;
+         } else {
+            xval = float(i) + 0.5;
+            host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
+         }
+
+         g->SetPoint(i, xval, values[det]);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
@@ -143,6 +173,7 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > result_fit0mean_err;
    double max_startTime = -1;
    double min_startTime = -1;
+   map<Time, string> runNameD;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -180,6 +211,7 @@ int main(int argc, char *argv[])
       }
 
       int         alphaSources    = gMM->fAnaInfo->fAlphaSourceCount;
+      string      runName         = gMM->fMeasInfo->GetRunName();
       Short_t     polId           = gMM->fMeasInfo->fPolId;
       Double_t    startTime       = gMM->fMeasInfo->fStartTime;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
@@ -193,6 +225,13 @@ int main(int argc, char *argv[])
          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
          continue;
       }
+
+      if (runNameD.count(startTime)) {
+         Error("malpha", "Duplicate time = %f, %s, %s",
+            startTime, runName.c_str(), runNameD[startTime].c_str());
+         exit(EXIT_FAILURE);
+      }
+      runNameD[startTime] = runName;
 
       if ((max_startTime == -1) || (max_startTime < startTime)) {
          max_startTime = startTime;
@@ -222,8 +261,10 @@ int main(int argc, char *argv[])
       TDirectory *fDir = f1.mkdir(polIdName.c_str());
       fDir->cd();
 
-      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], min_startTime, max_startTime);
-      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], min_startTime, max_startTime);
+      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD, min_startTime, max_startTime);
+      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD, min_startTime, max_startTime);
+      PlotMean("hDAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD, 0, 0);
+      PlotMean("hDAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD, 0, 0);
    }
 
    f1.Write();
