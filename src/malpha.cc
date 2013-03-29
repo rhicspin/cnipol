@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > result_fit0mean_err;
    double max_startTime = -1;
    double min_startTime = -1;
-   map<Time, string> runNameD;
+   map< Short_t, map<Time, string> > runNameD;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -238,12 +238,12 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      if (runNameD.count(startTime)) {
+      if (runNameD[polId].count(startTime)) {
          Error("malpha", "Duplicate time = %f, %s, %s",
-            startTime, runName.c_str(), runNameD[startTime].c_str());
+            startTime, runName.c_str(), runNameD[polId][startTime].c_str());
          exit(EXIT_FAILURE);
       }
-      runNameD[startTime] = runName;
+      runNameD[polId][startTime] = runName;
 
       if ((max_startTime == -1) || (max_startTime < startTime)) {
          max_startTime = startTime;
@@ -273,10 +273,10 @@ int main(int argc, char *argv[])
       TDirectory *fDir = f1.mkdir(polIdName.c_str());
       fDir->cd();
 
-      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD, min_startTime, max_startTime);
-      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD, min_startTime, max_startTime);
-      PlotMean("hDAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD, 0, 0);
-      PlotMean("hDAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD, 0, 0);
+      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean("hDAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], 0, 0);
+      PlotMean("hDAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], 0, 0);
    }
 
    f1.Write();
