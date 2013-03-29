@@ -42,8 +42,14 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
 
       TFitResultPtr fitres = h->Fit("pol0", "S", "", xmin, xmax); // S: return fitres
 
-      result.second[startTime][det] = fitres->Value(0);
-      result_err.second[startTime][det] = fitres->FitResult::Error(0);
+      if (fitres.Get())
+      {
+         result.second[startTime][det] = fitres->Value(0);
+         result_err.second[startTime][det] = fitres->FitResult::Error(0);
+      } else {
+         result.second[startTime][det] = NAN;
+         result_err.second[startTime][det] = NAN;
+      }
    }
 }
 
@@ -99,6 +105,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       TGraphErrors *g = new TGraphErrors(result.second.size());
       g->SetLineColor(det + 2);
       int i = 0;
+      double xval = -0.5;
       TString sDet(hostNameStr);
       sDet += det;
       g->SetName(sDet);
@@ -107,20 +114,25 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          double startTime = it->first;
          const RunName &runName = runNameD[startTime];
          double value = it->second[det];
-         double xval;
+
+         if (max_startTime) {
+            xval = startTime - min_startTime;
+         } else {
+            xval++;
+            host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
+         }
+
+         if (isnan(value))
+         {
+            g->RemovePoint(0);
+            continue;
+         }
 
          if (min_value > value) {
             min_value = value;
          }
          if (max_value < value) {
             max_value = value;
-         }
-
-         if (max_startTime) {
-            xval = startTime - min_startTime;
-         } else {
-            xval = float(i) + 0.5;
-            host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
          }
 
          g->SetPoint(i, xval, value);
