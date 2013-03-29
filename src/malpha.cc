@@ -106,14 +106,14 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
          double startTime = it->first;
          const RunName &runName = runNameD[startTime];
-         vector<double> &values = it->second;
+         double value = it->second[det];
          double xval;
 
-         if (min_value > values[det]) {
-            min_value = values[det];
+         if (min_value > value) {
+            min_value = value;
          }
-         if (max_value < values[det]) {
-            max_value = values[det];
+         if (max_value < value) {
+            max_value = value;
          }
 
          if (max_startTime) {
@@ -123,7 +123,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
          }
 
-         g->SetPoint(i, xval, values[det]);
+         g->SetPoint(i, xval, value);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
