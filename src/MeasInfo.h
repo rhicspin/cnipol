@@ -102,6 +102,7 @@ public:
    BeamBunchMap                fBeamBunches;
    //Int_t                       NDisableBunch;
    //Int_t                       DisableBunch[N_BUNCHES];
+   bool                        fMachineParamsPresent;
 
 public:
 
