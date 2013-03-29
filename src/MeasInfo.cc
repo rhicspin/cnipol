@@ -19,6 +19,7 @@ using namespace std;
 MeasInfo::MeasInfo() : TObject(),
    fBeamEnergy(0),
    fMachineParams(),
+   fMachineParamsPresent(false),
    fTargetParams(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
@@ -91,6 +92,7 @@ string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 void MeasInfo::SetMachineParams(const RecordMachineParams &rec)
 {
    fMachineParams = rec;
+   fMachineParamsPresent = true;
 }
 
 
