@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <sstream>
 #include <ctime>
+#include <cstdio>
 
 #include "TROOT.h"
 #include "TStopwatch.h"
@@ -39,6 +40,112 @@
 
 using namespace std;
 
+
+/**
+ * You will need to have aclina host defined in your ssh_config, like this
+ *
+ * Host aclina
+ * 	IdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa
+ * 	User            dsmirnov
+ * 	HostName        localhost
+ * 	Port            8022
+ *
+ * @returns 0 if everything was ok
+ */
+int read_ssh(const char *logger, const char *cells, time_t start, time_t end, map<string, double> *mean_value)
+{
+   char buf[1024], startStr[32], endStr[32];
+   vector<string> cell_name;
+
+   if (index(logger, '\'') || (index(cells, '\'')) || index(logger, '"') || (index(cells, '"')))
+   {
+      Error("read_ssh", "Wrong params.");
+      return 1;
+   }
+
+   char *copy = strdup(cells);
+   cell_name.push_back(strtok(copy, ","));
+   const char *tok;
+   while((tok = strtok(NULL, ",")))
+   {
+      cell_name.push_back(tok);
+   }
+   free(copy);
+
+   ctime_r(&start, startStr); // this should have timezone problems
+   ctime_r(&end, endStr);
+   startStr[strlen(startStr) - 1] = 0; // replace newlines with end-of-string marks
+   endStr[strlen(endStr) - 1] = 0;
+   snprintf(buf, sizeof(buf),
+            "ssh aclina \""
+            "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
+            "exportLoggerData"
+            " -logger '%s'"
+            " -cells '%s'"
+            " -timeformat 'unix'"
+            " -dataformat '%%10.6f'"
+            " -excluderowswithholes"
+            " -start '%s'"
+            " -stop '%s'"
+            "\"",
+            logger, cells, startStr, endStr);
+
+   Info("read_ssh", "Running %s", buf);
+
+   FILE *fd = popen(buf, "r");
+   if (!fd)
+   {
+      Error("read_ssh", "popen failed, errno = %i", errno);
+      return 1;
+   }
+
+   int row_count = 0;
+   mean_value->clear();
+
+   while(!feof(fd)) {
+      char c;
+      c = ungetc(fgetc(fd), fd);
+      if (c == '#') {
+         if (fgets(buf, sizeof(buf), fd)) {
+            buf[strlen(buf) - 1] = 0;
+            Info("read_ssh", "Read comment: %s", buf);
+         }
+      } else {
+         int len;
+         double time, value;
+         len = fscanf(fd, "%lf", &time);
+         if (len != 1) break;
+
+         for(vector<string>::const_iterator it = cell_name.begin();
+             it != cell_name.end(); it++) {
+            len = fscanf(fd, "%lf", &value);
+            if (len != 1) {
+               Error("read_ssh", "unexpected end of row");
+               return 1;
+            }
+            (*mean_value)[*it] += value;
+         }
+         row_count++;
+      }
+   }
+
+   for(map<string, double>::iterator it = mean_value->begin();
+       it != mean_value->end(); it++)
+   {
+      double &value = it->second;
+      value /= row_count;
+   }
+
+   int retcode = pclose(fd);
+
+   if (retcode == -1)
+   {
+      Error("read_ssh", "pclose failed, errno = %i", errno);
+      return 1;
+   }
+
+   return retcode;
+}
 
 /**
  * Main program
@@ -117,6 +224,45 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
+
+   if (!gMeasInfo->fMachineParamsPresent)
+   {
+      map<string, double> mean_value;
+
+      int retval = read_ssh(
+         "RHIC/Rf/All_Cavities_Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps",
+         "cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0],"
+         "cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0],"
+         "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer",
+         gMeasInfo->fStartTime, gMeasInfo->fStopTime,
+         &mean_value
+      );
+      if (retval)
+      {
+         Error("asym", "Some problems with read_ssh");
+         return EXIT_FAILURE;
+      }
+
+      for(map<string, double>::const_iterator it = mean_value.begin();
+          it != mean_value.end(); it++) {
+         const string &key = it->first;
+         double value = it->second;
+
+         Info("asym", "Mean %s equals to %f", key.c_str(), value);
+      }
+
+      RecordMachineParams machineParams;
+      machineParams.fCavity197MHzVoltage[0] = mean_value["cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0]"];
+      machineParams.fCavity197MHzVoltage[1] = mean_value["cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0]"];
+      machineParams.fSnakeCurrents[0] = mean_value["bo3-snk7-outer"];
+      machineParams.fSnakeCurrents[1] = mean_value["yi3-snk7-outer"];
+      machineParams.fStarRotatorCurrents[0] = mean_value["bi5-rot3-outer"];
+      machineParams.fStarRotatorCurrents[1] = mean_value["yo5-rot3-outer"];
+      machineParams.fPhenixRotatorCurrents[0] = mean_value["bo7-rot3-outer"];
+      machineParams.fPhenixRotatorCurrents[1] = mean_value["yi7-rot3-outer"];
+
+      gMeasInfo->SetMachineParams(machineParams);
+   }
 
    // For debugging
    gAsymAnaInfo->Print();
