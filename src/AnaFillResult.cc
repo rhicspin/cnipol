@@ -449,7 +449,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
    FitPCPolarGraphs();
    FitPCProfRGraphs();
 
-   //CalcRotatorPCPolarRatio();
+   CalcRotatorPCPolarRatio();
 
    // Calculate average polarization and profiles
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -1308,7 +1308,7 @@ void AnaFillResult::CalcRotatorPCPolarRatio()
    for ( ; iPolId2MeasInfoPtrSet != fMeasInfosByPolId.end(); ++iPolId2MeasInfoPtrSet)
    {
       EPolarimeterId  polId           = iPolId2MeasInfoPtrSet->first;
-      cout << "polId: " << RunConfig::AsString(polId) << endl;
+      //cout << "polId: " << RunConfig::AsString(polId) << endl;
       const MeasInfoPtrSet &measInfos = iPolId2MeasInfoPtrSet->second;
 
       // Now loop over all measInfos for this polarimeter and select the first
@@ -1322,8 +1322,8 @@ void AnaFillResult::CalcRotatorPCPolarRatio()
       for ( ; iMeasInfoPtr != measInfos.end(); ++iMeasInfoPtr)
       {
          const MeasInfo &measInfo = **iMeasInfoPtr;
-         cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
-         cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
+         //cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
+         //cout << "runName: " << measInfo.GetRunName() << ", IsStarRotatorOn: " << measInfo.IsStarRotatorOn()<< endl;
 
          if (measInfo.GetBeamEnergy() <= kINJECTION) continue;
 
@@ -1331,7 +1331,7 @@ void AnaFillResult::CalcRotatorPCPolarRatio()
          {
             polarBeforeRot = fAnaMeasResults[measInfo.GetRunName()].GetPCPolar();
             timeBeforeRot  = measInfo.GetStartTime();
-            cout << "polarBeforeRot: " << PairAsPhpArray(polarBeforeRot) << endl;
+            //cout << "polarBeforeRot: " << PairAsPhpArray(polarBeforeRot) << endl;
             continue;
          }
 
@@ -1339,15 +1339,15 @@ void AnaFillResult::CalcRotatorPCPolarRatio()
          if (measInfo.IsStarRotatorOn() && polarBeforeRot.second > 0 && fabs(measInfo.GetStartTime() - timeBeforeRot) < 3600)
          {
             polarAfterRot = fAnaMeasResults[measInfo.GetRunName()].GetPCPolar();
-            cout << "polarAfterRot : " << PairAsPhpArray(polarAfterRot) << endl;
+            //cout << "polarAfterRot : " << PairAsPhpArray(polarAfterRot) << endl;
          }
       }
 
-      fRotatorPCPolarRatio[polId] = utils::CalcDivision(polarBeforeRot, polarAfterRot, 0);
+      fRotatorPCPolarRatio[polId] = utils::CalcDivision(polarAfterRot, polarBeforeRot, 0);
 
       //cout << "polarBeforeRot: " << PairAsPhpArray(polarBeforeRot) << endl;
       //cout << "polarAfterRot : " << PairAsPhpArray(polarAfterRot) << endl;
-      cout << "fRotatorPCPolarRatio : " << PairAsPhpArray(fRotatorPCPolarRatio[polId]) << endl;
+      //cout << "fRotatorPCPolarRatio : " << PairAsPhpArray(fRotatorPCPolarRatio[polId]) << endl;
    }
 }
 
