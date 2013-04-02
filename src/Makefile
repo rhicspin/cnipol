@@ -47,8 +47,7 @@ CNIANA_DICT_HDR = $(CNIANA_DICT_SRC:.cxx=.h)
 CNIANA_DICT_OBJ = $(CNIANA_DICT_SRC:.cxx=.o)
 CNIANA_DICT     = $(CNIANA_DICT_SRC) $(CNIANA_DICT_HDR) $(CNIANA_DICT_OBJ)
 
-#BINARIES = asym masym RunDBReader dLayerChecker KinFunc AsymPlot plotAN
-BINARIES = asym masym malpha RunDBReader dLayerChecker KinFunc AsymPlot
+BINARIES = asym masym malpha RunDBReader dLayerChecker KinFunc AsymPlot plotAN
 BINARY_OBJS = $(BINARIES:=.o)
 
 #BINARIES2 = plotAN 
