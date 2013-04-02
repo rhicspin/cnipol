@@ -40,7 +40,7 @@ public:
    ~MAsymSingleFillHists();
 
    void BookHists();
-   void BookHistsPolarimeter(EPolarimeterId polId);
+   void BookHistsByPolarimeter(EPolarimeterId polId);
    void SetSignature(const std::string signature);
    void Fill(EventConfig &rc);
    void PostFill();
