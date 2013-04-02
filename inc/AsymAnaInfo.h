@@ -29,7 +29,7 @@ class AsymAnaInfo : public AnaInfo
 public:
 
    // Various histogramming and running modes
-   enum Mode   {MODE_ALPHA             = 0x01010000,
+   enum Mode   {MODE_ALPHA             = 0x01011000,
                 MODE_CALIB             = 0x01000000,
                 MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
                 MODE_SCALER            = 0x00040000,
