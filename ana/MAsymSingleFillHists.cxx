@@ -60,7 +60,7 @@ void MAsymSingleFillHists::BookHists()
    }
 
    for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
-      BookHistsPolarimeter((EPolarimeterId) i);
+      BookHistsByPolarimeter((EPolarimeterId) i);
    }
 
    string   shName;
@@ -154,7 +154,7 @@ void MAsymSingleFillHists::BookHists()
 
 
 /** */
-void MAsymSingleFillHists::BookHistsPolarimeter(EPolarimeterId polId)
+void MAsymSingleFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
 {
    char     hName[256];
    string   shName;
@@ -476,6 +476,7 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
       // Add injection graph to the histogram
       TGraphErrors *grPCPolarInj  = afr.GetPCPolarInjGraph(*iPolId);
+
       if (grPCPolarInj->GetN() > 0) {
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolarInj);
          grPCPolarInj->SetMarkerStyle(34); // full cross marker for injection measurements
@@ -576,10 +577,10 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          funcConst->SetLineColor(color);
          grAsymVsBunchId_X_->Fit("funcConst");
 
-      TAttMarker styleMarker;
-      styleMarker.SetMarkerStyle(kFullCircle);
-      styleMarker.SetMarkerSize(1);
-      styleMarker.SetMarkerColor(color);
+         TAttMarker styleMarker;
+         styleMarker.SetMarkerStyle(kFullCircle);
+         styleMarker.SetMarkerSize(1);
+         styleMarker.SetMarkerColor(color);
 
          // remove graph for empty bunches. A separate histogram with all spin type graphs can be helpful
          if (*iSS != kSPIN_NULL) {
