@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
    TIter   *next = new TIter(utils::getFileList(filelist));
 
    // Loop over the runs and record the time of the last flattop measurement in the fill
-   while (next && (o = (*next)()) ) {
+   while (next && (o = (*next)()) )
+   {
       string measId   = string(((TObjString*) o)->GetName());
       string fileName = mAsymAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAsymAnaInfo.GetSuffix() + ".root";
 
