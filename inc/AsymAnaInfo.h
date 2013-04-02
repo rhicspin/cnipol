@@ -43,7 +43,8 @@ public:
                 MODE_PMT               = 0x00000100,
                 MODE_PULSER            = 0x00000200,
                 MODE_FULL              = 0x007f0000,
-                MODE_ONLINE            = 0x04040000};
+                MODE_ONLINE            = 0x04040000,
+                MODE_NO_SSH            = 0x00001000};
 
    // Constraint parameter for data processing 
    std::string      fRunName;           // Run name
@@ -117,6 +118,7 @@ public:
    Bool_t      HasPmtBit() const;
    Bool_t      HasPulserBit() const;
    Bool_t      HasOnlineBit() const;
+   Bool_t      HasNoSshBit() const;
 
    ClassDef(AsymAnaInfo, 3)
 };

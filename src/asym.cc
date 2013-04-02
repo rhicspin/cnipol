@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
    gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
 
-   if (!gMeasInfo->fMachineParamsPresent)
+   if ((!gMeasInfo->fMachineParamsPresent) && (!gAsymAnaInfo->HasNoSshBit()))
    {
       map<string, double> mean_value;
 
