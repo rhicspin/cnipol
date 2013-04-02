@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
    //gROOT->SetStyle("Plain");
    //gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("styles/style_anapow.C");
-	gStyle->SetLineWidth(2);
+   gStyle->SetLineWidth(2);
 
    //double targetPol    = 0.924;
    //double targetPolErr = 0.018;
@@ -99,20 +99,19 @@ int main(int argc, char *argv[])
    // Add systematic errors
    Double_t x, y, y_systM, y_systP;
    Double_t xe, ye, ye_syst;
-	Double_t xmin, xmax, ymin, ymax;
+   Double_t xmin, xmax, ymin, ymax;
 
-   for (UInt_t i=0; i!=grANStat->GetN(); i++)
-   {
-	   grANStat->ComputeRange(xmin, ymin, xmax, ymax);
+   for (UInt_t i=0; i!=grANStat->GetN(); i++) {
+      grANStat->ComputeRange(xmin, ymin, xmax, ymax);
       grANStat->GetPoint(i, x, y);
       xe = grANStat->GetErrorX(i);
       ye = grANStat->GetErrorY(i);
 
-		//xe = TMath::Sqrt( xe*xe + );
-		ye_syst = y*0.03;
-		ye_syst = TMath::Sqrt( ye*ye + ye_syst*ye_syst);        // uncorrelated across -t syst. error
-		y_systM = y - y*0.04 - 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
-		y_systP = y + y*0.04 + 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
+      //xe = TMath::Sqrt( xe*xe + );
+      ye_syst = y*0.03;
+      ye_syst = TMath::Sqrt( ye*ye + ye_syst*ye_syst);        // uncorrelated across -t syst. error
+      y_systM = y - y*0.04 - 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
+      y_systP = y + y*0.04 + 0.002*(x - xmin)/(xmax - xmin);  // correlated across -t syst. error
 
       //grANStat->SetPointError(i, xe, ye);
       grANSyst->SetPointError(i, xe, ye_syst);
@@ -121,7 +120,7 @@ int main(int argc, char *argv[])
       //grANSystM->SetPointError(i, xe, ye);
       grANSystP->SetPoint(i, x, y_systP);
       //grANSystP->SetPointError(i, xe, ye);
-	}
+   }
 
 
    //|t| = ((1E-2)-(2E-4))/ (Double_t) 64;
@@ -166,19 +165,19 @@ int main(int argc, char *argv[])
    TFitResultPtr fitResSystP = FitGraph(grANSystP, funcModelAN, errEllipseSystP);
    TFitResultPtr fitResSystM = FitGraph(grANSystM, funcModelAN, errEllipseSystM);
 
-   errEllipseStat->Print();     
-   errEllipseSyst->Print();     
+   errEllipseStat->Print();
+   errEllipseSyst->Print();
    errEllipseSystP->Print();
    errEllipseSystM->Print();
 
    Double_t reR5Syst    = TMath::Max(fabs(errEllipseStat->GetX1() - errEllipseSystP->GetX1()), fabs(errEllipseStat->GetX1() - errEllipseSystM->GetX1()));
    Double_t imR5Syst    = TMath::Max(fabs(errEllipseStat->GetY1() - errEllipseSystP->GetY1()), fabs(errEllipseStat->GetY1() - errEllipseSystM->GetY1()));
 
-	Double_t corr        = fitResStat->GetCorrelationMatrix()[0][1];
-	Double_t reR5        = fitResStat->Value(0);
-	Double_t reR5ErrStat = fitResStat->ParError(0);
-	Double_t imR5        = fitResStat->Value(1);
-	Double_t imR5ErrStat = fitResStat->ParError(1);
+   Double_t corr        = fitResStat->GetCorrelationMatrix()[0][1];
+   Double_t reR5        = fitResStat->Value(0);
+   Double_t reR5ErrStat = fitResStat->ParError(0);
+   Double_t imR5        = fitResStat->Value(1);
+   Double_t imR5ErrStat = fitResStat->ParError(1);
 
    Double_t reR5ErrTot  = sqrt(fitResSyst->ParError(0)*fitResSyst->ParError(0) + reR5Syst*reR5Syst);
    Double_t imR5ErrTot  = sqrt(fitResSyst->ParError(1)*fitResSyst->ParError(1) + imR5Syst*imR5Syst);
@@ -212,12 +211,12 @@ int main(int argc, char *argv[])
    grANStat->SetMarkerColor(kBlack);
    grANStat->Draw("P");
 
-	TF1* funcANSystP = grANSystP->GetFunction("funcModelAN");
+   TF1* funcANSystP = grANSystP->GetFunction("funcModelAN");
    funcANSystP->SetLineStyle(2);
    funcANSystP->SetLineColor(kMagenta);
    funcANSystP->Draw("same");
 
-	TF1* funcANSystM = grANSystM->GetFunction("funcModelAN");
+   TF1* funcANSystM = grANSystM->GetFunction("funcModelAN");
    funcANSystM->SetLineStyle(2);
    funcANSystM->SetLineColor(kMagenta);
    funcANSystM->Draw("same");
@@ -401,16 +400,16 @@ int main(int argc, char *argv[])
    //ly->SetLineStyle(1);
    ly->Draw("same");
 
-	errEllipseStat->SetFillStyle(0);
-	errEllipseStat->SetLineColor(kBlue);
-	errEllipseStat->SetLineWidth(2);
-	errEllipseStat->Draw();
+   errEllipseStat->SetFillStyle(0);
+   errEllipseStat->SetLineColor(kBlue);
+   errEllipseStat->SetLineWidth(2);
+   errEllipseStat->Draw();
 
-	errEllipseSystTot->SetFillStyle(0);
+   errEllipseSystTot->SetFillStyle(0);
    errEllipseSystTot->SetLineStyle(2);
-	errEllipseSystTot->SetLineColor(kMagenta);
-	errEllipseSystTot->SetLineWidth(2);
-	errEllipseSystTot->Draw();
+   errEllipseSystTot->SetLineColor(kMagenta);
+   errEllipseSystTot->SetLineWidth(2);
+   errEllipseSystTot->Draw();
 
    canvas2->SaveAs((dataFileName + "_ell.png").c_str());
 } //}}}
@@ -438,8 +437,7 @@ void f_AN(double cal_t[], double cal_AN[], double rho, double sigma, double Imr5
 
    double tc = -8 * TMath::Pi() * ALPHA / (sigma_totP * sqrt(1 + rho * rho));
 
-   for (i = 0; i < 256; ++i)
-   {
+   for (i = 0; i < 256; ++i) {
       cal_t[i] = 0.5E-3 + delta_t * i;
 
       double tt = -1 * tc / cal_t[i];
@@ -537,31 +535,31 @@ TFitResultPtr FitGraph(TGraph *gr, TF1 *func, TEllipse *ell)
    double Imr5_err = func->GetParError(1);
    //double norm     = func->GetParameter(2);
    //double normErr  = func->GetParError(2);
-	Double_t corr   = 0;
+   Double_t corr   = 0;
 
    if (fitRes.Get()) {
-	   TMatrixDSym covMatrix  = fitRes->GetCovarianceMatrix();
-		covMatrix.Print();
-	   TMatrixDSym corrMatrix = fitRes->GetCorrelationMatrix();
-		corrMatrix.Print();
+      TMatrixDSym covMatrix  = fitRes->GetCovarianceMatrix();
+      covMatrix.Print();
+      TMatrixDSym corrMatrix = fitRes->GetCorrelationMatrix();
+      corrMatrix.Print();
 
       Rer5     = fitRes->Value(0);
       Rer5_err = fitRes->ParError(0);
       Imr5     = fitRes->Value(1);
       Imr5_err = fitRes->ParError(1);
 
-		corr = corrMatrix[0][1];
+      corr = corrMatrix[0][1];
    }
 
    ValErrPair par1(Rer5, Rer5_err);
    ValErrPair par2(Imr5, Imr5_err);
 
-	//par1.e *= 3;
-	//par2.e *= 3;
+   //par1.e *= 3;
+   //par2.e *= 3;
    TEllipse* ellTmp = utils::GetErrorEllipse(par1, par2, corr);
 
-	ellTmp->Copy(*ell);
-	delete ellTmp;
+   ellTmp->Copy(*ell);
+   delete ellTmp;
 
    if (ell)
       ell->Print();
@@ -588,5 +586,5 @@ TFitResultPtr FitGraph(TGraph *gr, TF1 *func, TEllipse *ell)
    //f_AN(cal_t, cal_AN, rho, B, sigma, 0, 0, scale); // write 256 points
    //f_AN(cal_t, cal_AN, rho, sigma, 0, 0, scale); // write 256 points
    //TGraph *gr = new TGraph(256, cal_t, cal_AN); //r5=0 N=1, rho=-0.08
-	return fitRes;
+   return fitRes;
 } //}}}
