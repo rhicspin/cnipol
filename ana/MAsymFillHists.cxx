@@ -48,70 +48,31 @@ void MAsymFillHists::BookHists()
    fDir->cd();
 
    // By polarimeter
-   for (UInt_t i=0; i!=N_POLARIMETERS; i++) {
-      BookHistsPolarimeter((EPolarimeterId) i);
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      BookHistsByPolarimeter(*iPolId);
    }
-
-   string   shName;
-   TH1     *hist;
 
    // By ring
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
    for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
    {
-      ERingId ringId  = *iRingId;
-      string  sRingId = RunConfig::AsString(ringId);
-      Color_t color   = RunConfig::AsColor(ringId);
-
-      TAttMarker styleMarker;
-      styleMarker.SetMarkerStyle(kFullCircle);
-      styleMarker.SetMarkerSize(2);
-      styleMarker.SetMarkerColor(color);
-
-      // Chi2 of bunch asym
-      shName = "hBunchAsymChi2_" + sRingId;
-      hist = new TH1C(shName.c_str(), shName.c_str(), 1, 0, 1);
-      hist->SetTitle("; Fill Id; Bunch Asym. #chi^{2};");
-      hist->SetOption("DUMMY GRIDX");
-      hist->GetYaxis()->SetRangeUser(0, 10);
-      styleMarker.Copy(*hist);
-      o[shName] = hist;
-   
-      SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
-   
-      for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
-      {
-         string  sSS   = gRunConfig.AsString(*iSS);
-         Color_t color = RunConfig::AsColor(*iSS);
-   
-         // Create graphs for different spin states
-         shName = "grBunchAsymChi2_" + sSS;
-   
-         TGraph *grBunchAsymChi2_ = new TGraph();
-         grBunchAsymChi2_->SetName(shName.c_str());
-         grBunchAsymChi2_->SetMarkerStyle(kFullCircle);
-         grBunchAsymChi2_->SetMarkerSize(1);
-         grBunchAsymChi2_->SetMarkerColor(color);
-   
-         // Add graphs to histos
-         ((TH1*) o["hBunchAsymChi2_" + sRingId])->GetListOfFunctions()->Add(grBunchAsymChi2_, "p");
-      }
+      BookHistsByRing(*iRingId);
    }
 
 }
 
 
 /** */
-void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
+void MAsymFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
 {
    char    hName[256];
    string  shName;
    TH1    *hist;
-   //char    hTitle[256];
    string  sPolId = RunConfig::AsString(polId);
    //string  strBeamE = RunConfig::AsString(beamE);
-   Color_t color    = RunConfig::AsColor(polId);
+   Color_t color  = RunConfig::AsColor(polId);
 
    //TStyle  styleMarker;
    TAttMarker  styleMarker;
@@ -144,20 +105,20 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    grAnaPowerVsEnergy->SetMarkerColor(color);
 
    sprintf(hName, "hAnaPowerVsEnergy_%s", sPolId.c_str());
-   o[hName] = new TH2F(hName, hName, 1, 0, 450, 1, 0.01, 0.02);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;A_{N};");
+   o[hName] = new TH2F(hName, hName, 1, 0, 450, 1, 0, 0.02);
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; A_{N};");
    ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
 
    sprintf(hName, "hAnaPowerVsEnergyBinned_%s", sPolId.c_str());
    Float_t energyBins[10] = {0, 14, 34, 90, 110, 240, 260, 390, 410, 450};
    o[hName] = new TH1F(hName, hName, 9, energyBins);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0.01, 0.02);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;A_{N};");
+   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(0.00, 0.02);
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; A_{N};");
    ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
    ((TH1*) o[hName])->SetMarkerSize(1);
    ((TH1*) o[hName])->SetMarkerColor(color);
-   ((TH1*) o[hName])->SetOption("hist");
+   ((TH1*) o[hName])->SetOption("E1");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grAnaPowerVsEnergy, "p");
 
    // Polarization
@@ -263,6 +224,77 @@ void MAsymFillHists::BookHistsPolarimeter(EPolarimeterId polId)
    hist->GetYaxis()->SetRangeUser(-0.5, 0.5);
    styleMarker.Copy(*hist);
    o[shName] = hist;
+
+   TGraphErrors *grRotatorPCPolarRatio = new TGraphErrors();
+   grRotatorPCPolarRatio->SetName("grRotatorPCPolarRatio");
+   styleMarker.Copy(*grRotatorPCPolarRatio);
+
+   shName = "hRotatorPCPolarRatio_" + sPolId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; After/Before Rotator Pol. Ratio;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRotatorPCPolarRatio, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hRotatorPCPolarRatiosByPol[polId]  = hist;
+   grRotatorPCPolarRatiosByPol[polId] = grRotatorPCPolarRatio;
+}
+
+
+/** */
+void MAsymFillHists::BookHistsByRing(ERingId ringId)
+{
+   string  sRingId = RunConfig::AsString(ringId);
+   Color_t color   = RunConfig::AsColor(ringId);
+
+   TAttMarker styleMarker;
+   styleMarker.SetMarkerStyle(kFullCircle);
+   styleMarker.SetMarkerSize(1);
+   styleMarker.SetMarkerColor(color);
+
+   string   shName;
+   TH1     *hist;
+
+   TGraphErrors *grRotatorPCPolarRatio = new TGraphErrors();
+   grRotatorPCPolarRatio->SetName("grRotatorPCPolarRatio");
+   styleMarker.Copy(*grRotatorPCPolarRatio);
+
+   shName = "hRotatorPCPolarRatio_" + sRingId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; After/Before Rotator Pol. Ratio;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRotatorPCPolarRatio, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hRotatorPCPolarRatiosByRing[ringId]  = hist;
+   grRotatorPCPolarRatiosByRing[ringId] = grRotatorPCPolarRatio;
+
+   // Chi2 of bunch asym
+   shName = "hBunchAsymChi2_" + sRingId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; Bunch Asym. #chi^{2};");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   o[shName] = hist;
+   
+   SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
+   
+   for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+   {
+      string  sSS   = gRunConfig.AsString(*iSS);
+      Color_t color = RunConfig::AsColor(*iSS);
+   
+      styleMarker.SetMarkerColor(color);
+
+      // Create graphs for different spin states
+      shName = "grBunchAsymChi2_" + sSS;
+   
+      TGraph *grBunchAsymChi2_ = new TGraph();
+      grBunchAsymChi2_->SetName(shName.c_str());
+      styleMarker.Copy(*grBunchAsymChi2_);
+   
+      // Add graphs to histos
+      ((TH1*) o["hBunchAsymChi2_" + sRingId])->GetListOfFunctions()->Add(grBunchAsymChi2_, "p");
+   }
 }
 
 
@@ -311,7 +343,7 @@ void MAsymFillHists::Fill(const EventConfig &rc)
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grAnaPowerVsEnergy");
    graphNEntries = graphErrs->GetN();
    graphErrs->SetPoint(graphNEntries, beamEnergy, anaPower);
-   graphErrs->SetPointError(graphNEntries, 1, 1);
+   graphErrs->SetPointError(graphNEntries, 0, 0.05*anaPower); // This error is faked
 
    // Polarization
    sprintf(hName, "hPolarVsEnergy_%s", sPolId.c_str());
@@ -487,7 +519,7 @@ void MAsymFillHists::PostFill()
 /** */
 void MAsymFillHists::PostFill(AnaGlobResult &agr)
 {
-   // should be moved to separate function
+   // Should be moved to separate function
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
 
    for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
@@ -495,7 +527,18 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       ERingId ringId  = *iRingId;
       string  sRingId = RunConfig::AsString(ringId);
 
-      ((TH1*) o["hBunchAsymChi2_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill());
+      ((TH1*) o["hBunchAsymChi2_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+      hRotatorPCPolarRatiosByRing[ringId]->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+   }
+
+
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      EPolarimeterId polId  = *iPolId;
+      string         sPolId = RunConfig::AsString(polId);
+      hRotatorPCPolarRatiosByPol[polId]->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
    }
 
 
@@ -510,23 +553,25 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       // Set individual fill sub dirs
       string sFillId(5, ' ');
       sprintf(&sFillId[0], "%05d", fillId);
-      //string dName = sFillId;
 
-      //DrawObjContainer        *oc;
-      //DrawObjContainerMapIter  isubdir = d.find(dName);
-
-      //if ( isubdir == d.end()) { // if dir not found
-      //   TDirectoryFile *tdir = new TDirectoryFile(dName.c_str(), dName.c_str(), "", fDir);
-      //   oc = new MAsymSingleFillHists(tdir);
-      //   d[dName] = oc;
-      //} else {
-      //   oc = isubdir->second;
-      //}
-      //DrawObjContainer *oc = GetSingleFillHists(fillId);
       DrawObjContainer *oc = GetSingleFillHists(afr);
 
       ((MAsymSingleFillHists*) oc)->PostFill(afr);
 
+      // By polarimeter
+      PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+      for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+      {
+         EPolarimeterId polId  = *iPolId;
+         ERingId        ringId = RunConfig::GetRingId(polId);
+
+         if (afr.fRotatorPCPolarRatio[polId].second >= 0)
+         {
+            utils::AppendToGraph(grRotatorPCPolarRatiosByPol[polId], fillId, afr.fRotatorPCPolarRatio[polId].first, 0, afr.fRotatorPCPolarRatio[polId].second);
+            utils::AppendToGraph(grRotatorPCPolarRatiosByRing[ringId], fillId, afr.fRotatorPCPolarRatio[polId].first, 0, afr.fRotatorPCPolarRatio[polId].second);
+         }
+      }
 
       // now fill histograms using the above results
       RingIdSetIter iRingId = gRunConfig.fRings.begin();
@@ -571,7 +616,9 @@ void MAsymFillHists::UpdateLimits()
 {
    char hName[256];
 
-   for (PolarimeterIdSetIter iPolId=gRunConfig.fPolarimeters.begin(); iPolId!=gRunConfig.fPolarimeters.end(); ++iPolId)
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       //for (BeamEnergySetIter iBE=gRunConfig.fBeamEnergies.begin(); iBE!=gRunConfig.fBeamEnergies.end(); ++iBE)
       //{
@@ -602,7 +649,19 @@ void MAsymFillHists::UpdateLimits()
          //sprintf(hName, "hPolarVsTime_%s_%s", sPolId.c_str(), strBeamE.c_str());
 
          //((TH1*) o[hName])->GetXaxis()->SetLimits(fMinTime, fMaxTime);
+
+         grRotatorPCPolarRatiosByPol[*iPolId]->Fit("pol0");
+         utils::UpdateLimitsFromGraphs(hRotatorPCPolarRatiosByPol[*iPolId], 2);
       //}
+   }
+
+   RingIdSetIter iRingId = gRunConfig.fRings.begin();
+   for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
+   {
+      ERingId ringId  = *iRingId;
+
+      grRotatorPCPolarRatiosByRing[ringId]->Fit("pol0");
+      utils::UpdateLimitsFromGraphs(hRotatorPCPolarRatiosByRing[ringId], 2);
    }
 
    DrawObjContainer::UpdateLimits();
@@ -610,7 +669,6 @@ void MAsymFillHists::UpdateLimits()
 
 
 /** */
-//DrawObjContainer *MAsymFillHists::GetSingleFillHists(UInt_t fillId)
 DrawObjContainer *MAsymFillHists::GetSingleFillHists(const AnaFillResult &afr)
 {
    UInt_t fillId = afr.GetFillId();
