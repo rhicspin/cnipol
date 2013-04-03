@@ -143,6 +143,10 @@ int read_ssh(const char *logger, const char *cells, time_t start, time_t end, ma
       Error("read_ssh", "pclose failed, errno = %i", errno);
       return 1;
    }
+   if (retcode)
+   {
+       Error("read_ssh", "process returned %i", retcode);
+   }
 
    return retcode;
 }
