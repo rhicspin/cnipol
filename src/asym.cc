@@ -232,13 +232,20 @@ int main(int argc, char *argv[])
    if ((!gMeasInfo->fMachineParamsPresent) && (!gAsymAnaInfo->HasNoSshBit()))
    {
       map<string, double> mean_value;
+      double startTime = gMeasInfo->fStartTime;
+      double endTime = gMeasInfo->fStopTime;
+
+      if (endTime < startTime)
+      {
+          endTime = startTime + 600;
+      }
 
       int retval = read_ssh(
          "RHIC/Rf/All_Cavities_Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps",
          "cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0],"
          "cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0],"
          "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer",
-         gMeasInfo->fStartTime, gMeasInfo->fStopTime,
+         startTime, endTime,
          &mean_value
       );
       if (retval)
