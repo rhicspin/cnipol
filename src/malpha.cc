@@ -110,7 +110,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       g->SetLineColor(det + 2);
       int i = 0;
       double xval = -0.5;
-      TString sDet(hostNameStr);
+      TString sDet("Detector");
       sDet += det;
       g->SetName(sDet);
 
