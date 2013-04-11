@@ -111,7 +111,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       int i = 0;
       double xval = -0.5;
       TString sDet("Detector");
-      sDet += det;
+      sDet += (det + 1);
       g->SetName(sDet);
 
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
