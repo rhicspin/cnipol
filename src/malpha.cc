@@ -7,6 +7,7 @@
 
 #include "TEnv.h"
 #include "TROOT.h"
+#include "TLegend.h"
 
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
@@ -92,6 +93,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       h->GetXaxis()->SetTimeOffset(min_startTime);
    }
 
+   TCanvas c((string(name) + "_canvas").c_str());
+   TLegend leg(0.7,0.1,0.9,0.4);
+   leg.SetHeader("The Legend Title");
    string hostNameStr = string(name) + "_Per_Detector";
    const char *hostName = hostNameStr.c_str();
    TH1F  *host;
@@ -141,6 +145,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       }
 
       host->GetListOfFunctions()->Add(g, "pl");
+      leg.AddEntry(g, sDet, "pl");
    }
 
    host->SetOption("DUMMY GRIDX GRIDY");
@@ -151,6 +156,11 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
    host->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+
+   host->Draw();
+   leg.Draw();
+   c.Write();
+   delete host;
 }
 
 
