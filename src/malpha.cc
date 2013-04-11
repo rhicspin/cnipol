@@ -93,16 +93,16 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       h->GetXaxis()->SetTimeOffset(min_startTime);
    }
 
-   TCanvas c((string(name) + "_canvas").c_str());
+   string hostName = "det_" + string(name);
+   const char *hostNameStr = hostName.c_str();
+   TCanvas c(hostNameStr);
    TLegend leg(0.7,0.1,0.9,0.4);
    leg.SetHeader("The Legend Title");
-   string hostNameStr = string(name) + "_Per_Detector";
-   const char *hostName = hostNameStr.c_str();
    TH1F  *host;
    if (max_startTime) {
-       host = new TH1F(hostName, hostName, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+       host = new TH1F("host", hostNameStr, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    } else {
-       host = new TH1F(hostName, hostName, result.first.size(), 0.0, result.first.size());
+       host = new TH1F("host", hostNameStr, result.first.size(), 0.0, result.first.size());
    }
 
    for(int det = 0; det < N_DETECTORS; det++) {
