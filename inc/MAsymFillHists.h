@@ -27,9 +27,13 @@ private:
    std::map<Double_t, UInt_t> fVTargetVsRun;
 
    std::map<EPolarimeterId, TH1*>    hRotatorPCPolarRatiosByPol;
+   std::map<EPolarimeterId, TH1*>    hRampPCPolarRatiosByPol;
    std::map<EPolarimeterId, TGraph*> grRotatorPCPolarRatiosByPol;
+   std::map<EPolarimeterId, TGraph*> grRampPCPolarRatiosByPol;
    std::map<ERingId, TH1*>           hRotatorPCPolarRatiosByRing;
+   std::map<ERingId, TH1*>           hRampPCPolarRatiosByRing;
    std::map<ERingId, TGraph*>        grRotatorPCPolarRatiosByRing;
+   std::map<ERingId, TGraph*>        grRampPCPolarRatiosByRing;
 
 public:
 

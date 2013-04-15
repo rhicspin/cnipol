@@ -1396,7 +1396,7 @@ void MAsymRunHists::PostFill()
          graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grSpinAngleVsMeas");
          graph->Fit("pol0");
 
-         // Polarization
+         // Polarizatione
          hist  = (TH1*) oc_pol->o["hPolarVsFill_" + sPolId + "_" + sBeamE];
          graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grPolarVsMeas");
          hist->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
