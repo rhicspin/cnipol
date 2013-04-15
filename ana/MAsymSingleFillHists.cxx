@@ -382,9 +382,9 @@ void MAsymSingleFillHists::Fill(EventConfig &rc)
 
 
 /** */
+/*
 void MAsymSingleFillHists::PostFill()
 {
-/*
    string strDirName = fDir->GetName();
 
    char hName[256];
@@ -432,8 +432,8 @@ void MAsymSingleFillHists::PostFill()
 
       //((TH1*) o[hName])->GetListOfFunctions()->Remove(graph);
    }
-*/
 }
+*/
 
 
 /** */
@@ -477,7 +477,9 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       // Add injection graph to the histogram
       TGraphErrors *grPCPolarInj  = afr.GetPCPolarInjGraph(*iPolId);
 
-      if (grPCPolarInj->GetN() > 0) {
+      //if (grPCPolarInj && grPCPolarInj->GetN() > 0)
+      if (grPCPolarInj)
+      {
          ((TAttMarker*) hPolarVsFillTime_)->Copy(*grPCPolarInj);
          grPCPolarInj->SetMarkerStyle(34); // full cross marker for injection measurements
          hPolarVsFillTime_->GetListOfFunctions()->Add(grPCPolarInj, "p");
@@ -572,10 +574,11 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          //grName = "grAsymVsBunchId_X_neb_" + sSS;
          //TGraphErrors* grAsymVsBunchId_X_neb_ = (TGraphErrors*) hAsymVsBunchId_X_neb_->GetListOfFunctions()->FindObject(grName.c_str());
 
-         TF1 *funcConst= new TF1("funcConst", "[0]");
-         funcConst->SetParNames("const");
-         funcConst->SetLineColor(color);
-         grAsymVsBunchId_X_->Fit("funcConst");
+         TF1 fitFunc("fitFunc", "[0] + [1]*0");
+         fitFunc.SetParNames("const", "#sigma_{Y}");
+         fitFunc.SetLineColor(color);
+         fitFunc.FixParameter(1, grAsymVsBunchId_X_->GetRMS(2));
+         grAsymVsBunchId_X_->Fit(&fitFunc);
 
          TAttMarker styleMarker;
          styleMarker.SetMarkerStyle(kFullCircle);
@@ -584,17 +587,14 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
          // remove graph for empty bunches. A separate histogram with all spin type graphs can be helpful
          if (*iSS != kSPIN_NULL) {
-            //hAsymVsBunchId_X_->GetListOfFunctions()->Remove(grAsymVsBunchId_X_);
-            //TGraphErrors *grAsymVsBunchId_X_neb_ = new TGraphErrors(*grAsymVsBunchId_X_);
             TGraphErrors *grAsymVsBunchId_X_neb_ = (TGraphErrors*) grAsymVsBunchId_X_->Clone();
             styleMarker.Copy(*grAsymVsBunchId_X_neb_);
-            //utils::MergeGraphs(grAsymVsBunchId_X_neb_, grAsymVsBunchId_X_);
-            //grAsymVsBunchId_X_neb_->GetListOfFunctions()->Add(funcConst->Clone());
             hAsymVsBunchId_X_neb_->GetListOfFunctions()->Add(grAsymVsBunchId_X_neb_, "p");
          }
-
-         delete funcConst;
       }
+
+      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_, 1, N_BUNCHES, 0, 0, 0.05);
+      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_neb_, 1, N_BUNCHES, 0, 0, 0.05);
 
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_, 2);
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_neb_, 2);

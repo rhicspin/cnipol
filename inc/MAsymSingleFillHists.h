@@ -43,7 +43,7 @@ public:
    void BookHistsByPolarimeter(EPolarimeterId polId);
    void SetSignature(const std::string signature);
    void Fill(EventConfig &rc);
-   void PostFill();
+   //void PostFill();
    void PostFill(AnaFillResult &afr);
    //void UpdateLimits();
 

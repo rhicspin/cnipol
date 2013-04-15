@@ -26,7 +26,6 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fPCPolarGraphs(), fPCPolarInjGraphs(), fPCProfRGraphs(), fPCProfRInjGraphs(),
    fPCTargets(),
    fPCPolarFitRes(), fPolProfRFitRes(),
-   //fAsymVsBunchId_X(0),
    fFlattopEnergy(0),
    fFillType(kFILLTYPE_UNKNOWN),
    fAnaMeasResults(), fMeasInfos(), fMeasInfosByPolId(),
@@ -35,8 +34,8 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fPCPolarsByTargets(),
    fPCProfPolars(), fHJPolars(), fHJAsyms(),
    fBeamPolars(), fBeamPolarP0s(), fBeamPolarSlopes(), fBeamCollPolars(),
-   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fRotatorPCPolarRatio(), fMeasTgtOrients(),
-   fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
+   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fRotatorPCPolarRatio(), fRampPCPolarRatio(),
+   fMeasTgtOrients(), fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
 {
    // Initialize averages with invalid values
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -450,6 +449,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
    FitPCProfRGraphs();
 
    CalcRotatorPCPolarRatio();
+   CalcRampPCPolarRatio();
 
    // Calculate average polarization and profiles
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -586,10 +586,10 @@ TGraphErrors* AnaFillResult::GetPCPolarGraph(EPolarimeterId polId) const
 TGraphErrors* AnaFillResult::GetPCPolarInjGraph(EPolarimeterId polId)
 {
    if (fPCPolarInjGraphs.find(polId) == fPCPolarInjGraphs.end()) {
-      fPCPolarInjGraphs[polId] = new TGraphErrors(0);
+      return 0;
    }
 
-   return (TGraphErrors*) fPCPolarInjGraphs[polId];
+   return (TGraphErrors*) fPCPolarInjGraphs.find(polId)->second;
 }
 
 
@@ -1353,6 +1353,42 @@ void AnaFillResult::CalcRotatorPCPolarRatio()
 
 
 /** */
+void AnaFillResult::CalcRampPCPolarRatio()
+{
+   Info("CalcRampPCPolarRatio", "Called");
+
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      EPolarimeterId polId = *iPolId;
+
+      TGraphErrors *grPCPolar    = GetPCPolarGraph(polId);
+      TGraphErrors *grPCPolarInj = GetPCPolarInjGraph(polId);
+
+      if (!grPCPolar || !grPCPolarInj) continue;
+
+      // Get last injection measurement 
+      Double_t x, y, xe, ye;
+      Int_t nPoints = grPCPolarInj->GetN();
+      grPCPolarInj->GetPoint(nPoints-1, x, y);
+      xe = grPCPolarInj->GetErrorX(nPoints-1);
+      ye = grPCPolarInj->GetErrorY(nPoints-1);
+
+      ValErrPair pcPolarInj(y/100., ye/100.);
+      ValErrPair pcPolarP0 = GetPCPolarP0(polId);
+
+      //if (pcPolarP0.second < 0 || pcPolarInj.second < 0) continue;
+
+      fRampPCPolarRatio[polId] = utils::CalcDivision(pcPolarP0, pcPolarInj, 0);
+
+      //cout << "pcPolarP0:         " << PairAsPhpArray(pcPolarP0) << endl;
+      //cout << "pcPolarInj :       " << PairAsPhpArray(pcPolarInj) << endl;
+      //cout << "fRampPCPolarRatio: " << PairAsPhpArray(fRampPCPolarRatio[polId]) << endl;
+   }
+}
+
+
+/** */
 void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const
 {
    MAsymFillHists *fillHists;
@@ -1514,21 +1550,26 @@ void AnaFillResult::FitPCPolarGraphs()
       // Fit injection measurements first...
       TGraphErrors *grPCPolarInj = GetPCPolarInjGraph(polId);
 
-      grPCPolarInj->Apply(dummyScale);
+      // All of this has to be combined with FT measurements and processed the same way
+      if (grPCPolarInj)
+      {
+         grPCPolarInj->Apply(dummyScale);
 
-      if (grPCPolarInj->GetN() >= 2) {
+         if (grPCPolarInj->GetN() >= 2)
+         {
+            Double_t xmin, ymin, xmax, ymax;
+            grPCPolarInj->ComputeRange(xmin, ymin, xmax, ymax);
 
-         Double_t xmin, ymin, xmax, ymax;
-         grPCPolarInj->ComputeRange(xmin, ymin, xmax, ymax);
+            if (fabs(xmax - xmin) > 3600*3) // fit only if injection run > 3 hours
+            {
+               Info("FitPCPolarGraphs", "Fill %d. Fitting injection graph for polId %d", fFillId, polId);
 
-         if (fabs(xmax - xmin) > 3600*3) { // fit only if injection run > 3 hours
-            Info("FitPCPolarGraphs", "Fill %d. Fitting injection graph for polId %d", fFillId, polId);
+               TF1 *fitFunc = new TF1("fitFunc", "pol0");
+               fitFunc->SetParNames("P_{0}, %");
+               grPCPolarInj->Fit(fitFunc, "", "", xmin, xmax);
 
-            TF1 *fitFunc = new TF1("fitFunc", "pol0");
-            fitFunc->SetParNames("P_{0}, %");
-            grPCPolarInj->Fit(fitFunc, "", "", xmin, xmax);
-
-            delete fitFunc;
+               delete fitFunc;
+            }
          }
       }
 
@@ -1684,6 +1725,13 @@ void AnaFillResult::AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Doubl
 void AnaFillResult::AppendToPCPolarInjGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye)
 {
    TGraphErrors *graph = GetPCPolarInjGraph(polId);
+
+   if (!graph) {
+      Info("AppendToPCPolarInjGraph", "Fill %d. Created new injection graph for polId %d", fFillId, polId);
+      graph = new TGraphErrors();
+      fPCPolarInjGraphs[polId] = graph;
+   }
+
    utils::AppendToGraph(graph, x, y, xe, ye);
 }
 

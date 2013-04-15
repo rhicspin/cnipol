@@ -238,6 +238,20 @@ void MAsymFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
    o[shName] = hist;
    hRotatorPCPolarRatiosByPol[polId]  = hist;
    grRotatorPCPolarRatiosByPol[polId] = grRotatorPCPolarRatio;
+
+   TGraphErrors *grRampPCPolarRatio = new TGraphErrors();
+   grRampPCPolarRatio->SetName("grRampPCPolarRatio");
+   styleMarker.Copy(*grRampPCPolarRatio);
+
+   shName = "hRampPCPolarRatio_" + sPolId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; Flattop/Injection Pol. Ratio;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRampPCPolarRatio, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hRampPCPolarRatiosByPol[polId]  = hist;
+   grRampPCPolarRatiosByPol[polId] = grRampPCPolarRatio;
 }
 
 
@@ -269,10 +283,33 @@ void MAsymFillHists::BookHistsByRing(ERingId ringId)
    hRotatorPCPolarRatiosByRing[ringId]  = hist;
    grRotatorPCPolarRatiosByRing[ringId] = grRotatorPCPolarRatio;
 
+
+   TGraphErrors *grRampPCPolarRatio = new TGraphErrors();
+   grRampPCPolarRatio->SetName("grRampPCPolarRatio");
+   styleMarker.Copy(*grRampPCPolarRatio);
+
+   shName = "hRampPCPolarRatio_" + sRingId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
+   hist->SetTitle("; Fill Id; Flattop/Injection Pol. Ratio;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRampPCPolarRatio, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hRampPCPolarRatiosByRing[ringId]  = hist;
+   grRampPCPolarRatiosByRing[ringId] = grRampPCPolarRatio;
+
+
    // Chi2 of bunch asym
    shName = "hBunchAsymChi2_" + sRingId;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 1, 0, 1);
    hist->SetTitle("; Fill Id; Bunch Asym. #chi^{2};");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   o[shName] = hist;
+
+   // 
+   shName = "hBunchAsymSigma_" + sRingId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, 100, 0, 1);
+   hist->SetTitle("; Fill Id; Bunch Asym. #sigma_{Y};");
    hist->SetOption("DUMMY GRIDX GRIDY");
    o[shName] = hist;
    
@@ -286,14 +323,20 @@ void MAsymFillHists::BookHistsByRing(ERingId ringId)
       styleMarker.SetMarkerColor(color);
 
       // Create graphs for different spin states
-      shName = "grBunchAsymChi2_" + sSS;
-   
       TGraph *grBunchAsymChi2_ = new TGraph();
-      grBunchAsymChi2_->SetName(shName.c_str());
+      grBunchAsymChi2_->SetName(string("grBunchAsymChi2_" + sSS).c_str());
       styleMarker.Copy(*grBunchAsymChi2_);
    
-      // Add graphs to histos
+      // Add graph to hist
       ((TH1*) o["hBunchAsymChi2_" + sRingId])->GetListOfFunctions()->Add(grBunchAsymChi2_, "p");
+
+      // Create graphs for different spin states
+      TGraph *grBunchAsymSigma_ = new TGraph();
+      grBunchAsymSigma_->SetName(string("grBunchAsymSigma_" + sSS).c_str());
+      styleMarker.Copy(*grBunchAsymSigma_);
+
+      // Add graph to hist
+      ((TH1*) o["hBunchAsymSigma_" + sRingId])->GetListOfFunctions()->Add(grBunchAsymSigma_, "p");
    }
 }
 
@@ -527,8 +570,14 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       ERingId ringId  = *iRingId;
       string  sRingId = RunConfig::AsString(ringId);
 
-      ((TH1*) o["hBunchAsymChi2_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
-      hRotatorPCPolarRatiosByRing[ringId]->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+      //((TH1*) o["hBunchAsymChi2_"  + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+      //((TH1*) o["hBunchAsymSigma_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+
+      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymChi2_"  + sRingId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymSigma_" + sRingId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+
+      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
    }
 
 
@@ -538,7 +587,9 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
    {
       EPolarimeterId polId  = *iPolId;
       string         sPolId = RunConfig::AsString(polId);
-      hRotatorPCPolarRatiosByPol[polId]->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
+
+      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
    }
 
 
@@ -571,6 +622,12 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
             utils::AppendToGraph(grRotatorPCPolarRatiosByPol[polId], fillId, afr.fRotatorPCPolarRatio[polId].first, 0, afr.fRotatorPCPolarRatio[polId].second);
             utils::AppendToGraph(grRotatorPCPolarRatiosByRing[ringId], fillId, afr.fRotatorPCPolarRatio[polId].first, 0, afr.fRotatorPCPolarRatio[polId].second);
          }
+
+         if (afr.fRampPCPolarRatio[polId].second >= 0)
+         {
+            utils::AppendToGraph(grRampPCPolarRatiosByPol[polId], fillId, afr.fRampPCPolarRatio[polId].first, 0, afr.fRampPCPolarRatio[polId].second);
+            utils::AppendToGraph(grRampPCPolarRatiosByRing[ringId], fillId, afr.fRampPCPolarRatio[polId].first, 0, afr.fRampPCPolarRatio[polId].second);
+         }
       }
 
       // now fill histograms using the above results
@@ -592,6 +649,9 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
             string grName = "grBunchAsymChi2_" + sSS;
             TGraph* grBunchAsymChi2_ = (TGraph*) ((TH1*) o["hBunchAsymChi2_" + sRingId])->GetListOfFunctions()->FindObject(grName.c_str());
 
+            grName = "grBunchAsymSigma_" + sSS;
+            TGraph* grBunchAsymSigma_ = (TGraph*) ((TH1*) o["hBunchAsymSigma_" + sRingId])->GetListOfFunctions()->FindObject(grName.c_str());
+
             // now extract the chi2 from single fill hist
             TH1*    hAsymVsBunchId_X_  = (TH1*) ((MAsymSingleFillHists*) oc)->o["hAsymVsBunchId_X_" + sFillId + "_" + sRingId];
             grName = "grAsymVsBunchId_X_" + sSS;
@@ -599,13 +659,16 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
 
             if (grAsymVsBunchId_X_->GetN() <= 0) continue;
 
-            TF1* funcConst   = (TF1*) grAsymVsBunchId_X_->GetListOfFunctions()->FindObject("funcConst");
-            Double_t chi2ndf = funcConst->GetNDF() > 0 ? funcConst->GetChisquare()/funcConst->GetNDF() : -1;
+            TF1* fitFunc   = (TF1*) grAsymVsBunchId_X_->GetListOfFunctions()->FindObject("fitFunc");
+            Double_t chi2ndf = fitFunc->GetNDF() > 0 ? fitFunc->GetChisquare()/fitFunc->GetNDF() : -1;
+            Double_t sigma_y = fitFunc->GetParameter(1); // extract sigma_y, parameter 1
 
-            utils::AppendToGraph(grBunchAsymChi2_, fillId, chi2ndf);
+            utils::AppendToGraph(grBunchAsymChi2_,  fillId, chi2ndf);
+            utils::AppendToGraph(grBunchAsymSigma_, fillId, sigma_y);
          }
 
-         utils::UpdateLimitsFromGraphs((TH1*) o["hBunchAsymChi2_" + sRingId], 2);
+         utils::UpdateLimitsFromGraphs((TH1*) o["hBunchAsymChi2_"  + sRingId], 2);
+         utils::UpdateLimitsFromGraphs((TH1*) o["hBunchAsymSigma_" + sRingId], 2);
       }
    }
 }
@@ -652,6 +715,9 @@ void MAsymFillHists::UpdateLimits()
 
          grRotatorPCPolarRatiosByPol[*iPolId]->Fit("pol0");
          utils::UpdateLimitsFromGraphs(hRotatorPCPolarRatiosByPol[*iPolId], 2);
+
+         grRampPCPolarRatiosByPol[*iPolId]->Fit("pol0");
+         utils::UpdateLimitsFromGraphs(hRampPCPolarRatiosByPol[*iPolId], 2);
       //}
    }
 
@@ -660,8 +726,19 @@ void MAsymFillHists::UpdateLimits()
    {
       ERingId ringId  = *iRingId;
 
-      grRotatorPCPolarRatiosByRing[ringId]->Fit("pol0");
+      TF1 fitFunc("fitFunc", "[0] + [1]*0");
+      fitFunc.SetParNames("const", "#sigma_{Y}");
+      Double_t sigma;
+
+      sigma = grRotatorPCPolarRatiosByRing[ringId]->GetRMS(2);
+      fitFunc.FixParameter(1, sigma);
+      grRotatorPCPolarRatiosByRing[ringId]->Fit(&fitFunc);
       utils::UpdateLimitsFromGraphs(hRotatorPCPolarRatiosByRing[ringId], 2);
+
+      sigma = grRampPCPolarRatiosByRing[ringId]->GetRMS(2);
+      fitFunc.FixParameter(1, sigma);
+      grRampPCPolarRatiosByRing[ringId]->Fit(&fitFunc);
+      utils::UpdateLimitsFromGraphs(hRampPCPolarRatiosByRing[ringId], 2);
    }
 
    DrawObjContainer::UpdateLimits();

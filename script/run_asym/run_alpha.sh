@@ -23,7 +23,7 @@ do
    else
       #echo "polid defined" ${arr[1]}
       #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --pol-id=${arr[1]} -r ${arr[0]}
-      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --alpha-sources=${arr[1]} --sfx=new -r $meas_name
+      bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --alpha-sources=${arr[1]} -r $meas_name
    fi
 done
 

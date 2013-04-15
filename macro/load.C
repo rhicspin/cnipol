@@ -1,4 +1,3 @@
-
 {
    gROOT->Reset();
    gROOT->Clear();
@@ -19,4 +18,7 @@
 
    //gROOT->LoadMacro("plotPolarFromFile.C+");
    //gROOT->LoadMacro("plotAN.C+");
+
+   gROOT->LoadMacro("CniAN.C+");
+   gROOT->LoadMacro("plotANTheory.C+");
 }

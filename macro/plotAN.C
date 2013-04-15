@@ -15,8 +15,6 @@ void plotAN()
       //printf("file: %s\n", fileId.c_str());
       file >> strName >> sqrtS >> imR5 >> strDummy >> imR5ErrStat >> r5 >> strDummy >> r5ErrStat
            >>  imR5 >> strDummy >> imR5ErrTot >> r5 >> strDummy >> r5ErrTot;
-
-      
    }
 
 }

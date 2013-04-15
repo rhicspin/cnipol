@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
    //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_255);
    gRunConfig.fBeamEnergies.clear();
    gRunConfig.fBeamEnergies.insert(kINJECTION);
+   //gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_100);
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
 
    //string filelistName = mAsymAnaInfo.GetMListFileName();
@@ -171,7 +172,8 @@ int main(int argc, char *argv[])
           profileRatioErr < 0.01 || profileRatioErr > 10 ||                 // exclude too small and too big errors. probably from failed fits?
           //(TMath::Abs(profileRatio) < 0.001 && profileRatioErr < 0.01)
           ( fillId >= 17064 && fillId <= 17084 )
-         ) {
+         )
+      {
          Warning("masym", "Measurement %9.3f did not pass basic QA check", runId);
          printf("%8.3f, %s, %3d, %f, %f, %s, %f, %f\n",
                 runId, strTime, beamEnergy, polarization, polarizationErr,
@@ -241,7 +243,7 @@ int main(int argc, char *argv[])
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(anaGlobResult.GetMinTime(), anaGlobResult.GetMaxTime());
    ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
-   anaGlobResult.AdjustMinMaxFill();
+   //anaGlobResult.AdjustMinMaxFill();
 
 
    // Process run/fill results, i.e. calculate fill average, ...
@@ -276,7 +278,7 @@ int main(int argc, char *argv[])
 
    if (mAsymAnaInfo.HasGraphBit())
       mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
-   //mAsymRoot.SaveAs("^.*hRSlopeVsFill.*$", mAsymAnaInfo.GetImageDir());
+      //mAsymRoot.SaveAs("^.*RotatorPCPolarRatio.*$", mAsymAnaInfo.GetImageDir());
 
    if (mAsymAnaInfo.fFlagUpdateDb) {
       AsymDbSql *asymDbSql = new AsymDbSql();

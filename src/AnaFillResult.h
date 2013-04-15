@@ -36,16 +36,15 @@ protected:
    time_t                     fEndTime;                // the time of the last measurement in the fill
    AnaFillExternResult       *fAnaFillExternResult;
 
-   PolId2TGraphMap            fPCPolarGraphs;    // polarization at flattop
-   PolId2TGraphMap            fPCPolarInjGraphs; // polarization measurements at 24 GeV by polarimeter
+   PolId2TGraphMap            fPCPolarGraphs;          // polarization at flattop
+   PolId2TGraphMap            fPCPolarInjGraphs;       // polarization measurements at 24 GeV by polarimeter
    PolId2TgtOrient2TGraphMap  fPCProfRGraphs;
-   PolId2TgtOrient2TGraphMap  fPCProfRInjGraphs; //!
+   PolId2TgtOrient2TGraphMap  fPCProfRInjGraphs;       //!
    PolId2TargetUIdMap         fPCTargets;
 
    TFitResultPtr              fPCPolarFitRes;
    TFitResultPtr              fPolProfRFitRes;
 
-   //TH1F                      *fAsymVsBunchId_X;
    Double_t                   fFlattopEnergy;
    EFillType                  fFillType;
 
@@ -74,10 +73,11 @@ public:
    RingId2ValErrMap              fSystUvsDPolar;
 
    PolId2ValErrMap               fRotatorPCPolarRatio; // before/after rotator ratio at flattop
+   PolId2ValErrMap               fRampPCPolarRatio;    //! before/after ramp to flattop ratio
 
-   String2TgtOrientMap           fMeasTgtOrients;    // a stupid temporary fix
-   String2TargetIdMap            fMeasTgtIds;        // a stupid temporary fix
-   String2RingIdMap              fMeasRingIds;       // a stupid temporary fix
+   String2TgtOrientMap           fMeasTgtOrients;      // a stupid temporary fix
+   String2TargetIdMap            fMeasTgtIds;          // a stupid temporary fix
+   String2RingIdMap              fMeasRingIds;         // a stupid temporary fix
 
    RingId2TgtOrient2ValErrMap    fPolProfRs;
    RingId2TgtOrient2ValErrMap    fPolProfPMaxs;
@@ -158,6 +158,7 @@ public:
    ValErrPair           CalcAvrgPolProfPMax(ERingId ringId, ETargetOrient tgtOrient);
    ValErrPair           CalcPolProfP(ValErrPair R, ValErrPair PMax);
    void                 CalcRotatorPCPolarRatio();
+   void                 CalcRampPCPolarRatio();
    void                 CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
    void                 UpdateExternGraphRange();
    void                 FitExternGraphs();

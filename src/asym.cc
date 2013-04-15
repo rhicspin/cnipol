@@ -102,7 +102,7 @@ int read_ssh(const char *logger, const char *cells, time_t start, time_t end, ma
    int row_count = 0;
    mean_value->clear();
 
-   while(!feof(fd)) {
+   while (!feof(fd)) {
       char c;
       c = ungetc(fgetc(fd), fd);
       if (c == '#') {
@@ -129,7 +129,7 @@ int read_ssh(const char *logger, const char *cells, time_t start, time_t end, ma
       }
    }
 
-   for(map<string, double>::iterator it = mean_value->begin();
+   for (map<string, double>::iterator it = mean_value->begin();
        it != mean_value->end(); it++)
    {
       double &value = it->second;
@@ -150,6 +150,7 @@ int read_ssh(const char *logger, const char *cells, time_t start, time_t end, ma
 
    return retcode;
 }
+
 
 /**
  * Main program
@@ -241,13 +242,14 @@ int main(int argc, char *argv[])
       }
 
       int retval = read_ssh(
-         "RHIC/Rf/All_Cavities_Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps",
+         "RHIC/Rf/Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps",
          "cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0],"
          "cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0],"
          "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer",
          startTime, endTime,
          &mean_value
       );
+
       if (retval)
       {
          Error("asym", "Some problems with read_ssh");
@@ -263,12 +265,12 @@ int main(int argc, char *argv[])
       }
 
       RecordMachineParams machineParams;
-      machineParams.fCavity197MHzVoltage[0] = mean_value["cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0]"];
-      machineParams.fCavity197MHzVoltage[1] = mean_value["cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0]"];
-      machineParams.fSnakeCurrents[0] = mean_value["bo3-snk7-outer"];
-      machineParams.fSnakeCurrents[1] = mean_value["yi3-snk7-outer"];
-      machineParams.fStarRotatorCurrents[0] = mean_value["bi5-rot3-outer"];
-      machineParams.fStarRotatorCurrents[1] = mean_value["yo5-rot3-outer"];
+      machineParams.fCavity197MHzVoltage[0]   = mean_value["cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0]"];
+      machineParams.fCavity197MHzVoltage[1]   = mean_value["cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0]"];
+      machineParams.fSnakeCurrents[0]         = mean_value["bo3-snk7-outer"];
+      machineParams.fSnakeCurrents[1]         = mean_value["yi3-snk7-outer"];
+      machineParams.fStarRotatorCurrents[0]   = mean_value["bi5-rot3-outer"];
+      machineParams.fStarRotatorCurrents[1]   = mean_value["yo5-rot3-outer"];
       machineParams.fPhenixRotatorCurrents[0] = mean_value["bo7-rot3-outer"];
       machineParams.fPhenixRotatorCurrents[1] = mean_value["yi7-rot3-outer"];
 
