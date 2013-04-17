@@ -593,8 +593,8 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          }
       }
 
-      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_, 1, N_BUNCHES, 0, 0, 0.05);
-      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_neb_, 1, N_BUNCHES, 0, 0, 0.05);
+      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_, 1, N_BUNCHES);
+      utils::SetXAxisIntBinsLabels(hAsymVsBunchId_X_neb_, 1, N_BUNCHES);
 
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_, 2);
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_neb_, 2);
