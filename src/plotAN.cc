@@ -24,10 +24,9 @@
 using namespace std;
 
 
-
 /** */
 int main(int argc, char *argv[])
-{ //{{{
+{
    //gROOT->Reset();
    //gROOT->SetStyle("Plain");
    //gROOT->SetMacroPath("./:~/rootmacros/:");
@@ -254,12 +253,12 @@ int main(int argc, char *argv[])
    errEllipseSystTot->Draw();
 
    canvas2->SaveAs((dataFileName + "_ell.png").c_str());
-} //}}}
+}
 
 
 /** */
 void f_AN(double cal_t[], double cal_AN[], double rho, double sigma, double Imr5, double Rer5, double scale)
-{ //{{{
+{
    int i;
    double mb2GeV_inv2 = 0.389379; // 1GeV-2=0.389mb factor to convert mb to GeV
    double beta = 0;
@@ -279,12 +278,12 @@ void f_AN(double cal_t[], double cal_AN[], double rho, double sigma, double Imr5
 
       cal_AN[i] = scale * ans * sqrt(cal_t[i]) / (double)(ttt * MASS_PROTON);
    }
-} //}}}
+}
 
 
 /** */
 Double_t modelAN(Double_t *x, Double_t *par)
-{ //{{{
+{
    double minus_t = x[0];
 
    double Rer5 = par[0];
@@ -310,12 +309,12 @@ Double_t modelAN(Double_t *x, Double_t *par)
    double nom   = tt * (kappa * (1 - delta * rho) + 2 * (delta * Rer5 - Imr5)) - 2 * (Rer5 - rho * Imr5);
 
    return TMath::Sqrt(minus_t) * nom / MASS_PROTON / denom;
-} //}}}
+}
 
 
 /** */
 TFitResultPtr FitGraph(TGraph *gr, TF1 *func, TEllipse *ell)
-{ //{{{
+{
    Info("FitGraph", "\n********************************************************************************\n");
 
    TFitResultPtr fitRes = gr->Fit(func, "R S B");
@@ -364,4 +363,4 @@ TFitResultPtr FitGraph(TGraph *gr, TF1 *func, TEllipse *ell)
    printf("\n");
 
    return fitRes;
-} //}}}
+}
