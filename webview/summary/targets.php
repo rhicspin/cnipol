@@ -21,6 +21,7 @@
 <?php
 include("../head.html");
 
+
 include_once("../rundb/DbRunInfo.php");
 
 $dbRunInfo = new DbRunInfo();
@@ -36,10 +37,17 @@ $dbRunInfo = new DbRunInfo();
 
 <h2>Run 13</h2>
 
-<h3 class=center>Feb 17, 2013 - ...</h3>
+<h3 class=center>Mar 20, 2013 - ...</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2013-02-17");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-03-20 23:00:00");
+$dbRunInfo->PrintTargetUsage();
+?>
+
+<h3 class=center>Feb 17, 2013 - Mar 20, 2013</h3>
+
+<?php
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-02-17 00:00:00", "2013-03-20 08:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -50,7 +58,7 @@ $dbRunInfo->PrintTargetUsage();
 <h3 class=center>Jan 25, 2012 - Mar 13, 2012</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2012-01-25 00:00:00", "2012-03-14 00:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-01-25 00:00:00", "2012-03-14 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -58,7 +66,7 @@ $dbRunInfo->PrintTargetUsage();
 <h3 class=center>Mar 14, 2012 - Apr 10, 2012</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2012-03-14 00:00:00", "2012-04-11 00:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-03-14 00:00:00", "2012-04-11 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -66,7 +74,7 @@ $dbRunInfo->PrintTargetUsage();
 <h3 class=center>Apr 11, 2012 - Apr 19, 2012</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2012-04-11 00:00:00", "2012-04-20 00:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-04-11 00:00:00", "2012-04-20 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -76,7 +84,7 @@ $dbRunInfo->PrintTargetUsage();
 <h3 class=center>Jan 4, 2011 - Apr 19, 2011</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2011-01-04 00:00:00", "2011-04-20 00:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2011-01-04 00:00:00", "2011-04-20 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -86,7 +94,7 @@ $dbRunInfo->PrintTargetUsage();
 <h3 class=center>Jan 15, 2009 - Jul 6, 2009</h3>
 
 <?php
-$targetUsage = $dbRunInfo->FetchTargetUsage("2009-01-15 00:00:00", "2009-06-07 00:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2009-01-15 00:00:00", "2009-06-07 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
