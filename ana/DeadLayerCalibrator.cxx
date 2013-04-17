@@ -235,7 +235,7 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 /** */
 void DeadLayerCalibrator::Print(const Option_t* opt) const
 {
-   Info("Print", "");
+   Info("Print", " ");
 	Calibrator::Print(opt);
 }
 

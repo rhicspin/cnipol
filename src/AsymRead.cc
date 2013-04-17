@@ -64,9 +64,9 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
 
 ///
    RecordHeaderStruct *mHeader = (RecordHeaderStruct*) fMem;
-   printf("Currently consider record: fMem: %0#10x, type: %0#10x, len: %ld \n", fMem, (UInt_t) mHeader->type, mHeader->len);
-   printf("size RecordHeaderStruct: %ld \n", sizeof(RecordHeaderStruct));
-   printf("size recordHeaderStruct: %ld \n", sizeof(recordHeaderStruct));
+   printf("Currently consider record: fMem: %0#10x, type: %0#10x, len: %ld \n", (uint) fMem, (UInt_t) mHeader->type, mHeader->len);
+   printf("size RecordHeaderStruct: %u \n", sizeof(RecordHeaderStruct));
+   printf("size recordHeaderStruct: %u \n", sizeof(recordHeaderStruct));
 ///
 
    sw.Stop();

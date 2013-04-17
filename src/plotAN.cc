@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
    Double_t xe, ye, ye_syst;
    Double_t xmin, xmax, ymin, ymax;
 
-   for (UInt_t i=0; i!=grANStat->GetN(); i++) {
+   for (Int_t i=0; i!=grANStat->GetN(); i++) {
       grANStat->ComputeRange(xmin, ymin, xmax, ymax);
       grANStat->GetPoint(i, x, y);
       xe = grANStat->GetErrorX(i);

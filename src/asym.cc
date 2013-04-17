@@ -229,8 +229,9 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseRunPeriodX);
+   gMeasInfo->Update(*gAsymAnaInfo);  // Can override some parameters by the user ones
 
-   if ((!gMeasInfo->fMachineParamsPresent) && (!gAsymAnaInfo->HasNoSshBit()))
+   if ( !gMeasInfo->HasMachineParamsInRawData() && !gAsymAnaInfo->HasNoSshBit() )
    {
       map<string, double> mean_value;
       double startTime = gMeasInfo->fStartTime;

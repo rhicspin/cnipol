@@ -237,11 +237,10 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      int         alphaSources    = gMM->fAnaInfo->fAlphaSourceCount;
-      string      runName         = gMM->fMeasInfo->GetRunName();
-      Short_t     polId           = gMM->fMeasInfo->fPolId;
-      Double_t    startTime       = gMM->fMeasInfo->fStartTime;
-      EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
+      int      alphaSources = gMM->fMeasInfo->GetAlphaSourceCount();
+      string   runName      = gMM->fMeasInfo->GetRunName();
+      Short_t  polId        = gMM->fMeasInfo->fPolId;
+      Double_t startTime    = gMM->fMeasInfo->fStartTime;
 
       Info("malpha", "Number of alpha sources in %s is %d", fileName.c_str(), alphaSources);
 

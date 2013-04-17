@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "rpoldata.h"
 
+#include "AnaInfo.h"
 #include "AsymHeader.h"
 #include "AsymOnline.h"
 #include "BeamBunch.h"
@@ -47,10 +48,12 @@ protected:
 
    Float_t             fBeamEnergy;
    RecordMachineParams fMachineParams;
+   Bool_t              fHasMachineParamsInRawData;
    RecordTargetParams  fTargetParams;
    Short_t             fExpectedGlobalTdcOffset;
    Float_t             fExpectedGlobalTimeOffset;
    std::string         fRunName;
+   UShort_t            fAlphaSourceCount;
    Float_t             fProtoCutSlope;
    Float_t             fProtoCutOffset;
    UShort_t            fProtoCutWidth;
@@ -62,7 +65,6 @@ protected:
    UShort_t            fPulserCutAdcMax;
    UShort_t            fPulserCutTdcMin;
    UShort_t            fPulserCutTdcMax;
-
 
 public:
 
@@ -102,7 +104,6 @@ public:
    BeamBunchMap                fBeamBunches;
    //Int_t                       NDisableBunch;
    //Int_t                       DisableBunch[N_BUNCHES];
-   bool                        fMachineParamsPresent;
 
 public:
 
@@ -116,28 +117,31 @@ public:
    void            SetRunName(std::string runName);
    std::string     GetRunName() const;
 
-   Float_t         GetProtoCutSlope()   const { return fProtoCutSlope;   }
-   Float_t         GetProtoCutOffset()  const { return fProtoCutOffset;  }
-   UShort_t        GetProtoCutWidth()   const { return fProtoCutWidth;  }
-   UShort_t        GetProtoCutAdcMin()  const { return fProtoCutAdcMin;  }
-   UShort_t        GetProtoCutAdcMax()  const { return fProtoCutAdcMax;  }
-   UShort_t        GetProtoCutTdcMin()  const { return fProtoCutTdcMin;  }
-   UShort_t        GetProtoCutTdcMax()  const { return fProtoCutTdcMax;  }
-   UShort_t        GetPulserCutAdcMin() const { return fPulserCutAdcMin; }
-   UShort_t        GetPulserCutAdcMax() const { return fPulserCutAdcMax; }
-   UShort_t        GetPulserCutTdcMin() const { return fPulserCutTdcMin; }
-   UShort_t        GetPulserCutTdcMax() const { return fPulserCutTdcMax; }
+   Bool_t          HasMachineParamsInRawData() const { return fHasMachineParamsInRawData; }
+   UShort_t        GetAlphaSourceCount() const { return fAlphaSourceCount; }
+   Float_t         GetProtoCutSlope()    const { return fProtoCutSlope;    }
+   Float_t         GetProtoCutOffset()   const { return fProtoCutOffset;   }
+   UShort_t        GetProtoCutWidth()    const { return fProtoCutWidth;    }
+   UShort_t        GetProtoCutAdcMin()   const { return fProtoCutAdcMin;   }
+   UShort_t        GetProtoCutAdcMax()   const { return fProtoCutAdcMax;   }
+   UShort_t        GetProtoCutTdcMin()   const { return fProtoCutTdcMin;   }
+   UShort_t        GetProtoCutTdcMax()   const { return fProtoCutTdcMax;   }
+   UShort_t        GetPulserCutAdcMin()  const { return fPulserCutAdcMin;  }
+   UShort_t        GetPulserCutAdcMax()  const { return fPulserCutAdcMax;  }
+   UShort_t        GetPulserCutTdcMin()  const { return fPulserCutTdcMin;  }
+   UShort_t        GetPulserCutTdcMax()  const { return fPulserCutTdcMax;  }
 
-   void            SetProtoCutSlope  (Float_t  protoCutSlope )  { fProtoCutSlope   = protoCutSlope;   }
-   void            SetProtoCutOffset (Float_t  protoCutOffset)  { fProtoCutOffset  = protoCutOffset;  }
-   void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)  { fProtoCutAdcMin  = protoCutAdcMin;  }
-   void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)  { fProtoCutAdcMax  = protoCutAdcMax;  }
-   void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)  { fProtoCutTdcMin  = protoCutTdcMin;  }
-   void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)  { fProtoCutTdcMax  = protoCutTdcMax;  }
-   void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin) { fPulserCutAdcMin = pulserCutAdcMin; }
-   void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax) { fPulserCutAdcMax = pulserCutAdcMax; }
-   void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin) { fPulserCutTdcMin = pulserCutTdcMin; }
-   void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax) { fPulserCutTdcMax = pulserCutTdcMax; }
+   void            SetAlphaSourceCount(UShort_t alphaSourceCount) { fAlphaSourceCount = alphaSourceCount; }
+   void            SetProtoCutSlope  (Float_t  protoCutSlope )    { fProtoCutSlope   = protoCutSlope;   }
+   void            SetProtoCutOffset (Float_t  protoCutOffset)    { fProtoCutOffset  = protoCutOffset;  }
+   void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)    { fProtoCutAdcMin  = protoCutAdcMin;  }
+   void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)    { fProtoCutAdcMax  = protoCutAdcMax;  }
+   void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)    { fProtoCutTdcMin  = protoCutTdcMin;  }
+   void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)    { fProtoCutTdcMax  = protoCutTdcMax;  }
+   void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin)   { fPulserCutAdcMin = pulserCutAdcMin; }
+   void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax)   { fPulserCutAdcMax = pulserCutAdcMax; }
+   void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin)   { fPulserCutTdcMin = pulserCutTdcMin; }
+   void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax)   { fPulserCutTdcMax = pulserCutTdcMax; }
 
    time_t          GetStartTime() const { return fStartTime; }
    void            SetStartTime(time_t time) { fStartTime = time; }
@@ -147,6 +151,7 @@ public:
    void            Update(DbEntry &rundb);
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
+   void            Update(AnaInfo& anaInfo);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;
    EBeamEnergy     GetBeamEnergy() const;

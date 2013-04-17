@@ -137,12 +137,11 @@ void CnipolKinemaCleanHists::PostFill()
    Info("PostFill", "Called");
 
    // Fit energy slope with an exponential func
-   TF1 *fitfunc = new TF1("fitfunc", "gaus", 9, 14);
-
-   //fitfunc->SetParNames("slope");
-   //fitfunc->SetParameter(0, 0);
-   //fitfunc->SetParameter(1, 0);
-   //fitfunc->SetParLimits(1, -1, 1);
+   TF1 fitfunc("fitfunc", "gaus", 9, 14);
+   //fitfunc.SetParNames("slope");
+   //fitfunc.SetParameter(0, 0);
+   //fitfunc.SetParameter(1, 0);
+   //fitfunc.SetParLimits(1, -1, 1);
 
    TH1* hPseudoMass = (TH1*) o["hPseudoMass"];
       
@@ -151,7 +150,7 @@ void CnipolKinemaCleanHists::PostFill()
       return;
    }
 
-   TFitResultPtr fitres = hPseudoMass->Fit("fitfunc", "M E S R");
+   TFitResultPtr fitres = hPseudoMass->Fit(&fitfunc, "M E S R");
 
    if ( fitres.Get() && fitres->Ndf()) {
       gAnaMeasResult->fFitResPseudoMass = fitres;
@@ -181,14 +180,15 @@ void CnipolKinemaCleanHists::PostFill()
          continue;
       }
 
-      TF1 *fitfunc = new TF1("fitfunc", "gaus", 8, 14);
+      TF1 fitfunc("fitfunc", "gaus", 8, 14);
 
-      //fitfunc->SetParNames("slope");
-      //fitfunc->SetParameter(0, 0);
-      //fitfunc->SetParameter(1, 0);
-      //fitfunc->SetParLimits(1, -1, 1);
+      //fitfunc.SetParNames("slope");
+      //fitfunc.SetParameter(0, 0);
+      //fitfunc.SetParameter(1, 0);
+      //fitfunc.SetParLimits(1, -1, 1);
 
-      TFitResultPtr fitres = hPseudoMass_ch->Fit("fitfunc", "M E S R");
+      //TFitResultPtr fitres = hPseudoMass_ch->Fit("fitfunc", "M E S R");
+      TFitResultPtr fitres = hPseudoMass_ch->Fit(&fitfunc, "M E S R");
 
       if ( fitres.Get() && fitres->Ndf()) {
          // check ndf

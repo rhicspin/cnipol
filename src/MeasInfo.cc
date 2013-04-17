@@ -19,11 +19,12 @@ using namespace std;
 MeasInfo::MeasInfo() : TObject(),
    fBeamEnergy(0),
    fMachineParams(),
-   fMachineParamsPresent(false),
+   fHasMachineParamsInRawData(false),
    fTargetParams(),
    fExpectedGlobalTdcOffset(0),
    fExpectedGlobalTimeOffset(0),
    fRunName(),
+   fAlphaSourceCount(0),
    fProtoCutSlope(0), fProtoCutOffset(0), fProtoCutWidth(20),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
@@ -91,8 +92,8 @@ string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 /** */
 void MeasInfo::SetMachineParams(const RecordMachineParams &rec)
 {
-   fMachineParams = rec;
-   fMachineParamsPresent = true;
+   fMachineParams        = rec;
+   fHasMachineParamsInRawData = true;
 }
 
 
@@ -214,6 +215,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    //fprintf(f, "$rc['fActiveChannels']              = %s;\n", SetAsPhpArray<UShort_t>(fActiveChannels).c_str());
    fprintf(f, "$rc['fBeamBunches']                 = %s;\n", MapAsPhpArray<UShort_t, BeamBunch>(fBeamBunches).c_str() );
    //fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
+   fprintf(f, "$rc['fAlphaSourceCount']            = %d;\n", fAlphaSourceCount);
    fprintf(f, "$rc['fProtoCutSlope']               = %f;\n", fProtoCutSlope);
    fprintf(f, "$rc['fProtoCutOffset']              = %f;\n", fProtoCutOffset);
    fprintf(f, "$rc['fProtoCutWidth']               = %d;\n", fProtoCutWidth);
@@ -502,17 +504,29 @@ void MeasInfo::Update(MseMeasInfoX& run)
 /** */
 void MeasInfo::Update(MseRunPeriodX& runPeriod)
 {
-   fProtoCutSlope   = runPeriod.cut_proto_slope;
-   fProtoCutOffset  = runPeriod.cut_proto_offset;
-   fProtoCutWidth   = (unsigned char) runPeriod.cut_proto_width;
-   fProtoCutAdcMin  = runPeriod.cut_proto_adc_min;
-   fProtoCutAdcMax  = runPeriod.cut_proto_adc_max;
-   fProtoCutTdcMin  = runPeriod.cut_proto_tdc_min;
-   fProtoCutTdcMax  = runPeriod.cut_proto_tdc_max;
-   fPulserCutAdcMin = runPeriod.cut_pulser_adc_min;
-   fPulserCutAdcMax = runPeriod.cut_pulser_adc_max;
-   fPulserCutTdcMin = runPeriod.cut_pulser_tdc_min;
-   fPulserCutTdcMax = runPeriod.cut_pulser_tdc_max;
+   fAlphaSourceCount = UChar_t(runPeriod.alpha_source_count);
+   fProtoCutSlope    = runPeriod.cut_proto_slope;
+   fProtoCutOffset   = runPeriod.cut_proto_offset;
+   fProtoCutWidth    = (unsigned char) runPeriod.cut_proto_width;
+   fProtoCutAdcMin   = runPeriod.cut_proto_adc_min;
+   fProtoCutAdcMax   = runPeriod.cut_proto_adc_max;
+   fProtoCutTdcMin   = runPeriod.cut_proto_tdc_min;
+   fProtoCutTdcMax   = runPeriod.cut_proto_tdc_max;
+   fPulserCutAdcMin  = runPeriod.cut_pulser_adc_min;
+   fPulserCutAdcMax  = runPeriod.cut_pulser_adc_max;
+   fPulserCutTdcMin  = runPeriod.cut_pulser_tdc_min;
+   fPulserCutTdcMax  = runPeriod.cut_pulser_tdc_max;
+}
+
+
+/**
+ * Call this method to override some parameters by those provided by the user
+ * in the command line.
+ */
+void MeasInfo::Update(AnaInfo& anaInfo)
+{
+   if (anaInfo.fAlphaSourceCount > 0)
+      fAlphaSourceCount = anaInfo.fAlphaSourceCount;
 }
 
 
@@ -540,8 +554,7 @@ void MeasInfo::ConfigureActiveStrip(int mask)
    }
 
    // Configure Active Strips
-   int det, strip=0;
-
+   //int det, strip=0;
    //for (int i=0; i<NDisableStrip; i++) {
    //   det = fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
    //   // skip if the detector is already disabled

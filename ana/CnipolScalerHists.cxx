@@ -55,7 +55,7 @@ void CnipolScalerHists::BookHists()
    for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
    {
       string sCh("  ");
-      sprintf(&sCh[0], "%02d", iCh);
+      sprintf(&sCh[0], "%02d", *iCh);
 
       // Corresponds to 200 histograms in rhic2hbook.f
       sprintf(hName, "hBunches_ch%s", sCh.c_str());
