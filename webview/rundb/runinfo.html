@@ -45,6 +45,8 @@ include("../head.html");
 include_once("MeasResult.php");
 
 // Determine whether we have different analyses identified by a suffix
+$suffixes = "";
+
 if (!isset($gSfx) || empty($gSfx))
    $suffixes = "default ";
 else 

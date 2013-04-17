@@ -143,15 +143,6 @@ while ($e = mysql_fetch_assoc($rslt)):
    if ($measurementType != "undef" && $measurementType != "alpha")
    {
       // Apply normalization factor to polarization value
-		$normSpecs = array(
-		   "runPeriod" => $runPeriod,
-			"energy"    => intval($e['beam_energy']+0.5),
-			"polId"     => $polId,
-			"tgtOrient" => $e['target_orient'],
-			"tgtId"     => $e['target_id']
-		);
-
-		//$norm = getJetCarbonNormalization($normSpecs);
       $norm2 = getHJPCNorm($runPeriod, intval($e['beam_energy']+0.5), $polId, $e['target_orient'], $e['target_id']);
       $norm = $norm2->val;
 
@@ -245,19 +236,19 @@ endwhile;
 // Now take care of the averages
 $meanPolarization = calcWeigtedAvrgErr($polarizations);
 $meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
-//print $meanProfileRatio->ToString();
 ?>
 
 <tr>
-   <th colspan=12>&nbsp;<br>&nbsp;
+   <th colspan=13>&nbsp;<br>&nbsp;
 
 <tr>
    <th>Mean
 
    <th>&nbsp;
    <th>&nbsp;
-   <th><?=$meanPolarization->ToString("", "%5.2f");?>
-   <th><?=$meanProfileRatio->ToString("", "%5.3f");?>
+   <th><?=(count($polarizations) ? $meanPolarization->ToString("", "%5.2f") : "&nbsp;")?>
+   <th><?=(count($profileRatios) ? $meanProfileRatio->ToString("", "%5.2f") : "&nbsp;")?>
+   <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;

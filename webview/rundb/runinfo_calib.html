@@ -41,6 +41,24 @@ include("../head.html");
 
 <?php
 
+// Determine whether we have different analyses identified by a suffix
+$suffixes = "";
+
+if (!isset($gSfx) || empty($gSfx))
+   $suffixes = "default ";
+else 
+   $suffixes = "<a href=\"./?runid=$gRunId\">default</a> ";
+
+foreach ($rc['suffixes'] as $suffix)
+{
+   if (empty($suffix)) continue;
+
+   if ($gSfx == $suffix) 
+      $suffixes .= "$suffix ";
+   else
+      $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
+}
+
 $polId = $POLARIMETER_ID[$rc['polarimeter_id']];
 
 $cssPol = "";
@@ -63,7 +81,7 @@ if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] >
 
 // Deal with version now
 $asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
-$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+$asymVersionLink = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
 
 ?>
 
@@ -85,7 +103,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <td>
    <b>Total Events:</b> <?=number_format($rc['fNEventsTotal'])?>
    <td>
-   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['BeamEnergy'])?>&nbsp;GeV
+   <b>Beam Energy:</b> &mdash;
    <td>&nbsp;
    <!--
    <td>
@@ -103,7 +121,7 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    <? endif; ?>
    <td>&nbsp;
    <td>
-   <b>Asym Version:</b> <?=$asymVersion?>
+   <b>Asym Version:</b> <?=$asymVersionLink?>
 
 <tr>
    <td colspan=4>
@@ -129,6 +147,10 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
       }
    ?>
    </table>
+
+<tr>
+   <td colspan=4>
+   <div class="s120">Analysis tags (for experts): <?=$suffixes?></div>
 
 </table>
 
@@ -167,7 +189,7 @@ for ($ir=0; $ir<$nRows; $ir++) :
    for ($ic=0; $ic<$nColumns; $ic++) :
 
       $chanId = $ic*$nRows + $ir + 1;
-      $coefs = $rc['calib'][$chanId];
+      $coefs  = $rc['calib'][$chanId]['Americium'];
 
       if ($chanId > $nChannels) continue;
 
@@ -222,7 +244,6 @@ Calibration constants calculated using the <b>integral</b> (I) of the signal sha
 <td align=center>
 <?=$gP->img('alpha/hAmpltd')?>
 <td align=center>
-<?=$gP->img('alpha/hAmpltd')?>
 <td align=center>
 <?=$gP->img('alpha/hAmAmpWidth')?>
 
@@ -230,7 +251,6 @@ Calibration constants calculated using the <b>integral</b> (I) of the signal sha
 <td align=center>
 <?=$gP->img('alpha/hIntgrl')?>
 <td align=center>
-<?=$gP->img('alpha/hIntgrl')?>
 <td align=center>
 <?=$gP->img('alpha/hAmIntWidth')?>
 
@@ -267,7 +287,7 @@ foreach($rc['fSiliconChannels'] as $chanId) {
    //$chanId += 1;
 
    $chanId = sprintf("%02d", $chanId);
-   $gP->dir = "../runs/$gRunId/images/alpha/channel$chanId/";
+   $gP->dir = "../runs/$gRunId/images$gSuffix/alpha/channel$chanId/";
 
    //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
 
