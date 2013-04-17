@@ -397,7 +397,7 @@ void CnipolProfileHists::FillDerived(DrawObjContainer &oc)
    }
 
    TH1 *hAsymVsDelim4Det_asym = (TH1*) hists_asym->o["hAsymVsDelim4Det"];
-   TH1 *hAsymVsDelim4Ch_asym  = (TH1*) hists_asym->o["hAsymVsDelim4Ch"];
+   //TH1 *hAsymVsDelim4Ch_asym  = (TH1*) hists_asym->o["hAsymVsDelim4Ch"];
    TH1 *hAsymVsDelim4Det      = (TH1*) o["hAsymVsDelim4Det"];
    TH1 *hAsymVsIntensProfile  = (TH1*) o["hAsymVsIntensProfile"];
    TH1 *hPolarProfile         = (TH1*) o["hPolarProfile"];

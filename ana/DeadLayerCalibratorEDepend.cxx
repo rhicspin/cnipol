@@ -345,7 +345,6 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
       // skip points with bad chi2
       if ( chi2 > hchi2_profy_mean + hchi2_profy_rms ) continue;
 
-      Double_t bcntr = hmeans->GetBinCenter(ib);
       Double_t bcont = hmeans->GetBinContent(ib);
       Double_t berr  = hmeans->GetBinError(ib);
 

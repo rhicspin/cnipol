@@ -47,7 +47,7 @@ float EnergyBin[NTBIN+1]={320,360,400,440,480,520,600,700,800,900,1000,1100,1200
  */
 void event_process(ChannelEvent &chEvent)
 {
-   int   st    = chEvent.GetChannelId() - 1;        // 0 - 71
+   //int   st    = chEvent.GetChannelId() - 1;        // 0 - 71
    //int   si    = (int) (st/12);     // 0 - 5
    //float Emin  = (float) gAsymAnaInfo->enel;
    //float Emax  = (float) gAsymAnaInfo->eneu;
@@ -583,7 +583,7 @@ void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct 
   float rand1, rand2;
 
   // random numbers in order to smear for the integer reading
-  int vlen = 1;
+  //int vlen = 1;
   //hhrammar_(&rand1, &vlen);
   //hhrammar_(&rand2, &vlen);
 

@@ -36,7 +36,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    string    sCh("  ");
    TH1F     *htemp     = 0;
    TFitResultPtr fitres;
-   bool     fit_gadolinium = gAsymAnaInfo->fAlphaSourceCount == 2;
+   bool     fit_gadolinium = gMeasInfo->GetAlphaSourceCount() == 2;
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
       sprintf(&sCh[0], "%02d", i);

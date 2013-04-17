@@ -387,7 +387,7 @@ void CnipolHists::Fill(ChannelEvent *ch)
    //      //NDcounts[(int)(st/12)][event->bid][TgtIndex[ttime]]++;
    //   } else if (!gAnaInfo->HasAlphaBit()) {
    //      Error("Fill", "Time constructed from revolution #%d exeeds MAXDELIM=%d defined\n" \
-   //            "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
+               "Perhaps calibration data? Try running with --calib option", ttime, MAXDELIM);
    //   }
    //} else {
    //   Warning("Fill", "Target tstep size is not defined for Run %d", gMeasInfo->Run);

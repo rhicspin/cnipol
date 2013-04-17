@@ -23,6 +23,7 @@
 #include "AsymHeader.h"
 #include "Calibrator.h"
 #include "DrawObjContainer.h"
+#include "MeasInfo.h"
 
 //class DrawObjContainer;
 

@@ -41,7 +41,7 @@ void BeamBunch::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fIsFilled']            = %d;\n", fIsFilled);
    fprintf(f, "$rc['fIsUserDisabled']      = %d;\n", fIsUserDisabled);
    fprintf(f, "$rc['fBunchSpin']           = %d;\n", fBunchSpin);
-   fprintf(f, "$rc['fLength']              = %d;\n", fLength);
+   fprintf(f, "$rc['fLength']              = %f;\n", fLength);
 }
 
 

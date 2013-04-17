@@ -64,31 +64,31 @@ public:
    Bool_t           fFlagUpdateDb;
    Bool_t           fFlagCreateThumbs;
    UserGroup_t      fUserGroup;
-   Int_t            fAlphaSourceCount;
+   Short_t          fAlphaSourceCount;
 
 public:
 
    AnaInfo();
    ~AnaInfo();
 
-   std::string  GetSuffix() const;
-   std::string  GetResultsDir() const;
-   std::string  GetOutDir() const;
-   std::string  GetImageDir() const;
+   std::string          GetSuffix() const;
+   std::string          GetResultsDir() const;
+   std::string          GetOutDir() const;
+   std::string          GetImageDir() const;
    virtual std::string  GetAnaInfoFileName() const;
-   std::string  GetStdLogFileName() const;
-   std::string  GetRootFileName() const;
-   FILE*        GetAnaInfoFile() const;
-   virtual void ProcessOptions(int argc, char **argv);
-   virtual void VerifyOptions();
-   void         Print(const Option_t* opt="") const;
-   void         PrintAsPhp(FILE *f=stdout) const;
-   virtual void PrintUsage();
-	virtual void CopyResults();
-
-   Bool_t       HasGraphBit() const;
+   std::string          GetStdLogFileName() const;
+   std::string          GetRootFileName() const;
+   FILE*                GetAnaInfoFile() const;
+   virtual void         ProcessOptions(int argc, char **argv);
+   virtual void         VerifyOptions();
+   void                 Print(const Option_t* opt="") const;
+   void                 PrintAsPhp(FILE *f=stdout) const;
+   virtual void         PrintUsage();
+	virtual void         CopyResults();
+   Bool_t               HasGraphBit() const;
 
 protected:
+
    void Init();
    void MakeOutDir();
 

@@ -206,7 +206,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case '?':
       case 'h':
          PrintUsage();
-         exit(0);
+         exit(EXIT_FAILURE);
 
       case 'l':
          fFileStdLogName = (optarg != 0 ? optarg : "");
@@ -444,7 +444,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       default:
          Error("ProcessOptions", "Unknown option provided");
          PrintUsage();
-         exit(0);
+         exit(EXIT_FAILURE);
          break;
       }
    }
@@ -469,7 +469,7 @@ void AsymAnaInfo::VerifyOptions()
    if (fRunName.empty()) {
       Error("VerifyOptions", "Run name has to be specified");
       PrintUsage();
-      exit(0);
+      exit(EXIT_FAILURE);
    }
 
    fOutputName = fRunName;
@@ -480,9 +480,8 @@ void AsymAnaInfo::VerifyOptions()
 
    if ( !gSystem->FindFile(fAsymEnv["CNIPOL_DATA_DIR"].c_str(), fileName ) )
 	{
-      Error("VerifyOptions",
-		   "Raw data file \"%s.data\" not found in %s\n", fRunName.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
-      exit(0);
+      Error("VerifyOptions", "Raw data file \"%s.data\" not found in %s\n", fRunName.c_str(), fAsymEnv["CNIPOL_DATA_DIR"].c_str());
+      exit(EXIT_FAILURE);
 	}
 
    if (HasAlphaBit()) {
@@ -516,18 +515,18 @@ void AsymAnaInfo::Print(const Option_t* opt) const
 void AsymAnaInfo::PrintAsPhp(FILE *f) const
 {
    AnaInfo::PrintAsPhp(f);
-   fprintf(f, "$rc['fRunName']                     = \"%s\";\n", fRunName.c_str());
-   fprintf(f, "$rc['fAsymModes']                   = %#010x;\n",  fAsymModes);
-   fprintf(f, "$rc['enel']                         = %d;\n",     enel);
-   fprintf(f, "$rc['eneu']                         = %d;\n",     eneu);
-   fprintf(f, "$rc['widthl']                       = %d;\n",     widthl);
-   fprintf(f, "$rc['widthu']                       = %d;\n",     widthu);
-   fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n", fSaveTrees.to_string().c_str());
-   fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n", fDisabledDetectors.to_string().c_str());
-   fprintf(f, "$rc['fThinout']                     = %f;\n",     fThinout);
-   fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n", GetAlphaCalibRun().c_str());
-   fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n", fDlCalibRun.c_str());
-   fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",     fAlphaSourceCount);
+   fprintf(f, "$rc['fRunName']                     = \"%s\";\n",  fRunName.c_str());
+   fprintf(f, "$rc['fAsymModes']                   = %#010lx;\n", fAsymModes);
+   fprintf(f, "$rc['enel']                         = %d;\n",      enel);
+   fprintf(f, "$rc['eneu']                         = %d;\n",      eneu);
+   fprintf(f, "$rc['widthl']                       = %d;\n",      widthl);
+   fprintf(f, "$rc['widthu']                       = %d;\n",      widthu);
+   fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n",  fSaveTrees.to_string().c_str());
+   fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n",  fDisabledDetectors.to_string().c_str());
+   fprintf(f, "$rc['fThinout']                     = %f;\n",      fThinout);
+   fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n",  GetAlphaCalibRun().c_str());
+   fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n",  fDlCalibRun.c_str());
+   fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",      fAlphaSourceCount);
    fprintf(f, "\n");
 }
 
@@ -589,13 +588,15 @@ void AsymAnaInfo::PrintUsage()
 }
 
 
-/** */
+/**
+ * Some of this method functionality should better be moved to MeasInfo Update(). This class
+ * should deal only with input command line options.
+ */
 void AsymAnaInfo::Update(MseMeasInfoX& run)
 {
 	// A fix for alpha calib runs - Maybe this should go to the process options
    // method
    if (HasAlphaBit()) {
-      //fAlphaCalibRun = fRunName;
       fAlphaCalibRun           = "";
       fDlCalibRun              = "";
       run.alpha_calib_run_name = "";
@@ -606,16 +607,16 @@ void AsymAnaInfo::Update(MseMeasInfoX& run)
       gMeasInfo->SetMeasType(kMEASTYPE_ALPHA);
    }
 
-   if (!fAlphaCalibRun.empty())
+   if ( !fAlphaCalibRun.empty() )
       run.alpha_calib_run_name = fAlphaCalibRun;
-   else if (!run.alpha_calib_run_name.empty())
+   else if ( !run.alpha_calib_run_name.empty() )
       fAlphaCalibRun = run.alpha_calib_run_name;
 
-   if (fAlphaCalibRun.empty()) {
+   if ( fAlphaCalibRun.empty() ) {
       if (!HasAlphaBit()) {
          Error("Update", "Alpha calibration run must be specified");
          Error("Update", "Specify it on command line or use --use-db option");
-         exit(0);
+         exit(EXIT_FAILURE);
       }
    } else
       Info("Update", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
