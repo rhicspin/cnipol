@@ -21,6 +21,7 @@ do
       #echo "polid defined" ${arr[1]}
       #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --pol-id=${arr[1]} -r ${arr[0]}
       bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --use-db -g --copy --alpha-sources=${arr[1]} -r $meas_name
+      #bgx_limit 10 $CNIPOL_DIR/bin/asym --alpha --alpha-sources=${arr[1]} -r $meas_name
    fi
 done
 

@@ -43,6 +43,7 @@
 #pragma link C++ class HistContainer+;
 #pragma link C++ class HistManager+;
 #pragma link C++ class MAlphaAnaInfo+;
+#pragma link C++ class MAlphaRoot+;
 #pragma link C++ class MAsymAnaInfo+;
 #pragma link C++ class MAsymFillHists+;
 #pragma link C++ class MAsymRateHists+;

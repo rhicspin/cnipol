@@ -573,11 +573,11 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       //((TH1*) o["hBunchAsymChi2_"  + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
       //((TH1*) o["hBunchAsymSigma_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
 
-      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymChi2_"  + sRingId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
-      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymSigma_" + sRingId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymChi2_"  + sRingId], agr.GetMinFill(), agr.GetMaxFill());
+      utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymSigma_" + sRingId], agr.GetMinFill(), agr.GetMaxFill());
 
-      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
-      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill());
+      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill());
    }
 
 
@@ -588,8 +588,8 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
       EPolarimeterId polId  = *iPolId;
       string         sPolId = RunConfig::AsString(polId);
 
-      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
-      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill(), 0, 0);
+      utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill());
+      utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByPol[polId], agr.GetMinFill(), agr.GetMaxFill());
    }
 
 
