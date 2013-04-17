@@ -1,4 +1,4 @@
-
+#include <cstdlib>
 #include <fstream>
 #include <time.h>
 #include <map>
@@ -46,15 +46,7 @@ int main(int argc, char *argv[])
    AnaGlobResult anaGlobResult;
    anaGlobResult.Configure(mAsymAnaInfo);
 
-   //gROOT->SetMacroPath("./:~/rootmacros/:");
    gROOT->Macro("~/rootmacros/styles/style_masym.C");
-
-   //gStyle->SetOptTitle(0);
-   //gStyle->SetOptStat("emroui");
-   //gStyle->SetOptStat("e");
-   //gStyle->SetOptStat(1111);
-   //gStyle->SetOptFit(1111);
-   //gStyle->SetPadRightMargin(0.25);
 
    //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
    //gRunConfig.fBeamEnergies.erase(kINJECTION);
@@ -293,5 +285,5 @@ int main(int argc, char *argv[])
    //anaGlobResult.Print("all");
    anaGlobResult.Print();
 
-   return 1;
+   return EXIT_SUCCESS;
 }

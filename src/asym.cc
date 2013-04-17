@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
    printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
    printf("Processing time: %f seconds\n", gAsymAnaInfo->fAnaTimeReal);
 
-   return 1;
+   return EXIT_SUCCESS;
 }
 
 
