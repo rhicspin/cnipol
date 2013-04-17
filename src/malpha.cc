@@ -29,6 +29,9 @@ typedef pair<
 /** */
 void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &result_err)
 {
+   if ( !h ) return;
+   if ( h->GetEntries() < 100 ) return;
+
    TFitResultPtr fitres = h->Fit("pol0", "S"); // S: return fitres
 
    result.first[startTime] = fitres->Value(0);
@@ -37,7 +40,8 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
    result.second[startTime].resize(N_DETECTORS);
    result_err.second[startTime].resize(N_DETECTORS);
 
-   for(int det = 0; det < N_DETECTORS; det++) {
+   for(int det = 0; det < N_DETECTORS; det++)
+	{
       int xmin = 0.5 + det * NSTRIP_PER_DETECTOR;
       int xmax = xmin + NSTRIP_PER_DETECTOR;
 
@@ -202,7 +206,8 @@ int main(int argc, char *argv[])
    TIter   *next = new TIter(utils::getFileList(filelist));
 
    // Loop over the runs and record the time of the last flattop measurement in the fill
-   while (next && (o = (*next)()) ) {
+   while (next && (o = (*next)()) )
+	{
       string measId   = string(((TObjString*) o)->GetName());
       string fileName = mAlphaAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAlphaAnaInfo.GetSuffix() + ".root";
 
@@ -238,10 +243,12 @@ int main(int argc, char *argv[])
       Double_t    startTime       = gMM->fMeasInfo->fStartTime;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
-      if (alphaSources != 2) {
-         Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
-         continue;
-      }
+      Info("malpha", "Number of alpha sources in %s is %d", fileName.c_str(), alphaSources);
+
+      //if (alphaSources != 2) {
+      //   Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
+      //   continue;
+      //}
 
       if (gMM->fMeasInfo->RUNID == 70213) {
          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
@@ -276,7 +283,8 @@ int main(int argc, char *argv[])
 
    PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
-   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId) {
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+	{
       Short_t polId = *iPolId;
       string  polIdName = RunConfig::AsString(*iPolId);
 
