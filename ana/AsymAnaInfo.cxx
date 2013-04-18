@@ -45,6 +45,7 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    WCMRANGE          (999.05),
    MassLimit         (8),
    fThinout          (1),
+   fMaxEventsUser    (0),
    reference_rate    (1),
    //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
@@ -253,14 +254,13 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case 'n':
-         gMaxEventsUser = atol(optarg);
+         fMaxEventsUser = atoi(optarg);
          break;
 
       case 's':
          sstr.str("");
          sstr << optarg;
          sstr >> fThinout;
-         //cout << "TTTTTTTTTTTTTTTTTTTTTTTT: " << optarg << " lllllllllll " << sstr2.str() << " ooo " << fThinout << endl;
          break;
 
       case 't': // set timing shift in banana cut
@@ -524,6 +524,7 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n",  fSaveTrees.to_string().c_str());
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n",  fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['fThinout']                     = %f;\n",      fThinout);
+   fprintf(f, "$rc['fMaxEventsUser']               = %u;\n",      fMaxEventsUser);
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n",  GetAlphaCalibRun().c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n",  fDlCalibRun.c_str());
    fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",      fAlphaSourceCount);

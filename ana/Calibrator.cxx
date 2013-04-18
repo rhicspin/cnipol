@@ -7,7 +7,7 @@
 
 #include "TMath.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 #include "AsymGlobals.h"
 #include "MeasInfo.h"
 

@@ -59,14 +59,12 @@ void MAsymRunHists::BookHists()
    string  shName;
    TH1    *hist;
 
-   //TStyle  styleMarker;
    TAttMarker  styleMarker;
 
    styleMarker.SetMarkerStyle(kFullCircle);
    styleMarker.SetMarkerSize(1);
 
-
-   // histogram stacks used for setting histogram limits
+   // Histogram stacks are used to set common histogram limits
    BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
 
    for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
@@ -123,15 +121,15 @@ void MAsymRunHists::BookHists()
 
       shName = "hT0VsChannelDiff_" + sPolId;
       hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      hist->SetOption("GRIDX");
-      hist->SetTitle(";Channel;t_{0} Diff, ns;");
+      hist->SetOption("GRIDX GRIDY");
+      hist->SetTitle("; Channel; t_{0} Diff, ns;");
       styleMarker.Copy(*hist);
       oc->o[shName] = hist;
 
       shName = "hDLVsChannelDiff_" + sPolId;
       hist = new TH1F(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      hist->SetOption("GRIDX");
-      hist->SetTitle(";Channel;Dead Layer Diff, #mug/cm^{2};");
+      hist->SetOption("GRIDX GRIDY");
+      hist->SetTitle("; Channel; Dead Layer Diff, #mug/cm^{2};");
       styleMarker.Copy(*hist);
       oc->o[shName] = hist;
 
@@ -156,9 +154,8 @@ void MAsymRunHists::BookHists()
       oc->o[shName] = hist;
 
       // If this is a new directory then we need to add it to the list
-      if ( isubdir == d.end()) {
+      if ( isubdir == d.end())
          d[sDirName] = oc;
-      }
    }
 
 
@@ -189,9 +186,8 @@ void MAsymRunHists::BookHists()
       }
 
       // If this is a new directory then we need to add it to the list
-      if ( isubdir == d.end()) {
+      if ( isubdir == d.end())
          d[sDirName] = oc;
-      }
    }
 }
 
@@ -1134,7 +1130,7 @@ void MAsymRunHists::Print(const Option_t* opt) const
 /** */
 void MAsymRunHists::PostFill(AnaGlobResult &agr)
 {
-
+   // Loop over all fill results
    AnaFillResultMapIter iFill = agr.fAnaFillResults.begin();
    for ( ; iFill != agr.fAnaFillResults.end(); ++iFill)
    {
@@ -1250,7 +1246,6 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
 
 
       RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
       for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
       {
          string sRingId  = RunConfig::AsString(*iRingId);
@@ -1264,19 +1259,16 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          utils::UpdateLimits((TH1*) hAsymHJVsFill_);
          hAsymHJVsFill_->Fit("pol0");
 
-         TH1F* hPolarRelDiff_         = (TH1F*) oc_ring->o["hPolarRelDiff_" + sRingId + "_" + sBeamE];
-         TH1F* hPolarRelDiffCumul_    = (TH1F*) oc_ring->o["hPolarRelDiffCumul_" + sRingId + "_" + sBeamE];
+         TH1F* hPolarRelDiff_       = (TH1F*) oc_ring->o["hPolarRelDiff_"       + sRingId + "_" + sBeamE];
+         TH1F* hPolarRelDiffCumul_  = (TH1F*) oc_ring->o["hPolarRelDiffCumul_"  + sRingId + "_" + sBeamE];
          TH1F* hPolarUDRatioVsFill_ = (TH1F*) oc_ring->o["hPolarUDRatioVsFill_" + sRingId + "_" + sBeamE];
 
          utils::ConvertToProfile(hPolarUDRatioVsFill_, hPolarRelDiff_, kFALSE);
          utils::ConvertToProfile(hPolarUDRatioVsFill_, hPolarRelDiffCumul_, kFALSE);
          utils::ConvertToCumulative(hPolarRelDiffCumul_);
 
-         //hPolarUDRatioVsFill_->Fit("pol0", "W");
-         //hPolarUDRatioVsFill_->Fit("pol0", "+");
-         //hPolarUDRatioVsFill_->Print();
+         hPolarUDRatioVsFill_->Print();
          hPolarUDRatioVsFill_->Fit("pol0");
-         //hPolarUDRatioVsFill_->GetYaxis()->UnZoom();
 
          TH1F* hPolarU = 0, *hPolarU_HJOnly = 0;
          TH1F* hPolarD = 0, *hPolarD_HJOnly = 0;
@@ -1300,12 +1292,9 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          //utils::Divide(hPolarU, hPolarD, 1, hPolarRatioVsFill_);
          utils::Divide(hPolarU, hPolarD, 0, hPolarRatioVsFill_);
 
-         //hPolarRatioVsFill_->Fit("pol0", "W");
-         //hPolarRatioVsFill_->Fit("pol0", "+");
-         //hPolarRatioVsFill_->Print();
+         hPolarRatioVsFill_->Print();
          utils::UpdateLimits((TH1*) hPolarRatioVsFill_);
          hPolarRatioVsFill_->Fit("pol0");
-
 
          TH1F* hPolarRatioVsFill_HJOnly_ = (TH1F*) oc_ring->o["hPolarRatioVsFill_HJOnly_" + sRingId + "_"  + sBeamE];
          hPolarRatioVsFill_HJOnly_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
@@ -1314,18 +1303,14 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          //utils::Divide(hPolarU_HJOnly, hPolarD_HJOnly, 1, hPolarRatioVsFill_HJOnly_);
          utils::Divide(hPolarU_HJOnly, hPolarD_HJOnly, 0, hPolarRatioVsFill_HJOnly_);
 
-         //hPolarRatioVsFill_HJOnly_->Fit("pol0", "W");
-         //hPolarRatioVsFill_HJOnly_->Fit("pol0", "+");
          hPolarRatioVsFill_HJOnly_->Print();
          hPolarRatioVsFill_HJOnly_->Fit("pol0");
 
-         //
          TH1* hIntensDecayVsFill_ = (TH1*) oc_ring->o["hIntensDecayVsFill_" + sRingId + "_" + sBeamE];
          hIntensDecayVsFill_->Fit("pol0");
       }
    }
 
-   //
    //TF1 *systRatioFitFunc = new TF1("systRatioFitFunc", new SystRatioFitFunctor(), fMinFill, fMaxFill, 1, "SystRatioFitFunctor");
    //utils::SystRatioFitFunctor *srff = new utils::SystRatioFitFunctor(*hRatio);
    //TF1 *systRatioFitFunc = new TF1("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
@@ -1614,11 +1599,10 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    Int_t ib = hPolarPCScaledVsFill_->FindBin(fillId);
 
    // Consider P and P_prof by polarimeter
-
    ValErrPair polarHJ         = afr.GetHJPolar(polId);
    ValErrPair polarPC         = afr.GetPCPolar(polId);                       // unnormalized value
-   //ValErrPair polarPCNorm   = afr.GetPCPolar(polId, &agr.fNormJetCarbon);  // ratio of average
-   //ValErrPair polarProfNorm = afr.GetPCPolar(polId, &agr.fNormProfPolar);
+   //ValErrPair polarPCNorm     = afr.GetPCPolar(polId, &agr.fNormJetCarbon);  // ratio of average
+   //ValErrPair polarProfNorm   = afr.GetPCPolar(polId, &agr.fNormProfPolar);
    ValErrPair polarPCNorm     = afr.GetPCPolar(polId, &agr.fNormJetCarbon2); // average of ratio
    //ValErrPair polarProfNorm   = afr.GetPCPolar(polId, &agr.fNormProfPolar2);
 
@@ -1771,10 +1755,10 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
       hPolarVsFill_->SetBinError(  ib, avrgPolar.second);
    }
 
-   ValErrPair systRatio = afr.GetSystUvsDPolar(ringId);
-   if (systRatio.second >= 0) { // expect some reasonable number
-      hPolarUDRatioVsFill_->SetBinContent(ib, systRatio.first);
-      hPolarUDRatioVsFill_->SetBinError(  ib, systRatio.second);
+   ValErrPair polarUDRatio = afr.GetPolarUDRatio(ringId);
+   if (polarUDRatio.second >= 0) { // expect some reasonable number
+      hPolarUDRatioVsFill_->SetBinContent(ib, polarUDRatio.first);
+      hPolarUDRatioVsFill_->SetBinError(  ib, polarUDRatio.second);
    }
 
    // Get polarization from profile meas

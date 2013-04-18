@@ -27,7 +27,7 @@
 #include "rhicpol.h"
 #include "rpoldata.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 
 static Int_t GHOSTVIEW      = 0;
 static Int_t FEEDBACK       = 0;

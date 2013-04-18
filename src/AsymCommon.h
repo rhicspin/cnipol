@@ -1,24 +1,23 @@
-// Header file for Asym
-// Author   : Itaru Nakagawa
-// Creation : 11/18/2005         
-
 /**
+ * Header file for Asym
+ * Author   : Itaru Nakagawa
+ * Creation : 11/18/2005         
  *
  * 15 Oct, 2010 - Dmitri Smirnov
  *    - Modified readloop to take an object of Root class as an argument 
  *
  */
 
-#ifndef Asym_h
-#define Asym_h
+#ifndef AsymCommon_h
+#define AsymCommon_h
 
+#include <iostream>
+#include <iterator>
 #include <map>
 #include <set>
 #include <string>
-#include <iostream>
-#include <iterator>
 #include <sstream>
-#include <utility> // for std::pair definition
+#include <utility> // for std::pair
 
 #include "TH1.h"
 #include "TGraph.h"
@@ -28,8 +27,8 @@
 #include "rpoldata.h"
 
 #include "AsymHeader.h"
-//#include "TargetUId.h"
 #include "utils/ValErrPair.h"
+
 
 class TargetUId;
 
@@ -44,15 +43,10 @@ enum ESpinState     {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 enum EFillType      {kFILLTYPE_UNKNOWN = 0, kFILLTYPE_PHYSICS};
 
 typedef std::map<std::string, std::string>     Str2StrMap;
-//typedef std::pair<Double_t, Double_t>          ValErrPair;
-//typedef std::set<ValErrPair>                   ValErrSet;
-//typedef ValErrSet::iterator                    ValErrSetIter;
-//typedef std::map<std::string, ValErrPair>      ValErrMap;
 typedef std::map<std::string, TFitResultPtr>   Str2FitResMap;
 typedef std::map<ESpinState,  TFitResultPtr>   Spin2FitResMap;
 typedef std::pair<UShort_t, UShort_t>          DetLRPair;
 typedef std::set<DetLRPair>                    DetLRSet;
-//typedef std::map<UShort_t, UShort_t>  DetLRPairs;
 
 typedef std::map<EPolarimeterId, ValErrSet>    PolId2ValErrSet;
 typedef PolId2ValErrSet::iterator              PolId2ValErrSetIter;
@@ -128,7 +122,6 @@ typedef std::map<std::string, UShort_t>        String2TargetIdMap;
 typedef String2TargetIdMap::iterator           String2TargetIdMapIter;
 
 
-
 typedef std::set<EBeamId>                  BeamIdSet;
 typedef BeamIdSet::iterator                BeamIdSetIter;
 typedef BeamIdSet::const_iterator          BeamIdConstIter;
@@ -159,9 +152,6 @@ typedef ChannelSet::const_iterator  ChannelSetConstIter;
 //std::ostream& operator<<(std::ostream &os, const ESpinState &ss);
 //std::ostream& operator<<(std::ostream &os, const ValErrPair &vep);
 std::ostream& operator<<(std::ostream &os, const TgtOrient2ValErrMap &vep);
-//TBuffer&      operator<<(TBuffer &buf, const ValErrPair &vep);
-//TBuffer&      operator>>(TBuffer &buf, ValErrPair &vep);
-
 
 
 // whole info for one event
@@ -333,22 +323,6 @@ struct StructCounterTgt {
 
    StructCounterTgt();
 };
-
-//struct StructTarget {
-//   float  x;                    // (arbitarary) target postion [mm]
-//   int    vector;
-//   long   eventID;
-//   int    VHtarget;             // Vertical:[0], Horizontal:[1]
-//   int    Index[MAXDELIM];
-//   int    Linear[MAXDELIM][2];   
-//   int    Rotary[MAXDELIM][2];
-//   float  X[MAXDELIM];          // target position [mm] array excluding static position 
-//   float  Interval[MAXDELIM];   // time interval of given target postiion [sec]
-//   float  Time[MAXDELIM];       // duration from measurement start in [sec]
-//   struct StructAll {
-//      float x[TARGETINDEX];    // target position in [mm] including static position
-//   } all;
-//};
 
 struct StructBunchPattern {
   int bunchpat[N_BUNCHES];

@@ -574,14 +574,13 @@ void AnaGlobResult::CalcDependencies()
 
    for ( ; iFill != fAnaFillResults.end(); ++iFill)
    {
-      //UInt_t         fillId   =  iFill->first;
       AnaFillResult *fillRslt = &iFill->second;
 
       // Using calculated normalization and pol. profiles calculate average beam
       // polarization and the same in collisions
       fillRslt->CalcBeamPolar(kTRUE);
 
-      RingId2ValErrMap ratioU2D   = fillRslt->CalcSystUvsDPolar(fNormJetCarbon2);
+      RingId2ValErrMap ratioU2D   = fillRslt->CalcPolarRatioU2D(fNormJetCarbon2);
       PolId2ValErrMap  ratioHJ2PC = fillRslt->CalcSystJvsCPolar(fNormJetCarbon2);
       PolId2ValErrMap  ratioP2PP  = fillRslt->CalcSystProfPolar(fNormProfPolar2);
 
@@ -601,20 +600,10 @@ void AnaGlobResult::CalcDependencies()
       }
    }
 
-   // Calculate the contribution of the systematic error to the total one
+   // Calculate the contribution from the systematic effects
    utils::SystRatioFitFunctor srff;
 
-   //srff.SetSet(ratioU2DSet[kBLUE_BEAM]);
-   //TF1 systRatioFitFunc("systRatioFitFunc", srff, -10, 10, 0, "SystRatioFitFunctor");
-   //ROOT::Math::WrappedTF1 wf1(systRatioFitFunc);
-   //ROOT::Math::BrentRootFinder brf;
-   //brf.SetFunction(wf1, 0, 1);
-   //brf.Solve();
-   //fSystUvsDPolar[kBLUE_BEAM].first = brf.Root();
-   //return;
-
    PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
-
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       EPolarimeterId polId  = *iPolId;

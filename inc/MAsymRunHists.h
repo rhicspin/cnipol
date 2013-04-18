@@ -48,10 +48,8 @@ public:
    //void BookHistsEnergy(EBeamEnergy beamE);
    void Fill(const EventConfig &rc);
    void Fill(EventConfig &rc, DrawObjContainer &oc);
-   void PostFill();
    void PostFill(AnaGlobResult &agr);
-   void PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIter iafr, EPolarimeterId polId, EBeamEnergy beamE);
-   void PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter afr, ERingId ringId, EBeamEnergy beamE);
+   void PostFill();
    void Print(const Option_t* opt="") const;
    void UpdateLimits();
 	void UpdMinMaxFill(UInt_t fillId);
@@ -59,6 +57,11 @@ public:
 	void AdjustMinMaxFill();
 	void UpdMinMaxTime(time_t time);
 	void SetMinMaxTime(time_t minTime, time_t maxTime);
+
+private:
+
+   void PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIter iafr, EPolarimeterId polId, EBeamEnergy beamE);
+   void PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter afr, ERingId ringId, EBeamEnergy beamE);
 
    ClassDef(MAsymRunHists, 1)
 };

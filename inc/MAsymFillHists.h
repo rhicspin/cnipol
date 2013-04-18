@@ -45,8 +45,8 @@ public:
    void BookHistsByPolarimeter(EPolarimeterId polId);
    void BookHistsByRing(ERingId ringId);
    void Fill(const EventConfig &rc);
-   void PostFill();
    void PostFill(AnaGlobResult &agr);
+   void PostFill();
    void UpdateLimits();
 	DrawObjContainer *GetSingleFillHists(const AnaFillResult &afr);
 

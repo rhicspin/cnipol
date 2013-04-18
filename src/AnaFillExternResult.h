@@ -8,7 +8,7 @@
 #include "TObject.h"
 #include "TGraphErrors.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 
 
 class AnaFillResult;

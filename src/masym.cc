@@ -92,6 +92,7 @@ int main(int argc, char *argv[])
       // Check for fills of no interest
       stringstream ssMeasId(measId);
       Int_t        nFillId;
+
       ssMeasId >> nFillId;
 
       if ( nFillId >= 17064 && nFillId <= 17084 ) {
@@ -258,7 +259,7 @@ int main(int argc, char *argv[])
 
       Info("masym", "Processing measurement: %.3f", iMeas->fMeasInfo->RUNID);
 
-      gH->Fill(*iMeas);
+      gH->Fill((const EventConfig&) *iMeas);
       //gH->Fill(*iMeas, *gHIn);
    }
 

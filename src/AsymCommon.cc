@@ -1,5 +1,5 @@
 
-#include "Asym.h"
+#include "AsymCommon.h"
 
 #include <map>
 #include <string>
@@ -35,7 +35,6 @@ char    CalibFile[256];             // energy calibration file
 
 float   ramptshift[500];            // ramp timing shift
 
-UInt_t  gMaxEventsUser = 0; // number of events to process
 long    Ngood[120];     // number of events after carbon cut (each bunch)
 long    Ntotal[120];    // number of events before carbon cut (each bunch)
 long    Nback[120];     // number of events below the curbon cut (each bunch)
@@ -79,17 +78,12 @@ StructFlag Flag = {
 StructCounter    cntr;
 StructCounterTgt cntr_tgt;
 
-//StructTarget tgt = {
-//    0,  // target position x
-//    -1, // target motion sign
-//    0,  // eventID
-//    0   // Vertical:[0], Horizontal:[1]
-//};
-
-// Following arrays correspond to phi agnle of each strips. These phi angles are
-// subject to change depends on TOFLength from target to detectors.
-// To get phi values for given TOFLength, use calcPhi.cc program. Copy and paste outputs.
-// phi angle of each strips for Run05 (l=18.5cm)
+/**
+ * Following arrays correspond to phi angle of each strips. These phi angles are
+ * subject to change depends on TOFLength from target to detectors.
+ * To get phi values for given TOFLength, use calcPhi.cc program. Copy and paste outputs.
+ * phi angle of each strips for Run05 (l=18.5cm)
+ */
 float phiRun5[N_SILICON_CHANNELS] = {
    0.72601,0.73679,0.74758,0.75838,0.76918,0.77999,0.79080,0.80161,0.81242,0.82322,0.83401,0.84479,
    1.51141,1.52219,1.53298,1.54378,1.55458,1.56539,1.57620,1.58701,1.59782,1.60862,1.61941,1.63019,

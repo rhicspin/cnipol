@@ -8,7 +8,7 @@
 
 #include "TObject.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 #include "AnaFillExternResult.h"
 #include "AnaMeasResult.h"
 #include "EventConfig.h"
@@ -70,7 +70,7 @@ public:
    
    PolId2ValErrMap               fSystProfPolar;
    PolId2ValErrMap               fSystJvsCPolar;
-   RingId2ValErrMap              fSystUvsDPolar;
+   RingId2ValErrMap              fPolarRatioU2D;
 
    PolId2ValErrMap               fRotatorPCPolarRatio; // before/after rotator ratio at flattop
    PolId2ValErrMap               fRampPCPolarRatio;    //! before/after ramp to flattop ratio
@@ -132,7 +132,7 @@ public:
    ValErrPair           GetBeamPolar(ERingId ringId) const;
    ValErrPair           GetBeamPolarP0(ERingId ringId) const;
    ValErrPair           GetBeamPolarDecay(ERingId ringId) const;
-   ValErrPair           GetSystUvsDPolar(ERingId ringId);
+   ValErrPair           GetPolarUDRatio(ERingId ringId);
    ValErrPair           GetSystJvsCPolar(EPolarimeterId polId);
    ValErrPair           GetSystProfPolar(EPolarimeterId polId);
    TGraphErrors*        GetPCProfRGraph(EPolarimeterId polId, ETargetOrient tgtOrient) const;
@@ -146,7 +146,7 @@ public:
    ValErrPair           GetPCProfP(ERingId ringId, ETargetOrient tgtOrient) const;
    //ValErrPair           GetProfPolarSyst(EPolarimeterId polId);
    void                 CalcBeamPolar(Bool_t doNorm=kFALSE);
-   RingId2ValErrMap     CalcSystUvsDPolar(PolId2ValErrMap &normJC);
+   RingId2ValErrMap     CalcPolarRatioU2D(PolId2ValErrMap &normJC);
    PolId2ValErrMap      CalcSystJvsCPolar(PolId2ValErrMap &normJC);
    PolId2ValErrMap      CalcSystProfPolar(PolId2ValErrMap &normPP);
    ValErrPair           CalcAvrgPolar(EPolarimeterId polId);

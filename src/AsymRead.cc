@@ -20,7 +20,7 @@
 #include "AsymProcess.h"
 #include "AsymRecover.h"
 #include "AsymRoot.h"
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "TargetInfo.h"
 
 using namespace std;
@@ -435,15 +435,13 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
          // count the total number of event records in raw file
          gMeasInfo->fNEventsTotal += nEvents;
 
-         //if (nEvents > 100) printf("nEvents: %d, %d\n", siNum, nEvents);
-
          i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
          for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
          {
             //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
-            if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
+            if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 
@@ -557,15 +555,13 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
          // count the total number of event records in raw file
          gMeasInfo->fNEventsTotal += nEvents;
 
-         //if (nEvents > 100) printf("nEvents: %d, %d\n", siNum, nEvents);
-
          i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
 
          for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
          {
             //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
 
-            if (gMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gMaxEventsUser) break;
+            if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 

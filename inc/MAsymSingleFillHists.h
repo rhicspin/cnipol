@@ -41,11 +41,12 @@ public:
 
    void BookHists();
    void BookHistsByPolarimeter(EPolarimeterId polId);
+   void BookHistsByRing(ERingId ringId);
    void SetSignature(const std::string signature);
    void Fill(EventConfig &rc);
-   //void PostFill();
    void PostFill(AnaFillResult &afr);
-   //void UpdateLimits();
+   void PostFill();
+   void UpdateLimits();
 
    ClassDef(MAsymSingleFillHists, 1)
 };

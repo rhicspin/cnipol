@@ -1,7 +1,7 @@
 #ifndef TargetInfo_h
 #define TargetInfo_h
 
-#include "Asym.h"
+#include "AsymCommon.h"
 
 
 /** */

@@ -457,22 +457,6 @@ void AsymRoot::UpdateRunConfig()
 /**
  * Sets current event with data from raw file.
  */
-void AsymRoot::SetChannelEvent(processEvent &event)
-{
-   fChannelEvent->fEventId.fRevolutionId = event.delim*512 + event.rev*2 + event.rev0;
-   fChannelEvent->fEventId.fBunchId      = event.bid;
-   fChannelEvent->fEventId.fChannelId    = event.stN;
-   fChannelEvent->fEventId.fDelimiterId  = event.delim;
-   fChannelEvent->fChannel.fAmpltd       = event.amp;
-   fChannelEvent->fChannel.fIntgrl       = event.intg;
-   fChannelEvent->fChannel.fTdc          = event.tdc;
-   fChannelEvent->fChannel.fTdcAMax      = event.tdcmax;
-}
-
-
-/**
- * Sets current event with data from raw file.
- */
 void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
 {
    fChannelEvent->fEventId.fRevolutionId = delim*512 + at.rev*2 + at.rev0;
