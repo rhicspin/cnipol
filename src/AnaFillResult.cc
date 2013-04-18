@@ -34,7 +34,7 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fPCPolarsByTargets(),
    fPCProfPolars(), fHJPolars(), fHJAsyms(),
    fBeamPolars(), fBeamPolarP0s(), fBeamPolarSlopes(), fBeamCollPolars(),
-   fSystProfPolar(), fSystJvsCPolar(), fSystUvsDPolar(), fRotatorPCPolarRatio(), fRampPCPolarRatio(),
+   fSystProfPolar(), fSystJvsCPolar(), fPolarRatioU2D(), fRotatorPCPolarRatio(), fRampPCPolarRatio(),
    fMeasTgtOrients(), fMeasTgtIds(), fMeasRingIds(), fPolProfRs(), fPolProfPMaxs(), fPolProfPs()
 {
    // Initialize averages with invalid values
@@ -137,7 +137,7 @@ void AnaFillResult::Print(const Option_t* opt) const
    //   string sRingId = RunConfig::AsString(*iRingId);
    //   ValErrPair polar = fBeamPolars.find(*iRingId)->second;
    //   cout << sRingId << ": " << PairAsPhpArray(polar) << "      ";
-   //   ValErrPair systUvsD = fSystUvsDPolar.find(*iRingId)->second;
+   //   ValErrPair systUvsD = fPolarRatioU2D.find(*iRingId)->second;
    //   cout << PairAsPhpArray(systUvsD) << endl;
    //}
 
@@ -162,7 +162,7 @@ void AnaFillResult::Print(const Option_t* opt) const
    //cout << "Beam polar:" << endl;
    //cout << MapAsPhpArray<ERingId, ValErrPair>(fBeamPolars) << endl;
    //cout << "Syst U vs D:" << endl;
-   //cout << MapAsPhpArray<ERingId, ValErrPair>(fSystUvsDPolar) << endl;
+   //cout << MapAsPhpArray<ERingId, ValErrPair>(fPolarRatioU2D) << endl;
    //cout << "Profile polar:" << endl;
    //cout << MapAsPhpArray<EPolarimeterId, ValErrPair>(fPCProfPolars) << endl;
    //cout << MapAsPhpArray<ERingId, ValErrPair>(fHJPolars) << endl;
@@ -784,9 +784,9 @@ ValErrPair AnaFillResult::GetBeamPolarDecay(ERingId ringId) const
 
 
 /** */
-ValErrPair AnaFillResult::GetSystUvsDPolar(ERingId ringId)
+ValErrPair AnaFillResult::GetPolarUDRatio(ERingId ringId)
 {
-   return fSystUvsDPolar.find(ringId) == fSystUvsDPolar.end() ? ValErrPair(0, -1) : fSystUvsDPolar[ringId];
+   return fPolarRatioU2D.find(ringId) == fPolarRatioU2D.end() ? ValErrPair(0, -1) : fPolarRatioU2D[ringId];
 }
 
 
@@ -840,13 +840,13 @@ void AnaFillResult::CalcBeamPolar(Bool_t doNorm)
 
 
 /** */
-RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
+RingId2ValErrMap AnaFillResult::CalcPolarRatioU2D(PolId2ValErrMap &normJC)
 {
    RingId2ValErrMapConstIter iBeamPolar = fBeamPolars.begin();
 
    for ( ; iBeamPolar != fBeamPolars.end(); ++iBeamPolar)
    {
-      ERingId    ringId    = iBeamPolar->first;
+      ERingId    ringId = iBeamPolar->first;
       ValErrPair polarU(-1, -1);
       ValErrPair polarD(-1, -1);
 
@@ -861,17 +861,17 @@ RingId2ValErrMap AnaFillResult::CalcSystUvsDPolar(PolId2ValErrMap &normJC)
       }
 
       if (polarU.second < 0 || polarD.second < 0) {
-         fSystUvsDPolar[ringId] = ValErrPair(-1, -1);
+         fPolarRatioU2D[ringId] = ValErrPair(-1, -1);
          continue; // skip invalid result
       }
 
       // 1 = 100% correlation between U and D is a more conservative assumption
       // 0 =   0% correlation between U and D is more realistic?
-      //fSystUvsDPolar[ringId] = utils::CalcDivision(polarU, polarD, 1);
-      fSystUvsDPolar[ringId] = utils::CalcDivision(polarU, polarD, 0);
+      //fPolarRatioU2D[ringId] = utils::CalcDivision(polarU, polarD, 1);
+      fPolarRatioU2D[ringId] = utils::CalcDivision(polarU, polarD, 0);
    }
 
-   return fSystUvsDPolar;
+   return fPolarRatioU2D;
 }
 
 
@@ -1367,7 +1367,7 @@ void AnaFillResult::CalcRampPCPolarRatio()
 
       if (!grPCPolar || !grPCPolarInj) continue;
 
-      // Get last injection measurement 
+      // Get the last injection measurement 
       Double_t x, y, xe, ye;
       Int_t nPoints = grPCPolarInj->GetN();
       grPCPolarInj->GetPoint(nPoints-1, x, y);
@@ -1376,8 +1376,6 @@ void AnaFillResult::CalcRampPCPolarRatio()
 
       ValErrPair pcPolarInj(y/100., ye/100.);
       ValErrPair pcPolarP0 = GetPCPolarP0(polId);
-
-      //if (pcPolarP0.second < 0 || pcPolarInj.second < 0) continue;
 
       fRampPCPolarRatio[polId] = utils::CalcDivision(pcPolarP0, pcPolarInj, 0);
 
@@ -1499,7 +1497,6 @@ void AnaFillResult::FitExternGraphs()
 
    Info("FitExternGraphs", "Using range %ld - %ld", lumion, lumioff);
 
-   TF1 *fitFunc;
 
    // Fit the intensity graphs
    // Loop over rings
@@ -1521,16 +1518,13 @@ void AnaFillResult::FitExternGraphs()
       //ssFormula << "[0] * 1./exp((x - " << lumion << ")/3600./[1])";
       ssFormula << "[0] * (1.- (x - " << lumion << ")/3600./[1])";
 
-      fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
-      fitFunc->SetParNames("I_{0}", "Lifetime, h");
-      fitFunc->SetParameters(100, 50);
-      fitFunc->SetParLimits(0, 1, 200);
-      fitFunc->SetParLimits(1, 1, 200);
-      //fitFunc->SetParLimits(1, 1e-5, 10);
+      TF1 fitFunc("fitFunc", ssFormula.str().c_str());
+      fitFunc.SetParNames("I_{0}", "Lifetime, h");
+      fitFunc.SetParameters(100, 50);
+      fitFunc.SetParLimits(0, 50, 300);
+      fitFunc.SetParLimits(1, 1, 200);
 
-      grIntens->Fit(fitFunc, "M E", "", lumion, lumioff);
-
-      delete fitFunc;
+      grIntens->Fit(&fitFunc, "M E", "", lumion, lumioff);
    }
 }
 

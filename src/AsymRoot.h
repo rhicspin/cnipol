@@ -69,7 +69,6 @@ public:
    void         CreateTrees();
    //Bool_t       UseCalibFile(std::string cfname=""); // Deprecated
    void         UpdateRunConfig(); // Deprecated
-   void         SetChannelEvent(processEvent &event);
    void         SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void         ProcessEvent() {};
    void         FillPassOne(ECut cut);

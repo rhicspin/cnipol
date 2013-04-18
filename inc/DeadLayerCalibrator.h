@@ -21,7 +21,7 @@
 #include "TH1D.h"
 #include "TMath.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 #include "AsymHeader.h"
 #include "AsymGlobals.h"
 

@@ -10,13 +10,12 @@
 #include "TH2F.h"
 #include "TLine.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 #include "AsymHeader.h"
 #include "AsymCalculator.h"
 
-//class  AsymDb;
+
 class  AsymRoot;
-//class  AsymDbFile;
 class  AsymAnaInfo;
 class  MAsymAnaInfo;
 struct ErrorDetector;
@@ -51,7 +50,7 @@ extern StructStripCheck strpchk;
 extern StructBunchCheck bnchchk;
 
 // global constants
-extern const int ASYM_DEFAULT;
+extern const int   ASYM_DEFAULT;
 extern const float MSIZE; // marker size
 
 extern int   wcmfillpat[N_BUNCHES];   // fill pattern within the Wall Current Monitor Average Ragne 
@@ -68,8 +67,6 @@ extern char conf_file[256];          // update configuration file for T0 info
 extern char CalibFile[256];          // Energy calibration file
 
 extern float ramptshift[500]; // ramp timing shift 
-
-extern UInt_t   gMaxEventsUser; // number of events to process
 
 extern long int Ngood[N_BUNCHES];   // number of evts after carbon cut 
 extern long int Ntotal[N_BUNCHES];  // number of evts before carbon cut 

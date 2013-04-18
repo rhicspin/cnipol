@@ -16,7 +16,7 @@
 #include "TObject.h"
 #include "TSystem.h"
 
-#include "Asym.h"
+#include "AsymCommon.h"
 #include "AnaInfo.h"
 
 class DbEntry;
@@ -75,6 +75,7 @@ public:
    float            WCMRANGE;           // Wall Current Monitor process Fill range
    float            MassLimit;          // Lower Mass limit for peak position adjustment fit
    Float_t          fThinout;           // Approximate fraction of events to read
+   UInt_t           fMaxEventsUser;     // Max number of events requested by user
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
    std::string      fAlphaCalibRun;     // Name of alpha calib run

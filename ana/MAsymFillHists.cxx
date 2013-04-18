@@ -92,7 +92,7 @@ void MAsymFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
 
    sprintf(hName, "hAsymVsEnergy_%s", sPolId.c_str());
    o[hName] = new TH2F(hName, hName, 1, 0, 450, 1, 0, 0.01);
-   ((TH1*) o[hName])->SetTitle(";Beam Energy;Asymmetry;");
+   ((TH1*) o[hName])->SetTitle("; Beam Energy; Asymmetry;");
    ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->GetListOfFunctions()->Add(grAsymVsEnergy, "p");
 
@@ -349,22 +349,13 @@ void MAsymFillHists::Fill(const EventConfig &rc)
    UInt_t   beamEnergy         = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId              = rc.fMeasInfo->fPolId;
    time_t   measStartTime       = rc.fMeasInfo->fStartTime;
-   //Short_t  targetId           = rc.fMseMeasInfoX->target_id;
-   //Char_t   targetOrient       = rc.fMseMeasInfoX->target_orient[0];
    Float_t  anaPower           = rc.fAnaMeasResult->A_N[1];
    Float_t  asymmetry          = rc.fAnaMeasResult->sinphi[0].P[0] * rc.fAnaMeasResult->A_N[1];
    Float_t  asymmetryErr       = rc.fAnaMeasResult->sinphi[0].P[1] * rc.fAnaMeasResult->A_N[1];
    Float_t  polar              = rc.fAnaMeasResult->sinphi[0].P[0] * 100.;
    Float_t  polarErr           = rc.fAnaMeasResult->sinphi[0].P[1] * 100.;
-   //Float_t  profilePolarMax    = rc.fAnaMeasResult->fProfilePolarMax.first;
-   //Float_t  profilePolarMaxErr = rc.fAnaMeasResult->fProfilePolarMax.second;
    Float_t  profileRatio       = rc.fAnaMeasResult->fProfilePolarR.first;
    Float_t  profileRatioErr    = rc.fAnaMeasResult->fProfilePolarR.second;
-   //Float_t  max_rate           = rc.fAnaMeasResult->max_rate;
-   //Float_t  tzero              = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
-   //Float_t  tzeroErr           = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
-   //Float_t  dl                 = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
-   //Float_t  dlErr              = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    // Process common histograms
    char hName[256];
@@ -386,7 +377,7 @@ void MAsymFillHists::Fill(const EventConfig &rc)
    graphErrs = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grAnaPowerVsEnergy");
    graphNEntries = graphErrs->GetN();
    graphErrs->SetPoint(graphNEntries, beamEnergy, anaPower);
-   graphErrs->SetPointError(graphNEntries, 0, 0.05*anaPower); // This error is faked
+   graphErrs->SetPointError(graphNEntries, 0, 0.05*anaPower); // This error is fake
 
    // Polarization
    sprintf(hName, "hPolarVsEnergy_%s", sPolId.c_str());
@@ -562,16 +553,12 @@ void MAsymFillHists::PostFill()
 /** */
 void MAsymFillHists::PostFill(AnaGlobResult &agr)
 {
-   // Should be moved to separate function
+   // Should be moved to a new function
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
    for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
    {
       ERingId ringId  = *iRingId;
       string  sRingId = RunConfig::AsString(ringId);
-
-      //((TH1*) o["hBunchAsymChi2_"  + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
-      //((TH1*) o["hBunchAsymSigma_" + sRingId])->SetBins(agr.GetMaxFill() - agr.GetMinFill(), agr.GetMinFill(), agr.GetMaxFill(), 1, 0, 1);
 
       utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymChi2_"  + sRingId], agr.GetMinFill(), agr.GetMaxFill());
       utils::SetXAxisIntBinsLabels((TH1*) o["hBunchAsymSigma_" + sRingId], agr.GetMinFill(), agr.GetMaxFill());
@@ -582,7 +569,6 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
 
 
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
-
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       EPolarimeterId polId  = *iPolId;

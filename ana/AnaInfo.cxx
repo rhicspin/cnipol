@@ -186,8 +186,6 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup.fUser.Data());
    fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup.fRealName.Data());
 
-   // Various printouts. Should be combined with Print()?
-   //cout << "Max events to process:         " << gMaxEventsUser << endl;
    fprintf(f, "\n");
 }
 
