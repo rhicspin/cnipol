@@ -147,7 +147,7 @@ int SshLogReader::ReadMean(time_t start, time_t end, map<string, double> *mean_v
 
       if (v.size() != 0)
       {
-         mean = std::accumulate(v.begin(), v.end(), 0) / v.size();
+         mean = std::accumulate(v.begin(), v.end(), (double)0.0) / v.size();
       }
 
       (*mean_value)[key] = mean;
