@@ -12,6 +12,8 @@
 
 #include "TObject.h"
 
+#include "CalibCoefSet.h"
+
 enum EFitStatus {
    kUNKNOWN,
    kDLFIT_OK,
@@ -28,24 +30,6 @@ typedef std::map<UShort_t, ChannelCalib>                 ChannelCalibMap;
 typedef std::map<UShort_t, ChannelCalib>::iterator       ChannelCalibMapIter;
 typedef std::map<UShort_t, ChannelCalib>::const_iterator ChannelCalibMapConstIter;
 typedef std::pair<const UShort_t, ChannelCalib>          ChannelCalibPair;
-
-
-class CalibCoefSet : public TObject
-{
-public:
-
-   Float_t fPeakPos;
-   Float_t fPeakPosErr;
-   Float_t fCoef;
-   Float_t fCoefErr;
-   Float_t fChi2Ndf;
-
-public:
-
-   CalibCoefSet() : fCoef(-1), fCoefErr(-1), fChi2Ndf(0) { };
-
-   ClassDef(CalibCoefSet, 1)
-};
 
 
 /** */
