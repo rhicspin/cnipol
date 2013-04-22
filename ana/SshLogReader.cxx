@@ -53,17 +53,6 @@ string SshLogReader::GetSshCommand(time_t start, time_t end)
    return string(buf);
 }
 
-/**
- * You will need to have aclina host defined in your ssh_config, like this
- *
- * Host aclina
- *    IdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa
- *    User            dsmirnov
- *    HostName        localhost
- *    Port            8022
- *
- * @returns 0 if everything was ok
- */
 int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *values)
 {
    string cmd = GetSshCommand(start, end);
