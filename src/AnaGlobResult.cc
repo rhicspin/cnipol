@@ -90,8 +90,10 @@ void AnaGlobResult::Print(const Option_t* opt) const
       string         sPolId = RunConfig::AsString(polId);
 
       printf("%s: ", sPolId.c_str());
-      printf(" %16.14f +/- %16.14f      ", iNormJC2->second.first, iNormJC2->second.second);
-      printf("(%16.14f +/- %16.14f)   \n", iNormJC->second.first,  iNormJC->second.second);
+      //printf(" %16.14f +/- %16.14f      ", iNormJC2->second.first, iNormJC2->second.second);
+      //printf("(%16.14f +/- %16.14f)   \n", iNormJC->second.first,  iNormJC->second.second);
+      printf(" %16.3f +/- %16.3f      ", iNormJC2->second.first, iNormJC2->second.second);
+      printf("(%16.3f +/- %16.3f)   \n", iNormJC->second.first,  iNormJC->second.second);
    }
 
    printf("\nNorm. jet/carbon by target:\n");

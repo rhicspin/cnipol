@@ -77,7 +77,6 @@ extern MAsymAnaInfo                 *gMAsymAnaInfo;
 extern MeasInfo                     *gMeasInfo;
 extern AnaMeasResult                *gAnaMeasResult;
 extern AsymRoot                     *gAsymRoot;
-//extern AsymDb                       *gAsymDb;
 extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;
 extern DbEntry                       gRunDb;

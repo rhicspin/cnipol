@@ -274,7 +274,6 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    shName = "hPolarVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
    hist->GetYaxis()->SetRangeUser(0, 100);
-   //hist->GetXaxis()->SetNdivisions(1005);
    hist->SetTitle("; Fill Id; Polarization, %;");
    hist->SetOption("E1 GRIDX");
    hist->GetListOfFunctions()->Add(grPolarVsMeas, "p");
@@ -852,24 +851,17 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
 /** */
 void MAsymRunHists::Fill(const EventConfig &rc)
 {
+   char     hName[256];
    string   shName;
    TH1     *hist;
 
-   Double_t runId            =  rc.fMeasInfo->RUNID;
-   //UInt_t   fillId           = (UInt_t) runId;
+   Double_t runId            = rc.fMeasInfo->RUNID;
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId            = rc.fMeasInfo->fPolId;
    time_t   measStartTime    = rc.fMeasInfo->fStartTime;
-   //Float_t  ana_power        = rc.fAnaMeasResult->A_N[1];
-   //Float_t  asymmetry        = rc.fAnaMeasResult->sinphi[0].P[0] * rc.fAnaMeasResult->A_N[1];
-   //Float_t  asymmetryErr     = rc.fAnaMeasResult->sinphi[0].P[1] * rc.fAnaMeasResult->A_N[1];
    Float_t  profileRatio     = rc.fAnaMeasResult->fProfilePolarR.first;
    Float_t  profileRatioErr  = rc.fAnaMeasResult->fProfilePolarR.second;
    Float_t  max_rate         = rc.fAnaMeasResult->max_rate;
-   //Float_t  t0               = rc.fCalibrator->fChannelCalibs[0].fT0Coef;
-   //Float_t  t0Err            = rc.fCalibrator->fChannelCalibs[0].fT0CoefErr;
-   //Float_t  dl               = rc.fCalibrator->fChannelCalibs[0].fDLWidth;
-   //Float_t  dlErr            = rc.fCalibrator->fChannelCalibs[0].fDLWidthErr;
 
    ChannelCalib chCalib      = rc.fCalibrator->GetMeanChannel();
 
@@ -877,14 +869,6 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    Float_t t0Err = chCalib.fT0CoefErr;
    Float_t dl    = chCalib.fDLWidth;
    Float_t dlErr = chCalib.fDLWidthErr;
-
-   // Some QA checks... should be removed in the future...
-   //if (isnan(t0) || isinf(t0)) {
-   //   printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-   //   t0 = 0;
-   //}
-
-   char hName[256];
 
    string sPolId = RunConfig::AsString((EPolarimeterId) polId);
    string sBeamE = RunConfig::AsString((EBeamEnergy) beamEnergy);
@@ -979,22 +963,14 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    // Dead layer
    sprintf(hName, "hDLVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grDLVsMeas");
-   //nPoints = graphErrs->GetN();
-   //graphErrs->SetPoint(nPoints, runId, dl);
-   //graphErrs->SetPointError(nPoints, 0, dlErr);
    utils::AppendToGraph(graphErrs, runId, dl, 0, dlErr);
 
    // DL vs time
    sprintf(hName, "hDLVsTime_%s_%s", sPolId.c_str(), sBeamE.c_str());
    graphErrs = (TGraphErrors*) ((TH1*) oc_pol->o[hName])->GetListOfFunctions()->FindObject("grDLVsTime");
-   //nPoints = graphErrs->GetN();
-   //graphErrs->SetPoint(nPoints, measStartTime, dl);
-   //graphErrs->SetPointError(nPoints, 0, dlErr);
    utils::AppendToGraph(graphErrs, measStartTime, dl, 0, dlErr);
 
-
    // Banana fit params
-   //Float_t bananaChi2Ndf = rc.fCalibrator->fChannelCalibs[0].fBananaChi2Ndf;
    Float_t bananaChi2Ndf = chCalib.fBananaChi2Ndf;
 
    sprintf(hName, "hBananaChi2NdfVsMeas_%s_%s", sPolId.c_str(), sBeamE.c_str());
@@ -1004,10 +980,9 @@ void MAsymRunHists::Fill(const EventConfig &rc)
 
    // per channel hists
    //ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
-
-   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++) {
    //for (; iCh!=gMeasInfo->fSiliconChannels.end(); ++iCh)
-
+   for (UShort_t iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iCh);
 
@@ -1065,21 +1040,12 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    {
       hist->SetBinContent(fillId - fMinFill + 1, *iDisCh, 1);
    }
-
-   //cout << "Disabled channels: ";
-   //std::copy(disabledChs.begin(), disabledChs.end(), std::ostream_iterator<int>(cout, ", "));
-   //cout << endl;
 }
 
 
 /** */
 void MAsymRunHists::Fill(EventConfig &rc, DrawObjContainer &oc)
 {
-   //if (!oc) {
-   //   Error("Fill(DrawObjContainer *oc)", "Argument required");
-   //   return;
-   //}
-
    Short_t  polId            = rc.fMeasInfo->fPolId;
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
 
@@ -1333,7 +1299,7 @@ void MAsymRunHists::PostFill()
       DrawObjContainer *oc_pol = d.find(sPolId)->second;
 
       // Adjust axis range
-      Double_t xmin,   ymin, xmax, ymax, xdelta, ydelta;
+      Double_t xmin,   ymin,   xmax,   ymax,   xdelta, ydelta;
       Double_t xminDL, yminDL, xmaxDL, ymaxDL;
 
       BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
@@ -1381,11 +1347,10 @@ void MAsymRunHists::PostFill()
          graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grSpinAngleVsMeas");
          graph->Fit("pol0");
 
-         // Polarizatione
+         // Polarization
          hist  = (TH1*) oc_pol->o["hPolarVsFill_" + sPolId + "_" + sBeamE];
          graph = (TGraphErrors*) hist->GetListOfFunctions()->FindObject("grPolarVsMeas");
          hist->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-         //utils::RemoveOutliers(graph, 2, 2.5);
          utils::BinGraph(graph, hist);
          hist->GetListOfFunctions()->Remove(graph);
          hist->Fit("pol0");
@@ -1471,28 +1436,11 @@ void MAsymRunHists::PostFill()
 
             // T0
             TH1* hT0 = (TH1*) oc_ch->o["hT0_" + sPolId + "_" + sBeamE + "_" + sChId];
-
             //utils::RemoveOutliers(hT0);
-
-            //if (hT0->Integral()) {
-            //   TF1* myGaus = new TF1("myGaus", "gaus(0)");
-            //   //myGaus->SetParameters(hT0->Integral());
-            //   //myGaus->SetParameter(0, hT0->GetMaximum());
-            //   myGaus->SetNpx(1000);
-            //   myGaus->FixParameter(0, hT0->GetMaximum());
-            //   myGaus->SetParameter(1, hT0->GetMean());
-            //   myGaus->SetParLimits(1, hT0->GetMean()-5, hT0->GetMean()+5);
-            //   myGaus->SetParameter(2, 1);
-            //   myGaus->SetParLimits(2, 0, 10);
-            //   TFitResultPtr fitres = hT0->Fit(myGaus, "M I W S");
 
             hT0VsChannel_->SetBinContent(iCh, hT0->GetMean());
             hT0VsChannel_->SetBinError(iCh,   hT0->GetRMS());
             //hT0VsChannel_->SetBinError(*iCh, fitres->Parameter(2));
-
-            //   //delete fitres;
-            //   delete myGaus;
-            //}
 
             // Dead layer
             TH1* hDL = (TH1*) oc_ch->o["hDL_" + sPolId + "_" + sBeamE + "_" + sChId];
@@ -1553,10 +1501,21 @@ void MAsymRunHists::PostFill()
       TH1F* hPolarFst                   = (TH1F*) oc_pol->o["hPolarFirstMeasVsFill_" + sPolId + "_255"];
 
       hPolarFirstMeasRatioVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-      //hPolarFirstMeasRatioVsFill_->Divide(hPolarInj, hPolarFst);
       hPolarFirstMeasRatioVsFill_->Divide(hPolarFst, hPolarInj);
       hPolarFirstMeasRatioVsFill_->Fit("pol0");
    }
+
+   TH1F* hPolarVsFill_B1U_024        = (TH1F*) d["B1U"]->o["hPolarVsFill_B1U_024"];
+   TH1F* hPolarVsFill_B2D_024        = (TH1F*) d["B2D"]->o["hPolarVsFill_B2D_024"];
+   TH1F* hPolarUDRatioVsFill_BLU_024 = (TH1F*) d["BLU"]->o["hPolarUDRatioVsFill_BLU_024"];
+   hPolarUDRatioVsFill_BLU_024->Divide(hPolarVsFill_B1U_024, hPolarVsFill_B2D_024);
+   hPolarUDRatioVsFill_BLU_024->Fit("pol0");
+
+   TH1F* hPolarVsFill_Y2U_024        = (TH1F*) d["Y2U"]->o["hPolarVsFill_Y2U_024"];
+   TH1F* hPolarVsFill_Y1D_024        = (TH1F*) d["Y1D"]->o["hPolarVsFill_Y1D_024"];
+   TH1F* hPolarUDRatioVsFill_YEL_024 = (TH1F*) d["YEL"]->o["hPolarUDRatioVsFill_YEL_024"];
+   hPolarUDRatioVsFill_YEL_024->Divide(hPolarVsFill_Y2U_024, hPolarVsFill_Y1D_024);
+   hPolarUDRatioVsFill_YEL_024->Fit("pol0");
 }
 
 
@@ -1749,10 +1708,10 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
       hAsymHJVsFill_->SetBinError(  ib, hjAsym.second);
    }
 
-   ValErrPair avrgPolar = afr.GetBeamPolar(ringId);
-   if (avrgPolar.second >= 0) {
-      hPolarVsFill_->SetBinContent(ib, avrgPolar.first);
-      hPolarVsFill_->SetBinError(  ib, avrgPolar.second);
+   ValErrPair beamPolar = afr.GetBeamPolar(ringId);
+   if (beamPolar.second >= 0) {
+      hPolarVsFill_->SetBinContent(ib, beamPolar.first);
+      hPolarVsFill_->SetBinError(  ib, beamPolar.second);
    }
 
    ValErrPair polarUDRatio = afr.GetPolarUDRatio(ringId);
@@ -1839,7 +1798,6 @@ void MAsymRunHists::UpdateLimits()
          shName = "hPolarVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
          utils::UpdateLimits((TH1*) oc_pol->o[shName]);
-         //((TH1*) oc_pol->o[shName])->GetYaxis()->SetRangeUser(minFill-marginFill, maxFill+marginFill);
 
          shName = "hPolarFirstMeasVsFill_" + sPolId + "_" + sBeamE;
          ((TH1*) oc_pol->o[shName])->GetXaxis()->SetLimits(fMinFill, fMaxFill);
