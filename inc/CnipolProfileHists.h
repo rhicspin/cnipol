@@ -29,8 +29,12 @@ class CnipolProfileHists : public DrawObjContainer
 {
 private:
 
+   TH1* fhPolarProfile; //!
    TH1* fhIntensProfile;
    TH1* fhIntensProfile_ch[N_SILICON_CHANNELS];
+   TH1* fhAsymVsIntensProfile; //!
+   TH1* fhIntensProfileFine; //!
+   TH1* fhIntensProfileFine_ch[N_SILICON_CHANNELS]; //!
 
 public:
 
@@ -46,7 +50,9 @@ public:
    void      FillDerived(DrawObjContainer &oc);
    EMeasType GuessMeasurementType();
 
-   static Double_t ProfileFitFunc(Double_t *x, Double_t *par);
+   //static Double_t ProfileFitFunc(Double_t *x, Double_t *par);
+   Double_t ProfileFitFunc(Double_t *x, Double_t *par);
+   Double_t ProfileTailFitFunc(Double_t *x, Double_t *par);
 
    ClassDef(CnipolProfileHists, 1)
 };

@@ -94,16 +94,11 @@ public:
    UInt_t                      fTargetVelocity;         // from CDEV
    UInt_t                      fProfileStartPosition;   // from CDEV
    UInt_t                      fProfileEndPosition;     // from CDEV
-   //int                         ActiveDetector[N_DETECTORS];
-   //int                         ActiveStrip[N_SILICON_CHANNELS];
-   //int                         NDisableStrip;
    //std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
    ChannelSet                  fSiliconChannels;     // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
    ChannelSet                  fDisabledChannels;    // a list of disabled channels. not just silicon channels
    //ChannelSet                  fActiveChannels;
    BeamBunchMap                fBeamBunches;
-   //Int_t                       NDisableBunch;
-   //Int_t                       DisableBunch[N_BUNCHES];
 
 public:
 

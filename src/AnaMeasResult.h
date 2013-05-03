@@ -50,6 +50,8 @@ public:
    ValErrMap            fAsymX45B;              //! lower/bottom 45-deg detectors
    ValErrMap            fAsymY45;               //!
    TFitResultPtr        fFitResProfilePvsI;     // Fit result from profile polarization vs intensity plot
+   TFitResultPtr        fFitResProfilePvsIRange1;     //! Fit result from profile polarization vs intensity plot
+   TFitResultPtr        fFitResProfilePvsIRange2;     //! Fit result from profile polarization vs intensity plot
    TFitResultPtr        fFitResEnergySlope;     // Fit result from energy distribution histogram
    TFitResultPtr        fFitResPseudoMass;      // Fit result from mass distribution histogram
    //Float_t              fBananaCount;         // The number of events in the final sample
