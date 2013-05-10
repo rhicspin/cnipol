@@ -160,7 +160,6 @@ void MAsymRunHists::BookHists()
 
 
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
-
    for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
    {
       string sRingId  = RunConfig::AsString(*iRingId);
@@ -177,7 +176,6 @@ void MAsymRunHists::BookHists()
       }
 
       BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
-
       for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
       {
          string sBeamE = RunConfig::AsString(*iBE);
@@ -188,6 +186,17 @@ void MAsymRunHists::BookHists()
       // If this is a new directory then we need to add it to the list
       if ( isubdir == d.end())
          d[sDirName] = oc;
+   }
+
+
+   iBE = gRunConfig.fBeamEnergies.begin();
+   for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
+   {
+      string sBeamE = RunConfig::AsString(*iBE);
+
+      shName = "hPolarSlopeVsFill_" + sBeamE;
+      hist = utils::ConstructTH1C(shName.c_str(), "; Fill Id; Polar. Decay #frac{dP}{dt}, %/hour;");
+      o[shName] = hist;
    }
 }
 
@@ -713,7 +722,6 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
 
    // Disabled channels per fill
-
    shName = "hDisabledChVsFill_" + sPolId + "_" + sBeamE;
    hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Fill Id; Channel; ");
@@ -721,18 +729,12 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    oc.o[shName] = hist;
 
 
-   //
    shName = "hPolarSlopeVsFill_" + sPolId + "_" + sBeamE;
-   hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->GetYaxis()->SetRangeUser(-6, 4);
-   hist->SetTitle("; Fill Id; Polar. Slope, %/hour;");
-   hist->SetOption("E1");
-   styleMarker.Copy(*hist);
+   hist = utils::ConstructTH1CWithTGraphErrors(shName.c_str(), "; Fill Id; Polar. Decay #frac{dP}{dt}, %/hour;", (TStyle*) &styleMarker);
    oc.o[shName] = hist;
 
 
    // Combined asymmetry histogram
-
    shName = "hKinEnergyAChAsym_" + sPolId + "_" + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 25, 22.5, 1172.2);
    hist->SetOption("E1");
@@ -824,6 +826,10 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    hist->SetOption("hist");
    oc.o[shName] = hist;
 
+   shName = "hPolarSlopeVsFill_" + sRingId + "_" + sBeamE;
+   hist = utils::ConstructTH1CWithTGraphErrors(shName.c_str(), "; Fill Id; Polar. Decay #frac{dP}{dt}, %/hour;", (TStyle*) &styleMarker);
+   oc.o[shName] = hist;
+
    // By target orientation
    shName = "hProfPMaxVsFill_H_" + sRingId + "_"  + sBeamE;
    hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
@@ -859,8 +865,8 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    UInt_t   beamEnergy       = rc.fMeasInfo->GetBeamEnergy();
    Short_t  polId            = rc.fMeasInfo->fPolId;
    time_t   measStartTime    = rc.fMeasInfo->fStartTime;
-   Float_t  profileRatio     = rc.fAnaMeasResult->fProfilePolarR.first;
-   Float_t  profileRatioErr  = rc.fAnaMeasResult->fProfilePolarR.second;
+   //Float_t  profileRatio     = rc.fAnaMeasResult->fProfilePolarR.first;
+   //Float_t  profileRatioErr  = rc.fAnaMeasResult->fProfilePolarR.second;
    Float_t  max_rate         = rc.fAnaMeasResult->max_rate;
 
    ChannelCalib chCalib      = rc.fCalibrator->GetMeanChannel();
@@ -1097,8 +1103,8 @@ void MAsymRunHists::Print(const Option_t* opt) const
 void MAsymRunHists::PostFill(AnaGlobResult &agr)
 {
    // Loop over all fill results
-   AnaFillResultMapIter iFill = agr.fAnaFillResults.begin();
-   for ( ; iFill != agr.fAnaFillResults.end(); ++iFill)
+   AnaFillResultMapIter iafr = agr.fAnaFillResults.begin();
+   for ( ; iafr != agr.fAnaFillResults.end(); ++iafr)
    {
       BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
       for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
@@ -1106,17 +1112,19 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
          for (; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
          {
-            PostFillByPolarimeter(agr, iFill, *iPolId, *iBE);
+            PostFillByPolarimeter(agr, iafr, *iPolId, *iBE);
          }
 
          RingIdSetIter iRingId = gRunConfig.fRings.begin();
          for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
          {
-            PostFillByRing(agr, iFill, *iRingId, *iBE);
+            PostFillByRing(agr, iafr, *iRingId, *iBE);
          }
       }
    }
 
+   TGraph *graph;
+   TH1    *hist;
 
    BeamEnergySetIter iBE = gRunConfig.fBeamEnergies.begin();
    for ( ; iBE != gRunConfig.fBeamEnergies.end(); ++iBE)
@@ -1187,8 +1195,22 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          hProfPolarRatioVsFill_->Fit("pol0");
          //hProfPolarRatioVsFill_->GetYaxis()->UnZoom();
 
-         TH1* hPolarSlopeVsFill_ = (TH1F*) oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE];
-         hPolarSlopeVsFill_->Fit("pol0");
+         hist = (TH1*) oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE];
+         utils::SetXAxisIntBinsLabels(hist, agr.GetMinFill(), agr.GetMaxFill());
+         utils::UpdateLimitsFromGraphs(hist, 2);
+         graph = utils::ExtractTGraph(*hist);
+         graph->Fit("pol0");
+
+         ERingId ringId  = RunConfig::GetRingId(*iPolId);
+         string  sRingId = RunConfig::AsString(ringId);
+         DrawObjContainer *oc_ring = d.find(sRingId)->second;
+
+         hist = (TH1*) oc_ring->o["hPolarSlopeVsFill_" + sRingId + "_" + sBeamE];
+         utils::SetXAxisIntBinsLabels(hist, agr.GetMinFill(), agr.GetMaxFill());
+         TGraph* graphMerged = utils::ExtractTGraph(*hist);
+         utils::MergeGraphs(graphMerged, graph);
+         graphMerged->Fit("pol0");
+         utils::UpdateLimitsFromGraphs(hist, 2);
 
          TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
          //hRSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
@@ -1274,6 +1296,14 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
 
          TH1* hIntensDecayVsFill_ = (TH1*) oc_ring->o["hIntensDecayVsFill_" + sRingId + "_" + sBeamE];
          hIntensDecayVsFill_->Fit("pol0");
+
+         hist = (TH1*) oc_ring->o["hPolarSlopeVsFill_" + sRingId + "_" + sBeamE];
+         graph = utils::ExtractTGraph(*hist);
+
+         hist = (TH1*) o["hPolarSlopeVsFill_" + sBeamE];
+         utils::SetXAxisIntBinsLabels(hist, agr.GetMinFill(), agr.GetMaxFill());
+         hist->GetListOfFunctions()->Add(graph, "p");
+         utils::UpdateLimitsFromGraphs(hist, 2);
       }
    }
 
@@ -1615,10 +1645,9 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
    // Decay plots
    ValErrPair pcPolarSlope = afr.GetPCPolarSlope(polId);
 
-   if (pcPolarSlope.second >= 0) { // some reasonable number
-      TH1* hPolarSlopeVsFill_ = (TH1F*) oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE];
-      hPolarSlopeVsFill_->SetBinContent(ib, pcPolarSlope.first*100.);
-      hPolarSlopeVsFill_->SetBinError(ib, pcPolarSlope.second*100.);
+   if (pcPolarSlope.second > 0) { // reasonable results only
+      TGraph* graph = utils::ExtractTGraph( (TH1&) *oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE] );
+      utils::AppendToGraph(graph, fillId, pcPolarSlope.first*100., 0, pcPolarSlope.second*100.);
    }
 
    // Polarization profiles and decays
@@ -1990,9 +2019,6 @@ void MAsymRunHists::AdjustMinMaxFill()
 
          TH1* hDisabledChVsFill_ = (TH1*) oc_pol->o["hDisabledChVsFill_" + sPolId + "_" + sBeamE];
          hDisabledChVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-
-         TH1* hPolarSlopeVsFill_ = (TH1*) oc_pol->o["hPolarSlopeVsFill_" + sPolId + "_" + sBeamE];
-         hPolarSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
       }
 
       RingIdSetIter iRingId = gRunConfig.fRings.begin();

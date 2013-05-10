@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
    mAsymRoot.Close();
 
    //anaGlobResult.Print("all");
-   anaGlobResult.Print();
+   //anaGlobResult.Print();
 
    return EXIT_SUCCESS;
 }
