@@ -10,7 +10,7 @@ class RunSelector {
    var $sqlOrderBy = "";
 	var $defaultRun = 13;
 
-   static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti",   "srtn", "srtd");
+   static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti", "himg",   "srtn", "srtd");
 
    static $shortSortNames = array("rn" => "run_name",
                                   "pi" => "polarimeter_id",
@@ -56,6 +56,7 @@ class RunSelector {
       } else if ( isset($_GET['rp']) && empty($_GET['rp'])) {
       } else {
          $rp = $this->defaultRun;
+         $_GET['rp'] = $rp;
          $this->sqlWhere .= " AND start_time > '{$RUN_PERIOD_BY_DATE[$rp]['start']}' AND start_time < '{$RUN_PERIOD_BY_DATE[$rp]['end']}'";
       }
 
@@ -116,7 +117,8 @@ class RunSelector {
 
    function PrintForm()
    {
-      global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID;
+		global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE,
+             $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID, $PLOT_IMAGES;
 
       // Create a table with the necessary header informations
       //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formRunSelector'>\n";
@@ -125,68 +127,64 @@ class RunSelector {
             <table border=0>';
 
       echo "
-
             <tr>
-              <td colspan=4 class=padding2><b>Run period:</b>\n";
+               <td colspan=4 class=padding2><b>Run period:</b>\n";
 
       $this->HtmlSelectField($RUN_PERIOD, "rp", $this->defaultRun);
 
       $runName = isset($_GET['rn']) ? $_GET['rn'] : "";
 
       echo "<tr>
-              <td colspan=4 class=padding2><b>Run:</b>
-              <input type=text name=rn value='{$runName}'>
-              &nbsp;&nbsp;&nbsp;
-              Use \"%\" to match any number of characters, use \"_\" to match any single character in run id
+               <td colspan=4 class=padding2><b>Run:</b>
+               <input type=text name=rn value='{$runName}'>
+               &nbsp;&nbsp;&nbsp;
+               Use \"%\" to match any number of characters, use \"_\" to match any single character in run id\n";
 
-              <tr>
-              <td class=\"padding2\"><b>Polarimeter:</b>\n";
+      echo "<tr> ";
+      echo "<td colspan=4 class=padding2><b>Graph:</b>\n";
+
+      $this->HtmlSelectField($PLOT_IMAGES, "himg");
+
+      echo "<tr>
+               <td class=\"padding2\"><b>Polarimeter:</b>\n";
 
       $this->HtmlSelectField($POLARIMETER_ID, "pi");
 
-      echo "  <td class=\"padding2\"><b>Type:</b>\n";
+      echo "   <td class=\"padding2\"><b>Type:</b>\n";
 
       $this->HtmlSelectField($MEASTYPE, "mt");
 
-      echo "  <td class=\"padding2\"><b>Beam energy:</b>\n";
+      echo "   <td class=\"padding2\"><b>Beam energy:</b>\n";
 
       $this->HtmlSelectField($BEAM_ENERGY, "be");
 
-      echo "  <td class=\"padding2\"><b>Target:</b>\n";
+      echo "   <td class=\"padding2\"><b>Target:</b>\n";
 
       $this->HtmlSelectField($TARGET_ORIENT, "to");
       $this->HtmlSelectField($TARGET_ID, "ti");
 
-      echo "<tr>\n";
-      echo "   <td colspan=5 class=\"align_cm padding2\">\n";
-      echo "   <p><input type='submit' name=sb value='Select'>\n";
-      echo "</table>\n";
-      echo "</div>\n";
-      echo "</form>\n";
+      echo "<tr>
+               <td colspan=4 class=\"align_cm padding2\">
+               <p><input type='submit' name=sb value='Select'>
+            </table>
+            </div>
+            </form>\n";
    }
 
 
    function HtmlSelectField($options, $v="", $default=null)
    {
-      $selected      = "";
-
       $html  = "<select name='$v'>\n";
       $html .= "<option value=''></option>\n";
 
-      foreach($options as $ovalue => $oname) {
-
-         if ( empty($selected) ) {
-
-            if ( isset($_GET[$v]) && array_key_exists($_GET[$v], $options) && ($_GET[$v] == $ovalue) )
-               $html .= "<option value='$ovalue' selected>$oname</option>\n";
-            else if ( !isset($_GET[$v]) && !empty($default) && $default == $ovalue )
-               $html .= "<option value='$ovalue' selected>$oname</option>\n";
-            else
-               $html .= "<option value='$ovalue'>$oname</option>\n";
-
-         } else {
+      foreach($options as $ovalue => $oname)
+      {
+         if ( isset($_GET[$v]) && array_key_exists($_GET[$v], $options) && ($_GET[$v] == $ovalue) )
+            $html .= "<option value='$ovalue' selected>$oname</option>\n";
+         else if ( !isset($_GET[$v]) && !empty($default) && $default == $ovalue )
+            $html .= "<option value='$ovalue' selected>$oname</option>\n";
+         else
             $html .= "<option value='$ovalue'>$oname</option>\n";
-         }
       }
 
       $html .= "</select>\n";

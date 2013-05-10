@@ -123,6 +123,7 @@ print("<pre>");
 //endforeach;
 print("</pre>");
 
+// XXX is it really used?
 foreach ($es as &$e)
 {
    // blue comb
@@ -657,11 +658,20 @@ endif;
 
 </table>
 
+<p>&nbsp;
 
-<p>&nbsp;
-<p>&nbsp;
-<p>&nbsp;
-<p>&nbsp;
+<h2>Normalization for p-Carbon Measurements</h2>
+
+For details on calculation of normalization factors go to <a
+href="https://wiki.bnl.gov/rhicspin/PCarbon_normalization">https://wiki.bnl.gov/rhicspin/PCarbon_normalization</a>.
+Normalization k<sub>jet/crb</sub> applied to p-Carbon polarization for selected run period is:
+
+<?php
+print(GlobResult::BuildHtmlNormJetCarbon($_GET['rp']));
+?>
+
+
+<!--
 <p>
 Normalization for p-Carbon polarization k<sub>jet/crb</sub> from all selected fills:
 
@@ -674,24 +684,13 @@ Normalization for p-Carbon polarization k<sub>jet/crb</sub> from all selected fi
    <th class='yelPol'>Y2U
 
 <tr>
-   <td><?=pairToString($normB1U, "", "%8.7f")?>
-   <td><?=pairToString($normB2D, "", "%8.7f")?>
-   <td><?=pairToString($normY1D, "", "%8.7f")?>
-   <td><?=pairToString($normY2U, "", "%8.7f")?>
-</table>
-
-
-<!--
-<p>
-Nominal normalization for p-Carbon polarization k<sub>jet/crb</sub> from all good fills in this run:
-
-<p>
-<table border="1" cellpadding="4" cellspacing="0">
-<?php
-//show_array($normHJPC[$_GET['rp']], 1, 0);
-?>
+   <td><?//=pairToString($normB1U, "", "%8.7f")?>
+   <td><?//=pairToString($normB2D, "", "%8.7f")?>
+   <td><?//=pairToString($normY1D, "", "%8.7f")?>
+   <td><?//=pairToString($normY2U, "", "%8.7f")?>
 </table>
 -->
+
 
 <?php
 

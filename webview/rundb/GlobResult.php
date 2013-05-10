@@ -196,6 +196,49 @@ class GlobResult
       }
    }
 
+
+   public static function BuildHtmlNormJetCarbon($rp=null)
+   {
+      // $normHJPC[$run][$benergy][$polId][$tgtOrient][$tgtId];
+      global $normHJPC;
+      global $POLARIMETER_ID;
+
+      $normsByRun = $normHJPC[$rp];
+		$html       = "<table class=\"simple cntr\">\n";
+
+      $html .= "<tr><th>Beam Energy, GeV\n";
+
+      foreach ($POLARIMETER_ID as $polId => $polName)
+      {
+         $cssPol = "";
+	      if ($polName[0] == 'B') $cssPol = "bluPol";
+	      if ($polName[0] == 'Y') $cssPol = "yelPol";
+
+         $html .= "<th class=$cssPol>$polName\n";
+	   }
+
+      foreach ($normsByRun as $beamEnergy => $normsByBeamEnergy)
+		{
+		   $html .= "<tr>\n";
+		   $html .= "<th>$beamEnergy\n";
+
+         foreach ($normsByBeamEnergy as $polId => $normsNomi)
+			{
+			   if ( !isset($normsNomi['nomi']) ) continue;
+
+            //$polIdStr = $POLARIMETER_ID[$polId];
+
+				$norm = $normsNomi['nomi'];
+
+		      $html .= "<td>{$norm->first} &plusmn; {$norm->second}\n";
+		   }
+		}
+
+		$html .= "</table>\n";
+
+		return $html;
+   }
+
 }
 
 ?>

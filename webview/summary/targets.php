@@ -37,16 +37,32 @@ $dbRunInfo = new DbRunInfo();
 
 <h2>Run 13</h2>
 
-<h3 class=center>Mar 20, 2013 - ...</h3>
 
 <?php
+$inDateTime  = new DateTime("2013-03-20 08:00:00");
+$outDateTime = new DateTime();
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-03-20 23:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
-<h3 class=center>Feb 17, 2013 - Mar 20, 2013</h3>
 
 <?php
+$inDateTime  = new DateTime("2013-02-17 00:00:00");
+$outDateTime = new DateTime("2013-03-20 08:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-02-17 00:00:00", "2013-03-20 08:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
@@ -55,25 +71,50 @@ $dbRunInfo->PrintTargetUsage();
 <h2>Run 12</h2>
 
 
-<h3 class=center>Jan 25, 2012 - Mar 13, 2012</h3>
-
 <?php
+$inDateTime  = new DateTime("2012-01-25 00:00:00");
+$outDateTime = new DateTime("2012-03-14 00:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-01-25 00:00:00", "2012-03-14 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
 
-<h3 class=center>Mar 14, 2012 - Apr 10, 2012</h3>
+<!--<h3 class=center>Mar 3, 2012 - Apr 10, 2012</h3> -->
 
 <?php
+$inDateTime  = new DateTime("2012-03-14 00:00:00");
+$outDateTime = new DateTime("2012-04-11 00:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-03-14 00:00:00", "2012-04-11 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
 
-<h3 class=center>Apr 11, 2012 - Apr 19, 2012</h3>
+<!--<h3 class=center>Apr 11, 2012 - Apr 19, 2012</h3> -->
 
 <?php
+$inDateTime  = new DateTime("2012-04-11 00:00:00");
+$outDateTime = new DateTime("2012-04-20 00:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2012-04-11 00:00:00", "2012-04-20 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
@@ -81,9 +122,18 @@ $dbRunInfo->PrintTargetUsage();
 
 <h2>Run 11</h2>
 
-<h3 class=center>Jan 4, 2011 - Apr 19, 2011</h3>
+<!--<h3 class=center>Jan 4, 2011 - Apr 19, 2011</h3> -->
 
 <?php
+$inDateTime  = new DateTime("2011-01-04 00:00:00");
+$outDateTime = new DateTime("2011-04-20 00:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2011-01-04 00:00:00", "2011-04-20 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
@@ -91,9 +141,18 @@ $dbRunInfo->PrintTargetUsage();
 
 <h2>Run 9</h2>
 
-<h3 class=center>Jan 15, 2009 - Jul 6, 2009</h3>
+<!--<h3 class=center>Jan 15, 2009 - Jul 6, 2009</h3> -->
 
 <?php
+$inDateTime  = new DateTime("2009-01-15 00:00:00");
+$outDateTime = new DateTime("2009-06-07 00:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
 $targetUsage = $dbRunInfo->FetchTargetUsage(255, "2009-01-15 00:00:00", "2009-06-07 00:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
