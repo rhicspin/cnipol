@@ -136,14 +136,19 @@ class DbRunInfo extends SqlDbReader
       $row1  = "<tr><th>&nbsp;\n";
       $row2  = "<tr><th>&nbsp;\n";
 
-      foreach ($TARGET_ID as $tgtId => $tgtUId)
+      foreach ($TARGET_ORIENT as $tgtOrientId => $tgtOrient)
       {
-         $row1 .= "<th colspan=2>$tgtId\n";
+         $row1 .= "<th colspan=6>$tgtOrient\n";
 
-         foreach ($TARGET_ORIENT as $tgtOrientId => $tgtOrient)
+         $row2evn = $row2odd = "";
+
+         foreach ($TARGET_ID as $tgtId => $tgtUId)
          {
-            $row2 .= "<th>$tgtOrient\n";
+            if ($tgtId % 2) $row2odd .= "<th>$tgtId\n";
+            else            $row2evn .= "<th>$tgtId\n";
          }
+
+         $row2 .= $row2odd.$row2evn;
       }
 
       $html .= $row1;
@@ -153,21 +158,33 @@ class DbRunInfo extends SqlDbReader
       {
          $html .= "<tr class=my_tr_highlight><th>$polName\n";
 
-         foreach ($TARGET_ID as $tgtId => $tgtUId)
-         {
-            foreach ($TARGET_ORIENT as $tgtOrientId => $tgtOrient)
-            {  
+         foreach ($TARGET_ORIENT as $tgtOrientId => $tgtOrient)
+         {  
+            $row2evn = $row2odd = "";
+
+            foreach ($TARGET_ID as $tgtId => $tgtUId)
+            {
                $tgtInfo = $this->targetUsage[$polId][$tgtId][$tgtOrient];
 
+               $cell = "";
+
                if (empty($tgtInfo)) 
-                  $html .= "<td class='align_cm'>\n ";
+                  $cell .= "<td class='align_cm'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n ";
+                  //$cell .= "<td class='align_cm'>&nbsp; [$polId, $tgtId, $tgtOrient]\n ";
                else {
-                  $html .= "<td class='align_cm'>{$tgtInfo['counts']} ";
-                  $html .= "(<span class=green>".$tgtInfo["interval1"]->format("%a")."</span>";
-                  $html .= "<span class=red>+".$tgtInfo["interval2"]->format("%a")."</span>)\n";
+                  $cell .= "<td class='align_cm'>{$tgtInfo['counts']} ";
+                  $cell .= "(<span class=green>".$tgtInfo["interval1"]->format("%a")."</span>";
+                  $cell .= "<span class=red>+".$tgtInfo["interval2"]->format("%a")."</span>)\n";
+                  //$cell .= "<br>[$polId, $tgtId, $tgtOrient]";
                }
+
+               if ($tgtId % 2) $row2odd .= $cell;
+               else            $row2evn .= $cell;
             }
+
+            $html .= $row2odd.$row2evn;
          }
+         //$html .= $row;
       }
 
       $html .= "</table>\n";

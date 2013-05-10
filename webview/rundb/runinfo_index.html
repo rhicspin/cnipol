@@ -30,8 +30,10 @@ include("../head.html");
 <?php
 
 include_once("utils.php");
+include_once("GlobResult.php");
 include_once("SqlDbReader.php");
 include_once("RunSelector.php");
+include_once("PlotHelper.php");
 include_once("MeasResult.php");
 
 $runSelector = new RunSelector();
@@ -211,6 +213,10 @@ while ($e = mysql_fetch_assoc($rslt)):
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
 	$asymVersion = "<a href=https://svn.bnl.gov/viewvc/cnipol?view=revision&revision=$asymVersion>$asymVersion</a>";
+
+   // Set default directory for run images
+   $dir = "../runs/{$e['run_name']}/images$gSuffix/";
+   $gP = new PlotHelper($dir);
 ?>
 
 <tr class=my_tr_highlight title="<?=$trTooltip?>">
@@ -229,6 +235,17 @@ while ($e = mysql_fetch_assoc($rslt)):
    <td class=align_cm><?=$asymVersion?>
    <td class=align_cm><tt><?=isset($e['ana_start_time']) ? date("M d, Y H:i", strtotime($e['ana_start_time'])) : "&nbsp;";?></tt>
 
+<?php
+if ( isset($_GET['himg']) && !empty($_GET['himg']) ) :
+?>
+
+<tr>
+   <td colspan=13 class=align_cm>
+   <?=$gP->img($_GET['himg'], false, 1200)?>
+
+<?php
+endif;
+?>
 
 <?php
 endwhile;
@@ -261,10 +278,19 @@ $meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
 
 <?$sqlDbReader->PrintPageIndex($nPages, $page);?>
 
-<pre>
+<?php
+//print_r($rc);
+?>
 
-<?php //print_r($rc); ?>
-</pre>
+<h2>Normalization for p-Carbon Measurements</h2>
+
+For details on calculation of normalization factors go to <a
+href="https://wiki.bnl.gov/rhicspin/PCarbon_normalization">https://wiki.bnl.gov/rhicspin/PCarbon_normalization</a>.
+Normalization k<sub>jet/crb</sub> applied to p-Carbon polarization for selected run period is:
+
+<?php
+print(GlobResult::BuildHtmlNormJetCarbon($_GET['rp']));
+?>
 
 
 <!-- Main text ends here-->

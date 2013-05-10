@@ -36,6 +36,14 @@ $TARGET_ORIENT     = array("H" => "H", "V" => "V");
 $TARGET_ID         = array_combine(range(1, 6), range(1, 6));
 $MODE              = array("1" => "user", "11" => "user (csv)", "2" => "expert");
 
+$PLOT_IMAGES       = array (
+   "profile/hIntensProfile"  => "IntensProfile",
+   "profile/hPolarVsIntensProfile" => "PolarVsIntensProfile",
+   "asym/hAsymVsBunchId_X90" => "AsymVsBunchId_X90",
+   "raw/hTvsA"               => "TvsA",
+   "raw_eb/hTvsA"            => "TvsA (empty bunch)"
+);
+
 
 // Normalization factors
 
