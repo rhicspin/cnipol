@@ -70,7 +70,7 @@ enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
                 kMEASTYPE_PROFILE_E   = 0x00000080}; // profile events
 
 
-typedef struct RecordHeaderStruct
+struct RecordHeaderStruct
 {
    long len;           // total length = header size + data size
    long type;          // record type, see above
@@ -83,12 +83,25 @@ typedef struct RecordHeaderStruct
    RecordHeaderStruct & operator=(const RecordHeaderStruct &rec);
    void Streamer(TBuffer &buf);
 
+};
+
+
+typedef struct
+{
+   long len;           // total length = header size + data size
+   long type;          // record type, see above
+   long num;           // record number
+   union {
+       time_t time;    // local UNIX time in most cases
+       long delim;     // when read from memory
+   } timestamp;
+
 } recordHeaderStruct;
 
 
 typedef struct
 {
-    RecordHeaderStruct header;
+    recordHeaderStruct header;
     long version;
     char comment[256];
 } recordBeginStruct;

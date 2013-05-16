@@ -2252,12 +2252,12 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    gRecordMachineParams.header.type           = REC_MACHINEPARAMS;
    gRecordMachineParams.header.len            = sizeof(RecordMachineParams);
    gRecordMachineParams.header.timestamp.time = time(NULL);
-   polWrite(&gRecordMachineParams.header, (long *) gRecordMachineParams.fCavity197MHzVoltage);
+   polWrite( (recordHeaderStruct*) &gRecordMachineParams.header, (long *) gRecordMachineParams.fCavity197MHzVoltage);
 
    gRecordTargetParams.header.type            = REC_TARGETPARAMS;
    gRecordTargetParams.header.len             = sizeof(RecordTargetParams);
    gRecordTargetParams.header.timestamp.time  = time(NULL);
-   polWrite(&gRecordTargetParams.header, (long *) &gRecordTargetParams.fVelocity);
+   polWrite( (recordHeaderStruct*) &gRecordTargetParams.header, (long *) &gRecordTargetParams.fVelocity);
 
    if (!useCDEV) return 0;
 
@@ -2272,7 +2272,7 @@ int openDataFile(const char *fname, char *comment, bool useCDEV)
    gRecordWcm.header.len  = sizeof(RecordWcm);
    gRecordWcm.header.timestamp.time = time(NULL);
    //gRecordWcm.Print();
-   polWrite(&gRecordWcm.header, (long*) gRecordWcm.fFillDataM);
+   polWrite( (recordHeaderStruct*) &gRecordWcm.header, (long*) gRecordWcm.fFillDataM);
 
    // Save V124 settings if any... No use when no ADO
    if (V124.flags) {
