@@ -136,7 +136,6 @@ void CnipolKinematHists::PostFill()
 {
    Info("PostFill", "Called");
 
-   // Fit energy slope with an exponential func
    TF1 fitfunc("fitfunc", "gaus", 9, 14);
    //fitfunc.SetParNames("slope");
    //fitfunc.SetParameter(0, 0);

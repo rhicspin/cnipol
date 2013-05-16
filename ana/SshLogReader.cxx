@@ -28,6 +28,7 @@ SshLogReader::SshLogReader(string loggers, string cells)
    free(copy);
 }
 
+
 string SshLogReader::GetSshCommand(time_t start, time_t end)
 {
    char buf[1024], startStr[32], endStr[32];
@@ -53,6 +54,7 @@ string SshLogReader::GetSshCommand(time_t start, time_t end)
    return string(buf);
 }
 
+
 int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *values)
 {
    string cmd = GetSshCommand(start, end);
@@ -70,8 +72,7 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
 
    while (!feof(fd))
    {
-      char c;
-      c = ungetc(fgetc(fd), fd);
+      char c = ungetc(fgetc(fd), fd);
       if (c == '#')
       {
          if (fgets(buf, sizeof(buf), fd))
@@ -87,8 +88,7 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
          len = fscanf(fd, "%lf", &time);
          if (len != 1) break;
 
-         for (vector<string>::const_iterator it = fCells.begin();
-              it != fCells.end(); it++)
+         for (vector<string>::const_iterator it = fCells.begin(); it != fCells.end(); it++)
          {
             len = fscanf(fd, "%lf", &value);
             if (len != 1)
@@ -96,6 +96,7 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
                Error("SshLogReader", "unexpected end of row");
                return 1;
             }
+
             (*values)[*it].push_back(value);
          }
       }
@@ -115,6 +116,7 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
 
    return retcode;
 }
+
 
 int SshLogReader::ReadMean(time_t start, time_t end, map<string, double> *mean_value)
 {
