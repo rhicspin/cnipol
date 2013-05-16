@@ -3,7 +3,6 @@ PROGS = cmcmtest
 
 include ../include/common.mk
 
-
 CXXFLAGS += $(shell root-config --cflags)
 CFLAGS += $(shell root-config --cflags)
 
