@@ -531,13 +531,13 @@ void UpdateStatus(void)
 }
 
 
-//      Update message
+// Update message
 void UpdateMessage(char * msg)
 {
     int irc;
     cdevData data;
 
-    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : UpdateMessage - %s\n", DeviceName);
+    if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : UpdateMessage - %s, %s\n", DeviceName, msg);
 
     cdevDevice & pol = cdevDevice::attachRef(DeviceName);
 

@@ -270,11 +270,13 @@ int main(int argc, char **argv)
       switch (rec.header.type & REC_TYPEMASK) {
 
       case REC_BEGIN:
+
          if (rec.begin.version < 20000) {
             printf("EMIT-ERR : DAQ versions < 2.0.0 are not supported\n");
             poldat.statusS |= (STATUS_ERROR | ERR_INT);
             exit(-2);
          }
+
          printf("EMIT-INFO : Begin of data set version=%ld for ", rec.begin.version);
          if (rec.header.type & REC_YELLOW) {
             printf("YELLOW");
@@ -287,6 +289,7 @@ int main(int argc, char **argv)
          else {
             printf("unknown");
          }
+
          printf(" ring.\n%s : %s", rec.begin.comment, ctime(&rec.header.timestamp.time));
          break;
 
@@ -973,6 +976,7 @@ int main(int argc, char **argv)
 
    // Print the entire TCanvas (c1) to a .ps file...
    c1->Print(psFile);
+   //c1->SaveAs(psFile);
 
    // send fit results to CDEV
    if (iSend) sendemit(devName);

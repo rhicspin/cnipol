@@ -37,7 +37,7 @@
 #define EXIT_BADSCRIPT  127
 
 char myName[2][20] = {"Blue", "Yellow"};
-int  myDev[2][2] = {{0, 2}, {1, 3}};                            // polCDEVName for Blue/Yellow
+int  myDev[2][2]   = {{0, 2}, {1, 3}};                            // polCDEVName for Blue/Yellow
 
 FILE *LogFile;
 char LogFileName[256] = "/dev/stdout";
@@ -474,6 +474,7 @@ int main(int argc, char** argv)
    for (;;) {
       if (iStop) break;
 
+      // iChild != 0 when the child exits
       if (iChild) {
          if (iVerbose) {
             fprintf(LogFile, "RHICDAEMON-DEBUG : Child %d returned to %d with %X.\n", ChildPid, CurrentPolarimeter, iChild);
