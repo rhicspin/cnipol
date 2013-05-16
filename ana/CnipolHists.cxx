@@ -436,8 +436,8 @@ void CnipolHists::FillDerived()
    set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
    set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
 
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
-
+   for (iCh=iChB; iCh!=iChE; ++iCh)
+   {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", *iCh);
 
@@ -549,7 +549,6 @@ void CnipolHists::PostFill()
 
       TF1 *fitfunc = new TF1("fitfunc", "expo", 450, 850);
 
-      //fitfunc->SetParNames("slope");
       fitfunc->SetParameter(0, 0);
       fitfunc->SetParameter(1, 0);
       fitfunc->SetParLimits(1, -1, 1);

@@ -32,7 +32,6 @@
 #include "AsymRead.h"
 #include "AsymAnaInfo.h"
 #include "AsymDbSql.h"
-//#include "AsymHbook.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "SshLogReader.h"
@@ -62,11 +61,6 @@ int main(int argc, char *argv[])
 
    gAsymAnaInfo->ProcessOptions(argc, argv);
    gAsymAnaInfo->VerifyOptions();
-
-   // Book HBOOK file (deprecated) should be removed from future releases
-   //char hbk_outfile[256] = "out.hbook";
-   //printf("Booking HBOOK file %s\n", hbk_outfile);
-   //hist_book(hbk_outfile);
 
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
@@ -137,10 +131,7 @@ int main(int argc, char *argv[])
          "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer"
       );
 
-      int retval = ssh_log.ReadMean(
-                      startTime, endTime,
-                      &mean_value
-                   );
+      int retval = ssh_log.ReadMean( startTime, endTime, &mean_value);
 
       if (retval)
       {
@@ -148,8 +139,8 @@ int main(int argc, char *argv[])
          return EXIT_FAILURE;
       }
 
-      for(map<string, double>::const_iterator it = mean_value.begin();
-          it != mean_value.end(); it++) {
+      for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+      {
          const string &key = it->first;
          double value = it->second;
 
