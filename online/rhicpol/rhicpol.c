@@ -436,7 +436,8 @@ int main(int argc, char **argv)
       polexit();
    }
 
-   for (j = 0; j < nLoop; j++) {
+   for (j = 0; j < nLoop; j++)
+   {
       fastInitWFDs(1);
       writeSubrun(j);
       if (gUseCdev && (recRing & REC_JET) == 0 && j == 0) UpdateMessage("Running...");
@@ -493,7 +494,12 @@ int main(int argc, char **argv)
    writeSubrun(-1);
    if (iSig == SIGTERM) polData.statusS |= WARN_CANCELLED;
    closeDataFile("End of RHICpol run.");
-   if (gUseCdev && (recRing & REC_JET) == 0) UpdateStatus();
+
+   if (gUseCdev && (recRing & REC_JET) == 0) {
+      UpdateStatus();
+      UpdateMessage("Measurement Finished");
+   }
+
    // close the log file
    fclose(LogFile);
 

@@ -35,7 +35,8 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
 {
    cdevDevice& device = req.device();
    //data.get("value", &fillNumber);
-   data.get("value", (int*) arg);
+   data.get("value", (double*) arg);
+   printf("value: %f\n", *((double*) arg));
 }
 
 
@@ -43,20 +44,38 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
 int main(int argc, char** argv)
 {
    // Hook Action button
-   cdevSystem &defSystem = cdevSystem::defaultSystem();
 
-   int fillId = 0;
+   setbuf(stdout, NULL);
 
-   cdevCallback cb(handleGetAsync, &fillId);
+   //long fillId = 0;
 
+   cdevData data;
    cdevDevice &device = cdevDevice::attachRef("ringSpec.blue"); // the source of the fill number
-   //cdevData data;
-   device.sendCallback("monitorOn fillNumberM", NULL, cb);
+   //cdevDevice &device = cdevDevice::attachRef("wcm.blue"); // the source of the fill number
+
+   //int value = 0;
+   double value = 0;
+
+   cdevSystem &defSystem = cdevSystem::defaultSystem();
+   //cdevCallback cb(handleGetAsync, &fillId);
+   cdevCallback cb(handleGetAsync, &value);
+
+   device.sendCallback("monitorOn fillNumberM", data, cb);
+   //device.sendCallback("monitorOn wcmBeamM", NULL, cb);
+
+   device.send("get fillNumberM", NULL, data);
+   data.get("value", &value);
+
+   printf("value my: %f \n", value);
+
 
    // Infinite loop
-   for (;;) {
+   for (int i=0; ; i++) {
 
-      defSystem.pend(2);
+      printf("value2: %f - %d\n", value, i);
+
+      defSystem.pend();
+      //defSystem.poll();
    }
 
    return 0;

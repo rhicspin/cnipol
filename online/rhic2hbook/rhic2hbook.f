@@ -188,9 +188,9 @@ c	endif
 
 c Run 2012: We use a more general detMask to disable detectors
 c blu2 det 1 and 6 are experimental
-	if (device(13:16).eq.'blu2') then
-	   detMask = 30
-	endif
+c	if (device(13:16).eq.'blu2') then
+c	   detMask = 30
+c	endif
 
 	i90OK = 1
 
