@@ -1,6 +1,7 @@
 
 CDEV=/usr/local/cdev
 
+LIB_DIR   = $(CNIPOL_DIR)/lib
 LIB_PATHS = -L$(CDEV)/store/X86/lib
 INC_PATHS = -I$(CDEV)/store/X86/include/cdev -I../include -I/usr/include
 LIBS = -lcdev -lm -ldl -lstdc++ -lpthread
