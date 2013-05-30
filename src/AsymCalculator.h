@@ -33,13 +33,26 @@ class AsymCalculator
 {
 private:
 
+   static DetLRPair arrX90Dets[1]; //!
+   static DetLRPair arrX45Dets[2]; //!
+   static DetLRPair arrX45TDets[1]; //!
+   static DetLRPair arrX45BDets[1]; //!
+   static DetLRPair arrY45Dets[2]; //!
+
 public:
+
+   static DetLRSet X90Dets; //!
+   static DetLRSet X45Dets; //!
+   static DetLRSet X45TDets; //!
+   static DetLRSet X45BDets; //!
+   static DetLRSet Y45Dets; //!
 
    //void          CalcBunchAsym(TH2 &hDetVsBunchId);
    void          CalcBunchAsym(DrawObjContainer *oc);
    void          CalcBunchAsymSqrtFormula(DrawObjContainer *oc);
    void          CalcDelimAsym(DrawObjContainer *oc);
    void          CalcDelimAsymSqrtFormula(DrawObjContainer *oc);
+   void          CalcOscillPhaseAsymSqrtFormula(TH2 &h2DetCounts_up, TH2 &h2DetCounts_down, TH1 &hAsym, DetLRSet detSet);
 
    // first==="left" and second==="right" detectors
    TGraphErrors* CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, DetLRSet detSet, TGraphErrors *gr=0);
@@ -47,12 +60,12 @@ public:
    TGraphErrors* CalcBunchAsymX45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr=0);
    TGraphErrors* CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetVsBunchId, TGraphErrors *gr=0);
 
-   ValErrMap     CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet);
-   ValErrMap     CalcDetAsymX90SqrtFormula(TH1 &hUp, TH1 &hDown);
-   ValErrMap     CalcDetAsymX45SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymSqrtFormula    (TH1 &hUp, TH1 &hDown, DetLRSet detSet);
+   ValErrMap     CalcDetAsymX90SqrtFormula (TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymX45SqrtFormula (TH1 &hUp, TH1 &hDown);
    ValErrMap     CalcDetAsymX45TSqrtFormula(TH1 &hUp, TH1 &hDown);
    ValErrMap     CalcDetAsymX45BSqrtFormula(TH1 &hUp, TH1 &hDown);
-   ValErrMap     CalcDetAsymY45SqrtFormula(TH1 &hUp, TH1 &hDown);
+   ValErrMap     CalcDetAsymY45SqrtFormula (TH1 &hUp, TH1 &hDown);
 
    void          CumulativeAsymmetry();
    // Strip by Strip
@@ -83,6 +96,7 @@ public:
    //Float_t  sinx(Float_t, Double_t *);
    //Double_t GetFittingErrors(TMinuit *gMinuit, Int_t NUM);
 };
+
 
 void FillAsymmetryHistgram(std::string mode, int sign, float *A, float *dA);
 

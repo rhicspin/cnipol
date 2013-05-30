@@ -45,7 +45,7 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
       EPolarimeterId polId  = *iPolId;
 
       TargetUId unknownTarget(kUNKNOWN_POLID, kUNKNOWN_ORIENT, 0);
-      fPCTargets[polId] =unknownTarget;
+      fPCTargets[polId] = unknownTarget;
    }
 
    // Initialize averages with invalid values
@@ -417,9 +417,9 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
          if ( curTarget.IsCompletelyUnknown() && !newTarget.IsCompletelyUnknown() )
             curTarget = newTarget;
-         else if (curTarget != newTarget) { // partially invalidate the current target id
+         else if (curTarget != newTarget) // target was switched in this fill => partially invalidate the current target id
             curTarget.fTargetId = 0;
-         } // else do nothing
+         // else do nothing
       }
 
       // The maximum energy achieved in this fill

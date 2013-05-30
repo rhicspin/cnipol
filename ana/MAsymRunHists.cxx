@@ -753,6 +753,13 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
    styleMarker.Copy(*hist);
    oc.o[shName] = hist;
 
+
+   shName = "hNormHJ2PCVsTargetId_" + sPolId + "_" + sBeamE;
+   map<string, TStyle*> sfx2styles;
+   sfx2styles["_H"] = (TStyle*) &RunConfig::AsMarker(kTARGET_H, polId);
+   sfx2styles["_V"] = (TStyle*) &RunConfig::AsMarker(kTARGET_V, polId);
+   hist = utils::ConstructTH1CWithTGraphErrorsMap(shName.c_str(), "; Target Id; H-jet/p-Carbon Pol. Ratio;", sfx2styles, 6, 0.5, 6.5, 10, 0, 1.5);
+   oc.o[shName] = hist;
 }
 
 
@@ -772,17 +779,11 @@ void MAsymRunHists::BookHistsByRing(DrawObjContainer &oc, ERingId ringId, EBeamE
    styleMarker.SetMarkerColor(color);
 
    shName = "hPolarHJVsFill_" + sRingId + "_" + sBeamE;
-   hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle("; Fill Id; Polarization (H-jet), %;");
-   hist->SetOption("E1 GRIDX GRIDY");
-   styleMarker.Copy(*hist);
+   hist = utils::ConstructTH1CWithTGraphErrors(shName.c_str(), "; Fill Id; Polarization (H-jet), %;", (TStyle*) &styleMarker);
    oc.o[shName] = hist;
 
    shName = "hAsymHJVsFill_" + sRingId + "_" + sBeamE;
-   hist = new TH1F(shName.c_str(), shName.c_str(), 1, 0, 1);
-   hist->SetTitle("; Fill Id; Asymmetry (H-jet);");
-   hist->SetOption("E1 GRIDX GRIDY");
-   styleMarker.Copy(*hist);
+   hist = utils::ConstructTH1CWithTGraphErrors(shName.c_str(), "; Fill Id; Asymmetry (H-jet);", (TStyle*) &styleMarker);
    oc.o[shName] = hist;
 
    shName = "hPolarVsFill_" + sRingId + "_"  + sBeamE;
@@ -1134,7 +1135,8 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
       PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
       for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
       {
-         string sPolId = RunConfig::AsString(*iPolId);
+         EPolarimeterId polId     = *iPolId;
+         string sPolId            = RunConfig::AsString(polId);
          DrawObjContainer *oc_pol = d.find(sPolId)->second;
 
          TH1F* hPolarHJVsFill_  = (TH1F*) oc_pol->o["hPolarHJVsFill_" + sPolId + "_" + sBeamE];
@@ -1201,7 +1203,7 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          graph = utils::ExtractTGraph(*hist);
          graph->Fit("pol0");
 
-         ERingId ringId  = RunConfig::GetRingId(*iPolId);
+         ERingId ringId  = RunConfig::GetRingId(polId);
          string  sRingId = RunConfig::AsString(ringId);
          DrawObjContainer *oc_ring = d.find(sRingId)->second;
 
@@ -1213,9 +1215,7 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          utils::UpdateLimitsFromGraphs(hist, 2);
 
          TH1* hRSlopeVsFill_ = (TH1F*) oc_pol->o["hRSlopeVsFill_" + sPolId + "_" + sBeamE];
-         //hRSlopeVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
          hRSlopeVsFill_->GetXaxis()->SetLimits(fMinFill, fMaxFill);
-         //utils::UpdateLimitsFromGraphs(hRSlopeVsFill_, 2);
 
          TGraph* grRSlopeVsFill_H_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject("grRSlopeVsFill_H_");
          grRSlopeVsFill_H_->Fit("pol0");
@@ -1230,6 +1230,30 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          grRSlopeVsPolarSlope_H_->Fit("pol1", "EX0");
          TGraphErrors* grRSlopeVsPolarSlope_V_ = (TGraphErrors*) hRSlopeVsPolarSlope_->GetListOfFunctions()->FindObject("grRSlopeVsPolarSlope_V_");
          grRSlopeVsPolarSlope_V_->Fit("pol1", "EX0");
+
+         TargetOrientSetIter iTgtOrient = gRunConfig.fTargetOrients.begin();
+         for ( ; iTgtOrient != gRunConfig.fTargetOrients.end(); ++iTgtOrient)
+         {
+            ETargetOrient tgtOrient  = *iTgtOrient;
+            string        sTgtOrient = RunConfig::AsString(tgtOrient);
+
+            for ( UShort_t iTgtId=1; iTgtId<=6; iTgtId++)
+            {
+               TargetUId targetUId(polId, tgtOrient, iTgtId);
+               ValErrPair norm = agr.fNormJetCarbonByTarget2.find(targetUId)->second;
+
+               if ( norm.second < 0) continue;
+
+               Float_t tinyOffset = tgtOrient == kTARGET_H ? -0.1 : +0.1;
+
+               TH1* hist = (TH1*) oc_pol->o["hNormHJ2PCVsTargetId_" + sPolId + "_" + sBeamE];
+               utils::AppendToTGraph(*hist, iTgtId+tinyOffset, norm.first, 0, norm.second, "_" + sTgtOrient);
+               utils::UpdateLimitsFromGraphs(hist, 2);
+            }
+
+            TH1* hist = (TH1*) oc_pol->o["hNormHJ2PCVsTargetId_" + sPolId + "_" + sBeamE];
+            utils::ExtractTGraph(*hist, string("_" + sTgtOrient).c_str())->Fit("pol0");
+         }
       }
 
 
@@ -1239,13 +1263,15 @@ void MAsymRunHists::PostFill(AnaGlobResult &agr)
          string sRingId  = RunConfig::AsString(*iRingId);
          DrawObjContainer *oc_ring = d.find(sRingId)->second;
 
-         TH1* hPolarHJVsFill_ = (TH1*) oc_ring->o["hPolarHJVsFill_" + sRingId + "_" + sBeamE];
-         utils::UpdateLimits((TH1*) hPolarHJVsFill_);
-         hPolarHJVsFill_->Fit("pol0");
+         hist = (TH1*) oc_ring->o["hPolarHJVsFill_" + sRingId + "_" + sBeamE];
+         utils::SetXAxisIntBinsLabels(hist, agr.GetMinFill(), agr.GetMaxFill());
+         utils::UpdateLimitsFromGraphs(hist, 2);
+         utils::ExtractTGraph(*hist)->Fit("pol0");
 
-         TH1* hAsymHJVsFill_ = (TH1*) oc_ring->o["hAsymHJVsFill_" + sRingId + "_" + sBeamE];
-         utils::UpdateLimits((TH1*) hAsymHJVsFill_);
-         hAsymHJVsFill_->Fit("pol0");
+         hist = (TH1*) oc_ring->o["hAsymHJVsFill_" + sRingId + "_" + sBeamE];
+         utils::SetXAxisIntBinsLabels(hist, agr.GetMinFill(), agr.GetMaxFill());
+         utils::UpdateLimitsFromGraphs(hist, 2);
+         utils::ExtractTGraph(*hist)->Fit("pol0");
 
          TH1F* hPolarRelDiff_       = (TH1F*) oc_ring->o["hPolarRelDiff_"       + sRingId + "_" + sBeamE];
          TH1F* hPolarRelDiffCumul_  = (TH1F*) oc_ring->o["hPolarRelDiffCumul_"  + sRingId + "_" + sBeamE];
@@ -1675,7 +1701,7 @@ void MAsymRunHists::PostFillByPolarimeter(AnaGlobResult &agr, AnaFillResultMapIt
       // decays...
       ValErrPair pcProfRSlope = afr.GetPCProfRSlope(polId, tgtOrient);
 
-      if (pcProfRSlope.second >= 0 && fabs(pcProfRSlope.first) < 1)
+      if (pcProfRSlope.second > 0 && fabs(pcProfRSlope.first) < 1)
       { // require some reasonable number
          string  ssRSlopeVsFill_ = "grRSlopeVsFill_" + sTgtOrient + "_";
          TGraph* grRSlopeVsFill_ = (TGraph*) hRSlopeVsFill_->GetListOfFunctions()->FindObject(ssRSlopeVsFill_.c_str());
@@ -1703,12 +1729,6 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
 
    DrawObjContainer *oc_ring = d.find(sRingId)->second;
 
-   TH1F* hPolarHJVsFill_ = (TH1F*) oc_ring->o["hPolarHJVsFill_" + sRingId + "_" + sBeamE];
-   hPolarHJVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-
-   TH1F* hAsymHJVsFill_ = (TH1F*) oc_ring->o["hAsymHJVsFill_" + sRingId + "_" + sBeamE];
-   hAsymHJVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
-
    TH1F* hPolarVsFill_ = (TH1F*) oc_ring->o["hPolarVsFill_" + sRingId + "_" + sBeamE];
    hPolarVsFill_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
 
@@ -1721,21 +1741,22 @@ void MAsymRunHists::PostFillByRing(AnaGlobResult &agr, AnaFillResultMapIter iafr
    TH1F* hProfPolarVsFill_H_ = (TH1F*) oc_ring->o["hProfPolarVsFill_H_" + sRingId + "_" + sBeamE];
    hProfPolarVsFill_H_->SetBins(fMaxFill-fMinFill, fMinFill, fMaxFill);
 
-   // Save beam histograms by ring
-
-   Int_t ib = hPolarHJVsFill_->FindBin(fillId);
+   // Fill graphs in histograms by ring
+   TH1* hist;
 
    ValErrPair polarHJ = afr.GetHJPolar(ringId);
    if (polarHJ.second >= 0) {
-      hPolarHJVsFill_->SetBinContent(ib, polarHJ.first*100);
-      hPolarHJVsFill_->SetBinError(  ib, polarHJ.second*100);
+      hist = (TH1*) oc_ring->o["hPolarHJVsFill_" + sRingId + "_" + sBeamE];
+      utils::AppendToTGraph(*hist, fillId, polarHJ.first*100, 0, polarHJ.second*100);
    }
 
-   ValErrPair hjAsym = afr.GetHJAsym(ringId);
-   if (hjAsym.second >= 0) {
-      hAsymHJVsFill_->SetBinContent(ib, hjAsym.first);
-      hAsymHJVsFill_->SetBinError(  ib, hjAsym.second);
+   ValErrPair asymHJ = afr.GetHJAsym(ringId);
+   if (asymHJ.second >= 0) {
+      hist = (TH1*) oc_ring->o["hAsymHJVsFill_" + sRingId + "_" + sBeamE];
+      utils::AppendToTGraph(*hist, fillId, asymHJ.first, 0, asymHJ.second);
    }
+
+   Int_t ib = hPolarVsFill_->FindBin(fillId);
 
    ValErrPair beamPolar = afr.GetBeamPolar(ringId);
    if (beamPolar.second >= 0) {

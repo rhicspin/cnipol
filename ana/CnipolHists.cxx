@@ -233,8 +233,8 @@ void CnipolHists::BookHists()
 
       SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    
-      for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS) {
-   
+      for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
+      {
          string sSS = gRunConfig.AsString(*iSS);
 
          // TOF vs Kinematic Energy

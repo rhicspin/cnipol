@@ -149,11 +149,7 @@ void CnipolAsymHists::BookHists()
    ((TH1*) o[shName])->SetOption("DUMMY GRIDX");
    ((TH1*) o[shName])->GetListOfFunctions()->Add(grPolarVsPhi, "p");
 
-   //DrawObjContainer        *oc;
-   //DrawObjContainerMapIter  isubdir;
-
    SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
-
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
       string sSS = gRunConfig.AsString(*iSS);
@@ -218,7 +214,7 @@ void CnipolAsymHists::BookHists()
       ((TH1*) o[shName])->SetTitle("; Time Diff, ns; Channel Id;");
       ((TH1*) o[shName])->SetOption("colz NOIMG");
 
-      // Channel Id vs energy
+      // Counts per Channel/Delim Id
       shName = "hChVsDelim_" + sSS;
       o[shName] = new TH2I(shName.c_str(), shName.c_str(), 1, 0, 1, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
       ((TH1*) o[shName])->SetTitle("; Time, s; Channel Id;");
@@ -276,15 +272,14 @@ void CnipolAsymHists::Fill(ChannelEvent *ch)
 
    Float_t  kinEnergy = ch->GetKinEnergyAEDepend();
    //Float_t timeDiff  = ch->GetTdcAdcTimeDiff();
-   Double_t ttime     = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
+   Double_t time     = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
    string sSS = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
 
    ((TH1*) o.find("hChVsBunchId_"    + sSS)->second) -> Fill(bId, chId);
    ((TH1*) o.find("hChVsKinEnergyA_" + sSS)->second) -> Fill(kinEnergy, chId);
-   ((TH1*) o.find("hChVsDelim_"      + sSS)->second) -> Fill(ttime, chId);
+   ((TH1*) o.find("hChVsDelim_"      + sSS)->second) -> Fill(time, chId);
    //((TH1*) o["hChVsLongiTimeDiff_" + sSS]) -> Fill(timeDiff, chId);
-
 }
 
 
@@ -300,7 +295,6 @@ void CnipolAsymHists::FillDerived()
    TH2* hDetVsDelim   = (TH2*) o["hDetVsDelim"];
 
    SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
-
    for ( ; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
       string sSS = gRunConfig.AsString(*iSS);

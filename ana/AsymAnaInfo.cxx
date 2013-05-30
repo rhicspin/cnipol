@@ -91,6 +91,7 @@ Bool_t AsymAnaInfo::HasAsymBit()        const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo::MODE_KINEMA)       == AsymAnaInfo::MODE_KINEMA; }
 Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
 Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
+Bool_t AsymAnaInfo::HasStudiesBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STUDIES)      == AsymAnaInfo::MODE_STUDIES; }
 Bool_t AsymAnaInfo::HasOnlineBit()      const { return (fAsymModes & AsymAnaInfo::MODE_ONLINE)       == AsymAnaInfo::MODE_ONLINE; }
 Bool_t AsymAnaInfo::HasNoSshBit()       const { return (fAsymModes & AsymAnaInfo::MODE_NO_SSH)       == AsymAnaInfo::MODE_NO_SSH; }
 
@@ -171,6 +172,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"kinema",              no_argument,         0,   AsymAnaInfo::MODE_KINEMA},
       {"pmt",                 no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AsymAnaInfo::MODE_PULSER},
+      {"studies",             no_argument,         0,   AsymAnaInfo::MODE_STUDIES},
       {"online",              no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
       {"no-ssh",              no_argument,         0,   AsymAnaInfo::MODE_NO_SSH},
       {"mode-alpha",          no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
@@ -427,6 +429,10 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AsymAnaInfo::MODE_PULSER:
          fAsymModes |= AsymAnaInfo::MODE_PULSER;
+         break;
+
+      case AsymAnaInfo::MODE_STUDIES:
+         fAsymModes |= AsymAnaInfo::MODE_STUDIES;
          break;
 
       case AsymAnaInfo::MODE_ONLINE:
