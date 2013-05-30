@@ -226,6 +226,47 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 
 
+
+<h2 id="pcarbon_hjet_ratio_by_target" class=count>H-jet/p-Carbon Polarization Ratio by Target Id</h2>
+
+<?
+foreach ($ai['fBeamEnergies'] as $energy):
+   if ($energy == $BEAM_ENERGY_INJ) continue;
+   $strEnergy = sprintf("%03d", $energy);
+?>
+
+<h3 id="pcarbon_hjet_ratio_by_target_<?=$strEnergy?>" class=count><?=$energy?> GeV</h3>
+
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("runs/B1U/hNormHJ2PCVsTargetId_B1U_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td><?=$gP->img("runs/Y2U/hNormHJ2PCVsTargetId_Y2U_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+   <td><?=$gP->img("runs/B2D/hNormHJ2PCVsTargetId_B2D_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+   <td><?=$gP->img("runs/Y1D/hNormHJ2PCVsTargetId_Y1D_$strEnergy", false, 800)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+H-jet/p-Carbon polarization ratio by target.
+</div>
+
+</table>
+
+<? endforeach; ?>
+
+
+
 <h2 id="pcarbon_scaled" class=count>Scaled Polarization</h2>
 <!-- {{{ -->
 <div id="div:pcarbon_scaled" class="section">
@@ -518,7 +559,7 @@ Fill average polarization profile values
 
 
 
-<h2 id="pcarbon_profile_decay" class=count>Polarization Profile R Decay</h2>
+<h2 id="pcarbon_profile_decay" class=count>Polarization Profile R Decay, dR/dt</h2>
 <!-- {{{ -->
 <div id="div:pcarbon_profile_decay" class="section">
 
@@ -563,7 +604,7 @@ Polarization profile "decay" per hour
 
 
 
-<h2 id="pcarbon_decay" class=count>Polarization Decay</h2>
+<h2 id="pcarbon_decay" class=count>Polarization Decay, dP/dt</h2>
 <!-- {{{ -->
 <div id="div:pcarbon_decay" class="section">
 
@@ -855,7 +896,7 @@ with only "down" spin polarization
 
 
 
-<h2 id="pcarbon_bunch_asym_sigma" class=count>Bunch Asymmetry Deviation</h2>
+<h2 id="pcarbon_bunch_asym_sigma" class=count>Bunch Asymmetry Spread</h2>
 
 <?
 foreach ($ai['fBeamEnergies'] as $energy):

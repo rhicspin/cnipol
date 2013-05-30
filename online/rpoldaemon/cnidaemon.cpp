@@ -39,7 +39,6 @@ void handleGetAsync(int status, void* arg, cdevRequestObject& req, cdevData& dat
    printf("value: %f\n", *((double*) arg));
 }
 
-
 /** */
 int main(int argc, char** argv)
 {
@@ -60,13 +59,15 @@ int main(int argc, char** argv)
    //cdevCallback cb(handleGetAsync, &fillId);
    cdevCallback cb(handleGetAsync, &value);
 
-   device.sendCallback("monitorOn fillNumberM", data, cb);
+   //device.sendCallback("monitorOn fillNumberM", data, cb);
    //device.sendCallback("monitorOn wcmBeamM", NULL, cb);
 
    device.send("get fillNumberM", NULL, data);
    data.get("value", &value);
 
    printf("value my: %f \n", value);
+
+	return 0;
 
 
    // Infinite loop

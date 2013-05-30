@@ -14,6 +14,10 @@ FC = f95
 CXX = g++
 CC = g++
 
+CXXFLAGS += $(shell root-config --cflags)
+CFLAGS += $(shell root-config --cflags)
+LIBS += $(shell root-config --ldflags --libs)
+
 all: $(PROGS)
 
 clean:

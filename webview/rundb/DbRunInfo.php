@@ -2,8 +2,10 @@
 
 include_once("config.php");
 include_once("SqlDbReader.php");
+include_once("TargetLossMonitor.php");
 
 date_default_timezone_set('America/New_York');
+
 
 class DbRunInfo extends SqlDbReader
 {
@@ -14,13 +16,16 @@ class DbRunInfo extends SqlDbReader
    var $nResults     = 0;
 
    var $targetUsage  = array();
+   var $targetLosses = array();
 
 
    /** */
-   function DbRunInfo()
+   function DbRunInfo(&$tgtLossMon)
    {
       mysql_connect("localhost", "cnipol", "(n!P0l") or die(mysql_error());
       mysql_select_db("cnipol") or die(mysql_error());
+
+      $this->targetLosses = $tgtLossMon->targetLosses;
    }
 
 
@@ -81,8 +86,39 @@ class DbRunInfo extends SqlDbReader
          $fl_use = $this->FetchTargetFirstLastTime($polId, $tgtId, $tgtOrient, $startTime, $endTime);
 
          $this->targetUsage[$polId][$tgtId][$tgtOrient] =
-            array("counts" => $row['target_counts'], "interval1" => $fl_use['interval1'], "interval2" => $fl_use['interval2']);
+            array("counts" => $row['target_counts'], "interval1" => $fl_use['interval1'],
+                  "interval2" => $fl_use['interval2']);
       }
+
+      // check if loss date is within the interval
+      $startDateTime = new DateTime($startTime);
+      $endDateTime   = new DateTime($endTime);
+
+      $tgtLos = &$this->targetLosses;
+
+      foreach ($tgtLos as $polTgtOrientId => $lossDateTimes)
+      {
+         list($polId, $tgtOrient, $tgtId) = explode(",", $polTgtOrientId);
+
+         foreach ($lossDateTimes as $lossDateTime)
+         {
+            if ($lossDateTime > $startDateTime && $lossDateTime < $endDateTime )
+            {
+               if ( !isset($this->targetUsage[$polId][$tgtId][$tgtOrient]) )
+               {
+                  $this->targetUsage[$polId][$tgtId][$tgtOrient] =
+                     array("counts" => 0, "interval1" => null, "interval2" => null );
+               }
+
+               $this->targetUsage[$polId][$tgtId][$tgtOrient]["lossDateTime"] = $lossDateTime;
+               break;
+            }
+         }
+          
+         //if ( isset($this->targetUsage[$polId][$tgtId][$tgtOrient]) )
+         //   $this->targetUsage[$polId][$tgtId][$tgtOrient][] = 
+      }
+
 
       //print "<pre>";
       //print_r($this->targetUsage);
@@ -110,10 +146,11 @@ class DbRunInfo extends SqlDbReader
       $result = mysql_query($this->sqlQuery);
       $row = mysql_fetch_assoc($result);
 
-      $datetime1 = new DateTime($startTime);
+      $startDateTime = new DateTime($startTime);
+      $endDateTime   = new DateTime($endTime);
       $datetime2 = new DateTime($row['first_use']);
       $datetime3 = new DateTime($row['last_use']);
-      $interval1 = $datetime1->diff($datetime2);
+      $interval1 = $startDateTime->diff($datetime2);
       $interval2 = $datetime2->diff($datetime3);
 
       //print "<pre>";
@@ -167,14 +204,16 @@ class DbRunInfo extends SqlDbReader
                $tgtInfo = $this->targetUsage[$polId][$tgtId][$tgtOrient];
 
                $cell = "";
+	            $cssHighlight = !empty( $tgtInfo["lossDateTime"] ) ? "feature" : "";
 
                if (empty($tgtInfo)) 
-                  $cell .= "<td class='align_cm'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n ";
+                  $cell .= "<td class='align_cm $cssHighlight'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n ";
                   //$cell .= "<td class='align_cm'>&nbsp; [$polId, $tgtId, $tgtOrient]\n ";
                else {
-                  $cell .= "<td class='align_cm'>{$tgtInfo['counts']} ";
-                  $cell .= "(<span class=green>".$tgtInfo["interval1"]->format("%a")."</span>";
-                  $cell .= "<span class=red>+".$tgtInfo["interval2"]->format("%a")."</span>)\n";
+                  $cell .= "<td class='align_cm $cssHighlight'>{$tgtInfo['counts']} ";
+                  $cell .= "(<span class=green>".( $tgtInfo["interval1"] ? $tgtInfo["interval1"]->format("%a") : "0")."</span>";
+                  $cell .= "<span class=red>+".  ( $tgtInfo["interval2"] ? $tgtInfo["interval2"]->format("%a") : "0")."</span>)\n";
+
                   //$cell .= "<br>[$polId, $tgtId, $tgtOrient]";
                }
 
