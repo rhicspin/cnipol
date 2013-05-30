@@ -202,20 +202,6 @@ void MAsymFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
    ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
    ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H");
 
-   sprintf(hName, "hRVsFillTimeBinned_%s", sPolId.c_str());
-   o[hName] = new TH1F(hName, hName, 36, 0, 12*3600);
-   ((TH1*) o[hName])->GetYaxis()->SetRangeUser(-0.1, 1);
-   ((TH1*) o[hName])->SetTitle(";Time in Fill, hours;r;");
-   ((TH1*) o[hName])->SetMarkerStyle(kFullCircle);
-   ((TH1*) o[hName])->SetMarkerSize(1);
-   ((TH1*) o[hName])->SetMarkerColor(color);
-   ((TH1*) o[hName])->SetOption("E1");
-   //((TH1*) o[hName])->GetListOfFunctions()->Add(grRVsFillTime, "p");
-   ((TH1*) o[hName])->GetXaxis()->SetTimeOffset(3600*6, "gmt");
-   //((TH1*) o[hName])->GetXaxis()->SetTimeOffset(0, "local");
-   ((TH1*) o[hName])->GetXaxis()->SetTimeDisplay(1);
-   ((TH1*) o[hName])->GetXaxis()->SetTimeFormat("%H");
-
    // Profile R
    shName = "hProfileRVsMeasId_" + sPolId;
    hist = new TH1D(shName.c_str(), shName.c_str(), 10, 0.5, 10.5);
@@ -527,23 +513,9 @@ void MAsymFillHists::PostFill()
 
       graph = (TGraphErrors*) ((TH1*) o[hName])->GetListOfFunctions()->FindObject("grRVsFillTime");
 
-      TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0] + [1]*x");
-      //TF1 *funcRVsFillTime = new TF1("funcRVsFillTime", "[0]");
-      //funcRVsFillTime->SetParameters(0, 0);
-      funcRVsFillTime->SetParNames("offset", "slope");
-      //funcRVsFillTime->SetParNames("const");
-      graph->Fit("funcRVsFillTime");
-      delete funcRVsFillTime;
-      //
-
-      sprintf(hName, "hRVsFillTimeBinned_%s", sPolId.c_str());
-
-      utils::BinGraph(graph, (TH1*) o[hName]);
-
-      TF1 *funcRVsFillTimeBinned = new TF1("funcRVsFillTimeBinned", "[0]");
-      funcRVsFillTimeBinned->SetParNames("const");
-      ((TH1*) o[hName])->Fit("funcRVsFillTimeBinned");
-      delete funcRVsFillTimeBinned;
+      TF1 funcRVsFillTime("funcRVsFillTime", "[0] + [1]*x");
+      funcRVsFillTime.SetParNames("offset", "slope");
+      graph->Fit(&funcRVsFillTime);
    }
 
    //DrawObjContainer::PostFill();

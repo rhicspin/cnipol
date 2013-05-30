@@ -54,12 +54,12 @@ void CnipolPmtHists::BookHists()
       ((TH1*) o[hName])->SetTitle("; Amplitude, ADC; Events;");
 
       sprintf(hName, "hTvsA_ch%02d", iChId);
-      o[hName] = new TH2I(hName, hName, 255, 0, 255, 80, 10, 90);
+      o[hName] = new TH2I(hName, hName, 255, 0, 255, 90, 0, 90);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) o[hName])->SetTitle("; Amplitude, ADC; TDC;");
 
       sprintf(hName, "hTvsI_ch%02d", iChId);
-      o[hName] = new TH2I(hName, hName, 255, 0, 255, 80, 10, 90);
+      o[hName] = new TH2I(hName, hName, 255, 0, 255, 90, 0, 90);
       ((TH1*) o[hName])->SetOption("colz LOGZ NOIMG");
       ((TH1*) o[hName])->SetTitle("; Integral, ADC; TDC;");
    }

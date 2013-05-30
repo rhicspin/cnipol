@@ -41,6 +41,7 @@
 #include "CnipolRawExtendedHists.h"
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
+#include "CnipolSpinStudyHists.h"
 #include "CnipolTargetHists.h"
 #include "DeadLayerCalibrator.h"
 #include "DeadLayerCalibratorEDepend.h"
@@ -285,6 +286,13 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["pulser"] = oc;
       //fHistCuts[kCUT_PASSONE_PULSER].insert(oc);
       //fHistCuts[kCUT_CARBON_EB].insert(oc);
+   }
+
+   if (gAsymAnaInfo->HasStudiesBit()) {
+      dir = new TDirectoryFile("studies", "studies", "", fOutRootFile);
+      oc  = new CnipolSpinStudyHists(dir);
+      fHists->d["studies"] = oc;
+      fHistCuts[kCUT_CARBON].insert(oc);
    }
 
    // should be reconsidered once preproc is used to fill raw hists for alpha runs

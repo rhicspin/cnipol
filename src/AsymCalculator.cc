@@ -32,6 +32,19 @@
 using namespace std;
 
 
+DetLRPair AsymCalculator::arrX90Dets[]  = { DetLRPair(5, 2) };
+DetLRPair AsymCalculator::arrX45Dets[]  = { DetLRPair(6, 1), DetLRPair(4, 3) };
+DetLRPair AsymCalculator::arrX45TDets[] = { DetLRPair(6, 1) };
+DetLRPair AsymCalculator::arrX45BDets[] = { DetLRPair(4, 3) };
+DetLRPair AsymCalculator::arrY45Dets[]  = { DetLRPair(1, 3), DetLRPair(6, 4) };
+
+DetLRSet AsymCalculator::X90Dets(arrX90Dets, arrX90Dets+1);
+DetLRSet AsymCalculator::X45Dets(arrX45Dets, arrX45Dets+2);
+DetLRSet AsymCalculator::X45TDets(arrX45TDets, arrX45TDets+1);
+DetLRSet AsymCalculator::X45BDets(arrX45BDets, arrX45BDets+1);
+DetLRSet AsymCalculator::Y45Dets(arrY45Dets, arrY45Dets+2);
+
+
 // End of data process
 void end_process(MseMeasInfoX &run)
 {
@@ -205,7 +218,7 @@ TGraphErrors* AsymCalculator::CalcBunchAsymY45(TH2 &hDetVsBunchId_ss, TH2 &hDetV
 
 
 /**
- * Calculates three asymmetries based using the square root formula from two
+ * Calculates three asymmetries using the square root formula from two
  * histogram containing counts per detector.
  */
 ValErrMap AsymCalculator::CalcDetAsymSqrtFormula(TH1 &hUp, TH1 &hDown, DetLRSet detSet)
@@ -1425,7 +1438,8 @@ void AsymCalculator::CalcBunchAsymSqrtFormula(DrawObjContainer *oc)
 
    gAnaMeasResult->fAsymX90  = CalcDetAsymX90SqrtFormula (*hDetCounts_up, *hDetCounts_down);
    gAnaMeasResult->fAsymX45  = CalcDetAsymX45SqrtFormula (*hDetCounts_up, *hDetCounts_down);
-   gAnaMeasResult->fAsymX45T = CalcDetAsymX45TSqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   //gAnaMeasResult->fAsymX45T = CalcDetAsymX45TSqrtFormula(*hDetCounts_up, *hDetCounts_down);
+   gAnaMeasResult->fAsymX45T = CalcDetAsymSqrtFormula(*hDetCounts_up, *hDetCounts_down, X45TDets);
    gAnaMeasResult->fAsymX45B = CalcDetAsymX45BSqrtFormula(*hDetCounts_up, *hDetCounts_down);
    gAnaMeasResult->fAsymY45  = CalcDetAsymY45SqrtFormula (*hDetCounts_up, *hDetCounts_down);
 
@@ -1493,6 +1507,37 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
       hAsymVsDelim4Det->SetBinError(iDelim, asymPhys.second);
    }
 
+}
+
+
+/** */
+void AsymCalculator::CalcOscillPhaseAsymSqrtFormula(TH2 &h2DetCounts_up, TH2 &h2DetCounts_down, TH1 &hAsym, DetLRSet detSet)
+{
+
+   for (int iBin=1; iBin<=hAsym.GetNbinsX(); iBin++)
+   {
+      TH1I *hDetCounts_up   = (TH1I*) h2DetCounts_up.ProjectionY("hDetCounts_up", iBin, iBin);
+      TH1I *hDetCounts_down = (TH1I*) h2DetCounts_down.ProjectionY("hDetCounts_down", iBin, iBin);
+
+      // Check if there are events in the histograms
+      if (!hDetCounts_up->Integral() && !hDetCounts_down->Integral()) continue;
+
+      //ValErrMap asymX90 = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      //ValErrMap asymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      //ValErrMap asymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+
+      ValErrMap asym = CalcDetAsymSqrtFormula(*hDetCounts_up, *hDetCounts_down, detSet);
+
+      //asymX45["phys"].first  = TMath::Sqrt(2)*asymX45["phys"].first;
+      //asymX45["phys"].second = TMath::Sqrt(2)*asymX45["phys"].second;
+      //cout << "test: " << asymX90["phys"] << ", " << asymX45["phys"] << endl;
+      //ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
+      ValErrPair asymPhys = asym["phys"];
+      cout << "test: " << asymPhys << endl;
+
+      hAsym.SetBinContent(iBin, asymPhys.first);
+      hAsym.SetBinError(iBin, asymPhys.second);
+   }
 }
 
 
@@ -1667,8 +1712,8 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    CalcStripAsymmetry(0);
 
    // Some consistency checks for different sigma cuts
-   if (gAnaMeasResult->sinphi[0].P[0]) {
-
+   if (gAnaMeasResult->sinphi[0].P[0])
+   {
       float diff[2];
 
       // calculate differences and ratio
@@ -1737,7 +1782,6 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    fitFunc->SetParNames("Polarization", "#phi");
    fitFunc->SetParameter(0, 0);
    fitFunc->SetParameter(1, 0);
-   //fitFunc->SetParLimits(0, -500, 500);
    fitFunc->SetParLimits(0, 0, 1);
    fitFunc->SetParLimits(1, -M_PI, M_PI);
 
@@ -1766,7 +1810,7 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
    // Calculate asymmetries for each target position
    TH2* hChVsDelim_up   = (TH2*) oc->o["hChVsDelim_up"];
    TH2* hChVsDelim_down = (TH2*) oc->o["hChVsDelim_down"];
-   TH2* hAsymVsDelim4Ch = (TH2*) oc->o["hAsymVsDelim4Ch"];
+   TH1* hAsymVsDelim4Ch = (TH1*) oc->o["hAsymVsDelim4Ch"];
 
    // this is where the output will go
    //TH1 *hPolarProfile = (TH1*) gAsymRoot->fHists->d["profile"]->o["hPolarProfile"];
@@ -1806,11 +1850,10 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
       delete hChAsym;
    }
 
-   //for(Int_t i=0; i<gNDelimeters; i++) {
-
+   //for(Int_t i=0; i<gNDelimeters; i++)
+   //{
    //   CalcStripAsymmetry(100+i);
    //   //printf("i, p: %d, %f\n", i, gAnaMeasResult->sinphi[100+i].P[0]);
-
    //   hPolarProfile->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
    //   hPolarProfile->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
    //}

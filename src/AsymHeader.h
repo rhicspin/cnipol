@@ -1,13 +1,16 @@
 #ifndef ASYM_HEADER_H
 #define ASYM_HEADER_H
 
-#define RHIC_REVOLUTION_FREQ 78e3     // RHIC Revolution Frequency 78 [kHz]
-#define RAMPTIME 350                  // duration of the ramp measurement (sec)
-#define MAXDELIM 410                  // maximum number of delimiter (dynamic motion only)
-#define SEC_PER_DELIM 1               // second per deliminter
-#define TARGETINDEX 1000              // maximum target full array size including static motion
-#define NTBIN 14                      // number of -t bin
-#define N_SPIN_STATES 3             // +1 - up, -1 - down, 0 - unpolarized
+static const double _TWO_PI= 6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696;
+
+#define RHIC_REVOLUTION_FREQ 78e3        // Hz RHIC Revolution Frequency 78 kHz
+#define RHIC_SPIN_FLIPPER_REV_FRAC 0.49  // = 0.49*78e3
+#define RAMPTIME 350                     // duration of the ramp measurement (sec)
+#define MAXDELIM 410                     // maximum number of delimiter (dynamic motion only)
+#define SEC_PER_DELIM 1                  // second per deliminter
+#define TARGETINDEX 1000                 // maximum target full array size including static motion
+#define NTBIN 14                         // number of -t bin
+#define N_SPIN_STATES 3                  // +1 - up, -1 - down, 0 - unpolarized
 
 #define NSTRIP 72                     // Number of channels
 #define N_SILICON_CHANNELS 72         // Number of channels
