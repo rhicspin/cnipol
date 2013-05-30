@@ -595,7 +595,8 @@ function readOnlinePolar($fileNameFull="")
 
    //$row = 1;
 
-   while (($data = fgetcsv($handle, 100, ",")) !== FALSE) {
+   while (($data = fgetcsv($handle, 100, ",")) !== FALSE)
+   {
        $nElements = count($data);
        if ($nElements == 3)
           $values[$data[0]] = new pair($data[1], $data[2]);
@@ -741,6 +742,30 @@ function show_array($array, $level, $sub){
     else{ // argument $array is not an array
         return;
     }
+}
+
+
+function flatten($array) {
+    $return = array();
+    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+    return $return;
+}
+
+
+function makeNonNestedRecursive(array &$out, $key, array $in){
+    foreach($in as $k=>$v){
+    	if(is_array($v)){
+    	    makeNonNestedRecursive($out, $key . $k . ',', $v);
+    	}else{
+            $out[$key . $k] = $v;
+    	}
+    }
+}
+
+function makeNonNested(array $in){
+    $out = array();
+    makeNonNestedRecursive($out, '', $in);
+    return $out;
 }
 
 ?>

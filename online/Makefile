@@ -1,4 +1,5 @@
-SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit rhic2hbook
+#SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit rhic2hbook
+SUBDIRS = burcmc libcmc rpoldaemon rhicpol tools cmcmtest emit
 
 ROOTLDFLAGS := $(shell root-config --nonew --ldflags)
 ROOTLIBS    := $(shell root-config --libs)

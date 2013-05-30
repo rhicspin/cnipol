@@ -23,8 +23,11 @@ include("../head.html");
 
 
 include_once("../rundb/DbRunInfo.php");
+include_once("../rundb/TargetLossMonitor.php");
 
-$dbRunInfo = new DbRunInfo();
+$targetLossMonitor = new TargetLossMonitor();
+
+$dbRunInfo = new DbRunInfo($targetLossMonitor);
 ?>
 
 <!-- Main text starts here-->
@@ -39,7 +42,7 @@ $dbRunInfo = new DbRunInfo();
 
 
 <?php
-$inDateTime  = new DateTime("2013-03-20 08:00:00");
+$inDateTime  = new DateTime("2013-05-08 23:00:00");
 $outDateTime = new DateTime();
 $interval    = $inDateTime->diff($outDateTime);
 
@@ -48,7 +51,22 @@ $header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDate
 
 print($header);
 
-$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-03-20 23:00:00");
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-05-08 23:00:00");
+$dbRunInfo->PrintTargetUsage();
+?>
+
+
+<?php
+$inDateTime  = new DateTime("2013-03-20 08:00:00");
+$outDateTime = new DateTime("2013-05-08 23:00:00");
+$interval    = $inDateTime->diff($outDateTime);
+
+$header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
+        . " (<span class=blue>".$interval->format("%a")." days</span>)</h3>";
+
+print($header);
+
+$targetUsage = $dbRunInfo->FetchTargetUsage(255, "2013-03-20 23:00:00", "2013-05-08 23:00:00");
 $dbRunInfo->PrintTargetUsage();
 ?>
 
@@ -159,6 +177,14 @@ $dbRunInfo->PrintTargetUsage();
 
 
 <?php
+//$targetLossMonitor = new TargetLossMonitor();
+print "<pre>\n";
+//$ttt = flatten($targetLossMonitor->targetLosses);
+//$ttt = $targetLossMonitor->flattenTargetLosses();
+//print_r( $targetLossMonitor->targetLosses);
+//print_r( $dbRunInfo->targetLosses);
+print "</pre>\n";
+
 include("../bottom.html");
 ?>
 

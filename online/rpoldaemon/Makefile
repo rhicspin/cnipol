@@ -1,12 +1,12 @@
-PROGS = rpoldaemon
+PROGS = rpoldaemon cnidaemon
 IPROGS = rpoldaemon.sh rpolmeasure.sh failed.gif
 
 include ../include/common.mk
 
-CXXFLAGS += $(shell root-config --cflags)
-CFLAGS += $(shell root-config --cflags)
-LIBS += $(shell root-config --ldflags --libs)
+#CXXFLAGS += $(shell root-config --cflags)
+#CFLAGS += $(shell root-config --cflags)
+#LIBS += $(shell root-config --ldflags --libs)
 
 rpoldaemon: rpoldaemon.o globals.o rpoldata.o
 
-#cnidaemon: cnidaemon.o globals.o
+cnidaemon: cnidaemon.o globals.o rpoldata.o
