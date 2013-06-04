@@ -65,15 +65,15 @@ extern "C" {
 CMC_chain *CMC_AllocateChain(size_t wlen, size_t rlen);
 void CMC_ReleaseChain(CMC_chain *chain);
 void CMC_ResetChain(CMC_chain *chain);
-int CMC_CommitChain(CMC_chain *chain, int C);
-int CMC_Add2Chain(CMC_chain *chain, long cmd);
+int  CMC_CommitChain(CMC_chain *chain, int C);
+int  CMC_Add2Chain(CMC_chain *chain, long cmd);
 void CMC_DumpChain(CMC_chain *ch, size_t wc, size_t rc, FILE *f); 
 long CMC_Single(int C, int N, int F, int A, long data);
-int CMC_Open(int C);
+int  CMC_Open(int C);
 void CMC_Close(int C);
-int CMC_Reset(int C);
-int CMC_R1(int C);
-int CMC_GetQX(void);
+int  CMC_Reset(int C);
+int  CMC_R1(int C);
+int  CMC_GetQX(void);
 
 #ifdef __cplusplus
     }

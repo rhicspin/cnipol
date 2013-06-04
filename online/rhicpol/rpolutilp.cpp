@@ -96,7 +96,7 @@ int getTargetMovementInfo(long **res)
 void getCarbTarg(carbTargStat * targstat)
 {
     char targetCDEVName[8][20] = {"pol.y-htarget", "pol.y-vtarget", "pol.b-htarget", "pol.b-vtarget",
-                "pol2.y-htarget", "pol2.y-vtarget", "pol2.b-htarget", "pol2.b-vtarget"};
+                                  "pol2.y-htarget", "pol2.y-vtarget", "pol2.b-htarget", "pol2.b-vtarget"};
     cdevData data;
     int irc;
     int i;
@@ -552,7 +552,7 @@ void UpdateMessage(char * msg)
 }
 
 
-//      Program V124 - ring = 0 - yellow, 1 - blue
+// Program V124 - ring = 0 - yellow, 1 - blue
 void ProgV124(int ring)
 {
     char name[128];
@@ -562,7 +562,8 @@ void ProgV124(int ring)
     cdevData data;
 
     irc = 0;
-//      Global setting
+
+    // Global setting
     if (V124.flags & 0x8000) {
         sprintf(name, "bsTrigMod.12a-polar1.%c", (ring) ? 'D' : 'C');
         cdevDevice & dev = cdevDevice::attachRef(name);
@@ -570,7 +571,8 @@ void ProgV124(int ring)
         DEVSEND(dev, "set positionDelay", &data, NULL, LogFile, irc);
         if (iDebug > 1000) fprintf(LogFile, "RHICPOL-INFO : Set V124 - %s:positionDelay\n", name);
     }
-//      Channel settings
+
+    //  Channel settings
     for (i=0; i<8; i++) if (V124.flags & (1 << i)) {
         sprintf(name, "bsTrigChan.12a-polar1.%c.%d", (ring) ? 'D' : 'C', i+1);
         cdevDevice & dev = cdevDevice::attachRef(name);
