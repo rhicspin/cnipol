@@ -325,8 +325,9 @@ int main(int argc, char **argv)
             if (Conf.Pattern[i] == 1) beamData.polarizationFillPatternS[3 * i] = 1;
             if (Conf.Pattern[i] == 2) beamData.polarizationFillPatternS[3 * i] = -1;
          }
+
          for (i = 0; i < 120; i++) {
-            if (Conf.Pattern[i] > 0) beamOtherData.measuredFillPatternM[3 * i] = 1;
+            if (Conf.Pattern[i] > 0)  beamOtherData.measuredFillPatternM[3 * i] = 1;
             if (Conf.Pattern[i] == 1) beamOtherData.polarizationFillPatternS[3 * i] = 1;
             if (Conf.Pattern[i] == 2) beamOtherData.polarizationFillPatternS[3 * i] = -1;
          }
@@ -352,9 +353,9 @@ int main(int argc, char **argv)
          fprintf(LogFile, "RHICPOL-INFO: Debugging run - not real polarization pattern !\n");
          for (i = 0; i < 120; i++) {
             Conf.Pattern[i] = 1 + (i & 1);
-            beamData.measuredFillPatternM[3 * i] = 1;
-            beamData.polarizationFillPatternS[3 * i] = 1 - 2 * (i & 1);
-            beamOtherData.measuredFillPatternM[3 * i] = 1;
+            beamData.measuredFillPatternM[3 * i]          = 1;
+            beamData.polarizationFillPatternS[3 * i]      = 1 - 2 * (i & 1);
+            beamOtherData.measuredFillPatternM[3 * i]     = 1;
             beamOtherData.polarizationFillPatternS[3 * i] = 1 - 2 * (i & 1);
          }
       }
@@ -380,7 +381,9 @@ int main(int argc, char **argv)
 
    //  Fill some usefull information to pass to data2hbook
    for (j = strlen(cfgname); j >= 0; j--) if (cfgname[j] == '/') break;
+
    j++;
+
    sprintf(polData.daqVersionS, "%1d.%1d.%1d %s", DAQVERSION / 10000, (DAQVERSION % 10000) / 100, DAQVERSION % 100, &cfgname[j]);
    i = Conf.ETLookUp;
    if (i > 2) i = 2;
@@ -406,13 +409,14 @@ int main(int argc, char **argv)
 
    fprintf(LogFile, "RHICPOL-INFO : TSHIFT = %6.1f\n", tshift);
 
-   for (i = 0; i < Conf.NumChannels; i++) {
+   for (i = 0; i < Conf.NumChannels; i++)
+   {
       j = (int) (SiConf[i].Window.split.Beg + tshift / Conf.WFDTUnit);
-      if (j < 1) j = 1;
+      if (j < 1)   j = 1;
       if (j > 255) j = 255;
       SiConf[i].Window.split.Beg = j;
       k = (int) (SiConf[i].Window.split.End + tshift / Conf.WFDTUnit);
-      if (k < j) k = j;
+      if (k < j)   k = j;
       if (k > 255) k = 255;
       SiConf[i].Window.split.End = k;
    }
@@ -424,13 +428,13 @@ int main(int argc, char **argv)
 
    if (setOutReg()) polexit();
    if (gUseCdev) ProgV124((recRing & REC_BLUE) ? 1 : 0);     // set V124
-   if (IStop != 0) polexit();
+   if (IStop != 0)  polexit();
    if (openDataFile(dataFileFullName.c_str(), comment, gUseCdev)) polexit();
 
    setInhibit();
    initScalers();
 
-   if (initWFDs()) {
+   if ( initWFDs() ) {
       fprintf(LogFile, "RHICPOL-FATAL : Cannot find reqired CAMAC modules\n");
       polData.statusS |= (STATUS_ERROR | ERR_CAMAC | ERR_WFD);
       polexit();
@@ -442,6 +446,7 @@ int main(int argc, char **argv)
       writeSubrun(j);
       if (gUseCdev && (recRing & REC_JET) == 0 && j == 0) UpdateMessage("Running...");
       setAlarm(mTime / nLoop);
+
       polData.startTimeS = time(NULL);
       clearVetoFlipFlop();
       resetInhibit();
