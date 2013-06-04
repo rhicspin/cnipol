@@ -371,7 +371,11 @@ int readConfig(char * cfgname, int update)
    if (envz_get(ENVZ, ENVLEN, "V124Delay")) V124.flags |= 0x8000;       // global V124 position delay was set - update flags
 
    // V124 channels:  we expect sintax: V124Chan1=Delay=A Width=B Offset=C Period=D
-   // where A - fine delay in 0.5 ns units, B - pulse width in 28 MHz ticks, C - bucket offset in 28 MHz ticks, D - bucket mask period
+   // where
+   // A - fine delay in 0.5 ns units,
+   // B - pulse width in 28 MHz ticks,
+   // C - bucket offset in 28 MHz ticks,
+   // D - bucket mask period
    // Parameters can go in any order and any parameter or even all can be omitted
    for (i = 0; i < 8; i++) {
       char sss[] = {"V124ChanX"};
@@ -379,10 +383,10 @@ int readConfig(char * cfgname, int update)
       if ((buf = envz_get(ENVZ, ENVLEN, sss))) {
          V124.flags |= 1 << i;
          argz_create_sep(buf, ' ', &ENVZC, &ENVLENC);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Delay"))) V124.chan[i].fineDelay = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Width"))) V124.chan[i].pulseWidth = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Offset")))        V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
-         if ((buf = envz_get(ENVZC, ENVLENC, "Period")))        V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Delay")))  V124.chan[i].fineDelay    = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Width")))  V124.chan[i].pulseWidth   = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Offset"))) V124.chan[i].bucketOffset = strtol(buf, NULL, 0);
+         if ((buf = envz_get(ENVZC, ENVLENC, "Period"))) V124.chan[i].bucketPeriod = strtol(buf, NULL, 0);
       }
    }
 
@@ -916,8 +920,7 @@ void setInhibit(void)
    int k;
    setOutInhibit();
    for (k = 0; k < MAXCRATES; k++) {
-      if (CrateRequired[k])
-         CMC_Single(Crate[k], 30, 26, 9, 0);
+      if (CrateRequired[k]) CMC_Single(Crate[k], 30, 26, 9, 0);
    }
 }
 
@@ -929,17 +932,20 @@ void resetOutInhibit(void)
    CMC_Single(Crate[Conf.CrOut], Conf.NOut, 16, 0, OutRegBits);
 }
 
+
 void resetInhibit(void)
 {
-   int k;
-   for (k = 0; k < MAXCRATES; k++) if (CrateRequired[k]) CMC_Single(Crate[k], 30, 24, 9, 0);
+   for (int k = 0; k < MAXCRATES; k++) {
+      if (CrateRequired[k]) CMC_Single(Crate[k], 30, 24, 9, 0);
+   }
+
    resetOutInhibit();
 }
 
+
 void clearVetoFlipFlop(void)
 {
-   CMC_chain *ch;
-   ch = CMC_AllocateChain(0, 0);
+   CMC_chain *ch = CMC_AllocateChain(0, 0);
    CMC_Add2Chain(ch, OutRegBits | OUT_CLRLAM | CMC_CMDDATA);
    CMC_Add2Chain(ch, CMC_STDNFA(Conf.NOut, 16, 0));
    CMC_Add2Chain(ch, OutRegBits | CMC_CMDDATA);
@@ -1013,7 +1019,7 @@ void pulseAllProgs(void)
  *   14 (RO) - dumping histogramms to emmory is active                  *
  *   15 (RO) - delimeter to memory is active                            *
  ************************************************************************/
-int initWFDs(void)
+int initWFDs()
 {
    int cr, i, j, k, ii, jj, iRC = 0, disFlag, nSi;
    CMC_chain *ch;
@@ -1342,7 +1348,7 @@ void writeJetStatus(void)
 
 
 // returns true on target state change
-int testCarbTarg(void)
+int testCarbTarg()
 {
    carbTargStat cts;
    static time_t t0;
@@ -1351,7 +1357,9 @@ int testCarbTarg(void)
       getCarbTarg(&ctss);
       return !(ctss.good);
    }
+
    getCarbTarg(&cts);
+
    switch (ctss.good) {
    case 1:
       if (!(cts.good)) {
@@ -1384,6 +1392,7 @@ int testCarbTarg(void)
       fprintf(LogFile, "\nTestCarbTarg-ERROR-Should never be here\n");
       break;
    }
+
    memcpy(&ctss, &cts, sizeof(cts));
    return 0;
 }
@@ -1448,11 +1457,10 @@ int checkChainResult(CMC_chain *ch, int cr)
 int getNumberOfEvents(void)     // Read from WFD dedicated scalers
 {
    int array[8];
-   int Cnt;
    int cr, i, j, ii, k, kk;
    CMC_chain *ch;
 
-   Cnt = 0;
+   int Cnt = 0;
    ch = CMC_AllocateChain(0, MAXSTATIONS * 150);
 
    for (cr = 0; cr < MAXCRATES; cr++) if (CrateRequired[cr]) {
@@ -1518,6 +1526,9 @@ int getNumberOfEvents(void)     // Read from WFD dedicated scalers
 }
 
 
+/**
+ * Monitors the number of events sent to the WFDs and the movement of the target if applicable
+ */
 int getEvents(int Number)
 {
    int Cnt, lCnt, l10Cnt, l10Val, l10;
