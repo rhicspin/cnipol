@@ -24,7 +24,7 @@ ostream& operator<<(ostream &os, const ESpinState &ss)
 
 /** */
 RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
-   fTargetOrients(), fBeamEnergies(), fSpinStates()
+   fTargetOrients(), fBeamEnergies(), fSpinStates(), fAsymTypes()
 {
    fPolarimeters.insert(kB1U);
    fPolarimeters.insert(kY1D);
@@ -55,6 +55,10 @@ RunConfig::RunConfig() : TObject(), fPolarimeters(), fTargets(), fMeasTypes(),
    fSpinStates.insert(kSPIN_DOWN);
    fSpinStates.insert(kSPIN_NULL);
    fSpinStates.insert(kSPIN_UP);
+
+   fAsymTypes.insert(kPHYS_ASYM);
+   fAsymTypes.insert(kGEOM_ASYM);
+   fAsymTypes.insert(kLUMI_ASYM);
 
    // Initialize targets
    PolarimeterIdSetConstIter iPolId = fPolarimeters.begin();
@@ -192,6 +196,22 @@ string RunConfig::AsString(ESpinState spinState)
 
 
 /** */
+string RunConfig::AsString(EAsymType asymType)
+{
+   switch (asymType) {
+   case kPHYS_ASYM:
+	   return "phys";
+   case kGEOM_ASYM:
+	   return "geom";
+   case kLUMI_ASYM:
+	   return "lumi";
+   default:
+      return "UNK";
+   }
+}
+
+
+/** */
 UShort_t RunConfig::AsIndex(ESpinState spinState)
 {
    switch (spinState) {
@@ -261,6 +281,22 @@ Color_t RunConfig::AsColor(ESpinState spin)
 	   return kBlack;
    case kSPIN_UP:
 	   return kRed;
+   default:
+      return kBlack;
+   }
+}
+
+
+/** */
+Color_t RunConfig::AsColor(EAsymType asymType)
+{
+   switch (asymType) {
+   case kPHYS_ASYM:
+	   return kBlue;
+   case kGEOM_ASYM:
+	   return kMagenta + 2;
+   case kLUMI_ASYM:
+	   return kRed - 2;
    default:
       return kBlack;
    }

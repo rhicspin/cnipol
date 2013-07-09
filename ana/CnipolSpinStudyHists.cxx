@@ -76,9 +76,9 @@ void CnipolSpinStudyHists::BookHists()
    o[shName] = hist;
 
    shName = "hAsymVsOscillPhase_Y45";
-   hist = new TH1D(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI);
+   hist = new TH2C(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI, 100, 0, 1);
    hist->SetTitle("; Oscill. Phase; Asymmetry;");
-   hist->SetOption("E1");
+   hist->SetOption("DUMMY");
    o[shName] = hist;
 
    shName = "hAsymVsOscillPhase_sine_X45";
@@ -124,6 +124,29 @@ void CnipolSpinStudyHists::BookHists()
       hist->SetTitle("; Oscill. Phase; Detector Id;");
       hist->SetOption("colz NOIMG");
       hist->Sumw2();
+      o[shName] = hist;
+   }
+
+   AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
+   for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
+   {
+      string  sAsymType = gRunConfig.AsString(*iAsymType);
+      Color_t color     = RunConfig::AsColor(*iAsymType);
+
+      styleMarker.SetMarkerColor(color);
+
+      // Create graphs for different spin states
+      hist = (TH1*) o.find("hAsymVsOscillPhase_Y45")->second;
+      shName = "gr" + string(hist->GetName()) + "_" + sAsymType;
+      TGraphErrors *grAsymVsOscillPhase_Y45_ = new TGraphErrors();
+      grAsymVsOscillPhase_Y45_->SetName(shName.c_str());
+      styleMarker.Copy(*grAsymVsOscillPhase_Y45_);
+
+      hist->GetListOfFunctions()->Add(grAsymVsOscillPhase_Y45_, "p");
+
+      shName = "hAsymVsOscillPhase_Y45_" + sAsymType;
+      hist = utils::ConstructTH1CWithTGraphErrors(shName.c_str(),
+         "; Oscill. Phase; Asymmetry;", (TStyle*) &styleMarker, 8, 0, _TWO_PI);
       o[shName] = hist;
    }
 }
@@ -204,7 +227,25 @@ void CnipolSpinStudyHists::PostFill()
    TF1 fitFunc("fitFunc", "[0] + [1]*sin(x + [2])", 0, _TWO_PI);
 
    hAsymVsOscillPhase_X45.Fit(&fitFunc);
-   hAsymVsOscillPhase_Y45.Fit(&fitFunc);
+   //hAsymVsOscillPhase_Y45.Fit(&fitFunc);
+
+   AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
+   for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
+   {
+      string sAsymType        = gRunConfig.AsString(*iAsymType);
+      string shName           = "gr" + string(hAsymVsOscillPhase_Y45.GetName()) + "_" + sAsymType;
+      TGraphErrors* graphErrs = (TGraphErrors*) hAsymVsOscillPhase_Y45.GetListOfFunctions()->FindObject(shName.c_str());
+      graphErrs->Fit(&fitFunc);
+
+      TH1* hist = (TH1*) o["hAsymVsOscillPhase_Y45_" + sAsymType];
+      TGraph* graphErrs2 = utils::ExtractTGraph(*hist);
+      utils::MergeGraphs(graphErrs2, graphErrs);
+      graphErrs2->Fit(&fitFunc);
+
+      utils::UpdateLimitsFromGraphs(hist, 2);
+   }
+
+   utils::UpdateLimitsFromGraphs(&hAsymVsOscillPhase_Y45, 2);
 
    TH2& hDetVsOscillPhase_sine_up   = (TH2&) *o.find("hDetVsOscillPhase_sine_up")->second;
    TH2& hDetVsOscillPhase_sine_down = (TH2&) *o.find("hDetVsOscillPhase_sine_down")->second;

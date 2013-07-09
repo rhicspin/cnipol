@@ -1528,15 +1528,29 @@ void AsymCalculator::CalcOscillPhaseAsymSqrtFormula(TH2 &h2DetCounts_up, TH2 &h2
 
       ValErrMap asym = CalcDetAsymSqrtFormula(*hDetCounts_up, *hDetCounts_down, detSet);
 
+      // Add point to different asym type graphs
+      AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
+      for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
+      {
+         string sAsymType = gRunConfig.AsString(*iAsymType);
+
+         ValErrPair asymValErr = asym[sAsymType];
+
+         string shName = "gr" + string(hAsym.GetName()) + "_" + sAsymType;
+         TGraphErrors* graphErrs = (TGraphErrors*) hAsym.GetListOfFunctions()->FindObject(shName.c_str());
+
+         Double_t binCntr = hAsym.GetBinCenter(iBin);
+         utils::AppendToGraph(graphErrs, binCntr, asymValErr.first, 0, asymValErr.second);
+      }
+
       //asymX45["phys"].first  = TMath::Sqrt(2)*asymX45["phys"].first;
       //asymX45["phys"].second = TMath::Sqrt(2)*asymX45["phys"].second;
       //cout << "test: " << asymX90["phys"] << ", " << asymX45["phys"] << endl;
-      //ValErrPair asymPhys = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
-      ValErrPair asymPhys = asym["phys"];
-      cout << "test: " << asymPhys << endl;
+      //ValErrPair asymValErr = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
+      //cout << "test: " << asymValErr << endl;
 
-      hAsym.SetBinContent(iBin, asymPhys.first);
-      hAsym.SetBinError(iBin, asymPhys.second);
+      //hAsym.SetBinContent(iBin, asymValErr.first);
+      //hAsym.SetBinError(iBin, asymValErr.second);
    }
 }
 
