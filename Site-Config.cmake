@@ -1,0 +1,2 @@
+SET(CNIPOL_MYSQLPP_LIBRARY_PATH /eicdata/eic0005/mysql++)
+SET(CNIPOL_MYSQLPP_INCLUDE_DIR /eicdata/eic0005/mysql++/lib)
