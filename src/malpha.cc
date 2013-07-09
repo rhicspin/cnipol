@@ -29,6 +29,9 @@ typedef pair<
 /** */
 void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &result_err)
 {
+   // there are few alpha runs which don't have any data in their channels, skip them
+   if ((!h) || (!h->GetEntries())) return;
+
    TFitResultPtr fitres = h->Fit("pol0", "S"); // S: return fitres
 
    result.first[startTime] = fitres->Value(0);
