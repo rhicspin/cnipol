@@ -29,9 +29,6 @@ typedef pair<
 /** */
 void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &result_err)
 {
-   if ( !h ) return;
-   if ( h->GetEntries() < 100 ) return;
-
    TFitResultPtr fitres = h->Fit("pol0", "S"); // S: return fitres
 
    result.first[startTime] = fitres->Value(0);
@@ -242,7 +239,10 @@ int main(int argc, char *argv[])
       Short_t  polId        = gMM->fMeasInfo->fPolId;
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
 
-      Info("malpha", "Number of alpha sources in %s is %d", fileName.c_str(), alphaSources);
+      if (alphaSources != 2) {
+         Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
+         continue;
+      }
 
       if (gMM->fMeasInfo->RUNID == 70213) {
          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
