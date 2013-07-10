@@ -197,6 +197,8 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > result_am_amgd_mean_err;
    map< Short_t, ResultMean > result_fit0mean;
    map< Short_t, ResultMean > result_fit0mean_err;
+   map< Short_t, ResultMean > rDeadLayerEnergy;
+   map< Short_t, ResultMean > rDeadLayerEnergyErr;
    double max_startTime = -1;
    double min_startTime = -1;
    map< Short_t, map<Time, string> > runNameD;
@@ -268,9 +270,11 @@ int main(int argc, char *argv[])
 
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
       TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
+      TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
 
       FillFromHist(hAmGdFit0Coef, startTime, result_fit0mean[polId], result_fit0mean_err[polId]);
       FillFromHist(hAmGdAmpCoef_over_AmAmpCoef, startTime, result_am_amgd_mean[polId], result_am_amgd_mean_err[polId]);
+      FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
 
       f->Close();
       delete f;
@@ -290,8 +294,10 @@ int main(int argc, char *argv[])
 
       PlotMean("hAmGdFit0Coef_by_day", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean("hAmGdGain_over_AmGain_by_day", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean("hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean("hAmGdFit0Coef_by_run", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], 0, 0);
       PlotMean("hAmGdGain_over_AmGain_by_run", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], 0, 0);
+      PlotMean("hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
    }
 
    f1.Write();
