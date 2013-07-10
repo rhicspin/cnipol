@@ -147,16 +147,18 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       }
   }
 
-   string hostName = "det_" + string(name);
-   const char *hostNameStr = hostName.c_str();
-   TCanvas c(hostNameStr);
+   TString	canvasName("c");
+   canvasName += name;
+   TString	title(name);
+   title += " (cut: |val-mean_i|<3*sigma_i)";
+   TCanvas c(canvasName);
    TLegend leg(0.7,0.1,0.9,0.4);
    leg.SetHeader("The Legend Title");
    TH1F  *host;
    if (max_startTime) {
-       host = new TH1F("host", hostNameStr, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+       host = new TH1F("host", title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    } else {
-       host = new TH1F("host", hostNameStr, result.first.size(), 0.0, result.first.size());
+       host = new TH1F("host", title, result.first.size(), 0.0, result.first.size());
    }
 
    for(int det = 0; det < N_DETECTORS; det++) {
