@@ -288,10 +288,10 @@ int main(int argc, char *argv[])
       TDirectory *fDir = f1.mkdir(polIdName.c_str());
       fDir->cd();
 
-      PlotMean("hAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean("hAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean("hDAmGdFit0Coef", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], 0, 0);
-      PlotMean("hDAmGdAmpCoef_over_AmAmpCoef", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], 0, 0);
+      PlotMean("hAmGdFit0Coef_by_day", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean("hAmGdGain_over_AmGain_by_day", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean("hAmGdFit0Coef_by_run", result_fit0mean[polId], result_fit0mean_err[polId], runNameD[polId], 0, 0);
+      PlotMean("hAmGdGain_over_AmGain_by_run", result_am_amgd_mean[polId], result_am_amgd_mean_err[polId], runNameD[polId], 0, 0);
    }
 
    f1.Write();
