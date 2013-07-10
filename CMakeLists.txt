@@ -15,6 +15,7 @@
 #
 # export PATH=/afs/rhic.bnl.gov/rcassoft/x8664_sl5/gcc471/bin:$PATH
 # export LD_RUN_PATH=/afs/rhic.bnl.gov/rcassoft/x8664_sl5/gcc471/lib:$LD_RUN_PATH
+# export LD_LIBRARY_PATH=/afs/rhic.bnl.gov/rcassoft/x8664_sl5/gcc471/lib:$LD_LIBRARY_PATH
 # CXX=`which gcc` cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
 # make
 #
