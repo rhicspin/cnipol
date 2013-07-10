@@ -168,9 +168,6 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       g->SetLineColor(det + 2);
       int i = 0;
       double xval = -0.5;
-      TString sDet("Detector");
-      sDet += (det + 1);
-      g->SetName(sDet);
 
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
          double startTime = it->first;
@@ -207,6 +204,30 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
+      TString sDet("Detector");
+      sDet += (det + 1);
+      if (max_startTime)
+      {
+         TFitResultPtr fitres = g->Fit("pol1", "S"); // S: return fitres
+         char buf[256];
+         if (fitres.Get())
+         {
+            sDet += ": (";
+            snprintf(buf, sizeof(buf), "%.2f", fitres->Value(1)*60*60*24*30);
+            sDet += buf;
+            sDet += "+-";
+            snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(1)*60*60*24*30);
+            sDet += buf;
+            sDet += ")*t(Months) + (";
+            snprintf(buf, sizeof(buf), "%.2f", fitres->Value(0));
+            sDet += buf;
+            sDet += "+-";
+            snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(0));
+            sDet += buf;
+            sDet += ") keV";
+         }
+      }
+      g->SetName(sDet);
 
       host->GetListOfFunctions()->Add(g, "pl");
       leg.AddEntry(g, sDet, "pl");
