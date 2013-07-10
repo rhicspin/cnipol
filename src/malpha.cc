@@ -115,20 +115,37 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
      }
    }
 
-   if (!max_startTime)
-   {
-      TH1F *hdet = 0;
-      for(int det = 0; det < N_DETECTORS; det++) {
-         TString hname(name);
-         hname += (det + 1);
-         hdet = new TH1F(hname, hname, 100, min_value, max_value);
-         hdet->SetXTitle(h->GetYaxis()->GetTitle());
-         for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
-            double value = it->second[det];
-            hdet->Fill(value);
-         }
+   vector<double>	mean, sigma;
+   TH1F *hdet = 0;
+   for(int det = 0; det < N_DETECTORS; det++) {
+      TString hname(name);
+      if (max_startTime)
+      {
+         hname += "deleteme";
       }
-   }
+      hname += (det + 1);
+      hdet = new TH1F(hname, hname, 100, min_value, max_value);
+      hdet->SetXTitle(h->GetYaxis()->GetTitle());
+      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+         double value = it->second[det];
+         hdet->Fill(value);
+      }
+      TFitResultPtr fitres = hdet->Fit("gaus", "S"); // S: return fitres
+      if (fitres.Get())
+      {
+         mean.push_back(fitres->Value(1));
+         sigma.push_back(fitres->Value(2));
+      }
+      else
+      {
+         mean.push_back(0);
+         sigma.push_back(-1);
+      }
+      if (max_startTime)
+      {
+         delete hdet;
+      }
+  }
 
    string hostName = "det_" + string(name);
    const char *hostNameStr = hostName.c_str();
@@ -155,6 +172,12 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          double startTime = it->first;
          const RunName &runName = runNameD[startTime];
          double value = it->second[det];
+
+         if (fabs(value - mean[det]) > 3*sigma[det])
+         {
+            g->RemovePoint(i);
+            continue;
+         }
 
          if (max_startTime) {
             xval = startTime - min_startTime;
