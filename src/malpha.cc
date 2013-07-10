@@ -161,6 +161,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
        host = new TH1F("host", title, result.first.size(), 0.0, result.first.size());
    }
 
+   double canvas_min_value = FLT_MAX, canvas_max_value = -FLT_MAX;
+
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = new TGraphErrors(result.second.size());
       g->SetLineColor(det + 2);
@@ -194,6 +196,13 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             continue;
          }
 
+         if (canvas_min_value > value) {
+            canvas_min_value = value;
+         }
+         if (canvas_max_value < value) {
+            canvas_max_value = value;
+         }
+
          g->SetPoint(i, xval, value);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
@@ -211,7 +220,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
 
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
-   host->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+   double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
+   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding, canvas_max_value + canvas_vpadding);
 
    host->Draw();
    leg.Draw();
