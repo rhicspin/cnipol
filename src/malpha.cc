@@ -102,6 +102,34 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    }
    h->SetYTitle(result.YTitle.c_str());
 
+
+   for(int det = 0; det < N_DETECTORS; det++) {
+      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+         double value = it->second[det];
+         if (min_value > value) {
+            min_value = value;
+         }
+         if (max_value < value) {
+            max_value = value;
+         }
+     }
+   }
+
+   if (!max_startTime)
+   {
+      TH1F *hdet = 0;
+      for(int det = 0; det < N_DETECTORS; det++) {
+         TString hname(name);
+         hname += (det + 1);
+         hdet = new TH1F(hname, hname, 100, min_value, max_value);
+         hdet->SetXTitle(h->GetYaxis()->GetTitle());
+         for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+            double value = it->second[det];
+            hdet->Fill(value);
+         }
+      }
+   }
+
    string hostName = "det_" + string(name);
    const char *hostNameStr = hostName.c_str();
    TCanvas c(hostNameStr);
@@ -141,13 +169,6 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             continue;
          }
 
-         if (min_value > value) {
-            min_value = value;
-         }
-         if (max_value < value) {
-            max_value = value;
-         }
-
          g->SetPoint(i, xval, value);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
@@ -171,21 +192,6 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    leg.Draw();
    c.Write();
    delete host;
-
-   if (!max_startTime)
-   {
-      TH1F *hdet = 0;
-      for(int det = 0; det < N_DETECTORS; det++) {
-         TString hname(name);
-         hname += (det + 1);
-         hdet = new TH1F(hname, hname, 100, min_value, max_value);
-         hdet->SetXTitle(h->GetYaxis()->GetTitle());
-         for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
-            double value = it->second[det];
-            hdet->Fill(value);
-         }
-      }
-   }
 }
 
 
