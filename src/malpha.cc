@@ -171,6 +171,21 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    leg.Draw();
    c.Write();
    delete host;
+
+   if (!max_startTime)
+   {
+      TH1F *hdet = 0;
+      for(int det = 0; det < N_DETECTORS; det++) {
+         TString hname(name);
+         hname += (det + 1);
+         hdet = new TH1F(hname, hname, 100, min_value, max_value);
+         hdet->SetXTitle(h->GetYaxis()->GetTitle());
+         for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+            double value = it->second[det];
+            hdet->Fill(value);
+         }
+      }
+   }
 }
 
 
