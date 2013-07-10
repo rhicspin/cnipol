@@ -165,7 +165,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
 
          if (isnan(value))
          {
-            g->RemovePoint(0);
+            g->RemovePoint(i);
             continue;
          }
 
