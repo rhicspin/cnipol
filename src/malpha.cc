@@ -20,10 +20,12 @@ using namespace std;
 typedef double Time;
 typedef string RunName;
 typedef int    DetectorId;
-typedef pair<
-   map<Time, double>,
-   map< Time, vector<double> >
-> ResultMean;
+struct ResultMean
+{
+   map<Time, double>	first;
+   map< Time, vector<double> >	second;
+   string	YTitle;
+};
 
 
 /** */
@@ -56,6 +58,8 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
          result_err.second[startTime][det] = NAN;
       }
    }
+
+   result.YTitle = h->GetYaxis()->GetTitle();
 }
 
 
@@ -96,6 +100,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
       h->GetXaxis()->SetTimeOffset(min_startTime);
    }
+   h->SetYTitle(result.YTitle.c_str());
 
    string hostName = "det_" + string(name);
    const char *hostNameStr = hostName.c_str();
@@ -156,6 +161,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    host->GetXaxis()->SetTimeDisplay(1);
    host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
    host->GetXaxis()->SetTimeOffset(min_startTime);
+   host->SetYTitle(h->GetYaxis()->GetTitle());
 
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
