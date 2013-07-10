@@ -130,7 +130,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          double value = it->second[det];
          hdet->Fill(value);
       }
-      TFitResultPtr fitres = hdet->Fit("gaus", "S"); // S: return fitres
+      TFitResultPtr fitres = hdet->Fit("gaus", "SW"); // S: return fitres
       if (fitres.Get())
       {
          mean.push_back(fitres->Value(1));
