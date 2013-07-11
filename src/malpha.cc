@@ -248,7 +248,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    double vpadding = (max_value - min_value) * 0.4;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
    double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
-   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding, canvas_max_value + canvas_vpadding);
+   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 1.5, canvas_max_value + canvas_vpadding * 0.5);
 
    host->Draw();
    leg.Draw();
