@@ -220,14 +220,16 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       det_host_name += (det+1);
       det_host_name += "_";
       det_host_name += polIdName;
+      TString  det_title(det_host_name);
+      det_title += cut_str;
 
       if (max_startTime)
       {
-         det_host = new TH1F(det_host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+         det_host = new TH1F(det_host_name, det_title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
       }
       else
       {
-         det_host = new TH1F(det_host_name, "", result.first.size(), 0.0, result.first.size());
+         det_host = new TH1F(det_host_name, det_title, result.first.size(), 0.0, result.first.size());
       }
       o[det_host_name.Data()] = det_host;
 
@@ -325,14 +327,11 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       leg->AddEntry(g, sDet, "pl");
       det_host->GetListOfFunctions()->Add(det_g, "pl");
 
-      TString  det_title(det_host_name);
-      det_title += cut_str;
-      det_title += sDet;
-      det_host->SetTitle(det_title.ReplaceAll("_", "\\_"));
       det_host->SetOption("DUMMY GRIDX GRIDY");
       det_host->GetXaxis()->SetTimeDisplay(1);
       det_host->GetXaxis()->SetTimeFormat("%d.%m.%y");
       det_host->GetXaxis()->SetTimeOffset(min_startTime);
+      det_host->SetXTitle(sDet);
       det_host->SetYTitle(h->GetYaxis()->GetTitle());
       det_hosts.push_back(det_host);
    }
