@@ -124,6 +124,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       {
          hname += "deleteme";
       }
+      hname += "_distribution";
       hname += (det + 1);
       hdet = new TH1F(hname, hname, 100, min_value, max_value);
       hdet->SetXTitle(h->GetYaxis()->GetTitle());
