@@ -63,10 +63,28 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
 }
 
 
+void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_value)
+{
+   *min_value = FLT_MAX;
+   *max_value = -FLT_MAX;
+
+   for(int det = 0; det < N_DETECTORS; det++) {
+      for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++) {
+         double value = it->second[det];
+         if (*min_value > value) {
+            *min_value = value;
+         }
+         if (*max_value < value) {
+            *max_value = value;
+         }
+      }
+   }
+}
+
+
 /** */
 void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
-   double min_value = FLT_MAX, max_value = -FLT_MAX;
 
    TH1F  *h;
 
@@ -102,19 +120,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    }
    h->SetYTitle(result.YTitle.c_str());
 
-
-   for(int det = 0; det < N_DETECTORS; det++) {
-      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
-         double value = it->second[det];
-         if (min_value > value) {
-            min_value = value;
-         }
-         if (max_value < value) {
-            max_value = value;
-         }
-     }
-   }
-   double vpadding = (max_value - min_value) * 0.4;
+   double max_value, min_value;
+   GetDeviceMaxMin(result, &min_value, &max_value);
+   double vpadding = (max_value - min_value) * 0.15;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 
    vector<double>	mean, sigma;
