@@ -165,6 +165,10 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = new TGraphErrors(result.second.size());
       Color_t	line_color = det + 2;
+      if (line_color == 5)
+      {
+         line_color = 28;
+      }
       g->SetLineColor(line_color);
       int i = 0;
       double xval = -0.5;
