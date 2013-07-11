@@ -208,7 +208,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       sDet += (det + 1);
       if (max_startTime)
       {
-         TFitResultPtr fitres = g->Fit("pol1", "S"); // S: return fitres
+         TF1	fit_daily("fit_daily", "pol1");
+         fit_daily.SetLineColor(line_color);
+         TFitResultPtr fitres = g->Fit(&fit_daily, "S"); // S: return fitres
          char buf[256];
          if (fitres.Get())
          {
