@@ -93,6 +93,11 @@ void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_va
 /** */
 void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
+   if (result.first.empty() && result.second.empty())
+   {
+      return;
+   }
+
    ObjMap	&o = oc->o;
    TH1F  *h;
 
