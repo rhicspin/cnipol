@@ -34,7 +34,7 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
    // there are few alpha runs which don't have any data in their channels, skip them
    if ((!h) || (!h->GetEntries())) return;
 
-   TFitResultPtr fitres = h->Fit("pol0", "S"); // S: return fitres
+   TFitResultPtr fitres = h->Fit("pol0", "QS"); // Q: quiet, S: return fitres
 
    result.first[startTime] = fitres->Value(0);
    result_err.first[startTime] = fitres->FitResult::Error(0);
@@ -47,7 +47,7 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
       int xmin = 0.5 + det * NSTRIP_PER_DETECTOR;
       int xmax = xmin + NSTRIP_PER_DETECTOR;
 
-      TFitResultPtr fitres = h->Fit("pol0", "S", "", xmin, xmax); // S: return fitres
+      TFitResultPtr fitres = h->Fit("pol0", "QS", "", xmin, xmax); // Q: quiet, S: return fitres
 
       if (fitres.Get())
       {
@@ -130,7 +130,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          double value = it->second[det];
          hdet->Fill(value);
       }
-      TFitResultPtr fitres = hdet->Fit("gaus", "SW"); // S: return fitres, W: all weights = 1
+      TFitResultPtr fitres = hdet->Fit("gaus", "QSW"); // Q: quiet, S: return fitres, W: all weights = 1
       if (fitres.Get())
       {
          mean.push_back(fitres->Value(1));
@@ -214,7 +214,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       {
          TF1	fit_daily("fit_daily", "pol1");
          fit_daily.SetLineColor(line_color);
-         TFitResultPtr fitres = g->Fit(&fit_daily, "S"); // S: return fitres
+         TFitResultPtr fitres = g->Fit(&fit_daily, "QS"); // Q: quiet, S: return fitres
          char buf[256];
          if (fitres.Get())
          {
