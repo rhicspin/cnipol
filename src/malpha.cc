@@ -152,7 +152,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    TString	title(name);
    title += " (cut: |val-mean_i|<3*sigma_i)";
    TCanvas c(canvasName);
-   TLegend leg(0.7,0.1,0.9,0.4);
+   TLegend leg(0.15,0.1,0.85,0.3);
    leg.SetHeader("The Legend Title");
    TH1F  *host;
    if (max_startTime) {
