@@ -237,7 +237,123 @@ void DrawObjContainer::Print(const Option_t* opt) const
 
 
 /** */
-void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string path, Bool_t thumbs)
+bool DrawObjContainer::PrepareHistogram(TCanvas *canvas, TH1 *hobj)
+{
+   char *hoptions = (char*) hobj->GetOption();
+
+   char *l = strstr( hoptions, "NOIMG");
+   if (l) return false;
+
+   l = strstr( hoptions, "LOGZ");
+   if (l)
+   {
+      memset(l, ' ', 4);
+      canvas->SetLogz(kTRUE);
+   }
+   else canvas->SetLogz(kFALSE);
+
+   l = strstr( hoptions, "XX");
+   if (l)
+   {
+      memset(l, ' ', 2);
+      canvas->SetLogx(kTRUE);
+   }
+   else canvas->SetLogx(kFALSE);
+
+   l = strstr( hoptions, "XY");
+   if (l)
+   {
+      memset(l, ' ', 2);
+      canvas->SetLogy(kTRUE);
+   }
+   else canvas->SetLogy(kFALSE);
+
+   l = strstr( hoptions, "GRIDX");
+   if (l)
+   {
+      memset(l, ' ', 5);
+      canvas->SetGridx(kTRUE);
+   }
+   else canvas->SetGridx(kFALSE);
+
+   l = strstr( hoptions, "GRIDY");
+   if (l)
+   {
+      memset(l, ' ', 5);
+      canvas->SetGridy(kTRUE);
+   }
+   else canvas->SetGridy(kFALSE);
+
+   l = strstr( hoptions, "DUMMY");
+   if (l)
+   {
+      memset(l, ' ', 5);
+      hobj->SetStats(kFALSE);
+   }
+
+   hobj->Draw( hoptions );
+
+   canvas->Update();
+
+   // Position stat box of the main histogram object
+   TPaveStats *stats = (TPaveStats*) (hobj)->FindObject("stats");
+
+   // There is no way to set these parameters in gStyle so, do it here
+   if (stats)
+   {
+      //stats->SetShadowColor(0);
+      stats->SetLineWidth(1);
+
+      stats->SetX1NDC(0.80);
+      stats->SetX2NDC(0.99);
+      stats->SetY1NDC(0.60);
+      stats->SetY2NDC(0.90);
+   }
+
+   // Now check if there are other associated objects like functions and graphs
+   TList* list = hobj->GetListOfFunctions();
+
+   TIter  next(list);
+   UShort_t iStat = 0;
+
+   while ( TObject *iObj = (TObject*) next() )
+   {
+      if ( !iObj ) continue;
+
+      if ( ( (TClass*) iObj->IsA() )->InheritsFrom("TLine") )
+      {
+         iObj->Draw();
+         continue;
+      }
+
+      // Consider only TGraph objects
+      if ( ! (( (TClass*) iObj->IsA() )->InheritsFrom("TGraph")) ) continue;
+
+      TGraph *grObj = (TGraph*) iObj;
+
+      if ( ((TGraph*) grObj)->GetN() <= 0) continue;
+
+      TPaveStats *stats = (TPaveStats*) ((TGraph*) grObj)->FindObject("stats");
+
+      if (stats)
+      {
+         stats->SetLineColor(grObj->GetMarkerColor());
+         stats->SetLineWidth(2);
+
+         stats->SetX1NDC(0.80);
+         stats->SetX2NDC(0.99);
+         stats->SetY1NDC(0.42 - iStat*0.18);
+         stats->SetY2NDC(0.60 - iStat*0.18);
+
+         iStat++;
+      }
+   }
+   return true;
+}
+
+
+/** */
+void DrawObjContainer::SaveAllAs(TCanvas &default_canvas, std::string pattern, string path, Bool_t thumbs)
 {
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
@@ -250,6 +366,8 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
 
    for (io=o.begin(); io!=o.end(); ++io)
    {
+      TCanvas  *canvas = &default_canvas;
+
       // For shorthand
       string   sObjName = io->first;
       TObject *obj      = io->second;
@@ -263,9 +381,30 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
 
       if (thumbs) sCanvasName += "_thumb";
 
-      canvas.cd();
-      canvas.SetName(sCanvasName.c_str());
-      canvas.SetTitle(sCanvasName.c_str());
+      if (obj->InheritsFrom(TCanvas::Class()))
+      {
+         canvas = (TCanvas*) obj;
+         TList *subobjs = canvas->GetListOfPrimitives();
+         if (!subobjs)
+         {
+            return;
+         }
+         TIter next(subobjs);
+         TObject *child;
+         while ((child = next()))
+         {
+            if (!child->InheritsFrom(TH1::Class()))
+            {
+               continue;
+            }
+            cout << "Child has name: " << child->GetName() << endl;
+            PrepareHistogram(canvas, (TH1*)child);
+         }
+      }
+
+      canvas->cd();
+      canvas->SetName(sCanvasName.c_str());
+      canvas->SetTitle(sCanvasName.c_str());
 
       if ( ((TClass*) obj->IsA())->InheritsFrom("THStack") )
       {
@@ -274,116 +413,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
       else if ( ((TClass*) obj->IsA())->InheritsFrom("TH1") )
       {
          TH1  *hobj     = (TH1*) obj;
-			char *hoptions = (char*) hobj->GetOption();
 
-         char *l = strstr( hoptions, "NOIMG");
-         if (l) continue;
-
-         l = strstr( hoptions, "LOGZ");
-         //printf("XXX1: set logz %s\n", hobj->GetOption());
-         if (l) {
-            memset(l, ' ', 4);
-            canvas.SetLogz(kTRUE);
-         } else canvas.SetLogz(kFALSE);
-
-         l = strstr( hoptions, "XX");
-         if (l) {
-            memset(l, ' ', 2);
-            canvas.SetLogx(kTRUE);
-         } else canvas.SetLogx(kFALSE);
-
-         l = strstr( hoptions, "XY");
-         if (l) {
-            memset(l, ' ', 2);
-            canvas.SetLogy(kTRUE);
-         } else canvas.SetLogy(kFALSE);
-
-         l = strstr( hoptions, "GRIDX");
-         if (l) {
-            memset(l, ' ', 5);
-            canvas.SetGridx(kTRUE);
-         } else canvas.SetGridx(kFALSE);
-
-         l = strstr( hoptions, "GRIDY");
-         if (l) {
-            memset(l, ' ', 5);
-            canvas.SetGridy(kTRUE);
-         } else canvas.SetGridy(kFALSE);
-
-         l = strstr( hoptions, "DUMMY");
-         if (l) {
-            memset(l, ' ', 5);
-            hobj->SetStats(kFALSE);
-         }
-
-         obj->Draw( hoptions );
-
-         canvas.Update();
-
-         // Position stat box of the main histogram object
-         TPaveStats *stats = (TPaveStats*) (hobj)->FindObject("stats");
-
-         // There is no way to set these parameters in gStyle so, do it here
-         if (stats) {
-            //stats->SetShadowColor(0);
-            stats->SetLineWidth(1);
-
-            stats->SetX1NDC(0.80);
-            stats->SetX2NDC(0.99);
-            stats->SetY1NDC(0.60);
-            stats->SetY2NDC(0.90);
-         }
-
-         //printf("could not find stats in %s\n", io->first.c_str());
-
-         // Now check if there are other associated objects like functions and graphs
-         TList* list = hobj->GetListOfFunctions();
-
-         //cout << "XXX print" << endl;
-         //if (list) list->Print();
-
-         TIter  next(list);
-         UShort_t iStat = 0;
-
-         while ( TObject *iObj = (TObject*) next() )
+         if (!PrepareHistogram(canvas, hobj))
          {
-            if ( !iObj ) continue;
-
-            if ( ( (TClass*) iObj->IsA() )->InheritsFrom("TLine") ) {
-               iObj->Draw();
-               continue;
-            }
-
-            // Consider only TGraph objects
-            if ( ! (( (TClass*) iObj->IsA() )->InheritsFrom("TGraph")) ) continue;
-
-            TGraph *grObj = (TGraph*) iObj;
-
-            if ( ((TGraph*) grObj)->GetN() <= 0) continue;
-
-            //grObj->Print();
-
-            TPaveStats *stats = (TPaveStats*) ((TGraph*) grObj)->FindObject("stats");
-
-            if (stats) {
-               //cout << "stats found:" << endl;
-               //stats->Print();
-               //stats->SetOptStat(0);
-               //stats->SetOptFit(1111);
-
-               stats->SetLineColor(grObj->GetMarkerColor());
-               //stats->SetShadowColor(0);
-               stats->SetLineWidth(2);
-
-               stats->SetX1NDC(0.80);
-               stats->SetX2NDC(0.99);
-               stats->SetY1NDC(0.42 - iStat*0.18);
-               stats->SetY2NDC(0.60 - iStat*0.18);
-
-               iStat++;
-            } else {
-               //cout << "stats not found" << endl;
-            }
+            continue;
          }
       }
 
@@ -391,10 +424,10 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
       signature.SetTextSize(0.035);
       UInt_t w, h;
       signature.GetTextExtent(w, h, signature.GetTitle());
-      //signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
-      signature.DrawTextNDC(0.98-(w/(Float_t) canvas.GetWw()), 1-(h/(Float_t) canvas.GetWh()), signature.GetTitle());
+      //signature.DrawTextNDC(0.98-(w/(Float_t) canvas->GetWw()) - gStyle->GetPadRightMargin(), 1-(h/(Float_t) canvas->GetWh()), signature.GetTitle());
+      signature.DrawTextNDC(0.98-(w/(Float_t) canvas->GetWw()), 1-(h/(Float_t) canvas->GetWh()), signature.GetTitle());
 
-      canvas.RedrawAxis("g");
+      canvas->RedrawAxis("g");
 
       //if (obj) obj->Print();
 
@@ -406,7 +439,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
          //obj->Print("all");
          //hobj->GetListOfFunctions()->Print("all");
 
-         canvas.SaveAs(sFileName.c_str());
+         canvas->SaveAs(sFileName.c_str());
          gSystem->Chmod(sFileName.c_str(), 0775);
       } else {
          //Info("SaveAllAs", "Histogram %s name does not match pattern. Skipped", sFileName.c_str());
@@ -426,7 +459,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &canvas, std::string pattern, string pa
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second->SaveAllAs(canvas, pattern, path, thumbs);
+      isubd->second->SaveAllAs(default_canvas, pattern, path, thumbs);
       path = parentPath;
    }
 }

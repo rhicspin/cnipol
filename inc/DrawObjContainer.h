@@ -52,6 +52,8 @@ public:
    ObjMap               o;
    DrawObjContainerMap  d;
 
+   bool PrepareHistogram(TCanvas *canvas, TH1 *hobj);
+
 public:
 
    DrawObjContainer();
