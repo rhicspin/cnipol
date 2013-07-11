@@ -196,7 +196,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    for (int det = 0; det < N_DETECTORS; det++)
    {
       TString   det_host_name(name);
-      det_host_name += det;
+      det_host_name += (det+1);
 
       if (max_startTime)
       {
