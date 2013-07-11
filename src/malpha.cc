@@ -138,7 +138,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    if (max_startTime)
    {
       h->GetXaxis()->SetTimeDisplay(1);
-      h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+      h->GetXaxis()->SetTimeFormat("%d.%m.%y");
       h->GetXaxis()->SetTimeOffset(min_startTime);
    }
    h->SetYTitle(result.YTitle.c_str());
@@ -331,7 +331,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       det_host->SetTitle(det_title.ReplaceAll("_", "\\_"));
       det_host->SetOption("DUMMY GRIDX GRIDY");
       det_host->GetXaxis()->SetTimeDisplay(1);
-      det_host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+      det_host->GetXaxis()->SetTimeFormat("%d.%m.%y");
       det_host->GetXaxis()->SetTimeOffset(min_startTime);
       det_host->SetYTitle(h->GetYaxis()->GetTitle());
       det_hosts.push_back(det_host);
@@ -339,7 +339,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 
    host->SetOption("DUMMY GRIDX GRIDY");
    host->GetXaxis()->SetTimeDisplay(1);
-   host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+   host->GetXaxis()->SetTimeFormat("%d.%m.%y");
    host->GetXaxis()->SetTimeOffset(min_startTime);
    host->SetYTitle(h->GetYaxis()->GetTitle());
 
