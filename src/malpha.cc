@@ -156,7 +156,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    title += cut_str;
    TCanvas c(canvasName);
    TLegend leg(0.15,0.1,0.85,0.3);
-   TH1F  *host;
+   TH1F  *host, *det_host;
+   vector<TH1F*>	det_hosts;
    if (max_startTime) {
        host = new TH1F("host", title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    } else {
@@ -166,13 +167,24 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    double canvas_min_value = FLT_MAX, canvas_max_value = -FLT_MAX;
 
    for(int det = 0; det < N_DETECTORS; det++) {
+      TString   det_host_name(name);
+      det_host_name += det;
+
+      if (max_startTime) {
+         det_host = new TH1F(det_host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+      } else {
+         det_host = new TH1F(det_host_name, "", result.first.size(), 0.0, result.first.size());
+      }
+
       TGraphErrors *g = new TGraphErrors(result.second.size());
+      TGraphErrors *det_g = new TGraphErrors(result.second.size());
       Color_t	line_color = det + 2;
       if (line_color == 5)
       {
          line_color = 28;
       }
       g->SetLineColor(line_color);
+      det_g->SetLineColor(line_color);
       int i = 0;
       double xval = -0.5;
 
@@ -184,6 +196,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          if (fabs(value - mean[det]) > 3*sigma[det])
          {
             g->RemovePoint(i);
+            det_g->RemovePoint(i);
             continue;
          }
 
@@ -192,11 +205,13 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          } else {
             xval++;
             host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
+            det_host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
          }
 
          if (isnan(value))
          {
             g->RemovePoint(i);
+            det_g->RemovePoint(i);
             continue;
          }
 
@@ -209,6 +224,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
 
          g->SetPoint(i, xval, value);
          g->SetPointError(i, 0, result_err.second[startTime][det]);
+         det_g->SetPoint(i, xval, value);
+         det_g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
       TString sDet("Detector");
@@ -216,8 +233,12 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       if (max_startTime)
       {
          TF1	fit_daily("fit_daily", "pol1");
+         TF1	det_fit_daily("det_fit_daily", "pol1");
          fit_daily.SetLineColor(line_color);
+         det_fit_daily.SetLineColor(kBlack);
+         det_fit_daily.SetLineWidth(1);
          TFitResultPtr fitres = g->Fit(&fit_daily, "QS"); // Q: quiet, S: return fitres
+         det_g->Fit(&det_fit_daily, "Q"); // Q: quiet
          char buf[256];
          if (fitres.Get())
          {
@@ -237,9 +258,22 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
          }
       }
       g->SetName(sDet);
+      det_g->SetName(sDet);
 
       host->GetListOfFunctions()->Add(g, "pl");
       leg.AddEntry(g, sDet, "pl");
+      det_host->GetListOfFunctions()->Add(det_g, "pl");
+
+      TString	det_title(det_host_name);
+      det_title += cut_str;
+      det_title += sDet;
+      det_host->SetTitle(det_title.ReplaceAll("_", "\\_"));
+      det_host->SetOption("DUMMY GRIDX GRIDY");
+      det_host->GetXaxis()->SetTimeDisplay(1);
+      det_host->GetXaxis()->SetTimeFormat("%d.%m.%Y");
+      det_host->GetXaxis()->SetTimeOffset(min_startTime);
+      det_host->SetYTitle(h->GetYaxis()->GetTitle());
+      det_hosts.push_back(det_host);
    }
 
    host->SetOption("DUMMY GRIDX GRIDY");
@@ -251,6 +285,12 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
    double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
    host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 1.5, canvas_max_value + canvas_vpadding * 0.5);
+
+   for(vector<TH1F*>::iterator it = det_hosts.begin(); it != det_hosts.end(); it++)
+   {
+      TH1F	*det_host = *it;
+      det_host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 0.3, canvas_max_value + canvas_vpadding * 0.3);
+   }
 
    host->Draw();
    leg.Draw();
