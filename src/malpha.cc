@@ -221,13 +221,13 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             sDet += ": (";
             snprintf(buf, sizeof(buf), "%.2f", fitres->Value(1)*60*60*24*30);
             sDet += buf;
-            sDet += "+-";
+            sDet += "\\pm";
             snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(1)*60*60*24*30);
             sDet += buf;
             sDet += ")*t(Months) + (";
             snprintf(buf, sizeof(buf), "%.2f", fitres->Value(0));
             sDet += buf;
-            sDet += "+-";
+            sDet += "\\pm";
             snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(0));
             sDet += buf;
             sDet += ") keV";
