@@ -22,9 +22,9 @@ typedef string RunName;
 typedef int    DetectorId;
 struct ResultMean
 {
-   map<Time, double>	first;
-   map< Time, vector<double> >	second;
-   string	YTitle;
+   map<Time, double> first;
+   map< Time, vector<double> >   second;
+   string   YTitle;
 };
 
 
@@ -42,8 +42,8 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
    result.second[startTime].resize(N_DETECTORS);
    result_err.second[startTime].resize(N_DETECTORS);
 
-   for(int det = 0; det < N_DETECTORS; det++)
-	{
+   for (int det = 0; det < N_DETECTORS; det++)
+   {
       int xmin = 0.5 + det * NSTRIP_PER_DETECTOR;
       int xmax = xmin + NSTRIP_PER_DETECTOR;
 
@@ -53,7 +53,9 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
       {
          result.second[startTime][det] = fitres->Value(0);
          result_err.second[startTime][det] = fitres->FitResult::Error(0);
-      } else {
+      }
+      else
+      {
          result.second[startTime][det] = NAN;
          result_err.second[startTime][det] = NAN;
       }
@@ -68,13 +70,17 @@ void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_va
    *min_value = FLT_MAX;
    *max_value = -FLT_MAX;
 
-   for(int det = 0; det < N_DETECTORS; det++) {
-      for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++) {
+   for (int det = 0; det < N_DETECTORS; det++)
+   {
+      for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+      {
          double value = it->second[det];
-         if (*min_value > value) {
+         if (*min_value > value)
+         {
             *min_value = value;
          }
-         if (*max_value < value) {
+         if (*max_value < value)
+         {
             *max_value = value;
          }
       }
@@ -88,32 +94,39 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
 
    TH1F  *h;
 
-   if (max_startTime) {
-       h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
-   } else {
-       h = new TH1F(name, name, result.first.size(), 0.0, 1.0);
+   if (max_startTime)
+   {
+      h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   }
+   else
+   {
+      h = new TH1F(name, name, result.first.size(), 0.0, 1.0);
    }
 
    int bin = 1;
-   for (map< Time, double >::iterator it = result.first.begin(); it != result.first.end(); it++) {
+   for (map< Time, double >::iterator it = result.first.begin(); it != result.first.end(); it++)
+   {
       double startTime = it->first;
       const RunName &runName = runNameD[startTime];
       double value = it->second;
 
-      if (max_startTime) {
+      if (max_startTime)
+      {
          bin = h->FindBin(startTime - min_startTime);
       }
 
       h->SetBinContent(bin, value);
       h->SetBinError(bin, result_err.first[startTime]);
 
-      if (!max_startTime) {
+      if (!max_startTime)
+      {
          h->GetXaxis()->SetBinLabel(bin, runName.c_str());
          bin++;
       }
    }
 
-   if (max_startTime) {
+   if (max_startTime)
+   {
       h->GetXaxis()->SetTimeDisplay(1);
       h->GetXaxis()->SetTimeFormat("%d.%m.%Y");
       h->GetXaxis()->SetTimeOffset(min_startTime);
@@ -125,9 +138,10 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    double vpadding = (max_value - min_value) * 0.15;
    h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
 
-   vector<double>	mean, sigma;
+   vector<double> mean, sigma;
    TH1F *hdet = 0;
-   for(int det = 0; det < N_DETECTORS; det++) {
+   for (int det = 0; det < N_DETECTORS; det++)
+   {
       TString hname(name);
       if (max_startTime)
       {
@@ -137,7 +151,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       hname += (det + 1);
       hdet = new TH1F(hname, hname, 100, min_value, max_value);
       hdet->SetXTitle(h->GetYaxis()->GetTitle());
-      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
+      {
          double value = it->second[det];
          hdet->Fill(value);
       }
@@ -156,38 +171,45 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       {
          delete hdet;
       }
-  }
+   }
 
-   TString	canvasName("c");
+   TString  canvasName("c");
    canvasName += name;
-   TString	title(name);
+   TString  title(name);
    const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
    title += cut_str;
    TCanvas c(canvasName);
    TLegend leg(0.15,0.1,0.85,0.3);
    TH1F  *host, *det_host;
-   vector<TH1F*>	det_hosts;
-   if (max_startTime) {
-       host = new TH1F("host", title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
-   } else {
-       host = new TH1F("host", title, result.first.size(), 0.0, result.first.size());
+   vector<TH1F*>  det_hosts;
+   if (max_startTime)
+   {
+      host = new TH1F("host", title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+   }
+   else
+   {
+      host = new TH1F("host", title, result.first.size(), 0.0, result.first.size());
    }
 
    double canvas_min_value = FLT_MAX, canvas_max_value = -FLT_MAX;
 
-   for(int det = 0; det < N_DETECTORS; det++) {
+   for (int det = 0; det < N_DETECTORS; det++)
+   {
       TString   det_host_name(name);
       det_host_name += det;
 
-      if (max_startTime) {
+      if (max_startTime)
+      {
          det_host = new TH1F(det_host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
-      } else {
+      }
+      else
+      {
          det_host = new TH1F(det_host_name, "", result.first.size(), 0.0, result.first.size());
       }
 
       TGraphErrors *g = new TGraphErrors(result.second.size());
       TGraphErrors *det_g = new TGraphErrors(result.second.size());
-      Color_t	line_color = det + 2;
+      Color_t  line_color = det + 2;
       if (line_color == 5)
       {
          line_color = 28;
@@ -197,7 +219,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       int i = 0;
       double xval = -0.5;
 
-      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++) {
+      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
+      {
          double startTime = it->first;
          const RunName &runName = runNameD[startTime];
          double value = it->second[det];
@@ -209,9 +232,12 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             continue;
          }
 
-         if (max_startTime) {
+         if (max_startTime)
+         {
             xval = startTime - min_startTime;
-         } else {
+         }
+         else
+         {
             xval++;
             host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
             det_host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
@@ -224,10 +250,12 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
             continue;
          }
 
-         if (canvas_min_value > value) {
+         if (canvas_min_value > value)
+         {
             canvas_min_value = value;
          }
-         if (canvas_max_value < value) {
+         if (canvas_max_value < value)
+         {
             canvas_max_value = value;
          }
 
@@ -241,8 +269,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       sDet += (det + 1);
       if (max_startTime)
       {
-         TF1	fit_daily("fit_daily", "pol1");
-         TF1	det_fit_daily("det_fit_daily", "pol1");
+         TF1   fit_daily("fit_daily", "pol1");
+         TF1   det_fit_daily("det_fit_daily", "pol1");
          fit_daily.SetLineColor(line_color);
          det_fit_daily.SetLineColor(kBlack);
          det_fit_daily.SetLineWidth(1);
@@ -273,7 +301,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       leg.AddEntry(g, sDet, "pl");
       det_host->GetListOfFunctions()->Add(det_g, "pl");
 
-      TString	det_title(det_host_name);
+      TString  det_title(det_host_name);
       det_title += cut_str;
       det_title += sDet;
       det_host->SetTitle(det_title.ReplaceAll("_", "\\_"));
@@ -294,9 +322,9 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
    host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 1.5, canvas_max_value + canvas_vpadding * 0.5);
 
-   for(vector<TH1F*>::iterator it = det_hosts.begin(); it != det_hosts.end(); it++)
+   for (vector<TH1F*>::iterator it = det_hosts.begin(); it != det_hosts.end(); it++)
    {
-      TH1F	*det_host = *it;
+      TH1F  *det_host = *it;
       det_host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 0.3, canvas_max_value + canvas_vpadding * 0.3);
    }
 
@@ -348,19 +376,21 @@ int main(int argc, char *argv[])
 
    // Loop over the runs and record the time of the last flattop measurement in the fill
    while (next && (o = (*next)()) )
-	{
+   {
       string measId   = string(((TObjString*) o)->GetName());
       string fileName = mAlphaAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAlphaAnaInfo.GetSuffix() + ".root";
 
       TFile *f = new TFile(fileName.c_str(), "READ");
 
-      if (!f) {
+      if (!f)
+      {
          Error("malpha", "file not found. Skipping...");
          delete f;
          continue;
       }
 
-      if (f->IsZombie()) {
+      if (f->IsZombie())
+      {
          Error("malpha", "file is zombie %s. Skipping...", fileName.c_str());
          f->Close();
          delete f;
@@ -371,7 +401,8 @@ int main(int argc, char *argv[])
 
       EventConfig *gMM = (EventConfig*) f->FindObjectAny("measConfig");
 
-      if (!gMM) {
+      if (!gMM)
+      {
          Error("malpha", "MM not found. Skipping...");
          f->Close();
          delete f;
@@ -383,27 +414,32 @@ int main(int argc, char *argv[])
       Short_t  polId        = gMM->fMeasInfo->fPolId;
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
 
-      if (alphaSources != 2) {
+      if (alphaSources != 2)
+      {
          Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
          continue;
       }
 
-      if (gMM->fMeasInfo->RUNID == 70213) {
+      if (gMM->fMeasInfo->RUNID == 70213)
+      {
          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
          continue;
       }
 
-      if (runNameD[polId].count(startTime)) {
+      if (runNameD[polId].count(startTime))
+      {
          Error("malpha", "Duplicate time = %f, %s, %s",
-            startTime, runName.c_str(), runNameD[polId][startTime].c_str());
+               startTime, runName.c_str(), runNameD[polId][startTime].c_str());
          exit(EXIT_FAILURE);
       }
       runNameD[polId][startTime] = runName;
 
-      if ((max_startTime == -1) || (max_startTime < startTime)) {
+      if ((max_startTime == -1) || (max_startTime < startTime))
+      {
          max_startTime = startTime;
       }
-      if ((min_startTime == -1) || (min_startTime > startTime)) {
+      if ((min_startTime == -1) || (min_startTime > startTime))
+      {
          min_startTime = startTime;
       }
 
@@ -424,7 +460,7 @@ int main(int argc, char *argv[])
    PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
-	{
+   {
       Short_t polId = *iPolId;
       string  polIdName = RunConfig::AsString(*iPolId);
 
