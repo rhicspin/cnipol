@@ -13,6 +13,8 @@
 #include "AsymHeader.h"
 #include "MeasInfo.h"
 
+#include "DrawObjContainer.h"
+
 #include "utils/utils.h"
 
 using namespace std;
@@ -89,19 +91,22 @@ void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_va
 
 
 /** */
-void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
+void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
-
+   ObjMap	&o = oc->o;
    TH1F  *h;
 
+   TString hname(name);
+   hname += polIdName;
    if (max_startTime)
    {
-      h = new TH1F(name, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+      h = new TH1F(hname, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    }
    else
    {
-      h = new TH1F(name, name, result.first.size(), 0.0, 1.0);
+      h = new TH1F(hname, name, result.first.size(), 0.0, 1.0);
    }
+   o[name] = h;
 
    int bin = 1;
    for (map< Time, double >::iterator it = result.first.begin(); it != result.first.end(); it++)
@@ -149,6 +154,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       }
       hname += "_distribution";
       hname += (det + 1);
+      hname += "_";
+      hname += polIdName;
       hdet = new TH1F(hname, hname, 100, min_value, max_value);
       hdet->SetXTitle(h->GetYaxis()->GetTitle());
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
@@ -171,24 +178,33 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       {
          delete hdet;
       }
+      else
+      {
+         o[hname.Data()] = hdet;
+      }
    }
 
    TString  canvasName("c");
    canvasName += name;
+   canvasName += "_";
+   canvasName += polIdName;
    TString  title(name);
    const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
    title += cut_str;
-   TCanvas c(canvasName);
-   TLegend leg(0.15,0.1,0.85,0.3);
+   TCanvas *c = new TCanvas(canvasName);
+   TLegend *leg = new TLegend(0.15,0.1,0.85,0.3);
    TH1F  *host, *det_host;
    vector<TH1F*>  det_hosts;
+   TString	host_name("_");
+   host_name += name;
+   host_name += polIdName;
    if (max_startTime)
    {
-      host = new TH1F("host", title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+      host = new TH1F(host_name, title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    }
    else
    {
-      host = new TH1F("host", title, result.first.size(), 0.0, result.first.size());
+      host = new TH1F(host_name, title, result.first.size(), 0.0, result.first.size());
    }
 
    double canvas_min_value = FLT_MAX, canvas_max_value = -FLT_MAX;
@@ -197,6 +213,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    {
       TString   det_host_name(name);
       det_host_name += (det+1);
+      det_host_name += "_";
+      det_host_name += polIdName;
 
       if (max_startTime)
       {
@@ -206,6 +224,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       {
          det_host = new TH1F(det_host_name, "", result.first.size(), 0.0, result.first.size());
       }
+      o[det_host_name.Data()] = det_host;
 
       TGraphErrors *g = new TGraphErrors(result.second.size());
       TGraphErrors *det_g = new TGraphErrors(result.second.size());
@@ -298,7 +317,7 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
       det_g->SetName(sDet);
 
       host->GetListOfFunctions()->Add(g, "pl");
-      leg.AddEntry(g, sDet, "pl");
+      leg->AddEntry(g, sDet, "pl");
       det_host->GetListOfFunctions()->Add(det_g, "pl");
 
       TString  det_title(det_host_name);
@@ -329,9 +348,11 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    }
 
    host->Draw();
-   leg.Draw();
-   c.Write();
-   delete host;
+   leg->Draw();
+   o[canvasName.Data()] = c;
+
+   static TCanvas *dummy = new TCanvas();
+   dummy->cd(); // Don't let anybody draw on our canvas
 }
 
 
@@ -455,8 +476,8 @@ int main(int argc, char *argv[])
       delete f;
    }
 
-   TFile f1(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
-
+   TFile *f1 = new TFile(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
+   DrawObjContainer *oc = new DrawObjContainer(f1);
    PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
@@ -464,18 +485,20 @@ int main(int argc, char *argv[])
       Short_t polId = *iPolId;
       string  polIdName = RunConfig::AsString(*iPolId);
 
-      TDirectory *fDir = f1.mkdir(polIdName.c_str());
-      fDir->cd();
+      oc->d[polIdName] = new DrawObjContainer(f1->mkdir(polIdName.c_str()));
+      DrawObjContainer *sub_oc = oc->d[polIdName];
 
-      PlotMean("hAmGdFit0Coef_by_day", rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean("hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean("hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean("hAmGdFit0Coef_by_run", rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId], runNameD[polId], 0, 0);
-      PlotMean("hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
-      PlotMean("hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hAmGdFit0Coef_by_day", rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hAmGdFit0Coef_by_run", rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
    }
 
-   f1.Write();
+   oc->Write();
+   f1->Close();
+   delete f1;
 
    return EXIT_SUCCESS;
 }
