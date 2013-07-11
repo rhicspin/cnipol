@@ -152,7 +152,8 @@ void PlotMean(const char *name, ResultMean &result, ResultMean &result_err, map<
    TString	canvasName("c");
    canvasName += name;
    TString	title(name);
-   title += " (cut: |val-mean_i|<3*sigma_i)";
+   const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
+   title += cut_str;
    TCanvas c(canvasName);
    TLegend leg(0.15,0.1,0.85,0.3);
    TH1F  *host;
