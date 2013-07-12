@@ -52,7 +52,6 @@ public:
    AnaMeasResult* GetAnaMeasResult();
    MseMeasInfoX*  GetMseMeasInfoX();
 
-   //virtual void Print(const Option_t* opt="") const;
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintAsConfig(FILE *f=stdout) const;

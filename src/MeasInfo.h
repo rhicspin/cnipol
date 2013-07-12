@@ -65,6 +65,10 @@ protected:
    UShort_t            fPulserCutAdcMax;
    UShort_t            fPulserCutTdcMin;
    UShort_t            fPulserCutTdcMax;
+   std::vector<UInt_t> fSpinFlipperMarkers; //! revolution id's corresponding to sync pulses for spin flipper studies
+   Double_t            fSpinFlipperPhase;   //!
+   UInt_t              fFirstRevolution;    //!
+   UInt_t              fLastRevolution;     //!
 
 public:
 
@@ -74,7 +78,7 @@ public:
    time_t                      fStopTime;
    Float_t                     fRunTime;
    int                         fDataFormatVersion;
-   std::string                 fAsymVersion;       // should go... moved to AnaInfo
+   std::string                 fAsymVersion;       // XXX should go... moved to AnaInfo
    EMeasType                   fMeasType;
    UInt_t                      fNEventsProcessed;  // number of events processed from raw data file
    UInt_t                      fNEventsTotal;      // number of total events in raw data file
@@ -88,16 +92,14 @@ public:
    UShort_t                    fPolBeam;
    UShort_t                    fPolStream;
    int                         PolarimetryID;
-   int                         MaxRevolution;
+   int                         MaxRevolution;           // XXX get rid of it when fFirstRevolution and fLastRevolution are enabled
    char                        fTargetOrient;
    char                        fTargetId;
    UInt_t                      fTargetVelocity;         // from CDEV
    UInt_t                      fProfileStartPosition;   // from CDEV
    UInt_t                      fProfileEndPosition;     // from CDEV
-   //std::vector<UShort_t>       fDisabledChannelsVec; // should rename to fDisabledChannels when get rid of the plain array
-   ChannelSet                  fSiliconChannels;     // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
-   ChannelSet                  fDisabledChannels;    // a list of disabled channels. not just silicon channels
-   //ChannelSet                  fActiveChannels;
+   ChannelSet                  fSiliconChannels;        // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
+   ChannelSet                  fDisabledChannels;       // a list of disabled channels. not just silicon channels
    BeamBunchMap                fBeamBunches;
 
 public:
@@ -112,19 +114,23 @@ public:
    void            SetRunName(std::string runName);
    std::string     GetRunName() const;
 
-   Bool_t          HasMachineParamsInRawData() const { return fHasMachineParamsInRawData; }
-   UShort_t        GetAlphaSourceCount() const { return fAlphaSourceCount; }
-   Float_t         GetProtoCutSlope()    const { return fProtoCutSlope;    }
-   Float_t         GetProtoCutOffset()   const { return fProtoCutOffset;   }
-   UShort_t        GetProtoCutWidth()    const { return fProtoCutWidth;    }
-   UShort_t        GetProtoCutAdcMin()   const { return fProtoCutAdcMin;   }
-   UShort_t        GetProtoCutAdcMax()   const { return fProtoCutAdcMax;   }
-   UShort_t        GetProtoCutTdcMin()   const { return fProtoCutTdcMin;   }
-   UShort_t        GetProtoCutTdcMax()   const { return fProtoCutTdcMax;   }
-   UShort_t        GetPulserCutAdcMin()  const { return fPulserCutAdcMin;  }
-   UShort_t        GetPulserCutAdcMax()  const { return fPulserCutAdcMax;  }
-   UShort_t        GetPulserCutTdcMin()  const { return fPulserCutTdcMin;  }
-   UShort_t        GetPulserCutTdcMax()  const { return fPulserCutTdcMax;  }
+   Bool_t          HasMachineParamsInRawData()  const { return fHasMachineParamsInRawData; }
+   UShort_t        GetAlphaSourceCount()        const { return fAlphaSourceCount; }
+   Float_t         GetProtoCutSlope()           const { return fProtoCutSlope;    }
+   Float_t         GetProtoCutOffset()          const { return fProtoCutOffset;   }
+   UShort_t        GetProtoCutWidth()           const { return fProtoCutWidth;    }
+   UShort_t        GetProtoCutAdcMin()          const { return fProtoCutAdcMin;   }
+   UShort_t        GetProtoCutAdcMax()          const { return fProtoCutAdcMax;   }
+   UShort_t        GetProtoCutTdcMin()          const { return fProtoCutTdcMin;   }
+   UShort_t        GetProtoCutTdcMax()          const { return fProtoCutTdcMax;   }
+   UShort_t        GetPulserCutAdcMin()         const { return fPulserCutAdcMin;  }
+   UShort_t        GetPulserCutAdcMax()         const { return fPulserCutAdcMax;  }
+   UShort_t        GetPulserCutTdcMin()         const { return fPulserCutTdcMin;  }
+   UShort_t        GetPulserCutTdcMax()         const { return fPulserCutTdcMax;  }
+   const std::vector<UInt_t>& GetSpinFlipperMarkers() const { return fSpinFlipperMarkers;  }
+   Double_t        GetSpinFlipperPhase()        const { return fSpinFlipperPhase;  }
+   UInt_t          GetFirstRevolution()         const { return fFirstRevolution;  }
+   UInt_t          GetLastRevolution()          const { return fLastRevolution;  }
 
    void            SetAlphaSourceCount(UShort_t alphaSourceCount) { fAlphaSourceCount = alphaSourceCount; }
    void            SetProtoCutSlope  (Float_t  protoCutSlope )    { fProtoCutSlope   = protoCutSlope;   }
@@ -138,6 +144,9 @@ public:
    void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin)   { fPulserCutTdcMin = pulserCutTdcMin; }
    void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax)   { fPulserCutTdcMax = pulserCutTdcMax; }
 
+   void            AddSpinFlipperMarker(UInt_t markerRevId) { fSpinFlipperMarkers.push_back(markerRevId); }
+   Double_t        CalcSpinFlipperPhase();
+
    time_t          GetStartTime() const { return fStartTime; }
    void            SetStartTime(time_t time) { fStartTime = time; }
    Short_t         GetPolarimeterId();
@@ -147,6 +156,7 @@ public:
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
    void            Update(AnaInfo& anaInfo);
+   void            UpdateRevolutions(UInt_t revId);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;
    EBeamEnergy     GetBeamEnergy() const;
@@ -170,7 +180,8 @@ public:
    UShort_t        GetNumActiveSiChannels() const;
    UShort_t        GetNumDisabledChannels() const;
    Bool_t          IsHamaChannel(UShort_t chId);
-   Bool_t          IsPmtChannel(UShort_t chId);
+   Bool_t          IsPmtChannel(UShort_t chId) const;
+   Bool_t          IsSpinFlipperMarkerChannel(UShort_t chId) const;
    BeamBunchMap    GetBunches() const;
    BeamBunchMap    GetFilledBunches() const;
    BeamBunchMap    GetEmptyBunches() const;
