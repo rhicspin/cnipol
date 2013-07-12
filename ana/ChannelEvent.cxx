@@ -425,11 +425,23 @@ Bool_t ChannelEvent::PassCutTargetChannel()
 
 
 /** */
-Bool_t ChannelEvent::PassCutPmtChannel()
+Bool_t ChannelEvent::PassCutPmtChannel() const
 {
    UShort_t chId = GetChannelId();
 
    if ( gMeasInfo->IsPmtChannel(chId) )
+      return true;
+
+  return false;
+}
+
+
+/** */
+Bool_t ChannelEvent::IsSpinFlipperMarkerChannel() const
+{
+   UShort_t chId = GetChannelId();
+
+   if ( fEventConfig->GetMeasInfo()->IsSpinFlipperMarkerChannel(chId) )
       return true;
 
   return false;

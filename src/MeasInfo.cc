@@ -1,5 +1,6 @@
 #include "MeasInfo.h"
 
+#include <climits>
 #include <sstream>
 #include <algorithm>
 
@@ -28,6 +29,7 @@ MeasInfo::MeasInfo() : TObject(),
    fProtoCutSlope(0), fProtoCutOffset(0), fProtoCutWidth(20),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
+   fSpinFlipperMarkers(), fFirstRevolution(UINT_MAX), fLastRevolution(0),
 
    fRunId(-1),
    RUNID(0.0),
@@ -52,7 +54,6 @@ MeasInfo::MeasInfo() : TObject(),
    fTargetId     ('-'),
    fSiliconChannels(),
    fDisabledChannels(),
-   //fActiveChannels(), // Only good channels used in the analysis
    fBeamBunches()
 {
    //for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
@@ -60,7 +61,6 @@ MeasInfo::MeasInfo() : TObject(),
 
    for (int i=1; i<=N_SILICON_CHANNELS; i++) {
       fSiliconChannels.insert(i);
-      //fActiveChannels.insert(i);
    }
 
    //NActiveStrip  = N_SILICON_CHANNELS; // NAactiveStrip;
@@ -212,7 +212,6 @@ void MeasInfo::PrintAsPhp(FILE *f) const
 
    fprintf(f, "$rc['fSiliconChannels']             = %s;\n", SetAsPhpArray<UShort_t>(fSiliconChannels).c_str());
    fprintf(f, "$rc['fDisabledChannels']            = %s;\n", SetAsPhpArray<UShort_t>(fDisabledChannels).c_str());
-   //fprintf(f, "$rc['fActiveChannels']              = %s;\n", SetAsPhpArray<UShort_t>(fActiveChannels).c_str());
    fprintf(f, "$rc['fBeamBunches']                 = %s;\n", MapAsPhpArray<UShort_t, BeamBunch>(fBeamBunches).c_str() );
    //fprintf(f, "$rc['NDisableBunch']                = %d;\n", NDisableBunch);
    fprintf(f, "$rc['fAlphaSourceCount']            = %d;\n", fAlphaSourceCount);
@@ -227,6 +226,10 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fPulserCutAdcMax']             = %d;\n", fPulserCutAdcMax);
    fprintf(f, "$rc['fPulserCutTdcMin']             = %d;\n", fPulserCutTdcMin);
    fprintf(f, "$rc['fPulserCutTdcMax']             = %d;\n", fPulserCutTdcMax);
+   fprintf(f, "$rc['fSpinFlipperMarkers']          = %s;\n", VecAsPhpArray<UInt_t>(fSpinFlipperMarkers).c_str());
+   fprintf(f, "$rc['fSpinFlipperPhase']            = %f;\n", fSpinFlipperPhase);
+   fprintf(f, "$rc['fFirstRevolution']             = %d;\n", fFirstRevolution);
+   fprintf(f, "$rc['fLastRevolution']              = %d;\n", fLastRevolution);
 
    fprintf(f, "\n");
 }
@@ -341,10 +344,20 @@ void MeasInfo::PrintConfig()
 /** */
 string MeasInfo::GetRunName() const { return fRunName; }
 
-void   MeasInfo::SetRunName(string runName) {
+void MeasInfo::SetRunName(string runName)
+{
    fRunName = runName;
    // Set to 0 when "RunID" contains alphabetical chars
    RUNID = strtod(fRunName.c_str(), NULL);
+}
+
+
+Double_t MeasInfo::CalcSpinFlipperPhase()
+{
+   UInt_t spinFlipperMarkerRevId = fSpinFlipperMarkers.size() > 0 ? fSpinFlipperMarkers[0] : 0;
+   Double_t delta_phase   = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ( (Double_t) spinFlipperMarkerRevId - fFirstRevolution);
+   fSpinFlipperPhase      = fmod(delta_phase, _TWO_PI);
+   return fSpinFlipperPhase;
 }
 
 
@@ -530,6 +543,13 @@ void MeasInfo::Update(AnaInfo& anaInfo)
 }
 
 
+void MeasInfo::UpdateRevolutions(UInt_t revId)
+{
+   if (revId < fFirstRevolution) fFirstRevolution = revId;
+   if (revId > fLastRevolution)  fLastRevolution  = revId;
+}
+
+
 //
 // Deprecated.
 //
@@ -632,8 +652,6 @@ void MeasInfo::DisableChannel(UShort_t chId)
 
    if ( fDisabledChannels.find(chId) == fDisabledChannels.end() )
       fDisabledChannels.insert(chId);
-
-   //fActiveChannels.erase(chId);
 }
 
 
@@ -654,9 +672,7 @@ void MeasInfo::DisableChannels(std::bitset<N_DETECTORS> &disabled_det)
 /** */
 void MeasInfo::EnableChannel(UShort_t chId)
 {
-   Warning("EnableChannel", "Enabled channel %d", chId);
-
-   //fActiveChannels.erase(chId);
+   Warning("EnableChannel", "Not implemented. Enabled channel %d", chId);
 }
 
 
@@ -725,10 +741,20 @@ Bool_t MeasInfo::IsHamaChannel(UShort_t chId)
 
 
 /** */
-Bool_t MeasInfo::IsPmtChannel(UShort_t chId)
+Bool_t MeasInfo::IsPmtChannel(UShort_t chId) const
 {
    if ( ((EPolarimeterId) fPolId == kY2U || (EPolarimeterId) fPolId == kY1D) &&
         chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4 )
+      return true;
+
+   return false;
+}
+
+
+/** */
+Bool_t MeasInfo::IsSpinFlipperMarkerChannel(UShort_t chId) const
+{
+   if ( (EPolarimeterId) fPolId == kB1U && chId == 76 ) // need to add a constrain by time
       return true;
 
    return false;

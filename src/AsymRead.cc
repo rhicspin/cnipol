@@ -444,6 +444,7 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
             if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
+            gAsymRoot->UpdateFromChannelEvent();
 
             // Use only a fraction of events
             if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
@@ -473,6 +474,11 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
                gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
             }
 
+            if ( gAsymAnaInfo->HasStudiesBit() && gAsymRoot->fChannelEvent->IsSpinFlipperMarkerChannel() )
+            {
+               gAsymRoot->AddSpinFlipperMarker();
+            }
+
             //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
             //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
@@ -486,7 +492,7 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
             if (gMeasInfo->fNEventsProcessed%50000 == 0)
             {
-               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+               printf("%s: Pass 1: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
                fflush(stdout);
             }
          }
@@ -495,6 +501,8 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
    printf("Total events read:      %12u\n", gMeasInfo->fNEventsTotal);
    printf("Total events processed: %12u\n", gMeasInfo->fNEventsProcessed);
+
+   gMeasInfo->CalcSpinFlipperPhase();
 
    // Save info into database global object
    mseMeasInfo.stop_time         = mysqlpp::DateTime(gMeasInfo->fStopTime);
@@ -604,7 +612,7 @@ void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 
             if (gMeasInfo->fNEventsProcessed%50000 == 0)
             {
-               printf("%s: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+               printf("%s: Pass 2: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
                fflush(stdout);
             }
          }

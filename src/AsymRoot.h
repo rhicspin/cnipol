@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "TFile.h"
-//#include "TObject.h"
 #include "TTree.h"
 
 #include "AsymGlobals.h"
@@ -32,7 +31,7 @@ typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;
 typedef Cut2DrawObjContainerMap::iterator              Cut2DrawObjContainerMapIter;
 
 
-class AsymRoot // : public TObject
+class AsymRoot
 {
 
 protected:
@@ -50,7 +49,6 @@ public:
    AnaEvent             *fAnaEvent;          //!
    ChannelEvent         *fChannelEvent;      //!
    ChannelData          *fChannelData;       //!
-   //ChannelEventMap      fChannelEvents;
    ChannelEventSet       fChannelEvents;     //!
    EventConfig          *fEventConfig;       //!
    DrawObjContainer     *fHists;             //!
@@ -70,6 +68,7 @@ public:
    //Bool_t       UseCalibFile(std::string cfname=""); // Deprecated
    void         UpdateRunConfig(); // Deprecated
    void         SetChannelEvent(ATStruct &at, long delim, unsigned chId);
+   void         AddSpinFlipperMarker();
    void         ProcessEvent() {};
    void         FillPassOne(ECut cut);
    void         FillDerivedPassOne();
@@ -86,6 +85,7 @@ public:
    void         PrintEventMap();
    void         PrintChannelEvent();
    void         UpdateCalibrator();
+   void         UpdateFromChannelEvent();
    Calibrator*  GetCalibrator();
    void         SaveChannelTrees();
    void         SaveEventTree();
@@ -93,8 +93,6 @@ public:
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
    EventConfig* GetMeasConfig();
    void         GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar);
-
-   //ClassDef(AsymRoot, 1)
 };
 
 #endif

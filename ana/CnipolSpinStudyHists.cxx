@@ -160,9 +160,15 @@ void CnipolSpinStudyHists::Fill(ChannelEvent *ch)
    string   sSS  = gRunConfig.AsString( gMeasInfo->GetBunchSpin(bId) );
    //Double_t time = ((Double_t) ch->GetRevolutionId())/RHIC_REVOLUTION_FREQ;
 
-   Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120.);
-   //Double_t phase = _TWO_PI * ((Double_t) ch->GetRevolutionId() + bId/120.)/ RHIC_SPIN_FLIPPER_REV_FRAC;
+   const std::vector<UInt_t>& spinFlipperMarkers = gMeasInfo->GetSpinFlipperMarkers();
+   UInt_t spinFlipperMarkerRevId = spinFlipperMarkers.size() > 0 ? spinFlipperMarkers[0] : 0;
+
+   //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120.);
+   //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - gMeasInfo->GetFirstRevolution());
+   Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - spinFlipperMarkerRevId);
    phase = fmod(phase, _TWO_PI);
+
+   //Double_t delta_phase = gMeasInfo->GetSpinFlipperPhase();
 
    ((TH2*) o.find("hChVsOscillPhase_" + sSS)->second) -> Fill(phase, chId);
    ((TH2*) o.find("hChVsOscillPhase_sine_" + sSS)->second) -> Fill(phase, chId, sin(phase)+1);

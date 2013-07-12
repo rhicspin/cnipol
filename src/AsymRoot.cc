@@ -96,13 +96,11 @@ TH2F  *asym_sinphi_fit;        // strip asymmetry and sin(phi) fit
 TH2F  *scan_asym_sinphi_fit;   // scan asymmetry and sin(phi) fit
 
 
-//ClassImp(AsymRoot)
-
 using namespace std;
 
 
 /** */
-AsymRoot::AsymRoot() : // TObject(),
+AsymRoot::AsymRoot() :
    fOutRootFile(), fOutTreeFile(), fTreeFileId(0),
    fRawEventTree(0), fAnaEventTree(0),
    fChannelEventTrees(), fAnaEvent(new AnaEvent()),
@@ -458,7 +456,6 @@ void AsymRoot::UpdateRunConfig()
    // Update the calibrator based on the running mode, i.e. alpha or
    // normal data
    UpdateCalibrator();
-
 }
 
 
@@ -475,6 +472,14 @@ void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)
    fChannelEvent->fChannel.fIntgrl       = at.s;
    fChannelEvent->fChannel.fTdc          = at.t;
    fChannelEvent->fChannel.fTdcAMax      = at.tmax;
+}
+
+
+/** */
+void AsymRoot::AddSpinFlipperMarker()
+{
+   UInt_t revId = fChannelEvent->GetRevolutionId();
+   fEventConfig->GetMeasInfo()->AddSpinFlipperMarker(revId);
 }
 
 
@@ -586,14 +591,15 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
 
    // Special processing for some of the histogram containers
    //if (gAsymAnaInfo->HasProfileBit()) {
-      //((CnipolProfileHists*) fHists->d["profile"])->Process();
-      //gMeasInfo->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
+   //   ((CnipolProfileHists*) fHists->d["profile"])->Process();
+   //   fEventConfig->GetMeasInfo()->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
    //}
 
    // Add info to database entry
    run.profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
    run.profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
 
+   // Old way... should be deleted
    //run.polarization        = gAnaMeasResult->sinphi[0].P[0];
    //run.polarization_error  = gAnaMeasResult->sinphi[0].P[1],
    //run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
@@ -650,7 +656,8 @@ void AsymRoot::AddChannelEvent()
    if (gAsymAnaInfo->fSaveTrees.test(0))
       fRawEventTree->Fill();
 
-   if (gAsymAnaInfo->fSaveTrees.test(1) || gAsymAnaInfo->fSaveTrees.test(2)) {
+   if (gAsymAnaInfo->fSaveTrees.test(1) || gAsymAnaInfo->fSaveTrees.test(2))
+   {
       //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
 
       fChannelEvents.insert(*fChannelEvent);
@@ -864,6 +871,13 @@ void AsymRoot::UpdateCalibrator()
 }
 
 
+void AsymRoot::UpdateFromChannelEvent()
+{
+   UInt_t revId = fChannelEvent->GetRevolutionId();
+   fEventConfig->GetMeasInfo()->UpdateRevolutions( revId );
+}
+
+
 /** */
 Calibrator* AsymRoot::GetCalibrator()
 {
@@ -969,7 +983,7 @@ void AsymRoot::BookHists()
    for (int i=0; i<TOT_WFD_CH; i++) {
 
       sprintf(hname, "mass_feedback_st%d", i+1);
-      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ",gMeasInfo->RUNID, i+1);
+      sprintf(htitle, "%.3f : Invariant Mass (feedback) for Strip-%d ", gMeasInfo->RUNID, i+1);
       mass_feedback[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_feedback[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_feedback[i] -> SetLineColor(2);
@@ -1021,12 +1035,12 @@ void AsymRoot::BookHists()
       mass_vs_e_ecut[i] -> GetYaxis() -> SetTitle("Invariant Mass [GeV]");
 
       sprintf(hname, "mass_nocut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ",gMeasInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (nocut) for Strip-%d ", gMeasInfo->RUNID, i+1);
       mass_nocut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_nocut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
 
       sprintf(hname, "mass_yescut_st%d",i+1);
-      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ",gMeasInfo->RUNID, i+1);
+      sprintf(htitle,"%.3f : Invariant Mass (w/cut) for Strip-%d ", gMeasInfo->RUNID, i+1);
       mass_yescut[i] = new TH1F(hname, htitle, 100, 0, 20);
       mass_yescut[i] -> GetXaxis() -> SetTitle("Mass [GeV/c^2]");
       mass_yescut[i] -> SetLineColor(2);
@@ -1206,7 +1220,7 @@ EventConfig* AsymRoot::GetMeasConfig() { return fEventConfig; }
 /** */
 void AsymRoot::GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar)
 {
-   if (!fEventConfig) {
+   if ( !fEventConfig ) {
       Error("GetMeasConfigs", "fEventConfig is not defined");
       ri = 0; ai = 0; ar = 0;
       return;

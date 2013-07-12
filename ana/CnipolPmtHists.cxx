@@ -32,9 +32,7 @@ CnipolPmtHists::~CnipolPmtHists()
 /** */
 void CnipolPmtHists::BookHists()
 {
-   //string shName;
-   //TH1*   hist;
-   char   hName[256];
+   char hName[256];
 
    fDir->cd();
 
@@ -78,7 +76,6 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
    ((TH1*) o["hTdc_ch"       + sChId]) -> Fill(ch->GetTdc());
    ((TH1*) o["hTvsA_ch"      + sChId]) -> Fill(ch->GetAmpltd(), ch->GetTdc());
    ((TH1*) o["hTvsI_ch"      + sChId]) -> Fill(ch->GetIntgrl(), ch->GetTdc());
-
 }
 
 
