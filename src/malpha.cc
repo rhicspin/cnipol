@@ -242,7 +242,13 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          line_color = 28;
       }
       g->SetLineColor(line_color);
+      g->SetMarkerColor(line_color);
+      g->SetMarkerStyle(20);
+      g->SetMarkerSize(0.4);
       det_g->SetLineColor(line_color);
+      det_g->SetMarkerColor(line_color);
+      det_g->SetMarkerStyle(20);
+      det_g->SetMarkerSize(0.4);
       int i = 0;
       double xval = -0.5;
 
@@ -329,9 +335,9 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       g->SetName(sDet);
       det_g->SetName(sDet);
 
-      host->GetListOfFunctions()->Add(g, "pl");
+      host->GetListOfFunctions()->Add(g, "p");
       leg->AddEntry(g, sDet, "pl");
-      det_host->GetListOfFunctions()->Add(det_g, "pl");
+      det_host->GetListOfFunctions()->Add(det_g, "p");
 
       det_host->SetOption("DUMMY GRIDX GRIDY");
       det_host->GetXaxis()->SetTimeDisplay(1);
