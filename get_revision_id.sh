@@ -20,17 +20,19 @@ git diff --cached --quiet
 STAGED=$?
 
 if [ $STAGED = 1 ] || [ $UNSTAGED = 1 ]; then
-        echo "dirty working tree\";"
-        exit 0
+	FLAGS="M"
+else
+	# check if last git commit is pushed to svn
+	SVN_ID_LINE=`git log -1 --pretty=%B | grep "^git-svn-id: "`
+	if [ $? != 0 ]; then
+		FLAGS="M"
+	fi
 fi
 
-# If last git commit is already in svn, use svn revision id.
-SVN_ID_LINE=`git log -1 --pretty=%B | grep "^git-svn-id: "`
+# Take last svn revision id.
+SVN_ID_LINE=`git log --pretty=%B | grep "^git-svn-id: "  | head -n 1`
 if [ $? = 0 ]; then
 	SVNVERSION=`echo $SVN_ID_LINE | cut -d" " -f2 | cut -d"@" -f2`
-	echo "${SVNVERSION}G\""
+	echo "${SVNVERSION}${FLAGS}\""
 	exit 0
 fi
-
-git rev-parse HEAD | xargs echo -n
-echo "\";"
