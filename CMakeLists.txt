@@ -214,7 +214,7 @@ TARGET_LINK_LIBRARIES(
 
 SET_TARGET_PROPERTIES(asym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
-ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter")
+ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
 
 add_dependencies(cnipol revision_id)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
