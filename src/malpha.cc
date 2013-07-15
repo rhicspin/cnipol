@@ -496,7 +496,9 @@ int main(int argc, char *argv[])
 
       FillFromHist(hAmGdFit0Coef, startTime, rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId]);
       FillFromHist(hAmGain_over_GdGain, startTime, rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId]);
+      rhAmGain_over_GdGain[polId].YTitle = "g_Am / g_Gd";
       FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
+      rhAmGdGain_over_AmGain[polId].YTitle = "g_AmGd / g_Am";
       FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
 
       f->Close();
