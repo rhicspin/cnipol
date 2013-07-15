@@ -474,7 +474,8 @@ int main(int argc, char *argv[])
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
       TH1F  *hAmAmpCoef_over_GdAmpCoef = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
-      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef_over_AmAmpCoef");
+      TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
+      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = new TH1F((*hAmGdAmpCoef) / (*hAmAmpCoef));
       TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
 
       FillFromHist(hAmGdFit0Coef, startTime, rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId]);

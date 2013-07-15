@@ -69,12 +69,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
             AmGdPlot(chCalib, c, i, sCh);
 
-            c->d["alpha"]->o["hAmGdAmpCoef_over_AmAmpCoef"] = new TH1F(
-               (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) / (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"])
-            );
-            ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef_over_AmAmpCoef"])->SetName("hAmGdAmpCoef_over_AmAmpCoef");
-            ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef_over_AmAmpCoef"])->SetTitle("hAmGdAmpCoef_over_AmAmpCoef");
-
             c->d["alpha"]->o["hDeadLayerEnergy"] = new TH1F(
                (-1) * (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) * (*(TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])
             );
