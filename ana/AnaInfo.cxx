@@ -11,6 +11,8 @@
 #include "MseMeasInfo.h"
 #include "MeasInfo.h"
 
+#include "revision-export.hpp"
+
 ClassImp(AnaInfo)
 
 using namespace std;

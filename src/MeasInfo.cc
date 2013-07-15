@@ -11,6 +11,8 @@
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
+#include "revision-export.hpp"
+
 ClassImp(MeasInfo)
 
 using namespace std;

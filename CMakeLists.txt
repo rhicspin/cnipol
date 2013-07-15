@@ -175,6 +175,7 @@ ADD_LIBRARY(
 	src/TargetInfo.cc
 	~dsmirnov/rootmacros/utils/ValErrPair.cxx
 	~dsmirnov/rootmacros/utils/utils.C
+	src/revision-export.cpp
 	Dict.cxx
 	)
 
@@ -214,4 +215,11 @@ TARGET_LINK_LIBRARIES(
 SET_TARGET_PROPERTIES(asym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
 ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter")
-ADD_DEFINITIONS("-DASYM_VERSION=\"not-implemented-yet\"")
+
+add_dependencies(cnipol revision_id)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(revision_id
+        ${PROJECT_SOURCE_DIR}/get_revision_id.sh > ${CMAKE_CURRENT_BINARY_DIR}/revision-id.hpp
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
+        )
