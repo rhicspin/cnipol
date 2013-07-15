@@ -140,6 +140,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       h->GetXaxis()->SetTimeDisplay(1);
       h->GetXaxis()->SetTimeFormat("%d.%m.%y");
       h->GetXaxis()->SetTimeOffset(min_startTime);
+      h->GetXaxis()->SetNdivisions(8);
    }
    h->SetYTitle(result.YTitle.c_str());
 
@@ -265,8 +266,13 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          else
          {
             xval++;
-            host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
-            det_host->GetXaxis()->SetBinLabel(i + 1, runName.c_str());
+            if (i % 5 == 0)
+            {
+               TString label(runName);
+               label = label.ReplaceAll(".alpha0", "");
+               host->GetXaxis()->SetBinLabel(i + 1, label.Data());
+               det_host->GetXaxis()->SetBinLabel(i + 1, label.Data());
+            }
          }
 
          if (isnan(value))
@@ -331,8 +337,13 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       det_host->GetXaxis()->SetTimeDisplay(1);
       det_host->GetXaxis()->SetTimeFormat("%d.%m.%y");
       det_host->GetXaxis()->SetTimeOffset(min_startTime);
+      det_host->GetXaxis()->SetNdivisions(8);
       det_host->SetXTitle(sDet);
       det_host->SetYTitle(h->GetYaxis()->GetTitle());
+      if (!max_startTime)
+      {
+         det_host->SetLabelOffset(0.0);
+      }
       det_hosts.push_back(det_host);
    }
 
@@ -340,7 +351,12 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    host->GetXaxis()->SetTimeDisplay(1);
    host->GetXaxis()->SetTimeFormat("%d.%m.%y");
    host->GetXaxis()->SetTimeOffset(min_startTime);
+   host->GetXaxis()->SetNdivisions(8);
    host->SetYTitle(h->GetYaxis()->GetTitle());
+      if (!max_startTime)
+      {
+         host->SetLabelOffset(0.0);
+      }
 
    double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
    host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 1.5, canvas_max_value + canvas_vpadding * 0.5);
@@ -473,14 +489,14 @@ int main(int argc, char *argv[])
       TH1F  *hAmGdFit0Coef = (TH1F*) f->FindObjectAny("hAmGdFit0Coef");
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
-      TH1F  *hAmAmpCoef_over_GdAmpCoef = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
       TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
-      TH1F  *hAmGdAmpCoef_over_AmAmpCoef = new TH1F((*hAmGdAmpCoef) / (*hAmAmpCoef));
+      TH1F  *hAmGain_over_GdGain = new TH1F((*hGdAmpCoef) / (*hAmAmpCoef));
+      TH1F  *hAmGdGain_over_AmGain = new TH1F((*hGdAmpCoef) / (*hAmGdAmpCoef));
       TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
 
       FillFromHist(hAmGdFit0Coef, startTime, rAmGdFit0Coef[polId], rAmGdFit0CoefErr[polId]);
-      FillFromHist(hAmAmpCoef_over_GdAmpCoef, startTime, rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId]);
-      FillFromHist(hAmGdAmpCoef_over_AmAmpCoef, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
+      FillFromHist(hAmGain_over_GdGain, startTime, rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId]);
+      FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
       FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
 
       f->Close();
