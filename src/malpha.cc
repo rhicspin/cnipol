@@ -304,7 +304,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          det_g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
       }
-      TString sDet("Detector");
+      TString sDet("Det");
       sDet += (det + 1);
       if (max_startTime)
       {
