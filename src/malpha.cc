@@ -198,7 +198,8 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
    title += cut_str;
    TCanvas *c = new TCanvas(canvasName);
-   TLegend *leg = new TLegend(0.15,0.1,0.85,0.3);
+   double bm = gStyle->GetPadBottomMargin();
+   TLegend *leg = new TLegend(0.15,bm+0.02,0.85,bm+0.202);
    TH1F  *host, *det_host;
    vector<TH1F*>  det_hosts;
    TString	host_name("_");
