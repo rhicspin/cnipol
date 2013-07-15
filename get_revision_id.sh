@@ -6,8 +6,14 @@ git diff --quiet
 UNSTAGED=$?
 
 if [ $UNSTAGED = 129 ]; then
-        echo "not in git\";"
-        exit 0
+	SVNVERSION=`svnversion $1`
+	if [ $SVNVERSION = "exported" ]; then
+		echo "not in repo\""
+		exit 0
+	else
+		echo "${SVNVERSION}\";"
+		exit 0
+	fi
 fi
 
 git diff --cached --quiet
