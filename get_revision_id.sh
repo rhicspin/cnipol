@@ -24,5 +24,13 @@ if [ $STAGED = 1 ] || [ $UNSTAGED = 1 ]; then
         exit 0
 fi
 
+# If last git commit is already in svn, use svn revision id.
+SVN_ID_LINE=`git log -1 --pretty=%B | grep "^git-svn-id: "`
+if [ $? = 0 ]; then
+	SVNVERSION=`echo $SVN_ID_LINE | cut -d" " -f2 | cut -d"@" -f2`
+	echo "${SVNVERSION}G\""
+	exit 0
+fi
+
 git rev-parse HEAD | xargs echo -n
 echo "\";"
