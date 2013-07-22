@@ -30,7 +30,7 @@ AnaInfo::AnaInfo() : TObject(),
    fAsymEnv(),
    fFileMeasInfo(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(kFALSE),
-   fFlagUpdateDb(kFALSE), fFlagCreateThumbs(kFALSE),
+   fFlagUpdateDb(kFALSE),    fFlagCreateThumbs(kFALSE),
    fUserGroup(),
    fAlphaSourceCount(-1)
 {

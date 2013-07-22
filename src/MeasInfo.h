@@ -65,10 +65,10 @@ protected:
    UShort_t            fPulserCutAdcMax;
    UShort_t            fPulserCutTdcMin;
    UShort_t            fPulserCutTdcMax;
-   std::vector<UInt_t> fSpinFlipperMarkers; //! revolution id's corresponding to sync pulses for spin flipper studies
-   Double_t            fSpinFlipperPhase;   //!
-   UInt_t              fFirstRevolution;    //!
-   UInt_t              fLastRevolution;     //!
+   std::vector<UInt_t> fSpinFlipperMarkers; // revolution id's corresponding to sync pulses for spin flipper studies
+   Double_t            fSpinFlipperPhase;   //
+   UInt_t              fFirstRevolution;    //
+   UInt_t              fLastRevolution;     //
 
 public:
 

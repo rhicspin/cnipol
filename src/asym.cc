@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
    MseMeasInfoX  *mseMeasInfoX     = 0;
    MseMeasInfoX  *mseMeasInfoXOrig = 0;
 
-   // Check whether the run is in database
+   // Check whether the run is already in database
    if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
    }
