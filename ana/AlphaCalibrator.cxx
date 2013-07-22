@@ -74,13 +74,14 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
             ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetBinContent(i, (chCalib->fAmAmp.fPeakPos * GD_ALPHA_E - chCalib->fGdAmp.fPeakPos * AM_ALPHA_E)
                / (chCalib->fAmAmp.fPeakPos - chCalib->fGdAmp.fPeakPos));
 
+            const double	STOPPING_POWER_GD = 190, STOPPING_POWER_AM = 140; // keV/(\mu m)
             c->d["alpha"]->o["hDeadLayerSize"] = new TH1F(
 		AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) - (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]))
                 /
                 (
-                   AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) * 190
+                   AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) * STOPPING_POWER_GD
                    -
-                   GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]) * 140
+                   GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]) * STOPPING_POWER_AM
                 )
             );
 
