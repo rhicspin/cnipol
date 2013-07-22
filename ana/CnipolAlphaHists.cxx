@@ -139,10 +139,10 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hAmGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
    ((TH2F*) o["hAmGdAmpCoef"])->GetYaxis()->SetTitle("Americium+Gadolinium Amplitude Calib, keV/ADC");
 
-   o["hAmGdFit0Coef"] = new TH1F("hAmGdFit0Coef", "hAmGdFit0Coef", 72, 1, 73);
-   ((TH1*)  o["hAmGdFit0Coef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hAmGdFit0Coef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmGdFit0Coef"])->GetYaxis()->SetTitle("[0], ADC");
+   o["hDeadLayerEnergy"] = new TH1F("hDeadLayerEnergy", "hDeadLayerEnergy", 72, 1, 73);
+   ((TH1F*) o["hDeadLayerEnergy"])->GetXaxis()->SetTitle("Channel");
+   ((TH1F*) o["hDeadLayerEnergy"])->GetYaxis()->SetTitle("Dead layer energy, keV");
+   ((TH1F*) o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
 
 
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);

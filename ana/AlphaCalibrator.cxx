@@ -91,13 +91,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       }
    }
 
-   c->d["alpha"]->o["hDeadLayerEnergy"] = new TH1F(
-      (-1) * (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) * (*(TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])
-   );
-   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetName("hDeadLayerEnergy");
-   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetTitle("hDeadLayerEnergy;Channel;Dead layer energy, keV");
-   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
-
    CalibrateBadChannels(c);
 }
 
@@ -160,8 +153,9 @@ void AlphaCalibrator::AmGdPlot(
    hAmGd->GetXaxis()->Set(1, 0, AM_ALPHA_E / 1000 * 1.1);
    hAmGd->GetYaxis()->Set(1, 0, chCalib->fAmAmp.fPeakPos * 1.3);
 
+   TF1	func("func", "(x-[0])*[1]", 0, AM_ALPHA_E / 1000);
    TFitResultPtr fitres;
-   fitres = gAmGd->Fit("pol1", "S", "", 0, AM_ALPHA_E / 1000); // S: return fitres
+   fitres = gAmGd->Fit(&func, "S"); // S: return fitres
 
    float fit1, fit1_err, coef, coefErr;
    fit1 = fitres->Value(1);
@@ -172,8 +166,8 @@ void AlphaCalibrator::AmGdPlot(
    ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinContent(iCh, coef);
    ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinError(iCh, coefErr);
 
-   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->SetBinContent(iCh, fitres->Value(0));
-   ((TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])->SetBinError(iCh, fitres->FitResult::Error(0));
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetBinContent(iCh, fitres->Value(0) * 1000);
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetBinError(iCh, fitres->FitResult::Error(0) * 1000);
 }
 
 
