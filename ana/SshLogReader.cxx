@@ -112,6 +112,19 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
    if (retcode)
    {
       Error("SshLogReader", "process returned %i", retcode);
+      Error("SshLogReader",
+         "You need to create a gateway to acnlina machine.\n"
+         "In order to do that, add following into your ~/.ssh/config file:\n\n"
+         "Host aclina\n"
+         "\tIdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa\n"
+         "\tUser            dsmirnov\n"
+         "\tHostName        localhost\n"
+         "\tPort            8022\n\n"
+         "To start gateway itself use following command:\n\n"
+         "ssh -l your_user_name ssh.pbn.bnl.local -L 8022:acnlina5.pbn.bnl.gov:22\n\n"
+         "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
+         "If you have problems, try using --no-ssh option."
+         );
    }
 
    return retcode;
