@@ -2,10 +2,17 @@
 
 echo -n "const char *ASYM_VERSION = \""
 
-git diff --quiet
-UNSTAGED=$?
+which git 1> /dev/null 2> /dev/null
+if [ $? != 1 ]; then
+	git diff --quiet
+	UNSTAGED=$?
+	GIT_FOUND=1
+else
+	UNSTAGED=0
+	GIT_FOUND=0
+fi
 
-if [ $UNSTAGED = 129 ]; then
+if [ $UNSTAGED = 129 ] || [ $GIT_FOUND = 0 ]; then
 	SVNVERSION=`svnversion $1`
 	if [ $SVNVERSION = "exported" ]; then
 		echo "not in repo\""
