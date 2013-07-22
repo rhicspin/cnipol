@@ -756,8 +756,8 @@ void MAsymRunHists::BookHistsByPolarimeter(DrawObjContainer &oc, EPolarimeterId 
 
    shName = "hNormHJ2PCVsTargetId_" + sPolId + "_" + sBeamE;
    map<string, TStyle*> sfx2styles;
-   sfx2styles["_H"] = (TStyle*) &RunConfig::AsMarker(kTARGET_H, polId);
-   sfx2styles["_V"] = (TStyle*) &RunConfig::AsMarker(kTARGET_V, polId);
+   sfx2styles["_H"] = (TStyle*) new TAttMarker(RunConfig::AsMarker(kTARGET_H, polId));
+   sfx2styles["_V"] = (TStyle*) new TAttMarker(RunConfig::AsMarker(kTARGET_V, polId));
    hist = utils::ConstructTH1CWithTGraphErrorsMap(shName.c_str(), "; Target Id; H-jet/p-Carbon Pol. Ratio;", sfx2styles, 6, 0.5, 6.5, 10, 0, 1.5);
    oc.o[shName] = hist;
 }
