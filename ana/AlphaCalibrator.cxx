@@ -68,13 +68,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          if (fit_gadolinium) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
             AmGdPlot(chCalib, c, i, sCh);
-
-            c->d["alpha"]->o["hDeadLayerEnergy"] = new TH1F(
-               (-1) * (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) * (*(TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])
-            );
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetName("hDeadLayerEnergy");
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetTitle("hDeadLayerEnergy;Channel;Dead layer energy, keV");
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
          }
       }
 
@@ -97,6 +90,13 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          Error("Calibrate", "Empty TFitResultPtr");
       }
    }
+
+   c->d["alpha"]->o["hDeadLayerEnergy"] = new TH1F(
+      (-1) * (*(TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"]) * (*(TH1F*) c->d["alpha"]->o["hAmGdFit0Coef"])
+   );
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetName("hDeadLayerEnergy");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetTitle("hDeadLayerEnergy;Channel;Dead layer energy, keV");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
 
    CalibrateBadChannels(c);
 }
