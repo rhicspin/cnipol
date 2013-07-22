@@ -33,6 +33,8 @@ fi
 SVN_ID_LINE=`git log --pretty=%B | grep "^git-svn-id: "  | head -n 1`
 if [ $? = 0 ]; then
 	SVNVERSION=`echo $SVN_ID_LINE | cut -d" " -f2 | cut -d"@" -f2`
-	echo "${SVNVERSION}${FLAGS}\""
+	echo "${SVNVERSION}${FLAGS}\";"
 	exit 0
 fi
+
+echo "unknown\";"
