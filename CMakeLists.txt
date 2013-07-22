@@ -89,6 +89,10 @@ SET(
 	inc/MAsymSingleFillHists.h
 	inc/RunQA.h
 	inc/Target.h
+	inc/MAsymPmtHists.h
+	inc/MAsymRateHists.h
+	inc/MAsymRoot.h
+	inc/MAsymRunHists.h
 	online/include/rpoldata.h
 	src/AnaFillExternResult.h
 	src/AnaFillResult.h
@@ -143,6 +147,10 @@ ADD_LIBRARY(
 	ana/MAlphaAnaInfo.cxx
 	ana/MAsymAnaInfo.cxx
 	ana/MAsymFillHists.cxx
+	ana/MAsymPmtHists.cxx
+	ana/MAsymRateHists.cxx
+	ana/MAsymRoot.cxx
+	ana/MAsymRunHists.cxx
 	ana/MAsymSingleFillHists.cxx
 	ana/RunConfig.cxx
 	ana/RunQA.cxx
@@ -213,6 +221,18 @@ TARGET_LINK_LIBRARIES(
 	)
 
 SET_TARGET_PROPERTIES(asym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+
+ADD_EXECUTABLE(
+	masym
+	src/masym.cc
+	)
+
+TARGET_LINK_LIBRARIES(
+	masym
+	cnipol
+	)
+
+SET_TARGET_PROPERTIES(masym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
 ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
 

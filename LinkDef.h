@@ -48,6 +48,10 @@
 #pragma link C++ class RunQA+;
 #pragma link C++ class Target+;
 #pragma link C++ class TargetUId+;
+#pragma link C++ class MAsymPmtHists+;
+#pragma link C++ class MAsymRateHists+;
+#pragma link C++ class MAsymRoot+;
+#pragma link C++ class MAsymRunHists+;
 
 // online/include/rpoldata.h;
 #pragma link C++ class RecordTargetParams-;
