@@ -414,6 +414,8 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > rhAmGdGain_over_AmGainErr;
    map< Short_t, ResultMean > rDeadLayerEnergy;
    map< Short_t, ResultMean > rDeadLayerEnergyErr;
+   map< Short_t, ResultMean > rDeadLayerSize;
+   map< Short_t, ResultMean > rDeadLayerSizeErr;
    double max_startTime = -1;
    double min_startTime = -1;
    map< Short_t, map<Time, string> > runNameD;
@@ -497,12 +499,14 @@ int main(int argc, char *argv[])
       TH1F  *hAmGain_over_GdGain = new TH1F((*hGdAmpCoef) / (*hAmAmpCoef));
       TH1F  *hAmGdGain_over_AmGain = new TH1F((*hGdAmpCoef) / (*hAmGdAmpCoef));
       TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
+      TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
 
       FillFromHist(hAmGain_over_GdGain, startTime, rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId]);
       rhAmGain_over_GdGain[polId].YTitle = "g_Am / g_Gd";
       FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
       rhAmGdGain_over_AmGain[polId].YTitle = "g_AmGd / g_Am";
       FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
+      FillFromHist(hDeadLayerSize, startTime, rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
 
       f->Close();
       delete f;
@@ -523,9 +527,11 @@ int main(int argc, char *argv[])
       PlotMean(sub_oc, polIdName, "hAmGain_over_GdGain_by_day", rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_day", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGain_over_GdGain_by_run", rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
    }
 
    oc->Write();
