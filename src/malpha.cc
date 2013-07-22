@@ -330,7 +330,15 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
             sDet += "\\pm";
             snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(0));
             sDet += buf;
-            sDet += ") keV";
+            sDet += ")";
+            if (strstr(name, "hDeadLayerEnergy"))
+            {
+               sDet += " keV";
+            }
+            else if (strstr(name, "hDeadLayerSize"))
+            {
+               sDet += " \\mu m";
+            }
          }
       }
       g->SetName(sDet);
