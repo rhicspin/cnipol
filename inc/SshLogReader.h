@@ -12,17 +12,7 @@ using std::map;
 using std::string;
 using std::vector;
 
-/**
- * You will need to have aclina host defined in your ssh_config.
- *
- * Example:
- *
- * Host aclina
- *    IdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa
- *    User            dsmirnov
- *    HostName        localhost
- *    Port            8022
- */
+
 class SshLogReader : TObject
 {
 private:
