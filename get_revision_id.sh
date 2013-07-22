@@ -2,6 +2,7 @@
 
 echo -n "const char *ASYM_VERSION = \""
 
+# check if git is in PATH
 which git 1> /dev/null 2> /dev/null
 if [ $? != 1 ]; then
 	git diff --quiet
@@ -12,6 +13,7 @@ else
 	GIT_FOUND=0
 fi
 
+# if this is not a git repo or git is not found fallback to svn
 if [ $UNSTAGED = 129 ] || [ $GIT_FOUND = 0 ]; then
 	SVNVERSION=`svnversion $1`
 	if [ $SVNVERSION = "exported" ]; then
@@ -23,6 +25,7 @@ if [ $UNSTAGED = 129 ] || [ $GIT_FOUND = 0 ]; then
 	fi
 fi
 
+# check if there were staged changes
 git diff --cached --quiet
 STAGED=$?
 
