@@ -38,7 +38,7 @@ string SshLogReader::GetSshCommand(time_t start, time_t end)
    startStr[strlen(startStr) - 1] = 0; // replace newlines with end-of-string marks
    endStr[strlen(endStr) - 1] = 0;
    snprintf(buf, sizeof(buf),
-            "ssh aclina \""
+            "ssh acnlina \""
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"
@@ -115,7 +115,7 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
       Error("SshLogReader",
          "You need to create a gateway to acnlina machine.\n"
          "In order to do that, add following into your ~/.ssh/config file:\n\n"
-         "Host aclina\n"
+         "Host acnlina\n"
          "\tIdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa\n"
          "\tUser            dsmirnov\n"
          "\tHostName        localhost\n"
