@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
          "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer"
       );
 
-      int retval = ssh_log.ReadMean( startTime, endTime, &mean_value);
+      int retval = ssh_log.ReadTimeRangeMean( startTime, endTime, &mean_value);
 
       if (retval)
       {
