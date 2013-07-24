@@ -395,6 +395,56 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 }
 
 
+void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &r1, ResultMean &r1_err, ResultMean &r2, ResultMean &r2_err)
+{
+   if ((r1.first.empty() && r1.second.empty()) || (r2.first.empty() && r2.second.empty()))
+   {
+      return;
+   }
+
+   ObjMap	&o = oc->o;
+   double max_value1, min_value1, max_value2, min_value2;
+   GetDeviceMaxMin(r1, &min_value1, &max_value1);
+   GetDeviceMaxMin(r2, &min_value2, &max_value2);
+   TH2F	*h = new TH2F(name, name,
+                      max_value1 - min_value1, min_value1, max_value1,
+                      max_value2 - min_value2, min_value2, max_value2);
+
+   for (int det = 0; det < N_DETECTORS; det++)
+   {
+      int	i = 0;
+      TGraphErrors *g = new TGraphErrors(r1.second.size());
+      Color_t  line_color = det + 2;
+      if (line_color == 5)
+      {
+         line_color = 28;
+      }
+      g->SetMarkerColor(line_color);
+
+      for (map< Time, vector<double> >::iterator it = r1.second.begin(); it != r1.second.end(); it++)
+      {
+         double startTime = it->first;
+         double value1 = it->second[det];
+         if (!r2.second[startTime].size())
+         {
+            continue;
+         }
+         double value2 = r2.second[startTime][det];
+
+         g->SetPoint(i, value1, value2);
+         g->SetPointError(i, r1_err.second[startTime][det], r2_err.second[startTime][det]);
+         ++i;
+      }
+
+      h->GetListOfFunctions()->Add(g, "p");
+   }
+   h->SetXTitle(r1.YTitle.c_str());
+   h->SetYTitle(r2.YTitle.c_str());
+
+   o[name] = h;
+}
+
+
 EPolarimeterId	parsePolIdFromCdevKey(const string &key)
 {
 #define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
@@ -631,6 +681,8 @@ int main(int argc, char *argv[])
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
+
+      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
    }
 
    oc->Write();
