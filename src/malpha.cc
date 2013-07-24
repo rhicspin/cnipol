@@ -531,7 +531,7 @@ int main(int argc, char *argv[])
 
       map<string, double> mean_value;
 
-      SshLogReader ssh_log(
+      static SshLogReader ssh_log(
          "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
          "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
          "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
