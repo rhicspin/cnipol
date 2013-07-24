@@ -29,14 +29,10 @@ SshLogReader::SshLogReader(string loggers, string cells)
 }
 
 
-string SshLogReader::GetSshCommand(time_t start, time_t end)
+string SshLogReader::GetSshCommand(const char *export_params)
 {
-   char buf[1024], startStr[32], endStr[32];
+   char buf[1024];
 
-   ctime_r(&start, startStr); // this should have timezone problems
-   ctime_r(&end, endStr);
-   startStr[strlen(startStr) - 1] = 0; // replace newlines with end-of-string marks
-   endStr[strlen(endStr) - 1] = 0;
    snprintf(buf, sizeof(buf),
             "ssh acnlina \""
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
@@ -46,12 +42,39 @@ string SshLogReader::GetSshCommand(time_t start, time_t end)
             " -timeformat 'unix'"
             " -dataformat '%%10.6f'"
             " -excluderowswithholes"
-            " -start '%s'"
-            " -stop '%s'"
-            "\"",
-            fLoggersStr.c_str(), fCellsStr.c_str(), startStr, endStr);
+            "%s\"",
+            fLoggersStr.c_str(), fCellsStr.c_str(), export_params);
 
    return string(buf);
+}
+
+
+string SshLogReader::GetSshCommandForTimeRange(time_t start, time_t end)
+{
+   char export_params[1024], startStr[32], endStr[32];
+
+   ctime_r(&start, startStr); // this should have timezone problems
+   ctime_r(&end, endStr);
+   startStr[strlen(startStr) - 1] = 0; // replace newlines with end-of-string marks
+   endStr[strlen(endStr) - 1] = 0;
+   snprintf(export_params, sizeof(export_params),
+            " -start '%s'"
+            " -stop '%s'",
+            startStr, endStr);
+
+   return GetSshCommand(export_params);
+}
+
+
+string SshLogReader::GetSshCommandForFillId(int fill_id)
+{
+   char export_params[1024];
+
+   snprintf(export_params, sizeof(export_params),
+	    " -fill '%i'",
+	    fill_id);
+
+   return GetSshCommand(export_params);
 }
 
 
@@ -129,24 +152,22 @@ int SshLogReader::Run(string cmd, map< string, vector<double> > *values)
 }
 
 
-int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *values)
+int SshLogReader::ReadTimeRange(time_t start, time_t end, map< string, vector<double> > *values)
 {
-   string cmd = GetSshCommand(start, end);
+   string cmd = GetSshCommandForTimeRange(start, end);
    return Run(cmd, values);
 }
 
 
-int SshLogReader::ReadMean(time_t start, time_t end, map<string, double> *mean_value)
+int SshLogReader::ReadFill(int fill_id, map< string, vector<double> > *values)
 {
-   map< string, vector<double> > values;
+   string cmd = GetSshCommandForFillId(fill_id);
+   return Run(cmd, values);
+}
 
-   int retcode = Read(start, end, &values);
 
-   if (retcode != 0)
-   {
-      return retcode;
-   }
-
+void SshLogReader::CalculateMean(const map< string, vector<double> > &values, map<string, double> *mean_value)
+{
    for (map< string, vector<double> >::const_iterator it = values.begin();
         it != values.end(); it++)
    {
@@ -161,6 +182,38 @@ int SshLogReader::ReadMean(time_t start, time_t end, map<string, double> *mean_v
 
       (*mean_value)[key] = mean;
    }
+}
+
+
+int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value)
+{
+   map< string, vector<double> > values;
+
+   int retcode = ReadTimeRange(start, end, &values);
+
+   if (retcode != 0)
+   {
+      return retcode;
+   }
+
+   CalculateMean(values, mean_value);
+
+   return retcode;
+}
+
+
+int SshLogReader::ReadFillMean(int fill_id, map<string, double> *mean_value)
+{
+   map< string, vector<double> > values;
+
+   int retcode = ReadFill(fill_id, &values);
+
+   if (retcode != 0)
+   {
+      return retcode;
+   }
+
+   CalculateMean(values, mean_value);
 
    return retcode;
 }
