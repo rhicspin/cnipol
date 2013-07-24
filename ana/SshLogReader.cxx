@@ -2,8 +2,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <algorithm>
 
 #include <errno.h>
+
+#include <mysql++.h>
 
 #include "SshLogReader.h"
 
@@ -11,6 +14,7 @@
 SshLogReader::SshLogReader(string loggers, string cells)
       : fLoggersStr(loggers)
       , fCellsStr(cells)
+      , fConnection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306)
 {
    if (index(fLoggersStr.c_str(), '\'') || (index(fCellsStr.c_str(), '\''))
        || index(fLoggersStr.c_str(), '"') || (index(fCellsStr.c_str(), '"')))
@@ -188,6 +192,42 @@ void SshLogReader::CalculateMean(const map< string, vector<double> > &values, ma
 int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value)
 {
    map< string, vector<double> > values;
+   mysqlpp::Query	select_query = fConnection.query();
+   select_query << "SELECT cdev_cell, value FROM ssh_mean_cache"
+                << " WHERE"
+                << " start_time = " << (double)start
+                << " AND end_time = " << (double)end
+                << ";";
+   mysqlpp::StoreQueryResult	res = select_query.store();
+   bool	cache_miss = false;
+
+   if (res && res.num_rows())
+   {
+      size_t	num_rows = res.num_rows();
+      for(size_t i = 0; i < num_rows; ++i)
+      {
+         string	cdev_cell;
+         res[i]["cdev_cell"].to_string(cdev_cell);
+         if (find(fCells.begin(), fCells.end(), cdev_cell) != fCells.end())
+         {
+            if (!res[i]["value"].is_null())
+            {
+               (*mean_value)[cdev_cell] = res[i]["value"];
+            }
+         }
+         else
+         {
+            cache_miss = true;
+            break;
+         }
+      }
+
+      if (!cache_miss)
+      {
+         Info("SshLogReader", "Loaded data from MySQL cache");
+         return 0;
+      }
+   }
 
    int retcode = ReadTimeRange(start, end, &values);
 
@@ -197,6 +237,34 @@ int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double
    }
 
    CalculateMean(values, mean_value);
+
+   mysqlpp::Transaction	trans(fConnection);
+
+   for (vector<string>::const_iterator it = fCells.begin(); it != fCells.end(); it++)
+   {
+      const string	cdev_cell = *it;
+      mysqlpp::Query       insert_query = fConnection.query();
+      insert_query << "INSERT INTO ssh_mean_cache"
+                   << " (start_time, end_time, cdev_cell, value)"
+                   << " VALUES"
+                   << " (" << (double)start
+                   << ", " << (double)end
+                   << ", " << mysqlpp::quote << cdev_cell
+                   << ", ";
+      if (mean_value->count(cdev_cell))
+      {
+         insert_query << (*mean_value)[cdev_cell];
+      }
+      else
+      {
+         insert_query << "NULL";
+      }
+      insert_query << ");";
+      insert_query.execute();
+   }
+
+   trans.commit();
+   Info("SshLogReader", "Saved data from MySQL cache");
 
    return retcode;
 }
