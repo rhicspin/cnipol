@@ -588,6 +588,7 @@ int main(int argc, char *argv[])
             (double)0
             ) / rBiasCurrentErr[polId].second[startTime].size();
       }
+      rBiasCurrent[polId].YTitle = "BiasCurrent";
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
