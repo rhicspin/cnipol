@@ -8,6 +8,8 @@
 
 #include <TObject.h>
 
+#include <mysql++.h>
+
 using std::map;
 using std::string;
 using std::vector;
@@ -20,6 +22,7 @@ private:
    string          fLoggersStr;
    string          fCellsStr;
    vector<string>  fCells;
+   mysqlpp::Connection fConnection;
 
    string GetSshCommand(const char *export_params);
    string GetSshCommandForTimeRange(time_t start, time_t end);
