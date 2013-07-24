@@ -154,6 +154,7 @@ ADD_LIBRARY(
 	ana/MAsymSingleFillHists.cxx
 	ana/RunConfig.cxx
 	ana/RunQA.cxx
+	ana/SshLogReader.cxx
 	ana/Target.cxx
 	ana/TargetUId.cxx
 	src/AnaFillExternResult.cc
@@ -212,7 +213,6 @@ SET_TARGET_PROPERTIES(malpha PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 ADD_EXECUTABLE(
 	asym
 	src/asym.cc
-	ana/SshLogReader.cxx
 	)
 
 TARGET_LINK_LIBRARIES(

@@ -2,6 +2,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <numeric>
+#include <stdint.h>
 
 #include "malpha.h"
 
@@ -12,6 +15,7 @@
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
 #include "MeasInfo.h"
+#include "SshLogReader.h"
 
 #include "DrawObjContainer.h"
 
@@ -391,6 +395,27 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 }
 
 
+EPolarimeterId	parsePolIdFromCdevKey(const string &key)
+{
+#define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
+   switch(CHAR_PAIR(key[0], key[10]))
+   {
+   case CHAR_PAIR('b', '1'):
+      return kB1U;
+   case CHAR_PAIR('y', '1'):
+      return kY1D;
+   case CHAR_PAIR('b', '2'):
+      return kB2D;
+   case CHAR_PAIR('y', '2'):
+      return kY2U;
+   default:
+      Error("masym", "Can't parse polarimeter");
+      exit(EXIT_FAILURE);
+   }
+#undef CHAR_PAIR
+}
+
+
 /** */
 int main(int argc, char *argv[])
 {
@@ -424,6 +449,8 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > rDeadLayerEnergyErr;
    map< Short_t, ResultMean > rDeadLayerSize;
    map< Short_t, ResultMean > rDeadLayerSizeErr;
+   map< Short_t, ResultMean > rBiasCurrent;
+   map< Short_t, ResultMean > rBiasCurrentErr;
    double max_startTime = -1;
    double min_startTime = -1;
    map< Short_t, map<Time, string> > runNameD;
@@ -471,6 +498,7 @@ int main(int argc, char *argv[])
       string   runName      = gMM->fMeasInfo->GetRunName();
       Short_t  polId        = gMM->fMeasInfo->fPolId;
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
+      Double_t ssh_endTime  = gMM->fMeasInfo->fStopTime;
 
       if (alphaSources != 2)
       {
@@ -499,6 +527,66 @@ int main(int argc, char *argv[])
       if ((min_startTime == -1) || (min_startTime > startTime))
       {
          min_startTime = startTime;
+      }
+
+      map<string, double> mean_value;
+
+      SshLogReader ssh_log(
+         "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
+         "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
+         "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
+         "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
+         "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM,"
+         "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
+         "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
+         "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
+         "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
+      );
+
+      int retval = ssh_log.ReadTimeRangeMean(startTime, ssh_endTime, &mean_value);
+
+      if (retval)
+      {
+         Error("masym", "Some problems with SshLogReader");
+         return EXIT_FAILURE;
+      }
+
+      for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+      {
+         const string &key = it->first;
+         double value = it->second;
+
+         EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+         if (ssh_PolId != polId)
+         {
+            continue;
+         }
+         int	ssh_DetId = key[15] - '0';
+
+         // sometimes cdev current have glitches, so the values like 98999999999999993426744560981400092672.000000 get in.
+         if (value >= 10e6)
+         {
+            continue;
+         }
+
+         Info("masym", "Mean %s equals to %f", key.c_str(), value);
+         rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
+         rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
+	 rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+         rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
+      }
+      if (rBiasCurrent[polId].second.count(startTime) && !rBiasCurrent[polId].second[startTime].empty())
+      {
+         rBiasCurrent[polId].first[startTime] = accumulate(
+            rBiasCurrent[polId].second[startTime].begin(),
+            rBiasCurrent[polId].second[startTime].end(),
+            (double)0
+            ) / rBiasCurrent[polId].second[startTime].size();
+         rBiasCurrentErr[polId].first[startTime] = accumulate(
+            rBiasCurrentErr[polId].second[startTime].begin(),
+            rBiasCurrentErr[polId].second[startTime].end(),
+            (double)0
+            ) / rBiasCurrentErr[polId].second[startTime].size();
       }
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
@@ -536,10 +624,12 @@ int main(int argc, char *argv[])
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_day", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hBiasCurrent_by_day", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGain_over_GdGain_by_run", rhAmGain_over_GdGain[polId], rhAmGain_over_GdGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
    }
 
    oc->Write();
