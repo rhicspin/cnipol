@@ -55,10 +55,8 @@ string SshLogReader::GetSshCommand(time_t start, time_t end)
 }
 
 
-int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *values)
+int SshLogReader::Run(string cmd, map< string, vector<double> > *values)
 {
-   string cmd = GetSshCommand(start, end);
-
    Info("SshLogReader", "Running %s", cmd.c_str());
 
    FILE *fd = popen(cmd.c_str(), "r");
@@ -128,6 +126,13 @@ int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *
    }
 
    return retcode;
+}
+
+
+int SshLogReader::Read(time_t start, time_t end, map< string, vector<double> > *values)
+{
+   string cmd = GetSshCommand(start, end);
+   return Run(cmd, values);
 }
 
 

@@ -30,6 +30,7 @@ public:
     * @param cells   comma separated list of cells
     */
    SshLogReader(string loggers, string cells);
+   int Run(string cmd, map< string, vector<double> > *values);
    /**
     * @returns 0 if everything was ok
     */
