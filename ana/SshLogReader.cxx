@@ -43,7 +43,7 @@ string SshLogReader::GetSshCommand(const char *export_params)
             " -logger '%s'"
             " -cells '%s'"
             " -timeformat 'unix'"
-            " -excluderowswithholes"
+            " -showmissingdatawith x"
             "%s\"",
             fLoggersStr.c_str(), fCellsStr.c_str(), export_params);
 
@@ -113,6 +113,17 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
 
          for (vector<string>::const_iterator it = fCells.begin(); it != fCells.end(); it++)
          {
+            char cc;
+            do
+            {
+               cc = getc(fd);
+            }
+            while((cc == ' ') || (cc == '\t'));
+            if (cc == 'x')
+            {
+               continue;
+            }
+            ungetc(cc, fd);
             len = fscanf(fd, "%lf", &value);
             if (len != 1)
             {
