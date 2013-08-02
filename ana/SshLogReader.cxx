@@ -81,7 +81,7 @@ string SshLogReader::GetSshCommandForFillId(int fill_id)
 }
 
 
-int SshLogReader::Run(string cmd, map< string, vector<double> > *values)
+int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
 {
    Info("SshLogReader", "Running %s", cmd.c_str());
 
@@ -121,7 +121,7 @@ int SshLogReader::Run(string cmd, map< string, vector<double> > *values)
                return 1;
             }
 
-            (*values)[*it].push_back(value);
+            (*values)[*it][time] = value;
          }
       }
    }
@@ -155,32 +155,38 @@ int SshLogReader::Run(string cmd, map< string, vector<double> > *values)
 }
 
 
-int SshLogReader::ReadTimeRange(time_t start, time_t end, map< string, vector<double> > *values)
+int SshLogReader::ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values)
 {
    string cmd = GetSshCommandForTimeRange(start, end);
    return Run(cmd, values);
 }
 
 
-int SshLogReader::ReadFill(int fill_id, map< string, vector<double> > *values)
+int SshLogReader::ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values)
 {
    string cmd = GetSshCommandForFillId(fill_id);
    return Run(cmd, values);
 }
 
 
-void SshLogReader::CalculateMean(const map< string, vector<double> > &values, map<string, double> *mean_value)
+void SshLogReader::CalculateMean(const map< string, map<cdev_time_t, double> > &values, map<string, double> *mean_value)
 {
-   for (map< string, vector<double> >::const_iterator it = values.begin();
+   for (map< string, map<cdev_time_t, double> >::const_iterator it = values.begin();
         it != values.end(); it++)
    {
       const string &key = it->first;
-      const vector<double> &v = it->second;
+      const map<cdev_time_t, double> &m = it->second;
       double mean = -1;
 
-      if (v.size() != 0)
+      if (m.size() != 0)
       {
-         mean = std::accumulate(v.begin(), v.end(), (double)0.0) / v.size();
+         mean = 0;
+         for(map<cdev_time_t, double>::const_iterator it = m.begin();
+             it != m.end(); it++)
+         {
+            mean += it->second;
+         }
+         mean /= m.size();
       }
 
       (*mean_value)[key] = mean;
@@ -190,7 +196,7 @@ void SshLogReader::CalculateMean(const map< string, vector<double> > &values, ma
 
 int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value)
 {
-   map< string, vector<double> > values;
+   map< string, map<cdev_time_t, double> > values;
 
    int retcode = ReadTimeRange(start, end, &values);
 
@@ -207,7 +213,7 @@ int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double
 
 int SshLogReader::ReadFillMean(int fill_id, map<string, double> *mean_value)
 {
-   map< string, vector<double> > values;
+   map< string, map<cdev_time_t, double> > values;
 
    int retcode = ReadFill(fill_id, &values);
 

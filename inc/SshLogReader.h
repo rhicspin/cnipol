@@ -15,6 +15,10 @@ using std::vector;
 
 class SshLogReader : public TObject
 {
+public:
+
+   typedef double cdev_time_t;
+
 private:
 
    string          fLoggersStr;
@@ -23,7 +27,7 @@ private:
    string GetSshCommand(const char *export_params);
    string GetSshCommandForTimeRange(time_t start, time_t end);
    string GetSshCommandForFillId(int fill_id);
-   static void CalculateMean(const map< string, vector<double> > &values, map<string, double> *mean_value);
+   static void CalculateMean(const map< string, map<cdev_time_t, double> > &values, map<string, double> *mean_value);
 
 protected:
 
@@ -36,12 +40,12 @@ public:
     * @param cells   comma separated list of cells
     */
    SshLogReader(string loggers, string cells);
-   int Run(string cmd, map< string, vector<double> > *values);
+   int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
    /**
     * @returns 0 if everything was ok
     */
-   int ReadTimeRange(time_t start, time_t end, map< string, vector<double> > *values);
-   int ReadFill(int fill_id, map< string, vector<double> > *values);
+   int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
+   int ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values);
    /**
     * @returns 0 if everything was ok
     */
