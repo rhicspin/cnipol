@@ -756,6 +756,7 @@ int main(int argc, char *argv[])
 
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_AmAmpCoef", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
+      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_BeamCurrent", rBiasCurrent[polId], rBiasCurrentErr[polId], rBeamCurrent[polId], rBeamCurrentErr[polId]);
    }
 
    oc->Write();
