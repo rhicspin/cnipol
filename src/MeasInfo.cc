@@ -366,7 +366,7 @@ Double_t MeasInfo::CalcSpinFlipperPhase()
 /** */
 Short_t MeasInfo::GetPolarimeterId()
 {
-   TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}$").MatchS(fRunName);
+   TObjArray *subStrL = TPRegexp("^\\d+\\.(\\d)\\d{2}(|\\.alpha0)$").MatchS(fRunName);
 
    if (subStrL->GetEntriesFast() < 1) {
       Error("GetPolarimeterId", "Cannot extract polarimeter id from run name");
@@ -405,7 +405,8 @@ Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
 /** */
 UInt_t MeasInfo::GetFillId()
 {
-   TObjArray *subStrL = TPRegexp("^(\\d+)\\.\\d{3}$").MatchS(fRunName);
+   TObjArray *subStrL = TPRegexp("^(\\d+)\\.\\d{3}(|\\.alpha0)$").MatchS(fRunName);
+   Error("", "%s", fRunName.c_str());
 
    if (subStrL->GetEntriesFast() < 1) {
       Error("GetFillId", "Cannot extract fill Id from run name");
