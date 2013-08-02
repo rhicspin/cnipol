@@ -284,7 +284,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
-   if (norm_amer < 3) {
+   if (norm_amer <= 5) {
       Error("Calibrate", "Peaks are too small in histogram %s. Skipped", h->GetName());
       return 0;
    }
@@ -314,7 +314,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
       float norm_gad = h->GetBinContent(mbin_gad);
       float mean_gad = h->GetBinCenter(mbin_gad);
 
-      if (norm_gad == 0)
+      if (norm_gad <= 3)
       {
          return 0;
       }
