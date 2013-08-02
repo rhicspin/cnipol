@@ -645,7 +645,7 @@ int main(int argc, char *argv[])
       TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
       TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
       TH1F  *hGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
-      TH1F  *hAmGdGain_over_AmGain = new TH1F((*hGdAmpCoef) / (*hAmGdAmpCoef));
+      TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hAmGdAmpCoef));
       TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
       TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
 
