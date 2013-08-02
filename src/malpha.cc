@@ -523,6 +523,8 @@ int main(int argc, char *argv[])
    map< Short_t, ResultMean > rDeadLayerEnergyErr;
    map< Short_t, ResultMean > rDeadLayerSize;
    map< Short_t, ResultMean > rDeadLayerSizeErr;
+   map< Short_t, ResultMean > rBeamCurrent;
+   map< Short_t, ResultMean > rBeamCurrentErr;
    map< Short_t, ResultMean > rBiasCurrent;
    map< Short_t, ResultMean > rBiasCurrentErr;
    double max_startTime = -1;
@@ -614,7 +616,8 @@ int main(int argc, char *argv[])
       map<string, double> mean_value;
 
       static CachingLogReader<SshLogReader> ssh_log(
-         "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
+         "RHIC/BeamIons,RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
+         "bluDCCTtotal,yelDCCTtotal,"
          "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
          "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
          "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
@@ -637,28 +640,54 @@ int main(int argc, char *argv[])
       {
          const string &key = it->first;
          double value = it->second;
-
-         EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
-         if (ssh_PolId != polId)
-         {
-            continue;
-         }
-         int	ssh_DetId = key[15] - '0';
-
-         // sometimes cdev current have glitches, so the values like 98999999999999993426744560981400092672.000000 get in.
-         if (value >= 10e6)
-         {
-            continue;
-         }
-
          Info("malpha", "Mean %s equals to %f", key.c_str(), value);
-         rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
-         rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
-	 rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
-         rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
+
+         if ((key == "bluDCCTtotal") || (key == "yelDCCTtotal"))
+         {
+            if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
+            {
+               continue;
+            }
+            else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kYELLOW_BEAM))
+            {
+               continue;
+            }
+            rBeamCurrent[polId].second[startTime].resize(N_DETECTORS);
+            for(int i = 0; i < N_DETECTORS; i++)
+            {
+               rBeamCurrent[polId].second[startTime][i] = value;
+            }
+            rBeamCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+            for(int i = 0; i < N_DETECTORS; i++)
+            {
+               rBeamCurrentErr[polId].second[startTime][i] = 0;
+            }
+         }
+         else
+         {
+            EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+            if (ssh_PolId != polId)
+            {
+               continue;
+            }
+            int	ssh_DetId = key[15] - '0';
+
+            // sometimes cdev current have glitches, so the values like 98999999999999993426744560981400092672.000000 get in.
+            if (value >= 10e6)
+            {
+               continue;
+            }
+
+            rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
+            rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
+            rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+            rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
+         }
       }
       FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
       rBiasCurrent[polId].YTitle = "BiasCurrent";
+      FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
+      rBeamCurrent[polId].YTitle = "BeamCurrent";
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
 
