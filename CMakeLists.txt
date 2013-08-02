@@ -234,6 +234,18 @@ TARGET_LINK_LIBRARIES(
 
 SET_TARGET_PROPERTIES(masym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 
+ADD_EXECUTABLE(
+	spinflipper
+	src/spinflipper.cc
+	)
+
+TARGET_LINK_LIBRARIES(
+	spinflipper
+	cnipol
+	)
+
+SET_TARGET_PROPERTIES(spinflipper PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+
 ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
 
 add_dependencies(cnipol revision_id)
