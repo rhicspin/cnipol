@@ -407,7 +407,10 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
    double max_value1, min_value1, max_value2, min_value2;
    GetDeviceMaxMin(r1, &min_value1, &max_value1);
    GetDeviceMaxMin(r2, &min_value2, &max_value2);
-   TH2F	*h = new TH2F(name, name,
+   TString	hname(name);
+   hname += "_";
+   hname += polIdName;
+   TH2F	*h = new TH2F(hname, hname,
                       max_value1 - min_value1, min_value1, max_value1,
                       max_value2 - min_value2, min_value2, max_value2);
 
