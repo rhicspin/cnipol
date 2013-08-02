@@ -40,6 +40,7 @@ public:
     * @param cells   comma separated list of cells
     */
    SshLogReader(string loggers, string cells);
+   int Read(FILE *fd, map< string, map<cdev_time_t, double> > *values);
    int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
    /**
     * @returns 0 if everything was ok
