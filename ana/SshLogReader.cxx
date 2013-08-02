@@ -80,17 +80,8 @@ string SshLogReader::GetSshCommandForFillId(int fill_id)
 }
 
 
-int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+int SshLogReader::Read(FILE *fd, map< string, map<cdev_time_t, double> > *values)
 {
-   Info("SshLogReader", "Running %s", cmd.c_str());
-
-   FILE *fd = popen(cmd.c_str(), "r");
-   if (!fd)
-   {
-      Error("SshLogReader", "popen failed, errno = %i", errno);
-      return 1;
-   }
-
    char buf[8192];
 
    while (!feof(fd))
@@ -140,6 +131,21 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
          }
       }
    }
+}
+
+
+int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+{
+   Info("SshLogReader", "Running %s", cmd.c_str());
+
+   FILE *fd = popen(cmd.c_str(), "r");
+   if (!fd)
+   {
+      Error("SshLogReader", "popen failed, errno = %i", errno);
+      return 1;
+   }
+
+   Read(fd, values);
 
    int retcode = pclose(fd);
 
