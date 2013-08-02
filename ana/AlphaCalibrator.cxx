@@ -304,7 +304,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
       float sigma_amer = par[2];
 
       // Now let's find initial params for gadolinium peak
-      float xmax_gad = mean_amer - 5 * sigma_amer;
+      float xmax_gad = min(mean_amer - 5 * sigma_amer, mean_amer * 3/4);
       // Use predicted gad peak position to track the right peak
       float predicted_gad = mean_amer / AM_ALPHA_E * GD_ALPHA_E;
       float xmin_gad = predicted_gad - 4 * sigma_amer;
