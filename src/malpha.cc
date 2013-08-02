@@ -615,9 +615,8 @@ int main(int argc, char *argv[])
 
       map<string, double> mean_value;
 
-      static CachingLogReader<SshLogReader> ssh_log(
-         "RHIC/BeamIons,RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
-         "bluDCCTtotal,yelDCCTtotal,"
+      static CachingLogReader<SshLogReader> bias_current_reader(
+         "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
          "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
          "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
          "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
@@ -628,7 +627,7 @@ int main(int argc, char *argv[])
          "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
       );
 
-      int retval = ssh_log.ReadTimeRangeMean(startTime, ssh_endTime, &mean_value);
+      int retval = bias_current_reader.ReadTimeRangeMean(startTime, ssh_endTime, &mean_value);
 
       if (retval)
       {
@@ -642,8 +641,48 @@ int main(int argc, char *argv[])
          double value = it->second;
          Info("malpha", "Mean %s equals to %f", key.c_str(), value);
 
-         if ((key == "bluDCCTtotal") || (key == "yelDCCTtotal"))
+         EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+         if (ssh_PolId != polId)
          {
+            continue;
+         }
+         int	ssh_DetId = key[15] - '0';
+
+         if (value > 100)
+         {
+            continue;
+         }
+
+         rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
+         rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
+         rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+         rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
+      }
+      FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
+      rBiasCurrent[polId].YTitle = "BiasCurrent";
+
+      static CachingLogReader<SshLogReader> beam_intensity_reader(
+         "RHIC/BeamIons",
+         "bluDCCTtotal,yelDCCTtotal"
+         );
+
+      int fill_id = gMM->fMeasInfo->GetFillId();
+      if (fill_id)
+      {
+         int retval = beam_intensity_reader.ReadFillMean(fill_id, &mean_value);
+
+         if (retval)
+         {
+            Error("malpha", "Some problems with SshLogReader");
+            return EXIT_FAILURE;
+         }
+
+         for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+         {
+            const string &key = it->first;
+            double value = it->second;
+            Info("malpha", "Mean %s equals to %f", key.c_str(), value);
+
             if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
             {
                continue;
@@ -663,30 +702,9 @@ int main(int argc, char *argv[])
                rBeamCurrentErr[polId].second[startTime][i] = 0;
             }
          }
-         else
-         {
-            EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
-            if (ssh_PolId != polId)
-            {
-               continue;
-            }
-            int	ssh_DetId = key[15] - '0';
-
-            if (value > 100)
-            {
-               continue;
-            }
-
-            rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
-            rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
-            rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
-            rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
-         }
+         FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
+         rBeamCurrent[polId].YTitle = "BeamCurrent";
       }
-      FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
-      rBiasCurrent[polId].YTitle = "BiasCurrent";
-      FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
-      rBeamCurrent[polId].YTitle = "BeamCurrent";
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
 
