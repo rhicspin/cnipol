@@ -195,8 +195,8 @@ int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double
    mysqlpp::Query	select_query = fConnection.query();
    select_query << "SELECT cdev_cell, value FROM ssh_mean_cache"
                 << " WHERE"
-                << " start_time = " << (double)start
-                << " AND end_time = " << (double)end
+                << " start_time = " << start
+                << " AND end_time = " << end
                 << ";";
    mysqlpp::StoreQueryResult	res = select_query.store();
    bool	cache_miss = false;
@@ -247,8 +247,8 @@ int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double
       insert_query << "INSERT INTO ssh_mean_cache"
                    << " (start_time, end_time, cdev_cell, value)"
                    << " VALUES"
-                   << " (" << (double)start
-                   << ", " << (double)end
+                   << " (" << start
+                   << ", " << end
                    << ", " << mysqlpp::quote << cdev_cell
                    << ", ";
       if (mean_value->count(cdev_cell))
