@@ -672,12 +672,6 @@ int main(int argc, char *argv[])
             }
             int	ssh_DetId = key[15] - '0';
 
-            // sometimes cdev current have glitches, so the values like 98999999999999993426744560981400092672.000000 get in.
-            if (value >= 10e6)
-            {
-               continue;
-            }
-
             rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
             rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
             rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
