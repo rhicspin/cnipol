@@ -61,11 +61,10 @@
 #pragma link C++ class RecordTargetParams-;
 
 // src
-#pragma link C++ class AnaFillExternResult+;
-#pragma link C++ class AnaFillResult+;
-#pragma link C++ class AnaGlobResult+;
-#pragma link C++ class AnaMeasResult+;
-#pragma link C++ class AsymCalculator+;
+#pragma link C++ class AnaFillExternResult;
+#pragma link C++ class AnaFillResult;
+#pragma link C++ class AnaGlobResult;
+#pragma link C++ class AnaMeasResult;
 #pragma link C++ class MeasInfo;
 
 // ~dmirnov/rootmacros/utils
