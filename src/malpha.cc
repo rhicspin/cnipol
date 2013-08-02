@@ -556,11 +556,6 @@ int main(int argc, char *argv[])
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
       Double_t ssh_endTime  = gMM->fMeasInfo->fStopTime;
 
-      if (alphaSources != 2)
-      {
-         Info("malpha", "Not enough alpha sources in %s. Skipping", fileName.c_str());
-         continue;
-      }
 
       if (gMM->fMeasInfo->RUNID == 70213)
       {
@@ -647,20 +642,25 @@ int main(int argc, char *argv[])
       rBiasCurrent[polId].YTitle = "BiasCurrent";
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
-      TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
-      TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
-      TH1F  *hGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
-      TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hAmGdAmpCoef));
-      TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
-      TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
 
       FillFromHist(hAmAmpCoef, startTime, rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
-      FillFromHist(hGdGain_over_AmGain, startTime, rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId]);
-      rhGdGain_over_AmGain[polId].YTitle = "g_Gd / g_Am";
-      FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
-      rhAmGdGain_over_AmGain[polId].YTitle = "g_AmGd / g_Am";
-      FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
-      FillFromHist(hDeadLayerSize, startTime, rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
+
+      if (alphaSources == 2)
+      {
+         TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
+         TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
+         TH1F  *hGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
+         TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hAmGdAmpCoef));
+         TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
+         TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
+
+         FillFromHist(hGdGain_over_AmGain, startTime, rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId]);
+         rhGdGain_over_AmGain[polId].YTitle = "g_Gd / g_Am";
+         FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
+         rhAmGdGain_over_AmGain[polId].YTitle = "g_AmGd / g_Am";
+         FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
+         FillFromHist(hDeadLayerSize, startTime, rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
+      }
 
       f->Close();
       delete f;
