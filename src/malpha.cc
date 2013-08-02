@@ -492,6 +492,8 @@ int main(int argc, char *argv[])
 
    Info("malpha", "Starting first pass...");
 
+   map< Short_t, ResultMean > rhAmAmpCoef;
+   map< Short_t, ResultMean > rhAmAmpCoefErr;
    map< Short_t, ResultMean > rhGdGain_over_AmGain;
    map< Short_t, ResultMean > rhGdGain_over_AmGainErr;
    map< Short_t, ResultMean > rhAmGdGain_over_AmGain;
@@ -649,6 +651,7 @@ int main(int argc, char *argv[])
       TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
       TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
 
+      FillFromHist(hAmAmpCoef, startTime, rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
       FillFromHist(hGdGain_over_AmGain, startTime, rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId]);
       rhGdGain_over_AmGain[polId].YTitle = "g_Gd / g_Am";
       FillFromHist(hAmGdGain_over_AmGain, startTime, rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId]);
@@ -683,6 +686,7 @@ int main(int argc, char *argv[])
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
 
+      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_AmAmpCoef", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
    }
 
