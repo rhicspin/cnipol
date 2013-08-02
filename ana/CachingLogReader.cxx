@@ -74,7 +74,6 @@ int CachingLogReader<T>::ReadTimeRange(time_t start, time_t end, map< string, ma
       if (it != cells.end())
       {
          int	ret;
-         map<cdev_time_t, double>  &cell_map = (*values)[cdev_cell];
 
          // Fetch data for acquired data_id
          int data_id = sqlite3_column_int(fMapSelectStmt, 1);
@@ -82,6 +81,7 @@ int CachingLogReader<T>::ReadTimeRange(time_t start, time_t end, map< string, ma
          sqlite3_bind_int(fDataSelectStmt, 1, data_id);
          while((ret = sqlite3_step(fDataSelectStmt)) == SQLITE_ROW)
          {
+            map<cdev_time_t, double>  &cell_map = (*values)[cdev_cell];
             double	time = sqlite3_column_double(fDataSelectStmt, 0);
             double	value = sqlite3_column_double(fDataSelectStmt, 1);
             cell_map[time] = value;
@@ -117,10 +117,9 @@ int CachingLogReader<T>::ReadTimeRange(time_t start, time_t end, map< string, ma
       T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
    }
 
-   for (typename map< string, map<cdev_time_t, double> >::const_iterator it = values->begin();
-        it != values->end(); it++)
+   for (vector<string>::const_iterator it = T::fCells.begin(); it != T::fCells.end(); it++)
    {
-      const string	cdev_cell = it->first;
+      const string	&cdev_cell = *it;
       sqlite3_reset(fMapInsertStmt);
       sqlite3_bind_double(fMapInsertStmt, 1, start);
       sqlite3_bind_double(fMapInsertStmt, 2, end);
@@ -131,19 +130,22 @@ int CachingLogReader<T>::ReadTimeRange(time_t start, time_t end, map< string, ma
       }
       sqlite3_reset(fDataInsertStmt);
       sqlite3_bind_int(fDataInsertStmt, 1, sqlite3_last_insert_rowid(fDB));
-      const map<cdev_time_t, double>  &cell_map = it->second;
-      for(typename map<cdev_time_t, double>::const_iterator it = cell_map.begin();
-          it != cell_map.end(); it++)
+      if (values->count(cdev_cell))
       {
-         double	time = it->first;
-         double	value = it->second;
-         sqlite3_bind_double(fDataInsertStmt, 2, time);
-         sqlite3_bind_double(fDataInsertStmt, 3, value);
-         if (sqlite3_step(fDataInsertStmt) != SQLITE_DONE)
+         const map<cdev_time_t, double>  &cell_map = (*values)[cdev_cell];
+         for(typename map<cdev_time_t, double>::const_iterator it = cell_map.begin();
+             it != cell_map.end(); it++)
          {
-            T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+            double	time = it->first;
+            double	value = it->second;
+            sqlite3_bind_double(fDataInsertStmt, 2, time);
+            sqlite3_bind_double(fDataInsertStmt, 3, value);
+            if (sqlite3_step(fDataInsertStmt) != SQLITE_DONE)
+            {
+               T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+            }
+            sqlite3_reset(fDataInsertStmt);
          }
-         sqlite3_reset(fDataInsertStmt);
       }
    }
 
