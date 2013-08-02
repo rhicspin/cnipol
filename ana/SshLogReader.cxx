@@ -6,7 +6,7 @@
 
 #include <errno.h>
 
-#include <mysql++.h>
+#include <sqlite3.h>
 
 #include "SshLogReader.h"
 
@@ -14,8 +14,30 @@
 SshLogReader::SshLogReader(string loggers, string cells)
       : fLoggersStr(loggers)
       , fCellsStr(cells)
-      , fConnection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306)
 {
+   if (sqlite3_open("cdev_cache.sqlite", &fDB) != SQLITE_OK)
+   {
+      Error("SshLogReader", "Can't open cdev cache");
+   }
+   const char *sql = "CREATE TABLE IF NOT EXISTS mean_cache (start_time DOUBLE, end_time DOUBLE, fill_id INT, cdev_cell CHAR(255) NOT NULL, value DOUBLE);";
+   int ret = sqlite3_exec(fDB, sql, NULL, NULL, NULL);
+   if (ret != SQLITE_OK)
+   {
+      Error("SshLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+   }
+   char select_query[] = "SELECT cdev_cell, value FROM mean_cache WHERE start_time = ? AND end_time = ?;";
+   ret = sqlite3_prepare_v2(fDB, select_query, sizeof(select_query), &fSelectStmt, NULL);
+   if (ret != SQLITE_OK)
+   {
+      Error("SshLogReader", "Error preparing select_query: %s", sqlite3_errmsg(fDB));
+   }
+   const char insert_query[] = "INSERT INTO mean_cache (start_time, end_time, cdev_cell, value) VALUES (?, ?, ?, ?);";
+   ret = sqlite3_prepare_v2(fDB, insert_query, sizeof(insert_query), &fInsertStmt, NULL);
+   if (ret != SQLITE_OK)
+   {
+      Error("SshLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
+   }
+
    if (index(fLoggersStr.c_str(), '\'') || (index(fCellsStr.c_str(), '\''))
        || index(fLoggersStr.c_str(), '"') || (index(fCellsStr.c_str(), '"')))
    {
@@ -30,6 +52,12 @@ SshLogReader::SshLogReader(string loggers, string cells)
       fCells.push_back(tok);
    }
    free(copy);
+}
+
+
+SshLogReader::~SshLogReader()
+{
+   sqlite3_close(fDB);
 }
 
 
@@ -192,41 +220,38 @@ void SshLogReader::CalculateMean(const map< string, vector<double> > &values, ma
 int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value)
 {
    map< string, vector<double> > values;
-   mysqlpp::Query	select_query = fConnection.query();
-   select_query << "SELECT cdev_cell, value FROM ssh_mean_cache"
-                << " WHERE"
-                << " start_time = " << start
-                << " AND end_time = " << end
-                << ";";
-   mysqlpp::StoreQueryResult	res = select_query.store();
-   bool	cache_miss = false;
+   vector<string>	cells(fCells);
+   int ret;
+   sqlite3_bind_double(fSelectStmt, 1, start);
+   sqlite3_bind_double(fSelectStmt, 2, end);
 
-   if (res && res.num_rows())
+   while ((ret = sqlite3_step(fSelectStmt)) == SQLITE_ROW)
    {
-      size_t	num_rows = res.num_rows();
-      for(size_t i = 0; i < num_rows; ++i)
+      string	cdev_cell = (const char*)sqlite3_column_text(fSelectStmt, 0);
+      vector<string>::iterator	it = find(cells.begin(), cells.end(), cdev_cell);
+      if (it != cells.end())
       {
-         string	cdev_cell;
-         res[i]["cdev_cell"].to_string(cdev_cell);
-         if (find(fCells.begin(), fCells.end(), cdev_cell) != fCells.end())
+         if (sqlite3_column_type(fSelectStmt, 1) != SQLITE_NULL)
          {
-            if (!res[i]["value"].is_null())
-            {
-               (*mean_value)[cdev_cell] = res[i]["value"];
-            }
+            (*mean_value)[cdev_cell] = sqlite3_column_double(fSelectStmt, 1);
          }
-         else
-         {
-            cache_miss = true;
-            break;
-         }
+         cells.erase(it);
       }
-
-      if (!cache_miss)
+   }
+   if (ret == SQLITE_DONE)
+   {
+      if (cells.empty())
       {
-         Info("SshLogReader", "Loaded data from MySQL cache");
          return 0;
       }
+      else
+      {
+         Error("SshLogReader", "Cells are not in cache, retreiving via ssh.");
+      }
+   }
+   else
+   {
+      Error("SshLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
    }
 
    int retcode = ReadTimeRange(start, end, &values);
@@ -238,34 +263,43 @@ int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double
 
    CalculateMean(values, mean_value);
 
-   mysqlpp::Transaction	trans(fConnection);
+   ret = sqlite3_exec(fDB, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+   if (ret != SQLITE_OK)
+   {
+      Error("SshLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+   }
 
    for (vector<string>::const_iterator it = fCells.begin(); it != fCells.end(); it++)
    {
       const string	cdev_cell = *it;
-      mysqlpp::Query       insert_query = fConnection.query();
-      insert_query << "INSERT INTO ssh_mean_cache"
-                   << " (start_time, end_time, cdev_cell, value)"
-                   << " VALUES"
-                   << " (" << start
-                   << ", " << end
-                   << ", " << mysqlpp::quote << cdev_cell
-                   << ", ";
+      sqlite3_bind_double(fInsertStmt, 1, start);
+      sqlite3_bind_double(fInsertStmt, 2, end);
+      ret = sqlite3_bind_text(fInsertStmt, 3, cdev_cell.c_str(), cdev_cell.size(), SQLITE_TRANSIENT);
+      if (ret != SQLITE_OK)
+         Error("SshLogReader", "%s", sqlite3_errmsg(fDB));
       if (mean_value->count(cdev_cell))
       {
-         insert_query << (*mean_value)[cdev_cell];
+         sqlite3_bind_double(fInsertStmt, 4, (*mean_value)[cdev_cell]);
       }
       else
       {
-         insert_query << "NULL";
+         sqlite3_bind_null(fInsertStmt, 4);
       }
-      insert_query << ");";
-      insert_query.execute();
+      ret = sqlite3_step(fInsertStmt);
+      if (ret != SQLITE_DONE)
+      {
+         Error("SshLogReader", "insert: ret = %i, %s", ret, sqlite3_errmsg(fDB));
+      }
+      sqlite3_reset(fInsertStmt);
    }
 
-   trans.commit();
-   Info("SshLogReader", "Saved data from MySQL cache");
+   ret = sqlite3_exec(fDB, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+   if (ret != SQLITE_OK)
+   {
+      Error("SshLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+   }
 
+   Info("SshLogReader", "Saved data to SQLite cache");
    return retcode;
 }
 
