@@ -97,9 +97,7 @@ int CachingLogReader<T>::ReadTimeRangeMean(time_t start, time_t end, map<string,
       sqlite3_reset(fInsertStmt);
       sqlite3_bind_double(fInsertStmt, 1, start);
       sqlite3_bind_double(fInsertStmt, 2, end);
-      ret = sqlite3_bind_text(fInsertStmt, 3, cdev_cell.c_str(), cdev_cell.size(), SQLITE_TRANSIENT);
-      if (ret != SQLITE_OK)
-         T::Error("CachingLogReader", "%s", sqlite3_errmsg(fDB));
+      sqlite3_bind_text(fInsertStmt, 3, cdev_cell.c_str(), cdev_cell.size(), SQLITE_TRANSIENT);
       if (mean_value->count(cdev_cell))
       {
          sqlite3_bind_double(fInsertStmt, 4, (*mean_value)[cdev_cell]);
