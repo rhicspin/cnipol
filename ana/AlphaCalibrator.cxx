@@ -294,7 +294,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
    f_amer.SetParLimits(1, xmin, xmax); // mean
    f_amer.SetParLimits(2, 0.1, 3 * expectedSigma); // sigma
 
-   fitres = h->Fit(&f_amer, "BMS"); // B: use limits, M: improve fit, S: return fitres
+   fitres = h->Fit(&f_amer, fit_gadolinium ? "BMSN" : "BMS"); // B: use limits, M: improve fit, S: return fitres, N: do not store graphic function
 
    if (fit_gadolinium) {
       Double_t par[6]; // params for more general fit
@@ -313,6 +313,11 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
       h->GetXaxis()->SetRange(); // reset range
       float norm_gad = h->GetBinContent(mbin_gad);
       float mean_gad = h->GetBinCenter(mbin_gad);
+
+      if (norm_gad == 0)
+      {
+         return 0;
+      }
 
       par[3] = norm_gad;
       par[4] = mean_gad;
