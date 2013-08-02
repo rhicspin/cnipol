@@ -66,7 +66,7 @@
 #pragma link C++ class AnaGlobResult+;
 #pragma link C++ class AnaMeasResult+;
 #pragma link C++ class AsymCalculator+;
-#pragma link C++ class MeasInfo+;
+#pragma link C++ class MeasInfo;
 
 // ~dmirnov/rootmacros/utils
 #pragma link C++ class ValErrPair+;
