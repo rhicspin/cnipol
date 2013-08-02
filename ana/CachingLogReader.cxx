@@ -30,7 +30,7 @@ CachingLogReader<T>::CachingLogReader(string loggers, string cells)
    {
       T::Error("CachingLogReader", "Error preparing map_select_query: %s", sqlite3_errmsg(fDB));
    }
-   char data_select_query[] = "SELECT time, value FROM cache_data WHERE data_id = ?;";
+   char data_select_query[] = "SELECT time, value, cdev_cell FROM cache_data INNER JOIN cache_map WHERE start_time = ? AND end_time = ? AND cache_data.data_id = cache_map.data_id;";
    ret = sqlite3_prepare_v2(fDB, data_select_query, sizeof(data_select_query), &fDataSelectStmt, NULL);
    if (ret != SQLITE_OK)
    {
@@ -73,25 +73,25 @@ int CachingLogReader<T>::ReadTimeRange(time_t start, time_t end, map< string, ma
       vector<string>::iterator	it = find(cells.begin(), cells.end(), cdev_cell);
       if (it != cells.end())
       {
-         int	ret;
-
-         // Fetch data for acquired data_id
-         int data_id = sqlite3_column_int(fMapSelectStmt, 1);
-         sqlite3_reset(fDataSelectStmt);
-         sqlite3_bind_int(fDataSelectStmt, 1, data_id);
-         while((ret = sqlite3_step(fDataSelectStmt)) == SQLITE_ROW)
-         {
-            map<cdev_time_t, double>  &cell_map = (*values)[cdev_cell];
-            double	time = sqlite3_column_double(fDataSelectStmt, 0);
-            double	value = sqlite3_column_double(fDataSelectStmt, 1);
-            cell_map[time] = value;
-         }
-         if (ret != SQLITE_DONE)
-         {
-            T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
-         }
-         cells.erase(it);
+         cells.erase(it); // Mark cell as present in cache
       }
+   }
+   if (ret != SQLITE_DONE)
+   {
+      T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+   }
+
+   sqlite3_reset(fDataSelectStmt);
+   sqlite3_bind_double(fDataSelectStmt, 1, start);
+   sqlite3_bind_double(fDataSelectStmt, 2, end);
+
+   while ((ret = sqlite3_step(fDataSelectStmt)) == SQLITE_ROW)
+   {
+      string	cdev_cell = (const char*)sqlite3_column_text(fDataSelectStmt, 2);
+      map<cdev_time_t, double>  &cell_map = (*values)[cdev_cell];
+      double      time = sqlite3_column_double(fDataSelectStmt, 0);
+      double      value = sqlite3_column_double(fDataSelectStmt, 1);
+      cell_map[time] = value;
    }
    if (ret == SQLITE_DONE)
    {
