@@ -672,6 +672,11 @@ int main(int argc, char *argv[])
             }
             int	ssh_DetId = key[15] - '0';
 
+            if (value > 100)
+            {
+               continue;
+            }
+
             rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
             rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
             rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
