@@ -50,6 +50,7 @@ int CachingLogReader<T>::ReadTimeRangeMean(time_t start, time_t end, map<string,
 {
    vector<string>	cells(T::fCells);
    int ret;
+   sqlite3_reset(fSelectStmt);
    sqlite3_bind_double(fSelectStmt, 1, start);
    sqlite3_bind_double(fSelectStmt, 2, end);
 
@@ -93,6 +94,7 @@ int CachingLogReader<T>::ReadTimeRangeMean(time_t start, time_t end, map<string,
    for (vector<string>::const_iterator it = T::fCells.begin(); it != T::fCells.end(); it++)
    {
       const string	cdev_cell = *it;
+      sqlite3_reset(fInsertStmt);
       sqlite3_bind_double(fInsertStmt, 1, start);
       sqlite3_bind_double(fInsertStmt, 2, end);
       ret = sqlite3_bind_text(fInsertStmt, 3, cdev_cell.c_str(), cdev_cell.size(), SQLITE_TRANSIENT);
@@ -111,7 +113,6 @@ int CachingLogReader<T>::ReadTimeRangeMean(time_t start, time_t end, map<string,
       {
          T::Error("CachingLogReader", "insert: ret = %i, %s", ret, sqlite3_errmsg(fDB));
       }
-      sqlite3_reset(fInsertStmt);
    }
 
    ret = sqlite3_exec(fDB, "COMMIT TRANSACTION;", NULL, NULL, NULL);
