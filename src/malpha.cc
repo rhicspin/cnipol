@@ -556,8 +556,21 @@ int main(int argc, char *argv[])
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
       Double_t ssh_endTime  = gMM->fMeasInfo->fStopTime;
 
-
-      if (gMM->fMeasInfo->RUNID == 70213)
+      if ((gMM->fMeasInfo->RUNID == 70213)
+          || (gMM->fMeasInfo->GetRunName() == "17514.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17515.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17517.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17518.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17519.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17520.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17521.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17524.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17526.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17527.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17529.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17530.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17533.101.alpha0")
+          || (gMM->fMeasInfo->GetRunName() == "17534.101.alpha0"))
       {
          Info("malpha", "File %s is blacklisted. Skipping", fileName.c_str());
          continue;
