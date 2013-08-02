@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
    utils::UpdateLimitsFromGraphs(hAsymVsOscillPhase_Y45_phys, 2);
 
    TF1 fitFunc("fitFunc", "[0] + [1]*sin(x + [2])", 0, _TWO_PI);
+   fitFunc.SetParNames("Offset", "Amplitude", "Phase");
    graph->Fit(&fitFunc);
 
    TCanvas canvas("canvas", "canvas", 1200, 600);
