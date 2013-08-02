@@ -43,12 +43,12 @@ public:
    SshLogReader(string loggers, string cells);
    int Read(string response, map< string, map<cdev_time_t, double> > *values);
    int ExecuteCmd(string cmd, string *response);
-   int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
+   virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
    /**
     * @returns 0 if everything was ok
     */
-   virtual int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
-   virtual int ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values);
+   int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
+   int ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values);
    /**
     * @returns 0 if everything was ok
     */

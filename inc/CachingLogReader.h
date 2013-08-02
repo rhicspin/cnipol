@@ -15,7 +15,7 @@ class CachingLogReader : public T
 private:
 
    sqlite3      *fDB;
-   sqlite3_stmt *fMapSelectStmt, *fDataSelectStmt, *fMapInsertStmt, *fDataInsertStmt;
+   sqlite3_stmt *fSelectStmt, *fInsertStmt;
 
 public:
 
@@ -24,7 +24,7 @@ public:
    CachingLogReader(string loggers, string cells);
    ~CachingLogReader();
 
-   virtual int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
+   virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
 };
 
 #endif
