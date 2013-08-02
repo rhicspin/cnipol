@@ -131,6 +131,11 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
                return 1;
             }
 
+            if (value >= 90000000000000000000000000000000000000.0)
+            {
+               continue;
+            }
+
             (*values)[*it][time] = value;
          }
       }
