@@ -80,8 +80,36 @@ string SshLogReader::GetSshCommandForFillId(int fill_id)
 }
 
 
-int SshLogReader::Read(FILE *fd, map< string, map<cdev_time_t, double> > *values)
+string SshLogReader::ReadStream(FILE *fd)
 {
+   size_t       buf_size = 1024*64, data_size = 0;
+   char *buf = (char*)malloc(buf_size), *pos = buf;
+
+   while(!feof(fd))
+   {
+      size_t read_len = buf_size - data_size;
+      size_t len = fread(pos, 1, read_len, fd);
+      if ((len < read_len) && ferror(fd))
+      {
+         perror("SshLogReader::ReadALL");
+         return "";
+      }
+      data_size += len;
+      if (data_size == buf_size)
+      {
+         buf_size *= 2;
+         buf = (char*)realloc(buf, buf_size);
+      }
+      pos = buf + data_size;
+   }
+   return string(buf, data_size);
+}
+
+
+int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > *values)
+{
+   FILE *fd = fmemopen((void*)response.c_str(), response.size(), "r");
+   int  retval = 0;
    char buf[8192];
 
    while (!feof(fd))
@@ -119,7 +147,8 @@ int SshLogReader::Read(FILE *fd, map< string, map<cdev_time_t, double> > *values
             if (len != 1)
             {
                Error("SshLogReader", "unexpected end of row");
-               return 1;
+               retval = 1;
+               goto exit;
             }
 
             if (value >= 90000000000000000000000000000000000000.0)
@@ -131,10 +160,13 @@ int SshLogReader::Read(FILE *fd, map< string, map<cdev_time_t, double> > *values
          }
       }
    }
+exit:
+   fclose(fd);
+   return retval;
 }
 
 
-int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+int SshLogReader::ExecuteCmd(string cmd, string *response)
 {
    Info("SshLogReader", "Running %s", cmd.c_str());
 
@@ -145,7 +177,7 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
       return 1;
    }
 
-   Read(fd, values);
+   *response = ReadStream(fd);
 
    int retcode = pclose(fd);
 
@@ -173,6 +205,24 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
    }
 
    return retcode;
+}
+
+
+int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+{
+   string response;
+   int retcode = ExecuteCmd(cmd, &response);
+   if (retcode)
+   {
+      return retcode;
+   }
+   retcode = Read(response, values);
+   if (retcode)
+   {
+      Error("SshLogReader", "error parsing response");
+      return 1;
+   }
+   return 0;
 }
 
 
