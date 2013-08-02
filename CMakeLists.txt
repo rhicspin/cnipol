@@ -120,6 +120,7 @@ ADD_LIBRARY(
 	ana/AnaInfo.cxx
 	ana/AsymAnaInfo.cxx
 	ana/BeamBunch.cxx
+	ana/CachingLogReader.cxx
 	ana/Calibrator.cxx
 	ana/ChannelCalib.cxx
 	ana/ChannelData.cxx
