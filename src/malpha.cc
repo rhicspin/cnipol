@@ -611,7 +611,7 @@ int main(int argc, char *argv[])
 
       if (retval)
       {
-         Error("masym", "Some problems with SshLogReader");
+         Error("malpha", "Some problems with SshLogReader");
          return EXIT_FAILURE;
       }
 
@@ -633,7 +633,7 @@ int main(int argc, char *argv[])
             continue;
          }
 
-         Info("masym", "Mean %s equals to %f", key.c_str(), value);
+         Info("malpha", "Mean %s equals to %f", key.c_str(), value);
          rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
          rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
 	 rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
