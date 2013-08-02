@@ -34,7 +34,7 @@ SshLogReader::SshLogReader(string loggers, string cells)
 
 string SshLogReader::GetSshCommand(const char *export_params)
 {
-   char buf[1024];
+   char buf[8192];
 
    snprintf(buf, sizeof(buf),
             "ssh acnlina \""
@@ -92,7 +92,7 @@ int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *value
       return 1;
    }
 
-   char buf[1024];
+   char buf[8192];
 
    while (!feof(fd))
    {
