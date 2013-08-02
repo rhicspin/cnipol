@@ -470,6 +470,24 @@ EPolarimeterId	parsePolIdFromCdevKey(const string &key)
 }
 
 
+void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double startTime)
+{
+   if (result.second.count(startTime) && !result.second[startTime].empty())
+   {
+      result.first[startTime] = accumulate(
+         result.second[startTime].begin(),
+         result.second[startTime].end(),
+         (double)0
+         ) / result.second[startTime].size();
+      result_err.first[startTime] = accumulate(
+         result_err.second[startTime].begin(),
+         result_err.second[startTime].end(),
+         (double)0
+         ) / result_err.second[startTime].size();
+   }
+}
+
+
 /** */
 int main(int argc, char *argv[])
 {
@@ -639,19 +657,7 @@ int main(int argc, char *argv[])
 	 rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
          rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
       }
-      if (rBiasCurrent[polId].second.count(startTime) && !rBiasCurrent[polId].second[startTime].empty())
-      {
-         rBiasCurrent[polId].first[startTime] = accumulate(
-            rBiasCurrent[polId].second[startTime].begin(),
-            rBiasCurrent[polId].second[startTime].end(),
-            (double)0
-            ) / rBiasCurrent[polId].second[startTime].size();
-         rBiasCurrentErr[polId].first[startTime] = accumulate(
-            rBiasCurrentErr[polId].second[startTime].begin(),
-            rBiasCurrentErr[polId].second[startTime].end(),
-            (double)0
-            ) / rBiasCurrentErr[polId].second[startTime].size();
-      }
+      FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
       rBiasCurrent[polId].YTitle = "BiasCurrent";
 
       TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
