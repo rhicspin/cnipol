@@ -15,13 +15,16 @@ class CachingLogReader : public T
 private:
 
    sqlite3      *fDB;
-   sqlite3_stmt *fSelectStmt, *fInsertStmt;
+   sqlite3_stmt *fMapSelectStmt, *fDataSelectStmt, *fMapInsertStmt, *fDataInsertStmt;
 
 public:
+
+   typedef typename T::cdev_time_t	cdev_time_t;
+
    CachingLogReader(string loggers, string cells);
    ~CachingLogReader();
 
-   int ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value);
+   virtual int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
 };
 
 #endif
