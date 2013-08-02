@@ -8,7 +8,7 @@
 
 #include <TObject.h>
 
-#include <mysql++.h>
+#include <sqlite3.h>
 
 using std::map;
 using std::string;
@@ -22,7 +22,8 @@ private:
    string          fLoggersStr;
    string          fCellsStr;
    vector<string>  fCells;
-   mysqlpp::Connection fConnection;
+   sqlite3	*fDB;
+   sqlite3_stmt	*fSelectStmt, *fInsertStmt;
 
    string GetSshCommand(const char *export_params);
    string GetSshCommandForTimeRange(time_t start, time_t end);
@@ -36,6 +37,7 @@ public:
     * @param cells   comma separated list of cells
     */
    SshLogReader(string loggers, string cells);
+   ~SshLogReader();
    int Run(string cmd, map< string, vector<double> > *values);
    /**
     * @returns 0 if everything was ok
