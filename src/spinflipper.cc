@@ -164,6 +164,7 @@ void changePhase(TGraphErrors* gr, Double_t phase)
       gr->GetPoint(i, x, y);
       //x = fmod(x + phase, _TWO_PI);
       x = fmod(x - phase, _TWO_PI);
+      x = x < 0 ? _TWO_PI + x : x;
       gr->SetPoint(i, x, y);
    }
 }
