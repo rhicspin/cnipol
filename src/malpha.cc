@@ -613,7 +613,7 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      map<string, double> mean_value;
+      map<string, double> bias_mean_value;
 
       static CachingLogReader<SshLogReader> bias_current_reader(
          "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
@@ -627,7 +627,7 @@ int main(int argc, char *argv[])
          "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
       );
 
-      int retval = bias_current_reader.ReadTimeRangeMean(startTime, ssh_endTime, &mean_value);
+      int retval = bias_current_reader.ReadTimeRangeMean(startTime, ssh_endTime, &bias_mean_value);
 
       if (retval)
       {
@@ -635,7 +635,7 @@ int main(int argc, char *argv[])
          return EXIT_FAILURE;
       }
 
-      for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+      for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
       {
          const string &key = it->first;
          double value = it->second;
@@ -669,7 +669,8 @@ int main(int argc, char *argv[])
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
       {
-         int retval = beam_intensity_reader.ReadFillMean(fill_id, &mean_value);
+         map<string, double> beam_mean_value;
+         int retval = beam_intensity_reader.ReadFillMean(fill_id, &beam_mean_value);
 
          if (retval)
          {
@@ -677,7 +678,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
          }
 
-         for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+         for(map<string, double>::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
          {
             const string &key = it->first;
             double value = it->second;
