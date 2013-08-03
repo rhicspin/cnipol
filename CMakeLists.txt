@@ -255,7 +255,7 @@ ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
 add_dependencies(cnipol revision_id)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_custom_target(revision_id
-        ${PROJECT_SOURCE_DIR}/get_revision_id.sh ${PROJECT_SOURCE_DIR} > ${CMAKE_CURRENT_BINARY_DIR}/revision-id.hpp
+        ${PROJECT_SOURCE_DIR}/get_revision_id.sh ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/revision-id.hpp
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM
         )
