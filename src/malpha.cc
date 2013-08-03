@@ -614,20 +614,42 @@ int main(int argc, char *argv[])
       }
 
       map<string, double> bias_mean_value;
+      CachingLogReader<SshLogReader>	*bias_current_reader = NULL;
 
-      static CachingLogReader<SshLogReader> bias_current_reader(
-         "RHIC/Polarimeter/Blue/biasReadbacks,RHIC/Polarimeter/Yellow/biasReadbacks",
-         "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
-         "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
-         "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
-         "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM,"
-         "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
-         "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
-         "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
-         "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
-      );
+      // exportDataLogger seems to have problems exporting differently timestamped values
+      // from different loggers, so we have to read out them separately
+      switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
+      {
+         case kBLUE_BEAM:
+         {
+            static CachingLogReader<SshLogReader> _reader(
+                  "RHIC/Polarimeter/Blue/biasReadbacks",
+                  "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
+                  "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
+                  "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
+                  "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM"
+                  );
+            bias_current_reader = &_reader;
+            break;
+         }
+         case kYELLOW_BEAM:
+         {
+            static CachingLogReader<SshLogReader> _reader(
+                  "RHIC/Polarimeter/Yellow/biasReadbacks",
+                  "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
+                  "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
+                  "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
+                  "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
+                  );
+            bias_current_reader = &_reader;
+            break;
+         }
+         default:
+         Error("malpha", "Unknown beam type");
+         return EXIT_FAILURE;
+      }
 
-      int retval = bias_current_reader.ReadTimeRangeMean(startTime, ssh_endTime, &bias_mean_value);
+      int retval = bias_current_reader->ReadTimeRangeMean(startTime, ssh_endTime, &bias_mean_value);
 
       if (retval)
       {
