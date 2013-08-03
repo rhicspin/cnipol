@@ -211,8 +211,9 @@ while ($e = mysql_fetch_assoc($rslt)):
    }
 
    // Deal with version now
-	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0";
-	$asymVersion = "<a href=https://svn.bnl.gov/viewvc/cnipol?view=revision&revision=$asymVersion>$asymVersion</a>";
+	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0;";
+	list($human_version, $git_hash) = explode(";", $asymVersion);
+	$asymVersion = '<a href="https://github.com/rhicspin/cnipol/commit/' . $git_hash . '">' . $human_version . '</a>';
 
    // Set default directory for run images
    $dir = "../runs/{$e['run_name']}/images$gSuffix/";
