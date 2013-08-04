@@ -56,6 +56,10 @@ public:
 
 public:
 
+   typedef const char*  ImageFormat;
+   static ImageFormat   FORMAT_PNG;
+   static ImageFormat   FORMAT_POSTSCRIPT;
+
    DrawObjContainer();
    DrawObjContainer(TDirectory *dir);
    virtual ~DrawObjContainer();
@@ -84,7 +88,7 @@ public:
    virtual void PostFill();
    virtual void PostFill(AnaGlobResult &agr);
    virtual void PostFill(DrawObjContainer *oc) {}        // special processing for dependant histograms
-   virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
+   virtual void SaveAllAs(ImageFormat fmt_ext, TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
    virtual void SaveHStackAs(TCanvas &c, THStack &hstack, std::string path="./");
    void         Draw(Option_t* option = "") { ((TObject*)this)->Draw(option); }
    void         Draw(TCanvas &c);

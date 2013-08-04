@@ -50,7 +50,7 @@ public:
    void Fill(ChannelEvent *ch);
    void FillDerived();
    void PostFill();
-   void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
+   void SaveAllAs(ImageFormat fmt_ext, TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
 
    ClassDef(CnipolHists, 1)
 };

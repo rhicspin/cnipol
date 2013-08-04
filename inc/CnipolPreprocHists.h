@@ -40,7 +40,7 @@ public:
    void FillPassOne(ChannelEvent *ch);
    void FillDerivedPassOne(DrawObjContainer &oc);
    void PostFillPassOne(DrawObjContainer *oc=0);
-   void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
+   void SaveAllAs(ImageFormat fmt_ext, TCanvas &c, std::string pattern="^.*$", std::string path="./", Bool_t thumbs=kFALSE);
 
    ClassDef(CnipolPreprocHists, 1)
 };

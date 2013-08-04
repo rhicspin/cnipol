@@ -71,7 +71,7 @@ void MAsymRoot::SaveAs(string pattern, string dir)
    ssSignature << ", Version " << fAnaInfo->fAsymVersion << ", " << fAnaInfo->fUserGroup.fUser;
 
    fHists->SetSignature(ssSignature.str());
-   fHists->SaveAllAs(canvas, pattern, dir);
+   fHists->SaveAllAs(DrawObjContainer::FORMAT_PNG, canvas, pattern, dir);
 }
 
 

@@ -199,9 +199,9 @@ void CnipolPreprocHists::PostFillPassOne(DrawObjContainer *oc)
 
 
 /** */
-void CnipolPreprocHists::SaveAllAs(TCanvas &c, string pattern, string path, Bool_t thumbs)
+void CnipolPreprocHists::SaveAllAs(ImageFormat fmt_ext, TCanvas &c, string pattern, string path, Bool_t thumbs)
 {
-   DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
+   DrawObjContainer::SaveAllAs(fmt_ext, c, pattern, path, thumbs);
 
    // Draw superimposed histos
 
