@@ -10,30 +10,41 @@ using std::vector;
 
 
 template<class T>
+sqlite3*	CachingLogReader<T>::fDB = NULL;
+template<class T>
+sqlite3_stmt*	CachingLogReader<T>::fSelectStmt = NULL;
+template<class T>
+sqlite3_stmt*	CachingLogReader<T>::fInsertStmt = NULL;
+
+
+template<class T>
 CachingLogReader<T>::CachingLogReader(string loggers, string cells)
    : T(loggers, cells)
 {
-   if (sqlite3_open("cdev_cache.sqlite", &fDB) != SQLITE_OK)
+   if (!fDB)
    {
-      T::Error("CachingLogReader", "Can't open cdev cache");
-   }
-   const char *sql = "CREATE TABLE IF NOT EXISTS cache (query TEXT PRIMARY KEY, response TEXT);";
-   int ret = sqlite3_exec(fDB, sql, NULL, NULL, NULL);
-   if (ret != SQLITE_OK)
-   {
-      T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
-   }
-   char select_query[] = "SELECT response FROM cache WHERE query = ? LIMIT 1;";
-   ret = sqlite3_prepare_v2(fDB, select_query, sizeof(select_query), &fSelectStmt, NULL);
-   if (ret != SQLITE_OK)
-   {
-      T::Error("CachingLogReader", "Error preparing select_query: %s", sqlite3_errmsg(fDB));
-   }
-   const char insert_query[] = "INSERT INTO cache (query, response) VALUES (?, ?);";
-   ret = sqlite3_prepare_v2(fDB, insert_query, sizeof(insert_query), &fInsertStmt, NULL);
-   if (ret != SQLITE_OK)
-   {
-      T::Error("CachingLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
+      if (sqlite3_open("cdev_cache.sqlite", &fDB) != SQLITE_OK)
+      {
+         T::Error("CachingLogReader", "Can't open cdev cache");
+      }
+      const char *sql = "CREATE TABLE IF NOT EXISTS cache (query TEXT PRIMARY KEY, response TEXT);";
+      int ret = sqlite3_exec(fDB, sql, NULL, NULL, NULL);
+      if (ret != SQLITE_OK)
+      {
+         T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+      }
+      char select_query[] = "SELECT response FROM cache WHERE query = ? LIMIT 1;";
+      ret = sqlite3_prepare_v2(fDB, select_query, sizeof(select_query), &fSelectStmt, NULL);
+      if (ret != SQLITE_OK)
+      {
+         T::Error("CachingLogReader", "Error preparing select_query: %s", sqlite3_errmsg(fDB));
+      }
+      const char insert_query[] = "INSERT INTO cache (query, response) VALUES (?, ?);";
+      ret = sqlite3_prepare_v2(fDB, insert_query, sizeof(insert_query), &fInsertStmt, NULL);
+      if (ret != SQLITE_OK)
+      {
+         T::Error("CachingLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
+      }
    }
 }
 
@@ -41,7 +52,11 @@ CachingLogReader<T>::CachingLogReader(string loggers, string cells)
 template<class T>
 CachingLogReader<T>::~CachingLogReader()
 {
-   sqlite3_close(fDB);
+   if (fDB)
+   {
+      sqlite3_close(fDB);
+      fDB = NULL;
+   }
 }
 
 

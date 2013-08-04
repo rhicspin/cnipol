@@ -14,8 +14,8 @@ class CachingLogReader : public T
 {
 private:
 
-   sqlite3      *fDB;
-   sqlite3_stmt *fSelectStmt, *fInsertStmt;
+   static sqlite3      *fDB;
+   static sqlite3_stmt *fSelectStmt, *fInsertStmt;
 
 public:
 
