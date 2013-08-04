@@ -782,6 +782,11 @@ int main(int argc, char *argv[])
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_BeamCurrent", rBiasCurrent[polId], rBiasCurrentErr[polId], rBeamCurrent[polId], rBeamCurrentErr[polId]);
    }
 
+   if (mAlphaAnaInfo.HasGraphBit())
+   {
+      TCanvas r("r");
+      oc->SaveAllAs(DrawObjContainer::FORMAT_POSTSCRIPT, r, "^.*$", mAlphaAnaInfo.GetImageDir(), false);
+   }
    oc->Write();
    f1->Close();
    delete f1;

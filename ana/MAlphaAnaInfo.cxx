@@ -52,6 +52,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
 
    static struct option long_options[] = {
       {"log",                 optional_argument,   0,   'l'},
+      {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
 
       {"meas-list",           required_argument,   0,   MAlphaAnaInfo::OPTION_MLIST},
       {"output-file",         required_argument,   0,   MAlphaAnaInfo::OPTION_OFILE},
@@ -60,7 +61,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::m:o:", long_options, &option_index)) != -1) {
+   while ((c = getopt_long(argc, argv, "?hlg::m:o:", long_options, &option_index)) != -1) {
       switch (c) {
 
          case '?':
@@ -70,6 +71,11 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
 
          case 'l':
             fFileStdLogName = (optarg != 0 ? optarg : "");
+            break;
+
+         case 'g':
+         case AnaInfo::MODE_GRAPH:
+            fModes |= AnaInfo::MODE_GRAPH;
             break;
 
          case 'm':
@@ -143,6 +149,7 @@ void MAlphaAnaInfo::PrintUsage()
    cout << endl;
    cout << "Options:" << endl;
    cout << " -h, -?                               : Print this help" << endl;
+   cout << " -g, --graph                          : Plot graphs" << endl;
    cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
    cout << " -o, --output-file <file_name>        : Output file name" << endl;
    cout << endl;
