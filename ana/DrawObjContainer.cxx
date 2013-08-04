@@ -352,8 +352,12 @@ bool DrawObjContainer::PrepareHistogram(TCanvas *canvas, TH1 *hobj)
 }
 
 
+DrawObjContainer::ImageFormat DrawObjContainer::FORMAT_PNG = ".png";
+DrawObjContainer::ImageFormat DrawObjContainer::FORMAT_POSTSCRIPT = ".ps";
+
+
 /** */
-void DrawObjContainer::SaveAllAs(TCanvas &default_canvas, std::string pattern, string path, Bool_t thumbs)
+void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, std::string pattern, string path, Bool_t thumbs)
 {
    if (gSystem->mkdir(path.c_str()) < 0)
       Warning("SaveAllAs", "Perhaps dir already exists: %s", path.c_str());
@@ -431,7 +435,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &default_canvas, std::string pattern, s
 
       //if (obj) obj->Print();
 
-      string sFileName = path + "/" + sCanvasName + ".png";
+      string sFileName = path + "/" + sCanvasName + fmt_ext;
 
       if (TPRegexp(pattern).MatchB(sFileName.c_str())) {
 
@@ -459,7 +463,7 @@ void DrawObjContainer::SaveAllAs(TCanvas &default_canvas, std::string pattern, s
 
       string parentPath = path;
       path += "/" + isubd->first;
-      isubd->second->SaveAllAs(default_canvas, pattern, path, thumbs);
+      isubd->second->SaveAllAs(fmt_ext, default_canvas, pattern, path, thumbs);
       path = parentPath;
    }
 }

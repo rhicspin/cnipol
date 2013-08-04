@@ -568,10 +568,10 @@ void CnipolHists::PostFill()
 
 
 /** */
-void CnipolHists::SaveAllAs(TCanvas &c, std::string pattern, string path, Bool_t thumbs)
+void CnipolHists::SaveAllAs(ImageFormat fmt_ext, TCanvas &c, std::string pattern, string path, Bool_t thumbs)
 {
    //Info("SaveAllAs", "executing...");
-   DrawObjContainer::SaveAllAs(c, pattern, path, thumbs);
+   DrawObjContainer::SaveAllAs(fmt_ext, c, pattern, path, thumbs);
 
    //ds XXX
    return;
