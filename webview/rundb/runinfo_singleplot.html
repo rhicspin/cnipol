@@ -1,0 +1,765 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--
+******************************************************************************
+*
+******************************************************************************
+-->
+
+<html>
+<head>
+  <title>p-Carbon Measurement <?=$gRunId?>: Analysis Results</title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+  <script language="javascript" src="../main.js"></script>
+  <script language="javascript" src="../toc.js"></script>
+</head>
+
+<body bgcolor="#ffffff">
+
+<?php
+include("../head.html");
+?>
+
+<!-- Main text starts here-->
+
+
+<h1>pC Measurement <?=$gRunId?></h1>
+
+<div class="count" id="generated-toc"></div>
+
+<hr>
+
+<div id="main_text_body">
+<!-- {{{ -->
+
+
+<h1 id="summary" class="count">Summary</h1>
+<!-- {{{ -->
+<div id="div:summary" class="section">
+
+<?php
+
+// Determine whether we have different analyses identified by a suffix
+if (!isset($gSfx) || empty($gSfx))
+   $suffixes = "default ";
+else 
+   $suffixes = "<a href=\"./?runid=$gRunId\">default</a> ";
+
+foreach ($rc['suffixes'] as $suffix)
+{
+   if (empty($suffix)) continue;
+
+   if ($gSfx == $suffix) 
+      $suffixes .= "$suffix ";
+   else
+      $suffixes .= "<a href=\"./?runid=$gRunId&sfx=$suffix\">$suffix</a> ";
+}
+
+// Assign the variables
+$polId     = $POLARIMETER_ID[$rc['polarimeter_id']];
+$runPeriod = getRunPeriod($rc['start_time']);
+
+$cssPol = "";
+
+if ($polId[0] == 'B') $cssPol = "bluPol";
+if ($polId[0] == 'Y') $cssPol = "yelPol";
+
+if ($polId[2] == 'U') $cssPol .= " bold";
+#if ($polId[2] == 'D') $cssPol .= "";
+
+$strPolId = "<span class=\"s150 padding1 $cssPol\">$polId</span>";
+
+if ( isset($rc['A_N'][1]) && $rc['A_N'][1] == 0) $rc['A_N'][1] = 1e-10;
+
+$polarization = "&nbsp;";
+
+
+$normSpecs = array(
+   "runPeriod" => $runPeriod,
+	"energy"    => intval($rc['beam_energy']+0.5),
+	"polId"     => $polId,
+	"tgtOrient" => $rc['target_orient'],
+	"tgtId"     => $rc['target_id']
+);
+
+$norm = getJetCarbonNormalization($normSpecs);
+
+
+if (isset($rc['polarization'])) {
+	$polarization = sprintf("<span class=s150>%5.1f &plusmn; %5.1f %%</span>",
+      $rc['polarization']*100*$norm, $rc['polarization_error']*100*$norm);
+}
+
+$polarization_X90 = isset($rc['fAsymX90']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX90']['phys'][0]*100*$norm/$rc['A_N'][1],
+	                                   $rc['fAsymX90']['phys'][1]*100*$norm/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45 = isset($rc['fAsymX45']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45T = isset($rc['fAsymX45T']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45T']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45T']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_X45B = isset($rc['fAsymX45B']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymX45B']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymX45B']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$polarization_Y45 = isset($rc['fAsymY45']['phys']) ?
+   sprintf("%5.1f &plusmn; %5.1f %%", $rc['fAsymY45']['phys'][0]*100*$norm*M_SQRT2/$rc['A_N'][1],
+	                                   $rc['fAsymY45']['phys'][1]*100*$norm*M_SQRT2/$rc['A_N'][1]) : "&nbsp;";
+
+$targetId = "&nbsp;";
+
+if (isset($rc['target_orient']) && isset($rc['target_id']) && $rc['target_id'] > 0) {
+   $targetId = "{$rc['target_orient']}{$rc['target_id']}";
+} else {
+   $targetId = "N/A";
+}
+
+$measurementType = "&nbsp;";
+
+if (isset($rc['measurement_type']) && $rc['measurement_type'] >= 0 ) {
+   $measurementType = $MEASTYPE[$rc['measurement_type']];
+}
+
+$profileRatio = sprintf("%5.2f &plusmn; %5.2f", $rc['profile_ratio'], $rc['profile_ratio_error']);
+
+// Deal with version now
+$asymVersion = isset($rc['asym_version']) ? $rc['asym_version'] : "v0.0.0";
+$asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion>$asymVersion</a>";
+?>
+
+<p>
+<table border="0" cellpadding="3" cellspacing="0" align="center" width="100%">
+
+<tr>
+   <td>
+   <b>Polarimeter:</b> <?=$strPolId?>
+   <td>
+   <b>Polarization:</b> <?=$polarization?>
+   <td>
+   <b>Beam Energy:</b> <?=sprintf("%10.3f", $rc['beam_energy'])?>&nbsp;GeV
+   <td>
+   <b>Target:</b> <?=$targetId?>
+
+<tr>
+   <td colspan=4>
+      <table border="0" cellpadding="2" cellspacing="2" align=center>
+      <tr>
+         <th>X90
+         <th>X45
+         <th>X45T
+         <th>X45B
+         <th>Y45
+      <tr>
+         <td> <?=$polarization_X90?>
+         <td> <?=$polarization_X45?>
+         <td> <?=$polarization_X45T?>
+         <td> <?=$polarization_X45B?>
+         <td> <?=$polarization_Y45?>
+      </table>
+
+<tr>
+   <td>
+   <b>Run Period:</b> <?=$runPeriod?>
+   <td>
+   <b>H-Jet norm (A_N Scale):</b> <?=$norm?>
+   <td>&nbsp;
+   <td>&nbsp;
+
+<tr>
+   <td>
+   <b>Run Start Time:</b> <?=isset($rc['start_time']) ? date("M d, Y H:i:s D", $rc['start_time']) : "&nbsp;";?>
+   <td>
+   <b>Total Events:</b> <?=number_format($rc['fNEventsTotal'])?>
+   <td>
+   <b>Profile Ratio:</b> r = <?=$profileRatio?>
+   <td>
+   <b>Run Type:</b> <?=$measurementType?>
+   <!--
+   <td>
+   <b>Size:</b> <?//=$s['dirsize']?>
+   -->
+
+<tr>
+   <td>
+   <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
+   <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['ana_start_time'])?>&nbsp;
+   (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
+   <td>
+   <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
+   <? if ($rc['fThinout'] > 1): ?>(every <?=ordinal_suffix($rc['fThinout'])?> event)
+   <? endif; ?>
+   <td>
+   <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
+   <td>
+   <b>Asym Version:</b> <?=$asymVersion?>
+
+<tr>
+   <td colspan=4>
+   <b>Channels:</b> Total <span class=feature>excluded channels</span>: <?=count($rc['fDisabledChannels'])?>
+	<br>
+
+   <table class="simple w100 align_cm padding0" cellspacing=0 align=center>
+   <?php
+      $row1 = "";
+
+      foreach($rc['fSiliconChannels'] as $chanId)
+		{
+		   $tdBkg = in_array($chanId, $rc['fDisabledChannels']) ? "class='feature'" : "";
+         $row1 .= "<td $tdBkg><a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">$chanId</a>";
+
+         if ($chanId % 36 == 0) {
+            print "<tr>$row1\n";
+            $row1 = "";
+         }
+      }
+   ?>
+   </table>
+
+<?php
+   //$row1 = "";
+   $row2 = "";
+   $row3 = "";
+   $iCell = 0;
+   $bkgCellColor = "#fff";
+
+   foreach ($rc['fBeamBunches'] as $bunchId => $bunch)
+   {
+      if ($iCell % 8 == 0) {
+         if ($bkgCellColor == "#fff") $bkgCellColor = "#ddd";
+         else if ($bkgCellColor == "#ddd") $bkgCellColor = "#fff";
+      }
+
+      if ($bunch['fBunchSpin'] == -1)      $bunchSpin = "&#8722;";
+      else if ($bunch['fBunchSpin'] == +1) $bunchSpin = "+";
+      else                                 $bunchSpin = "0";
+      //$bunchSpin = ($bunch['fBunchSpin'] == -1 ? "&#8722;" : "+");
+     
+      //$row1 .= "<td>$bunchId";
+      $row2 .= "<td class=align_cm style='background-color: $bkgCellColor;'>{$bunch['fIsFilled']}";
+      $row3 .= "<td class=align_cm style='background-color: $bkgCellColor;'>$bunchSpin";
+
+      //print "<tr class=align_cm>$row1\n";
+      $iCell++;
+   }
+?>
+<tr>
+   <td colspan=4>
+   <table class="simple00 w100 cntr0" cellspacing=0 align=center>
+   <tr>
+      <td colspan=120 class=align_l>
+      <b>Bunch fill pattern:</b>
+   <tr>
+      <?=$row2;?>
+   <tr>
+      <td colspan=120 class=align_l>
+      <b>Bunch spin pattern:</b>
+   <tr>
+      <?=$row3;?>
+   </table>
+
+<tr>
+   <td colspan=4>
+   &nbsp;
+
+<tr>
+   <td colspan=4>
+   <div class="s120">Analysis tags (for experts): <?=$suffixes?></div>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<!--
+<h1 id="bunch_lumi" class="count">Bunch and Luminosity Info</h1>
+<div id="div:bunch_lumi" class="section">
+
+<p>
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<tr>
+<td align=center>
+<?=$gP->img('Bunch/wall_current_monitor')?>
+<td align=center>
+<?=$gP->img('Bunch/bunch_dist')?>
+<td align=center>
+<?=$gP->img('Raw/bunch_dist_raw')?>
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/bunch_spelumi')?>
+<td align=center>
+<?=$gP->img('Bunch/specific_luminosity')?>
+<td align=center>
+<?=$gP->img('ErrDet/spelumi_vs_bunch')?>
+</table>
+
+</div>
+-->
+
+
+
+<!--
+<h1 id="energy" class="count">Energy</h1>
+<div id="div:energy" class="section">
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_all')?>
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det1')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det2')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det3')?>
+<tr>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det4')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det5')?>
+<td align=center>
+<?=$gP->img('Kinema/energy_spectrum_det6')?>
+</table>
+
+</div>
+-->
+
+
+<!--
+<h2 id="mass_fit" class="count">Mass Fit</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/mass_pos_dev_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/mass_sigma_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/good_carbon_events_strip')?>
+<tr>
+<td align=center>
+<?=$gP->img('ErrDet/mass_chi2_vs_strip')?>
+<td align=center>
+<?=$gP->img('ErrDet/mass_e_correlation_strip')?>
+</table>
+-->
+
+
+<h1 id="raw" class="count">Raw Data</h1>
+<!-- {{{ -->
+<div id="div:raw" class="section">
+
+<p>
+<span class="s150"><a href=./?runid=<?=$gRunId?>&raw>All channels at once</a></span>
+
+<p>
+<table class="simple00 cntr" cellspacing=15 align=center>
+
+<tr class="toprow4">
+<td>
+<?=$gP->img('run/wall_current_monitor')?>
+<div class="thumbcaption">
+Number of protons per bunch as reported by the wall current monitor (WCM)
+</div>
+
+<td>
+<?=$gP->img('raw/hBunchCounts')?>
+<div class="thumbcaption">
+Number of events per bunch
+</div>
+
+<td>
+<?=$gP->img('raw/hStripCounts')?>
+<div class="thumbcaption">
+Number of events per detector channel
+</div>
+
+<td>
+<?=$gP->img('raw/hChIdVsBunchId')?>
+<div class="thumbcaption">
+Number of events registered by detector channel per bunch
+</div>
+
+<tr class=align_ct>
+<td>
+<?=$gP->img('raw/hAdcAmpltd')?>
+<p class=left>Distribution of the maximum signal amplitude (all channels combined)
+<td>
+<?=$gP->img('raw/hTdc')?>
+<p class=left>Distribution of the signal time (all channels combined)
+<td>
+<?=$gP->img('raw/hTvsA')?>
+<p class=left>TDC vs Amplitude (all channels combined)
+<td>
+<?=$gP->img('raw/hTvsI')?>
+<p class=left>TDC vs Integral (all channels combined)
+
+<tr class=align_ct>
+<td>
+<?=$gP->img('raw/hRevolutionId')?>
+<p class=left>Number of events per beam revolution
+<td>
+<td>
+<td>
+<?=$gP->img('raw/hIvsA')?>
+<div class="thumbcaption">
+Pulse integral vs (maximum) apmplitude
+</div>
+
+</table>
+
+
+</div>
+<!-- }}} -->
+
+
+<h1 id="asymmetry" class="count">Beam Polarization and Asymmetry</h1>
+<!-- {{{ -->
+<div id="div:asymmetry" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+<tr>
+<td align=center>
+   &nbsp;
+
+<td align=center>
+<?=$gP->img('asym/hPolarVsPhi')?>
+<div class="thumbcaption">
+Polarization per channel as a function of the azimuthal channel angle
+</div>
+
+<td align=center>
+<?=$gP->img('asym/hAsymVsPhi')?>
+<div class="thumbcaption">
+Asymmetry per channel as a function of the azimuthal channel angle
+</div>
+
+<tr>
+<td align=center><?=$gP->img('asym/hAsymVsBunchId_X90')?>
+<div class="thumbcaption">X90: Left-right asymmetry using only 90&deg; detectors</div>
+
+<td align=center><?=$gP->img('asym/hAsymVsBunchId_X45')?>
+<div class="thumbcaption">X45: Left-right asymmetry using only 45&deg; detectors</div>
+
+<td align=center> <?=$gP->img('asym/hAsymVsBunchId_Y45')?>
+<div class="thumbcaption">Y45: Top-bottom (false) asymmetry using only 45&deg; detectors</div>
+
+<tr>
+<td colspan=3>
+<div class='thumbcaption'>
+<span class=frgRed>Red</span> points correspond to bunches with "up" spin
+polarization. <span class=frgGreen>Green</span> points correspond to bunches
+with "down" spin polarization
+</div>
+
+<tr>
+<td align=center><?=$gP->img('asym/hKinEnergyAChAsym')?>
+<div class='thumbcaption'>
+Asymmetry as a function of the recoil carbon kinematic energy
+</div>
+
+<td align=center><?=$gP->img('asym/hLongiChAsym')?>
+<div class='thumbcaption'>
+Asymmetry as a function of the proton-Carbon interaction position (in seconds)
+relative to the bunch center
+</div>
+
+<td align=center>
+   &nbsp;
+
+</table>
+
+
+<!--
+<h2 id="misc" class="count">Misc</h2>
+
+<table border="1" cellpadding="5" cellspacing="2" align="center" width="100%">
+
+<tr>
+<td align=center>
+<?=$gP->img('Run/rate_vs_delim')?>
+<td align=center>
+<?=$gP->img('run/Asymmetry/scan_asym_sinphi_fit')?>
+
+</table>
+-->
+</div>
+<!-- }}} -->
+
+
+<h1 id="profile_plots" class="count">Profile</h1>
+<!-- {{{ -->
+<div id="div:profile_plots" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+
+<tr class="toprow3">
+<td>
+<?=$gP->img("targets/hTargetVertRotary")?>
+<div class="thumbcaption">
+Nominal target position in motor steps vs time
+</div>
+
+<td>
+<?=$gP->img("profile/hIntensProfile")?>
+<div class="thumbcaption">
+Intensity profile: Number of events as a function of time
+</div>
+
+
+<tr>
+<td>
+<?=$gP->img("profile/hIntensUniProfile")?>
+<div class="thumbcaption">
+If we assume a gaussian beam profile with the unit width the actuall
+position of the target in the beam can be deduced from the intensity measured
+at each target step. Note that the plot is symmetric around X = 0 by
+construction
+</div>
+
+<td>
+<?=$gP->img("profile/hAsymUniProfile")?>
+<div class="thumbcaption">
+Beam asymmetry as a function of beam width in intesity sigma units
+</div>
+
+<td>
+<?=$gP->img("profile/hAsymVsIntensProfile")?>
+<div class="thumbcaption">
+Asymmetry vs intensity as measured every 0.1 second. The data is fitted with a
+function P = P_max * (I/I_max)^r
+</div>
+
+
+<tr>
+<td>
+
+<td>
+<?=$gP->img("profile/hPolarUniProfile")?>
+<div class="thumbcaption">
+Beam polarization as a function of beam width in intesity sigma units
+</div>
+
+<td>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<div class="thumbcaption">
+Polarization vs intensity as measured every 0.1 second. The data is fitted with
+a function P = P_max * (I/I_max)^r
+</div>
+
+<tr>
+<td>
+
+<td>
+<?=$gP->img("profile/hPolarUniProfileBin")?>
+<div class="thumbcaption">
+The same as above but with a smaller number of bins for easier reading
+</div>
+
+<td>
+<?=$gP->img("profile/hPolarVsIntensProfileBin")?>
+<div class="thumbcaption">
+The same as above but with a smaller number of bins for easier reading
+</div>
+
+<!--
+<tr>
+<td>
+<?=$gP->img("profile/hPolarVsIntensProfile")?>
+<p>Polarization vs intensity as measured every second at each target step. The
+data is fitted with a function P = P_max * I^r
+
+<td>
+<?=$gP->img("profile/hPolarUniProfile")?>
+The beam polarization as a function of beam width in intesity sigma units
+
+<td>
+<?=$gP->img("profile/hPolarUniProfileBin")?>
+The same data as on the left plot but the measurements are binned
+-->
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<h1 id="calib_plots" class="count">Dead layer, t0 calibration</h1>
+<!-- {{{ -->
+<div id="div:calib_plots" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+
+<!--
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA")?>
+<td align=center>
+<?=$gP->img("hTvsI")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_cut1")?>
+<td align=center>
+<?=$gP->img("hTvsI_cut1")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut1")?>
+
+<tr>
+<td align=center>
+<?=$gP->img("hTvsA_cut2")?>
+<td align=center>
+<?=$gP->img("hTvsI_cut2")?>
+<td align=center>
+<?=$gP->img("hTimeVsEnergyA_cut2")?>
+
+-->
+
+<!--
+<tr>
+<td align=center colspan=4>
+<?=$gP->img("preproc/combo")?>
+-->
+
+<tr>
+<td align=center>
+<?=$gP->img("calib/hDLVsChannel")?>
+<div class="thumbcaption">
+Effective dead layer for all channels. The dead layer estimates the undetectable
+fraction (losses) of the initial carbon energy
+</div>
+
+<td align=center>
+<?=$gP->img("calib/hT0VsChannel")?>
+<div class="thumbcaption">
+
+</div>
+
+<td align=center>
+<?=$gP->img("calib/hChi2NdfVsChannel")?>
+
+<td align=center>
+<?=$gP->img("calib/hFitStatusVsChannel")?>
+
+<tr>
+<td>
+<?=$gP->img("preproc/hsTimeVsEnergyACumul")?>
+
+<td>
+<td>
+<td>
+
+<!--
+<tr>
+<td class=align_cm colspan=4>
+<?=$gP->img("std/hEventsVsChannel_cut2")?>
+-->
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<h1 id="kinematics" class="count">Recoil Carbon Kinematics</h1>
+<!-- {{{ -->
+<div id="div:kinematics" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+
+<tr>
+<td align=center>
+<?=$gP->img("kinema_premass/hPseudoMass")?>
+<td align=center>
+<?=$gP->img("kinema/hPseudoMass")?>
+<td align=center>
+&nbsp;
+
+<tr>
+<td align=center>
+<?=$gP->img("kinema/hMassFitChi2ByChannel")?>
+<td align=center>
+<?=$gP->img("kinema/hMassFitMeanByChannel")?>
+<td align=center>
+<?=$gP->img("kinema/hMassFitSigmaByChannel")?>
+
+
+<tr>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiff")?>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiffVsEnergyA")?>
+<td align=center>
+<?=$gP->img("std/hLongiTimeDiffVsEnergyA_pfx")?>
+
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<h1 id="channels" class="count">Channels</h1>
+<!-- {{{ -->
+<div id="div:channels" class="section">
+
+<p>
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+<?php
+
+foreach($rc['fSiliconChannels'] as $chanId)
+{
+   $chanId = sprintf("%02d", $chanId);
+   //$gP->dir = "../runs/$gRunId/images$gSuffix/std/channel$chanId/";
+   $gP->dir = "../runs/$gRunId/images$gSuffix/preproc/";
+
+   //$row1 .= "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>";
+
+   if ( ($chanId-1) % 6 == 0 ) {
+      //print "<tr class=align_cm>$row1\n<tr class=align_cm>$row2";
+      print "<tr class=align_cm>\n";
+      //$row1 = "";// $row2 = "";
+   }
+
+   $img = $gP->img("combo_ch$chanId", false, 250);
+   //$img = $gP->img("combo_ch$chanId");
+   //$img = $gP->img("combo_ch$chanId", 150, "./?runid=$gRunId&chanid=$chanId&sfx=$gSfx");
+   print "<td>$img<br>\n";
+   print "<a href=\"./?runid=$gRunId&chanid=$chanId&sfx=$gSfx\">channel $chanId</a>\n";
+   
+}
+?>
+</table>
+
+</div>
+<!-- }}} -->
+
+
+<!-- Main text ends here-->
+</div>
+<!-- }}} -->
+
+<?php
+include("../bottom.html");
+?>
+
+</body>
+</html>
