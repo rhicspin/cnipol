@@ -22,12 +22,17 @@ function print_version_definition()
 	git describe --abbrev=0 --tags --exact 2> /dev/null
 	UNSTABLE=$?
 
-	if [ $STAGED = 1 ] || [ $UNSTAGED = 1 ] || [ $UNSTABLE = 128 ]; then
-		FLAGS="M"
-	fi
+	if [ $STAGED = 0 ] && [ $UNSTAGED = 0 ]; then
+		if [ $UNSTABLE = 128 ]; then
+			FLAGS="M"
+		fi
 
-	TAG=`git describe --abbrev=0 --tags 2> /dev/null`
-	echo -n "${TAG}${FLAGS};"
+		TAG=`git describe --abbrev=0 --tags 2> /dev/null`
+		echo -n "${TAG}${FLAGS}"
+	else
+		echo -n "dirty"
+	fi
+	echo -n ";"
 	git rev-parse HEAD | xargs echo -n
 	echo "\";"
 }
