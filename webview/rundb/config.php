@@ -5,6 +5,7 @@ include_once("Pair.php");
 
 define("DATA_DIR", "/usr/local/polarim/root");
 define("LOG_DIR",  "/usr/local/polarim/log");
+define("VIDEO_DIR",  "/usr/local/polarim/video");
 
 // Approximate fill numbers
 $RUN_PERIOD_BY_FILL = array (
