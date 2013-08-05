@@ -28,7 +28,9 @@ function print_version_definition()
 
 	TAG=`git describe --abbrev=0 --tags 2> /dev/null`
 	echo -n "${TAG}${FLAGS};"
-	git rev-parse HEAD | xargs echo -n
+	if [ $STAGED = 0 ] && [ $UNSTAGED = 0 ]; then
+		git rev-parse HEAD | xargs echo -n
+	fi
 	echo "\";"
 }
 
