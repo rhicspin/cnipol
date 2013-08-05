@@ -213,7 +213,12 @@ while ($e = mysql_fetch_assoc($rslt)):
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0;";
 	list($human_version, $git_hash) = explode(";", $asymVersion);
-	$asymVersion = '<a href="https://github.com/rhicspin/cnipol/commit/' . $git_hash . '">' . $human_version . '</a>';
+	$asymVersion = "";
+        if ($git_hash)
+		$asymVersion = '<a href="https://github.com/rhicspin/cnipol/commit/' . $git_hash . '">';
+	$asymVersion .= $human_version;
+        if ($git_hash)
+		$asymVersion .= '</a>';
 
    // Set default directory for run images
    $dir = "../runs/{$e['run_name']}/images$gSuffix/";
