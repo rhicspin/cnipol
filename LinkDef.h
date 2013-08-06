@@ -57,9 +57,6 @@
 #pragma link C++ class MAsymRoot+;
 #pragma link C++ class MAsymRunHists+;
 
-// online/include/rpoldata.h;
-#pragma link C++ class RecordTargetParams-;
-
 // src
 #pragma link C++ class AnaFillExternResult;
 #pragma link C++ class AnaFillResult;
