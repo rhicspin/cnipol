@@ -402,7 +402,6 @@ void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, s
             {
                continue;
             }
-            cout << "Child has name: " << child->GetName() << endl;
             PrepareHistogram(canvas, (TH1*)child);
          }
       }
