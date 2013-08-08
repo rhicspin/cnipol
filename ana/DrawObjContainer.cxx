@@ -354,6 +354,7 @@ bool DrawObjContainer::PrepareHistogram(TCanvas *canvas, TH1 *hobj)
 
 DrawObjContainer::ImageFormat DrawObjContainer::FORMAT_PNG = ".png";
 DrawObjContainer::ImageFormat DrawObjContainer::FORMAT_POSTSCRIPT = ".ps";
+DrawObjContainer::ImageFormat DrawObjContainer::FORMAT_EPS = ".eps";
 
 
 /** */

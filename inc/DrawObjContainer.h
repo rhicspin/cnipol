@@ -59,6 +59,7 @@ public:
    typedef const char*  ImageFormat;
    static ImageFormat   FORMAT_PNG;
    static ImageFormat   FORMAT_POSTSCRIPT;
+   static ImageFormat   FORMAT_EPS;
 
    DrawObjContainer();
    DrawObjContainer(TDirectory *dir);
