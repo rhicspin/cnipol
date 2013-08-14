@@ -1903,6 +1903,8 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
       } else {
          Error("AsymCalculator::CalcKinEnergyAChAsym", "Fit error in energy bin %d", iKinE);
       }
+
+      delete hChAsym;
    }
 }
 
