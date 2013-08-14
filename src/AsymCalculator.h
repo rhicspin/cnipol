@@ -86,7 +86,7 @@ public:
       Float_t *P, Float_t *phase, Float_t &chi2dof);
  
    static Float_t    WeightAnalyzingPower(int hid);
-	static Bool_t     ExcludeStrip(int i, int j);
+   static Bool_t     IsExclusionCandidate(int i, int j);
    static ValErrPair CalcAsym(Double_t A, Double_t B, Double_t totalA, Double_t totalB);
    static ValErrPair CalcAsymSqrtFormula(Double_t A, Double_t B, Double_t C, Double_t D);
    static void       sqass(Double_t A, Double_t B, Double_t C, Double_t D, Double_t &asym, Double_t &asymErr);

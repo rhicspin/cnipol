@@ -1082,7 +1082,7 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
 // Description : returns true if strip #j is in exclusion candidate
 // Input       : int i, int j
 // Return      : true/false
-Bool_t AsymCalculator::ExcludeStrip(int k, int j)
+Bool_t AsymCalculator::IsExclusionCandidate(int k, int j)
 {
    int i = (k >= 36) ? k-36 : k;
 
@@ -2025,7 +2025,7 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       for (int j=0; j<N_SILICON_CHANNELS; j++) {
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(iCh, j)) {
+         if (!AsymCalculator::IsExclusionCandidate(iCh, j)) {
             totalUpCounts[iCh]   += nCountsUp[j];
             totalDownCounts[iCh] += nCountsDown[j];
          }
@@ -2170,7 +2170,7 @@ TH1D* AsymCalculator::CalcChannelAsym(TH1I &hUp, TH1I &hDown, TH1D *hChAsym)
             continue;
 
          // Calculate luminosity. This strip and ones in cross geometry are excluded.
-         if (!AsymCalculator::ExcludeStrip(iCh-1, iCh2-1)) {
+         if (!AsymCalculator::IsExclusionCandidate(iCh-1, iCh2-1)) {
             totalCountsUp   += hUp.GetBinContent(iCh2);
             totalCountsDown += hDown.GetBinContent(iCh2);
          }
