@@ -580,7 +580,8 @@ void event_process(ChannelEvent &chEvent)
 void KinemaReconstruction(int Mode, processEvent *event, recordConfigRhicStruct *gConfigInfo,
                      int st, float &edepo, float &e, float &t, float &delt, float &Mass)
 {
-  float rand1, rand2;
+  float rand1 = (float)rand()/(float)RAND_MAX;
+  float rand2 = (float)rand()/(float)RAND_MAX;
 
   // random numbers in order to smear for the integer reading
   //int vlen = 1;
