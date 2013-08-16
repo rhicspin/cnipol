@@ -25,8 +25,6 @@ ChannelData::~ChannelData()
 /** */
 void ChannelData::Print(const Option_t* opt) const
 {
-   opt = "";
-
    //printf("ChannelData:\n");
    //printf("fAmpltd, fIntgrl, fTdc, fTdcAMax: %12d, %12d, %12d, %12d", fAmpltd, fIntgrl, fTdc, fTdcAMax);
    printf("%12d %12d %12d %12d", fAmpltd, fTdc, fIntgrl, fTdcAMax);

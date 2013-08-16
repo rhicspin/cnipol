@@ -912,16 +912,12 @@ void MAsymRunHists::Fill(const EventConfig &rc)
    //assert(fitResAsymPhi.Get());
    //assert(fitResPolarPhi.Get());
 
-   Float_t asym            = 0;
-   Float_t asymErr         = 0;
    Float_t spinAngle       = 0;
    Float_t spinAngleErr    = 0;
    Float_t polarization    = 0;
    Float_t polarizationErr = 0;
 
    if ( fitResAsymPhi.Get() && fitResPolarPhi.Get() ) {
-      asym         = fitResAsymPhi->Value(0);
-      asymErr      = fitResAsymPhi->FitResult::Error(0);
       spinAngle    = fitResAsymPhi->Value(1) / TMath::Pi() * 180;
       spinAngleErr = fitResAsymPhi->FitResult::Error(1) / TMath::Pi() * 180;
 
@@ -1095,7 +1091,6 @@ void MAsymRunHists::Fill(EventConfig &rc, DrawObjContainer &oc)
 /** */
 void MAsymRunHists::Print(const Option_t* opt) const
 {
-   opt = ""; //printf("MAsymRunHists:\n");
    DrawObjContainer::Print();
 }
 

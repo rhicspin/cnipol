@@ -214,8 +214,6 @@ Float_t ChannelEvent::GetTdcAdcTimeDiff()
 /** */
 void ChannelEvent::Print(const Option_t* opt) const
 {
-   opt = "";
-
    //printf("ChannelEvent:");
    //printf("\n\t");
    //fEventId.Print();

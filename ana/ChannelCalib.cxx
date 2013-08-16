@@ -47,13 +47,11 @@ void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
  */
 void ChannelCalib::Print(const Option_t* opt) const
 {
-   opt = "";
-
    //printf("ChannelCalib:\n");
    //printf("\n");
-   //printf("fACoef, fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth, " \
-   //     "fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr, " \
-   //     "fBananaChi2Ndf " \
+   //printf("fACoef, fACoefErr, fAChi2Ndf, fICoef, fICoefErr, fIChi2Ndf, fDLWidth, "
+   //     "fDLWidthErr, fT0Coef, fT0CoefErr, fAvrgEMiss, fAvrgEMissErr, "
+   //     "fBananaChi2Ndf "
    //     "fFitStatus\n");
    printf("%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8.3f  " \
           "%8.3f  %8.3f  %8.3f  %8.3f  %8.3f  %8d\n", fAmAmp.fCoef,

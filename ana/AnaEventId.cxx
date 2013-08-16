@@ -26,8 +26,6 @@ AnaEventId::~AnaEventId()
  */
 void AnaEventId::Print(const Option_t* opt) const
 {
-   opt = "";
-
    printf("AnaEventId:\n");
    printf("RevId, BunchId: %12d, %12d", fRevolutionId, fBunchId);
 }

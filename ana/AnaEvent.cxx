@@ -57,8 +57,6 @@ float AnaEvent::GetTime(EventConfig *ec, ChannelDataPair &ch)
  */
 void AnaEvent::Print(const Option_t* opt) const
 {
-   opt = "";
-
    printf("AnaEvent:\n");
 
    ChannelDataMap::const_iterator mi;

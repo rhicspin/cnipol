@@ -500,7 +500,7 @@ void BunchAnomalyDetector()
 // Input       : err_code
 void HotBunchFinder(int err_code)
 {
-   float err[NBUNCH], bindex[NBUNCH];
+   float bindex[NBUNCH];
    float max, min;
    int init_flag=1;
    int EXCLUDE_BUNCH=20; // bunch 20 supposed be excluded from specific luminosity anomaly finding
@@ -509,7 +509,6 @@ void HotBunchFinder(int err_code)
  
       // inistiarization
       bindex[bnch] = bnch;
-      err[bnch]    = 1;
  
       // calculate min and max range of the histogram
       if ((SpeLumi.Cnts[bnch])&&(init_flag) ) {min=SpeLumi.Cnts[bnch]; init_flag=0;}

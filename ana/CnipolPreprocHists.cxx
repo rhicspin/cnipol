@@ -292,7 +292,7 @@ void CnipolPreprocHists::FillDerivedPassOne_SubtractEmptyBunch(CnipolPreprocHist
 /** */
 void CnipolPreprocHists::FillDerivedPassOne_FillFromRawHists(CnipolRawHists *rawHists)
 {
-   TH1 *hNoiseReject;
+   TH1 *hNoiseReject = NULL;
    
    ChannelSetIter iCh = gMeasInfo->fSiliconChannels.begin();
 

@@ -280,8 +280,8 @@ void MeasInfo::PrintConfig()
 
    // banana cut configulation
 
-   int ccutwu;
-   int ccutwl;
+   int ccutwu = 0;
+   int ccutwl = 0;
 
    if (gAsymAnaInfo->CBANANA == 0) {
       ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
