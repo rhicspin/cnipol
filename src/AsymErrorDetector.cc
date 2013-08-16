@@ -501,7 +501,7 @@ void BunchAnomalyDetector()
 void HotBunchFinder(int err_code)
 {
    float bindex[NBUNCH];
-   float max, min;
+   float max = FLT_MIN, min = FLT_MAX;
    int init_flag=1;
    int EXCLUDE_BUNCH=20; // bunch 20 supposed be excluded from specific luminosity anomaly finding
  
