@@ -125,7 +125,6 @@ void MAsymRateHists::BookHistsPolarimeter(EPolarimeterId polId, EBeamEnergy beam
 void MAsymRateHists::Fill(const EventConfig &rc)
 {
    Double_t runId            = rc.fMeasInfo->RUNID;
-   UInt_t   fillId           = (UInt_t) runId;
    UInt_t   beamEnergy       = (UInt_t) (rc.fMeasInfo->GetBeamEnergy() + 0.5);
    Short_t  polId            = rc.fMeasInfo->fPolId;
    //Short_t  targetId         = rc.fMseMeasInfoX->target_id;
@@ -184,6 +183,5 @@ void MAsymRateHists::Fill(const EventConfig &rc)
 /** */
 void MAsymRateHists::Print(const Option_t* opt) const
 {
-   opt = ""; //printf("MAsymRateHists:\n");
    DrawObjContainer::Print();
 }

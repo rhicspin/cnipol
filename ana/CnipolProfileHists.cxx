@@ -493,20 +493,14 @@ void CnipolProfileHists::PostFill()
    fitres = fhIntensProfile->Fit(&profileTailFitFunc, "M S R +", "");
 
    // Now split the fhIntensProfile hist into two: forward and backward motions
-   double chi2Ndf  = 0;
    double sigma    = 0;
    double mean1    = 0;
-   double mean1Err = 0;
    double mean2    = 0;
-   double mean2Err = 0;
 
    if (fitres.Get()) {
-      chi2Ndf  = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
       sigma    = fitres->Value(0);
       mean1    = fitres->Value(1);
-      mean1Err = fitres->FitResult::Error(1);
       mean2    = fitres->Value(2);
-      mean2Err = fitres->FitResult::Error(2);
    }
 
    TH1* hIntensProfileFwd  = (TH1*) o["hIntensProfileFwd"];

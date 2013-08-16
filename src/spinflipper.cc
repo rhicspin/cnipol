@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
 
    printf("spinFlipperTune: %d\n", spinFlipperTune);
 
-   TH2* hAsymVsOscillPhase_Y45_phys;
-   TGraphErrors* graph;
+   TH2* hAsymVsOscillPhase_Y45_phys = NULL;
+   TGraphErrors* graph = NULL;
 
    vector<string>::const_iterator iMeasId = measIds.begin();
    vector<uint>::const_iterator   iMarkerAbsRev = markerAbsRevs.begin();

@@ -1018,27 +1018,20 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
       //for (int i=0; i<25; i++) anth[i] = anth[i] * a_n_scale_v1_5_0;
    }
 
-   float Emin = 22.5;
-   float Emax = 1172.2;
-   float DeltaE = (Emax - Emin)/25.;
-
    //int nbin   = HENEBIN;
    //int fstbin = 1;
    //int lstbin = HENEBIN;
 
-   float X[HENEBIN];
    float Y[HENEBIN];
    //float EX[HENEBIN];
    //float EY[HENEBIN];
 
    //ds hhrebin_(&HID, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
 
-   int j      = 0;
    float sum  = 0.;
    float suma = 0.;
 
    for (int i=0; i<HENEBIN; i++){
-      j = (int) ((X[i] - Emin)/DeltaE);
       sum  += Y[i];
       //suma += Y[i] * anth[j];
       suma += Y[i] * anth[i];
@@ -1051,7 +1044,6 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
 
    if (!hKinEnergyA_o) return 0;
 
-   j = 0;
    sum = suma = 0;
 
    for (int i=1; i<=hKinEnergyA_o->GetNbinsX(); i++) {

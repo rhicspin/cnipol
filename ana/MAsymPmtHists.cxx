@@ -151,8 +151,7 @@ void MAsymPmtHists::UpdateLimits()
          string strPolId = RunConfig::AsString(*iPolId);
          string strBeamE = RunConfig::AsString(*iBE);
 
-         char hName[256];
-         Double_t xmin, ymin, xmax, ymax, xdelta, ydelta;
+         Double_t xmin, ymin, xmax, ymax;
          Double_t yMean, yRms;
          TH1* h = 0;
 

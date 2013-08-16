@@ -177,7 +177,7 @@ TGraphErrors* AnaFillResult::GetGrYelIntens() const { return fAnaFillExternResul
 /** */
 TGraphErrors* AnaFillResult::GetIntensGraph(ERingId ringId) const
 {
-   TGraphErrors *gr;
+   TGraphErrors *gr = NULL;
 
    if (ringId == kBLUE_RING)        gr = GetGrBluIntens();
    else if (ringId == kYELLOW_RING) gr = GetGrYelIntens();
@@ -1368,10 +1368,9 @@ void AnaFillResult::CalcRampPCPolarRatio()
       if (!grPCPolar || !grPCPolarInj) continue;
 
       // Get the last injection measurement 
-      Double_t x, y, xe, ye;
+      Double_t x, y, ye;
       Int_t nPoints = grPCPolarInj->GetN();
       grPCPolarInj->GetPoint(nPoints-1, x, y);
-      xe = grPCPolarInj->GetErrorX(nPoints-1);
       ye = grPCPolarInj->GetErrorY(nPoints-1);
 
       ValErrPair pcPolarInj(y/100., ye/100.);
