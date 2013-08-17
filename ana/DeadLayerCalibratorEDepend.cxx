@@ -551,7 +551,7 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
 
 BananaFitFunctor::BananaFitFunctor(UShort_t chId)
 {
-   for (int i=0; i<=4; i++) {
+   for (int i=0; i<4; i++) {
       fCp0[i] = DeadLayerCalibratorEDepend::cp0[i];
       fCp1[i] = DeadLayerCalibratorEDepend::cp1[i];
       fCp2[i] = DeadLayerCalibratorEDepend::cp2[i];
