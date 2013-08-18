@@ -110,7 +110,8 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 
    cout << "Begin of data stream version: " << recBegin->version << endl;
    cout << "Comment: "                      << recBegin->comment << endl;
-   cout << "Time Stamp: "                   << ctime(&recBegin->header.timestamp.time);
+   time_t       time  = recBegin->header.timestamp.time;
+   cout << "Time Stamp: "                   << ctime(&time);
    cout << "Unix Time Stamp: "              << recBegin->header.timestamp.time << endl;
 
    gMeasInfo->fStartTime         = recBegin->header.timestamp.time;
