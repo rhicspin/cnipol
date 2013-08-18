@@ -7,6 +7,7 @@
 
 //#include "globals.h"
 #include "rhicpol.h"
+#include "static_assert.h"
 
 #define BSIZE 0x40000                   // 256 k
 
@@ -416,9 +417,6 @@ struct SubRun {
 };
 
 #ifndef __CINT__
-#define STATIC_ASSERT( condition, name )\
-       typedef char assert_failed_ ## name [ (condition) ? 1 : -1 ];
-
 STATIC_ASSERT(sizeof(RecordHeaderStruct) == 16, RecordHeaderStruct_size)
 STATIC_ASSERT(sizeof(recordHeaderStruct) == 16, recordHeaderStruct_size)
 STATIC_ASSERT(sizeof(recordBeginStruct) == sizeof(recordHeaderStruct) + 4 + 256, recordBeginStruct_size)
