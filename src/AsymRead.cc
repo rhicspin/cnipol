@@ -64,9 +64,9 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
 
 ///
    RecordHeaderStruct *mHeader = (RecordHeaderStruct*) fMem;
-   printf("Currently consider record: fMem: %0#10x, type: %0#10x, len: %ld \n", (uint) fMem, (UInt_t) mHeader->type, mHeader->len);
-   printf("size RecordHeaderStruct: %u \n", sizeof(RecordHeaderStruct));
-   printf("size recordHeaderStruct: %u \n", sizeof(recordHeaderStruct));
+   cout << "Currently consider record: fMem: " << hex << fMem << ", type: " << hex << mHeader->type << ", len: " << mHeader->len << endl;
+   cout << "size RecordHeaderStruct: " << sizeof(RecordHeaderStruct) << endl;
+   cout << "size recordHeaderStruct: " << sizeof(recordHeaderStruct) << endl;
 ///
 
    sw.Stop();
@@ -95,7 +95,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 
    RecordHeaderStruct *mHeader = (RecordHeaderStruct*) mSeek;
 
-   printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
+   cout << "Currently consider record: " << hex << mHeader->type << ", len: " << mHeader->len << " (MEM)" << endl;
 
    // Take the very first record from the raw data file
    recordBeginStruct *recBegin = (recordBeginStruct*) fMem;
@@ -194,7 +194,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_BEAMADO
       if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO)
       {
-         printf("Reading REC_BEAMADO record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_BEAMADO record... size = " << mHeader->len << cerr;
 
          recordBeamAdoStruct *rec = (recordBeamAdoStruct*) mHeader;
 
@@ -211,7 +211,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_MACHINEPARAMS
       if ((mHeader->type & REC_TYPEMASK) == REC_MACHINEPARAMS)
       {
-         printf("Reading REC_MACHINEPARAMS record... size= %ld\n", mHeader->len);
+         cout << "Reading REC_MACHINEPARAMS record... size = " << mHeader->len << cerr;
 
          // Extract voltages, currents, etc
          RecordMachineParams *rec = (RecordMachineParams*) mHeader;
@@ -224,7 +224,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_TARGETPARAMS
       if ((mHeader->type & REC_TYPEMASK) == REC_TARGETPARAMS)
       {
-         printf("Reading REC_TARGETPARAMS record... size= %ld\n", mHeader->len);
+         cout << "Reading REC_TARGETPARAMS record... size = " << mHeader->len << cerr;
 
          // Extract target info
          RecordTargetParams *rec = (RecordTargetParams*) mHeader;
@@ -237,7 +237,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_MEASTYPE
       if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
       {
-         printf("Reading REC_MEASTYPE record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_MEASTYPE record... size = " << mHeader->len << cerr;
 
          recordMeasTypeStruct *rec = (recordMeasTypeStruct*) mHeader;
          ProcessRecord( (recordMeasTypeStruct&) *rec);
@@ -249,7 +249,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_POLADO
       if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
       {
-         printf("Reading REC_POLADO record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_POLADO record... size = " << mHeader->len << cerr;
 
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
          ProcessRecord( (recordPolAdoStruct&) *rec, mseMeasInfo);
@@ -263,7 +263,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       {
          // Do not process this record for calibration runs. May contain
          // invalid ndelim info
-         printf("Reading REC_PCTARGET record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_PCTARGET record... size = " << mHeader->len << cerr;
 
          recordpCTagAdoStruct *rec = (recordpCTagAdoStruct*) mHeader;
          ProcessRecord( (recordpCTagAdoStruct&) *rec, mseMeasInfo);
@@ -275,7 +275,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_WCMADO
       if ((mHeader->type & REC_TYPEMASK) == REC_WCMADO)
       {
-         printf("Reading REC_WCMADO record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_WCMADO record... size = " << mHeader->len << cerr;
 
          recordWcmAdoStruct *rec = (recordWcmAdoStruct*) mHeader;
          ProcessRecord( (recordWcmAdoStruct &) *rec);
@@ -287,7 +287,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_WCM_NEW
       if ((mHeader->type & REC_TYPEMASK) == REC_WCM_NEW)
       {
-         printf("Reading REC_WCM_NEW record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_WCM_NEW record... size = " << mHeader->len << cerr;
 
          RecordWcm *rec = (RecordWcm*) mHeader;
          ProcessRecord( (RecordWcm &) *rec);
@@ -300,7 +300,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       if ((mHeader->type & REC_TYPEMASK) == REC_WFDV8SCAL &&
           fSeenRecords.find(REC_WFDV8SCAL) == fSeenRecords.end())
       {
-         printf("Reading REC_WFDV8SCAL record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_WFDV8SCAL record... size = " << mHeader->len << cerr;
 
          recordWFDV8ArrayStruct *rec = (recordWFDV8ArrayStruct*) mHeader;
          ProcessRecord( (recordWFDV8ArrayStruct &) *rec);
@@ -314,7 +314,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_COUNTRATE
       if ((mHeader->type & REC_TYPEMASK) == REC_COUNTRATE)
       {
-         printf("Reading REC_COUNTRATE record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_COUNTRATE record... size = " << mHeader->len << cerr;
 
          recordCountRate *rec = (recordCountRate*) mHeader;
          ProcessRecord( (recordCountRate &) *rec);
@@ -326,7 +326,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_RHIC_CONF
       if ((mHeader->type & REC_TYPEMASK) == REC_RHIC_CONF)
       {
-         printf("Reading REC_RHIC_CONF record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_RHIC_CONF record... size = " << mHeader->len << cerr;
 
          recordConfigRhicStruct *rec = (recordConfigRhicStruct*) mHeader;
          ProcessRecord( (recordConfigRhicStruct &) *rec);
@@ -338,7 +338,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_TAGADO:
       if ((mHeader->type & REC_TYPEMASK) == REC_TAGADO)
       {
-         printf("Reading REC_TAGADO record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_TAGADO record... size = " << mHeader->len << cerr;
          //targetDataStruct *rec = (targetDataStruct*) mHeader;
          //targetDataStruct  tgtdat1;
          //targetDataStruct  tgtdat2;
@@ -351,7 +351,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_SCALERS
       if ((mHeader->type & REC_TYPEMASK) == REC_SCALERS)
       {
-         printf("Reading REC_SCALERS record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_SCALERS record... size = " << mHeader->len << cerr;
          //recordScalersStruct *rec = (recordScalersStruct*) mHeader;
          //ProcessRecord( (recordScalersStruct &) *rec);
          Info("ReadMeasInfo", "Not implemented yet");
@@ -362,7 +362,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_READRAW, REC_READSUB, REC_READALL
       if ((mHeader->type & REC_TYPEMASK) == REC_READRAW)
       {
-         printf("Reading REC_READRAW record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_READRAW record... size = " << mHeader->len << cerr;
          Info("ReadMeasInfo", "Not implemented yet");
          mSeek = mSeek + mHeader->len;
          continue;
@@ -371,7 +371,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       // REC_END:
       if ((mHeader->type & REC_TYPEMASK) == REC_END)
       {
-         printf("Reading REC_END record... size = %ld\n", mHeader->len);
+         cout << "Reading REC_END record... size = " << mHeader->len << cerr;
          recordEndStruct *rec = (recordEndStruct*) mHeader;
          gMeasInfo->fStopTime = rec->header.timestamp.time;
          mSeek = mSeek + mHeader->len;
@@ -1110,7 +1110,7 @@ void ProcessRecord(const recordCountRate &rec)
    Long_t *pointer = (Long_t *) rec.data;
    //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
 
-   printf("len, size: %ld, %d\n", rec.header.len, size);
+   cout << "len, size: " << rec.header.len << ", " << size << endl;
 
    //for (UInt_t i=0; i<size; i++) {
    //   printf("countrate: i: %d, %ld\n", i, *(pointer+i));
