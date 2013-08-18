@@ -24,10 +24,7 @@ void RecordHeaderStruct::Streamer(TBuffer &R__b)
       R__b >> len;
       R__b >> type;
       R__b >> num;
-      if (sizeof(long) >= sizeof(time_t))
-         R__b >> timestamp.delim;
-      else
-         R__b >> timestamp.time;
+      R__b >> timestamp.time;
 
       //R__b.StreamObject(&(timestamp),typeid(Timestamp));
       //R__b.CheckByteCount(R__s, R__c, RecordHeaderStruct::IsA());
@@ -36,10 +33,7 @@ void RecordHeaderStruct::Streamer(TBuffer &R__b)
       R__b << len;
       R__b << type;
       R__b << num;
-      if (sizeof(long) >= sizeof(time_t))
-         R__b << timestamp.delim;
-      else
-         R__b << timestamp.time;
+      R__b << timestamp.time;
 
       //R__b.StreamObject(&(timestamp),typeid(Timestamp));
       //R__b.SetByteCount(R__c, kTRUE);

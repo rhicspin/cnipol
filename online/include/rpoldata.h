@@ -1,7 +1,7 @@
 #ifndef POLDATA_H
 #define POLDATA_H
 
-#include <time.h>
+#include <stdint.h>
 
 #include "TBuffer.h"
 
@@ -72,12 +72,12 @@ enum EMeasType {kMEASTYPE_UNKNOWN     = 0x00000000,
 
 struct RecordHeaderStruct
 {
-   long len;           // total length = header size + data size
-   long type;          // record type, see above
-   long num;           // record number
+   int32_t len;           // total length = header size + data size
+   int32_t type;          // record type, see above
+   int32_t num;           // record number
    union {
-       time_t time;    // local UNIX time in most cases
-       long delim;     // when read from memory
+       int32_t time;      // local UNIX time in most cases
+       int32_t delim;     // when read from memory
    } timestamp;
 
    RecordHeaderStruct & operator=(const RecordHeaderStruct &rec);
@@ -88,12 +88,12 @@ struct RecordHeaderStruct
 
 typedef struct
 {
-   long len;           // total length = header size + data size
-   long type;          // record type, see above
-   long num;           // record number
+   int32_t len;           // total length = header size + data size
+   int32_t type;          // record type, see above
+   int32_t num;           // record number
    union {
-       time_t time;    // local UNIX time in most cases
-       long delim;     // when read from memory
+       int32_t time;      // local UNIX time in most cases
+       int32_t delim;     // when read from memory
    } timestamp;
 
 } recordHeaderStruct;
@@ -102,7 +102,7 @@ typedef struct
 typedef struct
 {
     recordHeaderStruct header;
-    long version;
+    int32_t version;
     char comment[256];
 } recordBeginStruct;
 
@@ -129,7 +129,7 @@ struct RecordMachineParams
 
 typedef struct {
     recordHeaderStruct header;
-    long subrun;
+    int32_t subrun;
 } recordSubrunStruct;
 
 
@@ -152,14 +152,14 @@ struct RecordTargetParams
 
 typedef struct {
     recordHeaderStruct header;
-    unsigned short Num;         // sequential number of the state
+    uint16_t Num;         // sequential number of the state
 // we put here raw data read from our LC4448 latch register
-    unsigned short data[3];     // just 3 16-bit words
-    long reserved[16];          // just for future extensions
+    uint16_t data[3];     // just 3 16-bit words
+    int32_t reserved[16];          // just for future extensions
 } recordHJetSwitchStruct;
 
 typedef struct {
-    int good;                   // 1 if all targets out of beam, zero otherwise
+    int32_t good;                   // 1 if all targets out of beam, zero otherwise
     char carbtarg[8][10];       // 8 carbon targets positions
 } carbTargStat;
 
@@ -180,7 +180,7 @@ typedef struct {
 
 typedef struct {
     recordHeaderStruct header;
-    long data[];
+    int32_t data[];
 } recordCountRate;
 
 typedef struct {
@@ -309,8 +309,8 @@ typedef struct {
     length (header.len) and each record length */
 
 typedef struct {                // each record has its subhead
-    unsigned siNum:8;           // silicon number
-    unsigned Events:24;         // number events-1, so that 0 designates 1 event
+    uint32_t siNum:8;           // silicon number
+    uint32_t Events:24;         // number events-1, so that 0 designates 1 event
 } subheadStruct;                // the length of the record is determined from
                                 // number of events
 
@@ -351,11 +351,11 @@ typedef struct {
 
 typedef struct {                        // obsolete
     recordHeaderStruct header;
-    int siNum;                  // silicon number
-    unsigned short csr;         // F1A1
-    unsigned short win;         // F1A4
-    long scalers[8];            // 8 internal scalers
-    long hist[512];             // internal histogram memory.
+    int32_t siNum;                  // silicon number
+    uint16_t csr;                  // F1A1
+    uint16_t win;                  // F1A4
+    int32_t scalers[8];            // 8 internal scalers
+    int32_t hist[512];             // internal histogram memory.
 //  Partitioning according header.type:
 //      REC_WFDSCAL -   [0-59]          bunch C counts
 //                      [64-127]        amplitude histogram, unpolarized
@@ -368,14 +368,14 @@ typedef struct {                        // obsolete
 
 typedef struct {
     recordHeaderStruct header;
-    int siNum;                  // silicon number
-    unsigned short csr;         // F1A1 CSR5=0 --coarase, 1 --fine
-    unsigned short win;         // F1A3 WIN[7:0]*2 is the lower hist limit in time
-    unsigned short trg;         // F1A2 TRG[15:8] is the lower hist limit in ampl
+    int32_t siNum;                  // silicon number
+    uint16_t csr;               // F1A1 CSR5=0 --coarase, 1 --fine
+    uint16_t win;               // F1A3 WIN[7:0]*2 is the lower hist limit in time
+    uint16_t trg;               // F1A2 TRG[15:8] is the lower hist limit in ampl
                                 // in fine mode, otherwise ll=0
-    unsigned short dummy;       // just to aline
-    long scalers[8];            // 8 internal scalers
-    long hist[1536];            // internal histogram memory.
+    uint16_t dummy;       // just to aline
+    int32_t scalers[8];            // 8 internal scalers
+    int32_t hist[1536];            // internal histogram memory.
 //  Partitioning according header.type:
 //      REC_WFDSCAL -   [0-119]         bunch C(arbon?) counts (within look up table?)
 //                      [128-255]       amplitude histogram, unpolarized
@@ -391,7 +391,7 @@ typedef struct {
 
 typedef struct {
     recordHeaderStruct header;
-    long long data[6];  // 6 48-bit scalers (module LeCroy 2551)
+    int64_t data[6];  // 6 48-bit scalers (module LeCroy 2551)
 } recordScalersStruct;
 
 typedef struct {
@@ -405,8 +405,8 @@ typedef struct {
 } ReadBufferStruct;
 
 struct SubRun {
-    int nofsubruns;
-    long timestamp[500];
+    int32_t nofsubruns;
+    int32_t timestamp[500];
     float asymX[500];
     float asymErrX[500];
     float asymX90[500];
