@@ -415,4 +415,22 @@ struct SubRun {
     float asymErrX45[500];
 };
 
+#ifndef __CINT__
+#define STATIC_ASSERT( condition, name )\
+       typedef char assert_failed_ ## name [ (condition) ? 1 : -1 ];
+
+STATIC_ASSERT(sizeof(RecordHeaderStruct) == 16, RecordHeaderStruct_size)
+STATIC_ASSERT(sizeof(recordHeaderStruct) == 16, recordHeaderStruct_size)
+STATIC_ASSERT(sizeof(recordBeginStruct) == sizeof(recordHeaderStruct) + 4 + 256, recordBeginStruct_size)
+STATIC_ASSERT(sizeof(recordMeasTypeStruct) == sizeof(recordHeaderStruct) + 4, recordMeasTypeStruct_size)
+STATIC_ASSERT(sizeof(recordSubrunStruct) == sizeof(recordHeaderStruct) + 4, recordSubrunStruct_size)
+STATIC_ASSERT(sizeof(subheadStruct) == 4, subheadStruct_size)
+STATIC_ASSERT(sizeof(recordHJetSwitchStruct) == sizeof(recordHeaderStruct) + 2 + 2*3 + 4*16, recordHJetSwitchStruct_size)
+STATIC_ASSERT(sizeof(carbTargStat) == 4 + 8*10, carbTargStat_size)
+STATIC_ASSERT(sizeof(recordWFDArrayStruct) == sizeof(recordHeaderStruct) + 4 + 2 + 2 + 4*8 + 4*512, recordWFDArrayStruct_size)
+STATIC_ASSERT(sizeof(recordWFDV8ArrayStruct) == sizeof(recordHeaderStruct) + 4 + 8 + 4*8 + 4*1536, recordWFDV8ArrayStruct_size)
+STATIC_ASSERT(sizeof(recordScalersStruct) == sizeof(recordHeaderStruct) + 8*6, recordScalersStruct_size)
+STATIC_ASSERT(sizeof(SubRun) == 4 + 4*500 + 6*4*500, SubRun_size)
+#endif
+
 #endif
