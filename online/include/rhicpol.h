@@ -56,6 +56,7 @@
 #define CFG_INIT        0
 #define CFG_UPDATE      1
 
+#include "static_assert.h"
 
 //extern char polCDEVName[4][20];// = {"polarimeter.blu1", "polarimeter.blu2", "polarimeter.yel1", "polarimeter.yel2"};
 
@@ -283,5 +284,21 @@ typedef struct {
 
 void rhicpol_print_usage();
 void rhicpol_process_options();
+
+#ifndef __CINT__
+STATIC_ASSERT(sizeof(polDataStruct) == 8 + 4*2 + 80*3 + 4*(2+1) + 80 + 4*(4+360*6) + 4*8 + 4*360*4 + 4*3 + 4*2, polDataStruct_size)
+STATIC_ASSERT(sizeof(targetDataStruct) == 4*(1+2) + 80*2, targetDataStruct_size)
+STATIC_ASSERT(sizeof(pCTargetStruct) == 4*4, pCTargetStruct_size)
+STATIC_ASSERT(sizeof(beamDataStruct) == 8 + 4 + 2*360 + 4*2 + 2*360, beamDataStruct_size)
+STATIC_ASSERT(sizeof(wcmDataStruct) == 4*360 + 4, wcmDataStruct_size)
+STATIC_ASSERT(sizeof(jetPositionStruct) == 4*(1+8), jetPositionStruct_size)
+STATIC_ASSERT(sizeof(V124Struct) == 2*2 + 2*4*8, V124Struct_size)
+STATIC_ASSERT(sizeof(SiChanStruct) == 2*2 + 4 + 4 + 2*512 + 4*(10+5+1) + 4*9, SiChanStruct_size)
+#define CRDS_PTR ((configRhicDataStruct*)NULL)
+STATIC_ASSERT(sizeof(CRDS_PTR->CSR) == 4, configRhicDataStruct_CSR_size)
+STATIC_ASSERT(sizeof(CRDS_PTR->TRG) == 4, configRhicDataStruct_TRG_size)
+STATIC_ASSERT(sizeof(configRhicDataStruct) == 2*8 + 4 + 4*3 + sizeof(CRDS_PTR->CSR) + sizeof(CRDS_PTR->TRG) + 120 + 4*2 + 4*4 + 4*3 + 4*2 + 4*2 + 4*(33+1) + sizeof(SiChanStruct), configRhicDataStruct_size)
+#undef CRDS_PTR
+#endif
 
 #endif
