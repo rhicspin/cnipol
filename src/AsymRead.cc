@@ -102,7 +102,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 
    // We'd better check the record type...
    if ( (recBegin->header.type & REC_TYPEMASK) == REC_BEGIN) {
-      Info("ReadRecBegin", "Found REC_BEGIN record... size: %ld", recBegin->header.len);
+      Info("ReadRecBegin", "Found REC_BEGIN record... size: %i", recBegin->header.len);
    } else {
       Error("ReadRecBegin", "Could not find REC_BEGIN record");
       exit(-1);
@@ -1077,7 +1077,7 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
    //   //HPAKAD(1700 + chId, &hist[512]);
    //}
 
-   printf("Si%02d : %12ld %12ld %12ld %12ld %12ld    %12d  %12d  %12d  %12d",
+   printf("Si%02d : %12d %12d %12d %12d %12d    %12d  %12d  %12d  %12d",
           rec.siNum + 1, rec.scalers[0], rec.scalers[1],
           rec.scalers[2], rec.scalers[3], rec.scalers[4],
           s1, s2, s3, s4);
