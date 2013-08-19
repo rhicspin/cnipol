@@ -563,7 +563,7 @@ void readdb(double RUNID)
 /** */
 void AsymDbFile::Print(const Option_t* opt) const
 {
-   printf("DB size: %d\n", fDBRuns.size());
+   cout << "DB size: " << fDBRuns.size() << endl;
 
    DbRunSet::iterator ir;
    DbRunSet::iterator br = fDBRuns.begin();
