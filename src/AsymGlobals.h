@@ -38,7 +38,7 @@ class  TargetInfo;
 struct StructBunchPattern;
 struct StructHist;
 struct StructSpeLumi;
-struct AsymCalculator;
+class AsymCalculator;
 struct BunchAsym;
 struct StructStripCheck;
 struct StructBunchCheck;
