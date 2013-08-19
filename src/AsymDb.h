@@ -35,7 +35,6 @@ public:
    virtual void              UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill) {}
    virtual void              UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill) {}
    virtual void              UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill) {}
-   virtual void              Dump() {}
 };
 
 #endif
