@@ -843,24 +843,20 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
 
 
 /** */
-void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &mseMeasInfo)
+void ProcessRecordPCTarget(const pCTargetStruct *rec, MseMeasInfoX &mseMeasInfo)
 {
-   const long* pointer = (const long*) &rec;
-
-   //--rec;
-   //UShort_t i = 0;
+   const pCTargetStruct* pointer = rec;
 
    // copy data to a linear array
    Double_t* linRec = new Double_t[gNDelimeters*4 + 8]; // there 2 under and ooverflow bins
 
    for (Int_t k=0; k<gNDelimeters; k++) {
+      *(linRec + k + 1                 ) = pointer->VertLinear;
+      *(linRec + k + (gNDelimeters+2)  ) = pointer->VertRotary;
+      *(linRec + k + (gNDelimeters+2)*2) = pointer->HorLinear;
+      *(linRec + k + (gNDelimeters+2)*3) = pointer->HorRotary;
 
-      *(linRec + k + 1                 ) = *pointer++; // Horizontal target
-      *(linRec + k + (gNDelimeters+2)  ) = *pointer++;
-      *(linRec + k + (gNDelimeters+2)*2) = *pointer++; // Vertical target
-      *(linRec + k + (gNDelimeters+2)*3) = *pointer++;
-
-      //printf("%8d %8d %12.3f %12.3f %12.3f %12.3f\n", k, gNDelimeters, *(linRec + k + 1), *(linRec + k + (gNDelimeters+2)  ), *(linRec + k + (gNDelimeters+2)*2), *(linRec + k + (gNDelimeters+2)*3) );
+      pointer++;
    }
 
    gAsymRoot->FillTargetHists(gNDelimeters, linRec);
@@ -871,19 +867,20 @@ void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &mseMeasInfo)
    //
    tgt.fNDelim = gNDelimeters;
 
-   //--pointer;
    UShort_t i = 0;
 
    printf("   index    total        x-pos        y-pos\n");
 
-   pointer = (const long*) &rec;
+   pointer = rec;
 
    for (int k=0; k<gNDelimeters; k++) {
 
-      tgt.Linear[k][1] = *pointer++; // Horizontal target
-      tgt.Rotary[k][1] = *pointer++;
-      tgt.Linear[k][0] = *pointer++; // Vertical target
-      tgt.Rotary[k][0] = *pointer++;
+      tgt.Linear[k][1] = pointer->VertLinear;
+      tgt.Rotary[k][1] = pointer->VertRotary;
+      tgt.Linear[k][0] = pointer->HorLinear;
+      tgt.Rotary[k][0] = pointer->HorRotary;
+
+      pointer++;
 
       // force 0 for +/-1 tiny readout as target position.
       if (abs(tgt.Rotary[k][1]) <= 1) tgt.Rotary[k][1] = 0;
@@ -1035,7 +1032,7 @@ void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
 
    //long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
-   ProcessRecordPCTarget((pCTargetStruct &) rec.data, mseMeasInfo);
+   ProcessRecordPCTarget((const pCTargetStruct *) rec.data, mseMeasInfo);
 
 }
 
