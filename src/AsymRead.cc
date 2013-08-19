@@ -991,8 +991,6 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
    gConfigInfo = (recordConfigRhicStruct *) malloc(sizeof(recordConfigRhicStruct) +
                  (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
-   //XXX printf("TTT: %d\n", rec.data.NumChannels);
-
    memcpy(gConfigInfo, &rec, sizeof(recordConfigRhicStruct) + (rec.data.NumChannels - 1) * sizeof(SiChanStruct));
 
    // when we mandatory provide cfg info -- derpecated
@@ -1008,12 +1006,7 @@ void ProcessRecord(const recordConfigRhicStruct &rec)
 /** */
 void ProcessRecord(const recordMeasTypeStruct &rec)
 {
-   //UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
    gMeasInfo->SetMeasType(rec.type);
-
-   //printf("recordMeasTypeStruct\n");
-   //printf("len, size: %ld, %d\n", rec.header.len, size);
-   //printf("type: %d\n", measType);
 }
 
 
@@ -1031,9 +1024,7 @@ void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 
    gNDelimeters  = (rec.header.len - sizeof(rec.header)) / sizeof(pCTargetStruct);
 
-   //long *pointer = (long *) &rec.buffer[sizeof(rec.header)];
    ProcessRecordPCTarget((const pCTargetStruct *) rec.data, mseMeasInfo);
-
 }
 
 
