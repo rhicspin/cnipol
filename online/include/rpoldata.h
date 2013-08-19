@@ -176,7 +176,7 @@ typedef struct {
 
 typedef struct {
     recordHeaderStruct header;
-    pCTargetStruct data;
+    pCTargetStruct data[];
 } recordpCTagAdoStruct;
 
 typedef struct {
