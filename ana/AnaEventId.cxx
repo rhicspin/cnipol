@@ -10,7 +10,7 @@ ClassImp(AnaEventId)
 using namespace std;
 
 /** Default constructor. */
-AnaEventId::AnaEventId() : TObject(), fRevolutionId(ULONG_MAX), fBunchId(UCHAR_MAX)
+AnaEventId::AnaEventId() : TObject(), fRevolutionId(UINT_MAX), fBunchId(UCHAR_MAX)
 {
 };
 
