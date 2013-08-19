@@ -275,7 +275,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case 'e': // set energy range
-         strcpy(enerange, optarg);
+         strncpy(enerange, optarg, sizeof(enerange));
 
          if ((ptr = strrchr(enerange, ':'))) {
             ptr++;
@@ -291,8 +291,8 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case 'F':
-         sprintf(cfile, optarg);
-         strcat(reConfFile, cfile);
+         strncpy(cfile, optarg, sizeof(cfile));
+         strncat(reConfFile, cfile, sizeof(cfile) - 1 - strlen(cfile));
          extinput.CONFIG = 1;
          break;
 
