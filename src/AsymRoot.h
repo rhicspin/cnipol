@@ -77,9 +77,9 @@ public:
    void         Fill(ECut cut);
    void         FillDerived();
    void         PostFill(MseMeasInfoX &run);
-   void         FillScallerHists(Long_t *hData, UShort_t chId);
+   void         FillScallerHists(Int_t *hData, UShort_t chId);
    void         FillTargetHists(Int_t n, Double_t *hData);
-   void         FillProfileHists(UInt_t n, Long_t *hData);
+   void         FillProfileHists(UInt_t n, Int_t *hData);
    void         FillRunHists();
    void         AddChannelEvent();
    void         PrintEventMap();

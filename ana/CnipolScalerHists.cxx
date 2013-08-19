@@ -76,7 +76,7 @@ void CnipolScalerHists::BookHists()
 /**
  * We assume 1536 entries in the hData arrays.
  */
-void CnipolScalerHists::Fill(Long_t *hData, UShort_t chId)
+void CnipolScalerHists::Fill(int32_t *hData, UShort_t chId)
 {
    string sCh("  ");
    char   hName[256];
