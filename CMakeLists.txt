@@ -48,13 +48,14 @@ FIND_PACKAGE(MySQL)
 FIND_PACKAGE(MySQLPP)
 FIND_PACKAGE(SQLite)
 FIND_PACKAGE(ROOT)
+ADD_SUBDIRECTORY(contrib/root-helper)
 
 SET(
 	CNIPOL_INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/
 	${CMAKE_CURRENT_SOURCE_DIR}/src/
 	${CMAKE_CURRENT_SOURCE_DIR}/online/include/
-	/eic/u/dsmirnov/rootmacros/
+	${ROOT_HELPER_DIR}
 	)
 
 INCLUDE_DIRECTORIES(
@@ -196,8 +197,6 @@ ADD_LIBRARY(
 	src/MseMeasInfo.cc
 	src/MseRunPeriod.cc
 	src/TargetInfo.cc
-	~dsmirnov/rootmacros/utils/ValErrPair.cxx
-	~dsmirnov/rootmacros/utils/utils.C
 	src/revision-export.cpp
 	Dict.cxx
 	)
@@ -208,6 +207,7 @@ TARGET_LINK_LIBRARIES(
 	${MYSQL++_LIBRARIES}
 	${ROOT_LIBRARIES}
 	${SQLITE_LIBRARY}
+	root-helper-utils
 	)
 
 ADD_EXECUTABLE(
@@ -256,6 +256,7 @@ IF(FORCE_32BIT)
 	SET_TARGET_PROPERTIES(asym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 	SET_TARGET_PROPERTIES(masym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 	SET_TARGET_PROPERTIES(spinflipper PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+	SET_TARGET_PROPERTIES(root-helper-utils PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 ENDIF()
 ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
 IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
