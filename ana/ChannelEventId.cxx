@@ -10,7 +10,7 @@ ClassImp(ChannelEventId)
 using namespace std;
 
 /** Default constructor. */
-ChannelEventId::ChannelEventId() : TObject(), fRevolutionId(ULONG_MAX),
+ChannelEventId::ChannelEventId() : TObject(), fRevolutionId(UINT_MAX),
    fBunchId(UCHAR_MAX), fChannelId(UCHAR_MAX), fDelimiterId(USHRT_MAX)
 {
 };
