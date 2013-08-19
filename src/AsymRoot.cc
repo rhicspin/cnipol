@@ -613,7 +613,7 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
 
 
 /** */
-void AsymRoot::FillScallerHists(Long_t *hData, UShort_t chId)
+void AsymRoot::FillScallerHists(int32_t *hData, UShort_t chId)
 {
    if ( !gAsymAnaInfo->HasScalerBit() ) return;
 
@@ -631,7 +631,7 @@ void AsymRoot::FillTargetHists(Int_t n, Double_t *hData)
 
 
 /** */
-void AsymRoot::FillProfileHists(UInt_t n, Long_t *hData)
+void AsymRoot::FillProfileHists(UInt_t n, int32_t *hData)
 {
    if (!gAsymAnaInfo->HasProfileBit()) return;
 

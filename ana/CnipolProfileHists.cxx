@@ -354,13 +354,13 @@ void CnipolProfileHists::Fill(ChannelEvent *ch)
 
 
 /** */
-void CnipolProfileHists::Fill(UInt_t n, Long_t* hData)
+void CnipolProfileHists::Fill(UInt_t n, int32_t* hData)
 {
    Double_t *hd    = new Double_t[n+3](); // 2+1 seems one bin is lost compared to PC_TARGET histograms
    Double_t *hdErr = new Double_t[n+3](); // 2+1 seems one bin is lost compared to PC_TARGET histograms
 
    //copy(hData, hData+1, hd);
-   Long_t   *hPtr     = hData;
+   int32_t  *hPtr     = hData;
    Double_t *hdPtr    = hd;
    Double_t *hdErrPtr = hdErr;
    Double_t  nEntries = 0;

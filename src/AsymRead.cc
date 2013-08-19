@@ -1079,7 +1079,7 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
           rec.scalers[2], rec.scalers[3], rec.scalers[4],
           s1, s2, s3, s4);
 
-   gAsymRoot->FillScallerHists((Long_t*) rec.hist, chId);
+   gAsymRoot->FillScallerHists((int32_t*) rec.hist, chId);
 
    // Check for hardware counts compatibility. Mark channel as bad if something is wrong
    if (s2 < rec.scalers[2] || s3 != rec.scalers[0] ||
@@ -1104,8 +1104,8 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
 /** */
 void ProcessRecord(const recordCountRate &rec)
 {
-   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(long));
-   Long_t *pointer = (Long_t *) rec.data;
+   UInt_t size = (rec.header.len - sizeof(rec.header))/(sizeof(int32_t));
+   int32_t *pointer = (int32_t *) rec.data;
    //Double_t *pointer = (Double_t *) &rec.buffer[sizeof(rec.header)];
 
    cout << "len, size: " << rec.header.len << ", " << size << endl;

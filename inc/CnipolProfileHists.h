@@ -45,7 +45,7 @@ public:
    void      BookHists();
    void      PreFill();
    void      Fill(ChannelEvent *ch);
-   void      Fill(UInt_t n, Long_t* hData);
+   void      Fill(UInt_t n, int32_t* hData);
    void      PostFill();
    void      FillDerived(DrawObjContainer &oc);
    EMeasType GuessMeasurementType();

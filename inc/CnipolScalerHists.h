@@ -33,7 +33,7 @@ public:
 
    void  BookHists();
    //void  Fill(ChannelEvent *ch);
-   void  Fill(Long_t *hData, UShort_t chId);
+   void  Fill(int32_t *hData, UShort_t chId);
    //virtual void SaveAllAs(TCanvas &c, std::string pattern="^.*$", std::string path="./");
 
    ClassDef(CnipolScalerHists, 1)
