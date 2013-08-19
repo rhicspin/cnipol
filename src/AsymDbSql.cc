@@ -617,8 +617,3 @@ void AsymDbSql::UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfil
       query.execute();
    }
 }
-
-
-/** */
-void AsymDbSql::Dump()
-{}
