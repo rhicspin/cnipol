@@ -372,6 +372,10 @@ void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, s
    for (io=o.begin(); io!=o.end(); ++io)
    {
       TCanvas  *canvas = &default_canvas;
+      // Let PrepareHistogram draw on this canvas even if we are rendering
+      // contents of other TCanvas object. It seems like original canvas plot
+      // is updated too.
+      canvas->cd();
 
       // For shorthand
       string   sObjName = io->first;
@@ -406,7 +410,6 @@ void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, s
          }
       }
 
-      canvas->cd();
       canvas->SetName(sCanvasName.c_str());
       canvas->SetTitle(sCanvasName.c_str());
 
