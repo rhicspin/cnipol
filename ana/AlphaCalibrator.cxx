@@ -88,49 +88,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
             ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
             ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetTitle("hDeadLayerSize;Channel;Dead layer size, \\mu m");
             ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
-
-            for(int sp_gd = 180; sp_gd < 200; sp_gd++)
-            {
-                double val_gd = AM_ALPHA_E * GD_ALPHA_E * (((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) - ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i))
-                  /
-                  (
-                     AM_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) * sp_gd
-                     -
-                     GD_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i) * STOPPING_POWER_AM
-                  );
-               val_gd /= AM_ALPHA_E * GD_ALPHA_E * (((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) - ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i))
-                  /
-                  (
-                     AM_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) * STOPPING_POWER_GD
-                     -
-                     GD_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i) * STOPPING_POWER_AM
-                  );
-               val_gd -= 1;
-
-               ((TH2F*) c->d["alpha"]->o["hDeadLayerSizeVarMuGd"])->SetBinContent(((TH2F*) c->d["alpha"]->o["hDeadLayerSizeVarMuGd"])->FindBin(sp_gd, i), val_gd);
-            }
-
-
-            for(int sp_am = 130; sp_am < 150; sp_am++)
-            {
-               double val_am = AM_ALPHA_E * GD_ALPHA_E * (((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) - ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i))
-                  /
-                  (
-                     AM_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) * STOPPING_POWER_GD
-                     -
-                     GD_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i) * sp_am
-                  );
-               val_am /= AM_ALPHA_E * GD_ALPHA_E * (((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) - ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i))
-                  /
-                  (
-                     AM_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hGdAmpCoef"])->GetBinContent(i) * STOPPING_POWER_GD
-                     -
-                     GD_ALPHA_E * ((TH1F*) c->d["alpha"]->o["hAmAmpCoef"])->GetBinContent(i) * STOPPING_POWER_AM
-                  );
-               val_am -= 1;
-
-               ((TH2F*) c->d["alpha"]->o["hDeadLayerSizeVarMuAm"])->SetBinContent(((TH2F*) c->d["alpha"]->o["hDeadLayerSizeVarMuAm"])->FindBin(sp_am, i), val_am);
-            }
          }
       }
 
