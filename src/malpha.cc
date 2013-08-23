@@ -429,7 +429,7 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
       {
          double startTime = it->first;
          double value1 = it->second[det];
-         if (!r2.second[startTime].size())
+         if ((!r2.second.count(startTime)) || (!r2.second[startTime].size()))
          {
             continue;
          }
