@@ -144,15 +144,6 @@ void CnipolAlphaHists::BookHists()
    ((TH1F*) o["hDeadLayerEnergy"])->GetYaxis()->SetTitle("Dead layer energy, keV");
    ((TH1F*) o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
 
-   o["hDeadLayerSizeVarMuGd"] = new TH2F("hDeadLayerSizeVarMuGd", "hDeadLayerSizeVarMuGd", 20, 180, 200, 72, 1, 73);
-   ((TH2F*) o["hDeadLayerSizeVarMuGd"])->GetXaxis()->SetTitle("\\mu_Gd, keV/\\mu m");
-   ((TH1F*) o["hDeadLayerSizeVarMuGd"])->GetYaxis()->SetTitle("Channel");
-   ((TH2F*) o["hDeadLayerSizeVarMuGd"])->SetOption("COLZ");
-   o["hDeadLayerSizeVarMuAm"] = new TH2F("hDeadLayerSizeVarMuAm", "hDeadLayerSizeVarMuAm", 20, 130, 150, 72, 1, 73);
-   ((TH2F*) o["hDeadLayerSizeVarMuAm"])->GetXaxis()->SetTitle("\\mu_Am, keV/\\mu m");
-   ((TH1F*) o["hDeadLayerSizeVarMuAm"])->GetYaxis()->SetTitle("Channel");
-   ((TH2F*) o["hDeadLayerSizeVarMuAm"])->SetOption("COLZ");
-
 
    o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
    ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");
