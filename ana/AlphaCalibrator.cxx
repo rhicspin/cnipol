@@ -64,9 +64,9 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fit_gadolinium);
 
       if (fitres) {
-         chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "AmAmp");
+         chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "Amp");
          if (fit_gadolinium) {
-            chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
+            chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "Amp");
             AmGdPlot(chCalib, c, i, sCh);
          }
       }
@@ -82,9 +82,9 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fit_gadolinium);
 
       if (fitres.Get()) {
-         chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "AmInt");
+         chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "Int");
          if (fit_gadolinium) {
-            chCalib->fGdInt = CoefExtract(fitres, kGadolinium, c, i, "GdInt");
+            chCalib->fGdInt = CoefExtract(fitres, kGadolinium, c, i, "Int");
          }
       } else {
          Error("Calibrate", "Empty TFitResultPtr");
@@ -115,7 +115,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 /** */
 CalibCoefSet AlphaCalibrator::CoefExtract (
    const TFitResultPtr &fitres, ESource source_offset,
-   DrawObjContainer *c, UShort_t i, std::string name
+   DrawObjContainer *c, UShort_t i, std::string suffix
 )
 {
    // Typical value for long_name is "Intgrl", for short_name it is "I"
@@ -123,12 +123,15 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
    CalibCoefSet result;
 
    float peak_energy = AM_ALPHA_E;
+   std::string  name;
 
    if (source_offset == kAmericium)
    {
       peak_energy = AM_ALPHA_E;
+      name = "Am" + suffix;
    } else if (source_offset == kGadolinium) {
       peak_energy = GD_ALPHA_E;
+      name = "Gd" + suffix;
    } else {
       Error("CoefExtract", "Bad source type");
    }
