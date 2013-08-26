@@ -38,8 +38,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    TFitResultPtr fitres;
    bool     fit_gadolinium = gMeasInfo->GetAlphaSourceCount() == 2;
 
-   c->d["alpha"]->o["hDeadLayerSize"] = new TH1F("hDeadLayerSize", "hDeadLayerSize", 72, 1, 73);
-
    for (UShort_t i = 1; i <= NSTRIP; i++) {
       sprintf(&sCh[0], "%02d", i);
 
@@ -70,24 +68,6 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          if (fit_gadolinium) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "GdAmp");
             AmGdPlot(chCalib, c, i, sCh);
-
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetBinContent(i, (chCalib->fAmAmp.fPeakPos * GD_ALPHA_E - chCalib->fGdAmp.fPeakPos * AM_ALPHA_E)
-               / (chCalib->fAmAmp.fPeakPos - chCalib->fGdAmp.fPeakPos));
-
-            const double	STOPPING_POWER_GD = 190, STOPPING_POWER_AM = 140; // keV/(\mu m)
-            c->d["alpha"]->o["hDeadLayerSize"] = new TH1F(
-		AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) - (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]))
-                /
-                (
-                   AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) * STOPPING_POWER_GD
-                   -
-                   GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]) * STOPPING_POWER_AM
-                )
-            );
-
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetTitle("hDeadLayerSize;Channel;Dead layer size, \\mu m");
-            ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
          }
       }
 
@@ -110,6 +90,23 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          Error("Calibrate", "Empty TFitResultPtr");
       }
    }
+
+   const double	STOPPING_POWER_GD = 190, STOPPING_POWER_AM = 140; // keV/(\mu m)
+   c->d["alpha"]->o["hDeadLayerSize"] = new TH1F(
+       AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) - (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]))
+       /
+       (
+          AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) * STOPPING_POWER_GD
+          -
+          GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]) * STOPPING_POWER_AM
+       )
+   );
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetTitle("hDeadLayerSize");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetXaxis()->SetTitle("Channel");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead layer size, \\mu m");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
+
 
    CalibrateBadChannels(c);
 }
