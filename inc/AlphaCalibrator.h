@@ -40,7 +40,7 @@ private:
 
    CalibCoefSet CoefExtract (
       const TFitResultPtr &fitres, ESource source_offset,
-      DrawObjContainer *c, UShort_t i, std::string name
+      DrawObjContainer *c, UShort_t i, std::string suffix
    );
    void AmGdPlot(
       const ChannelCalib *chCalib, DrawObjContainer *c, int iCh, const std::string &sCh
