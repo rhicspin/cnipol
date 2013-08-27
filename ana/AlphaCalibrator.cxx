@@ -104,7 +104,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetTitle("hDeadLayerSize");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetXaxis()->SetTitle("Channel");
-   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead~layer~size,~\\mu m");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead layer size, \\mu m");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
 
 
