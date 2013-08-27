@@ -75,69 +75,69 @@ void CnipolAlphaHists::BookHists()
 
    // Americium
 
-   o["hAmAmpCoef"]   = new TH1F("hAmAmpCoef", "hAmAmpCoef", 72, 1, 73);
-   ((TH1*)  o["hAmAmpCoef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hAmAmpCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmAmpCoef"])->GetYaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
+   o["hAmGain"]   = new TH1F("hAmGain", "hAmGain", 72, 1, 73);
+   ((TH1*)  o["hAmGain"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hAmGain"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmGain"])->GetYaxis()->SetTitle("Americium Amplitude Calib, ADC/keV");
 
-   o["hAmAmpCoefDisp"] = new TH1F("hAmAmpCoefDisp", "hAmAmpCoefDisp", 100, 0, 1);
-   ((TH2F*) o["hAmAmpCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmAmpCoefDisp"])->GetXaxis()->SetTitle("Americium Amplitude Calib, keV/ADC");
+   o["hAmGainDisp"] = new TH1F("hAmGainDisp", "hAmGainDisp", 100, 0, 1);
+   ((TH2F*) o["hAmGainDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hAmGainDisp"])->GetXaxis()->SetTitle("Americium Amplitude Calib, ADC/keV");
 
-   o["hAmIntCoef"]   = new TH1F("hAmIntCoef", "hAmIntCoef", 72, 1, 73);
-   ((TH1*)  o["hAmIntCoef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hAmIntCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmIntCoef"])->GetYaxis()->SetTitle("Americium Integral Calib, keV/ADC");
+   o["hAmIntGain"]   = new TH1F("hAmIntGain", "hAmIntGain", 72, 1, 73);
+   ((TH1*)  o["hAmIntGain"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hAmIntGain"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmIntGain"])->GetYaxis()->SetTitle("Americium Integral Calib, ADC/keV");
 
-   o["hAmIntCoefDisp"] = new TH1F("hAmIntCoefDisp", "hAmIntCoefDisp", 100, 0, 1);
-   ((TH2F*) o["hAmIntCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmIntCoefDisp"])->GetXaxis()->SetTitle("Americium Integral Calib, keV/ADC");
+   o["hAmIntGainDisp"] = new TH1F("hAmIntGainDisp", "hAmIntGainDisp", 100, 0, 1);
+   ((TH2F*) o["hAmIntGainDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hAmIntGainDisp"])->GetXaxis()->SetTitle("Americium Integral Calib, ADC/keV");
 
-   o["hAmAmpWidth"]   = new TH1F("hAmAmpWidth", "hAmAmpWidth", 72, 1, 73);
-   ((TH1*) o["hAmAmpWidth"])->SetOption("E1 GRIDX GRIDY");
-   ((TH1*) o["hAmAmpWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hAmAmpWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (A)");
+   o["hAmGainWidth"]   = new TH1F("hAmGainWidth", "hAmGainWidth", 72, 1, 73);
+   ((TH1*) o["hAmGainWidth"])->SetOption("E1 GRIDX GRIDY");
+   ((TH1*) o["hAmGainWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hAmGainWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (A)");
 
-   o["hAmIntWidth"]   = new TH1F("hAmIntWidth", "hAmIntWidth", 72, 1, 73);
-   ((TH1*) o["hAmIntWidth"])->SetOption("E1 GRIDX GRIDY");
-   ((TH1*) o["hAmIntWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hAmIntWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (I)");
+   o["hAmIntGainWidth"]   = new TH1F("hAmIntGainWidth", "hAmIntGainWidth", 72, 1, 73);
+   ((TH1*) o["hAmIntGainWidth"])->SetOption("E1 GRIDX GRIDY");
+   ((TH1*) o["hAmIntGainWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hAmIntGainWidth"])->GetYaxis()->SetTitle("Americium Alpha Peak Width, % (I)");
 
    // Gadolinium
 
-   o["hGdAmpCoef"]   = new TH1F("hGdAmpCoef", "hGdAmpCoef", 72, 1, 73);
-   ((TH1*)  o["hGdAmpCoef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hGdAmpCoef"])->GetYaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
+   o["hGdGain"]   = new TH1F("hGdGain", "hGdGain", 72, 1, 73);
+   ((TH1*)  o["hGdGain"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hGdGain"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hGdGain"])->GetYaxis()->SetTitle("Gadolinium Amplitude Calib, ADC/keV");
 
-   o["hGdAmpCoefDisp"] = new TH1F("hGdAmpCoefDisp", "hGdAmpCoefDisp", 100, 0, 1);
-   ((TH2F*) o["hGdAmpCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hGdAmpCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Amplitude Calib, keV/ADC");
+   o["hGdGainDisp"] = new TH1F("hGdGainDisp", "hGdGainDisp", 100, 0, 1);
+   ((TH2F*) o["hGdGainDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hGdGainDisp"])->GetXaxis()->SetTitle("Gadolinium Amplitude Calib, ADC/keV");
 
-   o["hGdIntCoef"]   = new TH1F("hGdIntCoef", "hGdIntCoef", 72, 1, 73);
-   ((TH1*)  o["hGdIntCoef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hGdIntCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hGdIntCoef"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
+   o["hGdIntGain"]   = new TH1F("hGdIntGain", "hGdIntGain", 72, 1, 73);
+   ((TH1*)  o["hGdIntGain"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hGdIntGain"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hGdIntGain"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, ADC/keV");
 
-   o["hGdIntCoefDisp"] = new TH1F("hGdIntCoefDisp", "hGdIntCoefDisp", 100, 0, 1);
-   ((TH2F*) o["hGdIntCoefDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hGdIntCoefDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, keV/ADC");
+   o["hGdIntGainDisp"] = new TH1F("hGdIntGainDisp", "hGdIntGainDisp", 100, 0, 1);
+   ((TH2F*) o["hGdIntGainDisp"])->SetBit(TH1::kCanRebin);
+   ((TH2F*) o["hGdIntGainDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, ADC/keV");
 
-   o["hGdAmpWidth"]   = new TH1F("hGdAmpWidth", "hGdAmpWidth", 72, 1, 73);
-   ((TH1*) o["hGdAmpWidth"])->SetOption("E1 GRIDX GRIDY");
-   ((TH1*) o["hGdAmpWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hGdAmpWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (A)");
+   o["hGdGainWidth"]   = new TH1F("hGdGainWidth", "hGdGainWidth", 72, 1, 73);
+   ((TH1*) o["hGdGainWidth"])->SetOption("E1 GRIDX GRIDY");
+   ((TH1*) o["hGdGainWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hGdGainWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (A)");
 
-   o["hGdIntWidth"]   = new TH1F("hGdIntWidth", "hGdIntWidth", 72, 1, 73);
-   ((TH1*) o["hGdIntWidth"])->SetOption("E1 GRIDX GRIDY");
-   ((TH1*) o["hGdIntWidth"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["hGdIntWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (I)");
+   o["hGdIntGainWidth"]   = new TH1F("hGdIntGainWidth", "hGdIntGainWidth", 72, 1, 73);
+   ((TH1*) o["hGdIntGainWidth"])->SetOption("E1 GRIDX GRIDY");
+   ((TH1*) o["hGdIntGainWidth"])->GetXaxis()->SetTitle("Channel");
+   ((TH1*) o["hGdIntGainWidth"])->GetYaxis()->SetTitle("Gadolinium Alpha Peak Width, % (I)");
 
 
-   o["hAmGdAmpCoef"] = new TH1F("hAmGdAmpCoef", "hAmGdAmpCoef", 72, 1, 73);
-   ((TH1*)  o["hAmGdAmpCoef"])->SetOption("E1 GRIDX GRIDY");
-   ((TH2F*) o["hAmGdAmpCoef"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmGdAmpCoef"])->GetYaxis()->SetTitle("Americium+Gadolinium Amplitude Calib, keV/ADC");
+   o["hAmGdGain"] = new TH1F("hAmGdGain", "hAmGdGain", 72, 1, 73);
+   ((TH1*)  o["hAmGdGain"])->SetOption("E1 GRIDX GRIDY");
+   ((TH2F*) o["hAmGdGain"])->GetXaxis()->SetTitle("Channel");
+   ((TH2F*) o["hAmGdGain"])->GetYaxis()->SetTitle("Americium+Gadolinium Amplitude Calib, ADC/keV");
 
    o["hDeadLayerEnergy"] = new TH1F("hDeadLayerEnergy", "hDeadLayerEnergy", 72, 1, 73);
    ((TH1F*) o["hDeadLayerEnergy"])->GetXaxis()->SetTitle("Channel");
@@ -385,12 +385,12 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    }
 
    // Update axis range
-   utils::UpdateLimits((TH1*) o["hAmAmpCoef"]);
-   utils::UpdateLimits((TH1*) o["hAmAmpWidth"]);
-   utils::UpdateLimits((TH1*) o["hAmIntCoef"]);
-   utils::UpdateLimits((TH1*) o["hAmIntWidth"]);
-   utils::UpdateLimits((TH1*) o["hGdAmpCoef"]);
-   utils::UpdateLimits((TH1*) o["hGdAmpWidth"]);
-   utils::UpdateLimits((TH1*) o["hGdIntCoef"]);
-   utils::UpdateLimits((TH1*) o["hGdIntWidth"]);
+   utils::UpdateLimits((TH1*) o["hAmGain"]);
+   utils::UpdateLimits((TH1*) o["hAmGainWidth"]);
+   utils::UpdateLimits((TH1*) o["hAmIntGain"]);
+   utils::UpdateLimits((TH1*) o["hAmIntGainWidth"]);
+   utils::UpdateLimits((TH1*) o["hGdGain"]);
+   utils::UpdateLimits((TH1*) o["hGdGainWidth"]);
+   utils::UpdateLimits((TH1*) o["hGdIntGain"]);
+   utils::UpdateLimits((TH1*) o["hGdIntGainWidth"]);
 }

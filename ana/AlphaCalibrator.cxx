@@ -64,9 +64,9 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       fitres = Calibrate(htemp, fit_gadolinium);
 
       if (fitres) {
-         chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "Amp");
+         chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "");
          if (fit_gadolinium) {
-            chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "Amp");
+            chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "");
             AmGdPlot(chCalib, c, i, sCh);
          }
       }
@@ -93,12 +93,12 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
    const double	STOPPING_POWER_GD = 190, STOPPING_POWER_AM = 140; // keV/(\mu m)
    c->d["alpha"]->o["hDeadLayerSize"] = new TH1F(
-       AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) - (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]))
+       AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdGain"]) - (*(TH1F*) c->d["alpha"]->o["hAmGain"]))
        /
        (
-          AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdAmpCoef"]) * STOPPING_POWER_GD
+          AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdGain"]) * STOPPING_POWER_GD
           -
-          GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmAmpCoef"]) * STOPPING_POWER_AM
+          GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmGain"]) * STOPPING_POWER_AM
        )
    );
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
@@ -144,13 +144,15 @@ CalibCoefSet AlphaCalibrator::CoefExtract (
 
    float width_value = 100 * fitres->Value(source_offset + 2) / result.fPeakPos;
    float width_error = 100 * fitres->FitResult::Error(source_offset + 2) / result.fPeakPos;
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinContent(i, width_value);
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Width"])->SetBinError(i, width_error);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "GainWidth"])->SetBinContent(i, width_value);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "GainWidth"])->SetBinError(i, width_error);
 
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Coef"])->SetBinContent(i, result.fCoef);
-   ((TH1F*) c->d["alpha"]->o["h" + name + "Coef"])->SetBinError(i, result.fCoefErr);
+   float gain_value = 1 / result.fCoef;
+   float gain_error = gain_value * (result.fCoefErr / result.fCoef);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "Gain"])->SetBinContent(i, gain_value);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "Gain"])->SetBinError(i, gain_error);
 
-   ((TH1F*) c->d["alpha"]->o["h" + name + "CoefDisp"])->Fill(result.fCoef);
+   ((TH1F*) c->d["alpha"]->o["h" + name + "GainDisp"])->Fill(gain_value);
 
    return result;
 }
@@ -177,14 +179,16 @@ void AlphaCalibrator::AmGdPlot(
    TFitResultPtr fitres;
    fitres = gAmGd->Fit(&func, "S"); // S: return fitres
 
-   float fit1, fit1_err, coef, coefErr;
+   float fit1, fit1_err, coef, coefErr, gain, gainErr;
    fit1 = fitres->Value(1);
    fit1_err = fitres->FitResult::Error(1);
    coef = ATTEN / fit1 * 1000;
    coefErr = coef * fit1_err / fit1;
+   gain = 1 / coef;
+   gainErr = gain * (coefErr / coef);
 
-   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinContent(iCh, coef);
-   ((TH1F*) c->d["alpha"]->o["hAmGdAmpCoef"])->SetBinError(iCh, coefErr);
+   ((TH1F*) c->d["alpha"]->o["hAmGdGain"])->SetBinContent(iCh, gain);
+   ((TH1F*) c->d["alpha"]->o["hAmGdGain"])->SetBinError(iCh, gainErr);
 
    ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetBinContent(iCh, fitres->Value(0) * 1000);
    ((TH1F*) c->d["alpha"]->o["hDeadLayerEnergy"])->SetBinError(iCh, fitres->FitResult::Error(0) * 1000);
@@ -300,10 +304,10 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
 /** */
 void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
 {
-   Double_t aMean = ((TH1F*) c->d["alpha"]->o["hAmAmpCoefDisp"])->GetMean();
-   Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hAmAmpCoefDisp"])->GetRMS();
-   //Double_t iMean = ((TH1F*) c->d["alpha"]->o["hAmIntCoefDisp"])->GetMean();
-   //Double_t iRMS  = ((TH1F*) c->d["alpha"]->o["hAmIntCoefDisp"])->GetRMS();
+   Double_t aMean = ((TH1F*) c->d["alpha"]->o["hAmGainDisp"])->GetMean();
+   Double_t aRMS  = ((TH1F*) c->d["alpha"]->o["hAmGainDisp"])->GetRMS();
+   //Double_t iMean = ((TH1F*) c->d["alpha"]->o["hAmIntGainDisp"])->GetMean();
+   //Double_t iRMS  = ((TH1F*) c->d["alpha"]->o["hAmIntGainDisp"])->GetRMS();
 
    Double_t aEntries  = 0;
 
