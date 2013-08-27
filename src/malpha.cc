@@ -513,8 +513,8 @@ int main(int argc, char *argv[])
 
    Info("malpha", "Starting first pass...");
 
-   map< Short_t, ResultMean > rhAmAmpCoef;
-   map< Short_t, ResultMean > rhAmAmpCoefErr;
+   map< Short_t, ResultMean > rhAmGain;
+   map< Short_t, ResultMean > rhAmGainErr;
    map< Short_t, ResultMean > rhGdGain_over_AmGain;
    map< Short_t, ResultMean > rhGdGain_over_AmGainErr;
    map< Short_t, ResultMean > rhAmGdGain_over_AmGain;
@@ -729,16 +729,16 @@ int main(int argc, char *argv[])
          rBeamCurrent[polId].YTitle = "BeamCurrent";
       }
 
-      TH1F  *hAmAmpCoef = (TH1F*) f->FindObjectAny("hAmAmpCoef");
+      TH1F  *hAmGain = (TH1F*) f->FindObjectAny("hAmGain");
 
-      FillFromHist(hAmAmpCoef, startTime, rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
+      FillFromHist(hAmGain, startTime, rhAmGain[polId], rhAmGainErr[polId]);
 
       if (alphaSources == 2)
       {
-         TH1F  *hGdAmpCoef = (TH1F*) f->FindObjectAny("hGdAmpCoef");
-         TH1F  *hAmGdAmpCoef = (TH1F*) f->FindObjectAny("hAmGdAmpCoef");
-         TH1F  *hGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hGdAmpCoef));
-         TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmAmpCoef) / (*hAmGdAmpCoef));
+         TH1F  *hGdGain = (TH1F*) f->FindObjectAny("hGdGain");
+         TH1F  *hAmGdGain = (TH1F*) f->FindObjectAny("hAmGdGain");
+         TH1F  *hGdGain_over_AmGain = new TH1F((*hGdGain) / (*hAmGain));
+         TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmGdGain) / (*hAmGain));
          TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
          TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
 
@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
 
-      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_AmAmpCoef", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmAmpCoef[polId], rhAmAmpCoefErr[polId]);
+      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_AmGain", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmGain[polId], rhAmGainErr[polId]);
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
       PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_BeamCurrent", rBiasCurrent[polId], rBiasCurrentErr[polId], rBeamCurrent[polId], rBeamCurrentErr[polId]);
    }
