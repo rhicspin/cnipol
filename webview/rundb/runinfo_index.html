@@ -99,9 +99,10 @@ $profileRatios = array();
    <th rowspan=2>Bunches<br>&minus;/0/+
    <th rowspan=2>Total Events<br><?=$runSelector->HtmlSortLinks("te");?>
    <!--<th rowspan=2>Duration-->
-   <th colspan=3>Offline analysis
+   <th colspan=4>Offline analysis
 <tr>
-   <th>&#1044; <!--cyrillic D for download-->
+   <th>R
+   <th>V
    <th>Ver<br><?=$runSelector->HtmlSortLinks("av");?>
    <th>Date &amp; Time<br><?=$runSelector->HtmlSortLinks("at");?>
 
@@ -210,6 +211,15 @@ while ($e = mysql_fetch_assoc($rslt)):
       $processedFrac = "<a href='../runs/{$e['run_name']}/{$e['run_name']}.root'>$processedFrac</a>";
    }
 
+   // video file
+   $videoFile = VIDEO_DIR."/{$e['run_name']}.avi";
+
+   if ( file_exists($videoFile) )
+      $videoFile = "<a href='../video/{$e['run_name']}.avi'>&beta;</a>";
+   else
+      $videoFile = "&mdash;";
+
+
    // Deal with version now
 	$asymVersion = isset($e['asym_version']) ? $e['asym_version'] : "v0.0.0;";
 	list($human_version, $git_hash) = explode(";", $asymVersion);
@@ -238,6 +248,7 @@ while ($e = mysql_fetch_assoc($rslt)):
    <td class=align_cm><?=$udCounts['-']."/".$udCounts['0']."/".$udCounts['+']?>
    <td align=right><?=isset($e['nevents_total']) ? number_format($e['nevents_total']) : "&nbsp;";?>
    <td class=align_cm><?=$processedFrac?>
+   <td class=align_cm><?=$videoFile?>
    <td class=align_cm><?=$asymVersion?>
    <td class=align_cm><tt><?=isset($e['ana_start_time']) ? date("M d, Y H:i", strtotime($e['ana_start_time'])) : "&nbsp;";?></tt>
 
@@ -246,7 +257,7 @@ if ( isset($_GET['himg']) && !empty($_GET['himg']) ) :
 ?>
 
 <tr>
-   <td colspan=13 class=align_cm>
+   <td colspan=14 class=align_cm>
    <?=$gP->img($_GET['himg'], false, 1200)?>
 
 <?php
@@ -262,7 +273,7 @@ $meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
 ?>
 
 <tr>
-   <th colspan=13>&nbsp;<br>&nbsp;
+   <th colspan=14>&nbsp;<br>&nbsp;
 
 <tr>
    <th>Mean
@@ -271,6 +282,7 @@ $meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
    <th>&nbsp;
    <th><?=(count($polarizations) ? $meanPolarization->ToString("", "%5.2f") : "&nbsp;")?>
    <th><?=(count($profileRatios) ? $meanProfileRatio->ToString("", "%5.2f") : "&nbsp;")?>
+   <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;
    <th>&nbsp;
