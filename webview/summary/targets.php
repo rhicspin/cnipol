@@ -43,7 +43,7 @@ $dbRunInfo = new DbRunInfo($targetLossMonitor);
 
 <?php
 $inDateTime  = new DateTime("2013-05-08 23:00:00");
-$outDateTime = new DateTime();
+$outDateTime = new DateTime("2013-06-10 15:00:00");
 $interval    = $inDateTime->diff($outDateTime);
 
 $header = "<h3 class=center>".$inDateTime->format("M j, Y")." &mdash; ".$outDateTime->format("M j, Y")
