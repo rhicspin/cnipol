@@ -51,7 +51,8 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    target_count_mm   (1),   // Need to get the real value
    fAlphaCalibRun(""),
    fDlCalibRun(""),
-   fFileRunConf(0)
+   fFileRunConf(0),
+   fAcDipolePeriod(0)
 {
    Init();
 }
@@ -195,6 +196,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"set-calib-dl",        required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_DL},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
+      {"ac-dipole-period",    required_argument,   0,   AsymAnaInfo::OPTION_AC_DIPOLE_PERIOD},
       {0, 0, 0, 0}
    };
 
@@ -375,6 +377,12 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          }
          break;
 
+      case AsymAnaInfo::OPTION_AC_DIPOLE_PERIOD:
+         sstr.clear();
+         sstr.str(string(optarg));
+         sstr >> fAcDipolePeriod;
+         break;
+
       case 'C':
       case AsymAnaInfo::MODE_ALPHA:
          fAsymModes |= AsymAnaInfo::MODE_ALPHA;
@@ -534,6 +542,7 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n",  GetAlphaCalibRun().c_str());
    fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n",  fDlCalibRun.c_str());
    fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",      fAlphaSourceCount);
+   fprintf(f, "$rc['fAcDipolePeriod']              = %i;\n",      fAcDipolePeriod);
    fprintf(f, "\n");
 }
 
@@ -588,6 +597,7 @@ void AsymAnaInfo::PrintUsage()
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
    cout << "     --update-db                      : Update run info in database" << endl;
    cout << "     --disable-det <bitmask>          : Exclude some detectors from the analysis, e.g. \"000100\" excludes detector 3" << endl;
+   cout << "     --ac-dipole-period               : Unsigned integer representing dipole period in ticks, i.e. large number 16441672" << endl;
    cout << endl;
    cout << "Options marked with (!) are not supported" << endl;
    cout << "Options marked with (?) need more work" << endl;

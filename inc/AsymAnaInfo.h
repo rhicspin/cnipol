@@ -47,6 +47,8 @@ public:
                 MODE_ONLINE            = 0x04040000,
                 MODE_NO_SSH            = 0x00001000};
 
+   enum Option {OPTION_AC_DIPOLE_PERIOD = 0x20000004};
+
    // Constraint parameter for data processing 
    std::string      fRunName;           // Run name
    ULong_t          fAsymModes;
@@ -82,6 +84,7 @@ public:
    std::string      fAlphaCalibRun;     // Name of alpha calib run
    std::string      fDlCalibRun;        // Name of dead layer calib run
    FILE            *fFileRunConf;       //!
+   uint32_t         fAcDipolePeriod;    //! AC dipole magnet period in revolutions
 
 public:
 

@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "rpoldata.h"
 
-#include "AnaInfo.h"
+#include "AsymAnaInfo.h"
 #include "AsymHeader.h"
 #include "AsymOnline.h"
 #include "BeamBunch.h"
@@ -69,6 +69,7 @@ protected:
    Double_t            fSpinFlipperPhase;   //
    UInt_t              fFirstRevolution;    //
    UInt_t              fLastRevolution;     //
+   uint32_t            fAcDipolePeriod;     //! AC dipole magnet period in revolutions
 
 public:
 
@@ -131,6 +132,7 @@ public:
    Double_t        GetSpinFlipperPhase()        const { return fSpinFlipperPhase;  }
    UInt_t          GetFirstRevolution()         const { return fFirstRevolution;  }
    UInt_t          GetLastRevolution()          const { return fLastRevolution;  }
+   uint32_t        GetAcDipolePeriod()          const { return fAcDipolePeriod;  }
 
    void            SetAlphaSourceCount(UShort_t alphaSourceCount) { fAlphaSourceCount = alphaSourceCount; }
    void            SetProtoCutSlope  (Float_t  protoCutSlope )    { fProtoCutSlope   = protoCutSlope;   }
@@ -143,6 +145,7 @@ public:
    void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax)   { fPulserCutAdcMax = pulserCutAdcMax; }
    void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin)   { fPulserCutTdcMin = pulserCutTdcMin; }
    void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax)   { fPulserCutTdcMax = pulserCutTdcMax; }
+   void            SetAcDipolePeriod (uint32_t acDipolePeriod)    { fAcDipolePeriod   = acDipolePeriod;   }
 
    void            AddSpinFlipperMarker(UInt_t markerRevId) { fSpinFlipperMarkers.push_back(markerRevId); }
    Double_t        CalcSpinFlipperPhase();
@@ -155,7 +158,7 @@ public:
    void            Update(DbEntry &rundb);
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
-   void            Update(AnaInfo& anaInfo);
+   void            Update(AsymAnaInfo& anaInfo);
    void            UpdateRevolutions(UInt_t revId);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;

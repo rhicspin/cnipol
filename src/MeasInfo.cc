@@ -31,8 +31,7 @@ MeasInfo::MeasInfo() : TObject(),
    fProtoCutSlope(0), fProtoCutOffset(0), fProtoCutWidth(20),
    fProtoCutAdcMin(0), fProtoCutAdcMax(255), fProtoCutTdcMin(0), fProtoCutTdcMax(255),
    fPulserCutAdcMin(255), fPulserCutAdcMax(0), fPulserCutTdcMin(255), fPulserCutTdcMax(0),
-   fSpinFlipperMarkers(), fFirstRevolution(UINT_MAX), fLastRevolution(0),
-
+   fSpinFlipperMarkers(), fFirstRevolution(UINT_MAX), fLastRevolution(0), fAcDipolePeriod(16441672),
    fRunId(-1),
    RUNID(0.0),
    fStartTime(0),
@@ -232,6 +231,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fSpinFlipperPhase']            = %f;\n", fSpinFlipperPhase);
    fprintf(f, "$rc['fFirstRevolution']             = %d;\n", fFirstRevolution);
    fprintf(f, "$rc['fLastRevolution']              = %d;\n", fLastRevolution);
+   fprintf(f, "$rc['fAcDipolePeriod']              = %d;\n", fAcDipolePeriod);
 
    fprintf(f, "\n");
 }
@@ -539,10 +539,13 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
  * Call this method to override some parameters by those provided by the user
  * in the command line.
  */
-void MeasInfo::Update(AnaInfo& anaInfo)
+void MeasInfo::Update(AsymAnaInfo& anaInfo)
 {
    if (anaInfo.fAlphaSourceCount > 0)
       fAlphaSourceCount = anaInfo.fAlphaSourceCount;
+
+   if (anaInfo.fAcDipolePeriod > 0)
+      fAcDipolePeriod = anaInfo.fAcDipolePeriod;
 }
 
 
