@@ -1502,31 +1502,31 @@ void AsymCalculator::CalcDelimAsymSqrtFormula(DrawObjContainer *oc)
 }
 
 
-/** */
+/**
+ * Takes event counts per detector for up and down spin state bunches and
+ * calculates the geom, lumi, and phys asymmetries for each bin along the X
+ * axis. Returns the results as graphs saved in the dummy hAsym histogram.
+ */
 void AsymCalculator::CalcOscillPhaseAsymSqrtFormula(TH2 &h2DetCounts_up, TH2 &h2DetCounts_down, TH1 &hAsym, DetLRSet detSet)
 {
-
+   // Loop over all bins along the horizontal axis
    for (int iBin=1; iBin<=hAsym.GetNbinsX(); iBin++)
    {
       TH1I *hDetCounts_up   = (TH1I*) h2DetCounts_up.ProjectionY("hDetCounts_up", iBin, iBin);
       TH1I *hDetCounts_down = (TH1I*) h2DetCounts_down.ProjectionY("hDetCounts_down", iBin, iBin);
 
-      // Check if there are events in the histograms
+      // Proceed only if there are events in the histograms
       if (!hDetCounts_up->Integral() && !hDetCounts_down->Integral()) continue;
 
-      //ValErrMap asymX90 = CalcDetAsymX90SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-      //ValErrMap asymX45 = CalcDetAsymX45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
-      //ValErrMap asymY45 = CalcDetAsymY45SqrtFormula(*hDetCounts_up, *hDetCounts_down);
+      ValErrMap asyms = CalcDetAsymSqrtFormula(*hDetCounts_up, *hDetCounts_down, detSet);
 
-      ValErrMap asym = CalcDetAsymSqrtFormula(*hDetCounts_up, *hDetCounts_down, detSet);
-
-      // Add point to different asym type graphs
+      // Add a point to different types of asymmetry graphs
       AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
       for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
       {
          string sAsymType = gRunConfig.AsString(*iAsymType);
 
-         ValErrPair asymValErr = asym[sAsymType];
+         ValErrPair asymValErr = asyms[sAsymType];
 
          string shName = "gr" + string(hAsym.GetName()) + "_" + sAsymType;
          TGraphErrors* graphErrs = (TGraphErrors*) hAsym.GetListOfFunctions()->FindObject(shName.c_str());
@@ -1534,15 +1534,6 @@ void AsymCalculator::CalcOscillPhaseAsymSqrtFormula(TH2 &h2DetCounts_up, TH2 &h2
          Double_t binCntr = hAsym.GetBinCenter(iBin);
          utils::AppendToGraph(graphErrs, binCntr, asymValErr.first, 0, asymValErr.second);
       }
-
-      //asymX45["phys"].first  = TMath::Sqrt(2)*asymX45["phys"].first;
-      //asymX45["phys"].second = TMath::Sqrt(2)*asymX45["phys"].second;
-      //cout << "test: " << asymX90["phys"] << ", " << asymX45["phys"] << endl;
-      //ValErrPair asymValErr = utils::CalcWeightedAvrgErr(asymX90["phys"], asymX45["phys"]);
-      //cout << "test: " << asymValErr << endl;
-
-      //hAsym.SetBinContent(iBin, asymValErr.first);
-      //hAsym.SetBinError(iBin, asymValErr.second);
    }
 }
 
