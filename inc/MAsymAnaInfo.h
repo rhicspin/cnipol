@@ -1,10 +1,3 @@
-/**
- *
- * 12 Jan, 2012 - Dmitri Smirnov
- *    - Created class
- *
- */
-
 #ifndef MAsymAnaInfo_h
 #define MAsymAnaInfo_h
 
@@ -26,7 +19,7 @@ class MAsymAnaInfo : public AnaInfo
 public:
 
    // Flag options
-   enum Option {OPTION_MLIST           = 0x20000001};
+   enum Option {OPTION_MLIST = 0x20000001};
 
    // Constraint parameter for data processing 
    std::string fMListFileName;     // File name

@@ -1,8 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                                                                           *
- *****************************************************************************/
-
 #include <algorithm>
 #include <math.h>
 
@@ -163,8 +158,6 @@ void CnipolSpinStudyHists::Fill(ChannelEvent *ch)
    const std::vector<UInt_t>& spinFlipperMarkers = gMeasInfo->GetSpinFlipperMarkers();
    UInt_t spinFlipperMarkerRevId = spinFlipperMarkers.size() > 0 ? spinFlipperMarkers[0] : 0;
 
-   //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120.);
-   //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - gMeasInfo->GetFirstRevolution());
    Double_t phase = _TWO_PI * (gMeasInfo->GetAcDipolePeriod()/_RHIC_AC_DIPOLE_MAX_PERIOD) * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - spinFlipperMarkerRevId);
    phase = fmod(phase, _TWO_PI);
 

@@ -462,17 +462,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
       }
    }
-
-   // Include all interesting modes for now
-   //if (!HasAlphaBit()) {
-   //   fAsymModes |= AsymAnaInfo::MODE_NORMAL;
-   //   fAsymModes |= AsymAnaInfo::MODE_CALIB;
-   //   fAsymModes |= AsymAnaInfo::MODE_PROFILE;
-   //   fAsymModes |= AsymAnaInfo::MODE_TARGET;
-   //   fAsymModes |= AsymAnaInfo::MODE_PULSER;
-   //   fAsymModes |= AsymAnaInfo::MODE_ASYM;
-   //   fAsymModes |= AsymAnaInfo::MODE_RAW;
-   //}
 }
 
 
@@ -561,17 +550,11 @@ void AsymAnaInfo::PrintUsage()
         << " (default \"-n 0\" all events)" << endl;
    cout << " -s <real>                            : Approximate fraction of events to read/process (default \"-s 1\" no events skipped)" << endl;
    cout << " -o <filename>                        : Output hbk file (!)" << endl;
-   //cout << " -r <filename>                        : ramp timing file" << endl;
    cout << " -l, --log=[filename]                 : Optional log file to redirect stdout and stderr" << endl;
    cout << " -t <time shift>                      : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
    cout << " -e <lower:upper>                     : Kinetic energy range (default [400:900] keV) (!)" << endl;
-   //cout << " -B                                   : create banana curve on" << endl;
-   //cout << " -G                                   : mass mode on " << endl;
    cout << " -D                                   : Dead layer mode on (!)" << endl;
    cout << " -d <dlayer>                          : Additional deadlayer thickness [ug/cm2] (!)" << endl;
-   //cout << " -T                                   : T0 study    mode on " << endl;
-   //cout << " -A                                   : A0,A1 study mode on " << endl;
-   //cout << " -Z                                   : without T0 subtraction" << endl;
    cout << " -F <file>                            : Overwrite conf file defined in run.db (!)" << endl;
    cout << " -W <lower:upper>                     : Const width banana cut (!)" << endl;
    cout << " -m <sigma>                           : Banana cut by <sigma> from 12C mass [def]:3 sigma (!)" << endl;

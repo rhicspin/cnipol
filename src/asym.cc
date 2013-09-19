@@ -1,19 +1,3 @@
-//  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name :   former AsymMain.cc
-//
-//  Authors   :   Itaru Nakagawa
-//                Dmitri Smirnov
-//
-//  Creation  :   11/17/2005
-//
-
-/**
- *
- * 18 Oct, 2010 - Dmitri Smirnov
- *    - Added -R flag, moved header files, cleaned up the code
- *
- */
-
 #include "asym.h"
 
 #include <iostream>
@@ -65,8 +49,8 @@ int main(int argc, char *argv[])
    // Book root file
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
 
-   MseMeasInfoX  *mseMeasInfoX     = 0;
-   MseMeasInfoX  *mseMeasInfoXOrig = 0;
+   MseMeasInfoX *mseMeasInfoX     = 0;
+   MseMeasInfoX *mseMeasInfoXOrig = 0;
 
    // Check whether the run is already in database
    if (gAsymAnaInfo->fFlagUseDb) {

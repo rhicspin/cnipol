@@ -32,13 +32,13 @@ public:
                 FLAG_CREATE_THUMBS     = 0x10000800};
 
    // Flag options
-   enum Option {OPTION_POL_ID          = 0x20004000,
-                OPTION_SET_CALIB       = 0x20003000,
-                OPTION_SET_CALIB_ALPHA = 0x20001000,
-                OPTION_SET_CALIB_DL    = 0x20002000,
-                OPTION_DET_DISABLE     = 0x20000001,
-                OPTION_SUFFIX          = 0x20000002,
-                OPTION_ALPHA_SOURCES   = 0x20000003};
+   enum Option {OPTION_POL_ID           = 0x20004000,
+                OPTION_SET_CALIB        = 0x20003000,
+                OPTION_SET_CALIB_ALPHA  = 0x20001000,
+                OPTION_SET_CALIB_DL     = 0x20002000,
+                OPTION_DET_DISABLE      = 0x20000001,
+                OPTION_SUFFIX           = 0x20000002,
+                OPTION_ALPHA_SOURCES    = 0x20000003};
 
    // Various histogramming and running modes
    enum Mode   {MODE_GRAPH             = 0x02000000, MODE_NO_GRAPH     = 0x82000000};

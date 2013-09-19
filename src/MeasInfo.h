@@ -1,10 +1,3 @@
-/**
- *
- * 24 Dec, 2010 - Dmitri Smirnov
- *    - Created class
- *
- */
-
 #ifndef MeasInfo_h
 #define MeasInfo_h
 
@@ -135,16 +128,16 @@ public:
    uint32_t        GetAcDipolePeriod()          const { return fAcDipolePeriod;  }
 
    void            SetAlphaSourceCount(UShort_t alphaSourceCount) { fAlphaSourceCount = alphaSourceCount; }
-   void            SetProtoCutSlope  (Float_t  protoCutSlope )    { fProtoCutSlope   = protoCutSlope;   }
-   void            SetProtoCutOffset (Float_t  protoCutOffset)    { fProtoCutOffset  = protoCutOffset;  }
-   void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)    { fProtoCutAdcMin  = protoCutAdcMin;  }
-   void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)    { fProtoCutAdcMax  = protoCutAdcMax;  }
-   void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)    { fProtoCutTdcMin  = protoCutTdcMin;  }
-   void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)    { fProtoCutTdcMax  = protoCutTdcMax;  }
-   void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin)   { fPulserCutAdcMin = pulserCutAdcMin; }
-   void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax)   { fPulserCutAdcMax = pulserCutAdcMax; }
-   void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin)   { fPulserCutTdcMin = pulserCutTdcMin; }
-   void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax)   { fPulserCutTdcMax = pulserCutTdcMax; }
+   void            SetProtoCutSlope  (Float_t  protoCutSlope )    { fProtoCutSlope    = protoCutSlope;    }
+   void            SetProtoCutOffset (Float_t  protoCutOffset)    { fProtoCutOffset   = protoCutOffset;   }
+   void            SetProtoCutAdcMin (UShort_t protoCutAdcMin)    { fProtoCutAdcMin   = protoCutAdcMin;   }
+   void            SetProtoCutAdcMax (UShort_t protoCutAdcMax)    { fProtoCutAdcMax   = protoCutAdcMax;   }
+   void            SetProtoCutTdcMin (UShort_t protoCutTdcMin)    { fProtoCutTdcMin   = protoCutTdcMin;   }
+   void            SetProtoCutTdcMax (UShort_t protoCutTdcMax)    { fProtoCutTdcMax   = protoCutTdcMax;   }
+   void            SetPulserCutAdcMin(UShort_t pulserCutAdcMin)   { fPulserCutAdcMin  = pulserCutAdcMin;  }
+   void            SetPulserCutAdcMax(UShort_t pulserCutAdcMax)   { fPulserCutAdcMax  = pulserCutAdcMax;  }
+   void            SetPulserCutTdcMin(UShort_t pulserCutTdcMin)   { fPulserCutTdcMin  = pulserCutTdcMin;  }
+   void            SetPulserCutTdcMax(UShort_t pulserCutTdcMax)   { fPulserCutTdcMax  = pulserCutTdcMax;  }
    void            SetAcDipolePeriod (uint32_t acDipolePeriod)    { fAcDipolePeriod   = acDipolePeriod;   }
 
    void            AddSpinFlipperMarker(UInt_t markerRevId) { fSpinFlipperMarkers.push_back(markerRevId); }
