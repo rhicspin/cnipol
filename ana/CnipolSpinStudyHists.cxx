@@ -193,6 +193,7 @@ void CnipolSpinStudyHists::PostFill()
 
    hAsymVsOscillPhase_X45.Fit(&fitFunc);
    //hAsymVsOscillPhase_Y45.Fit(&fitFunc);
+   fitFunc.SetParNames("Offset", "Amplitude", "Phase");.
 
    AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
    for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
@@ -202,6 +203,8 @@ void CnipolSpinStudyHists::PostFill()
       TGraphErrors* graphErrs = (TGraphErrors*) hAsymVsOscillPhase_Y45.GetListOfFunctions()->FindObject(shName.c_str());
       graphErrs->Fit(&fitFunc);
 
+      // Replace the existing empty graph with and fit again. The fit should
+      // be identical. It may be better to clone the graph directly
       TH1* hist = (TH1*) o["hAsymVsOscillPhase_Y45_" + sAsymType];
       TGraph* graphErrs2 = utils::ExtractTGraph(*hist);
       utils::MergeGraphs(graphErrs2, graphErrs);
