@@ -1,10 +1,13 @@
-#ifndef ASYM_HEADER_H
-#define ASYM_HEADER_H
+/*! \file */
+
+#ifndef AsymHeader_h
+#define AsymHeader_h
 
 static const double _TWO_PI= 6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696;
+static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (2^25) in ticks for some RHIC counter
 
 #define RHIC_REVOLUTION_FREQ 78e3        // Hz RHIC Revolution Frequency 78 kHz
-#define RHIC_SPIN_FLIPPER_REV_FRAC 0.49  // = 0.49*78e3
+#define RHIC_SPIN_FLIPPER_REV_FRAC 0.49  /// Default approximate value for the AC dipol magnet frequency 0.49*78e3 Hz
 #define RAMPTIME 350                     // duration of the ramp measurement (sec)
 #define MAXDELIM 410                     // maximum number of delimiter (dynamic motion only)
 #define SEC_PER_DELIM 1                  // second per deliminter

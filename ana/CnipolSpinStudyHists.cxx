@@ -165,7 +165,7 @@ void CnipolSpinStudyHists::Fill(ChannelEvent *ch)
 
    //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120.);
    //Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - gMeasInfo->GetFirstRevolution());
-   Double_t phase = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - spinFlipperMarkerRevId);
+   Double_t phase = _TWO_PI * (gMeasInfo->GetAcDipolePeriod()/_RHIC_AC_DIPOLE_MAX_PERIOD) * ((Double_t) ch->GetRevolutionId() + (bId-1)/120. - spinFlipperMarkerRevId);
    phase = fmod(phase, _TWO_PI);
 
    //Double_t delta_phase = gMeasInfo->GetSpinFlipperPhase();

@@ -354,11 +354,15 @@ void MeasInfo::SetRunName(string runName)
 }
 
 
+/**
+ * Calculates the phase of the AC dipole marker in the data with respect to the
+ * first revolution.
+ */
 Double_t MeasInfo::CalcSpinFlipperPhase()
 {
    UInt_t spinFlipperMarkerRevId = fSpinFlipperMarkers.size() > 0 ? fSpinFlipperMarkers[0] : 0;
-   Double_t delta_phase   = _TWO_PI * RHIC_SPIN_FLIPPER_REV_FRAC * ( (Double_t) spinFlipperMarkerRevId - fFirstRevolution);
-   fSpinFlipperPhase      = fmod(delta_phase, _TWO_PI);
+   Double_t delta_phase = _TWO_PI * (fAcDipolePeriod/_RHIC_AC_DIPOLE_MAX_PERIOD) * ( (Double_t) spinFlipperMarkerRevId - fFirstRevolution);
+   fSpinFlipperPhase    = fmod(delta_phase, _TWO_PI);
    return fSpinFlipperPhase;
 }
 
