@@ -76,18 +76,6 @@ void CnipolSpinStudyHists::BookHists()
    hist->SetOption("DUMMY");
    o[shName] = hist;
 
-   shName = "hAsymVsOscillPhase_sine_X45";
-   hist = new TH1D(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI);
-   hist->SetTitle("; Oscill. Phase; Asymmetry;");
-   hist->SetOption("E1 NOIMG");
-   o[shName] = hist;
-
-   shName = "hAsymVsOscillPhase_sine_Y45";
-   hist = new TH1D(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI);
-   hist->SetTitle("; Oscill. Phase; Asymmetry;");
-   hist->SetOption("E1 NOIMG");
-   o[shName] = hist;
-
    SpinStateSetIter iSS = gRunConfig.fSpinStates.begin();
    for (; iSS!=gRunConfig.fSpinStates.end(); ++iSS)
    {
@@ -99,26 +87,11 @@ void CnipolSpinStudyHists::BookHists()
       hist->SetOption("colz NOIMG");
       o[shName] = hist;
 
-      shName = "hChVsOscillPhase_sine_" + sSS;
-      hist = new TH2F(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
-      hist->SetTitle("; Oscill. Phase; Channel Id;");
-      hist->SetOption("colz NOIMG");
-      hist->Sumw2();
-      o[shName] = hist;
-
       // Detector Id
       shName = "hDetVsOscillPhase_" + sSS;
       hist = new TH2I(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI, N_DETECTORS, 0.5, N_DETECTORS+0.5);
       hist->SetTitle("; Oscill. Phase; Detector Id;");
       hist->SetOption("colz NOIMG");
-      o[shName] = hist;
-
-      // Detector Id
-      shName = "hDetVsOscillPhase_sine_" + sSS;
-      hist = new TH2F(shName.c_str(), shName.c_str(), 8, 0, _TWO_PI, N_DETECTORS, 0.5, N_DETECTORS+0.5);
-      hist->SetTitle("; Oscill. Phase; Detector Id;");
-      hist->SetOption("colz NOIMG");
-      hist->Sumw2();
       o[shName] = hist;
    }
 
@@ -164,7 +137,6 @@ void CnipolSpinStudyHists::Fill(ChannelEvent *ch)
    //Double_t delta_phase = gMeasInfo->GetSpinFlipperPhase();
 
    ((TH2*) o.find("hChVsOscillPhase_" + sSS)->second) -> Fill(phase, chId);
-   ((TH2*) o.find("hChVsOscillPhase_sine_" + sSS)->second) -> Fill(phase, chId, sin(phase)+1);
 }
 
 
@@ -182,9 +154,7 @@ void CnipolSpinStudyHists::FillDerived()
       string sSS = gRunConfig.AsString(*iSS);
 
       TH2* hChVsOscillPhase_       = (TH2*) o["hChVsOscillPhase_"  + sSS];
-      TH2* hChVsOscillPhase_sine_  = (TH2*) o["hChVsOscillPhase_sine_"  + sSS];
       TH2* hDetVsOscillPhase_      = (TH2*) o["hDetVsOscillPhase_" + sSS];
-      TH2* hDetVsOscillPhase_sine_ = (TH2*) o["hDetVsOscillPhase_sine_" + sSS];
 
       for (int iCh=1; iCh<=N_SILICON_CHANNELS; iCh++)
       {
@@ -199,10 +169,6 @@ void CnipolSpinStudyHists::FillDerived()
             Double_t bc_ch  = hChVsOscillPhase_->GetBinContent(iBin, iCh);
             Double_t bc_det = hDetVsOscillPhase_->GetBinContent(iBin, iDet);
             hDetVsOscillPhase_->SetBinContent(iBin, iDet, bc_det + bc_ch);
-
-            bc_ch  = hChVsOscillPhase_sine_->GetBinContent(iBin, iCh);
-            bc_det = hDetVsOscillPhase_sine_->GetBinContent(iBin, iDet);
-            hDetVsOscillPhase_sine_->SetBinContent(iBin, iDet, bc_det + bc_ch);
          }
       }
 
@@ -245,12 +211,4 @@ void CnipolSpinStudyHists::PostFill()
    }
 
    utils::UpdateLimitsFromGraphs(&hAsymVsOscillPhase_Y45, 2);
-
-   TH2& hDetVsOscillPhase_sine_up   = (TH2&) *o.find("hDetVsOscillPhase_sine_up")->second;
-   TH2& hDetVsOscillPhase_sine_down = (TH2&) *o.find("hDetVsOscillPhase_sine_down")->second;
-   TH1& hAsymVsOscillPhase_sine_X45 = (TH1&) *o.find("hAsymVsOscillPhase_sine_X45")->second;
-   TH1& hAsymVsOscillPhase_sine_Y45 = (TH1&) *o.find("hAsymVsOscillPhase_sine_Y45")->second;
-
-   gAsymCalculator.CalcOscillPhaseAsymSqrtFormula(hDetVsOscillPhase_sine_up, hDetVsOscillPhase_sine_down, hAsymVsOscillPhase_sine_X45, AsymCalculator::X45Dets);
-   gAsymCalculator.CalcOscillPhaseAsymSqrtFormula(hDetVsOscillPhase_sine_up, hDetVsOscillPhase_sine_down, hAsymVsOscillPhase_sine_Y45, AsymCalculator::Y45Dets);
 }
