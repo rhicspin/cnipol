@@ -44,17 +44,12 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"log",                 optional_argument,   0,   'l'},
       {"sfx",                 required_argument,   0,   AnaInfo::OPTION_SUFFIX},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
-      //{"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
-      //{"mode-graph",          no_argument,         0,   AnaInfo::MODE_GRAPH},
-      //{"mode-no-graph",       no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
-
       {"copy",                no_argument,         0,   AnaInfo::FLAG_COPY},
       {"copy-results",        no_argument,         0,   AnaInfo::FLAG_COPY},
       {"update-db",           no_argument,         0,   AnaInfo::FLAG_UPDATE_DB},
       {"no-update-db",        no_argument,         0,   AnaInfo::FLAG_NO_UPDATE_DB},
       {"use-db",              no_argument,         0,   AnaInfo::FLAG_USE_DB},
       {"thumb",               no_argument,         0,   AnaInfo::FLAG_CREATE_THUMBS},
-
       {"meas-list",           required_argument,   0,   MAsymAnaInfo::OPTION_MLIST},
       {0, 0, 0, 0}
    };
@@ -78,10 +73,6 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
       case AnaInfo::MODE_GRAPH:
          fModes |= AnaInfo::MODE_GRAPH;
          break;
-
-      //case AsymAnaInfo::MODE_NO_GRAPH:
-      //   fModes &= ~AsymAnaInfo::MODE_GRAPH;
-      //   break;
 
       case AnaInfo::OPTION_SUFFIX:
          fSuffix = optarg;

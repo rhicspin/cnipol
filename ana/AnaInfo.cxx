@@ -68,7 +68,6 @@ void AnaInfo::Init()
    if (tmpEnv) fAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
 
-
    fUserGroup = *gSystem->GetUserInfo();
 }
 
@@ -178,13 +177,11 @@ void AnaInfo::PrintAsPhp(FILE *f) const
    ssEnvs << ")";
 
    fprintf(f, "$rc['fAsymEnv']                     = %s;\n", ssEnvs.str().c_str());
-
    fprintf(f, "$rc['fFileStdLogName']              = \"%s\";\n", fFileStdLogName.c_str());
    fprintf(f, "$rc['fFlagCopyResults']             = %d;\n", fFlagCopyResults);
    fprintf(f, "$rc['fFlagUseDb']                   = %d;\n", fFlagUseDb);
    fprintf(f, "$rc['fFlagUpdateDb']                = %d;\n", fFlagUpdateDb);
    fprintf(f, "$rc['fFlagCreateThumbs']            = %d;\n", fFlagCreateThumbs);
-
    fprintf(f, "$rc['fUserGroup_fUser']             = \"%s\";\n", fUserGroup.fUser.Data());
    fprintf(f, "$rc['fUserGroup_fRealName']         = \"%s\";\n", fUserGroup.fRealName.Data());
 

@@ -1,10 +1,3 @@
-/**
- *
- * 24 Dec, 2010 - Dmitri Smirnov
- *    - Created class
- *
- */
-
 #ifndef AsymAnaInfo_h
 #define AsymAnaInfo_h
 
@@ -23,29 +16,32 @@ class DbEntry;
 class MseMeasInfoX;
 
 
-/** */
+/**
+ * This class takes care of all options provided by the user in the command
+ * line. The options are intended to be used in the asym executable.
+ */
 class AsymAnaInfo : public AnaInfo
 {
 public:
 
    // Various histogramming and running modes
-   enum Mode   {MODE_ALPHA             = 0x01011000,
-                MODE_CALIB             = 0x01000000,
-                MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
-                MODE_SCALER            = 0x00040000,
-                MODE_RAW               = 0x00080000,
-                MODE_RAW_EXTENDED      = 0x40080000,
-                MODE_RUN               = 0x00100000,
-                MODE_TARGET            = 0x00200000,
-                MODE_PROFILE           = 0x00400000,
-                MODE_ASYM              = 0x00800000,
-                MODE_KINEMA            = 0x08000000,
-                MODE_PMT               = 0x00000100,
-                MODE_PULSER            = 0x00000200,
-                MODE_STUDIES           = 0x00000400,
-                MODE_FULL              = 0x007f0000,
-                MODE_ONLINE            = 0x04040000,
-                MODE_NO_SSH            = 0x00001000};
+   enum Mode {MODE_ALPHA             = 0x01011000,
+              MODE_CALIB             = 0x01000000,
+              MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
+              MODE_SCALER            = 0x00040000,
+              MODE_RAW               = 0x00080000,
+              MODE_RAW_EXTENDED      = 0x40080000,
+              MODE_RUN               = 0x00100000,
+              MODE_TARGET            = 0x00200000,
+              MODE_PROFILE           = 0x00400000,
+              MODE_ASYM              = 0x00800000,
+              MODE_KINEMA            = 0x08000000,
+              MODE_PMT               = 0x00000100,
+              MODE_PULSER            = 0x00000200,
+              MODE_STUDIES           = 0x00000400,
+              MODE_FULL              = 0x007f0000,
+              MODE_ONLINE            = 0x04040000,
+              MODE_NO_SSH            = 0x00001000};
 
    enum Option {OPTION_AC_DIPOLE_PERIOD = 0x20000004};
 
