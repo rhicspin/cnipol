@@ -545,7 +545,7 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
  */
 void MeasInfo::Update(AsymAnaInfo& anaInfo)
 {
-   if (anaInfo.fAlphaSourceCount > 0)
+   if (anaInfo.fAlphaSourceCount >= 0)
       fAlphaSourceCount = anaInfo.fAlphaSourceCount;
 
    if (anaInfo.fAcDipolePeriod > 0)
