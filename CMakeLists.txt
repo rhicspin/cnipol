@@ -215,7 +215,7 @@ TARGET_LINK_LIBRARIES(
 	${MYSQL++_LIBRARIES}
 	${ROOT_LIBRARIES}
 	${SQLITE_LIBRARY}
-	root-helper-utils
+	root-helper-utils-shared
 	)
 
 ADD_EXECUTABLE(
