@@ -193,7 +193,7 @@ void CnipolSpinStudyHists::PostFill()
 
    hAsymVsOscillPhase_X45.Fit(&fitFunc);
    //hAsymVsOscillPhase_Y45.Fit(&fitFunc);
-   fitFunc.SetParNames("Offset", "Amplitude", "Phase");.
+   fitFunc.SetParNames("Offset", "Amplitude", "Phase");
 
    AsymTypeSetIter iAsymType = gRunConfig.fAsymTypes.begin();
    for (; iAsymType!=gRunConfig.fAsymTypes.end(); ++iAsymType)
