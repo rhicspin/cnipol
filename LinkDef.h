@@ -1,5 +1,3 @@
-// This LinkDef is only used by CMake!
-
 #ifdef __CINT__
 
 // This is LinkDef file used for CMake build
