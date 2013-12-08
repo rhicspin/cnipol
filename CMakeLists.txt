@@ -121,7 +121,6 @@ SET(
 	src/AnaGlobResult.h
 	src/AnaMeasResult.h
 	src/MeasInfo.h
-#	/eic/u/dsmirnov/rootmacros/utils/ValErrPair.h
 	)
 
 ROOT_GENERATE_DICTIONARY(
@@ -270,9 +269,9 @@ IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	ADD_DEFINITIONS("-Wno-overloaded-virtual")
 ENDIF()
 
-add_dependencies(cnipol revision_id)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-add_custom_target(revision_id
+ADD_DEPENDENCIES(cnipol revision_id)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+ADD_CUSTOM_TARGET(revision_id
         ${PROJECT_SOURCE_DIR}/get_revision_id.sh ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/revision-id.hpp
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM
