@@ -16,7 +16,11 @@
 #include "MseFillProfileNew.h"
 
 
-class AsymDbSql : public AsymDb {
+/**
+ * select information about run periods from an ascii file.
+ */
+class AsymDbSql : public AsymDb
+{
 
 public:
 

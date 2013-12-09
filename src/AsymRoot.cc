@@ -122,7 +122,9 @@ AsymRoot::~AsymRoot()
 }
 
 
-// Description : Open Root File and define directory structure of histograms
+/**
+ * Opens a ROOT file and creates a directory structure of histograms in that file.
+ */
 void AsymRoot::CreateRootFile(string filename)
 {
    printf("Creating ROOT file: %s\n", filename.c_str());
@@ -275,7 +277,7 @@ void AsymRoot::CreateRootFile(string filename)
       fHistCuts[kCUT_CARBON].insert(oc);
    }
 
-   // should be reconsidered once preproc is used to fill raw hists for alpha runs
+   // Should be reconsidered once preproc is used to fill raw hists for alpha runs
    if (!gAsymAnaInfo->HasAlphaBit()) {
       dir = new TDirectoryFile("run", "run", "", fOutRootFile);
       fHists->d["run"] = new CnipolRunHists(dir);

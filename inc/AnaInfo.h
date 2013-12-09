@@ -1,10 +1,3 @@
-/**
- *
- * Apr 12, 2012 - Dmitri Smirnov
- *    - Created class
- *
- */
-
 #ifndef AnaInfo_h
 #define AnaInfo_h
 

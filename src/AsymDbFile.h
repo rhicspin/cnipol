@@ -20,7 +20,12 @@
 typedef std::set<DbEntry> DbRunSet;
 typedef std::map<UShort_t, DbEntry*> DbCommonRunMap;
 
-class AsymDbFile : public AsymDb {
+
+/**
+ * Deprecated class to select information about run periods from an ascii file.
+ */
+class AsymDbFile : public AsymDb
+{
 
 public:
 
@@ -30,16 +35,13 @@ public:
    std::string fDbFileName;
    FILE *fDbFile;
    DbCommonRunMap fCommonRunDB;
-   DbRunSet fDBRuns; // container for run info read from run.db
-
-public:
+   DbRunSet fDBRuns;   ///< Container for MeasInfo objects read from run.db
 
    AsymDbFile();
    ~AsymDbFile();
 
    DbEntry* Select(std::string runName="");
    void Delete(std::string runName);
-   void Clear();
    void Dump();
    void Append(DbEntry *dbrun);
    void Insert(DbEntry *dbrun);
@@ -48,6 +50,7 @@ public:
    void Print(const Option_t* opt="") const;
    void PrintCommon();
 };
+
 
 void  readdb(double RUNID);
 std::string GetVariables(std::string str);

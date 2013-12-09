@@ -279,5 +279,4 @@ void Calibrator::PrintAsConfig(FILE *f) const
    }
 
 	// XXX need to add 8 more default channels here
-
 }

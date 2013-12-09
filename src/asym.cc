@@ -1,5 +1,3 @@
-#include "asym.h"
-
 #include <iostream>
 #include <getopt.h>
 #include <sys/stat.h>
@@ -20,11 +18,12 @@
 #include "MseRunPeriod.h"
 #include "SshLogReader.h"
 
+
 using namespace std;
 
 
 /**
- * Main program
+ * The main function of `asym`
  */
 int main(int argc, char *argv[])
 {
@@ -32,9 +31,8 @@ int main(int argc, char *argv[])
    TStopwatch stopwatch;
    TTimeStamp timestamp;
 
-   time_t  gtime = time(0);
-   //tm     *ltime = localtime(&gtime);
-   tm      start_time = *localtime(&gtime);
+   time_t gtime = time(0);
+   tm     start_time = *localtime(&gtime);
 
    // Create all main (global) objects
    gAsymRoot = new AsymRoot();
@@ -50,17 +48,17 @@ int main(int argc, char *argv[])
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
 
    MseMeasInfoX *mseMeasInfoX     = 0;
-   MseMeasInfoX *mseMeasInfoXOrig = 0;
+   MseMeasInfoX *mseMeasInfoXOrig = 0; 
 
-   // Check whether the run is already in database
+   // Check whether the measurement is already in database
    if (gAsymAnaInfo->fFlagUseDb) {
       mseMeasInfoX = gAsymDb->SelectRun(gMeasInfo->GetRunName());
    }
 
-   if (mseMeasInfoX) { // If run found in database get a copy of it for later sql update
+   if (mseMeasInfoX) { // If measurement found in database get its copy for later update with SQL
       mseMeasInfoXOrig  = new MseMeasInfoX(gMeasInfo->GetRunName());
       *mseMeasInfoXOrig = *mseMeasInfoX;
-   } else {            // If run not found in database create a new object
+   } else {            // If measurement not found in database create a new object
       mseMeasInfoX = new MseMeasInfoX(gMeasInfo->GetRunName());
    }
 
@@ -68,7 +66,7 @@ int main(int argc, char *argv[])
    RawDataProcessor rawData(gAsymAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
-   // and overwrite the run info from database (MseMeasInfoX) if needed
+   // and overwrite the measurement info from database (MseMeasInfoX) if needed
    rawData.ReadRecBegin(*mseMeasInfoX);
    rawData.ReadMeasInfo(*mseMeasInfoX);
 
@@ -83,7 +81,7 @@ int main(int argc, char *argv[])
       mseRunPeriodX = new MseRunPeriodX();
    }
 
-   //cout << endl << "mseMeasInfoX 3: " << endl;
+   // For debugging
    //mseMeasInfoX->Print();
    //cout << *mseMeasInfoX << endl;
 
@@ -144,7 +142,7 @@ int main(int argc, char *argv[])
       gMeasInfo->SetMachineParams(machineParams);
    }
 
-   // For debugging
+   // Print some information about the measurement for debugging
    gAsymAnaInfo->Print();
    gMeasInfo->Print();
    mseMeasInfoX->Print();
@@ -168,9 +166,8 @@ int main(int argc, char *argv[])
 
    if ( gAsymAnaInfo->HasCalibBit() ) {
       rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-      //if ( gAsymAnaInfo->HasAlphaBit() )
       gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
-      gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX Fix order!
+		gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
       gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
    }
 
@@ -188,10 +185,7 @@ int main(int argc, char *argv[])
       gAsymRoot->PostFill(*mseMeasInfoX);
    }
 
-   // Close histogram file
-   //hist_close(hbk_outfile);
-
-   // For debugging only
+   // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // Update calibration constants if requested
@@ -206,7 +200,7 @@ int main(int argc, char *argv[])
    //gAsymRoot->fEventConfig->Print();
    //gAsymRoot->fEventConfig->fCalibrator->Print();
 
-   // No analysis is done beyond this point only bookkeeping
+   // No data analysis is done beyond this point only bookkeeping
 
    // Stop stopwatch and save results
    stopwatch.Stop();
@@ -248,23 +242,4 @@ int main(int argc, char *argv[])
    printf("Processing time: %f seconds\n", gAsymAnaInfo->fAnaTimeReal);
 
    return EXIT_SUCCESS;
-}
-
-
-// for Bunch by Bunch base analysis
-int BunchSelect(int bid)
-{
-   int go = 0;
-   //int BunchList[11]={4,13,24,33,44,53,64,73,84,93,104};
-   int BunchList[26]={3,6,13,16,23,26,33,36,43,46,53,56,63,66,73,76,83,86,93,96,103,106};
-
-   for (int i=0; i<14; i++) {
-     //BunchList[i]++;
-     if (bid == BunchList[i]) {
-       go=1;
-       break;
-     }
-   }
-
-   return go;
 }

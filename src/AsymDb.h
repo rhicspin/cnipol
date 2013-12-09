@@ -13,12 +13,15 @@
 #include "MseFillProfile.h"
 
 
-class AsymDb : public TObject {
+/**
+ * An abstract class (not really) to provide a sort of interface for database access.
+ */
+class AsymDb : public TObject
+{
 
 public:
 
    AsymDb();
-   ~AsymDb();
 
    virtual void              OpenConnection() {}
    virtual void              CloseConnection() {}

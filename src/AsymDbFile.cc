@@ -1,11 +1,3 @@
-//  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name:    AsymDbFile.cc
-//
-//  Authors:      Itaru Nakagawa
-//                Dmitri Smirnov
-//
-//  Creation:     11/18/2005
-//
 
 #include "AsymDbFile.h"
 
@@ -26,7 +18,8 @@ int ProcessBunch[NBUNCH];
 
 const UShort_t AsymDbFile::sNFields = 31;
 
-const char* AsymDbFile::sFieldNames[] = {
+const char* AsymDbFile::sFieldNames[] =
+{
 	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
    "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
    "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
@@ -34,7 +27,8 @@ const char* AsymDbFile::sFieldNames[] = {
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
    "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
    "RUN_STATUS", "START_TIME", "STOP_TIME", "NEVENTS_TOTAL",
-   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION", "PROFILE_RATIO"};
+   "NEVENTS_PROCESSED", "BEAM_ENERGY", "TARGET_ID", "ASYM_VERSION", "PROFILE_RATIO"
+};
 
 
 /** */
@@ -42,13 +36,6 @@ AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
 {
    if ( !gAsymAnaInfo->fAsymEnv["CNIPOL_DIR"].empty() )
       fDbFileName = gAsymAnaInfo->fAsymEnv["CNIPOL_DIR"] + "/" + fDbFileName;
-
-   //fDbFile = fopen(fDbFileName.c_str(), "r");
-
-   //if (!fDbFile) {
-   //   Error("AsymDbFile", "%s file not found. Force exit", fDbFileName.c_str());
-   //   exit(-1);
-   //}
 
    for (UShort_t i=0; i<N_POLARIMETERS; i++) {
       fCommonRunDB[i] = 0;
@@ -59,17 +46,10 @@ AsymDbFile::AsymDbFile() : AsymDb(), fDbFileName("run.db")
 /** */
 AsymDbFile::~AsymDbFile()
 {
-   //if (fDbFile) fclose(fDbFile);
-   Clear();
-}
+   if (fDbFile) fclose(fDbFile);
+	fDbFile = 0;
 
-
-/** */
-void AsymDbFile::Clear()
-{
-   //if (fDbFile) fclose(fDbFile);
-
-   // There must be a more elegant way for erasing pointers
+   // There must be a more elegant way to erase pointers
    DbCommonRunMap::iterator icr;
    DbCommonRunMap::iterator bcr = fCommonRunDB.begin();
    DbCommonRunMap::iterator ecr = fCommonRunDB.end();
@@ -747,14 +727,13 @@ string GetVariables(string str)
 
 
 /*
-float GetVariablesFloat(string str){
-
+float GetVariablesFloat(string str)
+{
   string::size_type begin = str.find("=")+ 1;
   string::size_type end = str.find(";");
   string::size_type length = end - begin ;
 
   string s = str.substr(begin,length);
   return strtof(s.c_str(),NULL);
-
 }
 */

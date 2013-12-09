@@ -35,7 +35,6 @@ void AsymDbSql::OpenConnection()
 
    try {
       // Establish the connection to the database server.
-      //fConnection = new Connection("cnipol", "127.0.0.1", "cnipol", "(n!P0l", 3306);
       fConnection = new Connection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306);
    } catch (const BadQuery& er) {
       // Handle any query errors
@@ -43,8 +42,7 @@ void AsymDbSql::OpenConnection()
    } catch (const BadConversion& er) {
       // Handle bad conversions; e.g. type mismatch populating 'stock'
       cerr << "Conversion error: " << er.what() << endl <<
-              "\tretrieved data size: " << er.retrieved <<
-              ", actual size: " << er.actual_size << endl;
+              "\tretrieved data size: " << er.retrieved << ", actual size: " << er.actual_size << endl;
    } catch (const Exception& er) {
       // Catch-all for any other MySQL++ exceptions
       cerr << "Error: " << er.what() << endl;
@@ -350,7 +348,10 @@ void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
 }
 
 
-/** */
+/** 
+ * Selects the first record corresponding to the time of the provided measurement `run` from the
+ * `run_period` table. The returned object is owned by the caller.
+ */
 MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
 {
    MseRunPeriodX *runPeriod = SelectRunPeriod(run);
@@ -415,7 +416,10 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
 }
 
 
-/** */
+/** 
+ * Selects the first record corresponding to the time of the provided measurement `run` from the
+ * `run_period` table. The returned object is owned by the caller.
+ */
 MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
 {
    MseRunPeriodX* mserp = 0;

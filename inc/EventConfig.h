@@ -1,9 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                                                                           *
- *****************************************************************************/
-
-
 #ifndef EventConfig_h
 #define EventConfig_h
 
@@ -25,6 +19,7 @@
 #include "Calibrator.h"
 
 class MseMeasInfoX;
+
 
 /** */
 class EventConfig : public TObject
