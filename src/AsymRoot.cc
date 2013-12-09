@@ -808,10 +808,7 @@ void AsymRoot::UpdateFromChannelEvent()
 
 
 /** */
-Calibrator* AsymRoot::GetCalibrator()
-{
-   return fEventConfig->GetCalibrator();
-}
+const Calibrator* AsymRoot::GetCalibrator() const { return fEventConfig->GetCalibrator(); }
 
 
 /** */
@@ -1140,7 +1137,7 @@ void AsymRoot::SaveAs(string pattern, string dir)
 
 
 /** */
-EventConfig* AsymRoot::GetMeasConfig() { return fEventConfig; }
+const EventConfig* AsymRoot::GetMeasConfig() const { return fEventConfig; }
 
 
 /** */

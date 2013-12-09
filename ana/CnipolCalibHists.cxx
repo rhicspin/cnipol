@@ -127,7 +127,7 @@ void CnipolCalibHists::BookHists(std::string cutid)
 /** */
 void CnipolCalibHists::PostFill()
 {
-   Calibrator *calibrator = gAsymRoot->GetCalibrator();
+   const Calibrator *calibrator = gAsymRoot->GetCalibrator();
 
    //ChannelCalibMapIter iCh  = calibrator->fChannelCalibs.begin();
    //ChannelCalibMapIter iChE = calibrator->fChannelCalibs.end();

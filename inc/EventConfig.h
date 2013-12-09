@@ -46,11 +46,11 @@ public:
    EventConfig();
    ~EventConfig();
 
-   MeasInfo*      GetMeasInfo();
-   AsymAnaInfo*   GetAnaInfo();
-   Calibrator*    GetCalibrator();
-   AnaMeasResult* GetAnaMeasResult();
-   MseMeasInfoX*  GetMseMeasInfoX();
+   MeasInfo*      GetMeasInfo() const;
+   AsymAnaInfo*   GetAnaInfo() const;
+   Calibrator*    GetCalibrator() const;
+   AnaMeasResult* GetAnaMeasResult() const;
+   MseMeasInfoX*  GetMseMeasInfoX() const;
 
    void        Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;

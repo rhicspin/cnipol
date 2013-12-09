@@ -41,11 +41,11 @@ EventConfig::~EventConfig()
 }
 
 
-MeasInfo*      EventConfig::GetMeasInfo()      { return fMeasInfo; }
-AsymAnaInfo*   EventConfig::GetAnaInfo()       { return fAnaInfo; }
-Calibrator*    EventConfig::GetCalibrator()    { return fCalibrator; }
-AnaMeasResult* EventConfig::GetAnaMeasResult() { return fAnaMeasResult; }
-MseMeasInfoX*  EventConfig::GetMseMeasInfoX()  { return fMseMeasInfoX; }
+MeasInfo*      EventConfig::GetMeasInfo()      const { return fMeasInfo; }
+AsymAnaInfo*   EventConfig::GetAnaInfo()       const { return fAnaInfo; }
+Calibrator*    EventConfig::GetCalibrator()    const { return fCalibrator; }
+AnaMeasResult* EventConfig::GetAnaMeasResult() const { return fAnaMeasResult; }
+MseMeasInfoX*  EventConfig::GetMseMeasInfoX()  const { return fMseMeasInfoX; }
 
 
 /** */

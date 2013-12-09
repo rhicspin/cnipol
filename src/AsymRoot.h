@@ -87,12 +87,12 @@ public:
    void         PrintChannelEvent();
    void         UpdateCalibrator();
    void         UpdateFromChannelEvent();
-   Calibrator*  GetCalibrator();
+   const Calibrator*  GetCalibrator() const;
    void         SaveChannelTrees();
    void         SaveEventTree();
    void         WriteTreeFile();
    void         SaveAs(std::string pattern="^.*$", std::string dir=".");
-   EventConfig* GetMeasConfig();
+   const EventConfig* GetMeasConfig() const;
    void         GetMeasConfigs(MeasInfo *&ri, AsymAnaInfo *&ai, AnaMeasResult *&ar);
 };
 

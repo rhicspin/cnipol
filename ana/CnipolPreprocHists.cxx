@@ -313,7 +313,7 @@ void CnipolPreprocHists::FillDerivedPassOne_FillFromRawHists(CnipolRawHists *raw
       Int_t nXBins = adcMax - adcMin;
       Int_t nYBins = tdcMax - tdcMin;
 
-      Calibrator *calibrator = gAsymRoot->GetCalibrator();
+      const Calibrator *calibrator = gAsymRoot->GetCalibrator();
 
       Float_t xMin = calibrator->GetEnergyA(adcMin, chId);
       Float_t xMax = calibrator->GetEnergyA(adcMax, chId);
