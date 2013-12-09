@@ -10,9 +10,9 @@
 #include "mysql++.h"
 #include "ssqls.h"
 
-//#include "TBuffer.h"
 #include "TObject.h"
 
+// Call macro to automatically build an SQL class
 sql_create_23(MseMeasInfo, 1, 5,
    mysqlpp::sql_varchar,           run_name,
    mysqlpp::sql_smallint,          polarimeter_id,
@@ -44,7 +44,6 @@ class MseMeasInfoX : public MseMeasInfo
 public:
    // default constructor[13]
    MseMeasInfoX();
-   ~MseMeasInfoX();
  
    // for-comparison constructor[14]
    MseMeasInfoX(const mysqlpp::sql_varchar &p1);
@@ -62,10 +61,6 @@ public:
    void Init();
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
-   //void Streamer(TBuffer &buf);
 };
-
-//TBuffer & operator<<(TBuffer &buf, MseMeasInfoX *&rec);
-//TBuffer & operator>>(TBuffer &buf, MseMeasInfoX *&rec);
 
 #endif

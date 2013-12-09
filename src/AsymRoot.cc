@@ -1,20 +1,3 @@
-//  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name :   AsymRoot.cc
-//
-//  Authors   :   I. Nakagawa
-//                Dmitri Smirnov
-//
-//  Creation  :   7/11/2006
-//
-
-/**
- *
- * Oct 18, 2010 - Dmitri Smirnov
- *    - Added SaveChannelTrees() and SaveEventTree(), PrintEventMap()
- *
- */
-
-
 #include "AsymRoot.h"
 
 #include "TClassTable.h"
@@ -350,49 +333,8 @@ void AsymRoot::CreateTrees()
 }
 
 
-/** Deprecated. */
-/*
-Bool_t AsymRoot::UseCalibFile(std::string cfname)
-{
-   if (cfname == "" && gAsymAnaInfo->CMODE) {
-
-      UpdateCalibrator();
-      return true; // check if config is already set
-
-   } else if (cfname == "" && fEventConfig) {
-      return true; // check if config is already set
-
-   } else if (cfname != "") {
-
-      TFile *f = TFile::Open(cfname.c_str());
-
-      fEventConfig = (EventConfig*) f->FindObjectAny("measConfig");
-
-      if (fEventConfig) {
-
-         //fEventConfig->fRunDB->alpha_calib_run_name = fEventConfig->fMeasInfo->GetRunName();
-         gRunDb.alpha_calib_run_name = fEventConfig->fMeasInfo->GetRunName();
-         //fEventConfig->fDatproc->CMODE = 0;
-
-         delete fChannelEvent->fEventConfig;
-
-         fChannelEvent->fEventConfig = fEventConfig;
-
-         // Update the calibrator based on the running mode, i.e. alpha or
-         // normal data
-         UpdateCalibrator();
-
-         return true;
-
-      } else return false;
-
-   } else return false;
-}
-*/
-
-
 /**
- * Deprecated.
+ * (Deprecated)
  * Updates the default fEventConfig to the one taken from the DL_CALIB_RUN_NAME
  * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
  * constants from that file.
@@ -506,10 +448,10 @@ void AsymRoot::FillDerivedPassOne()
    fHists->FillDerivedPassOne();
 
    // The order is important!
-   if ( fHists->d.find("raw_neb") != fHists->d.end() ) 
+   if ( fHists->d.find("raw_neb") != fHists->d.end() )
       fHists->d["raw_neb"]->FillDerivedPassOne(*fHists);
 
-   if ( fHists->d.find("preproc") != fHists->d.end() ) 
+   if ( fHists->d.find("preproc") != fHists->d.end() )
       fHists->d["preproc"]->FillDerivedPassOne(*fHists);
 }
 
@@ -521,7 +463,7 @@ void AsymRoot::PostFillPassOne()
    //fHists->PostFillPassOne(fHists);
 
    // The order is important!
-   if ( fHists->d.find("alpha") != fHists->d.end() ) 
+   if ( fHists->d.find("alpha") != fHists->d.end() )
       fHists->d["alpha"]->PostFillPassOne(fHists);
 
    //DrawObjContainer *pulserHists = 0;
@@ -836,7 +778,6 @@ void AsymRoot::UpdateCalibrator()
          exit(-1);
       }
 
-      //streamerList->Print("all");
       TStreamerInfo *streamerInfo = (TStreamerInfo*) streamerList->FindObject("EventConfig"); // this is actually class name
       Int_t mcVer = 0;
 
@@ -857,7 +798,6 @@ void AsymRoot::UpdateCalibrator()
          exit(-1);
       }
 
-
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
       delete eventConfig;
@@ -867,7 +807,6 @@ void AsymRoot::UpdateCalibrator()
       Error("UpdateCalibrator", "Cannot select calibrator for this kind of run");
       exit(-1);
    }
-
 }
 
 
@@ -888,10 +827,6 @@ Calibrator* AsymRoot::GetCalibrator()
 /** */
 void AsymRoot::Calibrate()
 {
-   //fEventConfig->Print();
-   //fEventConfig->fCalibrator->Print();
-   //exit(0);
-
    fEventConfig->fCalibrator->Calibrate(fHists);
 }
 
@@ -963,8 +898,9 @@ void AsymRoot::SaveEventTree()
 }
 
 
-// Deprecated.
-// Description : Book AsymRoot Histograms
+/**
+ * (Deprecated) Book AsymRoot histograms.
+ */
 void AsymRoot::BookHists()
 {
    Char_t hname[100], htitle[100];
