@@ -131,7 +131,6 @@ void AsymRoot::CreateRootFile(string filename)
 
    if (!fOutRootFile) {
       Fatal("CreateRootFile", "Cannot open ROOT file %s", filename.c_str());
-      exit(-1);
    }
 
    gSystem->Chmod(filename.c_str(), 0775);
@@ -294,7 +293,6 @@ void AsymRoot::CreateTrees()
 {
    if (fTreeFileId > 99) {
       Fatal("CreateTrees", "fTreeFileId is too big");
-      exit(-1);
    }
 
    string filename = gAsymAnaInfo->GetRootTreeFileName(fTreeFileId);
@@ -728,17 +726,14 @@ void AsymRoot::UpdateCalibrator()
          string fname = anaInfo->GetDlCalibFile();
 
          if (fname.empty()) {
-            Error("AsymRoot::UpdateCalibrator", "Dead layer calibration file not specified. Use --calib option");
-            exit(-1);
+            Fatal("UpdateCalibrator", "Dead layer calibration file not specified. Use --calib option");
          }
 
          Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from file %s", fname.c_str());
          TFile *f = TFile::Open(fname.c_str());
 
          if (!f) {
-            Error("UpdateCalibrator", "File not found: %s", fname.c_str());
-            delete f;
-            exit(-1);
+            Fatal("UpdateCalibrator", "File not found: %s", fname.c_str());
          }
 
          EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
@@ -766,16 +761,13 @@ void AsymRoot::UpdateCalibrator()
       TFile *f = TFile::Open(fnameAlpha.c_str());
 
       if (!f) {
-         Error("UpdateCalibrator", "File not found: %s", fnameAlpha.c_str());
-         delete f;
-         exit(-1);
+         Fatal("UpdateCalibrator", "File not found: %s", fnameAlpha.c_str());
       }
 
       TList *streamerList = f->GetStreamerInfoList();
 
       if (!streamerList) {
-         Error("UpdateCalibrator", "No MeasConfig object found in alpha calib file %s", fnameAlpha.c_str());
-         exit(-1);
+         Fatal("UpdateCalibrator", "No MeasConfig object found in alpha calib file %s", fnameAlpha.c_str());
       }
 
       TStreamerInfo *streamerInfo = (TStreamerInfo*) streamerList->FindObject("EventConfig"); // this is actually class name
@@ -794,8 +786,7 @@ void AsymRoot::UpdateCalibrator()
       EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
 
       if (!eventConfig || mcVer != mcLoadedVer) {
-         Error("UpdateCalibrator", "No MeasConfig object of known version %d found in alpha calib file %s", mcLoadedVer, fnameAlpha.c_str());
-         exit(-1);
+         Fatal("UpdateCalibrator", "No MeasConfig object of known version %d found in alpha calib file %s", mcLoadedVer, fnameAlpha.c_str());
       }
 
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
@@ -804,8 +795,7 @@ void AsymRoot::UpdateCalibrator()
       delete f;
 
    } else {
-      Error("UpdateCalibrator", "Cannot select calibrator for this kind of run");
-      exit(-1);
+      Fatal("UpdateCalibrator", "Cannot select calibrator for this kind of run");
    }
 }
 
