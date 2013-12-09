@@ -75,7 +75,7 @@ and calibration data.
 
 To analyze a regular data file simply do:
 
-    asym --calib --profile --use-db --no-update-db --raw-ext --asym --pmt --kinema -r <meas_id> &
+    asym --calib --profile --raw-ext --asym --pmt --kinema -r <meas_id> &
 
 where `<meas_id>` is the name of the run, e.g. 12345.001. Note that usually
 `<file_name> = <meas_id>.data`. The program searches for the input <file_name>
@@ -87,7 +87,7 @@ results to display on the web, and a file with calibration results.
 
 To analyze an alpha or pulser run use the --alpha option:
 
-    asym --alpha --use-db -r <meas_id>
+    asym --alpha -r <meas_id>
 
 
 How to produce the summary plots
