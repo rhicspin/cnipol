@@ -1,20 +1,17 @@
-<p>
-
-
 Introduction
 ============
 
-`cnipol` is a software package designed to acquire and analyze data from the
+**cnipol** is a software package designed to acquire and analyze data from the
 Relativistic Heavy Ion Collider (RHIC) polarimeters at the Brookhaven National
 Lab (BNL). The first objective is usually referred to as the 'online' part of
-`cnipol` which is designed to support the data acquisition and the second
+cnipol which is designed to support the data acquisition and the second
 objective is referred to as the 'offline' data analysis.
 
 There is a wiki page with some details about the RHIC polarimetry:
 
 https://wiki.bnl.gov/rhicspin/Polarimetry
 
-The entry page with links to results obtained with `cnipol` can be found at
+The entry page with links to results obtained with cnipol can be found at
 
 http://www.phy.bnl.gov/cnipol/
 
@@ -22,7 +19,7 @@ http://www.phy.bnl.gov/cnipol/
 General remarks
 ---------------
 
-The code to analyze the data from the RHIC polarimeters has changed
+The code for the analysis of the RHIC polarimeters data has changed
 significantly starting 2010. Nevertheless, one may still find it useful to look
 through the older documentation which can be found at
 
@@ -147,15 +144,23 @@ repository is restricted to BNL Domain NT accounts. An account can be requested
 at http://www.bnl.gov/accounts/. The same account and password can be used to
 view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 
-`cnipol`:
-	This is an older unsupported version of this package. For the up-to-date
-	version see https://github.com/rhicspin/cnipol
-
-`ags_cni`:
-   Code for AGS data analysis
-
-`jet`:
-   Code for the H-jet polarimeter data analysis
+<table>
+	<tr>
+		<td>*cnipol*</td>
+		<td>
+This is an older unsupported version of this package.<br/>
+For the up-to-date version see https://github.com/rhicspin/cnipol
+		</td>
+	</tr>
+	<tr>
+		<td>*ags_cni*</td>
+		<td>Code for AGS data analysis</td>
+	</tr>
+	<tr>
+		<td>*jet*</td>
+		<td>Code for the H-jet polarimeter data analysis</td>
+	</tr>
+</table>
 
 
 Build Status
