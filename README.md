@@ -1,14 +1,35 @@
+<p>
 
-General Remarks
-===============
 
-The code to analyze the data from the RHIC polarimeteres has changed
+Introduction
+============
+
+`cnipol` is a software package designed to acquire and analyze data from the
+Relativistic Heavy Ion Collider (RHIC) polarimeters at the Brookhaven National
+Lab (BNL). The first objective is usually referred to as the 'online' part of
+`cnipol` which is designed to support the data acquisition and the second
+objective is referred to as the 'offline' data analysis.
+
+There is a wiki page with some details about the RHIC polarimetry:
+
+https://wiki.bnl.gov/rhicspin/Polarimetry
+
+The entry page with links to results obtained with `cnipol` can be found at
+
+http://www.phy.bnl.gov/cnipol/
+
+
+General remarks
+---------------
+
+The code to analyze the data from the RHIC polarimeters has changed
 significantly starting 2010. Nevertheless, one may still find it useful to look
 through the older documentation which can be found at
+
 http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
 
 
-How to Configure and Install cnipol
+How to configure and install cnipol
 ===================================
 
 The best way to start with the analysis is to clone the latest version of the
@@ -20,9 +41,9 @@ installed on your machine issue the following command:
 
 To make the processing of the data controllable and predictable we create stable
 releases of the code. The list of tagged stable releases can be viewed at
-https://github.com/rhicspin/cnipol/releases One may switch from the development
-version of the code checked out as above to the latest stable release by issuing
-the following command:
+https://github.com/rhicspin/cnipol/releases
+One may switch from the development version of the code checked out as above to
+the latest stable release by issuing the following command:
 
     git checkout stable
 
@@ -59,7 +80,7 @@ The compiled executables should appear in the `cnipol/build` directory along
 with the cnipol libraries.
 
 
-How to Run cnipol
+How to run cnipol
 =================
 
 Make sure the following environment variables are set to valid locations before
@@ -82,9 +103,8 @@ usually `<file_name> = <meas_id>.data`. The program searches for the input
 <file_name> file in $CNIPOL_DATA_DIR and creates an output directory <meas_id>
 in $CNIPOL_RESULTS_DIR. Typically, the output directory contains a ROOT file
 with a predefined set of histograms, a log file (stdoe.log) with the entire
-output of the program, a file in PHP format with information about the
-measurement and results to display on the web, and a file with calibration
-results.
+output of the program, a file in PHP with information about the measurement and
+results to display on the web, and a file with calibration results.
 
 To analyze an alpha or pulser measurement use the --alpha option:
 
@@ -122,22 +142,20 @@ where NNNNN must be replaced with an actual fill number.
 Other software packages for the RHIC polarimetry
 ================================================
 
-Other packages are available from the SVN repository. Access to the repository
-is restricted to BNL Domain NT accounts. An account can be requested at
-http://www.bnl.gov/accounts/. The same account and password can be used to view
-the repository on the web by visiting https://svn.bnl.gov/viewvc/.
+Other packages are available from the BNL SVN repository. Access to the
+repository is restricted to BNL Domain NT accounts. An account can be requested
+at http://www.bnl.gov/accounts/. The same account and password can be used to
+view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 
-{| class="wikitable cellpadded_top cntr"
-! cnipol ([https://github.com/rhicspin/cnipol on github])
-| Includes the DAQ code and the code for online data processing. Also includes
-| the full offline analysis code for the p-Carbon polarimeters
-|-
-! ags_cni
-| Code for AGS data analysis
-|-
-! jet
-| Code for the H-jet polarimeter data analysis
-|}
+`cnipol`:
+	This is an older unsupported version of this package. For the up-to-date
+	version see https://github.com/rhicspin/cnipol
+
+`ags_cni`:
+   Code for AGS data analysis
+
+`jet`:
+   Code for the H-jet polarimeter data analysis
 
 
 Build Status
