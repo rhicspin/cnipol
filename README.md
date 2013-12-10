@@ -75,49 +75,48 @@ and calibration data.
 
 To analyze a regular data file simply do:
 
-    asym --calib --profile --raw-ext --asym --pmt --kinema -r <meas_id> &
+    asym -r <meas_id>
 
-where `<meas_id>` is the name of the run, e.g. 12345.001. Note that usually
-`<file_name> = <meas_id>.data`. The program searches for the input <file_name>
-file in $CNIPOL_DATA_DIR and creates an output directory <meas_id> in
-$CNIPOL_RESULTS_DIR. Typically, the output directory contains a ROOT file with a
-predefined set of histograms, a log file (stdoe.log) with the entire output of
-the program, a file in PHP format with information about the measurement and
-results to display on the web, and a file with calibration results.
+where `<meas_id>` is a unique name of a measurement, e.g. 12345.001. Note that
+usually `<file_name> = <meas_id>.data`. The program searches for the input
+<file_name> file in $CNIPOL_DATA_DIR and creates an output directory <meas_id>
+in $CNIPOL_RESULTS_DIR. Typically, the output directory contains a ROOT file
+with a predefined set of histograms, a log file (stdoe.log) with the entire
+output of the program, a file in PHP format with information about the
+measurement and results to display on the web, and a file with calibration
+results.
 
-To analyze an alpha or pulser run use the --alpha option:
+To analyze an alpha or pulser measurement use the --alpha option:
 
     asym --alpha -r <meas_id>
 
 
-How to produce the summary plots
-================================
+How to produce summary plots
+============================
 
-This section still has to be rewritten.
-These instructions will work for executables in ~dsmirnov/cnipol on the eic
-cluster.
+Often it is useful to see how polarization or other observables change from
+measurement to measurement during some period of time. To study such time
+dependence we developed `masym`, a program that runs on a set of measurements
+analyzed with `asym`. The output ROOT files produced by `asym` are used as input
+to `masym`. Executing the following command will create a <meas_list> directory
+in $CNIPOL_RESULTS_DIR with a ROOT file containing summary histograms:
 
-    rsync -auv bluepc:/usr/local/polarim/data/*.data /eicdata/eic0005/run13/data/
-    rsync -auv --include='*.root' --include='stdoe*' --include='runconfig.php' \
-       --include='17???.???/' --exclude='*' pc2pc-phy:/usr/local/polarim/root/ \
-       /eicdata/eic0005/run13/root/
-    find /eicdata/eic0005/run13/data/ -regex \
-       "/eicdata/eic0005/run13/data/\([0-9]+.[0-9]+\).data$" -printf "%f\n" | awk -F \
-       ".data" '{print $1}' | sort > /eicdata/eic0005/runXX/lists/run13_all
+    masym -m <meas_list>
 
-Add polarization results from H-Jet web page to
-`/eicdata/eic0005/runXX/hjet_pol`. Then get the intensity and other
-information about the new fills from CDEV using the following script:
+Here <meas_list> is a plain text file with a list of measurements to process.
+This file is assumed to exist in $CNIPOL_RESULTS_DIR/runXX/lists/ and to have
+one <meas_id> per line.
 
-    ssh -Y acnlina "~/cnipol_trunk/script/get_fill_info.sh 17XXX" > \
-       /eicdata/eic0005/runXX/cdev_info/cdev_17XXX
+Optionally, the analyzer can provide a plain text file
+$CNIPOL_RESULTS_DIR/runXX/hjet_pol with H-Jet polarization values, and one file
+$CNIPOL_RESULTS_DIR/runXX/cdev_info/cdev_NNNNN per fill NNNNN containing
+intensity and other beam parameters. Information from these text files will be
+used by `masym` in the summary plots. Information from CDEV can be extracted
+using the following script on the acnlin CAD cluster:
 
-17XXX has to be replaced with the actual fill number. The summary plots are
-produced with the following command:
+    $CNIPOL_DIR/script/get_fill_info.sh NNNNN
 
-    cd cnipol
-    source setup13.sh
-    ./bin/masym -m run13_phys -g
+where NNNNN must be replaced with an actual fill number.
 
 
 Other software packages for the RHIC polarimetry
