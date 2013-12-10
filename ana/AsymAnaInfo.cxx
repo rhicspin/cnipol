@@ -32,7 +32,6 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    UPDATE            (0),
    MMODE             (1),
    NTMODE            (0),
-   RECONFMODE        (1),
    RAMPMODE          (0),
    STUDYMODE         (0),
    fSaveTrees        (0),
@@ -386,7 +385,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case 'C':
       case AsymAnaInfo::MODE_ALPHA:
          fAsymModes |= AsymAnaInfo::MODE_ALPHA;
-         RECONFMODE = 0;
          fAsymModes &= ~AsymAnaInfo::MODE_NORMAL; // turn off normal mode
          break;
 
