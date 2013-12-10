@@ -19,7 +19,7 @@ using namespace std;
 /** */
 AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fRunName          (""),
-   fAsymModes        (MODE_NORMAL),
+   fAsymModes        (MODE_NORMAL|MODE_CALIB|MODE_PROFILE|MODE_TARGET|MODE_RAW_EXTENDED|MODE_ASYM|MODE_PMT|MODE_KINEMA),
    enel              (400),
    eneu              (900),
    widthl            (-30),
