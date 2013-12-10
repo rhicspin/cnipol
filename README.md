@@ -146,18 +146,18 @@ view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 
 <table>
 	<tr>
-		<td>*cnipol*</td>
+		<th>cnipol</th>
 		<td>
 This is an older unsupported version of this package.<br/>
 For the up-to-date version see https://github.com/rhicspin/cnipol
 		</td>
 	</tr>
 	<tr>
-		<td>*ags_cni*</td>
+		<th>ags_cni</th>
 		<td>Code for AGS data analysis</td>
 	</tr>
 	<tr>
-		<td>*jet*</td>
+		<th>jet</th>
 		<td>Code for the H-jet polarimeter data analysis</td>
 	</tr>
 </table>
