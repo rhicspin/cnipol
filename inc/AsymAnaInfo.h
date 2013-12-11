@@ -17,8 +17,8 @@ class MseMeasInfoX;
 
 
 /**
- * This class takes care of all options provided by the user in the command
- * line. The options are intended to be used in the asym executable.
+ * This class takes care of the command line options specific to the 'asym'
+ * executable. The common options are taken care of by the AnaInfo class.
  */
 class AsymAnaInfo : public AnaInfo
 {

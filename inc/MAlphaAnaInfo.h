@@ -9,7 +9,10 @@
 #include "AnaInfo.h"
 
 
-/** */
+/**
+ * This class takes care of the command line options specific to the 'malpha'
+ * executable. The common options are taken care of by the AnaInfo class.
+ */
 class MAlphaAnaInfo : public AnaInfo {
 public:
 

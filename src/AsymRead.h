@@ -17,6 +17,9 @@
 #include "MseMeasInfo.h"
 
 
+/**
+ * Efficiently reads the raw data file and processes data structures.
+ */
 class RawDataProcessor
 {
 public:
