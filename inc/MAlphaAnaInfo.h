@@ -30,7 +30,6 @@ public:
    std::string fOutputFileName;
 
    MAlphaAnaInfo();
-   ~MAlphaAnaInfo();
 
    void        SetMListFileName(std::string listName);
    std::string GetMListFileName();
