@@ -63,12 +63,12 @@ int main(int argc, char *argv[])
    }
 
    // Read data file into memory
-   RawDataProcessor rawData(gAsymAnaInfo->GetRawDataFileName());
+   RawDataReader rawDataReader(gAsymAnaInfo->GetRawDataFileName());
 
    // Get basic information about the measurement from the data file
    // and overwrite the measurement info from database (MseMeasInfoX) if needed
-   rawData.ReadRecBegin(*mseMeasInfoX);
-   rawData.ReadMeasInfo(*mseMeasInfoX);
+   rawDataReader.ReadRecBegin(*mseMeasInfoX);
+   rawDataReader.ReadMeasInfo(*mseMeasInfoX);
 
    MseRunPeriodX *mseRunPeriodX = 0;
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
    // to set preliminary cuts.
 
    if ( gAsymAnaInfo->HasCalibBit() ) {
-      rawData.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
+      rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
       gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
 		gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
       gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
       gAsymRoot->PreFill();
 
       // Main event Loop
-      rawData.ReadDataPassTwo(*mseMeasInfoX);
+      rawDataReader.ReadDataPassTwo(*mseMeasInfoX);
 
       gAsymRoot->FillDerived();
       gAsymRoot->PostFill(*mseMeasInfoX);

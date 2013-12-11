@@ -18,7 +18,7 @@ using namespace std;
 
 
 /** */
-RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
+RawDataReader::RawDataReader() : fFileName(""), fFile(0), fMem(0),
    fFileStream(), fSeenRecords()
 {
    fclose(fFile);
@@ -28,7 +28,7 @@ RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),
 
 
 /** */
-RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
+RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
    fMem(0),
    fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
 {
@@ -42,12 +42,12 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
       printf("\nFound file %s\n", fFileName.c_str());
 
    // Create a BLOB with file content
-   Info("RawDataProcessor", "Reading into memory...");
+   Info("RawDataReader", "Reading into memory...");
    TStopwatch sw;
 
    fFileStream.seekg(0, ios::end);
    fMemSize = fFileStream.tellg(); // in bytes
-   Info("RawDataProcessor", "Input file size: %d bytes", fMemSize);
+   Info("RawDataReader", "Input file size: %d bytes", fMemSize);
    fFileStream.seekg(0, ios::beg);
 
    fMem = new char[fMemSize];
@@ -67,7 +67,7 @@ RawDataProcessor::RawDataProcessor(string fname) : fFileName(fname), fFile(0),
 
 
 /** */
-RawDataProcessor::~RawDataProcessor()
+RawDataReader::~RawDataReader()
 {
    if (fFile) fclose(fFile);
    delete[] fMem;
@@ -76,7 +76,7 @@ RawDataProcessor::~RawDataProcessor()
 
 
 /** */
-void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
+void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
@@ -164,7 +164,7 @@ void RawDataProcessor::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
  * This method is supposed to read all information about the measurement from
  * raw data. It does not read events.
  */
-void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
+void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadMeasInfo", "Start reading run info from data file...");
@@ -381,7 +381,7 @@ void RawDataProcessor::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 
 
 /** */
-void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
+void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadDataPassOne", "Start reading events from data file...");
@@ -509,7 +509,7 @@ void RawDataProcessor::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
 
 /** Read loop routine */
-void RawDataProcessor::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
+void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadDataPassTwo", "Start reading events from data file...");

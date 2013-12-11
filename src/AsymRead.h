@@ -20,7 +20,7 @@
 /**
  * Efficiently reads the raw data file and processes data structures.
  */
-class RawDataProcessor
+class RawDataReader
 {
 public:
 
@@ -30,9 +30,9 @@ public:
    UInt_t         fMemSize;
    std::ifstream  fFileStream;
 
-   RawDataProcessor();
-   RawDataProcessor(std::string fname);
-   ~RawDataProcessor();
+   RawDataReader();
+   RawDataReader(std::string fname);
+   ~RawDataReader();
 
    void ReadRecBegin(MseMeasInfoX &mseMeasInfo);
    void ReadMeasInfo(MseMeasInfoX &mseMeasInfo);
