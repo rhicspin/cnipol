@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/rhicspin/cnipol.png)](https://travis-ci.org/rhicspin/cnipol)
-
 Introduction
 ============
 
@@ -17,7 +15,29 @@ The entry page with links to results obtained with cnipol can be found at
 
 http://www.phy.bnl.gov/cnipol/
 
-qw of the code. The list of tagged stable releases can be viewed at
+
+General remarks
+---------------
+
+The code for the analysis of the RHIC polarimeters data has changed
+significantly starting 2010. Nevertheless, one may still find it useful to look
+through the older documentation which can be found at
+
+http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
+
+
+How to configure and install cnipol
+===================================
+
+The best way to start with the analysis is to clone the latest version of the
+code from the git repository. From the location where the package will be
+installed on your machine issue the following command:
+
+    git clone git@github.com:rhicspin/cnipol.git
+    cd cnipol
+
+To make the processing of the data controllable and predictable we create stable
+releases of the code. The list of tagged stable releases can be viewed at
 https://github.com/rhicspin/cnipol/releases
 One may switch from the development version of the code checked out as above to
 the latest stable release by issuing the following command:
@@ -141,3 +161,9 @@ For the up-to-date version see https://github.com/rhicspin/cnipol
 		<td>Code for the H-jet polarimeter data analysis</td>
 	</tr>
 </table>
+
+
+Build Status
+============
+
+[![Build Status](https://travis-ci.org/rhicspin/cnipol.png)](https://travis-ci.org/rhicspin/cnipol)
