@@ -1,4 +1,3 @@
-
 #include "AsymCommon.h"
 
 #include <map>
@@ -466,15 +465,4 @@ string PairAsPhpArray(const ValErrPair &p)
    //sstr << "array (" << p.first << ", " << p.second << ")";
 
    return sstr.str();
-}
-
-
-/** */
-string FitResultAsPhpArray(const TFitResultPtr &fitres)
-{
-   std::stringstream ssChs("");
-
-   //ssChs << "array (" << p.first << ", " << p.second << ")";
-
-   return ssChs.str();
 }

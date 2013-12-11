@@ -1,4 +1,3 @@
-
 #include <getopt.h>
 
 #include "AsymAnaInfo.h"
@@ -36,7 +35,6 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fThinout          (1),
    fMaxEventsUser    (0),
    reference_rate    (1),
-   //target_count_mm   (0.11),
    target_count_mm   (1),   // Need to get the real value
    fAlphaCalibRun(""),
    fDlCalibRun(""),
@@ -67,7 +65,7 @@ string AsymAnaInfo::GetDlCalibRun()       const { return fDlCalibRun; }
 
 Bool_t AsymAnaInfo::HasAlphaBit() const  {
    return (fAsymModes & (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB))  == (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB);
- }
+}
 
 Bool_t AsymAnaInfo::HasCalibBit()       const { return (fAsymModes & AsymAnaInfo::MODE_CALIB)        == AsymAnaInfo::MODE_CALIB; }
 Bool_t AsymAnaInfo::HasNormalBit()      const { return (fAsymModes & AsymAnaInfo::MODE_NORMAL)       == AsymAnaInfo::MODE_NORMAL; }
@@ -138,9 +136,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"log",                 optional_argument,   0,   'l'},
       {"sfx",                 required_argument,   0,   AnaInfo::OPTION_SUFFIX},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
-      //{"no-graph",            no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
-      //{"mode-graph",          no_argument,         0,   AnaInfo::MODE_GRAPH},
-      //{"mode-no-graph",       no_argument,         0,   AnaInfo::MODE_NO_GRAPH},
 
       {"copy",                no_argument,         0,   AnaInfo::FLAG_COPY},
       {"copy-results",        no_argument,         0,   AnaInfo::FLAG_COPY},
@@ -210,10 +205,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case AnaInfo::MODE_GRAPH:
          fModes |= AnaInfo::MODE_GRAPH;
          break;
-
-      //case AsymAnaInfo::MODE_NO_GRAPH:
-      //   fModes &= ~AsymAnaInfo::MODE_GRAPH;
-      //   break;
 
       case AnaInfo::OPTION_SUFFIX:
          fSuffix = optarg;

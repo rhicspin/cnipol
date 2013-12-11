@@ -106,7 +106,7 @@ void CompleteHistogram()
 
       float max = mass_nocut[i]->GetMaximum();
 
-      DrawVertLine(mass_nocut[i], MASS_12C_k2G,                                              max*1.05, 14, 2);
+      DrawVertLine(mass_nocut[i], MASS_12C_k2G,                                                      max*1.05, 14, 2);
       DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
       DrawVertLine(mass_nocut[i], MASS_12C_k2G - feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);
       DrawVertLine(mass_nocut[i], MASS_12C_k2G + feedback.RMS[i] * k2G * gAsymAnaInfo->MassSigma,    max*0.3,   4, 2);

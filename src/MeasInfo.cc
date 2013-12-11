@@ -42,9 +42,9 @@ MeasInfo::MeasInfo() : TObject(),
    fMeasType(kMEASTYPE_UNKNOWN),
    fNEventsProcessed (0),
    fNEventsTotal     (0),
-   GoodEventRate     (0),        // GoodEventRate;
-   EvntRate          (0),        // EvntRate;
-   ReadRate          (0),        // ReadRate;
+   GoodEventRate     (0),
+   EvntRate          (0),
+   ReadRate          (0),
    fWallCurMon(), fWallCurMonAve(0), fWallCurMonSum(0),
    fPolId        (-1),       // valid values 0 - 3
    fPolBeam      (0),        // blue = 2 or yellow = 1
@@ -285,7 +285,7 @@ void MeasInfo::PrintConfig()
    fprintf(stdout, "Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
 
    // tshift in [ns]
-   fprintf(stdout,"             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);
+   fprintf(stdout, "             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);
 
    // expected reference rate
    if (fRunId==5)   fprintf(stdout,"     REFERENCE_RATE = %.4f\n", gAsymAnaInfo->reference_rate);

@@ -1,19 +1,3 @@
-/**
- *  Asymmetry Analysis of RHIC pC Polarimeter
- *
- *  Authors: I. Nakagawa
- *           Dmitri Smirnov
- *
- * Oct 18, 2010 - Dmitri Smirnov
- *    - Minor code clean-up
- *
- * Feb 10, 2011 - Dmitri Smirnov
- *    - Significantly simplified the code. Removed unnecessary copies of global
- *      variables
- *
- */
-
-
 #include "AsymProcess.h"
 
 #include "TH1F.h"
@@ -24,11 +8,6 @@
 #include "MeasInfo.h"
 
 using namespace std;
-
-// A manual switch operation is required for following routine.
-// This routine calls special text output routine for spin tune measurements
-//
-// SpinTuneOutput(event->bid,si);
 
 extern void HHF1(int, float, float);
 extern void HHF2(int, float, float, float);
@@ -330,9 +309,7 @@ void event_process(ChannelEvent &chEvent)
    //    atdata.strip = (int)st+1;
    //    atdata.e = (float)e;
    //    atdata.tof = (float)t;
-
    //    atdata.spin = gSpinPattern[chEvent.bid];
-
    //    //HHFNT(1);
    //}
 

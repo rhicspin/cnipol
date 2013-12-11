@@ -1,13 +1,3 @@
-/**
- * Header file for Asym
- * Author   : Itaru Nakagawa
- * Creation : 11/18/2005         
- *
- * 15 Oct, 2010 - Dmitri Smirnov
- *    - Modified readloop to take an object of Root class as an argument 
- *
- */
-
 #ifndef AsymCommon_h
 #define AsymCommon_h
 
@@ -508,8 +498,5 @@ template<class Key, class T> std::string MapAsPhpArray(const std::map<Key, T>& m
 //}
 
 std::string PairAsPhpArray(const ValErrPair &p);
-std::string FitResultAsPhpArray(const TFitResultPtr &fitres);
-
-//template<class > std::string
 
 #endif
