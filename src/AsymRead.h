@@ -1,13 +1,3 @@
-/**
- *
- * 15 Oct, 2010 - Dmitri Smirnov
- *    - Modified readloop to take an object of Root class as an argument 
- *
- * 18 Oct, 2010 - Dmitri Smirnov
- *    - Made the Root object global, redefined readloop back
- *
- */
-
 #ifndef ASYM_READ_H
 #define ASYM_READ_H
 
@@ -30,16 +20,13 @@
 class RawDataProcessor
 {
 public:
+
    std::string    fFileName;
    FILE          *fFile;
    char          *fMem;
    UInt_t         fMemSize;
    std::ifstream  fFileStream;
 
-private:
-   std::set<Int_t> fSeenRecords;
-
-public:
    RawDataProcessor();
    RawDataProcessor(std::string fname);
    ~RawDataProcessor();
@@ -48,6 +35,10 @@ public:
    void ReadMeasInfo(MseMeasInfoX &mseMeasInfo);
    void ReadDataPassOne(MseMeasInfoX &mseMeasInfo);
    void ReadDataPassTwo(MseMeasInfoX &mseMeasInfo);
+
+private:
+
+   std::set<Int_t> fSeenRecords;
 };
 
 void UpdateRunConst(TRecordConfigRhicStruct *ci);

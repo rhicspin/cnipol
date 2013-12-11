@@ -1,4 +1,3 @@
-
 #include <getopt.h>
 
 #include "AnaInfo.h"

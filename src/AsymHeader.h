@@ -1,5 +1,3 @@
-/*! \file */
-
 #ifndef AsymHeader_h
 #define AsymHeader_h
 
@@ -58,10 +56,8 @@ static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (
 #define GD_ALPHA_E   3271.21  // keV, Gd alpha energy
 #define ATTEN        0.2000   // =1/5 regular calibration
 #define CCONST       0.2000   // =1/5 regular calibration
-//#define CCONST       0.1000   //
-//#define CCONST       0.4000   // attenuation (x2) runs
 
-const int TOT_WFD_CH = NSTRIP + NTGTWFD; //Total WFD channels including target WFD channels.
+const int TOT_WFD_CH = NSTRIP + NTGTWFD; // Total WFD channels including target WFD channels.
 
 #define MAX_CHANNEL_DIGITS 2
 

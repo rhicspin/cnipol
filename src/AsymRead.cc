@@ -1,12 +1,3 @@
-//  Asymmetry Analysis of RHIC pC Polarimeter
-//  file name :   AsymRead.cc
-//
-//  Author    :   Itaru Nakagawa
-//                Dmitri Smirnov
-//
-//  Creation  :   10/17/2005
-//
-
 #include "AsymRead.h"
 
 #include <sstream>
@@ -24,6 +15,7 @@
 #include "TargetInfo.h"
 
 using namespace std;
+
 
 /** */
 RawDataProcessor::RawDataProcessor() : fFileName(""), fFile(0), fMem(0),

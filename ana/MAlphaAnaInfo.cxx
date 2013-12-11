@@ -21,24 +21,21 @@ MAlphaAnaInfo::MAlphaAnaInfo() : AnaInfo(),
 }
 
 
-/** */
-MAlphaAnaInfo::~MAlphaAnaInfo()
-{
-}
-
-
 void   MAlphaAnaInfo::SetMListFileName(std::string listName)
 {
    fMListFileName = listName;
 }
+
 string MAlphaAnaInfo::GetMListFileName()
 {
    return fMListFileName;
 }
+
 string MAlphaAnaInfo::GetMListFullPath()
 {
    return GetResultsDir() + "/runXX/lists/" + fMListFileName;
 }
+
 string MAlphaAnaInfo::GetExternInfoPath()
 {
    return GetResultsDir() + "/runXX/";

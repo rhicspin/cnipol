@@ -27,7 +27,6 @@ public:
 public:
 
    MAsymAnaInfo();
-   ~MAsymAnaInfo();
 
    void        SetMListFileName(std::string listName);
    std::string GetMListFileName();

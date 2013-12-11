@@ -1,4 +1,3 @@
-
 #include <getopt.h>
 
 #include "MAsymAnaInfo.h"
@@ -20,12 +19,6 @@ MAsymAnaInfo::MAsymAnaInfo() : AnaInfo(),
    fMListFileName("")
 {
    Init();
-}
-
-
-/** */
-MAsymAnaInfo::~MAsymAnaInfo()
-{
 }
 
 
