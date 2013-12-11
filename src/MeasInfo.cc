@@ -279,22 +279,10 @@ void MeasInfo::PrintConfig()
    fprintf(stdout,"              CALIB = %s\n", CalibFile);
 
    // banana cut configulation
+   int ccutwl = (int) gAsymAnaInfo->widthl;
+   int ccutwu = (int) gAsymAnaInfo->widthu;
 
-   int ccutwu = 0;
-   int ccutwl = 0;
-
-   if (gAsymAnaInfo->CBANANA == 0) {
-      ccutwl = (int) gConfigInfo->data.chan[3].ETCutW;
-      ccutwu = (int) gConfigInfo->data.chan[3].ETCutW;
-   } else if (gAsymAnaInfo->CBANANA == 2) {
-      fprintf(stdout,"            MASSCUT = %.1f\n", gAsymAnaInfo->MassSigma);
-   } else {
-      ccutwl = (int) gAsymAnaInfo->widthl;
-      ccutwu = (int) gAsymAnaInfo->widthu;
-   }
-
-   if (gAsymAnaInfo->CBANANA!=2)
-     fprintf (stdout,"Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
+   fprintf(stdout, "Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
 
    // tshift in [ns]
    fprintf(stdout,"             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);

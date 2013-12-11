@@ -62,9 +62,6 @@ void end_process(MseMeasInfoX &run)
    // Calculate Statistics
    CalcStatistics();
 
-   // Skip end-of-run analysis routines for deadlayer and calibration modes.
-   //if (!gAsymAnaInfo->DMODE) {
-
    // Energy Yeild Weighted Average Analyzing Power
    //gAnaMeasResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
    gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
@@ -89,7 +86,6 @@ void end_process(MseMeasInfoX &run)
 
    // Draw polarization vs target position
    DrawPlotvsTar();
-   //}
 
    // Run Information
    PrintWarning();
@@ -2534,46 +2530,5 @@ Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
   cout << eplus << " " << eminus << " " << eparab << " " << globcc << " " << error << endl;
 
   return error;
-}
-*/
-
-
-//
-// Class name  : RAMP
-// Method name : CalcRAMP()
-//
-// Description : Not being use.
-// Input       :
-// Return      :
-/*
-void RAMP::CalcRAMP()
-{
-  if (gAsymAnaInfo->RAMPMODE==1) {
-
-    for (int dlm=0;dlm<RAMPTIME;dlm++){
-      // not need for initialization for RUN,RD,LU,LD
-      // they are initialized at bid=0
-      memset(SIU,0,sizeof(SIU));
-      memset(SID,0,sizeof(SID));
-
-      for (bid=0;bid<N_BUNCHES;bid++){
-        for (si=0;si<6;si++){
-          SIU[si] += (NRcounts[si][bid][dlm])
-            *((gSpinPattern[bid]==1)?1:0)*gbid[bid];
-          SID[si] += (NRcounts[si][bid][dlm])
-            *((gSpinPattern[bid]==-1)?1:0)*gbid[bid];
-        }
-      }
-
-      // fill the histograms
-      for (si=0; si<6; si++) {
-        HHF1(21000+si, (float)dlm, SIU[si]);
-        HHF1(21100+si, (float)dlm, SID[si]);
-      }
-
-    }
-  }
-
-  return;
 }
 */

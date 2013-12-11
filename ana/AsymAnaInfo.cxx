@@ -24,16 +24,6 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    eneu              (900),
    widthl            (-30),
    widthu            (3),
-   DMODE             (0),
-   TMODE             (0),
-   BMODE             (1),
-   ZMODE             (0),
-   CBANANA           (2),
-   UPDATE            (0),
-   MMODE             (1),
-   NTMODE            (0),
-   RAMPMODE          (0),
-   STUDYMODE         (0),
    fSaveTrees        (0),
    fDisabledDetectors(0),
    MassSigma         (3),
@@ -297,22 +287,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          extinput.CONFIG = 1;
          break;
 
-      case 'D':
-         DMODE = 1; break;
-      case 'T':
-         TMODE = 1; break;
-      case 'B':
-         BMODE = 1; break;
-      case 'Z':
-         ZMODE = 1; break;
-      case 'U':
-         UPDATE = 1; break;
-      case 'G':
-         MMODE = 1; break;
-      case 'N':
-         NTMODE = 1; break;
       case 'W': // constant width banana cut
-         CBANANA = 1;
          strcpy(cwidth, optarg);
          if ((ptr = strrchr(cwidth,':'))) {
             ptr++;
@@ -331,7 +306,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          break;
 
       case 'm':
-         CBANANA = 2;
          MassSigma = atof(optarg);
          extinput.MASSCUT = 1;
          break;

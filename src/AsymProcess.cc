@@ -96,25 +96,6 @@ void event_process(ChannelEvent &chEvent)
    }
    */
 
-   // DeadLayer Mode
-   //if (gAsymAnaInfo->DMODE) {
-   //   // 2*gConfigInfo->data.chan[st].Window.split.Beg = 6
-   //   // ds: A prelim cut on tdc? 6 ns?
-   //   if (chEvent.tdc > 2*gConfigInfo->data.chan[st].Window.split.Beg) {
-   //  
-   //      float edepo, e, t, delt, Mass;
-   //      KinemaReconstruction(1, chEvent, gConfigInfo, st, edepo, e, t, delt, Mass);
-   //      // Get rid of bunch zero due to laser chEvent after Run09
-   //      if (chEvent.bid) HHF2(15000+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-   //      if (fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigma/sqrt(e))
-   //      {
-   //         HHF2(15100+st+1, edepo, t + gConfigInfo->data.chan[st].t0, 1.);
-   //         if ( e > Emin && e < Emax) Ngood[chEvent.bid]++;
-   //      }
-   //   }
-   //   return;
-   //}
-
    // Nomal Process Mode
    // fill profile histograms at the 1st visit
    /*
@@ -158,22 +139,6 @@ void event_process(ChannelEvent &chEvent)
                 HHF1(13600+strip+1, e, 0.);
             } else {
 
-               if (gAsymAnaInfo->CBANANA == 0){
-                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        -gConfigInfo->data.chan[strip].ETCutW);
-                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +gConfigInfo->data.chan[strip].ETCutW);
-               } else if (gAsymAnaInfo->CBANANA == 1) {
-                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(gAsymAnaInfo->widthl));
-                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        +(float)(gAsymAnaInfo->widthu));
-               } else if (gAsymAnaInfo->CBANANA == 2) {
-                   HHF1(13500+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        + gRunConsts[st+1].M2T*feedback.RMS[strip]*gAsymAnaInfo->MassSigma/sqrt(e)) ;
-                   HHF1(13600+strip+1, e, gRunConsts[st+1].E2T/sqrt(e)
-                        - gRunConsts[st+1].M2T*feedback.RMS[strip]*gAsymAnaInfo->MassSigma/sqrt(e)) ;
-               }
             }
          }
       }
@@ -303,21 +268,6 @@ void event_process(ChannelEvent &chEvent)
    // Time Of Flight
    float t;
 
-   if (gAsymAnaInfo->RAMPMODE == 1) {
-
-      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5)
-          - gConfigInfo->data.chan[st].t0
-          - (ramptshift[(int) chEvent.GetDelimiterId()/20]-ramptshift[0]) - gAsymAnaInfo->tshift;
-
-   } else if (gAsymAnaInfo->ZMODE == 0) {   // normal runs
-
-      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5) - gConfigInfo->data.chan[st].t0
-           - gAsymAnaInfo->tshift - feedback.tedev[st]/sqrt_e;
-   } else  {
-
-      t = gRunConsts[st+1].Ct * (chEvent.tdc + rand1 - 0.5) - gAsymAnaInfo->tshift ;
-   }
-
    //ds
    //printf("%10.3f, %10d, %10d, %10.3f, %10.3f, %10.3f\n", chEvent.GetTime(), chEvent.fChannel.fTdc, chEvent.tdc, t, gAsymAnaInfo->tshift, gRunConsts[st+1].Ct);
 
@@ -340,11 +290,6 @@ void event_process(ChannelEvent &chEvent)
    //   }
    //}
 
-   // for T0 (cable length dependence)
-   //if (gAsymAnaInfo->TMODE == 1 && edepo!=0.){
-   //   HHF2(12100+st+1, (float)(1./sqrt_e), t, 1.);
-   //}
-
    //// Banana Plots (E-T)
    //if (gAsymAnaInfo->BMODE == 1) {
 
@@ -356,15 +301,6 @@ void event_process(ChannelEvent &chEvent)
    //   HHF2(13100+st+1, chEvent.amp, chEvent.tdc, 1.);
    //   HHF2(13200+st+1, chEvent.amp, chEvent.tdcmax, 1.);
    //   HHF1(14000+st+1, chEvent.bid, 1.);
-   //}
-
-   //if (gAsymAnaInfo->RAMPMODE==1) {0
-   //    // total RAMPTIME sec
-   //    // 1sec for each bin, delimiters are 20Hz rate
-   //    int rbin = (int)(chEvent.GetDelimiterId()/20);
-   //    if (e>600 && e<650) {
-   //        HHF1(20000+rbin,t,1.);
-   //    }
    //}
 
    //// integral vs. amplitede
@@ -410,21 +346,6 @@ void event_process(ChannelEvent &chEvent)
    //if (e > Emin && e < Emax) {
    //    HHF1(10020,(float)chEvent.bid,1.);
    //}
-
-   //------------------------------------------------------
-   //                Banana Curve Cut
-   //------------------------------------------------------
-   //if ( ((delt> -1. * gConfigInfo->data.chan[st].ETCutW ) &&
-   //      (delt<  1. * gConfigInfo->data.chan[st].ETCutW ) &&
-   //      (gAsymAnaInfo->CBANANA == 0))
-   //     ||
-   //     ((delt > (float)(gAsymAnaInfo->widthl) ) &&
-   //      (delt < (float)(gAsymAnaInfo->widthu) ) &&
-   //      (gAsymAnaInfo->CBANANA == 1))
-   //     ||
-   //     ((fabs(delt) < gRunConsts[st+1].M2T*feedback.RMS[st]*gAsymAnaInfo->MassSigma/sqrt_e)
-   //       && (gAsymAnaInfo->CBANANA == 2)) // default 
-   //     )
 
    if (chEvent.PassCutCarbonMass())
    {
@@ -553,22 +474,6 @@ void event_process(ChannelEvent &chEvent)
 
          if (phx.bunchpat[chEvent.bid]) cntr.phx.NStrip[spbit][st]++;
          if (str.bunchpat[chEvent.bid]) cntr.str.NStrip[spbit][st]++;
-
-         // Ramp measurements binning
-         // 20 Hz delimiters
-         //if (gAsymAnaInfo->RAMPMODE==1) {
-         //   int rbin = (int)((chEvent.GetDelimiterId())/20.);
-         //   //NRcounts[(int)(st/12)][chEvent.bid][rbin]++;
-
-         //   // Plus Spin 21000+Si
-         //   // Minus Spin 21100+Si
-         //   HHF1(21000+spbit*100+(int)(st/12), rbin, 1.);
-         //}
-
-         // Spin Tune
-         //ds if (gAsymAnaInfo->STUDYMODE == 1) {
-         //ds    HHF1(40000+(int)(st/12), (float)chEvent.bid/2. + (float)chEvent.rev0 * 60., 1.);
-         //ds }
       }
    }
 */

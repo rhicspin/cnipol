@@ -52,17 +52,6 @@ public:
    int              eneu;               // upper kinetic energy threshold (keV)
    int              widthl;             // lower banana cut (ns)
    int              widthu;             // upper banana cut (ns)
-   int              DMODE;              // dead layer study mode 0:off 1:on
-   int              TMODE;              // T0 study mode 0:off 1:on
-   int              BMODE;              // create banana curve (E-T) plots 0:off 1:on
-   int              ZMODE;              // with/out T0 subtraction 0:with 1:without
-   int              CBANANA;            // constant width banana cut :1, <sigma> Mass Cut :2
-   int              UPDATE;             // 1: keep update of the histogram
-   int              MMODE;              // mass mode
-   int              NTMODE;             // if 1 store NTUPLEv
-   int              RECONFMODE;         // if 1 reconfigure from file
-   int              RAMPMODE;           // if 1 prepare the histograms for ramp measurement
-   int              STUDYMODE;          // if 1 study mode
    std::bitset<3>   fSaveTrees;         //! bitmask telling which ROOT trees to save
    std::bitset<N_DETECTORS>   fDisabledDetectors;   //! bitmask with disabled detector indeces
    float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
