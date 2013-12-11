@@ -1,4 +1,3 @@
-
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -14,10 +13,11 @@
 #include "utils/utils.h"
 
 //static const double _TWO_PI= 6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696;
-static const uint   _SPIN_FLIPPER_PERIOD = 33554432; // 2^25
+static const uint _SPIN_FLIPPER_PERIOD = 33554432; // 2^25
 
 using namespace std;
 
+// Define some helper functions
 void   changePhase(TGraphErrors* gr, Double_t phase);
 void   removePoints(TGraphErrors* gr);
 double calcSpinFlipperPhase(uint markerAbsRev, uint markerRelRev, uint spinFlipperTune);
@@ -29,9 +29,11 @@ int main(int argc, char *argv[])
    TDirectory *myDir = gDirectory;
    gROOT->Macro("~/rootmacros/styles/style_masym.C");
 
-   //string spinFlipperFileName("spinflipper_study_1");
+   // Pick the input file
+   string spinFlipperFileName("spinflipper_study_1");
    //string spinFlipperFileName("spinflipper_study_2");
-   string spinFlipperFileName("spinflipper_study_3");
+   //string spinFlipperFileName("spinflipper_study_3");
+
    std::stringstream fullPath("");
    fullPath << "/eic/u/dsmirnov/cnipol_results/" + spinFlipperFileName;
    ifstream fileSpinFlipperCombo(fullPath.str().c_str());
@@ -83,6 +85,7 @@ int main(int argc, char *argv[])
 
       if (!gMM) { Error("spinflipper", "MM not found. Skipping..."); f->Close(); delete f; continue; }
 
+      // Calculate the position of the marker in the data set w.r.t. the first revolution in the data
       const std::vector<UInt_t>& spinFlipperMarkers = gMM->fMeasInfo->GetSpinFlipperMarkers();
       UInt_t spinFlipperMarkerRevId    = spinFlipperMarkers.size() > 0 ? spinFlipperMarkers[0] : 0;
       UInt_t spinFlipperMarkerRelRevId = spinFlipperMarkerRevId - gMM->fMeasInfo->GetFirstRevolution();
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
       cout << "spinFlipperMarkerRelRevId: " << spinFlipperMarkerRelRevId << endl;
 
       double phase = calcSpinFlipperPhase(*iMarkerAbsRev, spinFlipperMarkerRelRevId, spinFlipperTune);
-      //phase = 0;
+      //phase += 0.01;
 
       cout << "phase: " << phase << endl;
 
@@ -149,7 +152,6 @@ int main(int argc, char *argv[])
    hAsymVsOscillPhase_Y45_phys->SetStats(kFALSE);
    hAsymVsOscillPhase_Y45_phys->Draw();
    canvas.SaveAs((string(hAsymVsOscillPhase_Y45_phys->GetName())+".png").c_str());
-
 }
 
 
