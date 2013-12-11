@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rhicspin/cnipol.png)](https://travis-ci.org/rhicspin/cnipol)
+
 Introduction
 ============
 
@@ -161,9 +163,3 @@ For the up-to-date version see https://github.com/rhicspin/cnipol
 		<td>Code for the H-jet polarimeter data analysis</td>
 	</tr>
 </table>
-
-
-Build Status
-============
-
-[![Build Status](https://travis-ci.org/rhicspin/cnipol.png)](https://travis-ci.org/rhicspin/cnipol)
