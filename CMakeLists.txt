@@ -61,7 +61,6 @@ ADD_SUBDIRECTORY(contrib/root-helper)
 SET(
 	CNIPOL_INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}/inc/
-	${CMAKE_CURRENT_SOURCE_DIR}/src/
 	${CMAKE_CURRENT_SOURCE_DIR}/online/include/
 	${ROOT_HELPER_DIR}
 	)
@@ -79,7 +78,11 @@ SET(
 	inc/AlphaCalibrator.h
 	inc/AnaEvent.h
 	inc/AnaEventId.h
+	inc/AnaFillExternResult.h
+	inc/AnaFillResult.h
+	inc/AnaGlobResult.h
 	inc/AnaInfo.h
+	inc/AnaMeasResult.h
 	inc/AsymAnaInfo.h
 	inc/BeamBunch.h
 	inc/CalibCoefSet.h
@@ -108,19 +111,15 @@ SET(
 	inc/EventConfig.h
 	inc/MAlphaAnaInfo.h
 	inc/MAsymFillHists.h
-	inc/MAsymSingleFillHists.h
-	inc/RunQA.h
-	inc/Target.h
 	inc/MAsymPmtHists.h
 	inc/MAsymRateHists.h
 	inc/MAsymRoot.h
 	inc/MAsymRunHists.h
+	inc/MAsymSingleFillHists.h
+	inc/MeasInfo.h
+	inc/RunQA.h
+	inc/Target.h
 	online/include/rpoldata.h
-	src/AnaFillExternResult.h
-	src/AnaFillResult.h
-	src/AnaGlobResult.h
-	src/AnaMeasResult.h
-	src/MeasInfo.h
 	)
 
 ROOT_GENERATE_DICTIONARY(
@@ -132,56 +131,15 @@ ROOT_GENERATE_DICTIONARY(
 ADD_LIBRARY(
 	cnipol
 	SHARED
-	ana/AlphaCalibrator.cxx
-	ana/AnaEvent.cxx
-	ana/AnaEventId.cxx
-	ana/AnaInfo.cxx
-	ana/AsymAnaInfo.cxx
-	ana/BeamBunch.cxx
-	ana/CachingLogReader.cxx
-	ana/Calibrator.cxx
-	ana/ChannelCalib.cxx
-	ana/ChannelData.cxx
-	ana/ChannelEvent.cxx
-	ana/ChannelEventId.cxx
-	ana/CnipolAlphaHists.cxx
-	ana/CnipolAsymHists.cxx
-	ana/CnipolCalibHists.cxx
-	ana/CnipolHists.cxx
-	ana/CnipolKinemaCleanHists.cxx
-	ana/CnipolKinematHists.cxx
-	ana/CnipolPmtHists.cxx
-	ana/CnipolPreprocHists.cxx
-	ana/CnipolProfileHists.cxx
-	ana/CnipolProfileHists.cxx
-	ana/CnipolPulserHists.cxx
-	ana/CnipolRawExtendedHists.cxx
-	ana/CnipolRawHists.cxx
-	ana/CnipolRunHists.cxx
-	ana/CnipolScalerHists.cxx
-	ana/CnipolSpinStudyHists.cxx
-	ana/CnipolTargetHists.cxx
-	ana/DeadLayerCalibrator.cxx
-	ana/DeadLayerCalibratorEDepend.cxx
-	ana/DrawObjContainer.cxx
-	ana/EventConfig.cxx
-	ana/MAlphaAnaInfo.cxx
-	ana/MAsymAnaInfo.cxx
-	ana/MAsymFillHists.cxx
-	ana/MAsymPmtHists.cxx
-	ana/MAsymRateHists.cxx
-	ana/MAsymRoot.cxx
-	ana/MAsymRunHists.cxx
-	ana/MAsymSingleFillHists.cxx
-	ana/RunConfig.cxx
-	ana/RunQA.cxx
-	ana/SshLogReader.cxx
-	ana/Target.cxx
-	ana/TargetUId.cxx
+	src/AlphaCalibrator.cxx
+	src/AnaEvent.cxx
+	src/AnaEventId.cxx
 	src/AnaFillExternResult.cc
 	src/AnaFillResult.cc
 	src/AnaGlobResult.cc
+	src/AnaInfo.cxx
 	src/AnaMeasResult.cc
+	src/AsymAnaInfo.cxx
 	src/AsymCalculator.cc
 	src/AsymCommon.cc
 	src/AsymDb.cc
@@ -193,8 +151,44 @@ ADD_LIBRARY(
 	src/AsymRead.cc
 	src/AsymRecover.cc
 	src/AsymRoot.cc
+	src/BeamBunch.cxx
+	src/CachingLogReader.cxx
+	src/Calibrator.cxx
+	src/ChannelCalib.cxx
+	src/ChannelData.cxx
+	src/ChannelEvent.cxx
+	src/ChannelEventId.cxx
+	src/CnipolAlphaHists.cxx
+	src/CnipolAsymHists.cxx
+	src/CnipolCalibHists.cxx
+	src/CnipolHists.cxx
+	src/CnipolKinemaCleanHists.cxx
+	src/CnipolKinematHists.cxx
+	src/CnipolPmtHists.cxx
+	src/CnipolPreprocHists.cxx
+	src/CnipolProfileHists.cxx
+	src/CnipolProfileHists.cxx
+	src/CnipolPulserHists.cxx
+	src/CnipolRawExtendedHists.cxx
+	src/CnipolRawHists.cxx
+	src/CnipolRunHists.cxx
+	src/CnipolScalerHists.cxx
+	src/CnipolSpinStudyHists.cxx
+	src/CnipolTargetHists.cxx
 	src/DbEntry.cc
+	src/DeadLayerCalibrator.cxx
+	src/DeadLayerCalibratorEDepend.cxx
+	src/DrawObjContainer.cxx
+	src/EventConfig.cxx
 	src/Kinema.cc
+	src/MAlphaAnaInfo.cxx
+	src/MAsymAnaInfo.cxx
+	src/MAsymFillHists.cxx
+	src/MAsymPmtHists.cxx
+	src/MAsymRateHists.cxx
+	src/MAsymRoot.cxx
+	src/MAsymRunHists.cxx
+	src/MAsymSingleFillHists.cxx
 	src/MeasInfo.cc
 	src/MseFillPolar.cc
 	src/MseFillPolarNew.cc
@@ -202,7 +196,12 @@ ADD_LIBRARY(
 	src/MseFillProfileNew.cc
 	src/MseMeasInfo.cc
 	src/MseRunPeriod.cc
+	src/RunConfig.cxx
+	src/RunQA.cxx
+	src/SshLogReader.cxx
+	src/Target.cxx
 	src/TargetInfo.cc
+	src/TargetUId.cxx
 	src/revision-export.cpp
 	Dict.cxx
 	)
