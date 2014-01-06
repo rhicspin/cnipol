@@ -6,7 +6,7 @@ Introduction
 **cnipol** is a software package designed to acquire and analyze data from the
 Relativistic Heavy Ion Collider (RHIC) polarimeters at the Brookhaven National
 Lab (BNL). The first objective is usually referred to as the 'online' part of
-cnipol which is designed to support the data acquisition and the second
+this package which is designed to support the data acquisition and the second
 objective is referred to as the 'offline' data analysis.
 
 There is a wiki page with some details about the RHIC polarimetry:
@@ -35,6 +35,12 @@ The best way to start with the analysis is to clone the latest version of the
 code from the git repository. From the location where the package will be
 installed on your machine issue the following command:
 
+    git clone https://github.com/rhicspin/cnipol.git
+    cd cnipol
+
+If you plan to push changes back to the repository a github account is required.
+The source code in this case can be cloned via ssh protocol:
+
     git clone git@github.com:rhicspin/cnipol.git
     cd cnipol
 
@@ -48,7 +54,7 @@ the latest stable release by issuing the following command:
 
 Alternatively, one can checkout the latest stable release directly by doing:
 
-    git clone -b stable git@github.com:rhicspin/cnipol.git
+    git clone -b stable https://github.com/rhicspin/cnipol.git
     cd cnipol
 
 The analysis framework depends on a few external libraries and programs including
@@ -63,12 +69,13 @@ Before the code can be compiled and executed a number of environment variables
 must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
-configuration. To run this script with an optional argument for the RHIC run
+configuration. This script can be ran with an optional argument for the RHIC run
 number, e.g. `run_id = 9|11|12|13`, execute in the terminal:
 
     source script/setup.sh [run_id]
 
-Once the environment variables are set the cnipol package can be build as:
+Once the environment variables are set the cnipol package can be build in
+$CNIPOL_DIR as:
 
     mkdir build
     cd build
@@ -90,8 +97,8 @@ running the cnipol executables
     $CNIPOL_RESULTS_DIR
 
 `asym` accepts a number of options which can be listed by running it with a `-h`
-option. Here we just give a few most common examples used to process the regular
-and calibration data.
+option. Here we just give a few most common examples used to process regular and
+calibration data.
 
 To analyze a regular data file simply do:
 
@@ -102,7 +109,7 @@ usually `<file_name> = <meas_id>.data`. The program searches for the input
 <file_name> file in $CNIPOL_DATA_DIR and creates an output directory <meas_id>
 in $CNIPOL_RESULTS_DIR. Typically, the output directory contains a ROOT file
 with a predefined set of histograms, a log file (stdoe.log) with the entire
-output of the program, a file in PHP with information about the measurement and
+output of the program, a PHP file with information about the measurement and
 results to display on the web, and a file with calibration results.
 
 To analyze an alpha or pulser measurement use the --alpha option:
@@ -133,9 +140,9 @@ intensity and other beam parameters. Information from these text files will be
 used by `masym` in the summary plots. Information from CDEV can be extracted
 using the following script on the acnlin CAD cluster:
 
-    $CNIPOL_DIR/script/get_fill_info.sh NNNNN
+    $CNIPOL_DIR/script/get_fill_info.sh <NNNNN>
 
-where NNNNN must be replaced with an actual fill number.
+where <NNNNN> must be replaced with an actual fill number.
 
 
 Other software packages for the RHIC polarimetry
