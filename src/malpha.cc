@@ -323,27 +323,32 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          char buf[256];
          if (fitres.Get())
          {
-            sDet += ": (";
-            snprintf(buf, sizeof(buf), "%.2f", fitres->Value(1)*60*60*24*30);
-            sDet += buf;
-            sDet += "\\pm";
-            snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(1)*60*60*24*30);
-            sDet += buf;
-            sDet += ")*t(Months) + (";
+            TString        unit("Unit");
+            if (strstr(name, "hDeadLayerEnergy"))
+            {
+               unit = "keV";
+            }
+            else if (strstr(name, "hDeadLayerSize"))
+            {
+               unit = "\\mu m";
+            }
+            else if (strstr(name, "hAmGain"))
+            {
+               unit = "ADC/keV";
+            }
+            sDet += " fit: p0 = ";
             snprintf(buf, sizeof(buf), "%.2f", fitres->Value(0));
             sDet += buf;
             sDet += "\\pm";
             snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(0));
             sDet += buf;
-            sDet += ")";
-            if (strstr(name, "hDeadLayerEnergy"))
-            {
-               sDet += " keV";
-            }
-            else if (strstr(name, "hDeadLayerSize"))
-            {
-               sDet += " \\mu m";
-            }
+            sDet += " [" + unit + "]; p1 = ";
+            snprintf(buf, sizeof(buf), "%.5f", fitres->Value(1)*60*60*24*30);
+            sDet += buf;
+            sDet += "\\pm";
+            snprintf(buf, sizeof(buf), "%.5f", fitres->FitResult::Error(1)*60*60*24*30);
+            sDet += buf;
+            sDet += " [" + unit + "/Month];";
          }
       }
       g->SetName(sDet);
