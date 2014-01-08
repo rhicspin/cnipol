@@ -204,7 +204,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    title += cut_str;
    TCanvas *c = new TCanvas(canvasName);
    double bm = gStyle->GetPadBottomMargin();
-   TLegend *leg = new TLegend(0.15,bm+0.02,0.85,bm+0.202);
+   TLegend *leg = new TLegend(0.15,bm+0.02,0.90,bm+0.202);
    TH1F  *host, *det_host;
    vector<TH1F*>  det_hosts;
    TString	host_name("_");
