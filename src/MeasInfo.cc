@@ -398,7 +398,6 @@ Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
 UInt_t MeasInfo::GetFillId()
 {
    TObjArray *subStrL = TPRegexp("^(\\d+)\\.\\d{3}(|\\.alpha0)$").MatchS(fRunName);
-   Error("", "%s", fRunName.c_str());
 
    if (subStrL->GetEntriesFast() < 1) {
       Error("GetFillId", "Cannot extract fill Id from run name");
