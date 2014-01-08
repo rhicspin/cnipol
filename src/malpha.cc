@@ -577,6 +577,7 @@ int main(int argc, char *argv[])
       Double_t ssh_endTime  = gMM->fMeasInfo->fStopTime;
 
       if ((gMM->fMeasInfo->RUNID == 70213)
+          || (int(gMM->fMeasInfo->RUNID) == 17400) // this one takes too long to process
           || (gMM->fMeasInfo->GetRunName() == "17514.101.alpha0")
           || (gMM->fMeasInfo->GetRunName() == "17515.101.alpha0")
           || (gMM->fMeasInfo->GetRunName() == "17517.101.alpha0")
