@@ -13,4 +13,4 @@ script:
   - ./asym # dummy run all executables
   - ./malpha # for example checks for dynamic libraries loading
   - ./masym
-  - ./spinflipper
+#  - ./spinflipper
