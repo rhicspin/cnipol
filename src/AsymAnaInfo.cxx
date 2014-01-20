@@ -195,7 +195,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case '?':
       case 'h':
          PrintUsage();
-         exit(EXIT_FAILURE);
+         exit(EXIT_SUCCESS);
 
       case 'l':
          fFileStdLogName = (optarg != 0 ? optarg : "");
