@@ -60,6 +60,12 @@ EXECUTE_PROCESS(
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 ADD_SUBDIRECTORY(contrib/root-helper)
+# Put root-helper.so in the same directory as executables.  Normally CMake
+# would set correct path for us, but we broke this by setting RPATH.
+SET_TARGET_PROPERTIES(
+	root-helper-utils-shared PROPERTIES
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	)
 
 SET(
 	CNIPOL_INCLUDE_DIRECTORIES
