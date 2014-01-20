@@ -11,7 +11,7 @@
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 
-#include "revision-export.hpp"
+#include "revision-export.h"
 
 ClassImp(MeasInfo)
 

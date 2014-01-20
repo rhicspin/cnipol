@@ -10,7 +10,7 @@
 #include "MseMeasInfo.h"
 #include "MeasInfo.h"
 
-#include "revision-export.hpp"
+#include "revision-export.h"
 
 ClassImp(AnaInfo)
 

@@ -143,23 +143,23 @@ ADD_LIBRARY(
 	src/AlphaCalibrator.cxx
 	src/AnaEvent.cxx
 	src/AnaEventId.cxx
-	src/AnaFillExternResult.cc
-	src/AnaFillResult.cc
-	src/AnaGlobResult.cc
+	src/AnaFillExternResult.cxx
+	src/AnaFillResult.cxx
+	src/AnaGlobResult.cxx
 	src/AnaInfo.cxx
-	src/AnaMeasResult.cc
+	src/AnaMeasResult.cxx
 	src/AsymAnaInfo.cxx
-	src/AsymCalculator.cc
-	src/AsymCommon.cc
-	src/AsymDb.cc
-	src/AsymDbFile.cc
-	src/AsymDbSql.cc
-	src/AsymErrorDetector.cc
-	src/AsymOnline.cc
-	src/AsymProcess.cc
-	src/AsymRead.cc
-	src/AsymRecover.cc
-	src/AsymRoot.cc
+	src/AsymCalculator.cxx
+	src/AsymCommon.cxx
+	src/AsymDb.cxx
+	src/AsymDbFile.cxx
+	src/AsymDbSql.cxx
+	src/AsymErrorDetector.cxx
+	src/AsymOnline.cxx
+	src/AsymProcess.cxx
+	src/AsymRead.cxx
+	src/AsymRecover.cxx
+	src/AsymRoot.cxx
 	src/BeamBunch.cxx
 	src/CachingLogReader.cxx
 	src/Calibrator.cxx
@@ -184,12 +184,12 @@ ADD_LIBRARY(
 	src/CnipolScalerHists.cxx
 	src/CnipolSpinStudyHists.cxx
 	src/CnipolTargetHists.cxx
-	src/DbEntry.cc
+	src/DbEntry.cxx
 	src/DeadLayerCalibrator.cxx
 	src/DeadLayerCalibratorEDepend.cxx
 	src/DrawObjContainer.cxx
 	src/EventConfig.cxx
-	src/Kinema.cc
+	src/Kinema.cxx
 	src/MAlphaAnaInfo.cxx
 	src/MAsymAnaInfo.cxx
 	src/MAsymFillHists.cxx
@@ -198,20 +198,20 @@ ADD_LIBRARY(
 	src/MAsymRoot.cxx
 	src/MAsymRunHists.cxx
 	src/MAsymSingleFillHists.cxx
-	src/MeasInfo.cc
-	src/MseFillPolar.cc
-	src/MseFillPolarNew.cc
-	src/MseFillProfile.cc
-	src/MseFillProfileNew.cc
-	src/MseMeasInfo.cc
-	src/MseRunPeriod.cc
+	src/MeasInfo.cxx
+	src/MseFillPolar.cxx
+	src/MseFillPolarNew.cxx
+	src/MseFillProfile.cxx
+	src/MseFillProfileNew.cxx
+	src/MseMeasInfo.cxx
+	src/MseRunPeriod.cxx
 	src/RunConfig.cxx
 	src/RunQA.cxx
 	src/SshLogReader.cxx
 	src/Target.cxx
-	src/TargetInfo.cc
+	src/TargetInfo.cxx
 	src/TargetUId.cxx
-	src/revision-export.cpp
+	src/revision-export.cxx
 	Dict.cxx
 	)
 
@@ -226,7 +226,7 @@ TARGET_LINK_LIBRARIES(
 
 ADD_EXECUTABLE(
 	malpha
-	src/malpha.cc
+	src/malpha.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
@@ -236,7 +236,7 @@ TARGET_LINK_LIBRARIES(
 
 ADD_EXECUTABLE(
 	asym
-	src/asym.cc
+	src/asym.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
@@ -246,7 +246,7 @@ TARGET_LINK_LIBRARIES(
 
 ADD_EXECUTABLE(
 	masym
-	src/masym.cc
+	src/masym.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
@@ -256,7 +256,7 @@ TARGET_LINK_LIBRARIES(
 
 ADD_EXECUTABLE(
 	spinflipper
-	src/spinflipper.cc
+	src/spinflipper.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
@@ -279,7 +279,7 @@ ENDIF()
 ADD_DEPENDENCIES(cnipol revision_id)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 ADD_CUSTOM_TARGET(revision_id
-        ${PROJECT_SOURCE_DIR}/get_revision_id.sh ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/revision-id.hpp
+        ${PROJECT_SOURCE_DIR}/get_revision_id.sh ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/revision-id.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM
         )
