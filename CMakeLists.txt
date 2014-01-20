@@ -9,9 +9,9 @@
 #
 
 #
-# Due to this bug https://bugzilla.redhat.com/show_bug.cgi?id=493929
-# Releas build type (i.e. optimizatiations) won't work unless you use
-# newer version of gcc:
+# Due to the bug https://bugzilla.redhat.com/show_bug.cgi?id=493929 which
+# appear on EIC cluster, release build type (i.e. optimizatiations) won't work
+# unless you use newer version of gcc:
 #
 # export PATH=/afs/rhic.bnl.gov/rcassoft/x8664_sl5/gcc471/bin:$PATH
 # export LD_RUN_PATH=/afs/rhic.bnl.gov/rcassoft/x8664_sl5/gcc471/lib:$LD_RUN_PATH
@@ -32,6 +32,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 PROJECT(CNIPOL)
 
 # Make CMake obey LD_RUN_PATH environment variable
+# The idea behind this was to make it always use the same version of stdlibc++
+# as was used during compilation. More preciesely the point was to not use
+# old buggy stdlib used on SL5.3 EIC cluster.
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_PATH}:${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_RUN_PATH}:$ENV{LD_LIBRARY_PATH}")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
