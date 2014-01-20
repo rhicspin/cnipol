@@ -10,7 +10,7 @@ before_script:
   - cmake .. -DFORCE_32BIT=OFF
 script:
   - make
-  - ./asym # dummy run all executables
+  - ./asym -h # dummy run all executables
   - ./malpha # for example checks for dynamic libraries loading
   - ./masym
 #  - ./spinflipper
