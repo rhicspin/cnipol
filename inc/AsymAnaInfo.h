@@ -111,7 +111,7 @@ public:
    Bool_t      HasOnlineBit() const;
    Bool_t      HasNoSshBit() const;
 
-   ClassDef(AsymAnaInfo, 3)
+   ClassDef(AsymAnaInfo, 4)
 };
 
 #endif
