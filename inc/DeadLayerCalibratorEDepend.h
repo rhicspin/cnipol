@@ -24,10 +24,13 @@
 /** */
 class DeadLayerCalibratorEDepend : public DeadLayerCalibrator
 {
+private:
+
+   void         CalibrateChannel(UShort_t chId, TH1 *h, TH1 *hMeanTime, TObjArray* fitResultHists=0, Bool_t wideLimits=false);
+
 public:
 
    virtual void Calibrate(DrawObjContainer *c);
-   void         CalibrateChannel(UShort_t chId, TH1 *h, TH1 *hMeanTime, TObjArray* fitResultHists=0, Bool_t wideLimits=false);
    void         PostCalibrate();
    void         Print(const Option_t* opt="") const;
 
