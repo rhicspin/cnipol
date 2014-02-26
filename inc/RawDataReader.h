@@ -30,7 +30,6 @@ public:
    UInt_t         fMemSize;
    std::ifstream  fFileStream;
 
-   RawDataReader();
    RawDataReader(std::string fname);
    ~RawDataReader();
 

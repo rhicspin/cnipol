@@ -18,16 +18,6 @@ using namespace std;
 
 
 /** */
-RawDataReader::RawDataReader() : fFileName(""), fFile(0), fMem(0),
-   fFileStream(), fSeenRecords()
-{
-   fclose(fFile);
-   delete[] fMem; // why is it here?
-   fFileStream.close();
-}
-
-
-/** */
 RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
    fMem(0),
    fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
