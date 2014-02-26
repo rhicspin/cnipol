@@ -22,7 +22,7 @@ const char* AsymDbFile::sFieldNames[] =
 {
 	"RESET_ALL", "POLARIMETER_ID", "POLARIZATION",
    "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
-   "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
+   "INJ_TSHIFT", "ENERGY_CALIB",
    "ALPHA_CALIB_RUN_NAME", "CONFIG", "DEFINE_SPIN_PATTERN",
    "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
    "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",
@@ -443,7 +443,6 @@ void readdb(double RUNID)
                if (str.find("CONFIG")                == 1) gRunDb.config_file_s         = GetVariables(str);
                if (str.find("MASSCUT")               == 1) gRunDb.masscut_s             = GetVariables(str);
                if (str.find("TSHIFT")                == 1) gRunDb.tshift_s              = GetVariables(str);
-               if (str.find("DL_CALIB_RUN_NAME=")    == 1) gRunDb.dl_calib_run_name     = GetVariables(str);
                if (str.find("ALPHA_CALIB_RUN_NAME=") == 1) gRunDb.alpha_calib_run_name  = GetVariables(str);
                if (str.find("ENERGY_CALIB=")         == 1) gRunDb.calib_file_s          = GetVariables(str);
                if (str.find("INJ_TSHIFT")            == 1) gRunDb.inj_tshift_s          = GetVariables(str);

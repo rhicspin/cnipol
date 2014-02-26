@@ -18,7 +18,7 @@ using namespace std;
 /** */
 AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fRunName          (""),
-   fAsymModes        (MODE_NORMAL|MODE_CALIB|MODE_PROFILE|MODE_TARGET|MODE_RAW_EXTENDED|MODE_ASYM|MODE_PMT|MODE_KINEMA),
+   fAsymModes        (MODE_NORMAL|MODE_PROFILE|MODE_TARGET|MODE_RAW_EXTENDED|MODE_ASYM|MODE_PMT|MODE_KINEMA),
    enel              (400),
    eneu              (900),
    widthl            (-30),
@@ -37,7 +37,6 @@ AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    reference_rate    (1),
    target_count_mm   (1),   // Need to get the real value
    fAlphaCalibRun(""),
-   fDlCalibRun(""),
    fFileRunConf(0),
    fAcDipolePeriod(0)
 {
@@ -61,13 +60,8 @@ string AsymAnaInfo::GetRunConfFileName()  const { return GetOutDir() + "/config_
 FILE*  AsymAnaInfo::GetRunConfFile()      const { return fFileRunConf; }
 
 string AsymAnaInfo::GetAlphaCalibRun()    const { return fAlphaCalibRun + GetSuffix(); }
-string AsymAnaInfo::GetDlCalibRun()       const { return fDlCalibRun; }
 
-Bool_t AsymAnaInfo::HasAlphaBit() const  {
-   return (fAsymModes & (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB))  == (AsymAnaInfo::MODE_ALPHA^AsymAnaInfo::MODE_CALIB);
-}
-
-Bool_t AsymAnaInfo::HasCalibBit()       const { return (fAsymModes & AsymAnaInfo::MODE_CALIB)        == AsymAnaInfo::MODE_CALIB; }
+Bool_t AsymAnaInfo::HasAlphaBit()       const { return (fAsymModes & AsymAnaInfo::MODE_ALPHA)        == AsymAnaInfo::MODE_ALPHA; }
 Bool_t AsymAnaInfo::HasNormalBit()      const { return (fAsymModes & AsymAnaInfo::MODE_NORMAL)       == AsymAnaInfo::MODE_NORMAL; }
 Bool_t AsymAnaInfo::HasScalerBit()      const { return (fAsymModes & AsymAnaInfo::MODE_SCALER)       == AsymAnaInfo::MODE_SCALER; }
 Bool_t AsymAnaInfo::HasRawBit()         const { return (fAsymModes & AsymAnaInfo::MODE_RAW)          == AsymAnaInfo::MODE_RAW; }
@@ -94,21 +88,6 @@ string AsymAnaInfo::GetAlphaCalibFile() const
 
    string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
    path += "/" + fAlphaCalibRun + "/" + GetAlphaCalibRun() + ".root";
-   return path;
-}
-
-
-/** */
-string AsymAnaInfo::GetDlCalibFile() const
-{
-   if (fDlCalibRun.empty()) {
-      Warning("GetDlCalibFile", "Dead layer calibration run not defined");
-      return "";
-   }
-
-   string path = fAsymEnv.find("CNIPOL_RESULTS_DIR")->second;
-   path += "/" + fDlCalibRun + "/" + fDlCalibRun + ".root";
-
    return path;
 }
 
@@ -147,7 +126,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"run-name",            required_argument,   0,   'r'},
       {"pol-id",              required_argument,   0,   AsymAnaInfo::OPTION_POL_ID},
       {"alpha",               no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
-      {"calib",               no_argument,         0,   AsymAnaInfo::MODE_CALIB},
       {"scaler",              no_argument,         0,   AsymAnaInfo::MODE_SCALER},
       {"raw",                 no_argument,         0,   AsymAnaInfo::MODE_RAW},
       {"raw-ext",             no_argument,         0,   AsymAnaInfo::MODE_RAW_EXTENDED},
@@ -161,7 +139,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"online",              no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
       {"no-ssh",              no_argument,         0,   AsymAnaInfo::MODE_NO_SSH},
       {"mode-alpha",          no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
-      {"mode-calib",          no_argument,         0,   AsymAnaInfo::MODE_CALIB},
       {"mode-normal",         no_argument,         0,   AsymAnaInfo::MODE_NORMAL},
       {"mode-no-normal",      no_argument,         0,   AsymAnaInfo::MODE_NO_NORMAL},
       {"mode-scaler",         no_argument,         0,   AsymAnaInfo::MODE_SCALER},
@@ -175,9 +152,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"mode-pmt",            no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"mode-online",         no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
       {"mode-full",           no_argument,         0,   AsymAnaInfo::MODE_FULL},
-      {"set-calib",           required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB},
       {"set-calib-alpha",     required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_ALPHA},
-      {"set-calib-dl",        required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_DL},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
       {"ac-dipole-period",    required_argument,   0,   AsymAnaInfo::OPTION_AC_DIPOLE_PERIOD},
@@ -315,15 +290,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          fAlphaCalibRun = optarg;
          break;
 
-      case AsymAnaInfo::OPTION_SET_CALIB_DL:
-         fDlCalibRun = optarg;
-         break;
-
-      case AsymAnaInfo::OPTION_SET_CALIB:
-         fAlphaCalibRun = optarg;
-         fDlCalibRun    = optarg;
-         break;
-
       case AsymAnaInfo::OPTION_DET_DISABLE:
          sstr.str("");
          sstr << optarg;
@@ -351,10 +317,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case AsymAnaInfo::MODE_ALPHA:
          fAsymModes |= AsymAnaInfo::MODE_ALPHA;
          fAsymModes &= ~AsymAnaInfo::MODE_NORMAL; // turn off normal mode
-         break;
-
-      case AsymAnaInfo::MODE_CALIB:
-         fAsymModes |= AsymAnaInfo::MODE_CALIB;
          break;
 
       case AsymAnaInfo::MODE_NO_NORMAL:
@@ -452,7 +414,6 @@ void AsymAnaInfo::VerifyOptions()
 
    if (HasAlphaBit()) {
       fAlphaCalibRun     = fRunName;
-      fDlCalibRun        = "";
       gMeasInfo->SetMeasType(kMEASTYPE_ALPHA);
    }
 
@@ -492,7 +453,6 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fThinout']                     = %f;\n",      fThinout);
    fprintf(f, "$rc['fMaxEventsUser']               = %u;\n",      fMaxEventsUser);
    fprintf(f, "$rc['fAlphaCalibRun']               = \"%s\";\n",  GetAlphaCalibRun().c_str());
-   fprintf(f, "$rc['fDlCalibRun']                  = \"%s\";\n",  fDlCalibRun.c_str());
    fprintf(f, "$rc['fAlphaSourceCount']            = %i;\n",      fAlphaSourceCount);
    fprintf(f, "$rc['fAcDipolePeriod']              = %i;\n",      fAcDipolePeriod);
    fprintf(f, "\n");
@@ -561,9 +521,7 @@ void AsymAnaInfo::Update(MseMeasInfoX& run)
    // method
    if (HasAlphaBit()) {
       fAlphaCalibRun           = "";
-      fDlCalibRun              = "";
       run.alpha_calib_run_name = "";
-      run.dl_calib_run_name    = "";
 
       // If user set the alpha option override the measurement type extracted
       // from the data file
@@ -583,24 +541,4 @@ void AsymAnaInfo::Update(MseMeasInfoX& run)
       }
    } else
       Info("Update", "Using alpha calibration run %s", fAlphaCalibRun.c_str());
-
-
-   // Set DL calib files
-   if (HasCalibBit()) {
-      fDlCalibRun           = "";
-      run.dl_calib_run_name = "";
-   }
-
-   if (!fDlCalibRun.empty())
-      run.dl_calib_run_name = fDlCalibRun;
-   else if (!run.dl_calib_run_name.empty())
-      fDlCalibRun = run.dl_calib_run_name;
-
-   if (fDlCalibRun.empty()) {
-      if (!HasCalibBit()) {
-         Warning("Update", "Calibration run is not specified.\n\tOption --calib should be used");
-      }
-   } else {
-      Info("Update", "Using calibration run %s", run.dl_calib_run_name.c_str());
-   }
 }

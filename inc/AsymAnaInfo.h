@@ -25,8 +25,7 @@ class AsymAnaInfo : public AnaInfo
 public:
 
    // Various histogramming and running modes
-   enum Mode {MODE_ALPHA             = 0x01011000,
-              MODE_CALIB             = 0x01000000,
+   enum Mode {MODE_ALPHA             = 0x00011000,
               MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
               MODE_SCALER            = 0x00040000,
               MODE_RAW               = 0x00080000,
@@ -67,7 +66,6 @@ public:
    float            reference_rate;     // Expected universal rate for given target
    float            target_count_mm;    // Target count/mm conversion
    std::string      fAlphaCalibRun;     // Name of alpha calib run
-   std::string      fDlCalibRun;        // Name of dead layer calib run
    FILE            *fFileRunConf;       //!
    uint32_t         fAcDipolePeriod;    //! AC dipole magnet period in revolutions
 
@@ -83,7 +81,6 @@ public:
    std::string GetRunConfFileName() const;
    FILE*       GetRunConfFile() const;
    std::string GetAlphaCalibFile() const;
-   std::string GetDlCalibFile() const;
    std::string GetRootTreeFileName(UShort_t trid) const;
    void        ProcessOptions(int argc, char **argv);
    void        VerifyOptions();
@@ -93,9 +90,7 @@ public:
    void        Update(MseMeasInfoX& run);
 
    std::string GetAlphaCalibRun() const;
-   std::string GetDlCalibRun() const;
    Bool_t      HasAlphaBit() const;
-   Bool_t      HasCalibBit() const;
    Bool_t      HasNormalBit() const;
    Bool_t      HasScalerBit() const;
    Bool_t      HasRawBit() const;
@@ -111,7 +106,7 @@ public:
    Bool_t      HasOnlineBit() const;
    Bool_t      HasNoSshBit() const;
 
-   ClassDef(AsymAnaInfo, 4)
+   ClassDef(AsymAnaInfo, 5)
 };
 
 #endif

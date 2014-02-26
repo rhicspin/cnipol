@@ -42,7 +42,6 @@ void MseMeasInfoX::Init()
    target_id            = -1;
    asym_version         = "";
    alpha_calib_run_name = "";
-   dl_calib_run_name    = "";
    measurement_type     = -1;
    disabled_channels    = "";
    disabled_bunches     = "";
@@ -79,7 +78,6 @@ void MseMeasInfoX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['target_id']                      = %d;\n", target_id         );
    fprintf(f, "$rc['asym_version']                   = \"%s\";\n", asym_version.c_str()      );
    fprintf(f, "$rc['alpha_calib_run_name']           = \"%s\";\n", string(alpha_calib_run_name).c_str());
-   fprintf(f, "$rc['dl_calib_run_name']              = \"%s\";\n", dl_calib_run_name.data() );
    fprintf(f, "$rc['measurement_type']               = %d;\n", measurement_type  );
    fprintf(f, "$rc['disabled_channels']              = \"%s\";\n", disabled_channels.c_str() );
    fprintf(f, "$rc['disabled_bunches']               = \"%s\";\n", disabled_bunches.c_str()  );

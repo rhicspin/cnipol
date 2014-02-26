@@ -161,7 +161,6 @@ public:
    Bool_t          IsStarRotatorOn() const;
    EMeasType       GetMeasType() const;
    std::string     GetAlphaCalibFileName() const;
-   std::string     GetDlCalibFileName() const;
    void            SetBeamEnergy(Float_t beamEnergy);
    void            SetMachineParams(const RecordMachineParams &rec);
    void            SetTargetParams(const RecordTargetParams &rec);

@@ -87,7 +87,6 @@ Short_t     MeasInfo::GetExpectedGlobalTdcOffset()  const { return fExpectedGlob
 Bool_t      MeasInfo::IsStarRotatorOn()             const { cout << "fStarRotatorCurrents: " << fMachineParams.fStarRotatorCurrents[1] << endl; return fMachineParams.fStarRotatorCurrents[GetRingId()-1] > 10 ? kTRUE : kFALSE; }
 EMeasType   MeasInfo::GetMeasType()                 const { return fMeasType; } 
 string      MeasInfo::GetAlphaCalibFileName()       const { return ""; }
-string      MeasInfo::GetDlCalibFileName()          const { return ""; }
 
 
 /** */

@@ -163,10 +163,8 @@ void AsymRoot::CreateRootFile(string filename)
       fHistCuts[kCUT_PASSONE].insert(oc);
    }
 
-   if (gAsymAnaInfo->HasCalibBit() && !gAsymAnaInfo->HasAlphaBit()) {
-      dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
-      fHists->d["calib"] = new CnipolCalibHists(dir);
-   }
+   dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);
+   fHists->d["calib"] = new CnipolCalibHists(dir);
 
    if (gAsymAnaInfo->HasNormalBit()) {
       dir = new TDirectoryFile("std", "std", "", fOutRootFile);
@@ -343,27 +341,7 @@ void AsymRoot::UpdateRunConfig()
 {
    AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
-   // if not calib
-   if ( !anaInfo->HasCalibBit() ) {
-
-      string fname = anaInfo->GetDlCalibFile();
-      Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from file %s", fname.c_str());
-      TFile *f = TFile::Open(fname.c_str());
-      fEventConfig = (EventConfig*) f->FindObjectAny("measConfig");
-      //delete f;
-
-      if (!fEventConfig) {
-         Error("AsymRoot::UpdateRunConfig", "No MeasConfig object found in file %s", fname.c_str());
-         return;
-      }
-
-      // Update the pointer to MeasConfig object in the event
-      delete fChannelEvent->fEventConfig;
-      fChannelEvent->fEventConfig = fEventConfig;
-
-   // else if not alpha mode what am I trying to do here?
-   // else if ( !(anaInfo->fModes & (AnaInfo::MODE_ALPHA^AnaInfo::MODE_CALIB)) )
-   } else if ( !anaInfo->HasAlphaBit() && anaInfo->HasNormalBit()) {
+   if (!anaInfo->HasAlphaBit() && anaInfo->HasNormalBit()) {
    // else if ( anaInfo->HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
@@ -697,13 +675,8 @@ void AsymRoot::UpdateCalibrator()
 {
    AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
-   if ( anaInfo->HasAlphaBit() && !anaInfo->HasCalibBit() ) {
-
-      Error("AsymRoot::UpdateCalibrator", "Alpha runs must be (self) calibrated to produce reasonable results");
-      return;
-   }
-   else if ( anaInfo->HasAlphaBit() && anaInfo->HasCalibBit() ) {
-
+   if (anaInfo->HasAlphaBit())
+   {
       Info("AsymRoot::UpdateCalibrator", "Setting AlphaCalibrator");
 
       // Existing calibrator will be replaced so, delete the existing one first
@@ -711,50 +684,15 @@ void AsymRoot::UpdateCalibrator()
       // and assign a new calibrator
       fEventConfig->fCalibrator = new AlphaCalibrator();
    }
-   else if ( anaInfo->HasNormalBit() ) { // regular data runs
+   else if (anaInfo->HasNormalBit())
+   {
+      Info("AsymRoot::UpdateCalibrator", "Setting DeadLayerCalibrator");
 
-      if ( anaInfo->HasCalibBit() ) { // create new calibrator
-
-         Info("AsymRoot::UpdateCalibrator", "Setting DeadLayerCalibrator");
-
-         // Existing calibrator will be replaced so, delete it first
-         delete fEventConfig->fCalibrator;
-         // and finally, assign the new calibrator
-         fEventConfig->fCalibrator =  new DeadLayerCalibratorEDepend();
-         //fEventConfig->fCalibrator = new DeadLayerCalibrator();
-
-      } else { // use calibration consts from a DL file
-
-         string fname = anaInfo->GetDlCalibFile();
-
-         if (fname.empty()) {
-            Fatal("UpdateCalibrator", "Dead layer calibration file not specified. Use --calib option");
-         }
-
-         Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from file %s", fname.c_str());
-         TFile *f = TFile::Open(fname.c_str());
-
-         if (!f) {
-            Fatal("UpdateCalibrator", "File not found: %s", fname.c_str());
-         }
-
-         EventConfig* eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
-
-         if (!eventConfig) {
-            Error("AsymRoot::UpdateCalibrator", "No MeasConfig object found in file %s", fname.c_str());
-            return;
-         }
-
-         // Update the pointer to MeasConfig object in the event
-         //delete fChannelEvent->fEventConfig;
-         //fChannelEvent->fEventConfig = fEventConfig;
-
-         // Copy all calibration consts from the file to the current one
-         fEventConfig->fCalibrator->fChannelCalibs = eventConfig->fCalibrator->fChannelCalibs;
-
-         delete eventConfig;
-         delete f;
-      }
+      // Existing calibrator will be replaced so, delete it first
+      delete fEventConfig->fCalibrator;
+      // and finally, assign the new calibrator
+      fEventConfig->fCalibrator =  new DeadLayerCalibratorEDepend();
+      //fEventConfig->fCalibrator = new DeadLayerCalibrator();
 
       // Now overwrite alpha calibration constants from an alpha calib file
       string fnameAlpha = anaInfo->GetAlphaCalibFile();

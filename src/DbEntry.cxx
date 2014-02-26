@@ -183,7 +183,6 @@ void DbEntry::Streamer(TBuffer &buf)
       buf >> RunID;
       buf >> isCalibRun;
       buf >> tstr; calib_file_s         = tstr.Data();
-      buf >> tstr; dl_calib_run_name    = tstr.Data();
       buf >> tstr; alpha_calib_run_name = tstr.Data();
       buf >> tstr; config_file_s        = tstr.Data();
    } else {
@@ -192,7 +191,6 @@ void DbEntry::Streamer(TBuffer &buf)
       buf << RunID;
       buf << isCalibRun;
       tstr = calib_file_s;         buf << tstr;
-      tstr = dl_calib_run_name;    buf << tstr;
       tstr = alpha_calib_run_name; buf << tstr;
       tstr = config_file_s;        buf << tstr;
    }
@@ -319,7 +317,6 @@ void DbEntry::SetAsymVersion(std::string version)
 void DbEntry::PrintAsPhp(FILE *f) const
 {
    //fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
-   //fprintf(f, "$rc['dl_calib_run_name']            = \"%s\";\n", dl_calib_run_name.c_str());
    //fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
    //fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
 

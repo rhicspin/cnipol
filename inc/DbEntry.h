@@ -28,7 +28,6 @@ public:
    std::string dateTime;
    Bool_t      isCalibRun;
    std::string calib_file_s;
-   std::string dl_calib_run_name;
    std::string alpha_calib_run_name;
    std::string config_file_s;
    std::string masscut_s;

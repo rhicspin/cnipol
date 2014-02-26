@@ -25,7 +25,6 @@ void MseRunPeriodX::Init()
    polarimeter_id       = -1;
    alpha_calib_run_name = "";
    alpha_source_count   = 0;
-   dl_calib_run_name    = "";
    disabled_channels    = "";
    disabled_bunches     = "";
    cut_proto_slope      = -0.25;
@@ -57,7 +56,6 @@ void MseRunPeriodX::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['polarimeter_id']                 = %d;\n", (short) polarimeter_id);
    fprintf(f, "$rc['alpha_calib_run_name']           = \"%s\";\n", string(alpha_calib_run_name).c_str());
    fprintf(f, "$rc['alpha_source_count']             = %d;\n",     (unsigned char) alpha_source_count);
-   fprintf(f, "$rc['dl_calib_run_name']              = \"%s\";\n", dl_calib_run_name.data());
    fprintf(f, "$rc['disabled_channels']              = \"%s\";\n", disabled_channels.c_str());
    fprintf(f, "$rc['disabled_bunches']               = \"%s\";\n", disabled_bunches.c_str());
    fprintf(f, "$rc['cut_proto_slope']                = %f;\n", cut_proto_slope);

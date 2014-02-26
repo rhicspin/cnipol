@@ -329,15 +329,12 @@ void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
       //cout << setw(10) << irun->beam_energy;
       //cout << endl;
 
-      if ( !run.alpha_calib_run_name.empty() && !run.dl_calib_run_name.empty() &&
+      if ( !run.alpha_calib_run_name.empty() &&
            !run.disabled_channels.empty()    && !run.disabled_bunches.empty() )
          break;
 
       if (run.alpha_calib_run_name.empty() && !irun->alpha_calib_run_name.empty())
          run.alpha_calib_run_name = irun->alpha_calib_run_name;
-
-      if (run.dl_calib_run_name.empty() && !irun->dl_calib_run_name.empty())
-         run.dl_calib_run_name = irun->dl_calib_run_name;
 
       if (run.disabled_channels.empty() && !irun->disabled_channels.empty())
          run.disabled_channels = irun->disabled_channels;
@@ -364,7 +361,6 @@ MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
    }
 
    run.alpha_calib_run_name = runPeriod->alpha_calib_run_name;
-   run.dl_calib_run_name    = runPeriod->dl_calib_run_name;
    run.disabled_channels    = runPeriod->disabled_channels;
    run.disabled_bunches     = runPeriod->disabled_bunches;
 

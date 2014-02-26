@@ -5,7 +5,7 @@ class DbEntry {
    var $runId = 0;
    var $fieldNames = array(
       "RESET_ALL", "POLARIMETER_ID", "POLARIZATION", "MEASUREMENT_TYPE", "MASSCUT", "TSHIFT",
-      "INJ_TSHIFT", "ENERGY_CALIB", "DL_CALIB_RUN_NAME",
+      "INJ_TSHIFT", "ENERGY_CALIB",
       "ALPHA_CALIB_RUN_NAME", "CONFIG", "DEFINE_SPIN_PATTERN",
       "DEFINE_FILL_PATTERN", "REFERENCE_RATE", "TARGET_COUNT_MM", "COMMENT",
       "DISABLED_BUNCHES", "EnableBunch", "DISABLED_CHANNELS", "EnableStrip", "DisabledBunches", "DisabledStrips",

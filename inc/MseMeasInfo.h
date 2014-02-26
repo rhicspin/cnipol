@@ -13,7 +13,7 @@
 #include "TObject.h"
 
 // Call macro to automatically build an SQL class
-sql_create_23(MseMeasInfo, 1, 5,
+sql_create_22(MseMeasInfo, 1, 5,
    mysqlpp::sql_varchar,           run_name,
    mysqlpp::sql_smallint,          polarimeter_id,
    mysqlpp::sql_datetime,          start_time,
@@ -31,7 +31,6 @@ sql_create_23(MseMeasInfo, 1, 5,
    mysqlpp::sql_smallint,          target_id,
    mysqlpp::sql_varchar,           asym_version,
    mysqlpp::sql_varchar,           alpha_calib_run_name,
-   mysqlpp::sql_varchar,           dl_calib_run_name,
    mysqlpp::sql_smallint,          measurement_type,
    mysqlpp::sql_varchar,           disabled_channels,
    mysqlpp::sql_varchar,           disabled_bunches,

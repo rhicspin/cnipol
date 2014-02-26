@@ -159,17 +159,15 @@ int main(int argc, char *argv[])
       gAsymRoot->CreateTrees();
    }
 
-   // If requested update for data (not alpha) calibration constants we need to
+   // We need to
    // quickly do some pre-processing to extract parameters from the data.
    // For example, rough estimates of the dead layer and t0 are needed
    // to set preliminary cuts.
 
-   if ( gAsymAnaInfo->HasCalibBit() ) {
-      rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
-      gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
-		gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
-      gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
-   }
+   rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
+   gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
+   gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
+   gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
 
    // For debugging
    //gAsymRoot->fEventConfig->fCalibrator->Print();
