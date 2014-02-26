@@ -48,7 +48,7 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
       TObjArray fitResultHists;
 
       // Single histogram calibration is done here
-      Calibrate(hTimeVsE, hMeanTime, *iCh, &fitResultHists); // extract also fitResultHists
+      CalibrateChannel(*iCh, hTimeVsE, hMeanTime, &fitResultHists); // extract also fitResultHists
 
       TH1* hChi2Ndf_tmp    = (TH1*) fitResultHists.At(3);
       TH1* hChi2NdfLog_tmp = (TH1*) fitResultHists.At(4);
@@ -201,7 +201,7 @@ void DeadLayerCalibratorEDepend::PostCalibrate()
 
 
 /** */
-void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort_t chId, TObjArray* fitResultHists, Bool_t wideLimits)
+void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, TH1 *hMeanTime, TObjArray* fitResultHists, Bool_t wideLimits)
 {
    ChannelCalib *chCalib;
 
