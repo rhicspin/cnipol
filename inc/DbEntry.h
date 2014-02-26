@@ -51,26 +51,16 @@ public:
 public:
 
    DbEntry();
-   ~DbEntry();
 
-   //bool operator()(const DbEntry &rec1, const DbEntry &rec2) const;
    bool operator<(const DbEntry &rhs) const;
    bool operator==(const DbEntry &rhs) const;
-   void Streamer(TBuffer &buf);
    void Print(const Option_t* opt="") const;
    void PrintAsPhp(FILE *f=stdout) const;
-   //void PrintAsDbEntry(FILE *f=stdout) const;
    void PrintAsDbEntry(std::ostream &o=std::cout, Bool_t printCommonFields=false) const;
    void ProcessLine(std::string sline);
    void UpdateFields(DbEntry &dbrun);
    void UpdateValues();
    void SetAsymVersion(std::string version);
 };
-
-TBuffer & operator<<(TBuffer &buf, DbEntry *&rec);
-TBuffer & operator>>(TBuffer &buf, DbEntry *&rec);
-
-//struct DbEntryCompare {
-//}
 
 #endif

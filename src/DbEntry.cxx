@@ -44,35 +44,6 @@ DbEntry::DbEntry() : fPolId(UCHAR_MAX), timeStamp(0), fFields(), fFieldFlags()
 }
 
 
-/** */
-DbEntry::~DbEntry()
-{
-   //printf("dest \n");
-   fFields.clear();
-   fFieldFlags.clear();
-}
-
-
-/** */
-/*
-void DbEntry::PrintAsDbEntry(FILE *f) const
-{
-   fprintf(f, "\n[%s]\n", fRunName.c_str());
-
-   DbFieldMap::const_iterator ifld;
-   DbFieldMap::const_iterator bfld = fFields.begin();
-   DbFieldMap::const_iterator efld = fFields.end();
-
-   for (ifld=bfld; ifld!=efld; ifld++) {
-      if (ifld->second != "none")
-         fprintf(f, "\t%s = %s;\n", ifld->first.c_str(), ifld->second.c_str());
-   }
-   
-   fprintf(f, "\n");
-}
-*/
-
-
 /**
  * Prints all fields except those having a default "none" value.
  */
@@ -143,65 +114,9 @@ void DbEntry::ProcessLine(std::string sline)
             ifld->second += subStr;
          } else
             ifld->second = subStr;
-
-         //printf("XXX found field: %s = |%s| %d\n", ifld->first.c_str(), ifld->second.c_str(), fFieldFlags[ifld->first]);
-         //printf("XXX found field: %s = |%s|\n", ifld->first.c_str(), ifld->second.c_str());
       }
    }
 }
-
-
-/** */
-TBuffer & operator<<(TBuffer &buf, DbEntry *&rec)
-{
-   if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, DbEntry *rec) : \n");
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-TBuffer & operator>>(TBuffer &buf, DbEntry *&rec)
-{
-   //if (!rec) return buf;
-   //printf("operator<<(TBuffer &buf, DbEntry *rec) : \n");
-   // if object has been created already delete it
-   //free(rec);
-   //rec = (DbEntry *) realloc(rec, sizeof(DbEntry ));
-   rec->Streamer(buf);
-   return buf;
-}
-
-
-/** */
-void DbEntry::Streamer(TBuffer &buf)
-{
-   if (buf.IsReading()) {
-      TString tstr;
-      //printf("reading DbEntry::Streamer(TBuffer &buf) \n");
-      buf >> RunID;
-      buf >> isCalibRun;
-      buf >> tstr; calib_file_s         = tstr.Data();
-      buf >> tstr; alpha_calib_run_name = tstr.Data();
-      buf >> tstr; config_file_s        = tstr.Data();
-   } else {
-      TString tstr;
-      //printf("writing DbEntry::Streamer(TBuffer &buf) \n");
-      buf << RunID;
-      buf << isCalibRun;
-      tstr = calib_file_s;         buf << tstr;
-      tstr = alpha_calib_run_name; buf << tstr;
-      tstr = config_file_s;        buf << tstr;
-   }
-}
-
-
-/** */
-//bool DbEntry::operator()(const DbEntry &rec1, const DbEntry &rec2) const
-//{
-//  return (rec1.RunID < rec2.RunID);
-//}
 
 
 /** */
@@ -247,17 +162,7 @@ bool DbEntry::operator==(const DbEntry &rhs) const
 /** */
 void DbEntry::Print(const Option_t* opt) const
 {
-   //printf("RunID:             %f\n", RunID);
-   //printf("isCalibRun:        %d\n", isCalibRun);
-   //printf("calib_file_s:      %s\n", calib_file_s.c_str());
-   //printf("alpha_calib_run_name: %s\n", alpha_calib_run_name.c_str());
-   //printf("config_file_s:     %s\n", config_file_s.c_str());
-   //printf("masscut_s:         %s\n", masscut_s.c_str());
-   //printf("comment_s:         %s\n", comment_s.c_str());
-   //cout << "RunID: " <<
-
    PrintAsDbEntry(cout);
-
 }
 
 
@@ -316,10 +221,6 @@ void DbEntry::SetAsymVersion(std::string version)
 /** */
 void DbEntry::PrintAsPhp(FILE *f) const
 {
-   //fprintf(f, "$rc['calib_file_s']                 = \"%s\";\n", calib_file_s.c_str());
-   //fprintf(f, "$rc['alpha_calib_run_name']         = \"%s\";\n", alpha_calib_run_name.c_str());
-   //fprintf(f, "$rc['config_file_s']                = \"%s\";\n", config_file_s.c_str());
-
    DbFieldMap::const_iterator ifld;
    DbFieldMap::const_iterator bfld = fFields.begin();
    DbFieldMap::const_iterator efld = fFields.end();
