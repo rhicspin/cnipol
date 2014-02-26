@@ -109,23 +109,17 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    if (polId < 0)
       Warning("ReadRecBegin", "Cannot read polarimeter ID from data record. Will guess it from file name or user option");
 
-   stringstream sstr;
 
    // First, try to get polarimeter id from the data
    if (polId >= 0) {
-      sstr << gMeasInfo->fPolId;
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    // if failed, get id from the file name
    } else if (gMeasInfo->GetPolarimeterId() >= 0) {
-      sstr.str("");
-      sstr << gMeasInfo->fPolId;
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    // see if the polarimeter id was set by command line argument
    } else if (gMeasInfo->fPolId >= 0) {
-      sstr.str("");
-      sstr << gMeasInfo->fPolId;
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    } else { // cannot proceed
@@ -133,8 +127,6 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
       exit(-1);
    }
 
-   sstr.str("");
-   sstr << gMeasInfo->fStartTime;
    gRunDb.timeStamp = gMeasInfo->fStartTime; // should be always defined in raw data
    //gRunDb.Print();
 
