@@ -151,7 +151,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"mode-kinema",         no_argument,         0,   AsymAnaInfo::MODE_KINEMA},
       {"mode-pmt",            no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"mode-online",         no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
-      {"mode-full",           no_argument,         0,   AsymAnaInfo::MODE_FULL},
       {"set-calib-alpha",     required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_ALPHA},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
@@ -374,10 +373,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AsymAnaInfo::MODE_NO_SSH:
          fAsymModes |= AsymAnaInfo::MODE_NO_SSH;
-         break;
-
-      case AsymAnaInfo::MODE_FULL:
-         fAsymModes |= AsymAnaInfo::MODE_FULL;
          break;
 
       default:

@@ -38,7 +38,6 @@ public:
               MODE_PMT               = 0x00000100,
               MODE_PULSER            = 0x00000200,
               MODE_STUDIES           = 0x00000400,
-              MODE_FULL              = 0x007f0000,
               MODE_ONLINE            = 0x04040000,
               MODE_NO_SSH            = 0x00001000};
 
