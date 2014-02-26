@@ -368,9 +368,6 @@ void DeadLayerCalibratorEDepend::Calibrate(TH1 *hTimeVsE, TH1 *hMeanTime, UShort
 
    //Double_t *errors = ((TH1D*) fitResultHists[1])->GetSumw2()->GetArray();
 
-   // Remember that for this fit the second parameter is the DL width
-   //TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibratorEDepend::BananaFitFunc, xmin, xmax, 2);
-
    BananaFitFunctor *bff = new BananaFitFunctor(chId);
 
    TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, xmin, xmax, 2, "BananaFitFunctor");
@@ -510,15 +507,21 @@ void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
 RunConst DeadLayerCalibratorEDepend::sRunConst  = RunConst();
 map<UShort_t, RunConst> DeadLayerCalibratorEDepend::sRunConsts = gRunConsts;
 
-const Double_t DeadLayerCalibratorEDepend::cp0[4] = {-0.5174     ,  0.4172     ,  0.3610E-02 , -0.1286E-05};
-const Double_t DeadLayerCalibratorEDepend::cp1[4] = { 1.0000     ,  0.8703E-02 ,  0.1252E-04 ,  0.6948E-07};
-const Double_t DeadLayerCalibratorEDepend::cp2[4] = { 0.2990E-05 , -0.7937E-05 , -0.2219E-07 , -0.2877E-09};
-const Double_t DeadLayerCalibratorEDepend::cp3[4] = {-0.8258E-08 ,  0.4031E-08 ,  0.9673E-12 ,  0.3661E-12};
-const Double_t DeadLayerCalibratorEDepend::cp4[4] = { 0.3652E-11 , -0.8652E-12 ,  0.4059E-14 , -0.1294E-15};
+const Double_t BananaFitFunctor::cp0[4] = {-0.5174     ,  0.4172     ,  0.3610E-02 , -0.1286E-05};
+const Double_t BananaFitFunctor::cp1[4] = { 1.0000     ,  0.8703E-02 ,  0.1252E-04 ,  0.6948E-07};
+const Double_t BananaFitFunctor::cp2[4] = { 0.2990E-05 , -0.7937E-05 , -0.2219E-07 , -0.2877E-09};
+const Double_t BananaFitFunctor::cp3[4] = {-0.8258E-08 ,  0.4031E-08 ,  0.9673E-12 ,  0.3661E-12};
+const Double_t BananaFitFunctor::cp4[4] = { 0.3652E-11 , -0.8652E-12 ,  0.4059E-14 , -0.1294E-15};
+
+
+BananaFitFunctor::BananaFitFunctor(UShort_t chId)
+{
+   fRunConst = gRunConsts[chId];
+}
 
 
 /** */
-Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
+Double_t BananaFitFunctor::operator()(double *x, double *p)
 {
    Double_t pp[5];
    Double_t x0 = x[0];
@@ -538,57 +541,6 @@ Double_t DeadLayerCalibratorEDepend::BananaFitFunc(Double_t *x, Double_t *p)
    pp[2] = cp2[0] + cp2[1]*p1 + cp2[2]*p2 + cp2[3]*p3;
    pp[3] = cp3[0] + cp3[1]*p1 + cp3[2]*p2 + cp3[3]*p3;
    pp[4] = cp4[0] + cp4[1]*p1 + cp4[2]*p2 + cp4[3]*p3;
-
-   Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*x2 + pp[3]*x2*x0 + pp[4]*x2*x2;
-
-   //Double_t tof = (Ekin != 0.0) ?  KinConst_E2T/sqrt(Ekin) + p[2] : 0.0;
-   //Double_t t_meas = (Ekin != 0.0) ?  sRunConsts[chId].E2T/sqrt(Ekin) - p[1] : 0.0;
-   Double_t t_meas = (Ekin != 0.0) ?  sRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
-
-   return t_meas;
-}
-
-
-BananaFitFunctor::BananaFitFunctor(UShort_t chId)
-{
-   for (int i=0; i<4; i++) {
-      fCp0[i] = DeadLayerCalibratorEDepend::cp0[i];
-      fCp1[i] = DeadLayerCalibratorEDepend::cp1[i];
-      fCp2[i] = DeadLayerCalibratorEDepend::cp2[i];
-      fCp3[i] = DeadLayerCalibratorEDepend::cp3[i];
-      fCp4[i] = DeadLayerCalibratorEDepend::cp4[i];
-   }
-
-   fRunConst = gRunConsts[chId];
-}
-
-
-/** */
-BananaFitFunctor::~BananaFitFunctor()
-{ }
-
-
-/** */
-Double_t BananaFitFunctor::operator()(double *x, double *p)
-{
-   Double_t pp[5];
-   Double_t x0 = x[0];
-   Double_t x2 = x0*x0;
-
-   //UShort_t chId = (UShort_t) p[0];
-
-   //Double_t p1 = 0;
-   //if (p[0] >= 0) p1 = TMath::Abs(p[0]);
-   //if (p[1] < 0) p1 = TMath::Abs(p[1]);
-   Double_t p1 = TMath::Abs(p[1]);
-   Double_t p2 = p1*p1;
-   Double_t p3 = p1*p1*p1;
-
-   pp[0] = fCp0[0] + fCp0[1]*p1 + fCp0[2]*p2 + fCp0[3]*p3;
-   pp[1] = fCp1[0] + fCp1[1]*p1 + fCp1[2]*p2 + fCp1[3]*p3;
-   pp[2] = fCp2[0] + fCp2[1]*p1 + fCp2[2]*p2 + fCp2[3]*p3;
-   pp[3] = fCp3[0] + fCp3[1]*p1 + fCp3[2]*p2 + fCp3[3]*p3;
-   pp[4] = fCp4[0] + fCp4[1]*p1 + fCp4[2]*p2 + fCp4[3]*p3;
 
    Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*x2 + pp[3]*x2*x0 + pp[4]*x2*x2;
 
