@@ -74,7 +74,6 @@ Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
 Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
 Bool_t AsymAnaInfo::HasStudiesBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STUDIES)      == AsymAnaInfo::MODE_STUDIES; }
-Bool_t AsymAnaInfo::HasOnlineBit()      const { return (fAsymModes & AsymAnaInfo::MODE_ONLINE)       == AsymAnaInfo::MODE_ONLINE; }
 Bool_t AsymAnaInfo::HasNoSshBit()       const { return (fAsymModes & AsymAnaInfo::MODE_NO_SSH)       == AsymAnaInfo::MODE_NO_SSH; }
 
 
@@ -136,7 +135,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"pmt",                 no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AsymAnaInfo::MODE_PULSER},
       {"studies",             no_argument,         0,   AsymAnaInfo::MODE_STUDIES},
-      {"online",              no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
       {"no-ssh",              no_argument,         0,   AsymAnaInfo::MODE_NO_SSH},
       {"mode-alpha",          no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
       {"mode-normal",         no_argument,         0,   AsymAnaInfo::MODE_NORMAL},
@@ -150,7 +148,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"mode-asym",           no_argument,         0,   AsymAnaInfo::MODE_ASYM},
       {"mode-kinema",         no_argument,         0,   AsymAnaInfo::MODE_KINEMA},
       {"mode-pmt",            no_argument,         0,   AsymAnaInfo::MODE_PMT},
-      {"mode-online",         no_argument,         0,   AsymAnaInfo::MODE_ONLINE},
       {"set-calib-alpha",     required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_ALPHA},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
@@ -365,10 +362,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AsymAnaInfo::MODE_STUDIES:
          fAsymModes |= AsymAnaInfo::MODE_STUDIES;
-         break;
-
-      case AsymAnaInfo::MODE_ONLINE:
-         fAsymModes |= AsymAnaInfo::MODE_ONLINE;
          break;
 
       case AsymAnaInfo::MODE_NO_SSH:
