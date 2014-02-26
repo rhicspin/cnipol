@@ -157,7 +157,6 @@ ADD_LIBRARY(
 	src/AsymErrorDetector.cxx
 	src/AsymOnline.cxx
 	src/AsymProcess.cxx
-	src/AsymRead.cxx
 	src/AsymRecover.cxx
 	src/AsymRoot.cxx
 	src/BeamBunch.cxx
@@ -205,6 +204,7 @@ ADD_LIBRARY(
 	src/MseFillProfileNew.cxx
 	src/MseMeasInfo.cxx
 	src/MseRunPeriod.cxx
+	src/RawDataReader.cxx
 	src/RunConfig.cxx
 	src/RunQA.cxx
 	src/SshLogReader.cxx
