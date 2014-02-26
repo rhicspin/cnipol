@@ -31,7 +31,6 @@ private:
 public:
 
    virtual void Calibrate(DrawObjContainer *c);
-   void         PostCalibrate();
    void         Print(const Option_t* opt="") const;
 
    static RunConst sRunConst;
