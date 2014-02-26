@@ -1,8 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                                                                           *
- *****************************************************************************/
-
 #include "DeadLayerCalibrator.h"
 
 ClassImp(DeadLayerCalibrator)
@@ -10,77 +5,7 @@ ClassImp(DeadLayerCalibrator)
 using namespace std;
 using namespace ROOT::Fit;
 
-/** Default constructor. */
-DeadLayerCalibrator::DeadLayerCalibrator() : Calibrator()
-{
-}
-
-
-/** Default destructor. */
-DeadLayerCalibrator::~DeadLayerCalibrator()
-{
-}
-
-
 /** */
-/*
-void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
-{
-   TH2F*  htemp = 0;
-   TH1D*  hMeanTime = 0;
-   string sSt("  ");
-
-   for (UShort_t i=1; i<=NSTRIP; i++) {
-      //if (i != 28) continue;
-
-      sprintf(&sSt[0], "%02d", i);
-
-      htemp     = (TH2F*) c->d["channel"+sSt]->o["hTimeVsEnergyA_st"+sSt];
-      hMeanTime = (TH1D*) c->d["channel"+sSt]->o["hFitMeanTimeVsEnergyA_st"+sSt];
-
-      if (!htemp || !hMeanTime) {
-         Error("Calibrate", "Histogram channel%02d/hTimeVsEnergyA_st%02d does not exist",
-               i, i);
-         Error("Calibrate", "Histogram channel%02d/hFitMeanTimeVsEnergyA_st%02d does not exist",
-               i, i);
-         continue;
-      }
-
-      if (htemp->Integral() < 1000) {
-         Error("Calibrate", "Too few entries in histogram channel%02d/hTimeVsEnergyA_st%02d. Skipped",
-               i, i);
-         continue;
-      }
-
-      ChannelCalib *chCalib;
-      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(i);
-
-      if (iChCalib != fChannelCalibs.end())  {
-         chCalib = &iChCalib->second;
-      } else {
-         ChannelCalib newChCalib;
-         fChannelCalibs[i] = newChCalib;
-         chCalib = &fChannelCalibs[i];
-      }
-
-      TFitResultPtr fitres = CalibrateOld(htemp, hMeanTime);
-
-      if (fitres.Get()) {
-         chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-         chCalib->fT0Coef        = fitres->Value(0);
-         chCalib->fT0CoefErr     = fitres->FitResult::Error(0);
-         chCalib->fAvrgEMiss     = fitres->Value(1);
-         chCalib->fAvrgEMissErr  = fitres->FitResult::Error(1);
-      } else {
-         Error("Calibrate", "Empty TFitResultPtr");
-      }
-   }
-}
-*/
-
-
-/** */
-//void DeadLayerCalibrator::CalibrateFast(DrawObjContainer *c)
 void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
 {
    TH2F *htemp     = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA"];
@@ -225,14 +150,6 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 
 
 /** */
-//ChannelCalib& DeadLayerCalibrator::Calibrate(TH1 *h, TH1D *hMeanTime, UShort_t chId, Bool_t wideLimits)
-//{
-//   ChannelCalib *chCalib = new ChannelCalib();
-//   return *chCalib;
-//}
-
-
-/** */
 void DeadLayerCalibrator::Print(const Option_t* opt) const
 {
    Info("Print", " ");
@@ -240,12 +157,6 @@ void DeadLayerCalibrator::Print(const Option_t* opt) const
 }
 
 
-/**
- *
- * par[0] - t0
- * par[1] - average energy loss
- *
- */
 Double_t DeadLayerCalibrator::BananaFitFunc(Double_t *x, Double_t *par)
 {
    Double_t e_meas      = x[0];

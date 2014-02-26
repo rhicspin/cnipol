@@ -1,8 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                                                                           *
- *****************************************************************************/
-
 #include "DeadLayerCalibratorEDepend.h"
 
 #include "TFitResult.h"
@@ -16,58 +11,6 @@ ClassImp(DeadLayerCalibratorEDepend)
 
 using namespace std;
 using namespace ROOT::Fit;
-
-/** Default constructor. */
-DeadLayerCalibratorEDepend::DeadLayerCalibratorEDepend() : DeadLayerCalibrator()
-{
-}
-
-
-/** Default destructor. */
-DeadLayerCalibratorEDepend::~DeadLayerCalibratorEDepend()
-{
-}
-
-
-/**
- * This method is not used at the moment. Probably, it will not work as is.
- */
-/*
-void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
-{
-   TH1*  htemp     = 0;
-   TH1F*  hMeanTime = 0;
-   string strChId("  ");
-
-   // iCh=0 is the sum of all channels
-   // Special treatment for combined histogram
-   //htemp     = (TH2F*) c->d["std"]->o["hTimeVsEnergyA"];
-   //hMeanTime = (TH1D*) c->d["std"]->o["hFitMeanTimeVsEnergyA"];
-
-   //Calibrate(htemp, hMeanTime);
-
-   // Now calibrate individual active channels
-   set<UShort_t>::const_iterator iCh;
-   set<UShort_t>::const_iterator iChB = gMeasInfo->fSiliconChannels.begin();
-   set<UShort_t>::const_iterator iChE = gMeasInfo->fSiliconChannels.end();
-
-   for (iCh=iChB; iCh!=iChE; ++iCh) {
-
-      // Skip if disabled
-      if (gMeasInfo->IsDisabledChannel(*iCh)) continue;
-
-      sprintf(&strChId[0], "%02d", *iCh);
-
-      htemp     = (TH1*)  c->d["std"]->d["channel"+strChId]->o["hTimeVsEnergyA_ch"+strChId];
-      hMeanTime = (TH1F*) c->d["std"]->d["channel"+strChId]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
-
-      Calibrate(htemp, hMeanTime, *iCh);
-   }
-
-   PostCalibrate();
-}
-*/
-
 
 /**
  * This method is mainly used for data calibration
