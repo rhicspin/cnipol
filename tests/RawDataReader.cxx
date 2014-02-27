@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include "AsymRoot.h"
 #include "RawDataReader.h"
 
@@ -34,21 +36,7 @@ void fail()
 
 int main(void)
 {
-   // enable redirect to file
-   int sout = dup(fileno(stdout));
-   int serr = dup(fileno(stderr));
-   freopen(output_filename, "w", stdout);
-   dup2(fileno(stdout), fileno(stderr));
-
-   test();
-
-   // disable redirect to file
-   fflush(stdout);
-   fflush(stderr);
-   dup2(sout,fileno(stdout));
-   dup2(serr,fileno(stderr));
-   close(sout);
-   close(serr);
+   save_output(test, output_filename);
 
    // read output
    FILE *fp = fopen(output_filename, "r");

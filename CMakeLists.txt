@@ -249,6 +249,7 @@ TARGET_LINK_LIBRARIES(
 ADD_EXECUTABLE(
 	RawDataReader_test
 	tests/RawDataReader.cxx
+	tests/common.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
