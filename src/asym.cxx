@@ -4,7 +4,6 @@
 #include <sstream>
 
 #include "TROOT.h"
-#include "TStopwatch.h"
 #include "TTimeStamp.h"
 
 #include "EventConfig.h"
@@ -27,8 +26,6 @@ using namespace std;
  */
 int main(int argc, char *argv[])
 {
-   // Create a stopwatch and start it
-   TStopwatch stopwatch;
    TTimeStamp timestamp;
 
    time_t gtime = time(0);
@@ -200,11 +197,7 @@ int main(int argc, char *argv[])
 
    // No data analysis is done beyond this point only bookkeeping
 
-   // Stop stopwatch and save results
-   stopwatch.Stop();
    gAsymAnaInfo->fAnaDateTime = timestamp.GetSec();
-   gAsymAnaInfo->fAnaTimeReal = stopwatch.RealTime();
-   gAsymAnaInfo->fAnaTimeCpu  = stopwatch.CpuTime();
 
    string tmpSqlDateTime(19, ' ');
    strftime(&tmpSqlDateTime[0], 20, "%Y-%m-%d %H:%M:%S", &start_time);
@@ -235,9 +228,6 @@ int main(int argc, char *argv[])
    delete gAsymDb;
 
    gAsymAnaInfo->CopyResults();
-
-   printf("Analysis finished at: %s\n",   timestamp.AsString("l"));
-   printf("Processing time: %f seconds\n", gAsymAnaInfo->fAnaTimeReal);
 
    return EXIT_SUCCESS;
 }
