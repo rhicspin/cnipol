@@ -1,5 +1,7 @@
 #include "assert.h"
 #include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 #include "unistd.h"
 
 #include "common.h"
@@ -38,4 +40,26 @@ char *read_file(const char *filename, unsigned long *size)
    assert(fread(buf, 1, *size, fp) == *size);
    fclose(fp);
    return buf;
+}
+
+bool compare(const char *output_filename, const unsigned char *reference_buf, unsigned long reference_len)
+{
+   bool retval = true;
+   unsigned long size;
+   char *buf = read_file(output_filename, &size);
+
+   if ((size != reference_len) || (memcmp(buf, reference_buf, reference_len) != 0))
+   {
+      const char *filename = "golden_reference.log";
+      FILE *fp = fopen(filename, "w");
+      fwrite(reference_buf, 1, reference_len, fp);
+      fclose(fp);
+      const unsigned N = 256;
+      char cmd[N];
+      snprintf(cmd, N, "diff %s %s", filename, output_filename);
+      system(cmd);
+      retval = false;
+   }
+   delete[] buf;
+   return retval;
 }
