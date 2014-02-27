@@ -211,10 +211,16 @@ int main(int argc, char *argv[])
 
    gAsymRoot->fEventConfig->fMseMeasInfoX = mseMeasInfoX;
 
-   gAsymRoot->fEventConfig->PrintAsPhp(gAsymAnaInfo->GetAnaInfoFile());
-   gAsymRoot->fEventConfig->PrintAsConfig(gAsymAnaInfo->GetRunConfFile());
-   fclose(gAsymAnaInfo->GetAnaInfoFile());
-   fclose(gAsymAnaInfo->GetRunConfFile());
+   if (gAsymAnaInfo->GetAnaInfoFile())
+   {
+      gAsymRoot->fEventConfig->PrintAsPhp(gAsymAnaInfo->GetAnaInfoFile());
+      fclose(gAsymAnaInfo->GetAnaInfoFile());
+   }
+   if (gAsymAnaInfo->GetRunConfFile())
+   {
+      gAsymRoot->fEventConfig->PrintAsConfig(gAsymAnaInfo->GetRunConfFile());
+      fclose(gAsymAnaInfo->GetRunConfFile());
+   }
    gAsymAnaInfo->fFileMeasInfo = 0;
    gAsymAnaInfo->fFileRunConf  = 0;
 
