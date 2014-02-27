@@ -24,11 +24,7 @@ using namespace std;
 /**
  * The main function of `asym`
  */
-#ifdef ASYM_TEST
-int asym_main(int argc, char *argv[])
-#else
 int main(int argc, char *argv[])
-#endif
 {
    TTimeStamp timestamp;
 
