@@ -5,7 +5,6 @@
 #include "mysql++.h"
 
 #include "TRandom.h"
-#include "TStopwatch.h"
 
 #include "AsymCalculator.h"
 #include "AsymProcess.h"
@@ -33,7 +32,6 @@ RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
 
    // Create a BLOB with file content
    Info("RawDataReader", "Reading into memory...");
-   TStopwatch sw;
 
    fFileStream.seekg(0, ios::end);
    fMemSize = fFileStream.tellg(); // in bytes
@@ -50,9 +48,6 @@ RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
    cout << "size RecordHeaderStruct: " << sizeof(RecordHeaderStruct) << endl;
    cout << "size recordHeaderStruct: " << sizeof(recordHeaderStruct) << endl;
 ///
-
-   sw.Stop();
-   printf("Stopped reading into memory: Real: %f s and CPU: %f s time\n", sw.RealTime(), sw.CpuTime());
 }
 
 
@@ -146,8 +141,6 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadMeasInfo", "Start reading run info from data file...");
-
-   TStopwatch sw;
 
    RecordHeaderStruct *mHeader;
 
@@ -351,10 +344,6 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 
       mSeek = mSeek + mHeader->len;
    }
-
-   sw.Stop();
-
-   Info("ReadMeasInfo", "Stopped reading run info from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
@@ -363,8 +352,6 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadDataPassOne", "Start reading events from data file...");
-
-   TStopwatch sw;
 
    gMeasInfo->fNEventsProcessed = 0;
    gMeasInfo->fNEventsTotal     = 0;
@@ -479,10 +466,6 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
    mseMeasInfo.stop_time         = mysqlpp::DateTime(gMeasInfo->fStopTime);
    mseMeasInfo.nevents_total     = gMeasInfo->fNEventsTotal;
    mseMeasInfo.nevents_processed = gMeasInfo->fNEventsProcessed;
-
-   sw.Stop();
-
-   Info("ReadDataPassOne", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
@@ -491,8 +474,6 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadDataPassTwo", "Start reading events from data file...");
-
-   TStopwatch sw;
 
    gMeasInfo->fNEventsProcessed = 0;
    gMeasInfo->fNEventsTotal     = 0;
@@ -607,10 +588,6 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
       mseMeasInfo.beam_energy = 0;
    else
       mseMeasInfo.beam_energy = gMeasInfo->GetBeamEnergyReal();
-
-   sw.Stop();
-
-   Info("ReadDataPassTwo", "Stopped reading events from data file: %f s, %f s\n", sw.RealTime(), sw.CpuTime());
 }
 
 
