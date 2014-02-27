@@ -46,7 +46,6 @@ private:
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
 void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &run);
 void ProcessRecordPCTarget(const pCTargetStruct &rec, MseMeasInfoX &run);
-void PrepareCollidingBunchPattern();
 
 void ProcessRecord(const recordConfigRhicStruct &rec);
 void ProcessRecord(const recordMeasTypeStruct &rec);

@@ -135,10 +135,6 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    mseMeasInfo.start_time     = dt;
 
    Info("ReadRecBegin", "Finished reading begin record from data file");
-
-   // Not really used now
-   // Configure colliding bunch patterns for PHENIX-BRAHMS and STAR
-   PrepareCollidingBunchPattern();
 }
 
 
@@ -854,28 +850,6 @@ void ProcessRecordPCTarget(const pCTargetStruct *rec, MseMeasInfoX &mseMeasInfo)
 
    // disable 90 degrees detectors for horizontal target 0x2D={10 1101}
    //if (tgt.VHtarget) mask.detector = 0x2D;
-}
-
-
-// Method name : PrepareCollidingBunchPattern(gMeasInfo->fPolBeam)
-// Description : Configure phx.bunchpat[] and str.bunchpat[] arrays only for colliding bunches
-void PrepareCollidingBunchPattern()
-{
-   for (int i=0; i<NBUNCH; i++) {
-      phx.bunchpat[i] = 1; // PHENIX bunch patterns
-      str.bunchpat[i] = 1; // STAR bunch patterns
-   }
-
-   if (gMeasInfo->fPolBeam == 1) { // Yellow Beam
-      for (int j=31; j<40; j++) str.bunchpat[j] = phx.bunchpat[j+40] = 0;
-   } else if (gMeasInfo->fPolBeam == 2){ // Blue Beam
-      for (int j=31; j<40; j++) phx.bunchpat[j] = str.bunchpat[j+40] = 0;
-   }
-
-   cout << "===== Colliding Bunch pattern =======" << endl;
-   cout << " IP2, IP8:  " ; for (int i=0; i<NBUNCH; i++) cout << phx.bunchpat[i]; cout << endl;
-   cout << " IP6, IP10: " ; for (int i=0; i<NBUNCH; i++) cout << str.bunchpat[i]; cout << endl;
-   cout << "=====================================" << endl;
 }
 
 

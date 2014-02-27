@@ -146,7 +146,6 @@ StructAverage             average;
 StructFeedBack            feedback;
 //RunConst                 runconst;
 map<UShort_t, RunConst>   gRunConsts;
-StructBunchPattern        phx, str;
 TRecordConfigRhicStruct  *gConfigInfo;
 TargetInfo                tgt;
 BunchAsym                 gBunchAsym;

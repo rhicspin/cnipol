@@ -92,7 +92,6 @@ extern StructMask                    mask;
 extern StructFlag                    Flag;
 extern StructReadFlag                gReadFlag;
 extern TargetInfo                    tgt;
-extern StructBunchPattern            phx, str;
 extern TRecordConfigRhicStruct      *gConfigInfo;
 
 extern float phiRun5[N_SILICON_CHANNELS];   // phi-angle for each strips of Run5 (l=18.5cm)
