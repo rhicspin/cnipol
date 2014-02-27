@@ -155,8 +155,9 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       mHeader = (RecordHeaderStruct*) mSeek;
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
-      // REC_BEAMADO
-      if ((mHeader->type & REC_TYPEMASK) == REC_BEAMADO)
+      switch(mHeader->type & REC_TYPEMASK)
+      {
+      case REC_BEAMADO:
       {
          cout << "Reading REC_BEAMADO record... size = " << mHeader->len << endl;
 
@@ -168,12 +169,10 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
 
          ProcessRecord( (recordBeamAdoStruct&) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_MACHINEPARAMS
-      if ((mHeader->type & REC_TYPEMASK) == REC_MACHINEPARAMS)
+      case REC_MACHINEPARAMS:
       {
          cout << "Reading REC_MACHINEPARAMS record... size = " << mHeader->len << endl;
 
@@ -181,12 +180,10 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
          RecordMachineParams *rec = (RecordMachineParams*) mHeader;
          ProcessRecord( (RecordMachineParams&) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_TARGETPARAMS
-      if ((mHeader->type & REC_TYPEMASK) == REC_TARGETPARAMS)
+      case REC_TARGETPARAMS:
       {
          cout << "Reading REC_TARGETPARAMS record... size = " << mHeader->len << endl;
 
@@ -194,36 +191,30 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
          RecordTargetParams *rec = (RecordTargetParams*) mHeader;
          ProcessRecord( (RecordTargetParams&) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_MEASTYPE
-      if ((mHeader->type & REC_TYPEMASK) == REC_MEASTYPE)
+      case REC_MEASTYPE:
       {
          cout << "Reading REC_MEASTYPE record... size = " << mHeader->len << endl;
 
          recordMeasTypeStruct *rec = (recordMeasTypeStruct*) mHeader;
          ProcessRecord( (recordMeasTypeStruct&) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_POLADO
-      if ((mHeader->type & REC_TYPEMASK) == REC_POLADO)
+      case REC_POLADO:
       {
          cout << "Reading REC_POLADO record... size = " << mHeader->len << endl;
 
          recordPolAdoStruct *rec = (recordPolAdoStruct*) mHeader;
          ProcessRecord( (recordPolAdoStruct&) *rec, mseMeasInfo);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_PCTARGET
-      if ((mHeader->type & REC_TYPEMASK) == REC_PCTARGET)
+      case REC_PCTARGET:
       {
          // Do not process this record for calibration runs. May contain
          // invalid ndelim info
@@ -232,114 +223,103 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
          recordpCTagAdoStruct *rec = (recordpCTagAdoStruct*) mHeader;
          ProcessRecord( (recordpCTagAdoStruct&) *rec, mseMeasInfo);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_WCMADO
-      if ((mHeader->type & REC_TYPEMASK) == REC_WCMADO)
+      case REC_WCMADO:
       {
          cout << "Reading REC_WCMADO record... size = " << mHeader->len << endl;
 
          recordWcmAdoStruct *rec = (recordWcmAdoStruct*) mHeader;
          ProcessRecord( (recordWcmAdoStruct &) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_WCM_NEW
-      if ((mHeader->type & REC_TYPEMASK) == REC_WCM_NEW)
+      case REC_WCM_NEW:
       {
          cout << "Reading REC_WCM_NEW record... size = " << mHeader->len << endl;
 
          RecordWcm *rec = (RecordWcm*) mHeader;
          ProcessRecord( (RecordWcm &) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_WFDV8SCAL
-      if ((mHeader->type & REC_TYPEMASK) == REC_WFDV8SCAL &&
-          fSeenRecords.find(REC_WFDV8SCAL) == fSeenRecords.end())
+      case REC_WFDV8SCAL:
       {
-         cout << "Reading REC_WFDV8SCAL record... size = " << mHeader->len << endl;
+         if (fSeenRecords.find(REC_WFDV8SCAL) == fSeenRecords.end())
+         {
+            cout << "Reading REC_WFDV8SCAL record... size = " << mHeader->len << endl;
 
-         recordWFDV8ArrayStruct *rec = (recordWFDV8ArrayStruct*) mHeader;
-         ProcessRecord( (recordWFDV8ArrayStruct &) *rec);
+            recordWFDV8ArrayStruct *rec = (recordWFDV8ArrayStruct*) mHeader;
+            ProcessRecord( (recordWFDV8ArrayStruct &) *rec);
 
-         fSeenRecords.insert(REC_WFDV8SCAL);
+            fSeenRecords.insert(REC_WFDV8SCAL);
+         }
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_COUNTRATE
-      if ((mHeader->type & REC_TYPEMASK) == REC_COUNTRATE)
+      case REC_COUNTRATE:
       {
          cout << "Reading REC_COUNTRATE record... size = " << mHeader->len << endl;
 
          recordCountRate *rec = (recordCountRate*) mHeader;
          ProcessRecord( (recordCountRate &) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_RHIC_CONF
-      if ((mHeader->type & REC_TYPEMASK) == REC_RHIC_CONF)
+      case REC_RHIC_CONF:
       {
          cout << "Reading REC_RHIC_CONF record... size = " << mHeader->len << endl;
 
          recordConfigRhicStruct *rec = (recordConfigRhicStruct*) mHeader;
          ProcessRecord( (recordConfigRhicStruct &) *rec);
 
-         mSeek = mSeek + mHeader->len;
-         continue;
+         break;
       }
 
-      // REC_TAGADO:
-      if ((mHeader->type & REC_TYPEMASK) == REC_TAGADO)
+      case REC_TAGADO:
       {
          cout << "Reading REC_TAGADO record... size = " << mHeader->len << endl;
          //targetDataStruct *rec = (targetDataStruct*) mHeader;
-         //targetDataStruct  tgtdat1;
-         //targetDataStruct  tgtdat2;
-         //memcpy(&tgtdat1, &rec.tagado.data[0], sizeof(tgtdat1));
-         //memcpy(&tgtdat2, &rec.tagado.data[1], sizeof(tgtdat2));
-         mSeek = mSeek + mHeader->len;
-         continue;
+
+         break;
       }
 
-      // REC_SCALERS
-      if ((mHeader->type & REC_TYPEMASK) == REC_SCALERS)
+      case REC_SCALERS:
       {
          cout << "Reading REC_SCALERS record... size = " << mHeader->len << endl;
          //recordScalersStruct *rec = (recordScalersStruct*) mHeader;
          //ProcessRecord( (recordScalersStruct &) *rec);
          Info("ReadMeasInfo", "Not implemented yet");
-         mSeek = mSeek + mHeader->len;
-         continue;
+
+         break;
       }
 
-      // REC_READRAW, REC_READSUB, REC_READALL
-      if ((mHeader->type & REC_TYPEMASK) == REC_READRAW)
+      case REC_READRAW:
       {
          cout << "Reading REC_READRAW record... size = " << mHeader->len << endl;
          Info("ReadMeasInfo", "Not implemented yet");
-         mSeek = mSeek + mHeader->len;
-         continue;
+
+         break;
       }
 
-      // REC_END:
-      if ((mHeader->type & REC_TYPEMASK) == REC_END)
+      case REC_END:
       {
          cout << "Reading REC_END record... size = " << mHeader->len << endl;
          recordEndStruct *rec = (recordEndStruct*) mHeader;
          gMeasInfo->fStopTime = rec->header.timestamp.time;
-         mSeek = mSeek + mHeader->len;
-         continue;
+
+         break;
+      }
+
+      case REC_READSUB:
+      case REC_READALL:
+      default:
+         break;
       }
 
       mSeek = mSeek + mHeader->len;
