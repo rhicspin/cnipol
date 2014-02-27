@@ -14,5 +14,6 @@ script:
   - ./malpha # for example checks for dynamic libraries loading
   - ./masym
   - wget http://www.phy.bnl.gov/cnipol/17068.202.data
+  - wget http://www.phy.bnl.gov/cnipol/150213a.blu2.alpha0.data
   - sh -c "TZ=EST+5 ctest -V"
 #  - ./spinflipper

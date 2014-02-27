@@ -247,6 +247,23 @@ TARGET_LINK_LIBRARIES(
 	)
 
 ADD_EXECUTABLE(
+	asym_test
+	tests/asym.cxx
+	tests/common.cxx
+        tests/asym_main.cxx
+	)
+
+TARGET_LINK_LIBRARIES(
+	asym_test
+	cnipol
+	)
+
+ADD_TEST(
+	NAME asym_test
+	COMMAND $<TARGET_FILE:asym_test>
+	)
+
+ADD_EXECUTABLE(
 	RawDataReader_test
 	tests/RawDataReader.cxx
 	tests/common.cxx
@@ -268,6 +285,7 @@ IF(FORCE_32BIT)
 	SET_TARGET_PROPERTIES(asym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 	SET_TARGET_PROPERTIES(masym PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 	SET_TARGET_PROPERTIES(spinflipper PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+	SET_TARGET_PROPERTIES(asym_test PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 	SET_TARGET_PROPERTIES(RawDataReader_test PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 ENDIF()
 ADD_DEFINITIONS("-Wall -Wextra -Wno-unused-parameter -DCMAKE_BUILD")
