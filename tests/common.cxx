@@ -26,3 +26,16 @@ void save_output(void (*testfunc)(), const char *output_filename)
    close(sout);
    close(serr);
 }
+
+char *read_file(const char *filename, unsigned long *size)
+{
+   // read output
+   FILE *fp = fopen(filename, "r");
+   fseek(fp, 0, SEEK_END);
+   *size = ftell(fp);
+   fseek(fp, 0, SEEK_SET);
+   char *buf = new char[*size];
+   assert(fread(buf, 1, *size, fp) == *size);
+   fclose(fp);
+   return buf;
+}

@@ -38,14 +38,8 @@ int main(void)
 {
    save_output(test, output_filename);
 
-   // read output
-   FILE *fp = fopen(output_filename, "r");
-   fseek(fp, 0, SEEK_END);
-   unsigned long size = ftell(fp);
-   fseek(fp, 0, SEEK_SET);
-   char *buf = new char[size];
-   assert(fread(buf, 1, size, fp) == size);
-   fclose(fp);
+   unsigned long size;
+   char *buf = read_file(output_filename, &size);
 
    if ((size != stdoe_log_len) || (memcmp(buf, stdoe_log, stdoe_log_len) != 0))
    {
