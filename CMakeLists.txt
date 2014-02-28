@@ -263,3 +263,5 @@ ADD_CUSTOM_TARGET(revision_id
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM
         )
+
+# vim: set noexpandtab:
