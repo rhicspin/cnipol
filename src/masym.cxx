@@ -48,36 +48,20 @@ int main(int argc, char *argv[])
 
    gROOT->Macro("~/rootmacros/styles/style_masym.C");
 
-   //std::find(gRunConfig.fBeamEnergies.begin(), gRunConfig.fBeamEnergies.end(), kBEAM_ENERGY_100);
-   //gRunConfig.fBeamEnergies.erase(kINJECTION);
-   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_100);
-   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_250);
-   //gRunConfig.fBeamEnergies.erase(kBEAM_ENERGY_255);
    gRunConfig.fBeamEnergies.clear();
    gRunConfig.fBeamEnergies.insert(kINJECTION);
-   //gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_100);
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
 
-   //string filelistName = mAsymAnaInfo.GetMListFileName();
    string filelist     = mAsymAnaInfo.GetMListFullPath();
-
-   //ofstream filelistGood((filelist + "_good").c_str());
-   //filelistGood << fixed << setprecision(3);
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
    mAsymRoot.SetAnaGlobResult(&anaGlobResult);
 
    Info("masym", "Starting first pass...");
 
-   // Create a default canvas here to get rid of weird root messages while
-   // reading objects from root files
-   //TCanvas canvas("canvas", "canvas", 1400, 600);
-
    // Container with measurements passed QA cuts. Used to save time on opening
    // input files in the second pass
    set<EventConfig> gGoodMeass;
-
-   //std::map<UInt_t, UInt_t>  flattopTimes;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -133,13 +117,6 @@ int main(int argc, char *argv[])
       UInt_t      fillId          = (UInt_t) runId;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
 
-      // Substitute the beam energy for special ramp fills.
-      // XXX Comment this for normal summary reports
-      //if ( beamEnergy == 100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
-      //   gMM->fMeasInfo->fBeamEnergy = 400;
-      //   beamEnergy = 400;
-      //}
-
       Float_t polarization    = 0;
       Float_t polarizationErr = -1;
 
@@ -178,17 +155,6 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      //if (flattopTimes.find(fillId) == flattopTimes.end())
-      //   flattopTimes[fillId] = 0;
-      //if ( beamEnergy == kBEAM_ENERGY_100 && gMM->fMeasInfo->fStartTime > flattopTimes[fillId]) {
-      //   flattopTimes[fillId] = gMM->fMeasInfo->fStartTime;
-      //}
-
-      //if (gH->d.find("runs") != gH->d.end()) {
-      //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxFill(fillId);
-      //   ((MAsymRunHists*) gH->d["runs"])->UpdMinMaxTime(gMM->fMeasInfo->fStartTime);
-      //}
-
       mAsymRoot.UpdMinMax(*gMM);
 
       // Check that asym hist container exists in this file
@@ -196,30 +162,17 @@ int main(int argc, char *argv[])
       gHIn->d["asym"] = new CnipolAsymHists();
       gHIn->ReadFromDir();
 
-      // Save plots
-      //TCanvas canvas("canvas", "canvas", 1200, 600);
-      //gHIn->SaveAllAs(canvas, "^.*$", ("./tmp_images/" + gMM->fMeasInfo->GetRunName()).c_str());
-
-      //DrawObjContainer *gHIn = 0;
-
-      //gMM->fMeasInfo->PrintAsPhp();
-
       // To calculate normalization factors for p-Carbon we need to save all
       // p-Carbon measurements in the first pass
       anaGlobResult.AddMeasResult(*gMM, gHIn);
-      //gHIn->Print();
 
-      //gHIn->Delete();
       delete gHIn;
 
       f->Close();
       delete f;
 
       gGoodMeass.insert(*gMM);
-      //filelistGood << runId << endl;
    }
-
-   //filelistGood.close();
 
    // Update global run parameters before anything else
    gRunConfig.SetBeamEnergies(anaGlobResult.GetBeamEnergies());
@@ -236,17 +189,12 @@ int main(int argc, char *argv[])
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxTime(anaGlobResult.GetMinTime(), anaGlobResult.GetMaxTime());
    ((MAsymRunHists*) gH->d["runs"])->AdjustMinMaxFill();
-   //anaGlobResult.AdjustMinMaxFill();
-
 
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
 
    anaGlobResult.AddHJMeasResult();
    anaGlobResult.Process(gH);
-   //anaGlobResult.Print("all");
-   //anaGlobResult.Print();
-
 
    Info("masym", "Starting second pass...");
 
@@ -260,7 +208,6 @@ int main(int argc, char *argv[])
       Info("masym", "Processing measurement: %.3f", iMeas->fMeasInfo->RUNID);
 
       gH->Fill((const EventConfig&) *iMeas);
-      //gH->Fill(*iMeas, *gHIn);
    }
 
    gH->PostFill(anaGlobResult);
@@ -271,7 +218,6 @@ int main(int argc, char *argv[])
 
    if (mAsymAnaInfo.HasGraphBit())
       mAsymRoot.SaveAs("^.*$", mAsymAnaInfo.GetImageDir());
-      //mAsymRoot.SaveAs("^.*RotatorPCPolarRatio.*$", mAsymAnaInfo.GetImageDir());
 
    if (mAsymAnaInfo.fFlagUpdateDb) {
       AsymDbSql *asymDbSql = new AsymDbSql();
@@ -283,7 +229,6 @@ int main(int argc, char *argv[])
    mAsymRoot.Print();
    mAsymRoot.Close();
 
-   //anaGlobResult.Print("all");
    anaGlobResult.Print();
 
    return EXIT_SUCCESS;
