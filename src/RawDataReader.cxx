@@ -56,7 +56,6 @@ RawDataReader::~RawDataReader()
 {
    if (fFile) fclose(fFile);
    delete[] fMem;
-   //fFileStream.close();
 }
 
 
@@ -65,8 +64,6 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
    Info("ReadRecBegin", "Start reading begin record from data file...");
-
-   //int nRecs = fread(&recBegin, sizeof(recBegin), 1, fp);
 
    char *mSeek = fMem;
 
@@ -95,9 +92,6 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    gMeasInfo->fDataFormatVersion = recBegin->version;
    gMeasInfo->fPolBeam           = (recBegin->header.type & REC_MASK_BEAM)   >> 16;
    gMeasInfo->fPolStream         = (recBegin->header.type & REC_MASK_STREAM) >> 20;
-
-   //printf("fPolBeam:   %#x\n", gMeasInfo->fPolBeam);
-   //printf("fPolStream: %#x, %#x, %#x\n", gMeasInfo->fPolStream, (UInt_t) recBegin->header.type, REC_MASK_STREAM);
 
    int polId = gMeasInfo->GetPolarimeterId(gMeasInfo->fPolBeam, gMeasInfo->fPolStream);
 
@@ -149,11 +143,8 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
    while (true)
    {
       if (mSeek > fMem + fMemSize - 1) break;
-      //if (nRecs != 1) break;
-      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
       mHeader = (RecordHeaderStruct*) mSeek;
-      //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       switch(mHeader->type & REC_TYPEMASK)
       {
@@ -284,7 +275,6 @@ void RawDataReader::ReadMeasInfo(MseMeasInfoX &mseMeasInfo)
       case REC_TAGADO:
       {
          cout << "Reading REC_TAGADO record... size = " << mHeader->len << endl;
-         //targetDataStruct *rec = (targetDataStruct*) mHeader;
 
          break;
       }
@@ -342,11 +332,8 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
    while (true) {
 
       if (mSeek > fMem + fMemSize - 1) break;
-      //if (nRecs != 1) break;
-      //printf("Currently consider record: %0#10x, len: %ld\n", (UInt_t) header.type, header.len);
 
       mHeader = (RecordHeaderStruct*) mSeek;
-      //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
       if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
       {
@@ -575,8 +562,6 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 void UpdateRunConst(TRecordConfigRhicStruct *ci)
 {
    if (!ci) return;
-
-   //ci->Print();
 
    float Ct = ci->data.WFDTUnit/2.; // Determine the TDC count unit (ns/channel)
    float L  = ci->data.TOFLength;
@@ -852,38 +837,16 @@ void ProcessRecord(const recordpCTagAdoStruct &rec, MseMeasInfoX &mseMeasInfo)
 void ProcessRecord(const recordWFDV8ArrayStruct &rec)
 {
    Int_t s1=0, s2=0, s3=0, s4=0;
-   //float hist[1536];
 
    UShort_t chId = rec.siNum + 1;
 
    // Consider only silicon channels
    if (chId > NSTRIP) return;
 
-   //for (int i=0; i<1536; i++) {
-   //   //hist[i] = rec.hist[i];
-   //   //printf("i, hist[i]: %4d, %8.3f\n", i, hist[i]);
-   //}
-
    for (int i=0; i< 128; i++) s1 += rec.hist[i];        // bunch hist
    for (int i=0; i< 128; i++) s2 += rec.hist[i+128];    // unpol energy
    for (int i=0; i< 128; i++) s3 += rec.hist[i+256];    // pol+ energy
    for (int i=0; i< 128; i++) s4 += rec.hist[i+384];    // pol- energy
-
-   //HPAKAD( 200 + chId, &hist[0]);
-   //HPAKAD( 300 + chId, &hist[128]);
-   //HPAKAD( 400 + chId, &hist[256]);
-   //HPAKAD( 500 + chId, &hist[384]);
-   //HPAKAD(1300 + chId, &hist[128]);
-   //HPAKAD(1400 + chId, &hist[256]);
-   //HPAKAD(1500 + chId, &hist[384]);
-
-   //if (sipar_.ifine == 0) {
-   //   //HPAKAD(600 + chId, &hist[512]);
-   //   //HPAKAD(1600 + chId, &hist[512]);
-   //} else {
-   //   //HPAKAD(700 + chId, &hist[512]);
-   //   //HPAKAD(1700 + chId, &hist[512]);
-   //}
 
    printf("Si%02d : %12d %12d %12d %12d %12d    %12d  %12d  %12d  %12d",
           rec.siNum + 1, rec.scalers[0], rec.scalers[1],
@@ -897,7 +860,6 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
        s4 != rec.scalers[1] || s1 < s2 + s3 + s4)
    {
       printf(" <- !!!");
-      //sipar_.mark[rec.siNum]++;
    }
 
    printf("\n");
@@ -905,10 +867,6 @@ void ProcessRecord(const recordWFDV8ArrayStruct &rec)
    Int_t cnt = 0;
 
    cnt += rec.scalers[0] + rec.scalers[1] + rec.scalers[2];
-
-   //for (int i=0; i<3; i++) {
-   //   //sscal_[rec.siNum * 3+i] += rec.scalers[i];
-   //}
 }
 
 
