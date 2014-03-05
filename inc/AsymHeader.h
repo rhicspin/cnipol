@@ -53,7 +53,7 @@ static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (
 //  14.?db = 0.2000  setting of attenuator board
 
 #define AM_ALPHA_E   5486.0   // keV, Am alpha energy
-#define GD_ALPHA_E   3271.21  // keV, Gd alpha energy
+#define GD_ALPHA_E   3182.68  // keV, Gd alpha energy A. Rytz, At. Data and Nucl. Data Tables 47, 205 (1991)
 #define ATTEN        0.2000   // =1/5 regular calibration
 #define CCONST       0.2000   // =1/5 regular calibration
 
