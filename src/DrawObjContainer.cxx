@@ -342,8 +342,8 @@ bool DrawObjContainer::PrepareHistogram(TCanvas *canvas, TH1 *hobj)
 
          stats->SetX1NDC(0.80);
          stats->SetX2NDC(0.99);
-         stats->SetY1NDC(0.42 - iStat*0.18);
-         stats->SetY2NDC(0.60 - iStat*0.18);
+         stats->SetY1NDC(0.80 - iStat*0.129);
+         stats->SetY2NDC(0.92 - iStat*0.129);
 
          iStat++;
       }

@@ -214,9 +214,9 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    TString  title(name);
    const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
    title += cut_str;
-   TCanvas *c = new TCanvas(canvasName);
+   TCanvas *c = new TCanvas(canvasName, "", 800, 500);
    double bm = gStyle->GetPadBottomMargin();
-   TLegend *leg = new TLegend(0.15,bm+0.02,0.90,bm+0.202);
+   TLegend *leg = new TLegend(0.14,bm+0.02,0.22,bm+0.202);
    TH1F  *host, *det_host;
    vector<TH1F*>  det_hosts;
    TString	host_name("_");
@@ -327,7 +327,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          det_fit_daily.SetLineColor(kBlack);
          det_fit_daily.SetLineWidth(1);
 
-         TFitResultPtr fitres;
          {
             time_t t = max_startTime;
             struct tm *time = gmtime(&t);
@@ -336,45 +335,14 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
                Warning("malpha", "detected run13 : will fit only during beamtime");
                const double fit_min = 1362096000 - min_startTime; // 03/01/2013 00:00:00
                const double fit_max = 1372636800 - min_startTime; // 07/01/2013 00:00:00
-               fitres = g->Fit(&fit_daily, "QS", "", fit_min, fit_max); // Q: quiet, S: return fitres
+               g->Fit(&fit_daily, "Q", "", fit_min, fit_max); // Q: quiet
                det_g->Fit(&det_fit_daily, "Q", "", fit_min, fit_max);   // Q: quiet
             }
             else
             {
-               fitres = g->Fit(&fit_daily, "QS"); // Q: quiet, S: return fitres
+               g->Fit(&fit_daily, "Q"); // Q: quiet
                det_g->Fit(&det_fit_daily, "Q");   // Q: quiet
             }
-         }
-
-         char buf[256];
-         if (fitres.Get())
-         {
-            TString        unit("Unit");
-            if (strstr(name, "hDeadLayerEnergy"))
-            {
-               unit = "keV";
-            }
-            else if (strstr(name, "hDeadLayerSize"))
-            {
-               unit = "\\mu m";
-            }
-            else if (strstr(name, "hAmGain"))
-            {
-               unit = "ADC/keV";
-            }
-            sDet += " fit: p0 = ";
-            snprintf(buf, sizeof(buf), "%.2f", fitres->Value(0));
-            sDet += buf;
-            sDet += "\\pm";
-            snprintf(buf, sizeof(buf), "%.2f", fitres->FitResult::Error(0));
-            sDet += buf;
-            sDet += " [" + unit + "]; p1 = ";
-            snprintf(buf, sizeof(buf), "%.5f", fitres->Value(1)*60*60*24*30);
-            sDet += buf;
-            sDet += "\\pm";
-            snprintf(buf, sizeof(buf), "%.5f", fitres->FitResult::Error(1)*60*60*24*30);
-            sDet += buf;
-            sDet += " [" + unit + "/Month];";
          }
       }
       g->SetName(sDet);
@@ -410,7 +378,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       }
 
    double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
-   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 1.5, canvas_max_value + canvas_vpadding * 0.5);
+   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 0.5, canvas_max_value + canvas_vpadding * 0.5);
 
    for (vector<TH1F*>::iterator it = det_hosts.begin(); it != det_hosts.end(); it++)
    {
