@@ -95,7 +95,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
 
    const double	STOPPING_POWER_GD = 190, STOPPING_POWER_AM = 140; // keV/(\mu m)
    c->d["alpha"]->o["hDeadLayerSize"] = new TH1F(
-       AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdGain"]) - (*(TH1F*) c->d["alpha"]->o["hAmGain"]))
+       SILICON_DENSITY*100 * AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdGain"]) - (*(TH1F*) c->d["alpha"]->o["hAmGain"]))
        /
        (
           GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdGain"]) * STOPPING_POWER_AM
@@ -106,7 +106,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetTitle("hDeadLayerSize");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetXaxis()->SetTitle("Channel");
-   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead layer size, \\mu m");
+   ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead layer size, \\mu g/cm^2");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
 
 

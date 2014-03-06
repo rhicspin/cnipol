@@ -56,6 +56,7 @@ static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (
 #define GD_ALPHA_E   3182.68  // keV, Gd alpha energy A. Rytz, At. Data and Nucl. Data Tables 47, 205 (1991)
 #define ATTEN        0.2000   // =1/5 regular calibration
 #define CCONST       0.2000   // =1/5 regular calibration
+#define SILICON_DENSITY 2.329 // g/cm^3
 
 const int TOT_WFD_CH = NSTRIP + NTGTWFD; // Total WFD channels including target WFD channels.
 
