@@ -95,6 +95,17 @@ void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_va
 }
 
 
+Color_t GetLineColor(int det)
+{
+   Color_t  line_color = det + 2;
+   if (line_color == 5)
+   {
+      line_color = 28;
+   }
+   return line_color;
+}
+
+
 /** */
 void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
@@ -169,6 +180,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       hname += polIdName;
       hdet = new TH1F(hname, hname, 100, min_value, max_value);
       hdet->SetXTitle(h->GetYaxis()->GetTitle());
+      hdet->SetLineColor(GetLineColor(det));
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
       {
          double value = it->second[det];
@@ -242,11 +254,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 
       TGraphErrors *g = new TGraphErrors(result.second.size());
       TGraphErrors *det_g = new TGraphErrors(result.second.size());
-      Color_t  line_color = det + 2;
-      if (line_color == 5)
-      {
-         line_color = 28;
-      }
+      Color_t line_color = GetLineColor(det);
       g->SetLineColor(line_color);
       g->SetMarkerColor(line_color);
       g->SetMarkerStyle(20);
