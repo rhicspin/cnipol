@@ -98,9 +98,9 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
        AM_ALPHA_E * GD_ALPHA_E * ((*(TH1F*) c->d["alpha"]->o["hGdGain"]) - (*(TH1F*) c->d["alpha"]->o["hAmGain"]))
        /
        (
-          AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdGain"]) * STOPPING_POWER_GD
+          GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hGdGain"]) * STOPPING_POWER_AM
           -
-          GD_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmGain"]) * STOPPING_POWER_AM
+          AM_ALPHA_E * (*(TH1F*) c->d["alpha"]->o["hAmGain"]) * STOPPING_POWER_GD
        )
    );
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetName("hDeadLayerSize");
