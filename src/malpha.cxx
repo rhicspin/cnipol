@@ -487,6 +487,51 @@ void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double star
 }
 
 
+void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
+{
+   static CachingLogReader<SshLogReader> beam_intensity_reader(
+      "RHIC/BeamIons",
+      "bluDCCTtotal,yelDCCTtotal"
+      );
+
+   map<string, double> beam_mean_value;
+   int retval = beam_intensity_reader.ReadFillMean(fill_id, &beam_mean_value);
+
+   if (retval)
+   {
+      Fatal("malpha", "Some problems with SshLogReader");
+   }
+
+   for(map<string, double>::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
+   {
+      const string &key = it->first;
+      double value = it->second;
+      Info("malpha", "Mean %s equals to %f", key.c_str(), value);
+
+      if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
+      {
+         continue;
+      }
+      else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kYELLOW_BEAM))
+      {
+         continue;
+      }
+      rBeamCurrent[polId].second[startTime].resize(N_DETECTORS);
+      for(int i = 0; i < N_DETECTORS; i++)
+      {
+         rBeamCurrent[polId].second[startTime][i] = value;
+      }
+      rBeamCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+      for(int i = 0; i < N_DETECTORS; i++)
+      {
+         rBeamCurrentErr[polId].second[startTime][i] = 0;
+      }
+   }
+   FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
+   rBeamCurrent[polId].YTitle = "BeamCurrent";
+}
+
+
 /** */
 int main(int argc, char *argv[])
 {
@@ -683,50 +728,10 @@ int main(int argc, char *argv[])
       FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
       rBiasCurrent[polId].YTitle = "BiasCurrent";
 
-      static CachingLogReader<SshLogReader> beam_intensity_reader(
-         "RHIC/BeamIons",
-         "bluDCCTtotal,yelDCCTtotal"
-         );
-
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
       {
-         map<string, double> beam_mean_value;
-         int retval = beam_intensity_reader.ReadFillMean(fill_id, &beam_mean_value);
-
-         if (retval)
-         {
-            Error("malpha", "Some problems with SshLogReader");
-            return EXIT_FAILURE;
-         }
-
-         for(map<string, double>::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
-         {
-            const string &key = it->first;
-            double value = it->second;
-            Info("malpha", "Mean %s equals to %f", key.c_str(), value);
-
-            if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
-            {
-               continue;
-            }
-            else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kYELLOW_BEAM))
-            {
-               continue;
-            }
-            rBeamCurrent[polId].second[startTime].resize(N_DETECTORS);
-            for(int i = 0; i < N_DETECTORS; i++)
-            {
-               rBeamCurrent[polId].second[startTime][i] = value;
-            }
-            rBeamCurrentErr[polId].second[startTime].resize(N_DETECTORS);
-            for(int i = 0; i < N_DETECTORS; i++)
-            {
-               rBeamCurrentErr[polId].second[startTime][i] = 0;
-            }
-         }
-         FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
-         rBeamCurrent[polId].YTitle = "BeamCurrent";
+         FillBeamCurrent(fill_id, polId, startTime, rBeamCurrent, rBeamCurrentErr);
       }
 
       TH1F  *hAmGain = (TH1F*) f->FindObjectAny("hAmGain");
