@@ -614,7 +614,7 @@ void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t,
       }
    }
    FillDetectorAverage(rBeamCurrent[polId], rBeamCurrentErr[polId], startTime);
-   rBeamCurrent[polId].YTitle = "BeamCurrent";
+   rBeamCurrent[polId].YTitle = "Beam intensity (10^11 protons)";
 }
 
 
