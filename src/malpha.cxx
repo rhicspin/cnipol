@@ -487,6 +487,77 @@ void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double star
 }
 
 
+void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
+{
+   map<string, double> bias_mean_value;
+   CachingLogReader<SshLogReader>	*bias_current_reader = NULL;
+
+   // exportDataLogger seems to have problems exporting differently timestamped values
+   // from different loggers, so we have to read out them separately
+   switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
+   {
+      case kBLUE_BEAM:
+      {
+         static CachingLogReader<SshLogReader> _reader(
+               "RHIC/Polarimeter/Blue/biasReadbacks",
+               "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
+               "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
+               "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
+               "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM"
+               );
+         bias_current_reader = &_reader;
+         break;
+      }
+      case kYELLOW_BEAM:
+      {
+         static CachingLogReader<SshLogReader> _reader(
+               "RHIC/Polarimeter/Yellow/biasReadbacks",
+               "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
+               "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
+               "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
+               "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
+               );
+         bias_current_reader = &_reader;
+         break;
+      }
+      default:
+      Fatal("malpha", "Unknown beam type");
+   }
+
+   int retval = bias_current_reader->ReadTimeRangeMean(startTime, endTime, &bias_mean_value);
+
+   if (retval)
+   {
+      Fatal("malpha", "Some problems with SshLogReader");
+   }
+
+   for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
+   {
+      const string &key = it->first;
+      double value = it->second;
+      Info("malpha", "Mean %s equals to %f", key.c_str(), value);
+
+      EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+      if (ssh_PolId != polId)
+      {
+         continue;
+      }
+      int	ssh_DetId = key[15] - '0';
+
+      if (value > 100)
+      {
+         continue;
+      }
+
+      rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
+      rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
+      rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
+      rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
+   }
+   FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
+   rBiasCurrent[polId].YTitle = "BiasCurrent";
+}
+
 void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
 {
    static CachingLogReader<SshLogReader> beam_intensity_reader(
@@ -658,75 +729,7 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      map<string, double> bias_mean_value;
-      CachingLogReader<SshLogReader>	*bias_current_reader = NULL;
-
-      // exportDataLogger seems to have problems exporting differently timestamped values
-      // from different loggers, so we have to read out them separately
-      switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
-      {
-         case kBLUE_BEAM:
-         {
-            static CachingLogReader<SshLogReader> _reader(
-                  "RHIC/Polarimeter/Blue/biasReadbacks",
-                  "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
-                  "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
-                  "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
-                  "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM"
-                  );
-            bias_current_reader = &_reader;
-            break;
-         }
-         case kYELLOW_BEAM:
-         {
-            static CachingLogReader<SshLogReader> _reader(
-                  "RHIC/Polarimeter/Yellow/biasReadbacks",
-                  "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
-                  "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
-                  "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
-                  "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
-                  );
-            bias_current_reader = &_reader;
-            break;
-         }
-         default:
-         Error("malpha", "Unknown beam type");
-         return EXIT_FAILURE;
-      }
-
-      int retval = bias_current_reader->ReadTimeRangeMean(startTime, ssh_endTime, &bias_mean_value);
-
-      if (retval)
-      {
-         Error("malpha", "Some problems with SshLogReader");
-         return EXIT_FAILURE;
-      }
-
-      for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
-      {
-         const string &key = it->first;
-         double value = it->second;
-         Info("malpha", "Mean %s equals to %f", key.c_str(), value);
-
-         EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
-         if (ssh_PolId != polId)
-         {
-            continue;
-         }
-         int	ssh_DetId = key[15] - '0';
-
-         if (value > 100)
-         {
-            continue;
-         }
-
-         rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
-         rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
-         rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
-         rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
-      }
-      FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
-      rBiasCurrent[polId].YTitle = "BiasCurrent";
+      FillBiasCurrent(polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
 
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
