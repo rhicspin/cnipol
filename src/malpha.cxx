@@ -565,19 +565,18 @@ void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t,
       "bluDCCTtotal,yelDCCTtotal"
       );
 
-   map<string, double> beam_mean_value;
-   int retval = beam_intensity_reader.ReadFillMean(fill_id, &beam_mean_value);
+   map<string, map<SshLogReader::cdev_time_t, double> > beam_mean_value;
+   int retval = beam_intensity_reader.ReadFill(fill_id, &beam_mean_value);
 
    if (retval)
    {
       Fatal("malpha", "Some problems with SshLogReader");
    }
 
-   for(map<string, double>::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
+   for(map<string, map<SshLogReader::cdev_time_t, double> >::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
    {
       const string &key = it->first;
-      double value = it->second;
-      Info("malpha", "Mean %s equals to %f", key.c_str(), value);
+      const map<SshLogReader::cdev_time_t, double> &values = it->second;
 
       if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
       {
@@ -587,10 +586,25 @@ void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t,
       {
          continue;
       }
+
+      double value_acc = 0.0;
+      int value_count = 0;
+      for(map<SshLogReader::cdev_time_t, double>::const_iterator it2 = values.begin(); it2 != values.end(); it2++)
+      {
+         double value = it2->second;
+         if (value > 50.0)
+         {
+            value_acc += value;
+            value_count++;
+         }
+      }
+      double beam_current = value_acc / value_count;
+      Info("malpha", "Mean %s equals to %f", key.c_str(), beam_current);
+
       rBeamCurrent[polId].second[startTime].resize(N_DETECTORS);
       for(int i = 0; i < N_DETECTORS; i++)
       {
-         rBeamCurrent[polId].second[startTime][i] = value;
+         rBeamCurrent[polId].second[startTime][i] = beam_current;
       }
       rBeamCurrentErr[polId].second[startTime].resize(N_DETECTORS);
       for(int i = 0; i < N_DETECTORS; i++)
