@@ -324,8 +324,9 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          TF1   fit_daily("fit_daily", "pol0");
          TF1   det_fit_daily("det_fit_daily", "pol0");
          fit_daily.SetLineColor(line_color);
+         fit_daily.SetLineWidth(0.5);
          det_fit_daily.SetLineColor(kBlack);
-         det_fit_daily.SetLineWidth(1);
+         det_fit_daily.SetLineWidth(0.5);
 
          {
             time_t t = max_startTime;
