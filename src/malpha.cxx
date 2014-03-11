@@ -556,7 +556,7 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
       rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
    }
    FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
-   rBiasCurrent[polId].YTitle = "BiasCurrent";
+   rBiasCurrent[polId].YTitle = "BiasCurrent, \\mu A";
 }
 
 void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
