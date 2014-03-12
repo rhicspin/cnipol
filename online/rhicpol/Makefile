@@ -1,9 +1,22 @@
-PROGS = rhicpol
+###PROGS = rhicpol
+###
+###include ../include/common.mk
+###
+###rhicpol : rpolutilp.o rhicpol.o rpolutil.o ../libcmc/libcmc.o ../rpoldaemon/globals.o ../rpoldaemon/rpoldata.o
+###
 
-include ../include/common.mk
+include /vobs/libs/makefiles/MakeStd.inc
 
-#CXXFLAGS += $(shell root-config --cflags)
-#CFLAGS += $(shell root-config --cflags)
-#LIBS += $(shell root-config --ldflags --libs)
+NAME = rhicpol
 
-rhicpol : rpolutilp.o rhicpol.o rpolutil.o ../libcmc/libcmc.o ../rpoldaemon/globals.o ../rpoldaemon/rpoldata.o
+USESOLIBS = yes
+INC = -I../include
+USER_CXXFLAGS = $(shell root-config --cflags)
+LDFLAGS = ../libcmc/libcmc.o $(shell root-config --libs)
+
+PROG1 = rhicpol
+SRCS1 = rhicpol.cpp rpolutil.cpp rpolutilp.cpp globals.cpp rpoldata.cpp
+PRIVATE_HEADERS1 = rpolutil.h
+LIBS1 = cdevCns cdev includeCdev GenData rhicError Async setHist
+
+include $(MAKEDIR)/MakeApp.inc

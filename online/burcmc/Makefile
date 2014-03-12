@@ -2,7 +2,6 @@ CFLAGS = -m32
 LDFLAGS = -m32
 PROGS = burcmc
 
-include ../include/common.mk
 
 burcmc : burcmc.o ../libcmc/libcmc.o
 

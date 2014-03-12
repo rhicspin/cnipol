@@ -1,7 +1,5 @@
 PROGS = libcmc.o
 
-include ../include/common.mk
-
 CFLAGS = -m32
 libcmc.o : libcmc.c
 

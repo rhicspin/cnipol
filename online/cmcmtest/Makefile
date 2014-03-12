@@ -2,7 +2,6 @@ CFLAGS = -m32
 LDFLAGS = -m32
 PROGS = cmcmtest
 
-include ../include/common.mk
 
 #CXXFLAGS += $(shell root-config --cflags)
 #CFLAGS += $(shell root-config --cflags)
