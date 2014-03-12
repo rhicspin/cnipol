@@ -5,7 +5,6 @@
 
 #include "TBuffer.h"
 
-//#include "globals.h"
 #include "rhicpol.h"
 #include "static_assert.h"
 
