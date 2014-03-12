@@ -98,6 +98,7 @@ static struct usb_driver cmcamac_driver;
 static ssize_t cmcamac_send(struct usb_cmcamac *dev, void *buf, size_t count)
 {
 	int retval = 0;
+	int cnt;
 
 	/* verify that we actually have some data to write */
 	if (count == 0)	return 0;
@@ -108,13 +109,13 @@ static ssize_t cmcamac_send(struct usb_cmcamac *dev, void *buf, size_t count)
 			      usb_sndbulkpipe(dev->udev, dev->bulk_out_endpointAddr),
 			      dev->bulk_out_buffer,
 			      min(dev->bulk_out_size, count),
-			      &count, CMCTMO);
+			      &cnt, CMCTMO);
 	if (retval) {
 		err("%s - failed writing, error %d", __FUNCTION__, retval);
 		return retval;
 	}
 
-	return count;
+	return cnt;
 }
 
 /*

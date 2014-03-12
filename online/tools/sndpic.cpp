@@ -52,12 +52,12 @@ int main(int argc, char **argv)
     lseek(file, 0, SEEK_SET);
     len = read(file, ptr, len);
 
-    cdevData::addTag("timeStamp");
+    cdevData::addTag((char *)"timeStamp");
     cdevDevice & pol = cdevDevice::attachRef(argv[1]);
 
     tm = time(NULL);
-    data.insert("timeStamp", tm);
-    data.insert("value", ptr, len);
+    data.insert((char *)"timeStamp", tm);
+    data.insert((char *)"value", ptr, len);
 
     sprintf(cmd, "set %s", argv[2]);
 

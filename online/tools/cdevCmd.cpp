@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
     if (argc == 3) {    // get - we know how to do... Arrays not supported ...
         sprintf(command, "get %s", argv[2]);
         if(!DEVSEND(dev, command, NULL, &cdat, stdout, irc)) {
-            cdat.get("value", &cdevval);
+            cdat.get((char *)"value", &cdevval);
             printf("%s\n", cdevval);
         }
     } else {            // set - we need to find type first.
@@ -43,22 +43,22 @@ int main (int argc, char *argv[])
         sprintf(command, "set %s", argv[2]);
         switch (i) {
         case 0: // StringType
-            cdat.insert("value", argv[3]);
+            cdat.insert((char *)"value", argv[3]);
             break;
         case 1: // DoubleType
-            cdat.insert("value", strtod(argv[3], NULL));
+            cdat.insert((char *)"value", strtod(argv[3], NULL));
             break;
         case 2: // FloatType
-            cdat.insert("value", (float)strtod(argv[3], NULL));
+            cdat.insert((char *)"value", (float)strtod(argv[3], NULL));
             break;
         case 3: // ShortType
-            cdat.insert("value", (short) strtol(argv[3], NULL, 0));
+            cdat.insert((char *)"value", (short) strtol(argv[3], NULL, 0));
             break;
         case 4: // LongType
-            cdat.insert("value", strtol(argv[3], NULL, 0));
+            cdat.insert((char *)"value", strtol(argv[3], NULL, 0));
             break;
         case 5: // UShortType
-            cdat.insert("value", (unsigned short) strtol(argv[3], NULL, 0));
+            cdat.insert((char *)"value", (unsigned short) strtol(argv[3], NULL, 0));
             break;
         default:        // Unknown
             printf("Unknown type (%s) to be set - call developers.\n", type);
