@@ -123,7 +123,7 @@ static ssize_t cmcamac_send(struct usb_cmcamac *dev, void *buf, size_t count)
 static ssize_t cmcamac_receive(struct usb_cmcamac *dev, void *buf, size_t count)
 {
 	int retval = 0;
-	size_t cnt;
+	int cnt;
 	
 	/* do a blocking bulk read to get data from the device */
 	retval = usb_bulk_msg(dev->udev,
@@ -148,8 +148,8 @@ static ssize_t cmcamac_receive(struct usb_cmcamac *dev, void *buf, size_t count)
 
 static int cmcamac_getnumber(struct usb_cmcamac *dev)
 {
-	long sndbuf[] = {0xFFFFFFFF, 0, 0x3C11, 0x0E000000};
-	long buf[128];
+	int sndbuf[] = {0xFFFFFFFF, 0, 0x3C11, 0x0E000000};
+	int buf[128];
 	int retval = 0;
 	int i;
 	int ecnt;
@@ -200,7 +200,7 @@ AGAIN:
 /*		Read data to get crate number		*/
 	retval = cmcamac_receive(dev, &buf, sizeof(buf));
 	if (retval < 0) return retval;
-	if (retval != sizeof(long)) {
+	if (retval != sizeof(int)) {
 		err("Unexpected error reading from controller. Retval = %d.", retval);
 		retval = -ECOMM;
 		goto RESET;
@@ -327,7 +327,8 @@ static ssize_t cmcamac_read(struct file *file, char *buffer, size_t count, loff_
 {
 	struct usb_cmcamac *dev;
 	int retval = 0;
-	size_t rcnt, l;
+	size_t rcnt;
+	int l;
 	int i;
 
 	if (count <= 0) return 0;
@@ -349,7 +350,7 @@ static ssize_t cmcamac_read(struct file *file, char *buffer, size_t count, loff_
 
 		/* Copy the data to userspace */
 		if (count > rcnt && l > 0 &&  
-			copy_to_user(&buffer[rcnt], dev->bulk_in_buffer, min(l, count-rcnt))) 
+			copy_to_user(&buffer[rcnt], dev->bulk_in_buffer, min((size_t)l, count-rcnt))) 
 				return -EFAULT;
 		rcnt += l;
 		if (l != dev->bulk_in_size) return rcnt;
@@ -362,7 +363,8 @@ static ssize_t cmcamac_write(struct file *file, const char *user_buffer, size_t 
 {
 	struct usb_cmcamac *dev;
 	int retval = 0;
-	size_t wcnt, l;
+	size_t wcnt;
+	int l;
 
 	if (count <= 0) return 0;
 
@@ -393,8 +395,8 @@ static ssize_t cmcamac_write(struct file *file, const char *user_buffer, size_t 
 static int cmcamac_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct usb_cmcamac *dev;
-	size_t cnt;
-	long data = 0;
+	int cnt;
+	int data = 0;
 	int retval = -ENOIOCTLCMD;
 
 	dev = (struct usb_cmcamac *)file->private_data;

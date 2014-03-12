@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
 //    cdat.asciiDump();
         irc = cdat.get(7116, &type);    // 7116 is "propType"
         if (irc) return irc;
-        for (i=0; i<sizeof(devTypes)/sizeof(devTypes[0]); i++) if (!strcmp(type, devTypes[i])) break;
+        for (i=0; i<(int)(sizeof(devTypes)/sizeof(devTypes[0])); i++) if (!strcmp(type, devTypes[i])) break;
         sprintf(command, "set %s", argv[2]);
         switch (i) {
         case 0: // StringType

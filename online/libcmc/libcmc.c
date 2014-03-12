@@ -64,7 +64,7 @@ int CMC_R1(int C)
  * Allocates a new chain and read/write buffers. Return new chain on success,
  * NULL on failure
  */
-CMC_chain *CMC_AllocateChain(size_t wlen, size_t rlen)
+CMC_chain *CMC_AllocateChain(int wlen, int rlen)
 {
    CMC_chain *chain;
 
@@ -73,7 +73,7 @@ CMC_chain *CMC_AllocateChain(size_t wlen, size_t rlen)
    memset(chain, 0, sizeof(CMC_chain));
 
    if (wlen < 3) wlen = 1024;
-   chain->wdata = (long *)malloc(wlen*sizeof(long));
+   chain->wdata = (int *)malloc(wlen*sizeof(int));
    if (chain->wdata == NULL) {
        free(chain);
        return NULL;
@@ -81,7 +81,7 @@ CMC_chain *CMC_AllocateChain(size_t wlen, size_t rlen)
    chain->wlen = wlen;
 
    if (rlen < 1) rlen = 1;
-   chain->rdata = (long *)malloc(rlen*sizeof(long));
+   chain->rdata = (int *)malloc(rlen*sizeof(int));
    if (chain->rdata == NULL) {
        free(chain->wdata);
        free(chain);
@@ -120,12 +120,12 @@ void CMC_ResetChain(CMC_chain *chain)
 
 
 /* Adds another command to the chain. Reallocates the wdata segment if te chain becomes too long */
-int CMC_Add2Chain(CMC_chain *chain, long cmd)
+int CMC_Add2Chain(CMC_chain *chain, int cmd)
 {
    if (chain == NULL) return -ENOMEM;
    // Reallocate if necessary
    if (chain->wptr >= chain->wlen) {
-       long *wd = (long*) realloc(chain->wdata, 2*chain->wlen*sizeof(long));
+       int *wd = (int *) realloc(chain->wdata, 2*chain->wlen*sizeof(int));
        if (wd == NULL) {
            CMC_ReleaseChain(chain);
            return -ENOMEM;
@@ -183,21 +183,21 @@ int CMC_CommitChain(CMC_chain *chain, int C)
     if ((retval = CMC_Add2Chain(chain, CMC_CMDFLUSH)) < 0) return retval;
 
     // Write the chain itself
-    retval = write(__Crates[C], chain->wdata, sizeof(long)*chain->wptr);
+    retval = write(__Crates[C], chain->wdata, sizeof(int)*chain->wptr);
     chain->wptr--;
 
     //fflush(Crates[C]);
-    if (retval != (int) (sizeof(long)*(chain->wptr+1))) return -errno;     /* remove PKTEND */
+    if (retval != (int) (sizeof(int)*(chain->wptr+1))) return -errno;     /* remove PKTEND */
 
     // Read the result (exactly one record)
-    retval = read(__Crates[C], chain->rdata, sizeof(long)*chain->rlen);
+    retval = read(__Crates[C], chain->rdata, sizeof(int)*chain->rlen);
 
     if (retval <= 0) {
         chain->rptr = 0;
         return -errno;
     }
 
-    retval /= sizeof(long);
+    retval /= sizeof(int);
     chain->rptr = (retval > (int) chain->rlen) ? chain->rlen : retval;
     return retval;
 }
@@ -208,7 +208,7 @@ int CMC_CommitChain(CMC_chain *chain, int C)
  * or 0 otherwise. Updates QX global variable. Takes a huge amount of time for
  * a single CAMAC operation
  */
-long CMC_Single(int C, int N, int F, int A, long data)
+int CMC_Single(int C, int N, int F, int A, int data)
 {
     CMC_chain * ch;
     int retval;

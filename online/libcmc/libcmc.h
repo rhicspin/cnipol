@@ -50,25 +50,25 @@
 #define CMC_DMASK	0x00FFFFFF
 
 typedef struct {
-	long *wdata; 	/* chain to write buffer	*/
-	long *rdata;	/* read buffer			*/
-	size_t wlen;	/* write buffer size		*/
-	size_t rlen;	/* read buffer size		*/
-	size_t wptr;	/* filled portion of write buffer	*/
-	size_t rptr;	/* really read from device	*/
+	int *wdata; 	/* chain to write buffer	*/
+	int *rdata;	/* read buffer			*/
+	int wlen;	/* write buffer size		*/
+	int rlen;	/* read buffer size		*/
+	int wptr;	/* filled portion of write buffer	*/
+	int rptr;	/* really read from device	*/
 } CMC_chain;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-CMC_chain *CMC_AllocateChain(size_t wlen, size_t rlen);
+CMC_chain *CMC_AllocateChain(int wlen, int rlen);
 void CMC_ReleaseChain(CMC_chain *chain);
 void CMC_ResetChain(CMC_chain *chain);
 int  CMC_CommitChain(CMC_chain *chain, int C);
-int  CMC_Add2Chain(CMC_chain *chain, long cmd);
+int  CMC_Add2Chain(CMC_chain *chain, int cmd);
 void CMC_DumpChain(CMC_chain *ch, size_t wc, size_t rc, FILE *f); 
-long CMC_Single(int C, int N, int F, int A, long data);
+int  CMC_Single(int C, int N, int F, int A, int data);
 int  CMC_Open(int C);
 void CMC_Close(int C);
 int  CMC_Reset(int C);

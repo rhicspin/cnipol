@@ -22,7 +22,7 @@
 
 typedef union {
 	unsigned short s[2];
-	unsigned long l;
+	unsigned int l;
 } ls;
 
 int START = 0;
@@ -80,7 +80,7 @@ int lutclose(void) {
     return 10517;
 }
 
-void MemDump(unsigned long addr) {
+void MemDump(unsigned int addr) {
     int i, j;
     unsigned short D;
     C_WRITE(N, 9, 16, 0x10); 	// Select memory chip
@@ -269,7 +269,7 @@ int analyse(char * str) {
     if (str[0] == '*') return -1;
     tok = strtok(str, "= \t\n");
     if (tok == NULL || strlen(tok) == 0) return -1;
-    for (i=0, cmd=-1; i<sizeof(known)/sizeof(known[0]); i++) {
+    for (i=0, cmd=-1; i<(int)(sizeof(known)/sizeof(known[0])); i++) {
 	if (!strncasecmp(tok, known[i], min(strlen(known[i]), strlen(tok)))) {
 	    if (cmd == -1) 
 		cmd = i;
@@ -316,7 +316,7 @@ int analyse(char * str) {
 	case 10: ANERR = (toupper(tok[0])=='T') ? 0 : 1; break;	// Analysis
 	case 11:	// Tests
 	    TEST = 0;
-	    for (i=0; i<strlen(tok); i++) for (j=0;j<strlen(tst); j++)
+	    for (i=0; i<(int)strlen(tok); i++) for (j=0;j<(int)strlen(tst); j++)
 		if (toupper(tok[i]) == tst[j]) TEST |= (1 << j);
 	    break;
 	case 12: 	// FastCamac option/acceleration
@@ -358,7 +358,7 @@ void printconf(void) {
     
     printf("CN: %d %d  VirtMask: %X  Loops: %d  Analyse %s for:", 
 	CR, N, VIRTMASK, LOOP, errtime[ANERR]);
-    for (i=0; i<sizeof(tests)/sizeof(tests[0]); i++)
+    for (i=0; i<(int)(sizeof(tests)/sizeof(tests[0])); i++)
 	if ((TEST >> i) & 1) printf(" %s", tests[i]);
     printf("\nV%1.1d Ranges: RAM: 0x%X-0x%X LUT: 0x%X-0x%X  FCAMACopt: %c%d  FRAMopt: %s\n", 
 	WFDVER, START, STOP, START, LSTOP, FCOPT, FCACC, ramopt[FROPT]);
@@ -431,7 +431,7 @@ int DirectWrite(void) {
 	    C_WRITE_B(N, 0, 16, WD, towrite);
 	    C_READ(N, 0, 1, final.s[0]);
 	    C_READ(N, 1, 1, final.s[1]);
-	    if (final.l != (j + 2*towrite)) {
+	    if (final.l != (unsigned)(j + 2*towrite)) {
 		printf("\nFinal pointer error: read=%4.4X != expected=%4.4X (Retry %d)\n",
 		    final.l, j+2*towrite, k);
 		return 0;
@@ -467,7 +467,7 @@ int DirectRead(int * err) {
 	    C_READ_B(N, 0, 0, RDD, toread, FCOPT, FCACC);
 	    C_READ(N, 0, 1, final.s[0]);
 	    C_READ(N, 1, 1, final.s[1]);
-	    if (final.l != (j + 2*toread)) {
+	    if (final.l != (unsigned)(j + 2*toread)) {
 		printf("\nFinal pointer error: read=%4.4X != expected=%4.4X\n",
 		    final.l, j+2*toread);
 		return 0;
@@ -485,7 +485,7 @@ int DirectRead(int * err) {
     fcopt(0);
     C_READ(N, 0, 1, final.s[0]);
     C_READ(N, 1, 1, final.s[1]);
-    if (final.l != STOP) {
+    if (final.l != (unsigned)STOP) {
 	printf("\nFinal pointer error: read=%4.4X != expected=%4.4X\n",
 	    final.l, STOP);
 	return 0;
@@ -510,7 +510,7 @@ int IndirectWrite(void) {
 	    C_WRITE_B(N, 12, 16, WD, towrite);
 	    C_READ(N, 0, 1, final.s[0]);
 	    C_READ(N, 1, 1, final.s[1]);
-	    if (final.l != (j + 2*towrite*(REPEAT+1))) {
+	    if (final.l != (unsigned)(j + 2*towrite*(REPEAT+1))) {
 		printf("\nFinal pointer error: read=%4.4X != expected=%4.4X (Retry %d)\n",
 		    final.l, j+2*towrite*(REPEAT+1), k);
 		return 0;
@@ -601,7 +601,7 @@ int GCCWrite(void) {
 	    C_READ(N, 0, 1, final.s[0]);
 	    C_READ(N, 1, 1, final.s[1]);
 	    C_WRITE(N, 9, 16, VIRTMASK);
-	    if (final.l != (j + 4*towrite*nvirt)) {
+	    if (final.l != (unsigned)(j + 4*towrite*nvirt)) {
 		printf("\nFinal pointer error: read=%4.4X != expected=%4.4X (Retry %d)\n",
 		    final.l, j+4*towrite*nvirt, k);
 		return 0;
@@ -661,7 +661,7 @@ int GCCRead(int * err) {
 
 int EventWrite(void) {
     int i, ops;
-    unsigned long lastaddr, tnext;
+    unsigned int lastaddr, tnext;
     ls final;
 
     C_SETINH();		// set Inhibit
@@ -690,7 +690,7 @@ int EventWrite(void) {
     C_WRITE(N, 9, 16, 0x10);	// Select memory Vx
     ops += 518;
     tnext = time(NULL);
-    for ( lastaddr=START; lastaddr < STOP-100 && iStop == 0; ) {
+    for ( lastaddr=START; (int)lastaddr < STOP-100 && iStop == 0; ) {
 	C_READ(N, 0, 1, final.s[0]);	// Read current pointer
 	C_READ(N, 1, 1, final.s[1]);
 	if (final.l > lastaddr) {
@@ -837,7 +837,7 @@ void RunTest(void) {
 	seed ^= k;
 	srand(seed);
 	printf("Pass %d with seed %X (first RAND %X)\n", i, seed, rand());
-	for (j=0; j<sizeof(tests)/sizeof(tests[0]) && iStop==0; j++) {
+	for (j=0; j<(int)(sizeof(tests)/sizeof(tests[0])) && iStop==0; j++) {
 	    if (((TEST >> j) & 1) == 0) continue;
 	    lutclose();
 	    // Write
@@ -871,13 +871,13 @@ void RunTest(void) {
     signal(SIGINT, SIG_DFL);
     if (i > 1) {
 	printf(" <Speed>:");
-	for (j=0; j<sizeof(tests)/sizeof(tests[0]); j++)
+	for (j=0; j<(int)(sizeof(tests)/sizeof(tests[0])); j++)
 	    printf(" %5s        ", tests[j]);
 	printf("\n  Write:");
-	for (j=0; j<sizeof(tests)/sizeof(tests[0]); j++)
+	for (j=0; j<(int)(sizeof(tests)/sizeof(tests[0])); j++)
 	    printf(" %7.1f(%4.1f)", s[j][0]/i, s2[j][0]/i-s[j][0]*s[j][0]/i/i);
 	printf("\n  Read: ");
-	for (j=0; j<sizeof(tests)/sizeof(tests[0]); j++)
+	for (j=0; j<(int)(sizeof(tests)/sizeof(tests[0])); j++)
 	    printf(" %7.1f(%4.1f)", s[j][1]/i, s2[j][1]/i-s[j][1]*s[j][1]/i/i);
 	printf("\n");
     }

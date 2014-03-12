@@ -1,4 +1,5 @@
-
+CFLAGS = -m32
+LDFLAGS = -m32
 PROGS = cmcmtest
 
 include ../include/common.mk
