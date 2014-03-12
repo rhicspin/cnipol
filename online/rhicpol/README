@@ -1,0 +1,2 @@
+Main online DAQ code. Take data form pC and HJET measurements.
+Controls CAMAC and hardware, takes data and writes it to hard drive.

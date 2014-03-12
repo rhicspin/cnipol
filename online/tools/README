@@ -1,0 +1,4 @@
+CDEV tools:
+cdevCmd - cdev simple command tool - read/write simple CDEV variables.
+          Arrays etc. are not supported.
+sndpic  - send small file (picture) to CDEV variable.
