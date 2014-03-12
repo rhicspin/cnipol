@@ -7,7 +7,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "rcdev.h"
+#include <cdevCns/cdevCns.hxx>
+#include "../include/rcdev.h"
 
 int main (int argc, char *argv[])
 {
@@ -25,6 +26,9 @@ int main (int argc, char *argv[])
     }
     irc = 0;
     type = 0;
+    
+    cdevCnsInit();
+
     cdevDevice & dev = cdevDevice::attachRef(argv[1]);
     if (argc == 3) {    // get - we know how to do... Arrays not supported ...
         sprintf(command, "get %s", argv[2]);
