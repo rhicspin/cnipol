@@ -265,7 +265,7 @@ void getCdevInfoMachineParams()
 
    int voltages[1000];
 
-   for (UShort_t iRing=0; iRing<N_BEAMS; iRing++) 
+   for (uint16_t iRing=0; iRing<N_BEAMS; iRing++)
    {
       if (iRing == 0)      fprintf(LogFile, "RHICPOL-INFO : Blue ring\n");
       else if (iRing == 1) fprintf(LogFile, "RHICPOL-INFO : Yellow ring\n");
