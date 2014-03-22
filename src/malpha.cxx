@@ -221,7 +221,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    double vpadding = (result.max_value - result.min_value) * 0.15;
    h->GetYaxis()->SetRangeUser(result.min_value - vpadding, result.max_value + vpadding);
 
-   vector<double> mean, sigma;
    TH1F *hdet = 0;
    for (int det = 0; det < N_DETECTORS; det++)
    {
@@ -243,16 +242,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          hdet->Fill(value);
       }
       TFitResultPtr fitres = hdet->Fit("gaus", "QSW"); // Q: quiet, S: return fitres, W: all weights = 1
-      if (fitres.Get())
-      {
-         mean.push_back(fitres->Value(1));
-         sigma.push_back(fitres->Value(2));
-      }
-      else
-      {
-         mean.push_back(0);
-         sigma.push_back(-1);
-      }
       if (max_startTime)
       {
          delete hdet;
@@ -329,13 +318,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          double startTime = it->first;
          const RunName &runName = runNameD[startTime];
          double value = it->second[det];
-
-         if (fabs(value - mean[det]) > 3*sigma[det])
-         {
-            g->RemovePoint(i);
-            det_g->RemovePoint(i);
-            continue;
-         }
 
          if (max_startTime)
          {
