@@ -32,6 +32,10 @@ struct ResultMean
    map<Time, double> first;
    map< Time, vector<double> >   second;
    string   YTitle;
+
+   // used for histogram limits
+   double       min_value, max_value;
+   double       min_mean, max_mean, max_sigma;
 };
 
 
@@ -72,25 +76,79 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
 }
 
 
-void GetDeviceMaxMin(const ResultMean &result, double *min_value, double *max_value)
+void FillDeviceMaxMin(map<Short_t, ResultMean> &results)
 {
-   *min_value = FLT_MAX;
-   *max_value = -FLT_MAX;
+   double min_value = FLT_MAX;
+   double max_value = -FLT_MAX;
 
-   for (int det = 0; det < N_DETECTORS; det++)
+   double min_mean = FLT_MAX;
+   double max_mean = -FLT_MAX;
+   double max_sigma = 0;
+
+   for (map<Short_t, ResultMean>::const_iterator i = results.begin(); i != results.end(); i++)
    {
-      for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+      const ResultMean &result = i->second;
+
+      for (int det = 0; det < N_DETECTORS; det++)
       {
-         double value = it->second[det];
-         if (*min_value > value)
+         // find min and max values
+         for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
          {
-            *min_value = value;
+            double value = it->second[det];
+            if (min_value > value)
+            {
+               min_value = value;
+            }
+            if (max_value < value)
+            {
+               max_value = value;
+            }
          }
-         if (*max_value < value)
+
+         // also we use information about mean values and their width
+         // to calculate limits for plots that are not interested in outliers (such as PlotMean())
+         double mean_sum = 0;
+         double sigma_sum = 0;
+         int count = result.second.size();
+         if (count > 0)
          {
-            *max_value = value;
+            for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+            {
+               double value = it->second[det];
+               mean_sum += value;
+            }
+            double mean = mean_sum / count;
+            for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+            {
+               double value = it->second[det];
+               sigma_sum += (mean - value) * (mean - value);
+            }
+            double sigma = sqrt(sigma_sum / count);
+
+            if (sigma > max_sigma)
+            {
+               max_sigma = sigma;
+            }
+            if (mean < min_mean)
+            {
+               min_mean = mean;
+            }
+            if (mean > max_mean)
+            {
+               max_mean = mean;
+            }
          }
       }
+   }
+
+   for (map<Short_t, ResultMean>::iterator i = results.begin(); i != results.end(); i++)
+   {
+      ResultMean &result = i->second;
+      result.min_value = min_value;
+      result.max_value = max_value;
+      result.min_mean = min_mean;
+      result.max_mean = max_mean;
+      result.max_sigma = max_sigma;
    }
 }
 
@@ -160,10 +218,8 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    }
    h->SetYTitle(result.YTitle.c_str());
 
-   double max_value, min_value;
-   GetDeviceMaxMin(result, &min_value, &max_value);
-   double vpadding = (max_value - min_value) * 0.15;
-   h->GetYaxis()->SetRangeUser(min_value - vpadding, max_value + vpadding);
+   double vpadding = (result.max_value - result.min_value) * 0.15;
+   h->GetYaxis()->SetRangeUser(result.min_value - vpadding, result.max_value + vpadding);
 
    vector<double> mean, sigma;
    TH1F *hdet = 0;
@@ -178,7 +234,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       hname += (det + 1);
       hname += "_";
       hname += polIdName;
-      hdet = new TH1F(hname, hname, 100, min_value, max_value);
+      hdet = new TH1F(hname, hname, 100, result.min_value, result.max_value);
       hdet->SetXTitle(h->GetYaxis()->GetTitle());
       hdet->SetLineColor(GetLineColor(det));
       for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
@@ -231,7 +287,9 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       host = new TH1F(host_name, title, result.first.size(), 0.0, result.first.size());
    }
 
-   double canvas_min_value = FLT_MAX, canvas_max_value = -FLT_MAX;
+   double canvas_min = result.min_mean - 3*result.max_sigma;
+   double canvas_max = result.max_mean + 3*result.max_sigma;
+   host->GetYaxis()->SetRangeUser(canvas_min, canvas_max);
 
    for (int det = 0; det < N_DETECTORS; det++)
    {
@@ -302,13 +360,15 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
             continue;
          }
 
-         if (canvas_min_value > value)
+         if (value > canvas_max)
          {
-            canvas_min_value = value;
+            Warning("malpha", "value %f of %s is more than canvas_max of %f",
+               value, result.YTitle.c_str(), canvas_max);
          }
-         if (canvas_max_value < value)
+         if (value < canvas_min)
          {
-            canvas_max_value = value;
+            Warning("malpha", "value %f of %s is less than canvas_min of %f",
+               value, result.YTitle.c_str(), canvas_min);
          }
 
          g->SetPoint(i, xval, value);
@@ -378,13 +438,10 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          host->SetLabelOffset(0.0);
       }
 
-   double canvas_vpadding = (canvas_max_value - canvas_min_value) * 0.4;
-   host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 0.5, canvas_max_value + canvas_vpadding * 0.5);
-
    for (vector<TH1F*>::iterator it = det_hosts.begin(); it != det_hosts.end(); it++)
    {
       TH1F  *det_host = *it;
-      det_host->GetYaxis()->SetRangeUser(canvas_min_value - canvas_vpadding * 0.3, canvas_max_value + canvas_vpadding * 0.3);
+      det_host->GetYaxis()->SetRangeUser(canvas_min, canvas_max);
    }
 
    host->Draw();
@@ -404,15 +461,12 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
    }
 
    ObjMap	&o = oc->o;
-   double max_value1, min_value1, max_value2, min_value2;
-   GetDeviceMaxMin(r1, &min_value1, &max_value1);
-   GetDeviceMaxMin(r2, &min_value2, &max_value2);
    TString	hname(name);
    hname += "_";
    hname += polIdName;
    TH2F	*h = new TH2F(hname, hname,
-                      max_value1 - min_value1, min_value1, max_value1,
-                      max_value2 - min_value2, min_value2, max_value2);
+                      r1.max_value - r1.min_value, r1.min_value, r1.max_value,
+                      r2.max_value - r2.min_value, r2.min_value, r2.max_value);
 
    for (int det = 0; det < N_DETECTORS; det++)
    {
@@ -780,6 +834,14 @@ int main(int argc, char *argv[])
    TFile *f1 = new TFile(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
    DrawObjContainer *oc = new DrawObjContainer(f1);
    PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   FillDeviceMaxMin(rhAmGain);
+   FillDeviceMaxMin(rhGdGain_over_AmGain);
+   FillDeviceMaxMin(rhAmGdGain_over_AmGain);
+   FillDeviceMaxMin(rDeadLayerEnergy);
+   FillDeviceMaxMin(rDeadLayerSize);
+   FillDeviceMaxMin(rBiasCurrent);
+   FillDeviceMaxMin(rBeamCurrent);
 
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
