@@ -358,6 +358,10 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          }
 
          g->SetPoint(i, xval, value);
+         if (year < 2013)
+         {
+            g->SetPointError(i, 0, result_err.second[startTime][det]);
+         }
          det_g->SetPoint(i, xval, value);
          det_g->SetPointError(i, 0, result_err.second[startTime][det]);
          i++;
