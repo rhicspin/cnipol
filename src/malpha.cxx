@@ -35,7 +35,7 @@ struct ResultMean
 
    // used for histogram limits
    double       min_value, max_value;
-   double       min_mean, max_mean, max_sigma;
+   double       mean, sigma;
 };
 
 
@@ -81,9 +81,8 @@ void FillDeviceMaxMin(map<Short_t, ResultMean> &results)
    double min_value = FLT_MAX;
    double max_value = -FLT_MAX;
 
-   double min_mean = FLT_MAX;
-   double max_mean = -FLT_MAX;
-   double max_sigma = 0;
+   double mean_sum = 0;
+   int count = 0;
 
    for (map<Short_t, ResultMean>::const_iterator i = results.begin(); i != results.end(); i++)
    {
@@ -107,48 +106,48 @@ void FillDeviceMaxMin(map<Short_t, ResultMean> &results)
 
          // also we use information about mean values and their width
          // to calculate limits for plots that are not interested in outliers (such as PlotMean())
-         double mean_sum = 0;
-         double sigma_sum = 0;
-         int count = result.second.size();
-         if (count > 0)
+         for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
          {
-            for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+            double value = it->second[det];
+            if (!isnan(value))
             {
-               double value = it->second[det];
                mean_sum += value;
-            }
-            double mean = mean_sum / count;
-            for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
-            {
-               double value = it->second[det];
-               sigma_sum += (mean - value) * (mean - value);
-            }
-            double sigma = sqrt(sigma_sum / count);
-
-            if (sigma > max_sigma)
-            {
-               max_sigma = sigma;
-            }
-            if (mean < min_mean)
-            {
-               min_mean = mean;
-            }
-            if (mean > max_mean)
-            {
-               max_mean = mean;
+               count++;
             }
          }
       }
    }
+   double mean = mean_sum / count;
+
+   int count_crosscheck = 0;
+   double sigma_sum = 0;
+   for (map<Short_t, ResultMean>::const_iterator i = results.begin(); i != results.end(); i++)
+   {
+      const ResultMean &result = i->second;
+
+      for (int det = 0; det < N_DETECTORS; det++)
+      {
+         for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
+         {
+            double value = it->second[det];
+            if (!isnan(value))
+            {
+               sigma_sum += (mean - value) * (mean - value);
+               count_crosscheck++;
+            }
+         }
+      }
+   }
+   assert(count == count_crosscheck);
+   double sigma = sqrt(sigma_sum / count);
 
    for (map<Short_t, ResultMean>::iterator i = results.begin(); i != results.end(); i++)
    {
       ResultMean &result = i->second;
       result.min_value = min_value;
       result.max_value = max_value;
-      result.min_mean = min_mean;
-      result.max_mean = max_mean;
-      result.max_sigma = max_sigma;
+      result.mean = mean;
+      result.sigma = sigma;
    }
 }
 
@@ -280,8 +279,8 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
       host = new TH1F(host_name, title, result.first.size(), 0.0, result.first.size());
    }
 
-   double canvas_min = result.min_mean - 3*result.max_sigma;
-   double canvas_max = result.max_mean + 3*result.max_sigma;
+   double canvas_min = result.mean - 3*result.sigma;
+   double canvas_max = result.mean + 3*result.sigma;
    host->GetYaxis()->SetRangeUser(canvas_min, canvas_max);
 
    for (int det = 0; det < N_DETECTORS; det++)
