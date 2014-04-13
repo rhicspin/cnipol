@@ -225,15 +225,6 @@ void ChannelEvent::Print(const Option_t* opt) const
 
 
 /** */
-bool ChannelEvent::operator()(const ChannelEvent &ch1, const ChannelEvent &ch2)
-{
-   if (ch1.fEventId < ch2.fEventId) return true;
-
-   return false;
-}
-
-
-/** */
 Bool_t ChannelEvent::PassCutRawAlpha()
 {
    // Do not consider channels other than silicon detectors

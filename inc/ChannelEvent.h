@@ -25,7 +25,7 @@ class ChannelEvent;
 
 typedef std::vector<ChannelEvent> ChannelEventVec;
 typedef std::map<ChannelEventId, ChannelEvent, ChannelEventId> ChannelEventMap;
-typedef std::set<ChannelEvent, ChannelEvent> ChannelEventSet;
+typedef std::set<ChannelEvent> ChannelEventSet;
 
 
 /** */
@@ -73,7 +73,6 @@ public:
 
    //virtual void Print(const Option_t* opt="") const;
    void   Print(const Option_t* opt="") const;
-   bool   operator()(const ChannelEvent &ch1, const ChannelEvent &ch2);
    Bool_t PassCutRawAlpha();
    Bool_t PassCutSiliconChannel();
    Bool_t PassCutDepEnergyTime();
@@ -94,5 +93,18 @@ public:
 
    ClassDef(ChannelEvent, 1)
 };
+
+namespace std {
+
+template<>
+struct less<ChannelEvent>
+{
+     bool operator() (const ChannelEvent& x, const ChannelEvent& y) const
+     {
+        return x.fEventId < y.fEventId;
+     }
+};
+
+}
 
 #endif
