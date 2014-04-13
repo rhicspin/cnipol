@@ -15,6 +15,8 @@
 
 using namespace std;
 
+static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeader);
+static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeader);
 
 /** */
 RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
@@ -327,7 +329,7 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
    gMeasInfo->fNEventsTotal     = 0;
 
    RecordHeaderStruct *mHeader;
-   char *mSeek = fMem;
+   const char *mSeek = fMem;
 
    while (true) {
 
@@ -335,91 +337,12 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
       mHeader = (RecordHeaderStruct*) mSeek;
 
-      if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
+      if ((mHeader->type & REC_TYPEMASK) == REC_READAT)
       {
-         mSeek = mSeek + mHeader->len;
-         continue;
+         ProcessRecordATPassOne(mSeek, mHeader);
       }
 
-      // We are here if rec type is REC_READAT
-      long    delim   = mHeader->timestamp.delim;
-      size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-      char   *mSeekAT = mSeek;
-
-      mSeekAT += sizeof(RecordHeaderStruct);
-      mSeek    = mSeek + mHeader->len;
-
-      recordReadATStruct *ATPtr;
-
-      for (UInt_t i=0; i<recSize; )
-      {
-                  ATPtr   = (recordReadATStruct*) (mSeekAT + i);
-         unsigned chId    = ATPtr->subhead.siNum; // si number
-         unsigned nEvents = ATPtr->subhead.Events + 1;
-
-         // count the total number of event records in raw file
-         gMeasInfo->fNEventsTotal += nEvents;
-
-         i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
-
-         for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
-         {
-            if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
-
-            gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
-            gAsymRoot->UpdateFromChannelEvent();
-
-            // Use only a fraction of events
-            if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
-
-            if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
-            {
-               // Fill hists with raw data
-               gAsymRoot->FillPassOne(kCUT_PASSONE);
-
-               // The same but empty bunches only
-               if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
-                  gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
-            }
-
-            // Use all events to fill pulser histograms - not valid. thinout is applied
-            //if ( gAsymAnaInfo->HasPulserBit() &&
-            //     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
-            //     //gAsymRoot->fChannelEvent->PassCutNoise() &&
-            //     gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
-            //{
-            //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
-            //}
-
-            if ( gAsymAnaInfo->HasPmtBit() && gAsymRoot->fChannelEvent->PassCutPmtChannel() )
-                 //gAsymRoot->fChannelEvent->PassCutPmtNoise()
-            {
-               gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
-            }
-
-            if ( gAsymAnaInfo->HasStudiesBit() && gAsymRoot->fChannelEvent->IsSpinFlipperMarkerChannel() )
-            {
-               gAsymRoot->AddSpinFlipperMarker();
-            }
-
-            //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
-            //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
-            //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
-            //if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
-            //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() )  continue;
-            //if (  gAsymRoot->fChannelEvent->PassCutEmptyBunch() )     continue;
-
-            //gAsymRoot->PrintChannelEvent();
-
-            gMeasInfo->fNEventsProcessed++;
-
-            if (gMeasInfo->fNEventsProcessed%50000 == 0)
-            {
-               printf("%s: Pass 1: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
-               fflush(stdout);
-            }
-         }
-      }
+      mSeek = mSeek + mHeader->len;
    }
 
    printf("Total events read:      %12u\n", gMeasInfo->fNEventsTotal);
@@ -444,7 +367,7 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
    gMeasInfo->fNEventsTotal     = 0;
 
    RecordHeaderStruct *mHeader;
-   char *mSeek = fMem;
+   const char *mSeek = fMem;
 
    while (true) {
 
@@ -455,81 +378,12 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
       mHeader = (RecordHeaderStruct*) mSeek;
       //printf("Currently consider record: %0#10x, len: %ld (MEM)\n", (UInt_t) mHeader->type, mHeader->len);
 
-      if ((mHeader->type & REC_TYPEMASK) != REC_READAT)
+      if ((mHeader->type & REC_TYPEMASK) == REC_READAT)
       {
-         mSeek = mSeek + mHeader->len;
-         continue;
+         ProcessRecordATPassTwo(mSeek, mHeader);
       }
 
-      // We are here if rec type is REC_READAT
-      long    delim   = mHeader->timestamp.delim;
-      size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-      char   *mSeekAT = mSeek;
-
-      mSeekAT += sizeof(RecordHeaderStruct);
-      mSeek    = mSeek + mHeader->len;
-
-      recordReadATStruct *ATPtr;
-
-      for (UInt_t i=0; i<recSize; )
-      {
-                  ATPtr   = (recordReadATStruct*) (mSeekAT + i);
-         unsigned chId    = ATPtr->subhead.siNum; // si number
-         unsigned nEvents = ATPtr->subhead.Events + 1;
-
-         // count the total number of event records in raw file
-         gMeasInfo->fNEventsTotal += nEvents;
-
-         i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
-
-         for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
-         {
-            if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
-
-            gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
-
-            // Use only a fraction of events
-            if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
-
-            gMeasInfo->fNEventsProcessed++;
-
-            // Finer Target Position Resolution by counting stepping moter
-            // This feature became available after Run06
-            if (gMeasInfo->fRunId >= 6) {
-               cntr.revolution = gAsymRoot->fChannelEvent->GetRevolutionId();
-
-               if (cntr.revolution > gMeasInfo->MaxRevolution)
-                  gMeasInfo->MaxRevolution = cntr.revolution;
-
-               if (gAsymRoot->fChannelEvent->GetChannelId() == 73 && delim != tgt.eventID) {
-                  tgt.x += gAsymAnaInfo->target_count_mm * (float) tgt.vector;
-                  tgt.vector=-1;
-               }
-
-               if (gAsymRoot->fChannelEvent->GetChannelId() == 73 || gAsymRoot->fChannelEvent->GetChannelId() == 74) {
-                   switch (gAsymRoot->fChannelEvent->GetChannelId()) {
-                   case 73:
-                       tgt.eventID = delim;
-                       ++cntr.tgtMotion;
-                       break;
-                   case 74:
-                       tgt.vector = 1;
-                       break;
-                   }
-               }
-            }
-
-            if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
-
-            event_process(*gAsymRoot->fChannelEvent);
-
-            if (gMeasInfo->fNEventsProcessed%50000 == 0)
-            {
-               printf("%s: Pass 2: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
-               fflush(stdout);
-            }
-         }
-      }
+      mSeek = mSeek + mHeader->len;
    }
 
    // Post processing
@@ -667,6 +521,159 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
    //}
 }
 
+static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeader)
+{
+   // We are here if rec type is REC_READAT
+   long    delim   = mHeader->timestamp.delim;
+   size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
+   const char   *mSeekAT = mSeek;
+
+   mSeekAT += sizeof(RecordHeaderStruct);
+
+   recordReadATStruct *ATPtr;
+
+   for (UInt_t i=0; i<recSize; )
+   {
+               ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+      unsigned chId    = ATPtr->subhead.siNum; // si number
+      unsigned nEvents = ATPtr->subhead.Events + 1;
+
+      // count the total number of event records in raw file
+      gMeasInfo->fNEventsTotal += nEvents;
+
+      i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
+
+      for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
+      {
+         if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
+
+         gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
+         gAsymRoot->UpdateFromChannelEvent();
+
+         // Use only a fraction of events
+         if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
+
+         if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+         {
+            // Fill hists with raw data
+            gAsymRoot->FillPassOne(kCUT_PASSONE);
+
+            // The same but empty bunches only
+            if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
+               gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
+         }
+
+         // Use all events to fill pulser histograms - not valid. thinout is applied
+         //if ( gAsymAnaInfo->HasPulserBit() &&
+         //     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
+         //     //gAsymRoot->fChannelEvent->PassCutNoise() &&
+         //     gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+         //{
+         //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
+         //}
+
+         if ( gAsymAnaInfo->HasPmtBit() && gAsymRoot->fChannelEvent->PassCutPmtChannel() )
+              //gAsymRoot->fChannelEvent->PassCutPmtNoise()
+         {
+            gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
+         }
+
+         if ( gAsymAnaInfo->HasStudiesBit() && gAsymRoot->fChannelEvent->IsSpinFlipperMarkerChannel() )
+         {
+            gAsymRoot->AddSpinFlipperMarker();
+         }
+
+         //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
+         //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
+         //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
+         //if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
+         //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() )  continue;
+         //if (  gAsymRoot->fChannelEvent->PassCutEmptyBunch() )     continue;
+
+         //gAsymRoot->PrintChannelEvent();
+
+         gMeasInfo->fNEventsProcessed++;
+
+         if (gMeasInfo->fNEventsProcessed%50000 == 0)
+         {
+            printf("%s: Pass 1: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+            fflush(stdout);
+         }
+      }
+   }
+}
+
+static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeader)
+{
+   // We are here if rec type is REC_READAT
+   long    delim   = mHeader->timestamp.delim;
+   size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
+   const char   *mSeekAT = mSeek;
+
+   mSeekAT += sizeof(RecordHeaderStruct);
+
+   recordReadATStruct *ATPtr;
+
+   for (UInt_t i=0; i<recSize; )
+   {
+               ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+      unsigned chId    = ATPtr->subhead.siNum; // si number
+      unsigned nEvents = ATPtr->subhead.Events + 1;
+
+      // count the total number of event records in raw file
+      gMeasInfo->fNEventsTotal += nEvents;
+
+      i += sizeof(subheadStruct) + nEvents*sizeof(ATStruct);
+
+      for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
+      {
+         if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
+
+         gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
+
+         // Use only a fraction of events
+         if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
+
+         gMeasInfo->fNEventsProcessed++;
+
+         // Finer Target Position Resolution by counting stepping moter
+         // This feature became available after Run06
+         if (gMeasInfo->fRunId >= 6) {
+            cntr.revolution = gAsymRoot->fChannelEvent->GetRevolutionId();
+
+            if (cntr.revolution > gMeasInfo->MaxRevolution)
+               gMeasInfo->MaxRevolution = cntr.revolution;
+
+            if (gAsymRoot->fChannelEvent->GetChannelId() == 73 && delim != tgt.eventID) {
+               tgt.x += gAsymAnaInfo->target_count_mm * (float) tgt.vector;
+               tgt.vector=-1;
+            }
+
+            if (gAsymRoot->fChannelEvent->GetChannelId() == 73 || gAsymRoot->fChannelEvent->GetChannelId() == 74) {
+                switch (gAsymRoot->fChannelEvent->GetChannelId()) {
+                case 73:
+                    tgt.eventID = delim;
+                    ++cntr.tgtMotion;
+                    break;
+                case 74:
+                    tgt.vector = 1;
+                    break;
+                }
+            }
+         }
+
+         if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
+
+         event_process(*gAsymRoot->fChannelEvent);
+
+         if (gMeasInfo->fNEventsProcessed%50000 == 0)
+         {
+            printf("%s: Pass 2: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
+            fflush(stdout);
+         }
+      }
+   }
+}
 
 /** */
 void ProcessRecordPCTarget(const pCTargetStruct *rec, MseMeasInfoX &mseMeasInfo)
