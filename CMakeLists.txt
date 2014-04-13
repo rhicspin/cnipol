@@ -78,6 +78,7 @@ SET(
 	inc/Calibrator.h
 	inc/ChannelCalib.h
 	inc/ChannelData.h
+	inc/ChannelEvent.h
 	inc/ChannelEventId.h
 	inc/CnipolAlphaHists.h
 	inc/CnipolAsymHists.h
