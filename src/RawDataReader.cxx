@@ -526,15 +526,11 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
    // We are here if rec type is REC_READAT
    long    delim   = mHeader->timestamp.delim;
    size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-   const char   *mSeekAT = mSeek;
-
-   mSeekAT += sizeof(RecordHeaderStruct);
-
-   recordReadATStruct *ATPtr;
+   const char   *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
 
    for (UInt_t i=0; i<recSize; )
    {
-               ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+      recordReadATStruct *ATPtr   = (recordReadATStruct*) (mSeekAT + i);
       unsigned chId    = ATPtr->subhead.siNum; // si number
       unsigned nEvents = ATPtr->subhead.Events + 1;
 
@@ -608,15 +604,11 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
    // We are here if rec type is REC_READAT
    long    delim   = mHeader->timestamp.delim;
    size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-   const char   *mSeekAT = mSeek;
-
-   mSeekAT += sizeof(RecordHeaderStruct);
-
-   recordReadATStruct *ATPtr;
+   const char   *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
 
    for (UInt_t i=0; i<recSize; )
    {
-               ATPtr   = (recordReadATStruct*) (mSeekAT + i);
+      recordReadATStruct *ATPtr   = (recordReadATStruct*) (mSeekAT + i);
       unsigned chId    = ATPtr->subhead.siNum; // si number
       unsigned nEvents = ATPtr->subhead.Events + 1;
 
