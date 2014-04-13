@@ -364,8 +364,6 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
          for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
          {
-            //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
-
             if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
@@ -486,16 +484,12 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
 
          for (unsigned iEvent=0; iEvent<nEvents; iEvent++)
          {
-            //printf("m: %d %d %d\n", ATPtr->data[iEvent].a, ATPtr->data[iEvent].t, ATPtr->data[iEvent].s);
-
             if (gAsymAnaInfo->fMaxEventsUser > 0 && gMeasInfo->fNEventsProcessed >= gAsymAnaInfo->fMaxEventsUser) break;
 
             gAsymRoot->SetChannelEvent(ATPtr->data[iEvent], delim, chId);
 
             // Use only a fraction of events
             if (gRandom->Rndm() > gAsymAnaInfo->fThinout) continue;
-
-            //gAsymRoot->PrintChannelEvent();
 
             gMeasInfo->fNEventsProcessed++;
 
