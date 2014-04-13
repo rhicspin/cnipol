@@ -387,6 +387,7 @@ Short_t MeasInfo::GetPolarimeterId(short beamId, short streamId)
    if (beamId == 1 && streamId == 2) { fPolId = 1; return 1; }
    if (beamId == 2 && streamId == 1) { fPolId = 0; return 0; }
    if (beamId == 2 && streamId == 2) { fPolId = 2; return 2; }
+   if (beamId == 2 && streamId == 0) { fPolId = kHJET; return kHJET; }
 
    printf("WARNING: MeasInfo::GetPolarimeterId(): Invalid polarimeter ID\n");
    return -1;
