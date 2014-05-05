@@ -5,9 +5,12 @@ Introduction
 
 **cnipol** is a software package designed to acquire and analyze data from the
 Relativistic Heavy Ion Collider (RHIC) polarimeters at the Brookhaven National
-Lab (BNL). The first objective is usually referred to as the 'online' part of
-this package which is designed to support the data acquisition and the second
-objective is referred to as the 'offline' data analysis.
+Lab (BNL). The first objective of this package is usually referred to as the
+"online" layer and designed to support the data acquisition and to provide
+a quick feedback by carrying a fast online analysis. The second objective is to
+execute a more rigorous "offline" data analysis and present the results in
+a systematic way. It is normally referred to as the "offline" layer of
+**cnipol**.
 
 There is a wiki page with some details about the RHIC polarimetry:
 
