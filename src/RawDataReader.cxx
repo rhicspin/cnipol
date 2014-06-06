@@ -17,6 +17,7 @@ using namespace std;
 
 static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeader);
 static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeader);
+static void ProcessRecordLongPassOne(const char *mSeek, RecordHeaderStruct *mHeader);
 
 /** */
 RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
@@ -341,6 +342,10 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
       {
          ProcessRecordATPassOne(mSeek, mHeader);
       }
+      else if ((mHeader->type & REC_TYPEMASK) == REC_READLONG)
+      {
+         ProcessRecordLongPassOne(mSeek, mHeader);
+      }
 
       mSeek = mSeek + mHeader->len;
    }
@@ -519,6 +524,66 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
    //      //      gMeasInfo->ConfigureActiveStrip(mask.detector);
    //   }
    //}
+}
+
+static void ProcessRecordLongPassOne(const char *mSeek, RecordHeaderStruct *mHeader)
+{
+   // This function does very basic processing of the HJet full waveform from REC_READLONG record.
+
+   const char *p = mSeek + sizeof(RecordHeaderStruct);
+
+   unsigned  wfLen = (gConfigInfo->data.JetDelay & 0xFF) * 6; // waveform length in points
+   unsigned  evLen = sizeof(longWaveStruct) - 1 + wfLen;
+
+   while(p != mSeek + mHeader->len)
+   {
+      const     recordLongWaveStruct      *longWave = (const recordLongWaveStruct*)p;
+      unsigned  chId = longWave->subhead.siNum;
+      unsigned  nEvents = longWave->subhead.Events + 1;
+
+      // cnipol has number of strips hardcoded in many places
+      // HJet has more strips so will have to drop some
+      if (chId < N_SILICON_CHANNELS)
+      {
+         for (unsigned iEvent = 0; iEvent < nEvents; iEvent++)
+         {
+            const longWaveStruct *event = (const longWaveStruct*)&longWave->data[evLen * iEvent];
+            ATStruct       atEmu;
+
+            // Here we only fill in amplitude value. This will be enough to do alpha calib's.
+            long delim = 0;
+            atEmu.rev = 0;
+            atEmu.rev0 = 0;
+            atEmu.b = 0;
+            atEmu.a = 0;
+            atEmu.s = 0;
+            atEmu.t = 0;
+            atEmu.tmax = 0;
+
+            int amp = 0;
+            for(int i = 0; i < wfLen; i++)
+            {
+               int val = event->d[i] - V10BASELINE;
+               if (val > amp)
+               {
+                  amp = val;
+               }
+            }
+            atEmu.a = amp;
+
+            // Now feed our emulated structure into cnipol's data flow.
+            gAsymRoot->SetChannelEvent(atEmu, delim, chId);
+            gAsymRoot->UpdateFromChannelEvent();
+            gAsymRoot->FillPassOne(kCUT_PASSONE);
+         }
+      }
+
+      p += sizeof(subheadStruct) + nEvents * evLen;
+      if (p > mSeek + mHeader->len)
+      {
+         Error("", "corrupted record");
+      }
+   }
 }
 
 static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeader)
