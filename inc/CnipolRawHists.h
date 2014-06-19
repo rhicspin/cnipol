@@ -1,8 +1,3 @@
-/*****************************************************************************
- *                                                                           *
- *                                                                           *
- *****************************************************************************/
-
 
 #ifndef CnipolRawHists_h
 #define CnipolRawHists_h
@@ -16,13 +11,13 @@
 
 
 /**
- *
+ * 
  */
 class CnipolRawHists : public DrawObjContainer
 {
 protected:
 
-   TH1 *fhTvsA_ch[N_SILICON_CHANNELS];
+   TH1 *fhTvsA_ch[N_SILICON_CHANNELS];        ///< 
    TH1 *fhTvsI_ch[N_SILICON_CHANNELS];
    TH1 *fhIvsA_ch[N_SILICON_CHANNELS];
    TH1 *fhTvsACumul_ch[N_SILICON_CHANNELS];
