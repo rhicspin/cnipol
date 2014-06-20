@@ -2,7 +2,6 @@
 
 ClassImp(AnaEvent)
 
-using namespace std;
 
 /** Default constructor. */
 AnaEvent::AnaEvent() : TObject(), fEventId(), fChannels()

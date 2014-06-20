@@ -2,7 +2,6 @@
 
 ClassImp(ChannelData)
 
-using namespace std;
 
 /** Default constructor. */
 ChannelData::ChannelData() : TObject(), fAmpltd(UCHAR_MAX), fIntgrl(UCHAR_MAX),
