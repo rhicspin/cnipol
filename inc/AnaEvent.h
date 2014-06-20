@@ -33,7 +33,6 @@ public:
 public:
 
    AnaEvent();
-   ~AnaEvent();
 
    float GetEnergy(EventConfig *ec, ChannelDataPair &ch);
    float GetEnergyIntegral(EventConfig *ec, ChannelDataPair &ch);

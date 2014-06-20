@@ -32,7 +32,6 @@ public:
 public:
 
    ChannelData();
-   ~ChannelData();
 
    void Print(const Option_t* opt="") const;
 

@@ -7,13 +7,7 @@ using namespace std;
 /** Default constructor. */
 AnaEvent::AnaEvent() : TObject(), fEventId(), fChannels()
 {
-};
-
-
-/** Default destructor. */
-AnaEvent::~AnaEvent()
-{
-};
+}
 
 
 float AnaEvent::GetEnergy(EventConfig *ec, ChannelDataPair &ch)

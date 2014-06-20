@@ -11,12 +11,6 @@ ChannelData::ChannelData() : TObject(), fAmpltd(UCHAR_MAX), fIntgrl(UCHAR_MAX),
 }
 
 
-/** Default destructor. */
-ChannelData::~ChannelData()
-{
-}
-
-
 /** */
 void ChannelData::Print(const Option_t* opt) const
 {
