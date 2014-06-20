@@ -1,3 +1,4 @@
+
 #ifndef AnaEvent_h
 #define AnaEvent_h
 
@@ -11,6 +12,7 @@
 #include "EventConfig.h"
 #include "ChannelData.h"
 
+//class EventConfig;
 class AnaEvent;
 
 typedef std::vector<AnaEvent> AnaEventVec;
@@ -19,20 +21,19 @@ typedef std::set<AnaEvent, AnaEvent> AnaEventSet;
 
 
 /**
- * A data container to hold data from a single event delivered by the RHIC
- * polarimeters. This class inherits from the ROOT's TObject so, the objects of
- * this class can be naturally saved in a ROOT file.
+ *
  */
 class AnaEvent : public TObject
 {
 public:
 
-   AnaEventId     fEventId;    ///< Unique event number
-   ChannelDataMap fChannels;   ///< An std::map container with data collected from all polarimeter channels
+	AnaEventId     fEventId;
+   ChannelDataMap fChannels;
 
 public:
 
    AnaEvent();
+   ~AnaEvent();
 
    float GetEnergy(EventConfig *ec, ChannelDataPair &ch);
    float GetEnergyIntegral(EventConfig *ec, ChannelDataPair &ch);
