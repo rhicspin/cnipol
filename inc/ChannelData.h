@@ -33,7 +33,7 @@ public:
 
    ChannelData();
 
-   void Print(const Option_t* opt="") const;
+   virtual void Print(const Option_t* opt="") const;
 
    ClassDef(ChannelData, 1)
 };
