@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rhicspin/cnipol.png)](https://travis-ci.org/rhicspin/cnipol)
+[![Build Status](https://travis-ci.org/rhicspin/cnipol.svg?branch=master)](https://travis-ci.org/rhicspin/cnipol)
 
 Introduction
 ============
