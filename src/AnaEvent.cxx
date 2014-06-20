@@ -1,9 +1,5 @@
 #include "AnaEvent.h"
 
-//#include "EventConfig.h"
-//#include "ChannelData.h"
-
-
 ClassImp(AnaEvent)
 
 using namespace std;
@@ -58,9 +54,7 @@ void AnaEvent::Print(const Option_t* opt) const
    ChannelDataMap::const_iterator mb = fChannels.begin();
    ChannelDataMap::const_iterator me = fChannels.end();
 
-   //for (int i=0; i!=nChannels; i++) {
    for (mi=mb; mi!=me; mi++) {
-      //printfmi->second.fAmpltd, mi->first));
 		mi->second.Print();
       printf("\n");
    }
