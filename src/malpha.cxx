@@ -708,33 +708,27 @@ int main(int argc, char *argv[])
    {
       string measId   = string(((TObjString*) o)->GetName());
       string fileName = mAlphaAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAlphaAnaInfo.GetSuffix() + ".root";
+      TFile f(fileName.c_str(), "READ");
 
-      TFile *f = new TFile(fileName.c_str(), "READ");
-
-      if (!f)
+      if (!f.IsOpen())
       {
          Error("malpha", "file not found. Skipping...");
-         delete f;
          continue;
       }
 
-      if (f->IsZombie())
+      if (f.IsZombie())
       {
          Error("malpha", "file is zombie %s. Skipping...", fileName.c_str());
-         f->Close();
-         delete f;
          continue;
       }
 
       Info("malpha", "Found file: %s", fileName.c_str());
 
-      EventConfig *gMM = (EventConfig*) f->FindObjectAny("measConfig");
+      EventConfig *gMM = (EventConfig*) f.FindObjectAny("measConfig");
 
       if (!gMM)
       {
          Error("malpha", "MM not found. Skipping...");
-         f->Close();
-         delete f;
          continue;
       }
 
@@ -790,18 +784,18 @@ int main(int argc, char *argv[])
          FillBeamCurrent(fill_id, polId, startTime, rBeamCurrent, rBeamCurrentErr);
       }
 
-      TH1F  *hAmGain = (TH1F*) f->FindObjectAny("hAmGain");
+      TH1F  *hAmGain = (TH1F*) f.FindObjectAny("hAmGain");
 
       FillFromHist(hAmGain, startTime, rhAmGain[polId], rhAmGainErr[polId]);
 
       if (alphaSources == 2)
       {
-         TH1F  *hGdGain = (TH1F*) f->FindObjectAny("hGdGain");
-         TH1F  *hAmGdGain = (TH1F*) f->FindObjectAny("hAmGdGain");
+         TH1F  *hGdGain = (TH1F*) f.FindObjectAny("hGdGain");
+         TH1F  *hAmGdGain = (TH1F*) f.FindObjectAny("hAmGdGain");
          TH1F  *hGdGain_over_AmGain = new TH1F((*hGdGain) / (*hAmGain));
          TH1F  *hAmGdGain_over_AmGain = new TH1F((*hAmGdGain) / (*hAmGain));
-         TH1F  *hDeadLayerEnergy = (TH1F*) f->FindObjectAny("hDeadLayerEnergy");
-         TH1F  *hDeadLayerSize = (TH1F*) f->FindObjectAny("hDeadLayerSize");
+         TH1F  *hDeadLayerEnergy = (TH1F*) f.FindObjectAny("hDeadLayerEnergy");
+         TH1F  *hDeadLayerSize = (TH1F*) f.FindObjectAny("hDeadLayerSize");
 
          FillFromHist(hGdGain_over_AmGain, startTime, rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId]);
          rhGdGain_over_AmGain[polId].YTitle = "g_Gd / g_Am";
@@ -810,9 +804,6 @@ int main(int argc, char *argv[])
          FillFromHist(hDeadLayerEnergy, startTime, rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId]);
          FillFromHist(hDeadLayerSize, startTime, rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
       }
-
-      f->Close();
-      delete f;
    }
 
    TFile *f1 = new TFile(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
