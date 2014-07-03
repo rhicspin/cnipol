@@ -73,20 +73,20 @@ void CnipolAlphaHists::BookHists()
    o["hAmGain"]   = new TH1F("hAmGain", "hAmGain", 72, 1, 73);
    ((TH1*)  o["hAmGain"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hAmGain"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmGain"])->GetYaxis()->SetTitle("Americium Amplitude Calib, ADC/keV");
+   ((TH2F*) o["hAmGain"])->GetYaxis()->SetTitle("Americium gain, ADC/keV");
 
    o["hAmGainDisp"] = new TH1F("hAmGainDisp", "hAmGainDisp", 100, 0, 1);
    ((TH2F*) o["hAmGainDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmGainDisp"])->GetXaxis()->SetTitle("Americium Amplitude Calib, ADC/keV");
+   ((TH2F*) o["hAmGainDisp"])->GetXaxis()->SetTitle("Americium gain, ADC/keV");
 
    o["hAmIntGain"]   = new TH1F("hAmIntGain", "hAmIntGain", 72, 1, 73);
    ((TH1*)  o["hAmIntGain"])->SetOption("E1 GRIDX GRIDY");
    ((TH2F*) o["hAmIntGain"])->GetXaxis()->SetTitle("Channel");
-   ((TH2F*) o["hAmIntGain"])->GetYaxis()->SetTitle("Americium Integral Calib, ADC/keV");
+   ((TH2F*) o["hAmIntGain"])->GetYaxis()->SetTitle("Americium gain (from integral), ADC/keV");
 
    o["hAmIntGainDisp"] = new TH1F("hAmIntGainDisp", "hAmIntGainDisp", 100, 0, 1);
    ((TH2F*) o["hAmIntGainDisp"])->SetBit(TH1::kCanRebin);
-   ((TH2F*) o["hAmIntGainDisp"])->GetXaxis()->SetTitle("Americium Integral Calib, ADC/keV");
+   ((TH2F*) o["hAmIntGainDisp"])->GetXaxis()->SetTitle("Americium gain (from integral), ADC/keV");
 
    o["hAmGainWidth"]   = new TH1F("hAmGainWidth", "hAmGainWidth", 72, 1, 73);
    ((TH1*) o["hAmGainWidth"])->SetOption("E1 GRIDX GRIDY");
