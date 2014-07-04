@@ -10,7 +10,7 @@
 # >nohup ./copy_results_pc2pc.sh run12
 #
 
-#source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
+#source $CNIPOL_DIR/script/bgx_asym.sh
 
 LOG="/usr/local/polarim/log/run_asym_nocron.log"
 #LOG="/eicdata/eic0005/run13/run_asym_nocron.log"

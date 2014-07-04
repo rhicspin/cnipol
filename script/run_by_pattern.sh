@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
+source $CNIPOL_DIR/script/bgx_asym.sh
 
 RUN_PATTERN=$1
 

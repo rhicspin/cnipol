@@ -4,7 +4,7 @@
 #
 # <runlist> is a file with a list of alpha runs. No .data suffix
 
-source $CNIPOL_DIR/script/run_asym/bgx_asym.sh
+source $CNIPOL_DIR/script/bgx_asym.sh
 
 FILE_MEASLIST=$1
 
