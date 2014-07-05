@@ -1,5 +1,19 @@
 [![Build Status](https://travis-ci.org/rhicspin/cnipol.svg?branch=master)](https://travis-ci.org/rhicspin/cnipol)
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Introduction](#introduction)
+  - [General remarks](#general-remarks)
+- [How to configure and install cnipol](#how-to-configure-and-install-cnipol)
+- [How to run cnipol](#how-to-run-cnipol)
+  - [Batch processing multiple data files](#batch-processing-multiple-data-files)
+- [How to produce summary plots](#how-to-produce-summary-plots)
+- [Other software packages for the RHIC polarimetry](#other-software-packages-for-the-rhic-polarimetry)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Introduction
 ============
 
