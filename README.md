@@ -188,13 +188,6 @@ view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 
 <table>
 	<tr>
-		<th>cnipol</th>
-		<td>
-This is an older unsupported version of this package.<br/>
-For the up-to-date version see https://github.com/rhicspin/cnipol
-		</td>
-	</tr>
-	<tr>
 		<th>ags_cni</th>
 		<td>Code for AGS data analysis</td>
 	</tr>
