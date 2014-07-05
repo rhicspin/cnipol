@@ -1,6 +1,2 @@
 *.o
-ana/cniana_dict.*
-src/cnipol_dict.*
-bin/
 build/
-lib/
