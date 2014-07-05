@@ -28,10 +28,9 @@ RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
 
    // reading the data till its end ...
    if (!fFile) {
-      printf("ERROR: %s file not found. Force exit.\n", fFileName.c_str());
-      exit(-1);
+      Fatal("RawDataReader", "File \"%s\" not found. Cannot proceed", fFileName.c_str());
    } else
-      printf("\nFound file %s\n", fFileName.c_str());
+      Info("RawDataReader", "Found file \"%s\"", fFileName.c_str());
 
    // Create a BLOB with file content
    Info("RawDataReader", "Reading into memory...");
@@ -47,7 +46,8 @@ RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
 
 ///
    RecordHeaderStruct *mHeader = (RecordHeaderStruct*) fMem;
-   cout << "Currently consider record: fMem: " << hex << fMem << ", type: " << hex << mHeader->type << ", len: " << mHeader->len << endl;
+   cout << "Currently consider record: fMem: " << hex << fMem
+        << ", type: " << hex << mHeader->type << ", len: " << mHeader->len << endl;
    cout << "size RecordHeaderStruct: " << sizeof(RecordHeaderStruct) << endl;
    cout << "size recordHeaderStruct: " << sizeof(recordHeaderStruct) << endl;
 ///
@@ -81,8 +81,7 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
    if ( (recBegin->header.type & REC_TYPEMASK) == REC_BEGIN) {
       Info("ReadRecBegin", "Found REC_BEGIN record... size: %i", recBegin->header.len);
    } else {
-      Error("ReadRecBegin", "Could not find REC_BEGIN record");
-      exit(-1);
+      Fatal("ReadRecBegin", "Could not find REC_BEGIN record");
    }
 
    cout << "Begin of data stream version: " << recBegin->version << endl;
@@ -115,8 +114,7 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
       gRunDb.fPolId = gMeasInfo->fPolId;
 
    } else { // cannot proceed
-      Error("ReadRecBegin", "Unknown polarimeter ID");
-      exit(-1);
+      Fatal("ReadRecBegin", "Unknown polarimeter ID");
    }
 
    gRunDb.timeStamp = gMeasInfo->fStartTime; // should be always defined in raw data
