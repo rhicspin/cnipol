@@ -64,7 +64,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
          case '?':
          case 'h':
             PrintUsage();
-            exit(0);
+            exit(EXIT_SUCCESS);
 
          case 'l':
             fFileStdLogName = (optarg != 0 ? optarg : "");
@@ -88,7 +88,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
          default:
             Error("ProcessOptions", "Invalid option provided");
             PrintUsage();
-            exit(0);
+            exit(EXIT_FAILURE);
       }
    }
 }
@@ -101,13 +101,13 @@ void MAlphaAnaInfo::VerifyOptions()
    if (fMListFileName.empty()) {
       Error("VerifyOptions", "List file name has to be specified");
       PrintUsage();
-      exit(0);
+      exit(EXIT_FAILURE);
    }
 
    if (fOutputFileName.empty()) {
       Error("VerifyOptions", "Output file name has to be specified");
       PrintUsage();
-      exit(0);
+      exit(EXIT_FAILURE);
    }
 
    TString tmpFileName(fMListFileName.c_str());
@@ -116,7 +116,7 @@ void MAlphaAnaInfo::VerifyOptions()
    if ( !gSystem->FindFile( (GetResultsDir() + "/runXX/lists/").c_str(), tmpFileName ) ) {
       Error("VerifyOptions",
             "File list \"%s\" not found\n", GetMListFullPath().c_str());
-      exit(0);
+      exit(EXIT_FAILURE);
    }
 
    fOutputName = fMListFileName;

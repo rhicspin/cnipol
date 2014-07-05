@@ -56,7 +56,7 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
       case '?':
       case 'h':
          PrintUsage();
-         exit(0);
+         exit(EXIT_SUCCESS);
 
       case 'l':
          fFileStdLogName = (optarg != 0 ? optarg : "");
@@ -96,7 +96,7 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
       default:
          Error("ProcessOptions", "Invalid option provided");
          PrintUsage();
-         exit(0);
+         exit(EXIT_FAILURE);
       }
    }
 }
@@ -109,7 +109,7 @@ void MAsymAnaInfo::VerifyOptions()
    if (fMListFileName.empty()) {
       Error("VerifyOptions", "File name has to be specified");
       PrintUsage();
-      exit(0);
+      exit(EXIT_FAILURE);
    }
 
    TString tmpFileName(fMListFileName.c_str());
@@ -119,7 +119,7 @@ void MAsymAnaInfo::VerifyOptions()
 	{
       Error("VerifyOptions",
 		   "File list \"%s\" not found\n", GetMListFullPath().c_str());
-      exit(0);
+      exit(EXIT_FAILURE);
 	}
 
    fOutputName = fMListFileName;
