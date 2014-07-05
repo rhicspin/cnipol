@@ -120,6 +120,22 @@ To analyze an alpha or pulser measurement use the --alpha option:
     asym --alpha -r <meas_id>
 
 
+Batch processing multiple data files
+------------------------------------
+
+Once in a while, when, for example, the **cnipol** code is modified one may need
+to re-analyze a large number of data files. This can be achieved in several ways
+by utilizing common linux tools. Here for completeness we provide a simple shell
+script that takes a text file containing a list of measurements (one `<meas_id>`
+per line) as a single argument and starts a certain number of parallel jobs in
+the background. The scripts for regular and energy calibration runs can be
+executed respectively as:
+
+    script/run_asym.sh <meas_list>
+
+    script/run_asym_alpha.sh <meas_list>
+
+
 How to produce summary plots
 ============================
 
