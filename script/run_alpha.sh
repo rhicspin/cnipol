@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# >run_alpha.sh <runlist>
+# $run_asym_alpha.sh <meas_list>
 #
-# <runlist> is a file with a list of alpha runs. No .data suffix
+# where <meas_list> is a file with a list of alpha calibration measurements
+# without the .data suffix
 
 source $CNIPOL_DIR/script/bgx_asym.sh
 
@@ -13,16 +14,12 @@ exec < $FILE_MEASLIST
 while read meas_id
 do
    arr=($meas_id)
-   #echo ${arr[0]} --- ${arr[1]} ---
    if [ -z "${arr[1]}" ]; then
       #echo "polid NOT defined"
-      #bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -g --copy -r $meas_id --no-update-db
-      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -g --copy -r $meas_id
+      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -r $meas_id
    else
-      #echo "polid defined" ${arr[1]}
-      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -g --copy --pol-id=${arr[1]} -r ${arr[0]} --no-update-db
-      #bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -g --copy --alpha-sources=${arr[1]} -r ${arr[0]}
-      #bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --alpha-sources=${arr[1]} -r ${arr[0]}
+      #echo "polid defined:" ${arr[1]}
+      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db --no-update-db --pol-id=${arr[1]} -r ${arr[0]}
    fi
 done
 
