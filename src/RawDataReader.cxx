@@ -21,10 +21,10 @@ static void ProcessRecordLongPassOne(const char *mSeek, RecordHeaderStruct *mHea
 
 /** */
 RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
-   fMem(0),
+   fMem(0), fMemSize(0),
    fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
 {
-   FILE *fFile = fopen(fFileName.c_str(), "r");
+   fFile = fopen(fFileName.c_str(), "r");
 
    // reading the data till its end ...
    if (!fFile) {
