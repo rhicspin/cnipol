@@ -24,12 +24,6 @@ class RawDataReader
 {
 public:
 
-   std::string    fFileName;
-   FILE          *fFile;
-   char          *fMem;
-   UInt_t         fMemSize;
-   std::ifstream  fFileStream;
-
    RawDataReader(std::string fname);
    ~RawDataReader();
 
@@ -40,7 +34,12 @@ public:
 
 private:
 
-   std::set<Int_t> fSeenRecords;
+   std::string      fFileName;
+   FILE            *fFile;
+   char            *fMem;
+   UInt_t           fMemSize;
+   std::ifstream    fFileStream;
+   std::set<Int_t>  fSeenRecords;
 };
 
 void UpdateRunConst(TRecordConfigRhicStruct *ci);
