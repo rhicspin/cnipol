@@ -225,32 +225,25 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    h->GetYaxis()->SetRangeUser(result.min_value - vpadding, result.max_value + vpadding);
 
    TH1F *hdet = 0;
-   for (int det = 0; det < N_DETECTORS; det++)
+   if (!max_startTime) // check if we are doing by_run plots
    {
-      TString hname(name);
-      if (max_startTime)
+      // we only do by_run distribution, since by_day will be the same
+      for (int det = 0; det < N_DETECTORS; det++)
       {
-         hname += "deleteme";
-      }
-      hname += "_distribution";
-      hname += (det + 1);
-      hname += "_";
-      hname += polIdName;
-      hdet = new TH1F(hname, hname, 100, result.min_value, result.max_value);
-      hdet->SetXTitle(h->GetYaxis()->GetTitle());
-      hdet->SetLineColor(GetLineColor(det));
-      for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
-      {
-         double value = it->second[det];
-         hdet->Fill(value);
-      }
-      TFitResultPtr fitres = hdet->Fit("gaus", "QSW"); // Q: quiet, S: return fitres, W: all weights = 1
-      if (max_startTime)
-      {
-         delete hdet;
-      }
-      else
-      {
+         TString hname(name);
+         hname += "_distribution";
+         hname += (det + 1);
+         hname += "_";
+         hname += polIdName;
+         hdet = new TH1F(hname, hname, 100, result.min_value, result.max_value);
+         hdet->SetXTitle(h->GetYaxis()->GetTitle());
+         hdet->SetLineColor(GetLineColor(det));
+         for (map< Time, vector<double> >::iterator it = result.second.begin(); it != result.second.end(); it++)
+         {
+            double value = it->second[det];
+            hdet->Fill(value);
+         }
+         hdet->Fit("gaus", "QW"); // Q: quiet, W: all weights = 1
          o[hname.Data()] = hdet;
       }
    }
