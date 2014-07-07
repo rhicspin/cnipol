@@ -189,11 +189,19 @@ view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 <table>
 	<tr>
 		<th>ags_cni</th>
-		<td>Code for AGS data analysis</td>
+		<td>
+			<p>Code for AGS data analysis.</p>
+			<p>AGS has a jet polarimeter much like the one at RHIC.
+			Analysis code has branched a long time ago and is now supported by CAD.</p>
+		</td>
 	</tr>
 	<tr>
 		<th>jet</th>
-		<td>Code for the H-jet polarimeter data analysis</td>
+		<td>
+			<p>Code for the H-jet polarimeter data analysis</p>
+			<p>Supported by RHIC Spin group. As many other analyses
+			it's reader code is based on code found in ``online/src/rdatautil.c``.</p>
+		</td>
 	</tr>
 </table>
 
