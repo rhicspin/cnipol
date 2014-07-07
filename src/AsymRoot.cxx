@@ -141,15 +141,6 @@ void AsymRoot::CreateRootFile(string filename)
    gROOT->Macro("styles/style_asym.C");
    gROOT->ForceStyle(kTRUE);
 
-   // directory structure
-   //FeedBack  = new TDirectoryFile("FeedBack", "FeedBack", "", fOutRootFile);   //fOutRootFile->mkdir("FeedBack");
-   //Kinema    = new TDirectoryFile("Kinema", "Kinema", "", fOutRootFile);   //fOutRootFile->mkdir("Kinema");
-   ////Bunch     = new TDirectoryFile("Bunch", "Bunch", "", fOutRootFile);   //fOutRootFile->mkdir("Bunch");
-   //ErrDet    = new TDirectoryFile("ErrDet", "ErrDet", "", fOutRootFile);   //fOutRootFile->mkdir("ErrDet");
-   //Asymmetry = new TDirectoryFile("Asymmetry", "Asymmetry", "", fOutRootFile);   //fOutRootFile->mkdir("Asymmetry");
-
-   //BookHists();
-
    TDirectory       *dir;
    DrawObjContainer *oc;
 
@@ -171,11 +162,6 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolHists(dir);
       fHists->d["std"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
-
-      //dir = new TDirectoryFile("std_eb", "std_eb", "", fOutRootFile);
-      //oc  = new CnipolHists(dir);
-      //fHists->d["std_eb"] = oc;
-      //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    // If requested create scaler histograms and add them to the container
@@ -232,11 +218,6 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolAsymHists(dir);
       fHists->d["asym"] = oc;
       fHistCuts[kCUT_CARBON].insert(oc);
-
-      //dir = new TDirectoryFile("asym_eb", "asym_eb", "", fOutRootFile);
-      //oc = new CnipolAsymHists(dir);
-      //fHists->d["asym_eb"] = oc;
-      //fHistCuts[kCUT_CARBON_EB].insert(oc);
    }
 
    if (gAsymAnaInfo->HasKinematBit()) {
@@ -327,7 +308,6 @@ void AsymRoot::CreateTrees()
       fAnaEventTree->Branch("AnaEvent", "AnaEvent", &fAnaEvent);
    }
 
-   //fOutTreeFile->ls();
 }
 
 
@@ -342,14 +322,12 @@ void AsymRoot::UpdateRunConfig()
    AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
 
    if (!anaInfo->HasAlphaBit() && anaInfo->HasNormalBit()) {
-   // else if ( anaInfo->HasNormalBit())
 
       // Now, if alpha calib file is different update alpha constants from that
       // MeasConfig
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
 
       // XXX not implemented. Need to fix it ASAP!
-      //if (fnameAlpha != fname) {
          Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
 
          TFile *f = TFile::Open(fnameAlpha.c_str());
@@ -362,11 +340,9 @@ void AsymRoot::UpdateRunConfig()
          }
 
          fEventConfig = alphaRunConfig;
-         //fEventConfig->Print();
 
          // XXX not implemented. Need to fix it!
          // ....
-      //}
 
       // Update the pointer to MeasConfig object in the event
       delete fChannelEvent->fEventConfig;
@@ -406,7 +382,6 @@ void AsymRoot::AddSpinFlipperMarker()
 /** */
 void AsymRoot::FillPassOne(ECut cut)
 {
-   //Info("FillPassOne", "Called");
    set<DrawObjContainer*> hists = fHistCuts[cut];
 
    set<DrawObjContainer*>::iterator hi;
@@ -438,21 +413,10 @@ void AsymRoot::FillDerivedPassOne()
 void AsymRoot::PostFillPassOne()
 {
    Info("PostFillPassOne", "Called");
-   //fHists->PostFillPassOne(fHists);
 
    // The order is important!
    if ( fHists->d.find("alpha") != fHists->d.end() )
       fHists->d["alpha"]->PostFillPassOne(fHists);
-
-   //DrawObjContainer *pulserHists = 0;
-   //
-   //if (gAsymAnaInfo->HasPulserBit()) {
-   //   pulserHists = fHists->d["pulser"];
-   //}
-   //
-   //if (gAsymAnaInfo->HasPmtBit()) {
-   //   ((CnipolPmtHists*) fHists->d["pmt"])->PostFillPassOne();
-   //}
 }
 
 
@@ -475,7 +439,6 @@ void AsymRoot::Fill(ECut cut)
    for (hi=hb; hi!=he; hi++) {
       (*hi)->Fill(fChannelEvent);
    }
-
 }
 
 
@@ -509,21 +472,9 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
    // For example, 'profile' depends on 'asym'
    fHists->PostFill();
 
-   // Special processing for some of the histogram containers
-   //if (gAsymAnaInfo->HasProfileBit()) {
-   //   ((CnipolProfileHists*) fHists->d["profile"])->Process();
-   //   fEventConfig->GetMeasInfo()->fMeasType = ((CnipolProfileHists*) fHists->d["profile"])->MeasurementType();
-   //}
-
    // Add info to database entry
    run.profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
    run.profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
-
-   // Old way... should be deleted
-   //run.polarization        = gAnaMeasResult->sinphi[0].P[0];
-   //run.polarization_error  = gAnaMeasResult->sinphi[0].P[1],
-   //run.phase               = gAnaMeasResult->sinphi[0].dPhi[0];
-   //run.phase_error         = gAnaMeasResult->sinphi[0].dPhi[1];
 
    run.polarization        = gAnaMeasResult->GetPCPolar().first;
    run.polarization_error  = gAnaMeasResult->GetPCPolar().second;
@@ -578,24 +529,14 @@ void AsymRoot::AddChannelEvent()
 
    if (gAsymAnaInfo->fSaveTrees.test(1) || gAsymAnaInfo->fSaveTrees.test(2))
    {
-      //fChannelEvents[fChannelEvent->fEventId] = *fChannelEvent;
-
       fChannelEvents.insert(*fChannelEvent);
 
-      //int sizeb = fChannelEvents.size()*sizeof(ChannelEvent);
       int sizen = fChannelEvents.size();
 
-      // a factor of 2 comes from some root overhead
-      //if (sizeb > 100000000*2) {
       if (sizen >= 12000000) { // corresponds to 300Mb if all 3 trees are saved
 
-         //printf("sizeb: %d\n", sizeb);
          printf("sizen: %d\n", sizen);
 
-         //PrintEventMap();
-
-         //fEventConfig->PrintAsPhp();
-         //fEventConfig->Write("measConfig");
          SaveChannelTrees();
          SaveEventTree();
 
@@ -604,12 +545,10 @@ void AsymRoot::AddChannelEvent()
          fOutTreeFile->Close();
          fOutTreeFile->Delete();
 
-         //fOutTreeFile  = 0;
          fRawEventTree = 0;
          fAnaEventTree = 0;
 
          fChannelEvents.clear();
-         //fChannelEvent
          CreateTrees();
       }
    }
@@ -624,7 +563,6 @@ void AsymRoot::WriteTreeFile()
    fOutTreeFile->cd();
 
    // Write run configuration object
-   //fEventConfig->PrintAsPhp();
    fEventConfig->Write("measConfig");
 
    if (fRawEventTree) {
@@ -644,7 +582,6 @@ void AsymRoot::WriteTreeFile()
    if (fAnaEventTree) {
       fAnaEventTree->Write();
       fAnaEventTree->Delete();
-      //delete fAnaEventTree;
    }
 }
 
@@ -657,7 +594,6 @@ void AsymRoot::PrintEventMap()
    ChannelEventSet::const_iterator me = fChannelEvents.end();
 
    for (mi=mb; mi!=me; mi++) {
-      //mi->first.Print();
       mi->Print();
    }
 }
@@ -692,7 +628,6 @@ void AsymRoot::UpdateCalibrator()
       delete fEventConfig->fCalibrator;
       // and finally, assign the new calibrator
       fEventConfig->fCalibrator =  new DeadLayerCalibratorEDepend();
-      //fEventConfig->fCalibrator = new DeadLayerCalibrator();
 
       // Now overwrite alpha calibration constants from an alpha calib file
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
@@ -720,7 +655,6 @@ void AsymRoot::UpdateCalibrator()
       }
 
       delete streamerList;
-      //if (streamerInfo) delete streamerInfo;
 
       Version_t    mcLoadedVer = TClassTable::GetID("EventConfig");
       EventConfig *eventConfig = (EventConfig*) f->FindObjectAny("measConfig");
@@ -774,7 +708,6 @@ void AsymRoot::SaveChannelTrees()
 
    for (mi=mb; mi!=me; mi++) {
       *fChannelData = (mi->fChannel);
-      //mi->fChannel.Print();
       fChannelEventTrees[mi->fEventId.fChannelId]->Fill();
    }
 }
@@ -797,28 +730,15 @@ void AsymRoot::SaveEventTree()
 
    for (mi=mb; mi!=me; mi++) {
 
-      //mi->Print();
-
       fAnaEvent->fEventId = mi->fEventId;
       fAnaEvent->fChannels[mi->fEventId.fChannelId] = mi->fChannel;
 
       // Pointer to the next element, can be end of map
       nextmi = mi; nextmi++;
 
-      //printf("check event ids\n");
-      //fAnaEvent->fEventId.Print();
-      //printf("\t");
-      //nextmi->fEventId.Print();
-      //printf("\n\n");
-
       if (fAnaEvent->fEventId < nextmi->fEventId || nextmi == me) {
 
          fAnaEventTree->Fill();
-         //printf("Filled ana event\n");
-         //if (fAnaEvent->fChannels.size() >= 2) {
-         //   printf("XXX size: %d\n", fAnaEvent->fChannels.size());
-         //}
-
          fAnaEvent->fChannels.clear();
       }
    }
@@ -862,13 +782,11 @@ void AsymRoot::BookHists()
       sprintf(htitle,"%.3f : Energy Spectrum Detector %d ", gMeasInfo->RUNID, i+1);
       energy_spectrum[i] = new TH1F(hname,htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
       energy_spectrum[i]->GetXaxis()->SetTitle("Momentum Transfer [-GeV/c]^2");
-      //energy_spectrum[i] = (TH1F*) fHists->d["Kinema"].o[hname];
    }
 
    sprintf(htitle,"%.3f : Energy Spectrum (All Detectors)", gMeasInfo->RUNID);
    energy_spectrum_all = new TH1F("energy_spectrum_all", htitle, Eslope.nxbin, Eslope.xmin, Eslope.xmax);
    energy_spectrum_all -> GetXaxis() -> SetTitle("Momentum Transfer [-GeV/c]^2");
-   //energy_spectrum_all = (TH1F*) fHists->d["Kinema"].o["energy_spectrum_all"];
 
    sprintf(hname,"mass_nocut_all");
    sprintf(htitle,"%.3f : Invariant Mass (nocut) for all strips", gMeasInfo->RUNID);
@@ -923,13 +841,6 @@ void AsymRoot::BookHists()
    sprintf(htitle,"%.3f : # of Events in Banana Cut per strip", gMeasInfo->RUNID);
    good_carbon_events_strip = new TH1I("good_carbon_events_strip", htitle, NSTRIP, 0.5, NSTRIP+0.5);
    good_carbon_events_strip->SetFillColor(17);
-
-   //Asymmetry->cd();
-   //asym_vs_bunch_x45    = new TH2F();
-   //asym_vs_bunch_x90    = new TH2F();
-   //asym_vs_bunch_y45    = new TH2F();
-   //asym_sinphi_fit      = new TH2F();
-   //scan_asym_sinphi_fit = new TH2F();
 }
 
 
@@ -1013,31 +924,9 @@ void AsymRoot::DeleteHistogram()
 // Description : Write out objects in memory and dump in fOutRootFile before closing it
 void AsymRoot::Finalize()
 {
-   //fOutRootFile->cd();
-   //Kinema->cd();
-
-   //for (int i=0; i<NSTRIP; i++) {
-   //   if (t_vs_e[i]) {
-
-   //      for (int j=0; j<2; j++){
-   //         if (banana_cut_l[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_l[i][j]);
-   //         if (banana_cut_h[i][j]) t_vs_e[i]->GetListOfFunctions()->Add(banana_cut_h[i][j]);
-   //      }
-
-   //      if (energy_cut_l[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_l[i]);
-   //      if (energy_cut_h[i]) t_vs_e[i]->GetListOfFunctions()->Add(energy_cut_h[i]);
-   //   }
-   //}
-
-   //fOutRootFile->cd();
-
    fHists->Write(); // this is NOT equivalent to fOutRootFile->Write();
-   //fHists->Delete();
-
-   //fOutRootFile->Write();
 
    fOutRootFile->cd();
-   //fEventConfig->PrintAsPhp();
    fEventConfig->Write("measConfig");
 
    // close fOutRootFile
