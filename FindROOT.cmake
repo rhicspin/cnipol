@@ -94,10 +94,17 @@ function(ROOT_GENERATE_DICTIONARY dictionary)
     endif()
   endforeach()
   #---call rootcint------------------------------------------
+  if (${ROOT_VERSION} VERSION_LESS "6.0")
   add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
                      COMMAND ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx
                                           -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
                      DEPENDS ${headerfiles} ${linkdefs})
+  else()
+  add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}_rdict.pcm
+                     COMMAND ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx
+                                          -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
+                     DEPENDS ${headerfiles} ${linkdefs})
+  endif()
 endfunction()
 
 #----------------------------------------------------------------------------
