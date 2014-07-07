@@ -178,13 +178,11 @@ using the following script on the acnlin CAD cluster:
 where <NNNNN> must be replaced with an actual fill number.
 
 
-Other software packages for the RHIC polarimetry
-================================================
+Other polarimetry software packages
+===================================
 
-Other packages are available from the BNL SVN repository. Access to the
-repository is restricted to BNL Domain NT accounts. An account can be requested
-at http://www.bnl.gov/accounts/. The same account and password can be used to
-view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
+Different people have been working on analysing polarimetry data. Some notable
+packages used for this purpose are:
 
 <table>
 	<tr>
