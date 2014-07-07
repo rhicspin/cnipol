@@ -196,3 +196,7 @@ view the repository on the web by visiting https://svn.bnl.gov/viewvc/.
 		<td>Code for the H-jet polarimeter data analysis</td>
 	</tr>
 </table>
+
+<!--
+# vim: set noexpandtab:
+-->
