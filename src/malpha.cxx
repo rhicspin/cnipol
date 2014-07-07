@@ -480,6 +480,71 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
 }
 
 
+/**
+ * Takes in a AmGain plot. Calculates the slope of the Gain vs BiasCurrent
+ * correlation.  Uses that slope value and BiasCurrent values to make a plot
+ * AmGainCorrected containing the corrected values.
+ */
+void DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr, ResultMean &rBiasCurrent, ResultMean &rhAmGainCorrected, ResultMean &rhAmGainCorrectedErr)
+{
+   vector<double>       slope;
+
+   for(int det = 0; det < N_DETECTORS; det++)
+   {
+      int count = 0;
+      for (map< Time, vector<double> >::iterator it = rhAmGain.second.begin(); it != rhAmGain.second.end(); it++)
+      {
+         Time   time = it->first;
+         vector<double>    &det_gain = it->second;
+
+         if (rBiasCurrent.second.count(time) && !isnan(det_gain.at(det)))
+         {
+            count++;
+         }
+      }
+      TGraph g(count);
+      int i = 0;
+      for (map< Time, vector<double> >::iterator it = rhAmGain.second.begin(); it != rhAmGain.second.end(); it++)
+      {
+         Time   time = it->first;
+         vector<double>    &det_gain = it->second;
+
+         if (rBiasCurrent.second.count(time) && !isnan(det_gain.at(det)))
+         {
+            g.SetPoint(i, rBiasCurrent.second[time].at(det), det_gain.at(det));
+            i++;
+         }
+      }
+      assert(i == count);
+      TFitResultPtr fitres = g.Fit("pol1", "QS"); // Q: quiet, S: return fitres
+      assert(!isnan(fitres->Value(1)));
+      slope.push_back(fitres->Value(1));
+   }
+
+   rhAmGainCorrected = rhAmGain;
+   rhAmGainCorrectedErr = rhAmGainErr;
+   rhAmGainCorrected.YTitle = "Corrected americium gain, ADC/keV";
+
+   for (map< Time, vector<double> >::iterator it = rhAmGain.second.begin(); it != rhAmGain.second.end(); it++)
+   {
+      Time   time = it->first;
+      vector<double>    &det_gain = it->second;
+      for(int det = 0; det < N_DETECTORS; det++)
+      {
+         if (rBiasCurrent.second.count(time))
+         {
+            rhAmGainCorrected.second[time].at(det) = det_gain.at(det) - slope[det] * rBiasCurrent.second[time].at(det);
+         }
+         else
+         {
+            // If we can't correct the value, remove it.
+            rhAmGainCorrected.second[time].at(det) = NAN;
+         }
+      }
+   }
+}
+
+
 EPolarimeterId	parsePolIdFromCdevKey(const string &key)
 {
 #define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
@@ -676,6 +741,8 @@ int main(int argc, char *argv[])
 
    map< Short_t, ResultMean > rhAmGain;
    map< Short_t, ResultMean > rhAmGainErr;
+   map< Short_t, ResultMean > rhAmGainCorrected;
+   map< Short_t, ResultMean > rhAmGainCorrectedErr;
    map< Short_t, ResultMean > rhGdGain_over_AmGain;
    map< Short_t, ResultMean > rhGdGain_over_AmGainErr;
    map< Short_t, ResultMean > rhAmGdGain_over_AmGain;
@@ -819,13 +886,17 @@ int main(int argc, char *argv[])
       oc->d[polIdName] = new DrawObjContainer(f1->mkdir(polIdName.c_str()));
       DrawObjContainer *sub_oc = oc->d[polIdName];
 
+      DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
+
       PlotMean(sub_oc, polIdName, "hAmGain_by_day", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, polIdName, "hAmGainCorrected_by_day", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hGdGain_over_AmGain_by_day", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_day", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hBiasCurrent_by_day", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGain_by_run", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, polIdName, "hAmGainCorrected_by_run", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hGdGain_over_AmGain_by_run", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
       PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
