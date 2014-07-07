@@ -2,6 +2,7 @@
 #define BeamBunch_h
 
 #include <map>
+#include <ostream>
 
 #include "TObject.h"
 
@@ -42,7 +43,7 @@ public:
    void       SetLength(Float_t len);
    void       PrintAsPhp(FILE *f=stdout) const;
 
-   friend ostream& operator<<(ostream &os, const BeamBunch &bb);
+   friend std::ostream& operator<<(std::ostream &os, const BeamBunch &bb);
 
    ClassDef(BeamBunch, 1)
 };
