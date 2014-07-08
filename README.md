@@ -207,8 +207,8 @@ packages used for this purpose are:
 		<th>jet</th>
 		<td>
 			<p>Code for the H-jet polarimeter data analysis</p>
-			<p>Supported by RHIC Spin group. As many other analyses
-			it's reader code is based on code found in ``online/src/rdatautil.c``.</p>
+			<p>Supported by the RHIC Spin group. As many other analyses
+			it's reader code is based on the code found in ```online/src/rdatautil.c```.</p>
 		</td>
 	</tr>
 </table>
