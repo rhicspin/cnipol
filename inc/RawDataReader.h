@@ -18,7 +18,8 @@
 
 
 /**
- * Efficiently reads the raw data file and processes data structures.
+ * This class loads a raw data file into memory, processes data structures with
+ * information about the measurement, and loops over the events.
  */
 class RawDataReader
 {

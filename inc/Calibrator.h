@@ -24,7 +24,7 @@ public:
 
    TRandom*         fRandom;
    ChannelCalibMap  fChannelCalibs;
-   ChannelCalib     fMeanChannel;
+   ChannelCalib     fMeanChannel;             //< A virtual "channel" to hold the mean values of all real channels
    ChannelCalib     fMeanOfLogsChannel;
    Float_t          fRMSBananaChi2Ndf;
    Float_t          fRMSOfLogsBananaChi2Ndf;

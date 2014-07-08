@@ -156,10 +156,9 @@ int main(int argc, char *argv[])
       gAsymRoot->CreateTrees();
    }
 
-   // We need to
-   // quickly do some pre-processing to extract parameters from the data.
-   // For example, rough estimates of the dead layer and t0 are needed
-   // to set preliminary cuts.
+   // We need to do some pre-processing first to extract parameters from the
+   // data. For example, rough estimates of the dead layer and t0 are needed to
+   // set preliminary cuts.
 
    rawDataReader.ReadDataPassOne(*mseMeasInfoX);  // Fill primary histograms
    gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones

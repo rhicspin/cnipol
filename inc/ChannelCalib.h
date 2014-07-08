@@ -27,7 +27,7 @@ typedef std::map<UShort_t, ChannelCalib>::const_iterator ChannelCalibMapConstIte
 typedef std::pair<const UShort_t, ChannelCalib>          ChannelCalibPair;
 
 
-/** */
+/** A simple data container to hold calibration parameters for each channel. */
 class ChannelCalib : public TObject
 {
 public:

@@ -19,20 +19,23 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
 static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeader);
 static void ProcessRecordLongPassOne(const char *mSeek, RecordHeaderStruct *mHeader);
 
-/** */
+
+/**
+ * Constructs a reader to process a raw data file from a single measurement.
+ */
 RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
    fMem(0), fMemSize(0),
    fFileStream(fFileName.c_str(), ios::binary), fSeenRecords()
 {
    fFile = fopen(fFileName.c_str(), "r");
 
-   // reading the data till its end ...
+   // Make sure the file exists
    if (!fFile) {
       Fatal("RawDataReader", "File \"%s\" not found. Cannot proceed", fFileName.c_str());
    } else
       Info("RawDataReader", "Found file \"%s\"", fFileName.c_str());
 
-   // Create a BLOB with file content
+   // Create a BLOB on the heap with the file content
    Info("RawDataReader", "Reading into memory...");
 
    fFileStream.seekg(0, ios::end);
@@ -44,13 +47,11 @@ RawDataReader::RawDataReader(string fname) : fFileName(fname), fFile(0),
    fFileStream.read(fMem, fMemSize);
    fFileStream.close();
 
-///
    RecordHeaderStruct *mHeader = (RecordHeaderStruct*) fMem;
    cout << "Currently consider record: fMem: " << hex << fMem
         << ", type: " << hex << mHeader->type << ", len: " << mHeader->len << endl;
    cout << "size RecordHeaderStruct: " << sizeof(RecordHeaderStruct) << endl;
    cout << "size recordHeaderStruct: " << sizeof(recordHeaderStruct) << endl;
-///
 }
 
 
@@ -453,10 +454,10 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 }
 
 
-// Description : Decorde target infomation.
-//             : presently the target ID is assumed to be appear at the last of
-//             : character string poldat.targetIdS.
-// Input       : polDataStruct poldat
+/**
+ * Decorde target infomation. Presently the target ID is assumed to be appear at
+ * the last of character string poldat.targetIdS
+ */
 void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
 {
    cout << endl;
@@ -617,7 +618,7 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
             // Fill hists with raw data
             gAsymRoot->FillPassOne(kCUT_PASSONE);
 
-            // The same but empty bunches only
+            // Use data from empty bunches to fill corresponding histograms
             if ( gAsymRoot->fChannelEvent->PassCutEmptyBunch() )
                gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
          }
