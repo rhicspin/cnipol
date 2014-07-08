@@ -1,5 +1,5 @@
-#ifndef RAW_DATA_READER_H
-#define RAW_DATA_READER_H
+#ifndef RawDataReader_h
+#define RawDataReader_h
 
 #include <errno.h>
 #include <fstream>

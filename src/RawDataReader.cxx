@@ -590,7 +590,7 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
    // We are here if rec type is REC_READAT
    long    delim   = mHeader->timestamp.delim;
    size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-   const char   *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
+   const char *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
 
    for (UInt_t i=0; i<recSize; )
    {
@@ -649,7 +649,7 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
    // We are here if rec type is REC_READAT
    long    delim   = mHeader->timestamp.delim;
    size_t  recSize = mHeader->len - sizeof(RecordHeaderStruct);
-   const char   *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
+   const char *mSeekAT = mSeek + sizeof(RecordHeaderStruct);
 
    for (UInt_t i=0; i<recSize; )
    {

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
    gAsymRoot->CreateRootFile(gAsymAnaInfo->GetRootFileName());
 
    MseMeasInfoX *mseMeasInfoX     = 0;
-   MseMeasInfoX *mseMeasInfoXOrig = 0; 
+   MseMeasInfoX *mseMeasInfoXOrig = 0;
 
    // Check whether the measurement is already in database
    if (gAsymAnaInfo->fFlagUseDb) {

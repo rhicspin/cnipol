@@ -14,14 +14,14 @@ using namespace std;
 
 /** */
 MAlphaAnaInfo::MAlphaAnaInfo() : AnaInfo(),
-      fMListFileName("")
-     ,fOutputFileName("")
+   fMListFileName(""),
+   fOutputFileName("")
 {
    Init();
 }
 
 
-void   MAlphaAnaInfo::SetMListFileName(std::string listName)
+void MAlphaAnaInfo::SetMListFileName(std::string listName)
 {
    fMListFileName = listName;
 }
