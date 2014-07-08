@@ -76,9 +76,17 @@ void AnaInfo::MakeOutDir()
       Error("MakeOutDir", "Output directory name is too long");
    }
 
-   if (gSystem->mkdir(GetOutDir().c_str()) < 0) {
+   const bool kACCESSABLE = false; // bizarre convention of return value
+   if (gSystem->AccessPathName(GetOutDir().c_str()) == kACCESSABLE)
+   {
       Warning("MakeOutDir", "Directory %s already exists", GetOutDir().c_str());
-   } else {
+   }
+   else if (gSystem->mkdir(GetOutDir().c_str()) < 0)
+   {
+      Fatal("MakeOutDir", "Can't create directory %s", GetOutDir().c_str());
+   }
+   else
+   {
       Info("MakeOutDir", "Created directory %s", GetOutDir().c_str());
       gSystem->Chmod(GetOutDir().c_str(), 0775);
    }
