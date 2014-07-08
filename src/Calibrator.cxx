@@ -113,13 +113,6 @@ void Calibrator::Calibrate(DrawObjContainer *c)
 
 
 /** */
-//void Calibrator::CalibrateFast(DrawObjContainer *c)
-//{
-//	Info("CalibrateFast", "Executing CalibrateFast()");
-//}
-
-
-/** */
 Float_t Calibrator::GetDLWidth(UShort_t chId) const
 {
    return fChannelCalibs.find(chId)->second.fDLWidth;
@@ -228,7 +221,6 @@ void Calibrator::Print(const Option_t* opt) const
    for (iCh=mb; iCh!=me; iCh++) {
 	   printf("Channel %2d: ", iCh->first);
 		iCh->second.Print();
-      //printf("\n");
    }
 }
 

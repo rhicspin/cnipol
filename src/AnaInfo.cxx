@@ -42,8 +42,6 @@ AnaInfo::~AnaInfo()
 {
    if (fFileMeasInfo) fclose(fFileMeasInfo);
    if (fFileStdLog)   fclose(fFileStdLog);
-
-   //delete fUserGroup; fUserGroup = 0;
 }
 
 

@@ -623,17 +623,7 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
                gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
          }
 
-         // Use all events to fill pulser histograms - not valid. thinout is applied
-         //if ( gAsymAnaInfo->HasPulserBit() &&
-         //     gAsymRoot->fChannelEvent->PassCutEmptyBunch() &&
-         //     //gAsymRoot->fChannelEvent->PassCutNoise() &&
-         //     gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
-         //{
-         //   gAsymRoot->FillPassOne(kCUT_PASSONE_PULSER);
-         //}
-
          if ( gAsymAnaInfo->HasPmtBit() && gAsymRoot->fChannelEvent->PassCutPmtChannel() )
-              //gAsymRoot->fChannelEvent->PassCutPmtNoise()
          {
             gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
          }
@@ -642,15 +632,6 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
          {
             gAsymRoot->AddSpinFlipperMarker();
          }
-
-         //if ( !gAsymRoot->fChannelEvent->PassCutNoise() )          continue;
-         //if ( !gAsymRoot->fChannelEvent->PassCutEnabledChannel() ) continue;
-         //if ( !gAsymRoot->fChannelEvent->PassCutPulser() )         continue;
-         //if ( !gAsymRoot->fChannelEvent->PassCutSiliconChannel() ) continue;
-         //if ( !gAsymRoot->fChannelEvent->PassCutDepEnergyTime() )  continue;
-         //if (  gAsymRoot->fChannelEvent->PassCutEmptyBunch() )     continue;
-
-         //gAsymRoot->PrintChannelEvent();
 
          gMeasInfo->fNEventsProcessed++;
 

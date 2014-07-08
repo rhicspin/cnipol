@@ -78,10 +78,6 @@ int main(int argc, char *argv[])
       mseRunPeriodX = new MseRunPeriodX();
    }
 
-   // For debugging
-   //mseMeasInfoX->Print();
-   //cout << *mseMeasInfoX << endl;
-
    // Overwrite the offline version (if set previously)
    mseMeasInfoX->asym_version = gAsymAnaInfo->fAsymVersion;
 
@@ -143,9 +139,6 @@ int main(int argc, char *argv[])
    gAsymAnaInfo->Print();
    gMeasInfo->Print();
    mseMeasInfoX->Print();
-   //gAsymDb->PrintCommon();
-   //gAsymDb->Print();
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // A Calibrator object holds calibration constants for individual channels.
    // It knows how to updated/calibrate them if requested by the user
@@ -165,9 +158,6 @@ int main(int argc, char *argv[])
    gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
    gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
 
-   // For debugging
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
-
    // PassTwo
    if ( !gAsymAnaInfo->HasAlphaBit() ) {
       gAsymRoot->PreFill();
@@ -178,21 +168,6 @@ int main(int argc, char *argv[])
       gAsymRoot->FillDerived();
       gAsymRoot->PostFill(*mseMeasInfoX);
    }
-
-   // For debugging
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
-
-   // Update calibration constants if requested
-   // XXX logic??? For normal data runs calibration should be done only once
-   // during the first pass
-   // Currently used for alpha runs only
-   //if ( gAsymAnaInfo->HasCalibBit() && gAsymAnaInfo->HasAlphaBit() )
-   //{
-   //   gAsymRoot->Calibrate();
-   //}
-
-   //gAsymRoot->fEventConfig->Print();
-   //gAsymRoot->fEventConfig->fCalibrator->Print();
 
    // No data analysis is done beyond this point only bookkeeping
 

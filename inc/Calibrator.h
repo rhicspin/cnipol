@@ -42,7 +42,6 @@ public:
    Float_t                GetRMSOfLogsBananaChi2Ndf() const { return fRMSOfLogsBananaChi2Ndf; }
    virtual void           CopyAlphaCoefs(Calibrator& calibrator);
    virtual void           Calibrate(DrawObjContainer* c);
-   //virtual void           CalibrateFast(DrawObjContainer* c);
    virtual Float_t        GetDLWidth(UShort_t chId) const;
    virtual Float_t        GetDLWidthErr(UShort_t chId) const;
    virtual Float_t        GetT0Coef(UShort_t chId) const;
