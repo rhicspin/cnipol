@@ -169,39 +169,52 @@ exit:
 int SshLogReader::ExecuteCmd(string cmd, string *response)
 {
    Info("SshLogReader", "Running %s", cmd.c_str());
+   int retries = 5;
+   int retcode;
 
-   FILE *fd = popen(cmd.c_str(), "r");
-   if (!fd)
+   while(retries--)
    {
-      Error("SshLogReader", "popen failed, errno = %i", errno);
-      return 1;
-   }
+      FILE *fd = popen(cmd.c_str(), "r");
+      if (!fd)
+      {
+         Error("SshLogReader", "popen failed, errno = %i", errno);
+         return 1;
+      }
 
-   *response = ReadStream(fd);
+      *response = ReadStream(fd);
 
-   int retcode = pclose(fd);
+      retcode = pclose(fd);
 
-   if (retcode == -1)
-   {
-      Error("SshLogReader", "pclose failed, errno = %i", errno);
-      return 1;
-   }
-   if (retcode)
-   {
-      Error("SshLogReader", "process returned %i", retcode);
-      Error("SshLogReader",
-         "You need to create a gateway to acnlina machine.\n"
-         "In order to do that, add following into your ~/.ssh/config file:\n\n"
-         "Host acnlina\n"
-         "\tIdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa\n"
-         "\tUser            dsmirnov\n"
-         "\tHostName        localhost\n"
-         "\tPort            8022\n\n"
-         "To start gateway itself use following command:\n\n"
-         "ssh -l your_user_name ssh.pbn.bnl.local -L 8022:acnlina5.pbn.bnl.gov:22\n\n"
-         "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
-         "If you have problems, try using --no-ssh option."
-         );
+      if (retcode == -1)
+      {
+         Error("SshLogReader", "pclose failed, errno = %i", errno);
+         return 1;
+      }
+      if (retcode)
+      {
+         Error("SshLogReader", "process returned %i", retcode);
+         Error("SshLogReader",
+            "You need to create a gateway to acnlina machine.\n"
+            "In order to do that, add following into your ~/.ssh/config file:\n\n"
+            "Host acnlina\n"
+            "\tIdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa\n"
+            "\tUser            dsmirnov\n"
+            "\tHostName        localhost\n"
+            "\tPort            8022\n"
+            "To start gateway itself use following command:\n\n"
+            "ssh -l your_user_name ssh.pbn.bnl.local -L 8022:acnlina5.pbn.bnl.gov:22\n\n"
+            "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
+            "If you have problems, try using --no-ssh option."
+            );
+         static int delay = 0;
+         delay += 5;
+         Error("SshLogReader", "Retrying in %i seconds... Retries left %i", delay, retries);
+         sleep(delay);
+      }
+      else
+      {
+         break;
+      }
    }
 
    return retcode;
