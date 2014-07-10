@@ -201,6 +201,7 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
             "\tUser            dsmirnov\n"
             "\tHostName        localhost\n"
             "\tPort            8022\n"
+            "\tBatchMode       yes\n\n"
             "To start gateway itself use following command:\n\n"
             "ssh -l your_user_name ssh.pbn.bnl.local -L 8022:acnlina5.pbn.bnl.gov:22\n\n"
             "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
