@@ -202,45 +202,17 @@ TARGET_LINK_LIBRARIES(
 	root-helper-utils-shared
 	)
 
-ADD_EXECUTABLE(
-	malpha
-	src/malpha.cxx
-	)
+ADD_EXECUTABLE(asym		src/asym.cxx)
+TARGET_LINK_LIBRARIES(asym	cnipol)
 
-TARGET_LINK_LIBRARIES(
-	malpha
-	cnipol
-	)
+ADD_EXECUTABLE(masym		src/masym.cxx)
+TARGET_LINK_LIBRARIES(masym	cnipol)
 
-ADD_EXECUTABLE(
-	asym
-	src/asym.cxx
-	)
+ADD_EXECUTABLE(malpha		src/malpha.cxx)
+TARGET_LINK_LIBRARIES(malpha	cnipol)
 
-TARGET_LINK_LIBRARIES(
-	asym
-	cnipol
-	)
-
-ADD_EXECUTABLE(
-	masym
-	src/masym.cxx
-	)
-
-TARGET_LINK_LIBRARIES(
-	masym
-	cnipol
-	)
-
-ADD_EXECUTABLE(
-	spinflipper
-	src/spinflipper.cxx
-	)
-
-TARGET_LINK_LIBRARIES(
-	spinflipper
-	cnipol
-	)
+ADD_EXECUTABLE(spinflipper	src/spinflipper.cxx)
+TARGET_LINK_LIBRARIES(spinflipper	cnipol)
 
 IF(FORCE_32BIT)
 	SET_TARGET_PROPERTIES(cnipol PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
