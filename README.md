@@ -204,7 +204,7 @@ packages used for this purpose are:
 		</td>
 	</tr>
 	<tr>
-		<th>jet</th>
+		<th>hjet-analysis</th>
 		<td>
 			<p>Code for the H-jet polarimeter data analysis</p>
 			<p>Supported by the RHIC Spin group. As many other analyses
