@@ -207,8 +207,7 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
             "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
             "If you have problems, try using --no-ssh option."
             );
-         static int delay = 0;
-         delay += 5;
+         const int delay = 10;
          Error("SshLogReader", "Retrying in %i seconds... Retries left %i", delay, retries);
          sleep(delay);
       }
@@ -225,6 +224,7 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
 int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
 {
    string response;
+   sleep(2); // a delay to give the exportLoggerData a break
    int retcode = ExecuteCmd(cmd, &response);
    if (retcode)
    {
