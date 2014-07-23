@@ -731,10 +731,6 @@ int main(int argc, char *argv[])
 
    gROOT->Macro("~/rootmacros/styles/style_malpha.C");
 
-   gRunConfig.fBeamEnergies.clear();
-   gRunConfig.fBeamEnergies.insert(kINJECTION);
-   gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
-
    string filelist = mAlphaAnaInfo.GetMListFullPath();
 
    Info("malpha", "Starting first pass...");
