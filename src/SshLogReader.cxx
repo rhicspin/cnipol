@@ -190,8 +190,7 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
          Error("SshLogReader", "pclose failed, errno = %i", errno);
          return 1;
       }
-      // Check if we have a non-zero return code or an absense of comment lines in the output
-      if (retcode || (response->find("#") == string::npos))
+      if (retcode)
       {
          Error("SshLogReader", "process returned %i", retcode);
          Error("SshLogReader",
