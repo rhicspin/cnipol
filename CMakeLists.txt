@@ -214,6 +214,9 @@ TARGET_LINK_LIBRARIES(malpha	cnipol)
 ADD_EXECUTABLE(mbias		src/mbias.cxx)
 TARGET_LINK_LIBRARIES(mbias	cnipol ${MYSQL++_LIBRARIES})
 
+ADD_EXECUTABLE(mbias-meas		src/mbias-meas.cxx)
+TARGET_LINK_LIBRARIES(mbias-meas	cnipol ${MYSQL++_LIBRARIES})
+
 ADD_EXECUTABLE(spinflipper	src/spinflipper.cxx)
 TARGET_LINK_LIBRARIES(spinflipper	cnipol)
 
