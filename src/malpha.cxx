@@ -485,7 +485,7 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
  * correlation.  Uses that slope value and BiasCurrent values to make a plot
  * AmGainCorrected containing the corrected values.
  */
-void DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr, ResultMean &rBiasCurrent, ResultMean &rhAmGainCorrected, ResultMean &rhAmGainCorrectedErr)
+vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr, ResultMean &rBiasCurrent, ResultMean &rhAmGainCorrected, ResultMean &rhAmGainCorrectedErr)
 {
    vector<double>       slope;
 
@@ -542,6 +542,7 @@ void DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr, ResultMea
          }
       }
    }
+   return slope;
 }
 
 
@@ -864,7 +865,7 @@ int main(int argc, char *argv[])
 
    TFile *f1 = new TFile(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
    DrawObjContainer *oc = new DrawObjContainer(f1);
-   PolarimeterIdSetConstIter iPolId = gRunConfig.fPolarimeters.begin();
+   PolarimeterIdSetConstIter iPolId;
 
    FillDeviceMaxMin(rhAmGain);
    FillDeviceMaxMin(rhGdGain_over_AmGain);
@@ -874,7 +875,9 @@ int main(int argc, char *argv[])
    FillDeviceMaxMin(rBiasCurrent);
    FillDeviceMaxMin(rBeamCurrent);
 
-   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   map<int, vector<double> > slope;
+
+   for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       Short_t polId = *iPolId;
       string  polIdName = RunConfig::AsString(*iPolId);
@@ -882,7 +885,7 @@ int main(int argc, char *argv[])
       oc->d[polIdName] = new DrawObjContainer(f1->mkdir(polIdName.c_str()));
       DrawObjContainer *sub_oc = oc->d[polIdName];
 
-      DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
+      slope[*iPolId] = DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
 
       PlotMean(sub_oc, polIdName, "hAmGain_by_day", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, polIdName, "hAmGainCorrected_by_day", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], min_startTime, max_startTime);
@@ -912,6 +915,23 @@ int main(int argc, char *argv[])
    oc->Write();
    f1->Close();
    delete f1;
+
+   cout << "// ============= malpha generated for " << mAlphaAnaInfo.GetMListFileName() << " begin" << endl;
+   cout << "//";
+   for(int i = 0; i < argc; i++)
+   {
+      cout << " " << argv[i];
+   }
+   cout << endl;
+   cout << "map<int, vector<double> > slope;" << endl;
+   for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      for(int det = 0; det < N_DETECTORS; det++)
+      {
+         cout << "slope[" << *iPolId << "][" << det << "] = " << slope.at(*iPolId).at(det) << ";" << endl;
+      }
+   }
+   cout << "// ============= malpha generated end" << endl;
 
    return EXIT_SUCCESS;
 }
