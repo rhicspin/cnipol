@@ -924,7 +924,7 @@ int main(int argc, char *argv[])
    }
    cout << endl;
    cout << "// version " << mAlphaAnaInfo.fAsymVersion << endl;
-   cout << "map<int, vector<double> > slope;" << endl;
+   cout << "map<int, vector<double> > slope; // {pol_id, det} -> slope" << endl;
    for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       for(int det = 0; det < N_DETECTORS; det++)
