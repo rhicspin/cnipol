@@ -84,23 +84,19 @@ void Calibrator::UpdateMeanChannel()
 
 
 /** */
-void Calibrator::CopyAlphaCoefs(Calibrator &calibrator)
+void Calibrator::CopyAlphaCoefs(Calibrator &other)
 {
    ChannelCalibMap::const_iterator iCh;
-   ChannelCalibMap::const_iterator mb = calibrator.fChannelCalibs.begin();
-   ChannelCalibMap::const_iterator me = calibrator.fChannelCalibs.end();
+   ChannelCalibMap::const_iterator mb = other.fChannelCalibs.begin();
+   ChannelCalibMap::const_iterator me = other.fChannelCalibs.end();
 
    for (iCh=mb; iCh!=me; ++iCh) {
+      UShort_t chId = iCh->first;
+      const ChannelCalib &other_calib = iCh->second;
 
-      ChannelCalibMap::iterator iChCalib = fChannelCalibs.find(iCh->first);
+      ChannelCalib &calib = fChannelCalibs[chId];
+      calib.CopyAlphaCoefs(other_calib);
 
-      if (iChCalib != fChannelCalibs.end()) {
-         iChCalib->second.CopyAlphaCoefs(iCh->second);
-      } else {
-         ChannelCalib newChCalib;
-         newChCalib.CopyAlphaCoefs(iCh->second);
-         fChannelCalibs[iCh->first] = newChCalib;
-      }
    }
 }
 

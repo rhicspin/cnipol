@@ -40,7 +40,7 @@ public:
    ChannelCalib const&    GetMeanOfLogsChannel() const { return fMeanOfLogsChannel; }
    Float_t                GetRMSBananaChi2Ndf() const { return fRMSBananaChi2Ndf; }
    Float_t                GetRMSOfLogsBananaChi2Ndf() const { return fRMSOfLogsBananaChi2Ndf; }
-   virtual void           CopyAlphaCoefs(Calibrator& calibrator);
+   virtual void           CopyAlphaCoefs(Calibrator& other);
    virtual void           Calibrate(DrawObjContainer* c);
    virtual Float_t        GetDLWidth(UShort_t chId) const;
    virtual Float_t        GetDLWidthErr(UShort_t chId) const;
