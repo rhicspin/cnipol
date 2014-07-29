@@ -418,6 +418,15 @@ UInt_t MeasInfo::GetFillId()
 }
 
 
+bool MeasInfo::IsRunYear(int year)
+{
+   time_t t = fStartTime;
+   struct tm *time = gmtime(&t);
+   int meas_year = 1900 + time->tm_year;
+   return meas_year == year;
+}
+
+
 /** */
 void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId)
 {
