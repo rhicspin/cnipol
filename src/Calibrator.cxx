@@ -1,9 +1,12 @@
+#include <opencdev.h>
+
 #include "Calibrator.h"
 
 #include "TMath.h"
 
 #include "AsymCommon.h"
 #include "AsymGlobals.h"
+#include "BiasCurrentUtil.h"
 #include "MeasInfo.h"
 
 
@@ -96,7 +99,114 @@ void Calibrator::CopyAlphaCoefs(Calibrator &other)
 
       ChannelCalib &calib = fChannelCalibs[chId];
       calib.CopyAlphaCoefs(other_calib);
+   }
+}
 
+
+void Calibrator::UsePlainAlphaGain()
+{
+   if (!gAsymAnaInfo->HasAlphaBit()) {
+      for(ChannelCalibMap::iterator iCh = fChannelCalibs.begin();
+            iCh != fChannelCalibs.end(); iCh++) {
+         ChannelCalib &calib = iCh->second;
+         calib.fEffectiveGain = calib.fAmAmp.fCoef;
+      }
+   }
+}
+
+
+void Calibrator::ApplyRun13BiasCurrentCorrection(MeasInfo *measInfo, bool direct)
+{
+   // ============= malpha generated for run13_alpha_study_novoltagevariation begin
+   // ./malpha -mrun13_alpha_study_novoltagevariation -orun13.root -g
+   // version M;18f729f4a97fd332bdafe0b66cec41d6b8492435
+   map<int, vector<double> > slope; // {pol_id, det} -> slope
+   slope[0].resize(6);
+   slope[0][0] = 0.000984756;
+   slope[0][1] = 0.000883521;
+   slope[0][2] = 0.00112485;
+   slope[0][3] = 0.00108529;
+   slope[0][4] = 0.000959145;
+   slope[0][5] = 0.00104949;
+   slope[1].resize(6);
+   slope[1][0] = 0.00132049;
+   slope[1][1] = 0.000961331;
+   slope[1][2] = 0.00119244;
+   slope[1][3] = 0.00110028;
+   slope[1][4] = 0.00109446;
+   slope[1][5] = 0.0010553;
+   slope[2].resize(6);
+   slope[2][0] = 0.00108253;
+   slope[2][1] = 0.00106266;
+   slope[2][2] = 0.00111284;
+   slope[2][3] = 0.0012403;
+   slope[2][4] = 0.000961333;
+   slope[2][5] = 0.00101413;
+   slope[3].resize(6);
+   slope[3][0] = 0.00116314;
+   slope[3][1] = 0.00094103;
+   slope[3][2] = 0.00108774;
+   slope[3][3] = 0.00123473;
+   slope[3][4] = 0.00090758;
+   slope[3][5] = 0.00095644;
+   // ============= malpha generated end
+
+   int polId = measInfo->fPolId;
+   double startTime = measInfo->fStartTime;
+   double endTime = max(double(measInfo->fStopTime), startTime + 500);
+
+   static opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+
+   string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)polId);
+   opencdev::mean_result_t bias_mean_value;
+
+   log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
+
+   vector<double> bc = BiasCurrentUtil::FillBiasCurrentMeanValue(bias_mean_value, (EPolarimeterId)polId);
+   assert(bc.size() == N_DETECTORS);
+
+   int not_avail = 0;
+   for(int i = 0; i < N_DETECTORS; i++)
+   {
+      if (isnan(bc[i]))
+      {
+         not_avail++;
+      }
+   }
+
+   if (not_avail > 0) {
+      Error("ApplyRun13BiasCurrentCorrection",
+            "Bias current measurements are not avaliable for %i out of %i detectors"
+            " - Falling back to plain alpha gain", not_avail, N_DETECTORS);
+      UsePlainAlphaGain();
+      return;
+   }
+
+   for(ChannelCalibMap::iterator iCh = fChannelCalibs.begin();
+         iCh != fChannelCalibs.end(); iCh++) {
+      int chId = iCh->first;
+      if (chId == 0)
+      {
+         continue; // skip channel containing mean data
+      }
+
+      int det = ((chId - 1) / NSTRIP_PER_DETECTOR);
+      ChannelCalib &calib = iCh->second;
+      assert(det < N_DETECTORS);
+      double correction = slope.at(polId).at(det) * bc.at(det);
+
+      if (direct) {
+         calib.fEffectiveGain = calib.fZeroBiasGain + correction;
+      } else {
+         calib.fZeroBiasGain = (1/calib.fAmAmp.fCoef) - correction;
+      }
+      if ((chId % NSTRIP_PER_DETECTOR) == 0)
+      {
+         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> (1/calib.fAmAmp.fCoef) = %f", chId, 1/calib.fAmAmp.fCoef);
+         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> calib.fZeroBiasGain = %f", chId, calib.fZeroBiasGain);
+         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> calib.fEffectiveGain = %f", chId, calib.fEffectiveGain);
+         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> bc.at(chId) = %f", chId, bc.at(det));
+      }
    }
 }
 

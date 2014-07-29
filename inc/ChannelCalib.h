@@ -36,6 +36,8 @@ public:
    CalibCoefSet fAmInt;
    CalibCoefSet fGdAmp;
    CalibCoefSet fGdInt;
+   Float_t    fZeroBiasGain;  //< Gain value adjusted to zero bias current
+   Float_t    fEffectiveGain; //< Gain value ready for production use
    Float_t    fDLWidth;       // Dead layer
    Float_t    fDLWidthErr;
    Float_t    fT0Coef;        // T0
@@ -58,7 +60,7 @@ public:
    void       PrintAsPhp(FILE *f=stdout) const;
    void       ResetToZero();
 
-   ClassDef(ChannelCalib, 1)
+   ClassDef(ChannelCalib, 2)
 };
 
 #endif

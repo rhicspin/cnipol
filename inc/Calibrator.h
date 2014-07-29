@@ -15,6 +15,7 @@
 
 #include "DrawObjContainer.h"
 #include "ChannelCalib.h"
+#include "MeasInfo.h"
 
 
 /** */
@@ -41,6 +42,8 @@ public:
    Float_t                GetRMSBananaChi2Ndf() const { return fRMSBananaChi2Ndf; }
    Float_t                GetRMSOfLogsBananaChi2Ndf() const { return fRMSOfLogsBananaChi2Ndf; }
    virtual void           CopyAlphaCoefs(Calibrator& other);
+   void                   UsePlainAlphaGain();
+   void                   ApplyRun13BiasCurrentCorrection(MeasInfo *measInfo, bool direct);
    virtual void           Calibrate(DrawObjContainer* c);
    virtual Float_t        GetDLWidth(UShort_t chId) const;
    virtual Float_t        GetDLWidthErr(UShort_t chId) const;

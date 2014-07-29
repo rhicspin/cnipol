@@ -689,6 +689,17 @@ const Calibrator* AsymRoot::GetCalibrator() const { return fEventConfig->GetCali
 void AsymRoot::Calibrate()
 {
    fEventConfig->fCalibrator->Calibrate(fHists);
+
+   if (gMeasInfo->IsRunYear(2013)) {
+      // run13 needs a following correction:
+      // For alpha run we use alpha mean bias current to extrapolate alpha gain to
+      // the zero bias curret value.  For sweep measurement we extrapolate alpha
+      // gain to sweep measurement bias current.
+      AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
+      fEventConfig->fCalibrator->ApplyRun13BiasCurrentCorrection(gMeasInfo, !anaInfo->HasAlphaBit());
+   } else {
+      fEventConfig->fCalibrator->UsePlainAlphaGain();
+   }
 }
 
 

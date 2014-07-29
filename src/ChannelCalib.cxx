@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "ChannelCalib.h"
 
 ClassImp(CalibCoefSet)
@@ -8,6 +10,7 @@ using namespace std;
 /** Default constructor. */
 ChannelCalib::ChannelCalib() : TObject(),
    // DL calibration related params
+   fZeroBiasGain(NAN), fEffectiveGain(NAN),
    fDLWidth(0), fDLWidthErr(0), fT0Coef(0), fT0CoefErr(0), fAvrgEMiss(0), fAvrgEMissErr(0), fEMeasDLCorr(0), fBananaChi2Ndf(0),
    fFitStatus(kUNKNOWN)
 {
@@ -34,6 +37,8 @@ void ChannelCalib::CopyAlphaCoefs(const ChannelCalib &chCalib)
    fAmInt = chCalib.fAmInt;
    fGdAmp = chCalib.fGdAmp;
    fGdInt = chCalib.fGdInt;
+   fZeroBiasGain  = chCalib.fZeroBiasGain;
+   fEffectiveGain = chCalib.fEffectiveGain;
 }
 
 
@@ -67,6 +72,8 @@ void ChannelCalib::PrintAsPhp(FILE *f) const
    fprintf(f, "'ICoef' => %7.4f, ",         fGdInt.fCoef);
    fprintf(f, "'ICoefErr' => %7.4f, ",      fGdInt.fCoefErr);
    fprintf(f, "),");
+   fprintf(f, "'ZeroBiasGain' => %7.4f, ",  fZeroBiasGain);
+   fprintf(f, "'EffectiveGain' => %7.4f, ", fEffectiveGain);
    fprintf(f, "'DLWidth' => %7.4f, ",       fDLWidth);
    fprintf(f, "'DLWidthErr' => %7.4f, ",    fDLWidthErr);
    fprintf(f, "'T0Coef' => %7.4f, ",        fT0Coef);

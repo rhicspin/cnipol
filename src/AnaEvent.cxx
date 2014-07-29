@@ -18,7 +18,7 @@ AnaEvent::~AnaEvent()
 float AnaEvent::GetEnergy(EventConfig *ec, ChannelDataPair &ch)
 {
    UChar_t chId = ch.first;
-   return ec->fCalibrator->fChannelCalibs[chId].fAmAmp.fCoef * fChannels[chId].fAmpltd;
+   return fChannels[chId].fAmpltd / ec->fCalibrator->fChannelCalibs[chId].fEffectiveGain;
 }
 
 
