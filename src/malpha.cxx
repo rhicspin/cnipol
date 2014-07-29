@@ -923,6 +923,7 @@ int main(int argc, char *argv[])
       cout << " " << argv[i];
    }
    cout << endl;
+   cout << "// version " << mAlphaAnaInfo.fAsymVersion << endl;
    cout << "map<int, vector<double> > slope;" << endl;
    for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
