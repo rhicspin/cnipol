@@ -902,6 +902,7 @@ int main(int argc, char *argv[])
    cout << "map<int, vector<double> > slope; // {pol_id, det} -> slope" << endl;
    for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
+      cout << "slope[" << *iPolId << "].resize(" << N_DETECTORS << ");" << endl;
       for(int det = 0; det < N_DETECTORS; det++)
       {
          cout << "slope[" << *iPolId << "][" << det << "] = " << slope.at(*iPolId).at(det) << ";" << endl;
