@@ -546,27 +546,6 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
 }
 
 
-EPolarimeterId	parsePolIdFromCdevKey(const string &key)
-{
-#define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
-   switch(CHAR_PAIR(key[0], key[10]))
-   {
-   case CHAR_PAIR('b', '1'):
-      return kB1U;
-   case CHAR_PAIR('y', '1'):
-      return kY1D;
-   case CHAR_PAIR('b', '2'):
-      return kB2D;
-   case CHAR_PAIR('y', '2'):
-      return kY2U;
-   default:
-      Error("masym", "Can't parse polarimeter");
-      exit(EXIT_FAILURE);
-   }
-#undef CHAR_PAIR
-}
-
-
 void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double startTime)
 {
    if (result.second.count(startTime) && !result.second[startTime].empty())
@@ -635,7 +614,7 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
       double value = it->second;
       Info("malpha", "Mean %s equals to %f", key.c_str(), value);
 
-      EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+      EPolarimeterId ssh_PolId = MeasInfo::ParsePolIdFromCdevKey(key);
       if (ssh_PolId != polId)
       {
          continue;

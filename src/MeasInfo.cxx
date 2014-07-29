@@ -886,3 +886,23 @@ EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
 
    return polId;
 }
+
+
+EPolarimeterId  MeasInfo::ParsePolIdFromCdevKey(const std::string &key)
+{
+#define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
+   switch(CHAR_PAIR(key[0], key[10]))
+   {
+   case CHAR_PAIR('b', '1'):
+      return kB1U;
+   case CHAR_PAIR('y', '1'):
+      return kY1D;
+   case CHAR_PAIR('b', '2'):
+      return kB2D;
+   case CHAR_PAIR('y', '2'):
+      return kY2U;
+   default:
+      gSystem->Fatal(" MeasInfo::ParsePolIdFromCdevKey", "Can't parse polarimeter");
+   }
+#undef CHAR_PAIR
+}
