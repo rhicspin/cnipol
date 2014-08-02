@@ -18,8 +18,8 @@ sqlite3_stmt*	CachingLogReader<T>::fInsertStmt = NULL;
 
 
 template<class T>
-CachingLogReader<T>::CachingLogReader(string loggers, string cells)
-   : T(loggers, cells)
+CachingLogReader<T>::CachingLogReader(string logger)
+   : T(logger)
 {
    if (!fDB)
    {

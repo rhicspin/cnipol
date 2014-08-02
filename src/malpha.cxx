@@ -572,11 +572,7 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
       case kBLUE_BEAM:
       {
          static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Blue/biasReadbacks",
-               "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
-               "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
-               "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
-               "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM"
+               "RHIC/Polarimeter/Blue/biasReadbacks"
                );
          bias_current_reader = &_reader;
          break;
@@ -584,11 +580,7 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
       case kYELLOW_BEAM:
       {
          static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Yellow/biasReadbacks",
-               "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
-               "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
-               "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
-               "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
+               "RHIC/Polarimeter/Yellow/biasReadbacks"
                );
          bias_current_reader = &_reader;
          break;
@@ -634,8 +626,7 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
 void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
 {
    static CachingLogReader<SshLogReader> beam_intensity_reader(
-      "RHIC/BeamIons",
-      "bluDCCTtotal,yelDCCTtotal"
+      "RHIC/BeamIons"
       );
 
    map<string, map<SshLogReader::cdev_time_t, double> > beam_mean_value;

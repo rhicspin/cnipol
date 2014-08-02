@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstdio>
 #include <algorithm>
+#include <cassert>
 
 #include <errno.h>
 
@@ -11,24 +12,13 @@
 #include "SshLogReader.h"
 
 
-SshLogReader::SshLogReader(string loggers, string cells)
-      : fLoggersStr(loggers)
-      , fCellsStr(cells)
+SshLogReader::SshLogReader(string logger)
+      : fLoggersStr(logger)
 {
-   if (index(fLoggersStr.c_str(), '\'') || (index(fCellsStr.c_str(), '\''))
-       || index(fLoggersStr.c_str(), '"') || (index(fCellsStr.c_str(), '"')))
+   if (index(fLoggersStr.c_str(), '\'') || index(fLoggersStr.c_str(), '"'))
    {
       Error("SshLogReader", "Wrong params.");
    }
-
-   char *copy = strdup(fCellsStr.c_str());
-   fCells.push_back(strtok(copy, ","));
-   const char *tok;
-   while ((tok = strtok(NULL, ",")))
-   {
-      fCells.push_back(tok);
-   }
-   free(copy);
 }
 
 
@@ -41,11 +31,10 @@ string SshLogReader::GetSshCommand(const char *export_params)
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"
-            " -cells '%s'"
             " -timeformat 'unix'"
             " -showmissingdatawith x"
             "%s\"",
-            fLoggersStr.c_str(), fCellsStr.c_str(), export_params);
+            fLoggersStr.c_str(), export_params);
 
    return string(buf);
 }
@@ -106,11 +95,32 @@ string SshLogReader::ReadStream(FILE *fd)
 }
 
 
+vector<string> SshLogReader::ParseCellList(string line)
+{
+   vector<string> result;
+   char *copy = strdup(line.c_str());
+   assert(string(strtok(copy, " \t")) == "Time");
+   const char *tok;
+   Info("line", "%s", line.c_str());
+   while ((tok = strtok(NULL, " \t")))
+   {
+      if (strlen(tok))
+      {
+         result.push_back(tok);
+      }
+   }
+   free(copy);
+   return result;
+}
+
+
 int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > *values)
 {
    FILE *fd = fmemopen((void*)response.c_str(), response.size(), "r");
    int  retval = 0;
    char buf[8192];
+   int line = 1;
+   vector<string> cells;
 
    while (!feof(fd))
    {
@@ -119,8 +129,14 @@ int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > 
       {
          if (fgets(buf, sizeof(buf), fd))
          {
+            assert(strlen(buf) > strlen("# Time"));
             buf[strlen(buf) - 1] = 0;
             Info("SshLogReader", "Read comment: %s", buf);
+            if (line == 3)
+            {
+               cells = ParseCellList(&buf[2]);
+            }
+            line++;
          }
       }
       else
@@ -130,7 +146,7 @@ int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > 
          len = fscanf(fd, "%lf", &time);
          if (len != 1) break;
 
-         for (vector<string>::const_iterator it = fCells.begin(); it != fCells.end(); it++)
+         for (vector<string>::const_iterator it = cells.begin(); it != cells.end(); it++)
          {
             char cc;
             do

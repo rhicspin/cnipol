@@ -100,10 +100,7 @@ int main(int argc, char *argv[])
       }
 
       SshLogReader ssh_log(
-         "RHIC/Rf/Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps",
-         "cavTuneLoop.4a-rf-b197-1.3:probeMagInVoltsScaledM:value[0],"
-         "cavTuneLoop.4a-rf-y197-1.3:probeMagInVoltsScaledM:value[0],"
-         "bi5-rot3-outer,yo5-rot3-outer,bo7-rot3-outer,yi7-rot3-outer,bo3-snk7-outer,yi3-snk7-outer"
+         "RHIC/Rf/Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps"
       );
 
       int retval = ssh_log.ReadTimeRangeMean( startTime, endTime, &mean_value);

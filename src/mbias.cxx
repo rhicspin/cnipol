@@ -219,11 +219,7 @@ bool FillBiasCurrent(int fill_id, Short_t polId, double startTime, double endTim
       case kBLUE_BEAM:
       {
          static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Blue/biasReadbacks",
-               "bi12-pol3.1-det1.i:currentM,bi12-pol3.1-det2.i:currentM,bi12-pol3.1-det3.i:currentM,"
-               "bi12-pol3.1-det4.i:currentM,bi12-pol3.1-det5.i:currentM,bi12-pol3.1-det6.i:currentM,"
-               "bi12-pol3.2-det1.i:currentM,bi12-pol3.2-det2.i:currentM,bi12-pol3.2-det3.i:currentM,"
-               "bi12-pol3.2-det4.i:currentM,bi12-pol3.2-det5.i:currentM,bi12-pol3.2-det6.i:currentM"
+               "RHIC/Polarimeter/Blue/biasReadbacks"
                );
          bias_current_reader = &_reader;
          break;
@@ -231,11 +227,7 @@ bool FillBiasCurrent(int fill_id, Short_t polId, double startTime, double endTim
       case kYELLOW_BEAM:
       {
          static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Yellow/biasReadbacks",
-               "yo12-pol3.1-det1.i:currentM,yo12-pol3.1-det2.i:currentM,yo12-pol3.1-det3.i:currentM,"
-               "yo12-pol3.1-det4.i:currentM,yo12-pol3.1-det5.i:currentM,yo12-pol3.1-det6.i:currentM,"
-               "yo12-pol3.2-det1.i:currentM,yo12-pol3.2-det2.i:currentM,yo12-pol3.2-det3.i:currentM,"
-               "yo12-pol3.2-det4.i:currentM,yo12-pol3.2-det5.i:currentM,yo12-pol3.2-det6.i:currentM"
+               "RHIC/Polarimeter/Yellow/biasReadbacks"
                );
          bias_current_reader = &_reader;
          break;

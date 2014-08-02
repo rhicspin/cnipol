@@ -22,8 +22,8 @@ public:
 private:
 
    string          fLoggersStr;
-   string          fCellsStr;
 
+   vector<string> ParseCellList(string line);
    string ReadStream(FILE *fd);
    string GetSshCommand(const char *export_params);
    string GetSshCommandForTimeRange(time_t start, time_t end);
@@ -40,7 +40,7 @@ public:
     * @param loggers comma separated list of loggers
     * @param cells   comma separated list of cells
     */
-   SshLogReader(string loggers, string cells);
+   SshLogReader(string logger);
    int Read(string response, map< string, map<cdev_time_t, double> > *values);
    int ExecuteCmd(string cmd, string *response);
    virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);

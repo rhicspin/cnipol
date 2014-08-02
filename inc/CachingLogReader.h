@@ -21,7 +21,7 @@ public:
 
    typedef typename T::cdev_time_t	cdev_time_t;
 
-   CachingLogReader(string loggers, string cells);
+   CachingLogReader(string logger);
    ~CachingLogReader();
 
    virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
