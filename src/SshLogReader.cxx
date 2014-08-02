@@ -33,6 +33,7 @@ string SshLogReader::GetSshCommand(const char *export_params)
             " -logger '%s'"
             " -timeformat 'unix'"
             " -showmissingdatawith x"
+            " -timetolerance 0"
             "%s\"",
             fLoggersStr.c_str(), export_params);
 
