@@ -69,18 +69,13 @@ the latest stable release by issuing the following command:
 
     git checkout stable
 
-Alternatively, one can checkout the latest stable release directly by doing:
-
-    git clone -b stable https://github.com/rhicspin/cnipol.git
-    cd cnipol
-
 The analysis framework depends on a few external libraries and programs including
 
 * ROOT
-* CERNLIB
 * MySQL
 * MySQLPP
-* CDEV
+
+The data acquisition and online processing code depends on CERNLIB and CDEV.
 
 Before the code can be compiled and executed a number of environment variables
 must be set. We provide an example bash script `script/setup.sh` with predefined
@@ -96,10 +91,10 @@ $CNIPOL_DIR as:
 
     mkdir build
     cd build
-    cmake ..
+    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
     make
 
-The compiled executables should appear in the `cnipol/build` directory along
+The compiled executables should appear in this `build` directory along
 with the cnipol libraries.
 
 
@@ -109,7 +104,6 @@ How to run cnipol
 Make sure the following environment variables are set to valid locations before
 running the cnipol executables
 
-    $CNIPOL_DIR
     $CNIPOL_DATA_DIR
     $CNIPOL_RESULTS_DIR
 
@@ -142,12 +136,11 @@ to re-analyze a large number of data files. This can be achieved in several ways
 by utilizing common linux tools. Here for completeness we provide a simple shell
 script that takes a text file containing a list of measurements (one `<meas_id>`
 per line) as a single argument and starts a certain number of parallel jobs in
-the background. The scripts for regular and energy calibration runs can be
+the background. The scripts for energy calibration and regular runs can be
 executed respectively as:
 
-    script/run_asym.sh <meas_list>
-
     script/run_asym_alpha.sh <meas_list>
+    script/run_asym.sh <meas_list>
 
 
 How to produce summary plots
@@ -157,14 +150,14 @@ Often it is useful to see how polarization or other observables change from
 measurement to measurement during some period of time. To study such time
 dependence we developed `masym`, a program that runs on a set of measurements
 analyzed with `asym`. The output ROOT files produced by `asym` are used as input
-to `masym`. Executing the following command will create a <meas_list> directory
+to `masym`. Executing the following command will create a `<meas_list>` directory
 in $CNIPOL_RESULTS_DIR with a ROOT file containing summary histograms:
 
     masym -m <meas_list>
 
 Here <meas_list> is a plain text file with a list of measurements to process.
 This file is assumed to exist in $CNIPOL_RESULTS_DIR/runXX/lists/ and to have
-one <meas_id> per line.
+one `<meas_id>` per line.
 
 Optionally, the analyzer can provide a plain text file
 $CNIPOL_RESULTS_DIR/runXX/hjet_pol with H-Jet polarization values, and one file
