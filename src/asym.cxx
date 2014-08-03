@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
    if ( !gMeasInfo->HasMachineParamsInRawData() && !gAsymAnaInfo->HasNoSshBit() )
    {
-      map<string, double> mean_value;
+      opencdev::mean_result_t mean_value;
       double startTime = gMeasInfo->fStartTime;
       double endTime = gMeasInfo->fStopTime;
 
@@ -99,19 +99,12 @@ int main(int argc, char *argv[])
           endTime = startTime + 600;
       }
 
-      SshLogReader ssh_log(
-         "RHIC/Rf/Voltage_Monitor_StripChart,RHIC/PowerSupplies/rot-ps,RHIC/PowerSupplies/snake-ps"
-      );
+      SshLogReader log_reader;
+      log_reader.query_timerange_mean("RHIC/Rf/Voltage_Monitor_StripChart", startTime, endTime, &mean_value);
+      log_reader.query_timerange_mean("RHIC/PowerSupplies/rot-ps", startTime, endTime, &mean_value);
+      log_reader.query_timerange_mean("RHIC/PowerSupplies/snake-ps", startTime, endTime, &mean_value);
 
-      int retval = ssh_log.ReadTimeRangeMean( startTime, endTime, &mean_value);
-
-      if (retval)
-      {
-         Error("asym", "Some problems with SshLogReader");
-         return EXIT_FAILURE;
-      }
-
-      for(map<string, double>::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
+      for(opencdev::mean_result_t::const_iterator it = mean_value.begin(); it != mean_value.end(); it++)
       {
          const string &key = it->first;
          double value = it->second;

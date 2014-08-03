@@ -1,6 +1,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <TSystem.h>
+
 #include <sqlite3.h>
 
 #include "CachingLogReader.h"
@@ -18,32 +20,31 @@ sqlite3_stmt*	CachingLogReader<T>::fInsertStmt = NULL;
 
 
 template<class T>
-CachingLogReader<T>::CachingLogReader(string logger)
-   : T(logger)
+CachingLogReader<T>::CachingLogReader()
 {
    if (!fDB)
    {
       if (sqlite3_open("cdev_cache.sqlite", &fDB) != SQLITE_OK)
       {
-         T::Error("CachingLogReader", "Can't open cdev cache");
+         gSystem->Error("CachingLogReader", "Can't open cdev cache");
       }
       const char *sql = "CREATE TABLE IF NOT EXISTS cache (query TEXT PRIMARY KEY, response TEXT);";
       int ret = sqlite3_exec(fDB, sql, NULL, NULL, NULL);
       if (ret != SQLITE_OK)
       {
-         T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+         gSystem->Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
       }
       char select_query[] = "SELECT response FROM cache WHERE query = ? LIMIT 1;";
       ret = sqlite3_prepare_v2(fDB, select_query, sizeof(select_query), &fSelectStmt, NULL);
       if (ret != SQLITE_OK)
       {
-         T::Error("CachingLogReader", "Error preparing select_query: %s", sqlite3_errmsg(fDB));
+         gSystem->Error("CachingLogReader", "Error preparing select_query: %s", sqlite3_errmsg(fDB));
       }
       const char insert_query[] = "INSERT INTO cache (query, response) VALUES (?, ?);";
       ret = sqlite3_prepare_v2(fDB, insert_query, sizeof(insert_query), &fInsertStmt, NULL);
       if (ret != SQLITE_OK)
       {
-         T::Error("CachingLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
+         gSystem->Error("CachingLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
       }
    }
 }
@@ -61,7 +62,7 @@ CachingLogReader<T>::~CachingLogReader()
 
 
 template<class T>
-int CachingLogReader<T>::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+void CachingLogReader<T>::Run(string cmd, opencdev::result_t *values)
 {
    int ret;
    sqlite3_reset(fSelectStmt);
@@ -74,38 +75,26 @@ int CachingLogReader<T>::Run(string cmd, map< string, map<cdev_time_t, double> >
    }
    else if (ret == SQLITE_DONE)
    {
-      T::Error("CachingLogReader", "Query result is not in cache, retreiving via ssh.");
+      gSystem->Error("CachingLogReader", "Query result is not in cache, retreiving via ssh.");
 
       string response;
-      int retcode = T::ExecuteCmd(cmd, &response);
-      if (retcode)
-      {
-         T::Error("CachingLogReader", "ExecuteCmd failed");
-         return retcode;
-      }
+      T::ExecuteCmd(cmd, &response);
 
       sqlite3_reset(fInsertStmt);
       sqlite3_bind_text(fInsertStmt, 1, cmd.c_str(), cmd.size(), SQLITE_STATIC);
       sqlite3_bind_text(fInsertStmt, 2, response.c_str(), response.size(), SQLITE_STATIC);
       if (sqlite3_step(fInsertStmt) != SQLITE_DONE)
       {
-         T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+         gSystem->Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
       }
-      T::Info("CachingLogReader", "Saved data to SQLite cache");
+      gSystem->Info("CachingLogReader", "Saved data to SQLite cache");
 
-      retcode = T::Read(response, values);
-      if (retcode)
-      {
-         T::Error("CachingLogReader", "error parsing response");
-         return 1;
-      }
+      T::Read(response, values);
    }
    else
    {
-      T::Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
-      return 1;
+      throw sqlite3_errmsg(fDB);
    }
-   return 0;
 }
 
 template

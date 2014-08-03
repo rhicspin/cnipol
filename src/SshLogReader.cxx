@@ -7,24 +7,20 @@
 
 #include <errno.h>
 
+#include <TSystem.h>
 #include <sqlite3.h>
 
 #include "SshLogReader.h"
 
 
-SshLogReader::SshLogReader(string logger)
-      : fLoggersStr(logger)
-{
-   if (index(fLoggersStr.c_str(), '\'') || index(fLoggersStr.c_str(), '"'))
-   {
-      Error("SshLogReader", "Wrong params.");
-   }
-}
-
-
-string SshLogReader::GetSshCommand(const char *export_params)
+string SshLogReader::GetSshCommand(const string &logger, const char *export_params)
 {
    char buf[8192];
+
+   if (index(logger.c_str(), '\'') || index(logger.c_str(), '"'))
+   {
+      throw "Wrong params.";
+   }
 
    snprintf(buf, sizeof(buf),
             "ssh acnlina \""
@@ -35,13 +31,13 @@ string SshLogReader::GetSshCommand(const char *export_params)
             " -showmissingdatawith x"
             " -timetolerance 0"
             "%s\"",
-            fLoggersStr.c_str(), export_params);
+            logger.c_str(), export_params);
 
    return string(buf);
 }
 
 
-string SshLogReader::GetSshCommandForTimeRange(time_t start, time_t end)
+string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t start, time_t end)
 {
    char export_params[1024], startStr[32], endStr[32];
 
@@ -54,11 +50,11 @@ string SshLogReader::GetSshCommandForTimeRange(time_t start, time_t end)
             " -stop '%s'",
             startStr, endStr);
 
-   return GetSshCommand(export_params);
+   return GetSshCommand(logger, export_params);
 }
 
 
-string SshLogReader::GetSshCommandForFillId(int fill_id)
+string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id)
 {
    char export_params[1024];
 
@@ -66,7 +62,7 @@ string SshLogReader::GetSshCommandForFillId(int fill_id)
 	    " -fill '%i'",
 	    fill_id);
 
-   return GetSshCommand(export_params);
+   return GetSshCommand(logger, export_params);
 }
 
 
@@ -82,7 +78,7 @@ string SshLogReader::ReadStream(FILE *fd)
       if ((len < read_len) && ferror(fd))
       {
          perror("SshLogReader::ReadALL");
-         return "";
+         throw "fread() error";
       }
       data_size += len;
       if (data_size == buf_size)
@@ -102,7 +98,6 @@ vector<string> SshLogReader::ParseCellList(string line)
    char *copy = strdup(line.c_str());
    assert(string(strtok(copy, " \t")) == "Time");
    const char *tok;
-   Info("line", "%s", line.c_str());
    while ((tok = strtok(NULL, " \t")))
    {
       if (strlen(tok))
@@ -115,10 +110,9 @@ vector<string> SshLogReader::ParseCellList(string line)
 }
 
 
-int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > *values)
+void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t, double> > *values)
 {
    FILE *fd = fmemopen((void*)response.c_str(), response.size(), "r");
-   int  retval = 0;
    char buf[8192];
    int line = 1;
    vector<string> cells;
@@ -132,7 +126,7 @@ int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > 
          {
             assert(strlen(buf) > strlen("# Time"));
             buf[strlen(buf) - 1] = 0;
-            Info("SshLogReader", "Read comment: %s", buf);
+            gSystem->Info("SshLogReader", "Read comment: %s", buf);
             if (line == 3)
             {
                cells = ParseCellList(&buf[2]);
@@ -163,9 +157,7 @@ int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > 
             len = fscanf(fd, "%lf", &value);
             if (len != 1)
             {
-               Error("SshLogReader", "unexpected end of row");
-               retval = 1;
-               goto exit;
+               throw "unexpected end of row";
             }
 
             if (value >= 90000000000000000000000000000000000000.0)
@@ -177,15 +169,14 @@ int SshLogReader::Read(string response, map< string, map<cdev_time_t, double> > 
          }
       }
    }
-exit:
+
    fclose(fd);
-   return retval;
 }
 
 
-int SshLogReader::ExecuteCmd(string cmd, string *response)
+void SshLogReader::ExecuteCmd(string cmd, string *response)
 {
-   Info("SshLogReader", "Running %s", cmd.c_str());
+   gSystem->Info("SshLogReader", "Running %s", cmd.c_str());
    int retries = 5;
    int retcode;
 
@@ -194,8 +185,8 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
       FILE *fd = popen(cmd.c_str(), "r");
       if (!fd)
       {
-         Error("SshLogReader", "popen failed, errno = %i", errno);
-         return 1;
+         gSystem->Error("SshLogReader", "popen failed, errno = %i", errno);
+         throw "popen failed";
       }
 
       *response = ReadStream(fd);
@@ -204,13 +195,13 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
 
       if (retcode == -1)
       {
-         Error("SshLogReader", "pclose failed, errno = %i", errno);
-         return 1;
+         gSystem->Error("SshLogReader", "pclose failed, errno = %i", errno);
+         throw "pclose failed";
       }
       if (retcode)
       {
-         Error("SshLogReader", "process returned %i", retcode);
-         Error("SshLogReader",
+         gSystem->Error("SshLogReader", "process returned %i", retcode);
+         gSystem->Error("SshLogReader",
             "You need to create a gateway to acnlina machine.\n"
             "In order to do that, add following into your ~/.ssh/config file:\n\n"
             "Host acnlina\n"
@@ -225,7 +216,7 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
             "If you have problems, try using --no-ssh option."
             );
          const int delay = 10;
-         Error("SshLogReader", "Retrying in %i seconds... Retries left %i", delay, retries);
+         gSystem->Error("SshLogReader", "Retrying in %i seconds... Retries left %i", delay, retries);
          sleep(delay);
       }
       else
@@ -234,97 +225,31 @@ int SshLogReader::ExecuteCmd(string cmd, string *response)
       }
    }
 
-   return retcode;
+   if (retcode)
+   {
+      throw "non-zero retcode";
+   }
 }
 
 
-int SshLogReader::Run(string cmd, map< string, map<cdev_time_t, double> > *values)
+void SshLogReader::Run(string cmd, opencdev::result_t *values)
 {
    string response;
    sleep(2); // a delay to give the exportLoggerData a break
-   int retcode = ExecuteCmd(cmd, &response);
-   if (retcode)
-   {
-      return retcode;
-   }
-   retcode = Read(response, values);
-   if (retcode)
-   {
-      Error("SshLogReader", "error parsing response");
-      return 1;
-   }
-   return 0;
+   ExecuteCmd(cmd, &response);
+   Read(response, values);
 }
 
 
-int SshLogReader::ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values)
+void SshLogReader::query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForTimeRange(start, end);
-   return Run(cmd, values);
+   string cmd = GetSshCommandForTimeRange(logger, start, end);
+   Run(cmd, values);
 }
 
 
-int SshLogReader::ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values)
+void SshLogReader::query_fill(const string &logger, int fill_id, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForFillId(fill_id);
-   return Run(cmd, values);
-}
-
-
-void SshLogReader::CalculateMean(const map< string, map<cdev_time_t, double> > &values, map<string, double> *mean_value)
-{
-   for (map< string, map<cdev_time_t, double> >::const_iterator it = values.begin();
-        it != values.end(); it++)
-   {
-      const string &key = it->first;
-      const map<cdev_time_t, double> &m = it->second;
-      double mean = -1;
-
-      if (m.size() != 0)
-      {
-         mean = 0;
-         for(map<cdev_time_t, double>::const_iterator it = m.begin();
-             it != m.end(); it++)
-         {
-            mean += it->second;
-         }
-         mean /= m.size();
-      }
-
-      (*mean_value)[key] = mean;
-   }
-}
-
-
-int SshLogReader::ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value)
-{
-   map< string, map<cdev_time_t, double> > values;
-
-   int retcode = ReadTimeRange(start, end, &values);
-
-   if (retcode != 0)
-   {
-      return retcode;
-   }
-
-   CalculateMean(values, mean_value);
-
-   return retcode;
-}
-
-
-int SshLogReader::ReadFillMean(int fill_id, map<string, double> *mean_value)
-{
-   map< string, map<cdev_time_t, double> > values;
-
-   int retcode = ReadFill(fill_id, &values);
-
-   if (retcode != 0)
-   {
-      return retcode;
-   }
-
-   CalculateMean(values, mean_value);
-
-   return retcode;
+   string cmd = GetSshCommandForFillId(logger, fill_id);
+   Run(cmd, values);
 }

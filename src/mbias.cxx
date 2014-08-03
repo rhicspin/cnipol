@@ -209,42 +209,27 @@ EPolarimeterId	parsePolIdFromCdevKey(const string &key)
 
 bool FillBiasCurrent(int fill_id, Short_t polId, double startTime, double endTime, map<Short_t, Result> &rBiasCurrent)
 {
-   map<string, double> bias_mean_value;
-   CachingLogReader<SshLogReader>	*bias_current_reader = NULL;
+   opencdev::mean_result_t bias_mean_value;
+   CachingLogReader<SshLogReader> log_reader;
 
-   // exportDataLogger seems to have problems exporting differently timestamped values
-   // from different loggers, so we have to read out them separately
    switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
    {
       case kBLUE_BEAM:
       {
-         static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Blue/biasReadbacks"
-               );
-         bias_current_reader = &_reader;
+         log_reader.query_timerange_mean("RHIC/Polarimeter/Blue/biasReadbacks", startTime, endTime, &bias_mean_value);
          break;
       }
       case kYELLOW_BEAM:
       {
-         static CachingLogReader<SshLogReader> _reader(
-               "RHIC/Polarimeter/Yellow/biasReadbacks"
-               );
-         bias_current_reader = &_reader;
+         log_reader.query_timerange_mean("RHIC/Polarimeter/Yellow/biasReadbacks", startTime, endTime, &bias_mean_value);
          break;
       }
       default:
       Fatal("malpha", "Unknown beam type");
    }
 
-   int retval = bias_current_reader->ReadTimeRangeMean(startTime, endTime, &bias_mean_value);
-
-   if (retval)
-   {
-      Fatal("malpha", "Some problems with SshLogReader");
-   }
-
    bool any_values_retrieved = false;
-   for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
+   for(opencdev::mean_result_t::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
    {
       const string &key = it->first;
       double value = it->second;

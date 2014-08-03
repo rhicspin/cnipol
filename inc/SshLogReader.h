@@ -8,27 +8,21 @@
 
 #include <TObject.h>
 
+#include <opencdev.h>
+
 using std::map;
 using std::string;
 using std::vector;
 
-
-class SshLogReader : public TObject
+class SshLogReader : public opencdev::LogReader
 {
-public:
-
-   typedef double cdev_time_t;
-
 private:
-
-   string          fLoggersStr;
 
    vector<string> ParseCellList(string line);
    string ReadStream(FILE *fd);
-   string GetSshCommand(const char *export_params);
-   string GetSshCommandForTimeRange(time_t start, time_t end);
-   string GetSshCommandForFillId(int fill_id);
-   static void CalculateMean(const map< string, map<cdev_time_t, double> > &values, map<string, double> *mean_value);
+   string GetSshCommand(const string &logger, const char *export_params);
+   string GetSshCommandForTimeRange(const string &logger, time_t start, time_t end);
+   string GetSshCommandForFillId(const string &logger, int fill_id);
 
 protected:
 
@@ -36,24 +30,11 @@ protected:
 
 public:
 
-   /**
-    * @param loggers comma separated list of loggers
-    * @param cells   comma separated list of cells
-    */
-   SshLogReader(string logger);
-   int Read(string response, map< string, map<cdev_time_t, double> > *values);
-   int ExecuteCmd(string cmd, string *response);
-   virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
-   /**
-    * @returns 0 if everything was ok
-    */
-   int ReadTimeRange(time_t start, time_t end, map< string, map<cdev_time_t, double> > *values);
-   int ReadFill(int fill_id, map< string, map<cdev_time_t, double> > *values);
-   /**
-    * @returns 0 if everything was ok
-    */
-   int ReadTimeRangeMean(time_t start, time_t end, map<string, double> *mean_value);
-   int ReadFillMean(int fill_id, map<string, double> *mean_value);
+   void Read(string response, opencdev::result_t *values);
+   void ExecuteCmd(string cmd, string *response);
+   virtual void Run(string cmd, opencdev::result_t *values);
+   virtual void query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values);
+   virtual void query_fill(const string &logger, int fill_id, opencdev::result_t *values);
 };
 
 #endif

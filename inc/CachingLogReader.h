@@ -6,6 +6,8 @@
 
 #include <sqlite3.h>
 
+#include <opencdev.h>
+
 using std::map;
 using std::string;
 
@@ -19,12 +21,10 @@ private:
 
 public:
 
-   typedef typename T::cdev_time_t	cdev_time_t;
-
-   CachingLogReader(string logger);
+   CachingLogReader();
    ~CachingLogReader();
 
-   virtual int Run(string cmd, map< string, map<cdev_time_t, double> > *values);
+   virtual void Run(string cmd, opencdev::result_t *values);
 };
 
 #endif
