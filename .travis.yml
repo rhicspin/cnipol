@@ -8,7 +8,7 @@ before_script:
   - sudo apt-get install -qq libboost-dev libboost-filesystem-dev libboost-test-dev
   - mkdir build
   - cd build
-  - cmake .. -DFORCE_32BIT=OFF
+  - cmake ..
 script:
   - make
   - ./asym -h # dummy run all executables
