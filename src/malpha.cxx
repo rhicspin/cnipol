@@ -563,7 +563,7 @@ void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double star
 void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
 {
    opencdev::mean_result_t bias_mean_value;
-   CachingLogReader<SshLogReader> log_reader;
+   static CachingLogReader<SshLogReader> log_reader;
 
    switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
    {
