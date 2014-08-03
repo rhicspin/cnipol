@@ -611,9 +611,9 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
 void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
 {
    opencdev::result_t beam_mean_value;
-   static CachingLogReader<SshLogReader> ssh_log_reader;
+   static CachingLogReader<SshLogReader> log_reader;
 
-   ssh_log_reader.query_fill("RHIC/BeamIons", fill_id, &beam_mean_value);
+   log_reader.query_fill("RHIC/BeamIons", fill_id, &beam_mean_value);
 
    for(opencdev::result_t::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
    {
