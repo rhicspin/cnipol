@@ -74,7 +74,6 @@ Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
 Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
 Bool_t AsymAnaInfo::HasStudiesBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STUDIES)      == AsymAnaInfo::MODE_STUDIES; }
-Bool_t AsymAnaInfo::HasNoSshBit()       const { return (fAsymModes & AsymAnaInfo::MODE_NO_SSH)       == AsymAnaInfo::MODE_NO_SSH; }
 
 
 /** */
@@ -135,7 +134,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"pmt",                 no_argument,         0,   AsymAnaInfo::MODE_PMT},
       {"pulser",              no_argument,         0,   AsymAnaInfo::MODE_PULSER},
       {"studies",             no_argument,         0,   AsymAnaInfo::MODE_STUDIES},
-      {"no-ssh",              no_argument,         0,   AsymAnaInfo::MODE_NO_SSH},
       {"mode-alpha",          no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
       {"mode-normal",         no_argument,         0,   AsymAnaInfo::MODE_NORMAL},
       {"mode-no-normal",      no_argument,         0,   AsymAnaInfo::MODE_NO_NORMAL},
@@ -364,10 +362,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          fAsymModes |= AsymAnaInfo::MODE_STUDIES;
          break;
 
-      case AsymAnaInfo::MODE_NO_SSH:
-         fAsymModes |= AsymAnaInfo::MODE_NO_SSH;
-         break;
-
       default:
          Error("ProcessOptions", "Unknown option provided");
          PrintUsage();
@@ -485,7 +479,6 @@ void AsymAnaInfo::PrintUsage()
    cout << "     --mode-run                       : Fill and save bunch, lumi and other run related histograms" << endl;
    cout << "     --mode-target, --target          : Fill and save target histograms" << endl;
    cout << "     --mode-full                      : Fill and save all histograms" << endl;
-   cout << "     --no-ssh                         : Disable filling MahineParams from log server" << endl;
    cout << "     --set-calib-alpha                : Provide a root file with alpha calibrations" << endl;
    cout << "     --copy                           : Copy results to server (?)" << endl;
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;

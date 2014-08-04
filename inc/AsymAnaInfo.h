@@ -37,8 +37,7 @@ public:
               MODE_KINEMA            = 0x08000000,
               MODE_PMT               = 0x00000100,
               MODE_PULSER            = 0x00000200,
-              MODE_STUDIES           = 0x00000400,
-              MODE_NO_SSH            = 0x00001000};
+              MODE_STUDIES           = 0x00000400};
 
    enum Option {OPTION_AC_DIPOLE_PERIOD = 0x20000004};
 
@@ -101,7 +100,6 @@ public:
    Bool_t      HasPmtBit() const;
    Bool_t      HasPulserBit() const;
    Bool_t      HasStudiesBit() const;
-   Bool_t      HasNoSshBit() const;
 
    ClassDef(AsymAnaInfo, 5)
 };

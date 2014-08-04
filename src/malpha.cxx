@@ -12,11 +12,11 @@
 #include "TROOT.h"
 #include "TLegend.h"
 
+#include <opencdev.h>
+
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
 #include "MeasInfo.h"
-#include "SshLogReader.h"
-#include "CachingLogReader.h"
 
 #include "DrawObjContainer.h"
 
@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
    mAlphaAnaInfo.ProcessOptions(argc, argv);
    mAlphaAnaInfo.VerifyOptions();
 
-   CachingLogReader<SshLogReader> log_reader;
+   opencdev::LocalLogReader log_reader(mAlphaAnaInfo.GetSlowControlLogDir());
 
    gROOT->Macro("~/rootmacros/styles/style_malpha.C");
 

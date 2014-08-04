@@ -65,6 +65,11 @@ void AnaInfo::Init()
    if (tmpEnv) fAsymEnv["CNIPOL_RESULTS_DIR"] = tmpEnv;
    else        fAsymEnv["CNIPOL_RESULTS_DIR"] = ".";
 
+   tmpEnv = getenv("SLOW_CONTROL_LOG_DIR");
+
+   if (tmpEnv) fAsymEnv["SLOW_CONTROL_LOG_DIR"] = tmpEnv;
+   else        fAsymEnv["SLOW_CONTROL_LOG_DIR"] = "/eicdata/eic0005/cdev_log";
+
    fUserGroup = *gSystem->GetUserInfo();
 }
 
@@ -113,6 +118,12 @@ string AnaInfo::GetResultsDir() const
 string AnaInfo::GetOutDir() const
 {
    return fAsymEnv.find("CNIPOL_RESULTS_DIR")->second + "/" + fOutputName;
+}
+
+
+std::string AnaInfo::GetSlowControlLogDir() const
+{
+   return fAsymEnv.find("SLOW_CONTROL_LOG_DIR")->second;
 }
 
 

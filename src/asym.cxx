@@ -6,6 +6,8 @@
 #include "TROOT.h"
 #include "TTimeStamp.h"
 
+#include <opencdev.h>
+
 #include "EventConfig.h"
 
 #include "AsymGlobals.h"
@@ -15,7 +17,6 @@
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "RawDataReader.h"
-#include "SshLogReader.h"
 
 
 using namespace std;
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
    gMeasInfo->Update(*mseRunPeriodX);
    gMeasInfo->Update(*gAsymAnaInfo);  // Can override some parameters by the user ones
 
-   if ( !gMeasInfo->HasMachineParamsInRawData() && !gAsymAnaInfo->HasNoSshBit() )
+   if (!gMeasInfo->HasMachineParamsInRawData())
    {
       opencdev::mean_result_t mean_value;
       double startTime = gMeasInfo->fStartTime;
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
           endTime = startTime + 600;
       }
 
-      SshLogReader log_reader;
+      opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
       log_reader.query_timerange_mean("RHIC/Rf/Voltage_Monitor_StripChart", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/rot-ps", startTime, endTime, &mean_value);
       log_reader.query_timerange_mean("RHIC/PowerSupplies/snake-ps", startTime, endTime, &mean_value);

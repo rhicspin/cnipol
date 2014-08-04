@@ -65,6 +65,7 @@ public:
    std::string          GetSuffix() const;
    std::string          GetResultsDir() const;
    std::string          GetOutDir() const;
+   std::string          GetSlowControlLogDir() const;
    std::string          GetImageDir() const;
    virtual std::string  GetAnaInfoFileName() const;
    std::string          GetStdLogFileName() const;
