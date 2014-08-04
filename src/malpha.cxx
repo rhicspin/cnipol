@@ -492,8 +492,9 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
       {
          Time   time = it->first;
          vector<double>    &det_gain = it->second;
+         double    bias_current = rBiasCurrent.second[time].at(det);
 
-         if (rBiasCurrent.second.count(time) && !isnan(det_gain.at(det)))
+         if (rBiasCurrent.second.count(time) && (!isnan(bias_current)) && !isnan(det_gain.at(det)))
          {
             count++;
          }
@@ -504,10 +505,11 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
       {
          Time   time = it->first;
          vector<double>    &det_gain = it->second;
+         double    bias_current = rBiasCurrent.second[time].at(det);
 
-         if (rBiasCurrent.second.count(time) && !isnan(det_gain.at(det)))
+         if (rBiasCurrent.second.count(time) && (!isnan(bias_current)) && !isnan(det_gain.at(det)))
          {
-            g.SetPoint(i, rBiasCurrent.second[time].at(det), det_gain.at(det));
+            g.SetPoint(i, bias_current, det_gain.at(det));
             i++;
          }
       }
@@ -560,21 +562,20 @@ void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double star
 }
 
 
-void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
+void FillBiasCurrent(opencdev::LogReader *log_reader, Short_t polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
 {
    opencdev::mean_result_t bias_mean_value;
-   static CachingLogReader<SshLogReader> log_reader;
 
    switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
    {
       case kBLUE_BEAM:
       {
-         log_reader.query_timerange_mean("RHIC/Polarimeter/Blue/biasReadbacks", startTime, endTime, &bias_mean_value);
+         log_reader->query_timerange_mean("RHIC/Polarimeter/Blue/biasReadbacks", startTime, endTime, &bias_mean_value);
          break;
       }
       case kYELLOW_BEAM:
       {
-         log_reader.query_timerange_mean("RHIC/Polarimeter/Yellow/biasReadbacks", startTime, endTime, &bias_mean_value);
+         log_reader->query_timerange_mean("RHIC/Polarimeter/Yellow/biasReadbacks", startTime, endTime, &bias_mean_value);
          break;
       }
       default:
@@ -608,12 +609,11 @@ void FillBiasCurrent(Short_t polId, double startTime, double endTime, map< Short
    rBiasCurrent[polId].YTitle = "BiasCurrent, \\mu A";
 }
 
-void FillBeamCurrent(int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
+void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
 {
    opencdev::result_t beam_mean_value;
-   static CachingLogReader<SshLogReader> log_reader;
 
-   log_reader.query_fill("RHIC/BeamIons", fill_id, &beam_mean_value);
+   log_reader->query_fill("RHIC/BeamIons", fill_id, &beam_mean_value);
 
    for(opencdev::result_t::const_iterator it = beam_mean_value.begin(); it != beam_mean_value.end(); it++)
    {
@@ -673,6 +673,8 @@ int main(int argc, char *argv[])
    MAlphaAnaInfo mAlphaAnaInfo;
    mAlphaAnaInfo.ProcessOptions(argc, argv);
    mAlphaAnaInfo.VerifyOptions();
+
+   CachingLogReader<SshLogReader> log_reader;
 
    gROOT->Macro("~/rootmacros/styles/style_malpha.C");
 
@@ -777,12 +779,12 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      FillBiasCurrent(polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
+      FillBiasCurrent(&log_reader, polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
 
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
       {
-         FillBeamCurrent(fill_id, polId, startTime, rBeamCurrent, rBeamCurrentErr);
+         FillBeamCurrent(&log_reader, fill_id, polId, startTime, rBeamCurrent, rBeamCurrentErr);
       }
 
       TH1F  *hAmGain = (TH1F*) f.FindObjectAny("hAmGain");
