@@ -440,3 +440,20 @@ void RunConfig::SetBeamEnergies(BeamEnergySet beamEnergies)
       fBeamEnergies.insert(*iBE);
    }
 }
+
+
+string RunConfig::GetBiasCurrentLoggerName(EPolarimeterId polId)
+{
+   switch(GetBeamId(polId))
+   {
+      case kBLUE_BEAM:
+      {
+         return "RHIC/Polarimeter/Blue/biasReadbacks";
+      }
+      case kYELLOW_BEAM:
+      {
+         return "RHIC/Polarimeter/Yellow/biasReadbacks";
+      }
+   }
+   throw "Unknown beam type";
+}

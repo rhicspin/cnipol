@@ -566,21 +566,8 @@ void FillBiasCurrent(opencdev::LogReader *log_reader, Short_t polId, double star
 {
    opencdev::mean_result_t bias_mean_value;
 
-   switch(gRunConfig.GetBeamId((EPolarimeterId)polId))
-   {
-      case kBLUE_BEAM:
-      {
-         log_reader->query_timerange_mean("RHIC/Polarimeter/Blue/biasReadbacks", startTime, endTime, &bias_mean_value);
-         break;
-      }
-      case kYELLOW_BEAM:
-      {
-         log_reader->query_timerange_mean("RHIC/Polarimeter/Yellow/biasReadbacks", startTime, endTime, &bias_mean_value);
-         break;
-      }
-      default:
-      Fatal("malpha", "Unknown beam type");
-   }
+   string logger_name = gRunConfig.GetBiasCurrentLoggerName((EPolarimeterId)polId);
+   log_reader->query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
 
    for(opencdev::mean_result_t::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
    {
