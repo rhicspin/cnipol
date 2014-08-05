@@ -37,6 +37,7 @@ ADD_LIBRARY(
 	AsymRecover.cxx
 	AsymRoot.cxx
 	BeamBunch.cxx
+	BiasCurrentUtil.cxx
 	CachingLogReader.cxx
 	Calibrator.cxx
 	ChannelCalib.cxx

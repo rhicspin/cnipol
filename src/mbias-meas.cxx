@@ -19,6 +19,7 @@
 #include "MeasInfo.h"
 #include "SshLogReader.h"
 #include "CachingLogReader.h"
+#include "BiasCurrentUtil.h"
 
 #include "DrawObjContainer.h"
 
@@ -170,33 +171,12 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
 }
 
 
-EPolarimeterId	parsePolIdFromCdevKey(const string &key)
-{
-#define CHAR_PAIR(c1, c2) (((uint16_t)c1) << 8) | ((uint16_t)c2)
-   switch(CHAR_PAIR(key[0], key[10]))
-   {
-   case CHAR_PAIR('b', '1'):
-      return kB1U;
-   case CHAR_PAIR('y', '1'):
-      return kY1D;
-   case CHAR_PAIR('b', '2'):
-      return kB2D;
-   case CHAR_PAIR('y', '2'):
-      return kY2U;
-   default:
-      Error("masym", "Can't parse polarimeter");
-      exit(EXIT_FAILURE);
-   }
-#undef CHAR_PAIR
-}
-
-
 bool FillBiasCurrent(const string &run_name, Short_t polId, double startTime, double endTime, map<Short_t, Result> &rBiasCurrent)
 {
    opencdev::mean_result_t bias_mean_value;
    CachingLogReader<SshLogReader> log_reader;
 
-   string logger_name = gRunConfig.GetBiasCurrentLoggerName((EPolarimeterId)polId);
+   string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)polId);
    log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
 
    bool any_values_retrieved = false;
@@ -206,7 +186,7 @@ bool FillBiasCurrent(const string &run_name, Short_t polId, double startTime, do
       double value = it->second;
       Info("malpha", "Mean %s equals to %f", key.c_str(), value);
 
-      EPolarimeterId ssh_PolId = parsePolIdFromCdevKey(key);
+      EPolarimeterId ssh_PolId = BiasCurrentUtil::ParseLoggerPolId(key);
       if (ssh_PolId != polId)
       {
          continue;

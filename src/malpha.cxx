@@ -17,6 +17,7 @@
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
 #include "MeasInfo.h"
+#include "BiasCurrentUtil.h"
 
 #include "DrawObjContainer.h"
 
@@ -562,41 +563,21 @@ void FillDetectorAverage(ResultMean &result, ResultMean &result_err, double star
 }
 
 
-void FillBiasCurrent(opencdev::LogReader *log_reader, Short_t polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
+void FillBiasCurrent(opencdev::LogReader *log_reader, EPolarimeterId polId, double startTime, double endTime, map< Short_t, ResultMean > &rBiasCurrent, map< Short_t, ResultMean > &rBiasCurrentErr)
 {
    opencdev::mean_result_t bias_mean_value;
 
-   string logger_name = gRunConfig.GetBiasCurrentLoggerName((EPolarimeterId)polId);
+   string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName(polId);
    log_reader->query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
 
-   for(opencdev::mean_result_t::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++)
-   {
-      const string &key = it->first;
-      double value = it->second;
-      Info("malpha", "Mean %s equals to %f", key.c_str(), value);
+   rBiasCurrent[polId].second[startTime] = BiasCurrentUtil::FillBiasCurrentMeanValue(bias_mean_value, polId);
+   rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS, (double)0.0);
 
-      EPolarimeterId ssh_PolId = MeasInfo::ParsePolIdFromCdevKey(key);
-      if (ssh_PolId != polId)
-      {
-         continue;
-      }
-      int	ssh_DetId = key[15] - '0';
-
-      if (value > 100)
-      {
-         continue;
-      }
-
-      rBiasCurrent[polId].second[startTime].resize(N_DETECTORS);
-      rBiasCurrent[polId].second[startTime][ssh_DetId-1] = value;
-      rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS);
-      rBiasCurrentErr[polId].second[startTime][ssh_DetId-1] = 0;
-   }
    FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
    rBiasCurrent[polId].YTitle = "BiasCurrent, \\mu A";
 }
 
-void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, Short_t polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
+void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, EPolarimeterId polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
 {
    opencdev::result_t beam_mean_value;
 
@@ -607,11 +588,11 @@ void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, Short_t polId
       const string &key = it->first;
       const map<opencdev::cdev_time_t, double> &values = it->second;
 
-      if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kBLUE_BEAM))
+      if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId(polId) != kBLUE_BEAM))
       {
          continue;
       }
-      else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId((EPolarimeterId)polId) != kYELLOW_BEAM))
+      else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId(polId) != kYELLOW_BEAM))
       {
          continue;
       }
@@ -766,12 +747,12 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      FillBiasCurrent(&log_reader, polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
+      FillBiasCurrent(&log_reader, (EPolarimeterId)polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
 
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
       {
-         FillBeamCurrent(&log_reader, fill_id, polId, startTime, rBeamCurrent, rBeamCurrentErr);
+         FillBeamCurrent(&log_reader, fill_id, (EPolarimeterId)polId, startTime, rBeamCurrent, rBeamCurrentErr);
       }
 
       TH1F  *hAmGain = (TH1F*) f.FindObjectAny("hAmGain");
