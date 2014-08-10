@@ -73,7 +73,6 @@ The analysis framework depends on a few external libraries and programs includin
 
 * ROOT
 * MySQL
-* MySQLPP
 
 The data acquisition and online processing code depends on CERNLIB and CDEV.
 

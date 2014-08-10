@@ -1,7 +1,0 @@
-IF(FORCE_32BIT)
-	SET(CNIPOL_MYSQLPP_LIBRARY_PATH /eicdata/eic0005/mysql++)
-	SET(CNIPOL_MYSQLPP_INCLUDE_DIR /eicdata/eic0005/mysql++/lib)
-ELSE()
-	SET(CNIPOL_MYSQLPP_LIBRARY_PATH ~veprbl/mysql++-3.2.0)
-	SET(CNIPOL_MYSQLPP_INCLUDE_DIR ~veprbl/mysql++-3.2.0/lib)
-ENDIF()

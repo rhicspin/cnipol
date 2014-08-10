@@ -4,3 +4,7 @@
 [submodule "contrib/opencdev"]
 	path = contrib/opencdev
 	url = git://github.com/rhicspin/opencdev.git
+[submodule "contrib/mysqlpp"]
+	path = contrib/mysqlpp
+	url = git://github.com/veprbl/mysqlpp.git
+	branch = cmake
