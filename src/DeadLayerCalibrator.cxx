@@ -1,9 +1,11 @@
 #include "DeadLayerCalibrator.h"
 
+
 ClassImp(DeadLayerCalibrator)
 
 using namespace std;
 using namespace ROOT::Fit;
+
 
 /** */
 void DeadLayerCalibrator::Calibrate(DrawObjContainer *c)
@@ -68,28 +70,20 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 
    hMeanTime->Set(((TH1D*)fitResHists[1])->GetNbinsX()+2, ((TH1D*) fitResHists[1])->GetArray());
    hMeanTime->SetError(((TH1D*) fitResHists[1])->GetSumw2()->GetArray());
-   //hMeanTime->SetError(((TH1D*) fitResHists[2])->GetArray());
 
    for (int i=1; i<=hMeanTime->GetNbinsX(); i++) {
 
       if (hMeanTime->GetBinContent(i) > 0 && hMeanTime->GetBinError(i) < 0.20)
          hMeanTime->SetBinError(i, 0.20);   // works for blue2
-         //hMeanTime->SetBinError(i, 1);   // works for blue2
    }
 
-   //
    TF1 *bananaFitFunc = new TF1("bananaFitFunc", DeadLayerCalibrator::BananaFitFunc, xmin, xmax, 2);
 
    bananaFitFunc->SetNpx(1000);
 
-   //TF2 *bananaFitFunc2 = new TF2("bananaFitFunc2",
-   //   DeadLayerCalibrator::BananaFitFunc2, xmin, xmax, ymin, ymax, 1);
-
    // Set expected values and limits
    float meanT0      = 20;
-   //float meanT0_err  = 0.1*meanT0;
    float meanEm      = 100;
-   //float meanEm_err  = 0.1*meanEm;
 
    // All channels are combined in the 0-th calib channel
    // Use these values as expected in the fit
@@ -97,9 +91,7 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 
    if (iChCalib != fChannelCalibs.end())  {
       meanT0     = fChannelCalibs[0].fT0Coef;
-      //meanT0_err = fChannelCalibs[0].fT0CoefErr;
       meanEm     = fChannelCalibs[0].fAvrgEMiss;
-      //meanEm_err = fChannelCalibs[0].fAvrgEMissErr;
    }
 
    float meanT0_low   = meanT0 < 0 ? 1.5*meanT0 : 0.5*meanT0;
@@ -115,35 +107,15 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
    }
 
    bananaFitFunc->SetParameters(meanT0, meanEm);
-   //bananaFitFunc->SetParLimits(0, meanT0-10*meanT0_err, meanT0+10*meanT0_err); // t0
-   //bananaFitFunc->SetParLimits(1, meanEm-10*meanEm_err, meanEm+10*meanEm_err);
 
    bananaFitFunc->SetParLimits(0, meanT0_low, meanT0_high);
    bananaFitFunc->SetParLimits(1, meanEm_low, meanEm_high);
 
-   //printf("T0, T0_err, Em, Em_err: %f, %f, %f, %f\n", meanT0, meanT0_err, meanEm, meanEm_err);
-
-   //bananaFitFunc->SetParameters(20, 100);
-   //bananaFitFunc->SetParameters(0, 100, 0.5, 0.5, 0.5);
-   //bananaFitFunc->SetParLimits(0, 5, 30); // t0
-   //bananaFitFunc->SetParLimits(1, 50, 200);
-   //bananaFitFunc->SetParLimits(2, -1, 1);
-   //bananaFitFunc->SetParLimits(3, -1, 1);
-   //bananaFitFunc->SetParLimits(4, -1, 1);
-
-   //bananaFitFunc->SetParameters(10);
-   //bananaFitFunc->SetParLimits(0, -10, 30);
-
    hMeanTime->Print();
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "I M E S R", "");
-   //fitres->Print("V");
-
-   //h->Print();
-   //h->Fit(bananaFitFunc2, "M E", "");
 
    delete gausFitFunc;
    delete bananaFitFunc;
-   //delete bananaFitFunc2;
 
    return fitres;
 }
@@ -162,17 +134,7 @@ Double_t DeadLayerCalibrator::BananaFitFunc(Double_t *x, Double_t *par)
    Double_t e_meas      = x[0];
    Double_t t0          = par[0];
    Double_t avrgELoss = par[1];
-   //Double_t e_miss_frac = par[1];
-   //Double_t e_miss_frac  = par[2];
-   //Double_t e_miss_frac2 = par[3];
-   //Double_t e_miss_frac3 = par[4];
-
    Double_t e_kin = e_meas + avrgELoss;
-   //Double_t e_kin = e_meas + e_miss + e_miss_frac*e_meas + e_miss_frac2*e_meas*e_meas + e_miss_frac3*e_meas*e_meas*e_meas;
-   //Double_t e_kin = e_meas * (1 + e_miss_frac);
-   //Double_t e_kin = e_meas / (1 - e_miss_frac);
-
-   //if (par[0] >= 0) par0 = TMath::Abs(par[0]);
 
    Double_t t_meas;
 

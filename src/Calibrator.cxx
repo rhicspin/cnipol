@@ -31,15 +31,11 @@ Calibrator::~Calibrator()
 /** */
 void Calibrator::UpdateMeanChannel()
 {
-	//Info("UpdateMeanChannel", "Called");
-
    fMeanChannel.ResetToZero();
    fMeanOfLogsChannel.ResetToZero();
 
 	vector<Float_t> vT0Coef;
-	//vector<Float_t> vT0CoefErr;
    vector<Float_t> vDLWidth;
-   //vector<Float_t> vDLWidthErr;
    vector<Float_t> vBananaChi2Ndf;
    vector<Float_t> vBananaChi2NdfLog;
 
@@ -55,9 +51,7 @@ void Calibrator::UpdateMeanChannel()
           !gMeasInfo->IsDisabledChannel(iCh->first) && iCh->second.GetFitStatus() == kDLFIT_OK )
       {
          vT0Coef.push_back(iCh->second.fT0Coef);
-         //vT0CoefErr.push_back(iCh->second.fT0CoefErr);
          vDLWidth.push_back(iCh->second.fDLWidth);
-         //vDLWidthErr.push_back(iCh->second.fDLWidthErr);
          vBananaChi2Ndf.push_back(iCh->second.fBananaChi2Ndf);
          vBananaChi2NdfLog.push_back( TMath::Log(iCh->second.fBananaChi2Ndf) );
 

@@ -12,20 +12,13 @@ ClassImp(DeadLayerCalibratorEDepend)
 using namespace std;
 using namespace ROOT::Fit;
 
+
 /**
  * This method is mainly used for data calibration
  */
 void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 {
-   //TH1*  hTimeVsE  = 0;
-   //TH1*  hMeanTime = 0;
    string strChId("  ");
-
-   // iCh=0 is the sum of all channels
-   // Special treatment for combined histogram
-   //hTimeVsE  = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA"];
-   //hMeanTime = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA"];
-   //Calibrate(hTimeVsE, hMeanTime);
 
    // Now calibrate individual active channels
    ChannelSetConstIter iCh;
@@ -39,7 +32,6 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
 
       sprintf(&strChId[0], "%02d", *iCh);
 
-      //hTimeVsE  = (TH2F*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
       TH1* hTimeVsE    = (TH1*) c->d["preproc"]->o["hTimeVsEnergyA_ch"+strChId];
       TH1* hMeanTime   = (TH1*) c->d["preproc"]->o["hFitMeanTimeVsEnergyA_ch"+strChId];
       TH1* hChi2Ndf    = (TH1*) c->d["preproc"]->o["hFitChi2NdfVsEnergyA_ch"+strChId];
@@ -60,7 +52,6 @@ void DeadLayerCalibratorEDepend::Calibrate(DrawObjContainer *c)
          Float_t chi2 = hChi2Ndf_tmp->GetBinContent(ib);
          hChi2Ndf->SetBinContent(ib, chi2);
 
-			//Double_t logChi2 = chi2 <= 0 ? 0 : TMath::Log(chi2);
          Float_t logChi2 = hChi2NdfLog_tmp->GetBinContent(ib);
          hChi2NdfLog->SetBinContent(ib, logChi2 );
       }
@@ -150,29 +141,9 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
    }
 
    Double_t xmin = hTimeVsE->GetXaxis()->GetXmin();
-   // Energy dependent fit function fails when E = 0
-   //xmin = xmin == 0 ? 1 : xmin;
    Double_t xmax = hTimeVsE->GetXaxis()->GetXmax();
-   //xmax = 600;
 
-   //Double_t ymin = hTimeVsE->GetYaxis()->GetXmin();
-   //Double_t ymax = hTimeVsE->GetYaxis()->GetXmax();
-
-   //TObjArray *fitResultHists = new TObjArray();
-
-   //TF1* gausFitFunc = new TF1("gausFitFunc", "gaus", ymin, ymax);
-
-   //if (wideLimits) { // This is for the fast calibration
-   //   //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G5", &fitResultHists);
-   //   ((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G2", fitResultHists);
-   //   //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR", &fitResultHists);
-   //} else { // In case of the regular channel calibration
-      //((TH2F*) hTimeVsE)->FitSlicesY(gausFitFunc, 0, -1, 0, "QNR G1", &fitResultHists);
-      ((TH2S*) hTimeVsE)->FitSlicesY(0, 0, -1, 0, "QNR", fitResultHists);
-   //}
-
-   //delete gausFitFunc;
-   //fitResultHists.SetOwner(kTRUE);
+   ((TH2S*) hTimeVsE)->FitSlicesY(0, 0, -1, 0, "QNR", fitResultHists);
 
    // Reject points based on chi2
    TH1* hchi2       = (TH1*) fitResultHists->At(3);
@@ -233,12 +204,9 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
       return;
    }
 
-   //Double_t *errors = ((TH1D*) fitResultHists[1])->GetSumw2()->GetArray();
-
    BananaFitFunctor *bff = new BananaFitFunctor(chId);
 
    TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, xmin, xmax, 2, "BananaFitFunctor");
-   //TF1 *bananaFitFunc = new TF1("bananaFitFunc", bff, 0, 0, 2, "BananaFitFunctor");
 
    bananaFitFunc->SetNpx(1000);
 
@@ -246,27 +214,15 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
    float meanT0  = 0;
    float meanDLW = 60;
 
-   // All channels are combined in the 0-th calib channel
-   // Use these values as expected in the fit
-   //iChCalib = fChannelCalibs.find(0);
-
-   //if ( iChCalib != fChannelCalibs.end() )
    if ( fChannelCalibs[0].GetFitStatus() == kDLFIT_OK ) {
       meanT0  = fChannelCalibs[0].fT0Coef;
       meanDLW = fChannelCalibs[0].fDLWidth;
    }
 
-   //float meanT0_low   = meanT0 < 0 ? 1.5*meanT0 : 0.5*meanT0;
-   //float meanT0_high  = meanT0 < 0 ? 0.5*meanT0 : 1.5*meanT0;
-   //float meanDLW_low  = 0.5*meanDLW;
-   //float meanDLW_high = 1.5*meanDLW;
-
-   //if (wideLimits) {
    Float_t meanT0_low   = -30;
    Float_t meanT0_high  =  30;
    Float_t meanDLW_low  = 0;
    Float_t meanDLW_high = 200;
-   //}
 
    bananaFitFunc->SetParameters(meanT0, meanDLW);
    bananaFitFunc->SetParNames("t_{0}, ns", "DL, #mug/cm^{2}");
@@ -278,58 +234,12 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
    Info("Calibrate", "Fitting histogram...");
 
    hMeanTime->Print();
-   //printf("meanT0, meanDLW: %f, %f\n", meanT0, meanDLW);
-   //printf("meanT0_low, meanT0_high, meanDLW_low, meanDLW_high: %f, %f, %f, %f\n", meanT0_low, meanT0_high, meanDLW_low, meanDLW_high);
 
-   //TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "M E S R", "");
    TFitResultPtr fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");
-
-/* This is an attempt to get a reasonable chi^2 by removing 'bad' points
-//{{{
-   if (fitres.Get()) {
-      // reject points
-      int iter = 0;
-
-      while (iter < 10) {
-
-         int iMaxDiffBin = 0;
-         double maxDiff = -1;
-         double diff = -1;
-
-         for (Int_t ib=1; ib<=hMeanTime->GetNbinsX(); ++ib)
-         {
-            Double_t bcntr = hMeanTime->GetBinCenter(ib);
-            Double_t bcont = hMeanTime->GetBinContent(ib);
-            Double_t berr  = hMeanTime->GetBinError(ib);
-
-            if (!bcont && !berr) continue;
-
-            Double_t expVal = bananaFitFunc->Eval(bcntr);
-
-            diff = fabs(bcont - expVal)/berr;
-
-            if (diff > maxDiff) { maxDiff = diff; iMaxDiffBin = ib; }
-            printf("diff, maxDiff: %f, %f\n", diff, maxDiff);
-         }
-
-         hMeanTime->SetBinContent(iMaxDiffBin, 0);
-         hMeanTime->SetBinError(iMaxDiffBin, 0);
-
-         // fit again with excluded points
-         fitres = hMeanTime->Fit(bananaFitFunc, "E S R", "");
-
-         iter++;
-      }
-   }
-*/
-
-   //fitres->Print("V");
 
    delete bananaFitFunc;
 
    if (fitres.Get()) {
-
-      //printf("status: %d\n", fitres->FitResult::Status());
 
       // If something is wrong with the channel mark it accordingly
       if (fitres->FitResult::Status() != 0) {
@@ -338,11 +248,6 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
       }
 
       chCalib->fBananaChi2Ndf = fitres->Ndf() > 0 ? fitres->Chi2()/fitres->Ndf() : -1;
-
-      //if (chCalib->fBananaChi2Ndf <= 0 || chCalib->fBananaChi2Ndf > 50) {
-      //   chCalib->fFitStatus = kDLFIT_FAIL;
-      //   return;
-      //}
 
       chCalib->fFitStatus     = kDLFIT_OK;
       chCalib->fT0Coef        = fitres->Value(0);
@@ -394,11 +299,6 @@ Double_t BananaFitFunctor::operator()(double *x, double *p)
    Double_t x0 = x[0];
    Double_t x2 = x0*x0;
 
-   //UShort_t chId = (UShort_t) p[0];
-
-   //Double_t p1 = 0;
-   //if (p[0] >= 0) p1 = TMath::Abs(p[0]);
-   //if (p[1] < 0) p1 = TMath::Abs(p[1]);
    Double_t p1 = TMath::Abs(p[1]);
    Double_t p2 = p1*p1;
    Double_t p3 = p1*p1*p1;
@@ -411,8 +311,6 @@ Double_t BananaFitFunctor::operator()(double *x, double *p)
 
    Double_t Ekin = pp[0] + pp[1]*x0 + pp[2]*x2 + pp[3]*x2*x0 + pp[4]*x2*x2;
 
-   //Double_t tof = (Ekin != 0.0) ?  KinConst_E2T/sqrt(Ekin) + p[2] : 0.0;
-   //Double_t t_meas = (Ekin != 0.0) ?  sRunConsts[chId].E2T/sqrt(Ekin) - p[1] : 0.0;
    Double_t t_meas = (Ekin != 0.0) ?  fRunConst.E2T/sqrt(Ekin) - p[0] : 0.0;
 
    return t_meas;
