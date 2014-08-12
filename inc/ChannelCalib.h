@@ -27,26 +27,30 @@ typedef std::map<UShort_t, ChannelCalib>::const_iterator ChannelCalibMapConstIte
 typedef std::pair<const UShort_t, ChannelCalib>          ChannelCalibPair;
 
 
-/** A simple data container to hold calibration parameters for each channel. */
+/**
+ * A data container to hold a complete set of calibration parameters for each
+ * detector channel. Depending on the calibration procedure the data members
+ * are filled by either AlphaCalibrator or DeadLayerCalibratorEDepend.
+ */
 class ChannelCalib : public TObject
 {
 public:
 
-   CalibCoefSet fAmAmp;
-   CalibCoefSet fAmInt;
-   CalibCoefSet fGdAmp;
-   CalibCoefSet fGdInt;
-   Float_t    fZeroBiasGain;  //< Gain value adjusted to zero bias current
-   Float_t    fEffectiveGain; //< Gain value ready for production use
-   Float_t    fDLWidth;       // Dead layer
-   Float_t    fDLWidthErr;
-   Float_t    fT0Coef;        // T0
-   Float_t    fT0CoefErr;
+   CalibCoefSet fAmAmp;       ///< Basic data structure to hold energy calibration parameters from an Americium alpha source
+   CalibCoefSet fAmInt;       ///< Basic data structure to hold energy calibration parameters from an Americium alpha source
+   CalibCoefSet fGdAmp;       ///< Basic data structure to hold energy calibration parameters from an Gadolinium alpha source
+   CalibCoefSet fGdInt;       ///< Basic data structure to hold energy calibration parameters from an Gadolinium alpha source
+   Float_t    fZeroBiasGain;  ///< Gain value adjusted to zero bias current
+   Float_t    fEffectiveGain; ///< Gain value ready for production use
+   Float_t    fDLWidth;       ///< Width of the detector channel's dead layer
+   Float_t    fDLWidthErr;    ///< Error on the width of the detector channel's dead layer
+   Float_t    fT0Coef;        ///< Average time offset for all triggers
+   Float_t    fT0CoefErr;     ///< Error on the average time offset for all triggers
    Float_t    fAvrgEMiss;
    Float_t    fAvrgEMissErr;
-   Float_t    fEMeasDLCorr;   // a correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
+   Float_t    fEMeasDLCorr;   ///< Correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
    Float_t    fBananaChi2Ndf;
-   EFitStatus fFitStatus;
+   EFitStatus fFitStatus;     ///< Status code indicating a problem (if any) with calculation of calibration parameters for that channel
 
 public:
 
