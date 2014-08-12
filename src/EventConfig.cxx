@@ -23,7 +23,7 @@ using namespace std;
  */
 EventConfig::EventConfig() : TObject(), fRandom(new TRandom()),
    fMeasInfo(new MeasInfo()), fAnaInfo(new AsymAnaInfo()),
-   fCalibrator(new Calibrator(fRandom)), fAnaMeasResult(new AnaMeasResult()),
+   fCalibrator(new Calibrator()), fAnaMeasResult(new AnaMeasResult()),
    fMseMeasInfoX(new MseMeasInfoX())
 {
 }

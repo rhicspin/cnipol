@@ -10,7 +10,6 @@
 #include "TFitResultPtr.h"
 #include "TH1.h"
 #include "TH1D.h"
-#include "TRandom.h"
 #include "TObject.h"
 
 #include "DrawObjContainer.h"
@@ -23,7 +22,6 @@ class Calibrator : public TObject
 {
 public:
 
-   TRandom*         fRandom;
    ChannelCalibMap  fChannelCalibs;
    ChannelCalib     fMeanChannel;             //< A virtual "channel" to hold the mean values of all real channels
    ChannelCalib     fMeanOfLogsChannel;
@@ -33,7 +31,6 @@ public:
 public:
 
    Calibrator();
-   Calibrator(TRandom* random);
    ~Calibrator();
 
    virtual void           UpdateMeanChannel();
@@ -61,7 +58,7 @@ public:
    virtual void           PrintAsPhp(FILE *f=stdout) const;
    void                   PrintAsConfig(FILE *f=stdout) const;
 
-   ClassDef(Calibrator, 1)
+   ClassDef(Calibrator, 2)
 };
 
 #endif

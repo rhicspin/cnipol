@@ -16,15 +16,8 @@ using namespace std;
 
 
 /** Default constructor. */
-Calibrator::Calibrator() : TObject(), fRandom(new TRandom()), fChannelCalibs(),
+Calibrator::Calibrator() : TObject(), fChannelCalibs(),
    fMeanChannel(), fMeanOfLogsChannel(), fRMSBananaChi2Ndf(), fRMSOfLogsBananaChi2Ndf()
-{
-}
-
-
-/** */
-Calibrator::Calibrator(TRandom *random) : TObject(), fRandom(random),
-   fChannelCalibs(), fMeanChannel(), fMeanOfLogsChannel(), fRMSBananaChi2Ndf(), fRMSOfLogsBananaChi2Ndf()
 {
 }
 
@@ -285,7 +278,6 @@ Float_t Calibrator::GetKinEnergyA(UShort_t adc, UShort_t chId) const
 /** */
 Float_t Calibrator::GetTime(UShort_t tdc) const
 {
-   //return WFD_TIME_UNIT_HALF * (tdc + fRandom->Rndm() - 0.5);
    return WFD_TIME_UNIT_HALF * tdc;
 }
 
