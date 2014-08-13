@@ -683,20 +683,6 @@ void MeasInfo::EnableChannel(UShort_t chId)
 
 
 /** */
-void MeasInfo::EnableChannels(std::bitset<N_DETECTORS> &disabled_det)
-{
-   //for (UShort_t iDet=0; iDet!=N_DETECTORS; ++iDet)
-   //{
-   //   if (disabled_det.test(iDet) )
-   //   {
-   //      for (UShort_t iCh=1; iCh<=NSTRIP_PER_DETECTOR; ++iCh)
-   //         DisableChannel(NSTRIP_PER_DETECTOR*iDet + iCh);
-   //   }
-   //}
-}
-
-
-/** */
 Bool_t MeasInfo::IsDisabledChannel(UShort_t chId)
 {
    return fDisabledChannels.find(chId) != fDisabledChannels.end() ? kTRUE : kFALSE;

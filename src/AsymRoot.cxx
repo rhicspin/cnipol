@@ -815,67 +815,6 @@ void AsymRoot::BookHists()
 }
 
 
-// Description : Book ROOT Functions and Histograms using Feedback infomations
-//             : This routine shuould be called after Feedback operation
-void AsymRoot::BookHists2(StructFeedBack &feedback)
-{
-   fOutRootFile->cd();
-   Kinema->cd();
-
-   char  formula[100], fname[100];
-   float low, high, sigma;
-   int   Color=2;
-   int   Width=2;
-
-   for (int i=0; i<NSTRIP; i++) {
-
-      for (int j=0; j<2; j++) {
-
-         sigma = j ? gRunConsts[i+1].M2T*feedback.RMS[i]*gAsymAnaInfo->MassSigmaAlt :
-                     gRunConsts[i+1].M2T*feedback.RMS[i]*gAsymAnaInfo->MassSigma;
-
-         int Style = j + 1 ;
-
-         // lower limit
-         sprintf(formula, "%f/sqrt(x)+(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
-         sprintf(fname, "banana_cut_l_st%d_mode%d", i, j);
-         banana_cut_l[i][j] = new TF1(fname, formula, gAsymAnaInfo->enel, gAsymAnaInfo->eneu);
-         banana_cut_l[i][j] -> SetLineColor(Color);
-         banana_cut_l[i][j] -> SetLineWidth(Width);
-         banana_cut_l[i][j] -> SetLineStyle(Style);
-
-         // upper limit
-         sprintf(formula,"%f/sqrt(x)-(%f)/sqrt(x)", gRunConsts[i+1].E2T, sigma);
-         sprintf(fname, "banana_cut_h_st%d", i);
-         banana_cut_h[i][j] = new TF1(fname, formula, gAsymAnaInfo->enel, gAsymAnaInfo->eneu);
-         banana_cut_h[i][j] -> SetLineColor(Color);
-         banana_cut_h[i][j] -> SetLineWidth(Width);
-         banana_cut_h[i][j] -> SetLineStyle(Style);
-      }
-
-      // energy cut low
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->enel)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->enel));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->enel)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->enel));
-
-      energy_cut_l[i] = new TLine(gAsymAnaInfo->enel, low, gAsymAnaInfo->enel, high);
-      energy_cut_l[i] ->SetLineColor(Color);
-      energy_cut_l[i] ->SetLineWidth(Width);
-
-      // energy cut high
-      low  = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->eneu)) -
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->eneu));
-      high = gRunConsts[i+1].E2T / sqrt(double(gAsymAnaInfo->eneu)) +
-                 gRunConsts[i+1].M2T * feedback.RMS[i] * gAsymAnaInfo->MassSigma / sqrt(double(gAsymAnaInfo->eneu));
-
-      energy_cut_h[i] = new TLine(gAsymAnaInfo->eneu, low, gAsymAnaInfo->eneu, high);
-      energy_cut_h[i] ->SetLineColor(Color);
-      energy_cut_h[i] ->SetLineWidth(Width);
-   }
-}
-
-
 // Deprecated
 // Description : Delete Unnecessary Histograms
 void AsymRoot::DeleteHistogram()

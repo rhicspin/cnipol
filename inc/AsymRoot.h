@@ -62,7 +62,6 @@ public:
 
    void         CreateRootFile(std::string filename);
    void         BookHists();
-   void         BookHists2(StructFeedBack &feedback);
    void         DeleteHistogram();
    void         Calibrate();
    void         Finalize();
