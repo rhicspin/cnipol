@@ -698,7 +698,7 @@ void CnipolProfileHists::PostFill()
       float xuni_p =    TMath::Sqrt(-2*TMath::Log(intens));
       float xuni_m = -1*TMath::Sqrt(-2*TMath::Log(intens));
 
-      //printf("%5d %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f\n", i, intens, intensErr, polar, polarErr, xuni_p, xuni_m);
+      printf("%5d %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f\n", i, intens, intensErr, polar, polarErr, xuni_p, xuni_m);
 
       grIntensUniProfile->SetPoint( (i-1)*2 + 0, xuni_p, intens);
       grIntensUniProfile->SetPoint( (i-1)*2 + 1, xuni_m, intens);

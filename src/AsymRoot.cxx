@@ -631,6 +631,9 @@ void AsymRoot::UpdateCalibrator()
 
       // Now overwrite alpha calibration constants from an alpha calib file
       string fnameAlpha = anaInfo->GetAlphaCalibFile();
+      cout << "alpha filename: " << fnameAlpha << endl;
+      string frunNameTest  = anaInfo->GetRunName();
+      cout << "run file name: " << frunNameTest << endl;
       Info("AsymRoot::UpdateCalibrator", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
 
       TFile *f = TFile::Open(fnameAlpha.c_str());

@@ -403,10 +403,10 @@ void AsymAnaInfo::VerifyOptions()
    if ( fDisabledDetectors.any() ) {
       gMeasInfo->DisableChannels(fDisabledDetectors);
    }
-
+   printf("Checking right before AnaInfo::VerifyOptions()\n");
    // The output dir is created here
    AnaInfo::VerifyOptions();
-
+   printf("Checking right after AnaInfo::VerifyOptions()\n");
    fFileRunConf = fopen(GetRunConfFileName().c_str(), "w");
    gSystem->Chmod(GetRunConfFileName().c_str(), 0775);
 }

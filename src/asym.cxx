@@ -140,6 +140,7 @@ int main(int argc, char *argv[])
       gAsymRoot->CreateTrees();
    }
 
+  printf("After CreateTrees()!!\n");
    // We need to do some pre-processing first to extract parameters from the
    // data. For example, rough estimates of the dead layer and t0 are needed to
    // set preliminary cuts.
@@ -148,6 +149,8 @@ int main(int argc, char *argv[])
    gAsymRoot->FillDerivedPassOne();         // Fill other histograms from the primary ones
    gAsymRoot->Calibrate();                  // Process all channel alpha peak. XXX May need to change call order
    gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
+
+   printf("After PostFillPassOne!\n");
 
    // PassTwo
    if ( !gAsymAnaInfo->HasAlphaBit() ) {
