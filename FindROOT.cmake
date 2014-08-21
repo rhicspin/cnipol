@@ -35,6 +35,23 @@ else()
     OUTPUT_VARIABLE ROOT_LIBRARIES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags --ldflags
+    OUTPUT_VARIABLE ROOT_FLAGS
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  if(${ROOT_FLAGS} MATCHES "(^|.+ )-m64($| .+)")
+    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+      message(FATAL_ERROR "You are building 32 bit version of cnipol, but your ROOT is 64 bit.")
+    endif()
+  elseif(${ROOT_FLAGS} MATCHES "(^|.+ )-m32($| .+)")
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+      message(FATAL_ERROR "You are building 64 bit version of cnipol, but your ROOT is 32 bit.")
+    endif()
+  else()
+    message(FATAL_ERROR "Can't detect ROOT distribution bitness")
+  endif()
+
   #set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lThread -lMinuit -lHtml -lVMC -lEG -lGeom -lTreePlayer -lXMLIO -lProof)
   #set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lProofPlayer -lMLP -lSpectrum -lEve -lRGL -lGed -lXMLParser -lPhysics)
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
