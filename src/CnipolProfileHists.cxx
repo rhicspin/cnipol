@@ -195,6 +195,18 @@ void CnipolProfileHists::BookHists()
    hist->Sumw2();
    o[shName] = hist;
 
+   shName = "hPolarVsIntensProfileLargeBins";
+   hist = new TH1F(shName.c_str(), shName.c_str(), 11, 0, 1.1);
+   hist->SetTitle("; Relative Intensity I/I_{max}; Polarization;");
+   //hist->SetOption("");
+   hist->GetYaxis()->SetRangeUser(0, 1.05);
+   hist->SetMarkerStyle(kFullDotLarge);
+   hist->SetMarkerSize(1);
+   hist->SetMarkerColor(kBlue);
+   hist->Sumw2();
+   o[shName] = hist;
+
+
    // Intensity profile
    TGraphErrors *grIntensUniProfileFineBin = new TGraphErrors();
    grIntensUniProfileFineBin->SetName("grIntensUniProfileFineBin");
@@ -768,10 +780,12 @@ void CnipolProfileHists::PostFill()
    TH1* hIntensUniProfileBin     = (TH1*) o["hIntensUniProfileBin"];
    TH1* hPolarUniProfileBin      = (TH1*) o["hPolarUniProfileBin"];
    TH1* hPolarVsIntensProfileBin = (TH1*) o["hPolarVsIntensProfileBin"];
+   TH1* hPolarVsIntensProfileLargeBins =(TH1*) o["hPolarVsIntensProfileLargeBins"];
 
    utils::BinGraph(grIntensUniProfile,     hIntensUniProfileBin);
    utils::BinGraph(grPolarUniProfile,      hPolarUniProfileBin);
    utils::BinGraph(grPolarVsIntensProfile, hPolarVsIntensProfileBin);
+   utils::BinGraph(grPolarVsIntensProfile, hPolarVsIntensProfileLargeBins);
 
    hIntensUniProfileBin->Fit("gaus", "M E");
    hPolarUniProfileBin->Fit("gaus", "M E", "", -3, 3);
@@ -780,7 +794,7 @@ void CnipolProfileHists::PostFill()
    mfPow.SetLineColor(kBlue);
 
    hPolarVsIntensProfileBin->Fit(&mfPow, "M E R");
-
+   hPolarVsIntensProfileLargeBins->Fit(&mfPow, "M E R");
    TGraphErrors *grAsymVsIntensProfile = (TGraphErrors*) fhAsymVsIntensProfile->GetListOfFunctions()->FindObject("grAsymVsIntensProfile");
    fitres = grAsymVsIntensProfile->Fit(&mfPow, "M E R S");
 
