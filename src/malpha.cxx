@@ -592,11 +592,11 @@ void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, EPolarimeterI
       const string &key = it->first;
       const map<opencdev::cdev_time_t, double> &values = it->second;
 
-      if ((key == "bluDCCTtotal") && (gRunConfig.GetBeamId(polId) != kBLUE_BEAM))
+      if ((gRunConfig.GetBeamId(polId) == kBLUE_BEAM) && (key != "bluDCCTtotal"))
       {
          continue;
       }
-      else if ((key == "yelDCCTtotal") && (gRunConfig.GetBeamId(polId) != kYELLOW_BEAM))
+      else if ((gRunConfig.GetBeamId(polId) == kYELLOW_BEAM) && (key != "yelDCCTtotal"))
       {
          continue;
       }
