@@ -602,7 +602,7 @@ void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, EPolarimeterI
       for(map<opencdev::cdev_time_t, double>::const_iterator it2 = values.begin(); it2 != values.end(); it2++)
       {
          double value = it2->second;
-         if (value > 50.0)
+         if ((value > 50.0) && (value < 9e37))
          {
             value_acc += value;
             value_count++;

@@ -160,11 +160,6 @@ void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t,
                throw "unexpected end of row";
             }
 
-            if (value >= 90000000000000000000000000000000000000.0)
-            {
-               continue;
-            }
-
             (*values)[*it][time] = value;
          }
       }
