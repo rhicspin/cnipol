@@ -462,6 +462,10 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
             continue;
          }
          double value2 = r2.second[startTime][det];
+         if (isnan(value1) || isnan(value2))
+         {
+            continue;
+         }
 
          g->SetPoint(i, value1, value2);
          g->SetPointError(i, r1_err.second[startTime][det], r2_err.second[startTime][det]);
