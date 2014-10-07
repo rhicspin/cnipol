@@ -96,7 +96,7 @@ void Calibrator::UsePlainAlphaGain()
       for(ChannelCalibMap::iterator iCh = fChannelCalibs.begin();
             iCh != fChannelCalibs.end(); iCh++) {
          ChannelCalib &calib = iCh->second;
-         calib.fEffectiveGain = calib.fAmAmp.fCoef;
+         calib.fEffectiveGain = 1/calib.fAmAmp.fCoef;
       }
    }
 }
