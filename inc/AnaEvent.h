@@ -35,8 +35,6 @@ public:
    AnaEvent();
    ~AnaEvent();
 
-   float GetEnergy(EventConfig *ec, ChannelDataPair &ch);
-   float GetTime(EventConfig *ec, ChannelDataPair &ch);
    virtual void Print(const Option_t* opt="") const;
 
    ClassDef(AnaEvent, 1)

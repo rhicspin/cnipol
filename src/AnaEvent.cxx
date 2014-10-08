@@ -15,20 +15,6 @@ AnaEvent::~AnaEvent()
 };
 
 
-float AnaEvent::GetEnergy(EventConfig *ec, ChannelDataPair &ch)
-{
-   UChar_t chId = ch.first;
-   return fChannels[chId].fAmpltd / ec->fCalibrator->fChannelCalibs[chId].fEffectiveGain;
-}
-
-
-float AnaEvent::GetTime(EventConfig *ec, ChannelDataPair &ch)
-{
-   //return (ec->fConfigInfo->data.WFDTUnit/2.) * (ch.second.fTdc + ec->fRandom->Rndm() - 0.5);
-   return WFD_TIME_UNIT_HALF * (ch.second.fTdc + ec->fRandom->Rndm() - 0.5);
-}
-
-
 /**
  *
  */
