@@ -312,50 +312,6 @@ void AsymRoot::CreateTrees()
 
 
 /**
- * (Deprecated)
- * Updates the default fEventConfig to the one taken from the DL_CALIB_RUN_NAME
- * file. If ALPHA_CALIB_RUN_NAME is another file then also updates alpha calib
- * constants from that file.
- */
-void AsymRoot::UpdateRunConfig()
-{
-   AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
-
-   if (!anaInfo->HasAlphaBit() && anaInfo->HasNormalBit()) {
-
-      // Now, if alpha calib file is different update alpha constants from that
-      // MeasConfig
-      string fnameAlpha = anaInfo->GetAlphaCalibFile();
-
-      // XXX not implemented. Need to fix it ASAP!
-         Info("AsymRoot::UpdateRunConfig", "Reading MeasConfig object from alpha calib file %s", fnameAlpha.c_str());
-
-         TFile *f = TFile::Open(fnameAlpha.c_str());
-         EventConfig *alphaRunConfig = (EventConfig*) f->FindObjectAny("EventConfig");
-         //delete f;
-
-         if (!alphaRunConfig) {
-            Error("AsymRoot::UpdateRunConfig", "No MeasConfig object found in alpha calib file %s", fnameAlpha.c_str());
-            return;
-         }
-
-         fEventConfig = alphaRunConfig;
-
-         // XXX not implemented. Need to fix it!
-         // ....
-
-      // Update the pointer to MeasConfig object in the event
-      delete fChannelEvent->fEventConfig;
-      fChannelEvent->fEventConfig = fEventConfig;
-   }
-
-   // Update the calibrator based on the running mode, i.e. alpha or
-   // normal data
-   UpdateCalibrator();
-}
-
-
-/**
  * Sets current event with data from raw file.
  */
 void AsymRoot::SetChannelEvent(ATStruct &at, long delim, unsigned chId)

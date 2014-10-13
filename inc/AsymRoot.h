@@ -67,7 +67,6 @@ public:
    void         Calibrate();
    void         Finalize();
    void         CreateTrees();
-   void         UpdateRunConfig(); // Deprecated
    void         SetChannelEvent(ATStruct &at, long delim, unsigned chId);
    void         AddSpinFlipperMarker();
    void         ProcessEvent() {};
