@@ -256,6 +256,10 @@ Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
 /** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 {
+   if (isnan(fChannelCalibs.find(chId)->second.fEffectiveGain)) {
+      Fatal("GetEnergyA", "NAN in effective gain");
+   }
+
    return adc / fChannelCalibs.find(chId)->second.fEffectiveGain;
 }
 
