@@ -256,7 +256,7 @@ Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
 /** */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 {
-   return fChannelCalibs.find(chId)->second.fAmAmp.fCoef * adc;
+   return adc / fChannelCalibs.find(chId)->second.fEffectiveGain;
 }
 
 

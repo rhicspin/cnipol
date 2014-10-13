@@ -26,7 +26,7 @@ Float_t ChannelEvent::GetEnergyA() const
 {
    UChar_t chId = GetChannelId();
 
-   return fChannel.fAmpltd / fEventConfig->fCalibrator->fChannelCalibs[chId].fEffectiveGain;
+   return fEventConfig->fCalibrator->GetEnergyA(fChannel.fAmpltd, chId);
 }
 
 
