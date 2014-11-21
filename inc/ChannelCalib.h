@@ -46,8 +46,8 @@ public:
    Float_t    fDLWidthErr;    ///< Error on the width of the detector channel's dead layer
    Float_t    fT0Coef;        ///< Average time offset for all triggers
    Float_t    fT0CoefErr;     ///< Error on the average time offset for all triggers
-   Float_t    fAvrgEMiss;
-   Float_t    fAvrgEMissErr;
+   Float_t    fAvrgEMiss;     ///< Missing energy not registered by the detector channel. Estimated from the banana fit
+   Float_t    fAvrgEMissErr;  ///< Error on fAvrgEMiss estimated from the banana fit
    Float_t    fEMeasDLCorr;   ///< Correction factor for E_meas = C_alpha * ADC * fEMeasDLCorr
    Float_t    fBananaChi2Ndf;
    EFitStatus fFitStatus;     ///< Status code indicating a problem (if any) with calculation of calibration parameters for that channel

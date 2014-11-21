@@ -28,7 +28,11 @@ Calibrator::~Calibrator()
 }
 
 
-/** */
+/**
+ * Calculates some statistical quantities (mean, chi^2/Ndf) for all valid
+ * channels in fChannelCalibs and saves them in fMeanChannel, a special
+ * dummy "channel" container.
+ */
 void Calibrator::UpdateMeanChannel()
 {
    fMeanChannel.ResetToZero();
@@ -253,7 +257,7 @@ Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
 }
 
 
-/** */
+/** Returns energy registered by channel chId */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 {
    if (isnan(fChannelCalibs.find(chId)->second.fEffectiveGain)) {
