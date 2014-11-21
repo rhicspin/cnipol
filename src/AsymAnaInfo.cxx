@@ -19,19 +19,12 @@ using namespace std;
 AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fRunName          (""),
    fAsymModes        (MODE_NORMAL|MODE_PROFILE|MODE_TARGET|MODE_RAW_EXTENDED|MODE_ASYM|MODE_PMT|MODE_KINEMA),
-   enel              (400),
-   eneu              (900),
-   widthl            (-30),
-   widthu            (3),
    fSaveTrees        (0),
    fDisabledDetectors(0),
    MassSigma         (3),
    MassSigmaAlt      (2),
    OneSigma          (CARBON_MASS_PEAK_SIGMA),
    tshift            (0),
-   dx_offset         (0),
-   WCMRANGE          (999.05),
-   MassLimit         (8),
    fThinout          (1),
    fMaxEventsUser    (0),
    reference_rate    (1),
@@ -107,7 +100,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int          option_index = 0;
    char         cfile[32];
-   char         enerange[20], cwidth[20], *ptr;
+   char         *ptr;
 
    static struct option long_options[] = {
       {"log",                 optional_argument,   0,   'l'},
@@ -221,48 +214,10 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          extinput.TSHIFT = 1;
          break;
 
-      case 'd': // set timing shift in banana cut
-         dx_offset = atoi(optarg);
-         break;
-
-      case 'e': // set energy range
-         strncpy(enerange, optarg, sizeof(enerange));
-
-         if ((ptr = strrchr(enerange, ':'))) {
-            ptr++;
-            eneu = atoi(ptr);
-            strtok(enerange, ":");
-            enel = atoi(enerange);
-            if (enel == 0 || enel < 0)     { enel = 0;}
-            if (eneu == 0 || eneu > 12000) { eneu = 2000;}
-            fprintf(stdout, "ENERGY RANGE LOWER:UPPER = %d:%d\n", enel, eneu);
-         } else {
-            cout << "Wrong specification for energy threshold" << endl;
-         }
-         break;
-
       case 'F':
          strncpy(cfile, optarg, sizeof(cfile));
          strncat(reConfFile, cfile, sizeof(cfile) - 1 - strlen(cfile));
          extinput.CONFIG = 1;
-         break;
-
-      case 'W': // constant width banana cut
-         strcpy(cwidth, optarg);
-         if ((ptr = strrchr(cwidth,':'))) {
-            ptr++;
-            widthu = atoi(ptr);
-            strtok(cwidth,":");
-            widthl = atoi(cwidth);
-            fprintf(stdout,"CONSTANT BANANA CUT LOWER:UPPER = %d:%d\n",
-                    widthl,widthu);
-            if (widthu == widthl)
-               fprintf(stdout, "WARNING: Banana Lower = Upper Cut\a\n");
-         } else {
-            fprintf(stdout, "Wrong specification constant banana cut\n");
-         }
-         fprintf(stdout,"BANANA Cut : %d <==> %d \n",
-                 widthl,widthu);
          break;
 
       case 'm':
@@ -426,10 +381,6 @@ void AsymAnaInfo::PrintAsPhp(FILE *f) const
    AnaInfo::PrintAsPhp(f);
    fprintf(f, "$rc['fRunName']                     = \"%s\";\n",  fRunName.c_str());
    fprintf(f, "$rc['fAsymModes']                   = %#010lx;\n", fAsymModes);
-   fprintf(f, "$rc['enel']                         = %d;\n",      enel);
-   fprintf(f, "$rc['eneu']                         = %d;\n",      eneu);
-   fprintf(f, "$rc['widthl']                       = %d;\n",      widthl);
-   fprintf(f, "$rc['widthu']                       = %d;\n",      widthu);
    fprintf(f, "$rc['fSaveTrees']                   = \"%s\";\n",  fSaveTrees.to_string().c_str());
    fprintf(f, "$rc['fDisabledDetectors']           = \"%s\";\n",  fDisabledDetectors.to_string().c_str());
    fprintf(f, "$rc['fThinout']                     = %f;\n",      fThinout);
@@ -459,9 +410,7 @@ void AsymAnaInfo::PrintUsage()
    cout << " -t <time shift>                      : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
    cout << " -e <lower:upper>                     : Kinetic energy range (default [400:900] keV) (!)" << endl;
    cout << " -D                                   : Dead layer mode on (!)" << endl;
-   cout << " -d <dlayer>                          : Additional deadlayer thickness [ug/cm2] (!)" << endl;
    cout << " -F <file>                            : Overwrite conf file defined in run.db (!)" << endl;
-   cout << " -W <lower:upper>                     : Const width banana cut (!)" << endl;
    cout << " -m <sigma>                           : Banana cut by <sigma> from 12C mass [def]:3 sigma (!)" << endl;
    cout << " -U                                   : Update histogram" << endl;
    cout << " -N                                   : Store Ntuple events (!)" << endl;

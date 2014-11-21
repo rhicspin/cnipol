@@ -44,10 +44,6 @@ public:
    // Constraint parameter for data processing 
    std::string      fRunName;           // Run name
    ULong_t          fAsymModes;
-   int              enel;               // lower kinetic energy threshold (keV)
-   int              eneu;               // upper kinetic energy threshold (keV)
-   int              widthl;             // lower banana cut (ns)
-   int              widthu;             // upper banana cut (ns)
    std::bitset<3>   fSaveTrees;         //! bitmask telling which ROOT trees to save
    std::bitset<N_DETECTORS>   fDisabledDetectors;   //! bitmask with disabled detector indeces
    float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
@@ -55,9 +51,6 @@ public:
                                         // <MassSigmaAlt> away from the 12C mass
    float            OneSigma;           // 1-sigma of 12C mass distribution in [keV]
    float            tshift;             // time shift in [ns]
-   float            dx_offset;          // additional deadlayer offset [ug/cm2]
-   float            WCMRANGE;           // Wall Current Monitor process Fill range
-   float            MassLimit;          // Lower Mass limit for peak position adjustment fit
    Float_t          fThinout;           // Approximate fraction of events to read
    UInt_t           fMaxEventsUser;     // Max number of events requested by user
    float            reference_rate;     // Expected universal rate for given target
@@ -101,7 +94,7 @@ public:
    Bool_t      HasPulserBit() const;
    Bool_t      HasStudiesBit() const;
 
-   ClassDef(AsymAnaInfo, 5)
+   ClassDef(AsymAnaInfo, 6)
 };
 
 #endif
