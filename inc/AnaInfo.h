@@ -45,11 +45,11 @@ public:
    std::string      fImgFmtName;
 #endif
    std::string      fAsymVersion;
-   std::string      fSuffix;            //< Additional unique identifier for analysis job
+   std::string      fSuffix;            ///< Additional unique identifier for analysis job
    ULong_t          fModes;
-   time_t           fAnaDateTime;       //< Date/time when data analysis started
-   Double_t         fAnaTimeReal;       //< Time in seconds to process input raw file
-   Double_t         fAnaTimeCpu;        //< Time in seconds to process input raw file
+   time_t           fAnaDateTime;       ///< Date/time when data analysis started
+   Double_t         fAnaTimeReal;       ///< Time in seconds to process input raw file
+   Double_t         fAnaTimeCpu;        ///< Time in seconds to process input raw file
    Str2StrMap       fAsymEnv;
    FILE            *fFileMeasInfo;      //!
    FILE            *fFileStdLog;        //!

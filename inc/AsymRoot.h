@@ -43,7 +43,7 @@ protected:
    TFile                    *fOutRootFile;   //!
    TFile                    *fOutTreeFile;   //!
    UInt_t                    fTreeFileId;    //!
-   Cut2DrawObjContainerMap   fHistCuts;      //! Map with histograms containers classified by cut categories
+   Cut2DrawObjContainerMap   fHistCuts;      //!< A map of histogram containers groupped by type of cut (event selection)
 
 public:
 
