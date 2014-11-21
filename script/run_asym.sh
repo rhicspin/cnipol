@@ -12,7 +12,7 @@ exec < $FILE_MEASLIST
 
 while read meas_id
 do
-   bgx_limit 10 $CNIPOL_DIR/bin/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -r $meas_id
+   bgx_limit 10 $CNIPOL_DIR/build/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -r $meas_id
 done
 
 # Wait until all processes are finished
