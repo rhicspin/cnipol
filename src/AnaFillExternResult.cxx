@@ -34,11 +34,6 @@ TGraphErrors* AnaFillExternResult::GetGrYelIntens() const { return fYelIntensGra
 
 
 /** */
-void AnaFillExternResult::Print(const Option_t* opt) const
-{
-}
-
-
 TGraphErrors* AnaFillExternResult::MakeGraph(const std::map<opencdev::cdev_time_t, double> &values, int thin_out_factor)
 {
    TGraphErrors *gr = new TGraphErrors(values.size() / thin_out_factor);

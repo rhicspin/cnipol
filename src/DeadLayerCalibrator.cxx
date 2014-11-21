@@ -121,14 +121,6 @@ TFitResultPtr DeadLayerCalibrator::CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_
 }
 
 
-/** */
-void DeadLayerCalibrator::Print(const Option_t* opt) const
-{
-   Info("Print", " ");
-	Calibrator::Print(opt);
-}
-
-
 Double_t DeadLayerCalibrator::BananaFitFunc(Double_t *x, Double_t *par)
 {
    Double_t e_meas      = x[0];

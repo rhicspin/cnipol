@@ -31,7 +31,6 @@ private:
 public:
 
    virtual void Calibrate(DrawObjContainer *c);
-   void         Print(const Option_t* opt="") const;
 
    static RunConst sRunConst;
    static std::map<UShort_t, RunConst> sRunConsts;

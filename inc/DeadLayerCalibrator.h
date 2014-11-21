@@ -31,8 +31,6 @@ public:
    virtual void          Calibrate(DrawObjContainer *c);
    virtual TFitResultPtr CalibrateOld(TH1 *h, TH1D *hMeanTime, UShort_t chId=0, Bool_t wideLimits=false);
 
-   void Print(const Option_t* opt="") const;
-
    static Double_t BananaFitFunc(Double_t *x, Double_t *par);
    static Double_t BananaFitFunc2(Double_t *x, Double_t *par);
 

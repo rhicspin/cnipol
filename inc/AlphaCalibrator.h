@@ -50,7 +50,6 @@ public:
 
    virtual void  Calibrate(DrawObjContainer *c);
    void CalibrateBadChannels(DrawObjContainer *c);
-   void Print(const Option_t* opt="") const;
 
    ClassDef(AlphaCalibrator, 1)
 };

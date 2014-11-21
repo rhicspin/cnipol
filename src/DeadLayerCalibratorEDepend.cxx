@@ -268,14 +268,6 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
 }
 
 
-/** */
-void DeadLayerCalibratorEDepend::Print(const Option_t* opt) const
-{
-   Info("Print", " ");
-   Calibrator::Print(opt);
-}
-
-
 RunConst DeadLayerCalibratorEDepend::sRunConst  = RunConst();
 map<UShort_t, RunConst> DeadLayerCalibratorEDepend::sRunConsts = gRunConsts;
 

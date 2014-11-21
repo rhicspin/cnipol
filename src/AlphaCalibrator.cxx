@@ -369,11 +369,3 @@ void AlphaCalibrator::CalibrateBadChannels(DrawObjContainer *c)
       ch.fAmInt.fCoef  = detAve;
    }
 }
-
-
-/** */
-void AlphaCalibrator::Print(const Option_t* opt) const
-{
-   Info("Print", " ");
-   Calibrator::Print(opt);
-}
