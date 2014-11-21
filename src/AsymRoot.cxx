@@ -297,7 +297,6 @@ void AsymRoot::CreateTrees()
          TTree *chEventTree = new TTree(tmpCharStr, "Channel Event Tree");
          chEventTree->Branch("ChannelData", "ChannelData", &fChannelData);
          fChannelEventTrees.push_back(chEventTree);
-         //printf("size: %d\n", chEventTrees.size());
       }
    }
 
@@ -822,7 +821,6 @@ void AsymRoot::DeleteHistogram()
   // Delete histograms declared for WFD channel 72 - 75 to avoid crash. These channcles
   // are for target channels and thus thes histograms wouldn't make any sense.
   for (int i=NSTRIP; i<TOT_WFD_CH; i++ ) {
-     //t_vs_e[i]->Delete();
      t_vs_e_yescut[i]->Delete();
      mass_vs_e_ecut[i]->Delete();  // Mass vs. 12C Kinetic Energy
      mass_nocut[i]->Delete();

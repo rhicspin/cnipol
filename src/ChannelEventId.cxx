@@ -33,7 +33,6 @@ void ChannelEventId::Print(const Option_t* opt) const
 
 
 /** */
-//static bool ChannelEventId::Compare(const ChannelEventId &id1, const ChannelEventId &id2)
 bool ChannelEventId::operator()(const ChannelEventId &id1, const ChannelEventId &id2)
 {
    if (id1.fRevolutionId < id2.fRevolutionId) return true;
@@ -49,26 +48,6 @@ bool ChannelEventId::operator()(const ChannelEventId &id1, const ChannelEventId 
 
    } else return false;
 }
-
-
-/**
- *
- */
-//bool ChannelEventId::operator<(const ChannelEventId &chEvId) const
-//{
-//   if (this->fRevolutionId < chEvId.fRevolutionId) return true;
-//   else if (this->fRevolutionId == chEvId.fRevolutionId) {
-//
-//      if (this->fBunchId < chEvId.fBunchId) return true;
-//      else if (this->fBunchId == chEvId.fBunchId) {
-//
-//         if (this->fChannelId < chEvId.fChannelId) return true;
-//         else return false;
-//
-//      } else return false;
-//
-//   } else return false;
-//}
 
 
 /** */

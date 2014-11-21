@@ -74,10 +74,8 @@ Float_t ChannelEvent::GetKinEnergyADLCorrEstimate()
    Float_t emeas = GetEnergyA();
    Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[0].fAvrgEMiss;
    Float_t eMeasDLCorr = fEventConfig->fCalibrator->fChannelCalibs[0].fEMeasDLCorr;
-   //printf("emeas, eMeasDLCorr, eloss: %f, %f, %f\n", emeas, eMeasDLCorr, eloss);
 
    return  emeas*eMeasDLCorr + eloss;
-   //return  emeas + eloss;
 }
 
 
@@ -112,7 +110,6 @@ Float_t ChannelEvent::GetEnergyI()
 /** */
 Float_t ChannelEvent::GetTime() const
 {
-   //return (fEventConfig->fConfigInfo->data.WFDTUnit/2.) *
    return WFD_TIME_UNIT_HALF * (fChannel.fTdc + fEventConfig->fRandom->Rndm() - 0.5);
 }
 
@@ -184,20 +181,9 @@ Float_t ChannelEvent::GetMandelstamT()
 Float_t ChannelEvent::GetTdcAdcTimeDiff()
 {
    UChar_t chId  = GetChannelId();
-   //Float_t delta = GetTimeOfFlight() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
    Float_t delta = GetTimeOfFlight2() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEDepend());
 
    return delta;
-
-   //if ( TMath::Abs(delta) < 3) {
-   //   return 0;
-   //} else if (delta >= 3)
-   //   return  +1;
-   //} else if (delta <= -3) {
-   //   return  -1;
-   //} else
-   //   return 2;
-
 }
 
 
@@ -217,9 +203,6 @@ void ChannelEvent::Print(const Option_t* opt) const
 /** */
 Bool_t ChannelEvent::PassCutRawAlpha()
 {
-   // Do not consider channels other than silicon detectors
-   //if (GetChannelId() > NSTRIP) return false;
-
    if (fChannel.fAmpltd < 50) return false;
 
    if (fChannel.fTdc < 15 || fChannel.fTdc > 50) return false;
@@ -301,7 +284,6 @@ Bool_t ChannelEvent::PassCutKinEnergyADLCorrEstimate()
 /** */
 Bool_t ChannelEvent::PassCutCarbonMass()
 {
-   //if (fabs(GetCarbonMass() - MASS_12C * k2G) < 1.0*CARBON_MASS_PEAK_SIGMA*k2G )
    if (fabs(GetCarbonMass() - MASS_12C * k2G) < 2.0*CARBON_MASS_PEAK_SIGMA*k2G )
       return true;
 
@@ -312,14 +294,6 @@ Bool_t ChannelEvent::PassCutCarbonMass()
 /** */
 Bool_t ChannelEvent::PassCutCarbonMassEstimate()
 {
-   //UChar_t chId = GetChannelId();
-   //float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimate());
-   //float delta  = GetTimeOfFlightEstimate() - gRunConsts[chId].E2T/sqrt(GetKinEnergyAEstimateEDepend());
-   //float delta = GetTime() - gRunConsts[].E2T/sqrt(GetEnergyA());
-   //if (fabs(delta) <= 20) return true; // in ns
-   //if fabs(delta) < gRunConsts[].M2T * feedback.RMS[st] * gAnaInfo->MassSigma/sqrt(GetEnergyA());
-   //if ( fabs(delta) < gRunConsts[].M2T * gAnaInfo->OneSigma * gAnaInfo->MassSigma / sqrt(GetEnergyA()) ) return true;
-
    if (fabs(GetCarbonMassEstimate() - MASS_12C * k2G) < 3.0*CARBON_MASS_PEAK_SIGMA*k2G )
       return true;
 
@@ -338,27 +312,6 @@ Bool_t ChannelEvent::PassCutPulser()
       return false;
 
    return true;
-
-   //switch (gMeasInfo->fPolId) {
-   //case 0:   // B1U
-   //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 200 && fChannel.fTdc > 64)
-   //      return false;
-   //   break;
-   //case 1:   // Y1D
-   //   if (fChannel.fAmpltd > 120 && fChannel.fAmpltd < 170 && fChannel.fTdc > 54)
-   //      return false;
-   //   break;
-   //case 2:   // B2D
-   //   if (fChannel.fAmpltd > 130 && fChannel.fAmpltd < 210 && fChannel.fTdc > 50)
-   //      return false;
-   //   break;
-   //case 3:   // Y2U
-   //   //if (fChannel.fAmpltd > 155 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50)
-   //   if (fChannel.fAmpltd > 140 && fChannel.fAmpltd < 200 && fChannel.fTdc > 50) // 15039.302
-   //      return false;
-   //   break;
-   //}
-   //return true;
 }
 
 

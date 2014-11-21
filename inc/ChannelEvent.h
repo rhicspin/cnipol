@@ -55,7 +55,6 @@ public:
    Float_t  GetKinEnergyAEstimateEDepend();
    Float_t  GetFunnyEnergyA();
    Float_t  GetEnergyI();
-   //Float_t GetTotalEnergyI();
    Float_t  GetTime() const;
    Float_t  GetTime2() const;
    Float_t  GetTimeOfFlight();
@@ -66,7 +65,6 @@ public:
    Float_t  GetMandelstamT();
    Float_t  GetTdcAdcTimeDiff();
 
-   //virtual void Print(const Option_t* opt="") const;
    virtual void Print(const Option_t* opt="") const;
    Bool_t PassCutRawAlpha();
    Bool_t PassCutSiliconChannel();

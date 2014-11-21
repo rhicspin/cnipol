@@ -155,10 +155,6 @@ void AnaInfo::VerifyOptions()
       stderr = stdout;
       gSystem->Chmod(GetStdLogFileName().c_str(), 0775);
    }
-
-   //freopen(GetStdLogFileName().c_str(), "w", stderr);
-   //setbuf(stdout, NULL);
-   //fFileStdLogBuf.open(GetStdLogFileName().c_str(), ios::out|ios::ate|ios::app);
 }
 
 
@@ -212,14 +208,11 @@ void AnaInfo::CopyResults()
 
    string cmd = "rsync --stats --exclude=*.root -rlpgoDv " + GetOutDir() + " pc2pc.phy.bnl.gov:/usr/local/polarim/root/";
    Info("CopyResults", "Copying results...\n%s", cmd.c_str());
-   //string cmd = "ls -l";
 
-   //system(cmd.c_str());
    char result[1000];
    FILE *fp = popen( cmd.c_str(), "r");
 
    while (fgets(result, sizeof(result), fp) != NULL ) { printf("%s", result); }
-   //printf("%s", result);
 
    pclose(fp);
 }
