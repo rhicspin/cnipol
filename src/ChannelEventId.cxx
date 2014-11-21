@@ -2,13 +2,12 @@
 
 ClassImp(ChannelEventId)
 
-using namespace std;
 
 /** Default constructor. */
 ChannelEventId::ChannelEventId() : TObject(), fRevolutionId(UINT_MAX),
    fBunchId(UCHAR_MAX), fChannelId(UCHAR_MAX), fDelimiterId(USHRT_MAX)
 {
-};
+}
 
 
 /** Default destructor. */
@@ -17,9 +16,7 @@ ChannelEventId::~ChannelEventId()
 };
 
 
-/**
- *
- */
+/** */
 void ChannelEventId::Print(const Option_t* opt) const
 {
    //printf("ChannelEventId: \n");
@@ -27,7 +24,7 @@ void ChannelEventId::Print(const Option_t* opt) const
    //printf("   fBunchId:      %12d\n", fBunchId);
    //printf("   fChannelId:    %12d\n", fChannelId);
    //printf("   fDelimiterId:  %12d\n", fDelimiterId);
-   printf("ChannelEventId: \n");
+   printf("ChannelEventId:\n");
    printf("   fRevolutionId: %12d\n", fRevolutionId);
    printf("   fBunchId:      %12d\n", fBunchId);
    printf("   fChannelId:    %12d\n", fChannelId);
@@ -35,9 +32,7 @@ void ChannelEventId::Print(const Option_t* opt) const
 }
 
 
-/**
- *
- */
+/** */
 //static bool ChannelEventId::Compare(const ChannelEventId &id1, const ChannelEventId &id2)
 bool ChannelEventId::operator()(const ChannelEventId &id1, const ChannelEventId &id2)
 {

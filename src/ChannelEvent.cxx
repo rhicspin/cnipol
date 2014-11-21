@@ -75,6 +75,7 @@ Float_t ChannelEvent::GetKinEnergyADLCorrEstimate()
    Float_t eloss = fEventConfig->fCalibrator->fChannelCalibs[0].fAvrgEMiss;
    Float_t eMeasDLCorr = fEventConfig->fCalibrator->fChannelCalibs[0].fEMeasDLCorr;
    //printf("emeas, eMeasDLCorr, eloss: %f, %f, %f\n", emeas, eMeasDLCorr, eloss);
+
    return  emeas*eMeasDLCorr + eloss;
    //return  emeas + eloss;
 }

@@ -37,7 +37,7 @@ public:
    std::string GetExternInfoPath();
    void        ProcessOptions(int argc, char **argv);
    void        VerifyOptions();
-   void        Print(const Option_t* opt="") const;
+   virtual void  Print(const Option_t* opt="") const;
    void        PrintAsPhp(FILE *f=stdout) const;
    void        PrintUsage();
 

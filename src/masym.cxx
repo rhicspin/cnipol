@@ -1,7 +1,8 @@
 #include <cstdlib>
 #include <fstream>
 #include <time.h>
-#include <map>
+#include <set>
+#include <string>
 
 #include "masym.h"
 
@@ -23,7 +24,6 @@
 
 #include "utils/utils.h"
 
-using namespace std;
 
 
 /** */
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
    gRunConfig.fBeamEnergies.insert(kINJECTION);
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
 
-   string filelist     = mAsymAnaInfo.GetMListFullPath();
+   std::string filelist     = mAsymAnaInfo.GetMListFullPath();
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
    mAsymRoot.SetAnaGlobResult(&anaGlobResult);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
    // Container with measurements passed QA cuts. Used to save time on opening
    // input files in the second pass
-   set<EventConfig> gGoodMeass;
+   std::set<EventConfig> gGoodMeass;
 
    // Fill chain with all input files from filelist
    TObject *o;
@@ -70,11 +70,11 @@ int main(int argc, char *argv[])
    // Loop over the runs and record the time of the last flattop measurement in the fill
    while (next && (o = (*next)()) )
    {
-      string measId   = string(((TObjString*) o)->GetName());
-      string fileName = mAsymAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAsymAnaInfo.GetSuffix() + ".root";
+      std::string measId   = std::string(((TObjString*) o)->GetName());
+      std::string fileName = mAsymAnaInfo.GetResultsDir() + "/" + measId + "/" + measId + mAsymAnaInfo.GetSuffix() + ".root";
 
       // Check for fills of no interest
-      stringstream ssMeasId(measId);
+      std::stringstream ssMeasId(measId);
       Int_t        nFillId;
 
       ssMeasId >> nFillId;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
    Info("masym", "Starting second pass...");
 
    // Now process only good runs
-   set<EventConfig>::const_iterator iMeas = gGoodMeass.begin();
+   std::set<EventConfig>::const_iterator iMeas = gGoodMeass.begin();
 
    for ( ; iMeas!=gGoodMeass.end(); ++iMeas) {
       // Overwrite the default gMeasInfo with the saved one
