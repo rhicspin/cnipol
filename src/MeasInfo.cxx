@@ -521,62 +521,6 @@ void MeasInfo::UpdateRevolutions(UInt_t revId)
 }
 
 
-//
-// Deprecated.
-//
-// Description : Disable detector and configure active strips
-//
-// Input       : int mask.detector
-// Return      : ActiveDetector[i] remains masked strip configulation
-void MeasInfo::ConfigureActiveStrip(int mask)
-{
-   // Disable Detector First
-   for (int i=0; i<N_DETECTORS; i++) {
-
-      if ( (~mask>>i) & 1) {
-
-         //ActiveDetector[i] = 0x000;
-
-         for (int j=0; j<NSTRIP_PER_DETECTOR; j++) {
-            //NActiveStrip--;
-            //ActiveStrip[i*NSTRIP_PER_DETECTOR+j] = 0;
-         }
-      }
-   }
-
-   // Configure Active Strips
-   //int det, strip=0;
-   //for (int i=0; i<NDisableStrip; i++) {
-   //   det = fDisabledChannels[i]/NSTRIP_PER_DETECTOR;
-   //   // skip if the detector is already disabled
-   //   if ( (mask >> det) & 1) {
-   //      strip = fDisabledChannels[i] - det * NSTRIP_PER_DETECTOR;
-   //      ActiveDetector[det] ^= int(pow(2,double(strip))); // mask strips of detector=det
-   //      //ActiveStrip[strip+det*NSTRIP_PER_DETECTOR] = 0;
-   //      //NActiveStrip--;
-   //   }
-   //}
-
-   // Active Detector and Strip Configulation
-   printf("ReConfigured Active Detector =");
-
-   //for (int i=0; i<N_DETECTORS; i++)  printf(" %1d", ActiveDetector[i] ? 1 : 0 );
-   printf("\n");
-   //    printf("Active Strip Config =");
-   //    for (int i=N_DETECTORS-1; i>=0; i--) printf(" %x", ActiveDetector[i]);
-   //    printf("\n");
-
-   printf("Reconfigured Active Strip Config =");
-
-   for (int i=0; i<N_SILICON_CHANNELS; i++) {
-     if (i%NSTRIP_PER_DETECTOR == 0) printf(" ");
-     //printf("%d", ActiveStrip[i]);
-   }
-
-   printf("\n");
-}
-
-
 // Description : Identify Polarimety ID and RHIC Beam (blue or yellow)
 // Input       : char RunID[]
 void MeasInfo::SetPolarimetrIdRhicBeam(const char* RunID)

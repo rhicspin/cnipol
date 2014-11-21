@@ -155,7 +155,6 @@ public:
    void            Update(const RunPeriod& runPeriod);
    void            Update(const AsymAnaInfo& anaInfo);
    void            UpdateRevolutions(UInt_t revId);
-   void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;
    EBeamEnergy     GetBeamEnergy() const;
    Float_t         GetExpectedGlobalTimeOffset() const;
