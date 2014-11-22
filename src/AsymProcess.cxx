@@ -10,36 +10,6 @@
 using namespace std;
 
 
-/**
- * Main process event routine. This routine is called event by event basis
- */
-void event_process(ChannelEvent &chEvent)
-{
-   Ntotal[chEvent.GetBunchId()-1]++;
-
-   // Fill target histograms
-   if (gAsymAnaInfo->HasTargetBit()) {
-
-      if (chEvent.PassCutTargetChannel()) {
-         gAsymRoot->fHists->d["targets"]->Fill(&chEvent);
-      }
-   }
-
-   if (gAsymAnaInfo->HasNormalBit())
-   {
-      if (!chEvent.PassCutSiliconChannel()) return;
-
-      if ( !chEvent.PassCutKinEnergyAEDepend() || !chEvent.PassCutEnabledChannel() ) return;
-
-		gAsymRoot->Fill(kCUT_NOISE);
-
-      if (!chEvent.PassCutCarbonMass()) return;
-
-		gAsymRoot->Fill(kCUT_CARBON);
-   }
-}
-
-
 // Description : calculate kinematics from ADC and TDC
 // Input       : int Mode, processEvent *event, recordConfigRhicStruct *gConfigInfo, int st
 // Return      : float &edepo, float &e, float &t, float &delt, float &Mass

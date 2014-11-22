@@ -701,7 +701,22 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
 
          if (gAsymAnaInfo->fSaveTrees.any()) { gAsymRoot->AddChannelEvent(); }
 
-         event_process(*gAsymRoot->fChannelEvent);
+         // Fill target histograms
+         if (gAsymAnaInfo->HasTargetBit() && gAsymRoot->fChannelEvent->PassCutTargetChannel())
+         {
+            gAsymRoot->fHists->d["targets"]->Fill(gAsymRoot->fChannelEvent);
+         }
+
+         if (gAsymAnaInfo->HasNormalBit() &&
+             gAsymRoot->fChannelEvent->PassCutSiliconChannel() &&
+             gAsymRoot->fChannelEvent->PassCutKinEnergyAEDepend() &&
+             gAsymRoot->fChannelEvent->PassCutEnabledChannel() )
+         {
+	         gAsymRoot->Fill(kCUT_NOISE);
+
+            if (gAsymRoot->fChannelEvent->PassCutCarbonMass())
+	            gAsymRoot->Fill(kCUT_CARBON);
+         }
 
          if (gMeasInfo->fNEventsProcessed%50000 == 0)
          {

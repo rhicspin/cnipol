@@ -14,12 +14,6 @@
 
 #include "AsymGlobals.h"
 
-/**
- * Main process event routine. This routine is called event by event basis
- * Input       : processEvent *event
- * Return      : 0
- */
-void event_process(ChannelEvent &chEvent);
 
 // Description : calculate kinematics from ADC and TDC
 // Input       : int Mode, processEvent *event, recordConfigRhicStruct *cfginfo, int st
