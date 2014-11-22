@@ -20,7 +20,10 @@
 #include "utils/utils.h"
 
 
-// Description : Fit the slope of energy spectrum given in (-t) with exponential.
+/**
+ * (Deprecated) Fit the slope of energy spectrum given in (-t) with
+ * exponential.
+ */
 void DetectorAnomaly()
 {
    Kinema->cd();
@@ -35,8 +38,8 @@ void DetectorAnomaly()
    // into the fit.
    //ds: extern StructHist Eslope;
    float dbin  = (Eslope.xmax - Eslope.xmin)/float(Eslope.nxbin);
-   float min_t = 2 * gAsymAnaInfo->enel * MASS_12C * k2G * k2G + dbin;
-   float max_t = 2 * gAsymAnaInfo->eneu * MASS_12C * k2G * k2G - dbin;
+   float min_t = 2 * 400 * MASS_12C * k2G * k2G + dbin;
+   float max_t = 2 * 900 * MASS_12C * k2G * k2G - dbin;
 
    energy_spectrum_all->Fit("expf", " ", " ", min_t, max_t);
 

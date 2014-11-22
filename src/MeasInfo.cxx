@@ -277,12 +277,6 @@ void MeasInfo::PrintConfig()
    fprintf(stdout,"             CONFIG = %s\n", reConfFile);
    fprintf(stdout,"              CALIB = %s\n", CalibFile);
 
-   // banana cut configulation
-   int ccutwl = (int) gAsymAnaInfo->widthl;
-   int ccutwu = (int) gAsymAnaInfo->widthu;
-
-   fprintf(stdout, "Carbon cut width : (low) %d (up) %d nsec \n", ccutwl, ccutwu);
-
    // tshift in [ns]
    fprintf(stdout, "             TSHIFT = %.1f\n", gAsymAnaInfo->tshift);
 
