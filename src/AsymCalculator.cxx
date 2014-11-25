@@ -16,7 +16,6 @@
 #include "TLatex.h"
 #include "TMath.h"
 
-//#include "AsymHbook.h"
 #include "AsymRoot.h"
 #include "AnaInfo.h"
 #include "AnaMeasResult.h"
@@ -43,56 +42,6 @@ DetLRSet AsymCalculator::X45Dets(arrX45Dets, arrX45Dets+2);
 DetLRSet AsymCalculator::X45TDets(arrX45TDets, arrX45TDets+1);
 DetLRSet AsymCalculator::X45BDets(arrX45BDets, arrX45BDets+1);
 DetLRSet AsymCalculator::Y45Dets(arrY45Dets, arrY45Dets+2);
-
-
-// End of data process
-void end_process(MseMeasInfoX &run)
-{
-   gSystem->Info("end_process", "Called");
-
-   // Feedback Mode
-   //if (Flag.feedback) {
-   //   int FeedBackLevel = 2; // 1: no fit just max and mean
-   //                          // 2: gaussian fit
-   //   gAnaMeasResult->TshiftAve = TshiftFinder(Flag.feedback, FeedBackLevel);
-   //   // reset counters
-   //   for (int i=0; i<N_BUNCHES; i++) Ntotal[i] = 0;
-   //}
-
-   // Calculate Statistics
-   CalcStatistics();
-
-   // Energy Yeild Weighted Average Analyzing Power
-   //gAnaMeasResult->A_N[0] = AsymCalculator::WeightAnalyzingPower(10040); // no cut in energy spectra
-   gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
-
-   //gAsymCalculator.CumulativeAsymmetry();
-
-   // Specific Luminosity (ds: this one is not used in asymmetry calculation)
-   //SpecificLuminosity(gHstat.mean, gHstat.RMS, gHstat.RMSnorm);
-
-   // ds: these routines are skipped by default
-   //if (Flag.EXE_ANOMALY_CHECK) {
-   //   // Check for 12C Invariant Mass and energy dependences
-   //   TshiftFinder(Flag.feedback, 2);
-   //   // Check for slope of Energy Spectrum
-   //   DetectorAnomaly();
-   //   // Check for bunch anomaly
-   //   BunchAnomalyDetector();
-   //}
-
-   // Complete Histograms
-   //CompleteHistogram();
-
-   // Draw polarization vs target position
-   DrawPlotvsTar();
-
-   // Run Information
-   PrintWarning();
-   PrintRunResults();
-
-   gSystem->Info("end_process", "End");
-}
 
 
 // Method name : CompleteHistograms()
@@ -135,7 +84,6 @@ TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetV
    for ( ; iDetPair!=detSet.end(); ++iDetPair) {
       totalL += hDetVsBunchId.Integral(1, N_BUNCHES, iDetPair->first,  iDetPair->first);
       totalR += hDetVsBunchId.Integral(1, N_BUNCHES, iDetPair->second, iDetPair->second);
-      //printf("totals: %d, %d\n", totalL, totalR);
    }
 
    if (!gr)
@@ -153,7 +101,6 @@ TGraphErrors* AsymCalculator::CalcBunchAsymDet(TH2 &hDetVsBunchId_ss, TH2 &hDetV
          countsR += hDetVsBunchId_ss.GetBinContent(iBunch, iDetPair->second);
       }
 
-      //ValErrPair bunchAsym = CalcAsym(countsR, countsL, totalR, totalL);
       ValErrPair bunchAsym = CalcAsym(countsL, countsR, totalL, totalR);
 
       // skip if nothing was calculated
@@ -411,23 +358,6 @@ void AsymCalculator::CumulativeAsymmetry()
       }
    }
 
-   // Counts for each detector
-   //for (int bid=0; bid<N_BUNCHES; bid++) {
-   //   Nsi[0] += Ncounts[0][bid];
-   //   Nsi[1] += Ncounts[1][bid];
-   //   Nsi[2] += Ncounts[2][bid];
-   //   Nsi[3] += Ncounts[3][bid];
-   //   Nsi[4] += Ncounts[4][bid];
-   //   Nsi[5] += Ncounts[5][bid];
-   //}
-
-   //HHPAK(31010, (float*)Ncounts[0]);
-   //HHPAK(31020, (float*)Ncounts[1]);
-   //HHPAK(31030, (float*)Ncounts[2]);
-   //HHPAK(31040, (float*)Ncounts[3]);
-   //HHPAK(31050, (float*)Ncounts[4]);
-   //HHPAK(31060, (float*)Ncounts[5]);
-
    float x90phys[2][N_BUNCHES], x90acpt[2][N_BUNCHES], x90lumi[2][N_BUNCHES];
    float x45phys[2][N_BUNCHES], x45acpt[2][N_BUNCHES], x45lumi[2][N_BUNCHES];
    float y45phys[2][N_BUNCHES], y45acpt[2][N_BUNCHES], y45lumi[2][N_BUNCHES];
@@ -463,8 +393,6 @@ void AsymCalculator::CumulativeAsymmetry()
       x90[bid].lumiE  = tmpasyme;
       x90lumi[0][bid] = tmpasym;
       x90lumi[1][bid] = tmpasyme;
-
-      //printf("%d : %d %f %f %f %f \n",bid,bunchSpin, RU[bid],RD[bid],LU[bid],LD[bid]);
    }
 
    fprintf(stdout, "si2 up :%10.0f down :%10.0f\n", RU[119], RD[119]);
@@ -563,22 +491,6 @@ void AsymCalculator::CumulativeAsymmetry()
       c45lumi[1][bid] = tmpasyme;
    }
 
-   //HHPAK(30000, x90phys[0]); HHPAKE(30000, x90phys[1]);
-   //HHPAK(30010, x90acpt[0]); HHPAKE(30010, x90acpt[1]);
-   //HHPAK(30020, x90lumi[0]); HHPAKE(30020, x90lumi[1]);
-
-   //HHPAK(30100, x45phys[0]); HHPAKE(30100, x45phys[1]);
-   //HHPAK(30110, x45acpt[0]); HHPAKE(30110, x45acpt[1]);
-   //HHPAK(30120, x45lumi[0]); HHPAKE(30120, x45lumi[1]);
-
-   //HHPAK(30200, y45phys[0]); HHPAKE(30200, y45phys[1]);
-   //HHPAK(30210, y45acpt[0]); HHPAKE(30210, y45acpt[1]);
-   //HHPAK(30220, y45lumi[0]); HHPAKE(30220, y45lumi[1]);
-
-   //HHPAK(30300, c45phys[0]); HHPAKE(30300, c45phys[1]);
-   //HHPAK(30310, c45acpt[0]); HHPAKE(30310, c45acpt[1]);
-   //HHPAK(30320, c45lumi[0]); HHPAKE(30320, c45lumi[1]);
-
    printf("*************** RESULT *******************\n");
    printf("        physics                luminosity             acceptance\n");
    printf("X90  :%10.6f+-%10.6f %10.6f+-%10.6f %10.6f+-%10.6f\n",
@@ -621,8 +533,6 @@ void AsymCalculator::CumulativeAsymmetry()
          x90phys[1][bid] = tmpasyme;
       }
 
-      //HHPAK(37000+i, x90phys[0]); HHPAKE(37000+i, x90phys[1]);
-
       // X45 (13-46) (C:02-35)
       for (int bid=0; bid<N_BUNCHES; bid++) {
 
@@ -640,8 +550,6 @@ void AsymCalculator::CumulativeAsymmetry()
          x45phys[0][bid] = tmpasym;
          x45phys[1][bid] = tmpasyme;
       }
-
-      //HHPAK(37500+i, x45phys[0]); HHPAKE(37500+i, x45phys[1]);
    }
 
    // **** for different t range ****
@@ -725,32 +633,12 @@ void AsymCalculator::CumulativeAsymmetry()
          tcasym45[tr][bid]  = tmpasym;
          tcasym45E[tr][bid] = tmpasyme;
       }
-
-      // Fill Histograms
-      //HHPAK(32000+tr+1, txasym90[tr]);  HHPAKE(32000+tr+1, txasym90E[tr]);
-      //HHPAK(32100+tr+1, txasym45[tr]);  HHPAKE(32100+tr+1, txasym45E[tr]);
-      //HHPAK(32200+tr+1, tyasym45[tr]);  HHPAKE(32200+tr+1, tyasym45E[tr]);
-      //HHPAK(32300+tr+1, tcasym45[tr]);  HHPAKE(32300+tr+1, tcasym45E[tr]);
    }
-
-   // Fill Histograms
-   //HHPAK(31000, fspinpat);
-   //HHPAK(31100, RL90);   HHPAKE(31100, RL90E);
-   //HHPAK(31110, RL45);   HHPAKE(31110, RL45E);
-   //HHPAK(31120, BT45);   HHPAKE(31120, BT45E);
-
-   //HHPAK(33000, (float*) Ngood);
-   //HHPAK(33010, (float*) Nback);
-   //HHPAK(33020, (float*) Ntotal);
-
-   // Spin Sorted Strip Distribution
-   //HHPAK(36000, (float*) cntr.reg.NStrip[0]);
-   //HHPAK(36100, (float*) cntr.reg.NStrip[1]);
 }
 
 
 // Description : Calculate Statistics
-void CalcStatistics()
+void AsymCalculator::CalcStatistics()
 {
    // Integrate good carbon events in banana
    cntr.good_event = 0;
@@ -777,7 +665,7 @@ void CalcStatistics()
 
 
 // Description : print warnings
-void PrintWarning()
+void AsymCalculator::PrintWarning()
 {
    printf("-----------------------------------------------------------------------------------------\n");
    printf("------------------------------  Error Detector Results ----------------------------------\n");
@@ -829,7 +717,7 @@ void PrintWarning()
 // Method name : PrintRunResults()
 //
 // Description : print analysis results and run infomation
-void PrintRunResults()
+void AsymCalculator::PrintRunResults()
 {
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------  Operation Messages  --------------------------------------\n");
@@ -888,7 +776,7 @@ void PrintRunResults()
 
 
 /** */
-void DrawPlotvsTar()
+void AsymCalculator::DrawPlotvsTar()
 {
    Double_t polvstar[nTgtIndex+1], epolvstar[nTgtIndex+1], posvstar[nTgtIndex+1];
 
@@ -898,7 +786,6 @@ void DrawPlotvsTar()
       posvstar[i]  = tgt.all.x[(int)tgt.Time[i]];
    }
 
-   //Asymmetry->cd();
    TH2F *h_vstar = new TH2F("Pol_vs_tarpos","Polarization vs target position",100,posvstar[0]-1,posvstar[nTgtIndex]+1,100,0,1);
 
    TGraphErrors *gpolvstar = new TGraphErrors(nTgtIndex+1,posvstar,polvstar,0,epolvstar);
@@ -921,8 +808,6 @@ void DrawPlotvsTar()
 // Return      : A_N
 Float_t AsymCalculator::WeightAnalyzingPower(int HID)
 {
-   //static int CallFlag = 0;
-
    // analyzing power
    //
    // A_N values from L. Trueman (new for Run-04)
@@ -1014,24 +899,13 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
       //for (int i=0; i<25; i++) anth[i] = anth[i] * a_n_scale_v1_5_0;
    }
 
-   //int nbin   = HENEBIN;
-   //int fstbin = 1;
-   //int lstbin = HENEBIN;
-
    float Y[HENEBIN];
-   //float EX[HENEBIN];
-   //float EY[HENEBIN];
-
-   //ds hhrebin_(&HID, X, Y, EX, EY, &nbin, &fstbin, &lstbin);
-
    float sum  = 0.;
    float suma = 0.;
 
    for (int i=0; i<HENEBIN; i++){
       sum  += Y[i];
-      //suma += Y[i] * anth[j];
       suma += Y[i] * anth[i];
-      //printf("%d: Y %f AN %f X %f\n",i,Y[i],anth[j],X[i]);
    }
 
    float aveA_N = sum != 0 ? suma/sum : 0;
@@ -1044,24 +918,14 @@ Float_t AsymCalculator::WeightAnalyzingPower(int HID)
 
    for (int i=1; i<=hKinEnergyA_o->GetNbinsX(); i++) {
       double bcont  = hKinEnergyA_o->GetBinContent(i);
-      //double bcentr = hKinEnergyA_o->GetBinCenter(i);
-      //double bwidth = hKinEnergyA_o->GetBinWidth(i);
-
-      //j = (int) ((bcentr - Emin)/bwidth);
 
       sum  += bcont;
       suma += bcont * anth[i-1];
-      //suma += bcont * anth[j];
    }
 
    float aveA_N_2 = sum != 0 ? suma/sum : FLT_MIN;
 
    printf("Average analyzing power: %10.8f (old: %10.8f)\n", aveA_N_2, aveA_N);
-
-   // Fill Analyzing power histogram only once.
-   //ds if (!CallFlag) HHF1(34000, 0.5, aveA_N);
-
-   //ds CallFlag=1;
 
    return aveA_N_2;
 }
@@ -1117,9 +981,6 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
       }
    }
 
-   //HHPAK(10033, SpeLumi.Cnts);
-   //HHPAKE(11033, SpeLumi.dCnts);
-
    SpeLumi.ave = utils::WeightedMean((Double_t*) SpeLumi.Cnts, (Double_t*) SpeLumi.dCnts, N_BUNCHES);
 
    if (SpeLumi.ave) {
@@ -1129,20 +990,9 @@ void SpecificLuminosity(float &mean, float &RMS, float &RMS_norm)
       }
    }
 
-   //HHPAK(10034, SpeLumi_norm);    HHPAKE(11034, dSpeLumi_norm);
-
    // Book and fill histograms
    char hcomment[256];
    sprintf(hcomment, "Specific Luminosity");
-   //HHBOOK1(10035, hcomment, 100, SpeLumi.ave-SpeLumi.ave/2, SpeLumi.ave + SpeLumi.ave/2.);
-
-   //for (int bid=0; bid<N_BUNCHES; bid++) HHF1(10035, SpeLumi.Cnts[bid], 1);
-
-   // Get variables
-   //char CHOICE[5]="HIST";
-   //mean = HHSTATI(10035, 1, CHOICE, 0) ;
-   //RMS  = HHSTATI(10035, 2, CHOICE, 0) ;
-   //RMS_norm = (!mean) ? 0 : RMS/mean ;
 }
 
 
@@ -1691,15 +1541,6 @@ void calcLRAsymmetry(float X90[2], float X45_tmp[2], float &A, float &dA)
 //             : Also call for PHENIX and STAR colliding bunches asymmetries
 void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
 {
-   //// Calculate Asymmetries for colliding bunches at PHENIX
-   //CalcStripAsymmetry(2);
-
-   //// Calculate Asymmetries for colliding bunches at STAR
-   //CalcStripAsymmetry(3);
-
-   //// alternative sigma cut
-   //CalcStripAsymmetry(1);
-
    // This is the old approach
    // regular sigma cut
    CalcStripAsymmetry(0);
@@ -1738,7 +1579,6 @@ void AsymCalculator::CalcStripAsymmetry(DrawObjContainer *oc)
    TGraphErrors* grAsymVsPhi = (TGraphErrors*) hAsymVsPhi->GetListOfFunctions()->FindObject("grAsymVsPhi");
 
    // Create and then fit to sine graph grAsymVsPhi given histogram hChAsym
-   //TFitResultPtr fitres = FitChAsymConst(*hChAsym, grAsymVsPhi);
    TFitResultPtr fitres = FitChAsymSine(*hChAsym, grAsymVsPhi);
 
    if (fitres.Get()) {
@@ -1805,14 +1645,10 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
    TH2* hChVsDelim_down = (TH2*) oc->o["hChVsDelim_down"];
    TH1* hAsymVsDelim4Ch = (TH1*) oc->o["hAsymVsDelim4Ch"];
 
-   // this is where the output will go
-   //TH1 *hPolarProfile = (TH1*) gAsymRoot->fHists->d["profile"]->o["hPolarProfile"];
-
    if (!hChVsDelim_up || !hChVsDelim_down || !hAsymVsDelim4Ch) {
       Error("AsymCalculator::CalcStripAsymmetryByProfile", "No proper histograms available to calculate asymmetry. Skipping...");
       return;
    }
-
 
    for (Int_t iDelim=1; iDelim<=hAsymVsDelim4Ch->GetNbinsX(); iDelim++)
    {
@@ -1829,27 +1665,16 @@ void AsymCalculator::CalcStripAsymmetryByProfile(DrawObjContainer *oc)
       if (fitres.Get()) {
          Double_t val = fitres->Value(0);
          Double_t err = fitres->FitResult::Error(0);
-         //printf("val err: %f, %f\n", val, err);
 
          hAsymVsDelim4Ch->SetBinContent(iDelim, val);
          hAsymVsDelim4Ch->SetBinError(iDelim, err);
 
-         //hPolarProfile->SetBinContent(iDelim, val/gAnaMeasResult->A_N[1]);
-         //hPolarProfile->SetBinError(iDelim, err/gAnaMeasResult->A_N[1]);
       } else {
          Error("AsymCalculator::CalcStripAsymmetryByProfile", "Fit error in time bin (delim) %d", iDelim);
       }
 
       delete hChAsym;
    }
-
-   //for(Int_t i=0; i<gNDelimeters; i++)
-   //{
-   //   CalcStripAsymmetry(100+i);
-   //   //printf("i, p: %d, %f\n", i, gAnaMeasResult->sinphi[100+i].P[0]);
-   //   hPolarProfile->SetBinContent(i+1, gAnaMeasResult->sinphi[100+i].P[0]);
-   //   hPolarProfile->SetBinError(i+1, gAnaMeasResult->sinphi[100+i].P[1]);
-   //}
 }
 
 
@@ -1875,7 +1700,6 @@ void AsymCalculator::CalcKinEnergyAChAsym(DrawObjContainer *oc)
       if (fitres.Get()) {
          Double_t val = fitres->Value(0);
          Double_t err = fitres->FitResult::Error(0);
-         //printf("val err: %f, %f\n", val, err);
 
          hKinEnergyAChAsym->SetBinContent(iKinE, val);
          hKinEnergyAChAsym->SetBinError(iKinE, err);
@@ -1898,8 +1722,6 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
 
    for (int iTimeDiff=1; iTimeDiff<=hAsym->GetNbinsX(); iTimeDiff++)
    {
-      //printf("binnn: %d\n", iTimeDiff);
-
       TH1I *hUp   = (TH1I*) hChVsTimeDiff_Up  ->ProjectionY("hUp",   iTimeDiff, iTimeDiff);
       TH1I *hDown = (TH1I*) hChVsTimeDiff_Down->ProjectionY("hDown", iTimeDiff, iTimeDiff);
 
@@ -1908,15 +1730,12 @@ void AsymCalculator::CalcLongiChAsym(DrawObjContainer *oc)
 
       TH1D* hChAsym = CalcChannelAsym(*hUp, *hDown);
 
-      //TFitResultPtr fitres = FitChAsymConst(*hChAsym);
       TFitResultPtr fitres = FitChAsymSine(*hChAsym);
 
       if (fitres.Get()) {
 
          Double_t val = fitres->Value(0);
          Double_t err = fitres->FitResult::Error(0);
-
-         //printf("val err: %f, %f\n", val, err);
 
          hAsym->SetBinContent(iTimeDiff, val);
          hAsym->SetBinError(iTimeDiff, err);
@@ -1983,8 +1802,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    }
 
    // Strip-by-Strip Asymmetries
-   //float LumiSum_r[2][N_SILICON_CHANNELS];                                 // Reduced order Total luminosity for histograming
-   //float LumiRatio[N_SILICON_CHANNELS];                                    // Luminosity Ratio
    float  Asym[N_SILICON_CHANNELS],        dAsym[N_SILICON_CHANNELS];        // Raw Asymmetries strip-by-strip
    float  rawPol[N_SILICON_CHANNELS],      rawPolErr[N_SILICON_CHANNELS];
    float  AsymPhiCorr[N_SILICON_CHANNELS], dAsymPhiCorr[N_SILICON_CHANNELS]; // Phi corrected Asymmetries strip-by-strip
@@ -1999,7 +1816,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       Asym[iCh]          = dAsym[iCh]        = 0;
       AsymPhiCorr[iCh]   = dAsymPhiCorr[iCh] = 0;
       rawPol[iCh]        = rawPolErr[iCh]    = 0;
-      //LumiSum_r[0][iCh] = LumiSum_r[0][iCh] = LumiRatio[iCh] = 0;
       totalUpCounts[iCh] = totalDownCounts[iCh] = 0;
 
       // Loop to get total counts (luminosity)
@@ -2012,12 +1828,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
          }
       }
 
-      //printf("XXX: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-      //       iCh, totalUpCounts[iCh], totalDownCounts[iCh], Asym[iCh], dAsym[iCh]);
-
-      // Luminosity Ratio
-      //LumiRatio[iCh] = float(totalUpCounts[iCh]) / float(totalDownCounts[iCh]);
-
       // Calculate raw asymmetries for the iCh-th strip
       if ( totalUpCounts[iCh] && totalDownCounts[iCh] && nCountsUp[iCh] + nCountsDown[iCh] ) {
 
@@ -2027,18 +1837,10 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
          Asym[iCh]  = chAsym.first;
          dAsym[iCh] = chAsym.second;
 
-         //printf("YYY: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-         //       iCh, totalUpCounts[iCh], totalDownCounts[iCh],
-         //       Asym[iCh], dAsym[iCh]);
       } else {
           Asym[iCh] = 0;
          dAsym[iCh] = 1e6;
       }
-
-      // Reduced Order Luminosity for histograms. Histogram scale is given in float, not double.
-      // Cannot accomomdate large entry.
-      //LumiSum_r[0][iCh] = totalUpCounts[iCh]/1e3;
-      //LumiSum_r[1][iCh] = totalDownCounts[iCh]/1e3;
 
       // Since this is the recoil asymmetries, flip the sign of asymmetry
       Asym[iCh] *= -1;
@@ -2062,7 +1864,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       dPt[iCh] = fabs(rawPolErr[iCh] / sin(-phit[iCh]));
 
       // ds temp fix: assign huge errors to disabled strips
-      //if ( gMeasInfo->IsDisabledChannel(iCh+1) )    // || gMeasInfo->IsHamaChannel(iCh+1) ) 
       if ( gAsymRoot->fEventConfig->fCalibrator->GetFitStatus(iCh+1) != kDLFIT_OK ||
            gMeasInfo->IsDisabledChannel(iCh+1) )
       {
@@ -2073,10 +1874,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
          dAsymPhiCorr[iCh] = 1e6;
 
       }
-
-      //printf("ZZZ: %3d, %8.5f, %10ld, %10ld, %10d, %10d, %8.5e, %8.5e\n",
-      //       iCh, aveA_N, totalUpCounts[iCh], totalDownCounts[iCh],
-      //       Asym[iCh], dAsym[iCh]);
    }
 
    // printing routine
@@ -2103,11 +1900,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
    gAnaMeasResult->P[0] = polar;
    gAnaMeasResult->P[1] = polarErr;
 
-   //deprecated:
-   //utils::CalcWeightedMean((Double_t*) AsymPhiCorr, (Double_t*) dAsymPhiCorr, N_SILICON_CHANNELS, gAnaMeasResult->fAvrgPMAsym.first, gAnaMeasResult->fAvrgPMAsym.second);
-
-   //printf("P0, P1: %8.5f %8.5f\n", gAnaMeasResult->P[0], gAnaMeasResult->P[1]);
-
    // Fit polarization vs phi distributions
    if (Mode < 100) { // Fit everything other than scan data
 
@@ -2118,8 +1910,6 @@ void AsymCalculator::CalcStripAsymmetry(int Mode)
       //gAsymCalculator.ScanSinPhiFit(gAnaMeasResult->P[0], rawPol, rawPolErr,
       //   gAnaMeasResult->sinphi[Mode].P, gAnaMeasResult->sinphi[Mode].dPhi, gAnaMeasResult->sinphi[Mode].chi2); // sinphi is filled here
    }
-
-   //gAsymCalculator.SinPhiFit(gAnaMeasResult->P[0], gAnaMeasResult->sinphi.P, gAnaMeasResult->sinphi.dPhi, gAnaMeasResult->sinphi.chi2);
 }
 
 
@@ -2266,9 +2056,6 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
 
    for (int i=0; i<N_SILICON_CHANNELS; i++) dx[i] = 0;
 
-   // define TH2D sin(phi) histogram
-   //Asymmetry->cd();
-
    float min, max;
    float prefix = 0.3;
    float margin = 0.3;
@@ -2303,11 +2090,8 @@ void AsymCalculator::SinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolErr,
    tg->Fit("sin_phi", "R");
    tg->SetName("tg");
 
-
    // Dump TGraphError obect to TH2D histogram
    asym_sinphi_fit->GetListOfFunctions()->Add(tg, "p");
-
-   //delete tg;
 
    // Get fitting results
    P[0]     = func->GetParameter(0);
@@ -2344,7 +2128,6 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    char htitle[100];
    sprintf(htitle, "Strip asymmetry fit: %s", gMeasInfo->GetRunName().c_str());
 
-   //scan_asym_sinphi_fit = new TH2F("scan_asym_sinphi_fit",htitle, 100, 0, 2*M_PI, 100, min, max);
    scan_asym_sinphi_fit = (TH2F*) gAsymRoot->fHists->d["run"]->o["scan_asym_sinphi_fit"];
    scan_asym_sinphi_fit->SetName("scan_asym_sinphi_fit");
    scan_asym_sinphi_fit->SetTitle(htitle);
@@ -2361,14 +2144,7 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    func->SetParNames("P", "#phi");
    func->SetParameter(0, p0);
    func->SetParameter(1, 0);
-   //func->SetParLimits(0, -1, 1);
    func->SetParLimits(0, 0, 1);
-   //func->SetParLimits(1, gAnaMeasResult->sinphi[0].dPhi[0], gAnaMeasResult->sinphi[0].dPhi[0]);
-   //func->SetParLimits(1,-M_PI, M_PI);
-   // Keeping phi fixed - changed by Vipuli April 2008
-   //printf("************************************ \n");
-   //printf("keeping phi fixed at = %12.3e \n", gAnaMeasResult->sinphi[0].dPhi[0]);
-   //printf("************************************ \n");
    func->FixParameter(1, gAnaMeasResult->sinphi[0].dPhi[0]);
 
    // define TGraphError obect for fitting
@@ -2406,129 +2182,3 @@ void AsymCalculator::ScanSinPhiFit(Float_t p0, Float_t *rawPol, Float_t *rawPolE
    scan_asym_sinphi_fit->GetListOfFunctions()->Add(txt);
    delete txt;
 }
-
-
-
-
-
-
-/*       following 3 subroutines are unsuccessful MINUIT sin(phi) fit routines.
-
-//
-// Class name  :
-// Method name : fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
-//
-// Description : Function returns chi2 for MINUIT
-// Input       :
-// Return      : chi2
-//
-void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
-{
-   AsymCalculator asymfit;
-   //calculate chisquare
-   Float_t chisq = 0;
-   Float_t delta;
-   for (Int_t i=0;i<N_SILICON_CHANNELS; i++) {
-     if (rawPolErr[i]) delta  = (rawPol[i]-asymfit.sinx(phi[i],par))/rawPolErr[i];
-     chisq += delta*delta;
-   }
-
-   FitChi2 = chisq;
-   f = chisq;
-}
-
-
-// Description : sin(x) fit. Amplitude and phase as parameters
-// Input       : Float_t x, Double_t *par
-// Return      : par[0]*sin(x+par[1])
-//
-Float_t AsymCalculator::sinx(Float_t x, Double_t *par)
-{
-   Float_t value=par[0]*sin(-x+par[1]);
-   return value;
-}
-
-
-// Description : Master Routine for MINUIT call.
-// Input       : Float_t p0 (1-par Polarization for par[0] initialization)
-// Return      : Float_t *P, Float_t *phi, Float_t &chi2dof
-//
-void AsymCalculator::SinPhiFit(Float_t p0, Float_t *P, Float_t *phi, Float_t &chi2dof)
-{
-  const Int_t NPAR=2;
-  TMinuit *gMinuit = new TMinuit(NPAR);
-  gMinuit->SetFCN(fcn);
-
-   Double_t arglist[10];
-   Int_t ierflg = 0;
-
-   // By default, get rid of MINUIT busy messages
-   if (!Flag.VERBOSE) {
-     arglist[0]=-1;
-     gMinuit->mnexcm("SET PRINT", arglist, 1, ierflg);
-     arglist[0]=1;
-     gMinuit->mnexcm("SET NOWarnings", arglist, 1, ierflg);
-   }
-
-// Initiarize par[0]=p0, par[1]=0
-   static Double_t vstart[2] = {p0, 0.};
-   static Double_t step[4] = {0.01 , 0.01};
-   gMinuit->mnparm(0, "P",   vstart[0], step[0], 0,0,ierflg);
-   gMinuit->mnparm(1, "phi", vstart[1], step[1], 0,0,ierflg);
-
-// Now ready for minimization step
-   arglist[0] = 1000; // call at least 1000 function calls
-   arglist[1] = 0.01;  // tolerance
-   gMinuit->mnexcm("MIGRAD", arglist ,2,ierflg);
-   gMinuit->mnexcm("MINOS", arglist ,2,ierflg);
-
-// Print results
-   Double_t amin,edm,errdef;
-   Int_t nvpar,nparx,icstat;
-   gMinuit->mnstat(amin,edm,errdef,nvpar,nparx,icstat);
-   //   if (!Flag.VERBOSE)
-   gMinuit->mnprin(3,amin);
-
-   // Get Fitting Results
-   Double_t val,eval,bnd1,bnd2;
-   Int_t ivarbl;
-   TString CHNAM;
-   gMinuit->mnpout(0,CHNAM,val,eval,bnd1,bnd2,ivarbl);
-   P[0]=(Float_t)val;
-   //   P[1]=(Float_t)eval;
-   P[1]=(Float_t)GetFittingErrors(gMinuit, 0);
-   gMinuit->mnpout(1,CHNAM,val,eval,bnd1,bnd2,ivarbl);
-   phi[0]=(Float_t)val;
-   //   phi[1]=(Float_t)eval;
-   phi[1]=(Float_t)GetFittingErrors(gMinuit, 1);
-
-   Int_t NDATA=0;
-   for (Int_t i=0;i<N_SILICON_CHANNELS; i++) NDATA += rawPolErr[i] ? 1 : 0;
-   chi2dof = FitChi2/Float_t(NDATA-NPAR);
-
-   return;
-}
-
-
-// Description : Retrun parameter errors for parameter NUM
-// Input       : TMinuit *gMinuit, Int_t NUM
-// Return      : error
-//
-Double_t AsymCalculator::GetFittingErrors(TMinuit *gMinuit, Int_t NUM)
-{
-  Double_t error;
-  Double_t eplus, eminus, eparab, globcc;
-  gMinuit->mnerrs(NUM,eplus,eminus,eparab,globcc);
-
-  Int_t NoAverage = fabs(eplus)*fabs(eminus) ? 0 : 1;
-  if (NoAverage) {
-    error = eplus ? fabs(eplus) : fabs(eminus);
-  }else{
-    error =(fabs(eplus)+fabs(eminus))/2.;
-  }
-
-  cout << eplus << " " << eminus << " " << eparab << " " << globcc << " " << error << endl;
-
-  return error;
-}
-*/

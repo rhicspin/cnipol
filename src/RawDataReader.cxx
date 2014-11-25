@@ -390,7 +390,16 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
    }
 
    // Post processing
-   if ( gAsymAnaInfo->HasNormalBit() ) end_process(mseMeasInfo);
+   if ( gAsymAnaInfo->HasNormalBit() )
+   {
+      AsymCalculator::CalcStatistics();
+
+      // Energy Yeild Weighted Average Analyzing Power
+      gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
+
+      AsymCalculator::PrintWarning();
+      AsymCalculator::PrintRunResults();
+   }
 
    printf("End of data stream \n");
    printf("End time: %s\n", ctime(&gMeasInfo->fStopTime));
