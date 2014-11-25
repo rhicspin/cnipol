@@ -64,7 +64,6 @@ ADD_LIBRARY(
 	DeadLayerCalibratorEDepend.cxx
 	DrawObjContainer.cxx
 	EventConfig.cxx
-	Kinema.cxx
 	MAlphaAnaInfo.cxx
 	MAsymAnaInfo.cxx
 	MAsymFillHists.cxx

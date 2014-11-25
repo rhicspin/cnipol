@@ -1,7 +1,7 @@
 #include "ChannelEvent.h"
 
 #include "MeasInfo.h"
-#include "Kinema.h"
+#include "cnipol_toolkit.h"
 
 
 ClassImp(ChannelEvent)
@@ -46,7 +46,7 @@ Float_t ChannelEvent::GetKinEnergyAEDepend()
    UChar_t chId    = GetChannelId();
    Float_t emeas   = GetEnergyA();
    Float_t dlwidth = fEventConfig->fCalibrator->fChannelCalibs[chId].fDLWidth;
-   return  ekin(emeas, dlwidth);
+   return  cnipol_toolkit::ekin(emeas, dlwidth);
 }
 
 
@@ -55,7 +55,7 @@ Float_t ChannelEvent::GetKinEnergyAEDependAverage()
 {
    Float_t emeas   = GetEnergyA();
    Float_t dlwidth = fEventConfig->fCalibrator->fChannelCalibs[0].fDLWidth;
-   return  ekin(emeas, dlwidth);
+   return  cnipol_toolkit::ekin(emeas, dlwidth);
 }
 
 
@@ -84,7 +84,7 @@ Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
 {
    Float_t emeas   = GetEnergyA();
    Float_t dlwidth = fEventConfig->fCalibrator->fChannelCalibs[0].fDLWidth;
-   return  ekin(emeas, dlwidth);
+   return  cnipol_toolkit::ekin(emeas, dlwidth);
 }
 
 
@@ -92,7 +92,7 @@ Float_t ChannelEvent::GetKinEnergyAEstimateEDepend()
 Float_t ChannelEvent::GetFunnyEnergyA()
 {
    float   emeas  = GetEnergyA();
-   float   funnyE = ekin(emeas, 60);
+   float   funnyE = cnipol_toolkit::ekin(emeas, 60);
    return  funnyE;
 }
 
