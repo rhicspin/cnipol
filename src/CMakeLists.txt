@@ -32,7 +32,6 @@ ADD_LIBRARY(
 	AsymDbSql.cxx
 	AsymErrorDetector.cxx
 	AsymOnline.cxx
-	AsymProcess.cxx
 	AsymRecover.cxx
 	AsymRoot.cxx
 	BeamBunch.cxx

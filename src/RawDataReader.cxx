@@ -7,7 +7,6 @@
 #include "TRandom.h"
 
 #include "AsymCalculator.h"
-#include "AsymProcess.h"
 #include "AsymRecover.h"
 #include "AsymRoot.h"
 #include "AsymAnaInfo.h"
