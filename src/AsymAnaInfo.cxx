@@ -100,7 +100,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int          option_index = 0;
    char         cfile[32];
-   char         *ptr;
 
    static struct option long_options[] = {
       {"log",                 optional_argument,   0,   'l'},

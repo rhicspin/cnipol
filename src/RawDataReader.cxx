@@ -559,7 +559,7 @@ static void ProcessRecordLongPassOne(const char *mSeek, RecordHeaderStruct *mHea
             atEmu.tmax = 0;
 
             int amp = 0;
-            for(int i = 0; i < wfLen; i++)
+            for(unsigned i = 0; i < wfLen; i++)
             {
                int val = event->d[i] - V10BASELINE;
                if (val > amp)
