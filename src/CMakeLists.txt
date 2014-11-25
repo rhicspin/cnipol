@@ -90,6 +90,7 @@ ADD_LIBRARY(
 	TargetUId.cxx
 	revision-export.cxx
 	Dict.cxx
+	cnipol_toolkit.cxx
 	)
 
 TARGET_LINK_LIBRARIES(
