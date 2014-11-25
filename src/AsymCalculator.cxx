@@ -44,28 +44,6 @@ DetLRSet AsymCalculator::X45BDets(arrX45BDets, arrX45BDets+1);
 DetLRSet AsymCalculator::Y45Dets(arrY45Dets, arrY45Dets+2);
 
 
-// End of data process
-void end_process(MseMeasInfoX &run)
-{
-   gSystem->Info("end_process", "Called");
-
-   // Calculate Statistics
-   AsymCalculator::CalcStatistics();
-
-   // Energy Yeild Weighted Average Analyzing Power
-   gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
-
-   // Draw polarization vs target position
-   AsymCalculator::DrawPlotvsTar();
-
-   // Run Information
-   AsymCalculator::PrintWarning();
-   AsymCalculator::PrintRunResults();
-
-   gSystem->Info("end_process", "End");
-}
-
-
 // Method name : CompleteHistograms()
 // Description : Complete dressing histograms
 void CompleteHistogram()

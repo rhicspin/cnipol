@@ -24,8 +24,6 @@
 
 class MseMeasInfoX;
 
-//  Main End Process Routine
-void end_process(MseMeasInfoX &run);
 void CompleteHistogram();
 
 
