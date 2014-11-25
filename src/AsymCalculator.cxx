@@ -50,17 +50,17 @@ void end_process(MseMeasInfoX &run)
    gSystem->Info("end_process", "Called");
 
    // Calculate Statistics
-   CalcStatistics();
+   AsymCalculator::CalcStatistics();
 
    // Energy Yeild Weighted Average Analyzing Power
    gAnaMeasResult->A_N[1] = AsymCalculator::WeightAnalyzingPower(10050); // banana cut in energy spectra
 
    // Draw polarization vs target position
-   DrawPlotvsTar();
+   AsymCalculator::DrawPlotvsTar();
 
    // Run Information
-   PrintWarning();
-   PrintRunResults();
+   AsymCalculator::PrintWarning();
+   AsymCalculator::PrintRunResults();
 
    gSystem->Info("end_process", "End");
 }
@@ -660,7 +660,7 @@ void AsymCalculator::CumulativeAsymmetry()
 
 
 // Description : Calculate Statistics
-void CalcStatistics()
+void AsymCalculator::CalcStatistics()
 {
    // Integrate good carbon events in banana
    cntr.good_event = 0;
@@ -687,7 +687,7 @@ void CalcStatistics()
 
 
 // Description : print warnings
-void PrintWarning()
+void AsymCalculator::PrintWarning()
 {
    printf("-----------------------------------------------------------------------------------------\n");
    printf("------------------------------  Error Detector Results ----------------------------------\n");
@@ -739,7 +739,7 @@ void PrintWarning()
 // Method name : PrintRunResults()
 //
 // Description : print analysis results and run infomation
-void PrintRunResults()
+void AsymCalculator::PrintRunResults()
 {
    printf("-----------------------------------------------------------------------------------------\n");
    printf("-----------------------------  Operation Messages  --------------------------------------\n");
@@ -798,7 +798,7 @@ void PrintRunResults()
 
 
 /** */
-void DrawPlotvsTar()
+void AsymCalculator::DrawPlotvsTar()
 {
    Double_t polvstar[nTgtIndex+1], epolvstar[nTgtIndex+1], posvstar[nTgtIndex+1];
 

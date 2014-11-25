@@ -88,6 +88,10 @@ public:
    static ValErrPair CalcAsym(Double_t A, Double_t B, Double_t totalA, Double_t totalB);
    static ValErrPair CalcAsymSqrtFormula(Double_t A, Double_t B, Double_t C, Double_t D);
    static void       sqass(Double_t A, Double_t B, Double_t C, Double_t D, Double_t &asym, Double_t &asymErr);
+   static void       CalcStatistics();
+   static void       PrintWarning();
+   static void       PrintRunResults();
+   static void       DrawPlotvsTar();
 };
 
 
@@ -97,12 +101,6 @@ void FillAsymmetryHistgram(std::string mode, int sign, float *A, float *dA);
 void  calcBunchAsymmetryAverage();
 void  calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
 float TshiftFinder(int, int);
-
-// Calculate Statistics adn  Result Printing
-void  CalcStatistics();
-void  PrintWarning();
-void  PrintRunResults();
-void  DrawPlotvsTar();
 
 // Profile Error
 float ProfileError(float x);
