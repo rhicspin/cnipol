@@ -1,8 +1,10 @@
 #!/bin/bash
 
-if [ -n "$1" ]; then RUN_ID=$1; else RUN_ID="13"; fi
+#if [ -n "$1" ]; then RUN_ID=$1; else RUN_ID="13"; fi
 
-RUN_ID=$(printf '%02d' $RUN_ID)
+#RUN_ID=$(printf '%02d' $RUN_ID)
+
+RUN_ID=13
 
 echo "Setting environment variables for RUN_ID=$RUN_ID:"
 
@@ -22,9 +24,11 @@ export LD_LIBRARY_PATH+=:$MYSQL_LIB_DIR
 export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 
 # CNIPOL
-export CNIPOL_DIR=~/cnipol
+export CNIPOL_DIR=~/pCpol/cnipol
 export CNIPOL_DATA_DIR=/eicdata/eic0005/run$RUN_ID/data
-export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root
+#export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root_rp
+export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root_Ibias
+#export CNIPOL_RESULTS_DIR=/star/u/gdwebb/pCpol/polroot
 
 export PATH+=:$CNIPOL_DIR/build
 export LD_LIBRARY_PATH+=:$CNIPOL_DIR/build
