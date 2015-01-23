@@ -1,3 +1,0 @@
-Cmcamac driver access functions. 
-Standard CAMAC functions and FASTCAMAC chains are supported.
-See the include file for more information.

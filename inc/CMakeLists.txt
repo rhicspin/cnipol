@@ -47,6 +47,6 @@ SET(
 	${CMAKE_CURRENT_SOURCE_DIR}/MeasInfo.h
 	${CMAKE_CURRENT_SOURCE_DIR}/RunQA.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Target.h
-	${CMAKE_CURRENT_SOURCE_DIR}/../online/include/rpoldata.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../contrib/polarim-online/include/rpoldata.h
 	PARENT_SCOPE
 	)

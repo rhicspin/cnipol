@@ -1,4 +1,0 @@
-QUAD FASTCAMAC WFD test utility. 
-Run : cmcmtest <station number> <crate number>
-Utility tests memory and lookup tables.
-More information is provided in the internal help.

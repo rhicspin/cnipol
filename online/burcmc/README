@@ -1,4 +1,0 @@
-Manual CAMAC command tool for CMC100 FASTCAMAC crate controller using cmcamac driver
-Run: burcmc <crate number>
-Standard set of CAMAC commands is available. 
-See help inside the code for more information.

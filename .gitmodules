@@ -8,3 +8,6 @@
 	path = contrib/mysqlpp
 	url = git://github.com/veprbl/mysqlpp.git
 	branch = cmake
+[submodule "contrib/polarim-online"]
+	path = contrib/polarim-online
+	url = https://github.com/rhicspin/polarim-online.git
