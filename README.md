@@ -200,7 +200,7 @@ packages used for this purpose are:
 		<td>
 			<p>Code for the H-jet polarimeter data analysis</p>
 			<p>Supported by the RHIC Spin group. As many other analyses
-			it's reader code is based on the code found in [rdatautil.c](https://github.com/rhicspin/polarim-online/blob/master/rhic2hbook/rdatautil.cpp).</p>
+			it's reader code is based on the code found in <a href="https://github.com/rhicspin/polarim-online/blob/master/rhic2hbook/rdatautil.cpp">rdatautil.c</a>.</p>
 		</td>
 	</tr>
 </table>
