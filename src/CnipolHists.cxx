@@ -5,6 +5,7 @@
 #include "TF1.h"
 #include "TFitResultPtr.h"
 #include "THStack.h"
+#include "TProfile.h"
 
 #include "AnaInfo.h"
 #include "MeasInfo.h"
@@ -139,6 +140,11 @@ void CnipolHists::BookHists()
    hist->SetTitle("; Deposited Energy, keV; Time Diff, ns;");
    o[shName] = hist;
 
+   shName = "hLongiTimeDiffVsEnergyA_pfx";
+   hist = new TProfile(shName.c_str(), shName.c_str(), 40, 200, 800, -20, 20);
+   hist->SetTitle("; Deposited Energy, keV; Time Diff, ns;");
+   o[shName] = hist;
+
    shName = "hLongiTimeDiff";
    hist = new TH1D(shName.c_str(), shName.c_str(), 40, -20, 20);
    hist->SetOption("hist");
@@ -241,6 +247,11 @@ void CnipolHists::BookHists()
       shName = "hLongiTimeDiffVsEnergyA_ch" + sChId;
       oc->o[shName] = new TH2I(shName.c_str(), shName.c_str(), 40, 200, 800, 40, -20, 20);
       ((TH1*) oc->o[shName])->SetOption("colz NOIMG");
+      ((TH1*) oc->o[shName])->SetTitle(";Deposited Energy, keV;Time Diff, ns;");
+
+      shName = "hLongiTimeDiffVsEnergyA_pfx_ch" + sChId;
+      oc->o[shName] = new TProfile(shName.c_str(), shName.c_str(), 40, 200, 800, -20, 20);
+      ((TH1*) oc->o[shName])->SetOption("NOIMG");
       ((TH1*) oc->o[shName])->SetTitle(";Deposited Energy, keV;Time Diff, ns;");
 
       shName = "hLongiTimeDiff_ch" + sChId;
@@ -462,6 +473,11 @@ void CnipolHists::FillDerived()
       utils::CopyBinContentError(hProjTmp, hKinEnergyA_ch);
       hKinEnergyA->Add(hKinEnergyA_ch);
 
+      // longitudinal hists
+      TH1* hLongiTimeDiffVsEnergyA_pfx_ch = (TH1*) oc->o["hLongiTimeDiffVsEnergyA_pfx_ch" + sChId];
+      TProfile *hProfTmp = hLongiTimeDiffVsEnergyA_ch->ProfileX();
+      hLongiTimeDiffVsEnergyA_pfx_ch->Add(hProfTmp);
+
       TH1* hLongiTimeDiff_ch = (TH1*) oc->o["hLongiTimeDiff_ch" + sChId];
       hProjTmp = hLongiTimeDiffVsEnergyA_ch->ProjectionY();
       hLongiTimeDiff_ch->Add(hProjTmp);
@@ -470,6 +486,11 @@ void CnipolHists::FillDerived()
 
       hLongiTimeDiff->Add(hLongiTimeDiff_ch);
    }
+
+   TProfile* hLongiTimeDiffVsEnergyA_pfx = (TProfile*) o["hLongiTimeDiffVsEnergyA_pfx"];
+
+   TProfile *hProfTmp = hLongiTimeDiffVsEnergyA->ProfileX();
+   hLongiTimeDiffVsEnergyA_pfx->Add(hProfTmp);
 }
 
 
