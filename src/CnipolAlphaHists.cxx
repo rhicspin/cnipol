@@ -327,57 +327,11 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    Int_t  maxBinI  = ((TH1F*) o["hIntgrl"])->GetMaximumBin();
    Double_t xminI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmin();
    Double_t xmaxI  = ((TH1F*) o["hIntgrl"])->GetXaxis()->GetXmax();
-   //Int_t tmaxBinI  = 0;
-   Int_t tmaxBinA  = 0;
-   Double_t valueA = 0;
-   Int_t maxBinAa  = 0;
-
-   //Int_t maxBin = 0;
 
    xminI = maxBinI - 50 < xminI ? xminI : maxBinI - 50;
    xmaxI = maxBinI + 50 > xmaxI ? xmaxI : maxBinI + 50;
 
    ((TH1F*) o["hIntgrl"])->SetAxisRange(xminI, xmaxI);
-
-   //Info("PostFillPassOne", "xminA, xmaxA, xminI, xmaxI: %f, %f, %f, %f", xminA, xmaxA, xminI, xmaxI);
-
-   string sChId("  ");
-
-   for (int i = 1; i <= NSTRIP; i++)
-   {
-      sprintf(&sChId[0], "%02d", i);
-
-      maxBinA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetMaximumBin();
-      maxBinI = ((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->GetMaximumBin();
-
-      valueA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetBinContent(maxBinA);
-
-      for (int j = 0; j <= 255; j++) {
-         tmaxBinA = ((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->GetBinContent(j);
-         if (tmaxBinA >= (valueA * .95)) maxBinAa = j;
-      }
-
-      maxBinA = maxBinAa;
-
-      // if (i == 9 || i == 10) {
-      //     for (int j = 0; j <= 255; j++) 
-      //      tmaxBinI = ((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->GetBinContent(j);
-      //    if (tmaxBinI >= maxBinI) maxBinI = tmaxBinI;
-      // }
-
-      //xmin   = ((TH1F*) d["channel"+sChId].o["hAmpltd_ch"+sChId])->GetXaxis()->GetXmin();
-      //xmax   = ((TH1F*) d["channel"+sChId].o["hAmpltd_ch"+sChId])->GetXaxis()->GetXmax();
-      //xmin   = maxBin - 50 < xmin ? xmin : maxBin - 50;
-      //xmax   = maxBin + 50 > xmax  ? xmax : maxBin + 50;
-
-      //xminA = maxBinA - 50;
-      //xmaxA = maxBinA + 50;
-      //xminI = maxBinI - 50;
-      //xmaxI = maxBinI + 50;
-
-      //((TH1F*) d["channel" + sChId]->o["hAmpltd_ch" + sChId])->SetAxisRange(xminA, xmaxA);
-      //((TH1F*) d["channel" + sChId]->o["hIntgrl_ch" + sChId])->SetAxisRange(xminI, xmaxI);
-   }
 
    // Update axis range
    utils::UpdateLimits((TH1*) o["hAmGain"]);
