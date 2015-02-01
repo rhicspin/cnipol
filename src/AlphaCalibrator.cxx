@@ -58,11 +58,13 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          continue;
       }
 
-      fitres = Calibrate(htemp, fit_gadolinium);
+      bool gadolinium_found;
+      gadolinium_found = false;
+      fitres = Calibrate(htemp, fit_gadolinium, &gadolinium_found);
 
       if (fitres) {
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "");
-         if (fit_gadolinium) {
+         if (fit_gadolinium && gadolinium_found) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "");
             AmGdPlot(chCalib, c, i, sCh);
          }
@@ -76,11 +78,12 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
          continue;
       }
 
-      fitres = Calibrate(htemp, fit_gadolinium);
+      gadolinium_found = false;
+      fitres = Calibrate(htemp, fit_gadolinium, &gadolinium_found);
 
       if (fitres.Get()) {
          chCalib->fAmInt = CoefExtract(fitres, kAmericium, c, i, "Int");
-         if (fit_gadolinium) {
+         if (fit_gadolinium && gadolinium_found) {
             chCalib->fGdInt = CoefExtract(fitres, kGadolinium, c, i, "Int");
          }
       } else {
@@ -193,11 +196,11 @@ void AlphaCalibrator::AmGdPlot(
 
 
 /** */
-TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
+TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium, bool *gadolinium_found)
 {
+   *gadolinium_found = false;
    TF1 f_amer("f_amer", "gaus");
    TF1 f_two_peak("fitfunc", "gaus(0) + gaus(3)");
-   TFitResultPtr fitres = 0;
 
    f_amer.SetLineColor(kRed);
    f_amer.SetLineWidth(3);
@@ -217,13 +220,13 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
 
    // First fit is to find americium peak
    // Will start from guessing initial params
-   int   mbin_amer = utils::FindMaximumBinEx(h, 1);
-   float norm_amer = h->GetBinContent(mbin_amer);
+   float norm_amer;
+   int   mbin_amer = utils::FindMaximumBinEx(h, 1, &norm_amer);
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
    if (norm_amer <= 5) {
-      Error("Calibrate", "Peaks are too small in histogram %s. Skipped", h->GetName());
+      Error("Calibrate", "Am peak is too small in histogram %s. Skipping channel.", h->GetName());
       return 0;
    }
 
@@ -232,9 +235,11 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
    f_amer.SetParLimits(1, xmin, xmax); // mean
    f_amer.SetParLimits(2, 0.1, 3 * expectedSigma); // sigma
 
-   fitres = h->Fit(&f_amer, fit_gadolinium ? "BMSN" : "BMS"); // B: use limits, M: improve fit, S: return fitres, N: do not store graphic function
+   TFitResultPtr am_fitres = h->Fit(&f_amer, "BMS"); // B: use limits, M: improve fit, S: return fitres
 
-   if (fit_gadolinium) {
+   if (!fit_gadolinium) {
+      return am_fitres;
+   } else {
       Double_t par[6]; // params for more general fit
       f_amer.GetParameters(&par[0]); // copy found params there
 
@@ -254,7 +259,8 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
 
       if (norm_gad <= 3)
       {
-         return 0;
+         Error("Calibrate", "Gd peak is too small in histogram %s. Using only Am peak fit.", h->GetName());
+         return am_fitres;
       }
 
       par[3] = norm_gad;
@@ -271,10 +277,17 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium)
       f_two_peak.SetParLimits(1, mean_amer - sigma_amer, mean_amer + sigma_amer); // mean
       f_two_peak.SetParLimits(2, 0.8 * sigma_amer, 1.2 * sigma_amer); // sigma
 
-      fitres = h->Fit(&f_two_peak, "BMS"); // B: use limits, M: improve fit, S: return fitres
-   }
+      TFitResultPtr gd_fitres = h->Fit(&f_two_peak, "BMS"); // B: use limits, M: improve fit, S: return fitres
 
-   return fitres;
+      if (!gd_fitres)
+      {
+         Error("Calibrate", "Two peak fit failed at %s. Using only Am peak.", h->GetName());
+         return am_fitres;
+      }
+
+      *gadolinium_found = true;
+      return gd_fitres;
+   }
 }
 
 

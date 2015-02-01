@@ -41,7 +41,7 @@ private:
       const ChannelCalib *chCalib, DrawObjContainer *c, int iCh, const std::string &sCh
    );
    Int_t         GetMaximumBinEx(TH1F *h, int blur_radius);
-   TFitResultPtr Calibrate(TH1F *h, bool fit_gadolinium);
+   TFitResultPtr Calibrate(TH1F *h, bool fit_gadolinium, bool *gadolinium_found);
 
 public:
 
