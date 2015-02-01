@@ -1,6 +1,6 @@
 [submodule "contrib/root-helper"]
 	path = contrib/root-helper
-	url = git://github.com/plexoos/root-helper.git
+	url = git://github.com/rhicspin/root-helper.git
 [submodule "contrib/opencdev"]
 	path = contrib/opencdev
 	url = git://github.com/rhicspin/opencdev.git
