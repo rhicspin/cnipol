@@ -29,16 +29,16 @@ include("head.html");
 <table class="generic_dl_0">
 
 <tr>
-<th><a href="http://www.phy.bnl.gov/cnipol/summary/">Summary&nbsp;Plots</a>
+<th><a href="/cnipol/summary/">Summary&nbsp;Plots</a>
 <td>A collection of plots to monitor the performance of the RHIC polarimeters for different time periods
 
 <tr>
-<th><a href="http://www.phy.bnl.gov/cnipol/fills/">Fill&nbsp;Results</a>
+<th><a href="/cnipol/fills/">Fill&nbsp;Results</a>
 <td>Polarization of RHIC beams for the experiments. Currently only Run11 fills
 are listed but we plan to update the database with Run 12 and even Run 9 results
 
 <tr>
-<th><a href="http://www.phy.bnl.gov/cnipol/rundb/">pC&nbsp;Measurements</a>
+<th><a href="/cnipol/rundb/">pC&nbsp;Measurements</a>
 <td>
 <p>Detailed information on every polarization measurement carried
 by the RHIC p-Carbon polarimeters
