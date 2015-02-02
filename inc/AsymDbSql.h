@@ -48,6 +48,10 @@ public:
    void                       UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill);
    void                       UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill);
    void                       UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfill);
+
+private:
+
+   const char*                GetSetting(const char *key);
 };
 
 #endif

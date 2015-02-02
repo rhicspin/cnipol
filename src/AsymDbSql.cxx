@@ -1,6 +1,9 @@
 
 #include <sstream>
 
+#include <TString.h>
+#include <TSystem.h>
+
 #include "AsymDbSql.h"
 
 
@@ -28,6 +31,19 @@ AsymDbSql::~AsymDbSql()
 
 
 /** */
+const char* AsymDbSql::GetSetting(const char *key)
+{
+   const char *value = gSystem->Getenv(key);
+   if (!key)
+   {
+      throw Form("Failed to determine MySQL settings."
+                 "Please define '%s' shell enviroment variable.", key);
+   }
+   return value;
+}
+
+
+/** */
 void AsymDbSql::OpenConnection()
 {
    // connection already established
@@ -35,7 +51,12 @@ void AsymDbSql::OpenConnection()
 
    try {
       // Establish the connection to the database server.
-      fConnection = new Connection("cnipol", "pc2pc.phy.bnl.gov", "cnipol", "(n!P0l", 3306);
+      const char *db_name =     GetSetting("CNIPOL_DB_NAME");
+      const char *db_host =     GetSetting("CNIPOL_DB_HOST");
+      const char *db_user =     GetSetting("CNIPOL_DB_USER");
+      const char *db_password = GetSetting("CNIPOL_DB_PASSWORD");
+
+      fConnection = new Connection(db_name, db_host, db_user, db_password, 3306);
    } catch (const BadQuery& er) {
       // Handle any query errors
       cerr << "Query error: " << er.what() << endl;
@@ -46,6 +67,9 @@ void AsymDbSql::OpenConnection()
    } catch (const Exception& er) {
       // Catch-all for any other MySQL++ exceptions
       cerr << "Error: " << er.what() << endl;
+      fConnection = 0;
+   } catch (const char *msg) {
+      cerr << msg << endl;
       fConnection = 0;
    }
 }
