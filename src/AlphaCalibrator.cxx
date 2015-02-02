@@ -225,7 +225,8 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium, bool *gad
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
-   if (norm_amer <= 5) {
+   // N.B.: This cut is on height of Am peak blured by FindMaximumBinEx
+   if (norm_amer <= 4) {
       Error("Calibrate", "Am peak is too small in histogram %s. Skipping channel.", h->GetName());
       return 0;
    }
