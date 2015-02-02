@@ -64,12 +64,6 @@ include("../head.html");
 
 </table>
 
-<?
-//$gChanId = sprintf("%02d", $gChanId);
-//$gP->dir .= "channel$gChanId/";
-?>
-
-
 <!--
 <h1 id="summary" class="count">Summary</h1>
 -->
@@ -109,7 +103,7 @@ include("../head.html");
 <!-- {{{ -->
 <div id="div:raw" class="section">
 
-<?
+<?php
 $gChanId = sprintf("%02d", $gChanId);
 //$origPHDir = $gP->dir;
 //$gP->dir = "$origPHDir/raw/channel$gChanId/";
@@ -145,7 +139,7 @@ $gChanId = sprintf("%02d", $gChanId);
 <!-- {{{ -->
 <div id="div:kinematics" class="section">
 
-<?
+<?php
 $gChanId = sprintf("%02d", $gChanId);
 //$origPHDir = $gP->dir;
 //$gP->dir = "$origPHDir/raw/channel$gChanId/";
@@ -170,13 +164,6 @@ $gChanId = sprintf("%02d", $gChanId);
 <h1 id="other" class="count">Other</h1>
 <!-- {{{ -->
 <div id="div:other" class="section">
-
-<?
-//$gP->dir = "$origPHDir/std/channel$gChanId/";
-//$gChanId = sprintf("%02d", $gChanId);
-//$origPHDir = $gP->dir;
-//$gP->dir = "$origPHDir/preproc/channel$gChanId/";
-?>
 
 <p>
 <table class="simple00 cntr" cellspacing=15 align=center>

@@ -186,8 +186,8 @@ $asymVersion = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVersion
    (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
    <td>
    <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
-   <? if ($rc['fThinout'] > 1): ?>(every <?=ordinal_suffix($rc['fThinout'])?> event)
-   <? endif; ?>
+   <?php if ($rc['fThinout'] > 1): ?>(every <?=ordinal_suffix($rc['fThinout'])?> event)
+   <?php endif; ?>
    <td>
    <b>Energy Calibration Run:</b> <a href="./?runid=<?=$rc['alpha_calib_run_name']?>"><?=$rc['alpha_calib_run_name']?></a>
    <td>

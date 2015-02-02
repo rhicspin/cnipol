@@ -62,7 +62,7 @@ $flattopEnergy = sprintf("%03d", 255);
 <!-- {{{ -->
 <div id="div:hjet_polar" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -86,7 +86,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 </div>
@@ -98,7 +98,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <!-- {{{ -->
 <div id="div:hjet_an" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -121,7 +121,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 </div>
@@ -143,7 +143,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 <!-- {{{ -->
 <div id="div:pcarbon_unscaled" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    //if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -176,7 +176,7 @@ polarimeters. <b>The values are unscaled</b>. The analyzing power (P =
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -187,7 +187,7 @@ polarimeters. <b>The values are unscaled</b>. The analyzing power (P =
 <!-- {{{ -->
 <div id="div:pcarbon_hjet_ratio" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -218,7 +218,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 </div>
@@ -229,7 +229,7 @@ foreach ($ai['fBeamEnergies'] as $energy):
 
 <h2 id="pcarbon_hjet_ratio_by_target" class=count>H-jet/p-Carbon Polarization Ratio by Target Id</h2>
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -263,7 +263,7 @@ H-jet/p-Carbon polarization ratio by target.
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 
@@ -271,7 +271,7 @@ H-jet/p-Carbon polarization ratio by target.
 <!-- {{{ -->
 <div id="div:pcarbon_scaled" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -303,7 +303,7 @@ polarimeters. The normalization to the H-jet results is applied</div>
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -314,7 +314,7 @@ polarimeters. The normalization to the H-jet results is applied</div>
 <!-- {{{ -->
 <div id="div:pcarbon_hjet_ratio_scaled" class="section">
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -348,7 +348,7 @@ Ratio of H-Jet/scaled p-Carbon polarization
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -358,7 +358,7 @@ Ratio of H-Jet/scaled p-Carbon polarization
 <h2 id="pcarbon_utod_ratio" class=count>Upstream/Downstream Scaled Polarization Ratio</h2>
 <!-- {{{ -->
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -384,7 +384,7 @@ Ratio of upstream to downstream p-Carbon polarization values <b>at flattop energ
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 <!-- }}} -->
 
@@ -393,7 +393,7 @@ Ratio of upstream to downstream p-Carbon polarization values <b>at flattop energ
 <h2 id="pcarbon_ramp_ratio" class=count>Energy Ramp Efficiency: After/Before Polarization Ratio</h2>
 <!-- {{{ -->
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -432,7 +432,7 @@ Ratio ("after"/"before") of polarization measured before and after the energy ra
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 <!-- }}} -->
 
@@ -441,7 +441,7 @@ Ratio ("after"/"before") of polarization measured before and after the energy ra
 <h2 id="pcarbon_rotator_ratio" class=count>Rotator Ramp Efficiency: After/Before Polarization Ratio</h2>
 <!-- {{{ -->
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -481,7 +481,7 @@ ramp <b>at flattop energy only</b>
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 <!-- }}} -->
 
@@ -492,7 +492,7 @@ ramp <b>at flattop energy only</b>
 <div id="div:pcarbon_profile" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
@@ -552,7 +552,7 @@ Fill average polarization profile values
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -564,7 +564,7 @@ Fill average polarization profile values
 <div id="div:pcarbon_profile_decay" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -597,7 +597,7 @@ Polarization profile "decay" per hour
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -609,7 +609,7 @@ Polarization profile "decay" per hour
 <div id="div:pcarbon_decay" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -642,7 +642,7 @@ Polarization decay in absolute % per hour
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -654,7 +654,7 @@ Polarization decay in absolute % per hour
 <div id="div:pcarbon_polar_profile_decay" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -687,7 +687,7 @@ dR/dt vs dP/dt
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -699,7 +699,7 @@ dR/dt vs dP/dt
 <div id="div:pcarbon_angle" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
@@ -731,7 +731,7 @@ Average spin angle (i.e. radial component)
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </div>
 <!-- }}} -->
@@ -741,7 +741,7 @@ Average spin angle (i.e. radial component)
 <h2 id="pcarbon_t0" class=count>p-Carbon Calibration: t0 Time Offset</h2>
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
@@ -773,14 +773,14 @@ t0 calibration parameter averaged over all channels and all measurements in a fi
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 
 
 <h2 id="pcarbon_dl" class=count>p-Carbon Calibration: Effective Dead Layer</h2>
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
@@ -813,14 +813,14 @@ measurements in a fill
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 
 
 <h2 id="pcarbon_target_use" class=count>Target Usage</h2>
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    $strEnergy = sprintf("%03d", $energy);
 ?>
@@ -853,14 +853,14 @@ Target used in the fill
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 
 
 <h2 id="pcarbon_bunch_asym" class=count>Bunch Asymmetry</h2>
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -891,14 +891,14 @@ with only "down" spin polarization
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 
 
 <h2 id="pcarbon_bunch_asym_sigma" class=count>Bunch Asymmetry Spread</h2>
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -927,7 +927,7 @@ with only "down" spin polarization
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 </div>
@@ -941,7 +941,7 @@ with only "down" spin polarization
 <div id="div:intens" class="section">
 
 
-<?
+<?php
 foreach ($ai['fBeamEnergies'] as $energy):
    if ($energy == $BEAM_ENERGY_INJ) continue;
    $strEnergy = sprintf("%03d", $energy);
@@ -967,7 +967,7 @@ Beam intensity lifetime
 
 </table>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 
 </div>

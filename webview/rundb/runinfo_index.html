@@ -51,12 +51,11 @@ SQL query: <?//=$sqlDbReader->sqlQuery?>
 
 <p>
 Runs selected: <?=$sqlDbReader->nResults?>
-<?//=$sqlDbReader->sqlWhere?>
 
 <p>
 Export to CSV file: <a href="export.php?<?=$runSelector->urlQuery?>">download</a>
  
-<?
+<?php
 // Create page links
 $page         = 1;
 $nRunsPerPage = 200;
@@ -294,10 +293,8 @@ $meanProfileRatio = calcWeigtedAvrgErr($profileRatios);
 
 </table>
 
-<?$sqlDbReader->PrintPageIndex($nPages, $page);?>
-
 <?php
-//print_r($rc);
+$sqlDbReader->PrintPageIndex($nPages, $page);
 ?>
 
 <h2>Normalization for p-Carbon Measurements</h2>
