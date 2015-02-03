@@ -13,6 +13,8 @@
 #include "TLegend.h"
 
 #include <opencdev.h>
+#include <SshLogReader.h>
+#include <CachingLogReader.h>
 
 #include "MAlphaAnaInfo.h"
 #include "AsymHeader.h"
@@ -646,7 +648,12 @@ int main(int argc, char *argv[])
    mAlphaAnaInfo.ProcessOptions(argc, argv);
    mAlphaAnaInfo.VerifyOptions();
 
-   opencdev::LocalLogReader log_reader(mAlphaAnaInfo.GetSlowControlLogDir());
+   opencdev::LogReader *log_reader;
+   if (mAlphaAnaInfo.fUseSsh) {
+      log_reader = new CachingLogReader<SshLogReader>;
+   } else {
+      log_reader = new opencdev::LocalLogReader(mAlphaAnaInfo.GetSlowControlLogDir());
+   }
 
    gROOT->Macro("~/rootmacros/styles/style_malpha.C");
 
@@ -751,12 +758,12 @@ int main(int argc, char *argv[])
          min_startTime = startTime;
       }
 
-      FillBiasCurrent(&log_reader, (EPolarimeterId)polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
+      FillBiasCurrent(log_reader, (EPolarimeterId)polId, startTime, ssh_endTime, rBiasCurrent, rBiasCurrentErr);
 
       int fill_id = gMM->fMeasInfo->GetFillId();
       if (fill_id)
       {
-         FillBeamCurrent(&log_reader, fill_id, (EPolarimeterId)polId, startTime, rBeamCurrent, rBeamCurrentErr);
+         FillBeamCurrent(log_reader, fill_id, (EPolarimeterId)polId, startTime, rBeamCurrent, rBeamCurrentErr);
       }
 
       TH1F  *hAmGain = (TH1F*) f.FindObjectAny("hAmGain");

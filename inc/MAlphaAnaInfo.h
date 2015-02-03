@@ -19,11 +19,13 @@ public:
    // Flag options
    enum Option {
       OPTION_MLIST           = 0x20000001,
-      OPTION_OFILE           = 0x20000002
+      OPTION_OFILE           = 0x20000002,
+      OPTION_USE_SSH         = 0x20000004
    };
 
    // Constraint parameter for data processing 
    std::string fMListFileName;     // File name
+   bool fUseSsh;
 
 public:
 

@@ -15,6 +15,7 @@ using namespace std;
 /** */
 MAlphaAnaInfo::MAlphaAnaInfo() : AnaInfo(),
    fMListFileName(""),
+   fUseSsh(false),
    fOutputFileName("")
 {
    Init();
@@ -53,6 +54,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
 
       {"meas-list",           required_argument,   0,   MAlphaAnaInfo::OPTION_MLIST},
       {"output-file",         required_argument,   0,   MAlphaAnaInfo::OPTION_OFILE},
+      {"use-ssh",             optional_argument,   0,   MAlphaAnaInfo::OPTION_USE_SSH},
       {0, 0, 0, 0}
    };
 
@@ -83,6 +85,10 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
          case 'o':
          case MAlphaAnaInfo::OPTION_OFILE:
             fOutputFileName = optarg;
+            break;
+
+         case MAlphaAnaInfo::OPTION_USE_SSH:
+            fUseSsh = true;
             break;
 
          default:
@@ -149,5 +155,6 @@ void MAlphaAnaInfo::PrintUsage()
    cout << " -g, --graph                          : Plot graphs" << endl;
    cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
    cout << " -o, --output-file <file_name>        : Output file name" << endl;
+   cout << " --use-ssh                            : Use ssh method to access CDEV log data" << endl;
    cout << endl;
 }
