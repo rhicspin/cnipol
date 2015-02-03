@@ -15,7 +15,7 @@ class TargetLossMonitor
    {
       global $POLARIMETER_ID, $TARGET_ID, $TARGET_ORIENT;
 
-      $fileNameFull = "/usr/local/cnipol/webview/rundb/target_losses.txt";
+      $fileNameFull = realpath(dirname(__FILE__)) . "/target_losses.txt";
       $file = fopen($fileNameFull, "r");
 
       if ($file === FALSE) {
