@@ -19,7 +19,7 @@ function print_version_definition()
 	git diff --cached --quiet
 	STAGED=$?
 
-	git describe --abbrev=0 --tags --exact 2> /dev/null
+	git describe --abbrev=0 --tags --exact 1> /dev/null 2> /dev/null
 	UNSTABLE=$?
 
 	if [ $STAGED = 1 ] || [ $UNSTAGED = 1 ] || [ $UNSTABLE = 128 ]; then
