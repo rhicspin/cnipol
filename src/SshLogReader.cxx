@@ -23,7 +23,7 @@ string SshLogReader::GetSshCommand(const string &logger, const char *export_para
    }
 
    snprintf(buf, sizeof(buf),
-            "ssh acnlina \""
+            "ssh yellowpc \""
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"
@@ -198,17 +198,7 @@ void SshLogReader::ExecuteCmd(string cmd, string *response)
          gSystem->Error("SshLogReader", "process returned %i", retcode);
          gSystem->Error("SshLogReader",
             "You need to create a gateway to acnlina machine.\n"
-            "In order to do that, add following into your ~/.ssh/config file:\n\n"
-            "Host acnlina\n"
-            "\tIdentityFile    /star/u/veprbl/.ssh/acnlina5_rsa\n"
-            "\tUser            dsmirnov\n"
-            "\tHostName        localhost\n"
-            "\tPort            8022\n"
-            "\tBatchMode       yes\n\n"
-            "To start gateway itself use following command:\n\n"
-            "ssh -l your_user_name ssh.pbn.bnl.local -L 8022:acnlina5.pbn.bnl.gov:22\n\n"
-            "replacing your_user_name with your MS Exchange (RSA SecurID token) account.\n"
-            "If you have problems, try using --no-ssh option."
+            "See https://wiki.bnl.gov/rhicspin/Automated_pC_setup for more information.\n"
             );
          const int delay = 10;
          gSystem->Error("SshLogReader", "Retrying in %i seconds... Retries left %i", delay, retries);
