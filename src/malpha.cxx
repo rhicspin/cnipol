@@ -167,7 +167,7 @@ Color_t GetLineColor(int det)
 
 
 /** */
-void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
+void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, ResultMean &result_err, map<Time, RunName> &runNameD, double min_startTime, double max_startTime)
 {
    if (result.first.empty() && result.second.empty())
    {
@@ -178,7 +178,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    TH1F  *h;
 
    TString hname(name);
-   hname += polIdName;
    if (max_startTime)
    {
       h = new TH1F(hname, name, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
@@ -232,8 +231,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
          TString hname(name);
          hname += "_distribution";
          hname += (det + 1);
-         hname += "_";
-         hname += polIdName;
          hdet = new TH1F(hname, hname, 100, result.min_value, result.max_value);
          hdet->SetXTitle(h->GetYaxis()->GetTitle());
          hdet->SetLineColor(GetLineColor(det));
@@ -249,8 +246,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 
    TString  canvasName("c");
    canvasName += name;
-   canvasName += "_";
-   canvasName += polIdName;
    TString  title(name);
    const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
    title += cut_str;
@@ -261,7 +256,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    vector<TH1F*>  det_hosts;
    TString	host_name("_");
    host_name += name;
-   host_name += polIdName;
    if (max_startTime)
    {
       host = new TH1F(host_name, title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
@@ -279,8 +273,6 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
    {
       TString   det_host_name(name);
       det_host_name += (det+1);
-      det_host_name += "_";
-      det_host_name += polIdName;
       TString  det_title(det_host_name);
       det_title += cut_str;
 
@@ -429,7 +421,7 @@ void PlotMean(DrawObjContainer *oc, const string &polIdName, const char *name, R
 }
 
 
-void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *name, ResultMean &r1, ResultMean &r1_err, ResultMean &r2, ResultMean &r2_err)
+void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, ResultMean &r1_err, ResultMean &r2, ResultMean &r2_err)
 {
    if ((r1.first.empty() && r1.second.empty()) || (r2.first.empty() && r2.second.empty()))
    {
@@ -438,8 +430,6 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
 
    ObjMap	&o = oc->o;
    TString	hname(name);
-   hname += "_";
-   hname += polIdName;
    TH2F	*h = new TH2F(hname, hname,
                       r1.max_value - r1.min_value, r1.min_value, r1.max_value,
                       r2.max_value - r2.min_value, r2.min_value, r2.max_value);
@@ -810,26 +800,29 @@ int main(int argc, char *argv[])
       oc->d[polIdName] = new DrawObjContainer(f1->mkdir(polIdName.c_str()));
       DrawObjContainer *sub_oc = oc->d[polIdName];
 
+      sub_oc->fDir->cd();
+      gROOT->GetListOfCanvases()->Clear(); // hack to prevent canvas deletion
+
       slope[*iPolId] = DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
 
-      PlotMean(sub_oc, polIdName, "hAmGain_by_day", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hAmGainCorrected_by_day", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hGdGain_over_AmGain_by_day", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_day", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hBiasCurrent_by_day", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], min_startTime, max_startTime);
-      PlotMean(sub_oc, polIdName, "hAmGain_by_run", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hAmGainCorrected_by_run", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hGdGain_over_AmGain_by_run", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
-      PlotMean(sub_oc, polIdName, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hAmGain_by_day", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hAmGainCorrected_by_day", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hGdGain_over_AmGain_by_day", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hAmGdGain_over_AmGain_by_day", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hDeadLayerEnergy_by_day", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hDeadLayerSize_by_day", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hBiasCurrent_by_day", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], min_startTime, max_startTime);
+      PlotMean(sub_oc, "hAmGain_by_run", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hAmGainCorrected_by_run", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hGdGain_over_AmGain_by_run", rhGdGain_over_AmGain[polId], rhGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hAmGdGain_over_AmGain_by_run", rhAmGdGain_over_AmGain[polId], rhAmGdGain_over_AmGainErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hDeadLayerEnergy_by_run", rDeadLayerEnergy[polId], rDeadLayerEnergyErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hDeadLayerSize_by_run", rDeadLayerSize[polId], rDeadLayerSizeErr[polId], runNameD[polId], 0, 0);
+      PlotMean(sub_oc, "hBiasCurrent_by_run", rBiasCurrent[polId], rBiasCurrentErr[polId], runNameD[polId], 0, 0);
 
-      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_AmGain", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmGain[polId], rhAmGainErr[polId]);
-      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
-      PlotCorrelation(sub_oc, polIdName, "hBiasCurrent_BeamCurrent", rBiasCurrent[polId], rBiasCurrentErr[polId], rBeamCurrent[polId], rBeamCurrentErr[polId]);
+      PlotCorrelation(sub_oc, "hBiasCurrent_AmGain", rBiasCurrent[polId], rBiasCurrentErr[polId], rhAmGain[polId], rhAmGainErr[polId]);
+      PlotCorrelation(sub_oc, "hBiasCurrent_DeadLayerSize", rBiasCurrent[polId], rBiasCurrentErr[polId], rDeadLayerSize[polId], rDeadLayerSizeErr[polId]);
+      PlotCorrelation(sub_oc, "hBiasCurrent_BeamCurrent", rBiasCurrent[polId], rBiasCurrentErr[polId], rBeamCurrent[polId], rBeamCurrentErr[polId]);
    }
 
    if (mAlphaAnaInfo.HasGraphBit())
