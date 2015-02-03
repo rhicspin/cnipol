@@ -20,6 +20,8 @@ class CnipolAlphaHists : public DrawObjContainer
 
 public:
 
+   static const double ALPHA_TDC_CUT;
+
    CnipolAlphaHists();
    CnipolAlphaHists(TDirectory *dir);
    virtual ~CnipolAlphaHists();

@@ -9,6 +9,8 @@ ClassImp(CnipolAlphaHists)
 using namespace std;
 
 
+const double CnipolAlphaHists::ALPHA_TDC_CUT = 70.0; //! cut out events that fall out of the WFD window
+
 /** Default constructor. */
 CnipolAlphaHists::CnipolAlphaHists() : DrawObjContainer()
 {
@@ -284,22 +286,26 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
    string sSi("  ");
    sprintf(&sSi[0], "%02d", chId);
 
-   ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
-   ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
    ((TH1F*) o["hTdc"])   ->Fill(data.fTdc);
    ((TH2F*) o["hTvsA"])  ->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) o["hTvsI"])  ->Fill(data.fIntgrl, data.fTdc);
-   ((TH2F*) o["hIvsA"])  ->Fill(data.fAmpltd, data.fIntgrl);
 
    DrawObjContainer *sd = d["channel" + sSi];
 
-   ((TH1F*) sd->o["hAmpltd_ch"    + sSi])->Fill(data.fAmpltd);
-   ((TH1F*) sd->o["hIntgrl_ch"    + sSi])->Fill(data.fIntgrl);
    ((TH1F*) sd->o["hTdc_ch"       + sSi])->Fill(data.fTdc);
    ((TH2F*) sd->o["hTvsA_ch"      + sSi])->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) sd->o["hTvsA_zoom_ch" + sSi])->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) sd->o["hTvsI_ch"      + sSi])->Fill(data.fIntgrl, data.fTdc);
-   ((TH2F*) sd->o["hIvsA_ch"      + sSi])->Fill(data.fAmpltd, data.fIntgrl);
+
+   if (data.fTdc <= ALPHA_TDC_CUT)
+   {
+      ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
+      ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
+      ((TH2F*) o["hIvsA"])->Fill(data.fAmpltd, data.fIntgrl);
+      ((TH1F*) sd->o["hAmpltd_ch" + sSi])->Fill(data.fAmpltd);
+      ((TH1F*) sd->o["hIntgrl_ch" + sSi])->Fill(data.fIntgrl);
+      ((TH2F*) sd->o["hIvsA_ch"   + sSi])->Fill(data.fAmpltd, data.fIntgrl);
+   }
 }
 
 
@@ -342,4 +348,22 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    utils::UpdateLimits((TH1*) o["hGdGainWidth"]);
    utils::UpdateLimits((TH1*) o["hGdIntGain"]);
    utils::UpdateLimits((TH1*) o["hGdIntGainWidth"]);
+
+   // Visualize the TDC cut
+   TVirtualPad *backup = gPad;
+   TH2F *h;
+   TLine *l;
+   h = (TH2F*)o["hTvsA"];
+   o["hTvsA"] = new TCanvas("hTvsA", "");
+   h->Draw();
+   l = new TLine(0, ALPHA_TDC_CUT, 255, ALPHA_TDC_CUT);
+   l->SetLineWidth(3);
+   l->Draw();
+   h = (TH2F*)o["hTvsI"];
+   o["hTvsI"] = new TCanvas("hTvsI", "");
+   h->Draw();
+   l = new TLine(0, ALPHA_TDC_CUT, 255, ALPHA_TDC_CUT);
+   l->SetLineWidth(3);
+   l->Draw();
+   gPad = backup;
 }
