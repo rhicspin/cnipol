@@ -177,9 +177,7 @@ for ($ir=0; $ir<$nRows; $ir++) :
       for ($ic=0; $ic<$nColumns; $ic++) {
          print "<th>Ch\n";
          print "<th>A, keV/ADC\n";
-         print "<th>&Delta;A\n";
          print "<th>I, keV/ADC\n";
-         print "<th>&Delta;I\n";
          print "<th>&nbsp;&nbsp;&nbsp;&nbsp;\n";
       }
    }
@@ -195,10 +193,10 @@ for ($ir=0; $ir<$nRows; $ir++) :
 
       //$chanId += 1;
       print "<td><a href=./?runid=$gRunId&chanid=$chanId>$chanId</a>\n";
-      print "<td class=align_r>".sprintf("%7.4f", $coefs['ACoef'])."\n";
-      print "<td class=\"align_r ".($coefs['ACoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ACoefErr'])."\n";
-      print "<td class=align_r>".sprintf("%7.4f", $coefs['ICoef'])."\n";
-      print "<td class=\"align_r ".($coefs['ICoefErr']<=0?"feature":"")."\">".sprintf("%7.4f", $coefs['ICoefErr'])."\n";
+      print "<td class=\"align_r ".($coefs['ACoefErr']<=0?"feature":"")."\">".sprintf("%7.2f", $coefs['ACoef'])."\n";
+      print " &plusmn; ".sprintf("%7.2f", $coefs['ACoefErr'])."\n";
+      print "<td class=\"align_r ".($coefs['ICoefErr']<=0?"feature":"")."\">".sprintf("%7.2f", $coefs['ICoef'])."\n";
+      print " &plusmn;".sprintf("%7.2f", $coefs['ICoefErr'])."\n";
       print "<td>&nbsp;&nbsp;\n";
 
    endfor;
