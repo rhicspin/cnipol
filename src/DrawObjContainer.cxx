@@ -404,8 +404,10 @@ void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, s
             PrepareHistogram(canvas, (TH1*)child);
          }
       }
-
-      canvas->SetName(sCanvasName.c_str());
+      else
+      {
+        canvas->SetName(sCanvasName.c_str());
+      }
       canvas->SetTitle(sCanvasName.c_str());
 
       if ( ((TClass*) obj->IsA())->InheritsFrom("THStack") )
