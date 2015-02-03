@@ -140,7 +140,14 @@ string EventConfig::GetSignature() const
       //if (strSignature.size() != 0) 
       //   strSignature += ", ";
 
-      strSignature += ", Version " + fAnaInfo->fAsymVersion + ", " + fAnaInfo->fUserGroup.fUser;
+      // find divider between human-readable version and git hash
+      size_t len = fAnaInfo->fAsymVersion.find(";");
+      if (len != std::string::npos)
+      {
+         len += 1 + 10; // set limit at ten more characters of git hash
+      }
+
+      strSignature += ", Version " + fAnaInfo->fAsymVersion.substr(0, len) + ", " + fAnaInfo->fUserGroup.fUser;
    }
 
    return strSignature;
