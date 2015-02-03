@@ -403,6 +403,7 @@ void DrawObjContainer::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, s
             }
             PrepareHistogram(canvas, (TH1*)child);
          }
+         canvas->SetCanvasSize(default_canvas.GetWw(), default_canvas.GetWh());
       }
       else
       {
