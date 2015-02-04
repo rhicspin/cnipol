@@ -29,8 +29,7 @@ int main(int argc, char *argv[])
 {
    //gROOT->Reset();
    //gROOT->SetStyle("Plain");
-   //gROOT->SetMacroPath("./:~/rootmacros/:");
-   gROOT->Macro("styles/style_anapow.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_anapow.C");
    gStyle->SetLineWidth(2);
 
    double BeamPhysBlue[6], TargetPhysBlue[6], BlueErr[6];

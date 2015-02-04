@@ -19,8 +19,7 @@ MAsymRoot::MAsymRoot() : TFile(),
    fMinTime(UINT_MAX), fMaxTime(0),
    fFilePhp(0)
 {
-   gROOT->SetMacroPath("./:~/rootmacros/:");
-   gROOT->Macro("styles/style_asym.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_asym.C");
 }
 
 
@@ -32,8 +31,7 @@ MAsymRoot::MAsymRoot(MAsymAnaInfo &anaInfo) : TFile(anaInfo.GetRootFileName().c_
 {
    printf("Created ROOT file: %s\n", GetName());
 
-   gROOT->SetMacroPath("./:~/rootmacros/:");
-   gROOT->Macro("styles/style_asym.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_asym.C");
 }
 
 

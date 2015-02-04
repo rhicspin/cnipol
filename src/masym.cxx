@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
    AnaGlobResult anaGlobResult;
    anaGlobResult.Configure(mAsymAnaInfo);
 
-   gROOT->Macro("~/rootmacros/styles/style_masym.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_masym.C");
 
    gRunConfig.fBeamEnergies.clear();
    gRunConfig.fBeamEnergies.insert(kINJECTION);

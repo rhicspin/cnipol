@@ -137,8 +137,7 @@ void AsymRoot::CreateRootFile(string filename)
 
    gSystem->Chmod(filename.c_str(), 0775);
 
-   gROOT->SetMacroPath("./:~/rootmacros/:");
-   gROOT->Macro("styles/style_asym.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_asym.C");
    gROOT->ForceStyle(kTRUE);
 
    TDirectory       *dir;

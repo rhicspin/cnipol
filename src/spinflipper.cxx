@@ -27,7 +27,7 @@ double calcSpinFlipperPhase(uint markerAbsRev, uint markerRelRev, uint spinFlipp
 int main(int argc, char *argv[])
 {
    TDirectory *myDir = gDirectory;
-   gROOT->Macro("~/rootmacros/styles/style_masym.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_masym.C");
 
    // Pick the input file
    string spinFlipperFileName("spinflipper_study_1");

@@ -664,7 +664,7 @@ int main(int argc, char *argv[])
       log_reader = new opencdev::LocalLogReader(mAlphaAnaInfo.GetSlowControlLogDir());
    }
 
-   gROOT->Macro("~/rootmacros/styles/style_malpha.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_malpha.C");
 
    string filelist = mAlphaAnaInfo.GetMListFullPath();
 

@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
    // Do not attempt to recover files
    gEnv->SetValue("TFile.Recover", 0);
 
-   gROOT->Macro("~/rootmacros/styles/style_malpha.C");
+   gROOT->Macro(CNIPOL_ROOT_DIR "/contrib/styles/style_malpha.C");
 
    map<Short_t, Result> rSweepBeamCurrent;
    map<Short_t, Result> rPostSweepBeamCurrent;
