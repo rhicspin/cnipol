@@ -38,7 +38,6 @@ struct ResultMean
 
    // used for histogram limits
    double       min_value, max_value;
-   double       mean, sigma;
 };
 
 
@@ -84,16 +83,12 @@ void FillDeviceMaxMin(map<Short_t, ResultMean> &results)
    double min_value = FLT_MAX;
    double max_value = -FLT_MAX;
 
-   double mean_sum = 0;
-   int count = 0;
-
    for (map<Short_t, ResultMean>::const_iterator i = results.begin(); i != results.end(); i++)
    {
       const ResultMean &result = i->second;
 
       for (int det = 0; det < N_DETECTORS; det++)
       {
-         // find min and max values
          for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
          {
             double value = it->second[det];
@@ -106,51 +101,14 @@ void FillDeviceMaxMin(map<Short_t, ResultMean> &results)
                max_value = value;
             }
          }
-
-         // also we use information about mean values and their width
-         // to calculate limits for plots that are not interested in outliers (such as PlotMean())
-         for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
-         {
-            double value = it->second[det];
-            if (!isnan(value))
-            {
-               mean_sum += value;
-               count++;
-            }
-         }
       }
    }
-   double mean = mean_sum / count;
-
-   int count_crosscheck = 0;
-   double sigma_sum = 0;
-   for (map<Short_t, ResultMean>::const_iterator i = results.begin(); i != results.end(); i++)
-   {
-      const ResultMean &result = i->second;
-
-      for (int det = 0; det < N_DETECTORS; det++)
-      {
-         for (map< Time, vector<double> >::const_iterator it = result.second.begin(); it != result.second.end(); it++)
-         {
-            double value = it->second[det];
-            if (!isnan(value))
-            {
-               sigma_sum += (mean - value) * (mean - value);
-               count_crosscheck++;
-            }
-         }
-      }
-   }
-   assert(count == count_crosscheck);
-   double sigma = sqrt(sigma_sum / count);
 
    for (map<Short_t, ResultMean>::iterator i = results.begin(); i != results.end(); i++)
    {
       ResultMean &result = i->second;
       result.min_value = min_value;
       result.max_value = max_value;
-      result.mean = mean;
-      result.sigma = sigma;
    }
 }
 
@@ -245,9 +203,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
 
    TString  canvasName("c");
    canvasName += name;
-   TString  title(name);
-   const char *cut_str = " (cut: |val-mean_i|<3*sigma_i)";
-   title += cut_str;
    TCanvas *c = new TCanvas(canvasName, "", 800, 500);
    double bm = gStyle->GetPadBottomMargin();
    TLegend *leg = new TLegend(0.14,bm+0.02,0.22,bm+0.202);
@@ -257,31 +212,29 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
    host_name += name;
    if (max_startTime)
    {
-      host = new TH1F(host_name, title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+      host = new TH1F(host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
    }
    else
    {
-      host = new TH1F(host_name, title, result.first.size(), 0.0, result.first.size());
+      host = new TH1F(host_name, "", result.first.size(), 0.0, result.first.size());
    }
 
-   double canvas_min = result.mean - 3*result.sigma;
-   double canvas_max = result.mean + 3*result.sigma;
+   double canvas_min = result.min_value;
+   double canvas_max = result.max_value;
    host->GetYaxis()->SetRangeUser(canvas_min, canvas_max);
 
    for (int det = 0; det < N_DETECTORS; det++)
    {
       TString   det_host_name(name);
       det_host_name += (det+1);
-      TString  det_title(det_host_name);
-      det_title += cut_str;
 
       if (max_startTime)
       {
-         det_host = new TH1F(det_host_name, det_title, 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+         det_host = new TH1F(det_host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
       }
       else
       {
-         det_host = new TH1F(det_host_name, det_title, result.first.size(), 0.0, result.first.size());
+         det_host = new TH1F(det_host_name, "", result.first.size(), 0.0, result.first.size());
       }
       o[det_host_name.Data()] = det_host;
 
@@ -324,17 +277,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
             g->RemovePoint(i);
             det_g->RemovePoint(i);
             continue;
-         }
-
-         if (value > canvas_max)
-         {
-            Warning("malpha", "value %f of %s is more than canvas_max of %f",
-               value, result.YTitle.c_str(), canvas_max);
-         }
-         if (value < canvas_min)
-         {
-            Warning("malpha", "value %f of %s is less than canvas_min of %f",
-               value, result.YTitle.c_str(), canvas_min);
          }
 
          g->SetPoint(i, xval, value);
