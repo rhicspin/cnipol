@@ -842,8 +842,8 @@ int main(int argc, char *argv[])
 
    if (mAlphaAnaInfo.HasGraphBit())
    {
-      TCanvas r("r");
-      oc->SaveAllAs(DrawObjContainer::FORMAT_EPS, r, "^.*$", mAlphaAnaInfo.GetImageDir(), false);
+      TCanvas r("r", "", 1000, 800);
+      oc->SaveAllAs(DrawObjContainer::FORMAT_PNG, r, "^.*$", mAlphaAnaInfo.GetImageDir(), false);
    }
    oc->Write();
    f1->Close();
