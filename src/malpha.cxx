@@ -573,8 +573,8 @@ void SetupSignature(DrawObjContainer *oc, MAlphaAnaInfo &mAlphaAnaInfo, int argc
    {
       ssSignature << " " << argv[i];
    }
-   ssSignature << ", Analyzed " << strAnaTime;
-   ssSignature << ", Version " << mAlphaAnaInfo.fAsymVersion.substr(0, 15)  << ", " << mAlphaAnaInfo.fUserGroup.fUser;
+   ssSignature << "malpha, Analyzed " << strAnaTime;
+   ssSignature << ", Version " << mAlphaAnaInfo.GetShortAsymVersion()  << ", " << mAlphaAnaInfo.fUserGroup.fUser;
    cout << ssSignature.str();
    oc->SetSignature(ssSignature.str());
 }

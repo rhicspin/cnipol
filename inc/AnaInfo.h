@@ -62,6 +62,7 @@ public:
    AnaInfo();
    ~AnaInfo();
 
+   std::string          GetShortAsymVersion() const;
    std::string          GetSuffix() const;
    std::string          GetResultsDir() const;
    std::string          GetOutDir() const;

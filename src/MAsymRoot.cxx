@@ -66,7 +66,7 @@ void MAsymRoot::SaveAs(string pattern, string dir)
    strftime(strAnaTime, 25, "%c", ltime);
 
    ssSignature << "Fills " << fMinFill << "--" << fMaxFill << ", Analyzed " << strAnaTime;
-   ssSignature << ", Version " << fAnaInfo->fAsymVersion << ", " << fAnaInfo->fUserGroup.fUser;
+   ssSignature << ", Version " << fAnaInfo->GetShortAsymVersion() << ", " << fAnaInfo->fUserGroup.fUser;
 
    fHists->SetSignature(ssSignature.str());
    fHists->SaveAllAs(DrawObjContainer::FORMAT_PNG, canvas, pattern, dir);

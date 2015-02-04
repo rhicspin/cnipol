@@ -98,6 +98,22 @@ void AnaInfo::MakeOutDir()
 }
 
 
+/**
+ * This function provides a version string where git commit id is shortened.
+ * Should be useful for plots.
+ */
+string AnaInfo::GetShortAsymVersion() const
+{
+   // find divider between human-readable version and git hash
+   size_t len = fAsymVersion.find(";");
+   if (len != std::string::npos)
+   {
+      len += 1 + 10; // set limit at ten more characters of git hash
+   }
+   return fAsymVersion.substr(0, len);
+}
+
+
 string AnaInfo::GetSuffix()           const { return !fSuffix.empty() ? "_" + fSuffix : "" ; }
 string AnaInfo::GetImageDir()         const { return GetOutDir() + "/images" + GetSuffix(); }
 string AnaInfo::GetAnaInfoFileName()  const { return GetOutDir() + "/anainfo" + GetSuffix() + ".php"; }

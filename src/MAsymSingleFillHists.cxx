@@ -234,7 +234,7 @@ void MAsymSingleFillHists::SetSignature(std::string signature)
    strftime(strAnaTime, 25, "%c", ltime);
 
    ssSignature << "Fill " << fDir->GetName() << ", Analyzed " << strAnaTime;
-   ssSignature << ", Version " << gMAsymAnaInfo->fAsymVersion << ", " << gMAsymAnaInfo->fUserGroup.fUser;
+   ssSignature << ", Version " << gMAsymAnaInfo->GetShortAsymVersion() << ", " << gMAsymAnaInfo->fUserGroup.fUser;
 
    fSignature = ssSignature.str();
 }
