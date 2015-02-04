@@ -1,6 +1,8 @@
 #ifndef AsymHeader_h
 #define AsymHeader_h
 
+#include <math.h>
+
 static const double _TWO_PI= 6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696;
 static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (2^25) in ticks for some RHIC counter
 

@@ -433,7 +433,7 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
          L = ci->data.chan[i-1].TOFLength; // TOF length in cm
       } else {
          printf("RawDataReader.cxx: UpdateRunConst(): This should not happen unless you process an old file.");
-         exit(EXIT_FAILURE)
+         exit(EXIT_FAILURE);
          L = CARBON_PATH_DISTANCE;
       }
 
