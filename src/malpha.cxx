@@ -215,7 +215,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
       h->GetXaxis()->SetTimeDisplay(1);
       h->GetXaxis()->SetTimeFormat("%m/%d/%y");
       h->GetXaxis()->SetTimeOffset(min_startTime);
-      h->GetXaxis()->SetNdivisions(8);
    }
    h->SetYTitle(result.YTitle.c_str());
 
@@ -292,11 +291,9 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
       g->SetLineColor(line_color);
       g->SetMarkerColor(line_color);
       g->SetMarkerStyle(20);
-      g->SetMarkerSize(0.4);
       det_g->SetLineColor(line_color);
       det_g->SetMarkerColor(line_color);
       det_g->SetMarkerStyle(20);
-      det_g->SetMarkerSize(0.4);
       int i = 0;
       double xval = -0.5;
 
@@ -385,7 +382,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
       det_host->GetXaxis()->SetTimeDisplay(1);
       det_host->GetXaxis()->SetTimeFormat("%m/%d/%y");
       det_host->GetXaxis()->SetTimeOffset(min_startTime);
-      det_host->GetXaxis()->SetNdivisions(8);
       det_host->SetXTitle(sDet);
       det_host->SetYTitle(h->GetYaxis()->GetTitle());
       if (!max_startTime)
@@ -399,7 +395,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
    host->GetXaxis()->SetTimeDisplay(1);
    host->GetXaxis()->SetTimeFormat("%m/%d/%y");
    host->GetXaxis()->SetTimeOffset(min_startTime);
-   host->GetXaxis()->SetNdivisions(8);
    host->SetYTitle(h->GetYaxis()->GetTitle());
       if (!max_startTime)
       {
