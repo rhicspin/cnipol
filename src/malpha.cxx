@@ -428,6 +428,7 @@ void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, Res
    TH2F	*h = new TH2F(hname, hname,
                       r1.max_value - r1.min_value, r1.min_value, r1.max_value,
                       r2.max_value - r2.min_value, r2.min_value, r2.max_value);
+   h->SetOption("DUMMY");
 
    for (int det = 0; det < N_DETECTORS; det++)
    {
