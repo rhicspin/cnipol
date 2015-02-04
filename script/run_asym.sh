@@ -6,14 +6,12 @@
 
 source $CNIPOL_DIR/script/bgx_asym.sh
 
-FILE_MEASLIST=$1
-
-exec < $FILE_MEASLIST
 
 while read meas_id
 do
-   bgx_limit 10 $CNIPOL_DIR/build/asym --calib --profile --use-db --raw-ext --asym --pmt --kinema -r $meas_id
-done
+   bgx_limit 10 $CNIPOL_DIR/build/asym --update-db -g -r $meas_id
+
+done < listofMeasId_run13.txt
 
 # Wait until all processes are finished
 bgx_wait
