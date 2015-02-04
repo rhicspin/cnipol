@@ -202,7 +202,8 @@ public:
    float M2T;   // Mass->tof     [ns/keV^(1/2)]
    float T2M;   // ToF -> Mass
 
-   RunConst(float lL=CARBON_PATH_DISTANCE, float lCt=WFD_TIME_UNIT_HALF);
+   RunConst() : L(NAN), Ct(NAN), E2T(NAN), M2T(NAN), T2M(NAN) {};
+   RunConst(float lL, float lCt);
    void Update(UShort_t ch=0);
    void Print(const Option_t* opt="") const;
 
