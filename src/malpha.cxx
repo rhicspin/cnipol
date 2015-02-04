@@ -561,7 +561,7 @@ void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, EPolarimeterI
 }
 
 
-void SetupSignature(DrawObjContainer *oc, MAlphaAnaInfo &mAlphaAnaInfo, int argc, char *argv[])
+void SetupSignature(DrawObjContainer *oc, MAlphaAnaInfo &mAlphaAnaInfo)
 {
    char strAnaTime[25];
    time_t currentTime = time(0);
@@ -569,10 +569,6 @@ void SetupSignature(DrawObjContainer *oc, MAlphaAnaInfo &mAlphaAnaInfo, int argc
    strftime(strAnaTime, 25, "%c", ltime);
 
    stringstream ssSignature;
-   for(int i = 0; i < argc; i++)
-   {
-      ssSignature << " " << argv[i];
-   }
    ssSignature << "malpha, Analyzed " << strAnaTime;
    ssSignature << ", Version " << mAlphaAnaInfo.GetShortAsymVersion()  << ", " << mAlphaAnaInfo.fUserGroup.fUser;
    cout << ssSignature.str();
@@ -737,7 +733,7 @@ int main(int argc, char *argv[])
 
    TFile *f1 = new TFile(mAlphaAnaInfo.fOutputFileName.c_str(), "RECREATE");
    DrawObjContainer *oc = new DrawObjContainer(f1);
-   SetupSignature(oc, mAlphaAnaInfo, argc, argv);
+   SetupSignature(oc, mAlphaAnaInfo);
    PolarimeterIdSetConstIter iPolId;
 
    FillDeviceMaxMin(rhAmGain);
