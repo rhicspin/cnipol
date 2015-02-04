@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title>RHIC Polarimetry Results: Alpha Summary Plots</title>
+  <meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../main.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki.css">
+  <link REL="STYLESHEET" TYPE="text/css" HREF="../wiki_monobook_main.css">
+  <script language="javascript" src="../main.js"></script>
+  <script language="javascript" src="../toc.js"></script>
+</head>
+
+<body bgcolor="#ffffff">
+
+<?php
+include("../head.html");
+
+include_once("../rundb/PlotHelper.php");
+$dir = "../runs/{$_GET['alpha_list']}/images/";
+$gP = new PlotHelper($dir);
+?>
+
+<!-- Main text starts here-->
+
+<h1>Summary Plots</h1>
+
+<div class="count" id="generated-toc"></div>
+
+<hr>
+
+<div id="main_text_body">
+
+
+<h1 id="timewise_plots" class="count">Timewise plots</h1>
+<div id="div:timewise_plots" class="section">
+
+<h2 id="gain_over_time" class="count">Gain over time</h2>
+<div id="div:gain_over_time" class="section">
+
+<p>
+<table class="simple00 cntr">
+<tr>
+   <td>
+   <?=$gP->img("B1U/chAmGain_by_day", false, 500)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td>
+   <?=$gP->img("B2D/chAmGain_by_day", false, 500)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+<tr>
+
+<tr>
+   <td>
+   <?=$gP->img("Y1D/chAmGain_by_day", false, 500)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+   <td>
+   <?=$gP->img("Y2U/chAmGain_by_day", false, 500)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+<td colspan=2>
+
+</table>
+
+</div>
+<h1 id="correlations" class="count">Correlations</h1>
+<div id="div:correlations" class="section">
+
+<h2 id="bc_vs_gain" class="count">Bias current vs gain</h2>
+<div id="div:bc_vs_gain" class="section">
+
+<p>
+<table class="simple00 cntr">
+<tr>
+   <td>
+   <?=$gP->img("B1U/hBiasCurrent_AmGain", false, 500)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B1U</span></div>
+
+   <td>
+   <?=$gP->img("B2D/hBiasCurrent_AmGain", false, 500)?>
+   <div class='thumbcaption_cm'><span class=bluPol>B2D</span></div>
+
+<tr>
+
+<tr>
+   <td>
+   <?=$gP->img("Y1D/hBiasCurrent_AmGain", false, 500)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y1D</span></div>
+
+   <td>
+   <?=$gP->img("Y2U/hBiasCurrent_AmGain", false, 500)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Y2U</span></div>
+
+<tr>
+<td colspan=2>
+
+</table>
+
+
+</div>
+
+<!-- Main text ends here-->
+</div>
+
+
+<?php
+include("../bottom.html");
+?>
+
+</body>
+</html>

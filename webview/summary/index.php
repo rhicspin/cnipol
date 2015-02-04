@@ -33,6 +33,8 @@ if ( isset($_GET['ana']) )
    }
 
    include("summary.html");
+} elseif ( isset($_GET['alpha_list']) ) {
+   include("summary_malpha.html");
 } else {
    include("summary_index.html");
 }
