@@ -31,8 +31,8 @@ static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (
 #define C_CMNS 29.98                     // Speed of Light in [cm/ns]
 #define REC_BEAMMASK 0x00030000
 
-#define CARBON_PATH_DISTANCE   18        // distance traveled by carbon, 18 cm in 2009 run
-//#define CARBON_PATH_DISTANCE   19.5      // average distance traveled by carbon in Run11
+#define CARBON_PATH_DISTANCE (NAN)       // XXX Legacy constant. XXX It was 18cm for run9, and 19.5cm in run11.
+                                         // This value now is read from the input data file.
 #define CARBON_MASS_PEAK_SIGMA 1.5e6     // 1-sigma of 12C mass peak = > 1.5e6 [keV]
 #define WFD_TIME_UNIT          2.369     // in ns
 #define WFD_TIME_UNIT_HALF     1.1845    // in ns

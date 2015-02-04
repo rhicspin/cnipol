@@ -428,14 +428,14 @@ void UpdateRunConst(TRecordConfigRhicStruct *ci)
 
    for (UShort_t i=1; i<=ci->data.NumChannels; i++) {
 
-      // XXX  It is wrong to comment the next 4 lines but it is better to be stable
-      // We are covering mistake made at the begining of the run 13 by using the default distance of 18 cm
-      // Change back for final analysis of run 13 data !!!
-      //if (gMeasInfo->fDataFormatVersion == 40200 ) // >= Run 11 version
-      //{
-      //   L = ci->data.chan[i-1].TOFLength;
-      //} else
+      if (gMeasInfo->fDataFormatVersion >= 40200 ) // >= Run 11 version
+      {
+         L = ci->data.chan[i-1].TOFLength; // TOF length in cm
+      } else {
+         printf("RawDataReader.cxx: UpdateRunConst(): This should not happen unless you process an old file.");
+         exit(EXIT_FAILURE)
          L = CARBON_PATH_DISTANCE;
+      }
 
       gRunConsts[i] = RunConst(L, Ct);
    }
