@@ -729,8 +729,7 @@ Bool_t MeasInfo::IsHamaChannel(UShort_t chId)
 /** */
 Bool_t MeasInfo::IsPmtChannel(UShort_t chId) const
 {
-   if ( ((EPolarimeterId) fPolId == kY2U || (EPolarimeterId) fPolId == kY1D) &&
-        chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4 )
+   if ( chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4 )
       return true;
 
    return false;
