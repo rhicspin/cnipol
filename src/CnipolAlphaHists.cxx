@@ -142,66 +142,6 @@ void CnipolAlphaHists::BookHists()
    ((TH1F*) o["hDeadLayerEnergy"])->SetOption("E1 GRIDX GRIDY");
 
 
-   o["Detector1_Events"]   = new TH1F("Detector1_Events", "Detector1_Events", 12, 1, 12);
-   ((TH1*) o["Detector1_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector1_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector1_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector2_Events"]   = new TH1F("Detector2_Events", "Detector2_Events", 12, 13, 24);
-   ((TH1*) o["Detector2_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector2_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector2_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector3_Events"]   = new TH1F("Detector3_Events", "Detector3_Events", 12, 25, 36);
-   ((TH1*) o["Detector3_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector3_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector3_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector4_Events"]   = new TH1F("Detector4_Events", "Detector4_Events", 12, 37, 48);
-   ((TH1*) o["Detector4_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector4_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector4_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector5_Events"]   = new TH1F("Detector5_Events", "Detector5_Events", 12, 49, 60);
-   ((TH1*) o["Detector5_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector5_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector5_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector6_Events"]   = new TH1F("Detector6_Events", "Detector6_Events", 12, 61, 72);
-   ((TH1*) o["Detector6_Events"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector6_Events"])->GetXaxis()->SetTitle("Channel");
-   ((TH1*) o["Detector6_Events"])->GetYaxis()->SetTitle("# of Events");
-
-   o["Detector1_Events_Dsp"]   = new TH1F("Detector1_Events_Dsp", "Detector1_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector1_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector1_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector1_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
-   o["Detector2_Events_Dsp"]   = new TH1F("Detector2_Events_Dsp", "Detector2_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector2_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector2_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector2_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
-   o["Detector3_Events_Dsp"]   = new TH1F("Detector3_Events_Dsp", "Detector3_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector3_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector3_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector3_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
-   o["Detector4_Events_Dsp"]   = new TH1F("Detector4_Events_Dsp", "Detector4_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector4_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector4_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector4_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
-   o["Detector5_Events_Dsp"]   = new TH1F("Detector5_Events_Dsp", "Detector5_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector5_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector5_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector5_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
-   o["Detector6_Events_Dsp"]   = new TH1F("Detector6_Events_Dsp", "Detector6_Events_Dsp", 20000, 0, 20000);
-   ((TH1*) o["Detector6_Events_Dsp"])->SetOption("E1 NOIMG");
-   ((TH1*) o["Detector6_Events_Dsp"])->GetXaxis()->SetTitle("Events");
-   ((TH1*) o["Detector6_Events_Dsp"])->GetYaxis()->SetTitle("#");
-
    DrawObjContainer        *oc;
    DrawObjContainerMapIter  isubdir;
 
