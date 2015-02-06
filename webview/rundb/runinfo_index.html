@@ -232,10 +232,17 @@ while ($e = mysql_fetch_assoc($rslt)):
    // Set default directory for run images
    $dir = "../runs/{$e['run_name']}/images$gSuffix/";
    $gP = new PlotHelper($dir);
+
+   $gRunDir = DATA_DIR."/".$e['run_name'];
+   $run_present = is_dir($gRunDir) && file_exists("$gRunDir/runconfig$gSuffix.php");
 ?>
 
 <tr class=my_tr_highlight title="<?=$trTooltip?>">
-   <td><a href="?runid=<?=$e['run_name']?>"><?=$e['run_name']?></a>
+   <td><?php
+if ($run_present) echo '<a href="?runid=' . $e['run_name'] . '">';
+echo $e['run_name'];
+if ($run_present) echo '</a>';
+?>
    <td class=align_cm><tt><?=date("M d, Y H:i:s D", $start_time)?></tt>
    <td class="<?=$cssPol?> align_cm"><?=isset($e['polarimeter_id']) ? $POLARIMETER_ID[$e['polarimeter_id']] : "&nbsp;";?>
    <td class=align_cm><?=$polarization?>
