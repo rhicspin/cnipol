@@ -62,7 +62,7 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
       gadolinium_found = false;
       fitres = Calibrate(htemp, fit_gadolinium, &gadolinium_found);
 
-      if (fitres) {
+      if (fitres.Get()) {
          chCalib->fAmAmp = CoefExtract(fitres, kAmericium, c, i, "");
          if (fit_gadolinium && gadolinium_found) {
             chCalib->fGdAmp = CoefExtract(fitres, kGadolinium, c, i, "");
