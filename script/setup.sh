@@ -32,7 +32,7 @@ export LD_LIBRARY_PATH+=:$MYSQLPP_LIB_DIR
 export CNIPOL_DIR=~/pCpol/cnipol
 export CNIPOL_DATA_DIR=/eicdata/eic0005/run$RUN_ID/data
 #export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root_rp
-export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root_Ibias
+export CNIPOL_RESULTS_DIR=/eicdata/eic0005/run$RUN_ID/root
 #export CNIPOL_RESULTS_DIR=/star/u/gdwebb/pCpol/polroot
 
 export PATH+=:$CNIPOL_DIR/build
