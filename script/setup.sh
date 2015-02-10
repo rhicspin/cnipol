@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#if [ -n "$1" ]; then RUN_ID=$1; else RUN_ID="13"; fi
+if [ -n "$1" ]; then RUN_ID=$1; else RUN_ID="13"; fi
 
 #RUN_ID=$(printf '%02d' $RUN_ID)
 
-RUN_ID=13
+#RUN_ID=13
 
 echo "Setting environment variables for RUN_ID=$RUN_ID:"
 
