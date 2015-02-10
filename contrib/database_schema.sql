@@ -1,5 +1,33 @@
 CREATE TABLE IF NOT EXISTS `fill_polar` (
   `fill` int(10) unsigned NOT NULL DEFAULT '0',
+  `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `type` smallint(6) NOT NULL DEFAULT '-1',
+  `beam_energy` float NOT NULL DEFAULT '0',
+  `polar_blue_p0` decimal(18,9) NOT NULL DEFAULT '-1.000000000',
+  `polar_blue_p0_err` float NOT NULL DEFAULT '-1',
+  `polar_blue_decay` float NOT NULL DEFAULT '-1',
+  `polar_blue_decay_err` float NOT NULL DEFAULT '-1',
+  `polar_yellow_p0` float NOT NULL DEFAULT '-1',
+  `polar_yellow_p0_err` float NOT NULL DEFAULT '-1',
+  `polar_yellow_decay` float NOT NULL DEFAULT '-1',
+  `polar_yellow_decay_err` float NOT NULL DEFAULT '-1',
+  `polar_blue_hjet` float NOT NULL DEFAULT '-1',
+  `polar_blue_hjet_err` float NOT NULL DEFAULT '-1',
+  `polar_yellow_hjet` float NOT NULL DEFAULT '-1',
+  `polar_yellow_hjet_err` float NOT NULL DEFAULT '-1',
+  `polar_blue_1` float NOT NULL DEFAULT '-1',
+  `polar_blue_1_err` float NOT NULL DEFAULT '-1',
+  `polar_blue_2` float NOT NULL DEFAULT '-1',
+  `polar_blue_2_err` float NOT NULL DEFAULT '-1',
+  `polar_yellow_1` float NOT NULL DEFAULT '-1',
+  `polar_yellow_1_err` float NOT NULL DEFAULT '-1',
+  `polar_yellow_2` float NOT NULL DEFAULT '-1',
+  `polar_yellow_2_err` float NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`fill`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `fill_polar_new` (
+  `fill` int(10) unsigned NOT NULL DEFAULT '0',
   `polarimeter_id` tinyint(4) NOT NULL DEFAULT '-1',
   `ring_id` tinyint(4) NOT NULL DEFAULT '-1',
   `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -15,6 +43,27 @@ CREATE TABLE IF NOT EXISTS `fill_polar` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `fill_profile` (
+  `fill` int(10) unsigned NOT NULL DEFAULT '0',
+  `profile_blue_h` float NOT NULL DEFAULT '-1',
+  `profile_blue_h_err` float NOT NULL DEFAULT '-1',
+  `profile_blue_v` float NOT NULL DEFAULT '-1',
+  `profile_blue_v_err` float NOT NULL DEFAULT '-1',
+  `profile_yellow_h` float NOT NULL DEFAULT '-1',
+  `profile_yellow_h_err` float NOT NULL DEFAULT '-1',
+  `profile_yellow_v` float NOT NULL DEFAULT '-1',
+  `profile_yellow_v_err` float NOT NULL DEFAULT '-1',
+  `pmax_blue_h` float NOT NULL DEFAULT '-1',
+  `pmax_blue_h_err` float NOT NULL DEFAULT '-1',
+  `pmax_blue_v` float NOT NULL DEFAULT '-1',
+  `pmax_blue_v_err` float NOT NULL DEFAULT '-1',
+  `pmax_yellow_h` float NOT NULL DEFAULT '-1',
+  `pmax_yellow_h_err` float NOT NULL DEFAULT '-1',
+  `pmax_yellow_v` float NOT NULL DEFAULT '-1',
+  `pmax_yellow_v_err` float NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`fill`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `fill_profile_new` (
   `fill` int(10) unsigned NOT NULL DEFAULT '0',
   `polarimeter_id` tinyint(4) NOT NULL DEFAULT '-1',
   `target_orient` tinyint(4) NOT NULL DEFAULT '-1',
