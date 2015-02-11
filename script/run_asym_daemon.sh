@@ -25,19 +25,7 @@ while true;  do
     echo "$file_list" | while read -r file_name; do
 	if [[ ! -z $file_name ]]; then
 	    run_name=${file_name%.data}
-	    if [[ $run_name == *".0"* ]]; then
-	    args="--update-db -g -r $run_name --set-calib-alpha 230115a.blu1.alpha0"
-	    fi
-	    if [[ $run_name == *".2"* ]]; then
-	    args="--update-db -g -r $run_name --set-calib-alpha 230115a.blu2.alpha0"
-	    fi
-	    if [[ $run_name == *".1"* ]]; then
-	    args="--update-db -g -r $run_name --set-calib-alpha 230115a.yel1.alpha0"
-	    fi
-	    if [[ $run_name == *".3"* ]]; then
-	    args="--update-db -g -r $run_name --set-calib-alpha 230115a.yel2.alpha0"
-	    fi
-#	    args="--update-db -g -r $run_name"
+	    args="--update-db -g -r $run_name"
 	    if [[ $run_name == *".alpha0" ]]; then
 		args="--alpha $args"
 	    fi
