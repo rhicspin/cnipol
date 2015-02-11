@@ -31,7 +31,7 @@ while true;  do
 	    fi
 	    echo $CNIPOL_DIR/build/asym $args 
 	    $CNIPOL_DIR/build/asym $args
-	    rsync -a ${CNIPOL_RESULTS_DIR}/${run_name} gdwebb@pc2pc.phy.bnl.gov:${CNIPOL_ONLINE_DIR} > /dev/null
+	    rsync -a ${CNIPOL_RESULTS_DIR}/${run_name} cnipol@pc2pc.phy.bnl.gov:${CNIPOL_ONLINE_DIR} > /dev/null
 	fi
     done
     sleep ${CHECKINGPERIOD}
