@@ -38,7 +38,7 @@ void CnipolPmtHists::BookHists()
 
       sprintf(hName, "hTdc_ch%02d", iChId);
       o[hName] = new TH1I(hName, hName, 100, 0, 100);
-      ((TH1*) o[hName])->SetOption("hist NOIMG");
+      ((TH1*) o[hName])->SetOption("hist");
       ((TH1*) o[hName])->SetTitle("; TDC; Events;");
 
       sprintf(hName, "hAdcAmpltd_ch%02d", iChId);

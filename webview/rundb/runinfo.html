@@ -709,6 +709,28 @@ are:<br>
 -->
 
 </table>
+<?php
+// only show this section for measurements processed later than Feb 13, 2015
+if ($rc['fAnaDateTime'] >= 1423851440) {
+?>
+<h2 id="hjet_polar" class="count">PMT</h2>
+<!-- {{{ -->
+<div id="div:hjet_polar" class="section">
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+<tr>
+<td align="center"><?=$gP->img("pmt/hTdc_ch73")?></td>
+<td align="center"><?=$gP->img("pmt/hTdc_ch74")?></td>
+<td align="center"><?=$gP->img("pmt/hTdc_ch75")?></td>
+<td align="center"><?=$gP->img("pmt/hTdc_ch76")?></td>
+</tr>
+</table>
+
+</div>
+<!-- }}} -->
+<?php
+}
+?>
 
 </div>
 <!-- }}} -->
