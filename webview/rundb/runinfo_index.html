@@ -109,6 +109,11 @@ $profileRatios = array();
 <?php
 //print count($es);
 while ($e = mysql_fetch_assoc($rslt)):
+   // such polarization can't exist
+   if ($e['polarization'] == 1.0)
+   {
+      $e['polarization_error'] = -1.0;
+   }
    //$e->PrintThis();
 
    //print "<pre>\n";
