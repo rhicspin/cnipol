@@ -34,7 +34,7 @@ protected:
    AnaGlobResult             *fAnaGlobResult;
    time_t                     fStartTime;
    time_t                     fEndTime;                // the time of the last measurement in the fill
-   AnaFillExternResult       *fAnaFillExternResult;
+   AnaFillExternResult        fAnaFillExternResult;
 
    PolId2TGraphMap            fPCPolarGraphs;          // polarization at flattop
    PolId2TGraphMap            fPCPolarInjGraphs;       // polarization measurements at 24 GeV by polarimeter
@@ -110,11 +110,9 @@ public:
    TGraphErrors*        GetRotCurStarGraph(ERingId ringId) const;
    TGraphErrors*        GetRotCurPhenixGraph(ERingId ringId) const;
    TGraphErrors*        GetSnakeCurGraph(ERingId ringId) const;
-   AnaFillExternResult* GetAnaFillExternResult() const;
    void                 AddMeasResult(AnaMeasResult &result);
    void                 AddMeasResult(EventConfig &mm);
    void                 AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);
-   void                 AddExternInfo(std::ifstream &file);
    void                 Process(DrawObjContainer *ocOut=0);
    Bool_t               IsValidFlattopMeas(const MeasInfo &measInfo);
    ValErrPair           GetPCPolar(EPolarimeterId polId, PolId2ValErrMap *normJC=0) const;

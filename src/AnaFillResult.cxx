@@ -22,7 +22,7 @@ using namespace std;
 
 /** */
 AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
-   fAnaGlobResult(0), fStartTime(LONG_MAX), fEndTime(0), fAnaFillExternResult(0),
+   fAnaGlobResult(0), fStartTime(LONG_MAX), fEndTime(0), fAnaFillExternResult(fillId),
    fPCPolarGraphs(), fPCPolarInjGraphs(), fPCProfRGraphs(), fPCProfRInjGraphs(),
    fPCTargets(),
    fPCPolarFitRes(), fPolProfRFitRes(),
@@ -68,10 +68,10 @@ AnaFillResult::~AnaFillResult() { }
 /** */
 time_t AnaFillResult::GetStartTime()      const { return fStartTime; }
 time_t AnaFillResult::GetEndTime()        const { return fEndTime; }
-time_t AnaFillResult::GetLumiOnRelTime()  const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  - fStartTime : -1; }
-time_t AnaFillResult::GetLumiOffRelTime() const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff - fStartTime : -1; }
-time_t AnaFillResult::GetLumiOnTime()     const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOn  : 0; }
-time_t AnaFillResult::GetLumiOffTime()    const { return fAnaFillExternResult ? fAnaFillExternResult->fTimeEventLumiOff : 0; }
+time_t AnaFillResult::GetLumiOnRelTime()  const { return fAnaFillExternResult.fTimeEventLumiOn  - fStartTime; }
+time_t AnaFillResult::GetLumiOffRelTime() const { return fAnaFillExternResult.fTimeEventLumiOff - fStartTime; }
+time_t AnaFillResult::GetLumiOnTime()     const { return fAnaFillExternResult.fTimeEventLumiOn; }
+time_t AnaFillResult::GetLumiOffTime()    const { return fAnaFillExternResult.fTimeEventLumiOff; }
 
 
 /** */
@@ -80,12 +80,6 @@ void AnaFillResult::Print(const Option_t* opt) const
    Info("Print", "Print members:");
    printf("Fill %d:\n", fFillId);
    //PrintAsPhp();
-
-   // debugging
-   if (fAnaFillExternResult)
-      Info("Print", "extern result is available");
-   else
-      Error("Print", "extern result is NOT available");
 
    AnaMeasResultMapConstIter iAnaMeasResult = fAnaMeasResults.begin();
 
@@ -170,8 +164,8 @@ void AnaFillResult::Print(const Option_t* opt) const
 }
 
 
-TGraphErrors* AnaFillResult::GetGrBluIntens() const { return fAnaFillExternResult ? fAnaFillExternResult->GetGrBluIntens() : 0; }
-TGraphErrors* AnaFillResult::GetGrYelIntens() const { return fAnaFillExternResult ? fAnaFillExternResult->GetGrYelIntens() : 0; }
+TGraphErrors* AnaFillResult::GetGrBluIntens() const { return fAnaFillExternResult.GetGrBluIntens(); }
+TGraphErrors* AnaFillResult::GetGrYelIntens() const { return fAnaFillExternResult.GetGrYelIntens(); }
 
 
 /** */
@@ -215,12 +209,10 @@ TGraphErrors* AnaFillResult::GetRotCurStarGraph(ERingId ringId) const
 {
    TGraphErrors *gr = 0;
 
-   if (!fAnaFillExternResult) return gr;
-
-   if (ringId == kBLUE_RING && fAnaFillExternResult->fBluRotCurStarGraph)
-      gr = fAnaFillExternResult->fBluRotCurStarGraph;
-   else if (ringId == kYELLOW_RING && fAnaFillExternResult->fYelRotCurStarGraph)
-      gr = fAnaFillExternResult->fYelRotCurStarGraph;
+   if (ringId == kBLUE_RING && fAnaFillExternResult.fBluRotCurStarGraph)
+      gr = fAnaFillExternResult.fBluRotCurStarGraph;
+   else if (ringId == kYELLOW_RING && fAnaFillExternResult.fYelRotCurStarGraph)
+      gr = fAnaFillExternResult.fYelRotCurStarGraph;
 
    return gr;
 }
@@ -231,12 +223,10 @@ TGraphErrors* AnaFillResult::GetRotCurPhenixGraph(ERingId ringId) const
 {
    TGraphErrors *gr = 0;
 
-   if (!fAnaFillExternResult) return gr;
-
-   if (ringId == kBLUE_RING && fAnaFillExternResult->fBluRotCurPhenixGraph)
-      gr = fAnaFillExternResult->fBluRotCurPhenixGraph;
-   else if (ringId == kYELLOW_RING && fAnaFillExternResult->fYelRotCurPhenixGraph)
-      gr = fAnaFillExternResult->fYelRotCurPhenixGraph;
+   if (ringId == kBLUE_RING && fAnaFillExternResult.fBluRotCurPhenixGraph)
+      gr = fAnaFillExternResult.fBluRotCurPhenixGraph;
+   else if (ringId == kYELLOW_RING && fAnaFillExternResult.fYelRotCurPhenixGraph)
+      gr = fAnaFillExternResult.fYelRotCurPhenixGraph;
 
    return gr;
 }
@@ -247,19 +237,13 @@ TGraphErrors* AnaFillResult::GetSnakeCurGraph(ERingId ringId) const
 {
    TGraphErrors *gr = 0;
 
-   if (!fAnaFillExternResult) return gr;
-
-   if (ringId == kBLUE_RING && fAnaFillExternResult->fBluSnakeCurGraph)
-      gr = fAnaFillExternResult->fBluSnakeCurGraph;
-   else if (ringId == kYELLOW_RING && fAnaFillExternResult->fYelSnakeCurGraph)
-      gr = fAnaFillExternResult->fYelSnakeCurGraph;
+   if (ringId == kBLUE_RING && fAnaFillExternResult.fBluSnakeCurGraph)
+      gr = fAnaFillExternResult.fBluSnakeCurGraph;
+   else if (ringId == kYELLOW_RING && fAnaFillExternResult.fYelSnakeCurGraph)
+      gr = fAnaFillExternResult.fYelSnakeCurGraph;
 
    return gr;
 }
-
-
-/** */
-AnaFillExternResult* AnaFillResult::GetAnaFillExternResult() const { return fAnaFillExternResult; }
 
 
 ///** */
@@ -342,41 +326,6 @@ void AnaFillResult::AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn)
 
 
 /** */
-void AnaFillResult::AddExternInfo(std::ifstream &file)
-{
-   if (file.good()) {
-
-      long begin = file.tellg();
-      file.seekg(0, ios::end);
-      long end = file.tellg();
-
-      if (end - begin <= 0) {
-         Error("AddExternInfo", "Invalid/Empty file provided with external info");
-         file.close();
-         return;
-      }
-
-      file.seekg(0, ios::beg);
-
-      Info("AddExternInfo", "Found external info");
-      fAnaFillExternResult = new AnaFillExternResult(file);
-      //fAnaFillExternResult->GetGrBluIntens()->Print();
-      //fAnaFillExternResult->GetGrYelIntens()->Print();
-      // adjust the starttime if neccessary
-      fStartTime = fAnaFillExternResult->fTimeEventLumiOff < fStartTime ? fAnaFillExternResult->fTimeEventLumiOff : fStartTime;
-      fStartTime = fAnaFillExternResult->fTimeEventLumiOn  < fStartTime ? fAnaFillExternResult->fTimeEventLumiOn  : fStartTime;
-
-      fEndTime   = fAnaFillExternResult->fTimeEventLumiOn  > fEndTime ? fAnaFillExternResult->fTimeEventLumiOn  : fEndTime;
-      fEndTime   = fAnaFillExternResult->fTimeEventLumiOff > fEndTime ? fAnaFillExternResult->fTimeEventLumiOff : fEndTime;
-   } else {
-      Error("AddExternInfo", "Invalid file provided with external info");
-   }
-
-   file.close();
-}
-
-
-/** */
 void AnaFillResult::Process(DrawObjContainer *ocOut)
 {
    // Loop over all measurements in this fill
@@ -432,7 +381,7 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       //Info("Process", "zzz %p", (void*) iAnaMeasResult->second.fhAsymVsBunchId_X45);
       //iAnaMeasResult->second.fhAsymVsBunchId_X45->Print();
-      if (fAnaFillExternResult && fAnaFillExternResult->GetGrBluIntens())
+      if (fAnaFillExternResult.GetGrBluIntens())
       {
          //fFlattopEnergy = measInfo.GetBeamEnergy();
          fFillType = kFILLTYPE_PHYSICS;
@@ -516,9 +465,6 @@ Bool_t AnaFillResult::IsValidFlattopMeas(const MeasInfo &measInfo)
    if (measInfo.GetBeamEnergy() == kINJECTION) return kFALSE;
 
    //if (!fAnaFillExternResult) return kFALSE;
-
-   //time_t lumion  = fAnaFillExternResult->fTimeEventLumiOn  - fStartTime;
-   //time_t lumioff = fAnaFillExternResult->fTimeEventLumiOff - fStartTime;
 
    //if (measInfo.fStartTime-fStartTime < lumion || measInfo.fStartTime-fStartTime > lumioff) return kFALSE;
 
@@ -1442,11 +1388,6 @@ void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo
 /** */
 void AnaFillResult::UpdateExternGraphRange()
 {
-   if (!fAnaFillExternResult) {
-      Error("UpdateExternGraphRange", "Fill %d. External results not available", fFillId);
-      return;
-   }
-
    // Fit the intensity graphs
    // Loop over rings
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
@@ -1481,13 +1422,8 @@ void AnaFillResult::UpdateExternGraphRange()
 /** */
 void AnaFillResult::FitExternGraphs()
 {
-   if (!fAnaFillExternResult) {
-      Error("FitExternGraphs", "Fill %d. External results not available", fFillId);
-      return;
-   }
-
-   time_t lumion  = fAnaFillExternResult->fTimeEventLumiOn  - fStartTime;
-   time_t lumioff = fAnaFillExternResult->fTimeEventLumiOff - fStartTime;
+   time_t lumion  = fAnaFillExternResult.fTimeEventLumiOn  - fStartTime;
+   time_t lumioff = fAnaFillExternResult.fTimeEventLumiOff - fStartTime;
 
    if (lumion >= lumioff) {
       Error("FitExternGraphs", "Lumi-on and lumi-off markers are invalid");
@@ -1508,8 +1444,6 @@ void AnaFillResult::FitExternGraphs()
       TGraphErrors *grIntens = GetIntensGraph(ringId);
 
       if (!grIntens) continue;
-
-      //Info("FitExternGraphs", "Duration %d", fAnaFillExternResult->fTimeEventLumiOff - fAnaFillExternResult->fTimeEventLumiOn);
 
       //if ( fabs(lumioff - lumion) < 3600 ) continue;
 

@@ -8,6 +8,8 @@
 #include "TObject.h"
 #include "TGraphErrors.h"
 
+#include <opencdev.h>
+
 #include "AsymCommon.h"
 
 
@@ -33,16 +35,12 @@ protected:
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 
-public:
-
-protected:
-
-   void ReadInfo(std::ifstream &file);
+   TGraphErrors* MakeGraph(const std::map<opencdev::cdev_time_t, double> &values);
+   void LoadInfo(UInt_t fillId);
 
 public:
 
-   AnaFillExternResult();
-   AnaFillExternResult(std::ifstream &file);
+   AnaFillExternResult(UInt_t fillId);
    ~AnaFillExternResult();
 
    TGraphErrors* GetGrBluIntens() const;
