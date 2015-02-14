@@ -342,6 +342,24 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
          hBCVsFillTime_->GetListOfFunctions()->Add(gr, "p");
          det++;
       }
+
+      if (afr.fMeasInfosByPolId.count(*iPolId))
+      {
+         MeasInfoPtrSet mset = afr.fMeasInfosByPolId.at(*iPolId);
+         TGraphErrors *mark_gr = new TGraphErrors(mset.size());
+         int i = 0;
+
+         for(MeasInfoPtrSetConstIter it = mset.begin(); it != mset.end(); it++)
+         {
+            MeasInfo *measInfo = *it;
+            mark_gr->SetPoint(i, measInfo->fStartTime - afr.GetStartTime(), -0.1);
+            i++;
+         }
+
+         mark_gr->SetMarkerStyle(23);
+         mark_gr->SetMarkerSize(5);
+         hBCVsFillTime_->GetListOfFunctions()->AddFirst(mark_gr, "p");
+      }
    }
 
 
