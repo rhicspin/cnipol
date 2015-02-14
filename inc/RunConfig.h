@@ -46,6 +46,7 @@ public:
    static Color_t     AsColor(ESpinState spin);
    static Color_t     AsColor(EAsymType asymType);
    static Color_t     AsColor(UShort_t chId);
+   static Color_t     DetAsColor(int det);
    static TAttMarker  AsMarker(ETargetOrient targetOrient, EPolarimeterId polId);
 
    static EBeamId     GetBeamId(EPolarimeterId polId);

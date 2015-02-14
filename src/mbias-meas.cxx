@@ -20,6 +20,7 @@
 #include "SshLogReader.h"
 #include "CachingLogReader.h"
 #include "BiasCurrentUtil.h"
+#include "RunConfig.h"
 
 #include "DrawObjContainer.h"
 
@@ -114,17 +115,6 @@ void FillDeviceMaxMin(map<Short_t, Result> &results)
 }
 
 
-Color_t GetLineColor(int det)
-{
-   Color_t  line_color = det + 2;
-   if (line_color == 5)
-   {
-      line_color = 28;
-   }
-   return line_color;
-}
-
-
 void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *name, Result &r1, Result &r2)
 {
    ObjMap	&o = oc->o;
@@ -139,12 +129,7 @@ void PlotCorrelation(DrawObjContainer *oc, const string &polIdName, const char *
    {
       int	i = 0;
       TGraph *g = new TGraph(0);
-      Color_t  line_color = det + 2;
-      if (line_color == 5)
-      {
-         line_color = 28;
-      }
-      g->SetMarkerColor(line_color);
+      g->SetMarkerColor(RunConfig::DetAsColor(det));
 
       for (map<string, vector<double> >::iterator it = r1.second.begin(); it != r1.second.end(); it++)
       {

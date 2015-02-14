@@ -328,6 +328,17 @@ Color_t RunConfig::AsColor(UShort_t chId)
 }
 
 
+Color_t RunConfig::DetAsColor(int det)
+{
+   Color_t  color = det + 2;
+   if (color == 5)
+   {
+      color = 28;
+   }
+   return color;
+}
+
+
 /** */
 TAttMarker RunConfig::AsMarker(ETargetOrient targetOrient, EPolarimeterId polId)
 {
