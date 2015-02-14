@@ -39,9 +39,9 @@ void AnaFillExternResult::Print(const Option_t* opt) const
 }
 
 
-TGraphErrors* AnaFillExternResult::MakeGraph(const std::map<opencdev::cdev_time_t, double> &values)
+TGraphErrors* AnaFillExternResult::MakeGraph(const std::map<opencdev::cdev_time_t, double> &values, int thin_out_factor)
 {
-   TGraphErrors *gr = new TGraphErrors(values.size());
+   TGraphErrors *gr = new TGraphErrors(values.size() / thin_out_factor);
    int i = 0;
 
    for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
@@ -49,7 +49,10 @@ TGraphErrors* AnaFillExternResult::MakeGraph(const std::map<opencdev::cdev_time_
       opencdev::cdev_time_t time = it->first;
       double value = it->second;
 
-      gr->SetPoint(i, time, value);
+      if ((i % thin_out_factor) == 0)
+      {
+         gr->SetPoint(i / thin_out_factor, time, value);
+      }
       i++;
    }
 
@@ -73,8 +76,8 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    log_reader.query_fill("RHIC/PowerSupplies/rot-ps", fillId, &result);
    log_reader.query_fill("RHIC/PowerSupplies/snake-ps", fillId, &result);
 
-   fBluIntensGraph = MakeGraph(result["bluDCCTtotal"]);
-   fYelIntensGraph = MakeGraph(result["yelDCCTtotal"]);
+   fBluIntensGraph = MakeGraph(result["bluDCCTtotal"], 100);
+   fYelIntensGraph = MakeGraph(result["yelDCCTtotal"], 100);
    fBluRotCurStarGraph = MakeGraph(result["bi5-rot3-outer"]);
    fYelRotCurStarGraph = MakeGraph(result["yo5-rot3-outer"]);
    fBluRotCurPhenixGraph = MakeGraph(result["yi7-rot3-outer"]);

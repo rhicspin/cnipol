@@ -37,7 +37,7 @@ protected:
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 
-   TGraphErrors* MakeGraph(const std::map<opencdev::cdev_time_t, double> &values);
+   TGraphErrors* MakeGraph(const std::map<opencdev::cdev_time_t, double> &values, int thin_out_factor=1);
    void LoadInfo(UInt_t fillId);
 
 public:
