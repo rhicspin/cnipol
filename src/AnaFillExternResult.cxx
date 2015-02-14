@@ -4,6 +4,7 @@
 
 #include "AnaFillExternResult.h"
 #include "AnaGlobResult.h"
+#include "BiasCurrentUtil.h"
 #include "CachingLogReader.h"
 #include "SshLogReader.h"
 #include "Target.h"
@@ -81,14 +82,30 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    fBluSnakeCurGraph = MakeGraph(result["bo3-snk7-outer"]);
    fYelSnakeCurGraph = MakeGraph(result["yi3-snk7-outer"]);
 
-   const std::map<opencdev::cdev_time_t, double> &values = result["bluDCCTtotal"];
-   for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
    {
-      opencdev::cdev_time_t time = it->first;
+      const std::map<opencdev::cdev_time_t, double> &values = result["bluDCCTtotal"];
+      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
+      {
+         opencdev::cdev_time_t time = it->first;
 
-      // Determine the lumi on/off events
-      if (time < fTimeEventLumiOn)  fTimeEventLumiOn  = (time_t) time;
-      if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
+         // Determine the lumi on/off events
+         if (time < fTimeEventLumiOn)  fTimeEventLumiOn  = (time_t) time;
+         if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
+      }
+   }
+
+   opencdev::result_t bc_result;
+   log_reader.set_additional_args("");
+   log_reader.query_fill("RHIC/Polarimeter/Blue/biasReadbacks", fillId, &bc_result);
+   log_reader.query_fill("RHIC/Polarimeter/Yellow/biasReadbacks", fillId, &bc_result);
+   for(opencdev::result_t::const_iterator it = bc_result.begin(); it != bc_result.end(); it++)
+   {
+      const string &key = it->first;
+      const map<opencdev::cdev_time_t, double> &values = it->second;
+
+      EPolarimeterId polId = BiasCurrentUtil::ParseLoggerPolId(key);
+      TGraphErrors *gr = MakeGraph(values);
+      fBCCurGraph[polId].push_back(gr);
    }
 }
 

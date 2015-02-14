@@ -246,6 +246,15 @@ TGraphErrors* AnaFillResult::GetSnakeCurGraph(ERingId ringId) const
 }
 
 
+std::vector<TGraphErrors*> AnaFillResult::GetBCCurGraphs(EPolarimeterId polId) const
+{
+   if (fAnaFillExternResult.fBCCurGraph.count(polId))
+     return fAnaFillExternResult.fBCCurGraph.at(polId);
+
+   return vector<TGraphErrors*>();
+}
+
+
 ///** */
 //void AnaFillResult::PrintAsPhp(FILE *f) const
 //{
@@ -1389,6 +1398,22 @@ void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo
 void AnaFillResult::UpdateExternGraphRange()
 {
    // Fit the intensity graphs
+
+   // Loop over polarimeters
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      Double_t x, y;
+      vector<TGraphErrors*> grs = GetBCCurGraphs(*iPolId);
+
+      for(vector<TGraphErrors*>::const_iterator it = grs.begin(); it != grs.end(); it++)
+      {
+         TGraphErrors *gr = *it;
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+      }
+   }
+
    // Loop over rings
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
 

@@ -157,6 +157,18 @@ void MAsymSingleFillHists::BookHistsByPolarimeter(EPolarimeterId polId)
    hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
    styleMarker.Copy(*hist);
    o[shName] = hist;
+
+   shName = "hBCVsFillTime_" + strDirName + "_" + sPolId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, -50, 0);
+   hist->SetTitle("; Time in Fill, hours; BiasCurrent, \\mu A;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   //hist->GetXaxis()->SetTimeOffset(0, "local");
+   //hist->GetXaxis()->SetTimeOffset(3600*6, "gmt");
+   hist->GetXaxis()->SetTimeOffset(0, "gmt");
+   hist->GetXaxis()->SetTimeDisplay(1);
+   hist->GetXaxis()->SetTimeFormat("%H");
+   hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
+   o[shName] = hist;
 }
 
 
@@ -315,6 +327,21 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
       }
 
       utils::UpdateLimitsFromGraphs(hRVsFillTime_, 2);
+
+      // Now deal with bias currents
+      TH1* hBCVsFillTime_ = (TH1*) o["hBCVsFillTime_" + strDirName + "_" + sPolId];
+      vector<TGraphErrors*> grs = afr.GetBCCurGraphs(*iPolId);
+      int det = 0;
+
+      for(vector<TGraphErrors*>::const_iterator it = grs.begin(); it != grs.end(); it++)
+      {
+         TGraphErrors *gr = *it;
+         gr->SetMarkerStyle(20);
+         gr->SetMarkerColor(RunConfig::DetAsColor(det));
+         gr->SetMarkerSize(0.3);
+         hBCVsFillTime_->GetListOfFunctions()->Add(gr, "p");
+         det++;
+      }
    }
 
 

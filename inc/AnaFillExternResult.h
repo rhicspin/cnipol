@@ -3,6 +3,7 @@
 #define AnaFillExternResult_h
 
 #include <map>
+#include <vector>
 #include <time.h>
 
 #include "TObject.h"
@@ -32,6 +33,7 @@ protected:
    TGraphErrors *fYelRotCurPhenixGraph;
    TGraphErrors *fBluSnakeCurGraph;
    TGraphErrors *fYelSnakeCurGraph;
+   std::map< EPolarimeterId, std::vector<TGraphErrors*> > fBCCurGraph;
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 
