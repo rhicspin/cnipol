@@ -87,27 +87,6 @@ Asymmetry per bunch averaged over all p-Carbon measurements taken between the lu
 
 <?//endif;  ?>
 
-
-<tr>
-<td>
-   <?=$gP->img("hExternInfoVsFillTime_{$gFillId}", false, 500)?>
-<div class="thumbcaption">
-Snake and rotator currents for STAR and PHENIX
-</div>
-
-<td>
-<table class="simple00">
-<tr>
-<td>
-   <?=$gP->img("hIntensVsFillTime_{$gFillId}_BLU", false, 500)?>
-   <div class="thumbcaption_cm"> <span class='bluPol'>Blue</span> </div>
-<td>
-   <?=$gP->img("hIntensVsFillTime_{$gFillId}_YEL", false, 500)?>
-   <div class="thumbcaption_cm"> <span class='yelPol'>Yellow</span> </div>
-</table>
-<div class="thumbcaption"> Beam intensity between the lumi-on and lumi-off events </div>
-
-
 <tr>
 <td>
 
@@ -159,6 +138,41 @@ Snake and rotator currents for STAR and PHENIX
 
 </table>
 
+
+</div>
+<!-- }}} -->
+
+<h1 id="cdev_logs" class="count">CDEV Logs</h1>
+<!-- {{{ -->
+<div id="div:cdev_logs" class="section">
+
+<h2 id="rhic" class="count">RHIC</h2>
+<!-- {{{ -->
+<div id="div:rhic" class="section">
+
+<table class="simple00 cntr" cellspacing=15 align=center>
+<tr>
+<td>
+   <?=$gP->img("hExternInfoVsFillTime_{$gFillId}", false, 500)?>
+<div class="thumbcaption">
+Snake and rotator currents for STAR and PHENIX
+</div>
+
+<td>
+<table class="simple00">
+<tr>
+<td>
+   <?=$gP->img("hIntensVsFillTime_{$gFillId}_BLU", false, 500)?>
+   <div class="thumbcaption_cm"> <span class='bluPol'>Blue</span> </div>
+<td>
+   <?=$gP->img("hIntensVsFillTime_{$gFillId}_YEL", false, 500)?>
+   <div class="thumbcaption_cm"> <span class='yelPol'>Yellow</span> </div>
+</table>
+<div class="thumbcaption"> Beam intensity between the lumi-on and lumi-off events </div>
+</tr>
+</table>
+</div>
+<!-- }}} -->
 
 </div>
 <!-- }}} -->
