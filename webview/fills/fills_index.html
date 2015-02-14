@@ -403,13 +403,22 @@ foreach ($globResult->fFillResults as $fill):
                                polarPairToString($globResult->fMissingBeamPolarSlopes[2][$fill->fBeamEnergy], "feature");
 
 
+   $gAnaName   = "run".sprintf("%02d", $_GET['rp']);
+   $gAnaResDir = DATA_DIR."/$gAnaName/";
+
 if ($gMode == 11):
    print $fill->FormatAsCSV();
 elseif ($gMode == 2):
 ?>
 
 <tr class=my_tr_highlight>
-   <td class=align_cm><a href="?fillid=<?=$strFillId?>&rp=<?=$_GET['rp']?>"><?=$strFillId?></a>
+   <td class=align_cm><?php
+if (file_exists("$gAnaResDir/images/fills/$strFillId")) {
+   echo '<a href="?fillid=' . $strFillId . '&rp=' . $_GET['rp'] . '">' . $strFillId . '</a>';
+} else {
+   echo $strFillId;
+}
+?>
    <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$strFillId?>'>-->
 
    <td class='align_cm'><?=$strFillType?>
@@ -458,7 +467,13 @@ else:
 ?>
 
 <tr class=my_tr_highlight>
-   <td class=align_cm><a href="?fillid=<?=$strFillId?>&rp=<?=$_GET['rp']?>"><?=$strFillId?></a>
+   <td class=align_cm><?php
+if (file_exists("$gAnaResDir/images/fills/$strFillId")) {
+   echo '<a href="?fillid=' . $strFillId . '&rp=' . $_GET['rp'] . '">' . $strFillId . '</a>';
+} else {
+   echo $strFillId;
+}
+?>
    <!--<td class=align_cm><input type='checkbox' name='selectedFills[] value=<?=$strFillId?>'>-->
 
    <td class='align_cm'><?=$strFillType?>
