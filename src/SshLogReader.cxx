@@ -196,7 +196,8 @@ void SshLogReader::ExecuteCmd(string cmd, string *response)
       }
       if (retcode)
       {
-         if (response->find("Can't find start time for event specified") != string::npos)
+         if ((response->find("Can't find start time for event specified") != string::npos)
+             || (response->find("Can't find stop time for event specified") != string::npos))
          {
             gSystem->Error("SshLogReader", "event selector failed. Additional args: '%s'", fAdditionalArgs.c_str());
             return;
