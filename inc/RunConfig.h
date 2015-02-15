@@ -57,6 +57,8 @@ public:
    static UShort_t    GetDetectorChannelId(UShort_t chId);
 
    void SetBeamEnergies(BeamEnergySet beamEnergies);
+
+    ClassDef(RunConfig, 0);
 };
 
 #endif
