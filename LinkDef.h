@@ -61,4 +61,9 @@
 #pragma link C++ class AnaMeasResult;
 #pragma link C++ class MeasInfo;
 
+// misc
+#pragma link C++ class ChannelCalibMap+;
+#pragma link C++ class ChannelCalibMap::iterator+;
+#pragma link C++ class ChannelCalibMap::value_type+;
+
 #endif
