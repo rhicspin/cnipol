@@ -186,11 +186,6 @@ ValErrPair AnaFillResult::GetIntensDecay(ERingId ringId) const
    ValErrPair decay(0, -1);
 
    TGraphErrors *gr = GetIntensGraph(ringId);
-   if (!gr) {
-      Warning("GetIntensDecay", "Fill %d. No graph defined for ringId %d", fFillId, ringId);
-      return decay;
-   }
-
    TF1* func = gr->GetFunction("fitFunc");
    if (!func) {
       Warning("GetIntensDecay", "Fill %d. No fit function defined in intensity graph for ringId %d", fFillId, ringId);
@@ -390,7 +385,8 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
 
       //Info("Process", "zzz %p", (void*) iAnaMeasResult->second.fhAsymVsBunchId_X45);
       //iAnaMeasResult->second.fhAsymVsBunchId_X45->Print();
-      if (fAnaFillExternResult.GetGrBluIntens())
+      if ((fAnaFillExternResult.GetGrBluIntens()->GetN() != 0)
+       && (fAnaFillExternResult.GetGrYelIntens()->GetN() != 0))
       {
          //fFlattopEnergy = measInfo.GetBeamEnergy();
          fFillType = kFILLTYPE_PHYSICS;
@@ -1014,8 +1010,8 @@ ValErrPair AnaFillResult::CalcAvrgPolar(EPolarimeterId polId)
    ERingId ringId = RunConfig::GetRingId(polId);
 
    TGraphErrors *grIntens = GetIntensGraph(ringId);
-   if (!grIntens) {
-      Warning("CalcAvrgPolar", "No intensity graph available for weighted average calculation %d. Unweighted average returned", polId);
+   if (grIntens->GetN() == 0) {
+      Warning("CalcAvrgPolar", "No intensity values available for weighted average calculation %d. Unweighted average returned", polId);
       avrgPol = CalcAvrgPolarUnweighted(polId);
       return avrgPol;
    }
@@ -1468,7 +1464,7 @@ void AnaFillResult::FitExternGraphs()
 
       TGraphErrors *grIntens = GetIntensGraph(ringId);
 
-      if (!grIntens) continue;
+      if (grIntens->GetN() == 0) continue;
 
       //if ( fabs(lumioff - lumion) < 3600 ) continue;
 
