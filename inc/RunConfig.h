@@ -56,8 +56,6 @@ public:
    static UShort_t    GetDetectorId(UShort_t chId);
    static UShort_t    GetDetectorChannelId(UShort_t chId);
 
-   static std::string GetBiasCurrentLoggerName(EPolarimeterId polId);
-
    void SetBeamEnergies(BeamEnergySet beamEnergies);
 };
 
