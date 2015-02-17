@@ -64,7 +64,7 @@ CachingLogReader<T>::~CachingLogReader()
 template<class T>
 string CachingLogReader<T>::GetDatabaseFilePath()
 {
-   return "cdev_cache.sqlite";
+   return ("/tmp/cdev_cache-" + gSystem->GetUserInfo()->fUser + ".sqlite").Data();
 }
 
 
