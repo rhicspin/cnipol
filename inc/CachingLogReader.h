@@ -24,6 +24,7 @@ public:
    CachingLogReader();
    ~CachingLogReader();
 
+   virtual string GetDatabaseFilePath();
    virtual void Run(string cmd, opencdev::result_t *values);
 };
 

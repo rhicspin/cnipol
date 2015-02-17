@@ -24,7 +24,7 @@ CachingLogReader<T>::CachingLogReader()
 {
    if (!fDB)
    {
-      if (sqlite3_open("cdev_cache.sqlite", &fDB) != SQLITE_OK)
+      if (sqlite3_open(GetDatabaseFilePath().c_str(), &fDB) != SQLITE_OK)
       {
          gSystem->Error("CachingLogReader", "Can't open cdev cache");
       }
@@ -58,6 +58,13 @@ CachingLogReader<T>::~CachingLogReader()
       sqlite3_close(fDB);
       fDB = NULL;
    }
+}
+
+
+template<class T>
+string CachingLogReader<T>::GetDatabaseFilePath()
+{
+   return "cdev_cache.sqlite";
 }
 
 
