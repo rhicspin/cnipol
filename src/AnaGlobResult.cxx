@@ -255,7 +255,7 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
 void AnaGlobResult::AddHJMeasResult()
 {
    std::stringstream fullPath("");
-   fullPath << fPathExternResults << "/hjet_pol_run13";
+   fullPath << fPathExternResults << "/hjet_pol_run15";
    ifstream file(fullPath.str().c_str());
 
    Info("AddHJMeasResult", "Adding HJet polarization from file: %s", fullPath.str().c_str());
