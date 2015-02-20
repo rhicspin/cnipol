@@ -3,9 +3,9 @@
 include_once("Pair.php");
 
 
-define("DATA_DIR", "/usr/local/polarim/root");
-define("LOG_DIR",  "/usr/local/polarim/log");
-define("VIDEO_DIR",  "/usr/local/polarim/video");
+define("DATA_DIR", "/home/cnipol/root");
+define("LOG_DIR",  "/home/cnipol/log");
+define("VIDEO_DIR",  "/home/cnipol/video");
 
 // Approximate fill numbers
 $RUN_PERIOD_BY_FILL = array (
