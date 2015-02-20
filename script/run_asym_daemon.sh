@@ -6,7 +6,7 @@ source /direct/eic+u/gwebb/pCpol/cnipol/script/setup.sh 15 > /dev/null
 
 CNIPOL_REMOTE_BLUE_DATA_DIR=/home/blue/20$RUN_ID/data
 CNIPOL_REMOTE_YELLOW_DATA_DIR=/home/yellow/20$RUN_ID/data
-CNIPOL_ONLINE_DIR=/usr/local/polarim/root
+CNIPOL_ONLINE_DIR=/home/cnipol/root
 RUNLIST=/eicdata/eic0005/runXX/lists/run${RUN_ID}_all
 
 while true;  do
