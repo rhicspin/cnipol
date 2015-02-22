@@ -1,5 +1,9 @@
 <?php
 
+// constants to workaround runconfig.php contents
+define('nan', NAN);
+define('inf', INF);
+
 include_once("Pair.php");
 
 
