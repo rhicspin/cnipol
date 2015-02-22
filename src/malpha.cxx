@@ -50,8 +50,11 @@ void FillFromHist(TH1F *h, double startTime, ResultMean &result, ResultMean &res
 
    TFitResultPtr fitres = h->Fit("pol0", "QS"); // Q: quiet, S: return fitres
 
-   result.first[startTime] = fitres->Value(0);
-   result_err.first[startTime] = fitres->FitResult::Error(0);
+   if (fitres.Get())
+   {
+      result.first[startTime] = fitres->Value(0);
+      result_err.first[startTime] = fitres->FitResult::Error(0);
+   }
 
    result.second[startTime].resize(N_DETECTORS);
    result_err.second[startTime].resize(N_DETECTORS);
