@@ -206,17 +206,21 @@ endfor;
 
 <p>
 
+<?php
+$newstyle_gain_plots = ($rc['fAnaDateTime'] >= 1388534400); // 00:00:00 01/01/2014
+?>
+
 <table class="simple00 cntr" cellspacing=15 align=center>
 
 <tr class="toprow2">
 <td>
-<?=$gP->img('alpha/hAmGain')?>
+<?=$newstyle_gain_plots ? $gP->img('alpha/hAmGain') : $gP->img('alpha/hAmAmpCoef')?>
 <div class="thumbcaption">
 Calibration constants calculated using the <b>amplitude</b> (A) in the maximum of the signal shape
 </div>
 
 <td>
-<?=$gP->img('alpha/hAmIntGain')?>
+<?=$newstyle_gain_plots ? $gP->img('alpha/hAmIntGain') : $gP->img('alpha/hAmIntCoef')?>
 <div class="thumbcaption">
 Calibration constants calculated using the <b>integral</b> (I) of the signal shape
 </div>
@@ -243,14 +247,14 @@ Calibration constants calculated using the <b>integral</b> (I) of the signal sha
 <?=$gP->img('alpha/hAmpltd')?>
 <td align=center>
 <td align=center>
-<?=$gP->img('alpha/hAmGainWidth')?>
+<?=$newstyle_gain_plots ? $gP->img('alpha/hAmGainWidth') : $gP->img('alpha/hAmAmpWidth')?>
 
 <tr>
 <td align=center>
 <?=$gP->img('alpha/hIntgrl')?>
 <td align=center>
 <td align=center>
-<?=$gP->img('alpha/hAmIntGainWidth')?>
+<?=$newstyle_gain_plots ? $gP->img('alpha/hAmIntGainWidth') : $gP->img('alpha/hAmIntWidth')?>
 
 <tr>
 <td align=center colspan=3>
