@@ -301,7 +301,7 @@ foreach($rc['fSiliconChannels'] as $chanId) {
 
    $img = $gP->img("hAmpltd_ch$chanId", false, 250);
    print "<td>$img\n";
-   print "channel $chanId\n";
+   print "<a href=./?runid=$gRunId&chanid=$chanId>channel $chanId</a>\n";
    
 }
 ?>
