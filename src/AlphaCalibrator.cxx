@@ -107,6 +107,20 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->GetYaxis()->SetTitle("Dead layer size, \\mu g/cm^2");
    ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetOption("E1 GRIDX GRIDY");
 
+   // Dead layer size value are invalid in the channels where Gd peak wasn't found
+   // We now remove such values
+   for(map<UShort_t, ChannelCalib>::iterator it = fChannelCalibs.begin(); it != fChannelCalibs.end(); it++)
+   {
+      UInt_t channelId = it->first;
+      const ChannelCalib &channelCalib = it->second;
+
+      if (channelId == 0) continue; // channel id 0 is used to store "mean calibration"
+      if (channelCalib.fGdAmp.fCoef < 0)
+      {
+         ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetBinContent(channelId, 0);
+         ((TH1F*) c->d["alpha"]->o["hDeadLayerSize"])->SetBinError(channelId, 0);
+      }
+   }
 
    CalibrateBadChannels(c);
 }
