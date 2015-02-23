@@ -92,13 +92,12 @@ string SshLogReader::ReadStream(FILE *fd)
    return string(buf, data_size);
 }
 
-
 vector<string> SshLogReader::ParseCellList(string line)
 {
    vector<string> result;
    char *copy = strdup(line.c_str());
-   assert(string(strtok(copy, " \t")) == "Time");
-   const char *tok;
+   const char *tok = strtok(copy, " \t");
+   assert(string(tok) == "Time");
    while ((tok = strtok(NULL, " \t")))
    {
       if (strlen(tok))
