@@ -236,8 +236,43 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
    ((TH2F*) sd->o["hTvsA_ch"      + sSi])->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) sd->o["hTvsA_zoom_ch" + sSi])->Fill(data.fAmpltd, data.fTdc);
    ((TH2F*) sd->o["hTvsI_ch"      + sSi])->Fill(data.fIntgrl, data.fTdc);
+}
 
-   if (data.fTdc <= ALPHA_TDC_CUT)
+
+/** */
+void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
+{
+   Info("PostFillPassOne", "Called");
+
+   // determine TDC distribution baseline
+   TH1F *hTdc = (TH1F*)o["hTdc"];
+   TFitResultPtr fitres = hTdc->Fit("pol0", "S"); // S: return fitres
+   double baseline = fitres->Value(0);
+
+   Int_t xfirst = hTdc->GetXaxis()->GetFirst();
+   Int_t xlast  = hTdc->GetXaxis()->GetLast();
+   for (Int_t bin = xfirst; bin <= xlast; bin++) {
+      double value = hTdc->GetBinContent(bin);
+      if (value > baseline*2)
+      {
+         Info("PostFillPassOne", "bad TDC bin %i", bin);
+         bad_tdc_bins.insert(bin);
+      }
+   }
+}
+
+
+/** */
+void CnipolAlphaHists::Fill(ChannelEvent *ch)
+{
+   UChar_t      chId = ch->GetChannelId();
+   ChannelData &data = ch->fChannel;
+
+   string sSi("  ");
+   sprintf(&sSi[0], "%02d", chId);
+   DrawObjContainer *sd = d["channel" + sSi];
+
+   if ((data.fTdc <= ALPHA_TDC_CUT) && !bad_tdc_bins.count(data.fTdc))
    {
       ((TH1F*) o["hAmpltd"])->Fill(data.fAmpltd);
       ((TH1F*) o["hIntgrl"])->Fill(data.fIntgrl);
@@ -246,18 +281,6 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
       ((TH1F*) sd->o["hIntgrl_ch" + sSi])->Fill(data.fIntgrl);
       ((TH2F*) sd->o["hIvsA_ch"   + sSi])->Fill(data.fAmpltd, data.fIntgrl);
    }
-}
-
-
-/** */
-void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
-{
-}
-
-
-/** */
-void CnipolAlphaHists::Fill(ChannelEvent *ch)
-{
 }
 
 
@@ -295,21 +318,44 @@ void CnipolAlphaHists::PostFill()
    utils::UpdateLimits((TH1*) o["hGdIntGain"]);
    utils::UpdateLimits((TH1*) o["hGdIntGainWidth"]);
 
-   // Visualize the TDC cut
+   // Visualize the TDC cuts
    TVirtualPad *backup = gPad;
-   TH2F *h;
    TLine *l;
-   h = (TH2F*)o["hTvsA"];
+   TH2F *hTvsA = (TH2F*)o["hTvsA"];
    o["hTvsA"] = new TCanvas("hTvsA", "");
-   h->Draw();
+   hTvsA->Draw();
    l = new TLine(0, ALPHA_TDC_CUT, 255, ALPHA_TDC_CUT);
    l->SetLineWidth(3);
    l->Draw();
-   h = (TH2F*)o["hTvsI"];
+   TH2F *hTvsI = (TH2F*)o["hTvsI"];
    o["hTvsI"] = new TCanvas("hTvsI", "");
-   h->Draw();
+   hTvsI->Draw();
    l = new TLine(0, ALPHA_TDC_CUT, 255, ALPHA_TDC_CUT);
    l->SetLineWidth(3);
    l->Draw();
+   for(set<int>::const_iterator it = bad_tdc_bins.begin(); it != bad_tdc_bins.end(); it++)
+   {
+      const Style_t FILL_STYLE = 3013;
+      const Color_t FILL_COLOR = kBlack;
+      int bin = *it;
+      double up, low;
+      TBox *b;
+
+      ((TCanvas*) o["hTvsA"])->cd();
+      low = hTvsA->GetXaxis()->GetBinLowEdge(bin);
+      up = hTvsA->GetXaxis()->GetBinUpEdge(bin);
+      b = new TBox(hTvsA->GetXaxis()->GetXmin(), low, hTvsA->GetXaxis()->GetXmax(), up);
+      b->SetFillStyle(FILL_STYLE);
+      b->SetFillColor(FILL_COLOR);
+      b->Draw();
+
+      ((TCanvas*) o["hTvsI"])->cd();
+      low = hTvsI->GetXaxis()->GetBinLowEdge(bin);
+      up = hTvsI->GetXaxis()->GetBinUpEdge(bin);
+      b = new TBox(hTvsI->GetXaxis()->GetXmin(), low, hTvsI->GetXaxis()->GetXmax(), up);
+      b->SetFillStyle(FILL_STYLE);
+      b->SetFillColor(FILL_COLOR);
+      b->Draw();
+   }
    gPad = backup;
 }
