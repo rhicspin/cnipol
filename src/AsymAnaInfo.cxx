@@ -263,8 +263,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case 'C':
       case AsymAnaInfo::MODE_ALPHA:
-         fAsymModes |= AsymAnaInfo::MODE_ALPHA;
-         fAsymModes &= ~AsymAnaInfo::MODE_NORMAL; // turn off normal mode
+         fAsymModes = AsymAnaInfo::MODE_ALPHA;
          break;
 
       case AsymAnaInfo::MODE_NO_NORMAL:
