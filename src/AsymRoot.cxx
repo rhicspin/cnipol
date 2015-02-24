@@ -151,6 +151,7 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolAlphaHists(dir);
       fHists->d["alpha"] = oc;
       fHistCuts[kCUT_PASSONE].insert(oc);
+      fHistCuts[kCUT_PASSTWO].insert(oc);
    }
 
    dir = new TDirectoryFile("calib", "calib", "", fOutRootFile);

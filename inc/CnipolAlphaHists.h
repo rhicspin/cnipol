@@ -30,6 +30,7 @@ public:
    void FillPassOne(ChannelEvent *ch);
    void PostFill();
    void PostFillPassOne(DrawObjContainer *oc=0);
+   void Fill(ChannelEvent *ch);
 
    ClassDef(CnipolAlphaHists, 1)
 };

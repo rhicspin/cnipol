@@ -250,15 +250,21 @@ void CnipolAlphaHists::FillPassOne(ChannelEvent *ch)
 
 
 /** */
-void CnipolAlphaHists::PostFill()
+void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 {
 }
 
 
 /** */
-void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
+void CnipolAlphaHists::Fill(ChannelEvent *ch)
 {
-   Info("PostFillPassOne", "Called");
+}
+
+
+/** */
+void CnipolAlphaHists::PostFill()
+{
+   Info("PostFill", "Called");
 
    // Adjust axis ranges
    Int_t    maxBinA = ((TH1F*) o["hAmpltd"])->GetMaximumBin();
