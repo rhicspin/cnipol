@@ -417,7 +417,7 @@ void AsymRoot::FillDerived()
 
 
 /** */
-void AsymRoot::PostFill(MseMeasInfoX &run)
+void AsymRoot::PostFill()
 {
    Info("PostFill", "Called");
 
@@ -425,15 +425,6 @@ void AsymRoot::PostFill(MseMeasInfoX &run)
    // Some histograms may depend on other histograms in independent containers
    // For example, 'profile' depends on 'asym'
    fHists->PostFill();
-
-   // Add info to database entry
-   run.profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
-   run.profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
-
-   run.polarization        = gAnaMeasResult->GetPCPolar().first;
-   run.polarization_error  = gAnaMeasResult->GetPCPolar().second;
-   run.phase               = gAnaMeasResult->GetPCPolarPhase().first;
-   run.phase_error         = gAnaMeasResult->GetPCPolarPhase().second;
 }
 
 

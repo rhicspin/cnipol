@@ -10,7 +10,6 @@
 #include "TTree.h"
 
 #include "AsymGlobals.h"
-#include "MseMeasInfo.h"
 
 #include "AnaEvent.h"
 #include "Calibrator.h"
@@ -75,7 +74,7 @@ public:
    void         PreFill();
    void         Fill(ECut cut);
    void         FillDerived();
-   void         PostFill(MseMeasInfoX &run);
+   void         PostFill();
    void         FillScallerHists(Int_t *hData, UShort_t chId);
    void         FillTargetHists(Int_t n, Double_t *hData);
    void         FillProfileHists(UInt_t n, Int_t *hData);

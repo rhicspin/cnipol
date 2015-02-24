@@ -160,7 +160,16 @@ int main(int argc, char *argv[])
       rawDataReader.ReadDataPassTwo(*mseMeasInfoX);
 
       gAsymRoot->FillDerived();
-      gAsymRoot->PostFill(*mseMeasInfoX);
+      gAsymRoot->PostFill();
+
+      // Add info to database entry
+      mseMeasInfoX->profile_ratio       = gAnaMeasResult->fProfilePolarR.first;
+      mseMeasInfoX->profile_ratio_error = gAnaMeasResult->fProfilePolarR.second;
+
+      mseMeasInfoX->polarization        = gAnaMeasResult->GetPCPolar().first;
+      mseMeasInfoX->polarization_error  = gAnaMeasResult->GetPCPolar().second;
+      mseMeasInfoX->phase               = gAnaMeasResult->GetPCPolarPhase().first;
+      mseMeasInfoX->phase_error         = gAnaMeasResult->GetPCPolarPhase().second;
    }
 
    // No data analysis is done beyond this point only bookkeeping
