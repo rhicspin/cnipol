@@ -44,7 +44,7 @@ void CnipolAlphaHists::BookHists()
    //o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 35, 165, 200);
 
    // The axis range will be/can be adjusted later based on the peak position
-   o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 255, 0, 255);
+   o["hAmpltd"] = new TH1F("hAmpltd", "hAmpltd", 220, 0, 220);
    ((TH1*) o["hAmpltd"])->SetTitle("; Amplitude, ADC; Events; ");
 
    o["hIntgrl"] = new TH1F("hIntgrl", "hIntgrl", 255, 0, 255);
@@ -56,7 +56,7 @@ void CnipolAlphaHists::BookHists()
    o["hTdc"]    = new TH1F("hTdc", "hTdc",  80, 0, 80);
    ((TH1*) o["hTdc"])->SetTitle("; TDC; Events; ");
 
-   o["hTvsA"] = new TH2F("hTvsA",   "hTvsA", 255, 0, 255, 80, 0, 80);
+   o["hTvsA"] = new TH2F("hTvsA",   "hTvsA", 220, 0, 220, 80, 0, 80);
    ((TH1*) o["hTvsA"])->SetOption("colz LOGZ");
    ((TH1*) o["hTvsA"])->SetTitle("; Amplitude, ADC; TDC;");
 
@@ -65,7 +65,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hTvsI"])->GetXaxis()->SetTitle("Integral, ADC");
    ((TH2F*) o["hTvsI"])->GetYaxis()->SetTitle("TDC");
 
-   o["hIvsA"]        = new TH2F("hIvsA",   "hIvsA", 255, 0, 255, 255, 0, 255);
+   o["hIvsA"]        = new TH2F("hIvsA",   "hIvsA", 220, 0, 220, 255, 0, 255);
    ((TH2F*) o["hIvsA"])->SetOption("colz LOGZ");
    ((TH2F*) o["hIvsA"])->GetXaxis()->SetTitle("Amplitude, ADC");
    ((TH2F*) o["hIvsA"])->GetYaxis()->SetTitle("Integral, ADC");
@@ -172,7 +172,7 @@ void CnipolAlphaHists::BookHists()
       //( (TH1F*) feedback.o[hName]) -> SetLineColor(2);
 
       sprintf(hName, "hAmpltd_ch%02d", iCh);
-      oc->o[hName] = new TH1F(hName, hName, 255, 0, 255);
+      oc->o[hName] = new TH1F(hName, hName, 220, 0, 220);
       ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; Events; ");
 
       sprintf(hName, "hIntgrl_ch%02d", iCh);
@@ -184,7 +184,7 @@ void CnipolAlphaHists::BookHists()
       ((TH1*) oc->o[hName])->SetTitle("; TDC; Events; ");
 
       sprintf(hName, "hTvsA_ch%02d", iCh);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 80, 0, 80);
+      oc->o[hName] = new TH2F(hName, hName, 220, 0, 220, 80, 0, 80);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; TDC;");
 
@@ -199,7 +199,7 @@ void CnipolAlphaHists::BookHists()
       ((TH1*) oc->o[hName])->SetTitle("; Integral, ADC; TDC; ");
 
       sprintf(hName, "hIvsA_ch%02d", iCh);
-      oc->o[hName] = new TH2F(hName, hName, 255, 0, 255, 255, 0, 255);
+      oc->o[hName] = new TH2F(hName, hName, 220, 0, 220, 255, 0, 255);
       ((TH1*) oc->o[hName])->SetOption("colz LOGZ");
       ((TH1*) oc->o[hName])->SetTitle("; Amplitude, ADC; Integral, ADC; ");
 
