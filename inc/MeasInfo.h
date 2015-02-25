@@ -174,7 +174,6 @@ public:
    Bool_t          IsSiliconChannel(UShort_t chId);
    UShort_t        GetNumActiveSiChannels() const;
    UShort_t        GetNumDisabledChannels() const;
-   Bool_t          IsHamaChannel(UShort_t chId);
    Bool_t          IsPmtChannel(UShort_t chId) const;
    Bool_t          IsSpinFlipperMarkerChannel(UShort_t chId) const;
    BeamBunchMap    GetBunches() const;

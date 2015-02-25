@@ -718,18 +718,6 @@ UShort_t MeasInfo::GetNumActiveSiChannels() const
 
 
 /** */
-Bool_t MeasInfo::IsHamaChannel(UShort_t chId)
-{
-   if ( ( (EPolarimeterId) fPolId == kB2D || (EPolarimeterId) fPolId == kY1D) &&
-        ( (chId >= 13 && chId <= 24) || (chId >= 49 && chId <= 60) )
-      )
-      return true;
-
-   return false;
-}
-
-
-/** */
 Bool_t MeasInfo::IsPmtChannel(UShort_t chId) const
 {
    if ( chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4 )

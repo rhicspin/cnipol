@@ -381,18 +381,6 @@ Bool_t ChannelEvent::IsSpinFlipperMarkerChannel() const
 
 
 /** */
-Bool_t ChannelEvent::PassCutHamaChannel()
-{
-   UShort_t chId = GetChannelId();
-
-   if ( gMeasInfo->IsHamaChannel(chId) )
-      return true;
-
-  return false;
-}
-
-
-/** */
 Bool_t ChannelEvent::PassCutPmtNoise()
 {
    if ( GetAmpltd() < 50 || GetAmpltd() > 150)
