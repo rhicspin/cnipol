@@ -246,7 +246,8 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 
    // determine TDC distribution baseline
    TH1F *hTdc = (TH1F*)o["hTdc"];
-   TFitResultPtr fitres = hTdc->Fit("pol0", "S"); // S: return fitres
+   TFitResultPtr fitres = hTdc->Fit("pol0", "WS"); // W: set weights to 1, S: return fitres
+
    if (fitres.Get()) {
       double baseline = fitres->Value(0);
       set<int> bins;
