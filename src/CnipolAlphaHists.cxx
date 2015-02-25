@@ -247,16 +247,18 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    // determine TDC distribution baseline
    TH1F *hTdc = (TH1F*)o["hTdc"];
    TFitResultPtr fitres = hTdc->Fit("pol0", "S"); // S: return fitres
-   double baseline = fitres->Value(0);
+   if (fitres.Get()) {
+      double baseline = fitres->Value(0);
 
-   Int_t xfirst = hTdc->GetXaxis()->GetFirst();
-   Int_t xlast  = hTdc->GetXaxis()->GetLast();
-   for (Int_t bin = xfirst; bin <= xlast; bin++) {
-      double value = hTdc->GetBinContent(bin);
-      if (value > baseline*2)
-      {
-         Info("PostFillPassOne", "bad TDC bin %i", bin);
-         bad_tdc_bins.insert(bin);
+      Int_t xfirst = hTdc->GetXaxis()->GetFirst();
+      Int_t xlast  = hTdc->GetXaxis()->GetLast();
+      for (Int_t bin = xfirst; bin <= xlast; bin++) {
+         double value = hTdc->GetBinContent(bin);
+         if (value > baseline*2)
+         {
+            Info("PostFillPassOne", "bad TDC bin %i", bin);
+            bad_tdc_bins.insert(bin);
+         }
       }
    }
 }
