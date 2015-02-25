@@ -249,6 +249,7 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
    TFitResultPtr fitres = hTdc->Fit("pol0", "S"); // S: return fitres
    if (fitres.Get()) {
       double baseline = fitres->Value(0);
+      set<int> bins;
 
       Int_t xfirst = hTdc->GetXaxis()->GetFirst();
       Int_t xlast  = hTdc->GetXaxis()->GetLast();
@@ -257,7 +258,9 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
          if (value > baseline*2)
          {
             Info("PostFillPassOne", "bad TDC bin %i", bin);
+            bad_tdc_bins.insert(bin - 1);
             bad_tdc_bins.insert(bin);
+            bad_tdc_bins.insert(bin + 1);
          }
       }
    }
