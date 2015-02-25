@@ -726,7 +726,10 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
 	            gAsymRoot->Fill(kCUT_CARBON);
          }
 
-         gAsymRoot->Fill(kCUT_PASSTWO);
+         if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
+         {
+            gAsymRoot->Fill(kCUT_PASSTWO);
+         }
 
          if (gMeasInfo->fNEventsProcessed%50000 == 0)
          {
