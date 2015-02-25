@@ -101,10 +101,11 @@ $asymVersionLink = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVer
    <td>
    <b>Run Start Time:</b> <?=isset($rc['start_time']) ? date("M d, Y H:i:s D", $rc['start_time']) : "&nbsp;";?>
    <td>
+   <b>Duration:</b> <?=($rc['fStartTime'] < $rc['fStopTime']) ? ($rc['fStopTime'] - $rc['fStartTime']) : "?";?> seconds
+   <td>
    <b>Total Events:</b> <?=number_format($rc['fNEventsTotal'])?>
    <td>
    <b>Beam Energy:</b> &mdash;
-   <td>&nbsp;
    <!--
    <td>
    <b>Size:</b> <?//=$s['dirsize']?>
@@ -115,11 +116,11 @@ $asymVersionLink = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVer
    <!--<b>Run End Time:</b> <?//=date("M j, Y H:i:s", $rc['StopTime'])?>-->
    <b>Processed Offline:</b> <?=date("M j, Y H:i:s", $rc['ana_start_time'])?>&nbsp;
    (<?=sprintf("%.0f", $rc['ana_duration']);?>&nbsp;s)
+   <td>&nbsp;
    <td>
    <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
    <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
    <? endif; ?>
-   <td>&nbsp;
    <td>
    <b>Asym Version:</b> <?=$asymVersionLink?>
 
