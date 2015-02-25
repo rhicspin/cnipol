@@ -246,22 +246,21 @@ void CnipolAlphaHists::PostFillPassOne(DrawObjContainer *oc)
 
    // determine TDC distribution baseline
    TH1F *hTdc = (TH1F*)o["hTdc"];
-   TFitResultPtr fitres = hTdc->Fit("pol0", "S"); // S: return fitres
-   if (fitres.Get()) {
-      double baseline = fitres->Value(0);
-      set<int> bins;
+   double baseline = utils::find_baseline(hTdc, 0.5);
+   TF1 *f = new TF1("pol0", "[0]", hTdc->GetXaxis()->GetXmin(), hTdc->GetXaxis()->GetXmax());
+   f->SetParameter(0, baseline);
+   hTdc->GetListOfFunctions()->Add(f);
 
-      Int_t xfirst = hTdc->GetXaxis()->GetFirst();
-      Int_t xlast  = hTdc->GetXaxis()->GetLast();
-      for (Int_t bin = xfirst; bin <= xlast; bin++) {
-         double value = hTdc->GetBinContent(bin);
-         if (value > baseline*2)
-         {
-            Info("PostFillPassOne", "bad TDC bin %i", bin);
-            bad_tdc_bins.insert(bin - 1);
-            bad_tdc_bins.insert(bin);
-            bad_tdc_bins.insert(bin + 1);
-         }
+   // Mark outliers
+   Int_t xfirst = hTdc->GetXaxis()->GetFirst();
+   Int_t xlast  = hTdc->GetXaxis()->GetLast();
+   for (Int_t bin = xfirst; bin <= xlast; bin++) {
+      double value = hTdc->GetBinContent(bin);
+      if (value > baseline*2) {
+         Info("PostFillPassOne", "bad TDC bin %i", bin);
+         bad_tdc_bins.insert(bin - 1);
+         bad_tdc_bins.insert(bin);
+         bad_tdc_bins.insert(bin + 1);
       }
    }
 }
