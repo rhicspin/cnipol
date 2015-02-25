@@ -119,8 +119,8 @@ $asymVersionLink = "<a href=https://wiki.bnl.gov/rhicspin/Asym_versions#$asymVer
    <td>&nbsp;
    <td>
    <b>Events Processed:</b> <?=number_format($rc['fNEventsProcessed'])?>
-   <? if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
-   <? endif; ?>
+   <?php if ($rc['thinout'] > 1): ?>(every <?=ordinal_suffix($rc['thinout'])?> event)
+   <?php endif; ?>
    <td>
    <b>Asym Version:</b> <?=$asymVersionLink?>
 
