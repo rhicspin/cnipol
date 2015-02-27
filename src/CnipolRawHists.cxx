@@ -201,27 +201,10 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
    UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
    UChar_t  bId      = ch->GetBunchId() + 1;
 
-   // Speed up the filling process by getting the global bin number
-   TH1*  hist;
-   Int_t gbin;
-
-   hist = fhTvsA_ch_b[chId-1][bId-1];
-   gbin = hist->GetBin(adcA_bin, tdc_bin);
-   hist->AddBinContent(gbin);
-   hist->SetEntries(hist->GetEntries()+1);
-
-   hist = fhTvsI_ch[chId-1];
-   gbin = hist->GetBin(adcI_bin, tdc_bin);
-   hist->AddBinContent(gbin);
-   hist->SetEntries(hist->GetEntries()+1);
-
-   hist = fhIvsA_ch[chId-1];
-   gbin = hist->GetBin(adcA_bin, adcI_bin);
-   hist->AddBinContent(gbin);
-   hist->SetEntries(hist->GetEntries()+1);
-
-   hist = ((TH1*) o["hRevolutionId"]);
-   hist->Fill(ch->GetRevolutionId());
+   fhTvsA_ch_b[chId-1][bId-1]->Fill(adcA_bin, tdc_bin);
+   fhTvsI_ch[chId-1]->Fill(adcI_bin, tdc_bin);
+   fhIvsA_ch[chId-1]->Fill(adcA_bin, adcI_bin);
+   ((TH1*) o["hRevolutionId"])->Fill(ch->GetRevolutionId());
 }
 
 
