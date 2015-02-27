@@ -196,16 +196,16 @@ void CnipolRawHists::BookHists()
 /** */
 void CnipolRawHists::FillPassOne(ChannelEvent *ch)
 {
-   UChar_t  chId     = ch->GetChannelId();
-   UShort_t adcA_bin = ch->GetAmpltd() + 1;
-   UShort_t adcI_bin = ch->GetIntgrl() + 1;
-   UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
-   UChar_t  bId      = ch->GetBunchId() + 1;
+   UChar_t  chId = ch->GetChannelId();
+   UShort_t adcA = ch->GetAmpltd();
+   UShort_t adcI = ch->GetIntgrl();
+   UShort_t tdc  = ch->GetTdc();
+   UChar_t  bId  = ch->GetBunchId() + 1;
 
    if (ch->PassCutSiliconChannel()) {
-      fhTvsA_ch_b[chId-1][bId-1]->Fill(adcA_bin, tdc_bin);
-      fhTvsI_ch[chId-1]->Fill(adcI_bin, tdc_bin);
-      fhIvsA_ch[chId-1]->Fill(adcA_bin, adcI_bin);
+      fhTvsA_ch_b[chId-1][bId-1]->Fill(adcA, tdc);
+      fhTvsI_ch[chId-1]->Fill(adcI, tdc);
+      fhIvsA_ch[chId-1]->Fill(adcA, adcI);
       ((TH1*) o["hRevolutionId"])->Fill(ch->GetRevolutionId());
    }
 
