@@ -73,14 +73,14 @@ void CnipolRawHists::BookHists()
    hist->SetOption("colz LOGZ");
    o[shName] = hist;
 
-   shName = "hBunchCounts"; //former bunch_dist_raw
+   shName = "hBunchCounts";
    hist = new TH1I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5);
    hist->SetTitle("; Bunch Id; Events;");
    hist->SetOption("hist XY GRIDX");
    hist->SetFillColor(kGray);
    o[shName] = hist;
 
-   shName = "hStripCounts"; // former strip_dist_raw
+   shName = "hStripCounts";
    hist = new TH1I(shName.c_str(), shName.c_str(), N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
    hist->SetTitle("; Channel Id; Events;");
    hist->SetOption("hist XY GRIDX");
@@ -100,9 +100,6 @@ void CnipolRawHists::BookHists()
    hist->SetFillColor(kGray);
    hist->SetBit(TH1::kCanRebin);
    o[shName] = hist;
-
-   //shName = "hsTvsACumul";
-   //o[shName] = new THStack(shName.c_str(), shName.c_str());
 
    shName = "hChIdVsBunchId";
    hist = new TH2I(shName.c_str(), shName.c_str(), N_BUNCHES, 0.5, N_BUNCHES+0.5, N_SILICON_CHANNELS, 0.5, N_SILICON_CHANNELS+0.5);
@@ -172,17 +169,6 @@ void CnipolRawHists::BookHists()
       hist->SetTitle("; Amplitude, ADC; Integral, ADC;");
       oc->o[shName]      = hist;
       fhIvsA_ch[iChId-1] = hist;
-
-      //shName = "hTvsACumul_ch" + sChId;
-      //hist = new TH1F(shName.c_str(), shName.c_str(), 100, 0, 1);
-      //hist->SetOption("hist NOIMG");
-      //hist->SetTitle("; Digi Channel Frac; Event Frac;");
-      //hist->SetLineWidth(2);
-      //hist->SetLineColor(RunConfig::AsColor(iChId));
-      //hist->GetYaxis()->SetRangeUser(0, 1);
-      //oc->o[shName]           = hist;
-      //fhTvsACumul_ch[iChId-1] = hist;
-      //((THStack*) o["hsTvsACumul"])->Add(hist);
 
       for (UShort_t iBunchId=1; iBunchId<=N_BUNCHES; iBunchId++)
       {
@@ -319,9 +305,6 @@ void CnipolRawHists::FillDerivedPassOne()
       utils::CopyBinContentError(hProjTmp, hTdc_channel);
 
       hTdc->Add(hTdc_channel);
-
-      // Calculate cumulative histograms
-      //utils::ConvertToCumulative2(hTvsA_ch, (TH1F*) fhTvsACumul_ch[iCh-1]);
 
       if (!gCh2WfdMap) continue;
 
