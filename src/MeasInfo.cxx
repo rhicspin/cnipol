@@ -507,7 +507,7 @@ void MeasInfo::Update(MseMeasInfoX& run)
       gCh2WfdMap = ch2WfdMap_run13;
    } else if (RUNID >= 18000) {
       fRunId = 15;
-      // WFD mapping has changed
+      gCh2WfdMap = ch2WfdMap_run13;
    } else {
       // default Run value
    }
