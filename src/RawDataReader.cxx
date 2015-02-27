@@ -636,6 +636,11 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
             gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
          }
 
+         if ( gAsymRoot->fChannelEvent->PassCutStepperChannel() )
+         {
+            gAsymRoot->FillPassOne(kCUT_PASSONE_STEPPER);
+         }
+
          if ( gAsymAnaInfo->HasStudiesBit() && gAsymRoot->fChannelEvent->IsSpinFlipperMarkerChannel() )
          {
             gAsymRoot->AddSpinFlipperMarker();

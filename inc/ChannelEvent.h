@@ -81,6 +81,7 @@ public:
    Bool_t PassCutPmtChannel() const;
    Bool_t PassCutPmtNoise();
    Bool_t PassCutEmptyBunch() const;
+   Bool_t PassCutStepperChannel() const;
    Bool_t IsSpinFlipperMarkerChannel() const;
 
    ClassDef(ChannelEvent, 1)

@@ -728,6 +728,13 @@ Bool_t MeasInfo::IsPmtChannel(UShort_t chId) const
 
 
 /** */
+Bool_t MeasInfo::IsStepperChannel(UShort_t chId) const
+{
+   return (chId > N_SILICON_CHANNELS+4) && (chId <= N_SILICON_CHANNELS+8);
+}
+
+
+/** */
 Bool_t MeasInfo::IsSpinFlipperMarkerChannel(UShort_t chId) const
 {
    if ( (EPolarimeterId) fPolId == kB1U && chId == 76 ) // need to add a constrain by time

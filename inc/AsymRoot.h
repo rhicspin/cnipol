@@ -26,7 +26,8 @@ enum ECut {
    kCUT_PASSONE_PULSER, kCUT_PASSONE_PMT, kCUT_PASSONE_CALIB,
    kCUT_PASSONE_CALIB_EB, kCUT_RAW, kCUT_RAW_EB, kCUT_NOISE, kCUT_CARBON,
    kCUT_CARBON_EB,
-   kCUT_PASSTWO
+   kCUT_PASSTWO,
+   kCUT_PASSONE_STEPPER
 };
 
 typedef std::map<ECut, std::set<DrawObjContainer*> >   Cut2DrawObjContainerMap;

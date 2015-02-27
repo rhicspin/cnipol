@@ -175,6 +175,7 @@ public:
    UShort_t        GetNumActiveSiChannels() const;
    UShort_t        GetNumDisabledChannels() const;
    Bool_t          IsPmtChannel(UShort_t chId) const;
+   Bool_t          IsStepperChannel(UShort_t chId) const;
    Bool_t          IsSpinFlipperMarkerChannel(UShort_t chId) const;
    BeamBunchMap    GetBunches() const;
    BeamBunchMap    GetFilledBunches() const;

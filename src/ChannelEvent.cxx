@@ -369,6 +369,13 @@ Bool_t ChannelEvent::PassCutPmtChannel() const
 
 
 /** */
+Bool_t ChannelEvent::PassCutStepperChannel() const
+{
+   return gMeasInfo->IsStepperChannel(GetChannelId());
+}
+
+
+/** */
 Bool_t ChannelEvent::IsSpinFlipperMarkerChannel() const
 {
    UShort_t chId = GetChannelId();
