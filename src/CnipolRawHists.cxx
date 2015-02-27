@@ -93,6 +93,7 @@ void CnipolRawHists::BookHists()
    hist->SetOption("hist GRIDX");
    hist->SetFillColor(kGray);
    o[shName] = hist;
+   fhWfdCounts = hist;
 
    shName = "hRevolutionId";
    hist = new TH1I(shName.c_str(), shName.c_str(), 1000, 0, 1);
@@ -201,10 +202,16 @@ void CnipolRawHists::FillPassOne(ChannelEvent *ch)
    UShort_t tdc_bin  = ch->GetTdc() - 10 + 1; // 10 is the lowest edge of the TvsA histograms
    UChar_t  bId      = ch->GetBunchId() + 1;
 
-   fhTvsA_ch_b[chId-1][bId-1]->Fill(adcA_bin, tdc_bin);
-   fhTvsI_ch[chId-1]->Fill(adcI_bin, tdc_bin);
-   fhIvsA_ch[chId-1]->Fill(adcA_bin, adcI_bin);
-   ((TH1*) o["hRevolutionId"])->Fill(ch->GetRevolutionId());
+   if (ch->PassCutSiliconChannel()) {
+      fhTvsA_ch_b[chId-1][bId-1]->Fill(adcA_bin, tdc_bin);
+      fhTvsI_ch[chId-1]->Fill(adcI_bin, tdc_bin);
+      fhIvsA_ch[chId-1]->Fill(adcA_bin, adcI_bin);
+      ((TH1*) o["hRevolutionId"])->Fill(ch->GetRevolutionId());
+   }
+
+   if (gCh2WfdMap) {
+      fhWfdCounts->Fill(gCh2WfdMap[chId-1]);
+   }
 }
 
 
@@ -288,11 +295,6 @@ void CnipolRawHists::FillDerivedPassOne()
       utils::CopyBinContentError(hProjTmp, hTdc_channel);
 
       hTdc->Add(hTdc_channel);
-
-      if (!gCh2WfdMap) continue;
-
-      ((TH1I*) o["hWfdCounts"])->AddBinContent(gCh2WfdMap[iCh-1], hTvsA_ch->GetEntries());
-      ((TH1I*) o["hWfdCounts"])->SetEntries(((TH1I*) o["hWfdCounts"])->GetEntries() + hTvsA_ch->GetEntries());
    }
 }
 

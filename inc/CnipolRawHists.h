@@ -23,6 +23,7 @@ protected:
    TH1 *fhTvsACumul_ch[N_SILICON_CHANNELS];
    TH1 *fhTvsA_ch_b[N_SILICON_CHANNELS][N_BUNCHES];
    TH1 *fhTvsACumul_ch_b[N_SILICON_CHANNELS][N_BUNCHES];
+   TH1 *fhWfdCounts;
 
 public:
 

@@ -174,11 +174,15 @@ void AsymRoot::CreateRootFile(string filename)
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
       fHistCuts[kCUT_PASSONE].insert(oc);
+      fHistCuts[kCUT_PASSONE_PMT].insert(oc);
+      fHistCuts[kCUT_PASSONE_STEPPER].insert(oc);
 
       dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw_eb"] = oc;
       fHistCuts[kCUT_PASSONE_RAW_EB].insert(oc);
+      fHistCuts[kCUT_PASSONE_PMT].insert(oc);
+      fHistCuts[kCUT_PASSONE_STEPPER].insert(oc);
 
       dir = new TDirectoryFile("raw_neb", "raw_neb", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
