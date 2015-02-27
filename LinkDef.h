@@ -31,7 +31,6 @@
 #pragma link C++ class CnipolPreprocHists+;
 #pragma link C++ class CnipolProfileHists+;
 #pragma link C++ class CnipolPulserHists+;
-#pragma link C++ class CnipolRawExtendedHists+;
 #pragma link C++ class CnipolRawHists+;
 #pragma link C++ class CnipolRunHists+;
 #pragma link C++ class CnipolScalerHists+;

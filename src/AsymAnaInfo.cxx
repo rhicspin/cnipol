@@ -18,7 +18,7 @@ using namespace std;
 /** */
 AsymAnaInfo::AsymAnaInfo() : AnaInfo(),
    fRunName          (""),
-   fAsymModes        (MODE_NORMAL|MODE_PROFILE|MODE_TARGET|MODE_RAW_EXTENDED|MODE_ASYM|MODE_PMT|MODE_KINEMA),
+   fAsymModes        (MODE_NORMAL|MODE_PROFILE|MODE_TARGET|MODE_RAW|MODE_ASYM|MODE_PMT|MODE_KINEMA),
    fSaveTrees        (0),
    fDisabledDetectors(0),
    MassSigma         (3),
@@ -58,7 +58,6 @@ Bool_t AsymAnaInfo::HasAlphaBit()       const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasNormalBit()      const { return (fAsymModes & AsymAnaInfo::MODE_NORMAL)       == AsymAnaInfo::MODE_NORMAL; }
 Bool_t AsymAnaInfo::HasScalerBit()      const { return (fAsymModes & AsymAnaInfo::MODE_SCALER)       == AsymAnaInfo::MODE_SCALER; }
 Bool_t AsymAnaInfo::HasRawBit()         const { return (fAsymModes & AsymAnaInfo::MODE_RAW)          == AsymAnaInfo::MODE_RAW; }
-Bool_t AsymAnaInfo::HasRawExtendedBit() const { return (fAsymModes & AsymAnaInfo::MODE_RAW_EXTENDED) == AsymAnaInfo::MODE_RAW_EXTENDED; }
 Bool_t AsymAnaInfo::HasRunBit()         const { return (fAsymModes & AsymAnaInfo::MODE_RUN)          == AsymAnaInfo::MODE_RUN; }
 Bool_t AsymAnaInfo::HasTargetBit()      const { return (fAsymModes & AsymAnaInfo::MODE_TARGET)       == AsymAnaInfo::MODE_TARGET; }
 Bool_t AsymAnaInfo::HasProfileBit()     const { return (fAsymModes & AsymAnaInfo::MODE_PROFILE)      == AsymAnaInfo::MODE_PROFILE; }
@@ -118,7 +117,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"alpha",               no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
       {"scaler",              no_argument,         0,   AsymAnaInfo::MODE_SCALER},
       {"raw",                 no_argument,         0,   AsymAnaInfo::MODE_RAW},
-      {"raw-ext",             no_argument,         0,   AsymAnaInfo::MODE_RAW_EXTENDED},
       {"target",              no_argument,         0,   AsymAnaInfo::MODE_TARGET},
       {"profile",             no_argument,         0,   AsymAnaInfo::MODE_PROFILE},
       {"asym",                no_argument,         0,   AsymAnaInfo::MODE_ASYM},
@@ -131,7 +129,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"mode-no-normal",      no_argument,         0,   AsymAnaInfo::MODE_NO_NORMAL},
       {"mode-scaler",         no_argument,         0,   AsymAnaInfo::MODE_SCALER},
       {"mode-raw",            no_argument,         0,   AsymAnaInfo::MODE_RAW},
-      {"mode-raw-extended",   no_argument,         0,   AsymAnaInfo::MODE_RAW_EXTENDED},
       {"mode-run",            no_argument,         0,   AsymAnaInfo::MODE_RUN},
       {"mode-target",         no_argument,         0,   AsymAnaInfo::MODE_TARGET},
       {"mode-profile",        no_argument,         0,   AsymAnaInfo::MODE_PROFILE},
@@ -278,10 +275,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          fAsymModes |= AsymAnaInfo::MODE_RAW;
          break;
 
-      case AsymAnaInfo::MODE_RAW_EXTENDED:
-         fAsymModes |= AsymAnaInfo::MODE_RAW_EXTENDED;
-         break;
-
       case AsymAnaInfo::MODE_RUN:
          fAsymModes |= AsymAnaInfo::MODE_RUN;
          break;
@@ -422,7 +415,6 @@ void AsymAnaInfo::PrintUsage()
    cout << "     --mode-no-normal                 : Turn off the default set of histograms" << endl;
    cout << "     --mode-scaler, --scaler          : Fill and save scaler histograms (from V124 memory)" << endl;
    cout << "     --mode-raw, --raw                : Fill and save raw histograms" << endl;
-   cout << "     --mode-raw-extended, --raw-ext   : Fill and save more detailed raw histograms" << endl;
    cout << "     --mode-run                       : Fill and save bunch, lumi and other run related histograms" << endl;
    cout << "     --mode-target, --target          : Fill and save target histograms" << endl;
    cout << "     --mode-full                      : Fill and save all histograms" << endl;

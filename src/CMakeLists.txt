@@ -56,7 +56,6 @@ ADD_LIBRARY(
 	CnipolProfileHists.cxx
 	CnipolProfileHists.cxx
 	CnipolPulserHists.cxx
-	CnipolRawExtendedHists.cxx
 	CnipolRawHists.cxx
 	CnipolRunHists.cxx
 	CnipolScalerHists.cxx

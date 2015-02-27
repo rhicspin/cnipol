@@ -28,7 +28,6 @@ SET(
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolPreprocHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolProfileHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolPulserHists.h
-	${CMAKE_CURRENT_SOURCE_DIR}/CnipolRawExtendedHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolRawHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolRunHists.h
 	${CMAKE_CURRENT_SOURCE_DIR}/CnipolScalerHists.h

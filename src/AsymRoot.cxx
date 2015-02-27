@@ -21,7 +21,6 @@
 #include "CnipolPreprocHists.h"
 #include "CnipolProfileHists.h"
 #include "CnipolRawHists.h"
-#include "CnipolRawExtendedHists.h"
 #include "CnipolRunHists.h"
 #include "CnipolScalerHists.h"
 #include "CnipolSpinStudyHists.h"
@@ -170,22 +169,7 @@ void AsymRoot::CreateRootFile(string filename)
       fHists->d["scalers"] = new CnipolScalerHists(dir);
    }
 
-   if (gAsymAnaInfo->HasRawExtendedBit()) {
-      dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
-      oc  = new CnipolRawExtendedHists(dir);
-      fHists->d["raw"] = oc;
-      fHistCuts[kCUT_PASSONE].insert(oc);
-
-      dir = new TDirectoryFile("raw_eb", "raw_eb", "", fOutRootFile);
-      oc  = new CnipolRawExtendedHists(dir);
-      fHists->d["raw_eb"] = oc;
-      fHistCuts[kCUT_PASSONE_RAW_EB].insert(oc);
-
-      dir = new TDirectoryFile("raw_neb", "raw_neb", "", fOutRootFile);
-      oc  = new CnipolRawExtendedHists(dir);
-      fHists->d["raw_neb"] = oc;
-   }
-   else if (gAsymAnaInfo->HasRawBit()) {
+   if (gAsymAnaInfo->HasRawBit()) {
       dir = new TDirectoryFile("raw", "raw", "", fOutRootFile);
       oc  = new CnipolRawHists(dir);
       fHists->d["raw"] = oc;
