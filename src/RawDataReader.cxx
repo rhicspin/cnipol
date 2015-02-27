@@ -631,7 +631,7 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
                gAsymRoot->FillPassOne(kCUT_PASSONE_RAW_EB);
          }
 
-         if ( gAsymAnaInfo->HasPmtBit() && gAsymRoot->fChannelEvent->PassCutPmtChannel() )
+         if ( gAsymRoot->fChannelEvent->PassCutPmtChannel() )
          {
             gAsymRoot->FillPassOne(kCUT_PASSONE_PMT);
          }
