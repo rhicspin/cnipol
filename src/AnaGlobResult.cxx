@@ -273,11 +273,12 @@ void AnaGlobResult::AddHJMeasResult()
       {
          iline++;
 
-	 file >> fillId >> yelAsym >> yelAsymErr
-	      >> yelPolar >> yelPolarErr
-	      >> bluAsym >> bluAsymErr
+	 file >> fillId >> bluAsym >> bluAsymErr
 	      >> bluPolar >> bluPolarErr
+	      >> yelAsym >> yelAsymErr
+	      >> yelPolar >> yelPolarErr
 	      >> energy;
+	 // The file format of the H-jet result has blue first then yellow. Not vise versa.
 
          if (file.eof()) break;
 
