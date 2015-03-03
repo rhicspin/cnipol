@@ -148,14 +148,14 @@ void DeadLayerCalibratorEDepend::CalibrateChannel(UShort_t chId, TH1 *hTimeVsE, 
    // Reject points based on chi2
    TH1* hchi2       = (TH1*) fitResultHists->At(3);
    TH1* hchi2Log    = (TH1*) hchi2->Clone("hchi2Log");
-   TH1* hchi2_profy = new TH1F("p", "p", 20, hchi2Log->GetMinimum(), hchi2Log->GetMaximum());
 
    fitResultHists->Add(hchi2Log);   
 
    TF1* logFunc = new TF1("logFunc", "TMath::Log(x)", 0, 1e10);
    utils::Apply(hchi2Log, logFunc);
-   utils::ConvertToProfile(hchi2Log, hchi2_profy, kFALSE);
 
+   TH1* hchi2_profy = new TH1F("p", "p", 20, hchi2Log->GetMinimum(), hchi2Log->GetMaximum());
+   utils::ConvertToProfile(hchi2Log, hchi2_profy, kFALSE);
    Double_t hchi2_profy_mean = hchi2_profy->GetMean() <= 0 ? 0 : hchi2_profy->GetMean();
    Double_t hchi2_profy_rms  = hchi2_profy->GetRMS(); // was: use only half of the RMS
 
