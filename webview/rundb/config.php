@@ -61,34 +61,56 @@ $normJetCarbonByTarget[12][255]["B2D"] = 1.197;
 $normJetCarbonByTarget[12][255]["Y2U"] = 0.994;
 
 // Run 9
-$normHJPC[9][100]['B1U']['nomi'] = new pair(   1.00350,    0.01672);
-$normHJPC[9][100]['Y1D']['nomi'] = new pair(   1.00494,    0.01126);
-$normHJPC[9][100]['B2D']['nomi'] = new pair(   0.97621,    0.01097);
-$normHJPC[9][100]['Y2U']['nomi'] = new pair(   1.01649,    0.01183);
+/* $normHJPC[9][100]['B1U']['nomi'] = new pair(   1.00350,    0.01672); */
+/* $normHJPC[9][100]['Y1D']['nomi'] = new pair(   1.00494,    0.01126); */
+/* $normHJPC[9][100]['B2D']['nomi'] = new pair(   0.97621,    0.01097); */
+/* $normHJPC[9][100]['Y2U']['nomi'] = new pair(   1.01649,    0.01183); */
 
-$normHJPC[9][250]['B1U']['nomi'] = new pair(   0.89197,    0.02712);
-$normHJPC[9][250]['Y1D']['nomi'] = new pair(   0.91179,    0.02892);
-$normHJPC[9][250]['B2D']['nomi'] = new pair(   0.88177,    0.02703);
-$normHJPC[9][250]['Y2U']['nomi'] = new pair(   0.86630,    0.02722);
+$normHJPC[9][100]['B1U']['nomi'] = new pair(   1.001,  0.016);
+$normHJPC[9][100]['Y1D']['nomi'] = new pair(   1.005,  0.011 );
+$normHJPC[9][100]['B2D']['nomi'] = new pair(   0.9767, 0.0108);
+$normHJPC[9][100]['Y2U']['nomi'] = new pair(   1.015,  0.012 );
+
+/* $normHJPC[9][250]['B1U']['nomi'] = new pair(   0.89197,    0.02712); */
+/* $normHJPC[9][250]['Y1D']['nomi'] = new pair(   0.91179,    0.02892); */
+/* $normHJPC[9][250]['B2D']['nomi'] = new pair(   0.88177,    0.02703); */
+/* $normHJPC[9][250]['Y2U']['nomi'] = new pair(   0.86630,    0.02722); */
+$normHJPC[9][250]['B1U']['nomi'] = new pair( 0.8814  , 0.0258   );
+$normHJPC[9][250]['Y1D']['nomi'] = new pair( 0.9097  , 0.0267   );
+$normHJPC[9][250]['B2D']['nomi'] = new pair( 0.8625  , 0.0279   );
+$normHJPC[9][250]['Y2U']['nomi'] = new pair( 0.8836  , 0.0258   );
 
 // Run 11
-$normHJPC[11][250]['B1U']['nomi'] = new pair(   0.95675,    0.01368);
-$normHJPC[11][250]['Y1D']['nomi'] = new pair(   0.96189,    0.01753);
-$normHJPC[11][250]['B2D']['nomi'] = new pair(   1.05085,    0.02548);
-$normHJPC[11][250]['B2D']['V'][4] = new pair(   1.11481,    0.04070);
-$normHJPC[11][250]['B2D']['V'][6] = new pair(   1.20940,    0.03638);
-$normHJPC[11][250]['Y2U']['nomi'] = new pair(   0.95513,    0.01278);
+/* $normHJPC[11][250]['B1U']['nomi'] = new pair(   0.95675,    0.01368); */
+/* $normHJPC[11][250]['Y1D']['nomi'] = new pair(   0.96189,    0.01753); */
+/* $normHJPC[11][250]['B2D']['nomi'] = new pair(   1.05085,    0.02548); */
+/* $normHJPC[11][250]['B2D']['V'][4] = new pair(   1.11481,    0.04070); */
+/* $normHJPC[11][250]['B2D']['V'][6] = new pair(   1.20940,    0.03638); */
+/* $normHJPC[11][250]['Y2U']['nomi'] = new pair(   0.95513,    0.01278); */
+
+$normHJPC[11][250]['B1U']['nomi'] = new pair(   0.9572,    0.0133);
+$normHJPC[11][250]['Y1D']['nomi'] = new pair(   0.9604,    0.0174 );
+$normHJPC[11][250]['B2D']['nomi'] = new pair(   1.102 ,    0.018 );
+$normHJPC[11][250]['Y2U']['nomi'] = new pair(   0.9551,    0.0128 );
 
 // Run 12
-$normHJPC[12][100]['B1U']['nomi'] = new pair(   1.04706,    0.01295);
-$normHJPC[12][100]['Y1D']['nomi'] = new pair(   1.02821,    0.01557);
-$normHJPC[12][100]['B2D']['nomi'] = new pair(   1.12185,    0.02087);
-$normHJPC[12][100]['Y2U']['nomi'] = new pair(   0.97165,    0.01640);
+/* normHJPC[12][100]['B1U']['nomi'] = new pair(   1.04706,    0.01295); */
+/* $normHJPC[12][100]['Y1D']['nomi'] = new pair(   1.02821,    0.01557); */
+/* $normHJPC[12][100]['B2D']['nomi'] = new pair(   1.12185,    0.02087); */
+/* $normHJPC[12][100]['Y2U']['nomi'] = new pair(   0.97165,    0.01640); */
+$normHJPC[12][100]['B1U']['nomi'] = new pair(   1.040,    0.01);
+$normHJPC[12][100]['Y1D']['nomi'] = new pair(   1.018,    0.015);
+$normHJPC[12][100]['B2D']['nomi'] = new pair(   1.113,    0.020);
+$normHJPC[12][100]['Y2U']['nomi'] = new pair(   0.9968,    0.0198);
 
-$normHJPC[12][255]['B1U']['nomi'] = new pair(   0.99292,    0.01359);
-$normHJPC[12][255]['Y1D']['nomi'] = new pair(   1.08502,    0.01481);
-$normHJPC[12][255]['B2D']['nomi'] = new pair(   1.12329,    0.02078);
-$normHJPC[12][255]['Y2U']['nomi'] = new pair(   0.99830,    0.01658);
+/* $normHJPC[12][255]['B1U']['nomi'] = new pair(   0.99292,    0.01359); */
+/* $normHJPC[12][255]['Y1D']['nomi'] = new pair(   1.08502,    0.01481); */
+/* $normHJPC[12][255]['B2D']['nomi'] = new pair(   1.12329,    0.02078); */
+/* $normHJPC[12][255]['Y2U']['nomi'] = new pair(   0.99830,    0.01658); */
+$normHJPC[12][255]['B1U']['nomi'] = new pair(  0.971,  0.013);
+$normHJPC[12][255]['Y1D']['nomi'] = new pair(  1.088,  0.015);
+$normHJPC[12][255]['B2D']['nomi'] = new pair(  1.099,  0.019);
+$normHJPC[12][255]['Y2U']['nomi'] = new pair(  0.9966, 0.0155);
 
 // Run 13
 //$normHJPC[13][24]['B1U']['nomi'] = new pair(   1.07559,    0.02920);
