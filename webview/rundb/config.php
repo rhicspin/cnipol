@@ -129,9 +129,9 @@ $normHJPC[13][24]['Y2U']['nomi'] = new pair(   1.08,    0.03);
 /* $normHJPC[13][255]['Y1D']['nomi'] = new pair(  1.09,    0.02); */
 /* $normHJPC[13][255]['B2D']['nomi'] = new pair(  1.11,    0.03); */
 /* $normHJPC[13][255]['Y2U']['nomi'] = new pair(  1.08,    0.03); */
-$normHJPC[13][255]['B1U']['nomi'] = new pair(  0.9987,    0.0105);
+$normHJPC[13][255]['B1U']['nomi'] = new pair(  0.9824,    0.0104);
 $normHJPC[13][255]['Y1D']['nomi'] = new pair(  0.9552,    0.0094);
-$normHJPC[13][255]['B2D']['nomi'] = new pair(  0.9831,    0.0091);
+$normHJPC[13][255]['B2D']['nomi'] = new pair(  0.9671,    0.0090);
 $normHJPC[13][255]['Y2U']['nomi'] = new pair(  0.9503,    0.0099);
 
 
