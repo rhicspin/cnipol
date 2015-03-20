@@ -98,7 +98,6 @@ void FillAsymmetryHistgram(std::string mode, int sign, float *A, float *dA);
 // bunch asymmetry average routines
 void  calcBunchAsymmetryAverage();
 void  calcLRAsymmetry(float X90[2], float X45[2], float &A, float &dA);
-float TshiftFinder(int, int);
 
 // Profile Error
 float ProfileError(float x);
