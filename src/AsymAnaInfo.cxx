@@ -146,7 +146,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::gvr:f:n:s:o:e:d:baCDTBZMNW:UGR:",
+   while ((c = getopt_long(argc, argv, "?hl::gvr:f:n:s:d:baCTBZMW:GR:",
                            long_options, &option_index)) != -1)
    {
       stringstream sstr;
@@ -394,12 +394,7 @@ void AsymAnaInfo::PrintUsage()
    cout << " -n <number>                          : Maximum number of events to process"
         << " (default \"-n 0\" all events)" << endl;
    cout << " -s <real>                            : Approximate fraction of events to read/process (default \"-s 1\" no events skipped)" << endl;
-   cout << " -o <filename>                        : Output hbk file (!)" << endl;
    cout << " -l, --log=[filename]                 : Optional log file to redirect stdout and stderr" << endl;
-   cout << " -e <lower:upper>                     : Kinetic energy range (default [400:900] keV) (!)" << endl;
-   cout << " -D                                   : Dead layer mode on (!)" << endl;
-   cout << " -U                                   : Update histogram" << endl;
-   cout << " -N                                   : Store Ntuple events (!)" << endl;
    cout << " -R <bitmask>                         : Save events in Root trees, " <<
            "e.g. \"-R 101\"" << endl;
    cout << "     --alpha-sources <count>          : 1 for Am, 2 for Am+Gd" << endl;
@@ -420,10 +415,6 @@ void AsymAnaInfo::PrintUsage()
    cout << "     --update-db                      : Update run info in database" << endl;
    cout << "     --disable-det <bitmask>          : Exclude some detectors from the analysis, e.g. \"000100\" excludes detector 3" << endl;
    cout << "     --ac-dipole-period               : Unsigned integer representing dipole period in ticks, i.e. large number 16441672" << endl;
-   cout << endl;
-   cout << "Options marked with (!) are not supported" << endl;
-   cout << "Options marked with (?) need more work" << endl;
-   cout << endl;
 }
 
 
