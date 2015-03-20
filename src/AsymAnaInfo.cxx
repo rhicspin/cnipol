@@ -149,7 +149,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::gvr:f:n:s:o:t:e:m:d:baCDTBZF:MNW:UGR:",
+   while ((c = getopt_long(argc, argv, "?hl::gvr:f:n:s:o:e:d:baCDTBZMNW:UGR:",
                            long_options, &option_index)) != -1)
    {
       stringstream sstr;
@@ -216,22 +216,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          sstr.str("");
          sstr << optarg;
          sstr >> fThinout;
-         break;
-
-      case 't': // set timing shift in banana cut
-         tshift = atoi(optarg);
-         extinput.TSHIFT = 1;
-         break;
-
-      case 'F':
-         strncpy(cfile, optarg, sizeof(cfile));
-         strncat(reConfFile, cfile, sizeof(cfile) - 1 - strlen(cfile));
-         extinput.CONFIG = 1;
-         break;
-
-      case 'm':
-         MassSigma = atof(optarg);
-         extinput.MASSCUT = 1;
          break;
 
       case 'R':
@@ -415,11 +399,8 @@ void AsymAnaInfo::PrintUsage()
    cout << " -s <real>                            : Approximate fraction of events to read/process (default \"-s 1\" no events skipped)" << endl;
    cout << " -o <filename>                        : Output hbk file (!)" << endl;
    cout << " -l, --log=[filename]                 : Optional log file to redirect stdout and stderr" << endl;
-   cout << " -t <time shift>                      : TOF timing shift in [ns], addition to TSHIFT defined in run.db (!)" << endl;
    cout << " -e <lower:upper>                     : Kinetic energy range (default [400:900] keV) (!)" << endl;
    cout << " -D                                   : Dead layer mode on (!)" << endl;
-   cout << " -F <file>                            : Overwrite conf file defined in run.db (!)" << endl;
-   cout << " -m <sigma>                           : Banana cut by <sigma> from 12C mass [def]:3 sigma (!)" << endl;
    cout << " -U                                   : Update histogram" << endl;
    cout << " -N                                   : Store Ntuple events (!)" << endl;
    cout << " -R <bitmask>                         : Save events in Root trees, " <<

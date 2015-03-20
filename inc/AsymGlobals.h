@@ -22,7 +22,6 @@ struct ErrorDetector;
 struct atdata_struct;
 class  MeasInfo;
 class  RunConfig;
-struct StructExtInput;
 struct StructAverage;
 struct StructHistStat;
 struct StructFeedBack;
@@ -61,7 +60,6 @@ extern long int NStrip[N_SPIN_STATES][N_SILICON_CHANNELS];   // counts 72 strips
 extern long int NRcounts[N_DETECTORS][N_BUNCHES][RAMPTIME];  // counts 6det 120bunch RAMPTIME sec
 
 extern char *calibdir;
-extern char reConfFile[256];         // update configuration file for T0 info
 extern char conf_file[256];          // update configuration file for T0 info
 extern char CalibFile[256];          // Energy calibration file
 
@@ -79,7 +77,6 @@ extern AsymRoot                     *gAsymRoot;
 extern ErrorDetector                 errdet;
 extern atdata_struct                 atdata;
 extern RunConfig                     gRunConfig;
-extern StructExtInput                extinput;
 extern StructAverage                 average;
 extern StructHistStat                gHstat;
 extern StructFeedBack                feedback;

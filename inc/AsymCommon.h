@@ -246,12 +246,6 @@ struct StructSinPhi {
    }
 };
 
-struct StructExtInput {
-  int CONFIG;
-  int MASSCUT;
-  int TSHIFT;
-};
-
 struct StructAverage {
   float total;
   float average;

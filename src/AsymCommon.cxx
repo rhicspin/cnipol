@@ -28,7 +28,6 @@ long    NDcounts[6][120][MAXDELIM]; // counts for 6 det 120 bunch per DELIMiter
 long    NStrip[3][N_SILICON_CHANNELS];          // counts 72 strips 3 spin states
 
 char   *calibdir;
-char    reConfFile[256];            // overwrite configuration for T0 info
 char    conf_file[256];             // overwrite configuration file
 char    CalibFile[256];             // energy calibration file
 
@@ -57,12 +56,6 @@ ErrorDetector errdet = {
    5.,           // BUNCH_RATE_SIGMA_ALLOWANCE;
    5.,           // BUNCH_ASYM_SIGMA_ALLOWANCE;
    20            // NBUNCH_REQUIREMENT;
-};
-
-StructExtInput extinput = {
-   0, // CONFIG
-   0, // MASSCUT
-   0  // TSHIFT
 };
 
 StructFlag Flag = {
