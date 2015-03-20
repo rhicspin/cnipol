@@ -738,7 +738,6 @@ void AsymCalculator::PrintRunResults()
    printf(" Phase (bunch ave)              = %10.4f%9.4f\n", gBunchAsym.ave.phase[0]*R2D, gBunchAsym.ave.phase[1]*R2D);
    if (gMeasInfo->fRunId == 5)
    printf(" profile error (absolute)[%%]   = %10.4f\n",      gAnaMeasResult->profile_error * fabs(gAnaMeasResult->P[0]));
-   printf("--- Alternative %3.1f sigma result & ratio to %3.1f sigma ---\n", gAsymAnaInfo->MassSigmaAlt, gAsymAnaInfo->MassSigma);
    printf(" Polarization (sinphi) alt      = %10.4f%9.4f\n", gAnaMeasResult->sinphi[1].P[0],        gAnaMeasResult->sinphi[1].P[1]);
    printf(" Ratio (alt/reg)                = %10.2f%9.2f\n", gAnaMeasResult->P_sigma_ratio[0],      gAnaMeasResult->P_sigma_ratio[1]);
    printf(" Ratio ((alt-reg)/reg)          = %10.3f%9.3f\n", gAnaMeasResult->P_sigma_ratio_norm[0], gAnaMeasResult->P_sigma_ratio_norm[1]);

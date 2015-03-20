@@ -45,10 +45,6 @@ public:
    ULong_t          fAsymModes;
    std::bitset<3>   fSaveTrees;         //! bitmask telling which ROOT trees to save
    std::bitset<N_DETECTORS>   fDisabledDetectors;   //! bitmask with disabled detector indeces
-   float            MassSigma;          // banana curve cut within <MassSigma> away from the 12C mass
-   float            MassSigmaAlt;       // banana curve alternative cut within
-                                        // <MassSigmaAlt> away from the 12C mass
-   float            OneSigma;           // 1-sigma of 12C mass distribution in [keV]
    float            tshift;             // time shift in [ns]
    Float_t          fThinout;           // Approximate fraction of events to read
    UInt_t           fMaxEventsUser;     // Max number of events requested by user
@@ -93,7 +89,7 @@ public:
    Bool_t      HasStudiesBit() const;
    Bool_t      HasNoGainCorrectionBit() const;
 
-   ClassDef(AsymAnaInfo, 6)
+   ClassDef(AsymAnaInfo, 7)
 };
 
 #endif
