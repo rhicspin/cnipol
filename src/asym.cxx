@@ -152,7 +152,6 @@ int main(int argc, char *argv[])
    }
    gAsymRoot->PostFillPassOne();            // Make decisions based on hist content/data
 
-
    // PassTwo
    gAsymRoot->PreFill();
    rawDataReader.ReadDataPassTwo(*mseMeasInfoX);
