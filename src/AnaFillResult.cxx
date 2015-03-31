@@ -1532,7 +1532,6 @@ void AnaFillResult::FitPCPolarGraphs()
 
       stringstream ssFormula("");
       ssFormula << "[0] + [1]*(x - (" << GetLumiOnRelTime() << ") )/3600.";
-
       TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
       fitFunc->SetParNames("P_{0}, %", "Decay, %/h");
 
@@ -1541,36 +1540,49 @@ void AnaFillResult::FitPCPolarGraphs()
 
       if ( GetLumiOffRelTime() > GetLumiOnRelTime() )
       {
-         TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnRelTime(), GetLumiOffRelTime());
-
-         if (tmpGraph->GetN() >= 1) {
-            tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
-
+	if(fFillId <=18749){ // Code for Longitudinal
+	TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnRelTime(), GetLumiOffRelTime());
+	if (tmpGraph->GetN() >= 1) {
+	  tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
+	  if (fabs(xmax - xmin) < 3600)
+	    fitFunc->FixParameter(1, 0);
+	  xmin = GetLumiOnRelTime();
+	  xmax = GetLumiOffRelTime();
+	} else { // go back to original limits
             if (fabs(xmax - xmin) < 3600)
-               fitFunc->FixParameter(1, 0);
-
-            xmin = GetLumiOnRelTime();
-            xmax = GetLumiOffRelTime();
-         } else { // go back to original limits
-            if (fabs(xmax - xmin) < 3600)
-               fitFunc->FixParameter(1, 0);
-         }
-
-         delete tmpGraph;
-      } else {
-
-         if (fabs(xmax - xmin) < 3600)
-            fitFunc->FixParameter(1, 0);
+	      fitFunc->FixParameter(1, 0);
+	}
+	  delete tmpGraph;
+	}else{
+	  //Code for Transverse
+	  TGraph *tmpGraph = new TGraph(0);
+	  tmpGraph = (TGraph*) grPCPolar->Clone();
+	  // UInt_t iPoint = 0;
+	  Double_t x, y;
+	  for(Int_t i=0; i<tmpGraph->GetN(); ++i)
+	    {
+	      tmpGraph->GetPoint(i,x,y);
+	      if(x < GetLumiOnRelTime() ){
+		xmin = x;
+	      }
+	    }
+	  if (fabs(xmax - xmin) < 3600)
+	    fitFunc->FixParameter(1, 0);
+	  delete tmpGraph;
+	}
+      }else {
+	if (fabs(xmax - xmin) < 3600)
+	  fitFunc->FixParameter(1, 0);
       }
-
       // fit with a const if only one data point is available
       Info("FitPCPolarGraphs", "Fill %d. Fitting flattop graph for polId %d", fFillId, polId);
-
+      //      grPCPolar->Fit(fitFunc, "", "", xmin, xmax);
+      printf("After Check! xmin: %f xmax: %f \n",xmin,xmax);
       grPCPolar->Fit(fitFunc, "", "", xmin, xmax);
       //grPCPolar->GetFunction("fitFunc")->Print();
 
       delete fitFunc;
-   }
+}
 
    delete dummyScale;
 }
@@ -1579,6 +1591,7 @@ void AnaFillResult::FitPCPolarGraphs()
 /** */
 void AnaFillResult::FitPCProfRGraphs()
 {
+
    // Fit the graphs
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
@@ -1602,42 +1615,50 @@ void AnaFillResult::FitPCProfRGraphs()
 
             TF1 *fitFunc = new TF1("fitFunc", "pol0");
             fitFunc->SetParNames("R_{0}, %");
-            grPCProfRInj->Fit(fitFunc, "", "", xmin, xmax);
+	    grPCProfRInj->Fit(fitFunc, "", "", xmin, xmax);
 
+	    //            grPCProfRInj->Fit(fitFunc, "", "", 0, xmax);
             delete fitFunc;
          }
 
          // now flattop results
          TGraphErrors *grPCProfR = GetPCProfRGraph(*iPolId, tgtOrient);
-
-         if (!grPCProfR) continue;
-
+	 if (!grPCProfR) continue;
          Double_t xmin, ymin, xmax, ymax;
          //grPCProfR->ComputeRange(xmin, ymin, xmax, ymax);
-         
-         TGraph *tmpGraph = utils::SubGraph(grPCProfR, GetLumiOnRelTime(), GetLumiOffRelTime());
-         tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
-
+	 TGraph *tmpGraph = new TGraph(0);
+	 if(fFillId < 18749){
+	   tmpGraph = utils::SubGraph(grPCProfR, GetLumiOnRelTime(), GetLumiOffRelTime());
+	   tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
+	 }
+	 else{
+	   tmpGraph = new TGraph(0);
+	   tmpGraph = (TGraph*) grPCProfR->Clone();
+	   Double_t x, y;
+	   for(Int_t i=0; i<tmpGraph->GetN(); ++i)
+	     {
+	       tmpGraph->GetPoint(i,x,y);
+	       if(x < GetLumiOnRelTime() ){
+		 xmin = x;
+	       }
+	     }
+	   xmax = GetLumiOffRelTime();
+	 }
          if (tmpGraph->GetN() <= 0) continue; // skip if empty graph
 
          stringstream ssFormula("");
          ssFormula << "[0] + [1]*(x - (" << GetLumiOnRelTime() << ") )/3600.";
-
          TF1 *fitFunc = new TF1("fitFunc", ssFormula.str().c_str());
-         fitFunc->SetParNames("R_{0}, %", "Slope/h");
-
+         fitFunc->SetParNames("R_{0}, %", "Slope/h");	 
          if (tmpGraph->GetN() == 1 || fabs(xmax - xmin) < 3600)
-            fitFunc->FixParameter(1, 0);
-
+	   fitFunc->FixParameter(1, 0);
          Info("FitPCProfRGraphs", "Fill %d. Fitting profile graph for polId %d", fFillId, polId);
          grPCProfR->Fit(fitFunc, "", "", xmin, xmax);
-
          delete tmpGraph;
          delete fitFunc;
       }
    }
 }
-
 
 /** */
 void AnaFillResult::SetHJPolar(ERingId ringId, ValErrPair ve)
