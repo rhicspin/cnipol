@@ -43,9 +43,6 @@ $nFills = $dbFillPolar->CountEntries();
 <p>
 Fills selected: <?=$nFills?>
 
-Avrg. = 
-P_0 =
-Slope =
 
 <?php
 // Create page links
@@ -682,6 +679,13 @@ endif;
 For details on calculation of normalization factors go to <a
 href="https://wiki.bnl.gov/rhicspin/PCarbon_normalization">https://wiki.bnl.gov/rhicspin/PCarbon_normalization</a>.
 Normalization k<sub>jet/crb</sub> applied to p-Carbon polarization for selected run period is:
+
+<p>&nbsp;
+
+<h3>Table Definitions</h3>
+
+Details on each column in the table above can be found by clicking <a href="table_def.html">Table Definitions</a>
+
 
 <?php
 print(GlobResult::BuildHtmlNormJetCarbon($_GET['rp']));
