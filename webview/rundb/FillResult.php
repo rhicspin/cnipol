@@ -9,6 +9,7 @@ class FillResult
    public $fRunPeriod;
    public $fFillId;
    public $fStartTime;
+   public $fStopTime;
    public $fType;
    public $fBeamEnergy;
 
@@ -84,6 +85,7 @@ class FillResult
    function AddMeas($row)
    { //{{{
       $this->fStartTime    = strtotime($row['start_time']);
+      $this->fStopTime    = strtotime($row['stop_time']);
       $this->fType         = $row['type'];
       $this->fBeamEnergy   = $row['beam_energy'];
 

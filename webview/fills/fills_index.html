@@ -290,6 +290,7 @@ else if ($gMode == 2)
    <th rowspan=2>Type
    <th rowspan=2>Beam Energy, GeV
    <th rowspan=2>Start Time
+   <th rowspan=2>Stop Time
 
    <th class='bluPol' colspan=3>Polarization,&nbsp;%<br>In collisions
    <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>In collisions
@@ -343,6 +344,7 @@ foreach ($globResult->fFillResults as $fill):
 
    $strFillId                = $fill->fFillId >= 0 ? $fill->fFillId : "&nbsp;";
    $strStartTime             = $fill->fStartTime > 0 ? date("M d, Y H:i:s D", $fill->fStartTime) : "&nbsp;";
+   $strStopTime              = $fill->fStopTime  > 0 ? date("M d, Y H:i:s D", $fill->fStopTime) : "&nbsp;";
    $strFillType              = $fill->fType >= 0 ? $FILLTYPE[$fill->fType] : "&nbsp;";
    $strBeamEnergy            = $fill->fBeamEnergy >= 0 ? sprintf("%6.0f", $fill->fBeamEnergy) : "&nbsp;";
 
@@ -479,6 +481,7 @@ if (file_exists("$gAnaResDir/images/fills/$strFillId")) {
    <td class='align_cm'><?=$strFillType?>
    <td class='align_cm'><?=$strBeamEnergy?>
    <td class='align_cm'><?=$strStartTime?>
+   <td class='align_cm'><?=$strStopTime?>
 
    <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolars[1])?></b>
    <td class='align_cm nowrap bluPol'><b><?=polarPairToString($fill->fCollBeamPolarP0s_patched[1])?></b>
