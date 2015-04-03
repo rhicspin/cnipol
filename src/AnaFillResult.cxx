@@ -1540,7 +1540,7 @@ void AnaFillResult::FitPCPolarGraphs()
 
       if ( GetLumiOffRelTime() > GetLumiOnRelTime() )
       {
-	if(fFillId <=18749){ // Code for Longitudinal
+	if(fFillId <=18749 || fFillId > 18857 ){ // Code for Longitudinal
 	TGraph *tmpGraph = utils::SubGraph(grPCPolar, GetLumiOnRelTime(), GetLumiOffRelTime());
 	if (tmpGraph->GetN() >= 1) {
 	  tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
@@ -1627,7 +1627,7 @@ void AnaFillResult::FitPCProfRGraphs()
          Double_t xmin, ymin, xmax, ymax;
          //grPCProfR->ComputeRange(xmin, ymin, xmax, ymax);
 	 TGraph *tmpGraph = new TGraph(0);
-	 if(fFillId < 18749){
+	 if(fFillId <= 18749 || fFillId > 18857){
 	   tmpGraph = utils::SubGraph(grPCProfR, GetLumiOnRelTime(), GetLumiOffRelTime());
 	   tmpGraph->ComputeRange(xmin, ymin, xmax, ymax);
 	 }

@@ -22,11 +22,12 @@ typedef MseFillPolarNewXSet::iterator         MseFillPolarNewXSetIter;
 typedef MseFillPolarNewXSet::const_iterator   MseFillPolarNewXSetConstIter;
 
 
-sql_create_12(MseFillPolarNew, 3, 0,
+sql_create_13(MseFillPolarNew, 3, 0,
    mysqlpp::sql_int_unsigned, fill,
    mysqlpp::sql_tinyint,      polarimeter_id,
    mysqlpp::sql_tinyint,      ring_id,
    mysqlpp::sql_datetime,     start_time,
+   mysqlpp::sql_datetime,     stop_time,
    mysqlpp::sql_smallint,     type,
    mysqlpp::sql_float,        beam_energy,
    mysqlpp::sql_float,        polar,

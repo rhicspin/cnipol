@@ -42,6 +42,7 @@ void MseFillPolarNewX::Init()
    polarimeter_id  = -1;
    ring_id         = -1;
    start_time      = mysqlpp::DateTime("0000-00-00 00:00:00");
+   stop_time      = mysqlpp::DateTime("0000-00-00 00:00:00");
    type            = -1;
    beam_energy     = 0;
    polar           = -1;
@@ -85,6 +86,7 @@ void MseFillPolarNewX::SetValues(const AnaFillResult &afr)
 {
    fill        = afr.GetFillId();
    start_time  = mysqlpp::DateTime(afr.GetLumiOnTime());
+   stop_time  = mysqlpp::DateTime(afr.GetLumiOffTime());
    type        = afr.GetFillType();
    beam_energy = afr.GetFlattopEnergy();
 }

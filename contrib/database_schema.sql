@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS `fill_polar_new` (
   `polarimeter_id` tinyint(4) NOT NULL DEFAULT '-1',
   `ring_id` tinyint(4) NOT NULL DEFAULT '-1',
   `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `stop_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `type` smallint(6) NOT NULL DEFAULT '-1',
   `beam_energy` float NOT NULL DEFAULT '0',
   `polar` float NOT NULL DEFAULT '-1',
