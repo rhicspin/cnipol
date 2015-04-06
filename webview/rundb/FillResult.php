@@ -10,6 +10,7 @@ class FillResult
    public $fFillId;
    public $fStartTime;
    public $fStopTime;
+   public $fTimeDiff;
    public $fType;
    public $fBeamEnergy;
 
@@ -86,6 +87,7 @@ class FillResult
    { //{{{
       $this->fStartTime    = strtotime($row['start_time']);
       $this->fStopTime    = strtotime($row['stop_time']);
+      $this->fTimeDiff = dateTimeDiff($this->fStartTime, $this->fStopTime);
       $this->fType         = $row['type'];
       $this->fBeamEnergy   = $row['beam_energy'];
 
