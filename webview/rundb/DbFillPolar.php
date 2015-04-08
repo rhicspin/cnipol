@@ -64,7 +64,7 @@ class DbFillPolar extends SqlDbReader
                       . "FROM `fill_polar_new` AS fill_polar LEFT JOIN `fill_profile_new` ON "
                       . "fill_polar.fill = fill_profile_new.fill AND fill_polar.polarimeter_id = fill_profile_new.polarimeter_id "
                       //. "WHERE TRUE AND fill_polar.fill > '10000' AND fill_polar.fill < '11100' "
-                      . "WHERE {$this->sqlWhere} AND (fill_polar.stop_time - fill_polar.start_time) > 400 \n"
+                      . "WHERE {$this->sqlWhere} AND (fill_polar.stop_time = '0000-00-00 00:00:00' OR (fill_polar.stop_time - fill_polar.start_time) > 400) \n"
                       . "ORDER BY `fill_polar`.`fill` ASC\n";
 
       //print $this->sqlQuery;
