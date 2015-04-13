@@ -736,6 +736,11 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
             gAsymRoot->Fill(kCUT_PASSTWO);
          }
 
+         if ( gAsymRoot->fChannelEvent->PassCutPmtChannel() )
+         {
+            gAsymRoot->Fill(kCUT_PMT);
+         }
+
          if (gMeasInfo->fNEventsProcessed%50000 == 0)
          {
             printf("%s: Pass 2: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
