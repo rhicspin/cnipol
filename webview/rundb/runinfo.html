@@ -726,6 +726,20 @@ if ($rc['fAnaDateTime'] >= 1423851440) {
 </tr>
 </table>
 
+<?php
+// only for measurements processed after Apr 13, 2015
+if ($rc['fAnaDateTime'] >= 1428969600) {
+?>
+<table class="simple00 cntr" cellspacing=15 align=center>
+<tr>
+<td align="center"><?=$gP->img("pmt/hChVsDelim")?></td>
+<td align="center"><?=$gP->img("pmt/hChVsDelim_px")?></td>
+<td align="center"><?=$gP->img("pmt/hChVsDelim_py")?></td>
+</tr>
+</table>
+<?php
+}
+?>
 </div>
 <!-- }}} -->
 <?php

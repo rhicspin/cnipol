@@ -25,6 +25,7 @@ public:
    ~CnipolPmtHists();
 
    void  BookHists();
+   void  PreFill() ;
    void  Fill(ChannelEvent *ch) ;
    void  PostFill() ;
 
