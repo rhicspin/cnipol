@@ -60,7 +60,7 @@ void CnipolPmtHists::BookHists()
 
 
 /** */
-void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
+void CnipolPmtHists::Fill(ChannelEvent *ch)
 {
    UChar_t chId = ch->GetChannelId();
 
@@ -75,9 +75,9 @@ void CnipolPmtHists::FillPassOne(ChannelEvent *ch)
 
 
 /** */
-void CnipolPmtHists::PostFillPassOne(DrawObjContainer *oc)
+void CnipolPmtHists::PostFill()
 {
-   Info("PostFillPassOne", "Starting...");
+   Info("PostFill", "Starting...");
 
    for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++)
    {

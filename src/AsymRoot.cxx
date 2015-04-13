@@ -226,7 +226,7 @@ void AsymRoot::CreateRootFile(string filename)
       dir = new TDirectoryFile("pmt", "pmt", "", fOutRootFile);
       oc  = new CnipolPmtHists(dir);
       fHists->d["pmt"] = oc;
-      fHistCuts[kCUT_PASSONE_PMT].insert(oc);
+      fHistCuts[kCUT_PMT].insert(oc);
    }
 
    if (gAsymAnaInfo->HasPulserBit()) {
