@@ -719,7 +719,7 @@ UShort_t MeasInfo::GetNumActiveSiChannels() const
 /** */
 Bool_t MeasInfo::IsPmtChannel(UShort_t chId) const
 {
-   if ( chId > N_SILICON_CHANNELS && chId <= N_SILICON_CHANNELS+4 )
+   if ((chId >= FIRST_PMT_CHANNEL) && (chId < FIRST_PMT_CHANNEL + N_PMT_CHANNELS))
       return true;
 
    return false;

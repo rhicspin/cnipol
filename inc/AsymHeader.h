@@ -17,6 +17,8 @@ static const double _RHIC_AC_DIPOLE_MAX_PERIOD = 33554432.0; /// Maximum value (
 
 #define NSTRIP 72                        // Number of channels
 #define N_SILICON_CHANNELS 72            // Number of channels
+#define N_PMT_CHANNELS 4                 // Number of pmt channels
+#define FIRST_PMT_CHANNEL (N_SILICON_CHANNELS+1)
 #define N_WFDS 20                        // Number of wfd's
 #define NSTRIP_PER_DETECTOR 12           // Number of channels per silicon detector
 #define NTGTWFD 4                        // Number of target WFD channels

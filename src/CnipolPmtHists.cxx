@@ -31,7 +31,7 @@ void CnipolPmtHists::BookHists()
 
    fDir->cd();
 
-   for (int iChId=N_SILICON_CHANNELS+1; iChId<=N_SILICON_CHANNELS+4; iChId++)
+   for (int iChId = FIRST_PMT_CHANNEL; iChId < FIRST_PMT_CHANNEL + N_PMT_CHANNELS; iChId++)
    {
       string sChId("  ");
       sprintf(&sChId[0], "%02d", iChId);
