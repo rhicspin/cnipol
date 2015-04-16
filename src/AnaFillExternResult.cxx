@@ -92,9 +92,12 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
          opencdev::cdev_time_t time = it->first;
 
          // Determine the lumi on/off events
+
          if (time < fTimeEventLumiOn)  fTimeEventLumiOn  = (time_t) time;
          if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
       }
+      if(fillId == 17443){fTimeEventLumiOn = (time_t)1367362617;}
+      if(fillId == 17699){fTimeEventLumiOn = (time_t)1370651445;}
    }
 
    opencdev::result_t bc_result;
