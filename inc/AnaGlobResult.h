@@ -56,6 +56,7 @@ public:
 	void                       UpdMinMaxFill(UInt_t fillId);
 	void                       UpdMinMaxTime(time_t time);
    void                       AdjustMinMaxFill();
+   Int_t                       GetTargetStatus(Double_t runId, ETargetOrient tgetOrient, UShort_t targetId);
    UInt_t                     GetMinFill() const { return fMinFill; }
    UInt_t                     GetMaxFill() const { return fMaxFill; }
    time_t                     GetMinTime() const { return fMinTime; }

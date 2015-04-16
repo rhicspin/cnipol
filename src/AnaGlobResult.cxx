@@ -362,6 +362,51 @@ ValErrPair AnaGlobResult::GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t nor
    return fillRslt->GetBeamPolar(ringId);
 }
 
+Int_t AnaGlobResult::GetTargetStatus(Double_t measId, ETargetOrient tgetOrient, UShort_t targetId)
+{
+  if(tgetOrient == 2) {return 0;}
+  static int first = 1;
+  const int max_index = 36;
+  static double last_run[4][36]; // [polid=0-3][tgtindex=0-35]
+  if (first) { // initial call read in last good run list
+
+    // set default target OK until end of Run13, last run OK -> big number
+    for (int i=0; i<4; i++) {
+      for (int j=0; j<max_index; j++) {
+	last_run[i][j] = 99999.;
+      }
+    }
+
+    // read list last good runs; if target never good list has -99999., always bad
+    int nin = 0;
+    int polid_in, tgtindex_in; double run_in;
+    std::stringstream fullPath("");
+    fullPath << fPathExternResults << "/tgt_lastruns_13.dat";
+    ifstream ifile(fullPath.str().c_str());
+    Info("GetTargetStatus", "Target Status from file: %s", fullPath.str().c_str());
+    //    ifstream ifile("dat/tgt_lastruns_13.dat");
+    while (1) {
+      ifile >> polid_in >> tgtindex_in >> run_in;
+      if (ifile.eof()) {break;}
+      nin++;
+      //cout << nin <<" "<< polid_in <<" "<< tgtindex_in <<" "<< run_in << endl;
+      last_run[polid_in][tgtindex_in] = run_in;
+    }
+    ifile.close();
+    cout << "AnaGlobResult::GetTargetStatus # last runs input: " << nin << endl;
+
+    first = 0;
+  }
+
+  int polid = int(10.*measId)%10;
+  // Run13 had 3 sets of targets
+  // internally target index 1-12 = set 1, 13-24 = set 2, 25-36 = set 3
+  int tgtindex = targetId + 6*(1-tgetOrient); // 1st target set
+  if (measId>17251.) {tgtindex += 12;} // 2nd target set
+  if (measId>17475.) {tgtindex += 12;} // 3rd target set
+
+  return (measId<=last_run[polid][tgtindex]);
+}
 
 /** */
 AnaFillResult* AnaGlobResult::GetAnaFillResult(UInt_t fillId)
