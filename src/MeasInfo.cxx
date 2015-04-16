@@ -59,7 +59,6 @@ MeasInfo::MeasInfo() : TObject(),
 {
    //for (int i=0; i<N_DETECTORS; i++) ActiveDetector[i] = 0xFFF;
    //ActiveDetector        = { 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF };// ActiveDetector[N_DETECTORS]
-
    for (int i=1; i<=N_SILICON_CHANNELS; i++) {
       fSiliconChannels.insert(i);
    }
