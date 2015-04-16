@@ -114,8 +114,21 @@ int main(int argc, char *argv[])
       strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
 
       Double_t    runId           = gMM->fMeasInfo->RUNID;
+      Int_t       runID           = gMM->fMeasInfo->fRunId;
       UInt_t      fillId          = (UInt_t) runId;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
+      UShort_t      targetId        = gMM->fMeasInfo->GetTargetId();
+      ETargetOrient targetOrient    = gMM->fMeasInfo->GetTargetOrient();
+      Info("masym", "MeasId: %4.3f, targetOrient %i, targetId %i", runId, targetOrient, targetId );
+      if(runID == 13){
+	Int_t target_ok = anaGlobResult.GetTargetStatus(runId, targetOrient, targetId);
+	if(target_ok != 1) {
+         Warning("masym","Measurement %9.3f had a broken target", runId);
+         f->Close();
+         delete f;
+         continue;
+       }
+      }
 
       Float_t polarization    = 0;
       Float_t polarizationErr = -1;
