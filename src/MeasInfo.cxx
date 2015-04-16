@@ -42,6 +42,7 @@ MeasInfo::MeasInfo() : TObject(),
    fMeasType(kMEASTYPE_UNKNOWN),
    fNEventsProcessed (0),
    fNEventsTotal     (0),
+   fNEventsSilicon   (0),
    GoodEventRate     (0),
    EvntRate          (0),
    ReadRate          (0),
@@ -148,6 +149,7 @@ void MeasInfo::PrintAsPhp(FILE *f) const
    fprintf(f, "$rc['fMeasType']                    = %#010X;\n", fMeasType);
    fprintf(f, "$rc['fNEventsProcessed']            = %u;\n",     fNEventsProcessed);
    fprintf(f, "$rc['fNEventsTotal']                = %u;\n",     fNEventsTotal);
+   fprintf(f, "$rc['fNEventsSilicon']              = %u;\n",     fNEventsSilicon);
    fprintf(f, "$rc['GoodEventRate']                = %f;\n",     GoodEventRate);
    fprintf(f, "$rc['EvntRate']                     = %f;\n",     EvntRate     );
    fprintf(f, "$rc['ReadRate']                     = %f;\n",     ReadRate     );

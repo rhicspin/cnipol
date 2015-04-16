@@ -326,6 +326,7 @@ void RawDataReader::ReadDataPassOne(MseMeasInfoX &mseMeasInfo)
 
    gMeasInfo->fNEventsProcessed = 0;
    gMeasInfo->fNEventsTotal     = 0;
+   gMeasInfo->fNEventsSilicon   = 0;
 
    RecordHeaderStruct *mHeader;
    const char *mSeek = fMem;
@@ -623,6 +624,8 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
 
          if ( gAsymRoot->fChannelEvent->PassCutSiliconChannel() )
          {
+            gMeasInfo->fNEventsSilicon++;
+
             // Fill hists with raw data
             gAsymRoot->FillPassOne(kCUT_PASSONE);
 

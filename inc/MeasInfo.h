@@ -76,6 +76,7 @@ public:
    EMeasType                   fMeasType;
    UInt_t                      fNEventsProcessed;  // number of events processed from raw data file
    UInt_t                      fNEventsTotal;      // number of total events in raw data file
+   UInt_t                      fNEventsSilicon;
    Float_t                     GoodEventRate;
    Float_t                     EvntRate;
    Float_t                     ReadRate;
@@ -191,7 +192,7 @@ public:
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
-   ClassDef(MeasInfo, 4)
+   ClassDef(MeasInfo, 5)
 };
 
 
