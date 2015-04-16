@@ -64,7 +64,7 @@ public:
    BeamEnergySet              GetBeamEnergies() const { return fBeamEnergies; }
    void                       AddMeasResult(AnaMeasResult &result);
    void                       AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn=0);
-   void                       AddHJMeasResult();
+   void                       AddHJMeasResult(Int_t runID);
    void                       Process(DrawObjContainer *ocOut=0);
    ValErrPair                 GetBeamPolar(ERingId ringId, UInt_t fillId, Bool_t norm=kTRUE);
    PolId2TgtOrient2ValErrMap  GetAvrgPCProfRUnWs() const { return fAvrgPCProfRUnWs; }

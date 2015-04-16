@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
    mAsymRoot.SetAnaGlobResult(&anaGlobResult);
-
+   Int_t runID;
    Info("masym", "Starting first pass...");
 
    // Container with measurements passed QA cuts. Used to save time on opening
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
       strftime(strTime, 80, "%X", localtime(&gMM->fMeasInfo->fStartTime));
 
       Double_t    runId           = gMM->fMeasInfo->RUNID;
-      Int_t       runID           = gMM->fMeasInfo->fRunId;
+                  runID           = gMM->fMeasInfo->fRunId;
       UInt_t      fillId          = (UInt_t) runId;
       EBeamEnergy beamEnergy      = gMM->fMeasInfo->GetBeamEnergy();
       UShort_t      targetId        = gMM->fMeasInfo->GetTargetId();
@@ -204,8 +204,8 @@ int main(int argc, char *argv[])
 
    // Process run/fill results, i.e. calculate fill average, ...
    Info("masym", "Analyzing measurements...");
-
-   anaGlobResult.AddHJMeasResult();
+   Info("masym", "RunId %i", runID);
+   anaGlobResult.AddHJMeasResult(runID);
    anaGlobResult.Process(gH);
 
    Info("masym", "Starting second pass...");

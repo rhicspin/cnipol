@@ -253,7 +253,7 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
 
 
 /** */
-void AnaGlobResult::AddHJMeasResult()
+void AnaGlobResult::AddHJMeasResult(Int_t runID)
 {
    std::stringstream fullPath("");
    fullPath << fPathExternResults << "/hjet_pol_run15";
@@ -268,7 +268,8 @@ void AnaGlobResult::AddHJMeasResult()
       Double_t energy;
       Int_t    iline = 0;
       string   dummy;
-
+      Double_t  tiltBluAngle=0.; // The tilt angle in the blue ring +16degrees
+      Double_t  tiltYelAngle=0.;
       // loop over the entries
       while ( file.good() )
       {
@@ -293,6 +294,13 @@ void AnaGlobResult::AddHJMeasResult()
                        << " " << energy   << endl;
 
          AnaFillResult *anaFillResult = GetAnaFillResult(fillId);
+	 if(runID ==13){
+	    tiltBluAngle=0.2793; // The tilt angle in the blue ring +16degrees
+	    tiltYelAngle=-0.1571;// The tilt angle in the yellow ring -9 degrees
+	 }
+	 printf("AnaGlobalResult: Tilt angles blue %f yellow %f \n", cos(tiltBluAngle), cos(tiltYelAngle));
+	 bluPolar = bluPolar/ cos(tiltBluAngle);
+	 yelPolar = yelPolar / cos(tiltYelAngle);
 
          if (bluPolarErr >= 0) {
             ValErrPair hjPolar_BLU(bluPolar, bluPolarErr);
