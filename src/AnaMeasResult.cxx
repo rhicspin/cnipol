@@ -149,3 +149,100 @@ ValErrPair AnaMeasResult::GetPCProfR() const
 
    return val_err;
 }
+
+/**
+ * "New system" streamer with backward-compatibility to old files.
+ * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
+ */
+void AnaMeasResult::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class AnaMeasResult.
+
+   UInt_t R__s, R__c;
+   if (R__b.IsReading()) {
+      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+      if (R__v > 1) {
+         AnaMeasResult::Class()->ReadBuffer(R__b, this, R__v, R__s, R__c);
+         return;
+      }
+      TObject::Streamer(R__b);
+      R__b >> max_rate;
+      R__b >> TshiftAve;
+      R__b >> wcm_norm_event_rate;
+      R__b >> UniversalRate;
+      R__b.ReadStaticArray((float*)A_N);
+      R__b.ReadStaticArray((float*)P);
+      fAnaPower.Streamer(R__b);
+      fPolar.Streamer(R__b);
+      fAvrgPMAsym.Streamer(R__b);
+      fProfilePolarMax.Streamer(R__b);
+      fProfilePolarR.Streamer(R__b);
+      fFitResAsymPhi.Streamer(R__b);
+      fFitResPolarPhi.Streamer(R__b);
+      {
+         Spin2FitResMap &R__stl =  fFitResAsymBunchX90;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            ESpinState R__t;
+            Int_t readtemp;
+            R__b >> readtemp;
+            R__t = static_cast<ESpinState>(readtemp);
+            TFitResultPtr R__t2;
+            R__t2.Streamer(R__b);
+            typedef ESpinState Value_t;
+            std::pair<Value_t const, TFitResultPtr > R__t3(R__t,R__t2);
+            R__stl.insert(R__t3);
+         }
+      }
+      {
+         Spin2FitResMap &R__stl =  fFitResAsymBunchX45;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            ESpinState R__t;
+            Int_t readtemp;
+            R__b >> readtemp;
+            R__t = static_cast<ESpinState>(readtemp);
+            TFitResultPtr R__t2;
+            R__t2.Streamer(R__b);
+            typedef ESpinState Value_t;
+            std::pair<Value_t const, TFitResultPtr > R__t3(R__t,R__t2);
+            R__stl.insert(R__t3);
+         }
+      }
+      {
+         Spin2FitResMap &R__stl =  fFitResAsymBunchY45;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            ESpinState R__t;
+            Int_t readtemp;
+            R__b >> readtemp;
+            R__t = static_cast<ESpinState>(readtemp);
+            TFitResultPtr R__t2;
+            R__t2.Streamer(R__b);
+            typedef ESpinState Value_t;
+            std::pair<Value_t const, TFitResultPtr > R__t3(R__t,R__t2);
+            R__stl.insert(R__t3);
+         }
+      }
+      fFitResProfilePvsI.Streamer(R__b);
+      fFitResEnergySlope.Streamer(R__b);
+      fFitResPseudoMass.Streamer(R__b);
+      R__b.ReadStaticArray((float*)P_sigma_ratio);
+      R__b.ReadStaticArray((float*)P_sigma_ratio_norm);
+      R__b.ReadStaticArray((float*)energy_slope);
+      R__b >> profile_error;
+      R__b >> fPmtV1T0;
+      R__b >> fPmtV1T0Err;
+      R__b >> fPmtS1T0;
+      R__b >> fPmtS1T0Err;
+      R__b.CheckByteCount(R__s, R__c, AnaMeasResult::IsA());
+   } else {
+      AnaMeasResult::Class()->WriteBuffer(R__b, this);
+   }
+}

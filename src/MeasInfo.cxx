@@ -871,3 +871,137 @@ EPolarimeterId MeasInfo::ExtractPolarimeterId(std::string runName)
 
    return polId;
 }
+
+/**
+ * "New system" streamer with backward-compatibility to old files.
+ * Implemented as suggested in https://root.cern.ch/root/SchemaEvolution.html
+ */
+void MeasInfo::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class MeasInfo.
+
+   UInt_t R__s, R__c;
+   if (R__b.IsReading()) {
+      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+      if (R__v > 3) {
+         MeasInfo::Class()->ReadBuffer(R__b, this, R__v, R__s, R__c);
+         return;
+      }
+      TObject::Streamer(R__b);
+      R__b >> fBeamEnergy;
+      fMachineParams.Streamer(R__b);
+      R__b >> fHasMachineParamsInRawData;
+      fTargetParams.Streamer(R__b);
+      R__b >> fExpectedGlobalTdcOffset;
+      R__b >> fExpectedGlobalTimeOffset;
+      { TString R__str; R__str.Streamer(R__b); fRunName = R__str.Data(); }
+      R__b >> fAlphaSourceCount;
+      R__b >> fProtoCutSlope;
+      R__b >> fProtoCutOffset;
+      R__b >> fProtoCutWidth;
+      R__b >> fProtoCutAdcMin;
+      R__b >> fProtoCutAdcMax;
+      R__b >> fProtoCutTdcMin;
+      R__b >> fProtoCutTdcMax;
+      R__b >> fPulserCutAdcMin;
+      R__b >> fPulserCutAdcMax;
+      R__b >> fPulserCutTdcMin;
+      R__b >> fPulserCutTdcMax;
+      {
+         vector<UInt_t> &R__stl =  fSpinFlipperMarkers;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         R__stl.reserve(R__n);
+         for (R__i = 0; R__i < R__n; R__i++) {
+            unsigned int R__t;
+            R__b >> R__t;
+            R__stl.push_back(R__t);
+         }
+      }
+      R__b >> fSpinFlipperPhase;
+      R__b >> fFirstRevolution;
+      R__b >> fLastRevolution;
+      R__b >> fRunId;
+      R__b >> RUNID;
+      R__b >> fStartTime;
+      R__b >> fStopTime;
+      R__b >> fRunTime;
+      R__b >> fDataFormatVersion;
+      { TString R__str; R__str.Streamer(R__b); fAsymVersion = R__str.Data(); }
+      void *ptr_fMeasType = (void*)&fMeasType;
+      R__b >> *reinterpret_cast<Int_t*>(ptr_fMeasType);
+      R__b >> fNEventsProcessed;
+      R__b >> fNEventsTotal;
+      R__b >> GoodEventRate;
+      R__b >> EvntRate;
+      R__b >> ReadRate;
+      {
+         map<UShort_t,Float_t> &R__stl =  fWallCurMon;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            unsigned short R__t;
+            R__b >> R__t;
+            float R__t2;
+            R__b >> R__t2;
+            typedef unsigned short Value_t;
+            std::pair<Value_t const, float > R__t3(R__t,R__t2);
+            R__stl.insert(R__t3);
+         }
+      }
+      R__b >> fWallCurMonAve;
+      R__b >> fWallCurMonSum;
+      R__b >> fPolId;
+      R__b >> fPolBeam;
+      R__b >> fPolStream;
+      R__b >> PolarimetryID;
+      R__b >> MaxRevolution;
+      R__b >> fTargetOrient;
+      R__b >> fTargetId;
+      R__b >> fTargetVelocity;
+      R__b >> fProfileStartPosition;
+      R__b >> fProfileEndPosition;
+      {
+         ChannelSet &R__stl =  fSiliconChannels;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            unsigned short R__t;
+            R__b >> R__t;
+            R__stl.insert(R__t);
+         }
+      }
+      {
+         ChannelSet &R__stl =  fDisabledChannels;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            unsigned short R__t;
+            R__b >> R__t;
+            R__stl.insert(R__t);
+         }
+      }
+      {
+         BeamBunchMap &R__stl =  fBeamBunches;
+         R__stl.clear();
+         int R__i, R__n;
+         R__b >> R__n;
+         for (R__i = 0; R__i < R__n; R__i++) {
+            unsigned short R__t;
+            R__b >> R__t;
+            BeamBunch R__t2;
+            R__t2.Streamer(R__b);
+            typedef unsigned short Value_t;
+            std::pair<Value_t const, BeamBunch > R__t3(R__t,R__t2);
+            R__stl.insert(R__t3);
+         }
+      }
+      R__b.CheckByteCount(R__s, R__c, MeasInfo::IsA());
+   } else {
+      MeasInfo::Class()->WriteBuffer(R__b, this);
+   }
+}

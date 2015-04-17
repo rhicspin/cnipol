@@ -81,7 +81,7 @@ public:
    ValErrPair GetPCPolarPhase() const;
    ValErrPair GetPCProfR() const;
 
-   ClassDef(AnaMeasResult, 1)
+   ClassDef(AnaMeasResult, 2)
 };
 
 

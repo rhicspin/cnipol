@@ -191,7 +191,7 @@ public:
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
-   ClassDef(MeasInfo, 3)
+   ClassDef(MeasInfo, 4)
 };
 
 
