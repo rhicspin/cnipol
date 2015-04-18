@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `run_info` (
   `beam_energy` float NOT NULL DEFAULT '0',
   `nevents_total` int(10) unsigned NOT NULL DEFAULT '0',
   `nevents_processed` int(10) unsigned NOT NULL DEFAULT '0',
+  `nevents_silicon` int(10) unsigned,
   `polarization` float NOT NULL DEFAULT '0',
   `polarization_error` float NOT NULL DEFAULT '0',
   `phase` float NOT NULL DEFAULT '0',

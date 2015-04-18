@@ -411,6 +411,7 @@ void RawDataReader::ReadDataPassTwo(MseMeasInfoX &mseMeasInfo)
    mseMeasInfo.stop_time         = mysqlpp::DateTime(gMeasInfo->fStopTime);
    mseMeasInfo.nevents_total     = gMeasInfo->fNEventsTotal;
    mseMeasInfo.nevents_processed = gMeasInfo->fNEventsProcessed;
+   mseMeasInfo.nevents_silicon   = gMeasInfo->fNEventsSilicon;
 
    if (gAsymAnaInfo->HasAlphaBit())
       mseMeasInfo.beam_energy = 0;
