@@ -62,6 +62,8 @@ class FillSelector {
       if (!empty($_GET['be']))
          $this->sqlWhere .= " AND ROUND(beam_energy) = {$_GET['be']}";
 
+      $this->sqlWhere .= " AND (fill_polar.stop_time = '0000-00-00 00:00:00' OR (fill_polar.stop_time - fill_polar.start_time) > 400)";
+
       //$this->sqlWhere .= " AND beam_energy >= {$BEAM_ENERGY_INJ}";
    } //}}}
 
