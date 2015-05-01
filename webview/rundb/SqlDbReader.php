@@ -18,7 +18,7 @@ class SqlDbReader {
    /** */
    function SqlDbReader($runSelector=null)
    {
-      mysql_connect("127.0.0.1", "cnipol", "(n!P0l") or die(mysql_error());
+      mysql_connect("localhost", "cnipol", "(n!P0l") or die(mysql_error());
       mysql_select_db("cnipol") or die(mysql_error());
 
       if (!empty($runSelector)) {
