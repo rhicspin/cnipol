@@ -20,7 +20,6 @@ if ( isset($_GET['ana']) )
       exit;
    }
 
-      //print "No results found for $gAnaDir<br>\n";
 
    // Read information about this run from the config file
    $ai = array();
