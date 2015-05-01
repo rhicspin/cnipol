@@ -21,7 +21,8 @@ export MYSQL_LIB_DIR=/usr/lib/mysql
 export MYSQLPP_LIB_DIR=/eicdata/eic0005/mysql++
 
 export CNIPOL_DB_NAME="cnipol"
-export CNIPOL_DB_HOST="pc2pc.phy.bnl.gov"
+#export CNIPOL_DB_HOST="pc2pc.phy.bnl.gov"
+export CNIPOL_DB_HOST="eicsrv1.phy.bnl.gov"
 export CNIPOL_DB_USER="cnipol"
 export CNIPOL_DB_PASSWORD="(n!P0l"
 

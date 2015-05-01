@@ -119,15 +119,15 @@ int main(int argc, char *argv[])
       UShort_t      targetId        = gMM->fMeasInfo->GetTargetId();
       ETargetOrient targetOrient    = gMM->fMeasInfo->GetTargetOrient();
       Info("masym", "MeasId: %4.3f, targetOrient %i, targetId %i", runId, targetOrient, targetId );
-      if(runID == 13){
-	Int_t target_ok = anaGlobResult.GetTargetStatus(runId, targetOrient, targetId);
-	if(target_ok != 1) {
-         Warning("masym","Measurement %9.3f had a broken target", runId);
-         f->Close();
-         delete f;
-         continue;
-       }
-      }
+      // if(runID == 13){
+      // 	Int_t target_ok = anaGlobResult.GetTargetStatus(runId, targetOrient, targetId);
+      // 	if(target_ok != 1) {
+      //    Warning("masym","Measurement %9.3f had a broken target", runId);
+      //    f->Close();
+      //    delete f;
+      //    continue;
+      //  }
+      // }
 
       Float_t polarization    = 0;
       Float_t polarizationErr = -1;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
       // the cut on polarization value should be removed
       //if (polarization > 99 || polarizationErr > 30 ||
       if (polarization < 10 || polarization > 99 || polarizationErr > 30 ||
-	  //gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() ||
+	  // gRunConfig.fBeamEnergies.find(beamEnergy) == gRunConfig.fBeamEnergies.end() || // this line needs to be uncommented for Run13
           gMM->fMeasInfo->fMeasType != kMEASTYPE_SWEEP ||
           (TMath::Abs(profileRatio) > 5.000) ||                             // exclude very large values
           (TMath::Abs(profileRatio) > 1.000 && profileRatioErr < 0.05) ||   // exclude large values with small errors
