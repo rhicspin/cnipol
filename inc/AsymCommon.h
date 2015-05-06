@@ -28,7 +28,7 @@ enum EBeamId        {kBLUE_BEAM = 1,  kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
 enum ERingId        {kBLUE_RING = 1,  kYELLOW_RING = 2, kUNKNOWN_RING};
 enum EStreamId      {kUPSTREAM = 1,   kDOWNSTREAM = 2,  kUNKNOWN_STREAM};
 enum ETargetOrient  {kTARGET_H = 0,   kTARGET_V = 1,    kUNKNOWN_ORIENT};
-enum EBeamEnergy    {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kBEAM_ENERGY_250 = 250, kBEAM_ENERGY_255 = 255};
+enum EBeamEnergy    {kINJECTION = 24, kBEAM_ENERGY_100 = 100, kBEAM_ENERGY_104 = 104,kBEAM_ENERGY_250 = 250, kBEAM_ENERGY_255 = 255};
 enum ESpinState     {kSPIN_DOWN = -1, kSPIN_NULL = 0, kSPIN_UP = +1};
 enum EAsymType      {kPHYS_ASYM = 1,  kGEOM_ASYM = 2, kLUMI_ASYM = 3};
 enum EFillType      {kFILLTYPE_UNKNOWN = 0, kFILLTYPE_PHYSICS};

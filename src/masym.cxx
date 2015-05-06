@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
    gRunConfig.fBeamEnergies.clear();
    gRunConfig.fBeamEnergies.insert(kINJECTION);
    gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_255);
-
+   gRunConfig.fBeamEnergies.insert(kBEAM_ENERGY_104);
    std::string filelist     = mAsymAnaInfo.GetMListFullPath();
 
    MAsymRoot mAsymRoot(mAsymAnaInfo);
