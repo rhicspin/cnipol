@@ -87,10 +87,14 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
 
    {
       const std::map<opencdev::cdev_time_t, double> &values = result["bluDCCTtotal"];
+      if(values.empty())
+	{
+	  fTimeEventLumiOn = -2211753600;
+	  fTimeEventLumiOff = -2211753600;
+	}
       for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
       {
          opencdev::cdev_time_t time = it->first;
-
          // Determine the lumi on/off events
 
          if (time < fTimeEventLumiOn)  fTimeEventLumiOn  = (time_t) time;
