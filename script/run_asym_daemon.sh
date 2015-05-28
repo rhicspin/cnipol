@@ -31,6 +31,8 @@ while true;  do
 	    fi
 	    echo $CNIPOL_DIR/build/asym $args 
 	    $CNIPOL_DIR/build/asym $args
+	    echo  "root -b -q '/direct/eic+u/schmidke/polana/afterburner/pro/afterburner.C+($run_name)'"
+	    root -b -q '/direct/eic+u/schmidke/polana/afterburner/pro/afterburner.C+('$run_name')' > /dev/null 
 	    rsync -av --exclude='*.root' ${CNIPOL_RESULTS_DIR}/${run_name} cnipol@eicsrv1.phy.bnl.gov:${CNIPOL_ONLINE_DIR} > /dev/null
 	fi
     done
