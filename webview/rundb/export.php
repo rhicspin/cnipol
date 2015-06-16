@@ -4,7 +4,7 @@ include_once("config.php");
 include_once("utils.php"); 
 include_once("RunSelector.php");
 
-$host = '127.0.0.1'; // MYSQL database host adress
+$host = 'localhost'; // MYSQL database host adress
 $db   = 'cnipol'; // MYSQL database name
 $user = 'cnipol'; // Mysql Datbase user
 $pass = '(n!P0l'; // Mysql Datbase password
