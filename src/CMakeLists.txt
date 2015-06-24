@@ -80,6 +80,7 @@ ADD_LIBRARY(
 	MseRunPeriod.cxx
 	RawDataReader.cxx
 	RunConfig.cxx
+	RunPeriod.c
 	RunQA.cxx
 	SshLogReader.cxx
 	Target.cxx

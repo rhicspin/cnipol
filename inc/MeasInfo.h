@@ -25,6 +25,7 @@
 
 class MseMeasInfoX;
 class MseRunPeriodX;
+class RunPeriod;
 
 class MeasInfo;
 
@@ -150,7 +151,7 @@ public:
    UInt_t          GetFillId();
    bool            IsRunYear(int year);
    void            Update(const MseMeasInfoX& run);
-   void            Update(const MseRunPeriodX& runPeriod);
+   void            Update(const RunPeriod& runPeriod);
    void            Update(const AsymAnaInfo& anaInfo);
    void            UpdateRevolutions(UInt_t revId);
    void            ConfigureActiveStrip(int mask);

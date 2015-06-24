@@ -10,6 +10,7 @@
 #include "AsymAnaInfo.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
+#include "RunPeriod.h"
 
 #include "revision-export.h"
 
@@ -477,7 +478,7 @@ void MeasInfo::Update(const MseMeasInfoX& run)
 
 
 /** */
-void MeasInfo::Update(const MseRunPeriodX& runPeriod)
+void MeasInfo::Update(const RunPeriod& runPeriod)
 {
    fAlphaSourceCount = UChar_t(runPeriod.alpha_source_count);
    fProtoCutSlope    = runPeriod.cut_proto_slope;

@@ -17,6 +17,7 @@
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "RawDataReader.h"
+#include "RunPeriod.h"
 
 
 using namespace std;
@@ -68,16 +69,16 @@ int main(int argc, char *argv[])
    rawDataReader.ReadRecBegin(*mseMeasInfoX);
    rawDataReader.ReadMeasInfo(*mseMeasInfoX);
 
-   MseRunPeriodX *mseRunPeriodX = 0;
-
-   // We can do this for any run type including alpha runs
-   if (gAsymAnaInfo->fFlagUseDb) {
-      mseRunPeriodX = gAsymDb->CompleteMeasInfoByRunPeriod(*mseMeasInfoX);
+   const RunPeriod *runPeriod = find_run_period(
+         (time_t)mseMeasInfoX->start_time, (EPolarimeterId)mseMeasInfoX->polarimeter_id);
+   if (!runPeriod) {
+      Error("asym", "Run period not found!");
+      exit(EXIT_FAILURE);
    }
 
-   if (!mseRunPeriodX) {
-      mseRunPeriodX = new MseRunPeriodX();
-   }
+   mseMeasInfoX->alpha_calib_run_name = runPeriod->alpha_calib_run_name;
+   mseMeasInfoX->disabled_channels    = runPeriod->disabled_channels;
+   mseMeasInfoX->disabled_bunches     = runPeriod->disabled_bunches;
 
    // Overwrite the offline version (if set previously)
    mseMeasInfoX->asym_version = gAsymAnaInfo->fAsymVersion;
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
    // what was requested by the user
    gAsymAnaInfo->Update(*mseMeasInfoX);
    gMeasInfo->Update(*mseMeasInfoX);
-   gMeasInfo->Update(*mseRunPeriodX);
+   gMeasInfo->Update(*runPeriod);
    gMeasInfo->Update(*gAsymAnaInfo);  // Can override some parameters by the user ones
 
    if (!gMeasInfo->HasMachineParamsInRawData())
