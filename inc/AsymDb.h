@@ -5,7 +5,6 @@
 
 #include "TObject.h"
 
-#include "DbEntry.h"
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "MseFillPolar.h"
@@ -25,7 +24,6 @@ public:
 
    virtual void              OpenConnection() {}
    virtual void              CloseConnection() {}
-   virtual DbEntry*          Select(std::string runName="") { return 0; }
    virtual MseMeasInfoX*     SelectRun(std::string runName="") { return 0; }
    virtual MseFillPolarX*    SelectFillPolar(UInt_t fill) { return 0; }
    virtual MseFillPolarNewX* SelectFillPolar(UInt_t fill, EPolarimeterId polId, ERingId ringId) { return 0; }
@@ -33,7 +31,6 @@ public:
    virtual MseRunPeriodX*    SelectRunPeriod(MseMeasInfoX& run) { return 0; }
 	virtual void              CompleteMeasInfo(MseMeasInfoX& run) {}
 	virtual MseRunPeriodX*    CompleteMeasInfoByRunPeriod(MseMeasInfoX& run) { return 0; }
-   virtual void              Insert(DbEntry *dbrun) {}
    virtual void              UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun) {}
    virtual void              UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill) {}
    virtual void              UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill) {}

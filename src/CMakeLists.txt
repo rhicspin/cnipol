@@ -31,7 +31,6 @@ ADD_LIBRARY(
 	AsymCalculator.cxx
 	AsymCommon.cxx
 	AsymDb.cxx
-	AsymDbFile.cxx
 	AsymDbSql.cxx
 	AsymErrorDetector.cxx
 	AsymOnline.cxx
@@ -61,7 +60,6 @@ ADD_LIBRARY(
 	CnipolScalerHists.cxx
 	CnipolSpinStudyHists.cxx
 	CnipolTargetHists.cxx
-	DbEntry.cxx
 	DeadLayerCalibrator.cxx
 	DeadLayerCalibratorEDepend.cxx
 	DrawObjContainer.cxx

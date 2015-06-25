@@ -12,7 +12,6 @@
 #include "AsymCommon.h"
 #include "AnaInfo.h"
 
-class DbEntry;
 class MseMeasInfoX;
 
 

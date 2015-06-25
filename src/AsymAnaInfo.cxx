@@ -6,7 +6,6 @@
 #include "TSystem.h"
 
 #include "AsymGlobals.h"
-#include "DbEntry.h"
 #include "MseMeasInfo.h"
 #include "MeasInfo.h"
 
@@ -192,7 +191,6 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case 'r':
       case 'f':
          SetRunName(optarg);
-         gRunDb.fRunName = optarg; // deprecated, should be removed later
          break;
 
       case 'n':

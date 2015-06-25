@@ -86,47 +86,6 @@ void AsymDbSql::CloseConnection()
 
 
 /** */
-DbEntry* AsymDbSql::Select(std::string runName)
-{
-   if (!fConnection) {
-      Error("Select", "Connection with MySQL server not established");
-      return 0;
-   }
-
-   // Retrieve a subset of the stock table's columns, and store
-   // the data in a vector of 'stock' SSQLS structures.  See the
-   // user manual for the consequences arising from this quiet
-   // ability to store a subset of the table in the stock SSQLS.
-   Query query = fConnection->query("select run_name from run_info");
-
-   if (StoreQueryResult res = query.store()) {
-      cout << "We have:" << endl;
-      for (size_t i = 0; i < res.num_rows(); ++i) {
-          cout << '\t' << res[i][0] << endl;
-      }
-   } else {
-      cerr << "Failed to get item list: " << query.error() << endl;
-   }
-
-   //vector<stock> res;
-   //query.storein(res);
-
-   //// Display the items
-   //cout << "We have:" << endl;
-   //vector<stock>::iterator it;
-   //for (it = res.begin(); it != res.end(); ++it) {
-   //    cout << '\t' << it->item;
-   //    if (it->description != mysqlpp::null) {
-   //        cout << " (" << it->description << ")";
-   //    }
-   //    cout << endl;
-   //}
-
-   return 0;
-}
-
-
-/** */
 MseMeasInfoX* AsymDbSql::SelectRun(std::string runName)
 {
    OpenConnection();
@@ -471,51 +430,6 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
    CloseConnection();
 
    return mserp;
-}
-
-
-/** */
-void AsymDbSql::Insert(DbEntry *dbrun)
-{
-   if (!dbrun) return;
-
-   //MseMeasInfoX MseMeasInfoX("", 0, sql_datetime(""), sql_datetime(""), 0);
-
-   stringstream sstr;
-
-   short polarimeter_id;
-   sstr.str("");
-   sstr << dbrun->fFields["POLARIMETER_ID"];
-   sstr >> polarimeter_id;
-
-   time_t start_time;
-   sstr.str("");
-   sstr << dbrun->fFields["START_TIME"];
-   sstr >> start_time;
-
-   time_t stop_time;
-   sstr.str("");
-   sstr << dbrun->fFields["STOP_TIME"];
-   sstr >> stop_time;
-
-   float beam_energy;
-   sstr.str("");
-   sstr << dbrun->fFields["BEAM_ENERGY"];
-   sstr >> beam_energy;
-
-   MseMeasInfoX MseMeasInfoX(dbrun->fRunName,
-                         sql_smallint(polarimeter_id),
-                         sql_datetime(start_time),
-                         sql_datetime(stop_time),
-                         sql_float(beam_energy));
-
-   //MseMeasInfoX.instance_table("run_info");
-
-   Query query = fConnection->query();
-   query.insert(MseMeasInfoX);
-
-   cout << "Query: " << query << endl;
-   query.execute();
 }
 
 

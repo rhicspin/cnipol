@@ -6,7 +6,6 @@
 #include "mysql++.h"
 
 #include "AsymDb.h"
-#include "DbEntry.h"
 
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
@@ -31,7 +30,6 @@ public:
    
    void                       OpenConnection();
    void                       CloseConnection();
-   DbEntry*                   Select(std::string runName="");
    MseMeasInfoX*              SelectRun(std::string runName="");
    MseFillPolarX*             SelectFillPolar(UInt_t fill);
    MseFillPolarNewX*          SelectFillPolar(UInt_t fill, EPolarimeterId polId, ERingId ringId);
@@ -42,7 +40,6 @@ public:
    MseRunPeriodX*             SelectRunPeriod(MseMeasInfoX& run);
 	void                       CompleteMeasInfo(MseMeasInfoX& run);
 	MseRunPeriodX*             CompleteMeasInfoByRunPeriod(MseMeasInfoX& run);
-   void                       Insert(DbEntry *dbrun);
    void                       UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun);
    void                       UpdateInsert(MseFillPolarX*   ofill, MseFillPolarX*   nfill);
    void                       UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill);

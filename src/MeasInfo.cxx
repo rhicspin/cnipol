@@ -273,8 +273,6 @@ void MeasInfo::PrintConfig()
    fprintf(stdout, "=== RHIC Polarimeter Configuration (BGN) ===\n");
 
    // Configulation File
-   fprintf(stdout,"         RUN STATUS = %s\n", gRunDb.run_status_s.c_str());
-   fprintf(stdout,"         MEAS. TYPE = %s\n", gRunDb.measurement_type_s.c_str());
    fprintf(stdout,"             CONFIG = %s\n", reConfFile);
    fprintf(stdout,"              CALIB = %s\n", CalibFile);
 
@@ -318,10 +316,6 @@ void MeasInfo::PrintConfig()
    //   printf("%d", ActiveStrip[i]);
    //}
    //printf("\n");
-
-   // print comment
-   if (strlen(gRunDb.comment_s.c_str())>3)
-     printf("            COMMENT = %s\n",    gRunDb.comment_s.c_str());
 }
 
 
@@ -431,39 +425,6 @@ void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &stre
    if (polId == 3) { beamId = 1; streamId = 1; };
 
    beamId = 0; streamId = 0;
-}
-
-
-/** Deprecated. */
-void MeasInfo::Update(DbEntry &rundb)
-{
-   stringstream sstr;
-   UShort_t     chId;
-
-   sstr << rundb.fFields["DISABLED_CHANNELS"];
-
-   while (sstr >> chId) {
-      DisableChannel(chId);
-   }
-
-   // For compatibility reasons set the Run variable
-   // Taken from AsymRunDb
-   if (RUNID < 6500) { // Run undefined
-      fRunId = 0;
-
-   } else if (RUNID >= 6500 && RUNID < 7400) { // Run05
-      fRunId = 5;
-      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun5[i];
-
-   } else if (RUNID >= 7400 && RUNID < 10018) { // Run06
-      fRunId = 6;
-      for (int i=0; i<N_SILICON_CHANNELS; i++) gPhi[i] = phiRun6[i];
-
-   } else if (RUNID >= 10018 && RUNID < 14000) { // Run09
-      fRunId = 9;
-
-   } else
-      fRunId = 11;
 }
 
 

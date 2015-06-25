@@ -103,24 +103,20 @@ void RawDataReader::ReadRecBegin(MseMeasInfoX &mseMeasInfo)
 
    // First, try to get polarimeter id from the data
    if (polId >= 0) {
-      gRunDb.fPolId = gMeasInfo->fPolId;
+      mseMeasInfo.polarimeter_id = gMeasInfo->fPolId;
 
    // if failed, get id from the file name
    } else if (gMeasInfo->GetPolarimeterId() >= 0) {
-      gRunDb.fPolId = gMeasInfo->fPolId;
+      mseMeasInfo.polarimeter_id = gMeasInfo->fPolId;
 
    // see if the polarimeter id was set by command line argument
    } else if (gMeasInfo->fPolId >= 0) {
-      gRunDb.fPolId = gMeasInfo->fPolId;
+      mseMeasInfo.polarimeter_id = gMeasInfo->fPolId;
 
    } else { // cannot proceed
       Fatal("ReadRecBegin", "Unknown polarimeter ID");
    }
 
-   gRunDb.timeStamp = gMeasInfo->fStartTime; // should be always defined in raw data
-   //gRunDb.Print();
-
-   mseMeasInfo.polarimeter_id = gRunDb.fPolId;
    mysqlpp::DateTime dt(gMeasInfo->fStartTime);
    mseMeasInfo.start_time     = dt;
 
@@ -474,8 +470,6 @@ void DecodeTargetID(const polDataStruct &poldat, MseMeasInfoX &mseMeasInfo)
    cout << "target ID = " << poldat.targetIdS << endl;
    //cout << "startTimeS = " << poldat.startTimeS << endl;
    //cout << "stopTimeS = " << poldat.stopTimeS << endl;
-
-   gRunDb.fFields["TARGET_ID"] = poldat.targetIdS;
 
    // initiarization
    gMeasInfo->fTargetId = '-';

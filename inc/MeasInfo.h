@@ -22,7 +22,6 @@
 #include "AsymOnline.h"
 #include "BeamBunch.h"
 #include "RunConfig.h"
-#include "DbEntry.h"
 
 class MseMeasInfoX;
 class MseRunPeriodX;
@@ -150,7 +149,6 @@ public:
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();
    bool            IsRunYear(int year);
-   void            Update(DbEntry &rundb);
    void            Update(MseMeasInfoX& run);
    void            Update(MseRunPeriodX& runPeriod);
    void            Update(AsymAnaInfo& anaInfo);
