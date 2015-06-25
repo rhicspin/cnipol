@@ -5,8 +5,6 @@
 
 #include "mysql++.h"
 
-#include "AsymDb.h"
-
 #include "MseMeasInfo.h"
 #include "MseRunPeriod.h"
 #include "MseFillPolar.h"
@@ -18,7 +16,7 @@
 /**
  * select information about run periods from an ascii file.
  */
-class AsymDbSql : public AsymDb
+class AsymDbSql
 {
 
 public:

@@ -30,7 +30,6 @@ ADD_LIBRARY(
 	AsymAnaInfo.cxx
 	AsymCalculator.cxx
 	AsymCommon.cxx
-	AsymDb.cxx
 	AsymDbSql.cxx
 	AsymErrorDetector.cxx
 	AsymOnline.cxx

@@ -12,7 +12,7 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() : AsymDb(), fConnection(0)
+AsymDbSql::AsymDbSql() : fConnection(0)
 {
    MseMeasInfoX::table("run_info");
    MseRunPeriodX::table("run_period");
