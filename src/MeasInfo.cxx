@@ -429,7 +429,7 @@ void MeasInfo::GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &stre
 
 
 /** */
-void MeasInfo::Update(MseMeasInfoX& run)
+void MeasInfo::Update(const MseMeasInfoX& run)
 {
    stringstream sstr;
    UShort_t     chId;
@@ -477,7 +477,7 @@ void MeasInfo::Update(MseMeasInfoX& run)
 
 
 /** */
-void MeasInfo::Update(MseRunPeriodX& runPeriod)
+void MeasInfo::Update(const MseRunPeriodX& runPeriod)
 {
    fAlphaSourceCount = UChar_t(runPeriod.alpha_source_count);
    fProtoCutSlope    = runPeriod.cut_proto_slope;
@@ -498,7 +498,7 @@ void MeasInfo::Update(MseRunPeriodX& runPeriod)
  * Call this method to override some parameters by those provided by the user
  * in the command line.
  */
-void MeasInfo::Update(AsymAnaInfo& anaInfo)
+void MeasInfo::Update(const AsymAnaInfo& anaInfo)
 {
    if (anaInfo.fAlphaSourceCount >= 0)
       fAlphaSourceCount = anaInfo.fAlphaSourceCount;

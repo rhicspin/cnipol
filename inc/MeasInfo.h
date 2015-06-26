@@ -149,9 +149,9 @@ public:
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();
    bool            IsRunYear(int year);
-   void            Update(MseMeasInfoX& run);
-   void            Update(MseRunPeriodX& runPeriod);
-   void            Update(AsymAnaInfo& anaInfo);
+   void            Update(const MseMeasInfoX& run);
+   void            Update(const MseRunPeriodX& runPeriod);
+   void            Update(const AsymAnaInfo& anaInfo);
    void            UpdateRevolutions(UInt_t revId);
    void            ConfigureActiveStrip(int mask);
    Float_t         GetBeamEnergyReal() const;
