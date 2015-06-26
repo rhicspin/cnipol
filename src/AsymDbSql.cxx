@@ -352,7 +352,7 @@ MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
 
 
 /** */
-vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
+vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(const MseMeasInfoX& run)
 {
    if (!fConnection) {
       Error("SelectPriorRuns", "Connection with MySQL server not established");
@@ -399,7 +399,7 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(MseMeasInfoX& run)
  * Selects the first record corresponding to the time of the provided measurement `run` from the
  * `run_period` table. The returned object is owned by the caller.
  */
-MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
+MseRunPeriodX* AsymDbSql::SelectRunPeriod(const MseMeasInfoX& run)
 {
    MseRunPeriodX* mserp = 0;
 
@@ -434,7 +434,7 @@ MseRunPeriodX* AsymDbSql::SelectRunPeriod(MseMeasInfoX& run)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
+void AsymDbSql::UpdateInsert(const MseMeasInfoX* orun, const MseMeasInfoX* nrun)
 {
    OpenConnection();
 
@@ -462,7 +462,7 @@ void AsymDbSql::UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
+void AsymDbSql::UpdateInsert(const MseFillPolarX* ofill, const MseFillPolarX* nfill)
 {
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
@@ -486,7 +486,7 @@ void AsymDbSql::UpdateInsert(MseFillPolarX* ofill, MseFillPolarX* nfill)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill)
+void AsymDbSql::UpdateInsert(const MseFillPolarNewX* ofill, const MseFillPolarNewX* nfill)
 {
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
@@ -510,7 +510,7 @@ void AsymDbSql::UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
+void AsymDbSql::UpdateInsert(const MseFillProfileX* ofill, const MseFillProfileX* nfill)
 {
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");
@@ -534,7 +534,7 @@ void AsymDbSql::UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill)
 
 
 /** */
-void AsymDbSql::UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfill)
+void AsymDbSql::UpdateInsert(const MseFillProfileNewX* ofill, const MseFillProfileNewX* nfill)
 {
    if (!fConnection) {
       Error("UpdateInsert", "Connection with MySQL server not established");

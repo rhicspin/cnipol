@@ -34,15 +34,15 @@ public:
    MseFillPolarNewXSet        SelectFillPolars(UInt_t fill);
    MseFillProfileX*           SelectFillProfile(UInt_t fill);
    MseFillProfileNewX*        SelectFillProfile(UInt_t fill, EPolarimeterId polId, ETargetOrient tgtOrient);
-   std::vector<MseMeasInfoX>  SelectPriorRuns(MseMeasInfoX& run);
-   MseRunPeriodX*             SelectRunPeriod(MseMeasInfoX& run);
-	void                       CompleteMeasInfo(MseMeasInfoX& run);
-	MseRunPeriodX*             CompleteMeasInfoByRunPeriod(MseMeasInfoX& run);
-   void                       UpdateInsert(MseMeasInfoX* orun, MseMeasInfoX* nrun);
-   void                       UpdateInsert(MseFillPolarX*   ofill, MseFillPolarX*   nfill);
-   void                       UpdateInsert(MseFillPolarNewX* ofill, MseFillPolarNewX* nfill);
-   void                       UpdateInsert(MseFillProfileX* ofill, MseFillProfileX* nfill);
-   void                       UpdateInsert(MseFillProfileNewX* ofill, MseFillProfileNewX* nfill);
+   std::vector<MseMeasInfoX>  SelectPriorRuns(const MseMeasInfoX& run);
+   MseRunPeriodX*             SelectRunPeriod(const MseMeasInfoX& run);
+   void                       CompleteMeasInfo(MseMeasInfoX& run);
+   MseRunPeriodX*             CompleteMeasInfoByRunPeriod(MseMeasInfoX& run);
+   void                       UpdateInsert(const MseMeasInfoX* orun, const MseMeasInfoX* nrun);
+   void                       UpdateInsert(const MseFillPolarX*   ofill, const MseFillPolarX*   nfill);
+   void                       UpdateInsert(const MseFillPolarNewX* ofill, const MseFillPolarNewX* nfill);
+   void                       UpdateInsert(const MseFillProfileX* ofill, const MseFillProfileX* nfill);
+   void                       UpdateInsert(const MseFillProfileNewX* ofill, const MseFillProfileNewX* nfill);
 
 private:
 
