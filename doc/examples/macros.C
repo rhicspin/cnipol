@@ -3,6 +3,12 @@
 #include <string>
 #include <time.h>
 
+#include <TSystem.h>
+#include <TFile.h>
+
+#include <EventConfig.h>
+#include <MeasInfo.h>
+
 using std::cout;
 using std::endl;
 using std::map;
