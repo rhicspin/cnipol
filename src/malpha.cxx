@@ -410,7 +410,7 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
 
    for(int det = 0; det < N_DETECTORS; det++)
    {
-      int count = 0;
+      TGraph g(0);
       for (map< Time, vector<double> >::iterator it = rhAmGain.second.begin(); it != rhAmGain.second.end(); it++)
       {
          Time   time = it->first;
@@ -419,24 +419,11 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
 
          if (rBiasCurrent.second.count(time) && (!isnan(bias_current)) && !isnan(det_gain.at(det)))
          {
-            count++;
+            int n = g.GetN();
+            g.Set(n + 1);
+            g.SetPoint(n, bias_current, det_gain.at(det));
          }
       }
-      TGraph g(count);
-      int i = 0;
-      for (map< Time, vector<double> >::iterator it = rhAmGain.second.begin(); it != rhAmGain.second.end(); it++)
-      {
-         Time   time = it->first;
-         vector<double>    &det_gain = it->second;
-         double    bias_current = rBiasCurrent.second[time].at(det);
-
-         if (rBiasCurrent.second.count(time) && (!isnan(bias_current)) && !isnan(det_gain.at(det)))
-         {
-            g.SetPoint(i, bias_current, det_gain.at(det));
-            i++;
-         }
-      }
-      assert(i == count);
       TFitResultPtr fitres = g.Fit("pol1", "QS"); // Q: quiet, S: return fitres
       assert(!isnan(fitres->Value(1)));
       slope.push_back(fitres->Value(1));
