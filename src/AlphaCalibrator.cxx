@@ -36,6 +36,9 @@ void AlphaCalibrator::Calibrate(DrawObjContainer *c)
    bool     fit_gadolinium = gMeasInfo->GetAlphaSourceCount() == 2;
 
    for (UShort_t i = 1; i <= NSTRIP; i++) {
+      if (gMeasInfo->IsDisabledChannel(i))
+         continue;
+
       sprintf(&sCh[0], "%02d", i);
 
       ChannelCalib *chCalib;
