@@ -757,7 +757,9 @@ int main(int argc, char *argv[])
    if (mAlphaAnaInfo.HasGraphBit())
    {
       TCanvas r("r", "", 1000, 800);
-      oc->SaveAllAs(DrawObjContainer::FORMAT_PNG, r, "^.*$", mAlphaAnaInfo.GetImageDir(), false);
+      string ext = "." + mAlphaAnaInfo.fImgFmtName;
+      DrawObjContainer::ImageFormat fmt = ext.c_str();
+      oc->SaveAllAs(fmt, r, "^.*$", mAlphaAnaInfo.GetImageDir(), false);
    }
    oc->Write();
    f1->Close();

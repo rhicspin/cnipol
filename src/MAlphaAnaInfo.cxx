@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <algorithm>
 
 #include <getopt.h>
 
@@ -16,7 +17,8 @@ using namespace std;
 MAlphaAnaInfo::MAlphaAnaInfo() : AnaInfo(),
    fMListFileName(""),
    fUseSsh(false),
-   fOutputFileName("")
+   fOutputFileName(""),
+   fImgFmtName("png")
 {
    Init();
 }
@@ -54,6 +56,7 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
 
       {"meas-list",           required_argument,   0,   MAlphaAnaInfo::OPTION_MLIST},
       {"output-file",         required_argument,   0,   MAlphaAnaInfo::OPTION_OFILE},
+      {"image-format",        required_argument,   0,   MAlphaAnaInfo::OPTION_IMG_FMT},
       {"use-ssh",             optional_argument,   0,   MAlphaAnaInfo::OPTION_USE_SSH},
       {0, 0, 0, 0}
    };
@@ -85,6 +88,11 @@ void MAlphaAnaInfo::ProcessOptions(int argc, char **argv)
          case 'o':
          case MAlphaAnaInfo::OPTION_OFILE:
             fOutputFileName = optarg;
+            break;
+
+         case MAlphaAnaInfo::OPTION_IMG_FMT:
+            fImgFmtName = optarg;
+            std::transform(fImgFmtName.begin(), fImgFmtName.end(), fImgFmtName.begin(), ::tolower);
             break;
 
          case MAlphaAnaInfo::OPTION_USE_SSH:
@@ -155,6 +163,7 @@ void MAlphaAnaInfo::PrintUsage()
    cout << " -g, --graph                          : Plot graphs" << endl;
    cout << " -m, --meas-list <file_name>          : Name of run with raw data in $CNIPOL_RESULTS_DIR directory" << endl;
    cout << " -o, --output-file <file_name>        : Output file name" << endl;
+   cout << " --image-format <ext>                 : Output image format (png, eps, ...)" << endl;
    cout << " --use-ssh                            : Use ssh method to access CDEV log data" << endl;
    cout << endl;
 }
