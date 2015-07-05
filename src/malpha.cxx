@@ -636,7 +636,15 @@ int main(int argc, char *argv[])
       string   runName      = gMM->fMeasInfo->GetRunName();
       Short_t  polId        = gMM->fMeasInfo->fPolId;
       Double_t startTime    = gMM->fMeasInfo->fStartTime;
+      Double_t stopTime     = gMM->fMeasInfo->fStopTime;
       Double_t ssh_endTime  = gMM->fMeasInfo->fStopTime;
+      Double_t eventRate    = gMM->fMeasInfo->fNEventsSilicon / (double)(stopTime - startTime); // event/s
+
+      if (eventRate > 100.)
+      {
+         Error("malpha", "Silicon event rate is too high (%f). Skipping...", eventRate);
+         continue;
+      }
 
       if ((gMM->fMeasInfo->RUNID == 70213)
           || (int(gMM->fMeasInfo->RUNID) == 17400) // this one takes too long to process
