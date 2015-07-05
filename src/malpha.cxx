@@ -622,8 +622,6 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      Info("malpha", "Found file: %s", fileName.c_str());
-
       EventConfig *gMM = (EventConfig*) f.FindObjectAny("measConfig");
 
       if (!gMM)

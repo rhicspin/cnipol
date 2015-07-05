@@ -56,7 +56,6 @@ vector<double> BiasCurrentUtil::FillBiasCurrentMeanValue(opencdev::mean_result_t
    for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++) {
       const string &key = it->first;
       double value = it->second;
-      gSystem->Info("BiasCurrentUtil::FillBiasCurrentMeanValue", "Mean %s equals to %f", key.c_str(), value);
 
       EPolarimeterId parsed_polId = ParseLoggerPolId(key);
       if (parsed_polId != polId)
