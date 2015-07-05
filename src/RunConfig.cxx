@@ -333,12 +333,21 @@ Color_t RunConfig::AsColor(UShort_t chId)
 
 Color_t RunConfig::DetAsColor(int det)
 {
-   Color_t  color = det + 2;
-   if (color == 5)
-   {
-      color = 28;
+   switch (det) {
+   case 0:
+      return kRed - 4;
+   case 1:
+      return kGreen + 1;
+   case 2:
+      return kBlue;
+   case 3:
+      return kOrange - 7; // aka Brown
+   case 4:
+      return kMagenta - 4;
+   case 5:
+      return kCyan - 8;
    }
-   return color;
+   return kBlack;
 }
 
 
