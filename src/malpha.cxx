@@ -205,7 +205,7 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
    host_name += name;
    if (max_startTime)
    {
-      host = new TH1F(host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+      host = new TH1F(host_name, "", 1, -86400, max_startTime - min_startTime + 86400);
    }
    else
    {
@@ -223,7 +223,7 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
 
       if (max_startTime)
       {
-         det_host = new TH1F(det_host_name, "", 100 * result.first.size(), -86400, max_startTime - min_startTime + 86400);
+         det_host = new TH1F(det_host_name, "", 1, -86400, max_startTime - min_startTime + 86400);
       }
       else
       {
@@ -342,9 +342,7 @@ void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, Res
 
    ObjMap	&o = oc->o;
    TString	hname(name);
-   TH2F	*h = new TH2F(hname, hname,
-                      r1.max_value - r1.min_value, r1.min_value, r1.max_value,
-                      r2.max_value - r2.min_value, r2.min_value, r2.max_value);
+   TH2F	*h = new TH2F(hname, hname, 1, r1.min_value, r1.max_value, 1, r2.min_value, r2.max_value);
    h->SetOption("DUMMY");
 
    for (int det = 0; det < N_DETECTORS; det++)
