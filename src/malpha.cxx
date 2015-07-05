@@ -283,29 +283,6 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
       }
       TString sDet("Det");
       sDet += (det + 1);
-      if (max_startTime)
-      {
-         TF1   fit_daily("fit_daily", "pol0");
-         TF1   det_fit_daily("det_fit_daily", "pol0");
-         fit_daily.SetLineColor(line_color);
-         fit_daily.SetLineWidth(0.5);
-         det_fit_daily.SetLineColor(kBlack);
-         det_fit_daily.SetLineWidth(0.5);
-
-         if (gMeasInfo->IsRunYear(2013))
-         {
-            Warning("malpha", "detected run13 : will fit only during beamtime");
-            const double fit_min = 1362096000 - min_startTime; // 03/01/2013 00:00:00
-            const double fit_max = 1372636800 - min_startTime; // 07/01/2013 00:00:00
-            g->Fit(&fit_daily, "Q", "", fit_min, fit_max); // Q: quiet
-            det_g->Fit(&det_fit_daily, "Q", "", fit_min, fit_max);   // Q: quiet
-         }
-         else
-         {
-            g->Fit(&fit_daily, "Q"); // Q: quiet
-            det_g->Fit(&det_fit_daily, "Q");   // Q: quiet
-         }
-      }
       g->SetName(sDet);
       det_g->SetName(sDet);
 
