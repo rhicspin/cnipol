@@ -368,6 +368,15 @@ void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, Res
       }
 
       h->GetListOfFunctions()->Add(g, "p");
+
+      TString hdetname(name);
+      hdetname += (det + 1);
+      TH2F *hdet = new TH2F(hdetname, hdetname, 1, r1.min_value, r1.max_value, 1, r2.min_value, r2.max_value);
+      hdet->SetOption("DUMMY");
+      hdet->SetXTitle(r1.YTitle.c_str());
+      hdet->SetYTitle(r2.YTitle.c_str());
+      hdet->GetListOfFunctions()->Add(g, "p");
+      o[hdetname.Data()] = hdet;
    }
    h->SetXTitle(r1.YTitle.c_str());
    h->SetYTitle(r2.YTitle.c_str());
