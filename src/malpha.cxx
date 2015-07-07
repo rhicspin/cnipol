@@ -416,8 +416,13 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
          }
       }
       TFitResultPtr fitres = DoBCGainFit(&g);
-      assert(!isnan(fitres->Value(1)));
-      slope.push_back(fitres->Value(1));
+      double val = NAN;
+      if (fitres.Get())
+      {
+         assert(!isnan(fitres->Value(1)));
+         val = fitres->Value(1);
+      }
+      slope.push_back(val);
    }
 
    rhAmGainCorrected = rhAmGain;
