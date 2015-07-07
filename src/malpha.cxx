@@ -328,6 +328,11 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
 }
 
 
+// Exclude zero bias current values from fit
+#define DoBCGainFit(g) \
+   ((g)->Fit("pol1", "QS")); // Q: quiet, S: return fitres
+
+
 void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, ResultMean &r1_err, ResultMean &r2, ResultMean &r2_err)
 {
    if ((r1.first.empty() && r1.second.empty()) || (r2.first.empty() && r2.second.empty()))
@@ -376,6 +381,8 @@ void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, Res
       hdet->SetXTitle(r1.YTitle.c_str());
       hdet->SetYTitle(r2.YTitle.c_str());
       hdet->GetListOfFunctions()->Add(g, "p");
+      if (strcmp(name, "hBiasCurrent_AmGain") == 0)
+         DoBCGainFit(g);
       o[hdetname.Data()] = hdet;
    }
    h->SetXTitle(r1.YTitle.c_str());
@@ -410,7 +417,7 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
             g.SetPoint(n, bias_current, det_gain.at(det));
          }
       }
-      TFitResultPtr fitres = g.Fit("pol1", "QS"); // Q: quiet, S: return fitres
+      TFitResultPtr fitres = DoBCGainFit(&g);
       assert(!isnan(fitres->Value(1)));
       slope.push_back(fitres->Value(1));
    }
