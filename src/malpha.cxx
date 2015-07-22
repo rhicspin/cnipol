@@ -330,7 +330,7 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
 
 // Exclude zero bias current values from fit
 #define DoBCGainFit(g) \
-   ((g)->Fit("pol1", "QS")); // Q: quiet, S: return fitres
+   ((g)->Fit("pol1", "QS", "", -50., -0.1)); // Q: quiet, S: return fitres
 
 
 void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, ResultMean &r1_err, ResultMean &r2, ResultMean &r2_err)
