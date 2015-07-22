@@ -6,7 +6,6 @@
 #include "mysql++.h"
 
 #include "MseMeasInfo.h"
-#include "MseRunPeriod.h"
 #include "MseFillPolar.h"
 #include "MseFillPolarNew.h"
 #include "MseFillProfile.h"
@@ -35,9 +34,7 @@ public:
    MseFillProfileX*           SelectFillProfile(UInt_t fill);
    MseFillProfileNewX*        SelectFillProfile(UInt_t fill, EPolarimeterId polId, ETargetOrient tgtOrient);
    std::vector<MseMeasInfoX>  SelectPriorRuns(const MseMeasInfoX& run);
-   MseRunPeriodX*             SelectRunPeriod(const MseMeasInfoX& run);
    void                       CompleteMeasInfo(MseMeasInfoX& run);
-   MseRunPeriodX*             CompleteMeasInfoByRunPeriod(MseMeasInfoX& run);
    void                       UpdateInsert(const MseMeasInfoX* orun, const MseMeasInfoX* nrun);
    void                       UpdateInsert(const MseFillPolarX*   ofill, const MseFillPolarX*   nfill);
    void                       UpdateInsert(const MseFillPolarNewX* ofill, const MseFillPolarNewX* nfill);

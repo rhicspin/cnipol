@@ -15,7 +15,6 @@
 #include "AsymAnaInfo.h"
 #include "AsymDbSql.h"
 #include "MseMeasInfo.h"
-#include "MseRunPeriod.h"
 #include "RawDataReader.h"
 #include "RunPeriod.h"
 

@@ -9,7 +9,6 @@
 
 #include "AsymAnaInfo.h"
 #include "MseMeasInfo.h"
-#include "MseRunPeriod.h"
 #include "RunPeriod.h"
 
 #include "revision-export.h"

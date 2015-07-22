@@ -77,7 +77,6 @@ ADD_LIBRARY(
 	MseFillProfile.cxx
 	MseFillProfileNew.cxx
 	MseMeasInfo.cxx
-	MseRunPeriod.cxx
 	RawDataReader.cxx
 	RunConfig.cxx
 	RunPeriod.c

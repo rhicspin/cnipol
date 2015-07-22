@@ -15,7 +15,6 @@ using namespace mysqlpp;
 AsymDbSql::AsymDbSql() : fConnection(0)
 {
    MseMeasInfoX::table("run_info");
-   MseRunPeriodX::table("run_period");
    MseFillPolarX::table("fill_polar");
    MseFillPolarNewX::table("fill_polar_new");
    MseFillProfileX::table("fill_profile");
@@ -328,29 +327,6 @@ void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
 }
 
 
-/** 
- * Selects the first record corresponding to the time of the provided measurement `run` from the
- * `run_period` table. The returned object is owned by the caller.
- */
-MseRunPeriodX* AsymDbSql::CompleteMeasInfoByRunPeriod(MseMeasInfoX& run)
-{
-   MseRunPeriodX *runPeriod = SelectRunPeriod(run);
-
-   if (runPeriod)
-      runPeriod->Print();
-   else {
-      Error("CompleteMeasInfoByRunPeriod", "No run period selected");
-      return 0;
-   }
-
-   run.alpha_calib_run_name = runPeriod->alpha_calib_run_name;
-   run.disabled_channels    = runPeriod->disabled_channels;
-   run.disabled_bunches     = runPeriod->disabled_bunches;
-
-   return runPeriod; 
-}
-
-
 /** */
 vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(const MseMeasInfoX& run)
 {
@@ -392,44 +368,6 @@ vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(const MseMeasInfoX& run)
    //}
 
    return results;
-}
-
-
-/** 
- * Selects the first record corresponding to the time of the provided measurement `run` from the
- * `run_period` table. The returned object is owned by the caller.
- */
-MseRunPeriodX* AsymDbSql::SelectRunPeriod(const MseMeasInfoX& run)
-{
-   MseRunPeriodX* mserp = 0;
-
-   OpenConnection();
-
-   if (!fConnection) {
-      Error("SelectRunPeriod", "Connection with MySQL server not established");
-      return mserp;
-   }
-
-   stringstream sstr;
-
-   sstr << "select * from `run_period` where `start_time` <= '" << run.start_time << "' "
-        << "AND `polarimeter_id`='" << run.polarimeter_id << "' ORDER BY `start_time` DESC";
-
-   Query query = fConnection->query(sstr.str());
-
-   cout << "Query: " << query << endl;
-
-   if (StoreQueryResult result = query.store()) {
-      if (!result.empty())
-         mserp = new MseRunPeriodX(result[0]);
-
-   } else {
-      cerr << "Failed to get item list: " << query.error() << endl;
-   }
-
-   CloseConnection();
-
-   return mserp;
 }
 
 
