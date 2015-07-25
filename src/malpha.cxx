@@ -726,6 +726,15 @@ int main(int argc, char *argv[])
    for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
    {
       Short_t polId = *iPolId;
+      slope[*iPolId] = DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
+   }
+
+   // Redo the histogram limits for corrected gains
+   FillDeviceMaxMin(rhAmGainCorrected);
+
+   for (iPolId = gRunConfig.fPolarimeters.begin(); iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      Short_t polId = *iPolId;
       string  polIdName = RunConfig::AsString(*iPolId);
 
       oc->d[polIdName] = new DrawObjContainer(f1->mkdir(polIdName.c_str()));
@@ -734,7 +743,9 @@ int main(int argc, char *argv[])
       sub_oc->fDir->cd();
       gROOT->GetListOfCanvases()->Clear(); // hack to prevent canvas deletion
 
-      slope[*iPolId] = DoAmGainCorrection(rhAmGain[polId], rhAmGainErr[polId], rBiasCurrent[polId], rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId]);
+      // Share histogram limits between normal and corrected gains
+      rhAmGain[polId].min_value = rhAmGainCorrected[polId].min_value = min(rhAmGain[polId].min_value, rhAmGainCorrected[polId].min_value);
+      rhAmGain[polId].max_value = rhAmGainCorrected[polId].max_value = max(rhAmGain[polId].max_value, rhAmGainCorrected[polId].max_value);
 
       PlotMean(sub_oc, "hAmGain_by_day", rhAmGain[polId], rhAmGainErr[polId], runNameD[polId], min_startTime, max_startTime);
       PlotMean(sub_oc, "hAmGainCorrected_by_day", rhAmGainCorrected[polId], rhAmGainCorrectedErr[polId], runNameD[polId], min_startTime, max_startTime);
