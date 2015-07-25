@@ -479,7 +479,7 @@ void FillBiasCurrent(opencdev::LogReader *log_reader, EPolarimeterId polId, doub
    rBiasCurrentErr[polId].second[startTime].resize(N_DETECTORS, (double)0.0);
 
    FillDetectorAverage(rBiasCurrent[polId], rBiasCurrentErr[polId], startTime);
-   rBiasCurrent[polId].YTitle = "BiasCurrent, \\mu A";
+   rBiasCurrent[polId].YTitle = "\\text{Bias current, }\\mu A";
 }
 
 void FillBeamCurrent(opencdev::LogReader *log_reader, int fill_id, EPolarimeterId polId, double startTime, map< Short_t, ResultMean > &rBeamCurrent, map< Short_t, ResultMean > &rBeamCurrentErr)
