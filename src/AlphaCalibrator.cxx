@@ -238,7 +238,7 @@ TFitResultPtr AlphaCalibrator::Calibrate(TH1F *h, bool fit_gadolinium, bool *gad
    // First fit is to find americium peak
    // Will start from guessing initial params
    float norm_amer;
-   int   mbin_amer = utils::FindMaximumBinEx(h, 1, &norm_amer);
+   int   mbin_amer = utils::FindMaximumBinEx(h, 2, &norm_amer);
    float mean_amer = h->GetBinCenter(mbin_amer);
    float expectedSigma = 0.7;
 
