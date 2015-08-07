@@ -106,7 +106,7 @@ void Calibrator::UsePlainAlphaGain()
 }
 
 
-void Calibrator::ApplyRun13BiasCurrentCorrection(MeasInfo *measInfo, bool direct)
+void Calibrator::ApplyBiasCurrentCorrection(MeasInfo *measInfo, bool direct)
 {
    // ============= malpha generated for run13_alpha_study_novoltagevariation begin
    // ./malpha -mrun13_alpha_study_novoltagevariation -orun13.root -g
@@ -166,7 +166,7 @@ void Calibrator::ApplyRun13BiasCurrentCorrection(MeasInfo *measInfo, bool direct
    }
 
    if (not_avail > 0) {
-      Error("ApplyRun13BiasCurrentCorrection",
+      Error("ApplyBiasCurrentCorrection",
             "Bias current measurements are not avaliable for %i out of %i detectors"
             " - Falling back to plain alpha gain", not_avail, N_DETECTORS);
       UsePlainAlphaGain();
@@ -193,10 +193,10 @@ void Calibrator::ApplyRun13BiasCurrentCorrection(MeasInfo *measInfo, bool direct
       }
       if ((chId % NSTRIP_PER_DETECTOR) == 0)
       {
-         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> (1/calib.fAmAmp.fCoef) = %f", chId, 1/calib.fAmAmp.fCoef);
-         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> calib.fZeroBiasGain = %f", chId, calib.fZeroBiasGain);
-         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> calib.fEffectiveGain = %f", chId, calib.fEffectiveGain);
-         Info("ApplyRun13BiasCurrentCorrection", "strip %i -> bc.at(chId) = %f", chId, bc.at(det));
+         Info("ApplyBiasCurrentCorrection", "strip %i -> (1/calib.fAmAmp.fCoef) = %f", chId, 1/calib.fAmAmp.fCoef);
+         Info("ApplyBiasCurrentCorrection", "strip %i -> calib.fZeroBiasGain = %f", chId, calib.fZeroBiasGain);
+         Info("ApplyBiasCurrentCorrection", "strip %i -> calib.fEffectiveGain = %f", chId, calib.fEffectiveGain);
+         Info("ApplyBiasCurrentCorrection", "strip %i -> bc.at(chId) = %f", chId, bc.at(det));
       }
    }
 }
