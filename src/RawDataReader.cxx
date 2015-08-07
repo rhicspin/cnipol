@@ -645,12 +645,6 @@ static void ProcessRecordATPassOne(const char *mSeek, RecordHeaderStruct *mHeade
          }
 
          gMeasInfo->fNEventsProcessed++;
-
-         if (gMeasInfo->fNEventsProcessed%50000 == 0)
-         {
-            printf("%s: Pass 1: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
-            fflush(stdout);
-         }
       }
    }
 }
@@ -737,12 +731,6 @@ static void ProcessRecordATPassTwo(const char *mSeek, RecordHeaderStruct *mHeade
          if ( gAsymRoot->fChannelEvent->PassCutPmtChannel() )
          {
             gAsymRoot->Fill(kCUT_PMT);
-         }
-
-         if (gMeasInfo->fNEventsProcessed%50000 == 0)
-         {
-            printf("%s: Pass 2: Processed events %u\r", gMeasInfo->GetRunName().c_str(), gMeasInfo->fNEventsProcessed);
-            fflush(stdout);
          }
       }
    }
