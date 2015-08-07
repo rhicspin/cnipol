@@ -51,7 +51,7 @@ EPolarimeterId BiasCurrentUtil::ParseLoggerPolId(const std::string &cell_name)
 
 vector<double> BiasCurrentUtil::FillBiasCurrentMeanValue(opencdev::mean_result_t &bias_mean_value, EPolarimeterId polId)
 {
-   vector<double> result(N_DETECTORS);
+   vector<double> result(N_DETECTORS, NAN);
 
    for(map<string, double>::const_iterator it = bias_mean_value.begin(); it != bias_mean_value.end(); it++) {
       const string &key = it->first;
@@ -68,7 +68,7 @@ vector<double> BiasCurrentUtil::FillBiasCurrentMeanValue(opencdev::mean_result_t
       {
          gSystem->Error("BiasCurrentUtil::FillBiasCurrentMeanValue", "Bias cureent value is too big - Ignoring");
       }
-      else if (!isnan(value))
+      else
       {
          int det_id = key[15] - '1';
          result.at(det_id) = value;
