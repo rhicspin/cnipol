@@ -49,7 +49,7 @@
 #define kY2U 3
 
 static const struct RunPeriod run_period_list[] = {
-#include "RunPeriod.inc"
+#include "../contrib/RunPeriod.inc"
 };
 
 const struct RunPeriod* find_run_period(time_t start_time, int polId)
