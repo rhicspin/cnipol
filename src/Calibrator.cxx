@@ -1,12 +1,9 @@
-#include <opencdev.h>
-
 #include "Calibrator.h"
 
 #include "TMath.h"
 
 #include "AsymCommon.h"
 #include "AsymGlobals.h"
-#include "BiasCurrentUtil.h"
 #include "MeasInfo.h"
 
 
@@ -143,18 +140,7 @@ void Calibrator::ApplyBiasCurrentCorrection(MeasInfo *measInfo, bool direct)
    // ============= malpha generated end
 
    int polId = measInfo->fPolId;
-   double startTime = measInfo->fStartTime;
-   double endTime = max(double(measInfo->fStopTime), startTime + 500);
-
-   static opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
-
-   string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)polId);
-   opencdev::mean_result_t bias_mean_value;
-
-   log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
-
-   vector<double> bc = BiasCurrentUtil::FillBiasCurrentMeanValue(bias_mean_value, (EPolarimeterId)polId);
-   assert(bc.size() == N_DETECTORS);
+   vector<double> bc = measInfo->GetBiasCurrents();
 
    int not_avail = 0;
    for(int i = 0; i < N_DETECTORS; i++)

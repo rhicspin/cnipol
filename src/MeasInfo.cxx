@@ -4,10 +4,13 @@
 #include <sstream>
 #include <algorithm>
 
+#include <opencdev.h>
+
 #include "AsymGlobals.h"
 #include "AsymCommon.h"
 
 #include "AsymAnaInfo.h"
+#include "BiasCurrentUtil.h"
 #include "MseMeasInfo.h"
 #include "RunPeriod.h"
 
@@ -802,6 +805,25 @@ ETargetOrient MeasInfo::GetTargetOrient() const
    }
 }
 
+
+/** */
+vector<double> MeasInfo::GetBiasCurrents() const
+{
+   double startTime = fStartTime;
+   double endTime = max(double(fStopTime), startTime + 500);
+
+   static opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+
+   string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)fPolId);
+   opencdev::mean_result_t bias_mean_value;
+
+   log_reader.query_timerange_mean(logger_name, startTime, endTime, &bias_mean_value);
+
+   vector<double> bc = BiasCurrentUtil::FillBiasCurrentMeanValue(bias_mean_value, (EPolarimeterId)fPolId);
+   assert(bc.size() == N_DETECTORS);
+
+   return bc;
+}
 
 /** */
 UShort_t MeasInfo::GetTargetId() const

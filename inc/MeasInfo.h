@@ -187,6 +187,7 @@ public:
    ERingId         GetRingId() const;
    ETargetOrient   GetTargetOrient() const;
    UShort_t        GetTargetId() const;
+   std::vector<double> GetBiasCurrents() const;
 
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
