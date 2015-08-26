@@ -55,7 +55,18 @@ CachingLogReader<T>::~CachingLogReader()
 {
    if (fDB)
    {
-      sqlite3_close(fDB);
+      if (sqlite3_finalize(fSelectStmt) != SQLITE_OK)
+      {
+         gSystem->Error("CachingLogReader", "Error finalizing select_query");
+      }
+      if (sqlite3_finalize(fInsertStmt) != SQLITE_OK)
+      {
+         gSystem->Error("CachingLogReader", "Error finalizing insert_query");
+      }
+      if (sqlite3_close(fDB) != SQLITE_OK)
+      {
+         gSystem->Error("CachingLogReader", "Failed to close cache");
+      }
       fDB = NULL;
    }
 }
