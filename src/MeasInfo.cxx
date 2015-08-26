@@ -10,6 +10,7 @@
 #include "AsymCommon.h"
 
 #include "AsymAnaInfo.h"
+#include "MAsymAnaInfo.h"
 #include "BiasCurrentUtil.h"
 #include "MseMeasInfo.h"
 #include "RunPeriod.h"
@@ -812,7 +813,9 @@ vector<double> MeasInfo::GetBiasCurrents() const
    double startTime = fStartTime;
    double endTime = max(double(fStopTime), startTime + 500);
 
-   static opencdev::LocalLogReader log_reader(gAsymAnaInfo->GetSlowControlLogDir());
+   AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
+
+   static opencdev::LocalLogReader log_reader(anaInfo->GetSlowControlLogDir());
 
    string logger_name = BiasCurrentUtil::GetBiasCurrentLoggerName((EPolarimeterId)fPolId);
    opencdev::mean_result_t bias_mean_value;
