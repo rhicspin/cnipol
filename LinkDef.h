@@ -43,6 +43,7 @@
 #pragma link C++ class MAsymAnaInfo+;
 #pragma link C++ class MAsymFillHists+;
 #pragma link C++ class MAsymSingleFillHists+;
+#pragma link C++ class MAsymBiasHists+;
 #pragma link C++ class RunConfig+;
 #pragma link C++ class RunQA+;
 #pragma link C++ class Target+;

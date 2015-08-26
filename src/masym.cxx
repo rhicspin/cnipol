@@ -14,6 +14,7 @@
 #include "MAsymRunHists.h"
 #include "MAsymRateHists.h"
 #include "MAsymPmtHists.h"
+#include "MAsymBiasHists.h"
 
 #include "AnaGlobResult.h"
 
@@ -196,6 +197,7 @@ int main(int argc, char *argv[])
    gH->d["rate"]  = new MAsymRateHists(new TDirectoryFile("rate",  "rate",  "", &mAsymRoot));
    gH->d["runs"]  = new MAsymRunHists (new TDirectoryFile("runs",  "runs",  "", &mAsymRoot));
    gH->d["pmt"]   = new MAsymPmtHists (new TDirectoryFile("pmt",   "pmt",   "", &mAsymRoot));
+   gH->d["bias"]  = new MAsymBiasHists(new TDirectoryFile("bias",  "bias",  "", &mAsymRoot));
 
    // Adjust min/max fill for histogram limits
    ((MAsymRunHists*) gH->d["runs"])->SetMinMaxFill(anaGlobResult.GetMinFill(), anaGlobResult.GetMaxFill());

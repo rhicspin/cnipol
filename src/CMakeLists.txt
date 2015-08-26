@@ -65,6 +65,7 @@ ADD_LIBRARY(
 	EventConfig.cxx
 	MAlphaAnaInfo.cxx
 	MAsymAnaInfo.cxx
+	MAsymBiasHists.cxx
 	MAsymFillHists.cxx
 	MAsymPmtHists.cxx
 	MAsymRateHists.cxx
