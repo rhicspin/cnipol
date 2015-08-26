@@ -38,6 +38,7 @@ void MAsymBiasHists::BookHistsPolarimeter(EPolarimeterId polId)
 
       const char *hName = Form("hBiasCurrent_%s_det%i", strPolId.c_str(), det + 1);
       o[hName] = new TH2F(hName, ";Measurement;\\text{Bias current, }\\mu A;", 1, 0., 1., 1, 0., 1.);
+      ((TH2F*) o[hName])->SetOption("DUMMY");
       ((TH2F*) o[hName])->GetListOfFunctions()->Add(g, "p");
 
       grBiasCurrent[polId][det] = g;
