@@ -976,6 +976,51 @@ Beam intensity lifetime
 
 
 
+<h1 id="bias" class="count">Bias current</h1>
+<!-- {{{ -->
+<div id="div:intens" class="section">
+
+<div class='thumbcaption'>
+Average detector bias currents during the measurements:
+</div>
+
+<?php
+foreach(array("B1U", "B2D", "Y1D", "Y2U") as $pol):
+?>
+<h2 id="bias_" class=count><?=$pol?></h2>
+<p>
+<table class="simple00 cntr">
+
+<tr>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det1", false, 800)?>
+   <div class='thumbcaption_cm'>Det1</div>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det2", false, 800)?>
+   <div class='thumbcaption_cm'>Det2</div>
+<tr>
+<tr>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det3", false, 800)?>
+   <div class='thumbcaption_cm'>Det3</div>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det4", false, 800)?>
+   <div class='thumbcaption_cm'>Det4</div>
+<tr>
+<tr>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det5", false, 800)?>
+   <div class='thumbcaption_cm'>Det5</div>
+   <td><?=$gP->img("bias/hBiasCurrent_${pol}_det6", false, 800)?>
+   <div class='thumbcaption_cm'>Det6</div>
+<tr>
+
+</table>
+
+<?php endforeach; ?>
+
+
+</div>
+<!-- }}} -->
+
+
+
+
 <!-- Main text ends here-->
 </div>
 <!-- }}} -->
