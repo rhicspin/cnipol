@@ -20,7 +20,6 @@ public:
    enum Option {
       OPTION_MLIST           = 0x20000001,
       OPTION_OFILE           = 0x20000002,
-      OPTION_IMG_FMT         = 0x20000003,
       OPTION_USE_SSH         = 0x20000004
    };
 
@@ -31,7 +30,6 @@ public:
 public:
 
    std::string fOutputFileName;
-   std::string fImgFmtName;
 
    MAlphaAnaInfo();
 

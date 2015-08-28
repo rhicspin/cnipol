@@ -19,6 +19,7 @@ using namespace std;
 /** */
 AnaInfo::AnaInfo() : TObject(),
    fOutputName(""),
+   fImgFmtName("png"),
    fAsymVersion(ASYM_VERSION),
    fSuffix(""),
    fModes(0),
@@ -241,6 +242,7 @@ void AnaInfo::PrintUsage()
    cout << " -h, -?                               : Print this help" << endl;
    cout << " -l, --log=[filename]                 : Optional log file to redirect stdout and stderr" << endl;
    cout << " -g, --graph                          : Save histograms as images" << endl;
+   cout << "     --image-format <ext>             : Output image format (png, eps, ...)" << endl;
    cout << "     --copy                           : Copy results to server (?)" << endl;
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
    cout << "     --update-db                      : Update run info in database" << endl;

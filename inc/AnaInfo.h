@@ -29,6 +29,7 @@ public:
                 OPTION_SET_CALIB_ALPHA  = 0x20001000,
                 OPTION_DET_DISABLE      = 0x20000001,
                 OPTION_SUFFIX           = 0x20000002,
+                OPTION_IMG_FMT          = 0x20000006,
                 OPTION_ALPHA_SOURCES    = 0x20000003};
 
    // Various histogramming and running modes
@@ -40,6 +41,9 @@ protected:
 
 public:
 
+#if !defined(__MAKECINT__)
+   std::string      fImgFmtName;
+#endif
    std::string      fAsymVersion;
    std::string      fSuffix;            //< Additional unique identifier for analysis job
    ULong_t          fModes;

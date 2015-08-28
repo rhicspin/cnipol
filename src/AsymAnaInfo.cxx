@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <getopt.h>
 
 #include "AsymAnaInfo.h"
@@ -103,6 +104,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"log",                 optional_argument,   0,   'l'},
       {"sfx",                 required_argument,   0,   AnaInfo::OPTION_SUFFIX},
       {"graph",               no_argument,         0,   AnaInfo::MODE_GRAPH},
+      {"image-format",        required_argument,   0,   AnaInfo::OPTION_IMG_FMT},
 
       {"copy",                no_argument,         0,   AnaInfo::FLAG_COPY},
       {"copy-results",        no_argument,         0,   AnaInfo::FLAG_COPY},
@@ -161,6 +163,11 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       case 'g':
       case AnaInfo::MODE_GRAPH:
          fModes |= AnaInfo::MODE_GRAPH;
+         break;
+
+      case AnaInfo::OPTION_IMG_FMT:
+         fImgFmtName = optarg;
+         std::transform(fImgFmtName.begin(), fImgFmtName.end(), fImgFmtName.begin(), ::tolower);
          break;
 
       case AnaInfo::OPTION_SUFFIX:
