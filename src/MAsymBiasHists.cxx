@@ -65,6 +65,13 @@ void MAsymBiasHists::Fill(const EventConfig &rc)
 }
 
 
+void MAsymBiasHists::SaveAllAs(ImageFormat fmt_ext, TCanvas &default_canvas, string pattern, string path, Bool_t thumbs)
+{
+   TCanvas canvas("canvas_bias", "", default_canvas.GetWw(), default_canvas.GetWw() * 1.3);
+   DrawObjContainer::SaveAllAs(fmt_ext, canvas, pattern, path, thumbs);
+}
+
+
 void MAsymBiasHists::UpdateLimits()
 {
    Double_t xmin, ymin, xmax, ymax;
