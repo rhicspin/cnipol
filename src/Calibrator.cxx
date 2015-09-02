@@ -105,6 +105,19 @@ void Calibrator::UsePlainAlphaGain()
 
 void Calibrator::ApplyBiasCurrentCorrection(MeasInfo *measInfo, bool direct)
 {
+   int no_slope = 0;
+   for(int i = 0; i < N_DETECTORS; i++)
+      if (measInfo->fGainSlope[i] == 0)
+         no_slope++;
+
+   if (no_slope == N_DETECTORS) {
+      Warning("ApplyBiasCurrentCorrection",
+              "No gain vs bias current slopes in run configuration"
+              " - Falling back to plain alpha gain");
+      UsePlainAlphaGain();
+      return;
+   }
+
    vector<double> bc = measInfo->GetBiasCurrents();
 
    int not_avail = 0;

@@ -602,12 +602,7 @@ void AsymRoot::UpdateCalibrator()
 
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
-      if (gMeasInfo->IsRunYear(2013)) {
-         fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
-      } else {
-         // For all other years we just use plain alpha gains
-         fEventConfig->fCalibrator->UsePlainAlphaGain();
-      }
+      fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
 
       delete eventConfig;
       delete f;
@@ -634,8 +629,7 @@ void AsymRoot::Calibrate()
 {
    fEventConfig->fCalibrator->Calibrate(fHists);
 
-   AsymAnaInfo *anaInfo = fEventConfig->GetAnaInfo();
-   if (gMeasInfo->IsRunYear(2013) && anaInfo->HasAlphaBit()) {
+   if (fEventConfig->GetAnaInfo()->HasAlphaBit()) {
       fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, false);
    }
 }
