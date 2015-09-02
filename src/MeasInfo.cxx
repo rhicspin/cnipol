@@ -495,6 +495,8 @@ void MeasInfo::Update(const RunPeriod& runPeriod)
    fPulserCutAdcMax  = runPeriod.cut_pulser_adc_max;
    fPulserCutTdcMin  = runPeriod.cut_pulser_tdc_min;
    fPulserCutTdcMax  = runPeriod.cut_pulser_tdc_max;
+   for(int i = 0; i < N_DETECTORS; i++)
+      fGainSlope[i] = runPeriod.gain_slope[i];
 }
 
 

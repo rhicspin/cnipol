@@ -96,6 +96,7 @@ public:
    ChannelSet                  fSiliconChannels;        // a list of channels for silicon detectors. Normaly, just everything from 1 to 72
    ChannelSet                  fDisabledChannels;       // a list of disabled channels. not just silicon channels
    BeamBunchMap                fBeamBunches;
+   Double_t                    fGainSlope[N_DETECTORS];
 
 public:
 
@@ -192,7 +193,7 @@ public:
    static void           GetBeamIdStreamId(Short_t polId, UShort_t &beamId, UShort_t &streamId);
    static EPolarimeterId ExtractPolarimeterId(std::string runName);
 
-   ClassDef(MeasInfo, 5)
+   ClassDef(MeasInfo, 6)
 };
 
 

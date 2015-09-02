@@ -282,6 +282,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.000984756,
+      0.000883521,
+      0.00112485,
+      0.00108529,
+      0.000959145,
+      0.00104949,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2013, 1, 1, 0, 0, 0) /* 2013-01-01 00:00:00 */,
@@ -301,6 +309,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00132049,
+      0.000961331,
+      0.00119244,
+      0.00110028,
+      0.00109446,
+      0.0010553,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2013, 1, 1, 0, 0, 0) /* 2013-01-01 00:00:00 */,
@@ -320,6 +336,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00108253,
+      0.00106266,
+      0.00111284,
+      0.0012403,
+      0.000961333,
+      0.00101413,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2013, 1, 1, 0, 0, 0) /* 2013-01-01 00:00:00 */,
@@ -339,6 +363,14 @@
    .cut_pulser_adc_max = 180.0,
    .cut_pulser_tdc_min = 50.0,
    .cut_pulser_tdc_max = 56.0,
+   .gain_slope = {
+      0.00116314,
+      0.00094103,
+      0.00108774,
+      0.00123473,
+      0.00090758,
+      0.00095644,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 1, 1, 0, 0, 0) /* 2015-01-01 00:00:00 */,

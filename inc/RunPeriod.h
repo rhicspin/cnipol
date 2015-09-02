@@ -1,6 +1,8 @@
 #ifndef RunPeriod_h
 #define RunPeriod_h
 
+#include "AsymHeader.h"
+
 #include <time.h>
 
 #ifdef __cplusplus
@@ -26,6 +28,7 @@ struct RunPeriod
    double cut_pulser_adc_max;
    double cut_pulser_tdc_min;
    double cut_pulser_tdc_max;
+   double gain_slope[N_DETECTORS];
 };
 
 const struct RunPeriod* find_run_period(time_t start_time, int polId);
