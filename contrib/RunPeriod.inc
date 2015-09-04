@@ -519,7 +519,7 @@
    .cut_pulser_tdc_max = 0.0,
 },
 {
-   .start_time = MK_UNIXTIME_NY_TZ(2015, 5, 1, 0, 0, 0) /* 2015-05-01 00:00:00 */,
+   .start_time = MK_UNIXTIME_NY_TZ(2015, 4, 28, 0, 0, 0) /* 2015-04-28 00:00:00 */,
    .polarimeter_id = kB1U,
    .alpha_calib_run_name = "280415_2.blu1.alpha0",
    .alpha_source_count = 1,
@@ -538,7 +538,7 @@
    .cut_pulser_tdc_max = 0.0,
 },
 {
-   .start_time = MK_UNIXTIME_NY_TZ(2015, 5, 1, 0, 0, 0) /* 2015-05-01 00:00:00 */,
+   .start_time = MK_UNIXTIME_NY_TZ(2015, 4, 28, 0, 0, 0) /* 2015-04-28 00:00:00 */,
    .polarimeter_id = kB2D,
    .alpha_calib_run_name = "280415_2.blu2.alpha0",
    .alpha_source_count = 1,
