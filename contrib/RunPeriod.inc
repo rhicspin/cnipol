@@ -390,6 +390,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00127087,
+      0.000602437,
+      0.000660786,
+      0.00062598,
+      0.000519805,
+      0.000761385,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 1, 1, 0, 0, 0) /* 2015-01-01 00:00:00 */,
@@ -409,6 +417,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00133785,
+      0.00132702,
+      0.000566536,
+      0.00299849,
+      -0.0051577,
+      0.000456541,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 1, 1, 0, 0, 0) /* 2015-01-01 00:00:00 */,
@@ -428,6 +444,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00127425,
+      0.000724106,
+      0.000137512,
+      0.00197387,
+      0.00263721,
+      0.000854158,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 1, 1, 0, 0, 0) /* 2015-01-01 00:00:00 */,
@@ -447,6 +471,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00103941,
+      0.00141582,
+      0.00111305,
+      0.00237359,
+      0.00141094,
+      0.0015727,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 2, 20, 0, 0, 0) /* 2015-02-20 00:00:00 */,
