@@ -150,7 +150,7 @@ public:
    Short_t         GetPolarimeterId();
    Short_t         GetPolarimeterId(short beamId, short streamId);
    UInt_t          GetFillId();
-   bool            IsRunYear(int year);
+   bool            IsRunYear(int year) const;
    void            Update(const MseMeasInfoX& run);
    void            Update(const RunPeriod& runPeriod);
    void            Update(const AsymAnaInfo& anaInfo);

@@ -411,7 +411,7 @@ UInt_t MeasInfo::GetFillId()
 }
 
 
-bool MeasInfo::IsRunYear(int year)
+bool MeasInfo::IsRunYear(int year) const
 {
    time_t t = fStartTime;
    struct tm *time = gmtime(&t);
