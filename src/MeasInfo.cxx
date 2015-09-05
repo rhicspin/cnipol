@@ -813,7 +813,20 @@ ETargetOrient MeasInfo::GetTargetOrient() const
 vector<double> MeasInfo::GetBiasCurrents() const
 {
    double startTime = fStartTime;
-   double endTime = max(double(fStopTime), startTime + 500);
+   double endTime;
+
+   if (IsRunYear(2013)) {
+      // bigger (>500sec) window is needed because bias current measurements
+      // had a big sampling period during run13
+      endTime = max(double(fStopTime), startTime + 500);
+   } else {
+      endTime = fStopTime;
+      if (endTime < startTime) {
+         // 60 is a value that is about average for sweep measurements
+         Warning("GetBiasCurrents", "Invalid end time. Setting it to t+60");
+         endTime = startTime + 60;
+      }
+   }
 
    AnaInfo *anaInfo = gAsymAnaInfo ? (AnaInfo*)gAsymAnaInfo : (AnaInfo*)gMAsymAnaInfo;
 
