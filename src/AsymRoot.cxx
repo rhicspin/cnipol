@@ -602,7 +602,11 @@ void AsymRoot::UpdateCalibrator()
 
       fEventConfig->fCalibrator->CopyAlphaCoefs(*eventConfig->fCalibrator);
 
-      fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
+      if (!fEventConfig->GetAnaInfo()->HasNoGainCorrectionBit()) {
+         fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, true);
+      } else {
+         fEventConfig->fCalibrator->UsePlainAlphaGain();
+      }
 
       delete eventConfig;
       delete f;
@@ -629,7 +633,7 @@ void AsymRoot::Calibrate()
 {
    fEventConfig->fCalibrator->Calibrate(fHists);
 
-   if (fEventConfig->GetAnaInfo()->HasAlphaBit()) {
+   if (fEventConfig->GetAnaInfo()->HasAlphaBit() && !fEventConfig->GetAnaInfo()->HasNoGainCorrectionBit()) {
       fEventConfig->fCalibrator->ApplyBiasCurrentCorrection(gMeasInfo, false);
    }
 }

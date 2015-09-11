@@ -66,6 +66,7 @@ Bool_t AsymAnaInfo::HasKinematBit()     const { return (fAsymModes & AsymAnaInfo
 Bool_t AsymAnaInfo::HasPmtBit()         const { return (fAsymModes & AsymAnaInfo::MODE_PMT)          == AsymAnaInfo::MODE_PMT; }
 Bool_t AsymAnaInfo::HasPulserBit()      const { return (fAsymModes & AsymAnaInfo::MODE_PULSER)       == AsymAnaInfo::MODE_PULSER; }
 Bool_t AsymAnaInfo::HasStudiesBit()     const { return (fAsymModes & AsymAnaInfo::MODE_STUDIES)      == AsymAnaInfo::MODE_STUDIES; }
+Bool_t AsymAnaInfo::HasNoGainCorrectionBit() const { return (fAsymModes & AsymAnaInfo::MODE_NO_GAIN_CORRECTION) == AsymAnaInfo::MODE_NO_GAIN_CORRECTION; }
 
 
 /** */
@@ -136,6 +137,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"mode-asym",           no_argument,         0,   AsymAnaInfo::MODE_ASYM},
       {"mode-kinema",         no_argument,         0,   AsymAnaInfo::MODE_KINEMA},
       {"mode-pmt",            no_argument,         0,   AsymAnaInfo::MODE_PMT},
+      {"no-gain-correction",  no_argument,         0,   AsymAnaInfo::MODE_NO_GAIN_CORRECTION},
       {"set-calib-alpha",     required_argument,   0,   AsymAnaInfo::OPTION_SET_CALIB_ALPHA},
       {"disable-det",         required_argument,   0,   AsymAnaInfo::OPTION_DET_DISABLE},
       {"alpha-sources",       required_argument,   0,   AsymAnaInfo::OPTION_ALPHA_SOURCES},
@@ -313,6 +315,10 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
          fAsymModes |= AsymAnaInfo::MODE_STUDIES;
          break;
 
+      case AsymAnaInfo::MODE_NO_GAIN_CORRECTION:
+         fAsymModes |= AsymAnaInfo::MODE_NO_GAIN_CORRECTION;
+         break;
+
       default:
          Error("ProcessOptions", "Unknown option provided");
          PrintUsage();
@@ -423,6 +429,7 @@ void AsymAnaInfo::PrintUsage()
    cout << "     --mode-run                       : Fill and save bunch, lumi and other run related histograms" << endl;
    cout << "     --mode-target, --target          : Fill and save target histograms" << endl;
    cout << "     --mode-full                      : Fill and save all histograms" << endl;
+   cout << "     --no-gain-correction             : Disable the bias current correction" << endl;
    cout << "     --set-calib-alpha                : Provide a root file with alpha calibrations" << endl;
    cout << "     --copy                           : Copy results to server (?)" << endl;
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
