@@ -841,11 +841,13 @@ void AsymRoot::SaveAs(string pattern, string dir)
 
    fHists->SetSignature(fEventConfig->GetSignature());
 
-   fHists->SaveAllAs(DrawObjContainer::FORMAT_PNG, canvas, pattern, dir.c_str());
+   string ext = "." + gAsymAnaInfo->fImgFmtName;
+   DrawObjContainer::ImageFormat fmt = ext.c_str();
+   fHists->SaveAllAs(fmt, canvas, pattern, dir.c_str());
 
    if (gAsymAnaInfo->fFlagCreateThumbs) {
       TCanvas canvas("canvas", "canvas", 200, 100);
-      fHists->SaveAllAs(DrawObjContainer::FORMAT_PNG, canvas, pattern, dir.c_str(), kTRUE);
+      fHists->SaveAllAs(fmt, canvas, pattern, dir.c_str(), kTRUE);
    }
 }
 
