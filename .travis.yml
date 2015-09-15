@@ -1,11 +1,20 @@
+sudo: false
 language: cpp
 compiler:
   - gcc
+addons:
+  apt:
+    packages:
+      - libc6-dev-i386
+      - libmysqlclient-dev
+      - libsqlite3-dev
+      - libboost-dev
+      - libboost-filesystem-dev
+      - libboost-test-dev
 before_script:
-  - echo yes | sudo add-apt-repository ppa:marco89-7/root
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq libc6-dev-i386 root-system libmysqlclient-dev libsqlite3-dev
-  - sudo apt-get install -qq libboost-dev libboost-filesystem-dev libboost-test-dev
+  - wget http://root.cern.ch/download/root_v5.34.30.Linux-ubuntu12-x86_64-gcc4.6.tar.gz
+  - tar -xzf root_v5.34.30.Linux-ubuntu12-x86_64-gcc4.6.tar.gz
+  - source root/bin/thisroot.sh
   - mkdir build
   - cd build
   - cmake ..
