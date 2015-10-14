@@ -498,6 +498,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00133785,
+      0.00132702,
+      0.000566536,
+      0.00299849,
+      0.0, // manually set to 0
+      0.000456541,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 2, 20, 0, 0, 0) /* 2015-02-20 00:00:00 */,
@@ -517,6 +525,14 @@
    .cut_pulser_adc_max = 0.0,
    .cut_pulser_tdc_min = 255.0,
    .cut_pulser_tdc_max = 0.0,
+   .gain_slope = {
+      0.00103941,
+      0.00141582,
+      0.00111305,
+      0.00237359,
+      0.00141094,
+      0.0015727,
+   },
 },
 {
    .start_time = MK_UNIXTIME_NY_TZ(2015, 4, 28, 0, 0, 0) /* 2015-04-28 00:00:00 */,
