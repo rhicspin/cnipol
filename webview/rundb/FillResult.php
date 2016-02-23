@@ -276,10 +276,10 @@ class FillResult
       $collBeamPolarSlopeYel = $this->fCollBeamPolarSlopes[2]->second >= 0 ?
                                $this->fCollBeamPolarSlopes_patched[2] : $this->fGlobResult->fMissingBeamPolarSlopes[2][$this->fBeamEnergy];
 
-      return sprintf("%10d %10d %12d %12d %16s %16s %16s %16s %16s %16s\n",
+      return sprintf("%10d %10d %12d %12d %16s %16s %16s %16s\n",
 		     $this->fFillId, $this->fBeamEnergy, $this->fStartTime, $this->fStopTime,
-             polarPairToString($this->fCollBeamPolars[1], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarP0s_patched[1], "", "%5.2f", false), polarPairToString($collBeamPolarSlopeBlu, "", "%5.2f", false),
-             polarPairToString($this->fCollBeamPolars[2], "", "%5.2f", false), polarPairToString($this->fCollBeamPolarP0s_patched[2], "", "%5.2f", false), polarPairToString($collBeamPolarSlopeYel, "", "%5.2f", false) );
+              polarPairToString($this->fCollBeamPolarP0s_patched[1], "", "%5.2f", false), polarPairToString($collBeamPolarSlopeBlu, "", "%5.2f", false),
+              polarPairToString($this->fCollBeamPolarP0s_patched[2], "", "%5.2f", false), polarPairToString($collBeamPolarSlopeYel, "", "%5.2f", false) );
    } //}}}
 }
 
