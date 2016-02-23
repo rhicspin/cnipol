@@ -448,20 +448,20 @@ if (file_exists("$gAnaResDir/images/fills/$strFillId")) {
    <td class='align_cm nowrap'><?=pairToString($fill->fCollPolarScale[2])?>
 
    <td class='align_cm nowrap'><?=polarPairToString($hjPolarBlu)?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[0])?> <?//=pairToString($fill->fNorm[0], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[0])?> <?=pairToString($fill->fNorm[0], "", "%6.4f")?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[0])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[0])?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[2])?> <?//=pairToString($fill->fNorm[2], "", "%6.4f")?> <?//=$fill->fTargetOrients[2]?> <?//=$fill->fTargetIds[2]?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[2])?> <?=pairToString($fill->fNorm[2], "", "%6.4f")?> <?=$fill->fTargetOrients[2]?> <?//=$fill->fTargetIds[2]?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[2])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[2])?>
    <td class='align_cm nowrap'><?=$strProfileB_V?>
    <td class='align_cm nowrap'><?=$strProfileB_H?>
 
    <td class='align_cm nowrap'><?=polarPairToString($hjPolarYel)?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[1])?> <?//=pairToString($fill->fNorm[1], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[1])?> <?=pairToString($fill->fNorm[1], "", "%6.4f")?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[1])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[1])?>
-   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[3])?> <?//=pairToString($fill->fNorm[3], "", "%6.4f")?>
+   <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolars[3])?> <?=pairToString($fill->fNorm[3], "", "%6.4f")?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarP0s[3])?>
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[3])?>
    <td class='align_cm nowrap'><?=$strProfileY_V?>
