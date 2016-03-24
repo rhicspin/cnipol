@@ -105,10 +105,10 @@ void Calibrator::UsePlainAlphaGain()
 
 void Calibrator::ApplyBiasCurrentCorrection(MeasInfo *measInfo, bool direct)
 {
-   int no_slope = 0;
-   for(int i = 0; i < N_DETECTORS; i++)
-      if (measInfo->fGainSlope[i] == 0)
-         no_slope++;
+  int no_slope = 0;
+  for(int i = 0; i < N_DETECTORS; i++)
+    if (measInfo->fGainSlope[i] == 0)
+      no_slope++;
 
    if (no_slope == N_DETECTORS) {
       Warning("ApplyBiasCurrentCorrection",
