@@ -16,10 +16,10 @@ do
    arr=($meas_id)
    if [ -z "${arr[1]}" ]; then
       #echo "polid NOT defined"
-      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db -r $meas_id
+      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha -g --update-db -r $meas_id
    else
       #echo "polid defined:" ${arr[1]}
-      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha --use-db --no-update-db --pol-id=${arr[1]} -r ${arr[0]}
+      bgx_limit 10 $CNIPOL_DIR/build/asym --alpha -g --use-db --no-update-db --pol-id=${arr[1]} -r ${arr[0]}
    fi
 done
 
