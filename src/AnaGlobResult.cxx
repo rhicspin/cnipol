@@ -390,7 +390,8 @@ Int_t AnaGlobResult::GetTargetStatus(Double_t measId, ETargetOrient tgetOrient, 
     int nin = 0;
     int polid_in, tgtindex_in; double run_in;
     std::stringstream fullPath("");
-    fullPath << fPathExternResults << "/tgt_lastruns_13.dat";
+    // fullPath << fPathExternResults << "/tgt_lastruns_13.dat";
+    fullPath << fPathExternResults << "/tgt_lastruns_15.dat";
     ifstream ifile(fullPath.str().c_str());
     Info("GetTargetStatus", "Target Status from file: %s", fullPath.str().c_str());
     //    ifstream ifile("dat/tgt_lastruns_13.dat");
@@ -411,9 +412,11 @@ Int_t AnaGlobResult::GetTargetStatus(Double_t measId, ETargetOrient tgetOrient, 
   // Run13 had 3 sets of targets
   // internally target index 1-12 = set 1, 13-24 = set 2, 25-36 = set 3
   int tgtindex = targetId + 6*(1-tgetOrient); // 1st target set
-  if (measId>17251.) {tgtindex += 12;} // 2nd target set
-  if (measId>17475.) {tgtindex += 12;} // 3rd target set
-
+  // if (measId>17251.) {tgtindex += 12;} // 2nd target set Run 13 
+  //  if (measId>17475.) {tgtindex += 12;} // 3rd target set Run 13 
+  // Run15 had 2 sets of targets
+  // internally target index 1-12 = set 1, 13-24 = set 2
+  if (measId>19000.) {tgtindex += 12;} // 2nd target set Run 15 
   return (measId<=last_run[polid][tgtindex]);
 }
 
