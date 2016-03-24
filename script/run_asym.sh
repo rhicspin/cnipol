@@ -7,10 +7,14 @@
 source $CNIPOL_DIR/script/bgx_asym.sh
 CNIPOL_ONLINE_DIR=/usr/local/polarim/root
 
+FILE_MEASLIST=$1
+
+exec < $FILE_MEASLIST
+
 while read meas_id
 do
    bgx_limit 10 $CNIPOL_DIR/build/asym --update-db -g -r $meas_id
-done < tempMeaslist_run15.txt
+done 
 
 # Wait until all processes are finished
 bgx_wait
