@@ -1,3 +1,6 @@
+CREATE DATABASE `cnipol`;
+USE `cnipol`;
+
 CREATE TABLE IF NOT EXISTS `fill_polar` (
   `fill` int(10) unsigned NOT NULL DEFAULT '0',
   `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
