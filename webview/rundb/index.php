@@ -3,9 +3,8 @@
 include("config.php");
 include("utils.php"); 
 
-//date_default_timezone_set('GMT');
 setlocale(LC_TIME, 'en');
-putenv("TZ=America/New_York");
+date_default_timezone_set('America/New_York');
 
 
 if ( isset($_GET['sfx']) && !empty($_GET['sfx']) ) {
