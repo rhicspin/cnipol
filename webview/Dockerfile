@@ -1,9 +1,11 @@
-FROM centos:centos6
 
-RUN echo ZONE="America/New_York" > /etc/sysconfig/clock
+FROM centos/httpd
+
+# Set proper timezone
+RUN ln -sf ../usr/share/zoneinfo/America/New_York /etc/localtime
 
 # Install Apache, MySQL, PHP
-RUN yum -y install httpd mysql mysql-server php php-mysql
+RUN yum -y install mariadb-server php php-mysql
 
 # Install supervisord
 RUN yum -y install epel-release

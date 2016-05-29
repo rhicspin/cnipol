@@ -2,6 +2,8 @@ set -e
 set -x
 
 mysql_install_db
+# Workaround mariadb package bug https://www.moucha.cc/charon/tag/mariadb/
+chown -R mysql:mysql /var/lib/mysql
 
 # Start the MySQL daemon in the background.
 /usr/bin/mysqld_safe &
