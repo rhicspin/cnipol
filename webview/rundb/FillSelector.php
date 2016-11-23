@@ -8,7 +8,7 @@ class FillSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
-	var $defaultRun = 15;
+	var $defaultRun = 17;
 
    static $queryVarNames  = array("rp", "fn", "ft", "be", "mode",   "srtn", "srtd");
 

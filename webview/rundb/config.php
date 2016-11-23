@@ -13,7 +13,8 @@ $RUN_PERIOD_BY_FILL = array (
    11 => array( "start" => 14000, "end" => 15500 ),
    12 => array( "start" => 16000, "end" => 16800 ),
    13 => array( "start" => 17000, "end" => 18000 ),
-   15 => array( "start" => 18000, "end" => 20000 )
+   15 => array( "start" => 18000, "end" => 20000 ),
+   17 => array( "start" => 21000, "end" => 22000)
 );
 
 // Approximate dates
@@ -22,10 +23,11 @@ $RUN_PERIOD_BY_DATE = array (
    11 => array( "start" => "2010-12-01 00:00:00", "end" => "2011-04-20 00:00:00" ),
    12 => array( "start" => "2011-11-01 00:00:00", "end" => "2012-06-01 00:00:00" ),
    13 => array( "start" => "2013-01-01 00:00:00", "end" => "2013-08-01 00:00:00" ),
-   15 => array( "start" => "2015-01-01 00:00:00", "end" => "2015-08-01 00:00:00" )
+   15 => array( "start" => "2015-01-01 00:00:00", "end" => "2015-08-01 00:00:00" ),
+   17 => array( "start" => "2017-01-01 00:00:00", "end" => "2017-08-01 00:00:00" )
 );
 
-$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13", 15 => "Run 15");
+$RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13", 15 => "Run 15", 17 => "Run 17");
 $POLARIMETER_ID    = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
 $HJ_POLARIMETER_ID = 10;
 $RHIC_RING         = array("1" => "Blue", "2" => "Yellow");
