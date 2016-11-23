@@ -21,7 +21,7 @@ Introduction
 Relativistic Heavy Ion Collider (RHIC) polarimeters at the Brookhaven National
 Lab (BNL). The first objective of this package is usually referred to as the
 "online" layer and designed to support the data acquisition and to provide
-a quick feedback by carrying a fast online analysis. The second objective is to
+a quick feedback by carrying out a fast online analysis. The second objective is to
 execute a more rigorous "offline" data analysis and present the results in
 a systematic way. It is normally referred to as the "offline" layer of
 **cnipol**.
@@ -50,7 +50,7 @@ How to configure and install cnipol
 
 The best way to start with the analysis is to clone the latest version of the
 code from the git repository. From the location where the package will be
-installed on your machine issue the following command:
+installed on your machine (such as eic0005)issue the following command:
 
     git clone https://github.com/rhicspin/cnipol.git
     cd cnipol
@@ -81,11 +81,11 @@ must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
 configuration. This script can be ran with an optional argument for the RHIC run
-number, e.g. `run_id = 9|11|12|13`, execute in the terminal:
+number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal:
 
     source script/setup.sh [run_id]
 
-Once the environment variables are set the cnipol package can be build in
+Once the environment variables are set the cnipol package can be built in
 $CNIPOL_DIR as:
 
     mkdir build
@@ -106,11 +106,16 @@ running the cnipol executables
     $CNIPOL_DATA_DIR
     $CNIPOL_RESULTS_DIR
 
+To setup the enviroment variables
+    cd script
+    bash
+    ./setup.sh 9 | 11 | 13 | 15 | 17 /* pick one run number *\
+
 `asym` accepts a number of options which can be listed by running it with a `-h`
 option. Here we just give a few most common examples used to process regular and
 calibration data.
 
-To analyze a regular data file simply do:
+To analyze a regular data file simply do in the build directory:
 
     asym -r <meas_id>
 
