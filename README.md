@@ -85,7 +85,7 @@ number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal:
 
     source script/setup.sh [run_id]
 
-Once the environment variables are set the cnipol package can be built in
+Note: You need to be bash. Once the environment variables are set the cnipol package can be built in
 $CNIPOL_DIR as:
 
     mkdir build
@@ -105,11 +105,6 @@ running the cnipol executables
 
     $CNIPOL_DATA_DIR
     $CNIPOL_RESULTS_DIR
-
-To setup the enviroment variables
-    cd script
-    bash
-    ./setup.sh 9 | 11 | 13 | 15 | 17 /* pick one run number *\
 
 `asym` accepts a number of options which can be listed by running it with a `-h`
 option. Here we just give a few most common examples used to process regular and
