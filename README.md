@@ -206,8 +206,8 @@ First, you need to follow the link below to set up a tunnel to the blue and yell
 https://wiki.bnl.gov/rhicspin/Automated_pC_setup
 
 After, the tunnel has been established you can start the automated process by executing the following command: 
-
-nohup ./run_asym_daemon.sh > some_output_file_name
+    
+    nohup ./run_asym_daemon.sh > some_output_file_name
 
 and you can put an ampersand at the end of the process if you want to hide it. The ampersand will allow you to continue working in your current terminal. Regardless, the process will be running and looking for new files every 60 seconds. 
 
