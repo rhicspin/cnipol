@@ -198,6 +198,20 @@ eicdata/eic0005/runXX/ -- This directory contains lists. The list of measuements
 
 eicdata/eic0005/run17/ -- This directory holds all the data after processing through asym (Using 17 as an example, could be any other run number).
 
+Automating the Process
+======================
+
+First, you need to follow the link below to set up a tunnel to the blue and yellow pC machines at IP 12. This will provide you with a tunnel into the machines without requiring a password. 
+
+https://wiki.bnl.gov/rhicspin/Automated_pC_setup
+
+After, the tunnel has been established you can start the automated process by executing the following command: 
+
+nohup ./run_asym_daemon.sh > some_output_file_name
+
+and you can put an ampersand at the end of the process if you want to hide it. The ampersand will allow you to continue working in your current terminal. Regardless, the process will be running and looking for new files every 60 seconds. 
+
+
 Other polarimetry software packages
 ===================================
 
