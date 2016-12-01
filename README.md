@@ -182,7 +182,7 @@ no beam was present in the RHIC.
 General Description of Directory Layout
 =======================================
 
-There are 6 major directories in the cnipol package:
+There are 7 major directories in the cnipol package:
 
 cnipol/inc/ -- This directory contains all the source code header files
 
