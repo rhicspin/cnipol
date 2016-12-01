@@ -179,6 +179,19 @@ where `<meas_list>` is a file in `$CNIPOL_RESULTS_DIR/runXX/lists/` with a list
 of unique names corresponding to measurements recorded by the polarimeters when
 no beam was present in the RHIC.
 
+General Description of Directory Layout
+=======================================
+
+There are 6 major directories in the cnipol package:
+
+cnipol/inc/ -- This directory contains all the source code header files
+cnipol/src/ -- This directory contains all the cpp files
+cnipol/build/ -- This is build directory to compile the code using make 
+cnipol/webview/ --  This directory contains all the code relavent for the webpage
+cnipol/script/ -- This directory contains all the scripts that can quickly allow a user to run the code
+
+eicdata/eic0005/runXX/ -- This directory contains lists. The list of measuements, the list of target status, and the lists from cdev.  
+eicdata/eic0005/run17/ -- This directory holds all the data after processing through asym (Using 17 as an example, could be any other run number).
 
 Other polarimetry software packages
 ===================================
