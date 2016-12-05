@@ -90,7 +90,7 @@ $CNIPOL_DIR as:
 
     mkdir build
     cd build
-    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    cmake28 .. -DCMAKE_BUILD_TYPE=RelWithDebInfo
     make
 
 The compiled executables should appear in this `build` directory along
