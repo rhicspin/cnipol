@@ -73,7 +73,7 @@ Before the code can be compiled and executed a number of environment variables
 must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
-configuration. This script can be ran with an optional argument for the RHIC run
+configuration. A example is the variable CNIPOL_DIR, which the directory you setup the code. This script can be ran with an optional argument for the RHIC run
 number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be bash shell. Type bash):
 
     source script/setup.sh [run_id]
@@ -198,7 +198,9 @@ First, you need to follow the link below to set up a tunnel to the blue and yell
 
 https://wiki.bnl.gov/rhicspin/Automated_pC_setup
 
-After, the tunnel has been established you can start the automated process by executing the following command: 
+The name of the script to execute is run_asym_daemon.sh. However, the first line in the script needs to be changed. 
+
+After the tunnel has been established you can start the automated process by executing the following command: 
     
     nohup ./run_asym_daemon.sh > some_output_file_name
 
