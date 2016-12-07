@@ -81,11 +81,11 @@ must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
 configuration. This script can be ran with an optional argument for the RHIC run
-number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal:
+number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be bash shell.):
 
     source script/setup.sh [run_id]
 
-Note: You need to be bash. Once the environment variables are set the cnipol package can be built in
+Once the environment variables are set the cnipol package can be built in
 $CNIPOL_DIR as:
 
     mkdir build
