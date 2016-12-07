@@ -61,13 +61,6 @@ The source code in this case can be cloned via ssh protocol:
     git clone git@github.com:rhicspin/cnipol.git
     cd cnipol
 
-To make the processing of the data controllable and predictable we create stable
-releases of the code. The list of tagged stable releases can be viewed at
-https://github.com/rhicspin/cnipol/releases
-One may switch from the development version of the code checked out as above to
-the latest stable release by issuing the following command:
-
-    git checkout stable
 
 The analysis framework depends on a few external libraries and programs including
 
@@ -81,7 +74,7 @@ must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
 configuration. This script can be ran with an optional argument for the RHIC run
-number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be bash shell.):
+number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be bash shell. Type bash):
 
     source script/setup.sh [run_id]
 
