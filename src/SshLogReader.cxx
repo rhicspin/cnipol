@@ -204,7 +204,7 @@ void SshLogReader::ExecuteCmd(string cmd, string *response)
 
          gSystem->Error("SshLogReader", "process returned %i", retcode);
          gSystem->Error("SshLogReader",
-            "You need to create a gateway to acnlina machine.\n"
+            "You need to create a gateway to yellowpc.\n"
             "See https://wiki.bnl.gov/rhicspin/Automated_pC_setup for more information.\n"
             );
          const int delay = 10;
