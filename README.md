@@ -138,6 +138,8 @@ executed respectively as:
 How to produce summary plots
 ============================
 
+Before you begin you should source the setup file as decribed above. 
+
 Often it is useful to see how polarization or other observables change from
 measurement to measurement during some period of time. To study such time
 dependence we developed `masym`, a program that runs on a set of measurements
