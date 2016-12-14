@@ -206,6 +206,16 @@ After the tunnel has been established you can start the automated process by exe
 
 and you can put an ampersand at the end of the process if you want to hide it. The ampersand will allow you to continue working in your current terminal. Regardless, the process will be running and looking for new files every 60 seconds. 
 
+Automating the Process
+======================
+
+During the course of the run, a long alpha measurment should occur and create the alpha calibration files needed for properly processing the measurments. Once this file is created you will need to edit the following code to include the file name of the alpha calibration. You can find the code at the following: 
+
+    /contrib/RunPeriod.inc
+    
+Make sure to change the start_time, the polarimeter_id, the alpha_calib_run_name, and possibly the gain_slope (may not need to include the gain_slope at all). The other parameters are the default tdc and adc cuts on the bananas plots.
+
+
 
 Other polarimetry software packages
 ===================================
