@@ -1,4 +1,4 @@
-<?php
+r<?php
 
 //include("config.php");
 
@@ -8,7 +8,7 @@ class RunSelector {
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
-	var $defaultRun = 15;
+	var $defaultRun = 17;
 
    static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti", "himg",   "srtn", "srtd");
 
