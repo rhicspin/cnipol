@@ -1,14 +1,11 @@
-r<?php
+<?php
 
-//include("config.php");
-
-
-class RunSelector {
-
+class RunSelector
+{
    var $urlQuery;
    var $sqlWhere;
    var $sqlOrderBy = "";
-	var $defaultRun = 17;
+   var $defaultRun = 17;
 
    static $queryVarNames  = array("rp", "rn", "pi", "mt", "be", "to", "ti", "himg",   "srtn", "srtd");
 
@@ -24,13 +21,12 @@ class RunSelector {
                                   "tgt");
 
    function RunSelector()
-   { //{{{
+   {
       global $RUN_PERIOD_BY_DATE, $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE, $TARGET_ORIENT, $TARGET_ID;
 
       $url = parse_url($_SERVER['REQUEST_URI']);
-      //$urlQuery = $url['query'];
 
-		if (isset($url['query']))
+      if (isset($url['query']))
          parse_str($url['query'], $urlQuery);
 
       // Copy only valid variables
@@ -40,12 +36,8 @@ class RunSelector {
       {
          if (isset($urlQuery[$varName]))
             $urlQueryNew[$varName] = $urlQuery[$varName];
-         //else
-         //   $urlQueryNew[$varName] = "";
       }
 
-      //$this->urlQuery = urlencode($url['query']);
-      //$this->urlQuery = $url['query'];
       $this->urlQuery = http_build_query($urlQueryNew);
 
       $this->sqlWhere = "TRUE";
@@ -85,17 +77,17 @@ class RunSelector {
          $this->sqlOrderBy .= ( isset($_GET['srtd']) && is_numeric($_GET['srtd']) && $_GET['srtd'] < 0 ) ? "DESC" : "ASC";
          $this->sqlOrderBy .= ", ";
       }
-   } //}}}
+   }
 
 
    function HtmlSortLinks($key=null)
-   { //{{{
+   {
       // first check for a page variable in the query
       $url = parse_url($_SERVER['REQUEST_URI']);
 
-		$tmpQuery = null;
+      $tmpQuery = null;
 
-		if (isset($url['query']))
+      if (isset($url['query']))
          parse_str($url['query'], $tmpQuery);
 
       $page = (isset($tmpQuery['page']) && is_numeric($tmpQuery['page'])) ? "page={$tmpQuery['page']}&" : "" ;
@@ -108,20 +100,19 @@ class RunSelector {
 
       $this->urlQuery = http_build_query($urlVars);
 
-      $html = "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=-1\">&#9660;</a> ". 
+      $html = "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=-1\">&#9660;</a> ".
               "<a href=\"?$page{$this->urlQuery}&srtn=$key&srtd=+1\">&#9650;</a>";
 
       return $html;
-   } //}}}
+   }
 
 
    function PrintForm()
    {
-		global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE,
+      global $RUN_PERIOD, $POLARIMETER_ID, $RHIC_STREAM, $MEASTYPE,
              $BEAM_ENERGY, $TARGET_ORIENT, $TARGET_ID, $PLOT_IMAGES;
 
       // Create a table with the necessary header informations
-      //echo "<form action='".$_SERVER['PHP_SELF']."?uri=5&' method='get' name='formRunSelector'>\n";
       echo "<form action='' method='get' name='formRunSelector'>\n";
       echo '<div align=center>
             <table border=0>';
