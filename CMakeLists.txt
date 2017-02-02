@@ -10,19 +10,11 @@
 # After that you will only need to use make.
 #
 
-#
-# To compile 64-bit version do:
-#
-# mkdir build64
-# cmake .. -DFORCE_32BIT=OFF
-# make
-#
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 PROJECT(CNIPOL)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
-OPTION(FORCE_32BIT "should be OFF" OFF)
+OPTION(FORCE_32BIT "should be OFF" OFF) # ON value is not supported
 
 ADD_DEFINITIONS("-DCNIPOL_ROOT_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
 
