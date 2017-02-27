@@ -20,7 +20,7 @@ public:
    // Flag options
    enum Flag   {FLAG_COPY              = 0x10000400,
                 FLAG_READ_FROM_DB      = 0x10000100,
-                FLAG_UPDATE_DB         = 0x10000200, FLAG_NO_UPDATE_DB = 0x90000200,
+                FLAG_UPDATE_DB         = 0x10000200, FLAG_NO_UPDATE_DB = 0x40000200,
                 FLAG_USE_DB            = 0x10000300,
                 FLAG_CREATE_THUMBS     = 0x10000800};
 

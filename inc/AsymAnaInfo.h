@@ -25,7 +25,7 @@ public:
 
    // Various histogramming and running modes
    enum Mode {MODE_ALPHA             = 0x00011000,
-              MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x80020000,
+              MODE_NORMAL            = 0x00020000, MODE_NO_NORMAL    = 0x40020000,
               MODE_SCALER            = 0x00040000,
               MODE_RAW               = 0x00080000,
               MODE_RUN               = 0x00100000,
