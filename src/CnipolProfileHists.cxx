@@ -56,7 +56,6 @@ void CnipolProfileHists::BookHists()
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1); // The number of steps will be taken from data
    hist->SetTitle("; Time, s; Events");
    hist->SetOption("NOIMG");
-   //hist->SetBit(TH1::kCanRebin);
    hist->Sumw2();
    o[shName] = hist;
 
@@ -100,7 +99,7 @@ void CnipolProfileHists::BookHists()
    hist = new TH1D(shName.c_str(), shName.c_str(), 1, 0, 1); // The number of delimeters is not known beforehand
    hist->SetTitle("; Time, s; Polarization;");
    hist->SetOption("E1");
-   hist->SetBit(TH1::kCanRebin);
+   CanRebin(hist);
    hist->GetYaxis()->SetRangeUser(-1.05, 1.05);
    o[shName] = hist;
    fhPolarProfile = hist;

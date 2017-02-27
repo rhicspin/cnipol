@@ -52,7 +52,7 @@ void CnipolTargetHists::BookHists()
    sprintf(hName, "hTargetSteps");
    o[hName] = new TH1I(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetTitle(";Target Steps;;");
-   ((TH1*) o[hName])->SetBit(TH1::kCanRebin);
+   CanRebin((TH1*) o[hName]);
 
    sprintf(hName, "hTargetChanVertYel");
    o[hName] = new TH1F(hName, hName, 255, 0, 255);
@@ -78,22 +78,18 @@ void CnipolTargetHists::BookHists()
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetOption("NOIMG");
    ((TH1*) o[hName])->SetTitle(";Time;Position;");
-   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetHorzRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetTitle(";Time;Position;");
-   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertLinear");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetTitle(";Time;Position;");
-   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 
    sprintf(hName, "hTargetVertRotary");
    o[hName] = new TH1F(hName, hName, 100, 0, 100);
    ((TH1*) o[hName])->SetTitle(";Time;Position;");
-   //((TH1*) o[hName])->SetBit(TH1::kCanRebin);
 }
 
 

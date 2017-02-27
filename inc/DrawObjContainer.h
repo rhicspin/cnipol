@@ -93,6 +93,14 @@ public:
    void         Delete(Option_t* option="");
    virtual void UpdateLimits();
 
+   void CanRebin(TH1* h){
+#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+      h->SetBit(TH1::kCanRebin);
+#else
+      h->SetCanExtend(TH1::kXaxis);
+#endif
+   }
+
    ClassDef(DrawObjContainer, 1)
 };
 

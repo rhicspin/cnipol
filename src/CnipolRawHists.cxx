@@ -99,7 +99,7 @@ void CnipolRawHists::BookHists()
    hist = new TH1I(shName.c_str(), shName.c_str(), 1000, 0, 1);
    hist->SetTitle("; Revolution Id; Events;");
    hist->SetFillColor(kGray);
-   hist->SetBit(TH1::kCanRebin);
+   CanRebin(hist);
    o[shName] = hist;
 
    shName = "hChIdVsBunchId";

@@ -78,7 +78,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hAmGain"])->GetYaxis()->SetTitle("Americium gain, ADC/keV");
 
    o["hAmGainDisp"] = new TH1F("hAmGainDisp", "hAmGainDisp", 100, 0, 1);
-   ((TH2F*) o["hAmGainDisp"])->SetBit(TH1::kCanRebin);
+   CanRebin((TH2F*) o["hAmGainDisp"]);
    ((TH2F*) o["hAmGainDisp"])->GetXaxis()->SetTitle("Americium gain, ADC/keV");
 
    o["hAmIntGain"]   = new TH1F("hAmIntGain", "hAmIntGain", 72, 1, 73);
@@ -87,7 +87,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hAmIntGain"])->GetYaxis()->SetTitle("Americium gain (from integral), ADC/keV");
 
    o["hAmIntGainDisp"] = new TH1F("hAmIntGainDisp", "hAmIntGainDisp", 100, 0, 1);
-   ((TH2F*) o["hAmIntGainDisp"])->SetBit(TH1::kCanRebin);
+   CanRebin((TH2F*) o["hAmIntGainDisp"]);
    ((TH2F*) o["hAmIntGainDisp"])->GetXaxis()->SetTitle("Americium gain (from integral), ADC/keV");
 
    o["hAmGainWidth"]   = new TH1F("hAmGainWidth", "hAmGainWidth", 72, 1, 73);
@@ -108,7 +108,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hGdGain"])->GetYaxis()->SetTitle("Gadolinium Amplitude Calib, ADC/keV");
 
    o["hGdGainDisp"] = new TH1F("hGdGainDisp", "hGdGainDisp", 100, 0, 1);
-   ((TH2F*) o["hGdGainDisp"])->SetBit(TH1::kCanRebin);
+   CanRebin((TH2F*) o["hGdGainDisp"]);
    ((TH2F*) o["hGdGainDisp"])->GetXaxis()->SetTitle("Gadolinium Amplitude Calib, ADC/keV");
 
    o["hGdIntGain"]   = new TH1F("hGdIntGain", "hGdIntGain", 72, 1, 73);
@@ -117,7 +117,7 @@ void CnipolAlphaHists::BookHists()
    ((TH2F*) o["hGdIntGain"])->GetYaxis()->SetTitle("Gadolinium Integral Calib, ADC/keV");
 
    o["hGdIntGainDisp"] = new TH1F("hGdIntGainDisp", "hGdIntGainDisp", 100, 0, 1);
-   ((TH2F*) o["hGdIntGainDisp"])->SetBit(TH1::kCanRebin);
+   CanRebin((TH2F*) o["hGdIntGainDisp"]);
    ((TH2F*) o["hGdIntGainDisp"])->GetXaxis()->SetTitle("Gadolinium Integral Calib, ADC/keV");
 
    o["hGdGainWidth"]   = new TH1F("hGdGainWidth", "hGdGainWidth", 72, 1, 73);
