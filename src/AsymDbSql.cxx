@@ -297,37 +297,6 @@ MseFillProfileNewX* AsymDbSql::SelectFillProfile(UInt_t fill, EPolarimeterId pol
 
 
 /** */
-void AsymDbSql::CompleteMeasInfo(MseMeasInfoX& run)
-{
-   vector<MseMeasInfoX> runs = SelectPriorRuns(run);
-   vector<MseMeasInfoX>::iterator irun;
-
-   for (irun=runs.begin(); irun!=runs.end(); irun++) {
-
-      //cout << setw(10) << irun->run_name;
-      //cout << setw(10) << irun->polarimeter_id;
-      //cout << setw(10) << irun->start_time;
-      //cout << setw(10) << irun->stop_time;
-      //cout << setw(10) << irun->beam_energy;
-      //cout << endl;
-
-      if ( !run.alpha_calib_run_name.empty() &&
-           !run.disabled_channels.empty()    && !run.disabled_bunches.empty() )
-         break;
-
-      if (run.alpha_calib_run_name.empty() && !irun->alpha_calib_run_name.empty())
-         run.alpha_calib_run_name = irun->alpha_calib_run_name;
-
-      if (run.disabled_channels.empty() && !irun->disabled_channels.empty())
-         run.disabled_channels = irun->disabled_channels;
-
-      if (run.disabled_bunches.empty() && !irun->disabled_bunches.empty())
-         run.disabled_bunches = irun->disabled_bunches;
-   }
-}
-
-
-/** */
 vector<MseMeasInfoX> AsymDbSql::SelectPriorRuns(const MseMeasInfoX& run)
 {
    if (!fConnection) {

@@ -34,7 +34,6 @@ public:
    MseFillProfileX*           SelectFillProfile(UInt_t fill);
    MseFillProfileNewX*        SelectFillProfile(UInt_t fill, EPolarimeterId polId, ETargetOrient tgtOrient);
    std::vector<MseMeasInfoX>  SelectPriorRuns(const MseMeasInfoX& run);
-   void                       CompleteMeasInfo(MseMeasInfoX& run);
    void                       UpdateInsert(const MseMeasInfoX* orun, const MseMeasInfoX* nrun);
    void                       UpdateInsert(const MseFillPolarX*   ofill, const MseFillPolarX*   nfill);
    void                       UpdateInsert(const MseFillPolarNewX* ofill, const MseFillPolarNewX* nfill);
