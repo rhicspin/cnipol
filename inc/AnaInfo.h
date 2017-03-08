@@ -58,6 +58,7 @@ public:
    Bool_t           fFlagUseDb;
    Bool_t           fFlagUpdateDb;
    Bool_t           fFlagCreateThumbs;
+   Bool_t           fFlagVerbose;       //!
    UserGroup_t      fUserGroup;
    Short_t          fAlphaSourceCount;
 

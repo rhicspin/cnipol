@@ -45,13 +45,14 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"no-update-db",        no_argument,         0,   AnaInfo::FLAG_NO_UPDATE_DB},
       {"use-db",              no_argument,         0,   AnaInfo::FLAG_USE_DB},
       {"thumb",               no_argument,         0,   AnaInfo::FLAG_CREATE_THUMBS},
+      {"verbose",             no_argument,         0,   'v'},
       {"meas-list",           required_argument,   0,   MAsymAnaInfo::OPTION_MLIST},
       {0, 0, 0, 0}
    };
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::gm:", long_options, &option_index)) != -1)
+   while ((c = getopt_long(argc, argv, "?hl::gvm:", long_options, &option_index)) != -1)
    {
       switch (c) {
 
@@ -93,6 +94,10 @@ void MAsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AnaInfo::FLAG_UPDATE_DB:
          fFlagUpdateDb = kTRUE;
+         break;
+
+      case 'v':
+         fFlagVerbose = true;
          break;
 
       case 'm':

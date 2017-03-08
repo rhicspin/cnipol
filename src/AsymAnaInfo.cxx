@@ -114,6 +114,8 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
       {"use-db",              no_argument,         0,   AnaInfo::FLAG_USE_DB},
       {"thumb",               no_argument,         0,   AnaInfo::FLAG_CREATE_THUMBS},
 
+      {"verbose",             no_argument,         0,   'v'},
+
       {"run-name",            required_argument,   0,   'r'},
       {"pol-id",              required_argument,   0,   AsymAnaInfo::OPTION_POL_ID},
       {"alpha",               no_argument,         0,   AsymAnaInfo::MODE_ALPHA},
@@ -147,7 +149,7 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
    int c;
 
-   while ((c = getopt_long(argc, argv, "?hl::gr:f:n:s:o:t:e:m:d:baCDTBZF:MNW:UGR:",
+   while ((c = getopt_long(argc, argv, "?hl::gvr:f:n:s:o:t:e:m:d:baCDTBZF:MNW:UGR:",
                            long_options, &option_index)) != -1)
    {
       stringstream sstr;
@@ -195,6 +197,10 @@ void AsymAnaInfo::ProcessOptions(int argc, char **argv)
 
       case AnaInfo::FLAG_NO_UPDATE_DB:
          fFlagUpdateDb = kFALSE;
+         break;
+
+      case 'v':
+         fFlagVerbose = true;
          break;
 
       case 'r':

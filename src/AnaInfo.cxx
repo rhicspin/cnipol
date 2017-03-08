@@ -29,7 +29,7 @@ AnaInfo::AnaInfo() : TObject(),
    fAsymEnv(),
    fFileMeasInfo(0), fFileStdLog(0),
    fFileStdLogName("stdoe"), fFlagCopyResults(kFALSE), fFlagUseDb(true),
-   fFlagUpdateDb(kFALSE),    fFlagCreateThumbs(kFALSE),
+   fFlagUpdateDb(kFALSE),    fFlagCreateThumbs(kFALSE), fFlagVerbose(false),
    fUserGroup(),
    fAlphaSourceCount(-1)
 {
@@ -165,7 +165,8 @@ void AnaInfo::VerifyOptions()
    gSystem->Chmod(this->GetAnaInfoFileName().c_str(), 0775);
 
    // Set default standard log output
-   if (!fFileStdLogName.empty()) {
+   // TODO: make fFlagVerbose write log to file as well
+   if ((!fFileStdLogName.empty()) && (!fFlagVerbose)) {
       freopen(GetStdLogFileName().c_str(), "w", stdout);
       fclose(stderr);
       stderr = stdout;
@@ -246,5 +247,6 @@ void AnaInfo::PrintUsage()
    cout << "     --copy                           : Copy results to server (?)" << endl;
    cout << "     --use-db                         : Run info will be retrieved from and saved into database" << endl;
    cout << "     --update-db                      : Update run info in database" << endl;
+   cout << " -v                                   : Print log to the standard output" << endl;
    cout << endl;
 }
