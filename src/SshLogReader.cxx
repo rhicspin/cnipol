@@ -27,6 +27,11 @@ string SshLogReader::GetSshCommand(const string &logger, const char *export_para
             "setenv PATH /usr/controls/bin; setenv LD_LIBRARY_PATH /ride/release/X86/lib;"
             "exportLoggerData"
             " -logger '%s'"
+            // Print 15 digits after decimal point. We are going to check if
+            // the value is not too small during the read. The main point here
+            // is that we can't use %e because that it precision for big
+            // numbers (e.g. unix timestamps)
+            " -dataformat '%%.15f'"
             " -timeformat 'unix'"
             " -showmissingdatawith x"
             " -timetolerance 0"
@@ -155,6 +160,18 @@ void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t,
             }
             ungetc(cc, fd);
             len = fscanf(fd, "%lf", &value);
+            if ((value != 0) && (fabs(value) < 1e-10))
+            {
+               // Here we try to detect small values. Because exportLoggerData
+               // already did rounding for us we can't detect non-zero values
+               // that are less than 1e-15 (we use '%.15f' format string
+               // above), but we at least can complain about somewhat small
+               // values. If you are reading this you probably should switch to
+               // opencdev interface that reads binary files and doesn't have
+               // this problem.
+               gSystem->Error("SshLogReader", "Detected a small non-zero value %e. "
+                     "This interface is not designed to handle these.", value);
+            }
             if (len != 1)
             {
                throw "unexpected end of row";
