@@ -7,7 +7,7 @@ stdenv.mkDerivation {
     boost
     cmake
     mariadb.client
-    root
+    root5
     sqlite.dev
   ];
 }

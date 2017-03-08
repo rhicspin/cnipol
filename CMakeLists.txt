@@ -23,6 +23,10 @@ FIND_PACKAGE(ROOT)
 
 IF(${ROOT_VERSION} VERSION_GREATER "6.0")
 	SET(CMAKE_CXX_STANDARD 11)
+	MESSAGE(WARNING You are trying to build against ROOT6. cnipol in some
+	      places uses ROOT2 style streamers that are broken in ROOT6.  So
+	      far problems observed with RecordMachineParams,
+	      RecordTargetParams, AnaInfo.)
 ENDIF()
 
 EXECUTE_PROCESS(
