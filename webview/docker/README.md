@@ -5,4 +5,4 @@ The main drawback here is that RACF, for obvious reasons, will never provide an 
 == Using ==
 
     docker build -t webview .
-    docker run -p 31337:80 -p 31338:3306 webview
+    docker run -p 31337:80 -p 31338:3306 -v `pwd`:/var/www/html/cnipol webview
