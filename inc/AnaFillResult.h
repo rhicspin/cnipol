@@ -85,7 +85,8 @@ public:
 
 public:
 
-   AnaFillResult(UInt_t fillId = 0);
+   AnaFillResult() {};
+   AnaFillResult(UInt_t fillId);
    ~AnaFillResult();
 
    time_t GetStartTime() const;

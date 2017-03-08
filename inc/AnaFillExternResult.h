@@ -42,6 +42,7 @@ protected:
 
 public:
 
+   AnaFillExternResult() {};
    AnaFillExternResult(UInt_t fillId);
    ~AnaFillExternResult();
 
