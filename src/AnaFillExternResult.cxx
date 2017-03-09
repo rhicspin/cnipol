@@ -70,7 +70,7 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    }
 
    CachingLogReader<SshLogReader> log_reader;
-   log_reader.set_additional_args(" -start \"ev-lumi\" -stop \"softev-physics-off\"");
+   log_reader.set_additional_args(" -start 'ev-lumi' -stop 'softev-physics-off'");
    opencdev::result_t result;
    log_reader.query_fill("RHIC/BeamIons", fillId, &result);
    log_reader.query_fill("RHIC/PowerSupplies/rot-ps", fillId, &result);

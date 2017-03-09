@@ -31,7 +31,7 @@ protected:
 
 public:
 
-   void set_additional_args(const string &additional_args) { fAdditionalArgs = additional_args; };
+   void set_additional_args(const string &additional_args);
    void Read(string response, opencdev::result_t *values);
    void ExecuteCmd(string cmd, string *response);
    virtual void Run(string cmd, opencdev::result_t *values);

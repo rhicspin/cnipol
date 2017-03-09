@@ -114,6 +114,14 @@ vector<string> SshLogReader::ParseCellList(string line)
    return result;
 }
 
+void SshLogReader::set_additional_args(const string &additional_args)
+{
+   if (additional_args.find("\"") != string::npos)
+   {
+      gSystem->Error("SshLogReader", "invalid input: additional_args must not contain \". use ' instead");
+   }
+   fAdditionalArgs = additional_args;
+};
 
 void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t, double> > *values)
 {
