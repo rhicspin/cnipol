@@ -93,7 +93,7 @@ void CachingLogReader<T>::Run(string cmd, opencdev::result_t *values)
    }
    else if (ret == SQLITE_DONE)
    {
-      gSystem->Error("CachingLogReader", "Query result is not in cache, retreiving via ssh.");
+      gSystem->Info("CachingLogReader", "Query result is not in cache, retreiving via ssh.");
 
       string response;
       T::ExecuteCmd(cmd, &response);
