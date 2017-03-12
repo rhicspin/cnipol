@@ -18,6 +18,9 @@ class MAsymFillHists : public DrawObjContainer
 {
 private:
 
+   TH1          *hAgsPolarVsFillId;
+   TGraph       *grAgsPolarVsFillId;
+
    std::map<Double_t, UInt_t> fHTargetVsRun;
    std::map<Double_t, UInt_t> fVTargetVsRun;
 
@@ -27,8 +30,10 @@ private:
    std::map<EPolarimeterId, TGraph*> grRampPCPolarRatiosByPol;
    std::map<ERingId, TH1*>           hRotatorPCPolarRatiosByRing;
    std::map<ERingId, TH1*>           hRampPCPolarRatiosByRing;
+   std::map<ERingId, TH1*>           hRhicAgsPolarRatiosByRing;
    std::map<ERingId, TGraph*>        grRotatorPCPolarRatiosByRing;
    std::map<ERingId, TGraph*>        grRampPCPolarRatiosByRing;
+   std::map<ERingId, TGraph*>        grRhicAgsPolarRatiosByRing;
 
 public:
 

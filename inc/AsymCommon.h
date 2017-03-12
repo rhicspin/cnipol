@@ -23,7 +23,7 @@
 class TargetUId;
 
 
-enum EPolarimeterId {kB1U = 0,        kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10};
+enum EPolarimeterId {kB1U = 0,        kY1D = 1, kB2D = 2, kY2U = 3, kUNKNOWN_POLID, kHJET = 10, kAGSCNI = 11};
 enum EBeamId        {kBLUE_BEAM = 1,  kYELLOW_BEAM = 2, kUNKNOWN_BEAM};
 enum ERingId        {kBLUE_RING = 1,  kYELLOW_RING = 2, kUNKNOWN_RING};
 enum EStreamId      {kUPSTREAM = 1,   kDOWNSTREAM = 2,  kUNKNOWN_STREAM};

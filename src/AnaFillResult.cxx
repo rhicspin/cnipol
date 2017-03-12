@@ -26,6 +26,7 @@ AnaFillResult::AnaFillResult(UInt_t fillId) : TObject(), fFillId(fillId),
    fPCPolarGraphs(), fPCPolarInjGraphs(), fPCProfRGraphs(), fPCProfRInjGraphs(),
    fPCTargets(),
    fPCPolarFitRes(), fPolProfRFitRes(),
+   fAgsPolFitRes(),
    fFlattopEnergy(0),
    fFillType(kFILLTYPE_UNKNOWN),
    fAnaMeasResults(), fMeasInfos(), fMeasInfosByPolId(),
@@ -250,6 +251,17 @@ std::vector<TGraphErrors*> AnaFillResult::GetBCCurGraphs(EPolarimeterId polId) c
 }
 
 
+TGraphErrors* AnaFillResult::GetAgsPolFitGraph() const
+{
+   return fAnaFillExternResult.fAgsPolFitGraph;
+}
+
+const vector<TLine*>& AnaFillResult::GetKickerLines() const
+{
+   return fAnaFillExternResult.fKickerLines;
+}
+
+
 ///** */
 //void AnaFillResult::PrintAsPhp(FILE *f) const
 //{
@@ -401,9 +413,11 @@ void AnaFillResult::Process(DrawObjContainer *ocOut)
    FitExternGraphs();
    FitPCPolarGraphs();
    FitPCProfRGraphs();
+   FitAgsPol();
 
    CalcRotatorPCPolarRatio();
    CalcRampPCPolarRatio();
+   CalcRhicAgsPolarRatio();
 
    // Calculate average polarization and profiles
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
@@ -752,6 +766,15 @@ ValErrPair AnaFillResult::GetSystJvsCPolar(EPolarimeterId polId)
 ValErrPair AnaFillResult::GetSystProfPolar(EPolarimeterId polId)
 {
    return fSystProfPolar.find(polId) == fSystProfPolar.end() ? ValErrPair(0, -1) : fSystProfPolar[polId];
+}
+
+
+ValErrPair AnaFillResult::GetAgsCniPolar() const
+{
+   if (!fAgsPolFitRes->IsValid()) {
+      return ValErrPair();
+   }
+   return ValErrPair(fAgsPolFitRes->Value(0), fAgsPolFitRes->FitResult::Error(0));
 }
 
 
@@ -1336,6 +1359,32 @@ void AnaFillResult::CalcRampPCPolarRatio()
 }
 
 
+void AnaFillResult::CalcRhicAgsPolarRatio()
+{
+   PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
+   for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
+   {
+      EPolarimeterId polId = *iPolId;
+
+      TGraphErrors *grPCPolarInj = GetPCPolarInjGraph(polId);
+
+      if (!grPCPolarInj) continue;
+
+      // Get the last injection measurement
+      // FIXME: should use all available measurements
+      Double_t x, y, ye;
+      Int_t nPoints = grPCPolarInj->GetN();
+      grPCPolarInj->GetPoint(nPoints-1, x, y);
+      ye = grPCPolarInj->GetErrorY(nPoints-1);
+
+      ValErrPair pcPolarInj(y, ye);
+      ValErrPair agsPolar = GetAgsCniPolar();
+
+      fRhicAgsPolarRatio[polId] = utils::CalcDivision(pcPolarInj, agsPolar, 0);
+   }
+}
+
+
 /** */
 void AnaFillResult::CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const
 {
@@ -1408,6 +1457,20 @@ void AnaFillResult::UpdateExternGraphRange()
          TGraphErrors *gr = *it;
          for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
       }
+   }
+
+   {
+      Double_t x, y;
+      TGraphErrors *gr = GetAgsPolFitGraph();
+      if (gr) {
+         for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
+      }
+   }
+   const vector<TLine*> &ls = GetKickerLines();
+   for(vector<TLine*>::const_iterator it = ls.begin(); it != ls.end(); it++) {
+      TLine *l = *it;
+      l->SetX1(l->GetX1() - fStartTime);
+      l->SetX2(l->GetX2() - fStartTime);
    }
 
    // Loop over rings
@@ -1651,6 +1714,25 @@ void AnaFillResult::FitPCProfRGraphs()
 	  delete fitFunc;
 	}
     }
+}
+
+/// This implements averaging of the polarization measurements via fitting. The
+/// measurements are currently chosen in an interval [t-0.5h,t] where t is the
+/// start of the fill. There will be, however, many measurements outside that
+/// range. AGS does not store its beam, it is instead processed within a single
+/// supercycle (which lasts ~4 seconds) and then either end up consumed by the
+/// user (RHIC) or (more often) dumped. We are only looking for measurements of
+/// the polarization done for a beam that is going to be injected in our
+/// specific fill. For the purposes of this study we only only assume that the
+/// settings are not changed during the interval mentioned above. This
+/// definition can be improved, but it is good enough for the purposes of this
+/// (small) study.
+void AnaFillResult::FitAgsPol()
+{
+   TGraphErrors *gr = GetAgsPolFitGraph();
+   if (gr) {
+      fAgsPolFitRes = gr->Fit("pol0", "QS", "", -0.5 * 60 * 60, 0); // Q - Quiet, S - return FitResult
+   }
 }
 
 /** */

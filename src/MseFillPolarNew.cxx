@@ -128,3 +128,14 @@ void MseFillPolarNewX::SetValuesHJ(const AnaFillResult &afr, ERingId ringId)
    polar     = ve.first;
    polar_err = ve.second;
 }
+
+void MseFillPolarNewX::SetValuesAgs(const AnaFillResult &afr)
+{
+   SetValues(afr);
+
+   polarimeter_id = kAGSCNI;
+
+   ValErrPair ve = afr.GetAgsCniPolar();
+   polar     = ve.first;
+   polar_err = ve.second;
+}

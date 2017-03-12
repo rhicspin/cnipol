@@ -56,6 +56,26 @@ void MAsymFillHists::BookHists()
       BookHistsByRing(*iRingId);
    }
 
+   TH1          *hist;
+   string       shName;
+   TAttMarker   styleMarker;
+
+   styleMarker.SetMarkerStyle(kFullCircle);
+   styleMarker.SetMarkerSize(1);
+
+   grAgsPolarVsFillId = new TGraphErrors();
+   grAgsPolarVsFillId->SetName("grAgsPolarVsFillId");
+   styleMarker.Copy(*grAgsPolarVsFillId);
+   grAgsPolarVsFillId->SetMarkerColor(kRed);
+
+   shName = "hAgsPolarVsFillId";
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0., 1., 1, 0., 1.);
+   hist->SetTitle("; Fill Id; AGS polarization, %;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grAgsPolarVsFillId, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hAgsPolarVsFillId = hist;
 }
 
 
@@ -278,6 +298,20 @@ void MAsymFillHists::BookHistsByRing(ERingId ringId)
    o[shName] = hist;
    hRampPCPolarRatiosByRing[ringId]  = hist;
    grRampPCPolarRatiosByRing[ringId] = grRampPCPolarRatio;
+
+   TGraphErrors *grRhicAgsPolarRatio = new TGraphErrors();
+   grRhicAgsPolarRatio->SetName("grRhicAgsPolarRatio");
+   styleMarker.Copy(*grRhicAgsPolarRatio);
+
+   shName = "hRhicAgsPolarRatio_" + sRingId;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, 0., 1., 1, 0., 1.);
+   hist->SetTitle("; Fill Id; RHIC Injection/AGS Pol. Ratio;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetListOfFunctions()->Add(grRhicAgsPolarRatio, "p");
+   hist->GetListOfFunctions()->SetOwner(kTRUE);
+   o[shName] = hist;
+   hRhicAgsPolarRatiosByRing[ringId]  = hist;
+   grRhicAgsPolarRatiosByRing[ringId] = grRhicAgsPolarRatio;
 
 
    // Chi2 of bunch asym
@@ -520,6 +554,8 @@ void MAsymFillHists::PostFill()
 /** */
 void MAsymFillHists::PostFill(AnaGlobResult &agr)
 {
+   utils::SetXAxisIntBinsLabels(hAgsPolarVsFillId, agr.GetMinFill(), agr.GetMaxFill());
+
    // Should be moved to a new function
    RingIdSetIter iRingId = gRunConfig.fRings.begin();
    for ( ; iRingId != gRunConfig.fRings.end(); ++iRingId)
@@ -532,6 +568,7 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
 
       utils::SetXAxisIntBinsLabels(hRotatorPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill());
       utils::SetXAxisIntBinsLabels(hRampPCPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill());
+      utils::SetXAxisIntBinsLabels(hRhicAgsPolarRatiosByRing[ringId], agr.GetMinFill(), agr.GetMaxFill());
    }
 
 
@@ -580,6 +617,22 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
          {
             utils::AppendToGraph(grRampPCPolarRatiosByPol[polId], fillId, afr.fRampPCPolarRatio[polId].first, 0, afr.fRampPCPolarRatio[polId].second);
             utils::AppendToGraph(grRampPCPolarRatiosByRing[ringId], fillId, afr.fRampPCPolarRatio[polId].first, 0, afr.fRampPCPolarRatio[polId].second);
+         }
+
+         if (afr.fRhicAgsPolarRatio[polId].second >= 0)
+         {
+            if (afr.fRhicAgsPolarRatio[polId].first >= 2)
+            {
+               Error("PostFill", "RHIC/AGS polarization ratio outlier: %f", afr.fRhicAgsPolarRatio[polId].first);
+            } else {
+               utils::AppendToGraph(grRhicAgsPolarRatiosByRing[ringId], fillId, afr.fRhicAgsPolarRatio[polId].first, 0, afr.fRhicAgsPolarRatio[polId].second);
+            }
+         }
+
+         ValErrPair agsPol = afr.GetAgsCniPolar();
+         if (agsPol.second >= 0)
+         {
+            utils::AppendToGraph(grAgsPolarVsFillId, fillId, agsPol.first, 0, agsPol.second);
          }
       }
 
@@ -631,6 +684,8 @@ void MAsymFillHists::PostFill(AnaGlobResult &agr)
 void MAsymFillHists::UpdateLimits()
 {
    char hName[256];
+
+   utils::UpdateLimitsFromGraphs(hAgsPolarVsFillId, 2);
 
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
 
@@ -692,6 +747,11 @@ void MAsymFillHists::UpdateLimits()
       fitFunc.FixParameter(1, sigma);
       grRampPCPolarRatiosByRing[ringId]->Fit(&fitFunc);
       utils::UpdateLimitsFromGraphs(hRampPCPolarRatiosByRing[ringId], 2);
+
+      sigma = grRhicAgsPolarRatiosByRing[ringId]->GetRMS(2);
+      fitFunc.FixParameter(1, sigma);
+      grRhicAgsPolarRatiosByRing[ringId]->Fit(&fitFunc);
+      utils::UpdateLimitsFromGraphs(hRhicAgsPolarRatiosByRing[ringId], 2);
    }
 
    DrawObjContainer::UpdateLimits();

@@ -8,6 +8,7 @@
 
 #include "TObject.h"
 #include "TGraphErrors.h"
+#include "TLine.h"
 
 #include <opencdev.h>
 
@@ -34,10 +35,13 @@ protected:
    TGraphErrors *fBluSnakeCurGraph;
    TGraphErrors *fYelSnakeCurGraph;
    std::map< EPolarimeterId, std::vector<TGraphErrors*> > fBCCurGraph;
+   TGraphErrors *fAgsPolFitGraph;
+   std::vector<TLine*> fKickerLines;
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 
    TGraphErrors* MakeGraph(const std::map<opencdev::cdev_time_t, double> &values, int thin_out_factor=1);
+   void LoadAgsInfo(opencdev::LogReader &log_reader);
    void LoadInfo(UInt_t fillId);
 
 public:

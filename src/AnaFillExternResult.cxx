@@ -19,6 +19,7 @@ AnaFillExternResult::AnaFillExternResult(UInt_t fillId) : TObject(),
    fBluIntensGraph(0), fYelIntensGraph(0),
    fBluRotCurStarGraph(0), fYelRotCurStarGraph(0), fBluRotCurPhenixGraph(0),
    fYelRotCurPhenixGraph(0), fBluSnakeCurGraph(0), fYelSnakeCurGraph(0),
+   fAgsPolFitGraph(0),
    fTimeEventLumiOn(LONG_MAX), fTimeEventLumiOff(LONG_MIN)
 {
    LoadInfo(fillId);
@@ -52,6 +53,63 @@ TGraphErrors* AnaFillExternResult::MakeGraph(const std::map<opencdev::cdev_time_
    }
 
    return gr;
+}
+
+
+void AnaFillExternResult::LoadAgsInfo(opencdev::LogReader &log_reader)
+{
+   opencdev::cdev_time_t ags_time_start = fTimeEventLumiOn - 60*60*5; // These are intended to be plot limits - FIXME
+   opencdev::cdev_time_t ags_time_end = fTimeEventLumiOff + 60*60*3;
+   opencdev::result_t ags_pol_result;
+
+   log_reader.query_timerange("Ags/Polarized_protons/CNIpolarimeter", ags_time_start, ags_time_end, &ags_pol_result);
+
+   {
+      std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["start"];
+      fAgsPolFitGraph = new TGraphErrors(values.size());
+      int i = 0;
+
+       for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
+       {
+          opencdev::cdev_time_t time = it->first;
+          double startTime = it->second;
+
+          fAgsPolFitGraph->SetPoint(i, (startTime + time) / 2, ags_pol_result["AgsPolarFit"][time]);
+          fAgsPolFitGraph->SetPointError(i, fabs(startTime - time) / 2, ags_pol_result["AgsPolarFitErr"][time]);
+          i++;
+       }
+   }
+
+#if 0
+   ags_pol_result.clear();
+   log_reader.set_additional_args(" -cells scope.xki:c4RawDataM\\[.\\]");
+   log_reader.query_timerange("RHIC/Injection/BlueScope", ags_time_start, ags_time_end, &ags_pol_result);
+   {
+      std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["scope.xki:c4RawDataM[.]"];
+
+      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
+      {
+         opencdev::cdev_time_t time = it->first;
+         TLine *l = new TLine(time, 0, time, 80);
+         l->SetLineColor(kBlue);
+         fKickerLines.push_back(l);
+      }
+   }
+
+   ags_pol_result.clear();
+   log_reader.set_additional_args(" -cells scope.yki:c4RawDataM:value\\[.\\]");
+   log_reader.query_timerange("RHIC/Injection/YellowScope", ags_time_start, ags_time_end, &ags_pol_result);
+   {
+      std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["scope.yki:c4RawDataM:value[.]"];
+      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
+      {
+         opencdev::cdev_time_t time = it->first;
+         TLine *l = new TLine(time, 20, time, 100);
+         l->SetLineColor(kYellow);
+         fKickerLines.push_back(l);
+      }
+   }
+#endif
 }
 
 
@@ -119,6 +177,10 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
       EPolarimeterId polId = BiasCurrentUtil::ParseLoggerPolId(key);
       TGraphErrors *gr = MakeGraph(values);
       fBCCurGraph[polId].push_back(gr);
+   }
+
+   if (fTimeEventLumiOn && fTimeEventLumiOff) {
+      LoadAgsInfo(log_reader);
    }
 }
 

@@ -794,6 +794,21 @@ void AnaGlobResult::UpdateInsertDb(AsymDbSql *asymDbSql)
       // test end
       // test end
 
+      {
+         EPolarimeterId polId = kAGSCNI;
+         ERingId ringId = kUNKNOWN_RING;
+         MseFillPolarNewX* ofillP = asymDbSql->SelectFillPolar(fillId, polId, ringId);
+         MseFillPolarNewX* nfillP = 0;
+
+         if (ofillP) { // if fill found in database copy it to new one
+            nfillP = new MseFillPolarNewX(*ofillP);
+         } else { // if fill not found in database create it
+            nfillP = new MseFillPolarNewX(fillId, polId, ringId);
+         }
+
+         nfillP->SetValuesAgs(fillResult);
+         asymDbSql->UpdateInsert(ofillP, nfillP);
+      }
 
       /*
       MseFillPolarX *ofill = asymDbSql->SelectFillPolar(fillId);

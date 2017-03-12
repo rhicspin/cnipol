@@ -85,6 +85,16 @@ void MAsymSingleFillHists::BookHists()
    hist->GetXaxis()->SetTimeFormat("%H");
    hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
    o[shName] = hist;
+
+   shName = "hAgsPolFitVsFillTime_" + strDirName;
+   hist = new TH2C(shName.c_str(), shName.c_str(), 1, fMinTime, fMaxTime, 1, 0, 100);
+   hist->SetTitle("; Time in Fill, hours; AGS polarization, %;");
+   hist->SetOption("DUMMY GRIDX GRIDY");
+   hist->GetXaxis()->SetTimeOffset(0, "gmt");
+   hist->GetXaxis()->SetTimeDisplay(1);
+   hist->GetXaxis()->SetTimeFormat("%H");
+   hist->SetNdivisions((Int_t) fMaxTime/3600 + 1, "X");
+   o[shName] = hist;
 }
 
 
@@ -452,6 +462,21 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_, 2);
       utils::UpdateLimitsFromGraphs(hAsymVsBunchId_X_neb_, 2);
+   }
+
+   {
+      TH1* hAgsPolFitVsFillTime_ = (TH1*) o["hAgsPolFitVsFillTime_" + strDirName];
+      const vector<TLine*> &ls = afr.GetKickerLines();
+      for(vector<TLine*>::const_iterator it = ls.begin(); it != ls.end(); it++) {
+         hAgsPolFitVsFillTime_->GetListOfFunctions()->Add(*it);
+      }
+      TGraphErrors* gr = afr.GetAgsPolFitGraph();
+      if (gr) {
+         gr->SetMarkerStyle(20);
+         gr->SetMarkerColor(kRed);
+         gr->SetMarkerSize(1.);
+         hAgsPolFitVsFillTime_->GetListOfFunctions()->Add(gr, "p");
+      }
    }
 }
 

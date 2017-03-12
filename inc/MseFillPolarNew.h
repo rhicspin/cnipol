@@ -54,6 +54,7 @@ public:
    void SetValues(const AnaFillResult &afr);
    void SetValuesPC(const AnaFillResult &afr, EPolarimeterId polId);
    void SetValuesHJ(const AnaFillResult &afr, ERingId ringId);
+   void SetValuesAgs(const AnaFillResult &afr);
 };
 
 #endif

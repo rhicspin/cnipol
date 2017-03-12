@@ -44,6 +44,7 @@ protected:
 
    TFitResultPtr              fPCPolarFitRes;
    TFitResultPtr              fPolProfRFitRes;
+   TFitResultPtr              fAgsPolFitRes;
 
    Double_t                   fFlattopEnergy;
    EFillType                  fFillType;
@@ -74,6 +75,7 @@ public:
 
    PolId2ValErrMap               fRotatorPCPolarRatio; // before/after rotator ratio at flattop
    PolId2ValErrMap               fRampPCPolarRatio;    //! before/after ramp to flattop ratio
+   PolId2ValErrMap               fRhicAgsPolarRatio;
 
    String2TgtOrientMap           fMeasTgtOrients;      // a stupid temporary fix
    String2TargetIdMap            fMeasTgtIds;          // a stupid temporary fix
@@ -112,6 +114,8 @@ public:
    TGraphErrors*        GetRotCurPhenixGraph(ERingId ringId) const;
    TGraphErrors*        GetSnakeCurGraph(ERingId ringId) const;
    std::vector<TGraphErrors*> GetBCCurGraphs(EPolarimeterId polId) const;
+   TGraphErrors*        GetAgsPolFitGraph() const;
+   const std::vector<TLine*>& GetKickerLines() const;
    void                 AddMeasResult(AnaMeasResult &result);
    void                 AddMeasResult(EventConfig &mm);
    void                 AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);
@@ -145,6 +149,7 @@ public:
    ValErrPair           GetPCProfPMax(ERingId ringId, ETargetOrient tgtOrient) const;
    ValErrPair           GetPCProfP(ERingId ringId, ETargetOrient tgtOrient) const;
    //ValErrPair           GetProfPolarSyst(EPolarimeterId polId);
+   ValErrPair           GetAgsCniPolar() const;
    void                 CalcBeamPolar(Bool_t doNorm=kFALSE);
    RingId2ValErrMap     CalcPolarRatioU2D(PolId2ValErrMap &normJC);
    PolId2ValErrMap      CalcSystJvsCPolar(PolId2ValErrMap &normJC);
@@ -159,11 +164,13 @@ public:
    ValErrPair           CalcPolProfP(ValErrPair R, ValErrPair PMax);
    void                 CalcRotatorPCPolarRatio();
    void                 CalcRampPCPolarRatio();
+   void                 CalcRhicAgsPolarRatio();
    void                 CalcAvrgAsymByBunch(const AnaMeasResult &amr, const MeasInfo &mi, DrawObjContainer &ocOut) const;
    void                 UpdateExternGraphRange();
    void                 FitExternGraphs();
    void                 FitPCPolarGraphs();
    void                 FitPCProfRGraphs();
+   void                 FitAgsPol();
    void                 SetHJPolar(ERingId ringId, ValErrPair ve);
    void                 SetHJAsym(ERingId ringId, ValErrPair ve);
    void                 AppendToPCPolarGraph(EPolarimeterId polId, Double_t x, Double_t y, Double_t xe, Double_t ye);
