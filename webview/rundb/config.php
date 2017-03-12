@@ -30,6 +30,7 @@ $RUN_PERIOD_BY_DATE = array (
 $RUN_PERIOD        = array(9 => "Run 9", 11 => "Run 11", 12 => "Run 12", 13 => "Run 13", 15 => "Run 15", 17 => "Run 17");
 $POLARIMETER_ID    = array(0 => "B1U", 1 => "Y1D", 2 => "B2D", 3 => "Y2U");
 $HJ_POLARIMETER_ID = 10;
+$AGS_POLARIMETER_ID = 11;
 $RHIC_RING         = array("1" => "Blue", "2" => "Yellow");
 $RHIC_STREAM       = array("1" => "Upstream", "2" => "Downstream");
 $MEASTYPE          = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");

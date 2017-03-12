@@ -23,6 +23,7 @@ class FillResult
    public $fPCProfR0s        = array();
    public $fPCProfRSlopes    = array();
    public $fHJPolars         = array();
+   public $fAgsPolar         = array();
    public $fBeamPolars       = array();
    public $fBeamPolarP0s     = array();
    public $fBeamPolarSlopes  = array();
@@ -46,6 +47,7 @@ class FillResult
       $this->fGlobResult = $gR;
       $this->fRunPeriod  = $this->fGlobResult->fRunPeriod;
       $this->fFillId     = $fillId;
+      $this->fAgsPolar   = new pair(0, -1);
 
       foreach (range(0, 3) as $polId)
       {
@@ -91,7 +93,7 @@ class FillResult
       $this->fType         = $row['type'];
       $this->fBeamEnergy   = $row['beam_energy'];
 
-      global $POLARIMETER_ID, $HJ_POLARIMETER_ID;
+      global $POLARIMETER_ID, $HJ_POLARIMETER_ID, $AGS_POLARIMETER_ID;
 
       $polId     = $row['polarimeter_id'];
       $ringId    = $row['ring_id'];
@@ -133,6 +135,8 @@ class FillResult
 
       } else if ($polId == $HJ_POLARIMETER_ID) {
          $this->fHJPolars[$ringId] = new pair($row['polar'], $row['polar_err']);
+      } else if ($polId == $AGS_POLARIMETER_ID) {
+         $this->fAgsPolar = new pair($row['polar'], $row['polar_err']);
       }
 
       //print "<br>".count($this->fPCPolars);

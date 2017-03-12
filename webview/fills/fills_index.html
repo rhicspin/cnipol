@@ -247,6 +247,7 @@ else if ($gMode == 2)
    <th class='yelPol' colspan=3>Polarization,&nbsp;%<br>Y2U
    <th class='yelPol' rowspan=2>R_H<br>Horiz. profile
    <th class='yelPol' rowspan=2>R_V<br>Vert. profile
+   <th class='agsPol' rowspan=2>AGS</th>
 
 <tr>
 
@@ -466,6 +467,7 @@ if (file_exists("$gAnaResDir/images/fills/$strFillId")) {
    <td class='align_cm nowrap'><?=polarPairToString($fill->fPCPolarSlopes[3])?>
    <td class='align_cm nowrap'><?=$strProfileY_V?>
    <td class='align_cm nowrap'><?=$strProfileY_H?>
+   <td class="align_cm nowrap"><?=pairToString($fill->fAgsPolar, "", "%6.2f")?>
 
 <?php
 else:
@@ -593,6 +595,7 @@ if ($gMode == 2):
    <th>&nbsp;
    <th class='yelPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[2][1])?>
    <th class='yelPol align_ct'><?=pairToString($globResult->fAvrgBeamProfRs[2][0])?>
+   <th>&nbsp;
 
 <tr>
    <th>
@@ -637,6 +640,7 @@ if ($gMode == 2):
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
    <th class='yelPol align_cm'>&nbsp;
+   <th class='agsPol align_cm'>&nbsp;
 
 <?php
 else:
