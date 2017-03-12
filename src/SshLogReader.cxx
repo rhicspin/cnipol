@@ -139,7 +139,6 @@ void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t,
          {
             assert(strlen(buf) > strlen("# Time"));
             buf[strlen(buf) - 1] = 0;
-            gSystem->Info("SshLogReader", "Read comment: %s", buf);
             if (line == 3)
             {
                cells = ParseCellList(&buf[2]);
