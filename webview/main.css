@@ -354,3 +354,11 @@ tr.toprow6 td {
 tr.my_tr_highlight:hover td {
   background-color: #E9E9E9; color: #000;
 }
+
+tr.my_tr_highlight:hover .bluPol {
+  background-color: #6f9fdf !important;
+}
+
+tr.my_tr_highlight:hover .yelPol {
+  background-color: #cfcf8f !important;
+}
