@@ -60,8 +60,8 @@ installed on your machine issue a following command:
     
 This will create a cnipol directory with your local cnipol repository.
 
-Syncing changes
----------------
+Syncing changes with central repository
+---------------------------------------
 
 In order to sync your changes in your local copy with the central repository you will need to have have them commited to your local repository first. To do that you need to first "stage" them using
 
@@ -80,7 +80,7 @@ The newly created commit will only exist in your local repository. To synchroniz
     git pull --rebase
     git push
     
-Later should ask for your github credentials. If you plan to push often it is a good idea to generate an ssh key and add it to gihub: https://help.github.com/articles/connecting-to-github-with-ssh/
+Later should ask for your github credentials. If you plan to push oftenб it is a good idea to generate an ssh key and add it to gihub: https://help.github.com/articles/connecting-to-github-with-ssh/
     
 It is important to sync your changes in a timely manner. Letting your changes pile locally for too long increases chance of having a merge conflict.
 
@@ -132,7 +132,7 @@ calibration data.
 
 To analyze a regular data file simply do in the build directory:
 
-    asym -r <meas_id>
+    ./asym -r <meas_id>
 
 where `<meas_id>` is a unique name of a measurement, e.g. 12345.001. Note that
 usually `<file_name> = <meas_id>.data`. The program searches for the input
@@ -144,7 +144,7 @@ results to display on the web, and a file with calibration results.
 
 To analyze an alpha or pulser measurement use the --alpha option:
 
-    asym --alpha -r <meas_id>
+    ./asym --alpha -r <meas_id>
 
 
 Batch processing multiple data files
@@ -174,28 +174,22 @@ analyzed with `asym`. The output ROOT files produced by `asym` are used as input
 to `masym`. Executing the following command will create a `<meas_list>` directory
 in $CNIPOL_RESULTS_DIR with a ROOT file containing summary histograms:
 
-    masym -m <meas_list>
+    ./masym -m <meas_list>
 
 Here <meas_list> is a plain text file with a list of measurements to process.
 This file is assumed to exist in $CNIPOL_RESULTS_DIR/runXX/lists/ and to have
 one `<meas_id>` per line.
 
 Optionally, the analyzer can provide a plain text file
-$CNIPOL_RESULTS_DIR/runXX/hjet_pol with H-Jet polarization values, and one file
-$CNIPOL_RESULTS_DIR/runXX/cdev_info/cdev_NNNNN per fill NNNNN containing
-intensity and other beam parameters. Information from these text files will be
-used by `masym` in the summary plots. Information from CDEV can be extracted
-using the following script on the acnlin CAD cluster:
+$CNIPOL_RESULTS_DIR/runXX/hjet_pol with H-Jet polarization values.
+Information from these text files will be
+used by `masym` in the summary plots.
 
-    $CNIPOL_DIR/script/get_fill_info.sh <NNNNN>
-
-where <NNNNN> must be replaced with an actual fill number.
-
-Similarly to `masym` we provide a program to study time dependences in a set of
+Similarly to `masym`, we provide a program to study time dependences in a set of
 alpha-calibration measurements. This program is called `malpha` and can be
 invoked as:
 
-    malpha -m <meas_list>
+    ./malpha -m <meas_list>
 
 where `<meas_list>` is a file in `$CNIPOL_RESULTS_DIR/runXX/lists/` with a list
 of unique names corresponding to measurements recorded by the polarimeters when
@@ -204,21 +198,9 @@ no beam was present in the RHIC.
 General Description of Directory Layout
 =======================================
 
-There are 7 major directories in the cnipol package:
-
-cnipol/inc/ -- This directory contains all the source code header files
-
-cnipol/src/ -- This directory contains all the cpp files
-
-cnipol/build/ -- This is build directory to compile the code using make 
-
-cnipol/webview/ --  This directory contains all the code relavent for the webpage
-
-cnipol/script/ -- This directory contains all the scripts that can quickly allow a user to run the code
-
-eicdata/eic0005/runXX/ -- This directory contains lists. The list of measuements, the list of target status, and the lists from cdev.  
-
-eicdata/eic0005/run17/ -- This directory holds all the data after processing through asym (Using 17 as an example, could be any other run number).
+ * ```$CNIPOL_DATA_DIR``` — directory containing raw input data files that are read by `asym`. Typically points to ```/eicdata/eic0005/run??/data``` where ```??``` is the run number.
+ * ```$CNIPOL_RESULTS_DIR``` — output directory for asym (it creates ```$CNIPOL_RESULTS_DIR/<meas_id>``` subdirectories). Also input and output directory for masym (it reads asym output and produces its output in ```$CNIPOL_RESULTS_DIR/<meas_list>```). Typically points to ```/eicdata/eic0005/run??/root```.
+ * Another input directory for masym is ```/eicdata/eic0005/runXX``` (literally ```XX```) that is a local git repository clone of https://github.com/rhicspin/runXX. It contains plain text files with lists of measurements, target statuses and H-Jet polarizations. I also contains text cdev logs, but these are not used anymore. Due to some bug masym will look for it in ```$CNIPOL_RESULTS_DIR/runXX```, which we working around by creating a symlink like ```ln -s /eicdata/eic0005/runXX /eicdata/eic0005/run17/root/runXX```.
 
 Automating the Process
 ======================
