@@ -30,51 +30,73 @@ There is a wiki page with some details about the RHIC polarimetry:
 
 https://wiki.bnl.gov/rhicspin/Polarimetry
 
-The entry page with links to results obtained with cnipol can be found at
+The results obtained with cnipol can be found at
 
 http://www.phy.bnl.gov/cnipol/
-
-
-General remarks
----------------
-
-The code for the analysis of the RHIC polarimeters data has changed
-significantly starting 2010. Nevertheless, one may still find it useful to look
-through the older documentation which can be found at
-
-http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
 
 
 How to configure and install cnipol
 ===================================
 
+The development of cnipol is done using the git version control system. Good manuals can be found at:
+
+ * https://git-scm.com/book/en/v2 - somewhat in-depth
+ * https://help.github.com — github specifics
+
+Obtaining the code
+------------------
+
 The best way to start with the analysis is to clone the latest version of the
 code from the git repository. From the location where the package will be
-installed on your machine (such as eic0005)issue the following command:
+installed on your machine issue a following command:
 
     git clone https://github.com/rhicspin/cnipol.git
     cd cnipol
+    
+This will create a cnipol directory with your local cnipol repository.
 
-If you plan to push changes back to the repository a github account is required.
-The source code in this case can be cloned via ssh protocol:
+Syncing changes
+---------------
 
-    git clone git@github.com:rhicspin/cnipol.git
-    cd cnipol
+In order to sync your changes in your local copy with the central repository you will need to have have them commited to your local repository first. To do that you need to first "stage" them using
 
+    git add -p
+
+This will interactively ask you which changes you want to stage. If there are new files that you would like to add to the repository use
+
+    git add path/to/new/file
+    
+To check what changes are staged use ```git status``` and ```git diff --staged```.
+To unstage all of the changes use ```git reset```.
+After staging the changes use ```git commit -m "your commit message here"``` to turn them into a commit. Use ```git log -p``` to see list of local commits.
+
+The newly created commit will only exist in your local repository. To synchronize with the common repository issue:
+
+    git pull --rebase
+    git push
+    
+Later should ask for your github credentials. If you plan to push often it is a good idea to generate an ssh key and add it to gihub: https://help.github.com/articles/connecting-to-github-with-ssh/
+    
+It is important to sync your changes in a timely manner. Letting your changes pile locally for too long increases chance of having a merge conflict.
+
+Compiling the code
+------------------
 
 The analysis framework depends on a few external libraries and programs including
 
-* ROOT
+* ROOT5
 * MySQL
+* sqlite3
+* boost (through opencdev)
 
-The data acquisition and online processing code depends on CERNLIB and CDEV.
+These (except ROOT) are typically readily available on most linux systems.
 
 Before the code can be compiled and executed a number of environment variables
 must be set. We provide an example bash script `script/setup.sh` with predefined
 paths which should work on the eic cluster of the RACF (RHIC and ATLAS Computing
 Facility). Review and modify this script as needed to match your specific system
 configuration. An example is the variable `CNIPOL_DIR`, which the directory you setup the code. This script can be ran with an optional argument for the RHIC run
-number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be bash shell. Type bash):
+number, e.g. `run_id = 9|11|12|13|15|17`, execute in the terminal (Note: You need to be in a bash shell. Type bash):
 
     source script/setup.sh [run_id]
 
@@ -218,9 +240,17 @@ During the course of the run, a long alpha measurment should occur and create th
 Make sure to change the start_time, the polarimeter_id, the alpha_calib_run_name, and possibly the gain_slope (may not need to include the gain_slope at all). The other parameters are the default tdc and adc cuts on the bananas plots.
 
 
+General remarks
+===============
+
+The code for the analysis of the RHIC polarimeters data has changed
+significantly starting 2010. Nevertheless, one may still find it useful to look
+through the older documentation which can be found at
+
+http://www4.rcf.bnl.gov/~cnipol/Analysis/pC/index.html
 
 Other polarimetry software packages
-===================================
+-----------------------------------
 
 Different people have been working on analysing polarimetry data. Some notable
 packages used for this purpose are:
@@ -238,8 +268,13 @@ packages used for this purpose are:
 		<th>hjet-analysis</th>
 		<td>
 			<p>Code for the H-jet polarimeter data analysis</p>
-			<p>Supported by the RHIC Spin group. As many other analyses
-			it's reader code is based on the code found in <a href="https://github.com/rhicspin/polarim-online/blob/master/rhic2hbook/rdatautil.cpp">rdatautil.c</a>.</p>
+			<p>Supported by the RHIC Spin group and provides the official polarization numbers.</p>
+		</td>
+	</tr>
+	<tr>
+		<th>new hjet analysis</th>
+		<td>
+			<p>An analysis by Andrei Poblaguev that pioneered support of the new JLAB fADC250 VME DAQ system.</p>
 		</td>
 	</tr>
 </table>
