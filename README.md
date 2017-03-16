@@ -4,14 +4,19 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [Introduction](#introduction)
-  - [General remarks](#general-remarks)
-- [How to configure and install cnipol](#how-to-configure-and-install-cnipol)
-- [How to run cnipol](#how-to-run-cnipol)
-  - [Batch processing multiple data files](#batch-processing-multiple-data-files)
-- [How to produce summary plots](#how-to-produce-summary-plots)
-- [Other software packages for the RHIC polarimetry](#other-software-packages-for-the-rhic-polarimetry)
-
+- [Introduction](#)
+- [How to configure and install cnipol](#)
+	- [Obtaining the code](#)
+	- [Syncing changes](#)
+	- [Compiling the code](#)
+- [How to run cnipol](#)
+	- [Batch processing multiple data files](#)
+- [How to produce summary plots](#)
+- [General Description of Directory Layout](#)
+- [Automating the Process](#)
+- [Alpha Calibration File](#)
+- [General remarks](#)
+	- [Other polarimetry software packages](#)
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 Introduction
