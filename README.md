@@ -4,19 +4,20 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [Introduction](#)
-- [How to configure and install cnipol](#)
-	- [Obtaining the code](#)
-	- [Syncing changes](#)
-	- [Compiling the code](#)
-- [How to run cnipol](#)
-	- [Batch processing multiple data files](#)
-- [How to produce summary plots](#)
-- [General Description of Directory Layout](#)
-- [Automating the Process](#)
-- [Alpha Calibration File](#)
-- [General remarks](#)
-	- [Other polarimetry software packages](#)
+- [Introduction](#introduction)
+- [How to configure and install cnipol](#how-to-configure-and-install-cnipol)
+  - [Obtaining the code](#obtaining-the-code)
+  - [Syncing changes with central repository](#syncing-changes-with-central-repository)
+  - [Compiling the code](#compiling-the-code)
+- [How to run cnipol](#how-to-run-cnipol)
+  - [Batch processing multiple data files](#batch-processing-multiple-data-files)
+- [How to produce summary plots](#how-to-produce-summary-plots)
+- [General Description of Directory Layout](#general-description-of-directory-layout)
+- [Automating the Process](#automating-the-process)
+- [Alpha Calibration File](#alpha-calibration-file)
+- [General remarks](#general-remarks)
+  - [Other polarimetry software packages](#other-polarimetry-software-packages)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 Introduction
