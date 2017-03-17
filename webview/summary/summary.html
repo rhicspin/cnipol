@@ -389,6 +389,28 @@ Ratio of upstream to downstream p-Carbon polarization values <b>at flattop energ
 <!-- }}} -->
 
 
+<h2 id="rhic_ags_ratio" class="count">Injection Efficiency: RHIC Injection/AGS Polarization Ratio</h2>
+<!-- {{{ -->
+
+<table class="simple00 cntr">
+
+<tr>
+   <td colspan=2><?=$gP->img("fills/hRhicAgsPolarRatio_BLU", false, 800)?>
+   <div class='thumbcaption_cm'><span class=bluPol>Blue</span></div>
+
+   <td colspan=2><?=$gP->img("fills/hRhicAgsPolarRatio_YEL", false, 800)?>
+   <div class='thumbcaption_cm'><span class=yelPol>Yellow</span></div>
+
+<tr>
+<td colspan=2>
+<div class='thumbcaption'>
+Ratio of RHIC polarization at injection (only last injection measurement per polarimeter is used) to polarization in AGS before injection.
+</div>
+
+</table>
+
+<!-- }}} -->
+
 
 <h2 id="pcarbon_ramp_ratio" class=count>Energy Ramp Efficiency: After/Before Polarization Ratio</h2>
 <!-- {{{ -->
@@ -974,6 +996,22 @@ Beam intensity lifetime
 <!-- }}} -->
 
 
+<h1 id="ags" class="count">AGS</h1>
+<!-- {{{ -->
+<div id="div:ags" class="section">
+
+<div class="thumbcaption">
+Polarizations in AGS before injection into the RHIC:
+</div>
+
+<table class="simple00 cntr">
+<tr>
+   <td><?=$gP->img("fills/hAgsPolarVsFillId", false, 800)?></td>
+</tr>
+</table>
+
+</div>
+<!-- }}} -->
 
 
 <h1 id="bias" class="count">Bias current</h1>
