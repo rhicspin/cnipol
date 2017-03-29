@@ -42,7 +42,7 @@ public:
 
 private:
 
-   const char*                GetSetting(const char *key);
+   static const char*         GetSetting(const char *key, const char *defval = NULL);
 };
 
 #endif

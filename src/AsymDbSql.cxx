@@ -30,13 +30,17 @@ AsymDbSql::~AsymDbSql()
 
 
 /** */
-const char* AsymDbSql::GetSetting(const char *key)
+const char* AsymDbSql::GetSetting(const char *key, const char *defval)
 {
    const char *value = gSystem->Getenv(key);
    if (!key)
    {
-      throw Form("Failed to determine MySQL settings."
-                 "Please define '%s' shell enviroment variable.", key);
+      if (defval) {
+         return defval;
+      } else {
+         throw Form("Failed to determine MySQL settings. "
+                    "Please define '%s' shell enviroment variable.", key);
+      }
    }
    return value;
 }
@@ -52,10 +56,12 @@ void AsymDbSql::OpenConnection()
       // Establish the connection to the database server.
       const char *db_name =     GetSetting("CNIPOL_DB_NAME");
       const char *db_host =     GetSetting("CNIPOL_DB_HOST");
+      const char *db_port_str = GetSetting("CNIPOL_DB_PORT", "3306");
       const char *db_user =     GetSetting("CNIPOL_DB_USER");
       const char *db_password = GetSetting("CNIPOL_DB_PASSWORD");
+      int db_port = strtol(db_port_str, NULL, 10);
 
-      fConnection = new Connection(db_name, db_host, db_user, db_password, 3306);
+      fConnection = new Connection(db_name, db_host, db_user, db_password, db_port);
    } catch (const BadQuery& er) {
       // Handle any query errors
       cerr << "Query error: " << er.what() << endl;
