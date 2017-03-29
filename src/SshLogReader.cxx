@@ -13,7 +13,7 @@
 #include "SshLogReader.h"
 
 
-string SshLogReader::GetSshCommand(const string &logger, const char *export_params)
+string SshLogReader::GetSshCommand(const string &logger, const string &args)
 {
    char buf[8192];
 
@@ -36,14 +36,14 @@ string SshLogReader::GetSshCommand(const string &logger, const char *export_para
             " -showmissingdatawith x"
             " -timetolerance 0"
             "%s"
-            "%s\"",
-            logger.c_str(), fAdditionalArgs.c_str(), export_params);
+            "\"",
+            logger.c_str(), args.c_str());
 
    return string(buf);
 }
 
 
-string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t start, time_t end)
+string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string &additional_args)
 {
    char export_params[1024], startStr[32], endStr[32];
 
@@ -56,11 +56,13 @@ string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t star
             " -stop '%s'",
             startStr, endStr);
 
-   return GetSshCommand(logger, export_params);
+   string args = export_params + additional_args;
+
+   return GetSshCommand(logger, args);
 }
 
 
-string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id)
+string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id, const string &additional_args)
 {
    char export_params[1024];
 
@@ -68,7 +70,9 @@ string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id)
 	    " -fill '%i'",
 	    fill_id);
 
-   return GetSshCommand(logger, export_params);
+   string args = export_params + additional_args;
+
+   return GetSshCommand(logger, args);
 }
 
 
@@ -259,13 +263,13 @@ void SshLogReader::Run(string cmd, opencdev::result_t *values)
 
 void SshLogReader::query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForTimeRange(logger, start, end);
+   string cmd = GetSshCommandForTimeRange(logger, start, end, fAdditionalArgs);
    Run(cmd, values);
 }
 
 
 void SshLogReader::query_fill(const string &logger, int fill_id, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForFillId(logger, fill_id);
+   string cmd = GetSshCommandForFillId(logger, fill_id, fAdditionalArgs);
    Run(cmd, values);
 }

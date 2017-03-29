@@ -20,9 +20,9 @@ private:
 
    vector<string> ParseCellList(string line);
    string ReadStream(FILE *fd);
-   string GetSshCommand(const string &logger, const char *export_params);
-   string GetSshCommandForTimeRange(const string &logger, time_t start, time_t end);
-   string GetSshCommandForFillId(const string &logger, int fill_id);
+   static string GetSshCommand(const string &logger, const string &args);
+   static string GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string &additional_args);
+   static string GetSshCommandForFillId(const string &logger, int fill_id, const string &additional_args);
 
 protected:
 
