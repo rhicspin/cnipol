@@ -1,3 +1,4 @@
+dist: trusty
 sudo: false
 language: cpp
 compiler:
@@ -12,8 +13,8 @@ addons:
       - libboost-filesystem-dev
       - libboost-test-dev
 before_script:
-  - wget http://root.cern.ch/download/root_v5.34.30.Linux-ubuntu12-x86_64-gcc4.6.tar.gz
-  - tar -xzf root_v5.34.30.Linux-ubuntu12-x86_64-gcc4.6.tar.gz
+  - wget https://root.cern.ch/download/root_v5.34.36.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
+  - tar -xzf root_v5.34.36.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
   - source root/bin/thisroot.sh
   - mkdir build
   - cd build
