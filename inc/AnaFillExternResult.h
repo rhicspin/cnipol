@@ -8,7 +8,6 @@
 
 #include "TObject.h"
 #include "TGraphErrors.h"
-#include "TLine.h"
 
 #include <opencdev.h>
 
@@ -36,7 +35,6 @@ protected:
    TGraphErrors *fYelSnakeCurGraph;
    std::map< EPolarimeterId, std::vector<TGraphErrors*> > fBCCurGraph;
    TGraphErrors *fAgsPolFitGraph;
-   std::vector<TLine*> fKickerLines;
    time_t        fTimeEventLumiOn;
    time_t        fTimeEventLumiOff;
 

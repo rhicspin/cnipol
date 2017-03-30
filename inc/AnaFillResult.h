@@ -115,7 +115,6 @@ public:
    TGraphErrors*        GetSnakeCurGraph(ERingId ringId) const;
    std::vector<TGraphErrors*> GetBCCurGraphs(EPolarimeterId polId) const;
    TGraphErrors*        GetAgsPolFitGraph() const;
-   const std::vector<TLine*>& GetKickerLines() const;
    void                 AddMeasResult(AnaMeasResult &result);
    void                 AddMeasResult(EventConfig &mm);
    void                 AddGraphMeasResult(EventConfig &mm, DrawObjContainer &ocIn);

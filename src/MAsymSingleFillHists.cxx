@@ -466,10 +466,6 @@ void MAsymSingleFillHists::PostFill(AnaFillResult &afr)
 
    {
       TH1* hAgsPolFitVsFillTime_ = (TH1*) o["hAgsPolFitVsFillTime_" + strDirName];
-      const vector<TLine*> &ls = afr.GetKickerLines();
-      for(vector<TLine*>::const_iterator it = ls.begin(); it != ls.end(); it++) {
-         hAgsPolFitVsFillTime_->GetListOfFunctions()->Add(*it);
-      }
       TGraphErrors* gr = afr.GetAgsPolFitGraph();
       if (gr) {
          gr->SetMarkerStyle(20);

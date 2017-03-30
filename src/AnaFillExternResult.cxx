@@ -79,37 +79,6 @@ void AnaFillExternResult::LoadAgsInfo(opencdev::LogReader &log_reader)
           i++;
        }
    }
-
-#if 0
-   ags_pol_result.clear();
-   log_reader.set_additional_args(" -cells scope.xki:c4RawDataM\\[.\\]");
-   log_reader.query_timerange("RHIC/Injection/BlueScope", ags_time_start, ags_time_end, &ags_pol_result);
-   {
-      std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["scope.xki:c4RawDataM[.]"];
-
-      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
-      {
-         opencdev::cdev_time_t time = it->first;
-         TLine *l = new TLine(time, 0, time, 80);
-         l->SetLineColor(kBlue);
-         fKickerLines.push_back(l);
-      }
-   }
-
-   ags_pol_result.clear();
-   log_reader.set_additional_args(" -cells scope.yki:c4RawDataM:value\\[.\\]");
-   log_reader.query_timerange("RHIC/Injection/YellowScope", ags_time_start, ags_time_end, &ags_pol_result);
-   {
-      std::map<opencdev::cdev_time_t, double> &values = ags_pol_result["scope.yki:c4RawDataM:value[.]"];
-      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
-      {
-         opencdev::cdev_time_t time = it->first;
-         TLine *l = new TLine(time, 20, time, 100);
-         l->SetLineColor(kYellow);
-         fKickerLines.push_back(l);
-      }
-   }
-#endif
 }
 
 

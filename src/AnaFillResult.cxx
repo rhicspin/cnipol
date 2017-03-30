@@ -256,11 +256,6 @@ TGraphErrors* AnaFillResult::GetAgsPolFitGraph() const
    return fAnaFillExternResult.fAgsPolFitGraph;
 }
 
-const vector<TLine*>& AnaFillResult::GetKickerLines() const
-{
-   return fAnaFillExternResult.fKickerLines;
-}
-
 
 ///** */
 //void AnaFillResult::PrintAsPhp(FILE *f) const
@@ -1463,12 +1458,6 @@ void AnaFillResult::UpdateExternGraphRange()
       if (gr) {
          for (Int_t i=0; i<gr->GetN(); ++i) { gr->GetPoint(i, x, y); gr->SetPoint(i, x - fStartTime, y); }
       }
-   }
-   const vector<TLine*> &ls = GetKickerLines();
-   for(vector<TLine*>::const_iterator it = ls.begin(); it != ls.end(); it++) {
-      TLine *l = *it;
-      l->SetX1(l->GetX1() - fStartTime);
-      l->SetX2(l->GetX2() - fStartTime);
    }
 
    // Loop over rings
