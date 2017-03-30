@@ -43,7 +43,7 @@ string SshLogReader::GetSshCommand(const string &logger, const string &args)
 }
 
 
-string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string &additional_args)
+string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string additional_args)
 {
    char export_params[1024], startStr[32], endStr[32];
 
@@ -62,7 +62,7 @@ string SshLogReader::GetSshCommandForTimeRange(const string &logger, time_t star
 }
 
 
-string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id, const string &additional_args)
+string SshLogReader::GetSshCommandForFillId(const string &logger, int fill_id, const string additional_args)
 {
    char export_params[1024];
 
@@ -117,15 +117,6 @@ vector<string> SshLogReader::ParseCellList(string line)
    free(copy);
    return result;
 }
-
-void SshLogReader::set_additional_args(const string &additional_args)
-{
-   if (additional_args.find("\"") != string::npos)
-   {
-      gSystem->Error("SshLogReader", "invalid input: additional_args must not contain \". use ' instead");
-   }
-   fAdditionalArgs = additional_args;
-};
 
 void SshLogReader::Read(string response, map< string, map<opencdev::cdev_time_t, double> > *values)
 {
@@ -226,7 +217,7 @@ void SshLogReader::ExecuteCmd(string cmd, string *response)
          if ((response->find("Can't find start time for event specified") != string::npos)
              || (response->find("Can't find stop time for event specified") != string::npos))
          {
-            gSystem->Error("SshLogReader", "event selector failed. Additional args: '%s'", fAdditionalArgs.c_str());
+            gSystem->Error("SshLogReader", "event selector failed");
             return;
          }
 
@@ -263,21 +254,21 @@ void SshLogReader::Run(string cmd, opencdev::result_t *values)
 
 void SshLogReader::query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForTimeRange(logger, start, end, fAdditionalArgs);
+   string cmd = GetSshCommandForTimeRange(logger, start, end);
    Run(cmd, values);
 }
 
 
 void SshLogReader::query_fill(const string &logger, int fill_id, opencdev::result_t *values)
 {
-   string cmd = GetSshCommandForFillId(logger, fill_id, fAdditionalArgs);
+   string cmd = GetSshCommandForFillId(logger, fill_id);
    Run(cmd, values);
 }
 
 
 void SshLogReader::get_fill_events(int fill_id, const string &ev_name, vector<opencdev::cdev_time_t> *values)
 {
-   string cmd = GetSshCommandForFillId("MCR/Events", fill_id, fAdditionalArgs + " -cells '" + ev_name + "'");
+   string cmd = GetSshCommandForFillId("MCR/Events", fill_id, " -cells '" + ev_name + "'");
 
    opencdev::result_t result;
    Run(cmd, &result);

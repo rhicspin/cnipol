@@ -21,17 +21,15 @@ private:
    vector<string> ParseCellList(string line);
    string ReadStream(FILE *fd);
    static string GetSshCommand(const string &logger, const string &args);
-   static string GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string &additional_args);
-   static string GetSshCommandForFillId(const string &logger, int fill_id, const string &additional_args);
+   static string GetSshCommandForTimeRange(const string &logger, time_t start, time_t end, const string additional_args = "");
+   static string GetSshCommandForFillId(const string &logger, int fill_id, const string additional_args = "");
 
 protected:
 
    vector<string>  fCells;
-   string fAdditionalArgs;
 
 public:
 
-   void set_additional_args(const string &additional_args);
    void Read(string response, opencdev::result_t *values);
    void ExecuteCmd(string cmd, string *response);
    virtual void Run(string cmd, opencdev::result_t *values);

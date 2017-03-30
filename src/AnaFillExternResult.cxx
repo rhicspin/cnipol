@@ -135,7 +135,6 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    if (fillId == 17699) fTimeEventLumiOn = (time_t)1370651445;
 
    opencdev::result_t bc_result;
-   log_reader.set_additional_args("");
    log_reader.query_fill("RHIC/Polarimeter/Blue/biasReadbacks", fillId, &bc_result);
    log_reader.query_fill("RHIC/Polarimeter/Yellow/biasReadbacks", fillId, &bc_result);
    for(opencdev::result_t::const_iterator it = bc_result.begin(); it != bc_result.end(); it++)
