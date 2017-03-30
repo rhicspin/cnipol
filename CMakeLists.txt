@@ -13,6 +13,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 PROJECT(CNIPOL)
 
+SET(CMAKE_CXX_STANDARD 11)
+
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 OPTION(FORCE_32BIT "should be OFF" OFF) # ON value is not supported
 
@@ -22,7 +24,6 @@ FIND_PACKAGE(Sqlite3)
 FIND_PACKAGE(ROOT)
 
 IF(${ROOT_VERSION} VERSION_GREATER "6.0")
-	SET(CMAKE_CXX_STANDARD 11)
 	MESSAGE(WARNING You are trying to build against ROOT6. cnipol in some
 	      places uses ROOT2 style streamers that are broken in ROOT6.  So
 	      far problems observed with RecordMachineParams,
