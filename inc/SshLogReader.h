@@ -37,6 +37,7 @@ public:
    virtual void Run(string cmd, opencdev::result_t *values);
    virtual void query_timerange(const string &logger, opencdev::cdev_time_t start, opencdev::cdev_time_t end, opencdev::result_t *values);
    virtual void query_fill(const string &logger, int fill_id, opencdev::result_t *values);
+   void get_fill_events(int fill_id, const string &ev_name, vector<opencdev::cdev_time_t> *values);
 };
 
 #endif

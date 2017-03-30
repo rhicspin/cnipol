@@ -273,3 +273,17 @@ void SshLogReader::query_fill(const string &logger, int fill_id, opencdev::resul
    string cmd = GetSshCommandForFillId(logger, fill_id, fAdditionalArgs);
    Run(cmd, values);
 }
+
+
+void SshLogReader::get_fill_events(int fill_id, const string &ev_name, vector<opencdev::cdev_time_t> *values)
+{
+   string cmd = GetSshCommandForFillId("MCR/Events", fill_id, fAdditionalArgs + " -cells '" + ev_name + "'");
+
+   opencdev::result_t result;
+   Run(cmd, &result);
+
+   for(std::pair<const opencdev::cdev_time_t, double> &p : result[ev_name]) {
+      opencdev::cdev_time_t time = p.first;
+      values->push_back(time);
+   }
+}
