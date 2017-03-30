@@ -65,11 +65,26 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    }
 
    CachingLogReader<SshLogReader> log_reader;
-   log_reader.set_additional_args(" -start 'ev-lumi' -stop 'softev-physics-off'");
+   {
+      std::vector<opencdev::cdev_time_t> ev_lumi_on, ev_lumi_off;
+      log_reader.get_fill_events(fillId, "ev-lumi", &ev_lumi_on);
+      log_reader.get_fill_events(fillId, "ev-lumi-off", &ev_lumi_off);
+      if ((!ev_lumi_on.empty()) && (!ev_lumi_off.empty())) {
+         fTimeEventLumiOn = ev_lumi_on[0];
+         fTimeEventLumiOff = ev_lumi_off[0];
+      } else {
+         fTimeEventLumiOn = 0;
+         fTimeEventLumiOff = 0;
+      }
+   }
+
    opencdev::result_t result;
-   log_reader.query_fill("RHIC/BeamIons", fillId, &result);
-   log_reader.query_fill("RHIC/PowerSupplies/rot-ps", fillId, &result);
-   log_reader.query_fill("RHIC/PowerSupplies/snake-ps", fillId, &result);
+
+   if (fTimeEventLumiOn && fTimeEventLumiOff) {
+      log_reader.query_timerange("RHIC/BeamIons", fTimeEventLumiOn, fTimeEventLumiOff, &result);
+      log_reader.query_timerange("RHIC/PowerSupplies/rot-ps", fTimeEventLumiOn, fTimeEventLumiOff, &result);
+      log_reader.query_timerange("RHIC/PowerSupplies/snake-ps", fTimeEventLumiOn, fTimeEventLumiOff, &result);
+   }
 
    fBluIntensGraph = MakeGraph(result["bluDCCTtotal"], 100);
    fYelIntensGraph = MakeGraph(result["yelDCCTtotal"], 100);
@@ -80,24 +95,17 @@ void AnaFillExternResult::LoadInfo(UInt_t fillId)
    fBluSnakeCurGraph = MakeGraph(result["bo3-snk7-outer"]);
    fYelSnakeCurGraph = MakeGraph(result["yi3-snk7-outer"]);
 
-   {
-      const std::map<opencdev::cdev_time_t, double> &values = result["bluDCCTtotal"];
-      if(values.empty())
-	{
-	  fTimeEventLumiOn = -2211753600;
-	  fTimeEventLumiOff = -2211753600;
-	}
-      for(std::map<opencdev::cdev_time_t, double>::const_iterator it = values.begin(); it != values.end(); it++)
-      {
-         opencdev::cdev_time_t time = it->first;
-         // Determine the lumi on/off events
-
-         if (time < fTimeEventLumiOn)  fTimeEventLumiOn  = (time_t) time;
-         if (time > fTimeEventLumiOff) fTimeEventLumiOff = (time_t) time;
-      }
-      if(fillId == 17443){fTimeEventLumiOn = (time_t)1367362617;}
-      if(fillId == 17699){fTimeEventLumiOn = (time_t)1370651445;}
-   }
+   /*
+    * I'm not sure if we still need this. Below is the Grant's original commit description.
+    *
+    * Two Fills in Run13 have get incorrect start times from cdev. This hard
+    * codes the start time for those two fills to be the time of the first
+    * measurement. Note: Fill 17699 is the fill we created to seperate the two
+    * fills with the same fill number. There were two fills originally in fill
+    * 17600
+    */
+   if (fillId == 17443) fTimeEventLumiOn = (time_t)1367362617;
+   if (fillId == 17699) fTimeEventLumiOn = (time_t)1370651445;
 
    opencdev::result_t bc_result;
    log_reader.set_additional_args("");
