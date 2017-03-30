@@ -1370,12 +1370,10 @@ void AnaFillResult::CalcRhicAgsPolarRatio()
 
       if (!grPCPolarInj) continue;
 
-      // Get the last injection measurement
-      // FIXME: should use all available measurements
+      // Get the first injection measurement
       Double_t x, y, ye;
-      Int_t nPoints = grPCPolarInj->GetN();
-      grPCPolarInj->GetPoint(nPoints-1, x, y);
-      ye = grPCPolarInj->GetErrorY(nPoints-1);
+      grPCPolarInj->GetPoint(0, x, y);
+      ye = grPCPolarInj->GetErrorY(0);
 
       ValErrPair pcPolarInj(y, ye);
       ValErrPair agsPolar = GetAgsCniPolar();
