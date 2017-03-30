@@ -79,7 +79,7 @@ void FillDeviceMaxMin(map<Short_t, Result> &results)
             for(vector<double>::const_iterator it2 = values.begin(); it2 != values.end(); it2++)
             {
                double value = *it2;
-               if (!isnan(value))
+               if (!std::isnan(value))
                {
                   mean_sum += value;
                   count++;
@@ -104,7 +104,7 @@ void FillDeviceMaxMin(map<Short_t, Result> &results)
             for(vector<double>::const_iterator it2 = values.begin(); it2 != values.end(); it2++)
             {
                double value = *it2;
-               if (!isnan(value))
+               if (!std::isnan(value))
                {
                   sigma_sum += (mean - value) * (mean - value);
                   count_crosscheck++;

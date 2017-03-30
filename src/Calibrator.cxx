@@ -48,7 +48,7 @@ void Calibrator::UpdateMeanChannel()
 
    for (iCh=mb; iCh!=me; ++iCh)
    {
-      if (gMeasInfo->IsSiliconChannel(iCh->first) && !isnan(iCh->second.fT0Coef) && !isinf(iCh->second.fT0Coef) &&
+      if (gMeasInfo->IsSiliconChannel(iCh->first) && !std::isnan(iCh->second.fT0Coef) && !isinf(iCh->second.fT0Coef) &&
           !gMeasInfo->IsDisabledChannel(iCh->first) && iCh->second.GetFitStatus() == kDLFIT_OK )
       {
          vT0Coef.push_back(iCh->second.fT0Coef);
@@ -123,7 +123,7 @@ void Calibrator::ApplyBiasCurrentCorrection(MeasInfo *measInfo, bool direct)
    int not_avail = 0;
    for(int i = 0; i < N_DETECTORS; i++)
    {
-      if (isnan(bc[i]))
+      if (std::isnan(bc[i]))
       {
          not_avail++;
       }
@@ -224,7 +224,7 @@ Float_t Calibrator::GetT0CoefErr(UShort_t chId) const
 /** Returns energy registered by channel chId */
 Float_t Calibrator::GetEnergyA(UShort_t adc, UShort_t chId) const
 {
-   if (isnan(fChannelCalibs.find(chId)->second.fEffectiveGain)) {
+   if (std::isnan(fChannelCalibs.find(chId)->second.fEffectiveGain)) {
       Fatal("GetEnergyA", "NAN in effective gain");
    }
 

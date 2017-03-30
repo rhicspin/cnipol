@@ -56,7 +56,7 @@ void MAsymBiasHists::Fill(const EventConfig &rc)
    for(int det = 0; det < N_DETECTORS; det++) {
       TGraphErrors *g = grBiasCurrent[polId][det];
 
-      if (isnan(bc[det])) continue;
+      if (std::isnan(bc[det])) continue;
 
       int nPoints = g->GetN();
       g->SetPoint(nPoints, runId, bc[det]);

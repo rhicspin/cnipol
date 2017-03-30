@@ -265,7 +265,7 @@ void PlotMean(DrawObjContainer *oc, const char *name, ResultMean &result, Result
             }
          }
 
-         if (isnan(value))
+         if (std::isnan(value))
          {
             g->RemovePoint(i);
             det_g->RemovePoint(i);
@@ -360,7 +360,7 @@ void PlotCorrelation(DrawObjContainer *oc, const char *name, ResultMean &r1, Res
             continue;
          }
          double value2 = r2.second[startTime][det];
-         if (isnan(value1) || isnan(value2))
+         if (std::isnan(value1) || std::isnan(value2))
          {
             continue;
          }
@@ -408,7 +408,7 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
          vector<double>    &det_gain = it->second;
          double    bias_current = rBiasCurrent.second[time].at(det);
 
-         if (rBiasCurrent.second.count(time) && (!isnan(bias_current)) && !isnan(det_gain.at(det)))
+         if (rBiasCurrent.second.count(time) && (!std::isnan(bias_current)) && !std::isnan(det_gain.at(det)))
          {
             int n = g.GetN();
             g.Set(n + 1);
@@ -419,7 +419,7 @@ vector<double> DoAmGainCorrection(ResultMean &rhAmGain, ResultMean &rhAmGainErr,
       double val = NAN;
       if (fitres.Get())
       {
-         assert(!isnan(fitres->Value(1)));
+         assert(!std::isnan(fitres->Value(1)));
          val = fitres->Value(1);
       }
       slope.push_back(val);

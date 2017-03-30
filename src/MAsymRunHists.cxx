@@ -992,7 +992,7 @@ void MAsymRunHists::Fill(const EventConfig &rc)
       t0Err = rc.fCalibrator->fChannelCalibs[iCh].fT0CoefErr;
 
       // XXX also should be removed when real QA is available
-      if (isnan(t0) || isinf(t0) || isnan(t0Err) || isinf(t0Err)) continue;
+      if (std::isnan(t0) || isinf(t0) || std::isnan(t0Err) || isinf(t0Err)) continue;
 
       shName = "hT0VsMeas_" + sPolId + "_" + sBeamE + "_" + sChId;
       graphErrs = (TGraphErrors*) ((TH1*) oc_ch->o[shName])->GetListOfFunctions()->FindObject("grT0VsMeas");
