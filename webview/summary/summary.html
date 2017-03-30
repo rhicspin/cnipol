@@ -389,7 +389,8 @@ Ratio of upstream to downstream p-Carbon polarization values <b>at flattop energ
 <!-- }}} -->
 
 <?php
-/*
+if (isset($agsPlotsAvailable) && $agsPlotsAvailable) {
+?>
 <h2 id="ags" class="count">Injection Efficiency: RHIC Injection/AGS Polarization Ratio</h2>
 <!-- {{{ -->
 
@@ -428,7 +429,8 @@ Polarizations in AGS before injection into the RHIC:
 
 
 <!-- }}} -->
-*/
+<?php
+}
 ?>
 
 

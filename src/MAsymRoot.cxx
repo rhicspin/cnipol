@@ -110,7 +110,8 @@ void MAsymRoot::Print(const Option_t* opt) const
 /** */
 void MAsymRoot::PrintAsPhp(FILE *f) const
 {
-   fprintf(f, "<?php\n");
+   fprintf(f, "<?php\n\n");
+   fprintf(f, "$agsPlotsAvailable = true;\n");
 
    fprintf(f, "\n// AnaGlobResult data\n");
    if (!fAnaGlobResult) {
