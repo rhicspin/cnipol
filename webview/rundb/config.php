@@ -14,7 +14,7 @@ $RUN_PERIOD_BY_FILL = array (
    12 => array( "start" => 16000, "end" => 16800 ),
    13 => array( "start" => 17000, "end" => 18000 ),
    15 => array( "start" => 18000, "end" => 20000 ),
-   17 => array( "start" => 20000, "end" => 22000 )
+   17 => array( "start" => 20000, "end" => 21000)
 );
 
 // Approximate dates
@@ -35,7 +35,7 @@ $RHIC_RING         = array("1" => "Blue", "2" => "Yellow");
 $RHIC_STREAM       = array("1" => "Upstream", "2" => "Downstream");
 $MEASTYPE          = array(0x00 => "undef", 0x01 => "alpha", 0x02 => "sweep", 0x04 => "fixed", 0x08 => "ramp", 0x10 => "emit");
 $FILLTYPE          = array(0x00 => "undef", 0x01 => "phys");
-$BEAM_ENERGY       = array("24" => "24", "100" => "100", "250" => "250", "255" => "255");
+$BEAM_ENERGY       = array("24" => "24", "100" => "100", "104" => "104","250" => "250", "255" => "255");
 $BEAM_ENERGY_INJ   = 24;
 $TARGET_ORIENT     = array("H" => "H", "V" => "V");
 //$TARGET_ORIENT_ID  = array(0 => "H", "V" => "V");
@@ -136,6 +136,28 @@ $normHJPC[13][255]['B1U']['nomi'] = new pair(  0.9824,    0.0104);
 $normHJPC[13][255]['Y1D']['nomi'] = new pair(  0.9552,    0.0094);
 $normHJPC[13][255]['B2D']['nomi'] = new pair(  0.9671,    0.0090);
 $normHJPC[13][255]['Y2U']['nomi'] = new pair(  0.9503,    0.0099);
+/*run15 same as run13 needs update*/
+$normHJPC[15][24]['B1U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[15][24]['Y1D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[15][24]['B2D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[15][24]['Y2U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[15][100]['B1U']['nomi'] = new pair(  0.957,    0.006);
+$normHJPC[15][100]['Y1D']['nomi'] = new pair(  1.049,    0.007);
+$normHJPC[15][100]['B2D']['nomi'] = new pair(  0.976,    0.006);
+$normHJPC[15][100]['Y2U']['nomi'] = new pair(  1.026,    0.006);
+$normHJPC[15][104]['B1U']['nomi'] = new pair(  0.997,    0.009);
+$normHJPC[15][104]['Y1D']['nomi'] = new pair(  1.0,    -1.0);
+$normHJPC[15][104]['B2D']['nomi'] = new pair(  0.980,    0.008);
+$normHJPC[15][104]['Y2U']['nomi'] = new pair(  1.0,    -1.0);
+/*run17 set to 1*/
+$normHJPC[17][24]['B1U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[17][24]['Y1D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[17][24]['B2D']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[17][24]['Y2U']['nomi'] = new pair(   1.0,    -1.0);
+$normHJPC[17][255]['B1U']['nomi'] = new pair(  0.960,    0.009);
+$normHJPC[17][255]['Y1D']['nomi'] = new pair(  0.991,    0.009);
+$normHJPC[17][255]['B2D']['nomi'] = new pair(  0.990,    0.010);
+$normHJPC[17][255]['Y2U']['nomi'] = new pair(  1.022,    0.010);
 
 
 // sigma = fill-to-fill uncorrelated errors
