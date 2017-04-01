@@ -14,7 +14,7 @@ $RUN_PERIOD_BY_FILL = array (
    12 => array( "start" => 16000, "end" => 16800 ),
    13 => array( "start" => 17000, "end" => 18000 ),
    15 => array( "start" => 18000, "end" => 20000 ),
-   17 => array( "start" => 20000, "end" => 21000)
+   17 => array( "start" => 20000, "end" => 22000)
 );
 
 // Approximate dates
