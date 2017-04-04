@@ -3,6 +3,7 @@
 #include <time.h>
 #include <set>
 #include <string>
+#include <memory>
 
 #include "masym.h"
 
@@ -85,18 +86,16 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      TFile *f = new TFile(fileName.c_str(), "READ");
+      std::unique_ptr<TFile> f(new TFile(fileName.c_str(), "READ"));
 
       if (!f) {
          Error("masym", "file not found. Skipping...");
-         delete f;
          continue;
       }
 
       if (f->IsZombie()) {
          Error("masym", "file is zombie %s. Skipping...", fileName.c_str());
          f->Close();
-         delete f;
          continue;
       }
 
@@ -107,7 +106,6 @@ int main(int argc, char *argv[])
       if (!gMM) {
          Error("masym", "MM not found. Skipping...");
          f->Close();
-         delete f;
          continue;
       }
       char strTime[80];
@@ -125,7 +123,6 @@ int main(int argc, char *argv[])
       	if(target_ok != 1) {
 	  Warning("masym","Measurement %9.3f had a broken target", runId);
 	  f->Close();
-	  delete f;
 	  continue;
 	}
       }
@@ -164,14 +161,13 @@ int main(int argc, char *argv[])
                 profileRatioErr );
 
          f->Close();
-         delete f;
          continue;
       }
 
       mAsymRoot.UpdMinMax(*gMM);
 
       // Check that asym hist container exists in this file
-      DrawObjContainer *gHIn = new DrawObjContainer(f);
+      DrawObjContainer *gHIn = new DrawObjContainer(f.get());
       gHIn->d["asym"] = new CnipolAsymHists();
       gHIn->ReadFromDir();
 
@@ -182,7 +178,6 @@ int main(int argc, char *argv[])
       delete gHIn;
 
       f->Close();
-      delete f;
 
       gGoodMeass.insert(*gMM);
    }
