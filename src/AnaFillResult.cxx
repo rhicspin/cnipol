@@ -1,4 +1,4 @@
-
+#include <memory>
 #include <string>
 #include <climits>
 
@@ -1538,7 +1538,7 @@ void AnaFillResult::FitPCPolarGraphs()
 {
    // Fit the polarization decay graphs
    // Create a function to multiply graphs by 100% for aesthetic reasons
-   TF2 *dummyScale = new TF2("dummyScale", "100.*y");
+   std::unique_ptr<TF2> dummyScale(new TF2("dummyScale", "100.*y"));
 
    PolarimeterIdSetIter iPolId = gRunConfig.fPolarimeters.begin();
    for ( ; iPolId != gRunConfig.fPolarimeters.end(); ++iPolId)
@@ -1551,7 +1551,7 @@ void AnaFillResult::FitPCPolarGraphs()
       // All of this has to be combined with FT measurements and processed the same way
       if (grPCPolarInj)
       {
-         grPCPolarInj->Apply(dummyScale);
+         grPCPolarInj->Apply(dummyScale.get());
 
          if (grPCPolarInj->GetN() >= 2)
          {
@@ -1574,7 +1574,7 @@ void AnaFillResult::FitPCPolarGraphs()
 
       if (!grPCPolar || grPCPolar->GetN() <= 0) continue; // require a valid graph
 
-      grPCPolar->Apply(dummyScale);
+      grPCPolar->Apply(dummyScale.get());
 
       //Info("FitPCPolarGraphs", "Using range %d - %d", GetLumiOnRelTime(), GetLumiOffRelTime());
 
@@ -1587,8 +1587,7 @@ void AnaFillResult::FitPCPolarGraphs()
       first= xmax;
       if ( GetLumiOffRelTime() > GetLumiOnRelTime() && grPCPolar->GetN() > 1)
       {
-	TGraph *tmpGraph = new TGraph(0);
-	tmpGraph = (TGraph*) grPCPolar->Clone();
+         std::unique_ptr<TGraph> tmpGraph((TGraph*) grPCPolar->Clone());
 	Double_t time ,y, timediff;
 
 	if (fabs(xmax - xmin) < 3600)
@@ -1606,7 +1605,6 @@ void AnaFillResult::FitPCPolarGraphs()
 		xmin = time - GetStartTime();
 	      }
 	  }
-	delete tmpGraph;
       }
       else {
 	if (fabs(xmax - xmin) < 3600)
@@ -1616,8 +1614,6 @@ void AnaFillResult::FitPCPolarGraphs()
       Info("FitPCPolarGraphs", "Fill %d. Fitting flattop graph for polId %d", fFillId, polId);
       grPCPolar->Fit(&fitFunc, "", "", xmin, xmax);
    }
-
-   delete dummyScale;
 }
 
 
