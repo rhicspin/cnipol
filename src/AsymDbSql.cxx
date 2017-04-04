@@ -12,20 +12,13 @@ using namespace mysqlpp;
 
 
 /** */
-AsymDbSql::AsymDbSql() : fConnection(0)
+AsymDbSql::AsymDbSql() : fConnection()
 {
    MseMeasInfoX::table("run_info");
    MseFillPolarX::table("fill_polar");
    MseFillPolarNewX::table("fill_polar_new");
    MseFillProfileX::table("fill_profile");
    MseFillProfileNewX::table("fill_profile_new");
-}
-
-
-/** */
-AsymDbSql::~AsymDbSql()
-{
-   CloseConnection();
 }
 
 
@@ -61,7 +54,7 @@ void AsymDbSql::OpenConnection()
       const char *db_password = GetSetting("CNIPOL_DB_PASSWORD");
       int db_port = strtol(db_port_str, NULL, 10);
 
-      fConnection = new Connection(db_name, db_host, db_user, db_password, db_port);
+      fConnection.reset(new Connection(db_name, db_host, db_user, db_password, db_port));
    } catch (const BadQuery& er) {
       // Handle any query errors
       cerr << "Query error: " << er.what() << endl;
@@ -72,10 +65,8 @@ void AsymDbSql::OpenConnection()
    } catch (const Exception& er) {
       // Catch-all for any other MySQL++ exceptions
       cerr << "Error: " << er.what() << endl;
-      fConnection = 0;
    } catch (const char *msg) {
       cerr << msg << endl;
-      fConnection = 0;
    }
 }
 
@@ -83,10 +74,7 @@ void AsymDbSql::OpenConnection()
 /** */
 void AsymDbSql::CloseConnection()
 {
-   if (fConnection) {
-      delete fConnection;
-      fConnection = 0;
-   }
+   fConnection.reset();
 }
 
 

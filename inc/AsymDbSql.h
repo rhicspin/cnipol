@@ -1,7 +1,7 @@
 #ifndef AsymDbSql_h
 #define AsymDbSql_h
 
-#include <stdio.h>
+#include <memory>
 
 #include "mysql++.h"
 
@@ -20,10 +20,9 @@ class AsymDbSql
 
 public:
 
-	mysqlpp::Connection *fConnection;
+   std::unique_ptr<mysqlpp::Connection> fConnection;
 
    AsymDbSql();
-   ~AsymDbSql();
    
    void                       OpenConnection();
    void                       CloseConnection();
