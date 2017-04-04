@@ -214,11 +214,12 @@ void SshLogReader::ExecuteCmd(string cmd, string *response)
       }
       if (retcode)
       {
+         // these are error messages that exportLogger data can ouput when used with '-start' and '-stop' options
          if ((response->find("Can't find start time for event specified") != string::npos)
              || (response->find("Can't find stop time for event specified") != string::npos))
          {
             gSystem->Error("SshLogReader", "event selector failed");
-            return;
+            throw "event selector failed";
          }
 
          gSystem->Error("SshLogReader", "process returned %i", retcode);
