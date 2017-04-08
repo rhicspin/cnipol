@@ -10,7 +10,7 @@ echo "Setting environment variables for RUN_ID=$RUN_ID:"
 
 # ROOT
 export PATH=/afs/rhic/rcassoft/x8664_sl6/gcc492/bin:$PATH
-export LD_LIBRARY_PATH=/afs/rhic/rcassoft/x8664_sl6/gcc492/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/afs/rhic/rcassoft/x8664_sl6/gcc492/lib64:$LD_LIBRARY_PATH
 source /eicdata/eic0005/root_gcc49/bin/thisroot.sh
 
 # CERNLIB (required for online programs)
