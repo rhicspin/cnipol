@@ -172,6 +172,12 @@ void AnaInfo::VerifyOptions()
       stderr = stdout;
       gSystem->Chmod(GetStdLogFileName().c_str(), 0775);
    }
+   else
+   {
+      // wipe log file on disk to prevent confusion
+      FILE *fp = fopen(GetStdLogFileName().c_str(), "w");
+      fclose(fp);
+   }
 }
 
 
