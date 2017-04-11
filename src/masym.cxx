@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
       UShort_t      targetId        = gMM->fMeasInfo->GetTargetId();
       ETargetOrient targetOrient    = gMM->fMeasInfo->GetTargetOrient();
       Info("masym", "MeasId: %4.3f, targetOrient %i, targetId %i", runId, targetOrient, targetId );
-      if(runID == 15){
+      if(runID == 13 ||runID == 15 || runID == 17 ){ // years with target last good run lists
       	Int_t target_ok = anaGlobResult.GetTargetStatus(runId, targetOrient, targetId);
       	if(target_ok != 1) {
 	  Warning("masym","Measurement %9.3f had a broken target", runId);

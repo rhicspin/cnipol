@@ -94,6 +94,7 @@ extern float phiRun6[N_SILICON_CHANNELS];   // phi-angle for each strips of Run6
 extern float phit[N_SILICON_CHANNELS];      // phi-angle for each strips in approximation 45,90,135... 
 extern float gPhi[N_SILICON_CHANNELS];      // phi-angle
 
+extern UShort_t ch2WfdMap_run11[80];
 extern UShort_t ch2WfdMap_run13[80];
 extern UShort_t *gCh2WfdMap;
 

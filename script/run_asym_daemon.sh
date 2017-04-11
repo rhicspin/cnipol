@@ -2,7 +2,11 @@
 
 CHECKINGPERIOD=60 # in sec
 
-source /direct/eic+u/gwebb/pCpol/cnipol/script/setup.sh 15 > /dev/null
+#source /direct/eic+u/gwebb/pCpol/cnipol/script/setup.sh 15 > /dev/null
+source /direct/eic+u/schmidke/pCpro/pro1/cnipol/script/setup.sh 17 > /dev/null
+
+MY_HOME_DIR=/direct/eic+u/schmidke
+MY_REMOTE_HOME_DIR=/home/cfsd/schmidke
 
 CNIPOL_REMOTE_BLUE_DATA_DIR=/home/blue/20$RUN_ID/data
 CNIPOL_REMOTE_YELLOW_DATA_DIR=/home/yellow/20$RUN_ID/data
@@ -10,6 +14,18 @@ CNIPOL_ONLINE_DIR=/home/cnipol/root
 RUNLIST=/eicdata/eic0005/runXX/lists/run${RUN_ID}_all
 
 while true;  do
+
+    # check bluepc tunnel
+    date > ${MY_HOME_DIR}/TSTTUNBLU
+    rsync -av ${MY_HOME_DIR}/TSTTUNBLU bluepc:${MY_REMOTE_HOME_DIR}/.
+    rm ${MY_HOME_DIR}/TSTTUNBLU
+    rsync -av bluepc:${MY_REMOTE_HOME_DIR}/TSTTUNBLU ${MY_HOME_DIR}/.
+
+    # check yellowpc tunnel
+    date > ${MY_HOME_DIR}/TSTTUNYEL
+    rsync -av ${MY_HOME_DIR}/TSTTUNYEL yellowpc:${MY_REMOTE_HOME_DIR}/.
+    rm ${MY_HOME_DIR}/TSTTUNYEL
+    rsync -av yellowpc:${MY_REMOTE_HOME_DIR}/TSTTUNYEL ${MY_HOME_DIR}/.
 
     blue_file_list="$(rsync -av --include='*.data' --exclude='*' bluepc:${CNIPOL_REMOTE_BLUE_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2)"
     yellow_file_list="$(rsync -av --include='*.data' --exclude='*' yellowpc:${CNIPOL_REMOTE_YELLOW_DATA_DIR}/ ${CNIPOL_DATA_DIR}/ | tee -a /dev/fd/2)"

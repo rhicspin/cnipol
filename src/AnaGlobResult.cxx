@@ -256,7 +256,7 @@ void AnaGlobResult::AddMeasResult(EventConfig &mm, DrawObjContainer *ocIn)
 void AnaGlobResult::AddHJMeasResult(Int_t runID)
 {
    std::stringstream fullPath("");
-   fullPath << fPathExternResults << "/hjet_pol_run15";
+   fullPath << fPathExternResults << "/hjet_pol_current";
    ifstream file(fullPath.str().c_str());
 
    Info("AddHJMeasResult", "Adding HJet polarization from file: %s", fullPath.str().c_str());
@@ -297,6 +297,10 @@ void AnaGlobResult::AddHJMeasResult(Int_t runID)
 	 if(runID ==13){
 	    tiltBluAngle=0.2793; // The tilt angle in the blue ring +16degrees
 	    tiltYelAngle=-0.1571;// The tilt angle in the yellow ring -9 degrees
+	 }
+	 if(runID ==17){
+	    tiltBluAngle=0.2042; // The tilt angle in the blue ring +11.7 degrees (04.03.17)
+	    tiltYelAngle=-0.1309;// The tilt angle in the yellow ring -7.5 degrees (04.03.17)
 	 }
 	 printf("AnaGlobalResult: Tilt angles blue %f yellow %f \n", cos(tiltBluAngle), cos(tiltYelAngle));
 	 bluPolar = bluPolar/ cos(tiltBluAngle);
@@ -376,12 +380,13 @@ Int_t AnaGlobResult::GetTargetStatus(Double_t measId, ETargetOrient tgetOrient, 
   if(tgetOrient == 2) {return 0;}
   static int first = 1;
   const int max_index = 36;
-  static double last_run[4][36]; // [polid=0-3][tgtindex=0-35]
+  // static double last_run[4][36]; // [polid=0-3][tgtindex=0-35] INDEX GLITCH 1 TGT RUN13!!!
+  static double last_run[4][max_index+1]; // [polid=0-3][tgtindex=1-max_index, 0 unused]
   if (first) { // initial call read in last good run list
 
-    // set default target OK until end of Run13, last run OK -> big number
+    // set default target OK until end of Run, last run OK -> big number
     for (int i=0; i<4; i++) {
-      for (int j=0; j<max_index; j++) {
+      for (int j=0; j<=max_index; j++) {
 	last_run[i][j] = 99999.;
       }
     }
@@ -390,33 +395,41 @@ Int_t AnaGlobResult::GetTargetStatus(Double_t measId, ETargetOrient tgetOrient, 
     int nin = 0;
     int polid_in, tgtindex_in; double run_in;
     std::stringstream fullPath("");
-    // fullPath << fPathExternResults << "/tgt_lastruns_13.dat";
-    fullPath << fPathExternResults << "/tgt_lastruns_15.dat";
+    fullPath << fPathExternResults << "/tgt_lastruns_current.dat";
     ifstream ifile(fullPath.str().c_str());
     Info("GetTargetStatus", "Target Status from file: %s", fullPath.str().c_str());
-    //    ifstream ifile("dat/tgt_lastruns_13.dat");
     while (1) {
       ifile >> polid_in >> tgtindex_in >> run_in;
       if (ifile.eof()) {break;}
       nin++;
-      //cout << nin <<" "<< polid_in <<" "<< tgtindex_in <<" "<< run_in << endl;
+      char crun_in[10]; sprintf(crun_in,"%9.3f",run_in);
+      cout << nin <<" "<< polid_in <<" "<< tgtindex_in <<" "<< crun_in << endl;
       last_run[polid_in][tgtindex_in] = run_in;
     }
     ifile.close();
     cout << "AnaGlobResult::GetTargetStatus # last runs input: " << nin << endl;
+    // for (int i=0; i<4; i++) {
+    //   for (int j=0; j<=max_index; j++) {
+    // 	char clast_run[10]; sprintf(clast_run,"%9.3f",last_run[i][j]);
+    // 	cout << i <<" "<< j << " " << clast_run << endl;
+    //   }
+    // }
 
     first = 0;
   }
 
   int polid = int(10.*measId)%10;
-  // Run13 had 3 sets of targets
-  // internally target index 1-12 = set 1, 13-24 = set 2, 25-36 = set 3
+  // internally target index 1-12 = set 1, 13-24 = set 2, 25-36 = set 3 etc.
   int tgtindex = targetId + 6*(1-tgetOrient); // 1st target set
+  // Run13 had 3 sets of targets
   // if (measId>17251.) {tgtindex += 12;} // 2nd target set Run 13 
-  //  if (measId>17475.) {tgtindex += 12;} // 3rd target set Run 13 
+  // if (measId>17475.) {tgtindex += 12;} // 3rd target set Run 13 
   // Run15 had 2 sets of targets
-  // internally target index 1-12 = set 1, 13-24 = set 2
-  if (measId>19000.) {tgtindex += 12;} // 2nd target set Run 15 
+  // if (measId>19000.) {tgtindex += 12;} // 2nd target set Run 15  
+  // Run17 so far 1 set of targets...
+  // char cmeasId[10]; sprintf(cmeasId,"%9.3f",measId);
+  // char clast_run[10]; sprintf(clast_run,"%9.3f",last_run[polid][tgtindex]);
+  // cout << "AnaGlobResult::GetTargetStatus " << polid <<" "<< tgtindex <<" "<< clast_run <<" "<< cmeasId <<" "<< (int)(measId<=last_run[polid][tgtindex]) << endl;
   return (measId<=last_run[polid][tgtindex]);
 }
 
