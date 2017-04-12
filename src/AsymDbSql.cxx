@@ -26,7 +26,7 @@ AsymDbSql::AsymDbSql() : fConnection()
 const char* AsymDbSql::GetSetting(const char *key, const char *defval)
 {
    const char *value = gSystem->Getenv(key);
-   if (!key)
+   if (!value)
    {
       if (defval) {
          return defval;
