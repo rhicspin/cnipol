@@ -18,6 +18,8 @@ sqlite3_stmt*	CachingLogReader<T>::fSelectStmt = NULL;
 template<class T>
 sqlite3_stmt*	CachingLogReader<T>::fInsertStmt = NULL;
 template<class T>
+sqlite3_stmt*	CachingLogReader<T>::fDeleteStmt = NULL;
+template<class T>
 int             CachingLogReader<T>::fDBRefCnt = 0;
 
 
@@ -49,6 +51,12 @@ CachingLogReader<T>::CachingLogReader()
       {
          gSystem->Error("CachingLogReader", "Error preparing insert_query: %s", sqlite3_errmsg(fDB));
       }
+      const char delete_query[] = "DELETE FROM cache WHERE query = ?;";
+      ret = sqlite3_prepare_v2(fDB, delete_query, sizeof(delete_query), &fDeleteStmt, NULL);
+      if (ret != SQLITE_OK)
+      {
+         gSystem->Error("CachingLogReader", "Error preparing delete_query: %s", sqlite3_errmsg(fDB));
+      }
    }
 }
 
@@ -66,6 +74,10 @@ CachingLogReader<T>::~CachingLogReader()
       if (sqlite3_finalize(fInsertStmt) != SQLITE_OK)
       {
          gSystem->Error("CachingLogReader", "Error finalizing insert_query");
+      }
+      if (sqlite3_finalize(fDeleteStmt) != SQLITE_OK)
+      {
+         gSystem->Error("CachingLogReader", "Error finalizing delete_query");
       }
       if (sqlite3_close(fDB) != SQLITE_OK)
       {
@@ -87,6 +99,9 @@ template<class T>
 void CachingLogReader<T>::Run(string cmd, opencdev::result_t *values)
 {
    int ret;
+
+   fLastCmd = cmd;
+
    sqlite3_reset(fSelectStmt);
    sqlite3_bind_text(fSelectStmt, 1, cmd.c_str(), cmd.size(), SQLITE_STATIC);
 
@@ -117,6 +132,36 @@ void CachingLogReader<T>::Run(string cmd, opencdev::result_t *values)
    {
       throw sqlite3_errmsg(fDB);
    }
+}
+
+
+/**
+ * This is an ugly hack to allow uncaching unwanted results
+ */
+template<class T>
+void CachingLogReader<T>::RemoveLastCache()
+{
+   sqlite3_reset(fDeleteStmt);
+   sqlite3_bind_text(fDeleteStmt, 1, fLastCmd.c_str(), fLastCmd.size(), SQLITE_STATIC);
+   if (sqlite3_step(fDeleteStmt) != SQLITE_DONE)
+   {
+      gSystem->Error("CachingLogReader", "sqlite error: %s", sqlite3_errmsg(fDB));
+   }
+   fLastCmd = "";
+}
+
+
+template<class T>
+void CachingLogReader<T>::get_fill_events(int fill_id, const string &ev_name, vector<opencdev::cdev_time_t> *values)
+{
+   vector<opencdev::cdev_time_t> result;
+   T::get_fill_events(fill_id, ev_name, &result);
+   if (!result.size()) {
+      gSystem->Info("CachingLogReader", "No events of type %s found in fill %i. Will retry.", ev_name.c_str(), fill_id);
+      RemoveLastCache();
+      T::get_fill_events(fill_id, ev_name, &result);
+   }
+   std::copy(result.begin(), result.end(), std::back_inserter(*values));
 }
 
 template
